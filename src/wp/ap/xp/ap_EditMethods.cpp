@@ -4210,6 +4210,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	        dHeaderMargin = dHeaderMargin * 2.54;
 		orig_margu = fp_PageSize::cm;
 	}
+
 	//
 	// OK set all page two stuff
 	//
@@ -4315,6 +4316,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	dHeaderMargin = (double) pDialog->getMarginHeader();
 	dFooterMargin = (double) pDialog->getMarginFooter();
 
+	docMargUnits = DIM_IN;
 	if(final_margu == fp_PageSize::cm)
 	{
 	       docMargUnits = DIM_CM;

@@ -570,7 +570,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
     }
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionPageSize), optionPageSize_menu);
   last_page_size = fp_PageSize::NameToPredefined (getPageSize ().getPredefinedName ());
-  gtk_option_menu_set_history (GTK_OPTION_MENU (optionPageSize), (int) last_page_size);
+  gtk_option_menu_set_history (GTK_OPTION_MENU (optionPageSize), (int)last_page_size);
 
   labelPageUnits = gtk_label_new (_(AP, DLG_PageSetup_Units));
   gtk_widget_show (labelPageUnits);
@@ -603,7 +603,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionPageUnits), optionPageUnits_menu);
   last_page_unit = getPageUnits ();
-  gtk_option_menu_set_history (GTK_OPTION_MENU (optionPageUnits), fp_2_pos (last_page_unit));
+  gtk_option_menu_set_history (GTK_OPTION_MENU (optionPageUnits), fp_2_pos (getPageUnits()));
 
   frameOrientation = gtk_frame_new (_(AP, DLG_PageSetup_Orient));
   gtk_widget_show (frameOrientation);
@@ -814,7 +814,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
 
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionMarginUnits), optionMarginUnits_menu);
   last_margin_unit = getMarginUnits ();
-  gtk_option_menu_set_history (GTK_OPTION_MENU (optionMarginUnits), fp_2_pos (last_margin_unit));
+  gtk_option_menu_set_history (GTK_OPTION_MENU (optionMarginUnits), fp_2_pos(last_margin_unit));
 
   labelMargin = gtk_label_new (_(AP, DLG_PageSetup_Margin));
   gtk_widget_show (labelMargin);
