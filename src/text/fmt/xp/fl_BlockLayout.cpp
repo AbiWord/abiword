@@ -2168,18 +2168,6 @@ void fl_BlockLayout::format()
 
 		// Reformat paragraph
 		m_Breaker.breakParagraph(this, NULL);
-
-#if 1
-		// the down-side of this is that on the active line we keep
-		// spliting/merging if the editing position is not at either
-		// end; the up-side is that at any given time our document
-		// is represented by the minimal number of runs necessary,
-		// which not only means that we use less memory, but more
-		// importantly, we draw faster since any line with uniform
-		// formatting is drawn by a single call to OS text drawing
-		// routine
-		coalesceRuns();
-#endif
 	}
 	else
 	{
@@ -2212,6 +2200,23 @@ void fl_BlockLayout::format()
 		pRun->clearIfNeeded();
 		pRun = pRun->getNextRun();
 	}
+
+#if 1
+    	// was previously after breakParagraph. Idea is to make this a less
+		// frequent occurance. So the paragraph get's lines coalessed 
+        // whenever the height changes. So we don't do this on every key press
+        // but on average the paragraph gets coalessed.
+
+		// the down-side of this is that on the active line we keep
+		// spliting/merging if the editing position is not at either
+		// end; the up-side is that at any given time our document
+		// is represented by the minimal number of runs necessary,
+		// which not only means that we use less memory, but more
+		// importantly, we draw faster since any line with uniform
+		// formatting is drawn by a single call to OS text drawing
+		// routine
+		coalesceRuns();
+#endif
 
 	m_bIsCollapsed = false;
 	xxx_UT_DEBUGMSG(("Block Uncollapsed in format \n"));

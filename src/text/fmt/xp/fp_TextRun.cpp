@@ -942,7 +942,6 @@ bool fp_TextRun::canMergeWithNext(void)
 	{
 		return false;
 	}
-
     return true;
 }
 
@@ -1304,14 +1303,6 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 //	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
-//
-// For justfied lines we have to clear the entire line
-//
-	if(	getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY)
-	{
-		getLine()->clearScreen();
-		return;
-	}
 	if(!getLine()->isEmpty() && getLine()->getLastVisRun() == this)   //#TF must be last visual run
 	{
 		// Last run on the line so clear to end.
@@ -1448,6 +1439,14 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  It shouldn't be too hard.  Just adjust the math a little.
 	  See bug 1297
 	*/
+//
+// This makes sure the widths don't change underneath us after a zoom.
+//
+	m_bKeepWidths = true;
+	Fill(pG,pDA->xoff,yTopOfSel + getAscent() - getLine()->getAscent(),
+					getWidth(),
+					getLine()->getHeight());
+	m_bKeepWidths = false;
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{
@@ -1485,14 +1484,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		clrNormalBackground -= color_offset;
 		clrSelBackground -= color_offset;
 	}
-//
-// This makes sure the widths don't change underneath us after a zoom.
-//
-	m_bKeepWidths = true;
-	Fill(pG,pDA->xoff,yTopOfSel + getAscent() - getLine()->getAscent(),
-					getWidth(),
-					getLine()->getHeight());
-	m_bKeepWidths = false;
 	// calculate selection rectangles ...
 	UT_uint32 iBase = getBlock()->getPosition();
 	UT_uint32 iRunBase = iBase + getBlockOffset();

@@ -177,7 +177,8 @@ bool fp_Run::isInSelectedTOC(void)
  */
 bool fp_Run::clearIfNeeded(void)
 {
-	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
+	//	if((getTmpX() == getX()) && (getTmpWidth() == getWidth()) && (getTmpY() == getY()))
+	if((getTmpX() == getX()) && (getTmpY() == getY()))
 	{
 		return true;
 	}
@@ -923,7 +924,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		m_pG = pG;
 	}
 	pG->setColor(getFGColor());
-
 	_draw(pDA);
 	FV_View* pView = _getView();
 	UT_return_if_fail(pView);
@@ -993,7 +993,6 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	}
 	_setDirty(false);
-
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		m_bPrinting = false;

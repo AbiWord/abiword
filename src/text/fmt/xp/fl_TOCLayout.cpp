@@ -1048,10 +1048,6 @@ void fl_TOCLayout::_calculateLabels(void)
 			pThisEntry->setPosInList(pPrevEntry->getPosInList()+1);
 			void * pTmp;
 			stEntry.viewTop(&pTmp);
-			if(pTmp == NULL)
-			{
-				return;
-			}
 			TOCEntry * pPrevLevel = static_cast<TOCEntry*>(pTmp);
 			if(pPrevLevel && pPrevLevel->getLevel() < pThisEntry->getLevel())
 			{

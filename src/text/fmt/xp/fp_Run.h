@@ -133,6 +133,7 @@ public:
 	virtual ~fp_Run();
 
 	// inline getter member functions
+
 	FP_RUN_TYPE		        getType() const 				{ return m_iType; }
 	fp_Line*		        getLine() const 				{ return m_pLine; }
 	fl_BlockLayout*	        getBlock() const 				{ return m_pBL; }
