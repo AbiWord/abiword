@@ -78,8 +78,8 @@ class XAP_UnixFont
 	const char * 			getMetricfile(void);
 	const encoding_pair*	loadEncodingFile(void);
 	const encoding_pair*	loadEncodingFile(char * file);
-	const encoding_pair*	getEncodingTable(){return m_pEncodingTable;};
-	UT_uint32				getEncodingTableSize(){return m_iEncodingTableSize;};
+	const encoding_pair*	getEncodingTable() const {return m_pEncodingTable;}
+	inline UT_uint32				getEncodingTableSize() const {return m_iEncodingTableSize;}
 
 	void					setXLFD(const char * xlfd);
 	const char * 			getXLFD(void);
@@ -153,11 +153,11 @@ public:
 	static XAP_UnixFont *			s_defaultNonCJKFont[4];
 	static XAP_UnixFont *			s_defaultCJKFont[4];
 
-	bool is_CJK_font()const{ return m_is_cjk; }
+	inline bool is_CJK_font()const{ return m_is_cjk; }
 	void set_CJK_font(bool v){ m_is_cjk=v; }
-	int get_CJK_Ascent(){ return m_cjk_font_metric.ascent; }
-	int get_CJK_Descent(){ return m_cjk_font_metric.descent; }
-	int get_CJK_Width(){ return m_cjk_font_metric.width; }
+	inline int get_CJK_Ascent() const { return m_cjk_font_metric.ascent; }
+	inline int get_CJK_Descent()const { return m_cjk_font_metric.descent; }
+	inline int get_CJK_Width()const{ return m_cjk_font_metric.width; }
 	void set_CJK_Ascent(int i){ m_cjk_font_metric.ascent=i; }
 	void set_CJK_Descent(int i){ m_cjk_font_metric.descent=i; }
 	void set_CJK_Width(int i){ m_cjk_font_metric.width=i; }
@@ -195,8 +195,8 @@ class XAP_UnixFontHandle : public GR_Font
 	XAP_UnixFont *				m_font;
 	UT_uint32					m_size;
 
-	XAP_UnixFont *getUnixFont()	const{ return m_font; }
-	GdkFont      *getMatchGdkFont()	{ return m_font? m_font->getMatchGdkFont(m_size): NULL; }
+	inline XAP_UnixFont *getUnixFont()	const{ return m_font; }
+	inline GdkFont      *getMatchGdkFont()	{ return m_font? m_font->getMatchGdkFont(m_size): NULL; }
 	
 	void explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one);	
 };

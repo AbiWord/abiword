@@ -167,8 +167,7 @@ void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 		}
 	}
 	else
-	{
-	
+	{	
 		WCTOMB_DECLS;
 		CONVERT_TO_MBS(Wide_char);
 		gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,text,text_length);
@@ -282,23 +281,18 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 void GR_UnixGraphics::setFont(GR_Font * pFont)
 {
-	if (m_pFont == pFont)
-		return;
-
-	if (!m_pFontManager)
-		return;
-
-	UT_ASSERT(pFont);
-
 	XAP_UnixFontHandle * pUFont = static_cast<XAP_UnixFontHandle *> (pFont);
+#if 1	
+	// this is probably caching done on the wrong level
+	// but it's currently faster to shortcut
+	// than to call explodeGdkFonts
+	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) && 
+	   (pUFont->getSize() == m_pFont->getSize()))
+	  return;
+#endif
 
 	m_pFont = pUFont;
 	m_pFont->explodeGdkFonts(m_pSingleByteFont,m_pMultiByteFont);
-  
-	if (m_pFont->getUnixFont()->is_CJK_font())
-		gdk_gc_set_font(m_pGC, m_pMultiByteFont);
-	else
-		gdk_gc_set_font(m_pGC, m_pSingleByteFont);
 }
 
 UT_uint32 GR_UnixGraphics::getFontHeight()
