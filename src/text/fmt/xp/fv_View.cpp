@@ -2845,6 +2845,18 @@ void FV_View::cmdCopy(void)
 
 void FV_View::cmdPaste(void)
 {
+	// set UAG markers around everything that the actual paste does
+	// so that undo/redo will treat it as one step.
+	
+	m_pDoc->beginUserAtomicGlob();
+	_doPaste();
+	m_pDoc->endUserAtomicGlob();
+}
+
+void FV_View::_doPaste(void)
+{
+	// internal portion of paste operation.
+	
 	/*
 	  This method of doing a paste is lame.  It results in a lot of screen
 	  flicker activity.  TODO
