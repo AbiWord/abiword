@@ -165,7 +165,7 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 	m_bDestroy_says_stopupdating = UT_FALSE;
 
 	// OK fire up the auto-updater for 0.5 secs
-	m_pAutoUpdateLists->set(500);
+	//m_pAutoUpdateLists->set(500);
 }
 
 void    AP_QNXDialog_Lists::autoupdateLists(UT_Timer * pTimer)
@@ -192,7 +192,7 @@ void  AP_QNXDialog_Lists::applyClicked(void)
 
 	//
 	// Failsafe code to make sure the start, stop and change flags are set
-        // as shown on the GUI.
+    // as shown on the GUI.
 	//
 
        if (GTK_TOGGLE_BUTTON (m_wCheckstartlist)->active)
@@ -273,26 +273,6 @@ void  AP_QNXDialog_Lists::applyClicked(void)
 #endif
 }
 
-#if 0
-void mark_changes(PtWidget_t *widget, UT_Bool *update) {
-
-	if (TOGGLED(widget)) {
-		m_bStartList = UT_FALSE;
-	    m_bStopList = UT_FALSE;
-	    m_bChangeStartValue = UT_FALSE;
-		*update = UT_TRUE;
-		
-        m_wCur_changestart_button),FALSE);
-        m_wCheckresumelist),FALSE);
-        m_wCheckstoplist),FALSE);
-	}
-	else {
-		*update = UT_FALSE;
-	}
-}
-#endif
-
-
 void  AP_QNXDialog_Lists::startChanged(void)
 {
 #if 0
@@ -362,97 +342,6 @@ void AP_QNXDialog_Lists::updateDialog(void)
 	setAllSensitivity();
 }
 
-
-void AP_QNXDialog_Lists::setAllSensitivity(void)
-{ 
-#if 0
-       gtk_widget_set_sensitive( m_wCheckstartlist,TRUE);
-       PopulateDialogData();
-       if(m_isListAtPoint == UT_TRUE)
-       {
-	       gtk_widget_set_sensitive( m_wCheckstoplist,TRUE);
-	       gtk_widget_set_sensitive( m_wCur_listtype,TRUE);
-	       gtk_widget_set_sensitive( m_wCur_listtypev,TRUE);
-	       gtk_widget_set_sensitive( m_wCur_listlabel,TRUE);
-	       gtk_widget_set_sensitive( m_wCur_listlabelv,TRUE);
-	       gtk_widget_set_sensitive( m_wCheckresumelist,FALSE);
-               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
-       }
-       else
-       {
-	       gtk_widget_set_sensitive( m_wCheckstoplist,FALSE);
-               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckstoplist),FALSE);
-	       m_bStopList = UT_FALSE;
-	       gtk_widget_set_sensitive( m_wCur_listtype,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_listtypev,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_listlabel,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_listlabelv,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_changestart_button,FALSE);
-               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
-	       m_bChangeStartValue = UT_FALSE;
-	       gtk_widget_set_sensitive( m_wCur_Option_types,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_startingvaluel,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_startingvaluev,FALSE);
-	       if(m_previousListExistsAtPoint == UT_TRUE)
-	       {
-	               gtk_widget_set_sensitive( m_wCheckresumelist,TRUE);
-	       }
-	       else
-	       {
-	               gtk_widget_set_sensitive( m_wCheckresumelist,FALSE);
-		       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
-	       }
-
-       }
-       if(!GTK_TOGGLE_BUTTON( m_wCur_changestart_button)->active)
-       {
-	       gtk_widget_set_sensitive( m_wCur_Option_types,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_startingvaluel,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_startingvaluev,FALSE);
-       }
-
-       if(GTK_TOGGLE_BUTTON( m_wCheckstoplist)->active)
-       {
-	       gtk_widget_set_sensitive( m_wCur_changestart_button,FALSE);
-	       gtk_widget_set_sensitive( m_wCheckresumelist,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_Option_types,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_startingvaluel,FALSE);
-	       gtk_widget_set_sensitive( m_wCur_startingvaluev,FALSE);
-               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
-       }
-       else if(m_isListAtPoint == UT_TRUE)
-       {
-	       gtk_widget_set_sensitive( m_wCur_changestart_button,TRUE);
-	       if(GTK_TOGGLE_BUTTON( m_wCur_changestart_button)->active)
-	       {
-	                gtk_widget_set_sensitive( m_wCur_Option_types,TRUE);
-	                gtk_widget_set_sensitive( m_wCur_startingvaluel,TRUE);
-	                gtk_widget_set_sensitive( m_wCur_startingvaluev,TRUE);
-	       }
-       }
-       if(GTK_TOGGLE_BUTTON( m_wCheckstartlist)->active)
-       {
-	       gtk_widget_set_sensitive( m_wNewlisttypel,TRUE);
-	       gtk_widget_set_sensitive( m_wOption_types,TRUE);
-	       gtk_widget_set_sensitive( m_wOption_types_menu,TRUE);
-	       gtk_widget_set_sensitive( m_wNew_startingvaluel,TRUE);
-	       gtk_widget_set_sensitive( m_wNew_startingvaluev,TRUE);
-	       gtk_widget_set_sensitive( m_wCheckresumelist,FALSE);
-               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCur_changestart_button),FALSE);
-               gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wCheckresumelist),FALSE);
-       }
-       else
-       {
-	       gtk_widget_set_sensitive( m_wNewlisttypel,FALSE);
-	       gtk_widget_set_sensitive( m_wOption_types,FALSE);
-	       gtk_widget_set_sensitive( m_wOption_types_menu,FALSE);
-	       gtk_widget_set_sensitive( m_wNew_startingvaluel,FALSE);
-	       gtk_widget_set_sensitive( m_wNew_startingvaluev,FALSE);
-       }
-#endif
-}
-
-
 PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -487,7 +376,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	m_wCur_listtype = PtCreateWidget(PtLabel, hlabelgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "xxxxxxxxxxxxx", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "xxxxxxxx", 0);
 	m_wCur_listtypev = PtCreateWidget(PtLabel, hlabelgroup, n, args);
 
 	n = 0;
@@ -495,7 +384,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	m_wCur_listlabel = PtCreateWidget(PtLabel, hlabelgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "xxxxxxxxxxxxx", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "xxxxxxxx", 0);
 	m_wCur_listlabelv = PtCreateWidget(PtLabel, hlabelgroup, n, args);
 
 	/* Create the radio groupings for the actions  ... */
@@ -504,12 +393,18 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtWidget_t *hradiogroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Cur_Change_Start), 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+					"Start New List",
+					/* pSS->getValue(AP_STRING_ID_DLG_Lists_Cur_Change_Start), */ 
+					0);
 	m_wCheckstartlist = PtCreateWidget(PtToggleButton, hradiogroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New_List), 0);
-	m_wCur_changestart_button = PtCreateWidget(PtToggleButton, hradiogroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
+					"Change Current List",
+					/* pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New_List), */
+					 0);
+	m_wCheckcurlist = PtCreateWidget(PtToggleButton, hradiogroup, n, args);
 
 	/* Create the actual button actions here */
 	n = 0;
@@ -517,28 +412,28 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "List Type:", 0);
-	PtWidget_t *dropdownlabel = PtCreateWidget(PtLabel, hactiongroup, n, args);
+	m_wMenuListTypeLabel = PtCreateWidget(PtLabel, hactiongroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
-	m_wOption_types_menu = PtCreateWidget(PtComboBox, hactiongroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	m_wMenuListType = PtCreateWidget(PtComboBox, hactiongroup, n, args);
 	const char *item;
 	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List);
-	PtListAddItems(m_wOption_types_menu, &item, 1, 0);
+	PtListAddItems(m_wMenuListType, &item, 1, 0);
 	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List);
-	PtListAddItems(m_wOption_types_menu, &item, 1, 0);
+	PtListAddItems(m_wMenuListType, &item, 1, 0);
 	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List);
-	PtListAddItems(m_wOption_types_menu, &item, 1, 0);
+	PtListAddItems(m_wMenuListType, &item, 1, 0);
 	item = (const char *)pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List);
-	PtListAddItems(m_wOption_types_menu, &item, 1, 0);
+	PtListAddItems(m_wMenuListType, &item, 1, 0);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Start Value:", 0);
-	m_wCur_startingvaluel = PtCreateWidget(PtLabel, hactiongroup, n, args);
+	m_wStartValueLabel = PtCreateWidget(PtLabel, hactiongroup, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
-	m_wCur_startingvaluev = PtCreateWidget(PtText, hactiongroup, n, args);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	m_wStartValue = PtCreateWidget(PtText, hactiongroup, n, args);
 
 
 	/* Buttons for the bottom */
@@ -549,23 +444,23 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Stop", 0);
-	PtWidget_t *stop = PtCreateWidget(PtButton, hbutgroup, n, args);
+	m_wStop = PtCreateWidget(PtButton, hbutgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Resume", 0);
-	PtWidget_t *resume = PtCreateWidget(PtButton, hbutgroup, n, args);
+	m_wResume = PtCreateWidget(PtButton, hbutgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Apply), 0);
-	PtWidget_t *m_wApply = PtCreateWidget(PtButton, hbutgroup, n, args);
+	m_wApply = PtCreateWidget(PtButton, hbutgroup, n, args);
 	PtAddCallback(m_wApply, Pt_CB_ACTIVATE, s_applyClicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Close), 0);
-	PtWidget_t *m_wClose = PtCreateWidget(PtButton, hbutgroup, n, args);
+	m_wClose = PtCreateWidget(PtButton, hbutgroup, n, args);
 	PtAddCallback(m_wClose, Pt_CB_ACTIVATE, s_closeClicked, this);
 
 	return m_mainWindow;
@@ -578,39 +473,77 @@ void AP_QNXDialog_Lists::_populateWindowData (void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
+	/* We are inside a current list, new & change are enabled */
 	if(m_isListAtPoint == UT_TRUE) {
 		int *flags = NULL;
 
 		PtSetResource(m_wCur_listlabelv, Pt_ARG_TEXT_STRING, m_curListLabel, 0);
 		PtSetResource(m_wCur_listtypev, Pt_ARG_TEXT_STRING, m_curListType, 0);
 
-		PtGetResource(m_wCur_changestart_button, Pt_ARG_FLAGS, &flags, 0);
-		if (!flags && *flags & Pt_SET) {
+		PtGetResource(m_wCheckcurlist, Pt_ARG_FLAGS, &flags, 0);
+		if (!flags && *flags & Pt_SET) { 	/* Change current selected */
 			char tmp[20];
 			int  pos;
 		
 			sprintf(tmp, "%d", m_curStartValue);
-			PtSetResource(m_wCur_startingvaluev, Pt_ARG_TEXT_STRING, tmp, 0);
-			
-			if(strstr(m_curListType, 
-					  pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List))!=NULL)
+			PtSetResource(m_wStartValue, Pt_ARG_TEXT_STRING, tmp, 0);
+		
+			if(!strcmp(m_curListType, pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List)))
 					pos = 1;
-			else if(strstr(m_curListType, 
-					pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List))!=NULL)
+			else if(!strcmp(m_curListType, pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List)))
 					pos = 2;
-			else if(strstr(m_curListType, 
-					pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List))!=NULL)
+			else if(!strcmp(m_curListType, pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List)))
 					pos = 3;
-			else if(strstr(m_curListType, 
-					pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List))!=NULL)
+			else if(!strcmp(m_curListType, pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List)))
 					pos = 4;
-			PtListGotoPos(m_wOption_types_menu, pos);
+
+			UT_QNXComboSetPos(m_wMenuListType, pos);
 		}
 	}
+	/* We are not inside a current list, change disabled, new enabled */
 	else {
-		PtSetResource(m_wCur_listlabelv, Pt_ARG_TEXT_STRING, "-----", 0);
-		PtSetResource(m_wCur_listtypev, Pt_ARG_TEXT_STRING, "-----", 0);
+		PtSetResource(m_wCur_listlabelv, Pt_ARG_TEXT_STRING, "NONE", 0);
+		PtSetResource(m_wCur_listtypev, Pt_ARG_TEXT_STRING, "NONE", 0);
+	}
+
+}
+
+void AP_QNXDialog_Lists::setAllSensitivity(void)
+{ 
+	PopulateDialogData();
+
+	/* If we are at a point, then all things are valid */
+	if(m_isListAtPoint == UT_TRUE) {
+		PtSetResource(m_wMenuListType, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
+		PtSetResource(m_wMenuListTypeLabel, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
+		PtSetResource(m_wStartValue, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
+		PtSetResource(m_wStartValueLabel, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
+		PtSetResource(m_wStop, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
+	}
+	else {
+		PtSetResource(m_wMenuListType, Pt_ARG_FLAGS, 
+				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
+		PtSetResource(m_wMenuListTypeLabel, Pt_ARG_FLAGS, 
+				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
+		PtSetResource(m_wStartValue, Pt_ARG_FLAGS, 
+				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
+		PtSetResource(m_wStartValueLabel, Pt_ARG_FLAGS, 
+				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
+		PtSetResource(m_wStop, Pt_ARG_FLAGS, 
+				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
+		PtSetResource(m_wResume, Pt_ARG_FLAGS, 
+				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
+
+	}
+
+	if(m_previousListExistsAtPoint == UT_TRUE) {
+		PtSetResource(m_wResume, Pt_ARG_FLAGS, 0, Pt_GHOST | Pt_BLOCKED);
+	}
+	else {
+		PtSetResource(m_wResume, Pt_ARG_FLAGS, 
+				Pt_GHOST | Pt_BLOCKED, Pt_GHOST | Pt_BLOCKED);
 	}
 }
+
 
 

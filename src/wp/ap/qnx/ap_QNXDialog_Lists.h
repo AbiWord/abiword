@@ -63,25 +63,23 @@ protected:
 
 	PtWidget_t *m_mainWindow;
 
+	PtWidget_t * m_wStop;
 	PtWidget_t * m_wApply;
 	PtWidget_t * m_wClose;
-	PtWidget_t * m_wContents;
+	PtWidget_t * m_wResume;
+
+	PtWidget_t * m_wStartValue;
+	PtWidget_t * m_wStartValueLabel;
+	PtWidget_t * m_wMenuListType;
+	PtWidget_t * m_wMenuListTypeLabel;
+
+	PtWidget_t * m_wCheckcurlist;
 	PtWidget_t * m_wCheckstartlist;
-	PtWidget_t * m_wCheckstoplist;
-	PtWidget_t * m_wNewlisttypel;
-    PtWidget_t * m_wOption_types;
-    PtWidget_t * m_wOption_types_menu;
-	PtWidget_t * m_wNew_startingvaluel;
-	PtWidget_t * m_wNew_startingvaluev;
-	PtWidget_t * m_wNew_list_labell;
-	PtWidget_t * m_wnew_list_labelv;
+
 	PtWidget_t * m_wCur_listtype;
 	PtWidget_t * m_wCur_listtypev;
 	PtWidget_t * m_wCur_listlabel;
 	PtWidget_t * m_wCur_listlabelv;
-    PtWidget_t * m_wCur_changestart_button;
-	PtWidget_t * m_wCur_startingvaluel;
-	PtWidget_t * m_wCur_startingvaluev;
 
 protected:
 

@@ -149,184 +149,138 @@ void AP_QNXDialog_Columns::event_WindowDelete(void)
 
 /*****************************************************************/
 
+int pretty_group(PtWidget_t *w, const char *title) {
+	int n, width;
+	PtArg_t args[10];
+
+	n = 0;
+
+	if (title && *title) {
+		PhRect_t rect;
+		const char *font = NULL;
+		char *defaultfont = { "helv10" };
+
+		PtGetResource(w, Pt_ARG_TITLE_FONT, &font, 0);
+		if (!font) {
+			font = defaultfont;	
+		}
+
+		PfExtentText(&rect, NULL, font, title, 0);
+		//PtSetArg(&args[n++], Pt_ARG_WIDTH, rect.lr.x - rect.ul.x + 10, 0);
+
+		PtSetArg(&args[n++], Pt_ARG_TITLE, title, 0);
+		PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, 
+			Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA, 
+			Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA);
+	}
+#define OUTLINE_GROUP (Pt_TOP_OUTLINE | Pt_TOP_BEVEL | \
+					   Pt_BOTTOM_OUTLINE | Pt_BOTTOM_BEVEL | \
+					   Pt_LEFT_OUTLINE | Pt_LEFT_BEVEL | \
+					   Pt_RIGHT_OUTLINE | Pt_RIGHT_BEVEL)
+	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, OUTLINE_GROUP, OUTLINE_GROUP);
+	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
+
+	PtSetResources(w, n, args);
+
+	return 0;
+}
+
 PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 {
-#if 0
 	PtWidget_t * windowColumns;
 	PtWidget_t * vboxMain;
-	PtWidget_t * tableInsert;
-	PtWidget_t * labelInsert;
-	GSList * tableInsert_group = NULL;
-	PtWidget_t * radiobuttonPageBreak;
-	PtWidget_t * radiobuttonNextPage;
-	PtWidget_t * radiobuttonContinuous;
-	PtWidget_t * radiobuttonColumnBreak;
-	PtWidget_t * radiobuttonEvenPage;
-	PtWidget_t * radiobuttonOddPage;
-	PtWidget_t * labelSectionBreaks;
-	PtWidget_t * hseparator9;
-	PtWidget_t * hseparator10;
-	PtWidget_t * hbuttonboxBreak;
 	PtWidget_t * buttonOK;
 	PtWidget_t * buttonCancel;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowColumns = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "windowColumns", windowColumns);
-	gtk_window_set_title (GTK_WINDOW (windowColumns), pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle));
-	gtk_window_set_policy (GTK_WINDOW (windowColumns), FALSE, FALSE, FALSE);
+	int n;
+	PtArg_t args[10];
 
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
+	windowColumns = PtCreateWidget(PtWindow, NULL, n, args);
+//    PtAddCallback(windowColumns, Pt_CB_WINDOW_CLOSING, s_deleteClicked, this);
 	
-	vboxMain = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "vboxMain", vboxMain);
-	gtk_widget_show (vboxMain);
-	gtk_container_add (GTK_CONTAINER (windowColumns), vboxMain);
-	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);
-/*
+	/* Create a vertical box in which to stuff things */
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
+	vboxMain = PtCreateWidget(PtGroup, windowColumns, n, args);
 
-	tableInsert = gtk_table_new (7, 2, FALSE);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "tableInsert", tableInsert);
-	gtk_widget_show (tableInsert);
-	gtk_box_pack_start (GTK_BOX (vboxMain), tableInsert, FALSE, FALSE, 0);
+	/* Create a horizontal box for the components */
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 15, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_VERTICAL, 0);
+	PtWidget_t *hitem = PtCreateWidget(PtGroup, vboxMain, n, args);
 
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Insert));
-	labelInsert = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "labelInsert", labelInsert);
-	gtk_widget_show (labelInsert);
-	gtk_table_attach (GTK_TABLE (tableInsert), labelInsert, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-	gtk_widget_set_usize (labelInsert, 17, -1);
-	gtk_label_set_justify (GTK_LABEL (labelInsert), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelInsert), 0, 0.5);
+	/* Create a vertical group for the columns */
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
+	PtWidget_t *vbuttons = PtCreateWidget(PtGroup, hitem, n, args);
+	pretty_group(vbuttons, NULL /* "Number of Columns" */);
 	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_PageBreak));	
-	radiobuttonPageBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonPageBreak));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonPageBreak", radiobuttonPageBreak);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonPageBreak), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_PAGE));
-	gtk_widget_show (radiobuttonPageBreak);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonPageBreak, 0, 1, 1, 2,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_NextPage));	
-	radiobuttonNextPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonNextPage));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonNextPage", radiobuttonNextPage);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonNextPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));
-	gtk_widget_show (radiobuttonNextPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonNextPage, 0, 1, 4, 5,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Continuous));	
-	radiobuttonContinuous = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonContinuous));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonContinuous", radiobuttonContinuous);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonContinuous), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_CONTINUOUS));
-	gtk_widget_show (radiobuttonContinuous);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonContinuous, 0, 1, 5, 6,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_ColumnBreak));	
-	radiobuttonColumnBreak = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonColumnBreak));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonColumnBreak", radiobuttonColumnBreak);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonColumnBreak), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
-	gtk_widget_show (radiobuttonColumnBreak);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonColumnBreak, 1, 2, 1, 2,
-					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_EvenPage));	
-	radiobuttonEvenPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonEvenPage));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonEvenPage", radiobuttonEvenPage);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonEvenPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_EVENPAGE));
-	gtk_widget_show (radiobuttonEvenPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonEvenPage, 1, 2, 4, 5,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_OddPage));	
-	radiobuttonOddPage = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
-	FREEP(unixstr);
-	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonOddPage));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "radiobuttonOddPage", radiobuttonOddPage);
-//	gtk_object_set_data (GTK_OBJECT (radiobuttonOddPage), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_ODDPAGE));
-	gtk_widget_show (radiobuttonOddPage);
-	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonOddPage, 1, 2, 5, 6,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
-	
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_SectionBreaks));	
-	labelSectionBreaks = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "labelSectionBreaks", labelSectionBreaks);
-	gtk_widget_show (labelSectionBreaks);
-	gtk_table_attach (GTK_TABLE (tableInsert), labelSectionBreaks, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 4);
-	gtk_widget_set_usize (labelSectionBreaks, 76, -1);
-	gtk_label_set_justify (GTK_LABEL (labelSectionBreaks), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_alignment (GTK_MISC (labelSectionBreaks), 0, 0.5);
-	
-	hseparator9 = gtk_hseparator_new ();
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "hseparator9", hseparator9);
-	gtk_widget_show (hseparator9);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator9, 0, 2, 6, 7,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Number of Columns", 0);
+	PtCreateWidget(PtLabel, vbuttons, n, args);
 
-	hseparator10 = gtk_hseparator_new ();
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "hseparator10", hseparator10);
-	gtk_widget_show (hseparator10);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator10, 0, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
-*/
-	hbuttonboxBreak = gtk_hbutton_box_new ();
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "hbuttonboxBreak", hbuttonboxBreak);
-	gtk_widget_show (hbuttonboxBreak);
-	gtk_box_pack_start (GTK_BOX (vboxMain), hbuttonboxBreak, FALSE, FALSE, 4);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxBreak), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxBreak), 10);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonboxBreak), 85, 24);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonboxBreak), 0, 0);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 24, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 24, 0);
+	PtCreateWidget(PtButton, vbuttons, n, args);
 
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 24, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 24, 0);
+	PtCreateWidget(PtButton, vbuttons, n, args);
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxBreak), buttonOK);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 24, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 24, 0);
+	PtCreateWidget(PtButton, vbuttons, n, args);
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowColumns), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxBreak), buttonCancel);
+	/* Create a vertical group for the preview */
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtWidget_t *vpreview = PtCreateWidget(PtGroup, hitem, n, args);
+	pretty_group(vpreview, NULL /* "Preview" */);
 
-	// the control buttons
-	gtk_signal_connect(GTK_OBJECT(buttonOK),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_ok_clicked),
-					   (gpointer) this);
-	
-	gtk_signal_connect(GTK_OBJECT(buttonCancel),
-					   "clicked",
-					   GTK_SIGNAL_FUNC(s_cancel_clicked),
-					   (gpointer) this);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Preview", 0);
+	PtCreateWidget(PtLabel, vpreview, n, args);
 
-	// the catch-alls
-	
-	gtk_signal_connect_after(GTK_OBJECT(windowColumns),
-							 "delete_event",
-							 GTK_SIGNAL_FUNC(s_delete_clicked),
-							 (gpointer) this);
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "PREVIEW HERE", 0);
+	PtCreateWidget(PtLabel, vpreview, n, args);
 
-	gtk_signal_connect_after(GTK_OBJECT(windowColumns),
-							 "destroy",
-							 NULL,
-							 NULL);
+	/* Create a vertical group for the response buttons */
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtWidget_t *vaction = PtCreateWidget(PtGroup, hitem, n, args);
+
+	n = 0;
+    PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
+	buttonOK = PtCreateWidget(PtButton, vaction, n, args);
+	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
+
+	n = 0;
+    PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
+	buttonCancel = PtCreateWidget(PtButton, vaction, n, args);
+	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
+
+	/* Put a "line between" toggle at the bottom */
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Line between", 0);
+	buttonCancel = PtCreateWidget(PtToggleButton, vboxMain, n, args);
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -336,12 +290,9 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	m_buttonOK = buttonOK;
 	m_buttonCancel = buttonCancel;
 
-	m_radioGroup = tableInsert_group;
+	//m_radioGroup = tableInsert_group;
 	
 	return windowColumns;
-#else
-	return NULL;
-#endif
 }
 
 void AP_QNXDialog_Columns::_populateWindowData(void)
