@@ -132,6 +132,7 @@ bool ps_Generate::formatComment(const char * szCommentName)
 {
 	UT_String buf = "%%%%";
 	buf += szCommentName;
+	buf += "\n";
 	return writeBytes((UT_Byte*)buf.c_str(), buf.size());
 }
 
