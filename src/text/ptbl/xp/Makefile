@@ -20,7 +20,7 @@
 
 ABI_DEPTH = ../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
 CPPSRCS=		pd_Document.cpp			\
 			pd_Document_TestRoutines.cpp	\

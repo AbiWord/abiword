@@ -21,9 +21,7 @@
 #define XAP_DIALOG_ABOUT_H
 
 #include "xap_Dialog.h"
-#include "fv_View.h"
 #include "xav_View.h"
-#include "pt_Types.h"
 
 #define XAP_ABOUT_TITLE "About %s"
 #define XAP_ABOUT_DESCRIPTION "%s is an Open Source application licensed under the GNU GPL.\nYou are free to redistribute this application."

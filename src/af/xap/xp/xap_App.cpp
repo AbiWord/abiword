@@ -38,7 +38,7 @@
 #include "xap_Menu_ActionSet.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_LoadBindings.h"
-#include "ap_LoadBindings.h"			// TODO move this out into app-specific code
+//#include "ap_LoadBindings.h"			// TODO move this out into app-specific code
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -81,6 +81,7 @@ UT_Bool XAP_App::initialize(void)
 	// create application-wide resources that
 	// are shared by everything.
 
+#if 0 
 	m_pEMC = AP_GetEditMethods();
 	UT_ASSERT(m_pEMC);
 
@@ -92,7 +93,7 @@ UT_Bool XAP_App::initialize(void)
 
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 	UT_ASSERT(m_pToolbarActionSet);
-
+#endif
 	// TODO use m_pArgs->{argc,argv} to process any command-line
 	// TODO options that we need.
 

@@ -19,10 +19,10 @@
 ## 02111-1307, USA.
 
 ABI_DEPTH=		../..
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
 DIRS=			xp $(ABI_NATIVE)
-LIBRARY_NAME=		AbiAp
+LIBRARY_NAME=		AbiWPAp
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
 

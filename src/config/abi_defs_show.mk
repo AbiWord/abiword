@@ -1,6 +1,6 @@
 #! gmake
 
-## AbiWord
+## AbiSource Program Utilities
 ## Copyright (C) 1998 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
@@ -18,28 +18,10 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_DEPTH = ../../..
+ABI_AP_INCS=	/sh/ap/xp	/sh/ap/$(ABI_NATIVE)	\
+		/sh/ap/xp/ToolbarIcons
 
-include $(ABI_DEPTH)/config/abi_defs_wp.mk
+include $(ABI_DEPTH)/abi_defs.mk
 
-CPPSRCS=		ie_exp.cpp		\
-			ie_exp_AbiWord_1.cpp	\
-			ie_exp_HTML.cpp		\
-			ie_exp_Text.cpp		\
-			ie_imp.cpp		\
-			ie_imp_AbiWord_1.cpp	\
-			ie_imp_MsWord_97.cpp	\
-			ie_imp_RTF.cpp		\
-			ie_imp_Text.cpp
+##################################################################
 
-LIBRARY_NAME=		AbiImpExp
-LIBRARY_VERSION=	$(ABI_VERSION)
-TARGETS=		$(LIBRARY)
-INCLUDES=		-I$(ABI_DEPTH)/other/libmswordview
-
-include $(ABI_DEPTH)/config/abi_rules.mk
-
-build:: $(TARGETS)
-	@echo Exporting library $(LIBRARY_NAME) from `pwd`...
-	@$(subst xxxx,$(DIST)/lib,$(VERIFY_DIRECTORY))
-	@$(ABICOPY) $(TARGETS) $(DIST)/lib

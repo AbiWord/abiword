@@ -29,7 +29,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 
-#include "ap_Dialog_Id.h"
+#include "xap_Dialog_Id.h"
 #include "xap_Dlg_WindowMore.h"
 #include "xap_UnixDlg_WindowMore.h"
 

@@ -36,6 +36,10 @@
 #include "ap_UnixApp.h"
 #include "sp_spell.h"
 #include "ap_Strings.h"
+#include "xap_EditMethods.h"
+#include "ap_LoadBindings.h"
+#include "xap_Menu_ActionSet.h"
+#include "xap_Toolbar_ActionSet.h"
 
 #define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
@@ -95,6 +99,18 @@ UT_Bool AP_UnixApp::initialize(void)
 		   
 	// now that preferences are established, let the xap init
 		   
+	m_pEMC = AP_GetEditMethods();
+	UT_ASSERT(m_pEMC);
+
+	m_pBindingSet = new AP_BindingSet(m_pEMC);
+	UT_ASSERT(m_pBindingSet);
+	
+	m_pMenuActionSet = AP_CreateMenuActionSet();
+	UT_ASSERT(m_pMenuActionSet);
+
+	m_pToolbarActionSet = AP_CreateToolbarActionSet();
+	UT_ASSERT(m_pToolbarActionSet);
+
 	if (! XAP_UnixApp::initialize())
 		return UT_FALSE;
 	

@@ -76,10 +76,8 @@ ABI_XAP_INCS=	/config					\
 ABI_CALC_INCS=	/calc/engine/xp				\
 		/calc/gui/$(ABI_NATIVE)
 
-ABI_WP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
-		/wp/fmt/xp				\
-		/wp/impexp/xp				\
-		/wp/ptbl/xp	/wp/ap/xp/ToolbarIcons
+ABI_SH_INCS=	/sh/ap/xp	/sh/ap/$(ABI_NATIVE)	\
+		/sh/ap/xp/ToolbarIcons
 
 ABI_OTH_INCS=	/other/expat/xmltok			\
 		/other/expat/xmlparse			\
@@ -87,8 +85,7 @@ ABI_OTH_INCS=	/other/expat/xmltok			\
 
 ###ABI_DIST_INCS=	-I$(ABI_DEPTH)/../dist/$(OBJDIR)/include
 
-# ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_CALC_INCS) $(ABI_WP_INCS) $(ABI_OTH_INCS)
-ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_WP_INCS) $(ABI_OTH_INCS)
+ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_CALC_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS)
 ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
 
 ##################################################################
@@ -105,21 +102,21 @@ ABI_ENABLED_OPTIONS=
 ifdef ABI_OPT_JS
 ABI_JSLIBS=		js
 ABI_JSDEFS=		-DABI_OPT_JS
-ABI_OPTIONS += JavaScript:On
+ABI_OPTIONS+=JavaScript:On
 else
 ABI_JSLIBS=
 ABI_JSDEFS=
-ABI_OPTIONS += JavaScript:Off
+ABI_OPTIONS+=JavaScript:Off
 endif
 
 ## conditionally enable some additional debugging and test code
 
 ifdef ABI_OPT_DEBUG
 ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST -DFMT_TEST -DUT_TEST
-ABI_OPTIONS += Debug:On
+ABI_OPTIONS+=Debug:On
 else
 ABI_DBGDEFS=		-DNDEBUG
-ABI_OPTIONS += Debug:Off
+ABI_OPTIONS+=Debug:Off
 endif
 
 ##################################################################
@@ -168,10 +165,6 @@ endif
 ifeq ($(OS_NAME), NetBSD)
 include $(ABI_DEPTH)/config/platforms/netbsd.mk
 endif
-
-ifeq ($(OS_NAME), BeOS)
-include $(ABI_DEPTH)/config/platforms/beos.mk
-endif       
 
 # TODO: how do we differentiate between old SunOS and new Solaris
 ifeq ($(OS_NAME), SunOS)
@@ -228,17 +221,7 @@ ifeq ($(OS_NAME),WIN32)
 EXTRA_LIBS	= 	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 			$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
 			$(addsuffix .lib,$(ABI_LIBS))
-endif
-
-ifeq ($(OS_NAME), BeOS)
-EXTRA_LIBS	=	-L$(DIST)/lib \
-			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))\
-			$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))\
-			$(addprefix -l,$(ABI_LIBS)) \
-			-lpng -lz
-endif
-
-ifeq ($(ABI_NATIVE), unix)
+else
 EXTRA_LIBS	=	-L$(DIST)/lib 							\
 			$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 			$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\

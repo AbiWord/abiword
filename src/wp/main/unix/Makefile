@@ -20,7 +20,7 @@
 
 ABI_DEPTH = ../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
 CPPSRCS=		UnixMain.cpp
 
@@ -32,7 +32,7 @@ PROGRAM=		AbiWord
 # TODO in order to get all symbols to resolve, i had to list them
 # TODO several times.  see if there is a better way of doing this.
 
-LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiAp AbiEv AbiUtil AbiVer AbiSpell
+LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp AbiEv AbiUtil AbiVer AbiSpell
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 
 ABI_OTHLIBS=		expat $(ABI_JSLIBS) $(DL_LIBS)

@@ -26,11 +26,8 @@
 
 #include "xap_Dlg_About.h"
 
-#include "ap_Dialog_Id.h"
+#include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
-
-#include "fl_DocLayout.h"
-#include "fv_View.h"
 
 XAP_Dialog_About::XAP_Dialog_About(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_NonPersistent(pDlgFactory,id)

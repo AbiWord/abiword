@@ -20,7 +20,7 @@
 
 ABI_DEPTH = ../../..
 
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
 CPPSRCS=		Win32Main.cpp
 RCSRCS=			Win32Main.rc
@@ -28,7 +28,7 @@ RCSRCS=			Win32Main.rc
 PROGRAM=		AbiWord.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
-ABI_APPLIBS=		AbiVer AbiUtil AbiImpExp MsWordView AbiPTbl AbiFmt AbiEv AbiXAp AbiGr AbiAp AbiSpell Abi_libpng Abi_zlib
+ABI_APPLIBS=		AbiVer AbiUtil AbiImpExp MsWordView AbiPTbl AbiFmt AbiEv AbiXAp AbiGr AbiWPAp AbiSpell Abi_libpng Abi_zlib
 
 ABI_OTHLIBS=		expat $(ABI_JSLIBS)
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \

@@ -19,7 +19,7 @@
 ## 02111-1307, USA.
 
 ABI_DEPTH=..
-include $(ABI_DEPTH)/config/abi_defs.mk
+include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
 ## Note: main must be last
 
