@@ -731,8 +731,8 @@ UT_Pair XAP_EncodingManager::fontsizes_list;
 void XAP_EncodingManager::initialize()
 {	
 	const char* isocode = getLanguageISOName(), 
-		   *terrname = getLanguageISOTerritory(),
-		   *enc = getNativeEncodingName();
+	*terrname = getLanguageISOTerritory(),
+	*enc = getNativeEncodingName();
 	
 	if(!strcmp(enc, "UTF-8") || !strcmp(enc, "UTF8") || !strcmp(enc, "utf-8") || !strcmp(enc, "utf8"))
 		m_bIsUnicodeLocale = true;
@@ -941,7 +941,8 @@ void 	XAP_EncodingManager::describe()
 */
 const char** localeinfo_combinations(const char* prefix,const char* suffix,const char* sep, bool skip_fallback)
 {
-	UT_String buf[5];
+	//_DEBUGMSG(("locale combinations: prefix %s, suffix %s, sep %s\n", prefix,suffix,sep));
+	static UT_String buf[5];
 	static const char *ptrs[6];
 
 	for (size_t i = 1; i < 5; i++)
@@ -984,6 +985,8 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 		ptrs[j] = buf[j].c_str();
 	ptrs[5] = 0;
 
+	//_DEBUGMSG(("combinations: %s, %s, %s, %s, %s\n", ptrs[0], ptrs[1],ptrs[2],ptrs[3],ptrs[4]));
+	
     return ptrs;
 };
 
