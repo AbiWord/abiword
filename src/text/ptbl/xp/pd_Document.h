@@ -479,6 +479,9 @@ private:
 
 	// mapping UT_String=>UT_UTF8String pointer
 	UT_StringPtrMap         m_mailMergeMap;
+
+public:
+	UT_XML_ID_Generator		m_XML_ID;
 };
 
 #endif /* PD_DOCUMENT_H */

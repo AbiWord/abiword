@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2001-2003 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -322,4 +324,65 @@ char * UT_XML_Decode ( const char * inKey )
 	char * to_return = UT_strdup(decoder.getKey ().c_str());
 	xxx_UT_DEBUGMSG(("DOM: returning %s from %s\n", to_return, inKey));	
 	return to_return ;
+}
+
+UT_XML_ID_Generator::UT_XML_ID_Generator () :
+	i1(-1),i2(0),i3(0),i4(0),i5(0),i6(0)
+{
+	strcpy (buffer, "Abi_000000");
+}
+
+static const char * s_62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+const char * UT_XML_ID_Generator::next ()
+{
+	if (++i1 < 62)
+		{
+			buffer[9] = s_62[i1];
+			return buffer;
+		}
+	i1 = 0;
+	buffer[9] = '0';
+
+	if (++i2 < 62)
+		{
+			buffer[8] = s_62[i2];
+			return buffer;
+		}
+	i2 = 0;
+	buffer[8] = '0';
+
+	if (++i3 < 62)
+		{
+			buffer[7] = s_62[i3];
+			return buffer;
+		}
+	i3 = 0;
+	buffer[7] = '0';
+
+	if (++i4 < 62)
+		{
+			buffer[6] = s_62[i4];
+			return buffer;
+		}
+	i4 = 0;
+	buffer[6] = '0';
+
+	if (++i5 < 62)
+		{
+			buffer[5] = s_62[i5];
+			return buffer;
+		}
+	i5 = 0;
+	buffer[5] = '0';
+
+	if (++i6 < 62)
+		{
+			buffer[4] = s_62[i6];
+			return buffer;
+		}
+	i6 = 0;
+	buffer[4] = '0';
+
+	return buffer;
 }

@@ -185,4 +185,19 @@ private:
   UT_uint32          m_length;
 };
 
+class ABI_EXPORT UT_XML_ID_Generator
+{
+public:
+	UT_XML_ID_Generator ();
+
+	/* cycles through 56.8 billion unique 10-character IDs,
+	 * each starting with the 4-character sequence "Abi_"
+	 */
+	const char * next ();
+
+private:
+	int i1,i2,i3,i4,i5,i6;
+	char buffer[11];
+};
+
 #endif
