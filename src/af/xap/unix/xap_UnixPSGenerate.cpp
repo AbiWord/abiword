@@ -41,15 +41,31 @@ UT_Bool ps_Generate::openFile(UT_Bool bIsFile)
 	if(bIsFile)
 	{
 		m_bIsFile = UT_TRUE;
-		m_fp = fopen(m_szFilename,"w");
+		m_fp = fopen(m_szFilename, "w");
 	}
 	else
 	{
+		// We should most likely give some thought to the
+		// security implications with a popen() (which is
+		// a shell out to possibly-priveliged commands).
+		// I think we're pretty safe since we're never going
+		// to be run setuid root (let's hope).
+		//
+		// As an alternative, someone should investigate
+		// a pipe()/fork()/execve() option, which gets around
+		// the /bin/sh problems and is a bit more flexible
 		m_bIsFile = UT_FALSE;
+		
 		m_fp = popen(m_szFilename, "w");
 	}
+
+	// This is not sufficient to catch a failed popen(), at least
+	// on Linux.  This may be a bug in Linux's popen(), but more likely
+	// most Unixes will give you a valid FP, but with all flags and fields
+	// invalid.
 	if (!m_fp)
 		return UT_FALSE;
+	
 	return writeBytes("%!PS-Adobe-3.0\n");
 }
 

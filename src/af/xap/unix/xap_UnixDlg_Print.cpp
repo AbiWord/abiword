@@ -418,25 +418,8 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 		UT_cloneString(m_szPrintCommand, gtk_entry_get_text(GTK_ENTRY(entryPrint)));
 	}
-	// destroy the widgets.
 
-//	gtk_widget_destroy (vbox1);
-//	gtk_widget_destroy (vbox2);
-//	gtk_widget_destroy (vbox);
-//	gtk_widget_destroy (hbox);
-	gtk_widget_destroy (buttonPrint);
-	gtk_widget_destroy (buttonFile);
-	gtk_widget_destroy (buttonAll);
-	gtk_widget_destroy (buttonRange);
-	gtk_widget_destroy (buttonSelection);
-//	gtk_widget_destroy (button);
-	gtk_widget_destroy (buttonCollate);
-	gtk_widget_destroy (spinCopies);
-//	gtk_widget_destroy (label);
-	gtk_widget_destroy (entryPrint);
-	gtk_widget_destroy (entryFrom);
-	gtk_widget_destroy (entryTo);
-//	gtk_widget_destroy (separator);
+	// destroy the widgets
 	gtk_widget_destroy (window);
 
 	return;

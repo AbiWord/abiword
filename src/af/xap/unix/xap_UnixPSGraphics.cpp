@@ -554,7 +554,7 @@ void PS_Graphics::_emit_IncludeResource(void)
 	{
 		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
 		
-		//m_ps->formatComment("IncludeResource",psf->getMetricsData()->gfi->fontName);
+		// m_ps->formatComment("IncludeResource",psf->getMetricsData()->gfi->fontName);
 
 		// Instead of including the resources, we actually splat the fonts
 		// into the document.  This looks really slow... perhaps buffer line
