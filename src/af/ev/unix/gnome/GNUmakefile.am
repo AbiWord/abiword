@@ -20,7 +20,7 @@ include $(top_srcdir)/includes.mk
 
 INCLUDES= -UVERSION @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
-	@GNOME_CFLAGS@
+	@GNOME_CFLAGS@ $(EXPAT_INCLUDES)
 
 noinst_LIBRARIES = libEv_Gnome.a
 

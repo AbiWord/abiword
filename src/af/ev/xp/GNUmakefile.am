@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= $(AF_INCLUDES) @EXPAT_INCLUDES@ 
+INCLUDES= $(AF_INCLUDES) $(EXPAT_INCLUDES)
 
 noinst_LIBRARIES = libEv_xp.a
 

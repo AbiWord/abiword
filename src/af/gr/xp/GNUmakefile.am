@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES = @EXPAT_INCLUDES@ $(AF_INCLUDES)
+INCLUDES = $(EXPAT_INCLUDES) $(AF_INCLUDES)
 
 noinst_LIBRARIES = libGr_xp.a
 
