@@ -39,7 +39,7 @@ public:
 
 	// must let static callbacks read our bindings
 	UT_Vector * 		_getBindingsVector();
-	void 				_setAnswer(AP_Dialog_MessageBox::tAnswer answer);
+	void 				_setAnswer(XAP_Dialog_MessageBox::tAnswer answer);
 		
 protected:
 	XAP_UnixFrame *			m_pUnixFrame;
