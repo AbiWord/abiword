@@ -246,10 +246,10 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 
 #define GETGLOBFLAGS(pcr)			(  (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker)			\
 									 ? (static_cast<PX_ChangeRecord_Glob *>((pcr))->getFlags())		\
-									 : PX_ChangeRecord_Glob::PXF_Null)
+									 : (UT_Byte)PX_ChangeRecord_Glob::PXF_Null)
 #define GETREVGLOBFLAGS(pcr)		(  (pcr->getType() == PX_ChangeRecord::PXT_GlobMarker)			\
 									 ? (static_cast<PX_ChangeRecord_Glob *>((pcr))->getRevFlags())	\
-									 : PX_ChangeRecord_Glob::PXF_Null)
+									 : (UT_Byte)PX_ChangeRecord_Glob::PXF_Null)
 
 /*****************************************************************/
 /*****************************************************************/

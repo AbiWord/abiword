@@ -22,7 +22,7 @@
 #include "ut_unixTimer.h"
 #include "ut_assert.h"
 
-UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
+UT_sint32 UT_UNIXTimer::set(UT_uint32 /*iMilliseconds*/)
 {
 	/*
 	  TODO

@@ -523,7 +523,7 @@ void fp_Run::calcWidths(UT_GrowBuf * pgbCharWidths)
 		m_pLine->runSizeChanged(m_pLineData, iOldWidth, m_iWidth);
 }
 
-void fp_Run::expandWidthTo(UT_uint32 iNewWidth)
+void fp_Run::expandWidthTo(UT_uint32 /*iNewWidth*/)
 {
 #if 0	// this does not work yet
 	m_iExtraWidth = iNewWidth - m_iWidth;
@@ -531,7 +531,7 @@ void fp_Run::expandWidthTo(UT_uint32 iNewWidth)
 #endif
 }
 
-void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& /*bBOL*/, UT_Bool& bEOL)
 {
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -776,7 +776,7 @@ void fp_Run::dumpRun(void) const
 	return;
 }
 
-UT_Bool fp_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, PT_AttrPropIndex indexAP)
+UT_Bool fp_Run::ins(UT_uint32 iOffset, UT_uint32 iCount, PT_AttrPropIndex /*indexAP*/)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	if ((m_iOffsetFirst + m_iLen) < iOffset)

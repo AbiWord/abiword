@@ -29,6 +29,7 @@
 
 #include <string.h>
 #include "ut_debugmsg.h"
+#include "ut_string.h"
 #include "ev_EditMethod.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
@@ -352,74 +353,76 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 /*****************************************************************/
 
 #define F(fn)		ap_EditMethods::fn
-#define Defun(fn)	UT_Bool F(fn)(FV_View* pView, EV_EditMethodCallData * pCallData)
+#define Defun(fn)	UT_Bool F(fn)(FV_View*   pView,   EV_EditMethodCallData *   pCallData  )
+#define Defun0(fn)	UT_Bool F(fn)(FV_View* /*pView*/, EV_EditMethodCallData * /*pCallData*/)
+#define Defun1(fn)	UT_Bool F(fn)(FV_View*   pView,   EV_EditMethodCallData * /*pCallData*/)
 #define EX(fn)		F(fn)(pView, pCallData)
 
 
-Defun(scrollPageDown)
+Defun1(scrollPageDown)
 {
 	pView->cmdScroll(DG_SCROLLCMD_PAGEDOWN);
 	
 	return UT_TRUE;
 }
 
-Defun(scrollPageUp)
+Defun1(scrollPageUp)
 {
 	pView->cmdScroll(DG_SCROLLCMD_PAGEUP);
 	
 	return UT_TRUE;
 }
 
-Defun(scrollPageLeft)
+Defun1(scrollPageLeft)
 {
 	pView->cmdScroll(DG_SCROLLCMD_PAGELEFT);
 	
 	return UT_TRUE;
 }
 
-Defun(scrollPageRight)
+Defun1(scrollPageRight)
 {
 	pView->cmdScroll(DG_SCROLLCMD_PAGERIGHT);
 	
 	return UT_TRUE;
 }
 
-Defun(scrollLineDown)
+Defun1(scrollLineDown)
 {
 	pView->cmdScroll(DG_SCROLLCMD_LINEDOWN);
 	
 	return UT_TRUE;
 }
 
-Defun(scrollLineUp)
+Defun1(scrollLineUp)
 {
 	pView->cmdScroll(DG_SCROLLCMD_LINEUP);
 	
 	return UT_TRUE;
 }
 
-Defun(scrollLineLeft)
+Defun1(scrollLineLeft)
 {
 	pView->cmdScroll(DG_SCROLLCMD_LINELEFT);
 	
 	return UT_TRUE;
 }
 
-Defun(scrollLineRight)
+Defun1(scrollLineRight)
 {
 	pView->cmdScroll(DG_SCROLLCMD_LINERIGHT);
 	
 	return UT_TRUE;
 }
 
-Defun(scrollToTop)
+Defun1(scrollToTop)
 {
 	pView->cmdScroll(DG_SCROLLCMD_TOTOP);
 	
 	return UT_TRUE;
 }
 
-Defun(scrollToBottom)
+Defun1(scrollToBottom)
 {
 	pView->cmdScroll(DG_SCROLLCMD_TOBOTTOM);
 	
@@ -459,84 +462,84 @@ Defun(warpInsPtToXY)
 	return UT_TRUE;
 }
 
-Defun(warpInsPtLeft)
+Defun1(warpInsPtLeft)
 {
 	pView->cmdCharMotion(UT_FALSE,1);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtRight)
+Defun1(warpInsPtRight)
 {
 	pView->cmdCharMotion(UT_TRUE,1);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtBOL)
+Defun1(warpInsPtBOL)
 {
 	pView->moveInsPtTo(FV_DOCPOS_BOL);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtEOL)
+Defun1(warpInsPtEOL)
 {
 	pView->moveInsPtTo(FV_DOCPOS_EOL);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtBOW)
+Defun1(warpInsPtBOW)
 {
 	pView->moveInsPtTo(FV_DOCPOS_BOW);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtEOW)
+Defun1(warpInsPtEOW)
 {
 	pView->moveInsPtTo(FV_DOCPOS_EOW);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtBOS)
+Defun0(warpInsPtBOS)
 {
 	return UT_TRUE;
 }
 
-Defun(warpInsPtEOS)
+Defun0(warpInsPtEOS)
 {
 	return UT_TRUE;
 }
 
-Defun(warpInsPtBOB)
+Defun1(warpInsPtBOB)
 {
 	pView->moveInsPtTo(FV_DOCPOS_BOB);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtEOB)
+Defun1(warpInsPtEOB)
 {
 	pView->moveInsPtTo(FV_DOCPOS_EOB);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtBOD)
+Defun1(warpInsPtBOD)
 {
 	pView->moveInsPtTo(FV_DOCPOS_BOD);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtEOD)
+Defun1(warpInsPtEOD)
 {
 	pView->moveInsPtTo(FV_DOCPOS_EOD);
 	return UT_TRUE;
 }
 
-Defun(warpInsPtPrevLine)
+Defun1(warpInsPtPrevLine)
 {
 	pView->warpInsPtNextPrevLine(UT_FALSE);
 
 	return UT_TRUE;
 }
 
-Defun(warpInsPtNextLine)
+Defun1(warpInsPtNextLine)
 {
 	pView->warpInsPtNextPrevLine(UT_TRUE);
 
@@ -548,101 +551,101 @@ Defun(extSelToXY)
 	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos);
 	return UT_TRUE;
 }
-Defun(extSelLeft)
+Defun1(extSelLeft)
 {
 	pView->extSelHorizontal(UT_FALSE,1);
 	return UT_TRUE;
 }
 
-Defun(extSelRight)
+Defun1(extSelRight)
 {
 	pView->extSelHorizontal(UT_TRUE,1);
 	return UT_TRUE;
 }
 
-Defun(extSelBOL)
+Defun1(extSelBOL)
 {
 	pView->extSelTo(FV_DOCPOS_BOL);
 	return UT_TRUE;
 }
 
-Defun(extSelEOL)
+Defun1(extSelEOL)
 {
 	pView->extSelTo(FV_DOCPOS_EOL);
 	return UT_TRUE;
 }
 
-Defun(extSelBOW)
+Defun1(extSelBOW)
 {
 	pView->extSelTo(FV_DOCPOS_BOW);
 	return UT_TRUE;
 }
 
-Defun(extSelEOW)
+Defun1(extSelEOW)
 {
 	pView->extSelTo(FV_DOCPOS_EOW);
 	return UT_TRUE;
 }
 
-Defun(extSelBOS)
+Defun0(extSelBOS)
 {
 	return UT_TRUE;
 }
 
-Defun(extSelEOS)
+Defun0(extSelEOS)
 {
 	return UT_TRUE;
 }
 
-Defun(extSelBOB)
+Defun1(extSelBOB)
 {
 	pView->extSelTo(FV_DOCPOS_BOB);
 	return UT_TRUE;
 }
 
-Defun(extSelEOB)
+Defun1(extSelEOB)
 {
 	pView->extSelTo(FV_DOCPOS_EOB);
 	return UT_TRUE;
 }
 
-Defun(extSelBOD)
+Defun1(extSelBOD)
 {
 	pView->extSelTo(FV_DOCPOS_BOD);
 	return UT_TRUE;
 }
 
-Defun(extSelEOD)
+Defun1(extSelEOD)
 {
 	pView->extSelTo(FV_DOCPOS_EOD);
 	return UT_TRUE;
 }
 
-Defun(extSelPrevLine)
+Defun1(extSelPrevLine)
 {
 	pView->extSelNextPrevLine(UT_FALSE);
 	
 	return UT_TRUE;
 }
 
-Defun(extSelNextLine)
+Defun1(extSelNextLine)
 {
 	pView->extSelNextPrevLine(UT_TRUE);
 	
 	return UT_TRUE;
 }
 
-Defun(extSelPageDown)
+Defun0(extSelPageDown)
 {
 	return UT_TRUE;
 }
 
-Defun(extSelPageUp)
+Defun0(extSelPageUp)
 {
 	return UT_TRUE;
 }
 
-Defun(selectAll)
+Defun1(selectAll)
 {
 	pView->moveInsPtTo(FV_DOCPOS_BOD);
 	pView->extSelTo(FV_DOCPOS_EOD);
@@ -667,71 +670,71 @@ Defun(selectBlock)
 	return UT_TRUE;
 }
 
-Defun(delLeft)
+Defun1(delLeft)
 {
 	pView->cmdCharDelete(UT_FALSE,1);
 	return UT_TRUE;
 }
 
-Defun(delRight)
+Defun1(delRight)
 {
 	pView->cmdCharDelete(UT_TRUE,1);
 	return UT_TRUE;
 }
 
-Defun(delBOL)
+Defun1(delBOL)
 {
 	pView->delTo(FV_DOCPOS_BOL);
 	return UT_TRUE;
 }
 
-Defun(delEOL)
+Defun1(delEOL)
 {
 	pView->delTo(FV_DOCPOS_EOL);
 	return UT_TRUE;
 }
 
-Defun(delBOW)
+Defun1(delBOW)
 {
 	pView->delTo(FV_DOCPOS_BOW);
 	return UT_TRUE;
 }
 
-Defun(delEOW)
+Defun1(delEOW)
 {
 	pView->delTo(FV_DOCPOS_EOW);
 	return UT_TRUE;
 }
 
-Defun(delBOS)
+Defun0(delBOS)
 {
 	return UT_TRUE;
 }
 
-Defun(delEOS)
+Defun0(delEOS)
 {
 	return UT_TRUE;
 }
 
-Defun(delBOB)
+Defun1(delBOB)
 {
 	pView->delTo(FV_DOCPOS_BOB);
 	return UT_TRUE;
 }
 
-Defun(delEOB)
+Defun1(delEOB)
 {
 	pView->delTo(FV_DOCPOS_EOB);
 	return UT_TRUE;
 }
 
-Defun(delBOD)
+Defun1(delBOD)
 {
 	pView->delTo(FV_DOCPOS_BOD);
 	return UT_TRUE;
 }
 
-Defun(delEOD)
+Defun1(delEOD)
 {
 	pView->delTo(FV_DOCPOS_EOD);
 	return UT_TRUE;
@@ -743,150 +746,150 @@ Defun(insertData)
 	return UT_TRUE;
 }
 
-Defun(insertTab)
+Defun0(insertTab)
 {
 	return UT_TRUE;
 }
 
-Defun(insertSoftBreak)
+Defun0(insertSoftBreak)
 {
 	return UT_TRUE;
 }
 
-Defun(insertParagraphBreak)
+Defun1(insertParagraphBreak)
 {
 	pView->insertParagraphBreak();
 	
 	return UT_TRUE;
 }
 
-Defun(insertLineBreak)
+Defun0(insertLineBreak)
 {
 	return UT_TRUE;
 }
 
-Defun(insertPageBreak)
+Defun0(insertPageBreak)
 {
 	return UT_TRUE;
 }
 
-Defun(insertColumnBreak)
+Defun0(insertColumnBreak)
 {
 	return UT_TRUE;
 }
 
-Defun(insFmtBold)
+Defun1(insFmtBold)
 {
 	const XML_Char * properties[] =	{ "font-weight", "bold", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtItalic)
+Defun1(insFmtItalic)
 {
 	const XML_Char * properties[] =	{ "font-style", "italic", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtUline)
+Defun1(insFmtUline)
 {
 	const XML_Char * properties[] =	{ "text-decoration", "underline", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtStrike)
+Defun1(insFmtStrike)
 {
 	const XML_Char * properties[] =	{ "text-decoration", "line-through", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
 
-Defun(insFmtFaceTimes)
+Defun1(insFmtFaceTimes)
 {
 	const XML_Char * properties[] =	{ "font-family", "Times New Roman", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtFaceCourier)
+Defun1(insFmtFaceCourier)
 {
 	const XML_Char * properties[] =	{ "font-family", "Courier New", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtFaceArial)
+Defun1(insFmtFaceArial)
 {
 	const XML_Char * properties[] =	{ "font-family", "Arial", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtSize08)
+Defun1(insFmtSize08)
 {
 	const XML_Char * properties[] =	{ "font-size", "8pt", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtSize10)
+Defun1(insFmtSize10)
 {
 	const XML_Char * properties[] =	{ "font-size", "10pt", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtSize12)
+Defun1(insFmtSize12)
 {
 	const XML_Char * properties[] =	{ "font-size", "12pt", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtSize14)
+Defun1(insFmtSize14)
 {
 	const XML_Char * properties[] =	{ "font-size", "14pt", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtSize16)
+Defun1(insFmtSize16)
 {
 	const XML_Char * properties[] =	{ "font-size", "16pt", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtSize24)
+Defun1(insFmtSize24)
 {
 	const XML_Char * properties[] =	{ "font-size", "24pt", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtSize36)
+Defun1(insFmtSize36)
 {
 	const XML_Char * properties[] =	{ "font-size", "36pt", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
 
-Defun(insFmtColorBlack)
+Defun1(insFmtColorBlack)
 {
 	const XML_Char * properties[] =	{ "color", "000000", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtColorRed)
+Defun1(insFmtColorRed)
 {
 	const XML_Char * properties[] =	{ "color", "ff0000", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtColorGreen)
+Defun1(insFmtColorGreen)
 {
 	const XML_Char * properties[] =	{ "color", "00ff00", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
-Defun(insFmtColorBlue)
+Defun1(insFmtColorBlue)
 {
 	const XML_Char * properties[] =	{ "color", "0000ff", 0};
 	pView->insertCharacterFormatting(properties);
 	return UT_TRUE;
 }
 
-Defun(fileNew)
+Defun1(fileNew)
 {
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -894,7 +897,7 @@ Defun(fileNew)
 	return pFrame->loadDocument(NULL);
 }
 
-Defun(fileOpen)
+Defun1(fileOpen)
 {
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -930,7 +933,7 @@ Defun(fileSave)
 	return UT_TRUE;
 }
 
-Defun(fileSaveAs)
+Defun1(fileSaveAs)
 {
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -951,54 +954,54 @@ Defun(fileSaveAs)
 	return UT_TRUE;
 }
 
-Defun(print)
+Defun0(print)
 {
 	return UT_TRUE;
 }
 
-Defun(undo)
+Defun1(undo)
 {
 	pView->cmdUndo(1);
 	return UT_TRUE;
 }
 
-Defun(redo)
+Defun1(redo)
 {
 	pView->cmdRedo(1);
 	return UT_TRUE;
 }
 
-Defun(cut)
+Defun0(cut)
 {
 	return UT_TRUE;
 }
 
-Defun(copy)
+Defun0(copy)
 {
 	return UT_TRUE;
 }
 
-Defun(paste)
+Defun0(paste)
 {
 	return UT_TRUE;
 }
 
-Defun(cycleWindows)
+Defun0(cycleWindows)
 {
 	return UT_TRUE;
 }
 
-Defun(cycleWindowsBck)
+Defun0(cycleWindowsBck)
 {
 	return UT_TRUE;
 }
 
-Defun(closeWindow)
+Defun0(closeWindow)
 {
 	return UT_TRUE;
 }
 
-Defun(querySaveAndExit)
+Defun0(querySaveAndExit)
 {
 	// TODO: does the querySave part go here, or in the window-specific shutdown?
 
@@ -1038,35 +1041,35 @@ Defun(toggleStrike)
 	return EX(insFmtStrike);
 }
 
-Defun(alignLeft)
+Defun1(alignLeft)
 {
 	const XML_Char * properties[] =	{ "text-align", "left", 0};
 	pView->cmdFormatBlock(properties);
 	return UT_TRUE;
 }
 
-Defun(alignCenter)
+Defun1(alignCenter)
 {
 	const XML_Char * properties[] =	{ "text-align", "center", 0};
 	pView->cmdFormatBlock(properties);
 	return UT_TRUE;
 }
 
-Defun(alignRight)
+Defun1(alignRight)
 {
 	const XML_Char * properties[] =	{ "text-align", "right", 0};
 	pView->cmdFormatBlock(properties);
 	return UT_TRUE;
 }
 
-Defun(alignJustify)
+Defun1(alignJustify)
 {
 	const XML_Char * properties[] =	{ "text-align", "justify", 0};
 	pView->cmdFormatBlock(properties);
 	return UT_TRUE;
 }
 
-Defun(Test_Dump)
+Defun1(Test_Dump)
 {
 	pView->Test_Dump();
 	return UT_TRUE;
@@ -1203,13 +1206,13 @@ return UT_TRUE;
 
 #ifdef LINUX
 
-static void set_ok (GtkWidget *widget, UT_Bool *dialog_result)
+static void set_ok (GtkWidget * /*widget*/, UT_Bool *dialog_result)
 {
 	*dialog_result = TRUE;
 	gtk_main_quit();
 }
 
-char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
+char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs)
 {
 	GtkFileSelection *pFS;
 	UT_Bool accepted = FALSE;
@@ -1233,7 +1236,7 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 
 	if (accepted)
 	{
-		UT_cloneString(&fileName, gtk_file_selection_get_filename(pFS));
+		UT_cloneString(fileName, gtk_file_selection_get_filename(pFS));
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(pFS));

@@ -310,8 +310,8 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 
 			const UT_UCSChar* pSpan = pgb.getPointer(0);
 
+			UT_ASSERT(iPos >= pBlock->getPosition());
 			UT_uint32 offset = iPos - pBlock->getPosition();
-			UT_ASSERT(offset >= 0);
 			UT_ASSERT(offset <= pgb.getLength());
 
 			if (offset == 0)
@@ -369,8 +369,8 @@ PT_DocPosition FV_View::_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking)
 
 			const UT_UCSChar* pSpan = pgb.getPointer(0);
 
+			UT_ASSERT(iPos >= pBlock->getPosition());
 			UT_uint32 offset = iPos - pBlock->getPosition();
-			UT_ASSERT(offset >= 0);
 			UT_ASSERT(offset <= pgb.getLength());
 
 			if (offset == pgb.getLength())

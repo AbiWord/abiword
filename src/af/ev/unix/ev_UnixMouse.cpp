@@ -71,7 +71,7 @@ void EV_UnixMouse::mouseClick(FV_View* pView, GdkEventButton* e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,e->x,e->y);
+		invokeMouseMethod(pView,pEM,iPrefix,(UT_uint32)e->x,(UT_uint32)e->y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -120,7 +120,7 @@ void EV_UnixMouse::mouseMotion(FV_View* pView, GdkEventMotion *e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,iPrefix,e->x,e->y);
+		invokeMouseMethod(pView,pEM,iPrefix,(UT_uint32)e->x,(UT_uint32)e->y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.

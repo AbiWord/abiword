@@ -267,7 +267,7 @@ ie_Exp_Listener::~ie_Exp_Listener()
 	m_pie->write("</awml>\n");
 }
 
-UT_Bool ie_Exp_Listener::populate(PL_StruxFmtHandle sfh,
+UT_Bool ie_Exp_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 								  const PX_ChangeRecord * pcr)
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertSpan);
@@ -288,7 +288,7 @@ UT_Bool ie_Exp_Listener::populate(PL_StruxFmtHandle sfh,
 	return UT_TRUE;
 }
 
-UT_Bool ie_Exp_Listener::populateStrux(PL_StruxDocHandle sdh,
+UT_Bool ie_Exp_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 									   const PX_ChangeRecord * pcr,
 									   PL_StruxFmtHandle * psfh)
 {
@@ -338,17 +338,17 @@ UT_Bool ie_Exp_Listener::populateStrux(PL_StruxDocHandle sdh,
 	}
 }
 
-UT_Bool ie_Exp_Listener::change(PL_StruxFmtHandle sfh,
-								const PX_ChangeRecord * pcr)
+UT_Bool ie_Exp_Listener::change(PL_StruxFmtHandle /*sfh*/,
+								const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
 	return UT_FALSE;
 }
 
-UT_Bool ie_Exp_Listener::insertStrux(PL_StruxFmtHandle sfh,
-									 const PX_ChangeRecord * pcr,
-									 PL_StruxDocHandle sdh,
-									 PL_StruxFmtHandle * psfh)
+UT_Bool ie_Exp_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+									 const PX_ChangeRecord * /*pcr*/,
+									 PL_StruxDocHandle /*sdh*/,
+									 PL_StruxFmtHandle * /*psfh*/)
 {
 	UT_ASSERT(0);						// this function is not used.
 	return UT_FALSE;

@@ -49,7 +49,7 @@ AP_Ap::~AP_Ap(void)
 	DELETEP(m_pMenuActionSet);
 }
 
-UT_Bool AP_Ap::initialize(int * pArgc, char *** pArgv)
+UT_Bool AP_Ap::initialize(int * /*pArgc*/, char *** /*pArgv*/)
 {
 	// create application-wide resources that
 	// are shared by everything.

@@ -27,6 +27,7 @@
 UT_BEGIN_EXTERN_C
 
 UT_sint32 UT_stricmp(const char *s1, const char *s2);
+UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1);
 UT_Bool UT_cloneString(char *& rszDest, const char * szSource);
 UT_Bool UT_replaceString(char *& rszDest, const char * szSource);
 

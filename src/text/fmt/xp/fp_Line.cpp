@@ -324,7 +324,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 		fp_RunInfo* pRI = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
 		UT_sint32 y2 = y - pRI->yoff - m_iAscent + pRI->pRun->getAscent();
-		if (((x - pRI->xoff) >= 0) && ((x - pRI->xoff) < (pRI->pRun->getWidth())))
+		if ((x >= (UT_sint32)pRI->xoff) && (x < (UT_sint32)(pRI->xoff + pRI->pRun->getWidth())))
 		{
 			// when hit testing runs within a line, we ignore the Y coord
 //			if (((y2) >= 0) && ((y2) < (pRI->pRun->getHeight())))

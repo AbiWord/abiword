@@ -38,6 +38,15 @@ UT_sint32 UT_stricmp(const char *s1, const char *s2)
 #endif
 }
 
+UT_sint32 UT_strnicmp(const char *s1, const char *s2, int lenS1)
+{
+#ifdef WINNT
+	return strnicmp(s1,s2,lenS1);
+#else
+	return strncasecmp(s1,s2,lenS1);
+#endif
+}
+
 UT_Bool UT_cloneString(char *& rszDest, const char * szSource)
 {
 	if (szSource && *szSource)

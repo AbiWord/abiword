@@ -222,7 +222,7 @@ void fl_BlockLayout::clearScreen(DG_Graphics* pG)
 	}
 }
 
-void fl_BlockLayout::setAlignment(UT_uint32 iAlignCmd)
+void fl_BlockLayout::setAlignment(UT_uint32 /*iAlignCmd*/)
 {
 #ifdef PROPERTY
 	switch (iAlignCmd)

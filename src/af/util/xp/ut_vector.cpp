@@ -104,7 +104,7 @@ UT_sint32 UT_Vector::grow()
 
 UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 {
-	if (ndx < 0 || ndx > m_iCount + 1)
+	if (ndx > m_iCount + 1)
 		return -1;
 	
 	if ((m_iCount+1) > m_iSpace)

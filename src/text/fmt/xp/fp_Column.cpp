@@ -331,7 +331,7 @@ UT_Bool fp_Column::verifySliverFit(fp_BlockSlice* pBS, fp_Sliver* pSliver, UT_si
 	}
 }
 
-void fp_Column::reportSliceHeightChanged(fp_BlockSlice* pBS, UT_uint32 iNewHeight)
+void fp_Column::reportSliceHeightChanged(fp_BlockSlice* pBS, UT_uint32 /*iNewHeight*/)
 {
 	fp_BlockSliceInfo*	pNode = _findSlice(pBS);
 	UT_ASSERT(pNode);
@@ -545,7 +545,7 @@ UT_uint32 fp_CircleColumn::_getSliverWidth(UT_uint32 iY, UT_uint32 iHeight, UT_u
 	return 2 * halfwidth;
 }
 
-UT_uint32 fp_BoxColumn::getTopOffset(UT_uint32 iLineHeight)
+UT_uint32 fp_BoxColumn::getTopOffset(UT_uint32 /*iLineHeight*/)
 {
 	return 0;
 }

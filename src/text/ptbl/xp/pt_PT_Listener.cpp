@@ -79,7 +79,7 @@ UT_Bool pt_PieceTable::addListener(PL_Listener * pListener,
 				UT_Bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
 				UT_ASSERT(bStatus1);
 				UT_Bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
-				UT_Bool bStatus3 = pfs->setFmtHandle(listenerId,sfh);
+				pfs->setFmtHandle(listenerId,sfh);
 				
 				if (pcr)
 					delete pcr;

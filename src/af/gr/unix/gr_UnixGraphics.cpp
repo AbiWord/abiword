@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include <X11/Xlib.h>
 #include <stdio.h>
 
@@ -28,6 +29,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
+#include "ut_string.h"
 
 UNIXFont::UNIXFont(GdkFont* pFont)
 {
@@ -151,7 +153,9 @@ UT_uint32 UNIXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	int charWidth = 0;
 
 	GdkFont* pFont = m_pFont->getHFONT();
-	XFontStruct* pXFont = ((GdkFontPrivate*)pFont)->xfont;
+
+	// TODO the following assignment looks suspicious...
+	XFontStruct* pXFont = (XFontStruct *)(((GdkFontPrivate*)pFont)->xfont);
 	
 	for (int i = 0; i < num; i++)
     {
@@ -220,13 +224,12 @@ void UNIXGraphics::setColor(UT_RGBColor& clr)
 
 DG_Font* UNIXGraphics::findFont(const char* pszFontFamily, 
 								const char* pszFontStyle, 
-								const char* pszFontVariant, 
+								const char* /*pszFontVariant*/, 
 								const char* pszFontWeight, 
-								const char* pszFontStretch, 
+								const char* /*pszFontStretch*/, 
 								const char* pszFontSize)
 {
 	UNIXFont* pFont = NULL;
-	char **fonts;
 
 	/*
 	  TODO what a hack.  later, we need to write proper font matching code.
@@ -288,11 +291,11 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 	}
 
 	char xFontName[2048];
-	sprintf(xFontName, "-adobe-%s-%s-%s-normal--%d-0-75-75-p-0-iso8859-1", szFamily, szWeight, szSlant, height);
+	sprintf(xFontName, "-adobe-%s-%s-%s-normal--%ld-0-75-75-p-0-iso8859-1", szFamily, szWeight, szSlant, height);
 
 	if (m_pFont && m_pFont->m_strFontName)
     {
-		if (!UT_stricmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
+		if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
 		{
 			return m_pFont;
 		}
@@ -319,7 +322,8 @@ UT_uint32 UNIXGraphics::getFontAscent()
 	UT_ASSERT(m_pGC);
 
 	GdkFontPrivate* prFont = (GdkFontPrivate*) m_pFont->getHFONT();
-	XFontStruct* pXFont = prFont->xfont;
+	// TODO the following assignment looks suspicious...
+	XFontStruct* pXFont = (XFontStruct *)prFont->xfont;
 
 	return pXFont->ascent;
 }
@@ -384,7 +388,7 @@ void UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
 
-void UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
+void UNIXGraphics::scroll(UT_sint32 /*dx*/, UT_sint32 dy)
 {
 	GdkWindowPrivate* pPWin = (GdkWindowPrivate*) m_pWin;
 
@@ -430,17 +434,17 @@ void UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 
 UT_Bool UNIXGraphics::startPrint(void)
 {
-
+	UT_ASSERT(0);
 }
 
-UT_Bool UNIXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
-								UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+UT_Bool UNIXGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
+								UT_Bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
 {
-
+	UT_ASSERT(0);
 }
 
 UT_Bool UNIXGraphics::endPrint(void)
 {
-
+	UT_ASSERT(0);
 }
 

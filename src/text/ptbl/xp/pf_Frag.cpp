@@ -69,8 +69,8 @@ UT_uint32 pf_Frag::getLength(void) const
 	return m_length;
 }
 
-UT_Bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
-										   PT_DocPosition dpos) const
+UT_Bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
+										   PT_DocPosition /*dpos*/) const
 {
 	// this function must be overloaded.
 	UT_ASSERT(0);
