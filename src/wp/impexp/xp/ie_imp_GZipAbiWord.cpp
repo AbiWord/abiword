@@ -46,7 +46,7 @@ bool IE_Imp_GZipAbiWord_Sniffer::recognizeContents(const char * szBuf, UT_uint32
 
 bool IE_Imp_GZipAbiWord_Sniffer::recognizeSuffix(const char * szSuffix)
 {
-    return (UT_stricmp(szSuffix,".zabw") == 0);
+    return (!UT_stricmp(szSuffix,".zabw") || !UT_stricmp(szSuffix,".abw.gz"));
 }
 
 UT_Error IE_Imp_GZipAbiWord_Sniffer::constructImporter(PD_Document * pDocument,
@@ -61,7 +61,7 @@ bool IE_Imp_GZipAbiWord_Sniffer::getDlgLabels(const char ** pszDesc,
 											  IEFileType * ft)
 {
     *pszDesc = "GZipped AbiWord (.zabw)";
-    *pszSuffixList = "*.zabw";
+    *pszSuffixList = "*.zabw; *.abw.gz";
     *ft = getFileType();
     return true;
 }
