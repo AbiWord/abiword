@@ -18,6 +18,7 @@
  */
  
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,8 +71,23 @@ public:									// we create...
 		UT_ASSERT(wd);
 
 		wd->m_pUnixMenu->refreshMenu(wd->m_pUnixMenu->getFrame()->getCurrentView());
+
+		// attach this new menu's accel group to be triggered off itself
+		gtk_accel_group_attach(wd->m_accelGroup, GTK_OBJECT(menuItem));
+		gtk_accel_group_lock(wd->m_accelGroup);
 	};
-		
+
+	static void s_onDestroyMenu(GtkMenuItem * menuItem, gpointer callback_data)
+	{
+		_wd * wd = (_wd *) callback_data;
+		UT_ASSERT(wd);
+
+		// bind this menuitem to its parent menu
+		gtk_accel_group_detach(wd->m_accelGroup, GTK_OBJECT(menuItem));
+		gtk_accel_group_unlock(wd->m_accelGroup);
+	};
+
+	GtkAccelGroup *		m_accelGroup;
 	EV_UnixMenu *		m_pUnixMenu;
 	AP_Menu_Id			m_id;
 };
@@ -114,6 +130,8 @@ EV_UnixMenu::EV_UnixMenu(AP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 {
 	m_pUnixApp = pUnixApp;
 	m_pUnixFrame = pUnixFrame;
+
+	m_accelGroup = gtk_accel_group_new();
 }
 
 EV_UnixMenu::~EV_UnixMenu(void)
@@ -240,7 +258,8 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
 				UT_ASSERT(label);
 				// trigger the underscore conversion in the menu labels
-				gtk_label_parse_uline(label, buf);
+				guint keyCode = gtk_label_parse_uline(label, buf);
+
 				// create the item with the underscored label
 				GtkWidget * w = gtk_menu_item_new();
 				UT_ASSERT(w);
@@ -266,6 +285,17 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				// connect callbacks
 				gtk_signal_connect(GTK_OBJECT(w), "activate", GTK_SIGNAL_FUNC(_wd::s_onActivate), wd);
 
+				// bind to parent item's accel group
+				if ((keyCode != GDK_VoidSymbol))// && parent_accel_group)
+				{
+					gtk_widget_add_accelerator(w,
+											   "activate_item",
+											   GTK_MENU(wParent)->accel_group,
+											   keyCode,
+											   0,
+											   GTK_ACCEL_LOCKED);
+				}
+
 				// item is created, add to class vector
 				m_vecMenuWidgets.addItem(w);
 				break;
@@ -289,8 +319,10 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				// create a label
 				GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
 				UT_ASSERT(label);
+
 				// trigger the underscore conversion in the menu labels
-				gtk_label_parse_uline(label, buf);
+				guint keyCode = gtk_label_parse_uline(label, buf);
+				
 				// create the item with the underscored label
 				GtkWidget * w = gtk_menu_item_new();
 				UT_ASSERT(w);
@@ -301,6 +333,17 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				gtk_widget_show(GTK_WIDGET(label));
 				gtk_widget_show(w);
 
+				// bind to top-level accel group
+				if ((keyCode != GDK_VoidSymbol))// && GTK_IS_MENU_BAR (parent))
+				{
+					gtk_widget_add_accelerator(w,
+											   "activate_item",
+											   m_accelGroup,
+											   keyCode,
+											   GDK_MOD1_MASK,
+											   GTK_ACCEL_LOCKED);
+				}
+				
 				// set menu data to relate to class
 				gtk_object_set_user_data(GTK_OBJECT(w),this);
 				// create callback info data for action handling
@@ -318,11 +361,19 @@ UT_Bool EV_UnixMenu::synthesize(void)
 				GtkWidget * wsub = gtk_menu_new();
 				UT_ASSERT(wsub);
 
+				wd->m_accelGroup = gtk_accel_group_new();
+					
+				gtk_menu_set_accel_group(GTK_MENU(wsub), wd->m_accelGroup);
+										 
 				// menu items with sub menus attached (w) get this signal
 				// bound to their children so they can trigger a refresh 
 				gtk_signal_connect(GTK_OBJECT(wsub),
 								   "map",
 								   GTK_SIGNAL_FUNC(_wd::s_onInitMenu),
+								   wd);
+				gtk_signal_connect(GTK_OBJECT(wsub),
+								   "unmap",
+								   GTK_SIGNAL_FUNC(_wd::s_onDestroyMenu),
 								   wd);
 				
 				gtk_object_set_user_data(GTK_OBJECT(wsub),this);
@@ -346,13 +397,11 @@ UT_Bool EV_UnixMenu::synthesize(void)
 		}
 		case EV_MLF_EndSubMenu:
 		{
-			// give it a fake, with no label, to make sure it passes the
-			// test that an empty (to be replaced) item in the vector should
-			// have no children
-			GtkWidget * w = gtk_menu_item_new();
+			// pop and inspect
+			GtkWidget * w;
 			bResult = stack.pop((void **)&w);
 			UT_ASSERT(bResult);
-			
+
 			// item is created (albeit empty in this case), add to vector
 			m_vecMenuWidgets.addItem(w);
 			break;
@@ -399,6 +448,12 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	// put it in the vbox
  	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
 
+	// we also have to bind the top level window to our
+	// accelerator group for this menu... it needs to join in
+	// on the action.
+	gtk_accel_group_attach(m_accelGroup, GTK_OBJECT(m_pUnixFrame->getTopLevelWindow()));
+	gtk_accel_group_lock(m_accelGroup);
+	
 	return UT_TRUE;
 }
 
