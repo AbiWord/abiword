@@ -131,7 +131,8 @@ public:
 	typedef enum { DGP_SCREEN, DGP_PAPER } Properties;
 	
 	virtual bool queryProperties(GR_Graphics::Properties gp) const = 0;
-
+	virtual UT_sint32 getScreenResolution(void) {return 100;} //subclasses to overide
+	virtual UT_sint32 getPaperResolution(void) {return 7200;} // sebclasses to override
 	/* the following 3 are only used for printing */
 	
 	virtual bool startPrint(void) = 0;
