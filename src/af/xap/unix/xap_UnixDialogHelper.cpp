@@ -788,8 +788,6 @@ void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...)
     // create the title
     gtk_window_set_title ( GTK_WINDOW(dlg), titleStr.c_str() ) ;
   }
-
-  return dlg ;
 }
 
 

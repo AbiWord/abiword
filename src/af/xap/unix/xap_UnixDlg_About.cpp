@@ -20,6 +20,8 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
+#include <glade/glade.h>
+
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_UnixDialogHelper.h"
@@ -94,13 +96,13 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
   _preparePicture();
   
   // attach a new graphics context
-  XAP_App *pApp = m_pFrame->getApp();
+/*  XAP_App *pApp = m_pFrame->getApp();
   
 #ifndef WITH_PANGO	
   m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, NULL, pApp);
 #else
   m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, pApp);
-#endif
+#endif*/
   
   switch ( abiRunModalDialog ( mainWindow, pFrame, this, BUTTON_CLOSE, true ) )
     {
@@ -126,15 +128,28 @@ void XAP_UnixDialog_About::event_DrawingAreaExpose(void)
 
 GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
 {
-  GtkWidget *windowAbout;
-  GtkWidget *hboxAbout;
-  GtkWidget *drawingareaGraphic;
-  GtkWidget *vboxInfo;
-  GtkWidget *labelTitle;
-  GtkWidget *labelVersion;
-  GtkWidget *textCopyright;
-  
-  // we use this for all sorts of strings that can't appear in the string sets
+	GtkWidget *window;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// get the path where our glade file is located
+	AP_UnixApp * unixApp = static_cast<AP_UnixApp*>(m_pApp);
+	UT_String glade_path( unixApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/ap_UnixDlg_About.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
+	
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	window = glade_xml_get_widget(xml, "ap_UnixDlg_About");
+	m_gc = glade_xml_get_widget(xml, "daLogo");
+	
+	abiDialogSetTitle(window, m_pApp->getApplicationName());
+
+	return window;
+		
+	
+  /*// we use this for all sorts of strings that can't appear in the string sets
   char buf[4096];
 
   windowAbout = abiDialogNew ("about dialog", TRUE, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
@@ -204,9 +219,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   // might need to be queried or altered later.
   
   m_windowMain = windowAbout;
-  m_drawingareaGraphic = drawingareaGraphic;
-  
-  return windowAbout;
+  m_drawingareaGraphic = drawingareaGraphic;*/
 }
 
 void XAP_UnixDialog_About::_preparePicture(void)
