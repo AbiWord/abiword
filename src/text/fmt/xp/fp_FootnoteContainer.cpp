@@ -293,7 +293,8 @@ fp_EndnoteContainer::fp_EndnoteContainer(fl_SectionLayout* pSectionLayout)
 	: fp_VerticalContainer(FP_CONTAINER_ENDNOTE, pSectionLayout),
 	  m_pLocalNext(NULL),
 	  m_pLocalPrev(NULL),
-	  m_iY(0)
+	  m_iY(0),
+	  m_bOnPage(false)
 {
 }
 
@@ -309,6 +310,7 @@ fp_EndnoteContainer::~fp_EndnoteContainer()
 	UT_DEBUGMSG(("deleting endnote container %x \n",this));
 	m_pLocalNext = NULL;
 	m_pLocalPrev = NULL;
+	m_bOnPage = false;
 }
 
 void fp_EndnoteContainer::setY(UT_sint32 iY)
@@ -341,7 +343,7 @@ void fp_EndnoteContainer::clearScreen(void)
 	xxx_UT_DEBUGMSG(("Clearscreen on Endnote container, height = %d \n",getHeight()));
 	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(getSectionLayout());
 	pCL->setNeedsRedraw();
-	if(getPage() == NULL)
+	if(!m_bOnPage)
 	{
 		return;
 	}
@@ -397,6 +399,14 @@ void fp_EndnoteContainer::setContainer(fp_Container * pContainer)
 	if (getContainer())
 	{
 		clearScreen();
+	}
+	if(pContainer != NULL)
+	{
+		m_bOnPage = true;
+	}
+	else
+	{
+		m_bOnPage = false;
 	}
 	fp_Container::setContainer(pContainer);
 }
