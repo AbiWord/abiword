@@ -35,7 +35,9 @@
 #include <string.h>
 #include <io.h>
 #include <fcntl.h>
+#ifndef __WINE__
 #include <iostream.h>
+#endif
 #include <ole2.h>
 
 #include "ut_debugmsg.h"
@@ -1313,7 +1315,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 //	
 
 
-#if  !defined(__MINGW32__)  && !defined(DEBUG) 
+#if  !defined(__MINGW32__)  && !defined(__WINE__) && !defined(DEBUG) 
 __try
 #endif	
 {		
@@ -1381,7 +1383,7 @@ __try
 // If an exception happens, with "catch" the block
 // and then the save it into disk
 //
-#if  !defined(__MINGW32__)  && !defined(DEBUG) 
+#if  !defined(__MINGW32__)  && !defined(__WINE__)  && !defined(DEBUG) 
 __except (1)
 {
 	AP_Win32App *pApp = (AP_Win32App *) XAP_App::getApp();
@@ -1712,5 +1714,3 @@ UT_UTF8String	AP_Win32App::s_fromAnsiToUTF8(const char* szIn)
 
 	return sRslt;
 }
-
-
