@@ -40,7 +40,7 @@
 
 /*****************************************************************/
 
-#define CUSTOM_RESPONSE_OPEN_FILE 1
+#define CUSTOM_RESPONSE_OPEN_FILE 2
 #define CUSTOM_RESPONSE_INSERT 1
 
 /*****************************************************************/
