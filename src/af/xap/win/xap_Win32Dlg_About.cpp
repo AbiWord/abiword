@@ -29,6 +29,8 @@
 #include "xap_Win32App.h"
 #include "xap_Win32Frame.h"
 
+#include "xap_Strings.h"
+#include "xap_Dialog_Id.h"
 #include "xap_Dlg_About.h"
 #include "xap_Win32Dlg_About.h"
 
@@ -126,7 +128,10 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	pWin32App->enableAllTopLevelWindows(FALSE);
 
 	char buf[1024];
-	sprintf(buf, XAP_ABOUT_TITLE, m_pApp->getApplicationName());
+	const XAP_StringSet*  pSS = m_pApp->getStringSet();	
+	sprintf(buf, pSS->getValue(XAP_STRING_ID_DLG_ABOUT_Title), 
+			m_pApp->getApplicationName());
+
 	HWND hwndAbout = CreateWindow(	wndclassAbout.lpszClassName,
 									buf,
 									WS_OVERLAPPED | WS_VISIBLE | WS_SYSMENU,
@@ -153,7 +158,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	const int iHeight = rcClient.bottom;
 		
 	HWND hwndOK = CreateWindow("BUTTON",
-							   "OK",		// TODO isn't this in the strings file?
+							   pSS->getValue(XAP_STRING_ID_DLG_OK),
 							   WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
 							   iWidth - BUTTON_WIDTH - BUTTON_GAP,
 							   iHeight - BUTTON_HEIGHT - BUTTON_GAP,

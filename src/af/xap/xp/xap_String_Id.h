@@ -56,7 +56,7 @@ dcl(DLG_QNXMB_No,				"No")
 dcl(DLG_MW_MoreWindows,			"Activate Window")
 dcl(DLG_MW_Activate,			"Activate:")
 
-/* Unix Font Selector dialog */
+/* Font Selector dialog */
 dcl(DLG_UFS_FontTitle,			"Font")
 dcl(DLG_UFS_FontLabel,			"Font:")
 dcl(DLG_UFS_StyleLabel,			"Style:")
@@ -74,6 +74,12 @@ dcl(DLG_UFS_StyleRegular,		"Regular")
 dcl(DLG_UFS_StyleItalic,		"Italic")
 dcl(DLG_UFS_StyleBold,			"Bold")
 dcl(DLG_UFS_StyleBoldItalic,	"Bold Italic")
+dcl(DLG_UFS_ToplineCheck,		"Topline")
+dcl(DLG_UFS_BottomlineCheck,	"Bottomline")
+dcl(DLG_UFS_SmallCapsCheck,		"Small Caps")
+dcl(DLG_UFS_ColorLabel,			"Color:")
+dcl(DLG_UFS_ScriptLabel,		"Script:")
+dcl(DLG_UFS_SampleFrameLabel,	"Sample")
 #ifdef BIDI_ENABLED
 dcl(DLG_UFS_Direction,     "Right-to-left")
 #endif
@@ -163,6 +169,9 @@ dcl(DLG_ULANG_LangTitle,				"Language")
 
 /* ClipArt Dialog */
 dcl(DLG_CLIPART_Title, "Clip Art")
+
+/* About Dialog */
+dcl(DLG_ABOUT_Title,					"About %s")
 
 /* Language property in different languages; alphabetical except English first */
 dcl(LANG_0,								"no proofing")

@@ -254,23 +254,25 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		}
 	}
 
+	const XAP_StringSet* pSS = m_pApp->getStringSet();
+
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_FILE_OPEN:
-		// TODO shouldn't we put a localized string into ofn.lpstrTitle?
+		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		bDialogResult = GetOpenFileName(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_PRINTTOFILE:
 		// TODO localize
-		ofn.lpstrTitle = "Print To File";
+		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
 
 	case XAP_DIALOG_ID_FILE_SAVEAS:
-		// TODO shouldn't we put a localized string into ofn.lpstrTitle?
+		ofn.lpstrTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
 		ofn.lpfnHook       = (LPOFNHOOKPROC) s_hookSaveAsProc;
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		ofn.Flags |= OFN_EXPLORER;
@@ -278,8 +280,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
 	case XAP_DIALOG_ID_INSERT_PICTURE:
-		// TODO localize
-		ofn.lpstrTitle     = "Insert Picture";
+		ofn.lpstrTitle     = pSS->getValue(XAP_STRING_ID_DLG_IP_Title);
 		ofn.hInstance      = pWin32App->getInstance();
 		ofn.lpTemplateName = MAKEINTRESOURCE(XAP_RID_DIALOG_INSERT_PICTURE);
 		ofn.lpfnHook       = (LPOFNHOOKPROC) s_hookInsertPicProc;
@@ -592,8 +593,6 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
 	XAP_App*              pApp        = pWin32Frame->getApp();
 	const XAP_StringSet*  pSS         = pApp->getStringSet();
 	
-	SetWindowText( hDlg, pSS->getValue(XAP_STRING_ID_DLG_IP_Title) );
-
 	SetDlgItemText( hDlg,
 					XAP_RID_DIALOG_INSERT_PICTURE_IMAGE_PREVIEW,
 					pSS->getValue(XAP_STRING_ID_DLG_IP_No_Picture_Label) );

@@ -27,10 +27,24 @@
 //
 //////////////////////////////////////////////////////////////////
 
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_PAPER					grp2
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_SIZE					stc2
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_SOURCE				stc3
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_ORIENTATION			grp1
+#define AP_RID_DIALOG_PAGE_SETUP_BTN_PORTRAIT				rad1
+#define AP_RID_DIALOG_PAGE_SETUP_BTN_LANDSCAPE				rad2
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_MARGINS				grp4
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_LEFT					stc15
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_RIGHT					stc16
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_TOP					stc17
+#define AP_RID_DIALOG_PAGE_SETUP_TEXT_BOTTOM				stc18
 #define AP_RID_DIALOG_PAGE_SETUP_TEXT_HEADER				1001
 #define AP_RID_DIALOG_PAGE_SETUP_EDIT_HEADER				1002
 #define AP_RID_DIALOG_PAGE_SETUP_TEXT_FOOTER				1003
 #define AP_RID_DIALOG_PAGE_SETUP_EDIT_FOOTER				1004
+#define XAP_RID_DIALOG_PAGE_SETUP_BTN_OK					IDOK
+#define XAP_RID_DIALOG_PAGE_SETUP_BTN_CANCEL				IDCANCEL
+#define AP_RID_DIALOG_PAGE_SETUP_BTN_PRINTER				psh3
 
 #ifdef RC_INVOKED
 // NOTE -- these placeholder strings get overridden at runtime 
@@ -44,34 +58,45 @@ BEGIN
     CONTROL         "",rct1,"Static",SS_WHITERECT | WS_GROUP,80,8,80,80
     CONTROL         "",rct2,"Static",SS_GRAYRECT | WS_GROUP,160,12,4,80
     CONTROL         "",rct3,"Static",SS_GRAYRECT | WS_GROUP,84,88,80,4
-    GROUPBOX        "Paper",grp2,8,96,224,56,WS_GROUP
-    LTEXT           "Si&ze:",stc2,16,112,36,8
+    GROUPBOX        "Paper",AP_RID_DIALOG_PAGE_SETUP_TEXT_PAPER,8,96,224,56,
+                    WS_GROUP
+    LTEXT           "Si&ze:",AP_RID_DIALOG_PAGE_SETUP_TEXT_SIZE,16,112,36,8
     COMBOBOX        cmb2,64,110,160,160,CBS_DROPDOWNLIST | CBS_SORT |
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    LTEXT           "&Source:",stc3,16,132,36,8
+    LTEXT           "&Source:",AP_RID_DIALOG_PAGE_SETUP_TEXT_SOURCE,
+                    16,132,36,8
     COMBOBOX        cmb3,64,130,160,160,CBS_DROPDOWNLIST | CBS_SORT |
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    GROUPBOX        "Orientation",grp1,8,156,64,56,WS_GROUP
-    CONTROL         "P&ortrait",rad1,"Button",BS_AUTORADIOBUTTON | WS_GROUP |
-                    WS_TABSTOP,16,170,52,12
-    CONTROL         "L&andscape",rad2,"Button",BS_AUTORADIOBUTTON,16,190,52,
-                    12
-    GROUPBOX        "Margins",grp4,80,156,152,76,WS_GROUP
-    LTEXT           "&Left:",stc15,88,172,32,8
+    GROUPBOX        "Orientation",AP_RID_DIALOG_PAGE_SETUP_TEXT_ORIENTATION,
+                    8,156,64,56,WS_GROUP
+    CONTROL         "P&ortrait",AP_RID_DIALOG_PAGE_SETUP_BTN_PORTRAIT,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP |
+                     WS_TABSTOP,16,170,52,12
+    CONTROL         "L&andscape",AP_RID_DIALOG_PAGE_SETUP_BTN_LANDSCAPE,
+                    "Button",BS_AUTORADIOBUTTON,16,190,52,12
+    GROUPBOX        "Margins",AP_RID_DIALOG_PAGE_SETUP_TEXT_MARGINS,
+                    80,156,152,76,WS_GROUP
+    LTEXT           "&Left:",AP_RID_DIALOG_PAGE_SETUP_TEXT_LEFT,88,172,32,8
     EDITTEXT        edt4,120,170,28,12,WS_GROUP
-    LTEXT           "&Right:",stc16,164,172,32,8
+    LTEXT           "&Right:",AP_RID_DIALOG_PAGE_SETUP_TEXT_RIGHT,164,172,32,8
     EDITTEXT        edt6,196,170,28,12,WS_GROUP
-    LTEXT           "&Top:",stc17,88,192,32,8
+    LTEXT           "&Top:",AP_RID_DIALOG_PAGE_SETUP_TEXT_TOP,88,192,32,8
     EDITTEXT        edt5,120,190,28,12,WS_GROUP
-    LTEXT           "&Bottom:",stc18,164,192,32,8
+    LTEXT           "&Bottom:",AP_RID_DIALOG_PAGE_SETUP_TEXT_BOTTOM,
+                    164,192,32,8
     EDITTEXT        edt7,196,190,28,12,WS_GROUP
-	LTEXT			"&Header:",AP_RID_DIALOG_PAGE_SETUP_TEXT_HEADER,88,212,32,8,WS_GROUP
-	EDITTEXT		AP_RID_DIALOG_PAGE_SETUP_EDIT_HEADER,120,210,28,12,WS_GROUP
-	LTEXT			"&Footer:",AP_RID_DIALOG_PAGE_SETUP_TEXT_FOOTER,164,212,32,8,WS_GROUP
-	EDITTEXT		AP_RID_DIALOG_PAGE_SETUP_EDIT_FOOTER,196,210,28,12,WS_GROUP
+    LTEXT           "&Header:",AP_RID_DIALOG_PAGE_SETUP_TEXT_HEADER,
+                    88,212,32,8,WS_GROUP
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EDIT_HEADER,120,210,28,12,
+                    WS_GROUP
+    LTEXT           "&Footer:",AP_RID_DIALOG_PAGE_SETUP_TEXT_FOOTER,
+                    164,212,32,8,WS_GROUP
+    EDITTEXT        AP_RID_DIALOG_PAGE_SETUP_EDIT_FOOTER,196,210,28,12,
+                    WS_GROUP
     DEFPUSHBUTTON   "OK",IDOK,80,240,48,14,WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,132,240,48,14
-    PUSHBUTTON      "&Printer...",psh3,184,240,48,14
+    PUSHBUTTON      "&Printer...",AP_RID_DIALOG_PAGE_SETUP_BTN_PRINTER,
+                    184,240,48,14
 END
 
 #endif /* RC_INVOKED */

@@ -286,6 +286,7 @@ UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARA
 }
 
 #define _DS(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
 BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
 	HWND hFrame     = GetParent(hWnd);
@@ -296,10 +297,21 @@ BOOL XAP_Win32Dialog_FontChooser::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM
 	SetWindowText(hWnd, pSS->getValue(XAP_STRING_ID_DLG_UFS_FontTitle));
 
 	// localize controls
+	_DS(FONT_TEXT_FONT,			DLG_UFS_FontLabel);
+	_DS(FONT_TEXT_FONT_STYLE,	DLG_UFS_StyleLabel);
+	_DS(FONT_TEXT_SIZE,			DLG_UFS_SizeLabel);
+	_DS(FONT_TEXT_EFFECTS,		DLG_UFS_EffectsFrameLabel);
+	_DS(FONT_BTN_STRIKEOUT,		DLG_UFS_StrikeoutCheck);
+	_DS(FONT_BTN_UNDERLINE,		DLG_UFS_UnderlineCheck);
 	_DS(FONT_CHK_OVERLINE,		DLG_UFS_OverlineCheck);
-//	_DS(FONT_CHK_TOPLINE,      	);
-//  _DL(FONT_CHK_BOTTOMLINE,	);
-//  _DL(FONT_CHK_SMALLCAPS,		);
+	_DS(FONT_CHK_TOPLINE,		DLG_UFS_ToplineCheck);
+	_DS(FONT_CHK_BOTTOMLINE,	DLG_UFS_BottomlineCheck);
+	_DS(FONT_CHK_SMALLCAPS,		DLG_UFS_SmallCapsCheck);
+	_DS(FONT_TEXT_COLOR,		DLG_UFS_ColorLabel);
+	_DS(FONT_TEXT_SCRIPT,		DLG_UFS_ScriptLabel);
+	_DS(FONT_TEXT_SAMPLE,		DLG_UFS_SampleFrameLabel);
+	_DS(FONT_BTN_OK,			DLG_OK);
+	_DS(FONT_BTN_CANCEL,		DLG_Cancel);
 
 	// set initial state
 	if( m_bWin32Overline )

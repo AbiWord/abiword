@@ -260,6 +260,7 @@ void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 }
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,XAP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 UINT AP_Win32Dialog_PageSetup::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 {
@@ -271,9 +272,25 @@ UINT AP_Win32Dialog_PageSetup::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	XAP_App* pApp					= pWin32Frame->getApp();
 	const XAP_StringSet * pSS		= pApp->getStringSet();
 	
+	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_PageSetup_Title));
+
 	// localize controls
+	_DS(PAGE_SETUP_TEXT_PAPER,		DLG_PageSetup_Paper);
+	_DS(PAGE_SETUP_TEXT_SIZE,		DLG_PageSetup_Paper_Size);
+//	_DS(PAGE_SETUP_TEXT_SOURCE,		DLG_PageSetup_PaperSource);	// FIXME: not yet added.
+//	_DS(PAGE_SETUP_TEXT_ORIENTATION,DLG_PageSetup_OrientWin);	// FIXME: not yet added.
+	_DS(PAGE_SETUP_BTN_LANDSCAPE,	DLG_PageSetup_Landscape);
+	_DS(PAGE_SETUP_BTN_PORTRAIT,	DLG_PageSetup_Portrait);
+	_DS(PAGE_SETUP_TEXT_TOP,		DLG_PageSetup_Top);
 	_DS(PAGE_SETUP_TEXT_HEADER,		DLG_PageSetup_Header);
 	_DS(PAGE_SETUP_TEXT_FOOTER,		DLG_PageSetup_Footer);
+	_DS(PAGE_SETUP_TEXT_BOTTOM,		DLG_PageSetup_Bottom);
+	_DS(PAGE_SETUP_TEXT_LEFT,		DLG_PageSetup_Left);
+	_DS(PAGE_SETUP_TEXT_RIGHT,		DLG_PageSetup_Right);
+//	_DS(PAGE_SETUP_TEXT_MARGINS,	DLG_PageSetup_MarginWin);	// FIXME: not yet added.
+	_DSX(PAGE_SETUP_BTN_OK,			DLG_OK);
+	_DSX(PAGE_SETUP_BTN_CANCEL,		DLG_Cancel);
+//	_DS(PAGE_SETUP_BTN_PRINTER,		DLG_PageSetup_ButtonPrinter);// FIXME: not yet added.
 
 	// Initialize Controls
 	char buf[10];

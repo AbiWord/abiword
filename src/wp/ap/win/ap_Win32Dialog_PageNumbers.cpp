@@ -113,6 +113,10 @@ BOOL AP_Win32Dialog_PageNumbers::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	m_helper.selectComboItem(AP_RID_DIALOG_PAGENUMBERS_COMBO_ALIGN, 2);
 
 	// localize controls
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+	_DSX(PAGENUMBERS_BTN_OK,				DLG_OK);
+	_DSX(PAGENUMBERS_BTN_CANCEL,			DLG_Cancel);
+#undef _DSX
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 	_DS(PAGENUMBERS_STATIC_ALIGNMENT,		DLG_PageNumbers_Alignment);
 	_DS(PAGENUMBERS_STATIC_POSITION,		DLG_PageNumbers_Position);
