@@ -101,7 +101,7 @@ void AP_Dialog_Spell::_purgeSuggestions(void)
 {
 	if (!m_Suggestions) return;
 
-	for (int i = 0; i < m_Suggestions->getItemCount(); i++)
+	for (UT_uint32 i = 0; i < m_Suggestions->getItemCount(); i++)
 	{
 		UT_UCSChar * sug = (UT_UCSChar *)m_Suggestions->getNthItem(i);
 		if (sug)
