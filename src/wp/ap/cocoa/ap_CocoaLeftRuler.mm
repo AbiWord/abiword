@@ -100,7 +100,7 @@ void AP_CocoaLeftRuler::getWidgetPosition(int * x, int * y)
 {
 	UT_ASSERT(x && y);
 
-	NSRect theBounds = [m_wLeftRuler bounds];
+	NSRect theBounds = [m_wLeftRuler bounds]; // FIXME ?? [... frame], or just remove method? also TopRuler
 	*x = (int)theBounds.size.width;
 	*y = (int)theBounds.size.height;
 }

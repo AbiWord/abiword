@@ -105,9 +105,21 @@
  */
 - (void)drawRect:(NSRect)aRect
 {
-	if (m_pGR)
-		if (![self inLiveResize]) // this case handled in -hasBeenResized: below
+	if (m_pGR) {
+		m_pGR->fillNSRect (aRect, [NSColor redColor]);
+
+		/*  Because of the way we convert from local to display units for scrolling and back again for expose
+		 *  events, there can be a sizeable discrepancy (in local units) between internal events and the
+		 *  reported exposed area. I am therefore marking an extra 1-pixel border around the exposed display area.
+		 */
+		aRect.origin.x    += -1.0;
+		aRect.origin.y    += -1.0;
+		aRect.size.width  +=  2.0;
+		aRect.size.height +=  2.0;
+
+		// if (![self inLiveResize]) // this case handled in -hasBeenResized: below
 			m_pGR->_callUpdateCallback(&aRect);
+	}
 }
 
 /*!
@@ -172,7 +184,7 @@
 		if (pView && !pView->isLayoutFilling())
 		{
 			pView->setWindowSize((UT_sint32)rint(rect.size.width), (UT_sint32)rint(rect.size.height));
-			m_pGR->_callUpdateCallback(&rect);
+			// m_pGR->_callUpdateCallback(&rect);
 			// m_pFrame->quickZoom(); // was update zoom
 		}
 	}

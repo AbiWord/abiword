@@ -63,7 +63,8 @@
 
 #define CG_CONTEXT__ (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort]
 
-#define TDUX(x) (_tduX(x)+1.0)
+#define TDUX(x) (_tduX(x))
+// #define TDUX(x) (_tduX(x)+1.0)
 
 // create a stack object like that to lock a NSView, then it will be unlocked on scope exit.
 // never do a new
@@ -194,7 +195,14 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	[m_fontMetricsTextContainer release];
 }
 
-
+void GR_CocoaGraphics::fillNSRect (NSRect & aRect, NSColor * color)
+{
+	::CGContextSaveGState(m_CGContext);
+	[color set];
+	::CGContextFillRect (m_CGContext, ::CGRectMake(aRect.origin.x, aRect.origin.y, 
+	                                                aRect.size.width, aRect.size.height));
+	::CGContextRestoreGState(m_CGContext);
+}
 
 void GR_CocoaGraphics::_beginPaint (void)
 {
@@ -769,14 +777,12 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	setPrevYOffset(newY);
 	setPrevXOffset(newX);
 
+	[m_pWin displayIfNeeded];
+
 	NSRect bounds = [m_pWin bounds];
 	NSSize offset = NSMakeSize(ddx,ddy);
 	[m_pWin scrollRect:bounds by:offset];
-// printf ("scroll: dx=%ld dy=%ld [off-x=%f off-y=%f]\n", dx, dy, offset.width, offset.height); fflush (stdout);
-	/*  Because of the way we convert from local to display units for scrolling and back again for expose events,
-	 *  there can be a sizeable discrepancy (in local units) between the scroll that was requested and the
-	 *  reported exposed area. I am therefore marking an extra 1-pixel border around the exposed display area.
-	 */
+
 	if (offset.width > 0)
 	{
 		if (offset.width < bounds.size.width)
@@ -786,10 +792,10 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 				if (offset.height < bounds.size.height)
 				{
 					NSRect tmp;
-					tmp.origin.x    = -1.0 + bounds.origin.x + offset.width;
-					tmp.origin.y    = -1.0 + bounds.origin.y;
-					tmp.size.width  =  2.0 + bounds.size.width - offset.width;
-					tmp.size.height =  2.0 + offset.height;
+					tmp.origin.x    = bounds.origin.x + offset.width;
+					tmp.origin.y    = bounds.origin.y;
+					tmp.size.width  = bounds.size.width - offset.width;
+					tmp.size.height = offset.height;
 					[m_pWin setNeedsDisplayInRect:tmp];
 
 					bounds.size.width = offset.width;
@@ -800,10 +806,10 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 				if ((-offset.height) < bounds.size.height)
 				{
 					NSRect tmp;
-					tmp.origin.x    = -1.0 + bounds.origin.x + offset.width;
-					tmp.origin.y    = -1.0 + bounds.origin.y + bounds.size.height + offset.height;
-					tmp.size.width  =  2.0 + bounds.size.width - offset.width;
-					tmp.size.height =  2.0 - offset.height;
+					tmp.origin.x    = bounds.origin.x + offset.width;
+					tmp.origin.y    = bounds.origin.y + bounds.size.height + offset.height;
+					tmp.size.width  = bounds.size.width - offset.width;
+					tmp.size.height = - offset.height;
 					[m_pWin setNeedsDisplayInRect:tmp];
 
 					bounds.size.width = offset.width;
@@ -824,10 +830,10 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 				if (offset.height < bounds.size.height)
 				{
 					NSRect tmp;
-					tmp.origin.x    = -1.0 + bounds.origin.x;
-					tmp.origin.y    = -1.0 + bounds.origin.y;
-					tmp.size.width  =  2.0 + bounds.size.width - offset.width;
-					tmp.size.height =  2.0 + offset.height;
+					tmp.origin.x    = bounds.origin.x;
+					tmp.origin.y    = bounds.origin.y;
+					tmp.size.width  = bounds.size.width - offset.width;
+					tmp.size.height = offset.height;
 					[m_pWin setNeedsDisplayInRect:tmp];
 
 					bounds.origin.x += bounds.size.width + offset.width;
@@ -839,10 +845,10 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 				if ((-offset.height) < bounds.size.height)
 				{
 					NSRect tmp;
-					tmp.origin.x    = -1.0 + bounds.origin.x;
-					tmp.origin.y    = -1.0 + bounds.origin.y + bounds.size.height + offset.height;
-					tmp.size.width  =  2.0 + bounds.size.width + offset.width;
-					tmp.size.height =  2.0 - offset.height;
+					tmp.origin.x    = bounds.origin.x;
+					tmp.origin.y    = bounds.origin.y + bounds.size.height + offset.height;
+					tmp.size.width  = bounds.size.width + offset.width;
+					tmp.size.height = - offset.height;
 					[m_pWin setNeedsDisplayInRect:tmp];
 
 					bounds.origin.x += bounds.size.width + offset.width;
@@ -874,10 +880,6 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 			}
 		}
 	}
-	bounds.origin.x    += -1.0;
-	bounds.origin.y    += -1.0;
-	bounds.size.width  +=  2.0;
-	bounds.size.height +=  2.0;
 	[m_pWin setNeedsDisplayInRect:bounds];
 
 	if (pC) pC->enable ();
