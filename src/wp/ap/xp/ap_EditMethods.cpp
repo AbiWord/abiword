@@ -3313,6 +3313,11 @@ Defun1(cursorDefault)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
@@ -3325,6 +3330,11 @@ Defun1(cursorIBeam)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
@@ -3337,6 +3347,11 @@ Defun1(cursorRightArrow)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
@@ -3349,6 +3364,11 @@ Defun1(cursorLeftArrow)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
@@ -3363,6 +3383,11 @@ Defun1(cursorImage)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
@@ -3377,6 +3402,11 @@ Defun1(cursorImageSize)
 // TODO figure out which corner or side we are on and
 	// TODO map cursor to one of the standard 8 resizers.
 	ABIWORD_VIEW;
+
+	// clear status bar of any lingering messages
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	pFrame->setStatusMessage(NULL);
+
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 	{
