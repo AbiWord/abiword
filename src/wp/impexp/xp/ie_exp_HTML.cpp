@@ -889,6 +889,13 @@ void s_HTML_Listener::tagPop ()
 				tagClose(TT_H4,m_utf8_1);
 			}
 			break;
+		case TT_SPAN:
+			{
+				m_utf8_1 = "span";
+				tagClose (TT_SPAN, m_utf8_1);
+			}
+			break;
+
 		default:
 			{
 				UT_DEBUGMSG(("tagPop: unhandled tag closure! %d\n",tagTop()));
