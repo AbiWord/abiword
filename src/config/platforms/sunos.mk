@@ -101,4 +101,7 @@ ABI_FE		= Unix
 ABIPKGDIR	= sunos
 PSICONV_PLATFORM_DEFS= CFLAGS='-O2'
 
+# SunOS needs specific stuff
+ABI_REQUIRE_PEER_ICONV = 1
+
 # End of sunos defs

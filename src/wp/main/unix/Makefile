@@ -41,7 +41,7 @@ LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv
 endif
 
-ifdef __FreeBSD__
+ifdef ABI_REQUIRE_PEER_ICONV
 LoadOrder+= Abi_libiconv
 endif
 

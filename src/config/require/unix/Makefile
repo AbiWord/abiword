@@ -169,7 +169,7 @@ _ABIDISTFILES_:
 
 _LIBICONV_:
 
-ifdef __FreeBSD__
+ifdef ABI_REQUIRE_PEER_ICONV
 		@if [ -d $(ABI_ROOT)/../libiconv ]; then                        	\
 			echo Found libiconv in peer directory;                  \
 			if [ ! -r $(ABI_ROOT)/../libiconv/src/config.h ]; then  \
