@@ -24,11 +24,14 @@
 ******************************************************************
 *****************************************************************/
 
-/* Default name for new, untitled document */
-dcl(MSG_ShowUnixFontWarning, "AbiWord was not able to add its fonts to the X "
-"font path. Please see \"Unix Font Path Problem\" in the FAQ section of "
-"Abiword help file.")
+dcl(MSG_ShowUnixFontWarning, "AbiWord was not able to add its fonts to the X font path.\n"
+                             "This does not mean that there is anything wrong with your\n"
+                             "system, but you will need to modify your font path manually.\n"
+                             "Please see \"Unix Font Path Problem\" in the FAQ section of\n"
+                             "the Abiword help file for more detailed information, including\n"
+                             "instructions on how to turn this warning off.")
 
+/* Default name for new, untitled document */
 dcl(UntitledDocument,			"Untitled%d")
 
 /* Common to many dialogs */
