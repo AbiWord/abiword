@@ -235,7 +235,7 @@ if test $abi_builtin_plugins = yes; then
 
 		_abi_plugin_name=`echo $p | tr '-' '_'`
 		PLUGIN_LIST="$PLUGIN_LIST lib$_abi_plugin_lib.a"
-		PLUGIN_DEFS="$PLUGIN_DEFS -DABIPGN_BUILTIN_`echo $_abi_plugin_name | tr 'a-z' 'A-Z'`=1"
+		PLUGIN_DEFS="$PLUGIN_DEFS -DABIPGN_BUILTIN_`echo $_abi_plugin_name | tr '[a-z]' '[A-Z]'`=1"
 	done
 fi
 AM_CONDITIONAL(BUILD_IN_PLUGINS,[test $abi_builtin_plugins = yes])
