@@ -101,7 +101,7 @@ UT_sint32 UT_Vector::grow(UT_uint32 ndx)
 	return 0;
 }
 
-UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
+UT_sint32 UT_Vector::insertItemAt(const void* p, UT_uint32 ndx)
 {
 	if (ndx > m_iCount + 1)
 		return -1;
@@ -118,7 +118,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 	// bump the elements -> thataway up to the ndxth position
 	memmove(&m_pEntries[ndx+1], &m_pEntries[ndx], (m_iCount - ndx) * sizeof(void *)); 
 
-	m_pEntries[ndx] = p;
+	m_pEntries[ndx] = (void *)p;
 	++m_iCount;
 
 	return 0;
@@ -146,6 +146,25 @@ UT_sint32 UT_Vector::addItem(const void* p)
 	m_pEntries[m_iCount++] = (void *)p;  /*** bad, cast away const so we can build again ***/
 
 	return 0;
+}
+
+UT_sint32 UT_Vector::addItemSorted(const void* p, int (*compar)(const void *, const void *))
+{
+
+	if (!m_iCount) return addItem(p);
+
+	UT_uint32 i = 0;
+	int icmp;
+
+    icmp = compar(&p, &m_pEntries[i]);
+
+	while ( icmp > 0 && i < m_iCount - 1)
+	{
+		i++;
+		icmp = compar(&p, &m_pEntries[i]);
+	}
+
+	return insertItemAt( p, i );
 }
 
 /** It returns true if there were no errors, false elsewhere */

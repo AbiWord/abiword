@@ -83,9 +83,8 @@ bool pp_TableAttrProp::addAP(PP_AttrProp * pAP,
  			*pSubscript = u;
  		}
  		pAP->setIndex(u);	//$HACK
- 		result = (m_vecTableSorted.addItem(pAP,NULL) == 0);
+ 		result = (m_vecTableSorted.addItemSorted(pAP,compareAP) == 0);
  	}
- 	sortTable();
  
  	return result;
 }

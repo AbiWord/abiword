@@ -109,7 +109,8 @@ public:
 	inline UT_uint32 getItemCount() const {	return m_iCount; }
 	UT_sint32	findItem(void*) const;
 
-	UT_sint32	insertItemAt(void*, UT_uint32 ndx);
+	UT_sint32	insertItemAt(const void*, UT_uint32 ndx);
+	UT_sint32   addItemSorted(const void* p, int (*compar)(const void *, const void *));
 	void		deleteNthItem(UT_uint32 n);
 	void		clear();
 	void		qsort(int (*compar)(const void *, const void *));
