@@ -48,11 +48,12 @@
                                       {  m_error = UT_ERROR;            \
                                          return 0; } } while (0)
 
-
-int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype, U16 lid);
-int SpecCharProc(wvParseStruct *ps,U16 eachchar, CHP* achp);
-int ElementProc(wvParseStruct *ps,wvTag tag, void *props, int dirty);
-int DocProc(wvParseStruct *ps,wvTag tag);
+extern "C" {
+  int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype, U16 lid);
+  int SpecCharProc(wvParseStruct *ps,U16 eachchar, CHP* achp);
+  int ElementProc(wvParseStruct *ps,wvTag tag, void *props, int dirty);
+  int DocProc(wvParseStruct *ps,wvTag tag);
+}
 
 // a little look-up table for mapping Word text colors 
 // (the comments) to Abiword's superior RGB color encoding
@@ -179,8 +180,13 @@ int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype,U16 lid)
 	   // HACK: it seems the text which is displayed by a field is contained
 	   // HACK: after the field separator. since I haven't written real field
 	   // HACK: import support, yet, this will fake it somewhat...
-	   if (ps->fieldstate && !ps->fieldmiddle) return 0;
-	   
+	   //if (ps->fieldstate && !ps->fieldmiddle) return 0;
+	   if (ps->fieldstate) {
+	     // TODO: really handle fields (i.e. eachchar == 13, 14, 15)
+	     if(eachchar == 0x13 || eachchar == 0x14)
+	       return 0;
+	   }
+
 	   // add character to our current text run
 	   pDocReader->m_pTextRun[pDocReader->m_iTextRunLength++] = 
 	     (UT_UCSChar) eachchar;
@@ -224,6 +230,10 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	ps->fieldmiddle = 0;
 	return 0;
       case 20: // field separator
+	if (achp->fOle2)
+	  {
+	    xxx_UT_DEBUGMSG(("field has associated embedded OLE object\n"));
+	  }
 	xxx_UT_DEBUGMSG(("a field separator\n"));
 	ps->fieldmiddle = 1;
 	return 0;
@@ -233,20 +243,21 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	ps->fieldmiddle = 0;
 	return 0;
      }
-   
+
    /* it seems some fields characters slip through here which tricks
     * the import into thinking it has an image with it really does
     * not. this catches special characters in a field
     */
    if (ps->fieldstate) {
-      /* HACK: we should do something with these field characters... */
-      return 0;
+     // TODO: really handle fields (i.e. eachchar == 13, 14, 15)
+     if(eachchar == 0x13 || eachchar == 0x14)
+       return 0;
    }
    
    switch (eachchar) 
      {
-      case 0x01:
-	
+     case 0x01:
+
 	if (achp->fOle2) {
 	   // TODO: support embedded OLE2 components...
 	   xxx_UT_DEBUGMSG(("embedded OLE2 component. currently unsupported"));
@@ -265,7 +276,11 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 	  {
 	     pDocReader->_handleImage(&blip, picf.dxaGoal, picf.dyaGoal);
 	  }
-	
+	else
+	  {
+	    xxx_UT_DEBUGMSG(("Dom: strange no graphic data 1\n"));
+	  }
+
 	wvStream_goto(ps->data, pos);
 
 	return 0;
@@ -286,6 +301,11 @@ int SpecCharProc(wvParseStruct *ps, U16 eachchar, CHP* achp)
 		    pDocReader->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
 					   fspa->yaBottom-fspa->yaTop);
 	      	}
+		else
+		  {
+		    xxx_UT_DEBUGMSG(("Dom: strange no graphic data 2\n"));
+		    return 0;
+		  }
 	    }
 	  else
 	    {
@@ -318,7 +338,7 @@ int DocProc(wvParseStruct *ps,wvTag tag)
 int ElementProc(wvParseStruct *ps,wvTag tag,void *props, int dirty)
 	{
 	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
-	UT_DEBUGMSG(("element tag = %d\n", tag));
+	xxx_UT_DEBUGMSG(("element tag = %d\n", tag));
 	return(pDocReader->_eleProc(ps, tag, props, dirty));
 	}
 
@@ -837,17 +857,16 @@ void IE_Imp_MsWord_97::pasteFromBuffer(PD_DocumentRange * pDocRange,
 
 UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
 {
-   int data;
+   int data = 0;
    const char * mimetype = NULL;
    
    UT_ByteBuf * buf = new UT_ByteBuf();
    IE_ImpGraphic * converter = NULL;
+   UT_Error err = UT_OK;
 
    // extract data from temp file
    while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
      buf->append((UT_Byte*)&data, 1);
-
-   UT_Error err = UT_OK;
    
    switch(b->type)
      {
@@ -867,45 +886,47 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
       case msoblipJPEG:
       default:
 	// TODO: support other image types
-	DELETEP(buf);
-	return UT_OK;
+	goto HandleImgEnd;
 	break;
      }
 
-   if (err != UT_OK) {
-      delete buf;
-      return err;
-   }
+   if (err != UT_OK)
+     goto HandleImgEnd;
 
    XML_Char propBuffer[128];
    propBuffer[0] = 0;
    sprintf(propBuffer, "width:%fin; height:%fin", 
 	   (double)width / (double)1440, 
 	   (double)height / (double)1440);
+
    XML_Char propsName[32];
    propsName[0] = 0;
    sprintf(propsName, "image%d", m_iImageCount++);
 
    const XML_Char* propsArray[5];
-   propsArray[0] = "PROPS";
+   propsArray[0] = "props";
    propsArray[1] = propBuffer;
-   propsArray[2] = "DATAID";
+   propsArray[2] = "dataid";
    propsArray[3] = propsName;
    propsArray[4] = NULL;
 
    UT_ByteBuf * pBBPNG;
-   if (converter == NULL) pBBPNG = buf;
-   else {
-      err = converter->convertGraphic(buf, &pBBPNG);
-      delete converter;
-      if (err != UT_OK) return err;
-   }
+   if (converter == NULL) 
+     pBBPNG = buf;
+   else 
+     {
+       err = converter->convertGraphic(buf, &pBBPNG);
+       DELETEP(converter);
+       if (err != UT_OK) 
+	 goto HandleImgEnd;
+     }
 
    X_ReturnNoMemIfError(m_pDocument->appendObject(PTO_Image, propsArray));
    X_CheckError0(m_pDocument->createDataItem((char*)propsName, UT_FALSE,
 					     pBBPNG, (void*)mimetype, NULL));
 
-   DELETEP(buf);
+ HandleImgEnd:
 
-   return UT_OK;
+   DELETEP(buf);
+   return err;
 }

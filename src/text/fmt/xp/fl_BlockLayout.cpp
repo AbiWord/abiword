@@ -241,7 +241,9 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 				case 'B':
 					iType = FL_TAB_BAR;
 					break;
-				case 'L':	// fall through
+				case 'L':
+				        iType = FL_TAB_LEFT;
+					break;
 				default:
 					iType = FL_TAB_LEFT;
 					UT_DEBUGMSG(("tabstop: unknown tab stop type [%c]\n", p1[1]));
