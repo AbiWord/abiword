@@ -32,7 +32,7 @@ class PD_DocumentRange;
 class UT_ByteBuf;
 
 // conditionally compile in support for VFS
-#ifdef HAVE_GNOMEVFS
+#if 0 //def HAVE_GNOMEVFS
 #include "libgnomevfs/gnome-vfs.h"
 #endif
 
@@ -131,7 +131,7 @@ protected:
 
 private:
 
-#ifdef HAVE_GNOMEVFS
+#if 0 //def HAVE_GNOMEVFS
 	GnomeVFSHandle * m_fp;
 #else
 	FILE *				m_fp;

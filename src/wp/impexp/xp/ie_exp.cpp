@@ -130,11 +130,11 @@ bool IE_Exp::_openFile(const char * szFilename)
 
 	// TODO add code to make a backup of the original file, if it exists.
 
-#ifndef HAVE_GNOMEVFS
+#if 1 //ndef HAVE_GNOMEVFS
 	// Open file in binary mode or UCS-2 output will be mangled.
 	m_fp = fopen(szFilename,"wb+");
 	return (m_fp != 0);
-#else
+#elif 0 //def HAVE_GNOMEVFS
 	GnomeVFSResult result;
 	GnomeVFSURI * uri = gnome_vfs_uri_new (szFilename);
 
@@ -160,9 +160,9 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 	if(!pBytes || !length)
 	  return 0;
 
-#ifndef HAVE_GNOMEVFS	
+#if 1 //ndef HAVE_GNOMEVFS	
 	return fwrite(pBytes,sizeof(UT_Byte),length,m_fp);
-#else
+#elif 0 //def HAVE_GNOMEVFS
 	GnomeVFSResult result;
 	GnomeVFSFileSize temp;
 	result = gnome_vfs_write (m_fp, pBytes, length,
@@ -182,10 +182,10 @@ bool IE_Exp::_writeBytes(const UT_Byte * sz)
 
 bool IE_Exp::_closeFile(void)
 {
-#ifndef HAVE_GNOMEVFS
+#if 1 //ndef HAVE_GNOMEVFS
 	if (m_fp)
 		fclose(m_fp);
-#else
+#elif //def HAVE_GNOMEVFS
 	if (m_fp)
 	  gnome_vfs_close (m_fp);
 #endif
