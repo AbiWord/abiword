@@ -64,7 +64,9 @@ void  XAP_QNXEncodingManager::initialize()
 	char *ABLANG;
 	char *val;
 	char *lang;
-	Native8BitEncodingName = NativeEncodingName = "UTF-8";
+	Native8BitEncodingName = "ISO-8859-1";
+  NativeEncodingName = "UTF-8";
+	NativeUnicodeEncodingName = "UTF-8";
 	LanguageISOName = "en";
 	LanguageISOTerritory = "US";
 
