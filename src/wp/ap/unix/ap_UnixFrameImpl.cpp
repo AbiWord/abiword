@@ -289,7 +289,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 	// attach program icon to window
 	GtkWidget * window = getTopLevelWindow();
 
-	GdkPixbuf * icon = gdk_pixbuf_new_from_xpm_data (abiword_48_xpm);
+	GdkPixbuf * icon = gdk_pixbuf_new_from_xpm_data (const_cast<const char **>(abiword_48_xpm));
 	gtk_window_set_icon (GTK_WINDOW (window), icon);
 	gdk_window_set_icon_name(window->window, "AbiWord Application Icon");
 }
