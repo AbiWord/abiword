@@ -390,7 +390,8 @@ void AP_UnixFrame::_showOrHideToolbars(void)
 void AP_UnixFrame::_showOrHideStatusbar(void)
 {
 	UT_Bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
-	toggleStatusBar(bShowStatusBar);
+	// I don't know why it doesn't work...
+	//	toggleStatusBar(bShowStatusBar);
 }
 
 /*****************************************************************/

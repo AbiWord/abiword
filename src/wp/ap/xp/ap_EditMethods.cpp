@@ -1582,7 +1582,7 @@ UT_Bool _helpLocalizeAndOpenURL(AV_View* pAV_View, UT_Bool bLocal, const char* p
 	const char * abiSuiteLibDir = pApp->getAbiSuiteLibDir();
 	const XML_Char * abiSuiteLocString = NULL;
 	char * helpURL = (char *)malloc(512);
-	pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_StringSet, &abiSuiteLocString);
+	pPrefs->getPrefsValue(AP_PREF_KEY_StringSet, &abiSuiteLocString);
 	if (bLocal)
 	{
 		UT_ASSERT(strlen(abiSuiteLibDir) + strlen(pathBeforeLang) + strlen(abiSuiteLocString) + strlen(pathAfterLang) < 509);
@@ -4626,7 +4626,7 @@ Defun1(cycleInputMode)
 
 	// this edit method may get ignored entirely
 	UT_Bool b;
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_KeyBindingsCycle, &b) && !b)
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_KeyBindingsCycle, &b) && !b)
 		return UT_FALSE;
 
 	const char * szCurrentInputMode = pFrame->getInputMode();
@@ -4660,7 +4660,7 @@ Defun1(toggleInsertMode)
 
 	// this edit method may get ignored entirely
 	UT_Bool b;
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_InsertModeToggle, &b) && !b)
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_InsertModeToggle, &b) && !b)
 		return UT_FALSE;
 
 	// toggle the insert mode

@@ -793,7 +793,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 
 	const XML_Char * szRulerUnits;
 	UT_Dimension dim;
-	if (XAP_App::getApp()->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&szRulerUnits))
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		dim = UT_determineDimension(szRulerUnits);
 	else
 		dim = DIM_IN;

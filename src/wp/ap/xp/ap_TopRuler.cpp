@@ -73,7 +73,7 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_xGuide = 0;
 	
 	const XML_Char * szRulerUnits;
-	if (pFrame->getApp()->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&szRulerUnits))
+	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
 		m_dim = DIM_IN;
@@ -2363,7 +2363,7 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 	//UT_DEBUGMSG(("AP_TopRuler::_prefsListener (this=%p)\n", data));
 
 	const XML_Char *pszBuffer;
-	pPrefs->getPrefsValue((XML_Char*) AP_PREF_KEY_RulerUnits, &pszBuffer );
+	pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits, &pszBuffer );
 
 	// or should I just default to inches or something?
 	UT_Dimension dim = UT_determineDimension( pszBuffer, DIM_none );

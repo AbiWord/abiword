@@ -426,7 +426,7 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 	if (firstTime)
 	{
 		firstTime = UT_FALSE;
-		m_pUnixApp->getPrefsValue((XML_Char*)XAP_PREF_KEY_ToolbarAppearance, &szValue);
+		m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
 		UT_ASSERT((szValue) && (*szValue));
 		
 		if (UT_XML_stricmp(szValue,"icon") == 0)

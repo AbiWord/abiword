@@ -161,7 +161,7 @@ UT_Bool AP_UnixApp::initialize(void)
 		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
 
 		const char * szSpellCheckWordList = NULL;
-		getPrefsValue((XML_Char*)AP_PREF_KEY_SpellCheckWordList,
+		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,
 			      (const XML_Char**)&szSpellCheckWordList);
 		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
 		
@@ -197,7 +197,7 @@ UT_Bool AP_UnixApp::initialize(void)
 		const char * szDirectory = NULL;
 		const char * szStringSet = NULL;
 
-		if (   (getPrefsValue((const XML_Char*)AP_PREF_KEY_StringSet,
+		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
 				      (const XML_Char**)&szStringSet))
 			&& (szStringSet)
 			&& (*szStringSet)

@@ -99,6 +99,10 @@ public:
 	UT_Bool							isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
 
 	XAP_Prefs *						getPrefs(void) const;
+#ifdef HAVE_GNOME_XML2
+	UT_Bool							getPrefsValue(const char * szKey, const XML_Char ** pszValue) const;
+	UT_Bool							getPrefsValueBool(const char * szKey, UT_Bool * pbValue) const;
+#endif
 	UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	UT_Bool							getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const;
 

@@ -61,7 +61,7 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Di
 	// determine unit system to use in this dialog
 	const XML_Char * szRulerUnits;
 	UT_ASSERT(m_pApp);
-	if (m_pApp->getPrefs()->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &szRulerUnits))
+	if (m_pApp->getPrefs()->getPrefsValue(AP_PREF_KEY_RulerUnits, &szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
 		m_dim = DIM_IN;

@@ -240,7 +240,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 	////////////////////////////////////////////////////////////////
 	
 	const XML_Char * szValue = NULL;
-	m_pUnixApp->getPrefsValue((XML_Char*)XAP_PREF_KEY_ToolbarAppearance,&szValue);
+	m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
 	UT_ASSERT((szValue) && (*szValue));
 	
 	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;

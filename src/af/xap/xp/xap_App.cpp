@@ -443,6 +443,16 @@ XAP_Prefs * XAP_App::getPrefs(void) const
 	return m_prefs;
 }
 
+#ifdef HAVE_GNOME_XML2
+UT_Bool XAP_App::getPrefsValue(const char * szKey, const XML_Char ** pszValue) const
+{
+	if (!m_prefs)
+		return UT_FALSE;
+
+	return m_prefs->getPrefsValue(static_cast<XML_Char *> (szKey), pszValue);
+}
+#endif
+
 UT_Bool XAP_App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)
@@ -450,6 +460,16 @@ UT_Bool XAP_App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValu
 
 	return m_prefs->getPrefsValue(szKey,pszValue);
 }
+
+#ifdef HAVE_GNOME_XML2
+UT_Bool XAP_App::getPrefsValueBool(const char * szKey, UT_Bool * pbValue) const
+{
+	if (!m_prefs)
+		return UT_FALSE;
+
+	return m_prefs->getPrefsValueBool(static_cast<XML_Char *> (szKey), pbValue);
+}
+#endif
 
 UT_Bool XAP_App::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const
 {

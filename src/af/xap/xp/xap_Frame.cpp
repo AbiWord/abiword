@@ -163,7 +163,7 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 	const char * szBindings = NULL;
 	EV_EditBindingMap * pBindingMap = NULL;
 
-	if ((pApp->getPrefsValue((const XML_Char*)szKeyBindingsKey,
+	if ((pApp->getPrefsValue(szKeyBindingsKey,
 				 (const XML_Char**)&szBindings)) && 
 	    (szBindings) && (*szBindings))
 		pBindingMap = m_app->getBindingMap(szBindings);
@@ -186,7 +186,7 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 	//////////////////////////////////////////////////////////////////
 
 	const char * szMenuLayoutName = NULL;
-	if ((pApp->getPrefsValue((const XML_Char*)szMenuLayoutKey,
+	if ((pApp->getPrefsValue(szMenuLayoutKey,
 				 (const XML_Char**)&szMenuLayoutName)) &&
 	    (szMenuLayoutName) && (*szMenuLayoutName))
 		;
@@ -199,7 +199,7 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 	//////////////////////////////////////////////////////////////////
 
 	const char * szMenuLabelSetName = NULL;
-	if ((pApp->getPrefsValue((const XML_Char*)szMenuLabelSetKey,
+	if ((pApp->getPrefsValue(szMenuLabelSetKey,
 				 (const XML_Char**)&szMenuLabelSetName)) &&
 	    (szMenuLabelSetName) && (*szMenuLabelSetName))
 		;
@@ -212,7 +212,7 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 	//////////////////////////////////////////////////////////////////
 
 	const char * szToolbarLayouts = NULL;
-	if ((pApp->getPrefsValue((const XML_Char*)szToolbarLayoutsKey,
+	if ((pApp->getPrefsValue(szToolbarLayoutsKey,
 				 (const XML_Char**)&szToolbarLayouts)) &&
 	    (szToolbarLayouts) && (*szToolbarLayouts))
 		;
@@ -243,7 +243,7 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 	//////////////////////////////////////////////////////////////////
 
 	const char * szToolbarLabelSetName = NULL;
-	if ((pApp->getPrefsValue((const XML_Char*)szToolbarLabelSetKey,
+	if ((pApp->getPrefsValue(szToolbarLabelSetKey,
 				 (const XML_Char**)&szToolbarLabelSetName)) &&
 	    (szToolbarLabelSetName) && (*szToolbarLabelSetName))
 		;
@@ -256,7 +256,7 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 	//////////////////////////////////////////////////////////////////
 
 	const char * szToolbarAppearance = NULL;
-	pApp->getPrefsValue((const XML_Char*)XAP_PREF_KEY_ToolbarAppearance,
+	pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,
 			    (const XML_Char**)&szToolbarAppearance);
 	UT_ASSERT((szToolbarAppearance) && (*szToolbarAppearance));
 	UT_cloneString((char *&)m_szToolbarAppearance,szToolbarAppearance);
