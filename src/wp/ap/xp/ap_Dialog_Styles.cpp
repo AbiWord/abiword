@@ -111,7 +111,7 @@ void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 	if(i < iCount)
 	{
 		char * pSV = (char *) m_vecAllProps.getNthItem(i+1);
-		delete [] pSV;
+		FREEP(pSV);
 		pSV = UT_strdup(pszVal);
 		m_vecAllProps.setNthItem(i+1, (void *) pSV, NULL);
 	}
@@ -151,8 +151,8 @@ void AP_Dialog_Styles::removeVecProp(const XML_Char * pszProp)
 	{
 		char * pSP = (char *) m_vecAllProps.getNthItem(i);
 		char * pSV = (char *) m_vecAllProps.getNthItem(i+1);
-		delete [] pSP;
-		delete [] pSV;
+		FREEP(pSP);
+		FREEP(pSV);
 		m_vecAllProps.deleteNthItem(i+1);
 		m_vecAllProps.deleteNthItem(i);
 	}
