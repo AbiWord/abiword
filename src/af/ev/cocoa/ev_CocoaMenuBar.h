@@ -29,6 +29,20 @@ class AV_View;
 class XAP_CocoaApp;
 class AP_CocoaFrame;
 
+#define EV_COCOAMENU_MODSHIFT     0x080
+#define EV_COCOAMENU_MODCONTROL   0x100
+#define EV_COCOAMENU_MODALTERNATE 0x200
+#define EV_COCOAMENU_MODCOMMAND   0x400
+
+struct EV_CocoaCommandKeyRef
+{
+	id		target;
+	SEL		action;
+
+	XAP_Menu_Id	menuid;
+
+	UT_uint32	key;
+};
 
 /*****************************************************************/
 
@@ -45,8 +59,11 @@ public:
 	virtual bool		refreshMenu(AV_View * pView);
     virtual void        destroy(void);
 
+	bool			lookupCommandKey (struct EV_CocoaCommandKeyRef * keyRef) const;
+	void			addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef);
 protected:
 	NSMenu *			m_wMenuBar;
+	UT_Vector			m_vecKeyRef;
 };
 
 #endif /* EV_COCOAMENUBAR_H */

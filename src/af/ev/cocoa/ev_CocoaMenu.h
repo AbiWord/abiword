@@ -32,6 +32,7 @@ class AV_View;
 class XAP_CocoaApp;
 class AP_CocoaFrame;
 class EV_CocoaMenu;
+class EV_CocoaMenuBar;
 
 /*****************************************************************/
 @interface EV_CocoaMenuTarget : NSObject
@@ -66,7 +67,7 @@ public:
 				const char * szMenuLabelSetName);
 	virtual ~EV_CocoaMenu();
 
-	bool				synthesizeMenu(NSMenu * wMenuRoot);
+	bool				synthesizeMenu(NSMenu * wMenuRoot, EV_CocoaMenuBar * pMenuBar = 0);
 	bool				menuEvent(XAP_Menu_Id menuid);
 	virtual bool		refreshMenu(AV_View * pView) = 0;
 	void				_refreshMenu(EV_NSMenu *menu);
@@ -76,7 +77,7 @@ protected:
 
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
 private:
-	static NSString* _getItemCmd (const char * mnemonic, unsigned int & modifiers);
+	static NSString* _getItemCmd (const char * mnemonic, unsigned int & modifiers, UT_uint32 * keyRefKey = 0);
 	XAP_CocoaApp *		m_pCocoaApp;
 	
 	EV_CocoaMenuTarget	*m_menuTarget;

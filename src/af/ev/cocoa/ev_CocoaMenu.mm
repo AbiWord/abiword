@@ -102,8 +102,8 @@
 {
 	UT_DEBUGMSG (("@EV_CocoaMenuTarget (id)menuSelected:(id)sender\n"));
 
-	UT_ASSERT ([sender isKindOfClass:[NSMenuItem class]]);
-	_xap->menuEvent([sender tag]);
+	if ([sender isKindOfClass:[NSMenuItem class]])
+		_xap->menuEvent([sender tag]);
 	return sender;
 }
 
@@ -308,7 +308,7 @@ bool EV_CocoaMenu::menuEvent(XAP_Menu_Id menuid)
 }
 
 
-bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
+bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot, EV_CocoaMenuBar * pMenuBar)
 {
 	UT_DEBUGMSG(("EV_CocoaMenu::synthesizeMenu\n"));
 	const EV_Menu_ActionSet * pMenuActionSet = m_pCocoaApp->getMenuActionSet();
@@ -350,9 +350,10 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			szMnemonicName = data[1];
 			
 			NSString * shortCut = nil;
-			
+			UT_uint32 keyRefKey = 0;
+
 			if (data[1] && *(data[1])) {
-				shortCut = _getItemCmd (data[1], modifier);
+				shortCut = _getItemCmd (data[1], modifier, &keyRefKey);
 			}
 			else {
 				shortCut = [NSString string];
@@ -396,6 +397,14 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 								keyEquivalent:shortCut];
 				[wParent addVirtualItem:menuItem];
 				[menuItem release];
+			}
+			if (pMenuBar && keyRefKey) {
+				struct EV_CocoaCommandKeyRef keyRef;
+				keyRef.key    = keyRefKey;
+				keyRef.menuid = pLayoutItem->getMenuId();
+				keyRef.target = m_menuTarget;
+				keyRef.action = @selector(menuSelected:);
+				pMenuBar->addCommandKey (&keyRef);
 			}
 			[menuItem setTarget:m_menuTarget];
 			[menuItem setAction:@selector(menuSelected:)];
@@ -501,7 +510,7 @@ bool EV_CocoaMenu::_doAddMenuItem(UT_uint32 layout_pos)
 	\return newly allocated NSString that contains the key equivalent. 
 	should be nil on entry.
  */
-NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modifiers)
+NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modifiers, UT_uint32 * keyRefKey)
 {
 	bool needsShift = false;
 	modifiers = 0;
@@ -522,7 +531,20 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 		p = strrchr (mnemonic, '+');
 		p++;
 	}
+	if (keyRefKey && (((*p) & 0x7f) == (*p))) {
+		char c = *p;
+		if ((c >= 'a') && (c <= 'z'))
+			c = static_cast<char>(toupper(static_cast<int>(c)));
 
+		*keyRefKey = static_cast<UT_uint32>(c);
+
+		if (modifiers & NSAlternateKeyMask)
+			*keyRefKey |= EV_COCOAMENU_MODALTERNATE;
+		if (modifiers & NSCommandKeyMask)
+			*keyRefKey |= EV_COCOAMENU_MODCOMMAND;
+		if (modifiers & NSShiftKeyMask)
+			*keyRefKey |= EV_COCOAMENU_MODSHIFT;
+	}
 	NSString *shortcut = nil;
 	if ((p[1] == 0) && needsShift) {
 		shortcut = [[NSString stringWithUTF8String:p] uppercaseString];
@@ -537,6 +559,85 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 
 /*****************************************************************/
 
+@interface ev_CocoaMenuDelegate : NSObject
+{
+	EV_CocoaMenuBar *	m_MenuBar;
+
+	struct EV_CocoaCommandKeyRef	m_KeyRef;
+}
+- (id)initWithMenuBar:(EV_CocoaMenuBar *)menuBar;
+- (BOOL)menuHasKeyEquivalent:(NSMenu *)menu forEvent:(NSEvent *)event target:(id *)target action:(SEL *)action;
+- (BOOL)queryCommandKey:(char)c withModifierFlags:(unsigned int)modifierFlags;
+@end
+
+@implementation ev_CocoaMenuDelegate
+
+- (id)initWithMenuBar:(EV_CocoaMenuBar *)menuBar
+{
+	if (self = [super init])
+		{
+			m_MenuBar = menuBar;
+		}
+	return self;
+}
+
+- (BOOL)menuHasKeyEquivalent:(NSMenu *)menu forEvent:(NSEvent *)event target:(id *)target action:(SEL *)action
+{
+	BOOL bHasEquivalent = NO;
+
+	UT_DEBUGMSG(("[ev_CocoaMenuDelegate -menuHasKeyEquivalent]\n"));
+	if ([event type] == NSKeyDown)
+		{
+			unsigned int modifierFlags = [event modifierFlags];
+
+			NSString * str = [event charactersIgnoringModifiers];
+			if ([str length] == 1)
+				{
+					unichar uc;
+					[str getCharacters:&uc];
+
+					if ((uc & 0x7f) == uc)
+						{
+							char c = static_cast<char>(uc & 0x7f);
+
+							if ((c >= 'a') && (c <= 'z'))
+								{
+									c = static_cast<char>(toupper (static_cast<int>(c)));
+									bHasEquivalent = [self queryCommandKey:c withModifierFlags:modifierFlags];
+								}
+							else
+								bHasEquivalent = [self queryCommandKey:c withModifierFlags:modifierFlags];
+						}
+					if (bHasEquivalent)
+						{
+							*target = m_KeyRef.target;
+							*action = m_KeyRef.action;
+
+							m_MenuBar->menuEvent (m_KeyRef.menuid);
+						}
+				}
+		}
+	return bHasEquivalent;
+}
+
+- (BOOL)queryCommandKey:(char)c withModifierFlags:(unsigned int)modifierFlags
+{
+	m_KeyRef.key = static_cast<UT_uint32>(c);
+
+	if (modifierFlags & NSShiftKeyMask    )
+		m_KeyRef.key |= EV_COCOAMENU_MODSHIFT;
+	if (modifierFlags & NSControlKeyMask  )
+		m_KeyRef.key |= EV_COCOAMENU_MODCONTROL;
+	if (modifierFlags & NSAlternateKeyMask)
+		m_KeyRef.key |= EV_COCOAMENU_MODALTERNATE;
+	if (modifierFlags & NSCommandKeyMask  )
+		m_KeyRef.key |= EV_COCOAMENU_MODCOMMAND; // I suspect that this one is necessarily true...
+
+	return (m_MenuBar->lookupCommandKey (&m_KeyRef) ? YES : NO);
+}
+
+@end
+
 EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
@@ -546,6 +647,7 @@ EV_CocoaMenuBar::EV_CocoaMenuBar(XAP_CocoaApp * pCocoaApp,
 
 EV_CocoaMenuBar::~EV_CocoaMenuBar()
 {
+	UT_VECTOR_PURGEALL(struct EV_CocoaCommandKeyRef *,m_vecKeyRef);
 }
 
 void  EV_CocoaMenuBar::destroy(void)
@@ -558,8 +660,12 @@ bool EV_CocoaMenuBar::synthesizeMenuBar(NSMenu *menu)
 	// to a 3D handle box and shown
 	m_wMenuBar = menu;
 
-	synthesizeMenu(m_wMenuBar);
+	synthesizeMenu(m_wMenuBar, this);
 	
+	ev_CocoaMenuDelegate * menuDelegate = [[ev_CocoaMenuDelegate alloc] initWithMenuBar:this];
+	if (menuDelegate)
+		[m_wMenuBar setDelegate:menuDelegate];
+
 	[NSApp setMainMenu:m_wMenuBar];
 	return true;
 }
@@ -574,6 +680,39 @@ bool EV_CocoaMenuBar::rebuildMenuBar()
 bool EV_CocoaMenuBar::refreshMenu(AV_View * pView)
 {
 	return true;
+}
+
+bool EV_CocoaMenuBar::lookupCommandKey (struct EV_CocoaCommandKeyRef * keyRef) const
+{
+	bool found = false;
+
+	for (UT_uint32 i = 0; i < m_vecKeyRef.getItemCount(); i++)
+		{
+			const struct EV_CocoaCommandKeyRef * savedKeyRef = 0;
+			savedKeyRef = reinterpret_cast<const struct EV_CocoaCommandKeyRef *>(m_vecKeyRef.getNthItem(i));
+
+			if (savedKeyRef->key == keyRef->key)
+				{
+					keyRef->menuid = savedKeyRef->menuid;
+					keyRef->target = savedKeyRef->target;
+					keyRef->action = savedKeyRef->action;
+					found = true;
+					break;
+				}
+		}
+	return found;
+}
+
+void EV_CocoaMenuBar::addCommandKey (const struct EV_CocoaCommandKeyRef * keyRef)
+{
+	struct EV_CocoaCommandKeyRef * newKeyRef = new struct EV_CocoaCommandKeyRef;
+
+	newKeyRef->key    = keyRef->key;
+	newKeyRef->menuid = keyRef->menuid;
+	newKeyRef->target = keyRef->target;
+	newKeyRef->action = keyRef->action;
+
+	m_vecKeyRef.addItem (reinterpret_cast<void *>(newKeyRef));
 }
 
 /*****************************************************************/
