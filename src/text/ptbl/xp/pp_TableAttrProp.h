@@ -38,6 +38,8 @@ public:
 	pp_TableAttrProp();
 	~pp_TableAttrProp();
 
+	UT_Bool					addAP(PP_AttrProp * pAP,
+								  UT_uint32 * pSubscript);
 	UT_Bool					createAP(UT_uint32 * pSubscript);
 
 	UT_Bool					createAP(const XML_Char ** attributes,
@@ -47,24 +49,11 @@ public:
 	UT_Bool					createAP(const UT_Vector * pVector,
 									 UT_uint32 * pSubscript);
 
-	UT_Bool					findMatch(const XML_Char ** attributes,
-									  UT_uint32 * pSubscript) const;
-
-	UT_Bool					findMatch(const UT_Vector * pVector,
+	UT_Bool					findMatch(const PP_AttrProp * pMatch,
 									  UT_uint32 * pSubscript) const;
 	
 	const PP_AttrProp *		getAP(UT_uint32 subscript) const;
 
-	UT_Bool					cloneWithReplacements(const PP_AttrProp * papOld,
-												  const XML_Char ** attributes,
-												  const XML_Char ** properties,
-												  UT_uint32 * pSubscript);
-
-	UT_Bool					cloneWithElimination(const PP_AttrProp * papOld,
-												 const XML_Char ** attributes,
-												 const XML_Char ** properties,
-												 UT_uint32 * pSubscript);
- 
 protected:
 	UT_Vector				m_vecTable;
 };

@@ -25,7 +25,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_hash.h"
+#include "ut_alphahash.h"
 #include "ut_string.h"
 #include "ut_vector.h"
 #include "xmlparse.h"
@@ -159,7 +159,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 	{
 		if (!m_pAttributes)
 		{
-			m_pAttributes = new UT_HashTable(5);
+			m_pAttributes = new UT_AlphaHashTable(5);
 			if (!m_pAttributes)
 			{
 				UT_DEBUGMSG(("setAttribute: could not allocate hash table.\n"));
@@ -175,7 +175,7 @@ UT_Bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szVal
 {
 	if (!m_pProperties)
 	{
-		m_pProperties = new UT_HashTable(5);
+		m_pProperties = new UT_AlphaHashTable(5);
 		if (!m_pProperties)
 		{
 			UT_DEBUGMSG(("setProperty: could not allocate hash table.\n"));
@@ -196,7 +196,7 @@ UT_Bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XM
 		return UT_FALSE;
 	if (ndx >= m_pAttributes->getEntryCount())
 		return UT_FALSE;
-	UT_HashTable::UT_HashEntry * pEntry = m_pAttributes->getNthEntry(ndx);
+	UT_HashTable::UT_HashEntry * pEntry = m_pAttributes->getNthEntryAlpha(ndx);
 	if (!pEntry)
 		return UT_FALSE;
 	szName = pEntry->pszLeft;
@@ -210,7 +210,7 @@ UT_Bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML
 		return UT_FALSE;
 	if (ndx >= m_pProperties->getEntryCount())
 		return UT_FALSE;
-	UT_HashTable::UT_HashEntry * pEntry = m_pProperties->getNthEntry(ndx);
+	UT_HashTable::UT_HashEntry * pEntry = m_pProperties->getNthEntryAlpha(ndx);
 	if (!pEntry)
 		return UT_FALSE;
 	szName = pEntry->pszLeft;
@@ -251,6 +251,10 @@ UT_Bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_C
 	// return TRUE if each attribute and property is already present
 	// and has the same value as what we have.
 
+	// TODO consider using the fact that we are now (Dec 12 1998) using
+	// TODO alpha-hash-table rather than just a hash-table to optimize
+	// TODO these loops somewhat.
+	
 	if (attributes && *attributes)
 	{
 		const XML_Char ** p = attributes;
@@ -290,6 +294,10 @@ UT_Bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, con
 	// this is like areAlreadyPresent() but we don't care about
 	// the values.
 
+	// TODO consider using the fact that we are now (Dec 12 1998) using
+	// TODO alpha-hash-table rather than just a hash-table to optimize
+	// TODO these loops somewhat.
+
 	if (attributes && *attributes)
 	{
 		const XML_Char ** p = attributes;
@@ -317,4 +325,177 @@ UT_Bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, con
 	return UT_FALSE;					// didn't find any
 }
 
+UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
+{
+	// return TRUE iff we exactly match the AP given.
+
+	if (!pMatch)
+		return UT_FALSE;
 	
+	UT_uint32 countMyAttrs = ((m_pAttributes) ? m_pAttributes->getEntryCount() : 0);
+	UT_uint32 countMatchAttrs = ((pMatch->m_pAttributes) ? pMatch->m_pAttributes->getEntryCount() : 0);
+	if (countMyAttrs != countMatchAttrs)
+		return UT_FALSE;
+
+	UT_uint32 countMyProps = ((m_pProperties) ? m_pProperties->getEntryCount() : 0);
+	UT_uint32 countMatchProps = ((pMatch->m_pProperties) ? pMatch->m_pProperties->getEntryCount() : 0);
+	if (countMyProps != countMatchProps)
+		return UT_FALSE;
+
+	UT_uint32 k;
+
+	for (k=0; (k < countMyAttrs); k++)
+	{
+		UT_HashTable::UT_HashEntry * pMyEntry = m_pAttributes->getNthEntryAlpha(k);
+		UT_HashTable::UT_HashEntry * pMatchEntry = pMatch->m_pAttributes->getNthEntryAlpha(k);
+		if (UT_XML_stricmp(pMyEntry->pszLeft,pMatchEntry->pszLeft) != 0)
+			return UT_FALSE;
+		if (UT_XML_stricmp(pMyEntry->pszRight,pMatchEntry->pszRight) != 0)
+			return UT_FALSE;
+	}
+
+	for (k=0; (k < countMyProps); k++)
+	{
+		UT_HashTable::UT_HashEntry * pMyEntry = m_pProperties->getNthEntryAlpha(k);
+		UT_HashTable::UT_HashEntry * pMatchEntry = pMatch->m_pProperties->getNthEntryAlpha(k);
+		if (UT_XML_stricmp(pMyEntry->pszLeft,pMatchEntry->pszLeft) != 0)
+			return UT_FALSE;
+		if (UT_XML_stricmp(pMyEntry->pszRight,pMatchEntry->pszRight) != 0)
+			return UT_FALSE;
+	}
+
+	return UT_TRUE;
+}
+
+PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
+												 const XML_Char ** properties) const
+{
+	// create a new AttrProp based upon the given one
+	// and adding or replacing the items given.
+	// return NULL on failure.
+
+	// first, create a new AttrProp using just the values given.
+
+	PP_AttrProp * papNew = new PP_AttrProp();
+	if (!papNew)
+		goto Failed;
+	if (!papNew->setAttributes(attributes) || !papNew->setProperties(properties))
+		goto Failed;
+	
+	// next, add any items that we have that are not present
+	// (have not been overridden) in the new one.
+
+	UT_uint32 k;
+	const XML_Char * n;
+	const XML_Char * v;
+	const XML_Char * vNew;
+	
+	k = 0;
+	while (getNthAttribute(k++,n,v))
+	{
+		// TODO decide if/whether to allow PT_PROPS_ATTRIBUTE_NAME here.
+		// TODO The issue is: we use it to store the CSS properties and
+		// TODO when we see it, we expand the value into one or more
+		// TODO properties.  if we allow it to be given here, should
+		// TODO we blowaway all of the existing properties and create
+		// TODO them from this?  or should we expand it and override
+		// TODO individual properties?  
+		// TODO for now, we just barf on it.
+		UT_ASSERT(UT_XML_stricmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
+		if (!papNew->getAttribute(n,vNew))
+			if (!papNew->setAttribute(n,v))
+				goto Failed;
+	}
+
+	k = 0;
+	while (getNthProperty(k++,n,v))
+	{
+		if (!papNew->getProperty(n,vNew))
+			if (!papNew->setProperty(n,v))
+				goto Failed;
+	}
+
+	return papNew;
+
+Failed:
+	if (papNew) delete papNew;
+	return NULL;
+}
+
+PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
+												const XML_Char ** properties) const
+{
+	// create a new AttrProp based upon the given one
+	// and removing the items given.
+	// return FALSE on failure.
+
+	// first, create an empty AttrProp.
+
+	PP_AttrProp * papNew = new PP_AttrProp();
+	if (!papNew)
+		goto Failed;
+	
+	UT_uint32 k;
+	const XML_Char * n;
+	const XML_Char * v;
+	
+	k = 0;
+	while (getNthAttribute(k++,n,v))
+	{
+		// for each attribute in the old set, add it to the
+		// new set only if it is not present in the given array.
+
+		if (attributes && *attributes)
+		{
+			const XML_Char ** p = attributes;
+			while (*p)
+			{
+				UT_ASSERT(UT_XML_stricmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
+				if (UT_XML_stricmp(n,p[0])!=0)		// found it, so we don't put it in the result.
+					goto DoNotIncludeAttribute;
+				p += 2;								// skip over value
+			}
+		}
+
+		// we didn't find it in the given array, add it to the new set.
+		
+		if (!papNew->setAttribute(n,v))
+			goto Failed;
+
+	DoNotIncludeAttribute:
+		;
+	}
+
+	k = 0;
+	while (getNthProperty(k++,n,v))
+	{
+		// for each property in the old set, add it to the
+		// new set only if it is not present in the given array.
+
+		if (properties && *properties)
+		{
+			const XML_Char ** p = properties;
+			while (*p)
+			{
+				if (UT_XML_stricmp(n,p[0])!=0)		// found it, so we don't put it in the result.
+					goto DoNotIncludeProperty;
+				p += 2;
+			}
+		}
+
+		// we didn't find it in the given array, add it to the new set.
+		
+		if (!papNew->setProperty(n,v))
+			goto Failed;
+
+	DoNotIncludeProperty:
+		;
+	}
+
+	return papNew;
+
+Failed:
+	if (papNew) delete papNew;
+	return NULL;
+}
+

@@ -27,6 +27,12 @@
 
 #define CHUNK_NUM_ENTRIES		8
 
+/*****************************************************************
+** WARNING: if we ever put in code to properly delete
+** WARNING: things from the m_pEntries array, we will
+** WARNING: need to update ut_alphahash.cpp.
+*****************************************************************/
+
 UT_HashTable::UT_HashTable(int iBuckets) : m_pool()
 {
 	UT_ASSERT(iBuckets>=3);		// NB: must be prime

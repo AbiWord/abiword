@@ -22,7 +22,7 @@
 #define PP_ATTRPROP_H
 
 #include "ut_types.h"
-#include "ut_hash.h"
+#include "ut_alphahash.h"
 #include "ut_vector.h"
 #include "xmlparse.h"
 
@@ -62,10 +62,16 @@ public:
 
 	UT_Bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
 	UT_Bool areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
+	UT_Bool isExactMatch(const PP_AttrProp * pMatch) const;
+
+	PP_AttrProp * cloneWithReplacements(const XML_Char ** attributes,
+										const XML_Char ** properties) const;
+	PP_AttrProp * cloneWithElimination(const XML_Char ** attributes,
+									   const XML_Char ** properties) const;
 
 protected:
-	UT_HashTable * m_pAttributes;
-	UT_HashTable * m_pProperties;
+	UT_AlphaHashTable * m_pAttributes;
+	UT_AlphaHashTable * m_pProperties;
 };
 
 #endif /* PP_ATTRPROP_H */

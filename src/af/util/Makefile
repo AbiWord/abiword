@@ -46,6 +46,7 @@ endif
 ###		xp/$(OBJDIR)/ut_regex.$(OBJ_SUFFIX)			\
 
 OBJS=		$(PLATFORM_OBJS)					\
+		xp/$(OBJDIR)/ut_alphahash.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_growbuf.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_hash.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ut_misc.$(OBJ_SUFFIX)			\
