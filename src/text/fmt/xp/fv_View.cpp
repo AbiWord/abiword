@@ -2824,7 +2824,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 						pAuto = m_pDoc->getNthList(i);
 						bFoundPrevList = (pAuto->getParentItem() == prevSDH);
 					}
-					if(bFoundPrevList)
+					if(bFoundPrevList && pAuto->getFirstItem())
 					{
 						PL_StruxDocHandle subSDH = pAuto->getFirstItem();
 						fl_BlockLayout * pSubBlock = NULL;
