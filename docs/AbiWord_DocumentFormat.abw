@@ -1,5 +1,7 @@
 <awml>
 <section>
+<p><c PROPS="font-size:18pt; font-weight:bold">THIS DOCUMENT IS CURRENTLY OUT OF SYNC WITH THE CODE.  PLEASE IGNORE FOR NOW.</c></p>
+<p></p>
 <p><c PROPS="font-family:courier; font-size:11pt">$Id$</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiWord Document Format</c></p>
 <p PROPS="text-align:center"><c PROPS="font-size:10pt">Version 1.0</c></p>
@@ -74,16 +76,16 @@
 <p PROPS="text-align:left"><c PROPS="font-family:courier; font-size:14pt; font-weight:bold">&lt;P&gt;...&lt;/P&gt;</c><c PROPS="font-family:times; font-size:14pt"> These tags represent a </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">block</c><c PROPS="font-family:times; font-size:14pt"> (or paragraph). All document text must be within a </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">block</c><c PROPS="font-family:times; font-size:14pt">. </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">Blocks</c><c PROPS="font-family:times; font-size:14pt"> may not be nested (at the current time). All paragraph formatting options appear as attributes of the this tag. All document content must appear within a </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">block</c><c PROPS="font-family:times; font-size:14pt">.</c></p>
 <p PROPS="text-align:left">The following are block-level properties:</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">text-align: ...;</c> See CSS2, Section 16.2.</p>
-<p PROPS="text-align:left"><c PROPS="font-family:courier">text-decoration: ...</c><c PROPS="font-family:courier">;</c> See CSS2, Section 16.3.1.</p>
-<p PROPS="text-align:left"><c PROPS="font-family:courier">line-height</c><c PROPS="font-family:courier">: ...;</c> See CSS2, Section 10.8.1.</p>
+<p PROPS="text-align:left"><c PROPS="font-family:courier">text-decoration: ...;</c> See CSS2, Section 16.3.1.</p>
+<p PROPS="text-align:left"><c PROPS="font-family:courier">line-height: ...;</c> See CSS2, Section 10.8.1.</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">line-break-after: ...;</c> See</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">line-break-before: ...;</c> See</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">line-break-inside: ...;</c> See</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">column-break-after: ...;</c> See</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">column-break-before: ...;</c> See</p>
-<p PROPS="text-align:left"><c PROPS="font-family:courier">column-break-ins</c><c PROPS="font-family:courier">ide: ...;</c> See</p>
+<p PROPS="text-align:left"><c PROPS="font-family:courier">column-break-inside: ...;</c> See</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">page-break-after: ...;</c> See</p>
-<p PROPS="text-align:left"><c PROPS="font-family:courier">page-break-before: </c><c PROPS="font-family:courier">...;</c> See</p>
+<p PROPS="text-align:left"><c PROPS="font-family:courier">page-break-before: ...;</c> See</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">page-break-inside: ...;</c> See</p>
 <p PROPS="text-align:left">TODO add list properties.</p>
 <p PROPS="text-align:left">TODO add tab properties.</p>
@@ -92,9 +94,9 @@
 <p PROPS="text-align:left"><c PROPS="font-family:times; font-size:14pt; font-weight:bold">2.3. Span-Level Tags</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier; font-size:14pt; font-weight:bold">&lt;C&gt;...&lt;/C&gt;</c><c PROPS="font-family:times; font-size:14pt"> These tags delimit an in-line </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">span</c><c PROPS="font-family:times; font-size:14pt"> format. These tags are used to apply a span-level format change within a block. For example, making a word italic within a regular font paragraph. </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">Spans</c><c PROPS="font-family:times; font-size:14pt"> may be nested, but this should be thought of as a convenience for document translators; AbiWord will flatten these during import and will write them out flattened on export.</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:times; font-size:14pt">A set of start and end </c><c PROPS="font-family:Courier New; font-size:14pt">C</c><c PROPS="font-family:times; font-size:14pt"> tags delimit a span of document text. These are only necessary to change a style from the settings inherited from the </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">block</c><c PROPS="font-family:times; font-size:14pt">. Text need not be enclosed in </c><c PROPS="font-family:Courier New; font-size:14pt">C</c><c PROPS="font-family:times; font-size:14pt"> tags.</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:times; font-size:14pt">The following are span-level </c><c PROPS="font-family:times; font-size:14pt">properties</c><c PROPS="font-family:times; font-size:14pt"> recognized by th</c><c PROPS="font-family:times; font-size:14pt">is tag</c><c PROPS="font-family:times; font-size:14pt">:</c></p>
+<p PROPS="text-align:left"><c PROPS="font-family:times; font-size:14pt">The following are span-level properties recognized by this tag:</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier; font-size:14pt">color: ...;</c><c PROPS="font-family:times; font-size:14pt"> See CSS2, Section 14.1.</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:courier; font-size:14pt">background-color: ...;</c><c PROPS="font-family:times; font-size:14pt"> See CSS</c><c PROPS="font-family:times; font-size:14pt">, Section 14.2.</c></p>
+<p PROPS="text-align:left"><c PROPS="font-family:courier; font-size:14pt">background-color: ...;</c><c PROPS="font-family:times; font-size:14pt"> See CSS, Section 14.2.</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">font-family: ...;</c> See CSS2, Section 15.2.2.</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">font-style: ...;</c> See CSS2, Section 15.2.3.</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">font-variant: ...;</c> See CSS2, Section 15.2.3.</p>
@@ -102,7 +104,7 @@
 <p PROPS="text-align:left"><c PROPS="font-family:courier">font-stretch: ...;</c> See CSS2, Section 15.2.3.</p>
 <p PROPS="text-align:left"><c PROPS="font-family:courier">font-size: ...;</c> See CSS2, Section 15.2.4.</p>
 <p PROPS="text-align:left"><c PROPS="font-family:times; font-size:14pt">Example:</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:11pt">&lt;c </c><c PROPS="font-family:Courier New; font-size:11pt">props="font-</c><c PROPS="font-family:Courier New; font-size:11pt">weight</c><c PROPS="font-family:Courier New; font-size:11pt">:</c><c PROPS="font-family:Courier New; font-size:11pt">b</c><c PROPS="font-family:Courier New; font-size:11pt">old</c><c PROPS="font-family:Courier New; font-size:11pt">; font-size:7</c><c PROPS="font-family:Courier New; font-size:11pt">2pt"</c><c PROPS="font-family:Courier New; font-size:11pt">&gt;hello world!&lt;/c&gt;</c></p>
+<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:11pt">&lt;c props="font-weight:bold; font-size:72pt"&gt;hello world!&lt;/c&gt;</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-weight:bold">&lt;NOTE&gt;...&lt;/NOTE&gt;</c><c PROPS="font-family:times; font-size:14pt"> These tags delimit a </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">footnote</c><c PROPS="font-family:times; font-size:14pt"> or </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">endnote</c><c PROPS="font-family:times; font-size:14pt">. In the document format, a </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">footnote</c><c PROPS="font-family:times; font-size:14pt"> or </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">endnote</c><c PROPS="font-family:times; font-size:14pt"> appears in-line in the body of the text. The content of these tags must be a series of one or more </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">blocks</c><c PROPS="font-family:times; font-size:14pt"> (properly delimited by </c><c PROPS="font-family:Courier New; font-size:14pt">P</c><c PROPS="font-family:times; font-size:14pt"> tags).</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:times; font-size:14pt">This tag has the following attributes: </c><c PROPS="font-family:Courier New; font-size:14pt">SHOW</c><c PROPS="font-family:times; font-size:14pt"> and </c><c PROPS="font-family:Courier New; font-size:14pt">LABEL</c><c PROPS="font-family:times; font-size:14pt">.</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt">SHOW=</c><c PROPS="font-family:times; font-size:14pt"> { </c><c PROPS="font-family:Courier New; font-size:14pt">FOOT</c><c PROPS="font-family:times; font-size:14pt">, </c><c PROPS="font-family:Courier New; font-size:14pt">END</c><c PROPS="font-family:times; font-size:14pt"> } This determines whether this </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">note</c><c PROPS="font-family:times; font-size:14pt"> is a footnote or an endnote. This allows the user to override the SHOW attribute given to the </c><c PROPS="font-family:Courier New; font-size:14pt">NOTES</c><c PROPS="font-family:times; font-size:14pt"> tag on this </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">section</c><c PROPS="font-family:times; font-size:14pt">. This attribute is optional. The default value is to inherit the value from the </c><c PROPS="font-family:Courier New; font-size:14pt">NOTES</c><c PROPS="font-family:times; font-size:14pt"> tag on this </c><c PROPS="font-family:times; font-size:14pt; font-style:italic">section</c><c PROPS="font-family:times; font-size:14pt">.</c></p>
