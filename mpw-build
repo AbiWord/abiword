@@ -34,7 +34,7 @@ End If
 
 Set ranmake 0
 
-If "`Exists Makefile.MPW`" != ""
+If "`Exists Makefile.mpw`" != ""
         Echo "Set Echo 1" >{BuildTarget}.makeout
         Make -f Makefile.mpw {BuildTarget} >>{BuildTarget}.makeout
         {BuildTarget}.makeout
@@ -66,41 +66,51 @@ Export ABI_ROOT
 
 If "{BuildTarget}" =~ /all/
         Echo Started `Date`
-        "{ThisScript}" do-all
+#        "{ThisScript}" do-png
+#        "{ThisScript}" do-wv
+#        "{ThisScript}" do-expat
+#        "{ThisScript}" do-zlib
+        "{ThisScript}" do-abi
         Echo Finished `Date`
-Else If "{BuildTarget}" =~ /do-all/
-        SetDirectory :src:af:ev:xp
+Else If "{BuildTarget}" =~ /do-abi/
+        SetDirectory "{ABI_ROOT}src:af:ev:xp"
         {savedir}{ThisScript} build
-        SetDirectory :src:af:ev:mac
+        SetDirectory "{ABI_ROOT}src:af:ev:mac"
         {savedir}{ThisScript} build
-        SetDirectory :src:af:gr:xp
+        SetDirectory "{ABI_ROOT}src:af:gr:xp"
         {savedir}{ThisScript} build
-        SetDirectory :src:af:gr:mac
+        SetDirectory "{ABI_ROOT}src:af:gr:mac"
         {savedir}{ThisScript} build
-        SetDirectory :src:af:util:xp
+        SetDirectory "{ABI_ROOT}src:af:util:xp"
         {savedir}{ThisScript} build
-        SetDirectory :src:af:util:mac
+        SetDirectory "{ABI_ROOT}src:af:util:mac"
         {savedir}{ThisScript} build
-        SetDirectory :src:af:xap:xp
+        SetDirectory "{ABI_ROOT}src:af:xap:xp"
         {savedir}{ThisScript} build
-        SetDirectory :src:af:xap:mac
+        SetDirectory "{ABI_ROOT}src:af:xap:mac"
         {savedir}{ThisScript} build
-        SetDirectory :src:text:fmt:xp
+        SetDirectory "{ABI_ROOT}src:text:fmt:xp"
         {savedir}{ThisScript} build
-        SetDirectory :src:text:ptbl:xp
+        SetDirectory "{ABI_ROOT}src:text:ptbl:xp"
         {savedir}{ThisScript} build
-        SetDirectory :src:wp:ap:xp
+        SetDirectory "{ABI_ROOT}src:wp:ap:xp"
         {savedir}{ThisScript} build
-        SetDirectory :src:wp:ap:mac
+        SetDirectory "{ABI_ROOT}src:wp:ap:mac"
         {savedir}{ThisScript} build
-		SetDirectory :src:other:spell
+		SetDirectory "{ABI_ROOT}src:other:spell"
         {savedir}{ThisScript} build
-        SetDirectory :src:wp:impexp:xp
+        SetDirectory "{ABI_ROOT}src:wp:impexp:xp"
         {savedir}{ThisScript} build
-        SetDirectory :src:wp:main:xp
+        SetDirectory "{ABI_ROOT}src:wp:main:xp"
         {savedir}{ThisScript} build
-        SetDirectory :src:wp:main:mac
+        SetDirectory "{ABI_ROOT}src:wp:main:mac"
         {savedir}{ThisScript} build
+Else If "{BuildTarget}" =~ /do-png/
+#		SetDirectory "{ABI_ROOT}::zlib"
+		
+Else If "{BuildTarget}" =~ /do-wv/
+Else If "{BuildTarget}" =~ /do-expat/
+Else If "{BuildTarget}" =~ /do-zlib/
 Else
         Echo {BuildTarget} not understood, ignoring
 End If
