@@ -1120,6 +1120,14 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 			UT_ASSERT (xmlField);
 		}
 		break;
+	case 'N':
+		// this one have been found with ApplixWare exported RTF.
+		if (strcmp (instr, "NUMPAGES") == 0)
+		{
+			xmlField = UT_strdup ("page_count");
+			UT_ASSERT (xmlField);
+		}
+		break;
 	case '\\':
 		/* mostly StarOffice RTF fields */
 		
