@@ -39,35 +39,109 @@
 ##################################################################
 
 
-##################################################################
-##################################################################
-## Interlude into NSPR makefile system.
-## 
-## Map ABI_DEPTH (set in makefile that included us) into NSPR's
-## MOD_DEPTH, include their config.mk, and fix up any paths as
-## necessary.
+OS_NAME		:= $(shell uname -s)
+OS_RELEASE	:= $(shell uname -r)
+OS_ARCH		:= $(shell uname -m)
 
-MOD_DEPTH=$(ABI_DEPTH)/other/nsprpub
-include $(MOD_DEPTH)/config/config.mk
+DISTBASE = $(ABI_DEPTH)/dist
 
+LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
-##################################################################
-##################################################################
-## Define ABI_ symbols to help with cross-platform (xp) and
-## platform-dependent directory naming.
+CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(XCFLAGS)
 
-ifeq ($(OS_ARCH),WINNT)
-ABI_NATIVE=	win
-else
-ABI_NATIVE=	unix
+INSTALL	= install
+
+ifeq ($(OS_NAME), CYGWIN32_NT)
+OS_NAME = WINNT
 endif
+
+ifeq ($(OS_NAME), WINNT)
+
+CC = cl
+CCC = cl
+LINK = link
+AR = lib -NOLOGO -OUT:"$@"
+RANLIB = echo
+BSDECHO = echo
+RC = rc.exe
+
+GARBAGE = $(OBJDIR)/vc20.pdb $(OBJDIR)/vc40.pdb
+
+OBJ_SUFFIX = obj
+LIB_SUFFIX = lib
+DLL_SUFFIX = dll
+
+# do we really need -GT?
+OS_CFLAGS = -W3 -nologo -GF -Gy -MDd -GT
+
+OPTIMIZER = -Od -Z7
+DEFINES = -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC -DWIN32 -DWINNT -D_X86_
+# note that we only build debug.  TODO
+DBG_OR_NOT = DBG
+
+DLLFLAGS = -DEBUG -DEBUGTYPE:CV -OUT:"$@"
+LDFLAGS = -DEBUG -DEBUGTYPE:CV
+OS_DLLFLAGS = -nologo -DLL -SUBSYSTEM:WINDOWS -PDB:NONE
+
+ABI_NATIVE=	win
+endif
+# end of WinNT section
+#######################
+
+ifeq ($(OS_NAME), Linux)
+
+OBJ_SUFFIX	= o
+LIB_SUFFIX	= a
+DLL_SUFFIX	= so
+AR		= ar cr $@
+
+OPTIMIZER	= -g
+DEFINES		= -DDEBUG -UNDEBUG
+# note that we only build debug.  TODO
+DBG_OR_NOT = DBG
+
+CC			= gcc
+CCC			= g++
+RANLIB			= ranlib
+
+OS_INCLUDES		=
+G++INCLUDES		= -I/usr/include/g++
+
+PLATFORM_FLAGS		= -ansi -Wall -pipe -DLINUX -Dlinux
+PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR
+
+OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
+
+PLATFORM_FLAGS		+= -mno-486 -Di386
+PORT_FLAGS		+= -D_XOPEN_SOURCE
+
+MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
+ABI_NATIVE=	unix
+
+endif
+# end of Linux section
+#######################
+
+define MAKE_OBJDIR
+if test ! -d $(@D); then rm -rf $(@D); $(INSTALL) -d $(@D); fi
+endef
+
+define VERIFY_DIRECTORY
+if test ! -d xxxx; then rm -rf xxxx; $(INSTALL) -d xxxx; fi
+endef
+
+OBJDIR = $(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(DBG_OR_NOT)
+
+# Figure out where the binary code lives.
+BUILD		= $(OBJDIR)
+DIST		= $(DISTBASE)/$(OBJDIR)
 
 ##################################################################
 ##################################################################
 ## Define AbiSoftware version
 
+# TODO fix this!
 ABI_VERSION=	0_0
-
 
 ##################################################################
 ##################################################################
@@ -78,7 +152,7 @@ ABI_VERSION=	0_0
 ##    ABI_OTHLIBS should be for MOD_ versioned things in $(DIST)/lib (from abi/src/other)
 ##    ABI_LIBS should be for the X11 libraries and the like
 
-ifeq ($(OS_ARCH),WINNT)
+ifeq ($(OS_NAME),WINNT)
 ifeq ($(BUILDWXWIN),)
 EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
