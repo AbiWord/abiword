@@ -349,7 +349,7 @@ protected:
 	virtual bool        _canContainPoint(void) const;
 	virtual bool        _letPointPass(void) const;
 	virtual	bool		_recalcWidth(void);
-	inline bool         _wouldBeHidden(FPVisibility eVis) const;
+	bool         _wouldBeHidden(FPVisibility eVis) const;
 //
 // Variables to draw underlines for all runs
 //
