@@ -43,9 +43,9 @@ struct XAP_Exp_HTMLOptions
 	bool	bEmbedCSS;
 	bool	bEmbedImages;
 
-	// TODO: 1. enable/disable AWML namespace mark-up
-	//       2. save images as base-64 encoded data-URL
-	//       3. save styles to an external stylesheet
+	/* other options, not set/saved/restore by options dialog
+	 */
+	bool	bMultipart;
 };
 
 class XAP_Dialog_HTMLOptions : public XAP_Dialog_NonPersistent
@@ -69,10 +69,12 @@ protected:
 	inline bool		get_Allow_AWML ()   const { return m_exp_opt->bAllowAWML; }
 	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
+	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 
-	inline bool		can_set_Declare_XML () const { return m_exp_opt->bIs4 ? false : true; }
-	inline bool		can_set_Allow_AWML ()  const { return m_exp_opt->bIs4 ? false : true; }
-	inline bool		can_set_Embed_CSS ()   const { return m_exp_opt->bIsAbiWebDoc ? false : true; }
+	inline bool		can_set_Declare_XML ()  const { return m_exp_opt->bIs4 ? false : true; }
+	inline bool		can_set_Allow_AWML ()   const { return m_exp_opt->bIs4 ? false : true; }
+	inline bool		can_set_Embed_CSS ()    const { return m_exp_opt->bIsAbiWebDoc ? false : true; }
+	inline bool		can_set_Embed_Images () const { return m_exp_opt->bMultipart ? false : true; }
 
 	void			set_HTML4 (bool enable);
 	void			set_PHTML (bool enable);

@@ -37,6 +37,7 @@
 #include "ut_units.h"
 #include "ut_wctomb.h"
 #include "ut_path.h"
+#include "ut_math.h"
 #include "ut_string_class.h"
 
 #include "xap_App.h"
@@ -67,6 +68,16 @@
 
 #ifdef HTML_TABLES_SUPPORTED
 #include "ie_Table.h"
+#endif
+
+#ifndef IE_MIME_XHTML
+#define IE_MIME_XHTML		"application/xhtml+xml"
+#endif
+#ifndef IE_MIME_HTML
+#define IE_MIME_HTML		"text/html"
+#endif
+#ifndef IE_MIME_CSS
+#define IE_MIME_CSS			"text/css"
 #endif
 
 /*****************************************************************/
@@ -179,6 +190,44 @@ bool IE_Exp_PHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 
 #endif /* HTML_ENABLE_PHTML */
 
+#ifdef HTML_ENABLE_MHTML
+
+// Multipart HTML: http://www.rfc-editor.org/rfc/rfc2557.txt
+
+IE_Exp_MHTML_Sniffer::IE_Exp_MHTML_Sniffer ()
+#ifdef HTML_NAMED_CONSTRUCTORS
+	: IE_ExpSniffer(IE_IMPEXPNAME_MHTML)
+#endif
+{
+	// 
+}
+
+bool IE_Exp_MHTML_Sniffer::recognizeSuffix (const char * szSuffix)
+{
+	return (!(UT_stricmp (szSuffix, ".mhtml")));
+}
+
+UT_Error IE_Exp_MHTML_Sniffer::constructExporter (PD_Document * pDocument,
+												  IE_Exp ** ppie)
+{
+	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
+	if (p) p->set_MHTML ();
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_MHTML_Sniffer::getDlgLabels(const char ** pszDesc,
+									   const char ** pszSuffixList,
+									   IEFileType * ft)
+{
+	*pszDesc = "Multipart HTML (.mhtml)";
+	*pszSuffixList = "*.mhtml";
+	*ft = getFileType();
+	return true;
+}
+
+#endif /* HTML_ENABLE_MHTML */
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -192,6 +241,7 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 	m_exp_opt.bAllowAWML   = true;
 	m_exp_opt.bEmbedCSS    = true;
 	m_exp_opt.bEmbedImages = false;
+	m_exp_opt.bMultipart   = false;
 
 	m_error = UT_OK;
 
@@ -250,6 +300,11 @@ static UT_UTF8String s_string_to_url (UT_String & str)
 			ptr++;
 		}
 	return url;
+}
+
+static UT_UTF8String s_cid_new ()
+{
+	return UT_UTF8String_sprintf ("dev.null.%lu@abiword.com", (unsigned long) UT_newNumber ());
 }
 
 /*!	This function returns true if the given property is a valid CSS
@@ -402,6 +457,7 @@ private:
 	inline bool		get_Allow_AWML ()   const { return m_exp_opt->bAllowAWML; }
 	inline bool		get_Embed_CSS ()    const { return m_exp_opt->bEmbedCSS; }
 	inline bool		get_Embed_Images () const { return m_exp_opt->bEmbedImages; }
+	inline bool		get_Multipart ()    const { return m_exp_opt->bMultipart; }
 
 	bool			m_bInSection;
 	bool			m_bInBlock;
@@ -451,8 +507,14 @@ private:
 	void			styleOpen (const UT_UTF8String & rule);
 	void			styleClose ();
 	void			styleNameValue (const char * name, const UT_UTF8String & value);
+	void			styleText (const UT_UTF8String & content);
 	void			textTrusted (const UT_UTF8String & text);
 	void			textUntrusted (const char * text);
+
+	void			multiHeader ();
+	void			multiBoundary (bool end = false);
+	void			multiField (const char * name, const UT_UTF8String & value);
+	void			multiBreak ();
 
 	/* for emulation of lists using tables:
 	 */
@@ -485,7 +547,12 @@ private:
 	UT_UTF8String	m_utf8_0; // low-level
 	UT_UTF8String	m_utf8_1; // intermediate
 
-	UT_UTF8String	m_utf8_span; // span tag-string cache
+	UT_UTF8String	m_utf8_span;     // span tag-string cache
+
+	const PP_AttrProp * m_pAPStyles;
+
+	UT_UTF8String	m_utf8_css_path; // Multipart HTML: cache for content location
+	UT_UTF8String	m_utf8_css_cid;  // Multipart HTML: cache for content ID
 
 	UT_Stack		m_tagStack;
 
@@ -792,6 +859,14 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 		m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
+void s_HTML_Listener::styleText (const UT_UTF8String & content)
+{
+	if (m_fdCSS)
+		fwrite (content.utf8_str (), 1, content.byteLength (), m_fdCSS);
+	else
+		m_pie->write (content.utf8_str (), content.byteLength ());
+}
+
 void s_HTML_Listener::textTrusted (const UT_UTF8String & text)
 {
 	if (text.byteLength ())
@@ -840,6 +915,65 @@ void s_HTML_Listener::textUntrusted (const char * text)
 	if (m_utf8_0.byteLength ()) m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
+static const char * s_boundary = "AbiWord_multipart_boundary____________";
+
+void s_HTML_Listener::multiHeader ()
+{
+	m_utf8_1  = "multipart/related; boundary=\"";
+	m_utf8_1 += s_boundary;
+	m_utf8_1 += "\"; type=\"";
+
+	if (get_HTML4 ())
+		m_utf8_1 += IE_MIME_HTML;
+	else
+		m_utf8_1 += IE_MIME_XHTML;
+
+	m_utf8_1 += "\"";
+
+	multiField ("Content-Type", m_utf8_1);
+	multiBoundary ();
+
+	if (get_HTML4 ())
+		m_utf8_1 = IE_MIME_HTML;
+	else
+		m_utf8_1 = IE_MIME_XHTML;
+
+	m_utf8_1 += "; charset=\"UTF-8\"";
+
+	multiField ("Content-Type", m_utf8_1);
+	multiBreak ();
+}
+
+void s_HTML_Listener::multiBoundary (bool end)
+{
+	m_utf8_0  = "\r\n--";
+	m_utf8_0 += s_boundary;
+
+	if (end)
+		m_utf8_0 += "--\r\n";
+	else
+		m_utf8_0 += "\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+}
+
+void s_HTML_Listener::multiField (const char * name, const UT_UTF8String & value)
+{
+	m_utf8_0  = name;
+	m_utf8_0 += ": ";
+	m_utf8_0 += value;
+	m_utf8_0 += "\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+}
+
+void s_HTML_Listener::multiBreak ()
+{
+	m_utf8_0 = "\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
+}
+
 /* intermediate methods
  */
 
@@ -858,6 +992,8 @@ static const char * s_Header[3] = {
 
 void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 {
+	if (get_Multipart ()) multiHeader ();
+
 	/* print XML header
 	 */
 	if (!get_HTML4 ())
@@ -939,7 +1075,11 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 			const PP_AttrProp * pAP = 0;
 			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
-			if (bHaveProp) _outputStyles (pAP);
+			if (bHaveProp && pAP)
+				{
+					_outputStyles (pAP);
+					m_pAPStyles = pAP;
+				}
 		}
 
 	if (get_PHTML ())
@@ -984,6 +1124,15 @@ void s_HTML_Listener::_outputEnd ()
 	 */
 	m_utf8_1 = "html";
 	tagClose (TT_HTML, m_utf8_1);
+
+	if (get_Multipart ())
+		{
+			if (m_pAPStyles) _outputStyles (m_pAPStyles);
+
+			// TODO: images
+
+			multiBoundary (true);
+		}
 }
 
 bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
@@ -997,10 +1146,28 @@ bool s_HTML_Listener::_openStyleSheet (UT_UTF8String & css_path)
 
 	imagedir += "/style.css";
 
-	m_fdCSS = fopen (imagedir.c_str (), "wb");
-	if (m_fdCSS == NULL) return false;
+	if (m_utf8_css_cid.byteLength ()) // Multipart HTML: style-sheet segment
+		{
+			multiBoundary ();
 
-	fprintf (m_fdCSS, "@charset \"UTF-8\"\r\n\r\n");
+			m_utf8_1  = IE_MIME_CSS;
+			m_utf8_1 += "; charset=\"UTF-8\"";
+
+			multiField ("Content-Type",     m_utf8_1);
+
+			m_utf8_1  = "<";
+			m_utf8_1 += m_utf8_css_cid;
+			m_utf8_1 += ">";
+
+			multiField ("Content-ID",       m_utf8_1);
+			multiField ("Content-Location", m_utf8_css_path);
+			multiBreak ();
+		}
+	else if (!get_Multipart ())
+		{
+			m_fdCSS = fopen (imagedir.c_str (), "wb");
+			if (m_fdCSS == NULL) return false;
+		}
 
 	css_path  = s_string_to_url (imagebasedir);
 	css_path += "/style.css";
@@ -1033,10 +1200,30 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 
 			if (!_openStyleSheet (css_path)) return;
 
-			m_utf8_1  = "link href=\"";
-			m_utf8_1 += css_path;
-			m_utf8_1 += "\" rel=\"stylesheet\" type=\"text/css\"";
-			tagOpenClose (m_utf8_1, get_HTML4 ());
+			if (!get_Multipart () || (m_utf8_css_cid.byteLength () == 0))
+				{
+					m_utf8_1  = "link href=\"";
+
+					if (get_Multipart ())
+						{
+							m_utf8_css_path = css_path;
+							m_utf8_css_cid  = s_cid_new ();
+
+							m_utf8_1 += "cid:";
+							m_utf8_1 += m_utf8_css_cid;
+						}
+					else m_utf8_1 += css_path;
+
+					m_utf8_1 += "\" rel=\"stylesheet\" type=\"text/css\"";
+					tagOpenClose (m_utf8_1, get_HTML4 ());
+
+					if (get_Multipart ()) return;
+				}
+
+			/* first line of style sheet is an encoding declaration
+			 */
+			m_utf8_1 = "@charset \"UTF-8\";\r\n\r\n";
+			styleText (m_utf8_1);
 		}
 
 	/* global page styles refer to the <body> tag
@@ -2729,6 +2916,7 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_iBlockType(0),
 	m_iListDepth(0),
 	m_iImgCnt(0),
+	m_pAPStyles(0),
 	m_styleIndent(0),
 	m_fdCSS(0),
 	m_tlistIndent(0),

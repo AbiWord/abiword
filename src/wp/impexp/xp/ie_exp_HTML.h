@@ -57,6 +57,9 @@
 #define HTML_ENABLE_HTML4 
 #define HTML_ENABLE_PHTML
 #endif
+#ifdef DEBUG
+#define HTML_ENABLE_MHTML
+#endif
 
 class PD_Document;
 
@@ -118,6 +121,26 @@ public:
 
 #endif /* HTML_ENABLE_PHTML */
 
+#ifdef HTML_ENABLE_MHTML
+
+class ABI_EXPORT IE_Exp_MHTML_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_MHTML_Sniffer ();
+	virtual ~IE_Exp_MHTML_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructExporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
+#endif /* HTML_ENABLE_MHTML */
+
 #ifdef HTML_DIALOG_OPTIONS
 #include "xap_Dlg_HTMLOptions.h"
 #else
@@ -134,9 +157,9 @@ struct XAP_Exp_HTMLOptions
 	bool	bEmbedCSS;
 	bool	bEmbedImages;
 
-	// TODO: 1. enable/disable AWML namespace mark-up
-	//       2. save images as base-64 encoded data-URL
-	//       3. save styles to an external stylesheet
+	/* other options, not set/saved/restore by options dialog
+	 */
+	bool	bMultipart;
 };
 
 #endif /* HTML_DIALOG_OPTIONS */
@@ -159,6 +182,7 @@ public:
 
 	inline void			set_HTML4 (bool enable = true) { m_exp_opt.bIs4 = enable; }
 	inline void			set_PHTML (bool enable = true) { m_exp_opt.bIsAbiWebDoc = enable; }
+	inline void			set_MHTML (bool enable = true) { m_exp_opt.bMultipart = enable; }
 
 protected:
 	virtual bool		_openFile (const char * szFilename);

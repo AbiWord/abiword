@@ -162,6 +162,9 @@ void XAP_UnixDialog_HTMLOptions::refreshStates ()
 
 	on = get_Embed_Images () ? TRUE : FALSE;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wEmbedImages), on);
+
+	on = can_set_Embed_Images () ? TRUE : FALSE;
+	gtk_widget_set_sensitive (m_wEmbedImages, on);
 }
 
 void XAP_UnixDialog_HTMLOptions::event_OK ()
