@@ -68,6 +68,7 @@ public:
 	static int    m_iHelp;
 	static const char * m_sDisplay;
 	static int    m_iAbiControl;
+	static const char * m_sMerge;
 private:
 	bool          m_bShowSplash;
 	AP_App*       m_pApp;

@@ -69,6 +69,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	const XAP_StringSet * pSS = pApp->getStringSet ();
 	char * tmp_str = NULL;
 
+	int dflResponse = GTK_RESPONSE_OK;
+
 	switch (m_buttons)
 	{
 		case b_O:
@@ -102,6 +104,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 							      GTK_STOCK_SAVE, 
 							      GTK_RESPONSE_YES,
 							      NULL);
+			dflResponse = GTK_RESPONSE_CANCEL;
 			FREEP(tmp_str);
 			label = gtk_label_new(NULL);
 			if (m_szSecondaryMessage == NULL)
@@ -110,7 +113,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 				separator =UT_String("\n\n");
 			
 			labelText = UT_String_sprintf(labelText, "<span weight=\"bold\" size=\"larger\">%s</span>%s%s", 
-						      m_szMessage, separator.c_str(), m_szSecondaryMessage);
+										  m_szMessage, separator.c_str(), m_szSecondaryMessage);
 			
 			gtk_label_set_markup(GTK_LABEL(label), labelText.c_str());
 
@@ -135,7 +138,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			gtk_widget_show_all (hbox);
 
   			gtk_dialog_set_default_response (GTK_DIALOG(message),
-							 GTK_RESPONSE_YES);
+							 GTK_RESPONSE_CANCEL);
 			gtk_dialog_set_has_separator(GTK_DIALOG(message), FALSE);
 			break;
 			
@@ -149,18 +152,17 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(message);
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(message), pFrame,
-				     this, GTK_RESPONSE_OK, true ) )
+				     this, dflResponse, true ) )
 	{
 		case GTK_RESPONSE_OK:
 			m_answer = XAP_Dialog_MessageBox::a_OK; break;
-		case GTK_RESPONSE_CANCEL:
-			m_answer = XAP_Dialog_MessageBox::a_CANCEL; break;
 		case GTK_RESPONSE_YES:
 			m_answer = XAP_Dialog_MessageBox::a_YES; break;
 		case GTK_RESPONSE_NO:
 			m_answer = XAP_Dialog_MessageBox::a_NO; break;
+		case GTK_RESPONSE_CANCEL:
 		default:
-			UT_ASSERT_NOT_REACHED() ;
+			m_answer = XAP_Dialog_MessageBox::a_CANCEL; break;
 	}
 }
 

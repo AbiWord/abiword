@@ -44,11 +44,13 @@ class ABI_EXPORT AP_Convert
 	void convertToPNG ( const char * szSourceFileName ) ;
 
 	void setVerbose(int level);
+	void setMergeSource (const char * source);
 
 	void print(const char * file, GR_Graphics * pGraphics);
 
  private:
 	int m_iVerbose;
+	const char * m_mergeSource;
 };
 
 #endif /* AP_CONVERT_H */

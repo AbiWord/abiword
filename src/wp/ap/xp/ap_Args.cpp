@@ -55,6 +55,7 @@ int    AP_Args::m_iHelp = 0;
 const char * AP_Args::m_sDisplay = NULL;
 struct poptOption * AP_Args::options = NULL;
 int  AP_Args::m_iAbiControl = 0;
+const char * AP_Args::m_sMerge = NULL;
 
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 	: XArgs (pArgs), poptcon(NULL), m_bShowSplash(true), m_pApp(pApp)
@@ -187,8 +188,9 @@ const struct poptOption AP_Args::const_opts[] =
 	 {"to-png", '\0', POPT_ARG_NONE, &m_iToPNG, 0, "Convert incoming file to a PNG image", ""},
 	 {"verbose", 'v', POPT_ARG_INT, &m_iVerbose, 0, "Set verbosity level (0, 1, 2)", "LEVEL"},
 	 {"print", 'p', POPT_ARG_STRING, &m_sPrintTo, 0, "Print this file to FILE or printer", "FILE or |lpr"},
-	 {"plugin", '\0', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application ", "NAME"},
-	 {"AbiControl", '\0', POPT_ARG_NONE, &m_iAbiControl, 0, "Execute plugin AbiControl instead of the main application ", ""},
+	 {"plugin", '\0', POPT_ARG_STRING, &m_sPlugin, 0, "Execute plugin NAME instead of the main application", "NAME"},
+	 {"merge", 'm', POPT_ARG_STRING, &m_sMerge, 0, "Mail-merge", "FILE"},
+	 {"AbiControl", '\0', POPT_ARG_NONE, &m_iAbiControl, 0, "Execute plugin AbiControl instead of the main application", ""},
 	 // GNOME build kills everything after "version"
 	 {"version", '\0', POPT_ARG_NONE, &m_iVersion, 0, "Print AbiWord version", NULL},
  	 {"help", '?', POPT_ARG_NONE, &m_iHelp, 0, "Display help", NULL},

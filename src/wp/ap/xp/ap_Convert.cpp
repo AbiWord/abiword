@@ -49,7 +49,7 @@
 //////////////////////////////////////////////////////////////////
 
 AP_Convert::AP_Convert(int inVerbose)
-  : m_iVerbose(inVerbose)
+	: m_iVerbose(inVerbose), m_mergeSource(0)
 {
 }
 
@@ -57,12 +57,17 @@ AP_Convert::~AP_Convert(void)
 {
 }
 
+void AP_Convert::setMergeSource (const char * source)
+{
+	m_mergeSource = source;
+}
+
 /////////////////////////////////////////////////////////////////
 
 void AP_Convert::convertTo(const char * szSourceFilename,
-			   IEFileType sourceFormat,
-			   const char * szTargetFilename,
-			   IEFileType targetFormat)
+						   IEFileType sourceFormat,
+						   const char * szTargetFilename,
+						   IEFileType targetFormat)
 {
 	UT_Error error = UT_OK;
 

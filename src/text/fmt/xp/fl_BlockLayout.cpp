@@ -2090,6 +2090,10 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// between the beginning of the block and the requested
 	// offset.
 	UT_ASSERT(NULL != pRun);
+	if (!pRun){
+		x = x2 = y = y2 = height = 0;
+		return NULL;
+	}
 
 	// This covers a special case (I) when bEOL.  Consider this
 	// line (| is the right margin, E end of document):
