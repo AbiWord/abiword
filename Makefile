@@ -57,6 +57,14 @@ deb:
 	@echo Starting DEB build
 	$(MAKE) -C src deb
 
+slp:
+	@echo Starting SLP build
+	$(MAKE) -C src slp
+
+tgz:
+	@echo Starting .tar.gz build
+	$(MAKE) -C src tgz
+
 install_redhat:
 	@echo Installing AbiSuite for Red Hat Linux systems
 	$(MAKE) -C src install_redhat

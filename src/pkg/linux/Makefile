@@ -79,14 +79,17 @@ MODULE_LIST=abi-$(ABI_BUILD_VERSION) expat unixfonts abidistfiles libpng zlib
 
 RPM_SOURCE_DIR=$(strip $(shell grep "topdir:" /etc/rpmrc | sed "s/topdir://"))
 
+# TODO : should this be specified outside the build process?  
+ABI_RELEASE_NUMBER=1
+
 pack_rpm:
 	@rm -rf $(PACK_ROOT)
 	@echo "Making source pack in directory [$(PACK_ROOT)]..."
 	@mkdir -p $(PACK_ROOT)
 	@(cd $(ABI_ROOT)/..; tar --exclude=CVS -cf - $(MODULE_LIST)) | \
 		(cd $(PACK_ROOT); tar xf -)
-	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar.gz
-	@(cd $(PACK_ROOT)/..; tar -cmzf $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar.gz \
+	@rm -f $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar
+	@(cd $(PACK_ROOT)/..; tar -cmf $(RPM_SOURCE_DIR)/SOURCES/abisuite-$(ABI_BUILD_VERSION).tar \
 		 abisuite-$(ABI_BUILD_VERSION))
 	@rm -rf $(PACK_ROOT)
 
@@ -96,20 +99,29 @@ pack_deb:
 ########################################################################
 
 # These targets actually do all the heavy lifting of packaging.
+
 rpm: pack_rpm
 # A tarball is already sitting in /usr/src/redhat/SOURCES (or thereabouts)
 # so rip the spec template through some sed magic and run with it.
 	@echo "Exporting spec file to [$(RPM_SOURCE_DIR)/SPECS]..."
 	@(sed "s/__ABI_BUILD_VERSION__/$(ABI_BUILD_VERSION)/" rpm/abisuite.spec-template \
+		| sed "s/__ABI_RELEASE_NUMBER__/$(ABI_RELEASE_NUMBER)/" \
 		> $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec)
-	@echo "Invoking RPM..."
+	@echo "Producing RPM..."
 	rpm -ba $(RPM_SOURCE_DIR)/SPECS/abisuite-$(ABI_BUILD_VERSION).spec
+	mv $(RPM_SOURCE_DIR)/RPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm $(DIST)
+	rm -f $(RPM_SOURCE_DIR)/SRPMS/abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).src.rpm
 
-deb: pack_deb
-	@echo TODO
+# We're using alien to convert from RPM to DEB package
+deb: rpm
+	@echo "Producing DEB..."
+	(cd $(DIST); fakeroot alien --to-deb -c -k abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm)
 
-########################################################################
+# We're using alien to convert from RPM to SLP package
+slp: rpm
+	@echo "Producing SLP..."
+	(cd $(DIST); fakeroot alien --to-slp -c -k abisuite-$(ABI_BUILD_VERSION)-$(ABI_RELEASE_NUMBER).$(OS_ARCH).rpm)
 
-# TODO : figure out if rpm, dpkg is available, then declare targets.
+# tgz target is provided by a common Unix makefile
+include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
 
-distribution: rpm deb

@@ -75,6 +75,12 @@ rpm:
 deb:
 	$(MAKE) -C pkg/$(ABIPKGDIR) deb
 
+slp:
+	$(MAKE) -C pkg/$(ABIPKGDIR) slp
+
+tgz:	
+	$(MAKE) -C pkg/$(ABIPKGDIR) tgz
+
 ##################################################################
 ## Targets for installs.  There is a generic install method, for
 ## developers mostly (make install), which just puts things in

@@ -1,11 +1,13 @@
 %define version __ABI_BUILD_VERSION__
+%define release	__ABI_RELEASE_NUMBER__
+
 #
 # spec file for AbiSuite 
 #
 Summary: AbiSuite Office Applications
 Name: abisuite
 Version: %{version}
-Release: 1
+Release: %{release}
 Copyright: GPL
 Group: Applications/Editors
 Source: abisuite-%{version}.tar.gz
