@@ -68,10 +68,12 @@ ifdef ABI_OPT_BRANDED
 ABI_TMDEFS=		-DABI_OPT_BRANDED
 ABI_OPTIONS+=Branding:On
 ABI_TM_INCS=/../../abisource/art
+ABI_BRAND_DIR= $(ABI_DEPTH)/../../abisource
 else
 ABI_TMDEFS=
 ABI_OPTIONS+=Branding:Off
 ABI_TM_INCS=
+ABI_BRAND_DIR=
 endif
 
 ##################################################################
