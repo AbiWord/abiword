@@ -263,7 +263,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 				// <p style="<anything else!>"> ...
 
 			        m_iBlockType = BT_NORMAL;
-			      	m_pie->write("<p class=\"norm\"");
+			      	m_pie->write("<p");
 				wasWritten = UT_TRUE;
 			}	
 		}
@@ -273,7 +273,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 			// <p> with no style attribute ...
 
 		  m_iBlockType = BT_NORMAL;
-		  m_pie->write("<p class=\"norm\"");
+		  m_pie->write("<p");
 		  wasWritten = UT_TRUE;
 		}
 
@@ -294,7 +294,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 		// <p> with no style attribute, and no properties either
 
 	  m_iBlockType = BT_NORMAL;
-	  m_pie->write("<p class=\"norm\"");
+	  m_pie->write("<p");
 	  wasWritten = UT_TRUE;
 	}
 	if (wasWritten)
@@ -894,7 +894,7 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_pie->write("\"></meta>\n");//</meta> looks ugly, but it should work.
 	m_pie->write("<title>AbiWord Document</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
-	m_pie->write("<!-- \n P.norm { margin-top: 0pt; margin-bottom: 0pt } \n -->\n");
+	m_pie->write("<!-- \n P { margin-top: 0pt; margin-bottom: 0pt } \n -->\n");
 	m_pie->write("</style>\n");
 	m_pie->write("</head>\n");
 	m_pie->write("<body>\n");
