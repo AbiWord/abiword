@@ -18,6 +18,7 @@ contributors
 Pierre Abbat <phma@oltronics.net>               LaTeX Testing, Help translation, font work
 Ithamar R. Adema <ithamar@dds.nl>               BeOS fixes
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix
+John Anderson <panic-abi@semiosix.com>			Win32 Slurp functionality
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Nils Barth <nils_barth@post.harvard.edu>        LaTeX exporter improvements, cntrl-Q
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
