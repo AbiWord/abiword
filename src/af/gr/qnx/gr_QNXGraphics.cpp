@@ -296,8 +296,11 @@ GR_Font * GR_QNXGraphics::findFont(const char* pszFontFamily,
 			pszFontFamily, pszFontStyle, pszFontWeight, pszFontSize));
 
 	char fname[MAX_FONT_TAG];
-//	int size = convertDimension(pszFontSize);
+#ifdef USE_LAYOUT_UNITS
+	int size = convertDimension(pszFontSize);
+#else
 	int size = (int)UT_convertToPoints(pszFontSize);
+#endif
 	int style = 0;
 	// Only check for bold weight and italic style
 	if (UT_strcmp(pszFontWeight, "bold") == 0) {
@@ -1065,7 +1068,8 @@ return;
 
 void GR_QNXGraphics::restoreRectangle()
 {
-UT_ASSERT(m_saveRect && m_pImg);
+if((m_saveRect && m_pImg))
+{
 PhPoint_t pos;
 
 DRAW_START
@@ -1076,6 +1080,7 @@ pos.y=m_saveRect->top;
 PgDrawPhImage(&pos,m_pImg,0);
 
 DRAW_END
+}
 return;
 }
 
