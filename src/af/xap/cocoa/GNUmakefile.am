@@ -41,6 +41,7 @@ libXap_cocoa_a_SOURCES =		\
 	xap_CocoaToolbarWindow.mm	\
 	xap_CocoaToolbar_Icons.mm	\
 	xap_CocoaWindow.mm		\
+	xap_Cocoa_NSTableUtils.mm	\
 	xap_Cocoa_ResourceIDs.mm	\
 	xap_GenericListChooser_Controller.mm
 
