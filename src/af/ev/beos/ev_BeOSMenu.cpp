@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
 #include "ev_BeOSMenu.h"
@@ -108,7 +109,8 @@ filter_result MenuFilter::Filter(BMessage *message, BHandler **target) {
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	m_pEVMenu->invokeMenuMethod(m_pBeOSFrame->getCurrentView(),pEM,0,0);
+	UT_String script_name(pAction->getScriptName());
+	m_pEVMenu->invokeMenuMethod(m_pBeOSFrame->getCurrentView(), pEM, script_name);
 
 	((EV_BeOSMenu *)m_pEVMenu)->synthesize();
 	
@@ -122,7 +124,7 @@ EV_BeOSMenu::EV_BeOSMenu(XAP_BeOSApp * pBeOSApp,
 			 XAP_BeOSFrame * pBeOSFrame,
 			 const char * szMenuLayoutName,
 			 const char * szMenuLabelSetName)
-	: EV_Menu(pBeOSApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
+	: EV_Menu(pBeOSApp, pBeOSApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
 {
 	xxx_UT_DEBUGMSG(("EV:Menu: Name: %s SetName %s \n", 
 				szMenuLayoutName, szMenuLabelSetName));

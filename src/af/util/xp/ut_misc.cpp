@@ -395,3 +395,61 @@ UT_Vector * simpleSplit (const UT_String & str, char separator,
 
 	return utvResult;
 }
+
+/**
+ * It search the next space (blank space, tab, etc.) in the string
+ * str, starting at offset.
+ *
+ * @param str is the string where we will look for spaces.
+ * @param offset is the offset where we will start our search.
+ * @returns offset of the next space.
+ */
+UT_uint32 find_next_space(const UT_String& str, UT_uint32 offset)
+{
+	size_t max = str.size();
+	for (++offset; offset < max; ++offset)
+		if (isspace(str[offset]))
+			break;
+
+	return offset;
+}
+
+/**
+ * It warps the string str in various lines, taking care that no line
+ * goes beyond the column col.
+ *
+ * @param str is the string to warp.
+ * @param col_max is the column that no character in any line should
+ *                pass (except if we can not cut this line anywhere).
+ */
+void warpString(UT_String& str, size_t col_max)
+{
+	size_t max = str.size();
+
+	for (UT_uint32 i = 0; i < max;)
+	{
+		UT_uint32 j = i, old_j;
+
+		do {
+			old_j = j;
+			j = find_next_space(str, j);
+
+			if (j < max && str[j] == '\n')
+				i = j;
+		} while (j - i < col_max && j < max);
+
+		if (j >= max)
+			return;
+
+		if (old_j == i) // no spaces in the whole line!
+		{
+			str[j] = '\n';
+			i = j;
+		}
+		else
+		{
+			str[old_j] = '\n';
+			i = old_j;
+		}
+	}
+}

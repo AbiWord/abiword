@@ -1,6 +1,6 @@
-open(TEXT, "/home/cuenca/cvs/abiword/abi/COPYING") or die "eccck.  Do you have a /home/cuenca?? :-) : $!";
+open(TEXT, "/home/cuenca/cvs/abiword/abi/COPYING") or die "eccck.  Do you have a \"/home/cuenca/cvs/abiword/abi/COPYING\" ?? :-) : $!";
 
-my $frame = abi::XAP_Frame::getLastFocussed;
+my $frame = AbiWord::XAP_Frame::getLastFocussed;
 my $view = $frame->getCurrentView;
 my @words;
 # most probable choices are the most repeated ones

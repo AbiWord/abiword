@@ -1,4 +1,4 @@
-my $frame = abi::XAP_Frame::getLastFocussed;
+my $frame = AbiWord::XAP_Frame::getLastFocussed;
 my $view = $frame->getCurrentView;
 $view->write("Body 1\n");
 $view->editHeader;

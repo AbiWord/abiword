@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
 #include "ev_Win32Menu.h"
@@ -103,20 +104,20 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 						   const EV_EditEventMapper * pEEM,
 						   const char * szMenuLayoutName,
 						   const char * szMenuLabelSetName)
-:	EV_Menu(pWin32App->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName),
+:	EV_Menu(pWin32App, pWin32App->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	m_pWin32App(pWin32App),
 	m_pEEM(pEEM),
 	m_myMenu(NULL)
 {
 }
 
-EV_Win32Menu::~EV_Win32Menu(void)
+EV_Win32Menu::~EV_Win32Menu()
 {
 	// we let the derived classes handle destruction of m_myMenu if appropriate.
 }
 
 bool EV_Win32Menu::onCommand(AV_View * pView,
-								HWND hWnd, WPARAM wParam)
+							 HWND hWnd, WPARAM wParam)
 {
 	// TODO do we need the hWnd parameter....
 
@@ -148,7 +149,8 @@ bool EV_Win32Menu::onCommand(AV_View * pView,
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeMenuMethod(pView,pEM,0,0);
+	UT_String script_name(pAction->getScriptName());
+	invokeMenuMethod(pView, pEM, script_name);
 	return true;
 }
 

@@ -25,19 +25,29 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 
 /*****************************************************************/
 /*****************************************************************/
 
 EV_EditMethodCallData::EV_EditMethodCallData()
-	:  m_dataLength(0),
+	:  m_pData(0),
+	   m_dataLength(0),
 	   m_bAllocatedData(false),
 	   m_xPos(0),
 	   m_yPos(0)
 {
-	  m_pData = NULL;
 }
 
+EV_EditMethodCallData::EV_EditMethodCallData(const UT_String& stScriptName)
+	: m_pData(0),
+	  m_dataLength(0),
+	  m_bAllocatedData(false),
+	  m_xPos(0),
+	  m_yPos(0),
+	  m_stScriptName(stScriptName)
+{
+}
 
 /* TF NOTE:
  I hate the fact that we need two almost identical constructors.  It really licks,
@@ -160,10 +170,10 @@ extern "C"
 #endif
 static int ev_compar (const void * a, const void * b)
 {
-  const char * str = (const char *)a;
-  EV_EditMethod * ev = (EV_EditMethod *)(b);
+	const char * str = (const char *)a;
+	EV_EditMethod * ev = (EV_EditMethod *)(b);
 
-  return (strcmp (str, ev->getName()));
+	return (strcmp (str, ev->getName()));
 }
 
 EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName) const
@@ -181,9 +191,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 
 	const void * entry = emHash.pick (szName);
 	if (entry)
-	  {
 	    return (EV_EditMethod *)entry;
-	  }
 
 	// nope, bsearch for it in our private array
 	mthd = (EV_EditMethod *)bsearch(szName, 
@@ -193,12 +201,12 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 					ev_compar);
 
 	if (mthd)
-	  {
+	{
 	    // found it, insert it into our hash table for quicker lookup
 	    // in the future and return
 	    emHash.insert(szName, (void *)mthd);
 	    return mthd;
-	  }
+	}
 
 	// else do a linear search through our dynamic method vector
 

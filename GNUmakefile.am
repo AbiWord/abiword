@@ -57,7 +57,7 @@ realrealclean: realclean
 
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
-	if test -d $(top_srcdir)/../unixfonts/fonts ; then \
+	@if test -d $(top_srcdir)/../unixfonts/fonts ; then \
 	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/fonts ;\
 	  for file in $(top_srcdir)/../unixfonts/fonts/* ; do \
 	    if test -f $$file ; then \
@@ -67,7 +67,7 @@ install-data-local:
 	else \
 	  echo "Warning: unixfonts package not found." ;\
 	fi
-	if test -d $(top_srcdir)/../abidistfiles ; then \
+	@if test -d $(top_srcdir)/../abidistfiles ; then \
           for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
             $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
             if test "$$dir" = "./dictionary"; then \
@@ -87,8 +87,8 @@ install-data-local:
 	else \
 	  echo "Warning: abidistfiles package not found." ;\
 	fi
-	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord
-	for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
+	@$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord
+	@for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
 	  $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/AbiWord/$$dir ;\
 	  for file in $(top_srcdir)/user/wp/$$dir/* ; do \
 	    if test -f $$file ; then \

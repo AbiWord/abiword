@@ -2,14 +2,30 @@
 #define UT_PERLBINDINGS_H
 
 class UT_String;
-class XAP_Frame;
 
 #include "ut_types.h"
 
 class ABI_EXPORT UT_PerlBindings
 {
 public:
-	static void evalFile(const UT_String& filename, XAP_Frame* frame = 0);
+	static UT_PerlBindings&		getInstance();
+	bool						evalFile(const UT_String& filename);
+	const UT_String&			errmsg();
+	bool						runCallback(const char* method);
+	void						registerCallback(const char* pszFunctionName,
+												 const char* pszMenuPath,
+												 const char* pszDescription,
+												 bool bRaisesDialog);
+
+	~UT_PerlBindings();
+
+private:
+	UT_PerlBindings();
+	UT_PerlBindings(const UT_PerlBindings&);
+	UT_PerlBindings& operator= (const UT_PerlBindings&);
+
+	struct Impl;
+	Impl* impl_;
 };
 
 #endif // UT_PERLBINDINGS_H

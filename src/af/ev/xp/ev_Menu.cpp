@@ -41,14 +41,13 @@
 
 /*****************************************************************/
 
-EV_Menu::EV_Menu(EV_EditMethodContainer * pEMC,
+EV_Menu::EV_Menu(XAP_App* pApp,
+				 EV_EditMethodContainer * pEMC,
 				 const char * szMenuLayoutName,
 				 const char * szMenuLabelSetName)
+	: m_pEMC(pEMC),
+	  m_pApp(pApp)
 {
-	UT_ASSERT(pEMC);
-
-	m_pEMC = pEMC;
-
 	//UT_DEBUGMSG(("EV_Menu: Creating menu for [layout %s, language %s]\n",
 	//			 szMenuLayoutName,szMenuLabelSetName));
 	
@@ -66,28 +65,19 @@ EV_Menu::~EV_Menu()
 	DELETEP(m_pMenuLabelSet);
 }
 
-const EV_Menu_Layout * EV_Menu::getMenuLayout() const
-{
-	return m_pMenuLayout;
-}
-
-const EV_Menu_LabelSet * EV_Menu::getMenuLabelSet() const
-{
-	return m_pMenuLabelSet;
-}
-
-void EV_Menu::addPath(const UT_String &path)
+XAP_Menu_Id
+EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 {
 	UT_DEBUGMSG(("Adding path %s.\n", path.c_str()));
 	UT_Vector *names = simpleSplit(path, '/');
-	EV_Menu_ActionSet *pMenuActionSet = getApp()->getMenuActionSet();
+//	EV_Menu_ActionSet *pMenuActionSet = getApp()->getMenuActionSet();
 	const UT_String *label;
 	UT_uint32 last_pos = 1;
 	XAP_Menu_Id last_index = 0;
 	XAP_Menu_Id index = 0;
 	UT_ASSERT(names);
 	UT_ASSERT(m_pMenuLabelSet);
-	UT_ASSERT(pMenuActionSet);
+//	UT_ASSERT(pMenuActionSet);
 
 	// if need, we create submenus
 	UT_DEBUGMSG(("Gonna create submenus...\n"));
@@ -110,8 +100,8 @@ void EV_Menu::addPath(const UT_String &path)
 				label = static_cast<const UT_String*> ((*names)[j]);
 				UT_ASSERT(label);
 				index = m_pMenuLayout->addLayoutItem(++lpos, EV_MLF_BeginSubMenu);
-				pMenuActionSet->addAction(new EV_Menu_Action(index, true, false, false, NULL, NULL, NULL));
-				m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, label->c_str(), label->c_str()));
+//				pMenuActionSet->addAction(action);
+				m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, label->c_str(), description.c_str()));
 				_doAddMenuItem(lpos);
 			}
 
@@ -136,7 +126,7 @@ void EV_Menu::addPath(const UT_String &path)
 	UT_DEBUGMSG(("Gonna add a menu item.\n"));
 	// and now we create the menu item
 	index = m_pMenuLayout->addLayoutItem(last_pos, EV_MLF_Normal);
-	pMenuActionSet->addAction(new EV_Menu_Action(index, false, false, false, "scriptPlay", NULL, NULL));
+//	pMenuActionSet->addAction(new EV_Menu_Action(index, false, false, false, "scriptPlay", NULL, NULL));
 	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, ((UT_String *) names->back())->c_str(),
 												((UT_String *) names->back())->c_str()));
 
@@ -144,13 +134,14 @@ void EV_Menu::addPath(const UT_String &path)
 	{
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 #if 0
-		pMenuActionSet->deleteAction(index);
+//		pMenuActionSet->deleteAction(index);
 		m_pMenuLabelSet->deleteLabel(index);
 		m_pMenuLayout->deleteLayoutItem(index);
 #endif
 	}
 
 	delete names;
+	return index;
 }
 
 bool EV_Menu::invokeMenuMethod(AV_View * pView,
@@ -178,6 +169,25 @@ bool EV_Menu::invokeMenuMethod(AV_View * pView,
 	return true;
 }
 
+bool EV_Menu::invokeMenuMethod(AV_View * pView,
+							   EV_EditMethod * pEM,
+							   const UT_String& stScriptName)
+{
+	UT_ASSERT(pView);
+	UT_ASSERT(pEM);
+	EV_EditMethodType t = pEM->getType();
+
+	if ((t & EV_EMT_REQUIREDATA) && stScriptName.size() == 0)
+	{
+		UT_DEBUGMSG(("    invoke aborted due to lack of script name\n"));
+		return false;
+	}
+
+	EV_EditMethodCallData emcd(stScriptName);
+	(*pEM->getFn())(pView, &emcd);
+
+	return true;
+}
 
 /* replace _ev_GetLabelName () */
 /* this version taken from ev_UnixMenu.cpp */

@@ -37,10 +37,10 @@ class EV_UnixGnomeMenu : public EV_UnixMenu
 {
 public:
 	EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
-						XAP_UnixFrame * pUnixFrame,
-						const char * szMenuLayoutName,
-						const char * szMenuLabelSetName);
-	virtual ~EV_UnixGnomeMenu(void);
+					 XAP_UnixFrame * pUnixFrame,
+					 const char * szMenuLayoutName,
+					 const char * szMenuLabelSetName);
+	virtual ~EV_UnixGnomeMenu();
 
 	virtual bool		refreshMenu(AV_View * pView) = 0;
 	bool				synthesizeMenu(GtkWidget * wMenuRoot);

@@ -49,7 +49,7 @@ endif
 
 # Install the wrapper
 install-exec-local:
-	$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkgdatadir) $(bindir) $(DESTDIR) && \
+	@$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkgdatadir) $(bindir) $(DESTDIR) && \
 	ln -sf $(DESTDIR)/$(bindir)/AbiWord $(DESTDIR)/$(bindir)/abiword
 
 

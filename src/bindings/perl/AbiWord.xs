@@ -10,8 +10,10 @@
 #include "../../text/fmt/xp/fv_View.h"
 #include "../../text/fmt/xp/fp_PageSize.h"
 #include "../../af/util/xp/ut_string.h"
+#include "../../af/util/xp/ut_PerlBindings.h"
+#include "../../af/ev/xp/ev_EditMethod.h"
 
-MODULE = abi		PACKAGE = abi::FV_View
+MODULE = AbiWord		PACKAGE = AbiWord::FV_View
 
 void
 moveCursorAbs(pView, target, where)
@@ -19,8 +21,8 @@ moveCursorAbs(pView, target, where)
 	const char *target
 	int where
 	ALIAS:
-		abi::FV_View::moveCursorAbs = 0
-		abi::FV_View::moveCursorRel = 1
+		AbiWord::FV_View::moveCursorAbs = 0
+		AbiWord::FV_View::moveCursorRel = 1
 	CODE:
 		UT_UCSChar *tmp;
 		static char szWhere[16];
@@ -76,9 +78,9 @@ bool
 setCharFormat (pView, ...)
 	FV_View *pView
 	ALIAS:
-		abi::FV_View::setCharFormat = 0
-		abi::FV_View::setSectionFormat = 1
-		abi::FV_View::setBlockFormat = 2
+		AbiWord::FV_View::setCharFormat = 0
+		AbiWord::FV_View::setSectionFormat = 1
+		AbiWord::FV_View::setBlockFormat = 2
 	CODE:
 	{
 		XML_Char **properties = new XML_Char* [items];
@@ -249,7 +251,24 @@ getSelectionText(pView)
 	OUTPUT:
 		RETVAL
 
-MODULE = abi		PACKAGE = abi::XAP_Frame
+void
+print(pView)
+	FV_View* pView
+	ALIAS:
+		AbiWord::FV_View::showPrintDialog = 0
+		AbiWord::FV_View::print = 1
+	CODE:
+		EV_EditMethodContainer* pEMC = XAP_App::getApp()->getEditMethodContainer();
+		EV_EditMethod* pEM = 0;
+
+		if (ix == 0)
+			pEM = pEMC->findEditMethodByName("print");
+		else
+			pEM = pEMC->findEditMethodByName("printTB");
+
+		(*pEM->getFn())(pView, 0);
+
+MODULE = AbiWord		PACKAGE = AbiWord::XAP_Frame
 
 XAP_Frame *
 getLastFocussed()
@@ -327,17 +346,14 @@ close(pFrame)
 		delete pFrame;
 
 void
-register(pszFunctionName, pszDescription, pszHelp, pszAuthor, pszCopyright, pszDate, pszMenuPath, pFunction)
+register(pszFunctionName, pszMenuPath, pszDescription, bRaisesDialog)
 	const char *pszFunctionName
-	const char *pszDescription
-	const char *pszHelp
-	const char *pszAuthor
-	const char *pszCopyright
-	const char *pszDate
 	const char *pszMenuPath
-	SV *pFunction
+	const char *pszDescription
+	bool bRaisesDialog
 	CODE:
-		// XAP_PerlBindings::get_instance().register_function(pszFunctionName, pFunction);
+		UT_PerlBindings::getInstance().registerCallback(
+			pszFunctionName, pszMenuPath, pszDescription, bRaisesDialog);
 
 void
 exit()

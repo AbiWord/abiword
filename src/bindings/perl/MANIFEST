@@ -1,6 +1,6 @@
 Changes
 MANIFEST
 Makefile.PL
-abi.pm
-abi.xs
+AbiWord.pm
+AbiWord.xs
 test.pl

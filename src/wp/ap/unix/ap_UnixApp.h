@@ -88,9 +88,6 @@ public:
 	static int main (const char * szAppName, int argc, char ** argv);
 
 	void							catchSignals(int sig_num);
-#ifdef ABI_OPT_PERL
-	virtual void					perlEvalFile(const UT_String &filename);
-#endif
 
 	void loadAllPlugins ();
 

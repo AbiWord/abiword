@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
 #include "ev_QNXMenu.h"
@@ -119,20 +120,20 @@ static const char ** _ev_GetLabelName(XAP_QNXApp * pQNXApp,
 /*****************************************************************/
 
 EV_QNXMenu::EV_QNXMenu(XAP_QNXApp * pQNXApp, XAP_QNXFrame * pQNXFrame,
-						 const char * szMenuLayoutName,
-						 const char * szMenuLabelSetName)
-	: EV_Menu(pQNXApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
+					   const char * szMenuLayoutName,
+					   const char * szMenuLabelSetName)
+	: EV_Menu(pQNXApp, pQNXApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
+	  m_pQNXApp(pQNXApp),
+	  m_pQNXFrame(pQNXFrame)
 {
-	m_pQNXApp = pQNXApp;
-	m_pQNXFrame = pQNXFrame;
 }
 
-EV_QNXMenu::~EV_QNXMenu(void)
+EV_QNXMenu::~EV_QNXMenu()
 {
 	m_vecMenuWidgets.clear();
 }
 
-XAP_QNXFrame * EV_QNXMenu::getFrame(void)
+XAP_QNXFrame * EV_QNXMenu::getFrame()
 {
 	return m_pQNXFrame;
 }
@@ -164,7 +165,8 @@ bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
 	//self destruct (ie a close selection) on the frame.
 	m_pQNXFrame->setDocumentFocus();
 
-	invokeMenuMethod(m_pQNXFrame->getCurrentView(),pEM,0,0);
+	UT_String script_name(pAction->getScriptName());
+	invokeMenuMethod(m_pQNXFrame->getCurrentView(), pEM, script_name);
 
 	return true;
 }
@@ -213,7 +215,7 @@ static int s_menu_select(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 		XAP_QNXFrame * pFrame = mcb->qnxmenu->getFrame();
 		UT_ASSERT(pFrame);
 
-		EV_Menu_Label * pLabel = mcb->qnxmenu->getMenuLabelSet()->getLabel(mcb->id);
+		EV_Menu_Label * pLabel = mcb->qnxmenu->getLabelSet()->getLabel(mcb->id);
 		if (!pLabel) {
 			pFrame->setStatusMessage(NULL);
 			return Pt_CONTINUE;

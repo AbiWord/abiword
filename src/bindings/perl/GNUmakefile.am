@@ -1,7 +1,7 @@
 # /usr/bin/perl 
 # /usr/share/perl/5.6.0/ExtUtils/xsubpp 
 # -C++ -typemap /usr/share/perl/5.6.0/ExtUtils/typemap 
-# -typemap typemap abi.xs > abi.xsc && mv abi.xsc abi.c
+# -typemap typemap AbiWord.xs > AbiWord.xsc && mv AbiWord.xsc AbiWord.cpp
 
 # XSUBPPDIR = /usr/lib/perl5/5.6.0/ExtUtils
 
@@ -9,8 +9,8 @@ include $(top_srcdir)/includes.mk
 
 noinst_LIBRARIES = libabiperl.a
 
-libabiperl_a_SOURCES = abi.cpp
-BUILT_SOURCES = abi.cpp
+libabiperl_a_SOURCES = AbiWord.cpp
+BUILT_SOURCES = AbiWord.cpp
 
 perldir = $(top_builddir)/src/bindings/perl
 XSUBPP = $(XSUBPPDIR)/xsubpp
@@ -18,13 +18,54 @@ XSPROTOARG =
 XSUBPPDEPS = $(XSUBPPDIR)/typemap typemap $(XSUBPP)
 XSUBPPARGS = -typemap $(XSUBPPDIR)/typemap -typemap typemap
 
+###################
+PERL_ARCHLIB = /usr/lib/perl5/5.6.0/i386-linux
+PERL_LIB = /usr/lib/perl5/5.6.0
+POD2MAN_EXE = /usr/bin/pod2man
+PERM_RW = 644
+###################
+
 INCLUDES=\
 	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) \
 	$(TEXT_INCLUDES) $(SCRIPT_CFLAGS) -I$(top_srcdir) \
 	$(AF_INCLUDES) $(AP_INCLUDES) @GMODULE_CFLAGS@ @GTK_CFLAGS@ 
 
-abi.cpp: abi.xs $(srcdir)/typemap
-	perl $(XSUBPP) -typemap $(XSUBPPDIR)/typemap -typemap typemap \
-		$(srcdir)/abi.xs > $(perldir)/abi.xsc && mv  $(perldir)/abi.xsc  $(perldir)/abi.cpp
+AbiWord.cpp: AbiWord.xs $(srcdir)/typemap
+	@perl $(XSUBPP) -typemap $(XSUBPPDIR)/typemap -typemap typemap \
+		$(srcdir)/AbiWord.xs > $(perldir)/AbiWord.xsc && mv $(perldir)/AbiWord.xsc  $(perldir)/AbiWord.cpp
 
+install-exec-local:
+	@perl -we '%m=@ARGV;for (keys %m){' \
+		-e 'next if -e $$m{$$_} && -M $$m{$$_} < -M $$_ && -M $$m{$$_} < -M "Makefile";' \
+		-e 'print "Manifying $$m{$$_}\n";' \
+		-e 'system(qq[$$^X ].q["-I$(PERL_ARCHLIB)" "-I$(PERL_LIB)" $(POD2MAN_EXE) ].qq[$$_>$$m{$$_}])==0 or warn "Couldn\047t install $$m{$$_}\n";' \
+		-e 'chmod(oct($(PERM_RW))), $$m{$$_} or warn "chmod $(PERM_RW) $$m{$$_}: $$!\n";}' \
+		$(perldir)/AbiWord.pm $(perldir)/blib/man3/AbiWord.3pm
+	@perl -Iblib/lib -I/usr/lib/perl5/5.6.0 -MExtUtils::Install -e "install({@ARGV},'1',0,'0');" \
+		read /usr/lib/perl5/site_perl/5.6.0/i386-linux/auto/AbiWord/.packlist \
+		write /usr/lib/perl5/site_perl/5.6.0/i386-linux/auto/AbiWord/.packlist \
+		blib/lib /usr/lib/perl5/site_perl/5.6.0 \
+		blib/arch /usr/lib/perl5/site_perl/5.6.0/i386-linux \
+		blib/bin /usr/bin \
+		blib/script /usr/bin \
+		blib/man1 /usr/share/man/man1 \
+		blib/man3 /usr/share/man/man3
+	@perl -we 'exit unless -f $$ARGV[0];' \
+		-e 'print "WARNING: I have found an old package in\n";' \
+		-e 'print "\t$$ARGV[0].\n";' \
+		-e 'print "Please make sure the two installations are not conflicting\n";' \
+		/usr/lib/perl5/5.6.0/i386-linux/auto/AbiWord
+	@perl -I/usr/lib/perl5/5.6.0/i386-linux -I/usr/lib/perl5/5.6.0 -MExtUtils::Command \
+		-e mkpath /usr/lib/perl5/5.6.0/i386-linux
+	@perl -e '$$\="\n\n";' -e 'print "=head2 ", scalar(localtime), ": C<", shift, ">", " L<", shift, ">";' \
+		-e 'print "=over 4";' \
+		-e 'while (defined($$key = shift) and defined($$val = shift)){print "=item *";print "C<$$key: $$val>";}' \
+		-e 'print "=back";' \
+		"Module" "AbiWord" \
+		"installed into" "/usr/lib/perl5/site_perl/5.6.0" \
+		LINKTYPE "dynamic" \
+		VERSION "0.01" \
+		EXE_FILES "" \
+		>> /usr/lib/perl5/5.6.0/i386-linux/perllocal.pod
+	@echo Appending installation info to /usr/lib/perl5/5.6.0/i386-linux/perllocal.pod

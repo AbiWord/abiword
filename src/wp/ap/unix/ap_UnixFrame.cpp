@@ -47,6 +47,9 @@
 #include "ut_dialogHelper.h"
 #if 1
 #include "ev_UnixMenuBar.h"
+#include "ev_Menu_Layouts.h"
+#include "ev_Menu_Labels.h"
+#include "ev_Menu_Actions.h"
 #endif
 
 #ifdef ABISOURCE_LICENSED_TRADEMARKS
@@ -380,7 +383,21 @@ bool AP_UnixFrame::initialize()
 #endif
 
 #if 0
-	m_pUnixMenu->addPath("/&Edit/Adieu");
+	EV_Menu_Layout* pLayout = getMainMenu()->getLayout();
+	EV_Menu_LabelSet* pLabelSet = getMainMenu()->getLabelSet();
+	EV_Menu_ActionSet* pActionSet = getApp()->getMenuActionSet();
+	UT_ASSERT(pLayout && pLabelSet && pActionSet);
+
+	XAP_Menu_Id id = EV_searchMenuLabel(*pLabelSet, "&Tools");
+	if (id == 0)
+	{
+		// TODO: What can I do here?
+		UT_DEBUGMSG(("JCA: Ugh, this menu doesn't have an entry \"&Tools\""));
+	}
+
+	XAP_Menu_Id new_id = pLayout->addLayoutItem(pLayout->getLayoutIndex(id) + 1, EV_MLF_Normal);
+	pActionSet->addAction(new EV_Menu_Action(new_id, false, false, false, "executeScript", NULL, NULL, "toto"));
+	pLabelSet->addLabel(new EV_Menu_Label(new_id, "&Toto", "Execute perl script toto"));
 #endif
 	return true;
 }

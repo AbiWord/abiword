@@ -42,7 +42,8 @@ class UT_String;
 class ABI_EXPORT EV_Menu
 {
 public:
-	EV_Menu(EV_EditMethodContainer * pEMC,
+	EV_Menu(XAP_App* pApp,
+			EV_EditMethodContainer * pEMC,
 			const char * szMenuLayoutName,
 			const char * szMenuLanguageName);
 	virtual ~EV_Menu();
@@ -52,20 +53,21 @@ public:
 						  UT_UCSChar * pData,
 						  UT_uint32 dataLength);
 
-	const EV_Menu_Layout *		getMenuLayout() const;
-	const EV_Menu_LabelSet *	getMenuLabelSet() const;
-	void 						addPath(const UT_String &path);
+	bool invokeMenuMethod(AV_View* pView,
+						  EV_EditMethod* pEM,
+						  const UT_String& szScriptName);
+
+	const EV_Menu_Layout *		getLayout() const { return m_pMenuLayout; }
+	const EV_Menu_LabelSet *	getLabelSet() const { return m_pMenuLabelSet; }
+	EV_Menu_Layout *			getLayout() { return m_pMenuLayout; }
+	EV_Menu_LabelSet *			getLabelSet() { return m_pMenuLabelSet; }
+
+	XAP_Menu_Id					addMenuItem(const UT_String& path, const UT_String& description);
 
 protected:
 	const char ** 				getLabelName(XAP_App * pApp,  XAP_Frame * pFrame,
 											 const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel);
-	// this method comes a bit late... if somebody has the time, add pApp to our constructor,
-	// and erase it from the constructor of our inherited classes.
-	void						setApp(XAP_App *pApp) { m_pApp = pApp; }
-	inline XAP_App *			getApp() { return m_pApp; }
-
-	inline EV_Menu_Layout *		getLayoutSet() { return m_pMenuLayout; }
-	inline EV_Menu_LabelSet *	getLabelSet() { return m_pMenuLabelSet; }
+	XAP_App *					getApp() { return m_pApp; }
 
 // private: TODO: our inherited classes should have no business with our variables!
 	EV_EditMethodContainer *	m_pEMC;

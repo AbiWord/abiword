@@ -21,22 +21,6 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
-// HACK to no collide with perl DEBUG
-#ifdef DEBUG
-#define ABI_DEBUG
-#undef DEBUG
-#endif
-
-#ifdef ABI_OPT_PERL
-#include <EXTERN.h>
-#include <perl.h>
-#endif
-
-#ifdef DEBUG
-#define PERL_DEBUG
-#undef DEBUG
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,6 +61,7 @@
 #include "ut_png.h"
 #include "ut_dialogHelper.h"
 #include "ut_debugmsg.h"
+#include "ut_PerlBindings.h"
 
 #include "fv_View.h"
 
@@ -182,10 +167,10 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 
 #ifdef HAVE_GNOMEVFS
 	if (! gnome_vfs_init ())
-	  {
+	{
 	    UT_DEBUGMSG(("DOM: gnome_vfs_init () failed!\n"));
 	    return -1;	    
-	  }
+	}
 #endif
 
 	// if the initialize fails, we don't have icons, fonts, etc.
@@ -284,7 +269,11 @@ bool AP_UnixGnomeApp::parseCommandLine()
 
 #ifdef ABI_OPT_PERL
 	if (script)
-		perlEvalFile(script);
+	{
+		UT_PerlBindings& pb(UT_PerlBindings::getInstance());
+		if (!pb.evalFile(script))
+			printf("%s\n", pb.errmsg().c_str());
+	}
 #endif
 
 	if (geometry)

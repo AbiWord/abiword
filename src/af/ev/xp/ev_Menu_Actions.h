@@ -41,12 +41,12 @@
 #include "ut_types.h"
 #include "xap_Types.h"
 #include "ut_vector.h"
+#include "ut_string_class.h"
 
 class XAP_App;
 class XAP_Frame;
 class AV_View;
 class EV_Menu_Label;
-
 
 // TODO consider removing bHoldsSubMenu bit from this file.
 
@@ -86,15 +86,17 @@ public:
 				   bool bHoldsSubMenu,
 				   bool bRaisesDialog,
 				   bool bCheckable,
-				   const char * szMethodName,
+				   const char* szMethodName,
 				   EV_GetMenuItemState_pFn pfnGetState,
-				   EV_GetMenuItemComputedLabel_pFn pfnGetLabel);
+				   EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
+				   const UT_String& stScriptName = "");
 	~EV_Menu_Action();
 
 	XAP_Menu_Id						getMenuId() const;
 	bool							hasDynamicLabel() const;
-	const char *					getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_Label * pLabel) const;
-	const char *					getMethodName() const;
+	const char*						getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_Label * pLabel) const;
+	const char*						getMethodName() const;
+	const UT_String&				getScriptName() const { return m_stScriptName; }
 	bool							hasGetStateFunction() const;
 	EV_Menu_ItemState				getMenuItemState(AV_View * pView) const;
 	bool							raisesDialog() const;
@@ -108,6 +110,7 @@ private:
 	char *							m_szMethodName;		/* name of method to invoke */
 	EV_GetMenuItemState_pFn			m_pfnGetState;		/* to get state on an activate */
 	EV_GetMenuItemComputedLabel_pFn m_pfnGetLabel;		/* to get computed label (for things like window-list) */
+	UT_String						m_stScriptName;		/* extra data that the method may need */
 };
 
 /*****************************************************************/
@@ -124,7 +127,8 @@ public:
 								  bool bCheckable,
 								  const char * szMethodName,
 								  EV_GetMenuItemState_pFn pfnGetState,
-								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel);
+								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
+								  const UT_String& stScriptName = "");
 	bool				addAction(EV_Menu_Action *pAction);
 
 	const EV_Menu_Action *	getAction(XAP_Menu_Id id) const;

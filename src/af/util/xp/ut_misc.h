@@ -85,4 +85,6 @@ UT_sint32 signedLoWord(UT_uint32 dw);
 UT_Vector * simpleSplit (const UT_String & str, char separator = ' ',
 						 size_t max = 0 /* 0 == full split */);
 
+void warpString(UT_String& str, size_t col_max = 75);
+
 #endif /* UTMISC_H */

@@ -253,9 +253,8 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-
-        // If this frame is the currently focussed frame write in NULL
-        // until another frame appears
+	// If this frame is the currently focussed frame write in NULL
+	// until another frame appears
 
 	if(pFrame == m_lastFocussedFrame )
 	{
@@ -523,12 +522,12 @@ UT_sint32 XAP_App::safefindFrame( XAP_Frame * f)
 	return i;
 }
 
-void    XAP_App::clearLastFocussedFrame()
+void XAP_App::clearLastFocussedFrame()
 {
-        m_lastFocussedFrame = (XAP_Frame *) NULL;
+	m_lastFocussedFrame = (XAP_Frame *) NULL;
 }
 
-XAP_Frame * XAP_App::getLastFocussedFrame( void ) 
+XAP_Frame* XAP_App::getLastFocussedFrame() 
 {
 	if(m_lastFocussedFrame == (XAP_Frame *) NULL)
 		return (XAP_Frame *) NULL;
@@ -538,80 +537,76 @@ XAP_Frame * XAP_App::getLastFocussedFrame( void )
 	return (XAP_Frame *) NULL;
 }
 
-XAP_Frame * XAP_App::findValidFrame( void)
+XAP_Frame * XAP_App::findValidFrame()
 {
         XAP_Frame * validFrame =  getFrame(0);
         return validFrame;
 }
 
-void XAP_App::clearIdTable( void)
+void XAP_App::clearIdTable()
 {
-        for(UT_sint32 i =0; i <= NUM_MODELESSID; i++)
-        {
-                m_IdTable[i].id =  -1;
-                m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
+	for(UT_sint32 i =0; i <= NUM_MODELESSID; i++)
+	{
+		m_IdTable[i].id =  -1;
+		m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
 	}
 }
 
 void XAP_App::rememberModelessId(UT_sint32 id, XAP_Dialog_Modeless * pDialog)
 {
-
-  // find a free slot in the m_IdTable
+	// find a free slot in the m_IdTable
  
-        UT_sint32 i;
-        for(i=0; (i<= NUM_MODELESSID) && (m_IdTable[i].id !=  -1); i++);
-        UT_ASSERT( i <= NUM_MODELESSID );
-        UT_ASSERT( m_IdTable[i].id == -1 );
-        UT_ASSERT( pDialog);
-        m_IdTable[i].id =  id;
-        m_IdTable[i].pDialog =  pDialog;
+	UT_sint32 i;
+	for(i=0; (i<= NUM_MODELESSID) && (m_IdTable[i].id !=  -1); i++);
+	UT_ASSERT( i <= NUM_MODELESSID );
+	UT_ASSERT( m_IdTable[i].id == -1 );
+	UT_ASSERT( pDialog);
+	m_IdTable[i].id =  id;
+	m_IdTable[i].pDialog =  pDialog;
 }
 
 void XAP_App::forgetModelessId( UT_sint32 id )
 {
+	// remove the id, pDialog pair from the m_IdTable
 
-  // remove the id, pDialog pair from the m_IdTable
-
-        UT_sint32 i;
-        for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
-        UT_ASSERT( i <= NUM_MODELESSID );
-        UT_ASSERT( m_IdTable[i].id == id );
-        m_IdTable[i].id =  -1;
-        m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
+	UT_sint32 i;
+	for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
+	UT_ASSERT( i <= NUM_MODELESSID );
+	UT_ASSERT( m_IdTable[i].id == id );
+	m_IdTable[i].id =  -1;
+	m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
 }
 
 bool XAP_App::isModelessRunning(UT_sint32 id)
 {
-  // returns true if the modeless dialog given by id is running
-
-        UT_sint32 i;
-        for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
-        if( i> NUM_MODELESSID)
+	// returns true if the modeless dialog given by id is running
+	
+	UT_sint32 i;
+	for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
+	if( i> NUM_MODELESSID)
 	{
-	     return false;
+		return false;
 	}
-        UT_ASSERT( m_IdTable[i].id == id );
-        return true;
+	UT_ASSERT( m_IdTable[i].id == id );
+	return true;
 }
         
 XAP_Dialog_Modeless * XAP_App::getModelessDialog( UT_sint32 i)
 {
-
-  // Retrieve pDialog from the table based on its location in the table
-
+	// Retrieve pDialog from the table based on its location in the table
 	return m_IdTable[i].pDialog;
 }
 
-void XAP_App::closeModelessDlgs( void )
+void XAP_App::closeModelessDlgs()
 {
-	  // Delete all the open modeless dialogs
+	// Delete all the open modeless dialogs
 
-        for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
-        {
-	       if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
-	       {
-	             getModelessDialog(i)->destroy();
-	       }
+	for(UT_sint32 i=0; i <= NUM_MODELESSID; i++)
+	{
+		if(getModelessDialog(i) != (XAP_Dialog_Modeless *) NULL)
+		{
+			getModelessDialog(i)->destroy();
+		}
 	}
 }
 

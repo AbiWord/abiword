@@ -44,13 +44,13 @@ class ABI_EXPORT EV_Menu_Label
 {
 public:
 	EV_Menu_Label(XAP_Menu_Id id,
-				  const char * szMenuLabel,		/* label on the actual menu itself */
-				  const char * szStatusMsg);	/* status bar message */
+				  const char* szMenuLabel,		/* label on the actual menu itself */
+				  const char* szStatusMsg);		/* status bar message */
 	~EV_Menu_Label();
 
 	XAP_Menu_Id						getMenuId() const;
-	const char *					getMenuLabel() const;
-	const char *					getMenuStatusMessage() const;
+	const char*						getMenuLabel() const;
+	const char*						getMenuStatusMessage() const;
 
 private:
 	XAP_Menu_Id						m_id;

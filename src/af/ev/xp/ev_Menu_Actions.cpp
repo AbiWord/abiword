@@ -25,8 +25,8 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_debugmsg.h"
-
 
 /*****************************************************************/
 /*****************************************************************/
@@ -37,18 +37,19 @@ EV_Menu_Action::EV_Menu_Action(XAP_Menu_Id id,
 							   bool bCheckable,
 							   const char * szMethodName,
 							   EV_GetMenuItemState_pFn pfnGetState,
-							   EV_GetMenuItemComputedLabel_pFn pfnGetLabel)
+							   EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
+							   const UT_String& stScriptName)
+	: m_id(id),
+	  m_bHoldsSubMenu(bHoldsSubMenu),
+	  m_bRaisesDialog(bRaisesDialog),
+	  m_bCheckable(bCheckable),
+	  m_pfnGetState(pfnGetState),
+	  m_pfnGetLabel(pfnGetLabel),
+	  m_stScriptName(stScriptName)
 {
 	UT_ASSERT((bHoldsSubMenu + bRaisesDialog + bCheckable) < 2); // a 3-way exclusive OR
 	UT_ASSERT((!bCheckable) || pfnGetState);
-	
-	m_id			= id;
-	m_bHoldsSubMenu	= bHoldsSubMenu;
-	m_bRaisesDialog = bRaisesDialog;
-	m_bCheckable	= bCheckable;
 	UT_cloneString(m_szMethodName,szMethodName);
-	m_pfnGetState	= pfnGetState;
-	m_pfnGetLabel	= pfnGetLabel;
 }
 
 EV_Menu_Action::~EV_Menu_Action()
@@ -136,7 +137,8 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 								  bool bCheckable,
 								  const char * szMethodName,
 								  EV_GetMenuItemState_pFn pfnGetState,
-								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel)
+								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
+								  const UT_String& stScriptName)
 {
 	void *tmp;
 
@@ -144,8 +146,8 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 		return false;
 
 	UT_uint32 index = (id - m_first);
-	EV_Menu_Action *pAction = new EV_Menu_Action(id,bHoldsSubMenu,bRaisesDialog,bCheckable,
-												 szMethodName,pfnGetState,pfnGetLabel);
+	EV_Menu_Action *pAction = new EV_Menu_Action(id, bHoldsSubMenu, bRaisesDialog, bCheckable,
+												 szMethodName, pfnGetState, pfnGetLabel, stScriptName);
 	UT_uint32 error = m_actionTable.setNthItem(index, pAction, &tmp);
 
 	EV_Menu_Action * pTmpAction = static_cast<EV_Menu_Action *> (tmp);

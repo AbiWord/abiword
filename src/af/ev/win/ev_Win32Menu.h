@@ -40,7 +40,7 @@ public:
 				 const EV_EditEventMapper * pEEM,
 				 const char * szMenuLayoutName,
 				 const char * szMenuLabelSetName);
-	~EV_Win32Menu(void);
+	~EV_Win32Menu();
 
 	bool				synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot);
 	bool				onCommand(AV_View * pView, HWND hWnd, WPARAM wParam);
@@ -48,9 +48,9 @@ public:
 	bool				onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
 									 HWND hWnd, HMENU hMenu, WPARAM wParam);
 
-	inline HMENU		getMenuHandle(void) const			{ return m_myMenu; };
-	inline XAP_Menu_Id	MenuIdFromWmCommand(UINT cmd)		{ return (XAP_Menu_Id)(cmd - WM_USER); };
-	inline UINT			WmCommandFromMenuId(XAP_Menu_Id id)	{ return (id + WM_USER); };
+	HMENU				getMenuHandle() const				{ return m_myMenu; }
+	XAP_Menu_Id			MenuIdFromWmCommand(UINT cmd)		{ return (XAP_Menu_Id)(cmd - WM_USER); }
+	UINT				WmCommandFromMenuId(XAP_Menu_Id id)	{ return (id + WM_USER); }
 
 	virtual bool		_doAddMenuItem(UT_uint32 id) { UT_ASSERT(UT_TODO); return false;/* TODO */ }
 
@@ -70,7 +70,7 @@ public:
 					const EV_EditEventMapper * pEEM,
 					const char * szMenuLayoutName,
 					const char * szMenuLabelSetName);
-	~EV_Win32MenuBar(void);
+	~EV_Win32MenuBar();
 
 	bool				synthesizeMenuBar(XAP_Frame * pFrame);
 };
@@ -83,7 +83,7 @@ public:
 	EV_Win32MenuPopup(XAP_Win32App * pWin32App,
 					  const char * szMenuLayoutName,
 					  const char * szMenuLabelSetName);
-	~EV_Win32MenuPopup(void);
+	~EV_Win32MenuPopup();
 
 	bool				synthesizeMenuPopup(XAP_Frame * pFrame);
 };

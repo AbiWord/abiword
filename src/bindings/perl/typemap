@@ -5,10 +5,10 @@ XAP_Frame *	O_OBJECT_FRAME
 
 OUTPUT
 O_OBJECT
-	sv_setref_pv( $arg, "abi::FV_View", (void*)$var );
+	sv_setref_pv( $arg, "AbiWord::FV_View", (void*)$var );
 
 O_OBJECT_FRAME
-	sv_setref_pv( $arg, "abi::XAP_Frame", (void*)$var );
+	sv_setref_pv( $arg, "AbiWord::XAP_Frame", (void*)$var );
 
 INPUT
 O_OBJECT

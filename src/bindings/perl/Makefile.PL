@@ -6,13 +6,13 @@ use ExtUtils::MakeMaker;
 $abidir = "../..";
 
 WriteMakefile(
-    'NAME'		=> 'abi',
+    'NAME'		=> 'AbiWord',
     'XSOPT'		=> '-C++',
 	'CC' => 'g++',
 	'LD' => 'g++',
 	#SKIP        => [qw(dynamic dynamic_lib dynamic_bs)],
 	#LINKTYPE    => 'static',
-    'VERSION_FROM'	=> 'abi.pm', # finds $VERSION
+    'VERSION_FROM'	=> 'AbiWord.pm', # finds $VERSION
     'PREREQ_PM'		=> {}, # e.g., Module::Name => 1.1
     'LIBS'		=> [''], # e.g., '-lm'
     'DEFINE'		=> '', # e.g., '-DHAVE_SOMETHING'

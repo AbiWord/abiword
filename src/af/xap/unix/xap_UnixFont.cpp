@@ -1018,11 +1018,10 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 
 	if (!gdkfont)
 	{
-		char message[1024];
-		g_snprintf(message, 1024,
-			"AbiWord could not load the following font or fontset from the X Window System display server:\n"
-			"[%s]\n"
-			"\n"
+		UT_String message("AbiWord could not load the following font or "
+						  "fontset from the X Window System display server:\n[");
+		message += requested_lfd;
+		message += "]\n\n"
 			"This error could be the result of an incomplete AbiSuite installation,\n"
 			"an incompatibility with your X Window System display server,\n"
 			"or a problem communicating with a remote font server.\n"
@@ -1031,9 +1030,12 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 			"its wrapper shell script.  The script dynamically adds the AbiSuite font directory\n"
 			"to your X Window System display server font path before running the executable.\n"
 			"\n"
-			"Please visit http://www.abisource.com/ for more information.",
-			requested_lfd);
-		messageBoxOK(message);
+			"IMPORTANT: If you're a XFree86 4.x user, try adding:\n"
+			"Load  \"type1\"\n"
+			"to the \"Module\" section of the XF86Config-4 file (usually located at /etc/X11)\n"
+			"\n"
+			"Please visit http://www.abisource.com/ for more information.";
+		messageBoxOK(message.c_str());
 		exit(1);
 	}
 
@@ -1048,7 +1050,7 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	return gdkfont;
 }
 
-void XAP_UnixFont::_makeFontKey(void)
+void XAP_UnixFont::_makeFontKey()
 {
 	ASSERT_MEMBERS;
 

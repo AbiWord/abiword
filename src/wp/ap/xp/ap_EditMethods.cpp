@@ -497,6 +497,7 @@ public:
 	static EV_EditMethod_Fn insAutotext_email_6;
 
 	static EV_EditMethod_Fn scriptPlay;
+	static EV_EditMethod_Fn executeScript;
 
 	static EV_EditMethod_Fn noop;
 
@@ -615,6 +616,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
 	EV_EditMethod(NF(endDrag),			0,	""),
+#ifdef ABI_OPT_PERL
+	EV_EditMethod(NF(executeScript),		EV_EMT_REQUIRE_SCRIPT_NAME,	""),
+#endif
 	EV_EditMethod(NF(extSelBOB),			0,	""),
 	EV_EditMethod(NF(extSelBOD),			0,	""),
 	EV_EditMethod(NF(extSelBOL),			0,	""),
@@ -5543,8 +5547,6 @@ Defun1(pageSetup)
 
 Defun1(dlgPlugins)
 {
-	ABIWORD_VIEW;
-
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -5989,7 +5991,7 @@ Defun1(insBreak)
 
 static bool s_doInsertPageNumbers(FV_View * pView)
 {
-        const XML_Char * right_attributes [] = {
+	const XML_Char * right_attributes [] = {
 	  "text-align", "right", NULL, NULL
 	};
 	
@@ -6788,8 +6790,8 @@ Defun1(doubleSpace)
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 Defun1(Test_Dump)
 {
-	ABIWORD_VIEW;
-//  	pView->Test_Dump();
+//	ABIWORD_VIEW;
+//	pView->Test_Dump();
 	return true;
 }
 
@@ -6857,7 +6859,7 @@ Defun1(cycleInputMode)
 	UT_ASSERT(pScheme);
 
 	pScheme->setValue((XML_Char*)AP_PREF_KEY_KeyBindings,
-			  (XML_Char*)szNextInputMode);
+					  (XML_Char*)szNextInputMode);
 #endif
 
 	return bResult;
@@ -7373,7 +7375,7 @@ Defun(insAutotext_subject_1)
 }
 
 #ifdef ABI_OPT_PERL
-Defun(scriptPlay)
+Defun1(scriptPlay)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -7385,8 +7387,28 @@ Defun(scriptPlay)
 	if (!bOK || !pNewFile)
 		return false;
 
-	UT_DEBUGMSG(("scripPlay (trying to play [%s]\n", pNewFile));
-	UT_PerlBindings::evalFile(pNewFile);
+	UT_DEBUGMSG(("scripPlay (trying to play [%s])\n", pNewFile));
+	UT_PerlBindings& p(UT_PerlBindings::getInstance());
+
+	if (!p.evalFile(pNewFile))
+		pFrame->showMessageBox(p.errmsg().c_str(),
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+	return true;
+}
+
+Defun(executeScript)
+{
+	XAP_Frame* pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+	UT_DEBUGMSG(("executeScript (trying to execute [%s])\n", pCallData->getScriptName().c_str()));
+	UT_PerlBindings& p(UT_PerlBindings::getInstance());
+
+	if (!p.runCallback(pCallData->getScriptName().c_str()))
+		pFrame->showMessageBox(p.errmsg().c_str(),
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+
 	return true;
 }
 #endif

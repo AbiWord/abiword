@@ -29,6 +29,7 @@
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
 #include "ev_UnixMenu.h"
@@ -79,7 +80,7 @@ public:									// we create...
 
 		XAP_UnixFrame * pFrame = wd->m_pUnixMenu->getFrame();
 		UT_ASSERT(pFrame);
-		EV_Menu_Label * pLabel = wd->m_pUnixMenu->getMenuLabelSet()->getLabel(wd->m_id);
+		EV_Menu_Label * pLabel = wd->m_pUnixMenu->getLabelSet()->getLabel(wd->m_id);
 		if (!pLabel)
 		{
 			pFrame->setStatusMessage(NULL);
@@ -236,20 +237,19 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 						 const char * szMenuLayoutName,
 						 const char * szMenuLabelSetName)
-	: EV_Menu(pUnixApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName)
+	: EV_Menu(pUnixApp, pUnixApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
+	  m_pUnixApp(pUnixApp),
+	  m_pUnixFrame(pUnixFrame)
 {
-	m_pUnixApp = pUnixApp;
-	m_pUnixFrame = pUnixFrame;
-	setApp(pUnixApp);
 	m_accelGroup = gtk_accel_group_new();
 }
 
-EV_UnixMenu::~EV_UnixMenu(void)
+EV_UnixMenu::~EV_UnixMenu()
 {
 	m_vecMenuWidgets.clear();
 }
 
-XAP_UnixFrame * EV_UnixMenu::getFrame(void)
+XAP_UnixFrame * EV_UnixMenu::getFrame()
 {
 	return m_pUnixFrame;
 }
@@ -258,7 +258,7 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 {
 	// user selected something from the menu.
 	// invoke the appropriate function.
-	// return true iff handled.
+	// return true if handled.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
@@ -276,7 +276,8 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeMenuMethod(m_pUnixFrame->getCurrentView(),pEM,0,0);
+	UT_String script_name(pAction->getScriptName());
+	invokeMenuMethod(m_pUnixFrame->getCurrentView(), pEM, script_name);
 	return true;
 }
 

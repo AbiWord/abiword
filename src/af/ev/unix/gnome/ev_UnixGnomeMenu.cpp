@@ -214,42 +214,40 @@ EV_UnixGnomeMenu::EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
 								   XAP_UnixFrame * pUnixFrame,
 								   const char * szMenuLayoutName,
 								   const char * szMenuLabelSetName)
-	: EV_UnixMenu(pUnixApp, pUnixFrame, szMenuLayoutName, szMenuLabelSetName)
+	: EV_UnixMenu(pUnixApp, pUnixFrame, szMenuLayoutName, szMenuLabelSetName),
+	  m_pUIInfo(0)
 {
-	m_pUIInfo = NULL;
+	if (!s_init)
+	{
+		/* register non-standard pixmaps with the gnome-stock engine */
+		s_init = true;
 
-	if(!s_init)
+		static struct AbiWordStockPixmap{
+			int width, height;
+			char const * const name;
+			gchar **xpm_data;
+		} const entry_names [] = {
+			{ 16, 16, "Menu_AbiWord_PrintPreview", tb_menu_print_preview_xpm },
+			{ 16, 16, "Menu_AbiWord_InsertGraphic", tb_menu_insert_graphic_xpm },
+			{ 16, 16, "Menu_AbiWord_InsertSymbol", tb_menu_insert_symbol_xpm },
+			{ 0, 0, NULL, NULL}
+		};
+
+		static GnomeStockPixmapEntry entry[sizeof(entry_names) / sizeof(struct AbiWordStockPixmap) - 1];
+
+		for (int i = 0; entry_names[i].name != NULL ; ++i)
 		{
-			/* register non-standard pixmaps with the gnome-stock engine */
-			s_init = true;
-
-			static struct AbiWordStockPixmap{
-				int width, height;
-				char const * const name;
-				gchar **xpm_data;
-			} const entry_names [] = {
-				{ 16, 16, "Menu_AbiWord_PrintPreview", tb_menu_print_preview_xpm },
-				{ 16, 16, "Menu_AbiWord_InsertGraphic", tb_menu_insert_graphic_xpm },
-				{ 16, 16, "Menu_AbiWord_InsertSymbol", tb_menu_insert_symbol_xpm },
-				{ 0, 0, NULL, NULL}
-			};
-
-			static GnomeStockPixmapEntry entry[sizeof(entry_names)/sizeof(struct AbiWordStockPixmap)-1];
-
-			int i = 0;
-
-			for (i = 0; entry_names[i].name != NULL ; i++) {
-				entry[i].data.type = GNOME_STOCK_PIXMAP_TYPE_DATA;
-				entry[i].data.width = entry_names[i].width;
-				entry[i].data.height = entry_names[i].height;
-				entry[i].data.xpm_data = entry_names[i].xpm_data;
-				gnome_stock_pixmap_register (entry_names[i].name,
-											 GNOME_STOCK_PIXMAP_REGULAR, entry + i);
-			}
+			entry[i].data.type = GNOME_STOCK_PIXMAP_TYPE_DATA;
+			entry[i].data.width = entry_names[i].width;
+			entry[i].data.height = entry_names[i].height;
+			entry[i].data.xpm_data = entry_names[i].xpm_data;
+			gnome_stock_pixmap_register (entry_names[i].name,
+										 GNOME_STOCK_PIXMAP_REGULAR, entry + i);
 		}
+	}
 }
 
-EV_UnixGnomeMenu::~EV_UnixGnomeMenu(void)
+EV_UnixGnomeMenu::~EV_UnixGnomeMenu()
 {
 	_destroyUIInfo (m_pUIInfo);
 }
@@ -661,7 +659,7 @@ void EV_UnixGnomeMenu::_destroyUIInfo(GnomeUIInfo * uiinfo)
 }
 
 bool _updateLabel(XAP_Menu_Id menu_id, const char * caption,
-									GtkWidget * item)
+				  GtkWidget * item)
 {
 	GtkWidget * tmp_label = (GTK_BIN(item)->child);
 
@@ -902,7 +900,7 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				// created ( or NULL if it couldn't ) and remove the
 				// continue statement below
 				_addNewItemEntry(wMenuRoot, GTK_MENU_ITEM(wParent)->submenu,
-									 k, nPositionInThisMenu);
+								 k, nPositionInThisMenu);
 				continue;
 			}
 			else
@@ -960,9 +958,7 @@ bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		case EV_MLF_Separator:
 		{
 			nPositionInThisMenu++;
-			
 			break;
-
 		}
 		case EV_MLF_BeginPopupMenu:
 		case EV_MLF_EndPopupMenu:
@@ -1048,7 +1044,7 @@ void EV_UnixGnomeMenu::_attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIIn
 		}
 
 		uiinfo++;
-	};
+	}
 }
 
 void EV_UnixGnomeMenu::menuEvent(GtkWidget *, gpointer pAux)
@@ -1071,7 +1067,8 @@ void EV_UnixGnomeMenu::menuEvent(GtkWidget *, gpointer pAux)
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	aux->me->invokeMenuMethod(aux->me->m_pUnixFrame->getCurrentView(), pEM, 0, 0);
+	UT_String script_name(pAction->getScriptName());
+	aux->me->invokeMenuMethod(aux->me->m_pUnixFrame->getCurrentView(), pEM, script_name);
 }
 
 bool EV_UnixGnomeMenu::_doAddMenuItem(UT_uint32 layout_pos)
@@ -1085,15 +1082,15 @@ EV_UnixGnomeMenuBar::EV_UnixGnomeMenuBar(XAP_UnixApp * pUnixApp,
 										 XAP_UnixFrame * pUnixFrame,
 										 const char * szMenuLayoutName,
 										 const char * szMenuLabelSetName)
-	: EV_UnixMenuBar(/*static_cast<XAP_UnixApp *>*/ pUnixApp, /*static_cast<XAP_UnixFrame *>*/ pUnixFrame,szMenuLayoutName,szMenuLabelSetName)
+	: EV_UnixMenuBar(pUnixApp, pUnixFrame, szMenuLayoutName, szMenuLabelSetName)
 {
 }
 
-EV_UnixGnomeMenuBar::~EV_UnixGnomeMenuBar(void)
+EV_UnixGnomeMenuBar::~EV_UnixGnomeMenuBar()
 {
 }
 
-bool EV_UnixGnomeMenuBar::synthesizeMenuBar(void)
+bool EV_UnixGnomeMenuBar::synthesizeMenuBar()
 {
 	m_wMenuBar = gtk_menu_bar_new();
 
@@ -1123,13 +1120,13 @@ EV_UnixGnomeMenuPopup::EV_UnixGnomeMenuPopup(XAP_UnixApp * pUnixApp,
 	m_wMenuPopup = NULL;
 }
 
-EV_UnixGnomeMenuPopup::~EV_UnixGnomeMenuPopup(void)
+EV_UnixGnomeMenuPopup::~EV_UnixGnomeMenuPopup()
 {
 	if (m_wMenuPopup != NULL)
 		gtk_widget_destroy (m_wMenuPopup);
 }
 
-bool EV_UnixGnomeMenuPopup::synthesizeMenuPopup(void)
+bool EV_UnixGnomeMenuPopup::synthesizeMenuPopup()
 {
 	m_wMenuPopup = gtk_menu_new();
 

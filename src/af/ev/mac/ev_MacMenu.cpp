@@ -26,6 +26,7 @@
 #include "ut_types.h"
 #include "ut_stack.h"
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_debugmsg.h"
 #include "ut_MacString.h"
 #include "xap_Types.h"
@@ -43,9 +44,9 @@
 
 
 EV_MacMenu::EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
-						   const char * szMenuLayoutName,
-						   const char * szMenuLabelSetName)
-	: EV_Menu(pMacApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
+					   const char * szMenuLayoutName,
+					   const char * szMenuLabelSetName)
+	: EV_Menu(pMacApp, pMacApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName)
 {
 	m_pMacApp = pMacApp;
 	m_pMacFrame = pMacFrame;
@@ -53,7 +54,7 @@ EV_MacMenu::EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 	m_lastSubMenuID = 0;		// submenu have ID between 1-235
 }
 
-EV_MacMenu::~EV_MacMenu(void)
+EV_MacMenu::~EV_MacMenu()
 {
 	if (m_hMacMenubar) {
 #if TARGET_API_MAC_CARBON
@@ -89,7 +90,8 @@ bool EV_MacMenu::onCommand(XAP_Menu_Id id)
 	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
-	invokeMenuMethod(m_pMacFrame->getCurrentView(),pEM,0,0);
+	UT_String script_name(pAction->getScriptName());
+	invokeMenuMethod(m_pMacFrame->getCurrentView(), pEM, script_name);
 	return true;
 }
 

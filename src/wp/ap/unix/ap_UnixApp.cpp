@@ -30,29 +30,10 @@
 #include <sys/stat.h>
 #include <signal.h>
 
-// HACK to no collide with perl DEBUG
-#ifdef DEBUG
-#define ABI_DEBUG
-#undef DEBUG
-#endif
-
-#ifdef ABI_OPT_PERL
-#include <EXTERN.h>
-#include <perl.h>
-#endif
-
-#ifdef DEBUG
-#define PERL_DEBUG
-#undef DEBUG
-#endif
-
-#ifdef ABI_DEBUG
-#define DEBUG
-#endif
-
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#include "ut_PerlBindings.h"
 
 #include "xap_Args.h"
 #include "ap_Convert.h"
@@ -170,69 +151,6 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
     UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
     return false;
 }	
-
-#ifdef ABI_OPT_PERL
-
-#ifdef __cplusplus
-#  define EXTERN_C extern "C"
-#else
-#  define EXTERN_C extern
-#endif
-
-EXTERN_C void boot_DynaLoader (CV* cv);
-EXTERN_C void boot_abi (CV* cv);
-
-static void 
-xs_init () {
-	char *file = __FILE__;
-	newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
-	/* we want to link to the module code, but until it's stable
-	it's better to have it dynamically loaded...
-	newXS("abi::boot_abi", boot_abi, file);*/
-}
-
-static PerlInterpreter &getPerlInterp()
-{
-	static PerlInterpreter *pPerlInt = 0;
-
-	if (pPerlInt == 0)
-	{
-		char *argv[] = { "", "-Mabi", "-e", "0" };
-#ifdef PERL_DEBUG
-#define DEBUG
-#endif
-		pPerlInt = perl_alloc();
-		perl_construct(pPerlInt);
-		perl_parse(pPerlInt, xs_init, sizeof(argv) / sizeof(char *), argv, (char **)NULL);
-#ifndef ABI_DEBUG
-#undef DEBUG
-#endif
-	}
-
-	return *pPerlInt;
-}
-
-void AP_UnixApp::perlEvalFile(const UT_String &filename)
-{
-#ifdef PERL_DEBUG
-#define DEBUG
-#endif
-	UT_String code("require \"");
-	code += filename;
-	code += '"';
-	getPerlInterp();
-	UT_DEBUGMSG(("executing script file: %s\n", filename.c_str()));
-	perl_eval_pv(code.c_str(), FALSE);
-
-	if (SvTRUE(ERRSV))
-	{
-#ifndef ABI_DEBUG
-#undef DEBUG
-#endif
-		printf("eval error: %s\n", SvPV(ERRSV, PL_na));
- 	}
-}
-#endif
 
 /*!
   Initialize the application.  This involves preferences, keybindings,
@@ -1415,16 +1333,20 @@ bool AP_UnixApp::parseCommandLine()
 				// [-script]
 				if (k < m_pArgs->m_argc)
 				{
-					perlEvalFile(m_pArgs->m_argv[k]);
+					UT_PerlBindings& pb(UT_PerlBindings::getInstance());
+
+					if (!pb.evalFile(m_pArgs->m_argv[k]))
+						printf("%s\n", pb.errmsg().c_str());
+					
 					script = true;
 				}
 				else
-					UT_DEBUGMSG(("No script file to execute in --script option\n"));
+					printf("No script file to execute in --script option\n");
 			}
 #endif
 			else  
 			{
-				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
+				printf("Unknown command line option [%s]\n", m_pArgs->m_argv[k]);
 				// TODO don't know if it has a following argument or not -- assume not
 				_printUsage();
 				return false;

@@ -25,6 +25,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ut_string_class.h"
 
 class AV_View;
 
@@ -70,6 +71,7 @@ class AV_View;
 
 typedef UT_uint32 EV_EditMethodType;
 #define EV_EMT_REQUIREDATA		((EV_EditMethodType) 0x1)
+#define EV_EMT_REQUIRE_SCRIPT_NAME		((EV_EditMethodType) 0x2)
 
 /*****************************************************************/
 /*****************************************************************/
@@ -80,13 +82,22 @@ public:
 	EV_EditMethodCallData();
 	EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength);
 	EV_EditMethodCallData(const char * pChar, UT_uint32 dataLength);
+	EV_EditMethodCallData(const UT_String& stScriptName);
 	~EV_EditMethodCallData();
 
+	UT_sint32			getX() { return m_xPos; }
+	UT_sint32			getY() { return m_yPos; }
+	const UT_String&	getScriptName() { return m_stScriptName; }
+	
+// private:
 	UT_UCSChar *		m_pData;
 	UT_uint32			m_dataLength;
 	bool				m_bAllocatedData;
 	UT_sint32			m_xPos;
 	UT_sint32			m_yPos;
+
+private:
+	UT_String			m_stScriptName;
 };
 
 typedef bool (*EV_EditMethod_pFn)(AV_View * pView, EV_EditMethodCallData * pCallData);

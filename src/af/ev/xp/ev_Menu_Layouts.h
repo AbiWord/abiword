@@ -78,7 +78,6 @@ public:
 	bool					setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
 	XAP_Menu_Id				addLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_LayoutFlags flags);
 	void					addFakeLayoutItem(UT_uint32 indexLayoutItem, EV_Menu_LayoutFlags flags);
-//	XAP_Menu_Id				addLayoutItem(const UT_String &path, const EV_Menu_LabelSet &labels, EV_Menu_LayoutFlags flags = EV_MLF_Normal);
 	EV_Menu_LayoutItem *	getLayoutItem(UT_uint32 indexLayoutItem) const;
 	UT_uint32				getLayoutIndex(XAP_Menu_Id id) const;
 	const char *			getName() const;
@@ -86,7 +85,6 @@ public:
 	inline UT_uint32		size() const { return getLayoutItemCount(); }
 
 private:
-//	int						searchPos(const UT_Vector *names, const EV_Menu_LabelSet &labels) const;
 	UT_String			    m_stName;			/* the name of our layout (like "MainMenu") */
 	UT_Vector				m_layoutTable;
 	XAP_Menu_Id				m_iMaxId;

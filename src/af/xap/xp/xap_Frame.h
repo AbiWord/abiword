@@ -81,7 +81,7 @@ class ABI_EXPORT XAP_Frame
 public:
 	XAP_Frame(XAP_App * app);
 	XAP_Frame(XAP_Frame * f);
-	virtual ~XAP_Frame(void);
+	virtual ~XAP_Frame();
 
 	virtual bool				initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 										   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
@@ -89,48 +89,48 @@ public:
 										   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
 	
-	virtual	XAP_Frame *			cloneFrame(void)=0;
-	virtual UT_Error   			loadDocument(const char * szFilename, int ieft)=0;
-	virtual UT_Error                        loadDocument(const char * szFileName, int ieft, bool createNew)=0;
+	virtual	XAP_Frame *			cloneFrame() = 0;
+	virtual UT_Error   			loadDocument(const char * szFilename, int ieft) = 0;
+	virtual UT_Error                        loadDocument(const char * szFileName, int ieft, bool createNew) = 0;
 	virtual UT_Error importDocument (const char * szFilename, int ieft, bool markClean = false) = 0;
-	virtual bool				close(void)=0;
-	virtual bool				raise(void)=0;
-	virtual bool				show(void)=0;
-	virtual bool				openURL(const char * szURL)=0;
-	virtual bool				updateTitle(void);
+	virtual bool				close() = 0;
+	virtual bool				raise() = 0;
+	virtual bool				show() = 0;
+	virtual bool				openURL(const char * szURL) = 0;
+	virtual bool				updateTitle();
 	virtual UT_sint32			setInputMode(const char * szName);
-	const char *				getInputMode(void) const;
+	const char *				getInputMode() const;
 	virtual void                            nullUpdate () const = 0;
 
-	EV_EditEventMapper *		getEditEventMapper(void) const;
-	XAP_App *					getApp(void) const;
-	AV_View *		       		getCurrentView(void) const;
-	AD_Document *				getCurrentDoc(void) const;
-	const char *				getFilename(void) const;
+	EV_EditEventMapper *		getEditEventMapper() const;
+	XAP_App *					getApp() const;
+	AV_View *		       		getCurrentView() const;
+	AD_Document *				getCurrentDoc() const;
+	const char *				getFilename() const;
 	const char *				getTitle(int len) const;
-	const char *				getTempNameFromTitle(void) const;
+	const char *				getTempNameFromTitle() const;
 
-	bool						isDirty(void) const;
+	bool						isDirty() const;
 
 	void						setViewNumber(UT_uint32 n);
-	UT_uint32					getViewNumber(void) const;
-	const char *				getViewKey(void) const;
+	UT_uint32					getViewNumber() const;
+	const char *				getViewKey() const;
 
-	inline void *				getFrameData(void) const { return m_pData; }
+	inline void *				getFrameData() const { return m_pData; }
 
-	virtual XAP_DialogFactory *	getDialogFactory(void) = 0;
-	virtual void				setXScrollRange(void) = 0;
-	virtual void				setYScrollRange(void) = 0;
+	virtual XAP_DialogFactory *	getDialogFactory() = 0;
+	virtual void				setXScrollRange() = 0;
+	virtual void				setYScrollRange() = 0;
 
 	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y) = 0;
 
 	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } tZoomType;
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
-	virtual UT_uint32			getZoomPercentage(void);
+	virtual UT_uint32			getZoomPercentage();
 	void						setZoomType(XAP_Frame::tZoomType z_Type){ m_zoomType = z_Type; } 
-	XAP_Frame::tZoomType		getZoomType(void) { return m_zoomType; }
-	void						updateZoom(void);
+	XAP_Frame::tZoomType		getZoomType() { return m_zoomType; }
+	void						updateZoom();
 
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
@@ -141,12 +141,12 @@ public:
 	virtual void				toggleStatusBar(bool /* bStatusBarOn */) { }
 	virtual bool				getBarVisibility(UT_uint32 iBarNb) { return true; }
 
-   	EV_Mouse *					getMouse(void);
-	EV_Keyboard *				getKeyboard(void);
+   	EV_Mouse *					getMouse();
+	EV_Keyboard *				getKeyboard();
 	EV_Toolbar *                getToolbar(UT_uint32 ibar);
 	virtual EV_Menu*			getMainMenu() = 0;
 
-	bool                        repopulateCombos(void);
+	bool                        repopulateCombos();
 	void						setAutoSaveFile(bool);
 	void						setAutoSaveFilePeriod(int);
 	void						setAutoSaveFileExt(const UT_String &);
@@ -167,7 +167,7 @@ public:
 	virtual void				queue_resize() {}
 
 protected:
-	virtual void				_createToolbars(void);
+	virtual void				_createToolbars();
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *)
 									{ return NULL; } // Abstract
 
@@ -195,7 +195,7 @@ protected:
 
 	XAP_InputModes *			m_pInputModes;
 	
-	static int					_getNextUntitledNumber(void);
+	static int					_getNextUntitledNumber();
 	
 private:
 	void						_createAutoSaveTimer();
