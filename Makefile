@@ -27,9 +27,9 @@ endif
 DEPENDS_ABIWORD=	$(DEPENDS)
 DEPENDS_ABICALC=	$(DEPENDS) _GLIB_ _GXML_
 
-all:		$(DEPENDS_ABIWORD)
-	@echo Building AbiWord and AbiCalc...
-	$(MAKE) -C src T=all  &&  echo AbiWord and AbiCalc build complete.
+# all:		$(DEPENDS_ABIWORD) $(DEPENDS_ABICALC)
+#	@echo Building AbiWord and AbiCalc...
+# 	$(MAKE) -C src T=all  &&  echo AbiWord and AbiCalc build complete.
 
 abiword:	$(DEPENDS_ABIWORD)
 	@echo Building AbiWord...
