@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001-2002 Dom Lachowicz
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,27 +17,18 @@
  * 02111-1307, USA.
  */
 
-#ifndef GR_UNIXIMAGE_H
-#define GR_UNIXIMAGE_H
+#ifndef GR_UNIXGNOMEIMAGE_H
+#define GR_UNIXGNOMEIMAGE_H
 
-#include <gdk/gdk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 
 #include "gr_Image.h"
-
-struct Fatmap
-{
-  Fatmap ();
-	gint width;
-	gint height;
-
-	// Always 24-bit pixel data
-	guchar * data;
-};
 
 class GR_UnixImage : public GR_RasterImage
 {
 public:
-	GR_UnixImage(const char* pszName);
+	GR_UnixImage(const char* pszName, bool isPrintResolution=false);
+	GR_UnixImage(const char* pszName,  GRType imageType, bool isPrintResolution = false);
 	~GR_UnixImage();
 
 	virtual UT_sint32	getDisplayWidth(void) const;
@@ -45,20 +36,28 @@ public:
 	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-	void			setData(Fatmap * image) { m_image = image; }
-   	Fatmap *			getData(void) const { return m_image; }
+	virtual void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool hasAlpha (void) const;
+	virtual UT_sint32  rowStride (void) const;
+    virtual GR_Image::GRType getType(void) const;
+   	GdkPixbuf *			getData(void) const { return m_image; }
 
-   	virtual GRType		getType() const { return m_grtype; }
-   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 private:
-	Fatmap * m_image;
-
-	GRType m_grtype;
-
-	UT_sint32 m_iDisplayWidth;
-	UT_sint32 m_iDisplayHeight;
-
-	bool _convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	GdkPixbuf * m_image;
+    bool m_bPrintResolution;
+    GR_Image::GRType m_ImageType;
 };
 
-#endif /* GR_UNIXIMAGE_H */
+#endif /* GR_UNIXGNOMEIMAGE_H */
+
+
+
+
+
+
+
+
+
+
+
+

@@ -25,10 +25,6 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CPPSRCS=		gr_UnixGraphics.cpp	\
 			gr_UnixImage.cpp
 
-ifeq ($(ABI_OPT_GNOME),1)
-CPPSRCS+=		gr_UnixGnomeImage.cpp
-endif
-
 INCLUDES=		-I/usr/X11R6/include
 
 TARGETS=		$(OBJS)

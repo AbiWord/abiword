@@ -44,11 +44,7 @@
 #include "fg_Graphic.h"
 #include "fg_GraphicRaster.h"
 
-#if defined(HAVE_GNOME)
-#include "gr_UnixGnomeImage.h"
-#else
 #include "gr_UnixImage.h"
-#endif
 
 #include <sys/stat.h>
 
@@ -866,11 +862,8 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	if ( FGT_Raster == pGraphic->getType () )
 	{
-#if defined(HAVE_GNOME)
-		pImage = new GR_UnixGnomeImage(NULL,false);
-#else
-		pImage = new GR_UnixImage(NULL);
-#endif
+		pImage = new GR_UnixImage(NULL,false);
+
 		UT_ByteBuf * png = static_cast<FG_GraphicRaster*>(pGraphic)->getRaster_PNG();
 		UT_PNG_getDimensions (png, iImageWidth, iImageHeight);
 
