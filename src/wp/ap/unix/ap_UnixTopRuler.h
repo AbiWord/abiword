@@ -44,13 +44,16 @@ public:
 	virtual void	setView(AV_View * pView);
 
 	// cheats for the callbacks
-	void 			getWidgetPosition(gint * x, gint * y);
-	GtkWidget * 	getWidget(void) { return m_wTopRuler; };
+	void 				getWidgetPosition(gint * x, gint * y);
+	GtkWidget * 		getWidget(void) { return m_wTopRuler; };
+	GdkWindowPrivate * 	getRootWindow(void);
 			
 protected:
 	GtkWidget *		m_wTopRuler;
 
 protected:
+
+	GdkWindowPrivate * m_rootWindow;
 
 	class _fe
 	{

@@ -36,6 +36,7 @@
 AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	: AP_TopRuler(pFrame)
 {
+	m_rootWindow = NULL;
 	m_wTopRuler = NULL;
 	m_pG = NULL;
 }
@@ -103,6 +104,16 @@ void AP_UnixTopRuler::getWidgetPosition(gint * x, gint * y)
 	gdk_window_get_position(m_wTopRuler->window, x, y);
 }
 
+GdkWindowPrivate * AP_UnixTopRuler::getRootWindow(void)
+{
+	if (m_rootWindow)
+		return m_rootWindow;
+
+	m_rootWindow  = ::getRootWindow(m_wTopRuler);
+	return m_rootWindow;
+}
+
+		
 /*****************************************************************/
 
 gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
@@ -203,8 +214,7 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	// root (absolute) coordinates
 	gint rx, ry;
 	GdkModifierType mask;
-	GdkWindowPrivate * rootWindow = getRootWindow(pUnixTopRuler->getWidget());
-	gdk_window_get_pointer((GdkWindow *) rootWindow, &rx, &ry, &mask);
+	gdk_window_get_pointer((GdkWindow *) pUnixTopRuler->getRootWindow(), &rx, &ry, &mask);
 
 	// local (ruler widget) coordinates
 	gint wx, wy;
