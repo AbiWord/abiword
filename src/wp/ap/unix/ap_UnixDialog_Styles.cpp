@@ -551,7 +551,7 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	gtk_hbutton_box_set_layout_default(GTK_BUTTONBOX_END);
 	gtk_widget_show(buttonBoxGlobal);
 
-	buttonClose = gtk_button_new_with_label ( 
+	buttonApply = gtk_button_new_with_label ( 
 		pSS->getValue(XAP_STRING_ID_DLG_Apply) );
 	gtk_widget_show(buttonApply);
 	gtk_container_add(GTK_CONTAINER(buttonBoxGlobal), buttonApply);
