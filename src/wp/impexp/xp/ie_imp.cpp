@@ -176,7 +176,8 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 		char szBuf[4096];  // 4096 ought to be enough
 		int iNumbytes;
 		FILE *f;
-		if ( ( f = fopen( szFilename, "r" ) ) != (FILE *)0 )
+		// we must open in binary mode for UCS-2 compatibility
+		if ( ( f = fopen( szFilename, "rb" ) ) != (FILE *)0 )
 		{
 			iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
 			fclose(f);

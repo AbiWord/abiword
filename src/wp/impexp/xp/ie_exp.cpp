@@ -109,7 +109,8 @@ bool IE_Exp::_openFile(const char * szFilename)
 	// TODO add code to make a backup of the original file, if it exists.
 
 #ifndef HAVE_GNOMEVFS
-	m_fp = fopen(szFilename,"w");
+	// Open file in binary mode or UCS-2 output will be mangled.
+	m_fp = fopen(szFilename,"wb");
 	return (m_fp != 0);
 #else
 	GnomeVFSResult result;

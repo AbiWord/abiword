@@ -22,6 +22,8 @@
 #include <limits.h>
 #include "ut_mbtowc.h"
 
+// UTF-8 can use up to 6 bytes
+#define MY_MB_LEN_MAX 6
 
 #if 0 /* big if 0 */
 #if defined(__OpenBSD__) || defined(__FreeBSD__)
@@ -191,7 +193,7 @@ int my_mbtowc( wchar_t *pwc, const char *s, size_t n, int *state) {
 
 int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
 {
-  if(++m_bufLen>MB_LEN_MAX)
+  if(++m_bufLen>MY_MB_LEN_MAX)
 	{
 	  initialize();
 	  return 0;
@@ -202,7 +204,7 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
 #else
   size_t thisLen=mbrtowc(&wc,m_buf,m_bufLen,&m_state);
 #endif
-  if(thisLen>MB_LEN_MAX)return 0;
+  if(thisLen>MY_MB_LEN_MAX)return 0;
   if(thisLen==0)thisLen=1;
   m_bufLen-=thisLen;
   return 1;
@@ -229,6 +231,12 @@ void UT_Mbtowc::setInCharset(const char* charset)
     cd = iconv_open("UCS-2", charset );
 };
 
+UT_Mbtowc::UT_Mbtowc(const char* from_charset): m_bufLen(0)
+{
+    cd = iconv_open("UCS-2", from_charset);
+    UT_ASSERT(cd != (iconv_t)-1);    
+};
+
 UT_Mbtowc::UT_Mbtowc(): m_bufLen(0)
 {
     cd = iconv_open("UCS-2", XAP_EncodingManager::get_instance()->getNativeEncodingName() );
@@ -250,7 +258,7 @@ UT_Mbtowc::~UT_Mbtowc()
 
 int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
 {
-    if(++m_bufLen>MB_LEN_MAX) {
+    if(++m_bufLen>MY_MB_LEN_MAX) {
       initialize();
       return 0;
     }

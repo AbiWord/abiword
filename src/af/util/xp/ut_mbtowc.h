@@ -49,6 +49,7 @@ class UT_Mbtowc
 public:
   void initialize();
   UT_Mbtowc();
+  UT_Mbtowc(const char* from_charset);
   UT_Mbtowc(const UT_Mbtowc& v);
   ~UT_Mbtowc();  
   int mbtowc(wchar_t &wc,char mb);

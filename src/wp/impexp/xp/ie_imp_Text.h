@@ -31,6 +31,7 @@ class PD_Document;
 class IE_Imp_Text_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
+	friend class IE_Imp_Text;
 
 public:
 	IE_Imp_Text_Sniffer() {}
@@ -45,6 +46,14 @@ public:
 	virtual UT_Error constructImporter (PD_Document * pDocument,
 										IE_Imp ** ppie);
 
+protected:
+	enum UCS2_Endian { UE_BigEnd = -1, UE_NotUCS = 0, UE_LittleEnd };
+
+	static bool _recognizeUTF8 (const char * szBuf,
+								UT_uint32 iNumbytes);
+	static UCS2_Endian _recognizeUCS2 (const char * szBuf,
+									   UT_uint32 iNumbytes,
+									   bool bDeep);
 };
 
 class IE_Imp_Text : public IE_Imp
@@ -58,9 +67,11 @@ public:
 										unsigned char * pData, UT_uint32 lenData);
 	
 protected:
+	UT_Error			_recognizeEncoding(FILE * fp);
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
 	UT_Mbtowc 		m_Mbtowc;
+	const char *	m_szEncoding;
 };
 
 #endif /* IE_IMP_TEXT_H */
