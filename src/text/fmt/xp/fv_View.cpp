@@ -10243,7 +10243,8 @@ bool FV_View::insertEndnote()
 			
 	// Current bogosity: c type="endnote_ref".  What's up with that?
 	// Also endnote-id should not follow to next paras.
-
+	
+	fl_BlockLayout * pBL;
 	fl_DocSectionLayout * pEndnoteSL;
 
 	if (pDSL->getEndnote() == NULL)
@@ -10259,33 +10260,185 @@ bool FV_View::insertEndnote()
 
 		_eraseInsertionPoint();
 
-		// TODO so we should insert an endnote in the appropriate place,
-		// not at the last block.  That's a bit tricky though.
+		// We know the position of the reference mark, so we will search from
+		// the start up to this position for all endnote_ref runs and count
+		// them. From this we will work out our position and insert the block
+		// at the appropriate place, this will automatically ensure that
+		// the field resolves to correct number
+		
+		fl_SectionLayout * pSL = m_pLayout->getFirstSection();
+		UT_sint32 enoteCount = 0;
+		fp_Run * pRun;
+		bool bFinished = false;		
+		
+		while (pSL)
+		{
+			pBL = pSL->getFirstBlock();
+			
+			while(pBL)
+			{
+				pRun = pBL->getFirstRun();
+				
+				while(pRun)			
+				{
+					if( (pBL->getPosition(false)+ pRun->getBlockOffset()) >= ErefStart)
+					{
+						bFinished = true;
+						break;
+					}
+					
+					if(pRun->getType() == FPRUN_FIELD)
+					{
+						fp_FieldRun * pF = static_cast<fp_FieldRun *>(pRun);
+						if(pF->getFieldType() == FPFIELD_endnote_ref)
+							enoteCount++;
+					}
+					
+					pRun = pRun->getNext();
+				}
+				
+				if(bFinished)
+					break;
+					
+				pBL = pBL->getNext();
+			}
+			
+			if(bFinished)
+				break;
+				
+			pSL = pSL->getNext();
+		}
+		
+	
+		pBL = pEndnoteSL->getFirstBlock();
+	
+		// now we will find the block just after us, move the start of it
+		// and insert a new block
+		UT_DEBUGMSG(("fv_View::insertEndnote: ErefStart %d, enoteCount %d\n", ErefStart, enoteCount));
 
-		PT_DocPosition dp = pEndnoteSL->getLastBlock()->getPosition();
-		_setPoint(dp, false);
-		moveInsPtTo(FV_DOCPOS_EOB);	
+		// TODO HACK until we stop propagating endnote-ids.
+		XML_Char * previd = NULL;
+		
+		while(pBL)
+		{
+			// skip any non-endnote blocks
+			UT_DEBUGMSG(("enoteCount %d\n", enoteCount));
+			
+			UT_ASSERT(pBL);
+			const PP_AttrProp *pp;
+			bool bRes = pBL->getAttrProp(&pp);
+			if (!bRes)
+				break;
+				
+			const XML_Char * someid;
+			pp->getAttribute("endnote-id", someid);
+			
+#if 0
+			//do not need this anymore
+			while(!someid || UT_strcmp(someid, "") == 0)
+			{
+				pBL = pBL->getNext();
+				bRes = pBL->getAttrProp(&pp);
+				if (!bRes)
+					break;
+				pp->getAttribute("endnote-id", someid);
+			}
+#endif
+			if (!previd || (previd && someid && UT_strcmp(someid, previd) != 0))
+			{
+				enoteCount--;
+				if (previd != NULL)
+					free(previd);
 
+				previd = UT_strdup(someid);
+			}
+						
+			if(enoteCount < 0)
+				break;
+			
+			pBL = pBL->getNext();
+		}
+
+		if (previd != NULL)
+			free(previd);
+				
+		// now if we do not have a block, we are inserting the last endnote
+		// so we will just get the last block in the section and move to the end
+		// if we do have a block, we move to the start of it
+		PT_DocPosition dp;
+		
+		if(!pBL)
+		{
+			UT_DEBUGMSG(("no block\n"));
+			pBL = pEndnoteSL->getLastBlock();
+#ifdef DEBUG
+			const XML_Char * someid;
+			const PP_AttrProp *pp;
+			bool bRes = pBL->getAttrProp(&pp);
+			if (bRes)
+			{
+				pp->getAttribute("endnote-id", someid);
+				UT_DEBUGMSG(("     enpid [%s], someid [%s]\n",enpid,someid));		
+			}
+#endif
+			dp = pBL->getPosition();
+			_setPoint(dp, false);
+			moveInsPtTo(FV_DOCPOS_EOB);
+			dp = getPoint();
+		}
+		else
+		{
+			// we want the position of the actual start of the block, not
+			// of the runlist
+			UT_DEBUGMSG(("found block\n"));
+#ifdef DEBUG
+			const XML_Char * someid;
+			const PP_AttrProp *pp;
+			bool bRes = pBL->getAttrProp(&pp);
+			if (bRes)
+			{
+				pp->getAttribute("endnote-id", someid);
+				UT_DEBUGMSG(("     enpid [%s], someid [%s]\n",enpid,someid));		
+			}
+#endif
+			dp = pBL->getPosition(true);
+			_setPoint(dp,false);
+		}
+				
+		
 		// add new block.
 		const XML_Char* block_attrs[] = {
 			"endnote-id", enpid,
 			NULL, NULL
 		};
-
+	
+	// do not want any hardcoded block properties, let them default
+#if 0
 		const XML_Char*	block_props[] = {
 			"text-align", "left",
 			NULL, NULL
 		};
+#else
+		const XML_Char**	block_props = NULL;
+#endif
 
-		m_pDoc->insertStrux(getPoint(), PTX_Block);
-		m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), block_attrs, block_props, PTX_Block);
+		m_pDoc->insertStrux(dp, PTX_Block);
+		// the dp+1 is needed because the postion on boundary between two
+		// blocks is considered as belonging to the PREVIOUS block,
+		// i.e., dp only reformats the wrong block
+		m_pDoc->changeStruxFmt(PTC_AddFmt, dp+1, dp+1, block_attrs, block_props, PTX_Block);
 
 		_drawInsertionPoint();
-	}
-
+  	}
+  	
 	// add endnote anchor
 	//get ready to apply Endnote Reference style
 	EanchStart = getPoint();
+
+	// if the block after which were inserted was not the last block
+	// we have to adjust the postion, because we are now siting at the
+	// start of the next block instead of our own
+	UT_DEBUGMSG(("fv_View::insertEndnote: EanchStart %d\n",EanchStart));
 	
 	if (cmdInsertField("endnote_anchor", attrs)==false)
 		return false;
@@ -10309,7 +10462,7 @@ bool FV_View::insertEndnote()
 	/*	some magic to make the endnote reference and anchor recalculate
 		its widths
 	*/
-	fl_BlockLayout* pBL = _findBlockAtPosition(ErefStart);
+	pBL = _findBlockAtPosition(ErefStart);
     UT_ASSERT(pBL != 0);
     UT_sint32 x, y, x2, y2, height;
     bool bDirection;
@@ -10338,10 +10491,15 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 		NULL, NULL
 	};
 
+	// do not want any hardcode block properties, let them default
+#if 0
 	const XML_Char*	block_props[] = {
 		"text-align", "left",
 		NULL, NULL
 	};
+#else
+	const XML_Char**	block_props = NULL;
+#endif
 
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
@@ -10398,14 +10556,17 @@ bool FV_View::insertEndnoteSection(const XML_Char ** blkprops, const XML_Char **
 		NULL, NULL
 	};
 
-
+	// do not want any hardcode block properties, let them default
+#if 0
 	const XML_Char*	block_props[] = {
 		"text-align", "left",
 		NULL, NULL
 	};
-
+	
 	if(!blkprops)
 		blkprops = block_props; // use the defaults
+#endif
+
 
 	if (isSelectionEmpty())
 	{

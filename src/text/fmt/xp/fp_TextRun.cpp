@@ -1536,9 +1536,11 @@ void fp_TextRun::_refreshDrawBuffer()
 		for(;;) // retrive the span and do any necessary processing
 		{
 			bContinue = m_pBL->getSpanPtr(offset + m_iOffsetFirst, &pSpan, &lenSpan);
-			//UT_ASSERT(lenSpan>0);
-			//UT_uint32 iOldX;
-
+			
+			//this sometimes happens with fields ...
+			if(!bContinue)
+				break;
+				
 			UT_uint32 iTrueLen = (lenSpan > len) ? len : lenSpan;
 		
 			if(m_iDirection != FRIBIDI_TYPE_ON || iVisDir != FRIBIDI_TYPE_RTL)
@@ -1591,7 +1593,7 @@ void fp_TextRun::_refreshDrawBuffer()
 					m_pSpanBuff[offset + i] = getMirrorChar(pSpan[i]);
 			}
 		
-			if((iTrueLen == len) || !bContinue)
+			if(iTrueLen == len)
 			{
 				break;
 			}

@@ -666,7 +666,7 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const XML_Char ** attributes,
 			while (*p)
 			{
 				UT_ASSERT(UT_XML_stricmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0); // cannot handle PROPS here
-				if (UT_XML_stricmp(n,p[0])!=0)		// found it, so we don't put it in the result.
+				if (UT_XML_stricmp(n,p[0])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeAttribute;
 				p += 2;								// skip over value
 			}

@@ -1285,7 +1285,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
 {
-	UT_DEBUGMSG(("fp_TabRun::_draw (0x%x)\n",this));
+	xxx_UT_DEBUGMSG(("fp_TabRun::_draw (0x%x)\n",this));
 	UT_ASSERT(pDA->pG == m_pG);
 
 	UT_RGBColor clrSelBackground(192, 192, 192);
@@ -2611,7 +2611,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 {
 	if (0 != UT_UCS_strcmp(p_new_value, m_sFieldValue))
 	{
-		UT_DEBUGMSG(("fp_FieldRun::_setValue: setting new value\n"));
+		xxx_UT_DEBUGMSG(("fp_FieldRun::_setValue: setting new value\n"));
 #ifdef BIDI_ENABLED
 		m_bRefreshDrawBuffer = true;
 #endif		
@@ -3551,17 +3551,23 @@ static int countEndnotesBefore(fl_BlockLayout * pBL, const XML_Char * endid)
 		const PP_AttrProp *pp; bool bRes = pBL->getAttrProp(&pp);
 		if (!bRes) return -1;
 		pp->getAttribute("endnote-id", someid);
+		xxx_UT_DEBUGMSG(("countEndnotesBefore: endid [%s], someid [%s]\n",endid,someid));		
 		if (someid && UT_strcmp(someid, endid)==0)
 			break;
 		pBL = pBL->getNext(); 
 
-		// TODO HACK until we stop propagating endnote-ids.
+		// HACK until we stop propagating endnote-ids.
+		// actually, we do want to propagate the endnote ids, it allows
+		// us to create multiparagraph endnotes and delete everyting
+		// when the reference is deleted
 		if (!previd || (previd && someid && UT_strcmp(someid, previd) != 0))
+		{
 			endnoteNo++;
 
-		if (previd != NULL)
-			free(previd);
-		previd = UT_strdup(someid);
+			if (previd != NULL)
+				free(previd);
+			previd = UT_strdup(someid);
+		}
 	}
 	if (previd != NULL)
 		free(previd);
@@ -3572,6 +3578,14 @@ static int countEndnotesBefore(fl_BlockLayout * pBL, const XML_Char * endid)
 // Refers to an endnote in the main body of the text.
 fp_FieldEndnoteRefRun::fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
+#if 0
+	const PP_AttrProp * pp = getAP();
+	const XML_Char * endid;
+	bool bRes = pp->getAttribute("endnote-id", endid);
+
+	UT_ASSERT(bRes);
+	m_iPID = atol(endid);
+#endif
 }
 
 bool fp_FieldEndnoteRefRun::calculateValue(void)
@@ -3626,6 +3640,14 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 
 fp_FieldEndnoteAnchorRun::fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
+#if 0
+	const PP_AttrProp * pp = getAP();
+	const XML_Char * endid;
+	bool bRes = pp->getAttribute("endnote-id", endid);
+
+	UT_ASSERT(bRes);
+	m_iPID = atol(endid);
+#endif
 }
 
 // Appears in the EndnoteSection, one per endnote.
@@ -3649,8 +3671,11 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 
 	fl_DocSectionLayout * pEndSL = getBlock()->
 		getDocSectionLayout();
-	UT_ASSERT((pEndSL->getType() == FL_SECTION_ENDNOTE));
+	//UT_ASSERT((pEndSL->getType() == FL_SECTION_ENDNOTE));
 
+	// this can happen when we delete last endnote
+	if(pEndSL->getType() != FL_SECTION_ENDNOTE)
+		return false;
 	// Now, count out how many paragraphs have special endnote-id tags
 	// until we reach the desired paragraph.  (para == block)
 

@@ -636,6 +636,12 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool 			isLayoutDependent() const {return true;}
+#if 0	
+	UT_uint32				getPID() const {return m_iPID;}
+private:
+	UT_uint32 m_iPID;
+#endif
 };
 
 class ABI_EXPORT fp_FieldEndnoteAnchorRun : public fp_FieldRun
@@ -646,6 +652,12 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual bool 			isLayoutDependent() const {return true;}
+#if 0	
+	UT_uint32				getPID() const {return m_iPID;}
+private:
+	UT_uint32 m_iPID;
+#endif
 };
 
 class ABI_EXPORT fp_FieldTimeRun : public fp_FieldRun

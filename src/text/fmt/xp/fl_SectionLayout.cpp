@@ -1528,7 +1528,7 @@ void fl_DocSectionLayout::collapseDocSection(void)
 bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
-	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
+	UT_ASSERT(pcrx->getStruxType()==PTX_Section || pcrx->getStruxType()==PTX_SectionEndnote);
 
 	fl_DocSectionLayout* pPrevSL = getPrevDocSection();
 	if (!pPrevSL)
@@ -1536,6 +1536,11 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 		// TODO shouldn't this just assert?
 		UT_DEBUGMSG(("no prior SectionLayout"));
 		return false;
+	}
+	
+	if(m_pEndnoteOwnerSL)
+	{
+		m_pEndnoteOwnerSL->setEndnote(0);
 	}
 
 //
@@ -1601,6 +1606,8 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 //
 	fl_BlockLayout * pBCur = getFirstBlock();
 	fl_BlockLayout * pBPrev = pPrevSL->getLastBlock();
+	UT_ASSERT(pBCur && pBPrev);
+	
 	pBCur->setPrev(pBPrev);
 	pBPrev->setNext(pBCur);
 	while(pBCur != NULL)

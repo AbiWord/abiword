@@ -54,6 +54,8 @@ _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_LineCount, line_count)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_ParaCount, para_count)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_NbspCount, nbsp_count)
 _FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_PageReference, page_ref)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_EndnoteAnchor, endnote_anch)
+_FIELD(NUMBERS, AP_STRING_ID_FIELD_Numbers_EndnoteReference, endnote_ref)
 
 #ifndef NDEBUG
 _FIELDTYPE(PIECETABLE, AP_STRING_ID_FIELD_Type_PieceTable)

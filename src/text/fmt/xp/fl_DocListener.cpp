@@ -626,9 +626,10 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		switch (pcrx->getStruxType())
 		{
 		case PTX_Section:
+		case PTX_SectionEndnote:
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
-			UT_ASSERT(pL->getType() == PTX_Section);
+			UT_ASSERT(pL->getType() == PTX_Section || pL->getType() == PTX_SectionEndnote);
 			fl_DocSectionLayout * pSL = static_cast<fl_DocSectionLayout *>(pL);
 			bResult = pSL->doclistener_deleteStrux(pcrx);
 			goto finish_up;
@@ -683,6 +684,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		switch (pL->getType())
 		{
 		case PTX_Section:
+		case PTX_SectionEndnote:
 		{
 			fl_DocSectionLayout* pSL = static_cast<fl_DocSectionLayout*>(pL);
 			

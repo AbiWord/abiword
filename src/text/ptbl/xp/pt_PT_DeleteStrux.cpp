@@ -45,9 +45,8 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	switch (pfs->getStruxType())	
 	{
 	case PTX_Section:
-		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
-
 	case PTX_SectionHdrFtr:
+	case PTX_SectionEndnote:
 		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
 		
 	case PTX_Block:
@@ -95,6 +94,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 
 	switch (pfsPrev->getStruxType())
 	{
+	
 	case PTX_Block:
 		// if there is a paragraph before us, we can delete this
 		// paragraph knowing that our content will be assimilated
@@ -102,7 +102,8 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
-
+	
+	case PTX_SectionEndnote:
 	case PTX_Section:
 		// we are the first paragraph in this section.  if we have
 		// content, we cannot be deleted, since there is no one to
@@ -144,7 +145,9 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 											pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-	UT_ASSERT(pfs->getStruxType()==PTX_Section || pfs->getStruxType()==PTX_SectionHdrFtr );
+	UT_ASSERT(pfs->getStruxType()==PTX_Section
+	|| pfs->getStruxType()==PTX_SectionHdrFtr
+	|| pfs->getStruxType()==PTX_SectionEndnote);
 	
 	// unlink this Section strux from the document.
 	// the caller is responsible for deleting pfs.
