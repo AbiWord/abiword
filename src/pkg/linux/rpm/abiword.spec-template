@@ -217,7 +217,7 @@ cd ../abi
 %__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/pixmaps
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{prefix}/share/pixmaps/abiword_48.png
 %__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/gnome/apps/Applications/
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT/%{prefix}/share/gnome/apps/Applications/abiword.desktop
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT/%{prefix}/share/applications/abiword.desktop
 
 # Copies oaf files
 %__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/oaf
