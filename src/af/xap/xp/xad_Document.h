@@ -41,27 +41,27 @@ public:
 	// TODO - this should be returning IEFileType, 
 	// but that's AP stuff, so it's not here
 
-	virtual UT_Error   		readFromFile(const char * szFilename, int ieft) = 0;
-	virtual UT_Error        importFile(const char * szFilename, int ieft, bool markClean = false) = 0;
-	virtual UT_Error		newDocument(void) = 0;
+	virtual UT_Error		readFromFile(const char * szFilename, int ieft) = 0;
+	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false) = 0;
+	virtual UT_Error		newDocument() = 0;
 	virtual bool			isDirty(void) const = 0;
 
 	virtual bool			canDo(bool bUndo) const = 0;
 	virtual bool			undoCmd(UT_uint32 repeatCount) = 0;
 	virtual bool			redoCmd(UT_uint32 repeatCount) = 0;
 
-	virtual UT_Error   		saveAs(const char * szFilename, int ieft) = 0;
-	virtual UT_Error                saveAs(const char * szFilename, int ieft, bool cpy) = 0;
-	virtual UT_Error                save(void) = 0;
+	virtual UT_Error		saveAs(const char * szFilename, int ieft) = 0;
+	virtual UT_Error		saveAs(const char * szFilename, int ieft, bool cpy) = 0;
+	virtual UT_Error		save() = 0;
 
    	// "ignore all" list for spell check
-   	bool				appendIgnore(const UT_UCSChar * pWord, UT_uint32 len);
-   	bool				isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const;
-   	bool				enumIgnores(UT_uint32 k, const UT_UCSChar ** pszWord) const;
-   	bool				clearIgnores(void);
+   	bool					appendIgnore(const UT_UCSChar * pWord, UT_uint32 len);
+   	bool					isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const;
+   	bool					enumIgnores(UT_uint32 k, const UT_UCSChar ** pszWord) const;
+   	bool					clearIgnores();
    
-	void				setEncodingName(const char * szEncodingName);
-	const char *		getEncodingName(void) const;
+	void					setEncodingName(const char * szEncodingName);
+	const char *			getEncodingName() const;
 
 protected:
 	virtual ~AD_Document();		//  Use unref() instead.

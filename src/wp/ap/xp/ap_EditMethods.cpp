@@ -88,6 +88,10 @@
 #include "ie_exp.h"
 #include "ie_types.h"
 
+#ifdef ABI_OPT_PERL
+#include "ut_PerlBindings.h"
+#endif
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -7296,7 +7300,8 @@ Defun(scriptPlay)
 	if (!bOK || !pNewFile)
 		return false;
 
-	pFrame->getApp()->perlEvalFile(pNewFile);
+	UT_DEBUGMSG(("scripPlay (trying to play [%s]\n", pNewFile));
+	UT_PerlBindings::evalFile(pNewFile);
 	return true;
 }
 #endif

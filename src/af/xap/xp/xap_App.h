@@ -143,11 +143,6 @@ public:
 	virtual UT_sint32						makeDirectory(const char * szPath, const UT_sint32 mode ) const = 0;
 
 
-#ifdef ABI_OPT_PERL
-	// HACK: I don't think that perlEvalFile belongs to App
-	virtual void							perlEvalFile(const UT_String &filename) = 0;
-#endif
-
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
 	virtual void							_printUsage();   

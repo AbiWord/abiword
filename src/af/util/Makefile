@@ -113,6 +113,9 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_path.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)
 
+ifdef ABI_OPT_PERL
+OBJS += $(OBJDIR)/ut_PerlBindings.$(OBJ_SUFFIX)
+endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

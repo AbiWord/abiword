@@ -55,6 +55,10 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_Language.cpp		\
 		ut_Encoding.cpp
 
+ifdef ABI_OPT_PERL
+CPPSRCS += ut_PerlBindings.cpp
+endif
+
 ### regex is only used by calc.
 ###CSRCS=		ut_regex.c
 

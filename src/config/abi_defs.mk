@@ -664,9 +664,15 @@ endif
 
 # Perl scripting support
 ifdef ABI_OPT_PERL
-EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts)
+    ifeq ($(OS_NAME), WIN32)
+        EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts | sed 's|[a-zA-Z0-9~:\\]*msvcrt\.lib||g' | sed 's|\([-/]release\|[-/]nodefaultlib\|[-/]nologo\|[-/]machine:[a-zA-Z0-9]*\)||g' | sed 's|\\|\\\\\\\\|g')
+	CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts | sed 's/\(-O1\|-MD\)//g')
+    else
+        EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts)
+	CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts) -Ubool
+    endif
+
 ABI_OPTIONS+=Scripting:On
-CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts) -Ubool
 else
 ABI_OPTIONS+=Scripting:Off
 endif
