@@ -237,7 +237,7 @@ void UT_StringPtrMap::insert(const UT_String & key, const void * value)
 		}
 	}
 
-#if 1
+#if 0
 	UT_DEBUGMSG(("DOM: inserted (%s, %p)\n", key.c_str(), value));
 
 	const void * v = pick (key);
