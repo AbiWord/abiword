@@ -62,6 +62,8 @@ public:
 	virtual UT_sint32   getY() const;
 	virtual UT_sint32   getWidth() const;
 	virtual UT_sint32   getHeight() const;
+	//	UT_sint32           getPenetrationFromLeft(UT_sint32 y, UT_sint32 height);
+	//	UT_sint32           getPenetrationFromRight(UT_sint32 y, UT_sint32 height);
 	virtual bool        isVBreakable(void)
 		{ return false;}
 	UT_sint32           getFullX() const;

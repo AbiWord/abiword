@@ -493,12 +493,14 @@ public:
 	inline void 	 setOffset(UT_sint32 iOffset) { m_iOffset = iOffset; }
 	inline void 	 setLength(UT_sint32 iLength) { m_iLength = iLength; }
 	inline void 	 setIsIgnored(bool bIsIgnored) { m_bIsIgnored = bIsIgnored; }
-
+	void             setGrammarMessage(UT_UTF8String & sMsg);
+	void             getGrammarMessage(UT_UTF8String & sMsg);
 private:
 	UT_sint32	m_iOffset;
 	UT_sint32	m_iLength;
 
 	bool		m_bIsIgnored;
+	UT_UTF8String  m_sGrammarMessage;
 };
 
 class ABI_EXPORT fl_TabStop

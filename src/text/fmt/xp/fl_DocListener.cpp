@@ -595,7 +595,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				{
 					reason = reason | (UT_uint32) FL_DocLayout::bgcrGrammar;
 				}
-				m_pLayout->queueBlockForBackgroundCheck(reason, (fl_BlockLayout *)pCL,true);
+				m_pLayout->queueBlockForBackgroundCheck(reason, (fl_BlockLayout *)pCL,false);
 			}
 		}
 		else
@@ -620,7 +620,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				{
 					reason = reason | (UT_uint32) FL_DocLayout::bgcrGrammar;
 				}
-				m_pLayout->queueBlockForBackgroundCheck(reason, (fl_BlockLayout *)pCL,true);
+				m_pLayout->queueBlockForBackgroundCheck(reason, (fl_BlockLayout *)pCL,false);
 			}
 		}
 

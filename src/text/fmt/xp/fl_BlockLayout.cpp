@@ -3760,6 +3760,16 @@ fl_PartOfBlock::fl_PartOfBlock(UT_sint32 iOffset, UT_sint32 iLength,
 	m_bIsIgnored = bIsIgnored;
 }
 
+void fl_PartOfBlock::setGrammarMessage(UT_UTF8String & sMsg)
+{
+	m_sGrammarMessage = sMsg;
+}
+
+void fl_PartOfBlock::getGrammarMessage(UT_UTF8String & sMsg)
+{
+	sMsg = m_sGrammarMessage;
+}
+
 /*!
   Does POB touch region
   \param iOffset Offset of region
