@@ -204,13 +204,13 @@ protected:
 									  UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths,
 									  UT_Rect & rect);
-
+#if 0
 	enum
 	{
 	    JUSTIFICATION_NOT_USED = -1,
 		JUSTIFICATION_FAKE = -2
 	};
-
+#endif
 	UT_sint32              _getSpaceWidthBeforeJustification();
 	void                   _setSpaceWidthBeforeJustification(UT_sint32 iWidth);
 
@@ -237,8 +237,8 @@ private:
 	// but only a pointer in the static table of the UT_Language class !!!
 	const XML_Char *		m_pLanguage;
 	bool					m_bIsOverhanging;
-	UT_Vector *             m_pJustifiedSpaces;
-
+	bool                    m_bIsJustified;
+	UT_sint32               m_iSpaceWidthBeforeJustification;
 	// these can be static as for now we do not want to chache anything
 	static UT_sint32 *      s_pCharAdvance;
 	static UT_uint32        s_iCharAdvanceSize;

@@ -73,7 +73,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_bSquiggled(false),
 	m_pLanguage(NULL),
 	m_bIsOverhanging(false),
-	m_pJustifiedSpaces(NULL)
+	m_bIsJustified(false)
 {
 	_setField(NULL);
 
@@ -137,7 +137,6 @@ fp_TextRun::~fp_TextRun()
 #endif
 
 	delete getRevisions();
-	delete m_pJustifiedSpaces;
 }
 
 bool fp_TextRun::hasLayoutProperties(void) const
@@ -153,7 +152,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	//clearScreen();
 
 	bool bChanged = false;
-	
+
 
 	fd_Field * fd = NULL;
 	static_cast<fl_Layout *>(getBlock())->getField(getBlockOffset(),fd);
@@ -225,11 +224,11 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	free(p);
 
 	bChanged |= (_getDecorations() != oldDecors);
-	
+
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	UT_Byte oldPos = m_fPosition;
-	
+
 	if (0 == UT_strcmp(pszPosition, "superscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
@@ -241,7 +240,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	else m_fPosition = TEXT_POSITION_NORMAL;
 
 	bChanged |= (oldPos != m_fPosition);
-	
+
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	GR_Font * pFont;
 
@@ -309,12 +308,12 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	m_pLanguage = lls.getPropertyFromProperty(pszLanguage);
 	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
 	{
-		
+
 		getBlock()->getDocLayout()->queueBlockForBackgroundCheck((UT_uint32) FL_DocLayout::bgcrSpelling, getBlock());
 		bChanged = true;
 	}
-	
-	
+
+
 	FriBidiCharType iOldOverride = m_iDirOverride;
 	FriBidiCharType iNewOverride;
 	const XML_Char *pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
@@ -332,7 +331,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 
 	bChanged |= (iOldOverride != iNewOverride);
-	
+
 	/*
 		OK, if the previous direction override was strong, and the new one is not (i.e., if
 		we are called because the user removed an override from us) we have to split this
@@ -399,7 +398,7 @@ bool fp_TextRun::canBreakAfter(void) const
 				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 				return false;
 			}
-			
+
 			UT_ASSERT(lenSpan>0);
 
 			if (len <= lenSpan)
@@ -533,7 +532,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 			return false;
 		}
-		
+
 		UT_ASSERT(lenSpan>0);
 
 		if (lenSpan > len)
@@ -601,7 +600,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 	return true;
 }
 
-		
+
 void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 								 PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
@@ -672,7 +671,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	// catch the case of a click directly on the left half of the
 	// first character in the run
 	UT_sint32 iCW = pCharWidths[getBlockOffset()] > 0 ? pCharWidths[getBlockOffset()] : 0;
-	
+
 	if (x < (iCW / 2))
 	{
 		pos = getBlock()->getPosition() + getOffsetFirstVis();
@@ -794,7 +793,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	bDirection = (iDirection != FRIBIDI_TYPE_LTR);
 	y = yoff;
 	height = getHeight();
-	xxx_UT_DEBUGMSG(("findPointCoords: TextRun yoff %d \n",yoff)); 
+	xxx_UT_DEBUGMSG(("findPointCoords: TextRun yoff %d \n",yoff));
 }
 
 bool fp_TextRun::canMergeWithNext(void)
@@ -810,9 +809,6 @@ bool fp_TextRun::canMergeWithNext(void)
 
 	fp_TextRun* pNext = static_cast<fp_TextRun*>(getNext());
 
-	UT_sint32 iSpaceWidth  = _getSpaceWidthBeforeJustification();
-	UT_sint32 iNSpaceWidth = pNext->_getSpaceWidthBeforeJustification();
-	
 	if (
 		(pNext->getBlockOffset() != (getBlockOffset() + getLength()))
 		|| (pNext->_getDecorations() != _getDecorations())
@@ -823,18 +819,6 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->_getFont() != _getFont())
 #endif
 		|| (getHeight() != pNext->getHeight())
-
-		// with the new algorithm we can merge if at least one run does not use
-		// justification or both have the same value (if one does not
-		// use, it probably does not contain spaces, if it does the
-		// merge comes a result of new line breaking and this will be
-		// followed by block format in which the justification will be
-		// recalculated anyway)
-		|| (   iSpaceWidth  != JUSTIFICATION_NOT_USED
-			&& iNSpaceWidth != JUSTIFICATION_NOT_USED
-			&& iNSpaceWidth != iSpaceWidth
-			)
-
 		|| (pNext->getField() != getField())
 		|| (pNext->m_pLanguage != m_pLanguage)	//this is not a bug
 		|| (pNext->_getColorFG() != _getColorFG())
@@ -856,6 +840,10 @@ bool fp_TextRun::canMergeWithNext(void)
 		    && !(*getRevisions() == *(pNext->getRevisions()))) //
 															   //non-null but different
 		|| (pNext->isHidden() != isHidden())
+
+		// I do not think this should happen at all
+		|| ((pNext->m_bIsJustified && m_bIsJustified)
+			&& (pNext->m_iSpaceWidthBeforeJustification != m_iSpaceWidthBeforeJustification))
 		)
 	{
 		return false;
@@ -889,6 +877,18 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(m_iDirOverride == pNext->m_iDirOverride); //#TF
 	//UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
 
+	// if either run was justified, the merged one needs to be as well
+	if(m_bIsJustified && pNext->m_bIsJustified)
+	{
+		UT_ASSERT(m_iSpaceWidthBeforeJustification == pNext->m_iSpaceWidthBeforeJustification);
+	}
+	else if(!m_bIsJustified && pNext->m_bIsJustified)
+	{
+		m_iSpaceWidthBeforeJustification = pNext->m_iSpaceWidthBeforeJustification;
+	}
+
+	m_bIsJustified |= pNext->m_bIsJustified;
+
 	_setField(pNext->getField());
 
 	UT_DEBUGMSG(("fp_TextRun::mergeWithNext\n"));
@@ -896,170 +896,6 @@ void fp_TextRun::mergeWithNext(void)
 
 	if(getX() > pNext->getX())
 		_setX(pNext->getX());
-
-	// here comes the the handling of justified runs
-	if(m_pJustifiedSpaces && pNext->m_pJustifiedSpaces)
-	{
-		// this is the case where both runs are justified
-		
-		UT_uint32 iCount = m_pJustifiedSpaces->getItemCount();
-		UT_uint32 iNCount = pNext->m_pJustifiedSpaces->getItemCount();
-		UT_ASSERT( iCount && iNCount );
-
-		if(_getSpaceWidthBeforeJustification() == JUSTIFICATION_FAKE)
-		{
-			// fake-ly justified runs can only be merged with other
-			// fake-ly justified runs
-			UT_ASSERT( pNext->_getSpaceWidthBeforeJustification() == JUSTIFICATION_FAKE );
-			
-			// there is nothing more to do, since these runs do not
-			// carry any data with them
-		}
-		else
-		{
-			
-			// get the last slot from our vector and the first slot from
-			// the next vector and see if they are continuous
-			//
-			// I have been toying with the idea to optimize this by
-			// reusing the longer of the two vectors, rather than the
-			// one associated with the current run, but in the end I
-			// decided against it. When we reuse the vector of the
-			// current run, we only need to add data by
-			// UT_Vector::addItem(), which is painless. If we were
-			// reusing the vector from the pNext run, we would have to
-			// be inserting data at the start of it using
-			// UT_Vector::insertItemAt(), which always involves
-			// shifting the entire contents of the vector to the right
-			// and most likely would cost us more than it would save us
-		
-			// NB: the following offsets are relative to their
-			// respective runs, not the block
-			//UT_sint32 iOrigSpaceWidth = (UT_sint32) m_pJustifiedSpaces->getNthItem(0);
-			//UT_sint32 iNOrigSpaceWidth = (UT_sint32) m_pJustifiedSpaces->getNthItem(0);
-			UT_sint32 iOrigOffset = (UT_sint32) m_pJustifiedSpaces->getNthItem(1);
-			UT_uint32 iBlOffset = getBlockOffset();
-			UT_sint32 iDelta = iBlOffset - iOrigOffset;
-			UT_uint32 iSpaceOffset = (UT_uint32) m_pJustifiedSpaces->getNthItem(iCount - 4) + iDelta;
-			UT_uint32 iSpaceLength = (UT_uint32) m_pJustifiedSpaces->getNthItem(iCount - 3);
-			UT_sint32 iNOrigOffset = (UT_sint32) pNext->m_pJustifiedSpaces->getNthItem(1);
-
-			UT_uint32 iNBlOffset = pNext->getBlockOffset();
-			UT_sint32 iNDelta = iNBlOffset - iNOrigOffset;
-			UT_uint32 iNSpaceOffset = (UT_uint32) pNext->m_pJustifiedSpaces->getNthItem(2) + iNDelta;
-			UT_uint32 iNSpaceLength = (UT_uint32) pNext->m_pJustifiedSpaces->getNthItem(3);
-
-			UT_uint32 iVectIndx = 2;
-
-			if(iSpaceOffset + iBlOffset + iSpaceLength == iNSpaceOffset + iNBlOffset)
-			{
-				// the two space slots are continuous, so we join them
-				m_pJustifiedSpaces->setNthItem(iCount - 3, (void*) (iSpaceLength + iNSpaceLength),NULL);
-				UT_uint32 iSpaceWidth = (UT_uint32) m_pJustifiedSpaces->getNthItem(iCount - 2);
-				iSpaceWidth += (UT_uint32) pNext->m_pJustifiedSpaces->getNthItem(4);
-				m_pJustifiedSpaces->setNthItem(iCount - 2, (void*) iSpaceWidth, NULL);
-
-				iVectIndx = 6;
-			}
-			else
-			{
-				// the two slots are not continuous, so we only need
-				// to append the contents of pNext->m_pJustifiedSpaces
-				// to this->m_pJustifiedSpaces, but first we have to
-				// adjust the text width of the first data segment
-				// from pNext by the width of the span after the last
-				// space in this run
-				UT_uint32 iTextBlOffset = iSpaceOffset + iSpaceLength + iBlOffset;
-				UT_uint32 iLastBlOffset = iBlOffset + getLength();
-				UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-				UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-				UT_uint32 iTextWidth = (UT_uint32)pNext->m_pJustifiedSpaces->getNthItem(iVectIndx+3);
-
-				for(UT_uint32 k = iTextBlOffset; k < iLastBlOffset; k++)
-				{
-					UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
-					iTextWidth += iCW;
-				}
-				
-				// we also have to adjust offsets so they are relative to
-				// iDelta, not iNDelta
-				UT_sint32 iMyOffset = (UT_uint32)pNext->m_pJustifiedSpaces->getNthItem(iVectIndx);
-				iMyOffset += (2*iNBlOffset - iNOrigOffset - 2*iBlOffset + iOrigOffset);
-				m_pJustifiedSpaces->addItem((void*)iMyOffset);
-
-				// add the length and space width
-				for(UT_uint32 j  = iVectIndx+1; j < iVectIndx+3; j++)
-					m_pJustifiedSpaces->addItem(pNext->m_pJustifiedSpaces->getNthItem(j));
-
-				// add the text width
-				m_pJustifiedSpaces->addItem((void*)iTextWidth);
-
-				iVectIndx += 4;
-			}
-			
-
-			for(UT_uint32 i = iVectIndx; i < iNCount; i += 4)
-			{
-				// we have to adjust offsets so they are relative to
-				// iDelta, not iNDelta
-				UT_sint32 iMyOffset = (UT_uint32) pNext->m_pJustifiedSpaces->getNthItem(i);
-				iMyOffset += (2*iNBlOffset - iNOrigOffset - 2*iBlOffset + iOrigOffset);
-				m_pJustifiedSpaces->addItem((void*)iMyOffset);
-
-				// copy the length, width and text width
-				for(UT_uint32 j  = i+1; j < i+4; j++)
-					m_pJustifiedSpaces->addItem(pNext->m_pJustifiedSpaces->getNthItem(j));
-			}
-		}
-	}
-	else
-	{
-		// we possibly have one run with justified spaces in it and
-		// other without, we keep the info from the one that has them
-		if(pNext->m_pJustifiedSpaces)
-		{
-			m_pJustifiedSpaces = pNext->m_pJustifiedSpaces;
-			pNext->m_pJustifiedSpaces = NULL;
-
-			// now we have to adjust the original offset, so that we
-			// get correct iDelta in our calculations (but only if
-			// this justification is not of JUSTIFICATION_FAKE kind)
-			// 
-			// to get the correct iDelta from the stored values we
-			// have to  subtract twice the length of this run from
-			// the stored original offset -- if you do not believe me,
-			// here come the equations (where bo is block offset, so
-			// is space offset, oo is original offset, of is
-			// offset-first, L is length, index 1 refers to the
-			// current run and index 2 to the next run):
-			//
-			//   bo = so + (of2 - oo2) + of2 = so + 2 of1 + 2 L1 - oo2
-			//   bo = so + (of1 - oo1) + of1 = so + 2 of1 - oo1
-			//   so + 2 of1 + 2 L1 - oo2 = so + 2 of1 - oo1
-			//   2 L1 - oo2 = -oo1
-			//   oo1 = oo2 - 2L1
-			//
-			// the consequence of this is, that the stored original
-			// offset can be negative, even though negative block
-			// offset is something that normally does not occur
-			//
-			// the other thing that we need to adjust here is the text
-			// width in the first data segement; this is very simple,
-			// since because this run originally did not have any
-			// spaces with adjuste width, we add to the first text
-			// width the width of this run
-			
-			if(_getSpaceWidthBeforeJustification() != JUSTIFICATION_FAKE)
-			{
-				UT_sint32 iOrigOffset = (UT_sint32)m_pJustifiedSpaces->getNthItem(1);
-				iOrigOffset -= 2*getLength();
-				m_pJustifiedSpaces->setNthItem(1, (void*) iOrigOffset, NULL);
-
-				UT_uint32 iTextWidth = (UT_uint32)m_pJustifiedSpaces->getNthItem(5) + getWidth();
-				m_pJustifiedSpaces->setNthItem(5, (void*) iTextWidth, NULL);
-			}
-		}
-	}
 
 	// can only adjust width after the justification has been handled
  	_setWidth(getWidth() + pNext->getWidth());
@@ -1123,7 +959,7 @@ void fp_TextRun::mergeWithNext(void)
 
 	setLength(getLength() + pNext->getLength());
 	_setDirty(isDirty() || pNext->isDirty());
-	
+
 	setNext(pNext->getNext(), false);
 	if (getNext())
 	{
@@ -1161,7 +997,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// buffer if the current one is up to date
 	pNew->_setRefreshDrawBuffer(_getRefreshDrawBuffer());
 	pNew->_setRecalcWidth(_getRecalcWidth());
-	
+
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	pNew->_setScreenFont(this->_getScreenFont());
 	pNew->_setLayoutFont(this->_getLayoutFont());
@@ -1192,6 +1028,9 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	pNew->_setHyperlink(this->getHyperlink());
 
+	pNew->m_bIsJustified = m_bIsJustified;
+	pNew->m_iSpaceWidthBeforeJustification = m_iSpaceWidthBeforeJustification;
+
 	// when revisions are present, this gets bit trickier
 	if(getRevisions() != NULL)
 	{
@@ -1205,149 +1044,6 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	}
 
 	pNew->setVisibility(this->isHidden());
-
-
-	// handle justification
-	if(m_pJustifiedSpaces)
-	{
-		// divide the justification info between the two runs
-		if(_getSpaceWidthBeforeJustification() == JUSTIFICATION_FAKE)
-		{
-			// this run has only faked justification, so it does not
-			// carry any real data
-			pNew->m_pJustifiedSpaces = new UT_Vector;
-			pNew->m_pJustifiedSpaces->addItem((void*)JUSTIFICATION_FAKE);
-		}
-		else
-		{
-			
-			UT_sint32 iOrigOffset  = (UT_sint32)m_pJustifiedSpaces->getNthItem(1);
-			UT_sint32 iDelta = getBlockOffset() - iOrigOffset;
-
-			// calculate new stored offset to produce same iDelta --
-			// for explanation of the adjustment see ::mergeWithNext()
-			UT_sint32 iNOrigOffset = iOrigOffset + 2*iSplitOffset;
-
-			for(UT_uint32 i = 2; i < m_pJustifiedSpaces->getItemCount(); i += 4)
-			{
-				UT_uint32 iSpaceOffset = (UT_uint32)m_pJustifiedSpaces->getNthItem(i) + iDelta;
-				UT_uint32 iSpaceLength = (UT_uint32)m_pJustifiedSpaces->getNthItem(i+1);
-
-				if(iSplitOffset >= iSpaceOffset + iSpaceLength)
-				{
-					// move on
-				}
-				else if(iSplitOffset <= iSpaceOffset)
-				{
-					// everything from this slot onwards belongs to the
-					// new run
-
-					// first try the special case where all the slots will
-					// go to the new run
-					if(i == 2)
-					{
-						pNew->m_pJustifiedSpaces = m_pJustifiedSpaces;
-						m_pJustifiedSpaces = NULL;
-
-					}
-					else
-					{
-						// only some of the slots need to be transferred
-						pNew->m_pJustifiedSpaces = new UT_Vector;
-						pNew->m_pJustifiedSpaces->addItem(m_pJustifiedSpaces->getNthItem(0));
-						pNew->m_pJustifiedSpaces->addItem(NULL); // dummy placeholder
-
-						// cannot call getItemCount() directly in the
-						// loop, since the number changes with each itteration
-						UT_uint32 iCount = m_pJustifiedSpaces->getItemCount();
-						
-						for(UT_uint32 j = i; j < iCount; j++)
-						{
-							// as we delete the item immediately afterwards,
-							// we are always working with the i index of the
-							// old vector (not j!)
-							pNew->m_pJustifiedSpaces->addItem(m_pJustifiedSpaces->getNthItem(i));
-							m_pJustifiedSpaces->deleteNthItem(i);
-						}
-					}
-
-					// now we have to adjust the stored original
-					// offset and the text width stored in the first slot
-					pNew->m_pJustifiedSpaces->setNthItem(1,(void*)iNOrigOffset,NULL);
-
-					iSpaceOffset = i >= 6 ? (UT_uint32)m_pJustifiedSpaces->getNthItem(i-4) + iDelta : 0;
-					iSpaceLength = i >= 6 ?(UT_uint32)m_pJustifiedSpaces->getNthItem(i-3):0;
-					UT_uint32 iBlOffset = getBlockOffset();
-					
-					UT_uint32 iTextBlOffset =  iSpaceOffset + iSpaceLength + iBlOffset;
-					UT_uint32 iLastBlOffset = iBlOffset + iSplitOffset;
-					UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-					UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
-					UT_uint32 iTextWidth = (UT_uint32)pNew->m_pJustifiedSpaces->getNthItem(5);
-
-					for(UT_uint32 k = iTextBlOffset; k < iLastBlOffset; k++)
-					{
-						UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
-						iTextWidth -= iCW;
-					}
-					
-					pNew->m_pJustifiedSpaces->setNthItem(5, (void*)iTextWidth, NULL);
-					
-
-					break;
-				}
-				else
-				{
-					// this is the harder case, where the split offset
-					// falls inside a space span, so we have to split the
-					// slot 
-
-					// first set the correct offsets and lengths
-					// (NB the iSplitOffset has to be recorded with the same
-					// iDelta as the rest of the offsets, so that adding
-					// iDelta would result in getting the correct offset)
-					pNew->m_pJustifiedSpaces = new UT_Vector;
-					pNew->m_pJustifiedSpaces->addItem(m_pJustifiedSpaces->getNthItem(0));
-					pNew->m_pJustifiedSpaces->addItem(NULL); //dummy placeholder
-
-					pNew->m_pJustifiedSpaces->addItem((void*)(iSplitOffset - iDelta)); //offset
-					UT_uint32 iNewLength = iSpaceLength - (iSplitOffset - iSpaceOffset);
-					pNew->m_pJustifiedSpaces->addItem((void*)iNewLength); //length
-					m_pJustifiedSpaces->setNthItem(i+1,(void*)(iSpaceOffset - iSplitOffset),NULL);//length
-
-					// now divide the width of the spaces
-					UT_uint32 iSpaceWidth = (UT_uint32)m_pJustifiedSpaces->getNthItem(i+2);
-					UT_uint32 iSingleWidth = iSpaceWidth / iSpaceLength;
-					pNew->m_pJustifiedSpaces->addItem((void*)(iSingleWidth * iNewLength));
-					m_pJustifiedSpaces->setNthItem(i+2,(void*)(iSingleWidth * (iSpaceLength - iNewLength)),NULL);
-					pNew->m_pJustifiedSpaces->addItem(NULL); //text width == 0
-
-
-					// everything after this slot onwards belongs to the
-					// new run
-
-					// cannot call getItemCount() directly in the
-					// loop, since the number changes with each itteration
-					UT_uint32 iCount = m_pJustifiedSpaces->getItemCount();
-					
-					for(UT_uint32 j = i+4; j < iCount; j++)
-					{
-						// as we delete the item immediately afterwards,
-						// we are always working with the i index of the
-						// old vector (not j!)
-						pNew->m_pJustifiedSpaces->addItem(m_pJustifiedSpaces->getNthItem(i));
-						m_pJustifiedSpaces->deleteNthItem(i);
-					}
-
-					// now we have to adjust the stored original
-					// offset
-					pNew->m_pJustifiedSpaces->setNthItem(1,(void*)iNOrigOffset,NULL);
-
-					break;
-				}
-			}
-		}
-	}
 
 	// do not force recalculation of the draw buffer and widths
 	pNew->setPrev(this, false);
@@ -1439,7 +1135,7 @@ void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths
 			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
 			return;
 		}
-		
+
 		UT_ASSERT(lenSpan>0);
 
 		if (len <= lenSpan)
@@ -1549,7 +1245,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iLength)
 			}
 #endif
 			UT_uint32 iCW = pCharWidths[i + getBlockOffset()] > 0 ? pCharWidths[i + getBlockOffset()] : 0;
-			
+
 			iWidth += iCW;
 		}
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
@@ -1621,7 +1317,7 @@ bool fp_TextRun::recalcWidth(void)
 
 #if defined(USE_LAYOUT_UNITS)
 		getGR()->setFont(_getLayoutFont());
-		
+
 		for (i = 0; i < getLength(); i++)
 		{
 			// this is a bit tricky, since we want the resulting width array in
@@ -1658,7 +1354,7 @@ bool fp_TextRun::recalcWidth(void)
 			UT_uint32 iCW = pCharWidthsDisplay[k] > 0 ? pCharWidthsDisplay[k] : 0;
 			_setWidth(getWidth() + iCW);
 		}
-		
+
 #endif // #ifndef WITH_PANGO
 
 		return true;
@@ -1695,7 +1391,7 @@ bool fp_TextRun::_addupCharWidths(void)
 	{
 		UT_uint32 iCW = pCharWidthsDisplay[i] > 0 ? pCharWidthsDisplay[i] : 0;
 		iWidth += iCW;
-		
+
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iCW = pCharWidthsLayout[i] > 0 ? pCharWidthsLayout[i] : 0;
 		iWidthLayoutUnits += iCW;
@@ -1802,13 +1498,13 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_ASSERT(pDA->pG == getGR());
 
-	
+
 	////////////////////////////////////////////////////////////////////
-	// 
+	//
 	// This section deals with calculating character advances so that
 	// overstriking characters get handled correctly
 	//
-	
+
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	const UT_GrowBuf * pgbCharWidthsLayout = getBlock()->getCharWidths()->getCharWidthsLayoutUnits();
@@ -1830,7 +1526,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	// required advance depends on the width of the base character and
 	// the properties of the combining character, and it can be both
 	// positive and negative.
-	// 
+	//
 	// At the moment, we calculate the advances here puting them into
 	// a static array. Should this prove to be too much of a
 	// performance bottleneck, we could cache this in a member array,
@@ -1846,7 +1542,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	UT_sint32 xoff_draw = pDA->xoff;
-	
+
 	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL )
 	{
 		for(UT_uint32 n = 0; n < iLen - 1; n++)
@@ -1886,7 +1582,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 							// centered character
 							iAdv = (pCWThis[m] + pCWThis[iLen - k - 1])/2 - iCumAdvance;
 						}
-						
+
 						if(k == 0)
 						{
 							// k == 0, this is the leftmost character,
@@ -1930,7 +1626,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 				// remember the width of the non-zero character
 				UT_sint32 iWidth = pCWThis[n];
 				UT_sint32 iCumAdvance = 0;
-				
+
 				// find the next non-zerow char
 				UT_uint32 m  = n + 1;
 				while(m < iLen && pCWThis[m] < 0)
@@ -1942,7 +1638,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 					{
 						UT_sint32 iThisWidth = pCWThis[m] & GR_OC_MAX_WIDTH;
 						iThisWidth -= iWidth;
-						
+
 						iAdv = -(iThisWidth - iCumAdvance);
 					}
 					else
@@ -1950,7 +1646,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 						//centered character
 						iAdv = iWidth - (iWidth + pCWThis[m])/2 + iCumAdvance;
 					}
-					
+
 					s_pCharAdvance[m-1] = iAdv;
 					iCumAdvance += iAdv;
 					m++;
@@ -1964,7 +1660,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		}
 
 	}
-	
+
 	UT_uint32 iBase = getBlock()->getPosition();
 
 	UT_RGBColor clrNormalBackground(_getColorHL());
@@ -2026,12 +1722,12 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	bool      bSegmentSelected[3];
 	UT_uint32 iSegmentWidth[3];
 	UT_Rect   rSegment;
-	
+
 	iSegmentOffset[0] = 0;
 	iSegmentOffset[1] = iSegmentOffset[3] = getLength();
 	bSegmentSelected[0] = false;
 	iSegmentWidth[0] = getWidth();
-	
+
 
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2)
 	{
@@ -2078,7 +1774,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			{
 				// a midle section is selected
 				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths, rSegment);
-				
+
 				iSegmentCount = 3;
 				bSegmentSelected[0] = false;
 				bSegmentSelected[1] = true;
@@ -2143,7 +1839,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 				bool bSel = (iSel1 != iSel2) && ((iRunBase + getLength()) < iSel1);
 				pT->_drawFirstChar(pDA->xoff + getWidth(),ytemp,bSel);
 			}
-			
+
 		}
 
 		if(pPrev && pPrev->getType() == FPRUN_TEXT)
@@ -2177,23 +1873,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	// if there is a selection, we will need to draw the text in
 	// segments due to different colour of the foreground
-	UT_uint32 iCurrOffset  = getBlockOffset();
-	UT_uint32 iSpaceOffset;
-	UT_uint32 iSpaceLength;
-	UT_uint32 iSpaceWidth;
-	UT_uint32 iTextWidth;
 	UT_sint32 iX = pDA->xoff;
-	UT_uint32 iLength = getLength();
-	UT_uint32 iPrevSpaceEnd = 0;
-	UT_uint32 iOffset = 0;
-	UT_uint32 i = 2;
-	UT_uint32 iCumSegmentWidth = 0;
-	UT_uint32 iCumTextWidth = 0;
-	UT_uint32 iDrawOffset;
-	UT_uint32 iSpaceCount = 0;
-
-	if(m_pJustifiedSpaces)
-		iSpaceCount = m_pJustifiedSpaces->getItemCount();
 
 	FriBidiCharType iVisDir = getVisDirection();
 	if(iVisDir == FRIBIDI_TYPE_RTL)
@@ -2204,15 +1884,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	for(UT_uint32 iSegment = 0; iSegment < iSegmentCount; iSegment++)
 	{
-
-		if(iOffset >= iSegmentOffset[iSegment+1])
-		{
-			// this is a special case when the segment spans only the
-			// spaces; we have skipped those, and so we need to move
-			iCumSegmentWidth += iSegmentWidth[iSegment];
-			continue;
-		}
-		
 		if(bSegmentSelected[iSegment])
 		{
 			getGR()->setColor(_getView()->getColorSelForeground());
@@ -2220,151 +1891,23 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		else
 			getGR()->setColor(getFGColor());
 
+		UT_uint32 iMyOffset = iVisDir == FRIBIDI_TYPE_RTL ?
+			getLength()-iSegmentOffset[iSegment+1]  :
+			iSegmentOffset[iSegment];
 
-		if(iSpaceCount < 2)
-		{
-			// this is the case of non-justified run or fakly-justified run
-			// since we have the visual string in the draw buffer, we
-			// just call getGR()r->drawChars()
-			UT_uint32 iMyOffset = iVisDir == FRIBIDI_TYPE_RTL ?
-				getLength()-iSegmentOffset[iSegment+1]  :
-				iSegmentOffset[iSegment];
-			
-			if(iVisDir == FRIBIDI_TYPE_RTL)
-				iX -= iSegmentWidth[iSegment];
+		if(iVisDir == FRIBIDI_TYPE_RTL)
+			iX -= iSegmentWidth[iSegment];
 
-			getGR()->drawChars(m_pSpanBuff,
-							   iMyOffset,
-							   iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment],
-							   iX,
-							   yTopOfRun,s_pCharAdvance + iMyOffset);
+		getGR()->drawChars(m_pSpanBuff,
+						   iMyOffset,
+						   iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment],
+						   iX,
+						   yTopOfRun,s_pCharAdvance + iMyOffset);
 
-			if(iVisDir == FRIBIDI_TYPE_LTR)
-				iX += iSegmentWidth[iSegment];
-				
-		}
-		else
-		{
-			// because the data stored in our vector does not get
-			// modified when text is inserted or deleted we have to
-			// calculate the adjustment for the stored offsets
-
-			// note that the original offset can be negative to allow us
-			// to create positive iDelta (see the note in ::mergeWithNext())
-			UT_sint32 iOrigOffset  = (UT_uint32) m_pJustifiedSpaces->getNthItem(1);
-			UT_sint32 iDelta       = iCurrOffset - iOrigOffset;
-
-
-			UT_uint32 iDrawLength;
-
-			// the justification data is stored in logical order, however,
-			// if the run is RTL, it is being drawn relative to its left
-			// edge, and consequently we have to process the draw buffer
-			// in the reverse order
-
-			do
-			{
-				iSpaceOffset = (UT_uint32) m_pJustifiedSpaces->getNthItem(i) + iDelta;
-				iSpaceLength = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+1);
-				iSpaceWidth  = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+2);
-				iTextWidth   = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+3);
-
-				UT_uint32 iMinOffset = UT_MIN(iSpaceOffset, iSegmentOffset[iSegment+1]);
-
-				if(iVisDir == FRIBIDI_TYPE_RTL)
-				{
-					if(iMinOffset == iSpaceOffset)
-					{
-						//iCumTextWidth += iTextWidth + iSpaceWidth;
-						iX = pDA->xoff + getWidth() - iCumTextWidth - iTextWidth;
-					}
-					else
-					{
-						//iCumSegmentWidth += iSegmentWidth[iSegment];
-						iX = pDA->xoff + getWidth() - iCumSegmentWidth - iSegmentWidth[iSegment];
-					}
-					
-					
-					iDrawOffset = iLength - iMinOffset;
-					iDrawLength = iMinOffset - iOffset;
-				}
-				else
-				{
-					iDrawOffset = UT_MIN(iOffset,iSegmentOffset[iSegment+1]); 
-					iDrawLength = iMinOffset - iDrawOffset;
-				}
-				
-				getGR()->drawChars(m_pSpanBuff,
-								   iDrawOffset,
-								   iDrawLength,
-								   iX,
-								   yTopOfRun,
-								   s_pCharAdvance + iDrawOffset);
-				
-				xxx_UT_DEBUGMSG(( "fp_TextRun::_draw: iOffset %d, iSpaceOffset %d, iSpaceLength %d, iDelta %d, iCurrOffset %d, iSpaceWidth %d, iTextWidth %d\n", iOffset, iSpaceOffset, iSpaceLength, iDelta, iCurrOffset, iSpaceWidth, iTextWidth ));
-
-				if(iVisDir == FRIBIDI_TYPE_LTR)
-				{
-					if(iMinOffset == iSpaceOffset)
-					{
-						// we drew to the end of the chunk
-						iCumTextWidth += (iTextWidth + iSpaceWidth);
-						iX = pDA->xoff + iCumTextWidth;
-					}
-					else
-					{
-						// we only drew to the end of the segment
-						iCumSegmentWidth += iSegmentWidth[iSegment];
-						iX = pDA->xoff + iCumSegmentWidth;
-					}
-				}
-				else
-				{
-					if(iMinOffset == iSpaceOffset)
-					{
-						// we drew to the end of the chunk
-						iCumTextWidth += (iTextWidth + iSpaceWidth);
-					}
-					else
-					{
-						// we only drew to the end of the segment
-						iCumSegmentWidth += iSegmentWidth[iSegment];
-					}
-				}
-				
-				
-				iOffset = UT_MIN(iSpaceOffset + iSpaceLength, iSegmentOffset[iSegment+1]);
-
-				if(iOffset >= iSpaceOffset && iOffset <= iSpaceOffset + iSpaceLength)
-				{
-					// we reached the end of the current spaces, so we
-					// want to shift the offset past them
-					iOffset = iSpaceOffset + iSpaceLength;
-
-					if(iOffset >= iSegmentOffset[iSegment+1])
-					{
-						// we have reached the end of the present segment
-						// need to add the segment width
-						iCumSegmentWidth += iSegmentWidth[iSegment];
-					}
-				}
-
-				
-				if(iOffset >= iSpaceOffset + iSpaceLength) 
-					i += 4;
-
-			}while (i < iSpaceCount && iOffset < iSegmentOffset[iSegment+1]);
-
-			if(iOffset < iSegmentOffset[iSegment+1])
-			{
-				// draw the section of the run past the last space segment
-				getGR()->drawChars(m_pSpanBuff, iOffset, iSegmentOffset[iSegment+1] - iOffset, iX, yTopOfRun, s_pCharAdvance + iOffset);
-			}
-			if(i >= iSpaceCount)
-				break;
-		}
+		if(iVisDir == FRIBIDI_TYPE_LTR)
+			iX += iSegmentWidth[iSegment];
 	}
-	
+
 	drawDecors(pDA->xoff, yTopOfRun);
 
 	if(pView->getShowPara())
@@ -2789,7 +2332,7 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 
 	if(bSelection)
 	{
-		getGR()->setColor(_getView()->getColorSelForeground());	
+		getGR()->setColor(_getView()->getColorSelForeground());
 	}
 	else
 		getGR()->setColor(getFGColor());
@@ -2823,11 +2366,11 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff, bool bSelection)
 
 	if(bSelection)
 	{
-		getGR()->setColor(_getView()->getColorSelForeground());	
+		getGR()->setColor(_getView()->getColorSelForeground());
 	}
 	else
 		getGR()->setColor(getFGColor());
-	
+
 	if(!s_bBidiOS)
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char
@@ -2934,13 +2477,13 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 		iWidthOffset += (iLen-1);
 		iWidthIncr = -1;
 	}
-	
+
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 
 	// we will process this in visual order, keeping in mind that the
 	// width buffer is in logical order
-	
+
 	for (UT_uint32 i=0; i < iLen; i++)
 	{
 		if(m_pSpanBuff[i] == UCS_SPACE)
@@ -3283,11 +2826,11 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistanceInLayoutUnits(void) const
 
 void fp_TextRun::resetJustification()
 {
-	UT_sint32 iSpaceWidthBefore = _getSpaceWidthBeforeJustification();
-	
-	if(iSpaceWidthBefore != JUSTIFICATION_NOT_USED
-    && iSpaceWidthBefore != JUSTIFICATION_FAKE)
+
+	if(m_bIsJustified)
 	{
+		UT_sint32 iSpaceWidthBefore = _getSpaceWidthBeforeJustification();
+
 		UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 		UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 		if(pCharWidths == NULL)
@@ -3295,7 +2838,7 @@ void fp_TextRun::resetJustification()
 			return;
 		}
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
-		
+
 		// if for some reason the width after justification is the
 		// same as it was, we do not need to do this at all
 		while (i >= 0)
@@ -3315,103 +2858,18 @@ void fp_TextRun::resetJustification()
 			// keep looping
 			i = findCharacter(i+1-getBlockOffset(), UCS_SPACE);
 		}
-	}
-	
-	if(m_pJustifiedSpaces)
-	{
-		delete m_pJustifiedSpaces;
-		m_pJustifiedSpaces = NULL;
+
+		m_bIsJustified = false;
 	}
 }
 
 /*!
     This metod distributes an extra width needed to make the line
     justified betten the spaces in this run
-    
+
     \param UT_sint32 iAmount      : the extra width to distribute
     \param UT_uint32 iSpacesInRun : the number of spaces in this run
-    
-    \note The new justification algorithm requires a few words of
-    explanation; the old algorithm worked like this: if the run was to
-    be justified, we split it so that each continous span of spaces
-    was contained in its own run. We then divided the extra width
-    needed to justify our run between the spaces and adjusted the
-    withds of the space-only runs accordingly. This was costly in
-    terms of memory and drawing performance; each justification point
-    required two runs to represent it, i.e., 2 * sizeof(fp_TextRun),
-    368 bytes (as of now)
 
-    The new algorithm avoids the costly spliting of runs by doing only
-    a notional split. Every continous span of spaces is described by a
-    record of four int's: offset of the spaces from the start of the
-    run, length of the span, its (adjusted) width and the width of
-    the text span that precedes it. This information is stored in the
-    vector pointed to by m_pJustifiedSpaces and is processed by
-    fp_TextRun::_draw(). Thus the overall memory requirenment for each
-    justification point is 4 * sizeof(void*), 16 bytes; this amounts
-    to saving 352 bytes per justification point, i.e., in a fully
-    justified document of 5000 words we use 1.7 MB of memory less !!!
-    A further advantage of this is that since the extra advance on the
-    screen is handled inside of a singe call to fp_TextRun::_draw(),
-    rather than in between separate calls to the routine, our drawing
-    performance improves because we get rid of the overhead that the
-    separate calls required (drawing selection background, setting up
-    colours, etc.). In return ::split() and mergeWithNext() become
-    slightly more complex.
-    
-    The one problem with representing the justification points with
-    the 4 int's is that when the runs get merged or split, the
-    position of the spaces within the run (and when text gets inserted
-    or deleted also within the block) changes. To avoid having to
-    recalculated all the offsets all the time, we store in our vector
-    the block position of the run with which the run-relative offsets
-    were calculated; by adjusting this position and using it to
-    calculate a difference iDelta we can avoid needing to modify the
-    actual offsets of the space segements we keep most of the time.
-    
-    Also, as the first element of our vector, we keep the original
-    width of a space before we applied justification; this does away
-    with the need for separate m_iSpaceWidthBeforeJustification member.
-
-    The contents of m_pJustifiedSpaces look like this:
-
-	    offset    |    content
-	    -----------------------------------------------------------
-		* the vector header
-	    0         |    original space width
-	    1         |    block offset used to calculate space offsets
-	                   (NB: this number is signed !!!)
-	    
-	    * the space segment records
-	    2         |    space segment offset (run-relative)
-	    3         |    space segment length
-	    4         |    space segment width
-	    5         |    width of text immediately before the spaces
-	    ...
-	    count - 4 |    space segment offset (run-relative)
-	    count - 3 |    space segment length
-	    count - 2 |    space segment width
-	    count - 1 |    width of text immediately before the spaces
-
-    (The reasons why we store the individual numbers sequentially in
-    the vector rather than in some kind of a struct is to avoid
-    allocation and deallocation of such a structure.)
-
-	It should be noted that the original block offset (OBO) stored at
-    index 1 can be not only positive, but also negative; it is merely
-    a notional block offset which can only be used for calculating
-    difference iDelta from the current block offset (CBO):
-
-        iDelta = CBO - OBO
-
-    iDelta is then used to calculate the real space offset (RSO) from
-    the space offset stored in the vector (SO):
-
-        RSO = SO + iDelta
-
-    RSO is run-relative, and where block offset is required,
-    adjustement by the block offset of the run is necessary.
-    
 */
 void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 {
@@ -3421,13 +2879,14 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 	{
 		return;
 	}
+#if 0
 	if(!iAmount && !iSpacesInRun)
 	{
 		// I suspect this might now be redundant ...
 		_setSpaceWidthBeforeJustification(JUSTIFICATION_FAKE);
 		return;
 	}
-
+#endif
 	if(!iAmount)
 	{
 		// this can happend near the start of the line (the line is
@@ -3439,9 +2898,9 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 		// resetJustification();
 		return;
 	}
-	
+
 	UT_uint32 iBlockOffset = getBlockOffset();
-	
+
 	if(iSpacesInRun && getLength() > 0)
 	{
 		_setWidth(getWidth() + iAmount);
@@ -3449,72 +2908,17 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 		// NB: i is block offset, not run offset !!!
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
 
-#if 0 // not needed, since we always follow resetJustification()
-		if(m_pJustifiedSpaces)
-			m_pJustifiedSpaces->clear();
-#endif
-		
 		UT_ASSERT( i>=0 );
+
+		m_bIsJustified = true;
+
 		_setSpaceWidthBeforeJustification(pCharWidths[i]);
-
-		UT_uint32 iVectIndx = 2;
-		UT_ASSERT( m_pJustifiedSpaces->getItemCount() == 1 );
-
-		m_pJustifiedSpaces->addItem((void*)iBlockOffset);
-
-		// add the first four slots to our space vector
-		for(UT_uint32 j = 1; j < 5; j++)
-			m_pJustifiedSpaces->addItem(NULL);
-
 
 		while ((i >= 0) && (iSpacesInRun))
 		{
 			UT_sint32 iThisAmount = iAmount / iSpacesInRun;
 
 			pCharWidths[i] += iThisAmount;
-
-			// find the data slot for this space in our vector
-			UT_uint32 iSpaceOffset = (UT_uint32)m_pJustifiedSpaces->getNthItem(iVectIndx);
-			UT_uint32 iSpaceLength = (UT_uint32)m_pJustifiedSpaces->getNthItem(iVectIndx + 1);
-			
-			if(iVectIndx == 2 && !iSpaceOffset && !iSpaceLength)
-			{
-				// this is the first empty slot, just use it
-				m_pJustifiedSpaces->setNthItem(2, (void*) (i - iBlockOffset), NULL); // offset
-				m_pJustifiedSpaces->setNthItem(3, (void*) 1, NULL); // length
-			}
-			else
-			{
-				// we have a proper slot, see if our space fits in it
-				UT_uint32 iRunOffset = i - iBlockOffset;
-				
-				UT_ASSERT( iRunOffset >= (UT_uint32)(iSpaceOffset + iSpaceLength));
-				if(iRunOffset == (UT_uint32)(iSpaceOffset + iSpaceLength))
-				{
-					// this space is immediately after the end of this
-					// slot, so we append it
-					m_pJustifiedSpaces->setNthItem(iVectIndx + 1, (void*) (iSpaceLength + 1), NULL); // length
-				}
-				else
-				{
-					// we need a new data segment
-					// add the first four slots to our space vector
-					m_pJustifiedSpaces->addItem((void*)(iRunOffset));
-					m_pJustifiedSpaces->addItem((void*)1);
-
-					for(UT_uint32 j = 0; j < 2; j++)
-						m_pJustifiedSpaces->addItem(NULL); //dummy placeholders
-
-					iVectIndx += 4;
-
-				}
-
-			}
-
-
-			// now adjust the width
-			UT_uint32 iSpaceWidth = (UT_uint32)m_pJustifiedSpaces->getNthItem(iVectIndx + 2);
-			m_pJustifiedSpaces->setNthItem(iVectIndx + 2,(void*)(iSpaceWidth + pCharWidths[i]),NULL);
 
 			iAmount -= iThisAmount;
 
@@ -3524,29 +2928,6 @@ void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint
 			i = findCharacter(i+1-iBlockOffset, UCS_SPACE);
 		}
 		_setRecalcWidth(true);
-	}
-
-	UT_ASSERT(iAmount == 0);
-
-	// now we need to calculate the width of the text segments between
-	// the space segments to speed up fp_TextRun::_draw()
-	UT_uint32 iCount = m_pJustifiedSpaces->getItemCount();
-	UT_ASSERT( iCount > 2);
-	UT_uint32 iOffset = iBlockOffset;
-
-	//NB: since we just calculated these offsets, we know that they
-	//have iDelta == 0, so we do not need to bother with that
-	for(UT_uint32 j = 2; j < iCount; j += 4)
-	{
-		UT_uint32 iSpaceOffset = (UT_uint32)m_pJustifiedSpaces->getNthItem(j);
-		UT_uint32 iSpaceLength = (UT_uint32)m_pJustifiedSpaces->getNthItem(j+1);
-		UT_uint32 iTextWidth = 0;
-
-		for(UT_uint32 k = iOffset; k < iSpaceOffset + iBlockOffset; k++)
-			iTextWidth += pCharWidths[k];
-
-		m_pJustifiedSpaces->setNthItem(j+3, (void*)iTextWidth, NULL);
-		iOffset = iBlockOffset + iSpaceOffset + iSpaceLength;
 	}
 }
 
@@ -3713,7 +3094,7 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 
 	if(dirOverride != FRIBIDI_TYPE_IGNORE)
 	{
-		
+
 		m_iDirOverride = dirOverride;
 
 		// if we set dir override to a strong value, set also visual direction
@@ -3724,7 +3105,7 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 		if(dirOverride != FRIBIDI_TYPE_UNSET)
 			setVisDirection(dirOverride);
 	}
-	
+
 
 	/*
 		if this run belongs to a line we have to notify the line that
@@ -3942,13 +3323,13 @@ void fp_TextRun::breakMeAtDirBoundaries(FriBidiCharType iNewOverride)
 	// contain characters of misleading directional properties
 	fp_TextRun * pRun = this;
 	UT_uint32 iLen = getLength();  // need to remember this, since
-								   // 
+								   //
 								   // getLength() will change if we split
 
 	// no need to process 1 character runs ...
 	if(iLen < 2)
 		return;
-	
+
 	PT_BlockOffset currOffset = getBlockOffset();
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan = 0;
@@ -4007,12 +3388,9 @@ void fp_TextRun::_freeGlyphString()
 */
 UT_sint32 fp_TextRun::_getSpaceWidthBeforeJustification()
 {
-	if(!m_pJustifiedSpaces)
-		return JUSTIFICATION_NOT_USED;
+	UT_return_val_if_fail(m_bIsJustified, 0);
 
-	UT_return_val_if_fail(m_pJustifiedSpaces->getItemCount() > 0, JUSTIFICATION_NOT_USED);
-
-	return (UT_sint32) m_pJustifiedSpaces->getNthItem(0);
+	return m_iSpaceWidthBeforeJustification;
 }
 
 /*!
@@ -4022,13 +3400,6 @@ UT_sint32 fp_TextRun::_getSpaceWidthBeforeJustification()
 */
 void fp_TextRun::_setSpaceWidthBeforeJustification(UT_sint32 iWidth)
 {
-	if(!m_pJustifiedSpaces)
-	{
-		m_pJustifiedSpaces = new UT_Vector;
-	}
-	
-	if(m_pJustifiedSpaces->getItemCount() == 0)
-		m_pJustifiedSpaces->addItem(NULL);
-
-	m_pJustifiedSpaces->setNthItem(0, (void*) iWidth, NULL);
+	UT_ASSERT(m_bIsJustified);
+	m_iSpaceWidthBeforeJustification = iWidth;
 }
