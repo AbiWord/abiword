@@ -30,6 +30,7 @@
 #include "fp_TableContainer.h"
 #include "fp_FootnoteContainer.h"
 #include "fp_FrameContainer.h"
+#include "fl_FootnoteLayout.h"
 #include "fp_Run.h"
 #include "fl_TOCLayout.h"
 #include "ut_debugmsg.h"
@@ -742,6 +743,10 @@ void fp_VerticalContainer::removeContainer(fp_Container* pContainer,bool bClear)
 		return;
 	UT_sint32 ndx = findCon(pContainer);
 	UT_ASSERT(ndx >= 0);
+	if(ndx < 0)
+	{
+		return;
+	}
 	if(bClear && (pContainer->getContainerType() == FP_CONTAINER_LINE))
 	{
 		pContainer->clearScreen();
@@ -1543,6 +1548,30 @@ fp_Column::~fp_Column()
 {
 	UT_DEBUGMSG(("Deleteing Column %x Number containers left %d \n",this,countCons()));
 //	UT_ASSERT(countCons() == 0);
+}
+
+/*!
+ * This method should be called before a docsection collapse since we can't
+ * be sure that the docsection that owns this column also contains the endnote
+ * in this column
+ */
+void fp_Column::collapseEndnotes(void)
+{
+	UT_sint32 i = 0;
+	for(i=static_cast<UT_sint32>(countCons())-1; i>= 0; i--)
+	{
+		fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));
+		if(pCon->getContainerType() == FP_CONTAINER_ENDNOTE)
+		{
+			fl_EndnoteLayout * pEL = static_cast<fl_EndnoteLayout *>(pCon->getSectionLayout());
+			pEL->collapse();
+			UT_sint32 ndx = findCon(pCon);
+			if(ndx >= 0)
+			{
+				justRemoveNthCon(ndx);
+			}
+		}
+	}
 }
 
 void fp_Column::setPage(fp_Page * pPage)

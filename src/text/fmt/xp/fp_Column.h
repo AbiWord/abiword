@@ -231,7 +231,7 @@ public:
  	
 	void				layout(void);
 
-
+	void                collapseEndnotes(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif

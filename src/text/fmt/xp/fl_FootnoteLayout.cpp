@@ -641,6 +641,7 @@ void fl_EndnoteLayout::_localCollapse(void)
 
 void fl_EndnoteLayout::collapse(void)
 {
+	UT_DEBUGMSG(("Collapsing  Endnote %x \n",this));
 	_localCollapse();
 	fp_EndnoteContainer *pFC = static_cast<fp_EndnoteContainer *>(getFirstContainer());
 	while(pFC)

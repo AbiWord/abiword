@@ -261,6 +261,7 @@ public:
 	void                   addCon(fp_ContainerObject * pCon);
 	UT_uint32              countCons(void) const;
 	UT_sint32              findCon(fp_ContainerObject * pCon) const;
+	void                   justRemoveNthCon(UT_sint32 i);
 	void                   deleteNthCon(UT_sint32 i);
 	void                   insertConAt(fp_ContainerObject * pCon, UT_sint32 i);
 	bool                   isEmpty(void) const;

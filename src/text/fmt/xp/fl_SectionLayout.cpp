@@ -2347,6 +2347,11 @@ void fl_DocSectionLayout::collapse(void)
 	pCol = m_pFirstColumn;
 	while (pCol)
 	{
+//
+// The endnote in a column may originate from a totally different 
+// docsection. We must collapse these endnotes first
+//
+		pCol->collapseEndnotes();
 		if (pCol->getLeader() == pCol)
 		{
 			pCol->getPage()->removeColumnLeader(pCol);
@@ -2359,14 +2364,33 @@ void fl_DocSectionLayout::collapse(void)
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
+		if(pBL->getContainerType() == FL_SECTION_ENDNOTE)
+		{
+			fp_Container * pCon = pBL->getFirstContainer();
+			fp_Column * pCol = static_cast<fp_Column *>(pCon->getColumn());
+			UT_DEBUGMSG(("Got and endnote in this section!! \n"));
+			UT_DEBUGMSG(("Remove Endnote con %x from col %x \n",pCon,pCol));
+			pCol->removeContainer(pCon);
+		}
 		pBL->collapse();
 		pBL = pBL->getNext();
+
 	}
 
 	// delete all our columns
 	pCol = m_pFirstColumn;
 	while (pCol)
 	{
+		if(pCol->countCons() > 0)
+		{
+			UT_uint32 i = 0;
+			for(i=0; i<pCol->countCons();i++)
+			{
+				fp_ContainerObject * pCon = pCol->getNthCon(i);
+				UT_DEBUGMSG(("Still have a pointer to a container %x -removing pointer \n",pCon));
+				pCol->justRemoveNthCon(i);
+			}
+		}
 		fp_Column* pNext = static_cast<fp_Column *>(pCol->getNext());
 		delete pCol;
 		pCol = pNext;	

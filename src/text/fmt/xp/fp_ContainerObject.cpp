@@ -421,6 +421,11 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 	return true;
 }
 
+void fp_Container::justRemoveNthCon(UT_sint32 i)
+{
+	m_vecContainers.deleteNthItem(i);
+}
+
 void  fp_Container::deleteNthCon(UT_sint32 i)
 {
 	fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));

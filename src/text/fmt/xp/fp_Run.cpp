@@ -974,12 +974,12 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 		}
 		else
 		{
-			UT_DEBUGMSG(("fp_Run: Clearscreen on line without page \n"));
+			xxx_UT_DEBUGMSG(("fp_Run: Clearscreen on line without page \n"));
 		}
 	}
 	else
 	{
-		UT_DEBUGMSG(("fpRun: Clearscreen on line without container \n"));
+		xxx_UT_DEBUGMSG(("fpRun: Clearscreen on line without container \n"));
 	}
 	fp_Line * pLine = getLine();
 	if(pLine)
