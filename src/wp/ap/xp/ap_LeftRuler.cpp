@@ -69,8 +69,7 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 		
 	s_iFixedHeight = 32;
 	s_iFixedWidth = 32;
-
-	memset(&m_lfi,0,sizeof(m_lfi));
+	m_lfi = NULL;
 	
 	// install top_ruler_prefs_listener as this lister for this func
 	pFrame->getApp()->getPrefs()->addListener( AP_LeftRuler::_prefsListener, (void *)this );
@@ -514,7 +513,7 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 			return;
 		}
 
-		draw(NULL, m_infoCache);
+		draw(NULL, &m_infoCache);
 		_xorGuide();
 		m_bBeforeFirstMotion = false;
 
@@ -599,7 +598,7 @@ void AP_LeftRuler::_ignoreEvent(bool bDone)
 	{
 	case DW_TOPMARGIN:
 	case DW_BOTTOMMARGIN:
-		draw(NULL, m_infoCache);
+		draw(NULL, &m_infoCache);
 		break;
 
 	case DW_NOTHING:
@@ -616,6 +615,10 @@ void AP_LeftRuler::_ignoreEvent(bool bDone)
 
 static bool s_IsOnDifferentPage(const AP_LeftRulerInfo * p1, const AP_LeftRulerInfo * p2)
 {
+	if(p2 == NULL)
+	{
+		return true;
+	}
 	return (   (p1->m_yPageStart    != p2->m_yPageStart)
 			|| (p1->m_yPageSize     != p2->m_yPageSize)
 			|| (p1->m_yTopMargin    != p2->m_yTopMargin)
@@ -634,12 +637,8 @@ bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 
 	if (mask & (AV_CHG_MOTION | AV_CHG_FMTSECTION | AV_CHG_HDRFTR))
 	{
-		static AP_LeftRulerInfo lfi;
-//		was AP_LeftRulerInfo lfi;
-		(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
-
-//		if (s_IsOnDifferentPage(&lfi, &m_lfi))
-			draw(NULL,lfi);
+		(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&m_tempInfo);
+			draw(NULL,&m_tempInfo);
 	}
 	
 	return true;
@@ -687,7 +686,7 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 	AP_LeftRulerInfo lfi;
 	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
 
-	if (s_IsOnDifferentPage(&lfi, &m_lfi))
+	if (s_IsOnDifferentPage(&lfi, m_lfi))
 	{
 		// if the current page has changed we override the clipping
 		// and redraw everything.
@@ -870,7 +869,6 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 	}
 
 	UT_sint32 nrows = pInfo->m_iNumRows;
-	AP_LeftRulerTableInfo * pLInfo = (AP_LeftRulerTableInfo *) pInfo->m_vecTableRowInfo->getNthItem(pInfo->m_iCurrentRow);
 	UT_sint32 i =0;
 	for(i=0;i <= nrows; i++)
 	{
@@ -889,14 +887,15 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 {
 	if (!m_pView)
 		return;
+	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&m_tempInfo);
 	
-	AP_LeftRulerInfo lfi;
-	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
-	
-	draw(pClipRect,lfi);
+// lfi will be reference to m_lfi which will be deleted before taking this.
+// value. This prevents a memory leak.
+
+	draw(pClipRect,&m_tempInfo);
 }
 
-void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
+void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo * lfi)
 {
 	if (!m_pG)
 		return;
@@ -919,24 +918,24 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	UT_uint32 xLeft = s_iFixedWidth/4;
 	UT_uint32 xBar  = s_iFixedWidth/2;
 
-	UT_uint32 docWithinMarginHeight = lfi.m_yPageSize - lfi.m_yTopMargin - lfi.m_yBottomMargin;
+	UT_uint32 docWithinMarginHeight = lfi->m_yPageSize - lfi->m_yTopMargin - lfi->m_yBottomMargin;
 
-	UT_sint32 yOrigin = lfi.m_yPageStart;
+	UT_sint32 yOrigin = lfi->m_yPageStart;
 	UT_sint32 yScrolledOrigin = yOrigin - m_yScrollOffset;
 	UT_sint32 y,h;
 
-	if ((yScrolledOrigin + lfi.m_yTopMargin) > 0)
+	if ((yScrolledOrigin + lfi->m_yTopMargin) > 0)
 	{
 		// top margin of paper is on-screen.  draw dark-gray bar.
 		// we need to clip it ourselves -- since the expose/paint
 		// clip rects don't know anything about this distinction.
 
 		y = yScrolledOrigin;
-		h = lfi.m_yTopMargin - 1;
+		h = lfi->m_yTopMargin - 1;
 		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
-	yScrolledOrigin += lfi.m_yTopMargin + 1;
+	yScrolledOrigin += lfi->m_yTopMargin + 1;
 	if ((yScrolledOrigin + docWithinMarginHeight) > 0)
 	{
 		// area within the page margins is on-screen.
@@ -948,14 +947,14 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	}
 
 	yScrolledOrigin += docWithinMarginHeight + 1;
-	if ((yScrolledOrigin + lfi.m_yBottomMargin) > 0)
+	if ((yScrolledOrigin + lfi->m_yBottomMargin) > 0)
 	{
 		// bottom margin of paper is on-screen.
 		// draw another dark-gray bar, like we
 		// did at the top.
 
 		y = yScrolledOrigin;
-		h = lfi.m_yBottomMargin - 1;
+		h = lfi->m_yBottomMargin - 1;
 		m_pG->fillRect(GR_Graphics::CLR3D_BevelDown,xLeft,y,xBar,h);
 	}
 
@@ -978,9 +977,9 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	}
 
 	// first draw the top margin
-	for (k=1; ((UT_sint32)(k*tick.tickUnit/tick.tickUnitScale) < lfi.m_yTopMargin); k++)
+	for (k=1; ((UT_sint32)(k*tick.tickUnit/tick.tickUnitScale) < lfi->m_yTopMargin); k++)
 	{
-		y = yOrigin + lfi.m_yTopMargin - k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
+		y = yOrigin + lfi->m_yTopMargin - k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
 		if (y >= 0)
 		{
 			if (k % tick.tickLabel)
@@ -1013,9 +1012,9 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	}
 	
 	// then draw everything below
-	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < (lfi.m_yPageSize - lfi.m_yTopMargin)); k++)
+	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < (lfi->m_yPageSize - lfi->m_yTopMargin)); k++)
 	{
-		y = yOrigin + lfi.m_yTopMargin + k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
+		y = yOrigin + lfi->m_yTopMargin + k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
 		if (y >= 0)
 		{
 			if (k % tick.tickLabel)
@@ -1050,11 +1049,11 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	// draw the various widgets for the left ruler
 	// 
 	// current section properties {left-margin, right-margin};
-	_drawMarginProperties(pClipRect, &lfi, GR_Graphics::CLR3D_Foreground);
+	_drawMarginProperties(pClipRect, lfi, GR_Graphics::CLR3D_Foreground);
 
 // Cell properties for a table
 
-	_drawCellProperties(&lfi);
+	_drawCellProperties(lfi);
 	if (pClipRect)
 	{
 		m_pG->setClipRect(NULL);

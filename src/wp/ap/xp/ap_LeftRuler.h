@@ -184,8 +184,8 @@ private:
 	UT_uint32			m_iHeight;		/* size of window */
 	UT_uint32			m_iWidth;		/* size of window */
 
-	AP_LeftRulerInfo *	m_infoCache;
-
+	AP_LeftRulerInfo 	m_infoCache;
+	AP_LeftRulerInfo    m_tempInfo;
 	UT_sint32			m_oldY; /* Only for dragging; used to see if object has moved */
 
 	typedef enum _draggingWhat { DW_NOTHING,
