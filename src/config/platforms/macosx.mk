@@ -67,12 +67,7 @@ endif
 OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include \
         -I$(ABI_ROOT)/../libpng \
 		-I/usr/local/include \
-		-I/System/Library/Frameworks/Carbon.framework/Headers \
-		-I/System/Library/Frameworks/CarbonCore.framework/Headers \
-		-I/System/Library/Frameworks/CoreFoundation.framework/Headers \
-		-I/System/Library/Frameworks/QD.framework/Headers \
-		-I/System/Library/Frameworks/HIToolbox.framework/Headers \
-		-I/System/Library/Frameworks/AE.framework/Headers
+		-I/Developer/Headers/FlatCarbon 
 G++INCLUDES		= -I$(ABI_ROOT)/../libiconv/include -I/usr/include/g++
 
 # Compiler flags
@@ -91,7 +86,8 @@ PLATFORM_FLAGS		+= $(PPC_ARCH_FLAGS)
 OS_ENDIAN		= BigEndian32
 endif
 
-LDFLAGS			= -framework Carbon
+LDFLAGS			= -framework Carbon -framework CoreServices \
+				-framework ApplicationService
 # Shared library flags
 #MKSHLIB		= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
@@ -100,9 +96,7 @@ ABI_NATIVE	= mac
 ABI_FE		= Mac
 
 # Rez flags
-ABI_MAC_REZ_INCS= -i /System/Library/Frameworks/HIToolbox.framework/Headers \
-    -i /System/Library/Frameworks/CarbonCore.framework/Headers \
-    -i $(ABI_ROOT)/src/af/xap/mac
+ABI_MAC_REZ_INCS= -i $(ABI_ROOT)/src/af/xap/mac
 ABI_MAC_REZ_OPTS= $(ABI_MAC_REZ_INCS) -d REZ_CARBON -F Carbon -F HIToolbox -useDF
 
 ##################################################################
