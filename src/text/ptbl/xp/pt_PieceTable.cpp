@@ -718,51 +718,6 @@ bool pt_PieceTable::getStruxOfTypeFromPosition( PT_DocPosition docPos,
 	return true;
 }
 
-bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
-											 pf_Frag_Strux ** ppfs) const
-{
-	// return the strux fragment immediately prior (containing)
-	// the given absolute document position.
-	pf_Frag * pfFirst = m_fragments.findFirstFragBeforePos( docPos);
-	while(pfFirst && pfFirst->getPrev() && pfFirst->getPos()  >= docPos)
-	{
-		pfFirst = pfFirst->getPrev();
-	}
-	while(pfFirst && pfFirst->getPrev() && pfFirst->getType() !=pf_Frag::PFT_Strux)
-	{
-		pfFirst = pfFirst->getPrev();
-	}
-//	UT_DEBUGMSG(("SEVIOR: I find strux frag number %d  sum = %d at pos %d \n",getFragNumber(pfFirst),pfFirst->getPos(),docPos));
-  	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfFirst);
-  	*ppfs = pfs;
-    return true;
-
-	//  PT_DocPosition sum = pfFirst->getPos();
-//  	pf_Frag * pfLastStrux = NULL;
-
-//  	for (pf_Frag * pf = pfFirst; (pf); pf=pf->getNext())
-//  	{
-//  		if (pf->getType() == pf_Frag::PFT_Strux)
-//  			pfLastStrux = pf;
-
-//  		sum += pf->getLength();
-
-//  		if (sum >= docPos)
-//  			goto FoundIt;
-//  	}
-
-	// if we fall out of the loop, we didn't have a text node
-	// at or around the document position requested.
-	// return the last strux in the document.
-
-//   FoundIt:
-
-//  	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfLastStrux);
-//  	UT_DEBUGMSG(("SEVIOR: Jeff find strux frag number %d  sum = %d at pos %d \n",getFragNumber(pfLastStrux),sum,docPos));
-//  	*ppfs = pfs;
-//      return true;
-}
-
 bool pt_PieceTable::isEndFootnote(pf_Frag * pf) const
 {
 	if(pf->getType() == pf_Frag::PFT_Strux)
@@ -790,44 +745,38 @@ bool pt_PieceTable::isFootnote(pf_Frag * pf) const
 	return false;
 }
 
-bool pt_PieceTable::_getStruxFromPositionSkip(PT_DocPosition docPos,
-											 pf_Frag_Strux ** ppfs) const
+bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
+											 pf_Frag_Strux ** ppfs,
+                                              bool bSkipFootnotes) const
 {
 	// return the strux fragment immediately prior (containing)
-	// the given absolute document position. This version skips past
+	// the given absolute document position.  If bSkip set, skip past
     // Footnote struxes.
 	UT_sint32 countEndFootnotes = 0;
 	pf_Frag * pfFirst = m_fragments.findFirstFragBeforePos( docPos);
+
 	if(isEndFootnote(pfFirst))
-	{
 		countEndFootnotes++;
-	}
-	while(pfFirst && pfFirst->getPrev() && pfFirst->getPos()  >= docPos )
+
+	while(pfFirst && pfFirst->getPrev() && pfFirst->getPos() >= docPos)
 	{
 		pfFirst = pfFirst->getPrev();
-		if(isFootnote(pfFirst))
-		{
+		if (isFootnote(pfFirst))
 			countEndFootnotes--;
-		}
 		else if(isEndFootnote(pfFirst))
-		{
 			countEndFootnotes++;
-		}
+
 		xxx_UT_DEBUGMSG(("countEndNotes 1 %d \n",countEndFootnotes));
 	}
-	while(pfFirst && pfFirst->getPrev() && pfFirst->getType() !=pf_Frag::PFT_Strux || (countEndFootnotes > 0) || isFootnote(pfFirst) || isEndFootnote(pfFirst))
+	while(pfFirst && pfFirst->getPrev() && 
+		  (pfFirst->getType() != pf_Frag::PFT_Strux || 
+		   (bSkipFootnotes && ((countEndFootnotes > 0) || isFootnote(pfFirst) || isEndFootnote(pfFirst)))))
 	{
 		pfFirst = pfFirst->getPrev();
 		if(isFootnote(pfFirst))
-		{
 			countEndFootnotes--;
-			pfFirst = pfFirst->getPrev();
-		}
 		else if(isEndFootnote(pfFirst))
-		{
 			countEndFootnotes++;
-			pfFirst = pfFirst->getPrev();
-		}
 		xxx_UT_DEBUGMSG(("countEndNotes 2 %d \n",countEndFootnotes));
 	}
 	xxx_UT_DEBUGMSG(("countEndNotes final %d \n",countEndFootnotes));
@@ -847,18 +796,11 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	*ppfs = NULL;
 
 	pf_Frag_Strux * pfs = NULL;
-	if(pts == PTX_EndFootnote || pts == PTX_SectionFootnote)
-	{
-		if (!_getStruxFromPosition(dpos,&pfs))
-			return false;
-	}
-	else
-	{
-		if (!_getStruxFromPositionSkip(dpos,&pfs))
-			return false;
-	}
+	if (!_getStruxFromPosition(dpos,&pfs, !(pts == PTX_EndFootnote || pts == PTX_SectionFootnote)))
+		return false;
 
-	if (pfs->getStruxType() == pts || (pts == PTX_Section && pfs->getStruxType() == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfs->getStruxType() == PTX_SectionFootnote) || (pts == PTX_SectionEndnote && pfs->getStruxType() == PTX_SectionEndnote) || (pts == PTX_SectionTable && pfs->getStruxType() == PTX_SectionTable) || (pts == PTX_SectionCell && pfs->getStruxType() == PTX_SectionCell) || (pts == PTX_EndTable && pfs->getStruxType() == PTX_EndTable) || (pts == PTX_EndCell && pfs->getStruxType() == PTX_EndCell)  )		// is it of the type we want
+	PTStruxType pfsType = pfs->getStruxType();
+	if (pfsType == pts || (pts == PTX_Section && pfsType == PTX_SectionHdrFtr) || (pts == PTX_SectionFootnote && pfsType == PTX_SectionFootnote) || (pts == PTX_SectionEndnote && pfsType == PTX_SectionEndnote) || (pts == PTX_SectionTable && pfsType == PTX_SectionTable) || (pts == PTX_SectionCell && pfsType == PTX_SectionCell) || (pts == PTX_EndTable && pfsType == PTX_EndTable) || (pts == PTX_EndCell && pfsType == PTX_EndCell)  )		// is it of the type we want
 	{
 		*ppfs = pfs;
 		return true;

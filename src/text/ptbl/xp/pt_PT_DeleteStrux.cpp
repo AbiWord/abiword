@@ -128,7 +128,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 	// find the previous strux (either a paragraph or something else).
 
 	pf_Frag_Strux * pfsPrev = NULL;
-	_getStruxFromPositionSkip(pfs->getPos(),&pfsPrev);
+	_getStruxFromPosition(pfs->getPos(),&pfsPrev, true); // should that really skip footnotes?
 	UT_ASSERT(pfsPrev);			// we have a block that's not in a section ??
 	//
 	// Code to prevent a crash. But this should not happen and if it does not everything will
