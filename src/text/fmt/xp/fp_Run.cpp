@@ -813,17 +813,30 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		}
 
 	}
-	else if(m_pHyperlink && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
+
+	if(m_pHyperlink && getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// have to set the colour again, since fp_TextRun::_draw can set it to red
 		// for drawing sguiggles
-		getGR()->setColor(getFGColor());
+		getGR()->setColor(UT_RGBColor(0,0,255));
 		getGR()->setLineProperties(1.0,
 								GR_Graphics::JOIN_MITER,
 								GR_Graphics::CAP_BUTT,
 								GR_Graphics::LINE_SOLID);
 
-		getGR()->drawLine(pDA->xoff, pDA->yoff + 1, pDA->xoff + m_iWidth, pDA->yoff + 1);
+		getGR()->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+	}
+
+	if(m_eHidden == FP_HIDDEN_TEXT || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+	{
+		getGR()->setColor(getFGColor());
+		getGR()->setLineProperties(1.0,
+								GR_Graphics::JOIN_MITER,
+								GR_Graphics::CAP_BUTT,
+								GR_Graphics::LINE_DOTTED);
+
+		getGR()->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
+
 	}
 
 	_setDirty(false);
