@@ -77,7 +77,7 @@ void AP_UnixDialog_Break::runModal(XAP_Frame * pFrame)
 	_populateWindowData();
 
 	switch ( abiRunModalDialog ( GTK_DIALOG(m_windowMain),
-								 pFrame, this, GTK_RESPONSE_CANCEL, false ) )
+								 pFrame, this, GTK_RESPONSE_OK, false ) )
 	{
 		case GTK_RESPONSE_OK:
 			m_answer = AP_Dialog_Break::a_OK;
@@ -112,7 +112,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	m_radioGroup = gtk_radio_button_group (GTK_RADIO_BUTTON ( glade_xml_get_widget(xml, "rbPageBreak") ));
 
 	// set the dialog title
-	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle).c_str());
+	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle_Capital).c_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
@@ -124,7 +124,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	localizeButton(glade_xml_get_widget(xml, "rbColumnBreak"), pSS, AP_STRING_ID_DLG_Break_ColumnBreak);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbColumnBreak")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbInsertSectionBreak"), pSS, AP_STRING_ID_DLG_Break_SectionBreaks);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbInsertSectionBreak"), pSS, AP_STRING_ID_DLG_Break_SectionBreaks_Capital);
 	
 	localizeButton(glade_xml_get_widget(xml, "rbNextPage"), pSS, AP_STRING_ID_DLG_Break_NextPage);
 	g_object_set_data (G_OBJECT (glade_xml_get_widget(xml, "rbNextPage")), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));

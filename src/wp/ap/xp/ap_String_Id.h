@@ -104,9 +104,11 @@ dcl(DLG_FR_FinishedFind, "AbiWord has finished searching the document.")
 dcl(DLG_FR_FinishedReplace, "AbiWord has finished its search of the document and has made %d replacements.")
 
 /* Break dialog */
-dcl(DLG_Break_BreakTitle,		"Break")
+dcl(DLG_Break_BreakTitle,		"Insert break")
+dcl(DLG_Break_BreakTitle_Capital,	"Insert Break")
 dcl(DLG_Break_Insert,			"Insert")
-dcl(DLG_Break_SectionBreaks,	"Section breaks")
+dcl(DLG_Break_SectionBreaks,		"Section breaks")
+dcl(DLG_Break_SectionBreaks_Capital,	"Section Breaks")
 dcl(DLG_Break_PageBreak,		"&Page break")
 dcl(DLG_Break_ColumnBreak,		"&Column break")
 dcl(DLG_Break_NextPage, 		"&Next page")
