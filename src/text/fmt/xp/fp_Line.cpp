@@ -1542,6 +1542,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 					iTabLeader = getBlock()->getTOCTabLeader(10);
 					iTabType =  FL_TAB_LEFT;
 					iPos =  getBlock()->getTOCTabPosition(10);
+					bRes = true;
 				}
 
 				// now find the tabstop for this tab, depending on whether we

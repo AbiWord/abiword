@@ -44,7 +44,7 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 //
 	PL_StruxDocHandle sdh = getBlock()->getStruxDocHandle();
 	PD_Document * pDoc = getBlock()->getDocument();
-	PT_DocPosition pos = pDoc->getStruxPosition(sdh);
+	PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
 	fl_BlockLayout * pBlockInDoc = pLayout->findBlockAtPosition(pos);
 	if(pBlockInDoc == NULL)

@@ -21,6 +21,7 @@
 #ifndef TOCLAYOUT_H
 #define TOCLAYOUT_H
 
+#include "ut_string_class.h"
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
@@ -95,6 +96,7 @@ private:
 	virtual void             _purgeLayout(void);
 	virtual void		     _lookupProperties(void);
 	void                     _createTOCContainer(void);
+	bool                     _isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCStyle);
 	void                     _insertTOCContainer(fp_TOCContainer * pNewTOC);
 	void                     _localCollapse();
 	void                      _addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks, UT_UTF8String & sStyle);

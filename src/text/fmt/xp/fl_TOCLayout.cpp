@@ -267,25 +267,25 @@ bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock)
 {
 	UT_UTF8String sStyle;
 	pBlock->getStyle(sStyle);
-	if(sStyle == m_sSourceStyle1)
+	if(_isStyleInTOC(sStyle,m_sSourceStyle1))
 	{
 		m_iCurrentLevel = 1;
 		_addBlockInVec(pBlock,&m_vecBlock1, m_sDestStyle1);
 		return true;
 	}
-	if(sStyle == m_sSourceStyle2)
+	if(_isStyleInTOC(sStyle,m_sSourceStyle2))
 	{
 		m_iCurrentLevel = 2;
 		_addBlockInVec(pBlock,&m_vecBlock2,m_sDestStyle2);
 		return true;
 	}
-	if(sStyle == m_sSourceStyle3)
+	if(_isStyleInTOC(sStyle,m_sSourceStyle3))
 	{
 		m_iCurrentLevel = 3;
 		_addBlockInVec(pBlock,&m_vecBlock3,m_sDestStyle3);
 		return true;
 	}
-	if(sStyle == m_sSourceStyle4)
+	if(_isStyleInTOC(sStyle,m_sSourceStyle4))
 	{
 		m_iCurrentLevel = 4;
 		_addBlockInVec(pBlock,&m_vecBlock4,m_sDestStyle4);
@@ -333,7 +333,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	{
 		if(i > 0)
 		{
-			pPrevBL =  static_cast<fl_BlockLayout *>(pVecBlocks->getNthItem(i-1));
+			pPrevBL =  static_cast<fl_BlockLayout *>(m_vecAllBlocks.getNthItem(i-1));
 		}
 		else
 		{
@@ -415,7 +415,6 @@ UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock, UT_Vector * pVecBloc
 {
 	fl_BlockLayout * pThisBL = NULL;
 	UT_sint32 i = 0;
-	bool bFound = false;
 	for(i=0; i< static_cast<UT_sint32>(pVecBlocks->getItemCount()); i++)
 	{
 		pThisBL = static_cast<fl_BlockLayout *>(pVecBlocks->getNthItem(i));
@@ -539,25 +538,60 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBl
 
 bool fl_TOCLayout::isStyleInTOC(UT_UTF8String & sStyle)
 {
-	if(sStyle == m_sSourceStyle1)
+	if(_isStyleInTOC(sStyle,m_sSourceStyle1))
 	{
 		return true;
 	}
-	if(sStyle == m_sSourceStyle2)
+	if(_isStyleInTOC(sStyle,m_sSourceStyle2))
 	{
 		return true;
 	}
-	if(sStyle == m_sSourceStyle3)
+	if(_isStyleInTOC(sStyle,m_sSourceStyle3))
 	{
 		return true;
 	}
-	if(sStyle == m_sSourceStyle4)
+	if(_isStyleInTOC(sStyle,m_sSourceStyle4))
 	{
 		return true;
 	}
 	return false;
 }
 
+/*!
+ * Does a case insensitive search of the basedon heirachy for a match.
+ */
+bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCStyle)
+{
+	UT_UTF8String sTmpStyle = sStyle;
+	const char * sLStyle = sTOCStyle.utf8_str();
+	UT_DEBUGMSG(("Looking at Style %s \n",sLStyle));
+	UT_DEBUGMSG(("Base input style is %s \n",sTmpStyle.utf8_str()));
+	if(UT_stricmp(sLStyle,sTmpStyle.utf8_str()) == 0)
+	{
+		UT_DEBUGMSG(("Found initial match \n"));
+		return true;
+	}
+	PD_Style * pStyle = NULL;
+	m_pDoc->getStyle(sTmpStyle.utf8_str(), &pStyle);
+	if(pStyle != NULL)
+	{
+		UT_sint32 iLoop = 0;
+		while((pStyle->getBasedOn()) != NULL && (iLoop < 10))
+		{
+			pStyle = pStyle->getBasedOn();
+			iLoop++;
+			sTmpStyle = pStyle->getName();
+			UT_DEBUGMSG(("Level %d style is %s \n",iLoop,sTmpStyle.utf8_str()));
+			if(UT_stricmp(sLStyle,sTmpStyle.utf8_str()) == 0)
+			{
+				UT_DEBUGMSG(("Found match  at Level %d \n",iLoop));
+				return true;
+			}
+		}
+	}
+	UT_DEBUGMSG(("No match Found \n"));
+	return false;
+}
 
 
 bool fl_TOCLayout::isBlockInTOC(fl_BlockLayout * pBlock)

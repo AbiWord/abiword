@@ -3339,8 +3339,11 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 
 	fd_Field * fd;
 	lookupProperties();
 	bool gotField = pBL->getField(iOffsetFirst,fd);
-	_setField(fd);
-	UT_ASSERT(gotField);
+	if(gotField)
+	{
+		_setField(fd);
+	}
+	//	UT_ASSERT(gotField);
 	m_sFieldValue[0] = 0;
 }
 

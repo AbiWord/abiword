@@ -35,9 +35,36 @@ bool fp_FieldListLabelRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	UT_uint32 i = 0;
-	UT_UCSChar *  listlabel = getBlock()->getListLabel();
+	UT_UCSChar *  listlabel = NULL;
+	if(getBlock()->isContainedByTOC())
+	{
+		xxx_UT_DEBUGMSG(("!!!!!!------!!!! ListLabel in TOC!!!! \n"));
+//
+// First Find the block in the document.
+//
+		PL_StruxDocHandle sdh = getBlock()->getStruxDocHandle();
+		PD_Document * pDoc = getBlock()->getDocument();
+		PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
+		FL_DocLayout * pLayout = getBlock()->getDocLayout();
+		fl_BlockLayout * pBlockInDoc = pLayout->findBlockAtPosition(pos);
+		if(pBlockInDoc == NULL)
+		{
+			sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');
+			sz_ucs_FieldValue[1] = 0;
+			return _setValue(sz_ucs_FieldValue);
+		}
+		i = 0;
+		listlabel = pBlockInDoc->getListLabel();
+
+	}
+	else
+	{
+		i = 0;
+		listlabel = getBlock()->getListLabel();
+	}
 	if(listlabel == NULL)
 	{
+		UT_DEBUGMSG(("Field List Label Got NULL \n"));
 		sz_ucs_FieldValue[0] = 0;
 	}
 	else

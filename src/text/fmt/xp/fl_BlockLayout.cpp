@@ -27,6 +27,7 @@
 #include <math.h>
 
 #include "fl_BlockLayout.h"
+#include "pf_Frag_Strux.h"
 #include "fl_Squiggles.h"
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
@@ -218,12 +219,17 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 				iLoop++;
 			}
 		}
-		if(!m_bIsTOC)
-		{
-			m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
-		}
 	}
 	_lookupProperties();
+	//
+	// Since the Style doesn't change we need to look to see if this
+	// block should added now. We need to wait until after the lookupProperties
+	// to get the field list label inserted.
+	//
+	if(!m_bIsTOC)
+	{
+		m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
+	}
 
 	if(!isHdrFtr() || (static_cast<fl_HdrFtrSectionLayout *>(getSectionLayout())->getDocSectionLayout() != NULL))
 	{
@@ -409,10 +415,6 @@ void fl_BlockLayout::_lookupProperties(void)
 	if(m_szStyle)
 	{
 		sNewStyle = m_szStyle;
-	}
-	if(!(sNewStyle == sOldStyle))
-	{
-		m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
 	}
 	// Now work out our dominant direction
 	// First, test if this is not a block that is the wrapper around a
@@ -825,6 +827,17 @@ void fl_BlockLayout::_lookupProperties(void)
 	  {
 	    setVisibility(FP_VISIBLE);
 	  }
+	//
+	// Look after TOC handling now.
+	//
+	if(!m_bIsTOC && !(sNewStyle == sOldStyle))
+	{
+		if(m_bStyleInTOC)
+		{
+			m_pLayout->removeBlockFromTOC(this); // remove old one
+		}
+		m_bStyleInTOC = m_pLayout->addOrRemoveBlockFromTOC(this);
+	}
 
 	// latter we will need to add here revision handling ...
 }
@@ -2355,6 +2368,20 @@ UT_sint32 fl_BlockLayout::getLength()
 		return 1;
 	}
 	PT_DocPosition posNext = m_pDoc->getStruxPosition(nextSDH);
+	//
+	// OK Look to see if we've got a TOC/ENDTOC at the end. If so subtract
+	// it's length.
+	//
+	pf_Frag * pf = m_pDoc->getFragFromPosition(posNext-1);
+	if(pf->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
+		if (pfsTemp->getStruxType() == PTX_EndTOC)	// did we find it
+		{
+			posNext -= 2;
+		}
+	}
+
 	UT_sint32 length = static_cast<UT_sint32>(posNext) - static_cast<UT_sint32>(posThis);
 	return length;
 }
@@ -6395,7 +6422,7 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 	}
 
 	case PTO_Field:
-		UT_DEBUGMSG(("Populate:InsertObject:Field:\n"));
+		UT_DEBUGMSG(("!!!Populate:InsertObject:Field: BlockOffset %d \n",blockOffset));
 		_doInsertFieldRun(blockOffset, pcro);
 		return true;
 
@@ -6484,6 +6511,26 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	m_pSquiggles->textInserted(blockOffset, 1);
 
 	_assertRunListIntegrity();
+	//
+	// OK Now do the insertSpan for any TOC's that shadow this block.
+	//
+	if(!m_bIsTOC && m_bStyleInTOC)
+	{
+		UT_Vector vecBlocksInTOCs;
+		if(m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
+		{
+			UT_sint32 i = 0;
+			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
+			{
+				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vecBlocksInTOCs.getNthItem(i));
+				pBL->doclistener_insertObject(pcro);
+			}
+		}
+		else
+		{
+			m_bStyleInTOC = false;
+		}
+	}
 
 	return true;
 }
@@ -6552,6 +6599,26 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	m_pSquiggles->textDeleted(blockOffset, 1);
 
 	_assertRunListIntegrity();
+	//
+	// OK Now do the deleteObject for any TOC's that shadow this block.
+	//
+	if(!m_bIsTOC && m_bStyleInTOC)
+	{
+		UT_Vector vecBlocksInTOCs;
+		if( m_pLayout->getMatchingBlocksFromTOCs(this, &vecBlocksInTOCs))
+		{
+			UT_sint32 i = 0;
+			for(i=0; i<static_cast<UT_sint32>(vecBlocksInTOCs.getItemCount());i++)
+			{
+				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(vecBlocksInTOCs.getNthItem(i));
+				pBL->doclistener_deleteObject(pcro);
+			}
+		}
+		else
+		{
+			m_bStyleInTOC = false;
+		}
+	}
 
 	return true;
 }
