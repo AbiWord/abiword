@@ -752,6 +752,8 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			
 			case PTO_Hyperlink:
 				return true;
+			case PTO_Embed:
+				return true;
 
 			default:
 				UT_ASSERT_NOT_REACHED();

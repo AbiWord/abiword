@@ -1780,6 +1780,11 @@ bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 				_openTag("math","/",false,api);
 				return true;
 
+			case PTO_Embed:
+				_closeSpan();
+				_openTag("embed","/",false,api);
+				return true;
+
 				//#endif
 
 			case PTO_Bookmark:
@@ -2282,6 +2287,48 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		   sPropVal =pszLatexId;
 		   UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
 		 }
+		 m_pie->write(sAllProps.utf8_str());
+		 m_pie->_rtf_close_brace();
+	 }
+	 else if(UT_XML_strcmp(szPrefix,"embed") == 0)
+	 {
+		 const PP_AttrProp * pSpanAP = NULL;
+		 const XML_Char * pszDataId = NULL;
+		 m_pDocument->getAttrProp(api, &pSpanAP);
+		 pSpanAP->getAttribute("dataid", pszDataId);
+		 UT_UTF8String sProps;
+		 if(pszDataId == NULL)
+		 {
+			 return;
+		 }
+		 m_pie->_rtf_open_brace();
+		 m_pie->_rtf_keyword("*");
+		 m_pie->_rtf_keyword("abiembed ");
+		 UT_UTF8String sAllProps;
+		 UT_UTF8String sPropName;
+		 UT_UTF8String sPropVal;
+		 UT_sint32 i = 0;
+		 const XML_Char * szProp = NULL;
+		 const XML_Char * szVal = NULL;
+		 for(i = 0; i < 50; i++)
+		 {
+		   szProp = NULL;
+		   szVal = NULL;
+		   pSpanAP->getNthProperty(i,szProp,szVal);
+		   if((szProp != NULL) && (szVal != NULL))
+		   { 
+		     sPropName = szProp;
+		     sPropVal = szVal;
+		     UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
+		   }
+		   else
+		   {
+		     break;
+		   }
+		 }
+		 sPropName = "dataid";
+		 sPropVal =pszDataId;
+		 UT_UTF8String_setProperty(sAllProps,sPropName,sPropVal);
 		 m_pie->write(sAllProps.utf8_str());
 		 m_pie->_rtf_close_brace();
 	 }

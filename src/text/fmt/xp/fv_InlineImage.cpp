@@ -61,7 +61,8 @@ FV_VisualInlineImage::FV_VisualInlineImage (FV_View * pView)
 	  m_iGlobCount(0),
 	  m_pImageAP(NULL),
 	  m_screenCache(NULL),
-	  m_bFirstDragDone(false)
+	  m_bFirstDragDone(false),
+	  m_bIsEmbedded(false)
 {
 	UT_ASSERT (pView);
 }
@@ -718,10 +719,18 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 	  m_iInlineDragMode = FV_InlineDrag_NOT_ACTIVE;
 	  return;
 	}
-	if(pRun->getType() !=  FPRUN_IMAGE)
+	if((pRun->getType() !=  FPRUN_IMAGE) && (pRun->getType() !=  FPRUN_EMBED)  )
 	{
 	  m_iInlineDragMode = FV_InlineDrag_NOT_ACTIVE;
 	  return;
+	}
+	if(pRun->getType() ==  FPRUN_EMBED)
+	{
+	  m_bIsEmbedded = true;
+	}
+	else
+        {
+	  m_bIsEmbedded = false;
 	}
 	UT_sint32 xoff = 0, yoff = 0;
 	pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
@@ -1008,13 +1017,21 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 		fp_Run * pRun = NULL;
 		
 		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
-		while(pRun && pRun->getType() != FPRUN_IMAGE)
+		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)  ))
 		{
 			pRun = pRun->getNextRun();
 		}
-		if(pRun && pRun->getType() == FPRUN_IMAGE)
+		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || (pRun->getType() == FPRUN_EMBED)  ))
 		{
 			// we've found an image: do not move the view, just select the image and exit
+		        if(pRun->getType() == FPRUN_EMBED)
+			{
+			     m_bIsEmbedded = true;
+			}
+			else
+			{
+			     m_bIsEmbedded = false;
+			}
 			m_pView->cmdSelect(pos,pos+1);
 			// Set the cursor context to image selected.
 			m_pView->getMouseContext(x, y);
@@ -1130,6 +1147,7 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  const XML_Char* szDescription = 0;
 	  const  XML_Char* szWidth = 0;
 	  const  XML_Char * szHeight = 0;
+	  const XML_Char * szEmbed= NULL;
 	  if(!m_bDoingCopy)
 	  {
 	    bool bFound = m_pImageAP->getAttribute("dataid",szDataID);
@@ -1141,6 +1159,14 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  else
 	  {
 	    szDataID = m_sCopyName.utf8_str();
+	  }
+	  if(m_bIsEmbedded)
+	  {
+	    bool bFound = m_pImageAP->getProperty("embed-type",szEmbed);
+	    if(!bFound)
+	    {
+	      return;
+	    }
 	  }
 	  m_bDoingCopy = false;
 	  UT_String sProps;
@@ -1160,6 +1186,7 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	    sVal = szHeight;
 	    UT_String_setProperty(sProps,sProp,sVal);
 	  }
+
 	  bFound = m_pImageAP->getProperty("title",szTitle);
 	  bFound = m_pImageAP->getProperty("alt",szDescription);
 	  sProps += "; height:";
@@ -1169,10 +1196,16 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	    "title",NULL,
 	    "alt",NULL,
 	    PT_PROPS_ATTRIBUTE_NAME, NULL,
-	    NULL, NULL};
+	    NULL,NULL};
 	  attributes[1] = szDataID;
 	  attributes[3] = szTitle;
 	  attributes[5] = szDescription;
+	  if(m_bIsEmbedded)
+	  {
+	      sProp="embed-type";
+	      sVal = szEmbed;
+	      UT_String_setProperty(sProps,sProp,sVal);
+	  }
 	  if(sProps.size() > 0)
 	  {
 	    attributes[7] = sProps.c_str();
@@ -1183,7 +1216,14 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  }
 	  m_pView->_saveAndNotifyPieceTableChange();
 	  xxx_UT_DEBUGMSG(("Doing Insert Image at %d \n",m_pView->getPoint()));
-	  getDoc()->insertObject(m_pView->getPoint(), PTO_Image, attributes, NULL);
+	  if(!m_bIsEmbedded)
+	  {
+	    getDoc()->insertObject(m_pView->getPoint(), PTO_Image, attributes, NULL);
+	  }
+	  else
+	  {
+	    getDoc()->insertObject(m_pView->getPoint(), PTO_Embed, attributes, NULL);
+	  }
 	  m_pView->_restorePieceTableState();
 	  m_pView->_updateInsertionPoint();
 	  m_pView->_generalUpdate();

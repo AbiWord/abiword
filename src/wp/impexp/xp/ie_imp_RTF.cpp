@@ -5013,6 +5013,9 @@ bool IE_Imp_RTF::HandleStarKeyword()
 				case RTF_KW_abimathml:
 					return HandleAbiMathml();
 					break;
+				case RTF_KW_abiembed:
+					return HandleAbiEmbed();
+					break;
 				case RTF_KW_shppict:
 					UT_DEBUGMSG (("handling shppict\n"));
 					HandleShapePict();
@@ -8466,6 +8469,50 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 	else
 	{
 		getDoc()->appendObject(PTO_Math,attrs);
+	}
+	return true;
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+// Handle copy/paste of Embedded Objects by extending RTF
+/////////////////////////////////////////////////////////////////////////
+bool IE_Imp_RTF::HandleAbiEmbed(void)
+{
+	UT_UTF8String sProps;
+	unsigned char ch;
+	if (!ReadCharFromFile(&ch))
+		return false;
+	while(ch == ' ')
+	{
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	while (ch != '}') // Outer loop
+	{
+		sProps += ch;
+		if (!ReadCharFromFile(&ch))
+			return false;
+	}
+	UT_UTF8String sPropName;
+	UT_UTF8String sInputAbiProps;
+	const XML_Char * attrs[7] = {"dataid",NULL,NULL,NULL,NULL};
+	sPropName = "dataid";
+	UT_UTF8String sDataIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
+	attrs[1] = sDataIDVal.utf8_str();
+	UT_UTF8String_removeProperty(sProps,sPropName);
+	attrs[2]= "props";
+	attrs[3] = sProps.utf8_str();
+
+	getDoc()->getUID(UT_UniqueId::Image); // Increment the image uid counter
+	if(bUseInsertNotAppend())
+	{
+		getDoc()->insertObject(m_dposPaste, PTO_Embed, attrs,NULL);
+		m_dposPaste++;
+	}
+	else
+	{
+		getDoc()->appendObject(PTO_Embed,attrs);
 	}
 	return true;
 }

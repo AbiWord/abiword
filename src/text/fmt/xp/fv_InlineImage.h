@@ -116,6 +116,7 @@ private:
 	GR_Image *            m_screenCache;
 	bool                  m_bFirstDragDone;
 	UT_UTF8String         m_sCopyName;
+	bool                  m_bIsEmbedded;
 };
 
 #endif /* FV_VISUALINLINEIMAGE_H */

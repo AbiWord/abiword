@@ -4485,6 +4485,10 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 						case PTO_Bookmark:
 							_handleBookmark (api);
 							return true;
+
+						case PTO_Embed:
+							// FIXME Put code to export the png here!
+							return true;
 	
 						default:
 							UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled object type: %d!\n", pcro->getObjectType ()));

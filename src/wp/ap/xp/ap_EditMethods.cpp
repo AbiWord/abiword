@@ -3695,11 +3695,11 @@ Defun(selectObject)
 		fp_Run * pRun = NULL;
 		
 		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
-		while(pRun && pRun->getType() != FPRUN_IMAGE)
+		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
 		{
 			pRun = pRun->getNextRun();
 		}
-		if(pRun && pRun->getType() == FPRUN_IMAGE)
+		if(pRun && (pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED)))
 		{
 			// we've found an image: do not move the view, just select the image and exit
 			pView->cmdSelect(pos,pos+1);
@@ -13231,6 +13231,30 @@ Defun(btn1InlineImage)
 	UT_sint32 y = pCallData->m_yPos;
 	UT_sint32 x = pCallData->m_xPos;
 	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	if(pView->getMouseContext(x,y) == EV_EMC_IMAGESIZE)
+	{
+	     PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
+	     fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
+	     if(pBlock)
+	     {
+		  UT_sint32 x1,x2,y1,y2,iHeight;
+		  bool bEOL = false;
+		  bool bDir = false;
+		
+		  fp_Run * pRun = NULL;
+		
+		  pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		  while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
+		  {
+			pRun = pRun->getNextRun();
+		  }
+		  if(pRun && (pRun->getType() == FPRUN_EMBED))
+		  {
+			// we've found an embed object: do not move the view, just select the image and exit
+		        pView->cmdSelect(pos,pos+1);
+		  }
+	     }
+	}
 	pView->btn1InlineImage(x,y);
 	return true;
 }

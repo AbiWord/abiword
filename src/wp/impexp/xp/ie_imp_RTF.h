@@ -705,6 +705,7 @@ private:
 	bool HandleAbiEndCell(void);
 	bool HandleAbiLists(void);
 	bool HandleAbiMathml(void);
+	bool HandleAbiEmbed(void);
 	bool isPastedTableOpen(void);
 	bool markPasteBlock(void);
 	bool isBlockNeededForPasteTable(void);

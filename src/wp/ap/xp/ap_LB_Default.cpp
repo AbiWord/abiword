@@ -93,6 +93,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CL _B0,	{ "",	"",			"cursorRightArrow",	"",			"",			""				}},
 	{_CM _B0,	{ "",	"",			"cursorIBeam",		"",			"",			""				}},
 	{_CI _B0,	{ "",	"",			"cursorImage",		"",			"",			""				}},
+	{_CEM _B0,	{ "",	"",			"btn0InlineImage",		"",			"",			""				}},
 	{_CZ _B0,	{ "",	"",			"btn0InlineImage",	"",			"",			""				}},
 	{_CF _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
 	{_CR _B0,	{ "",	"",			"cursorDefault",	"",			"",			""				}},
@@ -122,6 +123,7 @@ ap_bs_Mouse MouseTable[] =
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease }},
 	{_CI _B1,	{ "selectObject",	"selectObject",	"",			"",				"",			""	}},
 	{_CI _B1 _C,{ "copyInlineImage",	"copyInlineImage",				"dragInlineImage","dragInlineImage",				"releaseInlineImage","releaseInlineImage"	}},
+
 	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",	"",			"",				"",			""	}},
 	{_CF _B1,	{ "warpInsPtToXY",	"selectObject",	"",			"",				"",			""	}},
 	
@@ -153,6 +155,13 @@ ap_bs_Mouse MouseTable[] =
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
 	{_CZ _B1,	{ "btn1InlineImage",				"dlgFmtPosImage",				"dragInlineImage",	"",		"releaseInlineImage",	"releaseInlineImage"				}},
 	{_CZ _B1 _C,{ "copyInlineImage",	"copyInlineImage",				"dragInlineImage","dragInlineImage",				"releaseInlineImage","releaseInlineImage"	}},
+
+
+//	Button-1, Embed-context
+//  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
+	{_CEM _B1,	{ "btn1InlineImage",				"dlgFmtPosImage",				"dragInlineImage",	"",		"releaseInlineImage",	"releaseInlineImage"				}},
+	{_CEM _B1 _C,{ "copyInlineImage",	"copyInlineImage",				"dragInlineImage","dragInlineImage",				"releaseInlineImage","releaseInlineImage"	}},
+
 //	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
 
 //	Button-1, Math-context
