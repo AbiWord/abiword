@@ -232,13 +232,21 @@ XAP_UnixFrame::~XAP_UnixFrame(void)
 	UT_VECTOR_PURGEALL(EV_UnixToolbar *, m_vecUnixToolbars);
 }
 
-UT_Bool XAP_UnixFrame::initialize(void)
+UT_Bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+								  const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
+								  const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
+								  const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
+								  const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
 {
 	UT_Bool bResult;
 
 	// invoke our base class first.
 	
-	bResult = XAP_Frame::initialize();
+	bResult = XAP_Frame::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue,
+									szMenuLayoutKey, szMenuLayoutDefaultValue,
+									szMenuLabelSetKey, szMenuLabelSetDefaultValue,
+									szToolbarLayoutsKey, szToolbarLayoutsDefaultValue,
+									szToolbarLabelSetKey, szToolbarLabelSetDefaultValue);
 	UT_ASSERT(bResult);
 
 	// get a handle to our keyboard binding mechanism

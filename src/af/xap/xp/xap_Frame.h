@@ -76,7 +76,12 @@ public:
 	XAP_Frame(XAP_Frame * f);
 	virtual ~XAP_Frame(void);
 
-	virtual UT_Bool				initialize(void);
+	virtual UT_Bool				initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+										   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
+										   const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
+										   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
+										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
+	
 	virtual	XAP_Frame *			cloneFrame(void)=0;
 	virtual UT_Bool				loadDocument(const char * szFilename)=0;
 	virtual UT_Bool				close(void)=0;

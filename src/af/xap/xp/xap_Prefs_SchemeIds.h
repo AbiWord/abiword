@@ -37,23 +37,8 @@
 // Note: Additional keys may be defined by the application.
 //////////////////////////////////////////////////////////////////////////////////////
 
-#define XAP_PREF_KEY_KeyBindings			"KeyBindings"
-#define XAP_PREF_DEFAULT_KeyBindings		"default"					/* value in ap_LoadBindings.cpp */
-
-#define XAP_PREF_KEY_MenuLayout				"MenuLayouts"
-#define XAP_PREF_DEFAULT_MenuLabelSet		"EnUS"						/* value in BeginLayout() */
-
-#define XAP_PREF_KEY_MenuLabelSet			"MenuLabelSet"
-#define XAP_PREF_DEFAULT_MenuLayout			"Main"						/* value in BeginSet() */
-
 #define XAP_PREF_KEY_ToolbarAppearance		"ToolbarAppearance"
 #define XAP_PREF_DEFAULT_ToolbarAppearance	"icon"						/* {icon,text,both} */
-
-#define XAP_PREF_KEY_ToolbarLabelSet		"ToolbarLabelSet"
-#define XAP_PREF_DEFAULT_ToolbarLabelSet	"EnUS"						/* value in BeginSet() */
-
-#define XAP_PREF_KEY_ToolbarLayouts			"ToolbarLayouts"
-#define XAP_PREF_DEFAULT_ToolbarLayouts		"FileEditOps FormatOps"		/* values in BeginLayout() */
 
 #define XAP_PREF_KEY_UnixFontPath			"UnixFontPath"
 // TODO until we the the installation problems solved, try several paths probably valid during debugging only.
@@ -64,12 +49,7 @@
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
-dcl(KeyBindings)
-dcl(MenuLayout)
-dcl(MenuLabelSet)
 dcl(ToolbarAppearance)
-dcl(ToolbarLabelSet)
-dcl(ToolbarLayouts)
 dcl(UnixFontPath)
 
 #endif /* dcl */

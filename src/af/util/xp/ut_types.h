@@ -92,7 +92,7 @@ typedef		UT_sint32			UT_ErrorCode;
 ** Some useful macros that we use throughout
 */
 
-#define FREEP(p)		do { if (p) free(p); (p)=NULL; } while (0)
+#define FREEP(p)		do { if (p) free((void *)p); (p)=NULL; } while (0)
 #define DELETEP(p)		do { if (p) delete(p); (p)=NULL; } while (0)
 #define CLONEP(p,q)	do { FREEP(p); if (q && *q) UT_cloneString(p,q); } while (0)
 

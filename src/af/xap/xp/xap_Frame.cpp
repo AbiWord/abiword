@@ -127,7 +127,11 @@ int XAP_Frame::_getNextUntitledNumber(void)
 
 /*****************************************************************/
 
-UT_Bool XAP_Frame::initialize(void)
+UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+							  const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
+							  const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
+							  const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
+							  const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
 {
 	XAP_App * pApp = getApp();
 
@@ -139,10 +143,10 @@ UT_Bool XAP_Frame::initialize(void)
 	const char * szBindings = NULL;
 	EV_EditBindingMap * pBindingMap = NULL;
 
-	if ((pApp->getPrefsValue(XAP_PREF_KEY_KeyBindings,&szBindings)) && (szBindings) && (*szBindings))
+	if ((pApp->getPrefsValue(szKeyBindingsKey,&szBindings)) && (szBindings) && (*szBindings))
 		pBindingMap = m_app->getBindingMap(szBindings);
 	if (!pBindingMap)
-		pBindingMap = m_app->getBindingMap(XAP_PREF_DEFAULT_KeyBindings);
+		pBindingMap = m_app->getBindingMap(szKeyBindingsDefaultValue);
 	UT_ASSERT(pBindingMap);
 
 	if (!m_pInputModes)
@@ -160,10 +164,10 @@ UT_Bool XAP_Frame::initialize(void)
 	//////////////////////////////////////////////////////////////////
 
 	const char * szMenuLayoutName = NULL;
-	if ((pApp->getPrefsValue(XAP_PREF_KEY_MenuLayout,&szMenuLayoutName)) && (szMenuLayoutName) && (*szMenuLayoutName))
+	if ((pApp->getPrefsValue(szMenuLayoutKey,&szMenuLayoutName)) && (szMenuLayoutName) && (*szMenuLayoutName))
 		;
 	else
-		szMenuLayoutName = XAP_PREF_DEFAULT_MenuLayout;
+		szMenuLayoutName = szMenuLayoutDefaultValue;
 	UT_cloneString((char *&)m_szMenuLayoutName,szMenuLayoutName);
 	
 	//////////////////////////////////////////////////////////////////
@@ -171,10 +175,10 @@ UT_Bool XAP_Frame::initialize(void)
 	//////////////////////////////////////////////////////////////////
 
 	const char * szMenuLabelSetName = NULL;
-	if ((pApp->getPrefsValue(XAP_PREF_KEY_MenuLabelSet,&szMenuLabelSetName)) && (szMenuLabelSetName) && (*szMenuLabelSetName))
+	if ((pApp->getPrefsValue(szMenuLabelSetKey,&szMenuLabelSetName)) && (szMenuLabelSetName) && (*szMenuLabelSetName))
 		;
 	else
-		szMenuLabelSetName = XAP_PREF_DEFAULT_MenuLabelSet;
+		szMenuLabelSetName = szMenuLabelSetDefaultValue;
 	UT_cloneString((char *&)m_szMenuLabelSetName,szMenuLabelSetName);
 	
 	//////////////////////////////////////////////////////////////////
@@ -182,10 +186,10 @@ UT_Bool XAP_Frame::initialize(void)
 	//////////////////////////////////////////////////////////////////
 
 	const char * szToolbarLayouts = NULL;
-	if ((pApp->getPrefsValue(XAP_PREF_KEY_ToolbarLayouts,&szToolbarLayouts)) && (szToolbarLayouts) && (*szToolbarLayouts))
+	if ((pApp->getPrefsValue(szToolbarLayoutsKey,&szToolbarLayouts)) && (szToolbarLayouts) && (*szToolbarLayouts))
 		;
 	else
-		szToolbarLayouts = XAP_PREF_DEFAULT_ToolbarLayouts;
+		szToolbarLayouts = szToolbarLayoutsDefaultValue;
 
 	// take space-delimited list and call addItem() for each name in the list.
 	
@@ -211,10 +215,10 @@ UT_Bool XAP_Frame::initialize(void)
 	//////////////////////////////////////////////////////////////////
 
 	const char * szToolbarLabelSetName = NULL;
-	if ((pApp->getPrefsValue(XAP_PREF_KEY_ToolbarLabelSet,&szToolbarLabelSetName)) && (szToolbarLabelSetName) && (*szToolbarLabelSetName))
+	if ((pApp->getPrefsValue(szToolbarLabelSetKey,&szToolbarLabelSetName)) && (szToolbarLabelSetName) && (*szToolbarLabelSetName))
 		;
 	else
-		szToolbarLabelSetName = XAP_PREF_DEFAULT_ToolbarLabelSet;
+		szToolbarLabelSetName = szToolbarLabelSetDefaultValue;
 	UT_cloneString((char *&)m_szToolbarLabelSetName,szToolbarLabelSetName);
 	
 	//////////////////////////////////////////////////////////////////

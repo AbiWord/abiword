@@ -420,7 +420,11 @@ UT_Bool AP_Win32Frame::initialize(void)
 	if (!initFrameData())
 		return UT_FALSE;
 
-	if (!XAP_Win32Frame::initialize())
+	if (!XAP_Win32Frame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
+									AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
+									AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
+									AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
+									AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
 		return UT_FALSE;
 
 	_createTopLevelWindow();
