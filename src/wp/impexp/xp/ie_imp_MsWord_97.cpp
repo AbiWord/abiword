@@ -2148,7 +2148,8 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	}
 
 	// font size (hps is half-points)
-	U16 hps = (achp->fBidi ? achp->hpsBidi : achp->hps);
+	// I have seen a bidi doc that had hpsBidi == 0, and the actual size in hps
+	U16 hps = (achp->fBidi &&  achp->hpsBidi ? achp->hpsBidi : achp->hps);
 	sprintf(propBuffer, 
 			"font-size:%dpt;", (hps/2));
 	props += propBuffer;

@@ -4429,6 +4429,8 @@ FriBidiCharType fp_Run::getVisDirection()
 
 void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
+    if(iDir != m_iVisDirection)
+		m_bRefreshDrawBuffer = true;
 	m_iVisDirection = iDir;
 }
 /*
