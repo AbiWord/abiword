@@ -5735,8 +5735,6 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 	{
 	        return id;
 	}
-	//
-	// Now look to see if the 
 	///
 	/// Now look to see if the ID has been remapped.
 	///
