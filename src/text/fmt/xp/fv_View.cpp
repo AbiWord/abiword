@@ -1611,6 +1611,7 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 
 	// Signal PieceTable Changes have Started
 	m_pDoc->notifyPieceTableChangeEnd();
+	m_bPieceTableState = false;
 
 
 }
@@ -1626,6 +1627,7 @@ void FV_View::insertSectionBreak(void)
 
 	// Signal PieceTable Changes have ended
 	m_pDoc->notifyPieceTableChangeEnd();
+	m_bPieceTableState = false;
 	m_pDoc->endUserAtomicGlob();
 }
 
@@ -1947,7 +1949,9 @@ void FV_View::insertParagraphBreak(void)
 	_generalUpdate();
 
 	// Signal piceTable is stable again
-	_restorePieceTableState();
+	// Signal PieceTable Changes have finished
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_bPieceTableState = false;
 
 	_ensureThatInsertionPointIsOnScreen();
 	m_pLayout->considerPendingSmartQuoteCandidate();
@@ -7172,6 +7176,8 @@ void FV_View::cmdUndo(UT_uint32 count)
 	}
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
+	m_bPieceTableState = false;
+
 }
 
 void FV_View::cmdRedo(UT_uint32 count)
@@ -7224,6 +7230,9 @@ void FV_View::cmdRedo(UT_uint32 count)
 	}
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
+	m_bPieceTableState = false;
+
+
 }
 
 UT_Error FV_View::cmdSave(void)
@@ -7283,6 +7292,8 @@ void FV_View::cmdCut(void)
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
+	m_bPieceTableState = false;
+
 }
 
 void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
@@ -7340,6 +7351,8 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
+	m_bPieceTableState = false;
+
 	m_pDoc->clearDoingPaste();
 
 	m_pDoc->endUserAtomicGlob();
