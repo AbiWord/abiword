@@ -3451,7 +3451,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		}
 //
 // isInFrame will return true if we're right at the frame strux or right
-// at the EndFrame strux. We we delete either we're screwed. Handle
+// at the EndFrame strux. If we delete either we're screwed. Handle
 // the cases.
 //
 // Later we want to be clever about moving the frame into a valid position
@@ -3462,7 +3462,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			return;
 		}
 
-		if(m_pDoc->isEndFrameAtPos(posCur) && !isInFrame(posCur+amt)  )
+		if(m_pDoc->isEndFrameAtPos(posCur))
 		{
 			return;
 		}
