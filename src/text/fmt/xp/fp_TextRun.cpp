@@ -347,6 +347,8 @@ bool fp_TextRun::canBreakAfter(void) const
 		PD_StruxIterator text(*getBlock()->getDocument(),
 						 getBlock()->getStruxDocHandle(),
 						 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
+
+		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 		
 		if (XAP_EncodingManager::get_instance()->can_break_at(text.getChar()))
 		{
@@ -374,6 +376,7 @@ bool fp_TextRun::canBreakBefore(void) const
 						 getBlock()->getStruxDocHandle(),
 						 getBlockOffset() + fl_BLOCK_STRUX_OFFSET );
 		
+		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 		
 		if (XAP_EncodingManager::get_instance()->can_break_at(text.getChar()))
 		{
@@ -403,7 +406,7 @@ bool fp_TextRun::alwaysFits(void) const
 						 getBlock()->getStruxDocHandle(),
 						 getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-		for (UT_uint32 i=0; i< getLength(); i++, ++text)
+		for (UT_uint32 i=0; i< getLength() && text.getStatus() == UTIter_OK; i++, ++text)
 		{
 			if (text.getChar() != UCS_SPACE)
 			{
@@ -514,7 +517,7 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 						  getBlock()->getStruxDocHandle(),
 						  offset + fl_BLOCK_STRUX_OFFSET);
 
-	for(UT_uint32 i = 0; i < getLength(); i++, ++text)
+	for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
 	{
 		UT_sint32 iCW = pCharWidths[i + offset] > 0 ? pCharWidths[i + offset] : 0;
 		iLeftWidth += iCW;
@@ -556,7 +559,9 @@ bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitIn
 										   offset + fl_BLOCK_STRUX_OFFSET + i);
 
 					UT_uint32 j = i;
-					while(j >= 0 && text2.getChar() == UCS_SPACE)
+					while(j >= 0
+						  && text2.getStatus() == UTIter_OK
+						  && text2.getChar() == UCS_SPACE)
 					{
 						iSpaceW += pCharWidths[offset + j];
 						j--;
@@ -2139,7 +2144,8 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 							  getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET + startPosition);
 
-		for(UT_uint32 i = startPosition; i < getLength(); i++, ++text)
+		for(UT_uint32 i = startPosition; i < getLength() && text.getStatus() == UTIter_OK;
+			i++, ++text)
 		{
 			if(text.getChar() == Character)
 				return i + getBlockOffset();
@@ -2159,6 +2165,8 @@ bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const
 					 getBlock()->getStruxDocHandle(),
 					 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + run_offset);
 
+	UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
+	
 	Character = text.getChar();
 
 	xxx_UT_DEBUGMSG(("fp_TextRun::getCharacter offset %d, char 0x%04x\n",
@@ -2199,7 +2207,7 @@ bool	fp_TextRun::doesContainNonBlankData(void) const
 							  getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-		for(UT_uint32 i = 0; i < getLength(); i++, ++text)
+		for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
 		{
 			if(text.getChar() != UCS_SPACE)
 				return true;
@@ -2237,7 +2245,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 					 getBlock()->getStruxDocHandle(),
 					 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 		
-		for (i = getLength() - 1; i >= 0; i--, --text)
+		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
 			if(UCS_SPACE == text.getChar())
 			{
@@ -2379,7 +2387,7 @@ UT_uint32 fp_TextRun::countTrailingSpaces(void) const
 					 getBlock()->getStruxDocHandle(),
 					 getBlockOffset() + fl_BLOCK_STRUX_OFFSET + getLength() - 1);
 		
-		for (i = getLength() - 1; i >= 0; i--, --text)
+		for (i = getLength() - 1; i >= 0 && text.getStatus() == UTIter_OK; i--, --text)
 		{
 			if(UCS_SPACE == text.getChar())
 			{
@@ -2475,7 +2483,7 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 							  getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-		for(UT_uint32 i = 0; i < getLength(); i++, ++text)
+		for(UT_uint32 i = 0; i < getLength() && text.getStatus() == UTIter_OK; i++, ++text)
 			pStr[i] = text.getChar();
 		
 		pStr[i] = 0;
