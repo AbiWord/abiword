@@ -1776,6 +1776,12 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 	fp_FrameContainer * pFrameC = NULL;
 	if(!bNotFrames)
 	{
+//
+// The iextra distance gives the space around the text box frame inside the
+// frame where the user can select the frame rather than the text inside the
+// frame. Without this distance clicking inside a text box would always place 
+// the caret in text rather than selecting the frame to drag/resize etc.
+//
 		UT_sint32 iextra = m_pLayout->getGraphics()->tlu(4);
 		// loop from high z to low z
 		// Because we draw from old to new, the new appears on top
@@ -1807,6 +1813,15 @@ void fp_Page::mapXYToPosition(bool bNotFrames,UT_sint32 x, UT_sint32 y, PT_DocPo
 				}
 				
 				iDist = pFrameC->distanceFromPoint(x, y);
+//
+// The tlu(3) makes the distance of the mouse to the sensitive edge of the
+// text box 3 pixels. ie Move the mouse within 3 pixels of the textbox and it
+// change to show you can select the text box.
+//
+// If we're outside this distance make sure all other options are excluded
+// before placing hte point inside th text box
+//
+
 				if(static_cast<UT_sint32>(iDist) > m_pLayout->getGraphics()->tlu(3))
 				{
 					iDist += 200000;
