@@ -19,7 +19,7 @@
 
 #include <string.h>
 #include <ctype.h>
-#include <math.h>
+#include "ut_math.h"
 #include "ut_units.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -467,8 +467,8 @@ UT_SVGMatrix UT_SVGMatrix::scaleNonUniform (float scaleFactorX, float scaleFacto
 
 UT_SVGMatrix UT_SVGMatrix::rotate (float angle) // degrees, I assume
 {
-  float cos_angle = (float) cos (((double) angle * M_PI) / 180.0);
-  float sin_angle = (float) sin (((double) angle * M_PI) / 180.0);
+  float cos_angle = (float) cos (((double) angle * UT_PI) / 180.0);
+  float sin_angle = (float) sin (((double) angle * UT_PI) / 180.0);
 
   UT_SVGMatrix rotation(cos_angle, sin_angle, -sin_angle, cos_angle, 0, 0);
 
@@ -522,7 +522,7 @@ UT_SVGMatrix UT_SVGMatrix::skewX (float angle) // degrees, I assume
       return neo;
     }
 
-  float T = (float) tan ((mod_angle * M_PI) / 180.0);
+  float T = (float) tan ((mod_angle * UT_PI) / 180.0);
 
   UT_SVGMatrix neo(a, b, a*T+c, b*T+d, e, f);
 
@@ -544,7 +544,7 @@ UT_SVGMatrix UT_SVGMatrix::skewY (float angle) // degrees, I assume
       return neo;
     }
 
-  float T = (float) tan ((mod_angle * M_PI) / 180.0);
+  float T = (float) tan ((mod_angle * UT_PI) / 180.0);
 
   UT_SVGMatrix neo(a+T*c, b+T*d, c, d, e, f);
 
