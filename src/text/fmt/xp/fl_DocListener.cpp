@@ -79,24 +79,24 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			UT_ASSERT(pL->getType() == PTX_Block);
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
-			  {
-			    UT_DEBUGMSG(("SEVIOR: in DocListner before no LastLine \n"));
-			    UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-			    pBL->getPrev()->format();
-
-			  }
+			{
+			        UT_DEBUGMSG(("In DocListner no LastLine Fixing this now \n"));
+			        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+				pBL->getPrev()->format();
+				
+			}
 
 			PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 			UT_uint32 len = pcrs->getLength();
 			fl_SectionLayout* pBLSL = pBL->getSectionLayout();
 			bResult = pBLSL->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len);
 			if(pBL->getLastLine()==NULL)
-			  {
-			    UT_DEBUGMSG(("SEVIOR: in  DocListner after no LastLine \n"));
-			    UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",pBL->getPrev(),pBL));
-			    pBL->format();
-			    //UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			  }
+			{
+			        UT_DEBUGMSG(("In  DocListner no LastLine fixing this now \n"));
+				UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+				pBL->format();
+				//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
 
 			goto finish_up;
 		}

@@ -262,8 +262,8 @@ UT_Bool fl_SectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const
 {
         if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
         {
-	        UT_DEBUGMSG(("SEVIOR: in bl_doclistner_pop no LastLine \n"));
-	        UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+	        UT_DEBUGMSG(("In bl_doclistner_pop no LastLine \n"));
+	        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
 		//  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 

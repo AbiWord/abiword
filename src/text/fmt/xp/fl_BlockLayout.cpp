@@ -460,7 +460,6 @@ void fl_BlockLayout::_lookupProperties(void)
 	else 
 		id = 0;
 
-	UT_DEBUGMSG(("SEVIOR: Integer ID = %d \n",id));
 
 /*	if (!pBlockAP || !pBlockAP->getAttribute(PT_PARENTID_ATTRIBUTE_NAME, szPid))
 		szPid = NULL;
@@ -912,8 +911,8 @@ void fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
         // need a last line from the previous block before we call this.
         if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
         {
-	        UT_DEBUGMSG(("SEVIOR: in _breakLineAfterRun no LastLine \n"));
-	        UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",getPrev(),this));
+	        UT_DEBUGMSG(("In _breakLineAfterRun no LastLine \n"));
+	        UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
 	        //UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	if (!m_pFirstLine)
@@ -1137,8 +1136,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		        {
 			         // Previous block exists but doesn't have a last line.
 			         // This is a BUG. Try a work around for now. TODO Fix this elsewhere
-			         UT_DEBUGMSG(("SEVIOR: BUG!!! Previous block exists with no last line, try to reformat the block \n"));
-				 //abort();
+			         UT_DEBUGMSG(("BUG!!! Previous block exists with no last line, fix this by reformating the block \n"));
 			         m_pPrev->format();
 			}
 		}
@@ -2230,8 +2228,8 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 	PT_BufIndex bi = pcrs->getBufIndex();
         if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
         {
-	        UT_DEBUGMSG(("SEVIOR: in _breakLineAfterRun no LastLine \n"));
-	        UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",getPrev(),this));
+	        UT_DEBUGMSG(("In fl_BlockLayout::doclistener_populateSpan  no LastLine \n"));
+	        UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
 		//	        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
@@ -2375,8 +2373,8 @@ UT_Bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
         if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
         {
-	        UT_DEBUGMSG(("SEVIOR: in _breakLineAfterRun no LastLine \n"));
-	        UT_DEBUGMSG(("SEVIOR getPrev = %d this = %d \n",getPrev(),this));
+	        UT_DEBUGMSG(("In fl_BlockLayout::_doInsertForcedPageBreakRun  no LastLine \n"));
+	        UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
 	        //UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 

@@ -635,10 +635,9 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 
         if(pDocLayout->m_bStopSpellChecking == UT_TRUE || pDocLayout->m_bImSpellCheckingNow == UT_TRUE)
 	{
-	  UT_DEBUGMSG(("SEVIOR: Spell checking disabled coz m_bStopSpellChecking  m_bImSpellCheckingNow = %d %d\n",pDocLayout->m_bStopSpellChecking, pDocLayout->m_bImSpellCheckingNow));
 	        return;
 	}
-	// SEVIOR: Code added to hold spell checks during block insertions
+	// Code added to hold spell checks during block insertions
 
 	if(pDocLayout->m_pView->dontSpellCheckRightNow() == UT_TRUE)
 	{

@@ -688,7 +688,6 @@ void s_AbiWord_1_Listener::_handleLists(void)
 		m_pie->write("<l");
 		for (attr = pAutoNum->getAttributes(); (*attr); attr++)
 		{
-		  UT_DEBUGMSG(("SEVIOR: attribue = %s \n",*attr));
 			if (LCheck("id") || LCheck("parentid") || LCheck("type") || LCheck("start-value") || LCheck("list-delim"))
 			{
 				m_pie->write(" ");

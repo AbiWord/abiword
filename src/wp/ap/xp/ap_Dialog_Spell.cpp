@@ -227,7 +227,6 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 				 currentChar = pBlockText[m_iWordOffset + ldex];
 				 if (currentChar == UCS_RQUOTE) currentChar = '\'';
 				 theWord[ldex] = currentChar;
-				 UT_DEBUGMSG(("SEVIOR: the word = %s \n"));
 			 }
 			 UT_DEBUGMSG(("word: %s\n", theWord));
 			 if (!SpellCheckNWord16( theWord, m_iWordLength) &&

@@ -327,7 +327,6 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 
 void  AP_Dialog_Lists::fillFakeLabels(void)
 {
-  UT_DEBUGMSG(("SEVIOR: fillFakeLabels m_newListType = %d \n",m_newListType));
 
        if(m_bisCustomized == UT_FALSE)
        {
@@ -515,7 +514,6 @@ void  AP_Dialog_Lists::fillDialogFromBlock(void)
        }
        else
 	        m_iID = 0;
-       UT_DEBUGMSG(("SEVIOR: In fillDialogfromblock m_iListType = %d m_newListType= %d \n",m_iListType,m_newListType));
 }
 
 void  AP_Dialog_Lists::PopulateDialogData(void)

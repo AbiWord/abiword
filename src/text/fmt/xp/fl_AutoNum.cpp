@@ -37,7 +37,6 @@ fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start,  PL_StruxDocHandle pFirst,
 {
         UT_uint32 i;
 	m_iID = id;
-	UT_DEBUGMSG(("SEVIOR: AutoNum 1 constructed id = %d\n",id));
 	m_iStartValue = start;
 	m_iAsciiOffset = 0;
 	m_bUpdatingItems = UT_FALSE;
@@ -191,7 +190,6 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 	UT_sint32 place = getPositionInList(pLayout,depth);
 	if(place == -1)
 	{
-	       UT_DEBUGMSG(("SEVIOR: Did not find position! \n"));
 	       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	       labelStr[0] = NULL;
 	       (*insPoint) = 0;
@@ -421,31 +419,66 @@ void fl_AutoNum::setParentItem(PL_StruxDocHandle pItem)
 
 void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
 {
-	UT_sint32 ndx;
+	UT_sint32 ndx,i;
 	UT_ASSERT(pItem);
 	ndx = m_pItems.findItem((void *) pItem);
 	if(ndx >= 0)
 	        return;
 	ndx = m_pItems.findItem((void *) pPrev) + 1;
 	m_pItems.insertItemAt((void *) pItem, ndx);
-	UT_DEBUGMSG(("SEVIOR: For List %d Inserting item = %s \n",m_iID, getLabel(pItem)));
-	
-	_updateItems(ndx + 1,NULL);
+	if(m_bUpdate == UT_FALSE)
+	       return;
+
+	// scan through all the lists and update parent pointers
+        
+	UT_sint32 numlists = m_pDoc->getListsCount();
+	for(i=0; i<numlists; i++)
+	{
+	        fl_AutoNum * pAuto = m_pDoc->getNthList(i);
+		if( pPrev == pAuto->getParentItem())
+		{
+		        pAuto->setParentItem(pItem);
+			pAuto->_updateItems(0,NULL);
+		}
+	}
+
+	_updateItems(ndx+1,NULL);
 }
 
 
 void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext)
 {
 	UT_sint32 ndx;
+	UT_sint32 i;
 	UT_ASSERT(pItem);
+	PL_StruxDocHandle pPrev = NULL;
 	ndx = m_pItems.findItem((void *) pItem);
 	if(ndx >= 0)
 	        return;
 	ndx = m_pItems.findItem((void *) pNext);
+	if(ndx > 0)
+	{
+	        pPrev = m_pItems.getNthItem(ndx-1);
+	}
 	m_pItems.insertItemAt((void *) pItem, ndx);
-	UT_DEBUGMSG(("SEVIOR: For List %d PrePending item = %s \n",m_iID,getLabel(pItem)));
-	
-	_updateItems(ndx + 1,NULL);
+	if(m_bUpdate == UT_FALSE)
+	        return;
+	if(pPrev != NULL)
+	{
+	// scan through all the lists and update parent pointers
+        
+	        UT_sint32 numlists = m_pDoc->getListsCount();
+	        for(i=0; i<numlists; i++)
+	        {
+	                fl_AutoNum * pAuto = m_pDoc->getNthList(i);
+		        if( pPrev == pAuto->getParentItem())
+		        {
+		                pAuto->setParentItem(pItem);
+				pAuto->_updateItems(0,NULL);
+			}
+		}
+	}
+	_updateItems(ndx,NULL);
 }
 
 void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
@@ -460,7 +493,6 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	        ppItem =  ( PL_StruxDocHandle) m_pItems.getNthItem(ndx - 1);
 	}
 	
-	UT_DEBUGMSG(("SEVIOR: For List %d removing item = %s \n",m_iID,getLabel(pItem)));
 	//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	m_pItems.deleteNthItem(ndx);
 
