@@ -25,47 +25,62 @@
 ******************************************************************
 *****************************************************************/
 
+/*
+  Platform-specific ifdefs are bad, but the one below may be worth
+  doing anyway.  It basically allows us to have ONE set of menu
+  labels, even though the Windows version of same needs ampersands
+  inserted for the purpose of marking the mneumonic underlined
+  letters.
+*/
+
+#undef AMPERSAND
+#ifdef WIN32
+#define		AMPERSAND	"&"
+#else
+#define		AMPERSAND	""
+#endif
+
 BeginSet(EnUS)
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,		NULL,NULL,NULL)
 
-	MenuLabel(AP_MENU_ID_FILE,			"&File", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FILE_NEW,		"&New", NULL, "Create a new document")	
-	MenuLabel(AP_MENU_ID_FILE_OPEN,		"&Open", NULL, "Open an existing document")
-	MenuLabel(AP_MENU_ID_FILE_CLOSE,	"&Close", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FILE_SAVE,		"&Save", NULL, "Save the current document")
-	MenuLabel(AP_MENU_ID_FILE_SAVEAS,	"Save &As", NULL, "Save the current document under a different name")
-	MenuLabel(AP_MENU_ID_FILE_PAGESETUP,	"Page Set&up", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FILE_PRINT,	"&Print", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FILE_EXIT,		"E&xit", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FILE,			AMPERSAND "File", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FILE_NEW,		AMPERSAND "New", NULL, "Create a new document")	
+	MenuLabel(AP_MENU_ID_FILE_OPEN,		AMPERSAND "Open", NULL, "Open an existing document")
+	MenuLabel(AP_MENU_ID_FILE_CLOSE,	AMPERSAND "Close", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FILE_SAVE,		AMPERSAND "Save", NULL, "Save the current document")
+	MenuLabel(AP_MENU_ID_FILE_SAVEAS,	"Save " AMPERSAND "As", NULL, "Save the current document under a different name")
+	MenuLabel(AP_MENU_ID_FILE_PAGESETUP,	"Page Set" AMPERSAND "up", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FILE_PRINT,	AMPERSAND "Print", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FILE_EXIT,		"E" AMPERSAND "xit", NULL, NULL)
 
-	MenuLabel(AP_MENU_ID_EDIT,			"&Edit", NULL, NULL)
-	MenuLabel(AP_MENU_ID_EDIT_UNDO,		"&Undo", NULL, NULL)
-	MenuLabel(AP_MENU_ID_EDIT_REDO,		"&Redo", NULL, NULL)
-	MenuLabel(AP_MENU_ID_EDIT_CUT,		"Cu&t", NULL, NULL)
-	MenuLabel(AP_MENU_ID_EDIT_COPY,		"&Copy", NULL, NULL)
-	MenuLabel(AP_MENU_ID_EDIT_PASTE,	"&Paste", NULL, NULL)
-	MenuLabel(AP_MENU_ID_EDIT_CLEAR,	"Cle&ar", NULL, NULL)
-	MenuLabel(AP_MENU_ID_EDIT_SELECTALL,	"Select A&ll", NULL, NULL)
-	MenuLabel(AP_MENU_ID_EDIT_FIND,		"&Find", NULL, NULL)
-	MenuLabel(AP_MENU_ID_EDIT_REPLACE,	"R&eplace", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT,			AMPERSAND "Edit", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_UNDO,		AMPERSAND "Undo", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_REDO,		AMPERSAND "Redo", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_CUT,		"Cu" AMPERSAND "t", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_COPY,		AMPERSAND "Copy", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_PASTE,	AMPERSAND "Paste", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_CLEAR,	"Cle" AMPERSAND "ar", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_SELECTALL,	"Select A" AMPERSAND "ll", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_FIND,		AMPERSAND "Find", NULL, NULL)
+	MenuLabel(AP_MENU_ID_EDIT_REPLACE,	"R" AMPERSAND "eplace", NULL, NULL)
 
-	MenuLabel(AP_MENU_ID_FORMAT,		"F&ormat", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FMT_FONT,		"&Font", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FMT_PARAGRAPH,	"&Paragraph", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FMT_TABS,		"&Tabs", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FMT_BOLD,		"&Bold", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FMT_ITALIC,	"&Italic", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,	"&Underline", NULL, NULL)
-	MenuLabel(AP_MENU_ID_FMT_STRIKE,	"Stri&ke", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FORMAT,		"F" AMPERSAND "ormat", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FMT_FONT,		AMPERSAND "Font", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FMT_PARAGRAPH,	AMPERSAND "Paragraph", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FMT_TABS,		AMPERSAND "Tabs", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FMT_BOLD,		AMPERSAND "Bold", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FMT_ITALIC,	AMPERSAND "Italic", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FMT_UNDERLINE,	AMPERSAND "Underline", NULL, NULL)
+	MenuLabel(AP_MENU_ID_FMT_STRIKE,	"Stri" AMPERSAND "ke", NULL, NULL)
 
-	MenuLabel(AP_MENU_ID_ALIGN,			"&Align", NULL, NULL)
-	MenuLabel(AP_MENU_ID_ALIGN_LEFT,	"&Left", NULL, NULL)
-	MenuLabel(AP_MENU_ID_ALIGN_CENTER,	"&Center", NULL, NULL)
-	MenuLabel(AP_MENU_ID_ALIGN_RIGHT,	"&Right", NULL, NULL)
-	MenuLabel(AP_MENU_ID_ALIGN_JUSTIFY,	"&Justify", NULL, NULL)
+	MenuLabel(AP_MENU_ID_ALIGN,			AMPERSAND "Align", NULL, NULL)
+	MenuLabel(AP_MENU_ID_ALIGN_LEFT,	AMPERSAND "Left", NULL, NULL)
+	MenuLabel(AP_MENU_ID_ALIGN_CENTER,	AMPERSAND "Center", NULL, NULL)
+	MenuLabel(AP_MENU_ID_ALIGN_RIGHT,	AMPERSAND "Right", NULL, NULL)
+	MenuLabel(AP_MENU_ID_ALIGN_JUSTIFY,	AMPERSAND "Justify", NULL, NULL)
 
-	MenuLabel(AP_MENU_ID_HELP,			"&Help", NULL, NULL)
+	MenuLabel(AP_MENU_ID_HELP,			AMPERSAND "Help", NULL, NULL)
 	MenuLabel(AP_MENU_ID_HELP_READSRC,	"Read the source", NULL, NULL)
 	MenuLabel(AP_MENU_ID_HELP_FIXBUGS,	"Fix bugs", NULL, NULL)
 
