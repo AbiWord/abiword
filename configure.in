@@ -255,10 +255,10 @@ dnl check for wv
 ABI_NEED_WV="yes"
 ABI_WV(${abs_srcdir}/../wv)
 
-dnl check for wv
+dnl check for libpng. Disabled
 
-ABI_NEED_LIBPNG="yes"
-ABI_LIBPNG(${abs_srcdir}/../libpng)
+dnl ABI_NEED_LIBPNG="yes"
+dnl ABI_LIBPNG(${abs_srcdir}/../libpng)
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
