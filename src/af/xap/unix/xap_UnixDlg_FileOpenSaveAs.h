@@ -56,11 +56,7 @@ protected:
 	bool 				_askOverwrite_YesNo(XAP_Frame * pFrame,
 												const char * fileName);
 
-#if GTK_CHECK_VERSION(2,4,0)
 	GtkFileChooser * m_FC;
-#else
-	GtkFileSelection * m_FS;
-#endif
 	GtkWidget * m_preview;
 private:
 	bool				m_bExport;

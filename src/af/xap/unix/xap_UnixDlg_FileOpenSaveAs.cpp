@@ -41,9 +41,7 @@
 #include "xap_Prefs.h"
 #include "ut_debugmsg.h"
 #include "ut_string_class.h"
-#if GTK_CHECK_VERSION(2,4,0)
 #include "ut_path.h"
-#endif
 
 #include "ut_png.h"
 #include "ut_svg.h"
@@ -74,11 +72,7 @@ XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory
 
 XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id id)
-#if GTK_CHECK_VERSION(2,4,0)
   : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FC(0), m_preview(0), m_bExport(true)
-#else
-  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FS(0), m_preview(0), m_bExport(true)
-#endif
 {
 	m_szFinalPathnameCandidate = NULL;
 }
@@ -110,22 +104,6 @@ static void s_dialog_response(GtkWidget * /* widget */,
 			break;
 	}
 }
-
-#if !GTK_CHECK_VERSION(2,4,0)
-static void s_ok_clicked(GtkWidget * /* widget */,
-                                                 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
-{
-        *answer = XAP_Dialog_FileOpenSaveAs::a_OK;
-        gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * /* widget */,
-                                                         XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
-{
-        *answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
-        gtk_main_quit();
-}
-#endif
 
 static void s_delete_clicked(GtkWidget * /* widget*/, gpointer /* data */, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
@@ -227,11 +205,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			// a file, so we have to catch it, change the dialog, and not return
 			// any filename yet.
 
-#if GTK_CHECK_VERSION(2,4,0)
 			UT_cloneString(szDialogFilename, gtk_file_chooser_get_filename(m_FC));
-#else
-			UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(m_FS));
-#endif
 			UT_ASSERT(szDialogFilename);
 
 			err = stat(szDialogFilename, &buf);
@@ -246,11 +220,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				{
 					g_string_append_c(s, '/');
 				}
-#if GTK_CHECK_VERSION(2,4,0)				
 				gtk_file_chooser_set_filename(m_FC, s->str);
-#else
-				gtk_file_selection_set_filename(m_FS, s->str);
-#endif
 				g_string_free(s, TRUE);
 
 				// free the string and continue along
@@ -276,11 +246,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 		// Give us a filename we can mangle
 
-#if GTK_CHECK_VERSION(2,4,0)	
 		UT_cloneString(szDialogFilename, gtk_file_chooser_get_filename(m_FC));
-#else
-		UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(m_FS));
-#endif
 		if (!szDialogFilename)
 			continue;
 
@@ -393,11 +359,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			{
 				g_string_append_c(s, '/');
 			}
-#if GTK_CHECK_VERSION(2,4,0)			
 			gtk_file_chooser_set_filename(m_FC, s->str);
-#else
-			gtk_file_selection_set_filename(m_FS, s->str);
-#endif
 			g_string_free(s, TRUE);
 			goto ContinueLoop;
 		}
@@ -509,11 +471,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	{
 		return;
 	}
-#if GTK_CHECK_VERSION(2,4,0)			
 	UT_String sFileName = 	gtk_file_chooser_get_filename(m_FC);
-#else
-	UT_String sFileName = 	gtk_file_selection_get_filename(m_FS);
-#endif
 	UT_String sSuffix = m_szSuffixes[nFileType-1];
 	sSuffix = sSuffix.substr(1,sSuffix.length()-1);
 	UT_sint32 i = 0;
@@ -553,14 +511,10 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	sFileName = sFileName.substr(0,i);
 	sFileName += sSuffix;
 	
-#if GTK_CHECK_VERSION(2,4,0)
 	if (!gtk_file_chooser_select_filename(m_FC,sFileName.c_str()))
 	{
 		gtk_file_chooser_set_current_name(m_FC, UT_basename(sFileName.c_str()));
 	}
-#else	
-	gtk_file_selection_set_filename(m_FS,sFileName.c_str());
-#endif
 }
 
 /*****************************************************************/
@@ -639,7 +593,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: let GTK take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
 
-#if GTK_CHECK_VERSION(2,4,0)
 	// Get the GtkWindow of the parent frame
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
@@ -653,12 +606,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 							);
 
 	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_ACCEPT);
-#else	
-	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle.utf8_str()));
-	m_FS = pFS;
-
-	abiSetupModalDialog(GTK_DIALOG(pFS), pFrame, this, GTK_RESPONSE_CANCEL);
-#endif
 	GtkWidget * filetypes_pulldown = NULL;
 
 	UT_UTF8String s;
@@ -671,27 +618,16 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	  we need to return.
 	*/
 	{
-#if !GTK_CHECK_VERSION(2,4,0)		
-		GtkWidget * main_vbox = pFS->main_vbox;
-		UT_ASSERT(main_vbox);
-#endif
-		
 		// hbox for our pulldown menu (GTK does its pulldown this way */
 		GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
-#if !GTK_CHECK_VERSION(2,4,0)		
-		gtk_box_pack_start(GTK_BOX(main_vbox), pulldown_hbox, TRUE, TRUE, 0);
-#endif
 		gtk_widget_show(pulldown_hbox);
-#if GTK_CHECK_VERSION(2,4,0)
 		gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
-#endif
 
 		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
 		  {
 			  GtkWidget * preview = createDrawingArea ();
 		    gtk_widget_show (preview);
 			m_preview = preview;			  
-#if GTK_CHECK_VERSION(2,4,0)
 			gtk_widget_set_size_request (preview, PREVIEW_WIDTH, PREVIEW_HEIGHT);
 
 			// place the preview area inside a container to get a nice border
@@ -709,24 +645,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 			g_signal_connect (preview, "expose_event",
 									G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
-#else
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Activate_Label,s);
-		    GtkWidget * frame = gtk_frame_new (s.utf8_str());
-			gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_NONE);
-		    gtk_widget_show (frame);
-		    gtk_container_add (GTK_CONTAINER(frame), preview);
-
-		    gtk_box_pack_start(GTK_BOX(pulldown_hbox), frame, FALSE, TRUE, 0);
-		    gtk_widget_set_size_request (frame, PREVIEW_WIDTH, PREVIEW_HEIGHT);
-
-		    // the expose event off the preview
-		    g_signal_connect(G_OBJECT(preview),
-				       "expose_event",
-				       G_CALLBACK(s_preview_exposed),
-				       static_cast<gpointer>(this));
-
-		    g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (pFS->file_list)), "changed", G_CALLBACK (file_selection_changed), this);
-#endif
 		  }
 
 		// pulldown label
@@ -824,49 +742,23 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 	
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
-#if GTK_CHECK_VERSION(2,4,0)
 	g_signal_connect(G_OBJECT(m_FC),
 							 "delete_event",
 							 G_CALLBACK(s_delete_clicked),
 							 &m_answer);
-#else
-	g_signal_connect(G_OBJECT(m_FS),
-							 "delete_event",
-							 G_CALLBACK(s_delete_clicked),
-							 &m_answer);
-#endif
 
-#if GTK_CHECK_VERSION(2,4,0)
 	g_signal_connect(G_OBJECT(m_FC),
 			    "key_press_event",
 			    G_CALLBACK(fsel_key_event), &m_answer);
-#else
-	g_signal_connect(G_OBJECT(m_FS),
-			    "key_press_event",
-			    G_CALLBACK(fsel_key_event), &m_answer);
-#endif
 
-#if GTK_CHECK_VERSION(2,4,0)
 	g_signal_connect (G_OBJECT (m_FC),
 				"response",
 				G_CALLBACK(s_dialog_response), &m_answer);
-#else
-        g_signal_connect(G_OBJECT(pFS->ok_button), "clicked",
-                                           G_CALLBACK(s_ok_clicked), &m_answer);
-        g_signal_connect(G_OBJECT(pFS->cancel_button), "clicked",
-                                           G_CALLBACK(s_cancel_clicked), &m_answer);
-#endif
 	
-#if GTK_CHECK_VERSION(2,4,0)
 	g_signal_connect (G_OBJECT (m_FC),
 				"file-activated",
 				G_CALLBACK(s_file_activated), &m_answer);	
-#endif
 
-#if !GTK_CHECK_VERSION(2,4,0)
-	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_EXPORT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture
-	  gtk_file_selection_hide_fileop_buttons(m_FS);
-#endif
 
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
@@ -890,11 +782,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
-#if GTK_CHECK_VERSION(2,4,0)
 			gtk_file_chooser_set_filename(m_FC,szPersistDirectory);
-#else
-			gtk_file_selection_set_filename(m_FS,szPersistDirectory);
-#endif
 		}
 		else
 		{
@@ -914,11 +802,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		if (m_bSuggestName)
 		{
 			// use m_szInitialPathname
-#if GTK_CHECK_VERSION(2,4,0)			
 			gtk_file_chooser_set_filename(m_FC, m_szInitialPathname);
-#else
-			gtk_file_selection_set_filename(m_FS, m_szInitialPathname);
-#endif
 		}
 		else
 		{
@@ -928,33 +812,15 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
-#if GTK_CHECK_VERSION(2,4,0)	
 			gtk_file_chooser_set_filename(m_FC,szPersistDirectory);
-#else
-			gtk_file_selection_set_filename(m_FS,szPersistDirectory);
-#endif
 		}
 	}
 
-#if GTK_CHECK_VERSION(2,4,0)
 	// center the dialog
 	centerDialog(parent, GTK_WIDGET(m_FC));
 
 	gtk_widget_show(GTK_WIDGET(m_FC));
 	gtk_grab_add(GTK_WIDGET(m_FC));
-#else
-	// get top level window and its GtkWidget *
-	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
-	UT_ASSERT(pUnixFrameImpl);
-	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
-	UT_ASSERT(parent);
-
-	// center it
-	centerDialog(parent, GTK_WIDGET(pFS));
-	
-	gtk_widget_show(GTK_WIDGET(pFS));
-	gtk_grab_add(GTK_WIDGET(pFS));
-#endif
 	
 	bool bResult = _run_gtk_main(pFrame,bCheckWritePermission,filetypes_pulldown);
 	
@@ -973,13 +839,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		m_nFileType = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(activeItem), "user_data"));
 	}
 
-#if GTK_CHECK_VERSION(2,4,0)
 	if(m_FC && GTK_IS_WIDGET(m_FC))
 	  gtk_widget_destroy (GTK_WIDGET(m_FC));
-#else	
-	if(m_FS && GTK_IS_WIDGET(m_FS))
-	  gtk_widget_destroy (GTK_WIDGET(m_FS));
-#endif
 
 	FREEP(szPersistDirectory);
 
@@ -988,11 +849,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 {
-#if GTK_CHECK_VERSION(2,4,0)	
 	UT_ASSERT (m_FC && m_preview);
-#else
-	UT_ASSERT (m_FS && m_preview);
-#endif
 
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	UT_ASSERT(unixapp);
@@ -1004,11 +861,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_UnixAllocInfo ai(m_preview->window, unixapp->getFontManager(), m_pApp);
 	GR_UnixGraphics* pGr = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
-#if GTK_CHECK_VERSION(2,4,0)	
 	const gchar * file_name = gtk_file_chooser_get_filename (m_FC);
-#else
-	const gchar * file_name = gtk_file_selection_get_filename (m_FS);
-#endif
 	
 	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
 	pGr->setFont(fnt);
