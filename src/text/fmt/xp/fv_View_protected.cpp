@@ -3770,13 +3770,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		if ((m_xScrollOffset < getPageViewLeftMargin()) && (getViewMode() == VIEW_PRINT))
 		{
 			// fill left margin
-			painter.fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, getWindowHeight());
+			painter.fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, getWindowHeight() + m_pG->tlu(1));
 		}
 
 		if (m_yScrollOffset < getPageViewTopMargin() && (getViewMode() == VIEW_PRINT))
 		{
 			// fill top margin
-			painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getPageViewTopMargin() - m_yScrollOffset);
+			painter.fillRect(clrMargin, 0, 0, getWindowWidth() + m_pG->tlu(1), getPageViewTopMargin() - m_yScrollOffset);
 		}
 	}
 
@@ -3901,12 +3901,12 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			UT_sint32 adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset;
 			UT_sint32 adjustedRight = adjustedLeft + iPageWidth;
 
-			adjustedBottom -= getPageViewSep() - 1;
+			adjustedBottom -= getPageViewSep();
 
 			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
 			{
 			  UT_RGBColor * pClr = pPage->getFillType()->getColor();
-			  painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth-m_pG->tlu(1),iPageHeight-m_pG->tlu(1));
+			  painter.fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth + m_pG->tlu(1),iPageHeight + m_pG->tlu(1));
 //
 // Since we're clearing everything we have to draw every run no matter
 // what.
@@ -3929,8 +3929,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 				painter.drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
 				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
-				painter.drawLine(adjustedRight, adjustedBottom, adjustedLeft, adjustedBottom);
-				painter.drawLine(adjustedLeft, adjustedBottom, adjustedLeft, adjustedTop);
+				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
+				painter.drawLine(adjustedLeft, adjustedTop, adjustedLeft, adjustedBottom);
 			}
 
 //
@@ -3951,38 +3951,38 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
 
-				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight, adjustedBottom);
-				adjustedBottom += 1;
+				painter.drawLine(adjustedLeft, adjustedBottom, getWindowWidth() + m_pG->tlu(1), adjustedBottom);
+				adjustedBottom += m_pG->tlu(1);
 				m_pG->setColor(clr);
 			}
 			// fill to right of page
-			if (getWindowWidth() - (adjustedRight + 1) > 0)
+			if (getWindowWidth() - (adjustedRight + m_pG->tlu(1)) > 0)
 			{
 				// In normal mode, the right margin is
 				// white (since the whole screen is white).
 				if(getViewMode() != VIEW_PRINT)
 				{
-					painter.fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - (adjustedRight), iPageHeight + 1);
+					painter.fillRect(paperColor, adjustedRight, adjustedTop, getWindowWidth() - adjustedRight + m_pG->tlu(1), iPageHeight);
 				}
 				// Otherwise, the right margin is the
 				// margin color (gray).
 				else
 				{
-					painter.fillRect(clrMargin, adjustedRight + 1, adjustedTop, getWindowWidth() - (adjustedRight + 1), iPageHeight + 1);
+					painter.fillRect(clrMargin, adjustedRight + m_pG->tlu(1), adjustedTop, getWindowWidth() - adjustedRight, iPageHeight + m_pG->tlu(3));
 				}
 			}
 
 			// fill separator below page
-			if ((getWindowHeight() - (adjustedBottom + 1) > 0) && (VIEW_PRINT == getViewMode()))
+			if ((getWindowHeight() - (adjustedBottom + m_pG->tlu(1)) > 0) && (VIEW_PRINT == getViewMode()))
 			{
-			        if(pPage->getNext() != NULL)
+				if(pPage->getNext() != NULL)
 				{
-					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, getWindowWidth() - adjustedLeft, getPageViewSep());
+					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), getPageViewSep());
 				}
 				else // found last page
 				{
-				        UT_sint32 botfill = getWindowHeight() - adjustedBottom - 1 ;
-					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, getWindowWidth() - adjustedLeft, botfill);
+					UT_sint32 botfill = getWindowHeight() - adjustedBottom - m_pG->tlu(1) ;
+					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill);
 				}
 			}
 
@@ -3995,19 +3995,19 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 										GR_Graphics::CAP_BUTT,
 										GR_Graphics::LINE_SOLID);
 
-				adjustedLeft += 3;
-				adjustedBottom += 1;
-				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
+				adjustedLeft += m_pG->tlu(3);
+				adjustedBottom += m_pG->tlu(1);
+				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
 
-				adjustedBottom += 1;
-				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight+1, adjustedBottom);
+				adjustedBottom += m_pG->tlu(1);
+				painter.drawLine(adjustedLeft, adjustedBottom, adjustedRight + m_pG->tlu(1), adjustedBottom);
 
-				adjustedTop += 3;
-				adjustedRight += 1;
-				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+				adjustedTop += m_pG->tlu(3);
+				adjustedRight += m_pG->tlu(1);
+				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom + m_pG->tlu(1));
 
-				adjustedRight += 1;
-				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+				adjustedRight += m_pG->tlu(1);
+				painter.drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom + m_pG->tlu(1));
 			}
 		}
 		xxx_UT_DEBUGMSG(("PageHeight %d Page %x \n",iPageHeight,pPage));
@@ -4016,13 +4016,28 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		pPage = pPage->getNext();
 	}
 
-	if ((curY < iDocHeight) && !bNotEnd)
+	if ((curY <= iDocHeight) && !bNotEnd)
 	{
 		// fill below bottom of document
-		UT_sint32 y = curY - m_yScrollOffset + 1;
+		UT_sint32 y = curY - m_yScrollOffset;
 		UT_sint32 h = getWindowHeight() - y;
-		xxx_UT_DEBUGMSG(("Height of grey fill %d window height %d y %d curY %d \n",h,getWindowHeight(),y,curY));
-		painter.fillRect(clrMargin, 0, y, getWindowWidth(), h);
+		if (h > 0)
+		{
+			xxx_UT_DEBUGMSG(("Height of grey fill %d window height %d y %d curY %d \n",h,getWindowHeight(),y,curY));
+	
+			UT_RGBColor clrFillColor;
+			if (getViewMode() != VIEW_PRINT)
+			{
+				const XML_Char * pszTransparentColor = NULL;
+				this->getApp()->getPrefs()->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
+				clrFillColor.setColor(pszTransparentColor);
+			}
+			else
+			{
+				clrFillColor = clrMargin;
+			}
+			painter.fillRect(clrFillColor, 0, y, getWindowWidth() + m_pG->tlu(1), h + m_pG->tlu(1));
+		}
 	}
 
 	if (bClip)
