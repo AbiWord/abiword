@@ -536,8 +536,6 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 {
-	UT_uint32 yTop = s_iFixedHeight/4;
-	UT_uint32 yBar = s_iFixedHeight/2;
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 
 	UT_sint32 t = (s_iFixedHeight - 17)/2;
