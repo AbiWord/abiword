@@ -294,6 +294,8 @@ public:
 	UT_sint32           getWidth(void);
 	UT_sint32           getActualColumnHeight(void);
 	UT_sint32           getActualColumnWidth(void);
+	bool                isCollapsing(void) const
+		{ return m_bDoingCollapse;}
 private:
 	virtual void		_lookupProperties(const PP_AttrProp* pAP);
 	fb_ColumnBreaker    m_ColumnBreaker;
@@ -353,6 +355,7 @@ private:
 	UT_sint32           m_iNewFtrHeight;
 	UT_Worker *         m_pHdrFtrChangeTimer;
 	UT_String           m_sHdrFtrChangeProps;
+	bool                m_bDoingCollapse;
 };
 
 class _PageHdrFtrShadowPair;

@@ -818,7 +818,8 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	  m_bDeleteingBrokenContainers(false),
 	  m_iNewHdrHeight(0),
 	  m_iNewFtrHeight(0),
-	  m_pHdrFtrChangeTimer(NULL)
+	  m_pHdrFtrChangeTimer(NULL),
+	  m_bDoingCollapse(false)
 {
 	UT_ASSERT(iType == FL_SECTION_DOC);
 
@@ -2302,6 +2303,7 @@ void fl_DocSectionLayout::collapse(void)
 {
 	UT_DEBUGMSG(("DocSectionLayout: Collapsing all content in %x \n",this));
 	fp_Column* pCol = m_pFirstColumn;
+	m_bDoingCollapse = true;
 	while (pCol)
 	{
 		pCol->clearScreen();
@@ -2368,6 +2370,7 @@ void fl_DocSectionLayout::collapse(void)
 // This Doc Section No longer owns pages so this becomes NULL
 //
 	m_pFirstOwnedPage = NULL;
+	m_bDoingCollapse = false;
 }
 
 bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)

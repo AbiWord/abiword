@@ -817,10 +817,13 @@ void FL_DocLayout::removeEndnoteContainer(fp_EndnoteContainer * pECon)
 	{
 		pECon->getNext()->setPrev(pECon->getPrev());
 	}
-	fp_Column * pCol = static_cast<fp_Column *>(pECon->getContainer());
-	if(pCol)
+	if(!pDSL->isCollapsing())
 	{
-		pCol->removeContainer(pECon);
+		fp_Column * pCol = static_cast<fp_Column *>(pECon->getContainer());
+		if(pCol)
+		{
+			pCol->removeContainer(pECon);
+		}
 	}
 }
 
