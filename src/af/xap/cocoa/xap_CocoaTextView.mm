@@ -323,10 +323,9 @@ UT_DEBUGMSG(("m_hasMarkedText=%s\n",m_hasMarkedText ? "YES" : "NO"));
 
 - (void)insertText:(id)aString
 {
-	/* NSString * str = (NSString *) aString;
-	 * UT_DEBUGMSG(("insertText '%s' in window '%s'\n", [str UTF8String], [[[self window] title] UTF8String]));
+	 /* UT_DEBUGMSG(("insertText '%s' in window '%s'\n", [str UTF8String], [[[self window] title] UTF8String]));
 	 */
-UT_DEBUGMSG(("insertText: length=%u\n", [aString length]));
+	UT_DEBUGMSG(("insertText: length=%u\n", [(NSString *)aString length]));
 //  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
 	AV_View * pView = m_pFrame->getCurrentView();
 	ev_CocoaKeyboard * pCocoaKeyboard = static_cast<ev_CocoaKeyboard *>
@@ -360,7 +359,7 @@ UT_DEBUGMSG(("insertText: length=%u\n", [aString length]));
 
 - (NSRange)selectedRange
 {
-UT_DEBUGMSG(("selectedRange=(location=%u,length=%u)\n",m_selectedRange.location,m_selectedRange.length));
+	UT_DEBUGMSG(("selectedRange=(location=%u,length=%u)\n",m_selectedRange.location,m_selectedRange.length));
 	return m_selectedRange;
 }
 
@@ -371,8 +370,7 @@ UT_DEBUGMSG(("selectedRange=(location=%u,length=%u)\n",m_selectedRange.location,
 	m_selectedRange = selRange;
 	m_hasMarkedText = (selRange.length != 0 ? YES : NO);
 
-	UT_DEBUGMSG(("Hub TODO: handle -[XAP_CocoaTextView setMarkedText:selectedRange:]\n"));
-	UT_DEBUGMSG(("range=(location=%u,length=%u) [aString length]=%u\n",selRange.location,selRange.length,[aString length]));
+	UT_DEBUGMSG(("range=(location=%u,length=%u) [aString length]=%u\n", selRange.location, selRange.length, [(NSString*)aString length]));
 	/*
 		Steal code from the selection handling code in XP land. We have the AV_View
 		so everything is here.
