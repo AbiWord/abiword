@@ -9629,7 +9629,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			FREEP(oldbuffer);
 			break;
 		}
-		if (nesting == 1)
+
+		// if the stylesheet is malformed there might be nothing in the table ...
+		if (nesting == 1 && m_styleTable.getItemCount() > styleNumber )
 		{
 			// Reached the end of a single style definition.
 			// Use it.
@@ -9752,17 +9754,22 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 //
 // If style exists we have to redefine it like this
 //
-		PD_Style * pStyle = NULL;
-		if(getDoc()->getStyle(szName, &pStyle))
+		// need to test that we have a name, as there are some malformed docs around ...
+		if(szName && !*szName)
 		{
-			pStyle->addAttributes(attribs);
-			pStyle->getBasedOn();
-			pStyle->getFollowedBy();
+			PD_Style * pStyle = NULL;
+			if(getDoc()->getStyle(szName, &pStyle))
+			{
+				pStyle->addAttributes(attribs);
+				pStyle->getBasedOn();
+				pStyle->getFollowedBy();
+			}
+			else
+			{
+				getDoc()->appendStyle(attribs);
+			}
 		}
-		else
-		{
-			getDoc()->appendStyle(attribs);
-		}
+		
 //
 // OK Now delete all this allocated memory...
 //
