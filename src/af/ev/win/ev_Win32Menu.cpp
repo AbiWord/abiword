@@ -459,7 +459,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
-	bool bNeedToRedrawMenu = false;
+	
 
 	UT_uint32 pos = 0;
 	bool bResult;
@@ -534,15 +534,40 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 				if (bRemoveIt)			// we don't want it to be there
 				{
 					if (bPresent)
-					{
 						RemoveMenu(hMenuBar,cmd,MF_BYCOMMAND);
-						bNeedToRedrawMenu = true;
-					}
+					
 					break;
 				}
 
 				// we want the item in the menu.
 				pos++;			
+
+				if (bPresent)			// just update the label on the item.
+				{					
+					// dynamic label has changed
+					XAP_Menu_Id id = MenuIdFromWmCommand(cmd);
+					EV_Menu_Item*	item;
+					for(UT_sint32 i = 0; i< m_vecItems.getItemCount(); i++)
+					{
+						item = reinterpret_cast<EV_Menu_Item*>(m_vecItems.getNthItem(i));											
+						if (id==item->id)
+						{
+							strcpy (item->szText, szLabelName);					
+							//UT_DEBUGMSG(("Menu changing text->%s\n",szLabelName));
+							break;
+						}
+					}
+				}
+				else	
+				{
+					EV_Menu_Item*	item = new EV_Menu_Item;
+					item->id = id;					
+					item->pMenu= this;													
+					strcpy (item->szText, szLabelName);					
+					m_vecItems.addItem(item);
+					//UT_DEBUGMSG(("Menu adding menu->%s\n",szLabelName));
+					AppendMenu(m, MF_OWNERDRAW,cmd, (const char*) item);					
+				}
 
 			}
 			break;
@@ -647,36 +672,6 @@ bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 	return false;
 }
 
-bool _isAMenuBar2(XAP_Menu_Id id, EV_Menu_Item* item)
-{
-	XAP_Menu_Id ids[] = { AP_MENU_ID_FILE, AP_MENU_ID_EDIT, AP_MENU_ID_VIEW,AP_MENU_ID_INSERT,
-		AP_MENU_ID_TOOLS, AP_MENU_ID_WINDOW, AP_MENU_ID_HELP,AP_MENU_ID_TABLE, AP_MENU_ID_FORMAT, NULL};
-
-	for (int i=0; i<(sizeof(ids)/sizeof(XAP_Menu_Id)); i++)
-	{
-		if (ids[i]==id)
-		{		
-			
-			/*
-			MENUITEMINFO menuInfo;	 
-			memset (&menuInfo, 0, sizeof(MENUITEMINFO));
-			menuInfo.cbSize = sizeof(MENUITEMINFO);
-			menuInfo.fMask = MIIM_DATA;
-			GetMenuItemInfo(hMenu, 0, TRUE, &menuInfo);		
-			EV_Menu_Item*	item = (EV_Menu_Item *) menuInfo.dwItemData;            			           				
-			*/
-
-			if (item && id==item->id)		
-			{
-				UT_DEBUGMSG(("EV_Win32Menu::_isAMenuBar2->%s, 1\n", item->szText));
-				return true;
-			}
-		}
-	}
-
-	UT_DEBUGMSG(("EV_Win32Menu::_isAMenuBar2->0\n"));
-	return false;
-}
 
 
 /*
@@ -701,15 +696,6 @@ void EV_Win32Menu::onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 	else
 		lpmis->itemHeight = size.cy;
 
-/*	if (item->bMenuBar)
-	//if (_isAMenuBar2(item->id, (EV_Menu_Item*)(lpmis->itemData)))
-	{
-		lpmis->itemWidth =  size.cx;
-		lpmis->itemHeight = size.cy;
-
-		UT_DEBUGMSG(("Bar Measure->%s - %u\n", item->szText, _isAMenuBar2(item->id,(EV_Menu_Item*) lpmis->itemData)));
-	}
-	else*/
 
 	lpmis->itemWidth =  size.cx + item->pMenu->m_nBitmapCX + SPACE_ICONTEXT;
 
