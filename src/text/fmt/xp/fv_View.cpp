@@ -1002,7 +1002,8 @@ void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 			iLen = pCurRun->getLength() - iStart + pCurRun->getBlockOffset();
 		}
 
-		pCurRun->invert(iStart, iLen);
+		if (iLen > 0)
+			pCurRun->invert(iStart, iLen);
 
 		pCurRun = pCurRun->getNext();
 		if (!pCurRun)

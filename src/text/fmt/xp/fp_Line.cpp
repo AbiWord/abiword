@@ -369,7 +369,7 @@ void fp_Line::getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff
 
 void fp_Line::getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff,
 							   UT_sint32& yoff, UT_sint32& width,
-							   UT_sint32& height)
+							   UT_sint32& height, UT_Bool bLineHeight)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
@@ -381,7 +381,14 @@ void fp_Line::getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff,
 	UT_ASSERT(pRI->pRun == pRun);
 
 	xoff = my_xoff + pRI->xoff;
-	yoff = my_yoff + pRI->yoff + m_iAscent - pRun->getAscent();
+
+	if (bLineHeight)
+		yoff = my_yoff;
+	else
+		yoff = my_yoff + pRI->yoff + m_iAscent - pRun->getAscent();
+
+	width = m_iWidth;
+	height = m_iHeight;
 }
 
 #if UNUSED

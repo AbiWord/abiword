@@ -630,8 +630,9 @@ void fp_Run::clearScreen(void)
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0, width, height;
 	
-	m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, width, height);
-	m_pG->clearArea(xoff, yoff, m_iWidth, m_iHeight);
+	// need to clear full height of line, in case we had a selection
+	m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, width, height, UT_TRUE);
+	m_pG->clearArea(xoff, yoff, m_iWidth, height);
 }
 
 void fp_Run::invert(UT_uint32 iStart, UT_uint32 iLen)
@@ -639,11 +640,14 @@ void fp_Run::invert(UT_uint32 iStart, UT_uint32 iLen)
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0, width, height;
 	
-	m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, width, height);
+	m_pLine->getScreenOffsets(this, m_pLineData, xoff, yoff, width, height, UT_TRUE);
 
 	UT_Rect r;
 
 	_getPartRect(&r, xoff, yoff + m_iAscent, iStart, iLen, m_pBL->getCharWidths());
+
+	// inverting to line height avoids "staggered" selections
+	r.height = height;
 	m_pG->invertRect(&r);
 }
 
