@@ -3876,6 +3876,27 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 {
 	m_iInsPoint = pt;
 	m_bPointEOL = bEOL;
+
+	_checkPendingWord();
+}
+
+void FV_View::_checkPendingWord(void) const
+{
+	// deal with pending word, if any
+	if (m_pLayout->isPendingWord())
+	{
+		fl_BlockLayout* pBL = _findBlockAtPosition(m_iInsPoint);
+		if (pBL)
+		{
+			UT_uint32 iOffset = m_iInsPoint - pBL->getPosition();
+
+			if (!m_pLayout->touchesPendingWord(pBL, iOffset, 0))
+			{
+				// no longer there, so check it
+				m_pLayout->checkPendingWord();
+			}
+		}
+	}
 }
 
 UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
@@ -3915,6 +3936,7 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 
 		if (m_iInsPoint != posOld)
 		{
+			_checkPendingWord();
 			_clearIfAtFmtMark(posOld);
 			notifyListeners(AV_CHG_MOTION);
 		}
@@ -3931,6 +3953,7 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 
 		if (m_iInsPoint != posOld)
 		{
+			_checkPendingWord();
 			_clearIfAtFmtMark(posOld);
 			notifyListeners(AV_CHG_MOTION);
 		}
@@ -3940,6 +3963,7 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 
 	if (m_iInsPoint != posOld)
 	{
+		_checkPendingWord();
 		_clearIfAtFmtMark(posOld);
 		notifyListeners(AV_CHG_MOTION);
 	}

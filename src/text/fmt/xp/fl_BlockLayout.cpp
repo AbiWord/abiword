@@ -1045,7 +1045,7 @@ UT_Bool fl_PartOfBlock::doesTouch(UT_uint32 offset, UT_uint32 length) const
 	UT_uint32 start1, end1, start2, end2;
 
 	start1 = iOffset;
-	end1 =   iOffset + iLength;
+	end1 =   iOffset + iLength + 1;
 	start2 = offset;
 	end2 =   offset + length;
 
@@ -1141,20 +1141,21 @@ void fl_BlockLayout::_updateSquiggle(fl_PartOfBlock* pPOB)
 	pView->_clearBetweenPositions(pos1, pos2, UT_TRUE);
 }
 
-void fl_BlockLayout::_insertSquiggles(UT_uint32 /* iOffset */, UT_uint32 /* iLength */, fl_BlockLayout* /* pBlock */)
-{
-#if 0
-	UT_sint32 chg = iLength;
+/*
+	NOTE: The current squiggle code destructively rechecks the entire 
+	block for every atomic edit.  This is massively inefficient, and 
+	rather annoying.  Squiggles should get edited just like everything 
+	else.  
 
-	// first deal with pending word, if any
-	if (m_pLayout->isPendingWord())
-	{
-		if (!m_pLayout->touchesPendingWord(this, iOffset, 0))
-		{
-			// not affected by insert, so check it
-			m_pLayout->checkPendingWord();
-		}
-	}
+	To go back to the old approach, comment out the #define below.  
+*/
+
+#define FASTSQUIGGLE
+
+void fl_BlockLayout::_insertSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_BlockLayout* pBlock)
+{
+#ifdef FASTSQUIGGLE
+	UT_sint32 chg = iLength;
 
 	// remove squiggle broken by this insert
 	UT_sint32 iBroken = _findSquiggle(iOffset);
@@ -1169,6 +1170,21 @@ void fl_BlockLayout::_insertSquiggles(UT_uint32 /* iOffset */, UT_uint32 /* iLen
 	// move all trailing squiggles
 	_moveSquiggles(iOffset, chg, pBlock);
 
+	// deal with pending word, if any
+	if (m_pLayout->isPendingWord())
+	{
+		if (!m_pLayout->touchesPendingWord(this, iOffset, 0))
+		{
+			// not affected by insert, so check it
+			fl_PartOfBlock* pPending = m_pLayout->getPendingWord();
+
+			if (pPending->iOffset > iOffset)
+				pPending->iOffset = (UT_uint32)((UT_sint32)pPending->iOffset + chg);
+
+			m_pLayout->checkPendingWord();
+		}
+	}
+
 	// recheck at boundary
 	_recalcPendingWord(iOffset, chg);
 #else
@@ -1176,24 +1192,14 @@ void fl_BlockLayout::_insertSquiggles(UT_uint32 /* iOffset */, UT_uint32 /* iLen
 #endif
 }
 
-void fl_BlockLayout::_deleteSquiggles(UT_uint32 /* iOffset */, UT_uint32 /* iLength */, fl_BlockLayout* /* pBlock */)
+void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_BlockLayout* pBlock)
 {
-#if 0
+#ifdef FASTSQUIGGLE
 	UT_sint32 chg = -(UT_sint32)iLength;
 
 	// when deleting block break, squiggles move in opposite direction
 	if (pBlock)
 		chg = -chg;
-
-	// first deal with pending word, if any
-	if (m_pLayout->isPendingWord())
-	{
-		if (!m_pLayout->touchesPendingWord(this, iOffset, chg))
-		{
-			// not affected by delete, so check it
-			m_pLayout->checkPendingWord();
-		}
-	}
 
 	// remove all deleted squiggles
 	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
@@ -1213,11 +1219,26 @@ void fl_BlockLayout::_deleteSquiggles(UT_uint32 /* iOffset */, UT_uint32 /* iLen
 	// move all trailing squiggles
 	_moveSquiggles(iOffset, chg, pBlock);
 
+	// deal with pending word, if any
+	if (m_pLayout->isPendingWord())
+	{
+		if (!m_pLayout->touchesPendingWord(this, iOffset, chg))
+		{
+			// not affected by delete, so check it
+			fl_PartOfBlock* pPending = m_pLayout->getPendingWord();
+
+			if (pPending->iOffset > iOffset)
+				pPending->iOffset = (UT_uint32)((UT_sint32)pPending->iOffset + chg);
+
+			m_pLayout->checkPendingWord();
+		}
+	}
+
 	// recheck at boundary
 	_recalcPendingWord(iOffset, chg);
 
 	// check the newly pending word
-	m_pLayout->checkPendingWord();
+//	m_pLayout->checkPendingWord();
 #else
 	m_pLayout->queueBlockForSpell(this);
 #endif
@@ -1227,6 +1248,7 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 {
 	UT_ASSERT(chg);
 
+	// on entrance, the block is already changed & any pending word is junk
 	// on exit, there's either a single unchecked pending word, or nothing
 
 	UT_GrowBuf pgb(1024);
@@ -1237,24 +1259,15 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 
 	UT_uint32 iFirst = iOffset;
 	UT_uint32 iAbs = (UT_uint32) ((chg > 0) ? chg : -chg);
-	UT_uint32 iLen = iAbs;
+	UT_uint32 iLen = ((chg > 0) ? iAbs : 0);
 
 	/*
 	  first, we expand this region outward until we get a word delimiter
 	  on each side
 	*/
-	while ((iFirst > 0) && UT_isWordDelimiter(pBlockText[iFirst]))
+	while ((iFirst > 0) && !UT_isWordDelimiter(pBlockText[iFirst-1]))
 	{
 		iFirst--;
-	}
-
-	while ((iFirst > 0) && !UT_isWordDelimiter(pBlockText[iFirst]))
-	{
-		iFirst--;
-	}
-	if (UT_isWordDelimiter(pBlockText[iFirst]))
-	{
-		iFirst++;
 	}
 
 	UT_ASSERT(iOffset>=iFirst);
@@ -1272,40 +1285,64 @@ void fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	if (chg > 0)
 	{
 		// insert
-		
-		// TODO: consume/check all words except perhaps the last one
+		UT_uint32 iLast = iOffset + chg;
+		while ((iLast > iFirst) && !UT_isWordDelimiter(pBlockText[iLast-1]))
+		{
+			iLast--;
+		}
+
+		if (iLast == iFirst + 1)
+			iLast = iFirst;
+
+		// consume all words from the left ...
+		_checkMultiWord(pBlockText, iFirst, iLast, UT_FALSE);
+
+		// ... except the last one, which is still pending
+		iLen -= (iLast - iFirst);
+		iFirst = iLast;
 	}
 	else
 	{
 		// delete
+		UT_ASSERT(chg < 0);
 
+		// everything's already set up, so just fall through 
+	}
+
+	/*
+		Is there a pending word left?
+	*/
+	if (iLen)
+	{
 		fl_PartOfBlock* pPending = NULL;
+		UT_Bool bNew = UT_FALSE;
 
 		if (m_pLayout->isPendingWord())
 		{
 			pPending = m_pLayout->getPendingWord();
 			UT_ASSERT(pPending);
 		}
-			
-		UT_ASSERT(chg < 0);
-
-		// TODO: no need to create if this assert fires?  
-		UT_ASSERT((iFirst+iLen) > (iOffset+iAbs));
 
 		if (!pPending)
 		{
+			bNew = UT_TRUE;
 			pPending = new fl_PartOfBlock();
 			UT_ASSERT(pPending);
 		}
 
 		if (pPending)
 		{
-			// WARNING: old content not gone from blockbuf yet, thus funky math
 			pPending->iOffset = iFirst;
-			pPending->iLength = iLen - iAbs;
-			
-			m_pLayout->setPendingWord(this, pPending);
+			pPending->iLength = iLen;
+
+			if (bNew)
+				m_pLayout->setPendingWord(this, pPending);
 		}
+	}
+	else
+	{
+		// not pending any more
+		m_pLayout->setPendingWord(NULL, NULL);
 	}
 }
 
@@ -1361,7 +1398,6 @@ void fl_BlockLayout::checkSpelling(void)
 	FV_View* pView = m_pLayout->getView();
 	UT_Bool bUpdateScreen = UT_FALSE;
 
-
 	// remove any existing squiggles from the screen...
 	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
 	UT_uint32 j;
@@ -1392,14 +1428,31 @@ void fl_BlockLayout::checkSpelling(void)
 	_purgeSquiggles();
 
 	// now start checking
-	UT_uint32 wordBeginning = 0, wordLength = 0;
+	bUpdateScreen &= _checkMultiWord(pBlockText, 0, eor, UT_TRUE);
+
+	if (bUpdateScreen && pView)
+	{
+		pView->updateScreen();
+		pView->_drawInsertionPoint();
+	}
+}
+
+UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText, 
+										UT_uint32 iStart, 
+										UT_uint32 eor, 
+										UT_Bool bToggleIP)
+{
+	UT_Bool bUpdateScreen = UT_FALSE;
+
+	UT_uint32 wordBeginning = iStart;
+	UT_uint32 wordLength = 0;
 	UT_Bool bFound;
 	UT_Bool bAllUpperCase;
 
 	while (wordBeginning < eor)
 	{
 		// skip delimiters...
-		while ((wordBeginning < eor) && (UT_isWordDelimiter( pBlockText[wordBeginning])))
+		while ((wordBeginning < eor) && (UT_isWordDelimiter(pBlockText[wordBeginning])))
 		{
 			wordBeginning++;
 		}
@@ -1416,7 +1469,7 @@ void fl_BlockLayout::checkSpelling(void)
 			wordLength = 0;
 			while ((!bFound) && ((wordBeginning + wordLength) < eor))
 			{
-				if ( UT_TRUE == UT_isWordDelimiter( pBlockText[wordBeginning + wordLength] ))
+				if ( UT_TRUE == UT_isWordDelimiter(pBlockText[wordBeginning + wordLength] ))
 				{
 					bFound = UT_TRUE;
 				}
@@ -1447,9 +1500,11 @@ void fl_BlockLayout::checkSpelling(void)
 					!pApp->isWordInDict(&(pBlockText[wordBeginning]), wordLength))
 				{
 					// unknown word...
-					if (!bUpdateScreen)
+					if (bToggleIP && !bUpdateScreen)
 					{
 						bUpdateScreen = UT_TRUE;
+						FV_View* pView = m_pLayout->getView();
+
 						if (pView)
 							pView->_eraseInsertionPoint();
 					}
@@ -1463,11 +1518,7 @@ void fl_BlockLayout::checkSpelling(void)
 		}
 	}
 
-	if (bUpdateScreen && pView)
-	{
-		pView->updateScreen();
-		pView->_drawInsertionPoint();
-	}
+	return bUpdateScreen;
 }
 
 void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
@@ -1509,7 +1560,12 @@ void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		(!UT_UCS_isdigit(pBlockText[wordBeginning]) && 
 		(wordLength < 100)))
 	{
-		if (! SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength))
+		PD_Document * pDoc = m_pLayout->getDocument();
+		XAP_App * pApp = m_pLayout->getView()->getApp();
+
+		if (!SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength) &&
+			!pDoc->isIgnore(    &(pBlockText[wordBeginning]), wordLength) &&
+			!pApp->isWordInDict(&(pBlockText[wordBeginning]), wordLength))
 		{
 			// squiggle it
 			m_vecSquiggles.addItem(pPOB);
@@ -2580,7 +2636,7 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
 	}
 
-#if 0
+#ifdef FASTSQUIGGLE
 	if (m_vecSquiggles.getItemCount() > 0)
 	{
 		// we have squiggles, so move them 
@@ -3037,7 +3093,9 @@ UT_Bool fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark 
 		pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
 
-	//_insertSquiggles(blockOffset, 1);
+#ifdef FASTSQUIGGLE
+	_insertSquiggles(blockOffset, 1);
+#endif
 
 	return UT_TRUE;
 }
@@ -3063,7 +3121,9 @@ UT_Bool fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark 
 		pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
 
-	//_deleteSquiggles(blockOffset, 1);
+#ifdef FASTSQUIGGLE
+	_deleteSquiggles(blockOffset, 1);
+#endif
 
 	return UT_TRUE;
 }

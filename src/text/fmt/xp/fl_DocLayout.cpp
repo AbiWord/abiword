@@ -534,15 +534,19 @@ void FL_DocLayout::dequeueBlock(fl_BlockLayout *pBlock)
 
 void FL_DocLayout::setPendingWord(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord)
 {
+	if ((pBlock == m_pPendingBlock) && 
+		(pWord == m_pPendingWord))
+		return;
+
 	UT_ASSERT(!m_pPendingBlock || !pBlock);
 
 	if (pBlock && m_pPendingBlock && m_pPendingWord)
 	{
 		UT_ASSERT(pWord);
-
-		// when clobbering prior POB, make sure we don't leak it
-		FREEP(m_pPendingWord);
 	}
+
+	// when clobbering prior POB, make sure we don't leak it
+	FREEP(m_pPendingWord);
 
 	m_pPendingBlock = pBlock;
 	m_pPendingWord = pWord;
@@ -556,6 +560,8 @@ void FL_DocLayout::checkPendingWord(void)
 	// check pending word
 	UT_ASSERT(m_pPendingWord);
 	m_pPendingBlock->checkWord(m_pPendingWord);
+
+	m_pPendingWord = NULL;	// NB: already freed by checkWord
 
 	// not pending any more
 	setPendingWord(NULL, NULL);

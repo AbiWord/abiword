@@ -229,6 +229,10 @@ protected:
 										   UT_sint32 chg, 
 										   fl_BlockLayout* pBlock=NULL);
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
+	UT_Bool					_checkMultiWord(const UT_UCSChar* pBlockText, 
+									 UT_uint32 iStart, 
+									 UT_uint32 eor,
+									 UT_Bool bToggleIP);
 
 	UT_uint32				_getLastChar();
 	void					_stuffAllRunsOnALine(void);

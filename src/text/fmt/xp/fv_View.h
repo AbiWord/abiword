@@ -277,7 +277,9 @@ protected:
 	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);
 	void				_doPaste(UT_Bool bUseClipboard);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
-	
+
+	void				_checkPendingWord(void) const;
+
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
