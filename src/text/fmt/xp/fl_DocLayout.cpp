@@ -1974,6 +1974,11 @@ void FL_DocLayout::updateLayout()
 		deleteEmptyColumnsAndPages();
 		return;
 	}
+	if(m_pDoc->isPieceTableChanging())
+	{
+		static_cast<fl_DocSectionLayout *>(pSL)->clearRebuild();
+		return;
+	}
 	rebuildFromHere(static_cast<fl_DocSectionLayout *>(pSL));
 }
 

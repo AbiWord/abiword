@@ -1119,6 +1119,10 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 	pDoc->changeStruxFmtNoUndo(PTC_AddFmt,sdh,pszAtts,NULL);
 	pDoc->setMarginChangeOnly(false);
 //
+// Stop the resizer and delete and clear it's pointer. It's job is done now.
+//
+	pDSL->m_pHdrFtrChangeTimer->stop();
+//
 // update the screen
 //
 	pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
@@ -1141,10 +1145,6 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 	pView->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
     pView->setPoint(insPos);
 	pView->ensureInsertionPointOnScreen();
-//
-// Stop the resizer and delete and clear it's pointer. It's job is done now.
-//
-	pDSL->m_pHdrFtrChangeTimer->stop();
 	DELETEP(pDSL->m_pHdrFtrChangeTimer);
 }
 
