@@ -649,8 +649,8 @@ private:
 	GR_Image*				m_pImage;
 	UT_sint32               m_iImageWidth;
 	UT_sint32               m_iImageHeight;
-	UT_String               m_WidthProp;
-	UT_String               m_HeightProp;
+	UT_String               m_sCachedWidthProp;
+	UT_String               m_sCachedHeightProp;
 };
 
 #define FPFIELD_MAX_LENGTH	127

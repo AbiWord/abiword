@@ -2557,9 +2557,9 @@ fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 #endif
 
 	m_pFGraphic = pFG;
-	m_pImage = pFG->generateImage(pG);
-	m_WidthProp = pFG->getWidthProp();
-	m_HeightProp = pFG->getHeightProp();
+	m_pImage = pFG->generateImage(pG, NULL, 0, 0);
+	m_sCachedWidthProp = pFG->getWidthProp();
+	m_sCachedHeightProp = pFG->getHeightProp();
 	lookupProperties();
 }
 
@@ -2595,13 +2595,26 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		szHeight = "0in";
 	}
 
-	if((strcmp(m_WidthProp.c_str(),szWidth) != 0) ||
-	   (strcmp(m_HeightProp.c_str(),szHeight) != 0))
+	// Also get max width, height ready for generateImage.
+
+	fl_DocSectionLayout * pDSL = getBlock()->getSectionLayout()
+		                               ->getDocSectionLayout();
+	fp_Page * p = getBlock()->getSectionLayout()->
+		              getFirstContainer()->getPage();
+	UT_sint32 maxW = p->getWidth() - UT_convertToLogicalUnits("0.1in"), 
+		maxH = p->getHeight() - UT_convertToLogicalUnits("0.1in");
+	maxW -= pDSL->getLeftMargin() + pDSL->getRightMargin();
+	maxH -= pDSL->getTopMargin() + pDSL->getBottomMargin();
+
+	if((strcmp(m_sCachedWidthProp.c_str(),szWidth) != 0) ||
+	   (strcmp(m_sCachedHeightProp.c_str(),szHeight) != 0) ||
+		UT_convertToLogicalUnits(szHeight) > maxH ||
+		UT_convertToLogicalUnits(szWidth) > maxW)
 	{
-		m_WidthProp = szWidth;
-		m_HeightProp = szHeight;
+		m_sCachedWidthProp = szWidth;
+		m_sCachedHeightProp = szHeight;
 		DELETEP(m_pImage);
-		m_pImage = m_pFGraphic->generateImage(getGR(),pSpanAP);
+		m_pImage = m_pFGraphic->generateImage(getGR(), pSpanAP, maxW, maxH);
 		markAsDirty();
 		if(getLine())
 		{
@@ -2626,22 +2639,6 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	m_iImageWidth = getWidth();
 	m_iImageHeight = getHeight();
 
-//
-// This code deals with too big images
-//
-//
-	if(getLine() != NULL)
-	{
-		if(getLine()->getMaxWidth() - 1 < getWidth())
-		{
-			_setWidth(getLine()->getMaxWidth()-1);
-		}
-		if(getLine()->getContainer() != NULL &&
-		   static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() - 1 < getHeight())
-		{
-			_setHeight(static_cast<fp_VerticalContainer *>(getLine()->getContainer())->getMaxHeight() -1);
-		}
-	}
 	_setAscent(getHeight());
 	_setDescent(0);
 }

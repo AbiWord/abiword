@@ -8071,7 +8071,6 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	// Verify scale as a positive non-zero number else return old zoom
 	UT_uint32 iZoom = 100;
 	UT_sint32 iWindowWidth =  getWindowWidth();
-	UT_DEBUGMSG(("----------------WindowWidth in FV_View %d \n",iWindowWidth));
 	if(iWindowWidth == 0)
 	{
 	// Get fall-back defaults for zoom from prefs
@@ -8112,7 +8111,6 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 	double pageHeight = pageSize.Height(DIM_IN);
 	UT_uint32 iZoom = 100;
 	UT_sint32 iWindowHeight =  getWindowHeight();
-	UT_DEBUGMSG(("----------------WindowHeight in FV_View %d \n",iWindowHeight));
 	if(iWindowHeight == 0)
 	{
 	// Get fall-back defaults for zoom from prefs

@@ -40,7 +40,9 @@ public:
 	virtual double		getWidth(void);
 	virtual double		getHeight(void);
 	virtual const char * getDataId(void) const;
-	virtual GR_Image*	generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP = NULL );
+	virtual GR_Image*	generateImage(GR_Graphics* pG,
+									  const PP_AttrProp * pSpanAP,
+									  UT_sint32 maxW, UT_sint32 maxH);
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 										   UT_uint32 iPos, const char* szName);

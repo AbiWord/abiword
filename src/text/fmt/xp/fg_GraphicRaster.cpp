@@ -137,7 +137,9 @@ const char * FG_GraphicRaster::getHeightProp(void)
 //  We will generate an image at the proper resolution for display in the
 //  graphics object we are given.
 //
-GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP)
+GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,
+										  const PP_AttrProp * pSpanAP,
+										  UT_sint32 maxW, UT_sint32 maxH)
 {
 	UT_ASSERT(m_pSpanAP);
 	UT_ASSERT(m_pszDataID);
@@ -154,10 +156,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 	}
 	bool bFoundWidthProperty = m_pSpanAP->getProperty("width", pszWidth);
 	bool bFoundHeightProperty = m_pSpanAP->getProperty("height", pszHeight);
-	if( bFoundWidthProperty && bFoundHeightProperty)
-	{
-		UT_DEBUGMSG(("SEVIOR: generate image  height= %s width = %s \n",pszHeight,pszWidth));
-	}
+
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
@@ -178,6 +177,9 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 
 	UT_ASSERT(iDisplayWidth > 0);
 	UT_ASSERT(iDisplayHeight > 0);
+
+	if (maxW != 0 && iDisplayWidth > maxW) iDisplayWidth = maxW;
+	if (maxH != 0 && iDisplayHeight > maxH)	iDisplayHeight = maxH;
 
    	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbPNG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
 

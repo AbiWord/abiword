@@ -60,7 +60,9 @@ public:
 	virtual const char * getHeightProp(void) = 0;
 
 	//  generate an image for display in the specified graphics object
-	virtual GR_Image*	generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP = NULL) = 0;
+	virtual GR_Image* generateImage(GR_Graphics* pG,
+								   const PP_AttrProp * pSpanAP,
+								   UT_sint32 maxW, UT_sint32 maxH) = 0;
 
 	//  Insert the object at the specified point in a document
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,

@@ -135,7 +135,9 @@ const char * FG_GraphicVector::getHeightProp(void)
 //  We will generate an image at the proper resolution for display in the
 //  graphics object we are given.
 //
-GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,const PP_AttrProp * pSpanAP)
+GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,
+										  const PP_AttrProp * pSpanAP,
+										  UT_sint32 maxW, UT_sint32 maxH)
 {
 	UT_ASSERT(m_pSpanAP);
 	UT_ASSERT(m_pszDataID);
@@ -163,12 +165,15 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG,const PP_AttrProp * pS
 	}
 	else
 	{
-	  int iLayoutWidth, iLayoutHeight;
-	  UT_SVG_getDimensions(m_pbbSVG, pG, iDisplayWidth, iDisplayHeight, iLayoutWidth, iLayoutHeight);
+		UT_sint32 iLogicalWidth, iLogicalHeight; // throwaway
+		UT_SVG_getDimensions(m_pbbSVG, pG, iDisplayWidth, iDisplayHeight, iLogicalWidth, iLogicalHeight);
 	}
 	UT_DEBUGMSG(("SVG image: width = %d, height = %d\n",static_cast<int>(iDisplayWidth),static_cast<int>(iDisplayHeight)));
 	UT_ASSERT(iDisplayWidth > 0);
 	UT_ASSERT(iDisplayHeight > 0);
+
+	if (maxW != 0 && iDisplayWidth > maxW) iDisplayWidth = maxW;
+	if (maxH != 0 && iDisplayHeight > maxH) iDisplayHeight = maxH;
 
 	GR_Image *pImage = pG->createNewImage(static_cast<const char*>(m_pszDataID), m_pbbSVG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Vector);
 	return pImage;
