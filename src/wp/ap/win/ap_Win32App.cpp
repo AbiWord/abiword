@@ -605,72 +605,13 @@ static LRESULT CALLBACK _SplashWndProc(HWND hWnd, UINT message, WPARAM wParam, L
     return (0);
 }
 
-static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName)
+static GR_Image * _showSplash(HINSTANCE hInstance, const char * szAppName)
 {
 	hwndSplash = NULL;
 	pSplash = NULL;
 
 	UT_ByteBuf* pBB = NULL;
-	bool bShowSplash = true;
 	const char * szFile = NULL;
-
-	// Win32 does not put the program name in argv[0], so [0] is the first argument
-	int nFirstArg = 0;
-	int k;
-	
-	// scan args for splash-related stuff
-    for (k=nFirstArg; (k<pArgs->m_argc); k++)
-	{
-		if (*pArgs->m_argv[k] == '-')
-		{
-			if (UT_stricmp(pArgs->m_argv[k],"-to") == 0 || UT_stricmp(pArgs->m_argv[k],"-help") == 0)
-			{
-				bShowSplash = false;
-				break;
-			}
-		}
-	}	
-	
-    for (k=nFirstArg; (k<pArgs->m_argc); k++)
-	{
-		if (*pArgs->m_argv[k] == '-')
-		{
-			if (UT_stricmp(pArgs->m_argv[k],"-show") == 0)
-			{
-				bShowSplash = true;
-				break;
-			}
-		}
-	}	
-
-	for (k=nFirstArg; (k<pArgs->m_argc); k++)
-	{
-		if (*pArgs->m_argv[k] == '-')
-		{
-			if (UT_stricmp(pArgs->m_argv[k],"-nosplash") == 0)
-			{
-				bShowSplash = false;
-				break;
-			}
-#if DEBUG
-			else if (UT_stricmp(pArgs->m_argv[k],"-splash") == 0)
-			{
-				// [-splash filename]
-				szFile = pArgs->m_argv[k+1];
-				break;
-
-				// NOTE: this switch is just for debugging artwork, so 
-				// it's OK that the filename also gets opened as a document
-			}
-#endif
-		}
-
-		// TODO: platform-specific reasons to not show splash?
-		// TODO: for example, if being launched via DDE or OLE??
-	}
-
-	if (!bShowSplash)
-		goto Done;
 
 	extern unsigned char g_pngSplash[];		// see ap_wp_Splash.cpp
 	extern unsigned long g_pngSplash_sizeof;	// see ap_wp_Splash.cpp
@@ -739,7 +680,6 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 
 	DELETEP(pBB);
 
-Done:
 	return pSplash;
 }
 #endif
@@ -752,6 +692,8 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
 	bool bShowApp = true;
+	bool bShowSplash = true;
+	bool bSplashPref = true;
 
 	// this is a static function and doesn't have a 'this' pointer.
 	MSG msg;
@@ -796,32 +738,29 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 		hinstRich = LoadLibrary("riched20.dll");
 	UT_ASSERT(hinstRich);
 
-	// initialize our application.
-
+	// Load the command line into an XAP_Args class
 	XAP_Args Args = XAP_Args(szCmdLine);
 
-#if SPLASH
-	_showSplash(hInstance, &Args, szAppName);
-#endif
-	
+	// initialize our application.
 	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
 	pMyWin32App->initialize();
+  
+	// Quick & Dirty command-line 
+	// check to make sure we didn't do a conversion
 
-	pMyWin32App->ParseCommandLine(iCmdShow);
-
-#if 0 /* SPLASH */
-	_hideSplash();
-#endif
-	
-	// Win32 does not put the program name in argv[0], so [0] is the first argument
+	// Win32 does not put the program name in argv[0], 
+	// so [0] is the first argument
 	int nFirstArg = 0;
 	int k;
-	
-	// quick & dirty check to make sure we didn't do a command-line conversion
-   for (k=nFirstArg; (k<Args.m_argc); k++) {
+ 
+	for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
 			if (UT_stricmp(Args.m_argv[k],"-to") == 0 || UT_stricmp(Args.m_argv[k],"-help") == 0) {
  				bShowApp = false;
+				bShowSplash = false;
+			}
+			if( UT_stricmp(Args.m_argv[k],"-nosplash") == 0 ) {
+				bShowSplash = false;
 			}
 		}
 	}	
@@ -830,9 +769,27 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 		if (*Args.m_argv[k] == '-') {
 			if (UT_stricmp(Args.m_argv[k],"-show") == 0) {
  				bShowApp = true;
+				bShowSplash = true;
 			}
 		}
 	}	
+
+	// Consider the user saved preferences for the Splash Screen
+   	const XAP_Prefs * pPrefs = pMyWin32App->getPrefs();
+	UT_ASSERT(pPrefs);
+    if (pPrefs && pPrefs->getPrefsValueBool (AP_PREF_KEY_ShowSplash, &bSplashPref))
+	{
+		bShowSplash = bShowSplash && bSplashPref;
+	}
+
+#if SPLASH
+	if (bShowSplash)
+	{
+		_showSplash(hInstance, szAppName);
+	}
+#endif
+
+	pMyWin32App->ParseCommandLine(iCmdShow);
 
 	if (bShowApp)
 	{
