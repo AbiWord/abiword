@@ -54,7 +54,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_OPEN,		0,1,0,	"fileOpen",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVE,		0,0,0,	"fileSave",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,	"fileSaveAs",		NULL,					NULL);
-	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	"closeWindow",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PRINT,		0,1,0,	"print",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_EXIT,		0,0,0,	"querySaveAndExit",	NULL,					NULL);
@@ -67,8 +67,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_PASTE,		0,0,0,	"paste",			NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_CLEAR,		0,0,0,	"delRight",			NULL,					NULL);
 	_s(AP_MENU_ID_EDIT_SELECTALL,	0,0,0,	"selectAll",		NULL,					NULL);
-	_s(AP_MENU_ID_EDIT_FIND,		0,1,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_EDIT_REPLACE,		0,1,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_EDIT_FIND,		0,1,0,	"find",				NULL,					NULL);
+	_s(AP_MENU_ID_EDIT_REPLACE,		0,1,0,	"replace",			NULL,					NULL);
 
 	_s(AP_MENU_ID_FORMAT,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	"dlgFont",			NULL,					NULL);

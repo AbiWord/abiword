@@ -178,17 +178,25 @@ public:
 	static EV_EditMethod_Fn cut;
 	static EV_EditMethod_Fn copy;
 	static EV_EditMethod_Fn paste;
+	static EV_EditMethod_Fn find;
+	static EV_EditMethod_Fn go;
+	static EV_EditMethod_Fn replace;
 
 	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn toggleBold;
 	static EV_EditMethod_Fn toggleItalic;
 	static EV_EditMethod_Fn toggleUline;
 	static EV_EditMethod_Fn toggleStrike;
+	static EV_EditMethod_Fn togglePlain;
 
 	static EV_EditMethod_Fn alignLeft;
 	static EV_EditMethod_Fn alignCenter;
 	static EV_EditMethod_Fn alignRight;
 	static EV_EditMethod_Fn alignJustify;
+
+	static EV_EditMethod_Fn singleSpace;
+	static EV_EditMethod_Fn middleSpace;
+	static EV_EditMethod_Fn doubleSpace;
 
 	static EV_EditMethod_Fn cycleWindows;
 	static EV_EditMethod_Fn cycleWindowsBck;
@@ -315,17 +323,25 @@ static EV_EditMethod s_arrayEditMethods[] =
 		EV_EditMethod(NF(cut),					_M_,	""),
 		EV_EditMethod(NF(copy),					_M_,	""),
 		EV_EditMethod(NF(paste),				_M_,	""),
+		EV_EditMethod(NF(find),					_M_,	""),
+		EV_EditMethod(NF(go),					_M_,	""),
+		EV_EditMethod(NF(replace),				_M_,	""),
 
 		EV_EditMethod(NF(dlgFont),				0,		""),
 		EV_EditMethod(NF(toggleBold),			0,		""),
 		EV_EditMethod(NF(toggleItalic),			0,		""),
 		EV_EditMethod(NF(toggleUline),			0,		""),
 		EV_EditMethod(NF(toggleStrike),			0,		""),
+		EV_EditMethod(NF(togglePlain),			0,		""),
 
 		EV_EditMethod(NF(alignLeft),			0,		""),
 		EV_EditMethod(NF(alignCenter),			0,		""),
 		EV_EditMethod(NF(alignRight),			0,		""),
 		EV_EditMethod(NF(alignJustify),			0,		""),
+
+		EV_EditMethod(NF(singleSpace),			0,		""),
+		EV_EditMethod(NF(middleSpace),			0,		""),
+		EV_EditMethod(NF(doubleSpace),			0,		""),
 
 		EV_EditMethod(NF(cycleWindows),			_M_,	""),
 		EV_EditMethod(NF(cycleWindowsBck),		_M_,	""),
@@ -979,6 +995,21 @@ Defun0(paste)
 	return UT_TRUE;
 }
 
+Defun0(find)
+{
+	return UT_TRUE;
+}
+
+Defun0(go)
+{
+	return UT_TRUE;
+}
+
+Defun0(replace)
+{
+	return UT_TRUE;
+}
+
 Defun0(cycleWindows)
 {
 	return UT_TRUE;
@@ -1126,6 +1157,13 @@ Defun1(toggleStrike)
 	return _toggleSpan(pView, "text-decoration", "line-through", "none", UT_TRUE);
 }
 
+Defun0(togglePlain)
+{
+	// TODO: remove all character-level formatting
+	// HYP: explicitly delete it, to get back to defaults, styles
+	return UT_TRUE;
+}
+
 Defun1(alignLeft)
 {
 	const XML_Char * properties[] =	{ "text-align", "left", 0};
@@ -1150,6 +1188,27 @@ Defun1(alignRight)
 Defun1(alignJustify)
 {
 	const XML_Char * properties[] =	{ "text-align", "justify", 0};
+	pView->setBlockFormat(properties);
+	return UT_TRUE;
+}
+
+Defun1(singleSpace)
+{
+	const XML_Char * properties[] =	{ "line-height", "1.0", 0};
+	pView->setBlockFormat(properties);
+	return UT_TRUE;
+}
+
+Defun1(middleSpace)
+{
+	const XML_Char * properties[] =	{ "line-height", "1.5", 0};
+	pView->setBlockFormat(properties);
+	return UT_TRUE;
+}
+
+Defun1(doubleSpace)
+{
+	const XML_Char * properties[] =	{ "line-height", "2.0", 0};
 	pView->setBlockFormat(properties);
 	return UT_TRUE;
 }

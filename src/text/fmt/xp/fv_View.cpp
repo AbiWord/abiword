@@ -755,6 +755,7 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 	v.addItem(new _fmtPair("text-align",NULL,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("margin-top",NULL,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("margin-bottom",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("line-height",NULL,pBlockAP,pSectionAP));
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())

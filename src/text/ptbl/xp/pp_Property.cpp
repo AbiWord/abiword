@@ -47,6 +47,7 @@ static PP_Property _props[] =
 	{ "text-decoration",		"none",				1},
 
 	{ "background-color",		"transparent",		0},
+	{ "line-height",			"1.0",				0},
 	{ "line-break-after",		"auto",				0},
 	{ "line-break-before",		"auto",				0},
 	{ "line-break-inside",		"auto",				0},
