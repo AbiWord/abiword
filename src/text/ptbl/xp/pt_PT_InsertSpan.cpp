@@ -386,6 +386,10 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 		bFoundStrux = _getStruxFromFragSkip((pf_Frag *) pfs,&pfs);
 	}
 	UT_return_val_if_fail (pfs,false);
+	if(pfs->getStruxType() == PTX_EndFrame)
+	{
+		bFoundStrux = _getStruxFromFragSkip((pf_Frag *) pfs,&pfs);
+	}
 	// we just did a getFragFromPosition() which gives us the
 	// the thing *starting* at that position.  if we have a
 	// fragment boundary at that position, it's sort of arbitrary
