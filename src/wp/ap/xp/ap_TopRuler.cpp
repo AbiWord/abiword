@@ -282,6 +282,9 @@ void AP_TopRuler::_drawTickMark(AP_TopRulerInfo &info, ap_RulerTicks &tick,
 		UT_uint32 iFontHeight = m_pG->getFontHeight();
 		UT_uint32 n = k / tick.tickLabel * tick.tickScale;
 
+		if (n == 0)						// we never draw the zero on the
+			return;						// origin
+		
 		char buf[6];
 		UT_UCSChar span[6];
 		UT_uint16 charWidths[6];

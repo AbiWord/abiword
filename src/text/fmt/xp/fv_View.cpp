@@ -91,6 +91,7 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_chg.iColumn = 0;					// current column number
 	m_chg.propsChar = NULL;
 	m_chg.propsBlock = NULL;
+	m_chg.propsSection = NULL;
 
 	pLayout->setView(this);
 		
@@ -113,6 +114,7 @@ FV_View::~FV_View()
 	
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
+	FREEP(m_chg.propsSection);
 }
 	
 FL_DocLayout* FV_View::getLayout() const
@@ -269,6 +271,53 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		{
 			FREEP(propsChar);
 			mask ^= AV_CHG_FMTCHAR;
+		}
+	}
+
+	if (mask & AV_CHG_FMTSECTION)
+	{
+		/*
+			The following brute-force solution works, but is atrociously 
+			expensive, so we should avoid using it whenever feasible.  
+		*/
+		const XML_Char ** propsSection = NULL;
+		getSectionFormat(&propsSection);
+
+		UT_Bool bMatch = UT_FALSE;
+
+		if (propsSection && m_chg.propsSection)
+		{
+			bMatch = UT_TRUE;
+
+			int i=0;
+
+			while (bMatch)
+			{
+				if (!propsSection[i] || !m_chg.propsSection[i])
+				{
+					bMatch = (propsSection[i] == m_chg.propsSection[i]);
+					break;
+				}
+
+				if (UT_stricmp(propsSection[i], m_chg.propsSection[i]))
+				{
+					bMatch = UT_FALSE;
+					break;
+				}
+
+				i++;
+			}
+		}
+
+		if (!bMatch)
+		{
+			FREEP(m_chg.propsSection);
+			m_chg.propsSection = propsSection;
+		}
+		else
+		{
+			FREEP(propsSection);
+			mask ^= AV_CHG_FMTSECTION;
 		}
 	}
 

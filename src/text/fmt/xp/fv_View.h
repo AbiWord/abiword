@@ -64,6 +64,7 @@ struct fv_ChangeState
 	UT_uint32			iColumn;
 	const XML_Char **	propsChar;
 	const XML_Char **	propsBlock;
+	const XML_Char **	propsSection;
 };
 
 class FV_View : public AV_View
