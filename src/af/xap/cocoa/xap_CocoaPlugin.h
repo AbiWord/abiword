@@ -24,23 +24,57 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class XAP_CocoaPlugin;
 @class XAP_CocoaPluginImpl;
+
+@protocol XAP_CocoaPluginDelegate
+
+/* This will be called immediately after initialization;
+ * return NO if for some reason the plugin won't work with the current version of AbiWord.
+ * 
+ * If the bundle's main class implements *only* this method, it must immediately set the
+ * real XAP_CocoaPluginDelegate object as AbiWord's delegate.
+ */
+- (BOOL)pluginCanRegisterForAbiWord:(XAP_CocoaPlugin *)AbiWord;
+
+- (BOOL)pluginIsActive;
+- (void)pluginActivate;   /* Add menuitems etc. */
+- (void)pluginDeactivate; /* Remove them...     */
+
+/* Plugin should attempt to save all files, and return NO *only* if the user has answered
+ * "Cancel" to an alert about an unsaved document.
+ */
+- (BOOL)pluginCanDeactivate;
+
+- (NSString *)pluginName;
+- (NSString *)pluginAuthor;
+- (NSString *)pluginVersion;
+- (NSString *)pluginDescription;
+- (NSString *)pluginUsage;
+
+@end
 
 @interface XAP_CocoaPlugin : NSObject
 {
 	XAP_CocoaPluginImpl *	m_pImpl;
 }
-- (id)initWithPath:(NSString *)path;
+- (id)init;
 - (void)dealloc;
-- (void)setDelegate:(id)delegate;
-- (id)delegate;
-- (NSString *)path;
-- (NSString *)configurationFile;
-- (void)configure:(NSString *)configurationFile;
-@end
 
-@protocol XAP_CocoaPluginDelegate
-- (void)pluginHasConfigurationFile:(NSString *)path;
+/* .Abi plugins are bundles; loadBundle attempts to load the bundle specified to initWithPath,
+ * returns NO if the bundle is already loaded (to avoid duplication) or if it can't be loaded.
+ * The plugin's principal class is initialized with init and is set as the delegate, and must
+ * conform therefore to the XAP_CocoaPluginDelegate protocol (or set a new delegate when
+ * pluginCanRegisterForAbiWord is called).
+ */
+- (BOOL)loadBundleWithPath:(NSString *)path;
+
+- (void)setDelegate:(id <NSObject, XAP_CocoaPluginDelegate>)delegate;
+- (id <NSObject, XAP_CocoaPluginDelegate>)delegate;
+
+- (void)appendMenuItem:(NSMenuItem *)menuItem;
+- (void)removeMenuItem:(NSMenuItem *)menuItem;
+
 @end
 
 #endif /* XAP_COCOAPLUGIN_H */

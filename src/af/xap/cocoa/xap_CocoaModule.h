@@ -59,11 +59,8 @@ private:
 	UT_UTF8String	m_module_path;
 
 	void *			m_module;
-	void *			m_cocoa_plugin;
 
 	bool			m_bLoaded;
-	bool			m_bBundle;
-	bool			m_bCocoa;
 };
 
 #endif /* XAP_COCOAMODULE_H */

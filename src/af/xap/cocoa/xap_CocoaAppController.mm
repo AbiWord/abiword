@@ -29,6 +29,7 @@
 #include "xap_CocoaApp.h"
 #include "xap_CocoaAppController.h"
 #include "xap_CocoaModule.h"
+#include "xap_CocoaPlugin.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -314,6 +315,9 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 
 			m_PanelMenu   = [[NSMenu alloc] initWithTitle:@"Panels"];
 			m_ContextMenu = [[NSMenu alloc] initWithTitle:@"Context Menu"];
+
+			m_Plugins      = [[NSMutableArray alloc] initWithCapacity:16];
+			m_PluginsTools = [[NSMutableArray alloc] initWithCapacity:16];
 		}
 	return self;
 }
@@ -329,6 +333,16 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 		{
 			[m_ContextMenu release];
 			m_ContextMenu = 0;
+		}
+	if (m_Plugins)
+		{
+			[m_Plugins release];
+			m_Plugins = 0;
+		}
+	if (m_PluginsTools)
+		{
+			[m_PluginsTools release];
+			m_PluginsTools = 0;
 		}
 	[super dealloc];
 }
@@ -684,6 +698,16 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 	[self clearMenu:XAP_CocoaAppMenu_Help  ];
 }
 
+- (void)appendPluginMenuItem:(NSMenuItem *)menuItem
+{
+	// TODO
+}
+
+- (void)removePluginMenuItem:(NSMenuItem *)menuItem
+{
+	// TODO
+}
+
 /* Do we need this? getLastFocussedFrame() should be tracking this now... [TODO!!]
  */
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
@@ -760,6 +784,80 @@ static XAP_CocoaAppController * XAP_AppController_Instance = nil;
 - (XAP_Frame *)previousFrame
 {
 	return m_pFramePrevious;
+}
+
+/* load .Abi bundle plugin at path, returns nil on failure
+ */
+- (XAP_CocoaPlugin *)loadPlugin:(NSString *)path
+{
+	if (!path)
+		return nil;
+
+	XAP_CocoaPlugin * cocoa_plugin = [[XAP_CocoaPlugin alloc] init];
+	if (!cocoa_plugin)
+		return nil;
+
+	if ([cocoa_plugin loadBundleWithPath:path])
+		{
+			[m_Plugins addObject:cocoa_plugin];
+		}
+	else
+		{
+			[cocoa_plugin release];
+			cocoa_plugin = nil;
+		}
+	return cocoa_plugin;
+}
+
+/* list of currently loaded plugins
+ */
+- (NSArray *)plugins
+{
+	return m_Plugins;
+}
+
+/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
+ * returns false if any of the plugins object
+ */
+- (BOOL)deactivateAllPlugins
+{
+	unsigned count = [m_Plugins count];
+
+	BOOL bCanDeactivate = YES;
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+
+			bCanDeactivate = [[plugin delegate] pluginCanDeactivate];
+			if (!bCanDeactivate)
+				break;
+		}
+	if (!bCanDeactivate)
+		return NO;
+
+	for (unsigned i = 0; i < count; i++)
+		{
+			XAP_CocoaPlugin * plugin = (XAP_CocoaPlugin *) [m_Plugins objectAtIndex:i];
+
+			[[plugin delegate] pluginDeactivate];
+		}
+	return YES;
+}
+
+/* checks to see whether the plugins can deactivate, and, if they can, deactivates them;
+ * returns false if the plugin objects, unless override is YES.
+ */
+- (BOOL)deactivatePlugin:(XAP_CocoaPlugin *)plugin overridePlugin:(BOOL)override
+{
+	if (!override)
+		{
+			if (![[plugin delegate] pluginCanDeactivate])
+				return NO;
+		}
+	[[plugin delegate] pluginDeactivate];
+
+	return YES;
 }
 
 @end

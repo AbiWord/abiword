@@ -19,102 +19,56 @@
  * 02111-1307, USA.
  */
 
-#import "xap_CocoaPlugin.h"
+#include "xap_CocoaAppController.h"
+#include "xap_CocoaPlugin.h"
 
 @interface XAP_CocoaPluginImpl : NSObject
 {
-	id<XAP_CocoaPluginDelegate>	m_delegate;
-
-	NSString *	m_path;
-	NSString *	m_configurationFile;
+	id <NSObject, XAP_CocoaPluginDelegate>	m_delegate;
 }
-- (id)initWithPath:(NSString *)path;
+- (id)init;
 - (void)dealloc;
-- (void)setDelegate:(id<XAP_CocoaPluginDelegate>)delegate;
-- (id<XAP_CocoaPluginDelegate>)delegate;
-- (NSString *)path;
-- (NSString *)configurationFile;
-- (void)configure:(NSString *)configurationFile;
+
+- (void)setDelegate:(id <NSObject, XAP_CocoaPluginDelegate>)delegate;
+- (id <NSObject, XAP_CocoaPluginDelegate>)delegate;
 @end
 
 @implementation XAP_CocoaPluginImpl
 
-- (id)initWithPath:(NSString *)path
+- (id)init
 {
 	if (self = [super init])
 		{
 			m_delegate = 0;
-
-			m_path = path;
-			[m_path retain];
-
-			m_configurationFile = 0;
 		}
 	return self;
 }
 
 - (void)dealloc
 {
-	if (m_path)
-		{
-			[m_path release];
-			m_path = 0;
-		}
-	if (m_configurationFile)
-		{
-			[m_configurationFile release];
-			m_configurationFile = 0;
-		}
+	// 
 	[super dealloc];
 }
 
-- (void)setDelegate:(id<XAP_CocoaPluginDelegate>)delegate
+- (void)setDelegate:(id <NSObject, XAP_CocoaPluginDelegate>)delegate
 {
 	m_delegate = delegate;
 }
 
-- (id<XAP_CocoaPluginDelegate>)delegate
+- (id <NSObject, XAP_CocoaPluginDelegate>)delegate
 {
 	return m_delegate;
-}
-
-- (NSString *)path
-{
-	return m_path;
-}
-
-- (NSString *)configurationFile
-{
-	return m_configurationFile;
-}
-
-- (void)configure:(NSString *)configurationFile
-{
-	if (m_configurationFile)
-		{
-			[m_configurationFile release];
-			m_configurationFile = 0;
-		}
-	if (configurationFile)
-		{
-			m_configurationFile = configurationFile;
-			[m_configurationFile retain];
-		}
-	if (m_delegate)
-		{
-			[m_delegate pluginHasConfigurationFile:m_configurationFile];
-		}
 }
 
 @end
 
 @implementation XAP_CocoaPlugin
 
-- (id)initWithPath:(NSString *)path
+- (id)init
 {
 	if (self = [super init])
 		{
-			m_pImpl = [[XAP_CocoaPluginImpl alloc] initWithPath:path];
+			m_pImpl = [[XAP_CocoaPluginImpl alloc] init];
 			if (!m_pImpl)
 				{
 					[self dealloc];
@@ -134,30 +88,49 @@
 	[super dealloc];
 }
 
-- (void)setDelegate:(id)delegate
+- (BOOL)loadBundleWithPath:(NSString *)path
 {
-	[m_pImpl setDelegate:((id<XAP_CocoaPluginDelegate>) delegate)];
+	BOOL bLoaded = NO;
+
+	if (NSBundle * bundle = [NSBundle bundleWithPath:path])
+		if (![bundle isLoaded])
+			if ([bundle load])
+				if (Class bundleClass = [bundle principalClass])
+					if (id <NSObject, XAP_CocoaPluginDelegate> instance = [[bundleClass alloc] init])
+					{
+						if ([instance respondsToSelector:@selector(pluginCanRegisterForAbiWord:)])
+						{
+							[self setDelegate:instance];
+							bLoaded = [instance pluginCanRegisterForAbiWord:self];
+						}
+						if (!bLoaded)
+						{
+							[instance release];
+						}
+					}
+	return bLoaded;
 }
 
-- (id)delegate
+- (void)setDelegate:(id <NSObject, XAP_CocoaPluginDelegate>)delegate
+{
+	[m_pImpl setDelegate:delegate];
+}
+
+- (id <NSObject, XAP_CocoaPluginDelegate>)delegate
 {
 	return [m_pImpl delegate];
 }
 
-- (NSString *)path
+- (void)appendMenuItem:(NSMenuItem *)menuItem
 {
-	return [m_pImpl path];
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	[pController appendPluginMenuItem:menuItem];
 }
 
-- (NSString *)configurationFile
+- (void)removeMenuItem:(NSMenuItem *)menuItem
 {
-	return (m_pImpl ? [m_pImpl configurationFile] : nil);
-}
-
-- (void)configure:(NSString *)configurationFile
-{
-	if (m_pImpl)
-		[m_pImpl configure:configurationFile];
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	[pController removePluginMenuItem:menuItem];
 }
 
 @end
