@@ -250,7 +250,7 @@ void AP_Dialog_Lists::Apply(void)
 	}
 	else if(m_newListType > DASHED_LIST)
 	{
-		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Dingbats");
+		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 	}
 
 	if(m_bisCustomized == UT_FALSE)
@@ -391,7 +391,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
        }
        else if(m_newListType > DASHED_LIST)
        {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Dingbats");
+               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
        }
 }
 
@@ -422,7 +422,7 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
        }
       else if(m_newListType > DASHED_LIST)
        {
-               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Dingbats");
+               UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
                UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
        }
        m_pFakeAuto->setListType(m_newListType);
@@ -736,6 +736,10 @@ AV_View * AP_Dialog_Lists::getAvView(void)
 	return pFrame->getCurrentView();
 }
 
+const XML_Char* AP_Dialog_Lists::_getDingbatsFontName() const
+{
+	return "Dingbats";
+}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -918,9 +922,4 @@ void AP_Lists_preview::draw(void)
 		 }
 	}
 }
-
-
-
-
-
 

@@ -104,7 +104,7 @@ public:
 	virtual void 				_createPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
 
 protected:
-	
+
 	// These are the "current use" dialog data items,
 	// which are liberally read and set by the
 	// accessor methods above.
@@ -158,6 +158,9 @@ protected:
 	fl_Layout*				m_pFakeLayout[4];
 	PL_StruxDocHandle		m_pFakeSdh[4];
 	fl_AutoNum*				m_pFakeAuto;
+
+private:
+	virtual const XML_Char*	_getDingbatsFontName() const;
 };
 
 
