@@ -207,12 +207,23 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y)
 {
 }
 
+/*!
+ * This method responds to a mouse click and decides what to do with it.
+ */
 void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 {
 	if(!isActive())
 	{
 		setDragType(x,y);
 	}
+//
+// Find the type of drag we should do.
+//
+	if(FV_FrameEdit_EXISTING_SELECTED == m_iFrameEditMode )
+	{
+		setDragType(x,y);
+	}
+
 }
 
 

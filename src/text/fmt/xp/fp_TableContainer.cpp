@@ -2687,13 +2687,14 @@ void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
 		  for(i=0; i< m_iRows; i++)
 		  {
 			  m_vecRows.addItem(static_cast<void*>(new fp_TableRowColumn()));
-			  getNthRow(i)->requisition = 0;
-			  getNthRow(i)->allocation = 0;
-			  getNthRow(i)->spacing = m_iRowSpacing;
-			  getNthRow(i)->need_expand = 0;
-			  getNthRow(i)->need_shrink = 0;
-			  getNthRow(i)->expand = 0;
-			  getNthRow(i)->shrink = 0;
+			  fp_TableRowColumn * pRow = getNthRow(i);
+			  pRow->requisition = 0;
+			  pRow->allocation = 0;
+			  pRow->spacing = m_iRowSpacing;
+			  pRow->need_expand = 0;
+			  pRow->need_shrink = 0;
+			  pRow->expand = 0;
+			  pRow->shrink = 0;
 		  }
 	  }
 
@@ -2708,13 +2709,14 @@ void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
 		  for(i=0; i< m_iCols; i++)
 		  {
 			  m_vecColumns.addItem(static_cast<void*>(new fp_TableRowColumn()));
-			  getNthCol(i)->requisition = 0;
-			  getNthCol(i)->allocation = 0;
-			  getNthCol(i)->spacing = m_iColSpacing;
-			  getNthCol(i)->need_expand = 0;
-			  getNthCol(i)->need_shrink = 0;
-			  getNthCol(i)->expand = 0;
-			  getNthCol(i)->shrink = 0;
+			  fp_TableRowColumn *pCol= getNthCol(i);
+			  pCol->requisition = 0;
+			  pCol->allocation = 0;
+			  pCol->spacing = m_iColSpacing;
+			  pCol->need_expand = 0;
+			  pCol->need_shrink = 0;
+			  pCol->expand = 0;
+			  pCol->shrink = 0;
 		  }
 	  }
   }
@@ -4131,21 +4133,24 @@ void  fp_TableContainer::_size_allocate_init(void)
   m_iCols = m_vecColumns.getItemCount();
   for (col = 0; col < m_iCols; col++)
   {
-      getNthCol(col)->allocation = getNthCol(col)->requisition;
-      getNthCol(col)->need_expand = false;
-      getNthCol(col)->need_shrink = true;
-      getNthCol(col)->expand = false;
-      getNthCol(col)->shrink = true;
-      getNthCol(col)->empty = true;
+	  fp_TableRowColumn *pCol= getNthCol(col);
+
+      pCol->allocation = pCol->requisition;
+      pCol->need_expand = false;
+      pCol->need_shrink = true;
+      pCol->expand = false;
+      pCol->shrink = true;
+      pCol->empty = true;
   }
   for (row = 0; row < m_iRows; row++)
   {
-      getNthRow(row)->allocation = getNthRow(row)->requisition;
-      getNthRow(row)->need_expand = false;
-      getNthRow(row)->need_shrink = true;
-      getNthRow(row)->expand = false;
-      getNthRow(row)->shrink = true;
-      getNthRow(row)->empty = true;
+	  fp_TableRowColumn * pRow = getNthRow(row);
+      pRow->allocation = pRow->requisition;
+      pRow->need_expand = false;
+      pRow->need_shrink = true;
+      pRow->expand = false;
+      pRow->shrink = true;
+      pRow->empty = true;
   }
   
   /* Loop over all the children and adjust the row and col values
@@ -4293,20 +4298,22 @@ void  fp_TableContainer::_size_allocate_init(void)
   m_iCols = m_vecColumns.getItemCount();
   for (col = 0; col < m_iCols; col++)
   {
-      if (getNthCol(col)->empty)
+	  fp_TableRowColumn *pCol= getNthCol(col);
+
+      if (pCol->empty)
 	  {
-		  getNthCol(col)->expand = false;
-		  getNthCol(col)->shrink = false;
+		  pCol->expand = false;
+		  pCol->shrink = false;
 	  }
       else
 	  {
-		  if (getNthCol(col)->need_expand)
+		  if (pCol->need_expand)
 		  {
-			  getNthCol(col)->expand = true;
+			  pCol->expand = true;
 		  }
-		  if (!getNthCol(col)->need_shrink)
+		  if (!pCol->need_shrink)
 		  {
-			  getNthCol(col)->shrink = false;
+			  pCol->shrink = false;
 		  }
 	  }
   }
@@ -4316,20 +4323,21 @@ void  fp_TableContainer::_size_allocate_init(void)
    */
   for (row = 0; row < m_iRows; row++)
   {
-      if (getNthRow(row)->empty)
+	  fp_TableRowColumn * pRow = getNthRow(row);
+      if (pRow->empty)
 	  {
-		  getNthRow(row)->expand = false;
-		  getNthRow(row)->shrink = false;
+		  pRow->expand = false;
+		  pRow->shrink = false;
 	  }
       else
 	  {
-		  if (getNthRow(row)->need_expand)
+		  if (pRow->need_expand)
 		  {
-			  getNthRow(row)->expand = true;
+			  pRow->expand = true;
 		  }
-		  if (!getNthRow(row)->need_shrink)
+		  if (!pRow->need_shrink)
 		  {
-			  getNthRow(row)->shrink = false;
+			  pRow->shrink = false;
 		  }
 	  }
   }
@@ -4442,16 +4450,18 @@ void  fp_TableContainer::_size_allocate_pass1(void)
 			  m_iCols = m_vecColumns.getItemCount();
 			  for (col = 0; col < m_iCols; col++)
 			  {
-				  if (getNthCol(col)->shrink)
+				  fp_TableRowColumn *pCol= getNthCol(col);
+
+				  if (pCol->shrink)
 				  {
-					  UT_sint32 allocation = getNthCol(col)->allocation;
-					  getNthCol(col)->allocation = UT_MAX (1, static_cast<UT_sint32>(getNthCol(col)->allocation) - extra / nshrink);
-					  extra -= allocation - getNthCol(col)->allocation;
+					  UT_sint32 allocation = pCol->allocation;
+					  pCol->allocation = UT_MAX (1, static_cast<UT_sint32>(pCol->allocation) - extra / nshrink);
+					  extra -= allocation - pCol->allocation;
 					  nshrink -= 1;
-					  if (getNthCol(col)->allocation < 2)
+					  if (pCol->allocation < 2)
 					  {
 						  total_nshrink -= 1;
-						  getNthCol(col)->shrink = false;
+						  pCol->shrink = false;
 					  }
 				  }
 			  }
@@ -4496,6 +4506,8 @@ void  fp_TableContainer::_size_allocate_pass1(void)
 	  nshrink = 0;
 	  for (row = 0; row < m_iRows; row++)
 	  {
+
+
 		  height += getNthRow(row)->requisition;
 		  if (getNthRow(row)->expand)
 		  {
@@ -4539,17 +4551,18 @@ void  fp_TableContainer::_size_allocate_pass1(void)
 			  nshrink = total_nshrink;
 			  for (row = 0; row < m_iRows; row++)
 			  {
-				  if (getNthRow(row)->shrink)
+				  fp_TableRowColumn * pRow = getNthRow(row);
+				  if (pRow->shrink)
 				  {
-					  UT_sint32 allocation = getNthRow(row)->allocation;
+					  UT_sint32 allocation = pRow->allocation;
 		    
-					  getNthRow(row)->allocation = UT_MAX (1, static_cast<UT_sint32>(getNthRow(row)->allocation) - extra / nshrink);
-					  extra -= allocation - getNthRow(row)->allocation;
+					  pRow->allocation = UT_MAX (1, static_cast<UT_sint32>(pRow->allocation) - extra / nshrink);
+					  extra -= allocation - pRow->allocation;
 					  nshrink -= 1;
-					  if (getNthRow(row)->allocation < 2)
+					  if (pRow->allocation < 2)
 					  {
 						  total_nshrink -= 1;
-						  getNthRow(row)->shrink = false;
+						  pRow->shrink = false;
 					  }
 				  }
 			  }
@@ -4616,15 +4629,16 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 	  
 	  for (row = 0; row < child->getTopAttach(); row++)
 	  {
-		  UT_sint32 iOldAlloc = getNthRow(row)->allocation;
+		  fp_TableRowColumn * pRow = getNthRow(row);
+		  UT_sint32 iOldAlloc = pRow->allocation;
 		  UT_sint32 iNewAlloc = getRowHeight(row,iOldAlloc);
 		  if(iNewAlloc > iOldAlloc)
 		  {
-			  iNewAlloc -= getNthRow(row)->spacing;
+			  iNewAlloc -= pRow->spacing;
 		  }
-		  getNthRow(row)->allocation = iNewAlloc;
-		  y += getNthRow(row)->allocation;
-		  y += getNthRow(row)->spacing;
+		  pRow->allocation = iNewAlloc;
+		  y += pRow->allocation;
+		  y += pRow->spacing;
 		  xxx_UT_DEBUGMSG(("SEVIOR: Adding Height %d spacing is %d \n", getNthRow(row)->allocation,getNthRow(row)->spacing));
 	  }
 	  xxx_UT_DEBUGMSG(("SEVIOR: 2 next y %d for top-attach %d \n",y,child->getTopAttach()));
@@ -4715,14 +4729,15 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 //  for (row = 0; row + 1 < m_iRows; row++)
   for (row = 0; row < m_iRows; row++)
   {
-	  UT_sint32 iOldReq = getNthRow(row)->requisition;
+	  fp_TableRowColumn * pRow = getNthRow(row);
+	  UT_sint32 iOldReq = pRow->requisition;
 	  UT_sint32 iNewReq = getRowHeight(row,iOldReq);
 	  if(iNewReq > iOldReq)
 	  {
-		  iNewReq -= getNthRow(row)->spacing;
+		  iNewReq -= pRow->spacing;
 	  }
-	  getNthRow(row)->requisition = iNewReq;
-	  pRequisition->height += getNthRow(row)->spacing;
+	  pRow->requisition = iNewReq;
+	  pRequisition->height += pRow->spacing;
 
 	  xxx_UT_DEBUGMSG(("SEVIOR: requisition spacing 2 is %d \n", getNthRow(row)->spacing));
 	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height 2 is %d \n", pRequisition->height));

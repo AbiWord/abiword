@@ -31,7 +31,8 @@ enum _FV_FrameEditModes
 	FV_FrameEdit_RESIZE_INSERT,
     FV_FrameEdit_RESIZE_SELECTED_EXISTING,
 	FV_FrameEdit_RESIZE_EXISTING,
-	FV_FrameEdit_DRAG_EXISTING
+	FV_FrameEdit_DRAG_EXISTING,
+	FV_FrameEdit_EXISTING_SELECTED
 } FV_FrameEditModes;
 
 enum _FV_FrameEditDragWhat
