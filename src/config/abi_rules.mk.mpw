@@ -56,7 +56,7 @@
 ###############################################################################
 
 .cpp.o Ä .cpp {MAKEFILE} "{ABI_ROOT}src:config:abi_rules.mk.mpw" "{ABI_ROOT}src:config:abi_defs.mk.mpw"
-	{CPP} "{Default}.cpp" -o "{OBJDIR}{Targ}"  {CPPOptions} 
+	{CPP} "{Default}.cpp" -o "{OBJDIR}{Targ}"  {CPPOptions} {LocalCPPOptions}
 
 ###############################################################################
 ## Rule for building generated .cpp sources (in {OBJDIR)) into .o's in {OBJDIR)
