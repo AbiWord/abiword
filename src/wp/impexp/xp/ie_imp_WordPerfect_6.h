@@ -44,8 +44,17 @@
 #define WP_TOP_STYLE_GROUP 221 // (0xdd)
 #define WP_TOP_TAB_GROUP 224 // (0xe0)
 #define WP_TOP_EXTENDED_CHARACTER 240// (0xf0)
+#define WP_TOP_UNDO 241 // (0xf1)
 #define WP_TOP_ATTRIBUTE_ON 242 // (0xf2)
 #define WP_TOP_ATTRIBUTE_OFF 243 // (0xf3)
+
+#define WP_PARAGRAPH_GROUP_JUSTIFICATION 5 // 0x05
+#define WP_PARAGRAPH_GROUP_JUSTIFICATION_LEFT 0
+#define WP_PARAGRAPH_GROUP_JUSTIFICATION_FULL 1
+#define WP_PARAGRAPH_GROUP_JUSTIFICATION_CENTER 2
+#define WP_PARAGRAPH_GROUP_JUSTIFICATION_RIGHT 3
+#define WP_PARAGRAPH_GROUP_JUSTIFICATION_FULL_ALL_LINES 4
+#define WP_PARAGRAPH_GROUP_JUSTIFICATION_RESERVED 5
 
 // Character properties
 struct WordPerfectTextAttributes
@@ -67,8 +76,41 @@ struct WordPerfectTextAttributes
    bool m_underLine;
    bool m_smallCaps;
    bool m_Blink;
-   bool m_reverseVideo;
-     
+   bool m_reverseVideo;     
+};
+
+// Paragraph Properties (set using group WP_TOP_PARAGrAPH_GROUP)
+struct WordPerfectParagraphProperties
+{
+
+   WordPerfectParagraphProperties();
+   //float m_lineHeight; // originally in "signed WPU" 0.0=default
+   unsigned int m_lineSpacing; // d301
+   // (TODO: leftHotZone) d302
+   // TODO: rightHotZone) d303
+   // (TODO: tab set definitions 0xd304)
+   enum ParagraphJustification { left, full, center, right, fullAllLines, reserved };
+   ParagraphJustification m_justificationMode;
+   // (TODO hyphenationOn 0xd306
+   // (TODO:leadingAdjustment) originally in "signed WPU" d307
+   // (TODO: generated text?! 0xd308-0xd309)
+   // (TODO: spacing after paragraph 0xd30a)
+   // (TODO: indent first line of paragraph) 0xd30b
+   // (TODO: left margin adjustment) 0xd30c
+   // (TODO: right margin adjustment) 0xd30d
+   // (TODO: outline define) 0xd30e
+   // (TODO: paragraph border) 0xd30f
+   // (TODO: define math columns) 0xd310
+   // (TODO: math on/off) 0xd311
+   // (TODO: line numbering def'n) 0xd312
+   // (TODO: force odd/even/new) 0xd313
+   // (TODO: endnotes print here) 0xd314
+   // (TODO: endnotes print here end) 0xd315
+   // (TODO: define marked text) 0xd316
+   // (TODO: define drop cap) 0xd317
+   // (TODO: paragraph text direction) 0xd318
+   // (TODO: asian mapping) 0xd319
+   // (TODO: paragraph character count) 0xd31a
 };
 
 class IE_Imp_WordPerfect_6_Sniffer : public IE_ImpSniffer
@@ -99,25 +141,36 @@ public:
 	virtual UT_Error	importFile(const char * szFilename);
 
  protected:
-   void extractFile(FILE *fp);
-   void _handleHardEndOfLine();
-   void _handleEndOfLineGroup(FILE *fp);
-   void _handlePageGroup(FILE *fp);
-   void _handleColumnGroup(FILE *fp);
-   void _handleParagraphGroup(FILE *fp);
-   void _handleStyleGroup(FILE *fp);
-   void _handleTabGroup(FILE *fp);
-   void _handleCharacterGroup(FILE *fp);
-   void _handleFootEndNoteGroup(FILE *fp);
-   void _handleExtendedCharacter(FILE *fp);
-   void _handleAttribute(FILE *fp, bool attributeOn);
-   void _skipGroup(FILE *fp, int groupByte);
-   void _appendCurrentFormat();
-   void _flushText();
+   UT_Error _parseHeader();
+   UT_Error _parseDocument();
+   UT_Error _handleHardEndOfLine();
+   UT_Error _handleEndOfLineGroup();
+   UT_Error _handlePageGroup();
+   UT_Error _handleColumnGroup();
+   UT_Error _handleParagraphGroup();
+   UT_Error _handleParagraphGroupJustification();
+   UT_Error _handleStyleGroup();
+   UT_Error _handleTabGroup();
+   UT_Error _handleCharacterGroup();
+   UT_Error _handleFootEndNoteGroup();
+   UT_Error _handleExtendedCharacter();
+   UT_Error _handleAttribute(bool attributeOn);
+   UT_Error _skipGroup(int groupByte);
+   UT_Error _appendCurrentTextProperties();
+   UT_Error _appendCurrentParagraphProperties();
+   UT_Error _flushText();
+   UT_Error _flushParagraph();
+   
  private:
+   FILE *m_importFile;
+   UT_uint32 m_documentEnd;
+   UT_uint32 m_documentPointer;
+
+   bool m_firstParagraph; 
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
    WordPerfectTextAttributes m_textAttributes;
+   WordPerfectParagraphProperties m_paragraphProperties;
 };
 
 #endif /* IE_IMP_WP6_H */

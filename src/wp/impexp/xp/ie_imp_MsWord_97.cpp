@@ -366,7 +366,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 /****************************************************************************/
 /****************************************************************************/
 
-#define ErrCleanupAndExit(code)  do {wvOLEFree (); return (code); FREEP(password);} while(0)
+#define ErrCleanupAndExit(code)  do {wvOLEFree (); FREEP(password); return(code);} while(0)
 
 // TODO: DOM: *actually define these*
 #define GetPassword() _getPassword ( getDoc()->getApp()->getLastFocussedFrame() )
