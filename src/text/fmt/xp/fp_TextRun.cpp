@@ -72,7 +72,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_bSquiggled(false),
 	m_pLanguage(NULL),
 	m_bIsOverhanging(false),
-	m_bIsJustified(false)
+	m_bIsJustified(false),
+	m_eShapingRequired(SR_Unknown)
 {
 	_setField(NULL);
 
@@ -886,21 +887,27 @@ void fp_TextRun::mergeWithNext(void)
 	// can only adjust width after the justification has been handled
  	_setWidth(getWidth() + pNext->getWidth());
 
-	// join the two span buffers; this will save us refreshing the draw buffer
-	// which is very expensive
-#if 0
-	_setRefreshDrawBuffer(_getRefreshDrawBuffer() | pNext->_getRefreshDrawBuffer());
-#else
 	// because there might be a ligature across the run boundary, we
 	// have to refresh if the last char of the run is susceptible
 	// to ligating
 	UT_contextGlyph cg;
 	UT_UCS4Char c;
 	getCharacter(getLength()-1, c);
+	bool bFirstInLigature = !cg.isNotFirstInLigature(c);
 	_setRefreshDrawBuffer(_getRefreshDrawBuffer()
 						  | pNext->_getRefreshDrawBuffer()
-						  | !cg.isNotFirstInLigature(c));
-#endif
+						  | bFirstInLigature);
+
+	m_eShapingRequired = (UTShapingResult)((UT_uint32)m_eShapingRequired
+										   | (UT_uint32)(pNext->m_eShapingRequired));
+
+	if(bFirstInLigature)
+	{
+		// this is a special case where we have to force ligature
+		// processing
+		m_eShapingRequired = (UTShapingResult)((UT_uint32)m_eShapingRequired
+											   | (UT_uint32) SR_Ligatures);
+	}
 
 	// we need to take into consideration whether this run has been reversed
 	// in which case the order of the concating needs to be reversed too
@@ -1001,6 +1008,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// when spliting the run, we do not want to recalculated the draw
 	// buffer if the current one is up to date
 	pNew->_setRefreshDrawBuffer(_getRefreshDrawBuffer());
+	pNew->m_eShapingRequired = m_eShapingRequired;
 	pNew->_setRecalcWidth(_getRecalcWidth());
 
 	pNew->_setFont(this->_getFont());
@@ -1740,9 +1748,10 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 
 void fp_TextRun::_refreshDrawBuffer()
 {
-	if(_getRefreshDrawBuffer())
+	UT_uint32 iLen = getLength();
+	
+	if(_getRefreshDrawBuffer() && iLen && m_eShapingRequired != SR_Plain)
 	{
-		UT_uint32 iLen = getLength();
 		
 		if(iLen > m_iSpanBuffSize) //buffer too small, reallocate
 		{
@@ -1758,8 +1767,10 @@ void fp_TextRun::_refreshDrawBuffer()
 		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 							  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 		
-		cg.renderString(text,m_pSpanBuff, iLen, m_pLanguage, iVisDir,
-						GR_Font::s_doesGlyphExist, (void*)getFont());
+		m_eShapingRequired = cg.renderString(text,m_pSpanBuff, iLen, m_pLanguage, iVisDir,
+											 GR_Font::s_doesGlyphExist, (void*)getFont());
+
+		UT_ASSERT( m_eShapingRequired != SR_Error );
 
 		// if we are on a non-bidi OS, we have to reverse any RTL runs
 		// if we are on bidi OS, we have to reverse RTL runs that have direction
@@ -2863,7 +2874,7 @@ void fp_TextRun::_calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw)
 		// _stripLigaturePlaceHolders(), which is in the same order as
 		// the string to which it relates
 		
-		for(UT_uint32 n = 0; n < iLen - 1; n++)
+		for(UT_uint32 n = 0; n < iLen; n++)
 		{
 			if(s_pWidthBuff[n] < 0 || s_pWidthBuff[n] >= GR_OC_LEFT_FLUSHED)
 			{
@@ -2879,10 +2890,10 @@ void fp_TextRun::_calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw)
 					// character over which we are meant to be
 					// overimposing our overstriking chars
 					// we will have to set the offsets to 0
-					for(UT_uint32 k = n; k < iLen - 1; k++)
+					for(UT_uint32 k = n; k < iLen; k++)
 						s_pCharAdvance[k] = 0;
 
-					n = iLen - 1;
+					n = iLen;
 				}
 				else
 				{
@@ -2937,7 +2948,7 @@ void fp_TextRun::_calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw)
 	}
 	else
 	{
-		for(UT_uint32 n = 0; n < iLen - 1; n++)
+		for(UT_uint32 n = 0; n < iLen; n++)
 		{
 			if(s_pWidthBuff[n+1] < 0 || s_pWidthBuff[n+1] >= GR_OC_LEFT_FLUSHED)
 			{

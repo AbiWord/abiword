@@ -34,6 +34,7 @@
 */
 #define MAX_SPAN_LEN 250   //initial size for m_pSpanBuff, realocated if needed
 #include "ut_timer.h"
+#include "ut_contextGlyph.h"
 
 class ABI_EXPORT fp_TextRun : public fp_Run
 {
@@ -95,9 +96,14 @@ public:
 	virtual FriBidiCharType getDirection() const { return m_iDirOverride == FRIBIDI_TYPE_UNSET ? _getDirection() : m_iDirOverride;}
 	FriBidiCharType 		getDirOverride() const { return m_iDirOverride; }
 
-	void					breakNeighborsAtDirBoundaries();
-	void					breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
-
+	void				breakNeighborsAtDirBoundaries();
+	void				breakMeAtDirBoundaries(FriBidiCharType iNewOverride);
+	void                setShapingRequired(UTShapingResult eR) {m_eShapingRequired = eR;}
+	void                orShapingRequired(UTShapingResult eR)
+	                      {
+							m_eShapingRequired = (UTShapingResult)((UT_uint32)m_eShapingRequired
+																   | (UT_uint32)eR);
+	                      }
 
 	UT_UCSChar *		m_pSpanBuff;
 	UT_uint32			m_iSpanBuffSize;
@@ -203,6 +209,8 @@ private:
 	static UT_uint32        s_iCharAdvanceSize;
 	static UT_UCS4Char *    s_pCharBuff;
 	static UT_sint32 *      s_pWidthBuff;
+
+	UTShapingResult         m_eShapingRequired;
 };
 
 #endif /* FP_TEXTRUN_H */
