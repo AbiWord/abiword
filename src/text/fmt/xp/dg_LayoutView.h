@@ -25,13 +25,14 @@
 #define DG_LAYOUTVIEW_H
 
 #include "ut_types.h"
-#include "dg_DocMarker.h"
+#include "ut_vector.h"
+#include "pt_Types.h"
 
 class FL_DocLayout;
 class FL_BlockLayout;
 class FP_Page;
 class FP_Run;
-class DG_DocBuffer;
+class PD_Document;
 class DG_Graphics;
 
 enum
@@ -64,7 +65,7 @@ public:
 	void moveInsPtToBOD();
 	void getPageScreenOffsets(FP_Page* pPage, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 	void getPageYOffset(FP_Page* pPage, UT_sint32& yoff);
-	void invertBetweenPositions(UT_uint32 left, UT_uint32 right);
+	void invertBetweenPositions(PT_DocPosition left, PT_DocPosition right);
 
 	void insertParagraphBreak();
 	void insertCharacterFormatting(const XML_Char * properties[]);
@@ -103,7 +104,8 @@ protected:
 											UT_uint32& height,
 											FL_BlockLayout** ppBlock,
 											FP_Run** ppRun);
-	FL_BlockLayout* 	_findBlockWithBufferPosition(UT_uint32 pos);
+	FL_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos);
+
 	UT_Bool				_isSelectionEmpty();
 	void				_moveToSelectionEnd(UT_Bool bForward);
 	void				_clearSelection(void);
@@ -126,6 +128,7 @@ protected:
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
 	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);
 	
+	PT_DocPosition		m_iInsPoint;
 	UT_uint32			m_xPoint;
 	UT_uint32			m_yPoint;
 	UT_uint32			m_iPointHeight;
@@ -135,13 +138,14 @@ protected:
 	
 	UT_Bool				m_bSelectionVisible;
 	FL_DocLayout*		m_pLayout;
-	DG_DocBuffer*		m_pBuffer;
+	PD_Document*		m_pDoc;
 	DG_Graphics*		m_pG;
 	UT_sint32			m_xScrollOffset;
 	UT_sint32			m_yScrollOffset;
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
-	UT_uint32			m_iSelectionAnchor;
+
+	PT_DocPosition		m_iSelectionAnchor;
 	UT_Bool				m_bSelection;
 	UT_Vector           m_scrollListeners;
 };

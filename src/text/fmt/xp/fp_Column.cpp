@@ -31,7 +31,7 @@
 #include "fl_BlockLayout.h"
 #include "fp_SectionSlice.h"
 #include "fp_BlockSlice.h"
-#include "dg_Property.h"
+#include "pp_Property.h"
 #include "dg_Graphics.h"
 #include "dg_DrawArgs.h"
 
@@ -190,12 +190,12 @@ int FP_Column::insertBlockSliceAfter(FP_BlockSlice*	pBS, FP_BlockSlice*	pAfter, 
 		
 		UT_sint32 iPrevBottomMargin =
 			m_pG->convertDimension(pPrevNode->pSlice->getBlock()->getProperty(
-				lookupProperty("margin-bottom")
+				PP_lookupProperty("margin-bottom")
 				));
 		
 		UT_sint32 iMyTopMargin =
 			m_pG->convertDimension(pBS->getBlock()->getProperty(
-				lookupProperty("margin-top")
+				PP_lookupProperty("margin-top")
 				));
 		
 		UT_sint32 iMargin = UT_MAX(iPrevBottomMargin, iMyTopMargin);
@@ -261,12 +261,12 @@ UT_uint32 FP_Column::_calcSliceOffset(fp_BlockSliceInfo* pBSI, UT_uint32 iLineHe
 	{
 		UT_sint32 iPrevBottomMargin =
 			m_pG->convertDimension(pBSI->pPrev->pSlice->getBlock()->getProperty(
-				lookupProperty("margin-bottom")
+				PP_lookupProperty("margin-bottom")
 				));
 		
 		UT_sint32 iMyTopMargin =
 			m_pG->convertDimension(pBSI->pSlice->getBlock()->getProperty(
-				lookupProperty("margin-top")
+				PP_lookupProperty("margin-top")
 				));
 		
 		UT_sint32 iMargin = UT_MAX(iPrevBottomMargin, iMyTopMargin);
@@ -514,7 +514,7 @@ UT_Bool FP_BoxColumn::containsPoint(UT_sint32 x, UT_sint32 y)
 	return UT_TRUE;
 }
 
-void FP_Column::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& pos, UT_Bool& bRight)
+void FP_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
 	fp_BlockSliceInfo* pListNode = m_pFirstSlice;
 	UT_uint32 iMinDist = 0xffffffff;
@@ -533,7 +533,7 @@ void FP_Column::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& pos, 
 			{
 				if (((y - (UT_sint32)pListNode->yoff) >= iY) && ((y - (UT_sint32)pListNode->yoff) < (iY + (UT_sint32)pSliver->iHeight)))
 				{
-					pListNode->pSlice->mapXYToBufferPosition(x, y - pListNode->yoff, pos, bRight);
+					pListNode->pSlice->mapXYToPosition(x, y - pListNode->yoff, pos, bRight);
 					return;
 				}
 			}
@@ -560,7 +560,7 @@ void FP_Column::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& pos, 
 
 	UT_ASSERT(pMinDist);
 
-	pMinDist->pSlice->mapXYToBufferPosition(x, y - pMinDist->yoff, pos, bRight);
+	pMinDist->pSlice->mapXYToPosition(x, y - pMinDist->yoff, pos, bRight);
 	return;
 }
 

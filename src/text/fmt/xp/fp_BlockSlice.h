@@ -26,6 +26,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "pt_Types.h"
 
 class FL_BlockLayout;
 class FP_Column;
@@ -115,7 +116,7 @@ public:
 	UT_uint32			requestLineSpace(UT_uint32 iHeight);	// TODO should be called only by FL_BlockLayout.  (friend)
 	int					addLine(FP_Line*);// TODO should be called only by FL_BlockLayout.  (friend)
 
-	void				mapXYToBufferPosition(UT_sint32 xPos, UT_sint32 yPos, UT_uint32& pos, UT_Bool& bRight);
+	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
 	void		 		getOffsets(FP_Line* pLine, void* p, UT_sint32& xoff, UT_sint32& yoff);
 	void		 		getScreenOffsets(FP_Line* pLine, void* p, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 

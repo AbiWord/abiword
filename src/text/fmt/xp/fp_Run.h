@@ -27,12 +27,13 @@
 #include <stdlib.h>
 #include "ut_types.h"
 #include "ut_misc.h"
+#include "pt_Types.h"
 
 class FL_BlockLayout;
 class FP_Line;
 class DG_Graphics;
 class DG_Font;
-class DG_DocBuffer;
+class PD_Document;
 struct dg_DrawArgs;
 
 /*
@@ -77,7 +78,7 @@ class FP_Run
 	UT_uint32				getAscent();
 	UT_uint32				getDescent();
 	UT_uint32				getLength() const;
-	UT_uint32				getFirstPosition() const;
+	UT_uint32				getBlockOffset() const;
 	void					lookupProperties(void);
 
 	void					setNext(FP_Run*);
@@ -98,14 +99,16 @@ class FP_Run
 	void 					calcWidths(UT_uint16*);
 	void            		expandWidthTo(UT_uint32);
 
-	void					mapXYToBufferPosition(UT_sint32 xPos, UT_sint32 yPos, UT_uint32& pos, UT_Bool& bRight);
+	void					mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
 	void					getOffsets(UT_uint32& xoff, UT_uint32& yoff);
 	UT_uint32 				containsOffset(UT_uint32 iOffset);
 	void 					findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
 
+#ifdef BUFFER
 	UT_Bool 				insertData(UT_uint32 iOffset, UT_uint32 iCount);
 	UT_Bool 				deleteChars(UT_uint32 iOffset, UT_uint32 iCountUnits, UT_uint32 iCountChars);
 	UT_Bool					insertInlineMarker(UT_uint32 newMarkerOffset, UT_uint32 markerSize);
+#endif
 
 	void                    clearScreen(void);
 	void					draw(dg_DrawArgs*);
@@ -128,7 +131,7 @@ class FP_Run
 	void*					m_pLineData;
 	FP_Run*					m_pPrev;
 	FP_Run*					m_pNext;
-	DG_DocBuffer*	       	m_pBuffer;
+	PD_Document*	       	m_pDoc;
 	UT_uint32				m_iOffsetFirst;
 	UT_uint32				m_iLen;
 	UT_sint32				m_iWidth;

@@ -32,9 +32,8 @@
 #include "fp_BlockSlice.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
-#include "dg_Document.h"
-#include "dg_Property.h"
-#include "dg_DocBuffer.h"
+#include "pd_Document.h"
+#include "pp_Property.h"
 #include "dg_Graphics.h"
 
 #include "ut_debugmsg.h"
@@ -43,12 +42,12 @@
 
 #define EXTRA_CHARWIDTH_SPACE 256
 
-FL_BlockLayout::FL_BlockLayout(DG_DocMarker* pBlockMarker,
+FL_BlockLayout::FL_BlockLayout(PL_StruxDocHandle sdh,
 							   FB_LineBreaker* pBreaker,
 							   FL_BlockLayout* pPrev,
 							   FL_SectionLayout* pSectionLayout)
 {
-    m_pBlockMarker = pBlockMarker;
+    m_sdh = sdh;
 	m_pSectionLayout = pSectionLayout;
 	m_pBreaker = pBreaker;
 	m_pFirstRun = NULL;
@@ -60,16 +59,12 @@ FL_BlockLayout::FL_BlockLayout(DG_DocMarker* pBlockMarker,
 	m_iCharWidthSize = 0;
 	m_iCharWidthSpace = 0;
 	m_bNeedsReformat = UT_FALSE;
-
-#define MARKER 1
-#if MARKER
-	m_pBlockMarker->setBlock((DG_BlockLayout*) this);
-#endif
 	
 	m_pLayout = m_pSectionLayout->getLayout();
-	m_pBuffer = m_pLayout->getDocument()->getBuffer();
+	m_pDoc = m_pLayout->getDocument();
 
-	UT_uint32 posCur = m_pBuffer->getMarkerPosition(m_pBlockMarker);
+#ifdef BUFFER	// calculate m_iCharWidthSize
+	UT_uint32 posCur = m_pBuffer->getMarkerPosition(m_sdh);
 	UT_uint32 posBase = posCur;
 	for (;;)
 	{
@@ -92,6 +87,7 @@ FL_BlockLayout::FL_BlockLayout(DG_DocMarker* pBlockMarker,
 		}
 	    m_pBuffer->inc(posCur);
 	}
+#endif /* BUFFER */
 
 	m_pPrev = pPrev;
 	if (m_pPrev)
@@ -112,37 +108,6 @@ FL_BlockLayout::FL_BlockLayout(DG_DocMarker* pBlockMarker,
 FL_BlockLayout::~FL_BlockLayout()
 {
 	_purgeLayout(UT_FALSE);
-}
-
-void FL_BlockLayout::mergeWithNextBlock()
-{
-	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
-		
-	FL_BlockLayout* pNext = getNext();
-	UT_ASSERT(pNext);
-
-	_purgeLayout(UT_TRUE);
-	pNext->_purgeLayout(UT_TRUE);
-	
-	UT_uint32 iPosLeftEndMarker = m_pBuffer->getMarkerPosition(m_pEndBlockMarker);
-	m_pBuffer->moveAbsolute(iPosLeftEndMarker);
-	DG_DB_PosInfo res;
-	
-	res = m_pBuffer->remove(UT_TRUE);
-	UT_ASSERT(res == DG_DBPI_MARKER);
-
-	UT_uint32 iPosRightBeginMarker = m_pBuffer->getMarkerPosition(pNext->m_pBlockMarker);
-	m_pBuffer->moveAbsolute(iPosLeftEndMarker);
-	res = m_pBuffer->remove(UT_TRUE);
-	UT_ASSERT(res == DG_DBPI_MARKER);
-
-	m_pEndBlockMarker = pNext->m_pEndBlockMarker;
-	m_pEndBlockMarker->setParent(m_pBlockMarker->getMarkerId());
-	
-	m_pNext = pNext->getNext();
-	m_pNext->m_pPrev = this;
-
-	delete pNext;
 }
 
 /*
@@ -280,31 +245,34 @@ void FL_BlockLayout::clearScreen(DG_Graphics* pG)
 
 void FL_BlockLayout::setAlignment(UT_uint32 iAlignCmd)
 {
+#ifdef PROPERTY
 	switch (iAlignCmd)
 	{
 	case DG_ALIGN_BLOCK_LEFT:
-		m_pBlockMarker->setProperty("text-align", "left");
+		m_sdh->setProperty("text-align", "left");
 		break;
 	case DG_ALIGN_BLOCK_RIGHT:
-		m_pBlockMarker->setProperty("text-align", "right");
+		m_sdh->setProperty("text-align", "right");
 		break;
 	case DG_ALIGN_BLOCK_CENTER:
-		m_pBlockMarker->setProperty("text-align", "center");
+		m_sdh->setProperty("text-align", "center");
 		break;
 	case DG_ALIGN_BLOCK_JUSTIFY:
-		m_pBlockMarker->setProperty("text-align", "justify");
+		m_sdh->setProperty("text-align", "justify");
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
+#endif
 
 	_align();
 }
 
 UT_uint32 FL_BlockLayout::getAlignment()
 {
-	const char* pszAlign = m_pBlockMarker->getProperty(lookupProperty("text-align"));
+#ifdef PROPERTY
+	const char* pszAlign = m_sdh->getProperty(lookupProperty("text-align"));
 	if (0 == UT_stricmp(pszAlign, "left"))
 	{
 		return DG_ALIGN_BLOCK_LEFT;
@@ -322,6 +290,7 @@ UT_uint32 FL_BlockLayout::getAlignment()
 		return DG_ALIGN_BLOCK_JUSTIFY;
 	}
 	else
+#endif
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
@@ -456,14 +425,10 @@ int FL_BlockLayout::format()
 		// we don't ... construct just enough to keep going
 		UT_ASSERT(!m_pFirstLine);
 
-		// the run is empty -- all it has is a start/end marker pair
-		
-		UT_ASSERT(m_pBlockMarker->getType() & DG_MT_BLOCK);
-		UT_ASSERT(!(m_pBlockMarker->getType() & DG_MT_END));
-		UT_uint32 markerSize = m_pBuffer->getMarkerSize();
+		// the run is empty 
 		DG_Graphics* pG = m_pLayout->getGraphics();
 
-		m_pFirstRun = new FP_Run(this, pG, markerSize, 0);
+		m_pFirstRun = new FP_Run(this, pG, 0, 0);
 		m_pFirstRun->calcWidths(m_pCharWidths);
 
 		// the line just contains the empty run
@@ -585,10 +550,11 @@ int	FL_BlockLayout::addLine(FP_Line* pLine)
 
 void FL_BlockLayout::_createRuns()
 {
-  UT_uint32 posCur = getBufferAddress();
+#ifdef BUFFER	// _createRuns
+  UT_uint32 posCur = getPosition();
   UT_uint32 posBase = posCur;
-  UT_ASSERT(m_pBlockMarker->getType() & DG_MT_BLOCK);
-  UT_ASSERT(!(m_pBlockMarker->getType() & DG_MT_END));
+  UT_ASSERT(m_sdh->getType() & DG_MT_BLOCK);
+  UT_ASSERT(!(m_sdh->getType() & DG_MT_END));
 
   UT_Bool bDone = UT_FALSE;
   UT_uint32 posStartRun;
@@ -647,6 +613,7 @@ void FL_BlockLayout::_createRuns()
       }
       m_pBuffer->inc(posCur);
   }
+#endif BUFFER
 }
 
 void FL_BlockLayout::setNeedsReformat(UT_Bool b)
@@ -659,24 +626,21 @@ UT_Bool FL_BlockLayout::needsReformat()
 	return m_bNeedsReformat;
 }
 
-const char*	FL_BlockLayout::getProperty(DG_Property* pProp)
+const char*	FL_BlockLayout::getProperty(const PP_Property* pProp)
 {
-  return m_pBlockMarker->getProperty(pProp);
+#ifdef PROPERTY
+	return m_sdh->getProperty(pProp);
+#endif
+	return NULL;
 }
 
-DG_DocBuffer* FL_BlockLayout::getBuffer() const
+UT_uint32 FL_BlockLayout::getPosition() const
 {
-  return m_pBuffer;
-}
-
-UT_uint32 FL_BlockLayout::getBufferAddress() const
-{
-  return m_pBuffer->getMarkerPosition(m_pBlockMarker);
-}
-
-UT_uint32 FL_BlockLayout::getEndAddress() const
-{
-	return m_pBuffer->getMarkerPosition(m_pEndBlockMarker);
+#ifdef BUFFER	// getPosition
+	return m_pBuffer->getMarkerPosition(m_sdh);
+#endif
+	UT_ASSERT(UT_TODO);
+	return 0;
 }
 
 UT_uint16* FL_BlockLayout::getCharWidthArray() const
@@ -699,7 +663,7 @@ void FL_BlockLayout::_growCharWidthArray() // TODO return an error code
 
 void FL_BlockLayout::_allocateCharWidthArray()   // TODO return an error code
 {
-//  UT_ASSERT(m_iCharWidthSize == (m_pBuffer->getMarkerPosition(m_pBlockMarker) - m_pBuffer->getMarkerPosition(m_pEndBlockMarker) + 1));
+//  UT_ASSERT(m_iCharWidthSize == (m_pBuffer->getMarkerPosition(m_sdh) - m_pBuffer->getMarkerPosition(m_pEndBlockMarker) + 1));
 	if (m_pCharWidths)
     {
 		delete m_pCharWidths;
@@ -715,160 +679,16 @@ void FL_BlockLayout::_allocateCharWidthArray()   // TODO return an error code
 	// TODO check for failure and return outofmem if needed.
 }
 
+#ifdef BUFFER	// fetchPointers
 UT_Bool FL_BlockLayout::fetchPointers(UT_uint32 position, UT_uint32 count,
 									const UT_uint16** pp1, UT_uint32* pLen1,
 									const UT_uint16** pp2, UT_uint32* pLen2) const
 {
-  UT_uint32 iBaseAddress = getBufferAddress();
+  UT_uint32 iBaseAddress = getPosition();
 
   return m_pBuffer->fetchPointers(position + iBaseAddress, count, pp1, pLen1, pp2, pLen2);
 }
-
-UT_uint32 FL_BlockLayout::_getLastChar()
-{
-	UT_uint32 iPosLastChar;
-	
-	UT_uint32 posCur = m_pBuffer->getMarkerPosition(m_pBlockMarker);
-	for (;;)
-	{
-	    UT_UCSChar ch;
-	    DG_DocMarkerId dmid;
-	    DG_DocMarker* pMarker = NULL;
-	    
-	    UT_Bool bMarker = (m_pBuffer->getOneItem(posCur, &ch, &dmid) == DG_DBPI_MARKER);
-	    if (bMarker)
-		{
-			pMarker = m_pBuffer->fetchDocMarker(dmid);
-			DG_DocMarkerType dmt = pMarker->getType();
-			if ((dmt & DG_MT_BLOCK) && (dmt & DG_MT_END))
-			{
-				// we found the end of this block
-				break;
-			}
-		}
-		else
-		{
-			iPosLastChar = posCur;
-		}
-		
-	    m_pBuffer->inc(posCur);
-	}
-
-	return iPosLastChar;
-}
-
-UT_Bool FL_BlockLayout::cmdCharDelete(UT_Bool bForward, UT_uint32 iCount)
-{
-	UT_ASSERT(iCount > 0);
-
-	/*
-	  This code is funky, because we have to be really careful about
-	  the presence of both markers and characters in the buffer.
-	*/
-	UT_uint32 iBlockBase = getBufferAddress();
-	UT_uint32 iOldPoint = m_pBuffer->getPoint();
-	UT_ASSERT(iOldPoint > iBlockBase);
-
-	if (!bForward && (m_pBuffer->getDataCount(iBlockBase, iOldPoint) == 0))
-	{
-		UT_ASSERT(iCount == 1);	// we don't know how to cope with this yet
-		// we are deleting the paragraph break, merging two blocks
-		return UT_TRUE;
-	}
-	else if (bForward && (iCount==1) && (iOldPoint == _getLastChar()+1))
-	{
-		UT_ASSERT(iCount == 1);	// we don't know how to cope with this yet
-		// we are deleting the paragraph break, merging two blocks
-		mergeWithNextBlock();
-		format();
-		draw(m_pLayout->getGraphics());
-	}
-	else
-	{
-		m_pBuffer->charMotion(bForward, iCount);
-		UT_uint32 iNewPoint = m_pBuffer->getPoint();
-		bForward = !bForward;
-	
-		UT_uint32 iNumDeleteUnits;
-		if (iNewPoint > iOldPoint)
-		{
-			iNumDeleteUnits = iNewPoint - iOldPoint;
-		}
-		else
-		{
-			iNumDeleteUnits = iOldPoint - iNewPoint;
-		}
-
-		/*
-		  This deletes the characters, but not the markers.
-		*/
-		m_pBuffer->charDelete(bForward, iCount);
-	
-		iNewPoint -= iBlockBase;
-		memmove(m_pCharWidths + iNewPoint,
-				m_pCharWidths + iNewPoint + iCount,
-				(m_iCharWidthSize - (iNewPoint + iCount) + 1) * sizeof(UT_UCSChar));
-		m_iCharWidthSize -= iNumDeleteUnits;
-
-		FP_Run* pRun = m_pFirstRun;
-		while (pRun)
-		{
-			FP_Run* pNext = pRun->getNext();
-			if (pRun->deleteChars(iNewPoint, iNumDeleteUnits, iCount))
-			{
-				// a run sets its length to zero when everything within it has been deleted.
-				if (pRun->getLength() == 0)
-				{
-					// delete the run
-					pRun->getLine()->removeRun(pRun);
-					
-					if (pRun->getPrev())
-					{
-						pRun->getPrev()->setNext(pRun->getNext());
-					}
-					if (pRun->getNext())
-					{
-						pRun->getNext()->setPrev(pRun->getPrev());
-					}
-					pNext = pRun->getNext();
-					delete pRun;
-
-					// now, make sure the ins pt is on a character in a run
-					UT_UCSChar ch;
-					DG_DocMarkerId dmid;
-					UT_Bool bBackward = UT_TRUE;
-					
-					while (DG_DBPI_DATA != m_pBuffer->getOneItem(m_pBuffer->getPoint(), &ch, &dmid))
-					{
-						if (bBackward)
-						{
-							m_pBuffer->move(UT_FALSE);
-							if (m_pBuffer->getPoint() == 0)
-							{
-								bBackward = UT_FALSE;
-							}
-						}
-						else
-						{
-							m_pBuffer->move(UT_TRUE);
-						}
-					}
-					
-					m_pBuffer->move(bBackward);
-				}
-				else
-				{
-					pRun->calcWidths(m_pCharWidths);
-				}
-			}
-			pRun = pNext;
-		}
-
-		reformat();
-	}
-
-	return UT_FALSE;
-}
+#endif
 
 UT_Bool FL_BlockLayout::_insertInCharWidthsArray(UT_uint32 iOffset, UT_uint32 count)
 {
@@ -900,55 +720,11 @@ UT_Bool FL_BlockLayout::_insertInCharWidthsArray(UT_uint32 iOffset, UT_uint32 co
 	return UT_TRUE;
 }
 
-UT_Bool FL_BlockLayout::insertData(UT_UCSChar * text, UT_uint32 count)
-{
-	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
-	UT_ASSERT(count > 0);
-	UT_ASSERT(text);
-
-	UT_uint32 iBlockBase = getBufferAddress();
-	UT_uint32 iPointAbsolute = m_pBuffer->getPoint();
-	UT_ASSERT(iPointAbsolute > iBlockBase);
-	
-	UT_uint32 iOffset = iPointAbsolute - iBlockBase;
-
-	UT_Bool bResult = m_pBuffer->insertData(text, count);
-	UT_Bool bResult2 = _insertInCharWidthsArray(iOffset,count);
-	
-	/*
-	  Having fixed the char widths array, we need to update all the run offsets.
-	  We call each run individually to update its offsets.  It returns true if
-	  its size changed, thus requiring us to remeasure it.
-	*/
-	
-	FP_Run* pRun = m_pFirstRun;
-
-	/*
-	  Save away the list of runs that are going to possibly
-	  be reformatted.  After the reformat, just redraw thses
-	  runs
-	*/
-	  
-	while (pRun)
-	{
-		if (pRun->insertData(iOffset, count))
-		{
-			pRun->calcWidths(m_pCharWidths);
-		}
-		
-		pRun = pRun->getNext();
-	}
-
-	reformat();
-
-	return bResult;
-}
-
-FP_Run* FL_BlockLayout::findPointCoords(UT_uint32 iPos, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+FP_Run* FL_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height)
 {
 	// find the run which has this position inside it.
-	UT_ASSERT(iPos > getBufferAddress());
-	UT_uint32 iRelOffset = iPos - getBufferAddress();
+	UT_ASSERT(iPos > getPosition());
+	UT_uint32 iRelOffset = iPos - getPosition();
 
 	FP_Run* pRun = m_pFirstRun;
 	while (pRun)
@@ -981,7 +757,7 @@ FP_Run* FL_BlockLayout::findPointCoords(UT_uint32 iPos, UT_Bool bRight, UT_uint3
 		if (!pRun->getNext())
 		{
 			// this is the last run, we're not going to get another chance, so try harder
-			if (iRelOffset > (pRun->getFirstPosition() + pRun->getLength()))
+			if (iRelOffset > (pRun->getBlockOffset() + pRun->getLength()))
 			{
 				pRun->findPointCoords(iRelOffset, x, y, height);
 				return pRun;
@@ -991,7 +767,7 @@ FP_Run* FL_BlockLayout::findPointCoords(UT_uint32 iPos, UT_Bool bRight, UT_uint3
 		pRun = pRun->getNext();
 	}
 
-	if (iRelOffset < m_pFirstRun->getFirstPosition())
+	if (iRelOffset < m_pFirstRun->getBlockOffset())
 	{
 		m_pFirstRun->findPointCoords(iRelOffset, x, y, height);
 		return m_pFirstRun;
@@ -1096,6 +872,282 @@ FP_Line* FL_BlockLayout::findNextLineInDocument(FP_Line* pLine)
 	return NULL;
 }
 
+FL_BlockLayout* FL_BlockLayout::getNext() const
+{
+	return m_pNext;
+}
+
+FL_BlockLayout* FL_BlockLayout::getPrev() const
+{
+	return m_pPrev;
+}
+
+FP_BlockSlice* FL_BlockLayout::getFirstSlice()
+{
+	return (FP_BlockSlice*) m_vecSlices.getNthItem(0);
+}
+
+FP_BlockSlice* FL_BlockLayout::getLastSlice()
+{
+	return (FP_BlockSlice*) m_vecSlices.getNthItem(m_vecSlices.getItemCount()-1);
+}
+
+void FL_BlockLayout::dump()
+{
+	int count = m_vecSlices.getItemCount();
+	UT_DEBUGMSG(("FL_BlockLayout 0x%x is from element 0x%x and contains %d slices.\n", this, m_sdh, count));
+
+	for (int i=0; i<count; i++)
+	{
+		FP_BlockSlice* p = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
+
+		UT_DEBUGMSG(("FL_BlockLayout::dump(0x%x) - FP_BlockSlice 0x%x, height=%d, in column 0x%x\n", this, p, p->getHeight(), p->getColumn()));
+	}
+
+	UT_DEBUGMSG(("FL_BlockLayout 0x%x contains the following runs:\n",this));
+
+	FP_Run * pRun = getFirstRun();
+	while (pRun)
+	{
+		pRun->dumpRun();
+		pRun = pRun->getNext();
+	}
+}
+
+// *************************************************************************
+
+#ifdef BUFFER
+void FL_BlockLayout::mergeWithNextBlock()
+{
+	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
+		
+	FL_BlockLayout* pNext = getNext();
+	UT_ASSERT(pNext);
+
+	_purgeLayout(UT_TRUE);
+	pNext->_purgeLayout(UT_TRUE);
+	
+	UT_uint32 iPosLeftEndMarker = m_pBuffer->getMarkerPosition(m_pEndBlockMarker);
+	m_pBuffer->moveAbsolute(iPosLeftEndMarker);
+	DG_DB_PosInfo res;
+	
+	res = m_pBuffer->remove(UT_TRUE);
+	UT_ASSERT(res == DG_DBPI_MARKER);
+
+	UT_uint32 iPosRightBeginMarker = m_pBuffer->getMarkerPosition(pNext->m_sdh);
+	m_pBuffer->moveAbsolute(iPosLeftEndMarker);
+	res = m_pBuffer->remove(UT_TRUE);
+	UT_ASSERT(res == DG_DBPI_MARKER);
+
+	m_pEndBlockMarker = pNext->m_pEndBlockMarker;
+	m_pEndBlockMarker->setParent(m_sdh->getMarkerId());
+	
+	m_pNext = pNext->getNext();
+	m_pNext->m_pPrev = this;
+
+	delete pNext;
+}
+
+DG_DocBuffer* FL_BlockLayout::getBuffer() const
+{
+  return m_pBuffer;
+}
+
+UT_uint32 FL_BlockLayout::getEndAddress() const
+{
+	return m_pBuffer->getMarkerPosition(m_pEndBlockMarker);
+}
+
+UT_uint32 FL_BlockLayout::_getLastChar()
+{
+	UT_uint32 iPosLastChar;
+	
+	UT_uint32 posCur = m_pBuffer->getMarkerPosition(m_sdh);
+	for (;;)
+	{
+	    UT_UCSChar ch;
+	    DG_DocMarkerId dmid;
+	    DG_DocMarker* pMarker = NULL;
+	    
+	    UT_Bool bMarker = (m_pBuffer->getOneItem(posCur, &ch, &dmid) == DG_DBPI_MARKER);
+	    if (bMarker)
+		{
+			pMarker = m_pBuffer->fetchDocMarker(dmid);
+			DG_DocMarkerType dmt = pMarker->getType();
+			if ((dmt & DG_MT_BLOCK) && (dmt & DG_MT_END))
+			{
+				// we found the end of this block
+				break;
+			}
+		}
+		else
+		{
+			iPosLastChar = posCur;
+		}
+		
+	    m_pBuffer->inc(posCur);
+	}
+
+	return iPosLastChar;
+}
+
+UT_Bool FL_BlockLayout::cmdCharDelete(UT_Bool bForward, UT_uint32 iCount)
+{
+	UT_ASSERT(iCount > 0);
+
+	/*
+	  This code is funky, because we have to be really careful about
+	  the presence of both markers and characters in the buffer.
+	*/
+	UT_uint32 iBlockBase = getPosition();
+	UT_uint32 iOldPoint = m_pBuffer->getPoint();
+	UT_ASSERT(iOldPoint > iBlockBase);
+
+	if (!bForward && (m_pBuffer->getDataCount(iBlockBase, iOldPoint) == 0))
+	{
+		UT_ASSERT(iCount == 1);	// we don't know how to cope with this yet
+		// we are deleting the paragraph break, merging two blocks
+		return UT_TRUE;
+	}
+	else if (bForward && (iCount==1) && (iOldPoint == _getLastChar()+1))
+	{
+		UT_ASSERT(iCount == 1);	// we don't know how to cope with this yet
+		// we are deleting the paragraph break, merging two blocks
+		mergeWithNextBlock();
+		format();
+		draw(m_pLayout->getGraphics());
+	}
+	else
+	{
+		m_pBuffer->charMotion(bForward, iCount);
+		UT_uint32 iNewPoint = m_pBuffer->getPoint();
+		bForward = !bForward;
+	
+		UT_uint32 iNumDeleteUnits;
+		if (iNewPoint > iOldPoint)
+		{
+			iNumDeleteUnits = iNewPoint - iOldPoint;
+		}
+		else
+		{
+			iNumDeleteUnits = iOldPoint - iNewPoint;
+		}
+
+		/*
+		  This deletes the characters, but not the markers.
+		*/
+		m_pBuffer->charDelete(bForward, iCount);
+	
+		iNewPoint -= iBlockBase;
+		memmove(m_pCharWidths + iNewPoint,
+				m_pCharWidths + iNewPoint + iCount,
+				(m_iCharWidthSize - (iNewPoint + iCount) + 1) * sizeof(UT_UCSChar));
+		m_iCharWidthSize -= iNumDeleteUnits;
+
+		FP_Run* pRun = m_pFirstRun;
+		while (pRun)
+		{
+			FP_Run* pNext = pRun->getNext();
+			if (pRun->deleteChars(iNewPoint, iNumDeleteUnits, iCount))
+			{
+				// a run sets its length to zero when everything within it has been deleted.
+				if (pRun->getLength() == 0)
+				{
+					// delete the run
+					pRun->getLine()->removeRun(pRun);
+					
+					if (pRun->getPrev())
+					{
+						pRun->getPrev()->setNext(pRun->getNext());
+					}
+					if (pRun->getNext())
+					{
+						pRun->getNext()->setPrev(pRun->getPrev());
+					}
+					pNext = pRun->getNext();
+					delete pRun;
+
+					// now, make sure the ins pt is on a character in a run
+					UT_UCSChar ch;
+					DG_DocMarkerId dmid;
+					UT_Bool bBackward = UT_TRUE;
+					
+					while (DG_DBPI_DATA != m_pBuffer->getOneItem(m_pBuffer->getPoint(), &ch, &dmid))
+					{
+						if (bBackward)
+						{
+							m_pBuffer->move(UT_FALSE);
+							if (m_pBuffer->getPoint() == 0)
+							{
+								bBackward = UT_FALSE;
+							}
+						}
+						else
+						{
+							m_pBuffer->move(UT_TRUE);
+						}
+					}
+					
+					m_pBuffer->move(bBackward);
+				}
+				else
+				{
+					pRun->calcWidths(m_pCharWidths);
+				}
+			}
+			pRun = pNext;
+		}
+
+		reformat();
+	}
+
+	return UT_FALSE;
+}
+
+UT_Bool FL_BlockLayout::insertData(UT_UCSChar * text, UT_uint32 count)
+{
+	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(count > 0);
+	UT_ASSERT(text);
+
+	UT_uint32 iBlockBase = getPosition();
+	UT_uint32 iPointAbsolute = m_pBuffer->getPoint();
+	UT_ASSERT(iPointAbsolute > iBlockBase);
+	
+	UT_uint32 iOffset = iPointAbsolute - iBlockBase;
+
+	UT_Bool bResult = m_pBuffer->insertData(text, count);
+	UT_Bool bResult2 = _insertInCharWidthsArray(iOffset,count);
+	
+	/*
+	  Having fixed the char widths array, we need to update all the run offsets.
+	  We call each run individually to update its offsets.  It returns true if
+	  its size changed, thus requiring us to remeasure it.
+	*/
+	
+	FP_Run* pRun = m_pFirstRun;
+
+	/*
+	  Save away the list of runs that are going to possibly
+	  be reformatted.  After the reformat, just redraw thses
+	  runs
+	*/
+	  
+	while (pRun)
+	{
+		if (pRun->insertData(iOffset, count))
+		{
+			pRun->calcWidths(m_pCharWidths);
+		}
+		
+		pRun = pRun->getNext();
+	}
+
+	reformat();
+
+	return bResult;
+}
+
 /*
   Divides the block into two slices, at the insertion point.
   This is used when the user presses the return key.
@@ -1113,7 +1165,7 @@ void FL_BlockLayout::insertParagraphBreak()
 	DG_DocMarker* pMarkerBeginLeft;
 	DG_DocMarker* pMarkerEndRight;
 
-	pMarkerBeginLeft = m_pBlockMarker;
+	pMarkerBeginLeft = m_sdh;
 	dmidBeginLeft = pMarkerBeginLeft->getMarkerId();
 	
 	pMarkerEndRight = m_pEndBlockMarker;
@@ -1139,7 +1191,7 @@ void FL_BlockLayout::insertParagraphBreak()
 	pBLRight->draw(m_pLayout->getGraphics());
 
 	// this looks pretty darn fragile, but it's working
-	m_pBuffer->moveAbsolute(pBLRight->getBufferAddress() + m_pBuffer->getMarkerSize());
+	m_pBuffer->moveAbsolute(pBLRight->getPosition() + m_pBuffer->getMarkerSize());
 
 #if 0
 	/*
@@ -1181,7 +1233,7 @@ UT_Bool FL_BlockLayout::insertInlineMarker(const XML_Char * szName,
 	// at the current insertion point.
 	// return UT_TRUE if successful.
 
-	UT_uint32 newMarkerOffset = m_pBuffer->getPoint() - getBufferAddress();
+	UT_uint32 newMarkerOffset = m_pBuffer->getPoint() - getPosition();
 	UT_uint32 markerSize = m_pBuffer->getMarkerSize();
 	UT_Bool bResult = _insertInCharWidthsArray(newMarkerOffset,markerSize);
 	
@@ -1193,7 +1245,7 @@ UT_Bool FL_BlockLayout::insertInlineMarker(const XML_Char * szName,
 	FP_Run * pRun = getFirstRun();
 	while (pRun)
 	{
-		if (bCreateEmptyRun && (pRun->getFirstPosition()==newMarkerOffset))
+		if (bCreateEmptyRun && (pRun->getBlockOffset()==newMarkerOffset))
 		{
 			// if this run starts at the location of the (proposed)
 			// new marker and they want an empty run to preceed the
@@ -1224,46 +1276,4 @@ UT_Bool FL_BlockLayout::insertInlineMarker(const XML_Char * szName,
 	*pdmidNew = dmidNew;
 	return UT_TRUE;
 }
-
-FL_BlockLayout* FL_BlockLayout::getNext() const
-{
-	return m_pNext;
-}
-
-FL_BlockLayout* FL_BlockLayout::getPrev() const
-{
-	return m_pPrev;
-}
-
-FP_BlockSlice* FL_BlockLayout::getFirstSlice()
-{
-	return (FP_BlockSlice*) m_vecSlices.getNthItem(0);
-}
-
-FP_BlockSlice* FL_BlockLayout::getLastSlice()
-{
-	return (FP_BlockSlice*) m_vecSlices.getNthItem(m_vecSlices.getItemCount()-1);
-}
-
-void FL_BlockLayout::dump()
-{
-	int count = m_vecSlices.getItemCount();
-	UT_DEBUGMSG(("FL_BlockLayout 0x%x is from element 0x%x and contains %d slices.\n", this, m_pBlockMarker, count));
-
-	for (int i=0; i<count; i++)
-	{
-		FP_BlockSlice* p = (FP_BlockSlice*) m_vecSlices.getNthItem(i);
-
-		UT_DEBUGMSG(("FL_BlockLayout::dump(0x%x) - FP_BlockSlice 0x%x, height=%d, in column 0x%x\n", this, p, p->getHeight(), p->getColumn()));
-	}
-
-	UT_DEBUGMSG(("FL_BlockLayout 0x%x contains the following runs:\n",this));
-
-	FP_Run * pRun = getFirstRun();
-	while (pRun)
-	{
-		pRun->dumpRun();
-		pRun = pRun->getNext();
-	}
-}
-
+#endif BUFFER

@@ -28,7 +28,7 @@
 #include "fl_BlockLayout.h"
 #include "fp_Column.h"
 #include "fp_Line.h"
-#include "dg_Property.h"
+//#include "dg_Property.h"
 #include "dg_DrawArgs.h"
 #include "dg_Graphics.h"
 
@@ -350,7 +350,7 @@ UT_uint32 FP_BlockSlice::requestLineSpace(UT_uint32 iHeightNeeded)
 	}
 }
 
-void FP_BlockSlice::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& pos, UT_Bool& bRight)
+void FP_BlockSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
 	int count = m_vecLineInfos.getItemCount();
 	for (int i = 0; i<count; i++)
@@ -362,7 +362,7 @@ void FP_BlockSlice::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& p
 		{
 			if (((y - pLI->yoff) >= 0) && ((y - pLI->yoff) < (UT_sint32)(pLI->pLine->getHeight())))
 			{
-				pLI->pLine->mapXYToBufferPosition(x - pLI->xoff, y - pLI->yoff, pos, bRight);
+				pLI->pLine->mapXYToPosition(x - pLI->xoff, y - pLI->yoff, pos, bRight);
 				return;
 			}
 		}
@@ -370,13 +370,13 @@ void FP_BlockSlice::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& p
 		// TODO it might be better to move these special cases outside the loop
 		if ((i == 0) && (y < pLI->yoff))
 		{
-			pLI->pLine->mapXYToBufferPosition(x - pLI->xoff, y - pLI->yoff, pos, bRight);
+			pLI->pLine->mapXYToPosition(x - pLI->xoff, y - pLI->yoff, pos, bRight);
 			return;
 		}
 		
 		if ((i == (count-1)) && (y >= (pLI->yoff + (UT_sint32)pLI->pLine->getHeight())))
 		{
-			pLI->pLine->mapXYToBufferPosition(x - pLI->xoff, y - pLI->yoff, pos, bRight);
+			pLI->pLine->mapXYToPosition(x - pLI->xoff, y - pLI->yoff, pos, bRight);
 			return;
 		}
 	}

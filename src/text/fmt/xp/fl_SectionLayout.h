@@ -26,12 +26,12 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "pt_Types.h"
 
 class FL_DocLayout;
 class FB_LineBreaker;
 class FP_Column;
-class DG_DocMarker;
-class DG_DocBuffer;
+class PD_Document;
 
 /*
 	A section keeps track of all of its columns, as well as all of its
@@ -40,7 +40,7 @@ class DG_DocBuffer;
 class FL_SectionLayout
 {
 public:
-	FL_SectionLayout(FL_DocLayout* pLayout, DG_DocMarker* pSectionMarker);
+	FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh);
 	~FL_SectionLayout();
 
 	FL_DocLayout* getLayout();
@@ -49,15 +49,16 @@ public:
 	UT_Bool reformat();
 
 protected:
-	void			_purgeLayout();
+	void				_purgeLayout();
 
-	FL_DocLayout*	m_pLayout;
-	DG_DocMarker*	m_pMarker;
-	DG_DocBuffer*	m_pBuffer;
-	FB_LineBreaker*	m_pLB;
+	PL_StruxDocHandle	m_sdh;
+
+	FL_DocLayout*		m_pLayout;
+	PD_Document*		m_pDoc;
+	FB_LineBreaker*		m_pLB;
 	
-	UT_Vector		m_vecSlices;
-	UT_Vector		m_vecColumns;
+	UT_Vector			m_vecSlices;
+	UT_Vector			m_vecColumns;
 };
 
 #endif /* SECTIONLAYOUT_H */

@@ -32,21 +32,19 @@
 #include "fp_Page.h"
 #include "fp_SectionSlice.h"
 #include "fp_Column.h"
-#include "dg_ColumnModel.h"
-#include "dg_DocBuffer.h"
+//#include "dg_ColumnModel.h"
+#include "pd_Document.h"
 
 #include "ut_assert.h"
 
-FL_SectionLayout::FL_SectionLayout(FL_DocLayout* pLayout, DG_DocMarker* pMarker)
+FL_SectionLayout::FL_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh)
 {
 	UT_ASSERT(pLayout);
-	UT_ASSERT(pMarker);
-	UT_ASSERT(pMarker->getType() & DG_MT_SECTION);
-	UT_ASSERT(!(pMarker->getType() & DG_MT_END));
+	UT_ASSERT(sdh);
 	
 	m_pLayout = pLayout;
-	m_pMarker = pMarker;
-	m_pBuffer = pLayout->getBuffer();
+	m_sdh = sdh;
+	m_pDoc = pLayout->getDocument();
 	m_pLB = NULL;
 }
 
@@ -65,13 +63,15 @@ FL_SectionLayout::~FL_SectionLayout()
 	UT_VECTOR_PURGEALL(FP_SectionSlice, m_vecSlices);
 	UT_VECTOR_PURGEALL(FP_Column, m_vecColumns);
 
-	if (m_pMarker)
+#ifdef COLUMNMODEL
+	if (m_sdh)
 	{
-		DG_ColumnModel * pCM = m_pMarker->getColumnModel();
+		DG_ColumnModel * pCM = m_sdh->getColumnModel();
 
 		if (pCM)
 			delete pCM;
 	}
+#endif
 
 	if (m_pLB)
 		delete m_pLB;
@@ -118,14 +118,13 @@ FP_Column* FL_SectionLayout::getNewColumn()
 	UT_sint32 iWidthSlice = pSlice->getWidth();
 	UT_sint32 iHeightSlice = pSlice->getHeight();
 
-	DG_ColumnModel * pCM = m_pMarker->getColumnModel();
+#ifdef COLUMNMODEL
+	DG_ColumnModel * pCM = m_sdh->getColumnModel();
 	if (!pCM)
 		pCM = NULL; // TODO get default model from document
 	UT_ASSERT(pCM);
 
 	UT_uint32 kCMI=0;
-#define MARKER 1
-#if MARKER
 	UT_sint32 xoff, yoff;
 	FP_Column* pCol;
 
@@ -139,7 +138,7 @@ FP_Column* FL_SectionLayout::getNewColumn()
 		}
 		m_vecColumns.addItem(pCol);
 	}
-#endif
+#endif /* COLUMNMODEL */
 	return pSlice->getFirstColumn();
 }
 
@@ -151,7 +150,8 @@ int FL_SectionLayout::format()
 	// remember this so we can delete it later
 	m_pLB = slb;
 
-	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_pMarker);
+#ifdef BUFFER	// format
+	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_sdh);
 	
 	UT_UCSChar data;
 	DG_DocMarkerId dmid;
@@ -196,13 +196,15 @@ int FL_SectionLayout::format()
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+#endif /* BUFFER */
 	return 0;	// TODO return code
 }
 
 UT_Bool FL_SectionLayout::reformat()
 {
 	UT_Bool bResult = UT_FALSE;
-	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_pMarker);
+#ifdef BUFFER	// reformat
+	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_sdh);
 	
 	UT_UCSChar data;
 	DG_DocMarkerId dmid;
@@ -230,7 +232,6 @@ UT_Bool FL_SectionLayout::reformat()
 			else if ((pMarker->getType() & DG_MT_BLOCK)
 					 && !(pMarker->getType() & DG_MT_END))
 			{
-#if MARKER
 				FL_BlockLayout*	pBL = (FL_BlockLayout*) pMarker->getBlock();
 
 				if (pBL->needsReformat())
@@ -239,7 +240,6 @@ UT_Bool FL_SectionLayout::reformat()
 					pBL->draw(m_pLayout->getGraphics());
 					bResult = UT_TRUE;
 				}
-#endif			
 			}
 			break;
 		}
@@ -252,13 +252,15 @@ UT_Bool FL_SectionLayout::reformat()
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+#endif /* BUFFER */
 	return 0;	// TODO return code
 }
 
 // TODO -- write an iterator so functions like this aren't so gross
 void FL_SectionLayout::_purgeLayout()
 {
-	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_pMarker);
+#ifdef BUFFER	// _purgeLayout
+	UT_uint32 iSectionStart = m_pBuffer->getMarkerPosition(m_sdh);
 	
 	UT_UCSChar data;
 	DG_DocMarkerId dmid;
@@ -286,11 +288,9 @@ void FL_SectionLayout::_purgeLayout()
 			else if ((pMarker->getType() & DG_MT_BLOCK)
 					 && !(pMarker->getType() & DG_MT_END))
 			{
-#if MARKER
 				FL_BlockLayout*	pBL = (FL_BlockLayout*) pMarker->getBlock();
 
 				delete pBL;
-#endif 
 			}
 			break;
 		}
@@ -303,6 +303,7 @@ void FL_SectionLayout::_purgeLayout()
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+#endif /* BUFFER */
 	return;
 }
 

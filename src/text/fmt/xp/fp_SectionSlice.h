@@ -24,7 +24,9 @@
 #ifndef SECTIONSLICE_H
 #define SECTIONSLICE_H
 
+#include "ut_types.h"
 #include "ut_vector.h"
+#include "pt_Types.h"
 
 class FP_Page;
 class FP_Column;
@@ -52,7 +54,7 @@ public:
 	FP_Column* 	getFirstColumn();
 	void 		addColumn(FP_Column*, UT_sint32, UT_sint32);
 
-	void		mapXYToBufferPosition(UT_sint32 xPos, UT_sint32 yPos, UT_uint32& pos, UT_Bool& bRight);
+	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
 	void 		getOffsets(FP_Column* pCol, void* p, UT_sint32& xoff, UT_sint32& yoff);
 	void 		getScreenOffsets(FP_Column* pCol, void* p, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);	
 

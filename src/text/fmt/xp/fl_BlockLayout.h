@@ -26,7 +26,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "dg_DocMarker.h"
+#include "pt_Types.h"
 
 class FL_DocLayout;
 class FL_SectionLayout;
@@ -35,8 +35,8 @@ class FP_BlockSlice;
 class FP_Line;
 class FP_Run;
 class DG_Graphics;
-class DG_DocPosition;
-class DG_DocBuffer;
+class PD_Document;
+class PP_Property;
 
 // TODO the following should be an enum
 #define DG_ALIGN_BLOCK_LEFT		1
@@ -98,7 +98,7 @@ class DG_DocBuffer;
 class FL_BlockLayout
 {
 public:
-	FL_BlockLayout(DG_DocMarker*, FB_LineBreaker*, FL_BlockLayout*, FL_SectionLayout*);
+	FL_BlockLayout(PL_StruxDocHandle sdh, FB_LineBreaker*, FL_BlockLayout*, FL_SectionLayout*);
 	~FL_BlockLayout();
 
 	void setNeedsReformat(UT_Bool);
@@ -109,7 +109,7 @@ public:
 	int	requestLineSpace(int iHeight);
 	int	addLine(FP_Line*);
 
-	const char*	getProperty(DG_Property* pProp);
+	const char*	getProperty(const PP_Property* pProp);
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_uint32 getAlignment();
 
@@ -123,15 +123,17 @@ public:
 	FP_Line* findNextLineInDocument(FP_Line*);
 	FP_Run* getFirstRun();
 
+	UT_uint16* getCharWidthArray() const;
+
+	PT_DocPosition getPosition() const;
+	FP_Run* findPointCoords(PT_DocPosition position, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height);
+
+#ifdef BUFFER
 	DG_DocBuffer* getBuffer() const;
-	UT_uint32 getBufferAddress() const;
 	UT_uint32 getEndAddress() const;
 	UT_Bool fetchPointers(UT_uint32 position, UT_uint32 count,
 						  const UT_uint16** pp1, UT_uint32* pLen1,
 						  const UT_uint16** pp2, UT_uint32* pLen2) const;
-	FP_Run* findPointCoords(UT_uint32 position, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height);
-
-	UT_uint16* getCharWidthArray() const;
 
 	UT_Bool		insertData(UT_UCSChar * text, UT_uint32 count);
 	UT_Bool		cmdCharDelete(UT_Bool bForward, UT_uint32 iCount);
@@ -143,6 +145,7 @@ public:
 								   DG_DocMarkerId dmidParent,
 								   UT_Bool bCreateEmptyRun,
 								   DG_DocMarkerId * pdmidNew);
+#endif 
 
 	void draw(DG_Graphics*);
 	void clearScreen(DG_Graphics*);
@@ -172,10 +175,10 @@ protected:
 
 	UT_Vector				m_vecSlices;
 
-	DG_DocMarker*          	m_pBlockMarker;
-	DG_DocMarker*          	m_pEndBlockMarker;
+	PL_StruxDocHandle		m_sdh;
+
 	FL_DocLayout*	       	m_pLayout;
-	DG_DocBuffer*	      	m_pBuffer;
+	PD_Document*	      	m_pDoc;
 	FB_LineBreaker*			m_pBreaker;
 
 	FL_BlockLayout*			m_pPrev;

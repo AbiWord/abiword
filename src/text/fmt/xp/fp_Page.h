@@ -26,6 +26,7 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "pt_Types.h"
 
 class FL_DocLayout;
 class FL_SectionLayout;
@@ -69,7 +70,7 @@ class FP_Page
 	FL_DocLayout*	getLayout();
 	void            setLayoutView(DG_LayoutView*);
 
-	void			mapXYToBufferPosition(UT_sint32 xPos, UT_sint32 yPos, UT_uint32& pos, UT_Bool& bRight);
+	void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
 	void			getOffsets(FP_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff);
 	void			getScreenOffsets(FP_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 

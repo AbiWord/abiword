@@ -27,18 +27,16 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 
-#include "dg_DocMarker.h"
 #include "pl_Listener.h"
 
-class FP_Page;
-class DG_Graphics;
-class DG_Document;
-class DG_DocBuffer;
 class DG_LayoutView;
+class FP_Page;
+class PD_Document;
+class DG_Graphics;
 
 // ----------------------------------------------------------------
 /*
-	FL_DocLayout is a formatted representation of a specific DG_Document, 
+	FL_DocLayout is a formatted representation of a specific PD_Document, 
 	formatted for a specific DG_Graphics context.  
 
 	A FL_DocLayout encapsulates two related hierarchies of objects.  
@@ -65,14 +63,13 @@ class DG_LayoutView;
 class FL_DocLayout : public PL_Listener
 {
 public:
-	FL_DocLayout(DG_Document* doc, DG_Graphics* pG);
+	FL_DocLayout(PD_Document* doc, DG_Graphics* pG);
 	~FL_DocLayout();
 
 	void setLayoutView(DG_LayoutView*);
 
 	DG_Graphics*	getGraphics();
-	DG_Document*	getDocument() const;
-	DG_DocBuffer*	getBuffer() const;
+	PD_Document*	getDocument() const;
 	UT_uint32		getHeight();
 
 	FP_Page*	addNewPage();
@@ -107,8 +104,7 @@ public:
 	
 protected:
 	DG_Graphics*		m_pG;
-	DG_Document*		m_pDoc;
-	DG_DocBuffer*	   	m_pBuffer;
+	PD_Document*		m_pDoc;
 	DG_LayoutView*      m_pLayoutView;
 	
 	UT_Vector		m_vecPages;

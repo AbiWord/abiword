@@ -25,7 +25,9 @@
 #define COLUMN_H
 
 #include "ut_misc.h"
+#include "ut_types.h"
 #include "ut_vector.h"
+#include "pt_Types.h"
 
 class FL_SectionLayout;
 class FP_SectionSlice;
@@ -97,7 +99,7 @@ public:
 	virtual UT_Bool 	containsPoint(UT_sint32 x, UT_sint32 y) = 0;
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y) = 0;
 
-	void				mapXYToBufferPosition(UT_sint32 xPos, UT_sint32 yPos, UT_uint32& pos, UT_Bool& bRight);
+	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
 	void				getOffsets(FP_BlockSlice*, void*, UT_sint32&, UT_sint32&);
 	void				getScreenOffsets(FP_BlockSlice*, void*, UT_sint32&, UT_sint32&, UT_sint32&, UT_sint32&);
 

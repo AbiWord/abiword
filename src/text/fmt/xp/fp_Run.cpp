@@ -27,9 +27,9 @@
 #include "fp_Run.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
-#include "dg_Property.h"
+#include "pp_Property.h"
 #include "dg_Graphics.h"
-#include "dg_DocBuffer.h"
+#include "pd_Document.h"
 #include "dg_DrawArgs.h"
 
 #include "ut_debugmsg.h"
@@ -41,7 +41,7 @@ FP_Run::FP_Run(FL_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_
 	m_pG = pG;
 	m_pBL = pBL;
 
-	m_pBuffer = m_pBL->getBuffer();
+//	m_pDoc = m_pBL->getDocument();
 
 	m_bCanSplit = 1;
 	m_iLineBreakBefore = BREAK_AUTO;
@@ -114,14 +114,15 @@ UT_uint32 FP_Run::getLength() const
 	return m_iLen;
 }
 
-UT_uint32 FP_Run::getFirstPosition() const
+UT_uint32 FP_Run::getBlockOffset() const
 {
 	return m_iOffsetFirst;
 }
 
 void FP_Run::lookupProperties(void)
 {
-	UT_uint32 iAbsolute = m_pBL->getBufferAddress() + m_iOffsetFirst;
+#ifdef BUFFER	// lookupProperties
+	UT_uint32 iAbsolute = m_pBL->getPosition() + m_iOffsetFirst;
 	UT_uint32 posMarker;
 	DG_DocMarkerId idMarker;
 	DG_DocMarker* pMarker = NULL;
@@ -140,16 +141,16 @@ void FP_Run::lookupProperties(void)
 	  not a list.  This is broken.
 	*/
 
-	m_pFont = m_pG->findFont(pMarker->getProperty(lookupProperty("font-family")),
-							 pMarker->getProperty(lookupProperty("font-style")),
-							 pMarker->getProperty(lookupProperty("font-variant")),
-							 pMarker->getProperty(lookupProperty("font-weight")),
-							 pMarker->getProperty(lookupProperty("font-stretch")),
-							 pMarker->getProperty(lookupProperty("font-size")));
+	m_pFont = m_pG->findFont(pMarker->getProperty(PP_lookupProperty("font-family")),
+							 pMarker->getProperty(PP_lookupProperty("font-style")),
+							 pMarker->getProperty(PP_lookupProperty("font-variant")),
+							 pMarker->getProperty(PP_lookupProperty("font-weight")),
+							 pMarker->getProperty(PP_lookupProperty("font-stretch")),
+							 pMarker->getProperty(PP_lookupProperty("font-size")));
 
-	UT_parseColor(pMarker->getProperty(lookupProperty("color")), m_colorFG);
+	UT_parseColor(pMarker->getProperty(PP_lookupProperty("color")), m_colorFG);
 
-	const char *pszDecor = pMarker->getProperty(lookupProperty("text-decoration"));
+	const char *pszDecor = pMarker->getProperty(PP_lookupProperty("text-decoration"));
 	/*
 	  m_fDecorations supports multiple simultanous decors.  Unfortunately,
 	  our use of UT_stricmp only allows one.
@@ -172,6 +173,7 @@ void FP_Run::lookupProperties(void)
 	m_iAscent = m_pG->getFontAscent();	
 	m_iDescent = m_pG->getFontDescent();
 	m_iHeight = m_pG->getFontHeight();
+#endif /* BUFFER */
 }
 
 void FP_Run::setNext(FP_Run* p)
@@ -201,6 +203,7 @@ UT_Bool FP_Run::canSplit() const
 
 UT_Bool FP_Run::canBreakAfter() const
 {
+#ifdef BUFFER	// fetchPointers
 	const UT_UCSChar* p1;
 	UT_uint32   iLen1;
 	const UT_UCSChar* p2;
@@ -227,12 +230,14 @@ UT_Bool FP_Run::canBreakAfter() const
 	{
 		return m_pNext->canBreakBefore();
 	}
+#endif /* BUFFER */
 	
 	return UT_FALSE;
 }
 
 UT_Bool FP_Run::canBreakBefore() const
 {
+#ifdef BUFFER	// fetchPointers
 	const UT_UCSChar* p1;
 	UT_uint32   iLen1;
 	const UT_UCSChar* p2;
@@ -244,6 +249,7 @@ UT_Bool FP_Run::canBreakBefore() const
 		return UT_TRUE;
 	}
 	else
+#endif /* BUFFER */
 	{
 		return UT_FALSE;
 	}
@@ -337,6 +343,7 @@ UT_Bool	FP_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 
 	si.iOffset = -1;
 
+#ifdef BUFFER	// fetchPointers
 	const UT_UCSChar* p1;
 	UT_uint32   iLen1;
 	const UT_UCSChar* p2;
@@ -373,6 +380,7 @@ UT_Bool	FP_Run::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInf
 			}
 		}
 	}
+#endif /* BUFFER */
 
 	if ((si.iOffset == -1) || (si.iLeftWidth == m_iWidth))
 	{
@@ -395,6 +403,7 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 
 	si.iOffset = -1;
 
+#ifdef BUFFER	// fetchPointers
 	const UT_UCSChar* p1;
 	UT_uint32   iLen1;
 	const UT_UCSChar* p2;
@@ -425,6 +434,7 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 			break;
 		}
 	}
+#endif /* BUFFER */
 
 	if ((si.iOffset == -1) || (si.iLeftWidth == m_iWidth))
 	{
@@ -439,6 +449,7 @@ UT_Bool	FP_Run::findMinLeftFitSplitPoint(fp_RunSplitInfo& si)
 
 void FP_Run::_calcWidths(UT_uint16* pCharWidths)
 {
+#ifdef BUFFER	// fetchPointers
 	const UT_UCSChar* p1;
 	UT_uint32   iLen1;
 	const UT_UCSChar* p2;
@@ -452,6 +463,7 @@ void FP_Run::_calcWidths(UT_uint16* pCharWidths)
 	{
 		m_iWidth += m_pG->measureString(p2, 0, iLen2, pCharWidths + m_iOffsetFirst + iLen1);
 	}
+#endif /* BUFFER */
 }
 
 void FP_Run::calcWidths(UT_uint16* pCharWidths)
@@ -473,13 +485,13 @@ void FP_Run::expandWidthTo(UT_uint32 iNewWidth)
 #endif
 }
 
-void FP_Run::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& pos, UT_Bool& bRight)
+void FP_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
     UT_uint16* pCharWidths = m_pBL->getCharWidthArray();
 
 	if  (x <= 0)
 	{
-		pos = m_pBL->getBufferAddress() + m_iOffsetFirst;
+		pos = m_pBL->getPosition() + m_iOffsetFirst;
 		bRight = UT_TRUE;
 		return;
 	}
@@ -504,7 +516,7 @@ void FP_Run::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& pos, UT_
 				bRight = UT_TRUE;
 			}
 			
-			pos = m_pBL->getBufferAddress() + i;
+			pos = m_pBL->getPosition() + i;
 			return;
 		}
 	}
@@ -567,111 +579,6 @@ void FP_Run::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_u
 	height = m_iHeight;
 }
 
-UT_Bool FP_Run::insertData(UT_uint32 iOffset, UT_uint32 iCount)
-{
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
-	if ((m_iOffsetFirst + m_iLen) < iOffset)
-	{
-		// nothing to do.  the insert occurred AFTER this run
-		return UT_FALSE;
-	}
-
-	if (m_iOffsetFirst > iOffset)
-	{
-		m_iOffsetFirst += iCount;
-		return UT_FALSE;
-	}
-
-	m_iLen += iCount;
-	
-	return UT_TRUE;
-}
-
-UT_Bool FP_Run::deleteChars(UT_uint32 iOffset, UT_uint32 iCountUnits, UT_uint32 iCountChars)
-{
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
-	UT_ASSERT(iCountChars <= iCountUnits);
-	UT_uint32 iOldWidth = getWidth();
-	
-	if ((m_iOffsetFirst + m_iLen) <= iOffset)
-	{
-		// nothing to do.  the insert occurred AFTER this run
-		return UT_FALSE;
-	}
-
-	if (m_iOffsetFirst >= (iOffset + iCountUnits))
-	{
-		// the insert occurred entirely before this run.
-		
-		m_iOffsetFirst -= iCountChars;
-		return UT_FALSE;
-	}
-
-	clearScreen();
-	
-	if (iOffset >= m_iOffsetFirst)
-	{
-		if ((iOffset + iCountUnits) < (m_iOffsetFirst + m_iLen))
-		{
-			// the deleted section is entirely within this run
-			UT_ASSERT(iCountUnits == iCountChars);
-			
-			m_iLen -= iCountUnits;
-		}
-		else
-		{
-			int iDeleted = m_iOffsetFirst + m_iLen - iOffset;
-			UT_ASSERT(iDeleted > 0);
-			m_iLen -= iDeleted;
-		}
-	}
-	else
-	{
-		if ((iOffset + iCountUnits) < (m_iOffsetFirst + m_iLen))
-		{
-			int iDeleted = iOffset + iCountUnits - m_iOffsetFirst;
-			UT_ASSERT(iDeleted > 0);
-			m_iOffsetFirst -= (iCountChars - iDeleted);
-			m_iLen -= iDeleted;
-		}
-		else
-		{
-			/*
-			  the deletion spans the entire run.  we set its
-			  length, in chars, to zero.  it will be deleted.
-			*/
-			
-			m_iLen = 0;
-		}
-	}
-	
-	return UT_TRUE;
-}
-
-UT_Bool FP_Run::insertInlineMarker(UT_uint32 newMarkerOffset, UT_uint32 markerSize)
-{
-	if (newMarkerOffset <= m_iOffsetFirst)
-	{
-		// insert occured before (or at the begining of) this run.
-		// we need to update the offset in this run.
-
-		m_iOffsetFirst += markerSize;
-		return UT_TRUE;
-	}
-	else if (m_iOffsetFirst+m_iLen <= newMarkerOffset)
-	{
-		// insert occured after this run, we don't need to bother it.
-		return UT_TRUE;
-	}
-	else
-	{
-		// insert occured inside this run, we need to split it.
-		// we will let our caller update the new marker that we create.
-		split(newMarkerOffset);
-		return UT_TRUE;
-	}
-}
-
 void FP_Run::clearScreen(void)
 {
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
@@ -699,7 +606,8 @@ void FP_Run::draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 	
-	UT_uint32 iBlockBase = m_pBL->getBufferAddress();
+#ifdef BUFFER	// fetchPointers
+	UT_uint32 iBlockBase = m_pBL->getPosition();
 	
 	const UT_UCSChar* p1;
 	UT_uint32   iLen1;
@@ -715,6 +623,7 @@ void FP_Run::draw(dg_DrawArgs* pDA)
 	_drawPart(pDA->xoff, pDA->yoff, m_iOffsetFirst, m_iLen, p1, iLen1, p2, iLen2, pCharWidths);
 
 	_drawDecors(pDA->xoff, pDA->yoff);
+#endif /* BUFFER */
 }
 
 void FP_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
@@ -838,3 +747,111 @@ void FP_Run::dumpRun(void) const
 	
 	return;
 }
+
+#ifdef BUFFER
+UT_Bool FP_Run::insertData(UT_uint32 iOffset, UT_uint32 iCount)
+{
+	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	if ((m_iOffsetFirst + m_iLen) < iOffset)
+	{
+		// nothing to do.  the insert occurred AFTER this run
+		return UT_FALSE;
+	}
+
+	if (m_iOffsetFirst > iOffset)
+	{
+		m_iOffsetFirst += iCount;
+		return UT_FALSE;
+	}
+
+	m_iLen += iCount;
+	
+	return UT_TRUE;
+}
+
+UT_Bool FP_Run::deleteChars(UT_uint32 iOffset, UT_uint32 iCountUnits, UT_uint32 iCountChars)
+{
+	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(iCountChars <= iCountUnits);
+	UT_uint32 iOldWidth = getWidth();
+	
+	if ((m_iOffsetFirst + m_iLen) <= iOffset)
+	{
+		// nothing to do.  the insert occurred AFTER this run
+		return UT_FALSE;
+	}
+
+	if (m_iOffsetFirst >= (iOffset + iCountUnits))
+	{
+		// the insert occurred entirely before this run.
+		
+		m_iOffsetFirst -= iCountChars;
+		return UT_FALSE;
+	}
+
+	clearScreen();
+	
+	if (iOffset >= m_iOffsetFirst)
+	{
+		if ((iOffset + iCountUnits) < (m_iOffsetFirst + m_iLen))
+		{
+			// the deleted section is entirely within this run
+			UT_ASSERT(iCountUnits == iCountChars);
+			
+			m_iLen -= iCountUnits;
+		}
+		else
+		{
+			int iDeleted = m_iOffsetFirst + m_iLen - iOffset;
+			UT_ASSERT(iDeleted > 0);
+			m_iLen -= iDeleted;
+		}
+	}
+	else
+	{
+		if ((iOffset + iCountUnits) < (m_iOffsetFirst + m_iLen))
+		{
+			int iDeleted = iOffset + iCountUnits - m_iOffsetFirst;
+			UT_ASSERT(iDeleted > 0);
+			m_iOffsetFirst -= (iCountChars - iDeleted);
+			m_iLen -= iDeleted;
+		}
+		else
+		{
+			/*
+			  the deletion spans the entire run.  we set its
+			  length, in chars, to zero.  it will be deleted.
+			*/
+			
+			m_iLen = 0;
+		}
+	}
+	
+	return UT_TRUE;
+}
+
+UT_Bool FP_Run::insertInlineMarker(UT_uint32 newMarkerOffset, UT_uint32 markerSize)
+{
+	if (newMarkerOffset <= m_iOffsetFirst)
+	{
+		// insert occured before (or at the begining of) this run.
+		// we need to update the offset in this run.
+
+		m_iOffsetFirst += markerSize;
+		return UT_TRUE;
+	}
+	else if (m_iOffsetFirst+m_iLen <= newMarkerOffset)
+	{
+		// insert occured after this run, we don't need to bother it.
+		return UT_TRUE;
+	}
+	else
+	{
+		// insert occured inside this run, we need to split it.
+		// we will let our caller update the new marker that we create.
+		split(newMarkerOffset);
+		return UT_TRUE;
+	}
+}
+#endif /* BUFFER */
+

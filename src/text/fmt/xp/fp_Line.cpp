@@ -293,7 +293,7 @@ void FP_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 	m_pBlockSlice->alignOneLine(this, m_pBlockSliceData);
 }
 
-void FP_Line::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& pos, UT_Bool& bRight)
+void FP_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
 {
 	if (x < 0)
 	{
@@ -317,7 +317,7 @@ void FP_Line::mapXYToBufferPosition(UT_sint32 x, UT_sint32 y, UT_uint32& pos, UT
 			// when hit testing runs within a line, we ignore the Y coord
 //			if (((y2) >= 0) && ((y2) < (pSI->pRun->getHeight())))
 			{
-				pSI->pRun->mapXYToBufferPosition(x - pSI->xoff, y2, pos, bRight);
+				pSI->pRun->mapXYToPosition(x - pSI->xoff, y2, pos, bRight);
 				return;
 			}
 		}

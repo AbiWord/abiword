@@ -27,6 +27,7 @@
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "pt_Types.h"
 
 class FP_BlockSlice;
 class FP_Run;
@@ -76,7 +77,7 @@ public:
 	UT_uint32	getNumChars() const;
  	void        runSizeChanged(void*, UT_sint32 oldWidth, UT_sint32 newWidth);
 
-	void		mapXYToBufferPosition(UT_sint32 xPos, UT_sint32 yPos, UT_uint32& pos, UT_Bool& bRight);
+	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
 	void		getOffsets(FP_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff);
 	void		getScreenOffsets(FP_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 #if UNUSED

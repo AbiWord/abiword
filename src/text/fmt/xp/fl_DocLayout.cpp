@@ -24,22 +24,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "ut_types.h"
+#include "pt_Types.h"
 #include "px_ChangeRecord.h"
+#include "px_ChangeRecord_Span.h"
+#include "px_ChangeRecord_Strux.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "fp_Page.h"
-#include "dg_Document.h"
+#include "pd_Document.h"
 #include "dg_Graphics.h"
-#include "dg_DocBuffer.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
-FL_DocLayout::FL_DocLayout(DG_Document* doc, DG_Graphics* pG)
+FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG)
 {
 	m_pDoc = doc;
 	m_pG = pG;
-	m_pBuffer = doc->getBuffer();
 	m_pLayoutView = NULL;
 }
 
@@ -64,12 +66,7 @@ void FL_DocLayout::setLayoutView(DG_LayoutView* pLayoutView)
 	}
 }
 
-DG_DocBuffer* FL_DocLayout::getBuffer() const
-{
-	return m_pBuffer;
-}
-
-DG_Document* FL_DocLayout::getDocument() const
+PD_Document* FL_DocLayout::getDocument() const
 {
 	return m_pDoc;
 }
@@ -151,6 +148,7 @@ int FL_DocLayout::formatAll()
 	UT_ASSERT(m_pDoc);
 	UT_DEBUGMSG(("BEGIN Formatting document: 0x%x\n", this));
 
+#ifdef BUFFER	// formatAll
 	UT_UCSChar data;
 	DG_DocMarkerId dmid;
 	UT_uint32 pos = 0;
@@ -185,6 +183,8 @@ int FL_DocLayout::formatAll()
 		}
 		m_pBuffer->inc(pos);
 	}
+#endif /* BUFFER */
+	return 0;
 }
 
 int FL_DocLayout::reformat()
@@ -232,6 +232,14 @@ UT_Bool FL_DocLayout::populate(PL_StruxFmtHandle sfh,
 	UT_DEBUGMSG(("FL_DocLayout::populate\n"));
 	pcr->dump();
 
+	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertSpan);
+	PX_ChangeRecord_Span * pcrs = static_cast<PX_ChangeRecord_Span *> (pcr);
+
+	// TODO -- span is block-relative, right?
+	// HYP: append as a new run to last block of last section
+	// ALT: if format same, append to last run of that block
+	// ==>: pass enough info to delegate the decision  :-)
+
 	return UT_TRUE;
 }
 
@@ -241,6 +249,49 @@ UT_Bool FL_DocLayout::populateStrux(PL_StruxDocHandle sdh,
 {
 	UT_DEBUGMSG(("FL_DocLayout::populateStrux\n"));
 	pcr->dump();
+
+	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
+	PX_ChangeRecord_Strux * pcrx = static_cast<PX_ChangeRecord_Strux *> (pcr);
+
+	switch (pcrx->getStruxType())
+	{
+	case PTX_Section:
+		{
+			// append a SectionLayout to this DocLayout
+			FL_SectionLayout* pSL = new FL_SectionLayout(this, sdh);
+			m_vecSectionLayouts.addItem(pSL);
+
+			psfh = (PL_StruxFmtHandle *) &pSL;
+		}
+		break;
+
+	case PTX_ColumnSet:
+		{
+			// TODO -- Jeff?
+		}
+		break;
+			
+	case PTX_Column:
+		{
+			// TODO -- Jeff?
+		}
+		break;
+			
+	case PTX_Block:
+		{
+			// locate the last SectionLayout
+			int countSections = m_vecSectionLayouts.getItemCount();
+			UT_ASSERT(countSections > 0);
+			FL_SectionLayout* pSL = (FL_SectionLayout*) m_vecSectionLayouts.getNthItem(countSections - 1);
+
+			// TODO -- append a new BlockLayout to that SectionLayout
+		}
+		break;
+			
+	default:
+		UT_ASSERT(0);
+		return UT_FALSE;
+	}
 
 	return UT_TRUE;
 }
