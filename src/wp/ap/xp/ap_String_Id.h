@@ -592,7 +592,7 @@ dcl(WORD_PassInvalid, "Incorrect Password")
 	 dcl(SCRIPT_NOSCRIPTS, "No scripts found")
 	 dcl(SCRIPT_CANTRUN, "Error executing script %s")
 
-	dcl(MSG_CHECK_PRINT_MODE,"Headers and Footers can only be created and editted while in Print View Mode. \n To enter this mode choose ""View"" then ""Print Layout"" from the Menus. \n Would you like to enter Print Layout mode right now?")
+	dcl(MSG_CHECK_PRINT_MODE,"Headers and Footers can only be created and edited while in Print View Mode. \n To enter this mode choose ""View"" then ""Print Layout"" from the Menus. \n Would you like to enter Print Layout mode right now?")
 
 	 /* below are autotext defaults */
 
