@@ -38,6 +38,7 @@
 // #include "xap_Win32Resources.rc2"
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
+#include "gr_Win32USPGraphics.h"
 #include "ut_bytebuf.h"
 #include "ut_png.h"
 
@@ -69,7 +70,7 @@ XAP_Win32Dialog_About::~XAP_Win32Dialog_About(void)
 }
 
 const int ABOUT_WIDTH		= 500;
-const int ABOUT_HEIGHT		= 390;
+const int ABOUT_HEIGHT		= 398;
 const int BUTTON_WIDTH		= 64;
 const int BUTTON_HEIGHT		= 24;
 const int BUTTON_GAP		= 10;
@@ -232,6 +233,28 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 									   pWin32App->getInstance(),
 									   NULL);
 
+	HWND hwndStatic_USP_Version = 0;
+	
+	if(pWin32App->getLastFocussedFrame()->getCurrentView()->getGraphics()->getClassId()==GRID_WIN32_UNISCRIBE)
+	{
+		GR_Win32USPGraphics * pUSP = static_cast<GR_Win32USPGraphics*>(
+												  pWin32App->getLastFocussedFrame()->getCurrentView()->getGraphics());
+		
+		hwndStatic_USP_Version = CreateWindow("STATIC",
+												   pUSP->getUSPVersion(),
+												   WS_CHILD | WS_VISIBLE | SS_LEFT,
+												   BUTTON_GAP/2,
+ 				   								   iHeight - 3*BUTTON_HEIGHT/4,
+												   iImageWidth - BUTTON_GAP/2,
+												   3*BUTTON_HEIGHT/4,
+												   hwndAbout,
+												   (HMENU) 3005,
+												   pWin32App->getInstance(),
+												   NULL);
+	
+		
+	}
+	
 	LOGFONT lf = { 0 };
 	strcpy(lf.lfFaceName, "MS Sans Serif");
 	
@@ -259,6 +282,9 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	}
 
 	SendMessage(hwndStatic_GPL, WM_SETFONT, (WPARAM) hfontSmall, 0);
+
+	if(hwndStatic_USP_Version)
+		SendMessage(hwndStatic_USP_Version, WM_SETFONT, (WPARAM) hfontSmall, 0);
 	
 	// the event loop
 	{
