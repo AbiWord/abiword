@@ -1,6 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,7 +40,20 @@ class EV_CocoaMenu;
 }
 - (void)setXAPOwner:(EV_CocoaMenu*)owner;
 - (id)menuSelected:(id)sender;
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
+@end
+
+@interface EV_NSMenu : NSMenu
+{
+	NSMutableArray * _virtualItems;
+	EV_CocoaMenu * _xap;
+}
+
+-(id)initWithXAP:(EV_CocoaMenu*)owner andTitle:(NSString*)title;
+
+-(void)dealloc;
+-(void)addVirtualItem:(id <NSMenuItem>)newItem;
+-(NSEnumerator*)virtualItemsEnumerator;
+
 @end
 
 
@@ -56,14 +69,12 @@ public:
 	bool				synthesizeMenu(NSMenu * wMenuRoot);
 	bool				menuEvent(XAP_Menu_Id menuid);
 	virtual bool		refreshMenu(AV_View * pView) = 0;
+	void				_refreshMenu(EV_NSMenu *menu);
 	
-	bool				_validateMenuItem(NSMenuItem* menuItem);
 protected:
 	bool				_isItemPresent(XAP_Menu_Id menuid) const;
 
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
-/*	const char ** 		_getCocoaLabelName(XAP_App * pApp, 
-									const EV_Menu_Action * pAction, const EV_Menu_Label * pLabel);*/
 private:
 	static NSString* _getItemCmd (const char * mnemonic, unsigned int & modifiers);
 	XAP_CocoaApp *		m_pCocoaApp;

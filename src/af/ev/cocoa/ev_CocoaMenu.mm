@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2001-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,6 +49,47 @@
 #import <Cocoa/Cocoa.h>
 
 
+
+@implementation EV_NSMenu
+
+-(void)dealloc
+{
+	[_virtualItems release];
+	[super dealloc];
+}
+
+
+-(id)initWithXAP:(EV_CocoaMenu*)owner andTitle:(NSString*)title
+{
+	self = [super initWithTitle:title];
+	_virtualItems = [[NSMutableArray alloc] init];
+	_xap = owner;
+	return self;
+}
+
+// NSMenu overrides
+
+-(void)update
+{
+	xxx_UT_DEBUGMSG(("-[EV_NSMenu update: %s]\n", [[self title] UTF8String]));
+	_xap->_refreshMenu(self);
+	[super update];
+}
+
+- (void)addVirtualItem:(id <NSMenuItem>)newItem
+{
+	[_virtualItems addObject:newItem];
+}
+
+
+- (NSEnumerator*)virtualItemsEnumerator
+{
+	return [_virtualItems objectEnumerator];
+}
+
+@end
+
+
 @implementation EV_CocoaMenuTarget
 
 - (void)setXAPOwner:(EV_CocoaMenu*)owner
@@ -56,12 +97,6 @@
 	_xap = owner;
 }
 
-- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
-{
-	UT_ASSERT ([menuItem isKindOfClass:[NSMenuItem class]]);
-	xxx_UT_DEBUGMSG(("validateMenuItem\n"));
-	return _xap->_validateMenuItem(menuItem);
-}
 
 - (id)menuSelected:(id)sender
 {
@@ -75,9 +110,9 @@
 @end
 
 
-bool EV_CocoaMenu::_validateMenuItem(NSMenuItem* menuItem)
+void
+EV_CocoaMenu::_refreshMenu(EV_NSMenu *menu)
 {
-	XAP_Menu_Id cmd = [menuItem tag];
 	XAP_App* app = XAP_App::getApp();
 	AV_View* pView;
 	XAP_Frame* frame = app->getLastFocussedFrame();
@@ -87,176 +122,119 @@ bool EV_CocoaMenu::_validateMenuItem(NSMenuItem* menuItem)
 	else {
 		pView = NULL;
 	}
-
 	const EV_Menu_ActionSet * pMenuActionSet = app->getMenuActionSet();
-	const EV_Menu_Action * pAction = pMenuActionSet->getAction(cmd);
-	const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(cmd);
-	EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(m_pMenuLayout->getLayoutIndex(cmd));
-
-	switch (pLayoutItem->getMenuLayoutFlags())
-	{
-	case EV_MLF_Normal:
-	{			
-		// see if we need to enable/disable and/or check/uncheck it.
-		bool bEnable = true;
-		bool bCheck = false;
+	
+	NSMenuItem *menuItem;
+	NSEnumerator * enumerator = [[menu itemArray] objectEnumerator];
+	while (menuItem = [enumerator nextObject]) {
+		[menu removeItem:menuItem];
+	}
+	
+	enumerator = [menu virtualItemsEnumerator];
+	
+	while (menuItem = [enumerator nextObject]) {
+		XAP_Menu_Id cmd = [menuItem tag];
 		
-		if (pAction->hasGetStateFunction())
-		{
-			if (pView) {
-				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-				if (mis & EV_MIS_Gray)
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(cmd);
+		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(cmd);
+		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(m_pMenuLayout->getLayoutIndex(cmd));
+		
+		switch (pLayoutItem->getMenuLayoutFlags()) {
+		case EV_MLF_Normal:
+		{			
+			// see if we need to enable/disable and/or check/uncheck it.
+			bool bEnable = true;
+			bool bCheck = false;
+			
+			if (pAction->hasGetStateFunction())
+			{
+				if (pView) {
+					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+					if (mis & EV_MIS_Gray)
+						bEnable = false;
+					if (mis & EV_MIS_Toggled)
+						bCheck = true;
+				}
+				else {
 					bEnable = false;
-				if (mis & EV_MIS_Toggled)
-					bCheck = true;
+					bCheck = false;				
+				}
+			}
+
+			// Get the dynamic label
+			const char ** data = getLabelName(app, pAction, pLabel);
+			const char * szLabelName = data[0];
+			const char * szMnemonicName = data[1];		
+			bool bHasDynamicLabel = pAction->hasDynamicLabel();
+			
+			/* 
+			 we need to set the memnomic if current is empty even if it is not dynamic. Because we
+			 may be running the first update after building the menu bar in the application without
+			 having a frame. No frame = no shortcut actuallly because event mapper is tied to the frame.
+			*/
+			if (szMnemonicName && *szMnemonicName 
+						&& (bHasDynamicLabel || [[menuItem keyEquivalent] isEqualToString:@""])) {
+				NSString* shortCut;
+				unsigned int modifier = 0;
+				UT_DEBUGMSG(("changing menu shortcut\n"));
+				shortCut = _getItemCmd (szMnemonicName, modifier);
+				[menuItem setKeyEquivalent:shortCut];
+			}
+
+			// No dynamic label, check/enable
+			if (!bHasDynamicLabel)
+			{
+				[menu addItem:menuItem];
 			}
 			else {
-				bEnable = false;
-				bCheck = false;				
+				szLabelName = pAction->getDynamicLabel(pLabel);
+				if (szLabelName && *szLabelName) {
+					char buf[1024];
+					_convertLabelToMac(buf, sizeof (buf), szLabelName);
+					[menuItem setTitle:[NSString stringWithUTF8String:buf]];
+					[menu addItem:menuItem];
+				}
 			}
-		}
-
-		// Get the dynamic label
-		const char ** data = getLabelName(app, pAction, pLabel);
-		const char * szLabelName = data[0];
-		const char * szMnemonicName = data[1];		
-		bool bHasDynamicLabel = pAction->hasDynamicLabel();
-		
-		/* 
-		 we need to set the memnomic if current is empty even if it is not dynamic. Because we
-		 may be running the first update after building the menu bar in the application without
-		 having a frame. No frame = no shortcut actuallly because event mapper is tied to the frame.
-		*/
-		if (szMnemonicName && *szMnemonicName 
-					&& (bHasDynamicLabel || [[menuItem keyEquivalent] isEqualToString:@""])) {
-			NSString* shortCut;
-			unsigned int modifier = 0;
-			UT_DEBUGMSG(("changing menu shortcut\n"));
-			shortCut = _getItemCmd (szMnemonicName, modifier);
-			[menuItem setKeyEquivalent:shortCut];
-		}
-
-		// No dynamic label, check/enable
-		if (!bHasDynamicLabel)
-		{
+			
 			[menuItem setState:(bCheck?NSOnState:NSOffState)];
-			return (bEnable?YES:NO);
+			[menuItem setEnabled:(bEnable?YES:NO)];
+			break;
 		}
+		case EV_MLF_Separator:
+			[menu addItem:menuItem];
+			break;
 
-#if 0
-		// FIXME does not work
-		// Dynamic label, check for remove
-		bool bRemoveIt = (!szLabelName || !*szLabelName);
-		if (bRemoveIt)
+		case EV_MLF_BeginSubMenu:
 		{
-			NSMenu* menu = [menuItem menu];
-			if (menu != nil) {
-				[[menuItem retain] autorelease];
-				[menu removeItem:menuItem];
-			}
-			UT_DEBUGMSG (("destroyed NSMenuItem\n"));
-			return NO;	
-		}
-#endif
-
-		// Dynamic label, check for add/change
-		// We always change the labels every time, it's actually cheaper
-		// than doing the test for conditional changes.
-
-		// create a new updated label
-		if (szLabelName && *szLabelName) {
-			NSString* str;
-			char buf[1024];
-			UT_DEBUGMSG(("changing menu label\n"));
-			_convertLabelToMac(buf, sizeof (buf), szLabelName);
-			str = [[NSString alloc] initWithUTF8String:buf];
-			[menuItem setTitle:str];
-			[str release];
-		}
-		
-		[menuItem setState:(bCheck?NSOnState:NSOffState)];
-		return (bEnable?YES:NO);
-		break;
-	}
-	case EV_MLF_Separator:
-		break;
-
-	case EV_MLF_BeginSubMenu:
-	{
-		bool bEnable = true;
-		if (pAction->hasGetStateFunction())
-		{
-			if (pView) {
-				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-				if (mis & EV_MIS_Gray) {
+			bool bEnable = true;
+			if (pAction->hasGetStateFunction())
+			{
+				if (pView) {
+					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+					if (mis & EV_MIS_Gray) {
+						bEnable = false;
+					}
+				}
+				else {
 					bEnable = false;
 				}
 			}
-			else {
-				bEnable = false;
-			}
+			[menu addItem:menuItem];
+			[menuItem setEnabled:(bEnable?YES:NO)];
+			break;
 		}
-		return (bEnable?YES:NO);
-		break;
+		case EV_MLF_EndSubMenu:
+		case EV_MLF_BeginPopupMenu:
+		case EV_MLF_EndPopupMenu:
+			break;
+			
+		default:
+			UT_ASSERT_NOT_REACHED();
+			break;
+		}
 	}
-	case EV_MLF_EndSubMenu:
-	case EV_MLF_BeginPopupMenu:
-	case EV_MLF_EndPopupMenu:
-		break;
-		
-	default:
-		UT_ASSERT_NOT_REACHED();
-		break;
-	}
-
-	return true;
 }
 
-/*****************************************************************/
-
-#if 0
-class _wd								// a private little class to help
-{										// us remember all the widgets that
-public:									// we create...
-
-	static void s_onMenuItemSelect(GtkWidget * widget, gpointer data)
-	{
-		UT_ASSERT(widget && data);
-
-		_wd * wd = (_wd *) data;
-		UT_ASSERT(wd && wd->m_pCocoaMenu);
-
-		AP_CocoaFrame * pFrame = wd->m_pCocoaMenu->getFrame();
-		UT_ASSERT(pFrame);
-		EV_Menu_Label * pLabel = wd->m_pCocoaMenu->getLabelSet()->getLabel(wd->m_id);
-		if (!pLabel)
-		{
-			pFrame->setStatusMessage(NULL);
-			return;
-		}
-
-		const char * szMsg = pLabel->getMenuStatusMessage();
-		if (!szMsg || !*szMsg)
-			szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
-	
-		pFrame->setStatusMessage(szMsg);
-	};
-	
-	static void s_onMenuItemDeselect(GtkWidget * widget, gpointer data)
-	{
-		UT_ASSERT(widget && data);
-
-		_wd * wd = (_wd *) data;
-		UT_ASSERT(wd && wd->m_pCocoaMenu);
-
-		AP_CocoaFrame * pFrame = wd->m_pCocoaMenu->getFrame();
-		UT_ASSERT(pFrame);
-
-		pFrame->setStatusMessage(NULL);
-	};
-
-};
-#endif
 
 /*****************************************************************/
 
@@ -351,58 +329,58 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			szLabelName = data[0];
 			szMnemonicName = data[1];
 			
-			if (data[0] && *(data[0])) {
-				NSString * shortCut = nil;
-				
-				if (data[1] && *(data[1])) {
-					shortCut = _getItemCmd (data[1], modifier);
-				}
-				else {
-					shortCut = [NSString string];
-				}
-				char buf[1024];
-				// convert label into underscored version
-	
-				// create the item with the underscored label
-				NSMenu * wParent;
-				bResult = stack.viewTop((void **)&wParent);
-				UT_ASSERT(bResult);
-	
-				NSMenuItem * menuItem = nil;
-				NSString * str = nil;
-				if (szLabelName) {
-					_convertLabelToMac(buf, sizeof (buf), szLabelName);
-					str = [[NSString alloc] initWithUTF8String:buf];
-				}
-				else {
-					str = [[NSString alloc] init];
-				}
-				switch (menuid) {
-				
-				case AP_MENU_ID_HELP_ABOUT:
-					menuItem = [XAP_AppController_Instance _aboutMenu];
-					[menuItem setTitle:str];
-					[menuItem setKeyEquivalent:shortCut];
-					break;
-				case AP_MENU_ID_TOOLS_OPTIONS:
-					menuItem = [XAP_AppController_Instance _preferenceMenu];
-					[menuItem setTitle:str];
-					[menuItem setKeyEquivalent:shortCut];
-					break;
-				case AP_MENU_ID_FILE_EXIT:
-					menuItem = [XAP_AppController_Instance _quitMenu];
-					[menuItem setTitle:str];
-					[menuItem setKeyEquivalent:shortCut];					
-					break;
-				default:
-					menuItem = [wParent addItemWithTitle:str action:nil
-									keyEquivalent:shortCut];
-				}
-				[menuItem setTarget:m_menuTarget];
-				[menuItem setAction:@selector(menuSelected:)];
-				[menuItem setTag:pLayoutItem->getMenuId()];
-				[str release];
+			NSString * shortCut = nil;
+			
+			if (data[1] && *(data[1])) {
+				shortCut = _getItemCmd (data[1], modifier);
 			}
+			else {
+				shortCut = [NSString string];
+			}
+			char buf[1024];
+			// convert label into underscored version
+
+			// create the item with the underscored label
+			EV_NSMenu * wParent;
+			bResult = stack.viewTop((void **)&wParent);
+			UT_ASSERT(bResult);
+
+			NSMenuItem * menuItem = nil;
+			NSString * str = nil;
+			if (szLabelName) {
+				_convertLabelToMac(buf, sizeof (buf), szLabelName);
+				str = [[NSString alloc] initWithUTF8String:buf];
+			}
+			else {
+				str = [[NSString alloc] init];
+			}
+			switch (menuid) {
+			
+			case AP_MENU_ID_HELP_ABOUT:
+				menuItem = [XAP_AppController_Instance _aboutMenu];
+				[menuItem setTitle:str];
+				[menuItem setKeyEquivalent:shortCut];
+				break;
+			case AP_MENU_ID_TOOLS_OPTIONS:
+				menuItem = [XAP_AppController_Instance _preferenceMenu];
+				[menuItem setTitle:str];
+				[menuItem setKeyEquivalent:shortCut];
+				break;
+			case AP_MENU_ID_FILE_EXIT:
+				menuItem = [XAP_AppController_Instance _quitMenu];
+				[menuItem setTitle:str];
+				[menuItem setKeyEquivalent:shortCut];					
+				break;
+			default:
+				menuItem = [[NSMenuItem alloc] initWithTitle:str action:nil
+								keyEquivalent:shortCut];
+				[wParent addVirtualItem:menuItem];
+				[menuItem release];
+			}
+			[menuItem setTarget:m_menuTarget];
+			[menuItem setAction:@selector(menuSelected:)];
+			[menuItem setTag:pLayoutItem->getMenuId()];
+			[str release];
 			break;
 		}
 		case EV_MLF_BeginSubMenu:
@@ -413,7 +391,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			char buf[1024];
 			// convert label into underscored version
 			// create the item with the underscored label
-			NSMenu * wParent;
+			EV_NSMenu * wParent;
 			bResult = stack.viewTop((void **)&wParent);
 			UT_ASSERT(bResult);
 
@@ -426,13 +404,19 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			else {
 				str = [NSString string]; // autoreleased
 			}
-			menuItem = [wParent addItemWithTitle:str action:nil keyEquivalent:@""];
-			
+			if ([wParent isKindOfClass:[EV_NSMenu class]]) {
+				menuItem = [[NSMenuItem alloc] initWithTitle:str action:nil keyEquivalent:@""];
+				[wParent addVirtualItem:menuItem];
+				[menuItem release];
+			}
+			else {
+				menuItem = [wParent addItemWithTitle:str action:nil keyEquivalent:@""];
+			}
 			
 			// item is created, add to class vector
 			[menuItem setTag:(int)pLayoutItem->getMenuId()];
 
-			NSMenu * subMenu = [[NSMenu alloc] initWithTitle:str];
+			EV_NSMenu * subMenu = [[EV_NSMenu alloc] initWithXAP:this andTitle:str];
 			[menuItem setSubmenu:subMenu];
 			[subMenu setAutoenablesItems:YES];
 			[subMenu release];
@@ -442,7 +426,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 		case EV_MLF_EndSubMenu:
 		{
 			// pop and inspect
-			NSMenu * menu;
+			EV_NSMenu * menu;
 			bResult = stack.pop((void **)&menu);
 			UT_ASSERT(bResult);
 
@@ -453,10 +437,10 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 			NSMenuItem * menuItem = nil;
 			menuItem = [NSMenuItem separatorItem];
 
-			NSMenu * wParent;
+			EV_NSMenu * wParent;
 			bResult = stack.viewTop((void **)&wParent);
 			UT_ASSERT(bResult);
-			[wParent addItem:menuItem];
+			[wParent addVirtualItem:menuItem];
 
 			[menuItem setTag:(int)pLayoutItem->getMenuId()];
 			break;
@@ -473,7 +457,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 	}
 
 	// make sure our last item on the stack is the one we started with
-	NSMenu * wDbg = NULL;
+	EV_NSMenu * wDbg = NULL;
 	bResult = stack.pop((void **)&wDbg);
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == wMenuRoot);
