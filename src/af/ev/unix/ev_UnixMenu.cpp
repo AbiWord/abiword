@@ -672,7 +672,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		{
 		case EV_MLF_Normal:
 		{
-			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pFrame, pAction, pLabel);
+			const char ** data = getLabelName(m_pUnixApp, pAction, pLabel);
 			szLabelName = data[0];
 			szMnemonicName = data[1];
 			GtkWidget * w;

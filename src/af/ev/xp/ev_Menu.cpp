@@ -241,7 +241,7 @@ const char ** EV_Menu::getLabelName(XAP_App * pApp,
 		xxx_UT_DEBUGMSG(("found accelerator %s\n", accelbuf));
 		data[1] = accelbuf;
 	}
-	
+
 	if (!pAction->raisesDialog())
 	{
 		data[0] = szLabelName;

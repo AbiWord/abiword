@@ -524,8 +524,8 @@ NSString* EV_CocoaMenu::_getItemCmd (const char * mnemonic, unsigned int & modif
 	}
 
 	NSString *shortcut = nil;
-	if ((p[1] == 0) && !needsShift) {
-		shortcut = [[NSString stringWithUTF8String:p] lowercaseString];
+	if ((p[1] == 0) && needsShift) {
+		shortcut = [[NSString stringWithUTF8String:p] uppercaseString];
 	}
 	else {
 		shortcut = [NSString stringWithUTF8String:p];

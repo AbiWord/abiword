@@ -350,12 +350,15 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 
 	EV_EditModifierState ems = 0;
 	EV_EditBinding * pEB;
-	UT_uint32 i, j;
+	UT_sint32 i, j;
+	char shortcut = 0;
 
 	// search characters first
 	bool bChar = false;
 
-	for (i=0; (i < 256) && !bChar; i++)
+	/* we lookup the table in decreasing order to be able to catch lowercase
+	 BEFORE uppercase. Uppercase = Shift modifier. That is the rule */
+	for (i=255; (i >= 0) && !bChar; i--)
 		for (j=0; j < EV_COUNT_EMS_NoShift; j++)
 			if (m_pebChar->m_peb[i][j])
 			{
@@ -367,6 +370,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 				{
 					// bingo
 					bChar = true;
+					shortcut = i;
 
 					ems = EV_EMS_FromNumberNoShift(j);
 					break;
@@ -390,6 +394,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 					{
 						// bingo
 						bNVK = true;
+						shortcut = i;
 
 						ems = EV_EMS_FromNumber(j);
 						break;
@@ -416,16 +421,15 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 
 	if (bChar)
 	{
-		char c = static_cast<char>(i-1);
-		if ((c >= 'a') && (c <= 'z')) {
+		if ((shortcut >= 'A') && (shortcut <= 'Z')) {
 			/* always return an uppercase letter for the shortcut, unlike the mapper do */
-			c -= 32;
+			shortcut += 32;
 			if (!(ems&EV_EMS_SHIFT)) {
 				strcat(buf, "Shift+");
 			}
 		}
 		int len = strlen(buf);
-		buf[len] = c;
+		buf[len] = shortcut;
 	}
 	else
 	{
@@ -433,7 +437,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 		const char * szNVK = NULL;
 
 		// TODO: look these up from table, rather than switch
-		switch(EV_NamedKey(i-1))
+		switch(EV_NamedKey(shortcut))
 		{
 		case EV_NVK_DELETE:
 			szNVK = "Del";
