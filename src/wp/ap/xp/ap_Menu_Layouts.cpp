@@ -42,7 +42,7 @@ struct _lt
 	AP_Menu_Id					m_id;
 };
 
-#define BeginLayout(Name)		static struct _lt s_ltTable_##Name[] = {
+#define BeginLayout(Name,Cxt)	static struct _lt s_ltTable_##Name[] = {
 #define MenuItem(id)			{ EV_MLF_Normal,		(id)				 },
 #define BeginSubMenu(id)		{ EV_MLF_BeginSubMenu,	(id)				 },
 #define BeginPopupMenu()		{ EV_MLF_BeginPopupMenu,AP_MENU_ID__BOGUS1__ },
@@ -75,9 +75,10 @@ struct _tt
 	const char *				m_name;
 	UT_uint32					m_nrEntries;
 	struct _lt *				m_lt;
+	EV_EditMouseContext			m_emc;
 };
 
-#define BeginLayout(Name)		{ #Name, NrElements(s_ltTable_##Name), s_ltTable_##Name },
+#define BeginLayout(Name,Cxt)	{ #Name, NrElements(s_ltTable_##Name), s_ltTable_##Name, Cxt },
 #define MenuItem(id)			/*nothing*/
 #define BeginSubMenu(id)		/*nothing*/
 #define BeginPopupMenu()		/*nothing*/
@@ -136,3 +137,12 @@ EV_Menu_Layout * AP_CreateMenuLayout(const char * szName)
 	return NULL;
 }
 
+const char * AP_FindContextMenu(EV_EditMouseContext emc)
+{
+	for (UT_uint32 k=0; k<NrElements(s_ttTable); k++)
+		if (emc==s_ttTable[k].m_emc)
+			return s_ttTable[k].m_name;
+
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return NULL;
+}

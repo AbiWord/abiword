@@ -65,6 +65,7 @@ public:
 	virtual void				setYScrollRange(void)=0;
 	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
+	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void)=0;

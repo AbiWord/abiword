@@ -25,7 +25,7 @@
 ******************************************************************
 *****************************************************************/
 
-BeginLayout(ContextText)
+BeginLayout(ContextText,EV_EMC_TEXT)
 
 	BeginPopupMenu()
 		MenuItem(AP_MENU_ID_EDIT_CUT)

@@ -631,7 +631,7 @@ const static EV_EditBits s_Table_NVK[] =
 	0,0,0,0,0,0,0,0,0,0,0,				/*      -- VK_Z are the same as ASCII 'A' thru 'Z' (0x41 - 0x5A) */
 	EV_NVK__IGNORE__,	/* VK_LWIN           0x5B (the left flag button on Win95 keyboards) */
 	EV_NVK__IGNORE__,	/* VK_RWIN           0x5C (the right flag button on Win95 keyboards) */
-	EV_NVK__IGNORE__,	/* VK_APPS           0x5D (the button with a drop-down-menu on newer Win95 keyboards) */
+	EV_NVK_MENU_SHORTCUT,	/* VK_APPS		 0x5D (button with a drop-down-menu on newer Win95 keyboards) */
 	0,					/*                   0x5E */
 	0,					/*                   0x5F */
 	0,					/* VK_NUMPAD0        0x60 */

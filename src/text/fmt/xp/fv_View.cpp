@@ -4363,3 +4363,24 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	UT_ASSERT(0);
 	return EV_EMC_UNKNOWN;
 }
+
+EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos)
+{
+	// compute an EV_EMC_ context for the position
+	// of the current insertion point and return
+	// the window coordinates of the insertion point.
+	// this is to allow a keyboard binding to raise
+	// a context menu.
+
+	EV_EditMouseContext emc = EV_EMC_TEXT;
+
+	// TODO compute the correct context based upon the
+	// TODO current insertion point and/or the current
+	// TODO selection region.
+	
+	if (pxPos)
+		*pxPos = m_xPoint;
+	if (pyPos)
+		*pyPos = m_yPoint + m_iPointHeight;
+	return emc;
+}

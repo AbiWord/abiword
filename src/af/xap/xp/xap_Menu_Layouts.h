@@ -22,7 +22,9 @@
 #define AP_MENU_LAYOUTS_H
 
 #include "ev_Menu_Layouts.h"
+#include "ev_EditBits.h"
 
 EV_Menu_Layout * AP_CreateMenuLayout(const char * szName);
+const char * AP_FindContextMenu(EV_EditMouseContext emc);
 
 #endif /* AP_MENU_LAYOUTS_H */

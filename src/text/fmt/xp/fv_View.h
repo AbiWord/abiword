@@ -106,6 +106,7 @@ public:
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
+	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 	
 // ----------------------
 	FL_DocLayout* getLayout() const;

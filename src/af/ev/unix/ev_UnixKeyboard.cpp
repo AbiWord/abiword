@@ -297,7 +297,7 @@ static EV_EditBits s_Table_NVK_0xff[] =
 	EV_NVK__IGNORE__,    // GDK_Super_L 0xFFEB
 	EV_NVK__IGNORE__,    // GDK_Super_R 0xFFEC
 	EV_NVK__IGNORE__,    // GDK_Hyper_L 0xFFED
-	EV_NVK__IGNORE__,    // GDK_Hyper_R 0xFFEE
+	EV_NVK_MENU_SHORTCUT,    // GDK_Hyper_R 0xFFEE
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	EV_NVK_DELETE,       // GDK_Delete 0xFFFF
 };

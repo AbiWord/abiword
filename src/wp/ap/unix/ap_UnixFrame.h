@@ -39,6 +39,7 @@ public:
 
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
+	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
 
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void);

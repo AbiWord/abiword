@@ -428,6 +428,14 @@ UT_Bool XAP_UnixFrame::updateTitle()
 
 /*****************************************************************/
 
+static void s_gtkMenuPositionFunc(GtkMenu * menu, gint * x, gint * y, gpointer user_data)
+{
+	struct UT_Point * p = (struct UT_Point *)user_data;
+	
+	*x = p->x;
+	*y = p->y;
+}
+
 UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * pView, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
@@ -438,8 +446,14 @@ UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * pView, const char * szMenuN
 	m_pUnixPopup = new EV_UnixMenuPopup(m_pUnixApp,this,szMenuName,m_szMenuLabelSetName);
 	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
 	{
+		translateDocumentToScreen(x,y);
+
 		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
-		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL, NULL, NULL, 3, 0);
+		UT_Point pt;
+		pt.x = x;
+		pt.y = y;
+		gtk_menu_popup(GTK_MENU(m_pUnixPopup->getMenuHandle()), NULL, NULL,
+					   s_gtkMenuPositionFunc, &pt, 3, 0);
 	}
 
 	DELETEP(m_pUnixPopup);

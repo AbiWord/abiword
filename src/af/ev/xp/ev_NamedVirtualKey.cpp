@@ -81,8 +81,22 @@ static const char * s_Table[] =
 	"f32",
 	"f33",
 	"f34",
-	"f35"
-	// TODO add "names" for each of the _DEAD_ keys
+	"f35",
+	"DeadGrave",
+	"DeadAcute",
+	"DeadCircumflex",
+	"DeadTilde",
+	"DeadMacron",
+	"DeadBreve",
+	"DeadAboveDot",
+	"DeadDiaeresis",
+	"DeadDoubleAcute",
+	"DeadCaron",
+	"DeadCedilla",
+	"DeadOgonek",
+	"DeadIota",
+	"MeunShortCut"
+	// TODO as other items are added to ev_NamedVirtualKey, add items here.
 };
 
 #define NrElements(a)	((sizeof(a))/(sizeof(a[0])))
@@ -90,6 +104,8 @@ static const char * s_Table[] =
 const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
 {
 	UT_ASSERT((UT_stricmp(s_Table[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
+	UT_ASSERT((NrElements(s_Table) == EV_COUNT_NVK));
+
 	EV_EditVirtualKey evk = eb & ~EV_EKP_NAMEDKEY;
 	if (evk < NrElements(s_Table))
 		return s_Table[evk];
@@ -99,6 +115,8 @@ const char * EV_NamedVirtualKey::getName(EV_EditBits eb)
 EV_EditBits EV_NamedVirtualKey::getEB(const char * szName)
 {
 	UT_ASSERT((UT_stricmp(s_Table[EV_NVK_F35&~EV_EKP_NAMEDKEY],"f35")==0));
+	UT_ASSERT((NrElements(s_Table) == EV_COUNT_NVK));
+
 	for (UT_uint32 k=1; k<NrElements(s_Table); k++)
 		if (UT_stricmp(s_Table[k],szName)==0)
 			return EV_NamedKey(k);

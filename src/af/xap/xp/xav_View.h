@@ -96,6 +96,7 @@ public:
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo) = 0;
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
+	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos) = 0;
 	
 protected: 
 	void*				m_pParentData;

@@ -25,7 +25,7 @@
 ******************************************************************
 *****************************************************************/
 
-BeginLayout(Main)
+BeginLayout(Main,0)
 
 	BeginSubMenu(AP_MENU_ID_FILE)
 		MenuItem(AP_MENU_ID_FILE_NEW)

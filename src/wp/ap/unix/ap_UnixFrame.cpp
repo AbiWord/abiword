@@ -37,7 +37,6 @@
 #include "xap_UnixApp.h"
 #include "ap_UnixTopRuler.h"
 #include "ap_UnixLeftRuler.h"
-
 #include "xap_UnixFontManager.h"
 
 /*****************************************************************/
@@ -543,4 +542,19 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	gtk_widget_show(m_table);
 
 	return wSunkenBox;
+}
+
+void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
+{
+	// translate the given document mouse coordinates into absolute screen coordinates.
+
+	gint wx, wy;
+	GdkWindowPrivate * priv;
+
+	for (priv=(GdkWindowPrivate *)m_dArea->window; (priv); priv=(GdkWindowPrivate *)priv->parent)
+	{
+		gdk_window_get_position((GdkWindow *)priv, &wx, &wy);
+		x += wx;
+		y += wy;
+	}
 }

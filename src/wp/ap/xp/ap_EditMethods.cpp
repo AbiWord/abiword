@@ -32,6 +32,7 @@
 #include "xap_App.h"
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
+#include "xap_Menu_Layouts.h"
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
@@ -103,6 +104,7 @@ public:
 	static EV_EditMethod_Fn cursorImage;
 	static EV_EditMethod_Fn cursorImageSize;
 
+	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextText;
 
 	static EV_EditMethod_Fn dragToXY;
@@ -287,6 +289,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cursorImage),			0,	""),
 	EV_EditMethod(NF(cursorImageSize),		0,	""),
 
+	EV_EditMethod(NF(contextMenu),			0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
 
 	EV_EditMethod(NF(dragToXY),				0,	""),
@@ -1400,13 +1403,39 @@ Defun1(cursorImageSize)
 
 /*****************************************************************/
 
+Defun(contextMenu)
+{
+	// raise context menu over whatever we are over.  this is
+	// intended for use by the keyboard accelerator rather than
+	// the other "targeted" context{...} methods which are bound
+	// to the mouse.
+	
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = (XAP_Frame *)pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	UT_sint32 xPos, yPos;
+	EV_EditMouseContext emc = pView->getInsertionPointContext(&xPos,&yPos);
+
+	const char * szContextMenuName = AP_FindContextMenu(emc);
+	if (!szContextMenuName)
+		return UT_FALSE;
+	
+	return pFrame->runModalContextMenu(pView,szContextMenuName,xPos,yPos);
+}
+
 Defun(contextText)
 {
 	ABIWORD_VIEW;
 	XAP_Frame * pFrame = (XAP_Frame *)pView->getParentData();
 	UT_ASSERT(pFrame);
 
-	return pFrame->runModalContextMenu(pView,"ContextText",pCallData->m_xPos,pCallData->m_yPos);
+	const char * szContextMenuName = AP_FindContextMenu(EV_EMC_TEXT);
+	if (!szContextMenuName)
+		return UT_FALSE;
+	
+	return pFrame->runModalContextMenu(pView,szContextMenuName,
+									   pCallData->m_xPos,pCallData->m_yPos);
 }
 
 /*****************************************************************/

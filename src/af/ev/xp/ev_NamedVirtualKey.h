@@ -100,9 +100,13 @@ public:
 #define EV_NVK_DEAD_CEDILLA		EV_NamedKey(0x003e)	// prefix key for certain european keys
 #define EV_NVK_DEAD_OGONEK		EV_NamedKey(0x003f)	// prefix key for certain european keys
 #define EV_NVK_DEAD_IOTA		EV_NamedKey(0x0040)	// prefix key for certain european keys
+#define EV_NVK_MENU_SHORTCUT	EV_NamedKey(0x0041) // new key on MSFT keyboards
 
-#define EV_NVK__FIRST__		EV_NVK_BACKSPACE	// must be set to first in the list
-#define EV_NVK__LAST__		EV_NVK_DEAD_IOTA	// must be set to last in the list 
+// NOTE: add new items are added here, update __LAST__ below
+// NOTE: and update the string table in ev_NamedVirtualKey.cpp
+
+#define EV_NVK__FIRST__		EV_NVK_BACKSPACE		// must be set to first in the list
+#define EV_NVK__LAST__		EV_NVK_MENU_SHORTCUT	// must be set to last in the list 
 
 #define EV_COUNT_NVK		(EV_NVK_ToNumber(EV_NVK__LAST__)+1)	// +1 to include zero which we skipped
 
