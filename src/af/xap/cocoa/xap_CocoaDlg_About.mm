@@ -120,6 +120,12 @@ void XAP_CocoaDialog_About::event_URL(void)
 					[NSString stringWithFormat:@XAP_ABOUT_GPL_LONG_LF, app->getApplicationName()]]];
 	[m_licenseText setEditable:NO];
 
+	NSClipView * clipView = (NSClipView *) [m_licenseText superview];
+	[clipView scrollToPoint:NSZeroPoint];
+
+	NSScrollView * scrollView = (NSScrollView *) [clipView superview]; // Not sure why this is necessary...
+	[scrollView reflectScrolledClipView:clipView];
+
 	NSImage*	image = [NSImage imageNamed:XAP_COCOA_ABOUT_SIDEBAR_RESOURCE_NAME];
 	[m_imageView setImage:image];
 }

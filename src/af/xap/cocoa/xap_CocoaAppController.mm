@@ -283,6 +283,14 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
 {
+	if (frame)
+		{
+			XAP_App * pApp = XAP_App::getApp();
+
+			pApp->clearLastFocussedFrame();
+			pApp->rememberFocussedFrame(static_cast<void *>(frame));
+		}
+
 	m_pViewPrevious  = m_pViewCurrent;
 	m_pFramePrevious = m_pFrameCurrent;
 
@@ -297,6 +305,12 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 
 - (void)unsetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
 {
+	XAP_App * pApp = XAP_App::getApp();
+
+	if (pApp->getLastFocussedFrame() == frame)
+		{
+			pApp->clearLastFocussedFrame();
+		}
 	if ((m_pViewCurrent == view) && (m_pFrameCurrent == frame))
 		{
 			m_pViewCurrent = 0;

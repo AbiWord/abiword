@@ -70,6 +70,8 @@ private:
     IBOutlet NSPopUpButton *whatPopup;
 	AP_CocoaDialog_Goto* _xap;
 }
+- (void)windowToFront;
+
 - (NSString*)stringValue;
 - (IBAction)backAction:(id)sender;
 - (IBAction)closeAction:(id)sender;

@@ -77,6 +77,8 @@ private:
     IBOutlet NSButton *_wholeWordBtn;
 	AP_CocoaDialog_Replace*	_xap;
 }
+- (void)windowToFront;
+
 - (IBAction)findAction:(id)sender;
 - (IBAction)findAndReplaceAction:(id)sender;
 - (IBAction)findReverseAction:(id)sender;
@@ -101,36 +103,4 @@ private:
 - (void)_updateCombo:(NSComboBox*)combo withList:(UT_GenericVector<UT_UCS4Char*>*)list;
 @end
 
-
 #endif /* AP_COCOADIALOG_REPLACE_H */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

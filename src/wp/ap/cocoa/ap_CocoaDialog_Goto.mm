@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -137,19 +139,18 @@ int AP_CocoaDialog_Goto::getSelectedRow (void)
 
 void AP_CocoaDialog_Goto::runModeless (XAP_Frame * pFrame)
 {
-
 	m_dlg = [[AP_CocoaDialog_GotoController alloc] initFromNib];
+
 	[m_dlg setXAPOwner:this];
 
-	NSWindow* window = [m_dlg window];
+	ConstructWindowName();
+	[[m_dlg window] setTitle:[NSString stringWithUTF8String:getWindowName()]];
+
+	[m_dlg windowToFront];
 
 	// Save dialog the ID number and pointer to the widget
 	UT_sint32 sid = (UT_sint32) getDialogId ();
 	m_pApp->rememberModelessId(sid, (XAP_Dialog_Modeless *) m_pDialog);
-
-	// This magic command displays the frame that characters will be
-	// inserted into.
-	[window orderFront:m_dlg];	
 }
 
 void AP_CocoaDialog_Goto::destroy (void)
@@ -163,14 +164,12 @@ void AP_CocoaDialog_Goto::destroy (void)
 void AP_CocoaDialog_Goto::activate (void)
 {
 	ConstructWindowName();
-	NSWindow * window = [m_dlg window];
-	[window setTitle:[NSString stringWithUTF8String:getWindowName()]];
-	[window orderFront:m_dlg];
+	[[m_dlg window] setTitle:[NSString stringWithUTF8String:getWindowName()]];
 
+	[m_dlg windowToFront];
 }
 
-
-void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * pFrame)
 {
 	ConstructWindowName();
 	[[m_dlg window] setTitle:[NSString stringWithUTF8String:getWindowName()]];
@@ -203,24 +202,31 @@ void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame *pFrame)
 -(void)windowDidLoad
 {
 	if (_xap) {
-		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
-		_xap->ConstructWindowName();
-		[[self window] setTitle:[NSString stringWithUTF8String:_xap->getWindowName()]];
-		LocalizeControl(jumpToBtn, pSS, AP_STRING_ID_DLG_Goto_Btn_Goto);
-		LocalizeControl(forwardBtn, pSS, AP_STRING_ID_DLG_Goto_Btn_Next);
-		LocalizeControl(backBtn, pSS, AP_STRING_ID_DLG_Goto_Btn_Prev);
-		LocalizeControl(whatLabel, pSS, AP_STRING_ID_DLG_Goto_Label_What);
-		LocalizeControl(valueLabel, pSS, AP_STRING_ID_DLG_Goto_Label_Number);
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+		LocalizeControl(jumpToBtn,	pSS, AP_STRING_ID_DLG_Goto_Btn_Goto);
+		LocalizeControl(forwardBtn,	pSS, AP_STRING_ID_DLG_Goto_Btn_Next);
+		LocalizeControl(backBtn,	pSS, AP_STRING_ID_DLG_Goto_Btn_Prev);
+		LocalizeControl(whatLabel,	pSS, AP_STRING_ID_DLG_Goto_Label_What);
+		LocalizeControl(valueLabel,	pSS, AP_STRING_ID_DLG_Goto_Label_Number);
+
 		[whatPopup removeAllItems];
-		char **tmp2 = _xap->getJumpTargets ();
-		for (int i = 0; tmp2[i] != NULL; i++) {
-			[whatPopup addItemWithTitle:[NSString stringWithUTF8String:tmp2[i]]];
-		}
-		for(UT_uint32 i = 0; i < _xap->getExistingBookmarksCount(); i++) {
-			[valueCombo addItemWithObjectValue:[NSString stringWithUTF8String:_xap->getNthExistingBookmark(i)]];
+
+		if (char ** tmp2 = _xap->getJumpTargets()) {
+			for (int i = 0; tmp2[i] != NULL; i++) {
+				[whatPopup addItemWithTitle:[NSString stringWithUTF8String:tmp2[i]]];
+			}
+			for(UT_uint32 i = 0; i < _xap->getExistingBookmarksCount(); i++) {
+				[valueCombo addItemWithObjectValue:[NSString stringWithUTF8String:_xap->getNthExistingBookmark(i)]];
+			}
 		}
 	}
-	
+}
+
+- (void)windowToFront
+{
+	[[self window] makeKeyAndOrderFront:self];
+	[[self window] makeFirstResponder:valueCombo];
 }
 
 - (NSString*)stringValue

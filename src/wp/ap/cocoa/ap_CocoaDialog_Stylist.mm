@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  * Copyright (C) 2004 Martin Sevior
@@ -346,15 +348,25 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 - (void)windowDidLoad
 {
 	if (_xap) {
-		NSArray *columns;
-		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
-		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_Stylist_Title);
-		LocalizeControl(_applyBtn, pSS, XAP_STRING_ID_DLG_Apply);
-		columns = [_stylistList tableColumns];
+		NSPanel * panel = (NSPanel *) [self window];
+
+		[panel setBecomesKeyOnlyIfNeeded:YES];
+
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+		LocalizeControl(panel,		pSS, AP_STRING_ID_DLG_Stylist_Title);
+		LocalizeControl(_applyBtn,	pSS, XAP_STRING_ID_DLG_Apply);
+
 		UT_UTF8String label;
-		pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles, label);
-		[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:label.utf8_str()]];
+		if (pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles, label))
+			{
+				NSArray * columns = [_stylistList tableColumns];
+
+				[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:(label.utf8_str())]];
+			}
+
 		[_stylistList setDoubleAction:@selector(outlineDoubleAction:)];
+
 		// data source an delegate for style list should be set by the Nib.
 	}
 }

@@ -571,8 +571,6 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 	XAP_Frame * pFrame = m_frame->getFrame ();
 	AV_View * pView = pFrame->getCurrentView();
 
-	XAP_App::getApp()->rememberFocussedFrame (static_cast<void *>(pFrame));
-
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 	[pController setCurrentView:pView inFrame:pFrame];
 
@@ -590,10 +588,6 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 - (void)windowDidResignKey:(NSNotification *)aNotification
 {
 	UT_DEBUGMSG(("windowDidResignKey: '%s'\n", [[[self window] title] UTF8String]));
-
-	XAP_Frame * frame = m_frame->getFrame ();
-	XAP_App * App = frame->getApp ();
-	App->clearLastFocussedFrame ();
 
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 	[pController setCurrentView:0 inFrame:0];
