@@ -88,7 +88,7 @@ void GotoWin::DispatchMessage(BMessage *msg, BHandler *handler)
 {
 	BListView* pSource = NULL;
 	int32 dwCounter , dwStart , dwTextLength;
-	UT_Bool bValueOK = TRUE;
+	bool bValueOK = TRUE;
 	char* pBuf = NULL;
 
 	switch(msg->what) 

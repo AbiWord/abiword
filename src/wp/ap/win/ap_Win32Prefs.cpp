@@ -58,14 +58,14 @@ AP_Win32Prefs::AP_Win32Prefs(XAP_App * pApp)
 {
 }
 
-UT_Bool AP_Win32Prefs::loadBuiltinPrefs(void)
+bool AP_Win32Prefs::loadBuiltinPrefs(void)
 
 {
 
 	char  szLocaleInfo[64];
 
 	// Call base function
-	UT_Bool ret = AP_Prefs::loadBuiltinPrefs();
+	bool ret = AP_Prefs::loadBuiltinPrefs();
 
 	// Add information from Win32 system and user setup
 	if( GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_IMEASURE, szLocaleInfo, sizeof( szLocaleInfo ) / sizeof( szLocaleInfo[0] ) ) )

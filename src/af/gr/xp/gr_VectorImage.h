@@ -37,11 +37,11 @@ public:
 	
    	virtual void		setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
-   	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+   	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
    	virtual GRType		getType() { return GRT_Vector; }
-   	virtual UT_Bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
    	void _startElement(const XML_Char* name, const XML_Char **atts);
    	void _endElement(const XML_Char* name);
@@ -49,7 +49,7 @@ public:
    
 protected:
 
-   	UT_Bool m_status;
+   	bool m_status;
    	UT_Stack *m_context;
 	UT_Vector m_elements;  
    

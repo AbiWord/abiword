@@ -56,7 +56,7 @@ const double ScaleFactors[fp_PageSize::_last_predefined_unit_dont_use_] =
 
 fp_PageSize::fp_PageSize(Predefined preDef)
 {
-        m_bisPortrait = UT_TRUE;
+        m_bisPortrait = true;
 	Set(preDef);
 	m_scale = 1.0;
 	m_unit = inch;
@@ -64,7 +64,7 @@ fp_PageSize::fp_PageSize(Predefined preDef)
 
 fp_PageSize::fp_PageSize(const char *name)
 {
-        m_bisPortrait = UT_TRUE;
+        m_bisPortrait = true;
 	m_scale = 1.0;
 	Set(name);
 	m_unit = inch;
@@ -73,7 +73,7 @@ fp_PageSize::fp_PageSize(const char *name)
 fp_PageSize::fp_PageSize(double w, double h, Unit u)
 {
 	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
-        m_bisPortrait = UT_TRUE;
+        m_bisPortrait = true;
 	m_scale = 1.0;
 	Set(w, h, u);
 	m_unit = u;
@@ -115,18 +115,18 @@ void fp_PageSize::Set(const char *name)
 
 void fp_PageSize::setPortrait(void)
 {
-        m_bisPortrait = UT_TRUE;
+        m_bisPortrait = true;
 }
 
 void fp_PageSize::setLandscape(void)
 {
-        m_bisPortrait = UT_FALSE;
+        m_bisPortrait = false;
 }
 
 double fp_PageSize::Width(Unit u) const
 {
 	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
-	if(m_bisPortrait == UT_TRUE)
+	if(m_bisPortrait == true)
 	       return m_scale * m_iWidth / ScaleFactors[u];
 	else
 	       return m_scale * m_iHeight / ScaleFactors[u];
@@ -135,7 +135,7 @@ double fp_PageSize::Width(Unit u) const
 double fp_PageSize::Height(Unit u) const
 {
 	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
-	if(m_bisPortrait == UT_TRUE)
+	if(m_bisPortrait == true)
 	       return m_scale * m_iHeight / ScaleFactors[u];
 	else
 	       return m_scale * m_iWidth / ScaleFactors[u];

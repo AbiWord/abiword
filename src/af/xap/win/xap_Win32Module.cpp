@@ -44,19 +44,19 @@ public:
 		unload();
 	}
 
-	UT_Bool load(const char* name)
+	bool load(const char* name)
 	{
 		if (m_hMod)
 		{
 			m_pszErr = szErrAlreadyLoaded;
-			return UT_FALSE;
+			return false;
 		}
 
 		m_hMod = LoadLibrary(name);
 		if (!m_hMod)
 		{
 			m_pszErr = szErrNoDllFound;
-			return UT_FALSE;
+			return false;
 		}
 		m_pszErr = 0;
 		m_pszModuleName = new char[lstrlen(name) + 1];
@@ -64,10 +64,10 @@ public:
 		{
 			lstrcpy(m_pszModuleName, name);
 		}
-		return UT_TRUE;
+		return true;
 	}
 
-	UT_Bool unload()
+	bool unload()
 	{
 		if (m_hMod)
 		{
@@ -77,22 +77,22 @@ public:
 				delete [] m_pszModuleName;
 				m_pszModuleName = 0;
 				m_pszErr = 0;
-				return UT_TRUE;
+				return true;
 			}
 			m_pszErr = szErrCouldNotUnload;
-			return UT_FALSE;
+			return false;
 		}
 		m_pszErr = szErrNoDllLoaded;
-		return UT_FALSE;
+		return false;
 	}
 
-	UT_Bool resolveSymbol(const char* symbol_name, void** symbol)
+	bool resolveSymbol(const char* symbol_name, void** symbol)
 	{
 		if (!symbol_name || !*symbol_name ||
 			!symbol || IsBadWritePtr(*symbol, sizeof(*symbol)))
 		{
 			m_pszErr = szErrBadParam;
-			return UT_FALSE;
+			return false;
 		}
 
 		FARPROC pProc = GetProcAddress(m_hMod, symbol_name);
@@ -100,45 +100,45 @@ public:
 		{
 			*symbol = reinterpret_cast<void*>(pProc);
 			m_pszErr = 0;
-			return UT_TRUE;
+			return true;
 		}
-		return UT_FALSE;
+		return false;
 	}
 
-	UT_Bool getModuleName(char** dest) const
+	bool getModuleName(char** dest) const
 	{
 		if (!m_hMod)
 		{
 			m_pszErr = szErrNoDllLoaded;
-			return UT_FALSE;
+			return false;
 		}
 		if (!dest || IsBadWritePtr(*dest, sizeof(*dest)))
 		{
 			m_pszErr = szErrBadParam;
-			return UT_FALSE;
+			return false;
 		}
 		if (m_pszModuleName)
 		{
 			*dest = UT_strdup(m_pszModuleName);
 			m_pszErr = 0;
-			return UT_TRUE;
+			return true;
 		}
-		return UT_FALSE;
+		return false;
 	}
 
-	UT_Bool getErrorMsg(char** dest) const
+	bool getErrorMsg(char** dest) const
 	{
 		if (!dest || IsBadWritePtr(*dest, sizeof(*dest)))
 		{
 			m_pszErr = szErrBadParam;
-			return UT_FALSE;
+			return false;
 		}
 		if (m_pszErr)
 		{
 			*dest = UT_strdup(m_pszErr);
-			return UT_TRUE;
+			return true;
 		}
-		return UT_FALSE;
+		return false;
 	}
 
 	HMODULE				m_hMod;
@@ -158,27 +158,27 @@ XAP_Win32Module::~XAP_Win32Module()
 	delete pimpl;
 }
 
-UT_Bool XAP_Win32Module::load(const char* name)
+bool XAP_Win32Module::load(const char* name)
 {
 	return pimpl->load(name);
 }
 
-UT_Bool XAP_Win32Module::unload()
+bool XAP_Win32Module::unload()
 {
 	return pimpl->unload();
 }
 
-UT_Bool XAP_Win32Module::resolveSymbol(const char* symbol_name, void** symbol)
+bool XAP_Win32Module::resolveSymbol(const char* symbol_name, void** symbol)
 {
 	return pimpl->resolveSymbol(symbol_name, symbol);
 }
 
-UT_Bool XAP_Win32Module::getModuleName(char** dest) const
+bool XAP_Win32Module::getModuleName(char** dest) const
 {
 	return pimpl->getModuleName(dest);
 }
 
-UT_Bool XAP_Win32Module::getErrorMsg(char** dest) const
+bool XAP_Win32Module::getErrorMsg(char** dest) const
 {
 	return pimpl->getErrorMsg(dest);
 }

@@ -41,16 +41,16 @@ AP_Dialog_Replace::AP_Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 {
 	persist_findString = NULL;
 	persist_replaceString = NULL;
-	persist_matchCase = UT_TRUE;
+	persist_matchCase = true;
 
 	m_pView = NULL;
 	m_pFrame = NULL;
 	
 	m_findString = NULL;
 	m_replaceString = NULL;
-	m_matchCase = UT_TRUE;
+	m_matchCase = true;
 
-	m_didSomething = UT_FALSE;
+	m_didSomething = false;
 
 	// is this used?
 	m_answer = a_VOID;
@@ -109,7 +109,7 @@ AP_Dialog_Replace::tAnswer AP_Dialog_Replace::getAnswer(void) const
 
 // --------------------------- Setup Functions -----------------------------
 
-UT_Bool AP_Dialog_Replace::setView(AV_View * view)
+bool AP_Dialog_Replace::setView(AV_View * view)
 {
 	// we can do a static cast from AV_View into FV_View,
 	// so we can get WP specific information from it.
@@ -124,7 +124,7 @@ UT_Bool AP_Dialog_Replace::setView(AV_View * view)
 
 	getFvView()->findSetStartAtInsPoint();
 	
-	return UT_TRUE;
+	return true;
 }
 
 AV_View * AP_Dialog_Replace::getView(void) 
@@ -163,7 +163,7 @@ FV_View * AP_Dialog_Replace::getFvView(void)
 	return static_cast<FV_View *>(getView());
 }
 
-UT_Bool AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
+bool AP_Dialog_Replace::setFindString(const UT_UCSChar * string)
 {
 	FREEP(m_findString);
 	return UT_UCS_cloneString(&m_findString, string);
@@ -185,7 +185,7 @@ UT_UCSChar * AP_Dialog_Replace::getFindString(void)
 	return NULL;
 }
 
-UT_Bool AP_Dialog_Replace::setReplaceString(const UT_UCSChar * string)
+bool AP_Dialog_Replace::setReplaceString(const UT_UCSChar * string)
 {
 	FREEP(m_replaceString);
 	return UT_UCS_cloneString(&m_replaceString, string);
@@ -208,75 +208,75 @@ UT_UCSChar * AP_Dialog_Replace::getReplaceString(void)
 	return NULL;
 }
 	
-UT_Bool AP_Dialog_Replace::setMatchCase(UT_Bool match)
+bool AP_Dialog_Replace::setMatchCase(bool match)
 {
 	m_matchCase = match;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool	AP_Dialog_Replace::getMatchCase(void)
+bool	AP_Dialog_Replace::getMatchCase(void)
 {
 	return m_matchCase;
 }
 
 // --------------------------- Action Functions -----------------------------
 
-UT_Bool AP_Dialog_Replace::findNext()
+bool AP_Dialog_Replace::findNext()
 {
 	UT_ASSERT(m_findString);
 	//UT_ASSERT(m_replaceString);
 	
 	// so we save our attributes to persistent storage
-	m_didSomething = UT_TRUE;
+	m_didSomething = true;
 
-	UT_Bool bDoneEntireDocument = UT_FALSE;
+	bool bDoneEntireDocument = false;
 
 	// update the view's automatic "find next" string
 	getFvView()->findSetNextString(m_findString, m_matchCase);
 	
 	// call view to do the work
-	UT_Bool result = getFvView()->findNext(m_findString, m_matchCase, &bDoneEntireDocument);
+	bool result = getFvView()->findNext(m_findString, m_matchCase, &bDoneEntireDocument);
 
-	if (bDoneEntireDocument == UT_TRUE)
+	if (bDoneEntireDocument == true)
 		_messageFinishedFind();
 
 	return result;
 }
 
-UT_Bool AP_Dialog_Replace::findReplace()
+bool AP_Dialog_Replace::findReplace()
 {
 
 	UT_ASSERT(m_findString);
 	UT_ASSERT(m_replaceString);
 	
 	// so we save our attributes to persistent storage
-	m_didSomething = UT_TRUE;
+	m_didSomething = true;
 
-	UT_Bool bDoneEntireDocument = UT_FALSE;
+	bool bDoneEntireDocument = false;
 	
 	// update the view's automatic "find next" string
 	getFvView()->findSetNextString(m_findString, m_matchCase);
 	
 	// call view to do the work
-	UT_Bool result = getFvView()->findReplace(m_findString, m_replaceString,
+	bool result = getFvView()->findReplace(m_findString, m_replaceString,
 										  m_matchCase, &bDoneEntireDocument);
 
-	if (bDoneEntireDocument == UT_TRUE)
+	if (bDoneEntireDocument == true)
 		_messageFinishedFind();
 
 	return result;
 }
 
-UT_Bool AP_Dialog_Replace::findReplaceAll()
+bool AP_Dialog_Replace::findReplaceAll()
 {
 
 	UT_ASSERT(m_findString);
 	UT_ASSERT(m_replaceString);
 	
 	// so we save our attributes to persistent storage
-	m_didSomething = UT_TRUE;
+	m_didSomething = true;
 
-	UT_Bool bDoneEntireDocument = UT_FALSE;
+	bool bDoneEntireDocument = false;
 	
 	// update the view's automatic "find next" string
 	getFvView()->findSetNextString(m_findString, m_matchCase);
@@ -286,10 +286,10 @@ UT_Bool AP_Dialog_Replace::findReplaceAll()
 													m_replaceString,
 													m_matchCase);
 
-	if (bDoneEntireDocument == UT_TRUE)
+	if (bDoneEntireDocument == true)
 		_messageFinishedReplace(numReplaced);
 
-	return UT_TRUE;
+	return true;
 }
 
 void AP_Dialog_Replace::_messageFinishedFind(void)

@@ -28,7 +28,7 @@ public:
 	fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	
-	virtual UT_Bool			calculateValue(void);
+	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs*);
 
 };

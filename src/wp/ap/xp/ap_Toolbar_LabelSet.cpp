@@ -78,7 +78,7 @@ struct _lt
 {
 	const char *				m_name;
 	ap_CreateLabelSet_pFn		m_fn;
-	UT_Bool						m_bIsDefaultSetForLanguage;
+	bool						m_bIsDefaultSetForLanguage;
 };
 
 #define BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,Encoding)	{ #Language"-"#Locale, _ap_CreateLabelSet_##Language##Locale, bIsDefaultSetForLanguage },

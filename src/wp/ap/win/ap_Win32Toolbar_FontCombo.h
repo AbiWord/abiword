@@ -33,7 +33,7 @@ public:
 	AP_Win32Toolbar_FontCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 	virtual ~AP_Win32Toolbar_FontCombo(void);
 
-	virtual UT_Bool		populate(void);
+	virtual bool		populate(void);
 
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 

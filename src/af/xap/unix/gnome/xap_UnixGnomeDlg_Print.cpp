@@ -130,14 +130,14 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	// functions), so we have to give something up in order to get the pretty
 	// dialog (for now)
 
-	UT_Bool preview = UT_FALSE;
+	bool preview = false;
 
 	// 3.  Run dialog
 	switch( gnome_dialog_run(GNOME_DIALOG(gpd)) ) {
 		case GNOME_PRINT_PRINT:
 		  break;
 		case GNOME_PRINT_PREVIEW:
-		  preview = UT_TRUE;
+		  preview = true;
 		  break;
 		default:
 		  gnome_dialog_close(GNOME_DIALOG(gpd));
@@ -174,7 +174,7 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 #else
 	// or (smartly?) let gnome-print handle it
 	// will this work with our printing structure?
-	m_bCollate = UT_FALSE;
+	m_bCollate = false;
 	m_nCopies  = 1;
 	gnome_print_master_set_copies(m_gpm, copies, collate);
 #endif

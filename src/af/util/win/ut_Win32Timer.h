@@ -36,7 +36,7 @@ public:
 
 protected:
 	UT_sint32 m_iMilliseconds;
-	UT_Bool m_bStarted;
+	bool m_bStarted;
 	HWND m_hWnd;
 	static int _compareIdentifiers(const void* p1, const void* p2);
 	UT_uint32 _createIdentifier(void);

@@ -62,7 +62,7 @@ public:
 
 	// tab stop information
 
-	UT_Bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, fl_TabStop *pTabInfo);
+	bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, fl_TabStop *pTabInfo);
 	void *					m_pVoidEnumTabStopsData;
 	UT_sint32				m_iTabStops;
 	UT_sint32				m_iDefaultTabInterval;
@@ -122,7 +122,7 @@ public:
 	void			mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y);
 
 	/* used with AV_Listener */
-	virtual UT_Bool	notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool	notify(AV_View * pView, const AV_ChangeMask mask);
 
 	/* used with AV_ScrollObj */
 	static void		_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
@@ -152,21 +152,21 @@ protected:
 									 UT_Rect * prLeftIndent, UT_Rect * prRightIndent, UT_Rect * prFirstLineIndent);
 	void	_drawParagraphProperties(const UT_Rect * pClipRect,
 									 AP_TopRulerInfo * pInfo,
-									 UT_Bool bDrawAll = UT_TRUE);
+									 bool bDrawAll = true);
 
 	void	_getTabToggleRect(UT_Rect * prToggle);
-	void	_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase);
+	void	_drawTabToggle(const UT_Rect * pClipRect, bool bErase);
 
 	void	_getTabStopXAnchor(AP_TopRulerInfo * pInfo, UT_sint32 k, UT_sint32 * pTab, eTabType & iType);
 	void	_getTabStopRect(AP_TopRulerInfo * pInfo, UT_sint32 anchor, UT_Rect * pRect);
 	void	_drawTabProperties(const UT_Rect * pClipRect,
 								   AP_TopRulerInfo * pInfo,
-								   UT_Bool bDrawAll = UT_TRUE);
+								   bool bDrawAll = true);
 
 	UT_sint32		_findTabStop(AP_TopRulerInfo * pInfo, UT_uint32 x, UT_uint32 y, eTabType & iType);
 	const char *	_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k);
 	void			_getTabZoneRect(AP_TopRulerInfo * pInfo, UT_Rect &rZone);
-	void			_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, UT_Bool bDelete);
+	void			_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, bool bDelete);
 
 	UT_sint32	_getColumnMarkerXRightEnd(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	void		_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol, UT_sint32 xCenter,
@@ -178,19 +178,19 @@ protected:
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
 	void		_drawMarginProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr);
-	void		_xorGuide(UT_Bool bClear=UT_FALSE);
+	void		_xorGuide(bool bClear=false);
 
-	void		_ignoreEvent(UT_Bool bDone);
+	void		_ignoreEvent(bool bDone);
 	double		_scalePixelDistanceToUnits(UT_sint32 xColRel, ap_RulerTicks & tick);
 	double		_getUnitsFromRulerLeft(UT_sint32 xColRel, ap_RulerTicks & tick);
 	UT_sint32	_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	UT_sint32	_snapPixelToGrid(UT_sint32 xDist, ap_RulerTicks & tick);
-	void		_drawLeftIndentMarker(UT_Rect & r, UT_Bool bFilled);
-	void		_drawRightIndentMarker(UT_Rect & r, UT_Bool bFilled);
-	void		_drawFirstLineIndentMarker(UT_Rect & r, UT_Bool bFilled);
-	void		_drawTabStop(UT_Rect & r, eTabType iType, UT_Bool bFilled);
+	void		_drawLeftIndentMarker(UT_Rect & r, bool bFilled);
+	void		_drawRightIndentMarker(UT_Rect & r, bool bFilled);
+	void		_drawFirstLineIndentMarker(UT_Rect & r, bool bFilled);
+	void		_drawTabStop(UT_Rect & r, eTabType iType, bool bFilled);
 	void		_drawColumnGapMarker(UT_Rect & r);
-	UT_Bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
+	bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2);
 
@@ -216,8 +216,8 @@ protected:
 	UT_sint32			m_minColumnWidth;
 
 	AP_TopRulerInfo		m_infoCache;
-	UT_Bool				m_bValidMouseClick;
-	UT_Bool				m_bEventIgnored;
+	bool				m_bValidMouseClick;
+	bool				m_bEventIgnored;
 
 	typedef enum _draggingWhat { DW_NOTHING,
 								 DW_LEFTMARGIN,
@@ -239,11 +239,11 @@ protected:
 	UT_sint32			m_draggingTab;	/* index of tab being dragged */
 	eTabType			m_draggingTabType;
 	UT_sint32			m_dragStart;
-	UT_Bool				m_bBeforeFirstMotion;
+	bool				m_bBeforeFirstMotion;
 
 	eTabType			m_iDefaultTabType;
 
-	UT_Bool				m_bGuide;	/* UT_TRUE ==> guide line XORed onscreen */
+	bool				m_bGuide;	/* true ==> guide line XORed onscreen */
 	UT_sint32			m_xGuide;	/* valid iff m_bGuide */
 	UT_sint32			m_xOtherGuide;
 	

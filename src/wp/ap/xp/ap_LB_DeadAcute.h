@@ -23,7 +23,7 @@
 class EV_EditBindingMap;
 class AP_BindingSet;
 
-UT_Bool ap_LoadBindings_DeadAcute(AP_BindingSet * pThis,
+bool ap_LoadBindings_DeadAcute(AP_BindingSet * pThis,
 								  EV_EditBindingMap * pebm);
 
 #endif /* AP_LOADBINDINGS_DEADACUTE_H */

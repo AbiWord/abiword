@@ -537,7 +537,7 @@ BOOL AP_Win32Dialog_Options::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void AP_Win32Dialog_Options::_controlEnable( tControl id, UT_Bool value )
+void AP_Win32Dialog_Options::_controlEnable( tControl id, bool value )
 {
 	// This routine is called by XP code to enable/disable a particular field.
 	
@@ -629,9 +629,9 @@ void AP_Win32Dialog_Options::_controlEnable( tControl id, UT_Bool value )
 // they do not call back into XP code.
 
 #define DEFINE_GET_SET_BOOL(index,button)																	\
-	UT_Bool AP_Win32Dialog_Options::_gather##button(void)													\
+	bool AP_Win32Dialog_Options::_gather##button(void)													\
 	{ return IsDlgButtonChecked((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button); }	\
-	void AP_Win32Dialog_Options::_set##button(UT_Bool b)													\
+	void AP_Win32Dialog_Options::_set##button(bool b)													\
 	{ CheckDlgButton((HWND)m_vecSubDlgHWnd.getNthItem(index),AP_RID_DIALOG_OPTIONS_CHK_##button,b); }
 
 DEFINE_GET_SET_BOOL(SPELL_INDEX,SpellCheckAsType);

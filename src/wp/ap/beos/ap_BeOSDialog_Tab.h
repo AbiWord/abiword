@@ -39,7 +39,7 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
-	virtual void                    _controlEnable( tControl id, UT_Bool value );
+	virtual void                    _controlEnable( tControl id, bool value );
 	virtual void                    _setTabList( UT_uint32 count );
 	virtual void                    _clearList();
 	eTabType                        _gatherAlignment();

@@ -46,7 +46,7 @@ public:
 	typedef enum { a_VOID, a_OK, a_CANCEL }	tAnswer;
 	
 	void								setCurrentPathname(const char * szPathname);
-	void								setSuggestFilename(UT_Bool);
+	void								setSuggestFilename(bool);
 	XAP_Dialog_FileOpenSaveAs::tAnswer	getAnswer(void) const;
 	const char *						getPathname(void) const;
 
@@ -79,7 +79,7 @@ protected:
 	UT_sint32							m_nFileType;
 	UT_sint32							m_nDefaultFileType;
 		
-	UT_Bool								m_bSuggestName;
+	bool								m_bSuggestName;
 	XAP_Dialog_FileOpenSaveAs::tAnswer	m_answer;
 };
 

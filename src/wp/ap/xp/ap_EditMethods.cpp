@@ -716,9 +716,9 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 /*****************************************************************/
 
 #define F(fn)		ap_EditMethods::fn
-#define Defun(fn)	UT_Bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData *   pCallData  )
-#define Defun0(fn)	UT_Bool F(fn)(AV_View* /*pAV_View*/, EV_EditMethodCallData * /*pCallData*/)
-#define Defun1(fn)	UT_Bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData * /*pCallData*/)
+#define Defun(fn)	bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData *   pCallData  )
+#define Defun0(fn)	bool F(fn)(AV_View* /*pAV_View*/, EV_EditMethodCallData * /*pCallData*/)
+#define Defun1(fn)	bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData * /*pCallData*/)
 #define EX(fn)		F(fn)(pAV_View, pCallData)
 
 
@@ -726,70 +726,70 @@ Defun1(scrollPageDown)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGEDOWN);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(scrollPageUp)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGEUP);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(scrollPageLeft)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGELEFT);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(scrollPageRight)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_PAGERIGHT);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(scrollLineDown)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(scrollLineUp)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(scrollLineLeft)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINELEFT);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(scrollLineRight)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_LINERIGHT);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(scrollToTop)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_TOTOP);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(scrollToBottom)
 {
 	pAV_View->cmdScroll(AV_SCROLLCMD_TOBOTTOM);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(fileNew)
@@ -875,9 +875,9 @@ static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iL
 	FREEP(szMessage);
 }
 
-static UT_Bool s_AskRevertFile(XAP_Frame * pFrame)
+static bool s_AskRevertFile(XAP_Frame * pFrame)
 {
-	// return UT_TRUE if we should revert the file (back to the saved copy).
+	// return true if we should revert the file (back to the saved copy).
 
 	return (pFrame->showMessageBox(AP_STRING_ID_MSG_RevertBuffer,
 										XAP_Dialog_MessageBox::b_YN,
@@ -886,9 +886,9 @@ static UT_Bool s_AskRevertFile(XAP_Frame * pFrame)
 						== XAP_Dialog_MessageBox::a_YES);
 }
 
-static UT_Bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
+static bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 {
-	// return UT_TRUE if we should quit.
+	// return true if we should quit.
 	return (pFrame->showMessageBox(AP_STRING_ID_MSG_QueryExit,
 										XAP_Dialog_MessageBox::b_YN,
 										XAP_Dialog_MessageBox::a_NO)
@@ -904,8 +904,8 @@ static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 										pFrame->getTitle(200));
 }
 
-static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
-								UT_Bool bSaveAs,
+static bool s_AskForPathname(XAP_Frame * pFrame,
+								bool bSaveAs,
 								const char * pSuggestedName,
 								char ** ppPathname,
 								IEFileType * ieft)
@@ -939,7 +939,7 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 		// if caller wants to suggest a name, use it and seed the
 		// dialog in that directory and set the filename.
 		pDialog->setCurrentPathname(pSuggestedName);
-		pDialog->setSuggestFilename(UT_TRUE);
+		pDialog->setSuggestFilename(true);
 	}
 	else
 	{
@@ -947,7 +947,7 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 		// to the directory containing this document (if it has a
 		// name), but don't put anything in the filename portion.
 		pDialog->setCurrentPathname(pFrame->getFilename());
-		pDialog->setSuggestFilename(UT_FALSE);
+		pDialog->setSuggestFilename(false);
 	}
 
 	// to fill the file types popup list, we need to convert
@@ -994,7 +994,7 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
 
 	if (bOK)
 	{
@@ -1033,7 +1033,7 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 	return bOK;
 }
 
-static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
+static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 				       char ** ppPathname,
 				       IEGraphicFileType * iegft)
 {
@@ -1061,7 +1061,7 @@ static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	UT_ASSERT(pDialog);
 
 	pDialog->setCurrentPathname(NULL);
-	pDialog->setSuggestFilename(UT_FALSE);
+	pDialog->setSuggestFilename(false);
 
 	// to fill the file types popup list, we need to convert AP-level
 	// ImpGraphic descriptions, suffixes, and types into strings.
@@ -1084,7 +1084,7 @@ static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
 
 	if (bOK)
 	{
@@ -1182,7 +1182,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 	UT_ASSERT(pPrefs);
 
 	XAP_Frame * pNewFrame = NULL;
-	// not needed UT_Bool bRes = UT_FALSE;
+	// not needed bool bRes = false;
 	UT_Error errorCode = UT_IE_IMPORTERROR;
 
 	// see if requested file is already open in another frame
@@ -1234,7 +1234,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 		pNewFrame = pApp->newFrame();
 		if (!pNewFrame)
 		{
-			return UT_FALSE;
+			return false;
 		}
 		
 		errorCode = pNewFrame->loadDocument(pNewFile, ieft);
@@ -1264,7 +1264,7 @@ UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
 			// TODO this new window.
 			// TODO
 			// TODO long term, we may want to modified pApp->newFrame()
-			// TODO to take an 'UT_Bool bShowWindow' argument....
+			// TODO to take an 'bool bShowWindow' argument....
 
 			// the IEFileType here doesn't really matter since the file name is NULL
 			errorCode = pNewFrame->loadDocument(NULL, IEFT_Unknown);
@@ -1302,10 +1302,10 @@ Defun1(fileOpen)
 
 	char * pNewFile = NULL;
 	IEFileType ieft;
-	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile,&ieft);
+	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
-	  return UT_FALSE;
+	  return false;
 	
 	// we own storage for pNewFile and must free it.
 
@@ -1335,7 +1335,7 @@ Defun(fileSave)
 	{
 		// throw up a dialog
 		s_TellSaveFailed(pFrame, pFrame->getFilename(), errSaved);
-		return UT_FALSE;
+		return false;
 	}
 
 	if (pFrame->getViewNumber() > 0)
@@ -1346,7 +1346,7 @@ Defun(fileSave)
 		pApp->updateClones(pFrame);
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(fileSaveAs)
@@ -1356,10 +1356,10 @@ Defun1(fileSaveAs)
 
 	char * pNewFile = NULL;
 	IEFileType ieft;
-	UT_Bool bOK = s_AskForPathname(pFrame,UT_TRUE,NULL,&pNewFile,&ieft);
+	bool bOK = s_AskForPathname(pFrame,true,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
-		return UT_FALSE;
+		return false;
 
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 	
@@ -1370,7 +1370,7 @@ Defun1(fileSaveAs)
 		// throw up a dialog
 		s_TellSaveFailed(pFrame, pNewFile, errSaved);
 		free(pNewFile);
-		return UT_FALSE;
+		return false;
 	}
 
 	// update the MRU list
@@ -1387,19 +1387,19 @@ Defun1(fileSaveAs)
 		pApp->updateClones(pFrame);
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(undo)
 {
 	pAV_View->cmdUndo(1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(redo)
 {
 	pAV_View->cmdRedo(1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(newWindow)
@@ -1407,10 +1407,10 @@ Defun1(newWindow)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	return (pFrame->cloneFrame() ? UT_TRUE : UT_FALSE);
+	return (pFrame->cloneFrame() ? true : false);
 }
 
-static UT_Bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
+static bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -1476,7 +1476,7 @@ Defun1(openRecent_9)
 	return _openRecent(pAV_View, 9);
 }
 
-static UT_Bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
+static bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -1491,7 +1491,7 @@ static UT_Bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 	if (pSelFrame)
 		pSelFrame->raise();
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(activateWindow_1)
@@ -1531,7 +1531,7 @@ Defun1(activateWindow_9)
 	return _activateWindow(pAV_View, 9);
 }
 
-static UT_Bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
+static bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 {
 	UT_ASSERT(pFrame);
 
@@ -1548,7 +1548,7 @@ static UT_Bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	pDialog->runModal(pFrame);
 
 	XAP_Frame * pSelFrame = NULL;	
-	UT_Bool bOK = (pDialog->getAnswer() == XAP_Dialog_WindowMore::a_OK);
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_WindowMore::a_OK);
 
 	if (bOK)
 		pSelFrame = pDialog->getSelFrame();
@@ -1568,10 +1568,10 @@ Defun1(dlgMoreWindows)
 	UT_ASSERT(pFrame);
 
 	s_doMoreWindowsDlg(pFrame, XAP_DIALOG_ID_WINDOWMORE);
-	return UT_TRUE;
+	return true;
 }
 
-static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
+static bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 {
 	UT_ASSERT(pFrame);
 
@@ -1588,7 +1588,7 @@ static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	// gets the urge to make it safe that way)
 	pDialog->runModal(pFrame);
 	
-	UT_Bool bOK = UT_TRUE;
+	bool bOK = true;
 
 	pDialogFactory->releaseDialog(pDialog);
 
@@ -1602,18 +1602,18 @@ Defun1(dlgAbout)
 
 	s_doAboutDlg(pFrame, XAP_DIALOG_ID_ABOUT);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
+bool _helpOpenURL(AV_View* pAV_View, const char* helpURL)
 {
  	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 	pFrame->openURL(helpURL);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool _helpLocalizeAndOpenURL(AV_View* pAV_View, UT_Bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
+bool _helpLocalizeAndOpenURL(AV_View* pAV_View, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang)
 {
  	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
@@ -1648,19 +1648,19 @@ UT_Bool _helpLocalizeAndOpenURL(AV_View* pAV_View, UT_Bool bLocal, const char* p
 		FREEP(tmpURL);
 	}
 
-	UT_Bool bRetBuf = _helpOpenURL(pAV_View, helpURL);
+	bool bRetBuf = _helpOpenURL(pAV_View, helpURL);
 	FREEP(helpURL);
 	return bRetBuf;
 }
 
 Defun1(helpContents)
 {
- 	return _helpLocalizeAndOpenURL(pAV_View, UT_TRUE, "AbiWord/help", "contents.html");
+ 	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "contents.html");
 }
 
 Defun1(helpIndex)
 {
- 	return _helpLocalizeAndOpenURL(pAV_View, UT_TRUE, "AbiWord/help", "index.html");
+ 	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "index.html");
 }
 
 Defun1(helpCheckVer)
@@ -1672,12 +1672,12 @@ Defun1(helpCheckVer)
 
 Defun1(helpSearch)
 {
-        return _helpLocalizeAndOpenURL(pAV_View, UT_TRUE, "AbiWord/help", "search.html");
+        return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "search.html");
 }
 
 Defun1(helpAboutOS)
 {
- 	return _helpLocalizeAndOpenURL(pAV_View, UT_TRUE, "AbiWord/help", "aboutos.html");
+ 	return _helpLocalizeAndOpenURL(pAV_View, true, "AbiWord/help", "aboutos.html");
 }
 
 Defun1(cycleWindows)
@@ -1700,7 +1700,7 @@ Defun1(cycleWindows)
 	if (pSelFrame)
 		pSelFrame->raise();
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(cycleWindowsBck)
@@ -1723,7 +1723,7 @@ Defun1(cycleWindowsBck)
 	if (pSelFrame)
 		pSelFrame->raise();
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun(closeWindow)
@@ -1754,9 +1754,9 @@ Defun(closeWindow)
 		{
 		case XAP_Dialog_MessageBox::a_YES:				// save it first
 			{
-				UT_Bool bRet = EX(fileSave);
+				bool bRet = EX(fileSave);
 				if (!bRet)								// didn't successfully save,
-					return UT_FALSE;					//    so don't close
+					return false;					//    so don't close
 			}
 			break;
 
@@ -1764,11 +1764,11 @@ Defun(closeWindow)
 			break;
 
 		case XAP_Dialog_MessageBox::a_CANCEL:			// don't close it
-			return UT_FALSE;
+			return false;
 
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return UT_FALSE;
+			return false;
 		}
 	}
 
@@ -1787,7 +1787,7 @@ Defun(closeWindow)
 	pFrame->close();
 	delete pFrame;
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun(querySaveAndExit)
@@ -1803,12 +1803,12 @@ Defun(querySaveAndExit)
 		if (!s_AskCloseAllAndExit(pFrame))
 		{
 			// never mind
-			return UT_FALSE;
+			return false;
 		}
 	}
 
 
-	UT_Bool bRet = UT_TRUE;
+	bool bRet = true;
 	UT_uint32 ndx = pApp->getFrameCount();
 
 	// loop over windows, but stop if one can't close
@@ -1860,10 +1860,10 @@ Defun1(fileInsertGraphic)
 
 
 	IEGraphicFileType iegft;
-	UT_Bool bOK = s_AskForGraphicPathname(pFrame,&pNewFile,&iegft);
+	bool bOK = s_AskForGraphicPathname(pFrame,&pNewFile,&iegft);
 
 	if (!bOK || !pNewFile)
-		return UT_FALSE;
+		return false;
 
 	// we own storage for pNewFile and must free it.
 	UT_DEBUGMSG(("fileInsertGraphic: loading [%s]\n",pNewFile));
@@ -1878,7 +1878,7 @@ Defun1(fileInsertGraphic)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
-		return UT_FALSE;
+		return false;
 	  }
 	
 	errorCode = pIEG->importGraphic(pNewFile, &pFG);
@@ -1887,7 +1887,7 @@ Defun1(fileInsertGraphic)
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
 		DELETEP(pIEG);
-		return UT_FALSE;
+		return false;
 	  }
 
 	DELETEP(pIEG);
@@ -1901,13 +1901,13 @@ Defun1(fileInsertGraphic)
 
 		FREEP(pNewFile);
 		DELETEP(pFG);
-		return UT_FALSE;
+		return false;
 	}
 
 	FREEP(pNewFile);
 	DELETEP(pFG);
 	
-	return UT_TRUE;
+	return true;
 }
 
 Defun(warpInsPtToXY)
@@ -1915,131 +1915,131 @@ Defun(warpInsPtToXY)
 	ABIWORD_VIEW;
 	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtLeft)
 {
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("getPoint1: %d\n", pView->getPoint()));
-	pView->cmdCharMotion(UT_FALSE,1);
+	pView->cmdCharMotion(false,1);
 	UT_DEBUGMSG(("getPoint2: %d\n", pView->getPoint()));
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtRight)
 {
 	ABIWORD_VIEW;
-	pView->cmdCharMotion(UT_TRUE,1);
-	return UT_TRUE;
+	pView->cmdCharMotion(true,1);
+	return true;
 }
 
 Defun1(warpInsPtBOP)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_BOP);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtEOP)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOP);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtBOL)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_BOL);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtEOL)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOL);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtBOW)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_BOW);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtEOW)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
-	return UT_TRUE;
+	return true;
 }
 
 Defun0(warpInsPtBOS)
 {
-	return UT_TRUE;
+	return true;
 }
 
 Defun0(warpInsPtEOS)
 {
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtBOB)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_BOB);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtEOB)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOB);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtBOD)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_BOD);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtEOD)
 {
 	ABIWORD_VIEW;
 	pView->moveInsPtTo(FV_DOCPOS_EOD);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(warpInsPtPrevPage)
 {
 	ABIWORD_VIEW;
-	pView->warpInsPtNextPrevPage(UT_FALSE);
-	return UT_TRUE;
+	pView->warpInsPtNextPrevPage(false);
+	return true;
 }
 
 Defun1(warpInsPtNextPage)
 {
 	ABIWORD_VIEW;
-	pView->warpInsPtNextPrevPage(UT_TRUE);
-	return UT_TRUE;
+	pView->warpInsPtNextPrevPage(true);
+	return true;
 }
 
 Defun1(warpInsPtPrevLine)
 {
 	ABIWORD_VIEW;
-	pView->warpInsPtNextPrevLine(UT_FALSE);
-	return UT_TRUE;
+	pView->warpInsPtNextPrevLine(false);
+	return true;
 }
 
 Defun1(warpInsPtNextLine)
 {
 	ABIWORD_VIEW;
-	pView->warpInsPtNextPrevLine(UT_TRUE);
-	return UT_TRUE;
+	pView->warpInsPtNextPrevLine(true);
+	return true;
 }
 
 /*****************************************************************/
@@ -2050,7 +2050,7 @@ Defun1(cursorDefault)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_DEFAULT);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(cursorIBeam)
@@ -2059,7 +2059,7 @@ Defun1(cursorIBeam)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(cursorRightArrow)
@@ -2068,7 +2068,7 @@ Defun1(cursorRightArrow)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_RIGHTARROW);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(cursorImage)
@@ -2077,7 +2077,7 @@ Defun1(cursorImage)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_IMAGE);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(cursorImageSize)
@@ -2088,7 +2088,7 @@ Defun1(cursorImageSize)
 	GR_Graphics * pG = pView->getGraphics();
 	if (pG)
 		pG->setCursor(GR_Graphics::GR_CURSOR_IBEAM);
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -2109,7 +2109,7 @@ Defun1(contextMenu)
 
 	const char * szContextMenuName = AP_FindContextMenu(emc);
 	if (!szContextMenuName)
-		return UT_FALSE;
+		return false;
 	
 	return pFrame->runModalContextMenu(pView,szContextMenuName,xPos,yPos);
 }
@@ -2126,7 +2126,7 @@ Defun(contextText)
 
 	const char * szContextMenuName = AP_FindContextMenu(EV_EMC_TEXT);
 	if (!szContextMenuName)
-		return UT_FALSE;
+		return false;
 	
 	return pFrame->runModalContextMenu(pView,szContextMenuName,
 									   pCallData->m_xPos,pCallData->m_yPos);
@@ -2143,17 +2143,17 @@ Defun(contextMisspellText)
 
 	const char * szContextMenuName = AP_FindContextMenu(EV_EMC_MISSPELLEDTEXT);
 	if (!szContextMenuName)
-		return UT_FALSE;
+		return false;
 	
 	return pFrame->runModalContextMenu(pView,szContextMenuName,
 									   pCallData->m_xPos,pCallData->m_yPos);
 }
 
-static UT_Bool _spellSuggest(AV_View* pAV_View, UT_uint32 ndx)
+static bool _spellSuggest(AV_View* pAV_View, UT_uint32 ndx)
 {
 	ABIWORD_VIEW;
 	pView->cmdContextSuggest(ndx);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(spellSuggest_1)
@@ -2198,7 +2198,7 @@ Defun1(spellIgnoreAll)
 	ABIWORD_VIEW;
 
 	pView->cmdContextIgnoreAll();
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(spellAdd)
@@ -2206,7 +2206,7 @@ Defun1(spellAdd)
 	ABIWORD_VIEW;
 
 	pView->cmdContextAdd();
-	return UT_TRUE;
+	return true;
 }
 
 
@@ -2215,248 +2215,248 @@ Defun1(spellAdd)
 Defun(dragToXY)
 {
 	ABIWORD_VIEW;
-	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, UT_TRUE);
-	return UT_TRUE;
+	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, true);
+	return true;
 }
 
 Defun(dragToXYword)
 {
 	ABIWORD_VIEW;
-	pView->extSelToXYword(pCallData->m_xPos, pCallData->m_yPos, UT_TRUE);
-	return UT_TRUE;
+	pView->extSelToXYword(pCallData->m_xPos, pCallData->m_yPos, true);
+	return true;
 }
 
 Defun(endDrag)
 {
 	ABIWORD_VIEW;
 	pView->endDrag(pCallData->m_xPos, pCallData->m_yPos);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(extSelToXY)
 {
 	ABIWORD_VIEW;
-	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, UT_FALSE);
-	return UT_TRUE;
+	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos, false);
+	return true;
 }
 
 Defun1(extSelLeft)
 {
 	ABIWORD_VIEW;
-	pView->extSelHorizontal(UT_FALSE,1);
-	return UT_TRUE;
+	pView->extSelHorizontal(false,1);
+	return true;
 }
 
 Defun1(extSelRight)
 {
 	ABIWORD_VIEW;
-	pView->extSelHorizontal(UT_TRUE,1);
-	return UT_TRUE;
+	pView->extSelHorizontal(true,1);
+	return true;
 }
 
 Defun1(extSelBOL)
 {
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_BOL);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(extSelEOL)
 {
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_EOL);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(extSelBOW)
 {
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_BOW);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(extSelEOW)
 {
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_EOW_MOVE);
-	return UT_TRUE;
+	return true;
 }
 
 Defun0(extSelBOS)
 {
-	return UT_TRUE;
+	return true;
 }
 
 Defun0(extSelEOS)
 {
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(extSelBOB)
 {
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_BOB);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(extSelEOB)
 {
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_EOB);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(extSelBOD)
 {
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_BOD);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(extSelEOD)
 {
 	ABIWORD_VIEW;
 	pView->extSelTo(FV_DOCPOS_EOD);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(extSelPrevLine)
 {
 	ABIWORD_VIEW;
-	pView->extSelNextPrevLine(UT_FALSE);
-	return UT_TRUE;
+	pView->extSelNextPrevLine(false);
+	return true;
 }
 
 Defun1(extSelNextLine)
 {
 	ABIWORD_VIEW;
-	pView->extSelNextPrevLine(UT_TRUE);
-	return UT_TRUE;
+	pView->extSelNextPrevLine(true);
+	return true;
 }
 
 Defun0(extSelPageDown)
 {
-	return UT_TRUE;
+	return true;
 }
 
 Defun0(extSelPageUp)
 {
-	return UT_TRUE;
+	return true;
 }
 
 Defun(selectAll)
 {
 	ABIWORD_VIEW;
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOD, FV_DOCPOS_EOD);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(selectWord)
 {
 	ABIWORD_VIEW;
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOW, FV_DOCPOS_EOW_SELECT);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(selectLine)
 {
 	ABIWORD_VIEW;
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOL, FV_DOCPOS_EOL);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(selectBlock)
 {
 	ABIWORD_VIEW;
 	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(delLeft)
 {
 	ABIWORD_VIEW;
-	pView->cmdCharDelete(UT_FALSE,1);
-	return UT_TRUE;
+	pView->cmdCharDelete(false,1);
+	return true;
 }
 
 Defun1(delRight)
 {
 	ABIWORD_VIEW;
-	pView->cmdCharDelete(UT_TRUE,1);
-	return UT_TRUE;
+	pView->cmdCharDelete(true,1);
+	return true;
 }
 
 Defun1(delBOL)
 {
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_BOL);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(delEOL)
 {
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_EOL);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(delBOW)
 {
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_BOW);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(delEOW)
 {
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_EOW_SELECT);
-	return UT_TRUE;
+	return true;
 }
 
 Defun0(delBOS)
 {
-	return UT_TRUE;
+	return true;
 }
 
 Defun0(delEOS)
 {
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(delBOB)
 {
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_BOB);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(delEOB)
 {
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_EOB);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(delBOD)
 {
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_BOD);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(delEOD)
 {
 	ABIWORD_VIEW;
 	pView->delTo(FV_DOCPOS_EOD);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertData)
 {
 	ABIWORD_VIEW;
 	pView->cmdCharInsert(pCallData->m_pData,pCallData->m_dataLength);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(replaceChar)
@@ -2467,21 +2467,21 @@ Defun(replaceChar)
 
 Defun0(insertSoftBreak)
 {
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insertParagraphBreak)
 {
 	ABIWORD_VIEW;
 	pView->insertParagraphBreak();
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insertSectionBreak)
 {
 	ABIWORD_VIEW;
 	pView->insertSectionBreak();
-	return UT_TRUE;
+	return true;
 }
 
 /*
@@ -2499,7 +2499,7 @@ Defun1(insertTab)
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_TAB;
 	pView->cmdCharInsert(&c,1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insertLineBreak)
@@ -2507,7 +2507,7 @@ Defun1(insertLineBreak)
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_LF;
 	pView->cmdCharInsert(&c,1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insertColumnBreak)
@@ -2515,7 +2515,7 @@ Defun1(insertColumnBreak)
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_VTAB;
 	pView->cmdCharInsert(&c,1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insertPageBreak)
@@ -2523,7 +2523,7 @@ Defun1(insertPageBreak)
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_FF;
 	pView->cmdCharInsert(&c,1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insertSpace)
@@ -2531,7 +2531,7 @@ Defun1(insertSpace)
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_SPACE;
 	pView->cmdCharInsert(&c,1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insertNBSpace)
@@ -2539,7 +2539,7 @@ Defun1(insertNBSpace)
 	ABIWORD_VIEW;
 	UT_UCSChar c = UCS_NBSP;			// decimal 160 is NBS
 	pView->cmdCharInsert(&c,1);
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -2579,11 +2579,11 @@ Defun(insertGraveData)
 	case 0x75:		graveChar=0x00f9;	break;	// ugrave
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&graveChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertAcuteData)
@@ -2632,11 +2632,11 @@ Defun(insertAcuteData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&acuteChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertCircumflexData)
@@ -2681,11 +2681,11 @@ Defun(insertCircumflexData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&circumflexChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertTildeData)
@@ -2720,11 +2720,11 @@ Defun(insertTildeData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&tildeChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertMacronData)
@@ -2758,11 +2758,11 @@ Defun(insertMacronData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&macronChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertBreveData)
@@ -2792,11 +2792,11 @@ Defun(insertBreveData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&breveChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertAbovedotData)
@@ -2830,11 +2830,11 @@ Defun(insertAbovedotData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&abovedotChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertDiaeresisData)
@@ -2867,11 +2867,11 @@ Defun(insertDiaeresisData)
 	case 0x79:		diaeresisChar=0x00ff;	break;	// ydiaeresis
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&diaeresisChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertDoubleacuteData)
@@ -2899,11 +2899,11 @@ Defun(insertDoubleacuteData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&doubleacuteChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertCaronData)
@@ -2945,11 +2945,11 @@ Defun(insertCaronData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&caronChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertCedillaData)
@@ -2989,11 +2989,11 @@ Defun(insertCedillaData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&cedillaChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(insertOgonekData)
@@ -3025,11 +3025,11 @@ Defun(insertOgonekData)
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 	
 	pView->cmdCharInsert(&ogonekChar, 1);
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -3039,7 +3039,7 @@ Defun1(cut)
 	ABIWORD_VIEW;
 	pView->cmdCut();
 	
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(copy)
@@ -3047,7 +3047,7 @@ Defun1(copy)
 	ABIWORD_VIEW;
 	pView->cmdCopy();
 	
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(paste)
@@ -3055,7 +3055,7 @@ Defun1(paste)
 	ABIWORD_VIEW;
 	pView->cmdPaste();
 	
-	return UT_TRUE;
+	return true;
 }
 
 Defun(pasteSelection)
@@ -3064,12 +3064,12 @@ Defun(pasteSelection)
 	ABIWORD_VIEW;
 	pView->cmdPasteSelectionAt(pCallData->m_xPos, pCallData->m_yPos);
 	
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
 
-static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
+static bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3085,13 +3085,13 @@ static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 
 	pDialog->runModeless(pFrame);
 	
-	//UT_Bool bOK = UT_TRUE;
+	//bool bOK = true;
 
 	// get result?
 	
 	pDialogFactory->releaseDialog(pDialog);
 
-	if(pDialog->isRunning() == UT_TRUE)
+	if(pDialog->isRunning() == true)
 	{
 		pDialog->activate();
 	}
@@ -3100,7 +3100,7 @@ static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 		pDialog->setView(pView);
 		pDialog->runModeless(pFrame);
 	}
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(go)
@@ -3113,7 +3113,7 @@ Defun1(go)
 
 /*****************************************************************/
    
-static UT_Bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
+static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
 {
    XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
    UT_ASSERT(pFrame);
@@ -3131,7 +3131,7 @@ static UT_Bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
    // gets the urge to make it safe that way)
    pDialog->runModal(pFrame);
 	        
-   UT_Bool bOK = pDialog->isComplete();
+   bool bOK = pDialog->isComplete();
 
    if (bOK)
 	   s_TellSpellDone(pFrame);
@@ -3152,7 +3152,7 @@ Defun1(dlgSpell)
    
 /*****************************************************************/
 
-static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
+static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3180,7 +3180,7 @@ static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	// run the dialog (it should really be modeless if anyone
 	// gets the urge to make it safe that way)
         // OK I Will
-        if(pDialog->isRunning() == UT_TRUE)
+        if(pDialog->isRunning() == true)
 	{
 	       pDialog->activate();
 	}
@@ -3188,7 +3188,7 @@ static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 	{
 	       pDialog->runModeless(pFrame);
 	}
-	UT_Bool bOK = UT_TRUE;
+	bool bOK = true;
 	return bOK;
 }
 
@@ -3218,7 +3218,7 @@ Defun1(replace)
 
 /*****************************************************************/
 
-static UT_Bool s_doFontDlg(FV_View * pView)
+static bool s_doFontDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3262,9 +3262,9 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 		// worry about initializing a combo box with a choice
 		// (and because they are all stuck under one CSS attribute).
 
-		UT_Bool bUnderline = UT_FALSE;
-		UT_Bool bOverline = UT_FALSE;
-		UT_Bool bStrikeOut = UT_FALSE;
+		bool bUnderline = false;
+		bool bOverline = false;
+		bool bStrikeOut = false;
 		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
 		if (s)
 		{
@@ -3283,7 +3283,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 
 	// extract what they did
 
-	UT_Bool bOK = (pDialog->getAnswer() == XAP_Dialog_FontChooser::a_OK);
+	bool bOK = (pDialog->getAnswer() == XAP_Dialog_FontChooser::a_OK);
 
 	if (bOK)
 	{
@@ -3321,12 +3321,12 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 			props_out[k++] = s;
 		}
 
-		UT_Bool bUnderline = UT_FALSE;
-		UT_Bool bChangedUnderline = pDialog->getChangedUnderline(&bUnderline);
-		UT_Bool bOverline = UT_FALSE;
-		UT_Bool bChangedOverline = pDialog->getChangedOverline(&bOverline);
-		UT_Bool bStrikeOut = UT_FALSE;
-		UT_Bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
+		bool bUnderline = false;
+		bool bChangedUnderline = pDialog->getChangedUnderline(&bUnderline);
+		bool bOverline = false;
+		bool bChangedOverline = pDialog->getChangedOverline(&bOverline);
+		bool bStrikeOut = false;
+		bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
 
 		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline)
 		{
@@ -3363,7 +3363,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 	return bOK;
 }
 
-static UT_Bool s_doTabDlg(FV_View * pView)
+static bool s_doTabDlg(FV_View * pView)
 {
 
 
@@ -3406,11 +3406,11 @@ static UT_Bool s_doTabDlg(FV_View * pView)
 	{
 		s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
 	}
-	return UT_TRUE;	
+	return true;	
 }
 
 
-static UT_Bool s_doParagraphDlg(FV_View * pView)
+static bool s_doParagraphDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3427,18 +3427,18 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 	const XML_Char ** props = NULL;
 
 	if (!pView->getBlockFormat(&props))
-		return UT_FALSE;
+		return false;
 
 	if (!pDialog->setDialogData(props))
-		return UT_FALSE;
+		return false;
 
 	FREEP(props);
 
 	if (!pView->getSectionFormat(&props))
-		return UT_FALSE;
+		return false;
 
 	if (!pDialog->setDialogData(props))
-		return UT_FALSE;
+		return false;
 
 	FREEP(props);
 	
@@ -3496,11 +3496,11 @@ static UT_Bool s_doParagraphDlg(FV_View * pView)
 			
 	pDialogFactory->releaseDialog(pDialog);
 
-	return UT_TRUE;	
+	return true;	
 }
 
 
-static UT_Bool s_doOptionsDlg(FV_View * pView)
+static bool s_doOptionsDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3535,7 +3535,7 @@ static UT_Bool s_doOptionsDlg(FV_View * pView)
 			
 	pDialogFactory->releaseDialog(pDialog);
 
-	return UT_TRUE;	
+	return true;	
 }
 
 /*****************************************************************/
@@ -3553,7 +3553,7 @@ Defun(fontFamily)
 	const XML_Char * properties[] =	{ "font-family", NULL, 0};
 	properties[1] = (const XML_Char *) pCallData->m_pData;
 	pView->setCharFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(fontSize)
@@ -3576,17 +3576,17 @@ Defun(fontSize)
 
 		FREEP(buf);
 	}
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
 
-static UT_Bool _toggleSpanOrBlock(FV_View * pView,
+static bool _toggleSpanOrBlock(FV_View * pView,
 				  const XML_Char * prop,
 				  const XML_Char * vOn,
 				  const XML_Char * vOff,
-				  UT_Bool bMultiple,
-				  UT_Bool isSpan)
+				  bool bMultiple,
+				  bool isSpan)
 {
 	const XML_Char * props_out[] =	{ NULL, NULL, 0};
 
@@ -3597,12 +3597,12 @@ static UT_Bool _toggleSpanOrBlock(FV_View * pView,
 	if (isSpan)
 	{
 		if (!pView->getCharFormat(&props_in))
-		return UT_FALSE;
+		return false;
 	}
 	else // isBlock 
 	{
 		if (!pView->getBlockFormat(&props_in))
-		return UT_FALSE;
+		return false;
 	}
 
 	props_out[0] = prop;
@@ -3677,33 +3677,33 @@ static UT_Bool _toggleSpanOrBlock(FV_View * pView,
 
 	FREEP(buf);
 
-	return UT_TRUE;
+	return true;
 }
 
-static UT_Bool _toggleSpan(FV_View * pView,
+static bool _toggleSpan(FV_View * pView,
 			   const XML_Char * prop,
 			   const XML_Char * vOn,
 			   const XML_Char * vOff,
-			   UT_Bool bMultiple=UT_FALSE)
+			   bool bMultiple=false)
 {
-  return _toggleSpanOrBlock (pView, prop, vOn, vOff, bMultiple, UT_TRUE);
+  return _toggleSpanOrBlock (pView, prop, vOn, vOff, bMultiple, true);
 }
 
-static UT_Bool _toggleBlock(FV_View * pView,
+static bool _toggleBlock(FV_View * pView,
 			    const XML_Char * prop,
 			    const XML_Char * vOn,
 			    const XML_Char * vOff,
-			    UT_Bool bMultiple=UT_FALSE)
+			    bool bMultiple=false)
 {
-  return _toggleSpanOrBlock (pView, prop, vOn, vOff, bMultiple, UT_FALSE);
+  return _toggleSpanOrBlock (pView, prop, vOn, vOff, bMultiple, false);
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-static UT_Bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics, 
+static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics, 
 			       FV_View * pPrintView, const char *pDocName,
-			       UT_uint32 nCopies, UT_Bool bCollate,
+			       UT_uint32 nCopies, bool bCollate,
 			       UT_sint32 iWidth,  UT_sint32 iHeight,
 			       UT_uint32 nToPage, UT_uint32 nFromPage)
 {
@@ -3728,7 +3728,7 @@ static UT_Bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		      // pGraphics->m_iRasterPosition when 
 		      // iHeight is allowed to vary page to page
 		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
-		      pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
+		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
 		      pPrintView->draw(k-1, &da);
 		    }
 	      }
@@ -3741,17 +3741,17 @@ static UT_Bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		      // pGraphics->m_iRasterPosition when 
 		      // iHeight is allowed to vary page to page
 		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
-		      pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
+		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
 		      pPrintView->draw(k-1, &da);
 		    }
 	      }
 	    pGraphics->endPrint();
 	  }
 	
-	return UT_TRUE;
+	return true;
 }
 
-static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
+static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3773,15 +3773,15 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 	pDialog->setDocumentPathname((doc->getFilename())
 								 ? doc->getFilename()
 								 : pFrame->getTempNameFromTitle());
-	pDialog->setEnablePageRangeButton(UT_TRUE,1,pLayout->countPages());
-	pDialog->setEnablePrintSelection(UT_FALSE);	// TODO change this when we know how to do it.
-	pDialog->setEnablePrintToFile(UT_TRUE);
+	pDialog->setEnablePageRangeButton(true,1,pLayout->countPages());
+	pDialog->setEnablePrintSelection(false);	// TODO change this when we know how to do it.
+	pDialog->setEnablePrintToFile(true);
 	pDialog->setTryToBypassActualDialog(bTryToSuppressDialog);
 
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_Print::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == XAP_Dialog_Print::a_OK);
+	bool bOK = (ans == XAP_Dialog_Print::a_OK);
 
 	if (bOK)
 	{
@@ -3802,7 +3802,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		// TODO add code to handle getDoPrintSelection()
 
 		UT_uint32 nCopies = pDialog->getNrCopies();
-		UT_Bool bCollate = pDialog->getCollate();
+		bool bCollate = pDialog->getCollate();
 
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		// BUGBUG assumes all pages are same size and orientation
@@ -3825,7 +3825,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 	return bOK;
 }
 
-static UT_Bool s_doPrintPreview(FV_View * pView)
+static bool s_doPrintPreview(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3864,7 +3864,7 @@ static UT_Bool s_doPrintPreview(FV_View * pView)
 	  }
 		
 	UT_uint32 nCopies = 1;
-	UT_Bool bCollate  = UT_FALSE;
+	bool bCollate  = false;
 	
 	// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 	// BUGBUG assumes all pages are same size and orientation
@@ -3883,10 +3883,10 @@ static UT_Bool s_doPrintPreview(FV_View * pView)
 
 	pDialogFactory->releaseDialog(pDialog);
 				     
-        return UT_TRUE;
+        return true;
 }
 
-static UT_Bool s_doZoomDlg(FV_View * pView)
+static bool s_doZoomDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3906,7 +3906,7 @@ static UT_Bool s_doZoomDlg(FV_View * pView)
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_Zoom::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == XAP_Dialog_Zoom::a_OK);
+	bool bOK = (ans == XAP_Dialog_Zoom::a_OK);
 
 	if (bOK)
 	{
@@ -3933,7 +3933,7 @@ static UT_Bool s_doZoomDlg(FV_View * pView)
 	return bOK;
 }
 
-static UT_Bool s_doBreakDlg(FV_View * pView)
+static bool s_doBreakDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -3950,7 +3950,7 @@ static UT_Bool s_doBreakDlg(FV_View * pView)
 	pDialog->runModal(pFrame);
 
 	AP_Dialog_Break::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == AP_Dialog_Break::a_OK);
+	bool bOK = (ans == AP_Dialog_Break::a_OK);
 
 	if (bOK)
 	{
@@ -4017,7 +4017,7 @@ fp_2_dim (fp_PageSize::Unit u)
     }
 }
 
-static UT_Bool s_doPageSetupDlg (FV_View * pView)
+static bool s_doPageSetupDlg (FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -4048,7 +4048,7 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 	pDialog->setPageSize(orig_def);
 	AP_Dialog_PageSetup::Orientation orig_ori,final_ori;
 	orig_ori =  AP_Dialog_PageSetup::PORTRAIT;
-	if(pDoc->m_docPageSize.isPortrait() == UT_FALSE)
+	if(pDoc->m_docPageSize.isPortrait() == false)
 	       orig_ori = AP_Dialog_PageSetup::LANDSCAPE;
 	pDialog->setPageOrientation(orig_ori);
 	fp_PageSize::Unit orig_unit,final_unit,orig_margu,final_margu;
@@ -4078,7 +4078,7 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 	double dHeaderMargin = 0.0;
 	UT_Dimension docMargUnits = DIM_IN;
 
-	UT_Bool bResult = pView->getSectionFormat(&props_in);
+	bool bResult = pView->getSectionFormat(&props_in);
 	if (!bResult)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -4157,10 +4157,10 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 	pDialog->runModal (pFrame);
 
 	AP_Dialog_PageSetup::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == AP_Dialog_PageSetup::a_OK);
+	bool bOK = (ans == AP_Dialog_PageSetup::a_OK);
 
-	if(bOK == UT_FALSE)
-	       return UT_TRUE;
+	if(bOK == false)
+	       return true;
 
 	final_def = pSize.NameToPredefined(pDialog->getPageSize().getPredefinedName());
 	final_ori = pDialog->getPageOrientation();
@@ -4173,8 +4173,8 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 	  //
 	       pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
 	       pDoc->m_docPageSize.Set(final_unit);
-	       UT_Bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
-	       if( p == UT_TRUE)
+	       bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
+	       if( p == true)
 	       { 
 		      pDoc->m_docPageSize.setPortrait();
 	       }
@@ -4297,7 +4297,7 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 	//
 	ppView->setSectionFormat(props);
 	FREEP(props);
-	return UT_TRUE;
+	return true;
 }
 
 class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
@@ -4308,13 +4308,13 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 	        {
 			p_view = (FV_View *) pJustFocussedView ;
 	        }
-		UT_Bool insertSymbol(UT_UCSChar Char, char *p_font_name)
+		bool insertSymbol(UT_UCSChar Char, char *p_font_name)
 		{
 			UT_ASSERT(p_view != NULL);
 
 			p_view->insertSymbol(Char, (XML_Char*)p_font_name);
 
-			return UT_TRUE;
+			return true;
 		}
 
 	private:
@@ -4324,7 +4324,7 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 
 static  FV_View_Insert_symbol_listener symbol_Listener;
 
-static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
+static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -4337,7 +4337,7 @@ static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	
-	if(pDialog->isRunning() == UT_TRUE)
+	if(pDialog->isRunning() == true)
 	{
 	       pDialog->activate();
 	}
@@ -4347,7 +4347,7 @@ static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	       pDialog->runModeless(pFrame);
 		   
 	}
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -4356,7 +4356,7 @@ static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 Defun1(print)
 {
 	ABIWORD_VIEW;
-	return s_doPrint(pView,UT_FALSE);
+	return s_doPrint(pView,false);
 }
 
 Defun1(printTB)
@@ -4365,7 +4365,7 @@ Defun1(printTB)
 	// suppress the dialog if possible))
 
 	ABIWORD_VIEW;
-	return s_doPrint(pView,UT_TRUE);
+	return s_doPrint(pView,true);
 }
 
 Defun1(printPreview)
@@ -4411,12 +4411,12 @@ Defun1(viewStd)
 	UT_ASSERT(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
 	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_StandardBarVisible, pFrameData->m_bShowBar[0]); 
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(viewFormat)
@@ -4438,12 +4438,12 @@ Defun1(viewFormat)
 	UT_ASSERT(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
 	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_FormatBarVisible, pFrameData->m_bShowBar[1]); 
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(viewExtra)
@@ -4465,12 +4465,12 @@ Defun1(viewExtra)
 	UT_ASSERT(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
 	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[2]); 
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(viewStatus)
@@ -4492,11 +4492,11 @@ Defun1(viewStatus)
 	UT_ASSERT(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
 	pScheme->setValueBool((XML_Char*) AP_PREF_KEY_StatusBarVisible, pFrameData->m_bShowStatusBar);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(viewRuler)
@@ -4519,12 +4519,12 @@ Defun1(viewRuler)
 	UT_ASSERT(pApp);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_ASSERT(pPrefs);
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler); 
 #endif
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(viewPara)
@@ -4546,13 +4546,13 @@ Defun1(viewPara)
     UT_ASSERT(pApp);
     XAP_Prefs * pPrefs = pApp->getPrefs();
     UT_ASSERT(pPrefs);
-    XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+    XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
     UT_ASSERT(pScheme);
 
     pScheme->setValueBool(AP_PREF_KEY_ParaVisible, pFrameData->m_bShowPara);
 #endif
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(viewHeadFoot)
@@ -4562,7 +4562,7 @@ Defun1(viewHeadFoot)
 
 	// TODO: synch this implementation with ap_GetState_View
 	s_TellNotImplemented(pFrame, "View Headers and Footers", __LINE__);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(zoom)
@@ -4599,7 +4599,7 @@ Defun(zoom)
 
 	pFrame->setZoomPercentage(iZoom);
 	
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(dlgZoom)
@@ -4608,7 +4608,7 @@ Defun1(dlgZoom)
 	return s_doZoomDlg(pView);
 }
 
-static UT_Bool s_doInsertDateTime(FV_View * pView)
+static bool s_doInsertDateTime(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -4633,13 +4633,13 @@ static UT_Bool s_doInsertDateTime(FV_View * pView)
 
 		strftime(szCurrentDateTime,CURRENT_DATE_TIME_SIZE,pDialog->GetDateTimeFormat(),pTime);
 		UT_UCS_cloneString_char(&CurrentDateTime,szCurrentDateTime);
-		pView->cmdCharInsert(CurrentDateTime,UT_UCS_strlen(CurrentDateTime), UT_TRUE);
+		pView->cmdCharInsert(CurrentDateTime,UT_UCS_strlen(CurrentDateTime), true);
 		FREEP(CurrentDateTime);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insDateTime)
@@ -4657,7 +4657,7 @@ Defun1(insBreak)
 	return s_doBreakDlg(pView);
 }
 
-static UT_Bool s_doInsertPageNumbers(FV_View * pView)
+static bool s_doInsertPageNumbers(FV_View * pView)
 {
         const XML_Char * right_attributes [] = {
 	  "text-align", "right", NULL, NULL
@@ -4702,7 +4702,7 @@ static UT_Bool s_doInsertPageNumbers(FV_View * pView)
 
 	pDialogFactory->releaseDialog(pDialog);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insPageNo)
@@ -4711,7 +4711,7 @@ Defun1(insPageNo)
 	return s_doInsertPageNumbers(pView);
 }
 
-static UT_Bool s_doField(FV_View * pView)
+static bool s_doField(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -4735,7 +4735,7 @@ static UT_Bool s_doField(FV_View * pView)
 
 	pDialogFactory->releaseDialog(pDialog);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(insField)
@@ -4764,7 +4764,7 @@ Defun1(dlgParagraph)
 	return s_doParagraphDlg(pView);
 }
 
-static UT_Bool s_doBullets(FV_View *pView)
+static bool s_doBullets(FV_View *pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -4777,7 +4777,7 @@ static UT_Bool s_doBullets(FV_View *pView)
 		= (AP_Dialog_Lists *)(pDialogFactory->requestDialog(AP_DIALOG_ID_LISTS));
 	UT_ASSERT(pDialog);
 
-	if(pDialog->isRunning() == UT_TRUE)
+	if(pDialog->isRunning() == true)
 	{
 		pDialog->activate();
 	}
@@ -4785,7 +4785,7 @@ static UT_Bool s_doBullets(FV_View *pView)
 	{
 		pDialog->runModeless(pFrame);
 	}
-	return UT_TRUE;
+	return true;
 }
 
 
@@ -4799,7 +4799,7 @@ Defun1(dlgBullets)
   	UT_ASSERT(pFrame);
   
 	s_TellNotImplemented(pFrame, "Bullets and Numbering dialog", __LINE__);
-	return UT_TRUE;
+	return true;
 #else
 	ABIWORD_VIEW;
 	return s_doBullets(pView);
@@ -4812,10 +4812,10 @@ Defun1(dlgBorders)
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Border and shading dialog", __LINE__);
-	return UT_TRUE;
+	return true;
 }
 
-static UT_Bool s_doColumnsDlg(FV_View * pView)
+static bool s_doColumnsDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -4830,12 +4830,12 @@ static UT_Bool s_doColumnsDlg(FV_View * pView)
 	UT_ASSERT(pDialog);
 
 	UT_uint32 iColumns = 1;
-	UT_Bool bLineBetween = UT_FALSE;
+	bool bLineBetween = false;
 
 	const XML_Char ** props_in = NULL;
 	const XML_Char * sz = NULL;
 
-    UT_Bool bResult = pView->getSectionFormat(&props_in);
+    bool bResult = pView->getSectionFormat(&props_in);
 
     if (!bResult)
 	{
@@ -4858,7 +4858,7 @@ static UT_Bool s_doColumnsDlg(FV_View * pView)
 	{
 		if(strcmp(sz, "on") == 0)
 		{
-			bLineBetween = UT_TRUE;
+			bLineBetween = true;
 		}
 	}
 	
@@ -4867,7 +4867,7 @@ static UT_Bool s_doColumnsDlg(FV_View * pView)
 	pDialog->runModal(pFrame);
 
 	AP_Dialog_Columns::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == AP_Dialog_Columns::a_OK);
+	bool bOK = (ans == AP_Dialog_Columns::a_OK);
 
 	if (bOK)
 	{
@@ -4908,7 +4908,7 @@ Defun(style)
 	ABIWORD_VIEW;
 	const XML_Char * style = (const XML_Char *) pCallData->m_pData;
 	pView->setStyle(style);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(dlgStyle)
@@ -4917,7 +4917,7 @@ Defun1(dlgStyle)
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Styles dialog", __LINE__);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(dlgTabs)
@@ -4930,10 +4930,10 @@ Defun1(dlgTabs)
 Defun0(noop)
 {
 	// this is a no-op, so unbound menus don't assert at trade shows
-	return UT_TRUE;
+	return true;
 }
 
-static UT_Bool s_doWordCountDlg(FV_View * pView)
+static bool s_doWordCountDlg(FV_View * pView)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
@@ -4956,7 +4956,7 @@ static UT_Bool s_doWordCountDlg(FV_View * pView)
 		pDialog->setCount(pView->countWords());
 		pDialog->runModeless(pFrame);
 	}
-	UT_Bool bOK = UT_TRUE;
+	bool bOK = true;
 	return bOK;
 }
 
@@ -4986,18 +4986,18 @@ Defun1(toggleItalic)
 Defun1(toggleUline)
 {
 	ABIWORD_VIEW;
-	return _toggleSpan(pView, "text-decoration", "underline", "none", UT_TRUE);
+	return _toggleSpan(pView, "text-decoration", "underline", "none", true);
 }
 Defun1(toggleOline)
 {
 	ABIWORD_VIEW;
-	return _toggleSpan(pView, "text-decoration", "overline", "none", UT_TRUE);
+	return _toggleSpan(pView, "text-decoration", "overline", "none", true);
 }
 
 Defun1(toggleStrike)
 {
 	ABIWORD_VIEW;
-	return _toggleSpan(pView, "text-decoration", "line-through", "none", UT_TRUE);
+	return _toggleSpan(pView, "text-decoration", "line-through", "none", true);
 }
 
 // MSWord defines this to 1/2 an inch, so we do too
@@ -5019,12 +5019,12 @@ Defun1(toggleIndent)
 
   // make sure that we stay on the page
   if (howmuch > page_size)
-    return UT_TRUE;
+    return true;
 
   char * new_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch));
   char * old_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch - TOGGLE_INDENT_AMT));
-  UT_Bool ret;
-  if(pView->getCurrentBlock()->isListItem() == UT_FALSE)
+  bool ret;
+  if(pView->getCurrentBlock()->isListItem() == false)
   {
          ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
   }
@@ -5054,13 +5054,13 @@ Defun1(toggleUnIndent)
 
   // make sure that we stay on the page
   if (howmuch < 0)
-    return UT_TRUE;
+    return true;
 
   char * new_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch));
   char * old_buf = UT_strdup (UT_convertInchesToDimensionString (dim, howmuch + TOGGLE_INDENT_AMT));
-  UT_Bool ret;
+  bool ret;
   double page_size = pView->getPageSize().Width (fp_PageSize::inch);
-  if(pView->getCurrentBlock()->isListItem() == UT_FALSE)
+  if(pView->getCurrentBlock()->isListItem() == false)
   {
          ret =  (_toggleBlock (pView, "margin-left", new_buf, old_buf));
   }
@@ -5092,14 +5092,14 @@ Defun1(doBullets)
 {
 	ABIWORD_VIEW;
 	pView->processSelectedBlocks(BULLETED_LIST);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(doNumbers)
 {
 	ABIWORD_VIEW;
 	pView->processSelectedBlocks(NUMBERED_LIST);
-	return UT_TRUE;
+	return true;
 }
 
 Defun(colorForeTB)
@@ -5110,7 +5110,7 @@ Defun(colorForeTB)
   properties[1] = (const XML_Char *) pCallData->m_pData;
   pView->setCharFormat(properties);
 
-  return UT_TRUE;
+  return true;
 }
 
 Defun(colorBackTB)
@@ -5121,14 +5121,14 @@ Defun(colorBackTB)
 	properties[1] = (const XML_Char *) pCallData->m_pData;
 	pView->setCharFormat(properties);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun0(togglePlain)
 {
 	// TODO: remove all character-level formatting
 	// HYP: explicitly delete it, to get back to defaults, styles
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(alignLeft)
@@ -5136,7 +5136,7 @@ Defun1(alignLeft)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "left", 0};
 	pView->setBlockFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(alignCenter)
@@ -5144,7 +5144,7 @@ Defun1(alignCenter)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "center", 0};
 	pView->setBlockFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(alignRight)
@@ -5152,7 +5152,7 @@ Defun1(alignRight)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "right", 0};
 	pView->setBlockFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(alignJustify)
@@ -5160,7 +5160,7 @@ Defun1(alignJustify)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "justify", 0};
 	pView->setBlockFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(setStyleHeading1)
@@ -5168,7 +5168,7 @@ Defun1(setStyleHeading1)
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 1";
 	pView->setStyle(style);
-	return UT_TRUE;
+	return true;
 }
 
 
@@ -5177,7 +5177,7 @@ Defun1(setStyleHeading2)
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 2";
 	pView->setStyle(style);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(setStyleHeading3)
@@ -5185,7 +5185,7 @@ Defun1(setStyleHeading3)
 	ABIWORD_VIEW;
 	const XML_Char * style = "Heading 3";
 	pView->setStyle(style);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(sectColumns1)
@@ -5193,7 +5193,7 @@ Defun1(sectColumns1)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "columns", "1", 0};
 	pView->setSectionFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(sectColumns2)
@@ -5201,7 +5201,7 @@ Defun1(sectColumns2)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "columns", "2", 0};
 	pView->setSectionFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(sectColumns3)
@@ -5209,7 +5209,7 @@ Defun1(sectColumns3)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "columns", "3", 0};
 	pView->setSectionFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(paraBefore0)
@@ -5217,7 +5217,7 @@ Defun1(paraBefore0)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "margin-top", "0pt", 0};
 	pView->setBlockFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(paraBefore12)
@@ -5225,7 +5225,7 @@ Defun1(paraBefore12)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "margin-top", "12pt", 0};
 	pView->setBlockFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(singleSpace)
@@ -5233,7 +5233,7 @@ Defun1(singleSpace)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "line-height", "1.0", 0};
 	pView->setBlockFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(middleSpace)
@@ -5241,7 +5241,7 @@ Defun1(middleSpace)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "line-height", "1.5", 0};
 	pView->setBlockFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(doubleSpace)
@@ -5249,7 +5249,7 @@ Defun1(doubleSpace)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "line-height", "2.0", 0};
 	pView->setBlockFormat(properties);
-	return UT_TRUE;
+	return true;
 }
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
@@ -5257,14 +5257,14 @@ Defun1(Test_Dump)
 {
 	ABIWORD_VIEW;
 	pView->Test_Dump();
-	return UT_TRUE;
+	return true;
 }
 
 Defun1(Test_Ftr)
 {
 	ABIWORD_VIEW;
-	pView->insertPageNum(NULL, UT_FALSE);
-	return UT_TRUE;
+	pView->insertPageNum(NULL, false);
+	return true;
 }
 #endif
 
@@ -5277,9 +5277,9 @@ Defun1(setEditVI)
 	UT_ASSERT(pFrame);
 
 	// When exiting input mode, vi goes to previous character
-	pView->cmdCharMotion(UT_FALSE,1);
+	pView->cmdCharMotion(false,1);
 
-	UT_Bool bResult = (pFrame->setInputMode("viEdit") != 0);
+	bool bResult = (pFrame->setInputMode("viEdit") != 0);
 	return bResult;
 }
 
@@ -5290,7 +5290,7 @@ Defun1(setInputVI)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
-	UT_Bool bResult = (pFrame->setInputMode("viInput") != 0);
+	bool bResult = (pFrame->setInputMode("viInput") != 0);
 	return bResult;
 }
 
@@ -5306,21 +5306,21 @@ Defun1(cycleInputMode)
 	UT_ASSERT(pPrefs);
 
 	// this edit method may get ignored entirely
-	UT_Bool b;
+	bool b;
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_KeyBindingsCycle, &b) && !b)
-		return UT_FALSE;
+		return false;
 
 	const char * szCurrentInputMode = pFrame->getInputMode();
 	UT_ASSERT(szCurrentInputMode);
 	const char * szNextInputMode = AP_BindingSet::s_getNextInCycle(szCurrentInputMode);
 	if (!szNextInputMode)				// probably an error....
-		return UT_FALSE;
+		return false;
 	
-	UT_Bool bResult = (pFrame->setInputMode(szNextInputMode) != 0);
+	bool bResult = (pFrame->setInputMode(szNextInputMode) != 0);
 
 #if 1
 	// POLICY: make this the default for new frames, too
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
 	pScheme->setValue((XML_Char*)AP_PREF_KEY_KeyBindings,
@@ -5340,9 +5340,9 @@ Defun1(toggleInsertMode)
 	UT_ASSERT(pPrefs);
 
 	// this edit method may get ignored entirely
-	UT_Bool b;
+	bool b;
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_InsertModeToggle, &b) && !b)
-		return UT_FALSE;
+		return false;
 
 	// toggle the insert mode
 	AP_FrameData *pFrameData = (AP_FrameData *)pFrame->getFrameData();
@@ -5355,13 +5355,13 @@ Defun1(toggleInsertMode)
 
 #if 1
 	// POLICY: make this the default for new frames, too
-	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
 	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_InsertMode, pFrameData->m_bInsertMode); 
 #endif
 
-	return UT_TRUE;
+	return true;
 }
 
 

@@ -52,7 +52,7 @@ class ZoomWin:public BWindow {
 		BTextControl 		*m_CustomText;	
 		UT_uint32		 m_CurrentPercent;
 		XAP_Frame::tZoomType	 m_CurrentType;
-		UT_Bool			 m_Okay;
+		bool			 m_Okay;
 		
 		sem_id modalSem;
 		status_t WaitForDelete(sem_id deleteSem);
@@ -96,7 +96,7 @@ bool ZoomWin::QuitRequested()
 
 void ZoomWin::GetAnswer(XAP_Frame::tZoomType &ZoomType, UT_uint32 &ZoomPercent)
 {
-	if (m_Okay==UT_TRUE)
+	if (m_Okay==true)
 	{
 		ZoomType=m_CurrentType;
 		ZoomPercent=m_CurrentPercent;
@@ -114,7 +114,7 @@ ZoomWin::ZoomWin(BMessage *data)
 	  :BWindow(data) 
 {
 	
-	m_Okay=UT_FALSE;
+	m_Okay=false;
 } //ZoomWin::ZoomWin
 void ZoomWin::MessageReceived(BMessage *msg)
 {
@@ -173,7 +173,7 @@ void ZoomWin::MessageReceived(BMessage *msg)
 		case 'appl':
 		{
 			printf("Setting okay to true\n");
-			m_Okay=UT_TRUE;
+			m_Okay=true;
 			
 			PostMessage(B_QUIT_REQUESTED);
 		}

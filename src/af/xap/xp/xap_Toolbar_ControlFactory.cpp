@@ -34,7 +34,7 @@ XAP_Toolbar_ControlFactory::~XAP_Toolbar_ControlFactory(void)
 {
 }
 
-UT_Bool XAP_Toolbar_ControlFactory::_find_ControlInTable(XAP_Toolbar_Id id, UT_uint32 * pIndex) const
+bool XAP_Toolbar_ControlFactory::_find_ControlInTable(XAP_Toolbar_Id id, UT_uint32 * pIndex) const
 {
 	// search the table and return the index of the entry with this id.
 
@@ -45,12 +45,12 @@ UT_Bool XAP_Toolbar_ControlFactory::_find_ControlInTable(XAP_Toolbar_Id id, UT_u
 		if (m_ctl_table[k].m_id == id)
 		{
 			*pIndex = k;
-			return UT_TRUE;
+			return true;
 		}
 	}
 
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return UT_FALSE;
+	return false;
 }
 
 /*****************************************************************/

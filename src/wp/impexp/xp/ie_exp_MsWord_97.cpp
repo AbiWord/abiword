@@ -304,7 +304,7 @@ IE_Exp_MsWord_97::~IE_Exp_MsWord_97()
 /********************************************************/
 /********************************************************/
 
-UT_Bool IE_Exp_MsWord_97::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_MsWord_97::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".doc") == 0);
 }
@@ -317,17 +317,17 @@ UT_Error IE_Exp_MsWord_97::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool IE_Exp_MsWord_97::GetDlgLabels(const char ** pszDesc,
+bool IE_Exp_MsWord_97::GetDlgLabels(const char ** pszDesc,
                                         const char ** pszSuffixList,
                                         IEFileType * ft)
 {
 	*pszDesc = "Microsoft Word (.doc)";
 	*pszSuffixList = "*.doc";
 	*ft = IEFT_MsWord_97;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Exp_MsWord_97::SupportsFileType(IEFileType ft)
+bool IE_Exp_MsWord_97::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_MsWord_97 == ft);
 }
@@ -344,18 +344,18 @@ public:
 
 	virtual ~s_MsWord_97_Listener();
 
-	virtual UT_Bool populate(PL_StruxFmtHandle sfh,
+	virtual bool populate(PL_StruxFmtHandle sfh,
 		  				     const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool populateStrux(PL_StruxDocHandle sdh,
+	virtual bool populateStrux(PL_StruxDocHandle sdh,
 							 	  const PX_ChangeRecord * pcr,
 							 	  PL_StruxFmtHandle * psfh);
 
 
-	virtual UT_Bool change(PL_StruxFmtHandle sfh,
+	virtual bool change(PL_StruxFmtHandle sfh,
 						   const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool insertStrux(PL_StruxFmtHandle sfh,
 								const PX_ChangeRecord * pcr,
 	                            PL_StruxDocHandle sdh,
 	                            PL_ListenerId lid,
@@ -363,7 +363,7 @@ public:
 		                                                PL_ListenerId lid,
 		                                                PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool signal(UT_uint32 iSignal);
+	virtual bool signal(UT_uint32 iSignal);
 
 protected:	
     void				_closeSection(void);
@@ -371,7 +371,7 @@ protected:
 	void				_closeSpan(void);
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
-								 UT_Bool bNewLineAfter, PT_AttrPropIndex api);
+								 bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_handleStyles(void);
 	void				_handleDataItems(void);
@@ -385,9 +385,9 @@ protected:
 
 	PD_Document *		m_pDocument;
 	IE_Exp_MsWord_97*	m_pie;
-	UT_Bool				m_bInSection;
-	UT_Bool				m_bInBlock;
-	UT_Bool				m_bInSpan;
+	bool				m_bInSection;
+	bool				m_bInBlock;
+	bool				m_bInSpan;
 	PT_AttrPropIndex	m_apiLastSpan;
 };
 
@@ -424,7 +424,7 @@ UT_Error IE_Exp_MsWord_97::_writeDocument(void)
 // in common. Unfortunately, we do not.
 //
 
-UT_Bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
+bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
 {
 	UT_ASSERT(szFileName);
 
@@ -432,7 +432,7 @@ UT_Bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
 	if(!m_pExporter)
 	  {
 	    UT_DEBUGMSG(("MSWord Exporter: NULL exporter object\n"));
-	    return UT_FALSE;
+	    return false;
 	  }
 
 	UT_DEBUGMSG(("MSWord Exporter: created exporter object\n"));
@@ -450,7 +450,7 @@ UT_Bool IE_Exp_MsWord_97::_openFile(const char * szFileName)
 	wvExporter_summaryPutLong(m_pExporter, PID_CHARCOUNT, 0);
 #endif
 
-	return UT_TRUE;
+	return true;
 }
 
 UT_uint32 IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
@@ -464,7 +464,7 @@ UT_uint32 IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes, UT_uint32 length
 				     length, (void*)pBytes);
 }
 
-UT_Bool IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes)
+bool IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes)
 {
 	UT_ASSERT(pBytes);
 	UT_uint32 length = (UT_uint32)strlen((const char *)pBytes);
@@ -473,9 +473,9 @@ UT_Bool IE_Exp_MsWord_97::_writeBytes(const UT_Byte * pBytes)
 	return (_writeBytes(pBytes, length) == length);
 }
 
-UT_Bool IE_Exp_MsWord_97::_closeFile(void)
+bool IE_Exp_MsWord_97::_closeFile(void)
 {
-	UT_Bool tmp = UT_TRUE;
+	bool tmp = true;
 
 	wvExporter_close(m_pExporter);
 	return tmp;
@@ -521,7 +521,7 @@ s_MsWord_97_Listener::~s_MsWord_97_Listener()
         // nothing
 }
 
-UT_Bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 									  const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -536,7 +536,7 @@ UT_Bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
 
-			return UT_TRUE;
+			return true;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -549,28 +549,28 @@ UT_Bool s_MsWord_97_Listener::populate(PL_StruxFmtHandle /*sfh*/,
             // Should do something with these.
 			case PTO_Image:
 				
-                return UT_TRUE;
+                return true;
 
 			case PTO_Field:
 				
-				return UT_TRUE;
+				return true;
 
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 			}
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return UT_TRUE;
+		return true;
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_MsWord_97_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_MsWord_97_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -585,34 +585,34 @@ UT_Bool s_MsWord_97_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeSpan();
 			_closeBlock();
 			_closeSection();
-			_openTag("section","",UT_TRUE,pcr->getIndexAP());
-			m_bInSection = UT_TRUE;
-			return UT_TRUE;
+			_openTag("section","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
 		}
 
 	case PTX_Block:
 		{
 			_closeSpan();
 			_closeBlock();
-			_openTag("p","",UT_FALSE,pcr->getIndexAP());
-			m_bInBlock = UT_TRUE;
-			return UT_TRUE;
+			_openTag("p","",false,pcr->getIndexAP());
+			m_bInBlock = true;
+			return true;
 		}
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_MsWord_97_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_MsWord_97_Listener::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_MsWord_97_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_MsWord_97_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 										  const PX_ChangeRecord * /*pcr*/,
 										  PL_StruxDocHandle /*sdh*/,
 										  PL_ListenerId /* lid */,
@@ -621,13 +621,13 @@ UT_Bool s_MsWord_97_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																	  PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_MsWord_97_Listener::signal(UT_uint32 /* iSignal */)
+bool s_MsWord_97_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 
@@ -636,7 +636,7 @@ void s_MsWord_97_Listener::_closeBlock(void) {}
 void s_MsWord_97_Listener::_closeSpan(void) {}
 void s_MsWord_97_Listener::_openSpan(PT_AttrPropIndex apiSpan) {}
 void s_MsWord_97_Listener::_openTag(const char * szPrefix, const char * szSuffix,
-							    UT_Bool bNewLineAfter, PT_AttrPropIndex api) {}
+							    bool bNewLineAfter, PT_AttrPropIndex api) {}
 
 void s_MsWord_97_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length) 
 {

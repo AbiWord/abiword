@@ -40,7 +40,7 @@ public:
 	
 protected:
 	UT_sint32 m_iMilliseconds;
-	UT_Bool m_bStarted;
+	bool m_bStarted;
 
 #if defined(USE_TIMER_THREADS) 
 	timer_t timerid;

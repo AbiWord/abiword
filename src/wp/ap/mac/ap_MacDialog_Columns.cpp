@@ -148,6 +148,6 @@ void AP_MacDialog_Columns::_storeWindowData(void)
 //	m_break = _getActiveRadioItem();
 }
 
-void AP_MacDialog_Columns::enableLineBetweenControl(UT_Bool bState)
+void AP_MacDialog_Columns::enableLineBetweenControl(bool bState)
 {
 }

@@ -35,7 +35,7 @@ EV_Toolbar_Control::EV_Toolbar_Control(EV_Toolbar * pToolbar)
 	// set defaults ... should be overridden
 	m_nPixels = 40;
 	m_nLimit = 0;
-	m_bSort = UT_FALSE;
+	m_bSort = false;
 }
 
 EV_Toolbar_Control::~EV_Toolbar_Control(void)
@@ -62,7 +62,7 @@ UT_uint32 EV_Toolbar_Control::getMaxLength(void) const
 	return m_nLimit;
 }
 
-UT_Bool EV_Toolbar_Control::shouldSort(void) const
+bool EV_Toolbar_Control::shouldSort(void) const
 {
 	return m_bSort;
 }

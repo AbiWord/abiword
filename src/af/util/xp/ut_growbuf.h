@@ -34,17 +34,17 @@ public:
 	UT_GrowBuf(UT_uint32 iChunk = 0);
 	~UT_GrowBuf();
 
-	UT_Bool				append(const UT_uint16 * pValue, UT_uint32 length);
-	UT_Bool				ins(UT_uint32 position, const UT_uint16 * pValue, UT_uint32 length);
-	UT_Bool				ins(UT_uint32 position, UT_uint32 length);
-	UT_Bool				del(UT_uint32 position, UT_uint32 amount);
-	UT_Bool				overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length);
+	bool				append(const UT_uint16 * pValue, UT_uint32 length);
+	bool				ins(UT_uint32 position, const UT_uint16 * pValue, UT_uint32 length);
+	bool				ins(UT_uint32 position, UT_uint32 length);
+	bool				del(UT_uint32 position, UT_uint32 amount);
+	bool				overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length);
 	void				truncate(UT_uint32 position);
 	UT_uint32			getLength(void) const;
 	UT_uint16 *			getPointer(UT_uint32 position) const;				/* temporary use only */
 	
 protected:
-	UT_Bool				_growBuf(UT_uint32 spaceNeeded);
+	bool				_growBuf(UT_uint32 spaceNeeded);
 
 	UT_uint16 *			m_pBuf;
 	UT_uint32			m_iSize;			/* amount currently used */

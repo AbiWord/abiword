@@ -112,7 +112,7 @@ static char * mapFontName(const char *name)
 
 #undef TableSize
 
-static UT_Bool isItalic(XAP_UnixFont::style s)
+static bool isItalic(XAP_UnixFont::style s)
 {
         return ((s == XAP_UnixFont::STYLE_ITALIC) || (s == XAP_UnixFont::STYLE_BOLD_ITALIC));
 }
@@ -158,7 +158,7 @@ GnomeFont * XAP_UnixGnomePrintGraphics::_allocGnomeFont(PSFont* pFont)
 	char *abi_name            = (char*)uf->getName();
 	
 	GnomeFontWeight gfw = getGnomeFontWeight(style);
-	UT_Bool italic      = isItalic(style);
+	bool italic      = isItalic(style);
 	
 	// ok, this is the ugliest hack of the year, so I'll take it one step
 	// at a time
@@ -251,7 +251,7 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 													   const char * pageSize,
 						       XAP_UnixFontManager * fontManager,
 						       XAP_App *pApp,
-						       UT_Bool isPreview)
+						       bool isPreview)
 {
         m_pApp         = pApp;
 	m_gpm          = gpm;
@@ -271,8 +271,8 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 
 	m_bIsPreview   = isPreview;
 	m_fm           = fontManager;
-	m_bStartPrint  = UT_FALSE;
-	m_bStartPage   = UT_FALSE;
+	m_bStartPrint  = false;
+	m_bStartPage   = false;
 	m_pCurrentFont = NULL;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
@@ -331,7 +331,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 
 			pD = buf;
 			for (pB = pS; (pB < pS + OUR_LINE_LIMIT) && (pB < pEnd); pB++) {
-					currentChar = remapGlyph(*pB, *pB >= 256 ? UT_TRUE : UT_FALSE);
+					currentChar = remapGlyph(*pB, *pB >= 256 ? true : false);
 					currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
 					pD += unichar_to_utf8 (currentChar, pD);
 			}
@@ -377,17 +377,17 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 	gnome_print_setfont (m_gpc, m_pCurrentFont);
 }
 
-UT_Bool XAP_UnixGnomePrintGraphics::queryProperties(GR_Graphics::Properties gp) const
+bool XAP_UnixGnomePrintGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
 	case DGP_SCREEN:
-		return UT_FALSE;
+		return false;
 	case DGP_PAPER:
-		return UT_TRUE;
+		return true;
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
@@ -418,30 +418,30 @@ void XAP_UnixGnomePrintGraphics::setLineWidth(UT_sint32 iLineWidth)
  	m_dLineWidth = (double)((double)iLineWidth * _scale_factor_get());
 }
 
-UT_Bool XAP_UnixGnomePrintGraphics::startPrint(void)
+bool XAP_UnixGnomePrintGraphics::startPrint(void)
 {
         UT_ASSERT(!m_bStartPrint);
-	m_bStartPrint = UT_TRUE;
+	m_bStartPrint = true;
 	return _startDocument();
 }
 
-UT_Bool XAP_UnixGnomePrintGraphics::startPage(const char * szPageLabel)
+bool XAP_UnixGnomePrintGraphics::startPage(const char * szPageLabel)
 {
 	if (m_bStartPage)
 	  _endPage();
-	m_bStartPage = UT_TRUE;
-	m_bNeedStroked = UT_FALSE;
+	m_bStartPage = true;
+	m_bNeedStroked = false;
 	return _startPage(szPageLabel);
 }
 
-UT_Bool XAP_UnixGnomePrintGraphics::startPage (const char *szPageLabel, 
+bool XAP_UnixGnomePrintGraphics::startPage (const char *szPageLabel, 
 				       unsigned int, unsigned char, 
 				       unsigned int, unsigned int)
 {
         return startPage(szPageLabel);
 }
 
-UT_Bool XAP_UnixGnomePrintGraphics::endPrint()
+bool XAP_UnixGnomePrintGraphics::endPrint()
 {
 	if (m_bStartPage)
 	  _endPage();
@@ -460,7 +460,7 @@ GR_Graphics::ColorSpace XAP_UnixGnomePrintGraphics::getColorSpace(void) const
 
 
 void XAP_UnixGnomePrintGraphics::drawAnyImage (GR_Image* pImg, 
-				       UT_sint32 xDest, UT_sint32 yDest, UT_Bool rgb)
+				       UT_sint32 xDest, UT_sint32 yDest, bool rgb)
 {
 	UT_sint32 iDestWidth  = pImg->getDisplayWidth();
 	UT_sint32 iDestHeight = pImg->getDisplayHeight();
@@ -523,13 +523,13 @@ void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest,
    	switch(m_cs)
      	{
        	case GR_Graphics::GR_COLORSPACE_COLOR:
-		drawAnyImage(pImg, xDest, yDest, UT_TRUE);
+		drawAnyImage(pImg, xDest, yDest, true);
 		break;
       	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
-		drawAnyImage(pImg, xDest, yDest, UT_FALSE);
+		drawAnyImage(pImg, xDest, yDest, false);
 		break;
       	case GR_Graphics::GR_COLORSPACE_BW:
-		drawAnyImage(pImg, xDest, yDest, UT_FALSE);
+		drawAnyImage(pImg, xDest, yDest, false);
 		break;
       	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -557,20 +557,20 @@ GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName,
 /***********************************************************************/
 /*                          Protected things                           */
 /***********************************************************************/
-UT_Bool	XAP_UnixGnomePrintGraphics::_startDocument(void)
+bool	XAP_UnixGnomePrintGraphics::_startDocument(void)
 {
-        return UT_TRUE;
+        return true;
 }
 
-UT_Bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
+bool XAP_UnixGnomePrintGraphics::_startPage(const char * szPageLabel)
 {
 		xxx_UT_DEBUGMSG(("DOM: startPage\n"));
         gnome_print_beginpage(m_gpc, szPageLabel);
 		_setup_rotation ();
-		return UT_TRUE;
+		return true;
 }
 
-UT_Bool XAP_UnixGnomePrintGraphics::_endPage(void)
+bool XAP_UnixGnomePrintGraphics::_endPage(void)
 {
 		xxx_UT_DEBUGMSG(("DOM: endPage\n"));
 
@@ -578,17 +578,17 @@ UT_Bool XAP_UnixGnomePrintGraphics::_endPage(void)
 	  gnome_print_stroke(m_gpc);
 
 	gnome_print_showpage(m_gpc);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_UnixGnomePrintGraphics::_endDocument(void)
+bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 {
 
 		xxx_UT_DEBUGMSG(("DOM: endDocument\n"));
 		// bonobo version, we'd don't own the context
 		// or the master, just return
 	if(!m_gpm)
-	  return UT_TRUE;
+	  return true;
 
         gnome_print_master_close(m_gpm);
 
@@ -608,7 +608,7 @@ UT_Bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 	  }
 	
 	gtk_object_unref(GTK_OBJECT(m_gpm));
-	return UT_TRUE;
+	return true;
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::_getResolution(void) const

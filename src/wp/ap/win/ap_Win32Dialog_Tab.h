@@ -45,7 +45,7 @@ protected:
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
 
-	void _controlEnable( tControl id, UT_Bool value );
+	void _controlEnable( tControl id, bool value );
 
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
  					    virtual void    _set##a( t )

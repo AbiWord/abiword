@@ -312,11 +312,11 @@ void AP_QNXFrame::setXScrollRange(void)
 	UT_DEBUGMSG(("X SLIDER SIZE CHANGE TO %f (max %d) ", slidersize, newmax));
 
 	/*
-	UT_Bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
-	UT_Bool bDifferentLimits = ((width-windowWidth) != (m_pHadj->upper-m_pHadj->page_size));
+	bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
+	bool bDifferentLimits = ((width-windowWidth) != (m_pHadj->upper-m_pHadj->page_size));
 	*/
-	UT_Bool bDifferentPosition = 1;
-	UT_Bool bDifferentLimits = 1;
+	bool bDifferentPosition = 1;
+	bool bDifferentLimits = 1;
 
 	//printf("Set X limits to %d -[%d]- %d \n", 0, newvalue, newmax);
 	
@@ -356,11 +356,11 @@ void AP_QNXFrame::setYScrollRange(void)
 	UT_DEBUGMSG(("Y SLIDER SIZE CHANGE TO %f (max %d) ", slidersize, newmax));
 
 	/*
-	UT_Bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
-	UT_Bool bDifferentLimits ((height-windowHeight) != (m_pVadj->upper-m_pVadj->page_size));
+	bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
+	bool bDifferentLimits ((height-windowHeight) != (m_pVadj->upper-m_pVadj->page_size));
 	*/
-	UT_Bool bDifferentPosition = 1;
-	UT_Bool bDifferentLimits = 1;
+	bool bDifferentPosition = 1;
+	bool bDifferentLimits = 1;
 
 	//printf("Set Y limits to %d -[%d]- %d \n", 0, newvalue, newmax);
 
@@ -388,17 +388,17 @@ AP_QNXFrame::~AP_QNXFrame(void)
 	killFrameData();
 }
 
-UT_Bool AP_QNXFrame::initialize(void)
+bool AP_QNXFrame::initialize(void)
 {
 	if (!initFrameData())
-		return UT_FALSE;
+		return false;
 
 	if (!XAP_QNXFrame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 								   AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
 								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 								   AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
-		return UT_FALSE;
+		return false;
 
 	_createTopLevelWindow();
 	_showOrHideToolbars();
@@ -406,7 +406,7 @@ UT_Bool AP_QNXFrame::initialize(void)
 	PtRealizeWidget(m_wTopLevelWindow);
 	PtDamageWidget(m_wTopLevelWindow);
 
-	return UT_TRUE;
+	return true;
 }
 
 // Does the initial show/hide of toolbars (based on the user prefs).
@@ -415,7 +415,7 @@ UT_Bool AP_QNXFrame::initialize(void)
 // and thus we have to manually call this function at startup.
 void AP_QNXFrame::_showOrHideToolbars(void)
 {
-    UT_Bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
+    bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
 
     for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
     {
@@ -430,20 +430,20 @@ void AP_QNXFrame::_showOrHideToolbars(void)
 // Does the initial show/hide of toolbars (based on the user prefs).
 void AP_QNXFrame::_showOrHideStatusbar(void)
 {
-    UT_Bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
+    bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
     //  toggleStatusBar(bShowStatusBar);
 }
 
 /*****************************************************************/
 
-UT_Bool AP_QNXFrame::initFrameData(void)
+bool AP_QNXFrame::initFrameData(void)
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
 	AP_FrameData* pData = new AP_FrameData(m_pQNXApp);
 
 	m_pData = (void*)pData;
-	return (pData ? UT_TRUE : UT_FALSE);
+	return (pData ? true : false);
 }
 
 void AP_QNXFrame::killFrameData(void)
@@ -522,7 +522,7 @@ Cleanup:
 
 UT_Error AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
 {
-	UT_Bool bUpdateClones;
+	bool bUpdateClones;
 	UT_Vector vClones;
 	XAP_App * pApp = getApp();
 
@@ -628,7 +628,7 @@ PtWidget_t * AP_QNXFrame::_createDocumentWindow(void)
 
 	/*TF DIFF: There is code here to not show
                the rulers, checked by
-		UT_Bool bShowRulers = ((AP_FrameData*)m_pData)->m_bShowRuler;
+		bool bShowRulers = ((AP_FrameData*)m_pData)->m_bShowRuler;
 	*/
 
 
@@ -822,7 +822,7 @@ UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
 	return _showDocument();
 }
 
-void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn) {
+void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
     AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
     UT_ASSERT(pFrameData);
 
@@ -834,11 +834,11 @@ void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn) {
     }
 }
 
-void AP_QNXFrame::toggleRuler(UT_Bool bRulerOn) {
+void AP_QNXFrame::toggleRuler(bool bRulerOn) {
 	UT_DEBUGMSG(("TODO: Toggle ruler code "));
 }
 
-void AP_QNXFrame::toggleStatusBar(UT_Bool bStatusBarOn) {
+void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
     AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
     UT_ASSERT(pFrameData);
 

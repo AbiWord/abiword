@@ -34,25 +34,25 @@ public:
 	~pt_VarSet();
 	
 	void					setPieceTableState(PTState pts);
-	UT_Bool					appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
-	UT_Bool					storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi);
-	UT_Bool					storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * papi);
+	bool					appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
+	bool					storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi);
+	bool					storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * papi);
 	inline const UT_UCSChar *getPointer(PT_BufIndex bi) const {  return m_buffer[_varsetFromBufIndex(bi)].getPointer(_subscriptFromBufIndex(bi)); }
 	inline PT_BufIndex		getBufIndex(PT_BufIndex bi, UT_uint32 offset) const
 	{     return _makeBufIndex(_varsetFromBufIndex(bi),
 	                           _subscriptFromBufIndex(bi)+offset);
 	}
 
-	UT_Bool					isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) const;
+	bool					isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) const;
 	inline const PP_AttrProp *getAP(PT_AttrPropIndex api) const
 	{
 		return m_tableAttrProp[_varsetFromAPIndex(api)].getAP(_subscriptFromAPIndex(api));
 	}
-	UT_Bool					mergeAP(PTChangeFmt ptc,PT_AttrPropIndex apiOld,
+	bool					mergeAP(PTChangeFmt ptc,PT_AttrPropIndex apiOld,
 									const XML_Char ** attributes, const XML_Char ** properties,
 									PT_AttrPropIndex * papiNew);
-	UT_Bool					addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi);
-    UT_Bool                 overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
+	bool					addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi);
+    bool                 overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
 
 private:
 	inline UT_uint32 _subscriptFromBufIndex(PT_BufIndex bi) const
@@ -84,9 +84,9 @@ private:
 		return ((varset<<31)|subscript);
 	}
 
-	UT_Bool					_finishConstruction(void);
+	bool					_finishConstruction(void);
 
-	UT_Bool					m_bInitialized;
+	bool					m_bInitialized;
 	UT_uint32				m_currentVarSet;
 
 	UT_GrowBuf				m_buffer[2];

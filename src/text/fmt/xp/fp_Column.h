@@ -131,19 +131,19 @@ public:
 	fp_Line*			getFirstLine(void) const;
 	fp_Line*			getLastLine(void) const;
 	
-	UT_Bool				insertLineAfter(fp_Line* pNewLine, fp_Line*	pAfterLine);
-	UT_Bool				insertLine(fp_Line*);
-	UT_Bool				addLine(fp_Line*);
+	bool				insertLineAfter(fp_Line* pNewLine, fp_Line*	pAfterLine);
+	bool				insertLine(fp_Line*);
+	bool				addLine(fp_Line*);
 	void				removeLine(fp_Line*);
 
-	UT_Bool				isEmpty(void) const;
+	bool				isEmpty(void) const;
 	
 	UT_uint32 			distanceFromPoint(UT_sint32 x, UT_sint32 y);
 
 	void				mapXYToPosition(UT_sint32 xPos, 
 										UT_sint32 yPos, 
 										PT_DocPosition& pos, 
-										UT_Bool& bBOL, UT_Bool& bEOL);
+										bool& bBOL, bool& bEOL);
 
 	void		 		getOffsets(fp_Line* pLine, UT_sint32& xoff, 
 								   UT_sint32& yoff);

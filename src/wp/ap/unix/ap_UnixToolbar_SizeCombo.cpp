@@ -48,7 +48,7 @@ AP_UnixToolbar_SizeCombo::~AP_UnixToolbar_SizeCombo(void)
 
 /*****************************************************************/
 
-UT_Bool AP_UnixToolbar_SizeCombo::populate(void)
+bool AP_UnixToolbar_SizeCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
@@ -60,6 +60,6 @@ UT_Bool AP_UnixToolbar_SizeCombo::populate(void)
 	    };
 	}
 	// TODO: may want to populate this based on current font instead?
-	return UT_TRUE;
+	return true;
 }
 

@@ -42,8 +42,8 @@ public:
 				const char * szMenuLayoutName,
 				const char * szMenuLabelSetName);
 	~EV_BeOSMenu(void);
-	UT_Bool synthesize();
-	UT_Bool synthesizeMenuBar();
+	bool synthesize();
+	bool synthesizeMenuBar();
 
 protected:
 	XAP_BeOSApp 		*m_pBeOSApp;
@@ -62,7 +62,7 @@ public:
 					  const char * szMenuLabelSetName);
 	~EV_BeOSMenuPopup(void);
 
-	UT_Bool				synthesizeMenuPopup(XAP_BeOSFrame * pFrame);
+	bool				synthesizeMenuPopup(XAP_BeOSFrame * pFrame);
 	
 	BPopUpMenu* GetHandle();
 	

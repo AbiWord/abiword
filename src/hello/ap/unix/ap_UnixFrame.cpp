@@ -57,10 +57,10 @@ AP_UnixFrame::~AP_UnixFrame(void)
 	killFrameData();
 }
 
-UT_Bool AP_UnixFrame::initialize(void)
+bool AP_UnixFrame::initialize(void)
 {
 	if (!initFrameData())
-		return UT_FALSE;
+		return false;
 
 	if (!XAP_UnixFrame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
@@ -68,7 +68,7 @@ UT_Bool AP_UnixFrame::initialize(void)
 								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 								   AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
 	{
-		return UT_FALSE;
+		return false;
 	}
 
 	_createTopLevelWindow();
@@ -76,7 +76,7 @@ UT_Bool AP_UnixFrame::initialize(void)
 
 	loadDocument(NULL, 0);
 	
-	return UT_TRUE;
+	return true;
 }
 
 UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int fileType)
@@ -97,17 +97,17 @@ UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int fileType)
 	if (m_pUnixStatusBar)
 		m_pUnixStatusBar->setView(pView);
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool AP_UnixFrame::initFrameData(void)
+bool AP_UnixFrame::initFrameData(void)
 {
 	UT_ASSERT(!m_pData);
 
 	AP_FrameData* pData = new AP_FrameData();
 	m_pData = (void*) pData;
 	
-	return (pData ? UT_TRUE : UT_FALSE);
+	return (pData ? true : false);
 }
 
 void AP_UnixFrame::killFrameData(void)
@@ -184,6 +184,6 @@ GtkWidget* AP_UnixFrame::_createStatusBarWindow(void)
 void AP_UnixFrame::_setWindowIcon(void)
 {
 }
-void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
+void AP_UnixFrame::toggleRuler(bool bRulerOn)
 {
 }

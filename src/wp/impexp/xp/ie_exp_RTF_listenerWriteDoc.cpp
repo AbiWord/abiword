@@ -59,7 +59,7 @@ void s_RTF_ListenerWriteDoc::_closeSpan(void)
 		return;
 
 	m_pie->_rtf_close_brace();
-	m_bInSpan = UT_FALSE;
+	m_bInSpan = false;
 	return;
 }
 
@@ -82,7 +82,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
 	m_pDocument->getAttrProp(apiSpan,&pSpanAP);
 
-	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	UT_sint32 ndxColor = m_pie->_findColor((char*)szColor);
 	UT_ASSERT(ndxColor != -1);
 	if (ndxColor != 0)
@@ -93,21 +93,21 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	UT_ASSERT(ndxFont != -1);
 	m_pie->_rtf_keyword("f",ndxFont);	// font index in fonttbl
 
-	const XML_Char * szFontSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szFontSize = PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	double dbl = UT_convertToPoints(szFontSize);
 	UT_sint32 d = (UT_sint32)(dbl*2.0);
 	if (d != 24)
 		m_pie->_rtf_keyword("fs",d);	// font size in half points
 
-	const XML_Char * szFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	if (szFontStyle && *szFontStyle && (UT_strcmp(szFontStyle,"italic")==0))
 		m_pie->_rtf_keyword("i");
 
-	const XML_Char * szFontWeight = PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szFontWeight = PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	if (szFontWeight && *szFontWeight && (UT_strcmp(szFontWeight,"bold")==0))
 		m_pie->_rtf_keyword("b");
 
-	const XML_Char * szFontDecoration = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szFontDecoration = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	if (szFontDecoration && *szFontDecoration)
 	{
 		if (strstr(szFontDecoration,"underline") != 0)
@@ -118,7 +118,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 			m_pie->_rtf_keyword("strike");
 	}
 
-	const XML_Char * szFontPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szFontPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	if (szFontPosition && *szFontPosition)
 	{
 		if (!UT_strcmp(szFontPosition,"superscript"))
@@ -130,7 +130,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	// TODO do something with our font-stretch and font-variant properties
 	// note: we assume that kerning has been turned off at global scope.
 	
-	m_bInSpan = UT_TRUE;
+	m_bInSpan = true;
 	m_apiLastSpan = apiSpan;
 	return;
 }
@@ -316,7 +316,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 
 s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 											   IE_Exp_RTF * pie,
-											   UT_Bool bToClipboard)
+											   bool bToClipboard)
 {
 	// The overall syntax for an RTF file is:
 	//
@@ -328,7 +328,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	
 	m_pDocument = pDocument;
 	m_pie = pie;
-	m_bInSpan = UT_FALSE;
+	m_bInSpan = false;
 	m_apiLastSpan = 0;
 	m_apiThisSection = 0;
 	m_apiThisBlock = 0;
@@ -355,7 +355,7 @@ s_RTF_ListenerWriteDoc::~s_RTF_ListenerWriteDoc()
 	_closeSection();
 }
 
-UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 									  const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -370,7 +370,7 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
 
-			return UT_TRUE;
+			return true;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -382,39 +382,39 @@ UT_Bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Image:
 				_closeSpan();
 				_writeImageInRTF(pcro);
-				return UT_TRUE;
+				return true;
 
 				//#if 0
 			// TODO deal with these other inline objects....
 			
 			case PTO_Field:
 				_closeSpan();
-				_openTag("field","/",UT_FALSE,api);
-				return UT_TRUE;
+				_openTag("field","/",false,api);
+				return true;
 
 				//#endif
 			default:
-				return UT_FALSE;
+				return false;
 			}
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return UT_TRUE;
+		return true;
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
 
 void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuffix,
-								 UT_Bool bNewLineAfter, PT_AttrPropIndex api)
+								 bool bNewLineAfter, PT_AttrPropIndex api)
 {
   UT_DEBUGMSG(("TODO: Write code to go in here. In _openTag, szPrefix = %s  api = %x \n",szPrefix,api));
 }
 
-UT_Bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -437,7 +437,7 @@ UT_Bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle /*sdh*/,
 			// here we deal with everything except for the <para>+
 
 			_rtf_open_section(pcr->getIndexAP());
-			return UT_TRUE;
+			return true;
 		}
 
 	case PTX_Block:
@@ -445,23 +445,23 @@ UT_Bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeSpan();
 			_closeBlock();
 			_rtf_open_block(pcr->getIndexAP());
-			return UT_TRUE;
+			return true;
 		}
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_RTF_ListenerWriteDoc::change(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerWriteDoc::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_RTF_ListenerWriteDoc::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerWriteDoc::insertStrux(PL_StruxFmtHandle /*sfh*/,
 										  const PX_ChangeRecord * /*pcr*/,
 										  PL_StruxDocHandle /*sdh*/,
 										  PL_ListenerId /* lid */,
@@ -470,13 +470,13 @@ UT_Bool s_RTF_ListenerWriteDoc::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																	  PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_RTF_ListenerWriteDoc::signal(UT_uint32 /* iSignal */)
+bool s_RTF_ListenerWriteDoc::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -493,7 +493,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	
 	const XML_Char * szDefaultTabs = PP_evalProperty("default-tab-interval",
 													 pSpanAP,pBlockAP,pSectionAP,
-													 m_pDocument,UT_TRUE);
+													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("deftab",(char*)szDefaultTabs,720);
 
 	// <docfmt> -- document views and zoom level
@@ -511,19 +511,19 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	
 	const XML_Char * szLeftMargin = PP_evalProperty("page-margin-left",
 													 pSpanAP,pBlockAP,pSectionAP,
-													 m_pDocument,UT_TRUE);
+													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margl",(char*)szLeftMargin,1800);
 	const XML_Char * szRightMargin = PP_evalProperty("page-margin-right",
 													 pSpanAP,pBlockAP,pSectionAP,
-													 m_pDocument,UT_TRUE);
+													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margr",(char*)szRightMargin,1800);
 	const XML_Char * szTopMargin = PP_evalProperty("page-margin-top",
 													 pSpanAP,pBlockAP,pSectionAP,
-													 m_pDocument,UT_TRUE);
+													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margt",(char*)szTopMargin,1440);
 	const XML_Char * szBottomMargin = PP_evalProperty("page-margin-Bottom",
 													 pSpanAP,pBlockAP,pSectionAP,
-													 m_pDocument,UT_TRUE);
+													 m_pDocument,true);
 	m_pie->_rtf_keyword_ifnotdefault_twips("margb",(char*)szBottomMargin,1440);
 	m_pie->_rtf_keyword("widowctl");	// enable widow and orphan control
 	
@@ -550,20 +550,20 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 
 	const XML_Char * szColumns = PP_evalProperty("columns",
 												 pSpanAP,pBlockAP,pSectionAP,
-												 m_pDocument,UT_TRUE);
+												 m_pDocument,true);
 	const XML_Char * szColumnGap = PP_evalProperty("column-gap",
 												   pSpanAP,pBlockAP,pSectionAP,
-												   m_pDocument,UT_TRUE);
+												   m_pDocument,true);
 		
 	// TODO add other properties here
 
 	m_pie->_rtf_nl();
 
 	if (m_bJustStartingDoc)			// 'sect' is a delimiter, rather than a plain start
-		m_bJustStartingDoc = UT_FALSE;
+		m_bJustStartingDoc = false;
 	else
 		m_pie->_rtf_keyword("sect");							// begin a new section
-	m_bJustStartingSection = UT_TRUE;
+	m_bJustStartingSection = true;
 
 	m_pie->_rtf_keyword("sectd");								// restore all defaults for this section
 	m_pie->_rtf_keyword("sbknone");								// no page break implied
@@ -611,16 +611,16 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	m_pDocument->getAttrProp(m_apiThisSection,&pSectionAP);
 	m_pDocument->getAttrProp(m_apiThisBlock,&pBlockAP);
 
-	const XML_Char * szTextAlign = PP_evalProperty("text-align",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szFirstLineIndent = PP_evalProperty("text-indent",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szLeftIndent = PP_evalProperty("margin-left",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szRightIndent = PP_evalProperty("margin-right",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szTopMargin = PP_evalProperty("margin-top",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szBottomMargin = PP_evalProperty("margin-bottom",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szLineHeight = PP_evalProperty("line-height",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szKeepTogether = PP_evalProperty("keep-together",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szKeepWithNext = PP_evalProperty("keep-with-next",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szTabStops = PP_evalProperty("tabstops",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szTextAlign = PP_evalProperty("text-align",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szFirstLineIndent = PP_evalProperty("text-indent",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szLeftIndent = PP_evalProperty("margin-left",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szRightIndent = PP_evalProperty("margin-right",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szTopMargin = PP_evalProperty("margin-top",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szBottomMargin = PP_evalProperty("margin-bottom",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szLineHeight = PP_evalProperty("line-height",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szKeepTogether = PP_evalProperty("keep-together",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szKeepWithNext = PP_evalProperty("keep-with-next",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szTabStops = PP_evalProperty("tabstops",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 
 	// TODO add other properties here
 
@@ -639,15 +639,15 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		szLevel = NULL;
 	if (!pBlockAP || !pBlockAP->getAttribute((const XML_Char*)"style", szListStyle))
 		szListStyle = NULL;
-	const XML_Char * szAbiListDecimal = PP_evalProperty("list-decimal",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szAbiStartValue = PP_evalProperty("start-value",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szAbiFieldFont = PP_evalProperty("field-font",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	const XML_Char * szAbiListDelim = PP_evalProperty("list-delim",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szAbiListDecimal = PP_evalProperty("list-decimal",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szAbiStartValue = PP_evalProperty("start-value",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szAbiFieldFont = PP_evalProperty("field-font",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
+	const XML_Char * szAbiListDelim = PP_evalProperty("list-delim",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 
 	m_pie->_rtf_nl();
 
 	if (m_bJustStartingSection)			// 'par' is a delimiter, rather than a plain start.
-		m_bJustStartingSection = UT_FALSE;
+		m_bJustStartingSection = false;
 	else
 		m_pie->_rtf_keyword("par");		// begin a new paragraph
 	
@@ -829,7 +829,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	// fetch the "name" of the image and use it to fetch the actual image data.
 	
 	const XML_Char * szDataID = NULL;
-	UT_Bool bFoundDataID = pImageAP->getAttribute((XML_Char*)"dataid",szDataID);
+	bool bFoundDataID = pImageAP->getAttribute((XML_Char*)"dataid",szDataID);
 	if (!bFoundDataID)
 	{
 		UT_DEBUGMSG(("RTF_Export: cannot get dataid for image\n"));
@@ -838,7 +838,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	const UT_ByteBuf * pbb = NULL;
 	void * pToken = NULL;
 	void * pHandle = NULL;
-	UT_Bool bFoundDataItem = m_pDocument->getDataItemDataByName((char*)szDataID,&pbb,&pToken,&pHandle);
+	bool bFoundDataItem = m_pDocument->getDataItemDataByName((char*)szDataID,&pbb,&pToken,&pHandle);
 	if (!bFoundDataItem)
 	{
 		UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
@@ -850,8 +850,8 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	
 	const XML_Char * szWidthProp = NULL;
 	const XML_Char * szHeightProp = NULL;
-	UT_Bool bFoundWidthProperty = pImageAP->getProperty((XML_Char*)"width",szWidthProp);
-	UT_Bool bFoundHeightProperty = pImageAP->getProperty((XML_Char*)"height",szHeightProp);
+	bool bFoundWidthProperty = pImageAP->getProperty((XML_Char*)"width",szWidthProp);
+	bool bFoundHeightProperty = pImageAP->getProperty((XML_Char*)"height",szHeightProp);
 
 	// get the width/height of the image from the image itself.
 

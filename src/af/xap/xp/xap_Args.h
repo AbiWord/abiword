@@ -33,7 +33,7 @@ public:
 	char **	m_argv;
 
 private:
-	UT_Bool m_bAllocated;
+	bool m_bAllocated;
 	char *	m_szBuf;
 };
 

@@ -30,7 +30,7 @@ EV_MacToolbar_ViewListener::EV_MacToolbar_ViewListener(EV_MacToolbar * pMacToolb
 	m_pView = pView;
 }
 
-UT_Bool EV_MacToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
+bool EV_MacToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView == m_pView);
 	

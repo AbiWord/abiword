@@ -160,22 +160,22 @@ UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen)
 	}
 }
 
-UT_Bool UT_cloneString(char *& rszDest, const char * szSource)
+bool UT_cloneString(char *& rszDest, const char * szSource)
 {
 	if (szSource && *szSource)
 	{
 		UT_uint32 length = strlen(szSource) + 1;
 		rszDest = (char *)calloc(length,sizeof(char));
 		if (!rszDest)
-			return UT_FALSE;
+			return false;
 		memmove(rszDest,szSource,length*sizeof(char));
 	}
 	else
 		rszDest = NULL;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_replaceString(char *& rszDest, const char * szSource)
+bool UT_replaceString(char *& rszDest, const char * szSource)
 {
 	if (rszDest)
 		free(rszDest);
@@ -198,40 +198,40 @@ UT_uint32 UT_XML_strlen(const XML_Char * sz)
 
 // Is this function implemented somewhere else?
 
-UT_Bool UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource)
+bool UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource)
 {
 	if (!szSource)
-		return UT_TRUE;
+		return true;
 
 	XML_Char ** newmemory = (XML_Char **)
 		calloc(UT_pointerArrayLength((void **) szSource) + 1, sizeof(XML_Char *));
 
 	if (newmemory == NULL)
-		return UT_FALSE;
+		return false;
 
 	memcpy((void *) newmemory, (const void *) szSource,
 		   UT_pointerArrayLength((void **) szSource ) * sizeof(XML_Char *));
 
 	rszDest = newmemory;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource)
+bool UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource)
 {
 	FREEP(rszDest);
 
 	return UT_XML_cloneList(rszDest, szSource);
 }
 	
-UT_Bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
+bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
 {
 	UT_uint32 length = UT_XML_strlen(szSource) + 1;
 	rszDest = (XML_Char *)calloc(length,sizeof(XML_Char));
 	if (!rszDest)
-		return UT_FALSE;
+		return false;
 	memmove(rszDest,szSource,length*sizeof(XML_Char));
-	return UT_TRUE;
+	return true;
 }
 
 UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2)
@@ -252,16 +252,16 @@ UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2)
 	return strcmp(sz1,sz2);
 }
 
-UT_Bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
+bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
 {
 	if (szSource == NULL)
-		return UT_FALSE;
+		return false;
 
 	UT_uint32 length = UT_XML_strlen(szSource) + 1;
 	rszDest = (XML_Char *) calloc(length, sizeof(XML_Char));
 
 	if (!rszDest)
-		return UT_FALSE;
+		return false;
 
 	const XML_Char * o = szSource;
 	XML_Char * n = rszDest;
@@ -275,7 +275,7 @@ UT_Bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
 		o++;
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 /* This uses the clone no ampersands but dumps into a static buffer */
@@ -716,18 +716,18 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	return dest;
 }
 
-UT_Bool UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src)
+bool UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src)
 {
 	UT_uint32 length = UT_UCS_strlen(src) + 1;
 	*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
 	if (!*dest)
-		return UT_FALSE;
+		return false;
 	memmove(*dest,src,length*sizeof(UT_UCSChar));
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
+bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 {
 
 #ifdef WITHOUT_MB
@@ -735,17 +735,17 @@ UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 		UT_uint32 length = strlen(src) + 1;   
 		*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar)); 
 		if (!*dest)
-				return UT_FALSE;
+				return false;
 		UT_UCS_strcpy_char(*dest, src);
 
-		return UT_TRUE;          
+		return true;          
 
 #else
 
 		UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
 		*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
 		if (!*dest)
-				return UT_FALSE;
+				return false;
 		UT_UCSChar * d= *dest;
 		unsigned char * s	= (unsigned char *) src;
 		
@@ -759,7 +759,7 @@ UT_Bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 		}
 		*d = 0;  
 		
-		return UT_TRUE;
+		return true;
 
 #endif
 
@@ -972,46 +972,46 @@ XML_Char *UT_decodeXMLstring(XML_Char *in)
 #endif
 }
 
-UT_Bool UT_isSmartQuotableCharacter(UT_UCSChar c)
+bool UT_isSmartQuotableCharacter(UT_UCSChar c)
 {
 	// TODO:  this is anglo-centric; really need a locale argument or
 	// TODO:  something to get smart quote rules for the rest of the world
-	UT_Bool result;
+	bool result;
 	switch (c)
 	{
 	case '"':
 	case '`':
 	case '\'':
-		result = UT_TRUE;
+		result = true;
 		break;
 	default:
-		result = UT_FALSE;
+		result = false;
 		break;
 	}
 	return (result);
 }
 
-UT_Bool UT_isSmartQuotedCharacter(UT_UCSChar c)
+bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 {
 	// TODO:  this is anglo-centric; really need a locale argument or
 	// TODO:  something to get smart quote rules for the rest of the world
-	UT_Bool result;
+	bool result;
 	switch (c)
 	{
 	case UCS_LQUOTE:
 	case UCS_RQUOTE:
 	case UCS_LDBLQUOTE:
 	case UCS_RDBLQUOTE:
-		result = UT_TRUE;
+		result = true;
 		break;
 	default:
-		result = UT_FALSE;
+		result = false;
 		break;
 	}
 	return (result);
 }
 
-UT_Bool UT_UCS_isupper(UT_UCSChar c)
+bool UT_UCS_isupper(UT_UCSChar c)
 {
 	if (XAP_EncodingManager::instance->single_case())
 	    return 1;/* FIXME: anyone has better idea? */
@@ -1019,7 +1019,7 @@ UT_Bool UT_UCS_isupper(UT_UCSChar c)
 	return local && local <0xff ? isupper(local)!=0 : 0;
 };
 
-UT_Bool UT_UCS_islower(UT_UCSChar c)
+bool UT_UCS_islower(UT_UCSChar c)
 {
 	if (XAP_EncodingManager::instance->single_case())
 	    return 1;/* FIXME: anyone has better idea? */
@@ -1027,7 +1027,7 @@ UT_Bool UT_UCS_islower(UT_UCSChar c)
 	return local && local <0xff ? islower(local)!=0 : 0;
 };
 
-UT_Bool UT_UCS_isalpha(UT_UCSChar c)
+bool UT_UCS_isalpha(UT_UCSChar c)
 {
 	UT_UCSChar local = XAP_EncodingManager::instance->try_UToNative(c);
 	return local && local < 0xff ? 

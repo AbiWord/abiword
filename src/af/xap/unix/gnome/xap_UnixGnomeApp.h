@@ -38,7 +38,7 @@ public:
 	XAP_UnixGnomeApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_UnixGnomeApp(void);
 	
-	virtual UT_Bool							initialize(void);
+	virtual bool							initialize(void);
 	
 protected:
 	void							_setAbiSuiteLibDir(void);

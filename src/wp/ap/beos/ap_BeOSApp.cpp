@@ -132,14 +132,14 @@ void _showSplash(XAP_Args * pArgs, const char * /*szAppName*/) {
 	// unlike Win32, so [1] is the first argument
 	int nFirstArg = 1;
 	int k;
-	UT_Bool bShowSplash = UT_TRUE;
+	bool bShowSplash = true;
 
 	// scan args for splash-related stuff
 #if CONVERT
 	for (k=nFirstArg; (k<pArgs->m_argc); k++) {
 		if (*pArgs->m_argv[k] == '-') {
 			if (UT_stricmp(pArgs->m_argv[k],"-to") == 0) {
-				bShowSplash = UT_FALSE;
+				bShowSplash = false;
 			}
 		}
 	}	
@@ -147,7 +147,7 @@ void _showSplash(XAP_Args * pArgs, const char * /*szAppName*/) {
 	for (k=nFirstArg; (k<pArgs->m_argc); k++) {
 		if (*pArgs->m_argv[k] == '-') {
 			if (UT_stricmp(pArgs->m_argv[k],"-show") == 0) {
- 				bShowSplash = UT_TRUE;
+ 				bShowSplash = true;
 			}
 		}
 	}	
@@ -156,11 +156,11 @@ void _showSplash(XAP_Args * pArgs, const char * /*szAppName*/) {
 	for (k=nFirstArg; (k<pArgs->m_argc); k++) {
 		if (*pArgs->m_argv[k] == '-') {
 			if (UT_stricmp(pArgs->m_argv[k],"-nosplash") == 0)
-				bShowSplash = UT_FALSE;
+				bShowSplash = false;
 		}
 	}                                   
 
-	if (bShowSplash == UT_FALSE)
+	if (bShowSplash == false)
 		return;
 
 	BMessage *msg = new BMessage();
@@ -186,31 +186,31 @@ AP_BeOSApp::~AP_BeOSApp(void)
 	DELETEP(m_pClipboard);
 }
 
-static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
+static bool s_createDirectoryIfNecessary(const char * szDir)
 {
 	struct stat statbuf;
 	
 	if (stat(szDir,&statbuf) == 0)								// if it exists
 	{
 		if (S_ISDIR(statbuf.st_mode))							// and is a directory
-			return UT_TRUE;
+			return true;
 
 		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-		return UT_FALSE;
+		return false;
 	}
 	
 	if (mkdir(szDir,0700) == 0)
-		return UT_TRUE;
+		return true;
 	
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-	return UT_FALSE;
+	return false;
 }	
 
-UT_Bool AP_BeOSApp::initialize(void)
+bool AP_BeOSApp::initialize(void)
 {
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
-	UT_Bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 	UT_ASSERT(bVerified);
 
 	// load the preferences.
@@ -236,7 +236,7 @@ UT_Bool AP_BeOSApp::initialize(void)
 	UT_ASSERT(m_pToolbarActionSet);
 		   
 	if (! XAP_BeOSApp::initialize())
-		return UT_FALSE;
+		return false;
 	
 	//////////////////////////////////////////////////////////////////
 	// initializes the spell checker.
@@ -245,7 +245,7 @@ UT_Bool AP_BeOSApp::initialize(void)
 #if 1
 	{
 		const char * szISpellDirectory = NULL;
-		getPrefsValueDirectory(UT_FALSE,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
+		getPrefsValueDirectory(false,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
 		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
 
 		const char * szSpellCheckWordList = NULL;
@@ -289,7 +289,7 @@ UT_Bool AP_BeOSApp::initialize(void)
 			&& (*szStringSet)
 			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
-			getPrefsValueDirectory(UT_TRUE,AP_PREF_KEY_StringSetDirectory,&szDirectory);
+			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
 
 			char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
@@ -337,7 +337,7 @@ UT_Bool AP_BeOSApp::initialize(void)
 
 	//////////////////////////////////////////////////////////////////
 
-	return UT_TRUE;
+	return true;
 }
 
 XAP_Frame * AP_BeOSApp::newFrame(const char *path)
@@ -361,28 +361,28 @@ XAP_Frame * AP_BeOSApp::newFrame(void)
 	return pBeOSFrame;
 }
 
-UT_Bool AP_BeOSApp::shutdown(void)
+bool AP_BeOSApp::shutdown(void)
 {
 	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool AP_BeOSApp::getPrefsValueDirectory(UT_Bool bAppSpecific,
+bool AP_BeOSApp::getPrefsValueDirectory(bool bAppSpecific,
 										   const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)
-		return UT_FALSE;
+		return false;
 
 	const XML_Char * psz = NULL;
 	if (!m_prefs->getPrefsValue(szKey,&psz))
-		return UT_FALSE;
+		return false;
 
 	if (*psz == '/')
 	{
 		*pszValue = psz;
-		return UT_TRUE;
+		return true;
 	}
 
 	const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
@@ -393,7 +393,7 @@ UT_Bool AP_BeOSApp::getPrefsValueDirectory(UT_Bool bAppSpecific,
 	
 	sprintf(buf,"%s/%s",dir,psz);
 	*pszValue = buf;
-	return UT_TRUE;
+	return true;
 }
 
 const char * AP_BeOSApp::getAbiSuiteAppDir(void) const
@@ -451,7 +451,7 @@ void AP_BeOSApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	}
 }
 
-void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
+void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.
@@ -460,7 +460,7 @@ void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
 	{
 		unsigned char * pData = NULL;
 		UT_uint32 iLen = 0;
-		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen);
+		bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_RTF,(void**)&pData,&iLen);
 		UT_ASSERT(bResult);
 		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
@@ -474,7 +474,7 @@ void AP_BeOSApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
 	{
 		unsigned char * pData = NULL;
 		UT_uint32 iLen = 0;
-		UT_Bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen);
+		bool bResult = m_pClipboard->getClipboardData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(void**)&pData,&iLen);
 		UT_ASSERT(bResult);
 		iLen = MyMin(iLen,strlen((const char *) pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
@@ -491,17 +491,17 @@ MyEnd:
 	return;
 }
 
-UT_Bool AP_BeOSApp::canPasteFromClipboard(void)
+bool AP_BeOSApp::canPasteFromClipboard(void)
 {
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
 		goto ReturnTrue;
 	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
 		goto ReturnTrue;
 
-	return UT_FALSE;
+	return false;
 
 ReturnTrue:
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -509,7 +509,7 @@ ReturnTrue:
 int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	// This is a static function.
 #if CONVERT
-	UT_Bool bShowApp = UT_TRUE;
+	bool bShowApp = true;
 #endif
 	UT_DEBUGMSG(("Build ID:\t%s\n", XAP_App::s_szBuild_ID));
 	UT_DEBUGMSG(("Version:\t%s\n", XAP_App::s_szBuild_Version));
@@ -561,7 +561,7 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
 			if (UT_stricmp(Args.m_argv[k],"-to") == 0) {
-				bShowApp = UT_FALSE;
+				bShowApp = false;
 			}
 		}
 	}	
@@ -569,7 +569,7 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
 			if (UT_stricmp(Args.m_argv[k],"-show") == 0) {
-				bShowApp = UT_TRUE;
+				bShowApp = true;
 			}
 		}
 	}	
@@ -609,7 +609,7 @@ void AP_BeOSApp::ParseCommandLine(void)
 #if CONVERT
 	char *to = NULL;
 	int verbose = 1;
-	UT_Bool show = UT_FALSE;
+	bool show = false;
 #endif
 
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
@@ -646,7 +646,7 @@ void AP_BeOSApp::ParseCommandLine(void)
 			}
 			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
 			{
-				show = UT_TRUE;
+				show = true;
 			}
 			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
 			{

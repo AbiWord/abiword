@@ -79,29 +79,29 @@ public:
 	fp_Line*	getNextLineInSection(void) const;
 	fp_Line*	getPrevLineInSection(void) const;
 
-	UT_Bool		containsForcedColumnBreak(void) const;
-	UT_Bool		containsForcedPageBreak(void) const;
+	bool		containsForcedColumnBreak(void) const;
+	bool		containsForcedPageBreak(void) const;
 	
 	void 		addRun(fp_Run*);
 	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
 	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);
 	void        insertRun(fp_Run*);
-    UT_Bool     removeRun(fp_Run*, UT_Bool bTellTheRunAboutIt=UT_FALSE);
+    bool     removeRun(fp_Run*, bool bTellTheRunAboutIt=false);
 	
-	inline	UT_Bool		isEmpty(void) const				{ return ((m_vecRuns.getItemCount()) == 0); }
+	inline	bool		isEmpty(void) const				{ return ((m_vecRuns.getItemCount()) == 0); }
 	inline	int 		countRuns(void) const			{ return m_vecRuns.getItemCount(); }
 	inline	fp_Run*     getFirstRun(void) const			{ return ((fp_Run*) m_vecRuns.getFirstItem()); }
         fp_Run*     getLastRun(void) const ;
 
-	inline	UT_Bool 	isFirstLineInBlock(void) const	{ return (m_pBlock->getFirstLine() == this); }
-	inline	UT_Bool 	isLastLineInBlock(void) const	{ return (m_pBlock->getLastLine() == this); }
+	inline	bool 	isFirstLineInBlock(void) const	{ return (m_pBlock->getFirstLine() == this); }
+	inline	bool 	isLastLineInBlock(void) const	{ return (m_pBlock->getLastLine() == this); }
 	
 	void		remove(void);
 	UT_sint32	getMarginBefore(void) const;
 	UT_sint32	getMarginAfter(void) const;
 	UT_sint32	getMarginAfterInLayoutUnits(void) const;
 
-	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	void		getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 
@@ -111,7 +111,7 @@ public:
 	void        draw(GR_Graphics*);
 	void		align(void);
 	void		layout(void);
-	UT_Bool		recalculateFields(void);
+	bool		recalculateFields(void);
 	void		recalcHeight();
 	void		recalcMaxWidth();
 	void		coalesceRuns(void);
@@ -125,13 +125,13 @@ public:
 	UT_uint32	countJustificationPoints(void) const;
 	void		splitRunsAtSpaces(void);
 
-	UT_Bool		isLastCharacter(UT_UCSChar Character) const;
+	bool		isLastCharacter(UT_UCSChar Character) const;
 
-	UT_Bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader );
-	UT_Bool		findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
+	bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader );
+	bool		findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
 	
-	void		setNeedsRedraw(void) { m_bNeedsRedraw = UT_TRUE; m_pBlock->setNeedsRedraw();}
-	UT_Bool		needsRedraw(void) { return m_bNeedsRedraw; }
+	void		setNeedsRedraw(void) { m_bNeedsRedraw = true; m_pBlock->setNeedsRedraw();}
+	bool		needsRedraw(void) { return m_bNeedsRedraw; }
 	void		redrawUpdate(void);
 
 protected:
@@ -157,7 +157,7 @@ protected:
 	fp_Line*		m_pNext;
 	fp_Line*        m_pPrev;
 
-	UT_Bool			m_bNeedsRedraw;
+	bool			m_bNeedsRedraw;
 };
 
 #endif /* FP_LINE_H */

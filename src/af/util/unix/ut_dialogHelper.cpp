@@ -191,7 +191,7 @@ void connectFocusModeless(GtkWidget *widget,const XAP_App * pApp)
 }
 
 
-UT_Bool isTransientWindow(GtkWindow *window,GtkWindow *parent)
+bool isTransientWindow(GtkWindow *window,GtkWindow *parent)
 {
   if(window)
 	{
@@ -199,10 +199,10 @@ UT_Bool isTransientWindow(GtkWindow *window,GtkWindow *parent)
 		{
 		  window=window->transient_parent;
 		  if(window==parent)
-			return UT_TRUE;
+			return true;
 		}
 	}
-  return UT_FALSE;
+  return false;
 }
 
 gint s_key_pressed(GtkWidget * /* widget */, GdkEventKey * e)

@@ -518,11 +518,11 @@ DEFLEN(CharTable);
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_Default(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
+bool ap_LoadBindings_Default(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 {
 	pThis->_loadMouse(pebm,MouseTable,MouseTable_len);
 	pThis->_loadNVK(pebm,NVKTable,NVKTable_len,NVKTable_P,NVKTable_P_len);
 	pThis->_loadChar(pebm,CharTable,CharTable_len,NULL,0);
 
-	return UT_TRUE;
+	return true;
 }

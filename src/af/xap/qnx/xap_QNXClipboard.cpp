@@ -50,22 +50,22 @@ void XAP_QNXClipboard::initialize(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_QNXClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
+bool XAP_QNXClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
 {
 	return XAP_FakeClipboard::addData(format, pData, iNumBytes);
 }
 
-UT_Bool XAP_QNXClipboard::hasFormat(const char *format)
+bool XAP_QNXClipboard::hasFormat(const char *format)
 {
 	return XAP_FakeClipboard::hasFormat(format);
 }
 
-UT_Bool XAP_QNXClipboard::clearClipboard()
+bool XAP_QNXClipboard::clearClipboard()
 {
 	return XAP_FakeClipboard::clearClipboard();
 }
 
-UT_Bool XAP_QNXClipboard::getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen)
+bool XAP_QNXClipboard::getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen)
 {
 	return XAP_FakeClipboard::getClipboardData(format, ppData, pLen);
 }

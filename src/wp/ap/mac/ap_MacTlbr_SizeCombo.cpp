@@ -49,7 +49,7 @@ AP_MacToolbar_SizeCombo::~AP_MacToolbar_SizeCombo(void)
 
 /*****************************************************************/
 
-UT_Bool AP_MacToolbar_SizeCombo::populate(void)
+bool AP_MacToolbar_SizeCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
@@ -73,6 +73,6 @@ UT_Bool AP_MacToolbar_SizeCombo::populate(void)
 	m_vecContents.addItem((void *)"72");
 
 	// TODO: may want to populate this based on current font instead?
-	return UT_TRUE;
+	return true;
 }
 

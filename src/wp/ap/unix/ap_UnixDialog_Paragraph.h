@@ -66,7 +66,7 @@ public:
  protected:
 
 	GR_UnixGraphics	* 		m_unixGraphics;
-	UT_Bool					m_bEditChanged;
+	bool					m_bEditChanged;
 	
 	// private construction functions
 	virtual GtkWidget *  _constructWindow(void);
@@ -75,7 +75,7 @@ public:
 	
 	void                 _populateWindowData(void);
 
-	virtual void         _syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
+	virtual void         _syncControls(tControl changed, bool bAll = false);
 
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog

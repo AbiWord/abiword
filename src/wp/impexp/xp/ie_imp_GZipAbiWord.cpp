@@ -24,7 +24,7 @@
 #include "ut_string.h"
 #include "ut_types.h"
 
-UT_Bool IE_Imp_GZipAbiWord::_openFile(const char * szFilename) 
+bool IE_Imp_GZipAbiWord::_openFile(const char * szFilename) 
 {
     m_gzfp = gzopen(szFilename, "rb");
     return (m_gzfp != NULL);
@@ -54,7 +54,7 @@ IE_Imp_GZipAbiWord::IE_Imp_GZipAbiWord(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_GZipAbiWord::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_GZipAbiWord::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// TODO: This is a hack.  Since we're just passed in some
 	// TODO: some data, and not the actual filename, there isn't
@@ -63,15 +63,15 @@ UT_Bool IE_Imp_GZipAbiWord::RecognizeContents(const char * szBuf, UT_uint32 iNum
 	// TODO: gzip'ed, it's gzip'ed abiword.  This assumption will
 	// TODO: be false if and when we support any other compressed
 	// TODO: formats.
-	if ( iNumbytes < 2 ) return(UT_FALSE);
+	if ( iNumbytes < 2 ) return(false);
 	if ( ( szBuf[0] == (char)0x1f ) && ( szBuf[1] == (char)0x8b ) )
 	{
-		return(UT_TRUE);
+		return(true);
 	}
-	return(UT_FALSE);
+	return(false);
 }
 
-UT_Bool IE_Imp_GZipAbiWord::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_GZipAbiWord::RecognizeSuffix(const char * szSuffix)
 {
     return (UT_stricmp(szSuffix,".zabw") == 0);
 }
@@ -83,17 +83,17 @@ UT_Error IE_Imp_GZipAbiWord::StaticConstructor(PD_Document * pDocument,
     return UT_OK;
 }
 
-UT_Bool	IE_Imp_GZipAbiWord::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_GZipAbiWord::GetDlgLabels(const char ** pszDesc,
 	const char ** pszSuffixList,
 	IEFileType * ft)
 {
     *pszDesc = "GZipped AbiWord (.zabw)";
     *pszSuffixList = "*.zabw";
     *ft = IEFT_GZipAbiWord;
-    return UT_TRUE;
+    return true;
 }
 
-UT_Bool IE_Imp_GZipAbiWord::SupportsFileType(IEFileType ft)
+bool IE_Imp_GZipAbiWord::SupportsFileType(IEFileType ft)
 {
     return (IEFT_GZipAbiWord == ft);
 }

@@ -55,7 +55,7 @@ fl_BlockLayout* fd_Field::getBlock( void)
        return m_pBlock;
 }
 
-UT_Bool fd_Field::update(void)
+bool fd_Field::update(void)
 {
 
        // test it out
@@ -81,7 +81,7 @@ UT_Bool fd_Field::update(void)
 	      _deleteSpan();
         
 	      // insert new span
-	      UT_Bool returnValue;
+	      bool returnValue;
 	      returnValue =  m_pPieceTable->insertSpan_norec
 		(dPos,
 		 testUCSFieldText,
@@ -128,7 +128,7 @@ UT_Bool fd_Field::update(void)
 	      _deleteSpan();
         
 	      // insert new span
-	      UT_Bool returnValue;
+	      bool returnValue;
 	      returnValue =  m_pPieceTable->insertSpan_norec
 		(dPos,
 		 testUCSFieldText,
@@ -145,10 +145,10 @@ UT_Bool fd_Field::update(void)
 
 	      return returnValue;
        }
-       return UT_TRUE;
+       return true;
 }
 
-UT_Bool fd_Field::_deleteSpan(void)
+bool fd_Field::_deleteSpan(void)
 {
        pf_Frag * pfOld = NULL;
        pf_Frag * pf = m_fragObject.getNext();
@@ -159,7 +159,7 @@ UT_Bool fd_Field::_deleteSpan(void)
 	     pf = pfOld->getNext();
 	     m_pPieceTable->deleteFieldFrag(pfOld);
        }
-       return UT_TRUE;
+       return true;
 }
 
 void  fd_Field::_throwChangeRec(  PT_DocPosition docPos)
@@ -169,8 +169,8 @@ void  fd_Field::_throwChangeRec(  PT_DocPosition docPos)
   // Fields
   //
        PL_StruxDocHandle sdh = NULL;
-       UT_Bool bret = m_pPieceTable->getStruxOfTypeFromPosition(docPos,PTX_Block, &sdh);
-       if(bret == UT_TRUE)
+       bool bret = m_pPieceTable->getStruxOfTypeFromPosition(docPos,PTX_Block, &sdh);
+       if(bret == true)
        {    
              pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 	     PT_AttrPropIndex pAppIndex = pfs->getIndexAP();

@@ -31,7 +31,7 @@ public:
 	EV_MacToolbar_ViewListener(EV_MacToolbar * pMacToolbar,
 								AV_View * pView);
 	
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
 	EV_MacToolbar *	m_pMacToolbar;

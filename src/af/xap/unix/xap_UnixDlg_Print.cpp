@@ -571,14 +571,14 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname, m_szDocumentTitle,
 										m_pUnixFrame->getApp()->getApplicationName(),
 										fontmgr,
-										UT_TRUE, app);
+										true, app);
 	}
 	else
 	{		
 		m_pPSGraphics = new PS_Graphics(m_szPrintCommand, m_szDocumentTitle,
 										m_pUnixFrame->getApp()->getApplicationName(),
 										fontmgr,
-										UT_FALSE, app);
+										false, app);
 	}
 
 	UT_ASSERT(m_pPSGraphics);

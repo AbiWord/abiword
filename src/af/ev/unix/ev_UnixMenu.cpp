@@ -253,11 +253,11 @@ XAP_UnixFrame * EV_UnixMenu::getFrame(void)
 	return m_pUnixFrame;
 }
 
-UT_Bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
+bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 {
 	// user selected something from the menu.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
@@ -267,7 +267,7 @@ UT_Bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
-		return UT_FALSE;
+		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pUnixApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
@@ -276,7 +276,7 @@ UT_Bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	invokeMenuMethod(m_pUnixFrame->getCurrentView(),pEM,0,0);
-	return UT_TRUE;
+	return true;
 }
 
 static const char * _ev_FakeName(const char * sz, UT_uint32 k)
@@ -389,7 +389,7 @@ static void _ev_convert(char * bufResult,
 	}
 }
 
-UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
+bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 {
 	UT_DEBUGMSG(("EV_UnixMenu::synthesizeMenu\n"));
     // create a GTK menu from the info provided.
@@ -402,7 +402,7 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
 	UT_uint32 tmp = 0;
-	UT_Bool bResult;
+	bool bResult;
 	UT_Stack stack;
 	stack.push(wMenuRoot);
 
@@ -570,8 +570,8 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				// regard to what XK_ keysym is bound to it.  therefore, if
 				// MOD1 is bound to XK_Alt_{L,R}, we do the following.
 
-				UT_Bool bAltOnMod1 = (ev_UnixKeyboard::getAltModifierMask() == GDK_MOD1_MASK);
-				UT_Bool bConflict = UT_FALSE;
+				bool bAltOnMod1 = (ev_UnixKeyboard::getAltModifierMask() == GDK_MOD1_MASK);
+				bool bConflict = false;
 				
 				// Lookup any bindings cooresponding to MOD1-key and the lower-case
 				// version of the underlined char, since all the menus ignore upper
@@ -748,10 +748,10 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 	gtk_accel_group_attach(m_accelGroup, GTK_OBJECT(m_pUnixFrame->getTopLevelWindow()));
 	gtk_accel_group_lock(m_accelGroup);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
+bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 {
 	// update the status of stateful items on menu bar.
 
@@ -761,7 +761,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
-	UT_Bool bResult;
+	bool bResult;
 	UT_Stack stack;
 	stack.push(wMenuRoot);
 
@@ -787,16 +787,16 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 			
 			// see if we need to enable/disable and/or check/uncheck it.
 			
-			UT_Bool bEnable = UT_TRUE;
-			UT_Bool bCheck = UT_FALSE;
+			bool bEnable = true;
+			bool bCheck = false;
 			
 			if (pAction->hasGetStateFunction())
 			{
 				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
 				if (mis & EV_MIS_Gray)
-					bEnable = UT_FALSE;
+					bEnable = false;
 				if (mis & EV_MIS_Toggled)
-					bCheck = UT_TRUE;
+					bCheck = true;
 			}
 
 			// must have an entry for each and every layout item in the vector
@@ -908,7 +908,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				break;
 						
 				// Dynamic label, check for remove
-			UT_Bool bRemoveIt = (!szLabelName || !*szLabelName);
+			bool bRemoveIt = (!szLabelName || !*szLabelName);
 			if (bRemoveIt)
 			{
 				// unbind all accelerators
@@ -1045,7 +1045,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == wMenuRoot);
 
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -1062,7 +1062,7 @@ EV_UnixMenuBar::~EV_UnixMenuBar(void)
 {
 }
 
-UT_Bool EV_UnixMenuBar::synthesizeMenuBar(void)
+bool EV_UnixMenuBar::synthesizeMenuBar(void)
 {
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
@@ -1085,10 +1085,10 @@ UT_Bool EV_UnixMenuBar::synthesizeMenuBar(void)
 	// put it in the vbox
  	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_UnixMenuBar::refreshMenu(AV_View * pView)
+bool EV_UnixMenuBar::refreshMenu(AV_View * pView)
 {
 	// this makes an exception for initialization where a view
 	// might not exist... silly to refresh the menu then; it will
@@ -1096,7 +1096,7 @@ UT_Bool EV_UnixMenuBar::refreshMenu(AV_View * pView)
 	if (pView)
 		return _refreshMenu(pView,m_wMenuBar);
 
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -1118,7 +1118,7 @@ GtkWidget * EV_UnixMenuPopup::getMenuHandle(void) const
 	return m_wMenuPopup;
 }
 
-UT_Bool EV_UnixMenuPopup::synthesizeMenuPopup(void)
+bool EV_UnixMenuPopup::synthesizeMenuPopup(void)
 {
 	m_wMenuPopup = gtk_menu_new();
 	_wd * wd = new _wd(this, 0);
@@ -1132,10 +1132,10 @@ UT_Bool EV_UnixMenuPopup::synthesizeMenuPopup(void)
 	gtk_object_set_user_data(GTK_OBJECT(m_wMenuPopup),this);
 
 	synthesizeMenu(m_wMenuPopup);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_UnixMenuPopup::refreshMenu(AV_View * pView)
+bool EV_UnixMenuPopup::refreshMenu(AV_View * pView)
 {
 	// this makes an exception for initialization where a view
 	// might not exist... silly to refresh the menu then; it will
@@ -1143,5 +1143,5 @@ UT_Bool EV_UnixMenuPopup::refreshMenu(AV_View * pView)
 	if (pView)
 		return _refreshMenu(pView, m_wMenuPopup);
 
-	return UT_TRUE;
+	return true;
 }

@@ -34,27 +34,27 @@ static void _write_png( png_structp png_ptr,
 static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
 
 
-UT_Bool IE_ImpGraphic_BMP::RecognizeSuffix(const char * szSuffix)
+bool IE_ImpGraphic_BMP::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".bmp") == 0);
 }
 
-UT_Bool IE_ImpGraphic_BMP::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_ImpGraphic_BMP::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	return ( !(strncmp(szBuf, "BM", 2)) );
 }
 
-UT_Bool IE_ImpGraphic_BMP::GetDlgLabels(const char ** pszDesc,
+bool IE_ImpGraphic_BMP::GetDlgLabels(const char ** pszDesc,
 					const char ** pszSuffixList,
 					IEGraphicFileType * ft)
 {
 	*pszDesc = "Windows Bitmap (.bmp)";
 	*pszSuffixList = "*.bmp";
 	*ft = IEGFT_BMP;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_ImpGraphic_BMP::SupportsFileType(IEGraphicFileType ft)
+bool IE_ImpGraphic_BMP::SupportsFileType(IEGraphicFileType ft)
 {
 	return ((IEGFT_BMP == ft) ||
 		(IEGFT_DIB == ft));
@@ -184,7 +184,7 @@ UT_Error IE_ImpGraphic_BMP::Read_BMP_Header(UT_ByteBuf* pBB)
 	/* Image Info Starts Here */
 	m_iHeaderSize = Read4Bytes(pBB,m_iBytesRead);
 		if (m_bHeaderDone) return UT_IE_BOGUSDOCUMENT; /* More Header Info Needed */
-	m_bOldBMPFormat = (m_iHeaderSize <=12) ? UT_TRUE : UT_FALSE;
+	m_bOldBMPFormat = (m_iHeaderSize <=12) ? true : false;
 	m_iWidth  = (m_bOldBMPFormat) ?
 				(UT_sint32) Read2Bytes(pBB,m_iBytesRead) :
 	            (UT_sint32) Read4Bytes(pBB,m_iBytesRead) ;
@@ -381,8 +381,8 @@ UT_uint32 IE_ImpGraphic_BMP::ReadBytes(UT_ByteBuf* pBB,
 	if (m_iHeaderSize)
 	{
 		m_bHeaderDone = (m_iBytesRead >= m_iHeaderSize + 14) ?
-		                UT_TRUE :
-	                    UT_FALSE;
+		                true :
+	                    false;
 	}
 
 	UT_uint32 result = 0;
@@ -422,6 +422,6 @@ void IE_ImpGraphic_BMP::InitializePrivateClassData()
 	m_iClrEncoding=0;	
 	m_iIdentifier=0;	
 	m_iBytesRead=0;		
-	m_bOldBMPFormat=UT_FALSE;
-	m_bHeaderDone=UT_FALSE;
+	m_bOldBMPFormat=false;
+	m_bHeaderDone=false;
 }

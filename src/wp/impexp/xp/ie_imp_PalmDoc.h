@@ -139,14 +139,14 @@ public:
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										unsigned char * pData, UT_uint32 lenData);
 
-	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
+	static bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Imp ** ppie);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	static bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
-	static UT_Bool 		SupportsFileType(IEFileType ft);
+	static bool 		SupportsFileType(IEFileType ft);
 	
 protected:
 	UT_Error			_parseFile(FILE * fp);
@@ -171,7 +171,7 @@ private:
 	buffer *			m_buf;
 	UT_uint32			m_bufLen;
         UT_uint32			m_bufPosition;
-	UT_Bool				m_littlendian;	
+	bool				m_littlendian;	
 };
 
 #endif /* IE_IMP_PALMDOC_H */

@@ -35,9 +35,9 @@ public:
 
 	void remapKeyboard(HKL hKeyboardLayout);
 
-	UT_Bool onKeyDown(AV_View * pView,
+	bool onKeyDown(AV_View * pView,
 					  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
-	UT_Bool onChar(AV_View * pView,
+	bool onChar(AV_View * pView,
 				   HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
 	
 protected:

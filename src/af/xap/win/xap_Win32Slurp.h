@@ -30,8 +30,8 @@ public:
 	HDDEDATA CALLBACK		doCallback(UINT uType, UINT uFmt, HCONV hConv,
 									   HSZ hsz1, HSZ hsz2, HDDEDATA hData,
 									   DWORD dwData1, DWORD dwData2);
-	UT_Bool					connectSlurper(void);
-	UT_Bool					disconnectSlurper(void);
+	bool					connectSlurper(void);
+	bool					disconnectSlurper(void);
 	void					processCommand(HDDEDATA hData);
 	void					stuffRegistry(const char * szSuffix,
 										  const char * szApplicationName,
@@ -39,12 +39,12 @@ public:
 										  const char * szContentType);
 
 protected:
-	UT_Bool					_askForStealFromAnotherApplication(void) const;
-	UT_Bool					_askForUpdateExePathname(void) const;
-	UT_Bool					_askForStealMimeFromAnotherApplication(void) const;
+	bool					_askForStealFromAnotherApplication(void) const;
+	bool					_askForUpdateExePathname(void) const;
+	bool					_askForStealMimeFromAnotherApplication(void) const;
 	
 	XAP_Win32App *			m_pApp;
-	UT_Bool					m_bInitialized;
+	bool					m_bInitialized;
 	HSZ						m_hszServerName;
 	HSZ						m_hszTopic;
 	DWORD					m_idDdeServerInst;

@@ -36,7 +36,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
+bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 									PTObjectType pto,
 									const XML_Char ** attributes,
 									const XML_Char ** properties,  pf_Frag_Object ** ppfo)
@@ -53,22 +53,22 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
-		return UT_FALSE;
+		return false;
 
 	// get the fragment at the given document position.
 	
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
-	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
 
 	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
         pf_Frag_Object * pfo = NULL;
 	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))
-		return UT_FALSE;
+		return false;
 	
 	// create a change record, add it to the history, and notify
 	// anyone listening.
@@ -82,11 +82,11 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
         *ppfo = pfo;
-	return UT_TRUE;
+	return true;
 }
 
 
-UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
+bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 									PTObjectType pto,
 									const XML_Char ** attributes,
 									const XML_Char ** properties )
@@ -103,22 +103,22 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
-		return UT_FALSE;
+		return false;
 
 	// get the fragment at the given document position.
 	
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
-	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
 
 	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
     pf_Frag_Object * pfo = NULL;
 	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))
-		return UT_FALSE;
+		return false;
 	
 	// create a change record, add it to the history, and notify
 	// anyone listening.
@@ -132,10 +132,10 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
 
-	return UT_TRUE;
+	return true;
 }
 	
-UT_Bool pt_PieceTable::_createObject(PTObjectType pto,
+bool pt_PieceTable::_createObject(PTObjectType pto,
 									 PT_AttrPropIndex indexAP,
 									 pf_Frag_Object ** ppfo)
 {
@@ -163,14 +163,14 @@ UT_Bool pt_PieceTable::_createObject(PTObjectType pto,
 	{
 		UT_DEBUGMSG(("Could not create object fragment.\n"));
 		// we forget about the AP that we created.
-		return UT_FALSE;
+		return false;
 	}
 
 	*ppfo = pfo;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_insertObject(pf_Frag * pf,
+bool pt_PieceTable::_insertObject(pf_Frag * pf,
 									 PT_BlockOffset fragOffset,									 
 									 PTObjectType pto,
 									 PT_AttrPropIndex indexAP,
@@ -178,7 +178,7 @@ UT_Bool pt_PieceTable::_insertObject(pf_Frag * pf,
 {
 	pfo = NULL;
 	if (!_createObject(pto,indexAP,&pfo))
-		return UT_FALSE;
+		return false;
 
 	if (fragOffset == 0)
 	{
@@ -211,10 +211,10 @@ UT_Bool pt_PieceTable::_insertObject(pf_Frag * pf,
 		m_fragments.insertFrag(pfo,pftTail);
 	}
 
-	return UT_TRUE;
+	return true;
 
 MemoryError:
 	if (pfo)
 		delete pfo;
-	return UT_FALSE;
+	return false;
 }

@@ -32,36 +32,36 @@ XAP_BeOSModule::~XAP_BeOSModule (void)
 	unload ();
 }
 
-UT_Bool XAP_BeOSModule::unload (void)
+bool XAP_BeOSModule::unload (void)
 {
   if (m_module != -1)
     {
 	unload_add_on(m_module);
 	m_module = -1;
-	return UT_TRUE;
+	return true;
     }
-  return UT_FALSE;
+  return false;
 }
 
-UT_Bool XAP_BeOSModule::load (const char * file_name)
+bool XAP_BeOSModule::load (const char * file_name)
 {
 	m_module = load_add_on( file_name );
 	m_szname = new char[strlen(file_name) + 1];
 
-	return (m_module != -1 ? UT_TRUE : UT_FALSE);
+	return (m_module != -1 ? true : false);
 }
 
-UT_Bool XAP_BeOSModule::getModuleName (char ** dest) const
+bool XAP_BeOSModule::getModuleName (char ** dest) const
 {
 	if (m_szname)
 	  {
 	    *dest = UT_strdup (m_szname);
-	    return UT_TRUE;
+	    return true;
 	  }
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_BeOSModule::resolveSymbol (const char * symbol_name, void ** symbol)
+bool XAP_BeOSModule::resolveSymbol (const char * symbol_name, void ** symbol)
 {
 	UT_ASSERT(m_module);
 	UT_ASSERT(symbol && symbol_name);
@@ -70,15 +70,15 @@ UT_Bool XAP_BeOSModule::resolveSymbol (const char * symbol_name, void ** symbol)
 	if( m_module < 0 )
 		get_image_symbol( m_module , symbol_name , B_SYMBOL_TYPE_TEXT , symbol );
 
-	return (*symbol ? UT_TRUE : UT_FALSE);
+	return (*symbol ? true : false);
 }
 
-UT_Bool XAP_BeOSModule::getErrorMsg (char **dest) const
+bool XAP_BeOSModule::getErrorMsg (char **dest) const
 {
 	if( m_module > 0)
 		*dest = UT_strdup("No Error");
 	else
 		*dest = UT_strdup ("Argument is not a valid image.");
 
-	return UT_TRUE;
+	return true;
 }

@@ -40,39 +40,39 @@ public:
  protected:
 
 	GtkWidget *_lookupWidget( tControl id );
-	virtual void _controlEnable( tControl id, UT_Bool value );
+	virtual void _controlEnable( tControl id, bool value );
 
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
  					    virtual void    _set##a( t )
  
- 	SET_GATHER			(SpellCheckAsType,	UT_Bool );
- 	SET_GATHER			(SpellHideErrors,	UT_Bool );
- 	SET_GATHER			(SpellSuggest,		UT_Bool );
- 	SET_GATHER			(SpellMainOnly,		UT_Bool );
- 	SET_GATHER			(SpellUppercase,	UT_Bool );
- 	SET_GATHER			(SpellNumbers,		UT_Bool );
- 	SET_GATHER			(SpellInternet,		UT_Bool );
+ 	SET_GATHER			(SpellCheckAsType,	bool );
+ 	SET_GATHER			(SpellHideErrors,	bool );
+ 	SET_GATHER			(SpellSuggest,		bool );
+ 	SET_GATHER			(SpellMainOnly,		bool );
+ 	SET_GATHER			(SpellUppercase,	bool );
+ 	SET_GATHER			(SpellNumbers,		bool );
+ 	SET_GATHER			(SpellInternet,		bool );
  
- 	SET_GATHER			(SmartQuotesEnable,	UT_Bool );
+ 	SET_GATHER			(SmartQuotesEnable,	bool );
 	SET_GATHER			(DefaultPageSize,  fp_PageSize::Predefined);
  
- 	SET_GATHER			(PrefsAutoSave,		UT_Bool );
+ 	SET_GATHER			(PrefsAutoSave,		bool );
  
- 	SET_GATHER			(ViewShowRuler,		UT_Bool );
+ 	SET_GATHER			(ViewShowRuler,		bool );
 
- 	SET_GATHER			(ViewShowStandardBar,	UT_Bool );
- 	SET_GATHER			(ViewShowFormatBar,	UT_Bool );
- 	SET_GATHER			(ViewShowExtraBar,	UT_Bool );
+ 	SET_GATHER			(ViewShowStandardBar,	bool );
+ 	SET_GATHER			(ViewShowFormatBar,	bool );
+ 	SET_GATHER			(ViewShowExtraBar,	bool );
 
- 	SET_GATHER			(ViewShowStatusBar,	UT_Bool );
+ 	SET_GATHER			(ViewShowStatusBar,	bool );
 
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
-	SET_GATHER			(ViewCursorBlink,	UT_Bool);
+	SET_GATHER			(ViewCursorBlink,	bool);
  
- 	SET_GATHER			(ViewAll,			UT_Bool );
- 	SET_GATHER			(ViewHiddenText,	UT_Bool );
- 	SET_GATHER			(ViewUnprintable,	UT_Bool );
+ 	SET_GATHER			(ViewAll,			bool );
+ 	SET_GATHER			(ViewHiddenText,	bool );
+ 	SET_GATHER			(ViewUnprintable,	bool );
   
  	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER

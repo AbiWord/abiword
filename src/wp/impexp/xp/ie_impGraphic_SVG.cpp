@@ -22,12 +22,12 @@
 #include "ie_impGraphic_SVG.h"
 #include "fg_GraphicVector.h"
 
-UT_Bool IE_ImpGraphic_SVG::RecognizeSuffix(const char * szSuffix)
+bool IE_ImpGraphic_SVG::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".svg") == 0);
 }
 
-UT_Bool IE_ImpGraphic_SVG::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_ImpGraphic_SVG::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	UT_uint32 off = 0;
    	for (;;) {
@@ -40,28 +40,28 @@ UT_Bool IE_ImpGraphic_SVG::RecognizeContents(const char * szBuf, UT_uint32 iNumb
 			    (szBuf[off+3] == 'g' || szBuf[off+3] == 'G') &&
 			    (szBuf[off+4] == ' ' || szBuf[off+4] == '\t' ||
 			     szBuf[off+4] == '\n' || szBuf[off+4] == '\r'))
-		     		return UT_TRUE;
+		     		return true;
 		   	else {
 			   	off++;
 			   	while (off < iNumbytes && szBuf[off] != '>') off++;
 			}
 		}
-	   	else return UT_FALSE;
+	   	else return false;
 	}
-   	return UT_FALSE;
+   	return false;
 }
 
-UT_Bool IE_ImpGraphic_SVG::GetDlgLabels(const char ** pszDesc,
+bool IE_ImpGraphic_SVG::GetDlgLabels(const char ** pszDesc,
 					const char ** pszSuffixList,
 					IEGraphicFileType * ft)
 {
 	*pszDesc = "Scalable Vector Graphics (.svg)";
 	*pszSuffixList = "*.svg";
 	*ft = IEGFT_SVG;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_ImpGraphic_SVG::SupportsFileType(IEGraphicFileType ft)
+bool IE_ImpGraphic_SVG::SupportsFileType(IEGraphicFileType ft)
 {
 	return (IEGFT_SVG == ft);
 }

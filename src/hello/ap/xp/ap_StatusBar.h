@@ -58,7 +58,7 @@ public:
 	const UT_UCSChar *	getStatusMessage(void) const;
 	
 	/* used with AV_Listener */
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
 	void				_draw(void);
@@ -72,7 +72,7 @@ protected:
 
 	UT_uint32			s_iFixedHeight;
 
-	UT_Bool				m_bInitFields;
+	bool				m_bInitFields;
 	UT_Vector			m_vecFields;			/* vector of 'ap_sb_Field *' */
 	void *				m_pStatusMessageField;	/* actually 'ap_sb_Field_StatusMessage *' */
 

@@ -102,7 +102,7 @@ static void charData(void* userData, const XML_Char *s, int len)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_XML::_openFile(const char * szFilename) 
+bool IE_Imp_XML::_openFile(const char * szFilename) 
 {
     m_fp = fopen(szFilename, "r");
     return (m_fp != NULL);
@@ -196,16 +196,16 @@ IE_Imp_XML::~IE_Imp_XML()
 	FREEP(m_currentDataItemMimeType);
 }
 
-IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, UT_Bool whiteSignificant)
+IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	: IE_Imp(pDocument)
 {
 	m_error = UT_OK;
 	m_parseState = _PS_Init;
 	m_lenCharDataSeen = 0;
 	m_lenCharDataExpected = 0;
-	m_bSeenCR = UT_FALSE;
+	m_bSeenCR = false;
 	m_bWhiteSignificant = whiteSignificant;
-	m_bWasSpace = UT_FALSE;
+	m_bWasSpace = false;
 
 	m_currentDataItemName = NULL;
 	m_currentDataItemMimeType = NULL;
@@ -274,7 +274,7 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 				if (currentChar == UCS_CR)
 				{
 					buf[bufLen++] = UCS_SPACE;		// substitute a SPACE
-					m_bSeenCR = UT_TRUE;
+					m_bSeenCR = true;
 					continue;
 				}
 
@@ -289,13 +289,13 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 				      if(!m_bWasSpace)
 					{
 					  buf[bufLen++] = UCS_SPACE;
-					  m_bWasSpace = UT_TRUE;
+					  m_bWasSpace = true;
 					}
 				      continue;
 				    }
 				  else
 				    {
-				      m_bWasSpace = UT_FALSE;
+				      m_bWasSpace = false;
 				    }
 				}
 
@@ -303,11 +303,11 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 				{
 					if (!m_bSeenCR)					// if not immediately after a CR,
 						buf[bufLen++] = UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
-					m_bSeenCR = UT_FALSE;
+					m_bSeenCR = false;
 					continue;
 				}
 				
-				m_bSeenCR = UT_FALSE;
+				m_bSeenCR = false;
 
 				if (currentChar < 0x80)					// plain us-ascii part of latin-1
 				{
@@ -401,7 +401,7 @@ UT_uint32 IE_Imp_XML::_getInlineDepth(void) const
 	return m_stackFmtStartIndex.getDepth();
 }
 
-UT_Bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
+bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 {
 	UT_uint32 start = m_vecInlineFmt.getItemCount()+1;
 	UT_uint32 k;
@@ -410,13 +410,13 @@ UT_Bool IE_Imp_XML::_pushInlineFmt(const XML_Char ** atts)
 	{
 		XML_Char * p;
 		if (!UT_XML_cloneString(p,atts[k]))
-			return UT_FALSE;
+			return false;
 		if (m_vecInlineFmt.addItem(p)!=0)
-			return UT_FALSE;
+			return false;
 	}
 	if (!m_stackFmtStartIndex.push((void*)start))
-		return UT_FALSE;
-	return UT_TRUE;
+		return false;
+	return true;
 }
 
 void IE_Imp_XML::_popInlineFmt(void)

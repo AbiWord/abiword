@@ -61,10 +61,6 @@ typedef signed int		UT_sint32;
 	an error code.
 */
 
-typedef	unsigned char		UT_Bool;
-#define UT_TRUE			((UT_Bool) 1)
-#define UT_FALSE		((UT_Bool) 0)
-
 /*
 	UT_Error should be used far more than it is.  Any function
 	which reasonably could fail at runtime for anything other than

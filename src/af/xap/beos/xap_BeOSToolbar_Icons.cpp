@@ -41,7 +41,7 @@ BBitmap *AP_BeOSToolbar_Icons::GetIconBitmap(const char *szIconName) {
 	BBitmap *outbitmap = NULL;
 	const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
-	UT_Bool bFound = _findIconDataByName(szIconName, 
+	bool bFound = _findIconDataByName(szIconName, 
 					     &pIconData, &sizeofIconData); 
 
 	if (!bFound || !UT_Xpm2Bitmap(pIconData, sizeofIconData, &outbitmap)) {

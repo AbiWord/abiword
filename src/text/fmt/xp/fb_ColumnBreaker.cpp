@@ -89,7 +89,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 
 					UT_uint32 iNumLinesBeforeOffending = 0;
 					UT_uint32 iNumLinesAfterOffending = 0;
-					UT_Bool bFoundOffending = UT_FALSE;
+					bool bFoundOffending = false;
 					
 					fp_Line* pFirstLineInBlock = pBlock->getFirstLine();
 					pCurLine = pFirstLineInBlock;
@@ -104,7 +104,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_SectionLayout* pSL)
 							if (pCurLine == pOffendingLine)
 							{
 								iNumLinesAfterOffending = 1;
-								bFoundOffending = UT_TRUE;
+								bFoundOffending = true;
 							}
 							else
 							{

@@ -22,7 +22,7 @@
 dg_DrawArgs::dg_DrawArgs()
 {
 	pG = NULL;
-	bDirtyRunsOnly = UT_FALSE;
+	bDirtyRunsOnly = false;
 	xoff = 0;
 	yoff = 0;
 }

@@ -43,7 +43,7 @@
 extern unsigned char g_pngSidebar[];		// see ap_wp_sidebar.cpp
 extern unsigned long g_pngSidebar_sizeof;	// see ap_wp_sidebar.cpp
 
-UT_Bool XAP_Win32Dialog_About::s_bEventLoopDone;
+bool XAP_Win32Dialog_About::s_bEventLoopDone;
 
 /*****************************************************************/
 XAP_Dialog * XAP_Win32Dialog_About::static_constructor(XAP_DialogFactory * pFactory,
@@ -258,7 +258,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 	{
 		MSG msg;
 
-		s_bEventLoopDone = UT_FALSE;
+		s_bEventLoopDone = false;
 	
 		while (!s_bEventLoopDone)
 		{
@@ -281,7 +281,7 @@ void XAP_Win32Dialog_About::runModal(XAP_Frame * pFrame)
 
 	UnregisterClass(wndclassAbout.lpszClassName, pWin32App->getInstance());
 
-	pWin32App->enableAllTopLevelWindows(UT_TRUE);
+	pWin32App->enableAllTopLevelWindows(true);
 
 	if (GetWindow(hWndFrame, GW_HWNDFIRST) != hWndFrame)
 	{
@@ -332,7 +332,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		case 13:	// CR
 		case 27:	// ESC
 		case 32:	// SPACE
-			s_bEventLoopDone = UT_TRUE;
+			s_bEventLoopDone = true;
 			return 0;
 		}
 		
@@ -343,7 +343,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		return pThis->_onCommand(hWnd,wParam,lParam);
 
 	case WM_DESTROY:
-		s_bEventLoopDone = UT_TRUE;
+		s_bEventLoopDone = true;
 		return 0;
 	}
 
@@ -360,7 +360,7 @@ BOOL XAP_Win32Dialog_About::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	{
 	case IDCANCEL:
 	case IDOK:							// also XAP_RID_DIALOG_ABOUT_BTN_OK
-		s_bEventLoopDone = UT_TRUE;
+		s_bEventLoopDone = true;
 		return 0;
 
 	case ID_BUTTON_URL:

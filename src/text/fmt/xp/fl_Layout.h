@@ -48,9 +48,9 @@ public:
 	PTStruxType			getType(void) const;
 	PT_AttrPropIndex 	getAttrPropIndex(void) const;
 	void				setAttrPropIndex(PT_AttrPropIndex apIndex);
-	UT_Bool				getAttrProp(const PP_AttrProp ** ppAP) const;
-	UT_Bool				getSpanAttrProp(UT_uint32 offset, UT_Bool bLeftSide, const PP_AttrProp ** ppAP) const;
-	UT_Bool				getField(UT_uint32 offset, fd_Field * &pField);
+	bool				getAttrProp(const PP_AttrProp ** ppAP) const;
+	bool				getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP) const;
+	bool				getField(UT_uint32 offset, fd_Field * &pField);
 	virtual	void		listUpdate(void) { return; }
 	inline fl_AutoNum *	getAutoNum(void) const { return m_pAutoNum; }
 	void    		setAutoNum(fl_AutoNum * pAutoNum);

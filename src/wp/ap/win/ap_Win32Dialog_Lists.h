@@ -63,13 +63,13 @@ private:
 	void					_setTypeComboCurSel(int iSel);
 	void					_setStyleComboCurSel(int iSel);
 
-	UT_Bool					_isNewList() const;
+	bool					_isNewList() const;
 	void					_fillTypeList();
 	void					_fillStyleList(int iType);
 	void					_typeChanged();
 	void					_styleChanged();
 	void					_customChanged();
-	void					_enableCustomControls(UT_Bool bEnable = UT_TRUE);
+	void					_enableCustomControls(bool bEnable = true);
 	void					_updateCaption();
 	void					_previewExposed();
 	void					_setData();			// data -> "view"
@@ -82,7 +82,7 @@ private:
 	UT_Timer*				m_pAutoUpdateLists;
 	XAP_Win32DialogHelper	_win32Dialog;
 	XAP_Win32PreviewWidget*	m_pPreviewWidget;
-	UT_Bool					m_bDisplayCustomControls;
+	bool					m_bDisplayCustomControls;
 	HWND					m_hThisDlg;
 };
 

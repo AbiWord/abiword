@@ -137,7 +137,7 @@ IE_Imp_UTF8::IE_Imp_UTF8(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-#define X_ReturnIfFail(exp,error)		do { UT_Bool b = (exp); if (!b) return (error); } while (0)
+#define X_ReturnIfFail(exp,error)		do { bool b = (exp); if (!b) return (error); } while (0)
 #define X_ReturnNoMemIfError(exp)	X_ReturnIfFail(exp,UT_IE_NOMEMORY)
 
 UT_Error IE_Imp_UTF8::_writeHeader(FILE * /* fp */)
@@ -150,9 +150,9 @@ UT_Error IE_Imp_UTF8::_writeHeader(FILE * /* fp */)
 UT_Error IE_Imp_UTF8::_parseFile(FILE * fp)
 {
 	UT_GrowBuf gbBlock(1024);
-	UT_Bool bEatLF = UT_FALSE;
-	UT_Bool bEmptyFile = UT_TRUE;
-	UT_Bool bSmashUTF8 = UT_FALSE;
+	bool bEatLF = false;
+	bool bEmptyFile = true;
+	bool bSmashUTF8 = false;
 	unsigned char c;
 
 	while (fread(&c, 1, sizeof(c), fp) > 0)
@@ -163,13 +163,13 @@ UT_Error IE_Imp_UTF8::_parseFile(FILE * fp)
 		case '\n':
 			if ((c == '\n') && bEatLF)
 			{
-				bEatLF = UT_FALSE;
+				bEatLF = false;
 				break;
 			}
 
 			if (c == '\r')
 			{
-				bEatLF = UT_TRUE;
+				bEatLF = true;
 			}
 			
 			// we interprete either CRLF, CR, or LF as a paragraph break.
@@ -177,19 +177,19 @@ UT_Error IE_Imp_UTF8::_parseFile(FILE * fp)
 			// start a paragraph and emit any text that we
 			// have accumulated.
 			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-			bEmptyFile = UT_FALSE;
+			bEmptyFile = false;
 			if (gbBlock.getLength() > 0)
 			{
 				if (bSmashUTF8)
 					_smashUTF8(&gbBlock);
 				X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
 				gbBlock.truncate(0);
-				bSmashUTF8 = UT_FALSE;
+				bSmashUTF8 = false;
 			}
 			break;
 
 		default:
-			bEatLF = UT_FALSE;
+			bEatLF = false;
 
 			// deal with plain character.  to simplify parsing logic,
 			// we just stuff all text chars (latin-1 and utf8 escape
@@ -197,7 +197,7 @@ UT_Error IE_Imp_UTF8::_parseFile(FILE * fp)
 			// sequences into unicode in a moment.
 
 			if (c > 0x7f)
-				bSmashUTF8 = UT_TRUE;
+				bSmashUTF8 = true;
 			UT_UCSChar uc = (UT_UCSChar) c;
 			X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&uc,1));
 			break;
@@ -233,9 +233,9 @@ void IE_Imp_UTF8::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
 
 	UT_GrowBuf gbBlock(1024);
-	UT_Bool bEatLF = UT_FALSE;
-	UT_Bool bSuppressLeadingParagraph = UT_TRUE;
-	UT_Bool bInColumn1 = UT_TRUE;
+	bool bEatLF = false;
+	bool bSuppressLeadingParagraph = true;
+	bool bInColumn1 = true;
 	unsigned char * pc;
 
 	PT_DocPosition dpos = pDocRange->m_pos1;
@@ -250,13 +250,13 @@ void IE_Imp_UTF8::pasteFromBuffer(PD_DocumentRange * pDocRange,
 		case '\n':
 			if ((c == '\n') && bEatLF)
 			{
-				bEatLF = UT_FALSE;
+				bEatLF = false;
 				break;
 			}
 
 			if (c == '\r')
 			{
-				bEatLF = UT_TRUE;
+				bEatLF = true;
 			}
 			
 			// we interprete either CRLF, CR, or LF as a paragraph break.
@@ -268,11 +268,11 @@ void IE_Imp_UTF8::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				dpos += gbBlock.getLength();
 				gbBlock.truncate(0);
 			}
-			bInColumn1 = UT_TRUE;
+			bInColumn1 = true;
 			break;
 
 		default:
-			bEatLF = UT_FALSE;
+			bEatLF = false;
 			if (bInColumn1 && !bSuppressLeadingParagraph)
 			{
 				m_pDocument->insertStrux(dpos,PTX_Block);
@@ -287,8 +287,8 @@ void IE_Imp_UTF8::pasteFromBuffer(PD_DocumentRange * pDocRange,
 			UT_UCSChar uc = (UT_UCSChar) c;
 			gbBlock.ins(gbBlock.getLength(),&uc,1);
 
-			bInColumn1 = UT_FALSE;
-			bSuppressLeadingParagraph = UT_FALSE;
+			bInColumn1 = false;
+			bSuppressLeadingParagraph = false;
 			break;
 		}
 	} 
@@ -306,13 +306,13 @@ void IE_Imp_UTF8::pasteFromBuffer(PD_DocumentRange * pDocRange,
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_UTF8::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_UTF8::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// TODO: Not yet written
-	return(UT_FALSE);
+	return(false);
 }
 
-UT_Bool IE_Imp_UTF8::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_UTF8::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".utf8") == 0);
 }
@@ -325,17 +325,17 @@ UT_Error IE_Imp_UTF8::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Imp_UTF8::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_UTF8::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
 	*pszDesc = "UTF8 (.utf8)";
 	*pszSuffixList = "*.utf8";
 	*ft = IEFT_UTF8;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_UTF8::SupportsFileType(IEFileType ft)
+bool IE_Imp_UTF8::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_UTF8 == ft);
 }

@@ -28,7 +28,7 @@ class ap_QNXViewListener : public ap_ViewListener
 {
 public:
 	ap_QNXViewListener(XAP_Frame * pFrame);
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 };
 
 #endif /* AP_QNXVIEWLISTENER_H */

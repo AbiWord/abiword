@@ -69,13 +69,13 @@ protected:
 		UT_uint32	nMinPage;
 		UT_uint32	nMaxPage;
 		UT_uint32	nCopies;
-		UT_Bool		bDoPageRange;
-		UT_Bool		bDoPrintSelection;
-		UT_Bool		bDoPrintToFile;
-		UT_Bool		bDoCollate;
-		UT_Bool		bEnablePrintToFile;
-		UT_Bool		bEnableSelection;
-		UT_Bool		bEnablePageRange;
+		bool		bDoPageRange;
+		bool		bDoPrintSelection;
+		bool		bDoPrintToFile;
+		bool		bDoCollate;
+		bool		bEnablePrintToFile;
+		bool		bEnableSelection;
+		bool		bEnablePageRange;
 
 		GR_Graphics::ColorSpace		colorSpace;
 

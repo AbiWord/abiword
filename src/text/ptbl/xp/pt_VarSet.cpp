@@ -28,14 +28,14 @@
 pt_VarSet::pt_VarSet()
 {
 	m_currentVarSet = 0;
-	m_bInitialized = UT_FALSE;
+	m_bInitialized = false;
 }
 
 pt_VarSet::~pt_VarSet()
 {
 }
 
-UT_Bool pt_VarSet::_finishConstruction(void)
+bool pt_VarSet::_finishConstruction(void)
 {
 	// finish the construction -- C++ doesn't let us return failures
 	// in a constructor, so we do the malloc's here.
@@ -46,12 +46,12 @@ UT_Bool pt_VarSet::_finishConstruction(void)
 		
 	if (   !m_tableAttrProp[0].createAP(&foo)
 		|| !m_tableAttrProp[1].createAP(&foo))
-		return UT_FALSE;
+		return false;
 	((PP_AttrProp *)getAP(_makeAPIndex(0,0)))->markReadOnly();
 	((PP_AttrProp *)getAP(_makeAPIndex(1,0)))->markReadOnly();
 	
-	m_bInitialized = UT_TRUE;
-	return UT_TRUE;
+	m_bInitialized = true;
+	return true;
 }
 
 void pt_VarSet::setPieceTableState(PTState pts)
@@ -60,40 +60,40 @@ void pt_VarSet::setPieceTableState(PTState pts)
 		m_currentVarSet = 1;
 }
 
-UT_Bool pt_VarSet::appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi)
+bool pt_VarSet::appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi)
 {
 	UT_uint32 bufOffset = m_buffer[m_currentVarSet].getLength();
 	if (m_buffer[m_currentVarSet].ins(bufOffset,pBuf,length))
 	{
 		*pbi = _makeBufIndex(m_currentVarSet,bufOffset);
-		return UT_TRUE;
+		return true;
 	}
 
 	UT_DEBUGMSG(("could not appendBuf\n"));
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool pt_VarSet::overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi)
+bool pt_VarSet::overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi)
 {
 	if (m_buffer[_varsetFromBufIndex(*pbi)]
         .overwrite(_subscriptFromBufIndex(*pbi),
                    pBuf,
                    length))
 	{
-		return UT_TRUE;
+		return true;
 	}
 
 	UT_DEBUGMSG(("could not overwriteBuf\n"));
-	return UT_FALSE;
+	return false;
 }
 
 
 
-UT_Bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
+bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
 		if (!_finishConstruction())
-			return UT_FALSE;
+			return false;
 
 	// create an AP for this set of attributes -- iff unique.
 	// return the index for the new one (or the one we found).
@@ -104,7 +104,7 @@ UT_Bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi
 		// with empty attributes.  return index back to
 		// the first table.
 		*papi = _makeAPIndex(0,0);
-		return UT_TRUE;
+		return true;
 	}
 
 	// This is a bit expensive, but it can't be helped.
@@ -116,7 +116,7 @@ UT_Bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi
 
 	PP_AttrProp * pTemp = new PP_AttrProp();
 	if (!pTemp)
-		return UT_FALSE;
+		return false;
 
 	if (pTemp->setAttributes(attributes))
 	{
@@ -125,14 +125,14 @@ UT_Bool pt_VarSet::storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi
 	}
 	
 	delete pTemp;
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * papi)
+bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
 		if (!_finishConstruction())
-			return UT_FALSE;
+			return false;
 
 	// create an AP for this set of attributes -- iff unique.
 	// return the index for the new one (or the one we found).
@@ -143,7 +143,7 @@ UT_Bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * 
 		// with empty attributes.  return index back to
 		// the first table.
 		*papi = _makeAPIndex(0,0);
-		return UT_TRUE;
+		return true;
 	}
 
 	// This is a bit expensive, but it can't be helped.
@@ -155,7 +155,7 @@ UT_Bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * 
 
 	PP_AttrProp * pTemp = new PP_AttrProp();
 	if (!pTemp)
-		return UT_FALSE;
+		return false;
 	
 	if (pTemp->setAttributes(pVecAttributes))
 	{
@@ -164,15 +164,15 @@ UT_Bool pt_VarSet::storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * 
 	}
 
 	delete pTemp;
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool pt_VarSet::isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) const
+bool pt_VarSet::isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) const
 {
 	return ((getPointer(bi)+length) == getPointer(bi2));
 }
 
-UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
+bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 						   const XML_Char ** attributes, const XML_Char ** properties,
 						   PT_AttrPropIndex * papiNew)
 {
@@ -180,7 +180,7 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 	// under the operator ptc giving a new set to be returned in
 	// papiNew.  if the resulting merger is the same as the set
 	// referenced in apiOld, just return it.
-	// return UT_FALSE only if we had an error.
+	// return false only if we had an error.
 
 	const PP_AttrProp * papOld = getAP(apiOld);
 	switch (ptc)
@@ -190,16 +190,16 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			if (papOld->areAlreadyPresent(attributes,properties))
 			{
 				*papiNew = apiOld;
-				return UT_TRUE;
+				return true;
 			}
 
 			// create a new AP that is the merger of the existing
 			// one and the a/p given in the args.  we then use it
 			// to find an existing match or use the new one.
 			
-			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, UT_FALSE);
+			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, false);
 			if (!pNew)
-				return UT_FALSE;
+				return false;
 
 			pNew->markReadOnly();
 			return addIfUniqueAP(pNew,papiNew);
@@ -211,7 +211,7 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 				papOld->areAlreadyPresent(attributes,properties))
 			{
 				*papiNew = apiOld;
-				return UT_TRUE;
+				return true;
 			}
 
 			// create a new AP that is the merger of the existing
@@ -219,9 +219,9 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			// the args.  we then use it to find an existing match 
 			// or use the new one.
 			
-			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, UT_TRUE);
+			PP_AttrProp * pNew = papOld->cloneWithReplacements(attributes,properties, true);
 			if (!pNew)
-				return UT_FALSE;
+				return false;
 
 			pNew->markReadOnly();
 			return addIfUniqueAP(pNew,papiNew);
@@ -234,7 +234,7 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 				// none of the given attributes/properties are present in this set.
 				// the remove has no effect.
 				*papiNew = apiOld;
-				return UT_TRUE;
+				return true;
 			}
 
 			// create a new AP that is the existing set minus the
@@ -243,7 +243,7 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 
 			PP_AttrProp * pNew = papOld->cloneWithElimination(attributes,properties);
 			if (!pNew)
-				return UT_FALSE;
+				return false;
 
 			pNew->markReadOnly();
 			return addIfUniqueAP(pNew,papiNew);
@@ -251,11 +251,11 @@ UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
+bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
 {
 	// Add the AP to our tables iff it is unique.
 	// If not unique, delete it and return the index
@@ -273,7 +273,7 @@ UT_Bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
 			// use the one that we already have in the table.
 			delete pAP;
 			*papi = _makeAPIndex(table,subscript);
-			return UT_TRUE;
+			return true;
 		}
 
 	// we did not find a match, so we store our new one.
@@ -281,11 +281,11 @@ UT_Bool pt_VarSet::addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi)
 	if (m_tableAttrProp[m_currentVarSet].addAP(pAP,&subscript))
 	{
 		*papi = _makeAPIndex(m_currentVarSet,subscript);
-		return UT_TRUE;
+		return true;
 	}
 	
 	// memory error of some kind.
 	
 	delete pAP;
-	return UT_FALSE;
+	return false;
 }

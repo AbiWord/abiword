@@ -50,7 +50,7 @@ AP_MacDialog_Replace::AP_MacDialog_Replace(XAP_DialogFactory * pDlgFactory,
 {
 	m_findString = NULL;
 	m_replaceString = NULL;
-    m_matchCase = UT_TRUE;
+    m_matchCase = true;
 }
 
 AP_MacDialog_Replace::~AP_MacDialog_Replace(void)

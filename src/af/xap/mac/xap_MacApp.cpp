@@ -71,7 +71,7 @@ XAP_MacApp::~XAP_MacApp(void)
 	DELETEP(m_pMacToolbarIcons);
 }
 
-UT_Bool XAP_MacApp::initialize(void)
+bool XAP_MacApp::initialize(void)
 {
 	// let our base class do it's thing.
 	
@@ -86,7 +86,7 @@ UT_Bool XAP_MacApp::initialize(void)
 
 	// _pClipboard = new AP_MacClipboard();
 	
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_MacApp::reallyExit(void)

@@ -121,7 +121,7 @@ inline const XML_Char * PP_Property::getInitial() const
 	return m_pszInitial;
 }
 
-inline UT_Bool PP_Property::canInherit() const
+inline bool PP_Property::canInherit() const
 {
 	return m_bInherit;
 }
@@ -174,7 +174,7 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
 								 PD_Document * pDoc,
-								 UT_Bool bExpandStyles)
+								 bool bExpandStyles)
 {
 	// find the value for the given property
 	// by evaluating it in the contexts given.

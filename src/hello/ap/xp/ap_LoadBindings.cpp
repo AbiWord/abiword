@@ -35,7 +35,7 @@
 /****************************************************************/
 /****************************************************************/
 
-typedef UT_Bool (*ap_LoadBindings_pFn)(AP_BindingSet * pThis, EV_EditBindingMap * pebm);
+typedef bool (*ap_LoadBindings_pFn)(AP_BindingSet * pThis, EV_EditBindingMap * pebm);
 
 struct _lb
 {

@@ -35,7 +35,7 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 {
 	FG_GraphicRaster* pFG = new FG_GraphicRaster();
 
-	UT_Bool bFoundDataItem = UT_FALSE;
+	bool bFoundDataItem = false;
 	const PD_Document* pDoc = pFL->getDocument();
 	PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
@@ -44,11 +44,11 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 	  for the image, and get the dataItem.  The bytes in the
 	  dataItem should be a PNG image.
 	*/
-	UT_Bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, UT_FALSE,
+	bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, false,
 												&pFG->m_pSpanAP);
 	if (bFoundSpanAP && pFG->m_pSpanAP)
 	{
-		UT_Bool bFoundDataID = pFG->m_pSpanAP->getAttribute((XML_Char*)"dataid", pFG->m_pszDataID);
+		bool bFoundDataID = pFG->m_pSpanAP->getAttribute((XML_Char*)"dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
 			bFoundDataItem = pDoc->getDataItemDataByName((char*)pFG->m_pszDataID, (const UT_ByteBuf **)&pFG->m_pbbPNG, NULL, NULL);
@@ -65,7 +65,7 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 FG_GraphicRaster::FG_GraphicRaster()
 {
 	m_pbbPNG = NULL;
-	m_bOwnPNG = UT_FALSE;
+	m_bOwnPNG = false;
 	m_pSpanAP = NULL;
 	m_pszDataID = NULL;
 }
@@ -112,8 +112,8 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 
 	const XML_Char *pszWidth;
 	const XML_Char *pszHeight;
-	UT_Bool bFoundWidthProperty = m_pSpanAP->getProperty((XML_Char*)"width", pszWidth);
-	UT_Bool bFoundHeightProperty = m_pSpanAP->getProperty((XML_Char*)"height", pszHeight);
+	bool bFoundWidthProperty = m_pSpanAP->getProperty((XML_Char*)"width", pszWidth);
+	bool bFoundHeightProperty = m_pSpanAP->getProperty((XML_Char*)"height", pszHeight);
 
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
@@ -180,7 +180,7 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	  Create the data item
 	*/
 	char * mimetype = UT_strdup("image/png");
-   	pDoc->createDataItem(szName, UT_FALSE, m_pbbPNG, mimetype, NULL);
+   	pDoc->createDataItem(szName, false, m_pbbPNG, mimetype, NULL);
 
 	/*
 	  Insert the object into the document.
@@ -204,13 +204,13 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	return UT_OK;
 }
 
-UT_Bool FG_GraphicRaster::setRaster_PNG(UT_ByteBuf* pBB)
+bool FG_GraphicRaster::setRaster_PNG(UT_ByteBuf* pBB)
 {
 	if (m_bOwnPNG)
 		DELETEP(m_pbbPNG);
 
 	m_pbbPNG = pBB;
-	m_bOwnPNG = UT_TRUE;
+	m_bOwnPNG = true;
 
 	//  We want to calculate the dimensions of the image here.
 	return UT_PNG_getDimensions(pBB, m_iWidth, m_iHeight);

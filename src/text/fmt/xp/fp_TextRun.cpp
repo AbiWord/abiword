@@ -44,7 +44,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 					   GR_Graphics* pG,
 					   UT_uint32 iOffsetFirst,
 					   UT_uint32 iLen,
-					   UT_Bool bLookupProperties)
+					   bool bLookupProperties)
 :	fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT),
 	m_fPosition(TEXT_POSITION_NORMAL)
 {
@@ -52,7 +52,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_pFontLayout = NULL;
 	m_fDecorations = 0;
 	m_iLineWidth = 0;
-	m_bSquiggled = UT_FALSE;
+	m_bSquiggled = false;
 	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
         m_pField = NULL;
 	if (bLookupProperties)
@@ -72,7 +72,7 @@ void fp_TextRun::lookupProperties(void)
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_FALSE,&pSpanAP);
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,false,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
         static_cast<fl_Layout *>(m_pBL)->getField(m_iOffsetFirst,m_pField);
 	// look for fonts in this DocLayout's font cache
@@ -82,11 +82,11 @@ void fp_TextRun::lookupProperties(void)
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
-	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE), m_colorFG);
+	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, pDoc, true), m_colorFG);
 
-	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE), m_colorBG);
+	UT_parseColor(PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, true), m_colorBG);
 
-	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
+	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	/*
 	  TODO map line width to a property, not a hard-coded value
@@ -123,7 +123,7 @@ void fp_TextRun::lookupProperties(void)
 
 	free(p);
 
-	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
+	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	if (0 == UT_strcmp(pszPosition, "superscript"))
 	{
@@ -149,13 +149,13 @@ void fp_TextRun::lookupProperties(void)
 	m_pG->setFont(m_pFont);
 }
 
-UT_Bool fp_TextRun::canBreakAfter(void) const
+bool fp_TextRun::canBreakAfter(void) const
 {
 	const UT_UCSChar* pSpan = NULL;
 	UT_uint32 lenSpan = 0;
 	UT_uint32 offset = m_iOffsetFirst;
 	UT_uint32 len = m_iLen;
-	UT_Bool bContinue = UT_TRUE;
+	bool bContinue = true;
 
 	if (len > 0)
 	{
@@ -170,10 +170,10 @@ UT_Bool fp_TextRun::canBreakAfter(void) const
 
 				if (XAP_EncodingManager::instance->can_break_at(pSpan[len-1]))
 				{
-					return UT_TRUE;
+					return true;
 				}
 
-				bContinue = UT_FALSE;
+				bContinue = false;
 			}
 			else
 			{
@@ -184,7 +184,7 @@ UT_Bool fp_TextRun::canBreakAfter(void) const
 	}
 	else if (!m_pNext)
 	{
-		return UT_TRUE;
+		return true;
 	}
 
 	if (m_pNext)
@@ -192,10 +192,10 @@ UT_Bool fp_TextRun::canBreakAfter(void) const
 		return m_pNext->canBreakBefore();
 	}
 	
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool fp_TextRun::canBreakBefore(void) const
+bool fp_TextRun::canBreakBefore(void) const
 {
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
@@ -208,7 +208,7 @@ UT_Bool fp_TextRun::canBreakBefore(void) const
 
 			if (XAP_EncodingManager::instance->can_break_at(pSpan[0]))
 			{
-				return UT_TRUE;
+				return true;
 			}
 		}
 	}
@@ -220,14 +220,14 @@ UT_Bool fp_TextRun::canBreakBefore(void) const
 		}
 		else
 		{
-			return UT_TRUE;
+			return true;
 		}
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool fp_TextRun::alwaysFits(void) const
+bool fp_TextRun::alwaysFits(void) const
 {
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
@@ -244,21 +244,21 @@ UT_Bool fp_TextRun::alwaysFits(void) const
 			{
 				if (pSpan[i] != UCS_SPACE)
 				{
-					return UT_FALSE;
+					return false;
 				}
 			}
 
-			return UT_TRUE;
+			return true;
 		}
 
-		return UT_FALSE;
+		return false;
 	}
 
 	// could assert here -- this should never happen, I think
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -272,7 +272,7 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidt
 	UT_uint32 lenSpan;
 	UT_uint32 offset = m_iOffsetFirst;
 	UT_uint32 len = m_iLen;
-	UT_Bool bContinue = UT_TRUE;
+	bool bContinue = true;
 
 	while (bContinue)
 	{
@@ -313,7 +313,7 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidt
 				}
 				else
 				{
-					bContinue = UT_FALSE;
+					bContinue = false;
 					break;
 				}
 			}
@@ -321,7 +321,7 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidt
 
 		if (len <= lenSpan)
 		{
-			bContinue = UT_FALSE;
+			bContinue = false;
 		}
 		else
 		{
@@ -336,22 +336,22 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidt
 		)
 	{
 		// there were no split points which fit.
-		return UT_FALSE;
+		return false;
 	}
 
 
-	return UT_TRUE;
+	return true;
 }
 
-void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	if (x <= 0)
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
 		// don't set bBOL to false here
-		bEOL = UT_FALSE;
+		bEOL = false;
 
-		UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+		UT_ASSERT(bBOL == true || bBOL == false);
 
 		return;
 	}
@@ -360,8 +360,8 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
 
-		UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-		UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+		UT_ASSERT(bEOL == true || bEOL == false);
+		UT_ASSERT(bBOL == true || bBOL == false);
 
 		return;
 	}
@@ -373,8 +373,8 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 	if (x < (pCharWidths[m_iOffsetFirst] / 2))
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
-		bBOL = UT_FALSE;
-		bEOL = UT_FALSE;
+		bBOL = false;
+		bEOL = false;
 		return;
 	}
 	
@@ -390,12 +390,12 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 			}
 
 			// NOTE: this allows inserted text to be coalesced in the PT
-			bEOL = UT_TRUE;
+			bEOL = true;
 
 			pos = m_pBL->getPosition() + i;
 
-			UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-			UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+			UT_ASSERT(bEOL == true || bEOL == false);
+			UT_ASSERT(bBOL == true || bBOL == false);
 
 			return;
 		}
@@ -435,14 +435,14 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 
 }
 
-UT_Bool fp_TextRun::canMergeWithNext(void)
+bool fp_TextRun::canMergeWithNext(void)
 {
 	if (!m_pNext ||
 		!m_pLine ||
 		m_pNext->getType() != FPRUN_TEXT ||
 		!m_pNext->getLine())
 	{
-		return UT_FALSE;
+		return false;
 	}
 
 	
@@ -458,10 +458,10 @@ UT_Bool fp_TextRun::canMergeWithNext(void)
                 || (pNext->m_pField != m_pField)
 		)
 	{
-		return UT_FALSE;
+		return false;
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
 void fp_TextRun::mergeWithNext(void)
@@ -493,17 +493,17 @@ void fp_TextRun::mergeWithNext(void)
 		m_pNext->setPrev(this);
 	}
 
-	pNext->getLine()->removeRun(pNext, UT_FALSE);
+	pNext->getLine()->removeRun(pNext, false);
 
 	delete pNext;
 }
 
-UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
+bool fp_TextRun::split(UT_uint32 iSplitOffset)
 {
 	UT_ASSERT(iSplitOffset >= m_iOffsetFirst);
 	UT_ASSERT(iSplitOffset < (m_iOffsetFirst + m_iLen));
 	
-	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, iSplitOffset, m_iLen - (iSplitOffset - m_iOffsetFirst), UT_FALSE);
+	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, iSplitOffset, m_iLen - (iSplitOffset - m_iOffsetFirst), false);
 	UT_ASSERT(pNew);
 	pNew->m_pFont = this->m_pFont;
 	pNew->m_pFontLayout = this->m_pFontLayout;
@@ -542,7 +542,7 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_iWidth = pNew->simpleRecalcWidth(Width_type_display);
 	pNew->m_iWidthLayoutUnits = pNew->simpleRecalcWidth(Width_type_layout_units);
 	
-	return UT_TRUE;
+	return true;
 }
 
 void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths)
@@ -554,7 +554,7 @@ void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths)
 	UT_uint32 lenSpan;
 	UT_uint32 offset = m_iOffsetFirst;
 	UT_uint32 len = m_iLen;
-	UT_Bool bContinue = UT_TRUE;
+	bool bContinue = true;
 
 	while (bContinue)
 	{
@@ -567,7 +567,7 @@ void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths)
 		{
 			m_pG->measureString(pSpan, 0, len, pCharWidths + offset);
 
-			bContinue = UT_FALSE;
+			bContinue = false;
 		}
 		else
 		{
@@ -637,7 +637,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 		UT_uint32 lenSpan;
 		UT_uint32 offset = m_iOffsetFirst;
 		UT_uint32 len = iLength;
-		UT_Bool bContinue = UT_TRUE;
+		bool bContinue = true;
 
 		while (bContinue)
 		{
@@ -660,7 +660,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 
 			if (len <= lenSpan)
 			{
-				bContinue = UT_FALSE;
+				bContinue = false;
 			}
 			else
 			{
@@ -673,13 +673,13 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 	return iWidth;
 }
 
-UT_Bool fp_TextRun::recalcWidth(void)
+bool fp_TextRun::recalcWidth(void)
 {
 	UT_sint32 iWidth = simpleRecalcWidth(Width_type_display);
 	
 	if (iWidth == m_iWidth)
 	{
-		return UT_FALSE;
+		return false;
 	}
 
 	if (m_iWidth)
@@ -690,10 +690,10 @@ UT_Bool fp_TextRun::recalcWidth(void)
 	m_iWidth = iWidth;
 	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
 
-	return UT_TRUE;
+	return true;
 }
 
-void fp_TextRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
+void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 	UT_ASSERT(!m_bDirty);
 	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
@@ -738,7 +738,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	*/
 #ifndef NDEBUG
 	FV_View* ppView = m_pBL->getDocLayout()->getView();
-	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==UT_FALSE);
+	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
 
 	UT_sint32 yTopOfRun = pDA->yoff - m_iAscent-1; // Hack to remove
@@ -848,7 +848,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	// TODO: draw this underneath (ie, before) the text and decorations
-	m_bSquiggled = UT_FALSE;
+	m_bSquiggled = false;
 	m_pBL->findSquigglesForRun(this);
 }
 
@@ -865,7 +865,7 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 	*/
 #ifndef NDEBUG
 	FV_View* ppView = m_pBL->getDocLayout()->getView();
-	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==UT_FALSE);
+	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
 	// we also need to support this in printing
 	//if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
@@ -941,7 +941,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	UT_uint32 lenSpan = 0;
 	UT_uint32 offset = iStart;
 	UT_uint32 len = iLen;
-	UT_Bool bContinue = UT_TRUE;
+	bool bContinue = true;
 
 	// don't even try to draw a zero-length run
 	if (m_iLen == 0)
@@ -975,7 +975,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		{
 			m_pG->drawChars(pSpan, 0, len, xoff + iLeftWidth, yoff);
 
-			bContinue = UT_FALSE;
+			bContinue = false;
 		}
 		else
 		{
@@ -1024,11 +1024,11 @@ drawn.
 	UT_sint32 iDrop = 0;
 	fp_Run* P_Run = getPrev();
 	fp_Run* N_Run = getNext();
-	const UT_Bool b_Underline = isUnderline();
-	const UT_Bool b_Overline = isOverline();
-	const UT_Bool b_Strikethrough = isStrikethrough();
-	const UT_Bool b_Firstrun = (P_Run == NULL) || (m_pLine->getFirstRun()== this);
-	const UT_Bool b_Lastrun = (N_Run == NULL) || (m_pLine->getLastRun()== this);
+	const bool b_Underline = isUnderline();
+	const bool b_Overline = isOverline();
+	const bool b_Strikethrough = isStrikethrough();
+	const bool b_Firstrun = (P_Run == NULL) || (m_pLine->getFirstRun()== this);
+	const bool b_Lastrun = (N_Run == NULL) || (m_pLine->getLastRun()== this);
 
 	/*
 	  If the previous run is NULL or if this is the first run of a line, 
@@ -1179,12 +1179,12 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
     UT_sint32 iWidth = 0;
     UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
     UT_sint32 iRectSize = cur_linewidth * 3 / 2;
-    UT_Bool bContinue = UT_TRUE;
+    bool bContinue = true;
     UT_uint32 offset = m_iOffsetFirst;
 
 #ifndef NDEBUG
     FV_View* ppView = m_pBL->getDocLayout()->getView();
-    if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==UT_FALSE);
+    if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
 
     if(findCharacter(0, UCS_SPACE) > 0){
@@ -1206,7 +1206,7 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
                iWidth += pCharWidths[i + offset];
             }
             if (len <= lenSpan){
-                bContinue = UT_FALSE;
+                bContinue = false;
             }else{
                 offset += lenSpan;
                 len -= lenSpan;
@@ -1220,7 +1220,7 @@ void fp_TextRun::_drawInvisibles(UT_sint32 xoff, UT_sint32 yoff)
 {
 #ifndef NDEBUG
 	FV_View* ppView = m_pBL->getDocLayout()->getView();
-	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==UT_FALSE);
+	if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
 
         if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN))){
@@ -1236,7 +1236,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 		return;
 	}
 
-	m_bSquiggled = UT_TRUE;
+	m_bSquiggled = true;
 	
 	UT_sint32 nPoints = (right - left + 3)/2;
 	UT_ASSERT(nPoints > 1);
@@ -1260,7 +1260,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 	points[0].x = left;
 	points[0].y = top;
 
-	UT_Bool bTop = UT_FALSE;
+	bool bTop = false;
 
 	for (UT_sint32 i = 1; i < nPoints; i++, bTop = !bTop)
 	{
@@ -1316,7 +1316,7 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 	UT_uint32 lenSpan = 0;
 	UT_uint32 offset = m_iOffsetFirst + startPosition;
 	UT_uint32 len = m_iLen - startPosition;
-	UT_Bool bContinue = UT_TRUE;
+	bool bContinue = true;
 
 	if ((m_iLen > 0) && (startPosition < m_iLen))
 	{
@@ -1335,7 +1335,7 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 						return offset + i;
 				}
 
-				bContinue = UT_FALSE;
+				bContinue = false;
 			}
 			else
 			{
@@ -1359,7 +1359,7 @@ UT_sint32 fp_TextRun::findCharacter(UT_uint32 startPosition, UT_UCSChar Characte
 	return -1;
 }
 
-UT_Bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const
+bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const
 {
 	const UT_UCSChar* pSpan = NULL;
 	UT_uint32 lenSpan = 0;
@@ -1373,16 +1373,16 @@ UT_Bool fp_TextRun::getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) co
 			UT_ASSERT(lenSpan>0);
 
 			Character = pSpan[0];
-			return UT_TRUE;
+			return true;
 		}
 	}
 
 	// not found
 
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool fp_TextRun::isLastCharacter(UT_UCSChar Character) const
+bool fp_TextRun::isLastCharacter(UT_UCSChar Character) const
 {
 	UT_UCSChar c;
 
@@ -1391,10 +1391,10 @@ UT_Bool fp_TextRun::isLastCharacter(UT_UCSChar Character) const
 
 	// not found
 
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool fp_TextRun::isFirstCharacter(UT_UCSChar Character) const
+bool fp_TextRun::isFirstCharacter(UT_UCSChar Character) const
 {
 	UT_UCSChar c;
 
@@ -1403,11 +1403,11 @@ UT_Bool fp_TextRun::isFirstCharacter(UT_UCSChar Character) const
 
 	// not found
 
-	return UT_FALSE;
+	return false;
 }
 
 
-UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
+bool	fp_TextRun::doesContainNonBlankData(void) const
 {
 	if(m_iLen > 0)
 	{
@@ -1415,7 +1415,7 @@ UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
 		UT_uint32 lenSpan = 0;
 		UT_uint32 offset = m_iOffsetFirst;
 		UT_uint32 len = m_iLen;
-		UT_Bool bContinue = UT_TRUE;
+		bool bContinue = true;
 
 		UT_uint32 i;
 
@@ -1429,17 +1429,17 @@ UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
 				for(i = 0; i < len; i++)
 				{
 					if (pSpan[i] != UCS_SPACE)
-						return UT_TRUE;
+						return true;
 				}
 
-				bContinue = UT_FALSE;
+				bContinue = false;
 			}
 			else
 			{
 				for(i = 0; i < lenSpan; i++)
 				{
 					if (pSpan[i] != UCS_SPACE)
-						return UT_TRUE;
+						return true;
 				}
 
 				offset += lenSpan;
@@ -1453,30 +1453,30 @@ UT_Bool	fp_TextRun::doesContainNonBlankData(void) const
 
 	// Only spaces found;
 
-	return UT_FALSE;
+	return false;
 }
 
-inline UT_Bool fp_TextRun::isSuperscript(void) const 
+inline bool fp_TextRun::isSuperscript(void) const 
 {
 	return (m_fPosition == TEXT_POSITION_SUPERSCRIPT);
 }
 
-inline UT_Bool fp_TextRun::isSubscript(void) const
+inline bool fp_TextRun::isSubscript(void) const
 {
 	return (m_fPosition == TEXT_POSITION_SUBSCRIPT);
 }
 
-inline UT_Bool fp_TextRun::isUnderline(void) const
+inline bool fp_TextRun::isUnderline(void) const
 {
          return ((m_fDecorations & TEXT_DECOR_UNDERLINE) !=  0);
 }
 
-inline UT_Bool fp_TextRun::isOverline(void) const
+inline bool fp_TextRun::isOverline(void) const
 {
          return ((m_fDecorations & TEXT_DECOR_OVERLINE) !=  0);
 }
 
-inline UT_Bool fp_TextRun::isStrikethrough(void) const
+inline bool fp_TextRun::isStrikethrough(void) const
 {
          return ((m_fDecorations & TEXT_DECOR_LINETHROUGH) !=  0);
 }
@@ -1696,14 +1696,14 @@ UT_uint32 fp_TextRun::countJustificationPoints(void) const
 	return iCount;
 }
 
-UT_Bool fp_TextRun::canContainPoint(void) const
+bool fp_TextRun::canContainPoint(void) const
 {
 	if (m_pField) 
 	{
-		return UT_FALSE;
+		return false;
 	}
 	else
 	{
-		return UT_TRUE;
+		return true;
 	}
 }

@@ -47,7 +47,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	m_pNext(0),
 	m_pPrev(0),
 	m_pageSize(pageSize),
-	m_bNeedsRedraw(UT_TRUE),
+	m_bNeedsRedraw(true),
 	m_pOwner(pOwner),
 	m_pFooter(0),
 	m_pHeader(0)
@@ -70,7 +70,7 @@ fp_Page::~fp_Page()
 	m_pOwner->deleteOwnedPage(this);
 }
 
-UT_Bool fp_Page::isEmpty(void) const
+bool fp_Page::isEmpty(void) const
 {
 	return m_vecColumnLeaders.getItemCount() == 0;
 }
@@ -237,10 +237,10 @@ void fp_Page::draw(dg_DrawArgs* pDA)
 		m_pFooter->draw(&da);
 	}
 	
-	m_bNeedsRedraw = UT_FALSE;
+	m_bNeedsRedraw = false;
 }
 
-UT_Bool fp_Page::needsRedraw(void) const
+bool fp_Page::needsRedraw(void) const
 {
 	return m_bNeedsRedraw;
 }
@@ -358,7 +358,7 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 	_reformat();
 }
 
-UT_Bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
+bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 {
 	if (pAfter)
 	{
@@ -382,7 +382,7 @@ UT_Bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 
 	_reformat();
 
-	return UT_TRUE;
+	return true;
 }
 
 void fp_Page::columnHeightChanged(fp_Column* pCol)
@@ -395,7 +395,7 @@ void fp_Page::columnHeightChanged(fp_Column* pCol)
 	_reformat();
 }
 
-PT_DocPosition fp_Page::getFirstLastPos(UT_Bool bFirst) const
+PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 {
 	PT_DocPosition pos;
 
@@ -442,7 +442,7 @@ PT_DocPosition fp_Page::getFirstLastPos(UT_Bool bFirst) const
 	return pos;
 }
 
-void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	int count = m_vecColumnLeaders.getItemCount();
 	UT_uint32 iMinDist = 0xffffffff;

@@ -60,7 +60,7 @@ XAP_QNXApp::~XAP_QNXApp(void)
 	DELETEP(m_pQNXToolbarIcons);
 }
 
-UT_Bool XAP_QNXApp::initialize(void)
+bool XAP_QNXApp::initialize(void)
 {
 	XAP_App::initialize();
 
@@ -72,7 +72,7 @@ UT_Bool XAP_QNXApp::initialize(void)
 	
 	// do any thing we need here...
 
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_QNXApp::reallyExit(void)
@@ -146,10 +146,10 @@ const char * XAP_QNXApp::getUserPrivateDirectory(void)
 	return buf;
 }
 
-UT_Bool XAP_QNXApp::_loadFonts(void)
+bool XAP_QNXApp::_loadFonts(void)
 {
 	//Not needed in QNX
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_QNXApp::_setAbiSuiteLibDir(void)

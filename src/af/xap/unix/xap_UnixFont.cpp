@@ -135,18 +135,18 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	// leave GdkFont * alone
 }
 
-UT_Bool XAP_UnixFont::openFileAs(const char * fontfile,
+bool XAP_UnixFont::openFileAs(const char * fontfile,
 								const char * metricfile,
 								const char * xlfd,
 								XAP_UnixFont::style s)
 {
 	// test all our data to make sure we can continue
 	if (!fontfile)
-		return UT_FALSE;
+		return false;
 	if (!metricfile)
-		return UT_FALSE;
+		return false;
 	if (!xlfd)
-		return UT_FALSE;
+		return false;
 
 	struct stat buf;
 	int err;
@@ -157,13 +157,13 @@ UT_Bool XAP_UnixFont::openFileAs(const char * fontfile,
 	    UT_ASSERT(err == 0 || err == -1);
 
 	    if (! (err == 0 || S_ISREG(buf.st_mode)) )
-		return UT_FALSE;
+		return false;
 	
 	    err = stat(metricfile, &buf);
 	    UT_ASSERT(err == 0 || err == -1);
 
 	    if (! (err == 0 || S_ISREG(buf.st_mode)) )
-		return UT_FALSE;
+		return false;
 	};
 	
 	// strip our proper face name out of the XLFD
@@ -190,7 +190,7 @@ UT_Bool XAP_UnixFont::openFileAs(const char * fontfile,
 	// update our key so we can be identified
 	_makeFontKey();
 
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_UnixFont::setName(const char * name)
@@ -828,7 +828,7 @@ ABIFontInfo * XAP_UnixFont::getMetricsData(void)
 	return m_metricsData;
 }
 
-UT_Bool XAP_UnixFont::openPFA(void)
+bool XAP_UnixFont::openPFA(void)
 {
 	ASSERT_MEMBERS;
 	int peeked;
@@ -841,7 +841,7 @@ UT_Bool XAP_UnixFont::openPFA(void)
 		g_snprintf(message, 1024,
 				   "Font data file [%s] can not be opened for reading.\n", m_fontfile);
 		messageBoxOK(message);
-		return UT_FALSE;
+		return false;
 	}
 
 	/* Check to see if it's a binary or ascii PF file */
@@ -849,17 +849,17 @@ UT_Bool XAP_UnixFont::openPFA(void)
 	ungetc(peeked, m_PFFile);
 	m_PFB = peeked == PFB_MARKER;
 	m_bufpos = 0;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_UnixFont::closePFA(void)
+bool XAP_UnixFont::closePFA(void)
 {
 	if (m_PFFile)
 	{
 		fclose(m_PFFile);
-		return UT_TRUE;
+		return true;
 	}
-	return UT_FALSE;
+	return false;
 }
 
 char XAP_UnixFont::getPFAChar(void)

@@ -35,7 +35,7 @@ ap_QNXViewListener::ap_QNXViewListener(XAP_Frame * pFrame)
 {
 }
 
-UT_Bool ap_QNXViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
+bool ap_QNXViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView);
 	

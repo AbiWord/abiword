@@ -40,7 +40,7 @@ public:
 	void mouseUp(AV_View* pView, BMessage *msg);
 	void mouseClick(AV_View* pView, BMessage *msg);
 	void mouseMotion(AV_View* pView, BMessage *msg);
-	UT_Bool synthesize(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame);
+	bool synthesize(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame);
 private:
 	UT_uint32		m_clickState;   /* {NoClick,SingleClick,DoubleClick} */
         EV_EditMouseContext	m_contextState; /* mouse context of click */ 

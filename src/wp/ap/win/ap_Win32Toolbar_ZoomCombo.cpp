@@ -49,7 +49,7 @@ AP_Win32Toolbar_ZoomCombo::~AP_Win32Toolbar_ZoomCombo(void)
 
 /*****************************************************************/
 
-UT_Bool AP_Win32Toolbar_ZoomCombo::populate(void)
+bool AP_Win32Toolbar_ZoomCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
@@ -67,6 +67,6 @@ UT_Bool AP_Win32Toolbar_ZoomCombo::populate(void)
 	m_vecContents.addItem((void *)pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth));
 	m_vecContents.addItem((void *)pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage));
 
-	return UT_TRUE;
+	return true;
 }
 

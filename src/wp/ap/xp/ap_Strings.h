@@ -50,7 +50,7 @@ public:
 	virtual const XML_Char *	getValue(XAP_String_Id id) const;
 
 #ifdef DEBUG
-	UT_Bool						dumpBuiltinSet(const char * szFilename) const;
+	bool						dumpBuiltinSet(const char * szFilename) const;
 #endif
 
 protected:
@@ -67,10 +67,10 @@ public:
 	AP_DiskStringSet(XAP_App * pApp);
 	virtual ~AP_DiskStringSet(void);
 
-	virtual UT_Bool				setValue(XAP_String_Id id, const XML_Char * szString);
-	virtual UT_Bool				setValue(const XML_Char * szId, const XML_Char * szString);
+	virtual bool				setValue(XAP_String_Id id, const XML_Char * szString);
+	virtual bool				setValue(const XML_Char * szId, const XML_Char * szString);
 	virtual const XML_Char *	getValue(XAP_String_Id id) const;
-	virtual UT_Bool				loadStringsFromDisk(const char * szFilename);
+	virtual bool				loadStringsFromDisk(const char * szFilename);
 
 protected:
 	UT_Vector					m_vecStringsAP;

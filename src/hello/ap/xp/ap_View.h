@@ -35,9 +35,9 @@ class AP_View : public AV_View
 	virtual void    draw(const UT_Rect* pRect=(UT_Rect*) NULL);
 
 	virtual void    cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0);
-	virtual UT_Bool notifyListeners(const AV_ChangeMask hint);
+	virtual bool notifyListeners(const AV_ChangeMask hint);
 
-	virtual UT_Bool canDo(UT_Bool bUndo) const;
+	virtual bool canDo(bool bUndo) const;
 	virtual void    cmdUndo(UT_uint32 count);
 	virtual void    cmdRedo(UT_uint32 count);
 	virtual UT_Error cmdSave(void);
@@ -45,7 +45,7 @@ class AP_View : public AV_View
 		
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
-	virtual UT_Bool 	isSelectionEmpty(void) const;
+	virtual bool 	isSelectionEmpty(void) const;
 	virtual void		cmdUnselectSelection(void);
 
 

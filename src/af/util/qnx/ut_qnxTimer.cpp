@@ -40,7 +40,7 @@ UT_QNXTimer::UT_QNXTimer(UT_TimerCallback pCallback, void* pData)
 {
 	setCallback(pCallback);
 	setInstanceData(pData);
-	m_bStarted = UT_FALSE;
+	m_bStarted = false;
 	m_iMilliseconds = 0;
 }
 
@@ -128,7 +128,7 @@ UT_sint32 UT_QNXTimer::set(UT_uint32 iMilliseconds)
 	PtRealizeWidget(idTimer);
 
 	m_iMilliseconds = iMilliseconds;
-	m_bStarted = UT_TRUE;
+	m_bStarted = true;
 
 	return 0;
 }
@@ -148,7 +148,7 @@ void UT_QNXTimer::stop(void)
 		PtDestroyWidget(timer);
 	}
 
-	m_bStarted = UT_FALSE;
+	m_bStarted = false;
 }
 
 /*

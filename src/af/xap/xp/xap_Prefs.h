@@ -54,7 +54,7 @@ public:
 	~XAP_PrefsScheme(void);
 
 	const XML_Char *	getSchemeName(void) const;
-	UT_Bool				setSchemeName(const XML_Char * szNewSchemeName);
+	bool				setSchemeName(const XML_Char * szNewSchemeName);
 	// The idea of the tick is that some object can cache a preference
 	// value if it makes a performance difference.  It should also save
 	// a copy of the tick count and the scheme pointer.  If the scheme
@@ -65,15 +65,15 @@ public:
 	// every time any preference value in the scheme is changed.
 	inline UT_uint32			getTickCount() {return m_uTick;}
 	
-	UT_Bool				setValue(const XML_Char * szKey, const XML_Char * szValue);
-	UT_Bool				setValueBool(const XML_Char * szKey, UT_Bool bValue);
+	bool				setValue(const XML_Char * szKey, const XML_Char * szValue);
+	bool				setValueBool(const XML_Char * szKey, bool bValue);
 	
 	// the get*Value*() functions return the answer in the last
 	// argument; they return error information as the function
 	// return value.
-	UT_Bool				getValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
-	UT_Bool				getValueBool(const XML_Char * szKey, UT_Bool * pbValue) const;
-	UT_Bool				getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const;
+	bool				getValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	bool				getValueBool(const XML_Char * szKey, bool * pbValue) const;
+	bool				getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const;
 	
 protected:
 	XML_Char *			m_szName;
@@ -91,24 +91,24 @@ public:
 	XAP_Prefs(XAP_App * pApp);
 	virtual ~XAP_Prefs(void);
 
-	UT_Bool					loadPrefsFile(void);
-	UT_Bool					loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsPathname);
-	UT_Bool					savePrefsFile(void);
+	bool					loadPrefsFile(void);
+	bool					loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsPathname);
+	bool					savePrefsFile(void);
 	
 	XAP_PrefsScheme *		getNthScheme(UT_uint32 k) const;
 	XAP_PrefsScheme *		getScheme(const XML_Char * szSchemeName) const;
-	UT_Bool					addScheme(XAP_PrefsScheme * pNewScheme);
-	XAP_PrefsScheme *		getCurrentScheme(UT_Bool bCreate = UT_FALSE);
-	UT_Bool					setCurrentScheme(const XML_Char * szSchemeName);
+	bool					addScheme(XAP_PrefsScheme * pNewScheme);
+	XAP_PrefsScheme *		getCurrentScheme(bool bCreate = false);
+	bool					setCurrentScheme(const XML_Char * szSchemeName);
 
-	UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
-	UT_Bool					getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const;
+	bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	bool					getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;
 
-	UT_Bool					getAutoSavePrefs(void) const;
-	void					setAutoSavePrefs(UT_Bool bAuto);
+	bool					getAutoSavePrefs(void) const;
+	void					setAutoSavePrefs(bool bAuto);
 
-	UT_Bool					getUseEnvLocale(void) const;
-	void					setUseEnvLocale(UT_Bool bUse);
+	bool					getUseEnvLocale(void) const;
+	void					setUseEnvLocale(bool bUse);
 
 	UT_uint32				getMaxRecent(void) const;
 	void					setMaxRecent(UT_uint32 k);
@@ -117,11 +117,11 @@ public:
 	void					addRecent(const char * szRecent);
 	void					removeRecent(UT_uint32 k);			// one-based
 
-	UT_Bool					setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
-	UT_Bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
+	bool					setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
+	bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 	
 	virtual void				fullInit(void) = 0;
-	virtual UT_Bool				loadBuiltinPrefs(void) = 0;
+	virtual bool				loadBuiltinPrefs(void) = 0;
 	virtual const XML_Char *	getBuiltinSchemeName(void) const = 0;
 	virtual const char *		getPrefsPathname(void) const = 0;
 
@@ -136,8 +136,8 @@ protected:
 	void					_pruneRecent(void);
 
 	XAP_App *				m_pApp;
-	UT_Bool					m_bAutoSavePrefs; /* save on any changes or only when user asks */
-	UT_Bool					m_bUseEnvLocale; /* use POSIX env vars to set locale */
+	bool					m_bAutoSavePrefs; /* save on any changes or only when user asks */
+	bool					m_bUseEnvLocale; /* use POSIX env vars to set locale */
 
 	UT_Vector				m_vecSchemes;		/* vector of XAP_PrefsScheme */
 	XAP_PrefsScheme *		m_currentScheme;
@@ -148,7 +148,7 @@ protected:
 
 	UT_Vector				m_vecPrefsListeners;	/* vectory of struct PrefListnersPair */
 	UT_AlphaHashTable		m_ahashChanges;
-	UT_Bool					m_bInChangeBlock;
+	bool					m_bInChangeBlock;
 	void					_sendPrefsSignal( UT_AlphaHashTable *hash );
 
 	typedef struct {
@@ -160,7 +160,7 @@ protected:
 	
 
 #ifdef HAVE_LIBXML2
-	UT_Bool _sax(const char *path, UT_Bool sys);
+	bool _sax(const char *path, bool sys);
 #endif
 
 public:						/* these are needed by the XML parser interface */
@@ -172,12 +172,12 @@ public:						/* these are needed by the XML parser interface */
 private:
 	struct
 	{
-		UT_Bool				m_parserStatus;
-		UT_Bool				m_bFoundAbiPreferences;
-		UT_Bool				m_bFoundSelect;
+		bool				m_parserStatus;
+		bool				m_bFoundAbiPreferences;
+		bool				m_bFoundSelect;
 		XML_Char *			m_szSelectedSchemeName;
-		UT_Bool				m_bFoundRecent;
-		UT_Bool				m_bFoundGeometry;
+		bool				m_bFoundRecent;
+		bool				m_bFoundGeometry;
 	} m_parserState;
 
 	typedef struct					/* used to store the listener/data pairs in the vector  */

@@ -66,7 +66,7 @@ typedef UT_uint16 AV_ChangeMask;
 class AV_Listener
 {
 public:
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
 };
 	
 #endif /* AV_LISTENER_H */

@@ -61,13 +61,13 @@ public:
 	virtual ~IE_Exp_Psion_TextEd(void);
 
 	// Overriding methods from the base class
-	static UT_Bool RecognizeSuffix(const char * szSuffix);
+	static bool RecognizeSuffix(const char * szSuffix);
 	static UT_Error StaticConstructor(PD_Document * pDocument,
 	                                  IE_Exp ** ppie);
-	static UT_Bool GetDlgLabels(const char ** pszDesc,
+	static bool GetDlgLabels(const char ** pszDesc,
 	                           const char ** pszSuffixList,
 	                           IEFileType * ft);
-	static UT_Bool SupportsFileType(IEFileType ft);
+	static bool SupportsFileType(IEFileType ft);
 
 protected:
 	// New methods
@@ -82,13 +82,13 @@ public:
 	virtual ~IE_Exp_Psion_Word(void);
 
 	// Overriding methods from the base class
-	static UT_Bool RecognizeSuffix(const char * szSuffix);
+	static bool RecognizeSuffix(const char * szSuffix);
 	static UT_Error StaticConstructor(PD_Document * pDocument,
 	                                  IE_Exp ** ppie);
-	static UT_Bool GetDlgLabels(const char ** pszDesc,
+	static bool GetDlgLabels(const char ** pszDesc,
 	                           const char ** pszSuffixList,
 	                           IEFileType * ft);
-	static UT_Bool SupportsFileType(IEFileType ft);
+	static bool SupportsFileType(IEFileType ft);
 
 protected:
 	// New methods

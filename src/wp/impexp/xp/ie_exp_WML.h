@@ -34,13 +34,13 @@ class IE_Exp_WML : public IE_Exp
         IE_Exp_WML(PD_Document *pDocument);
 	virtual ~IE_Exp_WML();
 
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Error 	StaticConstructor(PD_Document * pDocument,
 						  IE_Exp ** ppie);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	static bool		GetDlgLabels(const char ** pszDesc,
 					     const char ** pszSuffixList,
 					     IEFileType * ft);
-	static UT_Bool 		SupportsFileType(IEFileType ft);
+	static bool 		SupportsFileType(IEFileType ft);
 	
 protected:
 	virtual UT_Error	_writeDocument(void);

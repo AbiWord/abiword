@@ -57,7 +57,7 @@ IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".abw") == 0);
 }
@@ -70,17 +70,17 @@ UT_Error IE_Exp_AbiWord_1::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Exp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
+bool	IE_Exp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEFileType * ft)
 {
 	*pszDesc = "AbiWord (.abw)";
 	*pszSuffixList = "*.abw";
 	*ft = IEFT_AbiWord_1;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Exp_AbiWord_1::SupportsFileType(IEFileType ft)
+bool IE_Exp_AbiWord_1::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_AbiWord_1 == ft);
 }
@@ -95,17 +95,17 @@ public:
 						IE_Exp_AbiWord_1 * pie);
 	virtual ~s_AbiWord_1_Listener();
 
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
@@ -113,7 +113,7 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool		signal(UT_uint32 iSignal);
+	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
 	void				_closeSection(void);
@@ -122,7 +122,7 @@ protected:
 	void				_closeField(void);
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
-								 UT_Bool bNewLineAfter, PT_AttrPropIndex api);
+								 bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_handleStyles(void);
 	void				_handleLists(void);
@@ -131,9 +131,9 @@ protected:
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_AbiWord_1 *	m_pie;
-	UT_Bool				m_bInSection;
-	UT_Bool				m_bInBlock;
-	UT_Bool				m_bInSpan;
+	bool				m_bInSection;
+	bool				m_bInBlock;
+	bool				m_bInSpan;
 	PT_AttrPropIndex	m_apiLastSpan;
     fd_Field *             m_pCurrentField;
 };
@@ -144,7 +144,7 @@ void s_AbiWord_1_Listener::_closeSection(void)
 		return;
 	
 	m_pie->write("</section>\n");
-	m_bInSection = UT_FALSE;
+	m_bInSection = false;
 	return;
 }
 
@@ -154,7 +154,7 @@ void s_AbiWord_1_Listener::_closeBlock(void)
 		return;
 
 	m_pie->write("</p>\n");
-	m_bInBlock = UT_FALSE;
+	m_bInBlock = false;
 	return;
 }
 
@@ -164,7 +164,7 @@ void s_AbiWord_1_Listener::_closeSpan(void)
 		return;
 
 	m_pie->write("</c>");
-	m_bInSpan = UT_FALSE;
+	m_bInSpan = false;
 	return;
 }
 void s_AbiWord_1_Listener::_closeField(void)
@@ -189,17 +189,17 @@ void s_AbiWord_1_Listener::_openSpan(PT_AttrPropIndex apiSpan)
 	if (!apiSpan)				// don't write tag for empty A/P
 		return;
 	
-	_openTag("c","",UT_FALSE,apiSpan);
-	m_bInSpan = UT_TRUE;
+	_openTag("c","",false,apiSpan);
+	m_bInSpan = true;
 	m_apiLastSpan = apiSpan;
 	return;
 }
 
 void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix,
-								   UT_Bool bNewLineAfter, PT_AttrPropIndex api)
+								   bool bNewLineAfter, PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = NULL;
-	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
 	m_pie->write("<");
 	UT_ASSERT(szPrefix && *szPrefix);
@@ -397,9 +397,9 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
-	m_bInSection = UT_FALSE;
-	m_bInBlock = UT_FALSE;
-	m_bInSpan = UT_FALSE;
+	m_bInSection = false;
+	m_bInBlock = false;
+	m_bInSpan = false;
 	m_apiLastSpan = 0;
     m_pCurrentField = 0;
 	// Be nice to XML apps.  See the notes in _outputData() for more 
@@ -525,7 +525,7 @@ s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 	m_pie->write("</abiword>\n");
 }
 
-UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 									  const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -543,7 +543,7 @@ UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
 
-			return UT_TRUE;
+			return true;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -555,34 +555,34 @@ UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Image:
 				_closeSpan();
                 _closeField();
-				_openTag("image","/",UT_FALSE,api);
-				return UT_TRUE;
+				_openTag("image","/",false,api);
+				return true;
 
 			case PTO_Field:
                 {
                     _closeSpan();
                     _closeField();
-                    _openTag("field","",UT_FALSE,api);
+                    _openTag("field","",false,api);
                     m_pCurrentField = pcro->getField(); 
                     UT_ASSERT(m_pCurrentField);
-                    return UT_TRUE;
+                    return true;
                 }
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 			}
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return UT_TRUE;
+		return true;
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -598,9 +598,9 @@ UT_Bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
 			_closeBlock();
 			_closeSection();
-			_openTag("section","",UT_TRUE,pcr->getIndexAP());
-			m_bInSection = UT_TRUE;
-			return UT_TRUE;
+			_openTag("section","",true,pcr->getIndexAP());
+			m_bInSection = true;
+			return true;
 		}
 
 	case PTX_Block:
@@ -608,25 +608,25 @@ UT_Bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeSpan();
             _closeField();
 			_closeBlock();
-			_openTag("p","",UT_FALSE,pcr->getIndexAP());
-			m_bInBlock = UT_TRUE;
-			return UT_TRUE;
+			_openTag("p","",false,pcr->getIndexAP());
+			m_bInBlock = true;
+			return true;
 		}
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_AbiWord_1_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_AbiWord_1_Listener::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_AbiWord_1_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_AbiWord_1_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 										  const PX_ChangeRecord * /*pcr*/,
 										  PL_StruxDocHandle /*sdh*/,
 										  PL_ListenerId /* lid */,
@@ -635,13 +635,13 @@ UT_Bool s_AbiWord_1_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																	  PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_AbiWord_1_Listener::signal(UT_uint32 /* iSignal */)
+bool s_AbiWord_1_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 /*****************************************************************/
@@ -666,7 +666,7 @@ UT_Error IE_Exp_AbiWord_1::_writeDocument(void)
 
 void s_AbiWord_1_Listener::_handleStyles(void)
 {
-	UT_Bool bWroteOpenStyleSection = UT_FALSE;
+	bool bWroteOpenStyleSection = false;
 
 	const char * szName;
 	const PD_Style * pStyle;
@@ -679,11 +679,11 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 		if (!bWroteOpenStyleSection)
 		{
 			m_pie->write("<styles>\n");
-			bWroteOpenStyleSection = UT_TRUE;
+			bWroteOpenStyleSection = true;
 		}
 
 		PT_AttrPropIndex api = pStyle->getIndexAP();
-		_openTag("s","/",UT_TRUE,api);
+		_openTag("s","/",true,api);
 	}
 
 	if (bWroteOpenStyleSection)
@@ -695,7 +695,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 
 void s_AbiWord_1_Listener::_handleLists(void)
 {
-	UT_Bool bWroteOpenListSection = UT_FALSE;
+	bool bWroteOpenListSection = false;
 	
  	//const char * szID;
 	//const char * szPid;
@@ -708,13 +708,13 @@ void s_AbiWord_1_Listener::_handleLists(void)
 
 	for (UT_uint32 k = 0; (m_pDocument->enumLists(k, &pAutoNum )); k++)
 	{	
-		if (pAutoNum->isEmpty() == UT_TRUE)
+		if (pAutoNum->isEmpty() == true)
 			continue;
 		
 		if (!bWroteOpenListSection)
 		{
 			m_pie->write("<lists>\n");
-			bWroteOpenListSection = UT_TRUE;
+			bWroteOpenListSection = true;
 		}
 		m_pie->write("<l");
 		for (attr = pAutoNum->getAttributes(); (*attr); attr++)
@@ -752,7 +752,7 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 	m_pie->write("\"");
 
 	m_pie->write(" orientation=\"");
-	if(m_pDocument->m_docPageSize.isPortrait() == UT_TRUE)
+	if(m_pDocument->m_docPageSize.isPortrait() == true)
 	        m_pie->write("portrait\"");
 	else
 	        m_pie->write("landscape\"");
@@ -786,7 +786,7 @@ void s_AbiWord_1_Listener::_handlePageSize(void)
 
 void s_AbiWord_1_Listener::_handleDataItems(void)
 {
-	UT_Bool bWroteOpenDataSection = UT_FALSE;
+	bool bWroteOpenDataSection = false;
 
 	const char * szName;
    	const char * szMimeType;
@@ -799,11 +799,11 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		if (!bWroteOpenDataSection)
 		{
 			m_pie->write("<data>\n");
-			bWroteOpenDataSection = UT_TRUE;
+			bWroteOpenDataSection = true;
 		}
 
-	   	UT_Bool status = UT_FALSE;
-	   	UT_Bool encoded = UT_TRUE;
+	   	bool status = false;
+	   	bool encoded = true;
 	   
 		if (szMimeType && (UT_strcmp(szMimeType, "image/svg-xml") == 0 || UT_strcmp(szMimeType, "text/mathml") == 0))
 	     	{
@@ -826,13 +826,13 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		   }
 		   bbEncoded.append(buf, off);
 		   bbEncoded.append((UT_Byte*)"]]>\n", 4);
-		   status = UT_TRUE;
-		   encoded = UT_FALSE;
+		   status = true;
+		   encoded = false;
 		}
 	   	else  
 		{
 		   status = UT_Base64Encode(&bbEncoded, pByteBuf);
-		   encoded = UT_TRUE;
+		   encoded = true;
 		}
 
 	   	if (status)

@@ -32,10 +32,10 @@ public:
 	AP_Win32Frame(AP_Win32Frame * f);
 	virtual ~AP_Win32Frame(void);
 
-	virtual UT_Bool				initialize(void);
+	virtual bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
-	virtual UT_Bool				loadDocument(const char * szFilename, int ieft);
-	virtual UT_Bool				initFrameData(void);
+	virtual bool				loadDocument(const char * szFilename, int ieft);
+	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 
 	virtual void				setXScrollRange(void);
@@ -44,7 +44,7 @@ public:
 
 	virtual void				setStatusMessage(const char * szMsg);
 	
-	static UT_Bool				RegisterClass(XAP_Win32App * app);
+	static bool				RegisterClass(XAP_Win32App * app);
 
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,

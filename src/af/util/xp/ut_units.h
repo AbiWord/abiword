@@ -54,7 +54,7 @@ const char * UT_reformatDimensionString(UT_Dimension dim, const char *sz, const 
 const char * UT_convertToDimensionlessString(double value, const char * szPrecision = NULL);
 const char * UT_formatDimensionedValue(double value, const char * szUnits, const char * szPrecision = NULL);
 
-UT_Bool UT_hasDimensionComponent(const char * sz);
+bool UT_hasDimensionComponent(const char * sz);
 
 
 UT_END_EXTERN_C

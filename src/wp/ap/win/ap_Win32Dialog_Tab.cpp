@@ -195,7 +195,7 @@ BOOL AP_Win32Dialog_Tab::_onDeltaPos(NM_UPDOWN * pnmud)
 	return 1;
 }
 
-void AP_Win32Dialog_Tab::_controlEnable( tControl id, UT_Bool value )
+void AP_Win32Dialog_Tab::_controlEnable( tControl id, bool value )
 {
 	int WinControlID;
 
@@ -346,9 +346,9 @@ void AP_Win32Dialog_Tab::_setLeader( eTabLeader a )
 
 	// tell the change routines to ignore this message
 
-	m_bInSetCall = UT_TRUE;
+	m_bInSetCall = true;
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
-	m_bInSetCall = UT_FALSE;
+	m_bInSetCall = false;
 */
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

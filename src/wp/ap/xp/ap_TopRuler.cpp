@@ -54,12 +54,12 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_iLeftRulerWidth = 0;
 	m_xScrollOffset = 0;
 	m_xScrollLimit = 0;
-	m_bValidMouseClick = UT_FALSE;
+	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
 	m_iDefaultTabType = FL_TAB_LEFT;
 	m_pAutoScrollTimer = NULL;
 
-	m_bGuide = UT_FALSE;
+	m_bGuide = false;
 	m_xGuide = 0;
 	
 	const XML_Char * szRulerUnits;
@@ -179,7 +179,7 @@ UT_uint32 AP_TopRuler::getWidth(void) const
 
 /*****************************************************************/
 
-UT_Bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
+bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	// Handle AV_Listener events on the view.
 
@@ -201,7 +201,7 @@ UT_Bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 		draw(&pClipRect);
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -469,7 +469,7 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 	return;
 }
 
-UT_Bool AP_TopRuler::_isInBottomBoxOfLeftIndent(UT_uint32 y)
+bool AP_TopRuler::_isInBottomBoxOfLeftIndent(UT_uint32 y)
 {
 	// return true if in the lower box of the left-indent pair
 	
@@ -504,7 +504,7 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * /* pInfo */,
 
 void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 										   AP_TopRulerInfo * pInfo,
-										   UT_Bool bDrawAll)
+										   bool bDrawAll)
 {
 	UT_sint32 leftCenter, rightCenter, firstLineCenter;
 	UT_Rect rLeftIndent, rRightIndent, rFirstLineIndent;
@@ -516,50 +516,50 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 	if (m_draggingWhat == DW_LEFTINDENTWITHFIRST)
 	{
-		_drawLeftIndentMarker(rLeftIndent, UT_FALSE); // draw hollow version at old location
-		_drawFirstLineIndentMarker(rFirstLineIndent, UT_FALSE);
-		_drawLeftIndentMarker(m_draggingRect, UT_TRUE);	// draw sculpted version at mouse
-		_drawFirstLineIndentMarker(m_dragging2Rect, UT_TRUE);
+		_drawLeftIndentMarker(rLeftIndent, false); // draw hollow version at old location
+		_drawFirstLineIndentMarker(rFirstLineIndent, false);
+		_drawLeftIndentMarker(m_draggingRect, true);	// draw sculpted version at mouse
+		_drawFirstLineIndentMarker(m_dragging2Rect, true);
 	}
 	else if (bDrawAll)
 	{
 		if (!pClipRect || rLeftIndent.intersectsRect(pClipRect))
-			_drawLeftIndentMarker(rLeftIndent, UT_TRUE); // draw sculpted version at current location		
+			_drawLeftIndentMarker(rLeftIndent, true); // draw sculpted version at current location		
 		if (!pClipRect || rFirstLineIndent.intersectsRect(pClipRect))
-			_drawFirstLineIndentMarker(rFirstLineIndent, UT_TRUE);
+			_drawFirstLineIndentMarker(rFirstLineIndent, true);
 	}
 	
 	if (m_draggingWhat == DW_LEFTINDENT)
 	{
-		_drawLeftIndentMarker(rLeftIndent, UT_FALSE); // draw hollow version at old location
-		_drawLeftIndentMarker(m_draggingRect, UT_TRUE);	// draw sculpted version at mouse
+		_drawLeftIndentMarker(rLeftIndent, false); // draw hollow version at old location
+		_drawLeftIndentMarker(m_draggingRect, true);	// draw sculpted version at mouse
 	}
 	else if (bDrawAll)
 	{
 		if (!pClipRect || rLeftIndent.intersectsRect(pClipRect))
-			_drawLeftIndentMarker(rLeftIndent, UT_TRUE); // draw sculpted version at current location
+			_drawLeftIndentMarker(rLeftIndent, true); // draw sculpted version at current location
 	}
 
 	if (m_draggingWhat == DW_RIGHTINDENT)
 	{
-		_drawRightIndentMarker(rRightIndent, UT_FALSE);
-		_drawRightIndentMarker(m_draggingRect, UT_TRUE);
+		_drawRightIndentMarker(rRightIndent, false);
+		_drawRightIndentMarker(m_draggingRect, true);
 	}
 	else if (bDrawAll)
 	{
 		if (!pClipRect || rRightIndent.intersectsRect(pClipRect))
-			_drawRightIndentMarker(rRightIndent, UT_TRUE);
+			_drawRightIndentMarker(rRightIndent, true);
 	}
 	
 	if (m_draggingWhat == DW_FIRSTLINEINDENT)
 	{
-		_drawFirstLineIndentMarker(rFirstLineIndent, UT_FALSE);
-		_drawFirstLineIndentMarker(m_draggingRect, UT_TRUE);
+		_drawFirstLineIndentMarker(rFirstLineIndent, false);
+		_drawFirstLineIndentMarker(m_draggingRect, true);
 	}
 	else if (bDrawAll)
 	{
 		if (!pClipRect || rFirstLineIndent.intersectsRect(pClipRect))
-			_drawFirstLineIndentMarker(rFirstLineIndent, UT_TRUE);
+			_drawFirstLineIndentMarker(rFirstLineIndent, true);
 	}
 }
 
@@ -600,7 +600,7 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 		UT_ASSERT(k<pInfo->m_iTabStops);
 
 		fl_TabStop TabInfo;
-		UT_Bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
+		bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
 												k, &TabInfo);
 		UT_ASSERT(bRes);
 		iPosition = TabInfo.getPosition();
@@ -629,7 +629,7 @@ void AP_TopRuler::_getTabStopRect(AP_TopRulerInfo * /* pInfo */,
 
 void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 										   AP_TopRulerInfo * pInfo,
-										   UT_Bool bDrawAll)
+										   bool bDrawAll)
 {
 	UT_sint32 anchor;
 	UT_Rect rect;
@@ -642,9 +642,9 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 		_getTabStopXAnchor(pInfo, m_draggingTab, &anchor, iType);
 		_getTabStopRect(pInfo, anchor, &rect);
 
-		_drawTabStop(rect, m_draggingTabType, UT_FALSE);
+		_drawTabStop(rect, m_draggingTabType, false);
 		if (m_draggingRect.left + m_draggingRect.width > (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth))
-			_drawTabStop(m_draggingRect, m_draggingTabType, UT_TRUE);
+			_drawTabStop(m_draggingRect, m_draggingTabType, true);
 	}
 	
 	/*
@@ -672,7 +672,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 				left = anchor;
 
 			if (!pClipRect || rect.intersectsRect(pClipRect))
-				_drawTabStop(rect, iType, UT_TRUE);
+				_drawTabStop(rect, iType, true);
 		}
 
 		if (m_draggingWhat != DW_TABSTOP)
@@ -741,7 +741,7 @@ const char * AP_TopRuler::_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k
 
 	fl_TabStop TabInfo;
 
-	UT_Bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
+	bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
 											k, &TabInfo);
 	UT_ASSERT(bRes);
 
@@ -892,7 +892,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	
 	// draw the tab toggle inside the fixed area in the left-hand corner
 
-	_drawTabToggle(pClipRect, UT_FALSE);
+	_drawTabToggle(pClipRect, false);
 
 
 	// TODO for now assume we are in column display mode.
@@ -988,15 +988,15 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	_drawMarginProperties(pClipRect, pInfo, GR_Graphics::CLR3D_Foreground);
 	if (pInfo->m_iNumColumns > 1)
 		_drawColumnProperties(pClipRect,pInfo,0);
-	_drawParagraphProperties(pClipRect,pInfo,UT_TRUE);
-	_drawTabProperties(pClipRect,pInfo,UT_TRUE);
+	_drawParagraphProperties(pClipRect,pInfo,true);
+	_drawTabProperties(pClipRect,pInfo,true);
 	
 	return;
 }
 
 /*****************************************************************/
 
-void AP_TopRuler::_xorGuide(UT_Bool bClear)
+void AP_TopRuler::_xorGuide(bool bClear)
 {
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	UT_sint32 x = m_draggingCenter - xFixed;
@@ -1027,7 +1027,7 @@ void AP_TopRuler::_xorGuide(UT_Bool bClear)
 		pG->xorLine(m_xGuide, 0, m_xGuide, h);
 		if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) )
 			pG->xorLine(m_xOtherGuide, 0, m_xOtherGuide, h);
-		m_bGuide = UT_FALSE;
+		m_bGuide = false;
 	}
 
 	if (!bClear)
@@ -1040,7 +1040,7 @@ void AP_TopRuler::_xorGuide(UT_Bool bClear)
 		// remember this for next time
 		m_xGuide = x;
 		m_xOtherGuide = xOther;
-		m_bGuide = UT_TRUE;
+		m_bGuide = true;
 	}
 }
 
@@ -1054,9 +1054,9 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 	// we assume that nothing in the document can change during our grab unless we
 	// change it.
 
-	m_bValidMouseClick = UT_FALSE;
+	m_bValidMouseClick = false;
 	m_draggingWhat = DW_NOTHING;
-	m_bEventIgnored = UT_FALSE;
+	m_bEventIgnored = false;
 	
 	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
 
@@ -1084,7 +1084,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 			case FL_TAB_DECIMAL:	m_iDefaultTabType = FL_TAB_LEFT;	break;
 			default:	UT_DEBUGMSG(("Should not happen, tab type %d\n", m_iDefaultTabType));
 		}
-		_drawTabToggle(NULL, UT_TRUE);
+		_drawTabToggle(NULL, true);
 		return;
 	}
 
@@ -1095,12 +1095,12 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 	if (iTab >= 0)
 	{
 		UT_DEBUGMSG(("hit tab %ld\n",iTab));
-		m_bValidMouseClick = UT_TRUE;
+		m_bValidMouseClick = true;
 		m_draggingWhat = DW_TABSTOP;
 		m_draggingTab = iTab;
 		m_draggingTabType = iType;
 		m_dragStart = 0;
-		m_bBeforeFirstMotion = UT_TRUE;
+		m_bBeforeFirstMotion = true;
 		return;
 	}
 
@@ -1115,25 +1115,25 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 	if (rLeftIndent.containsPoint(x,y))
 	{
 		//UT_DEBUGMSG(("hit left indent block\n"));
-		m_bValidMouseClick = UT_TRUE;
+		m_bValidMouseClick = true;
 		m_draggingWhat = ((_isInBottomBoxOfLeftIndent(y)) ? DW_LEFTINDENTWITHFIRST : DW_LEFTINDENT);
-		m_bBeforeFirstMotion = UT_TRUE;
+		m_bBeforeFirstMotion = true;
 		return;
 	}
 	if (rRightIndent.containsPoint(x,y))
 	{
 		//UT_DEBUGMSG(("hit right indent block\n"));
-		m_bValidMouseClick = UT_TRUE;
+		m_bValidMouseClick = true;
 		m_draggingWhat = DW_RIGHTINDENT;
-		m_bBeforeFirstMotion = UT_TRUE;
+		m_bBeforeFirstMotion = true;
 		return;
 	}
 	if (rFirstLineIndent.containsPoint(x,y))
 	{
 		//UT_DEBUGMSG(("hit first-line-indent block\n"));
-		m_bValidMouseClick = UT_TRUE;
+		m_bValidMouseClick = true;
 		m_draggingWhat = DW_FIRSTLINEINDENT;
-		m_bBeforeFirstMotion = UT_TRUE;
+		m_bBeforeFirstMotion = true;
 		return;
 	}
 
@@ -1146,9 +1146,9 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 		if (rCol.containsPoint(x,y))
 		{
 			//UT_DEBUGMSG(("hit in column gap block\n"));
-			m_bValidMouseClick = UT_TRUE;
+			m_bValidMouseClick = true;
 			m_draggingWhat = ((((UT_sint32)x) > (rCol.left+(rCol.width/2))) ? DW_COLUMNGAP : DW_COLUMNGAPLEFTSIDE);
-			m_bBeforeFirstMotion = UT_TRUE;
+			m_bBeforeFirstMotion = true;
 			return;
 		}
 	}
@@ -1160,17 +1160,17 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 	if (rLeftMargin.containsPoint(x,y))
 	{
 		UT_DEBUGMSG(("hit left margin block\n"));
-		m_bValidMouseClick = UT_TRUE;
+		m_bValidMouseClick = true;
 		m_draggingWhat = DW_LEFTMARGIN;
-		m_bBeforeFirstMotion = UT_TRUE;
+		m_bBeforeFirstMotion = true;
 		return;
 	}
 	if (rRightMargin.containsPoint(x,y))
 	{
 		//UT_DEBUGMSG(("hit right margin block\n"));
-		m_bValidMouseClick = UT_TRUE;
+		m_bValidMouseClick = true;
 		m_draggingWhat = DW_RIGHTMARGIN;
-		m_bBeforeFirstMotion = UT_TRUE;
+		m_bBeforeFirstMotion = true;
 		return;
 	}
 
@@ -1181,11 +1181,11 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 	if (rZone.containsPoint(x,y))
 	{
 		UT_DEBUGMSG(("hit new tab\n"));
-		m_bValidMouseClick = UT_TRUE;
+		m_bValidMouseClick = true;
 		m_draggingWhat = DW_TABSTOP;
 		m_draggingTab = tr_TABINDEX_NEW;
 		m_draggingTabType = m_iDefaultTabType;
-		m_bBeforeFirstMotion = UT_TRUE;
+		m_bBeforeFirstMotion = true;
 
 		// this is a new widget, so it needs more work to get started
 		m_dragStart = xgrid;
@@ -1199,10 +1199,10 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 		_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
 		if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 			draw(&oldDraggingRect,&m_infoCache);
-		_drawTabProperties(NULL,&m_infoCache,UT_FALSE);
+		_drawTabProperties(NULL,&m_infoCache,false);
 		_xorGuide();
 
-		m_bBeforeFirstMotion = UT_FALSE;
+		m_bBeforeFirstMotion = false;
 
 		// Since this is a new tab, it may be a simple click and not
 		// a drag. Set m_oldX to a negative number so that
@@ -1218,17 +1218,17 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	if (!m_bValidMouseClick || (m_bEventIgnored && m_draggingWhat != DW_TABSTOP))
 	{
 		m_draggingWhat = DW_NOTHING;
-		m_bValidMouseClick = UT_FALSE;
+		m_bValidMouseClick = false;
 		return;
 	}
 	
-	m_bValidMouseClick = UT_FALSE;
+	m_bValidMouseClick = false;
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
 	if ((y < 0) || (y > (UT_sint32)m_iHeight))
 	{
-		_ignoreEvent(UT_TRUE);
+		_ignoreEvent(true);
 		m_draggingWhat = DW_NOTHING;
 		return;
 	}
@@ -1250,7 +1250,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 	UT_sint32 xgrid = _snapPixelToGrid(((UT_sint32)x) - xAbsLeft, tick);
 	
-	_xorGuide (UT_TRUE);
+	_xorGuide (true);
 	
 	if (xgrid == m_oldX) // Not moved - clicked and released
 	{
@@ -1276,7 +1276,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: page-margin-left [%s]\n",properties[1]));
 
-			_xorGuide(UT_TRUE);
+			_xorGuide(true);
 			m_draggingWhat = DW_NOTHING;
             FV_View *pView = static_cast<FV_View *>(m_pView);
             pView->setSectionFormat(properties);
@@ -1295,7 +1295,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			properties[2] = 0;
 			UT_DEBUGMSG(("TopRuler: page-margin-right [%s]\n",properties[1]));
 
-			_xorGuide(UT_TRUE);
+			_xorGuide(true);
 			m_draggingWhat = DW_NOTHING;
             FV_View *pView = static_cast<FV_View *>(m_pView);
             pView->setSectionFormat(properties);
@@ -1415,11 +1415,11 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			if (iTab >= 0 && iTab != m_draggingTab)
 			{
 				UT_DEBUGMSG (("This tab was released over an existing tab. It will be deleted.\n"));
-				_setTabStops(tick, m_draggingTab, UT_TRUE); // UT_TRUE for the last arg will cause this to be deleted
+				_setTabStops(tick, m_draggingTab, true); // true for the last arg will cause this to be deleted
 			}
 			else
 			{
-				_setTabStops(tick, iTab, UT_FALSE);
+				_setTabStops(tick, iTab, false);
 			}
 			m_draggingWhat = DW_NOTHING;
 			return;
@@ -1431,7 +1431,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	}
 }
 
-void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, UT_Bool bDelete)
+void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, bool bDelete)
 {
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn);
 	double dxrel = _scalePixelDistanceToUnits(m_draggingCenter-xAbsLeft,tick);
@@ -1492,7 +1492,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	if (!m_bValidMouseClick)
 		return;
 		
-	m_bEventIgnored = UT_FALSE;
+	m_bEventIgnored = false;
 
 	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 
@@ -1502,8 +1502,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	{
 		if(!m_bEventIgnored)
 		{
-			_ignoreEvent(UT_FALSE);
-			m_bEventIgnored = UT_TRUE;
+			_ignoreEvent(false);
+			m_bEventIgnored = true;
 		}
 		return;
 	}
@@ -1567,7 +1567,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		DELETEP(m_pAutoScrollTimer);
 		m_pAutoScrollTimer = NULL;
 		draw(NULL, &m_infoCache);
-		_xorGuide(UT_TRUE);
+		_xorGuide(true);
 	}
 
 	// make sure the item is within the page...
@@ -1642,7 +1642,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		m_infoCache.u.c.m_xaLeftMargin -= deltaLeftMargin;
 		m_infoCache.u.c.m_xColumnWidth += deltaLeftMargin / (UT_sint32)m_infoCache.m_iNumColumns;
 		_xorGuide();
-		m_bBeforeFirstMotion = UT_FALSE;
+		m_bBeforeFirstMotion = false;
 
 		// Display in margin in status bar.
 
@@ -1690,7 +1690,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		m_infoCache.u.c.m_xaRightMargin -= deltaRightMargin;
 		m_infoCache.u.c.m_xColumnWidth += deltaRightMargin / (UT_sint32)m_infoCache.m_iNumColumns;
 		_xorGuide();
-		m_bBeforeFirstMotion = UT_FALSE;
+		m_bBeforeFirstMotion = false;
 
 		// Display in margin in status bar.
 
@@ -1755,7 +1755,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_displayStatusMessage(AP_STRING_ID_ColumnGapStatus, tick, dgrid);
 			
 		}
-		m_bBeforeFirstMotion = UT_FALSE;
+		m_bBeforeFirstMotion = false;
 		return;
 		
 	case DW_LEFTINDENT:
@@ -1784,7 +1784,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_getParagraphMarkerRects(&m_infoCache,m_draggingCenter,0,0,&m_draggingRect,NULL,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,false);
 			_xorGuide();
 
 		
@@ -1795,7 +1795,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			_displayStatusMessage(AP_STRING_ID_LeftIndentTextIndentStatus, tick, dxrel, dxrel2);
 		}
-		m_bBeforeFirstMotion = UT_FALSE;
+		m_bBeforeFirstMotion = false;
 		return;
 		
 	case DW_LEFTINDENTWITHFIRST:
@@ -1843,14 +1843,14 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 				draw(&oldDraggingRect,&m_infoCache);
 				draw(&oldDragging2Rect,&m_infoCache);
 			}
-			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,false);
 			_xorGuide();
 
 			double dxrel  = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft,tick);
 
 			_displayStatusMessage(AP_STRING_ID_LeftIndentStatus, tick, dxrel);
 		}
-		m_bBeforeFirstMotion = UT_FALSE;
+		m_bBeforeFirstMotion = false;
 		return;
 		
 	case DW_RIGHTINDENT:
@@ -1874,13 +1874,13 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_getParagraphMarkerRects(&m_infoCache,0,m_draggingCenter,0,NULL,&m_draggingRect,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,false);
 			_xorGuide();
 
 			double dxrel = _scalePixelDistanceToUnits(xAbsRight2 - m_draggingCenter,tick);
 			_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, dxrel);
 		}
-		m_bBeforeFirstMotion = UT_FALSE;
+		m_bBeforeFirstMotion = false;
 		return;
 
 	case DW_FIRSTLINEINDENT:
@@ -1906,7 +1906,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_getParagraphMarkerRects(&m_infoCache,0,0,m_draggingCenter,NULL,NULL,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,false);
 			UT_DEBUGMSG(("FirstLineIndent: r [%ld %ld %ld %ld]]n",
 						 m_draggingRect.left,m_draggingRect.top,m_draggingRect.width,m_draggingRect.height));
 			_xorGuide();
@@ -1915,7 +1915,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			_displayStatusMessage(AP_STRING_ID_FirstLineIndentStatus, tick, dxrel);
 		}
-		m_bBeforeFirstMotion = UT_FALSE;
+		m_bBeforeFirstMotion = false;
 		return;
 
 	case DW_TABSTOP:
@@ -1938,13 +1938,13 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawTabProperties(NULL,&m_infoCache,UT_FALSE);
+			_drawTabProperties(NULL,&m_infoCache,false);
 			_xorGuide();
 
 			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xStartPixel,tick);
 			_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, dxrel);
 		}
-		m_bBeforeFirstMotion = UT_FALSE;
+		m_bBeforeFirstMotion = false;
 		return;
 
 	default:
@@ -2004,7 +2004,7 @@ UT_sint32 AP_TopRuler::_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32
 	return xAbsLeft;
 }
 
-void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
+void AP_TopRuler::_ignoreEvent(bool bDone)
 {
 	// user released the mouse off of the ruler.  we need to treat
 	// this as a cancel.  so we need to put everything back the
@@ -2012,7 +2012,7 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 
 	// clear the guide line
 
-	_xorGuide(UT_TRUE);
+	_xorGuide(true);
 
 	// Clear messages from status bar.
 
@@ -2034,7 +2034,7 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 		draw(&m_draggingRect, &m_infoCache);
 		if (dw == DW_LEFTINDENTWITHFIRST)
 			draw(&m_dragging2Rect, &m_infoCache);
-		m_bBeforeFirstMotion = UT_TRUE;
+		m_bBeforeFirstMotion = true;
 	}
 
 	// redraw the widget we are dragging at its original location
@@ -2055,7 +2055,7 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 	case DW_RIGHTINDENT:
 	case DW_FIRSTLINEINDENT:
 	case DW_LEFTINDENTWITHFIRST:
-		_drawParagraphProperties(NULL,&m_infoCache,UT_TRUE);
+		_drawParagraphProperties(NULL,&m_infoCache,true);
 		break;
 		
 	case DW_TABSTOP:
@@ -2070,7 +2070,7 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 			// delete the tab
 			m_draggingWhat = dw;
 			ap_RulerTicks tick(m_pG,m_dim);
-			_setTabStops(tick, tr_TABINDEX_NONE, UT_TRUE);
+			_setTabStops(tick, tr_TABINDEX_NONE, true);
 		}
 		break;
 
@@ -2084,7 +2084,7 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 	return;
 }
 
-static void _computeEffects(UT_Bool bFilled,
+static void _computeEffects(bool bFilled,
 							GR_Graphics::GR_Color3D & clr3dBorder,
 							GR_Graphics::GR_Color3D & clr3dBevel)
 {
@@ -2100,7 +2100,7 @@ static void _computeEffects(UT_Bool bFilled,
 	}
 }
 
-void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, UT_Bool bFilled)
+void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
 {
 	GR_Graphics::GR_Color3D clr3dBorder, clr3dBevel;
 	_computeEffects(bFilled,clr3dBorder,clr3dBevel);
@@ -2143,7 +2143,7 @@ void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 
 }
 
-void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, UT_Bool bFilled)
+void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
 {
 	GR_Graphics::GR_Color3D clr3dBorder, clr3dBevel;
 	_computeEffects(bFilled,clr3dBorder,clr3dBevel);
@@ -2178,7 +2178,7 @@ void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 
 }
 
-void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, UT_Bool bFilled)
+void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
 {
 	GR_Graphics::GR_Color3D clr3dBorder, clr3dBevel;
 	_computeEffects(bFilled,clr3dBorder,clr3dBevel);
@@ -2214,7 +2214,7 @@ void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, UT_Bool bFilled)
 
 }
 
-void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase)
+void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, bool bErase)
 {
 	UT_Rect rect;
 	_getTabToggleRect(&rect);
@@ -2249,11 +2249,11 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase)
 		if		(m_iDefaultTabType == FL_TAB_LEFT)	rect.left -= 2;
 		else if (m_iDefaultTabType == FL_TAB_RIGHT)	rect.left += 2;
 
-		_drawTabStop(rect, m_iDefaultTabType, UT_TRUE);
+		_drawTabStop(rect, m_iDefaultTabType, true);
 	}
 }
 
-void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, UT_Bool bFilled)
+void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, bool bFilled)
 {
 	GR_Graphics::GR_Color3D clr3d;
 	if (bFilled)
@@ -2306,7 +2306,7 @@ void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, UT_Bool bFilled)
 void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 {
 	GR_Graphics::GR_Color3D clr3dBorder, clr3dBevel;
-	_computeEffects(UT_TRUE,clr3dBorder,clr3dBevel);
+	_computeEffects(true,clr3dBorder,clr3dBevel);
 	
 	UT_sint32 l = rect.left;
 	UT_sint32 t = rect.top;
@@ -2403,7 +2403,7 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	AP_TopRuler * pRuler = (AP_TopRuler *) pTimer->getInstanceData();
 	UT_ASSERT(pRuler);
 	
-	pRuler->_xorGuide(UT_TRUE);
+	pRuler->_xorGuide(true);
 
 	UT_sint32 newXScrollOffset = pRuler->m_xScrollOffset;
 	if (pRuler->m_aScrollDirection == 'L')

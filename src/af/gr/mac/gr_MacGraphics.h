@@ -91,14 +91,14 @@ public:
 						UT_sint32 width, UT_sint32 height);
 	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	
-	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
+	virtual bool queryProperties(GR_Graphics::Properties gp) const;
 
 	/* the following are only used for printing */
 	
-	virtual UT_Bool startPrint(void);
-	virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
-							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
-	virtual UT_Bool endPrint(void);
+	virtual bool startPrint(void);
+	virtual bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
+							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual bool endPrint(void);
 	
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };

@@ -72,7 +72,7 @@ public:
 	EV_Menu_Layout(const char * szName, UT_uint32 nrLayoutItems);
 	~EV_Menu_Layout(void);
 
-	UT_Bool					setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
+	bool					setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags);
 	EV_Menu_LayoutItem *	getLayoutItem(UT_uint32 indexLayoutItem) const;
 	const char *			getName(void) const;
 	UT_uint32				getLayoutItemCount(void) const;

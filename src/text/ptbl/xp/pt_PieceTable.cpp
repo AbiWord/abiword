@@ -125,26 +125,26 @@ void pt_PieceTable::_unlinkFrag(pf_Frag * pf,
 	}
 }
 
-UT_Bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
+bool pt_PieceTable::_struxHasContent(pf_Frag_Strux * pfs) const
 {
 	// return true iff the paragraph has content (text).
 
 	return (pfs->getNext() && (pfs->getNext()->getType() == pf_Frag::PFT_Text));
 }
 
-UT_Bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
+bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
 {
 	UT_ASSERT(ppAP);
 
 	const PP_AttrProp * pAP = m_varset.getAP(indexAP);
 	if (!pAP)
-		return UT_FALSE;
+		return false;
 
 	*ppAP = pAP;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** ppAP) const
+bool pt_PieceTable::_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** ppAP) const
 {
 #define ReturnThis(type,pf)													\
 	do {	type * _pf_ = static_cast< type *>((pf));						\
@@ -168,13 +168,13 @@ UT_Bool pt_PieceTable::_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp **
 	case pf_Frag::PFT_EndOfDoc:
 	default:
 		*ppAP = NULL;
-		return UT_FALSE;
+		return false;
 	}
 #undef ReturnThis
 }
 
 		  
-UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, UT_Bool bLeftSide,
+bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 									   const PP_AttrProp ** ppAP) const
 {
 	// return the AP for the text at the given offset from the given strux.
@@ -229,10 +229,10 @@ UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, 
 	}
 
 	*ppAP = NULL;
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
+bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 								  const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
 	// note: offset zero refers to the strux.  the first character is at
@@ -255,29 +255,29 @@ UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 				continue;
 			
 			if (pfTemp->getType() != pf_Frag::PFT_Text)
-				return UT_FALSE;
+				return false;
 			
 			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 			*ppSpan = getPointer(pfText->getBufIndex());
 			*pLength = pfText->getLength();
-			return UT_TRUE;
+			return true;
 		}
 		if (offset < cumOffset+pfTemp->getLength())
 		{
 			if (pfTemp->getType() != pf_Frag::PFT_Text)
-				return UT_FALSE;
+				return false;
 
 			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 			const UT_UCSChar * p = getPointer(pfText->getBufIndex());
 			UT_uint32 delta = offset - cumOffset;
 			*ppSpan = p + delta;
 			*pLength = pfText->getLength() - delta;
-			return UT_TRUE;
+			return true;
 		}
 
 		cumOffset += pfTemp->getLength();
 	}
-	return UT_FALSE;
+	return false;
 }
 
 PD_Document * pt_PieceTable::getDocument(void)
@@ -294,7 +294,7 @@ PD_Document * pt_PieceTable::getDocument(void)
   Copy the contents (unicode character data) of the paragraph (block)
   into the growbuf given.  We append the content onto the growbuf.
 */
-UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, 
+bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, 
                                    UT_GrowBuf * pgb) const
 {
     UT_ASSERT(pgb);
@@ -328,7 +328,7 @@ UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
             const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
             UT_uint32 length = pft->getLength();
             
-            UT_Bool bAppended;
+            bool bAppended;
             bAppended = pgb->ins(bufferOffset,pSpan,length);
             UT_ASSERT(bAppended);
             
@@ -371,7 +371,7 @@ UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
             {
                 pSpaces[i] = UCS_OBJECT;
             }
-            UT_Bool bAppended;
+            bool bAppended;
             bAppended = pgb->ins(bufferOffset, pSpaces, length);
             delete[] pSpaces;
             UT_ASSERT(bAppended);
@@ -384,13 +384,13 @@ UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
     }
 
     UT_ASSERT(bufferOffset == pgb->getLength());
-    return UT_TRUE;
+    return true;
 }
 
-UT_Bool pt_PieceTable::getBounds(UT_Bool bEnd, PT_DocPosition & docPos) const
+bool pt_PieceTable::getBounds(bool bEnd, PT_DocPosition & docPos) const
 {
 	// be optimistic
-	UT_Bool res = UT_TRUE;
+	bool res = true;
 
 	if (!bEnd)
 	{
@@ -441,7 +441,7 @@ PT_DocPosition pt_PieceTable::getFragPosition(const pf_Frag * pfToFind) const
 	return 0;
 }
 
-UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
+bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 										   pf_Frag ** ppf,
 										   PT_BlockOffset * pFragOffset) const
 {
@@ -463,7 +463,7 @@ UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 			
 			UT_ASSERT(pf->getType() != pf_Frag::PFT_FmtMark);
 			
-			return UT_TRUE;
+			return true;
 		}
 
 		sum += pf->getLength();
@@ -485,10 +485,10 @@ UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 	if (pFragOffset)
 		*pFragOffset = docPos - sum;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
+bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
 											 pf_Frag ** ppf1, PT_BlockOffset * pOffset1,
 											 pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const
 {
@@ -501,7 +501,7 @@ UT_Bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPositio
 	// the first set has to be done the hard way.
 	
 	if (!getFragFromPosition(dPos1,ppf1,pOffset1))
-		return UT_FALSE;
+		return false;
 
 	// now get the second set relative to the first.
 
@@ -527,10 +527,10 @@ UT_Bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPositio
 		*ppf2 = pf;
 	if (pOffset2)
 		*pOffset2 = offset+deltaPos;
-	return UT_TRUE;
+	return true;
 }
 	
-UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
+bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 											PT_DocPosition docPos,
 											PL_StruxFmtHandle * psfh) const
 {
@@ -539,13 +539,13 @@ UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 
 	pf_Frag_Strux * pfs = NULL;
 	if (!_getStruxFromPosition(docPos,&pfs))
-		return UT_FALSE;
+		return false;
 	
 	*psfh = pfs->getFmtHandle(listenerId);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
+bool pt_PieceTable::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 												  PT_DocPosition docPos,
 												  PTStruxType pts,
 												  PL_StruxFmtHandle * psfh) const
@@ -555,28 +555,28 @@ UT_Bool pt_PieceTable::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 
 	pf_Frag_Strux * pfs = NULL;
 	if (!_getStruxOfTypeFromPosition(docPos,pts,&pfs))
-		return UT_FALSE;
+		return false;
 	
 	*psfh = pfs->getFmtHandle(listenerId);
-	return UT_TRUE;
+	return true;
 }
 ///
 /// return the SDH of the last strux of the given type
 /// immediately prior to the given absolute document position.
 ///
-UT_Bool pt_PieceTable::getStruxOfTypeFromPosition( PT_DocPosition docPos,
+bool pt_PieceTable::getStruxOfTypeFromPosition( PT_DocPosition docPos,
 						   PTStruxType pts, 
 						   PL_StruxDocHandle * sdh) const
 {
 
 	pf_Frag_Strux * pfs = NULL;
 	if (!_getStruxOfTypeFromPosition(docPos,pts,&pfs))
-		return UT_FALSE;
+		return false;
 	*sdh = ( PL_StruxDocHandle ) pfs;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
+bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 											 pf_Frag_Strux ** ppfs) const
 {
 	// return the strux fragment immediately prior (containing)
@@ -604,10 +604,10 @@ UT_Bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 
 	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfLastStrux);
 	*ppfs = pfs;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
+bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 												   PTStruxType pts,
 												   pf_Frag_Strux ** ppfs) const
 {
@@ -618,12 +618,12 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	
 	pf_Frag_Strux * pfs = NULL;
 	if (!_getStruxFromPosition(dpos,&pfs))
-		return UT_FALSE;
+		return false;
 
 	if (pfs->getStruxType() == pts)		// is it of the type we want
 	{
 		*ppfs = pfs;
-		return UT_TRUE;
+		return true;
 	}
 
 	// if not, we walk backwards thru the list and try to find it.
@@ -643,16 +643,16 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
 				*ppfs = pfsTemp;
-				return UT_TRUE;
+				return true;
 			}
 		}
 
 	// did not find it.
 	
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool pt_PieceTable::_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const
+bool pt_PieceTable::_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const
 {
 	// return the strux frag immediately prior to (containing)
 	// the given fragment.
@@ -664,10 +664,10 @@ UT_Bool pt_PieceTable::_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppf
 	for (pf=pfStart->getPrev(); (pf && (pf->getType() != pf_Frag::PFT_Strux)); pf=pf->getPrev())
 		;
 	if (!pf)
-		return UT_FALSE;
+		return false;
 
 	*ppfs = static_cast<pf_Frag_Strux *>(pf);
-	return UT_TRUE;
+	return true;
 }
 
 UT_uint32 pt_PieceTable::_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const
@@ -693,7 +693,7 @@ void pt_PieceTable::clearIfAtFmtMark(PT_DocPosition dpos)
 	}
 }
 
-UT_Bool pt_PieceTable::_changePointWithNotify(PT_DocPosition dpos)
+bool pt_PieceTable::_changePointWithNotify(PT_DocPosition dpos)
 {
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangePoint,
@@ -703,7 +703,7 @@ UT_Bool pt_PieceTable::_changePointWithNotify(PT_DocPosition dpos)
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(NULL, pcr);
 
-	return UT_TRUE;
+	return true;
 }
 
 

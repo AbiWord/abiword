@@ -49,7 +49,7 @@ PL_StruxFmtHandle pf_Frag_Strux::getFmtHandle(PL_ListenerId lid) const
 	return (PL_StruxFmtHandle)m_vecFmtHandle.getNthItem(lid);
 }
 
-UT_Bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
+bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
 {
 	return (m_vecFmtHandle.setNthItem(lid,(void *)sfh,NULL) == 0);
 }
@@ -64,7 +64,7 @@ void pf_Frag_Strux::setIndexAP(PT_AttrPropIndex indexNewAP)
 	m_indexAP = indexNewAP;
 }
 
-UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												 PT_DocPosition dpos) const
 {
 	UT_ASSERT(ppcr);
@@ -73,8 +73,8 @@ UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
 									dpos, m_indexAP, m_struxType);
 	if (!pcr)
-		return UT_FALSE;
+		return false;
 
 	*ppcr = pcr;
-	return UT_TRUE;
+	return true;
 }

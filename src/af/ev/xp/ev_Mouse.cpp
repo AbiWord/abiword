@@ -43,7 +43,7 @@ void EV_Mouse::setEditEventMap(EV_EditEventMapper * pEEM)
 	m_pEEM = pEEM;
 }
 
-UT_Bool EV_Mouse::invokeMouseMethod(AV_View * pView,
+bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 									EV_EditMethod * pEM,
 									UT_sint32 xPos,
 									UT_sint32 yPos)
@@ -60,7 +60,7 @@ UT_Bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 		// they bound a mouse event to something which requires a character.
 		// TODO we should ding this back when the binding was made ??
 		UT_DEBUGMSG(("    invoke aborted due to lack of data\n"));
-		return UT_FALSE;
+		return false;
 	}
 
 	EV_EditMethodCallData emcd;
@@ -68,6 +68,6 @@ UT_Bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 	emcd.m_yPos = yPos;
 	(*pEM->getFn())(pView,&emcd);
 
-	return UT_TRUE;
+	return true;
 }
 

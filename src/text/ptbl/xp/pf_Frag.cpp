@@ -50,7 +50,7 @@ pf_Frag * pf_Frag::setPrev(pf_Frag * pPrev)
 	return pOld;
 }
 
-UT_Bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
+bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 										   PT_DocPosition /*dpos*/) const
 {
 	// really this should be declared abstract in pf_Frag,
@@ -60,7 +60,7 @@ UT_Bool pf_Frag::createSpecialChangeRecord(PX_ChangeRecord ** /*ppcr*/,
 	// this function must be overloaded for all sub-classes.
 	
 	UT_ASSERT(0);
-	return UT_TRUE;
+	return true;
 }
 
 fd_Field * pf_Frag::getField(void)

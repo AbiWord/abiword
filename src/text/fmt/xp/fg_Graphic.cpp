@@ -34,11 +34,11 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
    
    // Get the attribute list for this offset.
    const PP_AttrProp* pSpanAP;
-   UT_Bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, UT_FALSE, &pSpanAP);
+   bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, false, &pSpanAP);
    if (bFoundSpanAP && pSpanAP)
    {
       const XML_Char *pszDataID;
-      UT_Bool bFoundDataID = pSpanAP->getAttribute((XML_Char*)"dataid", pszDataID);
+      bool bFoundDataID = pSpanAP->getAttribute((XML_Char*)"dataid", pszDataID);
       
       if (bFoundDataID && pszDataID)
       {

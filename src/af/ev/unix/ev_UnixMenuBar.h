@@ -45,8 +45,8 @@ public:
 				   const char * szMenuLabelSetName);
 	virtual ~EV_UnixMenuBar(void);
 
-	virtual UT_Bool     synthesizeMenuBar(void);
-	virtual UT_Bool		refreshMenu(AV_View * pView);
+	virtual bool     synthesizeMenuBar(void);
+	virtual bool		refreshMenu(AV_View * pView);
 
 protected:
 	GtkWidget *			m_wMenuBar;

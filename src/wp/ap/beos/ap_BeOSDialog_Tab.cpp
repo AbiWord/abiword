@@ -189,7 +189,7 @@ AP_BeOSDialog_Tab::~AP_BeOSDialog_Tab(void)
 {
 }
 
-void AP_BeOSDialog_Tab::_controlEnable( tControl id, UT_Bool value )
+void AP_BeOSDialog_Tab::_controlEnable( tControl id, bool value )
 {
 	BControl* toggleControl;
 	char* viewName = NULL;
@@ -236,7 +236,7 @@ void AP_BeOSDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	{
 		toggleControl = (BControl *)newwin->FindView(viewName);
 		if(toggleControl)
-			toggleControl->SetEnabled( (value == UT_TRUE) );
+			toggleControl->SetEnabled( (value == true) );
 	}
 }
 

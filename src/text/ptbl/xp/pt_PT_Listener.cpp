@@ -42,20 +42,20 @@
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool pt_PieceTable::tellListener(PL_Listener* pListener)
+bool pt_PieceTable::tellListener(PL_Listener* pListener)
 {
-	return _tellAndMaybeAddListener(pListener, 0, UT_FALSE);
+	return _tellAndMaybeAddListener(pListener, 0, false);
 }
 
-UT_Bool pt_PieceTable::addListener(PL_Listener* pListener,
+bool pt_PieceTable::addListener(PL_Listener* pListener,
 								   PL_ListenerId listenerId)
 {
-	return _tellAndMaybeAddListener(pListener, listenerId, UT_TRUE);
+	return _tellAndMaybeAddListener(pListener, listenerId, true);
 }
 
-UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
+bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 												PL_ListenerId listenerId,
-												UT_Bool bAdd)
+												bool bAdd)
 {
 	// walk document and for each fragment, send a notification
 	// to each layout.
@@ -72,13 +72,13 @@ UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			{
 				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 				PX_ChangeRecord * pcr = NULL;
-				UT_Bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset);
+				bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset);
 				UT_ASSERT(bStatus1);
-				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
-					return UT_FALSE;
+					return false;
 				blockOffset += pf->getLength();
 			}
 			break;
@@ -89,9 +89,9 @@ UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
 				sfh = 0;
 				PX_ChangeRecord * pcr = NULL;
-				UT_Bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
+				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
 				UT_ASSERT(bStatus1);
-				UT_Bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
+				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
 				if (bAdd)
 				{
 					pfs->setFmtHandle(listenerId,sfh);
@@ -100,7 +100,7 @@ UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
-					return UT_FALSE;
+					return false;
 				blockOffset = 0;
 			}
 			break;
@@ -109,13 +109,13 @@ UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			{
 				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
 				PX_ChangeRecord * pcr = NULL;
-				UT_Bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
+				bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
 				UT_ASSERT(bStatus1);
-				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
-					return UT_FALSE;
+					return false;
 				blockOffset += pf->getLength();
 			}
 			break;
@@ -124,12 +124,12 @@ UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			{
 				pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
 				PX_ChangeRecord * pcr = NULL;
-				UT_Bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
+				bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
 				UT_ASSERT(bStatus1);
-				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				bool bStatus2 = pListener->populate(sfh,pcr);
 				DELETEP(pcr);
 				if (!bStatus2)
-					return UT_FALSE;
+					return false;
 				blockOffset += pf->getLength();
 			}
 			break;
@@ -140,7 +140,7 @@ UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			
 		default:
 			UT_ASSERT(0);
-			return UT_FALSE;
+			return false;
 		}
 
 		sum += pf->getLength();
@@ -148,10 +148,10 @@ UT_Bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 
 	// TODO assert that sum == our cached value.
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
+bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 										  PD_DocumentRange * pDocRange)
 {
 	// walk the subset of the document in the given range
@@ -165,7 +165,7 @@ UT_Bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 	PT_BlockOffset endOffset = 0;
 	
 	if (!getFragFromPosition(pDocRange->m_pos1, &pf1, &fragOffset1))
-		return UT_TRUE;
+		return true;
 
 	PT_DocPosition sum = pDocRange->m_pos1 - fragOffset1;
 	
@@ -181,13 +181,13 @@ UT_Bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 					endOffset = (pDocRange->m_pos2 - sum);
 				else
 					endOffset = pf->getLength();
-				UT_Bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset,fragOffset1,endOffset);
+				bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset,fragOffset1,endOffset);
 				UT_ASSERT(bStatus1);
-				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
-					return UT_FALSE;
+					return false;
 				blockOffset += pf->getLength();
 				fragOffset1 = 0;
 			}
@@ -199,13 +199,13 @@ UT_Bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
 				sfh = 0;
 				PX_ChangeRecord * pcr = NULL;
-				UT_Bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
+				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
 				UT_ASSERT(bStatus1);
-				UT_Bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
+				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
-					return UT_FALSE;
+					return false;
 				blockOffset = 0;
 			}
 			break;
@@ -214,13 +214,13 @@ UT_Bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 			{
 				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
 				PX_ChangeRecord * pcr = NULL;
-				UT_Bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
+				bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
 				UT_ASSERT(bStatus1);
-				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
-					return UT_FALSE;
+					return false;
 				blockOffset += pf->getLength();
 			}
 			break;
@@ -229,12 +229,12 @@ UT_Bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 			{
 				pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
 				PX_ChangeRecord * pcr = NULL;
-				UT_Bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
+				bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
 				UT_ASSERT(bStatus1);
-				UT_Bool bStatus2 = pListener->populate(sfh,pcr);
+				bool bStatus2 = pListener->populate(sfh,pcr);
 				DELETEP(pcr);
 				if (!bStatus2)
-					return UT_FALSE;
+					return false;
 				blockOffset += pf->getLength();
 			}
 			break;
@@ -245,7 +245,7 @@ UT_Bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 			
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return UT_FALSE;
+			return false;
 		}
 
 		sum += pf->getLength();
@@ -253,5 +253,5 @@ UT_Bool pt_PieceTable::tellListenerSubset(PL_Listener * pListener,
 			break;
 	}
 
-	return UT_TRUE;
+	return true;
 }

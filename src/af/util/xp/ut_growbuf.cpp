@@ -49,7 +49,7 @@ UT_GrowBuf::~UT_GrowBuf()
 		free(m_pBuf);
 }
 
-UT_Bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
+bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
 {
 	// expand the buffer if necessary to accomidate the requested space.
 	// round up to the next multiple of the chunk size.
@@ -57,7 +57,7 @@ UT_Bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
 	UT_uint32 newSize = ((m_iSize+spaceNeeded+m_iChunk-1)/m_iChunk)*m_iChunk;
 	UT_uint16 * pNew = (UT_uint16 *)calloc(newSize,sizeof(*m_pBuf));
 	if (!pNew)
-		return UT_FALSE;
+		return false;
 	
 	if (m_pBuf)
 	{
@@ -68,64 +68,64 @@ UT_Bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
 	m_pBuf = pNew;
 	m_iSpace = newSize;
 
-	return UT_TRUE;
+	return true;
 }
 		
-UT_Bool UT_GrowBuf::append(const UT_uint16 * pValue, UT_uint32 length)
+bool UT_GrowBuf::append(const UT_uint16 * pValue, UT_uint32 length)
 {
 	return ins(m_iSize,pValue,length);
 }
 
-UT_Bool UT_GrowBuf::ins(UT_uint32 position, const UT_uint16 * pValue, UT_uint32 length)
+bool UT_GrowBuf::ins(UT_uint32 position, const UT_uint16 * pValue, UT_uint32 length)
 {
 	// insert the given buffer into the growbuf
 
 	if (!length)
 	{
 		UT_ASSERT(!pValue);
-		return UT_TRUE;
+		return true;
 	}
 	
 	UT_ASSERT(pValue);
 	
 	if (m_iSpace-m_iSize < length)
 		if (!_growBuf(length))
-			return UT_FALSE;
+			return false;
 
 	if (m_iSize > position)
 		memmove(m_pBuf+position+length,m_pBuf+position,(m_iSize-position)*sizeof(*m_pBuf));
 	m_iSize += length;
 	memmove(m_pBuf+position,pValue,length*sizeof(*m_pBuf));
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint32 length)
+bool UT_GrowBuf::ins(UT_uint32 position, UT_uint32 length)
 {
 	// insert zeroed space into the growbuf
 
 	if (!length)
-		return UT_TRUE;
+		return true;
 	
 	if (m_iSpace-m_iSize < length)
 		if (!_growBuf(length))
-			return UT_FALSE;
+			return false;
 
 	if (m_iSize > position)
 		memmove(m_pBuf+position+length,m_pBuf+position,(m_iSize-position)*sizeof(*m_pBuf));
 	m_iSize += length;
 	memset(m_pBuf+position,0,length*sizeof(*m_pBuf));
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_GrowBuf::del(UT_uint32 position, UT_uint32 amount)
+bool UT_GrowBuf::del(UT_uint32 position, UT_uint32 amount)
 {
 	if (!amount)
-		return UT_TRUE;
+		return true;
 
 	if (!m_pBuf)
-		return UT_FALSE;
+		return false;
 	UT_ASSERT(position < m_iSize);
 	UT_ASSERT(position+amount <= m_iSize);
 	
@@ -139,7 +139,7 @@ UT_Bool UT_GrowBuf::del(UT_uint32 position, UT_uint32 amount)
 		m_iSpace = newSpace; //update m_iSpace to the new figure
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
 UT_uint32 UT_GrowBuf::getLength(void) const
@@ -159,24 +159,24 @@ UT_uint16 * UT_GrowBuf::getPointer(UT_uint32 position) const
 	return m_pBuf+position;
 }
 
-UT_Bool UT_GrowBuf::overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length)
+bool UT_GrowBuf::overwrite(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length)
 {
 	// overwrite the current cells at the given position for the given length.
 
 	if (!length)
 	{
 		UT_ASSERT(!pValue);
-		return UT_TRUE;
+		return true;
 	}
 	
 	UT_ASSERT(pValue);
 
 	if (m_iSpace < position+length)
 		if (!_growBuf(position+length-m_iSpace))
-			return UT_FALSE;
+			return false;
 
 	memmove(m_pBuf+position,pValue,length*sizeof(*m_pBuf));
-	return UT_TRUE;
+	return true;
 }
 
 void UT_GrowBuf::truncate(UT_uint32 position)

@@ -141,17 +141,17 @@ GR_QNXGraphics::~GR_QNXGraphics()
 /*
  TF NOTE: I'm not sure I understand what this function does
 */
-UT_Bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
+bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
 	case DGP_SCREEN:
-		return (m_pPrintContext) ? UT_FALSE : UT_TRUE;
+		return (m_pPrintContext) ? false : true;
 	case DGP_PAPER:
-		return (m_pPrintContext) ? UT_TRUE : UT_FALSE;
+		return (m_pPrintContext) ? true : false;
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
@@ -177,7 +177,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		pNChars = new UT_UCSChar[iLength];
 	}
 	for (i = 0; i < iLength; i++) {
-		pNChars[i] = remapGlyph(pChars[i + iCharOffset], UT_FALSE);
+		pNChars[i] = remapGlyph(pChars[i + iCharOffset], false);
 	}
 
 	//Was: (char *)(&pChars[iCharOffset]), iLength*sizeof(UT_UCSChar), 
@@ -202,7 +202,7 @@ void GR_QNXGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		int tlen;
 
 		UT_ASSERT((ipos + MB_CUR_MAX) < blen);
-		tlen = wctomb(&pNChars[ipos], remapGlyph(pChars[i + iCharOffset], UT_FALSE));
+		tlen = wctomb(&pNChars[ipos], remapGlyph(pChars[i + iCharOffset], false));
 		UT_ASSERT(tlen > 0);
 		ipos += tlen;
 	}
@@ -853,7 +853,7 @@ void GR_QNXGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
-										 UT_Bool * pbTrueType)
+										 bool * pbTrueType)
 {
 #if 0
    switch (xx & 0xf0)
@@ -897,7 +897,7 @@ void GR_QNXGraphics::setPrintContext(PpPrintContext_t *context) {
 	 m_pPrintContext = context;
 }
 
-UT_Bool GR_QNXGraphics::startPrint(void) {
+bool GR_QNXGraphics::startPrint(void) {
 	UT_DEBUGMSG(("GR: Start print"));
 	UT_ASSERT(m_pPrintContext);
 
@@ -906,19 +906,19 @@ UT_Bool GR_QNXGraphics::startPrint(void) {
 		PpContinueJob(m_pPrintContext);	
 	}
 
- 	m_bPrintNextPage = UT_FALSE;    
-	return UT_TRUE;
+ 	m_bPrintNextPage = false;    
+	return true;
 }
 
-UT_Bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
-									UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) {
+bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
+									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) {
 
 	UT_DEBUGMSG(("GR: Start Page %d W/H %d/%d (portrait:%d label:%s nextpage:%d)", 
 		pageNumber, iWidth, iHeight, bPortrait, (szPageLabel) ? szPageLabel : "", m_bPrintNextPage));
 	UT_ASSERT(m_pPrintContext);
 
 	if (!m_pPrintContext) {
-		return UT_FALSE;
+		return false;
 	}
 
 	if (!m_bPrintNextPage) {		/* First page do setup */
@@ -939,11 +939,11 @@ UT_Bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber
 		PpPrintNewPage(m_pPrintContext);
 	}
 
-	m_bPrintNextPage = UT_TRUE;
-	return UT_TRUE;	
+	m_bPrintNextPage = true;
+	return true;	
 }
 
-UT_Bool GR_QNXGraphics::endPrint(void) {
+bool GR_QNXGraphics::endPrint(void) {
 	UT_DEBUGMSG(("GR: End print"));
 	UT_ASSERT(m_pPrintContext);
 
@@ -951,6 +951,6 @@ UT_Bool GR_QNXGraphics::endPrint(void) {
 		PpEndJob(m_pPrintContext);
 	}
 
-	return UT_TRUE;
+	return true;
 }
 

@@ -94,7 +94,7 @@ EV_MacMenu::~EV_MacMenu(void)
     }
 }
 
-UT_Bool EV_MacMenu::onCommand(AV_View * pView, 
+bool EV_MacMenu::onCommand(AV_View * pView, 
 								WindowPtr hWnd, int wParam)
 {
 	// map the windows WM_COMMAND command-id into one of our XAP_Menu_Id.
@@ -105,19 +105,19 @@ UT_Bool EV_MacMenu::onCommand(AV_View * pView,
 
 	// user selected something from the menu.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pMacApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 	if (!pAction)
-		return UT_FALSE;
+		return false;
 
 	const char * szMethodName = pAction->getMethodName();
 	UT_ASSERT(szMethodName);
 	if (!szMethodName)
-		return UT_FALSE;
+		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pMacApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
@@ -127,12 +127,12 @@ UT_Bool EV_MacMenu::onCommand(AV_View * pView,
 
 //	invokeMenuMethod(m_pMacFrame->getCurrentView(),pEM,1,0,0);
 	invokeMenuMethod(pView,pEM,0,0);
-	return UT_TRUE;
+	return true;
 }
 
 
 
-UT_Bool EV_MacMenu::synthesizeMenuBar(void)
+bool EV_MacMenu::synthesizeMenuBar(void)
 {
     UT_ASSERT (m_pMacFrame);
 
@@ -157,7 +157,7 @@ UT_Bool EV_MacMenu::synthesizeMenuBar(void)
 
 	synthesize ();
 
-	return UT_TRUE;
+	return true;
 }
 
 
@@ -178,14 +178,14 @@ void EV_MacMenu::_convertToMac (char * buf, const char * label)
 }
 
 
-UT_Bool EV_MacMenu::synthesize(void)
+bool EV_MacMenu::synthesize(void)
 {
 	
 	// create a Mac menu from the info provided.
 	AV_View* pView = m_pMacFrame->getCurrentView();
     
-	UT_Bool bResult;
-    UT_Bool bCheck;
+	bool bResult;
+    bool bCheck;
 	UT_uint32 tmp = 0;
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pMacApp->getMenuActionSet();
@@ -320,18 +320,18 @@ UT_Bool EV_MacMenu::synthesize(void)
 	UT_ASSERT(bResult);
 	UT_ASSERT(menu == m_hMacMenubar);
 	
-	return UT_TRUE;
+	return true;
 }
 
 
 #if 0
-UT_Bool EV_MacMenu::synthesize(void)
+bool EV_MacMenu::synthesize(void)
 {
 	// create a Mac menu from the info provided.
 	AV_View* pView = m_pMacFrame->getCurrentView();
     
-	UT_Bool bResult;
-    UT_Bool bCheck;
+	bool bResult;
+    bool bCheck;
 	UT_uint32 tmp = 0;
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pMacApp->getMenuActionSet();
@@ -406,22 +406,22 @@ UT_Bool EV_MacMenu::synthesize(void)
                             {
                                 EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
 //	                        if (mis & EV_MIS_Gray)
-//                              	bEnable = UT_FALSE;
+//                              	bEnable = false;
                                 if (mis & EV_MIS_Toggled)
-                                	bCheck = UT_TRUE;
+                                	bCheck = true;
                                 else
-                                	bCheck = UT_FALSE;
+                                	bCheck = false;
                             }
 #if 0
-                            UT_Bool bEnable = UT_TRUE;
-                            UT_Bool bCheck = UT_FALSE;
+                            bool bEnable = true;
+                            bool bCheck = false;
 
                             if (pAction->hasGetStateFunction()) {
                                 EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
                                 if (mis & EV_MIS_Gray)
-                                	bEnable = UT_FALSE;
+                                	bEnable = false;
                                 if (mis & EV_MIS_Toggled)
-                                	bCheck = UT_TRUE;
+                                	bCheck = true;
                             }                 
 #endif
                             const char **data = getLabelName(m_pMacApp, m_pMacFrame, pAction, pLabel);
@@ -528,7 +528,7 @@ UT_Bool EV_MacMenu::synthesize(void)
                 
 				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
 				if( pAction->isCheckable() )
-					pMenuItem->SetMarked( (bCheck == UT_TRUE) );
+					pMenuItem->SetMarked( (bCheck == true) );
 					
 				pMenu->AddItem(pMenuItem);
 				
@@ -599,25 +599,25 @@ UT_Bool EV_MacMenu::synthesize(void)
 	{
 		DWORD err = GetLastError();
 		UT_ASSERT(err);
-		return UT_FALSE;
+		return false;
 	}
-	return UT_TRUE;
+	return true;
 }
 #endif
 
-UT_Bool EV_MacMenu::onInitMenu(AV_View * pView, WindowPtr hWnd, Handle hMenuBar)
+bool EV_MacMenu::onInitMenu(AV_View * pView, WindowPtr hWnd, Handle hMenuBar)
 {
 	// deal with WM_INITMENU.
 #if 0
 	if (hMenuBar != m_myMenu)			// these are not different when they
-		return UT_FALSE;				// right-click on us on the menu bar.
+		return false;				// right-click on us on the menu bar.
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pMacApp->getMenuActionSet();
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
-	UT_Bool bNeedToRedrawMenu = UT_FALSE;
+	bool bNeedToRedrawMenu = false;
 
 	UT_uint32 pos = 0;
-	UT_Bool bResult;
+	bool bResult;
 	UT_Stack stackPos;
 	stackPos.push((void*)pos);
 	UT_Stack stackMenu;
@@ -685,7 +685,7 @@ UT_Bool EV_MacMenu::onInitMenu(AV_View * pView, WindowPtr hWnd, Handle hMenuBar)
 					if (bPresent)
 					{
 						RemoveMenu(hMenuBar,cmd,MF_BYCOMMAND);
-						bNeedToRedrawMenu = UT_TRUE;
+						bNeedToRedrawMenu = true;
 					}
 					break;
 				}
@@ -711,7 +711,7 @@ UT_Bool EV_MacMenu::onInitMenu(AV_View * pView, WindowPtr hWnd, Handle hMenuBar)
 						mif.fType = MFT_STRING;
 						mif.dwTypeData = (LPTSTR)szLabelName;
 						SetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
-						bNeedToRedrawMenu = UT_TRUE;
+						bNeedToRedrawMenu = true;
 					}
 				}
 				else
@@ -723,7 +723,7 @@ UT_Bool EV_MacMenu::onInitMenu(AV_View * pView, WindowPtr hWnd, Handle hMenuBar)
 					mif.wID = cmd;
 					mif.dwTypeData = (LPTSTR)szLabelName;
 					InsertMenuItem(m,pos-1,TRUE,&mif);
-					bNeedToRedrawMenu = UT_TRUE;
+					bNeedToRedrawMenu = true;
 				}
 			}
 			break;
@@ -768,6 +768,6 @@ UT_Bool EV_MacMenu::onInitMenu(AV_View * pView, WindowPtr hWnd, Handle hMenuBar)
 	// TODO if (bNeedToRedrawMenu)
 	// TODO 	DrawMenuBar(hWnd);
 #endif // 0
-	return UT_TRUE;
+	return true;
 }
 

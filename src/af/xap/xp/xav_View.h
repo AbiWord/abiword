@@ -78,7 +78,7 @@ public:
 
 	void*			getParentData() const;
 
-	void			setInsertMode(UT_Bool bInsert);
+	void			setInsertMode(bool bInsert);
 	void			setWindowSize(UT_sint32, UT_sint32);
 	virtual void	setXScrollOffset(UT_sint32) = 0;
 	virtual void	setYScrollOffset(UT_sint32) = 0;
@@ -98,21 +98,21 @@ public:
 	void			sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit = -1);
 	void			sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit = -1);
 
-	UT_Bool			addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
-	UT_Bool			removeListener(AV_ListenerId listenerId);
+	bool			addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
+	bool			removeListener(AV_ListenerId listenerId);
 
 	//! returns true iff the current view is the active/focused window
-	UT_Bool			isActive(void);
-	virtual UT_Bool	notifyListeners(const AV_ChangeMask hint) = 0;
+	bool			isActive(void);
+	virtual bool	notifyListeners(const AV_ChangeMask hint) = 0;
 
-	virtual UT_Bool	canDo(UT_Bool bUndo) const = 0;
+	virtual bool	canDo(bool bUndo) const = 0;
 	virtual void	cmdUndo(UT_uint32 count) = 0;
 	virtual void	cmdRedo(UT_uint32 count) = 0;
 	virtual UT_Error	cmdSave(void) = 0;
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft) = 0;
 
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos) = 0;
-	virtual UT_Bool 	isSelectionEmpty(void) const = 0;
+	virtual bool 	isSelectionEmpty(void) const = 0;
 	virtual void		cmdUnselectSelection(void) = 0;
 
    virtual UT_uint32   calculateZoomPercentForPageWidth() = 0;
@@ -129,7 +129,7 @@ protected:
 	UT_sint32			m_iWindowWidth;
 	AV_Focus			m_focus;
 	UT_uint32                       m_iTick; // Count changes
-	UT_Bool				m_bInsertMode;
+	bool				m_bInsertMode;
 
 	UT_Vector			m_scrollListeners;
 	UT_Vector			m_vecListeners;

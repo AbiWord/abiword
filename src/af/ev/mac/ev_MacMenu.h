@@ -43,15 +43,15 @@ public:
 				 const char * szMenuLabelSetName);
 	~EV_MacMenu(void);
 
-	UT_Bool onCommand(AV_View * pView, 
+	bool onCommand(AV_View * pView, 
 								WindowPtr hWnd, int wParam);
 	
-	UT_Bool synthesize(void);
+	bool synthesize(void);
 
-	UT_Bool onInitMenu(AV_View * pView, WindowPtr hWnd, 
+	bool onInitMenu(AV_View * pView, WindowPtr hWnd, 
 					Handle hMenuBar);
 
-        UT_Bool synthesizeMenuBar(void);
+        bool synthesizeMenuBar(void);
 
 private:
 	XAP_MacApp *m_pMacApp;

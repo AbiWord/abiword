@@ -38,7 +38,7 @@ UT_Win32Timer::UT_Win32Timer(UT_TimerCallback pCallback, void* pData, GR_Graphic
 {
 	setCallback(pCallback);
 	setInstanceData(pData);
-	m_bStarted = UT_FALSE;
+	m_bStarted = false;
 	m_iMilliseconds = 0;
 
 	GR_Win32Graphics * pWinG = static_cast<GR_Win32Graphics *>(pG);
@@ -87,7 +87,7 @@ UT_sint32 UT_Win32Timer::set(UT_uint32 iMilliseconds)
 		return -1;
 	
 	m_iMilliseconds = iMilliseconds;
-	m_bStarted = UT_TRUE;
+	m_bStarted = true;
 	setIdentifier(idTimer);
 	return 0;
 }
@@ -103,7 +103,7 @@ void UT_Win32Timer::stop(void)
 		return;
 	
 	KillTimer(m_hWnd, idTimer);
-	m_bStarted = UT_FALSE;
+	m_bStarted = false;
 }
 
 void UT_Win32Timer::start(void)

@@ -47,8 +47,8 @@ protected:
 	BOOL							_getValueFromEditPct(HWND hWnd, int * pNewValue);
 
 	XAP_Win32PreviewWidget *		m_pPreviewWidget;
-	UT_Bool							m_bEditPctChanged;		// has edit-pct-box been edited
-	UT_Bool							m_bEditPctEnabled;		// is edit-pct-box enabled (true iff radio_pct)
+	bool							m_bEditPctChanged;		// has edit-pct-box been edited
+	bool							m_bEditPctEnabled;		// is edit-pct-box enabled (true iff radio_pct)
 };
 
 #endif /* XAP_WIN32DIALOG_ZOOM_H */

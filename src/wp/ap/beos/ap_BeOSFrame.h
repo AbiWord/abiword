@@ -32,10 +32,10 @@ public:
 	AP_BeOSFrame(AP_BeOSFrame * f);
 	virtual ~AP_BeOSFrame(void);
 
-	virtual UT_Bool				initialize(void);
+	virtual bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
 	virtual UT_Error 			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Bool				initFrameData(void);
+	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 
 	virtual void				setXScrollRange(void);
@@ -45,7 +45,7 @@ public:
 	virtual UT_uint32 			getZoomPercentage(void);
 	virtual void 				setStatusMessage(const char * szMsg);
 	
-	virtual void				toggleRuler(UT_Bool bRulerOn);
+	virtual void				toggleRuler(bool bRulerOn);
 	virtual void  				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
 
 protected:

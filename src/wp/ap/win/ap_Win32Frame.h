@@ -32,10 +32,10 @@ public:
 	AP_Win32Frame(AP_Win32Frame * f);
 	virtual ~AP_Win32Frame(void);
 
-	virtual UT_Bool				initialize(void);
+	virtual bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
 	virtual UT_Error			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Bool				initFrameData(void);
+	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 
 	virtual void				setXScrollRange(void);
@@ -46,9 +46,9 @@ public:
 	virtual UT_uint32			getZoomPercentage(void);
 	virtual void				setStatusMessage(const char * szMsg);
 	
-	static UT_Bool				RegisterClass(XAP_Win32App * app);
+	static bool				RegisterClass(XAP_Win32App * app);
 
-	virtual void				toggleRuler(UT_Bool bRulerOn);
+	virtual void				toggleRuler(bool bRulerOn);
 
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,
@@ -84,22 +84,22 @@ protected:
 	UT_uint32					m_vScale; /* vertical scroll scaling to get around 16-bit scrollbar problems */
 
 private:
-	virtual void				toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn );
-	virtual void				toggleStatusBar(UT_Bool bStatusBarOn);
-	virtual UT_Bool				getBarVisibility(UT_uint32 iBarNb) { return UT_TRUE; }
+	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn );
+	virtual void				toggleStatusBar(bool bStatusBarOn);
+	virtual bool				getBarVisibility(UT_uint32 iBarNb) { return true; }
 
 	void						_startTracking(UT_sint32 x, UT_sint32 y);
 	void						_endTracking(UT_sint32 x, UT_sint32 y);
 	void						_track(UT_sint32 x, UT_sint32 y);
-	UT_Bool						_isTracking() const
+	bool						_isTracking() const
 								{
 									return m_bMouseWheelTrack;
 								}
 
-	UT_Bool						m_bMouseWheelTrack;
+	bool						m_bMouseWheelTrack;
 	UT_sint32					m_startMouseWheelY;
 	UT_sint32					m_startScrollPosition;
-	UT_Bool						m_bMouseActivateReceived;
+	bool						m_bMouseActivateReceived;
 };
 
 #endif /* AP_WIN32FRAME_H */

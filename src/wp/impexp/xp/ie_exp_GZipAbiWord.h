@@ -32,19 +32,19 @@ public:
 	IE_Exp_GZipAbiWord(PD_Document * pDocument);
 	virtual ~IE_Exp_GZipAbiWord();
 
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Exp ** ppie);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	static bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
-	static UT_Bool 		SupportsFileType(IEFileType ft);
+	static bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-	UT_Bool				_openFile(const char * szFilename);
+	bool				_openFile(const char * szFilename);
 	UT_uint32			_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-	UT_Bool				_writeBytes(const UT_Byte * sz);
-	UT_Bool				_closeFile(void);
+	bool				_writeBytes(const UT_Byte * sz);
+	bool				_closeFile(void);
 
 private:
     

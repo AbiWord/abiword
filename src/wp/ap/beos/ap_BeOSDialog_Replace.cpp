@@ -209,7 +209,7 @@ AP_BeOSDialog_Replace::AP_BeOSDialog_Replace(XAP_DialogFactory * pDlgFactory,
 
 	m_findString = NULL;
 	m_replaceString = NULL;
-    	m_matchCase = UT_TRUE;
+    	m_matchCase = true;
 }
 
 AP_BeOSDialog_Replace::~AP_BeOSDialog_Replace(void)

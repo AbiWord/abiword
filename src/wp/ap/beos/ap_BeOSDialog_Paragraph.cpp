@@ -662,7 +662,7 @@ void AP_BeOSDialog_Paragraph::_populateWindowData()
 
 void AP_BeOSDialog_Paragraph::_redrawPreview()
 {
-	_syncControls(AP_Dialog_Paragraph::id_MENU_ALIGNMENT, UT_TRUE);
+	_syncControls(AP_Dialog_Paragraph::id_MENU_ALIGNMENT, true);
 }
 
 void AP_BeOSDialog_Paragraph::_spinnerChanged(BTextControl *pControl)
@@ -687,7 +687,7 @@ void AP_BeOSDialog_Paragraph::_spinnerChanged(BTextControl *pControl)
 			w->SetText(_getSpinItemValue(i) ); \
 			break;			\
 
-void AP_BeOSDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+void AP_BeOSDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
 { 
 	// let parent sync any member variables first
 

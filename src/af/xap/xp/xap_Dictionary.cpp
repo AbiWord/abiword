@@ -48,7 +48,7 @@ XAP_Dictionary::XAP_Dictionary(const char * szFilename)
 	UT_cloneString((char *&)m_szFilename, szFilename);
 
 	m_fp = 0;
-	m_bDirty = UT_FALSE;
+	m_bDirty = false;
 }
 
 XAP_Dictionary::~XAP_Dictionary()
@@ -70,7 +70,7 @@ const char * XAP_Dictionary::getShortName(void) const
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool XAP_Dictionary::_openFile(const char * mode)
+bool XAP_Dictionary::_openFile(const char * mode)
 {
 	UT_ASSERT(!m_fp);
 
@@ -89,7 +89,7 @@ UT_uint32 XAP_Dictionary::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 	return fwrite(pBytes,sizeof(UT_Byte),length,m_fp);
 }
 
-UT_Bool XAP_Dictionary::_writeBytes(const UT_Byte * sz)
+bool XAP_Dictionary::_writeBytes(const UT_Byte * sz)
 {
 	UT_ASSERT(m_fp);
 	UT_ASSERT(sz);
@@ -99,12 +99,12 @@ UT_Bool XAP_Dictionary::_writeBytes(const UT_Byte * sz)
 	return (_writeBytes(sz,length)==(UT_uint32)length);
 }
 
-UT_Bool XAP_Dictionary::_closeFile(void)
+bool XAP_Dictionary::_closeFile(void)
 {
 	if (m_fp)
 		fclose(m_fp);
 	m_fp = 0;
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_Dictionary::_abortFile(void)
@@ -119,21 +119,21 @@ void XAP_Dictionary::_abortFile(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_Dictionary::load(void)
+bool XAP_Dictionary::load(void)
 {
 	UT_ASSERT(m_hashWords.getEntryCount() == 0);
 
 	if (!_openFile("r"))
-		return UT_FALSE;
+		return false;
 
 	if (!_parseUTF8())
 		_abortFile();
 	else
 		_closeFile();
 
-	m_bDirty = UT_FALSE;
+	m_bDirty = false;
 
-	return UT_TRUE;
+	return true;
 }
 
 static void _smashUTF8(UT_GrowBuf * pgb)
@@ -190,13 +190,13 @@ static void _smashUTF8(UT_GrowBuf * pgb)
 	}
 }
 
-#define X_ReturnIfFail(exp)		do { UT_Bool b = (exp); if (!b) return (UT_FALSE); } while (0)
+#define X_ReturnIfFail(exp)		do { bool b = (exp); if (!b) return (false); } while (0)
 
-UT_Bool XAP_Dictionary::_parseUTF8(void)
+bool XAP_Dictionary::_parseUTF8(void)
 {
 	UT_GrowBuf gbBlock(1024);
-	UT_Bool bEatLF = UT_FALSE;
-	UT_Bool bSmashUTF8 = UT_FALSE;
+	bool bEatLF = false;
+	bool bSmashUTF8 = false;
 	unsigned char c;
 
 	while (fread(&c, 1, sizeof(c), m_fp) > 0)
@@ -207,13 +207,13 @@ UT_Bool XAP_Dictionary::_parseUTF8(void)
 		case '\n':
 			if ((c == '\n') && bEatLF)
 			{
-				bEatLF = UT_FALSE;
+				bEatLF = false;
 				break;
 			}
 
 			if (c == '\r')
 			{
-				bEatLF = UT_TRUE;
+				bEatLF = true;
 			}
 			
 			// we interprete either CRLF, CR, or LF as a word delimiter.
@@ -225,12 +225,12 @@ UT_Bool XAP_Dictionary::_parseUTF8(void)
 
 				X_ReturnIfFail(addWord(gbBlock.getPointer(0), gbBlock.getLength()));
 				gbBlock.truncate(0);
-				bSmashUTF8 = UT_FALSE;
+				bSmashUTF8 = false;
 			}
 			break;
 
 		default:
-			bEatLF = UT_FALSE;
+			bEatLF = false;
 
 			// deal with plain character.  to simplify parsing logic,
 			// we just stuff all text chars (latin-1 and utf8 escape
@@ -238,7 +238,7 @@ UT_Bool XAP_Dictionary::_parseUTF8(void)
 			// sequences into unicode in a moment.
 
 			if (c > 0x7f)
-				bSmashUTF8 = UT_TRUE;
+				bSmashUTF8 = true;
 			UT_UCSChar uc = (UT_UCSChar) c;
 			X_ReturnIfFail(gbBlock.ins(gbBlock.getLength(),&uc,1));
 			break;
@@ -254,19 +254,19 @@ UT_Bool XAP_Dictionary::_parseUTF8(void)
 		X_ReturnIfFail(addWord(gbBlock.getPointer(0), gbBlock.getLength()));
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_Dictionary::save(void)
+bool XAP_Dictionary::save(void)
 {
 	if (!m_bDirty)
-		return UT_TRUE;
+		return true;
 
 	if (!_openFile("w"))
-		return UT_FALSE;
+		return false;
 
 	UT_sint32 k;
 	for (k=0; (k < m_hashWords.getEntryCount()); k++)
@@ -281,9 +281,9 @@ UT_Bool XAP_Dictionary::save(void)
 
 	_closeFile();
 
-	m_bDirty = UT_FALSE;
+	m_bDirty = false;
 
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_Dictionary::_outputUTF8(const UT_UCSChar * data, UT_uint32 length)
@@ -321,7 +321,7 @@ void XAP_Dictionary::_outputUTF8(const UT_UCSChar * data, UT_uint32 length)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
+bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 {
 	char * key = (char *) calloc(len+1, sizeof(char));
 	UT_UCSChar * copy = (UT_UCSChar *) calloc(len+1, sizeof(UT_UCSChar));
@@ -331,7 +331,7 @@ UT_Bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 		UT_DEBUGMSG(("mem failure adding word to dictionary\n"));
 		FREEP(key);
 		FREEP(copy);
-		return UT_FALSE;
+		return false;
 	}
 
 	for (UT_uint32 i = 0; i < len; i++)
@@ -350,23 +350,23 @@ UT_Bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 
 	if (iRes == 0)
 	{
-		m_bDirty = UT_TRUE;
-		return UT_TRUE;
+		m_bDirty = true;
+		return true;
 	}
 	else
 	{
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
+bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 {
 	char * key = (char*) calloc(len+1, sizeof(char));
 	if (!key)
 	{
 		UT_DEBUGMSG(("mem failure looking up word in dictionary\n"));
 		FREEP(key);
-		return UT_FALSE;
+		return false;
 	}
 
 	for (UT_uint32 i = 0; i < len; i++)
@@ -379,7 +379,7 @@ UT_Bool XAP_Dictionary::isWord(const UT_UCSChar * pWord, UT_uint32 len) const
 	FREEP(key);
 
 	if (pHE != NULL)
-		return UT_TRUE;
+		return true;
 	else 
-		return UT_FALSE;
+		return false;
 }

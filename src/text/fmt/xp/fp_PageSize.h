@@ -40,7 +40,7 @@ public:
 	inline void setScale( double scale) {m_scale = scale;}
 	void setPortrait(void);
 	void setLandscape(void);
-	UT_Bool isPortrait(void) { return m_bisPortrait; }
+	bool isPortrait(void) { return m_bisPortrait; }
 	double Width(Unit u) const;
 	double Height(Unit u) const;
 	double getScale(void) {return m_scale;}
@@ -56,7 +56,7 @@ private:
 
 	double m_iWidth;
 	double m_iHeight;
-	UT_Bool m_bisPortrait;
+	bool m_bisPortrait;
 	double m_scale;
 	Unit m_unit;
 };

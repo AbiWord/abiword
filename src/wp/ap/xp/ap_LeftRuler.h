@@ -73,7 +73,7 @@ public:
 	void				scrollRuler(UT_sint32 yoff, UT_sint32 ylimit);
 
 	/* used with AV_Listener */
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 	/* used with AV_ScrollObj */
 	static void			_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);

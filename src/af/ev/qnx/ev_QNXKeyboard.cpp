@@ -33,7 +33,7 @@
 //////////////////////////////////////////////////////////////////
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(PhKeyEvent_t *keyevent);
-static UT_Bool s_isVirtualKeyCode(PhKeyEvent_t *keyevent);
+static bool s_isVirtualKeyCode(PhKeyEvent_t *keyevent);
 static int s_getKeyEventValue(PhKeyEvent_t *keyevent);
 
 //////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ ev_QNXKeyboard::~ev_QNXKeyboard(void)
  This will get called by the static callback handler which 
  is attached ... elsewhere in the Frame
 */
-UT_Bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
+bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 					PtCallbackInfo_t* e)
 {
 	PhKeyEvent_t *keyevent;
@@ -60,7 +60,7 @@ UT_Bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 	//We only want to catch the down and repeat keys, ignore all others
 	if (!keyevent || 
         !(keyevent->key_flags & (Pk_KF_Key_Down | Pk_KF_Key_Repeat)))  {
-		return(UT_FALSE);
+		return(false);
 	}
 
 	EV_EditBits state = 0;
@@ -82,7 +82,7 @@ UT_Bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 		switch (nvk)
 		{
 		case EV_NVK__IGNORE__:
-			return UT_FALSE;
+			return false;
 		default:
 			result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM);
 
@@ -92,7 +92,7 @@ UT_Bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 				// If it is a bogus key and we don't have a sequence in
 				// progress, we should let the system handle it
 				// (this lets things like ALT-F4 work).
-				return UT_FALSE;
+				return false;
 				
 			case EV_EEMR_BOGUS_CONT:
 				// If it is a bogus key but in the middle of a sequence,
@@ -100,19 +100,19 @@ UT_Bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 				// like Control-X ALT-F4 from killing us -- if they want
 				// to kill us, fine, but they shouldn't be in the middle
 				// of a sequence).
-				return UT_TRUE;
+				return true;
 				
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
 				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
-				return UT_TRUE;
+				return true;
 				
 			case EV_EEMR_INCOMPLETE:
-				return UT_TRUE;
+				return true;
 				
 			default:
 				UT_ASSERT(0);
-				return UT_TRUE;
+				return true;
 			}
 		}
 	}
@@ -130,7 +130,7 @@ UT_Bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 			// If it is a bogus key and we don't have a sequence in
 			// progress, we should let the system handle it
 			// (this lets things like ALT-F4 work).
-			return UT_FALSE;
+			return false;
 			
 		case EV_EEMR_BOGUS_CONT:
 			// If it is a bogus key but in the middle of a sequence,
@@ -138,23 +138,23 @@ UT_Bool ev_QNXKeyboard::keyPressEvent(AV_View* pView,
 			// like Control-X ALT-F4 from killing us -- if they want
 			// to kill us, fine, but they shouldn't be in the middle
 			// of a sequence).
-			return UT_TRUE;
+			return true;
 			
 		case EV_EEMR_COMPLETE:
 			UT_ASSERT(pEM);
 			invokeKeyboardMethod(pView,pEM,&charData,1); // no char data to offer
-			return UT_TRUE;
+			return true;
 			
 		case EV_EEMR_INCOMPLETE:
-			return UT_TRUE;
+			return true;
 			
 		default:
 			UT_ASSERT(0);
-			return UT_TRUE;
+			return true;
 		}
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
 #if 0
@@ -238,17 +238,17 @@ static EV_EditBits s_Table_NVK_0xff[] =
  These three functions all work hand in hand to get the
 key events ... 
 */
-static UT_Bool s_isVirtualKeyCode(PhKeyEvent_t *keyevent)
+static bool s_isVirtualKeyCode(PhKeyEvent_t *keyevent)
 {
 	int key;
 /*
 	if (keyevent->key_sym <= 0xff) {
 		printf("Key Symbol is 0x%x \n", keyevent->key_sym);
-		return(UT_FALSE);
+		return(false);
 	}
 */
 	if ((key = PhTo8859_1(keyevent)) == -1) {
-		return(UT_TRUE);
+		return(true);
 	}
 
 	switch (keyevent->key_cap) {
@@ -303,12 +303,12 @@ static UT_Bool s_isVirtualKeyCode(PhKeyEvent_t *keyevent)
 	case Pk_F33:
 	case Pk_F34:
 	case Pk_F35:
-		return UT_TRUE;	
+		return true;	
 	default:
 		break;
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(PhKeyEvent_t *keyevent)

@@ -53,7 +53,7 @@ IE_Exp_DocBook::~IE_Exp_DocBook()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_DocBook::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_DocBook::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".dbk") == 0);
 }
@@ -66,17 +66,17 @@ UT_Error IE_Exp_DocBook::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Exp_DocBook::GetDlgLabels(const char ** pszDesc,
+bool	IE_Exp_DocBook::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
 	*pszDesc = "DocBook (.dbk)";
 	*pszSuffixList = "*.dbk";
 	*ft = IEFT_DocBook;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Exp_DocBook::SupportsFileType(IEFileType ft)
+bool IE_Exp_DocBook::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_DocBook == ft);
 }
@@ -99,17 +99,17 @@ public:
 						IE_Exp_DocBook * pie);
 	virtual ~s_DocBook_Listener();
 
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
@@ -117,7 +117,7 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool		signal(UT_uint32 iSignal);
+	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
 	void				_closeSection(void);
@@ -133,15 +133,15 @@ protected:
 	
 	PD_Document *		        m_pDocument;
 	IE_Exp_DocBook *		m_pie;
-	UT_Bool				m_bInSection;
-	UT_Bool				m_bInParagraph;
-	UT_Bool				m_bInSpan;
+	bool				m_bInSection;
+	bool				m_bInParagraph;
+	bool				m_bInSpan;
 	const PP_AttrProp*	        m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
 
 	UT_uint16		m_iBlockType;	// BT_*
-        UT_Bool                 m_bWasSpace;
+        bool                 m_bWasSpace;
 
 };
 
@@ -153,7 +153,7 @@ void s_DocBook_Listener::_closeSection(void)
 	}
 	
 	m_pie->write("</section>\n");
-	m_bInSection = UT_FALSE;
+	m_bInSection = false;
 	return;
 }
 
@@ -181,7 +181,7 @@ void s_DocBook_Listener::_closeParagraph(void)
 	else
 		m_pie->write("   oh, oh\n");
 
-	m_bInParagraph = UT_FALSE;
+	m_bInParagraph = false;
 	return;
 }
 
@@ -193,7 +193,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 	}
 	
 	const PP_AttrProp * pAP = NULL;
-	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
 	if (bHaveProp && pAP)
 	{
@@ -277,7 +277,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 
 		m_pie->write(">");
 
-	m_bInParagraph = UT_TRUE;
+	m_bInParagraph = true;
 }
 
 void s_DocBook_Listener::_openSection(PT_AttrPropIndex /* api*/)
@@ -295,7 +295,7 @@ void s_DocBook_Listener::_openSpan(PT_AttrPropIndex api)
 	}
 	
 	const PP_AttrProp * pAP = NULL;
-	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
 	if (bHaveProp && pAP)
 	{
@@ -327,7 +327,7 @@ void s_DocBook_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 		
 		
-		m_bInSpan = UT_TRUE;
+		m_bInSpan = true;
 		m_pAP_Span = pAP;
 	}
 }
@@ -374,7 +374,7 @@ void s_DocBook_Listener::_closeSpan(void)
 		m_pAP_Span = NULL;
 	}
 
-	m_bInSpan = UT_FALSE;
+	m_bInSpan = false;
 	return;
 }
 
@@ -456,7 +456,7 @@ void s_DocBook_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		  else
 		    {
 		      // just tack on a single space to the textrun
-		      m_bWasSpace = UT_TRUE;
+		      m_bWasSpace = true;
 		      *pBuf++ = ' ';
 		      pData++;
 		    }
@@ -465,7 +465,7 @@ void s_DocBook_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		default:
 
 		  // reset this variable
-		  m_bWasSpace = UT_FALSE;
+		  m_bWasSpace = false;
 
 		  // thanks for the international patch, vlad :-)
 		  if (*pData > 0x007f)
@@ -537,9 +537,9 @@ s_DocBook_Listener::s_DocBook_Listener(PD_Document * pDocument,
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
-	m_bInSection = UT_FALSE;
-	m_bInParagraph = UT_FALSE;
-	m_bInSpan = UT_FALSE;
+	m_bInSection = false;
+	m_bInParagraph = false;
+	m_bInSpan = false;
 	
 
 	// write out the doctype descriptor
@@ -606,7 +606,7 @@ s_DocBook_Listener::~s_DocBook_Listener()
 	m_pie->write("</book>\n");
 }
 
-UT_Bool s_DocBook_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_DocBook_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 								   const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -626,7 +626,7 @@ UT_Bool s_DocBook_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 			if (api)
 				_closeSpan();
-			return UT_TRUE;
+			return true;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -638,31 +638,31 @@ UT_Bool s_DocBook_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 				// TODO we *could* insert the images and create separate GIF files.
-				return UT_TRUE;
+				return true;
 
 			case PTO_Field:
 				// we do nothing with computed fields.
-				return UT_TRUE;
+				return true;
 
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 			}
 #else
-			return UT_TRUE;
+			return true;
 #endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return UT_TRUE;
+		return true;
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -690,19 +690,19 @@ UT_Bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 				)
 			{
 				_openSection(pcr->getIndexAP());
-				m_bInSection = UT_TRUE;
+				m_bInSection = true;
 			}
 			else
 			{
-				m_bInSection = UT_FALSE;
+				m_bInSection = false;
 			}
 		}
 		else
 		{
-			m_bInSection = UT_FALSE;
+			m_bInSection = false;
 		}
 		
-		return UT_TRUE;
+		return true;
 	}
 
 	case PTX_Block:
@@ -710,23 +710,23 @@ UT_Bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		_closeSpan();
 		_closeParagraph();
 		_openParagraph(pcr->getIndexAP());
-		return UT_TRUE;
+		return true;
 	}
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_DocBook_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_DocBook_Listener::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_DocBook_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_DocBook_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
 									 PL_StruxDocHandle /*sdh*/,
 									 PL_ListenerId /* lid */,
@@ -735,13 +735,13 @@ UT_Bool s_DocBook_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																 PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_DocBook_Listener::signal(UT_uint32 /* iSignal */)
+bool s_DocBook_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 

@@ -47,7 +47,7 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 	UT_HASH_PURGEDATA(XAP_UnixFont *, m_fontHash);
 }
 
-UT_Bool XAP_UnixFontManager::setFontPath(const char * searchpath)
+bool XAP_UnixFontManager::setFontPath(const char * searchpath)
 {
 	gchar ** table = g_strsplit(searchpath, ";", 0);
 
@@ -57,10 +57,10 @@ UT_Bool XAP_UnixFontManager::setFontPath(const char * searchpath)
 	// free the table but not its contents
 	g_free(table);
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_UnixFontManager::scavengeFonts(void)
+bool XAP_UnixFontManager::scavengeFonts(void)
 {
 	UT_uint32 i = 0;
 	UT_uint32 count = m_searchPaths.getItemCount();
@@ -138,7 +138,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 							   filename, fontcount, line);
 					messageBoxOK(message);
 					fclose(file);
-					return UT_TRUE;
+					return true;
 				}
 				if (subdir != subdirs && XAP_EncodingManager::instance->cjk_locale())
 				    _allocateCJKFont((const char *) buffer,line);
@@ -186,7 +186,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 				   "Please visit http://www.abisource.com/ for more information.",
 				   message);
 		messageBoxOK(message2);
-		return UT_FALSE;
+		return false;
 	}
 
 	if (totalfonts <= 0)
@@ -199,7 +199,7 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 				   "Please visit http://www.abisource.com/ for more information.",
 				   totaldirs);
 		messageBoxOK(message);
-		return UT_FALSE;
+		return false;
 	}
 
 	// since we now have a good list of fonts totalling more than 0,
@@ -216,12 +216,12 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 	{
 		// if any of these fails, the user will know about it
 		if (!allfonts[k]->getMetricsData())
-			return UT_FALSE;
+			return false;
 	}
 	DELETEP(allfonts);
 #endif
 	
-	return UT_TRUE;
+	return true;
 }
 
 UT_uint32 XAP_UnixFontManager::getCount(void)

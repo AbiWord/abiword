@@ -31,7 +31,7 @@
 
 /*****************************************************************/
 
-UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
+bool UT_Xpm2Bitmap(const char ** pIconData,
 				   UT_uint32 sizeofData,
 				   BBitmap ** pBitmap) {
 	BBitmap *pBBitmap;
@@ -56,7 +56,7 @@ UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
 	//Create a new BBitmap with that width/height ...
 	pBBitmap = new BBitmap(BRect(0, 0, width-1, height-1), B_RGB32);
 	if (!pBBitmap) 
-		return(UT_FALSE);
+		return(false);
 
 	rgb_color *pRGB = (rgb_color*)malloc((nrColors + 1) * sizeof(rgb_color));
 	UT_ASSERT(pRGB);
@@ -145,7 +145,7 @@ UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
 
 	free(pRGB);
 	*pBitmap = pBBitmap;
-	return(UT_TRUE);
+	return(true);
 }
 
 		

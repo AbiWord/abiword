@@ -31,11 +31,11 @@ public:
    XAP_BeOSModule () ;
    virtual ~XAP_BeOSModule (void);
 
-   virtual UT_Bool   load (const char * name);
-   virtual UT_Bool   unload (void);
-   virtual UT_Bool   resolveSymbol (const char * symbol_name, void ** symbol);
-   virtual UT_Bool   getModuleName (char ** dest) const;
-   virtual UT_Bool   getErrorMsg (char ** dest) const;
+   virtual bool   load (const char * name);
+   virtual bool   unload (void);
+   virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
+   virtual bool   getModuleName (char ** dest) const;
+   virtual bool   getErrorMsg (char ** dest) const;
 
  private:
 	char * m_szname;

@@ -74,11 +74,11 @@ class GR_UnixGraphics : public GR_Graphics
 					       UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 					       GR_Image::GRType = GR_Image::GRT_Raster);
   
-	virtual UT_Bool		queryProperties(GR_Graphics::Properties gp) const;
-	virtual UT_Bool		startPrint(void);
-	virtual UT_Bool		startPage(const char * szPageLabel, UT_uint32 pageNumber,
-								  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
-	virtual UT_Bool		endPrint(void);
+	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
+	virtual bool		startPrint(void);
+	virtual bool		startPage(const char * szPageLabel, UT_uint32 pageNumber,
+								  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual bool		endPrint(void);
 
 	virtual void		flush(void);
 

@@ -42,7 +42,7 @@ public:
 					PT_AttrPropIndex indexAP);
 	virtual ~pf_Frag_FmtMark();
 	
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos,
 													  PT_BlockOffset blockOffset) const;
 	PT_AttrPropIndex		getIndexAP(void) const;

@@ -32,11 +32,11 @@ public:
 	XAP_BeOSClipboard();
 	virtual ~XAP_BeOSClipboard();
 	
-	virtual UT_Bool			clearClipboard(void);
+	virtual bool			clearClipboard(void);
 
-	virtual UT_Bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
-	virtual UT_Bool			getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen);
-	virtual UT_Bool			hasFormat(const char* format);
+	virtual bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	virtual bool			getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen);
+	virtual bool			hasFormat(const char* format);
 
 private:
 	char* lastCopy;

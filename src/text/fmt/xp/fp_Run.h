@@ -132,7 +132,7 @@ public:
 	void					insertIntoRunListBeforeThis(fp_Run& newRun);
 	void					insertIntoRunListAfterThis(fp_Run& newRun);
 	fd_Field*				getField(void) { return m_pField;}
-	UT_Bool					isField(void) { return (UT_Bool) (m_pField != NULL) ;}
+	bool					isField(void) { return (bool) (m_pField != NULL) ;}
 	void					unlinkFromRunList();
 	
 	void					setLine(fp_Line*);
@@ -144,40 +144,40 @@ public:
 	
 	void					setNext(fp_Run*);
 	void					setPrev(fp_Run*);
-	UT_Bool					isFirstRunOnLine(void) const;
-	UT_Bool					isLastRunOnLine(void) const;
-	UT_Bool					isOnlyRunOnLine(void) const;
+	bool					isFirstRunOnLine(void) const;
+	bool					isLastRunOnLine(void) const;
+	bool					isOnlyRunOnLine(void) const;
 
 	void					draw(dg_DrawArgs*);
-	void            		clearScreen(UT_Bool bFullLineHeightRect = UT_FALSE);
-	void					markAsDirty(void)	{ m_bDirty = UT_TRUE; }
-	UT_Bool					isDirty(void) const { return m_bDirty; }
-	virtual UT_Bool			canContainPoint(void) const;
+	void            		clearScreen(bool bFullLineHeightRect = false);
+	void					markAsDirty(void)	{ m_bDirty = true; }
+	bool					isDirty(void) const { return m_bDirty; }
+	virtual bool			canContainPoint(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
-	virtual	UT_Bool			recalcWidth(void);
+	virtual	bool			recalcWidth(void);
 	
 	virtual void			_draw(dg_DrawArgs*) = 0;
     void                    _drawTextLine(UT_sint32, UT_sint32, UT_uint32, UT_uint32, UT_UCSChar *);
-	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect) = 0;
-	virtual UT_Bool			canBreakAfter(void) const = 0;
-	virtual UT_Bool			canBreakBefore(void) const = 0;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			isForcedBreak(void) const { return UT_FALSE; }
-	virtual UT_Bool			alwaysFits(void) const { return UT_FALSE; }
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE) = 0;
+	virtual void       		_clearScreen(bool bFullLineHeightRect) = 0;
+	virtual bool			canBreakAfter(void) const = 0;
+	virtual bool			canBreakBefore(void) const = 0;
+	virtual bool			letPointPass(void) const;
+	virtual bool			isForcedBreak(void) const { return false; }
+	virtual bool			alwaysFits(void) const { return false; }
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false) = 0;
 	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }	
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const { return 0; }	
-	virtual UT_Bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return UT_FALSE; }
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL) = 0;
+	virtual bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height) = 0;
 	virtual void			lookupProperties(void) = 0;
-	virtual UT_Bool			doesContainNonBlankData(void) const { return UT_TRUE; }	// Things like text whould return false if it is all spaces.
-	virtual UT_Bool			isSuperscript(void) const { return UT_FALSE; }
-	virtual UT_Bool			isSubscript(void) const { return UT_FALSE; }
-	virtual UT_Bool			isUnderline(void) const { return UT_FALSE; };
-	virtual UT_Bool			isOverline(void) const { return UT_FALSE; };
-	virtual UT_Bool			isStrikethrough(void) const { return UT_FALSE; };
+	virtual bool			doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
+	virtual bool			isSuperscript(void) const { return false; }
+	virtual bool			isSubscript(void) const { return false; }
+	virtual bool			isUnderline(void) const { return false; };
+	virtual bool			isOverline(void) const { return false; };
+	virtual bool			isStrikethrough(void) const { return false; };
 	virtual void			setLinethickness(UT_sint32 max_linethickness) { return; };
 	virtual UT_sint32		getLinethickness(void) {return 0; } ;
 	virtual void			setUnderlineXoff(UT_sint32 xoff) { return; };
@@ -212,7 +212,7 @@ protected:
 	UT_uint32				m_iAscentLayoutUnits;
 	UT_uint32				m_iDescentLayoutUnits;
 	GR_Graphics*			m_pG;
-	UT_Bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
+	bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
 	fd_Field*				m_pField;
 
 	// the paper's color at any given time
@@ -229,12 +229,12 @@ class fp_TabRun : public fp_Run
 	fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	void					setWidth(UT_sint32);
 	
 protected:
@@ -242,7 +242,7 @@ protected:
 
 	virtual void			_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
 class fp_ForcedLineBreakRun : public fp_Run
@@ -250,18 +250,18 @@ class fp_ForcedLineBreakRun : public fp_Run
  public:
 	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual UT_Bool			canContainPoint(void) const;
+	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			isForcedBreak(void) const { return true; }
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
 class fp_FieldStartRun : public fp_Run
@@ -269,18 +269,18 @@ class fp_FieldStartRun : public fp_Run
  public:
 	fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual UT_Bool			canContainPoint(void) const;
+	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			isForcedBreak(void) const { return true; }
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
 class fp_FieldEndRun : public fp_Run
@@ -288,18 +288,18 @@ class fp_FieldEndRun : public fp_Run
  public:
 	fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual UT_Bool			canContainPoint(void) const;
+	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			isForcedBreak(void) const { return true; }
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
 class fp_ForcedColumnBreakRun : public fp_Run
@@ -307,18 +307,18 @@ class fp_ForcedColumnBreakRun : public fp_Run
  public:
 	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual UT_Bool			canContainPoint(void) const;
+	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			isForcedBreak(void) const { return true; }
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
 class fp_ForcedPageBreakRun : public fp_Run
@@ -326,19 +326,19 @@ class fp_ForcedPageBreakRun : public fp_Run
  public:
 	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual UT_Bool			canContainPoint(void) const;
+	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			isForcedBreak(void) const { return UT_TRUE; }
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			isForcedBreak(void) const { return true; }
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
 
 class fp_ImageRun : public fp_Run
@@ -348,16 +348,16 @@ public:
 	virtual ~fp_ImageRun();
 
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 
 	GR_Image*				m_pImage;
 };
@@ -424,25 +424,25 @@ public:
 	virtual ~fp_FieldRun() {};
 
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
+	virtual bool			canBreakAfter(void) const;
 	virtual fp_FieldsEnum	getFieldType(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 
-	virtual UT_Bool			isSuperscript(void) const;
-	virtual UT_Bool			isSubscript(void) const;
+	virtual bool			isSuperscript(void) const;
+	virtual bool			isSubscript(void) const;
 
-	UT_Bool					_setValue(UT_UCSChar *p_new_value);					
+	bool					_setValue(UT_UCSChar *p_new_value);					
 
-	virtual UT_Bool			calculateValue(void);
+	virtual bool			calculateValue(void);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*) {};
 	virtual void			_defaultDraw(dg_DrawArgs*);
-	virtual void			_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 
 	GR_Font*				m_pFont;
 	GR_Font*				m_pFontLayout;
@@ -465,7 +465,7 @@ public:
 	
 	fp_FieldTimeRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual UT_Bool			calculateValue(void);
+	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
@@ -475,7 +475,7 @@ public:
 	
 	fp_FieldPageNumberRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual UT_Bool			calculateValue(void);
+	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
@@ -485,7 +485,7 @@ public:
 	
 	fp_FieldPageCountRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual UT_Bool			calculateValue(void);
+	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
@@ -496,19 +496,19 @@ public:
 	fp_FmtMarkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst);
 
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			letPointPass(void) const;
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual const PP_AttrProp* getAP(void) const;
-	virtual UT_Bool			isSuperscript(void) const { return UT_FALSE; }
-	virtual UT_Bool			isSubscript(void)  const { return UT_FALSE; }
+	virtual bool			isSuperscript(void) const { return false; }
+	virtual bool			isSubscript(void)  const { return false; }
 
 protected:
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void			_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 	enum
 	{
 		TEXT_POSITION_NORMAL,

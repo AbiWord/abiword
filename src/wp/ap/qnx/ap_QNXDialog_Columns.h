@@ -62,8 +62,8 @@ static struct _it s_itTable[] =
 #undef DefineToolbarIcon
 
 // Some convience functions to make Abi's pixmaps easily available to dialogs
-static UT_Bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
-static UT_Bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName);
+static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
+static bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName);
 
 
 
@@ -76,7 +76,7 @@ public:
 	virtual ~AP_QNXDialog_Columns(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-	virtual void			enableLineBetweenControl(UT_Bool bState = UT_TRUE);
+	virtual void			enableLineBetweenControl(bool bState = true);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 

@@ -48,7 +48,7 @@ public:
 protected:
 
 	class WordCountWin* newwin;	
-	UT_Bool windowIsValid;
+	bool windowIsValid;
 	
 	static void				autoupdateWC(UT_Timer * pTimer);
 	UT_Timer *				m_pAutoUpdateWC;

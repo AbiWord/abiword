@@ -37,26 +37,26 @@ class XAP_Module {
    // Delete (and unload) the module
    virtual ~XAP_Module (void) = 0;
 
-   // load this module into memory. UT_TRUE on success
-   virtual UT_Bool load (const char * name) = 0;
+   // load this module into memory. true on success
+   virtual bool load (const char * name) = 0;
 
-   // unload this module from memory. UT_TRUE on success
-   virtual UT_Bool unload (void) = 0;
+   // unload this module from memory. true on success
+   virtual bool unload (void) = 0;
 
    // passed a symbol name and a void ** symbol, 
    // *symbol refers to the actual representation of @symbol_name
    // i.e. resolveSymbol ("add", &func);
    // int result = func (1, 2);
-   virtual UT_Bool resolveSymbol (const char * symbol_name, void ** symbol) =
+   virtual bool resolveSymbol (const char * symbol_name, void ** symbol) =
 0;
 
    // returns the name of this module, if it has one
-   // if return is UT_TRUE, you must FREEP dest
-   virtual UT_Bool getModuleName (char ** dest) const = 0;
+   // if return is true, you must FREEP dest
+   virtual bool getModuleName (char ** dest) const = 0;
 
    // returns the most recent error message from one of these
-   // calls failing. If return is UT_TRUE, you must FREEP dest
-   virtual UT_Bool getErrorMsg (char ** dest) const = 0;
+   // calls failing. If return is true, you must FREEP dest
+   virtual bool getErrorMsg (char ** dest) const = 0;
 };
 
 #endif /* XAP_MODULE_H */

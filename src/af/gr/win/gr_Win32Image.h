@@ -32,8 +32,8 @@ public:
 	GR_Win32Image(const char* szName);
 	~GR_Win32Image();
 
-	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
 	void				setDIB(BITMAPINFO *pDIB) { m_pDIB = pDIB; }
 	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }

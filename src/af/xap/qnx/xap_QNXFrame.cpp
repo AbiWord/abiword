@@ -320,13 +320,13 @@ XAP_QNXFrame::~XAP_QNXFrame(void)
 	DELETEP(m_pQNXPopup);
 }
 
-UT_Bool XAP_QNXFrame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+bool XAP_QNXFrame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 								  const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
 								  const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
 								  const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
 								  const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
 {
-	UT_Bool bResult;
+	bool bResult;
 
 	// invoke our base class first.
 	
@@ -349,7 +349,7 @@ UT_Bool XAP_QNXFrame::initialize(const char * szKeyBindingsKey, const char * szK
 	m_pMouse = new EV_QNXMouse(pEEM);
 	UT_ASSERT(m_pMouse);
 
-	return UT_TRUE;
+	return true;
 }
 
 UT_sint32 XAP_QNXFrame::setInputMode(const char * szName)
@@ -399,7 +399,7 @@ XAP_DialogFactory * XAP_QNXFrame::getDialogFactory(void)
 */
 void XAP_QNXFrame::_createTopLevelWindow(void)
 {
-	UT_Bool bResult;
+	bool bResult;
 	PtArg_t args[10];
 	int 	n;
 	PhArea_t area;
@@ -480,26 +480,26 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	UT_QNXCenterWindow(NULL, m_wTopLevelWindow);
 }
 
-UT_Bool XAP_QNXFrame::close()
+bool XAP_QNXFrame::close()
 {
 	PtDestroyWidget(getTopLevelWindow());
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_QNXFrame::raise()
+bool XAP_QNXFrame::raise()
 {
 	if (getTopLevelWindow())
 		PtWindowToFront(getTopLevelWindow());
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_QNXFrame::show()
+bool XAP_QNXFrame::show()
 {
 	raise();
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_QNXFrame::openURL(const char * szURL)
+bool XAP_QNXFrame::openURL(const char * szURL)
 {
 	char execstring[4096];
 
@@ -507,15 +507,15 @@ UT_Bool XAP_QNXFrame::openURL(const char * szURL)
 	snprintf(execstring, 4096, "voyager -u %s &", szURL);
 	system(execstring);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_QNXFrame::updateTitle()
+bool XAP_QNXFrame::updateTitle()
 {
 	if (!XAP_Frame::updateTitle())
 	{
 		// no relevant change, so skip it
-		return UT_FALSE;
+		return false;
 	}
 
 	char buf[256];
@@ -534,15 +534,15 @@ UT_Bool XAP_QNXFrame::updateTitle()
 	PtSetArg(&args[0], Pt_ARG_WINDOW_TITLE, buf, 0); 
 	PtSetResources(getTopLevelWindow(), 1, args);
 	
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
-UT_Bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
+bool XAP_QNXFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
 
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	UT_ASSERT(!m_pQNXPopup);
 
 	setPopupDone(0);	

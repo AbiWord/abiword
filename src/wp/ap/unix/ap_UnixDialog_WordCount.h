@@ -70,7 +70,7 @@ protected:
 	GtkWidget * m_pAutocheck;
 	GtkWidget * m_pAutospinlabel;
 	GtkAdjustment * m_Spinrange;
-	UT_Bool m_bAutoWC;
+	bool m_bAutoWC;
 	guint m_Update_rate;
 
 	// Labels for the Word Count data
@@ -82,8 +82,8 @@ protected:
 	GtkWidget * m_labelPgCount;	
 	
 	// Handshake variables
-	UT_Bool m_bDestroy_says_stopupdating;
-	UT_Bool m_bAutoUpdate_happening_now;
+	bool m_bDestroy_says_stopupdating;
+	bool m_bAutoUpdate_happening_now;
 };
 
 #endif /* AP_UNIXDIALOG_WORDCOUNT_H */

@@ -34,19 +34,19 @@ public:
 	UT_ByteBuf(UT_uint32 iChunk = 0);
 	~UT_ByteBuf();
 
-	UT_Bool				append(const UT_Byte * pValue, UT_uint32 length);
-	UT_Bool				ins(UT_uint32 position, const UT_Byte * pValue, UT_uint32 length);
-	UT_Bool				ins(UT_uint32 position, UT_uint32 length);
-	UT_Bool				del(UT_uint32 position, UT_uint32 amount);
-	UT_Bool				overwrite(UT_uint32 position, UT_Byte * pValue, UT_uint32 length);
+	bool				append(const UT_Byte * pValue, UT_uint32 length);
+	bool				ins(UT_uint32 position, const UT_Byte * pValue, UT_uint32 length);
+	bool				ins(UT_uint32 position, UT_uint32 length);
+	bool				del(UT_uint32 position, UT_uint32 amount);
+	bool				overwrite(UT_uint32 position, UT_Byte * pValue, UT_uint32 length);
 	void				truncate(UT_uint32 position);
 	UT_uint32			getLength(void) const;
 	const UT_Byte *		getPointer(UT_uint32 position) const;				/* temporary use only */
-	UT_Bool				writeToFile(const char* pszFileName);
-	UT_Bool				insertFromFile(UT_uint32 iPosition, const char* pszFilename);
+	bool				writeToFile(const char* pszFileName);
+	bool				insertFromFile(UT_uint32 iPosition, const char* pszFilename);
 	
 protected:
-	UT_Bool				_byteBuf(UT_uint32 spaceNeeded);
+	bool				_byteBuf(UT_uint32 spaceNeeded);
 
 	UT_Byte *			m_pBuf;
 	UT_uint32			m_iSize;			/* amount currently used */

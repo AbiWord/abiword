@@ -29,10 +29,10 @@
 // character, remove or change the '&' in your menu constructor code.
 // translated by: Sercxemulo <explo@poczta.wp.pl>
 // last update: 07.14.2000A.D.
-// If the third argument is UT_TRUE, then this is the fall-back for
+// If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(pl,PL,UT_TRUE)
+BeginSet(pl,PL,true)
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 

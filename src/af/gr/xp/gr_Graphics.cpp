@@ -32,8 +32,8 @@
 #include "ut_debugmsg.h"
 
 // static class member initializations
-UT_Bool GR_Graphics::m_bRemapGlyphsMasterSwitch = UT_TRUE;
-UT_Bool GR_Graphics::m_bRemapGlyphsNoMatterWhat = UT_FALSE;
+bool GR_Graphics::m_bRemapGlyphsMasterSwitch = true;
+bool GR_Graphics::m_bRemapGlyphsNoMatterWhat = false;
 UT_UCSChar GR_Graphics::m_ucRemapGlyphsDefault = 0xB0;
 UT_UCSChar *GR_Graphics::m_pRemapGlyphsTableSrc = 0;
 UT_UCSChar *GR_Graphics::m_pRemapGlyphsTableDst = 0;
@@ -55,8 +55,8 @@ GR_Graphics::GR_Graphics()
 {
 	m_pApp = 0;
 	m_iZoomPercentage = 100;
-	m_bLayoutResolutionModeEnabled = UT_FALSE;
-	m_bIsPortrait = UT_TRUE;
+	m_bLayoutResolutionModeEnabled = false;
+	m_bIsPortrait = true;
 }
 
 GR_Graphics::~GR_Graphics()
@@ -98,7 +98,7 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	int stringWidth = 0, charWidth;
 	for (int i = 0; i < num; i++)
     {
-		UT_UCSChar currentChar = remapGlyph(s[i + iOffset], UT_FALSE);
+		UT_UCSChar currentChar = remapGlyph(s[i + iOffset], false);
 		charWidth = measureUnRemappedChar(currentChar);
 		stringWidth += charWidth;
 		if (pWidths) pWidths[i] = charWidth;
@@ -106,7 +106,7 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	return stringWidth;
 }
 
-UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, UT_Bool noMatterWhat)
+UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 {
 	UT_UCSChar actual = actual_;
 
@@ -163,8 +163,8 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, UT_Bool noMatterWha
 	}
 	XAP_Prefs *p = m_pApp->getPrefs();
 	UT_ASSERT(m_pApp->getPrefs());
-	XAP_PrefsScheme *s = p->getCurrentScheme(UT_FALSE);
-	UT_ASSERT(p->getCurrentScheme(UT_FALSE));
+	XAP_PrefsScheme *s = p->getCurrentScheme(false);
+	UT_ASSERT(p->getCurrentScheme(false));
 	UT_uint32 t = s->getTickCount();
 	if (m_pPrefsScheme != s  ||  m_uTick != t)
 	{
@@ -213,14 +213,14 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, UT_Bool noMatterWha
 	UT_uint32 width = 0xFFFF;
 	if (noMatterWhat  ||  m_bRemapGlyphsNoMatterWhat  ||  !(width = measureUnRemappedChar(actual)))
 	{
-		UT_Bool try_default = UT_TRUE;
+		bool try_default = true;
 		for (UT_uint32 tdex=0; tdex<m_iRemapGlyphsTableLen; ++tdex)
 		{
 			/*compare with character in unicode, not in current locale*/
 			if (actual_ == m_pRemapGlyphsTableSrc[tdex])
 			{
 				remap = m_pRemapGlyphsTableDst[tdex];
-				try_default = UT_FALSE;
+				try_default = false;
 				break;
 			}
 		}
@@ -290,7 +290,7 @@ const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 	return UT_convertInchesToDimensionString( dim, dInches);
 }
 
-UT_Bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
+bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 									 UT_uint32 iWidthAvail,
 									 UT_sint32 * piLeft, UT_uint32 * piWidth) const
 {
@@ -319,7 +319,7 @@ UT_Bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidth
 	if (piWidth)
 		*piWidth = iWidth;
 
-	return UT_TRUE;
+	return true;
 }
 
 void GR_Graphics::flush(void)
@@ -352,10 +352,10 @@ GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB
    return vectorImage;
 }
 
-UT_Bool GR_Graphics::_PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y)
+bool GR_Graphics::_PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y)
 {
     UT_uint32 i,j;
-    UT_Bool bResult = UT_FALSE;
+    bool bResult = false;
     for (i = 0,j = nPoints - 1;i < nPoints;j = i++){
         if ((((pts[i].y <= y) && (y < pts[j].y)) || ((pts[j].y <= y) && (y < pts[i].y))) &&
             (x < (pts[j].x - pts[i].x) * (y - pts[i].y) / (pts[j].y - pts[i].y) + pts[i].x))

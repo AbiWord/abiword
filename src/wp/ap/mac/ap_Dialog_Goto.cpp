@@ -95,10 +95,10 @@ void  AP_Dialog_Goto::setActiveFrame(XAP_Frame *pFrame)
 
 
 // --------------------------- Setup Functions -----------------------------
-UT_Bool AP_Dialog_Goto::setView(FV_View * view)
+bool AP_Dialog_Goto::setView(FV_View * view)
 {
         m_pView =  (FV_View *) getActiveFrame()->getCurrentView();
-	return UT_TRUE;
+	return true;
 }
 
 FV_View * AP_Dialog_Goto::getView(void)

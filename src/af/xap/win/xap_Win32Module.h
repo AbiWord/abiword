@@ -36,11 +36,11 @@ public:
 	virtual ~XAP_Win32Module();
 
 private:
-	virtual UT_Bool load(const char* name);
-	virtual UT_Bool unload();
-	virtual UT_Bool resolveSymbol(const char* symbol_name, void** symbol);
-	virtual UT_Bool getModuleName(char** dest) const;
-	virtual UT_Bool getErrorMsg(char** dest) const;
+	virtual bool load(const char* name);
+	virtual bool unload();
+	virtual bool resolveSymbol(const char* symbol_name, void** symbol);
+	virtual bool getModuleName(char** dest) const;
+	virtual bool getErrorMsg(char** dest) const;
 
 	class XAP_Win32ModuleImpl* pimpl;
 };

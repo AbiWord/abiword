@@ -49,7 +49,7 @@ XAP_UnixGnomeApp::~XAP_UnixGnomeApp(void)
 {
 }
 
-UT_Bool XAP_UnixGnomeApp::initialize(void)
+bool XAP_UnixGnomeApp::initialize(void)
 {
 	gnome_init(m_szAppName, "0.0", m_pArgs->m_argc, m_pArgs->m_argv);
 
@@ -62,7 +62,7 @@ UT_Bool XAP_UnixGnomeApp::initialize(void)
 	// load the font stuff from the font directory
 
 	if (!_loadFonts())
-		return UT_FALSE;
+		return false;
 	
 	/*******************************/
 
@@ -83,7 +83,7 @@ UT_Bool XAP_UnixGnomeApp::initialize(void)
 	
 	// do any thing we need here...
 
-	return UT_TRUE;
+	return true;
 }
 
 

@@ -106,23 +106,23 @@ void XAP_Preview_Zoom::setZoomPercent(UT_uint32 percent)
 }
 
 
-UT_Bool XAP_Preview_Zoom::setString(const char * string)
+bool XAP_Preview_Zoom::setString(const char * string)
 {
 	UT_ASSERT(m_gc);
 	UT_ASSERT(string);
 	
 	FREEP(m_string);
-	UT_Bool foo = UT_UCS_cloneString_char(&m_string, string);
+	bool foo = UT_UCS_cloneString_char(&m_string, string);
 	return foo;
 }
 
-UT_Bool XAP_Preview_Zoom::setString(UT_UCSChar * string)
+bool XAP_Preview_Zoom::setString(UT_UCSChar * string)
 {
 	UT_ASSERT(m_gc);
 	UT_ASSERT(string);
 	
 	FREEP(m_string);
-	UT_Bool foo = UT_UCS_cloneString(&m_string, string);
+	bool foo = UT_UCS_cloneString(&m_string, string);
 	return foo;
 }
 

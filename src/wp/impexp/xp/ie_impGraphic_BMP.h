@@ -30,12 +30,12 @@
 class IE_ImpGraphic_BMP : public IE_ImpGraphic
 {
 public:
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	static bool		RecognizeSuffix(const char * szSuffix);
+	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
+	static bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEGraphicFileType * ft);
-	static UT_Bool 		SupportsFileType(IEGraphicFileType ft);
+	static bool 		SupportsFileType(IEGraphicFileType ft);
 	static UT_Error		StaticConstructor(IE_ImpGraphic **ppieg);
 
     	virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
@@ -78,8 +78,8 @@ private:
 
 	// BMP Utility Data
 	UT_uint32   m_iBytesRead;		// Number of Bytes Read
-	UT_Bool		m_bOldBMPFormat;	// Older smaller file type
-	UT_Bool		m_bHeaderDone;		// Check to see if finshed Reading Header
+	bool		m_bOldBMPFormat;	// Older smaller file type
+	bool		m_bHeaderDone;		// Check to see if finshed Reading Header
 
 	void InitializePrivateClassData();
 	UT_Error _convertGraphic(UT_ByteBuf * pBB);

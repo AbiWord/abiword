@@ -44,7 +44,7 @@ AP_Win32Toolbar_FontCombo::AP_Win32Toolbar_FontCombo(EV_Toolbar * pToolbar,
 
 	m_nPixels = 130;		// TODO: do a better calculation
 	m_nLimit = LF_FACESIZE;
-	m_bSort = UT_TRUE;
+	m_bSort = true;
 }
 
 AP_Win32Toolbar_FontCombo::~AP_Win32Toolbar_FontCombo(void)
@@ -54,7 +54,7 @@ AP_Win32Toolbar_FontCombo::~AP_Win32Toolbar_FontCombo(void)
 
 /*****************************************************************/
 
-UT_Bool AP_Win32Toolbar_FontCombo::populate(void)
+bool AP_Win32Toolbar_FontCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
@@ -65,7 +65,7 @@ UT_Bool AP_Win32Toolbar_FontCombo::populate(void)
     EnumFontFamilies(hdc, (LPTSTR) NULL, (FONTENUMPROC) AP_Win32Toolbar_FontCombo::_EnumFontsProc, (LONG) this) ;
     ReleaseDC(hwnd, hdc) ;
 
-	return UT_TRUE;
+	return true;
 }
 
 int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONT lplf, 

@@ -66,8 +66,8 @@ public:
 	UT_uint32			getHeight(void) const;
 	void				setWidth(UT_uint32 iWidth);
 	void				setHeight(UT_uint32 iHeight);
-	void				setStatusMessage(UT_UCSChar * pbufUCS, int redraw = UT_TRUE);
-	void				setStatusMessage(const char * pbuf, int redraw = UT_TRUE);
+	void				setStatusMessage(UT_UCSChar * pbufUCS, int redraw = true);
+	void				setStatusMessage(const char * pbuf, int redraw = true);
 	const UT_UCSChar *	getStatusMessage(void) const;
 
 	void				setStatusProgressType(int start, int end, int flags);
@@ -77,7 +77,7 @@ public:
 	virtual void		hide(void) {} // the platforms that don't implement show/hide
 	
 	/* used with AV_Listener */
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
 	void				_draw(void);
@@ -91,7 +91,7 @@ protected:
 
 	UT_uint32			s_iFixedHeight;
 
-	UT_Bool				m_bInitFields;
+	bool				m_bInitFields;
 	UT_Vector			m_vecFields;			/* vector of 'ap_sb_Field *' */
 	void *				m_pStatusMessageField;	/* actually 'ap_sb_Field_StatusMessage *' */
 

@@ -45,15 +45,15 @@ public:
 	                                    UT_uint32 lenData);
 
 protected:
-		UT_Bool			getCharacterAttributes(psiconv_character_layout layout, UT_ByteBuf *props);
-		UT_Bool			getParagraphAttributes(psiconv_paragraph_layout layout, UT_ByteBuf *props);
-		UT_Bool			applyCharacterAttributes(psiconv_character_layout layout);
-		UT_Bool			applyParagraphAttributes(psiconv_paragraph_layout layout,const XML_Char *stylename);
-		UT_Bool			applyPageAttributes(psiconv_page_layout_section layout);
-		UT_Bool			prepareCharacters(char *input, int length, 
+		bool			getCharacterAttributes(psiconv_character_layout layout, UT_ByteBuf *props);
+		bool			getParagraphAttributes(psiconv_paragraph_layout layout, UT_ByteBuf *props);
+		bool			applyCharacterAttributes(psiconv_character_layout layout);
+		bool			applyParagraphAttributes(psiconv_paragraph_layout layout,const XML_Char *stylename);
+		bool			applyPageAttributes(psiconv_page_layout_section layout);
+		bool			prepareCharacters(char *input, int length, 
 						                  UT_GrowBuf *gbBlock);
 		UT_Error		readParagraphs(psiconv_text_and_layout psiontext, psiconv_word_styles_section style_sec);
-		UT_Bool 		applyStyles(psiconv_word_styles_section style_sec);
+		bool 		applyStyles(psiconv_word_styles_section style_sec);
 
 	virtual	UT_Error	parseFile(psiconv_file psionfile) = 0;
 	const XML_Char *listid;
@@ -65,14 +65,14 @@ class IE_Imp_Psion_Word : public IE_Imp_Psion
 public:
 	IE_Imp_Psion_Word(PD_Document * pDocument);
 	~IE_Imp_Psion_Word();
-	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
+	static bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Imp ** ppie);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	static bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
-	static UT_Bool 		SupportsFileType(IEFileType ft);
+	static bool 		SupportsFileType(IEFileType ft);
 
 protected:
 	virtual	UT_Error	parseFile(psiconv_file psionfile);
@@ -83,14 +83,14 @@ class IE_Imp_Psion_TextEd : public IE_Imp_Psion
 public:
 	IE_Imp_Psion_TextEd(PD_Document * pDocument);
 	~IE_Imp_Psion_TextEd();
-	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
+	static bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Imp ** ppie);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	static bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
-	static UT_Bool 		SupportsFileType(IEFileType ft);
+	static bool 		SupportsFileType(IEFileType ft);
 
 protected:
 	virtual	UT_Error	parseFile(psiconv_file psionfile);

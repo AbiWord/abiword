@@ -269,7 +269,7 @@ EV_UnixGnomeToolbar::_orient_changed(GtkToolbar *toolbar,
 	  }
 }
 
-UT_Bool EV_UnixGnomeToolbar::synthesize(void)
+bool EV_UnixGnomeToolbar::synthesize(void)
 {
 	// create a GTK toolbar from the info provided.
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
@@ -313,7 +313,7 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 					GtkWidget * wPixmap;
-					UT_Bool bFoundIcon =
+					bool bFoundIcon =
 						m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
 															  &wTLW->style->bg[GTK_STATE_NORMAL],
 															  pLabel->getIconName(),
@@ -334,7 +334,7 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 					GtkWidget * wPixmap;
-					UT_Bool bFoundIcon =
+					bool bFoundIcon =
 						m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
 															  &wTLW->style->bg[GTK_STATE_NORMAL],
 															  pLabel->getIconName(),
@@ -504,10 +504,10 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 	// add the toolbar to the band
 	_addToolbar(m_wToolbar);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
+bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 {
 	char *name = 0;
 	int beh;
@@ -532,7 +532,7 @@ UT_Bool EV_UnixGnomeToolbar::_addToolbar (GtkWidget *toolbar)
 	// increment the number of bands
 	nbBands++;
 
-	return UT_TRUE;
+	return true;
 }
 
 GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
@@ -543,12 +543,12 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 	////////////////////////////////////////////////////////////////
 	const XML_Char * szValue = NULL;
 	static GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
-	static UT_Bool firstTime = UT_TRUE;
+	static bool firstTime = true;
 	GtkWidget *toolbar;
 
 	if (firstTime)
 	{
-		firstTime = UT_FALSE;
+		firstTime = false;
 		m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
 		UT_ASSERT((szValue) && (*szValue));
 		
@@ -591,7 +591,7 @@ void EV_UnixGnomeToolbar::hide(void)
 // TODO: Dom, we copy *far* too much code from the GTK version here
 // TODO: Dom, when all we change is the combo-text case
 // TODO: Dom, change that
-UT_Bool EV_UnixGnomeToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
+bool EV_UnixGnomeToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
 	// make the toolbar reflect the current state of the document
 	// at the current insertion point or selection.
@@ -624,7 +624,7 @@ UT_Bool EV_UnixGnomeToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		      {
 		      case EV_TBIT_PushButton:
 			{
-			  UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+			  bool bGrayed = EV_TIS_ShouldBeGray(tis);
 			  
 			  _wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 			  UT_ASSERT(wd);
@@ -643,8 +643,8 @@ UT_Bool EV_UnixGnomeToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		      case EV_TBIT_ToggleButton:
 		      case EV_TBIT_GroupButton:
 			{
-			  //UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-			  UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
+			  //bool bGrayed = EV_TIS_ShouldBeGray(tis);
+			  bool bToggled = EV_TIS_ShouldBeToggled(tis);
 			  
 			  _wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 			  UT_ASSERT(wd);
@@ -674,8 +674,8 @@ UT_Bool EV_UnixGnomeToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 			break;
 		      case EV_TBIT_ComboBox:
 			{
-			  UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-			  //UT_Bool bString = EV_TIS_ShouldUseString(tis);
+			  bool bGrayed = EV_TIS_ShouldBeGray(tis);
+			  //bool bString = EV_TIS_ShouldUseString(tis);
 			  
 			  _wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 			  UT_ASSERT(wd);
@@ -723,5 +723,5 @@ UT_Bool EV_UnixGnomeToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }

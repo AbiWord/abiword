@@ -37,14 +37,14 @@ public:
     IE_Imp_XHTML(PD_Document * pDocument);
     ~IE_Imp_XHTML();
 
-    static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-    static UT_Bool		RecognizeSuffix(const char * szSuffix);
+    static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
+    static bool		RecognizeSuffix(const char * szSuffix);
     static UT_Error		StaticConstructor(PD_Document * pDocument,
 	    IE_Imp ** ppie);
-    static UT_Bool		GetDlgLabels(const char ** pszDesc,
+    static bool		GetDlgLabels(const char ** pszDesc,
 	    const char ** pszSuffixList,
 	    IEFileType * ft);
-    static UT_Bool 		SupportsFileType(IEFileType ft);
+    static bool 		SupportsFileType(IEFileType ft);
 
     void			_startElement(const XML_Char *name, 
 					      const XML_Char **atts);

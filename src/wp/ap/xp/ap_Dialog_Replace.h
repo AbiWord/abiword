@@ -53,24 +53,24 @@ public:
 	// to set or read the variables in the current
 	// instance of the dialog.  These do not read the persistent
 	// values.
-	UT_Bool						setView(AV_View * view);
+	bool						setView(AV_View * view);
 	AV_View * 					getView(void);
 	FV_View * 					getFvView(void);
 	
-	UT_Bool						setFindString(const UT_UCSChar * string);
+	bool						setFindString(const UT_UCSChar * string);
 	UT_UCSChar *				getFindString(void);
 
-	UT_Bool						setReplaceString(const UT_UCSChar * string);
+	bool						setReplaceString(const UT_UCSChar * string);
 	UT_UCSChar * 				getReplaceString(void);
 
-	UT_Bool						setMatchCase(UT_Bool match);
-	UT_Bool						getMatchCase(void);
+	bool						setMatchCase(bool match);
+	bool						getMatchCase(void);
 
 	// Action functions... set data using the accessors
 	// above and call one of these.
-	UT_Bool						findNext(void);
-	UT_Bool						findReplace(void);
-	UT_Bool 					findReplaceAll(void);
+	bool						findNext(void);
+	bool						findReplace(void);
+	bool 					findReplaceAll(void);
 	
  protected:
 
@@ -79,7 +79,7 @@ public:
 	// and useEnd(), and not by the accessors.
 	UT_UCSChar *			persist_findString; 
 	UT_UCSChar *			persist_replaceString;
-	UT_Bool					persist_matchCase;
+	bool					persist_matchCase;
 
 	// These are the "current use" dialog data items,
 	// which are liberally read and set by the
@@ -89,13 +89,13 @@ public:
 	FV_View * 				m_pView;
 	UT_UCSChar *			m_findString; 
 	UT_UCSChar *			m_replaceString;
-	UT_Bool					m_matchCase;
+	bool					m_matchCase;
 
 	// These are also "current use" dialog data item,
 	// but they're not user-settable; they are set
 	// on conditions that action functions or other
 	// non-accessor methods are invoked.
-	UT_Bool					m_didSomething;
+	bool					m_didSomething;
 
 	// Message boxes for events during search
 	XAP_Frame *				m_pFrame;

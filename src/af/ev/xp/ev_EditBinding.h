@@ -73,10 +73,10 @@ public:
 	~EV_EditBindingMap();
 
 	EV_EditBinding *	findEditBinding(EV_EditBits eb);
-	UT_Bool				setBinding(EV_EditBits eb, const char * szMethodName);
-	UT_Bool				setBinding(EV_EditBits eb, EV_EditBinding * peb);
-	UT_Bool				removeBinding(EV_EditBits eb);
-	UT_Bool				parseEditBinding(void);
+	bool				setBinding(EV_EditBits eb, const char * szMethodName);
+	bool				setBinding(EV_EditBits eb, EV_EditBinding * peb);
+	bool				removeBinding(EV_EditBits eb);
+	bool				parseEditBinding(void);
 
 	const char *		getShortcutFor(const EV_EditMethod * pEM) const;
 
@@ -91,7 +91,7 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool EV_LoadBindings_Default(EV_EditMethodContainer * pemc,
+bool EV_LoadBindings_Default(EV_EditMethodContainer * pemc,
 								EV_EditBindingMap **ppebm);
 
 #endif /* EV_EDITBINDING_H */

@@ -47,7 +47,7 @@ protected:
 	static BOOL CALLBACK		s_tabProc(HWND,UINT,WPARAM,LPARAM);
 	BOOL						_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
-	virtual void				_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
+	virtual void				_syncControls(tControl changed, bool bAll = false);
 
 	XAP_Win32PreviewWidget *	m_pPreviewWidget;
 
@@ -56,7 +56,7 @@ protected:
 	HWND						m_hwndSpacing;	// subdialog for first tab
 	HWND						m_hwndBreaks;	// subdialog for second tab
 
-	UT_Bool						m_bEditChanged;
+	bool						m_bEditChanged;
 };
 
 #endif /* XAP_WIN32DIALOG_PARAGRAPH_H */

@@ -49,13 +49,13 @@ public:
 	
 	virtual ~EV_Win32Toolbar(void);
 
-	UT_Bool toolbarEvent(XAP_Toolbar_Id id,
+	bool toolbarEvent(XAP_Toolbar_Id id,
 						 UT_UCSChar * pData = 0,
 						 UT_uint32 dataLength = 0);
-	virtual UT_Bool synthesize(void);
-	UT_Bool bindListenerToView(AV_View * pView);
-	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
-	UT_Bool getToolTip(LPARAM lParam);
+	virtual bool synthesize(void);
+	bool bindListenerToView(AV_View * pView);
+	bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
+	bool getToolTip(LPARAM lParam);
 
 	HWND getWindow(void) const;
 
@@ -73,8 +73,8 @@ protected:
 	void							_releaseListener(void);
 	HWND							_getControlWindow(XAP_Toolbar_Id id);
 
-	UT_Bool							_refreshID(XAP_Toolbar_Id id);
-	UT_Bool							_refreshItem(AV_View * pView, 
+	bool							_refreshID(XAP_Toolbar_Id id);
+	bool							_refreshItem(AV_View * pView, 
 												 const EV_Toolbar_Action * pAction, 
 												 XAP_Toolbar_Id id);
 

@@ -47,11 +47,11 @@ public:
 	FL_DocLayout *		m_pDocLayout;
 	GR_Graphics *		m_pG;
 
-	UT_Bool				m_bInsertMode;
-	UT_Bool				m_bShowRuler;
-	UT_Bool				m_bShowBar[3]; // TODO: 3 = NB_OF_TOOLBARS...
-	UT_Bool				m_bShowStatusBar;
-	UT_Bool             m_bShowPara;
+	bool				m_bInsertMode;
+	bool				m_bShowRuler;
+	bool				m_bShowBar[3]; // TODO: 3 = NB_OF_TOOLBARS...
+	bool				m_bShowStatusBar;
+	bool             m_bShowPara;
 	AP_TopRuler *		m_pTopRuler;
 	AP_LeftRuler *		m_pLeftRuler;
 	EV_Toolbar *		m_pToolbar[3]; // TODO: 3 = NB_OF_TOOLBARS...

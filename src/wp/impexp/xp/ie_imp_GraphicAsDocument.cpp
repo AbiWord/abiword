@@ -84,7 +84,7 @@ UT_Error IE_Imp_GraphicAsDocument::importFile(const char * szFilename)
 	   return UT_IE_NOMEMORY;
 	}
 
-   	if (!m_pDocument->createDataItem("image_0", UT_FALSE,
+   	if (!m_pDocument->createDataItem("image_0", false,
 					buf, (void*)mimetype, NULL)) {
 	   delete pFG;
 	   return UT_IE_NOMEMORY;

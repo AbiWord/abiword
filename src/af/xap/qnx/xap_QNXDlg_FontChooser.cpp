@@ -101,17 +101,17 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		c = *p; *p = '\0';
 		s = finfo.desc;
 		printf("Set family to %s \n", s);
-		setFontFamily(s); m_bChangedFontFamily = UT_TRUE;
+		setFontFamily(s); m_bChangedFontFamily = true;
 
 		s = p; *p = c;
 		while (*p && (*p >= 0 && *p <= '9')) { p++; }
 		c = *p; *p = '\0';
 		//This is mental having to put the pt on the end
 		char tempsize[20]; sprintf(tempsize, "%spt", s);
-		setFontSize(tempsize); m_bChangedFontSize = UT_TRUE;
+		setFontSize(tempsize); m_bChangedFontSize = true;
 
-		setFontWeight("normal"); m_bChangedFontWeight = UT_TRUE;
-		setFontStyle("normal"); m_bChangedFontStyle = UT_TRUE;
+		setFontWeight("normal"); m_bChangedFontWeight = true;
+		setFontStyle("normal"); m_bChangedFontStyle = true;
 		while (*p) {
 			switch (*p) {
 			case 'b':
@@ -136,7 +136,7 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 }
 	
 #if 0
-UT_Bool XAP_QNXDialog_FontChooser::getFont(XAP_QNXFont ** font)
+bool XAP_QNXDialog_FontChooser::getFont(XAP_QNXFont ** font)
 {
 	UT_ASSERT(font);
 	
@@ -155,7 +155,7 @@ UT_Bool XAP_QNXDialog_FontChooser::getFont(XAP_QNXFont ** font)
 	}
 	else
 	{
-		return UT_FALSE;
+		return false;
 	}
 		
 	selectedRow = GTK_CLIST(m_styleList)->selection;
@@ -179,12 +179,12 @@ UT_Bool XAP_QNXDialog_FontChooser::getFont(XAP_QNXFont ** font)
 			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return UT_FALSE;
+			return false;
 		}
 	}
 	else
 	{
-		return UT_FALSE;
+		return false;
 	}
 	
 	const XAP_QNXFont * tempQNXFont = m_fontManager->getFont((const char *) fontText[0], styleNumber);
@@ -193,15 +193,15 @@ UT_Bool XAP_QNXDialog_FontChooser::getFont(XAP_QNXFont ** font)
 	{
 		// we got a font, set the variables and return success
 		*font = (XAP_QNXFont *) tempQNXFont;
-		return UT_TRUE;
+		return true;
 	}
 
-	return UT_FALSE;
+	return false;
 }
 #endif
 
-UT_Bool XAP_QNXDialog_FontChooser::getDecoration(UT_Bool * strikeout,
-												 UT_Bool * underline)
+bool XAP_QNXDialog_FontChooser::getDecoration(bool * strikeout,
+												 bool * underline)
 {
 #if 0
 	UT_ASSERT(strikeout && underline);
@@ -210,10 +210,10 @@ UT_Bool XAP_QNXDialog_FontChooser::getDecoration(UT_Bool * strikeout,
 	*underline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
 
 #endif
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_QNXDialog_FontChooser::getSize(UT_uint32 * pointsize)
+bool XAP_QNXDialog_FontChooser::getSize(UT_uint32 * pointsize)
 {
 #if 0
 	UT_ASSERT(pointsize);
@@ -230,14 +230,14 @@ UT_Bool XAP_QNXDialog_FontChooser::getSize(UT_uint32 * pointsize)
 		UT_ASSERT(sizeText && sizeText[0]);
 
 		*pointsize = (UT_uint32) atol(sizeText[0]);
-		return UT_TRUE;
+		return true;
 	}
 
 #endif
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_QNXDialog_FontChooser::getEntryString(char ** string)
+bool XAP_QNXDialog_FontChooser::getEntryString(char ** string)
 {
 #if 0
 	UT_ASSERT(string);
@@ -248,10 +248,10 @@ UT_Bool XAP_QNXDialog_FontChooser::getEntryString(char ** string)
 	*string = PREVIEW_ENTRY_DEFAULT_STRING;
 
 #endif
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_QNXDialog_FontChooser::getForegroundColor(UT_RGBColor * color)
+bool XAP_QNXDialog_FontChooser::getForegroundColor(UT_RGBColor * color)
 {
 #if 0
 	UT_ASSERT(color);
@@ -271,12 +271,12 @@ UT_Bool XAP_QNXDialog_FontChooser::getForegroundColor(UT_RGBColor * color)
 	color->m_grn = (unsigned char) (currentColor[GREEN] * (gdouble) 255);
 	color->m_blu = (unsigned char) (currentColor[BLUE]  * (gdouble) 255);
 
-	return UT_TRUE;
+	return true;
 #endif
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_QNXDialog_FontChooser::getBackgroundColor(UT_RGBColor * color)
+bool XAP_QNXDialog_FontChooser::getBackgroundColor(UT_RGBColor * color)
 {
 #if 0
 	// this just returns white now, it should later query the document
@@ -288,9 +288,9 @@ UT_Bool XAP_QNXDialog_FontChooser::getBackgroundColor(UT_RGBColor * color)
 	color->m_grn = 255;
 	color->m_blu = 255;
 
-	return UT_TRUE;
+	return true;
 #endif
-	return UT_FALSE;
+	return false;
 }
 
 
@@ -301,8 +301,8 @@ void XAP_QNXDialog_FontChooser::updatePreview(void)
 	if (!m_gc)
 		return;
 	
-//	UT_Bool strikeout = UT_FALSE;
-//	UT_Bool underline = UT_FALSE;
+//	bool strikeout = false;
+//	bool underline = false;
 
 	XAP_QNXFont * font = NULL;
 	if (!getFont(&font))
@@ -327,7 +327,7 @@ void XAP_QNXDialog_FontChooser::updatePreview(void)
 		m_gc->setFont(entry);
 
 		// if we've set a font, this variable is true
-		m_doneFirstFont = UT_TRUE;
+		m_doneFirstFont = true;
 
 		// now do the switch
 		DELETEP(m_lastFont);

@@ -54,7 +54,7 @@ UT_sint32 GR_MacImage::getDisplayHeight(void) const {
 //	return (m_image) ? m_image->Bounds().Height() : 0;
 }
 
-UT_Bool	GR_MacImage::convertToBuffer(UT_ByteBuf** ppBB) const {
+bool	GR_MacImage::convertToBuffer(UT_ByteBuf** ppBB) const {
 	/*
 	  The purpose of this routine is to convert our internal bitmap
 	  into a PNG image, storing it in a ByteBuf and returning it
@@ -71,32 +71,32 @@ UT_Bool	GR_MacImage::convertToBuffer(UT_ByteBuf** ppBB) const {
       	//BFile file(filename, B_CREATE_FILE | B_WRITE_ONLY); 
 	BMallocIO memory;
 	if (roster->Translate(&stream, NULL, NULL, &memory, B_PNG_FORMAT) != B_NO_ERROR)
-		return(UT_FALSE); 
+		return(false); 
 
 	//Assuming that the translation went well we want to
 	//stick it all into a byte buffer
 	UT_ByteBuf *pBB = new UT_ByteBuf();
 	if (!pBB || !memory.BufferLength() || 
 	    !pBB->ins(0, (UT_Byte *)memory.Buffer(), memory.BufferLength()))
-		return(UT_FALSE);
+		return(false);
 
-	return(UT_TRUE);
+	return(true);
 #endif
 #if 0
 	// Create our bytebuf
 	UT_ByteBuf* pBB = new UT_ByteBuf();
 
 		*ppBB = NULL;
-		return UT_FALSE;
+		return false;
 
 	// And pass the ByteBuf back to our caller
 	*ppBB = pBB;
 
-	return UT_TRUE;
+	return true;
 #endif
 }
 
-UT_Bool	GR_MacImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool	GR_MacImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 #if 0
@@ -107,9 +107,9 @@ UT_Bool	GR_MacImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplay
 
 	//Use the translation library callouts
 	if ((image = BTranslationUtils::GetBitmap(&memio)) == NULL)
-		return(UT_FALSE);
+		return(false);
 	m_image = image;
 #endif
-	return(UT_TRUE);
+	return(true);
 }
 

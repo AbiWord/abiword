@@ -413,13 +413,13 @@ XAP_UnixFrame::~XAP_UnixFrame(void)
 	DELETEP(m_pUnixPopup);
 }
 
-UT_Bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 								  const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
 								  const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
 								  const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
 								  const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
 {
-	UT_Bool bResult;
+	bool bResult;
 
 	// invoke our base class first.
 	
@@ -442,7 +442,7 @@ UT_Bool XAP_UnixFrame::initialize(const char * szKeyBindingsKey, const char * sz
 	m_pMouse = new EV_UnixMouse(pEEM);
 	UT_ASSERT(m_pMouse);
 
-	return UT_TRUE;
+	return true;
 }
 
 UT_sint32 XAP_UnixFrame::setInputMode(const char * szName)
@@ -481,7 +481,7 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 
-	UT_Bool bResult;
+	bool bResult;
 
 	m_wTopLevelWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_object_set_data(GTK_OBJECT(m_wTopLevelWindow), "ic_attr", NULL);
@@ -615,30 +615,30 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	return;
 }
 
-UT_Bool XAP_UnixFrame::close()
+bool XAP_UnixFrame::close()
 {
 	gtk_widget_destroy(getTopLevelWindow());
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_UnixFrame::raise()
+bool XAP_UnixFrame::raise()
 {
 	GtkWidget * tlw = getTopLevelWindow();
 	UT_ASSERT(tlw);
 	
 	gdk_window_raise(tlw->window);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_UnixFrame::show()
+bool XAP_UnixFrame::show()
 {
 	gtk_widget_show(m_wTopLevelWindow);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_UnixFrame::openURL(const char * szURL)
+bool XAP_UnixFrame::openURL(const char * szURL)
 {
   	char *execstring;
 	struct stat * statbuf = (struct stat *) malloc(sizeof(struct stat));
@@ -665,15 +665,15 @@ UT_Bool XAP_UnixFrame::openURL(const char * szURL)
 	system(execstring);
 	g_free(execstring);
 	FREEP(statbuf);
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_UnixFrame::updateTitle()
+bool XAP_UnixFrame::updateTitle()
 {
 	if (!XAP_Frame::updateTitle())
 	{
 		// no relevant change, so skip it
-		return UT_FALSE;
+		return false;
 	}
 
 	char buf[256];
@@ -689,7 +689,7 @@ UT_Bool XAP_UnixFrame::updateTitle()
 	
 	gtk_window_set_title(GTK_WINDOW(m_wTopLevelWindow), buf);
 
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -702,10 +702,10 @@ static void s_gtkMenuPositionFunc(GtkMenu * /* menu */, gint * x, gint * y, gpoi
 	*y = p->y;
 }
 
-UT_Bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
+bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 
 	UT_ASSERT(!m_pUnixPopup);
 

@@ -39,7 +39,7 @@
 /****************************************************************/
 /****************************************************************/
 
-UT_Bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
+bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
 											   pf_Frag_Object * pfo, UT_uint32 fragOffset,
 											   UT_uint32 length,
 											   pf_Frag_Strux * pfs,
@@ -66,11 +66,11 @@ UT_Bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
 	
-	return UT_TRUE;
+	return true;
 }
 
 
-UT_Bool pt_PieceTable::_deleteObject_norec(PT_DocPosition dpos,
+bool pt_PieceTable::_deleteObject_norec(PT_DocPosition dpos,
 											   pf_Frag_Object * pfo, UT_uint32 fragOffset,
 											   UT_uint32 length,
 											   pf_Frag_Strux * pfs,
@@ -97,10 +97,10 @@ UT_Bool pt_PieceTable::_deleteObject_norec(PT_DocPosition dpos,
 	m_pDocument->notifyListeners(pfs,pcr);
 	delete pcr;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_deleteObject(pf_Frag_Object * pfo,
+bool pt_PieceTable::_deleteObject(pf_Frag_Object * pfo,
 									 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
 	// unlink the object from the fragment list and try to
@@ -108,6 +108,6 @@ UT_Bool pt_PieceTable::_deleteObject(pf_Frag_Object * pfo,
 	
 	_unlinkFrag(pfo,ppfEnd,pfragOffsetEnd);
 	delete pfo;
-	return UT_TRUE;
+	return true;
 }
 

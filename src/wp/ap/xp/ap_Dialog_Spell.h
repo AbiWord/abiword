@@ -42,7 +42,7 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    
    virtual void runModal(XAP_Frame * pFrame) = 0;
 
-   UT_Bool isComplete(void) const { return !m_bCancelled; };
+   bool isComplete(void) const { return !m_bCancelled; };
 
  protected:
 
@@ -59,19 +59,19 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    PT_DocPosition m_iOrigInsPoint;
    
    // used to find misspelled words
-   UT_Bool nextMisspelledWord(void);
+   bool nextMisspelledWord(void);
   
-   UT_Bool addIgnoreAll(void);
+   bool addIgnoreAll(void);
    void ignoreWord(void);
    
-   UT_Bool inChangeAll(void);
-   UT_Bool addChangeAll(UT_UCSChar * newword);
-   UT_Bool changeWordWith(UT_UCSChar * newword);
+   bool inChangeAll(void);
+   bool addChangeAll(UT_UCSChar * newword);
+   bool changeWordWith(UT_UCSChar * newword);
 
    // make the word visible in the document behind the dialog
-   UT_Bool makeWordVisible(void);
+   bool makeWordVisible(void);
    // add the word to current user dictionary
-   UT_Bool addToDict(void);
+   bool addToDict(void);
 
    // change/ignore all hash tables
    UT_HashTable * m_pChangeAll;
@@ -95,7 +95,7 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
    // most recently misspelled word
    sp_suggestions m_Suggestions;
 
-   UT_Bool	m_bCancelled;
+   bool	m_bCancelled;
    short m_iSelectedRow;
    
 };

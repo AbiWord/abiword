@@ -48,9 +48,9 @@ public:
 
 	PTStruxType				getStruxType(void) const;
 	PL_StruxFmtHandle		getFmtHandle(PL_ListenerId lid) const;
-	UT_Bool					setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh);
+	bool					setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh);
 	
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
 	void					setIndexAP(PT_AttrPropIndex indexNewAP);

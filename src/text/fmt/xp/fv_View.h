@@ -74,10 +74,10 @@ typedef enum
 
 struct fv_ChangeState
 {
-	UT_Bool				bUndo;
-	UT_Bool				bRedo;
-	UT_Bool				bDirty;
-	UT_Bool				bSelection;
+	bool				bUndo;
+	bool				bRedo;
+	bool				bDirty;
+	bool				bSelection;
 	UT_uint32			iColumn;
 	const XML_Char **	propsChar;
 	const XML_Char **	propsBlock;
@@ -116,9 +116,9 @@ public:
 
 	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL);
 
-	virtual UT_Bool	notifyListeners(const AV_ChangeMask hint);
+	virtual bool	notifyListeners(const AV_ChangeMask hint);
 
-	virtual UT_Bool	canDo(UT_Bool bUndo) const;
+	virtual bool	canDo(bool bUndo) const;
 	virtual void	cmdUndo(UT_uint32 count);
 	virtual void	cmdRedo(UT_uint32 count);
 	virtual UT_Error	cmdSave(void);
@@ -138,7 +138,7 @@ public:
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 
-	virtual UT_Bool		isSelectionEmpty(void) const;
+	virtual bool		isSelectionEmpty(void) const;
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
 	
@@ -157,26 +157,26 @@ public:
 	virtual	UT_uint32 getPageViewLeftMargin(void) const;
 	virtual	UT_uint32 getPageViewTopMargin(void) const;
 	
-	UT_Bool	setSectionFormat(const XML_Char * properties[]);
-	UT_Bool	getSectionFormat(const XML_Char *** properties);
+	bool	setSectionFormat(const XML_Char * properties[]);
+	bool	getSectionFormat(const XML_Char *** properties);
 
-	UT_Bool	isCursorOn(void);
+	bool	isCursorOn(void);
 	void	eraseInsertionPoint(void);
 	void	drawInsertionPoint(void);
 
-	UT_Bool	setListIndents(double indentChange, double page_size);
-	UT_Bool	setBlockFormat(const XML_Char * properties[]);
-	UT_Bool	getBlockFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
+	bool	setListIndents(double indentChange, double page_size);
+	bool	setBlockFormat(const XML_Char * properties[]);
+	bool	getBlockFormat(const XML_Char *** properties,bool bExpandStyles=true);
 
 
-	UT_Bool	isTabListBehindPoint(void);
-	UT_Bool	isTabListAheadPoint(void);
+	bool	isTabListBehindPoint(void);
+	bool	isTabListAheadPoint(void);
 	void	processSelectedBlocks(List_Type listType);
 	void	getListBlocksInSelection( UT_Vector * vBlock);
-	UT_Bool	isPointBeforeListLabel(void);
-	UT_Bool	isCurrentListBlockEmpty(void);
-	UT_Bool	cmdStartList(const XML_Char * style);
-	UT_Bool	cmdStopList(void);
+	bool	isPointBeforeListLabel(void);
+	bool	isCurrentListBlockEmpty(void);
+	bool	cmdStartList(const XML_Char * style);
+	bool	cmdStopList(void);
 	void	changeListStyle(fl_AutoNum* pAuto,
 							List_Type lType,
 							UT_uint32 startv,
@@ -188,15 +188,15 @@ public:
 
 	void	setDontChangeInsPoint(void);
 	void	allowChangeInsPoint(void);
-	UT_Bool	isDontChangeInsPoint(void);
+	bool	isDontChangeInsPoint(void);
 
 
-	UT_Bool	setCharFormat(const XML_Char * properties[]);
-	UT_Bool	getCharFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
+	bool	setCharFormat(const XML_Char * properties[]);
+	bool	getCharFormat(const XML_Char *** properties,bool bExpandStyles=true);
 
-	UT_Bool	setStyle(const XML_Char * style);
-	UT_Bool	getStyle(const XML_Char ** style);
-	UT_Bool appendStyle(const XML_Char ** style);
+	bool	setStyle(const XML_Char * style);
+	bool	getStyle(const XML_Char ** style);
+	bool appendStyle(const XML_Char ** style);
 
 	UT_uint32		getCurrentPageNumber(void);
 
@@ -205,26 +205,26 @@ public:
 	void	insertSectionBreak( BreakSectionType type);
 	void	insertSectionBreak(void);
 	void	insertSymbol(UT_UCSChar c, XML_Char * symfont);
-	UT_Bool	insertHeaderFooter(const XML_Char ** props, UT_Bool ftr);
+	bool	insertHeaderFooter(const XML_Char ** props, bool ftr);
 	// ----------------------
-	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
+	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
-	void			cmdCharMotion(UT_Bool bForward, UT_uint32 count);
-	UT_Bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count, UT_Bool bForce = UT_FALSE);
-	void			cmdCharDelete(UT_Bool bForward, UT_uint32 count);
+	void			cmdCharMotion(bool bForward, UT_uint32 count);
+	bool			cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce = false);
+	void			cmdCharDelete(bool bForward, UT_uint32 count);
 	void			delTo(FV_DocPos dp);
 	UT_UCSChar * 	getSelectionText(void);
 		
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos);
 	void			moveInsPtTo(FV_DocPos dp);
 	void 			moveInsPtTo(PT_DocPosition dp);
-	void			warpInsPtNextPrevPage(UT_Bool bNext);
-	void			warpInsPtNextPrevLine(UT_Bool bNext);
-	void			extSelHorizontal(UT_Bool bForward, UT_uint32 count);
-	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag);
-	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, UT_Bool bDrag);
+	void			warpInsPtNextPrevPage(bool bNext);
+	void			warpInsPtNextPrevLine(bool bNext);
+	void			extSelHorizontal(bool bForward, UT_uint32 count);
+	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
+	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelTo(FV_DocPos dp);
-	void			extSelNextPrevLine(UT_Bool bNext);
+	void			extSelNextPrevLine(bool bNext);
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 
 	void			updateScreen(void);
@@ -232,8 +232,8 @@ public:
 
 // ----------------------
 
-	UT_Bool			isPosSelected(PT_DocPosition pos) const;
-	UT_Bool			isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const;
+	bool			isPosSelected(PT_DocPosition pos) const;
+	bool			isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const;
 
 	UT_UCSChar *	getContextSuggest(UT_uint32 ndx);
 	void			cmdContextSuggest(UT_uint32 ndx);
@@ -242,7 +242,7 @@ public:
 	
 // ----------------------
 
-	UT_Bool 		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
+	bool 		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
 
 	void			changeNumColumns(UT_uint32 iNumColumns);
 	
@@ -251,26 +251,26 @@ public:
 	// find and replace
 	
 	// aid the edit method for the simple non-dialog findAgain()
-	UT_Bool 		findSetNextString(UT_UCSChar * string, UT_Bool matchCase);
-	UT_Bool			findAgain(void);
+	bool 		findSetNextString(UT_UCSChar * string, bool matchCase);
+	bool			findAgain(void);
 
 	void 			findSetStartAtInsPoint(void);
 
 	// finds the next "find" and selects it, filling bool when done the entire document
-	UT_Bool			findNext(const UT_UCSChar * find, UT_Bool matchCase = UT_TRUE, UT_Bool * bDoneEntireDocument = NULL);
-	UT_Bool			_findNext(const UT_UCSChar * find, UT_Bool matchCase = UT_TRUE, UT_Bool * bDoneEntireDocument = NULL);
-	UT_Bool			_findNext(const UT_UCSChar * find, UT_uint32 *prefix, UT_Bool matchCase = UT_TRUE, UT_Bool * bDoneEntireDocument = NULL);
+	bool			findNext(const UT_UCSChar * find, bool matchCase = true, bool * bDoneEntireDocument = NULL);
+	bool			_findNext(const UT_UCSChar * find, bool matchCase = true, bool * bDoneEntireDocument = NULL);
+	bool			_findNext(const UT_UCSChar * find, UT_uint32 *prefix, bool matchCase = true, bool * bDoneEntireDocument = NULL);
 	// replaces the selection of "find" with "replace" and selects the next, filling
 	// bool when done the entire document
-	UT_Bool			_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
-								 UT_Bool matchCase = UT_FALSE, UT_Bool * bDoneEntireDocument = NULL);
-	UT_Bool			_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_uint32 *prefix,
-								 UT_Bool matchCase = UT_FALSE, UT_Bool * bDoneEntireDocument = NULL);
-	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
-								UT_Bool matchCase = UT_FALSE, UT_Bool * bDoneEntireDocument = NULL);
+	bool			_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
+								 bool matchCase = false, bool * bDoneEntireDocument = NULL);
+	bool			_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_uint32 *prefix,
+								 bool matchCase = false, bool * bDoneEntireDocument = NULL);
+	bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
+								bool matchCase = false, bool * bDoneEntireDocument = NULL);
 	// replaces every occurance of "find" with "replace" without stopping for anything
 	UT_uint32		findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
-								   UT_Bool matchCase = UT_FALSE);
+								   bool matchCase = false);
 		
 // ----------------------
 
@@ -284,13 +284,13 @@ public:
 
 // -----------------------
 
-	UT_Bool				insertPageNum(const XML_Char ** props, UT_Bool ftr);
+	bool				insertPageNum(const XML_Char ** props, bool ftr);
 	void				setPoint(PT_DocPosition pt);
 
 // -----------------------
 
-	void				setShowPara(UT_Bool);
-	inline UT_Bool		getShowPara(void) const { return m_bShowPara; };
+	void				setShowPara(bool);
+	inline bool		getShowPara(void) const { return m_bShowPara; };
 	
 	const fp_PageSize&	getPageSize(void) const;
 	UT_uint32			calculateZoomPercentForPageWidth();
@@ -300,23 +300,23 @@ public:
 protected:
 	void				_generalUpdate(void);
 	
-	void 				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_Bool bDirtyRunsOnly, UT_Bool bClip=UT_FALSE);
+	void 				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
 	
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
-	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, UT_Bool bFullLineHeightRect);
+	void				_clearBetweenPositions(PT_DocPosition left, PT_DocPosition right, bool bFullLineHeightRect);
 	
-	UT_Bool				_ensureThatInsertionPointIsOnScreen(void);
-	void				_moveInsPtNextPrevPage(UT_Bool bNext);
-	void				_moveInsPtNextPrevLine(UT_Bool bNext);
+	bool				_ensureThatInsertionPointIsOnScreen(void);
+	void				_moveInsPtNextPrevPage(bool bNext);
+	void				_moveInsPtNextPrevLine(bool bNext);
 	fp_Page *			_getCurrentPage(void);
 	void				_moveInsPtNthPage(UT_uint32 n);
 	void				_moveInsPtToPage(fp_Page *page);
 	void				_insertSectionBreak(void);
 
-	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
-	PT_DocPosition		_getDocPos(FV_DocPos dp, UT_Bool bKeepLooking=UT_TRUE);
+	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, bool bKeepLooking=true);
+	PT_DocPosition		_getDocPos(FV_DocPos dp, bool bKeepLooking=true);
 	void 				_findPositionCoords(PT_DocPosition pos,
-											UT_Bool b,
+											bool b,
 											UT_sint32& x,
 											UT_sint32& y,
 											UT_uint32& height,
@@ -329,19 +329,19 @@ protected:
 									  UT_sint32& xClick, 
 									  UT_sint32& yClick) const;
 
-	void				_moveToSelectionEnd(UT_Bool bForward);
+	void				_moveToSelectionEnd(bool bForward);
 	void				_eraseSelection(void);
 	void				_clearSelection(void);
 	void				_resetSelection(void);
 	void				_setSelectionAnchor(void);
 	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL);
-	UT_Bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
+	bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
 	void 				_eraseInsertionPoint();
 	void				_drawInsertionPoint();
 	void 				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
 	void 				_xorInsertionPoint();
-	UT_Bool				_hasPointMoved(void); 
+	bool				_hasPointMoved(void); 
 	void				_saveCurrentPoint(void); 
 	void				_clearOldPoint(void); 
 	void				_drawSelection();
@@ -356,10 +356,10 @@ protected:
 	static void			_autoDrawPoint(UT_Timer * pTimer);
 
 	// localize handling of insertion point logic
-	void				_setPoint(PT_DocPosition pt, UT_Bool bEOL = UT_FALSE);
+	void				_setPoint(PT_DocPosition pt, bool bEOL = false);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
-	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);
-	void				_doPaste(UT_Bool bUseClipboard);
+	bool				_charMotion(bool bForward,UT_uint32 countChars);
+	void				_doPaste(bool bUseClipboard);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
 	void				_checkPendingWordForSpell(void);
@@ -373,9 +373,9 @@ protected:
 	UT_uint32			m_oldiPointHeight;
 	UT_sint32			m_xPointSticky;		// used only for _moveInsPtNextPrevLine() 
 
-	UT_Bool				m_bPointVisible;
-	UT_Bool				m_bPointEOL;
-	UT_Bool				m_bDontChangeInsPoint;
+	bool				m_bPointVisible;
+	bool				m_bPointEOL;
+	bool				m_bDontChangeInsPoint;
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
 	GR_Graphics*		m_pG;
@@ -384,7 +384,7 @@ protected:
 	PT_DocPosition		m_iSelectionAnchor;
 	PT_DocPosition		m_iSelectionLeftAnchor;
 	PT_DocPosition		m_iSelectionRightAnchor;
-	UT_Bool				m_bSelection;
+	bool				m_bSelection;
 
 	// autoscroll stuff
 	UT_Timer *			m_pAutoScrollTimer;
@@ -392,18 +392,18 @@ protected:
 	UT_sint32			m_yLastMouse;
 
 	UT_Timer *			m_pAutoCursorTimer;
-	UT_Bool				m_bCursorIsOn;
-	UT_Bool				m_bEraseSaysStopBlinking;
-	UT_Bool				m_bCursorBlink;
+	bool				m_bCursorIsOn;
+	bool				m_bEraseSaysStopBlinking;
+	bool				m_bCursorBlink;
 
-	UT_Bool				m_bdontSpellCheckRightNow;
+	bool				m_bdontSpellCheckRightNow;
 	fv_ChangeState		m_chg;
 
 	// find and replace stuff
-	UT_Bool				m_wrappedEnd;
+	bool				m_wrappedEnd;
 	PT_DocPosition		m_startPosition;
 
-	UT_Bool				m_doneFind;
+	bool				m_doneFind;
 	
 	PT_DocPosition 		_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset);
 	
@@ -411,7 +411,7 @@ protected:
 	PT_DocPosition	 	_findGetCurrentOffset(void);	
 	UT_UCSChar * 		_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
 
-	UT_Bool				_m_matchCase;
+	bool				_m_matchCase;
 	UT_UCSChar * 		_m_findNextString;
 
 	// search routines (these return values will fall short of an
@@ -423,7 +423,7 @@ protected:
 	// prefs listener - to change cursor blink on/off (and possibly others)
 	static void _prefsListener( XAP_App *, XAP_Prefs *, UT_AlphaHashTable *, void *);
 
-	UT_Bool		m_bShowPara;
+	bool		m_bShowPara;
 };
 
 #endif /* FV_VIEW_H */

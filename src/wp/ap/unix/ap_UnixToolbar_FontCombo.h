@@ -34,7 +34,7 @@ public:
 
 	static EV_Toolbar_Control * 	static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 
-	virtual UT_Bool					populate(void);
+	virtual bool					populate(void);
 
 protected:
 		

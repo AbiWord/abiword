@@ -47,7 +47,7 @@
 
 /*****************************************************************/
 
-UT_Bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
+bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 {
 	// NB: can't access 'this' members from a static member function
 	WNDCLASSEX  wndclass;
@@ -70,7 +70,7 @@ UT_Bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 	a = RegisterClassEx(&wndclass);
 	UT_ASSERT(a);
 
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -123,13 +123,13 @@ XAP_Win32Frame::~XAP_Win32Frame(void)
 	DELETEP(m_pWin32Popup);
 }
 
-UT_Bool XAP_Win32Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+bool XAP_Win32Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 								   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
 								   const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
 								   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
 								   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
 {
-	UT_Bool bResult;
+	bool bResult;
 
 	// invoke our base class first.
 	
@@ -155,7 +155,7 @@ UT_Bool XAP_Win32Frame::initialize(const char * szKeyBindingsKey, const char * s
 	// TODO: Jeff, I'm currently showing in WinMain, to honor iCmdShow.
 	// should we pass that via argv, to do it here for all frames?
 
-	return UT_TRUE;
+	return true;
 }
 
 UT_sint32 XAP_Win32Frame::setInputMode(const char * szName)
@@ -215,7 +215,7 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 									   m_szMenuLayoutName,
 									   m_szMenuLabelSetName);
 	UT_ASSERT(m_pWin32Menu);
-	UT_Bool bResult = m_pWin32Menu->synthesizeMenuBar(this);
+	bool bResult = m_pWin32Menu->synthesizeMenuBar(this);
 	UT_ASSERT(bResult);
 
 	HMENU oldMenu = GetMenu(m_hwndFrame);
@@ -279,30 +279,30 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 	return;
 }
 
-UT_Bool XAP_Win32Frame::close()
+bool XAP_Win32Frame::close()
 {
 	// NOTE: this should only be called from the closeWindow edit method
 	DestroyWindow(m_hwndFrame);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_Win32Frame::raise()
+bool XAP_Win32Frame::raise()
 {
 	BringWindowToTop(m_hwndFrame);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_Win32Frame::show()
+bool XAP_Win32Frame::show()
 {
 	ShowWindow(m_hwndFrame, SW_SHOW);
 	UpdateWindow(m_hwndFrame);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_Win32Frame::openURL(const char * szURL)
+bool XAP_Win32Frame::openURL(const char * szURL)
 {
 	// NOTE: could get finer control over browser window via DDE 
 	// NOTE: may need to fallback to WinExec for old NSCP versions
@@ -316,12 +316,12 @@ UT_Bool XAP_Win32Frame::openURL(const char * szURL)
 	return (res>32);
 }
 
-UT_Bool XAP_Win32Frame::updateTitle()
+bool XAP_Win32Frame::updateTitle()
 {
 	if (!XAP_Frame::updateTitle())
 	{
 		// no relevant change, so skip it
-		return UT_FALSE;
+		return false;
 	}
 
 	char buf[256];
@@ -337,7 +337,7 @@ UT_Bool XAP_Win32Frame::updateTitle()
 	
 	SetWindowText(m_hwndFrame, buf);
 
-	return UT_TRUE;
+	return true;
 }
 
 LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -624,10 +624,10 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 /*****************************************************************/
 
-UT_Bool XAP_Win32Frame::runModalContextMenu(AV_View * pView, const char * szMenuName,
+bool XAP_Win32Frame::runModalContextMenu(AV_View * pView, const char * szMenuName,
 											UT_sint32 x, UT_sint32 y)
 {
-	UT_Bool bResult = UT_FALSE;
+	bool bResult = false;
 
 	UT_ASSERT(!m_pWin32Popup);
 

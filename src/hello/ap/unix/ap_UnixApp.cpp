@@ -41,7 +41,7 @@
 
 #define DELETEP(p)      do { if (p) delete(p); (p)=NULL; } while (0)
 
-static UT_Bool s_createDirectoryIfNecessary(const char * szDir);
+static bool s_createDirectoryIfNecessary(const char * szDir);
 
 AP_UnixApp::AP_UnixApp(XAP_Args* pArgs, const char* szAppName)
 	: XAP_UnixApp(pArgs, szAppName)
@@ -54,7 +54,7 @@ AP_UnixApp::~AP_UnixApp(void)
 	DELETEP(m_pStringSet);
 }
 
-static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
+static bool s_createDirectoryIfNecessary(const char * szDir)
 {
         struct stat statbuf;
 
@@ -63,25 +63,25 @@ static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
         {
                 if (S_ISDIR(statbuf.st_mode))
                 // and is a directory
-                        return UT_TRUE;
+                        return true;
 
                 UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-                return UT_FALSE;
+                return false;
         }
 
         if (mkdir(szDir,0700) == 0)
-                return UT_TRUE;
+                return true;
 
 
         UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-        return UT_FALSE;
+        return false;
 }
 
-UT_Bool AP_UnixApp::initialize(void)
+bool AP_UnixApp::initialize(void)
 {
 	// getUserPrivateDirectory() is in xap/unix/xap_UnixApp.cpp
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
-	UT_Bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 
 	UT_ASSERT(bVerified);
 
@@ -103,11 +103,11 @@ UT_Bool AP_UnixApp::initialize(void)
 	UT_ASSERT(m_pToolbarActionSet);
 
 	if (!XAP_UnixApp::initialize())
-		return UT_FALSE;
+		return false;
 
 	// TODO  - load in strings
 
-	return UT_TRUE;
+	return true;
 }
 
 XAP_Frame* AP_UnixApp::newFrame(void)
@@ -120,12 +120,12 @@ XAP_Frame* AP_UnixApp::newFrame(void)
 	return pUnixFrame;
 }
 
-UT_Bool AP_UnixApp::shutdown(void)
+bool AP_UnixApp::shutdown(void)
 {
 	if (m_prefs && m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 
-	return UT_TRUE;
+	return true;
 }
 
 
@@ -199,17 +199,17 @@ const char * AP_UnixApp::getAbiSuiteAppDir(void) const
 void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange){}
 
 
-void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard)
+void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
 {
 }
 
-UT_Bool	AP_UnixApp::canPasteFromClipboard(void){}
+bool	AP_UnixApp::canPasteFromClipboard(void){}
 	
-UT_Bool	AP_UnixApp::parseCommandLine(void){}
+bool	AP_UnixApp::parseCommandLine(void){}
 
 void AP_UnixApp::setSelectionStatus(AV_View * pView){}
 void AP_UnixApp::clearSelection(void){}
-UT_Bool	AP_UnixApp::getCurrentSelection(const char** formatList,
+bool	AP_UnixApp::getCurrentSelection(const char** formatList,
 					void ** ppData, UT_uint32 * pLen,
 					const char **pszFormatFound){}
 void AP_UnixApp::cacheCurrentSelection(AV_View *){}

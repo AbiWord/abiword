@@ -56,7 +56,7 @@ IE_Exp_HTML::~IE_Exp_HTML()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_HTML::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_HTML::RecognizeSuffix(const char * szSuffix)
 {
 	return ((UT_stricmp(szSuffix,".html") == 0) || (UT_stricmp(szSuffix,".htm") == 0));
 }
@@ -69,17 +69,17 @@ UT_Error IE_Exp_HTML::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Exp_HTML::GetDlgLabels(const char ** pszDesc,
+bool	IE_Exp_HTML::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
 	*pszDesc = "HTML (.html)";
 	*pszSuffixList = "*.html";
 	*ft = IEFT_HTML;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Exp_HTML::SupportsFileType(IEFileType ft)
+bool IE_Exp_HTML::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_HTML == ft);
 }
@@ -103,17 +103,17 @@ public:
 						IE_Exp_HTML * pie);
 	virtual ~s_HTML_Listener();
 
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
@@ -121,7 +121,7 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool		signal(UT_uint32 iSignal);
+	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
 	void				_closeSection(void);
@@ -137,11 +137,11 @@ protected:
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_HTML *		m_pie;
-	UT_Bool				m_bInSection;
-	UT_Bool				m_bInBlock;
-	UT_Bool				m_bInSpan;
-	UT_Bool				m_bNextIsSpace;
-	UT_Bool				m_bInList;
+	bool				m_bInSection;
+	bool				m_bInBlock;
+	bool				m_bInSpan;
+	bool				m_bNextIsSpace;
+	bool				m_bInList;
 	const PP_AttrProp*	m_pAP_Span;
 
 	// Need to look up proper type, and place to stick #defines...
@@ -159,7 +159,7 @@ void s_HTML_Listener::_closeSection(void)
 	}
 	
 	m_pie->write("</div>\n");
-	m_bInSection = UT_FALSE;
+	m_bInSection = false;
 	return;
 }
 
@@ -196,7 +196,7 @@ void s_HTML_Listener::_closeTag(void)
 	else
 	  m_pie->write("</p>\n");
 
-	m_bInBlock = UT_FALSE;
+	m_bInBlock = false;
 	return;
 }
 
@@ -208,8 +208,8 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 	}
 	
 	const PP_AttrProp * pAP = NULL;
-	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
-	UT_Bool wasWritten = UT_FALSE;
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool wasWritten = false;
 	
 	if (bHaveProp && pAP)
 	{
@@ -236,14 +236,14 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 						m_iBlockType = BT_BULLETLIST;
 						m_pie->write("<ul>\n");
 					}
-					m_bInList = UT_TRUE;
+					m_bInList = true;
 				}
 				else
 				{
 					m_pie->write("</li>\n");
 				}
 				m_pie->write("<li");
-				wasWritten = UT_TRUE;	
+				wasWritten = true;	
 			}
 			else 
 			{
@@ -253,7 +253,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 						m_pie->write("</li>\n</ol>\n");
 					else if(m_iBlockType == BT_BULLETLIST)
 						m_pie->write("</li>\n</ul>\n");
-					m_bInList = UT_FALSE;
+					m_bInList = false;
 				}
 
 				if(0 == UT_strcmp(szValue, "Heading 1")) 
@@ -262,7 +262,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 					m_iBlockType = BT_HEADING1;
 					m_pie->write("<h1");
-					wasWritten = UT_TRUE;
+					wasWritten = true;
 				}
 				else if(0 == UT_strcmp(szValue, "Heading 2")) 
 				{
@@ -270,7 +270,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 					m_iBlockType = BT_HEADING2;
 					m_pie->write("<h2");
-					wasWritten = UT_TRUE;
+					wasWritten = true;
 				}
 				else if(0 == UT_strcmp(szValue, "Heading 3")) 
 				{
@@ -278,7 +278,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 					m_iBlockType = BT_HEADING3;
 					m_pie->write("<h3");
-					wasWritten = UT_TRUE;
+					wasWritten = true;
 				}
 				else if(0 == UT_strcmp(szValue, "Block Text"))
 				{
@@ -286,7 +286,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 					m_iBlockType = BT_BLOCKTEXT;
 					m_pie->write("<blockquote");
-					wasWritten = UT_TRUE;
+					wasWritten = true;
 				}
 				else if(0 == UT_strcmp(szValue, "Plain Text"))
 				{
@@ -294,7 +294,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 					m_iBlockType = BT_PLAINTEXT;
 					m_pie->write("<pre");
-					wasWritten = UT_TRUE;
+					wasWritten = true;
 				}
 				else 
 				{
@@ -302,7 +302,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 			        m_iBlockType = BT_NORMAL;
 			      	m_pie->write("<p");
-					wasWritten = UT_TRUE;
+					wasWritten = true;
 				}	
 			}
 		}
@@ -314,13 +314,13 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 					m_pie->write("</li>\n</ol>\n");
 				else if(m_iBlockType == BT_BULLETLIST)
 					m_pie->write("</li>\n</ul>\n");
-				m_bInList = UT_FALSE;
+				m_bInList = false;
 			}
 			// <p> with no style attribute ...
 
 			m_iBlockType = BT_NORMAL;
 			m_pie->write("<p");
-			wasWritten = UT_TRUE;
+			wasWritten = true;
 		}
 
 		/* Assumption: never get property set with block text, plain text. Probably true. */
@@ -341,12 +341,12 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 
 	  m_iBlockType = BT_NORMAL;
 	  m_pie->write("<p");
-	  wasWritten = UT_TRUE;
+	  wasWritten = true;
 	}
 	if (wasWritten)
 	  m_pie->write(">");
 
-	m_bInBlock = UT_TRUE;
+	m_bInBlock = true;
 }
 
 void s_HTML_Listener::_openSection(PT_AttrPropIndex /* api*/)
@@ -425,10 +425,10 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	}
 	
 	const PP_AttrProp * pAP = NULL;
-	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
-	UT_Bool span = UT_FALSE;
-	UT_Bool textD = UT_FALSE;
+	bool span = false;
+	bool textD = false;
 	
 	if (bHaveProp && pAP)
 	{
@@ -442,7 +442,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		        if (!span)
 			  {
 			    m_pie->write("<span style=\"font-weight: bold");	
-			    span = UT_TRUE;
+			    span = true;
 			  }
 			else
 			  {
@@ -458,7 +458,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		  if (!span)
 			  {
 			    m_pie->write("<span style=\"font-style: italic");	
-			    span = UT_TRUE;
+			    span = true;
 			  }
 			else
 			  {
@@ -489,13 +489,13 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				  if (!span)
 				    {
 					m_pie->write("<span style=\"text-decoration: underline");	
-					span = UT_TRUE;
-					textD = UT_TRUE;
+					span = true;
+					textD = true;
 				    }
 				  else if (!textD)
 				    {
 				        m_pie->write("; text-decoration: underline");
-					textD = UT_TRUE;
+					textD = true;
 				    }
 				  else
 				    {
@@ -531,13 +531,13 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				  if (!span)
 				    {
 					m_pie->write("<span style=\"text-decoration: line-through");	
-					span = UT_TRUE;
-					textD = UT_TRUE;
+					span = true;
+					textD = true;
 				    }
 				  else if (!textD)
 				    {
 				        m_pie->write("; text-decoration: line-through");
-					textD = UT_TRUE;
+					textD = true;
 				    }
 				  else
 				    {
@@ -573,13 +573,13 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				  if (!span)
 				    {
 						m_pie->write("<span style=\"text-decoration: overline");	
-						span = UT_TRUE;
-						textD = UT_TRUE;
+						span = true;
+						textD = true;
 				    }
 				  else if (!textD)
 				    {
 				        m_pie->write("; text-decoration: overline");
-						textD = UT_TRUE;
+						textD = true;
 				    }
 				  else
 				    {
@@ -628,7 +628,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 					_convertColor(szColor,(char*)pszColor);
 					m_pie->write(szColor);
 					m_pie->write(";");
-					span = UT_TRUE;
+					span = true;
 				    }
 				  else 
 				    {
@@ -647,7 +647,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 					m_pie->write("<span style=\"font-family: ");	
 					m_pie->write((char*)pszFontFamily);
 					m_pie->write(";");
-					span = UT_TRUE;
+					span = true;
 				    }
 				  else 
 				    {
@@ -668,7 +668,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 					sprintf(szSize, "%f", UT_convertToPoints(pszFontSize));
 					m_pie->write(szSize);
 					m_pie->write("pt;");
-					span = UT_TRUE;
+					span = true;
 				    }
 				  else 
 				    {
@@ -685,7 +685,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		if (span)
 		  m_pie->write("\">");
 
-		m_bInSpan = UT_TRUE;
+		m_bInSpan = true;
 		m_pAP_Span = pAP;
 	}
 }
@@ -700,7 +700,7 @@ void s_HTML_Listener::_closeSpan(void)
 	if (pAP)
 	{
 
-		UT_Bool closeSpan = UT_FALSE;
+		bool closeSpan = false;
 		const XML_Char * szValue;
 		
 		if (
@@ -709,7 +709,7 @@ void s_HTML_Listener::_closeSpan(void)
 		    || (pAP->getProperty((XML_Char*)"font-family", szValue))
 			)
 		{
-		  closeSpan = UT_TRUE;
+		  closeSpan = true;
 		}
 
 		if (pAP->getProperty((XML_Char*)"text-position", szValue))
@@ -731,7 +731,7 @@ void s_HTML_Listener::_closeSpan(void)
 			&& UT_strcmp(szValue, "none")
 			)
 		{
-		  closeSpan = UT_TRUE;
+		  closeSpan = true;
 		}
 
 		if (
@@ -739,7 +739,7 @@ void s_HTML_Listener::_closeSpan(void)
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
-		  closeSpan = UT_TRUE;
+		  closeSpan = true;
 		}
 		
 		if (
@@ -747,7 +747,7 @@ void s_HTML_Listener::_closeSpan(void)
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
-		  closeSpan = UT_TRUE;
+		  closeSpan = true;
 		}
 
 		if (closeSpan)
@@ -758,7 +758,7 @@ void s_HTML_Listener::_closeSpan(void)
 		m_pAP_Span = NULL;
 	}
 
-	m_bInSpan = UT_FALSE;
+	m_bInSpan = false;
 	return;
 }
 
@@ -786,11 +786,11 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		pData++;
 		if (*pData == ' ' || *pData == '\t')
 		{
-			m_bNextIsSpace = UT_TRUE;
+			m_bNextIsSpace = true;
 		}
 		else
 		{
-			m_bNextIsSpace = UT_FALSE;
+			m_bNextIsSpace = false;
 		}
 		pData--;
 
@@ -923,11 +923,11 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
-	m_bInSection = UT_FALSE;
-	m_bInBlock = UT_FALSE;
-	m_bInSpan = UT_FALSE;
-	m_bNextIsSpace = UT_FALSE;
-	m_bInList = UT_FALSE;
+	m_bInSection = false;
+	m_bInBlock = false;
+	m_bInSpan = false;
+	m_bNextIsSpace = false;
+	m_bInList = false;
 	m_iListDepth = 0;
 	
 	if (!XAP_EncodingManager::instance->cjk_locale()) {
@@ -1018,7 +1018,7 @@ s_HTML_Listener::~s_HTML_Listener()
 	m_pie->write("</html>\n");
 }
 
-UT_Bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 									  const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -1038,7 +1038,7 @@ UT_Bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 			if (api)
 				_closeSpan();
-			return UT_TRUE;
+			return true;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -1050,31 +1050,31 @@ UT_Bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 				// TODO we *could* insert the images and create separate GIF files.
-				return UT_TRUE;
+				return true;
 
 			case PTO_Field:
 				// we do nothing with computed fields.
-				return UT_TRUE;
+				return true;
 
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 			}
 #else
-			return UT_TRUE;
+			return true;
 #endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return UT_TRUE;
+		return true;
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -1102,19 +1102,19 @@ UT_Bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 				)
 			{
 				_openSection(pcr->getIndexAP());
-				m_bInSection = UT_TRUE;
+				m_bInSection = true;
 			}
 			else
 			{
-				m_bInSection = UT_FALSE;
+				m_bInSection = false;
 			}
 		}
 		else
 		{
-			m_bInSection = UT_FALSE;
+			m_bInSection = false;
 		}
 		
-		return UT_TRUE;
+		return true;
 	}
 
 	case PTX_Block:
@@ -1122,23 +1122,23 @@ UT_Bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		_closeSpan();
 		_closeTag();
 		_openTag(pcr->getIndexAP());
-		return UT_TRUE;
+		return true;
 	}
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_HTML_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_HTML_Listener::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
 									 PL_StruxDocHandle /*sdh*/,
 									 PL_ListenerId /* lid */,
@@ -1147,13 +1147,13 @@ UT_Bool s_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																 PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
+bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 
@@ -1185,7 +1185,7 @@ void s_HTML_Listener::_handleDataItems(void)
 	*/
 	
 #if 0
-	UT_Bool bWroteOpenDataSection = UT_FALSE;
+	bool bWroteOpenDataSection = false;
 
 	const char * szName;
 	const UT_ByteBuf * pByteBuf;
@@ -1197,7 +1197,7 @@ void s_HTML_Listener::_handleDataItems(void)
 		if (!bWroteOpenDataSection)
 		{
 			m_pie->write("<data>\n");
-			bWroteOpenDataSection = UT_TRUE;
+			bWroteOpenDataSection = true;
 		}
 
 		if (UT_Base64Encode(&bb64, pByteBuf))

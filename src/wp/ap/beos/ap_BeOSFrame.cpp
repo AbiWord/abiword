@@ -359,17 +359,17 @@ AP_BeOSFrame::~AP_BeOSFrame()
 	killFrameData();
 }
 
-UT_Bool AP_BeOSFrame::initialize()
+bool AP_BeOSFrame::initialize()
 {
 	if (!initFrameData())
-		return UT_FALSE;
+		return false;
 
 	if (!XAP_BeOSFrame::initialize(AP_PREF_KEY_KeyBindings, AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 								   AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
 								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 								   AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
-		return UT_FALSE;
+		return false;
 
 	_createTopLevelWindow();
 
@@ -386,18 +386,18 @@ UT_Bool AP_BeOSFrame::initialize()
 	m_pBeWin->Show();
  	//getTopLevelWindow()->Show();
 
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
 
-UT_Bool AP_BeOSFrame::initFrameData(void)
+bool AP_BeOSFrame::initFrameData(void)
 {
 	UT_ASSERT(!m_pData);
 
 	m_pData = new AP_FrameData(m_pBeOSApp);
 	
-	return (m_pData ? UT_TRUE : UT_FALSE);
+	return (m_pData ? true : false);
 }
 
 void AP_BeOSFrame::killFrameData(void)
@@ -474,7 +474,7 @@ Cleanup:
 
 UT_Error AP_BeOSFrame::loadDocument(const char * szFilename, int ieft)
 {
-	UT_Bool bUpdateClones;
+	bool bUpdateClones;
 	UT_Vector vClones;
 	XAP_App * pApp = getApp();
 
@@ -658,7 +658,7 @@ UT_Error AP_BeOSFrame::_replaceDocument(AD_Document * pDoc)
 	return _showDocument();
 }
 
-void AP_BeOSFrame::toggleRuler(UT_Bool bRulerOn)
+void AP_BeOSFrame::toggleRuler(bool bRulerOn)
 {
 	UT_DEBUGMSG(("AP_BeOSFrame::toggleRuler %d", bRulerOn));	
  

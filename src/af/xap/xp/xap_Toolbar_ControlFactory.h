@@ -52,7 +52,7 @@ public:
 	EV_Toolbar_Control *		getControl(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 
 protected:
-	UT_Bool						_find_ControlInTable(XAP_Toolbar_Id id, UT_uint32 * pIndex) const;
+	bool						_find_ControlInTable(XAP_Toolbar_Id id, UT_uint32 * pIndex) const;
 	
 	UT_uint32					m_nrElementsCtlTable;
 	const _ctl_table *	m_ctl_table;			/* an array of elements */

@@ -117,8 +117,8 @@ void AP_QNXDialog_WordCount::destroy(void)
 		return;
 	}
 
-	m_bDestroy_says_stopupdating = UT_TRUE;
-	while (m_bAutoUpdate_happening_now == UT_TRUE) ;
+	m_bDestroy_says_stopupdating = true;
+	while (m_bAutoUpdate_happening_now == true) ;
 	m_pAutoUpdateWC->stop();
 	m_answer = AP_Dialog_WordCount::a_CANCEL;	
 	modeless_cleanup();
@@ -175,7 +175,7 @@ void AP_QNXDialog_WordCount::runModeless(XAP_Frame * pFrame)
 	{	
 		//  Set it update evey second to start with
 		m_Update_rate = 1000;
-		m_bAutoWC = UT_TRUE;
+		m_bAutoWC = true;
 		//i_WordCountunix_first_time = 1;
 	}
 
@@ -184,15 +184,15 @@ void AP_QNXDialog_WordCount::runModeless(XAP_Frame * pFrame)
 
 void    AP_QNXDialog_WordCount::setUpdateCounter( void )
 {
-	m_bDestroy_says_stopupdating = UT_FALSE;
-	m_bAutoUpdate_happening_now = UT_FALSE;
+	m_bDestroy_says_stopupdating = false;
+	m_bAutoUpdate_happening_now = false;
 
 	float f_Update_rate = ((float) m_Update_rate)/ 1000.0;
 /*
 	gtk_adjustment_set_value( m_Spinrange, f_Update_rate );
 	gtk_spin_button_set_adjustment(GTK_SPIN_BUTTON( m_pAutospin), m_Spinrange);
 */
-	if(m_bAutoWC == UT_TRUE)
+	if(m_bAutoWC == true)
 	{
 		m_pAutoUpdateWC->stop();
 		m_pAutoUpdateWC->set(m_Update_rate);
@@ -213,11 +213,11 @@ void    AP_QNXDialog_WordCount::autoupdateWC(UT_Timer * pTimer)
 	AP_QNXDialog_WordCount * pDialog =  (AP_QNXDialog_WordCount *) pTimer->getInstanceData();
 
 	// Handshaking code
-	if( pDialog->m_bDestroy_says_stopupdating != UT_TRUE)
+	if( pDialog->m_bDestroy_says_stopupdating != true)
 	{
-		pDialog->m_bAutoUpdate_happening_now = UT_TRUE;
+		pDialog->m_bAutoUpdate_happening_now = true;
 		pDialog->event_Update();
-		pDialog->m_bAutoUpdate_happening_now = UT_FALSE;
+		pDialog->m_bAutoUpdate_happening_now = false;
 	}
 }        
 
@@ -243,12 +243,12 @@ void AP_QNXDialog_WordCount::event_Checkbox(void)
 		m_pAutoUpdateWC->stop();
 		// This actually does gtk_timer_add...
 		m_pAutoUpdateWC->set(m_Update_rate);
-		m_bAutoWC = UT_TRUE;
+		m_bAutoWC = true;
 	}
 	else
 	{
 		m_pAutoUpdateWC->stop();
-		m_bAutoWC = UT_FALSE;
+		m_bAutoWC = false;
 	}
 	set_sensitivity();
 #endif

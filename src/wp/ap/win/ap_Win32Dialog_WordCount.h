@@ -56,11 +56,11 @@ protected:
 	void 					_updateWindowData(void);       
 
 	HWND                    m_hWnd;
-	UT_Bool					m_bAutoWC;
+	bool					m_bAutoWC;
 
 	UT_Timer *				m_pAutoUpdateWC;
-	UT_Bool					m_bDestroy_says_stopupdating;
-	UT_Bool					m_bAutoUpdate_happening_now;
+	bool					m_bDestroy_says_stopupdating;
+	bool					m_bAutoUpdate_happening_now;
 	UT_uint32				m_iUpdateRate;
 };
 

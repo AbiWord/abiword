@@ -74,7 +74,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
  protected:
 
 		// to enable/disable a control
-	virtual void _controlEnable( tControl id, UT_Bool value )=0;
+	virtual void _controlEnable( tControl id, bool value )=0;
 
 		// to be called when a control is toggled/changed
 	void _enableDisableLogic( tControl id );
@@ -92,30 +92,30 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 
 #define SET_GATHER(a,u) virtual u _gather##a(void) = 0; \
 					 	virtual void    _set##a( u ) = 0
-	SET_GATHER			(SpellCheckAsType,	UT_Bool);
-	SET_GATHER			(SpellHideErrors,	UT_Bool);
-	SET_GATHER			(SpellSuggest,		UT_Bool);
-	SET_GATHER			(SpellMainOnly,		UT_Bool);
-	SET_GATHER			(SpellUppercase,	UT_Bool);
-	SET_GATHER			(SpellNumbers,		UT_Bool);
-	SET_GATHER			(SpellInternet,		UT_Bool);
+	SET_GATHER			(SpellCheckAsType,	bool);
+	SET_GATHER			(SpellHideErrors,	bool);
+	SET_GATHER			(SpellSuggest,		bool);
+	SET_GATHER			(SpellMainOnly,		bool);
+	SET_GATHER			(SpellUppercase,	bool);
+	SET_GATHER			(SpellNumbers,		bool);
+	SET_GATHER			(SpellInternet,		bool);
 
-	SET_GATHER			(SmartQuotesEnable,	UT_Bool);
+	SET_GATHER			(SmartQuotesEnable,	bool);
 	SET_GATHER			(DefaultPageSize,	fp_PageSize::Predefined);
 
-	SET_GATHER			(PrefsAutoSave,		UT_Bool);
+	SET_GATHER			(PrefsAutoSave,		bool);
 
-	SET_GATHER			(ViewShowRuler,		UT_Bool);
-	SET_GATHER			(ViewShowStandardBar,	UT_Bool);
-	SET_GATHER			(ViewShowFormatBar,	UT_Bool);
-	SET_GATHER			(ViewShowExtraBar,	UT_Bool);
-	SET_GATHER			(ViewShowStatusBar,	UT_Bool);
+	SET_GATHER			(ViewShowRuler,		bool);
+	SET_GATHER			(ViewShowStandardBar,	bool);
+	SET_GATHER			(ViewShowFormatBar,	bool);
+	SET_GATHER			(ViewShowExtraBar,	bool);
+	SET_GATHER			(ViewShowStatusBar,	bool);
  	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
-	SET_GATHER			(ViewCursorBlink,	UT_Bool);
+	SET_GATHER			(ViewCursorBlink,	bool);
 
-	SET_GATHER			(ViewAll,			UT_Bool);
-	SET_GATHER			(ViewHiddenText,	UT_Bool);
-	SET_GATHER			(ViewUnprintable,	UT_Bool);
+	SET_GATHER			(ViewAll,			bool);
+	SET_GATHER			(ViewHiddenText,	bool);
+	SET_GATHER			(ViewUnprintable,	bool);
 
  	// so we can save and restore to the same page - must be able to return
   	// the current page and reset it later (i.e., don't use a handle, but a

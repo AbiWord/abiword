@@ -52,10 +52,10 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	m_iLevel(pParent ? pParent->getLevel() + 1 : 1),
 	m_iStartValue(start),
 	m_iAsciiOffset(0),
-	m_bUpdatingItems(UT_FALSE),
-	m_bDirty(UT_FALSE),
+	m_bUpdatingItems(false),
+	m_bDirty(false),
 	m_ioffset(0),
-	m_bWordMultiStyle(UT_TRUE),
+	m_bWordMultiStyle(true),
 	m_pParentItem(0)
 {
 	UT_uint32 i;
@@ -84,10 +84,10 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	m_iLevel(1),
 	m_iStartValue(start),
 	m_iAsciiOffset(0),
-	m_bUpdatingItems(UT_FALSE),
-	m_bDirty(UT_FALSE),
+	m_bUpdatingItems(false),
+	m_bDirty(false),
 	m_ioffset(0),
-	m_bWordMultiStyle(UT_TRUE),
+	m_bWordMultiStyle(true),
 	m_pParentItem(0)
 {
 	// Set in Block???
@@ -109,7 +109,7 @@ void fl_AutoNum::addItem(PL_StruxDocHandle pItem)
     {
 	        m_pItems.addItem(const_cast<void *>(pItem));
     }
-    m_bDirty = UT_TRUE;
+    m_bDirty = true;
 }
 
 void fl_AutoNum::fixHierarchy(PD_Document * pDoc)
@@ -128,7 +128,7 @@ void fl_AutoNum::fixHierarchy(PD_Document * pDoc)
 		m_iLevel = m_pParent->getLevel() + 1;
 	else
 		m_iLevel = 1;
-	m_bDirty = UT_TRUE;
+	m_bDirty = true;
 }
 
 fl_AutoNum::~fl_AutoNum()
@@ -165,12 +165,12 @@ void    fl_AutoNum::fixListOrder(void)
 {
         pCurDoc = m_pDoc;
         m_pItems.qsort(compareListItems);
-        m_bDirty = UT_TRUE;
+        m_bDirty = true;
 }
 
 void    fl_AutoNum::markAsDirty(void)
 {
-         m_bDirty = UT_TRUE;
+         m_bDirty = true;
 }
 
 void    fl_AutoNum::findAndSetParentItem(void)
@@ -235,10 +235,10 @@ void    fl_AutoNum::findAndSetParentItem(void)
 		}
 	}
 	if(m_pParentItem != pClosestItem)
-	        m_bDirty = UT_TRUE;
+	        m_bDirty = true;
 	m_pParentItem = pClosestItem;
 	if(m_pParent != pClosestAuto)
-	        m_bDirty = UT_TRUE;
+	        m_bDirty = true;
 	m_pParent = pClosestAuto;
 	if(m_pParent != NULL)
 	{
@@ -253,7 +253,7 @@ void    fl_AutoNum::findAndSetParentItem(void)
 	  //	        m_iParentID = 0;
 		m_iLevel = 1;
 	}
-	if(m_bDirty == UT_TRUE)
+	if(m_bDirty == true)
 	        update(0);
 }
 
@@ -374,7 +374,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 			//labelStr[(*insPoint)] = NULL;
 	                break;
 	        case UPPERROMAN_LIST:
-		        sprintf(p,"%s",dec2roman(place,UT_FALSE));
+		        sprintf(p,"%s",dec2roman(place,false));
 			psz = UT_XML_strlen( p);
 			for(i=0; i<psz; i++)
 			{
@@ -383,7 +383,7 @@ void    fl_AutoNum::_getLabelstr( XML_Char labelStr[], UT_uint32 * insPoint,
 			//labelStr[(*insPoint)] = NULL;
 	                break;
 	        case LOWERROMAN_LIST:
-		        sprintf(p,"%s",dec2roman(place,UT_TRUE));
+		        sprintf(p,"%s",dec2roman(place,true));
 			psz = UT_XML_strlen( p);
 			for(i=0; i<psz; i++)
 			{
@@ -482,7 +482,7 @@ void fl_AutoNum::setListType(List_Type lType)
         m_List_Type = lType;
 }
 
-UT_Bool fl_AutoNum::isDirty(void)
+bool fl_AutoNum::isDirty(void)
 {
         return m_bDirty;
 }
@@ -491,7 +491,7 @@ void fl_AutoNum::setDelim(const XML_Char * lDelim)
 {
 	UT_uint32 i;
 	i =  UT_XML_strncpy( m_pszDelim, 80, lDelim);
-	m_bDirty = UT_TRUE;
+	m_bDirty = true;
 }
 
 const XML_Char * fl_AutoNum::getDelim( void)
@@ -509,7 +509,7 @@ void fl_AutoNum::setDecimal(const XML_Char * lDecimal)
 {
 	UT_uint32 i;
 	i =  UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
-	m_bDirty = UT_TRUE;
+	m_bDirty = true;
 }
 
 List_Type fl_AutoNum::getType(void)
@@ -520,14 +520,14 @@ List_Type fl_AutoNum::getType(void)
 void fl_AutoNum::setStartValue(UT_uint32 start)
 {
 	m_iStartValue = start;
-        m_bDirty = UT_TRUE;
+        m_bDirty = true;
 	_updateItems(0,NULL);
 }
 
 void fl_AutoNum::setAsciiOffset(UT_uint32 new_asciioffset)
 {
         m_iAsciiOffset = (UT_uint16) new_asciioffset;
-	m_bDirty = UT_TRUE;
+	m_bDirty = true;
 }
 
 UT_uint32 fl_AutoNum::getStartValue32(void)
@@ -543,14 +543,14 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 	if(i < 0)
 	{
 	        m_pItems.insertItemAt((void *) pItem, 0);
-		m_bDirty = UT_TRUE;
+		m_bDirty = true;
 	}
 
 
 	if (m_pParent)
 	{
 		m_pParentItem = pLast;
-		m_bDirty = UT_TRUE;
+		m_bDirty = true;
 	}
 	if ( getAutoNumFromSdh(pItem) == this)
 		_updateItems(0,NULL);
@@ -565,7 +565,7 @@ PL_StruxDocHandle fl_AutoNum::getParentItem(void)
 void fl_AutoNum::setParentItem(PL_StruxDocHandle pItem)
 {
 	m_pParentItem = pItem;
-	m_bDirty = UT_TRUE;
+	m_bDirty = true;
 }
 
 void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
@@ -575,10 +575,10 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
 	ndx = m_pItems.findItem((void *) pItem);
 	if(ndx >= 0)
 	        return;
-	m_bDirty = UT_TRUE;
+	m_bDirty = true;
 	ndx = m_pItems.findItem((void *) pPrev) + 1;
 	m_pItems.insertItemAt((void *) pItem, ndx);
-	if(m_pDoc->areListUpdatesAllowed() == UT_FALSE)
+	if(m_pDoc->areListUpdatesAllowed() == false)
 	       return;
 
 	// scan through all the lists and update parent pointers
@@ -590,7 +590,7 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
 		if( pPrev == pAuto->getParentItem())
 		{
 		        pAuto->setParentItem(pItem);
-			pAuto->m_bDirty = UT_TRUE;
+			pAuto->m_bDirty = true;
 			pAuto->_updateItems(0,NULL);
 		}
 	}
@@ -608,14 +608,14 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext)
 	ndx = m_pItems.findItem((void *) pItem);
 	if(ndx >= 0)
 	        return;
-	m_bDirty = UT_TRUE;
+	m_bDirty = true;
 	ndx = m_pItems.findItem((void *) pNext);
 	if(ndx > 0)
 	{
 	        pPrev = m_pItems.getNthItem(ndx-1);
 	}
 	m_pItems.insertItemAt((void *) pItem, ndx);
-	if(m_pDoc->areListUpdatesAllowed() == UT_FALSE)
+	if(m_pDoc->areListUpdatesAllowed() == false)
 	        return;
 	if(pPrev != NULL)
 	{
@@ -628,7 +628,7 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext)
 		        if( pPrev == pAuto->getParentItem())
 		        {
 		                pAuto->setParentItem(pItem);
-				pAuto->m_bDirty = UT_TRUE;
+				pAuto->m_bDirty = true;
 				pAuto->_updateItems(0,NULL);
 			}
 		}
@@ -648,7 +648,7 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	UT_ASSERT(ndx != -1);
 	if(ndx < 0 )
 	{
-	        m_bDirty = UT_TRUE;
+	        m_bDirty = true;
 	        _updateItems(0,NULL);
         }        
         PL_StruxDocHandle ppItem = NULL;
@@ -658,7 +658,7 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 	}
 	
 	m_pItems.deleteNthItem(ndx);
-	m_bDirty = UT_TRUE;
+	m_bDirty = true;
 
 	// scan through all the lists and update parent pointers
 	
@@ -682,10 +682,10 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 				}
 				pAuto->setLevel(level);
 				pAuto->setParent(getParent());
-				pAuto->m_bDirty = UT_TRUE;
+				pAuto->m_bDirty = true;
 				pAuto->setParentItem(getParentItem());
 			}
-			if(m_pDoc->areListUpdatesAllowed() == UT_TRUE)
+			if(m_pDoc->areListUpdatesAllowed() == true)
 			        pAuto->_updateItems(0,NULL);
 		}
 	}
@@ -704,16 +704,16 @@ UT_sint32 fl_AutoNum::getPositionInList(PL_StruxDocHandle pItem, UT_uint32 depth
 	PL_StruxDocHandle pTmp;
 	UT_uint32 ndx = 0;
 	UT_uint32 count = m_pItems.getItemCount();
-	UT_Bool bOnLevel = UT_TRUE;
-	UT_Bool bFirstItem = UT_FALSE;
+	bool bOnLevel = true;
+	bool bFirstItem = false;
 	
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		pTmp = (PL_StruxDocHandle) m_pItems.getNthItem(i);
      //		bOnLevel = (depth == 0);
 		fl_AutoNum * pAuto = getAutoNumFromSdh(pItem);
-     		bOnLevel = (UT_Bool)( pAuto == this);
-		bFirstItem = (UT_Bool)(pTmp == m_pItems.getFirstItem());
+     		bOnLevel = (bool)( pAuto == this);
+		bFirstItem = (bool)(pTmp == m_pItems.getFirstItem());
 		if (pTmp == pItem)
 		{
 			if (m_bWordMultiStyle && !bOnLevel && !bFirstItem)
@@ -734,9 +734,9 @@ fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh)
 {
 	UT_sint32 i;
 	fl_AutoNum * pAuto;
-	if(m_pDoc->areListUpdatesAllowed() == UT_FALSE)
+	if(m_pDoc->areListUpdatesAllowed() == false)
 	{
-	        if(isItem(sdh) == UT_FALSE)
+	        if(isItem(sdh) == false)
 	        {
 	                return (fl_AutoNum *) NULL;
 		}
@@ -758,20 +758,20 @@ fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh)
 
 	   
 
-const UT_Bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) 
+const bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) 
 {
 	if (m_pItems.findItem((void *)(pItem)) == -1)
-		return UT_FALSE;
+		return false;
 	else
-		return UT_TRUE;
+		return true;
 }
 
-const UT_Bool fl_AutoNum::isEmpty() 
+const bool fl_AutoNum::isEmpty() 
 {
 	if (m_pItems.getItemCount() > 0)
-		return UT_FALSE;
+		return false;
 	else
-		return UT_TRUE;
+		return true;
 }
 
 PL_StruxDocHandle fl_AutoNum::getFirstItem()
@@ -792,41 +792,41 @@ PL_StruxDocHandle fl_AutoNum::getLastItem()
 	}
 }
 
-UT_Bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
+bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
 {
         fp_Run * pRun = pItem->getFirstRun();
-	UT_Bool bStop = UT_FALSE;
-	while(bStop == UT_FALSE)
+	bool bStop = false;
+	while(bStop == false)
 	{
 		if(pRun->getType() == FPRUN_FIELD)
 		{
 	                 fp_FieldRun * pFRun = (fp_FieldRun *) pRun;
 	                 if(pFRun->getFieldType() == FPFIELD_list_label)
 	                 {
-			          bStop = UT_TRUE;
-	                          return UT_TRUE;
+			          bStop = true;
+	                          return true;
 			 }
 		}
 	        pRun = pRun->getNext();
 		if(pRun == NULL)
 		{
-		         bStop = UT_TRUE;
-		         return UT_FALSE;
+		         bStop = true;
+		         return false;
 		}
 	}
-	return UT_FALSE;
+	return false;
 }
 
 
-UT_Bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem) 
+bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem) 
 {
         UT_sint32 itemloc = m_pItems.findItem((void *) pItem);
 	if (itemloc == -1)
-		return UT_FALSE;
+		return false;
 	if(itemloc == (UT_sint32) (m_pItems.getItemCount() - 1))
-		return UT_TRUE;
+		return true;
 	else
-		return UT_FALSE;
+		return false;
 }
 
 fl_AutoNum * fl_AutoNum::getActiveParent(void) 
@@ -841,7 +841,7 @@ fl_AutoNum * fl_AutoNum::getActiveParent(void)
 
 void fl_AutoNum::setParent(fl_AutoNum * pParent)
 {
-	m_bDirty = UT_TRUE;
+	m_bDirty = true;
 	m_pParent = pParent;
 }
 
@@ -864,10 +864,10 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 {
   //	UT_DEBUGMSG(("Entering _updateItems\n"));
 	UT_sint32 j;
-	if(m_pDoc->areListUpdatesAllowed() == UT_TRUE)
+	if(m_pDoc->areListUpdatesAllowed() == true)
 	{
 		UT_sint32 numlists = m_pDoc->getListsCount();
-		m_bUpdatingItems = UT_TRUE;
+		m_bUpdatingItems = true;
 		for (UT_uint32 i = start; i < m_pItems.getItemCount(); i++)
 		{
 		  //       	 	UT_DEBUGMSG(("Entering _updateItems for loop\n"));
@@ -888,36 +888,36 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 				}
 			}
 		}
-		m_bUpdatingItems = UT_FALSE;
-		m_bDirty = UT_FALSE;
+		m_bUpdatingItems = false;
+		m_bDirty = false;
 	}
 }
 
 ///
 /// Returns true if item is contained or immediately adjacent to the list
 ///
-UT_Bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem)
+bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem)
 {
         PL_StruxDocHandle sdh, sdh_prev,sdh_next;
 	PT_DocPosition pos_prev,pos_next,pos;
-	UT_Bool bret;
+	bool bret;
 	UT_uint32 no_items = m_pItems.getItemCount();
 	if(no_items == 0)
-	        return UT_FALSE;
+	        return false;
 	sdh = ( PL_StruxDocHandle) m_pItems.getFirstItem();
 	bret = m_pDoc->getPrevStruxOfType(sdh,PTX_Block, &sdh_prev);
-	if(bret == UT_FALSE)
+	if(bret == false)
 	        sdh_prev = sdh;
 	pos_prev = m_pDoc->getStruxPosition(sdh_prev);
 	sdh = ( PL_StruxDocHandle) m_pItems.getNthItem(no_items-1);
 	bret = m_pDoc->getNextStruxOfType(sdh,PTX_Block, &sdh_next);
-	if(bret == UT_FALSE)
+	if(bret == false)
 	        sdh_next = sdh;
 	pos_next = m_pDoc->getStruxPosition(sdh_next);
 	pos =  m_pDoc->getStruxPosition(pItem);
 	if((pos >= pos_prev) && (pos <= pos_next))
-	        return UT_TRUE;
-	return UT_FALSE;
+	        return true;
+	return false;
 }
 
 
@@ -958,7 +958,7 @@ inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
 	return pAutoNum->getValue(pBlock);
 }
 
-char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower) 
+char *  fl_AutoNum::dec2roman(UT_sint32 value, bool lower) 
 {
 	char roman[80];		//Pretty big number if you ask me
 
@@ -1030,7 +1030,7 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower)
 		 value--;
         }
 
-	if (lower == UT_TRUE) 
+	if (lower == true) 
 	{
 		int len;
 		len = strlen(roman);

@@ -82,7 +82,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 
 	GR_Font * found = NULL;
 
-	int SizeOK = UT_FALSE;
+	int SizeOK = false;
 	UT_UCSChar *p_buffer = new UT_UCSChar[224];
 	for(int i = 0; i < 224; i++)
 	{
@@ -113,7 +113,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 			{
 				UT_DEBUGMSG(("COULD NOT find Symbol font \n"));
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				SizeOK = UT_TRUE;	// so we can break loop
+				SizeOK = true;	// so we can break loop
 			}
 		}
 
@@ -122,7 +122,7 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 			UT_uint32 MaxWidth = p_gc->getMaxCharacterWidth(p_buffer, 224);
 			if(MaxWidth < MaxWidthAllowable)
 			{
-				SizeOK = UT_TRUE;
+				SizeOK = true;
 			}
 			else
 			{

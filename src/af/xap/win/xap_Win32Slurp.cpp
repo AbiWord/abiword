@@ -69,7 +69,7 @@ XAP_Win32Slurp::XAP_Win32Slurp(XAP_Win32App * pApp)
 	UT_ASSERT(!s_Slurp);
 	
 	m_pApp = pApp;
-	m_bInitialized = UT_FALSE;
+	m_bInitialized = false;
 	s_Slurp = this;
 }
 
@@ -106,7 +106,7 @@ HDDEDATA CALLBACK XAP_Win32Slurp::doCallback(UINT uType, UINT uFmt, HCONV hConv,
 	case XTYP_CONNECT:
 		{
 			// grant connection request iff it matches my [ServerName,Topic]
-			UT_Bool bAccept = ( (hsz2==m_hszServerName) && (hsz1==m_hszTopic) );
+			bool bAccept = ( (hsz2==m_hszServerName) && (hsz1==m_hszTopic) );
 			UT_DEBUGMSG(("DDEML connect [accepted %d]\n",bAccept));
 			return (HDDEDATA)bAccept;
 		}
@@ -124,10 +124,10 @@ HDDEDATA CALLBACK XAP_Win32Slurp::doCallback(UINT uType, UINT uFmt, HCONV hConv,
 	}
 }
 
-UT_Bool XAP_Win32Slurp::connectSlurper(void)
+bool XAP_Win32Slurp::connectSlurper(void)
 {
 	if (m_bInitialized)					// only do this once !!
-		return UT_FALSE;
+		return false;
 	
 	// Register us with the DDE Management Library (DDEML).
 
@@ -142,7 +142,7 @@ UT_Bool XAP_Win32Slurp::connectSlurper(void)
 	if (nDdeRtnStatus != DMLERR_NO_ERROR)
 	{
 		UT_DEBUGMSG(("Unable to initialize DDEML [%d]\n",nDdeRtnStatus));
-		return UT_FALSE;
+		return false;
 	}
 
 	// create two registered strings.
@@ -160,14 +160,14 @@ UT_Bool XAP_Win32Slurp::connectSlurper(void)
 	if (!bRegistered)
 	{
 		UT_DEBUGMSG(("Unable to register NameService with DDEML.\n"));
-		return UT_FALSE;
+		return false;
 	}
 
-	m_bInitialized = UT_TRUE;
-	return UT_TRUE;
+	m_bInitialized = true;
+	return true;
 }
 
-UT_Bool XAP_Win32Slurp::disconnectSlurper(void)
+bool XAP_Win32Slurp::disconnectSlurper(void)
 {
 	if (m_hszServerName)
 		DdeFreeStringHandle(m_idDdeServerInst,m_hszServerName);
@@ -177,8 +177,8 @@ UT_Bool XAP_Win32Slurp::disconnectSlurper(void)
 	DdeUninitialize(m_idDdeServerInst);
 	m_idDdeServerInst = 0;
 
-	m_bInitialized = UT_FALSE;
-	return UT_TRUE;
+	m_bInitialized = false;
+	return true;
 }
 
 
@@ -308,8 +308,8 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	DWORD dType;
 	LONG eResult;
 	ULONG len;
-	UT_Bool bUpdateContentType;
-	UT_Bool bCreateOrOverwrite = UT_FALSE;
+	bool bUpdateContentType;
+	bool bCreateOrOverwrite = false;
 
 	HKEY hKeyFoo = 0;
 	HKEY hKeySuffix = 0;
@@ -337,7 +337,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		goto CleanupMess;
 
 	case X_CreatedKey:					// we are free to create what we want.
-		bCreateOrOverwrite = UT_TRUE;
+		bCreateOrOverwrite = true;
 		break;
 		
 	case X_ExistingKey:					// see what's already there 
@@ -361,7 +361,7 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 				if (!_askForStealFromAnotherApplication())
 					goto CleanupMess;
 
-				bCreateOrOverwrite = UT_TRUE;
+				bCreateOrOverwrite = true;
 				break;
 			}
 		}
@@ -389,14 +389,14 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	// as a value under the current key.
 	///////////////////////////////////////////////////////////////////
 
-	bUpdateContentType = UT_TRUE;
+	bUpdateContentType = true;
 	len = NrElements(buf);
 	eResult = RegQueryValueEx(hKeySuffix,CONTENT_TYPE_KEY,NULL,&dType,(LPBYTE)buf,&len);
 	if ((eResult == ERROR_SUCCESS) && (dType == REG_SZ))
 	{
 		UT_DEBUGMSG(("Registry: Existing ContentType [%s]\n",buf));
 		if (UT_stricmp(buf,szContentType) == 0)
-			bUpdateContentType = UT_FALSE;
+			bUpdateContentType = false;
 		else							// we didn't create this so ask first.
 			bUpdateContentType = (_askForStealMimeFromAnotherApplication());
 	}
@@ -631,39 +631,39 @@ CleanupMess:
 	return;
 }
 
-UT_Bool XAP_Win32Slurp::_askForStealFromAnotherApplication(void) const
+bool XAP_Win32Slurp::_askForStealFromAnotherApplication(void) const
 {
 	// TODO install a real dialog that asks the user and
 	// TODO allows us to set preference value for never
 	// TODO asking again or always steal or whatever...
 
 	UT_DEBUGMSG(("Registry: Suffix not ours.\n"));
-	UT_Bool bResult = UT_FALSE;
+	bool bResult = false;
 
 #ifdef DEBUG	
-	bResult = UT_TRUE;
+	bResult = true;
 #endif
 	
 	return bResult;
 }
 
-UT_Bool XAP_Win32Slurp::_askForStealMimeFromAnotherApplication(void) const
+bool XAP_Win32Slurp::_askForStealMimeFromAnotherApplication(void) const
 {
 	// TODO install a real dialog that asks the user and
 	// TODO allows us to set preference value for never
 	// TODO asking again or always steal or whatever...
 	
 	UT_DEBUGMSG(("Registry: MIME type not ours.\n"));
-	UT_Bool bResult = UT_FALSE;
+	bool bResult = false;
 
 #ifdef DEBUG	
-	bResult = UT_TRUE;
+	bResult = true;
 #endif
 
 	return bResult;
 }
 
-UT_Bool XAP_Win32Slurp::_askForUpdateExePathname(void) const
+bool XAP_Win32Slurp::_askForUpdateExePathname(void) const
 {
 	// TODO install a real dialog that asks the user if
 	// TODO we want to change the pathname of the exe in
@@ -672,7 +672,7 @@ UT_Bool XAP_Win32Slurp::_askForUpdateExePathname(void) const
 	// TODO whatever...
 
 	UT_DEBUGMSG(("Registry: Need to update EXE pathname...\n"));
-	UT_Bool bResult = UT_FALSE;
+	bool bResult = false;
 
 	return bResult;
 }

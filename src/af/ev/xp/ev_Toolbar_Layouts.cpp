@@ -69,7 +69,7 @@ EV_Toolbar_Layout::~EV_Toolbar_Layout(void)
 	free(m_layoutTable);
 }
 
-UT_Bool EV_Toolbar_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags)
+bool EV_Toolbar_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags)
 {
 	UT_ASSERT(indexLayoutItem < m_nrLayoutItems);
 	DELETEP(m_layoutTable[indexLayoutItem]);

@@ -39,46 +39,46 @@ public:
 	
 	void							setDocumentTitle(const char *);
 	void							setDocumentPathname(const char * );
-	void							setEnablePageRangeButton(UT_Bool bEnable,
+	void							setEnablePageRangeButton(bool bEnable,
 															 UT_uint32 nFirst,
 															 UT_uint32 nLast);
-	void							setEnablePrintSelection(UT_Bool bEnable);
-	void							setEnablePrintToFile(UT_Bool bEnable);
-	void							setTryToBypassActualDialog(UT_Bool bTry);
+	void							setEnablePrintSelection(bool bEnable);
+	void							setEnablePrintToFile(bool bEnable);
+	void							setTryToBypassActualDialog(bool bTry);
 	void setPaperSize (const char * pageSize);
 
 
 	XAP_Dialog_Print::tAnswer		getAnswer(void) const;
-	UT_Bool							getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const;
-	UT_Bool							getDoPrintSelection(void) const;
-	UT_Bool							getDoPrintToFile(const char *) const;
+	bool							getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const;
+	bool							getDoPrintSelection(void) const;
+	bool							getDoPrintToFile(const char *) const;
 	UT_uint32						getNrCopies(void) const;
-	UT_Bool							getCollate(void) const;
+	bool							getCollate(void) const;
 	GR_Graphics::ColorSpace			getColorSpace(void) const;
 	
 	virtual GR_Graphics *			getPrinterGraphicsContext(void) = 0;
 	virtual void					releasePrinterGraphicsContext(GR_Graphics * pGraphics) = 0;
 	
 protected:
-	UT_Bool							_getPrintToFilePathname(XAP_Frame * pFrame,
+	bool							_getPrintToFilePathname(XAP_Frame * pFrame,
 															const char * szSuggestedName);
 	
 	UT_uint32						m_bPersistValid;		/* persists (internal) */
 	UT_uint32						m_persistNrCopies;		/* persists (internal) */
-	UT_Bool							m_persistCollate;		/* persists (internal) */
+	bool							m_persistCollate;		/* persists (internal) */
 	GR_Graphics::ColorSpace			m_persistColorSpace;	/* persists (internal) */
-	UT_Bool							m_persistPrintToFile;	/* persists (internal) */
+	bool							m_persistPrintToFile;	/* persists (internal) */
 
 	char *							m_szDocumentTitle;		/* input */
 	char *							m_szDocumentPathname;	/* input */
-	UT_Bool							m_bBypassActualDialog;	/* input */
-	UT_Bool							m_bEnablePageRange;		/* input */
-	UT_Bool							m_bEnablePrintSelection;/* input */
-	UT_Bool							m_bEnablePrintToFile;	/* input */
-	UT_Bool							m_bDoPrintRange;		/* output */
-	UT_Bool							m_bDoPrintSelection;	/* output */
-	UT_Bool							m_bDoPrintToFile;		/* output */
-	UT_Bool							m_bCollate;				/* output */
+	bool							m_bBypassActualDialog;	/* input */
+	bool							m_bEnablePageRange;		/* input */
+	bool							m_bEnablePrintSelection;/* input */
+	bool							m_bEnablePrintToFile;	/* input */
+	bool							m_bDoPrintRange;		/* output */
+	bool							m_bDoPrintSelection;	/* output */
+	bool							m_bDoPrintToFile;		/* output */
+	bool							m_bCollate;				/* output */
 	GR_Graphics::ColorSpace			m_cColorSpace;			/* output */
 	UT_uint32						m_nFirstPage;			/* input/output */
 	UT_uint32						m_nLastPage;			/* input/output */

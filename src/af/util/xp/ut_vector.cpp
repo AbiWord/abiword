@@ -206,7 +206,7 @@ void UT_Vector::qsort(int (*compar)(const void *, const void *))
 	::qsort(m_pEntries, m_iCount, sizeof(void*), compar);
 }
 
-UT_Bool UT_Vector::copy(UT_Vector *pVec)
+bool UT_Vector::copy(UT_Vector *pVec)
 {
 	clear();
 
@@ -321,7 +321,7 @@ void UT_Vector::qsort(int (*compar)(const void *, const void *))
 	sort(m_STLVec.begin(), m_STLVec.end(), compar);
 }
 
-UT_Bool UT_Vector::copy(UT_Vector *pVec)
+bool UT_Vector::copy(UT_Vector *pVec)
 {
 	m_STLVec = pVec->m_STLVec;
 	return 0;

@@ -118,9 +118,9 @@ fl_BlockLayout * fl_SectionLayout::getLastBlock(void) const
 	return m_pLastBlock;
 }
 
-UT_Bool fl_SectionLayout::recalculateFields(void)
+bool fl_SectionLayout::recalculateFields(void)
 {
-	UT_Bool bResult = UT_FALSE;
+	bool bResult = false;
 	
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 
@@ -257,7 +257,7 @@ void fl_SectionLayout::_purgeLayout()
 	return;
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
+bool fl_SectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
         if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
         {
@@ -269,37 +269,37 @@ UT_Bool fl_SectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const
 	return pBL->doclistener_populateSpan(pcrs, blockOffset, len);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+bool fl_SectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
 	return pBL->doclistener_populateObject(blockOffset, pcro);
 }
 	
-UT_Bool fl_SectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+bool fl_SectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
 	return pBL->doclistener_insertSpan(pcrs);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+bool fl_SectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
 	return pBL->doclistener_deleteSpan(pcrs);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
+bool fl_SectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
 {
 	return pBL->doclistener_changeSpan(pcrsc);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
+bool fl_SectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
 {
 	return pBL->doclistener_deleteStrux(pcrx);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
+bool fl_SectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	return pBL->doclistener_changeStrux(pcrxc);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
 									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
@@ -317,7 +317,7 @@ UT_Bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const 
 		if (!pNewBL)
 		{
 			UT_DEBUGMSG(("no memory for BlockLayout\n"));
-			return UT_FALSE;
+			return false;
 		}
 
 		return pNewBL->doclistener_insertFirstBlock(pcrx, sdh, 
@@ -325,7 +325,7 @@ UT_Bool fl_SectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const 
 	}
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
 									  PL_StruxDocHandle sdh,
 									  PL_ListenerId lid,
 									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
@@ -335,32 +335,32 @@ UT_Bool fl_SectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, cons
 	return pBL->doclistener_insertSection(pcrx, sdh, lid, pfnBindHandles);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+bool fl_SectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
 	return pBL->doclistener_insertObject(pcro);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+bool fl_SectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
 	return pBL->doclistener_deleteObject(pcro);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
+bool fl_SectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
 {
 	return pBL->doclistener_changeObject(pcroc);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+bool fl_SectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
 	return pBL->doclistener_insertFmtMark(pcrfm);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+bool fl_SectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
 	return pBL->doclistener_deleteFmtMark(pcrfm);
 }
 
-UT_Bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
 {
 	return pBL->doclistener_changeFmtMark(pcrfmc);
 }
@@ -667,14 +667,14 @@ void fl_DocSectionLayout::redrawUpdate(void)
 	}
 }
 
-UT_Bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
+bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
 	PT_AttrPropIndex indexAP = pcrxc->getIndexAP();
 	const PP_AttrProp* pAP = NULL;
 			
-	UT_Bool bres = (m_pDoc->getAttrProp(indexAP, &pAP) && pAP);
+	bool bres = (m_pDoc->getAttrProp(indexAP, &pAP) && pAP);
 	UT_ASSERT(bres);
 	
 	const XML_Char* pszSectionType = NULL;
@@ -742,7 +742,7 @@ UT_Bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_Strux
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTSECTION);
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
 void fl_DocSectionLayout::_lookupProperties(void)
@@ -788,11 +788,11 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	pSectionAP->getProperty((XML_Char*)"column-line", (const XML_Char *&)pszColumnLineBetween);
 	if (pszColumnLineBetween && pszColumnLineBetween[0])
 	{
-		m_bColumnLineBetween = (strcmp(pszColumnLineBetween, "on") == 0) ? UT_TRUE : UT_FALSE;
+		m_bColumnLineBetween = (strcmp(pszColumnLineBetween, "on") == 0) ? true : false;
 	}
 	else
 	{
-		m_bColumnLineBetween = UT_FALSE;
+		m_bColumnLineBetween = false;
 	}
 
 	const char* pszSpaceAfter = NULL;
@@ -951,7 +951,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	
 
 
-	m_bForceNewPage = UT_FALSE;
+	m_bForceNewPage = false;
 }
 
 void fl_DocSectionLayout::deleteEmptyColumns(void)
@@ -962,14 +962,14 @@ void fl_DocSectionLayout::deleteEmptyColumns(void)
 		if (pCol->getLeader() == pCol)
 		{
 			fp_Column* pCol2 = pCol;
-			UT_Bool bAllEmpty = UT_TRUE;
+			bool bAllEmpty = true;
 			fp_Column* pLastInGroup = NULL;
 			
 			while (pCol2)
 			{
 				if (!pCol2->isEmpty())
 				{
-					bAllEmpty = UT_FALSE;
+					bAllEmpty = false;
 				}
 
 				if (!(pCol2->getFollower()))
@@ -1058,7 +1058,7 @@ fl_DocSectionLayout* fl_DocSectionLayout::getPrevDocSection(void) const
 	return (fl_DocSectionLayout*) getPrev();
 }
 
-UT_Bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
+bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
@@ -1068,7 +1068,7 @@ UT_Bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux
 	{
 		// TODO shouldn't this just assert?
 		UT_DEBUGMSG(("no prior SectionLayout"));
-		return UT_FALSE;
+		return false;
 	}
 	
 	// clear all the columns
@@ -1141,7 +1141,7 @@ UT_Bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux
 
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 	
-	return UT_TRUE;
+	return true;
 }
 
 void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
@@ -1264,7 +1264,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 
 					UT_uint32 iNumLinesBeforeOffending = 0;
 					UT_uint32 iNumLinesAfterOffending = 0;
-					UT_Bool bFoundOffending = UT_FALSE;
+					bool bFoundOffending = false;
 					
 					fp_Line* pFirstLineInBlock = pBlock->getFirstLine();
 					pCurLine = pFirstLineInBlock;
@@ -1279,7 +1279,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 							if (pCurLine == pOffendingLine)
 							{
 								iNumLinesAfterOffending = 1;
-								bFoundOffending = UT_TRUE;
+								bFoundOffending = true;
 							}
 							else
 							{
@@ -1502,9 +1502,9 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 	UT_VECTOR_PURGEALL(struct _PageHdrFtrShadowPair*, m_vecPages);
 }
 
-UT_Bool fl_HdrFtrSectionLayout::recalculateFields(void)
+bool fl_HdrFtrSectionLayout::recalculateFields(void)
 {
-	UT_Bool bResult = UT_FALSE;
+	bool bResult = false;
 	
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1663,7 +1663,7 @@ void fl_HdrFtrSectionLayout::changeStrux( fl_DocSectionLayout * pSL)
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
-	        UT_uint32 pos = (UT_uint32) pBL->getPosition(UT_TRUE);
+	        UT_uint32 pos = (UT_uint32) pBL->getPosition(true);
 		pView->setPoint(pos);
 	}
 
@@ -1755,7 +1755,7 @@ void fl_HdrFtrSectionLayout::redrawUpdate(void)
 
 }
 
-UT_Bool fl_HdrFtrSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
+bool fl_HdrFtrSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
@@ -1765,16 +1765,16 @@ UT_Bool fl_HdrFtrSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_St
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
-	return UT_FALSE;
+	return false;
 }
 
 void fl_HdrFtrSectionLayout::_lookupProperties(void)
 {
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
+bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1791,9 +1791,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL,
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1810,9 +1810,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pB
 	return bResult;
 }
 	
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1829,9 +1829,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, c
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
+bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1848,9 +1848,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, c
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
+bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1867,9 +1867,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, c
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
+bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1886,9 +1886,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, 
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
+bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1905,14 +1905,14 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, 
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
 									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1929,7 +1929,7 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, 
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx,
 									  PL_StruxDocHandle sdh,
 									  PL_ListenerId lid,
 									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
@@ -1938,7 +1938,7 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL
 {
 	// TODO this should NEVER happen, right?
 	
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
@@ -1951,9 +1951,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_BlockLayout* pBL
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1970,9 +1970,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL,
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
+bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -1989,9 +1989,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL,
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
+bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -2008,9 +2008,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL,
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -2027,9 +2027,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -2046,9 +2046,9 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL
 	return bResult;
 }
 
-UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
@@ -2158,7 +2158,7 @@ void fl_HdrFtrShadow::redrawUpdate(void)
 		pBL = pBL->getNext();
 	}
 }
-UT_Bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
+bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
@@ -2168,7 +2168,7 @@ UT_Bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChan
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
-	return UT_FALSE;
+	return false;
 }
 
 
@@ -2187,7 +2187,7 @@ fl_ShadowListener::fl_ShadowListener(fl_HdrFtrSectionLayout* pHFSL, fl_HdrFtrSha
 	m_pDoc = pHFSL->getDocLayout()->getDocument();
 	m_pHFSL = pHFSL;
 	m_pShadow = pShadow;
-	m_bListening = UT_FALSE;
+	m_bListening = false;
 	m_pCurrentBL = NULL;
 }
 
@@ -2195,18 +2195,18 @@ fl_ShadowListener::~fl_ShadowListener()
 {
 }
 
-UT_Bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
+bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr)
 {
 	if (!m_bListening)
 	{
-		return UT_TRUE;
+		return true;
 	}
 	
 	UT_ASSERT(m_pShadow);
 	UT_DEBUGMSG(("fl_ShadowListener::populate\n"));
 
-	UT_Bool bResult = UT_FALSE;
+	bool bResult = false;
 
 	switch (pcr->getType())
 	{
@@ -2263,7 +2263,7 @@ UT_Bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 	default:
 	        UT_DEBUGMSG(("Unknown Change record = %d \n",pcr->getType())); 
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 
 finish_up:
@@ -2271,7 +2271,7 @@ finish_up:
 	return bResult;
 }
 
-UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
+bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 										 const PX_ChangeRecord * pcr,
 										 PL_StruxFmtHandle * psfh)
 {
@@ -2296,7 +2296,7 @@ UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 				|| (0 == UT_strcmp(pszSectionType, "doc"))
 				)
 			{
-				m_bListening = UT_FALSE;
+				m_bListening = false;
 			}
 			else
 			{
@@ -2307,18 +2307,18 @@ UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 				{
 					// TODO verify id match
 					
-					m_bListening = UT_TRUE;
+					m_bListening = true;
 				}
 				else
 				{
-					return UT_FALSE;
+					return false;
 				}
 			}
 		}
 		else
 		{
 			// TODO fail?
-			return UT_FALSE;
+			return false;
 		}
 	}
 	break;
@@ -2332,7 +2332,7 @@ UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			if (!pBL)
 			{
 				UT_DEBUGMSG(("no memory for BlockLayout"));
-				return UT_FALSE;
+				return false;
 			}
 
 			m_pCurrentBL = pBL;	
@@ -2351,21 +2351,21 @@ UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 			
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool fl_ShadowListener::change(PL_StruxFmtHandle /*sfh*/,
+bool fl_ShadowListener::change(PL_StruxFmtHandle /*sfh*/,
 								  const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool fl_ShadowListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool fl_ShadowListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									   const PX_ChangeRecord * /*pcr*/,
 									   PL_StruxDocHandle /*sdh*/,
 									   PL_ListenerId /*lid*/,
@@ -2375,12 +2375,12 @@ UT_Bool fl_ShadowListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool fl_ShadowListener::signal(UT_uint32 /*iSignal*/)
+bool fl_ShadowListener::signal(UT_uint32 /*iSignal*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 
-	return UT_FALSE;
+	return false;
 }

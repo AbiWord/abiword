@@ -115,7 +115,7 @@ EV_Win32Menu::~EV_Win32Menu(void)
 	// we let the derived classes handle destruction of m_myMenu if appropriate.
 }
 
-UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
+bool EV_Win32Menu::onCommand(AV_View * pView,
 								HWND hWnd, WPARAM wParam)
 {
 	// TODO do we need the hWnd parameter....
@@ -128,19 +128,19 @@ UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
 
 	// user selected something from the menu.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 
 	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 	if (!pAction)
-		return UT_FALSE;
+		return false;
 
 	const char * szMethodName = pAction->getMethodName();
 	UT_ASSERT(szMethodName);
 	if (!szMethodName)
-		return UT_FALSE;
+		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pWin32App->getEditMethodContainer();
 	UT_ASSERT(pEMC);
@@ -149,14 +149,14 @@ UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	invokeMenuMethod(pView,pEM,0,0);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
+bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 {
 	// create a Win32 menu from the info provided.
 
-	UT_Bool bResult;
+	bool bResult;
 	UT_uint32 tmp = 0;
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
@@ -263,22 +263,22 @@ UT_Bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 	UT_ASSERT(wDbg == menuRoot);
 #endif
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HMENU hMenuBar)
+bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HMENU hMenuBar)
 {
 	// deal with WM_INITMENU.
 
 	if (hMenuBar != m_myMenu)			// these are not different when they
-		return UT_FALSE;				// right-click on us on the menu bar.
+		return false;				// right-click on us on the menu bar.
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
-	UT_Bool bNeedToRedrawMenu = UT_FALSE;
+	bool bNeedToRedrawMenu = false;
 
 	UT_uint32 pos = 0;
-	UT_Bool bResult;
+	bool bResult;
 	UT_Stack stackPos;
 	stackPos.push((void*)pos);
 	UT_Stack stackMenu;
@@ -351,7 +351,7 @@ UT_Bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd,
 					if (bPresent)
 					{
 						RemoveMenu(hMenuBar,cmd,MF_BYCOMMAND);
-						bNeedToRedrawMenu = UT_TRUE;
+						bNeedToRedrawMenu = true;
 					}
 					break;
 				}
@@ -384,7 +384,7 @@ UT_Bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd,
 						mif.fType = MFT_STRING;
 						mif.dwTypeData = (LPTSTR)szLabelName;
 						SetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
-						bNeedToRedrawMenu = UT_TRUE;
+						bNeedToRedrawMenu = true;
 					}
 				}
 				else
@@ -396,7 +396,7 @@ UT_Bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd,
 					mif.wID = cmd;
 					mif.dwTypeData = (LPTSTR)szLabelName;
 					InsertMenuItem(m,pos-1,TRUE,&mif);
-					bNeedToRedrawMenu = UT_TRUE;
+					bNeedToRedrawMenu = true;
 				}
 			}
 			break;
@@ -444,10 +444,10 @@ UT_Bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd,
 	UT_ASSERT(wDbg == hMenuBar);
 #endif
 		
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_Win32Menu::onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
+bool EV_Win32Menu::onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
 								   HWND hWnd, HMENU hMenu, WPARAM wParam)
 {
 	UINT nItemID = (UINT)LOWORD(wParam);
@@ -509,7 +509,7 @@ EV_Win32MenuBar::~EV_Win32MenuBar(void)
 	// TODO should we destroy m_myMenu if set ??
 }
 
-UT_Bool EV_Win32MenuBar::synthesizeMenuBar(XAP_Frame * pFrame)
+bool EV_Win32MenuBar::synthesizeMenuBar(XAP_Frame * pFrame)
 {
 	m_myMenu = CreateMenu();
 
@@ -532,7 +532,7 @@ EV_Win32MenuPopup::~EV_Win32MenuPopup(void)
 		DestroyMenu(m_myMenu);
 }
 
-UT_Bool EV_Win32MenuPopup::synthesizeMenuPopup(XAP_Frame * pFrame)
+bool EV_Win32MenuPopup::synthesizeMenuPopup(XAP_Frame * pFrame)
 {
 	m_myMenu = CreatePopupMenu();
 

@@ -59,8 +59,8 @@ void AP_QNXDialog_Spell::runModal(XAP_Frame * pFrame)
 	// class the base class method to initialize some basic xp stuff
 	AP_Dialog_Spell::runModal(pFrame);
    
-	m_bCancelled = UT_FALSE;
-	UT_Bool bRes = nextMisspelledWord();
+	m_bCancelled = false;
+	bool bRes = nextMisspelledWord();
 
 	// To center the dialog, we need the frame of its parent.
 	XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
@@ -553,7 +553,7 @@ void AP_QNXDialog_Spell::event_AddToDict()
 void AP_QNXDialog_Spell::event_Cancel()
 {
    	if (!done++) {
-		m_bCancelled = UT_TRUE;
+		m_bCancelled = true;
 	}
 }
 

@@ -84,7 +84,7 @@ AP_UnixGnomeApp::~AP_UnixGnomeApp(void)
 
 /*****************************************************************/
 
-UT_Bool	AP_UnixGnomeApp::initialize(void)
+bool	AP_UnixGnomeApp::initialize(void)
 {
 	static const struct poptOption options[] =
 	{{"geometry", 'g', POPT_ARG_STRING, NULL, 0, "set initial frame geometry", "GEOMETRY"},
@@ -124,15 +124,15 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
  	AP_UnixGnomeApp * pMyUnixApp = new AP_UnixGnomeApp(&Args, szAppName);
  
  	// Do a quick and dirty find for "--to"
-  	UT_Bool bShowSplash = UT_TRUE;
- 	UT_Bool bShowApp = UT_TRUE;
+  	bool bShowSplash = true;
+ 	bool bShowApp = true;
   	for (int k = 1; k < Args.m_argc; k++)
   		if (*Args.m_argv[k] == '-')
   			if ((UT_stricmp(Args.m_argv[k],"--to") == 0) ||
  				(UT_stricmp(Args.m_argv[k],"-t") == 0))
   			{
- 				bShowApp = UT_FALSE;
-  				bShowSplash = UT_FALSE;
+ 				bShowApp = false;
+  				bShowSplash = false;
   				break;
   			}
  
@@ -141,8 +141,8 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
   		if (*Args.m_argv[k] == '-')
   			if (UT_stricmp(Args.m_argv[k],"--show") == 0)
   			{
- 				bShowApp = UT_TRUE;
-  				bShowSplash = UT_TRUE;
+ 				bShowApp = true;
+  				bShowSplash = true;
   				break;
   			}
  
@@ -152,7 +152,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
  			if ((UT_stricmp(Args.m_argv[k],"--nosplash") == 0) ||
 				(UT_stricmp(Args.m_argv[k], "-n") == 0))
  			{
- 				bShowSplash = UT_FALSE;
+ 				bShowSplash = false;
  				break;
  			}
 
@@ -198,7 +198,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	return 0;
 }
 
-UT_Bool AP_UnixGnomeApp::parseCommandLine(void)
+bool AP_UnixGnomeApp::parseCommandLine(void)
 {
 	// parse the command line
 	// <app> [--script <scriptname>]* [--dumpstrings] [--to <format>] [--geometry <format>] [<documentname>]*
@@ -299,7 +299,7 @@ UT_Bool AP_UnixGnomeApp::parseCommandLine(void)
 		delete conv;
 
 		if (!show)
-			return UT_TRUE;
+			return true;
 	}
 
 	while ((file = poptGetArg (poptcon)) != NULL) {
@@ -337,7 +337,7 @@ UT_Bool AP_UnixGnomeApp::parseCommandLine(void)
 		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
 	  }
 
-	return UT_TRUE;
+	return true;
 }
 
 

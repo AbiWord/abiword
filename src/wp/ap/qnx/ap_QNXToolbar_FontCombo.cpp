@@ -58,7 +58,7 @@ AP_QNXToolbar_FontCombo::~AP_QNXToolbar_FontCombo(void)
 
 #define FONT_QUERY_CHAR 'A'
 #define FONT_TYPES (PHFONT_SCALABLE | PHFONT_BITMAP | PHFONT_PROP  /* | PHFONT_FIXED*/)
-UT_Bool AP_QNXToolbar_FontCombo::populate(void)
+bool AP_QNXToolbar_FontCombo::populate(void)
 {
 	FontDetails *font_list;
 	int			 index, alloc, count;
@@ -70,7 +70,7 @@ UT_Bool AP_QNXToolbar_FontCombo::populate(void)
 
 	if (!(font_list = (FontDetails *)malloc(alloc * sizeof(*font_list)))) {
 		fprintf(stderr, "ERROR GETTING FONT LIST \n");
-		return UT_FALSE;
+		return false;
 	}
 	memset(font_list, 0, alloc * sizeof(*font_list));
 
@@ -78,7 +78,7 @@ UT_Bool AP_QNXToolbar_FontCombo::populate(void)
 		if (font_list) {
 			free(font_list);
 		}
-		return UT_FALSE;
+		return false;
 	}
 
 	/* Now add the contents into the vector that we use as a reference */
@@ -93,5 +93,5 @@ UT_Bool AP_QNXToolbar_FontCombo::populate(void)
 	if (font_list) {
 		free(font_list);
 	}
-	return UT_TRUE;
+	return true;
 }

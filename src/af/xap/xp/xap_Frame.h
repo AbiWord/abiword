@@ -60,9 +60,9 @@ public:
 	XAP_InputModes(void);
 	~XAP_InputModes(void);
 
-	UT_Bool							createInputMode(const char * szName,
+	bool							createInputMode(const char * szName,
 													EV_EditBindingMap * pBindingMap);
-	UT_Bool							setCurrentMap(const char * szName);
+	bool							setCurrentMap(const char * szName);
 	EV_EditEventMapper *			getCurrentMap(void) const;
 	const char * 					getCurrentMapName(void) const;
 	EV_EditEventMapper *			getMapByName(const char * szName) const;
@@ -83,7 +83,7 @@ public:
 	XAP_Frame(XAP_Frame * f);
 	virtual ~XAP_Frame(void);
 
-	virtual UT_Bool				initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+	virtual bool				initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 										   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
 										   const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
 										   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
@@ -91,11 +91,11 @@ public:
 	
 	virtual	XAP_Frame *			cloneFrame(void)=0;
 	virtual UT_Error   			loadDocument(const char * szFilename, int ieft)=0;
-	virtual UT_Bool				close(void)=0;
-	virtual UT_Bool				raise(void)=0;
-	virtual UT_Bool				show(void)=0;
-	virtual UT_Bool				openURL(const char * szURL)=0;
-	virtual UT_Bool				updateTitle(void);
+	virtual bool				close(void)=0;
+	virtual bool				raise(void)=0;
+	virtual bool				show(void)=0;
+	virtual bool				openURL(const char * szURL)=0;
+	virtual bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode(void) const;
 
@@ -107,7 +107,7 @@ public:
 	const char *				getTitle(int len) const;
 	const char *				getTempNameFromTitle(void) const;
 
-	UT_Bool						isDirty(void) const;
+	bool						isDirty(void) const;
 
 	void						setViewNumber(UT_uint32 n);
 	UT_uint32					getViewNumber(void) const;
@@ -119,7 +119,7 @@ public:
 	virtual void				setXScrollRange(void) = 0;
 	virtual void				setYScrollRange(void) = 0;
 
-	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
+	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y) = 0;
 
 	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } tZoomType;
@@ -131,10 +131,10 @@ public:
 
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
-	virtual void				toggleRuler(UT_Bool /*bRulerOn*/) { } //
-	virtual void				toggleBar(UT_uint32 /* iBarNb */, UT_Bool /* bBarOn */) { }
-	virtual void				toggleStatusBar(UT_Bool /* bStatusBarOn */) { }
-	virtual UT_Bool				getBarVisibility(UT_uint32 iBarNb) { return UT_TRUE; }
+	virtual void				toggleRuler(bool /*bRulerOn*/) { } //
+	virtual void				toggleBar(UT_uint32 /* iBarNb */, bool /* bBarOn */) { }
+	virtual void				toggleStatusBar(bool /* bStatusBarOn */) { }
+	virtual bool				getBarVisibility(UT_uint32 iBarNb) { return true; }
 
    	EV_Mouse *					getMouse(void);
 	EV_Keyboard *				getKeyboard(void);

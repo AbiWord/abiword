@@ -37,7 +37,7 @@ static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 	p->iCurPos += length;
 }
 
-UT_Bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_sint32& iImageHeight)
+bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_sint32& iImageHeight)
 {
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -49,7 +49,7 @@ UT_Bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_s
 
 	if (png_ptr == NULL)
 	{
-		return UT_FALSE;
+		return false;
 	}
 
 	/* Allocate/initialize the memory for image information.  REQUIRED. */
@@ -57,7 +57,7 @@ UT_Bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_s
 	if (info_ptr == NULL)
 	{
 		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-		return UT_FALSE;
+		return false;
 	}
 
 	/* Set error handling if you are using the setjmp/longjmp method (this is
@@ -70,7 +70,7 @@ UT_Bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_s
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 	  
 		/* If we get here, we had a problem reading the file */
-		return UT_FALSE;
+		return false;
 	}
 
 	struct _bb myBB;
@@ -93,6 +93,6 @@ UT_Bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_s
 	iImageWidth = width;
 	iImageHeight = height;
 
-	return UT_TRUE;
+	return true;
 }
 

@@ -48,27 +48,27 @@ public:
 	// even cells; values are in the odd.  the list is
 	// terminated by a null name.
 	
-	UT_Bool	setAttributes(const XML_Char ** attributes);
-	UT_Bool setAttributes(const UT_Vector * pVector);
-	UT_Bool	setProperties(const XML_Char ** properties);
+	bool	setAttributes(const XML_Char ** attributes);
+	bool setAttributes(const UT_Vector * pVector);
+	bool	setProperties(const XML_Char ** properties);
 
-	UT_Bool	setAttribute(const XML_Char * szName, const XML_Char * szValue);
-	UT_Bool	setProperty(const XML_Char * szName, const XML_Char * szValue);
+	bool	setAttribute(const XML_Char * szName, const XML_Char * szValue);
+	bool	setProperty(const XML_Char * szName, const XML_Char * szValue);
 
-	UT_Bool	getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
-	UT_Bool	getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
+	bool	getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
+	bool	getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const;
 
-	UT_Bool getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
-	UT_Bool getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
+	bool getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
+	bool getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
 
-	UT_Bool hasProperties(void) const;
-	UT_Bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
-	UT_Bool areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
-	UT_Bool isExactMatch(const PP_AttrProp * pMatch) const;
+	bool hasProperties(void) const;
+	bool areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
+	bool areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const;
+	bool isExactMatch(const PP_AttrProp * pMatch) const;
 
 	PP_AttrProp * cloneWithReplacements(const XML_Char ** attributes,
 										const XML_Char ** properties,
-										UT_Bool bClearProps) const;
+										bool bClearProps) const;
 	PP_AttrProp * cloneWithElimination(const XML_Char ** attributes,
 									   const XML_Char ** properties) const;
 	void markReadOnly(void);
@@ -81,7 +81,7 @@ protected:
 	
 	UT_AlphaHashTable * m_pAttributes;
 	UT_AlphaHashTable * m_pProperties;
-	UT_Bool				m_bIsReadOnly;
+	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
 };
 

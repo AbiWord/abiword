@@ -105,7 +105,7 @@ public:
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP,
 					 UT_sint32 iUseLayoutResolution,
-					 UT_Bool isField
+					 bool isField
 							);
 	
 	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner);
@@ -120,14 +120,14 @@ public:
 	void		formatAll();
 	void  		updateLayout();
 
-	UT_Bool		isPendingWordForSpell(void) const;
-	UT_Bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
+	bool		isPendingWordForSpell(void) const;
+	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
 								   UT_uint32 iOffset, 
 								   UT_sint32 chg) const;
 	void		setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
-	UT_Bool		checkPendingWordForSpell(void);
+	bool		checkPendingWordForSpell(void);
 	
-	void 		queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
+	void 		queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, bool bHead=false);
 	void 		dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock);
 
 	void		addSection(fl_DocSectionLayout*);
@@ -142,16 +142,16 @@ public:
 	void 				deleteEmptyPages(void);
 
 
-	UT_Bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
-	UT_Bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
-	UT_Bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }
-	UT_Bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
+	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
+	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
+	bool		getSpellCheckNumbers(void) const { return m_bSpellCheckNumbers; }
+	bool		getSpellCheckInternet(void) const { return m_bSpellCheckInternet; }
 
 	void		recheckIgnoredWords();
 
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons |= reason;}
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons &= ~reason;}
-	inline UT_Bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uDocBackgroundCheckReasons & reason);}
+	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uDocBackgroundCheckReasons & reason);}
 	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uDocBackgroundCheckReasons);}
 
 	// These are used as bit flags in a UT_uint32.  The enum is here just
@@ -179,8 +179,8 @@ public:
 	
 protected:
 	static void			_backgroundCheck(UT_Timer * pTimer);
-	void				_toggleAutoSpell(UT_Bool bSpell);
-	void				_toggleAutoSmartQuotes(UT_Bool bSQ);
+	void				_toggleAutoSpell(bool bSpell);
+	void				_toggleAutoSmartQuotes(bool bSQ);
 	
 	static void			_prefsListener(class XAP_App *, class XAP_Prefs *, 
 									   class UT_AlphaHashTable *, void *);
@@ -204,12 +204,12 @@ protected:
 	UT_Vector			m_vecUncheckedBlocks;
 	fl_BlockLayout*		m_pPendingBlockForSpell;	// if NULL, then ignore m_pPendingWordForSpell
 	fl_PartOfBlock*		m_pPendingWordForSpell;
-	UT_Bool				m_bSpellCheckCaps;
-	UT_Bool				m_bSpellCheckNumbers;
-	UT_Bool				m_bSpellCheckInternet;
+	bool				m_bSpellCheckCaps;
+	bool				m_bSpellCheckNumbers;
+	bool				m_bSpellCheckInternet;
         UT_uint32                       m_uDocBackgroundCheckReasons;
-	UT_Bool                         m_bStopSpellChecking; // Handshaking
-	UT_Bool                         m_bImSpellCheckingNow; // Variables
+	bool                         m_bStopSpellChecking; // Handshaking
+	bool                         m_bImSpellCheckingNow; // Variables
 	// smart quote latent instance
 	fl_BlockLayout*		m_pPendingBlockForSmartQuote;  // if NULL, ignore m_uOffsetForSmartQuote
 	UT_uint32           m_uOffsetForSmartQuote;

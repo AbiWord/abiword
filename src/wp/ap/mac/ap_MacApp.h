@@ -38,15 +38,15 @@ public:
 	AP_MacApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~AP_MacApp(void);
 
-	virtual UT_Bool			initialize(void);
+	virtual bool			initialize(void);
 	virtual XAP_Frame *		newFrame(void);
-	virtual UT_Bool			shutdown(void);
+	virtual bool			shutdown(void);
 
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
-	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool);
-	virtual UT_Bool					canPasteFromClipboard(void);
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool);
+	virtual bool					canPasteFromClipboard(void);
 	virtual void					cacheCurrentSelection(AV_View *) {};
 
 	static int MacMain (const char * szAppName, int argc, char **argv);

@@ -36,7 +36,7 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
 {
 	FG_GraphicVector* pFG = new FG_GraphicVector();
 
-	UT_Bool bFoundDataItem = UT_FALSE;
+	bool bFoundDataItem = false;
 	const PD_Document* pDoc = pFL->getDocument();
 	PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
@@ -45,11 +45,11 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
 	  for the image, and get the dataItem.  The bytes in the
 	  dataItem should be a SVG image.
 	*/
-	UT_Bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, UT_FALSE,
+	bool bFoundSpanAP = pFL->getSpanAttrProp(blockOffset, false,
 						    &pFG->m_pSpanAP);
 	if (bFoundSpanAP && pFG->m_pSpanAP)
 	{
-		UT_Bool bFoundDataID = pFG->m_pSpanAP->getAttribute((XML_Char*)"dataid", pFG->m_pszDataID);
+		bool bFoundDataID = pFG->m_pSpanAP->getAttribute((XML_Char*)"dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
 			bFoundDataItem = pDoc->getDataItemDataByName((char*)pFG->m_pszDataID, (const UT_ByteBuf **)&pFG->m_pbbSVG, NULL, NULL);
@@ -66,7 +66,7 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
 FG_GraphicVector::FG_GraphicVector()
 {
 	m_pbbSVG = NULL;
-	m_bOwnSVG = UT_FALSE;
+	m_bOwnSVG = false;
 	m_pSpanAP = NULL;
 	m_pszDataID = NULL;
 }
@@ -113,8 +113,8 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG)
 
 	const XML_Char *pszWidth;
 	const XML_Char *pszHeight;
-	UT_Bool bFoundWidthProperty = m_pSpanAP->getProperty((XML_Char*)"width", pszWidth);
-	UT_Bool bFoundHeightProperty = m_pSpanAP->getProperty((XML_Char*)"height", pszHeight);
+	bool bFoundWidthProperty = m_pSpanAP->getProperty((XML_Char*)"width", pszWidth);
+	bool bFoundHeightProperty = m_pSpanAP->getProperty((XML_Char*)"height", pszHeight);
 
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
@@ -197,7 +197,7 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	  Create the data item
 	*/
 	char * mimetype = UT_strdup("image/svg-xml");
-   	pDoc->createDataItem(szName, UT_FALSE, m_pbbSVG, mimetype, NULL);
+   	pDoc->createDataItem(szName, false, m_pbbSVG, mimetype, NULL);
 
 	/*
 	  Insert the object into the document.
@@ -221,17 +221,17 @@ UT_Error FG_GraphicVector::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	return UT_OK;
 }
 
-UT_Bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
+bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
 {
 	if (m_bOwnSVG)
 		DELETEP(m_pbbSVG);
 
 	m_pbbSVG = pBB;
-	m_bOwnSVG = UT_TRUE;
+	m_bOwnSVG = true;
 
 	//  We want to calculate the dimensions of the image here.
 	UT_Byte * pszWidth, * pszHeight;
-   	if (!UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight)) return UT_FALSE;
+   	if (!UT_SVG_getDimensions(pBB, &pszWidth, &pszHeight)) return false;
 
    	if (UT_determineDimension((const char*)pszWidth, DIM_PX) != DIM_PX)
      		m_iWidth = (UT_sint32)(UT_convertToInches((const char*)pszWidth) * 72);
@@ -246,7 +246,7 @@ UT_Bool FG_GraphicVector::setVector_SVG(UT_ByteBuf* pBB)
    	FREEP(pszWidth); 
    	FREEP(pszHeight);
    
-	return UT_TRUE;
+	return true;
 }
 
 UT_ByteBuf* FG_GraphicVector::getVector_SVG(void)

@@ -28,9 +28,9 @@
 class UT_Stack
 {
 public:
-	UT_Bool			push(void * pVoid);
-	UT_Bool			pop(void ** ppVoid);
-	UT_Bool			viewTop(void ** ppVoid) const;
+	bool			push(void * pVoid);
+	bool			pop(void ** ppVoid);
+	bool			viewTop(void ** ppVoid) const;
 	UT_uint32		getDepth(void) const;
 
 protected:

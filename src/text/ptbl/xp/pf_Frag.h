@@ -62,7 +62,7 @@ public:
 	// not an actual change (editing) operation.  the
 	// is used to initialize the listeners.
 	
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos) const;
 	
 #ifdef PT_TEST

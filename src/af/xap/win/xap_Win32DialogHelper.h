@@ -63,8 +63,8 @@ public:
 									WPARAM	wParam,
 									LPARAM	lParam);
 
-	void				checkButton(UT_sint32 controlId, UT_Bool bChecked = UT_TRUE);
-	void				enableControl(UT_sint32 controlId, UT_Bool bEnabled = UT_TRUE);
+	void				checkButton(UT_sint32 controlId, bool bChecked = true);
+	void				enableControl(UT_sint32 controlId, bool bEnabled = true);
 	void				destroyWindow();
 	void				setDialogTitle(LPCSTR p_str);
 	int					showWindow( int Mode );
@@ -94,9 +94,9 @@ public:
 										LPSTR		p_buffer,
 										UT_sint32	Buffer_length) const;
 
-	UT_Bool				isControlVisible(UT_sint32	controlId) const;
+	bool				isControlVisible(UT_sint32	controlId) const;
 
-	UT_Bool				isParentFrame(const XAP_Win32Frame& frame) const;
+	bool				isParentFrame(const XAP_Win32Frame& frame) const;
 	void				setParentFrame(const XAP_Win32Frame* pFrame);
 	XAP_Win32Frame*		getParentFrame();
 

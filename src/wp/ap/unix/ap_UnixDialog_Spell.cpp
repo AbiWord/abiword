@@ -62,8 +62,8 @@ void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
    // class the base class method to initialize some basic xp stuff
    AP_Dialog_Spell::runModal(pFrame);
    
-   m_bCancelled = UT_FALSE;
-   UT_Bool bRes = nextMisspelledWord();
+   m_bCancelled = false;
+   bool bRes = nextMisspelledWord();
    
    if (bRes) { // we need to prepare the dialog
       GtkWidget * mainWindow = _constructWindow();
@@ -540,7 +540,7 @@ void AP_UnixDialog_Spell::event_AddToDict()
 
 void AP_UnixDialog_Spell::event_Cancel()
 {
-   m_bCancelled = UT_TRUE;
+   m_bCancelled = true;
    gtk_main_quit();
 }
 

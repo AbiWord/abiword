@@ -487,12 +487,12 @@ const ap_bs_Char s_CharTable[] =
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_Default(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
+bool ap_LoadBindings_Default(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 {
 	pThis->_loadMouse(pebm,s_MouseTable,NrElements(s_MouseTable));
 	//pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),s_NVKTable_P,NrElements(s_NVKTable_P));
 	pThis->_loadNVK(pebm,s_NVKTable,NrElements(s_NVKTable),NULL,0);
 	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);
 
-	return UT_TRUE;
+	return true;
 }

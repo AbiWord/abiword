@@ -197,8 +197,8 @@ void  AP_BeOSDialog_WordCount::setUpdateCounter( UT_uint32 iRate )
 {
 	UT_uint32 iFactor = 1000;
 
-//	m_bDestroy_says_stopupdating = UT_FALSE;
-//	m_bAutoUpdate_happening_now = UT_FALSE;
+//	m_bDestroy_says_stopupdating = false;
+//	m_bAutoUpdate_happening_now = false;
 
 	// Make a special case for 0 seconds in
 	// an attempt to reduce screen flicker
@@ -209,7 +209,7 @@ void  AP_BeOSDialog_WordCount::setUpdateCounter( UT_uint32 iRate )
 
 	m_iUpdateRate = iRate;
 
-//	if(m_bAutoWC == UT_TRUE)
+//	if(m_bAutoWC == true)
 	m_pAutoUpdateWC->set(m_iUpdateRate * iFactor);
 }         
 

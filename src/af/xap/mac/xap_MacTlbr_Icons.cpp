@@ -40,7 +40,7 @@ AP_MacToolbar_Icons::~AP_MacToolbar_Icons(void)
 	// TODO handed out, so that we can delete them ??
 }
 
-UT_Bool AP_MacToolbar_Icons::getBitmapForIcon(UT_uint32 maxWidth,
+bool AP_MacToolbar_Icons::getBitmapForIcon(UT_uint32 maxWidth,
 												UT_uint32 maxHeight,
 												UT_RGBColor * pColor,
 												const char * szIconName,
@@ -57,11 +57,11 @@ UT_Bool AP_MacToolbar_Icons::getBitmapForIcon(UT_uint32 maxWidth,
 	const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
 	
-	UT_Bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
+	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
 	if (!bFound)
-		return UT_FALSE;
+		return false;
 
-	UT_Bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,pColor,pBitmap);
+	bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,pColor,pBitmap);
 
 	return bCreated;
 }

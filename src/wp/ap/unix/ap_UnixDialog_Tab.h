@@ -39,7 +39,7 @@ public:
  protected:
 
 	GtkWidget *_lookupWidget( tControl id );
-	virtual void _controlEnable( tControl id, UT_Bool value );
+	virtual void _controlEnable( tControl id, bool value );
         void _spinChanged(void);
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
@@ -87,7 +87,7 @@ public:
 	GtkWidget * m_wTable;
 	UT_sint32 m_iDefaultSpin;
 	GtkObject *  m_oDefaultSpin_adj;
-	UT_Bool	   m_bInSetCall;		// a flag set to tell the change routines to ignore this message
+	bool	   m_bInSetCall;		// a flag set to tell the change routines to ignore this message
 	UT_sint32  m_iGtkListIndex;		// the -1, 0.. (N-1) index for the N tabs
 
 protected:

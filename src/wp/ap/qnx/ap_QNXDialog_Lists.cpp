@@ -140,7 +140,7 @@ static int s_update (void)
 {
 	printf("Static update \n");
 //	Current_Dialog->updateDialog();
-	return UT_TRUE;
+	return true;
 }
 
 
@@ -159,8 +159,8 @@ void AP_QNXDialog_Lists::destroy()
 	if (!m_mainWindow) {
 		return;
 	}
-	m_bDestroy_says_stopupdating = UT_TRUE;
-	while (m_bAutoUpdate_happening_now == UT_TRUE) ;
+	m_bDestroy_says_stopupdating = true;
+	while (m_bAutoUpdate_happening_now == true) ;
 	m_pAutoUpdateLists->stop();
 	m_answer = AP_Dialog_Lists::a_CLOSE;	
 	modeless_cleanup();
@@ -218,7 +218,7 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 
 	// Next construct a timer for auto-updating the dialog
 	m_pAutoUpdateLists = UT_Timer::static_constructor(autoupdateLists,this);
-	m_bDestroy_says_stopupdating = UT_FALSE;
+	m_bDestroy_says_stopupdating = false;
 
 	// OK fire up the auto-updater for 0.5 secs
 	//m_pAutoUpdateLists->set(500);
@@ -231,11 +231,11 @@ void    AP_QNXDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 	AP_QNXDialog_Lists * pDialog =  (AP_QNXDialog_Lists *) pTimer->getInstanceData();
 	// Handshaking code
 
-	if( pDialog->m_bDestroy_says_stopupdating != UT_TRUE)
+	if( pDialog->m_bDestroy_says_stopupdating != true)
 	{
-		pDialog->m_bAutoUpdate_happening_now = UT_TRUE;
+		pDialog->m_bAutoUpdate_happening_now = true;
 		pDialog->updateDialog();
-		pDialog->m_bAutoUpdate_happening_now = UT_FALSE;
+		pDialog->m_bAutoUpdate_happening_now = false;
 	}
 }
 
@@ -316,28 +316,28 @@ void  AP_QNXDialog_Lists::setMemberVariables(void)
 	}
 	printf("setMemberVariable newListType to %d from index %d \n", m_newListType, *value);
 
-	if(m_bisCustomized == UT_TRUE)
+	if(m_bisCustomized == true)
 	{
 	        _gatherData();
 	}
 
-	m_bStartNewList = UT_FALSE;
-	m_bApplyToCurrent = UT_FALSE;
-	m_bStartSubList = UT_FALSE;
+	m_bStartNewList = false;
+	m_bApplyToCurrent = false;
+	m_bStartSubList = false;
 
 	PtGetResource(m_wStartNewList, Pt_ARG_FLAGS, &value, 0);
 	if ((*value) & Pt_SET) {
-		m_bStartNewList = UT_TRUE;
+		m_bStartNewList = true;
 	}
 
 	PtGetResource(m_wApplyCurrent, Pt_ARG_FLAGS, &value, 0);
 	if ((*value) & Pt_SET) {
-		m_bApplyToCurrent = UT_TRUE;
+		m_bApplyToCurrent = true;
 	}
 
 	PtGetResource(m_wStartSubList, Pt_ARG_FLAGS, &value, 0);
 	if ((*value) & Pt_SET) {
-		m_bStartSubList = UT_TRUE;
+		m_bStartSubList = true;
 	}
 
 }
@@ -352,7 +352,7 @@ void  AP_QNXDialog_Lists::applyClicked(void)
 
 void  AP_QNXDialog_Lists::customChanged(void)
 {
-	if(m_bisCustomFrameHidden == UT_TRUE) {
+	if(m_bisCustomFrameHidden == true) {
 		fillWidgetFromDialog();
 
 		PtRealizeWidget(m_wCustomFrame);
@@ -360,15 +360,15 @@ void  AP_QNXDialog_Lists::customChanged(void)
 		PtExtentWidget(PtWidgetParent(PtWidgetParent(m_wCustomFrame)));
 		PtExtentWidget(m_mainWindow);
 
-		m_bisCustomFrameHidden = UT_FALSE;
-		m_bisCustomized = UT_TRUE;
+		m_bisCustomFrameHidden = false;
+		m_bisCustomized = true;
 		setMemberVariables();
 		previewExposed();
 	} else {
 		PtUnrealizeWidget(m_wCustomFrame);
 
-		m_bisCustomFrameHidden = UT_TRUE;
-		m_bisCustomized = UT_FALSE;
+		m_bisCustomFrameHidden = true;
+		m_bisCustomized = false;
 		_setData();
 	}
 }
@@ -382,11 +382,11 @@ void AP_QNXDialog_Lists::fillWidgetFromDialog(void)
 void AP_QNXDialog_Lists::updateDialog(void)
 {
 	List_Type oldlist = m_iListType;
-	if(m_bisCustomized == UT_FALSE)
+	if(m_bisCustomized == false)
 		_populateWindowData();
-	if((oldlist != m_iListType) && (m_bisCustomized == UT_FALSE))
+	if((oldlist != m_iListType) && (m_bisCustomized == false))
 		m_newListType = m_iListType;
-	if(m_bisCustomized == UT_FALSE)
+	if(m_bisCustomized == false)
 		_setData();
 }
 
@@ -467,7 +467,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_SET);
 	togCustomize = PtCreateWidget(PtToggleButton, ctlgroup, n, args);	
 	PtAddCallback(togCustomize, Pt_CB_ACTIVATE, s_customChanged, this);
-	m_bisCustomFrameHidden = UT_TRUE;
+	m_bisCustomFrameHidden = true;
 
 	n = 0;
 #define OUTLINE_GROUP (Pt_TOP_OUTLINE | Pt_TOP_BEVEL | \
@@ -702,7 +702,7 @@ void AP_QNXDialog_Lists::_populateWindowData (void)
 
 	PopulateDialogData();
 	
-	if(m_isListAtPoint == UT_TRUE) {
+	if(m_isListAtPoint == true) {
 	  // Button 0 is stop list, button 2 is startsub list
 		PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Stop_Current_List), 0);
 		PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_Sub), 0);

@@ -43,7 +43,7 @@ public:
 				const char * szTitle,
 				const char * szSoftwareNameAndVersion,
 				XAP_UnixFontManager * fontManager,
-				UT_Bool		 bIsFile,
+				bool		 bIsFile,
 				XAP_App *pApp);
 	virtual ~PS_Graphics();
 
@@ -87,12 +87,12 @@ public:
 	virtual void drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);	
    	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType);
 	
-	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
+	virtual bool queryProperties(GR_Graphics::Properties gp) const;
 	
-	virtual UT_Bool startPrint(void);
-	virtual UT_Bool startPage(const char * szPagelabel, UT_uint32 pageNumber,
-							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
-	virtual UT_Bool endPrint(void);
+	virtual bool startPrint(void);
+	virtual bool startPage(const char * szPagelabel, UT_uint32 pageNumber,
+							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual bool endPrint(void);
 
 	virtual void setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
@@ -107,11 +107,11 @@ public:
 
 protected:
 	UT_uint32		_scale(UT_uint32 units) const;
-	UT_Bool			_startDocument(void);
-	UT_Bool			_startPage(const char * szPageLabel, UT_uint32 pageNumber,
-							   UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
-	UT_Bool			_endPage(void);
-	UT_Bool			_endDocument(void);
+	bool			_startDocument(void);
+	bool			_startPage(const char * szPageLabel, UT_uint32 pageNumber,
+							   bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+	bool			_endPage(void);
+	bool			_endDocument(void);
 	void			_emit_DocumentNeededResources(void);
 	void			_emit_IncludeResource(void);
 	void			_emit_PrologMacros(void);
@@ -129,10 +129,10 @@ protected:
 	const char *	m_szFilename;
 	const char *	m_szTitle;
 	const char *	m_szSoftwareNameAndVersion;
-	UT_Bool			m_bStartPrint;
-	UT_Bool			m_bStartPage;
-	UT_Bool			m_bNeedStroked;
-	UT_Bool			m_bIsFile;
+	bool			m_bStartPrint;
+	bool			m_bStartPage;
+	bool			m_bNeedStroked;
+	bool			m_bIsFile;
 	UT_sint32		m_iLineWidth;
 
 	GR_Graphics::ColorSpace	m_cs;

@@ -38,18 +38,18 @@ public:
 	pp_TableAttrProp();
 	~pp_TableAttrProp();
 
-	UT_Bool					addAP(PP_AttrProp * pAP,
+	bool					addAP(PP_AttrProp * pAP,
 								  UT_uint32 * pSubscript);
-	UT_Bool					createAP(UT_uint32 * pSubscript);
+	bool					createAP(UT_uint32 * pSubscript);
 
-	UT_Bool					createAP(const XML_Char ** attributes,
+	bool					createAP(const XML_Char ** attributes,
 									 const XML_Char ** properties,
 									 UT_uint32 * pSubscript);
 
-	UT_Bool					createAP(const UT_Vector * pVector,
+	bool					createAP(const UT_Vector * pVector,
 									 UT_uint32 * pSubscript);
 
-	UT_Bool					findMatch(const PP_AttrProp * pMatch,
+	bool					findMatch(const PP_AttrProp * pMatch,
 									  UT_uint32 * pSubscript) const;
 	
 	const PP_AttrProp *		getAP(UT_uint32 subscript) const;

@@ -164,7 +164,7 @@ void FontWin::UpdateFontList()
 }
 void FontWin::MessageReceived(BMessage *msg)
 {
-	UT_Bool underline, overline, strikeout;
+	bool underline, overline, strikeout;
 	uint16 fontFace;
 	
 	switch (msg->what)
@@ -198,8 +198,8 @@ void FontWin::MessageReceived(BMessage *msg)
 				BStringItem *theItem=dynamic_cast<BStringItem *>(theView->ItemAt(index));
 				m_CurrentFont.SetFamilyAndStyle(NULL,theItem->Text());
 				
-				m_FontChooser->setFontWeight("normal"); //m_FontChooser->m_bChangedFontWeight = UT_TRUE;
-				m_FontChooser->setFontStyle("normal"); // m_FontChooser->m_bChangedFontStyle = UT_TRUE;
+				m_FontChooser->setFontWeight("normal"); //m_FontChooser->m_bChangedFontWeight = true;
+				m_FontChooser->setFontStyle("normal"); // m_FontChooser->m_bChangedFontStyle = true;
 						
 				if(*theItem->Text() == 'B')//m_FontChooser->setFontStyle(theItem->Text());
 					m_FontChooser->setFontWeight("bold");
@@ -316,7 +316,7 @@ void FontWin::SelectFontPrefs()
 {
 	int i;
 	const XML_Char *fontFamily, *fontSize, *fontWeight , *fontStyled , *fontColor;
-	UT_Bool fontUnderline, fontOverline, fontStrikeOut;
+	bool fontUnderline, fontOverline, fontStrikeOut;
 	
 	m_FontChooser->getChangedFontFamily(&fontFamily);
 	m_FontChooser->getChangedFontSize(&fontSize);
@@ -366,8 +366,8 @@ void FontWin::SelectFontPrefs()
 	BCheckBox* strikeOut = (BCheckBox *)FindView("undercheck");
 	BCheckBox* underLine = (BCheckBox *)FindView("strikecheck");
 	
-	strikeOut->SetValue((fontStrikeOut == UT_TRUE));
-	underLine->SetValue((fontUnderline == UT_TRUE));
+	strikeOut->SetValue((fontStrikeOut == true));
+	underLine->SetValue((fontUnderline == true));
 	
 	rgb_color textColor;
 	sscanf(fontColor,"%02x%02x%02x",&textColor.red,&textColor.green,&textColor.blue);
@@ -456,7 +456,7 @@ XAP_BeOSDialog_FontChooser::XAP_BeOSDialog_FontChooser(XAP_DialogFactory * pDlgF
 												   XAP_Dialog_Id id)
 	: XAP_Dialog_FontChooser(pDlgFactory,id)
 {
-	bAbusingTheFontSize = UT_FALSE;
+	bAbusingTheFontSize = false;
 }
 
 XAP_BeOSDialog_FontChooser::~XAP_BeOSDialog_FontChooser(void)
@@ -475,14 +475,14 @@ void XAP_BeOSDialog_FontChooser::runModal(XAP_Frame * pFrame)
                 FontWin *newwin = new FontWin(&msg);
 		newwin->SetDlg(this);			
 	
-	m_bChangedFontFamily	= UT_TRUE;
-	m_bChangedFontSize		= UT_TRUE;
-	m_bChangedFontWeight	= UT_TRUE;
-	m_bChangedFontStyle		= UT_TRUE;
-	m_bChangedColor			= UT_TRUE;
-	m_bChangedUnderline		= UT_TRUE;
-	m_bChangedOverline		= UT_TRUE;
-	m_bChangedStrikeOut		= UT_TRUE;
+	m_bChangedFontFamily	= true;
+	m_bChangedFontSize		= true;
+	m_bChangedFontWeight	= true;
+	m_bChangedFontStyle		= true;
+	m_bChangedColor			= true;
+	m_bChangedUnderline		= true;
+	m_bChangedOverline		= true;
+	m_bChangedStrikeOut		= true;
 	
 		//Take the information here ...
 		newwin->Lock();

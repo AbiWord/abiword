@@ -122,14 +122,14 @@ XAP_DiskStringSet::~XAP_DiskStringSet(void)
 	DELETEP(m_pFallbackStringSet);
 }
 
-UT_Bool XAP_DiskStringSet::setLanguage(const XML_Char * szLanguageName)
+bool XAP_DiskStringSet::setLanguage(const XML_Char * szLanguageName)
 {
 	if (m_szLanguageName)
 		free((XML_Char *)m_szLanguageName);
 	m_szLanguageName = NULL;
 	if (szLanguageName && *szLanguageName)
 		UT_XML_cloneString((XML_Char *&)m_szLanguageName,szLanguageName);
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_DiskStringSet::setFallbackStringSet(XAP_StringSet * pFallback)
@@ -137,9 +137,9 @@ void XAP_DiskStringSet::setFallbackStringSet(XAP_StringSet * pFallback)
 	m_pFallbackStringSet = pFallback;
 }
 
-UT_Bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
+bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 {
-	UT_Bool bFoundMultiByte = UT_FALSE;
+	bool bFoundMultiByte = false;
 	XML_Char * szDup = NULL;
 	if (szString && *szString)
 	{
@@ -164,13 +164,13 @@ UT_Bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		length = str.getLength();
 		szDup = (XML_Char *)malloc(length+1);
 		if (!szDup)
-			return UT_FALSE;
+			return false;
 		memcpy(szDup,str.getPointer(0),length);
 		szDup[length]='\0';
 	}
 
 	void * pOldValue = NULL;
-	UT_Bool bResult = (m_vecStringsXAP.setNthItem(id,szDup,&pOldValue) == 0);
+	bool bResult = (m_vecStringsXAP.setNthItem(id,szDup,&pOldValue) == 0);
 	UT_ASSERT(pOldValue == NULL);		// duplicate string for this id
 
 	if (bFoundMultiByte)
@@ -213,10 +213,10 @@ static struct { const XML_Char * szName; XAP_String_Id id; } s_map[] =
 
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString)
+bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString)
 {
 	if (!szId || !*szId || !szString || !*szString)
-		return UT_TRUE;
+		return true;
 	
 	UT_uint32 kLimit = NrElements(s_map);
 	UT_uint32 k;
@@ -227,7 +227,7 @@ UT_Bool XAP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szSt
 
 	// TODO should we promote this message to a message box ??
 	UT_DEBUGMSG(("Unknown ID in string file [%s=\"%s\"]\n",szId,szString));
-	return UT_FALSE;
+	return false;
 }
 
 /*****************************************************************
@@ -340,7 +340,7 @@ void XAP_DiskStringSet::_startElement(const XML_Char *name, const XML_Char **att
 MemoryError:
 	UT_DEBUGMSG(("Memory error parsing strings file.\n"));
 InvalidFileError:
-	m_parserState.m_parserStatus = UT_FALSE;			// cause parser driver to bail
+	m_parserState.m_parserStatus = false;			// cause parser driver to bail
 	return;
 }
 
@@ -357,9 +357,9 @@ void XAP_DiskStringSet::_charData(const XML_Char * /* s */, int /* len */)
 }
 
 
-UT_Bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
+bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 {
-	UT_Bool bResult = UT_FALSE;			// assume failure
+	bool bResult = false;			// assume failure
 #ifdef HAVE_LIBXML2
 	xmlDocPtr dok = xmlParseFile(szFilename);
 	if (dok == NULL)
@@ -372,7 +372,7 @@ UT_Bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	    xmlNodePtr node = xmlDocGetRootElement(dok);
 	    _scannode(dok,node,0);
 	    xmlFreeDoc(dok);
-	    bResult = UT_TRUE;
+	    bResult = true;
 	  }
 #else
 	FILE * fp = NULL;
@@ -380,7 +380,7 @@ UT_Bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	int done = 0;
 	char buf[4096];
 
-	m_parserState.m_parserStatus = UT_TRUE;
+	m_parserState.m_parserStatus = true;
 
 	if (!szFilename || !*szFilename)
 	{
@@ -446,7 +446,7 @@ UT_Bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	}
 #endif
 
-	bResult = UT_TRUE;
+	bResult = true;
 
 Cleanup:
 	if (parser)

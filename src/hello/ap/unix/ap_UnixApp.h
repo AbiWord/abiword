@@ -32,20 +32,20 @@ class AP_UnixApp : public XAP_UnixApp
 	AP_UnixApp(XAP_Args* pArgs, const char* szAppName);
 	~AP_UnixApp(void);
 
-	virtual UT_Bool                initialize(void);
+	virtual bool                initialize(void);
 	virtual XAP_Frame*             newFrame(void);
-	virtual UT_Bool                shutdown(void);
+	virtual bool                shutdown(void);
 	virtual const XAP_StringSet*   getStringSet(void) const;
     virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
-	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard);
-	virtual UT_Bool					canPasteFromClipboard(void);
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard);
+	virtual bool					canPasteFromClipboard(void);
 	
-	virtual UT_Bool					parseCommandLine(void);
+	virtual bool					parseCommandLine(void);
 
 	virtual void					setSelectionStatus(AV_View * pView);
 	virtual void					clearSelection(void);
-	virtual UT_Bool					getCurrentSelection(const char** formatList,
+	virtual bool					getCurrentSelection(const char** formatList,
 														void ** ppData, UT_uint32 * pLen,
 														const char **pszFormatFound);
 	virtual void					cacheCurrentSelection(AV_View *);

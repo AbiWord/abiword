@@ -54,7 +54,7 @@ public:
 	XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_BeOSApp(void);
 
-	virtual UT_Bool					initialize(void);
+	virtual bool					initialize(void);
 	//For handling the double click messages, containing new file info
 	virtual XAP_Frame * 				newFrame(const char *path) = 0;
 	virtual void					reallyExit(void);
@@ -64,8 +64,8 @@ public:
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getAbiSuiteAppDir(void) const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
-	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool) = 0;
-	virtual UT_Bool							canPasteFromClipboard(void) = 0;
+	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool) = 0;
+	virtual bool							canPasteFromClipboard(void) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 	virtual const char *					getUserPrivateDirectory(void);
 	virtual void 						_setAbiSuiteLibDir(void);

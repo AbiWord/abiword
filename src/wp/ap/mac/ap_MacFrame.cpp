@@ -36,20 +36,20 @@ AP_MacFrame::~AP_MacFrame(void)
 {
 }
 
-UT_Bool AP_MacFrame::initialize()
+bool AP_MacFrame::initialize()
 {
 	if (!initFrameData())
-		return UT_FALSE;
+		return false;
 
 	if (!XAP_MacFrame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 									AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 									AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
 									AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 									AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
-		return UT_FALSE;
+		return false;
 
 	_createTopLevelWindow();
-	return UT_TRUE;
+	return true;
 }
 
 XAP_Frame *	AP_MacFrame::cloneFrame(void)
@@ -67,10 +67,10 @@ void AP_MacFrame::setStatusMessage(const char * /*szMsg*/)
 UT_Error AP_MacFrame::loadDocument(const char * /*szFilename*/, int /*ieft*/)
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED); 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool AP_MacFrame::initFrameData(void)
+bool AP_MacFrame::initFrameData(void)
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
@@ -79,7 +79,7 @@ UT_Bool AP_MacFrame::initFrameData(void)
 	AP_FrameData* pData = new AP_FrameData(m_app);
 	m_pData = (void*) pData;
 	
-	return (pData ? UT_TRUE : UT_FALSE);
+	return (pData ? true : false);
 }
 
 void AP_MacFrame::killFrameData(void)
@@ -88,22 +88,22 @@ void AP_MacFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
-UT_Bool	AP_MacFrame::close(void)
+bool	AP_MacFrame::close(void)
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED); 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool	AP_MacFrame::raise(void)
+bool	AP_MacFrame::raise(void)
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED); 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool	AP_MacFrame::show(void)
+bool	AP_MacFrame::show(void)
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED); 
-	return UT_TRUE;
+	return true;
 }
 
 XAP_DialogFactory *AP_MacFrame::getDialogFactory(void)

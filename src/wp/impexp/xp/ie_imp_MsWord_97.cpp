@@ -38,7 +38,7 @@
 #include "ie_impGraphic.h"
 
 
-#define X_ReturnIfFail(exp,error)     do { UT_Bool b = (exp); if (!b) return (error); } while (0)
+#define X_ReturnIfFail(exp,error)     do { bool b = (exp); if (!b) return (error); } while (0)
 #define X_ReturnNoMemIfError(exp)   X_ReturnIfFail(exp,UT_IE_NOMEMORY)
 
 #define X_CheckError(v)         do {  if (!(v))                             \
@@ -933,7 +933,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// TODO: This is rather crude, because we don't parse OLE files.
 	// TODO: For the time being, we assume that any OLE file is an
@@ -952,7 +952,7 @@ UT_Bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, UT_uint32 iNumby
 	{
 		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
 		{
-			return(UT_TRUE);
+			return(true);
 		}
 	}
 	magic = "Documento Microsoft Word 6" ;
@@ -961,7 +961,7 @@ UT_Bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, UT_uint32 iNumby
 	{
 		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
 		{
-			return(UT_TRUE);
+			return(true);
 		}
 	}
 	magic = "MSWordDoc" ;
@@ -970,7 +970,7 @@ UT_Bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, UT_uint32 iNumby
 	{
 		if ( strncmp(szBuf+magicoffset, magic, strlen(magic)) == 0 )
 		{
-			return(UT_TRUE);
+			return(true);
 		}
 	}
 	if ( iNumbytes > 8 )
@@ -978,17 +978,17 @@ UT_Bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, UT_uint32 iNumby
 		if ( szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
 			 szBuf[2] == (char)0 && szBuf[3] == (char)0 )
 		{
-			return(UT_TRUE);
+			return(true);
 		}
 		if ( szBuf[0] == 'P' && szBuf[1] == 'O' &&
 			 szBuf[2] == '^' && szBuf[3] == 'Q' && szBuf[4] == '`' )
 		{
-			return(UT_TRUE);
+			return(true);
 		}
 		if ( szBuf[0] == (char)0xfe && szBuf[1] == (char)0x37 &&
 			 szBuf[2] == (char)0 && szBuf[3] == (char)0x23 )
 		{
-			return(UT_TRUE);
+			return(true);
 		}
 		// OLE magic:
 		// TODO: Dig through the OLE file
@@ -997,19 +997,19 @@ UT_Bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, UT_uint32 iNumby
 			 szBuf[4] == (char)0xa1 && szBuf[5] == (char)0xb1 &&
 			 szBuf[6] == (char)0x1a && szBuf[7] == (char)0xe1 )
 		{
-			return(UT_TRUE);
+			return(true);
 		}
 		if ( szBuf[0] == (char)0xdb && szBuf[1] == (char)0xa5 &&
 			 szBuf[2] == (char)0x2d && szBuf[3] == (char)0 &&
 			 szBuf[4] == (char)0 && szBuf[5] == (char)0 )
 		{
-			return(UT_TRUE);
+			return(true);
 		}
 	}
-	return(UT_FALSE);
+	return(false);
 }
 
-UT_Bool IE_Imp_MsWord_97::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_MsWord_97::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".doc") == 0);
 }
@@ -1022,17 +1022,17 @@ UT_Error IE_Imp_MsWord_97::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
 				       const char ** pszSuffixList,
 				       IEFileType * ft)
 {
 	*pszDesc = "Microsoft Word (.doc)";
 	*pszSuffixList = "*.doc";
 	*ft = IEFT_MsWord_97;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_MsWord_97::SupportsFileType(IEFileType ft)
+bool IE_Imp_MsWord_97::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_MsWord_97 == ft);
 }
@@ -1121,7 +1121,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
      }
 
    X_ReturnNoMemIfError(m_pDocument->appendObject(PTO_Image, propsArray));
-   X_CheckError0(m_pDocument->createDataItem((char*)propsName, UT_FALSE,
+   X_CheckError0(m_pDocument->createDataItem((char*)propsName, false,
 					     pBBPNG, (void*)mimetype, NULL));
 
  HandleImgEnd:

@@ -49,26 +49,26 @@ IE_Imp_WML::~IE_Imp_WML()
 }
 
 IE_Imp_WML::IE_Imp_WML(PD_Document * pDocument)
-	: IE_Imp_XML(pDocument, UT_FALSE)
+	: IE_Imp_XML(pDocument, false)
 {
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_WML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_WML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
   // simply search for "<wml"
   // no doubt, this could be better
   // but this should sufficefor all I care
 
   if(strstr(szBuf, "<wml") == NULL)
-    return UT_FALSE;
+    return false;
 
-  return UT_TRUE;
+  return true;
 }
 
-UT_Bool IE_Imp_WML::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_WML::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".wml") == 0);
 }
@@ -81,17 +81,17 @@ UT_Error IE_Imp_WML::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Imp_WML::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_WML::GetDlgLabels(const char ** pszDesc,
 				  const char ** pszSuffixList,
 				  IEFileType * ft)
 {
 	*pszDesc = "WML (.wml)";
 	*pszSuffixList = "*.wml";
 	*ft = IEFT_WML;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_WML::SupportsFileType(IEFileType ft)
+bool IE_Imp_WML::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_WML == ft);
 }
@@ -189,7 +189,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 		{
 		  XML_Char *p_val;
 		  XML_Char *buf[3];
-		  UT_Bool left = UT_FALSE;
+		  bool left = false;
 
 		  UT_XML_cloneString(buf[0], (XML_Char*)"props");
 		  buf[2] = NULL;
@@ -197,7 +197,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 		  p_val = (XML_Char*)_getXMLPropValue((XML_Char *)"align", atts);
 		  if(!p_val || !atts) {
 		    UT_DEBUGMSG(("WML: got <p> with no props\n"));
-		    left = UT_TRUE;
+		    left = true;
 		  }
 		  else {
 		    if(!UT_XML_strcmp(p_val, (XML_Char *)"center"))
@@ -209,7 +209,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 			UT_XML_cloneString(buf[1], (XML_Char*)"text-align:right");
 		      }
 		    else
-		      left = UT_TRUE;
+		      left = true;
 		  }
 		  X_CheckError(m_pDocument->appendStrux(PTX_Block, (left ? NULL : (const XML_Char **)buf)));
 		}

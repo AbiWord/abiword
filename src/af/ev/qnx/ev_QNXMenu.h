@@ -42,18 +42,18 @@ public:
 				const char * szMenuLabelSetName);
 	virtual ~EV_QNXMenu(void);
 
-	UT_Bool				synthesizeMenu(PtWidget_t * wMenuRoot);
-	UT_Bool				synthesizeMenu(void * wMenuRoot);
-	UT_Bool				menuEvent(XAP_Menu_Id id);
-	virtual UT_Bool		refreshMenu(AV_View * pView) = 0;
+	bool				synthesizeMenu(PtWidget_t * wMenuRoot);
+	bool				synthesizeMenu(void * wMenuRoot);
+	bool				menuEvent(XAP_Menu_Id id);
+	virtual bool		refreshMenu(AV_View * pView) = 0;
 
 	XAP_QNXFrame * 	getFrame(void);
 
 protected:
 
-	//UT_Bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
-	UT_Bool				_refreshMenu(AV_View * pView, void * wMenuRoot);
-	UT_Bool				_isItemPresent(XAP_Menu_Id id) const;
+	//bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
+	bool				_refreshMenu(AV_View * pView, void * wMenuRoot);
+	bool				_isItemPresent(XAP_Menu_Id id) const;
 
 	XAP_QNXApp *		m_pQNXApp;
 	XAP_QNXFrame *		m_pQNXFrame;
@@ -76,8 +76,8 @@ public:
 				   const char * szMenuLabelSetName);
 	virtual ~EV_QNXMenuBar(void);
 
-	UT_Bool				synthesizeMenuBar(void);
-	virtual UT_Bool		refreshMenu(AV_View * pView);
+	bool				synthesizeMenuBar(void);
+	virtual bool		refreshMenu(AV_View * pView);
 
 protected:
 	PtWidget_t *			m_wMenuBar;
@@ -95,8 +95,8 @@ public:
 					 const char * szMenuLabelSetName);
 	virtual ~EV_QNXMenuPopup(void);
 
-	UT_Bool				synthesizeMenuPopup();
-	virtual UT_Bool		refreshMenu(AV_View * pView);
+	bool				synthesizeMenuPopup();
+	virtual bool		refreshMenu(AV_View * pView);
 	virtual PtWidget_t *	getMenuHandle(void) const;
 
 

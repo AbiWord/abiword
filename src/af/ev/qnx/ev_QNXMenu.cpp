@@ -137,11 +137,11 @@ XAP_QNXFrame * EV_QNXMenu::getFrame(void)
 	return m_pQNXFrame;
 }
 
-UT_Bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
+bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
 {
 	// user selected something from the menu.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 
 	const EV_Menu_ActionSet * pMenuActionSet = m_pQNXApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
@@ -151,7 +151,7 @@ UT_Bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
-		return UT_FALSE;
+		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pQNXApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
@@ -166,7 +166,7 @@ UT_Bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
 
 	invokeMenuMethod(m_pQNXFrame->getCurrentView(),pEM,0,0);
 
-	return UT_TRUE;
+	return true;
 }
 
 static const char * _ev_FakeName(const char * sz, UT_uint32 k)
@@ -303,7 +303,7 @@ static int get_hotkey_code(const char *str) {
 
 
 
-UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
+bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 {
 	PtArg_t args[10];
 
@@ -315,7 +315,7 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
-	UT_Bool bResult;
+	bool bResult;
 	UT_Stack stack;
 	stack.push(wMenuRoot);
 
@@ -480,22 +480,22 @@ UT_Bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 	}
 
 	// make sure our last item on the stack is the one we started with
-	return UT_TRUE;
+	return true;
 }
 
 static void set_menu_enabled(PtWidget_t *w, int enabled, int checked) {
 	int flags;
 
 /* Photon funniness ... why can't ghosting work? */
-	flags =  (enabled == UT_TRUE) ? Pt_SELECTABLE : (Pt_BLOCKED | Pt_GHOST)  ;
-	flags |= (checked == UT_TRUE) ? Pt_SET : 0;
+	flags =  (enabled == true) ? Pt_SELECTABLE : (Pt_BLOCKED | Pt_GHOST)  ;
+	flags |= (checked == true) ? Pt_SET : 0;
 	PtSetResource(w, Pt_ARG_FLAGS, flags, Pt_BLOCKED | Pt_GHOST | Pt_SET | Pt_SELECTABLE);
 }
 
 //TODO: This code gets called way too often, or maybe we need to be able
 //      to whip through all of the non-relevant widgets more quickly.  In
 //      any case it is on the TODO list.
-UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
+bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 {
 	PtWidget_t *item, *wParent;
 
@@ -506,7 +506,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 
 	// we keep a stack of the widgets so that we can properly
 	// parent the menu items and deal with nested pull-rights.
-	UT_Bool bResult;
+	bool bResult;
 	UT_Stack stack;
 	stack.push(wMenuRoot);
 
@@ -532,16 +532,16 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 			
 				// see if we need to enable/disable and/or check/uncheck it.
 				
-				UT_Bool bEnable = UT_TRUE;
-				UT_Bool bCheck = UT_FALSE;
+				bool bEnable = true;
+				bool bCheck = false;
 				
 				if (pAction->hasGetStateFunction())
 				{
 					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
 					if (mis & EV_MIS_Gray)
-						bEnable = UT_FALSE;
+						bEnable = false;
 					if (mis & EV_MIS_Toggled)
-						bCheck = UT_TRUE;
+						bCheck = true;
 				}
 
 				// must have an entry for each and every layout item in the vector
@@ -690,7 +690,7 @@ UT_Bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 	UT_ASSERT(bResult);
 	UT_ASSERT(wDbg == wMenuRoot);
 
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -713,7 +713,7 @@ EV_QNXMenuBar::~EV_QNXMenuBar(void)
 	//TODO: Keep track of our alloced strucutres and free them too
 }
 
-UT_Bool EV_QNXMenuBar::synthesizeMenuBar(void)
+bool EV_QNXMenuBar::synthesizeMenuBar(void)
 {
     PtArg_t args[10];
 	int 	n = 0;
@@ -735,10 +735,10 @@ UT_Bool EV_QNXMenuBar::synthesizeMenuBar(void)
 								m_pQNXFrame->getTopLevelWindow(), 
 								n, args);
 	synthesizeMenu(m_wMenuBar);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_QNXMenuBar::refreshMenu(AV_View * pView)
+bool EV_QNXMenuBar::refreshMenu(AV_View * pView)
 {
 	// this makes an exception for initialization where a view
 	// might not exist... silly to refresh the menu then; it will
@@ -746,7 +746,7 @@ UT_Bool EV_QNXMenuBar::refreshMenu(AV_View * pView)
 	if (pView)
 		return _refreshMenu(pView,m_wMenuBar);
 
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -797,7 +797,7 @@ static int popup_unrealized(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 }
 
 
-UT_Bool EV_QNXMenuPopup::synthesizeMenuPopup()
+bool EV_QNXMenuPopup::synthesizeMenuPopup()
 {
     PtArg_t args[10];
 	int 	n = 0;
@@ -810,10 +810,10 @@ UT_Bool EV_QNXMenuPopup::synthesizeMenuPopup()
 
 	synthesizeMenu(m_wMenuPopup);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_QNXMenuPopup::refreshMenu(AV_View * pView)
+bool EV_QNXMenuPopup::refreshMenu(AV_View * pView)
 {
 	// this makes an exception for initialization where a view
 	// might not exist... silly to refresh the menu then; it will
@@ -821,5 +821,5 @@ UT_Bool EV_QNXMenuPopup::refreshMenu(AV_View * pView)
 	if (pView)
 		return _refreshMenu(pView,m_wMenuPopup);
 
-	return UT_TRUE;
+	return true;
 }

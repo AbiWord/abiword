@@ -69,10 +69,10 @@ static struct ap_bs_Char s_CharTable[] =
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_DeadBreve(AP_BindingSet * pThis,
+bool ap_LoadBindings_DeadBreve(AP_BindingSet * pThis,
 								  EV_EditBindingMap * pebm)
 {
 	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),NULL,0);
 	
-	return UT_TRUE;
+	return true;
 }

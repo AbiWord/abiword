@@ -136,7 +136,7 @@ IE_Imp_Psion::IE_Imp_Psion(PD_Document * pDocument)
 /*****************************************************************/
 
 // Output all styles.
-UT_Bool IE_Imp_Psion::applyStyles(psiconv_word_styles_section style_sec)
+bool IE_Imp_Psion::applyStyles(psiconv_word_styles_section style_sec)
 {
 	// UT_Byte is `unsigned char', so we need some nasty casts :-(
 	class UT_ByteBuf props(256);
@@ -150,20 +150,20 @@ UT_Bool IE_Imp_Psion::applyStyles(psiconv_word_styles_section style_sec)
 			style = style_sec->normal;
 		else if (!(style = (psiconv_word_style) 
 		                    psiconv_list_get(style_sec->styles,i)))
-			return UT_FALSE;
+			return false;
 		// UT_DEBUGMSG(("Importing style %s\n",style->name));
 		props.truncate(0);
 		if (!getParagraphAttributes(style->paragraph,&props))
-			return UT_FALSE;
+			return false;
 		if (!getCharacterAttributes(style->character,&props))
-			return UT_FALSE;
+			return false;
 		// Not yet implemented: hotkey
 		// Not yet implemented: built_in 
 		// Not yet implemented: outline_level
 		
 		// Append the string termination character '\000'
 		if (!(props.append((unsigned char *) "",1)))
-			return UT_FALSE;
+			return false;
 
 		if (i == -1)
 			stylename = (const XML_Char *) "Normal";
@@ -184,16 +184,16 @@ UT_Bool IE_Imp_Psion::applyStyles(psiconv_word_styles_section style_sec)
 
 		if (!( m_pDocument->appendStyle(propsArray))) {
 			UT_DEBUGMSG(("AppendStyle failed...\n"));
-			return UT_FALSE;
+			return false;
 		}
 	}
-	return UT_TRUE;
+	return true;
 }
 
 // Set all page (section) attributes, and do an appendStrux(PTX_Section,...)
 // These settings are global for the whole document: Psion documents
 // contain only one single section.
-UT_Bool IE_Imp_Psion::applyPageAttributes(psiconv_page_layout_section layout)
+bool IE_Imp_Psion::applyPageAttributes(psiconv_page_layout_section layout)
 {
 	// UT_Byte is `unsigned char', so we need some nasty casts :-(
 	class UT_ByteBuf props(256);
@@ -206,22 +206,22 @@ UT_Bool IE_Imp_Psion::applyPageAttributes(psiconv_page_layout_section layout)
 	// left margin
 	sprintf(buffer,"page-margin-left:%6.3fcm",layout->left_margin);
 	if (!(props.append((unsigned char *) buffer,strlen(buffer))))
-		return UT_FALSE;
+		return false;
 	
 	// right margin
 	sprintf(buffer,"; page-margin-right:%6.3fcm",layout->right_margin);
 	if (!(props.append((unsigned char *) buffer,strlen(buffer))))
-		return UT_FALSE;
+		return false;
 
 	// top margin
 	sprintf(buffer,"; page-margin-top:%6.3fcm",layout->top_margin);
 	if (!(props.append((unsigned char *) buffer,strlen(buffer))))
-		return UT_FALSE;
+		return false;
 
 	// bottom margin
 	sprintf(buffer,"; page-margin-bottom:%6.3fcm",layout->bottom_margin);
 	if (!(props.append((unsigned char *) buffer,strlen(buffer))))
-		return UT_FALSE;
+		return false;
 
 #if 0
 	// page width: not yet implemented; what would its name be?!?
@@ -237,7 +237,7 @@ UT_Bool IE_Imp_Psion::applyPageAttributes(psiconv_page_layout_section layout)
 
 	// Append the string termination character '\000'
 	if (!(props.append((unsigned char *) "",1)))
-		return UT_FALSE;
+		return false;
 
 	// UT_DEBUGMSG(("Page: %s\n",props.getPointer(0)));
 	const XML_Char* propsArray[3];
@@ -253,7 +253,7 @@ UT_Bool IE_Imp_Psion::applyPageAttributes(psiconv_page_layout_section layout)
 // Note that you have to append a string termination character yourself!
 // props is allocated on the heap if it is NULL.
 // If props is not empty, we start with '; ', else we do not.
-UT_Bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
+bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
                                              UT_ByteBuf *props)
 {
 	// This is only used for fixed string expansions, and should be big
@@ -262,11 +262,11 @@ UT_Bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 
 	int i;
 	psiconv_tab tab;
-	UT_Bool props_allocated = UT_FALSE;
+	bool props_allocated = false;
 
 	if (!props) {
 		props = new UT_ByteBuf(256);
-		props_allocated = UT_TRUE;
+		props_allocated = true;
 	}
 
 	// If this is a bulleted paragraph with indent, we need to make sure
@@ -372,7 +372,7 @@ UT_Bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 			if (!(tab = (psiconv_tab) psiconv_list_get(layout->tabs->extras,
 			                                           i))) {
 				UT_ASSERT(tab != NULL);
-				return(UT_FALSE);
+				return(false);
 			}
 			sprintf(buffer, "%s%6.3fcm/%c",	
 					i==0?"":",",
@@ -393,19 +393,19 @@ UT_Bool IE_Imp_Psion::getParagraphAttributes(psiconv_paragraph_layout layout,
 	
 	// Not yet implemented: borders
 	
-	return UT_TRUE;
+	return true;
 
 ERROR:
 	if (props_allocated)
 		delete props;
-	return  UT_FALSE;
+	return  false;
 }
 
 // Amazing. This actually works, even though it is stolen from the RTF importer
 // and mutilated severely by me.
 // It does an appendStrux setting the current paragraph attributes and opening
 // a new paragraph.
-UT_Bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
+bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
                       const XML_Char *stylename)
 {
 	// UT_Byte is `unsigned char', so we need some nasty casts :-(
@@ -416,11 +416,11 @@ UT_Bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 	if (layout->on_next_page) {
 		UT_UCSChar ucs = UCS_FF;
 		if (!(m_pDocument->appendSpan(&ucs,1)))
-			return UT_FALSE;
+			return false;
 	}
 	// Get all attributes into prop
 	if (!(getParagraphAttributes(layout,&props)))
-		return UT_FALSE;
+		return false;
 
 	// HACK: Handle bullets
 	// This is really, really ugly. One day, when fields have stabilized,
@@ -466,7 +466,7 @@ UT_Bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 	}
 
 	if (!(m_pDocument->appendStrux(PTX_Block,propsArray)))
-		return UT_FALSE;
+		return false;
 	
 	// We need to append a field and some other stuff...
 	if (layout->bullet->on) {
@@ -474,24 +474,24 @@ UT_Bool IE_Imp_Psion::applyParagraphAttributes(psiconv_paragraph_layout layout,
 		propsArray[1] = (const XML_Char *) "list_label";
 		propsArray[2] = (const XML_Char *) NULL;
 		if (!(m_pDocument->appendObject(PTO_Field,propsArray)))
-			return UT_FALSE;
+			return false;
 
 		// If this is a bullet-with-indent, we need a tab to get the
 		// text alligned to the selected left margin.
 		if (layout->bullet->indent) {
 			UT_UCSChar uc = (UT_UCSChar) UCS_TAB;
 			if (!(m_pDocument->appendSpan(&uc,1)))
-				return UT_FALSE;
+				return false;
 		}
 	}
-	return UT_TRUE;
+	return true;
 }
 
 // Get all character-related attributes and append them to props.
 // Note that you have to append a string termination character yourself!
 // props is allocated on the heap if it is NULL.
 // If props is not empty, we start with '; ', else we do not.
-UT_Bool IE_Imp_Psion::getCharacterAttributes(psiconv_character_layout layout,
+bool IE_Imp_Psion::getCharacterAttributes(psiconv_character_layout layout,
                                              UT_ByteBuf *props)
 {
 	// This is only used for fixed string expansions, and should be big
@@ -499,11 +499,11 @@ UT_Bool IE_Imp_Psion::getCharacterAttributes(psiconv_character_layout layout,
 	char buffer[64]; 
 	int fontsize;
 
-	UT_Bool props_allocated = UT_FALSE;
+	bool props_allocated = false;
 
 	if (!props) {
 		props = new UT_ByteBuf(256);
-		props_allocated = UT_TRUE;
+		props_allocated = true;
 	}
 
 	if (props->getLength())
@@ -588,12 +588,12 @@ UT_Bool IE_Imp_Psion::getCharacterAttributes(psiconv_character_layout layout,
 	if (!(props->append((unsigned char *) buffer,strlen(buffer))))
 		goto ERROR;
 
-	return UT_TRUE;
+	return true;
 
 ERROR:
 	if (props_allocated)
 		delete props;
-	return  UT_FALSE;
+	return  false;
 }
 	
 
@@ -601,14 +601,14 @@ ERROR:
 // and mutilated severely by me.
 // It does an appendFmt setting the current character attributes. The next
 // appendSpan will use these settings.
-UT_Bool IE_Imp_Psion::applyCharacterAttributes(psiconv_character_layout layout)
+bool IE_Imp_Psion::applyCharacterAttributes(psiconv_character_layout layout)
 {
 	// UT_Byte is `unsigned char', so we need some nasty casts :-(
 	class UT_ByteBuf props(256);
 
 	// Get all attributes into prop
 	if (!(getCharacterAttributes(layout,&props)))
-		return UT_FALSE;
+		return false;
 
 	// Append the string termination character '\000'
 	props.append((unsigned char *) "",1);
@@ -626,7 +626,7 @@ UT_Bool IE_Imp_Psion::applyCharacterAttributes(psiconv_character_layout layout)
 // Read length character from input, translate them to the internal
 // Abiword format, and append them to the gbBlock.
 // You must insure the input has at least length characters!
-UT_Bool IE_Imp_Psion::prepareCharacters(char *input, int length,
+bool IE_Imp_Psion::prepareCharacters(char *input, int length,
                                         UT_GrowBuf *gbBlock)
 {
 	class UT_Mbtowc mbtowc;
@@ -671,9 +671,9 @@ UT_Bool IE_Imp_Psion::prepareCharacters(char *input, int length,
 		else
 			 uc = (UT_UCSChar) wc;
 		if (!(gbBlock->ins(gbBlock->getLength(),&uc,1)))
-			return UT_FALSE;
+			return false;
 	}
-	return UT_TRUE;
+	return true;
 }
 
 UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
@@ -785,28 +785,28 @@ UT_Error IE_Imp_Psion_Word::parseFile(psiconv_file psionfile)
 }
 
 
-UT_Bool IE_Imp_Psion_Word::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_Psion_Word::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	
 	UT_uint32 i;
 
 	psiconv_buffer pl = psiconv_buffer_new();
 	if (!pl) 
-		return UT_FALSE;
+		return false;
 	for (i=0; i < iNumbytes; i++)
 		if ((psiconv_buffer_add(pl,szBuf[i]))) {
 			psiconv_buffer_free(pl);
-			return UT_FALSE;
+			return false;
 		}
 	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
 	psiconv_buffer_free(pl);
 	if (filetype == psiconv_word_file)
-		return UT_TRUE;
+		return true;
 	else
-		return UT_FALSE;
+		return false;
 }
 
-UT_Bool IE_Imp_Psion_Word::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_Psion_Word::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".psiword") == 0);
 }
@@ -819,17 +819,17 @@ UT_Error IE_Imp_Psion_Word::StaticConstructor(PD_Document * pDocument, IE_Imp **
 }
 
 // We take the .psi suffix for now, but this will need to change to none at all
-UT_Bool	IE_Imp_Psion_Word::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_Psion_Word::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
 	*pszDesc = "Psion Word (.psiword)";
 	*pszSuffixList = "*.psiword";
 	*ft = IEFT_Psion_Word;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_Psion_Word::SupportsFileType(IEFileType ft)
+bool IE_Imp_Psion_Word::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_Psion_Word == ft);
 }
@@ -858,28 +858,28 @@ UT_Error IE_Imp_Psion_TextEd::parseFile(psiconv_file psionfile)
 }
 
 
-UT_Bool IE_Imp_Psion_TextEd::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_Psion_TextEd::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	
 	UT_uint32 i;
 
 	psiconv_buffer pl = psiconv_buffer_new();
 	if (!pl) 
-		return UT_FALSE;
+		return false;
 	for (i=0; i < iNumbytes; i++)
 		if ((psiconv_buffer_add(pl,szBuf[i]))) {
 			psiconv_buffer_free(pl);
-			return UT_FALSE;
+			return false;
 		}
 	psiconv_file_type_t filetype = psiconv_file_type(pl,NULL,NULL);
 	psiconv_buffer_free(pl);
 	if (filetype == psiconv_texted_file)
-		return UT_TRUE;
+		return true;
 	else
-		return UT_FALSE;
+		return false;
 }
 
-UT_Bool IE_Imp_Psion_TextEd::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_Psion_TextEd::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".psitext") == 0);
 }
@@ -892,17 +892,17 @@ UT_Error IE_Imp_Psion_TextEd::StaticConstructor(PD_Document * pDocument, IE_Imp 
 }
 
 // We take the .psi suffix for now, but this will need to change to none at all
-UT_Bool	IE_Imp_Psion_TextEd::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_Psion_TextEd::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
 	*pszDesc = "Psion TextEd (.psitext)";
 	*pszSuffixList = "*.psitext";
 	*ft = IEFT_Psion_TextEd;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_Psion_TextEd::SupportsFileType(IEFileType ft)
+bool IE_Imp_Psion_TextEd::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_Psion_TextEd == ft);
 }

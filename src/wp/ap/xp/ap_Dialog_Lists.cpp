@@ -42,8 +42,8 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 :	XAP_Dialog_Modeless(pDlgFactory, id),
 	m_pView(0),
 	m_answer(a_CLOSE),
-	m_isListAtPoint(UT_FALSE),
-	m_previousListExistsAtPoint(UT_FALSE),
+	m_isListAtPoint(false),
+	m_previousListExistsAtPoint(false),
 	m_newListType(NOT_A_LIST),
 	m_fAlign(0),
 	m_fIndent(0),
@@ -58,16 +58,16 @@ AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	m_newListLevel(0),
 	m_iID(0),
 	m_iListType(NOT_A_LIST),
-	m_bStartList(UT_FALSE),
-	m_bStopList(UT_FALSE),
-	m_bChangeStartValue(UT_FALSE),
+	m_bStartList(false),
+	m_bStopList(false),
+	m_bChangeStartValue(false),
 	m_bresumeList(0),
 	m_bStartNewList(0),
 	m_bApplyToCurrent(0),
 	m_bStartSubList(0),
 	m_bResumeList(0),
 	m_bisCustomized(0),
-	m_bguiChanged(UT_FALSE),
+	m_bguiChanged(false),
 	m_paragraphPreview(0),
 	m_pListsPreview(0),
 	m_pFakeAuto(0)
@@ -141,7 +141,7 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 	//
 	generateFakeLabels();
 	m_isListAtPoint = getBlock()->isListItem();
-	if(m_isListAtPoint == UT_FALSE)
+	if(m_isListAtPoint == false)
 	{
 		m_newListType = NOT_A_LIST;
 	}
@@ -157,7 +157,7 @@ void AP_Dialog_Lists::_createPreviewFromGC(GR_Graphics* gc,
 	DELETEP(m_paragraphPreview);
 
 	UT_GrowBuf gb;
-	UT_Bool hadMem = getBlock()->getBlockBuf(&gb);
+	bool hadMem = getBlock()->getBlockBuf(&gb);
 
 	UT_UCSChar * tmp = NULL;
 	if (hadMem && gb.getLength() > 0)
@@ -257,16 +257,16 @@ void AP_Dialog_Lists::Apply(void)
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 	}
 
-	if(m_bisCustomized == UT_FALSE)
+	if(m_bisCustomized == false)
 	{
 		m_iLevel = getBlock()->getLevel();
-		if(m_iLevel == 0 || m_bStartSubList == UT_TRUE)
+		if(m_iLevel == 0 || m_bStartSubList == true)
 		{
 			m_iLevel++;
 		}
 		fillUncustomizedValues();
 	}
-	if(m_bApplyToCurrent == UT_TRUE && m_isListAtPoint == UT_TRUE)
+	if(m_bApplyToCurrent == true && m_isListAtPoint == true)
 	{
 		getView()->changeListStyle(getAutoNum(),m_newListType,m_iStartValue,(XML_Char *) m_pszDelim,(XML_Char *) m_pszDecimal, m_pszFont,m_fAlign,m_fIndent);
 		if(getAutoNum() != NULL)
@@ -276,17 +276,17 @@ void AP_Dialog_Lists::Apply(void)
 		}
 		return;
 	}
-	if(m_bStartNewList == UT_TRUE)
+	if(m_bStartNewList == true)
 	{ 
-		if(m_isListAtPoint == UT_TRUE || m_newListType == NOT_A_LIST)
+		if(m_isListAtPoint == true || m_newListType == NOT_A_LIST)
 		{
-			if(getBlock()->isListItem() == UT_TRUE)
+			if(getBlock()->isListItem() == true)
 			{
 				getBlock()->StopList();
 			}
 			return;
 		}
-		else if (m_bisCustomized == UT_TRUE)
+		else if (m_bisCustomized == true)
 		{
 		        getBlock()->getDocument()->disableListUpdates();
 			getBlock()->StartList(m_newListType,m_iStartValue,m_pszDelim,m_pszDecimal,m_pszFont,m_fAlign,m_fIndent, 0,1); 
@@ -294,14 +294,14 @@ void AP_Dialog_Lists::Apply(void)
 			getBlock()->getDocument()->updateDirtyLists();
 			return;
 		}
-		else if (m_bisCustomized == UT_FALSE)
+		else if (m_bisCustomized == false)
 		{
 			getBlock()->StartList(getBlock()->getListStyleString(m_newListType));
 		}
 	}
-	if(m_bStartSubList == UT_TRUE && m_newListType != NOT_A_LIST )
+	if(m_bStartSubList == true && m_newListType != NOT_A_LIST )
 	{ 
-		if(m_isListAtPoint == UT_TRUE)
+		if(m_isListAtPoint == true)
 		{
 			UT_uint32 curlevel = getBlock()->getLevel();
 			UT_uint32 currID = getBlock()->getAutoNum()->getID();
@@ -402,17 +402,17 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 void  AP_Dialog_Lists::fillFakeLabels(void)
 {
 
-       if(m_bisCustomized == UT_FALSE)
+       if(m_bisCustomized == false)
        {
 	      m_iLevel = getBlock()->getLevel();
-	      if(m_iLevel == 0 || m_bStartSubList == UT_TRUE)
+	      if(m_iLevel == 0 || m_bStartSubList == true)
 	      {
 		      m_iLevel++;
 	      }
 	      PopulateDialogData();
-	      if(m_bguiChanged == UT_FALSE)
+	      if(m_bguiChanged == false)
 	              m_newListType = m_iListType;
-	      m_bguiChanged = UT_FALSE;
+	      m_bguiChanged = false;
        }
        if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
        {
@@ -491,11 +491,11 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 
 	if (getBlock()->getPreviousList() != NULL)
 	{
-		m_previousListExistsAtPoint = UT_TRUE;
+		m_previousListExistsAtPoint = true;
 	}
 	else
 	{
-		m_previousListExistsAtPoint = UT_FALSE;
+		m_previousListExistsAtPoint = false;
 	}
 	getBlock()->getListAttributesVector( &va);
 	getBlock()->getListPropertyVector( &vp);
@@ -607,7 +607,7 @@ void AP_Dialog_Lists::PopulateDialogData(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	m_isListAtPoint = getBlock()->isListItem();
-	if(m_isListAtPoint == UT_TRUE)
+	if(m_isListAtPoint == true)
 	{
 		fillDialogFromBlock();
 	}
@@ -616,7 +616,7 @@ void AP_Dialog_Lists::PopulateDialogData(void)
 		//	m_newListType = NOT_A_LIST;
 		fillUncustomizedValues();
 	}
-	if(m_isListAtPoint == UT_TRUE)
+	if(m_isListAtPoint == true)
 	{
 		const char * tmp1 = (char *) getBlock()->getListLabel();
 		strcpy( m_curListLabel, tmp1);
@@ -667,7 +667,7 @@ void AP_Dialog_Lists::PopulateDialogData(void)
 
 UT_uint32 AP_Dialog_Lists::getID(void)
 {
-       if(getBlock()->isListItem() == UT_FALSE)
+       if(getBlock()->isListItem() == false)
        {
 	       return 0;
        }
@@ -695,7 +695,7 @@ UT_sint32  AP_Dialog_Lists::findVecItem(UT_Vector * v, char * key)
 		return -1;
 }
 
-UT_Bool AP_Dialog_Lists::isLastOnLevel(void)
+bool AP_Dialog_Lists::isLastOnLevel(void)
 {
 	return getAutoNum()->isLastOnLevel(getBlock()->getStruxDocHandle());
 }
@@ -721,10 +721,10 @@ void AP_Dialog_Lists::setActiveFrame(XAP_Frame *pFrame)
 	notifyActiveFrame(getActiveFrame());
 }
 
-UT_Bool AP_Dialog_Lists::setView(FV_View * view)
+bool AP_Dialog_Lists::setView(FV_View * view)
 {
 	m_pView = (FV_View *) getActiveFrame()->getCurrentView();
-	return UT_TRUE;
+	return true;
 }
 
 FV_View * AP_Dialog_Lists::getView(void)
@@ -753,7 +753,7 @@ AP_Lists_preview::AP_Lists_preview(GR_Graphics * gc, AP_Dialog_Lists * pLists)
 	m_fAlign(0.0f),
 	m_fIndent(0.0f),
 	m_iLine_height(0),
-	m_bFirst(UT_TRUE)
+	m_bFirst(true)
 {
 	m_pszFont[0] = '\0';
 	m_iLine_pos[0] = 0;
@@ -804,7 +804,7 @@ void AP_Lists_preview::draw(void)
 	//
 	// clear our screen
 	//
-	if(m_bFirst == UT_TRUE)
+	if(m_bFirst == true)
 	{
 	         m_gc->clearArea(0, 0, iWidth, iHeight);
 	}

@@ -46,8 +46,8 @@ public:
 	XAP_UnixGnomeFrame(XAP_UnixFrame * f);
 	virtual ~XAP_UnixGnomeFrame(void);
 
-	virtual UT_Bool				openURL(const char * szURL);
-	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
+	virtual bool				openURL(const char * szURL);
+	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
 
 protected:

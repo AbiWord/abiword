@@ -26,6 +26,6 @@
 
 class UT_ByteBuf;
 
-UT_Bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_sint32& iImageHeight);
+bool UT_PNG_getDimensions(const UT_ByteBuf* pBB, UT_sint32& iImageWidth, UT_sint32& iImageHeight);
 
 #endif /* UT_PNG_H */

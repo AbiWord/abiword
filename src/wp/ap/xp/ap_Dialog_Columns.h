@@ -32,7 +32,7 @@ class AP_Columns_preview_drawer
 {
 public:
 
-	void			draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, UT_Bool bLines);
+	void			draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLines);
 };
 
 class AP_Columns_preview : public XAP_Preview
@@ -45,7 +45,7 @@ public:
 	// data twiddlers
 	void			draw(void);
 
-	void			set(UT_uint32 iColumns, UT_Bool bLines)
+	void			set(UT_uint32 iColumns, bool bLines)
 					{
 						m_iColumns = iColumns;
 						m_bLineBetween = bLines;
@@ -58,7 +58,7 @@ private:
 protected:
 
 	UT_uint32		m_iColumns;
-	UT_Bool			m_bLineBetween;
+	bool			m_bLineBetween;
 
 
 };
@@ -70,7 +70,7 @@ public:
 	virtual ~AP_Dialog_Columns(void);
 
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
-	virtual void					enableLineBetweenControl(UT_Bool bState = UT_TRUE) = 0;
+	virtual void					enableLineBetweenControl(bool bState = true) = 0;
 
 
 	void							setColumns(UT_uint32 iColumns);
@@ -79,8 +79,8 @@ public:
 	AP_Dialog_Columns::tAnswer		getAnswer(void) const;
 	UT_uint32						getColumns(void) const {return m_iColumns;}
 
-	void							setLineBetween(UT_Bool bState);
-	UT_Bool							getLineBetween(void) const { return m_bLineBetween;}
+	void							setLineBetween(bool bState);
+	bool							getLineBetween(void) const { return m_bLineBetween;}
 
 	
 
@@ -98,7 +98,7 @@ protected:
 private:
 
 	UT_uint32						m_iColumns;
-	UT_Bool							m_bLineBetween;
+	bool							m_bLineBetween;
 };
 
 #endif /* AP_Dialog_Columns_H */

@@ -38,7 +38,7 @@ public:
 	virtual void			setAnswer(AP_Dialog_Paragraph::tAnswer a) { m_answer = a; };
 
 protected:
-	virtual void			_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
+	virtual void			_syncControls(tControl changed, bool bAll = false);
 	virtual void			_populateWindowData();
 	
        	void _redrawPreview();

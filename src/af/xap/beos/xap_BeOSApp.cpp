@@ -45,7 +45,7 @@ XAP_BeOSApp::~XAP_BeOSApp(void)
 	DELETEP(m_pBeOSToolbarIcons);
 }
 
-UT_Bool XAP_BeOSApp::initialize(void)
+bool XAP_BeOSApp::initialize(void)
 {
 	// let our base class do it's thing.
 	
@@ -56,7 +56,7 @@ UT_Bool XAP_BeOSApp::initialize(void)
 	
 	// do any thing we need here...
 	
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_BeOSApp::reallyExit(void)

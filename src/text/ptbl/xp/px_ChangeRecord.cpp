@@ -30,7 +30,7 @@ PX_ChangeRecord::PX_ChangeRecord(PXType type,
 	m_type = type;
 	m_position = position;
 	m_indexAP = indexNewAP;
-	m_persistant = UT_TRUE;
+	m_persistant = true;
 }
 
 PX_ChangeRecord::~PX_ChangeRecord()
@@ -56,7 +56,7 @@ PT_AttrPropIndex PX_ChangeRecord::getIndexAP(void) const
 	return m_indexAP;
 }
 
-UT_Bool PX_ChangeRecord::getPersistance(void) const
+bool PX_ChangeRecord::getPersistance(void) const
 {
 	return m_persistant;
 }

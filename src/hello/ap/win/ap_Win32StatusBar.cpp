@@ -67,7 +67,7 @@ void AP_Win32StatusBar::setView(AV_View * pView)
 
 /*****************************************************************/
 
-UT_Bool AP_Win32StatusBar::RegisterClass(XAP_Win32App * app)
+bool AP_Win32StatusBar::RegisterClass(XAP_Win32App * app)
 {
 	WNDCLASSEX  wndclass;
 	ATOM a;
@@ -92,7 +92,7 @@ UT_Bool AP_Win32StatusBar::RegisterClass(XAP_Win32App * app)
 	a = RegisterClassEx(&wndclass);
 	UT_ASSERT(a);
 
-	return UT_TRUE;
+	return true;
 }
 
 HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,

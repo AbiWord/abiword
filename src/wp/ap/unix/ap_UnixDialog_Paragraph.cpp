@@ -60,7 +60,7 @@ AP_UnixDialog_Paragraph::AP_UnixDialog_Paragraph(XAP_DialogFactory * pDlgFactory
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
 	m_unixGraphics = NULL;
-	m_bEditChanged = UT_FALSE;
+	m_bEditChanged = false;
 }
 
 AP_UnixDialog_Paragraph::~AP_UnixDialog_Paragraph(void)
@@ -181,7 +181,7 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
-	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
+	_syncControls(id_MENU_ALIGNMENT, true);
 
 	// Run into the GTK event loop for this window.
 	gtk_main();
@@ -255,13 +255,13 @@ void AP_UnixDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
 		// to the screen, we repaint from the member variable
 		_syncControls(id);
 		
-		m_bEditChanged = UT_FALSE;
+		m_bEditChanged = false;
 	}
 }
 
 void AP_UnixDialog_Paragraph::event_SpinChanged(GtkWidget * widget)
 {
-	m_bEditChanged = UT_TRUE;
+	m_bEditChanged = true;
 }
 	   
 void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
@@ -1285,7 +1285,7 @@ void AP_UnixDialog_Paragraph::_populateWindowData(void)
 								 (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE));
 }
 
-void AP_UnixDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+void AP_UnixDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
 {
 	// let parent sync any member variables first
 	AP_Dialog_Paragraph::_syncControls(changed, bAll);

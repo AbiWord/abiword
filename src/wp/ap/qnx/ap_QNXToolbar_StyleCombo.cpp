@@ -49,7 +49,7 @@ AP_QNXToolbar_StyleCombo::~AP_QNXToolbar_StyleCombo(void)
 
 /*****************************************************************/
 
-UT_Bool AP_QNXToolbar_StyleCombo::populate(void)
+bool AP_QNXToolbar_StyleCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
@@ -77,6 +77,6 @@ UT_Bool AP_QNXToolbar_StyleCombo::populate(void)
 	}
 #endif 
 
-	return UT_TRUE;
+	return true;
 }
 

@@ -54,7 +54,7 @@ AP_BeOSToolbar_FontCombo::~AP_BeOSToolbar_FontCombo(void)
 	// nothing to purge.  contents are static strings
 }
 
-UT_Bool AP_BeOSToolbar_FontCombo::populate(void)
+bool AP_BeOSToolbar_FontCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
@@ -80,5 +80,5 @@ UT_Bool AP_BeOSToolbar_FontCombo::populate(void)
        } 
    	}
 
-	return UT_TRUE;
+	return true;
 }

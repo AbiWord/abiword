@@ -45,7 +45,7 @@ void pf_Frag_Text::setIndexAP(PT_AttrPropIndex indexNewAP)
 	m_indexAP = indexNewAP;
 }
 
-UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												PT_DocPosition dpos,
 												PT_BlockOffset blockOffset) const
 {
@@ -56,13 +56,13 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 								   dpos, m_indexAP,
 								   m_bufIndex,m_length,blockOffset,m_pField);
 	if (!pcr)
-		return UT_FALSE;
+		return false;
 
 	*ppcr = pcr;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												PT_DocPosition dpos,
 												PT_BlockOffset blockOffset,
 												PT_BlockOffset startFragOffset,
@@ -80,10 +80,10 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 								   (endFragOffset-startFragOffset),
 								   blockOffset+startFragOffset,m_pField);
 	if (!pcr)
-		return UT_FALSE;
+		return false;
 
 	*ppcr = pcr;
-	return UT_TRUE;
+	return true;
 }
 
 void pf_Frag_Text::changeLength(UT_uint32 newLength)

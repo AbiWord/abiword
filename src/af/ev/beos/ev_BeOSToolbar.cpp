@@ -56,12 +56,12 @@ EV_BeOSToolbar::~EV_BeOSToolbar(void) {
 }
 
 // This is used to do the initial toolbar creation
-UT_Bool EV_BeOSToolbar::synthesize(void) {
+bool EV_BeOSToolbar::synthesize(void) {
 	//Add the toolbar(s) beneath the menus ...
 	be_Window 	*pBWin = NULL;
 
 	if (!m_pBeOSFrame) 
-		return UT_FALSE;
+		return false;
 	pBWin = (be_Window *)m_pBeOSFrame->getTopLevelWindow();
 	UT_ASSERT(pBWin);
 	
@@ -201,12 +201,12 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 			UT_ASSERT(0);
 		}
 	}
-	return UT_TRUE;
+	return true;
 }
 
 //This is used to make the toolbar reflect the current state of
 //the document (enable, disable, set font values etc
-UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
+bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 	const EV_Toolbar_ActionSet * pToolbarActionSet;
 	pToolbarActionSet = m_pBeOSApp->getToolbarActionSet();
 
@@ -234,7 +234,7 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 
 				switch (pAction->getItemType())	{
 				case EV_TBIT_PushButton: {
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
 				//	UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n", 
 				//		m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
@@ -257,8 +257,8 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 				case EV_TBIT_GroupButton:
 					DPRINTF(printf("Ref Group->Toggle Button \n"));
 				case EV_TBIT_ToggleButton: {
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
 											
 					//UT_DEBUGMSG(("refreshToolbar: ToggleBut [%s] is %s and %s\n", 
@@ -285,8 +285,8 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 				break;
 
 				case EV_TBIT_ComboBox: {
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					UT_Bool bString = EV_TIS_ShouldUseString(tis);
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					bool bString = EV_TIS_ShouldUseString(tis);
 						
 					//UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n", 
 					// 	m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(), 
@@ -349,16 +349,16 @@ UT_Bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 //when a button state changes.  Instead put in hooks
 //that only update us as required.
 #endif
-	return UT_TRUE;
+	return true;
 }
 
 // We call this when something substantial has happened to us
-UT_Bool EV_BeOSToolbar::toolbarEvent(XAP_Toolbar_Id id,
+bool EV_BeOSToolbar::toolbarEvent(XAP_Toolbar_Id id,
 				 UT_UCSChar * pData,
 				 UT_uint32 dataLength) {
 	// user selected something from this toolbar.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pBeOSApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -368,7 +368,7 @@ UT_Bool EV_BeOSToolbar::toolbarEvent(XAP_Toolbar_Id id,
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
-		return UT_FALSE;
+		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pBeOSApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
@@ -377,24 +377,24 @@ UT_Bool EV_BeOSToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	UT_ASSERT(pEM);			// make sure it's bound to something
 
 	invokeToolbarMethod(m_pBeOSFrame->getCurrentView(),pEM,pData,dataLength);
-	return UT_TRUE;
+	return true;
 }
 
 
 //These two functions enable us to listen for messages about
 //updating ourselves ... which we then pass to refresh	
-UT_Bool EV_BeOSToolbar::bindListenerToView(AV_View * pView) {
+bool EV_BeOSToolbar::bindListenerToView(AV_View * pView) {
 	_releaseListener();
 	
 	m_pViewListener = new EV_BeOSToolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
 	AV_ListenerId lid;
-	UT_Bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&lid);
+	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&lid);
 	UT_ASSERT(bResult);
 
 	refreshToolbar(pView, AV_CHG_ALL);
-	return UT_TRUE;
+	return true;
 }
 
 void EV_BeOSToolbar::_releaseListener(void) {

@@ -101,7 +101,7 @@ static EV_Toolbar_Layout * _ap_CreateToolbarLayout(struct _tt * ptt)
 	
 	for (UT_uint32 k=0; (k < ptt->m_nrEntries); k++)
 	{
-		UT_Bool bResult = pLayout->setLayoutItem(k, plt[k].m_id, plt[k].m_flags);
+		bool bResult = pLayout->setLayoutItem(k, plt[k].m_id, plt[k].m_flags);
 		UT_ASSERT(bResult);
 	}
 

@@ -45,7 +45,7 @@ IE_Exp_PalmDoc::~IE_Exp_PalmDoc()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_PalmDoc::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_PalmDoc::RecognizeSuffix(const char * szSuffix)
 {
     return (UT_stricmp(szSuffix,".pdb") == 0);
 }
@@ -57,17 +57,17 @@ UT_Error IE_Exp_PalmDoc::StaticConstructor(PD_Document * pDocument,
     return UT_OK;
 }
 
-UT_Bool	IE_Exp_PalmDoc::GetDlgLabels(const char ** pszDesc,
+bool	IE_Exp_PalmDoc::GetDlgLabels(const char ** pszDesc,
 	const char ** pszSuffixList,
 	IEFileType * ft)
 {
     *pszDesc = "Palm Document (.pdb)";
     *pszSuffixList = "*.pdb";
     *ft = IEFT_PalmDoc;
-    return UT_TRUE;
+    return true;
 }
 
-UT_Bool IE_Exp_PalmDoc::SupportsFileType(IEFileType ft)
+bool IE_Exp_PalmDoc::SupportsFileType(IEFileType ft)
 {
     return (IEFT_PalmDoc == ft);
 }
@@ -75,7 +75,7 @@ UT_Bool IE_Exp_PalmDoc::SupportsFileType(IEFileType ft)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_PalmDoc::_openFile(const char * szFilename)
+bool IE_Exp_PalmDoc::_openFile(const char * szFilename)
 {
     UT_ASSERT(!m_pdfp);
 
@@ -192,7 +192,7 @@ UT_uint32 IE_Exp_PalmDoc::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
     return length;
 }
 
-UT_Bool IE_Exp_PalmDoc::_writeBytes(const UT_Byte * sz)
+bool IE_Exp_PalmDoc::_writeBytes(const UT_Byte * sz)
 {
     UT_ASSERT(m_pdfp);
     UT_ASSERT(sz);
@@ -202,7 +202,7 @@ UT_Bool IE_Exp_PalmDoc::_writeBytes(const UT_Byte * sz)
     return (_writeBytes(sz,length)==(UT_uint32)length);
 }
 
-UT_Bool IE_Exp_PalmDoc::_closeFile(void)
+bool IE_Exp_PalmDoc::_closeFile(void)
 {
     UT_ASSERT(m_pdfp);
     UT_ASSERT(m_buf);
@@ -245,7 +245,7 @@ UT_Bool IE_Exp_PalmDoc::_closeFile(void)
     UT_DEBUGMSG(("File closed....\n"));
 
     m_pdfp = 0;
-    return UT_TRUE;
+    return true;
 }
 
 /*****************************************************************/
@@ -257,16 +257,16 @@ void IE_Exp_PalmDoc::_selectSwap()
     strncpy(  w.c, "\1\2",     2 );
 
     if ( w.n == 0x0201 )
-        m_littlendian = UT_TRUE;
+        m_littlendian = true;
     else
-        m_littlendian = UT_FALSE;
+        m_littlendian = false;
 
 }  
 
 void IE_Exp_PalmDoc::_compress( buffer *b )
 {
     UT_uint16 i, current = 0;
-    UT_Bool   space = UT_FALSE;
+    bool   space = false;
 
     buffer *original = new buffer;
     original->len = b->len;
@@ -294,7 +294,7 @@ void IE_Exp_PalmDoc::_compress( buffer *b )
         if ( space )
         {
             UT_DEBUGMSG(("Previous character was a space.\n"));
-            space = UT_FALSE;
+            space = false;
 
             if ( original->buf[current] >= 0x40 && original->buf[current] <= 0x7F )
             {
@@ -317,7 +317,7 @@ void IE_Exp_PalmDoc::_compress( buffer *b )
         if ( original->buf[current] == ' ' )
         {
             UT_DEBUGMSG(("Current character is a space.\n"));
-            space = UT_TRUE;
+            space = true;
             ++current;
             continue;
         }

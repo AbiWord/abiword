@@ -43,7 +43,7 @@ AP_Win32Toolbar_StyleCombo::AP_Win32Toolbar_StyleCombo(EV_Toolbar * pToolbar,
 
 	m_nPixels = 90;		// TODO: do a better calculation
 	m_nLimit = 20;
-	m_bSort = UT_TRUE;
+	m_bSort = true;
 }
 
 AP_Win32Toolbar_StyleCombo::~AP_Win32Toolbar_StyleCombo(void)
@@ -53,7 +53,7 @@ AP_Win32Toolbar_StyleCombo::~AP_Win32Toolbar_StyleCombo(void)
 
 /*****************************************************************/
 
-UT_Bool AP_Win32Toolbar_StyleCombo::populate(void)
+bool AP_Win32Toolbar_StyleCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
@@ -81,6 +81,6 @@ UT_Bool AP_Win32Toolbar_StyleCombo::populate(void)
 	}
 #endif 
 
-	return UT_TRUE;
+	return true;
 }
 

@@ -58,7 +58,7 @@ public:
 	void				releaseDialog(XAP_Dialog * pDialog);
 
 protected:
-	UT_Bool				_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const;
+	bool				_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const;
 	
 	XAP_App *			m_pApp;
 	XAP_Frame *			m_pFrame;

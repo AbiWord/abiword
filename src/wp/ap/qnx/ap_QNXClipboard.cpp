@@ -35,7 +35,7 @@ AP_QNXClipboard::AP_QNXClipboard(AP_QNXApp * pApp)
 #if 0
 #define AddFmt(szFormat)															\
 	do {	m_vecFormat_AP_Name.addItem((void *) szFormat);							\
-			m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat, UT_FALSE));	\
+			m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat, false));	\
 	} while (0)
 
    	AddFmt(AP_CLIPBOARD_RTF);

@@ -68,14 +68,14 @@ PS_Image::~PS_Image()
 	}
 }
 
-UT_Bool PS_Image::convertToBuffer(UT_ByteBuf ** /* ppBB */) const
+bool PS_Image::convertToBuffer(UT_ByteBuf ** /* ppBB */) const
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
    	png_structp png_ptr;
 	png_infop info_ptr;
@@ -87,7 +87,7 @@ UT_Bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWid
 
 	if (png_ptr == NULL)
 	{
-		return UT_FALSE;
+		return false;
 	}
 
 	/* Allocate/initialize the memory for image information.  REQUIRED. */
@@ -95,7 +95,7 @@ UT_Bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWid
 	if (info_ptr == NULL)
 	{
 		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-		return UT_FALSE;
+		return false;
 	}
 
 	/* Set error handling if you are using the setjmp/longjmp method (this is
@@ -108,7 +108,7 @@ UT_Bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWid
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 	  
 		/* If we get here, we had a problem reading the file */
-		return UT_FALSE;
+		return false;
 	}
 
 	struct _bb myBB;
@@ -177,7 +177,7 @@ UT_Bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWid
 	if (!m_image->data)
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-		return UT_FALSE;
+		return false;
 	}
 
 	UT_Byte * pBits = (UT_Byte *) m_image->data;
@@ -200,5 +200,5 @@ UT_Bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWid
 	/* clean up after the read, and free any memory allocated - REQUIRED */
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 
-	return UT_TRUE;
+	return true;
 }

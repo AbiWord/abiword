@@ -36,20 +36,20 @@ public:
 	EV_Toolbar_Control(EV_Toolbar * pToolbar);
 	virtual ~EV_Toolbar_Control(void);
 
-	virtual UT_Bool		populate(void) = 0;
+	virtual bool		populate(void) = 0;
 
 	const UT_Vector *	getContents(void) const;
 	XML_Char *			getNthItem(UT_uint32 n) const;
 
 	UT_uint32			getMaxLength(void) const;
 	UT_uint32			getPixelWidth(void) const;
-	UT_Bool				shouldSort(void) const;
+	bool				shouldSort(void) const;
 
 protected:
 	EV_Toolbar *	m_pToolbar;
 	UT_uint32		m_nLimit;
 	UT_uint32		m_nPixels;
-	UT_Bool			m_bSort;
+	bool			m_bSort;
 
 	UT_Vector		m_vecContents;
 };

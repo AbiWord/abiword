@@ -44,8 +44,8 @@ public:
 					 const char * szMenuLabelSetName);
 	virtual ~EV_UnixMenuPopup(void);
 
-	virtual UT_Bool		synthesizeMenuPopup(void);
-	virtual UT_Bool		refreshMenu(AV_View * pView);
+	virtual bool		synthesizeMenuPopup(void);
+	virtual bool		refreshMenu(AV_View * pView);
 	virtual GtkWidget *	getMenuHandle(void) const;
 
 protected:

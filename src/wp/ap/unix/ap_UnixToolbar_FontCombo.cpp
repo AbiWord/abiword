@@ -59,7 +59,7 @@ AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)
 	// nothing to purge.  contents are static strings
 }
 
-UT_Bool AP_UnixToolbar_FontCombo::populate(void)
+bool AP_UnixToolbar_FontCombo::populate(void)
 {
 	UT_ASSERT(m_pToolbar);
 	
@@ -99,5 +99,5 @@ UT_Bool AP_UnixToolbar_FontCombo::populate(void)
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }

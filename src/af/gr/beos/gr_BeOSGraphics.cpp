@@ -165,18 +165,18 @@ void GR_BeOSGraphics::ResizeBitmap(BRect r) {
 #endif
 }
 
-UT_Bool GR_BeOSGraphics::queryProperties(GR_Graphics::Properties gp) const
+bool GR_BeOSGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
 	case DGP_SCREEN:
-		return UT_TRUE;
+		return true;
 	case DGP_PAPER:			//Not sure what this does
-		return UT_TRUE;
-		return UT_FALSE;
+		return true;
+		return false;
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
@@ -203,7 +203,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	memset(buffer, 0, 2*(iLength+1));
 	for (i=0; i<iLength; i++) {
 		char * utf8char;
-		utf8char =  UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], UT_FALSE));
+		utf8char =  UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], false));
 			
 //		printf("GR: 0x%x -UCS2 2 UTF8-> ", pChars[i+iCharOffset]);
 //		for (int t=0; utf8char[t]; t++) {
@@ -255,7 +255,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		 */
 		widthAbiWants=(unsigned short int)(escapementArray[i-1].x*fontsize);
 		xoff+=widthAbiWants;
-		m_pShadowView->DrawString(UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], UT_FALSE)),
+		m_pShadowView->DrawString(UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], false)),
 								  BPoint(xoff,yoff+offset));
 	}
 
@@ -523,7 +523,7 @@ UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
 		UT_UCSChar *currentChar;
 		currentChar = s[i+Offset];
 		// TODO: next line might be performance hit
-		currentChar = remapGlyph(currentChar, UT_FALSE);
+		currentChar = remapGlyph(currentChar, false);
 		utf8char =  UT_encodeUTF8char(currentChar);
 		strcat(buffer, utf8char);						
 	}
@@ -746,7 +746,7 @@ void GR_BeOSGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	UPDATE_VIEW
 }
 
-UT_Bool GR_BeOSGraphics::startPrint(void)
+bool GR_BeOSGraphics::startPrint(void)
 {
 	if (!m_pPrintJob) {
 		printf("Creating a new print job \n");
@@ -754,18 +754,18 @@ UT_Bool GR_BeOSGraphics::startPrint(void)
 	}
 	if (!m_pPrintJob) {
 		printf("No print job ... exiting \n");
-		return(UT_FALSE);
+		return(false);
 	}
 
 	if (!m_pPrintSettings) {
 		printf("I SHOULD NEVER BE HERE! \n");
-		return(UT_FALSE);
+		return(false);
 		if (m_pPrintJob->ConfigPage() != B_OK) {
-			return(UT_FALSE);
+			return(false);
 		}
 
 		if (m_pPrintJob->ConfigJob() != B_OK) {
-       		         return(UT_FALSE);
+       		         return(false);
        		}
 		m_pPrintSettings = m_pPrintJob->Settings();
 	}
@@ -778,18 +778,18 @@ UT_Bool GR_BeOSGraphics::startPrint(void)
 
 	//Make sure that we start spooling at the right time
 	m_bPrint = FALSE;
-	return(UT_TRUE);
+	return(true);
 }
 
-UT_Bool GR_BeOSGraphics::startPage(const char * /*szPageLabel*/, 
+bool GR_BeOSGraphics::startPage(const char * /*szPageLabel*/, 
 				   UT_uint32 /*pageNumber*/,
-				   UT_Bool /*bPortrait*/, 
+				   bool /*bPortrait*/, 
 				   UT_uint32 /*iWidth*/, 
 				   UT_uint32 /*iHeight*/) {
 
 	if (!m_pPrintJob || !m_pPrintJob->CanContinue() || !m_pShadowView) {
 		printf("GR: Start page something amiss \n");
-		return(UT_FALSE);
+		return(false);
 	}
 
 	if (m_bPrint) {
@@ -816,12 +816,12 @@ UT_Bool GR_BeOSGraphics::startPage(const char * /*szPageLabel*/,
 	m_bPrint = TRUE;
 	m_pShadowView->BeginPicture(new BPicture());
 
-	return(UT_TRUE);
+	return(true);
 }
 
-UT_Bool GR_BeOSGraphics::endPrint(void) {
+bool GR_BeOSGraphics::endPrint(void) {
 	if (!m_pPrintJob || !m_pPrintJob->CanContinue()) {
-		return(UT_FALSE);
+		return(false);
 	}
 
 	if (m_bPrint) {
@@ -848,7 +848,7 @@ UT_Bool GR_BeOSGraphics::endPrint(void) {
 	m_pPrintJob->CommitJob();
 	delete(m_pPrintJob);
 	m_pPrintJob = NULL;
-	return(UT_TRUE);
+	return(true);
 }
 
 GR_Image* GR_BeOSGraphics::createNewImage(const char* pszName, 
@@ -1024,7 +1024,7 @@ void GR_BeOSGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 void GR_Font::s_getGenericFontProperties(const char * szFontName,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
-										 UT_Bool * pbTrueType)
+										 bool * pbTrueType)
 {
 	// describe in generic terms the named font.
 
@@ -1037,5 +1037,5 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 
 	*pff = FF_Unknown;
 	*pfp = FP_Unknown;
-	*pbTrueType = UT_TRUE;
+	*pbTrueType = true;
 }

@@ -47,7 +47,7 @@ class fd_Field
 	} FieldType;
     fd_Field(pf_Frag_Object& fO, pt_PieceTable * pt, FieldType fieldType);
     virtual                              ~fd_Field(void);
-    UT_Bool                              update(void);
+    bool                              update(void);
     void                                 setBlock(fl_BlockLayout * pBlock);
     fl_BlockLayout *                     getBlock( void);
     // probably need different types of update
@@ -55,7 +55,7 @@ class fd_Field
     // eg positionChangeUpdate
     //    referenceChangeUpdate
  protected:
-    UT_Bool                              _deleteSpan(void);
+    bool                              _deleteSpan(void);
     void                                 _throwChangeRec(PT_DocPosition docPos);
     fl_BlockLayout * m_pBlock;
     // will need some more helper functions in here eg. to test 

@@ -28,7 +28,7 @@ fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG,
 {
 }
 
-UT_Bool fp_FieldListLabelRun::calculateValue(void)
+bool fp_FieldListLabelRun::calculateValue(void)
 {
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	UT_uint32 i = 0;

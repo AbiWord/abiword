@@ -32,7 +32,7 @@ public:
 	AP_QNXToolbar_StyleCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
 	virtual ~AP_QNXToolbar_StyleCombo(void);
 
-	virtual UT_Bool		populate(void);
+	virtual bool		populate(void);
 
 	static EV_Toolbar_Control *		static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
 

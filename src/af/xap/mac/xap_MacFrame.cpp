@@ -103,7 +103,7 @@ XAP_MacFrame::~XAP_MacFrame(void)
     }
 }
 
-UT_Bool XAP_MacFrame::initialize(const char * szKeyBindingsKey, 
+bool XAP_MacFrame::initialize(const char * szKeyBindingsKey, 
 				  const char * szKeyBindingsDefaultValue,
 				  const char * szMenuLayoutKey, 
 				  const char * szMenuLayoutDefaultValue,
@@ -113,7 +113,7 @@ UT_Bool XAP_MacFrame::initialize(const char * szKeyBindingsKey,
 				  const char * szToolbarLayoutsDefaultValue,
 				  const char * szToolbarLabelSetKey, 
 				  const char * szToolbarLabelSetDefaultValue) {
-	UT_Bool bResult;
+	bool bResult;
 
 	// invoke our base class first.
 	
@@ -143,7 +143,7 @@ UT_Bool XAP_MacFrame::initialize(const char * szKeyBindingsKey,
 	m_pMouse = new EV_MacMouse(pEEM);
 	UT_ASSERT(m_pMouse);
 
-	return UT_TRUE;
+	return true;
 }
 
 XAP_Frame *	XAP_MacFrame::cloneFrame(void)
@@ -153,38 +153,38 @@ XAP_Frame *	XAP_MacFrame::cloneFrame(void)
 	return 0;
 }
 
-UT_Bool	XAP_MacFrame::close(void)
+bool	XAP_MacFrame::close(void)
 {
 	::DisposeWindow ((WindowPtr)m_MacWindow);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool	XAP_MacFrame::raise(void)
+bool	XAP_MacFrame::raise(void)
 {
 	::BringToFront ((WindowPtr)m_MacWindow);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool	XAP_MacFrame::show(void)
+bool	XAP_MacFrame::show(void)
 {
 	::ShowWindow ((WindowPtr)m_MacWindow);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_MacFrame::openURL(const char * /*szURL*/)
+bool XAP_MacFrame::openURL(const char * /*szURL*/)
 {
 	// TODO: use GURL or InternetConfig to open the specified URL
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool	XAP_MacFrame::updateTitle(void)
+bool	XAP_MacFrame::updateTitle(void)
 {
 	if (!XAP_Frame::updateTitle())
 	{
 		// no relevant change, so skip it
-		return UT_FALSE;
+		return false;
 	}
 
 	char buf[256];
@@ -202,7 +202,7 @@ UT_Bool	XAP_MacFrame::updateTitle(void)
         // TODO make conditionnal use of SetWindowTitleWithCFString when target is Carbon
         ::SetWTitle (m_MacWindow, (ConstStr255Param)buf);
 
-	return UT_TRUE;
+	return true;
 }
 
 UT_sint32 XAP_MacFrame::setInputMode(const char * szName)
@@ -330,8 +330,8 @@ void XAP_MacFrame::setYScrollRange(void)
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-UT_Bool XAP_MacFrame::runModalContextMenu(AV_View * /* pView */, const char * /*szMenuName*/, UT_sint32 /*x*/, UT_sint32 /*y*/) {
+bool XAP_MacFrame::runModalContextMenu(AV_View * /* pView */, const char * /*szMenuName*/, UT_sint32 /*x*/, UT_sint32 /*y*/) {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 
-	return(UT_FALSE);
+	return(false);
 }

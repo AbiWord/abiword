@@ -42,9 +42,9 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_hdc = hdc;
 	m_hwnd = 0;
 	m_iLineWidth = 0;	// default to a hairline
-	m_bPrint = UT_FALSE;
-	m_bStartPrint = UT_FALSE;
-	m_bStartPage = UT_FALSE;
+	m_bPrint = false;
+	m_bStartPrint = false;
+	m_bStartPage = false;
 	m_pFont = NULL;
 	m_pFontGUI = NULL;
 
@@ -64,7 +64,7 @@ GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo, XAP_App * 
 {
 	_constructorCommonCode(hdc);
 	m_pApp = app;
-	m_bPrint = UT_TRUE;
+	m_bPrint = true;
 	m_pDocInfo = pDocInfo;
 }
 
@@ -73,7 +73,7 @@ GR_Win32Graphics::~GR_Win32Graphics()
 	DELETEP(m_pFontGUI);
 }
 
-UT_Bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
+bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
@@ -83,7 +83,7 @@ UT_Bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 		return m_bPrint;
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
@@ -207,7 +207,7 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
-	UT_UCSChar currentChar = remapGlyph(Char, UT_FALSE);
+	UT_UCSChar currentChar = remapGlyph(Char, false);
 
 	// Windows NT and Windows 95 support the Unicode Font file. 
 	// All of the Unicode glyphs can be rendered if the glyph is found in
@@ -219,7 +219,7 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	LOGFONT lf;
 	int iRes = GetObject(hFont, sizeof(LOGFONT), &lf);
 	UT_ASSERT(iRes);
-	if (UT_IsWinNT() == UT_FALSE && lf.lfCharSet == SYMBOL_CHARSET)
+	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
 		// Symbol character handling for Win9x
 		char str[sizeof(UT_UCSChar)];
@@ -249,7 +249,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	UT_UCSChar* currentChars = new UT_UCSChar[iLength];
 	for (int i = 0; i < iLength; ++i)
 	{
-		currentChars[i] = remapGlyph(pChars[iCharOffset + i], UT_FALSE);
+		currentChars[i] = remapGlyph(pChars[iCharOffset + i], false);
 	}
 
 	// Windows NT and Windows 95 support the Unicode Font file. 
@@ -262,7 +262,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	LOGFONT lf;
 	int iRes = GetObject(hFont, sizeof(LOGFONT), &lf);
 	UT_ASSERT(iRes);
-	if (UT_IsWinNT() == UT_FALSE && lf.lfCharSet == SYMBOL_CHARSET)
+	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
 		// Symbol character handling for Win9x
 		char* str = new char[iLength * sizeof(UT_UCSChar)];
@@ -426,7 +426,7 @@ void GR_Win32Graphics::fillRect(UT_RGBColor& c, UT_Rect &r)
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
-UT_Bool GR_Win32Graphics::startPrint(void)
+bool GR_Win32Graphics::startPrint(void)
 {
 	UT_ASSERT(m_bPrint);
 	UT_ASSERT(!m_bStartPrint);
@@ -435,8 +435,8 @@ UT_Bool GR_Win32Graphics::startPrint(void)
 	return m_bStartPrint;
 }
 
-UT_Bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
-									UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
+									bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	if (m_bStartPage)
 	{
@@ -462,7 +462,7 @@ UT_Bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumb
 	return m_bStartPage;
 }
 
-UT_Bool GR_Win32Graphics::endPrint(void)
+bool GR_Win32Graphics::endPrint(void)
 {
 	if (m_bStartPage)
 		EndPage(m_hdc);
@@ -720,7 +720,7 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_Rect &r)
 void GR_Font::s_getGenericFontProperties(const char * szFontName,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
-										 UT_Bool * pbTrueType)
+										 bool * pbTrueType)
 {
 	// describe in generic terms the named font.
 	
@@ -853,8 +853,8 @@ GR_Win32Font::~GR_Win32Font()
 	// But, let's try it like this...
 
 	const DWORD dwObjType = GetObjectType((HGDIOBJ)m_oldHDC);
-	const UT_Bool bIsDC =
-		(dwObjType == OBJ_DC || dwObjType == OBJ_MEMDC) ? UT_TRUE : UT_FALSE;
+	const bool bIsDC =
+		(dwObjType == OBJ_DC || dwObjType == OBJ_MEMDC) ? true : false;
 	if (!bIsDC || m_hFont != (HFONT)::GetCurrentObject(m_oldHDC, OBJ_FONT))
 	{
 		DeleteObject(m_hFont);

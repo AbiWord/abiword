@@ -33,7 +33,7 @@ AP_UnixToolbar_Icons::~AP_UnixToolbar_Icons(void)
 	// TODO handed out, so that we can delete them ??
 }
 
-UT_Bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * background,
+bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * background,
 											   const char * szIconName, GtkWidget ** pwPixmap)
 {
 	UT_ASSERT(window);
@@ -44,9 +44,9 @@ UT_Bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * ba
 	const char ** pIconData = NULL, **used_pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
 	
-	UT_Bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
+	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
 	if (!bFound)
-		return UT_FALSE;
+		return false;
 
 	GdkBitmap * mask;
 	GdkColormap * colormap = NULL;
@@ -86,13 +86,13 @@ UT_Bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * ba
 	
 	    
 	if (!pixmap)
-		return UT_FALSE;
+		return false;
 
 	GtkWidget * wpixmap = gtk_pixmap_new(pixmap,mask);
 	if (!wpixmap)
-		return UT_FALSE;
+		return false;
 	
 	*pwPixmap = wpixmap;
-	return UT_TRUE;
+	return true;
 }
 

@@ -161,7 +161,7 @@ AP_QNXDialog_Options::AP_QNXDialog_Options(XAP_DialogFactory * pDlgFactory,
 	UT_DEBUGMSG(("    current pref : %s\n",
 		prefs->getCurrentScheme()->getSchemeName()) );
 
-	UT_Bool b = prefs->savePrefsFile();
+	bool b = prefs->savePrefsFile();
 	UT_DEBUGMSG(("    prefs saved (%d) in %s\n", b, prefs->getPrefsPathname() ));
 
 	UT_uint32 i;
@@ -794,7 +794,7 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 	}
 }
 
-void AP_QNXDialog_Options::_controlEnable( tControl id, UT_Bool value )
+void AP_QNXDialog_Options::_controlEnable( tControl id, bool value )
 {
 	PtWidget_t *w = _lookupWidget(id);
 	UT_ASSERT( w );
@@ -813,14 +813,14 @@ void AP_QNXDialog_Options::_controlEnable( tControl id, UT_Bool value )
 
 
 #define DEFINE_GET_SET_BOOL(button) \
-UT_Bool     AP_QNXDialog_Options::_gather##button(void) {       \
+bool     AP_QNXDialog_Options::_gather##button(void) {       \
 	UT_ASSERT(m_checkbutton##button);                           \
 	PtArg_t arg;                                                \
 	int *flags = NULL;                                          \
 	PtSetArg(&arg, Pt_ARG_FLAGS, &flags, 0);                    \
 	PtGetResources(m_checkbutton##button, 1, &arg);             \
 	return ((flags) ? (*flags & Pt_SET) == Pt_SET : 0); }       \
-void        AP_QNXDialog_Options::_set##button(UT_Bool b) {	    \
+void        AP_QNXDialog_Options::_set##button(bool b) {	    \
 	UT_ASSERT(m_checkbutton##button);                           \
 	PtArg_t arg;                                                \
 	PtSetArg(&arg, Pt_ARG_FLAGS, (b) ? Pt_SET : 0, Pt_SET);     \

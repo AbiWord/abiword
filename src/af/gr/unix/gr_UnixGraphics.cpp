@@ -35,7 +35,7 @@
 
 #if 1
 #include <gdk/gdkprivate.h>
-static UT_Bool isFontUnicode(GdkFont *font)
+static bool isFontUnicode(GdkFont *font)
 {
 	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
 	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
@@ -98,17 +98,17 @@ GR_UnixGraphics::~GR_UnixGraphics()
 	DELETEP(m_pFontGUI);
 }
 
-UT_Bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
+bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
 	case DGP_SCREEN:
-		return UT_TRUE;
+		return true;
 	case DGP_PAPER:
-		return UT_FALSE;
+		return false;
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
@@ -116,7 +116,7 @@ UT_Bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 static UT_Wctomb* w = NULL;
 static char text[MB_LEN_MAX];
 static int text_length;
-static UT_Bool fallback_used;
+static bool fallback_used;
 
 #define WCTOMB_DECLS \
 	if (!w) {	\
@@ -159,7 +159,7 @@ tucs = * ((UT_UCSChar *)(x)); lb1 = (char*) (&tucs);  \
 // HACK: I need more speed
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-	UT_UCSChar Wide_char = remapGlyph(Char, UT_FALSE);
+	UT_UCSChar Wide_char = remapGlyph(Char, false);
 	GdkFont *font = XAP_EncodingManager::instance->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
 
 	if(XAP_EncodingManager::instance->isUnicodeLocale())
@@ -202,7 +202,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	const UT_UCSChar *pC;
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
 	{
-		UT_UCSChar actual = remapGlyph(*pC,UT_FALSE);
+		UT_UCSChar actual = remapGlyph(*pC,false);
 		font=XAP_EncodingManager::instance->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
 		if(XAP_EncodingManager::instance->isUnicodeLocale())
 		{
@@ -348,7 +348,7 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 	
 	for (int i = 0; i < num; i++)
     {
-		cChar = remapGlyph(s[i + iOffset], UT_TRUE);
+		cChar = remapGlyph(s[i + iOffset], true);
 		width = gdk_char_width_wc (pFont, cChar);
 		charWidth += width;
 		if (pWidths)
@@ -703,23 +703,23 @@ void GR_UnixGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 	}
 }
 
-UT_Bool GR_UnixGraphics::startPrint(void)
+bool GR_UnixGraphics::startPrint(void)
 {
 	UT_ASSERT(0);
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool GR_UnixGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
-								UT_Bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
+bool GR_UnixGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
+								bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
 {
 	UT_ASSERT(0);
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool GR_UnixGraphics::endPrint(void)
+bool GR_UnixGraphics::endPrint(void)
 {
 	UT_ASSERT(0);
-	return UT_FALSE;
+	return false;
 }
 
 GR_Image* GR_UnixGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType)
@@ -925,7 +925,7 @@ void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
-										 UT_Bool * pbTrueType)
+										 bool * pbTrueType)
 {
 	// describe in generic terms the named font.
 
@@ -938,5 +938,5 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 
 	*pff = FF_Unknown;
 	*pfp = FP_Unknown;
-	*pbTrueType = UT_TRUE;
+	*pbTrueType = true;
 }

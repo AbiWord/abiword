@@ -44,12 +44,12 @@ public:
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,
 										   UT_uint32 iPos, const char* szName);
 
-	UT_Bool				setRaster_PNG(UT_ByteBuf* pBB);
+	bool				setRaster_PNG(UT_ByteBuf* pBB);
 	UT_ByteBuf*			getRaster_PNG(void);
 
 protected:
 	UT_ByteBuf* m_pbbPNG;
-	UT_Bool m_bOwnPNG;
+	bool m_bOwnPNG;
 
 	UT_sint32 m_iWidth, m_iHeight;
 	const PP_AttrProp* m_pSpanAP;

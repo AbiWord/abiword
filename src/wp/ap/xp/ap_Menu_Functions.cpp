@@ -394,12 +394,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 	switch(id)
 	{
 	case AP_MENU_ID_EDIT_UNDO:
-		if (!pView->canDo(UT_TRUE))
+		if (!pView->canDo(true))
 			s = EV_MIS_Gray;
 		break;
 
 	case AP_MENU_ID_EDIT_REDO:
-		if (!pView->canDo(UT_FALSE))
+		if (!pView->canDo(false))
 			s = EV_MIS_Gray;
 		break;
 
@@ -459,7 +459,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
-	UT_Bool bMultiple = UT_FALSE;
+	bool bMultiple = false;
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
@@ -481,19 +481,19 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	case AP_MENU_ID_FMT_UNDERLINE:
 		prop = "text-decoration";
 		val  = "underline";
-		bMultiple = UT_TRUE;
+		bMultiple = true;
 		break;
 
 	case AP_MENU_ID_FMT_OVERLINE:
 		prop = "text-decoration";
 		val  = "overline";
-		bMultiple = UT_TRUE;
+		bMultiple = true;
 		break;
 
 	case AP_MENU_ID_FMT_STRIKE:
 		prop = "text-decoration";
 		val  = "line-through";
-		bMultiple = UT_TRUE;
+		bMultiple = true;
 		break;
 	case AP_MENU_ID_FMT_SUPERSCRIPT:
 		prop = "text-position";

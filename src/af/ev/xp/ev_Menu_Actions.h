@@ -82,28 +82,28 @@ class EV_Menu_Action
 {
 public:
 	EV_Menu_Action(XAP_Menu_Id id,
-				   UT_Bool bHoldsSubMenu,
-				   UT_Bool bRaisesDialog,
-				   UT_Bool bCheckable,
+				   bool bHoldsSubMenu,
+				   bool bRaisesDialog,
+				   bool bCheckable,
 				   const char * szMethodName,
 				   EV_GetMenuItemState_pFn pfnGetState,
 				   EV_GetMenuItemComputedLabel_pFn pfnGetLabel);
 	~EV_Menu_Action(void);
 
 	XAP_Menu_Id						getMenuId(void) const;
-	UT_Bool							hasDynamicLabel(void) const;
+	bool							hasDynamicLabel(void) const;
 	const char *					getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_Label * pLabel) const;
 	const char *					getMethodName(void) const;
-	UT_Bool							hasGetStateFunction(void) const;
+	bool							hasGetStateFunction(void) const;
 	EV_Menu_ItemState				getMenuItemState(AV_View * pView) const;
-	UT_Bool							raisesDialog(void) const;
-	UT_Bool							isCheckable(void) const;
+	bool							raisesDialog(void) const;
+	bool							isCheckable(void) const;
 	
 protected:
 	XAP_Menu_Id						m_id;
-	UT_Bool							m_bHoldsSubMenu;	/* is a PullRight */
-	UT_Bool							m_bRaisesDialog;	/* does it raise a dialog */
-	UT_Bool							m_bCheckable;		/* is it checkable */
+	bool							m_bHoldsSubMenu;	/* is a PullRight */
+	bool							m_bRaisesDialog;	/* does it raise a dialog */
+	bool							m_bCheckable;		/* is it checkable */
 	char *							m_szMethodName;		/* name of method to invoke */
 	EV_GetMenuItemState_pFn			m_pfnGetState;		/* to get state on an activate */
 	EV_GetMenuItemComputedLabel_pFn m_pfnGetLabel;		/* to get computed label (for things like window-list) */
@@ -117,10 +117,10 @@ public:
 	EV_Menu_ActionSet(XAP_Menu_Id first, XAP_Menu_Id last);
 	~EV_Menu_ActionSet(void);
 
-	UT_Bool				setAction(XAP_Menu_Id id,
-								  UT_Bool bHoldsSubMenu,
-								  UT_Bool bRaisesDialog,
-								  UT_Bool bCheckable,
+	bool				setAction(XAP_Menu_Id id,
+								  bool bHoldsSubMenu,
+								  bool bRaisesDialog,
+								  bool bCheckable,
 								  const char * szMethodName,
 								  EV_GetMenuItemState_pFn pfnGetState,
 								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel);

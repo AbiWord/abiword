@@ -95,7 +95,7 @@ const XAP_EncodingManager* XAP_App::getEncodingManager(void) const
     return m_pEncMgr;
 };
 
-UT_Bool XAP_App::initialize(void)
+bool XAP_App::initialize(void)
 {
 	// create application-wide resources that
 	// are shared by everything.
@@ -131,7 +131,7 @@ UT_Bool XAP_App::initialize(void)
 	//
 	UT_uint32 t = (UT_uint32) time( NULL);
 	srand(t);
-	return UT_TRUE;
+	return true;
 }
 
 const char * XAP_App::getApplicationTitleForTitleBar(void) const
@@ -176,7 +176,7 @@ const EV_Toolbar_ActionSet * XAP_App::getToolbarActionSet(void) const
 	return m_pToolbarActionSet;
 }
 
-UT_Bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
+bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 {
 	UT_ASSERT(pFrame);
 
@@ -236,10 +236,10 @@ UT_Bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 	}
 	
 	// TODO do something here...
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
+bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
@@ -318,10 +318,10 @@ UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 
 	// TODO do something here...
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_App::forgetClones(XAP_Frame * pFrame)
+bool XAP_App::forgetClones(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
@@ -339,10 +339,10 @@ UT_Bool XAP_App::forgetClones(XAP_Frame * pFrame)
 		forgetFrame(f);
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_App::getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame)
+bool XAP_App::getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame)
 {
 	UT_ASSERT(pvClonesCopy);
 	UT_ASSERT(pFrame);
@@ -358,7 +358,7 @@ UT_Bool XAP_App::getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame)
 	return pvClonesCopy->copy(pvClones);
 }
 
-UT_Bool XAP_App::updateClones(XAP_Frame * pFrame)
+bool XAP_App::updateClones(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 	UT_ASSERT(pFrame->getViewNumber() > 0);
@@ -385,7 +385,7 @@ UT_Bool XAP_App::updateClones(XAP_Frame * pFrame)
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 UT_uint32 XAP_App::getFrameCount(void) const
@@ -441,18 +441,18 @@ const char * XAP_App::getAbiSuiteLibDir(void) const
 	return m_szAbiSuiteLibDir;
 }
 
-UT_Bool XAP_App::addWordToDict(const UT_UCSChar * pWord, UT_uint32 len)
+bool XAP_App::addWordToDict(const UT_UCSChar * pWord, UT_uint32 len)
 {
 	if (!m_pDict)
-		return UT_FALSE;
+		return false;
 
 	return m_pDict->addWord(pWord, len);
 }
 
-UT_Bool XAP_App::isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const
+bool XAP_App::isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const
 {
 	if (!m_pDict)
-		return UT_FALSE;
+		return false;
 
 	return m_pDict->isWord(pWord, len);
 }
@@ -463,37 +463,37 @@ XAP_Prefs * XAP_App::getPrefs(void) const
 }
 
 #ifdef HAVE_LIBXML2
-UT_Bool XAP_App::getPrefsValue(const char * szKey, const XML_Char ** pszValue) const
+bool XAP_App::getPrefsValue(const char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)
-		return UT_FALSE;
+		return false;
 
 	return m_prefs->getPrefsValue((XML_Char*) (szKey), pszValue);
 }
 #endif
 
-UT_Bool XAP_App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+bool XAP_App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)
-		return UT_FALSE;
+		return false;
 
 	return m_prefs->getPrefsValue(szKey,pszValue);
 }
 
 #ifdef HAVE_LIBXML2
-UT_Bool XAP_App::getPrefsValueBool(const char * szKey, UT_Bool * pbValue) const
+bool XAP_App::getPrefsValueBool(const char * szKey, bool * pbValue) const
 {
 	if (!m_prefs)
-		return UT_FALSE;
+		return false;
 
 	return m_prefs->getPrefsValueBool((XML_Char*) (szKey), pbValue);
 }
 #endif
 
-UT_Bool XAP_App::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const
+bool XAP_App::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 {
 	if (!m_prefs)
-		return UT_FALSE;
+		return false;
 
 	return m_prefs->getPrefsValueBool(szKey,pbValue);
 }
@@ -579,18 +579,18 @@ void XAP_App::forgetModelessId( UT_sint32 id )
         m_IdTable[i].pDialog = (XAP_Dialog_Modeless *) NULL;
 }
 
-UT_Bool XAP_App::isModelessRunning(UT_sint32 id)
+bool XAP_App::isModelessRunning(UT_sint32 id)
 {
-  // returns UT_TRUE if the modeless dialog given by id is running
+  // returns true if the modeless dialog given by id is running
 
         UT_sint32 i;
         for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
         if( i> NUM_MODELESSID)
 	{
-	     return UT_FALSE;
+	     return false;
 	}
         UT_ASSERT( m_IdTable[i].id == id );
-        return UT_TRUE;
+        return true;
 }
         
 XAP_Dialog_Modeless * XAP_App::getModelessDialog( UT_sint32 i)
@@ -638,13 +638,13 @@ void XAP_App::notifyModelessDlgsCloseFrame(XAP_Frame *p_Frame)
 }
 
 /* Window Geometry Preferences */
-UT_Bool XAP_App::setGeometry(UT_sint32 x, UT_sint32 y, UT_uint32 width, UT_uint32 height , UT_uint32 flags) 
+bool XAP_App::setGeometry(UT_sint32 x, UT_sint32 y, UT_uint32 width, UT_uint32 height , UT_uint32 flags) 
 {
 	XAP_Prefs *prefs = getPrefs();
 	return prefs->setGeometry(x, y, width, height, flags);
 }
 
-UT_Bool XAP_App::getGeometry(UT_sint32 *x, UT_sint32 *y, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags) 
+bool XAP_App::getGeometry(UT_sint32 *x, UT_sint32 *y, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags) 
 {
 	XAP_Prefs *prefs = getPrefs();
 	return prefs->getGeometry(x, y, width, height, flags);

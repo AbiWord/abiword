@@ -42,7 +42,7 @@
 /****************************************************************/
 /****************************************************************/
 	
-UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
+bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 								   PT_BufIndex bi,
 								   PT_BlockOffset fragOffset,
 								   UT_uint32 length,
@@ -58,7 +58,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	{
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 
 	case pf_Frag::PFT_EndOfDoc:
 	case pf_Frag::PFT_Strux:
@@ -92,7 +92,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		// the same API.  This needs to be handled at the higher
 		// level (so the glob markers can be set).
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 
 	if (pft&&pField==NULL)
@@ -134,7 +134,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 					}
 				}
 				
-				return UT_TRUE;
+				return true;
 			}
 		}
 
@@ -167,7 +167,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 					}
 				}
 			
-				return UT_TRUE;
+				return true;
 			}
 
 			// one last attempt to coalesce.  if we are at the beginning of
@@ -185,7 +185,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 					&& (m_varset.isContiguous(pftPrev->getBufIndex(),prevLength,bi)))
 				{
 					pftPrev->changeLength(prevLength+length);
-					return UT_TRUE;
+					return true;
 				}
 			}
 		}
@@ -197,7 +197,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
     
 	pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi,length,indexAP,pField);
 	if (!pftNew)
-		return UT_FALSE;
+		return false;
 
 	if (fragOffset == 0)
 	{
@@ -205,7 +205,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		// single new text fragment before the one we found.
 
 		m_fragments.insertFrag(pf->getPrev(),pftNew);
-		return UT_TRUE;
+		return true;
 	}
 
 	UT_uint32 fragLen = pf->getLength();
@@ -215,7 +215,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		// new text fragment after the one we found.
 
 		m_fragments.insertFrag(pf,pftNew);
-		return UT_TRUE;
+		return true;
 	}
 
 	// if the change is in the middle of the fragment, we construct
@@ -227,16 +227,16 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	PT_BufIndex biTail = m_varset.getBufIndex(pft->getBufIndex(),fragOffset);
 	pf_Frag_Text * pftTail = new pf_Frag_Text(this,biTail,lenTail,pft->getIndexAP(),pft->getField());
 	if (!pftTail)
-		return UT_FALSE;
+		return false;
 			
 	pft->changeLength(fragOffset);
 	m_fragments.insertFrag(pft,pftNew);
 	m_fragments.insertFrag(pftNew,pftTail);
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
+bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 {
 	// look backwards thru the undo from this point and see
 	// if we have <InsertFmtMark>[<ChangeFmtMark>*]
@@ -246,21 +246,21 @@ UT_Bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 
 	while (1)
 	{
-		UT_Bool bHaveUndo = m_history.getUndo(&pcr,undoNdx);
+		bool bHaveUndo = m_history.getUndo(&pcr,undoNdx);
 
 		if (!bHaveUndo)
-			return UT_FALSE;
+			return false;
 		if (!pcr)
-			return UT_FALSE;
+			return false;
 		if (pcr->getPosition() != dpos)
-			return UT_FALSE;
+			return false;
 		
 		switch (pcr->getType())
 		{
 		default:
-			return UT_FALSE;
+			return false;
 		case PX_ChangeRecord::PXT_InsertFmtMark:
-			return UT_TRUE;
+			return true;
 		case PX_ChangeRecord::PXT_ChangeFmtMark:
 			undoNdx++;
 			break;
@@ -268,10 +268,10 @@ UT_Bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
+bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 								  const UT_UCSChar * p,
 								  UT_uint32 length, fd_Field * pField)
 {
@@ -283,7 +283,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
-	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
     
 
@@ -291,11 +291,11 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	PT_BufIndex bi;
 	if (!m_varset.appendBuf(p,length,&bi))
-		return UT_FALSE;
+		return false;
 
-	UT_Bool bSuccess = UT_FALSE;
+	bool bSuccess = false;
 	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 
 	// we just did a getFragFromPosition() which gives us the
@@ -312,12 +312,12 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	// we will see if we are on a text-text boundary and backup
 	// (and thus appending) to the previous.
 
-	UT_Bool bNeedGlob = UT_FALSE;
+	bool bNeedGlob = false;
 	PT_AttrPropIndex indexAP = 0;
 	
 	if ( (fragOffset==0) && (pf->getPrev()) )
 	{
-		UT_Bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
+		bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
 		if (bRightOfFmtMark)
 		{
 			// if we're just to the right of a _FmtMark, we want to replace
@@ -365,7 +365,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 				// TODO decide if we like this...
 				// NOTE this causes BUG#431.... :-)
 
-				bNeedGlob = UT_TRUE;
+				bNeedGlob = true;
 				beginMultiStepGlob();
 				_deleteFmtMarkWithNotify(dpos,pfPrevFmtMark,pfs,&pf,&fragOffset);
 			}
@@ -406,7 +406,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
      
 		        if(pf->getField() != NULL)
 			{
-				return UT_FALSE;
+				return false;
 			}
 
 			indexAP = _chooseIndexAP(pf,fragOffset);
@@ -419,7 +419,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
      
                 if(pf->getField() != NULL)
 		{
-		       return UT_FALSE;
+		       return false;
 		}
 
 
@@ -454,7 +454,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		m_pDocument->notifyListeners(pfs,pcr);
 	}
 
-	bSuccess = UT_TRUE;
+	bSuccess = true;
 	
 Finish:
 	if (bNeedGlob)
@@ -464,7 +464,7 @@ Finish:
 }
 
 
-UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
+bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 								  const UT_UCSChar * p,
 								  UT_uint32 length, fd_Field * pField)
 {
@@ -477,7 +477,7 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 	
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
-	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
+	bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
     
 
@@ -485,11 +485,11 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 
 	PT_BufIndex bi;
 	if (!m_varset.appendBuf(p,length,&bi))
-		return UT_FALSE;
+		return false;
 
-	UT_Bool bSuccess = UT_FALSE;
+	bool bSuccess = false;
 	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 
 	// we just did a getFragFromPosition() which gives us the
@@ -506,12 +506,12 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 	// we will see if we are on a text-text boundary and backup
 	// (and thus appending) to the previous.
 
-	UT_Bool bNeedGlob = UT_FALSE;
+	bool bNeedGlob = false;
 	PT_AttrPropIndex indexAP = 0;
 	
 	if ( (fragOffset==0) && (pf->getPrev()) )
 	{
-		UT_Bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
+		bool bRightOfFmtMark = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
 		if (bRightOfFmtMark)
 		{
 			// if we're just to the right of a _FmtMark, we want to replace
@@ -559,7 +559,7 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 				// TODO decide if we like this...
 				// NOTE this causes BUG#431.... :-)
 
-				bNeedGlob = UT_TRUE;
+				bNeedGlob = true;
 				beginMultiStepGlob();
 				_deleteFmtMarkWithNotify(dpos,pfPrevFmtMark,pfs,&pf,&fragOffset);
 			}
@@ -600,7 +600,7 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
      
 		        if(pf->getField() != NULL)
 			{
-				return UT_FALSE;
+				return false;
 			}
 
 			indexAP = _chooseIndexAP(pf,fragOffset);
@@ -613,7 +613,7 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
      
                 if(pf->getField() != NULL)
 		{
-		       return UT_FALSE;
+		       return false;
 		}
 
 
@@ -641,7 +641,7 @@ UT_Bool pt_PieceTable::insertSpan_norec(PT_DocPosition dpos,
 	// We've finished with this now so delete it
 
 	delete pcr;
-	bSuccess = UT_TRUE;
+	bSuccess = true;
 	
 Finish:
 	if (bNeedGlob)
@@ -649,7 +649,7 @@ Finish:
 	return bSuccess;
 }
 
-UT_Bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const
+bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const
 {
 	// see if this record can be coalesced with the most recent undo record.
 
@@ -657,25 +657,25 @@ UT_Bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) co
 
 	PX_ChangeRecord * pcrUndo;
 	if (!m_history.getUndo(&pcrUndo))
-		return UT_FALSE;
+		return false;
 	if (pcrSpan->getType() != pcrUndo->getType())
-		return UT_FALSE;
+		return false;
 	if (pcrSpan->getIndexAP() != pcrUndo->getIndexAP())
-		return UT_FALSE;
+		return false;
 
 	PX_ChangeRecord_Span * pcrUndoSpan = static_cast<PX_ChangeRecord_Span *>(pcrUndo);
 	UT_uint32 lengthUndo = pcrUndoSpan->getLength();
 
 	if ((pcrUndo->getPosition() + lengthUndo) != pcrSpan->getPosition())
-		return UT_FALSE;
+		return false;
 
 	PT_BufIndex biUndo = pcrUndoSpan->getBufIndex();
 	PT_BufIndex biSpan = pcrSpan->getBufIndex();
 
 	if (m_varset.getBufIndex(biUndo,lengthUndo) != biSpan)
-		return UT_FALSE;
+		return false;
 
-	return UT_TRUE;
+	return true;
 }
 
 PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset fragOffset)

@@ -204,9 +204,9 @@ void XAP_UnixClipboard::initialize(void)
 {
    UT_DEBUGMSG(("Clipboard: initializing\n"));
 
-   m_waiting = UT_FALSE;
-   m_bOwnClipboard = UT_FALSE;
-   m_bOwnPrimary = UT_FALSE;
+   m_waiting = false;
+   m_bOwnClipboard = false;
+   m_bOwnPrimary = false;
    m_timeClipboard = 0;
    m_timePrimary = 0;
    m_timeOnServer = 0;
@@ -258,7 +258,7 @@ void XAP_UnixClipboard::initialize(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_UnixClipboard::assertSelection(void)
+bool XAP_UnixClipboard::assertSelection(void)
 {
 	// assert the X-Selection.  user must have started a
 	// mouse click and drag or somehow started a selection.
@@ -270,7 +270,7 @@ UT_Bool XAP_UnixClipboard::assertSelection(void)
 	UT_ASSERT( (m_bOwnPrimary == _testOwnership(m_atomPrimary)) );
 
 	if (m_bOwnPrimary)					// already asserted it and still own it
-		return UT_TRUE;
+		return true;
 	
 	m_timePrimary = m_pUnixApp->getTimeOfLastEvent();
 
@@ -282,7 +282,7 @@ UT_Bool XAP_UnixClipboard::assertSelection(void)
 	return m_bOwnPrimary;
 }
 	
-UT_Bool XAP_UnixClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
+bool XAP_UnixClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
 {
 	// This is an EXPLICIT Cut or Copy from the User.
 	// First, we stick a copy of the data onto our internal clipboard.
@@ -295,7 +295,7 @@ UT_Bool XAP_UnixClipboard::addData(const char* format, void* pData, UT_sint32 iN
 				 format,iNumBytes,m_timeClipboard));
 
 	if (!m_fakeClipboard.addData(format,pData,iNumBytes))
-		return UT_FALSE;
+		return false;
 
 	m_bOwnClipboard = _testOwnership(m_atomClipboard);
 	if (m_bOwnClipboard)
@@ -314,7 +314,7 @@ UT_Bool XAP_UnixClipboard::addData(const char* format, void* pData, UT_sint32 iN
 	return m_bOwnClipboard;
 }
 
-void XAP_UnixClipboard::clearData(UT_Bool bClipboard, UT_Bool bPrimary)
+void XAP_UnixClipboard::clearData(bool bClipboard, bool bPrimary)
 {
 	// User requested us to clear the clipboard.
 
@@ -338,7 +338,7 @@ void XAP_UnixClipboard::clearData(UT_Bool bClipboard, UT_Bool bPrimary)
 	return;
 }
 
-UT_Bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
+bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
 								   void ** ppData, UT_uint32 * pLen,
 								   const char **pszFormatFound)
 {
@@ -380,11 +380,11 @@ UT_Bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
 		
 	case TAG_MostRecent:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 		
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
-		return UT_FALSE;
+		return false;
 	}
 	/*NOTREACHED*/
 }
@@ -392,7 +392,7 @@ UT_Bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_UnixClipboard::_getDataFromFakeClipboard(const char** formatList,
+bool XAP_UnixClipboard::_getDataFromFakeClipboard(const char** formatList,
 													 void ** ppData, UT_uint32 * pLen,
 													 const char **pszFormatFound)
 {
@@ -405,14 +405,14 @@ UT_Bool XAP_UnixClipboard::_getDataFromFakeClipboard(const char** formatList,
 		{
 			*pszFormatFound = formatList[k];
 			UT_DEBUGMSG(("Clipboard::_getDataFromFakeClipboard: found format [%s][len %d]\n",formatList[k],*pLen));
-			return UT_TRUE;
+			return true;
 		}
 
 	UT_DEBUGMSG(("Clipboard::_getDataFromFakeClipboard: no matching format found ??\n"));
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_UnixClipboard::_getDataFromServer(GdkAtom atom, const char** formatList,
+bool XAP_UnixClipboard::_getDataFromServer(GdkAtom atom, const char** formatList,
 											  void ** ppData, UT_uint32 * pLen,
 											  const char **pszFormatFound)
 {
@@ -454,7 +454,7 @@ UT_Bool XAP_UnixClipboard::_getDataFromServer(GdkAtom atom, const char** formatL
 
 	UT_DEBUGMSG(("Clipboard::_getDataFromServer: [property %s] didn't contain anything in format requested.\n",
 				 gdk_atom_name(atom)));
-	return UT_FALSE;
+	return false;
 }
 
 void XAP_UnixClipboard::_getFormats(GdkAtom atom)
@@ -465,7 +465,7 @@ void XAP_UnixClipboard::_getFormats(GdkAtom atom)
 	UT_DEBUGMSG(("Clipboard::_getFormats: requesting formats for [property %s]\n",
 				 gdk_atom_name(atom)));
 
-	m_waiting = UT_TRUE;
+	m_waiting = true;
 	//gtk_selection_convert(m_myWidget,atom,m_atomTargets,m_pUnixApp->getTimeOfLastEvent());
 	gtk_selection_convert(m_myWidget,atom,m_atomTargets,GDK_CURRENT_TIME);
 	while (m_waiting)
@@ -482,7 +482,7 @@ guint32 XAP_UnixClipboard::_getTimeFromServer(GdkAtom atom)
 	UT_DEBUGMSG(("Clipboard::_getTimeFromServer: requesting timestamp for [property %s]\n",
 				 gdk_atom_name(atom)));
 
-	m_waiting = UT_TRUE;
+	m_waiting = true;
 	gtk_selection_convert(m_myWidget,atom,m_atomTimestamp,m_pUnixApp->getTimeOfLastEvent());
 	while (m_waiting)
 		gtk_main_iteration();
@@ -490,7 +490,7 @@ guint32 XAP_UnixClipboard::_getTimeFromServer(GdkAtom atom)
 	return m_timeOnServer;
 }
 
-UT_Bool XAP_UnixClipboard::_getDataFromServerInFormat(GdkAtom atom, GdkAtom atomFormat,
+bool XAP_UnixClipboard::_getDataFromServerInFormat(GdkAtom atom, GdkAtom atomFormat,
 													  void ** ppData, UT_uint32 * pLen,
 													  const char **pszFormatFound)
 {
@@ -500,8 +500,8 @@ UT_Bool XAP_UnixClipboard::_getDataFromServerInFormat(GdkAtom atom, GdkAtom atom
 	UT_DEBUGMSG(("Clipboard::_getDataFromServerInFormat: [property %s][formst %s]\n",
 				 gdk_atom_name(atom),gdk_atom_name(atomFormat)));
 
-	m_bWaitingForDataFromServer = UT_TRUE;	// safety check to guard against stray messages
-	m_waiting = UT_TRUE;
+	m_bWaitingForDataFromServer = true;	// safety check to guard against stray messages
+	m_waiting = true;
 	gtk_selection_convert(m_myWidget,atom,atomFormat,m_pUnixApp->getTimeOfLastEvent());
 	while (m_waiting)
 		gtk_main_iteration();
@@ -511,21 +511,21 @@ UT_Bool XAP_UnixClipboard::_getDataFromServerInFormat(GdkAtom atom, GdkAtom atom
 		*pszFormatFound = NULL;
 		*ppData = NULL;
 		*pLen = 0;
-		return UT_FALSE;
+		return false;
 	}
 	else
 	{
 		*pszFormatFound = _convertToFormatString(m_databuftype);
 		*ppData = (void *)m_databuf.getPointer(0);
 		*pLen = m_databuf.getLength();
-		return UT_TRUE;
+		return true;
 	}
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_UnixClipboard::_testOwnership(GdkAtom atom) const
+bool XAP_UnixClipboard::_testOwnership(GdkAtom atom) const
 {
 	// return TRUE iff the XServer currently thinks
 	// that we still own the given atom.
@@ -544,7 +544,7 @@ void XAP_UnixClipboard::_releaseOwnership(GdkAtom atom, guint32 timeOfRelease)
 		// TODO investigate if this is necessary and/or if we
 		// TODO need a timeout on this loop.
 
-		m_waiting = UT_TRUE;
+		m_waiting = true;
 		gtk_selection_owner_set(NULL,atom,timeOfRelease);
 		while (m_waiting)
 			gtk_main_iteration();
@@ -586,7 +586,7 @@ void XAP_UnixClipboard::_selsnd(GtkSelectionData * selectionData, guint /*info*/
 
 		void * pData = NULL;
 		UT_uint32 iLen = 0;
-		UT_Bool bHaveDataInRequestedFormat = m_fakeClipboard.getClipboardData(szApFormatDesired,&pData,&iLen);
+		bool bHaveDataInRequestedFormat = m_fakeClipboard.getClipboardData(szApFormatDesired,&pData,&iLen);
 		if (!bHaveDataInRequestedFormat)
 		{
 			UT_DEBUGMSG(("Clipboard: SELSND CLIPBOARD failed -- no data on internal clipboard in requested format [%s]\n",
@@ -611,7 +611,7 @@ void XAP_UnixClipboard::_selsnd(GtkSelectionData * selectionData, guint /*info*/
 		aszFormats[0] = szApFormatDesired;
 		aszFormats[1] = NULL;
 
-		UT_Bool bHaveDataInRequestedFormat = _getCurrentSelection(aszFormats,&pData,&iLen,&szApFormatFound);
+		bool bHaveDataInRequestedFormat = _getCurrentSelection(aszFormats,&pData,&iLen,&szApFormatFound);
 		if (!bHaveDataInRequestedFormat)
 		{
 			UT_DEBUGMSG(("Clipboard:: SELSND PRIMARY failed -- no data on current X selection in requested format [%s]\n",
@@ -642,27 +642,27 @@ gint XAP_UnixClipboard::_selclr(GdkEventSelection * event)
 	// because we did a user-clear and released the
 	// property (set the owner to null).
 	
-	m_waiting = UT_FALSE;
+	m_waiting = false;
 
 	if (event->selection == m_atomClipboard)
 	{
 		m_fakeClipboard.clearClipboard();
 		// assert that we are not the owner of the CLIPBOARD property.
 		UT_ASSERT( !_testOwnership(m_atomClipboard) );
-		m_bOwnClipboard = UT_FALSE;
+		m_bOwnClipboard = false;
 		// TODO consider clearing the highlighted selection on screen
-		return UT_TRUE;
+		return true;
 	}
 
 	if (event->selection == m_atomPrimary)
 	{
 		m_pUnixApp->clearSelection();
-		m_bOwnPrimary = UT_FALSE;
-		return UT_TRUE;
+		m_bOwnPrimary = false;
+		return true;
 	}
 
 	UT_DEBUGMSG(("Clipboard: SELCLR failed -- unknown property\n"));
-	return UT_FALSE;
+	return false;
 }
 
 void XAP_UnixClipboard::_selrcv(GtkSelectionData *selectionData, guint32 /*time*/, gpointer /*data*/)
@@ -683,7 +683,7 @@ void XAP_UnixClipboard::_selrcv(GtkSelectionData *selectionData, guint32 /*time*
 	// no matter what we do, we must release the top-half.
 
 	UT_ASSERT(m_waiting);
-	m_waiting = UT_FALSE;
+	m_waiting = false;
 
 	// our processing depends upon the target.
 	
@@ -735,7 +735,7 @@ void XAP_UnixClipboard::_selrcv(GtkSelectionData *selectionData, guint32 /*time*
 	{
 		UT_DEBUGMSG(("Clipboard: SELRCV: assuming data buffer [length %d]\n",selectionData->length));
 
-		m_bWaitingForDataFromServer = UT_FALSE;
+		m_bWaitingForDataFromServer = false;
 		
 		m_databuf.truncate(0);
 		m_databuftype = GDK_NONE;
@@ -793,7 +793,7 @@ const char * XAP_UnixClipboard::_convertToFormatString(GdkAtom fmt) const
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_UnixClipboard::_getCurrentSelection(const char** formatList,
+bool XAP_UnixClipboard::_getCurrentSelection(const char** formatList,
 												void ** ppData, UT_uint32 * pLen,
 												const char **pszFormatFound)
 {

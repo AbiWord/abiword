@@ -270,10 +270,10 @@ const char ** _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
 	return data;
 }
 
-UT_Bool EV_BeOSMenu::synthesizeMenuBar()
+bool EV_BeOSMenu::synthesizeMenuBar()
 {
 	AV_View* pView = m_pBeOSFrame->getCurrentView();
- 	UT_Bool bCheck = UT_FALSE;
+ 	bool bCheck = false;
 	BMenu 		*pMenu = NULL;
 	be_Window 	*pBWin = NULL;
 	//Future reference, use the UT_Stack stack;
@@ -298,10 +298,10 @@ UT_Bool EV_BeOSMenu::synthesizeMenuBar()
 	pMenuBar = new BMenuBar(all, "Menubar");
 	UT_ASSERT(pMenuBar);
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_BeOSMenu::synthesize()
+bool EV_BeOSMenu::synthesize()
  {		
 	AV_View* pView = m_pBeOSFrame->getCurrentView();
 		
@@ -311,7 +311,7 @@ UT_Bool EV_BeOSMenu::synthesize()
 	delete pMenuBar;
 	pMenuBar = new BMenuBar(frameRect , "Menubar");
 	
- 	UT_Bool bCheck = UT_FALSE;
+ 	bool bCheck = false;
 	BMenu 		*pMenu = NULL;
 	be_Window 	*pBWin = NULL;
 	//Future reference, use the UT_Stack stack;
@@ -361,22 +361,22 @@ UT_Bool EV_BeOSMenu::synthesize()
 						{
 						EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
 //	                            if (mis & EV_MIS_Gray)
-//                                	bEnable = UT_FALSE;
+//                                	bEnable = false;
                                 if (mis & EV_MIS_Toggled)
-                                	bCheck = UT_TRUE;
+                                	bCheck = true;
                                 else
-                                	bCheck = UT_FALSE;
+                                	bCheck = false;
                         }
 #if 0
-			UT_Bool bEnable = UT_TRUE;
-                        UT_Bool bCheck = UT_FALSE;
+			bool bEnable = true;
+                        bool bCheck = false;
 
                         if (pAction->hasGetStateFunction()) {
                         	EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
                                 if (mis & EV_MIS_Gray)
-                                	bEnable = UT_FALSE;
+                                	bEnable = false;
                                 if (mis & EV_MIS_Toggled)
-                                	bCheck = UT_TRUE;
+                                	bCheck = true;
                         }                 
 #endif
 			const char **data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
@@ -492,7 +492,7 @@ UT_Bool EV_BeOSMenu::synthesize()
                 
 				BMenuItem *pMenuItem = new BMenuItem(buf, newmesg, key,modifiers);
 				if( pAction->isCheckable() )
-					pMenuItem->SetMarked( (bCheck == UT_TRUE) );
+					pMenuItem->SetMarked( (bCheck == true) );
 					
 				pMenu->AddItem(pMenuItem);
 				
@@ -586,7 +586,7 @@ UT_Bool EV_BeOSMenu::synthesize()
 	pBWin->AddChild(pMenuBar);
 	pBWin->AddFilter(new MenuFilter(m_pBeOSApp, m_pBeOSFrame, this));	
 		
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -610,7 +610,7 @@ BPopUpMenu* EV_BeOSMenuPopup::GetHandle()
 	return m_pPopup;
 }
 
-UT_Bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
+bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 {
 	BPopUpMenu	*pMenuBar = NULL;
 	BMenu 		*pMenu = NULL;
@@ -662,15 +662,15 @@ UT_Bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 		{
 		case EV_MLF_Normal:	{
 #if 0
-			UT_Bool bEnable = UT_TRUE;
-                        UT_Bool bCheck = UT_FALSE;
+			bool bEnable = true;
+                        bool bCheck = false;
 
                         if (pAction->hasGetStateFunction()) {
                         	EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
                                 if (mis & EV_MIS_Gray)
-                                	bEnable = UT_FALSE;
+                                	bEnable = false;
                                 if (mis & EV_MIS_Toggled)
-                                	bCheck = UT_TRUE;
+                                	bCheck = true;
                         }                 
 #endif
 
@@ -869,5 +869,5 @@ UT_Bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 		}
 	}
 		
-	return UT_TRUE;
+	return true;
 }

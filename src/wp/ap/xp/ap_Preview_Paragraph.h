@@ -123,7 +123,7 @@ class AP_Preview_Paragraph : public XAP_Preview
 	UT_uint32 m_x;
 	UT_uint32 m_y;	
 	
-	virtual UT_Bool _loadDrawFont(void);
+	virtual bool _loadDrawFont(void);
 	virtual void 	_drawPageBackground(void);
 	virtual void	_drawPageBorder(void);
 	virtual void 	_appendBlock(AP_Preview_Paragraph_Block * block);

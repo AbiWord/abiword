@@ -58,12 +58,12 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_uOffsetForSmartQuote = 0;
 	m_pFirstSection = NULL;
 	m_pLastSection = NULL;
-	m_bSpellCheckCaps = UT_TRUE;
-	m_bSpellCheckNumbers = UT_TRUE;
-	m_bSpellCheckInternet = UT_TRUE;
+	m_bSpellCheckCaps = true;
+	m_bSpellCheckNumbers = true;
+	m_bSpellCheckInternet = true;
 	m_pPrefs = NULL;
-	m_bStopSpellChecking = UT_FALSE;
-	m_bImSpellCheckingNow = UT_FALSE;
+	m_bStopSpellChecking = false;
+	m_bImSpellCheckingNow = false;
 	m_uDocBackgroundCheckReasons = 0;
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
@@ -104,9 +104,9 @@ FL_DocLayout::~FL_DocLayout()
 
 	if (m_pBackgroundCheckTimer)
 	{
-	        m_bStopSpellChecking = UT_TRUE;
+	        m_bStopSpellChecking = true;
 		m_pBackgroundCheckTimer->stop();
-		while(m_bImSpellCheckingNow == UT_TRUE)
+		while(m_bImSpellCheckingNow == true)
 		{
 		}
 	}
@@ -163,8 +163,8 @@ void FL_DocLayout::setView(FV_View* pView)
 
 			// keep updating itself	
 			pPrefs->addListener ( _prefsListener, this ); 
-			UT_Bool b;
-			if (m_pPrefs->getPrefsValueBool((const XML_Char *)"DebugFlash",&b)  &&  b == UT_TRUE)
+			bool b;
+			if (m_pPrefs->getPrefsValueBool((const XML_Char *)"DebugFlash",&b)  &&  b == true)
 			{
 				addBackgroundCheckReason(bgcrDebugFlash);
 			}
@@ -224,13 +224,13 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 {
 	GR_Font* pFont = NULL;
 
-	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
 	// for superscripts and subscripts, we'll automatically shrink the font size
 	if ((0 == UT_strcmp(pszPosition, "superscript")) ||
@@ -252,10 +252,10 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 
 		if(iUseLayoutResolution)
 			{
-			m_pG->setLayoutResolutionMode(UT_TRUE);
+			m_pG->setLayoutResolutionMode(true);
 			}
 		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
-		m_pG->setLayoutResolutionMode(UT_FALSE);
+		m_pG->setLayoutResolutionMode(false);
 		UT_ASSERT(pFont);
 
 		// add it to the cache
@@ -274,18 +274,18 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 								const PP_AttrProp * pBlockAP,
 								const PP_AttrProp * pSectionAP,
-								UT_sint32 iUseLayoutResolution, UT_Bool isField)
+								UT_sint32 iUseLayoutResolution, bool isField)
 {
 	GR_Font* pFont = NULL;
 
-	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, UT_TRUE);
-	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
-	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, UT_TRUE);
+	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, true);
+	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszVariant	= PP_evalProperty("font-variant",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszWeight	= PP_evalProperty("font-weight",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszStretch	= PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszSize		= PP_evalProperty("font-size",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
+	const char* pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 
 	// for superscripts and subscripts, we'll automatically shrink the font size
 	if ((0 == UT_strcmp(pszPosition, "superscript")) ||
@@ -298,7 +298,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
 	char key[500];
-	if(pszField!="NULL" && pszField != NULL && isField==UT_TRUE)
+	if(pszField!="NULL" && pszField != NULL && isField==true)
 	{
 	        pszFamily = pszField;
 	}
@@ -311,10 +311,10 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 
 		if(iUseLayoutResolution)
 			{
-			m_pG->setLayoutResolutionMode(UT_TRUE);
+			m_pG->setLayoutResolutionMode(true);
 			}
 		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
-		m_pG->setLayoutResolutionMode(UT_FALSE);
+		m_pG->setLayoutResolutionMode(false);
 		UT_ASSERT(pFont);
 
 		// add it to the cache
@@ -440,9 +440,9 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 	PL_StruxFmtHandle sfh;
 
 	PT_DocPosition posEOD;
-	UT_Bool bRes;
+	bool bRes;
 
-	bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
+	bRes = m_pDoc->getBounds(true, posEOD);
 	UT_ASSERT(bRes);
 
 	bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
@@ -555,9 +555,9 @@ void FL_DocLayout::updateLayout()
 
 #define BACKGROUND_CHECK_MSECS 100
 
-void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
+void FL_DocLayout::_toggleAutoSpell(bool bSpell)
 {
-	UT_Bool bOldAutoSpell = getAutoSpellCheck();
+	bool bOldAutoSpell = getAutoSpellCheck();
 	if (bSpell)
 	{
 		addBackgroundCheckReason(bgcrSpelling);
@@ -567,7 +567,7 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 		removeBackgroundCheckReason(bgcrSpelling);
 	}
 
-	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)\n", bSpell ? "UT_TRUE" : "UT_FALSE" ));
+	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)\n", bSpell ? "true" : "false" ));
 
 	if (bSpell)
 	{
@@ -612,7 +612,7 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 	}
 }
 
-void FL_DocLayout::_toggleAutoSmartQuotes(UT_Bool bSQ)
+void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 {
 	setPendingSmartQuote(NULL, 0);  // avoid surprises
 	if (bSQ)
@@ -624,7 +624,7 @@ void FL_DocLayout::_toggleAutoSmartQuotes(UT_Bool bSQ)
 		removeBackgroundCheckReason(bgcrSmartQuotes);
 	}
 
-	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSmartQuotes(%s)\n", bSQ ? "UT_TRUE" : "UT_FALSE" ));
+	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSmartQuotes(%s)\n", bSQ ? "true" : "false" ));
 }
 
 void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
@@ -643,17 +643,17 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 		return;
 	}
 
-        if(pDocLayout->m_bStopSpellChecking == UT_TRUE || pDocLayout->m_bImSpellCheckingNow == UT_TRUE)
+        if(pDocLayout->m_bStopSpellChecking == true || pDocLayout->m_bImSpellCheckingNow == true)
 	{
 	        return;
 	}
 	// Code added to hold spell checks during block insertions
 
-	if(pDocLayout->m_pDoc->isPieceTableChanging() == UT_TRUE)
+	if(pDocLayout->m_pDoc->isPieceTableChanging() == true)
 	{
 	        return;
 	}
-	pDocLayout->m_bImSpellCheckingNow = UT_TRUE;
+	pDocLayout->m_bImSpellCheckingNow = true;
 
 	// prevent getting a new timer hit before we've finished this one by
 	// temporarily disabling the timer
@@ -707,20 +707,20 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 		}
 	}
 
-	if (i != 0 && pDocLayout->m_bStopSpellChecking == UT_FALSE)
+	if (i != 0 && pDocLayout->m_bStopSpellChecking == false)
 	{
 		// restart timer unless it's not needed any more
 	  //pDocLayout->m_pBackgroundCheckTimer->start();
 	}
-	pDocLayout->m_bImSpellCheckingNow = UT_FALSE;
+	pDocLayout->m_bImSpellCheckingNow = false;
 }
 
-void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, UT_Bool bHead)
+void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, bool bHead)
 {
 	/*
 		This routine queues up blocks for timer-driven spell checking, etc.  
 		By default, this is a FIFO queue, but it can be explicitly 
-		reprioritized by setting bHead == UT_TRUE.  
+		reprioritized by setting bHead == true.  
 	*/
 	if (!m_pBackgroundCheckTimer)
 	{
@@ -731,7 +731,7 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	else
 	{
 	  //		m_pBackgroundCheckTimer->stop();
-	        m_bStopSpellChecking = UT_FALSE;
+	        m_bStopSpellChecking = false;
 		m_pBackgroundCheckTimer->start();
 	}
 
@@ -771,11 +771,11 @@ void FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 	// when queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
 	{
-	        m_bStopSpellChecking = UT_TRUE;
+	        m_bStopSpellChecking = true;
                 if(m_pBackgroundCheckTimer)
 		{
 		         m_pBackgroundCheckTimer->stop();
-		         while(m_bImSpellCheckingNow == UT_TRUE)
+		         while(m_bImSpellCheckingNow == true)
 		         {
 		         }
 		}
@@ -802,14 +802,14 @@ void FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock, fl_PartOfBlock
 	m_pPendingWordForSpell = pWord;
 }
 
-UT_Bool FL_DocLayout::checkPendingWordForSpell(void)
+bool FL_DocLayout::checkPendingWordForSpell(void)
 {
-	UT_Bool bUpdate = UT_FALSE;
+	bool bUpdate = false;
 
 	if (!m_pPendingBlockForSpell)
 		return bUpdate;
 
-	if(m_pDoc->isPieceTableChanging() == UT_TRUE)
+	if(m_pDoc->isPieceTableChanging() == true)
 	{
 	        return bUpdate;
 	}
@@ -826,25 +826,25 @@ UT_Bool FL_DocLayout::checkPendingWordForSpell(void)
 	return bUpdate;
 }
 
-UT_Bool FL_DocLayout::isPendingWordForSpell(void) const
+bool FL_DocLayout::isPendingWordForSpell(void) const
 {
-	return (m_pPendingBlockForSpell ? UT_TRUE : UT_FALSE);
+	return (m_pPendingBlockForSpell ? true : false);
 }
 
-UT_Bool	FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
+bool	FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
 										 UT_uint32 iOffset, 
 										 UT_sint32 chg) const
 {
 	UT_uint32 len = (chg < 0) ? -chg : 0;
 
 	if (!m_pPendingBlockForSpell)
-		return UT_FALSE;
+		return false;
 
 	UT_ASSERT(pBlock);
 
 	// are we in the same block?
 	if (m_pPendingBlockForSpell != pBlock)
-		return UT_FALSE;
+		return false;
 
 	UT_ASSERT(m_pPendingWordForSpell);
 
@@ -963,14 +963,14 @@ fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID)
 	void				*data
 ) 
 {
-	UT_Bool b;
+	bool b;
 	FL_DocLayout *pDocLayout = (FL_DocLayout *)data;
 
 	// UT_DEBUGMSG(("spell_prefsListener\n"));		
 	UT_ASSERT( pApp && pPrefs && data );
 
 	// caps/number/internet
-	UT_Bool changed = UT_FALSE;	
+	bool changed = false;	
 	pPrefs->getPrefsValueBool( (XML_Char *)AP_PREF_KEY_SpellCheckCaps, &b );
 	changed = changed || (b != pDocLayout->getSpellCheckCaps());
 	pDocLayout->m_bSpellCheckCaps = b;
@@ -1491,11 +1491,11 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 			// your basic emacs (save-excursion...)  :-)
 			PT_DocPosition saved_pos, quotable_at;
 			saved_pos = m_pView->getPoint();
-			quotable_at = block->getPosition(UT_FALSE) + offset;
+			quotable_at = block->getPosition(false) + offset;
 
 			m_pView->moveInsPtTo(quotable_at);
 			// delete/insert create change records for UNDO
-			m_pView->cmdCharDelete(UT_TRUE, 1);
+			m_pView->cmdCharDelete(true, 1);
 			m_pView->cmdCharInsert(&replacement, 1);
 			m_pView->moveInsPtTo(saved_pos);
 

@@ -284,8 +284,8 @@ void AP_UnixFrame::setXScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	UT_Bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
-	UT_Bool bDifferentLimits = ((width-windowWidth) != (int)(m_pHadj->upper-m_pHadj->page_size));
+	bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
+	bool bDifferentLimits = ((width-windowWidth) != (int)(m_pHadj->upper-m_pHadj->page_size));
 	
 	m_pHadj->value = newvalue;
 	m_pHadj->lower = 0.0;
@@ -311,8 +311,8 @@ void AP_UnixFrame::setYScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	UT_Bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
-	UT_Bool bDifferentLimits ((height-windowHeight) != (int)(m_pVadj->upper-m_pVadj->page_size));
+	bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
+	bool bDifferentLimits ((height-windowHeight) != (int)(m_pVadj->upper-m_pVadj->page_size));
 	
 	m_pVadj->value = newvalue;
 	m_pVadj->lower = 0.0;
@@ -346,25 +346,25 @@ AP_UnixFrame::~AP_UnixFrame(void)
 	killFrameData();
 }
 
-UT_Bool AP_UnixFrame::initialize(void)
+bool AP_UnixFrame::initialize(void)
 {
 	UT_DEBUGMSG(("AP_UnixFrame::initialize"));
 	if (!initFrameData())
-		return UT_FALSE;
+		return false;
 
 	if (!XAP_UNIXBASEFRAME::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 								   AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
 								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 								   AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
-		return UT_FALSE;
+		return false;
 
 	_createTopLevelWindow();
 	_showOrHideToolbars();
 	_showOrHideStatusbar();
 	gtk_widget_show(m_wTopLevelWindow);
 
-	return UT_TRUE;
+	return true;
 }
 
 // Does the initial show/hide of toolbars (based on the user prefs).
@@ -373,7 +373,7 @@ UT_Bool AP_UnixFrame::initialize(void)
 // and thus we have to manually call this function at startup.
 void AP_UnixFrame::_showOrHideToolbars(void)
 {
-	UT_Bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
+	bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
 
 	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
 	{
@@ -389,21 +389,21 @@ void AP_UnixFrame::_showOrHideToolbars(void)
 // Idem.
 void AP_UnixFrame::_showOrHideStatusbar(void)
 {
-        //UT_Bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
+        //bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
 	// I don't know why it doesn't work...
 	//	toggleStatusBar(bShowStatusBar);
 }
 
 /*****************************************************************/
 
-UT_Bool AP_UnixFrame::initFrameData(void)
+bool AP_UnixFrame::initFrameData(void)
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
 	AP_FrameData* pData = new AP_FrameData(m_pUnixApp);
 
 	m_pData = (void*)pData;
-	return (pData ? UT_TRUE : UT_FALSE);
+	return (pData ? true : false);
 }
 
 void AP_UnixFrame::killFrameData(void)
@@ -481,7 +481,7 @@ Cleanup:
 
 UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
 {
-	UT_Bool bUpdateClones;
+	bool bUpdateClones;
 	UT_Vector vClones;
 	XAP_App * pApp = getApp();
 
@@ -562,7 +562,7 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 
 GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 {
-	UT_Bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
+	bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
 
 	// create the rulers
 	AP_UnixTopRuler * pUnixTopRuler = NULL;
@@ -766,7 +766,7 @@ UT_Error AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
 	return _showDocument();
 }
 
-void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
+void AP_UnixFrame::toggleRuler(bool bRulerOn)
 {
 	//UT_DEBUGMSG(("AP_UnixFrame::toggleRuler %d\n", bRulerOn));	
 
@@ -825,7 +825,7 @@ void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
 }
 
-void AP_UnixFrame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn)
+void AP_UnixFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 {
 	UT_DEBUGMSG(("AP_UnixFrame::toggleBar %d, %d\n", iBarNb, bBarOn));	
 
@@ -838,7 +838,7 @@ void AP_UnixFrame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn)
 		pFrameData->m_pToolbar[iBarNb]->hide();
 }
 
-void AP_UnixFrame::toggleStatusBar(UT_Bool bStatusBarOn)
+void AP_UnixFrame::toggleStatusBar(bool bStatusBarOn)
 {
 	UT_DEBUGMSG(("AP_UnixFrame::toggleStatusBar %d\n", bStatusBarOn));	
 

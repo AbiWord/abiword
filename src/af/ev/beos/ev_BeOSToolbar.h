@@ -102,14 +102,14 @@ public:
 	virtual ~EV_BeOSToolbar(void);
 
 	//This is called in the frame code
-	UT_Bool bindListenerToView(AV_View * pView);
+	bool bindListenerToView(AV_View * pView);
 	//This is called in the frame code
-	virtual UT_Bool synthesize(void);
+	virtual bool synthesize(void);
 	//This is called locally and by the toolbar listener
-	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
+	bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
 	//This is called by the local BeOS View
-	UT_Bool toolbarEvent(XAP_Toolbar_Id id,
+	bool toolbarEvent(XAP_Toolbar_Id id,
 			 UT_UCSChar * pData,
 			 UT_uint32 dataLength);
 

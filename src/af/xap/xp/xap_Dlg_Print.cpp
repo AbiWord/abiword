@@ -35,20 +35,20 @@
 XAP_Dialog_Print::XAP_Dialog_Print(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_AppPersistent(pDlgFactory,id)
 {
-	m_bPersistValid = UT_FALSE;
+	m_bPersistValid = false;
 	m_persistNrCopies = 1;
-	m_persistCollate = UT_FALSE;
+	m_persistCollate = false;
 	m_persistColorSpace = GR_Graphics::GR_COLORSPACE_COLOR;	/* full color is default */
-	m_persistPrintToFile = UT_FALSE;
+	m_persistPrintToFile = false;
 
 	m_szDocumentTitle = NULL;
 	m_szDocumentPathname = NULL;
 	m_szPrintToFilePathname = NULL;
 	m_szPrintCommand = NULL;
-	m_bBypassActualDialog = UT_FALSE;
-	m_bEnablePageRange = UT_FALSE;
-	m_bEnablePrintSelection = UT_FALSE;
-	m_bEnablePrintToFile = UT_FALSE;
+	m_bBypassActualDialog = false;
+	m_bEnablePageRange = false;
+	m_bEnablePrintSelection = false;
+	m_bEnablePrintToFile = false;
 	m_nFirstPage = 0;
 	m_nLastPage = 0;
 
@@ -69,17 +69,17 @@ void XAP_Dialog_Print::useStart(void)
 	FREEP(m_szDocumentPathname);
 	FREEP(m_szPrintToFilePathname);
 
-	m_bBypassActualDialog = UT_FALSE;
-	m_bEnablePageRange = UT_FALSE;
-	m_bEnablePrintSelection = UT_FALSE;
-	m_bEnablePrintToFile = UT_FALSE;
+	m_bBypassActualDialog = false;
+	m_bEnablePageRange = false;
+	m_bEnablePrintSelection = false;
+	m_bEnablePrintToFile = false;
 	m_nFirstPage = 0;
 	m_nLastPage = 0;
 
 	m_nCopies = ((m_bPersistValid) ? m_persistNrCopies : 1);
-	m_bCollate = ((m_bPersistValid) ? m_persistCollate : UT_TRUE);
+	m_bCollate = ((m_bPersistValid) ? m_persistCollate : true);
 	m_cColorSpace = ((m_bPersistValid) ? m_persistColorSpace : GR_Graphics::GR_COLORSPACE_COLOR);
-	m_bDoPrintToFile = ((m_bPersistValid) ? m_persistPrintToFile : UT_FALSE);
+	m_bDoPrintToFile = ((m_bPersistValid) ? m_persistPrintToFile : false);
 	
 	m_answer = a_VOID;
 }
@@ -95,7 +95,7 @@ void XAP_Dialog_Print::useEnd(void)
 
 	if (m_answer == a_OK)
 	{
-		m_bPersistValid = UT_TRUE;
+		m_bPersistValid = true;
 		m_persistNrCopies = m_nCopies;
 		m_persistCollate = m_bCollate;
 		m_persistColorSpace = m_cColorSpace;
@@ -134,7 +134,7 @@ void XAP_Dialog_Print::setDocumentPathname(const char * szDocPath)
 		UT_cloneString(m_szDocumentPathname,szDocPath);
 }
 
-void XAP_Dialog_Print::setEnablePageRangeButton(UT_Bool bEnable,
+void XAP_Dialog_Print::setEnablePageRangeButton(bool bEnable,
 											   UT_uint32 nFirst,
 											   UT_uint32 nLast)
 {
@@ -143,17 +143,17 @@ void XAP_Dialog_Print::setEnablePageRangeButton(UT_Bool bEnable,
 	m_nLastPage			= ((bEnable) ? nLast : 0);
 }
 
-void XAP_Dialog_Print::setEnablePrintSelection(UT_Bool bEnable)
+void XAP_Dialog_Print::setEnablePrintSelection(bool bEnable)
 {
 	m_bEnablePrintSelection = bEnable;
 }
 
-void XAP_Dialog_Print::setEnablePrintToFile(UT_Bool bEnable)
+void XAP_Dialog_Print::setEnablePrintToFile(bool bEnable)
 {
 	m_bEnablePrintToFile = bEnable;
 }
 
-void XAP_Dialog_Print::setTryToBypassActualDialog(UT_Bool bEnable)
+void XAP_Dialog_Print::setTryToBypassActualDialog(bool bEnable)
 {
 	// allow the caller to bypass the actual dialog (useful for the
 	// print button on the toolbar (which should try to reuse as much
@@ -163,7 +163,7 @@ void XAP_Dialog_Print::setTryToBypassActualDialog(UT_Bool bEnable)
 	m_bBypassActualDialog = (bEnable && m_bPersistValid);
 }
 
-UT_Bool XAP_Dialog_Print::getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const
+bool XAP_Dialog_Print::getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLast) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
@@ -177,14 +177,14 @@ UT_Bool XAP_Dialog_Print::getDoPrintRange(UT_uint32 * pnFirst, UT_uint32 * pnLas
 	return m_bDoPrintRange;
 }
 
-UT_Bool XAP_Dialog_Print::getDoPrintSelection(void) const
+bool XAP_Dialog_Print::getDoPrintSelection(void) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
 	return m_bDoPrintSelection;
 }
 
-UT_Bool XAP_Dialog_Print::getDoPrintToFile(const char *) const
+bool XAP_Dialog_Print::getDoPrintToFile(const char *) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
@@ -198,7 +198,7 @@ UT_uint32 XAP_Dialog_Print::getNrCopies(void) const
 	return m_nCopies;
 }
 
-UT_Bool XAP_Dialog_Print::getCollate(void) const
+bool XAP_Dialog_Print::getCollate(void) const
 {
 	UT_ASSERT(m_answer == a_OK);
 
@@ -212,7 +212,7 @@ GR_Graphics::ColorSpace XAP_Dialog_Print::getColorSpace(void) const
 	return m_persistColorSpace;
 }
 
-UT_Bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
+bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 												 const char * szSuggestedName)
 {
 	UT_ASSERT(pFrame);
@@ -228,7 +228,7 @@ UT_Bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 	UT_ASSERT(pDialog);
 
 	pDialog->setCurrentPathname(szSuggestedName);
-	pDialog->setSuggestFilename(UT_TRUE);
+	pDialog->setSuggestFilename(true);
 
 	{
 		// TODO : FIX THIS!  Make this pull dynamic types from the export
@@ -258,7 +258,7 @@ UT_Bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
-	UT_Bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
+	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
 
 	if (bOK)
 		UT_cloneString(m_szPrintToFilePathname,pDialog->getPathname());

@@ -38,8 +38,8 @@ public:
 	virtual UT_sint32	getDisplayWidth(void) const { return m_iDisplayWidth; }
 	virtual UT_sint32	getDisplayHeight(void) const { return m_iDisplayHeight; }
 
-   	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const { return UT_FALSE; }
-	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { return UT_FALSE; }
+   	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const { return false; }
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { return false; }
 
 	void				getName(char* szName) const;
 
@@ -55,7 +55,7 @@ public:
    
 	static GRType		getBufferType(const UT_ByteBuf* pBB);
    	virtual GRType		getType() { return GRT_Unknown; }
-   	virtual UT_Bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { return UT_FALSE; }
+   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { return false; }
 
 protected:
    	char			m_szName[GR_IMAGE_MAX_NAME_LEN+1];

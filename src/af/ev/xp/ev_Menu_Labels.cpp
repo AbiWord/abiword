@@ -85,12 +85,12 @@ EV_Menu_LabelSet::~EV_Menu_LabelSet(void)
 	free(m_labelTable);
 }
 
-UT_Bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
+bool EV_Menu_LabelSet::setLabel(XAP_Menu_Id id,
 								   const char * szMenuLabel,
 								   const char * szStatusMsg)
 {
 	if ((id < m_first) || (id > m_last))
-		return UT_FALSE;
+		return false;
 
 	UT_uint32 index = (id - m_first);
 	DELETEP(m_labelTable[index]);

@@ -59,14 +59,14 @@ void AP_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 {
 }
 
-UT_Bool AP_View::notifyListeners(const AV_ChangeMask hint)
+bool AP_View::notifyListeners(const AV_ChangeMask hint)
 {
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool AP_View::canDo(UT_Bool bUndo) const
+bool AP_View::canDo(bool bUndo) const
 {
-	return UT_FALSE;
+	return false;
 }
 
 void AP_View::cmdUndo(UT_uint32 count)
@@ -81,12 +81,12 @@ void AP_View::cmdRedo(UT_uint32 count)
 	
 UT_Error AP_View::cmdSave(void)
 {
-	return UT_FALSE;
+	return false;
 }
 
 UT_Error AP_View::cmdSaveAs(const char * szFilename, int ieft)
 {
-	return UT_FALSE;
+	return false;
 }
 
 EV_EditMouseContext AP_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
@@ -100,9 +100,9 @@ EV_EditMouseContext AP_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 }
 
 
-UT_Bool	AP_View::isSelectionEmpty(void) const
+bool	AP_View::isSelectionEmpty(void) const
 {
-	return UT_FALSE;
+	return false;
 }
 
 void AP_View::cmdUnselectSelection(void)

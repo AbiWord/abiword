@@ -150,7 +150,7 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// directory for writability?  Save/Export operations will want
 	// this, open/import will not.
 
-	UT_Bool bCheckWritePermission;
+	bool bCheckWritePermission;
 	char * szTitle;
 	BMessenger *messenger = new BMessenger(m_pHandler);
 	m_pOpenPanel = m_pSavePanel = NULL;
@@ -159,7 +159,7 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	case XAP_DIALOG_ID_INSERT_PICTURE:
 	case XAP_DIALOG_ID_FILE_OPEN: {
 		szTitle = "AbiWord - Open File";
-		bCheckWritePermission = UT_FALSE;
+		bCheckWritePermission = false;
 		if (!m_pOpenPanel) {
 			//BMessenger tmpMessenger(this);
 		 	m_pOpenPanel = new BFilePanel(B_OPEN_PANEL, 	//Mode SAVE/OPEN
@@ -180,7 +180,7 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{
 		
 		szTitle = "AbiWord - Save File As";
-		bCheckWritePermission = UT_TRUE;
+		bCheckWritePermission = true;
 		if (!m_pSavePanel) {
 			//BMessenger tmpMessenger(this);
 		 	m_pSavePanel = new BFilePanel(B_SAVE_PANEL, 	//Mode SAVE/OPEN
@@ -241,7 +241,7 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 	case XAP_DIALOG_ID_PRINTTOFILE: {
 		szTitle = "Print To File";
-		bCheckWritePermission = UT_TRUE;
+		bCheckWritePermission = true;
 		break;
 	}
 	default:

@@ -32,7 +32,7 @@ public:
 	AP_Win32Toolbar_Icons(void);
 	~AP_Win32Toolbar_Icons(void);
 
-	static UT_Bool getBitmapForIcon(HWND hwnd,
+	static bool getBitmapForIcon(HWND hwnd,
 									UT_uint32 maxWidth,
 									UT_uint32 maxHeight,
 									UT_RGBColor * pColor,

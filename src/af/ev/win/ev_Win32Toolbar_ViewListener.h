@@ -31,7 +31,7 @@ public:
 	EV_Win32Toolbar_ViewListener(EV_Win32Toolbar * pWin32Toolbar,
 								AV_View * pView);
 	
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
 	EV_Win32Toolbar *	m_pWin32Toolbar;

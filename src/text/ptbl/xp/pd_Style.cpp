@@ -33,7 +33,7 @@ PD_Style::~PD_Style()
 {
 }
 
-UT_Bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
+bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
 {
 	UT_ASSERT(indexAP != m_indexAP);
 
@@ -41,30 +41,30 @@ UT_Bool PD_Style::setIndexAP(PT_AttrPropIndex indexAP)
 
 	m_indexAP = indexAP;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PD_Style::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
+bool PD_Style::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
-		return UT_FALSE;
+		return false;
 	else
 		return pAP->getProperty(szName, szValue);
 }
 
-UT_Bool PD_Style::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
+bool PD_Style::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
-		return UT_FALSE;
+		return false;
 	else
 		return pAP->getAttribute(szName, szValue);
 }
 
-UT_Bool PD_Style::isUsed(void) const
+bool PD_Style::isUsed(void) const
 {
 	// TODO: we need some way of refcounting
 	// TODO: what if this document is a template
@@ -73,7 +73,7 @@ UT_Bool PD_Style::isUsed(void) const
 	return isUserDefined();
 }
 
-UT_Bool PD_Style::isCharStyle(void) const
+bool PD_Style::isCharStyle(void) const
 {
 	// TODO: cache this too  
 
@@ -83,7 +83,7 @@ UT_Bool PD_Style::isCharStyle(void) const
 			return !UT_strcmp(szValue, "c");
 
 	// default: no
-	return UT_FALSE;
+	return false;
 }
 
 PD_Style * PD_Style::getBasedOn(void)

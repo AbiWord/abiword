@@ -61,7 +61,7 @@ protected:
 	XAP_UnixGnomePrintGraphics      * m_pGnomePrintGraphics;
 	GR_Graphics::ColorSpace		colorSpace;
 	GnomePrintMaster                *m_gpm;
-	UT_Bool                         m_bIsPreview;
+	bool                         m_bIsPreview;
 };
 
 #endif /* XAP_UNIXGNOMEDIALOG_PRINT_H */

@@ -89,11 +89,11 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
    	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType = GR_Image::GRT_Raster);
   
-	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
-	virtual UT_Bool startPrint(void);
-	virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
-							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
-	virtual UT_Bool endPrint(void);
+	virtual bool queryProperties(GR_Graphics::Properties gp) const;
+	virtual bool startPrint(void);
+	virtual bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
+							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
+	virtual bool endPrint(void);
 
 	virtual void flush(void);
 
@@ -137,7 +137,7 @@ class GR_QNXGraphics : public GR_Graphics
 	PgColor_t			m_3dColors[COUNT_3D_COLORS];
 
 	UT_uint32			m_iShadowZoomPercentage;
- 	UT_Bool             m_bPrintNextPage;    
+ 	bool             m_bPrintNextPage;    
 	PpPrintContext_t *  m_pPrintContext;
 };
 

@@ -64,7 +64,7 @@ XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFac
 	m_nFileType = XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO;
 
 	m_answer = a_VOID;
-	m_bSuggestName = UT_FALSE;
+	m_bSuggestName = false;
 }
 
 XAP_Dialog_FileOpenSaveAs::~XAP_Dialog_FileOpenSaveAs(void)
@@ -82,7 +82,7 @@ void XAP_Dialog_FileOpenSaveAs::useStart(void)
 	FREEP(m_szInitialPathname);
 	FREEP(m_szFinalPathname);
 	m_answer = a_VOID;
-	m_bSuggestName = UT_FALSE;
+	m_bSuggestName = false;
 }
 
 void XAP_Dialog_FileOpenSaveAs::useEnd(void)
@@ -108,7 +108,7 @@ void XAP_Dialog_FileOpenSaveAs::setCurrentPathname(const char * szPathname)
 		UT_cloneString(m_szInitialPathname,szPathname);
 }
 
-void XAP_Dialog_FileOpenSaveAs::setSuggestFilename(UT_Bool bSuggestName)
+void XAP_Dialog_FileOpenSaveAs::setSuggestFilename(bool bSuggestName)
 {
 	m_bSuggestName = bSuggestName;
 }

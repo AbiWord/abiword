@@ -31,9 +31,9 @@
 /*****************************************************************/
 
 EV_Menu_Action::EV_Menu_Action(XAP_Menu_Id id,
-							   UT_Bool bHoldsSubMenu,
-							   UT_Bool bRaisesDialog,
-							   UT_Bool bCheckable,
+							   bool bHoldsSubMenu,
+							   bool bRaisesDialog,
+							   bool bCheckable,
 							   const char * szMethodName,
 							   EV_GetMenuItemState_pFn pfnGetState,
 							   EV_GetMenuItemComputedLabel_pFn pfnGetLabel)
@@ -60,7 +60,7 @@ XAP_Menu_Id EV_Menu_Action::getMenuId(void) const
 	return m_id;
 }
 
-UT_Bool EV_Menu_Action::hasDynamicLabel(void) const
+bool EV_Menu_Action::hasDynamicLabel(void) const
 {
 	return (m_pfnGetLabel != NULL);
 }
@@ -73,7 +73,7 @@ const char * EV_Menu_Action::getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_L
 		return NULL;
 }
 
-UT_Bool EV_Menu_Action::hasGetStateFunction(void) const
+bool EV_Menu_Action::hasGetStateFunction(void) const
 {
 	return (m_pfnGetState != NULL);
 }
@@ -91,12 +91,12 @@ const char * EV_Menu_Action::getMethodName(void) const
 	return m_szMethodName;
 }
 
-UT_Bool EV_Menu_Action::raisesDialog(void) const
+bool EV_Menu_Action::raisesDialog(void) const
 {
 	return m_bRaisesDialog;
 }
 
-UT_Bool EV_Menu_Action::isCheckable(void) const
+bool EV_Menu_Action::isCheckable(void) const
 {
 	return m_bCheckable;
 }
@@ -124,16 +124,16 @@ EV_Menu_ActionSet::~EV_Menu_ActionSet(void)
 	free(m_actionTable);
 }
 
-UT_Bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
-									 UT_Bool bHoldsSubMenu,
-									 UT_Bool bRaisesDialog,
-									 UT_Bool bCheckable,
+bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
+									 bool bHoldsSubMenu,
+									 bool bRaisesDialog,
+									 bool bCheckable,
 									 const char * szMethodName,
 									 EV_GetMenuItemState_pFn pfnGetState,
 									 EV_GetMenuItemComputedLabel_pFn pfnGetLabel)
 {
 	if ((id < m_first) || (id > m_last))
-		return UT_FALSE;
+		return false;
 
 	UT_uint32 index = (id - m_first);
 	DELETEP(m_actionTable[index]);

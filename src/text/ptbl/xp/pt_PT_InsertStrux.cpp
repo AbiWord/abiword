@@ -40,7 +40,7 @@
 /****************************************************************/
 /****************************************************************/
 
-UT_Bool pt_PieceTable::_createStrux(PTStruxType pts,
+bool pt_PieceTable::_createStrux(PTStruxType pts,
 									PT_AttrPropIndex indexAP,
 									pf_Frag_Strux ** ppfs)
 {
@@ -69,11 +69,11 @@ UT_Bool pt_PieceTable::_createStrux(PTStruxType pts,
 	{
 		UT_DEBUGMSG(("Could not create structure fragment.\n"));
 		// we forget about the AP that we created
-		return UT_FALSE;
+		return false;
 	}
 
 	*ppfs = pfs;
-	return UT_TRUE;
+	return true;
 }
 
 void pt_PieceTable::_insertStrux(pf_Frag * pf,
@@ -165,7 +165,7 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 }
 
 
-UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
+bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 								   PTStruxType pts)
 {
 	// insert a new structure fragment at the given document position.
@@ -178,13 +178,13 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	pf_Frag * pf = NULL;
 	PT_BlockOffset fragOffset = 0;
-	UT_Bool bFoundFrag = getFragFromPosition(dpos,&pf,&fragOffset);
+	bool bFoundFrag = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFoundFrag);
 
 	// get the strux containing the given position.
 	
 	pf_Frag_Strux * pfsContainer = NULL;
-	UT_Bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer);
+	bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer);
 	UT_ASSERT(bFoundContainer);
 
 	// if we are inserting something similar to the previous strux,
@@ -205,7 +205,7 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	
 	pf_Frag_Strux * pfsNew = NULL;
 	if (!_createStrux(pts,indexAP,&pfsNew))
-		return UT_FALSE;
+		return false;
 	
 	// when inserting paragraphs, we try to remember the current
 	// span formatting active at the insertion point and add a
@@ -216,7 +216,7 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	// not still be here) new text will either use the FmtMark or
 	// look to the right.
 
-	UT_Bool bNeedGlob = UT_FALSE;
+	bool bNeedGlob = false;
 	PT_AttrPropIndex apFmtMark = 0;
 	if (pfsNew->getStruxType() == PTX_Block)
 	{
@@ -264,10 +264,10 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		endMultiStepGlob();
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */,
+bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */,
 												  pf_Frag * pfCurrent, PT_BlockOffset fragOffset,
 												  PT_AttrPropIndex * pFmtMarkAP)
 {
@@ -299,14 +299,14 @@ UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock
 		default:
 			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				return UT_FALSE;
+				return false;
 			}
 			
 		case pf_Frag::PFT_Text:
 			{
 				pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pfPrev);
 				*pFmtMarkAP = pfPrevText->getIndexAP();
-				return UT_TRUE;
+				return true;
 			}
 
 		case pf_Frag::PFT_Object:
@@ -320,7 +320,7 @@ UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock
 				{
 				case PTO_Field:
 					*pFmtMarkAP = pfPrevObject->getIndexAP();
-					return UT_TRUE;
+					return true;
 
 				default:					// keep looking back
 					break;
@@ -329,7 +329,7 @@ UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock
 
 		case pf_Frag::PFT_Strux:
 			{	
-				return UT_FALSE;
+				return false;
 			}
 
 		case pf_Frag::PFT_FmtMark:
@@ -337,7 +337,7 @@ UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock
 				// this one is easy.
 				pf_Frag_FmtMark * pfPrevFM = static_cast<pf_Frag_FmtMark *>(pfPrev);
 				*pFmtMarkAP = pfPrevFM->getIndexAP();
-				return UT_TRUE;
+				return true;
 			}
 
 		case pf_Frag::PFT_EndOfDoc:
@@ -347,5 +347,5 @@ UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock
 		}
 	}
 
-	return UT_FALSE;
+	return false;
 }

@@ -380,9 +380,9 @@ void AP_BeOSDialog_Columns::runModal(XAP_Frame * pFrame)
         }                                                
 }
 
-void AP_BeOSDialog_Columns::enableLineBetweenControl(UT_Bool bState)
+void AP_BeOSDialog_Columns::enableLineBetweenControl(bool bState)
 {
-	enableLineBetween = (bState == UT_TRUE);
+	enableLineBetween = (bState == true);
 	
 	if(newwin)
 	{

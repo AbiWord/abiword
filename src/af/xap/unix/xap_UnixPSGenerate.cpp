@@ -28,7 +28,7 @@ ps_Generate::ps_Generate(const char * szFilename)
 {
 	m_szFilename = szFilename;
 	m_fp = 0;
-	m_bIsFile = UT_FALSE;
+	m_bIsFile = false;
 	m_pfOldSIGPIPEHandler = NULL;
 }
 
@@ -37,11 +37,11 @@ ps_Generate::~ps_Generate()
 	UT_ASSERT(!m_fp);					// somebody didn't close the file
 }
 
-UT_Bool ps_Generate::openFile(UT_Bool bIsFile)
+bool ps_Generate::openFile(bool bIsFile)
 {
 	if(bIsFile)
 	{
-		m_bIsFile = UT_TRUE;
+		m_bIsFile = true;
 		m_fp = fopen(m_szFilename, "w");
 	}
 	else
@@ -55,7 +55,7 @@ UT_Bool ps_Generate::openFile(UT_Bool bIsFile)
 		// As an alternative, someone should investigate
 		// a pipe()/fork()/execve() option, which gets around
 		// the /bin/sh problems and is a bit more flexible
-		m_bIsFile = UT_FALSE;
+		m_bIsFile = false;
 		
 		// This is not sufficient to catch a failed popen(), at least
 		// on Linux.  This may be a bug in Linux's popen(), but more likely
@@ -63,7 +63,7 @@ UT_Bool ps_Generate::openFile(UT_Bool bIsFile)
 		// invalid.
 		m_fp = NULL;
 		if ((m_fp = popen(m_szFilename, "w")) == NULL)
-			return UT_FALSE;
+			return false;
 	}
 
 	
@@ -92,28 +92,28 @@ void ps_Generate::abortFile(void)
 	closeFile();
 }
 
-UT_Bool	ps_Generate::writeByte(UT_Byte byte)
+bool	ps_Generate::writeByte(UT_Byte byte)
 {
 	doProtectFromPipe();
-	UT_Bool bSuccess = fputc((char) byte, m_fp) != EOF;
+	bool bSuccess = fputc((char) byte, m_fp) != EOF;
 	undoProtectFromPipe();
 
 	return bSuccess;
 }
 
-UT_Bool ps_Generate::writeBytes(const char * sz)
+bool ps_Generate::writeBytes(const char * sz)
 {
 	return writeBytes((const unsigned char *) sz);
 }
 
-UT_Bool ps_Generate::writeBytes(const unsigned char * sz)
+bool ps_Generate::writeBytes(const unsigned char * sz)
 {
 	// is that strlen correct?  Will we lose sign data on
 	// anything?
 	return writeBytes((UT_Byte*)sz,strlen((const char *)sz));
 }
 
-UT_Bool ps_Generate::writeBytes(UT_Byte * pBytes, UT_uint32 length)
+bool ps_Generate::writeBytes(UT_Byte * pBytes, UT_uint32 length)
 {
 	UT_ASSERT(m_fp);
 	UT_ASSERT(pBytes && (length>0));
@@ -121,20 +121,20 @@ UT_Bool ps_Generate::writeBytes(UT_Byte * pBytes, UT_uint32 length)
 //	UT_ASSERT(length<256);				// DSC3.0 requirement
 	
 	doProtectFromPipe();
-	UT_Bool bSuccess = (fwrite(pBytes,sizeof(UT_Byte),length,m_fp)==length);
+	bool bSuccess = (fwrite(pBytes,sizeof(UT_Byte),length,m_fp)==length);
 	undoProtectFromPipe();
 
 	return bSuccess;
 }
 
-UT_Bool ps_Generate::formatComment(const char * szCommentName)
+bool ps_Generate::formatComment(const char * szCommentName)
 {
 	char buf[1024];
 	sprintf(buf,"%%%%%s\n",szCommentName);
 	return writeBytes(buf);
 }
 
-UT_Bool ps_Generate::formatComment(const char * szCommentName, const char * szArg1)
+bool ps_Generate::formatComment(const char * szCommentName, const char * szArg1)
 {
 	// write out "foo: arg1\n"
 	// arg1 may be a list of space separated names,
@@ -147,7 +147,7 @@ UT_Bool ps_Generate::formatComment(const char * szCommentName, const char * szAr
 	return writeBytes(buf);
 }
 
-UT_Bool ps_Generate::formatComment(const char * szCommentName, const char **argv, int argc)
+bool ps_Generate::formatComment(const char * szCommentName, const char **argv, int argc)
 {
 	// write out a comment line possibly with multiple arguments
 	// we PS-escapify each arg as we output it.
@@ -169,7 +169,7 @@ UT_Bool ps_Generate::formatComment(const char * szCommentName, const char **argv
 		{
 			strcat(buf,"\n");
 			if (!writeBytes(buf))
-				return UT_FALSE;
+				return false;
 			sprintf(buf,"%%%%+");
 		}
 	}
@@ -178,12 +178,12 @@ UT_Bool ps_Generate::formatComment(const char * szCommentName, const char **argv
 	{
 		strcat(buf,"\n");
 		if (!writeBytes(buf))
-			return UT_FALSE;
+			return false;
 	}
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pVec)
+bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector * pVec)
 {
 	// write out a comment line possibly with multiple arguments
 	// we PS-escapify each arg as we output it.
@@ -207,7 +207,7 @@ UT_Bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector *
 		{
 			strcat(buf,"\n");
 			if (!writeBytes(buf))
-				return UT_FALSE;
+				return false;
 			sprintf(buf,"%%%%+");
 		}
 	}
@@ -216,9 +216,9 @@ UT_Bool ps_Generate::formatComment(const char * szCommentName, const UT_Vector *
 	{
 		strcat(buf,"\n");
 		if (!writeBytes(buf))
-			return UT_FALSE;
+			return false;
 	}
-	return UT_TRUE;
+	return true;
 }
 
 void ps_Generate::doProtectFromPipe(void)

@@ -64,17 +64,17 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
 	m_apIndex = apIndex;
 }
 
-UT_Bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP) const
+bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP) const
 {
 	return m_pDoc->getAttrProp(m_apIndex,ppAP);
 }
 
-UT_Bool fl_Layout::getSpanAttrProp(UT_uint32 offset, UT_Bool bLeftSide, const PP_AttrProp ** ppAP) const
+bool fl_Layout::getSpanAttrProp(UT_uint32 offset, bool bLeftSide, const PP_AttrProp ** ppAP) const
 {
 	return m_pDoc->getSpanAttrProp(m_sdh,offset,bLeftSide,ppAP);
 }
 
-UT_Bool fl_Layout::getField(UT_uint32 offset, fd_Field * & pField)
+bool fl_Layout::getField(UT_uint32 offset, fd_Field * & pField)
 {
     return m_pDoc->getField(m_sdh,offset,pField);
 }

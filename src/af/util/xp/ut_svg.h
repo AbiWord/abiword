@@ -26,6 +26,6 @@
 
 class UT_ByteBuf;
 
-UT_Bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, UT_Byte** ppszWidth, UT_Byte** ppszHeight);
+bool UT_SVG_getDimensions(const UT_ByteBuf* pBB, UT_Byte** ppszWidth, UT_Byte** ppszHeight);
 
 #endif /* UT_SVG_H */

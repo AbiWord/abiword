@@ -40,8 +40,8 @@ public:
 	PS_Image(const char* pszName);
 	~PS_Image();
 
-	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
    	void			setData(PSFatmap * image) { m_image = image; }
 	PSFatmap *			getData(void) const { return m_image; }

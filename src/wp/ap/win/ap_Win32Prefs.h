@@ -27,7 +27,7 @@ class AP_Win32Prefs : public AP_Prefs
 public:
 	AP_Win32Prefs(XAP_App * pApp);
 	
-	virtual UT_Bool			loadBuiltinPrefs(void);
+	virtual bool			loadBuiltinPrefs(void);
 	virtual const char *	getPrefsPathname(void) const;
 	virtual void			overlayEnvironmentPrefs(void);
 };

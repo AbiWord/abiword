@@ -92,12 +92,12 @@ public:
 	XAP_DiskStringSet(XAP_App * pApp);
 	virtual ~XAP_DiskStringSet(void);
 
-	virtual UT_Bool				setValue(XAP_String_Id id, const XML_Char * szString);
-	virtual UT_Bool				setValue(const XML_Char * szId, const XML_Char * szString);
+	virtual bool				setValue(XAP_String_Id id, const XML_Char * szString);
+	virtual bool				setValue(const XML_Char * szId, const XML_Char * szString);
 	virtual const XML_Char *	getValue(XAP_String_Id id) const;
-	virtual UT_Bool				loadStringsFromDisk(const char * szFilename);
+	virtual bool				loadStringsFromDisk(const char * szFilename);
 
-	UT_Bool						setLanguage(const XML_Char * szLanguageName);
+	bool						setLanguage(const XML_Char * szLanguageName);
 	void						setFallbackStringSet(XAP_StringSet * pFallback);
 	
 public:
@@ -115,7 +115,7 @@ private:
 
 	struct
 	{
-		UT_Bool				m_parserStatus;
+		bool				m_parserStatus;
 	} m_parserState;
 };
 

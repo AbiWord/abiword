@@ -57,7 +57,7 @@ XAP_DialogFactory::~XAP_DialogFactory(void)
 	UT_VECTOR_PURGEALL(XAP_Dialog *, m_vecDialogs);
 }
 
-UT_Bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const
+bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pIndex) const
 {
 	// search the table and return the index of the entry with this id.
 
@@ -68,12 +68,12 @@ UT_Bool XAP_DialogFactory::_findDialogInTable(XAP_Dialog_Id id, UT_uint32 * pInd
 		if (m_dlg_table[k].m_id == id)
 		{
 			*pIndex = k;
-			return UT_TRUE;
+			return true;
 		}
 	}
 	UT_DEBUGMSG(("Could not find a match for id %d \n",id));
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return UT_FALSE;
+	return false;
 }
 
 /*****************************************************************/

@@ -48,7 +48,7 @@
 // I don't like it, but I like non-gnome menus even more
 #include "../../../../wp/ap/xp/ap_Menu_Id.h"
 
-static UT_Bool s_init = UT_FALSE;
+static bool s_init = false;
 
 /*****************************************************************/
 
@@ -153,7 +153,7 @@ EV_UnixGnomeMenu::EV_UnixGnomeMenu(XAP_UnixApp * pUnixApp,
 	if(!s_init)
 		{
 			/* register non-standard pixmaps with the gnome-stock engine */
-			s_init = UT_TRUE;
+			s_init = true;
 
 			static struct AbiWordStockPixmap{
 				int width, height;
@@ -403,7 +403,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
 	int nItems = (int) m_pMenuLayout->getLayoutItemCount();
 	GnomeUIInfo * retval = NULL;
-	UT_Bool endofsubmenu = UT_FALSE;
+	bool endofsubmenu = false;
 	int i;
 
 	UT_ASSERT(nItems > pos);
@@ -492,7 +492,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 		}
 		case EV_MLF_EndSubMenu:
 		{
-			endofsubmenu = UT_TRUE;
+			endofsubmenu = true;
 			break;
 		}
 		case EV_MLF_Separator:
@@ -505,7 +505,7 @@ GnomeUIInfo * EV_UnixGnomeMenu::_convertMenu2UIInfo (int &pos)
 			i--;
 			break;
 		case EV_MLF_EndPopupMenu:
-			endofsubmenu = UT_TRUE;
+			endofsubmenu = true;
 			break;
 			
 		default:
@@ -554,7 +554,7 @@ void EV_UnixGnomeMenu::_destroyUIInfo(GnomeUIInfo * uiinfo)
 	g_free (first);
 }
 
-UT_Bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
+bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 {
 	// update the status of stateful items on menu bar.
 	const EV_Menu_ActionSet * pMenuActionSet = m_pUnixApp->getMenuActionSet();
@@ -575,16 +575,16 @@ UT_Bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		{
 			// TODO: Dynamic labels and widgets
 			// see if we need to enable/disable and/or check/uncheck it.
-			UT_Bool bEnable = UT_TRUE;
-			UT_Bool bCheck = UT_FALSE;
+			bool bEnable = true;
+			bool bCheck = false;
 			
 			if (pAction->hasGetStateFunction())
 			{
 				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
 				if (mis & EV_MIS_Gray)
-					bEnable = UT_FALSE;
+					bEnable = false;
 				if (mis & EV_MIS_Toggled)
-					bCheck = UT_TRUE;
+					bCheck = true;
 			}
 			
 			// Get the dynamic label
@@ -623,10 +623,10 @@ UT_Bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		}	
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_UnixGnomeMenu::synthesizeMenu(GtkWidget * wMenuRoot)
+bool EV_UnixGnomeMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 {
 	int i = 0;
 	GtkWidget *app;
@@ -637,7 +637,7 @@ UT_Bool EV_UnixGnomeMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 						 GNOME_APP (app)->accel_group, TRUE, 0);
 	_attachWidgetsAndSignals (wMenuRoot, m_pUIInfo);
 
-	return UT_TRUE;
+	return true;
 }
 
 void EV_UnixGnomeMenu::_attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIInfo * uiinfo)
@@ -692,7 +692,7 @@ void EV_UnixGnomeMenu::menuEvent(GtkWidget *, gpointer pAux)
 {
 	// user selected something from the menu.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 	__Aux *aux = (__Aux *) pAux;
 	XAP_Menu_Id id = aux->id;
 
@@ -725,7 +725,7 @@ EV_UnixGnomeMenuBar::~EV_UnixGnomeMenuBar(void)
 {
 }
 
-UT_Bool EV_UnixGnomeMenuBar::synthesizeMenuBar(void)
+bool EV_UnixGnomeMenuBar::synthesizeMenuBar(void)
 {
 	m_wMenuBar = gtk_menu_bar_new();
 
@@ -733,15 +733,15 @@ UT_Bool EV_UnixGnomeMenuBar::synthesizeMenuBar(void)
 	gtk_widget_show(m_wMenuBar);
 	gnome_app_set_menus(GNOME_APP(m_pUnixFrame->getTopLevelWindow()), GTK_MENU_BAR(m_wMenuBar));
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_UnixGnomeMenuBar::refreshMenu(AV_View * pView)
+bool EV_UnixGnomeMenuBar::refreshMenu(AV_View * pView)
 {
 	if (pView)
 		return _refreshMenu(pView, m_wMenuBar);
 
-	return UT_TRUE;
+	return true;
 }
 
 /***********************************************************************/
@@ -761,11 +761,11 @@ EV_UnixGnomeMenuPopup::~EV_UnixGnomeMenuPopup(void)
 		gtk_widget_destroy (m_wMenuPopup);
 }
 
-UT_Bool EV_UnixGnomeMenuPopup::synthesizeMenuPopup(void)
+bool EV_UnixGnomeMenuPopup::synthesizeMenuPopup(void)
 {
 	m_wMenuPopup = gtk_menu_new();
 
 	synthesizeMenu(m_wMenuPopup);
 
-	return UT_TRUE;
+	return true;
 }

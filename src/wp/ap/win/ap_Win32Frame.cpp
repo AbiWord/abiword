@@ -387,12 +387,12 @@ void AP_Win32Frame::setYScrollRange(void)
 	m_pView->sendVerticalScrollEvent(si.nPos,si.nMax-si.nPage);
 }
 
-UT_Bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
+bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
 {
 	// NB: can't access 'this' members from a static member function
 
 	if (!XAP_Win32Frame::RegisterClass(app))
-		return UT_FALSE;
+		return false;
 
 	WNDCLASSEX  wndclass;
 	ATOM a;
@@ -443,10 +443,10 @@ UT_Bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
 		!AP_Win32LeftRuler::RegisterClass(app) ||
 		!AP_Win32StatusBar::RegisterClass(app))
 	{
-		return UT_FALSE;
+		return false;
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
 AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
@@ -457,8 +457,8 @@ AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
 	m_hwndLeftRuler = NULL;
 	m_hwndDocument = NULL;
 	m_hwndStatusBar = NULL;
-	m_bMouseWheelTrack = UT_FALSE;
-	m_bMouseActivateReceived = UT_FALSE;
+	m_bMouseWheelTrack = false;
+	m_bMouseActivateReceived = false;
 }
 
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
@@ -469,8 +469,8 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_hwndLeftRuler = NULL;
 	m_hwndDocument = NULL;
 	m_hwndStatusBar = NULL;
-	m_bMouseWheelTrack = UT_FALSE;
-	m_bMouseActivateReceived = UT_FALSE;
+	m_bMouseWheelTrack = false;
+	m_bMouseActivateReceived = false;
 }
 
 AP_Win32Frame::~AP_Win32Frame(void)
@@ -478,20 +478,20 @@ AP_Win32Frame::~AP_Win32Frame(void)
 	killFrameData();
 }
 
-UT_Bool AP_Win32Frame::initialize(void)
+bool AP_Win32Frame::initialize(void)
 {
 	if (!initFrameData())
-		return UT_FALSE;
+		return false;
 
 	if (!XAP_Win32Frame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 									AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 									AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
 									AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 									AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
-		return UT_FALSE;
+		return false;
 
 	_createTopLevelWindow();
-	return UT_TRUE;
+	return true;
 }
 
 XAP_Frame* AP_Win32Frame::cloneFrame(void)
@@ -618,7 +618,7 @@ UT_Error AP_Win32Frame::loadDocument(const char * szFilename, int ieft)
 	UT_Vector vClones;
 	XAP_App * pApp = getApp();
 
-	const UT_Bool bUpdateClones = (getViewNumber() > 0);
+	const bool bUpdateClones = (getViewNumber() > 0);
 	if (bUpdateClones)
 	{
 		pApp->getClones(&vClones, this);
@@ -908,7 +908,7 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 	switch (iMsg)
 	{
 	case WM_MOUSEACTIVATE:
-		f->m_bMouseActivateReceived = UT_TRUE;
+		f->m_bMouseActivateReceived = true;
 		return MA_ACTIVATE;
 
 	case WM_SETFOCUS:
@@ -956,7 +956,7 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 			pMouse = (EV_Win32Mouse *) f->m_pMouse;
 		}
 		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
-		f->m_bMouseActivateReceived = UT_FALSE;
+		f->m_bMouseActivateReceived = false;
 		return 0;
 	case WM_MBUTTONDOWN:
 		f->_startTracking(LOWORD(lParam), HIWORD(lParam));
@@ -1084,14 +1084,14 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 
 /*****************************************************************/
 
-UT_Bool AP_Win32Frame::initFrameData(void)
+bool AP_Win32Frame::initFrameData(void)
 {
 	UT_ASSERT(!m_pData);
 
 	AP_FrameData* pData = new AP_FrameData(m_pWin32App);
 	m_pData = (void*) pData;
 	
-	return (pData ? UT_TRUE : UT_FALSE);
+	return (pData ? true : false);
 }
 
 void AP_Win32Frame::killFrameData(void)
@@ -1174,7 +1174,7 @@ UT_Error AP_Win32Frame::_replaceDocument(AD_Document * pDoc)
 	return _showDocument();
 }
 
-void AP_Win32Frame::toggleRuler(UT_Bool bRulerOn)
+void AP_Win32Frame::toggleRuler(bool bRulerOn)
 {
 	AP_FrameData *pFrameData = static_cast<AP_FrameData*>(getFrameData());
 	UT_ASSERT(pFrameData);
@@ -1217,7 +1217,7 @@ void AP_Win32Frame::toggleRuler(UT_Bool bRulerOn)
 void AP_Win32Frame::_startTracking(UT_sint32 x, UT_sint32 y)
 {
 	m_startMouseWheelY = y;
-	m_bMouseWheelTrack = UT_TRUE;
+	m_bMouseWheelTrack = true;
 
 	m_startScrollPosition = GetScrollPos(m_hwndContainer, SB_VERT);
 
@@ -1227,7 +1227,7 @@ void AP_Win32Frame::_startTracking(UT_sint32 x, UT_sint32 y)
 
 void AP_Win32Frame::_endTracking(UT_sint32 x, UT_sint32 y)
 {
-	m_bMouseWheelTrack = UT_FALSE;
+	m_bMouseWheelTrack = false;
 	ReleaseCapture();
 }
 
@@ -1261,7 +1261,7 @@ void AP_Win32Frame::_track(UT_sint32 x, UT_sint32 y)
 
 }
 
-void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn)
+void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
 {
 	UT_DEBUGMSG(("AP_Win32Frame::toggleBar %d, %d\n", iBarNb, bBarOn));	
 
@@ -1303,7 +1303,7 @@ void AP_Win32Frame::toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn)
 	SetWindowPos(m_hwndFrame, 0, 0, 0, cx, cy, fFlags);
 }
 
-void AP_Win32Frame::toggleStatusBar(UT_Bool bStatusBarOn)
+void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 {
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(getFrameData());
 	UT_ASSERT(pFrameData);

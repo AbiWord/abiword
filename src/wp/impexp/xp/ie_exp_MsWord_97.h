@@ -43,14 +43,14 @@ class IE_Exp_MsWord_97 : public IE_Exp
         IE_Exp_MsWord_97(PD_Document * pDocument);
         ~IE_Exp_MsWord_97();
 
-        static UT_Bool          RecognizeSuffix(const char * szSuffix);
+        static bool          RecognizeSuffix(const char * szSuffix);
         static UT_Error         StaticConstructor(PD_Document * pDocument,
                                                                                    IE_Exp ** ppie);
-        static UT_Bool          GetDlgLabels(const char ** pszDesc,
+        static bool          GetDlgLabels(const char ** pszDesc,
                                              const char ** pszSuffixList,
                                              IEFileType * ft);
 
-        static UT_Bool          SupportsFileType(IEFileType ft);
+        static bool          SupportsFileType(IEFileType ft);
 
 		void            		write(const char * sz);
 		void            		write(const char * sz, UT_uint32 length);
@@ -64,10 +64,10 @@ class IE_Exp_MsWord_97 : public IE_Exp
 		// see comments in ie_exp_MsWord_97.cpp for explanation
 
         UT_Error        		_writeDocument(void);
-		UT_Bool 				_openFile(const char * szFileName);
+		bool 				_openFile(const char * szFileName);
 		UT_uint32				_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-		UT_Bool 				_writeBytes(const UT_Byte * pBytes);
-		UT_Bool 				_closeFile(void);
+		bool 				_writeBytes(const UT_Byte * pBytes);
+		bool 				_closeFile(void);
 		void 					_abortFile(void);
 };
 

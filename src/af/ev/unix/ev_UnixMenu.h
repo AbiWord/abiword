@@ -41,16 +41,16 @@ public:
 				const char * szMenuLabelSetName);
 	virtual ~EV_UnixMenu(void);
 
-	UT_Bool				synthesizeMenu(GtkWidget * wMenuRoot);
-	UT_Bool				menuEvent(XAP_Menu_Id id);
-	virtual UT_Bool		refreshMenu(AV_View * pView) = 0;
+	bool				synthesizeMenu(GtkWidget * wMenuRoot);
+	bool				menuEvent(XAP_Menu_Id id);
+	virtual bool		refreshMenu(AV_View * pView) = 0;
 
 	XAP_UnixFrame * 	getFrame(void);
 
 protected:
 
-	UT_Bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
-	UT_Bool				_isItemPresent(XAP_Menu_Id id) const;
+	bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
+	bool				_isItemPresent(XAP_Menu_Id id) const;
 
 	XAP_UnixApp *		m_pUnixApp;
 	XAP_UnixFrame *		m_pUnixFrame;

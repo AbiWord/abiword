@@ -64,7 +64,7 @@ IE_Exp_LaTeX::~IE_Exp_LaTeX()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_LaTeX::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_LaTeX::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".latex") == 0);
 }
@@ -77,17 +77,17 @@ UT_Error IE_Exp_LaTeX::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Exp_LaTeX::GetDlgLabels(const char ** pszDesc,
+bool	IE_Exp_LaTeX::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
 	*pszDesc = "LaTeX (.latex)";
 	*pszSuffixList = "*.latex";
 	*ft = IEFT_LaTeX;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Exp_LaTeX::SupportsFileType(IEFileType ft)
+bool IE_Exp_LaTeX::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_LaTeX == ft);
 }
@@ -111,17 +111,17 @@ public:
 						IE_Exp_LaTeX * pie);
 	virtual ~s_LaTeX_Listener();
 
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
@@ -129,7 +129,7 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool		signal(UT_uint32 iSignal);
+	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
 	void				_closeSection(void);
@@ -145,13 +145,13 @@ protected:
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_LaTeX *		m_pie;
-	UT_Bool				m_bInSection;
-	UT_Bool				m_bInBlock;
-	UT_Bool				m_bInSpan;
+	bool				m_bInSection;
+	bool				m_bInBlock;
+	bool				m_bInSpan;
 	const PP_AttrProp*	m_pAP_Span;
-	UT_Bool             m_bMultiCols;
+	bool             m_bMultiCols;
 	JustificationTypes  m_eJustification;
-	UT_Bool				m_bLineHeight;
+	bool				m_bLineHeight;
 
 	// Need to look up proper type, and place to stick #defines...
 
@@ -169,10 +169,10 @@ void s_LaTeX_Listener::_closeSection(void)
 	if (m_bMultiCols)
 	{
 		m_pie->write("\\end{multicols}\n");
-		m_bMultiCols = UT_FALSE;
+		m_bMultiCols = false;
 	}
 
-	m_bInSection = UT_FALSE;
+	m_bInSection = false;
 	return;
 }
 
@@ -219,14 +219,14 @@ void s_LaTeX_Listener::_closeBlock(void)
 		m_pie->write("%% oh, oh\n");
 	}
 
-	m_bInBlock = UT_FALSE;
+	m_bInBlock = false;
 	return;
 }
 
 void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 {
 	m_eJustification = JUSTIFIED;
-	m_bLineHeight = UT_FALSE;
+	m_bLineHeight = false;
 
 	if (!m_bInSection)
 	{
@@ -234,7 +234,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 	}
 	
 	const PP_AttrProp * pAP = NULL;
-	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
 	if (bHaveProp && pAP)
 	{
@@ -308,8 +308,8 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				if (height < 0.9 || height > 1.1)
 				{
 					m_pie->write("\\begin{spacing}{");
-					printf("m_bLineHeight = UT_TRUE\n");
-					m_bLineHeight = UT_TRUE;
+					printf("m_bLineHeight = true\n");
+					m_bLineHeight = true;
 				}
 				if (height > 1.4 && height < 1.6)
 					m_pie->write("1.24}\n");
@@ -325,15 +325,15 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		m_iBlockType = BT_NORMAL;
 	}
 	
-	m_bInBlock = UT_TRUE;
+	m_bInBlock = true;
 }
 
 void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 {
 	const PP_AttrProp* pAP = NULL;
-	static UT_Bool firstSection = UT_TRUE;
+	static bool firstSection = true;
 
-	m_bMultiCols = UT_FALSE;
+	m_bMultiCols = false;
 
 	if (m_pDocument->getAttrProp(api, &pAP) && pAP)
 	{
@@ -351,7 +351,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 			m_pie->write("\\begin{multicols}{");
 			m_pie->write((char*)pszNbCols);
 			m_pie->write("}\n");
-			m_bMultiCols = UT_TRUE;
+			m_bMultiCols = true;
 		}
 		if (pszPageMarginLeft != NULL)
 		{
@@ -373,7 +373,7 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 	if (firstSection)
 	{
 		m_pie->write ("\n\n\\begin{document}\n");
-		firstSection = UT_FALSE;
+		firstSection = false;
 	}
 }
 
@@ -439,7 +439,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 	}
 	
 	const PP_AttrProp * pAP = NULL;
-	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
 	if (bHaveProp && pAP)
 	{
@@ -527,7 +527,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		if (pAP->getProperty((XML_Char*)"font-family", szValue))
 			; // TODO
 
-		m_bInSpan = UT_TRUE;
+		m_bInSpan = true;
 		m_pAP_Span = pAP;
 	}
 }
@@ -644,7 +644,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 		m_pAP_Span = NULL;
 	}
 
-	m_bInSpan = UT_FALSE;
+	m_bInSpan = false;
 	return;
 }
 
@@ -794,9 +794,9 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
-	m_bInSection = UT_FALSE;
-	m_bInBlock = UT_FALSE;
-	m_bInSpan = UT_FALSE;
+	m_bInSection = false;
+	m_bInBlock = false;
+	m_bInSpan = false;
 
 	m_pie->write("%% ================================================================================\n");
 	m_pie->write("%% This LaTeX file was created by AbiWord.                                         \n");
@@ -869,7 +869,7 @@ s_LaTeX_Listener::~s_LaTeX_Listener()
 	m_pie->write("\\end{document}\n");
 }
 
-UT_Bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 								   const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -889,7 +889,7 @@ UT_Bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 			if (api)
 				_closeSpan();
-			return UT_TRUE;
+			return true;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -901,31 +901,31 @@ UT_Bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 				// TODO we *could* insert the images and create separate GIF files.
-				return UT_TRUE;
+				return true;
 
 			case PTO_Field:
 				// we do nothing with computed fields.
-				return UT_TRUE;
+				return true;
 
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 			}
 #else
-			return UT_TRUE;
+			return true;
 #endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return UT_TRUE;
+		return true;
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -953,19 +953,19 @@ UT_Bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 				)
 			{
 				_openSection(pcr->getIndexAP());
-				m_bInSection = UT_TRUE;
+				m_bInSection = true;
 			}
 			else
 			{
-				m_bInSection = UT_FALSE;
+				m_bInSection = false;
 			}
 		}
 		else
 		{
-			m_bInSection = UT_FALSE;
+			m_bInSection = false;
 		}
 		
-		return UT_TRUE;
+		return true;
 	}
 
 	case PTX_Block:
@@ -973,23 +973,23 @@ UT_Bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		_closeSpan();
 		_closeBlock();
 		_openParagraph(pcr->getIndexAP());
-		return UT_TRUE;
+		return true;
 	}
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_LaTeX_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_LaTeX_Listener::change(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_LaTeX_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_LaTeX_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
 									 PL_StruxDocHandle /*sdh*/,
 									 PL_ListenerId /* lid */,
@@ -998,13 +998,13 @@ UT_Bool s_LaTeX_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																 PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_LaTeX_Listener::signal(UT_uint32 /* iSignal */)
+bool s_LaTeX_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 

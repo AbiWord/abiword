@@ -35,17 +35,17 @@ public:
 						   IE_Exp_RTF * pie);
 	virtual ~s_RTF_ListenerGetProps();
 
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
@@ -53,7 +53,7 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool		signal(UT_uint32 iSignal);
+	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
 	void				_closeSection(void);
@@ -67,9 +67,9 @@ protected:
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;
-	UT_Bool				m_bInSection;
-	UT_Bool				m_bInBlock;
-	UT_Bool				m_bInSpan;
+	bool				m_bInSection;
+	bool				m_bInBlock;
+	bool				m_bInSpan;
 	PT_AttrPropIndex	m_apiLastSpan;
 
 	PT_AttrPropIndex	m_apiThisSection;

@@ -50,7 +50,7 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 				   const char * pageSize,
 				   XAP_UnixFontManager * fontManager,
-				   XAP_App *pApp, UT_Bool isPreview);
+				   XAP_App *pApp, bool isPreview);
 
 	virtual ~XAP_UnixGnomePrintGraphics();
 
@@ -88,19 +88,19 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	virtual void clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 
 	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	virtual void drawAnyImage (GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_Bool rgb);
+	virtual void drawAnyImage (GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, bool rgb);
    	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, 
 					 UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, 
 					 GR_Image::GRType iType);
 	
-	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const;
+	virtual bool queryProperties(GR_Graphics::Properties gp) const;
 	
-	virtual UT_Bool startPrint(void);
-	virtual UT_Bool startPage(const char * szPagelabel);
-	virtual UT_Bool startPage (const char *szPageLabel, 
+	virtual bool startPrint(void);
+	virtual bool startPage(const char * szPagelabel);
+	virtual bool startPage (const char *szPageLabel, 
 				   unsigned int, unsigned char, 
 				   unsigned int, unsigned int);
-	virtual UT_Bool endPrint();
+	virtual bool endPrint();
 
 	virtual void setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
@@ -115,10 +115,10 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 
  protected:
 
-	UT_Bool			_startDocument(void);
-	UT_Bool			_startPage(const char * szPageLabel);
-	UT_Bool			_endPage(void);
-	UT_Bool			_endDocument(void);
+	bool			_startDocument(void);
+	bool			_startPage(const char * szPageLabel);
+	bool			_endPage(void);
+	bool			_endDocument(void);
 	virtual UT_uint32       _getResolution(void) const;
 
 	GnomeFont * _allocGnomeFont(PSFont* pFont);
@@ -134,15 +134,15 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	double _scale_x_dir(int x);
 	double _scale_y_dir(int y);
 
-	UT_Bool                 m_bIsPreview;
+	bool                 m_bIsPreview;
 	GnomePrintMaster        *m_gpm;
 	GnomePrintContext       *m_gpc;
 	const GnomePaper        *m_paper;
 
 	// some small variables stolen from UnixPSGraphics
-	UT_Bool			m_bStartPrint;
-	UT_Bool			m_bStartPage;
-	UT_Bool			m_bNeedStroked;
+	bool			m_bStartPrint;
+	bool			m_bStartPage;
+	bool			m_bNeedStroked;
 	double		        m_dLineWidth;
 
 	GR_Graphics::ColorSpace	m_cs;

@@ -39,7 +39,7 @@ public:
 	AP_MacToolbar_Icons(void);
 	~AP_MacToolbar_Icons(void);
 
-	UT_Bool getBitmapForIcon(UT_uint32 maxWidth,
+	bool getBitmapForIcon(UT_uint32 maxWidth,
 							 UT_uint32 maxHeight,
 							 UT_RGBColor * pColor,
 							 const char * szIconName,

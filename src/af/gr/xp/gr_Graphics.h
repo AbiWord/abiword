@@ -50,7 +50,7 @@ public:
 	static void s_getGenericFontProperties(const char * szFontName,
 										   FontFamilyEnum * pff,
 										   FontPitchEnum * pfp,
-										   UT_Bool * pbTrueType);
+										   bool * pbTrueType);
 };
 
 /*
@@ -79,7 +79,7 @@ public:
 	virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c) = 0;
 
-	UT_UCSChar remapGlyph(const UT_UCSChar actual, UT_Bool noMatterWhat);
+	UT_UCSChar remapGlyph(const UT_UCSChar actual, bool noMatterWhat);
 
 	UT_uint32 getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
 	
@@ -95,7 +95,7 @@ public:
 		const char* pszFontSize) = 0;
 	UT_sint32 convertDimension(const char*) const;
 	const char * invertDimension(UT_Dimension, double) const;
-	UT_Bool scaleDimensions(const char * szLeftIn, const char * szWidthIn,
+	bool scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 				UT_uint32 iWidthAvail,
 				UT_sint32 * piLeft,
 				UT_uint32 * piWidth) const;
@@ -123,14 +123,14 @@ public:
 	
 	typedef enum { DGP_SCREEN, DGP_PAPER } Properties;
 	
-	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const = 0;
+	virtual bool queryProperties(GR_Graphics::Properties gp) const = 0;
 
 	/* the following 3 are only used for printing */
 	
-	virtual UT_Bool startPrint(void) = 0;
-	virtual UT_Bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
-							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) = 0;
-	virtual UT_Bool endPrint(void) = 0;
+	virtual bool startPrint(void) = 0;
+	virtual bool startPage(const char * szPageLabel, UT_uint32 pageNumber,
+							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight) = 0;
+	virtual bool endPrint(void) = 0;
 
 	virtual void flush(void);
 
@@ -167,10 +167,10 @@ public:
 	void setZoomPercentage(UT_uint32 iZoom);
 	UT_uint32 getZoomPercentage(void) const;
 	UT_uint32 getResolution(void) const;
-	void setLayoutResolutionMode(UT_Bool bEnable) {m_bLayoutResolutionModeEnabled = bEnable;}
+	void setLayoutResolutionMode(bool bEnable) {m_bLayoutResolutionModeEnabled = bEnable;}
 
-	inline void setPortrait (UT_Bool b) {m_bIsPortrait = b;}
-	inline UT_Bool isPortrait (void) const {return m_bIsPortrait;}
+	inline void setPortrait (bool b) {m_bIsPortrait = b;}
+	inline bool isPortrait (void) const {return m_bIsPortrait;}
 
 	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
 				   CLR3D_Background=1,				/* color of face/background on a 3d object */
@@ -201,10 +201,10 @@ protected:
 	
 	XAP_App	*	m_pApp;
 	UT_uint32	m_iZoomPercentage;
-	UT_Bool		m_bLayoutResolutionModeEnabled;
+	bool		m_bLayoutResolutionModeEnabled;
 	
-	static UT_Bool m_bRemapGlyphsMasterSwitch;
-	static UT_Bool m_bRemapGlyphsNoMatterWhat;
+	static bool m_bRemapGlyphsMasterSwitch;
+	static bool m_bRemapGlyphsNoMatterWhat;
 	static UT_UCSChar m_ucRemapGlyphsDefault;
 	static UT_UCSChar *m_pRemapGlyphsTableSrc;
 	static UT_UCSChar *m_pRemapGlyphsTableDst;
@@ -213,8 +213,8 @@ protected:
 	static XAP_PrefsScheme *m_pPrefsScheme;
 	static UT_uint32 m_uTick;
 private:
-    UT_Bool _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
-    UT_Bool m_bIsPortrait;
+    bool _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
+    bool m_bIsPortrait;
 };
 
 #endif /* GR_GRAPHICS_H */

@@ -54,9 +54,9 @@ UT_BeOSTimer::UT_BeOSTimer(UT_TimerCallback pCallback, void* pData)
 	setCallback(pCallback);
 	setInstanceData(pData);
 	setIdentifier(-1);  
-	m_bStarted = UT_FALSE;
+	m_bStarted = false;
 	m_iMilliseconds = 0;
-	m_bMustRestart=UT_FALSE;
+	m_bMustRestart=false;
 }
 
 UT_BeOSTimer::~UT_BeOSTimer()
@@ -83,7 +83,7 @@ static int32 _Timer_Proc(void *p)
  *
  */
 restartlabel:
-	while(UT_TRUE)
+	while(true)
 	{
 
 	/*
@@ -92,13 +92,13 @@ restartlabel:
 	*/
 	if (pTimer->m_bMustRestart)
 	{
-		pTimer->m_bMustRestart=UT_FALSE;
+		pTimer->m_bMustRestart=false;
 		goto restartlabel;
 	}
 	snooze(pTimer->m_iMilliseconds * 1000);
 	if (pTimer->m_bMustRestart)
 	{
-		pTimer->m_bMustRestart=UT_FALSE;
+		pTimer->m_bMustRestart=false;
 		goto restartlabel;
 	}
 	UT_DEBUGMSG(("ut_BeOSTimer.cpp:  timer fire\n"));
@@ -140,7 +140,7 @@ UT_sint32 UT_BeOSTimer::set(UT_uint32 iMilliseconds)
 	}
 	UT_DEBUGMSG(("Timer set\n"));
 	m_iMilliseconds = iMilliseconds;
-	m_bStarted = UT_TRUE;
+	m_bStarted = true;
 	thread_id idTimer = spawn_thread(_Timer_Proc, "Timer", 
 									 B_NORMAL_PRIORITY, this);
 	setIdentifier(idTimer);
@@ -156,8 +156,8 @@ void UT_BeOSTimer::stop(void)
 	if ((id = getIdentifier()) !=-1 ) 
 	{
 		UT_DEBUGMSG(("ut_BeOSTimer.cpp: timer stopped\n"));
-		m_bStarted=UT_FALSE;
-		m_bMustRestart=UT_TRUE;
+		m_bStarted=false;
+		m_bMustRestart=true;
 		suspend_thread(id); 
 	}
 	else {
@@ -177,7 +177,7 @@ void UT_BeOSTimer::start(void)
 	else if (!m_bStarted)
 	{
 		UT_DEBUGMSG(("Restarted old timer\n"));
-		m_bStarted=UT_TRUE;
+		m_bStarted=true;
 		resume_thread(getIdentifier());
 	}
 }

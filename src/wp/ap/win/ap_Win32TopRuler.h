@@ -44,7 +44,7 @@ public:
 										 UT_uint32 width);
 	virtual void			setView(AV_View * pView);
 
-	static UT_Bool			RegisterClass(XAP_Win32App * app);
+	static bool			RegisterClass(XAP_Win32App * app);
 	static LRESULT CALLBACK	_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	
 protected:

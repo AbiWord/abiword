@@ -118,29 +118,29 @@ void GR_VectorImage::setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayH
    m_iDisplayHeight = iDisplayHeight;
 }
 
-UT_Bool GR_VectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
+bool GR_VectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
    UT_DEBUGMSG(("writing vector image data (TODO)\n"));
-   return UT_FALSE;
+   return false;
 }
 
-UT_Bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
    m_iDisplayWidth = iDisplayWidth;
    m_iDisplayHeight = iDisplayHeight;
 
    UT_DEBUGMSG(("reading vector image data (TODO)\n"));
-   return UT_FALSE;
+   return false;
 /*
    XML_Parser parser = XML_CreateParser(NULL);
    XML_SetUserData(parser, this);
    XML_SetElementHandler(parser, startElement, endElement);
    XML_SetCharacterDataHandler(parser, charData);
 
-   m_status = UT_TRUE;
+   m_status = true;
    
    if (!XML_Parse(parser, pBB->getPointer(0), pBB->getLength(), 1))
-     m_status = UT_FALSE;
+     m_status = false;
    
    if (parser) XML_ParserFree(parser);
    
@@ -148,7 +148,7 @@ UT_Bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisp
   */ 
 }
 
-UT_Bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDest)
+bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDest)
 {
    UT_RGBColor col(0, 0xff, 0);
    pGR->fillRect(col, xDest, yDest, m_iDisplayWidth, m_iDisplayHeight);
@@ -159,7 +159,7 @@ UT_Bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDes
    pGR->drawLine(xDest + m_iDisplayWidth/2, yDest, xDest, yDest+m_iDisplayHeight/2);
    pGR->drawLine(xDest + m_iDisplayWidth/2, yDest+m_iDisplayHeight, xDest, yDest+m_iDisplayHeight/2);
 		 
-   return UT_TRUE;
+   return true;
 }
 
 #ifndef HAVE_GNOME

@@ -67,7 +67,7 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// directory for writability?  Save/Export operations will want
 	// this, open/import will not.
 
-	UT_Bool bCheckWritePermission = UT_TRUE;
+	bool bCheckWritePermission = true;
 	const XML_Char * szTitle = NULL;
 	const XML_Char * szFileTypeLabel = NULL;
 	int   flags = 0;
@@ -79,14 +79,14 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
-		bCheckWritePermission = UT_FALSE;
+		bCheckWritePermission = false;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
-		bCheckWritePermission = UT_TRUE;
+		bCheckWritePermission = true;
 		/* Allow non-existant files to be selected and confirm overwrite */
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
 		break;
@@ -95,7 +95,7 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
-		bCheckWritePermission = UT_TRUE;
+		bCheckWritePermission = true;
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
 		break;
 	}

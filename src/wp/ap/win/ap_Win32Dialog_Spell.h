@@ -41,7 +41,7 @@ protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	
-	void					_toggleChangeButtons(UT_Bool bEnable) const;
+	void					_toggleChangeButtons(bool bEnable) const;
 	void					_showMisspelledWord(void);
 	void					_suggestChange(void);
 	void					_change(void);

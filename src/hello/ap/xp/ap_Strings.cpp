@@ -63,19 +63,19 @@ const XML_Char * AP_BuiltinStringSet::getValue(XAP_String_Id id) const
 }
 
 #ifdef DEBUG
-UT_Bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
+bool AP_BuiltinStringSet::dumpBuiltinSet(const char * szFilename) const
 {
 	// Dump a full set of english strings.  The resulting file
 	// can then be translated and later loaded as a DiskStringSet
 	// for the other language.
 	
-	UT_Bool bResult = UT_FALSE;			// assume failure
+	bool bResult = false;			// assume failure
 	FILE * fp = NULL;
 	fp = fopen(szFilename, "w");
 	if (!fp)
 	{
 		UT_DEBUGMSG(("Could not open String file [%s].\n",szFilename));
-		return UT_FALSE;
+		return false;
 	}
 
 	UT_DEBUGMSG(("Dumping English strings into String file [%s].\n",szFilename));
@@ -163,7 +163,7 @@ AP_DiskStringSet::~AP_DiskStringSet(void)
 	}
 }
 
-UT_Bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
+bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 {
 	if (id < AP_STRING_ID__FIRST__)
 		return XAP_DiskStringSet::setValue(id,szString);
@@ -171,10 +171,10 @@ UT_Bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 	XML_Char * szDup = NULL;
 	if (szString && *szString)
 		if (!UT_XML_cloneString(szDup,szString))
-			return UT_FALSE;
+			return false;
 
 	void * pOldValue = NULL;
-	UT_Bool bResult = (m_vecStringsAP.setNthItem(id-AP_STRING_ID__FIRST__,szDup,&pOldValue) == 0);
+	bool bResult = (m_vecStringsAP.setNthItem(id-AP_STRING_ID__FIRST__,szDup,&pOldValue) == 0);
 	UT_ASSERT(pOldValue == NULL);		// duplicate string for this id
 
 	return bResult;
@@ -221,10 +221,10 @@ static struct { const XML_Char * szName; XAP_String_Id id; } s_map[] =
 
 //////////////////////////////////////////////////////////////////
 
-UT_Bool AP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString)
+bool AP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szString)
 {
 	if (!szId || !*szId || !szString || !*szString)
-		return UT_TRUE;
+		return true;
 	
 	UT_uint32 kLimit = NrElements(s_map);
 	UT_uint32 k;
@@ -238,10 +238,10 @@ UT_Bool AP_DiskStringSet::setValue(const XML_Char * szId, const XML_Char * szStr
 	return XAP_DiskStringSet::setValue(szId,szString);
 }
 
-UT_Bool AP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
+bool AP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 {
 	if (!XAP_DiskStringSet::loadStringsFromDisk(szFilename))
-		return UT_FALSE;
+		return false;
 
 #ifdef DEBUG	
 	{
@@ -259,5 +259,5 @@ UT_Bool AP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 	}
 #endif
 
-	return UT_TRUE;
+	return true;
 }

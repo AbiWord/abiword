@@ -30,8 +30,8 @@ public:
 
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;
-	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
 	void			setData(BBitmap * image) { m_image = image; }
    	BBitmap *		getData(void) const { return m_image; }

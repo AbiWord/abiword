@@ -25,7 +25,7 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 
-UT_Bool UT_SVG_getDimensions(const UT_ByteBuf* pBB,
+bool UT_SVG_getDimensions(const UT_ByteBuf* pBB,
 			     UT_Byte ** ppszWidth, 
 			     UT_Byte ** ppszHeight)
 {
@@ -36,15 +36,15 @@ UT_Bool UT_SVG_getDimensions(const UT_ByteBuf* pBB,
    
    	while (isspace(pData[iOffset]) && iOffset < iLength) iOffset++;
    	// the first thing we see should be <svg followed by a character of whitespace...
-   	if (iOffset >= iLength) return UT_FALSE;
-   	if (UT_strnicmp((const char*)(pData+iOffset), "<svg", 4) != 0) return UT_FALSE;
-   	if (!isspace(pData[iOffset+4])) return UT_FALSE;
+   	if (iOffset >= iLength) return false;
+   	if (UT_strnicmp((const char*)(pData+iOffset), "<svg", 4) != 0) return false;
+   	if (!isspace(pData[iOffset+4])) return false;
    	iOffset+=5;
    
    	UT_Byte * width = NULL, * height = NULL;
    	while (!width || !height) {
 	   while (isspace(pData[iOffset]) && iOffset < iLength) iOffset++;
-	   if (iOffset >= iLength || pData[iOffset] == '>')  return UT_FALSE;
+	   if (iOffset >= iLength || pData[iOffset] == '>')  return false;
 
 	   if (UT_strnicmp((const char*)(pData+iOffset), "width", 5) == 0 ||
 	       UT_strnicmp((const char*)(pData+iOffset), "height", 6) == 0) {
@@ -54,17 +54,17 @@ UT_Bool UT_SVG_getDimensions(const UT_ByteBuf* pBB,
 	      else iOffset += 6;
 	      
 	      while (isspace(pData[iOffset]) && iOffset < iLength) iOffset++;
-	      if (pData[iOffset] != '=') return UT_FALSE;
+	      if (pData[iOffset] != '=') return false;
 	      iOffset++;
 	      
 	      while (isspace(pData[iOffset]) && iOffset < iLength) iOffset++;
-	      if (pData[iOffset] != '"') return UT_FALSE;
+	      if (pData[iOffset] != '"') return false;
 	      iOffset++;
 	      
 	      int iStart = iOffset;
 	      
 	      while (pData[iOffset] != '"' && iOffset < iLength) iOffset++;
-	      if (pData[iOffset] != '"') return UT_FALSE;
+	      if (pData[iOffset] != '"') return false;
 
 	      UT_Byte *pDim = (UT_Byte*)malloc((iOffset-iStart+1)*sizeof(UT_Byte));
 	      UT_ASSERT(pDim != NULL);
@@ -90,6 +90,6 @@ UT_Bool UT_SVG_getDimensions(const UT_ByteBuf* pBB,
    	if (ppszWidth) *ppszWidth = width;
 	if (ppszHeight) *ppszHeight = height;
 
-	return UT_TRUE;
+	return true;
 }
 

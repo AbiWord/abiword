@@ -23,12 +23,12 @@
 #include "ie_impGraphic_PNG.h"
 #include "fg_GraphicRaster.h"
 
-UT_Bool IE_ImpGraphic_PNG::RecognizeSuffix(const char * szSuffix)
+bool IE_ImpGraphic_PNG::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".png") == 0);
 }
 
-UT_Bool IE_ImpGraphic_PNG::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_ImpGraphic_PNG::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
    	char str1[10] = "\211PNG";
    	char str2[10] = "<89>PNG";
@@ -36,17 +36,17 @@ UT_Bool IE_ImpGraphic_PNG::RecognizeContents(const char * szBuf, UT_uint32 iNumb
    	return ( !(strncmp(szBuf, str1, 4)) || !(strncmp(szBuf, str2, 6)) );
 }
 
-UT_Bool IE_ImpGraphic_PNG::GetDlgLabels(const char ** pszDesc,
+bool IE_ImpGraphic_PNG::GetDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEGraphicFileType * ft)
 {
 	*pszDesc = "Portable Network Graphics (.png)";
 	*pszSuffixList = "*.png";
 	*ft = IEGFT_PNG;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_ImpGraphic_PNG::SupportsFileType(IEGraphicFileType ft)
+bool IE_ImpGraphic_PNG::SupportsFileType(IEGraphicFileType ft)
 {
 	return (IEGFT_PNG == ft);
 }

@@ -43,7 +43,7 @@ public:
 	XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_Win32App(void);
 
-	virtual UT_Bool							initialize(void);
+	virtual bool							initialize(void);
 	virtual XAP_Frame *						newFrame(void) = 0;
 	virtual void							reallyExit(void);
 
@@ -54,8 +54,8 @@ public:
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getAbiSuiteAppDir(void) const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
-	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool) = 0;
-	virtual UT_Bool							canPasteFromClipboard(void) = 0;
+	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool) = 0;
+	virtual bool							canPasteFromClipboard(void) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 	virtual const char *					getUserPrivateDirectory(void);
 
@@ -64,7 +64,7 @@ public:
 	
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile) = 0;
 
-	void									enableAllTopLevelWindows(UT_Bool);
+	void									enableAllTopLevelWindows(bool);
 
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);

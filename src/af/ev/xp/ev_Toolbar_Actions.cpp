@@ -99,14 +99,14 @@ EV_Toolbar_ActionSet::~EV_Toolbar_ActionSet(void)
 	free(m_actionTable);
 }
 
-UT_Bool EV_Toolbar_ActionSet::setAction(XAP_Toolbar_Id id,
+bool EV_Toolbar_ActionSet::setAction(XAP_Toolbar_Id id,
 										EV_Toolbar_ItemType type,
 										const char * szMethodName,
 										AV_ChangeMask maskOfInterest,
 										EV_GetToolbarItemState_pFn pfnGetState)
 {
 	if ((id < m_first) || (id > m_last))
-		return UT_FALSE;
+		return false;
 
 	UT_uint32 index = (id - m_first);
 	DELETEP(m_actionTable[index]);

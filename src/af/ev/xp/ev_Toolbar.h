@@ -44,12 +44,12 @@ public:
 	const EV_Toolbar_Layout * getToolbarLayout(void) const;
 	const EV_Toolbar_LabelSet * getToolbarLabelSet(void) const;
 
-	UT_Bool invokeToolbarMethod(AV_View * pView,
+	bool invokeToolbarMethod(AV_View * pView,
 								EV_EditMethod * pEM,
 								UT_UCSChar * pData,
 								UT_uint32 dataLength);
 
-	virtual UT_Bool synthesize(void) { return (UT_FALSE); } // Abstract
+	virtual bool synthesize(void) { return (false); } // Abstract
 	virtual void show(void) {} // It must be abstract, but I don't want to screw
 	virtual void hide(void) {} // the platforms that don't implement show/hide
 

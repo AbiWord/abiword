@@ -30,17 +30,17 @@ public:
 	ps_Generate(const char * szFilename);
 	~ps_Generate();
 	
-	UT_Bool		openFile(UT_Bool bIsFile);
+	bool		openFile(bool bIsFile);
 	void		closeFile(void);
 	void		abortFile(void);
-	UT_Bool		writeByte(UT_Byte byte);
-	UT_Bool		writeBytes(const char * sz);
-	UT_Bool		writeBytes(const unsigned char * sz);	
-	UT_Bool		writeBytes(UT_Byte * pBytes, UT_uint32 length);
-	UT_Bool		formatComment(const char * szCommentName);
-	UT_Bool		formatComment(const char * szCommentName, const char * szArg1);
-	UT_Bool		formatComment(const char * szCommentName, const char **argv, int argc);
-	UT_Bool		formatComment(const char * szCommentName, const UT_Vector * pVec);
+	bool		writeByte(UT_Byte byte);
+	bool		writeBytes(const char * sz);
+	bool		writeBytes(const unsigned char * sz);	
+	bool		writeBytes(UT_Byte * pBytes, UT_uint32 length);
+	bool		formatComment(const char * szCommentName);
+	bool		formatComment(const char * szCommentName, const char * szArg1);
+	bool		formatComment(const char * szCommentName, const char **argv, int argc);
+	bool		formatComment(const char * szCommentName, const UT_Vector * pVec);
 
 protected:
  	void 		doProtectFromPipe(void);
@@ -48,7 +48,7 @@ protected:
 
 	const char *	m_szFilename;
 	FILE *			m_fp;
-	UT_Bool			m_bIsFile;
+	bool			m_bIsFile;
 	void			(*m_pfOldSIGPIPEHandler)(int);
 
 private:

@@ -44,12 +44,12 @@ public:
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, double fDPI,
 										   UT_uint32 iPos, const char* szName);
 
-	UT_Bool				setVector_SVG(UT_ByteBuf* pBB);
+	bool				setVector_SVG(UT_ByteBuf* pBB);
 	UT_ByteBuf*			getVector_SVG(void);
 
 protected:
 	UT_ByteBuf* m_pbbSVG;
-	UT_Bool m_bOwnSVG;
+	bool m_bOwnSVG;
 
 	UT_sint32 m_iWidth, m_iHeight;
 	const PP_AttrProp* m_pSpanAP;

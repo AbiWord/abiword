@@ -40,17 +40,17 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
-  : IE_Imp_XML(pDocument, UT_TRUE)
+  : IE_Imp_XML(pDocument, true)
 {
-	m_bDocHasLists = UT_FALSE;
-	m_bDocHasPageSize = UT_FALSE;
+	m_bDocHasLists = false;
+	m_bDocHasPageSize = false;
 }
 
 /* Quick hack for GZipAbiWord */
 UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
         UT_Error bret = IE_Imp_XML::importFile(szFilename);
-	if(m_bDocHasPageSize == UT_FALSE)
+	if(m_bDocHasPageSize == false)
 	       m_pDocument->setDefaultPageSize();
 	return bret;
 }
@@ -58,7 +58,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_AbiWord_1::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_AbiWord_1::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
 	UT_uint32 iBytesScanned = 0 ;
@@ -68,16 +68,16 @@ UT_Bool IE_Imp_AbiWord_1::RecognizeContents(const char * szBuf, UT_uint32 iNumby
 	while( iLinesToRead-- )
 	{
 		magic = "<abiword " ;
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_FALSE);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_TRUE);
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
 		magic = "<!-- This file is an AbiWord document." ;
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_FALSE);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_TRUE);
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
 		/*  Seek to the next newline:  */
 		while ( *p != '\n' && *p != '\r' )
 		{
 			iBytesScanned++ ; p++ ;
-			if( iBytesScanned+2 >= iNumbytes ) return(UT_FALSE);
+			if( iBytesScanned+2 >= iNumbytes ) return(false);
 		}
 		/*  Seek past the next newline:  */
 		if ( *p == '\n' || *p == '\r' )
@@ -89,10 +89,10 @@ UT_Bool IE_Imp_AbiWord_1::RecognizeContents(const char * szBuf, UT_uint32 iNumby
 			}
 		}
 	}
-	return(UT_FALSE);
+	return(false);
 }
 
-UT_Bool IE_Imp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".abw") == 0);
 }
@@ -105,17 +105,17 @@ UT_Error IE_Imp_AbiWord_1::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEFileType * ft)
 {
 	*pszDesc = "AbiWord (.abw)";
 	*pszSuffixList = "*.abw";
 	*ft = IEFT_AbiWord_1;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
+bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_AbiWord_1 == ft);
 }
@@ -369,7 +369,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		m_parseState = _PS_List;
 		// Urgh! Complex. I think how done.
 		X_CheckError(m_pDocument->appendList(atts));
-		m_bDocHasLists = UT_TRUE;
+		m_bDocHasLists = true;
 		return;
 
 	case TT_PAGESIZE:
@@ -377,7 +377,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		m_parseState = _PS_PageSize;
 		UT_DEBUGMSG(("SEVIOR: Processing pagesize \n"));
 		X_CheckError(m_pDocument->setPageSizeFromFile(atts));
-		m_bDocHasPageSize = UT_TRUE;
+		m_bDocHasPageSize = true;
 		UT_DEBUGMSG(("SEVIOR: Back From Error processing \n"));
 		return;
 
@@ -547,12 +547,12 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
 	return (val ? val : "image/png");
 }
 
-UT_Bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
+bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 { 
   	const XML_Char *val = _getXMLPropValue ((XML_Char *)"base64", atts);
 
 	if ((!val) || (UT_XML_strcmp (val, "no") != 0))
-	  return UT_TRUE;
+	  return true;
 
-	return UT_FALSE;
+	return false;
 }

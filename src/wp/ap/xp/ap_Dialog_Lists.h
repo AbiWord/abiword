@@ -57,7 +57,7 @@ protected:
 	float				m_fIndent;
 	UT_sint32			m_iLine_pos[8];
 	UT_sint32			m_iLine_height;
-	UT_Bool				m_bFirst;
+	bool				m_bFirst;
 };
 		
 class AP_Dialog_Lists : public XAP_Dialog_Modeless
@@ -83,7 +83,7 @@ public:
 	void						fillDialogFromBlock(void);
 	void						PopulateDialogData(void);
 	void						fillFakeLabels(void);
-	UT_Bool						isLastOnLevel(void);
+	bool						isLastOnLevel(void);
 	XML_Char *					getListStyleString( UT_uint32 iListType);
 	UT_uint32					decodeListType(char * listformat);
 	UT_sint32					findVecItem(UT_Vector * v, char * key);
@@ -94,7 +94,7 @@ public:
 	fl_BlockLayout *			getBlock(void);
 	UT_uint32					getTick(void);
 	void						setTick(UT_uint32 iTick);
-	UT_Bool						setView(FV_View * view);
+	bool						setView(FV_View * view);
 	FV_View *					getView(void);
 	AV_View *					getAvView(void);
 	void						setActiveFrame(XAP_Frame *pFrame);
@@ -116,8 +116,8 @@ protected:
 
 	tAnswer					m_answer;
 	char					m_WindowName[100];
-	UT_Bool					m_isListAtPoint;
-	UT_Bool					m_previousListExistsAtPoint;
+	bool					m_isListAtPoint;
+	bool					m_previousListExistsAtPoint;
 	char					m_curListType[100];
 	char					m_curListLabel[100];
 	char					m_newListLabel[100];
@@ -140,17 +140,17 @@ protected:
 	UT_uint32				m_iID;
 	List_Type				m_iListType;
 
-	UT_Bool					m_bStartList;
-	UT_Bool					m_bStopList;
-	UT_Bool					m_bChangeStartValue;
-	UT_Bool					m_bresumeList;
+	bool					m_bStartList;
+	bool					m_bStopList;
+	bool					m_bChangeStartValue;
+	bool					m_bresumeList;
 
-	UT_Bool					m_bStartNewList;
-	UT_Bool					m_bApplyToCurrent;
-	UT_Bool					m_bStartSubList;
-	UT_Bool					m_bResumeList;
-	UT_Bool					m_bisCustomized;
-	UT_Bool                                 m_bguiChanged;
+	bool					m_bStartNewList;
+	bool					m_bApplyToCurrent;
+	bool					m_bStartSubList;
+	bool					m_bResumeList;
+	bool					m_bisCustomized;
+	bool                                 m_bguiChanged;
 
 	AP_Preview_Paragraph*	m_paragraphPreview;
 	AP_Lists_preview*		m_pListsPreview;

@@ -67,20 +67,20 @@ public:
 
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
-	PT_DocPosition		getFirstLastPos(UT_Bool bFirst) const;
-	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	PT_DocPosition		getFirstLastPos(bool bFirst) const;
+	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	void				getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
 	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
 						
 	void				draw(dg_DrawArgs*);
-	UT_Bool				needsRedraw(void) const;
+	bool				needsRedraw(void) const;
 						
 	void 				columnHeightChanged(fp_Column* pLeader);
 	UT_uint32 			countColumnLeaders(void) const;
 	fp_Column*			getNthColumnLeader(UT_sint32 n) const;
-	UT_Bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
+	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
-	UT_Bool				isEmpty(void) const;
+	bool				isEmpty(void) const;
         fp_HdrFtrContainer*             getHeaderP(void) const { return m_pHeader;}
         fp_HdrFtrContainer*             getFooterP(void) const { return m_pFooter;}
 	fp_HdrFtrContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
@@ -102,7 +102,7 @@ protected:
 	fp_PageSize			m_pageSize;
 	UT_uint32			m_iResolution;	// in points per inch
 
-	UT_Bool				m_bNeedsRedraw;
+	bool				m_bNeedsRedraw;
 
 	UT_Vector			m_vecColumnLeaders;
 

@@ -76,7 +76,7 @@ ev_BeOSMouse::ev_BeOSMouse(EV_EditEventMapper * pEEM) : EV_Mouse(pEEM)
 	; //Do nothing yet ...
 }
 
-UT_Bool ev_BeOSMouse::synthesize(XAP_BeOSApp * pBeOSApp, 
+bool ev_BeOSMouse::synthesize(XAP_BeOSApp * pBeOSApp, 
 				 XAP_BeOSFrame * pBeOSFrame) {
 	UT_ASSERT(pBeOSFrame); 
 
@@ -86,7 +86,7 @@ UT_Bool ev_BeOSMouse::synthesize(XAP_BeOSApp * pBeOSApp,
 	pBWin->Lock();
 	pBWin->m_pbe_DocView->AddFilter(new MouseFilter(pBeOSApp, pBeOSFrame, this));
 	pBWin->Unlock();
-	return UT_TRUE;
+	return true;
 }
 
 

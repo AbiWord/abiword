@@ -39,7 +39,7 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
+bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 													PT_DocPosition dpos,
 													const XML_Char ** attributes,
 													const XML_Char ** properties)
@@ -50,7 +50,7 @@ UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	PT_BlockOffset fo;
 
 	// The return value of getFragFromPosition was never checked (sterwill)
-	// UT_Bool bFound =
+	// bool bFound =
 	getFragFromPosition(dpos,&pf,&fo);
 
 	UT_ASSERT(pf);
@@ -64,7 +64,7 @@ UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 			
 			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
 			pf_Frag_Strux * pfsContainer = NULL;
-			UT_Bool bFoundStrux;
+			bool bFoundStrux;
 			bFoundStrux = _getStruxFromPosition(dpos,&pfsContainer);
 			UT_ASSERT(bFoundStrux);
 
@@ -83,21 +83,21 @@ UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	
 	PT_AttrPropIndex indexOldAP = _chooseIndexAP(pf,fo);
 	PT_AttrPropIndex indexNewAP;
-	UT_Bool bMerged;
+	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
-		return UT_TRUE;
+		return true;
 	
 	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux;
+	bool bFoundStrux;
 	bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fo;
 
 	if (!_insertFmtMark(pf,fo,indexNewAP))
-		return UT_FALSE;
+		return false;
 
 	// create a change record, add it to the history, and notify
 	// anyone listening.
@@ -110,14 +110,14 @@ UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_insertFmtMark(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPropIndex api)
+bool pt_PieceTable::_insertFmtMark(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPropIndex api)
 {
 	pf_Frag_FmtMark * pffm = new pf_Frag_FmtMark(this,api);
 	if (!pffm)
-		return UT_FALSE;
+		return false;
 
 	if (fragOffset == 0)
 	{
@@ -150,14 +150,14 @@ UT_Bool pt_PieceTable::_insertFmtMark(pf_Frag * pf, UT_uint32 fragOffset, PT_Att
 		m_fragments.insertFrag(pffm,pftTail);
 	}
 
-	return UT_TRUE;
+	return true;
 
 MemoryError:
 	DELETEP(pffm);
-	return UT_FALSE;
+	return false;
 }
 	
-UT_Bool pt_PieceTable::_insertFmtMarkAfterBlockWithNotify(pf_Frag_Strux * pfsBlock,
+bool pt_PieceTable::_insertFmtMarkAfterBlockWithNotify(pf_Frag_Strux * pfsBlock,
 														  PT_DocPosition dpos,
 														  PT_AttrPropIndex api)
 {
@@ -173,7 +173,7 @@ UT_Bool pt_PieceTable::_insertFmtMarkAfterBlockWithNotify(pf_Frag_Strux * pfsBlo
 #endif
 
 	if (!_insertFmtMark(pfsBlock,pfsBlock->getLength(),api))
-		return UT_FALSE;
+		return false;
 
 	// create a change record, add it to the history, and notify
 	// anyone listening.
@@ -186,13 +186,13 @@ UT_Bool pt_PieceTable::_insertFmtMarkAfterBlockWithNotify(pf_Frag_Strux * pfsBlo
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfsBlock,pcr);
 
-	return UT_TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool pt_PieceTable::_deleteFmtMarkWithNotify(PT_DocPosition dpos, pf_Frag_FmtMark * pffm,
+bool pt_PieceTable::_deleteFmtMarkWithNotify(PT_DocPosition dpos, pf_Frag_FmtMark * pffm,
 												pf_Frag_Strux * pfs,
 												pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
@@ -213,10 +213,10 @@ UT_Bool pt_PieceTable::_deleteFmtMarkWithNotify(PT_DocPosition dpos, pf_Frag_Fmt
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_deleteFmtMark(pf_Frag_FmtMark * pffm,
+bool pt_PieceTable::_deleteFmtMark(pf_Frag_FmtMark * pffm,
 									  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
 	// unlink the FmtMark from the fragment list and try to
@@ -224,13 +224,13 @@ UT_Bool pt_PieceTable::_deleteFmtMark(pf_Frag_FmtMark * pffm,
 	
 	_unlinkFrag(pffm,ppfEnd,pfragOffsetEnd);
 	delete pffm;
-	return UT_TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark * pffm,
+bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark * pffm,
 												   PT_DocPosition dpos, 
 												   const XML_Char ** attributes, const XML_Char ** properties,
 												   pf_Frag_Strux * pfs,
@@ -243,7 +243,7 @@ UT_Bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtM
 
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pffm->getIndexAP();
-	UT_Bool bMerged;
+	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
@@ -251,7 +251,7 @@ UT_Bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtM
 	{
 		SETP(ppfNewEnd, pffm->getNext());
 		SETP(pfragOffsetNewEnd, 0);
-		return UT_TRUE;
+		return true;
 	}
 
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pffm);
@@ -273,10 +273,10 @@ UT_Bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtM
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_fmtChangeFmtMark(pf_Frag_FmtMark * pffm,
+bool pt_PieceTable::_fmtChangeFmtMark(pf_Frag_FmtMark * pffm,
 										 PT_AttrPropIndex indexNewAP,
 										 pf_Frag ** ppfNewEnd,
 										 UT_uint32 * pfragOffsetNewEnd)
@@ -286,10 +286,10 @@ UT_Bool pt_PieceTable::_fmtChangeFmtMark(pf_Frag_FmtMark * pffm,
 	pffm->setIndexAP(indexNewAP);
 	SETP(ppfNewEnd, pffm->getNext());
 	SETP(pfragOffsetNewEnd, 0);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
+bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 													PT_DocPosition dpos,
 													PP_AttrProp *p_AttrProp)
 {
@@ -313,7 +313,7 @@ UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 
 		Index++;
 	}
-	while(UT_TRUE);
+	while(true);
 
 	const XML_Char * Attributes[] =	{ NULL, NULL, 0};
 
@@ -333,7 +333,7 @@ UT_Bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 
 		Index++;
 	}
-	while(UT_TRUE);
+	while(true);
 
-	return UT_TRUE;
+	return true;
 }

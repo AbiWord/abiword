@@ -62,7 +62,7 @@ AP_UnixDialog_Tab::AP_UnixDialog_Tab(XAP_DialogFactory * pDlgFactory,
 {
 	m_current_alignment = FL_TAB_LEFT;
 	m_current_leader	= FL_LEADER_NONE;
-	m_bInSetCall		= UT_FALSE;
+	m_bInSetCall		= false;
 
 }
 
@@ -755,7 +755,7 @@ GtkWidget *AP_UnixDialog_Tab::_lookupWidget ( tControl id )
 	return w;
 }
 
-void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
+void AP_UnixDialog_Tab::_controlEnable( tControl id, bool value )
 {
 	GtkWidget *w = _lookupWidget(id);
 	UT_ASSERT( w && GTK_IS_WIDGET(w) );
@@ -958,9 +958,9 @@ void AP_UnixDialog_Tab::_setAlignment( eTabType a )
 	UT_ASSERT(w && GTK_IS_RADIO_BUTTON(w));
 
 	// tell the change routines to ignore this message
-	m_bInSetCall = UT_TRUE;
+	m_bInSetCall = true;
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
-	m_bInSetCall = UT_FALSE;
+	m_bInSetCall = false;
 
 	m_current_alignment = a;
 
@@ -987,9 +987,9 @@ void AP_UnixDialog_Tab::_setLeader( eTabLeader a )
 
 	// tell the change routines to ignore this message
 
-	m_bInSetCall = UT_TRUE;
+	m_bInSetCall = true;
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
-	m_bInSetCall = UT_FALSE;
+	m_bInSetCall = false;
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 

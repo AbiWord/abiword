@@ -36,8 +36,8 @@ public:
 	virtual ~ev_BeOSKeyboard(void);
 	
 	//This should be fixed to be placed on the view ...
-	UT_Bool synthesize(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame);
-	UT_Bool keyPressEvent(AV_View* pView, BMessage *msg);
+	bool synthesize(XAP_BeOSApp * pBeOSApp, XAP_BeOSFrame * pBeOSFrame);
+	bool keyPressEvent(AV_View* pView, BMessage *msg);
 
 };
 

@@ -182,7 +182,7 @@ void ap_sb_Field_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 {
 	FV_View * pView = (FV_View *)pavView;
 	
-	UT_Bool bNeedNewString = UT_FALSE;
+	bool bNeedNewString = false;
 	
 	if (mask & (AV_CHG_PAGECOUNT))
 	{
@@ -190,7 +190,7 @@ void ap_sb_Field_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 
 		if (newPageCount != m_nrPages)
 		{
-			bNeedNewString = UT_TRUE;
+			bNeedNewString = true;
 			m_nrPages = newPageCount;
 		}
 	}
@@ -201,7 +201,7 @@ void ap_sb_Field_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 
 		if (currentPage != m_pageNr)
 		{
-			bNeedNewString = UT_TRUE;
+			bNeedNewString = true;
 			m_pageNr = currentPage;
 		}
 	}
@@ -336,7 +336,7 @@ void ap_sb_Field_StatusMessage::draw(void)
 			}
 
 			if (buffer[0]) {
-				m_pSB->setStatusMessage((const char *)buffer, UT_FALSE);
+				m_pSB->setStatusMessage((const char *)buffer, false);
 				centertext = 1;
 			}
 		}
@@ -524,18 +524,18 @@ public:
 
 private:
     UT_UCSChar          m_InsertMode[2][AP_MAX_MESSAGE_FIELD];
-    UT_Bool             m_bInsertMode;
+    bool             m_bInsertMode;
     UT_uint32           m_iDesiredWidth;
 };
 
 ap_sb_Field_InsertMode::ap_sb_Field_InsertMode(AP_StatusBar * pSB)
     : ap_sb_Field(pSB)
 {
-    UT_UCS_strcpy_char(m_InsertMode[(int)UT_TRUE],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS));
-    UT_UCS_strcpy_char(m_InsertMode[(int)UT_FALSE],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR));
+    UT_UCS_strcpy_char(m_InsertMode[(int)true],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldINS));
+    UT_UCS_strcpy_char(m_InsertMode[(int)false],pSB->getFrame()->getApp()->getStringSet()->getValue(AP_STRING_ID_InsertModeFieldOVR));
 
     m_iDesiredWidth = 0;
-    m_bInsertMode = UT_TRUE;
+    m_bInsertMode = true;
 }
 
 ap_sb_Field_InsertMode::~ap_sb_Field_InsertMode(void)
@@ -606,7 +606,7 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
         m_iHeight(0),
         m_iWidth(0),
         s_iFixedHeight(20),
-        m_bInitFields(UT_FALSE),
+        m_bInitFields(false),
         m_pStatusMessageField(0)
 {
         const XML_Char * szRulerUnits;
@@ -676,7 +676,7 @@ void AP_StatusBar::setView(AV_View * pView)
 		// TODO add other fields
 
 #undef DclField
-		m_bInitFields = UT_TRUE;
+		m_bInitFields = true;
 	}
 
 	// force a full notify of all fields so that they all
@@ -707,7 +707,7 @@ UT_uint32 AP_StatusBar::getWidth(void) const
 	return m_iWidth;
 }
 
-UT_Bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
+bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	// Handle AV_Listener events on the view.	
 
@@ -732,7 +732,7 @@ UT_Bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 		pf->notify(pView,mask);
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 void AP_StatusBar::draw(void)
@@ -772,7 +772,7 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 	}
 	
 	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
-	if (redraw == UT_TRUE) {
+	if (redraw == true) {
 		pf->draw();
 	}
 }

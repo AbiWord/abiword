@@ -23,7 +23,7 @@
 
 #include "ut_types.h"
 
-UT_Bool UT_IsWinNT(void);
+bool UT_IsWinNT(void);
 
 DLGTEMPLATE * WINAPI UT_LockDlgRes(HINSTANCE hinst, LPCSTR lpszResName);
 

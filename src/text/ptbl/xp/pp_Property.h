@@ -36,11 +36,11 @@ class PP_Property
 public:
 	XML_Char *	m_pszName;
 	XML_Char *	m_pszInitial;
-	UT_Bool		m_bInherit;
+	bool		m_bInherit;
 
 	inline const XML_Char *	getName() const;
 	inline const XML_Char *	getInitial() const;
-	inline UT_Bool				canInherit() const;
+	inline bool				canInherit() const;
 };
 
 const PP_Property * PP_lookupProperty(const XML_Char * pszName);
@@ -49,6 +49,6 @@ const XML_Char * PP_evalProperty(const XML_Char * pszName,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,
 								 PD_Document * pDoc=NULL,
-								 UT_Bool bExpandStyles=UT_FALSE);
+								 bool bExpandStyles=false);
 
 #endif /* PP_PROPERTY_H */

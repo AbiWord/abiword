@@ -308,12 +308,12 @@ const ap_bs_Char_Prefix s_CharPrefixTable[] =
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_viEdit(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
+bool ap_LoadBindings_viEdit(AP_BindingSet * pThis, EV_EditBindingMap * pebm)
 {
 	extern UT_uint32 MouseTable_len, NVKTable_len, NVKTable_P_len; 
 	pThis->_loadMouse(pebm,MouseTable,MouseTable_len);
 	pThis->_loadNVK(pebm,NVKTable,NVKTable_len,NVKTable_P,NVKTable_P_len);
 	pThis->_loadChar(pebm,s_CharTable,NrElements(s_CharTable),s_CharPrefixTable,NrElements(s_CharPrefixTable));
 
-	return UT_TRUE;
+	return true;
 }

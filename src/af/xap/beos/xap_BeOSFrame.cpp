@@ -116,7 +116,7 @@ XAP_BeOSFrame::~XAP_BeOSFrame(void)
 	DELETEP(m_pBeOSMenu);
 }
 
-UT_Bool XAP_BeOSFrame::initialize(const char * szKeyBindingsKey, 
+bool XAP_BeOSFrame::initialize(const char * szKeyBindingsKey, 
 				  const char * szKeyBindingsDefaultValue,
 				  const char * szMenuLayoutKey, 
 				  const char * szMenuLayoutDefaultValue,
@@ -126,7 +126,7 @@ UT_Bool XAP_BeOSFrame::initialize(const char * szKeyBindingsKey,
 				  const char * szToolbarLayoutsDefaultValue,
 				  const char * szToolbarLabelSetKey, 
 				  const char * szToolbarLabelSetDefaultValue) {
-	UT_Bool bResult;
+	bool bResult;
 
 	// invoke our base class first.
 	
@@ -156,7 +156,7 @@ UT_Bool XAP_BeOSFrame::initialize(const char * szKeyBindingsKey,
 	m_pMouse = new ev_BeOSMouse(pEEM);
 	UT_ASSERT(m_pMouse);
 
-	return UT_TRUE;
+	return true;
 }
 
 BWindow * XAP_BeOSFrame::getTopLevelWindow(void) const
@@ -197,7 +197,7 @@ XAP_DialogFactory * XAP_BeOSFrame::getDialogFactory(void)
 void XAP_BeOSFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
-	UT_Bool bResult;
+	bool bResult;
 
 	m_pBeWin = new be_Window(m_pBeOSApp, this, 
 			      	BRect(50, 50, 200+50, 300+50),
@@ -210,46 +210,46 @@ void XAP_BeOSFrame::_createTopLevelWindow(void)
 	return;
 }
 
-UT_Bool XAP_BeOSFrame::close()
+bool XAP_BeOSFrame::close()
 {
 	m_pBeWin->Lock();
 	m_pBeWin->Close();
 	m_pBeWin->Unlock();
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_BeOSFrame::raise()
+bool XAP_BeOSFrame::raise()
 {
 	
 	m_pBeWin->Lock();
 	m_pBeWin->Show();
 	m_pBeWin->Unlock();
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_BeOSFrame::show()
+bool XAP_BeOSFrame::show()
 {
 	m_pBeWin->Lock();
 	m_pBeWin->Show();
 	m_pBeWin->Unlock();
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_BeOSFrame::openURL(const char * szURL)
+bool XAP_BeOSFrame::openURL(const char * szURL)
 {
 	char *url;
 	url = (char*)UT_strdup(szURL);
 	be_roster->Launch("text/html", 1, &url);
 	free(url);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_BeOSFrame::updateTitle()
+bool XAP_BeOSFrame::updateTitle()
 {
 	if (!XAP_Frame::updateTitle())
 	{
 		// no relevant change, so skip it
-		return UT_FALSE;
+		return false;
 	}
 
 	char buf[256];
@@ -267,7 +267,7 @@ UT_Bool XAP_BeOSFrame::updateTitle()
 	m_pBeWin->SetTitle(buf);
 	m_pBeWin->Unlock();
 
-	return UT_TRUE;
+	return true;
 }
 
 UT_Vector * XAP_BeOSFrame::VecToolbarLayoutNames() {
@@ -543,10 +543,10 @@ void be_DocView::WindowActivated(bool activated)
 }
 
 /*****************************************************************/
-UT_Bool XAP_BeOSFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
+bool XAP_BeOSFrame::runModalContextMenu(AV_View * /* pView */, const char * szMenuName,
 										   UT_sint32 x, UT_sint32 y)
 {
-	UT_Bool bResult = UT_TRUE;
+	bool bResult = true;
 	UT_ASSERT(!m_pBeOSPopup);
 
 	m_pBeOSPopup = new EV_BeOSMenuPopup(m_pBeOSApp, this, 

@@ -277,7 +277,7 @@ void AP_QNXDialog_Replace::event_MatchCaseToggled(void)
 	//TODO: Turn this into a helper function
 	int *flags = NULL;
 	PtGetResource(m_checkbuttonMatchCase, Pt_ARG_FLAGS, &flags, 0);
-	setMatchCase((flags && *flags & Pt_SET) ? UT_TRUE: UT_FALSE);
+	setMatchCase((flags && *flags & Pt_SET) ? true: false);
 }
 
 void AP_QNXDialog_Replace::event_Cancel(void)

@@ -58,7 +58,7 @@ AP_Win32Dialog_Paragraph::AP_Win32Dialog_Paragraph(XAP_DialogFactory * pDlgFacto
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
 	m_pPreviewWidget = NULL;
-	m_bEditChanged = UT_FALSE;
+	m_bEditChanged = false;
 }
 
 AP_Win32Dialog_Paragraph::~AP_Win32Dialog_Paragraph(void)
@@ -279,7 +279,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
-	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
+	_syncControls(id_MENU_ALIGNMENT, true);
 
 	return 1;							// 1 == we did not call SetFocus()
 }
@@ -457,7 +457,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 		switch (wNotifyCode)	\
 		{						\
 			case EN_CHANGE:		\
-				m_bEditChanged = UT_TRUE;		\
+				m_bEditChanged = true;		\
 				return 1;		\
 								\
 			case EN_KILLFOCUS:	\
@@ -465,7 +465,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lPara
 				GetWindowText(hWndCtrl,buf,SPIN_BUF_TEXT_SIZE);		\
 				_setSpinItemValue(i,buf);		\
 				_syncControls(i);				\
-				m_bEditChanged = UT_FALSE;		\
+				m_bEditChanged = false;		\
 				return 1;	\
 							\
 			default:		\
@@ -535,7 +535,7 @@ BOOL AP_Win32Dialog_Paragraph::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		{								\
 			GetDlgItemText(w,AP_RID_DIALOG_PARA_EDIT_##c,buf,SPIN_BUF_TEXT_SIZE);	\
 			_setSpinItemValue(i,buf);	\
-			m_bEditChanged = UT_FALSE;	\
+			m_bEditChanged = false;	\
 		}								\
 		_doSpin(i, (0 - (UT_sint32) pnmud->iDelta));	\
 		break;							\
@@ -576,7 +576,7 @@ BOOL AP_Win32Dialog_Paragraph::_onDeltaPos(NM_UPDOWN * pnmud)
 			SetDlgItemText(w,AP_RID_DIALOG_##c,_getSpinItemValue(i));	\
 			break;			\
 
-void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+void AP_Win32Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
 { 
 	// let parent sync any member variables first
 

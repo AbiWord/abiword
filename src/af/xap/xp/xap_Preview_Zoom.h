@@ -44,8 +44,8 @@ public:
 	void	setZoomPercent(UT_uint32 percent);
 
 	// set the string you'd like to display
-	UT_Bool	setString(const char * string);
-	UT_Bool	setString(UT_UCSChar * string);
+	bool	setString(const char * string);
+	bool	setString(UT_UCSChar * string);
 
     // where all the zoom-specific drawing happens
 	void	draw(void);

@@ -188,7 +188,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 			     (UT_uint32) m_wpreviewArea->allocation.height);
 
 	setLineBetween(getLineBetween());
-	if(getLineBetween()==UT_TRUE)
+	if(getLineBetween()==true)
 	{
 	       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wlineBetween),TRUE);
 	}
@@ -210,11 +210,11 @@ void AP_UnixDialog_Columns::checkLineBetween(void)
 {
         if (GTK_TOGGLE_BUTTON (m_wlineBetween)->active)
         {
-	        setLineBetween(UT_TRUE);
+	        setLineBetween(true);
 	}
 	else
         {
-	        setLineBetween(UT_FALSE);
+	        setLineBetween(false);
 	}
 }
 
@@ -545,6 +545,6 @@ void AP_UnixDialog_Columns::_storeWindowData(void)
 {
 }
 
-void AP_UnixDialog_Columns::enableLineBetweenControl(UT_Bool bState)
+void AP_UnixDialog_Columns::enableLineBetweenControl(bool bState)
 {
 }

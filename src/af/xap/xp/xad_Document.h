@@ -43,20 +43,20 @@ public:
 
 	virtual UT_Error   		readFromFile(const char * szFilename, int ieft) = 0;
 	virtual UT_Error		newDocument(void) = 0;
-	virtual UT_Bool			isDirty(void) const = 0;
+	virtual bool			isDirty(void) const = 0;
 
-	virtual UT_Bool			canDo(UT_Bool bUndo) const = 0;
-	virtual UT_Bool			undoCmd(UT_uint32 repeatCount) = 0;
-	virtual UT_Bool			redoCmd(UT_uint32 repeatCount) = 0;
+	virtual bool			canDo(bool bUndo) const = 0;
+	virtual bool			undoCmd(UT_uint32 repeatCount) = 0;
+	virtual bool			redoCmd(UT_uint32 repeatCount) = 0;
 
 	virtual UT_Error   		saveAs(const char * szFilename, int ieft) = 0;
 	virtual UT_Error                save(void) = 0;
 
    	// "ignore all" list for spell check
-   	UT_Bool				appendIgnore(const UT_UCSChar * pWord, UT_uint32 len);
-   	UT_Bool				isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const;
-   	UT_Bool				enumIgnores(UT_uint32 k, const UT_UCSChar * pszWord) const;
-   	UT_Bool				clearIgnores(void);
+   	bool				appendIgnore(const UT_UCSChar * pWord, UT_uint32 len);
+   	bool				isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const;
+   	bool				enumIgnores(UT_uint32 k, const UT_UCSChar * pszWord) const;
+   	bool				clearIgnores(void);
    
 protected:
 	virtual ~AD_Document();		//  Use unref() instead.

@@ -154,14 +154,14 @@ EV_UnixToolbar::~EV_UnixToolbar(void)
 	_releaseListener();
 }
 
-UT_Bool EV_UnixToolbar::toolbarEvent(_wd * wd,
+bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 									 UT_UCSChar * pData,
 									 UT_uint32 dataLength)
 
 {
 	// user selected something from this toolbar.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 
 	XAP_Toolbar_Id id = wd->m_id;
 	
@@ -195,13 +195,13 @@ UT_Bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 			wd->m_blockSignal = wasBlocked;
 
 			// can safely ignore this event
-			return UT_TRUE;
+			return true;
 		}
 	}
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
-		return UT_FALSE;
+		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pUnixApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
@@ -210,11 +210,11 @@ UT_Bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	invokeToolbarMethod(pView,pEM,pData,dataLength);
-	return UT_TRUE;
+	return true;
 }
 
 
-UT_Bool EV_UnixToolbar::synthesize(void)
+bool EV_UnixToolbar::synthesize(void)
 {
 	// create a GTK toolbar from the info provided.
 
@@ -284,7 +284,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 					GtkWidget * wPixmap;
-					UT_Bool bFoundIcon =
+					bool bFoundIcon =
 						m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
 															  &wTLW->style->bg[GTK_STATE_NORMAL],
 															  pLabel->getIconName(),
@@ -305,7 +305,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 					GtkWidget * wPixmap;
-					UT_Bool bFoundIcon =
+					bool bFoundIcon =
 						m_pUnixToolbarIcons->getPixmapForIcon(wTLW->window,
 															  &wTLW->style->bg[GTK_STATE_NORMAL],
 															  pLabel->getIconName(),
@@ -479,7 +479,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 	// put it in the vbox
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, FALSE, 0);
 
-	return UT_TRUE;
+	return true;
 }
 
 void EV_UnixToolbar::_releaseListener(void)
@@ -491,22 +491,22 @@ void EV_UnixToolbar::_releaseListener(void)
 	m_lid = 0;
 }
 	
-UT_Bool EV_UnixToolbar::bindListenerToView(AV_View * pView)
+bool EV_UnixToolbar::bindListenerToView(AV_View * pView)
 {
 	_releaseListener();
 	
 	m_pViewListener = new EV_UnixToolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-	UT_Bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
+	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 
 	refreshToolbar(pView, AV_CHG_ALL);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
+bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
 	// make the toolbar reflect the current state of the document
 	// at the current insertion point or selection.
@@ -539,7 +539,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				{
 				case EV_TBIT_PushButton:
 				{
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
@@ -558,8 +558,8 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				case EV_TBIT_ToggleButton:
 				case EV_TBIT_GroupButton:
 				{
-					//UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
+					//bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
@@ -589,8 +589,8 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					break;
 				case EV_TBIT_ComboBox:
 				{
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					//UT_Bool bString = EV_TIS_ShouldUseString(tis);
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					//bool bString = EV_TIS_ShouldUseString(tis);
 					
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
@@ -641,7 +641,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 XAP_UnixApp * EV_UnixToolbar::getApp(void)

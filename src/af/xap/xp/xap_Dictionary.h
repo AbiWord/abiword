@@ -39,25 +39,25 @@ public:
 
 	const char *		getShortName(void) const;
 
-	UT_Bool				load(void);
-	UT_Bool				save(void);
+	bool				load(void);
+	bool				save(void);
 
-	UT_Bool				addWord(const UT_UCSChar * pWord, UT_uint32 len);
-	UT_Bool				isWord(const UT_UCSChar * pWord, UT_uint32 len) const;
+	bool				addWord(const UT_UCSChar * pWord, UT_uint32 len);
+	bool				isWord(const UT_UCSChar * pWord, UT_uint32 len) const;
 
 protected:
-	UT_Bool				_openFile(const char * mode);
+	bool				_openFile(const char * mode);
 	UT_uint32			_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-	UT_Bool				_writeBytes(const UT_Byte * sz);
-	UT_Bool				_closeFile(void);
+	bool				_writeBytes(const UT_Byte * sz);
+	bool				_closeFile(void);
 	void				_abortFile(void);
 
-	UT_Bool				_parseUTF8(void);
+	bool				_parseUTF8(void);
 	void				_outputUTF8(const UT_UCSChar * data, UT_uint32 length);
 
 	const char *		m_szFilename;
 
-	UT_Bool				m_bDirty;
+	bool				m_bDirty;
 	UT_AlphaHashTable	m_hashWords;
 
 private:

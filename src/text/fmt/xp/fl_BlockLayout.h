@@ -94,13 +94,13 @@ class fl_CharWidths
 
 	public:
 
-		UT_Bool ins(UT_uint32 position, UT_uint32 length)
+		bool ins(UT_uint32 position, UT_uint32 length)
 			{
 			m_gbCharWidths.ins(position, length);
 			return m_gbCharWidthsLayoutUnits.ins(position, length);
 			}
 
-		UT_Bool del(UT_uint32 position, UT_uint32 amount)
+		bool del(UT_uint32 position, UT_uint32 amount)
 			{
 			m_gbCharWidths.del(position, amount);
 			return m_gbCharWidthsLayoutUnits.del(position, amount);
@@ -110,7 +110,7 @@ class fl_CharWidths
 			UT_ASSERT(m_gbCharWidths.getLength() == m_gbCharWidthsLayoutUnits.getLength());
 			return m_gbCharWidths.getLength();
 			}
-		UT_Bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
+		bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
 			{
 			m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
 			return m_gbCharWidthsLayoutUnits.ins(position, Other.m_gbCharWidthsLayoutUnits.getPointer(offset), length);
@@ -148,7 +148,7 @@ class fl_BlockLayout : public fl_Layout
 
 	// TODO: shack - code should be moved from toggleAuto to a function in
 	// here - to handle the squiggles
-	friend void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell);
+	friend void FL_DocLayout::_toggleAutoSpell(bool bSpell);
 
 public:
 	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, fl_BlockLayout*, fl_SectionLayout*, PT_AttrPropIndex indexAP);
@@ -162,7 +162,7 @@ public:
 	} eSpacingPolicy;
 
 	int 		format();
-	UT_Bool		recalculateFields(void);
+	bool		recalculateFields(void);
 	
 	void		redrawUpdate();
 
@@ -171,9 +171,9 @@ public:
 
 // TODO: What I want to test is XML_Char != char
 #ifdef HAVE_LIBXML2
-	const char*	getProperty(const char * pszName, UT_Bool bExpandStyles = UT_TRUE) const;
+	const char*	getProperty(const char * pszName, bool bExpandStyles = true) const;
 #endif
-	const char*	getProperty(const XML_Char * pszName, UT_Bool bExpandStyles = UT_TRUE) const;
+	const char*	getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 
 	inline fl_BlockLayout* getNext(void) const { return m_pNext; }
@@ -193,8 +193,8 @@ public:
 
 	inline fp_Run* getFirstRun(void) const { return m_pFirstRun; }
 
-	inline UT_Bool isListItem(void) const { return m_bListItem; }
-	UT_Bool isFirstInList(void);
+	inline bool isListItem(void) const { return m_bListItem; }
+	bool isFirstInList(void);
 //	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
 	void    getListAttributesVector( UT_Vector * va);
 	void  getListPropertyVector( UT_Vector * vp);
@@ -209,7 +209,7 @@ public:
 	XML_Char* getListStyleString( List_Type iListType);
 	List_Type getListTypeFromStyle( const XML_Char * style);
 	fl_BlockLayout * getNextList(UT_uint32 id);
-	UT_Bool isListLabelInBlock(void); 
+	bool isListLabelInBlock(void); 
 	void StartList( const XML_Char * style);
 
 	void StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID = 0, UT_uint32 level=0 );
@@ -219,8 +219,8 @@ public:
 	XML_Char * getListLabel(void);
 	void transferListFlags(void);
 	UT_uint32 getLevel(void);
-	void setStarting( UT_Bool bValue);
-	void setStopping( UT_Bool bValue);
+	void setStarting( bool bValue);
+	void setStopping( bool bValue);
         fl_BlockLayout * getPreviousList(UT_uint32 id);
         fl_BlockLayout * getPreviousList(void);
 	inline fl_BlockLayout * getParentItem(void);
@@ -230,13 +230,13 @@ public:
 
 	fl_CharWidths * getCharWidths(void);
 
-	PT_DocPosition getPosition(UT_Bool bActualBlockPos=UT_FALSE) const;
-	fp_Run* findPointCoords(PT_DocPosition position, UT_Bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
+	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& height);
 
-	UT_Bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
-	UT_Bool	getBlockBuf(UT_GrowBuf * pgb) const;
+	bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
+	bool	getBlockBuf(UT_GrowBuf * pgb) const;
 
-	UT_Bool truncateLayout(fp_Run* pTruncRun);
+	bool truncateLayout(fp_Run* pTruncRun);
 
 	void clearScreen(GR_Graphics*);
 
@@ -260,18 +260,18 @@ public:
 						
 	inline UT_uint32 getProp_Orphans(void) const { return m_iOrphansProperty; }
 	inline UT_uint32 getProp_Widows(void) const { return m_iWidowsProperty; }
-	inline UT_Bool getProp_KeepTogether(void) const { return m_bKeepTogether; }
-	inline UT_Bool getProp_KeepWithNext(void) const { return m_bKeepWithNext; }
+	inline bool getProp_KeepTogether(void) const { return m_bKeepTogether; }
+	inline bool getProp_KeepWithNext(void) const { return m_bKeepWithNext; }
 
 	void checkForBeginOnForcedBreak(void);
 	void checkForEndOnForcedBreak(void);
 
 	void checkSpelling(void);
 	void debugFlashing(void);
- 	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, 
+ 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, 
 				UT_sint32& iPosition, eTabType& iType, 
 				eTabLeader &iLeader );
- 	UT_Bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
+ 	bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
 					     UT_sint32& iPosition, 
 					     eTabType& iType, 
 					     eTabLeader &iLeader);
@@ -279,59 +279,59 @@ public:
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
 	inline UT_sint32 getTabsCount(void) const { return (UT_sint32) m_vecTabs.getItemCount(); }
 
-	UT_Bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
-	UT_Bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
+	bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	
-	UT_Bool doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs);
-	UT_Bool doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs);
-	UT_Bool doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc);
-	UT_Bool doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
-	UT_Bool doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
-	UT_Bool doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * pcrx,
+	bool doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs);
+	bool doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs);
+	bool doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc);
+	bool doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
+	bool doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
+	bool doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * pcrx,
 										 PL_StruxDocHandle sdh,
 										 PL_ListenerId lid,
 										 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																 PL_ListenerId lid,
 																 PL_StruxFmtHandle sfhNew));
-	UT_Bool doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
+	bool doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
 									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
-	UT_Bool doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
+	bool doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
 									  PL_StruxDocHandle sdh,
 									  PL_ListenerId lid,
 									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 															  PL_ListenerId lid,
 															  PL_StruxFmtHandle sfhNew));
-	UT_Bool doclistener_insertObject(const PX_ChangeRecord_Object * pcro);
-	UT_Bool doclistener_deleteObject(const PX_ChangeRecord_Object * pcro);
-	UT_Bool doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc);
+	bool doclistener_insertObject(const PX_ChangeRecord_Object * pcro);
+	bool doclistener_deleteObject(const PX_ChangeRecord_Object * pcro);
+	bool doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc);
 
-	UT_Bool doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * pcrfm);
-	UT_Bool doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * pcrfm);
-	UT_Bool doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChange * pcrfmc);
+	bool doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * pcrfm);
+	bool doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * pcrfm);
+	bool doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 	
 	void					purgeLayout(void);
 	void					collapse(void);
 	void					coalesceRuns(void);
 
-	void					setNeedsReformat(void) { m_bNeedsReformat = UT_TRUE; }
-	inline UT_Bool			needsReformat(void) const { return m_bNeedsReformat; }
+	void					setNeedsReformat(void) { m_bNeedsReformat = true; }
+	inline bool			needsReformat(void) const { return m_bNeedsReformat; }
 
-	void					setNeedsRedraw(void) { m_bNeedsRedraw = UT_TRUE; }
-	inline UT_Bool			needsRedraw(void) const { return m_bNeedsRedraw; }
+	void					setNeedsRedraw(void) { m_bNeedsRedraw = true; }
+	inline bool			needsRedraw(void) const { return m_bNeedsRedraw; }
 
-	UT_Bool					checkWord(fl_PartOfBlock* pPOB);
+	bool					checkWord(fl_PartOfBlock* pPOB);
 	fl_PartOfBlock*			getSquiggle(UT_uint32 iOffset) const;
 	void					recheckIgnoredWords();
 
-	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
+	static bool			s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
 	
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
-	inline UT_Bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uBackgroundCheckReasons & reason);}
+	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return (m_uBackgroundCheckReasons & reason);}
 
 	// The following is a set of bit flags giving the reason this block is
 	// queued for background checking.  See specific values in fl_DocLayout.h
@@ -349,19 +349,19 @@ protected:
 	
 	void 					_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge);
 	
-	UT_Bool					_doInsertRun(fp_Run* pNewRun);
-	UT_Bool					_delete(PT_BlockOffset blockOffset, UT_uint32 len);
+	bool					_doInsertRun(fp_Run* pNewRun);
+	bool					_delete(PT_BlockOffset blockOffset, UT_uint32 len);
 
-	UT_Bool					_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len);
-	UT_Bool					_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset);
-	UT_Bool					_doInsertFieldStartRun(PT_BlockOffset blockOffset);
-	UT_Bool					_doInsertFieldEndRun(PT_BlockOffset blockOffset);
-	UT_Bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
-	UT_Bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
-	UT_Bool					_doInsertTabRun(PT_BlockOffset blockOffset);
-	UT_Bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG);
-	UT_Bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
-	UT_Bool					_deleteFmtMark(PT_BlockOffset blockOffset);
+	bool					_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len);
+	bool					_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset);
+	bool					_doInsertFieldStartRun(PT_BlockOffset blockOffset);
+	bool					_doInsertFieldEndRun(PT_BlockOffset blockOffset);
+	bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
+	bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
+	bool					_doInsertTabRun(PT_BlockOffset blockOffset);
+	bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG);
+	bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 	
 	void					_lookupProperties(void);
 	void					_removeLine(fp_Line*);
@@ -369,7 +369,7 @@ protected:
 
 	void					_purgeSquiggles(void);
 	UT_sint32				_findSquiggle(UT_uint32 iOffset) const;
-	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, UT_Bool bIsIgnored = UT_FALSE);
+	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, bool bIsIgnored = false);
 	void					_updateSquiggle(fl_PartOfBlock* pPOB);
 	void					_insertSquiggles(UT_uint32 iOffset, 
 											 UT_uint32 iLength);
@@ -383,16 +383,16 @@ protected:
 										   UT_sint32 chg, 
 										   fl_BlockLayout* pBlock=NULL);
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
-	UT_Bool					_checkMultiWord(const UT_UCSChar* pBlockText, 
+	bool					_checkMultiWord(const UT_UCSChar* pBlockText, 
 									 UT_uint32 iStart, 
 									 UT_uint32 eor,
-									 UT_Bool bToggleIP);
+									 bool bToggleIP);
 
 	UT_uint32				_getLastChar();
 	void					_stuffAllRunsOnALine(void);
 	void					_insertFakeTextRun(void);
 	void					_breakLineAfterRun(fp_Run* /*pRun*/);
-	UT_Bool					_validateBlockForPoint(void);
+	bool					_validateBlockForPoint(void);
 
 	static void				_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void * data);
 
@@ -401,10 +401,10 @@ protected:
 	inline void				_addBlockToPrevList( fl_BlockLayout * prevBlockInList, UT_uint32 level);	
 	inline void				_prependBlockToPrevList( fl_BlockLayout * nextBlockInList);	
 
-	UT_Bool					m_bNeedsReformat;
-	UT_Bool					m_bNeedsRedraw;
-	UT_Bool					m_bFixCharWidths;
-        UT_Bool                                 m_bCursorErased;
+	bool					m_bNeedsReformat;
+	bool					m_bNeedsRedraw;
+	bool					m_bFixCharWidths;
+        bool                                 m_bCursorErased;
 
 	fl_CharWidths			m_gbCharWidths;
 
@@ -440,17 +440,17 @@ protected:
 	fb_Alignment *			m_pAlignment;
 	double					m_dLineSpacing;
 	double					m_dLineSpacingLayoutUnits;
-	//UT_Bool					m_bExactSpacing;
+	//bool					m_bExactSpacing;
 	eSpacingPolicy			m_eSpacingPolicy;
-	UT_Bool					m_bKeepTogether;
-	UT_Bool					m_bKeepWithNext;
+	bool					m_bKeepTogether;
+	bool					m_bKeepWithNext;
 	const XML_Char *		m_szStyle;
 
 	//fl_AutoNum *			m_pAutoNum;
-	UT_Bool					m_bListItem;
-	UT_Bool					m_bStartList;
-	UT_Bool					m_bStopList;
-	UT_Bool					m_bListLabelCreated;
+	bool					m_bListItem;
+	bool					m_bStartList;
+	bool					m_bStopList;
+	bool					m_bListLabelCreated;
 
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;
@@ -467,12 +467,12 @@ class fl_PartOfBlock
 public:
 	fl_PartOfBlock();
 
-	UT_Bool doesTouch(UT_uint32 offset, UT_uint32 length) const;
+	bool doesTouch(UT_uint32 offset, UT_uint32 length) const;
 
 	UT_uint32	iOffset;
 	UT_uint32	iLength;
 
-	UT_Bool		bIsIgnored;
+	bool		bIsIgnored;
 
 protected:
 };

@@ -45,7 +45,7 @@ int mapNameToToken (const char * name, xmlToIdMapping * idlist, int len);
 class IE_Imp_XML : public IE_Imp
 {
 public:
-    IE_Imp_XML(PD_Document * pDocument, UT_Bool whiteSignificant);
+    IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant);
     virtual ~IE_Imp_XML();
 
     virtual UT_Error	importFile(const char * szFilename);
@@ -64,14 +64,14 @@ public:
     virtual void	_charData(const XML_Char*, int len);
 
 protected:
-    virtual UT_Bool			_openFile(const char * szFilename);
+    virtual bool			_openFile(const char * szFilename);
     virtual UT_uint32			_readBytes(char * buf, UT_uint32 length);
     virtual void			_closeFile(void);
 
     const XML_Char *            _getXMLPropValue(const XML_Char *name, const XML_Char **atts);
 
     UT_uint32			_getInlineDepth(void) const;
-    UT_Bool			_pushInlineFmt(const XML_Char ** atts);
+    bool			_pushInlineFmt(const XML_Char ** atts);
     void			_popInlineFmt(void);
 
     typedef enum _parseState { _PS_Init,
@@ -93,9 +93,9 @@ protected:
     XML_Char			m_charDataSeen[4];
     UT_uint32			m_lenCharDataSeen;
     UT_uint32			m_lenCharDataExpected;
-    UT_Bool			m_bSeenCR;
-    UT_Bool                     m_bWhiteSignificant;
-    UT_Bool                     m_bWasSpace;
+    bool			m_bSeenCR;
+    bool                     m_bWhiteSignificant;
+    bool                     m_bWasSpace;
 
     UT_Vector			m_vecInlineFmt;
     UT_Stack			m_stackFmtStartIndex;
@@ -103,7 +103,7 @@ protected:
     UT_ByteBuf			m_currentDataItem;
     XML_Char *			m_currentDataItemName;
     XML_Char *			m_currentDataItemMimeType;
-    UT_Bool			m_currentDataItemEncoded;
+    bool			m_currentDataItemEncoded;
 
     FILE *			m_fp;
 #ifdef HAVE_LIBXML2

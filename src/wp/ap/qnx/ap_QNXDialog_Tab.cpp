@@ -423,13 +423,13 @@ PtWidget_t *AP_QNXDialog_Tab::_lookupWidget ( tControl id )
 }
 
 
-void AP_QNXDialog_Tab::_controlEnable( tControl id, UT_Bool value )
+void AP_QNXDialog_Tab::_controlEnable( tControl id, bool value )
 {
 	PtWidget_t *w = _lookupWidget(id);
 	UT_ASSERT(w);
 	if (w) {
 		int flags = 0;
-		flags = (value == UT_TRUE) ? Pt_SELECTABLE : (Pt_BLOCKED | Pt_GHOST);
+		flags = (value == true) ? Pt_SELECTABLE : (Pt_BLOCKED | Pt_GHOST);
 		PtSetResource(w, Pt_ARG_FLAGS, flags, Pt_SELECTABLE | Pt_BLOCKED | Pt_GHOST);
 	}
 }
@@ -705,9 +705,9 @@ void AP_QNXDialog_Tab::_setAlignment( eTabType a )
 	UT_ASSERT(w);
 
 	// tell the change routines to ignore this message
-	//m_bInSetCall = UT_TRUE;
+	//m_bInSetCall = true;
 	PtSetResource(w, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
-	//m_bInSetCall = UT_FALSE;
+	//m_bInSetCall = false;
 
 	m_current_alignment = a;
 }
@@ -734,9 +734,9 @@ void AP_QNXDialog_Tab::_setLeader( eTabLeader a )
 	UT_ASSERT(w);
 
 	// tell the change routines to ignore this message
-	//m_bInSetCall = UT_TRUE;
+	//m_bInSetCall = true;
 	PtSetResource(w, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
-	//m_bInSetCall = UT_FALSE;
+	//m_bInSetCall = false;
 }
 
 

@@ -24,7 +24,7 @@
 
 class UT_RGBColor;
 
-UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
+bool UT_Xpm2Bitmap(const char ** pIconData,
 		      UT_uint32 sizeofData,
 		      PhImage_t ** ppImage);
 

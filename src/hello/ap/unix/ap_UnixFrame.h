@@ -31,15 +31,15 @@ public:
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);
 	
-	virtual UT_Bool     initialize(void);
+	virtual bool     initialize(void);
 	virtual XAP_Frame*  cloneFrame(void);
 	virtual UT_Error     loadDocument(const char * szFilename, int fileType);
-	virtual UT_Bool     initFrameData(void);
+	virtual bool     initFrameData(void);
 	virtual void        killFrameData(void);
 	virtual void        setXScrollRange(void);
 	virtual void        setYScrollRange(void);
 	virtual void        translateDocumentToScreen(UT_sint32&, UT_sint32&);
-	virtual void		toggleRuler(UT_Bool bRulerOn);	
+	virtual void		toggleRuler(bool bRulerOn);	
 protected:
 	virtual GtkWidget*  _createDocumentWindow(void);
 	virtual void        setStatusMessage(const char *);

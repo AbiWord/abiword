@@ -38,7 +38,7 @@ IE_Exp_GZipAbiWord::~IE_Exp_GZipAbiWord()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_GZipAbiWord::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_GZipAbiWord::RecognizeSuffix(const char * szSuffix)
 {
     return (UT_stricmp(szSuffix,".zabw") == 0);
 }
@@ -50,22 +50,22 @@ UT_Error IE_Exp_GZipAbiWord::StaticConstructor(PD_Document * pDocument,
     return UT_OK;
 }
 
-UT_Bool	IE_Exp_GZipAbiWord::GetDlgLabels(const char ** pszDesc,
+bool	IE_Exp_GZipAbiWord::GetDlgLabels(const char ** pszDesc,
 	const char ** pszSuffixList,
 	IEFileType * ft)
 {
     *pszDesc = "GZipped AbiWord (.zabw)";
     *pszSuffixList = "*.zabw";
     *ft = IEFT_GZipAbiWord;
-    return UT_TRUE;
+    return true;
 }
 
-UT_Bool IE_Exp_GZipAbiWord::SupportsFileType(IEFileType ft)
+bool IE_Exp_GZipAbiWord::SupportsFileType(IEFileType ft)
 {
     return (IEFT_GZipAbiWord == ft);
 }
 
-UT_Bool IE_Exp_GZipAbiWord::_openFile(const char * szFilename)
+bool IE_Exp_GZipAbiWord::_openFile(const char * szFilename)
 {
     UT_ASSERT(!m_gzfp);
 
@@ -82,7 +82,7 @@ UT_uint32 IE_Exp_GZipAbiWord::_writeBytes(const UT_Byte * pBytes, UT_uint32 leng
     return gzwrite(m_gzfp, (void *) pBytes, sizeof(UT_Byte) * length);
 }
 
-UT_Bool IE_Exp_GZipAbiWord::_writeBytes(const UT_Byte * sz)
+bool IE_Exp_GZipAbiWord::_writeBytes(const UT_Byte * sz)
 {
     UT_ASSERT(m_gzfp);
     UT_ASSERT(sz);
@@ -92,11 +92,11 @@ UT_Bool IE_Exp_GZipAbiWord::_writeBytes(const UT_Byte * sz)
     return (_writeBytes(sz,length)==(UT_uint32)length);
 }
 
-UT_Bool IE_Exp_GZipAbiWord::_closeFile(void)
+bool IE_Exp_GZipAbiWord::_closeFile(void)
 {
     if (m_gzfp)
 	gzclose(m_gzfp);
 
     m_gzfp = 0;
-    return UT_TRUE;
+    return true;
 }

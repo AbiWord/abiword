@@ -41,7 +41,7 @@
 			goto Failed;						\
 	} while(0);
 
-UT_Bool pt_PieceTable::_loadBuiltinStyles(void)
+bool pt_PieceTable::_loadBuiltinStyles(void)
 {
 	_s("Normal",	"P", "",       "normal", "font-family:Times New Roman; font-size:12pt; text-align:left; line-height:1.0; field-font:NULL");
 	_s("Heading 1",	"P", "normal", "normal", "font-family:Arial; font-size:16pt; font-weight:bold; margin-top:12pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
@@ -67,39 +67,39 @@ UT_Bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Heart List", "P", "normal", "Heart List", "margin-left:LIST_DEFAULT_INDENTin; text-indent:-LIST_DEFAULT_INDENT_LABELin; start-value:0; field-color: ffffff; field-font:Dingbats;list-delim:%L;list-decimal:NULL");
 
 
-	return UT_TRUE;
+	return true;
 
 Failed:
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** attributes)
+bool pt_PieceTable::_createBuiltinStyle(const char * szName, const XML_Char ** attributes)
 {
 	// this function can only be called before loading the document.
 	UT_ASSERT(m_pts==PTS_Create);
 
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
-		return UT_FALSE;
+		return false;
 
 	// verify unique name
 
 	PD_Style * pStyle = NULL;
-	if (getStyle(szName,&pStyle) == UT_TRUE)
-		return UT_FALSE;		// duplicate name
+	if (getStyle(szName,&pStyle) == true)
+		return false;		// duplicate name
 
 	pStyle = new PD_BuiltinStyle(this, indexAP);
 	if (pStyle)
 		if (m_hashStyles.addEntry(szName,NULL,(void *)pStyle) != -1)
-			return UT_TRUE;
+			return true;
 
 	// cleanup after failure
 	if (pStyle)
 		delete pStyle;
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
+bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 {
 	// this function can only be called while loading the document.
 	UT_ASSERT(m_pts==PTS_Loading);
@@ -108,17 +108,17 @@ UT_Bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 	
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
-		return UT_FALSE;
+		return false;
 
 	// verify unique name
 
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
 	const char * szName = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME, attributes);
 	if (!szName || !*szName)
-		return UT_TRUE;		// silently ignore unnamed styles
+		return true;		// silently ignore unnamed styles
 
 	PD_Style * pStyle = NULL;
-	if (getStyle(szName,&pStyle) == UT_TRUE)
+	if (getStyle(szName,&pStyle) == true)
 	{
 		// duplicate name
 		UT_ASSERT(pStyle);
@@ -126,7 +126,7 @@ UT_Bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 		{
 			// already loaded, ignore redefinition
 			UT_DEBUGMSG(("appendStyle[%s]: duplicate definition ignored\n", szName));
-			return UT_TRUE;	
+			return true;	
 		}
 
 		// override builtin definition
@@ -138,22 +138,22 @@ UT_Bool pt_PieceTable::appendStyle(const XML_Char ** attributes)
 		pStyle = new PD_Style(this, indexAP);
 		if (pStyle)
 			if (m_hashStyles.addEntry(szName,NULL,(void *)pStyle) != -1)
-				return UT_TRUE;
+				return true;
 
 		// cleanup after failure
 		if (pStyle)
 			delete pStyle;
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
+bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
 	UT_ASSERT(szName && *szName);
 	
 	UT_HashEntry * pHashEntry = m_hashStyles.findEntry(szName);
 	if (!pHashEntry)
-		return UT_FALSE;
+		return false;
 
 	PD_Style * pStyle = (PD_Style *) pHashEntry->pData;
 	UT_ASSERT(pStyle);
@@ -163,17 +163,17 @@ UT_Bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 		*ppStyle = pStyle;
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::enumStyles(UT_uint32 k,
+bool pt_PieceTable::enumStyles(UT_uint32 k,
 								const char ** pszName, const PD_Style ** ppStyle) const
 {
 	// return the kth style.
 
 	UT_uint32 kLimit = m_hashStyles.getEntryCount();
 	if (k >= kLimit)
-		return UT_FALSE;
+		return false;
 	
 	const UT_HashEntry * pHashEntry = m_hashStyles.getNthEntryAlpha(k);
 	UT_ASSERT(pHashEntry);
@@ -191,6 +191,6 @@ UT_Bool pt_PieceTable::enumStyles(UT_uint32 k,
 		*pszName = pHashEntry->pszLeft;
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 	

@@ -42,10 +42,10 @@ public:
                  fd_Field * m_pField);
 	virtual ~pf_Frag_Text();
 	
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos,
 													  PT_BlockOffset blockOffset) const;
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos,
 													  PT_BlockOffset blockOffset,
 													  PT_BlockOffset startFragOffset,

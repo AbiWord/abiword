@@ -98,7 +98,7 @@ IE_Imp_PalmDoc::IE_Imp_PalmDoc(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-#define X_ReturnIfFail(exp,error)		do { UT_Bool b = (exp); if (!b) return (error); } while (0)
+#define X_ReturnIfFail(exp,error)		do { bool b = (exp); if (!b) return (error); } while (0)
 #define X_ReturnNoMemIfError(exp)	X_ReturnIfFail(exp,UT_IE_NOMEMORY)
 
 UT_Error IE_Imp_PalmDoc::_writeHeader(FILE * /* m_pdfp */)
@@ -110,14 +110,14 @@ UT_Error IE_Imp_PalmDoc::_writeHeader(FILE * /* m_pdfp */)
 UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 {
 	UT_GrowBuf gbBlock(1024);
-	UT_Bool bEatLF = UT_FALSE;
-	UT_Bool bEmptyFile = UT_TRUE;
+	bool bEatLF = false;
+	bool bEmptyFile = true;
 	UT_UCSChar c;
 	wchar_t wc;
 
 	pdb_header	m_header;
 	doc_record0	m_rec0;
-	UT_Bool		bCompressed = UT_FALSE;
+	bool		bCompressed = false;
 	int		num_records, rec_num;
 	DWord		file_size, offset;
 
@@ -140,7 +140,7 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 	fread( &m_rec0, sizeof(m_rec0), 1, m_pdfp );
 
 	if ( _swap_Word( m_rec0.version ) == 2 )
-		bCompressed = UT_TRUE;
+		bCompressed = true;
 
 	fseek( m_pdfp, 0, SEEK_END );
 	file_size = ftell( m_pdfp );
@@ -188,13 +188,13 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 			
 				if ((c == (UT_UCSChar)'\n') && bEatLF)
 				{
-					bEatLF = UT_FALSE;
+					bEatLF = false;
 					break;
 				}
 
 				if (c == (UT_UCSChar)'\r')
 				{
-					bEatLF = UT_TRUE;
+					bEatLF = true;
 				}
 		
 				// we interprete either CRLF, CR, or LF as a paragraph break.
@@ -202,7 +202,7 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 				// start a paragraph and emit any text that we
 				// have accumulated.
 				X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-				bEmptyFile = UT_FALSE;
+				bEmptyFile = false;
 				if (gbBlock.getLength() > 0)
 				{
 					X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
@@ -211,7 +211,7 @@ UT_Error IE_Imp_PalmDoc::_parseFile(FILE * m_pdfp)
 				break;
 
 			default:
-				bEatLF = UT_FALSE;
+				bEatLF = false;
 				X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&c,1));
 				break;
 			}
@@ -247,13 +247,13 @@ void IE_Imp_PalmDoc::pasteFromBuffer(PD_DocumentRange * pDocRange,
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_PalmDoc::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_PalmDoc::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
         pdb_header	* header;
 
 	// not enough bytes to make a good enough guess
 	if (!iNumbytes || (iNumbytes < sizeof (pdb_header)))
-	  return(UT_FALSE);
+	  return(false);
 
 	// evil, type unsafe cast
 	header = (pdb_header *) szBuf;
@@ -261,13 +261,13 @@ UT_Bool IE_Imp_PalmDoc::RecognizeContents(const char * szBuf, UT_uint32 iNumbyte
 	if (strncmp( header->type,    DOC_TYPE,    sizeof(header->type) ) ||
 	    strncmp( header->creator, DOC_CREATOR, sizeof(header->creator) ))
         {
-		return UT_FALSE;
+		return false;
 	}
 
-	return(UT_TRUE);
+	return(true);
 }
 
-UT_Bool IE_Imp_PalmDoc::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_PalmDoc::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".pdb") == 0);
 }
@@ -280,17 +280,17 @@ UT_Error IE_Imp_PalmDoc::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Imp_PalmDoc::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_PalmDoc::GetDlgLabels(const char ** pszDesc,
 				     const char ** pszSuffixList,
 				     IEFileType * ft)
 {
 	*pszDesc = "Palm Document (.pdb)";
 	*pszSuffixList = "*.pdb";
 	*ft = IEFT_PalmDoc;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_PalmDoc::SupportsFileType(IEFileType ft)
+bool IE_Imp_PalmDoc::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_PalmDoc == ft);
 }
@@ -304,9 +304,9 @@ void IE_Imp_PalmDoc::_selectSwap()
     strncpy(  w.c, "\1\2",     2 );
 
     if ( w.n == 0x0201 )
-        m_littlendian = UT_TRUE;
+        m_littlendian = true;
     else
-        m_littlendian = UT_FALSE;
+        m_littlendian = false;
 
 }  
 

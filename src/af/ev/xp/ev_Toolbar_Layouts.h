@@ -68,7 +68,7 @@ public:
 	EV_Toolbar_Layout(const char * szName, UT_uint32 nrLayoutItems);
 	~EV_Toolbar_Layout(void);
 
-	UT_Bool						setLayoutItem(UT_uint32 indexLayoutItem,
+	bool						setLayoutItem(UT_uint32 indexLayoutItem,
 											  XAP_Toolbar_Id id, EV_Toolbar_LayoutFlags flags);
 	EV_Toolbar_LayoutItem *		getLayoutItem(UT_uint32 indexLayoutItem) const;
 	const char *				getName(void) const;

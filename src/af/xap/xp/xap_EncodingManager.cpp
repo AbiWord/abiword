@@ -289,11 +289,11 @@ struct _rmap
 	const char** keys;//NULL-teminated array of strings
 };
 
-static const char* search_rmap(const _rmap* m,const char* key,UT_Bool* is_default = NULL)
+static const char* search_rmap(const _rmap* m,const char* key,bool* is_default = NULL)
 {
 	const _rmap* cur = m+1;	
 	if (is_default)
-		*is_default = UT_FALSE;
+		*is_default = false;
 	for(;cur->value;++cur) 
 	{
 		if (!cur->keys)
@@ -309,13 +309,13 @@ static const char* search_rmap(const _rmap* m,const char* key,UT_Bool* is_defaul
 				return cur->value;			
 	}
 	if (is_default)	
-		*is_default = UT_TRUE;
+		*is_default = true;
 	return m->value;
 };
 
 static const char* search_rmap_with_opt_suffix(const _rmap* m,const char* key,const char* fallback_key=NULL,const char* fallback_key_final=NULL)
 {
-	UT_Bool is_default;
+	bool is_default;
 	const char* value = search_rmap(m,key,&is_default);
 	if (!is_default || !fallback_key)
 		return value;
@@ -328,22 +328,22 @@ struct _map
 	char* key;
 	char* value;
 };
-static const char* search_map(const _map* m,const char* key,UT_Bool* is_default = NULL)
+static const char* search_map(const _map* m,const char* key,bool* is_default = NULL)
 {
 	const _map* cur = m+1;	
 	if (is_default)
-		*is_default = UT_FALSE;
+		*is_default = false;
 	for(;cur->key;++cur)
 		if (!UT_stricmp(cur->key,key))
 			return cur->value;
 	if (is_default)
-		*is_default = UT_TRUE;
+		*is_default = true;
 	return m->value;
 };
 
 static const char* search_map_with_opt_suffix(const _map* m,const char* key,const char* fallback_key=NULL,const char* fallback_key_final=NULL)
 {
-	UT_Bool is_default;
+	bool is_default;
 	const char* value = search_map(m,key,&is_default);
 	if (!is_default || !fallback_key)
 		return value;
@@ -716,9 +716,9 @@ void XAP_EncodingManager::initialize()
 		   *enc = getNativeEncodingName();
 	
 	if(!strcmp(enc, "UTF-8") || !strcmp(enc, "UTF8") || !strcmp(enc, "utf-8") || !strcmp(enc, "utf8"))
-		m_bIsUnicodeLocale = UT_TRUE;
+		m_bIsUnicodeLocale = true;
 	else
-		m_bIsUnicodeLocale = UT_FALSE;
+		m_bIsUnicodeLocale = false;
 		   		
 #define SEARCH_PARAMS  fulllocname, langandterr, isocode
 	char fulllocname[40],langandterr[40];
@@ -854,14 +854,14 @@ const char* XAP_EncodingManager::charsetFromCodepage(int lid) const
     static char buf[100];
     sprintf(buf,"CP%d",lid);    
     char* cpname = buf;
-    UT_Bool is_default;
+    bool is_default;
     const char* ret = search_map(MSCodepagename_to_charset_name_map,cpname,&is_default);
     return is_default ? cpname : ret;
 };
 
 const char* XAP_EncodingManager::CodepageFromCharset(char *charset) const
 {
-    UT_Bool is_default;
+    bool is_default;
     const char* ret = search_map(charset_name_to_MSCodepagename_map,charset,&is_default);
     UT_DEBUGMSG(("Belcon:in XAP_EncodingManager::CodepageFromCharset,charset=%s,ret=%s,is_default=%d\n",charset,ret,is_default));
     return is_default ? charset : ret;
@@ -870,7 +870,7 @@ const char* XAP_EncodingManager::CodepageFromCharset(char *charset) const
 const char* XAP_EncodingManager::WindowsCharsetName() const
 {
     char* cpname = wvLIDToCodePageConverter(getWinLanguageCode());
-    UT_Bool is_default;
+    bool is_default;
     const char* ret = search_map(MSCodepagename_to_charset_name_map,cpname,&is_default);
     return is_default ? cpname : ret;
 };

@@ -38,7 +38,7 @@
 /****************************************************************/
 /****************************************************************/
 
-UT_Bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
+bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 												  pf_Frag_Object * pfo, UT_uint32 fragOffset,
 												  PT_DocPosition dpos,
 												  UT_uint32 length,
@@ -56,7 +56,7 @@ UT_Bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 	
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
-	UT_Bool bMerged;
+	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
@@ -64,7 +64,7 @@ UT_Bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 	{
 		SETP(ppfNewEnd, pfo->getNext());
 		SETP(pfragOffsetNewEnd, 0);
-		return UT_TRUE;
+		return true;
 	}
 
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pfo) + fragOffset;
@@ -87,10 +87,10 @@ UT_Bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_fmtChangeObject(pf_Frag_Object * pfo,
+bool pt_PieceTable::_fmtChangeObject(pf_Frag_Object * pfo,
 										PT_AttrPropIndex indexNewAP,
 										pf_Frag ** ppfNewEnd,
 										UT_uint32 * pfragOffsetNewEnd)
@@ -101,7 +101,7 @@ UT_Bool pt_PieceTable::_fmtChangeObject(pf_Frag_Object * pfo,
     //    if (pfo->getField()) pfo->getField()->update();
 	SETP(ppfNewEnd, pfo->getNext());
 	SETP(pfragOffsetNewEnd, 0);
-	return UT_TRUE;
+	return true;
 }
 
 

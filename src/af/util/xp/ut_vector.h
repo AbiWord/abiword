@@ -63,7 +63,7 @@ public:
 	void		clear();
 	void		qsort(int (*compar)(const void *, const void *));
 
-	UT_Bool		copy(UT_Vector *pVec);
+	bool		copy(UT_Vector *pVec);
 
 protected:
 	UT_sint32		grow(UT_uint32);
@@ -136,7 +136,7 @@ class UT_Vector
 	void		clear();
 	void		qsort(int (*compar)(const void *, const void *));
 
-	UT_Bool		copy(UT_Vector *pVec);
+	bool		copy(UT_Vector *pVec);
  private:
 	vector<void *>  m_STLVec;
 

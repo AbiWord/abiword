@@ -43,7 +43,7 @@ public:
 	XAP_QNXApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_QNXApp(void);
 
-	virtual UT_Bool							initialize(void);
+	virtual bool							initialize(void);
 	virtual XAP_Frame * 					newFrame(void) = 0;
 	virtual void							reallyExit(void);
 
@@ -52,13 +52,13 @@ public:
 	virtual const XAP_StringSet *			getStringSet(void) const = 0;
 	virtual const char *					getAbiSuiteAppDir(void) const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
-	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard) = 0;
-	virtual UT_Bool							canPasteFromClipboard(void) = 0;
+	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard) = 0;
+	virtual bool							canPasteFromClipboard(void) = 0;
 	virtual const char *					getUserPrivateDirectory(void);
 
 	virtual void							setSelectionStatus(AV_View * pView) = 0;
 	virtual void							clearSelection(void) = 0;
-	virtual UT_Bool							getCurrentSelection(const char** formatList,
+	virtual bool							getCurrentSelection(const char** formatList,
 																void ** ppData, UT_uint32 * pLen,
 																const char **pszFormatFound) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
@@ -87,7 +87,7 @@ public:
 	unsigned int					getTimeOfLastEvent(void) const { return m_eventTime; };
 	
 protected:
-	UT_Bool							_loadFonts(void);
+	bool							_loadFonts(void);
 	void							_setAbiSuiteLibDir(void);
 
 	AP_QNXToolbar_Icons *			m_pQNXToolbarIcons;

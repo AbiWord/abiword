@@ -65,9 +65,9 @@ protected:
 	PtWidget_t *					m_mainWindow;
 	GR_QNXGraphics *				m_pPreviewWidget;
 
-	UT_Bool                         m_bDestroy_says_stopupdating;
-	UT_Bool                         m_bAutoUpdate_happening_now;
-	UT_Bool                         m_bisCustomFrameHidden;
+	bool                         m_bDestroy_says_stopupdating;
+	bool                         m_bAutoUpdate_happening_now;
+	bool                         m_bisCustomFrameHidden;
 	UT_Timer *                      m_pAutoUpdateLists;
 
 	//List things ...

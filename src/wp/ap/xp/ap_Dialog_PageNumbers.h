@@ -51,8 +51,8 @@ class AP_Dialog_PageNumbers : public XAP_Dialog_NonPersistent
 	AP_Dialog_PageNumbers::tAlign   getAlignment(void);
 	AP_Dialog_PageNumbers::tAnswer  getAnswer(void);
 
-	UT_Bool  isHeader(void);
-	UT_Bool  isFooter(void);
+	bool  isHeader(void);
+	bool  isFooter(void);
 
  protected:
 

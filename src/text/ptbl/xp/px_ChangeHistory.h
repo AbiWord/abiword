@@ -55,23 +55,23 @@ public:
 	// didRedo -- increment the current position (to compensate for
 	//            having just performed the redo).
 	
-	UT_Bool					addChangeRecord(PX_ChangeRecord * pcr);
-	UT_Bool					canDo(UT_Bool bUndo) const;
+	bool					addChangeRecord(PX_ChangeRecord * pcr);
+	bool					canDo(bool bUndo) const;
 	
 	void					setSavePosition(UT_sint32 savePosition);
 	UT_sint32				getSavePosition(void) const;
 
 	UT_uint32                               getUndoPos(void);
 
-	UT_Bool					getUndo(PX_ChangeRecord ** ppcr) const;
-	UT_Bool					getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const;
-	UT_Bool					getRedo(PX_ChangeRecord ** ppcr) const;
-	UT_Bool					didUndo(void);
-	UT_Bool					didRedo(void);
+	bool					getUndo(PX_ChangeRecord ** ppcr) const;
+	bool					getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const;
+	bool					getRedo(PX_ChangeRecord ** ppcr) const;
+	bool					didUndo(void);
+	bool					didRedo(void);
 	void					coalesceHistory(const PX_ChangeRecord * pcr);
 
 	void					setClean(void);
-	UT_Bool					isDirty(void) const;
+	bool					isDirty(void) const;
 
 protected:
 	void					_invalidateRedo(void);

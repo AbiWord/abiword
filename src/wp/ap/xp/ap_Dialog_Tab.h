@@ -66,7 +66,7 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
  protected:
 
 	// to enable/disable a control
-	virtual void _controlEnable( tControl id, UT_Bool value )=0;
+	virtual void _controlEnable( tControl id, bool value )=0;
 
 	// disable controls appropriately
 	void _initEnableControls();

@@ -133,7 +133,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		{
 			if((UT_stricmp(lf.lfFaceName,m_pFontFamily) != 0))
 			{
-				m_bChangedFontFamily = UT_TRUE;
+				m_bChangedFontFamily = true;
 				setFontFamily(lf.lfFaceName);
 			}
 		}
@@ -141,13 +141,13 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		{
 			if(lf.lfFaceName[0])
 			{
-				m_bChangedFontFamily = UT_TRUE;
+				m_bChangedFontFamily = true;
 				setFontFamily(lf.lfFaceName);
 			}
 		}
 
-		UT_Bool bIsSizeValid = ((cf.Flags & CF_NOSIZESEL) == 0);
-		UT_Bool bWasSizeValid = (m_pFontSize && *m_pFontSize);
+		bool bIsSizeValid = ((cf.Flags & CF_NOSIZESEL) == 0);
+		bool bWasSizeValid = (m_pFontSize && *m_pFontSize);
 		char bufSize[10];
 		if (bIsSizeValid)
 			sprintf(bufSize,"%dpt",(cf.iPointSize/10));
@@ -160,45 +160,45 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		}
 		else
 		{
-			m_bChangedFontSize = UT_TRUE;
+			m_bChangedFontSize = true;
 			setFontSize(bufSize);
 		}
 
-		UT_Bool bIsBold = ((cf.nFontType & BOLD_FONTTYPE) != 0);
-		UT_Bool bWasBold = (m_pFontWeight && *m_pFontWeight && (UT_stricmp(m_pFontWeight,"bold") == 0));
-		UT_Bool bIsNormal = ((cf.nFontType & REGULAR_FONTTYPE) != 0);
-		UT_Bool bWasNormal = (!m_pFontWeight
+		bool bIsBold = ((cf.nFontType & BOLD_FONTTYPE) != 0);
+		bool bWasBold = (m_pFontWeight && *m_pFontWeight && (UT_stricmp(m_pFontWeight,"bold") == 0));
+		bool bIsNormal = ((cf.nFontType & REGULAR_FONTTYPE) != 0);
+		bool bWasNormal = (!m_pFontWeight
 							  || !*m_pFontWeight
 							  || (UT_stricmp(m_pFontWeight,"normal") != 0));
 		if ((bIsBold != bWasBold) || (bIsNormal != bWasNormal))
 		{
-			m_bChangedFontWeight = UT_TRUE;
+			m_bChangedFontWeight = true;
 			setFontWeight((bIsBold) ? "bold" : "normal");
 		}
 
-		UT_Bool bIsItalic = ((cf.nFontType & ITALIC_FONTTYPE) != 0);
-		UT_Bool bWasItalic = (m_pFontStyle && *m_pFontStyle && (UT_stricmp(m_pFontStyle,"italic") == 0));
+		bool bIsItalic = ((cf.nFontType & ITALIC_FONTTYPE) != 0);
+		bool bWasItalic = (m_pFontStyle && *m_pFontStyle && (UT_stricmp(m_pFontStyle,"italic") == 0));
 		if (bIsItalic != bWasItalic)
 		{
-			m_bChangedFontStyle = UT_TRUE;
+			m_bChangedFontStyle = true;
 			setFontStyle((bIsItalic) ? "italic" : "normal");
 		}
 
 		char bufColor[10];
 		sprintf(bufColor,"%02x%02x%02x",GetRValue(cf.rgbColors),
 				GetGValue(cf.rgbColors),GetBValue(cf.rgbColors));
-		UT_Bool bWasColorValid = (m_pColor && *m_pColor);
+		bool bWasColorValid = (m_pColor && *m_pColor);
 		if (   (bWasColorValid && (UT_stricmp(bufColor,m_pColor) != 0))
 			|| (!bWasColorValid && (UT_stricmp(bufColor,"000000") != 0)))
 		{
-			m_bChangedColor = UT_TRUE;
+			m_bChangedColor = true;
 			setColor(bufColor);
 		}
 
 		m_bChangedUnderline = (lf.lfUnderline != m_bUnderline);
 		m_bChangedStrikeOut = (lf.lfStrikeOut != m_bStrikeOut);
 		if (m_bChangedUnderline || m_bChangedStrikeOut)
-			setFontDecoration(lf.lfUnderline,UT_FALSE,lf.lfStrikeOut);
+			setFontDecoration(lf.lfUnderline,false,lf.lfStrikeOut);
 	}
 	
 	UT_DEBUGMSG(("FontChooserEnd: Family[%s%s] Size[%s%s] Weight[%s%s] Style[%s%s] Color[%s%s] Underline[%d%s] StrikeOut[%d%s]\n",

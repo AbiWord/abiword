@@ -61,14 +61,14 @@ EV_QNXToolbar::~EV_QNXToolbar(void)
 	_releaseListener();
 }
 
-UT_Bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id, 
+bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id, 
 				 					UT_UCSChar * pData,
 				 					UT_uint32 dataLength)
 
 {
 	// user selected something from this toolbar.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 	
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pQNXApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -94,13 +94,13 @@ UT_Bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 		{
 			//We clicked a button which was already down, make it not happen
 			refreshToolbar(pView, AV_CHG_ALL);
-			return UT_TRUE;
+			return true;
 		}
 	}
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
-		return UT_FALSE;
+		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pQNXApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
@@ -109,7 +109,7 @@ UT_Bool EV_QNXToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	invokeToolbarMethod(pView,pEM,pData,dataLength);
-	return UT_TRUE;
+	return true;
 }
 
 struct _cb_data {
@@ -141,7 +141,7 @@ int but_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 }
 
 
-UT_Bool EV_QNXToolbar::synthesize(void)
+bool EV_QNXToolbar::synthesize(void)
 {
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pQNXApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -434,7 +434,7 @@ UT_Bool EV_QNXToolbar::synthesize(void)
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 void EV_QNXToolbar::_releaseListener(void)
@@ -446,23 +446,23 @@ void EV_QNXToolbar::_releaseListener(void)
 	m_lid = 0;
 }
 	
-UT_Bool EV_QNXToolbar::bindListenerToView(AV_View * pView)
+bool EV_QNXToolbar::bindListenerToView(AV_View * pView)
 {
 	_releaseListener();
 	
 	m_pViewListener = new EV_QNXToolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-	UT_Bool bResult;
+	bool bResult;
 	bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 
 	refreshToolbar(pView, AV_CHG_ALL);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
+bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
 	PtArg_t args[10];
     struct _cb_data *tcb;       //Toolbar item call back
@@ -501,7 +501,7 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				{
 				case EV_TBIT_PushButton:
 				{
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
 					tcb = (struct _cb_data *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(tcb);
@@ -525,8 +525,8 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				case EV_TBIT_ToggleButton:
 				case EV_TBIT_GroupButton:
 				{
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
 					tcb = (struct _cb_data *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(tcb);
@@ -561,7 +561,7 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					break;
 				case EV_TBIT_ComboBox:
 				{
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					int     top = 1;
 					
 					tcb = (struct _cb_data *) m_vecToolbarWidgets.getNthItem(k);
@@ -622,7 +622,7 @@ UT_Bool EV_QNXToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 			break;
 		}
 	}
-	return UT_TRUE;
+	return true;
 }
 
 XAP_QNXApp * EV_QNXToolbar::getApp(void)

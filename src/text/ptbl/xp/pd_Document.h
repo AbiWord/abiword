@@ -65,11 +65,11 @@ public:
 
 	virtual UT_Error	       	readFromFile(const char * szFilename, int ieft);
 	virtual UT_Error	       	newDocument(void);
-	virtual UT_Bool			isDirty(void) const;
+	virtual bool			isDirty(void) const;
 
-	virtual UT_Bool			canDo(UT_Bool bUndo) const;
-	virtual UT_Bool			undoCmd(UT_uint32 repeatCount);
-	virtual UT_Bool			redoCmd(UT_uint32 repeatCount);
+	virtual bool			canDo(bool bUndo) const;
+	virtual bool			undoCmd(UT_uint32 repeatCount);
+	virtual bool			redoCmd(UT_uint32 repeatCount);
 
 	UT_Error   				saveAs(const char * szFilename, int ieft);
 	UT_Error	       			save(void);
@@ -77,33 +77,33 @@ public:
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
 	
-	UT_Bool					insertObject(PT_DocPosition dpos,
+	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
 										 const XML_Char ** properties);
-	UT_Bool					insertObject(PT_DocPosition dpos,
+	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
 										 const XML_Char ** properties, fd_Field ** pField );
 
-	UT_Bool					insertSpan(PT_DocPosition dpos,
+	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
 									   UT_uint32 length,
 									   PP_AttrProp *p_AttrProp = NULL);
-	UT_Bool					deleteSpan(PT_DocPosition dpos1,
+	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before = NULL);
 
-	UT_Bool					changeSpanFmt(PTChangeFmt ptc,
+	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,
 										  const XML_Char ** attributes,
 										  const XML_Char ** properties);
 
-	UT_Bool					insertStrux(PT_DocPosition dpos,
+	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts);
 
-	UT_Bool					changeStruxFmt(PTChangeFmt ptc,
+	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
 										   const XML_Char ** attributes,
@@ -114,105 +114,105 @@ public:
 	// the append- methods are only available while importing
 	// the document.
 
-	UT_Bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
-	UT_Bool					appendFmt(const XML_Char ** attributes);
-	UT_Bool					appendFmt(const UT_Vector * pVecAttributes);
-	UT_Bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
-	UT_Bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
-	UT_Bool					appendStyle(const XML_Char ** attributes);
+	bool					appendStrux(PTStruxType pts, const XML_Char ** attributes);
+	bool					appendFmt(const XML_Char ** attributes);
+	bool					appendFmt(const UT_Vector * pVecAttributes);
+	bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
+	bool					appendObject(PTObjectType pto, const XML_Char ** attributes);
+	bool					appendStyle(const XML_Char ** attributes);
 	
-	UT_Bool					tellListener(PL_Listener * pListener);
-	UT_Bool					tellListenerSubset(PL_Listener * pListener,
+	bool					tellListener(PL_Listener * pListener);
+	bool					tellListenerSubset(PL_Listener * pListener,
 											   PD_DocumentRange * pDocRange);
-	UT_Bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
-	UT_Bool					removeListener(PL_ListenerId listenerId);
-	UT_Bool					signalListeners(UT_uint32 iSignal) const;
-	UT_Bool					notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const;
-	UT_Bool					notifyListeners(pf_Frag_Strux * pfs,
+	bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
+	bool					removeListener(PL_ListenerId listenerId);
+	bool					signalListeners(UT_uint32 iSignal) const;
+	bool					notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const;
+	bool					notifyListeners(pf_Frag_Strux * pfs,
 											pf_Frag_Strux * pfsNew,
 											const PX_ChangeRecord * pcr) const;
 
-	UT_Bool					getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const;
-	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, UT_Bool bLeftSide,
+	bool					getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const;
+	bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
 	const UT_UCSChar *		getPointer(PT_BufIndex bi) const; /* see warning on this function */
-	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
+	bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
-	UT_Bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
+	bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
 
-	UT_Bool					getBounds(UT_Bool bEnd, PT_DocPosition & docPos) const;
+	bool					getBounds(bool bEnd, PT_DocPosition & docPos) const;
 	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
-	UT_Bool					getStruxFromPosition(PL_ListenerId listenerId,
+	bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,
 												 PL_StruxFmtHandle * psfh) const;
-	UT_Bool					getStruxOfTypeFromPosition(PL_ListenerId listenerId,
+	bool					getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 													   PT_DocPosition docPos,
 													   PTStruxType pts,
 													   PL_StruxFmtHandle * psfh) const;
-        UT_Bool                                 getStruxOfTypeFromPosition(PT_DocPosition, PTStruxType pts, PL_StruxDocHandle * sdh) const;
+        bool                                 getStruxOfTypeFromPosition(PT_DocPosition, PTStruxType pts, PL_StruxDocHandle * sdh) const;
 
-UT_Bool getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+bool getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * nextsdh);
 
-UT_Bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+bool getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * prevsdh);
 
 	// data items
 
-	UT_Bool					createDataItem(const char * szName, UT_Bool bBase64, const UT_ByteBuf * pByteBuf,
+	bool					createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
 										   void* pToken, void ** ppHandle);
-	UT_Bool					getDataItemDataByName(const char * szName,
+	bool					getDataItemDataByName(const char * szName,
 												  const UT_ByteBuf ** ppByteBuf, void** ppToken, void ** ppHandle) const;
-	UT_Bool					setDataItemToken(void* pHandle, void* pToken);
-	UT_Bool					getDataItemData(void * pHandle,
+	bool					setDataItemToken(void* pHandle, void* pToken);
+	bool					getDataItemData(void * pHandle,
 											const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
-	UT_Bool					enumDataItems(UT_uint32 k,
+	bool					enumDataItems(UT_uint32 k,
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	
 	// styles
 
-	UT_Bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
-	UT_Bool					enumStyles(UT_uint32 k,
+	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
+	bool					enumStyles(UT_uint32 k,
 										  const char ** pszName, const PD_Style ** ppStyle) const;
 
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 
 	const char *                            getFileName() { return m_szFilename; }
 	UT_uint32                               getLastType() { return m_lastSavedAsType; }
-        UT_Bool                 updateFields(void);
-        UT_Bool                 getField(PL_StruxDocHandle sdh, 
+        bool                 updateFields(void);
+        bool                 getField(PL_StruxDocHandle sdh, 
 					 UT_uint32 offset,
                                      fd_Field * &pField);
 	void                    setDontChangeInsPoint(void);
 	void                    allowChangeInsPoint(void);
-	UT_Bool                 isPieceTableChanging(void);
+	bool                 isPieceTableChanging(void);
         void                    notifyPieceTableChangeStart(void);
         void                    notifyPieceTableChangeEnd(void);
 	
 	// List Functions
 	fl_AutoNum *    getListByID(UT_uint32 id) const;
 	fl_AutoNum *    getNthList(UT_uint32 i) const; 
-	UT_Bool		enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
+	bool		enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
 	UT_uint32       getListsCount(void) const; 
 	void            addList(fl_AutoNum * pAutoNum);
-	UT_Bool		appendList(const XML_Char ** attributes);
-	UT_Bool		fixListHierarchy(void);
+	bool		appendList(const XML_Char ** attributes);
+	bool		fixListHierarchy(void);
 	void	 	removeList(fl_AutoNum * pAutoNum,PL_StruxDocHandle sdh );
 	void            listUpdate(PL_StruxDocHandle sdh);
 	void            StopList(PL_StruxDocHandle sdh);
 	void            disableListUpdates(void);
 	void            enableListUpdates(void);
 	void            updateDirtyLists(void);
-	UT_Bool         areListUpdatesAllowed(void);
+	bool         areListUpdatesAllowed(void);
 
 	void            setDoingPaste(void);
 	void            clearDoingPaste(void);
-	UT_Bool         isDoingPaste(void);
+	bool         isDoingPaste(void);
 	
 	fp_PageSize     m_docPageSize;
 	void            setDefaultPageSize(void);
 	const char *    getDefaultPageSize(void);
-	UT_Bool		setPageSizeFromFile(const XML_Char ** attributes);
+	bool		setPageSizeFromFile(const XML_Char ** attributes);
 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
@@ -223,7 +223,7 @@ protected:
 
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
-	UT_Bool                                 m_ballowListUpdates;
+	bool                                 m_ballowListUpdates;
 	pt_PieceTable *			        m_pPieceTable;
 	UT_Vector				m_vecListeners;
 	UT_Vector				m_vecLists;
@@ -231,8 +231,8 @@ protected:
 	UT_AlphaHashTable		        m_hashDataItems;
 
 	IEFileType				m_lastSavedAsType;
-	UT_Bool                                 m_bPieceTableChanging;
-	UT_Bool                                 m_bDoingPaste;
+	bool                                 m_bPieceTableChanging;
+	bool                                 m_bDoingPaste;
 };
 
 

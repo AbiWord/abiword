@@ -31,7 +31,7 @@
 
 /*****************************************************************/
 
-UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
+bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 				   UT_uint32 maxHeight,
 				   const char ** pIconData,
 				   UT_uint32 sizeofData,
@@ -74,7 +74,7 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 
 	UT_Byte * pInfo = (UT_Byte *)calloc(1,sizeofStructure);
 	if (!pInfo)
-		return UT_FALSE;
+		return false;
 
 	BITMAPINFO * pbmi = (BITMAPINFO *)pInfo;
 	BITMAPINFOHEADER * pbmih = &pbmi->bmiHeader;

@@ -156,29 +156,29 @@ void AP_Dialog_Tab::_populateWindowData(void)
 void AP_Dialog_Tab::_initEnableControls()
 {
 	// alignment
-	_controlEnable( id_ALIGN_BAR,			UT_FALSE );
+	_controlEnable( id_ALIGN_BAR,			false );
 
 	// leaders
-	_controlEnable( id_LEADER_NONE,			UT_FALSE );
-	_controlEnable( id_LEADER_DOT,			UT_FALSE );
-	_controlEnable( id_LEADER_DASH,			UT_FALSE );
-	_controlEnable( id_LEADER_UNDERLINE,	UT_FALSE );
+	_controlEnable( id_LEADER_NONE,			false );
+	_controlEnable( id_LEADER_DOT,			false );
+	_controlEnable( id_LEADER_DASH,			false );
+	_controlEnable( id_LEADER_UNDERLINE,	false );
 
 	// buttons
-	_controlEnable( id_BUTTON_SET,			UT_FALSE );
-	_controlEnable( id_BUTTON_CLEAR,		UT_FALSE );
+	_controlEnable( id_BUTTON_SET,			false );
+	_controlEnable( id_BUTTON_CLEAR,		false );
 
-	_controlEnable( id_BUTTON_CLEAR_ALL,	m_tabInfo.getItemCount() == 0 ? UT_FALSE : UT_TRUE );
+	_controlEnable( id_BUTTON_CLEAR_ALL,	m_tabInfo.getItemCount() == 0 ? false : true );
 }
 
 void AP_Dialog_Tab::_event_TabChange(void)
 {
-	_controlEnable(id_BUTTON_SET, UT_TRUE);
+	_controlEnable(id_BUTTON_SET, true);
 }
 
 void AP_Dialog_Tab::_event_AlignmentChange(void)
 {
-	_controlEnable(id_BUTTON_SET, UT_TRUE);
+	_controlEnable(id_BUTTON_SET, true);
 }
 
 
@@ -432,13 +432,13 @@ void AP_Dialog_Tab::_event_somethingChanged()
 	UT_DEBUGMSG(("AP_Dialog_Tab::_event_somethingChanged  [%s]\n", buffer ));
 
 	// check to see if the current tab is in the list
-	UT_Bool bEnableClear = UT_FALSE;
-	UT_Bool bEnableSet   = UT_TRUE;		// only disabled if current selection exactly matches current ones
+	bool bEnableClear = false;
+	bool bEnableSet   = true;		// only disabled if current selection exactly matches current ones
 										// or there are no items in the list.
 
 	if(m_tabInfo.getItemCount() == 0)
 	{
-		bEnableSet = UT_FALSE;
+		bEnableSet = false;
 	}
 
 	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
@@ -449,12 +449,12 @@ void AP_Dialog_Tab::_event_somethingChanged()
 		// if we have a tab at that unit
 		if ( !strcmp(buffer, _getTabString(pTabInfo)) )
 		{
-			bEnableClear = UT_TRUE;
+			bEnableClear = true;
 
 			// if everything is the same, disable the set
 			if ( pTabInfo->getType() == _gatherAlignment() &&
 			     pTabInfo->getLeader() == _gatherLeader() )
-				bEnableSet = UT_FALSE;
+				bEnableSet = false;
 
 		}
 	}
@@ -462,7 +462,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 	_controlEnable( id_BUTTON_SET, bEnableSet );
 	_controlEnable( id_BUTTON_CLEAR, bEnableClear );
 
-	_controlEnable( id_BUTTON_CLEAR_ALL,	m_tabInfo.getItemCount() == 0 ? UT_FALSE : UT_TRUE );
+	_controlEnable( id_BUTTON_CLEAR_ALL,	m_tabInfo.getItemCount() == 0 ? false : true );
 
 }
 

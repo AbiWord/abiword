@@ -36,26 +36,26 @@
 class fp_TextRun : public fp_Run
 {
  public:
-	fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, bool bLookupProperties=true);
 	virtual ~fp_TextRun();
 
 	virtual void			lookupProperties(void);
-	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
-	virtual UT_Bool			canBreakAfter(void) const;
-	virtual UT_Bool			canBreakBefore(void) const;
-	virtual UT_Bool			alwaysFits(void) const;
-	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			alwaysFits(void) const;
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
 	
-	UT_Bool					split(UT_uint32 iSplitOffset);
+	bool					split(UT_uint32 iSplitOffset);
 
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
-	virtual UT_Bool			recalcWidth(void);
+	virtual bool			recalcWidth(void);
 
-	UT_Bool					canMergeWithNext(void);
+	bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
 
 	enum
@@ -73,16 +73,16 @@ class fp_TextRun : public fp_Run
 	void					distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
 	UT_uint32				countJustificationPoints() const;
 
-	UT_Bool					getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const;
+	bool					getCharacter(UT_uint32 run_offset, UT_UCSChar &Character) const;
 	UT_sint32				findCharacter(UT_uint32 startPosition, UT_UCSChar Character) const;
-	UT_Bool					isFirstCharacter(UT_UCSChar Character) const;
-	UT_Bool					isLastCharacter(UT_UCSChar Character) const;
-	virtual UT_Bool			doesContainNonBlankData(void) const;
-	inline virtual UT_Bool	isSuperscript(void) const;
-	inline virtual UT_Bool	isSubscript(void) const;
-	inline virtual UT_Bool	isUnderline(void) const;
-	inline virtual UT_Bool	isOverline(void) const;
-	inline virtual UT_Bool	isStrikethrough(void) const;
+	bool					isFirstCharacter(UT_UCSChar Character) const;
+	bool					isLastCharacter(UT_UCSChar Character) const;
+	virtual bool			doesContainNonBlankData(void) const;
+	inline virtual bool	isSuperscript(void) const;
+	inline virtual bool	isSubscript(void) const;
+	inline virtual bool	isUnderline(void) const;
+	inline virtual bool	isOverline(void) const;
+	inline virtual bool	isStrikethrough(void) const;
 	virtual void			setLinethickness(UT_sint32 max_linethickness);
 	virtual UT_sint32                       getLinethickness(void);
 	virtual void                            setUnderlineXoff(UT_sint32 xoff);
@@ -94,7 +94,7 @@ class fp_TextRun : public fp_Run
 	virtual void                            setMinOverline(UT_sint32 xoff);
 	virtual UT_sint32                       getMinOverline(void);
 	UT_uint32				countTrailingSpaces(void) const;
-    UT_Bool                 canContainPoint(void) const;
+    bool                 canContainPoint(void) const;
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif	
@@ -102,7 +102,7 @@ class fp_TextRun : public fp_Run
 protected:
 	void					_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths);
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
+	virtual void       		_clearScreen(bool bFullLineHeightRect);
 	
 	void					_drawDecors(UT_sint32, UT_sint32);
     void                    _drawInvisibleSpaces(UT_sint32, UT_sint32);
@@ -157,7 +157,7 @@ protected:
 	GR_Font*				m_pFont;
 	GR_Font*				m_pFontLayout;
 	UT_RGBColor				m_colorFG;
-	UT_Bool					m_bSquiggled;
+	bool					m_bSquiggled;
 
 	enum
 	{

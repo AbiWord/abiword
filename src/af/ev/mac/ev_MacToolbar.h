@@ -50,15 +50,15 @@ public:
 	
 	virtual ~EV_MacToolbar(void);
 
-	UT_Bool toolbarEvent(XAP_Toolbar_Id id,
+	bool toolbarEvent(XAP_Toolbar_Id id,
 						 UT_UCSChar * pData = 0,
 						 UT_uint32 dataLength = 0);
-	virtual UT_Bool synthesize(void);
-	UT_Bool bindListenerToView(AV_View * pView);
-	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
+	virtual bool synthesize(void);
+	bool bindListenerToView(AV_View * pView);
+	bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 	
 	WindowPtr getWindow(void) const;
-	UT_Bool getToolTip(long lParam);
+	bool getToolTip(long lParam);
 	
 private:
 	XAP_MacApp *					m_pMacApp;
@@ -70,8 +70,8 @@ private:
 	UT_Vector						m_vecToolbarWidgets;
 	WindowPtr						m_hwnd;
 	
-	UT_Bool _refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id);
-	UT_Bool _refreshID(XAP_Toolbar_Id id);
+	bool _refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id);
+	bool _refreshID(XAP_Toolbar_Id id);
 
 };
 

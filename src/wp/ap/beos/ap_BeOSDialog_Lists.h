@@ -61,8 +61,8 @@ protected:
 	void					_populateWindowData(void);
 	void					_connectSignals(void);
 
-	UT_Bool                         m_bDestroy_says_stopupdating;
-	UT_Bool                         m_bAutoUpdate_happening_now;
+	bool                         m_bDestroy_says_stopupdating;
+	bool                         m_bAutoUpdate_happening_now;
 	UT_Timer *                      m_pAutoUpdateLists;
 
 	GtkWidget *				m_wMainWindow;

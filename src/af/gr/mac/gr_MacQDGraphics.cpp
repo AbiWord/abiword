@@ -58,7 +58,7 @@ UT_uint32 getFontHeight();
 void GR_Font::s_getGenericFontProperties(const char * szFontName,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
-										 UT_Bool * pbTrueType)
+										 bool * pbTrueType)
 {
 	// describe in generic terms the named font.
 
@@ -71,6 +71,6 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 
 	*pff = FF_Unknown;
 	*pfp = FP_Unknown;
-	*pbTrueType = UT_TRUE;
+	*pbTrueType = true;
 }
 

@@ -36,9 +36,9 @@ public:
 	AP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName);
 	virtual ~AP_Win32App(void);
 
-	virtual UT_Bool					initialize(void);
+	virtual bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
-	virtual UT_Bool					shutdown(void);
+	virtual bool					shutdown(void);
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	
 	static int WinMain (const char * szAppName, HINSTANCE hInstance, 

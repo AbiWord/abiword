@@ -37,12 +37,12 @@ public:
 
 	void				initialize(void);
 
-	virtual UT_Bool		clearClipboard(void);
+	virtual bool		clearClipboard(void);
 
-	virtual UT_Bool		addData(const char* format, void* pData, UT_sint32 iNumBytes);
-	virtual UT_Bool		getClipboardData(const char* format, void** ppData, UT_uint32 *pLen);
+	virtual bool		addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	virtual bool		getClipboardData(const char* format, void** ppData, UT_uint32 *pLen);
 
-	virtual UT_Bool		hasFormat(const char *format);
+	virtual bool		hasFormat(const char *format);
 
 protected:
 	XAP_QNXApp 			*m_pQNXApp;

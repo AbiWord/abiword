@@ -32,15 +32,15 @@ XAP_QNXModule::~XAP_QNXModule (void)
 	unload ();
 }
 
-UT_Bool XAP_QNXModule::load (const char * file_name)
+bool XAP_QNXModule::load (const char * file_name)
 {
 	m_module = dlopen(file_name, /* Flags? */ 0);
 	m_szname = new char[strlen(file_name) + 1];
 
-	return (m_module ? UT_TRUE : UT_FALSE);
+	return (m_module ? true : false);
 }
 
-UT_Bool XAP_QNXModule::unload (void)
+bool XAP_QNXModule::unload (void)
 {
 	if (m_module) {
 		dlclose(m_module);
@@ -48,17 +48,17 @@ UT_Bool XAP_QNXModule::unload (void)
 	m_module = NULL;
 }
 
-UT_Bool XAP_QNXModule::getModuleName (char ** dest) const
+bool XAP_QNXModule::getModuleName (char ** dest) const
 {
 	if (m_szname)
 	  {
 	    *dest = (char *)UT_strdup (m_szname);
-	    return UT_TRUE;
+	    return true;
 	  }
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_QNXModule::resolveSymbol (const char * symbol_name, void ** symbol)
+bool XAP_QNXModule::resolveSymbol (const char * symbol_name, void ** symbol)
 {
 	UT_ASSERT(m_module);
 	UT_ASSERT(symbol && symbol_name);
@@ -66,15 +66,15 @@ UT_Bool XAP_QNXModule::resolveSymbol (const char * symbol_name, void ** symbol)
 	if (m_module) {
 		*symbol = dlsym(m_module, symbol_name);
 	}
-	return (*symbol ? UT_TRUE : UT_FALSE);
+	return (*symbol ? true : false);
 }
 
-UT_Bool XAP_QNXModule::getErrorMsg (char ** dest) const
+bool XAP_QNXModule::getErrorMsg (char ** dest) const
 {
   if (m_module)
     {
       *dest = (char *)UT_strdup (dlerror());
-      return UT_TRUE;
+      return true;
     }
-  return UT_FALSE;
+  return false;
 }

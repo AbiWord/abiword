@@ -40,8 +40,8 @@ public:
 						const char * szMenuLabelSetName);
 	virtual ~EV_UnixGnomeMenuBar(void);
 
-	virtual UT_Bool     synthesizeMenuBar(void);
-    UT_Bool             refreshMenu(AV_View * pView);
+	virtual bool     synthesizeMenuBar(void);
+    bool             refreshMenu(AV_View * pView);
 
 protected:
 	GtkWidget *			m_wMenuBar;

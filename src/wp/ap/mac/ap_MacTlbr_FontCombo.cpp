@@ -56,7 +56,7 @@ AP_MacToolbar_FontCombo::~AP_MacToolbar_FontCombo(void)
 	// nothing to purge.  contents are static strings
 }
 
-UT_Bool AP_MacToolbar_FontCombo::populate(void)
+bool AP_MacToolbar_FontCombo::populate(void)
 {
 #if 0	// needs to implement XAP_MacFont and XAP_MacFontManager
 	UT_ASSERT(m_pToolbar);
@@ -98,5 +98,5 @@ UT_Bool AP_MacToolbar_FontCombo::populate(void)
 	}
 #endif
         UT_ASSERT (UT_NOT_IMPLEMENTED);
-	return UT_TRUE;
+	return true;
 }

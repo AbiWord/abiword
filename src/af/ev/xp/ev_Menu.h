@@ -41,7 +41,7 @@ public:
 			const char * szMenuLanguageName);
 	~EV_Menu(void);
 
-	UT_Bool invokeMenuMethod(AV_View * pView,
+	bool invokeMenuMethod(AV_View * pView,
 							 EV_EditMethod * pEM,
 							 UT_UCSChar * pData,
 							 UT_uint32 dataLength);

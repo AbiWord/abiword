@@ -39,7 +39,7 @@ void s_RTF_ListenerGetProps::_closeSection(void)
 	if (!m_bInSection)
 		return;
 	
-	m_bInSection = UT_FALSE;
+	m_bInSection = false;
 	m_apiThisSection = 0;
 
 	return;
@@ -50,7 +50,7 @@ void s_RTF_ListenerGetProps::_closeBlock(void)
 	if (!m_bInBlock)
 		return;
 
-	m_bInBlock = UT_FALSE;
+	m_bInBlock = false;
 	m_apiThisBlock = 0;
 	
 	return;
@@ -61,7 +61,7 @@ void s_RTF_ListenerGetProps::_closeSpan(void)
 	if (!m_bInSpan)
 		return;
 
-	m_bInSpan = UT_FALSE;
+	m_bInSpan = false;
 	return;
 }
 
@@ -84,7 +84,7 @@ void s_RTF_ListenerGetProps::_openSpan(PT_AttrPropIndex apiSpan)
 
 	_compute_span_properties(pSpanAP,pBlockAP,pSectionAP);
 	
-	m_bInSpan = UT_TRUE;
+	m_bInSpan = true;
 	m_apiLastSpan = apiSpan;
 	return;
 }
@@ -99,7 +99,7 @@ void s_RTF_ListenerGetProps::_outputData(const UT_UCSChar * data, UT_uint32 leng
 	{
 		if (*pData > 0x00ff)
 		{
-			m_pie->m_bNeedUnicodeText = UT_TRUE;
+			m_pie->m_bNeedUnicodeText = true;
 			return;
 		}
 	}
@@ -112,9 +112,9 @@ s_RTF_ListenerGetProps::s_RTF_ListenerGetProps(PD_Document * pDocument,
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
-	m_bInSection = UT_FALSE;
-	m_bInBlock = UT_FALSE;
-	m_bInSpan = UT_FALSE;
+	m_bInSection = false;
+	m_bInBlock = false;
+	m_bInSpan = false;
 	m_apiLastSpan = 0;
 	m_apiThisSection = 0;
 	m_apiThisBlock = 0;
@@ -127,7 +127,7 @@ s_RTF_ListenerGetProps::~s_RTF_ListenerGetProps()
 	_closeSection();
 }
 
-UT_Bool s_RTF_ListenerGetProps::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerGetProps::populate(PL_StruxFmtHandle /*sfh*/,
 										 const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -142,7 +142,7 @@ UT_Bool s_RTF_ListenerGetProps::populate(PL_StruxFmtHandle /*sfh*/,
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
 
-			return UT_TRUE;
+			return true;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -155,30 +155,30 @@ UT_Bool s_RTF_ListenerGetProps::populate(PL_StruxFmtHandle /*sfh*/,
 			case PTO_Image:
 				_closeSpan();
 				_openTag("image",api);
-				return UT_TRUE;
+				return true;
 
 			case PTO_Field:
 				_closeSpan();
 				_openTag("field",api);
-				return UT_TRUE;
+				return true;
 
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 			}
 #endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return UT_TRUE;
+		return true;
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 											  const PX_ChangeRecord * pcr,
 											  PL_StruxFmtHandle * psfh)
 {
@@ -193,34 +193,34 @@ UT_Bool s_RTF_ListenerGetProps::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeSpan();
 			_closeBlock();
 			_closeSection();
-			m_bInSection = UT_TRUE;
+			m_bInSection = true;
 			m_apiThisSection = pcr->getIndexAP();
-			return UT_TRUE;
+			return true;
 		}
 
 	case PTX_Block:
 		{
 			_closeSpan();
 			_closeBlock();
-			m_bInBlock = UT_TRUE;
+			m_bInBlock = true;
 			m_apiThisBlock = pcr->getIndexAP();
-			return UT_TRUE;
+			return true;
 		}
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_RTF_ListenerGetProps::change(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerGetProps::change(PL_StruxFmtHandle /*sfh*/,
 									   const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_RTF_ListenerGetProps::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerGetProps::insertStrux(PL_StruxFmtHandle /*sfh*/,
 										  const PX_ChangeRecord * /*pcr*/,
 										  PL_StruxDocHandle /*sdh*/,
 										  PL_ListenerId /* lid */,
@@ -229,13 +229,13 @@ UT_Bool s_RTF_ListenerGetProps::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																	  PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);	// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_RTF_ListenerGetProps::signal(UT_uint32 /* iSignal */)
+bool s_RTF_ListenerGetProps::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanAP,
@@ -244,7 +244,7 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 {
 	// see if we have a previously unused color reference.
 	
-	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
+	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,true);
 	UT_sint32 ndxColor = m_pie->_findColor((char*)szColor);
 	if (ndxColor == -1)
 		m_pie->_addColor((char*)szColor);

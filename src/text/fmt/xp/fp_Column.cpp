@@ -206,26 +206,26 @@ void fp_Container::removeLine(fp_Line* pLine)
  Insert line at the front/top of the container
  \param pNewLine Line
  */
-UT_Bool fp_Container::insertLine(fp_Line* pNewLine)
+bool fp_Container::insertLine(fp_Line* pNewLine)
 {
 	m_vecLines.insertItemAt(pNewLine, 0);
 	pNewLine->setContainer(this);
 	pNewLine->recalcMaxWidth();
 
-	return UT_TRUE;
+	return true;
 }
 
 /*!
  Append line at the end/bottom of the container
  \param pNewLine Line
  */
-UT_Bool fp_Container::addLine(fp_Line* pNewLine)
+bool fp_Container::addLine(fp_Line* pNewLine)
 {
 	m_vecLines.addItem(pNewLine);
 	pNewLine->setContainer(this);
 	pNewLine->recalcMaxWidth();
 
-	return UT_TRUE;
+	return true;
 }
 
 /*!
@@ -237,7 +237,7 @@ UT_Bool fp_Container::addLine(fp_Line* pNewLine)
        should be identified and fixed, and this function should be
        cleaned up.
  */
-UT_Bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
+bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 {
 	UT_ASSERT(pAfterLine);
 	UT_ASSERT(pNewLine);
@@ -265,14 +265,14 @@ UT_Bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 	pNewLine->setContainer(this);
 	pNewLine->recalcMaxWidth();
 
-	return UT_TRUE;
+	return true;
 }
 
 /*!
   Determine if container is empty
  \return True if container is empty, otherwise false.
  */
-UT_Bool fp_Container::isEmpty(void) const
+bool fp_Container::isEmpty(void) const
 {
 	return (m_vecLines.getItemCount() == 0);
 }
@@ -349,7 +349,7 @@ void fp_Container::draw(dg_DrawArgs* pDA)
  \retval bEOL True if position is at end of line, otherwise false
  */
 void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
-							  UT_Bool& bBOL, UT_Bool& bEOL)
+							  bool& bBOL, bool& bEOL)
 {
 	int count = m_vecLines.getItemCount();
 
@@ -366,8 +366,8 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 			{
 				pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
 
-				UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-				UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+				UT_ASSERT(bEOL == true || bEOL == false);
+				UT_ASSERT(bBOL == true || bBOL == false);
 				
 				return;
 			}
@@ -398,8 +398,8 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 						pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
 					}
 
-					UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-					UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+					UT_ASSERT(bEOL == true || bEOL == false);
+					UT_ASSERT(bBOL == true || bBOL == false);
 
 					return;
 				}
@@ -411,8 +411,8 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 		{
 			pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
 
-			UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-			UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+			UT_ASSERT(bEOL == true || bEOL == false);
+			UT_ASSERT(bBOL == true || bBOL == false);
 			
 			return;
 		}
@@ -421,8 +421,8 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 		{
 			pLine->mapXYToPosition(x - pLine->getX(), y - pLine->getY(), pos, bBOL, bEOL);
 
-			UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-			UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+			UT_ASSERT(bEOL == true || bEOL == false);
+			UT_ASSERT(bBOL == true || bBOL == false);
 			
 			return;
 		}

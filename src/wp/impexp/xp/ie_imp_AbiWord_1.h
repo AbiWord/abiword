@@ -41,21 +41,21 @@ public:
 
     virtual UT_Error	importFile(const char * szFilename);
 
-    static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-    static UT_Bool		RecognizeSuffix(const char * szSuffix);
+    static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
+    static bool		RecognizeSuffix(const char * szSuffix);
     static UT_Error		StaticConstructor(PD_Document * pDocument,
 	    IE_Imp ** ppie);
-    static UT_Bool		GetDlgLabels(const char ** pszDesc,
+    static bool		GetDlgLabels(const char ** pszDesc,
 	    const char ** pszSuffixList,
 	    IEFileType * ft);
-    static UT_Bool 		SupportsFileType(IEFileType ft);
+    static bool 		SupportsFileType(IEFileType ft);
 	
 protected:
     const XML_Char *	_getDataItemName(const XML_Char ** atts);
     const XML_Char *	_getDataItemMimeType(const XML_Char ** atts);
-    UT_Bool		_getDataItemEncoded(const XML_Char ** atts);
-    UT_Bool			m_bDocHasLists;
-    UT_Bool			m_bDocHasPageSize;
+    bool		_getDataItemEncoded(const XML_Char ** atts);
+    bool			m_bDocHasLists;
+    bool			m_bDocHasPageSize;
 };
 
 #endif /* IE_IMP_ABIWORD_1_H */

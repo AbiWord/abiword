@@ -148,7 +148,7 @@ UT_uint32 AP_LeftRuler::getWidth(void) const
 
 /*****************************************************************/
 
-static UT_Bool s_IsOnDifferentPage(const AP_LeftRulerInfo * p1, const AP_LeftRulerInfo * p2)
+static bool s_IsOnDifferentPage(const AP_LeftRulerInfo * p1, const AP_LeftRulerInfo * p2)
 {
 	return (   (p1->m_yPageStart    != p2->m_yPageStart)
 			|| (p1->m_yPageSize     != p2->m_yPageSize)
@@ -156,7 +156,7 @@ static UT_Bool s_IsOnDifferentPage(const AP_LeftRulerInfo * p1, const AP_LeftRul
 			   || (p1->m_yBottomMargin != p2->m_yBottomMargin));
 }
 	
-UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
+bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	// Handle AV_Listener events on the view.
 
@@ -175,7 +175,7 @@ UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 			draw(NULL,lfi);
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/

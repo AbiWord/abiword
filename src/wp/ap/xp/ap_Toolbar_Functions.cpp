@@ -55,12 +55,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_EDIT_UNDO:
-		if (!pView->canDo(UT_TRUE))
+		if (!pView->canDo(true))
 			s = EV_TIS_Gray;
 		break;
 
 	case AP_TOOLBAR_ID_EDIT_REDO:
-		if (!pView->canDo(UT_FALSE))
+		if (!pView->canDo(false))
 			s = EV_TIS_Gray;
 		break;
 
@@ -167,7 +167,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
 
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
         UT_ASSERT(pBlock);
-	if(pBlock->isListItem() == UT_FALSE)
+	if(pBlock->isListItem() == false)
 	        return s;
 	if(pBlock->getListType() == BULLETED_LIST)
 	        s = EV_TIS_Toggled;
@@ -184,7 +184,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
 
 	fl_BlockLayout * pBlock = pView->getCurrentBlock();
         UT_ASSERT(pBlock);
-	if(pBlock->isListItem() == UT_FALSE)
+	if(pBlock->isListItem() == false)
 	        return s;
 	if(pBlock->getListType() == NUMBERED_LIST)
 	        s = EV_TIS_Toggled;
@@ -195,9 +195,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
-	UT_Bool bMultiple = UT_FALSE;
-	UT_Bool bSize = UT_FALSE;
-	UT_Bool bString = UT_FALSE;
+	bool bMultiple = false;
+	bool bSize = false;
+	bool bString = false;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -209,13 +209,13 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	case AP_TOOLBAR_ID_FMT_FONT:
 		prop = "font-family";
 		val  = "";
-		bString = UT_TRUE;
+		bString = true;
 		break;
 
 	case AP_TOOLBAR_ID_FMT_SIZE:
 		prop = "font-size";
 		val  = "";
-		bSize = UT_TRUE;
+		bSize = true;
 		break;
 
 	case AP_TOOLBAR_ID_FMT_BOLD:
@@ -231,31 +231,31 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	case AP_TOOLBAR_ID_FMT_UNDERLINE:
 		prop = "text-decoration";
 		val  = "underline";
-		bMultiple = UT_TRUE;
+		bMultiple = true;
 		break;
 
 	case AP_TOOLBAR_ID_FMT_OVERLINE:
 		prop = "text-decoration";
 		val  = "overline";
-		bMultiple = UT_TRUE;
+		bMultiple = true;
 		break;
 
 	case AP_TOOLBAR_ID_FMT_STRIKE:
 		prop = "text-decoration";
 		val  = "line-through";
-		bMultiple = UT_TRUE;
+		bMultiple = true;
 		break;
 
 	case AP_TOOLBAR_ID_FMT_SUPERSCRIPT:
 		prop = "text-position";
 		val  = "superscript";
-		bMultiple = UT_TRUE;
+		bMultiple = true;
 		break;
 
 	case AP_TOOLBAR_ID_FMT_SUBSCRIPT:
 		prop = "text-position";
 		val  = "subscript";
-		bMultiple = UT_TRUE;
+		bMultiple = true;
 		break;
 		
 	default:
@@ -349,7 +349,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 		const XML_Char ** props_in = NULL;
 		const XML_Char * sz = NULL;
 
-        UT_Bool bResult = pView->getSectionFormat(&props_in);
+        bool bResult = pView->getSectionFormat(&props_in);
         pView->draw(NULL);
 
         if (!bResult)
@@ -381,7 +381,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 	if (pszState)
 		*pszState = NULL;
 
-	UT_Bool bPoints = UT_FALSE;
+	bool bPoints = false;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -409,13 +409,13 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 	case AP_TOOLBAR_ID_PARA_0BEFORE:
 		prop = "margin-top";
 		val = "0pt";
-		bPoints = UT_TRUE;
+		bPoints = true;
 		break;
 
 	case AP_TOOLBAR_ID_PARA_12BEFORE:
 		prop = "margin-top";
 		val = "12pt";
-		bPoints = UT_TRUE;
+		bPoints = true;
 		break;
 
 	case AP_TOOLBAR_ID_SINGLE_SPACE:

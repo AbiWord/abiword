@@ -44,15 +44,15 @@
 
 struct _imp
 {
-	UT_Bool			(*fpRecognizeContents)(const char * szBuf,
+	bool			(*fpRecognizeContents)(const char * szBuf,
 							UT_uint32 iNumbytes);
-	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
+	bool			(*fpRecognizeSuffix)(const char * szSuffix);
 	UT_Error		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Imp ** ppie);
-	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
+	bool			(*fpGetDlgLabels)(const char ** szDesc,
 									  const char ** szSuffixList,
 									  IEFileType * ft);
-	UT_Bool			(*fpSupportsFileType)(IEFileType ft);
+	bool			(*fpSupportsFileType)(IEFileType ft);
 };
 
 #define DeclareImporter(n)	{ n::RecognizeContents, n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels, n::SupportsFileType }
@@ -231,7 +231,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
 }
 
-UT_Bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
+bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
 								   const char ** pszDesc,
 								   const char ** pszSuffixList,
 								   IEFileType * ft)
@@ -239,7 +239,7 @@ UT_Bool IE_Imp::enumerateDlgLabels(UT_uint32 ndx,
 	if (ndx < NrElements(s_impTable))
 		return s_impTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList,ft);
 
-	return UT_FALSE;
+	return false;
 }
 
 UT_uint32 IE_Imp::getImporterCount(void)

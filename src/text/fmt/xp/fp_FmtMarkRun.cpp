@@ -55,7 +55,7 @@ void fp_FmtMarkRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_TRUE,&pSpanAP);
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
 
 	// look for fonts in this DocLayout's font cache
@@ -76,7 +76,7 @@ void fp_FmtMarkRun::lookupProperties(void)
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
-	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, UT_TRUE);
+	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	if (0 == UT_strcmp(pszPosition, "superscript"))
 	{
@@ -90,31 +90,31 @@ void fp_FmtMarkRun::lookupProperties(void)
 
 }
 
-UT_Bool fp_FmtMarkRun::canBreakAfter(void) const
+bool fp_FmtMarkRun::canBreakAfter(void) const
 {
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool fp_FmtMarkRun::canBreakBefore(void) const
+bool fp_FmtMarkRun::canBreakBefore(void) const
 {
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool fp_FmtMarkRun::letPointPass(void) const
+bool fp_FmtMarkRun::letPointPass(void) const
 {
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool	fp_FmtMarkRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+bool	fp_FmtMarkRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
 {
-	return UT_FALSE;
+	return false;
 }
 
-void fp_FmtMarkRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_FmtMarkRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
-	bBOL = UT_FALSE;
-	bEOL = UT_FALSE;
+	bBOL = false;
+	bEOL = false;
 }
 
 void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint32& y, UT_sint32& height)
@@ -139,7 +139,7 @@ void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint
 
 }
 
-void fp_FmtMarkRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
+void fp_FmtMarkRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 #if 0
 #ifdef DEBUG
@@ -168,7 +168,7 @@ const PP_AttrProp* fp_FmtMarkRun::getAP(void) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	
-	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_TRUE,&pSpanAP);
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
 
 	return pSpanAP;
 }

@@ -105,12 +105,12 @@ void AP_Win32Frame::setYScrollRange(void)
 {
 }
 
-UT_Bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
+bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
 {
 	// NB: can't access 'this' members from a static member function
 
 	if (!XAP_Win32Frame::RegisterClass(app))
-		return UT_FALSE;
+		return false;
 
 	WNDCLASSEX  wndclass;
 	ATOM a;
@@ -158,9 +158,9 @@ UT_Bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
 	UT_ASSERT(a);
 	
 	if (!AP_Win32StatusBar::RegisterClass(app))
-		return UT_FALSE;
+		return false;
 	
-	return UT_TRUE;
+	return true;
 }
 
 AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
@@ -193,23 +193,23 @@ AP_Win32Frame::~AP_Win32Frame(void)
 	DELETEP(m_pWin32StatusBar);
 }
 
-UT_Bool AP_Win32Frame::initialize(void)
+bool AP_Win32Frame::initialize(void)
 {
 	if (!initFrameData())
-		return UT_FALSE;
+		return false;
 
 	if (!XAP_Win32Frame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
 									AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
 									AP_PREF_KEY_MenuLabelSet, AP_PREF_DEFAULT_MenuLabelSet,
 									AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
 									AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
-		return UT_FALSE;
+		return false;
 
 	_createTopLevelWindow();
 
 	loadDocument(NULL,0);
 
-	return UT_TRUE;
+	return true;
 }
 
 XAP_Frame * AP_Win32Frame::cloneFrame(void)
@@ -303,7 +303,7 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	return hwndContainer;
 }
 
-UT_Bool AP_Win32Frame::loadDocument(const char * szFilename, int ieft)
+bool AP_Win32Frame::loadDocument(const char * szFilename, int ieft)
 {
 	GR_Win32Graphics * pG = new GR_Win32Graphics(GetDC(m_hwndDocument), m_hwndDocument, getApp());
 	pG->setFont(pG->findFont("Times New Roman", "normal", NULL, "bold", NULL, "72pt"));
@@ -317,7 +317,7 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename, int ieft)
 	if (m_pWin32StatusBar)
 		m_pWin32StatusBar->setView(pView);
 
-	return UT_TRUE;
+	return true;
 }
 	
 void AP_Win32Frame::_scrollFuncY(void* pData, UT_sint32 yoff, UT_sint32 /*ylimit*/)
@@ -627,14 +627,14 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 
 /*****************************************************************/
 
-UT_Bool AP_Win32Frame::initFrameData(void)
+bool AP_Win32Frame::initFrameData(void)
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
 	AP_FrameData* pData = new AP_FrameData();
 	m_pData = (void*) pData;
 	
-	return (pData ? UT_TRUE : UT_FALSE);
+	return (pData ? true : false);
 }
 
 void AP_Win32Frame::killFrameData(void)

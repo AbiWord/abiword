@@ -114,7 +114,7 @@ public:
 	EV_Toolbar_ActionSet(XAP_Toolbar_Id first, XAP_Toolbar_Id last);
 	~EV_Toolbar_ActionSet(void);
 
-	UT_Bool				setAction(XAP_Toolbar_Id id,
+	bool				setAction(XAP_Toolbar_Id id,
 								  EV_Toolbar_ItemType type,
 								  const char * szMethodName,
 								  AV_ChangeMask maskOfInterest,

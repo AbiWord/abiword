@@ -49,12 +49,12 @@ AP_Dialog_PageNumbers::tAlign AP_Dialog_PageNumbers::getAlignment(void)
   return m_align;
 }
 
-UT_Bool AP_Dialog_PageNumbers::isHeader(void)
+bool AP_Dialog_PageNumbers::isHeader(void)
 {
   return (m_control == id_HDR);
 }
 
-UT_Bool AP_Dialog_PageNumbers::isFooter(void)
+bool AP_Dialog_PageNumbers::isFooter(void)
 {
   return (m_control == id_FTR);
 }

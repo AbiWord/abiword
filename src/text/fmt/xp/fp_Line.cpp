@@ -48,7 +48,7 @@ fp_Line::fp_Line()
 	m_pContainer = NULL;
 	m_pBlock = NULL;
 
-	m_bNeedsRedraw = UT_FALSE;
+	m_bNeedsRedraw = false;
 }
 
 fp_Line::~fp_Line()
@@ -80,7 +80,7 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	m_pContainer = pContainer;
 }
 
-UT_Bool fp_Line::removeRun(fp_Run* pRun, UT_Bool bTellTheRunAboutIt)
+bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 {
 	if (bTellTheRunAboutIt)
 	{
@@ -92,7 +92,7 @@ UT_Bool fp_Line::removeRun(fp_Run* pRun, UT_Bool bTellTheRunAboutIt)
 	m_vecRuns.deleteNthItem(ndx);
 
 
-	return UT_TRUE;
+	return true;
 }
 
 void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
@@ -156,7 +156,7 @@ void fp_Line::remove(void)
 	m_pContainer->removeLine(this);
 }
 
-void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
+void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	const int count = m_vecRuns.getItemCount();
 	UT_ASSERT(count > 0);
@@ -164,16 +164,16 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	fp_Run* pFirstRun = (fp_Run*) m_vecRuns.getNthItem(0);
 	UT_ASSERT(pFirstRun);
 
-	bBOL = UT_FALSE;
+	bBOL = false;
 	if (x < pFirstRun->getX())
 	{
-		bBOL = UT_TRUE;
+		bBOL = true;
 
 		UT_sint32 y2 = y - pFirstRun->getY() - m_iAscent + pFirstRun->getAscent();
 		pFirstRun->mapXYToPosition(0, y2, pos, bBOL, bEOL);
 
-		UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-		UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+		UT_ASSERT(bEOL == true || bEOL == false);
+		UT_ASSERT(bBOL == true || bBOL == false);
 
 		return;
 	}
@@ -197,8 +197,8 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 				{
 					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
 
-					UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-					UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+					UT_ASSERT(bEOL == true || bEOL == false);
+					UT_ASSERT(bBOL == true || bBOL == false);
 
 					return;
 				}
@@ -222,8 +222,8 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 
 					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
 
-					UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-					UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+					UT_ASSERT(bEOL == true || bEOL == false);
+					UT_ASSERT(bBOL == true || bBOL == false);
 
 					return;
 				}
@@ -275,8 +275,8 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	{
 		pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
 	}
-	UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
-	UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+	UT_ASSERT(bEOL == true || bEOL == false);
+	UT_ASSERT(bBOL == true || bBOL == false);
 
 }
 
@@ -409,7 +409,7 @@ void fp_Line::clearScreen(void)
 	if(count)
 	{
 		fp_Run* pRun;
-		UT_Bool bNeedsClearing = UT_FALSE;
+		bool bNeedsClearing = false;
 
 		UT_uint32 i;
 		for (i = 0; i < count; i++)
@@ -418,7 +418,7 @@ void fp_Line::clearScreen(void)
 
 			if(!pRun->isDirty())
 			{
-				bNeedsClearing = UT_TRUE;
+				bNeedsClearing = true;
 
 				pRun->markAsDirty();
 			}
@@ -491,7 +491,7 @@ void fp_Line::redrawUpdate(void)
 		draw(((fp_Run*) m_vecRuns.getNthItem(0))->getGraphics());
 	}
 
-	m_bNeedsRedraw = UT_FALSE;
+	m_bNeedsRedraw = false;
 	
 }
 
@@ -556,7 +556,7 @@ void fp_Line::layout(void)
 
 	UT_sint32 iX			= iStartX;
 	UT_sint32 iXLayoutUnits	= iStartXLayoutUnits;
-	UT_Bool bLineErased		= UT_FALSE;
+	bool bLineErased		= false;
 
 	// TODO do we need to do this if iMoveOver is zero ??
 	for (UT_uint32 i=0; i<iCountRuns; ++i)
@@ -568,7 +568,7 @@ void fp_Line::layout(void)
 			// Need to erase some or all of the line depending of Alignment mode.
 
 			pAlignment->eraseLineFromRun(this, i);
-			bLineErased = UT_TRUE;
+			bLineErased = true;
 			}
 			
 		pRun->setX(iX);
@@ -580,7 +580,7 @@ void fp_Line::layout(void)
 			eTabType	iTabType;
 			eTabLeader	iTabLeader;
 
-			UT_Bool bRes = findNextTabStopInLayoutUnits(iXLayoutUnits - iStartXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+			bool bRes = findNextTabStopInLayoutUnits(iXLayoutUnits - iStartXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
 			UT_ASSERT(bRes);
 
 			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
@@ -648,7 +648,7 @@ void fp_Line::layout(void)
 				UT_uint32	runLen = 0;
 
 				// the string to search for decimals
-				if (UT_UCS_cloneString_char(&pDecimalStr, ".") != UT_TRUE)
+				if (UT_UCS_cloneString_char(&pDecimalStr, ".") != true)
 				{
 					// Out of memory. Now what?
 				}
@@ -657,7 +657,7 @@ void fp_Line::layout(void)
 					  pScanRun && pScanRun->getType() != FPRUN_TAB;
 					  pScanRun = pScanRun->getNext() )
 				{
-					UT_Bool foundDecimal = UT_FALSE;
+					bool foundDecimal = false;
 
 					if(pScanRun->getType() == FPRUN_TEXT)
 					{
@@ -665,7 +665,7 @@ void fp_Line::layout(void)
 
 						if(decimalBlockOffset != -1)
 						{
-							foundDecimal = UT_TRUE;
+							foundDecimal = true;
 
 							runLen = pScanRun->getBlockOffset() - decimalBlockOffset;
 						}
@@ -812,9 +812,9 @@ UT_sint32 fp_Line::getMarginAfterInLayoutUnits(void) const
 	return 0;
 }
 
-UT_Bool fp_Line::recalculateFields(void)
+bool fp_Line::recalculateFields(void)
 {
-	UT_Bool bResult = UT_FALSE;
+	bool bResult = false;
 	
 	UT_uint32 iNumRuns = m_vecRuns.getItemCount();
 	for (UT_uint32 i = 0; i < iNumRuns; i++)
@@ -824,7 +824,7 @@ UT_Bool fp_Line::recalculateFields(void)
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = (fp_FieldRun*) pRun;
-			UT_Bool bSizeChanged = pFieldRun->calculateValue();
+			bool bSizeChanged = pFieldRun->calculateValue();
 
 			bResult = bResult || bSizeChanged;
 		}
@@ -847,13 +847,13 @@ fp_Run* fp_Line::getLastRun(void) const
 	}
 }
 
-UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType & iType, eTabLeader & iLeader )
+bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType & iType, eTabLeader & iLeader )
 {
 	UT_sint32	iTabStopPosition = 0;
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	UT_Bool bRes = m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
+	bool bRes = m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getX();
@@ -864,21 +864,21 @@ UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabTy
 		iType = iTabStopType;
 		iLeader = iTabStopLeader;
 
-		return UT_TRUE;
+		return true;
 	}
 	else
 	{
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader )
+bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader )
 {
 	UT_sint32	iTabStopPosition = 0;
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	UT_Bool bRes = m_pBlock->findNextTabStopInLayoutUnits(iStartX + getXInLayoutUnits(),
+	bool bRes = m_pBlock->findNextTabStopInLayoutUnits(iStartX + getXInLayoutUnits(),
 														  getXInLayoutUnits() + getMaxWidthInLayoutUnits(),
 														  iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
@@ -891,11 +891,11 @@ UT_Bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPos
 		iType = iTabStopType;
 		iLeader = iTabStopLeader;
 
-		return UT_TRUE;
+		return true;
 	}
 	else
 	{
-		return UT_FALSE;
+		return false;
 	}
 }
 
@@ -975,31 +975,31 @@ fp_Line*	fp_Line::getPrevLineInSection(void) const
 	return NULL;
 }
 
-UT_Bool	fp_Line::containsForcedColumnBreak(void) const 
+bool	fp_Line::containsForcedColumnBreak(void) const 
 {
 	if(!isEmpty())
 	{
 		fp_Run* pRun = getLastRun();
 		if (pRun->getType() == FPRUN_FORCEDCOLUMNBREAK)
 		{			
-			return UT_TRUE;
+			return true;
 		}
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool fp_Line::containsForcedPageBreak(void) const
+bool fp_Line::containsForcedPageBreak(void) const
 {
 	if (!isEmpty())
 	{
 		fp_Run* pRun = getLastRun();
 		if (pRun->getType() == FPRUN_FORCEDPAGEBREAK)
 		{
-			return UT_TRUE;
+			return true;
 		}
 	}
-	return UT_FALSE;
+	return false;
 }
 
 void fp_Line::coalesceRuns(void)
@@ -1037,7 +1037,7 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 			eTabType	iTabType;
 			eTabLeader	iTabLeader;
 
-			UT_Bool bRes = findNextTabStop(iX, iPos, iTabType, iTabLeader);
+			bool bRes = findNextTabStop(iX, iPos, iTabType, iTabLeader);
 			UT_ASSERT(bRes);
 			UT_ASSERT(iTabType == FL_TAB_LEFT);
 
@@ -1078,7 +1078,7 @@ UT_sint32 fp_Line::calculateWidthOfLineInLayoutUnits(void)
 			eTabType iTabType;
 			eTabLeader iTabLeader;
 
-			UT_Bool bRes = findNextTabStopInLayoutUnits(iX, iPos, iTabType, iTabLeader);
+			bool bRes = findNextTabStopInLayoutUnits(iX, iPos, iTabType, iTabLeader);
 			UT_ASSERT(bRes);
 			UT_ASSERT(iTabType == FL_TAB_LEFT);
 
@@ -1171,7 +1171,7 @@ UT_uint32 fp_Line::countJustificationPoints(void) const
 	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 i;
 	UT_uint32 iSpaceCount = 0;
-	UT_Bool bStartFound = UT_FALSE;
+	bool bStartFound = false;
 
 	// first calc the width of the line
 	for (i=iCountRuns -1 ; i >= 0; i--)
@@ -1180,7 +1180,7 @@ UT_uint32 fp_Line::countJustificationPoints(void) const
 		
 		if (pRun->getType() == FPRUN_TAB)
 		{
-			//			UT_ASSERT(UT_FALSE);
+			//			UT_ASSERT(false);
 			UT_DEBUGMSG(("TODO - decide if tab is a space \n"));
 			// TODO: decide if a tab is a space.
 
@@ -1198,14 +1198,14 @@ UT_uint32 fp_Line::countJustificationPoints(void) const
 				{
 					iSpaceCount += pTR->countJustificationPoints();
 					iSpaceCount -= pTR->countTrailingSpaces();
-					bStartFound = UT_TRUE;
+					bStartFound = true;
 				}
 
 			}
 		}
 		else
 		{
-			bStartFound = UT_TRUE;
+			bStartFound = true;
 		}
 	}
 
@@ -1213,7 +1213,7 @@ UT_uint32 fp_Line::countJustificationPoints(void) const
 }
 
 
-UT_Bool fp_Line::isLastCharacter(UT_UCSChar Character) const
+bool fp_Line::isLastCharacter(UT_UCSChar Character) const
 {
 	UT_ASSERT(!isEmpty());
 
@@ -1226,7 +1226,7 @@ UT_Bool fp_Line::isLastCharacter(UT_UCSChar Character) const
 		return pTR->isLastCharacter(Character);
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
 void fp_Line::resetJustification()

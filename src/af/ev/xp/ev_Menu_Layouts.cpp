@@ -69,7 +69,7 @@ EV_Menu_Layout::~EV_Menu_Layout(void)
 	free(m_layoutTable);
 }
 
-UT_Bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags)
+bool EV_Menu_Layout::setLayoutItem(UT_uint32 indexLayoutItem, XAP_Menu_Id id, EV_Menu_LayoutFlags flags)
 {
 	UT_ASSERT(indexLayoutItem < m_nrLayoutItems);
 	DELETEP(m_layoutTable[indexLayoutItem]);

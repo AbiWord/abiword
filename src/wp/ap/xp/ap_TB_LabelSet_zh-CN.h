@@ -40,10 +40,10 @@
 // Note: if a tool item does not use an icon (like a combo box), use the
 // Note: constant "NoIcon" in that column.
 
-// If the third argument is UT_TRUE, then this is the fall-back for
+// If the third argument is true, then this is the fall-back for
 // this language (named in the first argument).
 
-BeginSet(zh,CN,UT_TRUE)
+BeginSet(zh,CN,true)
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
 

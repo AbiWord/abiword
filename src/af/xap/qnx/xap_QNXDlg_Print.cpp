@@ -224,24 +224,24 @@ void XAP_QNXDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		UT_DEBUGMSG(("PRINT: Range is set to [%d - %d] ", 
 					(range) ? range->from : -1, (range) ? range->to : -1));
 		if (!range || (range->from == 0 && range->to == 0)) {
-			m_bDoPrintRange		= UT_FALSE;
-			m_bDoPrintSelection = UT_FALSE;
+			m_bDoPrintRange		= false;
+			m_bDoPrintSelection = false;
 		}
 		else if (range->from == -1 && range->to == -1) {
-			m_bDoPrintRange		= UT_FALSE;
-			m_bDoPrintSelection = UT_TRUE;
+			m_bDoPrintRange		= false;
+			m_bDoPrintSelection = true;
 		}
 		else {	//Must be a range in 1[-2][,3-6][,10-] notation
-			m_bDoPrintRange = UT_TRUE;
-			m_bDoPrintSelection = UT_FALSE;
+			m_bDoPrintRange = true;
+			m_bDoPrintSelection = false;
 			//Punt for now only accept %d-%d format
 			first = range->from;
 			last = range->to;
 			UT_DEBUGMSG(("PRINT: Got range from %d to %d ", first, last));
 		}
 
-		m_bDoPrintToFile	= UT_FALSE;	//Let photon take care of this
-		m_bCollate			= UT_FALSE; //Pp_PC_COLLATING_MODE
+		m_bDoPrintToFile	= false;	//Let photon take care of this
+		m_bCollate			= false; //Pp_PC_COLLATING_MODE
 		
 		PpGetPC(m_pPrintContext, Pp_PC_COPIES, (const void **)&option);
 		m_nCopies			= __max(strtoul(option, NULL, 10), 1);

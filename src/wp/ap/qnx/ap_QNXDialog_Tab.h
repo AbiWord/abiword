@@ -40,7 +40,7 @@ public:
 protected:
 	/*** Start inherited ***/
 
-	virtual void _controlEnable( tControl id, UT_Bool value );
+	virtual void _controlEnable( tControl id, bool value );
 
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \

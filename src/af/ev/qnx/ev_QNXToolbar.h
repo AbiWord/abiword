@@ -41,10 +41,10 @@ public:
 	
 	virtual ~EV_QNXToolbar(void);
 
-	UT_Bool toolbarEvent(XAP_Toolbar_Id id, UT_UCSChar * pData, UT_uint32 dataLength);
-	virtual UT_Bool synthesize(void);
-	UT_Bool bindListenerToView(AV_View * pView);
-	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
+	bool toolbarEvent(XAP_Toolbar_Id id, UT_UCSChar * pData, UT_uint32 dataLength);
+	virtual bool synthesize(void);
+	bool bindListenerToView(AV_View * pView);
+	bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
 	XAP_QNXApp *	getApp(void);
 	XAP_QNXFrame * getFrame(void);

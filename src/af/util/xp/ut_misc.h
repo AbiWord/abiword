@@ -52,9 +52,9 @@ public:
 	UT_Rect(int iLeft, int iTop, int iWidth, int iHeight);
 	UT_Rect(const UT_Rect &);
 
-	UT_Bool containsPoint(UT_sint32 x, UT_sint32 y) const;
+	bool containsPoint(UT_sint32 x, UT_sint32 y) const;
 	void set(int iLeft, int iTop, int iWidth, int iHeight);
-	UT_Bool intersectsRect(const UT_Rect * pRect) const;
+	bool intersectsRect(const UT_Rect * pRect) const;
 	
 	UT_sint32	left;
 	UT_sint32	top;
@@ -76,7 +76,7 @@ struct UT_Point
 #define UT_ABS(A)	( ((A) < 0) ? (-(A)) : (A) )
 
 const char * UT_pathSuffix(const char * path);
-UT_Bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar);
+bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar);
 const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts);
 
 UT_sint32 signedHiWord(UT_uint32 dw);

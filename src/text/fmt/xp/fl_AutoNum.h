@@ -71,7 +71,7 @@ public:
 	const XML_Char *			getDelim(void);
 	void						setDecimal(const XML_Char * pszDecimal);
 	const XML_Char *			getDecimal(void);
-	UT_Bool						isDirty(void);
+	bool						isDirty(void);
 	UT_uint16					getStartValue(void) { return m_iStartValue; }
 
 	UT_uint32					getStartValue32(void);
@@ -85,16 +85,16 @@ public:
 	void						removeItem(PL_StruxDocHandle pItem);
 	PL_StruxDocHandle			getParentItem(void);
 	void						setParentItem(PL_StruxDocHandle pItem);
-	UT_Bool                                 isContainedByList(PL_StruxDocHandle pItem);
+	bool                                 isContainedByList(PL_StruxDocHandle pItem);
 	PL_StruxDocHandle			getNthBlock(UT_uint32 i);
 	PL_StruxDocHandle			getPrevInList(PL_StruxDocHandle pItem);
 
-	const UT_Bool				isItem(PL_StruxDocHandle pItem);
-	UT_Bool						doesItemHaveLabel(fl_BlockLayout * pItem);
-	const UT_Bool				isEmpty(void);
+	const bool				isItem(PL_StruxDocHandle pItem);
+	bool						doesItemHaveLabel(fl_BlockLayout * pItem);
+	const bool				isEmpty(void);
 	PL_StruxDocHandle			getFirstItem(void);
 	PL_StruxDocHandle			getLastItem(void);
-	UT_Bool						isLastOnLevel(PL_StruxDocHandle pItem);
+	bool						isLastOnLevel(PL_StruxDocHandle pItem);
 
 	fl_AutoNum *				getParent(void) { return m_pParent; }
 	fl_AutoNum *				getActiveParent(void) ;
@@ -106,10 +106,10 @@ public:
 	void						setAsciiOffset(UT_uint32 new_asciioffset);
 
 	void						update(UT_uint32 start);
-	UT_Bool						isUpdating(void) { return m_bUpdatingItems; }
+	bool						isUpdating(void) { return m_bUpdatingItems; }
 	UT_uint32					getID(void)  { return m_iID; }
 	UT_uint32					getParentID(void)  { return m_iParentID; }
-	char *						dec2roman(UT_sint32 value, UT_Bool lower) ;
+	char *						dec2roman(UT_sint32 value, bool lower) ;
 	char *						dec2ascii(UT_sint32 value, UT_uint32 offset);
 	
 	const char **				getAttributes(void) ;
@@ -134,13 +134,13 @@ protected:
 	UT_uint32					m_iLevel;
 	UT_uint32					m_iStartValue;
 	UT_uint16					m_iAsciiOffset;
-	UT_Bool						m_bUpdatingItems;
-	UT_Bool						m_bDirty;
+	bool						m_bUpdatingItems;
+	bool						m_bDirty;
 	UT_sint32					m_ioffset;
 	XML_Char					m_pszDecimal[80];
 	XML_Char					m_pszDelim[80];
 	XML_Char					m_pszIndent[80];
-	UT_Bool						m_bWordMultiStyle;
+	bool						m_bWordMultiStyle;
 	PL_StruxDocHandle			m_pParentItem;
 };
 

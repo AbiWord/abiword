@@ -42,7 +42,7 @@ XAP_BeOSClipboard::~XAP_BeOSClipboard()
 		free(lastCopy);
 }
 
-UT_Bool XAP_BeOSClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
+bool XAP_BeOSClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
 {
 	BMessage* clip = (BMessage *)NULL;
 	
@@ -54,13 +54,13 @@ UT_Bool XAP_BeOSClipboard::addData(const char* format, void* pData, UT_sint32 iN
 			{
 				clip->AddData("text/rtf" , B_MIME_TYPE , pData , iNumBytes - 1);
 				be_clipboard->Commit();
-				return UT_TRUE;
+				return true;
 			}
 			else if( strcmp(format , "text-8bit") == 0)
 			{
 				clip->AddData("text/plain" , B_MIME_TYPE , pData , iNumBytes - 1);
 				be_clipboard->Commit();
-				return UT_TRUE;
+				return true;
 			}
 		}
 		be_clipboard->Unlock();
@@ -69,7 +69,7 @@ UT_Bool XAP_BeOSClipboard::addData(const char* format, void* pData, UT_sint32 iN
 	return XAP_FakeClipboard::addData(format, pData, iNumBytes);
 }
 
-UT_Bool XAP_BeOSClipboard::hasFormat(const char* format)
+bool XAP_BeOSClipboard::hasFormat(const char* format)
 {
 	BMessage* clip = NULL;
 	char* text;
@@ -77,7 +77,7 @@ UT_Bool XAP_BeOSClipboard::hasFormat(const char* format)
 	
 	if(strcmp(format , "rtf") == 0)
 	{
-		UT_Bool hasRTF = UT_FALSE;
+		bool hasRTF = false;
 		
 		if( be_clipboard->Lock() )
 		{
@@ -85,7 +85,7 @@ UT_Bool XAP_BeOSClipboard::hasFormat(const char* format)
 			{			
 				if( clip->FindData("text/rtf" , B_MIME_TYPE , (const void **)&text , &textSize) == B_OK)
 				{
-				hasRTF = UT_TRUE;
+				hasRTF = true;
 				}
 			}
 			be_clipboard->Unlock();
@@ -96,7 +96,7 @@ UT_Bool XAP_BeOSClipboard::hasFormat(const char* format)
 	
 	if(strcmp(format , "text-8bit") == 0)
 	{
-		UT_Bool hasPlain = UT_FALSE;
+		bool hasPlain = false;
 		
 		if( be_clipboard->Lock() )
 		{
@@ -104,7 +104,7 @@ UT_Bool XAP_BeOSClipboard::hasFormat(const char* format)
 			{			
 				if( clip->FindData("text/plain" , B_MIME_TYPE , (const void **)&text , &textSize) == B_OK)
 				{
-				hasPlain = UT_TRUE;
+				hasPlain = true;
 				}
 			}
 			be_clipboard->Unlock();
@@ -116,7 +116,7 @@ UT_Bool XAP_BeOSClipboard::hasFormat(const char* format)
 	return XAP_FakeClipboard::hasFormat(format);
 }
 
-UT_Bool XAP_BeOSClipboard::clearClipboard(void)
+bool XAP_BeOSClipboard::clearClipboard(void)
 {
 	if(be_clipboard->Lock() )
 	{
@@ -127,7 +127,7 @@ UT_Bool XAP_BeOSClipboard::clearClipboard(void)
 	return XAP_FakeClipboard::clearClipboard();
 }
 
-UT_Bool XAP_BeOSClipboard::getClipboardData(const char * format, void ** ppData, UT_uint32 * pLen)
+bool XAP_BeOSClipboard::getClipboardData(const char * format, void ** ppData, UT_uint32 * pLen)
 {
 	const char* text;
 	ssize_t textSize;
@@ -151,7 +151,7 @@ UT_Bool XAP_BeOSClipboard::getClipboardData(const char * format, void ** ppData,
 					
 					*ppData = (void *)lastCopy;
 					*pLen = textSize;
-					return UT_TRUE;
+					return true;
 				}
 				else
 				{
@@ -171,7 +171,7 @@ UT_Bool XAP_BeOSClipboard::getClipboardData(const char * format, void ** ppData,
 					
 					*ppData = (void *)lastCopy;
 					*pLen = textSize;
-					return UT_TRUE;
+					return true;
 				}
 				else
 				{

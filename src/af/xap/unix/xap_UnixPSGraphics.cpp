@@ -53,7 +53,7 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 						 const char * szTitle,
 						 const char * szSoftwareNameAndVersion,
 						 XAP_UnixFontManager * fontManager,						 
-						 UT_Bool	  bIsFile,
+						 bool	  bIsFile,
 						 XAP_App *pApp)
 {
 	UT_ASSERT(szFilename && *szFilename);
@@ -62,9 +62,9 @@ PS_Graphics::PS_Graphics(const char * szFilename,
 	m_szTitle = szTitle;
 	m_szSoftwareNameAndVersion = szSoftwareNameAndVersion;
 	m_pCurrentFont = 0;
-	m_bStartPrint = UT_FALSE;
-	m_bStartPage = UT_FALSE;
-	m_bNeedStroked = UT_FALSE;
+	m_bStartPrint = false;
+	m_bStartPage = false;
+	m_bNeedStroked = false;
 	m_bIsFile = bIsFile;
 	m_ps = 0;
 
@@ -82,17 +82,17 @@ PS_Graphics::~PS_Graphics()
 	// TODO free stuff
 }
 
-UT_Bool PS_Graphics::queryProperties(GR_Graphics::Properties gp) const
+bool PS_Graphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
 	case DGP_SCREEN:
-		return UT_FALSE;
+		return false;
 	case DGP_PAPER:
-		return UT_TRUE;
+		return true;
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
@@ -190,7 +190,7 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 		//UT_ASSERT(p[k] < 256);			// TODO deal with Unicode
 		register int x;
 		UT_UCSChar currentChar;
-		currentChar = remapGlyph(p[k], UT_FALSE);
+		currentChar = remapGlyph(p[k], false);
 		x = (currentChar < 256 ? _scale(cwi[currentChar]) : 0;
 		
 		iCharWidth += x;
@@ -418,7 +418,7 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
                        }
 
 		} else 	{
-		    currentChar = remapGlyph(*pS, *pS >= 256 ? UT_TRUE : UT_FALSE);
+		    currentChar = remapGlyph(*pS, *pS >= 256 ? true : false);
 		    currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
 		    switch (currentChar)
 		    {
@@ -444,7 +444,7 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 {
 	// TODO This is used for lines in the document, as well as underlines
 	// TODO and strikes.
-	m_bNeedStroked = UT_TRUE;
+	m_bNeedStroked = true;
 
 	// emit a change in line width
 	_emit_SetLineWidth();
@@ -515,28 +515,28 @@ void PS_Graphics::scroll(UT_sint32 /* x_dest */,
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
-UT_Bool PS_Graphics::startPrint(void)
+bool PS_Graphics::startPrint(void)
 {
 	UT_ASSERT(!m_bStartPrint);
-	m_bStartPrint = UT_TRUE;
+	m_bStartPrint = true;
 	m_ps = new ps_Generate(m_szFilename);
 	if (!m_ps)
-		return UT_FALSE;
+		return false;
 
 	return _startDocument();
 }
 
-UT_Bool PS_Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
-							   UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+bool PS_Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
+							   bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	if (m_bStartPage)
 		_endPage();
-	m_bStartPage = UT_TRUE;
-	m_bNeedStroked = UT_FALSE;
+	m_bStartPage = true;
+	m_bNeedStroked = false;
 	return _startPage(szPageLabel,pageNumber,bPortrait,iWidth,iHeight);
 }
 
-UT_Bool PS_Graphics::endPrint(void)
+bool PS_Graphics::endPrint(void)
 {
 	if (m_bStartPage)
 		_endPage();
@@ -555,7 +555,7 @@ UT_uint32 PS_Graphics::_scale(UT_uint32 units) const
 	return (units * m_pCurrentFont->getSize() / 1000);
 }
 
-UT_Bool PS_Graphics::_startDocument(void)
+bool PS_Graphics::_startDocument(void)
 {
 	// open the file and begin writing the prolog
 	// return false if an error occurs.
@@ -565,7 +565,7 @@ UT_Bool PS_Graphics::_startDocument(void)
 	//////////////////////////////////////////////////////////////////
 	
 	if (!m_ps->openFile(m_bIsFile))
-		return UT_FALSE;
+		return false;
 
 	// we use the argv-version of these so that we get PS-escaping on
 	// the strings (which will probably have spaces in them).
@@ -605,11 +605,11 @@ UT_Bool PS_Graphics::_startDocument(void)
 	// TODO add other setup stuff
 
 	m_ps->formatComment("EndSetup");
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
-								UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
+								bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	// emit stuff prior to each page
 	
@@ -636,10 +636,10 @@ UT_Bool PS_Graphics::_startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	// Note, need to reset font at the beginning of each page
 	_emit_SetFont();
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PS_Graphics::_endPage(void)
+bool PS_Graphics::_endPage(void)
 {
 	// emit stuff following each page
 
@@ -653,10 +653,10 @@ UT_Bool PS_Graphics::_endPage(void)
 	// TODO (this inludes an atend's that we used in the page header)
 
 	// Note, either the next page or the document-trailer will follow this.
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PS_Graphics::_endDocument(void)
+bool PS_Graphics::_endDocument(void)
 {
 	// emit the document trailer
 
@@ -665,7 +665,7 @@ UT_Bool PS_Graphics::_endDocument(void)
 	// TODO add any trailer stuff here
 	// TODO (this includes an atend's that we used in the document header)
 
-	UT_Bool bStatus = m_ps->formatComment("EOF");
+	bool bStatus = m_ps->formatComment("EOF");
 
 	m_ps->closeFile();
 	delete m_ps;

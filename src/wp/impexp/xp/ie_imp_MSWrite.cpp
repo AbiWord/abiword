@@ -122,7 +122,7 @@ IE_Imp_MSWrite::IE_Imp_MSWrite(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-#define X_ReturnIfFail(exp,ies)		do { UT_Bool b = (exp); if (!b) return (ies); } while (0)
+#define X_ReturnIfFail(exp,ies)		do { bool b = (exp); if (!b) return (ies); } while (0)
 #define X_ReturnNoMemIfError(exp)	X_ReturnIfFail(exp,UT_IE_NOMEMORY)
 
 UT_Error IE_Imp_MSWrite::_writeHeader(FILE * /* fp */)
@@ -198,7 +198,7 @@ UT_Error
 IE_Imp_MSWrite::ReadTextRangeWithFormat (FILE * fp, const UT_uint32 end, 
                                          const WRI_format_page_t & fmtData)
 {
-    UT_Bool bEatLF = UT_FALSE;
+    bool bEatLF = false;
     UT_uint32 count;
     UT_Byte c;
     UT_GrowBuf gbBlock(1024);
@@ -228,13 +228,13 @@ IE_Imp_MSWrite::ReadTextRangeWithFormat (FILE * fp, const UT_uint32 end,
             case '\n':
                 if ((c == '\n') && bEatLF)
                 {
-                    bEatLF = UT_FALSE;
+                    bEatLF = false;
                     break;
                 }
                 
                 if (c == '\r')
                 {
-                    bEatLF = UT_TRUE;
+                    bEatLF = true;
                 }
                 
                 // a paragraph is delimited by a CRLF as specified 
@@ -260,7 +260,7 @@ IE_Imp_MSWrite::ReadTextRangeWithFormat (FILE * fp, const UT_uint32 end,
                 X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&uc,1));
                 break;
             default:
-                bEatLF = UT_FALSE;
+                bEatLF = false;
                 
                 // deal with plain character.
                 // this cast is OK.  we have US-ASCII (actually Latin-1) character
@@ -310,9 +310,9 @@ void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
     UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
     
     UT_GrowBuf gbBlock(1024);
-    UT_Bool bEatLF = UT_FALSE;
-    UT_Bool bSuppressLeadingParagraph = UT_TRUE;
-    UT_Bool bInColumn1 = UT_TRUE;
+    bool bEatLF = false;
+    bool bSuppressLeadingParagraph = true;
+    bool bInColumn1 = true;
     unsigned char * pc;
     
     PT_DocPosition dpos = pDocRange->m_pos1;
@@ -327,13 +327,13 @@ void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
         case '\n':
             if ((c == '\n') && bEatLF)
             {
-                bEatLF = UT_FALSE;
+                bEatLF = false;
                 break;
             }
             
             if (c == '\r')
             {
-                bEatLF = UT_TRUE;
+                bEatLF = true;
             }
             
             // we interprete either CRLF, CR, or LF as a paragraph break.
@@ -345,11 +345,11 @@ void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
                 dpos += gbBlock.getLength();
                 gbBlock.truncate(0);
             }
-            bInColumn1 = UT_TRUE;
+            bInColumn1 = true;
             break;
             
         default:
-            bEatLF = UT_FALSE;
+            bEatLF = false;
             if (bInColumn1 && !bSuppressLeadingParagraph)
             {
                 m_pDocument->insertStrux(dpos,PTX_Block);
@@ -363,8 +363,8 @@ void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
             UT_UCSChar uc = (UT_UCSChar) c;
             gbBlock.ins(gbBlock.getLength(),&uc,1);
             
-            bInColumn1 = UT_FALSE;
-            bSuppressLeadingParagraph = UT_FALSE;
+            bInColumn1 = false;
+            bSuppressLeadingParagraph = false;
             break;
         }
     } 
@@ -382,22 +382,22 @@ void IE_Imp_MSWrite::pasteFromBuffer(PD_DocumentRange * pDocRange,
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_MSWrite::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_MSWrite::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
     if ( iNumbytes > 8 )
     {
         if ( szBuf[0] == (char)0x31 && szBuf[1] == (char)0xbe &&
              szBuf[2] == (char)0 && szBuf[3] == (char)0 )
         {
-            return(UT_TRUE);
+            return(true);
         }
     }
-    return(UT_FALSE);
+    return(false);
 }
 
 
 
-UT_Bool IE_Imp_MSWrite::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_MSWrite::RecognizeSuffix(const char * szSuffix)
 {
     return (UT_stricmp(szSuffix,".wri") == 0);
 }
@@ -414,17 +414,17 @@ UT_Error IE_Imp_MSWrite::StaticConstructor(PD_Document * pDocument,
 
 
 
-UT_Bool	IE_Imp_MSWrite::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_MSWrite::GetDlgLabels(const char ** pszDesc,
                                      const char ** pszSuffixList,
                                      IEFileType * ft)
 {
     *pszDesc = "MS-Write (.wri)";
     *pszSuffixList = "*.wri";
     *ft = IEFT_MSWrite;
-    return UT_TRUE;
+    return true;
 }
 
-UT_Bool IE_Imp_MSWrite::SupportsFileType(IEFileType ft)
+bool IE_Imp_MSWrite::SupportsFileType(IEFileType ft)
 {
     return (IEFT_MSWrite == ft);
 }

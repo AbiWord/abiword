@@ -49,7 +49,7 @@ public:
 	XAP_QNXFrame(XAP_QNXFrame * f);
 	virtual ~XAP_QNXFrame(void);
 
-	virtual UT_Bool				initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+	virtual bool				initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 										   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
 										   const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
 										   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
@@ -57,11 +57,11 @@ public:
 
 	virtual	XAP_Frame *			cloneFrame(void)=0;
 	virtual UT_Error			loadDocument(const char * szFilename, int ieft)=0;
-	virtual UT_Bool				close(void);
-	virtual UT_Bool				raise(void);
-	virtual UT_Bool				show(void);
-	virtual UT_Bool				openURL(const char * szURL);
-	virtual UT_Bool				updateTitle(void);
+	virtual bool				close(void);
+	virtual bool				raise(void);
+	virtual bool				show(void);
+	virtual bool				openURL(const char * szURL);
+	virtual bool				updateTitle(void);
 	virtual UT_sint32			setInputMode(const char * szName);
 
 	PtWidget_t *				getTopLevelWindow(void) const;	//Get the Window widget
@@ -72,7 +72,7 @@ public:
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void)=0;
 	virtual void				setYScrollRange(void)=0;
-	virtual UT_Bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
+	virtual bool				runModalContextMenu(AV_View * pView, const char * szMenuName,
 													UT_sint32 x, UT_sint32 y);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 	virtual void				setStatusMessage(const char * szMsg) = 0;

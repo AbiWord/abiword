@@ -35,7 +35,7 @@ PP_AttrProp::PP_AttrProp()
 {
 	m_pAttributes = NULL;
 	m_pProperties = NULL;
-	m_bIsReadOnly = UT_FALSE;
+	m_bIsReadOnly = false;
 	m_checkSum = 0;
 }
 
@@ -45,22 +45,22 @@ PP_AttrProp::~PP_AttrProp()
 	DELETEP(m_pProperties);
 }
 
-UT_Bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
+bool	PP_AttrProp::setAttributes(const XML_Char ** attributes)
 {
 	if (!attributes)
-		return UT_TRUE;
+		return true;
 
 	const XML_Char ** pp = attributes;
 	while (*pp)
 	{
 		if (!setAttribute(pp[0],pp[1]))
-			return UT_FALSE;
+			return false;
 		pp += 2;
 	}
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PP_AttrProp::setAttributes(const UT_Vector * pVector)
+bool PP_AttrProp::setAttributes(const UT_Vector * pVector)
 {
 	UT_uint32 kLimit = pVector->getItemCount();
 	for (UT_uint32 k=0; k+1<kLimit; k+=2)
@@ -68,28 +68,28 @@ UT_Bool PP_AttrProp::setAttributes(const UT_Vector * pVector)
 		const XML_Char * pName = (const XML_Char *)pVector->getNthItem(k);
 		const XML_Char * pValue = (const XML_Char *)pVector->getNthItem(k+1);
 		if (!setAttribute(pName,pValue))
-			return UT_FALSE;
+			return false;
 	}
-	return UT_TRUE;
+	return true;
 }
 
 
-UT_Bool	PP_AttrProp::setProperties(const XML_Char ** properties)
+bool	PP_AttrProp::setProperties(const XML_Char ** properties)
 {
 	if (!properties)
-		return UT_TRUE;
+		return true;
 
 	const XML_Char ** pp = properties;
 	while (*pp)
 	{
 		if (!setProperty(pp[0],pp[1]))
-			return UT_FALSE;
+			return false;
 		pp += 2;
 	}
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue)
+bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue)
 {
 	// TODO when this assert fails, switch this file to use UT_XML_ version of str*() functions.
 	UT_ASSERT(sizeof(char)==sizeof(XML_Char));
@@ -100,7 +100,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 		if (!UT_cloneString(pOrig,szValue))
 		{
 			UT_DEBUGMSG(("setAttribute: UT_cloneString failed on [%s]\n",szValue));
-			return UT_FALSE;
+			return false;
 		}
 
 		// This function parses out CSS properties, separated by semicolons.
@@ -124,7 +124,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 			if (!*q)
 			{
 				free(pOrig);
-				return UT_FALSE;
+				return false;
 			}
 
 			// zero-out the colon, thus separating into two strings.
@@ -154,7 +154,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 		}
 
 		free(pOrig);
-		return UT_TRUE;
+		return true;
 	}
 	else								// not "PROPS" -- add to attribute list
 	{
@@ -164,7 +164,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 			if (!m_pAttributes)
 			{
 				UT_DEBUGMSG(("setAttribute: could not allocate hash table.\n"));
-				return UT_FALSE;
+				return false;
 			}
 		}
 
@@ -174,12 +174,12 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 		if (!UT_cloneString(copy, szName))
 		{
 			UT_DEBUGMSG(("setAttribute: could not allocate lowercase copy.\n"));
-			return UT_FALSE;
+			return false;
 		}
 
 		UT_lowerString(copy);
 			
-		UT_Bool bRet = (m_pAttributes->addEntry(copy, (char*)szValue, NULL) == 0);
+		bool bRet = (m_pAttributes->addEntry(copy, (char*)szValue, NULL) == 0);
 
 		FREEP(copy);
 
@@ -187,7 +187,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 	}
 }
 
-UT_Bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
+bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szValue)
 {
 	if (!m_pProperties)
 	{
@@ -195,7 +195,7 @@ UT_Bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szVal
 		if (!m_pProperties)
 		{
 			UT_DEBUGMSG(("setProperty: could not allocate hash table.\n"));
-			return UT_FALSE;
+			return false;
 		}
 	}
 
@@ -206,71 +206,71 @@ UT_Bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szVal
 		return (m_pProperties->addEntry((char*)szName, (char*)szValue, NULL) == 0);
 }
 
-UT_Bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
+bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
 {
 	if (!m_pAttributes)
-		return UT_FALSE;
+		return false;
 	if (ndx >= m_pAttributes->getEntryCount())
-		return UT_FALSE;
+		return false;
 	UT_HashEntry * pEntry = m_pAttributes->getNthEntryAlpha(ndx);
 	if (!pEntry)
-		return UT_FALSE;
+		return false;
 	szName = pEntry->pszLeft;
 	szValue = pEntry->pszRight;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
+bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
 {
 	if (!m_pProperties)
-		return UT_FALSE;
+		return false;
 	if (ndx >= m_pProperties->getEntryCount())
-		return UT_FALSE;
+		return false;
 	UT_HashEntry * pEntry = m_pProperties->getNthEntryAlpha(ndx);
 	if (!pEntry)
-		return UT_FALSE;
+		return false;
 	szName = pEntry->pszLeft;
 	szValue = pEntry->pszRight;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
+bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
 {
 	if (!m_pProperties)
-		return UT_FALSE;
+		return false;
 	
 	UT_HashEntry* pEntry = m_pProperties->findEntry((char*)szName);
 	if (!pEntry)
-		return UT_FALSE;
+		return false;
 
 	szValue = pEntry->pszRight;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
+bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szValue) const
 {
 	if (!m_pAttributes)
-		return UT_FALSE;
+		return false;
 	
 	UT_HashEntry* pEntry = m_pAttributes->findEntry((char*)szName);
 	if (!pEntry)
-		return UT_FALSE;
+		return false;
 
 	szValue = pEntry->pszRight;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PP_AttrProp::hasProperties(void) const
+bool PP_AttrProp::hasProperties(void) const
 {
 	if (!m_pProperties)
-		return UT_FALSE;
+		return false;
 
 	return (m_pProperties->getEntryCount() > 0);
 }
 
-UT_Bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const
+bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_Char ** properties) const
 {
 	// return TRUE if each attribute and property is already present
 	// and has the same value as what we have.
@@ -287,9 +287,9 @@ UT_Bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_C
 			UT_ASSERT(p[1] && *p[1]);	// require value for each name
 			const XML_Char * szValue = NULL;
 			if (!getAttribute(p[0],szValue))
-				return UT_FALSE;		// item not present
+				return false;		// item not present
 			if (UT_XML_stricmp(p[1],szValue)!=0)
-				return UT_FALSE;		// item has different value
+				return false;		// item has different value
 			p += 2;
 		}
 	}
@@ -307,17 +307,17 @@ UT_Bool PP_AttrProp::areAlreadyPresent(const XML_Char ** attributes, const XML_C
 			UT_ASSERT(p[1] /* && *p[1] */);	// require value for each name
 			const XML_Char * szValue = NULL;
 			if (!getProperty(p[0],szValue))
-				return UT_FALSE;		// item not present
+				return false;		// item not present
 			if (UT_XML_stricmp(p[1],szValue)!=0)
-				return UT_FALSE;		// item has different value
+				return false;		// item has different value
 			p += 2;
 		}
 	}
 
-	return UT_TRUE;						// everything matched
+	return true;						// everything matched
 }
 
-UT_Bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const
+bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, const XML_Char ** properties) const
 {
 	// return TRUE if any attribute- or property-name is present.
 	// this is like areAlreadyPresent() but we don't care about
@@ -334,7 +334,7 @@ UT_Bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, con
 		{
 			const XML_Char * szValue = NULL;
 			if (getAttribute(p[0],szValue))
-				return UT_TRUE;
+				return true;
 			p += 2;						// skip over value
 		}
 	}
@@ -346,15 +346,15 @@ UT_Bool PP_AttrProp::areAnyOfTheseNamesPresent(const XML_Char ** attributes, con
 		{
 			const XML_Char * szValue = NULL;
 			if (getProperty(p[0],szValue))
-				return UT_TRUE;
+				return true;
 			p += 2;						// skip over value
 		}
 	}
 
-	return UT_FALSE;					// didn't find any
+	return false;					// didn't find any
 }
 
-UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
+bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 {
 #ifdef PT_TEST
 	static UT_uint32 s_Calls = 0;
@@ -371,7 +371,7 @@ UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	UT_ASSERT(pMatch);
 	UT_ASSERT(m_bIsReadOnly && pMatch->m_bIsReadOnly);
 	if (m_checkSum != pMatch->m_checkSum)
-		return UT_FALSE;
+		return false;
 
 #ifdef PT_TEST
 	s_PassedCheckSum++;
@@ -380,12 +380,12 @@ UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	UT_uint32 countMyAttrs = ((m_pAttributes) ? m_pAttributes->getEntryCount() : 0);
 	UT_uint32 countMatchAttrs = ((pMatch->m_pAttributes) ? pMatch->m_pAttributes->getEntryCount() : 0);
 	if (countMyAttrs != countMatchAttrs)
-		return UT_FALSE;
+		return false;
 
 	UT_uint32 countMyProps = ((m_pProperties) ? m_pProperties->getEntryCount() : 0);
 	UT_uint32 countMatchProps = ((pMatch->m_pProperties) ? pMatch->m_pProperties->getEntryCount() : 0);
 	if (countMyProps != countMatchProps)
-		return UT_FALSE;
+		return false;
 
 	UT_uint32 k;
 
@@ -394,9 +394,9 @@ UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 		UT_HashEntry * pMyEntry = m_pAttributes->getNthEntryAlpha(k);
 		UT_HashEntry * pMatchEntry = pMatch->m_pAttributes->getNthEntryAlpha(k);
 		if (UT_XML_stricmp(pMyEntry->pszLeft,pMatchEntry->pszLeft) != 0)
-			return UT_FALSE;
+			return false;
 		if (UT_XML_stricmp(pMyEntry->pszRight,pMatchEntry->pszRight) != 0)
-			return UT_FALSE;
+			return false;
 	}
 
 	for (k=0; (k < countMyProps); k++)
@@ -404,21 +404,21 @@ UT_Bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 		UT_HashEntry * pMyEntry = m_pProperties->getNthEntryAlpha(k);
 		UT_HashEntry * pMatchEntry = pMatch->m_pProperties->getNthEntryAlpha(k);
 		if (UT_XML_stricmp(pMyEntry->pszLeft,pMatchEntry->pszLeft) != 0)
-			return UT_FALSE;
+			return false;
 		if (UT_XML_stricmp(pMyEntry->pszRight,pMatchEntry->pszRight) != 0)
-			return UT_FALSE;
+			return false;
 	}
 
 #ifdef PT_TEST
 	s_Matches++;
 #endif
 
-	return UT_TRUE;
+	return true;
 }
 
 PP_AttrProp * PP_AttrProp::cloneWithReplacements(const XML_Char ** attributes,
 												 const XML_Char ** properties,
-												 UT_Bool bClearProps) const
+												 bool bClearProps) const
 {
 	// create a new AttrProp based upon the given one
 	// and adding or replacing the items given.
@@ -555,7 +555,7 @@ Failed:
 void PP_AttrProp::markReadOnly(void)
 {
 	UT_ASSERT(!m_bIsReadOnly);
-	m_bIsReadOnly = UT_TRUE;
+	m_bIsReadOnly = true;
 	_computeCheckSum();
 }
 

@@ -34,20 +34,20 @@ class s_RTF_ListenerWriteDoc : public PL_Listener
 public:
 	s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 						   IE_Exp_RTF * pie,
-						   UT_Bool bToClipboard);
+						   bool bToClipboard);
 	virtual ~s_RTF_ListenerWriteDoc();
 
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
@@ -55,7 +55,7 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool		signal(UT_uint32 iSignal);
+	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
 	void				_closeSection(void);
@@ -63,7 +63,7 @@ protected:
 	void				_closeSpan(void);
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
-								 UT_Bool bNewLineAfter, PT_AttrPropIndex api);
+								 bool bNewLineAfter, PT_AttrPropIndex api);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	
 	void				_rtf_docfmt(void);
@@ -73,10 +73,10 @@ protected:
 
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;
-	UT_Bool				m_bInSpan;
-	UT_Bool				m_bJustStartingDoc;
-	UT_Bool				m_bJustStartingSection;
-	UT_Bool				m_bToClipboard;
+	bool				m_bInSpan;
+	bool				m_bJustStartingDoc;
+	bool				m_bJustStartingSection;
+	bool				m_bToClipboard;
 	PT_AttrPropIndex	m_apiLastSpan;
 
 	PT_AttrPropIndex	m_apiThisSection;

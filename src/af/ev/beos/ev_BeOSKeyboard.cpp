@@ -67,10 +67,10 @@ filter_result KeybdFilter::Filter(BMessage *message, BHandler **target) {
 	}
 	
 	m_pBeOSFrame->getTopLevelWindow()->Lock();
-	UT_Bool result = ((ev_BeOSKeyboard*)m_pEVKeyboard)->keyPressEvent(m_pBeOSFrame->getCurrentView(), message);
+	bool result = ((ev_BeOSKeyboard*)m_pEVKeyboard)->keyPressEvent(m_pBeOSFrame->getCurrentView(), message);
 	m_pBeOSFrame->getTopLevelWindow()->Unlock();
 		
-	if( result == UT_TRUE)
+	if( result == true)
 		return(B_SKIP_MESSAGE);			
 	
 	return(B_DISPATCH_MESSAGE);			
@@ -86,7 +86,7 @@ ev_BeOSKeyboard::~ev_BeOSKeyboard(void)
 {
 }
 
-UT_Bool ev_BeOSKeyboard::synthesize(XAP_BeOSApp * pBeOSApp, 
+bool ev_BeOSKeyboard::synthesize(XAP_BeOSApp * pBeOSApp, 
 				    XAP_BeOSFrame * pBeOSFrame) {
 	UT_ASSERT(pBeOSFrame); 
 	
@@ -99,11 +99,11 @@ UT_Bool ev_BeOSKeyboard::synthesize(XAP_BeOSApp * pBeOSApp,
 					  	         pBeOSFrame, 
 						         this));
 	pBeWin->Unlock();
-	return UT_TRUE;
+	return true;
 }
 
 //Handle mapping
-UT_Bool ev_BeOSKeyboard::keyPressEvent(AV_View* pView, BMessage *msg)
+bool ev_BeOSKeyboard::keyPressEvent(AV_View* pView, BMessage *msg)
 {
 	EV_EditBits state = 0;
 	EV_EditEventMapperResult result;
@@ -175,7 +175,7 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 
 		switch (nvk) {
 		case EV_NVK__IGNORE__:
-			return UT_FALSE;
+			return false;
 		default:
 			result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM);
 
@@ -184,7 +184,7 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 				// If it is a bogus key and we don't have a sequence in
 				// progress, we should let the system handle it
 				// (this lets things like ALT-F4 work).
-				return UT_FALSE;
+				return false;
 				
 			case EV_EEMR_BOGUS_CONT:
 				// If it is a bogus key but in the middle of a sequence,
@@ -192,20 +192,20 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 				// like Control-X ALT-F4 from killing us -- if they want
 				// to kill us, fine, but they shouldn't be in the middle
 				// of a sequence).
-				return UT_TRUE;
+				return true;
 				
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
 				// no char data to offer
 				invokeKeyboardMethod(pView,pEM,0,0); 
-				return UT_TRUE;
+				return true;
 				
 			case EV_EEMR_INCOMPLETE:
-				return UT_TRUE;
+				return true;
 				
 			default:
 				UT_ASSERT(0);
-				return UT_TRUE;
+				return true;
 			}
 		}
 	}
@@ -221,7 +221,7 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 			// If it is a bogus key and we don't have a sequence in
 			// progress, we should let the system handle it
 			// (this lets things like ALT-F4 work).
-			return UT_FALSE;
+			return false;
 			
 		case EV_EEMR_BOGUS_CONT:
 			// If it is a bogus key but in the middle of a sequence,
@@ -229,23 +229,23 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 			// like Control-X ALT-F4 from killing us -- if they want
 			// to kill us, fine, but they shouldn't be in the middle
 			// of a sequence).
-			return UT_TRUE;
+			return true;
 			
 		case EV_EEMR_COMPLETE:
 			UT_ASSERT(pEM);
 			// no char data to offer
 			invokeKeyboardMethod(pView,pEM,&charData,1); 
-			return UT_TRUE;
+			return true;
 			
 		case EV_EEMR_INCOMPLETE:
-			return UT_TRUE;
+			return true;
 			
 		default:
 			UT_ASSERT(0);
-			return UT_TRUE;
+			return true;
 		}
 	}
-	return UT_FALSE;
+	return false;
 }
 
 /*

@@ -48,7 +48,7 @@ AP_MacToolbar_ZoomCombo::~AP_MacToolbar_ZoomCombo(void)
 
 /*****************************************************************/
 
-UT_Bool AP_MacToolbar_ZoomCombo::populate(void)
+bool AP_MacToolbar_ZoomCombo::populate(void)
 {
 	// clear anything that's already there
 	m_vecContents.clear();
@@ -61,6 +61,6 @@ UT_Bool AP_MacToolbar_ZoomCombo::populate(void)
 	m_vecContents.addItem((void *) "50%");
 	m_vecContents.addItem((void *) "25%");
 
-	return UT_TRUE;
+	return true;
 }
 

@@ -36,18 +36,18 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_pFontWeight			= NULL;
 	m_pFontStyle			= NULL;
 	m_pColor				= NULL;
-	m_bUnderline			= UT_FALSE;
-	m_bOverline			= UT_FALSE;
-	m_bStrikeOut			= UT_FALSE;
+	m_bUnderline			= false;
+	m_bOverline			= false;
+	m_bStrikeOut			= false;
 
-	m_bChangedFontFamily	= UT_FALSE;
-	m_bChangedFontSize		= UT_FALSE;
-	m_bChangedFontWeight	= UT_FALSE;
-	m_bChangedFontStyle		= UT_FALSE;
-	m_bChangedColor			= UT_FALSE;
-	m_bChangedUnderline		= UT_FALSE;
-	m_bChangedOverline		= UT_FALSE;
-	m_bChangedStrikeOut		= UT_FALSE;
+	m_bChangedFontFamily	= false;
+	m_bChangedFontSize		= false;
+	m_bChangedFontWeight	= false;
+	m_bChangedFontStyle		= false;
+	m_bChangedColor			= false;
+	m_bChangedUnderline		= false;
+	m_bChangedOverline		= false;
+	m_bChangedStrikeOut		= false;
 }
 
 XAP_Dialog_FontChooser::~XAP_Dialog_FontChooser(void)
@@ -89,7 +89,7 @@ void XAP_Dialog_FontChooser::setColor(const XML_Char * pColor)
 	CLONEP((char *&)m_pColor, pColor);
 }
 
-void XAP_Dialog_FontChooser::setFontDecoration(UT_Bool bUnderline, UT_Bool bOverline, UT_Bool bStrikeOut)
+void XAP_Dialog_FontChooser::setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut)
 {
 	m_bUnderline = bUnderline;
 	m_bOverline = bOverline;
@@ -102,56 +102,56 @@ XAP_Dialog_FontChooser::tAnswer XAP_Dialog_FontChooser::getAnswer(void) const
 	return m_answer;
 }
 
-UT_Bool XAP_Dialog_FontChooser::getChangedFontFamily(const XML_Char ** pszFontFamily) const
+bool XAP_Dialog_FontChooser::getChangedFontFamily(const XML_Char ** pszFontFamily) const
 {
 	if (pszFontFamily)
 		*pszFontFamily = m_pFontFamily;
 	return m_bChangedFontFamily;
 }
 
-UT_Bool XAP_Dialog_FontChooser::getChangedFontSize(const XML_Char ** pszFontSize) const
+bool XAP_Dialog_FontChooser::getChangedFontSize(const XML_Char ** pszFontSize) const
 {
 	if (pszFontSize)
 		*pszFontSize = m_pFontSize;
 	return m_bChangedFontSize;
 }
 
-UT_Bool XAP_Dialog_FontChooser::getChangedFontWeight(const XML_Char ** pszFontWeight) const
+bool XAP_Dialog_FontChooser::getChangedFontWeight(const XML_Char ** pszFontWeight) const
 {
 	if (pszFontWeight)
 		*pszFontWeight = m_pFontWeight;
 	return m_bChangedFontWeight;
 }
 
-UT_Bool XAP_Dialog_FontChooser::getChangedFontStyle(const XML_Char ** pszFontStyle) const
+bool XAP_Dialog_FontChooser::getChangedFontStyle(const XML_Char ** pszFontStyle) const
 {
 	if (pszFontStyle)
 		*pszFontStyle = m_pFontStyle;
 	return m_bChangedFontStyle;
 }
 
-UT_Bool XAP_Dialog_FontChooser::getChangedColor(const XML_Char ** pszColor) const
+bool XAP_Dialog_FontChooser::getChangedColor(const XML_Char ** pszColor) const
 {
 	if (pszColor)
 		*pszColor = m_pColor;
 	return m_bChangedColor;
 }
 
-UT_Bool XAP_Dialog_FontChooser::getChangedUnderline(UT_Bool * pbUnderline) const
+bool XAP_Dialog_FontChooser::getChangedUnderline(bool * pbUnderline) const
 {
 	if (pbUnderline)
 		*pbUnderline = m_bUnderline;
 	return m_bChangedUnderline;
 }
 
-UT_Bool XAP_Dialog_FontChooser::getChangedOverline(UT_Bool * pbOverline) const
+bool XAP_Dialog_FontChooser::getChangedOverline(bool * pbOverline) const
 {
 	if (pbOverline)
 		*pbOverline = m_bOverline;
 	return m_bChangedOverline;
 }
 
-UT_Bool XAP_Dialog_FontChooser::getChangedStrikeOut(UT_Bool * pbStrikeOut) const
+bool XAP_Dialog_FontChooser::getChangedStrikeOut(bool * pbStrikeOut) const
 {
 	if (pbStrikeOut)
 		*pbStrikeOut = m_bStrikeOut;

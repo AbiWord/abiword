@@ -53,7 +53,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	void					setAllSensitivity(void);
 	void					updateDialog(void);
 	static void				autoupdateLists(UT_Timer * pTimer);
-	UT_Bool					m_bDoExpose;
+	bool					m_bDoExpose;
 
  protected:
 	virtual GtkWidget *		_constructWindow(void);
@@ -80,10 +80,10 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	GList *					m_glFonts;
 	GR_UnixGraphics *		m_pPreviewWidget;
 
-	UT_Bool					m_bManualListStyle;
-	UT_Bool					m_bDestroy_says_stopupdating;
-	UT_Bool					m_bAutoUpdate_happening_now;
-	UT_Bool					m_bisCustomFrameHidden;
+	bool					m_bManualListStyle;
+	bool					m_bDestroy_says_stopupdating;
+	bool					m_bAutoUpdate_happening_now;
+	bool					m_bisCustomFrameHidden;
 	UT_Timer *				m_pAutoUpdateLists;
 
 	GtkWidget *				m_wMainWindow;

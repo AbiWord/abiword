@@ -56,10 +56,10 @@ AP_Dialog_Options::tAnswer AP_Dialog_Options::getAnswer(void) const
 
 inline void Save_Pref_Bool(  XAP_PrefsScheme *pPrefsScheme, 
 						XML_Char const * key, 
-						UT_Bool var ) 
+						bool var ) 
 {
 	XML_Char szBuffer[2] = {0,0};
-	szBuffer[0] = ((var)==UT_TRUE ? '1' : '0'); 
+	szBuffer[0] = ((var)==true ? '1' : '0'); 
 	pPrefsScheme->setValue( key, szBuffer );
 }
 
@@ -81,9 +81,9 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// we have turned OFF PrefsAutoSave.  If so, toggle that value, then force
 	// a prefs save, then update everything else
 	//			shack@uiuc.edu
-	if ( pPrefs->getAutoSavePrefs() == UT_TRUE && _gatherPrefsAutoSave() == UT_FALSE ) {
+	if ( pPrefs->getAutoSavePrefs() == true && _gatherPrefsAutoSave() == false ) {
 
-		pPrefs->setAutoSavePrefs( UT_FALSE );
+		pPrefs->setAutoSavePrefs( false );
 		pPrefs->savePrefsFile();				// TODO: check the results
 	}
 	else {	// otherwise, just set the value
@@ -91,7 +91,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	}
 
 	// try again to make sure we've got an updatable scheme
-	pPrefsScheme = pPrefs->getCurrentScheme(UT_TRUE);
+	pPrefsScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pPrefsScheme);
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -192,7 +192,7 @@ void AP_Dialog_Options::_eventSave(void)
 
 void AP_Dialog_Options::_populateWindowData(void)
 {
-	UT_Bool			b;
+	bool			b;
 	XAP_Prefs		*pPrefs;
 	const XML_Char	*pszBuffer;	
 
@@ -285,23 +285,23 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 void AP_Dialog_Options::_initEnableControls()
 {
 	// spelling
-	_controlEnable( id_CHECK_SPELL_SUGGEST,			UT_FALSE );
-	_controlEnable( id_CHECK_SPELL_HIDE_ERRORS,		UT_FALSE );
-	_controlEnable( id_CHECK_SPELL_MAIN_ONLY,		UT_FALSE );
-	_controlEnable( id_CHECK_SPELL_INTERNET,		UT_FALSE );
-	_controlEnable( id_LIST_DICTIONARY,				UT_FALSE );
-	_controlEnable( id_BUTTON_DICTIONARY_EDIT,		UT_FALSE );
-	_controlEnable( id_BUTTON_IGNORE_EDIT,			UT_FALSE );
+	_controlEnable( id_CHECK_SPELL_SUGGEST,			false );
+	_controlEnable( id_CHECK_SPELL_HIDE_ERRORS,		false );
+	_controlEnable( id_CHECK_SPELL_MAIN_ONLY,		false );
+	_controlEnable( id_CHECK_SPELL_INTERNET,		false );
+	_controlEnable( id_LIST_DICTIONARY,				false );
+	_controlEnable( id_BUTTON_DICTIONARY_EDIT,		false );
+	_controlEnable( id_BUTTON_IGNORE_EDIT,			false );
 
 	// prefs
-	_controlEnable( id_COMBO_PREFS_SCHEME,			UT_FALSE );
+	_controlEnable( id_COMBO_PREFS_SCHEME,			false );
 
 	// view
-	_controlEnable( id_CHECK_VIEW_ALL,				UT_FALSE );
-	_controlEnable( id_CHECK_VIEW_HIDDEN_TEXT,		UT_FALSE );
+	_controlEnable( id_CHECK_VIEW_ALL,				false );
+	_controlEnable( id_CHECK_VIEW_HIDDEN_TEXT,		false );
 
 	// general
-	_controlEnable( id_BUTTON_SAVE,					UT_FALSE );
+	_controlEnable( id_BUTTON_SAVE,					false );
 }
 
 void AP_Dialog_Options::_event_SetDefaults(void)

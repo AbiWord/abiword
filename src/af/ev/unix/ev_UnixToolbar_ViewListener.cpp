@@ -30,7 +30,7 @@ EV_UnixToolbar_ViewListener::EV_UnixToolbar_ViewListener(EV_UnixToolbar * pUnixT
 	m_pView = pView;
 }
 
-UT_Bool EV_UnixToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
+bool EV_UnixToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView == m_pView);
 	

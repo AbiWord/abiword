@@ -79,7 +79,7 @@ const XML_Char * AP_Prefs::getBuiltinSchemeName(void) const
 }
 
 
-UT_Bool AP_Prefs::loadBuiltinPrefs(void)
+bool AP_Prefs::loadBuiltinPrefs(void)
 {
 	// we have a built-in table of name/value pairs
 	// (see {xap,ap}_Prefs_SchemeIds.h) that we
@@ -95,7 +95,7 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 	
 	XAP_PrefsScheme * pScheme = new XAP_PrefsScheme(this, szBuiltinSchemeName);
 	if (!pScheme)
-		return UT_FALSE;
+		return false;
 
 	struct _table
 	{
@@ -121,7 +121,7 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 	{
 		XML_Char *xp = UT_decodeXMLstring(_t[k].m_szValue);
 		UT_DEBUGMSG(("DEFAULT %s |%s|%s|\n", _t[k].m_szKey, _t[k].m_szValue, xp));
-		UT_Bool bOK = pScheme->setValue(_t[k].m_szKey, xp);
+		bool bOK = pScheme->setValue(_t[k].m_szKey, xp);
 		FREEP(xp);
 		if (!bOK)
 		{
@@ -136,7 +136,7 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 	
 Failed:
 	DELETEP(pScheme);
-	return UT_FALSE;
+	return false;
 }
 
 void AP_Prefs::overlaySystemPrefs(void)

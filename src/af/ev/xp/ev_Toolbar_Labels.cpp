@@ -101,14 +101,14 @@ EV_Toolbar_LabelSet::~EV_Toolbar_LabelSet(void)
 	FREEP(m_labelTable);
 }
 
-UT_Bool EV_Toolbar_LabelSet::setLabel(XAP_Toolbar_Id id,
+bool EV_Toolbar_LabelSet::setLabel(XAP_Toolbar_Id id,
 									  const char * szToolbarLabel,
 									  const char * szIconName,
 									  const char * szToolTip,
 									  const char * szStatusMsg)
 {
 	if ((id < m_first) || (id > m_last))
-		return UT_FALSE;
+		return false;
 
 	UT_uint32 index = (id - m_first);
 	DELETEP(m_labelTable[index]);

@@ -39,18 +39,18 @@ PhImage_t *AP_QNXToolbar_Icons::getPixmapForIcon(const char * szIconName)
 	PhImage_t *outimage = NULL;
 
 	if (!szIconName || !*szIconName)
-		return UT_FALSE;
+		return false;
 	
 	const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
 	
 	//printf("Looking for icon [%s] \n", szIconName);
-	UT_Bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
+	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
 	if (!bFound)
-		return UT_FALSE;
+		return false;
 
 	if (!UT_Xpm2Bitmap(pIconData, sizeofIconData, &outimage)) 
-		return UT_FALSE;
+		return false;
 
 	return outimage;
 }

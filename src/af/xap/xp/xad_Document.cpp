@@ -74,7 +74,7 @@ const char * AD_Document::getFilename(void) const
 
 // Methods for maintaining document-wide "Ignore All" list
 
-UT_Bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
+bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 {
 	UT_ASSERT(m_pIgnoreList);
 
@@ -86,7 +86,7 @@ UT_Bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 		UT_DEBUGMSG(("mem failure adding word to dictionary\n"));
 		FREEP(key);
 		FREEP(copy);
-		return UT_FALSE;
+		return false;
 	}
 
 	for (UT_uint32 i = 0; i < len; i++)
@@ -104,12 +104,12 @@ UT_Bool AD_Document::appendIgnore(const UT_UCSChar * pWord, UT_uint32 len)
 	FREEP(key);
 
 	if (iRes == 0)
-		return UT_TRUE;
+		return true;
 	else
-		return UT_FALSE;
+		return false;
 }
 
-UT_Bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
+bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
 {
 	UT_ASSERT(m_pIgnoreList);
 
@@ -118,7 +118,7 @@ UT_Bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
 	{
 		UT_DEBUGMSG(("mem failure looking up word in ignore all list\n"));
 		FREEP(key);
-		return UT_FALSE;
+		return false;
 	}
 
 	for (UT_uint32 i = 0; i < len; i++)
@@ -131,21 +131,21 @@ UT_Bool AD_Document::isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const
 	FREEP(key);
 
 	if (pHE != NULL)
-		return UT_TRUE;
+		return true;
 	else 
-		return UT_FALSE;
+		return false;
    
 }
 
   
-UT_Bool AD_Document::enumIgnores(UT_uint32 k, const UT_UCSChar * pszWord) const
+bool AD_Document::enumIgnores(UT_uint32 k, const UT_UCSChar * pszWord) const
 {
          UT_ASSERT(m_pIgnoreList);
   
 	 if ((int)k >= m_pIgnoreList->getEntryCount())
          {
 	          pszWord = NULL;
-		  return UT_FALSE;
+		  return false;
 	 }
    
 	 UT_HashEntry * pHE = m_pIgnoreList->getNthEntry(k);
@@ -154,10 +154,10 @@ UT_Bool AD_Document::enumIgnores(UT_uint32 k, const UT_UCSChar * pszWord) const
      
 	 pszWord = (UT_UCSChar*) pHE->pData;
 
-	 return UT_TRUE;
+	 return true;
 }
   
-UT_Bool AD_Document::clearIgnores(void)
+bool AD_Document::clearIgnores(void)
 {
           UT_ASSERT(m_pIgnoreList);
      
@@ -173,7 +173,7 @@ UT_Bool AD_Document::clearIgnores(void)
    
 	  UT_ASSERT(m_pIgnoreList);
      
-	  return UT_TRUE;
+	  return true;
 }
 
 

@@ -109,20 +109,20 @@ EV_Win32Toolbar::~EV_Win32Toolbar(void)
 	_releaseListener();
 }
 
-UT_Bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
+bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 									  UT_UCSChar * pData,
 									  UT_uint32 dataLength)
 {
 	// user selected something from this toolbar.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
 	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 	if (!pAction)
-		return UT_FALSE;
+		return false;
 
 	AV_View * pView = m_pWin32Frame->getCurrentView();
 
@@ -140,14 +140,14 @@ UT_Bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 			UT_ASSERT(UT_TODO);
 			
 			// can safely ignore this event
-			return UT_TRUE;
+			return true;
 		}
 	}
 #endif 
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
-		return UT_FALSE;
+		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pWin32App->getEditMethodContainer();
 	UT_ASSERT(pEMC);
@@ -156,7 +156,7 @@ UT_Bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	invokeToolbarMethod(pView,pEM,pData,dataLength);
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -205,7 +205,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 				case CBN_SELCHANGE:
 				{
 					// are we currently dropped down?
-					UT_Bool bDropped = (UT_Bool) SendMessage(hWnd, CB_GETDROPPEDSTATE, 0, 0);
+					bool bDropped = (bool) SendMessage(hWnd, CB_GETDROPPEDSTATE, 0, 0);
 					
 					if (!bDropped)
 						break;
@@ -339,7 +339,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, W
 
 /*****************************************************************/
 
-UT_Bool EV_Win32Toolbar::synthesize(void)
+bool EV_Win32Toolbar::synthesize(void)
 {
 	// create a toolbar from the info provided.
 
@@ -347,26 +347,26 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	// get toolbar button appearance from the preferences
 	////////////////////////////////////////////////////////////////
 
-	UT_Bool bIcons = UT_TRUE;
-	UT_Bool bText = UT_FALSE;
+	bool bIcons = true;
+	bool bText = false;
 	const XML_Char * szValue = NULL;
 	m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
 	UT_ASSERT((szValue) && (*szValue));
 
 	if (UT_XML_stricmp(szValue,"icon") == 0)
 	{
-		bIcons = UT_TRUE;
-		bText = UT_FALSE;
+		bIcons = true;
+		bText = false;
 	}
 	else if (UT_XML_stricmp(szValue,"text") == 0)
 	{
-		bIcons = UT_FALSE;
-		bText = UT_TRUE;
+		bIcons = false;
+		bText = true;
 	}
 	else if (UT_XML_stricmp(szValue,"both") == 0)
 	{
-		bIcons = UT_TRUE;
-		bText = UT_TRUE;
+		bIcons = true;
+		bText = true;
 	}
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
@@ -380,7 +380,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 
 	HWND hwndParent = m_pWin32Frame->getToolbarWindow();
 	if(hwndParent == NULL)
-		return UT_FALSE;
+		return false;
 
 	// NOTE: this toolbar will get placed later, by frame or rebar
 
@@ -433,7 +433,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	// TODO: is there any advantage to building up all the TBBUTTONs at once
 	//		 and then adding them en masse, instead of one at a time? 
 	UINT last_id=0;
-	UT_Bool bControls = UT_FALSE;
+	bool bControls = false;
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -460,24 +460,24 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 				
 				last_id = u;
 
-				UT_Bool bButton = UT_FALSE;
+				bool bButton = false;
 
 				switch (pAction->getItemType())
 				{
 				case EV_TBIT_PushButton:
-					bButton = UT_TRUE;
+					bButton = true;
 					tbb.fsState = TBSTATE_ENABLED; 
 					tbb.fsStyle = TBSTYLE_BUTTON;     
 					break;
 
 				case EV_TBIT_ToggleButton:
-					bButton = UT_TRUE;
+					bButton = true;
 					tbb.fsState = TBSTATE_ENABLED; 
 					tbb.fsStyle = TBSTYLE_CHECK;     
 					break;
 
 				case EV_TBIT_GroupButton:
-					bButton = UT_TRUE;
+					bButton = true;
 					tbb.fsState = TBSTATE_ENABLED; 
 					tbb.fsStyle = TBSTYLE_CHECKGROUP;     
 					break;
@@ -494,7 +494,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 							iWidth = pControl->getPixelWidth();
 						}
 						
-						bControls = UT_TRUE;
+						bControls = true;
 						tbb.fsStyle = TBSTYLE_SEP;   
 						tbb.iBitmap = iWidth;
 
@@ -618,7 +618,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 					if (bIcons)
 					{
 						HBITMAP hBitmap;
-						const UT_Bool bFoundIcon =
+						const bool bFoundIcon =
 							AP_Win32Toolbar_Icons::getBitmapForIcon(m_hwnd,
 																	MY_MAXIMUM_BITMAP_X,
 																	MY_MAXIMUM_BITMAP_Y,
@@ -719,7 +719,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 
 	_addToRebar();	// add this bar to the rebar
 
-	return UT_TRUE;
+	return true;
 }
 
 HWND EV_Win32Toolbar::getWindow(void) const
@@ -752,28 +752,28 @@ void EV_Win32Toolbar::_releaseListener(void)
 	m_lid = 0;
 }
 	
-UT_Bool EV_Win32Toolbar::bindListenerToView(AV_View * pView)
+bool EV_Win32Toolbar::bindListenerToView(AV_View * pView)
 {
 	if(m_hwnd == NULL)
-		return UT_FALSE;
+		return false;
 
 	_releaseListener();
 	
 	m_pViewListener = new EV_Win32Toolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-	UT_Bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
+	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 
 	refreshToolbar(pView, AV_CHG_ALL);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
+bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
 	if(m_hwnd == NULL)
-		return UT_FALSE;
+		return false;
 
 	// make the toolbar reflect the current state of the document
 	// at the current insertion point or selection.
@@ -812,10 +812,10 @@ UT_Bool EV_Win32Toolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_Win32Toolbar::_refreshID(XAP_Toolbar_Id id)
+bool EV_Win32Toolbar::_refreshID(XAP_Toolbar_Id id)
 {
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -829,7 +829,7 @@ UT_Bool EV_Win32Toolbar::_refreshID(XAP_Toolbar_Id id)
 	return _refreshItem(pView, pAction, id);
 }
 
-UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id)
+bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id)
 {
 	const char * szState = 0;
 	EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
@@ -840,7 +840,7 @@ UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action *
 	{
 		case EV_TBIT_PushButton:
 			{
-				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
 				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
 
@@ -853,8 +853,8 @@ UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action *
 		case EV_TBIT_ToggleButton:
 		case EV_TBIT_GroupButton:
 			{
-				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-				UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
+				bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				bool bToggled = EV_TIS_ShouldBeToggled(tis);
 				
 				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
 				SendMessage(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
@@ -868,8 +868,8 @@ UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action *
 
 		case EV_TBIT_ComboBox:
 			{
-				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-				UT_Bool bString = EV_TIS_ShouldUseString(tis);
+				bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				bool bString = EV_TIS_ShouldUseString(tis);
 
 				HWND hwndCombo = _getControlWindow(id);
 				UT_ASSERT(hwndCombo);
@@ -899,10 +899,10 @@ UT_Bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action *
 			break;
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
+bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 {
 	UT_ASSERT(lParam);
 	LPTOOLTIPTEXT lpttt = (LPTOOLTIPTEXT) lParam;
@@ -913,7 +913,7 @@ UT_Bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 	
 	EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
 	if (!pLabel)
-		return UT_FALSE;
+		return false;
 
 	// ok, gotcha
 	const char * szToolTip = pLabel->getToolTip();
@@ -937,7 +937,7 @@ UT_Bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 		lpttt->lpszText[0] = '\0';
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 

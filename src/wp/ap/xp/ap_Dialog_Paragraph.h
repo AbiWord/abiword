@@ -46,8 +46,8 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// answer from dialog
 	typedef enum { a_OK, a_CANCEL, a_TABS } tAnswer;
 
-	UT_Bool setDialogData(const XML_Char ** pProps);
- 	UT_Bool getDialogData(const XML_Char **& pProps);
+	bool setDialogData(const XML_Char ** pProps);
+ 	bool getDialogData(const XML_Char **& pProps);
 
 	AP_Dialog_Paragraph::tAnswer	getAnswer(void) const;
 	
@@ -74,7 +74,7 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	struct _sControlData
 	{
 		void * pData;
-		UT_Bool bChanged;
+		bool bChanged;
 	};
 	typedef struct _sControlData sControlData;
 	
@@ -90,9 +90,9 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	const XML_Char *	_makeAbsolute(const XML_Char * value);
 
 	void				_doSpin(tControl edit, UT_sint32 amt);
-	virtual void		_syncControls(tControl changed, UT_Bool bAll = UT_FALSE);
+	virtual void		_syncControls(tControl changed, bool bAll = false);
 
-	UT_Bool				_wasChanged(tControl item);
+	bool				_wasChanged(tControl item);
 	
 	// final dialog answer
 	tAnswer					m_answer;

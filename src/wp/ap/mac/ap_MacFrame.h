@@ -32,14 +32,14 @@ public:
 	AP_MacFrame(AP_MacFrame * f);
 	virtual ~AP_MacFrame(void);
 
-	virtual UT_Bool				initialize(void);
+	virtual bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
 	virtual UT_Error			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Bool				initFrameData(void);
+	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
-	virtual UT_Bool				close(void);
-	virtual UT_Bool				raise(void);
-	virtual UT_Bool				show(void);
+	virtual bool				close(void);
+	virtual bool				raise(void);
+	virtual bool				show(void);
 
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void);

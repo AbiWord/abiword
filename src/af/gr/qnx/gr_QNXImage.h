@@ -39,8 +39,8 @@ public:
 
 	virtual UT_sint32	getDisplayWidth(void) const;
 	virtual UT_sint32	getDisplayHeight(void) const;
-	virtual UT_Bool		convertToBuffer(UT_ByteBuf** ppBB) const;
-	virtual UT_Bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
    	void			setData(Fatmap * image) { m_image = image; }
 	Fatmap *			getData(void) const { return m_image; }

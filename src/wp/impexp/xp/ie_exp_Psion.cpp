@@ -71,17 +71,17 @@ public:
 	virtual ~s_Psion_Listener(void);
 
 	// Overriding methods from the base class
-	virtual UT_Bool populate(PL_StruxFmtHandle sfh,
+	virtual bool populate(PL_StruxFmtHandle sfh,
 	                         const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool populateStrux(PL_StruxDocHandle sdh,
+	virtual bool populateStrux(PL_StruxDocHandle sdh,
 	                              const PX_ChangeRecord * pcr,
 	                              PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool change(PL_StruxFmtHandle sfh,
+	virtual bool change(PL_StruxFmtHandle sfh,
 	                       const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool insertStrux(PL_StruxFmtHandle sfh,
 	                            const PX_ChangeRecord * pcr,
 	                            PL_StruxDocHandle sdh,
 	                            PL_ListenerId lid,
@@ -90,10 +90,10 @@ public:
 	                                             PL_ListenerId lid,
 	                                             PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool signal(UT_uint32 iSignal);
+	virtual bool signal(UT_uint32 iSignal);
 
 	// New public methods
-	virtual UT_Bool finishDocument(void);
+	virtual bool finishDocument(void);
 
 protected:
 	// New data
@@ -103,19 +103,19 @@ protected:
 	UT_ByteBuf m_currentParagraphText;
 	psiconv_paragraph_layout m_currentParagraphPLayout;
 	psiconv_character_layout m_currentParagraphCLayout;
-	UT_Bool m_inParagraph;
+	bool m_inParagraph;
 	psiconv_in_line_layouts m_currentParagraphInLines;
 
 	// New methods
-	UT_Bool _writeText(const UT_UCSChar *p, UT_uint32 inlength,
+	bool _writeText(const UT_UCSChar *p, UT_uint32 inlength,
 	                   UT_uint32 *outlength);
-	UT_Bool _openParagraph(PT_AttrPropIndex api);
-	UT_Bool _closeParagraph(void);
-	UT_Bool _addInLine(PT_AttrPropIndex api,UT_uint32 textlen);
+	bool _openParagraph(PT_AttrPropIndex api);
+	bool _closeParagraph(void);
+	bool _addInLine(PT_AttrPropIndex api,UT_uint32 textlen);
 	static void _parseColor(const char *input,psiconv_color color);
 	static int _hexDigitToDec(char in);
 	static void _parseTab(char *input,psiconv_tab tab);
-	static UT_Bool _parseTabs(const char *input,psiconv_tab_list tabs);
+	static bool _parseTabs(const char *input,psiconv_tab_list tabs);
 };
 
 
@@ -152,7 +152,7 @@ UT_Error IE_Exp_Psion::_writeDocument(void)
 	char buf[MAXBUFLEN];
 	char *pByte;
 	unsigned int i;
-	UT_Bool bRes;
+	bool bRes;
 	int iRes;
 	psiconv_file psionfile;
 	psiconv_buffer psiondump;
@@ -221,7 +221,7 @@ IE_Exp_Psion_TextEd::~IE_Exp_Psion_TextEd(void)
 {
 }
 
-UT_Bool IE_Exp_Psion_TextEd::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_Psion_TextEd::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".psitext") == 0);
 }
@@ -234,18 +234,18 @@ UT_Error IE_Exp_Psion_TextEd::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool IE_Exp_Psion_TextEd::GetDlgLabels(const char ** pszDesc,
+bool IE_Exp_Psion_TextEd::GetDlgLabels(const char ** pszDesc,
                                    const char ** pszSuffixList,
                                    IEFileType * ft)
 {
 	*pszDesc = "Psion TextEd (.psitext)";
 	*pszSuffixList = "*.psitext";
 	*ft = IEFT_Psion_TextEd;
-	return UT_TRUE;
+	return true;
 }
 
 
-UT_Bool IE_Exp_Psion_TextEd::SupportsFileType(IEFileType ft)
+bool IE_Exp_Psion_TextEd::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_Psion_TextEd == ft);
 }
@@ -284,7 +284,7 @@ IE_Exp_Psion_Word::~IE_Exp_Psion_Word(void)
 {
 }
 
-UT_Bool IE_Exp_Psion_Word::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_Psion_Word::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".psiword") == 0);
 }
@@ -297,18 +297,18 @@ UT_Error IE_Exp_Psion_Word::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool IE_Exp_Psion_Word::GetDlgLabels(const char ** pszDesc,
+bool IE_Exp_Psion_Word::GetDlgLabels(const char ** pszDesc,
                                    const char ** pszSuffixList,
                                    IEFileType * ft)
 {
 	*pszDesc = "Psion Word (.psiword)";
 	*pszSuffixList = "*.psiword";
 	*ft = IEFT_Psion_Word;
-	return UT_TRUE;
+	return true;
 }
 
 
-UT_Bool IE_Exp_Psion_Word::SupportsFileType(IEFileType ft)
+bool IE_Exp_Psion_Word::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_Psion_Word == ft);
 }
@@ -364,7 +364,7 @@ s_Psion_Listener::~s_Psion_Listener(void)
 }
 
 // Standard listener callback for in-block data
-UT_Bool s_Psion_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_Psion_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                                    const PX_ChangeRecord * pcr)
 {
 	const PX_ChangeRecord_Span * pcrs;
@@ -378,24 +378,24 @@ UT_Bool s_Psion_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			bi = pcrs->getBufIndex();
 			if (! _writeText(m_pDocument->getPointer(bi),pcrs->getLength(),
 			                 &textlen))
-				return UT_FALSE;
+				return false;
 			api = pcr->getIndexAP();
 			return _addInLine(api,textlen);
 		case PX_ChangeRecord::PXT_InsertObject:
 			UT_DEBUGMSG(("Insert Object (ignored)\n"));
-			return UT_TRUE;
+			return true;
 		case PX_ChangeRecord::PXT_InsertFmtMark:
 			UT_DEBUGMSG(("Insert Format Mark (ignored)\n"));
-			return UT_TRUE;
+			return true;
 		default:
 			UT_ASSERT(0);
-			return UT_FALSE;
+			return false;
 	}
 
 }
 
 // Standard listener callback for block and section data
-UT_Bool s_Psion_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_Psion_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
                                         const PX_ChangeRecord * pcr,
                                         PL_StruxFmtHandle * psfh)
 {
@@ -406,33 +406,33 @@ UT_Bool s_Psion_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	switch (pcrx->getStruxType()) {
 		case PTX_Block:
 			if (!_closeParagraph())
-				return UT_FALSE;
+				return false;
 			if (!_openParagraph(pcr->getIndexAP()))
-				return UT_FALSE;
-			return UT_TRUE;
+				return false;
+			return true;
 			break;
 		case PTX_Section:
 			UT_DEBUGMSG(("New section (ignored)\n"));
 			if (!_closeParagraph())
-				return UT_FALSE;
-			return UT_TRUE;
+				return false;
+			return true;
 			break;
 		default:
 			UT_ASSERT(0);
-			 return UT_FALSE;
+			 return false;
 	}
 }
 
 // Standard listener callback that should never be called
-UT_Bool s_Psion_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_Psion_Listener::change(PL_StruxFmtHandle /*sfh*/,
                                  const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);  // this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
 // Standard listener callback that should never be called
-UT_Bool s_Psion_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_Psion_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
                 const PX_ChangeRecord * /*pcr*/,
                 PL_StruxDocHandle /*sdh*/,
                 PL_ListenerId /* lid */,
@@ -441,21 +441,21 @@ UT_Bool s_Psion_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
                                             PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);    // this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
 // Standard listener callback that should never be called
-UT_Bool s_Psion_Listener::signal(UT_uint32 /* iSignal */)
+bool s_Psion_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 // Add some text to the current paragraph. Returns the length of the 
 // written text in outLength; this may be more or less than inLength,
 // because some input characters may need to be represented by more than one
 // output character, and because we may ignore some input characters.
-UT_Bool s_Psion_Listener::_writeText(const UT_UCSChar *p, UT_uint32 inLength,
+bool s_Psion_Listener::_writeText(const UT_UCSChar *p, UT_uint32 inLength,
                                      UT_uint32 *outLength)
 {
 	class UT_Wctomb wctomb("CP1252");
@@ -478,40 +478,40 @@ UT_Bool s_Psion_Listener::_writeText(const UT_UCSChar *p, UT_uint32 inLength,
 			// TODO
 		}
 		if (!m_currentParagraphText.append( (UT_Byte *) pC,mbLen))
-			return UT_FALSE;
+			return false;
 		if (outLength)
 			*outLength += mbLen;
 	}
-	return UT_TRUE;
+	return true;
 }
 
 // Open a new paragraph, and set paragraph-level layout.
-UT_Bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
+bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 {
 	const PP_AttrProp * pAP = NULL;
 	const XML_Char* szValue;
 	char *tempstr;
-	UT_Bool widowsorphans;
+	bool widowsorphans;
 
 	// New paragraph, new text.
 	m_currentParagraphText.truncate(0);
 	// Set the base layout of this paragraph.
 	// TODO: This should be based on the current style!
 	if (!(m_currentParagraphPLayout = psiconv_basic_paragraph_layout()))
-		return UT_FALSE;
+		return false;
 	if (!(m_currentParagraphCLayout = psiconv_basic_character_layout())) {
 		psiconv_free_paragraph_layout(m_currentParagraphPLayout);
-		return UT_FALSE;
+		return false;
 	}
 	// New list of in-line layout
 	if (!(m_currentParagraphInLines = 
 	              psiconv_list_new(sizeof(struct psiconv_in_line_layout_s)))) {
 		psiconv_free_character_layout(m_currentParagraphCLayout);
 		psiconv_free_paragraph_layout(m_currentParagraphPLayout);
-		return UT_FALSE;
+		return false;
 	}
 	// We need to close the paragraph too.
-	m_inParagraph = UT_TRUE;
+	m_inParagraph = true;
 	
 	// Check for all possible paragraph-level layout.
 	if (m_pDocument->getAttrProp(api,&pAP) && pAP) {
@@ -565,7 +565,7 @@ UT_Bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 		}
 		// Set widowsorphans if either widows or orphans is set and 
 		// unequal to "0".
-		widowsorphans = UT_FALSE;
+		widowsorphans = false;
 		if (pAP->getProperty((XML_Char*)"widows",szValue)) 
 			widowsorphans |= UT_strcmp((const char *) szValue,"0");
 		if (pAP->getProperty((XML_Char*)"orphans",szValue)) 
@@ -581,16 +581,16 @@ UT_Bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 				psiconv_free_character_layout(m_currentParagraphCLayout);
 				psiconv_free_paragraph_layout(m_currentParagraphPLayout);
 				psiconv_list_free(m_currentParagraphInLines);
-				return UT_FALSE;
+				return false;
 			}
 		// TODO: Bullets
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 // Close a paragraph, and write the result to the exporter object.
-UT_Bool s_Psion_Listener::_closeParagraph(void)
+bool s_Psion_Listener::_closeParagraph(void)
 {
 	struct psiconv_paragraph_s para;
 	// It is safe to call us when we are not actually in a paragraph;
@@ -623,9 +623,9 @@ UT_Bool s_Psion_Listener::_closeParagraph(void)
 		if (psiconv_list_add(m_pie->m_paragraphs,&para))
 			goto ERROR3;
 		
-		m_inParagraph = UT_FALSE;
+		m_inParagraph = false;
 	}
-	return UT_TRUE;
+	return true;
 
 // Cleanup if something goes wrong halfway-through.
 ERROR3:
@@ -636,11 +636,11 @@ ERROR2:
 	psiconv_free_character_layout(para.base_character);
 	free(para.text);
 ERROR1:
-	return UT_FALSE;
+	return false;
 }
 
 // Add current in-line layout
-UT_Bool s_Psion_Listener::_addInLine(PT_AttrPropIndex api,UT_uint32 textlen)
+bool s_Psion_Listener::_addInLine(PT_AttrPropIndex api,UT_uint32 textlen)
 {
 	const PP_AttrProp * pAP = NULL;
 	const XML_Char* szValue;
@@ -648,12 +648,12 @@ UT_Bool s_Psion_Listener::_addInLine(PT_AttrPropIndex api,UT_uint32 textlen)
 	char *tempstr;
 
 	if (!m_inParagraph)
-		return UT_FALSE;
+		return false;
 
 	curInLine.length = textlen;
 	if (!(curInLine.layout =
 	                psiconv_clone_character_layout(m_currentParagraphCLayout)))
-		return UT_FALSE;
+		return false;
 
 	if (m_pDocument->getAttrProp(api,&pAP) && pAP) {
 		if (pAP->getProperty((XML_Char*)"font-family",szValue)) {
@@ -718,16 +718,16 @@ UT_Bool s_Psion_Listener::_addInLine(PT_AttrPropIndex api,UT_uint32 textlen)
 	}
 	if (psiconv_list_add(m_currentParagraphInLines,&curInLine))
 		goto ERROR;
-	return UT_TRUE;
+	return true;
 ERROR:
 	psiconv_free_character_layout(curInLine.layout);
-	return UT_FALSE;
+	return false;
 }
 
 // Close remaining paragraphs and sections. We could do this in the
 // destructor, except that it may not be safe to call these routines
 // if something went wrong half-way through.
-UT_Bool s_Psion_Listener::finishDocument(void)
+bool s_Psion_Listener::finishDocument(void)
 {
 	return _closeParagraph();
 }
@@ -779,7 +779,7 @@ void s_Psion_Listener::_parseTab(char *input,psiconv_tab tab)
 
 
 // Parse tabs into input.
-UT_Bool s_Psion_Listener::_parseTabs(const char *input,psiconv_tab_list tabs)
+bool s_Psion_Listener::_parseTabs(const char *input,psiconv_tab_list tabs)
 {
 	const char *currentPos;
 	const char *nextPos;
@@ -792,16 +792,16 @@ UT_Bool s_Psion_Listener::_parseTabs(const char *input,psiconv_tab_list tabs)
 		if (!nextPos)
 			nextPos = strchr(currentPos,'\000');
 		if (!(copy = (char *) malloc(nextPos - currentPos + 1)))
-			return UT_FALSE;
+			return false;
 		memcpy(copy,currentPos,nextPos-currentPos);
 		copy[nextPos - currentPos] = '\000';
 		_parseTab(copy,&tab);
 		free(copy);
 		if (psiconv_list_add(tabs,&tab))
-			return UT_FALSE;
+			return false;
 		currentPos = nextPos;
 		while ((*currentPos == ',' || *currentPos == ' '))
 			currentPos++;
 	}
-	return UT_TRUE;
+	return true;
 }

@@ -42,8 +42,8 @@ public:
 	XAP_UnixFontManager(void);
 	~XAP_UnixFontManager(void);
 
-	UT_Bool					setFontPath(const char * searchpath);
-	UT_Bool					scavengeFonts(void);
+	bool					setFontPath(const char * searchpath);
+	bool					scavengeFonts(void);
 
 	UT_uint32				getCount(void);
 

@@ -28,7 +28,7 @@ class ap_UnixViewListener : public ap_ViewListener
 {
 public:
 	ap_UnixViewListener(XAP_Frame * pFrame);
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 };
 
 #endif /* AP_UNIXVIEWLISTENER_H */

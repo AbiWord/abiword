@@ -23,7 +23,7 @@
 class UT_RGBColor;
 class BBitmap;
 
-UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
+bool UT_Xpm2Bitmap(const char ** pIconData,
 		      UT_uint32 sizeofData,
 		      BBitmap ** pBitmap);
 

@@ -121,13 +121,13 @@ BOOL CALLBACK XAP_Win32DialogHelper::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 }
 
 
-void XAP_Win32DialogHelper::checkButton(UT_sint32 controlId, UT_Bool bChecked)
+void XAP_Win32DialogHelper::checkButton(UT_sint32 controlId, bool bChecked)
 {
 	_assertValidDlgHandle(m_hDlg);
 	CheckDlgButton(m_hDlg, controlId, bChecked ? BST_CHECKED : BST_UNCHECKED);
 }
 
-void XAP_Win32DialogHelper::enableControl(UT_sint32 controlId, UT_Bool bChecked)
+void XAP_Win32DialogHelper::enableControl(UT_sint32 controlId, bool bChecked)
 {
 	_assertValidDlgHandle(m_hDlg);
 	EnableWindow(GetDlgItem(m_hDlg, controlId), bChecked ? TRUE : FALSE);
@@ -252,22 +252,22 @@ void XAP_Win32DialogHelper::getControlText(	UT_sint32 controlId,
 	GetDlgItemText(m_hDlg, controlId, p_buffer, Buffer_length);
 }
 
-UT_Bool XAP_Win32DialogHelper::isControlVisible(UT_sint32 controlId) const
+bool XAP_Win32DialogHelper::isControlVisible(UT_sint32 controlId) const
 {
 	_assertValidDlgHandle(m_hDlg);
 	HWND hControl = GetDlgItem(m_hDlg, controlId);
 	if (hControl) {
 		return (GetWindowLong(m_hDlg, GWL_STYLE) & WS_VISIBLE) ?
-				UT_TRUE : UT_FALSE;
+				true : false;
 	}
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_Win32DialogHelper::isParentFrame(const XAP_Win32Frame& frame) const
+bool XAP_Win32DialogHelper::isParentFrame(const XAP_Win32Frame& frame) const
 {
 	_assertValidDlgHandle(m_hDlg);
 	return ((HWND)GetWindowLong(m_hDlg, GWL_HWNDPARENT) ==
-		frame.getTopLevelWindow()) ? UT_TRUE : UT_FALSE;
+		frame.getTopLevelWindow()) ? true : false;
 }
 
 void XAP_Win32DialogHelper::setParentFrame(const XAP_Win32Frame* pFrame)

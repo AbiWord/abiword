@@ -58,7 +58,7 @@ class AP_QNXDialog_Spell: public AP_Dialog_Spell
    char * _convertToMB(UT_UCSChar *wword);
    UT_UCSChar * _convertFromMB(char *word);
    
-   UT_Bool m_bCancelled;
+   bool m_bCancelled;
    short m_iSelectedRow;
    
    // pointers to widgets we need to query/set

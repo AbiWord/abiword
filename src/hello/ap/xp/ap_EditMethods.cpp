@@ -131,9 +131,9 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 /*****************************************************************/
 
 #define F(fn)		ap_EditMethods::fn
-#define Defun(fn)	UT_Bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData *   pCallData  )
-#define Defun0(fn)	UT_Bool F(fn)(AV_View* /*pAV_View*/, EV_EditMethodCallData * /*pCallData*/)
-#define Defun1(fn)	UT_Bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData * /*pCallData*/)
+#define Defun(fn)	bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData *   pCallData  )
+#define Defun0(fn)	bool F(fn)(AV_View* /*pAV_View*/, EV_EditMethodCallData * /*pCallData*/)
+#define Defun1(fn)	bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData * /*pCallData*/)
 #define EX(fn)		F(fn)(pAV_View, pCallData)
 
 
@@ -141,17 +141,17 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 Defun1(Test_Dump)
 {
-	return UT_TRUE;
+	return true;
 }
 #endif
 
 Defun1(noop)
 {
 	// this is a no-op, so unbound menus don't assert at trade shows
-	return UT_TRUE;
+	return true;
 }
 
-static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
+static bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 {
 	UT_ASSERT(pFrame);
 
@@ -168,7 +168,7 @@ static UT_Bool s_doAboutDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 	// gets the urge to make it safe that way)
 	pDialog->runModal(pFrame);
 
-	UT_Bool bOK = UT_TRUE;
+	bool bOK = true;
 
 	pDialogFactory->releaseDialog(pDialog);
 
@@ -182,7 +182,7 @@ Defun1(dlgAbout)
 
 	s_doAboutDlg(pFrame, XAP_DIALOG_ID_ABOUT);
 
-	return UT_TRUE;
+	return true;
 }
 
 Defun(closeWindow)
@@ -203,7 +203,7 @@ Defun(closeWindow)
 	pApp->forgetFrame(pFrame);
 	delete pFrame;
 
-	return UT_TRUE;
+	return true;
 }
 
 

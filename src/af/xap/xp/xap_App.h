@@ -67,15 +67,15 @@ public:
 	XAP_App(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_App(void);
 
-	virtual UT_Bool					initialize(void);
-	virtual UT_Bool					rememberFrame(XAP_Frame* pFrame, XAP_Frame* pCloneOf = 0);
-	virtual UT_Bool					forgetFrame(XAP_Frame * pFrame);
-	virtual UT_Bool					forgetClones(XAP_Frame * pFrame);
-	virtual UT_Bool					getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame);
+	virtual bool					initialize(void);
+	virtual bool					rememberFrame(XAP_Frame* pFrame, XAP_Frame* pCloneOf = 0);
+	virtual bool					forgetFrame(XAP_Frame * pFrame);
+	virtual bool					forgetClones(XAP_Frame * pFrame);
+	virtual bool					getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame);
 	virtual XAP_Frame * 			newFrame(void) = 0;
 	virtual void					reallyExit(void) = 0;
 
-	UT_Bool							updateClones(XAP_Frame * pFrame);
+	bool							updateClones(XAP_Frame * pFrame);
 
 	UT_uint32						getFrameCount(void) const;
 	XAP_Frame * 					getFrame(UT_uint32 ndx) const;
@@ -93,16 +93,16 @@ public:
 
 	XAP_Args *						getArgs(void) const;
 
-	UT_Bool							addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
-	UT_Bool							isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
+	bool							addWordToDict(const UT_UCSChar * pWord, UT_uint32 len);
+	bool							isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
 
 	XAP_Prefs *						getPrefs(void) const;
 #ifdef HAVE_LIBXML2
-	UT_Bool							getPrefsValue(const char * szKey, const XML_Char ** pszValue) const;
-	UT_Bool							getPrefsValueBool(const char * szKey, UT_Bool * pbValue) const;
+	bool							getPrefsValue(const char * szKey, const XML_Char ** pszValue) const;
+	bool							getPrefsValueBool(const char * szKey, bool * pbValue) const;
 #endif
-	UT_Bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
-	UT_Bool							getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const;
+	bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
+	bool							getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;
 
 	static XAP_App *				getApp(void) {return m_pApp;}
 
@@ -114,19 +114,19 @@ public:
 	virtual const char *					getAbiSuiteLibDir(void) const;
 	virtual const char *					getAbiSuiteAppDir(void) const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange) = 0;
-	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard) = 0;
-	virtual UT_Bool							canPasteFromClipboard(void) = 0;
+	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard) = 0;
+	virtual bool							canPasteFromClipboard(void) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
         void rememberFocussedFrame( void * pJustFocussedFrame);
         XAP_Frame * getLastFocussedFrame( void ) ;
         XAP_Frame * findValidFrame( void ) ;
-        UT_Bool safeCompare( XAP_Frame * lff, XAP_Frame * f);
+        bool safeCompare( XAP_Frame * lff, XAP_Frame * f);
         UT_sint32 safefindFrame( XAP_Frame * f);
         void clearLastFocussedFrame(void);
         void clearIdTable( void);
 	void rememberModelessId(  UT_sint32 id, XAP_Dialog_Modeless * pDialog);
 	void forgetModelessId( UT_sint32 id );
-        UT_Bool isModelessRunning( UT_sint32 id);
+        bool isModelessRunning( UT_sint32 id);
 	XAP_Dialog_Modeless * getModelessDialog( UT_sint32 id);
 	void closeModelessDlgs( void);
 	void notifyModelessDlgsOfActiveFrame(XAP_Frame *p_Frame);
@@ -135,9 +135,9 @@ public:
         virtual void                                            setViewSelection( AV_View * pView) {}; //subclasses override
         virtual AV_View *                                       getViewSelection( void) { return (AV_View *)  NULL;} ; // subclasses override
 
-		virtual	UT_Bool					setGeometry(UT_sint32 x, UT_sint32 y, 
+		virtual	bool					setGeometry(UT_sint32 x, UT_sint32 y, 
 												    UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
-		virtual	UT_Bool					getGeometry(UT_sint32 *x, UT_sint32 *y, 
+		virtual	bool					getGeometry(UT_sint32 *x, UT_sint32 *y, 
 													UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 
 

@@ -29,7 +29,7 @@ class ap_Scrollbar_ViewListener : public AV_Listener
 public:
 	ap_Scrollbar_ViewListener(XAP_Frame * pFrame, AV_View * pView);
 	
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
 	XAP_Frame *			m_pFrame;

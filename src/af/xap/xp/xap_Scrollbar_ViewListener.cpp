@@ -32,7 +32,7 @@ ap_Scrollbar_ViewListener::ap_Scrollbar_ViewListener(XAP_Frame * pFrame,
 	m_pView = pView;
 }
 
-UT_Bool ap_Scrollbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
+bool ap_Scrollbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView == m_pView);
 	
@@ -45,5 +45,5 @@ UT_Bool ap_Scrollbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask m
 		m_pFrame->setYScrollRange();
 	}
 
-	return UT_TRUE;
+	return true;
 }

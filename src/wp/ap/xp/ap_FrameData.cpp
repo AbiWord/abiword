@@ -36,17 +36,17 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 	m_pLeftRuler = NULL;
 	m_pStatusBar = NULL;
 
-	m_bShowRuler = UT_TRUE;
-	m_bShowBar[0] = UT_TRUE;
-	m_bShowBar[1] = UT_TRUE;
-	m_bShowBar[2] = UT_TRUE;
-    m_bShowPara = UT_TRUE;
-	m_bInsertMode = UT_TRUE;
-	m_bShowStatusBar = UT_TRUE;
+	m_bShowRuler = true;
+	m_bShowBar[0] = true;
+	m_bShowBar[1] = true;
+	m_bShowBar[2] = true;
+    m_bShowPara = true;
+	m_bInsertMode = true;
+	m_bShowStatusBar = true;
 
 	if (pApp)
 	{
-		UT_Bool b;
+		bool b;
 
 		if (pApp->getPrefsValueBool(AP_PREF_KEY_InsertMode, &b))
 			m_bInsertMode = b;

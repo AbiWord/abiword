@@ -35,7 +35,7 @@ ap_UnixViewListener::ap_UnixViewListener(XAP_Frame * pFrame)
 {
 }
 
-UT_Bool ap_UnixViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
+bool ap_UnixViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView);
 	

@@ -65,19 +65,19 @@ void px_ChangeHistory::_invalidateRedo(void)
 }
 
         
-UT_Bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
+bool px_ChangeHistory::addChangeRecord(PX_ChangeRecord * pcr)
 {
 	// add a change record to the history.
 	// blow away any redo, since it is now invalid.
 
 	_invalidateRedo();
 	
-	UT_Bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
+	bool bResult = (m_vecChangeRecords.insertItemAt(pcr,m_undoPosition++) == 0);
 	UT_ASSERT(bResult);
 	return bResult;
 }
 
-UT_Bool px_ChangeHistory::canDo(UT_Bool bUndo) const
+bool px_ChangeHistory::canDo(bool bUndo) const
 {
 	PX_ChangeRecord * pcr;
 
@@ -100,59 +100,59 @@ void px_ChangeHistory::setSavePosition(UT_sint32 savePosition)
 }
 
 
-UT_Bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
+bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr) const
 {
 	if (m_undoPosition == 0)
-		return UT_FALSE;
+		return false;
 
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-1);
 	UT_ASSERT(pcr);
 	*ppcr = pcr;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const
+bool px_ChangeHistory::getUndo(PX_ChangeRecord ** ppcr, UT_uint32 undoNdx) const
 {
 	if (m_undoPosition <= undoNdx)
-		return UT_FALSE;
+		return false;
 
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition-undoNdx-1);
 	UT_ASSERT(pcr);
 	*ppcr = pcr;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
+bool px_ChangeHistory::getRedo(PX_ChangeRecord ** ppcr) const
 {
 	if (m_undoPosition >= m_vecChangeRecords.getItemCount())
-		return UT_FALSE;
+		return false;
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);
 	if (!pcr)
-		return UT_FALSE;
+		return false;
 	*ppcr = pcr;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool px_ChangeHistory::didUndo(void)
+bool px_ChangeHistory::didUndo(void)
 {
 	if (m_undoPosition == 0)
-		return UT_FALSE;
+		return false;
 	m_undoPosition--;
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);
 	if (pcr && !pcr->getPersistance())
 		m_savePosition--;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool px_ChangeHistory::didRedo(void)
+bool px_ChangeHistory::didRedo(void)
 {
 	if (m_undoPosition >= m_vecChangeRecords.getItemCount())
-		return UT_FALSE;
+		return false;
 	PX_ChangeRecord * pcr = (PX_ChangeRecord *)m_vecChangeRecords.getNthItem(m_undoPosition);
 	m_undoPosition++;
 	if (pcr && !pcr->getPersistance())
 		m_savePosition++;
-	return UT_TRUE;
+	return true;
 }
 
 void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
@@ -160,7 +160,7 @@ void px_ChangeHistory::coalesceHistory(const PX_ChangeRecord * pcr)
 	// coalesce this record with the current undo record.
 
 	PX_ChangeRecord * pcrUndo;
-	UT_Bool bResult;
+	bool bResult;
 	bResult = getUndo(&pcrUndo);
 	UT_ASSERT(bResult);
 	UT_ASSERT(pcr->getType() == pcrUndo->getType());
@@ -189,7 +189,7 @@ void px_ChangeHistory::setClean(void)
 	m_savePosition = (UT_sint32) m_undoPosition;
 }
 
-UT_Bool px_ChangeHistory::isDirty(void) const
+bool px_ChangeHistory::isDirty(void) const
 {
 	return (m_savePosition != (UT_sint32) m_undoPosition);
 }

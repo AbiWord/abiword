@@ -30,16 +30,16 @@
 
 XAP_Win32Clipboard::XAP_Win32Clipboard(void)
 {
-	m_bOpen = UT_FALSE;
+	m_bOpen = false;
 }
 
-UT_Bool XAP_Win32Clipboard::openClipboard(void)
+bool XAP_Win32Clipboard::openClipboard(void)
 {
 	if (m_bOpen)
-		return UT_FALSE;
+		return false;
 
 	if (!OpenClipboard(NULL))
-		return UT_FALSE;
+		return false;
 
 #ifdef DEBUG
 	{
@@ -50,17 +50,17 @@ UT_Bool XAP_Win32Clipboard::openClipboard(void)
 	}
 #endif /* DEBUG */
 
-	m_bOpen = UT_TRUE;
-	return UT_TRUE;
+	m_bOpen = true;
+	return true;
 }
 
-UT_Bool XAP_Win32Clipboard::closeClipboard(void)
+bool XAP_Win32Clipboard::closeClipboard(void)
 {
-	m_bOpen = UT_FALSE;
+	m_bOpen = false;
 	return CloseClipboard();
 }
 
-UT_Bool XAP_Win32Clipboard::clearClipboard(void)
+bool XAP_Win32Clipboard::clearClipboard(void)
 {
 	return EmptyClipboard();
 }
@@ -68,15 +68,15 @@ UT_Bool XAP_Win32Clipboard::clearClipboard(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNumBytes)
+bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNumBytes)
 {
 	UINT iFormat = _convertFormatString(format);
 	if (iFormat == 0)
-		return UT_FALSE;
+		return false;
 
 	HANDLE hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, iNumBytes);
 	if (!hData)
-		return UT_FALSE;
+		return false;
 	
 	void* p = GlobalLock(hData);
 	memcpy(p, pData, iNumBytes);
@@ -97,7 +97,7 @@ HANDLE XAP_Win32Clipboard::getHandleInFormat(const char * format)
 	return (hData);
 }
 	
-UT_Bool XAP_Win32Clipboard::hasFormat(const char * format)
+bool XAP_Win32Clipboard::hasFormat(const char * format)
 {
 	HANDLE hData = getHandleInFormat(format);
 	return (hData != NULL);

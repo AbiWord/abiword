@@ -33,7 +33,7 @@ EV_EditMethodCallData::EV_EditMethodCallData(void)
 	m_yPos = 0;
 	m_pData = 0;
 	m_dataLength = 0;
-	m_bAllocatedData = UT_FALSE;
+	m_bAllocatedData = false;
 }
 
 EV_EditMethodCallData::EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataLength)
@@ -42,7 +42,7 @@ EV_EditMethodCallData::EV_EditMethodCallData(UT_UCSChar * pData, UT_uint32 dataL
 	m_yPos = 0;
 	m_pData = pData;
 	m_dataLength = dataLength;
-	m_bAllocatedData = UT_FALSE;
+	m_bAllocatedData = false;
 }
 
 EV_EditMethodCallData::EV_EditMethodCallData(const char * pChar, UT_uint32 dataLength)
@@ -55,12 +55,12 @@ EV_EditMethodCallData::EV_EditMethodCallData(const char * pChar, UT_uint32 dataL
 		for (UT_uint32 k=0; k<dataLength; k++)
 			m_pData[k] = pChar[k];
 		m_dataLength = dataLength;
-		m_bAllocatedData = UT_TRUE;
+		m_bAllocatedData = true;
 	}
 	else								// since constructors can't fail, we create a zombie.
 	{
 		m_dataLength = 0;
-		m_bAllocatedData = UT_FALSE;
+		m_bAllocatedData = false;
 	}
 }
 
@@ -115,7 +115,7 @@ EV_EditMethodContainer::~EV_EditMethodContainer()
 	UT_VECTOR_PURGEALL(EV_EditMethod *, m_vecDynamicEditMethods);
 }
 
-UT_Bool EV_EditMethodContainer::addEditMethod(EV_EditMethod * pem)
+bool EV_EditMethodContainer::addEditMethod(EV_EditMethod * pem)
 {
 	UT_ASSERT(pem);
 

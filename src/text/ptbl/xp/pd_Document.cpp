@@ -69,9 +69,9 @@ PD_Document::PD_Document()
 	// but now we just depend on save() never being called without
 	// a previous saveAs() (which specifies a type)
 	m_lastSavedAsType = IEFT_AbiWord_1;
-	m_ballowListUpdates = UT_FALSE;
-        m_bPieceTableChanging = UT_FALSE;
-	m_bDoingPaste = UT_FALSE;
+	m_ballowListUpdates = false;
+        m_bPieceTableChanging = false;
+	m_bDoingPaste = false;
 }
 
 PD_Document::~PD_Document()
@@ -243,7 +243,7 @@ UT_Error PD_Document::save(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool PD_Document::isDirty(void) const
+bool PD_Document::isDirty(void) const
 {
 	return m_pPieceTable->isDirty();
 }
@@ -256,7 +256,7 @@ void PD_Document::_setClean(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool	PD_Document::insertObject(PT_DocPosition dpos,
+bool	PD_Document::insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
 										 const XML_Char ** properties)
@@ -266,19 +266,19 @@ UT_Bool	PD_Document::insertObject(PT_DocPosition dpos,
 
 
 
-UT_Bool	PD_Document::insertObject(PT_DocPosition dpos,
+bool	PD_Document::insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const XML_Char ** attributes,
 										 const XML_Char ** properties, fd_Field ** pField)
 {
 	pf_Frag_Object * pfo = NULL;
-	UT_Bool bres =  m_pPieceTable->insertObject(dpos, pto, attributes, properties, &pfo);
+	bool bres =  m_pPieceTable->insertObject(dpos, pto, attributes, properties, &pfo);
 	*pField = pfo->getField();
 	return bres;
 }
 
 
-UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
+bool PD_Document::insertSpan(PT_DocPosition dpos,
 								  const UT_UCSChar * p,
 								  UT_uint32 length,
 								  PP_AttrProp *p_AttrProp)
@@ -291,14 +291,14 @@ UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
 	return m_pPieceTable->insertSpan(dpos,p,length);
 }
 
-UT_Bool PD_Document::deleteSpan(PT_DocPosition dpos1,
+bool PD_Document::deleteSpan(PT_DocPosition dpos1,
 								PT_DocPosition dpos2,
 								PP_AttrProp *p_AttrProp_Before)
 {
 	return m_pPieceTable->deleteSpan(dpos1, dpos2, p_AttrProp_Before);
 }												 
 
-UT_Bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
+bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 								   PT_DocPosition dpos1,
 								   PT_DocPosition dpos2,
 								   const XML_Char ** attributes,
@@ -307,13 +307,13 @@ UT_Bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 	return m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,attributes,properties);
 }
 
-UT_Bool PD_Document::insertStrux(PT_DocPosition dpos,
+bool PD_Document::insertStrux(PT_DocPosition dpos,
 								 PTStruxType pts)
 {
 	return m_pPieceTable->insertStrux(dpos,pts);
 }
 
-UT_Bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
+bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 									PT_DocPosition dpos1,
 									PT_DocPosition dpos2,
 									const XML_Char ** attributes,
@@ -326,7 +326,7 @@ UT_Bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
+bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);
 
@@ -335,7 +335,7 @@ UT_Bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 	return m_pPieceTable->appendStrux(pts,attributes);
 }
 
-UT_Bool PD_Document::appendFmt(const XML_Char ** attributes)
+bool PD_Document::appendFmt(const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);
 
@@ -344,7 +344,7 @@ UT_Bool PD_Document::appendFmt(const XML_Char ** attributes)
 	return m_pPieceTable->appendFmt(attributes);
 }
 
-UT_Bool PD_Document::appendFmt(const UT_Vector * pVecAttributes)
+bool PD_Document::appendFmt(const UT_Vector * pVecAttributes)
 {
 	UT_ASSERT(m_pPieceTable);
 	
@@ -353,7 +353,7 @@ UT_Bool PD_Document::appendFmt(const UT_Vector * pVecAttributes)
 	return m_pPieceTable->appendFmt(pVecAttributes);
 }
 
-UT_Bool PD_Document::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
+bool PD_Document::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 {
 	UT_ASSERT(m_pPieceTable);
 	
@@ -362,7 +362,7 @@ UT_Bool PD_Document::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	return m_pPieceTable->appendSpan(pbuf,length);
 }
 
-UT_Bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
+bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);
 	
@@ -371,7 +371,7 @@ UT_Bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes
 	return m_pPieceTable->appendObject(pto,attributes);
 }
 
-UT_Bool PD_Document::appendStyle(const XML_Char ** attributes)
+bool PD_Document::appendStyle(const XML_Char ** attributes)
 {
 	UT_ASSERT(m_pPieceTable);
 	
@@ -383,7 +383,7 @@ UT_Bool PD_Document::appendStyle(const XML_Char ** attributes)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool PD_Document::tellListener(PL_Listener* pListener)
+bool PD_Document::tellListener(PL_Listener* pListener)
 {
 	UT_ASSERT(pListener);
 	UT_ASSERT(m_pPieceTable);
@@ -391,7 +391,7 @@ UT_Bool PD_Document::tellListener(PL_Listener* pListener)
 	return m_pPieceTable->tellListener(pListener);
 }
 
-UT_Bool PD_Document::tellListenerSubset(PL_Listener* pListener, PD_DocumentRange * pDocRange)
+bool PD_Document::tellListenerSubset(PL_Listener* pListener, PD_DocumentRange * pDocRange)
 {
 	UT_ASSERT(pListener);
 	UT_ASSERT(m_pPieceTable);
@@ -400,7 +400,7 @@ UT_Bool PD_Document::tellListenerSubset(PL_Listener* pListener, PD_DocumentRange
 	return m_pPieceTable->tellListenerSubset(pListener,pDocRange);
 }
 
-UT_Bool PD_Document::addListener(PL_Listener * pListener,
+bool PD_Document::addListener(PL_Listener * pListener,
 								 PL_ListenerId * pListenerId)
 {
 	UT_uint32 kLimit = m_vecListeners.getItemCount();
@@ -418,7 +418,7 @@ UT_Bool PD_Document::addListener(PL_Listener * pListener,
 	// otherwise, extend the vector for it.
 	
 	if (m_vecListeners.addItem(pListener,&k) != 0)
-		return UT_FALSE;				// could not add item to vector
+		return false;				// could not add item to vector
 
   ClaimThisK:
 
@@ -431,15 +431,15 @@ UT_Bool PD_Document::addListener(PL_Listener * pListener,
 	// give our vector index back to the caller as a "Listener Id".
 	
 	*pListenerId = k;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PD_Document::removeListener(PL_ListenerId listenerId)
+bool PD_Document::removeListener(PL_ListenerId listenerId)
 {
 	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
 }
 
-UT_Bool PD_Document::signalListeners(UT_uint32 iSignal) const
+bool PD_Document::signalListeners(UT_uint32 iSignal) const
 {
 	PL_ListenerId lid;
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
@@ -457,10 +457,10 @@ UT_Bool PD_Document::signalListeners(UT_uint32 iSignal) const
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
+bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord * pcr) const
 {
 	// notify listeners of a change.
 	
@@ -487,7 +487,7 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs, const PX_ChangeRecord 
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 static void s_BindHandles(PL_StruxDocHandle sdhNew,
@@ -501,7 +501,7 @@ static void s_BindHandles(PL_StruxDocHandle sdhNew,
 	pfsNew->setFmtHandle(lid,sfhNew);
 }
 
-UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
+bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 									 pf_Frag_Strux * pfsNew,
 									 const PX_ChangeRecord * pcr) const
 {
@@ -535,13 +535,13 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool PD_Document::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
+bool PD_Document::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
 {
 	return m_pPieceTable->getAttrProp(indexAP,ppAP);
 }
@@ -555,18 +555,18 @@ const UT_UCSChar * PD_Document::getPointer(PT_BufIndex bi) const
 	return m_pPieceTable->getPointer(bi);
 }
 
-UT_Bool PD_Document::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
+bool PD_Document::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 								const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
 	return m_pPieceTable->getSpanPtr(sdh,offset,ppSpan,pLength);
 }
 
-UT_Bool PD_Document::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const
+bool PD_Document::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const
 {
 	return m_pPieceTable->getBlockBuf(sdh,pgb);
 }
 
-UT_Bool PD_Document::getBounds(UT_Bool bEnd, PT_DocPosition & docPos) const
+bool PD_Document::getBounds(bool bEnd, PT_DocPosition & docPos) const
 {
 	return m_pPieceTable->getBounds(bEnd,docPos);
 }
@@ -576,13 +576,13 @@ PT_DocPosition PD_Document::getStruxPosition(PL_StruxDocHandle sdh) const
 	return m_pPieceTable->getStruxPosition(sdh);
 }
 
-UT_Bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, UT_Bool bLeftSide,
+bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 									 const PP_AttrProp ** ppAP) const
 {
 	return m_pPieceTable->getSpanAttrProp(sdh,offset,bLeftSide,ppAP);
 }
 
-UT_Bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
+bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
                                fd_Field * & pField)
 {
 
@@ -603,26 +603,26 @@ UT_Bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
 			case pf_Frag::PFT_Text:
 				pft = static_cast<pf_Frag_Text *> (pfTemp);
 				pField = pft->getField();
-				return UT_TRUE; // break out of loop
+				return true; // break out of loop
 				break;
 			default:
-				return UT_FALSE;
+				return false;
 				break;
 			}
 		}
 
 	}
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
+bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
 										  PT_DocPosition docPos,
 										  PL_StruxFmtHandle * psfh) const
 {
 	return m_pPieceTable->getStruxFromPosition(listenerId,docPos,psfh);
 }
 
-UT_Bool PD_Document::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
+bool PD_Document::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 												PT_DocPosition docPos,
 												PTStruxType pts,
 												PL_StruxFmtHandle * psfh) const
@@ -636,7 +636,7 @@ UT_Bool PD_Document::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 /// immediately prior to the given absolute document position.
 /// This sdh is actually a (void *) pointer to a pf_Frag_Strux
 ///
-UT_Bool PD_Document::getStruxOfTypeFromPosition(PT_DocPosition docPos,
+bool PD_Document::getStruxOfTypeFromPosition(PT_DocPosition docPos,
 												PTStruxType pts,
 												PL_StruxDocHandle * sdh) const
 {
@@ -646,7 +646,7 @@ UT_Bool PD_Document::getStruxOfTypeFromPosition(PT_DocPosition docPos,
 ///
 /// Return the sdh of type pts immediately prior to sdh 
 ///
-UT_Bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * prevsdh)
 {
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
@@ -659,20 +659,20 @@ UT_Bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
 				*prevsdh = pfsTemp;
-				return UT_TRUE;
+				return true;
 			}
 		}
 
 	// did not find it.
 	
-	return UT_FALSE;
+	return false;
 }
 
 
 ///
 /// Return the sdh of type pts immediately after sdh 
 ///
-UT_Bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
+bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 					PL_StruxDocHandle * nextsdh)
 {
 	pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
@@ -685,13 +685,13 @@ UT_Bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
 				*nextsdh = pfsTemp;
-				return UT_TRUE;
+				return true;
 			}
 		}
 
 	// did not find it.
 	
-	return UT_FALSE;
+	return false;
 }
 
   
@@ -708,25 +708,25 @@ void PD_Document::endUserAtomicGlob(void)
 	m_pPieceTable->endUserAtomicGlob();
 }
 
-UT_Bool PD_Document::canDo(UT_Bool bUndo) const
+bool PD_Document::canDo(bool bUndo) const
 {
 	return m_pPieceTable->canDo(bUndo);
 }
 
-UT_Bool PD_Document::undoCmd(UT_uint32 repeatCount)
+bool PD_Document::undoCmd(UT_uint32 repeatCount)
 {
 	while (repeatCount--)
 		if (!m_pPieceTable->undoCmd())
-			return UT_FALSE;
-	return UT_TRUE;
+			return false;
+	return true;
 }
 
-UT_Bool PD_Document::redoCmd(UT_uint32 repeatCount)
+bool PD_Document::redoCmd(UT_uint32 repeatCount)
 {
 	while (repeatCount--)
 		if (!m_pPieceTable->redoCmd())
-			return UT_FALSE;
-	return UT_TRUE;
+			return false;
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -735,14 +735,14 @@ UT_Bool PD_Document::redoCmd(UT_uint32 repeatCount)
 // to store the actual data of an image.  The inline image tag has
 // a reference to a DataItem.
 
-UT_Bool PD_Document::createDataItem(const char * szName, UT_Bool bBase64, const UT_ByteBuf * pByteBuf,
+bool PD_Document::createDataItem(const char * szName, bool bBase64, const UT_ByteBuf * pByteBuf,
 									void* pToken,
 									void ** ppHandle)
 {
 	// verify unique name
 
-	if (getDataItemDataByName(szName,NULL,NULL,NULL) == UT_TRUE)
-		return UT_FALSE;				// invalid or duplicate name
+	if (getDataItemDataByName(szName,NULL,NULL,NULL) == true)
+		return false;				// invalid or duplicate name
 
 	// set the actual DataItem's data using the contents of the ByteBuf.
 	// we must copy it if we want to keep it.  bBase64 is TRUE if the
@@ -754,7 +754,7 @@ UT_Bool PD_Document::createDataItem(const char * szName, UT_Bool bBase64, const 
 	
 	UT_ByteBuf * pNew = new UT_ByteBuf();
 	if (!pNew)
-		return UT_FALSE;
+		return false;
 	
 	if (bBase64)
 	{
@@ -788,15 +788,15 @@ UT_Bool PD_Document::createDataItem(const char * szName, UT_Bool bBase64, const 
 		*ppHandle = (void *)pHashEntry;
 	}
 	
-	return UT_TRUE;
+	return true;
 
 Failed:
 	if (pNew)
 		delete pNew;
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool PD_Document::getDataItemDataByName(const char * szName,
+bool PD_Document::getDataItemDataByName(const char * szName,
 										   const UT_ByteBuf ** ppByteBuf,
 										   void** ppToken,
 										   void ** ppHandle) const
@@ -805,7 +805,7 @@ UT_Bool PD_Document::getDataItemDataByName(const char * szName,
 	
 	UT_HashEntry * pHashEntry = m_hashDataItems.findEntry(szName);
 	if (!pHashEntry)
-		return UT_FALSE;
+		return false;
 
 	struct _dataItemPair* pPair = (struct _dataItemPair*) pHashEntry->pData;
 	UT_ASSERT(pPair);
@@ -825,10 +825,10 @@ UT_Bool PD_Document::getDataItemDataByName(const char * szName,
 		*ppHandle = (void *)pHashEntry;
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PD_Document::setDataItemToken(void * pHandle,
+bool PD_Document::setDataItemToken(void * pHandle,
 									  void* pToken)
 {
 	UT_ASSERT(pHandle);
@@ -840,10 +840,10 @@ UT_Bool PD_Document::setDataItemToken(void * pHandle,
 
 	pPair->pToken = pToken;
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PD_Document::getDataItemData(void * pHandle,
+bool PD_Document::getDataItemData(void * pHandle,
 									 const char ** pszName,
 									 const UT_ByteBuf ** ppByteBuf,
 									 void** ppToken) const
@@ -870,17 +870,17 @@ UT_Bool PD_Document::getDataItemData(void * pHandle,
 		*pszName = pHashEntry->pszLeft;
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PD_Document::enumDataItems(UT_uint32 k,
+bool PD_Document::enumDataItems(UT_uint32 k,
 								   void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const
 {
 	// return the kth data item.
 
 	UT_uint32 kLimit = m_hashDataItems.getEntryCount();
 	if (k >= kLimit)
-		return UT_FALSE;
+		return false;
 	
 	const UT_HashEntry * pHashEntry = m_hashDataItems.getNthEntryAlpha(k);
 	UT_ASSERT(pHashEntry);
@@ -906,7 +906,7 @@ UT_Bool PD_Document::enumDataItems(UT_uint32 k,
 		*pszName = pHashEntry->pszLeft;
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
 void PD_Document::_destroyDataItemData(void)
@@ -932,12 +932,12 @@ void PD_Document::_destroyDataItemData(void)
 ///////////////////////////////////////////////////////////////////
 // Styles represent named collections of formatting properties.
 
-UT_Bool PD_Document::getStyle(const char * szName, PD_Style ** ppStyle) const
+bool PD_Document::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
 	return m_pPieceTable->getStyle(szName, ppStyle);
 }
 
-UT_Bool PD_Document::enumStyles(UT_uint32 k,
+bool PD_Document::enumStyles(UT_uint32 k,
 								const char ** pszName, const PD_Style ** ppStyle) const
 {
 	return m_pPieceTable->enumStyles(k, pszName, ppStyle);
@@ -950,7 +950,7 @@ void PD_Document::clearIfAtFmtMark (PT_DocPosition dpos)
 	m_pPieceTable->clearIfAtFmtMark(dpos);
 }
 
-UT_Bool PD_Document::updateFields(void)
+bool PD_Document::updateFields(void)
 {
 	//
 	// Turn off Insertion point motion during this general update
@@ -1050,16 +1050,16 @@ void PD_Document::allowChangeInsPoint(void)
 
 void PD_Document::notifyPieceTableChangeStart(void)
 {
-        m_bPieceTableChanging = UT_TRUE;
+        m_bPieceTableChanging = true;
 }
 
 
 void PD_Document::notifyPieceTableChangeEnd(void)
 {
-        m_bPieceTableChanging = UT_FALSE;
+        m_bPieceTableChanging = false;
 }
 
-UT_Bool PD_Document::isPieceTableChanging(void)
+bool PD_Document::isPieceTableChanging(void)
 {
         return m_bPieceTableChanging;
 }
@@ -1091,16 +1091,16 @@ fl_AutoNum * PD_Document::getListByID(UT_uint32 id) const
 	return (fl_AutoNum *) NULL;
 }
 
-UT_Bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum) 
+bool PD_Document::enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum) 
 {
 	UT_uint32 kLimit = m_vecLists.getItemCount();
 	if (k >= kLimit)
-		return UT_FALSE;
+		return false;
 	
 	if (pAutoNum)
 		*pAutoNum = (fl_AutoNum *)m_vecLists[k];
 	
-	return UT_TRUE;
+	return true;
 }
 
 fl_AutoNum * PD_Document::getNthList(UT_uint32 i) const
@@ -1158,7 +1158,7 @@ void PD_Document::StopList(PL_StruxDocHandle sdh )
 }
 
 
-UT_Bool PD_Document::appendList(const XML_Char ** attributes)
+bool PD_Document::appendList(const XML_Char ** attributes)
 {
 	const XML_Char * szID=NULL, * szPid=NULL, * szType=NULL, * szStart=NULL, * szDelim=NULL, *szDec=NULL;
 	UT_uint32 id, parent_id, start;
@@ -1181,15 +1181,15 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 	}
 
 	if(!szID)
-		return UT_FALSE;
+		return false;
 	if(!szPid)
-		return UT_FALSE;
+		return false;
 	if(!szType)
-		return UT_FALSE;
+		return false;
 	if(!szStart)
-		return UT_FALSE;
+		return false;
 	if(!szDelim)
-		return UT_FALSE;
+		return false;
 	if(!szDec)
 		szDec = (const XML_Char *) ".";
 	id = atoi(szID);
@@ -1202,7 +1202,7 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 			break;
 	}
 	if(i < numlists)
-		return UT_TRUE; // List is already present
+		return true; // List is already present
 	parent_id = atoi(szPid);
 	type = (List_Type)atoi(szType);
 	start = atoi(szStart);
@@ -1210,22 +1210,22 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,szDec,this);
 	addList(pAutoNum);
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool PD_Document::areListUpdatesAllowed(void)
+bool PD_Document::areListUpdatesAllowed(void)
 {
         return m_ballowListUpdates;
 }
  
 void PD_Document::disableListUpdates(void)
 {
-        m_ballowListUpdates = UT_FALSE;
+        m_ballowListUpdates = false;
 }
    
 void PD_Document::enableListUpdates(void)
 {
-        m_ballowListUpdates = UT_TRUE;
+        m_ballowListUpdates = true;
 }
   
 void PD_Document::updateDirtyLists(void)
@@ -1236,7 +1236,7 @@ void PD_Document::updateDirtyLists(void)
 	for(i=0; i< iNumLists; i++)
 	{
 		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
-		if(pAutoNum->isDirty() == UT_TRUE)
+		if(pAutoNum->isDirty() == true)
 		{
 			pAutoNum->update(0);
 		}
@@ -1249,14 +1249,14 @@ void PD_Document::updateDirtyLists(void)
 }
 
 
-UT_Bool PD_Document::fixListHierarchy(void)
+bool PD_Document::fixListHierarchy(void)
 {
 	UT_uint32 iNumLists = m_vecLists.getItemCount();
 	fl_AutoNum * pAutoNum;
 
 	if (iNumLists == 0)
 	{
-		return UT_FALSE;
+		return false;
 	}
 	else
 	{
@@ -1265,7 +1265,7 @@ UT_Bool PD_Document::fixListHierarchy(void)
 			pAutoNum = (fl_AutoNum *)m_vecLists.getNthItem(i);
 			pAutoNum->fixHierarchy(this);
 		}
-		return UT_TRUE;
+		return true;
 	}
 }
 
@@ -1291,17 +1291,17 @@ void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 
 void  PD_Document::setDoingPaste(void)
 {
-         m_bDoingPaste = UT_TRUE;
+         m_bDoingPaste = true;
 }
 
 
 void  PD_Document::clearDoingPaste(void)
 {
-         m_bDoingPaste = UT_FALSE;
+         m_bDoingPaste = false;
 }
 
 
-UT_Bool  PD_Document::isDoingPaste(void)
+bool  PD_Document::isDoingPaste(void)
 {
          return m_bDoingPaste;
 }
@@ -1332,7 +1332,7 @@ const char *  PD_Document::getDefaultPageSize(void)
 	return (const char *) szDefaultPageSize;
 }
 
-UT_Bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
+bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 {
 	const XML_Char * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;
 	double width=0.0;
@@ -1357,9 +1357,9 @@ UT_Bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 	}
 
 	if(!szPageSize)
-		return UT_FALSE;
+		return false;
 	if(!szOrientation)
-		return UT_FALSE;
+		return false;
 	m_docPageSize.Set(szPageSize);
 	if(UT_XML_stricmp(szOrientation,"portrait")==0)
 	{
@@ -1370,9 +1370,9 @@ UT_Bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 		m_docPageSize.setLandscape();
 	}
 	else
-	        return UT_FALSE;
+	        return false;
 	if( !szWidth || !szHeight || !szUnits || !szPageScale)
-	        return UT_FALSE;
+	        return false;
 	else
 	{
 	        width = UT_convertDimensionless(szWidth);
@@ -1391,7 +1391,7 @@ UT_Bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 		m_docPageSize.setScale(scale);
 	}
 	UT_DEBUGMSG(("SEVIOR: Filled PageSize \n"));
-	return UT_TRUE;
+	return true;
 }
 
 

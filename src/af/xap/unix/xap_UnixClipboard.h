@@ -42,12 +42,12 @@ public:
 
 	void				initialize(void);
 
-	UT_Bool				addData(const char* format, void* pData, UT_sint32 iNumBytes);
-	void				clearData(UT_Bool bClipboard, UT_Bool bPrimary);
-	UT_Bool				getData(T_AllowGet tFrom, const char** formatList,
+	bool				addData(const char* format, void* pData, UT_sint32 iNumBytes);
+	void				clearData(bool bClipboard, bool bPrimary);
+	bool				getData(T_AllowGet tFrom, const char** formatList,
 								void ** ppData, UT_uint32 * pLen,
 								const char **pszFormatFound);
-	UT_Bool				assertSelection(void);
+	bool				assertSelection(void);
 	
 	// the following are callbacks
 	
@@ -60,29 +60,29 @@ protected:
 	virtual const char *	_convertToFormatString(GdkAtom fmt) const;
 
 	void					_releaseOwnership(GdkAtom atom, guint32 timeOfRelease);
-	UT_Bool					_testOwnership(GdkAtom atom) const;
+	bool					_testOwnership(GdkAtom atom) const;
 
-	UT_Bool					_getDataFromServerInFormat(GdkAtom atom, GdkAtom atomFormat,
+	bool					_getDataFromServerInFormat(GdkAtom atom, GdkAtom atomFormat,
 													   void ** ppData, UT_uint32 * pLen,
 													   const char **pszFormatFound);
 	void					_getFormats(GdkAtom atom);
-	UT_Bool					_getDataFromServer(GdkAtom atom, const char** formatList,
+	bool					_getDataFromServer(GdkAtom atom, const char** formatList,
 											   void ** ppData, UT_uint32 * pLen,
 											   const char **pszFormatFound);
-	UT_Bool					_getDataFromFakeClipboard(const char** formatList,
+	bool					_getDataFromFakeClipboard(const char** formatList,
 													  void ** ppData, UT_uint32 * pLen,
 													  const char **pszFormatFound);
 	guint32					_getTimeFromServer(GdkAtom atom);
-	UT_Bool					_getCurrentSelection(const char** formatList,
+	bool					_getCurrentSelection(const char** formatList,
 												 void ** ppData, UT_uint32 * pLen,
 												 const char **pszFormatFound);
 
 	GtkWidget *			m_myWidget;				// private widget to sync selection/clipboard communication with XServer.
    
-	UT_Bool				m_waiting;				// sync flag between top-half and bottom-half (callbacks)
-	UT_Bool				m_bOwnClipboard;		// do we own CLIPBOARD property (ie the clipboard)
-	UT_Bool				m_bOwnPrimary;			// do we own PRIMARY property (ie the X selection)
-	UT_Bool				m_bWaitingForDataFromServer;	// transient used to guard against stray SELRCVs
+	bool				m_waiting;				// sync flag between top-half and bottom-half (callbacks)
+	bool				m_bOwnClipboard;		// do we own CLIPBOARD property (ie the clipboard)
+	bool				m_bOwnPrimary;			// do we own PRIMARY property (ie the X selection)
+	bool				m_bWaitingForDataFromServer;	// transient used to guard against stray SELRCVs
 
 	guint32				m_timeClipboard;		// eventTime when we took ownership of CLIPBOARD property
 	guint32				m_timePrimary;			// eventTime when we took ownership of PRIMARY property

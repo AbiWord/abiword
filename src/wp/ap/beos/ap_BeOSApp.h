@@ -40,17 +40,17 @@ public:
 	AP_BeOSApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~AP_BeOSApp(void);
 
-	virtual UT_Bool					initialize(void);
+	virtual bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
 	virtual XAP_Frame *				newFrame(const char *path);
-	virtual UT_Bool					shutdown(void);
-	virtual UT_Bool					getPrefsValueDirectory(UT_Bool bAppSpecific,
+	virtual bool					shutdown(void);
+	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
-	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool);
-	virtual UT_Bool					canPasteFromClipboard(void);
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool);
+	virtual bool					canPasteFromClipboard(void);
 	virtual void					cacheCurrentSelection(AV_View *) {};
 
 	void							ParseCommandLine(void);

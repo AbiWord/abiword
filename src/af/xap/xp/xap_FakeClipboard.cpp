@@ -71,7 +71,7 @@ XAP_FakeClipboard::~XAP_FakeClipboard()
 	clearClipboard();
 }
 
-UT_Bool XAP_FakeClipboard::clearClipboard(void)
+bool XAP_FakeClipboard::clearClipboard(void)
 {
 	UT_sint32 iCount = m_vecData.getItemCount();
 	for (int i=0; i<iCount; i++)
@@ -82,19 +82,19 @@ UT_Bool XAP_FakeClipboard::clearClipboard(void)
 
 	m_vecData.clear();
 	
-	return UT_TRUE;
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_Bool XAP_FakeClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
+bool XAP_FakeClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
 {
 	_ClipboardItem * pExistingItem = _findFormatItem(format);
 	if (pExistingItem)
 	{
 		pExistingItem->replace(pData,iNumBytes);
-		return UT_TRUE;
+		return true;
 	}
 	
 	_ClipboardItem * pItem = new _ClipboardItem(format, pData, iNumBytes);
@@ -117,13 +117,13 @@ _ClipboardItem* XAP_FakeClipboard::_findFormatItem(const char* format)
 	return NULL;
 }
 
-UT_Bool XAP_FakeClipboard::hasFormat(const char* format)
+bool XAP_FakeClipboard::hasFormat(const char* format)
 {
 	_ClipboardItem* pItem = _findFormatItem(format);
 	return (pItem != NULL);
 }
 
-UT_Bool XAP_FakeClipboard::getClipboardData(const char * format, void ** ppData, UT_uint32 * pLen)
+bool XAP_FakeClipboard::getClipboardData(const char * format, void ** ppData, UT_uint32 * pLen)
 {
 	UT_ASSERT(ppData && pLen);
 
@@ -132,12 +132,12 @@ UT_Bool XAP_FakeClipboard::getClipboardData(const char * format, void ** ppData,
 	{
 		*ppData = pItem->m_pData;
 		*pLen = pItem->m_iLen;
-		return UT_TRUE;
+		return true;
 	}
 	else
 	{
 		*ppData = NULL;
 		*pLen = 0;
-		return UT_FALSE;
+		return false;
 	}
 }

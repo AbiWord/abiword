@@ -32,12 +32,12 @@
 
 struct _impGraphic
 {
-	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
-	UT_Bool			(*fpRecognizeContents)(const char * szBuf, UT_uint32 iNumbytes);
-	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
+	bool			(*fpRecognizeSuffix)(const char * szSuffix);
+	bool			(*fpRecognizeContents)(const char * szBuf, UT_uint32 iNumbytes);
+	bool			(*fpGetDlgLabels)(const char ** szDesc,
 									  const char ** szSuffixList,
 									  IEGraphicFileType * ft);
-	UT_Bool			(*fpSupportsFileType)(IEGraphicFileType ft);
+	bool			(*fpSupportsFileType)(IEGraphicFileType ft);
         UT_Error		(*fpStaticConstructor)(IE_ImpGraphic **ppieg);
 };
 
@@ -110,7 +110,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 	return IEGFT_Unknown;
 }
 	
-UT_Bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
+bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
 					  const char ** pszDesc,
 					  const char ** pszSuffixList,
 					  IEGraphicFileType * ft)
@@ -118,7 +118,7 @@ UT_Bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
 	if (ndx < NrElements(s_impGraphicTable))
 		return s_impGraphicTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList,ft);
 
-	return UT_FALSE;
+	return false;
 }
 
 UT_uint32 IE_ImpGraphic::getImporterCount(void)

@@ -43,7 +43,7 @@ class XAP_App;
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame);
 void connectFocusModeless(GtkWidget *widget,const XAP_App *pApp);
 void connectFocusModelessOther(GtkWidget *widget,const XAP_App *pApp,gboolean (*other_function)(void) );
-UT_Bool isTransientWindow(GtkWindow *window,GtkWindow *parent);
+bool isTransientWindow(GtkWindow *window,GtkWindow *parent);
 												   
 // This is a very thin message box; only use it for startup errors
 // or places where you can't use the message box class (like when

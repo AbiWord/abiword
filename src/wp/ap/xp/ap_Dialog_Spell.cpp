@@ -57,7 +57,7 @@ AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
    m_pChangeAll = NULL;
    m_pIgnoreAll = NULL;
 
-   m_bCancelled = UT_FALSE;
+   m_bCancelled = false;
 }
 
 AP_Dialog_Spell::~AP_Dialog_Spell(void)
@@ -101,7 +101,7 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    m_pBlock = m_pSection->getFirstBlock();
 			   
    m_pBlockBuf = new UT_GrowBuf(1024);
-   UT_Bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
+   bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
    UT_ASSERT(bRes);
    
    m_pChangeAll = new UT_HashTable(7); // is 7 buckets adequate? too much?
@@ -110,7 +110,7 @@ void AP_Dialog_Spell::runModal(XAP_Frame * pFrame)
    UT_DEBUGMSG(("modal spell dialog: xp init complete\n"));
 }
 
-UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
+bool AP_Dialog_Spell::nextMisspelledWord(void)
 {
    UT_ASSERT(m_pBlockBuf);
 
@@ -118,7 +118,7 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
    UT_uint32 iBlockLength = m_pBlockBuf->getLength();
 
    UT_ASSERT(m_pView && m_pView->getLayout() );	
-   UT_Bool checkCaps = m_pView->getLayout()->getSpellCheckCaps();
+   bool checkCaps = m_pView->getLayout()->getSpellCheckCaps();
 
    // loop until a misspelled word or end of document is hit
    for (;;) {
@@ -138,13 +138,13 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 	 
 	    m_pSection = (fl_DocSectionLayout*) m_pSection->getNext();
 	    if (m_pSection == NULL)
-	      return UT_FALSE; // end of document
+	      return false; // end of document
 	    m_pBlock = m_pSection->getFirstBlock();
 	 }
 	 
 	 // update the buffer with our new block
 	 m_pBlockBuf->truncate(0);
-	 UT_Bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
+	 bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
 	 UT_ASSERT(bRes);
 	     
 	 m_iWordOffset = 0;
@@ -158,8 +158,8 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
       // scan block for misspelled words
 
       // now start checking
-      UT_Bool bFound;
-      UT_Bool bAllUpperCase;
+      bool bFound;
+      bool bAllUpperCase;
 	
       while (m_iWordOffset < iBlockLength) {
 
@@ -179,16 +179,16 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 	 if (m_iWordOffset < iBlockLength) {
 	    
 	    // we're at the start of a word. find end of word...
-	    bAllUpperCase = UT_TRUE;
-	    bFound = UT_FALSE;
+	    bAllUpperCase = true;
+	    bFound = false;
 	    m_iWordLength = 0;
 	    while ((!bFound) && (m_iWordOffset + m_iWordLength) < iBlockLength) {
 
 			UT_UCSChar followChar;
 			followChar = ((m_iWordOffset + m_iWordLength + 1) < iBlockLength)  ?  pBlockText[m_iWordOffset + m_iWordLength + 1]  :  UCS_UNKPUNK;
-	       if ( UT_TRUE == UT_isWordDelimiter( pBlockText[m_iWordOffset + m_iWordLength], followChar)) {
+	       if ( true == UT_isWordDelimiter( pBlockText[m_iWordOffset + m_iWordLength], followChar)) {
 
-		  bFound = UT_TRUE;
+		  bFound = true;
 
 	       } else {
 
@@ -248,7 +248,7 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
 			UT_DEBUGMSG(("misspelled word found\n"));
 		     
 			// return to caller
-			return UT_TRUE;
+			return true;
 			// we have all the important state information in class variables,
 			// so the next call to this function will pick up at the same place.
 			// this also means we'll check whatever changes they make to this word.
@@ -269,20 +269,20 @@ UT_Bool AP_Dialog_Spell::nextMisspelledWord(void)
    }
 }
 
-UT_Bool AP_Dialog_Spell::makeWordVisible(void)
+bool AP_Dialog_Spell::makeWordVisible(void)
 {
    UT_DEBUGMSG(("making misspelled word visible in main window\n"));
    
    if (!m_pView->isSelectionEmpty())
      m_pView->cmdUnselectSelection();
    m_pView->moveInsPtTo( (PT_DocPosition) (m_pBlock->getPosition() + m_iWordOffset) );
-   m_pView->extSelHorizontal(UT_TRUE, (UT_uint32) m_iWordLength);
+   m_pView->extSelHorizontal(true, (UT_uint32) m_iWordLength);
    m_pView->updateScreen();
    
-   return UT_TRUE;
+   return true;
 }
 
-UT_Bool AP_Dialog_Spell::addIgnoreAll(void)
+bool AP_Dialog_Spell::addIgnoreAll(void)
 {
 	UT_UCSChar * pBuf = (UT_UCSChar *) m_pBlockBuf->getPointer(m_iWordOffset);
 	return m_pDoc->appendIgnore(pBuf,m_iWordLength);
@@ -296,7 +296,7 @@ void AP_Dialog_Spell::ignoreWord(void)
 
 // changing words
 
-UT_Bool AP_Dialog_Spell::inChangeAll(void)
+bool AP_Dialog_Spell::inChangeAll(void)
 {
    UT_UCSChar * bufferUnicode = _getCurrentWord();
    UT_ASSERT(bufferUnicode);
@@ -306,15 +306,15 @@ UT_Bool AP_Dialog_Spell::inChangeAll(void)
    UT_HashEntry * ent = m_pChangeAll->findEntry(bufferNormal);
    FREEP(bufferNormal);
 
-   if (ent == NULL) return UT_FALSE;
+   if (ent == NULL) return false;
    else {
       makeWordVisible();
-      UT_Bool bRes = changeWordWith( (UT_UCSChar*) (ent->pData) ); 
+      bool bRes = changeWordWith( (UT_UCSChar*) (ent->pData) ); 
       return bRes;
    }
 }
 
-UT_Bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
+bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
 {
    UT_UCSChar * bufferUnicode = _getCurrentWord();
    char * bufferNormal = (char *) calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
@@ -329,13 +329,13 @@ UT_Bool AP_Dialog_Spell::addChangeAll(UT_UCSChar * newword)
 
    FREEP(bufferNormal);
    
-   if (iRes < 0) return UT_FALSE;
-   else return UT_TRUE;
+   if (iRes < 0) return false;
+   else return true;
 }
 
-UT_Bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
+bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
 {
-   UT_Bool result = UT_TRUE;
+   bool result = true;
 
    UT_DEBUGMSG(("changing word\n"));
    UT_DEBUGMSG(("SAM: gp: %d\n", m_pView->getPoint()));
@@ -361,13 +361,13 @@ UT_Bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    
    // reload block into buffer, as we just changed it
    m_pBlockBuf->truncate(0);
-   UT_Bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
+   bool bRes = m_pBlock->getBlockBuf(m_pBlockBuf);
    UT_ASSERT(bRes);
                  
    return result;
 }
 
-UT_Bool AP_Dialog_Spell::addToDict(void)
+bool AP_Dialog_Spell::addToDict(void)
 {
 	UT_UCSChar * pBuf = (UT_UCSChar *) m_pBlockBuf->getPointer(m_iWordOffset);
 	XAP_App * pApp = m_pFrame->getApp();

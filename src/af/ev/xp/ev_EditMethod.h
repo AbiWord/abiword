@@ -84,13 +84,13 @@ public:
 
 	UT_UCSChar *		m_pData;
 	UT_uint32			m_dataLength;
-	UT_Bool				m_bAllocatedData;
+	bool				m_bAllocatedData;
 	UT_sint32			m_xPos;
 	UT_sint32			m_yPos;
 };
 
-typedef UT_Bool (*EV_EditMethod_pFn)(AV_View * pView, EV_EditMethodCallData * pCallData);
-typedef UT_Bool ( EV_EditMethod_Fn) (AV_View * pView, EV_EditMethodCallData * pCallData);
+typedef bool (*EV_EditMethod_pFn)(AV_View * pView, EV_EditMethodCallData * pCallData);
+typedef bool ( EV_EditMethod_Fn) (AV_View * pView, EV_EditMethodCallData * pCallData);
 
 /*****************************************************************/
 /*****************************************************************/
@@ -121,7 +121,7 @@ public:
 	EV_EditMethodContainer(UT_uint32 cStatic,EV_EditMethod arrayStaticEditMethods[]);
 	~EV_EditMethodContainer();
 
-	UT_Bool				addEditMethod(EV_EditMethod * pem);
+	bool				addEditMethod(EV_EditMethod * pem);
 	UT_uint32			countEditMethods(void);
 	EV_EditMethod *		getNthEditMethod(UT_uint32 ndx);
 	EV_EditMethod *		findEditMethodByName(const char * szName) const;

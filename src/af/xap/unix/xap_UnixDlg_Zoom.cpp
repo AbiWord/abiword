@@ -224,37 +224,37 @@ void XAP_UnixDialog_Zoom::event_WindowDelete(void)
 
 void XAP_UnixDialog_Zoom::event_Radio200Clicked(void)
 {
-	_enablePercentSpin(UT_FALSE);
+	_enablePercentSpin(false);
 	_updatePreviewZoomPercent(200);
 }
 
 void XAP_UnixDialog_Zoom::event_Radio100Clicked(void)
 {
-	_enablePercentSpin(UT_FALSE);
+	_enablePercentSpin(false);
 	_updatePreviewZoomPercent(100);
 }
 
 void XAP_UnixDialog_Zoom::event_Radio75Clicked(void)
 {
-	_enablePercentSpin(UT_FALSE);
+	_enablePercentSpin(false);
 	_updatePreviewZoomPercent(75);
 }
 
 void XAP_UnixDialog_Zoom::event_RadioPageWidthClicked(void)
 {
-	_enablePercentSpin(UT_FALSE);
+	_enablePercentSpin(false);
 	// TODO : figure out the dimensions
 }
 
 void XAP_UnixDialog_Zoom::event_RadioWholePageClicked(void)
 {
-	_enablePercentSpin(UT_FALSE);
+	_enablePercentSpin(false);
 	// TODO : figure out the dimensions
 }
 
 void XAP_UnixDialog_Zoom::event_RadioPercentClicked(void)
 {
-	_enablePercentSpin(UT_TRUE);
+	_enablePercentSpin(true);
 	// call event_SpinPercentChanged() to do the fetch and update work
 	event_SpinPercentChanged();
 }
@@ -537,7 +537,7 @@ void XAP_UnixDialog_Zoom::_populateWindowData(void)
 	// the spin button.
 	
 	// enable the right button
-	_enablePercentSpin(UT_FALSE);	// default
+	_enablePercentSpin(false);	// default
 	switch(getZoomType())
 	{
 	case XAP_Frame::z_200:
@@ -560,7 +560,7 @@ void XAP_UnixDialog_Zoom::_populateWindowData(void)
 		break;
 	case XAP_Frame::z_PERCENT:
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_radioPercent), TRUE);
-		_enablePercentSpin(UT_TRUE);	// override
+		_enablePercentSpin(true);	// override
 		_updatePreviewZoomPercent(getZoomPercent());
 		break;
 	default:
@@ -588,7 +588,7 @@ void XAP_UnixDialog_Zoom::_storeWindowData(void)
 	m_zoomPercent = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_spinPercent));
 }
 
-void XAP_UnixDialog_Zoom::_enablePercentSpin(UT_Bool enable)
+void XAP_UnixDialog_Zoom::_enablePercentSpin(bool enable)
 {
 	UT_ASSERT(m_spinPercent);
 	

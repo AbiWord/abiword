@@ -40,20 +40,20 @@ class s_UTF8_Listener : public PL_Listener
 public:
 	s_UTF8_Listener(PD_Document * pDocument,
 					IE_Exp_UTF8 * pie,
-					UT_Bool bToClipboard);
+					bool bToClipboard);
 	virtual ~s_UTF8_Listener();
 
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
@@ -61,7 +61,7 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool		signal(UT_uint32 iSignal);
+	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
 	void				_closeBlock(void);
@@ -69,8 +69,8 @@ protected:
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_UTF8 *		m_pie;
-	UT_Bool				m_bInBlock;
-	UT_Bool				m_bToClipboard;
+	bool				m_bInBlock;
+	bool				m_bToClipboard;
 };
 
 /*****************************************************************/
@@ -90,7 +90,7 @@ IE_Exp_UTF8::~IE_Exp_UTF8()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_UTF8::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_UTF8::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".utf8") == 0);
 }
@@ -103,18 +103,18 @@ UT_Error IE_Exp_UTF8::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Exp_UTF8::GetDlgLabels(const char ** pszDesc,
+bool	IE_Exp_UTF8::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
 	*pszDesc = "UTF8 (.utf8)";
 	*pszSuffixList = "*.utf8";
 	*ft = IEFT_UTF8;
-	return UT_TRUE;
+	return true;
 }
 
 
-UT_Bool IE_Exp_UTF8::SupportsFileType(IEFileType ft)
+bool IE_Exp_UTF8::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_UTF8 == ft);
 }
@@ -150,7 +150,7 @@ void s_UTF8_Listener::_closeBlock(void)
 		m_pie->write("\r");				// use text mode when going to a file
 #endif									// so we don't need to then.
 	m_pie->write("\n");
-	m_bInBlock = UT_FALSE;
+	m_bInBlock = false;
 	return;
 }
 
@@ -193,7 +193,7 @@ void s_UTF8_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 
 s_UTF8_Listener::s_UTF8_Listener(PD_Document * pDocument,
 								 IE_Exp_UTF8 * pie,
-								 UT_Bool bToClipboard)
+								 bool bToClipboard)
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
@@ -209,7 +209,7 @@ s_UTF8_Listener::~s_UTF8_Listener()
 	_closeBlock();
 }
 
-UT_Bool s_UTF8_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_UTF8_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 								  const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -221,7 +221,7 @@ UT_Bool s_UTF8_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
 
-			return UT_TRUE;
+			return true;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -234,30 +234,30 @@ UT_Bool s_UTF8_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
-				return UT_TRUE;
+				return true;
 
 			case PTO_Field:
-				return UT_TRUE;
+				return true;
 
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 			}
 #else
-			return UT_FALSE;
+			return false;
 #endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return UT_TRUE;
+		return true;
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_UTF8_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_UTF8_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 									   const PX_ChangeRecord * pcr,
 									   PL_StruxFmtHandle * psfh)
 {
@@ -270,30 +270,30 @@ UT_Bool s_UTF8_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	case PTX_Section:
 		{
 			_closeBlock();
-			return UT_TRUE;
+			return true;
 		}
 
 	case PTX_Block:
 		{
 			_closeBlock();
-			m_bInBlock = UT_TRUE;
-			return UT_TRUE;
+			m_bInBlock = true;
+			return true;
 		}
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_UTF8_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_UTF8_Listener::change(PL_StruxFmtHandle /*sfh*/,
 								const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_UTF8_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_UTF8_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
 									 PL_StruxDocHandle /*sdh*/,
 									 PL_ListenerId /* lid */,
@@ -302,11 +302,11 @@ UT_Bool s_UTF8_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																 PL_StruxFmtHandle /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool s_UTF8_Listener::signal(UT_uint32 /* iSignal */)
+bool s_UTF8_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }

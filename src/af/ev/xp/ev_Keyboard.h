@@ -33,7 +33,7 @@ public:
 	EV_Keyboard(EV_EditEventMapper * pEEM);
 	virtual ~EV_Keyboard(void);
 
-	UT_Bool invokeKeyboardMethod(AV_View * pView,
+	bool invokeKeyboardMethod(AV_View * pView,
 								 EV_EditMethod * pEM,
 								 UT_UCSChar * pData,
 								 UT_uint32 dataLength);

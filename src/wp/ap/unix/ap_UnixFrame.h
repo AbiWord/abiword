@@ -41,10 +41,10 @@ public:
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);
 
-	virtual UT_Bool				initialize(void);
+	virtual bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
 	virtual UT_Error   			loadDocument(const char * szFilename, int ieft);
-	virtual UT_Bool				initFrameData(void);
+	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 
 	virtual void				setXScrollRange(void);
@@ -54,9 +54,9 @@ public:
 	virtual UT_uint32			getZoomPercentage(void);
 	virtual void				setStatusMessage(const char * szMsg);
 
-	virtual void				toggleRuler(UT_Bool bRulerOn);
-	virtual void				toggleBar(UT_uint32 iBarNb, UT_Bool bBarOn);
-	virtual void				toggleStatusBar(UT_Bool bStatusBarOn);
+	virtual void				toggleRuler(bool bRulerOn);
+	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
+	virtual void				toggleStatusBar(bool bStatusBarOn);
 
 protected:
 	virtual GtkWidget *			_createDocumentWindow(void);

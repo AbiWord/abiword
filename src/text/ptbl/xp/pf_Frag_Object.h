@@ -40,7 +40,7 @@ public:
 	virtual ~pf_Frag_Object();
 
 	PTObjectType			getObjectType(void) const;
-	virtual UT_Bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos,
 													  PT_BlockOffset blockOffset) const;
 

@@ -201,7 +201,7 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
+bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 									HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
 	// process the keydown message.
@@ -324,7 +324,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 
 		//MSG(keyData,(("    NVK_Ignore: %p\n",nVirtKey)));
 		_translateMessage(hWnd,iMsg,nVirtKey,keyData);
-		return UT_FALSE;
+		return false;
 	}
 
 	if (nvk != 0)
@@ -344,7 +344,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 			// progress, we should let the system handle it
 			// (this lets things like ALT-F4 work).
 			_translateMessage(hWnd,iMsg,nVirtKey,keyData);
-			return UT_FALSE;
+			return false;
 
 		case EV_EEMR_BOGUS_CONT:
 			// If it is a bogus key but in the middle of a sequence,
@@ -352,19 +352,19 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 			// like Control-X ALT-F4 from killing us -- if they want
 			// to kill us, fine, but they shouldn't be in the middle
 			// of a sequence).
-			return UT_TRUE;
+			return true;
 
 		case EV_EEMR_COMPLETE:			// a terminal node in state machine
 			UT_ASSERT(pEM);
 			invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
-			return UT_TRUE;
+			return true;
 
 		case EV_EEMR_INCOMPLETE:		// a non-terminal node in state machine
-			return UT_TRUE;
+			return true;
 
 		default:
 			UT_ASSERT(0);
-			return UT_TRUE;
+			return true;
 		}
 	}
 
@@ -382,7 +382,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	{
 		// a possible dead-char -- ignore it and wait for possible completed sequence.
 		//UT_DEBUGMSG(("    Received possible dead-char: %x\n",nVirtKey));
-		return UT_TRUE;
+		return true;
 	}
 		
 	if (count == 0)
@@ -423,7 +423,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 			//			 ((ems&EV_EMS_ALT)?"alt":""),
 			//			 count));
 		}
-		return UT_TRUE;
+		return true;
 	}
 	
 	if (count == 2)
@@ -460,7 +460,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 			ems2 = 0;
 		
 		_emitChar(pView,hWnd,iMsg,nVirtKey,keyData,buffer[0],ems2);
-		return UT_TRUE;
+		return true;
 	}
 	else
 	{
@@ -495,7 +495,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 			//			 ((ems2&EV_EMS_ALT)?"alt":""),
 			//			 count));
 		}
-		return UT_TRUE;
+		return true;
 	}
 }
 
@@ -561,7 +561,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 }
 
 
-UT_Bool ev_Win32Keyboard::onChar(AV_View * pView,
+bool ev_Win32Keyboard::onChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
 	// process the char message.  since we have taken care of everything
@@ -569,11 +569,11 @@ UT_Bool ev_Win32Keyboard::onChar(AV_View * pView,
 
 	//MSG(keyData,(("%s: %p %p\n",((iMsg==WM_CHAR)?"wm_char":"wm_syschar"),nVirtKey,keyData)));
 
-	UT_Bool bIgnoreCharacter = UT_TRUE;
+	bool bIgnoreCharacter = true;
 #ifdef HACK_FOR_MENU
 	// see the note in KeyDown.  we need this to get the system to
 	// process the key and do the menu activation thing.
-	bIgnoreCharacter = UT_FALSE;
+	bIgnoreCharacter = false;
 #endif
 	return bIgnoreCharacter;
 }

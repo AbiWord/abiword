@@ -99,7 +99,7 @@ void pf_Frag_Object::setIndexAP(PT_AttrPropIndex indexNewAP)
     m_indexAP = indexNewAP;
 }
 
-UT_Bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
                                                   PT_DocPosition dpos,
                                                   PT_BlockOffset blockOffset) const
 {
@@ -110,8 +110,8 @@ UT_Bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
                                      dpos, m_indexAP, m_objectType,
                                      blockOffset, m_pField);
     if (!pcr)
-        return UT_FALSE;
+        return false;
 
     *ppcr = pcr;
-    return UT_TRUE;
+    return true;
 }

@@ -41,7 +41,7 @@ public:
 	ap_ViewListener(XAP_Frame* pFrame);
 	virtual ~ap_ViewListener();
 
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
 	XAP_Frame*		m_pFrame;

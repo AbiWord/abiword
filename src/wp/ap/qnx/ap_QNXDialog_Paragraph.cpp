@@ -160,7 +160,7 @@ AP_QNXDialog_Paragraph::AP_QNXDialog_Paragraph(XAP_DialogFactory * pDlgFactory,
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
 	m_unixGraphics = NULL;
-	m_bEditChanged = UT_FALSE;
+	m_bEditChanged = false;
 }
 
 AP_QNXDialog_Paragraph::~AP_QNXDialog_Paragraph(void)
@@ -280,7 +280,7 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
-	//_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
+	//_syncControls(id_MENU_ALIGNMENT, true);
 
 	UT_QNXCenterWindow(parentWindow, mainWindow);
 	UT_QNXBlockWidget(parentWindow, 1);
@@ -364,7 +364,7 @@ void AP_QNXDialog_Paragraph::event_SpinChanged(PtWidget_t * widget)
 	char	 buffer[100];
 	tControl id = (tControl) TFGetDataInt(widget); 
 
-	m_bEditChanged = UT_TRUE;
+	m_bEditChanged = true;
 	
 	TFGetNumericString(widget, buffer, 100);
 	//_setSpinItemValue(id, buffer, op_SYNC);
@@ -1048,7 +1048,7 @@ void AP_QNXDialog_Paragraph::_populateWindowData(void)
 								 (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE));
 }
 
-void AP_QNXDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+void AP_QNXDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
 {
 	// let parent sync any member variables first
 	AP_Dialog_Paragraph::_syncControls(changed, bAll);

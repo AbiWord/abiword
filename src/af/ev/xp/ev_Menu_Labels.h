@@ -66,7 +66,7 @@ public:
 					 XAP_Menu_Id first, XAP_Menu_Id last);
 	~EV_Menu_LabelSet(void);
 
-	UT_Bool				setLabel(XAP_Menu_Id id,
+	bool				setLabel(XAP_Menu_Id id,
 								 const char * szMenuLabel,
 								 const char * szStatusMsg);
 #ifdef __MRC__

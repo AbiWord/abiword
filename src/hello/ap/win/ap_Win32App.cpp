@@ -58,30 +58,30 @@ AP_Win32App::~AP_Win32App(void)
 	DELETEP(m_pStringSet);
 }
 
-static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
+static bool s_createDirectoryIfNecessary(const char * szDir)
 {
 	struct _stat statbuf;
 	
 	if (_stat(szDir,&statbuf) == 0)								// if it exists
 	{
 		if ( (statbuf.st_mode & _S_IFDIR) == _S_IFDIR )			// and is a directory
-			return UT_TRUE;
+			return true;
 
 		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-		return UT_FALSE;
+		return false;
 	}
 
 	if (CreateDirectory(szDir,NULL))
-		return UT_TRUE;
+		return true;
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-	return UT_FALSE;
+	return false;
 }	
 
-UT_Bool AP_Win32App::initialize(void)
+bool AP_Win32App::initialize(void)
 {
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
-	UT_Bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 	UT_ASSERT(bVerified);
 
 	// load preferences, first the builtin set and then any on disk.
@@ -107,19 +107,19 @@ UT_Bool AP_Win32App::initialize(void)
 	UT_ASSERT(m_pToolbarActionSet);
 
 	if (! XAP_Win32App::initialize())
-		return UT_FALSE;
+		return false;
 
 	// let various window types register themselves
 
 	if (!AP_Win32Frame::RegisterClass(this))
 	{
 		UT_DEBUGMSG(("couldn't register class\n"));
-		return UT_FALSE;
+		return false;
 	}
 
 	// TODO  - load in strings
 
-	return UT_TRUE;
+	return true;
 }
 
 XAP_Frame * AP_Win32App::newFrame(void)
@@ -132,12 +132,12 @@ XAP_Frame * AP_Win32App::newFrame(void)
 	return pWin32Frame;
 }
 
-UT_Bool AP_Win32App::shutdown(void)
+bool AP_Win32App::shutdown(void)
 {
 	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 
-	return UT_TRUE;
+	return true;
 }
 
 const XAP_StringSet * AP_Win32App::getStringSet(void) const

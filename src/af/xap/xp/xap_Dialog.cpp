@@ -64,7 +64,7 @@ XAP_Dialog_NonPersistent::~XAP_Dialog_NonPersistent(void)
 XAP_Dialog_Persistent::XAP_Dialog_Persistent(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog(pDlgFactory,id)
 {
-	m_bInUse = UT_FALSE;
+	m_bInUse = false;
 }
 
 XAP_Dialog_Persistent::~XAP_Dialog_Persistent(void)
@@ -74,13 +74,13 @@ XAP_Dialog_Persistent::~XAP_Dialog_Persistent(void)
 void XAP_Dialog_Persistent::useStart(void)
 {
 	UT_ASSERT(!m_bInUse);
-	m_bInUse = UT_TRUE;
+	m_bInUse = true;
 }
 
 void XAP_Dialog_Persistent::useEnd(void)
 {
 	UT_ASSERT(m_bInUse);
-	m_bInUse = UT_FALSE;
+	m_bInUse = false;
 }
 
 /*****************************************************************/
@@ -161,7 +161,7 @@ void XAP_Dialog_Modeless::modeless_cleanup(void)
 	m_pDlgFactory->releaseDialog(m_pDialog);
 }
 
-UT_Bool XAP_Dialog_Modeless::isRunning(void)
+bool XAP_Dialog_Modeless::isRunning(void)
 {
  
 	UT_sint32 sid = (UT_sint32) getDialogId();

@@ -75,7 +75,7 @@ struct _lt
 {
 	const char *				m_name;
 	ap_CreateLabelSet_pFn		m_fn;
-	UT_Bool						m_bIsDefaultSetForLanguage;
+	bool						m_bIsDefaultSetForLanguage;
 };
 
 

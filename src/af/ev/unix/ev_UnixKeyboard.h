@@ -34,7 +34,7 @@ public:
 	ev_UnixKeyboard(EV_EditEventMapper * pEEM);
 	virtual ~ev_UnixKeyboard(void);
 
-	UT_Bool keyPressEvent(AV_View * pView, GdkEventKey* e);
+	bool keyPressEvent(AV_View * pView, GdkEventKey* e);
 	static GdkModifierType getAltModifierMask(void);
 };
 

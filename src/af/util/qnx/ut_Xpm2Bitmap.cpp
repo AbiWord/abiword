@@ -31,7 +31,7 @@
 
 /*****************************************************************/
 
-UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
+bool UT_Xpm2Bitmap(const char ** pIconData,
 				   UT_uint32 sizeofData,	//USELESS
 				   PhImage_t ** ppImage) {
 	PhImage_t *pImage;
@@ -59,7 +59,7 @@ UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
 	//Create a new PhImage_t 
 	//printf("Allocating an image buffer %d bytes\n", sizeof(*pImage));
 	if (!(pImage = (PhImage_t *)malloc(sizeof(*pImage))))
-		return(UT_FALSE);
+		return(false);
 	memset(pImage, 0, sizeof(*pImage));
 
 	//printf("Setting information \n");
@@ -84,7 +84,7 @@ UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
 	pImage->image = (char *)malloc(sizeof(PgColor_t) * width * height);
 	if (!pImage->image) {
 		free(pImage);	
-		return(UT_FALSE);
+		return(false);
 	}
 
 	PgColor_t *pRGB;
@@ -173,7 +173,7 @@ UT_Bool UT_Xpm2Bitmap(const char ** pIconData,
 
 	free(pRGB);
 	*ppImage = pImage;
-	return(UT_TRUE);
+	return(true);
 }
 
 		

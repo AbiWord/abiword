@@ -34,7 +34,7 @@ AP_Win32Toolbar_Icons::~AP_Win32Toolbar_Icons(void)
 	// TODO handed out, so that we can delete them ??
 }
 
-UT_Bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND hwnd,
+bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND hwnd,
 												UT_uint32 maxWidth,
 												UT_uint32 maxHeight,
 												UT_RGBColor * pColor,
@@ -48,12 +48,12 @@ UT_Bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND hwnd,
 	const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
 	
-	UT_Bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
+	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
 	if (!bFound)
-		return UT_FALSE;
+		return false;
 
 	HDC hdc = GetDC(hwnd);
-	UT_Bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,hdc,pColor,pBitmap);
+	bool bCreated = UT_Xpm2Bmp(maxWidth,maxHeight,pIconData,sizeofIconData,hdc,pColor,pBitmap);
 	ReleaseDC(hwnd,hdc);
 
 	return bCreated;

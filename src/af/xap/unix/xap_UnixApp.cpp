@@ -68,7 +68,7 @@ XAP_UnixApp::~XAP_UnixApp(void)
 	DELETEP(m_pUnixToolbarIcons);
 }
 
-UT_Bool XAP_UnixApp::initialize(void)
+bool XAP_UnixApp::initialize(void)
 {
 	// initialize GTK first.
 	
@@ -84,7 +84,7 @@ UT_Bool XAP_UnixApp::initialize(void)
 	// load the font stuff from the font directory
 
 	if (!_loadFonts())
-		return UT_FALSE;
+		return false;
 	
 	/*******************************/
 
@@ -104,7 +104,7 @@ UT_Bool XAP_UnixApp::initialize(void)
 	
 	// do any thing we need here...
 
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_UnixApp::reallyExit(void)
@@ -176,7 +176,7 @@ const char * XAP_UnixApp::getUserPrivateDirectory(void)
 	return buf;
 }
 
-UT_Bool XAP_UnixApp::_loadFonts(void)
+bool XAP_UnixApp::_loadFonts(void)
 {
 	// create a font manager for our app to use
 	UT_uint32 relativePathsSoFar = 0, relativePathCount = 0;
@@ -237,7 +237,7 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 	// let it loose
 
 	if (!m_fontManager->scavengeFonts())
-		return UT_FALSE;
+		return false;
 	
 #if 0
 #ifdef DEBUG
@@ -254,7 +254,7 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 #endif
 #endif
 
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_UnixApp::_setAbiSuiteLibDir(void)

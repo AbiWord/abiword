@@ -37,7 +37,7 @@ public:
 	virtual ~AP_MacDialog_Columns(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-	virtual void			enableLineBetweenControl(UT_Bool bState = UT_TRUE);
+	virtual void			enableLineBetweenControl(bool bState = true);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 

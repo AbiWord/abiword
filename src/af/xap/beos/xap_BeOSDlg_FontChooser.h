@@ -39,7 +39,7 @@ public:
 	
 protected:
 
-	UT_Bool bAbusingTheFontSize;
+	bool bAbusingTheFontSize;
 	
 	XAP_BeOSFrame *			m_pBeOSFrame;
 	

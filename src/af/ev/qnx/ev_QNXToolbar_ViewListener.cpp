@@ -30,7 +30,7 @@ EV_QNXToolbar_ViewListener::EV_QNXToolbar_ViewListener(EV_QNXToolbar * pQNXToolb
 	m_pView = pView;
 }
 
-UT_Bool EV_QNXToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
+bool EV_QNXToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView == m_pView);
 	

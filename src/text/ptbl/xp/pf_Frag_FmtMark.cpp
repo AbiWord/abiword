@@ -45,7 +45,7 @@ void pf_Frag_FmtMark::setIndexAP(PT_AttrPropIndex indexNewAP)
 	m_indexAP = indexNewAP;
 }
 
-UT_Bool pf_Frag_FmtMark::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+bool pf_Frag_FmtMark::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 												   PT_DocPosition dpos,
 												   PT_BlockOffset blockOffset) const
 {
@@ -55,8 +55,8 @@ UT_Bool pf_Frag_FmtMark::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 		= new PX_ChangeRecord_FmtMark(PX_ChangeRecord::PXT_InsertFmtMark,
 									  dpos, m_indexAP, blockOffset);
 	if (!pcr)
-		return UT_FALSE;
+		return false;
 
 	*ppcr = pcr;
-	return UT_TRUE;
+	return true;
 }

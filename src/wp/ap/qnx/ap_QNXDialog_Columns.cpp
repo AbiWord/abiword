@@ -119,10 +119,10 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
 /**** ****/
 
 /* findIconDataByName stolen from ap_Toolbar_Icons.cpp */
-static UT_Bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
+static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
 {
 	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
-		return UT_FALSE;
+		return false;
 	
 	UT_uint32 kLimit = NrElements(s_itTable);
 	UT_uint32 k;
@@ -132,30 +132,30 @@ static UT_Bool findIconDataByName(const char * szName, const char *** pIconData,
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;
-			return UT_TRUE;
+			return true;
 		}
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
-static UT_Bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName)
+static bool label_button_with_abi_pixmap( PtWidget_t * button, const char * szIconName)
 {
 	const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
-	UT_Bool bFound = findIconDataByName(szIconName, &pIconData, &sizeofIconData);
+	bool bFound = findIconDataByName(szIconName, &pIconData, &sizeofIconData);
 	if (!bFound) {
-		return UT_FALSE;
+		return false;
 	}
 
 	PhImage_t *pImage = NULL;
 
-	if (UT_Xpm2Bitmap(pIconData, sizeofIconData, &pImage) == UT_FALSE) {
-		return UT_FALSE;
+	if (UT_Xpm2Bitmap(pIconData, sizeofIconData, &pImage) == false) {
+		return false;
 	}
 
 	if (!pImage) {
-		return UT_FALSE;
+		return false;
 	}
 
 	PtSetResource(button, Pt_ARG_DIM, &pImage->size, 0);
@@ -163,7 +163,7 @@ static UT_Bool label_button_with_abi_pixmap( PtWidget_t * button, const char * s
 	PtSetResource(button, Pt_ARG_LABEL_TYPE, Pt_TEXT_IMAGE, 0);
 //	PtSetArg(button, Pt_ARG_BALLOON_POSITION, Pt_BALLOON_BOTTOM, 0);
 
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -232,15 +232,15 @@ void AP_QNXDialog_Columns::event_Toggle( PtWidget_t *widget)
 	PtGetResource(m_wlineBetween, Pt_ARG_FLAGS, &flags, 0);
 	if (flags == NULL) {
 		printf("No flags! \n");
-		setLineBetween(UT_FALSE);
+		setLineBetween(false);
 	}
 	else if (*flags & Pt_SET) {
 		printf("Set line between on \n");
-		setLineBetween(UT_TRUE);
+		setLineBetween(true);
 	}
 	else {
 		printf("Set line between off \n");
-		setLineBetween(UT_FALSE);
+		setLineBetween(false);
 	}
 
 	/* There has to be a better way to do this ... */
@@ -442,6 +442,6 @@ void AP_QNXDialog_Columns::_storeWindowData(void)
 {
 }
 
-void AP_QNXDialog_Columns::enableLineBetweenControl(UT_Bool bState)
+void AP_QNXDialog_Columns::enableLineBetweenControl(bool bState)
 {
 }

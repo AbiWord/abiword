@@ -79,7 +79,7 @@
   };
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
-  : IE_Imp_XML(pDocument, UT_FALSE), m_listType(L_NONE)
+  : IE_Imp_XML(pDocument, false), m_listType(L_NONE)
 {
 }
 
@@ -98,7 +98,7 @@ IE_Imp_XHTML::~IE_Imp_XHTML()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_XHTML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_XHTML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	UT_uint32 iLinesToRead = 6 ;  // Only examine the first few lines of the file
 	UT_uint32 iBytesScanned = 0 ;
@@ -108,16 +108,16 @@ UT_Bool IE_Imp_XHTML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 	while( iLinesToRead-- )
 	{
 		magic = "<html " ;
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_FALSE);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_TRUE);
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
 		magic = "<!DOCTYPE html" ;
-		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(UT_FALSE);
-		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(UT_TRUE);
+		if ( (iNumbytes - iBytesScanned) < strlen(magic) ) return(false);
+		if ( strncmp(p, magic, strlen(magic)) == 0 ) return(true);
 		/*  Seek to the next newline:  */
 		while ( *p != '\n' && *p != '\r' )
 		{
 			iBytesScanned++ ; p++ ;
-			if( iBytesScanned+2 >= iNumbytes ) return(UT_FALSE);
+			if( iBytesScanned+2 >= iNumbytes ) return(false);
 		}
 		/*  Seek past the next newline:  */
 		if ( *p == '\n' || *p == '\r' )
@@ -129,10 +129,10 @@ UT_Bool IE_Imp_XHTML::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 			}
 		}
 	}
-	return(UT_FALSE);
+	return(false);
 }
 
-UT_Bool IE_Imp_XHTML::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_XHTML::RecognizeSuffix(const char * szSuffix)
 {
 	return ((UT_stricmp(szSuffix,".html") == 0) || (UT_stricmp(szSuffix,".xhtml") == 0));
 }
@@ -145,17 +145,17 @@ UT_Error IE_Imp_XHTML::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Imp_XHTML::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_XHTML::GetDlgLabels(const char ** pszDesc,
 									   const char ** pszSuffixList,
 									   IEFileType * ft)
 {
 	*pszDesc = "XHTML (.html)";
 	*pszSuffixList = "*.html";
 	*ft = IEFT_XHTML;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_XHTML::SupportsFileType(IEFileType ft)
+bool IE_Imp_XHTML::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_XHTML == ft);
 }

@@ -72,7 +72,7 @@ public:
 						XAP_Toolbar_Id first, XAP_Toolbar_Id last);
 	~EV_Toolbar_LabelSet(void);
 
-	UT_Bool				setLabel(XAP_Toolbar_Id id,
+	bool				setLabel(XAP_Toolbar_Id id,
 								 const char * szToolbarLabel,
 								 const char * szIconName,
 								 const char * szToolTip,

@@ -79,9 +79,9 @@ static void s_delete_clicked(GtkWidget * /* widget*/, gpointer /* data */, XAP_D
 	gtk_main_quit();
 }
 
-UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
+bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 													 void * pFSvoid,
-													 UT_Bool bCheckWritePermission,
+													 bool bCheckWritePermission,
 													 GtkWidget * filetypes_pulldown)
 {
 	GtkFileSelection * pFS = (GtkFileSelection *)pFSvoid;
@@ -119,7 +119,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		{
 			gtk_main();
 			if (m_answer == a_CANCEL)			// The easy way out
-				return UT_FALSE;
+				return false;
 
 			// TODO  check for symlinks, because even symlinks to dirs won't
 			// TODO  show up with S_ISDIR().
@@ -169,7 +169,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 	{
 		gtk_main();
 		if (m_answer == a_CANCEL)			// The easy way out
-			return UT_FALSE;
+			return false;
 
 		// Give us a filename we can mangle
 
@@ -205,7 +205,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 					break;
 				}
 			}
-			UT_Bool wantSuffix = UT_TRUE;
+			bool wantSuffix = true;
 			
 			XAP_Prefs *pPrefs= pFrame->getApp()->getPrefs();
 
@@ -346,11 +346,11 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 ReturnTrue:
 	FREEP(szFinalPathnameCopy);
 	FREEP(szFinalPathname);
-	return UT_TRUE;
+	return true;
 }
 
 
-UT_Bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName)
+bool XAP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName)
 {
 	return (pFrame->showMessageBox(XAP_STRING_ID_DLG_OverwriteFile,
 										XAP_Dialog_MessageBox::b_YN,
@@ -389,7 +389,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// directory for writability?  Save/Export operations will want
 	// this, open/import will not.
 
-	UT_Bool bCheckWritePermission = UT_FALSE;
+	bool bCheckWritePermission = false;
 
 	const XML_Char * szTitle = NULL;
 	const XML_Char * szFileTypeLabel = NULL;
@@ -400,21 +400,21 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
-		bCheckWritePermission = UT_FALSE;
+		bCheckWritePermission = false;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
-		bCheckWritePermission = UT_TRUE;
+		bCheckWritePermission = true;
 		break;
 	}
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle);
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel);
-		bCheckWritePermission = UT_TRUE;
+		bCheckWritePermission = true;
 		break;
 	}
 	default:
@@ -609,7 +609,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(GTK_WIDGET(pFS));
 	gtk_grab_add(GTK_WIDGET(pFS));
 
-	UT_Bool bResult = _run_gtk_main(pFrame,pFS,bCheckWritePermission,filetypes_pulldown);
+	bool bResult = _run_gtk_main(pFrame,pFS,bCheckWritePermission,filetypes_pulldown);
 	
 	if (bResult)
 	{

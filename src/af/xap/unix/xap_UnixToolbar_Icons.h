@@ -33,7 +33,7 @@ public:
 	AP_UnixToolbar_Icons(void);
 	~AP_UnixToolbar_Icons(void);
 
-	UT_Bool			getPixmapForIcon(GdkWindow * window, GdkColor * background,
+	bool			getPixmapForIcon(GdkWindow * window, GdkColor * background,
 									 const char * szIconName, GtkWidget ** pwPixmap);
 	
 protected:

@@ -398,7 +398,7 @@ void AP_MacDialog_Options::runModal(XAP_Frame * pFrame)
 #endif
 }
 		
-void AP_MacDialog_Options::_controlEnable( tControl id, UT_Bool value )
+void AP_MacDialog_Options::_controlEnable( tControl id, bool value )
 {
 #if 0
 	newwin->Lock();
@@ -500,11 +500,11 @@ void AP_MacDialog_Options::_controlEnable( tControl id, UT_Bool value )
 
 /*
 #define DEFINE_GET_SET_BOOL(button) \
-UT_Bool     AP_MacDialog_Options::_gather##button(void) {				\
+bool     AP_MacDialog_Options::_gather##button(void) {				\
 	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
 	return gtk_toggle_button_get_active(								\
 				GTK_TOGGLE_BUTTON(m_checkbutton##button) ); }			\
-void        AP_MacDialog_Options::_set##button(UT_Bool b) {	\
+void        AP_MacDialog_Options::_set##button(bool b) {	\
 	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
 	gtk_toggle_button_set_active (										\
 				GTK_TOGGLE_BUTTON(m_checkbutton##button), b ); }
@@ -517,11 +517,11 @@ void        AP_MacDialog_Options::_set##button(UT_Bool b) {	\
 // which tab is the active one and set the active one to 0, search, 1 , search , 2 , search , restore.
 
 #define DEFINE_GET_SET_BOOL(button , chartitle) \
-UT_Bool     AP_MacDialog_Options::_gather##button(void) \
+bool     AP_MacDialog_Options::_gather##button(void) \
 {\
-	return UT_FALSE;\
+	return false;\
 } \
-void        AP_MacDialog_Options::_set##button(UT_Bool b) \
+void        AP_MacDialog_Options::_set##button(bool b) \
 { \
 } 
 

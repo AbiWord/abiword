@@ -42,15 +42,15 @@ public:
 						const char * szMenuLabelSetName);
 	virtual ~EV_UnixGnomeMenu(void);
 
-	virtual UT_Bool		refreshMenu(AV_View * pView) = 0;
-	UT_Bool				synthesizeMenu(GtkWidget * wMenuRoot);
+	virtual bool		refreshMenu(AV_View * pView) = 0;
+	bool				synthesizeMenu(GtkWidget * wMenuRoot);
 	static void			menuEvent(GtkWidget *w, gpointer);
 
 protected:
 	GnomeUIInfo *       _convertMenu2UIInfo (int &pos);
 	void                _destroyUIInfo (GnomeUIInfo *uiinfo);
 	void                _attachWidgetsAndSignals(GtkWidget * wMenuRoot, GnomeUIInfo * uiinfo);
-	UT_Bool             _refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
+	bool             _refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
 	void                _convertString2Accel(const char *s, guint &accel_key, GdkModifierType &ac_mods);
 
 	// static functions

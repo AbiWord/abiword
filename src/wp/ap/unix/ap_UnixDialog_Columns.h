@@ -69,9 +69,9 @@ static struct _it s_itTable[] =
 // Some convience functions to make Abi's pixmaps easily available to unix
 // dialogs
 
-static UT_Bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
+static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
 
-static UT_Bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName);
+static bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName);
 
 
 //
@@ -81,12 +81,12 @@ static UT_Bool label_button_with_abi_pixmap( GtkWidget * button, const char * sz
 //
 // findIconDataByName stolen from ap_Toolbar_Icons.cpp
 //
-static UT_Bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
+static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
 {
 	// This is a static function.
 
 	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
-		return UT_FALSE;
+		return false;
 	
 	UT_uint32 kLimit = NrElements(s_itTable);
 	UT_uint32 k;
@@ -96,19 +96,19 @@ static UT_Bool findIconDataByName(const char * szName, const char *** pIconData,
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;
-			return UT_TRUE;
+			return true;
 		}
 
-	return UT_FALSE;
+	return false;
 }
 
-static UT_Bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName)
+static bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName)
 {
         const char ** pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
-	UT_Bool bFound = findIconDataByName(szIconName, &pIconData, &sizeofIconData);
+	bool bFound = findIconDataByName(szIconName, &pIconData, &sizeofIconData);
 	if (!bFound)
-		return UT_FALSE;
+		return false;
 	//	UT_DEBUGMSG(("SEVIOR: found icon name %s \n",szIconName));
 	GdkBitmap * mask;
 	GdkColormap * colormap =  gtk_widget_get_colormap (button);
@@ -117,14 +117,14 @@ static UT_Bool label_button_with_abi_pixmap( GtkWidget * button, const char * sz
 							&mask, NULL, 
 							(char **)pIconData);
 	if (!pixmap)
-		return UT_FALSE;
+		return false;
 	GtkWidget * wpixmap = gtk_pixmap_new(pixmap,mask);
 	if (!wpixmap)
-		return UT_FALSE;
+		return false;
 	gtk_widget_show(wpixmap);
 	//	UT_DEBUGMSG(("SEVIOR: Adding pixmap to button now \n"));
 	gtk_container_add (GTK_CONTAINER (button), wpixmap);
-	return UT_TRUE;
+	return true;
 }
 //----------------------------------------------------------------
 
@@ -139,7 +139,7 @@ public:
 	virtual ~AP_UnixDialog_Columns(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-	virtual void			enableLineBetweenControl(UT_Bool bState = UT_TRUE);
+	virtual void			enableLineBetweenControl(bool bState = true);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 

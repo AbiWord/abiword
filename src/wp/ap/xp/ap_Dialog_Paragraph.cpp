@@ -55,7 +55,7 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 	XAP_Prefs* pPrefs = m_pApp->getPrefs();
 	UT_ASSERT(pPrefs);
 	
-	const UT_Bool bHasRulerUnits =
+	const bool bHasRulerUnits =
 		pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &szRulerUnits);
 
 	m_dim = bHasRulerUnits ? UT_determineDimension(szRulerUnits) : DIM_IN;
@@ -116,13 +116,13 @@ AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
 	UT_VECTOR_PURGEALL(sControlData *, m_vecProperties);
 }
 
-UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
+bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 {
 	UT_ASSERT(pProps);
 
 	// NOTICE : When setting values, this function always calls
 	// NOTICE : _set[thing]ItemValue() with the bToggleDirty flag
-	// NOTICE : set to UT_FALSE, because these are the "un-dirty"
+	// NOTICE : set to false, because these are the "un-dirty"
 	// NOTICE : values.
 	
 	if (pProps[0])
@@ -250,8 +250,8 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			// NOTE : 0, then some form of control is in effect.  If the property
 			// NOTE : is not set, they're indeterminate.
 
-			UT_Bool bNoOrphans = UT_FALSE;
-			UT_Bool bNoWidows = UT_FALSE;
+			bool bNoOrphans = false;
+			bool bNoWidows = false;
 
 			double orphans = 0, widows = 0;
 			
@@ -259,13 +259,13 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			if (sz)
 				orphans = UT_convertDimensionless(sz);
 			else
-				bNoOrphans = UT_TRUE;
+				bNoOrphans = true;
 			
 			sz = UT_getAttribute("widows", pProps);
 			if (sz)
 				widows = UT_convertDimensionless(sz);
 			else
-				bNoWidows = UT_TRUE;
+				bNoWidows = true;
 
 			if (bNoOrphans && bNoWidows)
 				_setCheckItemValue(id_CHECK_WIDOW_ORPHAN, check_INDETERMINATE, op_INIT);
@@ -318,7 +318,7 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		*/
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 // This function returns a pointer to newly allocated memory, which contains
@@ -330,10 +330,10 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 #define ALLOC_PROP_PAIR(p)									\
         do {                								\
             p = (propPair *) calloc(1, sizeof(propPair));	\
-            if (!p) return UT_FALSE;						\
+            if (!p) return false;						\
         } while (0)											\
 
-UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
+bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 {
 	UT_Vector v;
 
@@ -573,7 +573,7 @@ UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 
 	const XML_Char ** newprops = (const XML_Char **) calloc(count, sizeof(XML_Char *));
 	if (!newprops)
-		return UT_FALSE;
+		return false;
 
 	const XML_Char ** newitem = newprops;
 
@@ -597,7 +597,7 @@ UT_Bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 
 	pProps = newprops;
 	
-	return UT_TRUE;
+	return true;
 }
 
 AP_Dialog_Paragraph::tAnswer AP_Dialog_Paragraph::getAnswer(void) const
@@ -636,7 +636,7 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	UT_ASSERT(bl);
 
 	UT_GrowBuf gb;
-	UT_Bool hadMem = bl->getBlockBuf(&gb);
+	bool hadMem = bl->getBlockBuf(&gb);
 
 	UT_UCSChar * tmp = NULL;
 	if (hadMem && gb.getLength() > 0)
@@ -676,7 +676,7 @@ void AP_Dialog_Paragraph::_setMenuItemValue(tControl item, UT_sint32 value,
 	pItem->pData = (void *) value;
 
 	if ((op == op_UICHANGE) || (op == op_SYNC))
-		pItem->bChanged = UT_TRUE;
+		pItem->bChanged = true;
 
 	// for UI-driven changes, may need to sync other controls
 	if (op == op_UICHANGE)
@@ -706,7 +706,7 @@ void AP_Dialog_Paragraph::_setCheckItemValue(tControl item, tCheckState value,
 	pItem->pData = (void *) value;
 
 	if ((op == op_UICHANGE) || (op == op_SYNC))
-		pItem->bChanged = UT_TRUE;
+		pItem->bChanged = true;
 
 	// for UI-driven changes, may need to sync other controls
 	if (op == op_UICHANGE)
@@ -790,7 +790,7 @@ void AP_Dialog_Paragraph::_setSpinItemValue(tControl item, const XML_Char * valu
 	}
 
 	if ((op == op_UICHANGE) || (op == op_SYNC))
-		pItem->bChanged = UT_TRUE;
+		pItem->bChanged = true;
 
 	// for UI-driven changes, may need to sync other controls
 	if (op == op_UICHANGE)
@@ -832,13 +832,13 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 	UT_Dimension dimSpin = m_dim;
 	double dSpinUnit = SPIN_INCR_PT;
 	double dMin = 0.0;
-	UT_Bool bMin = UT_FALSE;
+	bool bMin = false;
 
 	switch (edit)
 	{
 	case id_SPIN_SPECIAL_INDENT:
 		dMin = 0.0;
-		bMin = UT_TRUE;
+		bMin = true;
 		// fall through
 	case id_SPIN_LEFT_INDENT:
 	case id_SPIN_RIGHT_INDENT:
@@ -860,7 +860,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 		dimSpin = DIM_PT;
 		dSpinUnit = 6.0;
 		dMin = 0.0;
-		bMin = UT_TRUE;
+		bMin = true;
 		break;
 
 	case id_SPIN_SPECIAL_SPACING:
@@ -875,7 +875,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 			dimSpin = DIM_none;
 			dSpinUnit = 0.5;
 			dMin = 0.5;
-			bMin = UT_TRUE;
+			bMin = true;
 			break;
 
 		case spacing_EXACTLY:
@@ -884,7 +884,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 		case spacing_ATLEAST:
 			dimSpin = DIM_PT;
 			dSpinUnit = SPIN_INCR_PT;
-			bMin = UT_TRUE;
+			bMin = true;
 			break;
 
 		default:
@@ -939,11 +939,11 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 // must be to call the XP (parent) implementation
 //
 // also, the platform code has to call _syncControls() once with 
-// bAll set to UT_TRUE.  this should happen *after* all of the 
+// bAll set to true.  this should happen *after* all of the 
 // member variables have been copied to the screen for the first 
 // time, but before the dialog is displayed.
 
-void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
 {
 	if(changed == id_SPIN_LEFT_INDENT)
 	{
@@ -993,7 +993,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 	if (changed == id_MENU_SPECIAL_INDENT)
 	{
 		double dDefault = 0.0;
-		UT_Bool bDefault = UT_TRUE;
+		bool bDefault = true;
 
 		switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
 		{
@@ -1007,7 +1007,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 			dDefault = UT_convertDimensionless(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 			if (dDefault > 0)
 			{
-				bDefault = UT_FALSE;
+				bDefault = false;
 			}
 			else
 			{
@@ -1100,7 +1100,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 	m_paragraphPreview->draw();
 }
 
-UT_Bool AP_Dialog_Paragraph::_wasChanged(tControl item)
+bool AP_Dialog_Paragraph::_wasChanged(tControl item)
 {
 	UT_ASSERT((UT_uint32) item <= m_vecProperties.getItemCount());
 
@@ -1115,7 +1115,7 @@ void AP_Dialog_Paragraph::_addPropertyItem(UT_uint32 index, void* pValue)
 	typedef AP_Dialog_Paragraph::sControlData sControlData;
 	sControlData* pItem = new sControlData;
     UT_ASSERT(pItem);
-    pItem->bChanged = UT_FALSE;
+    pItem->bChanged = false;
     pItem->pData = pValue;
     void* pTmp;
     m_vecProperties.setNthItem(index, pItem, &pTmp);

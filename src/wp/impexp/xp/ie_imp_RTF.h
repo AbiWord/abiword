@@ -62,14 +62,14 @@ class RTFProps_CharProps
 public:
 	RTFProps_CharProps();
 
-	UT_Bool	m_deleted;
-	UT_Bool	m_bold;
-	UT_Bool	m_italic;
-	UT_Bool	m_underline;
-	UT_Bool m_overline;
-	UT_Bool	m_strikeout;
-	UT_Bool m_superscript;
-	UT_Bool m_subscript;
+	bool	m_deleted;
+	bool	m_bold;
+	bool	m_italic;
+	bool	m_underline;
+	bool m_overline;
+	bool	m_strikeout;
+	bool m_superscript;
+	bool m_subscript;
 	double	m_fontSize;			// font size in points
 	UT_uint32 m_fontNumber;		// index into font table
 	UT_uint32 m_colourNumber;	// index into colour table
@@ -93,10 +93,10 @@ public:
     UT_sint32	m_indentRight;	// right indent in twips
     UT_sint32	m_indentFirst;	// first line indent in twips
 	double	m_lineSpaceVal;		// line spaceing value
-	UT_Bool	m_lineSpaceExact;	// TRUE if m_lineSpaceVal is an exact value, FALSE if multiple
+	bool	m_lineSpaceExact;	// TRUE if m_lineSpaceVal is an exact value, FALSE if multiple
 	UT_Vector m_tabStops;
 	UT_Vector m_tabTypes;
-	UT_Bool         m_isList;       // TRUE if para is an element of a list
+	bool         m_isList;       // TRUE if para is an element of a list
 	UT_sint32       m_level;        // Level of list in para
 	char            m_pszStyle[30]; // Type of List
 	UT_uint32       m_rawID;        // raw ID of list
@@ -185,14 +185,14 @@ public:
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										unsigned char * pData, UT_uint32 lenData);
 
-	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
+	static bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Imp ** ppie);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	static bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
-	static UT_Bool 		SupportsFileType(IEFileType ft);
+	static bool 		SupportsFileType(IEFileType ft);
 
 protected:
 	UT_Error			_parseFile(FILE * fp);
@@ -201,57 +201,57 @@ protected:
 
 // importer helper methods
 private:
-	UT_Bool AddChar(UT_UCSChar ch);
-	UT_Bool FlushStoredChars(UT_Bool forceInsertPara = UT_FALSE);
-	UT_Bool StartNewPara();
-	UT_Bool StartNewSection();
-	UT_Bool PushRTFState();
-	UT_Bool PopRTFState();
-	UT_Bool ParseRTFKeyword();
-	UT_Bool ParseChar(UT_UCSChar ch,bool no_convert=1);
-  UT_Bool ReadCharFromFileWithCRLF(unsigned char* pCh);
-	UT_Bool ReadCharFromFile(unsigned char* pCh);
-	UT_Bool SkipBackChar(unsigned char ch);
-	UT_Bool ReadKeyword(unsigned char* pKeyword, long* pParam, UT_Bool* pParamUsed);
-	UT_Bool TranslateKeyword(unsigned char* pKeyword, long param, UT_Bool fParam);
-	UT_Bool ReadColourTable();
-	UT_Bool ReadFontTable();
-	UT_Bool ReadOneFontFromTable();
+	bool AddChar(UT_UCSChar ch);
+	bool FlushStoredChars(bool forceInsertPara = false);
+	bool StartNewPara();
+	bool StartNewSection();
+	bool PushRTFState();
+	bool PopRTFState();
+	bool ParseRTFKeyword();
+	bool ParseChar(UT_UCSChar ch,bool no_convert=1);
+  bool ReadCharFromFileWithCRLF(unsigned char* pCh);
+	bool ReadCharFromFile(unsigned char* pCh);
+	bool SkipBackChar(unsigned char ch);
+	bool ReadKeyword(unsigned char* pKeyword, long* pParam, bool* pParamUsed);
+	bool TranslateKeyword(unsigned char* pKeyword, long param, bool fParam);
+	bool ReadColourTable();
+	bool ReadFontTable();
+	bool ReadOneFontFromTable();
 	
 	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);
 	UT_uint32 GetNthTableColour(UT_uint32 colNum);
 
 	// Character property handlers
-	UT_Bool ResetCharacterAttributes();
-	UT_Bool ApplyCharacterAttributes();
-	UT_Bool HandleBoolCharacterProp(UT_Bool state, UT_Bool* pProp);
-	UT_Bool HandleDeleted(UT_Bool state);
-	UT_Bool HandleBold(UT_Bool state);
-	UT_Bool HandleItalic(UT_Bool state);
-	UT_Bool HandleUnderline(UT_Bool state);
-	UT_Bool HandleOverline(UT_Bool state);
-	UT_Bool HandleStrikeout(UT_Bool state);
-	UT_Bool HandleSuperscript(UT_Bool state);
-	UT_Bool HandleSubscript(UT_Bool state);
-	UT_Bool HandleFontSize(long sizeInHalfPoints);
-	UT_Bool HandleU32CharacterProp(UT_uint32 val, UT_uint32* pProp);
-	UT_Bool HandleFace(UT_uint32 fontNumber);
-	UT_Bool HandleColour(UT_uint32 colourNumber);
+	bool ResetCharacterAttributes();
+	bool ApplyCharacterAttributes();
+	bool HandleBoolCharacterProp(bool state, bool* pProp);
+	bool HandleDeleted(bool state);
+	bool HandleBold(bool state);
+	bool HandleItalic(bool state);
+	bool HandleUnderline(bool state);
+	bool HandleOverline(bool state);
+	bool HandleStrikeout(bool state);
+	bool HandleSuperscript(bool state);
+	bool HandleSubscript(bool state);
+	bool HandleFontSize(long sizeInHalfPoints);
+	bool HandleU32CharacterProp(UT_uint32 val, UT_uint32* pProp);
+	bool HandleFace(UT_uint32 fontNumber);
+	bool HandleColour(UT_uint32 colourNumber);
 
 	// Paragraph property handlers
-	UT_Bool ResetParagraphAttributes();
-	UT_Bool ApplyParagraphAttributes();
-	UT_Bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
-	UT_Bool AddTabstop(UT_sint32 stopDist);
+	bool ResetParagraphAttributes();
+	bool ApplyParagraphAttributes();
+	bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
+	bool AddTabstop(UT_sint32 stopDist);
 
-	UT_Bool HandleAbiLists(void);
-	UT_Bool HandleLists(void);
+	bool HandleAbiLists(void);
+	bool HandleLists(void);
         UT_uint32 mapID(UT_uint32 id);
 	UT_uint32 mapParentID(UT_uint32 id);
 
 	// Section property handlers
-	UT_Bool ApplySectionAttributes();
-	UT_Bool ResetSectionAttributes();
+	bool ApplySectionAttributes();
+	bool ResetSectionAttributes();
 
 
 // import member vars
@@ -259,8 +259,8 @@ private:
 	UT_GrowBuf m_gbBlock;
 
 	int m_groupCount;
-	UT_Bool m_newParaFlagged;
-	UT_Bool m_newSectionFlagged;
+	bool m_newParaFlagged;
+	bool m_newSectionFlagged;
 
 	int m_cbBin;
 
@@ -276,36 +276,36 @@ private:
 	       UT_uint32 orig_parentid;
 	       UT_uint32 start_value;
 	       UT_uint32 level;
-	       UT_Bool hasBeenMapped;
+	       bool hasBeenMapped;
 	       UT_uint32 mapped_id;
 	       UT_uint32 mapped_parentid;
 	};
 	_rtfAbiListTable m_rtfAbiListTable[2000]; // this will be a vector eventually
 	UT_uint32 m_numLists;
-	UT_Bool m_bisAbiList;
+	bool m_bisAbiList;
         
 	struct _rtfListTable
         {      
 	       UT_uint32 start_value;
 	       UT_uint32 level;
-	       UT_Bool bullet;
-	       UT_Bool simple;
-	       UT_Bool continueList;
-	       UT_Bool hangingIndent;
+	       bool bullet;
+	       bool simple;
+	       bool continueList;
+	       bool hangingIndent;
 	       List_Type type;
-	       UT_Bool bold;
-	       UT_Bool italic;
-	       UT_Bool caps;
-	       UT_Bool scaps;
-	       UT_Bool underline;
-	       UT_Bool nounderline;
-	       UT_Bool strike;
-	       UT_Bool isList;
+	       bool bold;
+	       bool italic;
+	       bool caps;
+	       bool scaps;
+	       bool underline;
+	       bool nounderline;
+	       bool strike;
+	       bool isList;
 	       UT_uint32 forecolor;
 	       UT_uint32 font;
 	       UT_uint32 fontsize;
 	       UT_uint32 indent;
-	       UT_Bool prevlist;
+	       bool prevlist;
 	       char textbefore[129];
 	       char textafter[129];
 	};

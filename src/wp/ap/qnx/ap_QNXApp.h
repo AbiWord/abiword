@@ -41,23 +41,23 @@ public:
 	AP_QNXApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~AP_QNXApp(void);
 
-	virtual UT_Bool					initialize(void);
+	virtual bool					initialize(void);
 	virtual XAP_Frame *				newFrame(void);
-	virtual UT_Bool					forgetFrame(XAP_Frame * pFrame);
-	virtual UT_Bool					shutdown(void);
-	virtual UT_Bool					getPrefsValueDirectory(UT_Bool bAppSpecific,
+	virtual bool					forgetFrame(XAP_Frame * pFrame);
+	virtual bool					shutdown(void);
+	virtual bool					getPrefsValueDirectory(bool bAppSpecific,
 														   const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange);
-	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard);
-	virtual UT_Bool					canPasteFromClipboard(void);
+	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard);
+	virtual bool					canPasteFromClipboard(void);
 	
-	UT_Bool							parseCommandLine(void);
+	bool							parseCommandLine(void);
 
 	virtual void					setSelectionStatus(AV_View * pView);
 	virtual void					clearSelection(void);
-	virtual UT_Bool					getCurrentSelection(const char** formatList,
+	virtual bool					getCurrentSelection(const char** formatList,
 														void ** ppData, UT_uint32 * pLen,
 														const char **pszFormatFound);
 	virtual void					cacheCurrentSelection(AV_View *);
@@ -74,9 +74,9 @@ protected:
 	XAP_StringSet *			m_pStringSet;
 	AP_QNXClipboard *		m_pClipboard;
 
-	UT_Bool					m_bHasSelection;
-	UT_Bool					m_bSelectionInFlux;
-	UT_Bool					m_cacheDeferClear;
+	bool					m_bHasSelection;
+	bool					m_bSelectionInFlux;
+	bool					m_cacheDeferClear;
 	AV_View *				m_pViewSelection;
 	AV_View *				m_cacheSelectionView;
 	XAP_Frame *				m_pFrameSelection;

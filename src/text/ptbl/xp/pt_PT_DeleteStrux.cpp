@@ -39,7 +39,7 @@
 
 /****************************************************************/
 /****************************************************************/
-UT_Bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
+bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 									pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
 	switch (pfs->getStruxType())	
@@ -52,11 +52,11 @@ UT_Bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 		
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
+bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
 	UT_ASSERT(pfs->getStruxType()==PTX_Block);
@@ -89,7 +89,7 @@ UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		// in to the previous one.
 
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
-		return UT_TRUE;
+		return true;
 
 	case PTX_Section:
 		// we are the first paragraph in this section.  if we have
@@ -101,21 +101,21 @@ UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 			// TODO decide if this should assert or just fail...
 			UT_DEBUGMSG(("Cannot delete first paragraph with content.\n"));
 			UT_ASSERT(0);
-			return UT_FALSE;
+			return false;
 		}
 
 		// no content in this paragraph.
 		
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
-		return UT_TRUE;
+		return true;
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
+bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 											pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
 	UT_ASSERT(pfs->getStruxType()==PTX_Section);
@@ -145,7 +145,7 @@ UT_Bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		// TODO decide if this should assesrt or just file...
 		UT_DEBUGMSG(("Cannot delete first section in document.\n"));
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 	
 	switch (pfsPrev->getStruxType())
@@ -157,7 +157,7 @@ UT_Bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		// this block).
 
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
-		return UT_TRUE;
+		return true;
 
 	case PTX_Section:
 		// there are no blocks (paragraphs) between this section
@@ -165,15 +165,15 @@ UT_Bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		// TODO decide if this should assert or just fail...
 		UT_DEBUGMSG(("No blocks between sections ??\n"));
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 			
-UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
+bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 											  pf_Frag_Strux * pfs,
 											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
@@ -183,7 +183,7 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 	UT_ASSERT(pcrs);
 
 	if (!_unlinkStrux(pfs,ppfEnd,pfragOffsetEnd))
-		return UT_FALSE;
+		return false;
 	
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcrs);
@@ -191,11 +191,11 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 
 	delete pfs;
 
-	return UT_TRUE;
+	return true;
 }
 
 			
-UT_Bool pt_PieceTable::_deleteStrux_norec(PT_DocPosition dpos,
+bool pt_PieceTable::_deleteStrux_norec(PT_DocPosition dpos,
 											  pf_Frag_Strux * pfs,
 											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
@@ -205,7 +205,7 @@ UT_Bool pt_PieceTable::_deleteStrux_norec(PT_DocPosition dpos,
 	UT_ASSERT(pcrs);
 
 	if (!_unlinkStrux(pfs,ppfEnd,pfragOffsetEnd))
-		return UT_FALSE;
+		return false;
 	
 	// No history for field updates..
 	// m_history.addChangeRecord(pcrs);
@@ -213,7 +213,7 @@ UT_Bool pt_PieceTable::_deleteStrux_norec(PT_DocPosition dpos,
 
 	delete pfs;
 
-	return UT_TRUE;
+	return true;
 }
 
 

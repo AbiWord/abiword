@@ -27,12 +27,12 @@ XAP_MacClipboard::XAP_MacClipboard() : XAP_FakeClipboard()
 {
 }
 
-UT_Bool XAP_MacClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
+bool XAP_MacClipboard::addData(const char* format, void* pData, UT_sint32 iNumBytes)
 {
 	return XAP_FakeClipboard::addData(format, pData, iNumBytes);
 }
 
-UT_Bool XAP_MacClipboard::hasFormat(const char* format)
+bool XAP_MacClipboard::hasFormat(const char* format)
 {
 	return XAP_FakeClipboard::hasFormat(format);
 }

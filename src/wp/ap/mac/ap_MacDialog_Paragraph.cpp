@@ -618,7 +618,7 @@ void AP_MacDialog_Paragraph::_populateWindowData()
 
 void AP_MacDialog_Paragraph::_redrawPreview()
 {
-	_syncControls(AP_Dialog_Paragraph::id_MENU_ALIGNMENT, UT_TRUE);
+	_syncControls(AP_Dialog_Paragraph::id_MENU_ALIGNMENT, true);
 }
 
 #if 0
@@ -646,7 +646,7 @@ void AP_MacDialog_Paragraph::_spinnerChanged(BTextControl *pControl)
 
 #endif
 
-void AP_MacDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
+void AP_MacDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)
 { 
 	// let parent sync any member variables first
 

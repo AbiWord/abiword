@@ -82,7 +82,7 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument)
 /*****************************************************************/
 /*****************************************************************/
 
-#define X_ReturnIfFail(exp,error)		do { UT_Bool b = (exp); if (!b) return (error); } while (0)
+#define X_ReturnIfFail(exp,error)		do { bool b = (exp); if (!b) return (error); } while (0)
 #define X_ReturnNoMemIfError(exp)	X_ReturnIfFail(exp,UT_IE_NOMEMORY)
 
 UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
@@ -95,8 +95,8 @@ UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
 UT_Error IE_Imp_Text::_parseFile(FILE * fp)
 {
 	UT_GrowBuf gbBlock(1024);
-	UT_Bool bEatLF = UT_FALSE;
-	UT_Bool bEmptyFile = UT_TRUE;
+	bool bEatLF = false;
+	bool bEmptyFile = true;
 	unsigned char b;
 	UT_UCSChar c;
 	wchar_t wc;
@@ -113,13 +113,13 @@ UT_Error IE_Imp_Text::_parseFile(FILE * fp)
 			
 			if ((c == (UT_UCSChar)'\n') && bEatLF)
 			{
-				bEatLF = UT_FALSE;
+				bEatLF = false;
 				break;
 			}
 
 			if (c == (UT_UCSChar)'\r')
 			{
-				bEatLF = UT_TRUE;
+				bEatLF = true;
 			}
 			
 			// we interprete either CRLF, CR, or LF as a paragraph break.
@@ -127,7 +127,7 @@ UT_Error IE_Imp_Text::_parseFile(FILE * fp)
 			// start a paragraph and emit any text that we
 			// have accumulated.
 			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-			bEmptyFile = UT_FALSE;
+			bEmptyFile = false;
 			if (gbBlock.getLength() > 0)
 			{
 				X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
@@ -136,7 +136,7 @@ UT_Error IE_Imp_Text::_parseFile(FILE * fp)
 			break;
 
 		default:
-			bEatLF = UT_FALSE;
+			bEatLF = false;
 			X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&c,1));
 			break;
 		}
@@ -168,9 +168,9 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
 
 	UT_GrowBuf gbBlock(1024);
-	UT_Bool bEatLF = UT_FALSE;
-	UT_Bool bSuppressLeadingParagraph = UT_TRUE;
-	UT_Bool bInColumn1 = UT_TRUE;
+	bool bEatLF = false;
+	bool bSuppressLeadingParagraph = true;
+	bool bInColumn1 = true;
 	unsigned char * pc;
 
 	PT_DocPosition dpos = pDocRange->m_pos1;
@@ -190,13 +190,13 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 		case (UT_UCSChar)'\n':
 			if ((c == (UT_UCSChar)'\n') && bEatLF)
 			{
-				bEatLF = UT_FALSE;
+				bEatLF = false;
 				break;
 			}
 
 			if (c == (UT_UCSChar)'\r')
 			{
-				bEatLF = UT_TRUE;
+				bEatLF = true;
 			}
 			
 			// we interprete either CRLF, CR, or LF as a paragraph break.
@@ -208,11 +208,11 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				dpos += gbBlock.getLength();
 				gbBlock.truncate(0);
 			}
-			bInColumn1 = UT_TRUE;
+			bInColumn1 = true;
 			break;
 
 		default:
-			bEatLF = UT_FALSE;
+			bEatLF = false;
 			if (bInColumn1 && !bSuppressLeadingParagraph)
 			{
 				m_pDocument->insertStrux(dpos,PTX_Block);
@@ -221,8 +221,8 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 			
 			gbBlock.ins(gbBlock.getLength(),&c,1);
 
-			bInColumn1 = UT_FALSE;
-			bSuppressLeadingParagraph = UT_FALSE;
+			bInColumn1 = false;
+			bSuppressLeadingParagraph = false;
 			break;
 		}
 	} 
@@ -240,15 +240,15 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_Text::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_Text::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
 	// TODO: We give the other guys a chance, since this
 	// TODO: importer is so generic.  Does this seem
 	// TODO: like a sensible strategy?
-	return(UT_FALSE);
+	return(false);
 }
 
-UT_Bool IE_Imp_Text::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_Text::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".txt") == 0);
 }
@@ -261,17 +261,17 @@ UT_Error IE_Imp_Text::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Imp_Text::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_Text::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
 	*pszDesc = "Text (.txt)";
 	*pszSuffixList = "*.txt";
 	*ft = IEFT_Text;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_Text::SupportsFileType(IEFileType ft)
+bool IE_Imp_Text::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_Text == ft);
 }

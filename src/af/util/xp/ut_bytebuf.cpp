@@ -49,7 +49,7 @@ UT_ByteBuf::~UT_ByteBuf()
 		free(m_pBuf);
 }
 
-UT_Bool UT_ByteBuf::_byteBuf(UT_uint32 spaceNeeded)
+bool UT_ByteBuf::_byteBuf(UT_uint32 spaceNeeded)
 {
 	// expand the buffer if necessary to accomidate the requested space.
 	// round up to the next multiple of the chunk size.
@@ -57,7 +57,7 @@ UT_Bool UT_ByteBuf::_byteBuf(UT_uint32 spaceNeeded)
 	UT_uint32 newSize = ((m_iSize+spaceNeeded+m_iChunk-1)/m_iChunk)*m_iChunk;
 	UT_Byte * pNew = (UT_Byte *)calloc(newSize,sizeof(*m_pBuf));
 	if (!pNew)
-		return UT_FALSE;
+		return false;
 	
 	if (m_pBuf)
 	{
@@ -68,66 +68,66 @@ UT_Bool UT_ByteBuf::_byteBuf(UT_uint32 spaceNeeded)
 	m_pBuf = pNew;
 	m_iSpace = newSize;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_ByteBuf::append(const UT_Byte * pValue, UT_uint32 length)
+bool UT_ByteBuf::append(const UT_Byte * pValue, UT_uint32 length)
 {
 	return ins(m_iSize,pValue,length);
 }
 
-UT_Bool UT_ByteBuf::ins(UT_uint32 position, const UT_Byte * pValue, UT_uint32 length)
+bool UT_ByteBuf::ins(UT_uint32 position, const UT_Byte * pValue, UT_uint32 length)
 {
 	// insert the given buffer into the bytebuf
 
 	if (!length)
 	{
 		UT_ASSERT(!pValue);
-		return UT_TRUE;
+		return true;
 	}
 	
 	UT_ASSERT(pValue);
 	
 	if (m_iSpace-m_iSize < length)
 		if (!_byteBuf(length))
-			return UT_FALSE;
+			return false;
 
 	if (m_iSize > position)
 		memmove(m_pBuf+position+length,m_pBuf+position,(m_iSize-position)*sizeof(*m_pBuf));
 	m_iSize += length;
 	memmove(m_pBuf+position,pValue,length*sizeof(*m_pBuf));
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_ByteBuf::ins(UT_uint32 position, UT_uint32 length)
+bool UT_ByteBuf::ins(UT_uint32 position, UT_uint32 length)
 {
 	// insert zeroed space into the bytebuf
 
 	if (!length)
-		return UT_TRUE;
+		return true;
 	
 	if (m_iSpace-m_iSize < length)
 		if (!_byteBuf(length))
-			return UT_FALSE;
+			return false;
 
 	if (m_iSize > position)
 		memmove(m_pBuf+position+length,m_pBuf+position,(m_iSize-position)*sizeof(*m_pBuf));
 	m_iSize += length;
 	memset(m_pBuf+position,0,length*sizeof(*m_pBuf));
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_ByteBuf::del(UT_uint32 position, UT_uint32 amount)
+bool UT_ByteBuf::del(UT_uint32 position, UT_uint32 amount)
 {
 
 
 	if (!amount)
-		return UT_TRUE;
+		return true;
 
 	if (!m_pBuf)
-		return UT_FALSE;
+		return false;
 	UT_ASSERT(position < m_iSize);
 	UT_ASSERT(position+amount <= m_iSize);
 	
@@ -142,7 +142,7 @@ UT_Bool UT_ByteBuf::del(UT_uint32 position, UT_uint32 amount)
 	}
 
 	
-	return UT_TRUE;
+	return true;
 }
 
 UT_uint32 UT_ByteBuf::getLength(void) const
@@ -162,24 +162,24 @@ const UT_Byte * UT_ByteBuf::getPointer(UT_uint32 position) const
 	return m_pBuf+position;
 }
 
-UT_Bool UT_ByteBuf::overwrite(UT_uint32 position, UT_Byte * pValue, UT_uint32 length)
+bool UT_ByteBuf::overwrite(UT_uint32 position, UT_Byte * pValue, UT_uint32 length)
 {
 	// overwrite the current cells at the given position for the given length.
 
 	if (!length)
 	{
 		UT_ASSERT(!pValue);
-		return UT_TRUE;
+		return true;
 	}
 	
 	UT_ASSERT(pValue);
 
 	if (m_iSpace < position+length)
 		if (!_byteBuf(position+length-m_iSpace))
-			return UT_FALSE;
+			return false;
 
 	memmove(m_pBuf+position,pValue,length*sizeof(*m_pBuf));
-	return UT_TRUE;
+	return true;
 }
 
 void UT_ByteBuf::truncate(UT_uint32 position)
@@ -195,21 +195,21 @@ void UT_ByteBuf::truncate(UT_uint32 position)
 	}
 }
 
-UT_Bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
+bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
 {
 	UT_ASSERT(pszFileName && pszFileName[0]);
 	
 	FILE* fp = fopen(pszFileName, "rb");
 	if (!fp)
 	{
-		return UT_FALSE;
+		return false;
 	}
 
 	if (0 != fseek(fp, 0, SEEK_END))
 	{
 		fclose(fp);
 
-		return UT_FALSE;
+		return false;
 	}
 
 	UT_uint32 iLengthOfFile = ftell(fp);
@@ -218,7 +218,7 @@ UT_Bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
 	{
 		fclose(fp);
 
-		return UT_FALSE;
+		return false;
 	}
 
 	this->ins(iPosition, iLengthOfFile);
@@ -231,32 +231,32 @@ UT_Bool UT_ByteBuf::insertFromFile(UT_uint32 iPosition, const char* pszFileName)
 	{
 		fclose(fp);
 
-		return UT_FALSE;
+		return false;
 	}
 
 	fclose(fp);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_ByteBuf::writeToFile(const char* pszFileName)
+bool UT_ByteBuf::writeToFile(const char* pszFileName)
 {
 	UT_ASSERT(pszFileName && pszFileName[0]);
 	
 	FILE* fp = fopen(pszFileName, "wb");
 	if (!fp)
 	{
-		return UT_FALSE;
+		return false;
 	}
 
 	UT_uint32 iBytesWritten = fwrite(m_pBuf, 1, m_iSize, fp);
 	if (iBytesWritten != m_iSize)
 	{
 		fclose(fp);
-		return UT_FALSE;
+		return false;
 	}
 
 	fclose(fp);
 
-	return UT_TRUE;
+	return true;
 }

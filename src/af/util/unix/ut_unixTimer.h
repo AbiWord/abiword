@@ -37,7 +37,7 @@ public:
 	
 protected:
 	UT_sint32 m_iMilliseconds;
-	UT_Bool m_bStarted;
+	bool m_bStarted;
 };
 
 #endif /* UT_UNIXTIMER_H */

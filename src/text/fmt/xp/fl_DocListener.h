@@ -40,17 +40,17 @@ public:
 	fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout);
 	virtual ~fl_DocListener();
 
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(PL_StruxFmtHandle sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
 									PL_StruxDocHandle sdh,
 									PL_ListenerId lid,
@@ -58,7 +58,7 @@ public:
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
-	virtual UT_Bool		signal(UT_uint32 iSignal);
+	virtual bool		signal(UT_uint32 iSignal);
 
 protected:
 	//! Document which is client of this DocListener
@@ -66,7 +66,7 @@ protected:
 	//! The Layout notified by this DocListener
 	FL_DocLayout*		m_pLayout;
 	//! Set when the document is drawn on screen
-	UT_Bool				m_bScreen;
+	bool				m_bScreen;
 	//! Counter used to keep track of when to update the Layout. In
 	//! case of multi-step changes, updating is suspended.
 	UT_uint32			m_iGlobCounter;

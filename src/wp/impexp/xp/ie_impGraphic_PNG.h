@@ -26,12 +26,12 @@
 class IE_ImpGraphic_PNG : public IE_ImpGraphic
 {
 public:
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	static bool		RecognizeSuffix(const char * szSuffix);
+	static bool		RecognizeContents(const char * szBuf, UT_uint32 iNumbytes);
+	static bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEGraphicFileType * ft);
-	static UT_Bool 		SupportsFileType(IEGraphicFileType ft);
+	static bool 		SupportsFileType(IEGraphicFileType ft);
 	static UT_Error		StaticConstructor(IE_ImpGraphic **ppieg);
 
         virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 

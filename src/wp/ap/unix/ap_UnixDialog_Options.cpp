@@ -68,7 +68,7 @@ AP_UnixDialog_Options::AP_UnixDialog_Options(XAP_DialogFactory * pDlgFactory,
 	UT_DEBUGMSG(("    current pref : %s\n",
 		prefs->getCurrentScheme()->getSchemeName()) );
 
-	UT_Bool b = prefs->savePrefsFile();
+	bool b = prefs->savePrefsFile();
 	UT_DEBUGMSG(("    prefs saved (%d) in %s\n", b, prefs->getPrefsPathname() ));
 
 	UT_uint32 i;
@@ -1109,7 +1109,7 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	}
 }
 
-void AP_UnixDialog_Options::_controlEnable( tControl id, UT_Bool value )
+void AP_UnixDialog_Options::_controlEnable( tControl id, bool value )
 {
 	GtkWidget *w = _lookupWidget(id);
 	UT_ASSERT( w && GTK_IS_WIDGET(w) );
@@ -1118,11 +1118,11 @@ void AP_UnixDialog_Options::_controlEnable( tControl id, UT_Bool value )
 
 
 #define DEFINE_GET_SET_BOOL(button) \
-UT_Bool     AP_UnixDialog_Options::_gather##button(void) {				\
+bool     AP_UnixDialog_Options::_gather##button(void) {				\
 	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
 	return gtk_toggle_button_get_active(								\
 				GTK_TOGGLE_BUTTON(m_checkbutton##button) ); }			\
-void        AP_UnixDialog_Options::_set##button(UT_Bool b) {	\
+void        AP_UnixDialog_Options::_set##button(bool b) {	\
 	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
 	gtk_toggle_button_set_active (										\
 				GTK_TOGGLE_BUTTON(m_checkbutton##button), b ); }

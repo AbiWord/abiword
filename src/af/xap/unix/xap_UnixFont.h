@@ -53,7 +53,7 @@ class XAP_UnixFont
 	
 	~XAP_UnixFont(void);
 
-	UT_Bool 				openFileAs(const char * fontfile,
+	bool 				openFileAs(const char * fontfile,
 									   const char * metricfile,
 									   const char * xlfd,
 									   XAP_UnixFont::style s);
@@ -72,9 +72,9 @@ class XAP_UnixFont
 	ABIFontInfo *			getMetricsData(void);
 	UT_uint16 *				getUniWidths(void);
 	
-	UT_Bool					openPFA(void);
+	bool					openPFA(void);
 	char					getPFAChar(void);
-	UT_Bool					closePFA(void);	
+	bool					closePFA(void);	
 
 	const char * 			getFontKey(void);
 	GdkFont *				getGdkFont(UT_uint32 pixelsize);
@@ -106,7 +106,7 @@ protected:
 
 	// The font file proper
 	FILE *	 				m_PFFile;
-	UT_Bool					m_PFB;
+	bool					m_PFB;
 	UT_ByteBuf				m_buffer;
 	UT_uint32				m_bufpos;
 	char					_getPFBChar(void);

@@ -24,8 +24,8 @@
 #include "ut_types.h"
 #include "ut_bytebuf.h"
 
-UT_Bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
-UT_Bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
+bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
+bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc);
 
 #ifdef UT_TEST
 #include "ut_test.h"

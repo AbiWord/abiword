@@ -141,7 +141,7 @@ XAP_UnixGnomeFrame::~XAP_UnixGnomeFrame(void)
 void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
-	UT_Bool bResult;
+	bool bResult;
 	static GtkTargetEntry drag_types[] =
 	{
 		{ "text/uri-list", 0, TARGET_URI_LIST },
@@ -270,17 +270,17 @@ void XAP_UnixGnomeFrame::_createTopLevelWindow(void)
 	return;
 }
 
-UT_Bool XAP_UnixGnomeFrame::openURL(const char * szURL)
+bool XAP_UnixGnomeFrame::openURL(const char * szURL)
 {
 	gnome_url_show(szURL);
-	return UT_FALSE;
+	return false;
 }
 
 /*****************************************************************/
 
-UT_Bool XAP_UnixGnomeFrame::runModalContextMenu(AV_View *  pView, const char * szMenuName,	UT_sint32 x, UT_sint32 y)
+bool XAP_UnixGnomeFrame::runModalContextMenu(AV_View *  pView, const char * szMenuName,	UT_sint32 x, UT_sint32 y)
 {
- 	UT_Bool bResult = UT_TRUE;
+ 	bool bResult = true;
  	UT_ASSERT(!m_pUnixPopup);
 	
 	EV_UnixGnomeMenuPopup *pUnixPopup = new EV_UnixGnomeMenuPopup(m_pUnixApp,this,szMenuName,m_szMenuLabelSetName);

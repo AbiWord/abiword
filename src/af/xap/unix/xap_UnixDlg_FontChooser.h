@@ -53,19 +53,19 @@ public:
 	GtkWidget *				m_colorSelector;
 	GtkWidget * 			m_preview;
 
-	UT_Bool					getFont(XAP_UnixFont ** font);
-	UT_Bool					getForegroundColor(UT_RGBColor * color);
-	UT_Bool					getBackgroundColor(UT_RGBColor * color);	
-	UT_Bool					getDecoration(UT_Bool * strikeout, UT_Bool * underline);
-	UT_Bool					getSize(UT_uint32 * pointsize);
-	UT_Bool					getEntryString(char ** string);
+	bool					getFont(XAP_UnixFont ** font);
+	bool					getForegroundColor(UT_RGBColor * color);
+	bool					getBackgroundColor(UT_RGBColor * color);	
+	bool					getDecoration(bool * strikeout, bool * underline);
+	bool					getSize(UT_uint32 * pointsize);
+	bool					getEntryString(char ** string);
 	GR_UnixGraphics * 		m_gc;
 
-	UT_Bool					m_doneFirstFont;
+	bool					m_doneFirstFont;
 	
 protected:
 
-	UT_Bool		 			m_blockUpdate;
+	bool		 			m_blockUpdate;
 	
 	// careful, these must be in the order the
 	// list box will show them (Windows order)

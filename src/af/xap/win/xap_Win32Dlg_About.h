@@ -37,7 +37,7 @@ public:
 	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
 	
 protected:
-	static UT_Bool			s_bEventLoopDone;
+	static bool			s_bEventLoopDone;
 	
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 

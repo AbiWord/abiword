@@ -42,7 +42,7 @@
 /*****************************************************************/
 
 #ifndef XP_MAC_TARGET_QUARTZ
-UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
+bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 				   UT_uint32 maxHeight,
 				   const char ** pIconData,
 				   UT_uint32 sizeofData,

@@ -36,7 +36,7 @@
 //////////////////////////////////////////////////////////////////
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval);
-static UT_Bool s_isVirtualKeyCode(gint keyval);
+static bool s_isVirtualKeyCode(gint keyval);
 static GdkModifierType s_getAltMask(void);
 
 //////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ ev_UnixKeyboard::~ev_UnixKeyboard(void)
 {
 }
 
-UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
+bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 									   GdkEventKey* e)
 {
 	EV_EditBits state = 0;
@@ -88,7 +88,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 		switch (nvk)
 		{
 		case EV_NVK__IGNORE__:
-			return UT_FALSE;
+			return false;
 		default:
 			result = m_pEEM->Keystroke((UT_uint32)EV_EKP_PRESS|state|nvk,&pEM);
 
@@ -98,7 +98,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 				// If it is a bogus key and we don't have a sequence in
 				// progress, we should let the system handle it
 				// (this lets things like ALT-F4 work).
-				return UT_FALSE;
+				return false;
 				
 			case EV_EEMR_BOGUS_CONT:
 				// If it is a bogus key but in the middle of a sequence,
@@ -106,19 +106,19 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 				// like Control-X ALT-F4 from killing us -- if they want
 				// to kill us, fine, but they shouldn't be in the middle
 				// of a sequence).
-				return UT_TRUE;
+				return true;
 				
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
 				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
-				return UT_TRUE;
+				return true;
 				
 			case EV_EEMR_INCOMPLETE:
-				return UT_TRUE;
+				return true;
 				
 			default:
 				UT_ASSERT(0);
-				return UT_TRUE;
+				return true;
 			}
 		}
 	}
@@ -144,7 +144,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			// If it is a bogus key and we don't have a sequence in
 			// progress, we should let the system handle it
 			// (this lets things like ALT-F4 work).
-			return UT_FALSE;
+			return false;
 			
 		case EV_EEMR_BOGUS_CONT:
 			// If it is a bogus key but in the middle of a sequence,
@@ -152,7 +152,7 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			// like Control-X ALT-F4 from killing us -- if they want
 			// to kill us, fine, but they shouldn't be in the middle
 			// of a sequence).
-			return UT_TRUE;
+			return true;
 			
 		case EV_EEMR_COMPLETE:
 			UT_ASSERT(pEM);
@@ -192,19 +192,19 @@ UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 			 }
 			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
 			delete ucs;
- 			return UT_TRUE;
+ 			return true;
 	
 			
 		case EV_EEMR_INCOMPLETE:
-			return UT_TRUE;
+			return true;
 			
 		default:
 			UT_ASSERT(0);
-			return UT_TRUE;
+			return true;
 		}
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
 // pulled in from gdk/gdkkeysyms.h
@@ -412,7 +412,7 @@ static EV_EditBits s_Table_NVK_0xfe[] =		// ISO 9995 Function and Modifier Keys
 };
 
 
-static UT_Bool s_isVirtualKeyCode(gint keyval)
+static bool s_isVirtualKeyCode(gint keyval)
 {
 	// X11 has several segregated sets of keys
 	// 0xff00 - 0xffff has most function keys and non-letter keys
@@ -427,19 +427,19 @@ static UT_Bool s_isVirtualKeyCode(gint keyval)
 	// for now, we will ignore these.
 
 	if (keyval > 0x0000FFFF)
-		return UT_FALSE;//was UT_TRUE before CJK patch
+		return false;//was true before CJK patch
 	
 	if (keyval > 0xFF00)				// see the above table
-		return UT_TRUE;
+		return true;
 	if (keyval > 0xFE00)
-		return UT_TRUE;
+		return true;
 
 	UT_ASSERT(keyval <= 0xFD00);		// we don't what to do with 3270 keys
 	
 	if (keyval == 0x0020)				// special handling for ASCII-Space
-		return UT_TRUE;
+		return true;
 
-	return UT_FALSE;
+	return false;
 }
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval)

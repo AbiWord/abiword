@@ -37,17 +37,17 @@ public:
 	virtual ~PD_Style();
 
 	inline PT_AttrPropIndex		getIndexAP(void) const	{ return m_indexAP; };
-	UT_Bool						setIndexAP(PT_AttrPropIndex indexAP);
+	bool						setIndexAP(PT_AttrPropIndex indexAP);
 
-	UT_Bool					getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
-	UT_Bool					getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
+	bool					getProperty(const XML_Char * szName, const XML_Char *& szValue) const;
+	bool					getAttribute(const XML_Char * szName, const XML_Char *& szValue) const;
 	
 	PD_Style *				getBasedOn(void);
 	PD_Style *				getFollowedBy(void);
 
-	virtual UT_Bool			isUserDefined(void) const { return UT_TRUE; };
-	UT_Bool					isUsed(void) const;
-	UT_Bool					isCharStyle(void) const;
+	virtual bool			isUserDefined(void) const { return true; };
+	bool					isUsed(void) const;
+	bool					isCharStyle(void) const;
 
 protected:
 
@@ -69,7 +69,7 @@ public:
 	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP);
 	virtual ~PD_BuiltinStyle();
 
-	virtual UT_Bool			isUserDefined(void) const { return (m_indexAP != m_indexAPOrig); };
+	virtual bool			isUserDefined(void) const { return (m_indexAP != m_indexAPOrig); };
 
 protected:
 	PT_AttrPropIndex		m_indexAPOrig;	// the builtin one

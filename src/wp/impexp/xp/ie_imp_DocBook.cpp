@@ -42,28 +42,28 @@ IE_Imp_DocBook::~IE_Imp_DocBook()
 }
 
 IE_Imp_DocBook::IE_Imp_DocBook(PD_Document * pDocument)
-	: IE_Imp_XML(pDocument, UT_FALSE)
+	: IE_Imp_XML(pDocument, false)
 {
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Imp_DocBook::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
+bool IE_Imp_DocBook::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes)
 {
   // no doubt, this could be better
   // but this should suffice for all I care
 
   if(strstr(szBuf, "<!DOCTYPE book") == NULL && strstr(szBuf, "<!doctype book") == NULL)
-    return UT_FALSE;
+    return false;
 
   if(strstr(szBuf, "<book") == NULL)
-    return UT_FALSE;
+    return false;
 
-  return UT_TRUE;
+  return true;
 }
 
-UT_Bool IE_Imp_DocBook::RecognizeSuffix(const char * szSuffix)
+bool IE_Imp_DocBook::RecognizeSuffix(const char * szSuffix)
 {
 	return (UT_stricmp(szSuffix,".dbk") == 0);
 }
@@ -76,17 +76,17 @@ UT_Error IE_Imp_DocBook::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Imp_DocBook::GetDlgLabels(const char ** pszDesc,
+bool	IE_Imp_DocBook::GetDlgLabels(const char ** pszDesc,
 				  const char ** pszSuffixList,
 				  IEFileType * ft)
 {
 	*pszDesc = "DocBook (.dbk)";
 	*pszSuffixList = "*.dbk";
 	*ft = IEFT_DocBook;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Imp_DocBook::SupportsFileType(IEFileType ft)
+bool IE_Imp_DocBook::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_DocBook == ft);
 }

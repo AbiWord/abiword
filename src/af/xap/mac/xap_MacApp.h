@@ -42,7 +42,7 @@ public:
 	XAP_MacApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_MacApp(void);
 
-	virtual UT_Bool			initialize(void);
+	virtual bool			initialize(void);
 	virtual XAP_Frame *		newFrame(void) = 0;
 	virtual void			reallyExit(void);
 

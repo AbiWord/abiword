@@ -51,16 +51,16 @@ UT_Rect::UT_Rect(const UT_Rect & r)
 	height = r.height;
 }
 
-UT_Bool UT_Rect::containsPoint(UT_sint32 x, UT_sint32 y) const
+bool UT_Rect::containsPoint(UT_sint32 x, UT_sint32 y) const
 {
 	// return true iff the given (x,y) is inside the rectangle.
 
 	if ((x < left) || (x >= left+width))
-		return UT_FALSE;
+		return false;
 	if ((y < top) || (y >= top+height))
-		return UT_FALSE;
+		return false;
 
-	return UT_TRUE;
+	return true;
 }
 
 void UT_Rect::set(int iLeft, int iTop, int iWidth, int iHeight)
@@ -71,7 +71,7 @@ void UT_Rect::set(int iLeft, int iTop, int iWidth, int iHeight)
 	height = iHeight;
 }
 
-UT_Bool UT_Rect::intersectsRect(const UT_Rect * pRect) const
+bool UT_Rect::intersectsRect(const UT_Rect * pRect) const
 {
 	// return true if this rectangle and pRect intersect.
 
@@ -79,18 +79,18 @@ UT_Bool UT_Rect::intersectsRect(const UT_Rect * pRect) const
 #define R_BOTTOM(pr)	(((pr)->top)+((pr)->height))
 	
 	if (R_RIGHT(pRect) < left)
-		return UT_FALSE;
+		return false;
 
 	if (R_RIGHT(this) < pRect->left)
-		return UT_FALSE;
+		return false;
 
 	if (R_BOTTOM(pRect) < top)
-		return UT_FALSE;
+		return false;
 
 	if (R_BOTTOM(this) < pRect->top)
-		return UT_FALSE;
+		return false;
 
-	return UT_TRUE;
+	return true;
 
 #undef R_RIGHT
 #undef R_BOTTOM
@@ -220,18 +220,18 @@ const char * UT_pathSuffix(const char * path)
 		
 
 
-UT_Bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
+bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 {
 #if 1
 	/* wjc ... these UT_UCS_isXXX() functions aren't really right for UCS */
-	if (UT_UCS_isalnum(currentChar)) return UT_FALSE;
+	if (UT_UCS_isalnum(currentChar)) return false;
         // This is for the unicode character used to represent objects
         // (which are used among other things for computed fields
         // which should be considered words).
-        if (UCS_OBJECT == currentChar) return UT_FALSE;
+        if (UCS_OBJECT == currentChar) return false;
 	// the following case is for embedded apostrophe in a contraction
-	if ((currentChar == '\''  ||  currentChar == UCS_RQUOTE)  &&  UT_UCS_isalnum(followChar)) return UT_FALSE;
-	return UT_TRUE;
+	if ((currentChar == '\''  ||  currentChar == UCS_RQUOTE)  &&  UT_UCS_isalnum(followChar)) return false;
+	return true;
 
 #else
 	/*
@@ -270,19 +270,19 @@ UT_Bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar)
 	case UCS_LDBLQUOTE:    // smart quote, open double /* wjc */
 	case UCS_RDBLQUOTE:    // smart quote, close double /* wjc */
 	case UCS_LQUOTE:    // smart quote, open single  /* wjc */
-		return UT_TRUE;
+		return true;
 	case '\'':	// we want quotes inside words for contractions
 	case UCS_RQUOTE:	// we want quotes inside words for contractions
 		if (UT_UCS_isalpha(followChar))
 		{
-			return UT_FALSE;
+			return false;
 		}
 		else
 		{
-			return UT_TRUE;
+			return true;
 		}
 	default:
-		return UT_FALSE;
+		return false;
 	}
 #endif
 }

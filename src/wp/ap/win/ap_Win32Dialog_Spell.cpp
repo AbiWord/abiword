@@ -61,8 +61,8 @@ void AP_Win32Dialog_Spell::runModal(XAP_Frame * pFrame)
 	// call the base class method to initialize some basic xp stuff
 	AP_Dialog_Spell::runModal(pFrame);
 
-	m_bCancelled = UT_FALSE;
-	UT_Bool bRes = nextMisspelledWord();
+	m_bCancelled = false;
+	bool bRes = nextMisspelledWord();
 
 	// if nothing misspelled, then nothing to do
 	if (!bRes)
@@ -140,7 +140,7 @@ BOOL AP_Win32Dialog_Spell::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-void AP_Win32Dialog_Spell::_toggleChangeButtons(UT_Bool bEnable) const
+void AP_Win32Dialog_Spell::_toggleChangeButtons(bool bEnable) const
 {
 	EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_SPELL_BTN_CHANGE),bEnable);
 	EnableWindow(GetDlgItem(m_hwndDlg,AP_RID_DIALOG_SPELL_BTN_CHANGEALL),bEnable);
@@ -223,7 +223,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 		SendMessage(m_hwndSuggest, LB_ADDSTRING, 0, (LPARAM) pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
 
 		m_iSelectedRow = -1;
-		_toggleChangeButtons(UT_FALSE);
+		_toggleChangeButtons(false);
 	} 
 	else 
 	{
@@ -241,7 +241,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 		}
 
 		m_iSelectedRow = 0;
-		_toggleChangeButtons(UT_TRUE);
+		_toggleChangeButtons(true);
 	}
 
 	SendMessage(m_hwndSuggest, LB_SETCURSEL, m_iSelectedRow, 0);
@@ -362,7 +362,7 @@ void AP_Win32Dialog_Spell::_tryAgain(void)
 	_purgeSuggestions();
 
 	// what's next
-	UT_Bool bRes = nextMisspelledWord();
+	bool bRes = nextMisspelledWord();
 
 	if (bRes)
 	{
@@ -375,7 +375,7 @@ void AP_Win32Dialog_Spell::_tryAgain(void)
 	else
 	{
 		// all done
-		UT_ASSERT((m_bCancelled == UT_FALSE));
+		UT_ASSERT((m_bCancelled == false));
 		EndDialog(m_hwndDlg,0);
 	}
 }
@@ -415,12 +415,12 @@ BOOL AP_Win32Dialog_Spell::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				{
 					m_iSelectedRow = -1;
 					SendMessage(m_hwndSuggest, LB_SETCURSEL, m_iSelectedRow, 0);
-					_toggleChangeButtons(UT_TRUE);
+					_toggleChangeButtons(true);
 				}
 			}
 			else
 			{
-				_toggleChangeButtons(UT_FALSE);
+				_toggleChangeButtons(false);
 			}
 			return 1;
 
@@ -475,7 +475,7 @@ BOOL AP_Win32Dialog_Spell::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		return 1;
 
 	case IDCANCEL:						// also AP_RID_DIALOG_SPELL_BTN_CANCEL
-		m_bCancelled = UT_TRUE;
+		m_bCancelled = true;
 		EndDialog(hWnd,0);
 		return 1;
 

@@ -53,7 +53,7 @@ HINSTANCE XAP_Win32App::getInstance() const
 	return m_hInstance;
 }
 
-UT_Bool XAP_Win32App::initialize(void)
+bool XAP_Win32App::initialize(void)
 {
 	// let our base class do it's thing.
 	
@@ -70,7 +70,7 @@ UT_Bool XAP_Win32App::initialize(void)
 	m_pSlurp->stuffRegistry(".abw",getApplicationName(),bufExePathname,"application/abiword");
 	m_pSlurp->stuffRegistry(".zabw",getApplicationName(),bufExePathname,"application/abiword-compressed");
 	
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_Win32App::reallyExit(void)
@@ -286,7 +286,7 @@ void XAP_Win32App::_setAbiSuiteLibDir(void)
 	return;
 }
 
-void XAP_Win32App::enableAllTopLevelWindows(UT_Bool b)
+void XAP_Win32App::enableAllTopLevelWindows(bool b)
 {
 	UT_uint32 iCount = m_vecFrames.getItemCount();
 	

@@ -74,30 +74,30 @@ AP_Win32App::~AP_Win32App(void)
 	DELETEP(m_pClipboard);
 }
 
-static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
+static bool s_createDirectoryIfNecessary(const char * szDir)
 {
 	struct _stat statbuf;
 	
 	if (_stat(szDir,&statbuf) == 0)								// if it exists
 	{
 		if ( (statbuf.st_mode & _S_IFDIR) == _S_IFDIR )			// and is a directory
-			return UT_TRUE;
+			return true;
 
 		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-		return UT_FALSE;
+		return false;
 	}
 
 	if (CreateDirectory(szDir,NULL))
-		return UT_TRUE;
+		return true;
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-	return UT_FALSE;
+	return false;
 }	
 
-UT_Bool AP_Win32App::initialize(void)
+bool AP_Win32App::initialize(void)
 {
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
-	UT_Bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 	UT_ASSERT(bVerified);
 
 	// load the preferences.
@@ -123,14 +123,14 @@ UT_Bool AP_Win32App::initialize(void)
 	UT_ASSERT(m_pToolbarActionSet);
 
 	if (! XAP_Win32App::initialize())
-		return UT_FALSE;
+		return false;
 
 	// let various window types register themselves
 
 	if (!AP_Win32Frame::RegisterClass(this))
 	{
 		UT_DEBUGMSG(("couldn't register class\n"));
-		return UT_FALSE;
+		return false;
 	}
 
 	//////////////////////////////////////////////////////////////////
@@ -139,7 +139,7 @@ UT_Bool AP_Win32App::initialize(void)
 	
 	{
 		const char * szISpellDirectory = NULL;
-		getPrefsValueDirectory(UT_FALSE,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
+		getPrefsValueDirectory(false,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
 		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
 
 		const char * szSpellCheckWordList = NULL;
@@ -183,7 +183,7 @@ UT_Bool AP_Win32App::initialize(void)
 			&& (*szStringSet)
 			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
-			getPrefsValueDirectory(UT_TRUE,AP_PREF_KEY_StringSetDirectory,&szDirectory);
+			getPrefsValueDirectory(true,AP_PREF_KEY_StringSetDirectory,&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
 
 			char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
@@ -231,7 +231,7 @@ UT_Bool AP_Win32App::initialize(void)
 
 	//////////////////////////////////////////////////////////////////
 
-	return UT_TRUE;
+	return true;
 }
 
 XAP_Frame * AP_Win32App::newFrame(void)
@@ -244,28 +244,28 @@ XAP_Frame * AP_Win32App::newFrame(void)
 	return pWin32Frame;
 }
 
-UT_Bool AP_Win32App::shutdown(void)
+bool AP_Win32App::shutdown(void)
 {
 	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool AP_Win32App::getPrefsValueDirectory(UT_Bool bAppSpecific,
+bool AP_Win32App::getPrefsValueDirectory(bool bAppSpecific,
 											const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)
-		return UT_FALSE;
+		return false;
 
 	const XML_Char * psz = NULL;
 	if (!m_prefs->getPrefsValue(szKey,&psz))
-		return UT_FALSE;
+		return false;
 
 	if ((*psz == '/') || (*psz == '\\'))
 	{
 		*pszValue = psz;
-		return UT_TRUE;
+		return true;
 	}
 
 	const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
@@ -275,7 +275,7 @@ UT_Bool AP_Win32App::getPrefsValueDirectory(UT_Bool bAppSpecific,
 	
 	sprintf(buf,"%s\\%s",dir,psz);
 	*pszValue = buf;
-	return UT_TRUE;
+	return true;
 }
 
 const char * AP_Win32App::getAbiSuiteAppDir(void) const
@@ -369,7 +369,7 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 	m_pClipboard->closeClipboard();				// release clipboard lock
 }
 
-void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool)
+void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.
@@ -432,10 +432,10 @@ MyEnd:
 	return;
 }
 
-UT_Bool AP_Win32App::canPasteFromClipboard(void)
+bool AP_Win32App::canPasteFromClipboard(void)
 {
 	if (!m_pClipboard->openClipboard())
-		return UT_FALSE;
+		return false;
 
 	// TODO decide if we need to support .ABW format on the clipboard.
 	
@@ -445,11 +445,11 @@ UT_Bool AP_Win32App::canPasteFromClipboard(void)
 		goto ReturnTrue;
 
 	m_pClipboard->closeClipboard();
-	return UT_FALSE;
+	return false;
 
 ReturnTrue:
 	m_pClipboard->closeClipboard();
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -545,7 +545,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 	pSplash = NULL;
 
 	UT_ByteBuf* pBB = NULL;
-	UT_Bool bShowSplash = UT_TRUE;
+	bool bShowSplash = true;
 	const char * szFile = NULL;
 
 	// Win32 does not put the program name in argv[0], so [0] is the first argument
@@ -559,7 +559,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 		{
 			if (UT_stricmp(pArgs->m_argv[k],"-to") == 0)
 			{
-				bShowSplash = UT_FALSE;
+				bShowSplash = false;
 				break;
 			}
 		}
@@ -571,7 +571,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 		{
 			if (UT_stricmp(pArgs->m_argv[k],"-show") == 0)
 			{
-				bShowSplash = UT_TRUE;
+				bShowSplash = true;
 				break;
 			}
 		}
@@ -583,7 +583,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 		{
 			if (UT_stricmp(pArgs->m_argv[k],"-nosplash") == 0)
 			{
-				bShowSplash = UT_FALSE;
+				bShowSplash = false;
 				break;
 			}
 #if DEBUG
@@ -685,7 +685,7 @@ typedef BOOL __declspec(dllimport) (CALLBACK *InitCommonControlsEx_fn)(LPINITCOM
 int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
-	UT_Bool bShowApp = UT_TRUE;
+	bool bShowApp = true;
 
 	// this is a static function and doesn't have a 'this' pointer.
 	MSG msg;
@@ -755,7 +755,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
    for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
 			if (UT_stricmp(Args.m_argv[k],"-to") == 0) {
- 				bShowApp = UT_FALSE;
+ 				bShowApp = false;
 			}
 		}
 	}	
@@ -763,7 +763,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
     for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
 			if (UT_stricmp(Args.m_argv[k],"-show") == 0) {
- 				bShowApp = UT_TRUE;
+ 				bShowApp = true;
 			}
 		}
 	}	
@@ -810,7 +810,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 	int kWindowsOpened = 0;
 	char *to = NULL;
 	int verbose = 1;
-	UT_Bool show = UT_FALSE;
+	bool show = false;
 	
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{
@@ -849,7 +849,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 			}
 			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
 			{
-				show = UT_TRUE;
+				show = true;
 			}
 			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
 			{
@@ -934,14 +934,14 @@ UT_Error AP_Win32App::fileOpen(XAP_Frame * pFrame, const char * pNewFile)
 	return ::fileOpen(pFrame, pNewFile, IEFT_Unknown);
 }
 
-UT_Bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
+bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 {
 	int iCounter;
 	HWND hWnd = NULL;
 
 	// Try to knock off the easy case quickly
 	if( m_IdTable[ 0 ].id == -1 )
-		return UT_FALSE;
+		return false;
 
     for( iCounter = 0; iCounter <= NUM_MODELESSID; iCounter++ )
 	{
@@ -950,11 +950,11 @@ UT_Bool AP_Win32App::handleModelessDialogMessage( MSG * msg )
 			hWnd = (HWND)m_IdTable[ iCounter ].pDialog->pGetWindowHandle();
 
 			if( hWnd && IsDialogMessage( hWnd, msg ) )
-				return UT_TRUE;
+				return true;
 		}
 		else
 			break;
 	}
 
-	return UT_FALSE;
+	return false;
 }

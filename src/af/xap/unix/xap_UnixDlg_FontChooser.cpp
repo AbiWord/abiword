@@ -66,7 +66,7 @@ XAP_UnixDialog_FontChooser::XAP_UnixDialog_FontChooser(XAP_DialogFactory * pDlgF
 	m_gc = NULL;
 	m_pUnixFrame = NULL;
 
-	m_doneFirstFont = UT_FALSE;
+	m_doneFirstFont = false;
 }
 
 XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
@@ -754,7 +754,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	connectFocus(GTK_WIDGET(cf),pFrame);
 
 	// freeze updates of the preview
-	m_blockUpdate = UT_TRUE;
+	m_blockUpdate = true;
 
 	// to sort out dupes
 	UT_HashTable fontHash(256);
@@ -877,7 +877,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(GTK_WIDGET(cf));
 	gtk_grab_add(GTK_WIDGET(cf));
 
-	m_doneFirstFont = UT_FALSE;
+	m_doneFirstFont = false;
 	
 	// attach a new graphics context
 	XAP_App *pApp = frame->getApp();
@@ -885,7 +885,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	gtk_object_set_user_data(GTK_OBJECT(m_preview), this);
 	
 	// unfreeze updates of the preview
-	m_blockUpdate = UT_FALSE;
+	m_blockUpdate = false;
 	// manually trigger an update
 	updatePreview();
 	
@@ -905,7 +905,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			if (!m_pFontFamily || UT_stricmp(m_pFontFamily, text[0]))
 			{
 				setFontFamily((XML_Char*)text[0]);
-				m_bChangedFontFamily = UT_TRUE;
+				m_bChangedFontFamily = true;
 			}
 		}
 		
@@ -923,12 +923,12 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
 				{
 					setFontStyle((XML_Char*)"normal");
-					m_bChangedFontStyle = UT_TRUE;
+					m_bChangedFontStyle = true;
 				}
 				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
 				{
 					setFontWeight((XML_Char*)"normal");
-					m_bChangedFontWeight = UT_TRUE;
+					m_bChangedFontWeight = true;
 				}
 			}
 			else if (rowNumber == LIST_STYLE_BOLD)
@@ -936,12 +936,12 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
 				{
 					setFontStyle((XML_Char*)"normal");
-					m_bChangedFontStyle = UT_TRUE;
+					m_bChangedFontStyle = true;
 				}
 				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
 				{
 					setFontWeight((XML_Char*)"bold");
-					m_bChangedFontWeight = UT_TRUE;
+					m_bChangedFontWeight = true;
 				}
 			}
 			else if (rowNumber == LIST_STYLE_ITALIC)
@@ -949,12 +949,12 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
 				{
 					setFontStyle((XML_Char*)"italic");
-					m_bChangedFontStyle = UT_TRUE;
+					m_bChangedFontStyle = true;
 				}
 				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
 				{
 					setFontWeight((XML_Char*)"normal");
-					m_bChangedFontWeight = UT_TRUE;
+					m_bChangedFontWeight = true;
 				}
 			}
 			else if (rowNumber == LIST_STYLE_BOLD_ITALIC)
@@ -962,12 +962,12 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
 				{
 					setFontStyle((XML_Char*)"italic");
-					m_bChangedFontStyle = UT_TRUE;
+					m_bChangedFontStyle = true;
 				}
 				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
 				{
 					setFontWeight((XML_Char*)"bold");
-					m_bChangedFontWeight = UT_TRUE;
+					m_bChangedFontWeight = true;
 				}
 			}
 			else
@@ -989,7 +989,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			if (!m_pFontSize || UT_stricmp(m_pFontSize, sizeString))
 			{
 				setFontSize((XML_Char*)sizeString);
-				m_bChangedFontSize = UT_TRUE;
+				m_bChangedFontSize = true;
 			}
 		}
 		
@@ -1009,7 +1009,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			if (!m_pColor || UT_stricmp(m_pColor, buf_color))
 			{
 				setColor((XML_Char*)buf_color);
-				m_bChangedColor = UT_TRUE;
+				m_bChangedColor = true;
 			}
 		}
 
@@ -1025,7 +1025,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	// these dialogs are cached around through the dialog framework,
 	// and this variable needs to get set back
-	m_doneFirstFont = UT_FALSE;
+	m_doneFirstFont = false;
 	
     gtk_widget_pop_visual();
     gtk_widget_pop_colormap();
@@ -1045,7 +1045,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_pUnixFrame = NULL;
 }
 	
-UT_Bool XAP_UnixDialog_FontChooser::getFont(XAP_UnixFont ** font)
+bool XAP_UnixDialog_FontChooser::getFont(XAP_UnixFont ** font)
 {
 	UT_ASSERT(font);
 	
@@ -1064,7 +1064,7 @@ UT_Bool XAP_UnixDialog_FontChooser::getFont(XAP_UnixFont ** font)
 	}
 	else
 	{
-		return UT_FALSE;
+		return false;
 	}
 		
 	selectedRow = GTK_CLIST(m_styleList)->selection;
@@ -1089,12 +1089,12 @@ UT_Bool XAP_UnixDialog_FontChooser::getFont(XAP_UnixFont ** font)
 		case LIST_STYLE_NONE: // if we're this, selectedRow should be 0
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return UT_FALSE;
+			return false;
 		}
 	}
 	else
 	{
-		return UT_FALSE;
+		return false;
 	}
 	
 	const XAP_UnixFont * tempUnixFont = m_fontManager->getFont((const char *) fontText[0], styleNumber);
@@ -1103,24 +1103,24 @@ UT_Bool XAP_UnixDialog_FontChooser::getFont(XAP_UnixFont ** font)
 	{
 		// we got a font, set the variables and return success
 		*font = (XAP_UnixFont *) tempUnixFont;
-		return UT_TRUE;
+		return true;
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_UnixDialog_FontChooser::getDecoration(UT_Bool * strikeout,
-												 UT_Bool * underline)
+bool XAP_UnixDialog_FontChooser::getDecoration(bool * strikeout,
+												 bool * underline)
 {
 	UT_ASSERT(strikeout && underline);
 
 	*strikeout = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
 	*underline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_UnixDialog_FontChooser::getSize(UT_uint32 * pointsize)
+bool XAP_UnixDialog_FontChooser::getSize(UT_uint32 * pointsize)
 {
 	UT_ASSERT(pointsize);
 
@@ -1136,13 +1136,13 @@ UT_Bool XAP_UnixDialog_FontChooser::getSize(UT_uint32 * pointsize)
 		UT_ASSERT(sizeText && sizeText[0]);
 
 		*pointsize = (UT_uint32) atol(sizeText[0]);
-		return UT_TRUE;
+		return true;
 	}
 
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_UnixDialog_FontChooser::getEntryString(char ** string)
+bool XAP_UnixDialog_FontChooser::getEntryString(char ** string)
 {
 	UT_ASSERT(string);
 
@@ -1151,10 +1151,10 @@ UT_Bool XAP_UnixDialog_FontChooser::getEntryString(char ** string)
 
 	*string = PREVIEW_ENTRY_DEFAULT_STRING;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_UnixDialog_FontChooser::getForegroundColor(UT_RGBColor * color)
+bool XAP_UnixDialog_FontChooser::getForegroundColor(UT_RGBColor * color)
 {
 	UT_ASSERT(color);
 	
@@ -1173,10 +1173,10 @@ UT_Bool XAP_UnixDialog_FontChooser::getForegroundColor(UT_RGBColor * color)
 	color->m_grn = (unsigned char) (currentColor[GREEN] * (gdouble) 255);
 	color->m_blu = (unsigned char) (currentColor[BLUE]  * (gdouble) 255);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_UnixDialog_FontChooser::getBackgroundColor(UT_RGBColor * color)
+bool XAP_UnixDialog_FontChooser::getBackgroundColor(UT_RGBColor * color)
 {
 	// this just returns white now, it should later query the document
 	// in the frame which launched this dialog
@@ -1187,7 +1187,7 @@ UT_Bool XAP_UnixDialog_FontChooser::getBackgroundColor(UT_RGBColor * color)
 	color->m_grn = 255;
 	color->m_blu = 255;
 
-	return UT_TRUE;
+	return true;
 }
 
 
@@ -1197,8 +1197,8 @@ void XAP_UnixDialog_FontChooser::updatePreview(void)
 	if (!m_gc)
 		return;
 	
-//	UT_Bool strikeout = UT_FALSE;
-//	UT_Bool underline = UT_FALSE;
+//	bool strikeout = false;
+//	bool underline = false;
 
 	XAP_UnixFont * font = NULL;
 	if (!getFont(&font))
@@ -1223,7 +1223,7 @@ void XAP_UnixDialog_FontChooser::updatePreview(void)
 		m_gc->setFont(entry);
 
 		// if we've set a font, this variable is true
-		m_doneFirstFont = UT_TRUE;
+		m_doneFirstFont = true;
 
 		// now do the switch
 		DELETEP(m_lastFont);

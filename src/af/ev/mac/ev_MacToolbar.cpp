@@ -53,20 +53,20 @@ EV_MacToolbar::~EV_MacToolbar(void)
 //	UT_VECTOR_PURGEALL(_wd *,m_vecToolbarWidgets);
 }
 
-UT_Bool EV_MacToolbar::toolbarEvent(XAP_Toolbar_Id id,
+bool EV_MacToolbar::toolbarEvent(XAP_Toolbar_Id id,
 									  UT_UCSChar * pData,
 									  UT_uint32 dataLength)
 {
 	// user selected something from this toolbar.
 	// invoke the appropriate function.
-	// return UT_TRUE iff handled.
+	// return true iff handled.
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pMacApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
 	const EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 	if (!pAction)
-		return UT_FALSE;
+		return false;
 
 	AV_View * pView = m_pMacFrame->getCurrentView();
 
@@ -84,14 +84,14 @@ UT_Bool EV_MacToolbar::toolbarEvent(XAP_Toolbar_Id id,
 			UT_ASSERT(UT_TODO);
 			
 			// can safely ignore this event
-			return UT_TRUE;
+			return true;
 		}
 	}
 #endif 
 
 	const char * szMethodName = pAction->getMethodName();
 	if (!szMethodName)
-		return UT_FALSE;
+		return false;
 	
 	const EV_EditMethodContainer * pEMC = m_pMacApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
@@ -100,12 +100,12 @@ UT_Bool EV_MacToolbar::toolbarEvent(XAP_Toolbar_Id id,
 	UT_ASSERT(pEM);						// make sure it's bound to something
 
 	invokeToolbarMethod(pView,pEM,pData,dataLength);
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
 
-UT_Bool EV_MacToolbar::synthesize(void)
+bool EV_MacToolbar::synthesize(void)
 {
 	// create a toolbar from the info provided.
 
@@ -166,7 +166,7 @@ UT_Bool EV_MacToolbar::synthesize(void)
 	// TODO: is there any advantage to building up all the TBBUTTONs at once
 	//		 and then adding them en masse, instead of one at a time? 
 	UINT last_id=0;
-	UT_Bool bControls = UT_FALSE;
+	bool bControls = false;
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -193,24 +193,24 @@ UT_Bool EV_MacToolbar::synthesize(void)
 				
 				last_id = u;
 
-				UT_Bool bButton = UT_FALSE;
+				bool bButton = false;
 
 				switch (pAction->getItemType())
 				{
 				case EV_TBIT_PushButton:
-					bButton = UT_TRUE;
+					bButton = true;
 					tbb.fsState = TBSTATE_ENABLED; 
 					tbb.fsStyle = TBSTYLE_BUTTON;     
 					break;
 
 				case EV_TBIT_ToggleButton:
-					bButton = UT_TRUE;
+					bButton = true;
 					tbb.fsState = TBSTATE_ENABLED; 
 					tbb.fsStyle = TBSTYLE_CHECK;     
 					break;
 
 				case EV_TBIT_GroupButton:
-					bButton = UT_TRUE;
+					bButton = true;
 					tbb.fsState = TBSTATE_ENABLED; 
 					tbb.fsStyle = TBSTYLE_CHECKGROUP;     
 					break;
@@ -227,7 +227,7 @@ UT_Bool EV_MacToolbar::synthesize(void)
 							iWidth = pControl->getPixelWidth();
 						}
 						
-						bControls = UT_TRUE;
+						bControls = true;
 						tbb.fsStyle = TBSTYLE_SEP;   
 						tbb.iBitmap = iWidth;
 
@@ -341,7 +341,7 @@ UT_Bool EV_MacToolbar::synthesize(void)
 					// TODO rather than create them once for each window....
 					
 					HBITMAP hBitmap;
-					UT_Bool bFoundIcon = m_pMacToolbarIcons->getBitmapForIcon(m_hwnd,
+					bool bFoundIcon = m_pMacToolbarIcons->getBitmapForIcon(m_hwnd,
 																				MY_MAXIMUM_BITMAP_X,
 																				MY_MAXIMUM_BITMAP_Y,
 																				&backgroundColor,
@@ -460,7 +460,7 @@ UT_Bool EV_MacToolbar::synthesize(void)
 	SendMessage(hwndParent, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
 #endif // 0
 
-	return UT_TRUE;
+	return true;
 }
 
 WindowPtr EV_MacToolbar::getWindow(void) const
@@ -468,7 +468,7 @@ WindowPtr EV_MacToolbar::getWindow(void) const
 	return m_hwnd;
 }
 
-UT_Bool EV_MacToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
+bool EV_MacToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
 	// make the toolbar reflect the current state of the document
 	// at the current insertion point or selection.
@@ -507,10 +507,10 @@ UT_Bool EV_MacToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 		}
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_MacToolbar::_refreshID(XAP_Toolbar_Id id)
+bool EV_MacToolbar::_refreshID(XAP_Toolbar_Id id)
 {
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pMacApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -524,7 +524,7 @@ UT_Bool EV_MacToolbar::_refreshID(XAP_Toolbar_Id id)
 	return _refreshItem(pView, pAction, id);
 }
 
-UT_Bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id)
+bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pAction, XAP_Toolbar_Id id)
 {
 	const char * szState = 0;
 	EV_Toolbar_ItemState tis = pAction->getToolbarItemState(pView,&szState);
@@ -537,7 +537,7 @@ UT_Bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * p
 	{
 		case EV_TBIT_PushButton:
 			{
-				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				bool bGrayed = EV_TIS_ShouldBeGray(tis);
 
 				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed) ;
 
@@ -550,8 +550,8 @@ UT_Bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * p
 		case EV_TBIT_ToggleButton:
 		case EV_TBIT_GroupButton:
 			{
-				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-				UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
+				bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				bool bToggled = EV_TIS_ShouldBeToggled(tis);
 				
 				SendMessage(m_hwnd, TB_ENABLEBUTTON, u, (LONG)!bGrayed);
 				SendMessage(m_hwnd, TB_CHECKBUTTON, u, (LONG)bToggled);
@@ -565,8 +565,8 @@ UT_Bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * p
 
 		case EV_TBIT_ComboBox:
 			{
-				UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-				UT_Bool bString = EV_TIS_ShouldUseString(tis);
+				bool bGrayed = EV_TIS_ShouldBeGray(tis);
+				bool bString = EV_TIS_ShouldUseString(tis);
 
 				HWND hwndCombo = _getControlWindow(id);
 				UT_ASSERT(hwndCombo);
@@ -598,10 +598,10 @@ UT_Bool EV_MacToolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * p
 
 #endif // 0
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool EV_MacToolbar::getToolTip(long lParam)
+bool EV_MacToolbar::getToolTip(long lParam)
 {
         UT_ASSERT (UT_NOT_IMPLEMENTED); 
 
@@ -615,7 +615,7 @@ UT_Bool EV_MacToolbar::getToolTip(long lParam)
 	
 	EV_Toolbar_Label * pLabel = m_pToolbarLabelSet->getLabel(id);
 	if (!pLabel)
-		return UT_FALSE;
+		return false;
 
 	// ok, gotcha
 	const char * szToolTip = pLabel->getToolTip();
@@ -628,5 +628,5 @@ UT_Bool EV_MacToolbar::getToolTip(long lParam)
 	strncpy(lpttt->lpszText, szToolTip, 80);
 #endif // 0
 
-	return UT_TRUE;
+	return true;
 }

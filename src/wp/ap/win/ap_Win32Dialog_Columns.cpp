@@ -68,7 +68,7 @@ void AP_Win32Dialog_Columns::runModal(XAP_Frame * pFrame)
 
 }
 
-void AP_Win32Dialog_Columns::enableLineBetweenControl(UT_Bool bState)
+void AP_Win32Dialog_Columns::enableLineBetweenControl(bool bState)
 	{
 	_win32Dialog.enableControl(AP_RID_DIALOG_COLUMN_CHECK_LINE_BETWEEN, bState);
 	}
@@ -106,7 +106,7 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	COLORREF ColorRef = GetSysColor(COLOR_BTNFACE);
 	UT_RGBColor Color(GetRValue(ColorRef), GetGValue(ColorRef), GetBValue(ColorRef));
 
-	UT_Bool bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "tb_1column_xpm",
+	bool bFoundIcon = Icons.getBitmapForIcon(hWnd, iWidth, iHeight, &Color, "tb_1column_xpm",
 																&hBitmap);
 	UT_ASSERT(bFoundIcon);
 	SendDlgItemMessage(hWnd, AP_RID_DIALOG_COLUMN_RADIO_ONE, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);

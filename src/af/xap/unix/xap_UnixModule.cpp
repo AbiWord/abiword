@@ -32,39 +32,39 @@ XAP_UnixModule::~XAP_UnixModule (void)
   unload ();
 }
 
-UT_Bool XAP_UnixModule::getModuleName (char ** dest) const
+bool XAP_UnixModule::getModuleName (char ** dest) const
 {
   if (m_szname)
     {
       *dest = (char *)UT_strdup (m_szname);
-      return UT_TRUE;
+      return true;
     }
-  return UT_FALSE;
+  return false;
 }
 
-UT_Bool XAP_UnixModule::load (const char * name)
+bool XAP_UnixModule::load (const char * name)
 {
   m_module = g_module_open (name, (GModuleFlags)0);
 
-  return (m_module ? UT_TRUE : UT_FALSE);
+  return (m_module ? true : false);
 }
 
-UT_Bool XAP_UnixModule::unload (void)
+bool XAP_UnixModule::unload (void)
 {
   if (m_module)
     {
-      return (UT_Bool)g_module_close (m_module);
+      return (bool)g_module_close (m_module);
     }
-  return UT_FALSE;
+  return false;
 }
 
-UT_Bool XAP_UnixModule::resolveSymbol (const char * symbol_name, void ** symbol)
+bool XAP_UnixModule::resolveSymbol (const char * symbol_name, void ** symbol)
 {
-  return (UT_Bool) g_module_symbol (m_module, symbol_name, symbol);
+  return (bool) g_module_symbol (m_module, symbol_name, symbol);
 }
 
-UT_Bool XAP_UnixModule::getErrorMsg (char ** dest) const
+bool XAP_UnixModule::getErrorMsg (char ** dest) const
 {
   *dest = (char *)UT_strdup (g_module_error ());
-  return UT_TRUE;
+  return true;
 }

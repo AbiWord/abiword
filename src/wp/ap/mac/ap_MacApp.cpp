@@ -55,7 +55,7 @@ AP_MacApp::~AP_MacApp(void)
 	DELETEP(m_pClipboard);
 }
 
-UT_Bool AP_MacApp::initialize(void)
+bool AP_MacApp::initialize(void)
 {
 	// load preferences, first the builtin set and then any on disk.
 	
@@ -84,7 +84,7 @@ UT_Bool AP_MacApp::initialize(void)
 	
 	// now that preferences are established, let the xap init
 	if (! XAP_MacApp::initialize())
-		return UT_FALSE;
+		return false;
 
 #if 0
 	//////////////////////////////////////////////////////////////////
@@ -124,12 +124,12 @@ XAP_Frame * AP_MacApp::newFrame(void)
 	return pMacFrame;
 }
 
-UT_Bool AP_MacApp::shutdown(void)
+bool AP_MacApp::shutdown(void)
 {
 	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 
-	return UT_TRUE;
+	return true;
 }
 
 const char * AP_MacApp::getAbiSuiteAppDir(void) const
@@ -149,13 +149,13 @@ void AP_MacApp::copyToClipboard(PD_DocumentRange * /*pDocRange*/)
 {
 }
 
-void AP_MacApp::pasteFromClipboard(PD_DocumentRange * /*pDocRange*/, UT_Bool)
+void AP_MacApp::pasteFromClipboard(PD_DocumentRange * /*pDocRange*/, bool)
 {
 }
 
-UT_Bool AP_MacApp::canPasteFromClipboard(void)
+bool AP_MacApp::canPasteFromClipboard(void)
 {
-	return UT_FALSE;
+	return false;
 }
 
 /*****************************************************************/

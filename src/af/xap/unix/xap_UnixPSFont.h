@@ -57,10 +57,10 @@ public:
 	ps_Font(UT_uint32 ndx);
 	~ps_Font();
 	
-	UT_Bool		loadFont(const char * szFamily, const char * szFace, const char * szStyle, const char * szWeight, UT_uint32 iSize);
-	UT_Bool		loadFont(const char * filename);
-	UT_Bool		setFont(const char * szFamily, const char * szFace, const char * szStyle, const char * szWeight, UT_uint32 iSize);
-	UT_Bool		matchesFont(const char * szFamily, const char * szFace, const char * szStyle, const char * szWeight, UT_uint32 iSize);
+	bool		loadFont(const char * szFamily, const char * szFace, const char * szStyle, const char * szWeight, UT_uint32 iSize);
+	bool		loadFont(const char * filename);
+	bool		setFont(const char * szFamily, const char * szFace, const char * szStyle, const char * szWeight, UT_uint32 iSize);
+	bool		matchesFont(const char * szFamily, const char * szFace, const char * szStyle, const char * szWeight, UT_uint32 iSize);
 	
 	UT_uint32			m_ndx;
 	char *				m_szFamily;

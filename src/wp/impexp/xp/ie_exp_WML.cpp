@@ -50,17 +50,17 @@ public:
 		       IE_Exp_WML * pie);
 	virtual ~s_WML_Listener();
 
-	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(PL_StruxFmtHandle sfh,
 					 const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(PL_StruxDocHandle sdh,
 					      const PX_ChangeRecord * pcr,
 					      PL_StruxFmtHandle * psfh);
 
-	virtual UT_Bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(PL_StruxFmtHandle sfh,
 				       const PX_ChangeRecord * pcr);
 
-	virtual UT_Bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 					    const PX_ChangeRecord * pcr,
 					    PL_StruxDocHandle sdh,
 					    PL_ListenerId lid,
@@ -68,7 +68,7 @@ public:
 								    PL_ListenerId lid,
 								    PL_StruxFmtHandle sfhNew));
   
-        virtual UT_Bool		signal(UT_uint32 iSignal);
+        virtual bool		signal(UT_uint32 iSignal);
 
 protected:
 	void				_closeSection(void);
@@ -82,9 +82,9 @@ protected:
 	
 	PD_Document *		m_pDocument;
 	IE_Exp_WML *		m_pie;
-	UT_Bool			m_bInBlock;
-	UT_Bool			m_bInSpan;
-        UT_Bool                 m_bWasSpace;
+	bool			m_bInBlock;
+	bool			m_bInSpan;
+        bool                 m_bWasSpace;
 
 	const PP_AttrProp*	m_pAP_Span;
 };
@@ -106,7 +106,7 @@ IE_Exp_WML::~IE_Exp_WML()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp_WML::RecognizeSuffix(const char * szSuffix)
+bool IE_Exp_WML::RecognizeSuffix(const char * szSuffix)
 {
         return (!(UT_stricmp(szSuffix,".wml")));
 }
@@ -119,17 +119,17 @@ UT_Error IE_Exp_WML::StaticConstructor(PD_Document * pDocument,
 	return UT_OK;
 }
 
-UT_Bool	IE_Exp_WML::GetDlgLabels(const char ** pszDesc,
+bool	IE_Exp_WML::GetDlgLabels(const char ** pszDesc,
 				 const char ** pszSuffixList,
 				 IEFileType * ft)
 {
 	*pszDesc = "WML (.wml)";
 	*pszSuffixList = "*.wml";
 	*ft = IEFT_WML;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool IE_Exp_WML::SupportsFileType(IEFileType ft)
+bool IE_Exp_WML::SupportsFileType(IEFileType ft)
 {
 	return (IEFT_WML == ft);
 }
@@ -159,9 +159,9 @@ s_WML_Listener::s_WML_Listener(PD_Document * pDocument,
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
-	m_bInBlock = UT_FALSE;
-	m_bInSpan = UT_FALSE;
-	m_bWasSpace = UT_FALSE;
+	m_bInBlock = false;
+	m_bInSpan = false;
+	m_bWasSpace = false;
 
 	m_pie->write("<!DOCTYPE wml PUBLIC \"-//PHONE.COM//DTD WML 1.1//EN\"\n");
 	m_pie->write("\t\"http://www.phone.com/dtd/wml11.dtd\" >\n");
@@ -210,7 +210,7 @@ void s_WML_Listener::_closeBlock(void)
 	}
 
 	m_pie->write("</p>\n");
-	m_bInBlock = UT_FALSE;
+	m_bInBlock = false;
 	return;
 }
 
@@ -219,7 +219,7 @@ void s_WML_Listener::_openParagraph(PT_AttrPropIndex api)
         UT_DEBUGMSG(("OpenParagraph called!\n"));
 
 	const PP_AttrProp * pAP = NULL;
-	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
 	if (bHaveProp && pAP)
 	{
@@ -244,13 +244,13 @@ void s_WML_Listener::_openParagraph(PT_AttrPropIndex api)
 	  m_pie->write("<p>");
 	}
 
-	m_bInBlock = UT_TRUE;
+	m_bInBlock = true;
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool s_WML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_WML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				 const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -270,7 +270,7 @@ UT_Bool s_WML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 			if (api)
 				_closeSpan();
-			return UT_TRUE;
+			return true;
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:
@@ -282,31 +282,31 @@ UT_Bool s_WML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 				// TODO we *could* insert the images and create separate WBMP files.
-				return UT_TRUE;
+				return true;
 
 			case PTO_Field:
 				// we do nothing with computed fields.
-				return UT_TRUE;
+				return true;
 
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 			}
 #else
-			return UT_TRUE;
+			return true;
 #endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
-		return UT_TRUE;
+		return true;
 		
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_WML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool s_WML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 				      const PX_ChangeRecord * pcr,
 				      PL_StruxFmtHandle * psfh)
 {
@@ -317,30 +317,30 @@ UT_Bool s_WML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
-		return UT_TRUE;
+		return true;
 
 	case PTX_Block:
 	{
 		_closeSpan();
 		_closeBlock();
 		_openParagraph(pcr->getIndexAP());
-		return UT_TRUE;
+		return true;
 	}
 
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
-UT_Bool s_WML_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_WML_Listener::change(PL_StruxFmtHandle /*sfh*/,
 			       const PX_ChangeRecord * /*pcr*/)
 {
   UT_ASSERT(0);	    // this function is not used.
-  return UT_FALSE;
+  return false;
 }
 
-UT_Bool s_WML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_WML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 				     const PX_ChangeRecord * /*pcr*/,
 				     PL_StruxDocHandle /*sdh*/,
 				     PL_ListenerId /* lid */,
@@ -349,13 +349,13 @@ UT_Bool s_WML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 																 PL_StruxFmtHandle /* sfhNew */))
 {
   UT_ASSERT(0);	    // this function is not used.
-  return UT_FALSE;
+  return false;
 }
 
-UT_Bool s_WML_Listener::signal(UT_uint32 /* iSignal */)
+bool s_WML_Listener::signal(UT_uint32 /* iSignal */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 void s_WML_Listener::_handleDataItems(void)
@@ -381,7 +381,7 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 	}
 	
 	const PP_AttrProp * pAP = NULL;
-	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
 	if (bHaveProp && pAP)
 	{
@@ -446,7 +446,7 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 			}
 		}
 		
-		m_bInSpan = UT_TRUE;
+		m_bInSpan = true;
 		m_pAP_Span = pAP;
 	}
 }
@@ -529,7 +529,7 @@ void s_WML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		  else
 		    {
 		      // just tack on a single space to the textrun
-		      m_bWasSpace = UT_TRUE;
+		      m_bWasSpace = true;
 		      *pBuf++ = ' ';
 		      pData++;
 		    }
@@ -538,7 +538,7 @@ void s_WML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		default:
 
 		  // reset this variable
-		  m_bWasSpace = UT_FALSE;
+		  m_bWasSpace = false;
 
 		  // thanks for the international patch, vlad :-)
 		  if (*pData > 0x007f)
@@ -673,6 +673,6 @@ void s_WML_Listener::_closeSpan(void)
 		m_pAP_Span = NULL;
 	}
 
-	m_bInSpan = UT_FALSE;
+	m_bInSpan = false;
 	return;
 }

@@ -199,43 +199,43 @@ void MacGraphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
     CGContextFillRect (m_CGContext, myRect);
 }
 
-UT_Bool MacGraphics::queryProperties(GR_Graphics::Properties gp) const
+bool MacGraphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
 	case DGP_SCREEN:
-		return UT_TRUE;
+		return true;
 	case DGP_PAPER:
-		return UT_FALSE;
+		return false;
 	default:
 		UT_ASSERT(0);
-		return UT_FALSE;
+		return false;
 	}
 }
 
 	/* the following are only used for printing */
 
-UT_Bool MacGraphics::startPrint(void)
+bool MacGraphics::startPrint(void)
 {
     // FIXIT
     UT_ASSERT (UT_NOT_IMPLEMENTED);
-    return UT_FALSE;
+    return false;
 }
 
-UT_Bool MacGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
-							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
+bool MacGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
+							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
     // FIXIT
     UT_ASSERT (UT_NOT_IMPLEMENTED);
-    return UT_FALSE;
+    return false;
 }
 
 
-UT_Bool MacGraphics::endPrint(void)
+bool MacGraphics::endPrint(void)
 {
     // FIXIT
     UT_ASSERT (UT_NOT_IMPLEMENTED);
-    return UT_FALSE;
+    return false;
 }
 
 
@@ -249,7 +249,7 @@ UT_Bool MacGraphics::endPrint(void)
 void GR_Font::s_getGenericFontProperties(const char * szFontName,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
-										 UT_Bool * pbTrueType)
+										 bool * pbTrueType)
 {
 	// describe in generic terms the named font.
 
@@ -262,6 +262,6 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 
 	*pff = FF_Unknown;
 	*pfp = FP_Unknown;
-	*pbTrueType = UT_TRUE;
+	*pbTrueType = true;
 }
 

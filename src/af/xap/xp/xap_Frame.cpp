@@ -144,7 +144,7 @@ int XAP_Frame::_getNextUntitledNumber(void)
 
 /*****************************************************************/
 
-UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
+bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
 							  const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
 							  const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
 							  const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
@@ -173,10 +173,10 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 		m_pInputModes = new XAP_InputModes();
 		UT_ASSERT(m_pInputModes);
 	}
-	UT_Bool bResult;
+	bool bResult;
 	bResult = m_pInputModes->createInputMode(szBindings,pBindingMap);
 	UT_ASSERT(bResult);
-	UT_Bool bResult2;
+	bool bResult2;
 	bResult2 = m_pInputModes->setCurrentMap(szBindings);
 	UT_ASSERT(bResult2);
 	
@@ -264,7 +264,7 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 	// ... add other stuff here ...
 	//////////////////////////////////////////////////////////////////
 
-	return UT_TRUE;
+	return true;
 }
 
 EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
@@ -287,7 +287,7 @@ UT_sint32 XAP_Frame::setInputMode(const char * szName)
 
 		EV_EditBindingMap * pBindingMap = m_app->getBindingMap(szName);
 		UT_ASSERT(pBindingMap);
-		UT_Bool bResult;
+		bool bResult;
 		bResult = m_pInputModes->createInputMode(szName,pBindingMap);
 		UT_ASSERT(bResult);
 	}
@@ -297,7 +297,7 @@ UT_sint32 XAP_Frame::setInputMode(const char * szName)
 
 	UT_DEBUGMSG(("Setting InputMode to [%s] for the current window.\n",szName));
 	
-	UT_Bool bStatus = m_pInputModes->setCurrentMap(szName);
+	bool bStatus = m_pInputModes->setCurrentMap(szName);
 	getCurrentView()->notifyListeners(AV_CHG_INPUTMODE);
 
 	return (bStatus);
@@ -332,7 +332,7 @@ const char * XAP_Frame::getFilename(void) const
 	return m_pDoc->getFilename();
 }
 
-UT_Bool XAP_Frame::isDirty(void) const
+bool XAP_Frame::isDirty(void) const
 {
 	return m_pDoc->isDirty();
 }
@@ -394,7 +394,7 @@ const char * XAP_Frame::getTempNameFromTitle(void) const
 	return m_szNonDecoratedTitle;
 }
 	
-UT_Bool XAP_Frame::updateTitle()
+bool XAP_Frame::updateTitle()
 {
 	/*
 		The document title for this window has changed, so we need to:
@@ -462,7 +462,7 @@ UT_Bool XAP_Frame::updateTitle()
 		strcat(m_szTitle, " *");
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 void XAP_Frame::setZoomPercentage(UT_uint32 /* iZoom */)
@@ -477,7 +477,7 @@ UT_uint32 XAP_Frame::getZoomPercentage(void)
 
 void XAP_Frame::_createToolbars(void)
 {
-	UT_Bool bResult;
+	bool bResult;
 	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
 	for (UT_uint32 k=0; k < nrToolbars; k++)
 	{
@@ -627,7 +627,7 @@ XAP_InputModes::~XAP_InputModes(void)
 	UT_VECTOR_FREEALL(char *, m_vecNames);
 }
 
-UT_Bool XAP_InputModes::createInputMode(const char * szName,
+bool XAP_InputModes::createInputMode(const char * szName,
 										EV_EditBindingMap * pBindingMap)
 {
 	UT_ASSERT(szName && *szName);
@@ -642,16 +642,16 @@ UT_Bool XAP_InputModes::createInputMode(const char * szName,
 	pEEM = new EV_EditEventMapper(pBindingMap);
 	UT_ASSERT(pEEM);
 
-	UT_Bool b1;
+	bool b1;
 	b1 = (m_vecEventMaps.addItem(pEEM) == 0);
-	UT_Bool b2;
+	bool b2;
 	b2 = (m_vecNames.addItem(szDup) == 0);
     UT_ASSERT(b1 && b2);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_InputModes::setCurrentMap(const char * szName)
+bool XAP_InputModes::setCurrentMap(const char * szName)
 {
 	UT_uint32 kLimit = m_vecNames.getItemCount();
 	UT_uint32 k;
@@ -660,10 +660,10 @@ UT_Bool XAP_InputModes::setCurrentMap(const char * szName)
 		if (UT_stricmp(szName,(const char *)m_vecNames.getNthItem(k)) == 0)
 		{
 			m_indexCurrentEventMap = k;
-			return UT_TRUE;
+			return true;
 		}
 
-	return UT_FALSE;
+	return false;
 }
 
 EV_EditEventMapper * XAP_InputModes::getCurrentMap(void) const

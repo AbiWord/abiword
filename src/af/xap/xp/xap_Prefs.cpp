@@ -52,20 +52,20 @@ const XML_Char * XAP_PrefsScheme::getSchemeName(void) const
 	return m_szName;
 }
 
-UT_Bool XAP_PrefsScheme::setSchemeName(const XML_Char * szNewSchemeName)
+bool XAP_PrefsScheme::setSchemeName(const XML_Char * szNewSchemeName)
 {
 	FREEP(m_szName);
 	return UT_XML_cloneString(m_szName,szNewSchemeName);
 }
 
-UT_Bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
+bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 {
 	++m_uTick;
 	UT_HashEntry * pEntry = m_hash.findEntry((char*)szKey);
 	if (pEntry)
 	{
 		if (UT_stricmp(szValue,pEntry->pszRight) == 0)
-			return UT_TRUE;				// equal values, no changes required
+			return true;				// equal values, no changes required
 		
 		m_hash.setEntry(pEntry, (char*)szValue, NULL); // update with new value
 	}
@@ -77,35 +77,35 @@ UT_Bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szVal
 
 	m_pPrefs->_markPrefChange( szKey );
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_PrefsScheme::setValueBool(const XML_Char * szKey, UT_Bool bValue)
+bool XAP_PrefsScheme::setValueBool(const XML_Char * szKey, bool bValue)
 {
 	return setValue(szKey, (XML_Char*) ((bValue) ? "1" : "0"));
 }
 
-UT_Bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	UT_HashEntry * pEntry = m_hash.findEntry((char*)szKey);
 	if (!pEntry)
-		return UT_FALSE;
+		return false;
 
 	if (pszValue)
 		*pszValue = pEntry->pszRight;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_PrefsScheme::getValueBool(const XML_Char * szKey, UT_Bool * pbValue) const
+bool XAP_PrefsScheme::getValueBool(const XML_Char * szKey, bool * pbValue) const
 {
-	*pbValue = UT_FALSE;				// assume something
+	*pbValue = false;				// assume something
 	
 	const XML_Char * szValue = NULL;
 	if (!getValue(szKey,&szValue))
-		return UT_FALSE;				// bogus keyword ??
+		return false;				// bogus keyword ??
 
 	if (!szValue || !*szValue)
-		return UT_FALSE;				// no value for known keyword ??
+		return false;				// no value for known keyword ??
 
 	switch (szValue[0])
 	{
@@ -114,43 +114,43 @@ UT_Bool XAP_PrefsScheme::getValueBool(const XML_Char * szKey, UT_Bool * pbValue)
 	case 'T':
 	case 'y':
 	case 'Y':
-		*pbValue = UT_TRUE;
-		return UT_TRUE;
+		*pbValue = true;
+		return true;
 
 	default:
-		*pbValue = UT_FALSE;
-		return UT_TRUE;
+		*pbValue = false;
+		return true;
 	}
 }
 
-UT_Bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const
+bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const XML_Char ** pszValue) const
 {
 	// TODO we should fix hash to use ut_uint32 rather than int
 	
 	if (k >= (UT_uint32)m_hash.getEntryCount())
-		return UT_FALSE;
+		return false;
 	
 	UT_HashEntry * pEntry = m_hash.getNthEntryAlpha(k);
 
 	if (!pEntry)
-		return UT_FALSE;
+		return false;
 
 	if (pszKey)
 		*pszKey = pEntry->pszLeft;
 	if (pszValue)
 		*pszValue = pEntry->pszRight;
 
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
 
-UT_Bool XAP_Prefs::getAutoSavePrefs(void) const
+bool XAP_Prefs::getAutoSavePrefs(void) const
 {
 	return m_bAutoSavePrefs;
 }
 
-void XAP_Prefs::setAutoSavePrefs(UT_Bool bAuto)
+void XAP_Prefs::setAutoSavePrefs(bool bAuto)
 {
 	m_bAutoSavePrefs = bAuto;
 
@@ -160,12 +160,12 @@ void XAP_Prefs::setAutoSavePrefs(UT_Bool bAuto)
 
 /*****************************************************************/
 
-UT_Bool XAP_Prefs::getUseEnvLocale(void) const
+bool XAP_Prefs::getUseEnvLocale(void) const
 {
 	return m_bUseEnvLocale;
 }
 
-void XAP_Prefs::setUseEnvLocale(UT_Bool bUse)
+void XAP_Prefs::setUseEnvLocale(bool bUse)
 {
 	m_bUseEnvLocale = bUse;
 }
@@ -210,7 +210,7 @@ const char * XAP_Prefs::getRecent(UT_uint32 k) const
 void XAP_Prefs::addRecent(const char * szRecent)
 {
 	const char * sz;
-	UT_Bool bFound = UT_FALSE;
+	bool bFound = false;
 
 	if (m_iMaxRecent == 0)
 		return;		// NOOP
@@ -223,7 +223,7 @@ void XAP_Prefs::addRecent(const char * szRecent)
 		{
 			// yep, we're gonna move it up
 			m_vecRecent.deleteNthItem(i);
-			bFound = UT_TRUE;
+			bFound = true;
 			break;
 		}
 	}
@@ -274,9 +274,9 @@ void XAP_Prefs::_pruneRecent(void)
 }
 /*****************************************************************/
 
-UT_Bool XAP_Prefs::setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags) 
+bool XAP_Prefs::setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags) 
 {
-	m_parserState.m_bFoundGeometry = UT_TRUE;
+	m_parserState.m_bFoundGeometry = true;
 	m_geom.m_width = width;
 	m_geom.m_height = height;
 	m_geom.m_posx = posx;
@@ -284,15 +284,15 @@ UT_Bool XAP_Prefs::setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, 
 	m_geom.m_flags = flags;
 
 	//For now we turn on the autosave of prefs so that we can save this setting ... is this bad?
-	setAutoSavePrefs(UT_TRUE);	
+	setAutoSavePrefs(true);	
 	
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool XAP_Prefs::getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags)
+bool XAP_Prefs::getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags)
 {
-	if (m_parserState.m_bFoundGeometry == UT_FALSE) {
-		return UT_FALSE;
+	if (m_parserState.m_bFoundGeometry == false) {
+		return false;
 	}
 	if (width) { 
 		*width = m_geom.m_width; 
@@ -309,7 +309,7 @@ UT_Bool XAP_Prefs::getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *widt
 	if (flags) {
 		*flags = m_geom.m_flags;
 	}
-	return UT_TRUE;
+	return true;
 }
 
 
@@ -324,7 +324,7 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 	m_currentScheme = NULL;
 	m_builtinScheme = NULL;
 	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);
-	m_bInChangeBlock = UT_FALSE;
+	m_bInChangeBlock = false;
 
 	// NOTE: since constructors cannot report malloc
 	// NOTE: failures (and since it is virtual back
@@ -370,7 +370,7 @@ XAP_PrefsScheme * XAP_Prefs::getScheme(const XML_Char * szSchemeName) const
 	return NULL;
 }
 
-UT_Bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
+bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 {
 	const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
 	const XML_Char * szThisSchemeName = pNewScheme->getSchemeName();
@@ -385,7 +385,7 @@ UT_Bool XAP_Prefs::addScheme(XAP_PrefsScheme * pNewScheme)
 }
 
 
-XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(UT_Bool bCreate)
+XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(bool bCreate)
 {
 	if (bCreate)
 	{
@@ -417,7 +417,7 @@ XAP_PrefsScheme * XAP_Prefs::getCurrentScheme(UT_Bool bCreate)
 	return m_currentScheme;
 }
 
-UT_Bool XAP_Prefs::setCurrentScheme(const XML_Char * szSchemeName)
+bool XAP_Prefs::setCurrentScheme(const XML_Char * szSchemeName)
 {
 	// set the current scheme.
 
@@ -425,62 +425,62 @@ UT_Bool XAP_Prefs::setCurrentScheme(const XML_Char * szSchemeName)
 
 	XAP_PrefsScheme * p = getScheme(szSchemeName);
 	if (!p)
-		return UT_FALSE;
+		return false;
 
 	UT_DEBUGMSG(("Preferences::setCurrentScheme [%s].\n",szSchemeName));
 	
 	m_currentScheme = p;
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
 static const XML_Char DEBUG_PREFIX[] = "DeBuG";  // case insensitive
 static const XML_Char NO_PREF_VALUE[] = "";
 
-UT_Bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
+bool XAP_Prefs::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
 
 	UT_ASSERT(m_currentScheme);
 
 	if (m_currentScheme->getValue(szKey,pszValue))
-		return UT_TRUE;
+		return true;
 	if (m_builtinScheme->getValue(szKey,pszValue))
-		return UT_TRUE;
+		return true;
 	// It is legal for there to be arbitrary preference tags that start with 
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use
 	// these to selectively trigger development-time behaviors.
 	if (UT_XML_strnicmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
 	{
 		*pszValue = NO_PREF_VALUE;
-		return UT_TRUE;
+		return true;
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
-UT_Bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) const
+bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 {
 	// a convenient routine to get a name/value pair from the current scheme
 
 	UT_ASSERT(m_currentScheme);
 
 	if (m_currentScheme->getValueBool(szKey,pbValue))
-		return UT_TRUE;
+		return true;
 	if (m_builtinScheme->getValueBool(szKey,pbValue))
-		return UT_TRUE;
+		return true;
 	// It is legal for there to be arbitrary preference tags that start with 
 	// "Debug", and Abi apps won't choke.  The idea is that developers can use
 	// these to selectively trigger development-time behaviors.
 	if (UT_XML_strnicmp(szKey, DEBUG_PREFIX, sizeof(DEBUG_PREFIX) - 1) == 0)
 	{
-		*pbValue = UT_FALSE;
-		return UT_TRUE;
+		*pbValue = false;
+		return true;
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 /*****************************************************************
@@ -525,7 +525,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 
 	if (UT_strcmp(name, "AbiPreferences") == 0)
 	{
-		m_parserState.m_bFoundAbiPreferences = UT_TRUE;
+		m_parserState.m_bFoundAbiPreferences = true;
 
 		// we expect something of the form:
 		// <AbiPreferences app="AbiWord" ver="1.0">...</AbiPreferences>
@@ -562,7 +562,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 	}
 	else if (UT_strcmp(name, "Select") == 0)
 	{
-		m_parserState.m_bFoundSelect = UT_TRUE;
+		m_parserState.m_bFoundSelect = true;
 		
 		// we expect something of the form:
 		// <Select
@@ -619,7 +619,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		// undefined -- we remember the last one that the XML parser
 		// give us.
 
-		UT_Bool bIsNamed = UT_FALSE;
+		bool bIsNamed = false;
 		
 		pNewScheme = new XAP_PrefsScheme(this, NULL);
 		if (!pNewScheme)
@@ -632,7 +632,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 
 			if (UT_strcmp(a[0], "name") == 0)
 			{
-				bIsNamed = UT_TRUE;
+				bIsNamed = true;
 				
 				const XML_Char * szBuiltinSchemeName = getBuiltinSchemeName();
 
@@ -668,7 +668,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 	}
 	else if (UT_strcmp(name, "Recent") == 0)
 	{
-		m_parserState.m_bFoundRecent = UT_TRUE;
+		m_parserState.m_bFoundRecent = true;
 		
 		// we expect something of the form:
 		// <Recent max="4" name1="v1" name2="v2" ... />
@@ -700,7 +700,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 	}
 	else if (UT_strcmp(name, "Geometry") == 0)
 	{
-		m_parserState.m_bFoundGeometry = UT_TRUE;
+		m_parserState.m_bFoundGeometry = true;
 		
 		// we expect something of the form:
 		// <Geometry width="xxx" height="xxx" posx="xxx" posy="xxx" />
@@ -748,7 +748,7 @@ IgnoreThisScheme:
 MemoryError:
 	UT_DEBUGMSG(("Memory error parsing preferences file.\n"));
 InvalidFileError:
-	m_parserState.m_parserStatus = UT_FALSE;			// cause parser driver to bail
+	m_parserState.m_parserStatus = false;			// cause parser driver to bail
 	DELETEP(pNewScheme);
 	return;
 }
@@ -768,7 +768,7 @@ void XAP_Prefs::_charData(const XML_Char * /* s */, int /* len */)
 /*****************************************************************/
 
 
-UT_Bool XAP_Prefs::loadPrefsFile(void)
+bool XAP_Prefs::loadPrefsFile(void)
 {
 #ifndef HAVE_LIBXML2 
 	XML_Parser parser = NULL;
@@ -776,15 +776,15 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	char buf[4096];
 	int done = 0;
 #endif
-	UT_Bool bResult = UT_FALSE;			// assume failure
+	bool bResult = false;			// assume failure
 	const char * szFilename;
 
-	m_parserState.m_parserStatus = UT_TRUE;
-	m_parserState.m_bFoundAbiPreferences = UT_FALSE;
-	m_parserState.m_bFoundSelect = UT_FALSE;
+	m_parserState.m_parserStatus = true;
+	m_parserState.m_bFoundAbiPreferences = false;
+	m_parserState.m_bFoundSelect = false;
 	m_parserState.m_szSelectedSchemeName = NULL;
-	m_parserState.m_bFoundRecent = UT_FALSE;
-	m_parserState.m_bFoundGeometry = UT_FALSE;
+	m_parserState.m_bFoundRecent = false;
+	m_parserState.m_bFoundGeometry = false;
 
 	szFilename = getPrefsPathname();
 	if (!szFilename)
@@ -795,7 +795,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 #ifdef HAVE_LIBXML2
 	else
 	{
-		bResult = _sax (szFilename, UT_FALSE);
+		bResult = _sax (szFilename, false);
 	}
  Cleanup:
 #else
@@ -871,7 +871,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	}
 
 #ifndef HAVE_LIBXML2
-	bResult = UT_TRUE;
+	bResult = true;
 Cleanup:
 	FREEP(m_parserState.m_szSelectedSchemeName);
 	if (parser)
@@ -882,9 +882,9 @@ Cleanup:
 	return bResult;
 }
 
-UT_Bool XAP_Prefs::savePrefsFile(void)
+bool XAP_Prefs::savePrefsFile(void)
 {
-	UT_Bool bResult = UT_FALSE;			// assume failure
+	bool bResult = false;			// assume failure
 	const char * szFilename;
 	FILE * fp = NULL;
 
@@ -982,7 +982,7 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			UT_ASSERT(p);
 
 			const XML_Char * szThisSchemeName = p->getSchemeName();
-			UT_Bool bIsBuiltin = (p == m_builtinScheme);
+			bool bIsBuiltin = (p == m_builtinScheme);
 
 			if (bIsBuiltin)
 			{
@@ -1004,12 +1004,12 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			UT_uint32 j;
 			for (j=0; (p->getNthValue(j,&szKey,&szValue)); j++)
 			{
-				UT_Bool need_print;
-				need_print = UT_FALSE;
+				bool need_print;
+				need_print = false;
 				if (bIsBuiltin)
 				{
 					// for the builtin set, we print every value
-					need_print = UT_TRUE;
+					need_print = true;
 				}
 				else
 				{
@@ -1022,10 +1022,10 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 						UT_XML_strnicmp(szKey, DEBUG_PREFIX,
 						                sizeof(DEBUG_PREFIX) - 1) == 0)
 					{
-						need_print = UT_TRUE;
+						need_print = true;
 					}
 				}
-				if (need_print == UT_TRUE)
+				if (need_print == true)
 				{
 					// szValue is UTF8.  Convert to Unicode and then
 					// do XML-encoding of XML-special characters and
@@ -1143,20 +1143,20 @@ void XAP_Prefs::_startElement_SystemDefaultFile(const XML_Char *name, const XML_
 
 MemoryError:
 	UT_DEBUGMSG(("Memory error parsing preferences file.\n"));
-	m_parserState.m_parserStatus = UT_FALSE;			// cause parser driver to bail
+	m_parserState.m_parserStatus = false;			// cause parser driver to bail
 	return;
 }
 
 /*****************************************************************/
 
-UT_Bool XAP_Prefs::loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsPathname)
+bool XAP_Prefs::loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsPathname)
 {
 	UT_ASSERT(szSystemDefaultPrefsPathname && *szSystemDefaultPrefsPathname);
 	
-	UT_Bool bResult = UT_FALSE;			// assume failure
-	m_parserState.m_parserStatus = UT_TRUE;
+	bool bResult = false;			// assume failure
+	m_parserState.m_parserStatus = true;
 #ifdef HAVE_LIBXML2
-	bResult = _sax(szSystemDefaultPrefsPathname, UT_TRUE);
+	bResult = _sax(szSystemDefaultPrefsPathname, true);
 #else
 	FILE * fp = NULL;
 	int done = 0;
@@ -1202,7 +1202,7 @@ UT_Bool XAP_Prefs::loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsP
 
 	// we succeeded in parsing the file,
 
-	bResult = UT_TRUE;
+	bResult = true;
 
 Cleanup:
 	if (parser)
@@ -1271,14 +1271,14 @@ void XAP_Prefs::_markPrefChange( const XML_Char *szKey )
 
 void XAP_Prefs::startBlockChange()
 {
-	m_bInChangeBlock = UT_TRUE;
+	m_bInChangeBlock = true;
 }
 
 void XAP_Prefs::endBlockChange()
 {
 	if ( m_bInChangeBlock ) 
 	{
-		m_bInChangeBlock = UT_FALSE;
+		m_bInChangeBlock = false;
 		_sendPrefsSignal( &m_ahashChanges );
 	}
 }
@@ -1304,7 +1304,7 @@ static xmlEntityPtr _getEntity(void *user_data, const CHAR *name) {
       return xmlGetPredefinedEntity(name);
 }
 
-UT_Bool XAP_Prefs::_sax (const char *path, UT_Bool sys)
+bool XAP_Prefs::_sax (const char *path, bool sys)
 {
 	xmlSAXHandler hdl;
 	hdl.internalSubset = NULL;
@@ -1337,7 +1337,7 @@ UT_Bool XAP_Prefs::_sax (const char *path, UT_Bool sys)
 	xmlParserCtxtPtr ctxt;
 
 	ctxt = xmlCreateFileParserCtxt(path);
-	if (ctxt == NULL) return UT_FALSE;
+	if (ctxt == NULL) return false;
 	ctxt->sax = &hdl;
 	ctxt->userData = (void *) this;
 
@@ -1345,9 +1345,9 @@ UT_Bool XAP_Prefs::_sax (const char *path, UT_Bool sys)
 
 
 	if (ctxt->wellFormed)
-		ret = UT_TRUE;
+		ret = true;
 	else
-		ret = UT_FALSE;
+		ret = false;
 	ctxt->sax = NULL;
 	xmlFreeParserCtxt(ctxt);
 	return ret;

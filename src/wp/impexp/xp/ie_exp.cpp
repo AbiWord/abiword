@@ -52,14 +52,14 @@
 
 struct _xp
 {
-	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
+	bool			(*fpRecognizeSuffix)(const char * szSuffix);
 
 	UT_Error		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Exp ** ppie);
-	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
+	bool			(*fpGetDlgLabels)(const char ** szDesc,
 									  const char ** szSuffixList,
 									  IEFileType * ft);
-	UT_Bool			(*fpSupportsFileType)(IEFileType ft);
+	bool			(*fpSupportsFileType)(IEFileType ft);
 };
 
 #define DeclareExporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels, n::SupportsFileType }
@@ -106,7 +106,7 @@ IE_Exp::~IE_Exp()
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool IE_Exp::_openFile(const char * szFilename)
+bool IE_Exp::_openFile(const char * szFilename)
 {
 	UT_ASSERT(!m_fp);
 
@@ -122,7 +122,7 @@ UT_Bool IE_Exp::_openFile(const char * szFilename)
 	if (!uri)
 	  {
 	    UT_DEBUGMSG(("GnomeVFS could not open the uri: %s\n", szFilename));
-	    return UT_FALSE;
+	    return false;
 	  }
 
 	result = gnome_vfs_create_uri (&m_fp, uri, GNOME_VFS_OPEN_WRITE, FALSE, 0644);
@@ -130,9 +130,9 @@ UT_Bool IE_Exp::_openFile(const char * szFilename)
 	  {
 	    UT_DEBUGMSG(("DOM: could not open file for writing!\n"));
 	    UT_DEBUGMSG(("DOM - reason: %s\n", gnome_vfs_result_to_string (result)));
-	    return UT_FALSE;
+	    return false;
 	  }
-	return UT_TRUE;
+	return true;
 #endif
 }
 
@@ -156,7 +156,7 @@ UT_uint32 IE_Exp::_writeBytes(const UT_Byte * pBytes, UT_uint32 length)
 #endif
 }
 
-UT_Bool IE_Exp::_writeBytes(const UT_Byte * sz)
+bool IE_Exp::_writeBytes(const UT_Byte * sz)
 {
 	UT_ASSERT(m_fp);
 	UT_ASSERT(sz);
@@ -166,7 +166,7 @@ UT_Bool IE_Exp::_writeBytes(const UT_Byte * sz)
 	return (_writeBytes(sz,length)==(UT_uint32)length);
 }
 
-UT_Bool IE_Exp::_closeFile(void)
+bool IE_Exp::_closeFile(void)
 {
 #ifndef HAVE_GNOMEVFS
 	if (m_fp)
@@ -176,7 +176,7 @@ UT_Bool IE_Exp::_closeFile(void)
 	  gnome_vfs_close (m_fp);
 #endif
 	m_fp = 0;
-	return UT_TRUE;
+	return true;
 }
 
 void IE_Exp::_abortFile(void)
@@ -233,7 +233,7 @@ void IE_Exp::write(const char * sz)
 		return;
 
 	if (m_pByteBuf)
-		m_error |= (m_pByteBuf->append((UT_Byte *)sz,strlen(sz)) != UT_TRUE);
+		m_error |= (m_pByteBuf->append((UT_Byte *)sz,strlen(sz)) != true);
 	else
 		m_error |= ! _writeBytes((UT_Byte *)sz);
 
@@ -246,7 +246,7 @@ void IE_Exp::write(const char * sz, UT_uint32 length)
 		return;
 
 	if (m_pByteBuf)
-		m_error |= (m_pByteBuf->append((UT_Byte *)sz,length) != UT_TRUE);
+		m_error |= (m_pByteBuf->append((UT_Byte *)sz,length) != true);
 	else
 		m_error |= (_writeBytes((UT_Byte *)sz,length) != length);
 	
@@ -333,7 +333,7 @@ UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
  	return ((*ppie) ? UT_OK : UT_IE_NOMEMORY);
 }
 
-UT_Bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
+bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
 								   const char ** pszDesc,
 								   const char ** pszSuffixList,
 								   IEFileType * ft)
@@ -341,7 +341,7 @@ UT_Bool IE_Exp::enumerateDlgLabels(UT_uint32 ndx,
 	if (ndx < NrElements(s_expTable))
 		return s_expTable[ndx].fpGetDlgLabels(pszDesc,pszSuffixList,ft);
 
-	return UT_FALSE;
+	return false;
 }
 
 UT_uint32 IE_Exp::getExporterCount(void)

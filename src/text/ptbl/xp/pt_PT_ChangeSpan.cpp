@@ -45,7 +45,7 @@
 /****************************************************************/
 /****************************************************************/
 
-UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
+bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
 									  PT_AttrPropIndex indexNewAP,
 									  pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd)
 {
@@ -86,7 +86,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 				// besides _unlinkFrag() doesn't look at it and we're going to delete it.
 				_unlinkFrag(pft,ppfNewEnd,pfragOffsetNewEnd);
 				delete pft;
-				return UT_TRUE;
+				return true;
 			}
 		}
 
@@ -107,7 +107,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 				// besides _unlinkFrag() doesn't look at it and we're going to delete it.
 				_unlinkFrag(pft,ppfNewEnd,pfragOffsetNewEnd);
 				delete pft;
-				return UT_TRUE;
+				return true;
 			}
 		}
 
@@ -117,7 +117,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 		SETP(ppfNewEnd, pft->getNext());
 		SETP(pfragOffsetNewEnd, 0);
 		
-		return UT_TRUE;
+		return true;
 	}
 
 	if (fragOffset == 0)
@@ -149,7 +149,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 				SETP(ppfNewEnd, pft);
 				SETP(pfragOffsetNewEnd, 0);
 		
-				return UT_TRUE;
+				return true;
 			}
 		}
 
@@ -157,7 +157,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 		
 		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_1,len_1,indexNewAP,pft->getField());
 		if (!pftNew)
-			return UT_FALSE;
+			return false;
 
 		pft->adjustOffsetLength(bi_2,len_2);
 		m_fragments.insertFrag(pft->getPrev(),pftNew);
@@ -165,7 +165,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 		SETP(ppfNewEnd, pft);
 		SETP(pfragOffsetNewEnd, 0);
 		
-		return UT_TRUE;
+		return true;
 	}
 
 	if (fragOffset+length == pft->getLength())
@@ -194,7 +194,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 				pft->changeLength(len_1);
 				SETP(ppfNewEnd,pftNext);
 				SETP(pfragOffsetNewEnd,len_2);
-				return UT_TRUE;
+				return true;
 			}
 		}
 
@@ -202,7 +202,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 
 		pf_Frag_Text * pftNew = new pf_Frag_Text(this,bi_2,len_2,indexNewAP,pft->getField());
 		if (!pftNew)
-			return UT_FALSE;
+			return false;
 
 		pft->changeLength(len_1);
 		m_fragments.insertFrag(pft,pftNew);
@@ -210,7 +210,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 		SETP(ppfNewEnd, pftNew->getNext());
 		SETP(pfragOffsetNewEnd, 0);
 		
-		return UT_TRUE;
+		return true;
 	}
 
 	// otherwise, change is in the middle of the fragment.  we
@@ -234,10 +234,10 @@ UT_Bool pt_PieceTable::_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, 
 	SETP(ppfNewEnd, pft_3);
 	SETP(pfragOffsetNewEnd, 0);
 		
-	return UT_TRUE;
+	return true;
 }
 	
-UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
+bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 												pf_Frag_Text * pft, UT_uint32 fragOffset,
 												PT_DocPosition dpos,
 												UT_uint32 length,
@@ -254,14 +254,14 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 		UT_DEBUGMSG(("_fmtChangeSpanWithNotify: length==0\n"));
 		SETP(ppfNewEnd, pft->getNext());
 		SETP(pfragOffsetNewEnd, 0);
-		return UT_TRUE;
+		return true;
 	}
 
 	UT_ASSERT(fragOffset+length <= pft->getLength());
 	
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
-	UT_Bool bMerged;
+	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
@@ -278,7 +278,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 			SETP(pfragOffsetNewEnd, fragOffset+length);
 		}
 		
-		return UT_TRUE;
+		return true;
 	}
 	
 	// we do this before the actual change because various fields that
@@ -293,7 +293,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 										 m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
 										 length,blockOffset);
 	UT_ASSERT(pcr);
-	UT_Bool bResult = _fmtChangeSpan(pft,fragOffset,length,indexNewAP,ppfNewEnd,pfragOffsetNewEnd);
+	bool bResult = _fmtChangeSpan(pft,fragOffset,length,indexNewAP,ppfNewEnd,pfragOffsetNewEnd);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcr);
@@ -302,7 +302,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	return bResult;
 }
 
-UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
+bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 									 PT_DocPosition dpos1,
 									 PT_DocPosition dpos2,
 									 const XML_Char ** attributes,
@@ -314,21 +314,21 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
     _tweakFieldSpan(dpos1,dpos2);
 	if (dpos1 == dpos2) 		// if length of change is zero, then we have a toggle format.
 	{
-		UT_Bool bRes = _insertFmtMarkFragWithNotify(ptc,dpos1,attributes,properties);
+		bool bRes = _insertFmtMarkFragWithNotify(ptc,dpos1,attributes,properties);
 		// Won't be a persistant change if it's just a toggle
 		PX_ChangeRecord *pcr=0;
 		m_history.getUndo(&pcr);
 		if (pcr)
 		{
 			UT_DEBUGMSG(("Setting persistance of change to false\n"));
-			pcr->setPersistance(UT_FALSE);
+			pcr->setPersistance(false);
 			m_history.setSavePosition(m_history.getSavePosition()+1);
 		}
 		return bRes;
 	}
 	
 	UT_ASSERT(dpos1 < dpos2);
-	UT_Bool bHaveAttributes, bHaveProperties;
+	bool bHaveAttributes, bHaveProperties;
 	bHaveAttributes = (attributes && *attributes);
 	bHaveProperties = (properties && *properties);
 	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
@@ -338,7 +338,7 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	PT_BlockOffset fragOffset_First;
 	PT_BlockOffset fragOffset_End;
 
-	UT_Bool bFound;
+	bool bFound;
 	bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_ASSERT(bFound);
 
@@ -347,8 +347,8 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		pf_Frag * pf1, * pf2;
 		PT_BlockOffset fo1, fo2;
 
-		UT_Bool bFound1 = getFragFromPosition(dpos1,&pf1,&fo1);
-		UT_Bool bFound2 = getFragFromPosition(dpos2,&pf2,&fo2);
+		bool bFound1 = getFragFromPosition(dpos1,&pf1,&fo1);
+		bool bFound2 = getFragFromPosition(dpos2,&pf2,&fo2);
 		UT_ASSERT(bFound1 && bFound2);
 		UT_ASSERT((pf1==pf_First) && (fragOffset_First==fo1));
 		UT_ASSERT((pf2==pf_End) && (fragOffset_End==fo2));
@@ -369,7 +369,7 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	// NOTE: endMultiStepGlob() before we return -- otherwise,
 	// NOTE: the undo/redo won't be properly bracketed.
 
-	UT_Bool bSimple = (pf_First == pf_End);
+	bool bSimple = (pf_First == pf_End);
 	if (!bSimple)
 		beginMultiStepGlob();
 
@@ -390,7 +390,7 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 		case pf_Frag::PFT_EndOfDoc:
 		default:
 			UT_ASSERT(0);
-			return UT_FALSE;
+			return false;
 			
 		case pf_Frag::PFT_Strux:
 			{
@@ -407,12 +407,12 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			{
 				if (!pfsContainer)
 				{
-					UT_Bool bFoundStrux;
+					bool bFoundStrux;
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
 				}
 
-				UT_Bool bResult;
+				bool bResult;
 				bResult	= _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf_First),
 											   fragOffset_First,dpos1,lengthThisStep,
 											   attributes,properties,
@@ -425,12 +425,12 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			{
 				if (!pfsContainer)
 				{
-					UT_Bool bFoundStrux;
+					bool bFoundStrux;
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
 				}
 
-				UT_Bool bResult;
+				bool bResult;
 				bResult	= _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf_First),
 												 fragOffset_First,dpos1,lengthThisStep,
 												 attributes,properties,
@@ -443,12 +443,12 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			{
 				if (!pfsContainer)
 				{
-					UT_Bool bFoundStrux;
+					bool bFoundStrux;
 					bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 					UT_ASSERT(bFoundStrux);
 				}
 
-				UT_Bool bResult;
+				bool bResult;
 				bResult = _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf_First),
 												  dpos1, attributes,properties,
 												  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
@@ -476,5 +476,5 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	if (!bSimple)
 		endMultiStepGlob();
 		
-	return UT_TRUE;
+	return true;
 }

@@ -36,13 +36,13 @@ static UT_Byte s_inverse(UT_Byte b)
 	if (b == '/') return 63;
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_FALSE;
+	return false;
 }
 
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
+bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 {
 	// Base64 encode the raw (presumed binary) data in pSrc into pDest.
 	// return false if error.
@@ -53,13 +53,13 @@ UT_Bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 	
 	UT_uint32 lenSrc = pSrc->getLength();
 	if (lenSrc == 0)						// empty source buffer yields empty output buffer.
-		return UT_TRUE;
+		return true;
 
 	// compute the amount of space needed in the destination and reserve space for it in advance.
 	
 	UT_uint32 lenDest = (lenSrc + 2) / 3 * 4;
 	if (!pDest->ins(0,lenDest))
-		return UT_FALSE;
+		return false;
 
 	UT_uint32 kSrc, kDest;
 	const UT_Byte * p = pSrc->getPointer(0);
@@ -82,10 +82,10 @@ UT_Bool UT_Base64Encode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 		pDest->overwrite(kDest,dd,4);
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
+bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 {
 	// decode the Base64 data in pSrc into pDest.
 	// return false if error.
@@ -96,7 +96,7 @@ UT_Bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 
 	UT_uint32 lenSrc = pSrc->getLength();
 	if (lenSrc == 0)						// empty source buffer yields empty output buffer.
-		return UT_TRUE;
+		return true;
 
 	UT_ASSERT((lenSrc % 4) == 0);			// encoded data must consists of quads
 
@@ -118,7 +118,7 @@ UT_Bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 	// reserve space in the destination in advance.
 	
 	if (!pDest->ins(0,lenDest))
-		return UT_FALSE;
+		return false;
 
 	UT_uint32 kSrc, kDest;
 
@@ -126,8 +126,8 @@ UT_Bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 	{
 		// decode each group of 4 bytes in the input into 3 bytes in the output.
 
-		UT_Bool bHave2 = ((kSrc+2) < lenSrc);
-		UT_Bool bHave3 = ((kSrc+3) < lenSrc);
+		bool bHave2 = ((kSrc+2) < lenSrc);
+		bool bHave3 = ((kSrc+3) < lenSrc);
 		
 		UT_Byte s1 =            s_inverse(p[kSrc  ]);
 		UT_Byte s2 =            s_inverse(p[kSrc+1]);
@@ -144,7 +144,7 @@ UT_Bool UT_Base64Decode(UT_ByteBuf * pDest, const UT_ByteBuf * pSrc)
 		pDest->overwrite(kDest,dd, (1 + bHave2 + bHave3));
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 	

@@ -40,7 +40,7 @@ ap_ViewListener::~ap_ViewListener()
 {
 }
 
-UT_Bool ap_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
+bool ap_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView);
 	UT_ASSERT(pView==m_pFrame->getCurrentView());
@@ -51,6 +51,6 @@ UT_Bool ap_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 		m_pFrame->updateTitle();
 	}
 
-	return UT_TRUE;
+	return true;
 }
 

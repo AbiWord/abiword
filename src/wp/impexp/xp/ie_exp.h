@@ -55,7 +55,7 @@ public:
 						  IEFileType ieft,
 						  IE_Exp ** ppie,
 						  IEFileType * pieft = NULL);
-	static UT_Bool		enumerateDlgLabels(UT_uint32 ndx,
+	static bool		enumerateDlgLabels(UT_uint32 ndx,
 						   const char ** pszDesc,
 						   const char ** pszSuffixList,
 						   IEFileType * ft);
@@ -76,10 +76,10 @@ protected:
 	// derived classes should use these to open/close
 	// and write data to the actual file.  this will
 	// let us handle file backups, etc.
-	virtual UT_Bool		_openFile(const char * szFilename);
+	virtual bool		_openFile(const char * szFilename);
 	virtual UT_uint32	_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
-	virtual UT_Bool		_writeBytes(const UT_Byte * sz);
-	virtual UT_Bool		_closeFile(void);
+	virtual bool		_writeBytes(const UT_Byte * sz);
+	virtual bool		_closeFile(void);
 	virtual void		_abortFile(void);
 	
 	PD_Document *		m_pDocument;
@@ -87,7 +87,7 @@ protected:
 	UT_ByteBuf *		m_pByteBuf;
 
 public:
-	UT_Bool				m_error;
+	bool				m_error;
 
 private:
 

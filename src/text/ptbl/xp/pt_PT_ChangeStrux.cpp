@@ -41,26 +41,26 @@
 /****************************************************************/
 /****************************************************************/
 
-UT_Bool pt_PieceTable::_fmtChangeStrux(pf_Frag_Strux * pfs,
+bool pt_PieceTable::_fmtChangeStrux(pf_Frag_Strux * pfs,
 									   PT_AttrPropIndex indexNewAP)
 {
 	pfs->setIndexAP(indexNewAP);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
+bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 												 pf_Frag_Strux * pfs,
 												 const XML_Char ** attributes,
 												 const XML_Char ** properties)
 {
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
-	UT_Bool bMerged;
+	bool bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
-		return UT_TRUE;
+		return true;
 
 	// convert this fragStrux into a doc position.  we add the length
 	// of the strux (in doc position coords) so that when undo looks
@@ -76,7 +76,7 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 										  indexOldAP,indexNewAP);
 	UT_ASSERT(pcr);
 
-	UT_Bool bResult;
+	bool bResult;
 	bResult = _fmtChangeStrux(pfs,indexNewAP);
 	UT_ASSERT(bResult);
 
@@ -84,10 +84,10 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
+bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 									  PT_DocPosition dpos1,
 									  PT_DocPosition dpos2,
 									  const XML_Char ** attributes,
@@ -99,7 +99,7 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 	// apply a strux-level formatting change to the given region.
 
 	UT_ASSERT(dpos1 <= dpos2);
-	UT_Bool bHaveAttributes, bHaveProperties;
+	bool bHaveAttributes, bHaveProperties;
 	bHaveAttributes = (attributes && *attributes);
 	bHaveProperties = (properties && *properties);
 	UT_ASSERT(bHaveAttributes || bHaveProperties); // must have something to do
@@ -110,9 +110,9 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 	// look backwards and find the containing strux of the given
 	// type for both end points of the change.
 	
-	UT_Bool bFoundFirst;
+	bool bFoundFirst;
 	bFoundFirst = _getStruxOfTypeFromPosition(dpos1,pts,&pfs_First);
-	UT_Bool bFoundEnd;
+	bool bFoundEnd;
 	bFoundEnd = _getStruxOfTypeFromPosition(dpos2,pts,&pfs_End);
 	UT_ASSERT(bFoundFirst && bFoundEnd);
 	
@@ -123,13 +123,13 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 	// NOTE: endMultiStepGlob() before we return -- otherwise,
 	// NOTE: the undo/redo won't be properly bracketed.
 
-	UT_Bool bApplyStyle = (ptc == PTC_AddStyle);
-	UT_Bool bSimple = (!bApplyStyle && (pfs_First == pfs_End));
+	bool bApplyStyle = (ptc == PTC_AddStyle);
+	bool bSimple = (!bApplyStyle && (pfs_First == pfs_End));
 	if (!bSimple)
 		beginMultiStepGlob();
 
 	pf_Frag * pf = pfs_First;
-	UT_Bool bFinished = UT_FALSE;
+	bool bFinished = false;
 
 	if (!bApplyStyle)
 	{
@@ -141,19 +141,19 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_EndOfDoc:
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 				
 			case pf_Frag::PFT_Strux:
 				{
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 					if (pfs->getStruxType() == pts)
 					{
-						UT_Bool bResult;
+						bool bResult;
 						bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties);
 						UT_ASSERT(bResult);
 					}
 					if (pfs == pfs_End)
-						bFinished = UT_TRUE;
+						bFinished = true;
 				}
 				break;
 
@@ -177,7 +177,7 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 		pf_Frag * pfNewEnd;
 		UT_uint32 fragOffsetNewEnd;
 		
-		UT_Bool bEndSeen = UT_FALSE;
+		bool bEndSeen = false;
 
 		while (!bFinished)
 		{
@@ -187,12 +187,12 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 			{
 			case pf_Frag::PFT_EndOfDoc:
 				UT_ASSERT(bEndSeen);
-				bFinished = UT_TRUE;
+				bFinished = true;
 				break;
 
 			default:
 				UT_ASSERT(0);
-				return UT_FALSE;
+				return false;
 				
 			case pf_Frag::PFT_Strux:
 				{
@@ -201,21 +201,21 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 					pfsContainer = static_cast<pf_Frag_Strux *> (pf);
 					if (!bEndSeen && (pfsContainer->getStruxType() == pts))
 					{
-						UT_Bool bResult;
+						bool bResult;
 						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,properties);
 						UT_ASSERT(bResult);
 					}
 
 					if (pfsContainer == pfs_End)
-						bEndSeen = UT_TRUE;
+						bEndSeen = true;
 					else if (bEndSeen)
-						bFinished = UT_TRUE;
+						bFinished = true;
 				}
 				break;
 
 			case pf_Frag::PFT_Text:
 				{
-					UT_Bool bResult;
+					bool bResult;
 					bResult = _fmtChangeSpanWithNotify(ptc,static_cast<pf_Frag_Text *>(pf),
 												   0,dpos,lengthThisStep,
 												   NULL,NULL,
@@ -235,7 +235,7 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_Object:
 				{
-					UT_Bool bResult;
+					bool bResult;
 					bResult = _fmtChangeObjectWithNotify(ptc,static_cast<pf_Frag_Object *>(pf),
 													 0,dpos,lengthThisStep,
 													 NULL,NULL,
@@ -247,7 +247,7 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_FmtMark:
 				{
-					UT_Bool bResult;
+					bool bResult;
 				 	bResult = _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf),
 													  dpos, NULL,NULL,
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
@@ -266,13 +266,13 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 			pf = pfNewEnd;
 			if (!pf)
-				bFinished = UT_TRUE;
+				bFinished = true;
 		}
 	}
 
 	if (!bSimple)
 		endMultiStepGlob();
 		
-	return UT_TRUE;
+	return true;
 }
 

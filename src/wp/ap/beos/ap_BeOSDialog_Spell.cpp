@@ -80,7 +80,7 @@ class SpellWin:public BWindow {
 				
 		void _showMisspelledWord();
 		void _suggestChange();
-		void _toggleChangeButtons(UT_Bool shouldShow);
+		void _toggleChangeButtons(bool shouldShow);
 		void _change();
 		void _tryAgain();
 		void _changeAll();
@@ -114,7 +114,7 @@ void SpellWin::SetDlg(AP_BeOSDialog_Spell *dlg)
 	badText.blue = badText.green = 0;
 	badText.alpha = 255;
 	
-	UT_Bool bRes = m_DlgSpell->nextMisspelledWord();
+	bool bRes = m_DlgSpell->nextMisspelledWord();
 	if(!bRes)
 		return;
 		
@@ -196,7 +196,7 @@ void SpellWin::_tryAgain(void)
 	}
 
 	// what's next
-	UT_Bool bRes = m_DlgSpell->nextMisspelledWord();
+	bool bRes = m_DlgSpell->nextMisspelledWord();
 
 	if (bRes)
 	{
@@ -317,7 +317,7 @@ void SpellWin::_showMisspelledWord(void)
 		BStringItem* emptyItem = new BStringItem(pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
 		suggestList->AddItem(emptyItem);
 		m_DlgSpell->m_iSelectedRow = -1;
-		_toggleChangeButtons(UT_FALSE);
+		_toggleChangeButtons(false);
 	} 
 	else 
 	{
@@ -336,7 +336,7 @@ void SpellWin::_showMisspelledWord(void)
 		}
 
 		m_DlgSpell->m_iSelectedRow = 0;
-		_toggleChangeButtons(UT_TRUE);
+		_toggleChangeButtons(true);
 	}
 
 	suggestList->Select(0);
@@ -419,7 +419,7 @@ void SpellWin::DispatchMessage(BMessage *msg, BHandler *handler)
 		}
 		
 		// The user is editing it so, enable the change button.
-		_toggleChangeButtons(UT_TRUE);
+		_toggleChangeButtons(true);
 		
 		suggestList->DeselectAll();
 		m_DlgSpell->m_iSelectedRow = -1;
@@ -439,7 +439,7 @@ bool SpellWin::QuitRequested()
 	return(true);
 }
 
-void SpellWin::_toggleChangeButtons(UT_Bool shouldShow)
+void SpellWin::_toggleChangeButtons(bool shouldShow)
 {
 	BButton *change, *changeall;
 	change = (BButton *)FindView("change");
@@ -474,7 +474,7 @@ void AP_BeOSDialog_Spell::runModal(XAP_Frame * pFrame)
    // call the base class method to initialize some basic xp stuff
    AP_Dialog_Spell::runModal(pFrame);
 
-   m_bCancelled = UT_FALSE;
+   m_bCancelled = false;
 
 	BMessage msg;
         SpellWin  *newwin;

@@ -34,7 +34,7 @@ public:
 	ev_QNXKeyboard(EV_EditEventMapper * pEEM);
 	virtual ~ev_QNXKeyboard(void);
 
-	UT_Bool keyPressEvent(AV_View * pView, PtCallbackInfo_t * e);
+	bool keyPressEvent(AV_View * pView, PtCallbackInfo_t * e);
 
 };
 

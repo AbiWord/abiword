@@ -44,7 +44,7 @@ void EV_Keyboard::setEditEventMap(EV_EditEventMapper * pEEM)
 	m_pEEM = pEEM;
 }
 
-UT_Bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
+bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 										  EV_EditMethod * pEM,
 										  UT_UCSChar * pData,
 										  UT_uint32 dataLength)
@@ -67,13 +67,13 @@ UT_Bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 	{
 		// This method requires character data and the caller did not provide any.
 		UT_DEBUGMSG(("    invoke aborted due to lack of data\n"));
-		return UT_FALSE;
+		return false;
 	}
 
 	EV_EditMethodCallData emcd(pData,dataLength);
 	(*pEM->getFn())(pView,&emcd);
 
-	return UT_TRUE;
+	return true;
 }
 
 

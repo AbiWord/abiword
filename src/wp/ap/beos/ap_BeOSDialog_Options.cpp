@@ -396,7 +396,7 @@ void AP_BeOSDialog_Options::runModal(XAP_Frame * pFrame)
         }                
 }
 		
-void AP_BeOSDialog_Options::_controlEnable( tControl id, UT_Bool value )
+void AP_BeOSDialog_Options::_controlEnable( tControl id, bool value )
 {
 	newwin->Lock();
 	
@@ -520,11 +520,11 @@ void AP_BeOSDialog_Options::_controlEnable( tControl id, UT_Bool value )
 
 /*
 #define DEFINE_GET_SET_BOOL(button) \
-UT_Bool     AP_BeOSDialog_Options::_gather##button(void) {				\
+bool     AP_BeOSDialog_Options::_gather##button(void) {				\
 	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
 	return gtk_toggle_button_get_active(								\
 				GTK_TOGGLE_BUTTON(m_checkbutton##button) ); }			\
-void        AP_BeOSDialog_Options::_set##button(UT_Bool b) {	\
+void        AP_BeOSDialog_Options::_set##button(bool b) {	\
 	UT_ASSERT(m_checkbutton##button && GTK_IS_BUTTON(m_checkbutton##button)); \
 	gtk_toggle_button_set_active (										\
 				GTK_TOGGLE_BUTTON(m_checkbutton##button), b ); }
@@ -537,7 +537,7 @@ void        AP_BeOSDialog_Options::_set##button(UT_Bool b) {	\
 // which tab is the active one and set the active one to 0, search, 1 , search , 2 , search , restore.
 
 #define DEFINE_GET_SET_BOOL(button , chartitle) \
-UT_Bool     AP_BeOSDialog_Options::_gather##button(void) \
+bool     AP_BeOSDialog_Options::_gather##button(void) \
 {\
 	BCheckBox* pBox;	\
 	BTabView* pView = (BTabView *)newwin->FindView("TabView"); \
@@ -556,26 +556,26 @@ UT_Bool     AP_BeOSDialog_Options::_gather##button(void) \
 	if(pBox) \
 		return (pBox->Value() == B_CONTROL_ON);\
 	\
-	return UT_FALSE;\
+	return false;\
 } \
-void        AP_BeOSDialog_Options::_set##button(UT_Bool b) \
+void        AP_BeOSDialog_Options::_set##button(bool b) \
 { \
 	BCheckBox* pBox;\
 	BTabView* pView = (BTabView *)newwin->FindView("TabView"); \
 	pBox = (BCheckBox *)newwin->FindView(chartitle); \
 	if(pBox) \
-		return pBox->SetValue( (b == UT_TRUE )); \
+		return pBox->SetValue( (b == true )); \
 	pBox = (BCheckBox *)pView->TabAt(0)->View()->FindView(chartitle); \
 	if(pBox) \
-		return pBox->SetValue( (b == UT_TRUE )); \
+		return pBox->SetValue( (b == true )); \
 \
 	pBox = (BCheckBox *)pView->TabAt(1)->View()->FindView(chartitle);\
 	if(pBox) \
-		return pBox->SetValue( (b == UT_TRUE )); \
+		return pBox->SetValue( (b == true )); \
 \
 	pBox = (BCheckBox *)pView->TabAt(2)->View()->FindView(chartitle);\
 	if(pBox) \
-		return pBox->SetValue( (b == UT_TRUE )); \
+		return pBox->SetValue( (b == true )); \
 } 
 
 DEFINE_GET_SET_BOOL(SpellCheckAsType , "SpellCheckAsType");

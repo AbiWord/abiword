@@ -55,7 +55,7 @@ public:
     */
     virtual const char* getNativeEncodingName() const;
 
-	inline virtual UT_Bool isUnicodeLocale() const {return m_bIsUnicodeLocale;}
+	inline virtual bool isUnicodeLocale() const {return m_bIsUnicodeLocale;}
 
     /*
 	This shouldn't return NULL. Don't free or write to returned string. 

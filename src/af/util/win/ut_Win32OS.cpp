@@ -22,9 +22,9 @@
 #include "ut_assert.h"
 #include "ut_Win32OS.h"
 
-UT_Bool UT_IsWinNT(void)
+bool UT_IsWinNT(void)
 {
-	static UT_Bool bInitialized = UT_FALSE;
+	static bool bInitialized = false;
 	static OSVERSIONINFO os;
 
 	if (!bInitialized)
@@ -32,7 +32,7 @@ UT_Bool UT_IsWinNT(void)
 		os.dwOSVersionInfoSize = sizeof(os);
 		BOOL bSuccess = GetVersionEx(&os);
 		UT_ASSERT(bSuccess);
-		bInitialized = UT_TRUE;
+		bInitialized = true;
 	}
 
 	return (os.dwPlatformId == VER_PLATFORM_WIN32_NT);

@@ -207,24 +207,24 @@ EV_EditBinding * EV_EditBindingMap::findEditBinding(EV_EditBits eb)
 	return 0;
 }
 
-UT_Bool EV_EditBindingMap::setBinding(EV_EditBits eb, const char * szMethodName)
+bool EV_EditBindingMap::setBinding(EV_EditBits eb, const char * szMethodName)
 {
 	EV_EditMethod * pem = m_pemc->findEditMethodByName(szMethodName);
 	if (!pem)
 	{
 		UT_DEBUGMSG(("Unknown method name [%s] in binding table.\n",szMethodName));
 		UT_ASSERT(pem);				// TODO remove this and find a better way of doing a spelling-check...
-		return UT_FALSE;
+		return false;
 	}
 
 	EV_EditBinding * peb = new EV_EditBinding(pem);
 	if (!peb)
-		return UT_FALSE;
+		return false;
 
 	return setBinding(eb,peb);
 }
 
-UT_Bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
+bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 {
 	// this handles keyboard (nvk and char) and mouse.
 	// return false if the given location is already bound.
@@ -238,15 +238,15 @@ UT_Bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 			m_pebMT[n_emb] = new ev_EB_MouseTable();
 			p = m_pebMT[n_emb];
 			if (!p)
-				return UT_FALSE;
+				return false;
 		}
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb)-1;
 		if (p->m_peb[n_emo][n_ems][n_emc])
-			return UT_FALSE;
+			return false;
 		p->m_peb[n_emo][n_ems][n_emc] = peb;
-		return UT_TRUE;
+		return true;
 	}
 	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
 	{
@@ -256,14 +256,14 @@ UT_Bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 			{
 				m_pebNVK = new ev_EB_NVK_Table();
 				if (!m_pebNVK)
-					return UT_FALSE;
+					return false;
 			}
 			UT_uint32 n_nvk = EV_NVK_ToNumber(eb);
 			UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 			if (m_pebNVK->m_peb[n_nvk][n_ems])
-				return UT_FALSE;
+				return false;
 			m_pebNVK->m_peb[n_nvk][n_ems] = peb;
-			return UT_TRUE;
+			return true;
 		}
 		else							// a non-nvk -- regular char
 		{
@@ -271,22 +271,22 @@ UT_Bool EV_EditBindingMap::setBinding(EV_EditBits eb, EV_EditBinding * peb)
 			{
 				m_pebChar = new ev_EB_Char_Table();
 				if (!m_pebChar)
-					return UT_FALSE;
+					return false;
 			}
 			UT_uint32 n_evk = EV_EVK_ToNumber(eb);
 			UT_ASSERT(n_evk < 256);		// TODO see note [1] above.
 			UT_uint32 n_ems = EV_EMS_ToNumberNoShift(eb);
 			if (m_pebChar->m_peb[n_evk][n_ems])
-				return UT_FALSE;
+				return false;
 			m_pebChar->m_peb[n_evk][n_ems] = peb;
-			return UT_TRUE;
+			return true;
 		}
 	}
 	UT_ASSERT(0);
 	return 0;
 }
 
-UT_Bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
+bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 {
 	// this handles keyboard (nvk and char) and mouse.
 	// remove the binding from the map.
@@ -298,33 +298,33 @@ UT_Bool EV_EditBindingMap::removeBinding(EV_EditBits eb)
 		UT_uint32 n_emb = EV_EMB_ToNumber(eb)-1;
 		class ev_EB_MouseTable * p = m_pebMT[n_emb];
 		if (!p)
-			return UT_FALSE;
+			return false;
 		UT_uint32 n_emo = EV_EMO_ToNumber(eb)-1;
 		UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 		UT_uint32 n_emc = EV_EMC_ToNumber(eb)-1;
 		p->m_peb[n_emo][n_ems][n_emc] = 0;
-		return UT_TRUE;
+		return true;
 	}
 	else if (EV_IsKeyboard(eb))			// a keyevent, find out what kind
 	{
 		if (eb & EV_EKP_NAMEDKEY)		// nvk
 		{
 			if (!m_pebNVK)
-				return UT_FALSE;
+				return false;
 			UT_uint32 n_nvk = EV_NVK_ToNumber(eb);
 			UT_uint32 n_ems = EV_EMS_ToNumber(eb);
 			m_pebNVK->m_peb[n_nvk][n_ems] = 0;
-			return UT_TRUE;
+			return true;
 		}
 		else							// a non-nvk -- regular char
 		{
 			if (!m_pebChar)
-				return UT_FALSE;
+				return false;
 			UT_uint32 n_evk = EV_EVK_ToNumber(eb);
 			UT_ASSERT(n_evk < 256);		// TODO see note [1] above.
 			UT_uint32 n_ems = EV_EMS_ToNumberNoShift(eb);
 			m_pebChar->m_peb[n_evk][n_ems] = 0;
-			return UT_TRUE;
+			return true;
 		}
 	}
 	UT_ASSERT(0);
@@ -342,7 +342,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	UT_uint32 i, j;
 
 	// search characters first
-	UT_Bool bChar = UT_FALSE;
+	bool bChar = false;
 
 	for (i=0; (i < 256) && !bChar; i++)
 		for (j=0; j < EV_COUNT_EMS_NoShift; j++)
@@ -355,14 +355,14 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 					(pEB->getMethod() == pEM))
 				{
 					// bingo
-					bChar = UT_TRUE;
+					bChar = true;
 
 					ems = EV_EMS_FromNumberNoShift(j);
 					break;
 				}
 			}
 
-	UT_Bool bNVK = UT_FALSE;
+	bool bNVK = false;
 
 	if (!bChar)
 	{
@@ -378,7 +378,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 						(pEB->getMethod() == pEM))
 					{
 						// bingo
-						bNVK = UT_TRUE;
+						bNVK = true;
 
 						ems = EV_EMS_FromNumber(j);
 						break;
@@ -439,10 +439,10 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 	return buf;
 }
 	
-UT_Bool EV_EditBindingMap::parseEditBinding(void)
+bool EV_EditBindingMap::parseEditBinding(void)
 {
 	/* TODO here we import a binding from a primitive ascii format
 	** TODO or XML syntax.
 	*/
-	return UT_FALSE;
+	return false;
 }

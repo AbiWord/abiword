@@ -53,7 +53,7 @@ public:
 	// to set or read the variables in the current
 	// instance of the dialog.  These do not read the persistent
 	// values.
-  	UT_Bool						setView(FV_View * view);
+  	bool						setView(FV_View * view);
   	FV_View * 					getView(void);
 	void                                            setActiveFrame(XAP_Frame *pFrame);
 	static char **              getJumpTargets(void); // TODO: Change to UT_UCSChar

@@ -57,7 +57,7 @@ XAP_Dialog* AP_Win32Dialog_PageSetup::static_constructor(XAP_DialogFactory* pDlg
 
 static const POINT _getPaperSizeFromDlg(const AP_Dialog_PageSetup& dlg)
 {
-	UT_Bool bPageIsInches	= dlg.getPageUnits() == fp_PageSize::inch;
+	bool bPageIsInches	= dlg.getPageUnits() == fp_PageSize::inch;
 	float pageScaleFactor	= bPageIsInches ? 1000.0f : 100.0f;
 	fp_PageSize::Unit pageUnit   = bPageIsInches ? fp_PageSize::inch : fp_PageSize::mm;
 
@@ -72,7 +72,7 @@ static const POINT _getPaperSizeFromDlg(const AP_Dialog_PageSetup& dlg)
 
 static const RECT _getMarginRectFromDlg(const AP_Dialog_PageSetup& dlg)
 {
-	UT_Bool bMarginIsInches	= dlg.getMarginUnits()	== fp_PageSize::inch;
+	bool bMarginIsInches	= dlg.getMarginUnits()	== fp_PageSize::inch;
 	float marginScaleFactor	= bMarginIsInches ? 1000.0f : 100.0f;
 
 	const RECT rcMargin =
@@ -124,7 +124,7 @@ static void _initDevModeFromDlg(HGLOBAL hDevMode, const AP_Dialog_PageSetup& dlg
 
 static void _setDlgFromPSD(AP_Dialog_PageSetup& dlg, const PAGESETUPDLG& psd)
 {
-	const UT_Bool bPageIsInches = (psd.Flags & PSD_INTHOUSANDTHSOFINCHES) != 0;
+	const bool bPageIsInches = (psd.Flags & PSD_INTHOUSANDTHSOFINCHES) != 0;
 	const float pageScaleFactor	= bPageIsInches ? 1000.0f : 100.0f;
 	dlg.setPageUnits(bPageIsInches ? fp_PageSize::inch : fp_PageSize::mm);
 	dlg.setMarginUnits(dlg.getPageUnits());
@@ -173,7 +173,7 @@ void AP_Win32Dialog_PageSetup::runModal(XAP_Frame *pFrame)
 	PageSetupDlg(&psd);
 
 	// Windows only supports mm or inches, why we only check for DIM_IN
-	UT_Bool bPageIsInches	= getPageUnits()	== fp_PageSize::inch;
+	bool bPageIsInches	= getPageUnits()	== fp_PageSize::inch;
 
 	const POINT ptPaperSize	= _getPaperSizeFromDlg(*this);
 	const RECT rcMargin		= _getMarginRectFromDlg(*this);

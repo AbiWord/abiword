@@ -162,7 +162,7 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 	m_iWidth = 0;
 	m_iHeight = 0;
 
-	m_bInitFields = UT_FALSE;
+	m_bInitFields = false;
 	
 	// really this should be "static const x = 20;" in the
 	// class declaration, but MSVC5 can't handle it....
@@ -219,7 +219,7 @@ void AP_StatusBar::setView(AV_View * pView)
 		// TODO add other fields
 
 #undef DclField
-		m_bInitFields = UT_TRUE;
+		m_bInitFields = true;
 	}
 
 	// force a full notify of all fields so that they all
@@ -250,7 +250,7 @@ UT_uint32 AP_StatusBar::getWidth(void) const
 	return m_iWidth;
 }
 
-UT_Bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
+bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	// Handle AV_Listener events on the view.	
 
@@ -275,7 +275,7 @@ UT_Bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 		pf->notify(pView,mask);
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 void AP_StatusBar::draw(void)

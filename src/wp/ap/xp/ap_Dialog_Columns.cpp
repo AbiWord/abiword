@@ -36,7 +36,7 @@ AP_Dialog_Columns::AP_Dialog_Columns(XAP_DialogFactory * pDlgFactory, XAP_Dialog
 
 	m_answer = a_OK;
 	m_pColumnsPreview = NULL;
-	m_bLineBetween = UT_FALSE;
+	m_bLineBetween = false;
 }
 
 AP_Dialog_Columns::~AP_Dialog_Columns(void)
@@ -75,7 +75,7 @@ void AP_Dialog_Columns::setColumns(UT_uint32 iColumns)
 	enableLineBetweenControl(m_iColumns != 1);
 }
 
-void AP_Dialog_Columns::setLineBetween(UT_Bool bState)
+void AP_Dialog_Columns::setLineBetween(bool bState)
 {
 	m_bLineBetween = bState;
 
@@ -93,7 +93,7 @@ void AP_Dialog_Columns::_drawColumnButton(GR_Graphics *gc, UT_Rect rect, UT_uint
 	rect.top += 2;
 	rect.height -= 4;
 
-	m_previewDrawer.draw(gc, rect, iColumns, UT_FALSE);
+	m_previewDrawer.draw(gc, rect, iColumns, false);
 }
 
 	
@@ -138,7 +138,7 @@ void AP_Columns_preview::draw(void)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, UT_Bool bLineBetween)
+void AP_Columns_preview_drawer::draw(GR_Graphics *gc, UT_Rect &rect, UT_sint32 iColumns, bool bLineBetween)
 {
 
 	UT_sint32 iHalfColumnGap = rect.width / 20;

@@ -56,11 +56,11 @@
 /****************************************************************/
 /****************************************************************/
 
-typedef UT_Bool (*ap_LoadBindings_pFn)(AP_BindingSet * pThis, EV_EditBindingMap * pebm);
+typedef bool (*ap_LoadBindings_pFn)(AP_BindingSet * pThis, EV_EditBindingMap * pebm);
 
 struct _lb
 {
-	UT_Bool						m_bCanCycle;	// visible to CycleInputMode
+	bool						m_bCanCycle;	// visible to CycleInputMode
 	const char *				m_name;
 	ap_LoadBindings_pFn			m_fn;
 	EV_EditBindingMap *			m_pebm;			// must be deleted
@@ -68,30 +68,30 @@ struct _lb
 
 static struct _lb s_lbTable[] =
 {
-	{	UT_TRUE,  "default",			ap_LoadBindings_Default,			NULL	}, // stock AbiWord bindings
-	{   UT_TRUE,  "emacs",				ap_LoadBindings_Emacs,              NULL    }, // emacs key bindings
-	{   UT_FALSE, "emacsctrlx",			ap_LoadBindings_EmacsCtrlX,         NULL    }, // emacs ctrl-x key bindings
+	{	true,  "default",			ap_LoadBindings_Default,			NULL	}, // stock AbiWord bindings
+	{   true,  "emacs",				ap_LoadBindings_Emacs,              NULL    }, // emacs key bindings
+	{   false, "emacsctrlx",			ap_LoadBindings_EmacsCtrlX,         NULL    }, // emacs ctrl-x key bindings
 
-	{	UT_TRUE,  "viEdit",				ap_LoadBindings_viEdit,				NULL	}, // vi Edit-Mode bindings
-	{	UT_FALSE, "viEdit_colon",		ap_LoadBindings_viEdit_colon,		NULL	}, // vi Edit-Mode :-prefix key bindings
-	{	UT_FALSE, "viEdit_c",			ap_LoadBindings_viEdit_c,			NULL	}, // vi Edit-Mode c-prefix key bindings
-	{	UT_FALSE, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL	}, // vi Edit-Mode d-prefix key bindings
-	{	UT_FALSE, "viEdit_y",			ap_LoadBindings_viEdit_y,			NULL	}, // vi Edit-Mode y-prefix key bindings
-	{	UT_FALSE, "viEdit_r",			ap_LoadBindings_viEdit_r,			NULL	}, // vi Edit-Mode r-prefix key bindings
-	{	UT_FALSE, "viInput",			ap_LoadBindings_viInput,			NULL	}, // vi Input-Mode bindings
+	{	true,  "viEdit",				ap_LoadBindings_viEdit,				NULL	}, // vi Edit-Mode bindings
+	{	false, "viEdit_colon",		ap_LoadBindings_viEdit_colon,		NULL	}, // vi Edit-Mode :-prefix key bindings
+	{	false, "viEdit_c",			ap_LoadBindings_viEdit_c,			NULL	}, // vi Edit-Mode c-prefix key bindings
+	{	false, "viEdit_d",			ap_LoadBindings_viEdit_d,			NULL	}, // vi Edit-Mode d-prefix key bindings
+	{	false, "viEdit_y",			ap_LoadBindings_viEdit_y,			NULL	}, // vi Edit-Mode y-prefix key bindings
+	{	false, "viEdit_r",			ap_LoadBindings_viEdit_r,			NULL	}, // vi Edit-Mode r-prefix key bindings
+	{	false, "viInput",			ap_LoadBindings_viInput,			NULL	}, // vi Input-Mode bindings
 
-	{	UT_FALSE, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL	}, // subordinate maps for 'dead'
-	{	UT_FALSE, "deadacute",			ap_LoadBindings_DeadAcute,			NULL	}, // key prefixes.
-	{	UT_FALSE, "deadbreve",			ap_LoadBindings_DeadBreve,			NULL	},
-	{	UT_FALSE, "deadcaron",			ap_LoadBindings_DeadCaron,			NULL	},
-	{	UT_FALSE, "deadcedilla",		ap_LoadBindings_DeadCedilla,		NULL	},
-	{	UT_FALSE, "deadcircumflex",		ap_LoadBindings_DeadCircumflex,		NULL	},
-	{	UT_FALSE, "deaddiaeresis",		ap_LoadBindings_DeadDiaeresis,		NULL	},
-	{	UT_FALSE, "deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	NULL	},
-	{	UT_FALSE, "deadgrave",			ap_LoadBindings_DeadGrave,			NULL	},
-	{	UT_FALSE, "deadmacron",			ap_LoadBindings_DeadMacron,			NULL	},
-	{	UT_FALSE, "deadogonek",			ap_LoadBindings_DeadOgonek,			NULL	},
-	{	UT_FALSE, "deadtilde",			ap_LoadBindings_DeadTilde,			NULL	},
+	{	false, "deadabovedot",		ap_LoadBindings_DeadAbovedot,		NULL	}, // subordinate maps for 'dead'
+	{	false, "deadacute",			ap_LoadBindings_DeadAcute,			NULL	}, // key prefixes.
+	{	false, "deadbreve",			ap_LoadBindings_DeadBreve,			NULL	},
+	{	false, "deadcaron",			ap_LoadBindings_DeadCaron,			NULL	},
+	{	false, "deadcedilla",		ap_LoadBindings_DeadCedilla,		NULL	},
+	{	false, "deadcircumflex",		ap_LoadBindings_DeadCircumflex,		NULL	},
+	{	false, "deaddiaeresis",		ap_LoadBindings_DeadDiaeresis,		NULL	},
+	{	false, "deaddoubleacute",	ap_LoadBindings_DeadDoubleacute,	NULL	},
+	{	false, "deadgrave",			ap_LoadBindings_DeadGrave,			NULL	},
+	{	false, "deadmacron",			ap_LoadBindings_DeadMacron,			NULL	},
+	{	false, "deadogonek",			ap_LoadBindings_DeadOgonek,			NULL	},
+	{	false, "deadtilde",			ap_LoadBindings_DeadTilde,			NULL	},
 };
 
 /****************************************************************/

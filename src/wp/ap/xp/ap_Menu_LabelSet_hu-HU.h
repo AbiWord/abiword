@@ -30,10 +30,10 @@
 // If your platform doesn't have a way to do accelerators or uses a different
 // character, remove or change the '&' in your menu constructor code.
 
-// If the second argument is UT_TRUE, then this is the fall-back for
+// If the second argument is true, then this is the fall-back for
 // this language (named in the first two letters).
 
-BeginSet(hu,HU,UT_TRUE)
+BeginSet(hu,HU,true)
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,				NULL)
 

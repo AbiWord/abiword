@@ -86,9 +86,9 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	m_pStringSet = NULL;
 	m_pClipboard = NULL;
 
-	m_bHasSelection = UT_FALSE;
-	m_bSelectionInFlux = UT_FALSE;
-	m_cacheDeferClear = UT_FALSE;
+	m_bHasSelection = false;
+	m_bSelectionInFlux = false;
+	m_cacheDeferClear = false;
 	m_pViewSelection = NULL;
 	m_pFrameSelection = NULL;
 	m_cacheSelectionView = NULL;
@@ -102,31 +102,31 @@ AP_UnixApp::~AP_UnixApp(void)
 	DELETEP(m_pClipboard);
 }
 
-static UT_Bool s_createDirectoryIfNecessary(const char * szDir)
+static bool s_createDirectoryIfNecessary(const char * szDir)
 {
 	struct stat statbuf;
 	
 	if (stat(szDir,&statbuf) == 0)								// if it exists
 	{
 		if (S_ISDIR(statbuf.st_mode))							// and is a directory
-			return UT_TRUE;
+			return true;
 
 		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-		return UT_FALSE;
+		return false;
 	}
 	
 	if (mkdir(szDir,0700) == 0)
-		return UT_TRUE;
+		return true;
 	
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-	return UT_FALSE;
+	return false;
 }	
 
-UT_Bool AP_UnixApp::initialize(void)
+bool AP_UnixApp::initialize(void)
 {
 	const char * szUserPrivateDirectory = getUserPrivateDirectory();
-	UT_Bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+	bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
 	UT_ASSERT(bVerified);
 	
 	// load the preferences.
@@ -153,7 +153,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	UT_ASSERT(m_pToolbarActionSet);
 
 	if (! XAP_UNIXBASEAPP::initialize())
-		return UT_FALSE;
+		return false;
 	
 	//////////////////////////////////////////////////////////////////
 	// initializes the spell checker.
@@ -161,7 +161,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	
 	{
 		const char * szISpellDirectory = NULL;
-		getPrefsValueDirectory(UT_FALSE,
+		getPrefsValueDirectory(false,
 				       (const XML_Char*)AP_PREF_KEY_SpellDirectory,
 				       (const XML_Char**)&szISpellDirectory);
 		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
@@ -209,7 +209,7 @@ UT_Bool AP_UnixApp::initialize(void)
 			&& (*szStringSet)
 			&& (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
-			getPrefsValueDirectory(UT_TRUE,
+			getPrefsValueDirectory(true,
 					       (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
 					       (const XML_Char**)&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
@@ -258,7 +258,7 @@ UT_Bool AP_UnixApp::initialize(void)
 
 	//////////////////////////////////////////////////////////////////
 
-	return UT_TRUE;
+	return true;
 }
 
 XAP_Frame * AP_UnixApp::newFrame(void)
@@ -271,28 +271,28 @@ XAP_Frame * AP_UnixApp::newFrame(void)
 	return pUnixFrame;
 }
 
-UT_Bool AP_UnixApp::shutdown(void)
+bool AP_UnixApp::shutdown(void)
 {
 	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool AP_UnixApp::getPrefsValueDirectory(UT_Bool bAppSpecific,
+bool AP_UnixApp::getPrefsValueDirectory(bool bAppSpecific,
 										   const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)
-		return UT_FALSE;
+		return false;
 
 	const XML_Char * psz = NULL;
 	if (!m_prefs->getPrefsValue(szKey,&psz))
-		return UT_FALSE;
+		return false;
 
 	if (*psz == '/')
 	{
 		*pszValue = psz;
-		return UT_TRUE;
+		return true;
 	}
 
 	const XML_Char * dir = ((bAppSpecific) ? getAbiSuiteAppDir() : getAbiSuiteLibDir());
@@ -302,7 +302,7 @@ UT_Bool AP_UnixApp::getPrefsValueDirectory(UT_Bool bAppSpecific,
 	
 	sprintf(buf,"%s/%s",dir,psz);
 	*pszValue = buf;
-	return UT_TRUE;
+	return true;
 }
 
 const char * AP_UnixApp::getAbiSuiteAppDir(void) const
@@ -361,7 +361,7 @@ void AP_UnixApp::copyToClipboard(PD_DocumentRange * pDocRange)
 	// NOTE: stored buffers.  I'm omitting it since we seem to get
 	// NOTE: clr callback after we have done some other processing
 	// NOTE: (like adding the new stuff).
-	// m_pClipboard->clearData(UT_TRUE,UT_FALSE);
+	// m_pClipboard->clearData(true,false);
 	
 	if (bufRTF.getLength() > 0)
 		m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)bufRTF.getPointer(0),bufRTF.getLength());
@@ -382,7 +382,7 @@ static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
 					     AP_CLIPBOARD_TEXTPLAIN_8BIT,
 					     0 /* must be last */ };
 
-void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseClipboard)
+void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.  try to get the content in the order listed.
@@ -403,7 +403,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseCl
 	unsigned char * pData = NULL;
 	UT_uint32 iLen = 0;
 
-	UT_Bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+	bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
 	if (!bFoundOne)
 	{
 		UT_DEBUGMSG(("PasteFromClipboard: did not find anything to paste.\n"));
@@ -438,7 +438,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseCl
 	return;
 }
 
-UT_Bool AP_UnixApp::canPasteFromClipboard(void)
+bool AP_UnixApp::canPasteFromClipboard(void)
 {
 #if 0
 	const char * szFormatFound = NULL;
@@ -448,16 +448,16 @@ UT_Bool AP_UnixApp::canPasteFromClipboard(void)
 	XAP_UnixClipboard::T_AllowGet tFrom = XAP_UnixClipboard::TAG_ClipboardOnly;
 
 	// first, try to see if we can paste from the clipboard
-	UT_Bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
+	bool bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
 	if (bFoundOne)
-	  return UT_TRUE;
+	  return true;
 
 	// didn't work, try out the primary selection
 	tFrom = XAP_UnixClipboard::TAG_PrimaryOnly;
 	bFoundOne = m_pClipboard->getData(tFrom,aszFormatsAccepted,(void**)&pData,&iLen,&szFormatFound);
 	return bFoundOne;
 #else
-	return UT_TRUE;
+	return true;
 #endif
 }
 
@@ -479,9 +479,9 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 
 	if (m_bSelectionInFlux)
 		return;
-	m_bSelectionInFlux = UT_TRUE;
+	m_bSelectionInFlux = true;
 
-	UT_Bool bSelectionStateInThisView = ( ! pView->isSelectionEmpty() );
+	bool bSelectionStateInThisView = ( ! pView->isSelectionEmpty() );
 	
 	if (m_pViewSelection && m_pFrameSelection && m_bHasSelection && (pView != m_pViewSelection))
 	{
@@ -514,19 +514,19 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 		// this and the server notification until afterwards.
 		
 		UT_ASSERT(m_bHasSelection);
-		m_cacheDeferClear = UT_TRUE;
+		m_cacheDeferClear = true;
 	}
 	else
 	{
 		m_bHasSelection = bSelectionStateInThisView;
-		m_pClipboard->clearData(UT_FALSE,UT_TRUE);
+		m_pClipboard->clearData(false,true);
 	}
 	
 	UT_DEBUGMSG(("here we go whooooo\n"));
 	setViewSelection(pView);
 	m_pFrameSelection = (XAP_Frame *)pView->getParentData();
 
-	m_bSelectionInFlux = UT_FALSE;
+	m_bSelectionInFlux = false;
 	return;
 }
 
@@ -540,7 +540,7 @@ AV_View* AP_UnixApp::getViewSelection(void)
         return m_pViewSelection;
 }
 
-UT_Bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)
+bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)
 {
 	// we intercept this so that we can erase our
 	// selection-related variables if necessary.
@@ -551,7 +551,7 @@ UT_Bool AP_UnixApp::forgetFrame(XAP_Frame * pFrame)
 
 	if (m_pFrameSelection && (pFrame==m_pFrameSelection))
 	{
-		m_pClipboard->clearData(UT_FALSE,UT_TRUE);
+		m_pClipboard->clearData(false,true);
 		m_pFrameSelection = NULL;
 		UT_DEBUGMSG(("here we go wheeeee\n"));
 		
@@ -579,16 +579,16 @@ void AP_UnixApp::clearSelection(void)
 
 	if (m_bSelectionInFlux)
 		return;
-	m_bSelectionInFlux = UT_TRUE;
+	m_bSelectionInFlux = true;
 	
 	if (m_pViewSelection && m_pFrameSelection && m_bHasSelection)
 	{
 		UT_DEBUGMSG(("crash2\n"));
 		m_pViewSelection->cmdUnselectSelection();
-		m_bHasSelection = UT_FALSE;
+		m_bHasSelection = false;
 	}
 	
-	m_bSelectionInFlux = UT_FALSE;
+	m_bSelectionInFlux = false;
 	return;
 }
 
@@ -612,15 +612,15 @@ void AP_UnixApp::cacheCurrentSelection(AV_View * pView)
 					 pFVView,
 					 m_cacheDocumentRangeOfSelection.m_pos1,
 					 m_cacheDocumentRangeOfSelection.m_pos2));
-		m_cacheDeferClear = UT_FALSE;
+		m_cacheDeferClear = false;
 	}
 	else
 	{
 		if (m_cacheDeferClear)
 		{
-			m_cacheDeferClear = UT_FALSE;
-			m_bHasSelection = UT_FALSE;
-			m_pClipboard->clearData(UT_FALSE,UT_TRUE);
+			m_cacheDeferClear = false;
+			m_bHasSelection = false;
+			m_pClipboard->clearData(false,true);
 		}
 		m_cacheSelectionView = NULL;
 	}
@@ -628,7 +628,7 @@ void AP_UnixApp::cacheCurrentSelection(AV_View * pView)
 	return;
 }
 
-UT_Bool AP_UnixApp::getCurrentSelection(const char** formatList,
+bool AP_UnixApp::getCurrentSelection(const char** formatList,
 										void ** ppData, UT_uint32 * pLen,
 										const char **pszFormatFound)
 {
@@ -643,7 +643,7 @@ UT_Bool AP_UnixApp::getCurrentSelection(const char** formatList,
 	*pszFormatFound = NULL;
 	
 	if (!m_pViewSelection || !m_pFrameSelection || !m_bHasSelection)
-		return UT_FALSE;		// can't do it, give up.
+		return false;		// can't do it, give up.
 
 	PD_DocumentRange dr;
 
@@ -672,7 +672,7 @@ UT_Bool AP_UnixApp::getCurrentSelection(const char** formatList,
 		{
 			IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(dr.m_pDoc);
 			if (!pExpRtf)
-				return UT_FALSE;		// give up on memory errors
+				return false;		// give up on memory errors
 
 			pExpRtf->copyToBuffer(&dr,&m_selectionByteBuf);
 			DELETEP(pExpRtf);
@@ -684,7 +684,7 @@ UT_Bool AP_UnixApp::getCurrentSelection(const char** formatList,
 		{
 			IE_Exp_Text * pExpText = new IE_Exp_Text(dr.m_pDoc);
 			if (!pExpText)
-				return UT_FALSE;
+				return false;
 
 			pExpText->copyToBuffer(&dr,&m_selectionByteBuf);
 			DELETEP(pExpText);
@@ -695,7 +695,7 @@ UT_Bool AP_UnixApp::getCurrentSelection(const char** formatList,
 	}
 
 	UT_DEBUGMSG(("Clipboard::getCurrentSelection: cannot create anything in one of requested formats.\n"));
-	return UT_FALSE;
+	return false;
 
 ReturnThisBuffer:
 	UT_DEBUGMSG(("Clipboard::getCurrentSelection: copying %d bytes in format [%s].\n",
@@ -703,7 +703,7 @@ ReturnThisBuffer:
 	*ppData = (void *)m_selectionByteBuf.getPointer(0);
 	*pLen = m_selectionByteBuf.getLength();
 	*pszFormatFound = formatList[j];
-	return UT_TRUE;
+	return true;
 }
 
 /*****************************************************************/
@@ -712,7 +712,7 @@ ReturnThisBuffer:
 static GtkWidget * wSplash = NULL;
 static GR_Image * pSplashImage = NULL;
 static GR_UnixGraphics * pUnixGraphics = NULL;
-static UT_Bool firstExpose = FALSE;
+static bool firstExpose = FALSE;
 static UT_uint32 splashTimeoutValue = 0;
 
 static guint death_timeout_handler = 0;
@@ -745,7 +745,7 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 		// on the first full paint of the image, start a 2 second timer
 		if (!firstExpose)
 		{
-			firstExpose = UT_TRUE;
+			firstExpose = true;
 			// kill the window after splashTimeoutValue ms
 			death_timeout_handler = gtk_timeout_add(splashTimeoutValue, s_hideSplash, NULL);
 		}
@@ -846,14 +846,14 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	XAP_Args Args = XAP_Args(argc,argv);
 
 	// Do a quick and dirty find for "-to"
- 	UT_Bool bShowSplash = UT_TRUE;
-	UT_Bool bShowApp = UT_TRUE;
+ 	bool bShowSplash = true;
+	bool bShowApp = true;
  	for (int k = 1; k < Args.m_argc; k++)
  		if (*Args.m_argv[k] == '-')
  			if (strcmp(Args.m_argv[k],"-to") == 0)
  			{
-				bShowApp = UT_FALSE;
- 				bShowSplash = UT_FALSE;
+				bShowApp = false;
+ 				bShowSplash = false;
  				break;
  			}
 
@@ -862,8 +862,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
  		if (*Args.m_argv[k] == '-')
  			if (strcmp(Args.m_argv[k],"-show") == 0)
  			{
-				bShowApp = UT_TRUE;
- 				bShowSplash = UT_TRUE;
+				bShowApp = true;
+ 				bShowSplash = true;
  				break;
  			}
 
@@ -872,7 +872,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		if (*Args.m_argv[k] == '-')
 			if (strcmp(Args.m_argv[k],"-nosplash") == 0)
 			{
-				bShowSplash = UT_FALSE;
+				bShowSplash = false;
 				break;
 			}
 
@@ -882,8 +882,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 			if (strncmp(Args.m_argv[k],"-h",2) == 0 ||
 				strncmp(Args.m_argv[k],"--h",3) == 0)
 			{
-				bShowSplash = UT_FALSE;
-				bShowApp = UT_FALSE;
+				bShowSplash = false;
+				bShowApp = false;
 				break;
 			}
 
@@ -951,7 +951,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	return 0;
 }
 
-UT_Bool AP_UnixApp::parseCommandLine(void)
+bool AP_UnixApp::parseCommandLine(void)
 {
 	// parse the command line
 	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
@@ -968,7 +968,7 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 	int kWindowsOpened = 0;
 	char *to = NULL;
 	int verbose = 1;
-	UT_Bool show = UT_FALSE;
+	bool show = false;
 
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{
@@ -1039,7 +1039,7 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 			}
 			else if (strcmp (m_pArgs->m_argv[k], "-show") == 0)
 			{
-				show = UT_TRUE;
+				show = true;
 			}
 			else if (strcmp (m_pArgs->m_argv[k], "-verbose") == 0)
 			{
@@ -1052,7 +1052,7 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 				// TODO don't know if it has a following argument or not -- assume not
 
 				_printUsage();
-				return UT_FALSE;
+				return false;
 			}
 		}
 		else
@@ -1153,7 +1153,7 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 						
 	// command-line conversion may not open any windows at all
 	if (to && !show)
-		return UT_TRUE;
+		return true;
 
 	if (kWindowsOpened == 0)
 	{
@@ -1164,7 +1164,7 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
 void signalWrapper(int sig_num)

@@ -479,7 +479,7 @@ void AP_Preview_Paragraph::draw(void)
 	m_y = DEFAULT_TOP_MARGIN;
 }
 
-UT_Bool AP_Preview_Paragraph::_loadDrawFont(void)
+bool AP_Preview_Paragraph::_loadDrawFont(void)
 {
 	// we draw at 7 points in this preview
 	GR_Font * font = m_gc->findFont("Times New Roman", "normal", "", "normal", "", "7pt");
@@ -489,10 +489,10 @@ UT_Bool AP_Preview_Paragraph::_loadDrawFont(void)
 		REPLACEP(m_font, font);
 		m_gc->setFont(m_font);
 		m_fontHeight = m_gc->getFontHeight();
-		return UT_TRUE;
+		return true;
 	}
 	else
-		return UT_FALSE;
+		return false;
 }
 
 void AP_Preview_Paragraph::_drawPageBackground(void)

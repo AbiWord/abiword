@@ -43,7 +43,7 @@ public:
 	void							setFontWeight(const XML_Char * pFontWeight);
 	void							setFontStyle(const XML_Char * pFontStyle);
 	void							setColor(const XML_Char * pColor);
-	void							setFontDecoration(UT_Bool bUnderline, UT_Bool bOverline, UT_Bool bStrikeOut);
+	void							setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut);
 
 	XAP_Dialog_FontChooser::tAnswer	getAnswer(void) const;
 	
@@ -53,14 +53,14 @@ public:
 	// they changed it or not.  this value is a static string in
 	// the dialog and must be valid only until the dialog is released.
 
-	UT_Bool							getChangedFontFamily(const XML_Char ** pszFontFamily) const;
-	UT_Bool							getChangedFontSize(const XML_Char ** pszFontSize) const;
-	UT_Bool							getChangedFontWeight(const XML_Char ** pszFontWeight) const;
-	UT_Bool							getChangedFontStyle(const XML_Char ** pszFontStyle) const;
-	UT_Bool							getChangedColor(const XML_Char ** pszColor) const;
-	UT_Bool							getChangedUnderline(UT_Bool * pbUnderline) const;
-	UT_Bool							getChangedOverline(UT_Bool * pbOverline) const;
-	UT_Bool							getChangedStrikeOut(UT_Bool * pbStrikeOut) const;
+	bool							getChangedFontFamily(const XML_Char ** pszFontFamily) const;
+	bool							getChangedFontSize(const XML_Char ** pszFontSize) const;
+	bool							getChangedFontWeight(const XML_Char ** pszFontWeight) const;
+	bool							getChangedFontStyle(const XML_Char ** pszFontStyle) const;
+	bool							getChangedColor(const XML_Char ** pszColor) const;
+	bool							getChangedUnderline(bool * pbUnderline) const;
+	bool							getChangedOverline(bool * pbOverline) const;
+	bool							getChangedStrikeOut(bool * pbStrikeOut) const;
 
 protected:
 	XAP_Dialog_FontChooser::tAnswer	m_answer;
@@ -71,18 +71,18 @@ protected:
 	XML_Char *						m_pFontWeight;			/* input/output */
 	XML_Char *						m_pFontStyle;			/* input/output */
 	XML_Char *						m_pColor;				/* input/output */
-	UT_Bool							m_bUnderline;			/* input/output */
-	UT_Bool							m_bOverline;			/* input/output */
-	UT_Bool							m_bStrikeOut;			/* input/output */
+	bool							m_bUnderline;			/* input/output */
+	bool							m_bOverline;			/* input/output */
+	bool							m_bStrikeOut;			/* input/output */
 
-	UT_Bool							m_bChangedFontFamily;	/* output */
-	UT_Bool							m_bChangedFontSize;		/* output */
-	UT_Bool							m_bChangedFontWeight;	/* output */
-	UT_Bool							m_bChangedFontStyle;	/* output */
-	UT_Bool							m_bChangedColor;		/* output */
-	UT_Bool							m_bChangedUnderline;	/* output */
-	UT_Bool							m_bChangedOverline;	/* output */
-	UT_Bool							m_bChangedStrikeOut;	/* output */
+	bool							m_bChangedFontFamily;	/* output */
+	bool							m_bChangedFontSize;		/* output */
+	bool							m_bChangedFontWeight;	/* output */
+	bool							m_bChangedFontStyle;	/* output */
+	bool							m_bChangedColor;		/* output */
+	bool							m_bChangedUnderline;	/* output */
+	bool							m_bChangedOverline;	/* output */
+	bool							m_bChangedStrikeOut;	/* output */
 };
 
 #endif /* XAP_DIALOG_FONTCHOOSER_H */

@@ -38,7 +38,7 @@ UT_UNIXTimer::UT_UNIXTimer(UT_TimerCallback pCallback, void* pData)
 {
 	setCallback(pCallback);
 	setInstanceData(pData);
-	m_bStarted = UT_FALSE;
+	m_bStarted = false;
 	m_iMilliseconds = 0;
 }
 
@@ -96,7 +96,7 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 	setIdentifier(idTimer);
 	
 	m_iMilliseconds = iMilliseconds;
-	m_bStarted = UT_TRUE;
+	m_bStarted = true;
 
 	return 0;
 }
@@ -108,7 +108,7 @@ void UT_UNIXTimer::stop(void)
 
 	if (m_bStarted)
 		gtk_timeout_remove(getIdentifier());
-	m_bStarted = UT_FALSE;
+	m_bStarted = false;
 
 	//UT_DEBUGMSG(("ut_unixTimer.cpp: timer stopped\n"));
 }

@@ -33,7 +33,7 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_iWindowWidth(0),
 	m_focus(AV_FOCUS_NONE),
 	m_iTick(0),
-	m_bInsertMode(UT_TRUE)
+	m_bInsertMode(true)
 {
 }
 
@@ -46,7 +46,7 @@ void* AV_View::getParentData() const
 	return m_pParentData;
 }
 
-UT_Bool AV_View::addListener(AV_Listener * pListener, 
+bool AV_View::addListener(AV_Listener * pListener, 
 							 AV_ListenerId * pListenerId)
 {
 	UT_uint32 kLimit = m_vecListeners.getItemCount();
@@ -65,7 +65,7 @@ UT_Bool AV_View::addListener(AV_Listener * pListener,
 	
 	if (m_vecListeners.addItem(pListener,&k) != 0)
 	{
-		return UT_FALSE;				// could not add item to vector
+		return false;				// could not add item to vector
 	}
 
   ClaimThisK:
@@ -73,18 +73,18 @@ UT_Bool AV_View::addListener(AV_Listener * pListener,
 	// give our vector index back to the caller as a "Listener Id".
 	
 	*pListenerId = k;
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool AV_View::removeListener(AV_ListenerId listenerId)
+bool AV_View::removeListener(AV_ListenerId listenerId)
 {
 	if (listenerId == (AV_ListenerId) -1)
-		return UT_FALSE;
+		return false;
 		
 	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
 }
 
-UT_Bool AV_View::notifyListeners(const AV_ChangeMask hint)
+bool AV_View::notifyListeners(const AV_ChangeMask hint)
 {
 	/*
 		App-specific logic calls this virtual method when relevant portions of 
@@ -112,7 +112,7 @@ UT_Bool AV_View::notifyListeners(const AV_ChangeMask hint)
 
 	if (hint == AV_CHG_NONE)
 	{
-		return UT_FALSE;
+		return false;
 	}
 	
 	// notify listeners of a change.
@@ -131,10 +131,10 @@ UT_Bool AV_View::notifyListeners(const AV_ChangeMask hint)
 			pListener->notify(this,hint);
 	}
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool AV_View::isActive(void) 
+bool AV_View::isActive(void) 
 {
 	AV_View* pActiveView = NULL;
 	XAP_Frame* lff = getApp()->getLastFocussedFrame();
@@ -160,7 +160,7 @@ void   AV_View::incTick(void)
         m_iTick++;
 }
 
-void AV_View::setInsertMode(UT_Bool bInsert)
+void AV_View::setInsertMode(bool bInsert)
 {
 	m_bInsertMode = bInsert; 
 

@@ -70,14 +70,14 @@ AP_Toolbar_Icons::~AP_Toolbar_Icons(void)
 {
 }
 
-UT_Bool AP_Toolbar_Icons::_findIconDataByName(const char * szName,
+bool AP_Toolbar_Icons::_findIconDataByName(const char * szName,
 											  const char *** pIconData,
 											  UT_uint32 * pSizeofData)
 {
 	// This is a static function.
 
 	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
-		return UT_FALSE;
+		return false;
 	
 	UT_uint32 kLimit = NrElements(s_itTable);
 	UT_uint32 k;
@@ -87,9 +87,9 @@ UT_Bool AP_Toolbar_Icons::_findIconDataByName(const char * szName,
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;
-			return UT_TRUE;
+			return true;
 		}
 
-	return UT_FALSE;
+	return false;
 }
 

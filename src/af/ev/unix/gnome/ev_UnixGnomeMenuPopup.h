@@ -38,7 +38,7 @@ public:
 						  const char * szMenuLabelSetName);
 	virtual ~EV_UnixGnomeMenuPopup(void);
 
-	UT_Bool				synthesizeMenuPopup(void);
+	bool				synthesizeMenuPopup(void);
 };
 
 #endif /* EV_UNIXGNOMEMENUPOPUP_H */

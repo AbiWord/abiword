@@ -56,7 +56,7 @@ void AP_MacDialog_Spell::runModal(XAP_Frame * pFrame)
    AP_Dialog_Spell::runModal(pFrame);
 
 #if 0
-   m_bCancelled = UT_FALSE;
+   m_bCancelled = false;
 
 	BMessage msg;
         SpellWin  *newwin;

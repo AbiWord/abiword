@@ -61,7 +61,7 @@ protected:
 	// private construction functions
 	PtWidget_t * _constructWindow(void);
 	void		_populateWindowData(void);
-	void		_enablePercentSpin(UT_Bool enable);
+	void		_enablePercentSpin(bool enable);
 	void 		_storeWindowData(void);
 
 	// pointers to widgets we need to query/set

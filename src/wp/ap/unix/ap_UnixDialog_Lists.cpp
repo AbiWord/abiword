@@ -46,8 +46,8 @@ AP_UnixDialog_Lists::AP_UnixDialog_Lists(XAP_DialogFactory * pDlgFactory,
 	m_wMainWindow = NULL;
 	Current_Dialog = this;
 	m_pPreviewWidget = NULL;
-	m_bManualListStyle = UT_TRUE;
-	m_bDoExpose = UT_TRUE;
+	m_bManualListStyle = true;
+	m_bDoExpose = true;
 }
 
 XAP_Dialog * AP_UnixDialog_Lists::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -177,7 +177,7 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 	// Next construct a timer for auto-updating the dialog
 	GR_Graphics * pG = NULL;
 	m_pAutoUpdateLists = UT_Timer::static_constructor(autoupdateLists,this,pG);
-	m_bDestroy_says_stopupdating = UT_FALSE;
+	m_bDestroy_says_stopupdating = false;
 
 	// OK fire up the auto-updater for 0.5 secs
 
@@ -198,12 +198,12 @@ void AP_UnixDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 	if(pDialog->getAvView()->getTick() != pDialog->getTick())
 	{
 		pDialog->setTick(pDialog->getAvView()->getTick());
-		if( pDialog->m_bDestroy_says_stopupdating != UT_TRUE)
+		if( pDialog->m_bDestroy_says_stopupdating != true)
 		{
-			pDialog->m_bAutoUpdate_happening_now = UT_TRUE;
+			pDialog->m_bAutoUpdate_happening_now = true;
 			pDialog->updateDialog();
 			pDialog->previewExposed();
-			pDialog->m_bAutoUpdate_happening_now = UT_FALSE;
+			pDialog->m_bAutoUpdate_happening_now = false;
 		}
 	}
 }   
@@ -213,19 +213,19 @@ void AP_UnixDialog_Lists::previewExposed(void)
 {
 	if(m_pPreviewWidget)
 	{
-		if(m_bDoExpose == UT_TRUE)
+		if(m_bDoExpose == true)
 		{
 			event_PreviewAreaExposed();
 		}
-		m_bDoExpose = UT_TRUE;
+		m_bDoExpose = true;
 	} 
 }
 
 void AP_UnixDialog_Lists::destroy (void)
 {
 	UT_ASSERT (m_wMainWindow);
-	m_bDestroy_says_stopupdating = UT_TRUE;
-	while (m_bAutoUpdate_happening_now == UT_TRUE) ;
+	m_bDestroy_says_stopupdating = true;
+	while (m_bAutoUpdate_happening_now == true) ;
 	m_pAutoUpdateLists->stop();
 	m_answer = AP_Dialog_Lists::a_CLOSE;	
 
@@ -263,8 +263,8 @@ void  AP_UnixDialog_Lists::typeChanged(gint type)
 	//
 
 	gtk_option_menu_remove_menu(GTK_OPTION_MENU (m_wListStyleBox));
-	m_bDoExpose = UT_TRUE;
-	m_bguiChanged = UT_TRUE;
+	m_bDoExpose = true;
+	m_bguiChanged = true;
 	if(type == 0)
 	{
 		//     gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
@@ -318,7 +318,7 @@ void  AP_UnixDialog_Lists::typeChanged(gint type)
 								  2);
                 m_newListType = NUMBERED_LIST;
 	}
-	if(m_bManualListStyle == UT_TRUE)
+	if(m_bManualListStyle == true)
 	{
 	  //		GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
 	  //		m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
@@ -337,33 +337,33 @@ void  AP_UnixDialog_Lists::setMemberVariables(void)
 	//
 	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
 	m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
-	m_bguiChanged = UT_TRUE;
+	m_bguiChanged = true;
 
-	if(m_bisCustomized == UT_TRUE)
+	if(m_bisCustomized == true)
 	{
 		_gatherData();
 	}
 
 	if (GTK_TOGGLE_BUTTON (m_wStartNewList)->active)
 	{
-		m_bStartNewList = UT_TRUE;
-		m_bApplyToCurrent = UT_FALSE;
-		m_bStartSubList = UT_FALSE;
+		m_bStartNewList = true;
+		m_bApplyToCurrent = false;
+		m_bStartSubList = false;
 	}
 	else if (GTK_TOGGLE_BUTTON (m_wApplyCurrent)->active)
 	{
-		m_bStartNewList = UT_FALSE;
-		m_bApplyToCurrent = UT_TRUE;
-		m_bStartSubList = UT_FALSE;
+		m_bStartNewList = false;
+		m_bApplyToCurrent = true;
+		m_bStartSubList = false;
 	}
 	else if (GTK_TOGGLE_BUTTON (m_wStartSubList)->active)
 	{
-		m_bStartNewList = UT_FALSE;
-		m_bApplyToCurrent = UT_FALSE;
-		m_bStartSubList = UT_TRUE;
+		m_bStartNewList = false;
+		m_bApplyToCurrent = false;
+		m_bStartSubList = true;
 	}
 
-	m_bDoExpose = UT_TRUE;
+	m_bDoExpose = true;
 }
 
 
@@ -376,17 +376,17 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 
 void  AP_UnixDialog_Lists::customChanged(void)
 {
-	if(m_bisCustomized == UT_FALSE)
+	if(m_bisCustomized == false)
 	{
 		fillWidgetFromDialog();
 		gtk_widget_show(m_wCustomFrame);
-		m_bisCustomized = UT_TRUE;
+		m_bisCustomized = true;
 		setMemberVariables();
 		previewExposed();
 	}
 	else
 	{
-		m_bisCustomized = UT_FALSE;
+		m_bisCustomized = false;
 		fillUncustomizedValues();
 		gtk_widget_hide(m_wCustomFrame);
 		_setData();
@@ -404,29 +404,29 @@ void AP_UnixDialog_Lists::updateDialog(void)
 {
 
 	UT_uint32 oldID = m_iID;
-	m_bDoExpose = UT_FALSE;
-	m_bManualListStyle = UT_FALSE;
-	if(m_bisCustomized == UT_FALSE)
+	m_bDoExpose = false;
+	m_bManualListStyle = false;
+	if(m_bisCustomized == false)
 	{
 		_populateWindowData();
 		m_iID = getID();
 	}
-	if((oldID != getID()) && (m_bisCustomized == UT_FALSE))
+	if((oldID != getID()) && (m_bisCustomized == false))
 	{               
 		m_newListType = m_iListType;
-		m_bDoExpose = UT_TRUE;
+		m_bDoExpose = true;
 	}
-	if(m_bisCustomized == UT_FALSE)
+	if(m_bisCustomized == false)
 	{
 		_setData();
 	}
-	m_bManualListStyle = UT_TRUE;
+	m_bManualListStyle = true;
 }
 
 void AP_UnixDialog_Lists::setAllSensitivity(void)
 { 
 	PopulateDialogData();
-	if(m_isListAtPoint == UT_TRUE)
+	if(m_isListAtPoint == true)
 	{
 	}
 }
@@ -822,7 +822,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	// Start by hiding the Custom frame
 	//
 	gtk_widget_hide(m_wCustomFrame);
-	m_bisCustomized = UT_FALSE;
+	m_bisCustomized = false;
 
 	return m_wContents;
 }
@@ -1049,7 +1049,7 @@ void AP_UnixDialog_Lists::_populateWindowData (void)
 	//	char *tmp;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	PopulateDialogData();
-	if(m_isListAtPoint == UT_TRUE)
+	if(m_isListAtPoint == true)
 	{
 		// Button 0 is stop list, button 2 is startsub list
 		gtk_label_set_text( GTK_LABEL(m_wStartNew_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Stop_Current_List));

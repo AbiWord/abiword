@@ -89,7 +89,7 @@ UT_sint32	GR_UnixImage::getDisplayHeight(void) const
    return m_image->height;
 }
 
-UT_Bool		GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
+bool		GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
 	/*
 	 The purpose of this routine is to convert our internal 24-bit
@@ -116,7 +116,7 @@ UT_Bool		GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 		png_destroy_write_struct(&png_ptr,  (png_infopp)NULL);
 		*ppBB = NULL;
 		
-		return UT_FALSE;
+		return false;
 	}
 
 	// We want libpng to write to our ByteBuf, not stdio
@@ -192,10 +192,10 @@ UT_Bool		GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 	// And pass the ByteBuf back to our caller
 	*ppBB = pBB;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
       png_structp png_ptr;
       png_infop info_ptr;
@@ -207,7 +207,7 @@ UT_Bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispla
       
       if (png_ptr == NULL)
 	{
-	   return UT_FALSE;
+	   return false;
 	}
       
       /* Allocate/initialize the memory for image information.  REQUIRED. */
@@ -215,7 +215,7 @@ UT_Bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispla
       if (info_ptr == NULL)
 	{
 	   png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-	   return UT_FALSE;
+	   return false;
 	}
       
       /* Set error handling if you are using the setjmp/longjmp method (this is
@@ -228,7 +228,7 @@ UT_Bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispla
 	   png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 	   
 	   /* If we get here, we had a problem reading the file */
-	   return UT_FALSE;
+	   return false;
 	}
       
       struct _bb myBB;
@@ -278,7 +278,7 @@ UT_Bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispla
       if (!pFM->data)
 	{
 	   png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-	   return UT_FALSE;
+	   return false;
 	}
       
       UT_Byte * pBits = (UT_Byte *) pFM->data;
@@ -321,7 +321,7 @@ UT_Bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispla
 		delete pDisplayFM;
 		free(pOtherFM->data);
 		delete pOtherFM;
-		return UT_FALSE;
+		return false;
 	     }
 	   
 	   // stretch the pixels from pOtherFM into pDisplayFM
@@ -343,14 +343,14 @@ UT_Bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispla
 		if (!xarray)
 		  {
 		     // TODO outofmem
-		     return UT_FALSE;
+		     return false;
 		  }
 		yarray = (unsigned char**) malloc(sizeof(unsigned char *) * iDisplayHeight);
 		
 		if (!yarray)
 		  {
 		     // TODO outofmem
-		     return UT_FALSE;
+		     return false;
 		  }
 		
 		ptr22 = pOtherFM->data;
@@ -411,6 +411,6 @@ UT_Bool	GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDispla
 	}
       
       m_image = pFM;
-      return UT_TRUE;
+      return true;
 
 }

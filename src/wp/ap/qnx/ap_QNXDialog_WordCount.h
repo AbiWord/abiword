@@ -81,12 +81,12 @@ protected:
 	PtWidget_t * m_labelPgCount;	
 	
 	UT_Timer   * m_pAutoUpdateWC;
-	UT_Bool		 m_bAutoWC;
+	bool		 m_bAutoWC;
 	int			 m_Update_rate;
 
 	// Handshake variables
-	UT_Bool m_bDestroy_says_stopupdating;
-	UT_Bool m_bAutoUpdate_happening_now;
+	bool m_bDestroy_says_stopupdating;
+	bool m_bAutoUpdate_happening_now;
 
 	int 		done;
 };

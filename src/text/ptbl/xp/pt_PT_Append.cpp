@@ -40,7 +40,7 @@
 /****************************************************************/
 /****************************************************************/
 
-UT_Bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
+bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
 	// create a new structure fragment at the current end of the document.
 	// this function can only be called while loading the document.
@@ -50,17 +50,17 @@ UT_Bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes
 	
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
-		return UT_FALSE;
+		return false;
 
 	pf_Frag_Strux * pfs = NULL;
 	if (!_createStrux(pts,indexAP,&pfs))
-		return UT_FALSE;
+		return false;
 	
 	m_fragments.appendFrag(pfs);
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
+bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 {
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);
@@ -73,23 +73,23 @@ UT_Bool pt_PieceTable::appendFmt(const XML_Char ** attributes)
 	// are implicit at this point in time.)
 
 	if (!m_varset.storeAP(attributes,&loading.m_indexCurrentInlineAP))
-		return UT_FALSE;
+		return false;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
+bool pt_PieceTable::appendFmt(const UT_Vector * pVecAttributes)
 {
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);
 
 	if (!m_varset.storeAP(pVecAttributes,&loading.m_indexCurrentInlineAP))
-		return UT_FALSE;
+		return false;
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
+bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 {
 	// can only be used while loading the document
 	UT_ASSERT(m_pts==PTS_Loading);
@@ -98,7 +98,7 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 
 	PT_BufIndex bi;
 	if (!m_varset.appendBuf(pbuf,length,&bi))
-		return UT_FALSE;
+		return false;
 
 	// set the formatting Attributes/Properties to that
 	// of the last fmt set in this paragraph.
@@ -114,7 +114,7 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 			&& m_varset.isContiguous(pfLastText->getBufIndex(),pfLastText->getLength(),bi))
 		{
 			pfLastText->changeLength(pfLastText->getLength() + length);
-			return UT_TRUE;
+			return true;
 		}
 	}
 	
@@ -122,7 +122,7 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 
 	pf_Frag_Text * pft = new pf_Frag_Text(this,bi,length,loading.m_indexCurrentInlineAP,NULL);
 	if (!pft)
-		return UT_FALSE;
+		return false;
 
 	m_fragments.appendFrag(pft);
 
@@ -130,10 +130,10 @@ UT_Bool pt_PieceTable::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	// records or any of the other stuff that an insertSpan
 	// would do.
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attributes)
+bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attributes)
 {
 	// create a new object fragment at the current end of the document.
 	// this function can only be called while loading the document.
@@ -143,12 +143,12 @@ UT_Bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attribut
 	
 	PT_AttrPropIndex indexAP;
 	if (!m_varset.storeAP(attributes,&indexAP))
-		return UT_FALSE;
+		return false;
 
 	pf_Frag_Object * pfo = NULL;
 	if (!_createObject(pto,indexAP,&pfo))
-		return UT_FALSE;
+		return false;
 	
 	m_fragments.appendFrag(pfo);
-	return UT_TRUE;
+	return true;
 }

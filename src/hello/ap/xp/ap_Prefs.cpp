@@ -35,14 +35,14 @@ const XML_Char* AP_Prefs::getBuiltinSchemeName(void) const
 	return "_builtin_";
 }
 
-UT_Bool AP_Prefs::loadBuiltinPrefs(void)
+bool AP_Prefs::loadBuiltinPrefs(void)
 {
 	const XML_Char* szBuiltinSchemeName = getBuiltinSchemeName();
 
 	XAP_PrefsScheme* pScheme = new XAP_PrefsScheme(this, szBuiltinSchemeName);
 
 	if (!pScheme)
-		return UT_FALSE;
+		return false;
 
 	struct _table
 	{
@@ -70,7 +70,7 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 	
  Failed:
 	DELETEP(pScheme);
-	return UT_FALSE;
+	return false;
 }
 
 void AP_Prefs::fullInit(void)

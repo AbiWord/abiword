@@ -40,28 +40,28 @@ class IE_Exp_RTF : public IE_Exp
 
 public:
 	IE_Exp_RTF(PD_Document * pDocument);
-	IE_Exp_RTF(PD_Document * pDocument,UT_Bool atticFormat);
+	IE_Exp_RTF(PD_Document * pDocument,bool atticFormat);
 	virtual ~IE_Exp_RTF();
 
-	static UT_Bool		RecognizeSuffix(const char * szSuffix);
+	static bool		RecognizeSuffix(const char * szSuffix);
 	static UT_Error		StaticConstructor(PD_Document * pDocument,
 										  IE_Exp ** ppie);
-	static UT_Bool		GetDlgLabels(const char ** pszDesc,
+	static bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
-	static UT_Bool 		SupportsFileType(IEFileType ft);
+	static bool 		SupportsFileType(IEFileType ft);
 
 	/*
 	    these group for exporting to RTF understood by attic software
 	    like WordPad and probably Word6.0.
 	*/
-	static UT_Bool		RecognizeSuffix_attic(const char * szSuffix);
+	static bool		RecognizeSuffix_attic(const char * szSuffix);
 	static UT_Error		StaticConstructor_attic(PD_Document * pDocument,
 										  IE_Exp ** ppie);
-	static UT_Bool		GetDlgLabels_attic(const char ** pszDesc,
+	static bool		GetDlgLabels_attic(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
-	static UT_Bool 		SupportsFileType_attic(IEFileType ft);
+	static bool 		SupportsFileType_attic(IEFileType ft);
 	
 protected:
 	virtual UT_Error	_writeDocument(void);
@@ -80,24 +80,24 @@ protected:
 	void				_rtf_fontname(const char * szFontName);
 	void				_rtf_chardata(const char * pbuf, UT_uint32 buflen);
 	void				_rtf_nl(void);
-	UT_Bool				_write_rtf_header(void);
-	UT_Bool				_write_rtf_trailer(void);
+	bool				_write_rtf_header(void);
+	bool				_write_rtf_trailer(void);
 	UT_sint32			_findFont(const _rtf_font_info * pfi) const;
 	void				_addFont(const _rtf_font_info * pfi);
 	void				_rtf_compute_font_properties(const _rtf_font_info * pfi,
 													 const char ** p_sz_font_name,
 													 const char ** p_sz_rtf_family,
 													 int * p_rtf_pitch,
-													 UT_Bool * pbTrueType) const;
+													 bool * pbTrueType) const;
 	
 	s_RTF_ListenerWriteDoc *	m_pListenerWriteDoc;
 	s_RTF_ListenerGetProps *	m_pListenerGetProps;
 	UT_Vector					m_vecColors;			/* vector of "const char * szColor" */
 	UT_Vector					m_vecFonts;				/* vector of struct _font */
-	UT_Bool						m_bNeedUnicodeText;		/* doc has unicode chars */
+	bool						m_bNeedUnicodeText;		/* doc has unicode chars */
 	UT_sint32					m_braceLevel;			/* nesting depth of {} braces */
-	UT_Bool						m_bLastWasKeyword;		/* just wrote a keyword, so need space before text data */
-	UT_Bool						m_atticFormat; 		/* whether to use unicode for all characters >0xff or convert to native windows encoding*/
+	bool						m_bLastWasKeyword;		/* just wrote a keyword, so need space before text data */
+	bool						m_atticFormat; 		/* whether to use unicode for all characters >0xff or convert to native windows encoding*/
 };
 
 /*****************************************************************/
@@ -119,14 +119,14 @@ public:
 		{
 		}
 
-	UT_Bool _is_same(const PP_AttrProp * pSpanAP,
+	bool _is_same(const PP_AttrProp * pSpanAP,
 					 const PP_AttrProp * pBlockAP,
 					 const PP_AttrProp * pSectionAP) const
 		{
 			return ((pSpanAP==m_pSpanAP) && (pBlockAP==m_pBlockAP) && (pSectionAP==m_pSectionAP));
 		}
 
-	UT_Bool _is_same(const _rtf_font_info * pfi) const
+	bool _is_same(const _rtf_font_info * pfi) const
 		{
 			return _is_same(pfi->m_pSpanAP,pfi->m_pBlockAP,pfi->m_pSectionAP);
 		}

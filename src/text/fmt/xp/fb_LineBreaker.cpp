@@ -58,8 +58,8 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			m_iMaxLineWidth = pLine->getMaxWidthInLayoutUnits();
 			m_iWorkingLineWidth = 0;
 			
-//			UT_Bool bFoundBreakAfter = UT_FALSE;
-//			UT_Bool bFoundSplit = UT_FALSE;
+//			bool bFoundBreakAfter = false;
+//			bool bFoundSplit = false;
 			
 //			fp_TextRun* pRunToSplit = NULL;
 //			fp_TextRun* pOtherHalfOfSplitRun = NULL;
@@ -69,16 +69,16 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			fp_Run* pCurrentRun = m_pFirstRunToKeep;
 			fp_Run* pPreviousRun = NULL;
 
-			while (UT_TRUE)
+			while (true)
 			{
 				// if this run is past the end of the line... 
 
-				UT_Bool bRunIsNonBlank = UT_TRUE;
+				bool bRunIsNonBlank = true;
 				if(pCurrentRun)
 				{
 					if(!pCurrentRun->doesContainNonBlankData())
 					{
-						bRunIsNonBlank = UT_FALSE;
+						bRunIsNonBlank = false;
 					}
 				}
 				
@@ -148,7 +148,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					
 					m_iWorkingLineWidth -= pCurrentRun->getWidthInLayoutUnits();
 
-					UT_Bool bRes = pLine->findNextTabStopInLayoutUnits(m_iWorkingLineWidth, iPos, iType, iLeader);
+					bool bRes = pLine->findNextTabStopInLayoutUnits(m_iWorkingLineWidth, iPos, iType, iLeader);
 					if (bRes)
 					{
 						UT_DEBUGMSG(("%s:%d tab run: type=%d leader=%d height=%d width=%d offset=%d length=%d",
@@ -223,7 +223,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 								  pScanRun && pScanRun->getType() != FPRUN_TAB && (iScanWidth < iPos-m_iWorkingLineWidth); 
 								  pScanRun = pScanRun->getNext() )
 							{
-								UT_Bool foundDecimal = UT_FALSE;
+								bool foundDecimal = false;
 
 								if(pScanRun->getType() == FPRUN_TEXT)
 								{
@@ -231,7 +231,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 
 									if(decimalBlockOffset != -1)
 									{
-										foundDecimal = UT_TRUE;
+										foundDecimal = true;
 
 										runLen = pScanRun->getBlockOffset() - decimalBlockOffset;
 									}
@@ -374,7 +374,7 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 }
 
 
-UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
+bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 {
 
 	// This run is past the end of the line.
@@ -391,9 +391,9 @@ UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 	fp_RunSplitInfo splitInfo;
 	fp_TextRun *pRunToSplit = NULL;
 
-	UT_Bool bFoundBreakAfter = UT_FALSE;
+	bool bFoundBreakAfter = false;
 
-	UT_Bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPointInLayoutUnits(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);
+	bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPointInLayoutUnits(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);
 	if (bFoundSplit)
 	{
 		UT_ASSERT(pOffendingRun->getType() == FPRUN_TEXT);
@@ -424,7 +424,7 @@ UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 				  onto the next line.
 				*/
 
-				bFoundBreakAfter = UT_TRUE;
+				bFoundBreakAfter = true;
 				m_pLastRunToKeep = pRunLookingBackwards;
 
 				break;
@@ -460,7 +460,7 @@ UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 		  to force a split of the Offending Run.
 		*/
 
-		bFoundSplit = pOffendingRun->findMaxLeftFitSplitPointInLayoutUnits(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo, UT_TRUE);
+		bFoundSplit = pOffendingRun->findMaxLeftFitSplitPointInLayoutUnits(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo, true);
 		if (bFoundSplit)
 		{
 			UT_ASSERT(pOffendingRun->getType() == FPRUN_TEXT);
@@ -483,13 +483,13 @@ UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 				*/
 				m_pLastRunToKeep = pOffendingRun->getPrev();
 
-				bFoundBreakAfter = UT_TRUE;
+				bFoundBreakAfter = true;
 			}
 			else
 			{
 				// nothing else we can do but this.
 				m_pLastRunToKeep = pOffendingRun;
-				bFoundBreakAfter = UT_TRUE;
+				bFoundBreakAfter = true;
 			}
 		}
 	}
@@ -503,13 +503,13 @@ UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 	}
 	
 
-	return UT_TRUE;
+	return true;
 }
 
-UT_Bool fb_LineBreaker::_splitAtNextNonBlank(fp_Run *pCurrentRun)
+bool fb_LineBreaker::_splitAtNextNonBlank(fp_Run *pCurrentRun)
 {
 	fp_RunSplitInfo splitInfo;
-	UT_Bool	bCanSplit = pCurrentRun->findFirstNonBlankSplitPoint(splitInfo);
+	bool	bCanSplit = pCurrentRun->findFirstNonBlankSplitPoint(splitInfo);
 
 	if(bCanSplit)
 	{
@@ -522,7 +522,7 @@ UT_Bool fb_LineBreaker::_splitAtNextNonBlank(fp_Run *pCurrentRun)
 		m_pLastRunToKeep = pCurrentRun->getPrev();
 	}
 	
-	return UT_TRUE;
+	return true;
 }
 
 void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo)
@@ -567,7 +567,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			fp_Line* pOtherLine = pCurrentRun->getLine();
 			UT_ASSERT(pOtherLine);
 
-			pOtherLine->removeRun(pCurrentRun, UT_TRUE);
+			pOtherLine->removeRun(pCurrentRun, true);
 			pLine->addRun(pCurrentRun);
 		}
 

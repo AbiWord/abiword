@@ -412,13 +412,13 @@ const char * UT_convertToDimensionlessString(double value, const char * szPrecis
 	return buf;
 }
 
-UT_Bool UT_hasDimensionComponent(const char * sz)
+bool UT_hasDimensionComponent(const char * sz)
 {
 	// TODO : check against known units instead of taking any
 	// TODO : ASCII chars after a number as a sign of units.
 	
 	if (!sz)
-		return UT_FALSE;
+		return false;
 	
 	const char *p = sz;
 	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
@@ -428,9 +428,9 @@ UT_Bool UT_hasDimensionComponent(const char * sz)
 
 	// if we landed on non-NULL, unit component
 	if(*p)
-		return UT_TRUE;
+		return true;
 	else
-		return UT_FALSE;
+		return false;
 }
 
 UT_sint32 UT_paperUnits(const char * sz)
