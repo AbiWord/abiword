@@ -707,7 +707,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		return true;
 //
 // Sevior check if we need this?
-// For some complex operations we can't update stuff in the middle. 
+// For some complex operations we can't update stuff in the middle.
 // In particular insert headers/footers
 //
 //	if(!_shouldScreenUpdateOnGeneralUpdate())
@@ -718,7 +718,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	*/
 	UT_ASSERT(hint != AV_CHG_NONE);
 	AV_ChangeMask mask = hint;
-	
+
 	if (mask & AV_CHG_DO)
 	{
 		bool bUndo = canDo(true);
@@ -736,7 +736,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 				m_chg.bRedo = bRedo;
 		}
 	}
-	
+
 	if (mask & AV_CHG_DIRTY)
 	{
 		bool bDirty = m_pDoc->isDirty();
@@ -924,14 +924,14 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	{
 		// computing which column the cursor is in is rather expensive,
 		// i'm not sure it's worth the effort here...
-		
+
 		fp_Run * pRun = NULL;
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
 		UT_sint32 xCaret2, yCaret2;
 		bool bDirection;
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRun);
-		
+
 		//
 		// Handle Headers/Footers This is a kludge for now
 		//
@@ -945,14 +945,14 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		{
 			// General question for msevior: When is this triggered?
 			// Usually we have an FL_SECTION_SHADOW. - PL
-			// The answer: 
+			// The answer:
 
 			// That if was put in to guard against an extremely
 			// convoluted crasher that occured once. I forget the
 			// details and you really don't want to know. Something
 			// like calling a _generalUpdate() from an insertStrux
 			// while editting the first header and it had been
-            // modified or something...
+			// modified or something...
 
 			if(m_bEditHdrFtr)
 			{
@@ -969,7 +969,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		if (pContainer->getType() == FP_CONTAINER_COLUMN)
 		{
 			fp_Column* pColumn = (fp_Column*) pContainer;
-			
+
 			UT_uint32 nCol=0;
 			fp_Column * pNthColumn = pColumn->getLeader();
 			while (pNthColumn && (pNthColumn != pColumn))
@@ -994,7 +994,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			mask ^= AV_CHG_COLUMN;
 		}
 	}
-	
+
 	// base class does the rest
 	return AV_View::notifyListeners(mask);
 }
@@ -5156,7 +5156,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 
 	char * numberString = (char *) calloc(UT_UCS_strlen(data) + 1, sizeof(char));
 	UT_ASSERT(numberString);
-	
+
 	UT_UCS_strcpy_to_char(numberString, data);
 	if (!isSelectionEmpty())
 	{
@@ -5189,7 +5189,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 	// check for range
 	//	if (number < 0 || number > (UT_uint32) m_pLayout->countPages())
 	//		return false;
-	
+
 	switch (type)
 	{
 	case AP_JUMPTARGET_PAGE:
@@ -5246,11 +5246,11 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
 			fl_BlockLayout * pBL = pSL->getFirstBlock();
 			fp_Line* pLine = pBL->getFirstLine();
-			
+
 			for (UT_uint32 i = 1; i < number; i++)
 			{
 				fp_Line* pOldLine = pLine;
-				
+
 				if ((pLine = pLine->getNext ()) == NULL)
 				{
 					if ((pBL = pBL->getNext ()) == NULL)
@@ -5275,9 +5275,9 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			PT_DocPosition dp = frun->getBlockOffset () + fblock->getPosition ();
 			moveInsPtTo (dp);
 		}
-	
+
 		notifyListeners(AV_CHG_MOTION);
-		
+
 		break;
 	case AP_JUMPTARGET_PICTURE:
 		// TODO
@@ -5287,10 +5287,11 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
 			fl_BlockLayout * pBL;
 			fp_Run* pRun;
-			fp_BookmarkRun * pB[2];
+			fp_BookmarkRun * pB[2] = {NULL,NULL};
+
 			UT_uint32 i = 0;
 			bool bFound = false;
-			
+
 			UT_DEBUGMSG(("fv_View::gotoTarget: bookmark [%s]\n",numberString));
 			if(UT_isUrl(numberString))
 			{
@@ -5301,15 +5302,15 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 			}
 			if(m_pDoc->isBookmarkUnique((const XML_Char *)numberString))
 				goto book_mark_not_found; //bookmark does not exist
-				
+
 			while(pSL)
 			{
 				pBL = pSL->getFirstBlock();
-				
+
 				while(pBL)
 				{
 					pRun = pBL->getFirstRun();
-					
+
 					while(pRun)
 					{
 						if(pRun->getType()== FPRUN_BOOKMARK)
@@ -5330,7 +5331,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 							break;
 						pRun = pRun->getNext();
 					}
-					if(bFound)	
+					if(bFound)
 						break;
 					pBL = pBL->getNext();
 				}
@@ -5338,13 +5339,13 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 					break;
 				pSL = pSL->getNext();
 			}
-			
+
 			if(pB[0] && pB[1])
 			{
 				_clearSelection();
 				PT_DocPosition dp1 = pB[0]->getBlock()->getPosition(false) + pB[0]->getBlockOffset();
 				PT_DocPosition dp2 = pB[1]->getBlock()->getPosition(false) + pB[1]->getBlockOffset();
-				
+
 				if(dp2 - dp1 == 1)
 					moveInsPtTo (dp2);
 				else
@@ -5358,38 +5359,38 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 
 			}
 			else
-			
+
 book_mark_not_found:
 			{
 				//bookmark not found
 				XAP_Frame * pFrame = (XAP_Frame *) getParentData();
 				UT_ASSERT((pFrame));
-		
+
 				const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 				const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound);
-		
+
 				UT_ASSERT(pMsg1);
-		
+
 				char * szMsg = new char[strlen(pMsg1) + BOOKMARK_NAME_SIZE + 10];
 				UT_ASSERT((szMsg));
-		
+
 				sprintf(szMsg, pMsg1, numberString);
-		
+
 				pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 
 				delete[] szMsg;
 				return true;
 			}
-			
+
 		}
-	
+
 		notifyListeners(AV_CHG_MOTION);
 		break;
 	default:
 		// TODO
 		;
 	}
-	
+
 	FREEP(numberString);
 
 	if (isSelectionEmpty())
@@ -6111,7 +6112,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	dOldPoint = (PT_DocPosition) iOldPoint;
 	getEditableBounds(false,posBOD);
 	getEditableBounds(true,posEOD);
-	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD 
+	if(dNewPoint < posBOD || dNewPoint > posEOD || dOldPoint < posBOD
 	   || dNewPoint > posEOD)
 	{
 		return;
@@ -6120,7 +6121,7 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	{
 		return;
 	}
-	
+
 	if (iNewPoint < iOldPoint)
 	{
 		if (iNewPoint < m_iSelectionAnchor)
@@ -6163,11 +6164,11 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 	else
 	{
 		UT_ASSERT(iNewPoint > iOldPoint);
-			
+
 		if (iNewPoint < m_iSelectionAnchor)
 		{
 			UT_ASSERT(iOldPoint <= m_iSelectionAnchor);
-				
+
 			/*
 			  O N A
 			  The selection got smaller.  Both points are
@@ -6394,7 +6395,7 @@ UT_sint32 FV_View::getPageViewTopMargin(void) const
 void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 {
 	UT_ASSERT(iPos1 < iPos2);
-	
+
 	fp_Run* pRun1;
 	fp_Run* pRun2;
 	UT_sint32 xoff;
@@ -6429,7 +6430,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		{
 			bDone = true;
 		}
-		
+
 		fl_BlockLayout* pBlock = pCurRun->getBlock();
 		UT_ASSERT(pBlock);
 
@@ -6441,18 +6442,18 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		pLine->getScreenOffsets(pCurRun, xoff, yoff);
 
 		dg_DrawArgs da;
-			
+
 		da.pG = m_pG;
 		da.xoff = xoff;
 		da.yoff = yoff + pLine->getAscent();
 
 		pCurRun->draw(&da);
-		
+
 		pCurRun = pCurRun->getNext();
 		if (!pCurRun)
 		{
 			fl_BlockLayout* pNextBlock;
-			
+
 			pNextBlock = pBlock->getNextBlockInDocument();
 			if (pNextBlock)
 			{
@@ -7454,7 +7455,7 @@ void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
 	UT_ASSERT(pH);
 
 	const XML_Char * pTarget = pH->getTarget();
-	
+
 	if(*pTarget == '#')
 		pTarget++;
 
@@ -9555,7 +9556,7 @@ void FV_View::RestoreSavedPieceTableState(void)
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
 	m_pDoc->endUserAtomicGlob(); // End the big undo block
-	setScreenUpdateOnGeneralUpdate(true); 	
+	setScreenUpdateOnGeneralUpdate(true);	
 	_generalUpdate();
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -10162,7 +10163,7 @@ void FV_View::markSavedPositionAsNeeded(void)
    region so the insertion piont is constrained to be in shadow section UNLESS
    bOverride is true in which case we return the Edittable region again.
    
-   We need all this so that we can jump into a Header/Footer region, stay 
+   We need all this so that we can jump into a Header/Footer region, stay
    there with simple keyboard motions and jump out again with a cursor click
    outside the header/footer.
 
