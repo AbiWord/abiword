@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,3 +40,4 @@
 #include "ap_TB_LabelSet_it-IT.h"
 #include "ap_TB_LabelSet_no-BOK.h"
 #include "ap_TB_LabelSet_sv-SE.h"
+#include "ap_TB_LabelSet_pt-PT.h"
