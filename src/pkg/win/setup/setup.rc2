@@ -1,5 +1,5 @@
 // AbiWord
-// Copyright (C) 1998 AbiSource, Inc.
+// Copyright (C) 2000 AbiSource, Inc.
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,6 +17,28 @@
 // 02111-1307, USA.
 //////////////////////////////////////////////////////////////////
 
-#include <windows.h>
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM setup.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
 
-#include <setup.rc2>
+#define AP_ICON_SETUP		10000
+
+#ifdef RC_INVOKED
+
+#ifdef ABISOURCE_LICENSED_TRADEMARKS
+
+AP_ICON_SETUP           ICON    DISCARDABLE     "setup_tm.ico"
+
+#else
+
+AP_ICON_SETUP           ICON    DISCARDABLE     "setup.ico"
+
+#endif
+
+#endif

@@ -225,6 +225,38 @@ long ASK_getFileSetTotalSizeInBytes(ASK_FileSet* pFileSet)
 	return len;
 }
 
+long ASK_getFileSetTotalSizeInBytesToCopy(ASK_FileSet* pFileSet)
+{
+	long len = 0;
+	int i;
+
+	for (i=0; i<pFileSet->iNumFilesInSet; i++)
+	{
+		if(pFileSet->aFiles[i]->bNoCopy == 0)
+		{
+			len += pFileSet->aFiles[i]->iOriginalLength;
+		}
+	}
+
+	return len;
+}
+
+long ASK_getFileSetTotalFilesToCopy(ASK_FileSet* pFileSet)
+{
+	long count = 0;
+	int i;
+
+	for (i=0; i<pFileSet->iNumFilesInSet; i++)
+	{
+		if(pFileSet->aFiles[i]->bNoCopy == 0)
+		{
+			count++;
+		}
+	}
+
+	return count;
+}
+
 void ASK_convertBytesToString(long n, char* pszStrings)
 {
 	if (n < 1024)
@@ -244,3 +276,18 @@ void ASK_convertBytesToString(long n, char* pszStrings)
 	sprintf(pszStrings, "%4.1f MB", n / (1024 * 1024.0));
 }
 
+int ASK_isFileNewer(char* pszFileName, unsigned int iModTime)
+{
+	if(ASK_fileExists(pszFileName))
+	{
+		if(ASK_getFileModTime(pszFileName) <= iModTime)
+		{
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+	}
+	return 0;
+}

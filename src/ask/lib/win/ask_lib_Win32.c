@@ -50,6 +50,8 @@ char		g_szBrowseDir[1024];
 
 HFONT		g_hfontMain;
 
+static int	s_bInstallationSuccessfull = 0;
+
 #define		ID_PANE			1000
 #define		ID_BTN_NEXT		1001
 #define		ID_BTN_CANCEL	1002
@@ -163,6 +165,7 @@ void _updateDirAndSpace(char* pszPath)
 	DWORD iNumberOfFreeClusters;
 	DWORD iTotalNumberOfClusters;
 	DWORD iBytes;
+	int iResult;
 
 	if (g_pSet_BrowseDir->pszDirName &&g_pSet_BrowseDir->pszDirName[0])
 	{
@@ -184,17 +187,30 @@ void _updateDirAndSpace(char* pszPath)
 	p++;
 	*p = 0;
 	
-	GetDiskFreeSpace(szBuf,
+	iResult = GetDiskFreeSpace(szBuf,
 					 &iSectorsPerCluster,
 					 &iBytesPerSector,
 					 &iNumberOfFreeClusters,
 					 &iTotalNumberOfClusters);
 
-	iBytes = iNumberOfFreeClusters * iSectorsPerCluster * iBytesPerSector;
+	iBytes = (iResult != 0 ? iNumberOfFreeClusters : 0)
+		* iSectorsPerCluster * iBytesPerSector;
 
 	// and set it into the static text display
 	ASK_convertBytesToString(iBytes, szBuf);
 	SetWindowText(g_hwndStatic_DiskSpace, szBuf);
+
+	if(iResult == 0)
+	{
+		EnableWindow(g_hwndButtonNext, FALSE);
+		MessageBox(g_hwndMain,
+			"The selected disk is not available.", "Error",
+			MB_ICONEXCLAMATION | MB_OK);
+	}
+	else
+	{
+		EnableWindow(g_hwndButtonNext, TRUE);
+	}
 }
 
 static void _png_read(png_structp png_ptr, png_bytep data, png_size_t length)
@@ -336,7 +352,7 @@ int try_cancel(void)
 	{
 		g_iWhichButton = ID_BTN_CANCEL;
 		QuitEventLoop();
-		return 0;
+		return 1;
 	}
 	else
 	{
@@ -428,7 +444,8 @@ LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		else if (wParam == 27)
 		{
-			return try_cancel();
+			try_cancel();
+			return 0;
 		}
 		else
 		{
@@ -445,7 +462,8 @@ LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case BN_CLICKED:
 			if (wID == ID_BTN_CANCEL)
 			{
-				return try_cancel();
+				try_cancel();
+				return 0;
 			}
 			else if (wID == ID_BTN_NEXT)
 			{
@@ -473,6 +491,21 @@ LRESULT CALLBACK WndProc_Main(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		
 		return 0;
 	}
+
+	case WM_CLOSE:
+	{
+		if(s_bInstallationSuccessfull)
+		{
+			QuitEventLoop();
+			PostQuitMessage(0);
+			return 0;
+		}
+		else
+		{
+			return ! try_cancel();
+		}
+	}
+
 	case WM_DESTROY:
 	{
 		PostQuitMessage(0);
@@ -615,7 +648,7 @@ LRESULT CALLBACK WndProc_Graphic(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 #define GRAPHIC_WIDTH		200
 
-int ASK_Win32_Init(HINSTANCE hInstance)
+int ASK_Win32_Init(HINSTANCE hInstance, long iIconId)
 {
 	int 		iScreenWidth;
 	int 		iScreenHeight;
@@ -639,7 +672,7 @@ int ASK_Win32_Init(HINSTANCE hInstance)
 	g_wndclassMain.cbClsExtra = 0;
 	g_wndclassMain.cbWndExtra = 0;
 	g_wndclassMain.hInstance = hInstance;
-	g_wndclassMain.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	g_wndclassMain.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(iIconId));
 	g_wndclassMain.hCursor = LoadCursor(NULL, IDC_ARROW);
 	g_wndclassMain.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
 	g_wndclassMain.lpszMenuName = NULL;
@@ -707,7 +740,7 @@ int ASK_Win32_Init(HINSTANCE hInstance)
 
 	g_hwndMain = CreateWindow("AbiSetup_MainWindow",
 						  "AbiSetup",
-						  WS_BORDER | WS_VISIBLE | WS_CLIPCHILDREN,
+						  WS_BORDER | WS_VISIBLE | WS_CLIPCHILDREN | WS_SYSMENU,
 						  (iScreenWidth - MAINWIN_WIDTH) / 2,
 						  (iScreenHeight - MAINWIN_HEIGHT) /2,
 						  MAINWIN_WIDTH,
@@ -963,6 +996,9 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 	int		iHeight;
 	RECT	r;
 
+	HCURSOR hcursorHourGlass;
+	HCURSOR	hcursorPrev;
+
 	if (pSet->bFixedPath)
 	{
 		// just do the fixed default path, but check for special names
@@ -978,6 +1014,9 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 
 		return 1;
 	}
+
+	hcursorHourGlass = LoadCursor(NULL, IDC_WAIT);
+	hcursorPrev = SetCursor(hcursorHourGlass);
 
 	sprintf(buf, "Choose directory for \"%s\"", pSet->pszName);
 	SetWindowText(g_hwndMain, buf);
@@ -1063,13 +1102,13 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 	SendMessage(hwndStatic_Dir, WM_SETFONT, (WPARAM) g_hfontMain, 0);
 	SendMessage(hwndStatic_Space, WM_SETFONT, (WPARAM) g_hfontMain, 0);
 
-	ASK_convertBytesToString(ASK_getFileSetTotalSizeInBytes(pSet), buf2);
+	ASK_convertBytesToString(ASK_getFileSetTotalSizeInBytesToCopy(pSet), buf2);
 	
 	sprintf(buf,
 			"\r\nPlease select a directory where '%s' will be installed.\r\n\r\nThe set '%s' contains %d files,\r\na total of %s.\r\n\r\n",
 			pSet->pszName,
 			pSet->pszName,
-			pSet->iNumFilesInSet,
+			ASK_getFileSetTotalFilesToCopy(pSet),
 			buf2);
 	SetWindowText(hwndStatic_Top, buf);
 
@@ -1077,6 +1116,8 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 	g_hwndStatic_BrowseDir = hwndStatic_Dir;
 	g_hwndStatic_DiskSpace = hwndStatic_Space;
 	
+	SetCursor(hcursorPrev);
+
 	_updateDirAndSpace(g_pSet_BrowseDir->pszDefaultPath);
 
 	result = DoEventLoop();
@@ -1111,8 +1152,8 @@ int ASK_DoScreen_readyToCopy(int iNumSets, ASK_FileSet** ppSets)
 	{
 		ASK_FileSet* pSet = ppSets[ndxSet];
 
-		iTotalBytes += ASK_getFileSetTotalSizeInBytes(pSet);
-		iTotalNumFiles += pSet->iNumFilesInSet;
+		iTotalBytes += ASK_getFileSetTotalSizeInBytesToCopy(pSet);
+		iTotalNumFiles += ASK_getFileSetTotalFilesToCopy(pSet);
 	}
 
 	ASK_convertBytesToString(iTotalBytes, buf2);
@@ -1157,7 +1198,8 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 	  etc.
 	*/
 
-	int 	result;
+	int 	bCopyCancelled = 0;
+	int		bErrorOccured = 0;
 	int 	ndxSet;
 	int 	ndxFile;
 
@@ -1183,8 +1225,8 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 	{
 		ASK_FileSet* pSet = ppSets[ndxSet];
 
-		iTotalBytes += ASK_getFileSetTotalSizeInBytes(pSet);
-		iTotalNumFiles += pSet->iNumFilesInSet;
+		iTotalBytes += ASK_getFileSetTotalSizeInBytesToCopy(pSet);
+		iTotalNumFiles += ASK_getFileSetTotalFilesToCopy(pSet);
 	}
 
 	GetClientRect(g_hwndPane, &r);
@@ -1264,7 +1306,7 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 			);
 	SetWindowText(hwndStatic_Top, buf);
 
-	for (ndxSet=0; ndxSet<iNumSets; ndxSet++)
+	for (ndxSet=0; ndxSet<iNumSets && bCopyCancelled == 0; ndxSet++)
 	{
 		ASK_FileSet* pSet = ppSets[ndxSet];
 
@@ -1275,81 +1317,117 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 		ASK_fixSlashes(pSet->szInstallPath);
 		ASK_verifyDirExists(pSet->szInstallPath);
 
-		for (ndxFile=0; ndxFile<pSet->iNumFilesInSet; ndxFile++)
+		for (ndxFile=0; ndxFile<pSet->iNumFilesInSet && bCopyCancelled == 0; ndxFile++)
 		{
-			ASK_DataFile* pFile = pSet->aFiles[ndxFile];
-			
-			iCurFile++;
-			
-			sprintf(buf, "Copying file %d of %d (%s)",
-					iCurFile,
-					iTotalNumFiles,
-					pFile->pszFileName
-					);
-			SetWindowText(hwndStatic_CurFile, buf);
-
+			if(pSet->aFiles[ndxFile]->bNoCopy == 0)
 			{
-				int err;
-
-				if (pFile->pszRelPath)
-				{
-					char szRelDir[ASK_MAX_PATH + 1];
-
-					sprintf(szRelDir, "%s/%s", pSet->szInstallPath, pFile->pszRelPath);
-					ASK_fixSlashes(szRelDir);
-					ASK_verifyDirExists(szRelDir);
-					
-					sprintf(pFile->szInstallPath, "%s/%s/%s", pSet->szInstallPath, pFile->pszRelPath, pFile->pszFileName);
-				}
-				else
-				{
-					sprintf(pFile->szInstallPath, "%s/%s", pSet->szInstallPath, pFile->pszFileName);
-				}
-
-				ASK_fixSlashes(pFile->szInstallPath);
+				ASK_DataFile* pFile = pSet->aFiles[ndxFile];
 				
-				// TODO check to see if the file and/or its directory exist.
+				iCurFile++;
 				
-				err = ASK_decompressAndWriteFile(pFile);
-				if (err < 0)
-				{
-					char szErr[ASK_MAX_PATH+1];
+				sprintf(buf, "Copying file %d of %d (%s)",
+						iCurFile,
+						iTotalNumFiles,
+						pFile->pszFileName
+						);
+				SetWindowText(hwndStatic_CurFile, buf);
 
-					sprintf(szErr, "Attempt to write file '%s' failed", pFile->szInstallPath);
-					
-					MessageBox(g_hwndMain, szErr, "Error", MB_ICONEXCLAMATION | MB_OK);
-				}
-
-				if (
-					!(pFile->bNoCopy)
-					&& !(pFile->bNoRemove))
 				{
-					ASK_addToRemoveFile(pFile->szInstallPath);
+					int err;
+					int bKeepExistingFile = 0;
+
+					if (pFile->pszRelPath)
+					{
+						char szRelDir[ASK_MAX_PATH + 1];
+
+						sprintf(szRelDir, "%s/%s", pSet->szInstallPath, pFile->pszRelPath);
+						ASK_fixSlashes(szRelDir);
+						ASK_verifyDirExists(szRelDir);
+
+						sprintf(pFile->szInstallPath, "%s/%s/%s", pSet->szInstallPath, pFile->pszRelPath, pFile->pszFileName);
+					}
+					else
+					{
+						sprintf(pFile->szInstallPath, "%s/%s", pSet->szInstallPath, pFile->pszFileName);
+					}
+
+					ASK_fixSlashes(pFile->szInstallPath);
+
+					if(ASK_isFileNewer(pFile->szInstallPath, pFile->iModTime))
+					{
+						sprintf(buf, "A file on your system is newer than the one supplied with this\r\n " \
+									"installation. It is recommended that you keep the existing file.\r\n\r\n " \
+									"File name:\t'%s'\r\n\r\n" \
+									"Do you want to keep this file?",
+							pFile->szInstallPath);
+
+						if(IDYES == MessageBox(g_hwndMain, buf, "Version Conflict",
+							MB_ICONEXCLAMATION | MB_YESNO))
+						{
+							bKeepExistingFile = 1;
+							iCurBytes += pFile->iOriginalLength;
+						}
+					}
+
+					if(bKeepExistingFile == 0)
+					{
+						err = ASK_decompressAndWriteFile(pFile);
+						if (err < 0)
+						{
+							sprintf(buf, "Attempt to write file '%s' failed", pFile->szInstallPath);
+
+							bErrorOccured = 1;
+							if(IDCANCEL == MessageBox(g_hwndMain, buf, "Error",
+								MB_ICONEXCLAMATION | MB_OKCANCEL))
+							{
+								if(bCopyCancelled = try_cancel())
+								{
+									break;
+								}
+							}
+						}
+						else
+						{
+							iCurBytes += pFile->iOriginalLength;
+						}
+					}
+
+					sprintf(buf, "Processed %d of %d bytes (%d%%)",iCurBytes, iTotalBytes, (iCurBytes * 100 / iTotalBytes));
+					SetWindowText(hwndStatic_CurBytes, buf);
+
+					SendMessage(hwndProgress, PBM_SETPOS, (WPARAM) (iCurBytes * 100 / iTotalBytes), (LPARAM) 0);
+
+					if (
+						!(pFile->bNoCopy)
+						&& !(pFile->bNoRemove))
+					{
+						ASK_addToRemoveFile(pFile->szInstallPath);
+					}
 				}
 			}
-			
-			iCurBytes += pFile->iOriginalLength;
-			
-			sprintf(buf, "Copied %d of %d bytes (%d%%)",iCurBytes, iTotalBytes, (iCurBytes * 100 / iTotalBytes));
-			SetWindowText(hwndStatic_CurBytes, buf);
-
-			SendMessage(hwndProgress, PBM_SETPOS, (WPARAM) (iCurBytes * 100 / iTotalBytes), (LPARAM) 0);
 		}
 	}
 
-	sprintf(buf,
-			"\r\nCopying is now complete.  Click the 'Next' button below to continue."
-			);
-	SetWindowText(hwndStatic_Top, buf);
+	if(bErrorOccured == 0)
+	{
+		sprintf(buf,
+				"\r\nCopying is now complete.  Click the 'Next' button below to continue."
+				);
+		SetWindowText(hwndStatic_Top, buf);
 
-	SetWindowText(g_hwndMain, "Done Copying Files");
-	EnableWindow(g_hwndButtonCancel, FALSE);
+		SetWindowText(g_hwndMain, "Done Copying Files");
+		EnableWindow(g_hwndButtonCancel, FALSE);
 
-	ShowWindow(hwndProgress, SW_HIDE);
-	
-	result = DoEventLoop();
+		ShowWindow(hwndProgress, SW_HIDE);
 
-	EnableWindow(g_hwndButtonCancel, TRUE);
+		s_bInstallationSuccessfull = 1;
+		DoEventLoop();
+	}
+	else
+	{
+		EnableWindow(g_hwndButtonNext, FALSE);
+		EnableWindow(g_hwndButtonCancel, FALSE);
+	}
 	
 	DestroyWindow(hwndStatic_Top);
 	DestroyWindow(hwndStatic_CurSet);
@@ -1357,7 +1435,7 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 	DestroyWindow(hwndStatic_CurBytes);
 	DestroyWindow(hwndProgress);
 	
-	return result;
+	return bErrorOccured;
 }
 
 int ASK_DoScreen_license(char* pszText)
@@ -1367,7 +1445,7 @@ int ASK_DoScreen_license(char* pszText)
 	HWND	hwndStatic;
 	RECT 	r;
 
-	SetWindowText(g_hwndMain, "You must accept this license in order to install the software.");
+	SetWindowText(g_hwndMain, "GNU General Public License.");
 	
 	GetClientRect(g_hwndPane, &r);
 	
@@ -1398,12 +1476,9 @@ int ASK_DoScreen_license(char* pszText)
 	SendMessage(hwndStatic, WM_SETFONT, (WPARAM) g_hfontMain, 0);
 	SendMessage(hwndText, WM_SETFONT, (WPARAM) g_hfontMain, 0);
 	
-	SetWindowText(hwndStatic, "Do you accept the terms of this license?");
+	SetWindowText(hwndStatic, "These are the terms of the GNU General Public License.");
 	
 	SetWindowText(hwndText, pszText);
-
-	SetWindowText(g_hwndButtonNext, "Yes");
-	SetWindowText(g_hwndButtonCancel, "No");
 
 	result = DoEventLoop();
 

@@ -1,5 +1,5 @@
 /*  AbiSource Setup Kit
- *  Copyright (C) 1999 AbiSource, Inc.
+ *  Copyright (C) 2000 AbiSource, Inc.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 */
 #include <ask.h>
 
-int main(int argc, char**argv)
+void ASK_PlatformSpecificInstructions(FILE* fpOut)
 {
-	return lib_main(argc, argv);
+	fprintf(fpOut, "#pragma warning(disable:4049)\n\n");
 }

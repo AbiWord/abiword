@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CSRCS=			ask_gendata_main_Win32.c
+CSRCS=			ask_gendata_main_Win32.c ask_gendata_data_Win32.c
 
 PROGRAM=		$(BINDIR)/ask_gendata.exe
 
@@ -37,6 +37,12 @@ ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 
 GARBAGE=		ask_gendata.map ask_gendata.pdb
 TARGETS=		$(PROGRAM)
+
+ifeq ($(OS_NAME), WIN32)
+INCLUDES=		-I$(ABI_XX_ROOT)/src/ask/lib/xp
+else
+INCLUDES=		-I$(ABI_ROOT)/src/ask/lib/xp
+endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

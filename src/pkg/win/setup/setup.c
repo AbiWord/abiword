@@ -21,14 +21,16 @@
 
 #include "ask.h"
 
-extern int ASK_Win32_Init(HINSTANCE hInstance);
+#include "setup.rc2"
+
+extern int ASK_Win32_Init(HINSTANCE hInstance, long iIconId);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				   PSTR szCmdLine, int iCmdShow)
 {
 	int result;
 	
-	if (0 != ASK_Win32_Init(hInstance))
+	if (0 != ASK_Win32_Init(hInstance, AP_ICON_SETUP))
 	{
 		return -1;
 	}
@@ -99,7 +101,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 		if (err != 0)
 		{
-			// TODO inform the user of the error
+			MessageBox(NULL, "Installation is not complete", "AbiSetup", MB_OK);
+			goto all_done;
 		}
 	}
 

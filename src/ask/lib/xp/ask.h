@@ -79,12 +79,17 @@ void ASK_decompressBuffer(const unsigned char* pCompressedBytes, long iCompresse
 int ASK_decompressAndWriteFile(ASK_DataFile* pDataFile);
 
 long ASK_getFileSetTotalSizeInBytes(ASK_FileSet* pFileSet);
+long ASK_getFileSetTotalSizeInBytesToCopy(ASK_FileSet* pFileSet);
+long ASK_getFileSetTotalFilesToCopy(ASK_FileSet* pFileSet);
 void ASK_convertBytesToString(long n, char* pszStrings);
+int ASK_isFileNewer(char* pszFileName, unsigned int iModTime);
 
 /*
   Functions implemented in platform code
 */
 
+void ASK_createRemoveFile(char* pszName);
+void ASK_registerForRemove(void);
 unsigned int ASK_getFileModTime(const char* pszFileName);
 void ASK_setFileModTime(const char* pszFileName, unsigned int iModTime);
 unsigned int ASK_getFileAttributes(const char* pszFileName);
@@ -108,6 +113,9 @@ int ASK_DoScreen_copyComplete(int iNumSets, ASK_FileSet** ppSets);
 int ASK_YesNo(char* pszTitle, char* pszMessage);
 
 void ASK_PopulateStartMenu(char* pszGroupName, int iNumSets, ASK_FileSet** ppSets);
+
+void ASK_PlatformSpecificInstructions(FILE* fpOut);
+int lib_main(int argc, char** argv);
 
 #endif /* ASK_H */
 
