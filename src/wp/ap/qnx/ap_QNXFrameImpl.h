@@ -37,6 +37,7 @@ class AP_QNXFrameImpl : public XAP_QNXFrameImpl
  public:
 	AP_QNXFrameImpl(AP_QNXFrame *pQNXFrame, XAP_QNXApp *pQNXApp); 
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
+	void setDocumentFocus();
 
  protected:
 	friend class AP_QNXFrame;

@@ -190,7 +190,7 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); 
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_GETS_FOCUS, Pt_GETS_FOCUS); 
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_GETS_FOCUS| Pt_CALLBACKS_ACTIVE, Pt_GETS_FOCUS|Pt_CALLBACKS_ACTIVE); 
 	m_dArea = PtCreateWidget(PtRaw, m_dAreaGroup, n, args); 
 
 	PtAddEventHandler(m_dArea, Ph_EV_KEY, _fe::key_press_event, this);
@@ -243,3 +243,6 @@ void AP_QNXFrameImpl::_setScrollRange(apufi_ScrollType scrollType,int iValue,flo
 
 }
 
+void AP_QNXFrameImpl::setDocumentFocus() {
+PtContainerGiveFocus(m_dArea,NULL);
+}
