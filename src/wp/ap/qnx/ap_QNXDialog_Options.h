@@ -41,10 +41,6 @@ public:
     virtual void event_Cancel(void);
     virtual void event_Apply(void);
     virtual void event_WindowDelete(void);
-	virtual void event_IgnoreEdit(void);
-	virtual void event_SetDefaults(void);
-	virtual void event_IgnoreReset(void);
-	virtual void event_DictionaryEdit(void);
 
  protected:
 
@@ -78,7 +74,19 @@ public:
 #undef SET_GATHER
 
  protected:
-	
+	static int s_ok_clicked			(PtWidget_t *, void *, PtCallbackInfo_t *info);
+	static int s_cancel_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
+	static int s_apply_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
+	static int s_delete_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
+	static int s_ignore_reset_clicked	(PtWidget_t *, void *, PtCallbackInfo_t *info);
+	static int s_ignore_edit_clicked	(PtWidget_t *, void *, PtCallbackInfo_t *info);
+	static int s_dict_edit_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
+	static int s_defaults_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
+
+	static int s_checkbutton_toggle	(PtWidget_t *, void *, PtCallbackInfo_t *info);
+	static int s_menu_item_activate	(PtWidget_t *, void *, PtCallbackInfo_t *info);
+
+		
 	// private construction functions
 	PtWidget_t * _constructWindow(void);
 

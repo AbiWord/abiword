@@ -38,7 +38,7 @@
 #include "ut_qnxHelper.h"
 
 /*****************************************************************/
-static int s_ok_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_ok_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
@@ -46,7 +46,7 @@ static int s_ok_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 	return Pt_CONTINUE;
 }
 
-static int s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(widget && dlg); 
@@ -54,7 +54,7 @@ static int s_cancel_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *in
 	return Pt_CONTINUE;
 }
 
-static int s_apply_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_apply_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(widget && dlg); 
@@ -62,52 +62,51 @@ static int s_apply_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *inf
 	return Pt_CONTINUE;
 }
 
-static int s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_delete_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
-	UT_DEBUGMSG(("AP_QNXDialog_Options::s_delete_clicked\n"));
 	dlg->event_WindowDelete(); 
 	return Pt_CONTINUE;
 }
 
-
-static int s_ignore_reset_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_ignore_reset_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
-	dlg->event_IgnoreReset(); 
+	dlg->_event_IgnoreReset(); 
 	return Pt_CONTINUE;
 }
 
-static int s_ignore_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_ignore_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
-	dlg->event_IgnoreEdit(); 
+	dlg->_event_IgnoreEdit(); 
 	return Pt_CONTINUE;
 }
 
-static int s_dict_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_dict_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(dlg); 
-	dlg->event_DictionaryEdit(); 
+	printf("dict edit clicked \n");
+	dlg->_event_DictionaryEdit(); 
 	return Pt_CONTINUE;
 }
 
-static int s_defaults_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_defaults_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
 	UT_ASSERT(widget && dlg); 
-	dlg->event_SetDefaults(); 
+	dlg->_event_SetDefaults(); 
 	return Pt_CONTINUE;
 }
 
 
 // these function will allow multiple widget to tie into the same logic
 // function (at the AP level) to enable/disable stuff
-static int s_checkbutton_toggle(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_checkbutton_toggle(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 { 
 #if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
@@ -119,7 +118,7 @@ static int s_checkbutton_toggle(PtWidget_t *widget, void *data, PtCallbackInfo_t
 	return Pt_CONTINUE;
 }
 
-static int s_menu_item_activate(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+int AP_QNXDialog_Options::s_menu_item_activate(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 #if 0
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
@@ -266,13 +265,6 @@ void AP_QNXDialog_Options::event_WindowDelete(void)
 	    m_answer = AP_Dialog_Options::a_CANCEL;    
 }
 
-//#define UNDERBAR((x)) void AP_QNXDialog_Options##(x)(void) { AP_Dialog_Options::_##(x); }
-
-void AP_QNXDialog_Options::event_IgnoreEdit(void) { /* AP_Dialog_Options::_eventIgnoreEdit(); */ }
-void AP_QNXDialog_Options::event_SetDefaults(void) { /* AP_Dialog_Options::_eventSetDefaults(); */ }
-void AP_QNXDialog_Options::event_IgnoreReset(void) { /* AP_Dialog_Options::_eventIgnoreReset(); */ }
-void AP_QNXDialog_Options::event_DictionaryEdit(void) { /* AP_Dialog_Options::_eventDictionaryEdit(); */ }
-
 /*****************************************************************/
 PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 {
@@ -332,29 +324,32 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtArg_t args[10];
 	int		n;
 
-#define WIN_WIDTH  100	
-#define WIN_HEIGHT 200	
+#define WIN_WIDTH  450	
+#define WIN_HEIGHT 320	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_Options_OptionsTitle), 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowOptions = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddCallback(windowOptions, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, WIN_WIDTH, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, WIN_HEIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_HORZ_ALIGN, Pt_GROUP_HORZ_CENTER, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0);
 	PtWidget_t *vallgroup = PtCreateWidget(PtGroup, windowOptions, n, args);
 
 	n = 0;
 	PhPoint_t pos;
-#define PANEL_WIDTH (WIN_WIDTH - 20)
+#define PANEL_WIDTH (WIN_WIDTH - 0)
 #define PANEL_HEIGHT (WIN_HEIGHT - 50)
 	pos.x = (WIN_WIDTH - PANEL_WIDTH) / 2;
 	pos.y = (WIN_HEIGHT - PANEL_HEIGHT - 30) / 2;
 	PtSetArg(&args[n++], Pt_ARG_POS, &pos, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 530, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 380, 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, PANEL_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, PANEL_HEIGHT, 0);
 	PtWidget_t *panelGroup = PtCreateWidget(PtPanelGroup, vallgroup, n, args);	
 
 #define TAB_WIDTH  (PANEL_WIDTH - 30)
@@ -368,8 +363,8 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
-//	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
 	PtWidget_t *vspellgroup = PtCreateWidget(PtGroup, spellingTab, n, args);
 
 	n = 0;
@@ -415,6 +410,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	listSpellDicts = PtCreateWidget(PtComboBox, hcustomdict, n, args);
 	const char *items1[] = { "custom.dic" };
 	PtListAddItems(listSpellDicts, items1, 1, 0);
+	UT_QNXComboSetPos(listSpellDicts, 1);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue( AP_STRING_ID_DLG_Options_Btn_CustomDict)), 0);
@@ -450,8 +446,8 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
-//	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
 	PtWidget_t *vprefgroup = PtCreateWidget(PtGroup, prefTab, n, args);
 
 	n = 0;
@@ -481,8 +477,8 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
-//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
-//	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
 	PtWidget_t *vviewgroup = PtCreateWidget(PtGroup, viewTab, n, args);
 
 	/** View View Show/Hide **/
@@ -514,6 +510,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	listViewRulerUnit = PtCreateWidget(PtComboBox, hrulergroup, n, args);
 	const char *items2[] = { "inch", "mm", "cm", "twips", "points", "pico"  };
 	PtListAddItems(listViewRulerUnit, items2, 6, 0);
+	UT_QNXComboSetPos(listViewRulerUnit, 1);
 	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewToolbars)), 0);
@@ -547,7 +544,6 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 
 	/* Create the horizontal button group */
 	n = 0;
-//	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
 	PtWidget_t *hbuttongroup = PtCreateWidget (PtGroup, vallgroup, n, args);
 
@@ -585,13 +581,6 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtAddCallback(buttonSpellIgnoreReset, Pt_CB_ACTIVATE, s_ignore_reset_clicked, this);
 	PtAddCallback(buttonSpellDictionary, Pt_CB_ACTIVATE, s_dict_edit_clicked, this);
 
-#if 0
-	// to enable/disable other controls (hide errors)
-	gtk_signal_connect(GTK_OBJECT(checkbuttonSpellCheckAsType),
-						"toggled",
-                       GTK_SIGNAL_FUNC(s_checkbutton_toggle),
-                       (void *) this);
-#endif
 
     m_windowMain = windowOptions;
 	m_notebook = notebook1;
@@ -830,44 +819,11 @@ static void search_for_value ( PtWidget_t *widget, void * _value )
 #endif
 }
 
-// returns -1 if not found
-int option_menu_set_by_key ( PtWidget_t *option_menu, void * value, char *key )
-{
-#if 0
-	UT_ASSERT( option_menu && key && GTK_IS_OPTION_MENU(option_menu));
-
-	// lookup for the key with the value of dim
-	search_data data = { -1, -1, key, value };
-
-	PtWidget_t *menu = gtk_option_menu_get_menu( GTK_OPTION_MENU(option_menu));
-	UT_ASSERT(menu&&GTK_IS_MENU(menu));
-
-	// iterate through all the values
-	gtk_container_forall ( GTK_CONTAINER(menu), search_for_value, (void *) &data );
-
-	// if we found a value that matches, then say select it
-	if ( data.found >= 0 )
-	{
-		gtk_option_menu_set_history( GTK_OPTION_MENU(option_menu), data.found );
-		//UT_DEBUGMSG(("search found %d\n", data.found ));
-	}
-	else
-		UT_DEBUGMSG(("%s:%f search NOT found (searched %d indexes)\n", __FILE__, __LINE__, data.index ));
-
-	return data.found;
-#endif
-	return 0;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
 void    AP_QNXDialog_Options::_setViewRulerUnits(UT_Dimension dim) 
 {	
+	UT_DEBUGMSG(("TODO: setViewRulerUnits "));
 #if 0
-	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
-
 	int r = option_menu_set_by_key ( m_listViewRulerUnits, (void *)dim, WIDGET_MENU_VALUE_TAG ); 
-	UT_ASSERT( r != -1 );
 #endif
 }
 
@@ -882,17 +838,12 @@ DEFINE_GET_SET_BOOL	(ViewUnprintable);
 
 int AP_QNXDialog_Options::_gatherNotebookPageNum(void) 
 {				
-#if 0
-	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook)); 
-	return gtk_notebook_get_current_page( GTK_NOTEBOOK(m_notebook) ); 
-#endif
+	UT_DEBUGMSG(("TODO: _gatherNotebookPageNum "));
+	return 0;
 }			
 
 void    AP_QNXDialog_Options::_setNotebookPageNum(int pn) 
 {	
-#if 0
-	UT_ASSERT(m_notebook && GTK_IS_NOTEBOOK(m_notebook)); 
-	gtk_notebook_set_page( GTK_NOTEBOOK(m_notebook), pn ); 
-#endif
+	UT_DEBUGMSG(("TODO: _gatherNotebookPageNum "));
 }
 

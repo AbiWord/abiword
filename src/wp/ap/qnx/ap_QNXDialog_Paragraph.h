@@ -40,7 +40,7 @@ public:
 	// callbacks can fire these events
 	virtual void event_OK(void);
 	virtual void event_Cancel(void);
-	virtual void event_Tabs(void);
+	virtual void event_Tabs(PtWidget_t *widget, PtCallbackInfo_t *info);
 	virtual void event_WindowDelete(void);
 
 	// all data controls are of three types in this dialog; the static
@@ -109,6 +109,7 @@ public:
 	PtWidget_t * m_menuitemExactly;
 	PtWidget_t * m_menuitemMultiple;
 	PtWidget_t * m_drawingareaPreview;
+	PtWidget_t * m_drawingareaPreviewGroup;
 
 	PtWidget_t * m_checkbuttonWidowOrphan;
 	PtWidget_t * m_checkbuttonKeepLines;
