@@ -42,7 +42,7 @@ MINGRES_INCS=--include-dir=$(ABI_ROOT)/src/wp/ap/win --include-dir=$(ABI_ROOT)/s
 CPPSRCS+=		dummy.cpp
 
 ABI_LIBS=		unicows kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-			shell32 uuid comctl32 ole32 unicows
+			shell32 uuid comctl32 ole32
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiImpExp AbiWordVer AbiSpell Abi_libwv fribidi \
@@ -65,7 +65,7 @@ ABI_APPLIBDEP=		$(ABI_APPLIBS)
 
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 ####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
-ABI_LIBS=		unicows kernel32 user32 gdi32 winspool comdlg32 advapi32 \
+ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 			shell32 uuid comctl32 msvcprt ole32
 
 GARBAGE=		AbiWord.map AbiWord.pdb
@@ -76,6 +76,8 @@ endif
 # ABI_APPLIBS+=	Abi_libcurl
 # # Note: ws2_32.lib is the winsock 2 import library (may cause user to require Winsock 2 update)
 # ABI_LIBS+=		ws2_32
+# so lets try delay loading it, win95 users should be able to run abiword, just not its libcurl based features
+#ABI_LIBS+= Delayimp -delayload:ws2_32.dll
 # endif
 
 TARGETS=		$(PROGRAM)
