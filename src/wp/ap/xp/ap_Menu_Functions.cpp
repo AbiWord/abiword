@@ -451,7 +451,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
-  else if(pView->isInTable())
+  else if(pView->isInTable(pView->getPoint()-1) && pView->isInTable()) // isintable includes first
   {
     s = EV_MIS_Gray;
   }

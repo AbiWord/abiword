@@ -72,6 +72,7 @@ class fl_DocSectionLayout;
 class UT_GrowBuf;
 class fl_FrameLayout;
 class fp_FrameContainer;
+class fl_BlockLayout;
 
 class ABI_EXPORT fl_ContainerLayout : public fl_Layout
 {
@@ -139,6 +140,9 @@ public:
 	UT_sint32               getFoldedLevel(void);
 	UT_uint32               getFoldedID(void);
     void                    lookupFoldedLevel(void);
+
+	fl_BlockLayout*         getNextBlockInDocument(void) const;
+	fl_BlockLayout*         getPrevBlockInDocument(void) const;
 
 	void                    getAP(const PP_AttrProp *& pAP)const;
 	void                    getSpanAP(UT_uint32 blockPos, bool bLeft, const PP_AttrProp * &pSpanAP) const;

@@ -841,7 +841,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 // Place the insertion point in the Frame
 
-		m_pView->setPoint(posFrame+1);
+		m_pView->setPoint(posFrame+2);
 
 // Finish up with the usual stuff
 		getDoc()->endUserAtomicGlob();

@@ -1162,10 +1162,12 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	{
 		pBL = static_cast<fl_BlockLayout *>(m_pEditShadow->findBlockAtPosition(pos));
 		if(pBL != NULL)
+		{		
+			UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 			return pBL;
+		}
 	}
 	pBL = m_pLayout->findBlockAtPosition(pos);
-
 	// This assert makes debugging virtually impossible; this is a hack to make it assert only once ...
 	//UT_ASSERT(pBL);
 #ifdef DEBUG
@@ -1178,6 +1180,7 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 #endif
 	if(!pBL)
 		return NULL;
+	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 
 //
 // Sevior should remove this after a while..
@@ -1186,12 +1189,15 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	if(pBL->isHdrFtr())
 	{
 //		  fl_HdrFtrSectionLayout * pSSL = static_cast<fl_HdrFtrSectionLayout *>(pBL->getSectionLayout());
-//		  pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
-		  if(!isLayoutFilling())
-		  {
-			  UT_DEBUGMSG(("SEVIOR: in view \n"));
-			  //UT_ASSERT(0);
-		  }
+//		  if(pSSL && pSSL->getFirstShadow())
+//		  {
+//			  pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
+			  if(!isLayoutFilling())
+			  {
+				  UT_DEBUGMSG(("SEVIOR: in view \n"));
+				  //UT_ASSERT(0);
+			  }
+//		  }
 	}
 #endif
 	return pBL;
@@ -3448,6 +3454,19 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		pos--;
 	}
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
+	UT_ASSERT(pBlock->getContainerType() == FL_CONTAINER_BLOCK);
+	if(pBlock->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+		x = x2 = 0;
+		y = y2 = 0;
+
+		height = 0;
+		if(ppBlock)
+			*ppBlock = 0;
+		return;
+	}
+
+
 	if(onFootnoteBoundary)
 	{
 		pos++;
@@ -3486,6 +3505,17 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 			break;
 
 		pBlock = _findBlockAtPosition(pos2);
+		UT_ASSERT(pBlock->getContainerType() == FL_CONTAINER_BLOCK);
+		if(pBlock->getContainerType() != FL_CONTAINER_BLOCK)
+		{
+			x = x2 = 0;
+			y = y2 = 0;
+			
+			height = 0;
+			if(ppBlock)
+				*ppBlock = 0;
+			return;
+		}
 	}
 
 	// If block is actually to the right of the requested position
@@ -4928,8 +4958,6 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 
 void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
 {
-	if(isHdrFtrEdit())
-		clearHdrFtrEdit();
 	fp_Page * pPage = getCurrentPage();
 //
 // If there is no header/footer, insert it and start to edit it.
@@ -4942,6 +4970,8 @@ void FV_View::_cmdEditHdrFtr(HdrFtrType hfType)
 		insertHeaderFooter(hfType);
 		return;
 	}
+	if(isHdrFtrEdit())
+		clearHdrFtrEdit();
 	pShadow = pHFCon->getShadow();
 	UT_ASSERT(pShadow);
 //

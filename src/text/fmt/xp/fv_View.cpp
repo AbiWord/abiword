@@ -8320,9 +8320,17 @@ fp_Page* FV_View::getCurrentPage(void) const
 	if (pRun)
 	{
 		// we now have coords relative to the page containing the ins pt
-//		fp_Page* pPointPage = pRun->getLine()->getContainer()->getPage();
-		fp_Page* pPointPage = pRun->getLine()->getPage();
 
+		fl_BlockLayout * pBL = pRun->getBlock();
+		fp_Page* pPointPage = NULL;
+		if(pBL->isHdrFtr())
+		{
+			UT_DEBUGMSG(("Yikes! What page am I on? \n"));
+		}
+		else
+		{
+			pPointPage = pRun->getLine()->getPage();
+		}
 		return pPointPage;
 	}
 
@@ -9102,8 +9110,6 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 //	edit mode.
 //
 	setCursorWait();
-	if(isHdrFtrEdit())
-		clearHdrFtrEdit();
 	UT_uint32 iPageNo = getCurrentPageNumber() - 1;
 
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
@@ -9114,6 +9120,8 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	m_pDoc->disableListUpdates();
 
 	insertHeaderFooter(block_props, hfType); // cursor is now in the header/footer
+	if(isHdrFtrEdit())
+		clearHdrFtrEdit();
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
@@ -9150,9 +9158,12 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 //
 	setHdrFtrEdit(pShadow);
 
-	_generalUpdate();
-	_updateInsertionPoint();
+	_generalUpdate();	
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	_fixInsertionPointCoords();
 	clearCursorWait();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
 }
 
 bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL)

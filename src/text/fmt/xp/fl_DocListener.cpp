@@ -1002,7 +1002,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		case PTX_SectionTOC:
 		{
 			fl_Layout * pL = (fl_Layout *)sfh;
-			UT_ASSERT(pL->getType() == PTX_SectionFootnote);
+			UT_ASSERT(pL->getType() == PTX_SectionTOC);
 			fl_TOCLayout * pFL = static_cast<fl_TOCLayout *>(pL);
 			pFL->doclistener_deleteStrux(pcrx);
 			goto finish_up;

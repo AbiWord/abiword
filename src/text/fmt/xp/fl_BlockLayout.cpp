@@ -2852,167 +2852,6 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 	return NULL;
 }
 
-fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
-{
-	fl_ContainerLayout * pNext = getNext();
-	fl_ContainerLayout * pOld = NULL;
-	UT_uint32 depth = 0;
-	next_is_null :
-	if(pNext == NULL)
-	{
-		while((pNext == NULL) && ((pOld != NULL) || (depth == 0)))
-	    {
-			fl_ContainerLayout * pPrevOld = pOld;
-			if(depth > 0)
-			{
-				pOld = pOld->myContainingLayout();
-			}
-			else
-			{
-				pOld = myContainingLayout();
-			}
-			depth++;
-			pNext = pOld->getNext();
-			if(pPrevOld == pOld)
-			{
-				pOld = NULL;
-			}
-		}
-	}
-	while(pNext)
-	{
-		pOld = pNext;
-		if(pNext->getContainerType() == FL_CONTAINER_BLOCK)
-		{
-			return static_cast<fl_BlockLayout *>(pNext);
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_DOCSECTION)
-		{
-			pNext = pNext->getFirstLayout();
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_TABLE)
-		{
-			pNext = pNext->getFirstLayout();
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_FRAME)
-		{
-			pNext = pNext->getFirstLayout();
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_CELL)
-		{
-			pNext = pNext->getFirstLayout();
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_TOC)
-		{
-			pNext = pNext->getNext();
-			if(pNext == NULL)
-			{
-				goto next_is_null;
-			}
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_FOOTNOTE)
-		{
-			pNext = pNext->getNext();
-			if(pNext == NULL)
-			{
-				goto next_is_null;
-			}
-		}
-		else if(pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
-		{
-			pNext = pNext->getNext();
-			if(pNext == NULL)
-			{
-				goto next_is_null;
-			}
-		}
-		else
-		{
-			pNext = NULL;
-			break;
-		}
-		if(pNext == NULL)
-		{
-				goto next_is_null;
-		}
-	}
-	return NULL;
-}
-
-fl_BlockLayout* fl_BlockLayout::getPrevBlockInDocument(void) const
-{
-	fl_ContainerLayout * pPrev = getPrev();
-	fl_ContainerLayout * pOld = NULL;
-	UT_uint32 depth = 0;
-	if(pPrev == NULL)
-	{
-		while((pPrev == NULL) && ((pOld != NULL) || (depth == 0)))
-	    {
-			fl_ContainerLayout * pPrevOld = pOld;
-			if(depth > 0)
-			{
-				pOld = pOld->myContainingLayout();
-			}
-			else
-			{
-				pOld = myContainingLayout();
-			}
-			depth++;
-			pPrev = pOld->getPrev();
-			if(pPrevOld == pOld)
-			{
-				pOld = NULL;
-			}
-		}
-	}
-	while(pPrev)
-	{
-		pOld = pPrev;
-		if(pPrev->getContainerType() == FL_CONTAINER_BLOCK)
-		{
-			return static_cast<fl_BlockLayout *>(pPrev);
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_DOCSECTION)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_FRAME)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_TABLE)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_CELL)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_FOOTNOTE)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_TOC)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else if(pPrev->getContainerType() == FL_CONTAINER_ENDNOTE)
-		{
-			pPrev = pPrev->getLastLayout();
-		}
-		else
-		{
-			pPrev = NULL;
-			break;
-		}
-		if(pPrev == NULL)
-		{
-			pPrev = pOld->myContainingLayout()->getPrev();
-		}
-	}
-	return NULL;
-}
-
 /*****************************************************************/
 /*****************************************************************/
 
@@ -3242,9 +3081,6 @@ bool fl_BlockLayout::checkSpelling(void)
 	if(m_pFirstRun->getLine() == NULL)
 		return false;
 
-	// only update screen if this block is on it
-	bool bIsOnScreen = isOnScreen();
-
 	// we only want to do the cursor magic if the cursor is in this block
 	bool bIsCursorInBlock = false;
 	FV_View* pView = getView();
@@ -3268,12 +3104,10 @@ bool fl_BlockLayout::checkSpelling(void)
 
 	// Now start checking
 	bUpdateScreen |= _checkMultiWord(0, -1, bIsCursorInBlock);
-
-	// Finally update screen
-	if (bIsOnScreen && bUpdateScreen && pView)
+	if( bUpdateScreen && pView)
 	{
 		markAllRunsDirty();
-		pView->updateScreen();
+		setNeedsRedraw();
 	}
 	return true;
 }
