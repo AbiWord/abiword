@@ -418,7 +418,7 @@ bool EV_CocoaMenu::synthesizeMenu(NSMenu * wMenuRoot)
 
 			EV_NSMenu * subMenu = [[EV_NSMenu alloc] initWithXAP:this andTitle:str];
 			[menuItem setSubmenu:subMenu];
-			[subMenu setAutoenablesItems:YES];
+			[subMenu setAutoenablesItems:NO];
 			[subMenu release];
 			stack.push((void **)subMenu);
 			break;
@@ -567,7 +567,7 @@ NSMenu * EV_CocoaMenuPopup::getMenuHandle() const
 bool EV_CocoaMenuPopup::synthesizeMenuPopup()
 {
 	m_wMenuPopup = [[NSMenu alloc] initWithTitle:@""];
-	[m_wMenuPopup setAutoenablesItems:YES];
+	[m_wMenuPopup setAutoenablesItems:NO];
 	synthesizeMenu(m_wMenuPopup);
 	return true;
 }
