@@ -1,3 +1,9 @@
+abiword (0.9.4.1-1) unstable; urgency=medium
+  * Updated rules file
+  * New upstream version (too many things to mention here)
+
+ -- Christian Meyer <meyerc@in.tum.de> Sep, 26 17:16:21 CEST 2001 
+
 abiword (0.7.12-0.1) unstable; urgency=low
   * NMU to bring back into testing
   * New upstream version (Closes: #80211, #83133, #74882, #61581, #85444, #85569)
