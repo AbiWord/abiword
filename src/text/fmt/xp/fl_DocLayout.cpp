@@ -1312,7 +1312,7 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 	PD_Document * pDoc = pDocLayout->getDocument();
 	if(pDoc->isPieceTableChanging())
 	{  
-		UT_DEBUGMSG(("PieceTable changing don't redraw \n"));
+		xxx_UT_DEBUGMSG(("PieceTable changing don't redraw \n"));
 		return;
 	}
 //
