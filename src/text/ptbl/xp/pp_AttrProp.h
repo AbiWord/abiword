@@ -27,7 +27,7 @@
 #include "ut_pair.h"
 #include "ut_xml.h"
 #include "pp_Property.h"
-#include "pt_types.h"
+#include "pt_Types.h"
 
 // the following class holds the state of the view when we set
 // m_iRevisionIndex
