@@ -4755,15 +4755,15 @@ void    fl_BlockLayout::StopList(void)
 			{
 				pStyle->getProperty("margin-left", szAlign);
 				pStyle->getProperty("text-indent", szIndent);
-				fAlign = atof(szAlign);
+				fAlign = (float)atof(szAlign);
 				fAlign *= level;
 				sprintf(align, "%fin", fAlign);
 				sprintf(indent, "%s", szIndent);
 			}
 			else
 			{
-				fAlign = 0.25 * level;
-				fIndent = -0.25;
+				fAlign = (float)(0.25 * level);
+				fIndent = (float)-0.25;
 				sprintf(align, "%fin", fAlign);
 				sprintf(indent, "%fin", fIndent);
 			}
