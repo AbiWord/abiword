@@ -32,15 +32,68 @@
 
 /*****************************************************************/
 /*****************************************************************/
+  // hackishly, we append two lists to every document
+  // to represent the <ol> and <ul> list types
+  // <ol> has an id of 1 and <ul> is given the list id of 2
+
+  static const XML_Char *ol_atts[] =
+  {
+    "id", "1",
+    "parentid", "0",
+    "type", "0",
+    "start-value", "1",
+    "list-delim", "%L.",
+    "list-decimal", ".",
+    NULL, NULL
+  };
+
+  static const XML_Char *ol_p_atts[] = 
+  {
+    "level", "1",
+    "listid", "1",
+    "parentid", "0",
+    "style", "Numbered List",
+    "props", "color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:1; text-decoration:none; text-indent:-0.4000in; text-position:normal",
+    NULL, NULL
+  };
+
+  static const XML_Char *ul_atts[] =
+  {
+    "id", "2",
+    "parentid", "0",
+    "type", "5",
+    "start-value", "0",
+    "list-delim", "%L",
+    "list-decimal", "NULL",
+    NULL, NULL
+  };
+
+  static const XML_Char *ul_p_atts[] =
+  {
+    "level", "1",
+    "listid", "2",
+    "parentid", "0",
+    "style", "Bullet List",
+    "props", "color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:0; text-decoration:none; text-indent:-0.4000in; text-position:normal",
+    NULL, NULL
+  };
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
-	: IE_Imp_XML(pDocument, UT_FALSE)
+  : IE_Imp_XML(pDocument, UT_FALSE), m_listType(L_NONE)
 {
 }
 
 IE_Imp_XHTML::~IE_Imp_XHTML()
 {
 }
+
+// to get lists to work:
+// 1. append ol and ul type lists (done in constructor)
+// 2. a ol or ul tag begins a paragraph with level=1, parentid=0, listid=[1|2]
+//    style=[Numbered List|Bullet List]
+// 3. append a field of type "list_label"
+// 4. insert character run with type "list_label"
+// 5. insert a tab
 
 /*****************************************************************/
 /*****************************************************************/
@@ -150,6 +203,10 @@ UT_Bool IE_Imp_XHTML::SupportsFileType(IEFileType ft)
 #define TT_BLOCKQUOTE           31              // blockquote
 #define TT_UNDERLINE            32              // underline
 
+#define TT_OL                   33              // ordered list
+#define TT_UL                   34              // unordered list
+#define TT_LI                   35              // list item
+
 // This certainly leaves off lots of tags, but with HTML, this is inevitable - samth
 
 static struct xmlToIdMapping s_Tokens[] =
@@ -174,6 +231,8 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"html",	        	TT_DOCUMENT		},
 	{       "i",                    TT_I                    },
 	{       "kbd",                  TT_KBD                  },
+	{       "li",                   TT_LI                   },
+	{       "ol",                   TT_OL                   },
 	{	"p",			TT_P	        	},
 	{       "q",                    TT_Q                    },
 	{       "s",                    TT_S                    },
@@ -185,6 +244,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{       "sup",                  TT_SUP                  },
 	{       "tr",                   TT_TR                   },
 	{       "u",                    TT_UNDERLINE            },
+	{       "ul",                   TT_UL                   },
 	{       "var",                  TT_VAR                  }
 };
 
@@ -399,6 +459,11 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_Block;
 
+		// append the two lists to the document
+		m_pDocument->appendList (ol_atts);
+		m_pDocument->appendList (ul_atts);
+		UT_DEBUGMSG(("DOM: appended lists\n"));
+
 		//UT_DEBUGMSG(("%d atts: %s\n", i, atts[i]));
 		X_CheckError(m_pDocument->appendStrux(PTX_Section,NULL));
 		X_CheckError(m_pDocument->appendStrux(PTX_Block,NULL));
@@ -560,6 +625,53 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 	  }
 
+	case TT_OL:	  
+	  m_listType = L_OL; return;
+	  break;
+
+	case TT_UL:
+	  m_listType = L_UL; return;
+	  break;
+
+	case TT_LI:
+	  X_VerifyParseState(_PS_Block);
+	  m_parseState = _PS_Block;
+
+	  XML_Char *sz;
+
+	  if (m_listType != L_NONE)
+	    {
+
+	      if (m_listType == L_OL)
+		{
+		  X_CheckError(m_pDocument->appendStrux(PTX_Block, ol_p_atts));
+		}
+	      else
+		{
+		  X_CheckError(m_pDocument->appendStrux(PTX_Block, ul_p_atts));
+		}
+
+	      // append a field
+	      UT_XML_cloneString(sz, "type");
+	      new_atts[0] = sz;
+	      UT_XML_cloneString(sz, "list_label");
+	      new_atts[1] = sz;
+	      X_CheckError(m_pDocument->appendObject(PTO_Field, new_atts));
+
+	      // append the character run
+	      UT_XML_cloneString(sz, "type");
+	      new_atts[0] = sz;
+	      UT_XML_cloneString(sz, "list_label");
+	      new_atts[1] = sz;
+	      X_CheckError(m_pDocument->appendFmt(new_atts));
+
+	      // finally, append a tab
+	      UT_UCSChar c = '\t';
+	      X_CheckError(m_pDocument->appendSpan(&c, 1));
+	      return;
+	    }
+	  break;
+
 	case TT_P:
 	case TT_TR:
 	case TT_H4:
@@ -662,6 +774,12 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 		m_parseState = _PS_Block;
 		return;
 
+	case TT_OL:
+	case TT_UL:
+	  m_listType = L_NONE; return;
+	  break;
+
+	case TT_LI:
 	case TT_P:
 	case TT_TR:
 	case TT_H1:
@@ -724,10 +842,8 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 
 	case TT_OTHER:
 	default:
-		UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
+	  //UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
 		return;
 	}
 }
-
-
 
