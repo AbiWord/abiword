@@ -29,7 +29,12 @@ TARGETS=		$(LIBRARY)
 PLATFORM_OBJS=	$(OBJDIR)/gr_$(ABI_FE)Graphics.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/gr_$(ABI_FE)Image.$(OBJ_SUFFIX)
 
+ifeq ($(ABI_FE), Win32)
+PLATFORM_OBJS += $(OBJDIR)/gr_$(ABI_FE)CharWidths.$(OBJ_SUFFIX)
+endif
+
 OBJS=		$(PLATFORM_OBJS)					\
+		$(OBJDIR)/gr_CharWidths.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_Graphics.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_Image.$(OBJ_SUFFIX)
