@@ -1403,3 +1403,51 @@ bool	AP_Win32App::doesStringSetExists(const char* pLocale)
 	
 	return false;
 }
+
+/* From UCS4 To Ansi*/
+UT_String  	AP_Win32App::s_fromUCS4ToAnsi(const UT_UCS4Char * szIn)
+{	
+	UT_uint32 uRead, uWrite;
+	UT_UCS4String sUCS4(szIn);
+	UT_String sRslt;
+	
+	char *pText = UT_convert ((char *)sUCS4.ucs4_str(),
+							  sUCS4.length()*sizeof(UT_UCS4Char),
+							  ucs4Internal(),
+							  XAP_EncodingManager::get_instance()->getNative8BitEncodingName(),
+							  &uRead, &uWrite);
+	sRslt = pText;
+	free(pText);
+	return sRslt;
+
+}
+
+/* From  Ansi To UCS4*/
+UT_UCS4String	AP_Win32App::s_fromAnsiToUCS4(const char* szIn)
+{
+	UT_UCS4Char * src = new UT_UCS4Char[strlen(szIn)+1];	
+	UT_UCS4_strcpy_char(src, (char*)szIn);	
+	UT_UCS4String sRslt(src);	
+	delete src;
+
+	return sRslt;
+}
+
+/* From  UTF8 To Ansi*/
+UT_String 		AP_Win32App::s_fromUTF8ToAnsi(const char* szInUTF8)
+{
+	UT_UTF8String utf8(szInUTF8);	
+	UT_UCS4String sUCS4(utf8.ucs4_str());
+	return AP_Win32App::s_fromUCS4ToAnsi(sUCS4.ucs4_str());
+}
+
+/* From  Ansi To UTF8*/
+UT_UTF8String	AP_Win32App::s_fromAnsiToUTF8(const char* szIn)
+{
+	UT_UCS4String sUCS4 = AP_Win32App::s_fromAnsiToUCS4(szIn);
+	UT_UTF8String sRslt(sUCS4.utf8_str());	
+
+	return sRslt;
+}
+
+

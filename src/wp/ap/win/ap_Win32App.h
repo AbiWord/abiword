@@ -33,6 +33,8 @@
 #include "ap_Win32Prefs.h"
 #include "ap_Win32Clipboard.h"
 #include "ie_types.h"
+#include "ut_string_class.h"
+
 class PD_DocumentRange;
 
 //////////////////////////////////////////////////////////////////
@@ -70,6 +72,17 @@ public:
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile);
 	UT_Vector*								getInstalledUILanguages(void);
 	bool									doesStringSetExists(const char* pLocale);
+
+	/*
+		Currently we need single byte strings to work with 
+		win32 UI until we do a Unicode port. It's better to do all UI
+		conversions in a single point. You are looking to this point right now. Jordi,
+	*/
+	static UT_String 		s_fromUCS4ToAnsi(const UT_UCS4Char * szIn);
+	static UT_UCS4String	s_fromAnsiToUCS4(const char* szIn);
+	static UT_String 		s_fromUTF8ToAnsi(const char* szIn);
+	static UT_UTF8String	s_fromAnsiToUTF8(const char* szIn);
+
 	
 	
 	bool handleModelessDialogMessage( MSG * msg );

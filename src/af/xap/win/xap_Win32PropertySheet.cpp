@@ -61,6 +61,7 @@ int CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wP
 			pThis->_onInitDialog();
 			return 0;
 		}		
+		
 
 		case WM_NOTIFY:
 		{
@@ -86,6 +87,7 @@ int CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARAM wP
         
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
+
 
 void XAP_Win32PropertyPage::createPage(XAP_Win32App* pWin32App, WORD wRscID,
 	XAP_String_Id	nID /* =0 */)
@@ -171,6 +173,16 @@ int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM 
 			
 			if (LOWORD(wParam)==IDOK)
 			{
+				
+				XAP_Win32PropertyPage* pPage;	
+				UT_sint32 i= 0;
+				
+				for(i=0; i< pThis->m_vecPages.getItemCount();  i++)
+				{			
+					pPage = (XAP_Win32PropertyPage*)pThis->m_vecPages.getNthItem(i);		
+					pPage->_onOK();					
+				}				
+
 				pThis->m_nRslt=IDOK;				
 				pThis->destroy();
 				return 0;

@@ -76,7 +76,7 @@ public:
 private:
 
 	virtual	void				_onInitDialog();
-	virtual	void				_onKillActive();
+	virtual	void				_onOK(); 	
 	char* 						_get_text(XAP_String_Id nID, char *szBuff, int nSize);
 	
 	UT_String					m_sTitle;
@@ -100,7 +100,7 @@ class AP_Win32Dialog_MetaData_Summary: public XAP_Win32PropertyPage
 
 private:
 						
-	virtual	void				_onKillActive();
+	virtual	void				_onOK(); 	
 	char* 						_get_text(XAP_String_Id nID, char *szBuff, int nSize);	
 	virtual	void				_onInitDialog();	
 	
@@ -125,8 +125,8 @@ public:
 private:	
 
 	char* 						_get_text(XAP_String_Id nID, char *szBuff, int nSize);
-	virtual	void				_onInitDialog();	
-	virtual	void				_onKillActive();
+	virtual	void				_onInitDialog();			
+	virtual	void				_onOK(); 	
 	
 	AP_Win32Dialog_MetaData*	m_pData;	
 	UT_String					m_sSource;

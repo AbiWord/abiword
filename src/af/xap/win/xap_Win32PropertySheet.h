@@ -51,7 +51,8 @@ public:
 	XAP_Win32PropertySheet*		getParent(){return m_pParent;}
 	void						setDialogProc(DLGPROC pfnDlgProc){m_pfnDlgProc=pfnDlgProc;};	
 	virtual	void				_onInitDialog(){};
-	virtual	void				_onKillActive(){}; 
+	virtual	void				_onKillActive(){}; 	
+	virtual	void				_onOK(){}; 	
 	virtual void				_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam){};
 	static int CALLBACK			s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,LPARAM lParam);
 	
