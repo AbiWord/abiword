@@ -47,6 +47,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.7  1999/09/29 23:33:32  justin
+ * Updates to the underlying ispell-based code to support suggested corrections.
+ *
  * Revision 1.6  1999/04/13 17:12:51  jeff
  * Applied "Darren O. Benham" <gecko@benham.net> spell check changes.
  * Fixed crash on Win32 with the new code.
@@ -114,6 +117,7 @@ static char Rcs_Id[] =
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "ispell.h"
 #include "msgs.h"
@@ -124,10 +128,11 @@ static void	dumpindex P ((struct flagptr * indexp, int depth));
 #endif /* INDEXDUMP */
 static void	clearindex P ((struct flagptr * indexp));
 struct dent *	ispell_lookup P ((ichar_t * word, int dotree));
+static void     initckch P ((char *));
 
 int		gnMaskBits = 64;
 
-static		inited = 0;
+static	int	inited = 0;
 
 int linit (hashname)
 char *hashname; /* name of the hash file (dictionary) */
@@ -152,7 +157,7 @@ char *hashname; /* name of the hash file (dictionary) */
 	}
 
     hashsize = fread ((char *) &hashheader, 1, sizeof hashheader, fpHash);
-    if (hashsize < sizeof hashheader)
+    if (hashsize < (int)sizeof(hashheader))
 	{
 	if (hashsize < 0)
 	    (void) fprintf (stderr, LOOKUP_C_CANT_READ, hashname);
@@ -456,10 +461,96 @@ char *hashname; /* name of the hash file (dictionary) */
 	    }
 	}
     inited = 1;
+
+    initckch(NULL);   
+       
     return (0);
     }
 
 #define FREEP(p)	do { if (p) free(p); } while (0)
+
+static void initckch (wchars)
+char *              wchars;         /* Characters in -w option, if any */
+{
+   register ichar_t    c;
+   char                num[4];
+   
+   for (c = 0; c < (ichar_t) (SET_SIZE + hashheader.nstrchars); ++c)
+     {
+	if (iswordch (c))
+	  {
+	     if (!mylower (c))
+	       {
+		  Try[Trynum] = c;
+		  ++Trynum;
+	       }
+	  }
+	else if (isboundarych (c))
+	  {
+	     Try[Trynum] = c;
+	     ++Trynum;
+	  }
+     }
+   if (wchars != NULL)
+     {
+	while (Trynum < SET_SIZE  &&  *wchars != '\0')
+	  {
+	     if (*wchars != 'n'  &&  *wchars != '\\')
+	       {
+		  c = *wchars;
+		  ++wchars;
+	       }
+	     else
+	       {
+		  ++wchars;
+		  num[0] = '\0';
+		  num[1] = '\0';
+		  num[2] = '\0';
+		  num[3] = '\0';
+		  if (isdigit (wchars[0]))
+		    {
+		       num[0] = wchars[0];
+		       if (isdigit (wchars[1]))
+			 {
+			    num[1] = wchars[1];
+			    if (isdigit (wchars[2]))
+				num[2] = wchars[2];
+			 }
+		    }
+		  if (wchars[-1] == 'n')
+		    {
+		       wchars += strlen (num);
+		       c = atoi (num);
+		    }
+		  else
+		    {
+		       wchars += strlen (num);
+		       c = 0;
+		       if (num[0])
+			   c = num[0] - '0';
+		       if (num[1])
+			 {
+			    c <<= 3;
+			    c += num[1] - '0';
+			 }
+		       if (num[2])
+			 {
+			    c <<= 3;
+			    c += num[2] - '0';
+			 }
+		    }
+	       }
+/*	     c &= NOPARITY;*/
+	     if (!hashheader.wordchars[c])
+	       {
+		  hashheader.wordchars[c] = 1;
+		  hashheader.sortorder[c] = hashheader.sortval++;
+		  Try[Trynum] = c;
+		  ++Trynum;
+	       }
+	  }
+     }
+}
 
 void lcleanup(void)
 {

@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.8  1999/09/29 23:33:32  justin
+ * Updates to the underlying ispell-based code to support suggested corrections.
+ *
  * Revision 1.7  1999/04/13 17:12:51  jeff
  * Applied "Darren O. Benham" <gecko@benham.net> spell check changes.
  * Fixed crash on Win32 with the new code.
@@ -336,6 +339,7 @@ int cap_ok (ichar_t* word, struct success* hit, int len);
 void chk_aff (ichar_t* word, ichar_t* ucword, int len, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
 long whatcap (ichar_t* word);
 int hash (ichar_t* s, int hashtblsize);
+void makepossibilities(ichar_t* word);
 
 #endif
 
