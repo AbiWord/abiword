@@ -1414,7 +1414,6 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	m_pie->write(m_pie->getFileName());
 	m_pie->write("</title>\n");
 	m_pie->write("<style type=\"text/css\">\n");
-	m_pie->write("<!--\n");
 	m_pie->write("body\n{\n\t");
 	if(bHaveProp && pAP)
 	{							// global page styles refer to the <body> tag
@@ -1551,7 +1550,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 		}
 	}
 		
-	m_pie->write("//-->\n</style>\n");
+	m_pie->write("</style>\n");
 	m_pie->write("</head>\n");
 	m_pie->write("<body>");
 
