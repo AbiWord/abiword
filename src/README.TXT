@@ -62,29 +62,29 @@ subdirectories:
 <dt>Directory <tt>af</tt>:</dt>
   <dd> Contains source code for application-neutral cross-platform framework.
 
-
 <dt>Directory <tt>hello</tt>:</dt>
-  <dd> Contains source code for the "Hello World" sample application.
+  <dd> Contains source code for the "Hello World" sample application.</dd>
 
 <dt>Directory <tt>other</tt>:</dt>
   <dd> Contains source code for forked third-party libraries.
        For example, we use a librarified subset of ispell, which is
        stored here.  In general, put libraries in 'other' if we are making 
        substantial modifications to the code.  DO NOT DO THIS LIGHTLY!!
+       </dd>
   <dd> Whenever possible, it's better to use existing libraries as peer 
        modules of the abi tree.  Minor bug fixes there are fine (please 
        send the fix back to the original author).  Customizations to make 
-       the library fit into our build system are fine.  
+       the library fit into our build system are fine.</dd> 
   <dd> Source code in 'other' is not required to comply with every one of our 
        coding guidelines.  Don't make gratuitous sweeping changes just to fix 
-       the indent level on someone else's library.
+       the indent level on someone else's library.</dd>
 
 <dt>Directory <tt>text</tt> (\ref text_overview):</dt>
   <dd> Contains source code for the text-editing library used by
-       various applications.
+       various applications.</dd>
 
-<dt>Directory <tt>wp</tt></dt>
-  <dd> Contains source code for the word processor application.
+<dt>Directory <tt>wp</tt> (\ref wp_overview):</dt>
+  <dd> Contains source code for the word processor application.</dd>
 
 </dl>
 
