@@ -64,13 +64,23 @@ static int s_customChanged(PtWidget_t *widget, void *data, PtCallbackInfo_t *inf
 	return Pt_CONTINUE;
 }
 
+static int s_somethingChanged(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
+{
+	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
+	dlg->setDirty();
+	dlg->setXPFromLocal();
+	dlg->previewExposed();
+	
+	return Pt_CONTINUE;
+}
+
+
 /*
  The style is the sub-type of the list.
 */
 static int s_styleChanged (PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Lists * dlg = (AP_QNXDialog_Lists *)data;
-	PtListCallback_t *lcb = (PtListCallback_t *)info->cbdata;
 
 	if (info->reason == Pt_CB_SELECTION && info->reason_subtype != Pt_LIST_SELECTION_FINAL) {
 		return Pt_CONTINUE;
@@ -329,7 +339,6 @@ void  AP_QNXDialog_Lists::setXPFromLocal(void)
 		junk = m_styleVector.getNthItem(*value - 1);
 		m_newListType = (enum List_Type)((int)junk);
 	}
-	printf("setMemberVariable newListType to %d from index %d \n", m_newListType, *value);
 
 	_gatherData();
 
@@ -421,12 +430,13 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_HORIZONTAL, Pt_GROUP_STRETCH_HORIZONTAL);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
    	vgroup = PtCreateWidget(PtGroup, m_mainWindow, n, args);
 
 	PtWidget_t *hgroup;
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, 10, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, 10, 0);
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING, 5, 0);
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
@@ -445,6 +455,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	lblType = PtCreateWidget(PtLabel, group, n, args);	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
 	listType = PtCreateWidget(PtComboBox, group, n, args);	
 	PtAddCallback(listType, Pt_CB_SELECTION, s_typeChanged, this);
 
@@ -463,6 +474,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	lblStyle = PtCreateWidget(PtLabel, group, n, args);	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 2*ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
 	listStyle = PtCreateWidget(PtComboBox, group, n, args);	
 	PtAddCallback(listStyle, Pt_CB_SELECTION, s_styleChanged, this);
 
@@ -514,10 +526,12 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	group = PtCreateWidget(PtGroup, grpCustomize, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5*ABI_DEFAULT_BUTTON_WIDTH, 0);
 	lblFormat = PtCreateWidget(PtText, group, n, args);	
+	PtAddCallback(lblFormat, Pt_CB_ACTIVATE, s_somethingChanged, this);
 #if 0
 	/* This is for something ... I just don't know what */
 	n = 0;
@@ -527,25 +541,36 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
 	PtWidget_t *font = PtCreateWidget(PtComboBox, group, n, args);	
 	//TODO: Fill this with the current fonts 
 	{
 		text = "Current Font";
 		PtListAddItems(font, &text, 1, 0);
 	}
-
+	UT_QNXComboSetPos(font, 1);
+	
+	double d;
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN, 0, 0);
 	numListLevel = PtCreateWidget(PtNumericInteger, group, n, args);	
-	PtAddCallback(numListLevel, Pt_CB_NUMERIC_CHANGED, s_customChanged, this);
+	PtAddCallback(numListLevel, Pt_CB_NUMERIC_CHANGED, s_somethingChanged, this);
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_MIN, 0, 0);
 	numStart = PtCreateWidget(PtNumericInteger, group, n, args);	
-	PtAddCallback(numStart, Pt_CB_NUMERIC_CHANGED, s_customChanged, this);
+	PtAddCallback(numStart, Pt_CB_NUMERIC_CHANGED, s_somethingChanged, this);
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_SUFFIX, "in", 0);
+	d = 0.1;
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_INCREMENT, &d, 0);
 	numListAlign = PtCreateWidget(PtNumericFloat, group, n, args);	
-	PtAddCallback(numListAlign, Pt_CB_NUMERIC_CHANGED, s_customChanged, this);
+	PtAddCallback(numListAlign, Pt_CB_NUMERIC_CHANGED, s_somethingChanged, this);
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_SUFFIX, "in", 0);
+	d = 0.1;
+	PtSetArg(&args[n++], Pt_ARG_NUMERIC_INCREMENT, &d, 0);
 	numIndentAlign = PtCreateWidget(PtNumericFloat, group, n, args);	
-	PtAddCallback(numIndentAlign, Pt_CB_NUMERIC_CHANGED, s_customChanged, this);
+	PtAddCallback(numIndentAlign, Pt_CB_NUMERIC_CHANGED, s_somethingChanged, this);
 
 	/*** Create the preview in the next dialog ***/
 	n = 0;
@@ -818,7 +843,6 @@ void AP_QNXDialog_Lists::_loadXPDataIntoLocal(void)
 		void *junk;
 		junk = m_styleVector.getNthItem(i);
 		if ((enum List_Type)((int)junk) == m_newListType) {
-			printf("Matched style %d \n", m_newListType);
 			PtSetResource(m_wListStyle_menu, Pt_ARG_CBOX_SEL_ITEM, i+1, 0);
 			break;
 		}
