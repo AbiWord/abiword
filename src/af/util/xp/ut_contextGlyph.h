@@ -38,15 +38,24 @@ struct UCSRange
 	UT_UCSChar high;
 };
 
+enum GlyphContext {GC_ISOLATE,GC_INITIAL,GC_MEDIAL,GC_FINAL};
 
 class UT_contextGlyph
 {
 	public:
+		UT_contextGlyph();
 		UT_UCSChar getGlyph(const UT_UCSChar * code,
 							const UT_UCSChar * prev,
 							const UT_UCSChar * next) const;
 	private:
+		GlyphContext _evalGlyphContext( const UT_UCSChar * code,
+										const UT_UCSChar * prev,
+										const UT_UCSChar * next) const;
+										
 		static Letter 		*s_pGlyphTable;
 		static UCSRange 	*s_pIgnore;
+		static Letter		*s_pLigature;
+		static Letter		*s_pLigRev;
+		static bool			s_bInit;
 };
 #endif

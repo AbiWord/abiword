@@ -48,6 +48,7 @@
 #include "fribidi.h"
 #include "ut_contextGlyph.h"
 #include "ap_Prefs.h"
+#define CONTEXT_BUFF_SIZE 5
 #endif
 
 /*****************************************************************/
@@ -281,7 +282,7 @@ void fp_TextRun::lookupProperties(void)
    	{
     	m_pLine->changeDirectionUsed(prevDir, m_iDirection, true);
     }
-	UT_DEBUGMSG(("TextRun::lookupProperties: m_iDirection=%d, m_iDirOverride=%d\n", m_iDirection, m_iDirOverride));
+	xxx_UT_DEBUGMSG(("TextRun::lookupProperties: m_iDirection=%d, m_iDirOverride=%d\n", m_iDirection, m_iDirOverride));
 #endif
 }
 
@@ -938,12 +939,30 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 			}
 			UT_ASSERT(lenSpan>0);
 
+			UT_uint32 iTrueLen;
 			if (lenSpan > len)
 			{
-				lenSpan = len;
+				iTrueLen = len;
 			}
-			for (UT_uint32 i=0; i<lenSpan; i++)
+			else
+				iTrueLen = lenSpan;
+#ifdef BIDI_ENABLED			
+			UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
+			UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
+
+			if(s_bUseContextGlyphs)
+				_getContext(pSpan,lenSpan,len,offset,&prev[0],&next[0]);
+#endif
+			for (UT_uint32 i=0; i<iTrueLen; i++)
 			{
+#ifdef BIDI_ENABLED
+				if(s_bUseContextGlyphs)
+				{
+					UT_UCSChar c = _getContextGlyph(pSpan,iTrueLen,i,&prev[0],&next[0]);
+					UT_DEBUGMSG(("fp_TextRun::simpleRecalcWidth: glyph 0x%x\n", c));
+					m_pG->measureString((const UT_UCSChar *)&c, 0, 1, (UT_uint16*)pCharWidths + offset+i);
+				}
+#endif				
 				iWidth += pCharWidths[i + offset];
 			}
 
@@ -953,8 +972,8 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 			}
 			else
 			{
-				offset += lenSpan;
-				len -= lenSpan;
+				offset += iTrueLen;
+				len -= iTrueLen;
 			}
 		}
 	}
@@ -1264,6 +1283,101 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 #endif
 }
 
+#ifdef BIDI_ENABLED
+inline UT_UCSChar fp_TextRun::_getContextGlyph(const UT_UCSChar * pSpan,
+										UT_uint32 len,
+										UT_uint32 offset,
+										UT_UCSChar *prev,
+										UT_UCSChar *after) const
+{
+	UT_sint32 iStop2 = MIN(CONTEXT_BUFF_SIZE, len - 1);
+	UT_contextGlyph cg;
+	UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
+			
+	xxx_UT_DEBUGMSG(("fp_TextRun::_getContextGlyph: len %d, offset %d\n",
+					len,offset));
+						
+			
+	// now for each character in this fragment we create
+	// an array of the chars that follow it, get the char
+	// that precedes it and then translate it using our
+	// UT_contextGlyph class, and we are done
+	UT_sint32 i;
+	for(i=0; i < iStop2; i++)
+		next[i] = pSpan[i+offset+1];
+	for(UT_sint32 j = 0; after[j]!=0 && (UT_uint32)i < CONTEXT_BUFF_SIZE; i++,j++)
+		next[i] = after[j];
+	next[i] = 0;
+		
+	switch(offset)
+	{
+		case 0: break;
+		case 1: prev[1] = prev[0]; prev[0] = pSpan[0];
+				break;
+		default: prev[1] = pSpan[offset-2]; prev[0] = pSpan[offset-1];
+	}
+
+	return cg.getGlyph(&pSpan[offset],&prev[0],&next[0]);
+}
+
+inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
+									UT_uint32 lenSpan,
+									UT_uint32 len,
+									UT_uint32 offset,
+									UT_UCSChar * prev,
+									UT_UCSChar * after) const
+{
+	// first the char preceding this part of the run, which is simple
+	// NB. cannot call getSpanPtr with negative offset, or we will get
+	// into the undo buffer
+	const UT_UCSChar * pPrev, * pNext;
+	UT_uint32 lenPrev, lenAfter;
+	
+	if(m_iOffsetFirst > 1)
+	{
+		m_pBL->getSpanPtr(offset - 2, &pPrev, &lenPrev);
+		prev[0] = *(pPrev+1);
+		prev[1] = *pPrev;
+	}
+	else if(m_iOffsetFirst > 0)
+	{
+		m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev);
+		prev[0] = *pPrev;
+		prev[1] = 0;
+	}
+	else
+	{
+		prev[0] = 0;
+		prev[1] = 0;
+	}
+				
+	prev[2]	= 0;
+	lenPrev = 2;
+				
+	xxx_UT_DEBUGMSG(("fp_TextRun::_getContext: prev[0] %d, prev[1] %d\n"
+	             "       m_iOffsetFirst %d, offset %d\n",
+	             prev[0],prev[1],m_iOffsetFirst,offset));
+			
+	// how many characters at most can we retrieve?
+	UT_sint32 iStop = MIN(CONTEXT_BUFF_SIZE, lenSpan - len);
+	UT_sint32 i;
+	// first, getting anything that might be in the span buffer
+	for(i=0; i< iStop;i++)
+		after[i] = pSpan[len+i];
+		
+	// for anything that we miss, we need to get it the hard way
+	// as it is located in different spans
+	
+	while(i < CONTEXT_BUFF_SIZE && m_pBL->getSpanPtr(offset + len + i, &pNext, &lenAfter))
+	{
+		for(UT_uint32 j = 0; j < lenSpan && (UT_uint32)i < CONTEXT_BUFF_SIZE; j++,i++)
+			after[i] = pNext[j];
+	}
+
+	// now we have our trailing chars, so we null-terminate the array			
+	after[i] = 0;
+}
+#endif
 void fp_TextRun::_drawPart(UT_sint32 xoff,
 						   UT_sint32 yoff,
 						   UT_uint32 iStart,
@@ -1306,15 +1420,16 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 
 #ifdef BIDI_ENABLED
 	FriBidiCharType iVisDir = getVisDirection();
-	if(iVisDir == FRIBIDI_TYPE_RTL)
+/*	if(iVisDir == FRIBIDI_TYPE_RTL)
 	{
 		iLeftWidth = m_iWidth - iLeftWidth;
 	}
-	
+*/	
 	for(;;)
 	{
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
 		//UT_ASSERT(lenSpan>0);
+		//UT_uint32 iOldX;
 
 		//we need special buffer for the rtl text so we could draw reversed
 		if(lenSpan > s_iSpanBuffSize) //the buffer too small, reallocate
@@ -1337,69 +1452,24 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 			*/
 			if(s_bUseContextGlyphs)	
 			{
-				UT_contextGlyph cg;
-			
-				const UT_UCSChar *pPrev, *pNext;
-				
-				UT_uint32 lenPrev, lenNext;
-			
-				// first the char preceding this part of the run, which is simple
-				if(!m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
-					pPrev = NULL;
-				
 				// now we will retrieve 5 characters that follow this part of the run
+				// and two chars that precede it
 				#define BUFF_SIZE 5
-				UT_sint32 i;
+				
+				UT_uint32 lenPrev = CONTEXT_BUFF_SIZE, lenNext = CONTEXT_BUFF_SIZE;
 			
-				// two small buffers, one to keep the chars past this part
+				// tree small buffers, one to keep the chars past this part
 				// and one that we will use to create the "trailing" chars
 				// for each character in this fragment
-				UT_UCSChar after[BUFF_SIZE + 1];
 				UT_UCSChar next[BUFF_SIZE + 1];
-			
-				// how many character at most can we retrieve?
-				UT_sint32 iStop = MIN(BUFF_SIZE, lenSpan - len);
-			
-				// first, getting anything that might be in the span buffer
-				for(i=0; i< iStop;i++)
-					after[i] = pSpan[len+i];
+				UT_UCSChar prev[BUFF_SIZE + 1];
 				
-				// for anything that we miss, we need to get it the hard way
-				// as it is located in different spans
-				while(i < BUFF_SIZE && m_pBL->getSpanPtr(offset + len + i, &pNext, &lenNext))
-				{
-					for(UT_uint32 j = 0; j < lenSpan && i < BUFF_SIZE; j++,i++)
-						after[i] = pNext[j];
-				}
-
-				// now we have our trailing chars, so we null-terminate the array			
-				after[i] = 0;
-			
-				// remember how many there are in the after buffer (including the NULL)
-				iStop = i+1;
-			
+				_getContext(pSpan,lenSpan,len,offset,&prev[0],&next[0]);
 				// how many trailing chars at most can we copy from our span?
-				UT_sint32 iStop2 = MIN(BUFF_SIZE, iTrueLen - 1);
-			
-				xxx_UT_DEBUGMSG(("i %d, iStop %d, iStop2 %d, len %d, iTrueLen %d, lenSpan %d\n",
-								i,iStop,iStop2,len,iTrueLen,lenSpan));
-						
-			
-				// now for each character in this fragment we create
-				// an array of the chars that follow it, get the char
-				// that precedes it and then translate it using our
-				// UT_contextGlyph class, and we are done
-				for(UT_uint32 k =0; k < iTrueLen; k++)
+				for(UT_uint32 k =0; k < len; k++)
 				{
-					for(i=0; i < iStop2; i++)
-						next[i] = pSpan[i+k+1];
-					for(UT_sint32 j = 0; j < iStop && i < BUFF_SIZE; i++,j++)
-						next[i] = after[j];
-					
-					if(k > 0)
-						pPrev = &pSpan[k-1];
-					
-					s_pSpanBuff[k] = cg.getGlyph(&pSpan[k],pPrev,&next[0]);
+						s_pSpanBuff[k] = _getContextGlyph(pSpan,iTrueLen,k,&prev[0],&next[0]);
+
 					if(s_bSaveContextGlyphs)
 					{
 						UT_UCSChar* pS = ((UT_UCSChar*) pSpan) + k;
@@ -1426,11 +1496,15 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 			UT_UCS_strnrev(s_pSpanBuff, iTrueLen);
 			for (i= 0; i < iTrueLen; i++)
 			{
-				iLeftWidth -= pCharWidths[offset + i];
+				iLeftWidth += pCharWidths[offset + i];
 			}
 		}
-			
-		m_pG->drawChars(s_pSpanBuff, 0, iTrueLen, xoff + iLeftWidth, yoff);
+		xxx_UT_DEBUGMSG(("iLeftWidth: %d\n", iLeftWidth));
+	
+		if(iVisDir == FRIBIDI_TYPE_RTL)
+			m_pG->drawChars(s_pSpanBuff, 0, iTrueLen, xoff + m_iWidth - iLeftWidth, yoff);
+		else
+			m_pG->drawChars(s_pSpanBuff, 0, iTrueLen, xoff + iLeftWidth, yoff);
 			
 		if((iTrueLen == len) || !bContinue)
 		{
@@ -2075,7 +2149,7 @@ void fp_TextRun::setDirection(FriBidiCharType dir)
 		m_iDirection = dir;
 	}
 	
-	UT_DEBUGMSG(("fp_TextRun (0x%x)::setDirection: %d (passed %d, override %d, prev. %d)\n", this, m_iDirection, dir, m_iDirOverride, prevDir));
+	xxx_UT_DEBUGMSG(("fp_TextRun (0x%x)::setDirection: %d (passed %d, override %d, prev. %d)\n", this, m_iDirection, dir, m_iDirOverride, prevDir));
 	
 	//setDirectionProperty(m_iDirection);
 	

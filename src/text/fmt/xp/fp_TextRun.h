@@ -97,6 +97,7 @@ public:
 	UT_sint32               getStr(UT_UCSChar * str, UT_uint32 &iMax);
 	//bool                 setUnicodeDirection();
     void					setDirection(FriBidiCharType dir);
+    static bool				getUseContextGlyphs(){return s_bUseContextGlyphs;};
 
 	/* needed for handling BiDi text, static because we need only one buffer
 	   for all the instances, public so that we could inicialised them in the cpp file outside of the
@@ -110,7 +111,18 @@ public:
 	static bool			s_bSaveContextGlyphs;
 	static UT_Timer *	s_pPrefsTimer;
 private:
-	static void			_refreshPrefs(UT_Worker * pTimer);	
+	static void			_refreshPrefs(UT_Worker * pTimer);
+	void				_getContext(const UT_UCSChar *pSpan,
+									UT_uint32 lenSpan,
+									UT_uint32 len,
+									UT_uint32 offset,
+									UT_UCSChar * prev,
+									UT_UCSChar * next) const;
+	UT_UCSChar			_getContextGlyph(const UT_UCSChar * pSpan,
+										 UT_uint32 len,
+										 UT_uint32 offset,
+										 UT_UCSChar *prev,
+										 UT_UCSChar *next) const;
 #endif
 
 #ifdef FMT_TEST

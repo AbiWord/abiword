@@ -23,7 +23,27 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// these tables have to be sorted by the first number !!!
+struct LigatureData
+{
+	UT_UCSChar code;
+	UT_UCSChar next;
+	//UT_UCSChar prev;
+};
+
+// these tables have to be sorted by the first two numbers !!!
+
+// in the ligature table, use 1 to indicate that no ligature
+// glyph exists
+static Letter s_ligature[] =
+{
+    {0x0644, 0x0622, 1, 1, 0xFEF6, 0xFEf5},
+	{0x0644, 0x0623, 1, 1, 0xFEF8, 0xFEF7},
+	{0x0644, 0x0625, 1, 1, 0xFEFA, 0xFEF9},
+	{0x0644, 0x0627, 1, 1, 0xFEFC, 0xFEFB},
+};
+
+static Letter s_lig_rev[NrElements(s_ligature)];
+
 static Letter s_table[] =
 {
 	// code_low, code_high, intial, medial, final, stand-alone
@@ -72,14 +92,6 @@ static Letter s_table[] =
 	{0x0649, 0x0649, 0x0649, 0x0649, 0xFEF0, 0xFEEF},
 	{0x064a, 0x064a, 0xFEF3, 0xFEF4, 0xFEF2, 0xFEF1},
  
-    /*
-    some combination that we have not implemented yet
-    0x0644 + 0x0622 - - 0xFEF6, 0xFEf5
-    0x0644 + 0x0623 - - 0xFEF8, 0xFEF7
-    0x0644 + 0x0625 - - 0xFEFA, 0xFEF9
-    0x0644 + 0x0627 - - 0xFEFC, 0xFEFB
-
-    */  
     /* the following characters are not found in Arabic Presentation forms B
         and so we will leave it for now -- most of these are ligatures
         
@@ -261,10 +273,134 @@ static int s_comp_ignore(const void *a, const void *b)
 	return 0;
 }
 
+// this function is special in that we want it to find our ligature glyph
+// if our charcter is the first part of the ligature or if it is the second
+// part of the ligature; we can determine which one it is later by comparing
+// our character to the two chars that makeup the ligature.
+
+static int s_comp_lig(const void *a, const void *b)
+{
+	const LigatureData * A = (const LigatureData*)a;
+	const Letter * B = (const Letter*)b;
+	
+	int ret = (int) A->code - (int) B->code_low;
+	if(!ret)
+		ret = (int) A->next - (int) B->code_high;
+
+	return ret;	
+}
+
+static int s_comp_lig2(const void *a, const void *b)
+{
+	const LigatureData * A = (const LigatureData*)a;
+	const Letter * B = (const Letter*)b;
+	
+	int ret = (int) A->code - (int) B->code_high;
+	if(!ret)
+		ret = (int) A->next - (int) B->code_low;
+
+	return ret;	
+}
+
+
+static int s_comp_qlig(const void *a, const void *b)
+{
+	const Letter *A = (const Letter*)a;
+	const Letter *B = (const Letter*)b;
+	
+	int ret = (int) A->code_high - (int) B->code_high;
+	if(!ret)
+		return (int) A->code_low - (int) B->code_low;
+		
+	return ret;
+}
+
 Letter* UT_contextGlyph::s_pGlyphTable = &s_table[0];
 UCSRange * UT_contextGlyph::s_pIgnore = &s_ignore[0];
+Letter* UT_contextGlyph::s_pLigature = &s_ligature[0];
+Letter* UT_contextGlyph::s_pLigRev = &s_lig_rev[0];
+bool UT_contextGlyph::s_bInit = false;
 
+UT_contextGlyph::UT_contextGlyph()
+{
+	if(!s_bInit)
+	{
+		memcpy(s_pLigRev,s_pLigature, sizeof(s_ligature));
+		qsort(s_pLigRev,NrElements(s_lig_rev), sizeof(Letter),s_comp_qlig);
+		s_bInit = true;
+	}
+}
 
+inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, const UT_UCSChar * prev, const UT_UCSChar * next) const
+{
+	UT_DEBUGMSG(("UT_contextGlyph::_evalGlyphContext: code 0x%x, prev 0x%x [*0x%x], next 0x%x [*0x%x]\n",
+				*code, prev, *prev, next, *next ));
+				
+	if((!next || !*next) && (!prev || !*prev))
+		return GC_ISOLATE;
+	
+	bool bPrevWD;
+	bool bNextWD;
+	
+	if((!next || !*next) && prev && *prev)
+	{
+		bPrevWD = UT_isWordDelimiter(*prev, *code);
+		if(bPrevWD)
+			return GC_ISOLATE;
+		else
+			return GC_FINAL;
+	}
+		
+	// no-next has been trapped above, now we can
+	//check if next is not a character that is to be ignored
+	const UT_UCSChar *myNext = next;
+	
+	while(*myNext && bsearch((void*)myNext, (void*)s_pIgnore, NrElements(s_ignore),sizeof(UCSRange),s_comp_ignore))
+		myNext++;
+
+	UT_DEBUGMSG(("UT_contextGlyph::_evalGlyphContext: myNext 0x%x\n", *myNext));
+
+	if((!prev || !*prev) && !*myNext)
+		return GC_ISOLATE;
+		
+	if((!prev || !*prev) && *myNext)
+	{
+		bNextWD = UT_isWordDelimiter(*myNext, UCS_SPACE);
+		if(bNextWD)
+			return GC_ISOLATE;
+		else
+			return GC_INITIAL;
+	}
+		
+	if(*prev && !*myNext)
+	{
+		bPrevWD = UT_isWordDelimiter(*prev, *code);
+		if(bPrevWD)
+			return GC_ISOLATE;
+		else
+			return GC_FINAL;
+		
+	}
+	
+	bPrevWD = UT_isWordDelimiter(*prev, *code);
+	bNextWD = UT_isWordDelimiter(*myNext, UCS_SPACE);
+	
+	// if both are not , then medial form is needed
+	if(!bPrevWD && !bNextWD)
+		return GC_MEDIAL;
+	
+	// if only *next is, than final form is needed
+	if(bNextWD)
+		return GC_FINAL;
+		
+	// if *prev is, the initial form is needed
+	if(bPrevWD)
+		return GC_INITIAL;
+		
+	// if we got here, both are delimiters, which means stand alone form is needed
+	return GC_ISOLATE;
+		
+}
 /*
 	code - pointer to the character to interpret
 	prev - pointer to the character before code
@@ -276,53 +412,92 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
 									 const UT_UCSChar * prev,
 									 const UT_UCSChar * next) const
 {
-	UT_ASSERT(code);
-
-	Letter *pL = (Letter*) bsearch((void*)code, (void*)s_pGlyphTable, NrElements(s_table),sizeof(Letter),s_comp);
 	
-	// if the letter is not in our table, it means it has only one form
+	UT_ASSERT(code);
+	
+	// first, decide if this is a part of a ligature
+    // first check for a ligature form
+    LigatureData Lig;
+    Letter *pL = 0;
+    bool bIsSecond = false;
+
+    Lig.next = next ? *next : 0;
+	Lig.code = *code;
+    	
+   	pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigature, NrElements(s_ligature),sizeof(Letter),s_comp_lig);
+
+    if(pL)
+    {
+		next++;
+   		UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 1st part of ligature\n", *code));			
+    }
+    else
+    {
+    	Lig.next = prev ? *prev : 0;
+	   	pL = (Letter*) bsearch((void*)&Lig, (void*)s_pLigRev, NrElements(s_lig_rev),sizeof(Letter),s_comp_lig2);
+		if(pL)
+		{
+	   		UT_DEBUGMSG(("UT_contextGlyph::getGlyph: char 0x%x, 2nd part of ligature\n", *code));
+	   		bIsSecond = true;
+	 	}
+    }
+
+
+    //if this is a second glyph in a ligature, work out what happened to the
+    //previous one
+    if(bIsSecond)
+    {
+	    GlyphContext LigContext = _evalGlyphContext(prev, prev+1, next);
+	    UT_UCSChar glyph = 0;
+    	switch (LigContext)
+    	{
+    		case GC_INITIAL:
+    			glyph = pL->initial;
+    			break;
+    		case GC_MEDIAL:
+    			glyph = pL->medial;
+    			break;
+    		case GC_FINAL:
+    			glyph = pL->final;
+    			break;
+    		case GC_ISOLATE:
+    			glyph = pL->alone;
+    			break;
+    		default:
+	    		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    	}
+    	
+    	if(glyph != 1)
+    	{
+    		// a special ligature glyph was used, map this to a 0-width non breaking space
+    		return 0xFEFF;
+    	}
+    	// otherwise treat this as an ordinary letter.
+    }
+
+    // if we have no pL we are dealing with an ordinary letter
+    if(!pL)
+		pL = (Letter*) bsearch((void*)code, (void*)s_pGlyphTable, NrElements(s_table),sizeof(Letter),s_comp);
+	
+	// if we still have no pL, it means the letter has only one form
 	// so we return it back
 	if(!pL)
 		return *code;
 
-	// if we got no next and no prev, than this is stand-alone char	
-	if((!next || !*next) && (!prev || !*prev))
-		return pL->alone;
-	xxx_UT_DEBUGMSG(("code 0x%x, next 0x%x [*0x%x], prev 0x%x [*0x%x]\n", *code, next, *next, prev,*prev));
-	// if we got no next or previous pointers, a final or intial value is
-	// required	
-	if(!prev)
-		return pL->initial;
-	
-	if(!next || !*next)
-		return pL->final;
-	
-	//check if next is not a character that is to be ignored
-	const UT_UCSChar *myNext = next;
-	
-	while(*myNext && bsearch((void*)myNext, (void*)s_pIgnore, NrElements(s_ignore),sizeof(UCSRange),s_comp_ignore))
-		myNext++;
-			
-	if(!*myNext)
-		return pL->final; //we skipped to the end
-		
-	UT_DEBUGMSG(("UT_contexGlyph: myNext 0x%x\n", *myNext));
-	// test whether *prev and *next are word delimiters
-	bool bPrevWD = UT_isWordDelimiter(*prev, *code);
-	bool bNextWD = UT_isWordDelimiter(*myNext, UCS_SPACE);
-	
-	// if both are not , then medial form is needed
-	if(!bPrevWD && !bNextWD)
-		return pL->medial;
-	
-	// if only *next is, than final form is needed
-	if(bNextWD)
-		return pL->final;
-		
-	// if *prev is, the initial form is needed
-	if(bPrevWD)
-		return pL->initial;
-		
-	// if we got here, both are delimiters, which means stand alone form is needed
-	return pL->alone;
+    GlyphContext context = _evalGlyphContext(code, prev, next);
+   	switch (context)
+   	{
+   		case GC_INITIAL:
+   			return pL->initial;
+   		case GC_MEDIAL:
+   			return pL->medial;
+   		case GC_FINAL:
+   			return pL->final;
+   		case GC_ISOLATE:
+   			return pL->alone;
+   		default:
+    		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+   	}
+   	
+   	return;
 }
