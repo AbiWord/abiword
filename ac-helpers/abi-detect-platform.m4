@@ -89,7 +89,7 @@ AC_SUBST(EPATH_WV_BUILD_FLAGS)
 # 
 # convenience option for building with fink installed...
 # 
-AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS],[
+AC_ARG_WITH(fink,[  --with-fink          add /sw/... to CPP/LDFLAGS (Mac OSX)],[
 	if test "x$withval" != "xno"; then
 		CPPFLAGS="$CPPFLAGS -I/sw/include"
 		LDFLAGS="$LDFLAGS -L/sw/lib"
