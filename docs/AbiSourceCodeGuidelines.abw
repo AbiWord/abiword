@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+<abiword version="unnumbered">
 <!-- =====================================================================  -->
 <!-- This file is an AbiWord document.                                      -->
 <!-- AbiWord is a free, Open Source word processor.                         -->
@@ -7,31 +9,30 @@
 
 <!--         Build_ID          = (none) -->
 <!--         Build_Version     = unnumbered -->
-<!--         Build_Options     = LicensedTrademarks:Off Debug:On -->
-<!--         Build_Target      = /usr/local/tmp/sterwill/abi/src/Linux_2.2.4_i386_DBG/obj -->
-<!--         Build_CompileTime = 16:12:12 -->
-<!--         Build_CompileDate = Jun 16 1999 -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On Gnome:Off -->
+<!--         Build_Target      = /home/sam/abi/abi-mod/src/Linux_2.3.36_i386_DBG/obj -->
+<!--         Build_CompileTime = 15:49:15 -->
+<!--         Build_CompileDate = May 27 2000 -->
 
-<abiword version="unnumbered">
 <section column_gap="0.25in" num_columns="1">
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:courier; font-size:11pt">$Id$</c></p>
+<p props="line-height:1.0; margin-top:0pt">$Id$</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center"><c props="font-size:24pt; font-weight:bold">AbiSource Programmer Guidelines</c></p>
+<p props="line-height:1.0; margin-top:0pt; text-align:center">AbiSource Programmer Guidelines</p>
 <p props="line-height:1.0; margin-top:0pt; text-align:center"></p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center"><c props="font-size:11pt">Copyright (C) 1999 AbiSource, Inc. All Rights Reserved.</c></p>
+<p props="line-height:1.0; margin-top:0pt; text-align:center">Copyright (C) 1999 AbiSource, Inc. All Rights Reserved.</p>
 <p props="line-height:1.0; margin-top:0pt; text-align:center"></p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center"><c props="font-style:italic">Eric W. Sink</c>, <c props="font-family:courier">eric@abisource.com</c></p>
+<p props="line-height:1.0; margin-top:0pt; text-align:center">Eric W. Sink, eric@abisource.com</p>
 <p props="line-height:1.0; margin-top:0pt; text-align:center">AbiSource, Inc.</p>
 <p props="line-height:1.0; margin-top:0pt; text-align:center"></p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center"><c props="font-family:courier">$Date$</c></p>
+<p props="line-height:1.0; margin-top:0pt; text-align:center">$Date$</p>
 <p props="line-height:1.0; margin-top:0pt; text-align:center"></p>
-<p props="line-height:1.0; margin-top:0pt">1.  Generally, we use Hungarian notation and mixed-case names for variables.  Prefix integer variables with an <c props="font-family:Courier New">i</c> and pointer variables with a <c props="font-family:Courier New">p</c>.  For example, <c props="font-family:Courier New">iNumColumns</c>.</p>
+<p props="line-height:1.0; margin-top:0pt">1.  Generally, we use Hungarian notation and mixed-case names for variables.  Prefix integer variables with an i and pointer variables with a p.  For example, iNumColumns.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">2.  Class member variables should be prefixed with <c props="font-family:Courier New">m_</c>.  For example, <c props="font-family:Courier New">m_pBlockLayout</c>.  Static member variables should be prefixed with s_.</p>
+<p props="line-height:1.0; margin-top:0pt">2.  Class member variables should be prefixed with m_.  For example, m_pBlockLayout.  Static member variables should be prefixed with s_.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">3.  We use C++, but we use it carefully.  We <c props="font-style:normal; font-weight:bold">generally </c>follow the <c props="font-style:italic">C++ Portability Guide</c> document at www.mozilla.org.  Don't use templates, exceptions, multiple inheritance, RTTI, or namespaces.  Avoid multiple inheritance.  The C++ filename suffix is <c props="font-family:Courier New">.cpp</c>. </p>
+<p props="line-height:1.0; margin-top:0pt">3.  We use C++, but we use it carefully.  We generally follow the C++ Portability Guide document at www.mozilla.org.  Don't use templates, exceptions, RTTI, or namespaces.  Avoid multiple inheritance.  The C++ filename suffix is .cpp. </p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">4.  C is allowed, but if you're writing new code, we'd prefer that you change the suffix to .cpp and compile it as C++.  :-)  The type checking is stronger that way.  If you do use C, do <c props="font-weight:bold">not </c>use C++ style comments (// this is a comment).</p>
+<p props="line-height:1.0; margin-top:0pt">4.  C is allowed, but if you're writing new code, we'd prefer that you change the suffix to .cpp and compile it as C++.  :-)  The type checking is stronger that way.  If you do use C, do not use C++ style comments (// this is a comment).  In C++ code, prefer C++ style comments where appropriate.  </p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">5.  We care about compiler warnings.  Turn on the highest warning level of your compiler which is reasonable and fix everything it complains about.  Our goal is to have a warning-free build.  In practice, we usually come very close to that goal.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
@@ -39,42 +40,44 @@
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">7.  Cross-platform (XP) code is very important to us.  Remember that XP code must compile on a wide variety of platforms.  Don't put platform-specific stuff in XP files.  Don't put platform #ifdefs in XP files.  Don't put any code which could be XP in a platform-specific file.  At the time of this writing, AbiWord is approximately 90% XP code, based on line count.  We'd like to keep it that way.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">8.  Use  the portability types in abi/src/util.  For example, don't use <c props="font-family:Courier New">unsigned long</c>, use <c props="font-family:Courier New">UT_uint32</c> instead.  There's also <c props="font-family:Courier New">UT_Bool</c>, with its attendant <c props="font-family:Courier New">UT_TRUE</c> and <c props="font-family:Courier New">UT_FALSE</c>.</p>
+<p props="line-height:1.0; margin-top:0pt">8.  Use  the portability types in abi/src/util.  For example, don't use unsigned long, use UT_uint32 instead.  If there is no possibility of overflow on <c props="font-weight:bold">any</c><c props="font-weight:normal"> supported platform</c>, int can be used as loop index.  There's also UT_Bool, with its attendant UT_TRUE and UT_FALSE.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">9.  Keep an eye on Bugzilla.  We believe in the "fix bugs as you go" approach.  Don't let the bug count ever get too high.  When you fix a bug, update Bugzilla to reflect the change in state.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">10.  When you check something in, send email about it.  Put the word 'commit' in the subject line of the message.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">11.  Design and implement AbiSuite for users, not for programmers.  We're fanatical about developing software which <c props="font-weight:bold">normal </c>people will like to use.  This is more than just the usual cliches about user friendliness.  If you are a programmer, you are definitely not normal.  Quite often, we refer to the example target user as "the church secretary".  When coding a feature, ask yourself if you designed it such that your Mom will like to use it.  If your Mom is a geek too, then refer to someone else's Mom.</p>
+<p props="line-height:1.0; margin-top:0pt">11.  Design and implement AbiSuite for users, not for programmers.  We're fanatical about developing software which normal people will like to use.  This is more than just the usual cliches about user friendliness.  If you are a programmer, you are definitely not normal.  Quite often, we refer to the example target user as "the church secretary".  When coding a feature, ask yourself if you designed it such that your Mom will like to use it.  If your Mom is a geek too, then refer to someone else's Mom.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">12.  Prefix the names of protected or private methods with an underscore.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">13.  The curly brace goes on the next line, and it is not indented.  Don't put the curly brace on the same line as the if, and do not indent it.</p>
+<p props="line-height:1.0; margin-top:0pt">13.  The curly brace goes on the next  line, and is indented to the same position as the starting position of  the expression it belongs to, i.e. </p>
+<p style="Block Text"><c props="font-family:Courier New">if(x)</c></p>
+<p style="Block Text"><c props="font-family:Courier New">{</c></p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">14.  Indents are 4 spaces or 1 tab.  Tabs are 4 spaces.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">15.  Use asserts liberally.  We've provided the <c props="font-family:Courier New">UT_ASSERT </c>macro for just this purpose.  Asserts are good -- they provide you an opportunity to make your assumptions explicit.</p>
+<p props="line-height:1.0; margin-top:0pt">15.  Use asserts liberally.  We've provided the UT_ASSERT macro for just this purpose.  Asserts are good -- they provide you an opportunity to make your assumptions explicit.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">16.  Don't use C++ iostreams.  "I consider the use of C++ iostreams to be a bug and will log it." -- Jeff Hostetler, 27 January 1999.  <c props="font-family:Courier New; font-style:normal">:-)</c></p>
+<p props="line-height:1.0; margin-top:0pt">16.  Don't use C++ iostreams.  "I consider the use of C++ iostreams to be a bug and will log it." -- Jeff Hostetler, 27 January 1999.  :-)</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">17.  Don't break the tree.  This is a Big One.  Some Open Source projects seem to be very forgiving about checking in code which doesn't compile or causes instant crashes.  We're not.  Around here, when someone breaks the tree, we require them to buy donuts.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">18.  Don't declare variables in the declaration of a 'for' loop of 'if' conditional and expect them to work outside the scope of the block of code.  This seems to be current ANSI/ICO C++ rules.  Metrowerks CodeWarrior is unforgiving about this; such variables are restricted to the scope of the conditional or loop.  For example, CodeWarrior will refuse to compile the following code:</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt">for (int i = 0; i &gt; 10; i++)</c></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt">{</c></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt">	printf("i is %d \n", i);</c></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt">}</c></p>
-<p props="line-height:1.0; margin-top:0pt; tabstops:"><c props="font-family:Courier New; font-size:9pt">printf("i is now %d \n", i);</c></p>
+<p props="line-height:1.0; margin-top:0pt">for (int i = 0; i &gt; 10; i++)</p>
+<p props="line-height:1.0; margin-top:0pt">{</p>
+<p props="line-height:1.0; margin-top:0pt">	printf("i is %d \n", i);</p>
+<p props="line-height:1.0; margin-top:0pt">}</p>
+<p props="line-height:1.0; margin-top:0pt">printf("i is now %d \n", i);</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">'i' is used after the for loop, where it is not in variable scope.  Write portable cross-platform code like this:</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt; font-style:normal; font-weight:normal; text-decoration:none">int i;</c></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt; font-style:normal; font-weight:normal; text-decoration:none">for (i = 0; i &gt; 10; i++)</c></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt; font-style:normal; font-weight:normal; text-decoration:none">{</c></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt; font-style:normal; font-weight:normal; text-decoration:none">	printf("i is %d \n", i);</c></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt; font-style:normal; font-weight:normal; text-decoration:none">}</c></p>
-<p props="line-height:1.0; margin-top:0pt"><c props="font-family:Courier New; font-size:9pt; font-style:normal; font-weight:normal; text-decoration:none">printf("i is now %d \n", i);</c></p>
+<p props="line-height:1.0; margin-top:0pt">int i;</p>
+<p props="line-height:1.0; margin-top:0pt">for (i = 0; i &gt; 10; i++)</p>
+<p props="line-height:1.0; margin-top:0pt">{</p>
+<p props="line-height:1.0; margin-top:0pt">	printf("i is %d \n", i);</p>
+<p props="line-height:1.0; margin-top:0pt">}</p>
+<p props="line-height:1.0; margin-top:0pt">printf("i is now %d \n", i);</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 </section>
 </abiword>
