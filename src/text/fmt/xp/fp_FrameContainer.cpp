@@ -66,6 +66,7 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
  */
 fp_FrameContainer::~fp_FrameContainer()
 {
+  UT_DEBUGMSG(("Delete FrameContainer %x \n",this));
 	m_pPage = NULL;
 }
 
@@ -109,7 +110,13 @@ bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
 	      delete pMyFrameRec;
 	      return true;
 	 }
-	 UT_sint32 y = rec.top - pMyFrameRec->top - iextra;
+	 UT_sint32 iTweak = getGraphics()->tlu(2);
+	 pMyFrameRec->left += iextra + iTweak;
+	 pMyFrameRec->top += iextra + iTweak;
+	 pMyFrameRec->width -= (2*iextra + 2*iTweak);
+	 pMyFrameRec->height -= (2*iextra + 2*iTweak);
+
+	 UT_sint32 y = rec.top - pMyFrameRec->top;
 	 UT_sint32 h = rec.height;
 	 if(pFL->getBackgroundImage() == NULL)
 	 {
@@ -118,11 +125,13 @@ bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
 	 }
 	 UT_sint32 pad = pFL->getBoundingSpace();
 	 UT_sint32 iLeft = pFL->getBackgroundImage()->GetOffsetFromLeft(getGraphics(),pad,y,h);
+	 UT_DEBUGMSG(("iLeft projection %d \n",iLeft));
 	 if(iLeft < -getWidth())
 	 {
 	   //
 	   // Pure transparent.
 	   //
+	   UT_DEBUGMSG(("Overlaps pure transparent line top %d line height %d image top %d \n",rec.top,rec.height,y));
 	      delete pMyFrameRec;
 	      return false;
 	 }
@@ -130,19 +139,24 @@ bool fp_FrameContainer::overlapsRect(UT_Rect & rec)
 	 if(rec.left < pMyFrameRec->left)
 	 {
               pMyFrameRec->left -= iLeft;
+	      UT_DEBUGMSG(("Moves Image left border by %d to %d \n",-iLeft,pMyFrameRec->left));
 	 }
 	 else
 	 {
 	      UT_sint32 iRight = pFL->getBackgroundImage()->GetOffsetFromRight(getGraphics(),pad,y,h);
               pMyFrameRec->width += iRight;
+	      UT_DEBUGMSG(("Reduce Image width by %d to %d \n",iRight,pMyFrameRec->width));
 	 }
 	 if(rec.intersectsRect(pMyFrameRec))
 	 {
-	   xxx_UT_DEBUGMSG(("Frame overlaps \n"));
+	   UT_DEBUGMSG(("Frame Still overlaps \n"));
 	   delete pMyFrameRec;
 	   return true;
 	 }
-	 UT_DEBUGMSG(("Tight Frame does not overlap \n"));
+	 UT_DEBUGMSG(("Tight Frame no longer overlaps \n"));
+	 UT_DEBUGMSG(("Line Top %d Height %d left %d width %d \n",rec.top,rec.height,rec.left,rec.width));
+	 UT_DEBUGMSG(("Image Top %d Height %d left %d width %d \n",pMyFrameRec->top,pMyFrameRec->height,pMyFrameRec->left,pMyFrameRec->width));
+	 UT_DEBUGMSG(("Relative Top of line %d \n",y));
      }
      delete pMyFrameRec;
      return false;

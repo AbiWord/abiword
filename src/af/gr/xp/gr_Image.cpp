@@ -94,7 +94,7 @@ UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32
   {
     GenerateOutline();
   }
-  double maxDist = -10000000;
+  double maxDist = -10000000.0;
   double d = 0.0;
   UT_uint32 i = 0;
   double ddPad = static_cast<double>(pG->tdu(pad));
@@ -107,7 +107,7 @@ UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32
   for(i=0; i < nPts;i++)
   {
     pPoint = m_vecOutLine.getNthItem(i);
-    if((pPoint->m_iY >= yTop) && (pPoint->m_iY <= (yTop + height)))
+    if((pPoint->m_iY >= diTop) && (pPoint->m_iY <= (yTop + diHeight)))
     {
       d = ddPad - static_cast<double>(pPoint->m_iX);
     }
@@ -128,7 +128,7 @@ UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32
 	//
 	// This point doesn't overlap at all
 	//
-	  d = -10000000;
+	  d = -10000000.0;
       }
       else
       {
@@ -140,7 +140,7 @@ UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32
       maxDist = d;
     }
   }
-  if(maxDist == -10000000)
+  if(maxDist < -9999999.)
   {
     maxDist = static_cast<double>(-getDisplayWidth());
   }
@@ -177,7 +177,7 @@ UT_sint32 GR_Image::GetOffsetFromRight(GR_Graphics * pG, UT_sint32 pad, UT_sint3
   {
     GenerateOutline();
   }
-  double maxDist = -10000000;
+  double maxDist = -10000000.0;
   double d = 0.0;
   UT_uint32 i = 0;
   double ddPad = static_cast<double>(pG->tdu(pad));
@@ -212,7 +212,7 @@ UT_sint32 GR_Image::GetOffsetFromRight(GR_Graphics * pG, UT_sint32 pad, UT_sint3
 	      //
 	      // This point doesn't overlap at all
 	      //
-	      d = -10000000;
+	      d = -10000000.0;
 	 }
 	 else
          {
@@ -225,7 +225,7 @@ UT_sint32 GR_Image::GetOffsetFromRight(GR_Graphics * pG, UT_sint32 pad, UT_sint3
          maxDist = d;
     }
   }
-  if(maxDist == -10000000)
+  if(maxDist < -9999999.)
   {
     maxDist = static_cast<double>(-getDisplayWidth());
   }

@@ -370,7 +370,43 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								{
 									xxx_UT_DEBUGMSG(("Found wrapped line with extra  space %x  \n",pLine));
 									bFoundOne = true;
+									if(pPrev && pLine->isSameYAsPrevious())
+									{
+									  pLine = pPrev;
+									  j--;
+									}
 								}
+								else if (pPrev &&  pLine->isSameYAsPrevious())
+								{
+								  //
+								  // Look for a gap between lines.
+								  //
+								  UT_Rect recBetween;
+								  UT_Rect * pPrevRec = pPrev->getScreenRect();
+								  UT_Rect * pCurRec = pLine->getScreenRect();
+								  recBetween.left = pPrevRec->left+pPrevRec->width;
+								  recBetween.width = pCurRec->left - recBetween.left;
+								  if(pPrevRec->height != pCurRec->height)
+								  {
+								    pLine = pPrev;
+								    j--;
+								    bFoundOne = true;
+								  }
+								  else
+								  {
+								    recBetween.height = pPrevRec->height;
+								    recBetween.top = pPrevRec->top;
+								    if(!overlapsWrappedFrame(recBetween))
+								    {
+								      pLine = pPrev;
+								      j--;
+								      bFoundOne = true;
+								    }
+								  }
+								  delete pPrevRec;
+								  delete pCurRec;
+								}
+								  
 							}
 							else
 							{
