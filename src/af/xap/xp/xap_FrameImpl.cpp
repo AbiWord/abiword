@@ -161,6 +161,14 @@ bool XAP_FrameImpl::_updateTitle()
 		because that happens dynamically at menu pop-up time.  
 	*/
 
+	/* first try to use the metadata title as our title */
+	if (m_pFrame->m_pDoc->getMetaDataProp ("dc.title", m_pFrame->m_sTitle) && m_pFrame->m_sTitle.size()) {
+		m_pFrame->m_sNonDecoratedTitle = m_pFrame->m_sTitle;
+		return true;
+	}
+	
+	/* that failed. let's use the filename instead */
+
 	const char* szName = m_pFrame->m_pDoc->getFilename();
 
 	if (szName && *szName) 

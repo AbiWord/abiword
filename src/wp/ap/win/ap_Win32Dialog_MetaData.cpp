@@ -41,8 +41,8 @@
 /*
 	Helpers
 */
-UT_String 	sRslt;
-UT_UTF8String  sRsltUTF8;
+static UT_String 	sRslt;
+static UT_UTF8String  sRsltUTF8;
 
 const char* fromUTF8toAnsi(const char* szIn)
 {
@@ -151,11 +151,11 @@ void AP_Win32Dialog_MetaData_General::_onInitDialog()
 		SetDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));						
 	
 	// Setup previous text	
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_TITLE,			fromUTF8toAnsi(getContainer()->getTitle().c_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_SUBJECT,		fromUTF8toAnsi(getContainer()->getSubject().c_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR,			fromUTF8toAnsi(getContainer()->getAuthor().c_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER,		fromUTF8toAnsi(getContainer()->getPublisher().c_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_CONTRIBUTOR,	fromUTF8toAnsi(getContainer()->getCoAuthor().c_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_TITLE,			fromUTF8toAnsi(getContainer()->getTitle().utf8_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_SUBJECT,		fromUTF8toAnsi(getContainer()->getSubject().utf8_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_AUTHOR,			fromUTF8toAnsi(getContainer()->getAuthor().utf8_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_PUBLISHER,		fromUTF8toAnsi(getContainer()->getPublisher().utf8_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_GENERAL_EDIT_CONTRIBUTOR,	fromUTF8toAnsi(getContainer()->getCoAuthor().utf8_str()));									
 	
 	
 	HWND hParent = GetParent(getHandle());						
@@ -238,10 +238,10 @@ void AP_Win32Dialog_MetaData_Summary::_onInitDialog()
 		SetDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));				
 
 	// Setup previous text	
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_CATEGORY,		fromUTF8toAnsi(getContainer()->getCategory().c_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_KEYWORDS,		fromUTF8toAnsi(getContainer()->getKeywords().c_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_LANGUAGE,		fromUTF8toAnsi(getContainer()->getLanguages().c_str()));									
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_DESCRIPTION,	fromUTF8toAnsi(getContainer()->getDescription().c_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_CATEGORY,		fromUTF8toAnsi(getContainer()->getCategory().utf8_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_KEYWORDS,		fromUTF8toAnsi(getContainer()->getKeywords().utf8_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_LANGUAGE,		fromUTF8toAnsi(getContainer()->getLanguages().utf8_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_SUMMARY_EDIT_DESCRIPTION,	fromUTF8toAnsi(getContainer()->getDescription().utf8_str()));									
 
 }
 
@@ -316,10 +316,10 @@ void AP_Win32Dialog_MetaData_Permissions::_onInitDialog()
 		SetDlgItemText(getHandle(), rgMapping[i].controlId, pSS->getValue(rgMapping[i].stringId));				
 
 	// Setup previous text	
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_SOURCE,		fromUTF8toAnsi(getContainer()->getSource().c_str()));											
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_RELATION,	fromUTF8toAnsi(getContainer()->getRelation().c_str()));											
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_COVERAGE,	fromUTF8toAnsi(getContainer()->getCoverage().c_str()));											
-	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_RIGHTS,		fromUTF8toAnsi(getContainer()->getRights().c_str()));									
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_SOURCE,		fromUTF8toAnsi(getContainer()->getSource().utf8_str()));											
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_RELATION,	fromUTF8toAnsi(getContainer()->getRelation().utf8_str()));											
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_COVERAGE,	fromUTF8toAnsi(getContainer()->getCoverage().utf8_str()));											
+	SetDlgItemText(getHandle(), AP_RID_DIALOG_META_PERMISSIONS_EDIT_RIGHTS,		fromUTF8toAnsi(getContainer()->getRights().utf8_str()));									
 
 }												
 

@@ -2800,7 +2800,7 @@ Defun(dlgMetaData)
 
   PD_Document * pDocument = pView->getDocument();
 
-  UT_String prop ( "" ) ;
+  UT_UTF8String prop ( "" ) ;
 
   if ( pDocument->getMetaDataProp ( PD_META_KEY_TITLE, prop ) )
     pDialog->setTitle ( prop ) ;
@@ -2851,12 +2851,18 @@ Defun(dlgMetaData)
       pDocument->setMetaDataProp ( PD_META_KEY_RIGHTS, pDialog->getRights() ) ;
       pDocument->setMetaDataProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
 
+	  for(int i = 0;i < pApp->getFrameCount();++i)
+	  {
+		  pApp->getFrame(i)->updateTitle ();
+	  }	  
+
       // TODO: set the document as dirty when something changed
     }
 
   // release the dialog
 
   pDialogFactory->releaseDialog(pDialog);
+
   return true ;
 }
 

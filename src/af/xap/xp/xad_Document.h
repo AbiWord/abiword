@@ -79,6 +79,9 @@ public:
 	const char *			getEncodingName() const;
 	bool					isPieceTableChanging(void);
 
+	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value) = 0;
+	virtual bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const = 0;
+
 protected:
 	virtual ~AD_Document();		//  Use unref() instead.
 

@@ -440,13 +440,8 @@ public:
 	inline bool areStylesLocked () const { return m_bLockedStyles; }    // See also lockStyles
 	void lockStyles(bool b);
 
-	/* these were the original functions, but shouldn't we use UT_UTF8String()?
-	 */
-	void setMetaDataProp (const UT_String & key, const UT_String & value);
-	bool getMetaDataProp (const UT_String & key, UT_String & outProp) const;
-
-	void setMetaDataProp (const UT_String & key, const UT_UTF8String & value);
-	bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const;
+	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value);
+	virtual bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const;
 
 	UT_StringPtrMap & getMetaData () { return m_metaDataMap ; }
 

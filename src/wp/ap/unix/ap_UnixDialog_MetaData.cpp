@@ -417,7 +417,7 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
 
   // now set the text
   #define SET_ENTRY_TXT(name) \
-  prop = get##name ().c_str() ; \
+  prop = get##name ().utf8_str() ; \
   if ( prop.size () > 0 ) { \
     gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.utf8_str() ) ; \
   }
@@ -437,7 +437,7 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
 
   #undef SET_ENTRY_TXT
 
-  prop = getDescription ().c_str() ;
+  prop = getDescription ().utf8_str() ;
   if ( prop.size () )
     {
       GtkTextBuffer * buffer = gtk_text_view_get_buffer ( GTK_TEXT_VIEW(description_txt) ) ;

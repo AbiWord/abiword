@@ -762,7 +762,7 @@ public:
 	virtual bool			isSuperscript(void) const;
 	virtual bool			isSubscript(void) const;
 
-	bool					_setValue(UT_UCSChar *p_new_value);
+	bool					_setValue(const UT_UCSChar *p_new_value);
 
 	virtual bool			calculateValue(void);
 	virtual bool			recalcWidth(void);

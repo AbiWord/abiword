@@ -33,7 +33,7 @@
 #include "ap_CocoaDialog_MetaData.h"
 
 #define SET_ENTRY_TXT(name) { \
-  UT_String prop(get##name ()) ; \
+  UT_UTF8String prop(get##name ()) ; \
   if ( prop.size () > 0 ) { \
     [m_dlg setGUI##name:prop] ; \
   }}
@@ -183,9 +183,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_titleData stringValue];
 }
 
-- (void)setGUITitle:(const UT_String&)str
+- (void)setGUITitle:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_titleData setStringValue:s];
 	[s release];
 }
@@ -196,9 +196,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_subjectData stringValue];
 }
 
-- (void)setGUISubject:(const UT_String&)str
+- (void)setGUISubject:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_subjectData setStringValue:s];
 	[s release];
 }
@@ -208,9 +208,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_authorData stringValue];
 }
 
-- (void)setGUIAuthor:(const UT_String&)str
+- (void)setGUIAuthor:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_authorData setStringValue:s];
 	[s release];
 }
@@ -220,9 +220,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_publisherData stringValue];
 }
 
-- (void)setGUIPublisher:(const UT_String&)str
+- (void)setGUIPublisher:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_publisherData setStringValue:s];
 	[s release];
 }
@@ -232,9 +232,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_coAuthorData stringValue];
 }
 
-- (void)setGUICoAuthor:(const UT_String&)str
+- (void)setGUICoAuthor:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_coAuthorData setStringValue:s];
 	[s release];
 }
@@ -244,9 +244,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_categoryData stringValue];
 }
 
-- (void)setGUICategory:(const UT_String&)str
+- (void)setGUICategory:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_categoryData setStringValue:s];
 	[s release];
 }
@@ -256,9 +256,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_keywordData stringValue];
 }
 
-- (void)setGUIKeywords:(const UT_String&)str
+- (void)setGUIKeywords:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_keywordData setStringValue:s];
 	[s release];
 }
@@ -268,9 +268,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_languageData stringValue];
 }
 
-- (void)setGUILanguages:(const UT_String&)str
+- (void)setGUILanguages:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_languageData setStringValue:s];
 	[s release];
 }
@@ -280,9 +280,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_sourceData stringValue];
 }
 
-- (void)setGUISource:(const UT_String&)str
+- (void)setGUISource:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_sourceData setStringValue:s];
 	[s release];
 }
@@ -292,9 +292,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_relationData stringValue];
 }
 
-- (void)setGUIRelation:(const UT_String&)str
+- (void)setGUIRelation:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_relationData setStringValue:s];
 	[s release];
 }
@@ -304,9 +304,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_coverageData stringValue];
 }
 
-- (void)setGUICoverage:(const UT_String&)str
+- (void)setGUICoverage:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_coverageData setStringValue:s];
 	[s release];
 }
@@ -316,9 +316,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_rightsData stringValue];
 }
 
-- (void)setGUIRights:(const UT_String&)str
+- (void)setGUIRights:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_rightsData setStringValue:s];
 	[s release];
 }
@@ -328,9 +328,9 @@ void AP_CocoaDialog_MetaData::cancelAction(void)
 	return [m_descriptionData stringValue];
 }
 
-- (void)setGUIDescription:(const UT_String&)str
+- (void)setGUIDescription:(const UT_UTF8String&)str
 {
-	NSString *s = [[NSString alloc] initWithUTF8String:str.c_str()];
+	NSString *s = [[NSString alloc] initWithUTF8String:str.utf8_str()];
 	[m_descriptionData setStringValue:s];
 	[s release];
 }

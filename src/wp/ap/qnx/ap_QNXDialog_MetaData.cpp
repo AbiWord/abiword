@@ -217,13 +217,13 @@ PtWidget_t *btnOk,*btnCancel;
   m_entryRights = rights_entry;
   m_entryDescription = description_txt;
 
-  UT_String prop ("" );
+  UT_UTF8String prop ("");
   //Set the text on the text boxes
   // now set the text
   #define SET_ENTRY_TXT(name) \
   prop = get##name () ; \
   if ( prop.size () > 0 ) { \
-    PtSetResource(m_entry##name,Pt_ARG_TEXT_STRING,prop.c_str(),0); \
+    PtSetResource(m_entry##name,Pt_ARG_TEXT_STRING,prop.utf8_str(),0); \
   }
 
   SET_ENTRY_TXT(Title)

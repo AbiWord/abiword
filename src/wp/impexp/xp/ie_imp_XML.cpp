@@ -245,9 +245,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						return;
 					case _PS_Meta:
 						{
-							// ugly hack
-							// UT_UTF8String utf8(buf);
-							UT_String data(s,len);
+							UT_UTF8String data(s,len);
 							getDoc()->setMetaDataProp(m_currentMetaDataName, data);
 							return;
 						}

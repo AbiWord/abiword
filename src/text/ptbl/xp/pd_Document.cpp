@@ -210,16 +210,6 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 //////////////////////////////////////////////////////////////////
 
 void PD_Document::setMetaDataProp ( const UT_String & key,
-									const UT_String & value )
-{
-	UT_UTF8String * old = (UT_UTF8String *)(m_metaDataMap.pick ( key ) );
-	DELETEP(old);
-	
-	UT_UTF8String * ptrvalue = new UT_UTF8String(value.c_str());
-	m_metaDataMap.set (key, ptrvalue);
-}
-
-void PD_Document::setMetaDataProp ( const UT_String & key,
 									const UT_UTF8String & value )
 {
 	UT_UTF8String * old = (UT_UTF8String *)(m_metaDataMap.pick ( key ) );
@@ -227,14 +217,6 @@ void PD_Document::setMetaDataProp ( const UT_String & key,
 	
 	UT_UTF8String * ptrvalue = new UT_UTF8String(value);
 	m_metaDataMap.set (key, ptrvalue);
-}
-
-bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp ) const
-{
-  UT_UTF8String value;
-  bool found = getMetaDataProp (key, value);
-  outProp = value.utf8_str ();
-  return found;
 }
 
 bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const
