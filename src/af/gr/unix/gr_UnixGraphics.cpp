@@ -110,29 +110,39 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	UT_ASSERT(m_pFont);
 
-	/*
-	  TODO -  We need to seriously look for a way to avoid this.
-	  Doing a memory allocation on every draw is painful.
-	*/
 	GdkFont *font = m_pFont->getGdkFont();
 
-	// Blargh... GDK wants strings in 32 bits, we use 16 internally
-    GdkWChar *pNChars = new GdkWChar[iLength];
+   	if (iLength > 1) {
+		/*
+		 * TODO -  We need to seriously look for a way to avoid this.
+	  	 * Doing a memory allocation on every draw is painful.
+		 */
+		// Blargh... GDK wants strings in 32 bits, we use 16 internally
+    		GdkWChar *pNChars = new GdkWChar[iLength];
 
-	for (int i = 0; i < iLength; i++)
-    {
-		pNChars[i] = pChars[i + iCharOffset];
-    }
-  
+   		for (int i = 0; i < iLength; i++)
+     		{
+			pNChars[i] = pChars[i + iCharOffset];
+    		}
+  	
 
-	// Use "wide-char" function
-	gdk_draw_text_wc (m_pWin, font, m_pGC,
-					  xoff, yoff + font->ascent, pNChars, iLength);
-	//XDrawString16 (drawable_private->xdisplay, drawable_private->xwindow,
-	//			   gc_private->xgc, xoff, yoff + xfont->ascent, pNChars,
-	//			   iLength);
+		// Use "wide-char" function
+		gdk_draw_text_wc (m_pWin, font, m_pGC,
+				  xoff, yoff + font->ascent, pNChars, iLength);
+		//XDrawString16 (drawable_private->xdisplay, drawable_private->xwindow,
+		//			   gc_private->xgc, xoff, yoff + xfont->ascent, pNChars,
+		//			   iLength);
 
-	delete pNChars;
+		delete pNChars;
+	} else {
+	 
+	   	// the vast majority of calls to this function are
+	   	// to draw a single character, so we'll optimize this case
+	   
+	   	GdkWChar pChar = pChars[iCharOffset];
+	   	gdk_draw_text_wc (m_pWin, font, m_pGC,
+				  xoff, yoff + font->ascent, &pChar, 1);
+	}
 
 #if 1
 	flush();
