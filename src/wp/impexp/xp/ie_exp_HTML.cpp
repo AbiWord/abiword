@@ -2014,7 +2014,7 @@ bool s_HTML_Listener::signal(UT_uint32 /* iSignal */)
 
 UT_Error IE_Exp_HTML::_writeDocument(void)
 {
-  bool err = true;
+	bool err = true;
 	m_pListener = new s_HTML_Listener(getDoc(),this, m_bIs4);
 	if (!m_pListener)
 		return UT_IE_NOMEMORY;
@@ -2083,7 +2083,13 @@ void s_HTML_Listener::_handleDataItems(void)
 #else
 			fname = "images";
 #endif
-			int result = m_pDocument->getApp()->makeDirectory(fname.c_str(), 0750);
+			UT_sint32 result = m_pDocument->getApp()->makeDirectory(fname.c_str(), 0750);
+			if (result < 0)
+			{
+				UT_DEBUGMSG(("Failed to create directory\n"));
+				/* we might want to return an error here, 
+				 * but I don't think so. */
+			}
 
 			if (!UT_strcmp(szMimeType, "image/svg-xml"))
 				UT_String_sprintf(fname, "%s/%s_%d.svg", fname.c_str(), szName, loc);

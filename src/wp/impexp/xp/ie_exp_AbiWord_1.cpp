@@ -1177,7 +1177,6 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 {
 	bool bWroteOpenRevisionsSection = false;
 
-	const char * szName = NULL;
 	const PD_Revision * pRev=NULL;
 	char buf[35];
 
