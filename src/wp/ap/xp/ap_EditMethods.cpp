@@ -7182,32 +7182,25 @@ Defun(dlgFmtImage)
 	
 	pDialog->setMaxWidth (max_width);
 	pDialog->setMaxHeight (max_height);
-
-	PT_DocPosition pos = pView->getPoint()-1;
-	fl_BlockLayout * pBlock = pView->getCurrentBlock();
+	UT_DEBUGMSG(("formatting  image: %d\n", pCallData->m_xPos));
+	PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
+	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
 	fp_Run *  pRun = NULL;
 	if(pBlock)
 	{
 		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && pRun->getType() != FPRUN_IMAGE)
+		{
+			pRun = pRun->getNext();
+		}
 		if(pRun && pRun->getType() == FPRUN_IMAGE)
 		{
-			UT_DEBUGMSG(("SEVIOR: Image run one off pos \n"));
+			UT_DEBUGMSG(("SEVIOR: Image run on pos \n"));
 		}
 		else
 		{
-			while(pRun && pRun->getType() != FPRUN_IMAGE)
-			{
-				pRun = pRun->getNext();
-			}
-			if(pRun && pRun->getType() == FPRUN_IMAGE)
-			{
-				UT_DEBUGMSG(("SEVIOR: Image run on pos \n"));
-			}
-			else
-			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				return false;
-			}
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return false;
 		}
 	}
 

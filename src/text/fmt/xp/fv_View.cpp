@@ -5723,6 +5723,24 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 	return pPage;
 }
 
+/*!
+ * This method returns the document position at xpos,ypos on the screen.
+ */
+PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos)
+{
+	// Figure out which page we clicked on.
+	// Pass the click down to that page.
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(xpos, ypos, xClick, yClick);
+
+	PT_DocPosition iNewPoint;
+	bool bBOL = false;
+	bool bEOL = false;
+	fl_HdrFtrShadow * pShadow = NULL;
+	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+	return iNewPoint;
+}
+
 void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 {
 	// Figure out which page we clicked on.
