@@ -581,8 +581,20 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 
 	// free any attached preview
 	DELETEP(m_paragraphPreview);
+
+	// we have to pass it a block of text to use as the current block
+
+	// TODO : USE SOME TEXT FROM THE DOCUMENT!!!
+
+	UT_UCSChar * tmp = NULL;
+
+	UT_UCS_cloneString_char(&tmp, "This is a test of the emergency broadcast system.  "
+							"If a real emergency had occurred, we'd all be dead right now, not testing paragraph dialogs.");
+
+	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp);
+
+	FREEP(tmp);
 	
-	m_paragraphPreview = new AP_Preview_Paragraph(gc);
 	UT_ASSERT(m_paragraphPreview);
 	
 	m_paragraphPreview->setWindowSize(width, height);
