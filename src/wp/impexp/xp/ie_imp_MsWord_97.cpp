@@ -157,7 +157,7 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	decodeWordFile(4, argv, buf, 4096, (void *) parser, s_readBuffer);
 	free(argv);
 	
-#if 0
+#ifdef DEBUG_MSWORDVIEW
 	// dump out byte buffer to file
 	FILE * out = fopen("mswordparsedump.abw", "w");
 	fwrite(bigbuf.getPointer(0), sizeof(UT_Byte), bigbuf.getLength(), out);

@@ -58,7 +58,7 @@ int list_author_key=0;
 
 int nofontfaces=0;
 int riskbadole=0;
-int NORMAL=20;
+int NORMAL=12;	/* sterwill: was 20 */
 int inunderline = 0;
 int inbold = 0;
 int incenter= 0;
@@ -126,6 +126,8 @@ char *errorfilename=NULL;
 char *filename=NULL;
 FILE *outputfile=NULL;
 FILE *erroroutput=NULL;
+
+int no_default_props_hack = 0;
 
 /*  global replacement for outputfile (not used in XML library interface) */
 char * outputbuffer = NULL;
@@ -605,7 +607,7 @@ int decodeWordFile(int argc, char ** argv, char * buf, int len, void * cbdata,
 		decode_e_chp(&achp);
 		if (inafont)
 			{
-			spewString("</c>");
+				 spewString("</c>");
 			inafont=0;
 			}
 		decode_e_specials(&apap,&achp,NULL);
@@ -622,7 +624,7 @@ int decodeWordFile(int argc, char ** argv, char * buf, int len, void * cbdata,
 		/* sterwill: handle section with awml, since we do 1 section now */
 		if (core)
 		{
-			spewString("</c>\n");	/* the first thing mswordview does is create a top-level <c>
+/*			spewString("</c>\n");*/	/* the first thing mswordview does is create a top-level <c>
 									   to cover the default font setup ("Times New Roman").  End it.
 									*/
 			spewString("</p>\n"); /*we need at least one paragraph  */
@@ -3268,6 +3270,7 @@ void decode_s_chp(chp *achp, ffn *fontnamelist)
 	if ((use_fontfacequery(achp) && (achp->ascii_font != currentfontcode)) || (achp->fontsize!=currentfontsize) || (strcmp(achp->color,incolor)) /* ( (achp->color[0] != '\0') && (!inacolor))  || ( (achp->color[0] == '\0' ) && (inacolor))*/   )
 		{
 		error(erroroutput,"b: font =%d %s\n", achp->fontsize,achp->color);
+#if 0
 		if (inunderline)
 			{
 			spewString("</c>");
@@ -3296,8 +3299,9 @@ void decode_s_chp(chp *achp, ffn *fontnamelist)
 			currentfontsize=NORMAL;
 			inafont=0;
 			}
-
-		if ( (achp->color[0] != '\0') || (achp->fontsize!=currentfontsize) || ((use_fontfacequery(achp) && (achp->ascii_font != currentfontcode))))
+#endif
+		
+		if ( (achp->color[0] != '\0') || (achp->fontsize!=currentfontsize) || ((use_fontfacequery(achp) && (achp->ascii_font != currentfontcode))) && no_default_props_hack == 1)
 			{
 			spewString("<c");
 
@@ -3372,6 +3376,9 @@ void decode_s_chp(chp *achp, ffn *fontnamelist)
 			currentfontsize=achp->fontsize;
 			}
 		}
+	else
+		no_default_props_hack = 1;
+		
 
 
 	if ((achp->supersubscript == 1) && (!insuper))
@@ -3453,8 +3460,7 @@ void end_para(pap *apap,pap *newpap)
 			do_indent(apap);
 			}
 		error(erroroutput,"apap height\n");
-		/* sterwill: later */
-/*		spewString("\n<img width=1 height=%d src=\"%s/clear.gif\"><br>\n",height*2,patterndir()); */
+		spewString("\n</p>\n<p>\n");
 		}
 
 	if (apap != NULL)
@@ -3469,8 +3475,7 @@ void end_para(pap *apap,pap *newpap)
 			if (apap->dyaAfter/TWIRPS_PER_V_PIXEL > 1)
 				{
 				error(erroroutput,"apap height\n");
-				/*  sterwill: later				 */
-				/* spewString("\n<img width=1 height=%d src=\"%s/clear.gif\"><br>\n",apap->dyaAfter/TWIRPS_PER_V_PIXEL,patterndir());*/
+				spewString("\n</p>\n<p>\n");
 				}
 			}
 		}
@@ -3492,6 +3497,7 @@ void end_para(pap *apap,pap *newpap)
 			if (newpap->dyaAfter/TWIRPS_PER_V_PIXEL >1)
 				{
 				error(erroroutput,"newpap height\n");
+				spewString("\n</p>\n<p>\n");
 				/*  sterwill: later				*/
 /*				spewString("\n<img width=1 height=%d src=\"%s/clear.gif\"><br>\n",newpap->dyaAfter/TWIRPS_PER_V_PIXEL,patterndir()); */
 				}
@@ -3513,7 +3519,7 @@ void decode_e_chp(chp *achp)
 
 	if ((achp->fStrike==0) && (instrike==1))
 		{
-		error(erroroutput,"END OF STRIKETHROUGH");
+		spewString("</c>");
 		instrike=0;
 		}
 
@@ -3626,12 +3632,21 @@ void decode_e_chp(chp *achp)
 			inblink=0;
 
 			}
-		if (inafont)
+		if (inafont || inacolor)
 			{
 			spewString("</c>");
-			incolor[0] = '\0';
+			incolor[0] = '\0'; 
 			currentfontcode=-1;
+			inafont=0;
+			inacolor=0;
 			}
+
+		if (instrike)
+		{
+			spewString("</c>");
+			instrike=0;
+		}
+
 		inafont =0;
 		inacolor=0;
 		currentfontsize=NORMAL;
@@ -4287,6 +4302,37 @@ int decode_letter(int letter,int flag,pap *apap, chp * achp,field_info *magic_fi
 				{
 				case 13:
 					error(erroroutput,"\n<!--paragraph end-->\n");
+					
+		if (inunderline)
+			{
+			spewString("</c>");
+			inunderline=0;
+			}
+		if (initalic)
+			{
+			spewString("</c>");
+			initalic=0;
+			}
+		if (inbold)
+			{
+			spewString("</c>");
+			inbold=0;
+			}
+		if (inblink)
+			{
+				/*spewString("</BLINK>");*/
+			inblink=0;
+			}
+		if (inafont)
+			{
+			inacolor=0;
+			incolor[0] = '\0';
+			spewString("</c>");
+			currentfontsize=NORMAL;
+			inafont=0;
+			}
+
+					spewString("\n</p>\n<p>\n");
 					if (!silent)
 						{
 						breakcount++;
