@@ -103,7 +103,7 @@ ifeq ($(ABI_NATIVE),unix)
 	fi
 # icons for X window manager use
 	@$(subst xxxx,$(CANONDIR)/icons,$(VERIFY_DIRECTORY))
-	(cd $(ABI_ROOT)/../abidistfiles/icons; cp *_48* $(CANONDIR)/icons)
+	(cd $(ABI_ROOT)/../abidistfiles/icons; cp abi* $(CANONDIR)/icons)
 # font stuff for installation
 	@$(subst xxxx,$(CANONDIR)/fonts,$(VERIFY_DIRECTORY))
 	(cd $(ABI_ROOT)/../unixfonts/fonts ; cp *.* $(CANONDIR)/fonts)

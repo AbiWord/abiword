@@ -20,9 +20,11 @@
 #include <gnome.h>
 
 #include "xap_Dialog_Id.h"
-#include "xap_UnixDlg_About.h"
 #include "xap_UnixGnomeDlg_About.h"
 #include "ut_dialogHelper.h"
+#include "xap_UnixFrame.h"
+#include "xap_App.h"
+#include "ut_string_class.h"
 
 XAP_Dialog * XAP_UnixGnomeDialog_About::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
@@ -63,14 +65,17 @@ void XAP_UnixGnomeDialog_About::runModal(XAP_Frame * pFrame)
 				   "and many other intrepid hackers",
 				   NULL};
 
+  UT_String str = XAP_App::getApp()->getAbiSuiteLibDir();
+  str += "/icons/abiword_logo.xpm";
+
   // Build the window's widgets and arrange them
   GtkWidget * mainWindow = gnome_about_new("AbiWord", 
-					   XAP_App::s_szBuild_Version,
-					   "(c) 1998-2001 AbiSource, Inc.",
-					   authors,
-					   "Released under the GNU GPL v2.0\n"
-					   "Gnome Port maintained by Dom Lachowicz <cinamod@hotmail.com>",
-					   NULL);  
+										   XAP_App::s_szBuild_Version,
+										   "(c) 1998-2001 AbiSource, Inc.",
+										   authors,
+										   "Released under the GNU GPL v2.0\n"
+										   "Gnome Port maintained by Dom Lachowicz <cinamod@hotmail.com>",
+										   str.c_str());
   UT_ASSERT(mainWindow);
   
   GtkWidget * hbox = gtk_hbox_new (TRUE, 0);
