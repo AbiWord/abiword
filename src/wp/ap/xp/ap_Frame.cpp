@@ -597,8 +597,8 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	}
 
 	REPLACEP(m_pView, pView);
-	if(getApp()->getViewSelection())
-		getApp()->setViewSelection(pView);
+	if(getApp()->getViewSelection() == m_pView)
+		getApp()->setViewSelection(NULL);
 
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
