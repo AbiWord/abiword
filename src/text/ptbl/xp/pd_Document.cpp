@@ -126,7 +126,7 @@ void PD_Document::setMetaDataProp ( const UT_String & key,
   m_metaDataMap.set ( key, ptrvalue ) ;
 }
 
-bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp )
+bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp ) const
 {
   bool found = false ;
   outProp = "" ;

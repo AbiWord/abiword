@@ -95,7 +95,7 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
-		UT_ASSERT(pL->getType() == PTX_Block);
+		UT_return_val_if_fail((pL->getType() == PTX_Block), false);
 		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 		if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
 		{

@@ -281,9 +281,105 @@ public:
 			       const UT_String & value ) ;
 
 	bool getMetaDataProp ( const UT_String & key,
-			       UT_String & outProp ) ;
+			       UT_String & outProp ) const ;
 
 	UT_StringPtrMap & getMetaData () { return m_metaDataMap ; }
+
+	inline void setAuthor ( const UT_String & value )
+	  {
+	    setMetaDataProp ( "Author", value ) ;
+	  }
+
+	inline UT_String getAuthor () const
+	  {
+	    UT_String ret;
+	    getMetaDataProp ( "Author", ret ) ;
+	    return ret ;
+	  }
+
+	inline void setSubject ( const UT_String & value )
+	  {
+	    setMetaDataProp ( "Subject", value ) ;
+	  }
+
+	inline UT_String getSubject () const
+	  {
+	    UT_String ret;
+	    getMetaDataProp ( "Subject", ret ) ;
+	    return ret ;
+	  }
+
+	inline void setTitle ( const UT_String & value )
+	  {
+	    setMetaDataProp ( "Title", value ) ;
+	  }
+
+	inline UT_String getTitle () const
+	  {
+	    UT_String ret;
+	    getMetaDataProp ( "Title", ret ) ;
+	    return ret ;
+	  }
+
+	inline void setSummary ( const UT_String & value )
+	  {
+	    setMetaDataProp ( "Summary", value ) ;
+	  }
+
+	inline UT_String getSummary () const
+	  {
+	    UT_String ret;
+	    getMetaDataProp ( "Summary", ret ) ;
+	    return ret ;
+	  }
+
+	inline void setOrginization ( const UT_String & value )
+	  {
+	    setMetaDataProp ( "Orginization", value ) ;
+	  }
+
+	inline UT_String getOrginization () const
+	  {
+	    UT_String ret;
+	    getMetaDataProp ( "Orginization", ret ) ;
+	    return ret ;
+	  }
+
+	inline void setRole ( const UT_String & value )
+	  {
+	    setMetaDataProp ( "Role", value ) ;
+	  }
+
+	inline UT_String getRole () const
+	  {
+	    UT_String ret;
+	    getMetaDataProp ( "Role", ret ) ;
+	    return ret ;
+	  }
+
+	inline void setKeywords ( const UT_String & value )
+	  {
+	    setMetaDataProp ( "Keywords", value ) ;
+	  }
+
+	inline UT_String getKeywords () const
+	  {
+	    UT_String ret;
+	    getMetaDataProp ( "Keywords", ret ) ;
+	    return ret ;
+	  }
+
+	inline void setComments ( const UT_String & value )
+	  {
+	    setMetaDataProp ( "Comments", value ) ;
+	  }
+
+	inline UT_String getComments () const
+	  {
+	    UT_String ret;
+	    getMetaDataProp ( "Comments", ret ) ;
+	    return ret ;
+	  }
 
 protected:
 	~PD_Document();
