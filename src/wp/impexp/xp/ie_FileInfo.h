@@ -82,6 +82,8 @@ public:
 #define IE_MIME_XBM			"image/x-xbitmap"
 #define IE_MIME_XPM			"image/x-xpixmap"
 
+#define IE_MIME_RELATED		"multipart/related"
+
 #if 0 /* some other MIME types, collected from AbiWord & gnome.mime */
 
 #define IE_MIME_	"application/x-color"
