@@ -129,8 +129,9 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 	// invoke the appropriate function.
 	// return true iff handled.
 
-	// we use this for the color dialog hack
-	UT_String color;
+	// we use this for the color dialog hack	
+	UT_UCS4String ucs4color;
+
 
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pWin32App->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
@@ -192,9 +193,11 @@ bool EV_Win32Toolbar::toolbarEvent(XAP_Toolbar_Id id,
 
 			if (bOK)
 			{
-				color = reinterpret_cast<const char *>(pDialog->getColor());
-				pData = (UT_UCSChar *)(color.c_str());
-				dataLength = color.size();
+				UT_UTF8String strColor;
+				strColor = (reinterpret_cast<const char *>(pDialog->getColor()));				
+				ucs4color = strColor.ucs4_str();
+				pData = (UT_UCSChar *) ucs4color.ucs4_str();
+				dataLength =  strColor.size();
 			}
 
 			pDialogFactory->releaseDialog(pDialog);
