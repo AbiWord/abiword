@@ -283,12 +283,29 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
 {
+	m_pViewPrevious  = m_pViewCurrent;
+	m_pFramePrevious = m_pFrameCurrent;
+
 	m_pViewCurrent  = view;
 	m_pFrameCurrent = frame;
 
 	if ([XAP_CocoaToolPalette instantiated])
 		{
 			[[XAP_CocoaToolPalette instance:self] setCurrentView:view inFrame:frame];
+		}
+}
+
+- (void)unsetCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
+{
+	if ((m_pViewCurrent == view) && (m_pFrameCurrent == frame))
+		{
+			m_pViewCurrent = 0;
+			m_pFrameCurrent = 0;
+		}
+	if ((m_pViewPrevious == view) && (m_pFramePrevious == frame))
+		{
+			m_pViewPrevious = 0;
+			m_pFramePrevious = 0;
 		}
 }
 
@@ -300,6 +317,16 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 - (XAP_Frame *)currentFrame
 {
 	return m_pFrameCurrent;
+}
+
+- (AV_View *)previousView
+{
+	return m_pViewPrevious;
+}
+
+- (XAP_Frame *)previousFrame
+{
+	return m_pFramePrevious;
 }
 
 @end
