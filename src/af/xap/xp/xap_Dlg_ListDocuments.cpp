@@ -31,7 +31,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_MessageBox.h"
-
+#include "xap_Frame.h"
 
 XAP_Dialog_ListDocuments::XAP_Dialog_ListDocuments(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id):
 	XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoglistdocument"),

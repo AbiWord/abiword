@@ -20,12 +20,11 @@
 #ifndef XAP_DIALOG_LISTDOCS_H
 #define XAP_DIALOG_LISTDOCS_H
 
-/* #include "xap_Frame.h" */
 #include "xap_Dialog.h"
 #include "ut_assert.h"
+#include "ut_vector.h"
 
 class AD_Document;
-class UT_Vector;
 
 /*!
 
