@@ -20,7 +20,6 @@
  * 02111-1307, USA.
  */
 
-#include "ut_string_class.h"
 #include "ut_exception.h"
 #include "ut_vector.h"
 #include "ut_assert.h"
@@ -28,6 +27,7 @@
 
 #include "xap_Spider.h"
 #include "xap_ModuleManager.h"
+#include "ut_string_class.h"
 
 // the loader manages instances of one of these target classes
 
