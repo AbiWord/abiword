@@ -153,7 +153,9 @@ int CALLBACK XAP_Win32PropertySheet::s_sheetWndProc(HWND hWnd, UINT msg, WPARAM 
 			{
                SendMessage (hWnd, WM_COMMAND, IDCANCEL, 0L);
                return 0;
-            }			
+            }		
+            	
+            break;
 		}
 			
 		case WM_DESTROY:
