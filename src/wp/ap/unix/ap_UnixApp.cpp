@@ -645,7 +645,7 @@ extern "C" {
 
 	// return > 0 for directory entries ending in ".so"
 #if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
-	|| defined(_AIX)
+	|| defined(_AIX) || defined(__sgi)
 	static int so_only (struct dirent *d)
 #else
 	static int so_only (const struct dirent *d)
