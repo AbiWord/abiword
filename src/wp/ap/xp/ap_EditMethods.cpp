@@ -1666,7 +1666,7 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 
 	IEFileType ieft = static_cast<PD_Document *>(pFrame->getCurrentDoc())->getLastSavedAsType();
 	char * pNewFile = NULL;
-	bool bOK = s_AskForPathname(pFrame,true,NULL,&pNewFile,&ieft);
+	bool bOK = s_AskForPathname(pFrame,true,pFrame->getFilename(),&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
 		return false;
@@ -1739,7 +1739,7 @@ Defun1(fileSaveAsWeb)
   XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
   IEFileType ieft = IE_Exp::fileTypeForSuffix (".html");
   char * pNewFile = NULL;
-  bool bOK = s_AskForPathname(pFrame,true,NULL,&pNewFile,&ieft);
+  bool bOK = s_AskForPathname(pFrame,true,pFrame->getFilename(),&pNewFile,&ieft);
   
   if (!bOK || !pNewFile)
     return false;
