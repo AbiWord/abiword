@@ -217,8 +217,8 @@ UT_Bool AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 	*/
 	m_pView->draw();
 #endif	
-	//((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
-        //((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
+	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
+        ((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
 	//((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 
 	return UT_TRUE;
@@ -523,6 +523,25 @@ void AP_BeOSFrame::setStatusMessage(const char * szMsg)
 *****/
 be_DocView *be_Window::_createDocumentWindow() {
 	BRect r;
+	
+        //Set up the scroll bars on the outer edges of the document area
+        printf("Setting up scroll bars \n");
+        r = m_winRectAvailable;
+        r.bottom -= B_H_SCROLL_BAR_HEIGHT;
+        r.left = r.right - B_V_SCROLL_BAR_WIDTH;
+        m_vScroll = new TFScrollBar(m_pBeOSFrame, r,
+                                    "VertScroll", NULL, 0, 100, B_VERTICAL);
+        AddChild(m_vScroll);
+
+        r = m_winRectAvailable;
+        r.top = r.bottom - B_H_SCROLL_BAR_HEIGHT;
+        r.right -= B_V_SCROLL_BAR_WIDTH;
+        m_hScroll = new TFScrollBar(m_pBeOSFrame, r,
+                                    "HortScroll", NULL, 0, 100, B_HORIZONTAL);
+        AddChild(m_hScroll);
+        m_pBeOSFrame->setScrollBars(m_hScroll, m_vScroll);
+        m_winRectAvailable.bottom -= B_H_SCROLL_BAR_HEIGHT +1;
+        m_winRectAvailable.right -= B_V_SCROLL_BAR_WIDTH +1;
 
 	//Create the Top and Left Rulers (need a width here)
 #define TOP_HEIGHT 32
@@ -531,47 +550,23 @@ be_DocView *be_Window::_createDocumentWindow() {
 	printf("Starting top ruler creation \n");
 	r = m_winRectAvailable;
 	r.bottom = r.top + TOP_HEIGHT;
-	r.right -= B_V_SCROLL_BAR_WIDTH +1;
 	AP_BeOSTopRuler * pBeOSTopRuler = new AP_BeOSTopRuler(m_pBeOSFrame);
 	UT_ASSERT(pBeOSTopRuler);
 	pBeOSTopRuler->createWidget(r);
-	//m_pData->m_pTopRuler = pBeOSTopRuler;
-	//((AP_FrameData*)m_pData)->m_pTopRuler = pBeOSTopRuler;
 	((AP_FrameData*)m_pBeOSFrame->getFrameData())->m_pTopRuler = pBeOSTopRuler;
+	m_winRectAvailable.top = r.bottom +1;
 
 	// create the left ruler
 	r = m_winRectAvailable;
 	r.right = r.left + LEFT_WIDTH;
-	r.bottom -= B_H_SCROLL_BAR_HEIGHT +1;
 	AP_BeOSLeftRuler * pBeOSLeftRuler = new AP_BeOSLeftRuler(m_pBeOSFrame);
 	UT_ASSERT(pBeOSLeftRuler);
 	pBeOSLeftRuler->createWidget(r);
 	((AP_FrameData*)m_pBeOSFrame->getFrameData())->m_pLeftRuler = pBeOSLeftRuler;
+	m_winRectAvailable.left = r.right +1;
 
 	// get the width from the left ruler and stuff it into the top ruler.
 	pBeOSTopRuler->setOffsetLeftRuler(pBeOSLeftRuler->getWidth());
-	
-        //Set up some scrollbars
-        printf("Setting up scroll bars \n");
-        r = m_winRectAvailable;
-        r.bottom -= B_H_SCROLL_BAR_HEIGHT;
-        r.left = r.right - B_V_SCROLL_BAR_WIDTH;
-        m_vScroll = new TFScrollBar(m_pBeOSFrame, r,
-                                    "VertScroll", NULL, 0, 100, B_VERTICAL);
-        r = m_winRectAvailable;
-        r.top = r.bottom - B_H_SCROLL_BAR_HEIGHT;
-        r.right -= B_V_SCROLL_BAR_WIDTH;
-        m_hScroll = new TFScrollBar(m_pBeOSFrame, r,
-                                    "HortScroll", NULL, 0, 100, B_HORIZONTAL);
-        AddChild(m_hScroll);
-        AddChild(m_vScroll);
-        m_pBeOSFrame->setScrollBars(m_hScroll, m_vScroll);
-        m_winRectAvailable.bottom -= B_H_SCROLL_BAR_HEIGHT +1;
-        m_winRectAvailable.right -= B_V_SCROLL_BAR_WIDTH +1;
-        printf("Finished with scroll bars \n");
-
-	m_winRectAvailable.top += TOP_HEIGHT +1;
-	m_winRectAvailable.left += LEFT_WIDTH +1;
 
         //Add the document view in the remaining space
         m_winRectAvailable.PrintToStream();
