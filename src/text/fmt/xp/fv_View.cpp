@@ -6388,9 +6388,16 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 		yoff = 0;
 	}
 
+	// I think that we should always scroll *and* set a 
+	// new insertion point, at least for page up/down. 
+	// I know that MSWord and others don't do
+	// this, but that's a bad lead to follow, IMHO
+	// - Dom
+
 	bool bRedrawPoint = true;
-	
-	if (bVertical && (yoff != m_yScrollOffset))
+
+	if (bVertical && (yoff != m_yScrollOffset) && 
+		!(cmd == AV_SCROLLCMD_PAGEDOWN || cmd == AV_SCROLLCMD_PAGEUP))
 	{
 		sendVerticalScrollEvent(yoff);
 		bRedrawPoint = false;
@@ -6407,13 +6414,22 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 		bRedrawPoint = false;
 	}
 
+	// we may want to add more here in the future...
+	switch (cmd)
+	{
+	case AV_SCROLLCMD_PAGEDOWN: 
+	case AV_SCROLLCMD_PAGEUP:
+		warpInsPtNextPrevPage (cmd == AV_SCROLLCMD_PAGEDOWN);
+		break;
+	default: 
+		break;
+	}
+
 	if (bRedrawPoint)
 	{
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
-
-	
 }
 
 bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
@@ -8379,3 +8395,4 @@ UT_uint32 FV_View::calculateZoomPercentForWholePage()
 	return MyMin(	calculateZoomPercentForPageWidth(),
 					calculateZoomPercentForPageHeight());
 }
+
