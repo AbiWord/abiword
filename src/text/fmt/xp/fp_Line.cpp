@@ -158,7 +158,7 @@ void fp_Line::remove(void)
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
-	int count = m_vecRuns.getItemCount();
+	const int count = m_vecRuns.getItemCount();
 	UT_ASSERT(count > 0);
 
 	fp_Run* pFirstRun = (fp_Run*) m_vecRuns.getNthItem(0);
@@ -171,7 +171,10 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 
 		UT_sint32 y2 = y - pFirstRun->getY() - m_iAscent + pFirstRun->getAscent();
 		pFirstRun->mapXYToPosition(0, y2, pos, bBOL, bEOL);
-	
+
+		UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+		UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+
 		return;
 	}
 
@@ -194,6 +197,9 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 				{
 					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
 
+					UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+					UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+
 					return;
 				}
 			}
@@ -215,6 +221,9 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 #endif
 
 					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
+
+					UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+					UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
 
 					return;
 				}
@@ -258,6 +267,10 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	
 	UT_sint32 y2 = y - pClosestRun->getY() - m_iAscent + pClosestRun->getAscent();
 	pClosestRun->mapXYToPosition(x - pClosestRun->getX(), y2, pos, bBOL, bEOL);
+
+	UT_ASSERT(bEOL == UT_TRUE || bEOL == UT_FALSE);
+	UT_ASSERT(bBOL == UT_TRUE || bBOL == UT_FALSE);
+
 }
 
 void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
@@ -935,28 +948,30 @@ fp_Line*	fp_Line::getPrevLineInSection(void) const
 
 UT_Bool	fp_Line::containsForcedColumnBreak(void) const
 {
-	fp_Run* pRun = getLastRun();
-	if (pRun->getType() == FPRUN_FORCEDCOLUMNBREAK)
+	if (!isEmpty())
 	{
-		return UT_TRUE;
+		fp_Run* pRun = getLastRun();
+		if (pRun->getType() == FPRUN_FORCEDCOLUMNBREAK)
+		{
+			return UT_TRUE;
+		}
 	}
-	else
-	{
-		return UT_FALSE;
-	}
+
+	return UT_FALSE;
 }
 
 UT_Bool fp_Line::containsForcedPageBreak(void) const
 {
-	fp_Run* pRun = getLastRun();
-	if (pRun->getType() == FPRUN_FORCEDPAGEBREAK)
+	if (!isEmpty())
 	{
-		return UT_TRUE;
+		fp_Run* pRun = getLastRun();
+		if (pRun->getType() == FPRUN_FORCEDPAGEBREAK)
+		{
+			return UT_TRUE;
+		}
 	}
-	else
-	{
-		return UT_FALSE;
-	}
+
+	return UT_FALSE;
 }
 
 void fp_Line::coalesceRuns(void)
@@ -980,12 +995,11 @@ void fp_Line::coalesceRuns(void)
 
 UT_sint32 fp_Line::calculateWidthOfLine(void)
 {
-	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
+	const UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 iX = 0;
-	UT_uint32 i;
 
 	// first calc the width of the line
-	for (i=0; i<iCountRuns; i++)
+	for (UT_uint32 i = 0; i < iCountRuns; ++i)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 		
@@ -1008,6 +1022,8 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 			iX += pRun->getWidth();
 		}
 	}
+
+	UT_ASSERT(iX <= m_iMaxWidth);
 
 	m_iWidth = iX;
 
@@ -1055,6 +1071,8 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 	// need to move back until we find the first non blank character and
 	// return the distance back to this character.
 
+	UT_ASSERT(!isEmpty());
+
 	UT_sint32 iTrailingBlank = 0;
 
 	fp_Run *pCurrentRun = getLastRun();
@@ -1086,6 +1104,8 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpacesInLayoutUnits(void)
 {
 	// need to move back until we find the first non blank character and
 	// return the distance back to this character.
+
+	UT_ASSERT(!isEmpty());
 
 	UT_sint32 iTrailingBlank = 0;
 
@@ -1163,6 +1183,8 @@ UT_uint32 fp_Line::countJustificationPoints(void) const
 
 UT_Bool fp_Line::isLastCharacter(UT_UCSChar Character) const
 {
+	UT_ASSERT(!isEmpty());
+
 	fp_Run *pRun = getLastRun();
 
 	if (pRun->getType() == FPRUN_TEXT)
