@@ -112,6 +112,7 @@ AC_ARG_ENABLE(debug,[  --enable-debug    Turn on debugging],[
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
 ABI_GNOME_QUICK
+ABI_CURLHASH
 
 AC_ARG_WITH(pspell,
     [  --with-pspell    Turn on pspell ],
