@@ -93,10 +93,11 @@ if test "$abi_found_parser" = "expat"; then
 			XML_CFLAGS="$abi_expat_incs"
 		fi	
 		XML_LIBS="$abi_expat_libs"
+		abi_xml_parser_message="expat in $abi_expat_libs"
 	else
-	       AC_MSG_ERROR(["found expat library but could not find expat.h or xmlparse.h"])
+	       AC_MSG_WARN(["found expat library but could not find expat.h or xmlparse.h"])
+		abi_found_parser="no"
 	fi
-	abi_xml_parser_message="expat in $abi_expat_libs"
 fi
 
 if test "$abi_found_parser" = "no" ; then
