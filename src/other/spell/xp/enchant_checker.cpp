@@ -63,11 +63,11 @@ EnchantChecker::~EnchantChecker()
 	UT_return_if_fail (s_enchant_broker);
 	UT_return_if_fail (m_dict);
 
-	enchant_broker_release_dict (s_enchant_broker, m_dict);
+	enchant_broker_free_dict (s_enchant_broker, m_dict);
 
 	s_enchant_broker_count--;
 	if (s_enchant_broker_count == 0) {
-		enchant_broker_term (s_enchant_broker);
+		enchant_broker_free (s_enchant_broker);
 		s_enchant_broker = 0;
 	}
 }

@@ -32,7 +32,7 @@ AC_ARG_ENABLE(enchant,[  --disable-enchant    don't use enchant spell-wrapper],[
 ])
 
 if test $abi_spell = check; then
-	PKG_CHECK_MODULES(_abi_enchant,[enchant >= 0.1.0],[
+	PKG_CHECK_MODULES(_abi_enchant,[enchant >= 0.4.0],[
 		abi_spell=enchant
 	],[	abi_spell=check
 	])
