@@ -210,15 +210,6 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON3,pG->tlu(signedLoWord(lParam)),pG->tlu(signedHiWord(lParam)));
 		ReleaseCapture();
 		return 0;
-
-	case WM_SIZE:
-		{
-			int nWidth = LOWORD(lParam);
-			int nHeight = HIWORD(lParam);			
-			pRuler->setHeight(nHeight);
-			pRuler->setWidth(nWidth);
-			return 0;
-		}
 	
 	case WM_PAINT:
 		{	
