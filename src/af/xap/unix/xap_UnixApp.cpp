@@ -176,7 +176,8 @@ const char * XAP_UnixApp::getUserPrivateDirectory(void)
 UT_Bool XAP_UnixApp::_loadFonts(void)
 {
 	// create a font manager for our app to use
-
+	UT_uint32 relativePathsSoFar = 0, relativePathCount = 0;
+	
 	m_fontManager = new XAP_UnixFontManager();
 	UT_ASSERT(m_fontManager);
 
@@ -189,15 +190,45 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 		      (const XML_Char**)&szPrefFontPath);
 	UT_ASSERT((szPrefFontPath) && (*szPrefFontPath));
 
-	if (*szPrefFontPath != '/')			// if relative path in prefs, prepend library directory.
-	{
-		szTemp = (char *)calloc(strlen(getAbiSuiteLibDir())+strlen(szPrefFontPath)+10,sizeof(char));
-		sprintf(szTemp,"%s/%s",getAbiSuiteLibDir(),szPrefFontPath);
-		szPrefFontPath = szTemp;
-	}
+ 	for (UT_uint32 i = 0; szPrefFontPath[i]; i++)
+  	{
+  		// count the number of segments in the path
+  		// path looks like: "/font/dir;dir/anotherdir;/more/fonts"
+  		if( ((i == 0) || (szPrefFontPath[i-1] == ';')) && (szPrefFontPath[i] != '/'))
+  			relativePathCount++;
+  	}
+  	
+  	// cache the suiteDir's name and length instead of calculating
+  	// them on every loop
+	char * suiteDirCache = (char *)getAbiSuiteLibDir();
+  	UT_uint32 suiteLenCache = strlen(suiteDirCache);
 
-	UT_DEBUGMSG(("Using FontPath from preferences [%s].\n",szPrefFontPath));
-	m_fontManager->setFontPath(szPrefFontPath);
+ 	// make pointer to the font path. ignore the cast to make gcc shut up
+	char *szPrefFontPathPtr = (char *)szPrefFontPath;
+
+	for (UT_uint32 i = 0; szPrefFontPathPtr[i]; i++)
+ 		if ( ((i == 0) || (szPrefFontPathPtr[i-1] == ';')) && (szPrefFontPathPtr[i] != '/'))
+ 		{
+		        // if relative path in prefs, prepend library directory.
+ 			szTemp = (char *)calloc(suiteLenCache + strlen(szPrefFontPathPtr) + 10, sizeof(char));
+ 			strcpy(szTemp, szPrefFontPathPtr);
+ 			sprintf(szTemp + i, "%s/%s", suiteDirCache, szPrefFontPathPtr + i);
+ 			
+ 			// if relativePathsSoFar > 1 then szPrefFontPathPtr
+ 			// was really szTemp and was allocated by our call to
+ 			// calloc so we must free it. also, we are sure not to
+			// free the memory pointed to by getPrefsValue()
+ 			if (relativePathsSoFar && szPrefFontPathPtr)
+ 				free(szPrefFontPathPtr);
+ 			
+ 			szPrefFontPathPtr = szTemp;
+ 			relativePathsSoFar++;
+ 		}
+ 
+ 	// HUH? These don't match somehow. Abort!!
+ 	UT_ASSERT(relativePathsSoFar == relativePathCount);
+	//UT_DEBUGMSG(("Using FontPath from preferences [%s].\n",szPrefFontPathPtr));
+	m_fontManager->setFontPath(szPrefFontPathPtr);
 	FREEP(szTemp);
 	
 	// let it loose
