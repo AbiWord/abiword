@@ -31,6 +31,9 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Lists.h"
 
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#endif
 /************************************************************************/
 
 // all of these are measured in pixels
@@ -104,7 +107,7 @@ void AP_Preview_Paragraph_Block::setText(const UT_UCSChar * text)
 	// dup the string for harmful chunkification
 	UT_UCSChar * clone = NULL;
 	UT_UCS_cloneString(&clone, text);
-	
+
 	UT_UCSChar * i = clone;
 
 	while (*i != 0)
@@ -257,7 +260,10 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 										   const UT_UCSChar * text,
 										   AP_Dialog_Lists * dlg)
-	: XAP_Preview(gc)
+  : XAP_Preview(gc)
+#ifdef BIDI_ENABLED
+	  ,m_dir(FRIBIDI_TYPE_LTR)
+#endif
 {
 	UT_ASSERT(text && dlg);
 
@@ -343,7 +349,10 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 					   const UT_UCSChar * text,
-					   XAP_Dialog * dlg) : XAP_Preview(gc)
+										   XAP_Dialog * dlg) : XAP_Preview(gc)
+#ifdef BIDI_ENABLED
+	  ,m_dir(FRIBIDI_TYPE_LTR)
+#endif
 {
   // this method heavily relies upon the parent dlg to call setFormat()
   // rather than auto-generating defaults
@@ -406,6 +415,9 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 					   const UT_UCSChar * text,
 					   AP_Dialog_Paragraph * dlg)
 	: XAP_Preview(gc)
+#ifdef BIDI_ENABLED
+	  ,m_dir(FRIBIDI_TYPE_LTR)
+#endif
 {
 	UT_ASSERT(text && dlg);
 
@@ -429,7 +441,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														 m_fontHeight);
 		m_previousBlock->setFormat(dlg->m_pageLeftMargin,
 									dlg->m_pageRightMargin,
-									AP_Dialog_Paragraph::align_LEFT,
+									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
 									NULL,
 									AP_Dialog_Paragraph::indent_NONE,
 									NULL,NULL,NULL,NULL,NULL,
@@ -454,6 +466,11 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_AFTER_SPACING),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_SPACING),
 									(AP_Dialog_Paragraph::tSpacingState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_SPACING));
+
+#ifdef BIDI_ENABLED
+		if(dlg->_getCheckItemValue(AP_Dialog_Paragraph::id_CHECK_DOMDIRECTION) == AP_Dialog_Paragraph::check_TRUE)
+			m_dir = FRIBIDI_TYPE_RTL;
+#endif
 	}
 	
 	{
@@ -464,7 +481,7 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														  m_fontHeight);
 		m_followingBlock->setFormat(dlg->m_pageLeftMargin,
 									dlg->m_pageRightMargin,
-									AP_Dialog_Paragraph::align_LEFT,
+									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
 									NULL,
 									AP_Dialog_Paragraph::indent_NONE,
 									NULL,NULL,NULL,NULL,NULL,
@@ -704,15 +721,24 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	// we have "i" words to plot on this line, and they will take pixelsForThisLine space
 
 	// TODO : maybe rework following code to remove this variable for more speed
+
 	UT_uint32 willDrawAt = left;
-	spaceCharWidth <<= 8;	// Calculate spacing at 256 times the resolution
+#ifdef BIDI_ENABLED
+	if(m_dir == FRIBIDI_TYPE_RTL)
+		willDrawAt += maxPixelsForThisLine;
+#endif
+
+ 	spaceCharWidth <<= 8;	// Calculate spacing at 256 times the resolution
 		
 	// obey alignment requests
-	switch(align)
-	{
-	case AP_Dialog_Paragraph::align_RIGHT:
-		// for right, we just draw at the difference in spaces added onto the first line stop.
-		willDrawAt = left + (maxPixelsForThisLine - pixelsForThisLine);
+ 	switch(align)
+ 	{
+ 	case AP_Dialog_Paragraph::align_RIGHT:
+#ifdef BIDI_ENABLED
+		if(m_dir == FRIBIDI_TYPE_LTR)
+#endif
+	    // for right, we just draw at the difference in spaces added onto the first line stop.
+	    willDrawAt = left + (maxPixelsForThisLine - pixelsForThisLine);
 		break;
 	case AP_Dialog_Paragraph::align_CENTERED:
 		// for centered, we split the difference 
@@ -727,17 +753,58 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 		break;
 	default:
 		// aligh_LEFT is caught here
+#ifdef BIDI_ENABLED
+		if(m_dir == FRIBIDI_TYPE_RTL)
+			willDrawAt =  pixelsForThisLine + left;
+#endif
 		break;
 	}
 
 	willDrawAt <<= 8;
 
 	UT_uint32 k;
+
+#ifdef BIDI_ENABLED
+	FriBidiChar fb1[100];
+	FriBidiChar fb2[100];
+	UT_UCSChar  str[100];
+	UT_uint32 j, iLen;
+#endif
+
 	for (k = startWithWord; k < i; k++)
 	{
+#ifdef BIDI_ENABLED
+		// this will not produce correct results in true bidi text, since the words that are inconsistend
+		// with the overall pargraph direction will be in wrong order, but that is not a big deal
+  	    iLen = UT_UCS_strlen((UT_UCSChar *) words->getNthItem(k));
+	    for(j = 0; j < iLen; j++)
+		    fb1[j] = ((UT_UCSChar *) words->getNthItem(k))[j];
+
+		fribidi_log2vis (		/* input */
+						 &fb1[0],
+						 iLen,
+						 &m_dir,
+						 /* output */
+						 &fb2[0],
+						 NULL,
+						 NULL,
+						 NULL);
+
+		for(j = 0; j < iLen; j++)
+		    str[j] = (UT_UCSChar)fb2[j];
+
+		if(m_dir == FRIBIDI_TYPE_RTL)
+		    willDrawAt -= (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
+
+		m_gc->drawChars(str, 0,	iLen, willDrawAt >> 8, y);
+
+		if(m_dir == FRIBIDI_TYPE_LTR)
+		    willDrawAt += (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
+#else
 		m_gc->drawChars((UT_UCSChar *) words->getNthItem(k), 0,
 						UT_UCS_strlen((UT_UCSChar *) words->getNthItem(k)), willDrawAt >> 8, y);
 		willDrawAt += (((UT_uint32) widths->getNthItem(k)) << 8) + spaceCharWidth;
+#endif
 	}
 
 	// return number of words drawn

@@ -28,6 +28,10 @@
 #include "xap_Preview.h"
 #include "ap_Dialog_Paragraph.h"
 
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#endif
+
 // fwd decl.
 class AP_Dialog_Lists;
 
@@ -148,6 +152,9 @@ class AP_Preview_Paragraph : public XAP_Preview
 
 	GR_Font * m_font;
 	UT_uint32 m_fontHeight;
+#ifdef BIDI_ENABLED
+	FriBidiCharType m_dir;
+#endif
 };
 
 #endif /* AP_PREVIEW_PARAGRAPH_H */
