@@ -33,16 +33,20 @@ class UT_ByteBuf;
 
 class QNXFont : public GR_Font {
   public:
-		QNXFont(const char *aFont); 
+		QNXFont(FontID *aFont); 
 		~QNXFont();
-		const char *getFont(void); 
+		const int getDisplayFontSize(void);
+		const char *getDisplayFont(void);
+		void    createDisplayFont(UT_uint32 size);
+		void deleteDisplayFont();	const char *getFont(void); 
+	
 		const int getSize(void);
 		virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
 
 	private:
-		char   *m_fontstr;
-		int			m_size;
 		FontID	*m_fontID;
+		FontID  *m_displayFontID;
+		FontID  *m_120ptFontID;
 };
 
 class GR_QNXGraphics : public GR_Graphics
@@ -132,8 +136,8 @@ class GR_QNXGraphics : public GR_Graphics
 	PhGC_t	*getCurrentGC() { return m_pGC; };
  protected:
 	virtual UT_uint32 	getDeviceResolution(void) const;
-	int 				DrawSetup();
-	int 				DrawTeardown();
+	inline int 				DrawSetup();
+	inline int 				DrawTeardown();
 
 	PtWidget_t *  	m_pWin;
 	PtWidget_t *  	m_pDraw;

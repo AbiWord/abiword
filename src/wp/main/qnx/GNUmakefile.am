@@ -20,7 +20,10 @@ include $(top_srcdir)/includes.mk
 
 CLEANFILES = abi_ver.cpp
 
-bin_PROGRAMS = AbiWord-2.0 hack
+noinst_PROGRAMS = AbiWord-2.0
+
+bin_SCRIPTS = AbiWord
+
 
 INCLUDES = \
 	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
@@ -37,9 +40,9 @@ AbiWord_2_0_SOURCES = abi_ver.cpp QNXMain.cpp
 abi_ver.cpp:	@PLUGIN_LIST@
 	cp $(srcdir)/../xp/abi_ver.cpp .
 
-hack$(EXEEXT):
-	@bindres -q AbiWord-2.0 Icon.wgti $(top_srcdir)/src/wp/ap/qnx/dialogs/wgt/*.wgtd $(top_srcdir)/src/af/xap/qnx/dialogs/wgt/*.wgtd	
-	@touch hack$(EXEEXT)
+AbiWord:	AbiWord-2.0
+	ln -fs AbiWord-2.0 AbiWord
+	bindres -q AbiWord Icon.wgti $(top_srcdir)/src/wp/ap/qnx/dialogs/wgt/*.wgtd $(top_srcdir)/src/af/xap/qnx/dialogs/wgt/*.wgtd	
 
 install-exec-local:	
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
