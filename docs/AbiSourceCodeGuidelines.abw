@@ -21,6 +21,7 @@
 <p>13.  The curly brace goes on the next line, and it is not indented.  Don't put the curly brace on the same line as the if, and do not indent it.</p>
 <p>14.  Indents are 4 spaces or 1 tab.  Tabs are 4 spaces.</p>
 <p>15.  Use asserts liberally.  We've provided the <c PROPS="font-family:Courier New">UT_ASSERT </c>macro for just this purpose.  Asserts are good -- they provide you an opportunity to make your assumptions explicit.</p>
+<p>16.  Don't use C++ iostreams.  "I consider the use of C++ iostreams to be a bug and will log it." -- Jeff Hostetler, 27 January 1999.  <c PROPS="font-family:Courier New; font-style:normal">:-</c><c PROPS="font-family:Courier New; font-style:normal">)</c></p>
 <p></p>
 <p></p>
 </section>
