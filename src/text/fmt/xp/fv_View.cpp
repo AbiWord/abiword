@@ -5360,7 +5360,7 @@ bool FV_View::getCellBGColor(XML_Char * &color)
 bool FV_View::setTableFormat(const XML_Char * properties[])
 {
 	PT_DocPosition pos = getPoint();
-	return setTableFormat(properties);
+	return setTableFormat(pos, properties);
 }
 
 bool FV_View::setTableFormat(PT_DocPosition pos, const XML_Char * properties[])
