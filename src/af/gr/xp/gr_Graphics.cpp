@@ -970,7 +970,7 @@ void GR_Graphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf
 	buf.append(reinterpret_cast<UT_GrowBufElement *>(RI.m_pChars),RI.m_iLength);
 }
 
-UT_sint32 GR_Graphics::getTextWidth(const GR_RenderInfo & ri) const
+UT_sint32 GR_Graphics::getTextWidth(GR_RenderInfo & ri)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
 	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;

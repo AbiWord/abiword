@@ -637,7 +637,7 @@ class ABI_EXPORT GR_Graphics
 								   UT_sint32& x2, UT_sint32& y2,
 								   UT_sint32& height, bool& bDirection) const VIRTUAL_SFX;
 
-	virtual UT_sint32 getTextWidth(const GR_RenderInfo & ri) const VIRTUAL_SFX;
+	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri) VIRTUAL_SFX;
 	
 	// should be overriden by any classes implemented as plugins
 	// NB: you must not use s_Version to store the version of derrived
