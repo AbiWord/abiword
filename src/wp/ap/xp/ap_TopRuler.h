@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
@@ -271,8 +273,10 @@ protected:
 	void        _drawCellGap( AP_TopRulerInfo * pInfo, UT_sint32 iCell);
 	void        _drawCellMark(UT_Rect * prDrag, bool bUp);
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
-	void		_drawMarginProperties(const UT_Rect * pClipRect,
+
+	virtual void	_drawMarginProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr);
+
 	void		_xorGuide(bool bClear=false);
 
 	void		_ignoreEvent(bool bDone);
@@ -280,11 +284,15 @@ protected:
 	double		_getUnitsFromRulerLeft(UT_sint32 xColRel, ap_RulerTicks & tick);
 	UT_sint32	_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	UT_sint32	_snapPixelToGrid(UT_sint32 xDist, ap_RulerTicks & tick);
-	void		_drawLeftIndentMarker(UT_Rect & r, bool bFilled);
-	void		_drawRightIndentMarker(UT_Rect & r, bool bFilled);
-	void		_drawFirstLineIndentMarker(UT_Rect & r, bool bFilled);
+
+	virtual void	_drawLeftIndentMarker(UT_Rect & r, bool bFilled);
+	virtual void	_drawRightIndentMarker(UT_Rect & r, bool bFilled);
+	virtual void	_drawFirstLineIndentMarker(UT_Rect & r, bool bFilled);
+
 	void		_drawTabStop(UT_Rect & r, eTabType iType, bool bFilled);
-	void		_drawColumnGapMarker(UT_Rect & r);
+
+	virtual void	_drawColumnGapMarker(UT_Rect & r);
+
 	bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2);
@@ -311,7 +319,9 @@ protected:
 
 private:
 	AV_ScrollObj *		m_pScrollObj;
+protected:
 	AV_View *			m_pView;
+private:
 	UT_Dimension		m_dim;
 
 	UT_uint32			m_iHeight;		/* size of window: device */
