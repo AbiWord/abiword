@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -385,6 +385,7 @@ bool GR_CocoaImage::_convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisp
 			  if (!yarray)
 			  {
 				  // TODO outofmem
+				  FREEP(xarray);
 				  return false;
 			  }
 		
@@ -421,6 +422,10 @@ bool GR_CocoaImage::_convertPNGFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisp
 					  *ptr++ = (int)*ptr2;
 				  }
 			  }
+			  
+			  // thou shalt free what thou allocate...
+			  FREEP(xarray);
+			  FREEP(yarray);
 		  }
 		  
 		  pFM = pDisplayFM;
@@ -456,6 +461,28 @@ UT_DEBUGMSG(("Choosing not to render what can't be a raster image!\n"));
 	return false;
 }
 
+/*!
+	Returns an autoreleased NSImage
+ */
+NSImage * GR_CocoaImage::getNSImage ()
+{
+	unsigned char *planes [5];
+	planes[0] = m_image->data;
+	planes[1] = NULL;
+	planes[2] = NULL;
+	planes[3] = NULL;
+	planes[4] = NULL;
+	NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
+							pixelsWide:m_image->width pixelsHigh:m_image->height bitsPerSample:8 samplesPerPixel:3
+							hasAlpha:NO isPlanar:NO 
+							colorSpaceName:NSDeviceRGBColorSpace bytesPerRow:0 
+							bitsPerPixel:0];
+
+	NSImage *pixmap = [[NSImage alloc] initWithSize:NSMakeSize(0.0, 0.0)];
+	[pixmap addRepresentation:bitmap];
+	[bitmap release];
+	return [pixmap autorelease];
+}
 
 
 

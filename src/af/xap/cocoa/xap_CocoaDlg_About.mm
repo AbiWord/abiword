@@ -58,18 +58,12 @@ XAP_CocoaDialog_About::XAP_CocoaDialog_About(XAP_DialogFactory * pDlgFactory,
 											 XAP_Dialog_Id dlgid)
 	: XAP_Dialog_About(pDlgFactory,dlgid)
 {
-#if 0
-	m_windowMain = NULL;
-	m_buttonOK = NULL;
-	m_buttonURL = NULL;
-	m_drawingareaGraphic = NULL;
-	m_gc = NULL;
 	m_pGrImageSidebar = NULL;
-#endif
 }
 
 XAP_CocoaDialog_About::~XAP_CocoaDialog_About(void)
 {
+	DELETEP(m_pGrImageSidebar);
 }
 
 /*****************************************************************/
@@ -113,12 +107,29 @@ void XAP_CocoaDialog_About::event_URL(void)
 	XAP_CocoaFrame *pFrame = m_xap->_getFrame ();
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
-	[[self window] setTitle:[NSString stringWithCString:XAP_ABOUT_TITLE]];	
+	[[self window] setTitle:[NSString stringWithFormat:@XAP_ABOUT_TITLE, pFrame->getApp()->getApplicationName()]];	
 	[m_okBtn setTitle:[NSString stringWithCString:pSS->getValue(XAP_STRING_ID_DLG_OK)]];
 	[m_appName setStringValue:[NSString stringWithCString:pFrame->getApp()->getApplicationName()]];
-	[m_versionLabel setStringValue:[NSString stringWithFormat:
-	                                [NSString stringWithCString:XAP_ABOUT_VERSION], XAP_App::s_szBuild_Version]];
+	[m_versionLabel setStringValue:[NSString stringWithFormat:@XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version]];
+	[m_licenseText setStringValue:[NSString stringWithFormat:@"%s\n\n%@", XAP_ABOUT_COPYRIGHT, 
+	                               [NSString stringWithFormat:@XAP_ABOUT_GPL_LONG_LF,
+	                 pFrame->getApp()->getApplicationName()]]];
 	
+	UT_ByteBuf * pBB = new UT_ByteBuf(g_pngSidebar_sizeof);
+	pBB->ins(0,g_pngSidebar,g_pngSidebar_sizeof);
+
+	UT_sint32 iImageWidth;
+	UT_sint32 iImageHeight;
+		
+	UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+	
+	m_xap->m_pGrImageSidebar = new GR_CocoaImage(NULL);
+	m_xap->m_pGrImageSidebar->convertFromBuffer(pBB, iImageWidth, iImageHeight);
+	NSImage *image = m_xap->m_pGrImageSidebar->getNSImage ();
+	[m_imageView setImage:image];
+	
+	DELETEP(pBB);
+
 }
 
 - (void)setXAPOwner:(XAP_CocoaDialog_About *)owner

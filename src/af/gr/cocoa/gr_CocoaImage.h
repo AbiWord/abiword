@@ -21,6 +21,7 @@
 #ifndef GR_COCOAIMAGE_H
 #define GR_COCOAIMAGE_H
 
+#import <Cocoa/Cocoa.h>
 
 #include "gr_Image.h"
 
@@ -50,6 +51,8 @@ public:
 
    	virtual GRType		getType() const { return m_grtype; }
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	
+	NSImage * getNSImage ();
 private:
 	Fatmap * m_image;
 

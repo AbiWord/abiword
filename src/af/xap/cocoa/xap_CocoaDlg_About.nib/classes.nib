@@ -8,7 +8,7 @@
             OUTLETS = {
                 m_appName = NSTextField; 
                 m_imageView = NSImageView; 
-                m_licenseText = NSTextView; 
+                m_licenseText = NSTextField; 
                 m_okBtn = NSButton; 
                 m_versionLabel = NSTextField; 
                 m_webBtn = NSButton; 

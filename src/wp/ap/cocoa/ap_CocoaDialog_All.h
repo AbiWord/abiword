@@ -90,7 +90,7 @@
 //PORT	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_CocoaDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_CocoaDialog_FileOpenSaveAs)
 
-//PORT	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_CocoaDialog_About)
+	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_CocoaDialog_About)
 
 //PORT	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_CocoaDialog_Replace)
 //PORT	DeclareDialog(AP_DIALOG_ID_FIND,			AP_CocoaDialog_Replace)

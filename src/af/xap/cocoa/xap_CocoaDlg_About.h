@@ -35,7 +35,7 @@ class XAP_CocoaDialog_About;
 {
 	XAP_CocoaDialog_About *m_xap;
     IBOutlet NSImageView *m_imageView;
-    IBOutlet NSTextView *m_licenseText;
+    IBOutlet NSTextField *m_licenseText;
     IBOutlet NSButton *m_okBtn;
     IBOutlet NSTextField *m_versionLabel;
     IBOutlet NSTextField *m_appName;
@@ -67,16 +67,9 @@ public:
 	virtual void			event_OK(void);
 	virtual void			event_URL(void);
 
-private:
-#if 0	
-	GtkWidget * m_windowMain;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonURL;
-	GtkWidget * m_drawingareaGraphic;
-	GR_CocoaGraphics * m_gc;
-
 	GR_CocoaImage * m_pGrImageSidebar;
-#endif
+
+private:
 	XAP_CocoaFrame * m_pFrame;
 	XAP_CocoaDlg_AboutController * m_dlg;
 };
