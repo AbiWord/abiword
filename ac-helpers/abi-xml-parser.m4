@@ -76,11 +76,11 @@ if test "$abi_found_parser" = "expat"; then
 	# right file by ifdef'ing is best
 	AC_CHECK_HEADER(expat.h,
 	[abi_expat_incs="" abi_found_expatincs="yes" abi_expat_new="yes"=],
-	AC_CHECK_HEADER(xmlparse.h,
+	[AC_CHECK_HEADER(xmlparse.h,
 	[abi_expat_incs="" abi_found_expatincs="yes" abi_expat_new=""],
-	AC_CHECK_HEADER(xmlparse/xmlparse.h,
+	[AC_CHECK_HEADER(xmlparse/xmlparse.h,
 	[abi_expat_incs="-I/usr/include/xmlparse" abi_found_expatincs="yes" abi_expat_new=""],
-	)))
+	)])])
 	if test "$abi_found_expatincs" = "yes"; then
 		AC_DEFINE(HAVE_EXPAT, 1, [Define if you have expat])
 		if test ! "$abi_expat_new"; then
