@@ -303,7 +303,34 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	*/
 
 	char * linedup = strdup(line);
-	char * fontfile = strtok(linedup, " ");
+
+	// Look for either first space or first tab
+	char * firstspace = index(linedup, ' ');
+	char * firsttab = index(linedup, '\t');
+
+	UT_uint32 whitespace;
+
+	if (!firstspace && !firsttab)
+	{
+		// We have a problem, there's only one thing here
+		UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - missing seperator "
+					 "between file name component and XLFD.\n"));
+		FREEP(linedup);
+		return;
+	}
+	if (!firstspace)
+		whitespace = UT_uint32 (firsttab - linedup);
+	else if (!firsttab)
+		whitespace = UT_uint32 (firstspace - linedup);
+	else
+		whitespace = (firstspace < firsttab) ?
+			(UT_uint32) (firstspace - linedup) : (UT_uint32) (firsttab - linedup);
+
+	// damage the duplicated string with a NULL, strtok() style
+	linedup[whitespace] = 0;
+	
+	// point fontfile to this new token
+	char * fontfile = linedup;
 	if (!fontfile)
 	{
 		UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - missing font "
@@ -320,7 +347,7 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	FREEP(fontfile);
 	fontfile = newstuff;
 		
-	char * xlfd = strtok(NULL, "\n");
+	char * xlfd = linedup + whitespace + 1;
 	if (!xlfd)
 	{
 		UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont() - missing XLFD "
