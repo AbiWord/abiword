@@ -137,6 +137,7 @@ public:
 	
 protected:
 	void					_setClean(void);
+	void					_destroyDataItemData(void);
 
 	pt_PieceTable *			m_pPieceTable;
 	UT_Vector				m_vecListeners;

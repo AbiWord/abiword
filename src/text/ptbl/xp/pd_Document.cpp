@@ -48,6 +48,9 @@ PD_Document::~PD_Document()
 		free((void *)m_szFilename);
 	if (m_pPieceTable)
 		delete m_pPieceTable;
+
+	_destroyDataItemData();
+	
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 }
@@ -567,4 +570,18 @@ UT_Bool PD_Document::getDataItemDataByName(const char * szName, const UT_ByteBuf
 
 	return UT_TRUE;
 }
+
+void PD_Document::_destroyDataItemData(void)
+{
+	UT_uint32 kLimit = m_hashDataItems.getEntryCount();
+
+	for (UT_uint32 k=0; (k<kLimit); k++)
+	{
+		UT_HashTable::UT_HashEntry * pHE = m_hashDataItems.getNthEntry(k);
+		UT_ByteBuf * pBB = (UT_ByteBuf *)pHE->pData;
+		delete pBB;
+		pHE->pData = NULL;
+	}
+}
+
 
