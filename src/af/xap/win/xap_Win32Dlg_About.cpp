@@ -320,7 +320,7 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		r.right = pThis->m_pGrImageSidebar->getDisplayWidth();
 		FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
 	
-		GR_Win32Graphics gr(hdc,hWnd);
+		GR_Win32Graphics gr(hdc,hWnd,pThis->m_pFrame->getApp());
 		gr.drawImage(pThis->m_pGrImageSidebar,
 					 0,
 					 (r.bottom - pThis->m_pGrImageSidebar->getDisplayHeight())/2);
