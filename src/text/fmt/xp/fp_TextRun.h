@@ -202,7 +202,8 @@ protected:
 									  UT_sint32 yoff,
 									  UT_uint32 iStart,
 									  UT_uint32 iLen,
-									  const UT_GrowBuf * pgbCharWidths);
+									  const UT_GrowBuf * pgbCharWidths,
+									  UT_Rect & rect);
 
 	enum
 	{

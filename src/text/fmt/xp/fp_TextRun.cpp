@@ -2017,6 +2017,22 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_ASSERT(iSel1 <= iSel2);
 
+	// we shall remember the nature of the selection, so we do not
+	// have to consider it later again; for each segment we will
+	// remember if it is selected or not,  where in the run it starts,
+	// and how wide it is
+	UT_uint32 iSegmentCount = 1;
+	UT_uint32 iSegmentOffset[4]; //the fourth segment is only would-be ...
+	bool      bSegmentSelected[3];
+	UT_uint32 iSegmentWidth[3];
+	UT_Rect   rSegment;
+	
+	iSegmentOffset[0] = 0;
+	iSegmentOffset[1] = iSegmentOffset[3] = getLength();
+	bSegmentSelected[0] = false;
+	iSegmentWidth[0] = getWidth();
+	
+
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2)
 	{
 		if (iSel1 <= iRunBase)
@@ -2026,12 +2042,20 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 				if (iSel2 >= (iRunBase + getLength()))
 				{
 					// the whole run is selected
-					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), getLength(), pgbCharWidths);
+					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), getLength(), pgbCharWidths, rSegment);
+					bSegmentSelected[0] = true;
 				}
 				else
 				{
 					// the first part is selected, the second part is not
-					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), iSel2 - iRunBase, pgbCharWidths);
+					_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, getBlockOffset(), iSel2 - iRunBase, pgbCharWidths, rSegment);
+					iSegmentCount = 2;
+					bSegmentSelected[0] = true;
+					bSegmentSelected[1] = false;
+					iSegmentOffset[1] = iSel2 - iRunBase;
+					iSegmentOffset[2] = getLength();
+					iSegmentWidth[0] = rSegment.width;
+					iSegmentWidth[1] = getWidth() - rSegment.width;
 				}
 			}
 		}
@@ -2040,12 +2064,39 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			if (iSel2 >= (iRunBase + getLength()))
 			{
 				// the second part is selected
-				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, getLength() - (iSel1 - iRunBase), pgbCharWidths);
+				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, getLength() - (iSel1 - iRunBase), pgbCharWidths, rSegment);
+
+				iSegmentCount = 2;
+				bSegmentSelected[0] = false;
+				bSegmentSelected[1] = true;
+				iSegmentOffset[1] = iSel1 - iRunBase;
+				iSegmentOffset[2] = getLength();
+				iSegmentWidth[0] = getWidth() - rSegment.width;
+				iSegmentWidth[1] = rSegment.width;
 			}
 			else
 			{
 				// a midle section is selected
-				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths);
+				_fillRect(clrSelBackground, pDA->xoff, yTopOfSel, iSel1 - iBase, iSel2 - iSel1, pgbCharWidths, rSegment);
+				
+				iSegmentCount = 3;
+				bSegmentSelected[0] = false;
+				bSegmentSelected[1] = true;
+				bSegmentSelected[2] = false;
+				iSegmentOffset[1] = iSel1 - iRunBase;
+				iSegmentOffset[2] = iSel2 - iRunBase;
+				iSegmentWidth[1] = rSegment.width;
+
+				if(getVisDirection() == FRIBIDI_TYPE_LTR)
+				{
+					iSegmentWidth[0] = rSegment.left - pDA->xoff;
+					iSegmentWidth[2] = getWidth() - (rSegment.width + iSegmentWidth[0]);
+				}
+				else
+				{
+					iSegmentWidth[2] = rSegment.left - pDA->xoff;
+					iSegmentWidth[0] = getWidth() - (rSegment.width + iSegmentWidth[2]);
+				}
 			}
 		}
 	}
@@ -2116,112 +2167,199 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		}
 	}
 
-	// now draw the whole string
+	// now draw the string
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	getGR()->setFont(_getScreenFont());
 #else
 	getGR()->setFont(_getFont());
 #endif
 
-#ifdef CLR_FOREGROUND
-	if(iSel1 != iSel2)
-	{
-		getGR()->setColor(_getView()->getColorSelForeground());
-	}
-	else
-#endif
-		getGR()->setColor(getFGColor()); // set colour just in case we drew a first/last char with a diff colour
 
-	// this code handles spaces in justified runs
+	// if there is a selection, we will need to draw the text in
+	// segments due to different colour of the foreground
+	UT_uint32 iCurrOffset  = getBlockOffset();
+	UT_uint32 iSpaceOffset;
+	UT_uint32 iSpaceLength;
+	UT_uint32 iSpaceWidth;
+	UT_uint32 iTextWidth;
+	UT_sint32 iX = pDA->xoff;
+	UT_uint32 iLength = getLength();
+	UT_uint32 iPrevSpaceEnd = 0;
+	UT_uint32 iOffset = 0;
+	UT_uint32 i = 2;
+	UT_uint32 iCumSegmentWidth = 0;
+	UT_uint32 iCumTextWidth = 0;
+	UT_uint32 iDrawOffset;
 	UT_uint32 iSpaceCount = 0;
 
-	// handle justification as required ...
 	if(m_pJustifiedSpaces)
 		iSpaceCount = m_pJustifiedSpaces->getItemCount();
 
-
-	if(iSpaceCount < 2)
+	FriBidiCharType iVisDir = getVisDirection();
+	if(iVisDir == FRIBIDI_TYPE_RTL)
 	{
-		// this is the case of non-justified run or fakly-justified run
-		// since we have the visual string in the draw buffer, we just call getGR()r->drawChars()
-		getGR()->drawChars(m_pSpanBuff, 0, getLength(), xoff_draw, yTopOfRun,s_pCharAdvance);
-	}
-	else
-	{
-		// because the data stored in our vector does not get
-		// modified when text is inserted or deleted we have to
-		// calculate the adjustment for the stored offsets
-
-		// note that the original offset can be negative to allow us
-		// to create positive iDelta (see the note in ::mergeWithNext())
-		UT_sint32 iOrigOffset  = (UT_uint32) m_pJustifiedSpaces->getNthItem(1);
-		UT_uint32 iCurrOffset  = getBlockOffset();
-		UT_sint32 iDelta       = iCurrOffset - iOrigOffset;
-
-		UT_uint32 iSpaceOffset;
-		UT_uint32 iSpaceLength;
-		UT_uint32 iSpaceWidth;
-		UT_uint32 iTextWidth;
-
-		UT_uint32 iOffset = 0;
-		UT_uint32 iLength = getLength();
-		UT_sint32 iX = xoff_draw;
-		UT_uint32 i = 2;
-		UT_uint32 iDrawLength;
-		UT_uint32 iPrevSpaceEnd = 0;
-
-		// the justification data is stored in logical order, however,
-		// if the run is RTL, it is being drawn relative to its left
-		// edge, and consequently we have to process the draw buffer
-		// in the reverse order
-		FriBidiCharType iVisDir = getVisDirection();
-
-		if(iVisDir == FRIBIDI_TYPE_RTL)
-		{
-			iX += getWidth();
-		}
-		
-		do
-		{
-			iSpaceOffset = (UT_uint32) m_pJustifiedSpaces->getNthItem(i) + iDelta;
-			iSpaceLength = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+1);
-			iSpaceWidth  = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+2);
-			iTextWidth   = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+3);
-
-			if(iVisDir == FRIBIDI_TYPE_RTL)
-			{
-				iX -= iTextWidth;
-				iOffset = iLength - iSpaceOffset;
-				iDrawLength = iSpaceOffset - iPrevSpaceEnd;
-			}
-			else
-				iDrawLength = iSpaceOffset - iOffset;
-		
-			getGR()->drawChars(m_pSpanBuff, iOffset, iDrawLength, iX, yTopOfRun, s_pCharAdvance + iOffset);
-			xxx_UT_DEBUGMSG(( "fp_TextRun::_draw: iOffset %d, iSpaceOffset %d, iSpaceLength %d, iDelta %d, iCurrOffset %d, iSpaceWidth %d, iTextWidth %d\n", iOffset, iSpaceOffset, iSpaceLength, iDelta, iCurrOffset, iSpaceWidth, iTextWidth ));
-
-			iOffset = iSpaceOffset + iSpaceLength;
-
-			if(iVisDir == FRIBIDI_TYPE_RTL)
-			{
-				iPrevSpaceEnd = iSpaceOffset + iSpaceLength;
-				iX -= iSpaceWidth;
-			}
-			else
-				iX += iTextWidth + iSpaceWidth;
-
-			i += 4;
-
-		}while (i < iSpaceCount);
-
-		if(iOffset < iLength)
-		{
-			// draw the section of the run past the last space segment
-			getGR()->drawChars(m_pSpanBuff, iOffset, iLength - iOffset, iX, yTopOfRun, s_pCharAdvance + iOffset);
-		}
+		iX += getWidth();
 	}
 
 
+	for(UT_uint32 iSegment = 0; iSegment < iSegmentCount; iSegment++)
+	{
+
+		if(iOffset >= iSegmentOffset[iSegment+1])
+		{
+			// this is a special case when the segment spans only the
+			// spaces; we have skipped those, and so we need to move
+			iCumSegmentWidth += iSegmentWidth[iSegment];
+			continue;
+		}
+		
+		if(bSegmentSelected[iSegment])
+		{
+			getGR()->setColor(_getView()->getColorSelForeground());
+		}
+		else
+			getGR()->setColor(getFGColor());
+
+
+		if(iSpaceCount < 2)
+		{
+			// this is the case of non-justified run or fakly-justified run
+			// since we have the visual string in the draw buffer, we
+			// just call getGR()r->drawChars()
+			UT_uint32 iMyOffset = iVisDir == FRIBIDI_TYPE_RTL ?
+				getLength()-iSegmentOffset[iSegment+1]  :
+				iSegmentOffset[iSegment];
+			
+			if(iVisDir == FRIBIDI_TYPE_RTL)
+				iX -= iSegmentWidth[iSegment];
+
+			getGR()->drawChars(m_pSpanBuff,
+							   iMyOffset,
+							   iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment],
+							   iX,
+							   yTopOfRun,s_pCharAdvance + iMyOffset);
+
+			if(iVisDir == FRIBIDI_TYPE_LTR)
+				iX += iSegmentWidth[iSegment];
+				
+		}
+		else
+		{
+			// because the data stored in our vector does not get
+			// modified when text is inserted or deleted we have to
+			// calculate the adjustment for the stored offsets
+
+			// note that the original offset can be negative to allow us
+			// to create positive iDelta (see the note in ::mergeWithNext())
+			UT_sint32 iOrigOffset  = (UT_uint32) m_pJustifiedSpaces->getNthItem(1);
+			UT_sint32 iDelta       = iCurrOffset - iOrigOffset;
+
+
+			UT_uint32 iDrawLength;
+
+			// the justification data is stored in logical order, however,
+			// if the run is RTL, it is being drawn relative to its left
+			// edge, and consequently we have to process the draw buffer
+			// in the reverse order
+
+			do
+			{
+				iSpaceOffset = (UT_uint32) m_pJustifiedSpaces->getNthItem(i) + iDelta;
+				iSpaceLength = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+1);
+				iSpaceWidth  = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+2);
+				iTextWidth   = (UT_uint32) m_pJustifiedSpaces->getNthItem(i+3);
+
+				UT_uint32 iMinOffset = UT_MIN(iSpaceOffset, iSegmentOffset[iSegment+1]);
+
+				if(iVisDir == FRIBIDI_TYPE_RTL)
+				{
+					if(iMinOffset == iSpaceOffset)
+					{
+						//iCumTextWidth += iTextWidth + iSpaceWidth;
+						iX = pDA->xoff + getWidth() - iCumTextWidth - iTextWidth;
+					}
+					else
+					{
+						//iCumSegmentWidth += iSegmentWidth[iSegment];
+						iX = pDA->xoff + getWidth() - iCumSegmentWidth;
+					}
+					
+					
+					iDrawOffset = iLength - iMinOffset;
+					iDrawLength = iMinOffset - iOffset;
+				}
+				else
+				{
+					iDrawOffset = UT_MIN(iOffset,iSegmentOffset[iSegment+1]); 
+					iDrawLength = iMinOffset - iDrawOffset;
+				}
+				
+				getGR()->drawChars(m_pSpanBuff,
+								   iDrawOffset,
+								   iDrawLength,
+								   iX,
+								   yTopOfRun,
+								   s_pCharAdvance + iDrawOffset);
+				
+				xxx_UT_DEBUGMSG(( "fp_TextRun::_draw: iOffset %d, iSpaceOffset %d, iSpaceLength %d, iDelta %d, iCurrOffset %d, iSpaceWidth %d, iTextWidth %d\n", iOffset, iSpaceOffset, iSpaceLength, iDelta, iCurrOffset, iSpaceWidth, iTextWidth ));
+
+				if(iVisDir == FRIBIDI_TYPE_LTR)
+				{
+					if(iMinOffset == iSpaceOffset)
+					{
+						// we drew to the end of the chunk
+						iCumTextWidth += (iTextWidth + iSpaceWidth);
+						iX = pDA->xoff + iCumTextWidth;
+					}
+					else
+					{
+						// we only drew to the end of the segment
+						iCumSegmentWidth += iSegmentWidth[iSegment];
+						iX = pDA->xoff + iCumSegmentWidth;
+					}
+				}
+				else
+				{
+					if(iMinOffset == iSpaceOffset)
+					{
+						// we drew to the end of the chunk
+						iCumTextWidth += (iTextWidth + iSpaceWidth);
+					}
+					else
+					{
+						// we only drew to the end of the segment
+						iCumSegmentWidth += iSegmentWidth[iSegment];
+					}
+				}
+				
+				
+				iOffset = UT_MIN(iSpaceOffset + iSpaceLength, iSegmentOffset[iSegment+1]);
+
+				if(iOffset >= iSpaceOffset)
+				{
+					// this is a special case when the segment end
+					// alings with the end of the text; in that case
+					// we want to move past the spaces
+					// we also have to increase the cumulative width
+					iOffset = iSpaceOffset + iSpaceLength;
+					iCumSegmentWidth += iSegmentWidth[iSegment];
+				}
+				
+				if(iOffset >= iSpaceOffset + iSpaceLength) 
+					i += 4;
+
+			}while (i < iSpaceCount && iOffset < iSegmentOffset[iSegment+1]);
+
+			if(iOffset < iSegmentOffset[iSegment+1])
+			{
+				// draw the section of the run past the last space segment
+				getGR()->drawChars(m_pSpanBuff, iOffset, iSegmentOffset[iSegment+1] - iOffset, iX, yTopOfRun, s_pCharAdvance + iOffset);
+			}
+			if(i >= iSpaceCount)
+				break;
+		}
+	}
+	
 	drawDecors(pDA->xoff, yTopOfRun);
 
 	if(pView->getShowPara())
@@ -2239,7 +2377,8 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 						   UT_sint32 yoff,
 						   UT_uint32 iPos1,
 						   UT_uint32 iLen,
-						   const UT_GrowBuf* pgbCharWidths)
+						   const UT_GrowBuf* pgbCharWidths,
+						   UT_Rect &r)
 {
 	/*
 	  Upon entry to this function, yoff is the TOP of the run,
@@ -2250,7 +2389,7 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 	// and field background and we do not want to see these printed
 	if (getGR()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		UT_Rect r;
+		//UT_Rect r;
 
 		_getPartRect(&r, xoff, yoff, iPos1, iLen, pgbCharWidths);
 		r.height = getLine()->getHeight();
@@ -2643,13 +2782,11 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 	getGR()->setFont(_getFont());
 #endif
 
-#ifdef CLR_FOREGROUND
 	if(bSelection)
 	{
 		getGR()->setColor(_getView()->getColorSelForeground());	
 	}
 	else
-#endif
 		getGR()->setColor(getFGColor());
 
 	FriBidiCharType iVisDirection = getVisDirection();
@@ -2679,13 +2816,11 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff, bool bSelection)
 	getGR()->setFont(_getFont());
 #endif
 
-#ifdef CLR_FOREGROUND
 	if(bSelection)
 	{
 		getGR()->setColor(_getView()->getColorSelForeground());	
 	}
 	else
-#endif
 		getGR()->setColor(getFGColor());
 	
 	if(!s_bBidiOS)
