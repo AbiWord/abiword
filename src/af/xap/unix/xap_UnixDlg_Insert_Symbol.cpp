@@ -124,8 +124,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	GtkWidget * mainWindow = _constructWindow();
 	UT_return_if_fail(mainWindow);
 
-	abiSetupModelessDialog(GTK_DIALOG(mainWindow),
-						   pFrame, this, BUTTON_CLOSE);
+	abiSetupModelessDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_INSERT);
 
 #ifndef USE_GUCHARMAP
 
@@ -493,19 +492,20 @@ void XAP_UnixDialog_Insert_Symbol::destroy(void)
 
 GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 {
-	GtkWidget * vboxInsertS;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	GtkWidget *tmp;
 
 	ConstructWindowName();
 
-	m_windowMain = abiDialogNew ( "insert symbol dialog", TRUE, m_WindowName ) ;
+	m_windowMain = abiDialogNew ("insert symbol dialog", TRUE, m_WindowName);
 
 	// Now put in a Vbox to hold our 3 widgets (Font Selector, Symbol Table
 	// and OK -Selected Symbol- Cancel
-	vboxInsertS = GTK_DIALOG(m_windowMain)->vbox ;
+	tmp = GTK_DIALOG(m_windowMain)->vbox ;
 
 	GtkWidget * hbox = gtk_hbox_new (FALSE, 4);
 	gtk_widget_show (hbox);
-	gtk_box_pack_start(GTK_BOX(vboxInsertS), hbox, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(tmp), hbox, FALSE, FALSE, 0);
 
 	// Finally construct the combo box
 	m_fontcombo = _createComboboxWithFonts ();
@@ -517,24 +517,24 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	// Now the Symbol Map. 
 	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
 	m_SymbolMap = _previewNew (608, 147);
-	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(tmp), m_SymbolMap, FALSE, FALSE, 0);
 	
 	m_areaCurrentSym = _previewNew (60, 45);
-	gtk_box_pack_start(GTK_BOX(hbox),
-					   m_areaCurrentSym, TRUE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), m_areaCurrentSym, TRUE, FALSE, 0);
 #else
-
 	m_SymbolMap = gucharmap_charmap_new ();
 	gtk_widget_show (m_SymbolMap);
-	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (tmp), m_SymbolMap, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (m_SymbolMap), 5);
 
 	gtk_widget_set_size_request (m_windowMain, 700, 300);
 #endif
 
 	gtk_widget_show_all (hbox);
 
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_ADD, BUTTON_INSERT) ;
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CLOSE) ;
+	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CLOSE);
+	tmp = abiAddButton (GTK_DIALOG(m_windowMain), "&Insert", BUTTON_INSERT);
+	localizeButtonUnderline (tmp, pSS, XAP_STRING_ID_DLG_Insert);
 	
 	_connectSignals ();
 
@@ -584,14 +584,10 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 	gtk_widget_show(fontcombo);
 
 	m_InsertS_Font_list = _getGlistFonts ();
- 
-	gtk_widget_set_size_request(fontcombo, 200, 25);
-	gtk_combo_set_value_in_list(GTK_COMBO(fontcombo), TRUE, TRUE);
-	gtk_combo_set_use_arrows(GTK_COMBO(fontcombo), FALSE);
 	gtk_combo_set_popdown_strings(GTK_COMBO(fontcombo), m_InsertS_Font_list);
 
 	// Turn off keyboard entry in the font selection box
-	gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(fontcombo)->entry),FALSE);
+	gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(fontcombo)->entry), FALSE);
 
 	return fontcombo;
 }
