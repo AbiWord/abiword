@@ -1,5 +1,7 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2003 Mark Pazolli
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,7 +28,7 @@
 
 // This header defines some functions for Cocoa dialogs,
 // like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -39,22 +41,16 @@
 
 /*****************************************************************/
 
-static void s_toggled (GtkWidget * radio, AP_Dialog_ToggleCase * dlg)
-{
-  ToggleCase tc = (ToggleCase) GPOINTER_TO_INT (g_object_get_user_data (G_OBJECT(radio)));
-  dlg->setCase (tc);
-}
-
 XAP_Dialog * AP_CocoaDialog_ToggleCase::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+													 XAP_Dialog_Id dlgid)
 {
-	AP_CocoaDialog_ToggleCase * p = new AP_CocoaDialog_ToggleCase(pFactory,id);
+	AP_CocoaDialog_ToggleCase * p = new AP_CocoaDialog_ToggleCase(pFactory,dlgid);
 	return p;
 }
 
 AP_CocoaDialog_ToggleCase::AP_CocoaDialog_ToggleCase(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_ToggleCase(pDlgFactory,id)
+										 XAP_Dialog_Id dlgid)
+	: AP_Dialog_ToggleCase(pDlgFactory,dlgid)
 {
 }
 
@@ -64,149 +60,121 @@ AP_CocoaDialog_ToggleCase::~AP_CocoaDialog_ToggleCase(void)
 
 void AP_CocoaDialog_ToggleCase::runModal(XAP_Frame * pFrame)
 {
-    // Build the window's widgets and arrange them
-    GtkWidget * mainWindow = _constructWindow();
-    UT_ASSERT(mainWindow);
+	NSWindow* window;
 
-    connectFocus(GTK_WIDGET(mainWindow), pFrame);
-
-    // To center the dialog, we need the frame of its parent.
-    XAP_CocoaFrame * pCocoaFrame = static_cast<XAP_CocoaFrame *>(pFrame);
-    UT_ASSERT(pCocoaFrame);
-    
-    // Get the GtkWindow of the parent frame
-    GtkWidget * parentWindow = pCocoaFrame->getTopLevelWindow();
-    UT_ASSERT(parentWindow);
-    
-    // Center our new dialog in its parent and make it a transient
-    // so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-
-    // Show the top level dialog,
-    gtk_widget_show(mainWindow);
-
-    // Make it modal, and stick it up top
-    gtk_grab_add(mainWindow);
-
-    // Run into the GTK event loop for this window.
-    gtk_main();
-    if(mainWindow && GTK_IS_WIDGET(mainWindow))
-      gtk_widget_destroy(mainWindow);
+	m_dlg = [[AP_CocoaDialog_ToggleCaseController alloc] initFromNib];
+	[m_dlg setXAPOwner:this];
+	window = [m_dlg window];
+	
+	[NSApp runModalForWindow:window];
+	
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
 }
 
-static void s_ok_clicked (GtkWidget * w, AP_CocoaDialog_ToggleCase * tc)
+@implementation AP_CocoaDialog_ToggleCaseController
+
+- (id)initFromNib
 {
-  tc->setAnswer(AP_Dialog_ToggleCase::a_OK);
-  gtk_main_quit ();
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_ToggleCase"];
+	
+	return self;
 }
 
-static void s_cancel_clicked (GtkWidget * w, AP_CocoaDialog_ToggleCase * tc)
+- (void)awakeFromNib
 {
-  tc->setAnswer(AP_Dialog_ToggleCase::a_CANCEL);
-  gtk_main_quit ();
+
+	switch (_xap->getCase()) {
+	case CASE_SENTENCE:
+		[_caseMatrix selectCellWithTag:0];
+		break;
+	case CASE_LOWER:
+		[_caseMatrix selectCellWithTag:1];
+		break;
+	case CASE_UPPER:
+		[_caseMatrix selectCellWithTag:2];
+		break;
+	case CASE_FIRST_CAPITAL:
+		[_caseMatrix selectCellWithTag:3];
+		break;
+	case CASE_TOGGLE:
+		[_caseMatrix selectCellWithTag:4];
+		break;
+	default:
+		[_caseMatrix selectCellWithTag:0];
+		break;
+	}
 }
 
-static void s_delete_clicked (GtkWidget * w, gpointer data, 
-			      AP_CocoaDialog_ToggleCase * tc)
+- (void)dealloc
 {
-  s_cancel_clicked (w, tc);
+	[super dealloc];
 }
 
-GtkWidget * AP_CocoaDialog_ToggleCase::_constructWindow (void)
+- (void)setXAPOwner:(XAP_Dialog *)owner
 {
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-  GtkWidget * buttonOK, * buttonCancel;
-
-  GtkWidget * windowMain = gtk_dialog_new ();
-  gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(AP_STRING_ID_DLG_ToggleCase_Title));
-
-  _constructWindowContents (GTK_DIALOG(windowMain)->vbox);
-
-  buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-  gtk_widget_show (buttonOK);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(windowMain)->action_area), 
-		     buttonOK);
-
-  buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-  gtk_widget_show (buttonCancel);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(windowMain)->action_area), buttonCancel);
-
-	g_signal_connect_after(G_OBJECT(windowMain),
-				 "destroy",
-				 NULL,
-				 NULL);
-	g_signal_connect(G_OBJECT(windowMain),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect(G_OBJECT(buttonOK),
-			   "clicked",
-			   G_CALLBACK(s_ok_clicked),
-			   (gpointer) this);
-	g_signal_connect(G_OBJECT(buttonCancel),
-			   "clicked",
-			   G_CALLBACK(s_cancel_clicked),
-			   (gpointer) this);
-
-  return windowMain;
+	_xap = dynamic_cast<AP_CocoaDialog_ToggleCase*>(owner);
+	UT_ASSERT(_xap);
 }
 
-void AP_CocoaDialog_ToggleCase::_constructWindowContents (GtkWidget *vbox1)
+- (void)discardXAP
 {
-  GSList *vbox1_group = NULL;
-  GtkWidget *sentenceCase;
-  GtkWidget *lowerCase;
-  GtkWidget *upperCase;
-  GtkWidget *firstUpperCase;
-  GtkWidget *toggleCase;
-
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  sentenceCase = gtk_radio_button_new_with_label (vbox1_group, 
-						  pSS->getValue(AP_STRING_ID_DLG_ToggleCase_SentenceCase));
-  vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (sentenceCase));
-  gtk_widget_show (sentenceCase);
-  gtk_box_pack_start (GTK_BOX (vbox1), sentenceCase, FALSE, FALSE, 0);
-
-  lowerCase = gtk_radio_button_new_with_label (vbox1_group, 
-					       pSS->getValue(AP_STRING_ID_DLG_ToggleCase_LowerCase));
-  vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (lowerCase));
-  gtk_widget_show (lowerCase);
-  gtk_box_pack_start (GTK_BOX (vbox1), lowerCase, FALSE, FALSE, 0);
-
-  upperCase = gtk_radio_button_new_with_label (vbox1_group, 
-					       pSS->getValue(AP_STRING_ID_DLG_ToggleCase_UpperCase));
-  vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (upperCase));
-  gtk_widget_show (upperCase);
-  gtk_box_pack_start (GTK_BOX (vbox1), upperCase, FALSE, FALSE, 0);
-
-  firstUpperCase = gtk_radio_button_new_with_label (vbox1_group,
-					       pSS->getValue(AP_STRING_ID_DLG_ToggleCase_FirstUpperCase));
-  vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (firstUpperCase));
-  gtk_widget_show (firstUpperCase);
-  gtk_box_pack_start (GTK_BOX (vbox1), firstUpperCase, FALSE, FALSE, 0);
-
-  toggleCase = gtk_radio_button_new_with_label (vbox1_group, 
-						pSS->getValue(AP_STRING_ID_DLG_ToggleCase_ToggleCase));
-  vbox1_group = gtk_radio_button_group (GTK_RADIO_BUTTON (toggleCase));
-  gtk_widget_show (toggleCase);
-  gtk_box_pack_start (GTK_BOX (vbox1), toggleCase, FALSE, FALSE, 0);
-
-  g_object_set_user_data (G_OBJECT(sentenceCase), GINT_TO_POINTER(CASE_SENTENCE));
-  g_object_set_user_data (G_OBJECT(lowerCase), GINT_TO_POINTER(CASE_LOWER));
-  g_object_set_user_data (G_OBJECT(upperCase), GINT_TO_POINTER(CASE_UPPER));
-  g_object_set_user_data (G_OBJECT(firstUpperCase), GINT_TO_POINTER(CASE_FIRST_CAPITAL));
-  g_object_set_user_data (G_OBJECT(toggleCase), GINT_TO_POINTER(CASE_TOGGLE));
-
-  g_signal_connect (G_OBJECT(sentenceCase), "toggled",
-		      G_CALLBACK(s_toggled), (gpointer)this);
-  g_signal_connect (G_OBJECT(lowerCase), "toggled",
-		      G_CALLBACK(s_toggled), (gpointer)this);
-  g_signal_connect (G_OBJECT(upperCase), "toggled",
-		      G_CALLBACK(s_toggled), (gpointer)this);
-  g_signal_connect (G_OBJECT(firstUpperCase), "toggled",
-		      G_CALLBACK(s_toggled), (gpointer)this);
-  g_signal_connect (G_OBJECT(toggleCase), "toggled",
-		      G_CALLBACK(s_toggled), (gpointer)this);
+	_xap = NULL;
 }
+
+- (void)windowDidLoad
+{
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	
+	LocalizeControl([self window], pSS, AP_STRING_ID_DLG_ToggleCase_Title);
+	LocalizeControl(_sentenceBtn, pSS, AP_STRING_ID_DLG_ToggleCase_SentenceCase);
+	LocalizeControl(_lowerBtn, pSS, AP_STRING_ID_DLG_ToggleCase_LowerCase);
+	LocalizeControl(_upperBtn, pSS, AP_STRING_ID_DLG_ToggleCase_UpperCase);
+	LocalizeControl(_titleBtn, pSS, AP_STRING_ID_DLG_ToggleCase_TitleCase);
+	LocalizeControl(_initialBtn, pSS, AP_STRING_ID_DLG_ToggleCase_FirstUpperCase);
+	LocalizeControl(_toggleBtn, pSS, AP_STRING_ID_DLG_ToggleCase_ToggleCase);
+	LocalizeControl (_okBtn, pSS, XAP_STRING_ID_DLG_OK);
+	LocalizeControl (_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
+}
+
+- (IBAction)okAction:(id)sender
+{
+	_xap->setAnswer(_xap->a_OK);
+    [NSApp stopModal];
+}
+
+- (IBAction)cancelAction:(id)sender
+{
+	_xap->setAnswer(_xap->a_CANCEL);
+    [NSApp stopModal];
+}
+
+- (IBAction)setAction:(id)sender
+{
+	switch ([[_caseMatrix selectedCell] tag]) {
+	case 0:
+		_xap->setCase(CASE_SENTENCE);
+		break;
+	case 1:
+		_xap->setCase(CASE_LOWER);
+		break;
+	case 2:
+		_xap->setCase(CASE_UPPER);
+		break;
+	case 3:
+		_xap->setCase(CASE_FIRST_CAPITAL);
+		break;
+	case 4:
+		_xap->setCase(CASE_TOGGLE);
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+}
+
+@end
+
+
+

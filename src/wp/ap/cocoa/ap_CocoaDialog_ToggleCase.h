@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
+ * Copyright (C) 2003 Mark Pazolli
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,7 +25,25 @@
 #include <Cocoa/Cocoa.h>
 #include "ap_Dialog_ToggleCase.h"
 
-class XAP_CocoaFrame;
+class AP_CocoaDialog_ToggleCase;
+
+@interface AP_CocoaDialog_ToggleCaseController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_cancelBtn;
+    IBOutlet NSMatrix *_caseMatrix;
+    IBOutlet NSButtonCell *_initialBtn;
+    IBOutlet NSButtonCell *_lowerBtn;
+    IBOutlet NSButton *_okBtn;
+    IBOutlet NSButtonCell *_sentenceBtn;
+    IBOutlet NSButtonCell *_titleBtn;
+    IBOutlet NSButtonCell *_toggleBtn;
+    IBOutlet NSButtonCell *_upperBtn;
+	AP_CocoaDialog_ToggleCase *_xap;
+}
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)setAction:(id)sender;
+@end
 
 /*****************************************************************/
 
@@ -37,11 +56,8 @@ class AP_CocoaDialog_ToggleCase: public AP_Dialog_ToggleCase
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
-
- protected:
-	virtual NSWindow * _constructWindow(void);
-	virtual void        _constructWindowContents (NSWindow *parent);
-	
+private:
+	AP_CocoaDialog_ToggleCaseController*	m_dlg;
 };
 
 #endif /* AP_COCOADIALOG_ToggleCase_H */
