@@ -107,35 +107,6 @@ bool IE_Exp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
 	return true;
 }
 
-#if !defined(DEBUG) || defined(NDEBUG)
-
-// Dom: hack - i hate doing this, but it will shut thousands of people up
-
-bool IE_Exp_MsWord_97_Sniffer::recognizeSuffix(const char * szSuffix)
-{
-	return (!UT_stricmp(szSuffix,".doc"));
-}
-
-UT_Error IE_Exp_MsWord_97_Sniffer::constructExporter(PD_Document * pDocument,
-											   IE_Exp ** ppie)
-{
-	IE_Exp_RTF * p = new IE_Exp_RTF(pDocument);
-	*ppie = p;
-	return UT_OK;
-}
-
-bool IE_Exp_MsWord_97_Sniffer::getDlgLabels(const char ** pszDesc,
-									  const char ** pszSuffixList,
-									  IEFileType * ft)
-{
-	*pszDesc = "Microsoft Word (.doc)";
-	*pszSuffixList = "*.doc";
-	*ft = getFileType();
-	return true;
-}
-
-#endif // word97 hack
-
 /*for attic*/
 
 bool IE_Exp_RTF_attic_Sniffer::recognizeSuffix(const char * szSuffix)
