@@ -2517,6 +2517,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 					projRec.width = diff;
 				}
 			}
+			delete pRec;
 		}
 		fp_Line* pLine = new fp_Line(getSectionLayout());
 		fp_Line* pOldLastLine = static_cast<fp_Line *>(getLastContainer());

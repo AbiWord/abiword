@@ -1022,8 +1022,10 @@ void fp_Line::clearScreen(void)
 			{
 				return;
 			}
+			UT_sint32 iExtra = getGraphics()->getFontAscent()/2;
 			UT_ASSERT(m_iClearToPos + m_iClearLeftOffset < getPage()->getWidth());
-			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
+//			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset+iExtra, height);
+			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, getMaxWidth() + m_iClearLeftOffset +iExtra, height);
 
 //
 // Sevior: I added this for robustness.
@@ -1067,14 +1069,16 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		bUseFirst = true;
 	}
 	
-	// Find the first non dirty run.
+	// Find the first non dirty run. NO!! fp_Run::clearScreen sets the 
+	// run Dirty first thing is it. Lets just do what we're told to do..
+
 	// the run index is visual and if we are in LTR paragraph we
 	// are deleting to the right of the run, while if we are in RTL
 	// paragraph we are deleting to the _left_ (Tomas, Oct 25, 2003)
 	UT_BidiCharType iDomDirection = m_pBlock->getDominantDirection();
-	
-	UT_sint32 i;
 
+#if 0
+	UT_sint32 i;
 	if(iDomDirection == UT_BIDI_LTR)
 	{
 		for(i = runIndex; i < count; i++)
@@ -1111,7 +1115,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		}
 	}
 	
-
+#endif
 	// if we have a valid index to clear from, let's do it ...
 
 	if(static_cast<UT_sint32>(runIndex) < count)
@@ -1160,7 +1164,10 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		{
 			leftClear = 0;
 		}
-		
+		if(pRun->getType() == FPRUN_IMAGE)
+		{
+			leftClear = 0;
+		}
 		if(bUseFirst)
 		{
 			getScreenOffsets(pFRun, xoff, yoff);

@@ -1118,7 +1118,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 				findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
 				xRight = x1 + _getView()->getPageViewLeftMargin();
 			}
-			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),xRight-xLeft,getLine()->getHeight());
+			UT_sint32 width = xRight-xLeft;
+			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),width,getLine()->getHeight());
 			pDA->pG->setClipRect(&clip);
 		}
 	}

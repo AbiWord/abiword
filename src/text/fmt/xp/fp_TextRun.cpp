@@ -1108,7 +1108,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->_setDescent(this->getDescent());
 	pNew->_setHeight(this->getHeight());
 	pNew->_setLineWidth(this->_getLineWidth());
-	pNew->_setDirty(isDirty());
+	pNew->_setDirty(true);
 	pNew->m_pLanguage = this->m_pLanguage;
 	pNew->_setDirection(this->_getDirection()); //#TF
 	pNew->m_iDirOverride = this->m_iDirOverride;
@@ -1136,8 +1136,11 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->setNextRun(this->getNextRun(), false);
 	if (getNextRun())
 	{
-		// do not mark anything dirty
+		// do not mark anything dirty, just the next run since the clearscreen
+		// from this split has cleared a bit of the next run.
+
 		getNextRun()->setPrevRun(pNew, false);
+		getNextRun()->markAsDirty();
 	}
 	setNextRun(pNew, false);
 
@@ -1351,10 +1354,11 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		}
 		else
 		{
-			getLine()->clearScreenFromRunToEnd(this);
-			xxx_UT_DEBUGMSG(("TextRun Clear Screen line is %x \n",getLine()));
-			getLine()->setNeedsRedraw();
-			return;
+			iExtra = getLine()->getMaxWidth() - getX() - getWidth();
+			if(iExtra <= 0)
+			{
+				iExtra = getGraphics()->tlu(1);
+			}
 		}
 	}
 
@@ -1392,10 +1396,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		leftClear = 0;
 	}
 	UT_sint32 rightClear = getAscent()/2 + iExtra;
-	if(!isSelectionDraw() && iExtra== 0)
-	{
-		rightClear = 0;
-	}
+
 	UT_sint32 iCumWidth = leftClear;
 	if(thisLine != NULL)
 	{
@@ -1427,7 +1428,6 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		 getLine()->getHeight());
 	xxx_UT_DEBUGMSG(("leftClear = %d width = %d xoff %d height %d \n",
 					 leftClear,getWidth(),xoff,getLine()->getHeight()));
-	
 
 }
 
@@ -1466,8 +1466,21 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 // This makes sure the widths don't change underneath us after a zoom.
 //
 	m_bKeepWidths = true;
+	UT_sint32 iWidth = getWidth();
+//
+// This code makes sure we don't fill past the right edge of text.
+// Full Justified text often as a space at the right edge of the text.
+// This space is counted in the width even though the text is aligned
+// to the correct edge.
+//
+	UT_Rect * pLRec = getLine()->getScreenRect();
+	if((pDA->xoff + iWidth) > (pLRec->left + pLRec->width))
+	{
+		iWidth -=  (pDA->xoff + iWidth) - (pLRec->left + pLRec->width);
+	}
+	delete pLRec;
 	Fill(pG,pDA->xoff,yTopOfSel + getAscent() - getLine()->getAscent(),
-					getWidth(),
+					iWidth,
 					getLine()->getHeight());
 	m_bKeepWidths = false;
 
@@ -1558,7 +1571,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	iSegmentOffset[0] = 0;
 	iSegmentOffset[1] = iSegmentOffset[3] = getLength();
 	bSegmentSelected[0] = false;
-	iSegmentWidth[0] = getWidth();
+	iSegmentWidth[0] = iWidth;
 
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ !bIsInTOC && (iSel1 != iSel2) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -1582,7 +1595,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 					iSegmentOffset[1] = iSel2 - iRunBase;
 					iSegmentOffset[2] = getLength();
 					iSegmentWidth[0] = rSegment.width;
-					iSegmentWidth[1] = getWidth() - rSegment.width;
+					iSegmentWidth[1] = iWidth - rSegment.width;
 				}
 			}
 		}
@@ -1598,7 +1611,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 				bSegmentSelected[1] = true;
 				iSegmentOffset[1] = iSel1 - iRunBase;
 				iSegmentOffset[2] = getLength();
-				iSegmentWidth[0] = getWidth() - rSegment.width;
+				iSegmentWidth[0] = iWidth - rSegment.width;
 				iSegmentWidth[1] = rSegment.width;
 			}
 			else
@@ -1617,12 +1630,12 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 				if(getVisDirection() == UT_BIDI_LTR)
 				{
 					iSegmentWidth[0] = rSegment.left - pDA->xoff;
-					iSegmentWidth[2] = getWidth() - (rSegment.width + iSegmentWidth[0]);
+					iSegmentWidth[2] = iWidth - (rSegment.width + iSegmentWidth[0]);
 				}
 				else
 				{
 					iSegmentWidth[2] = rSegment.left - pDA->xoff;
-					iSegmentWidth[0] = getWidth() - (rSegment.width + iSegmentWidth[2]);
+					iSegmentWidth[0] = iWidth - (rSegment.width + iSegmentWidth[2]);
 				}
 			}
 		}
@@ -1709,7 +1722,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 					UT_ASSERT( pT->m_pRenderInfo );
 					if(pT->m_pRenderInfo)
 					{
-						pT->m_pRenderInfo->m_xoff = pDA->xoff + getWidth();
+						pT->m_pRenderInfo->m_xoff = pDA->xoff + iWidth;
 						pT->m_pRenderInfo->m_yoff = ytemp;
 						
 						pT->_drawFirstChar(bSel);
@@ -1837,8 +1850,8 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 		_getPartRect(&r, xoff, yoff, iPos1, iLen);
 		r.height = getLine()->getHeight();
 		r.top = r.top + getAscent() - getLine()->getAscent();
-
 		GR_Painter painter(getGraphics());
+		UT_Rect * pLRec = getLine()->getScreenRect();
 		painter.fillRect(clr, r.left, r.top, r.width, r.height);
 	}
 }
@@ -1889,7 +1902,21 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	m_pRenderInfo->m_iOffset = iStart - getBlockOffset();
 	m_pRenderInfo->m_iLength = iLen;
 	pRect->width = getGraphics()->getTextWidth(*m_pRenderInfo);
-
+//
+// This code makes sure we don't fill past the right edge of text.
+// Full Justified text often as a space at the right edge of the text.
+// This space is counted in the width even though the text is aligned
+// to the correct edge.
+//
+	if(getLine())
+	{
+		UT_Rect * pLRec = getLine()->getScreenRect();
+		if((pRect->left + pRect->width) > (pLRec->left + pLRec->width))
+		{
+			pRect->width -= (pRect->left + pRect->width) - (pLRec->left + pLRec->width);
+		}
+		delete pLRec;
+	}
 	//in case of rtl we are now in the position to calculate the position of the the left corner
 	if(getVisDirection() == UT_BIDI_RTL)
 		pRect->left = xoff + getWidth() - pRect->left - pRect->width;

@@ -2130,7 +2130,7 @@ void fp_Page::markDirtyOverlappingRuns(fp_FrameContainer * pFrameC)
 			pFC->markDirtyOverlappingRuns(*pMyFrameRect);
 		}
 	}
-
+	delete pMyFrameRect;
 }
 
 UT_uint32 fp_Page::countFrameContainers(void) const
