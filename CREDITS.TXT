@@ -83,6 +83,7 @@ Christopher Plymire <chrisjp@eudoramail.com>    BeOS fixes, Word Count, Insert D
 Michael Pritchett <MPritchett@attglobal.net>    BMP Import, Cygwin 1.1.0 build fixes
 Bryan Prusha <bryanp@wolfram.com>               Mac Port Work
 Andy Richardson <andy@promethium.chem.ucl.ac.uk>PostScript image handling
+Will Robinson <wsr23@stanford.edu>
 Duncan Rose <d.rose@salford.ac.uk>
 Bernhard Rosenkraenzer <bero@redhat.de>         gcc 2.96 lint, IA64
 Gaetan Ryckeboer <gaetan.ryckeboer@microfox.fr> CSS/HTML script
@@ -103,6 +104,7 @@ Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
 Keith Stribley                                  Piece Table Fields
 Jim Studt <jim@federated.com>                   ARM configuration
 Peter Teichman <peter@helixcode.com>            XFree86 4.0 Fix
+Jeremy Teo <nerant@gmx.net>
 Petr Tesarik <tesarik@lupa.cz>                  X11 select and Paste
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Daniel Thompson <D.Thompson@gmx.net>            Page Size Option.
