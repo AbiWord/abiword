@@ -394,6 +394,9 @@ bool XAP_Win32FrameImpl::_runModalContextMenu(AV_View * pView, const char * szMe
 
 	UT_return_val_if_fail((m_pWin32Popup==NULL), false);
 
+	x = pView->getGraphics()->tdu(x);
+	y = pView->getGraphics()->tdu(y);
+
 	m_pWin32Popup = new EV_Win32MenuPopup(static_cast<XAP_Win32App*>(XAP_App::getApp()),szMenuName,m_szMenuLabelSetName);
 	if (m_pWin32Popup && m_pWin32Popup->synthesizeMenuPopup(getFrame()))
 	{
