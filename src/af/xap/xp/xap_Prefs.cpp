@@ -106,16 +106,17 @@ UT_Bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, cons
 }
 /*****************************************************************/
 
-UT_Bool XAP_Prefs::getAutoSave(void) const
+UT_Bool XAP_Prefs::getAutoSavePrefs(void) const
 {
-	return m_bAutoSave;
+	return m_bAutoSavePrefs;
 }
 
-void XAP_Prefs::setAutoSave(UT_Bool bAuto)
+void XAP_Prefs::setAutoSavePrefs(UT_Bool bAuto)
 {
-	m_bAutoSave = bAuto;
+	m_bAutoSavePrefs = bAuto;
 
 	// TODO if turning autosave on, we should do a save now....
+	// TODO if was on and turning off, should we save it now ??
 }
 
 /*****************************************************************/
@@ -221,7 +222,7 @@ void XAP_Prefs::_pruneRecent(void)
 XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 {
 	m_pApp = pApp;
-	m_bAutoSave = UT_TRUE;				// TODO this is true for testing, set it to false later.
+	m_bAutoSavePrefs = atoi(XAP_PREF_DEFAULT_AutoSavePrefs);
 	m_currentScheme = NULL;
 	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);
 
@@ -372,7 +373,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 		m_parserState.m_bFoundSelect = UT_TRUE;
 		
 		// we expect something of the form:
-		// <Select scheme="myScheme" autosave="1" />
+		// <Select scheme="myScheme" autosaveprefs="1" />
 
 		const XML_Char ** a = atts;
 		while (*a)
@@ -385,9 +386,9 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				if (!UT_cloneString(m_parserState.m_szSelectedSchemeName,a[1]))
 					goto MemoryError;
 			}
-			else if (UT_XML_stricmp(a[0], "autosave") == 0)
+			else if (UT_XML_stricmp(a[0], "autosaveprefs") == 0)
 			{
-				// m_bAutoSave controls whether we automatically
+				// m_bAutoSavePrefs controls whether we automatically
 				// save any changes in the preferences during
 				// interactive use/manipulation of the UI or if
 				// we wait until the user explicitly does a save.
@@ -395,7 +396,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				// almost everything in the UI -- we can do that,
 				// but lets not make it the default....
 				
-				m_bAutoSave = (*a[1] == '1');
+				m_bAutoSavePrefs = (*a[1] == '1');
 			}
 
 			a += 2;
@@ -483,8 +484,8 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			}
 			else if (UT_strnicmp(a[0], "name", 4) == 0)
 			{
-				// HACK: taking advantage of the fact that XML_Char == char
-				// TODO: be safe
+				// NOTE: taking advantage of the fact that XML_Char == char
+				UT_ASSERT((sizeof(XML_Char) == sizeof(char)));
 				XML_Char * sz;
 				UT_XML_cloneString((char *&)sz, a[1]);
 
@@ -602,7 +603,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	if (!m_parserState.m_bFoundRecent)
 	{
 		UT_DEBUGMSG(("Did not find <Recent...>\n"));
-		goto Cleanup;
+		// Note: it's ok if we didn't find it...
 	}
 
 	UT_ASSERT(m_parserState.m_szSelectedSchemeName);
@@ -699,9 +700,9 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 			m_pApp->getApplicationName(),
 			"1.0");
 	{
-		fprintf(fp,"\n\t<Select\n\t\tscheme=\"%s\"\n\t\tautosave=\"%ld\" />\n",
+		fprintf(fp,"\n\t<Select\n\t\tscheme=\"%s\"\n\t\tautosaveprefs=\"%ld\" />\n",
 				m_currentScheme->getSchemeName(),
-				(UT_uint32)m_bAutoSave);
+				(UT_uint32)m_bAutoSavePrefs);
 
 		UT_uint32 kLimit = m_vecSchemes.getItemCount();
 		UT_uint32 k;

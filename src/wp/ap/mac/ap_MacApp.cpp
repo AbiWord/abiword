@@ -66,7 +66,7 @@ UT_Bool AP_MacApp::initialize(void)
 
 UT_Bool AP_MacApp::shutdown(void)
 {
-	if (m_prefs->getAutoSave())
+	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 
 	return UT_TRUE;

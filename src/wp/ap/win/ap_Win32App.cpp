@@ -70,7 +70,7 @@ UT_Bool AP_Win32App::initialize(void)
 
 UT_Bool AP_Win32App::shutdown(void)
 {
-	if (m_prefs->getAutoSave())
+	if (m_prefs->getAutoSavePrefs())
 		m_prefs->savePrefsFile();
 
 	return UT_TRUE;

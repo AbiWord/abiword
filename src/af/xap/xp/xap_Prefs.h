@@ -71,8 +71,8 @@ public:
 
 	UT_Bool					getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 
-	UT_Bool					getAutoSave(void) const;
-	void					setAutoSave(UT_Bool bAuto);
+	UT_Bool					getAutoSavePrefs(void) const;
+	void					setAutoSavePrefs(UT_Bool bAuto);
 
 	UT_uint32				getMaxRecent(void) const;
 	void					setMaxRecent(UT_uint32 k);
@@ -89,7 +89,7 @@ protected:
 	void					_pruneRecent(void);
 
 	XAP_App *				m_pApp;
-	UT_Bool					m_bAutoSave; /* save on any changes or only when user asks */
+	UT_Bool					m_bAutoSavePrefs; /* save on any changes or only when user asks */
 
 	UT_Vector				m_vecSchemes;		/* vector of XAP_PrefsScheme */
 	XAP_PrefsScheme *		m_currentScheme;
@@ -113,7 +113,8 @@ private:
 	} m_parserState;
 };
 
-// The following are the set of application-independent preference keys.
+//////////////////////////////////////////////////////////////////////////////////////
+// The following are the set of scheme-based application-independent preference keys.
 // Additional keys may be defined by the application.
 
 #define XAP_PREF_KEY_KeyBindings			"KeyBindings"
@@ -122,7 +123,6 @@ private:
 #define XAP_PREF_KEY_ToolbarAppearance		"ToolbarAppearance"
 #define XAP_PREF_KEY_ToolbarLabelSet		"ToolbarLabelSet"
 #define XAP_PREF_KEY_ToolbarLayouts			"ToolbarLayouts"
-#define XAP_PREF_KEY_MaxRecent				"Max"
 
 // The following are the set of default values for the above set of keys.
 
@@ -132,9 +132,13 @@ private:
 #define XAP_PREF_DEFAULT_ToolbarAppearance	"icon"
 #define XAP_PREF_DEFAULT_ToolbarLabelSet	"EnUS"
 #define XAP_PREF_DEFAULT_ToolbarLayouts		"FileEditOps FormatOps"
-#define XAP_PREF_DEFAULT_MaxRecent			"4"
 
-// This is just convenient for keeping the MRU list in check
+//////////////////////////////////////////////////////////////////////////////////////
+// The following are the default values and limits for various non-scheme-based
+// application-independent preferences.
+
+#define XAP_PREF_DEFAULT_AutoSavePrefs		"1" /* TODO this is true for testing, set it to false later. */
+#define XAP_PREF_DEFAULT_MaxRecent			"4"
 
 #define XAP_PREF_LIMIT_MaxRecent			9
 
