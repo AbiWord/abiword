@@ -147,18 +147,19 @@ int XAP_QNXFrameImpl::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *
 	AV_View * pView = pFrame->getCurrentView();
 	//FV_View * pfView = static_cast<FV_View*>(pView);
 
-	if (pView) {
-		UT_DEBUGMSG(("Document Area Resizing to %d,%d %d,%d ",
+		UT_DEBUGMSG(("Document Area Resizing to %d,%d %d,%d",
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
 			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
 		pFrameImpl->m_iNewWidth = cbinfo->new_dim.w;
 		pFrameImpl->m_iNewHeight = cbinfo->new_dim.h;
 		// Dynamic Zoom Implimentation
 
-	}
 	if(!pFrameImpl->m_bDoZoomUpdate && (pFrameImpl->m_pZoomUpdateID == 0))
+		{
+		UT_DEBUGMSG(("Starting do_ZoomUpdate workproc."));
 		pFrameImpl->m_pZoomUpdateID = PtAppAddWorkProc(NULL,do_ZoomUpdate,pFrameImpl);	
 
+		}
 	return Pt_CONTINUE;
 }
 
@@ -204,9 +205,9 @@ int XAP_QNXFrameImpl::_fe::do_ZoomUpdate(void * /*XAP_QNXFrameImpl * */ p)
 		pView = pFrame->getCurrentView();
 		if(pView)
 		{
+			pQNXFrameImpl->_startViewAutoUpdater(); 
+			pView->setWindowSize(iNewWidth, iNewHeight);
 			pFrame->updateZoom();
-//			pQNXFrameImpl->_startViewAutoUpdater(); 
-//			pView->setWindowSize(iNewWidth, iNewHeight);
 			PtFlush();
 		}
 		else
@@ -287,10 +288,7 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 */
    	PtBasicWidgetCanvas(w, &rect);
    	PtWidgetOffset(w, &pnt);
-/*
-	UT_DEBUGMSG(("-----\nWidget Rect is %d,%d  %d,%d (@ %d,%d)",
-			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, pnt.x, pnt.y));
-*/
+	
 	XAP_FrameImpl *pQNXFrameImpl, **ppQNXFrameImpl = NULL;
 	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXFrameImpl, 0);
 	PtGetResources(w, 1, args);
@@ -317,25 +315,17 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 #define MULTIPLE_EXPOSE_EVENTS
 */
 		if (damage->next) {
-			UT_DEBUGMSG(("Multiple damage rects "));
 #if defined(MULTIPLE_EXPOSE_EVENTS) 
 			damage = damage->next;
 #endif
 		}
 		while (damage) {
-/*
-			UT_DEBUGMSG(("Expose Rect is %d,%d  %d,%d ",
-			damage->rect.ul.x, damage->rect.ul.y, damage->rect.lr.x, damage->rect.lr.y));
-*/
 			/* At one point in time this required some fiddling to put it in the widget co-ordinates*/
 			rClip.width = (damage->rect.lr.x - damage->rect.ul.x) + 1;
 			rClip.height = (damage->rect.lr.y - damage->rect.ul.y) + 1;
 			rClip.left = damage->rect.ul.x - pnt.x;
 			rClip.top = damage->rect.ul.y - pnt.y;
 
-			UT_DEBUGMSG(("Adjusted Expose Rect %d,%d %d/%d ",
-				rClip.left, rClip.top, rClip.width, rClip.height));
-				
 			//Don't bother setting the clip here, the Graphics routine does it
 
 			//OR: Pass the draw function the clipping rectangle
@@ -634,6 +624,7 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	int 	n;
 	UT_uint32	w, h;
 	PhArea_t area;
+	PhDim_t minsize = {200,200};
 
 #define INIT_WIDTH 500
 #define INIT_HEIGHT 400
@@ -658,6 +649,7 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, Ph_WM_CLOSE);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_NOTIFY_FLAGS, Ph_WM_CLOSE, Ph_WM_CLOSE);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_CALLBACKS_ACTIVE);
+	PtSetArg(&args[n++], Pt_ARG_MINIMUM_DIM,&minsize,0);
 
 	PtSetParentWidget(NULL);
 	m_wTopLevelWindow = PtCreateWidget(PtWindow, NULL /* Use last widget? */, n, args);
@@ -668,7 +660,7 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	//PtAddEventHandler(m_wTopLevelWindow, Ph_EV_KEY, _fe::key_press_event, this);
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_GOT_FOCUS, _fe::focus_in_event, this);
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_LOST_FOCUS, _fe::focus_out_event, this);
-	PtAddCallback(m_wTopLevelWindow, Pt_CB_RESIZE, _fe::window_resize, m_pQNXApp);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_RESIZE, _fe::window_resize, this);
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_WINDOW, _fe::window_delete, this);
 
 	/* TODO: Menu and the Toolbars all go into the same Toolbar "group" */
@@ -703,9 +695,6 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	// the child area of the window (between the toolbars and
 	// the status bar).
 	
-	/* Peel off some space at the bottom for the status bar */
-	m_AvailableArea.size.h -= 24;
-
 	/*** Add the document view ***/	
 	m_wSunkenBox = _createDocumentWindow();
 
