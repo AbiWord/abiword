@@ -36,8 +36,6 @@
 #include "ap_FrameData.h"
 #include "gr_BeOSGraphics.h"
 
-#define DPRINTF(x) x
-
 /*****************************************************************/
 
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -352,7 +350,6 @@ bool be_Window::_createWindow(const char *szMenuLayoutName,
 			   const char *szMenuLabelSetName) {
 	BRect r;
 	
-	DPRINTF(printf("ABI_WIN: Creating top level \n"));	
 	m_winRectAvailable = Bounds();
 	//printf("Initial Available Rect: "); m_winRectAvailable.PrintToStream();
 
