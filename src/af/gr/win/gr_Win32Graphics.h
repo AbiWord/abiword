@@ -96,6 +96,9 @@ public:
 	//virtual UT_uint32		measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32		measureUnRemappedChar(const UT_UCSChar c);
 	virtual void			setColor(const UT_RGBColor& clr);
+#if 0
+	virtual void            getColor(UT_RGBColor& clr);
+#endif
 	virtual GR_Font*		getGUIFont();
 	virtual GR_Font*		findFont(const char* pszFontFamily,
 									 const char* pszFontStyle,
@@ -108,6 +111,12 @@ public:
 	virtual void			drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void			xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void			setLineWidth(UT_sint32);
+
+	virtual void            setLineProperties ( double inWidthPixels,
+												JoinStyle inJoinStyle = JOIN_MITER,
+												CapStyle inCapStyle   = CAP_BUTT,
+												LineStyle inLineStyle = LINE_SOLID );
+
 	virtual void			polyLine(UT_Point * pts, UT_uint32 nPoints);
 	virtual void			fillRect(UT_RGBColor& c,
 									 UT_sint32 x, UT_sint32 y,
@@ -167,6 +176,9 @@ protected:
 	GR_Win32Font*			m_pFont;
 	GR_Win32Font*			m_pFontGUI;
 	UT_sint32				m_iLineWidth;
+    JoinStyle               m_eJoinStyle;
+	CapStyle                m_eCapStyle;
+	LineStyle               m_eLineStyle;
 
 	GR_Graphics::ColorSpace m_cs;
 	GR_Graphics::Cursor		m_cursor;

@@ -103,6 +103,10 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	}
 
 	UT_DEBUGMSG(("GR_Win32Graphics: screen resolution %d\n", s_iScreenResolution));
+
+	m_eJoinStyle = JOIN_MITER;
+	m_eCapStyle  = CAP_BUTT;
+	m_eLineStyle = LINE_SOLID;
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -484,6 +488,15 @@ void GR_Win32Graphics::setColor(const UT_RGBColor& clr)
 	_setColor(RGB(clr.m_red, clr.m_grn, clr.m_blu));
 }
 
+#if 0
+void GR_Win32Graphics::getColor(UT_RGBColor& clr)
+{
+	clr.m_red = GetRValue(m_clrCurrent);
+	clr.m_grn = GetGValue(m_clrCurrent);
+	clr.m_blu = GetBValue(m_clrCurrent);
+}
+#endif
+
 void GR_Win32Graphics::_setColor(DWORD dwColor)
 {
 	m_clrCurrent = dwColor;
@@ -492,8 +505,9 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
-	if (((x1 == x2 && y1 != y2) ||
-		 (y1 == y2 && x1 != x2)) && m_iLineWidth <= 1)
+	if (m_eLineStyle == LINE_SOLID &&
+		((x1 == x2 && y1 != y2) || (y1 == y2 && x1 != x2))
+	 && m_iLineWidth <= 1)
 	{
 		// TMN: A little bloaty, though a TREMENDOUS speedup (like 45 TIMES
 		// last I checked).
@@ -539,7 +553,17 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 		return;
 	}
 
-	HPEN hPen = CreatePen(PS_SOLID, m_iLineWidth, m_clrCurrent);
+	int penStyle;
+	switch(m_eLineStyle)
+	{
+		case LINE_DOUBLE_DASH:
+		case LINE_ON_OFF_DASH:      penStyle = PS_DASH; break;
+
+		default:
+			penStyle = PS_SOLID;
+	}
+
+	HPEN hPen = CreatePen(penStyle, m_iLineWidth, m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
 	MoveToEx(m_hdc, x1, y1, NULL);
@@ -548,6 +572,18 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 	(void) SelectObject(m_hdc, hOldPen);
 	DeleteObject(hPen);
 }
+
+void GR_Win32Graphics::setLineProperties(double inWidthPixels,
+										 JoinStyle inJoinStyle,
+										 CapStyle inCapStyle,
+										 LineStyle inLineStyle)
+{
+	m_eJoinStyle = inJoinStyle;
+	m_eCapStyle  = inCapStyle;
+	m_eLineStyle = inLineStyle;
+	m_iLineWidth = (int)inWidthPixels;
+}
+
 
 void GR_Win32Graphics::setLineWidth(UT_sint32 iLineWidth)
 {
