@@ -6830,7 +6830,7 @@ UT_Bool FV_View::insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
 		This provides NO undo stuff.  Do it yourself.
 	*/
 
-	XML_Char* szString = ftr ? "footer" : "header";
+	const XML_Char* szString = ftr ? "footer" : "header";
 
 	// TODO: This stuff shouldn't be hardcoded
 	// TODO: The fact that it is hardcoded means that only 
