@@ -262,7 +262,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 					pBL->m_gbCharWidths.ins(blockOffset, len);
 
-					UT_Bool bFormat = UT_FALSE;
 					AV_ChangeMask mask = AV_CHG_TYPING;
 	
 					fp_Run* pRun = pBL->m_pFirstRun;
@@ -289,7 +288,8 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 									
 									Note that split() calls calcWidths for us.
 								*/
-								bFormat = UT_TRUE;
+
+								mask |= AV_CHG_FMTCHAR;
 
 								UT_Bool bRight = UT_FALSE;
 
@@ -334,19 +334,13 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						pRun = pRun->getNext();
 					}
 
-					if (bFormat)
-					{
-						mask |= AV_CHG_FMTCHAR;
-						pBL->complete_format();
-						pBL->draw(m_pLayout->getGraphics());
-					}
-					else
-					{
-						pBL->minor_reformat();
-					}
-
+					pBL->minor_reformat();
+					
 					pBL->fixColumns();
 					
+					// TODO the following draw should not be necessary.
+					pBL->draw(m_pLayout->getGraphics());
+
 					// in case anything else moved
 					m_pLayout->reformat();
 
@@ -513,6 +507,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 						pBL->fixColumns();
 						
+						// TODO the following draw should not be necessary.
+						pBL->draw(m_pLayout->getGraphics());
+
 						// in case anything else moved
 						m_pLayout->reformat();
 
@@ -931,11 +928,6 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 
 					// update the display
 
-#if 0
-					// TODO just call align on this block, right?
-					pBL->minor_reformat();
-					pBL->draw(m_pLayout->getGraphics());
-#endif
 					pBL->getLastLine()->draw(m_pLayout->getGraphics());
 
 					// Note that in the case below, we really DO need to call complete_format().

@@ -572,7 +572,9 @@ void fp_BlockSlice::lineHeightChanged(fp_Line* pLine, void* p, DG_Graphics* pG, 
 	fp_LineInfo* pLI = (fp_LineInfo*) p;
 	UT_ASSERT(pLI->pLine == pLine);
 
-	UT_ASSERT(pLine->getHeight() == iNewHeight);
+	UT_DEBUGMSG(("lineHeightChanged: iOldHeight=%d  iNewHeight=%d\n", iOldHeight, iNewHeight));
+	
+	UT_ASSERT(pLine->getHeight() == (UT_uint32) iNewHeight);
 	UT_ASSERT(iOldHeight != iNewHeight);
 
 	if (countSlivers() != 1)
@@ -588,6 +590,8 @@ void fp_BlockSlice::lineHeightChanged(fp_Line* pLine, void* p, DG_Graphics* pG, 
 
 	int i;
 	
+	int iCountLines = m_vecLineInfos.getItemCount();
+			
 	if (iNewHeight > iOldHeight)
 	{
 		UT_uint32 iX;
@@ -597,11 +601,8 @@ void fp_BlockSlice::lineHeightChanged(fp_Line* pLine, void* p, DG_Graphics* pG, 
 		int result = m_pColumn->requestSliver(this, (iNewHeight - iOldHeight), &iX, &iWidth, &iHeight);
 		if (result && (iWidth == pSliver->iWidth))
 		{
-			int count;
-			count = m_vecLineInfos.getItemCount();
-
 			UT_Bool bAfter = UT_FALSE;
-			for (i=0; i<count; i++)
+			for (i=0; i<iCountLines; i++)
 			{
 				fp_LineInfo* pLI2 = (fp_LineInfo*) m_vecLineInfos.getNthItem(i);
 
@@ -630,7 +631,7 @@ void fp_BlockSlice::lineHeightChanged(fp_Line* pLine, void* p, DG_Graphics* pG, 
 			m_iTotalLineHeight += (iNewHeight - iOldHeight);
 
 			UT_sint32 iY = 0;
-			for (i=0; i<count; i++)
+			for (i=0; i<iCountLines; i++)
 			{
 				fp_LineInfo* pLI2 = (fp_LineInfo*) m_vecLineInfos.getNthItem(i);
 
@@ -651,8 +652,46 @@ void fp_BlockSlice::lineHeightChanged(fp_Line* pLine, void* p, DG_Graphics* pG, 
 	}
 	else
 	{
-		// TODO we might be able to be smarter than this
-		m_pBlock->setNeedsCompleteReformat(UT_TRUE);
+		UT_ASSERT(iNewHeight < iOldHeight);
+		UT_DEBUGMSG(("lineHeightChanged:: SMALLER\n"));
+		
+		UT_Bool bAfter = UT_FALSE;
+		for (i=0; i<iCountLines; i++)
+		{
+			fp_LineInfo* pLI2 = (fp_LineInfo*) m_vecLineInfos.getNthItem(i);
+
+			if (pLI2 == pLI)
+			{
+				bAfter = UT_TRUE;
+			}
+
+			if (bAfter)
+			{
+				/*
+				  NOTE -- consider the case where you select 3 lines within
+				  a single paragraph and change them all from 12pt to 24pt.
+				  Each of those three lines will change in height, thus
+				  calling this function.  For each time, we will reformat,
+				  and erase, all subsequent lines.  We will, therefore,
+				  be doing too many erases.
+				*/
+				pLI2->pLine->clearScreen();
+			}
+		}
+
+		m_iTotalLineHeight += (iNewHeight - iOldHeight);
+
+		UT_sint32 iY = 0;
+		for (i=0; i<iCountLines; i++)
+		{
+			fp_LineInfo* pLI2 = (fp_LineInfo*) m_vecLineInfos.getNthItem(i);
+
+			pLI2->yoff = iY;
+
+			iY += pLI2->pLine->getHeight();
+		}
+
+		returnExtraSpace();
 	}
 }
 
