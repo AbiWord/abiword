@@ -121,7 +121,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 		// make the ".." a hash key and store our color index as the data.
 		// we add k+1 because the hash code does not like null pointers...
 		
-		hash.insert(bufSymbol, (HashValType)(k+1));
+		hash.insert(bufSymbol, (UT_HashTable::HashValType)(k+1));
 
 		// store the actual color value in the rgb quad array with our color index.
 
@@ -160,7 +160,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 			for (UT_uint32 kPx=0; (kPx < charsPerPixel); kPx++)
 				bufPixel[kPx] = *p++;
 
-			const HashValType pEntry = hash.pick(bufPixel);
+			const UT_HashTable::HashValType pEntry = hash.pick(bufPixel);
 			*pPixel++ = ((UT_Byte)(pEntry)) - 1;
 		}
 
