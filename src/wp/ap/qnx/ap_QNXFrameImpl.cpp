@@ -84,11 +84,7 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 	AP_FrameData *pData = static_cast<AP_FrameData *>(pFrame->getFrameData());
 	PtArg_t args[10];
 	int n;
-
-	/*TF DIFF: There is code here to not show
-               the rulers, checked by
-		bool bShowRulers = ((AP_FrameData*)m_pData)->m_bShowRuler;
-	*/
+	bool bShowRulers = pData->m_bShowRuler; 
 
 
 #define SCROLLBAR_WIDTHHEIGHT 20
@@ -100,22 +96,20 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 	m_AvailableArea.size.w -= SCROLLBAR_WIDTHHEIGHT; 
 #endif
 
-	// create the top ruler
 	AP_QNXTopRuler * pQNXTopRuler = new AP_QNXTopRuler(getFrame());
 	UT_ASSERT(pQNXTopRuler);
 	m_topRuler = pQNXTopRuler->createWidget();
 	((AP_FrameData*)pData)->m_pTopRuler = pQNXTopRuler;
 
-	// create the left ruler
-	AP_QNXLeftRuler * pQNXLeftRuler = new AP_QNXLeftRuler(getFrame());
-	UT_ASSERT(pQNXLeftRuler);
-	m_leftRuler = pQNXLeftRuler->createWidget();
-	((AP_FrameData*)pData)->m_pLeftRuler = pQNXLeftRuler;
+		// create the left ruler
+		AP_QNXLeftRuler * pQNXLeftRuler = new AP_QNXLeftRuler(getFrame());
+		UT_ASSERT(pQNXLeftRuler);
+		m_leftRuler = pQNXLeftRuler->createWidget();
+		((AP_FrameData*)pData)->m_pLeftRuler = pQNXLeftRuler;
+		// get the width from the left ruler and stuff it into the top ruler.
+		pQNXTopRuler->setOffsetLeftRuler(pQNXLeftRuler->getWidth());
 
-	// get the width from the left ruler and stuff it into the top ruler.
-	pQNXTopRuler->setOffsetLeftRuler(pQNXLeftRuler->getWidth());
-
-	// create the scrollbars horizontal then vertical
+		// create the scrollbars horizontal then vertical
 
 #if defined(SCROLL_SMALLER_THAN_RULER) 
 	area.size.w = SCROLLBAR_WIDTHHEIGHT;
@@ -162,7 +156,7 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _HS_ANCHOR_, _HS_ANCHOR_); 
 	PtSetArg(&args[n++], Pt_ARG_SCROLLBAR_FLAGS, Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/,
 									 			 Pt_SCROLLBAR_FOCUSED | 1 /*Horizontal*/); 
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_FALSE, Pt_GETS_FOCUS); 
 	PtSetArg(&args[n++], Pt_ARG_ORIENTATION, 1 /*Horizontal*/, 0); 
 	m_hScroll = PtCreateWidget(PtScrollbar, getTopLevelWindow(), n, args);
 	PtAddCallback(m_hScroll, Pt_CB_SCROLL_MOVE, _fe::hScrollChanged, this);
@@ -200,6 +194,17 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 	//QNX DND Code
 	PtAddCallback(m_dArea,Pt_CB_DND,_fe::dnd,this);
 
+	if(bShowRulers) {
+		int *width,*height;
+		PtSetResource(m_topRuler,Pt_ARG_FLAGS,Pt_FALSE,Pt_DELAY_REALIZE); //We simply deactivate this if we want to show the rulers on startup.
+		PtSetResource(m_leftRuler,Pt_ARG_FLAGS,Pt_FALSE,Pt_DELAY_REALIZE); 
+		PtExtentWidgetFamily(m_leftRuler);
+		PtExtentWidgetFamily(m_topRuler);
+		PtGetResource(m_leftRuler,Pt_ARG_WIDTH,&width,0);
+		PtGetResource(m_topRuler,Pt_ARG_HEIGHT,&height,0);
+		_reflowLayout(0,0,-(*height),0);
+		_reflowLayout(0,0,0,-(*width));
+	}
 
 	return(m_dAreaGroup);
 }
@@ -222,6 +227,7 @@ void AP_QNXFrameImpl::_createWindow()
 		_showOrHideToolbars();
 		_showOrHideStatusbar();
 	}
+
 }
 
 PtWidget_t * AP_QNXFrameImpl::_createStatusBarWindow()
@@ -245,4 +251,75 @@ void AP_QNXFrameImpl::_setScrollRange(apufi_ScrollType scrollType,int iValue,flo
 
 void AP_QNXFrameImpl::setDocumentFocus() {
 PtContainerGiveFocus(m_dArea,NULL);
+}
+
+void AP_QNXFrameImpl::_reflowLayout(int loweradj, int upperadj, int topruleradj, int leftruleradj) {
+	PhArea_t 	newarea, *oldarea;
+
+	/*
+     loweradj < 0 means we are enabling and > 0 means disabling
+	*/
+	if(loweradj != 0) { 	
+		PtGetResource(m_hScroll, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.y += loweradj;
+		PtSetResource(m_hScroll, Pt_ARG_AREA, &newarea, 0);
+
+		PtGetResource(m_vScroll, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.size.h += loweradj;
+		PtSetResource(m_vScroll, Pt_ARG_AREA, &newarea, 0);
+		if(m_leftRuler){
+			PtGetResource(m_leftRuler, Pt_ARG_AREA, &oldarea, 0);
+			newarea = *oldarea;
+			newarea.size.h += loweradj;
+			PtSetResource(m_leftRuler, Pt_ARG_AREA, &newarea, 0);
+		}
+
+		PtGetResource(m_dAreaGroup, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.size.h += loweradj;
+		PtSetResource(m_dAreaGroup, Pt_ARG_AREA, &newarea, 0);
+	} 
+
+	/*
+	 upperadj < 0 means we are enabling an > 0 means disabling
+	*/
+	if(upperadj != 0) {
+		PtGetResource(m_vScroll, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.y -= upperadj;
+		newarea.size.h += upperadj;
+		PtSetResource(m_vScroll, Pt_ARG_AREA, &newarea, 0);
+		if(m_topRuler) {
+			PtGetResource(m_topRuler, Pt_ARG_AREA, &oldarea, 0);
+			newarea = *oldarea;
+			newarea.pos.y -= upperadj;
+			PtSetResource(m_topRuler, Pt_ARG_AREA, &newarea, 0);
+		}
+	}
+
+	if(topruleradj != 0 || upperadj != 0) {
+		if(m_leftRuler) {
+			PtGetResource(m_leftRuler, Pt_ARG_AREA, &oldarea, 0);
+			newarea = *oldarea;
+			newarea.pos.y -= upperadj;
+			newarea.size.h += upperadj;
+			PtSetResource(m_leftRuler, Pt_ARG_AREA, &newarea, 0);
+		}
+
+		PtGetResource(m_dAreaGroup, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.y -= upperadj + topruleradj;
+		newarea.size.h += upperadj + topruleradj;
+		PtSetResource(m_dAreaGroup, Pt_ARG_AREA, &newarea, 0);
+	}
+
+	if(leftruleradj != 0) {
+		PtGetResource(m_dAreaGroup, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.x -= leftruleradj;
+		newarea.size.w += leftruleradj;
+		PtSetResource(m_dAreaGroup, Pt_ARG_AREA, &newarea, 0);
+	}
 }

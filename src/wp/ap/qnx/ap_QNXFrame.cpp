@@ -249,14 +249,13 @@ void AP_QNXFrame::setStatusMessage(const char * szMsg)
 }
 
 void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
-#if 0
 	int		before, after;
 	unsigned short *height;
 
     AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
     UT_ASSERT(pFrameData);
 
-	PtGetResource(getTBGroupWidget(), Pt_ARG_HEIGHT, &height, 0);
+	PtGetResource(static_cast<XAP_QNXFrameImpl *>(getFrameImpl())->getTBGroupWidget(), Pt_ARG_HEIGHT, &height, 0);
 	before = *height;
 
     if (bBarOn) {
@@ -266,47 +265,47 @@ void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
         pFrameData->m_pToolbar[iBarNb]->hide();
     }
 
-	PtExtentWidgetFamily(getTBGroupWidget());
-	PtGetResource(getTBGroupWidget(), Pt_ARG_HEIGHT, &height, 0);
+	PtExtentWidgetFamily(static_cast<XAP_QNXFrameImpl *>(getFrameImpl())->getTBGroupWidget());
+	PtGetResource(static_cast<XAP_QNXFrameImpl *>(getFrameImpl())->getTBGroupWidget(), Pt_ARG_HEIGHT, &height, 0);
 	after = *height;
 
-	_reflowLayout(0, before - after, 0, 0);
-#endif
+	static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, before - after, 0, 0);
 }
 
 void AP_QNXFrame::toggleTopRuler(bool bRulerOn)
 {
 	unsigned short *height;
-#if 0
-	PtGetResource(m_topRuler, Pt_ARG_HEIGHT, &height, 0);
+	AP_QNXTopRuler *pTopRuler = (AP_QNXTopRuler *)(((AP_FrameData *)m_pData)->m_pTopRuler);
+	PtGetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_topRuler, Pt_ARG_HEIGHT, &height, 0);
 
 	if (bRulerOn) {
-		PtRealizeWidget(m_topRuler);
-		_reflowLayout(0, 0, -(*height), 0);
+			PtRealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_topRuler);
+			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, -(*height), 0);
+			pTopRuler->setView(m_pView);
 	} else {
-		PtUnrealizeWidget(m_topRuler);
-		PtSetResource(m_topRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
-		_reflowLayout(0, 0, *height, 0);
+			PtUnrealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_topRuler);
+			PtSetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_topRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
+			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, *height, 0);
 	}
-#endif
 }
 
 void AP_QNXFrame::toggleLeftRuler(bool bRulerOn)
 {
 	unsigned short *width;
-#if 0
+	AP_QNXLeftRuler *pLeftRuler = (AP_QNXLeftRuler *)(((AP_FrameData *)m_pData)->m_pLeftRuler);
 
-	PtGetResource(m_leftRuler, Pt_ARG_WIDTH, &width, 0);
+	PtGetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler, Pt_ARG_WIDTH, &width, 0);
 
 	if (bRulerOn) {
-		PtRealizeWidget(m_leftRuler);
-//		_reflowLayout(0, 0, 0, - (*width));
+			PtRealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler);
+			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, 0, - (*width));
+			pLeftRuler->setView(m_pView);
+			setYScrollRange();
 	} else {
-		PtRealizeWidget(m_leftRuler);		
-		PtSetResource(m_leftRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
-		_reflowLayout(0, 0, 0, (*width));
+			PtUnrealizeWidget(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler);		
+			PtSetResource(static_cast<AP_QNXFrameImpl *>(getFrameImpl())->m_leftRuler, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
+			static_cast<AP_QNXFrameImpl *>(getFrameImpl())->_reflowLayout(0, 0, 0, (*width));
 	}
-#endif 
 }
 
 void AP_QNXFrame::toggleRuler(bool bRulerOn)
@@ -314,8 +313,8 @@ void AP_QNXFrame::toggleRuler(bool bRulerOn)
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
 
-	toggleTopRuler(bRulerOn);
 	toggleLeftRuler(bRulerOn && (pFrameData->m_pViewMode == VIEW_PRINT));
+	toggleTopRuler(bRulerOn);
 }
 
 

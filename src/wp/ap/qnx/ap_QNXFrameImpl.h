@@ -38,6 +38,7 @@ class AP_QNXFrameImpl : public XAP_QNXFrameImpl
 	AP_QNXFrameImpl(AP_QNXFrame *pQNXFrame, XAP_QNXApp *pQNXApp); 
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
 	void setDocumentFocus();
+	void _reflowLayout(int loweradj,int upperadj,int topruleradj,int leftruleradj);	
 
  protected:
 	friend class AP_QNXFrame;
