@@ -8040,7 +8040,7 @@ void FV_View::markSavedPositionAsNeeded(void)
    outside the header/footer.
 
    \param   isEnd true to get the end of the document. False gets the beginning
-   \param   posEnd is the value of the doc position at the beginning and end 
+   \retval  posEnd is the value of the doc position at the beginning and end 
             of the doc
    \param   bOveride if true the EOD is made within the edittable region
    \return  true if succesful

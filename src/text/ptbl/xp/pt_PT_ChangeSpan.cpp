@@ -378,8 +378,15 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 	UT_uint32 fragOffsetNewEnd;
 
 	UT_uint32 length = dpos2 - dpos1;
-	while (length > 0)
+	while (length >= 0)
 	{
+		// FIXME: Special check to support a FmtMark at the end of the
+		// document. This is necessary because FmtMarks don't have a
+		// length...  See bug 452.
+		if (0 == length 
+			&& (!pf_First || pf_Frag::PFT_FmtMark != pf_First->getType()))
+			break;
+
 		UT_ASSERT(dpos1+length==dpos2);
 
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
