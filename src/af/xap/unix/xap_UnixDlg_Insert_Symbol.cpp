@@ -462,7 +462,7 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 	g_list_free( m_InsertS_Font_list);
 
 	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++)
-		g_free(m_fontlist[i]);
+		delete [] (m_fontlist[i]);
 
         modeless_cleanup();
         gtk_widget_destroy(m_windowMain);
@@ -541,7 +541,7 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 #endif
 
 	GList *glFonts = NULL;
-	gchar currentfont[50] = "\0";
+	UT_String currentfont;
 	UT_uint32 j = 0;
 
 #ifndef WITH_PANGO	
@@ -560,10 +560,10 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		gchar * lgn  = (gchar *) pManager->getNthAvailableFontFamily(i);
 #endif	
 		
-		if((strstr(currentfont,lgn)==NULL) || (strlen(currentfont)!=strlen(lgn)) )
+		if((strstr(currentfont.c_str(),lgn)==NULL) || (currentfont.size() !=strlen(lgn)) )
 		{
-			strncpy(currentfont, lgn, 50);
-			m_fontlist[j] = g_strdup(currentfont);
+			currentfont = lgn;
+			m_fontlist[j] = UT_strdup(currentfont.c_str());
 			glFonts = g_list_prepend(glFonts, m_fontlist[j++]);
 		}
 	}
@@ -588,11 +588,11 @@ void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)
 {
 	GtkWidget *fontcombo = gtk_combo_new();
+	gtk_widget_show(fontcombo);
 
 	m_InsertS_Font_list = _getGlistFonts ();
  
 	gtk_widget_set_usize(fontcombo, 200, 25);
-	gtk_widget_show(fontcombo);
 	gtk_combo_set_value_in_list(GTK_COMBO(fontcombo), TRUE, TRUE);
 	gtk_combo_set_use_arrows(GTK_COMBO(fontcombo), FALSE);
 	gtk_combo_set_popdown_strings(GTK_COMBO(fontcombo), m_InsertS_Font_list);

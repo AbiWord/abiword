@@ -83,7 +83,7 @@ protected:
 	GtkWidget * m_fontcombo;
 	
 	GList * m_InsertS_Font_list;
-	gchar * m_fontlist[100];
+	gchar * m_fontlist[10000];
 	UT_uint32 m_Insert_Symbol_no_fonts;
 	UT_uint32 m_ix;
 	UT_uint32 m_iy;
