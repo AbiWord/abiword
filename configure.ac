@@ -108,8 +108,6 @@ dnl   --with-libxml2
 dnl The defined values are used mostly in includes.mk, but also in
 dnl some other places
 
-ABI_THREAD
-
 ABI_GNOME_QUICK
 
 ABI_XFT_QUICK

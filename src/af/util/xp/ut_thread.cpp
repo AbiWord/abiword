@@ -16,38 +16,45 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-#include "ut_assert.h"
 #include "ut_thread.h"
 #include "ut_threadImpl.h"
+#include "ut_assert.h"
 
 UT_Thread::UT_Thread ( UT_Thread::Priority pri )
-  : mPri ( pri ), mbStarted ( false )
+	: mPri ( pri ), mbStarted ( false )
 {
-  mPimpl = new UT_ThreadImpl ( this ) ; 
+	mPimpl = new UT_ThreadImpl ( this ) ; 
+	UT_ASSERT(mPimpl);
 }
 
 UT_Thread::~UT_Thread ()
 {
-  if ( mPimpl )
-    delete mPimpl ;
+	if ( mPimpl )
+		delete mPimpl ;
 }
 
 void UT_Thread::setPriority ( UT_Thread::Priority pri )
 {
-  mPri = pri;
-
-  if ( mbStarted )
-    mPimpl->setPriority ( pri ) ;
+	mPri = pri;
+	
+	if ( mbStarted )
+		mPimpl->setPriority ( pri ) ;
 }
 
 void UT_Thread::yield ()
 {
-  UT_ThreadImpl::yield () ;
+	UT_ThreadImpl::yield () ;
+}
+
+void UT_Thread::join()
+{
+	mPimpl->join ();
 }
 
 void UT_Thread::start ()
 {
-  UT_ASSERT(!mbStarted);
-  mbStarted = true ;
-  mPimpl->start () ;
+	UT_ASSERT(!mbStarted);
+	mbStarted = true ;
+	mPimpl->start () ;
+	setPriority(getPriority());
 }

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <glib.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkmain.h>
 #include <gdk/gdkrgb.h>
@@ -97,6 +98,14 @@ XAP_UnixApp::~XAP_UnixApp()
 
 bool XAP_UnixApp::initialize()
 {
+	if (!g_thread_supported())
+	{
+		UT_DEBUGMSG(("you need to get yourself some new threads!\n"));
+		UT_ASSERT(0);
+		return false;
+	}
+	g_thread_init(NULL);
+
 	// initialize GTK first.
 	
 	gtk_set_locale();

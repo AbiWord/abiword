@@ -20,46 +20,48 @@
 #ifndef UT_MUTEXIMPL_H
 #define UT_MUTEXIMPL_H
 
-#include <sys/types.h>
-#include <pthread.h>
-#include <string.h>
+#include <glib.h>
+#include "ut_assert.h"
 
 /*!
- * Unix pthread impl of a mutex class
- * Could also do a glib-based one, but why?
+ * Unix GThread impl of a mutex class
  */
 class UT_MutexImpl
 {
- public:
-
-  UT_MutexImpl ()
-    {
-      memset(&m_mutex, 0, sizeof( m_mutex ));
-      pthread_mutex_init( &m_mutex, NULL );
-    }
-
-  ~UT_MutexImpl ()
-    {
-      pthread_mutex_destroy(&m_mutex);
-    }
+public:
+	
+	UT_MutexImpl ()
+		: mMutex ( 0 )
+		{
+			mMutex = g_mutex_new () ;
+			UT_ASSERT ( mMutex ) ;
+		}
+	
+	~UT_MutexImpl ()
+		{
+			if ( mMutex ) 
+				g_mutex_free ( mMutex ) ;
+		}
 
   void lock ()
-    {
-      pthread_mutex_lock(&m_mutex);
-    }
-
+		{
+			if ( mMutex ) 
+				g_mutex_lock ( mMutex ) ;
+		}
+	
   void unlock ()
-    {
-      pthread_mutex_unlock(&m_mutex);
-    }
+		{
+			if ( mMutex ) 
+				g_mutex_unlock ( mMutex ) ;
+		}
+	
+private:
+	
+	// no impls
+	UT_MutexImpl (const UT_MutexImpl & other);
+	UT_MutexImpl & operator=(const UT_MutexImpl & other);
 
- private:
-  
-  // no impls
-  UT_MutexImpl (const UT_MutexImpl & other);
-  UT_MutexImpl & operator=(const UT_MutexImpl & other);
-
-  pthread_mutex_t m_mutex;
+	GMutex *mMutex ;
 };
 
 #endif /* UT_MUTEXIMPL_H */

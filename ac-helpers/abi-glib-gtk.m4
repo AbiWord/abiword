@@ -17,6 +17,22 @@ AC_DEFUN([ABI_GLIB2],[
 	if test $abi_gmodule2 = no; then
 		AC_MSG_ERROR([$GMODULE_PKG_ERRORS])
 	fi
+
+	PKG_CHECK_MODULES(GTHREAD,gthread-2.0,[
+		dnl do we need to set these?
+		abi_gthread2=yes
+	],[	abi_gthread2=no
+	])
+	if test $abi_gthread2 = no; then
+		AC_MSG_ERROR([$GTHREAD_PKG_ERRORS])
+	else
+		THREAD_CFLAGS="-DHAVE_THREADS=1 $GTHREAD_CFLAGS"
+    	THREAD_LIBS=$GTHREAD_LIBS
+	fi
+	AC_SUBST(THREAD_CFLAGS)
+	AC_SUBST(THREAD_LIBS)
+
+	AM_CONDITIONAL(HAVE_THREADS, test $abi_gthread2 = yes)
 ])
 
 # test for gtk2

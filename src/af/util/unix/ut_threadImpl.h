@@ -20,72 +20,89 @@
 #define UT_THREADIMPL_H
 
 #include "ut_thread.h"
-#include <pthread.h>
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
+#include <glib.h>
 
 class ABI_EXPORT UT_ThreadImpl
 {
-
+	
  public:
-
-  UT_ThreadImpl ( UT_Thread * owner )
-    : mOwner ( owner ), mThread ( 0 )
-    {
-    }
-
-  ~UT_ThreadImpl ()
-    {
-      // only exit if started
-      if ( mOwner->mbStarted )
-	pthread_exit ( NULL ) ;
-    }
-
-  /*!
-   * Starts a new thread and executes the code in the
-   * (overridden) run method
-   */
-  void start ()
-    {
-      UT_Thread::Priority pri = mOwner->getPriority () ;
-
-      // TODO: use the priority
-
-      if ( 0 != pthread_create ( &mThread, NULL, start_routine, this ) )
+	
+	UT_ThreadImpl ( UT_Thread * owner )
+		: mOwner ( owner ), mThread ( 0 )
 	{
-	  printf ( "thread create failed!!\n" ) ;
 	}
-    }
-
-  /*!
-   * Sets this thread's priority
-   */
-  void setPriority ( UT_Thread::Priority pri )
+	
+	~UT_ThreadImpl ()
+	{
+		 // only exit if started
+		 if ( mOwner->mbStarted )
+			  g_thread_exit ( NULL ) ;
+	}
+	
+	/*!
+	 * Starts a new thread and executes the code in the
+	 * (overridden) run method
+	 */
+	void start ()
     {
-      // TODO!!
-    }
+		 UT_Thread::Priority pri = mOwner->getPriority () ;
+		 
+		 GError * err = 0 ;
+		
+		 // TODO: use the priority
+			
+		 if ( (mThread = g_thread_create ( start_routine, this, TRUE, &err ) ) == 0 )
+		 {
+			  UT_DEBUGMSG(( "thread create failed: %s!!\n", err->message ));
+			  g_error_free ( err ) ;
+		 }
+	}
+	
+	/*!
+	 * Sets this thread's priority
+	 */
+	void setPriority ( UT_Thread::Priority pri )
+	{
+		 GThreadPriority priority = G_THREAD_PRIORITY_NORMAL;
+
+		 if ( pri == UT_Thread::PRI_LOW )
+			  priority = G_THREAD_PRIORITY_LOW;
+		 else if ( pri == UT_Thread::PRI_HIGH )
+			  priority = G_THREAD_PRIORITY_HIGH; 
+		 
+		 if ( mThread != NULL )
+			  g_thread_set_priority ( mThread, priority ) ;
+	}
 
   /*!
    * Causes the current running thread to temporarily pause
    * and let other threads execute
    */
   static void yield ()
-    {
-#ifdef __USE_GNU
-      pthread_yield () ;
-#endif
-    }
+  {
+	   g_thread_yield () ;
+  }
+
+  void join ()
+  {
+	   if ( mThread != NULL )
+			g_thread_join ( mThread ) ;
+  }
 
  private:
 
   static void * start_routine ( void * inPtr )
-    {
-      UT_Thread * thisPtr = static_cast<UT_ThreadImpl *>(inPtr)->mOwner;
-      printf ( "In the start routine: %d\n", thisPtr == NULL );
-      thisPtr->run () ;
-      return NULL ;
-    }
+  {
+	   UT_Thread * thisPtr = static_cast<UT_ThreadImpl *>(inPtr)->mOwner;
+	   UT_DEBUGMSG(( "In the start routine: %d\n", thisPtr == NULL ));
+	   thisPtr->run () ;
+	   return NULL ;
+  }
 
-  UT_Thread         * mOwner;
-  pthread_t         mThread;
+	 UT_Thread       * mOwner;
+	 GThread         * mThread;
 };
 
 #endif

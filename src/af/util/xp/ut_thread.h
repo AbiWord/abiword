@@ -19,7 +19,6 @@
 #ifndef UT_THREAD_H
 #define UT_THREAD_H
 
-#include <stdio.h>
 #include "ut_types.h"
 
 class UT_ThreadImpl;
@@ -56,6 +55,12 @@ class ABI_EXPORT UT_Thread
    * Sets this thread's priority
    */
   void setPriority ( UT_Thread::Priority pri ) ;
+
+  /*!
+   * Causes the currently-executing thread to wait until
+   * this thread terminates
+   */
+  void join () ;
 
   /*!
    * Causes the current running thread to temporarily pause
