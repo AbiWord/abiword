@@ -6380,8 +6380,10 @@ Defun1(dlgBorders)
 	return true;
 }
 
-static bool s_doColumnsDlg(FV_View * pView)
+Defun(dlgColumns)
 {
+  ABIWORD_VIEW;
+
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
@@ -6422,6 +6424,11 @@ static bool s_doColumnsDlg(FV_View * pView)
 	{
 		iColumns = atoi(sz);
 	}
+
+	if ( iColumns > 1 )
+	  {
+	    EX(viewPrintLayout);
+	  }
 
 	if (props_in && props_in[0])
 		sz = UT_getAttribute("column-line", props_in);
@@ -6555,13 +6562,6 @@ static bool s_doColumnsDlg(FV_View * pView)
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
-}
-
-
-Defun1(dlgColumns)
-{
-	ABIWORD_VIEW;
-	return s_doColumnsDlg(pView);
 }
 
 Defun(style)
@@ -6955,23 +6955,25 @@ Defun1(sectColumns1)
 	return true;
 }
 
-Defun1(sectColumns2)
+Defun(sectColumns2)
 {
 	ABIWORD_VIEW;
 	if(pView->isHdrFtrEdit())
 		return false;
 	const XML_Char * properties[] =	{ "columns", "2", 0};
 	pView->setSectionFormat(properties);
+	EX(viewPrintLayout);
 	return true;
 }
 
-Defun1(sectColumns3)
+Defun(sectColumns3)
 {
 	ABIWORD_VIEW;
 	if(pView->isHdrFtrEdit())
 		return false;
 	const XML_Char * properties[] =	{ "columns", "3", 0};
 	pView->setSectionFormat(properties);
+	EX(viewPrintLayout);
 	return true;
 }
 
