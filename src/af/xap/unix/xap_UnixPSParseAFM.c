@@ -625,6 +625,7 @@ static int parseCharMetrics(fp, fi)
     int error = ok, count = 0;
     register CharMetricInfo *temp = fi->cmi;
     register char *keyword;
+    temp->name = NULL;
   
     while (cont)
     {
@@ -662,6 +663,9 @@ static int parseCharMetrics(fp, fi)
                 break;
             case CHARNAME: 
                 keyword = token(fp);
+                /* I think that it's gotta be allocating a name
+                   more than once... */
+                if (temp->name) free(temp->name);
                 temp->name = (char *) malloc(strlen(keyword) + 1);
                 strcpy(temp->name, keyword);
                 break;            
