@@ -51,7 +51,6 @@ protected:
 	
 	class BMenuBar* pMenuBar;
 
-private:
 	virtual bool		_doAddMenuItem(XAP_Menu_Id id) { /* TODO */ }
 };
 

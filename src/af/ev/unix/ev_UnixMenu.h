@@ -50,7 +50,6 @@ protected:
 	bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
 	bool				_isItemPresent(XAP_Menu_Id id) const;
 
-private:
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
 
 protected: // FIXME! These variables should be private.

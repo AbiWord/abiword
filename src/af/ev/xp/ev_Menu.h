@@ -72,8 +72,10 @@ protected:
 	EV_Menu_Layout *			m_pMenuLayout;	/* abstract ordering of our menu */
 	EV_Menu_LabelSet *			m_pMenuLabelSet;/* strings (in a given language) for the menu */
 
-private:
+protected:
 	virtual bool				_doAddMenuItem(UT_uint32 layout_pos) = 0;
+
+private:
 	XAP_App *					m_pApp;
 };
 

@@ -64,7 +64,6 @@ protected:
 	// actual GTK menu widgets
 	UT_Vector			m_vecMenuWidgets;
 
-private:
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
 };
 

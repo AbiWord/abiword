@@ -69,6 +69,8 @@ private:
 		
 	static void _convertToMac (char * buf, size_t bufSize, const char * label);
 	static char _getItemCmd (const char * mnemonic, UInt8 & modifiers, SInt16 & glyph);
+
+protected:
 	virtual bool		_doAddMenuItem(XAP_Menu_Id id) { /* TODO */ }
 };
 
