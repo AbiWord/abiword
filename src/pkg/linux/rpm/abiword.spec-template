@@ -276,7 +276,7 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiClarisWorks.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiDocBook.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiEML.*
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHancom.*
+#%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHancom.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHRText.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHTML.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiISCII.*
