@@ -42,8 +42,8 @@
 
 /*****************************************************************/
 
-AP_Win32App::AP_Win32App(AP_Args * pArgs, const char * szAppName)
-	: XAP_Win32App(pArgs,szAppName)
+AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)
+	: XAP_Win32App(hInstance, pArgs,szAppName)
 {
 	m_prefs = NULL;
 }

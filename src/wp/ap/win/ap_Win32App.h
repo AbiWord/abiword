@@ -33,7 +33,7 @@
 class AP_Win32App : public XAP_Win32App
 {
 public:
-	AP_Win32App(AP_Args * pArgs, const char * szAppName);
+	AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName);
 	virtual ~AP_Win32App(void);
 
 	virtual UT_Bool			initialize(void);

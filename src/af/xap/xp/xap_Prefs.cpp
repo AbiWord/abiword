@@ -19,10 +19,11 @@
 
 // TODO add code to do an auto save anytime anything is changed.
 
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "ut_debugmsg.h"
 #include "xap_Prefs.h"
-#include "stdlib.h"
-#include "stdio.h"
 
 #define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
