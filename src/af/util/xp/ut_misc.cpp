@@ -653,56 +653,17 @@ const char * UT_pathSuffix(const char * path)
 	}
 }
 
-typedef struct {
-  UT_UCSChar low;
-  UT_UCSChar high; 
-} ucs_range;
-
-static ucs_range s_word_delim[] = 
-{
-  // we will include all control chars from Latin1
-  {0x0001, 0x0021},
-  {0x0023, 0x0026},
-  {0x0028, 0x002f},
-  {0x003a, 0x0040},
-  {0x005b, 0x0060},
-  {0x007b, 0x007e},
-  {0x00a1, 0x00a7},
-  {0x00a9, 0x00b3},
-  {0x00b5, 0x00b6},
-  {0x00b9, 0x00bf},
-  {0x00f7, 0x00f7},
-  {0x060c, 0x060c}, //Arabic punctuation
-  {0x061b, 0x061b},
-  {0x061f, 0x061f},
-  {0xfeff, 0xfeff}
-};
-
-static bool s_find_delim(UT_UCSChar c)
-{
-    // This function is called for every character in the document
-    // during spell-checking. So make an effort to return in a hurry,
-    // by checking for the common cases (a-z and the biggest area)
-    // first. (not A-Z since there are more word seperators than
-    // capitals in a sentence!)
-    if ('a' <= c && c <= 'z') return false;
-    if (0x00f8 <= c && c <= 0xfefe) return false;
-
-    // Everything else via the table above...
-    for(UT_uint32 i = 0; i < NrElements(s_word_delim); i++)
-	{
-		if(c < s_word_delim[i].low)
-			return false;
-
-		if(c <= s_word_delim[i].high)
-			return true;
-	}
-	return false;
-}
 
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar)
 {
 #if 1
+	// fast track Ascii letters
+	if('a' <= currentChar && currentChar <= 'z')
+		return false;
+
+	if('A' <= currentChar && currentChar <= 'Z')
+		return false;
+	
     switch(currentChar)
 	{
 		case '"': //in some languages this can be in the middle of a word (Hebrew)
@@ -723,7 +684,7 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 			return true;
 
 		default:
-			return s_find_delim(currentChar);
+			return (UT_BIDI_IS_LETTER(UT_bidiGetCharType(currentChar)) == 0);
 	}
 
 #else
