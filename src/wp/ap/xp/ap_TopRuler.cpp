@@ -544,7 +544,7 @@ void AP_TopRuler::_drawColumnProperties(const UT_Rect * pClipRect,
 	
 	_getColumnMarkerRect(pInfo,kCol,_getColumnMarkerXRightEnd(pInfo,kCol),&rCol);
 
-	if (m_draggingWhat == DW_COLUMNGAP)
+	if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) )
 	{
 		_drawColumnGapMarker(m_draggingRect);
 	}
@@ -768,7 +768,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, U
 		{
 			//UT_DEBUGMSG(("hit in column gap block\n"));
 			m_bValidMouseClick = UT_TRUE;
-			m_draggingWhat = DW_COLUMNGAP;
+			m_draggingWhat = ((((UT_sint32)x) > (rCol.left+(rCol.width/2))) ? DW_COLUMNGAP : DW_COLUMNGAPLEFTSIDE);
 			m_bBeforeFirstMotion = UT_TRUE;
 			return;
 		}
@@ -859,6 +859,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb,
 		return;
 
 	case DW_COLUMNGAP:
+	case DW_COLUMNGAPLEFTSIDE:
 		{
 			double dxrel = _scalePixelDistanceToUnits(m_draggingRect.width,tick);
 
@@ -1024,6 +1025,35 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			if (((UT_sint32)x) < xAbsLowerLimit)
 				x = (UT_uint32)xAbsLowerLimit;
 			UT_sint32 xrel = ((UT_sint32)x) - xAbsRight;
+			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
+			UT_sint32 oldDraggingCenter = m_draggingCenter;
+			UT_Rect oldDraggingRect = m_draggingRect;
+			m_draggingCenter = xAbsRight + xgrid;
+			_getColumnMarkerRect(&m_infoCache,0,m_draggingCenter,&m_draggingRect);
+			UT_DEBUGMSG(("Gap: [x %ld][xAbsRight %ld][xrel %ld][xgrid %ld][width %ld]\n",x,xAbsRight,xrel,xgrid,m_draggingRect.width));
+
+			double dgrid = _scalePixelDistanceToUnits(m_draggingRect.width,tick);
+			UT_DEBUGMSG(("SettingColumnGap: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
+			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
+				draw(((oldDraggingRect.width > m_draggingRect.width ) ? &oldDraggingRect : &m_draggingRect),
+					 &m_infoCache);
+			_drawColumnProperties(NULL,&m_infoCache,0);
+		}
+		m_bBeforeFirstMotion = UT_FALSE;
+		return;
+
+	case DW_COLUMNGAPLEFTSIDE:
+		{
+			// TODO what upper/lower bound should we place on this ?
+			
+			UT_sint32 xAbsLeft = _getFirstPixelInColumn(&m_infoCache,0);
+			UT_sint32 xAbsRight = xAbsLeft + m_infoCache.u.c.m_xColumnWidth;
+			UT_sint32 xAbsRightGap = xAbsRight + m_infoCache.u.c.m_xColumnGap;
+			UT_sint32 xAbsMidPoint = (xAbsRight + xAbsRightGap)/2;
+			UT_sint32 xAbsUpperLimit = xAbsMidPoint - _snapPixelToGrid((UT_sint32)(tick.dragDelta/tick.tickUnitScale),tick);
+			if (((UT_sint32)x) > xAbsUpperLimit)
+				x = (UT_uint32)xAbsUpperLimit;
+			UT_sint32 xrel = xAbsRightGap - ((UT_sint32)x);
 			UT_sint32 xgrid = _snapPixelToGrid(xrel,tick);
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
@@ -1217,6 +1247,7 @@ void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite)
 		break;
 		
 	case DW_COLUMNGAP:
+	case DW_COLUMNGAPLEFTSIDE:
 		_drawColumnProperties(NULL,&m_infoCache,0);
 		break;
 		

@@ -173,6 +173,7 @@ protected:
 								 DW_LEFTMARGIN,
 								 DW_RIGHTMARGIN,
 								 DW_COLUMNGAP,
+								 DW_COLUMNGAPLEFTSIDE,
 								 DW_LEFTINDENT,
 								 DW_RIGHTINDENT,
 								 DW_FIRSTLINEINDENT,
