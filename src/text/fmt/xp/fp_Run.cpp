@@ -3031,6 +3031,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 			// lookupProperties();
 
 #ifndef WITH_PANGO
+			xxx_UT_DEBUGMSG(("Field_Run: calcValue Font set to %s \n",m_pFont->getFamily() ));
 			getGR()->setFont(m_pFont);
 #else
 			getGR()->setFont(m_pPangoFont);
@@ -3065,14 +3066,6 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
-	if(m_iFieldType == FPFIELD_list_label)
-	{
-		m_pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, true));
-	}
-	else
-	{
-		m_pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, false));
-	}
 
 	UT_RGBColor clrFG;
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true), clrFG);
@@ -3095,34 +3088,17 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 		UT_RGBColor r;
 		UT_parseColor(pszFieldColor, r);
 		_setColorHL(r);
-	} else if (pszBGColor && UT_strcmp(pszFieldColor,"transparent") != 0)
+	} 
+	else if (pszBGColor && UT_strcmp(pszFieldColor,"transparent") != 0)
 	{
 		UT_RGBColor r;
 		UT_parseColor(pszBGColor, r);
 		_setColorHL(r);
 	}
 
-	_setAscent(getGR()->getFontAscent(m_pFont));
-	_setDescent(getGR()->getFontDescent(m_pFont));
-	_setHeight(getGR()->getFontHeight(m_pFont));
 
 	const XML_Char* pszType = NULL;
 	const XML_Char* pszParam = NULL;
-
-	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-
-	if (0 == UT_strcmp(pszPosition, "superscript"))
-	{
-		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
-	}
-	else if (0 == UT_strcmp(pszPosition, "subscript"))
-	{
-		m_fPosition = TEXT_POSITION_SUBSCRIPT;
-	}
-	else
-	{
-		m_fPosition = TEXT_POSITION_NORMAL;
-	}
 
 	if(pSpanAP)
 	{
@@ -3143,18 +3119,52 @@ void fp_FieldRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if (!pszType) return;
 
 	int i;
-	for( i = 0; fp_FieldFmts[i].m_Tag != NULL; i++ )
+	if(pszType != NULL)
 	{
-		if (0 == UT_stricmp(pszType, fp_FieldFmts[i].m_Tag))
+		for( i = 0; fp_FieldFmts[i].m_Tag != NULL; i++ )
 		{
-			m_iFieldType = fp_FieldFmts[i].m_Num;
-			break;
+			if (0 == UT_stricmp(pszType, fp_FieldFmts[i].m_Tag))
+			{
+				m_iFieldType = fp_FieldFmts[i].m_Num;
+				break;
+			}
+		}
+		if( fp_FieldFmts[i].m_Tag == NULL )
+		{
+			// probably new type of field
+			//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 	}
-	if( fp_FieldFmts[i].m_Tag == NULL )
+
+	xxx_UT_DEBUGMSG(("FieldRun: Lookup Properties  field type %d \n",m_iFieldType));
+	if(m_iFieldType == FPFIELD_list_label)
 	{
-        // probably new type of field
-        //		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, true));
+		xxx_UT_DEBUGMSG(("FieldRun: ListLabel font lookup - font is %s \n",m_pFont->getFamily()));
+	}
+	else
+	{
+		m_pFont = const_cast<GR_Font *>(pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, false));
+		xxx_UT_DEBUGMSG(("FieldRun: Lookup Properties Not a list Label \n"));
+	}
+
+	_setAscent(getGR()->getFontAscent(m_pFont));
+	_setDescent(getGR()->getFontDescent(m_pFont));
+	_setHeight(getGR()->getFontHeight(m_pFont));
+
+	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+
+	if (0 == UT_strcmp(pszPosition, "superscript"))
+	{
+		m_fPosition = TEXT_POSITION_SUPERSCRIPT;
+	}
+	else if (0 == UT_strcmp(pszPosition, "subscript"))
+	{
+		m_fPosition = TEXT_POSITION_SUBSCRIPT;
+	}
+	else
+	{
+		m_fPosition = TEXT_POSITION_NORMAL;
 	}
 //
 // Lookup Decoration properties for this run

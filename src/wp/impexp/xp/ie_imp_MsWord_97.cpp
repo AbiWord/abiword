@@ -2269,7 +2269,55 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  // field-font
 	  props += "field-font:";
 	  props += s_fieldFontForListStyle (static_cast<MSWordListIdType>(myLVLF->nfc));
-	  props += ";";
+    // Put in margin-left and text-indent - Use MS info if available or
+    // AbiWord defaults if these aren't present
+	//
+
+	  UT_String sMargeLeft("margin-left"),sMargeLeftV;
+	  UT_String sMargeLeftFirst("text-indent"),sMargeLeftFirstV;
+	  // margin-left
+	  if (apap->dxaLeft) {
+		  UT_String_sprintf(sMargeLeftV,
+							"margin-left:%s;",
+							UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft) / 1440),
+															  "1.4"));
+		  UT_DEBUGMSG(("Margin-left from MSWord Lists info %s \n",sMargeLeftV.c_str()));
+	  }
+//
+// Overide the margin controls for lists.
+// Abi's defaults for levels gives a better fit to average documents. We need
+// to decypher where this info is stored in the MS Word document
+// 
+	  float fIndent = 0.5; // LIST_DEFAULT_INDENT
+	  fIndent = static_cast<float>(apap->ilvl + 1) * fIndent;
+	  if (apap->dxaLeft) 
+	  {
+		  fIndent += static_cast<float>(apap->dxaLeft)/1440.0;
+	  }
+	  UT_String_sprintf(sMargeLeftV,"%fin",fIndent);
+
+	  UT_String_setProperty(props,sMargeLeft,sMargeLeftV);
+
+	  // margin-left first line (indent) text-indent
+
+	  if (apap->dxaLeft1) {
+		  UT_String_sprintf(sMargeLeftFirst,
+							"%s",
+							UT_convertInchesToDimensionString(DIM_IN, (static_cast<float>(apap->dxaLeft1) / 1440),"1.4"));
+
+		  UT_DEBUGMSG(("Margin-left-first (text-indent)  from MSWord Lists info %s \n",sMargeLeftFirst.c_str()));
+		  sMargeLeftFirst = "text-indent";
+	  }
+
+	  float fFirstIndent  = -0.3; // LIST_DEFAULT_INDENT_LABEL
+	  fFirstIndent = fFirstIndent - static_cast<float>(apap->ilvl) * 0.2;
+	  UT_String_sprintf(sMargeLeftFirstV,"%fin;",fFirstIndent);
+
+
+	  UT_String_setProperty(props,sMargeLeftFirst,sMargeLeftFirstV);
+	  xxx_UT_DEBUGMSG(("props for MSWORD are %s \n",props.c_str()));
+
+
 	} // end of list-related code
 
 list_error:
