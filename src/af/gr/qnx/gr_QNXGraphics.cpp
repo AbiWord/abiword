@@ -59,7 +59,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 }
 
 bool GR_QNXGraphics::OSCIsValid() {
-#if WITH_OSC
+#ifdef WITH_OSC
 if(m_pOSC == NULL) 
 	return false;
 
@@ -90,7 +90,7 @@ int GR_QNXGraphics::DrawSetup() {
 	}
 	if(PtWidgetIsRealized(m_pDraw) == 0) return -1;
 
-#if WITH_OSC
+#ifdef WITH_OSC
 	if(OSCIsValid()) {
 		PtFlush();
 		if(PhDCSetCurrent(m_pOSC) == NULL)
@@ -108,7 +108,6 @@ int GR_QNXGraphics::DrawSetup() {
 
 #ifndef WITH_OSC 
 	PtWidgetOffset(m_pDraw, &m_OffsetPoint);
-	UT_ASSERT(m_OffsetPoint.y || m_OffsetPoint.x);
 	m_OffsetPoint.y+=m_pDraw->area.pos.y;
 	m_OffsetPoint.x+=m_pDraw->area.pos.x;
 	PgSetTranslation (&m_OffsetPoint,0); //replace translation with this one.	
@@ -133,7 +132,7 @@ int GR_QNXGraphics::DrawSetup() {
 /*	PhPoint_t abs;
 	PtGetAbsPosition(m_pDraw,&abs.x,&abs.y);
 	PhDeTranslateRect(&_rdraw,&abs);*/
-	PgSetUserClip(&_rdraw);
+	PgSetUserClip(&_rdraw); //honors the translation.
 
 	return 0;
 
@@ -146,7 +145,7 @@ int GR_QNXGraphics::DrawTeardown() {
 		return 0;
 	}
 
-#if WITH_OSC
+#ifdef WITH_OSC
 	PhDCSetCurrent(0);
 	PgFlush();
 #else
@@ -171,7 +170,7 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 	m_pFont(NULL),
 	m_pFontGUI(NULL),
 	m_pClipList(NULL),
-	m_iLineWidth(1),
+	m_iLineWidth(tlu(1)),
 	m_currentColor(Pg_BLACK),
 	m_pPrintContext(NULL),
 	m_iAscentCache(-1),
@@ -235,7 +234,7 @@ bool GR_QNXGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-void GR_QNXGraphics::setLineProperties ( double inWidthPixels, 
+void GR_QNXGraphics::setLineProperties ( double inWidth, 
 					  GR_Graphics::JoinStyle inJoinStyle,
 					  GR_Graphics::CapStyle inCapStyle,
 					  GR_Graphics::LineStyle inLineStyle )
@@ -274,7 +273,7 @@ if(inLineStyle == LINE_ON_OFF_DASH)
 if(inLineStyle == LINE_DOUBLE_DASH)
 	PgSetStrokeDash((const unsigned char *)"\10\4",2,0x10000);  //Same as gtk?
 
-PgSetStrokeWidth((int)inWidthPixels);
+PgSetStrokeWidth(static_cast<int>(tduD(inWidth)));
 PgSetStrokeCap(capstyle);
 PgSetStrokeJoin(joinstyle);
 DRAW_END
@@ -569,8 +568,7 @@ void GR_QNXGraphics::setColor(const UT_RGBColor& clr)
 void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 			      UT_sint32 x2, UT_sint32 y2)
 {
-	if(getCaret() && getCaret()->isEnabled())
-		DRAW_START
+	DRAW_START
 
 
 	x1 = _tduX(x1);
@@ -578,11 +576,10 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 	y1 = _tduY(y1);
 	y2 = _tduY(y2);
 
-//	PgSetFillColor(m_currentColor);
-//	PgSetStrokeColor(m_currentColor);
-//	PgSetStrokeWidth(m_iLineWidth);
 	PgDrawILine(x1, y1, x2, y2);
+
 	DRAW_END
+
 	setDamage(__min(x1,x2),__min(y1,y2),__max(y1,y2),__max(x1,x2)); 
 }
 
@@ -1178,10 +1175,6 @@ void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
   }
 #endif
 
-	//this reads from the screen, make sure it's uptodate
-	//XXX:TODO:FIXME!!	
-	PgFlush();
-	PgWaitDrawComplete();
   m_vSaveRect.setNthItem(iIndx, new UT_Rect(r),&oldR);
   if(oldR)
     delete oldR;
@@ -1236,7 +1229,7 @@ void GR_QNXGraphics::blitScreen() {
 if(!m_DamagedArea.size.w || !m_DamagedArea.size.h)  //don't blit if nothing changed.
 	return;
 #endif
-#if WITH_OSC
+#ifdef WITH_OSC
 if(OSCIsValid()) {
 	PhArea_t screenarea;
 	PhPoint_t pnt;
