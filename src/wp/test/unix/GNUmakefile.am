@@ -26,7 +26,7 @@ check_PROGRAMS = AbiWord-test
 INCLUDES = \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES)
 
-REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
+REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
 AbiWord_test_LDFLAGS = -Wl,-whole-archive $(ABI_TEST_LIBS) -Wl,-no-whole-archive
 
