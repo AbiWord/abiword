@@ -3794,7 +3794,7 @@ void FV_View::cmdCopy(void)
 		return;
 	}
 	
-	AP_Clipboard* pClip = AP_App::getClipboard();
+	AP_Clipboard* pClip = XAP_App::getClipboard();
 
 	UT_uint32 iPos1, iPos2;
 
@@ -3987,7 +3987,7 @@ void FV_View::_doPaste(void)
 		_eraseInsertionPoint();
 	}
 
-	AP_Clipboard* pClip = AP_App::getClipboard();
+	AP_Clipboard* pClip = XAP_App::getClipboard();
 	if (pClip->open())
 	{
 		// TODO support paste of RTF

@@ -27,7 +27,7 @@
 #include "ev_Toolbar.h"
 #include "xav_Listener.h"
 
-class AP_UnixApp;
+class XAP_UnixApp;
 class XAP_UnixFrame;
 class AP_UnixToolbar_Icons;
 class EV_UnixToolbar_ViewListener;
@@ -37,7 +37,7 @@ class _wd;
 class EV_UnixToolbar : public EV_Toolbar
 {
 public:
-	EV_UnixToolbar(AP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
+	EV_UnixToolbar(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
@@ -48,12 +48,12 @@ public:
 	UT_Bool bindListenerToView(AV_View * pView);
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
-	AP_UnixApp *	getApp(void);
+	XAP_UnixApp *	getApp(void);
 
 protected:
 	void							_releaseListener(void);
 	
-	AP_UnixApp *					m_pUnixApp;
+	XAP_UnixApp *					m_pUnixApp;
 	XAP_UnixFrame *					m_pUnixFrame;
 	EV_UnixToolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */

@@ -94,7 +94,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
-	AP_Clipboard* pClip = AP_App::getClipboard();
+	AP_Clipboard* pClip = XAP_App::getClipboard();
 
 	switch(id)
 	{

@@ -304,7 +304,7 @@ void AP_Win32Frame::setYScrollRange(void)
 	m_pView->sendVerticalScrollEvent(si.nPos,si.nMax-si.nPage);
 }
 
-UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
+UT_Bool AP_Win32Frame::RegisterClass(XAP_Win32App * app)
 {
 	// NB: can't access 'this' members from a static member function
 
@@ -364,7 +364,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	return UT_TRUE;
 }
 
-AP_Win32Frame::AP_Win32Frame(AP_Win32App * app)
+AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
 	: XAP_Win32Frame(app)
 {
 	m_hwndTopRuler = NULL;

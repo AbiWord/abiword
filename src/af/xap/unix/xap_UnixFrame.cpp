@@ -112,7 +112,7 @@ gint XAP_UnixFrame::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 gint XAP_UnixFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
-	AP_App * pApp = pUnixFrame->getApp();
+	XAP_App * pApp = pUnixFrame->getApp();
 	UT_ASSERT(pApp);
 
 	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
@@ -194,8 +194,8 @@ void XAP_UnixFrame::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 	
 /*****************************************************************/
 
-XAP_UnixFrame::XAP_UnixFrame(AP_UnixApp * app)
-	: XAP_Frame(static_cast<AP_App *>(app)),
+XAP_UnixFrame::XAP_UnixFrame(XAP_UnixApp * app)
+	: XAP_Frame(static_cast<XAP_App *>(app)),
 	  m_dialogFactory(this)
 {
 	m_pUnixApp = app;

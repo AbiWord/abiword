@@ -34,8 +34,8 @@
 
 /*****************************************************************/
 
-AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)
-	: AP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
+XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName)
+	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	UT_ASSERT(hInstance);
 
@@ -43,7 +43,7 @@ AP_Win32App::AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAp
 	m_pWin32ToolbarIcons = 0;
 }
 
-AP_Win32App::~AP_Win32App(void)
+XAP_Win32App::~XAP_Win32App(void)
 {
 	SpellCheckCleanup();
 
@@ -51,16 +51,16 @@ AP_Win32App::~AP_Win32App(void)
 	DELETEP(_pClipboard);
 }
 
-HINSTANCE AP_Win32App::getInstance() const
+HINSTANCE XAP_Win32App::getInstance() const
 {
 	return m_hInstance;
 }
 
-UT_Bool AP_Win32App::initialize(void)
+UT_Bool XAP_Win32App::initialize(void)
 {
 	// let our base class do it's thing.
 	
-	AP_App::initialize();
+	XAP_App::initialize();
 
 	// load only one copy of the platform-specific icons.
 
@@ -95,7 +95,7 @@ UT_Bool AP_Win32App::initialize(void)
 	return UT_TRUE;
 }
 
-XAP_Frame * AP_Win32App::newFrame(void)
+XAP_Frame * XAP_Win32App::newFrame(void)
 {
 	AP_Win32Frame * pWin32Frame = new AP_Win32Frame(this);
 
@@ -105,22 +105,22 @@ XAP_Frame * AP_Win32App::newFrame(void)
 	return pWin32Frame;
 }
 
-void AP_Win32App::reallyExit(void)
+void XAP_Win32App::reallyExit(void)
 {
 	PostQuitMessage (0);
 }
 
-AP_DialogFactory * AP_Win32App::getDialogFactory(void)
+AP_DialogFactory * XAP_Win32App::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
 
-AP_Toolbar_ControlFactory * AP_Win32App::getControlFactory(void)
+AP_Toolbar_ControlFactory * XAP_Win32App::getControlFactory(void)
 {
 	return &m_controlFactory;
 }
 
-UT_uint32 AP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)
+UT_uint32 XAP_Win32App::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)
 {
 	UT_uint32 iResult = GetModuleFileName(NULL, pDirBuf, iBufLen);
 

@@ -36,7 +36,7 @@
 
 /*****************************************************************/
 
-static const char * _ev_GetLabelName(AP_MacApp * pMacApp,
+static const char * _ev_GetLabelName(XAP_MacApp * pMacApp,
 									 EV_Menu_Action * pAction,
 									 EV_Menu_Label * pLabel)
 {
@@ -64,7 +64,7 @@ static const char * _ev_GetLabelName(AP_MacApp * pMacApp,
 	
 /*****************************************************************/
 
-EV_MacMenu::EV_MacMenu(AP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
+EV_MacMenu::EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 						   const char * szMenuLayoutName,
 						   const char * szMenuLabelSetName)
 	: EV_Menu(pMacApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)

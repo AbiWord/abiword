@@ -36,13 +36,13 @@
 
 /*****************************************************************/
 
-AP_MacApp::AP_MacApp(AP_Args * pArgs, const char * szAppName)
-	: AP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
+XAP_MacApp::XAP_MacApp(AP_Args * pArgs, const char * szAppName)
+	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	m_pMacToolbarIcons = 0;
 }
 
-AP_MacApp::~AP_MacApp(void)
+XAP_MacApp::~XAP_MacApp(void)
 {
 	SpellCheckCleanup();
 
@@ -50,11 +50,11 @@ AP_MacApp::~AP_MacApp(void)
 	DELETEP(_pClipboard);
 }
 
-UT_Bool AP_MacApp::initialize(void)
+UT_Bool XAP_MacApp::initialize(void)
 {
 	// let our base class do it's thing.
 	
-	AP_App::initialize();
+	XAP_App::initialize();
 
 	// load only one copy of the platform-specific icons.
 
@@ -81,7 +81,7 @@ UT_Bool AP_MacApp::initialize(void)
 	return UT_TRUE;
 }
 
-XAP_Frame * AP_MacApp::newFrame(void)
+XAP_Frame * XAP_MacApp::newFrame(void)
 {
 	AP_MacFrame * pMacFrame = new AP_MacFrame(this);
 
@@ -91,22 +91,22 @@ XAP_Frame * AP_MacApp::newFrame(void)
 	return pMacFrame;
 }
 
-void AP_MacApp::reallyExit(void)
+void XAP_MacApp::reallyExit(void)
 {
 	ExitToShell();
 }
 
-AP_DialogFactory * AP_MacApp::getDialogFactory(void)
+AP_DialogFactory * XAP_MacApp::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
 
-AP_Toolbar_ControlFactory * AP_MacApp::getControlFactory(void)
+AP_Toolbar_ControlFactory * XAP_MacApp::getControlFactory(void)
 {
 	return &m_controlFactory;
 }
 
-UT_uint32 AP_MacApp::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)
+UT_uint32 XAP_MacApp::_getExeDir(char* pDirBuf, UT_uint32 iBufLen)
 {
 	return 0;
 }

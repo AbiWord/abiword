@@ -20,7 +20,7 @@
 
 #include "ap_MacFrame.h"
 
-AP_MacFrame::AP_MacFrame(AP_MacApp * app)
+AP_MacFrame::AP_MacFrame(XAP_MacApp * app)
 	: XAP_MacFrame(app)
 {
 }

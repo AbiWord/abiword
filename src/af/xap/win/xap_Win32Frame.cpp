@@ -46,7 +46,7 @@
 
 /*****************************************************************/
 
-UT_Bool XAP_Win32Frame::RegisterClass(AP_Win32App * app)
+UT_Bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 {
 	// NB: can't access 'this' members from a static member function
 	WNDCLASSEX  wndclass;
@@ -74,8 +74,8 @@ UT_Bool XAP_Win32Frame::RegisterClass(AP_Win32App * app)
 
 /*****************************************************************/
 
-XAP_Win32Frame::XAP_Win32Frame(AP_Win32App * app)
-	: XAP_Frame(static_cast<AP_App *>(app)),
+XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
+	: XAP_Frame(static_cast<XAP_App *>(app)),
 	  m_dialogFactory(this)
 {
 	m_pWin32App = app;
@@ -445,7 +445,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 	case WM_CLOSE:
 	{
-		AP_App * pApp = f->getApp();
+		XAP_App * pApp = f->getApp();
 		UT_ASSERT(pApp);
 
 		const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();

@@ -72,7 +72,7 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	AV_ListenerId lidScrollbarViewListener;
 	UT_uint32 nrToolbars;
 
-	AP_UnixFontManager * fontManager = ((AP_UnixApp *) getApp())->getFontManager();
+	AP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 	
 	pG = new GR_UNIXGraphics(m_dArea->window, fontManager);
 	ENSUREP(pG);
@@ -270,7 +270,7 @@ void AP_UnixFrame::setYScrollRange(void)
 }
 
 
-AP_UnixFrame::AP_UnixFrame(AP_UnixApp * app)
+AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * app)
 	: XAP_UnixFrame(app)
 {
 	// TODO

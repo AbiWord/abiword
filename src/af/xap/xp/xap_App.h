@@ -18,8 +18,8 @@
  */
 
 
-#ifndef AP_APP_H
-#define AP_APP_H
+#ifndef XAP_APP_H
+#define XAP_APP_H
 
 #ifdef ABI_OPT_JS
 #include <js.h>
@@ -48,7 +48,7 @@ class XAP_BindingSet;
 ******************************************************************
 *****************************************************************/
 
-class AP_App
+class XAP_App
 {
 public:									/* TODO these should be protected */
 	static const char* s_szBuild_ID;
@@ -59,8 +59,8 @@ public:									/* TODO these should be protected */
 	static const char* s_szBuild_CompileDate;
 
 public:
-	AP_App(AP_Args * pArgs, const char * szAppName);
-	virtual ~AP_App(void);
+	XAP_App(AP_Args * pArgs, const char * szAppName);
+	virtual ~XAP_App(void);
 
 	virtual UT_Bool					initialize(void);
 	virtual UT_Bool					rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf=(XAP_Frame*)NULL);
@@ -115,4 +115,4 @@ protected:
 	static AP_Clipboard*			_pClipboard;
 };
 
-#endif /* AP_APP_H */
+#endif /* XAP_APP_H */

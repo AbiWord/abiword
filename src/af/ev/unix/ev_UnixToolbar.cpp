@@ -142,7 +142,7 @@ public:									// we create...
 
 /*****************************************************************/
 
-EV_UnixToolbar::EV_UnixToolbar(AP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
+EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 							   const char * szToolbarLayoutName,
 							   const char * szToolbarLabelSetName)
 	: EV_Toolbar(pUnixApp->getEditMethodContainer(),
@@ -618,7 +618,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 	return UT_TRUE;
 }
 
-AP_UnixApp * EV_UnixToolbar::getApp(void)
+XAP_UnixApp * EV_UnixToolbar::getApp(void)
 {
 	return m_pUnixApp;
 }

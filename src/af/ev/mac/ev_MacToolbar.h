@@ -26,7 +26,7 @@
 #include "ev_Toolbar.h"
 #include "xav_Listener.h"
 
-class AP_MacApp;
+class XAP_MacApp;
 class XAP_MacFrame;
 class AP_MacToolbar_Icons;
 class EV_MacToolbar_ViewListener;
@@ -42,7 +42,7 @@ class EV_Toolbar_Action;
 class EV_MacToolbar : public EV_Toolbar
 {
 public:
-	EV_MacToolbar(AP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
+	EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
@@ -59,7 +59,7 @@ public:
 	UT_Bool getToolTip(long lParam);
 	
 private:
-	AP_MacApp *					m_pMacApp;
+	XAP_MacApp *					m_pMacApp;
 	XAP_MacFrame *				m_pMacFrame;
 	EV_MacToolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */

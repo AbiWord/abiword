@@ -37,7 +37,7 @@
 
 /*****************************************************************/
 
-static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
+static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 									 const EV_EditEventMapper * pEEM,
 									 EV_Menu_Action * pAction,
 									 EV_Menu_Label * pLabel)
@@ -100,7 +100,7 @@ static const char * _ev_GetLabelName(AP_Win32App * pWin32App,
 	
 /*****************************************************************/
 
-EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App,
+EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 						   const EV_EditEventMapper * pEEM,
 						   const char * szMenuLayoutName,
 						   const char * szMenuLabelSetName)
@@ -443,7 +443,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 /*****************************************************************/
 /*****************************************************************/
 
-EV_Win32MenuBar::EV_Win32MenuBar(AP_Win32App * pWin32App,
+EV_Win32MenuBar::EV_Win32MenuBar(XAP_Win32App * pWin32App,
 								 const EV_EditEventMapper * pEEM,
 								 const char * szMenuLayoutName,
 								 const char * szMenuLabelSetName)
@@ -466,7 +466,7 @@ UT_Bool EV_Win32MenuBar::synthesizeMenuBar(void)
 /*****************************************************************/
 /*****************************************************************/
 
-EV_Win32MenuPopup::EV_Win32MenuPopup(AP_Win32App * pWin32App,
+EV_Win32MenuPopup::EV_Win32MenuPopup(XAP_Win32App * pWin32App,
 									 const char * szMenuLayoutName,
 									 const char * szMenuLabelSetName)
 	: EV_Win32Menu(pWin32App,NULL,szMenuLayoutName,szMenuLabelSetName)

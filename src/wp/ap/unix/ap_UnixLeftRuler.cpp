@@ -89,7 +89,7 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	// shown.
 	
 	DELETEP(m_pG);
-	AP_UnixApp * app = static_cast<AP_UnixApp *>(m_pFrame->getApp());
+	XAP_UnixApp * app = static_cast<XAP_UnixApp *>(m_pFrame->getApp());
 	AP_UnixFontManager * fontManager = app->getFontManager();
 	m_pG = new GR_UNIXGraphics(m_wLeftRuler->window, fontManager);
 	UT_ASSERT(m_pG);

@@ -28,7 +28,7 @@
 class AP_MacFrame : public XAP_MacFrame
 {
 public:
-	AP_MacFrame(AP_MacApp * app);
+	AP_MacFrame(XAP_MacApp * app);
 	AP_MacFrame(AP_MacFrame * f);
 	virtual ~AP_MacFrame(void);
 

@@ -37,7 +37,7 @@
 #include "xap_Types.h"
 #include "xav_Listener.h"
 
-class AP_App;
+class XAP_App;
 class AV_View;
 class EV_Toolbar_Label;
 

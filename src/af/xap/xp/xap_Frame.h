@@ -25,7 +25,7 @@
 #include "ut_vector.h"
 #include "xav_Listener.h"	// for AV_ListenerID
 
-class AP_App;
+class XAP_App;
 class AP_DialogFactory;
 class ap_ViewListener;
 class AV_View;
@@ -50,7 +50,7 @@ class ap_Scrollbar_ViewListener;
 class XAP_Frame
 {
 public:
-	XAP_Frame(AP_App * app);
+	XAP_Frame(XAP_App * app);
 	XAP_Frame(XAP_Frame * f);
 	virtual ~XAP_Frame(void);
 
@@ -63,7 +63,7 @@ public:
 	virtual UT_Bool				updateTitle(void);
 
 	const EV_EditEventMapper *	getEditEventMapper(void) const;
-	AP_App *					getApp(void) const;
+	XAP_App *					getApp(void) const;
 	AV_View *					getCurrentView(void) const;
 	const char *				getFilename(void) const;
 	const char *				getTitle(int len) const;
@@ -85,7 +85,7 @@ public:
 													UT_sint32 x, UT_sint32 y) = 0;
 	
 protected:
-	AP_App *					m_app;			/* handle to application-specific data */
+	XAP_App *					m_app;			/* handle to application-specific data */
 	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */
 	AV_View *					m_pView;		/* to our view on the document */
 	ap_ViewListener *			m_pViewListener;

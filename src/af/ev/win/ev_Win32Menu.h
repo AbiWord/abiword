@@ -26,7 +26,7 @@
 #include "ev_Menu.h"
 
 class AV_View;
-class AP_Win32App;
+class XAP_Win32App;
 class EV_EditEventMapper;
 
 
@@ -35,7 +35,7 @@ class EV_EditEventMapper;
 class EV_Win32Menu : public EV_Menu
 {
 public:
-	EV_Win32Menu(AP_Win32App * pWin32App,
+	EV_Win32Menu(XAP_Win32App * pWin32App,
 				 const EV_EditEventMapper * pEEM,
 				 const char * szMenuLayoutName,
 				 const char * szMenuLabelSetName);
@@ -50,7 +50,7 @@ public:
 	inline UINT			WmCommandFromMenuId(AP_Menu_Id id)	{ return (id + WM_USER); };
 
 protected:
-	AP_Win32App *				m_pWin32App;
+	XAP_Win32App *				m_pWin32App;
 	const EV_EditEventMapper *	m_pEEM;
 
 	HMENU						m_myMenu;
@@ -61,7 +61,7 @@ protected:
 class EV_Win32MenuBar : public EV_Win32Menu
 {
 public:
-	EV_Win32MenuBar(AP_Win32App * pWin32App,
+	EV_Win32MenuBar(XAP_Win32App * pWin32App,
 					const EV_EditEventMapper * pEEM,
 					const char * szMenuLayoutName,
 					const char * szMenuLabelSetName);
@@ -75,7 +75,7 @@ public:
 class EV_Win32MenuPopup : public EV_Win32Menu
 {
 public:
-	EV_Win32MenuPopup(AP_Win32App * pWin32App,
+	EV_Win32MenuPopup(XAP_Win32App * pWin32App,
 					  const char * szMenuLayoutName,
 					  const char * szMenuLabelSetName);
 	~EV_Win32MenuPopup(void);

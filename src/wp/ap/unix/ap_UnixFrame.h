@@ -27,7 +27,7 @@
 class AP_UnixFrame : public XAP_UnixFrame
 {
 public:
-	AP_UnixFrame(AP_UnixApp * app);
+	AP_UnixFrame(XAP_UnixApp * app);
 	AP_UnixFrame(AP_UnixFrame * f);
 	virtual ~AP_UnixFrame(void);
 

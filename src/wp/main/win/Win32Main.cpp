@@ -23,5 +23,5 @@
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)
 {
-	return AP_Win32App::WinMain("AbiWord", hInstance, hPrevInstance, szCmdLine, iCmdShow);
+	return XAP_Win32App::WinMain("AbiWord", hInstance, hPrevInstance, szCmdLine, iCmdShow);
 }

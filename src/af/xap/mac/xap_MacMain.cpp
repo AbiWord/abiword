@@ -33,13 +33,13 @@
 
 /*****************************************************************/
 
-int AP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
+int XAP_MacApp::MacMain(const char * szAppName, int argc, char **argv)
 {
 	// initialize our application.
 
 	AP_Args Args = AP_Args(argc,argv);
 	
-	AP_MacApp * pMyMacApp = new AP_MacApp(&Args, szAppName);
+	XAP_MacApp * pMyMacApp = new XAP_MacApp(&Args, szAppName);
 	pMyMacApp->initialize();
 
 	// create the first window.

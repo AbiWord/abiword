@@ -62,7 +62,7 @@ AP_MacDialog_Replace::~AP_MacDialog_Replace(void)
 #if 0
 void AP_MacDialog_Replace::runModal(XAP_Frame * pFrame)
 {
-	AP_MacApp * pMacApp = static_cast<AP_MacApp *>(pFrame->getApp());
+	XAP_MacApp * pMacApp = static_cast<XAP_MacApp  *>(pFrame->getApp());
 	XAP_MacFrame * pMacFrame = static_cast<XAP_MacFrame *>(pFrame);
 
 	LPCTSTR lpTemplate = NULL;

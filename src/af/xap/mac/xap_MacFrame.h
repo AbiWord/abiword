@@ -25,7 +25,7 @@
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_MacDialogFactory.h"
-class AP_MacApp;
+class XAP_MacApp;
 class ev_MacKeyboard;
 class EV_MacMouse;
 class EV_MacMenu;
@@ -42,7 +42,7 @@ class EV_MacMenu;
 class XAP_MacFrame : public XAP_Frame
 {
 public:
-	XAP_MacFrame(AP_MacApp * app);
+	XAP_MacFrame(XAP_MacApp * app);
 	XAP_MacFrame(XAP_MacFrame * f);
 	virtual ~XAP_MacFrame(void);
 

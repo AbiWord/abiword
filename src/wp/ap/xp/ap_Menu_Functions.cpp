@@ -50,7 +50,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
 	
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-	AP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
 	if (pFrame == pApp->getFrame(ndx))
@@ -177,7 +177,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Clipboard)
 	UT_ASSERT(pView);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
-	AP_Clipboard* pClip = AP_App::getClipboard();
+	AP_Clipboard* pClip = XAP_App::getClipboard();
 
 	switch(id)
 	{

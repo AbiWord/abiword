@@ -45,7 +45,7 @@
 
 /*****************************************************************/
 
-int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
+int XAP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
 	// this is a static function and doesn't have a 'this' pointer.
@@ -72,7 +72,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	AP_Args Args = AP_Args(argc,argv);
 	
-	AP_Win32App * pMyWin32App = new AP_Win32App(hInstance, &Args, szAppName);
+	XAP_Win32App * pMyWin32App = new XAP_Win32App(hInstance, &Args, szAppName);
 	pMyWin32App->initialize();
 
 	// create the first window.

@@ -63,7 +63,7 @@ void AP_Win32LeftRuler::setView(AV_View * pView)
 
 /*****************************************************************/
 
-UT_Bool AP_Win32LeftRuler::RegisterClass(AP_Win32App * app)
+UT_Bool AP_Win32LeftRuler::RegisterClass(XAP_Win32App * app)
 {
 	WNDCLASSEX  wndclass;
 	ATOM a;
@@ -95,7 +95,7 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 									UT_uint32 left, UT_uint32 top,
 									UT_uint32 height)
 {
-	AP_Win32App * app = static_cast<AP_Win32App *>(m_pFrame->getApp());
+	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
 	m_hwndLeftRuler = CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
 									 WS_CHILD | WS_VISIBLE,
 									 left, top, s_iFixedWidth, height,

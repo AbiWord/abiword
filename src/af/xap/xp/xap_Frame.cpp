@@ -43,7 +43,7 @@
 
 /*****************************************************************/
 
-XAP_Frame::XAP_Frame(AP_App * app)
+XAP_Frame::XAP_Frame(XAP_App * app)
 {
 	m_app = app;
 
@@ -157,7 +157,7 @@ const EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
 	return m_pEEM;
 }
 
-AP_App * XAP_Frame::getApp(void) const
+XAP_App * XAP_Frame::getApp(void) const
 {
 	return m_app;
 }

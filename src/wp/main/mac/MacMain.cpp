@@ -23,5 +23,5 @@
 
 int main (int argc, char **argv)
 {
-	return AP_MacApp::MacMain("AbiWord", argc, argv);
+	return XAP_MacApp::MacMain("AbiWord", argc, argv);
 }

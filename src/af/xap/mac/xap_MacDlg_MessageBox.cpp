@@ -47,7 +47,7 @@ void AP_MacDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
 	m_pMacFrame = (XAP_MacFrame *)pFrame;
 	UT_ASSERT(m_pMacFrame);
-	AP_MacApp * pApp = (AP_MacApp *)m_pMacFrame->getApp();
+	XAP_MacApp * pApp = (XAP_MacApp *)m_pMacFrame->getApp();
 	UT_ASSERT(pApp);
 
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();

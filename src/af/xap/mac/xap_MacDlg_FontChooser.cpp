@@ -52,7 +52,7 @@ void AP_MacDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pMacFrame = (XAP_MacFrame *)pFrame;
 	UT_ASSERT(m_pMacFrame);
-	AP_MacApp * pApp = (AP_MacApp *)m_pMacFrame->getApp();
+	XAP_MacApp * pApp = (XAP_MacApp *)m_pMacFrame->getApp();
 	UT_ASSERT(pApp);
 
 	UT_DEBUGMSG(("FontChooserStart: Family[%s] Size[%s] Weight[%s] Style[%s] Color[%s] Underline[%d] StrikeOut[%d]\n",

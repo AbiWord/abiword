@@ -44,9 +44,9 @@
 
 /*****************************************************************/
 
-AP_Clipboard* AP_App::_pClipboard = NULL;
+AP_Clipboard* XAP_App::_pClipboard = NULL;
 
-AP_App::AP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
+XAP_App::XAP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 {
 	UT_ASSERT(szAppName && *szAppName);
 
@@ -58,7 +58,7 @@ AP_App::AP_App(AP_Args * pArgs, const char * szAppName) : m_hashClones(5)
 	m_pToolbarActionSet = NULL;
 }
 
-AP_App::~AP_App(void)
+XAP_App::~XAP_App(void)
 {
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
@@ -76,7 +76,7 @@ AP_App::~AP_App(void)
 #endif /* ABI_OPT_JS */
 }
 
-UT_Bool AP_App::initialize(void)
+UT_Bool XAP_App::initialize(void)
 {
 	// create application-wide resources that
 	// are shared by everything.
@@ -113,13 +113,13 @@ UT_Bool AP_App::initialize(void)
 }
 
 #ifdef ABI_OPT_JS
-JSInterpPtr AP_App::getInterp(void) const
+JSInterpPtr XAP_App::getInterp(void) const
 {
 	return m_pJSInterp;
 }
 #endif /* ABI_OPT_JS */
 
-const char * AP_App::getApplicationTitleForTitleBar(void) const
+const char * XAP_App::getApplicationTitleForTitleBar(void) const
 {
 	static char _title[512];
 
@@ -139,7 +139,7 @@ const char * AP_App::getApplicationTitleForTitleBar(void) const
 	return _title;
 }
 
-const char * AP_App::getApplicationName(void) const
+const char * XAP_App::getApplicationName(void) const
 {
 	// return a string that the platform-specific code
 	// can use as a class name for various window-manager-like
@@ -147,28 +147,28 @@ const char * AP_App::getApplicationName(void) const
 	return m_szAppName;
 }
 
-EV_EditMethodContainer * AP_App::getEditMethodContainer(void) const
+EV_EditMethodContainer * XAP_App::getEditMethodContainer(void) const
 {
 	return m_pEMC;
 }
 
-EV_EditBindingMap * AP_App::getBindingMap(const char * szName)
+EV_EditBindingMap * XAP_App::getBindingMap(const char * szName)
 {
 	UT_ASSERT(m_pBindingSet);
 	return m_pBindingSet->getMap(szName);
 }
 
-const EV_Menu_ActionSet * AP_App::getMenuActionSet(void) const
+const EV_Menu_ActionSet * XAP_App::getMenuActionSet(void) const
 {
 	return m_pMenuActionSet;
 }
 
-const EV_Toolbar_ActionSet * AP_App::getToolbarActionSet(void) const
+const EV_Toolbar_ActionSet * XAP_App::getToolbarActionSet(void) const
 {
 	return m_pToolbarActionSet;
 }
 
-UT_Bool AP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
+UT_Bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 {
 	UT_ASSERT(pFrame);
 
@@ -231,7 +231,7 @@ UT_Bool AP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 	return UT_TRUE;
 }
 
-UT_Bool AP_App::forgetFrame(XAP_Frame * pFrame)
+UT_Bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
@@ -301,7 +301,7 @@ UT_Bool AP_App::forgetFrame(XAP_Frame * pFrame)
 	return UT_TRUE;
 }
 
-UT_Bool AP_App::updateClones(XAP_Frame * pFrame)
+UT_Bool XAP_App::updateClones(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 	UT_ASSERT(pFrame->getViewNumber() > 0);
@@ -331,12 +331,12 @@ UT_Bool AP_App::updateClones(XAP_Frame * pFrame)
 	return UT_TRUE;
 }
 
-UT_uint32 AP_App::getFrameCount(void) const
+UT_uint32 XAP_App::getFrameCount(void) const
 {
 	return m_vecFrames.getItemCount();
 }
 
-XAP_Frame * AP_App::getFrame(UT_uint32 ndx) const
+XAP_Frame * XAP_App::getFrame(UT_uint32 ndx) const
 {
 	XAP_Frame * pFrame = NULL;
 	
@@ -348,12 +348,12 @@ XAP_Frame * AP_App::getFrame(UT_uint32 ndx) const
 	return pFrame;
 }
 	
-UT_sint32 AP_App::findFrame(XAP_Frame * pFrame)
+UT_sint32 XAP_App::findFrame(XAP_Frame * pFrame)
 {
 	return m_vecFrames.findItem(pFrame);
 }
 	
-UT_sint32 AP_App::findFrame(const char * szFilename)
+UT_sint32 XAP_App::findFrame(const char * szFilename)
 {
 	if (!szFilename || !*szFilename)
 		return -1;
@@ -373,7 +373,7 @@ UT_sint32 AP_App::findFrame(const char * szFilename)
 	return -1;
 }
 
-AP_Clipboard* AP_App::getClipboard(void)
+AP_Clipboard* XAP_App::getClipboard(void)
 {
 	return _pClipboard;
 }

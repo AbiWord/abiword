@@ -47,13 +47,13 @@
 
 /*****************************************************************/
 
-AP_UnixApp::AP_UnixApp(AP_Args * pArgs, const char * szAppName)
-	: AP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
+XAP_UnixApp::XAP_UnixApp(AP_Args * pArgs, const char * szAppName)
+	: XAP_App(pArgs, szAppName), m_dialogFactory(this), m_controlFactory()
 {
 	m_pUnixToolbarIcons = 0;
 }
 
-AP_UnixApp::~AP_UnixApp(void)
+XAP_UnixApp::~XAP_UnixApp(void)
 {
 	SpellCheckCleanup();
 
@@ -61,7 +61,7 @@ AP_UnixApp::~AP_UnixApp(void)
 	DELETEP(_pClipboard);
 }
 
-UT_Bool AP_UnixApp::initialize(void)
+UT_Bool XAP_UnixApp::initialize(void)
 {
 	// initialize GTK first.
 	
@@ -70,7 +70,7 @@ UT_Bool AP_UnixApp::initialize(void)
 
 	// let our base class do it's thing.
 	
-	AP_App::initialize();
+	XAP_App::initialize();
 
 	// create a font manager for our app to use
 
@@ -151,7 +151,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	return UT_TRUE;
 }
 
-XAP_Frame * AP_UnixApp::newFrame(void)
+XAP_Frame * XAP_UnixApp::newFrame(void)
 {
 	AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
 
@@ -161,22 +161,22 @@ XAP_Frame * AP_UnixApp::newFrame(void)
 	return pUnixFrame;
 }
 
-void AP_UnixApp::reallyExit(void)
+void XAP_UnixApp::reallyExit(void)
 {
 	gtk_main_quit();
 }
 
-AP_DialogFactory * AP_UnixApp::getDialogFactory(void)
+AP_DialogFactory * XAP_UnixApp::getDialogFactory(void)
 {
 	return &m_dialogFactory;
 }
 
-AP_Toolbar_ControlFactory * AP_UnixApp::getControlFactory(void)
+AP_Toolbar_ControlFactory * XAP_UnixApp::getControlFactory(void)
 {
 	return &m_controlFactory;
 }
 
-AP_UnixFontManager * AP_UnixApp::getFontManager(void)
+AP_UnixFontManager * XAP_UnixApp::getFontManager(void)
 {
 	return m_fontManager;
 }

@@ -28,7 +28,7 @@
 #include "ut_types.h"
 #include "ap_TopRuler.h"
 #include "gr_Win32Graphics.h"
-class AP_Win32App;
+class XAP_Win32App;
 class XAP_Frame;
 
 /*****************************************************************/
@@ -44,7 +44,7 @@ public:
 										 UT_uint32 width);
 	virtual void			setView(AV_View * pView);
 
-	static UT_Bool			RegisterClass(AP_Win32App * app);
+	static UT_Bool			RegisterClass(XAP_Win32App * app);
 	static LRESULT CALLBACK	_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	
 protected:

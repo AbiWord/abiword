@@ -106,7 +106,7 @@ public:									// we create...
   values at their ends.
 */
 
-static const char ** _ev_GetLabelName(AP_UnixApp * pUnixApp,
+static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 									  XAP_UnixFrame * pUnixFrame,
 									  EV_Menu_Action * pAction,
 									  EV_Menu_Label * pLabel)
@@ -175,7 +175,7 @@ static const char ** _ev_GetLabelName(AP_UnixApp * pUnixApp,
 
 /*****************************************************************/
 
-EV_UnixMenu::EV_UnixMenu(AP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
+EV_UnixMenu::EV_UnixMenu(XAP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 						 const char * szMenuLayoutName,
 						 const char * szMenuLabelSetName)
 	: EV_Menu(pUnixApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
@@ -795,7 +795,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 
 /*****************************************************************/
 
-EV_UnixMenuBar::EV_UnixMenuBar(AP_UnixApp * pUnixApp,
+EV_UnixMenuBar::EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
 							   XAP_UnixFrame * pUnixFrame,
 							   const char * szMenuLayoutName,
 							   const char * szMenuLabelSetName)
@@ -846,7 +846,7 @@ UT_Bool EV_UnixMenuBar::refreshMenu(AV_View * pView)
 
 /*****************************************************************/
 
-EV_UnixMenuPopup::EV_UnixMenuPopup(AP_UnixApp * pUnixApp,
+EV_UnixMenuPopup::EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
 								   XAP_UnixFrame * pUnixFrame,
 								   const char * szMenuLayoutName,
 								   const char * szMenuLabelSetName)

@@ -488,10 +488,10 @@ void AP_UnixDialog_Print::_getGraphics(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
-	AP_App * app = m_pUnixFrame->getApp();
+	XAP_App * app = m_pUnixFrame->getApp();
 	UT_ASSERT(app);
 	
-	AP_UnixApp * unixapp = static_cast<AP_UnixApp *> (app);
+	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
 	UT_ASSERT(unixapp);
 
 	AP_UnixFontManager * fontmgr = unixapp->getFontManager();

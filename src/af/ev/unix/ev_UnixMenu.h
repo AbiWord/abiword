@@ -26,7 +26,7 @@
 #include "ev_Menu.h"
 
 class AV_View;
-class AP_UnixApp;
+class XAP_UnixApp;
 class XAP_UnixFrame;
 
 
@@ -35,7 +35,7 @@ class XAP_UnixFrame;
 class EV_UnixMenu : public EV_Menu
 {
 public:
-	EV_UnixMenu(AP_UnixApp * pUnixApp,
+	EV_UnixMenu(XAP_UnixApp * pUnixApp,
 				XAP_UnixFrame * pUnixFrame,
 				const char * szMenuLayoutName,
 				const char * szMenuLabelSetName);
@@ -52,7 +52,7 @@ protected:
 	UT_Bool				_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot);
 	UT_Bool				_isItemPresent(AP_Menu_Id id) const;
 
-	AP_UnixApp *		m_pUnixApp;
+	XAP_UnixApp *		m_pUnixApp;
 	XAP_UnixFrame *		m_pUnixFrame;
 
 	// Menu accelerator group, dynamically filled on synth()
@@ -67,7 +67,7 @@ protected:
 class EV_UnixMenuBar : public EV_UnixMenu
 {
 public:
-	EV_UnixMenuBar(AP_UnixApp * pUnixApp,
+	EV_UnixMenuBar(XAP_UnixApp * pUnixApp,
 				   XAP_UnixFrame * pUnixFrame,
 				   const char * szMenuLayoutName,
 				   const char * szMenuLabelSetName);
@@ -86,7 +86,7 @@ protected:
 class EV_UnixMenuPopup : public EV_UnixMenu
 {
 public:
-	EV_UnixMenuPopup(AP_UnixApp * pUnixApp,
+	EV_UnixMenuPopup(XAP_UnixApp * pUnixApp,
 					 XAP_UnixFrame * pUnixFrame,
 					 const char * szMenuLayoutName,
 					 const char * szMenuLabelSetName);

@@ -27,7 +27,7 @@
 class AP_Win32Frame : public XAP_Win32Frame
 {
 public:
-	AP_Win32Frame(AP_Win32App * app);
+	AP_Win32Frame(XAP_Win32App * app);
 	AP_Win32Frame(AP_Win32Frame * f);
 	virtual ~AP_Win32Frame(void);
 
@@ -41,7 +41,7 @@ public:
 	virtual void				setYScrollRange(void);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
 
-	static UT_Bool				RegisterClass(AP_Win32App * app);
+	static UT_Bool				RegisterClass(XAP_Win32App * app);
 
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,

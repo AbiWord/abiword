@@ -25,7 +25,7 @@
 #include "ev_Menu.h"
 
 class AV_View;
-class AP_MacApp;
+class XAP_MacApp;
 class XAP_MacFrame;
 
 
@@ -34,7 +34,7 @@ class XAP_MacFrame;
 class EV_MacMenu : public EV_Menu
 {
 public:
-	EV_MacMenu(AP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
+	EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 				 const char * szMenuLayoutName,
 				 const char * szMenuLabelSetName);
 	~EV_MacMenu(void);
@@ -49,7 +49,7 @@ public:
 
 
 private:
-	AP_MacApp *m_pMacApp;
+	XAP_MacApp *m_pMacApp;
 	XAP_MacFrame *m_pMacFrame;
 
 };

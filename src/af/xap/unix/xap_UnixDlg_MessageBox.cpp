@@ -167,7 +167,7 @@ void AP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
-	AP_UnixApp * pApp = (AP_UnixApp *)m_pUnixFrame->getApp();
+	XAP_UnixApp * pApp = (XAP_UnixApp *)m_pUnixFrame->getApp();
 	UT_ASSERT(pApp);
 
 	const char * szCaption = pApp->getApplicationTitleForTitleBar();

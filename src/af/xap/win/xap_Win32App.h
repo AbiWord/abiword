@@ -18,8 +18,8 @@
  */
 
 
-#ifndef AP_WIN32APP_H
-#define AP_WIN32APP_H
+#ifndef XAP_WIN32APP_H
+#define XAP_WIN32APP_H
 
 #include <windows.h>
 #include "xap_App.h"
@@ -37,11 +37,11 @@ class AP_Win32Toolbar_Icons;
 ******************************************************************
 *****************************************************************/
 
-class AP_Win32App : public AP_App
+class XAP_Win32App : public XAP_App
 {
 public:
-	AP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName);
-	virtual ~AP_Win32App(void);
+	XAP_Win32App(HINSTANCE hInstance, AP_Args * pArgs, const char * szAppName);
+	virtual ~XAP_Win32App(void);
 
 	virtual UT_Bool			initialize(void);
 	virtual XAP_Frame *		newFrame(void);
@@ -64,4 +64,4 @@ protected:
 	AP_Win32Toolbar_ControlFactory	m_controlFactory;
 };
 
-#endif /* AP_WIN32APP_H */
+#endif /* XAP_WIN32APP_H */

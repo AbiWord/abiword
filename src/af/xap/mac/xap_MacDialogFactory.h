@@ -26,7 +26,7 @@
 class AP_MacDialogFactory : public AP_DialogFactory
 {
 public:
-	AP_MacDialogFactory(AP_App * pApp);
+	AP_MacDialogFactory(XAP_App * pApp);
 	AP_MacDialogFactory(XAP_Frame * pFrame);
 	virtual ~AP_MacDialogFactory(void);
 

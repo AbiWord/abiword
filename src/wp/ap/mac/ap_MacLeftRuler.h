@@ -29,7 +29,7 @@
 #include "ut_types.h"
 #include "ap_LeftRuler.h"
 #include "gr_MacGraphics.h"
-class AP_MacApp;
+class XAP_MacApp;
 class XAP_Frame;
 
 /*****************************************************************/

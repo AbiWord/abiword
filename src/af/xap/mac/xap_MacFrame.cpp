@@ -42,8 +42,8 @@
 
 /*****************************************************************/
 
-XAP_MacFrame::XAP_MacFrame(AP_MacApp * app)
-	: XAP_Frame(static_cast<AP_App *>(app))
+XAP_MacFrame::XAP_MacFrame(XAP_MacApp * app)
+	: XAP_Frame(static_cast<XAP_App *>(app))
 {
 	SetRect(&theBounds, 100, 100, 500, 500);
 	theWP = NewWindow(0, &theBounds, "\pUntitled", 0, 0, (GrafPtr) -1, 0, (long) this);

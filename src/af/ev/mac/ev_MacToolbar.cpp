@@ -35,7 +35,7 @@
 
 /*****************************************************************/
 
-EV_MacToolbar::EV_MacToolbar(AP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
+EV_MacToolbar::EV_MacToolbar(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 								 const char * szToolbarLayoutName,
 								 const char * szToolbarLabelSetName)
 	: EV_Toolbar(pMacApp->getEditMethodContainer(),

@@ -21,5 +21,5 @@
 
 int main(int argc, char ** argv)
 {
-	return AP_UnixApp::main("AbiWord", argc, argv);
+	return XAP_UnixApp::main("AbiWord", argc, argv);
 }

@@ -18,8 +18,8 @@
  */
 
 
-#ifndef AP_UNIXAPP_H
-#define AP_UNIXAPP_H
+#ifndef XAP_UNIXAPP_H
+#define XAP_UNIXAPP_H
 
 #include "xap_App.h"
 #include "xap_UnixDialogFactory.h"
@@ -40,11 +40,11 @@ class AP_UnixToolbar_Icons;
 ******************************************************************
 *****************************************************************/
 
-class AP_UnixApp : public AP_App
+class XAP_UnixApp : public XAP_App
 {
 public:
-	AP_UnixApp(AP_Args * pArgs, const char * szAppName);
-	virtual ~AP_UnixApp(void);
+	XAP_UnixApp(AP_Args * pArgs, const char * szAppName);
+	virtual ~XAP_UnixApp(void);
 
 	virtual UT_Bool					initialize(void);
 	virtual XAP_Frame * 			newFrame(void);
@@ -67,4 +67,4 @@ protected:
 	*/
 };
 
-#endif /* AP_UNIXAPP_H */
+#endif /* XAP_UNIXAPP_H */

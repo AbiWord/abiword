@@ -25,7 +25,7 @@
 
 /*****************************************************************/
 
-AP_DialogFactory::AP_DialogFactory(AP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable)
+AP_DialogFactory::AP_DialogFactory(XAP_App * pApp, int nrElem, const struct _dlg_table * pDlgTable)
 {
 	// we are the factory for application-persistent dialogs
 	

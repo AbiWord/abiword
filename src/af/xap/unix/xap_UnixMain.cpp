@@ -32,19 +32,19 @@
 
 /*****************************************************************/
 
-int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
+int XAP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 {
 	/*
 		These printfs are not here permanently.
 		TODO remove them later
 	*/
 
-	printf("Build ID:\t%s\n", AP_App::s_szBuild_ID);
-	printf("Version:\t%s\n", AP_App::s_szBuild_Version);
-	printf("Build Options: \t%s\n", AP_App::s_szBuild_Options);
-	printf("Build Target: \t%s\n", AP_App::s_szBuild_Target);
-	printf("Compile Date:\t%s\n", AP_App::s_szBuild_CompileDate);
-	printf("Compile Time:\t%s\n", AP_App::s_szBuild_CompileTime);
+	printf("Build ID:\t%s\n", XAP_App::s_szBuild_ID);
+	printf("Version:\t%s\n", XAP_App::s_szBuild_Version);
+	printf("Build Options: \t%s\n", XAP_App::s_szBuild_Options);
+	printf("Build Target: \t%s\n", XAP_App::s_szBuild_Target);
+	printf("Compile Date:\t%s\n", XAP_App::s_szBuild_CompileDate);
+	printf("Compile Time:\t%s\n", XAP_App::s_szBuild_CompileTime);
 
 	printf("\n");
 	
@@ -52,7 +52,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 
 	AP_Args Args = AP_Args(argc,argv);
 	
-	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
+	XAP_UnixApp * pMyUnixApp = new XAP_UnixApp(&Args, szAppName);
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyUnixApp->initialize())

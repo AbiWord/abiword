@@ -25,7 +25,7 @@
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_Win32DialogFactory.h"
-class AP_Win32App;
+class XAP_Win32App;
 class ev_Win32Keyboard;
 class EV_Win32Mouse;
 class EV_Win32MenuBar;
@@ -43,7 +43,7 @@ class EV_Win32MenuPopup;
 class XAP_Win32Frame : public XAP_Frame
 {
 public:
-	XAP_Win32Frame(AP_Win32App * app);
+	XAP_Win32Frame(XAP_Win32App * app);
 	XAP_Win32Frame(XAP_Win32Frame * f);
 	virtual ~XAP_Win32Frame(void);
 
@@ -67,7 +67,7 @@ public:
 													UT_sint32 x, UT_sint32 y);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y) = 0;
 
-	static UT_Bool				RegisterClass(AP_Win32App * app);
+	static UT_Bool				RegisterClass(XAP_Win32App * app);
 
 protected:
 	virtual HWND				_createDocumentWindow(HWND hwndParent,
@@ -77,7 +77,7 @@ protected:
 	static LRESULT CALLBACK		_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 	// TODO see why ev_Win32Keyboard has lowercase prefix...
-	AP_Win32App *				m_pWin32App;
+	XAP_Win32App *				m_pWin32App;
 	ev_Win32Keyboard *			m_pWin32Keyboard;
 	EV_Win32Mouse *				m_pWin32Mouse;
 	EV_Win32MenuBar *			m_pWin32Menu;

@@ -25,7 +25,7 @@
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_UnixDialogFactory.h"
-class AP_UnixApp;
+class XAP_UnixApp;
 class ev_UnixKeyboard;
 class EV_UnixMouse;
 class EV_UnixMenuBar;
@@ -43,7 +43,7 @@ class EV_UnixMenuPopup;
 class XAP_UnixFrame : public XAP_Frame
 {
 public:
-	XAP_UnixFrame(AP_UnixApp * app);
+	XAP_UnixFrame(XAP_UnixApp * app);
 	XAP_UnixFrame(XAP_UnixFrame * f);
 	virtual ~XAP_UnixFrame(void);
 
@@ -72,7 +72,7 @@ protected:
 	virtual void				_createTopLevelWindow(void);
 
 	// TODO see why ev_UnixKeyboard has lowercase prefix...
-	AP_UnixApp *				m_pUnixApp;
+	XAP_UnixApp *				m_pUnixApp;
 	ev_UnixKeyboard *			m_pUnixKeyboard;
 	EV_UnixMouse *				m_pUnixMouse;
 	EV_UnixMenuBar *			m_pUnixMenu;

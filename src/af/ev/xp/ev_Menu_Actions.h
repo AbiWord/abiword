@@ -41,7 +41,7 @@
 #include "ut_types.h"
 #include "xap_Types.h"
 
-class AP_App;
+class XAP_App;
 class AV_View;
 class EV_Menu_Label;
 
@@ -62,14 +62,14 @@ typedef EV_Menu_ItemState ( EV_GetMenuItemState_Fn )(AV_View * pView, AP_Menu_Id
 typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(AV_View * pView, AP_Menu_Id id);
 #define Defun_EV_GetMenuItemState_Fn(fn) EV_Menu_ItemState fn(AV_View * pAV_View, AP_Menu_Id id)
 
-// TODO decide if ...GetMenuItemComputedLabel... should take an AP_App or an AV_View.
+// TODO decide if ...GetMenuItemComputedLabel... should take an XAP_App or an AV_View.
 // TODO for most-recently-used-file-list and window-history, we probably just need
 // TODO the ap.  but for view-specific things (like toggles where we change the menu
 // TODO item name rather than doing a checkmark), we need the view.
 
-typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(AP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id);
-typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(AP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id);
-#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(AP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id)
+typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(XAP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id);
+typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(XAP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id);
+#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(XAP_App * pApp, const EV_Menu_Label * pLabel, AP_Menu_Id id)
 
 /*****************************************************************/
 
@@ -87,7 +87,7 @@ public:
 
 	AP_Menu_Id						getMenuId(void) const;
 	UT_Bool							hasDynamicLabel(void) const;
-	const char *					getDynamicLabel(AP_App * pApp, const EV_Menu_Label * pLabel) const;
+	const char *					getDynamicLabel(XAP_App * pApp, const EV_Menu_Label * pLabel) const;
 	const char *					getMethodName(void) const;
 	UT_Bool							hasGetStateFunction(void) const;
 	EV_Menu_ItemState				getMenuItemState(AV_View * pView) const;

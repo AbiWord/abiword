@@ -19,8 +19,8 @@
  */
 
 
-#ifndef AP_MACAPP_H
-#define AP_MACAPP_H
+#ifndef XAP_MACAPP_H
+#define XAP_MACAPP_H
 
 #include "xap_App.h"
 #include "xap_MacDialogFactory.h"
@@ -37,11 +37,11 @@ class AP_MacToolbar_Icons;
 ******************************************************************
 *****************************************************************/
 
-class AP_MacApp : public AP_App
+class XAP_MacApp : public XAP_App
 {
 public:
-	AP_MacApp(AP_Args * pArgs, const char * szAppName);
-	virtual ~AP_MacApp(void);
+	XAP_MacApp(AP_Args * pArgs, const char * szAppName);
+	virtual ~XAP_MacApp(void);
 
 	virtual UT_Bool			initialize(void);
 	virtual XAP_Frame *		newFrame(void);
@@ -60,4 +60,4 @@ protected:
 	AP_MacToolbar_ControlFactory	m_controlFactory;
 };
 
-#endif /* AP_MACAPP_H */
+#endif /* XAP_MACAPP_H */

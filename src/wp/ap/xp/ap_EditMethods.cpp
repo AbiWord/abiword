@@ -525,7 +525,7 @@ Defun1(fileNew)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-	AP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
 	XAP_Frame * pNewFrame = pApp->newFrame();
@@ -799,7 +799,7 @@ Defun1(fileOpen)
 	// we own storage for pNewFile and must free it.
 
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
-	AP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 	XAP_Frame * pNewFrame = NULL;
 
@@ -921,7 +921,7 @@ Defun(fileSave)
 
 	if (pFrame->getViewNumber() > 0)
 	{
-		AP_App * pApp = pFrame->getApp();
+		XAP_App * pApp = pFrame->getApp();
 		UT_ASSERT(pApp);
 
 		pApp->updateClones(pFrame);
@@ -956,7 +956,7 @@ Defun1(fileSaveAs)
 
 	if (pFrame->getViewNumber() > 0)
 	{
-		AP_App * pApp = pFrame->getApp();
+		XAP_App * pApp = pFrame->getApp();
 		UT_ASSERT(pApp);
 
 		pApp->updateClones(pFrame);
@@ -989,7 +989,7 @@ static UT_Bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-	AP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
 	UT_ASSERT(ndx > 0);
@@ -1052,7 +1052,7 @@ Defun1(cycleWindows)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-	AP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
 	UT_sint32 ndx = pApp->findFrame(pFrame);
@@ -1075,7 +1075,7 @@ Defun1(cycleWindowsBck)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-	AP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
 	UT_sint32 ndx = pApp->findFrame(pFrame);
@@ -1098,7 +1098,7 @@ Defun(closeWindow)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-	AP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
 	// is this the last view on a dirty document?
@@ -1147,7 +1147,7 @@ Defun(querySaveAndExit)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-	AP_App * pApp = pFrame->getApp();
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 
 	if (1 < pApp->getFrameCount())

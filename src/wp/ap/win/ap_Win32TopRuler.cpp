@@ -63,7 +63,7 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 
 /*****************************************************************/
 
-UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
+UT_Bool AP_Win32TopRuler::RegisterClass(XAP_Win32App * app)
 {
 	WNDCLASSEX  wndclass;
 	ATOM a;
@@ -95,7 +95,7 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 									UT_uint32 left, UT_uint32 top,
 									UT_uint32 width)
 {
-	AP_Win32App * app = static_cast<AP_Win32App *>(m_pFrame->getApp());
+	XAP_Win32App * app = static_cast<XAP_Win32App *>(m_pFrame->getApp());
 	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
 									left, top, width, s_iFixedHeight,

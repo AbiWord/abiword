@@ -452,7 +452,7 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
 	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
-	AP_UnixApp * pApp = (AP_UnixApp *)m_pUnixFrame->getApp();
+	XAP_UnixApp * pApp = (XAP_UnixApp *)m_pUnixFrame->getApp();
 	UT_ASSERT(pApp);
 
 	UT_DEBUGMSG(("FontChooserStart: Family[%s] Size[%s] Weight[%s] Style[%s] Color[%s] Underline[%d] StrikeOut[%d]\n",
@@ -490,8 +490,8 @@ void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	m_blockUpdate = UT_TRUE;
 	
 	// Retrieve all the fonts
-	AP_App * app = m_pUnixFrame->getApp();
-	AP_UnixApp * unixapp = static_cast<AP_UnixApp *> (app);
+	XAP_App * app = m_pUnixFrame->getApp();
+	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
 	m_fontManager = unixapp->getFontManager();
 
 	gtk_clist_clear(GTK_CLIST(m_fontList));

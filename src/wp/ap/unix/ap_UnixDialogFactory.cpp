@@ -39,7 +39,7 @@ static struct AP_DialogFactory::_dlg_table s_dlg_table[] = {
 
 /*****************************************************************/
   
-AP_UnixDialogFactory::AP_UnixDialogFactory(AP_App * pApp)
+AP_UnixDialogFactory::AP_UnixDialogFactory(XAP_App * pApp)
 	: AP_DialogFactory(pApp, NrElements(s_dlg_table), s_dlg_table)
 {
 }
