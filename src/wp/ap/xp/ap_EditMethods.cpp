@@ -6702,6 +6702,16 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 
 		GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+
+		if (!pGraphics)
+		{
+			pFrame->showMessageBox(AP_STRING_ID_PRINT_CANNOTSTARTPRINTJOB,
+				   XAP_Dialog_MessageBox::b_O,
+				   XAP_Dialog_MessageBox::a_OK);
+
+		   return false;
+		}
+
 		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);

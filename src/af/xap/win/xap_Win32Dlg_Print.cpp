@@ -86,6 +86,8 @@ GR_Graphics * XAP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
+	if (!m_pPersistPrintDlg->hDC) return NULL; /* Prevents from passing NULL to GR_Win32Graphics*/
+
 	memset(&m_DocInfo,0,sizeof(m_DocInfo));
 	m_DocInfo.cbSize = sizeof(DOCINFO);
 	m_DocInfo.lpszDocName = m_szDocumentPathname;

@@ -680,6 +680,7 @@ dcl(WORD_PassRequired, "Password required, this is an encrypted document")
 dcl(WORD_PassInvalid, "Incorrect Password")
 dcl(SCRIPT_NOSCRIPTS, "No scripts found")
 dcl(SCRIPT_CANTRUN, "Error executing script %s")
+dcl(PRINT_CANNOTSTARTPRINTJOB, "Cannot start print job")
 
 dcl(MSG_CHECK_PRINT_MODE,"Headers and Footers can only be created and edited while in Print View Mode. \n To enter this mode choose ""View"" then ""Print Layout"" from the Menus. \n Would you like to enter Print Layout mode right now?")
 
