@@ -119,8 +119,8 @@
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_QNXDialog_FileOpenSaveAs)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_QNXDialog_InsertBookmark)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_QNXDialog_InsertHyperlink)
- 	DeclareDialog(AP_DIALOG_ID_MarkRevisions,	AP_QNXDialog_MarkRevisions)
- 	DeclareDialog(AP_DIALOG_ID_ListRevisions,	AP_QNXDialog_ListRevisions)
+ 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_QNXDialog_MarkRevisions)
+ 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_QNXDialog_ListRevisions)
 	// ... also add new dialogs here ...
 
 #endif
