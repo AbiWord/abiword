@@ -434,7 +434,14 @@ void AP_UnixFrame::killFrameData()
 UT_Error AP_UnixFrame::_loadDocument(const char * szFilename, IEFileType ieft,
 				     bool createNew)
 {
-  UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", szFilename, ieft, createNew));
+#ifdef DEBUG
+	if (szFilename) {
+		UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", szFilename, ieft, createNew));
+	}
+	else {
+		UT_DEBUGMSG(("DOM: trying to load %s (%d, %d)\n", "(NULL)", ieft, createNew));
+	}
+#endif
 
 	// are we replacing another document?
 	if (m_pDoc)
