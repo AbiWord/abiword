@@ -37,6 +37,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#include "ut_locale.h"
 #ifdef ABI_OPT_PERL
 #include "ut_PerlBindings.h"
 #endif
@@ -211,6 +212,45 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 }	
 
 /*!
+* Try loading a string-set.
+* \param szStringSet Language id, e.g. de_AT
+* \param pFallbackStringSet String set to be used for untranslated strings.
+* \return AP_DiskStringSet * on success, NULL if not found
+*/
+AP_DiskStringSet * 
+AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet, 
+								AP_BuiltinStringSet * pFallbackStringSet)
+{
+	UT_ASSERT(pFallbackStringSet);
+
+	const char * szDirectory = NULL;
+	getPrefsValueDirectory(true,
+			       static_cast<const XML_Char*>(AP_PREF_KEY_StringSetDirectory),
+			       static_cast<const XML_Char**>(&szDirectory));
+	UT_ASSERT((szDirectory) && (*szDirectory));
+
+	UT_String szPathname = szDirectory;
+	if (szDirectory[szPathname.size()-1]!='/')
+		szPathname += "/";
+	szPathname += szStringSet;
+	szPathname += ".strings";
+
+	AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
+	if (pDiskStringSet->loadStringsFromDisk(szPathname.c_str()))
+	{
+		pDiskStringSet->setFallbackStringSet(pFallbackStringSet);
+		UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname.c_str()));
+		return pDiskStringSet;
+	}
+	else
+	{
+		DELETEP(pDiskStringSet);
+		UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname.c_str()));
+		return NULL;
+	}
+}
+
+/*!
   Initialize the application.  This involves preferences, keybindings,
   toolbars, graphics, spelling and everything else.  
   \return True if successfully initalized, False otherwise. if false
@@ -241,49 +281,35 @@ bool AP_UnixApp::initialize(bool has_display)
     // reported to the user)
     //////////////////////////////////////////////////////////////////
 	
-    {
-		// assume we will be using the builtin set (either as the main
-		// set or as the fallback set).
-	
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,static_cast<const XML_Char*>(AP_PREF_DEFAULT_StringSet));
+    {	
+		// Loading default string set for untranslated messages
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this, 
+													static_cast<const XML_Char*>(AP_PREF_DEFAULT_StringSet));
 		UT_ASSERT(pBuiltinStringSet);
-		m_pStringSet = pBuiltinStringSet;
-		// see if we should load an alternative set from the disk
-	
-		const char * szDirectory = NULL;
+
+		// try loading strings by preference
 		const char * szStringSet = NULL;
-	
 		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
 							  static_cast<const XML_Char**>(&szStringSet)))
 			   && (szStringSet)
 			   && (*szStringSet)
 			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
-			getPrefsValueDirectory(true,
-					       static_cast<const XML_Char*>(AP_PREF_KEY_StringSetDirectory),
-					       static_cast<const XML_Char**>(&szDirectory));
-			UT_ASSERT((szDirectory) && (*szDirectory));
+			m_pStringSet = loadStringsFromDisk(szStringSet, pBuiltinStringSet);
+		}
 
-			UT_String szPathname = szDirectory;
-			if (szDirectory[szPathname.size()-1]!='/')
-				szPathname += "/";
-			szPathname += szStringSet;
-			szPathname += ".strings";
-		
-			AP_DiskStringSet * pDiskStringSet = new AP_DiskStringSet(this);
-			UT_ASSERT(pDiskStringSet);
-		
-			if (pDiskStringSet->loadStringsFromDisk(szPathname.c_str()))
-			{
-				pDiskStringSet->setFallbackStringSet(m_pStringSet);
-				m_pStringSet = pDiskStringSet;
-				UT_DEBUGMSG(("Using StringSet [%s]\n",szPathname.c_str()));
-			}
-			else
-			{
-				DELETEP(pDiskStringSet);
-				UT_DEBUGMSG(("Unable to load StringSet [%s] -- using builtin strings instead.\n",szPathname.c_str()));
-			}
+		// try loading fallback strings for the language, e.g. es-ES for es-AR
+		if (m_pStringSet == NULL) 
+		{
+			const char *szFallbackStringSet = UT_getFallBackStringSetLocale(szStringSet);
+			m_pStringSet = loadStringsFromDisk(szFallbackStringSet, pBuiltinStringSet);
+		}
+
+		// load the builtin string set
+		// this is the default
+		if (m_pStringSet == NULL) 
+		{
+			m_pStringSet = pBuiltinStringSet;
 		}
     }
 

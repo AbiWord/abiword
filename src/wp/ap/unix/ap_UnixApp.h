@@ -55,6 +55,8 @@ class XAP_StringSet;
 class AV_View;
 class GR_Image;
 class AP_Args;
+class AP_BuiltinStringSet;
+class AP_DiskStringSet;
 
 class AP_UnixApp : public AP_App
 {
@@ -109,6 +111,8 @@ public:
 	virtual bool doWindowlessArgs (const AP_Args *);
 	virtual XAP_Frame * newFrame(AP_App *);
 	bool makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight);
+	AP_DiskStringSet * loadStringsFromDisk(const char 		   * szStringSet, 
+										   AP_BuiltinStringSet * pFallbackStringSet);
 
 protected:	// JCA: Why in the hell we have so many (any) protected variables?
 	static GR_Image*		_showSplash(UT_uint32);

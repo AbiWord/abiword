@@ -22,8 +22,8 @@
 #include <string.h>
 
 #include "ut_types.h"
-
 #include "ut_units.h"
+#include "ut_locale.h"
 
 #include "ut_debugmsg.h"
 #include "ut_Win32Locale.h"
@@ -67,7 +67,7 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 		/* Do we have a string set for this locale?*/
 		if (!pApp->doesStringSetExist(szLocaleInfo))
 		{
-			const char* pFallBackLocale = UT_getWin32FallBackStringSetLocale(szLocaleInfo);
+			const char* pFallBackLocale = UT_getFallBackStringSetLocale(szLocaleInfo);
 
 			if (pFallBackLocale)
 			{				

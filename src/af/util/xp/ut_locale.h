@@ -73,4 +73,6 @@ class UT_LocaleInfo
   UT_UTF8String mEncoding;
 };
 
+const char* UT_getFallBackStringSetLocale(const char* pLocale);
+
 #endif /* UT_LOCALE_H */
