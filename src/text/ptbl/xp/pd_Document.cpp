@@ -1712,6 +1712,49 @@ bool PD_Document::isHdrFtrAtPos(PT_DocPosition pos)
 	return false;
 }
 
+
+
+/*!
+ * This method returns true if there is a Section strux at exactly this 
+ * position.
+ */
+bool PD_Document::isSectionAtPos(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf->getLength() == 0)
+		pf = pf->getPrev();
+	if(pf->getType() == pf_Frag::PFT_Strux)
+	{
+		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+		if(pfs->getStruxType() == PTX_Section)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+
+/*!
+ * This method returns true if there is a EndOfDoc frag at exactly this 
+ * position.
+ */
+bool PD_Document::isEndOfDocAtPos(PT_DocPosition pos)
+{
+	PT_BlockOffset pOffset;
+	pf_Frag * pf = NULL;
+	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
+	while(pf->getLength() == 0)
+		pf = pf->getPrev();
+	if(pf->getType() == pf_Frag:: PFT_EndOfDoc)
+	{
+		return true;
+	}
+	return false;
+}
+
 //============================================================================
 // Table Medthods
 //===========================================================================

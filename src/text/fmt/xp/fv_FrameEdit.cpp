@@ -1214,8 +1214,14 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		posAtXY = pCloseBL->getPosition();
 		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,NULL,props,&pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
+		PT_DocPosition posEOD= 0;
+		m_pView->getEditableBounds(true,posEOD);
 		getDoc()->insertStrux(posFrame+1,PTX_Block);
 		getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
+		if(getDoc()->isHdrFtrAtPos(posFrame+3) || getDoc()->isSectionAtPos(posFrame+3) || (posFrame+1) == posEOD)
+		{
+		      getDoc()->insertStrux(posFrame+3,PTX_Block);
+		} 
 
 // Place the insertion point in the Frame
 
@@ -1645,14 +1651,24 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		pf_Frag_Strux * pfFrame = NULL;
 		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,atts,NULL,&pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
+		PT_DocPosition posEOD= 0;
+		m_pView->getEditableBounds(true,posEOD);
 		if(isTextBox)
 		{
 			getDoc()->insertStrux(posFrame+1,PTX_Block);
 			getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
+			if(getDoc()->isHdrFtrAtPos(posFrame+3) || getDoc()->isSectionAtPos(posFrame+3) || (posFrame+1) == posEOD)
+			{
+			      getDoc()->insertStrux(posFrame+3,PTX_Block);
+			} 
 		}
 		else
 		{
 			getDoc()->insertStrux(posFrame+1,PTX_EndFrame);
+			if(getDoc()->isHdrFtrAtPos(posFrame+2) || getDoc()->isSectionAtPos(posFrame+2) || (posFrame+1) == posEnd)
+			{
+			      getDoc()->insertStrux(posFrame+2,PTX_Block);
+			} 
 		}
 		delete [] atts;
 
