@@ -86,7 +86,7 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 
 	// hack to force the linker to link in UT_Map functions; thanks to fjf
 	if (this == 0)
-		UT_Map foo;
+		delete (new UT_Map);
 
 }
 
