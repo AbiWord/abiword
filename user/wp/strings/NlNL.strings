@@ -1,0 +1,98 @@
+<!-- ==============================================================  -->
+<!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
+<!-- word processor developed by AbiSource, Inc.  Information about  -->
+<!-- this application can be found at http://www.abisource.com       -->
+<!-- This file contains the string translations for one language.    -->
+<!-- This file is covered by the GNU Public License (GPL).           -->
+<!-- ==============================================================  -->
+
+<!-- _Language_ translations provided by albi <albi@linuxfan.com> -->
+
+
+<AbiStrings app="AbiWord Personal" ver="1.0" language="NlNL">
+
+<Strings	class="XAP"
+UntitledDocument="ZonderNaam%d"
+DLG_OK="OK"
+DLG_Cancel="Afbreken"
+DLG_UnixMB_Yes="_Ja"
+DLG_UnixMB_No="_Nee"
+DLG_MW_MoreWindows="Nieuw Venster"
+DLG_MW_Activate="Nieuw:"
+DLG_UFS_FontTitle="Lettertype"
+DLG_UFS_FontLabel="Lettertype:"
+DLG_UFS_StyleLabel="Stijl:"
+DLG_UFS_SizeLabel="Grootte:"
+DLG_UFS_EncodingLabel="Codering:"
+DLG_UFS_EffectsFrameLabel="Effecten"
+DLG_UFS_StrikeoutCheck="Doorhalen"
+DLG_UFS_UnderlineCheck="Onderstreep"
+DLG_UFS_FontTab="   Lettertype   "
+DLG_UFS_ColorTab="   Kleur   "
+DLG_UFS_StyleRegular="Regelmatig"
+DLG_UFS_StyleItalic="Schuingedrukt"
+DLG_UFS_StyleBold="Vet"
+DLG_UFS_StyleBoldItalic="Vet En Schuingedrukt"
+DLG_FOSA_OpenTitle="Open Bestand"
+DLG_FOSA_SaveAsTitle="Bewaar Bestand Als"
+DLG_FOSA_PrintToFileTitle="Print Naar Bestand"
+DLG_FOSA_FileOpenTypeLabel="Open bestand als type:"
+DLG_FOSA_FileSaveTypeLabel="Bewaar bestand als type:"
+DLG_FOSA_FilePrintTypeLabel="Print bestand als type:"
+DLG_FOSA_FileTypeAutoDetect="Automatisch Herkenning"
+DLG_InvalidPathname="Ongeldig pad opgegeven."
+DLG_NoSaveFile_DirNotExist="Een directory in het opgegeven pad bestaat niet."
+DLG_NoSaveFile_DirNotWriteable="De directory '%s' is schrijfbeveiligd."
+DLG_OverwriteFile="Bestand bestaat al.  Overschrijven bestand '%s'?"
+DLG_Zoom_ZoomTitle="Inzoomen"
+DLG_Zoom_RadioFrameCaption="Inzoomen naar"
+DLG_Zoom_200="200%"
+DLG_Zoom_100="100%"
+DLG_Zoom_75="75%"
+DLG_Zoom_PageWidth="Pagina wijdte"
+DLG_Zoom_WholePage="Hele pagina"
+DLG_Zoom_Percent="Percentage:"
+DLG_Zoom_PreviewFrame="Voorbeschouwing"
+DLG_UP_PrintTitle="Print"
+DLG_UP_PrintTo="Printen naar: "
+DLG_UP_Printer="Printer"
+DLG_UP_File="Bestand"
+DLG_UP_PrinterCommand="Print commando: "
+DLG_UP_PageRanges="Pagina wijdte:"
+DLG_UP_All="Alles"
+DLG_UP_From="Van: "
+DLG_UP_To=" naar "
+DLG_UP_Selection="Selectie"
+DLG_UP_Collate="Collate"
+DLG_UP_Copies="Copieen: "
+DLG_UP_PrintButton="Print"
+DLG_UP_InvalidPrintString="Het print opdracht is ongeldig."
+/>
+
+<Strings	class="AP"
+MSG_SaveFailed="Kon niet schrijven naar het bestand %s."
+MSG_RevertBuffer="Revert naar bewaarde copie van %s?"
+MSG_QueryExit="Sluit alle vensters en verlaat programma?"
+MSG_ConfirmSave="Bewaar veranderingen naar %s?"
+MSG_ImportError="Fout importeren bestand %s."
+PageInfoField="Pagina: %d/%d"
+DLG_FR_FindTitle="Zoek"
+DLG_FR_ReplaceTitle="Vervang"
+DLG_FR_FindLabel="Zoek wat:"
+DLG_FR_ReplaceWithLabel="Vervang door:"
+DLG_FR_MatchCase="Match case"
+DLG_FR_FindNextButton="Zoek Volgende"
+DLG_FR_ReplaceButton="Vervang"
+DLG_FR_ReplaceAllButton="Vervang Alles"
+DLG_Break_BreakTitle="Onderbreek"
+DLG_Break_Insert="Invoegen"
+DLG_Break_SectionBreaks="Sectie onderbreking"
+DLG_Break_PageBreak="Pagina onderbreking"
+DLG_Break_ColumnBreak="Kolom onderbreking"
+DLG_Break_NextPage="Volgende pagina"
+DLG_Break_Continuous="Onafgebroken"
+DLG_Break_EvenPage="Even pagina"
+DLG_Break_OddPage="Oneven pagina"
+/>
+
+</AbiStrings>

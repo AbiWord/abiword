@@ -30,4 +30,6 @@
 
 #include "ap_Menu_LabelSet_EnUS.h"
 #include "ap_Menu_LabelSet_FiFI.h"
+#include "ap_Menu_LabelSet_DaDK.h"
+#include "ap_Menu_LabelSet_NlNL.h"
 
