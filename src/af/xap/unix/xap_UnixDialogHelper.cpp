@@ -660,26 +660,29 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg,
 6) Sets the default button to dfl_response, sets ESC to close
  */
 void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg,
-			    gint dfl_response )
+			    gint dfl_response, bool abi_modeless )
 {
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 
 	// remember the modeless id
-	XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), (XAP_Dialog_Modeless *) pDlg);
+	if (abi_modeless) {
+	  XAP_App::getApp()->rememberModelessId( pDlg->getDialogId(), (XAP_Dialog_Modeless *) pDlg);
 	
+	  // connect focus to our parent frame
+	  connectFocusModeless(GTK_WIDGET(me), XAP_App::getApp());
+	}
+
 	// Get the GtkWindow of the parent frame
 	GtkWidget * parentWindow = pUnixFrameImpl->getTopLevelWindow();
-	
-	// connect focus to our parent frame
-	connectFocusModeless(GTK_WIDGET(me), XAP_App::getApp());
+       
 	
 	// center the dialog
 	centerDialog ( parentWindow, GTK_WIDGET(me) ) ;
 	
 	// connect F1 to the help subsystem
 	g_signal_connect (G_OBJECT(me), "key-press-event",
-					  G_CALLBACK(nonmodal_keypress_cb), pDlg);
+			  G_CALLBACK(nonmodal_keypress_cb), pDlg);
 	
 	// set the default response
 	gtk_dialog_set_default_response ( me, dfl_response ) ;

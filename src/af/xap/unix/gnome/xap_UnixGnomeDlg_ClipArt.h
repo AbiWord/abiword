@@ -20,7 +20,7 @@
 #ifndef XAP_UNIXGNOMEDIALOG_CLIPART_H
 #define XAP_UNIXGNOMEDIALOG_CLIPART_H
 
-#include <libgnomeui-2.0/gnome.h>
+#include <gnome.h>
 #include "xap_Dlg_ClipArt.h"
 
 /*****************************************************************/
@@ -37,9 +37,6 @@ class XAP_UnixGnomeDialog_ClipArt: public XAP_Dialog_ClipArt
  private:
 
 	GtkWidget * _constructPreviewPane ();
-
-	GtkWidget * m_dialog;
-	gint m_index;
 };
 
 #endif /* XAP_UNIXGNOMEDIALOG_CLIPART_H */

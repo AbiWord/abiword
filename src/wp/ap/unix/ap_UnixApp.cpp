@@ -113,6 +113,7 @@
 
 #ifdef HAVE_GNOME
 #include <gnome.h>
+#include <libgnomevfs/gnome-vfs.h>
 #endif
 
 // quick hack - this is defined in ap_EditMethods.cpp
@@ -1175,8 +1176,9 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 #ifndef HAVE_GNOME
       gtk_init (&XArgs.m_argc,(char ***)&XArgs.m_argv);
 #else
-      // deprecated...
+      // deprecated...      
       gnome_init ("AbiWord", ABI_BUILD_VERSION, XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
+      gnome_vfs_init ();
 #endif
     }
 

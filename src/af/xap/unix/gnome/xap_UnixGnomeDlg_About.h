@@ -34,8 +34,6 @@ class XAP_UnixGnomeDialog_About: public XAP_Dialog_About
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	// callbacks can fire these events
-	virtual void			event_WindowDelete(void);
  private:
 };
 

@@ -25,19 +25,11 @@ INCLUDES= -UVERSION @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
 noinst_LIBRARIES = libXap_Gnome.a
 
 libXap_Gnome_a_SOURCES=\
-	xap_UnixGnomeApp.cpp               \
 	xap_UnixGnomeDlg_About.cpp         \
-	xap_UnixGnomeDlg_ClipArt.cpp	   \
-	xap_UnixGnomeDlg_Image.cpp	   \
-	xap_UnixGnomeDlg_FontChooser.cpp   \
-	xap_UnixGnomeDlg_Insert_Symbol.cpp \
-	xap_UnixGnomeDlg_MessageBox.cpp    \
-	xap_UnixGnomeDlg_Print.cpp         \
-	xap_UnixGnomeDlg_PrintPreview.cpp  \
-	xap_UnixGnomeDlg_Zoom.cpp          \
-	xap_UnixGnomeDlg_Image.cpp	\
-	xap_UnixGnomeFrame.cpp 	           \
-	xap_UnixGnomeDlg_Language.cpp	   \
-	xap_UnixGnomeDlg_Password.cpp	\
-	xap_UnixGnomeDlg_PluginManager.cpp	\
-	xap_UnixGnomePrintGraphics.cpp
+	xap_UnixGnomeDlg_ClipArt.cpp
+
+#	xap_UnixGnomeApp.cpp               \
+#	xap_UnixGnomeDlg_Print.cpp         \
+#	xap_UnixGnomeDlg_PrintPreview.cpp  \
+#	xap_UnixGnomeFrame.cpp 	           \
+#	xap_UnixGnomePrintGraphics.cpp

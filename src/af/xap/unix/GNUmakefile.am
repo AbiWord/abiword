@@ -19,7 +19,7 @@
 include $(top_srcdir)/includes.mk
 
 if WITH_GNOME
-#SUBDIRS = gnome
+SUBDIRS = gnome
 endif
 
 INCLUDES= -UVERSION @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
