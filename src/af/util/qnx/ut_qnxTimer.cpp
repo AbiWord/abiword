@@ -21,6 +21,8 @@
 #include "ut_qnxTimer.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include <Pt.h>
+#include <stdio.h>
 
 /*****************************************************************/
 	
@@ -48,8 +50,7 @@ UT_QNXTimer::~UT_QNXTimer()
 }
 
 /*****************************************************************/
-
-static int _Timer_Proc(void *p)
+static int _Timer_Proc(PtWidget_t *w, void *p, PtCallbackInfo_t *info)
 {
 	UT_QNXTimer* pTimer = (UT_QNXTimer*) p;
 	UT_ASSERT(pTimer);
@@ -62,11 +63,21 @@ static int _Timer_Proc(void *p)
 	  We need to manually reset the timer here.  This cross-platform
 	  timer was designed to emulate the semantics of Win32 timers,
 	  which continually fire until they are killed.
-	*/
 
-	pTimer->resetIfStarted();
+	  pTimer->resetIfStarted();
+	*/
 	return 0;
 }
+static void * _Timer_Thread(void *p)
+{
+	UT_QNXTimer* pTimer = (UT_QNXTimer*) p;
+	UT_ASSERT(pTimer);
+
+	pTimer->fire();
+
+	return NULL;
+}
+
 
 void UT_QNXTimer::resetIfStarted(void)
 {
@@ -91,13 +102,40 @@ UT_sint32 UT_QNXTimer::set(UT_uint32 iMilliseconds)
 
 #if 0
 	UT_sint32 idTimer = gtk_timeout_add(iMilliseconds, _Timer_Proc, this);
-	
 	setIdentifier(idTimer);
+#endif
+
+#if !defined(USE_TIMER_THREADS) 
+	PtArg_t args[5];
+	int     n = 0;
+	PtWidget_t *idTimer;
+
+	PtSetArg(&args[n++], Pt_ARG_TIMER_INITIAL, iMilliseconds, 0);
+	PtSetArg(&args[n++], Pt_ARG_TIMER_REPEAT, iMilliseconds, 0);
+	if (!(idTimer = PtCreateWidget(PtTimer, NULL, n, args))) {
+		return 1;
+	}
+	PtAddCallback(idTimer, Pt_CB_TIMER_ACTIVATE, _Timer_Proc, this);
+	//All bad things go away when I don't use this
+#if I_DONT_GET_IT
+	PtRealizeWidget(idTimer);
+#endif
+	setIdentifier((UT_sint32)idTimer);
+#else
+	//This really blows chunks
+	SIGEV_THREAD_INIT(&event, _Timer_Thread, NULL);
+	event.sigev_value.sival_ptr =  this;
+	off.it_value.tv_sec = 
+	off.it_interval.tv_sec = 0;
+	off.it_value.tv_nsec = 
+	off.it_interval.tv_nsec = iMilliseconds * 1000000;
+	timer_create(CLOCK_REALTIME, event, &timerid);
+	timer_settime(timerid, 0, &off, NULL); 
+	setIdentifier(&timerid);
 #endif
 	
 	m_iMilliseconds = iMilliseconds;
 	m_bStarted = UT_TRUE;
-
 	return 0;
 }
 
@@ -110,6 +148,18 @@ void UT_QNXTimer::stop(void)
 	if (m_bStarted)
 		gtk_timeout_remove(getIdentifier());
 #endif
+	//PtArg_t arg;
+	//PtSetArg(&arg, Pt_ARG_TIMER_INITIAL, 0, 0);
+	//PtSetResources((PtWidget_t *)getIdentifier(), 1, &arg);
+	//OR
+#if !defined(USE_TIMER_THREADS) 
+#if I_DONT_GET_IT
+	PtDestroyWidget((PtWidget_t *)getIdentifier());
+#endif
+#else
+	timer_delete(timerid);
+#endif
+	setIdentifier(0);
 	m_bStarted = UT_FALSE;
 
 	//UT_DEBUGMSG(("ut_unixTimer.cpp: timer stopped\n"));

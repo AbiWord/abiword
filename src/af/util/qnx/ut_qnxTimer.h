@@ -24,6 +24,9 @@
 
 #include "ut_timer.h"
 
+#include <sys/time.h>
+#include <sys/siginfo.h>
+
 class UT_QNXTimer : public UT_Timer
 {
 public:
@@ -38,6 +41,12 @@ public:
 protected:
 	UT_sint32 m_iMilliseconds;
 	UT_Bool m_bStarted;
+
+#if defined(USE_TIMER_THREADS) 
+	timer_t timerid;
+	struct sigevent event;
+	struct itimerspec off;
+#endif
 };
 
 #endif /* UT_QNXTIMER_H */
