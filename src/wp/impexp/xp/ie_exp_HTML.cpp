@@ -179,7 +179,7 @@ void s_HTML_Listener::_closeSection(void)
 		return;
 	}
 	
-	m_pie->write("</div>\n");
+	m_pie->write("</DIV>\n");
 	m_bInSection = UT_FALSE;
 	return;
 }
@@ -198,6 +198,11 @@ void s_HTML_Listener::_closeBlock(void)
 
 void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 {
+	if (!m_bInSection)
+	{
+		return;
+	}
+	
 	const PP_AttrProp * pAP = NULL;
 	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
@@ -217,6 +222,8 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 	}
 
 	m_pie->write(">");
+
+	m_bInBlock = UT_TRUE;
 }
 
 void s_HTML_Listener::_openSection(PT_AttrPropIndex /* api*/)
@@ -289,6 +296,11 @@ void s_HTML_Listener::_convertFontSize(char* szDest, const char* pszFontSize)
 
 void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 {
+	if (!m_bInBlock)
+	{
+		return;
+	}
+	
 	const PP_AttrProp * pAP = NULL;
 	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	
@@ -517,6 +529,11 @@ void s_HTML_Listener::_closeSpan(void)
 
 void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
+	if (!m_bInBlock)
+	{
+		return;
+	}
+	
 	// TODO deal with unicode.
 	// TODO for now, just squish it into ascii.
 	
@@ -727,23 +744,45 @@ UT_Bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
+	{
+		_closeSpan();
+		_closeBlock();
+		_closeSection();
+
+		PT_AttrPropIndex indexAP = pcr->getIndexAP();
+		const PP_AttrProp* pAP = NULL;
+		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
 		{
-			_closeSpan();
-			_closeBlock();
-			_closeSection();
-			_openSection(pcr->getIndexAP());
-			m_bInSection = UT_TRUE;
-			return UT_TRUE;
+			const XML_Char* pszSectionType = NULL;
+			pAP->getAttribute("type", pszSectionType);
+			if (
+				!pszSectionType
+				|| (0 == UT_stricmp(pszSectionType, "doc"))
+				)
+			{
+				_openSection(pcr->getIndexAP());
+				m_bInSection = UT_TRUE;
+			}
+			else
+			{
+				m_bInSection = UT_FALSE;
+			}
 		}
+		else
+		{
+			m_bInSection = UT_FALSE;
+		}
+		
+		return UT_TRUE;
+	}
 
 	case PTX_Block:
-		{
-			_closeSpan();
-			_closeBlock();
-			_openParagraph(pcr->getIndexAP());
-			m_bInBlock = UT_TRUE;
-			return UT_TRUE;
-		}
+	{
+		_closeSpan();
+		_closeBlock();
+		_openParagraph(pcr->getIndexAP());
+		return UT_TRUE;
+	}
 
 	default:
 		UT_ASSERT(0);
@@ -843,3 +882,4 @@ void s_HTML_Listener::_handleDataItems(void)
 	return;
 #endif	
 }
+
