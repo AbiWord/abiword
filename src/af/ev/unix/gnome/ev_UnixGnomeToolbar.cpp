@@ -379,15 +379,10 @@ bool EV_UnixGnomeToolbar::synthesize(void)
 
 					if (v)
 					  {
-					        UT_uint32 items = v->getItemCount();
+						  UT_uint32 items = v->getItemCount();
 
-						GtkWidget * comboBox;
-						
-						// aesthetic hack
-						if(items >= 12)
+						  GtkWidget * comboBox;
 						  comboBox = gtk_combo_text_new (TRUE);
-						else
-						  comboBox = gtk_combo_text_new (FALSE);
 
 						if (!gnome_preferences_get_toolbar_relief_btn ())
 						  gtk_combo_box_set_arrow_relief (GTK_COMBO_BOX (comboBox), GTK_RELIEF_NONE);

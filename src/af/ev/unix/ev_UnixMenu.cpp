@@ -709,6 +709,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 		{	
 			GtkWidget * w = gtk_menu_item_new();
 			UT_ASSERT(w);
+			gtk_widget_set_sensitive(w, FALSE);
 			gtk_object_set_user_data(GTK_OBJECT(w),this);
 
 			GtkWidget * wParent;
