@@ -857,11 +857,17 @@ void fp_Line::draw(GR_Graphics* pG)
 	//line can be wider than the max width due to trailing spaces
 	//UT_ASSERT(m_iWidth <= m_iMaxWidth);
 	
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG \n"));
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	
 	m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
-
+	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
+	if(((my_yoff < -32000) || (my_yoff > 32000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+//
+// offscreen don't bother.
+//
+		return;
+	}
 	dg_DrawArgs da;
 	
 	da.yoff = my_yoff + m_iAscent;

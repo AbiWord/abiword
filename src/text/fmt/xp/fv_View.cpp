@@ -3019,32 +3019,31 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 
 bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 {
+//
+// Quick hack to stop a segfault if a user tries to insert a header from
+// within a header/footer.
+//
+	bool bInsertFromHdrFtr = false;
+	PT_DocPosition oldpos = getPoint();
+	fl_HdrFtrShadow * pShadow = NULL;
+	if(isHdrFtrEdit())
+	{
+		bInsertFromHdrFtr = true;
+		pShadow = m_pEditShadow;
+		clearHdrFtrEdit();
+		warpInsPtToXY(0,0,false);
+	}
+//
+// Handle simple cases of inserting into non-existing header/footers.
+//
 	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
 	if(hfType == FL_HDRFTR_FOOTER && pDSL->getFooter() == NULL)
 	{
-//
-// Quick hack to stop a segfault if a user tries to insert a header from
-// within a footer. 
-//
-		if(isHdrFtrEdit())
-		{
-			clearHdrFtrEdit();
-			warpInsPtToXY(0,0,false);
-		}
 		insertPageNum(atts, hfType);
 		return true;
 	}
 	else if(hfType == FL_HDRFTR_HEADER && pDSL->getHeader() == NULL)
 	{
-//
-// Quick hack to stop a segfault if a user tries to insert a header from
-// within a footer. 
-//
-		if(isHdrFtrEdit())
-		{
-			clearHdrFtrEdit();
-			warpInsPtToXY(0,0,false);
-		}
 		insertPageNum(atts, hfType);
 		return true;
 	}
@@ -3094,6 +3093,11 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,atts,PTX_Block);
 
+		if(bInsertFromHdrFtr)
+		{
+			_setPoint(oldpos);
+			setHdrFtrEdit(pShadow);
+		}
 
 		// Signal PieceTable Changes have finished
 		_generalUpdate();
@@ -3140,6 +3144,12 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 
 	bRet = m_pDoc->insertObject(pos, PTO_Field, f_attributes, NULL);
 	m_pDoc->endUserAtomicGlob();
+
+	if(bInsertFromHdrFtr)
+	{
+		_setPoint(oldpos);
+		setHdrFtrEdit(pShadow);
+	}
 
 	_generalUpdate();
 
