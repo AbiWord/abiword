@@ -821,12 +821,12 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 }
 
 UT_sint32 AP_TopRuler::_findTabStop(AP_TopRulerInfo * pInfo, 
-									UT_uint32 x, UT_uint32 y, eTabType & iType, eTabLeader & iLeader)
+									UT_uint32 x, UT_uint32 y, 	
+									UT_sint32 &anchor, eTabType & iType, eTabLeader & iLeader)
 {
 	// hit-test all the existing tabs
 	// return the index of the one found
 
-	UT_sint32 anchor;
 	UT_Rect rect;
 
 	for (UT_sint32 i = 0; i < pInfo->m_iTabStops; i++)
@@ -1297,19 +1297,30 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
 
 	UT_Rect rToggle;
+
+	if (m_draggingWhat != DW_NOTHING)
+		return false;
+
 	_getTabToggleRect(&rToggle);
 	if (rToggle.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_EXCHANGE);
+		ap_RulerTicks tick(m_pG,m_dim);
+		XAP_String_Id baseTabName = AP_STRING_ID_TabToggleLeftTab-1;
+		_displayStatusMessage(baseTabName + m_iDefaultTabType);
 		return true;
 	}
 
- 	eTabType iType;
+
+ 	UT_sint32 anchor;
+	eTabType iType;
 	eTabLeader iLeader;
-	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType, iLeader);
+	ap_RulerTicks tick(m_pG,m_dim);
+	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, anchor, iType, iLeader);
 	if (iTab >= 0)
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, anchor);
 		return true;
 	}
 
@@ -1325,16 +1336,19 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	if (rLeftIndent.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick,  rLeftIndent.left);
 		return true;
 	}
 	if (rRightIndent.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, rRightIndent.left);
 		return true;
 	}
 	if (rFirstLineIndent.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		_displayStatusMessage(AP_STRING_ID_FirstLineIndentStatus, tick, rFirstLineIndent.left);
 		return true;
 	}
 
@@ -1347,6 +1361,7 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 		if (rCol.containsPoint(x,y))
 		{
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+			_displayStatusMessage(AP_STRING_ID_ColumnGapStatus, tick, 0);
 			return true;
 		}
 	}
@@ -1358,13 +1373,17 @@ bool AP_TopRuler::isMouseOverTab(UT_uint32 x, UT_uint32 y)
 	if (rLeftMargin.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, rLeftMargin.left);
 		return true;
 	}
 	if (rRightMargin.containsPoint(x,y))
 	{
 		m_pG->setCursor(GR_Graphics::GR_CURSOR_LEFTRIGHT);
+		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, rRightMargin.left);
 		return true;
 	}
+	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	pFrameData->m_pStatusBar->setStatusMessage("");
 	return false;
 }
 
@@ -1416,25 +1435,26 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 	_getTabToggleRect(&rToggle);
 	if (rToggle.containsPoint(x,y))
 	{
-		switch(m_iDefaultTabType)
+		int currentTabType = m_iDefaultTabType;
+		if(emb == EV_EMB_BUTTON1)
 		{
-			case FL_TAB_LEFT:		m_iDefaultTabType = FL_TAB_CENTER;	break;
-			case FL_TAB_CENTER:		m_iDefaultTabType = FL_TAB_RIGHT;	break;
-			case FL_TAB_RIGHT:		m_iDefaultTabType = FL_TAB_DECIMAL;	break;
-			case FL_TAB_DECIMAL:	m_iDefaultTabType = FL_TAB_BAR;	break;
-			case FL_TAB_BAR:		m_iDefaultTabType = FL_TAB_LEFT;	break;
-			default:	UT_DEBUGMSG(("Should not happen, tab type %d\n", m_iDefaultTabType));
+			currentTabType = ++currentTabType >= __FL_TAB_MAX ? FL_TAB_NONE+1 : currentTabType;
 		}
+		else
+		{
+			currentTabType = --currentTabType <= FL_TAB_NONE ? __FL_TAB_MAX-1 :  currentTabType;
+		}
+		m_iDefaultTabType = (eTabType)currentTabType;
 		_drawTabToggle(NULL, true);
-		m_pG->setCursor(GR_Graphics::GR_CURSOR_EXCHANGE);
 		return;
 	}
 
 	// next hit-test against the tabs
 
+ 	UT_sint32 anchor;
  	eTabType iType;
 	eTabLeader iLeader;
-	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType, iLeader);
+	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, anchor, iType, iLeader);
 	if (iTab >= 0)
 	{
 		if(emb == EV_EMB_BUTTON1)
@@ -1935,10 +1955,11 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 	case DW_TABSTOP:
 		{
-       			eTabType iType;
+		 	UT_sint32 anchor;
+       		eTabType iType;
 			eTabLeader iLeader;
 
-			UT_sint32 iTab = _findTabStop(&m_infoCache, xgrid+xAbsLeft, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType, iLeader);
+			UT_sint32 iTab = _findTabStop(&m_infoCache, xgrid+xAbsLeft, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, anchor, iType, iLeader);
 			
 			UT_DEBUGMSG (("iTab: %i, m_draggingTab: %i\n", iTab, m_draggingTab));
 			
@@ -2683,7 +2704,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel2);
 			double dgrid = tick.scalePixelDistanceToUnits(xrel2);
-			UT_DEBUGMSG(("SettingFirstLineIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
+			xxx_UT_DEBUGMSG(("SettingFirstLineIndent: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			
@@ -2721,7 +2742,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
 			_drawParagraphProperties(NULL,&m_infoCache,false);
-			UT_DEBUGMSG(("FirstLineIndent: r [%ld %ld %ld %ld]]n",
+			xxx_UT_DEBUGMSG(("FirstLineIndent: r [%ld %ld %ld %ld]]n",
 						 m_draggingRect.left,m_draggingRect.top,m_draggingRect.width,m_draggingRect.height));
 			_xorGuide();
 
@@ -2732,6 +2753,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 				dxrel = tick.scalePixelDistanceToUnits(xAbsRight - m_draggingCenter - m_infoCache.m_xrRightIndent);
 			else
 				dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft - m_infoCache.m_xrLeftIndent);
+#else
+			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft - m_infoCache.m_xrLeftIndent);
 #endif
 
 			_displayStatusMessage(AP_STRING_ID_FirstLineIndentStatus, tick, dxrel);
@@ -2753,7 +2776,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_sint32 xrel = ((UT_sint32)x) - xStartPixel - 1; // TODO why is the -1 necessary? w/o it problems arise.
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
-			UT_DEBUGMSG(("SettingTabStop: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
+			xxx_UT_DEBUGMSG(("SettingTabStop: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xStartPixel + xgrid;
@@ -3275,6 +3298,35 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerT
 	char temp[100];
 	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID);
 	sprintf(temp, pzMessageFormat, buf1, pText);
+
+	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	pFrameData->m_pStatusBar->setStatusMessage(temp);
+}
+
+void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID, XAP_String_Id messageID1, XAP_String_Id messageID2)
+{
+	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(FormatMessageID);
+	const XML_Char *pzMessageID1;
+	const XML_Char *pzMessageID2;
+
+	if (messageID1 >0)
+	{
+		pzMessageID1 = m_pFrame->getApp()->getStringSet()->getValue(messageID1);
+	}
+	else
+	{
+		pzMessageID1 = "";
+	}
+	if (messageID2 >0)
+	{
+		pzMessageID2 = m_pFrame->getApp()->getStringSet()->getValue(messageID2);
+	}
+	else
+	{
+		pzMessageID2 = "";
+	}
+	char temp[100];
+	sprintf(temp, pzMessageFormat, pzMessageID1, pzMessageID2);
 
 	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
 	pFrameData->m_pStatusBar->setStatusMessage(temp);

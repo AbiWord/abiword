@@ -75,6 +75,14 @@ dcl(DLG_NEW_Tab1,               "Wordprocessing")
 dcl(DLG_NEW_Tab1_WP1,           "Create a new blank document")
 dcl(DLG_NEW_Tab1_FAX1,          "Create a fax")
 	
+/* Tab Types - the order here must be consistent with the
+   order in fl_BlockLayout.h*/
+dcl(TabToggleLeftTab,			"Left Tab")
+dcl(TabToggleCenterTab,			"Center Tab")
+dcl(TabToggleRightTab,			"Right Tab")
+dcl(TabToggleDecimalTab,		"Decimal Tab")
+dcl(TabToggleBarTab,			"Bar Tab")
+
 /* Find and Replace strings */
 dcl(DLG_FR_FindTitle, 			"Find")
 dcl(DLG_FR_ReplaceTitle,		"Replace")

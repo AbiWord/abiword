@@ -165,7 +165,7 @@ protected:
 								   AP_TopRulerInfo * pInfo,
 								   bool bDrawAll = true);
 
-	UT_sint32		_findTabStop(AP_TopRulerInfo * pInfo, UT_uint32 x, UT_uint32 y, eTabType & iType, eTabLeader & iLeader);
+	UT_sint32		_findTabStop(AP_TopRulerInfo * pInfo, UT_uint32 x, UT_uint32 y, UT_sint32 & anchor, eTabType & iType, eTabLeader & iLeader);
 	const char *	_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k);
 	void			_getTabZoneRect(AP_TopRulerInfo * pInfo, UT_Rect &rZone);
 	void			_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, eTabLeader iLeader, bool bDelete);
@@ -195,6 +195,7 @@ protected:
 	bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2);
+	void		_displayStatusMessage(XAP_String_Id FormatMessageID, XAP_String_Id messageID1=0, XAP_String_Id messageID2=0);
 
 	void        _refreshView(void);
 
