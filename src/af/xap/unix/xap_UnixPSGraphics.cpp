@@ -265,6 +265,12 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_ASSERT(m_pCurrentFont);
+
+	// The GR classes are expected to take yoff as the upper-left of
+	// each glyph.  PostScript interprets the yoff as the baseline,
+	// which doesn't match this expectation.  Adding the ascent of the
+	// font will bring it back to the correct position.
+	yoff += getFontAscent();
 	
 	char buf[OUR_LINE_LIMIT*2];
 	const UT_UCSChar * pS = pChars+iCharOffset;
