@@ -576,8 +576,14 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
 	UT_ASSERT(unixapp);
 
+#ifndef WITH_PANGO	
 	XAP_UnixFontManager * fontmgr = unixapp->getFontManager();
 	UT_ASSERT(fontmgr);
+#else
+	// TODO: proper implemetation required !!!
+	XAP_UnixFontManager * fontmgr = NULL;
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+#endif
 	
 	if (m_bDoPrintToFile)
 	{

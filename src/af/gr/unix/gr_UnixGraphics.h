@@ -112,6 +112,9 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual UT_uint32 getFontAscent(GR_Font *);
 	virtual UT_uint32 getFontDescent(GR_Font *);
 	virtual UT_uint32 getFontHeight(GR_Font *);
+#else
+ private:
+	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;
 #endif
 	
  protected:

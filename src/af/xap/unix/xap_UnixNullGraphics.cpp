@@ -391,6 +391,12 @@ GR_Font* UnixNull_Graphics::findFont(const char* pszFontFamily,
 	return pFont;
 }
 
+#ifdef WITH_PANGO 
+void UnixNull_Graphics::_drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const
+{
+}
+#endif
+
 void UnixNull_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {

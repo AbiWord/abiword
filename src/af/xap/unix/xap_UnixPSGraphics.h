@@ -47,6 +47,7 @@ public:
 				XAP_App *pApp);
 	virtual ~PS_Graphics();
 
+#ifndef WITH_PANGO	
 	virtual void drawChars(const UT_UCSChar* pChars, 
 						   int iCharOffset, int iLength,
 						   UT_sint32 xoff, UT_sint32 yoff);
@@ -62,6 +63,7 @@ public:
 
 	// virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
+#endif
 	
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
@@ -110,7 +112,11 @@ public:
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);
 	virtual void setPageCount(UT_uint32 iCount) { m_iPageCount = iCount;}
-	
+
+#ifdef WITH_PANGO
+ private:
+	virtual void _drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const;
+#endif	
 
 protected:
 	UT_uint32		_scale(UT_uint32 units) const;

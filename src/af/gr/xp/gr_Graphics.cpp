@@ -45,7 +45,11 @@ UT_UCSChar GR_Graphics::m_ucRemapGlyphsDefault = 0xB0;
 UT_UCSChar *GR_Graphics::m_pRemapGlyphsTableSrc = 0;
 UT_UCSChar *GR_Graphics::m_pRemapGlyphsTableDst = 0;
 UT_uint32 GR_Graphics::m_iRemapGlyphsTableLen = 0;
+#else
+PangoContext * GR_Graphics::s_pPangoContext = NULL;
+XAP_PangoFontManager * GR_Graphics::s_pPangoFontManager = NULL;
 #endif
+
 XAP_PrefsScheme *GR_Graphics::m_pPrefsScheme = 0;
 UT_uint32 GR_Graphics::m_uTick = 0;
 
@@ -78,9 +82,10 @@ GR_Graphics::GR_Graphics()
 	m_bDontRedraw = false;
 	m_bDoMerge = false;
 #ifdef WITH_PANGO
-	m_pPangoContext = _getPangoContext();
-	UT_ASSERT(m_pPangoContext);
-	m_pPangoFontManager = new XAP_PangoFontManager(m_pPangoContext);
+	m_pLanguage = NULL;
+	// the order of these calls is important !!!
+	_initPangoContext();
+	_initFontManager();
 #endif
 }
 
@@ -91,16 +96,16 @@ GR_Graphics::~GR_Graphics()
 
 	m_instanceCount--;
 
-#ifndef WITH_PANGO
 	if(m_instanceCount == 0)
 	{
+#ifndef WITH_PANGO
 		delete[] m_pRemapGlyphsTableSrc;
 		delete[] m_pRemapGlyphsTableDst;
-	}
-#else	
-	delete m_pPangoFontManager;
-	g_free(m_pPangoContext); // not sure about the g_free here
+#else
+		delete s_pPangoFontManager;
+		g_free(s_pPangoContext); // not sure about the g_free here
 #endif
+	}
 }
 
 UT_uint32 GR_Graphics::s_getScreenResolution() 
@@ -136,7 +141,6 @@ UT_uint32 GR_Graphics::getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length
 	DELETEPV(pWidths);
 
 	return MaxWidth;
-
 }
 
 UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
@@ -305,7 +309,18 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 
 	return remap;
 }
-#endif
+
+#else
+UT_sint32 GR_Graphics::getApproxCharWidth()
+{
+	PangoFontMetrics * pMetrics = pango_font_get_metrics(m_pPangoFont, m_pLanguage);
+	UT_sint32 iWidth = pango_font_metrics_get_approximate_char_width(pMetrics);
+	pango_font_metrics_unref(pMetrics);
+	return iWidth;
+}
+#endif //#ifndef WITH_PANGO
+
+
 
 void GR_Graphics::setZoomPercentage(UT_uint32 iZoom)
 {
@@ -744,30 +759,101 @@ void GR_Graphics::doRepaint( UT_Rect * rClip)
 	
 
 #ifdef WITH_PANGO
-void GR_Graphics::drawPangoGlyphString(PangoGlyphString * pGlyphString,
+/*!
+  Draws text represented by a GList of PangoGlyphString's
+*/
+void GR_Graphics::drawPangoGlyphString(GList * pGlyphString,
 									   UT_sint32 xoff,
-									   UT_sint32 yoff)
+									   UT_sint32 yoff) const
 {
 	// first, convert the glyphs string to FT_Bitmap
 	FT_Bitmap FTBitmap;
+	UT_sint32 iWidth = 0;
+	UT_sint32 iHeight = 0;
+	
 	PangoRectangle inkRect;
 
-	pango_glyph_string_extents(pGlyphString, m_pPangoFont, &inkRect, NULL);
+	// iterate over the list calculating the total width of the bitmap, keeping track of the
+	// intermediate cumulative widths
 	
-	FTBitmap.rows       = PANGO_PIXELS(inkRect.height);
-	FTBitmap.width      = PANGO_PIXELS(inkRect.width);
+	GList * pListItem = g_list_first(pGlyphString);
+	GList * pWidthList = NULL;
+	
+	while (pListItem)
+	{
+		PangoGlyphString * pGString = (PangoGlyphString *) pListItem->data;
+		pango_glyph_string_extents(pGString, m_pPangoFont, &inkRect, NULL);
+
+		// remember the present cumulative width
+		pWidthList = g_list_append(pWidthList, (gpointer)iWidth);
+
+		iWidth += inkRect.width;
+		iHeight = UT_MAX(iHeight, inkRect.height);
+
+		pListItem = pListItem->next;
+	}
+	
+	
+	FTBitmap.rows       = PANGO_PIXELS(iHeight);
+	FTBitmap.width      = PANGO_PIXELS(iWidth);
 	FTBitmap.pixel_mode = ft_pixel_mode_grays;
 	FTBitmap.num_grays  = 256;
 	FTBitmap.pitch      = 1*FTBitmap.width;
-	FTBitmap.buffer     = (void*)UT_calloc(FTBitmap.rows * FTBitmap.width, 1);
+	FTBitmap.buffer     = (unsigned char*)UT_calloc(FTBitmap.rows * FTBitmap.width, 1);
+
+	// now itterate again, creating composite bitmap
+	pListItem = g_list_first(pGlyphString);
+	GList * pWidthItem = g_list_first(pWidthList);
 	
-	pango_ft2_render(&FTBitmap, m_pPangoFont, pGlyphString, 0 /*??*/, 0 /*??*/);
+	while (pListItem)
+	{
+		UT_ASSERT(pWidthItem);
+		
+		PangoGlyphString * pGString = (PangoGlyphString *) pListItem->data;
+		UT_sint32 iCumWidth = (UT_sint32) pWidthItem->data;
+		
+		pango_ft2_render(&FTBitmap, m_pPangoFont, pGString, iCumWidth , 0 /*??*/);
+		
+		pListItem = pListItem->next;
+		pWidthItem = pWidthItem->next;
+	}
+	
 
 	// now draw it
 	_drawFT2Bitmap(xoff, yoff, &FTBitmap);
 
 	FREEP(FTBitmap.buffer);
+	g_list_free(pWidthList);
 }
+
+/*!
+  Draws a single glyph represented by a PangoGlyphString
+ */
+void GR_Graphics::drawPangoGlyphString(PangoGlyphString * pGlyphString,
+									   UT_sint32 xoff,
+									   UT_sint32 yoff) const
+{
+	// first, convert the glyph to FT_Bitmap
+	FT_Bitmap FTBitmap;
+	PangoRectangle inkRect;
+
+	pango_glyph_string_extents(pGlyphString, m_pPangoFont, &inkRect, NULL);
+
+	FTBitmap.rows       = PANGO_PIXELS(inkRect.height);
+	FTBitmap.width      = PANGO_PIXELS(inkRect.width);
+	FTBitmap.pixel_mode = ft_pixel_mode_grays;
+	FTBitmap.num_grays  = 256;
+	FTBitmap.pitch      = 1*FTBitmap.width;
+	FTBitmap.buffer     = (unsigned char*)UT_calloc(FTBitmap.rows * FTBitmap.width, 1);
+
+	pango_ft2_render(&FTBitmap, m_pPangoFont, pGlyphString, 0 , 0 /*??*/);
+		
+	// now draw it
+	_drawFT2Bitmap(xoff, yoff, &FTBitmap);
+
+	FREEP(FTBitmap.buffer);
+}
+
 
 void GR_Graphics::setFont(PangoFont* pFont)
 {
@@ -786,12 +872,7 @@ UT_uint32 GR_Graphics::getFontAscent()
 
 UT_uint32 GR_Graphics::getFontAscent(PangoFont * pFont)
 {
-#if 0
-	PangoLanguage * pLang = pango_language_from_string(pszLang);
-#else
-#define pLang NULL
-#endif	
-	PangoFontMetrics * pMetrics = pango_font_get_metrics(pFont, pLang);
+	PangoFontMetrics * pMetrics = pango_font_get_metrics(pFont, m_pLanguage);
 	UT_uint32 iAscent = pMetrics->ascent;
 	pango_font_metrics_unref(pMetrics);
 	
@@ -805,12 +886,7 @@ UT_uint32 GR_Graphics::getFontDescent()
 
 UT_uint32 GR_Graphics::getFontDescent(PangoFont * pFont)
 {
-#if 0
-	PangoLanguage * pLang = pango_language_from_string(pszLang);
-#else
-#define pLang NULL
-#endif	
-	PangoFontMetrics * pMetrics = pango_font_get_metrics(pFont, pLang);
+	PangoFontMetrics * pMetrics = pango_font_get_metrics(pFont, m_pLanguage);
 	UT_uint32 iDescent = pMetrics->descent;
 	pango_font_metrics_unref(pMetrics);
 	
@@ -824,12 +900,7 @@ UT_uint32 GR_Graphics::getFontHeight()
 
 UT_uint32 GR_Graphics::getFontHeight(PangoFont * pFont)
 {
-#if 0
-	PangoLanguage * pLang = pango_language_from_string(pszLang);
-#else
-#define pLang NULL
-#endif	
-	PangoFontMetrics * pMetrics = pango_font_get_metrics(pFont, pLang);
+	PangoFontMetrics * pMetrics = pango_font_get_metrics(pFont, m_pLanguage);
 	UT_uint32 iHeight = pMetrics->ascent + pMetrics->descent;
 	pango_font_metrics_unref(pMetrics);
 	
@@ -843,20 +914,120 @@ PangoFont* GR_Graphics::findFont(const char* pszFontFamily,
 								 const char* pszFontStretch, 
 								 const char* pszFontSize)
 {
-	return m_pPangoFontManager->findFont(pszFontFamily, pszFontStyle, pszFontVariant,
+	return s_pPangoFontManager->findFont(pszFontFamily, pszFontStyle, pszFontVariant,
 										 pszFontWeight, pszFontStretch, pszFontSize);
 }
 
-PangoContext * GR_Graphics::_getPangoContext()
+
+void GR_Graphics::_initPangoContext()
+{
+	if(!s_pPangoContext)
+	{
+		
+		s_pPangoContext = _createPangoContext();
+	
+		// here we need to do some extra processing, such as setting the base direction
+		// default font, etc.
+	}
+	
+}
+
+void  GR_Graphics::_initFontManager()
+{
+	if(!s_pPangoFontManager)
+		s_pPangoFontManager = _createFontManager();
+}
+
+PangoContext * GR_Graphics::_createPangoContext()
 {
 	double x_dpi = (double)_getResolution();
 	double y_dpi = (double)_getResolution();
 	
-	PangoContext * pContext =  pango_ft2_get_context(x_dpi, y_dpi);
-	
-	// here we need to do some extra processing, such as setting the base direction
-	// default font, etc.
-
-	return pContext;
+	return pango_ft2_get_context(x_dpi, y_dpi);
 }
+
+XAP_PangoFontManager * GR_Graphics::_createFontManager()
+{
+	UT_ASSERT(s_pPangoContext);
+	return new XAP_PangoFontManager(s_pPangoContext);
+}
+
+GList *  GR_Graphics::getPangoGlyphString(const UT_UCS4Char * pChars, UT_uint32 iLen) const
+{
+	UT_UTF8String text(pChars);
+
+	GList * pGStringList = NULL;
+	
+	GList * pItems = pango_itemize(s_pPangoContext, text.utf8_str(), 0, text.byteLength(), NULL, NULL);
+
+	GList * pListItem = g_list_first(pItems);
+	
+	while(pListItem)
+	{
+		PangoItem * pItem = (PangoItem*) pListItem->data;
+		PangoGlyphString * pGlyphString = pango_glyph_string_new();
+		pGStringList = g_list_append(pGStringList, (gpointer)pGlyphString);
+		
+		pango_shape(text.utf8_str() + pItem->offset,pItem->length, &pItem->analysis, pGlyphString);
+
+		pango_item_free(pItem);
+
+		pListItem = pListItem->next;
+	}
+
+	g_list_free(pItems);
+	
+	return pGStringList;
+}
+
+
+PangoGlyphString * GR_Graphics::getPangoGlyphString(const UT_UCS4Char iChar) const
+{
+	UT_UTF8String text(&iChar,1);
+
+	GList * pItems = pango_itemize(s_pPangoContext, text.utf8_str(), 0, text.byteLength(), NULL, NULL);
+
+    // since there is only one char, we can use pItem directly
+	
+	PangoItem * pItem = (PangoItem*) pItems->data;
+	PangoGlyphString * pGlyphString = pango_glyph_string_new();
+	pango_shape(text.utf8_str(),pItem->length, &pItem->analysis, pGlyphString);
+
+	pango_item_free(pItem);
+	g_list_free(pItems);
+	
+	return pGlyphString;
+}
+
+
+
+void GR_Graphics::setLanguage(const char * lang)
+{
+	m_pLanguage = pango_language_from_string(lang);
+}
+
+static void s_free1PangoGlyph(gpointer data, gpointer /*unused*/)
+{
+	pango_glyph_string_free((PangoGlyphString *)data);
+}
+
+/*!
+  This function will draw a Unicode string; however, it is very inefficient
+  and should be used only for drawing into the GUI; it must not be used for
+  drawing the text in the main editing window !!!
+*/
+void GR_Graphics::drawCharsDirectly(const UT_UCS4Char* pChars, 
+									UT_uint32 iCharOffset,
+									UT_uint32 iLength,
+									UT_sint32 xoff,
+									UT_sint32 yoff) const
+{
+	GList * pGlyphs = getPangoGlyphString(pChars + iCharOffset, iLength);
+	drawPangoGlyphString(pGlyphs, xoff, yoff);
+
+	g_list_foreach(pGlyphs,s_free1PangoGlyph,NULL);
+	g_list_free(pGlyphs);
+}
+
+
 #endif

@@ -190,7 +190,7 @@ protected:
 	XAP_Menu_Factory *                      m_pMenuFactory;
 	XAP_Toolbar_Factory *                   m_pToolbarFactory;
 #ifdef HAVE_CURLHASH	
-	XAP_HashDownloader *			m_pHashDownloader;
+	XAP_HashDownloader *			        m_pHashDownloader;
 #endif
 
 	static bool 							s_bShowDisplay;

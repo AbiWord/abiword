@@ -45,7 +45,7 @@
 #include "ut_OverstrikingChars.h"
 
 
-#if 1
+#if (1 && !defined(WITH_PANGO))
 #include <gdk/gdkprivate.h>
 static bool isFontUnicode(GdkFont *font)
 {
@@ -153,6 +153,7 @@ bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
+#ifndef WITH_PANGO
 /* let's cache this, since construction of UT_Wctomb is rather slow */
 static UT_Wctomb* w = NULL;
 static char text[MB_LEN_MAX];
@@ -179,7 +180,7 @@ static bool fallback_used;
 		}	\
 	}	
 
-#ifndef WITH_PANGO 
+
 // HACK: I need more speed
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
@@ -526,7 +527,15 @@ UT_uint32 GR_UnixGraphics::measureString(const UT_UCSChar* s, int iOffset,
 }
 #endif
 
-#endif // #ifndef WITH_PANGO 
+#else
+void GR_UnixGraphics::_drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) const
+{
+	// TODO: provide implementation ...
+}
+
+#endif // #ifndef WITH_PANGO
+
+
 UT_uint32 GR_UnixGraphics::_getResolution(void) const
 {
 	// this is hard-coded at 100 for X now, since 75 (which

@@ -30,7 +30,10 @@
 class XAP_Args;
 class AP_UnixToolbar_Icons;
 class AV_View;
+
+#ifndef WITH_PANGO
 class XAP_UnixFontManager;
+#endif
 
 /*****************************************************************
 ******************************************************************
@@ -64,8 +67,10 @@ public:
 																const char **pszFormatFound) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
 
+#ifndef WITH_PANGO
 	XAP_UnixFontManager *					getFontManager();
-
+#endif
+	
 	typedef enum
 	{
 		GEOMETRY_FLAG_POS = 	1 << 0,
@@ -91,14 +96,19 @@ public:
 	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
 
 protected:
+#ifndef WITH_PANGO	
 	bool							_loadFonts();
+#endif
+	
 	void							_setAbiSuiteLibDir();
 
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;
+#ifndef WITH_PANGO	
 	XAP_UnixFontManager *			m_fontManager;
-
+#endif
+	
 	windowGeometry			m_geometry;
 	UT_uint32					m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard

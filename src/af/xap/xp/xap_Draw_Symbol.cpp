@@ -83,12 +83,16 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 	GR_Font * found = NULL;
 
 	int SizeOK = false;
-	UT_UCSChar *p_buffer = new UT_UCSChar[224];
-	for(int i = 0; i < 224; i++)
+
+#define SYMBOL_COUNT 224	
+#ifndef WITH_PANGO	
+	UT_UCSChar *p_buffer = new UT_UCSChar[SYMBOL_COUNT];
+	for(int i = 0; i < SYMBOL_COUNT; i++)
 	{
 		p_buffer[i] = i + 32;
 	}
-
+#endif
+	
 	while(!SizeOK)
 	{
 		char temp[10];
@@ -119,7 +123,12 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 
 		if(found)
 		{
-			UT_uint32 MaxWidth = p_gc->getMaxCharacterWidth(p_buffer, 224);
+#ifndef WITH_PANGO			
+			UT_uint32 MaxWidth = p_gc->getMaxCharacterWidth(p_buffer, SYMBOL_COUNT);
+#else
+			UT_sint32 MaxWidth = SYMBOL_COUNT *	p_gc->getApproxCharWidth();
+#endif
+			
 			if(MaxWidth < MaxWidthAllowable)
 			{
 				SizeOK = true;
@@ -132,9 +141,9 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 			}
 		}
 	}
-
+#ifndef WITH_PANGO
 	delete p_buffer;
-
+#endif
 }
 
 char * XAP_Draw_Symbol::getSelectedFont(void)
@@ -180,7 +189,13 @@ void XAP_Draw_Symbol::draw(void)
 		c = (char) (i + 32);
 		for(j = 0; j <= 6; j++)
 		{
+#ifndef WITH_PANGO			
 			m_gc->drawChar(c, x, y);
+#else
+			PangoGlyphString * pGlyph = m_gc->getPangoGlyphString(c);
+			m_gc->drawPangoGlyphString(pGlyph, x, y);
+			pango_glyph_string_free(pGlyph);
+#endif			
 			y += tmph;
 			c += 32;
 		}
@@ -233,13 +248,28 @@ void XAP_Draw_Symbol::drawarea( UT_UCSChar c, UT_UCSChar p)
 	wheight = m_drawareaHeight;
 	
 	// Centre the character.
+#ifndef WITH_PANGO 	
 	UT_GrowBufElement CharacterWidth;
 	m_areagc->measureString(&c, 0, 1, &CharacterWidth);
+#else	
+	PangoGlyphString * pGlyph = m_areagc->getPangoGlyphString(c);
+	PangoRectangle ink_rect;
+	UT_sint32 CharacterWidth;
+
+	pango_glyph_string_extents(pGlyph, m_pFont, &ink_rect, NULL);
+	CharacterWidth = ink_rect.width;
+#endif	
+	
 	x = (m_drawareaWidth - CharacterWidth) / 2;
 	y = (m_drawareaHeight - m_areagc->getFontHeight()) / 2;
 
 	m_areagc->clearArea(0, 0, wwidth, wheight);
+#ifndef WITH_PANGO	
 	m_areagc->drawChar(c, x, y);
+#else
+	m_areagc->drawPangoGlyphString(pGlyph,x,y);
+#endif
+	
 	//
 	// Calculate the cordinates of the current and previous symbol
 	// along with the widths of the appropriate boxes.
@@ -265,13 +295,26 @@ void XAP_Draw_Symbol::drawarea( UT_UCSChar c, UT_UCSChar p)
 	// Redraw the Previous Character in black on White
 	//
 	m_gc->clearArea(px + 1, py + 1, tmpw - 1, tmph - 1);
+#ifndef WITH_PANGO	
 	m_gc->drawChar(p, px + 2, py);
+#else
+	PangoGlyphString * pGlyph2 = m_gc->getPangoGlyphString(p);
+	m_gc->drawPangoGlyphString(pGlyph2, px + 2, py);
+#endif
+	
 	// 
 	// Redraw the Current Character in black on Blue
 	//
 	UT_RGBColor colour(128, 128, 192);
 	m_gc->fillRect(colour, cx + 1, cy + 1, tmpw - 1, tmph - 1);
+#ifndef WITH_PANGO	
 	m_gc->drawChar(c, cx + 2, cy);
+#else
+	m_gc->drawPangoGlyphString(pGlyph, cx + 2, cy);
+
+	pango_glyph_string_free(pGlyph);
+	pango_glyph_string_free(pGlyph2);
+#endif	
 }
 
 void XAP_Draw_Symbol::onLeftButtonDown(UT_sint32 x, UT_sint32 y)

@@ -44,7 +44,6 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixFontXLFD.cpp			\
 			xap_UnixFont.cpp			\
 			xap_UnixPSFont.cpp			\
-			xap_UnixFontManager.cpp			\
 			xap_UnixFrame.cpp			\
 			xap_UnixToolbar_Icons.cpp		\
 			xap_UnixModule.cpp                      \
@@ -60,6 +59,10 @@ CPPSRCS=		xap_UnixApp.cpp				\
 ifneq ($(ABI_OPT_GNOME),1)
 CPPSRCS +=		xap_UnixDlg_About.cpp			\
 			xap_UnixDlg_PrintPreview.cpp            
+endif
+
+ifneq ($(ABI_OPT_PANGO),1)
+CPPSRCS +=		xap_UnixFontManager.cpp
 endif
 
 TARGETS=		$(OBJS)

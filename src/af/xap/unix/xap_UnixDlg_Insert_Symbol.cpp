@@ -244,7 +244,11 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_unixGraphics);
+#ifndef WITH_PANGO	
 	m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
+#else
+	m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, m_pApp);
+#endif 	
 
 	// let the widget materialize
 	_createSymbolFromGC(m_unixGraphics,
@@ -256,7 +260,11 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new Unix GC
 	DELETEP (m_unixarea);
+#ifndef WITH_PANGO	
 	m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window, unixapp->getFontManager(), m_pApp);
+#else
+	m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window,m_pApp);
+#endif
 		
 	// let the widget materialize
 	_createSymbolareaFromGC(m_unixarea,
@@ -560,17 +568,32 @@ GtkWidget *XAP_UnixDialog_Insert_Symbol::_previewNew (int w, int h)
 
 GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 {	  
+#ifndef WITH_PANGO	
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	UT_Vector * list = unixapp->getFontManager()->getAllFonts();
 	UT_uint32 count = list->size();
+#endif
+
 	GList *glFonts = NULL;
 	gchar currentfont[50] = "\0";
 	UT_uint32 j = 0;
-	
+
+#ifndef WITH_PANGO	
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		XAP_UnixFont * pFont = (XAP_UnixFont *)list->getNthItem(i);
 		gchar * lgn  = (gchar *) pFont->getName();
+#else
+	const XAP_PangoFontManager * pManager = GR_Graphics::getFontManager();
+	UT_ASSERT(pManager);
+
+	UT_uint32 iFontCount =  pManager->getAvailableFontFamiliesCount();
+
+	for (UT_uint32 i = 0; i < iFontCount; i++)
+	{
+		gchar * lgn  = (gchar *) pManager->getNthAvailableFontFamily(i);
+#endif	
+		
 		if((strstr(currentfont,lgn)==NULL) || (strlen(currentfont)!=strlen(lgn)) )
 		{
 			strncpy(currentfont, lgn, 50);
@@ -578,10 +601,14 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 			glFonts = g_list_prepend(glFonts, m_fontlist[j++]);
 		}
 	}
+	
 
 	m_Insert_Symbol_no_fonts = j;
-	DELETEP(list);
 
+#ifndef WITH_PANGO
+	DELETEP(list);
+#endif
+	
 	return g_list_reverse(glFonts);
 }
 

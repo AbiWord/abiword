@@ -30,6 +30,9 @@
 
 XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 	: XAP_Preview(gc)
+#ifdef WITH_PANGO
+	  ,m_pGlyphString(NULL)
+#endif	
 {
 	m_string = NULL;
 	m_pFont = NULL;
@@ -41,10 +44,30 @@ XAP_Preview_Zoom::XAP_Preview_Zoom(GR_Graphics * gc)
 
 }
 
+#ifdef WITH_PANGO
+static void s_free1PangoGlyphString(gpointer pGlyphString, gpointer /*data*/)
+{
+	pango_glyph_string_free((PangoGlyphString*)pGlyphString);
+}
+
+void XAP_Preview_Zoom::_freeGlyphString()
+{
+	if(m_pGlyphString)
+	{
+		g_list_foreach(m_pGlyphString, s_free1PangoGlyphString, NULL);
+		g_list_free(m_pGlyphString);
+		m_pGlyphString = NULL;
+	}
+}
+#endif
+
 XAP_Preview_Zoom::~XAP_Preview_Zoom()
 {
 	FREEP(m_string);
 	DELETEP(m_pFont);
+#ifdef WITH_PANGO
+	_freeGlyphString();
+#endif
 }
 
 void XAP_Preview_Zoom::setDrawAtPosition(XAP_Preview_Zoom::tPos pos)
@@ -112,6 +135,13 @@ bool XAP_Preview_Zoom::setString(const char * string)
 	UT_ASSERT(string);
 	
 	FREEP(m_string);
+
+#ifdef WITH_PANGO
+	// free the glyph string and set it to NULL, we will leave it to the draw() routine
+	// to refill it
+	_freeGlyphString();
+#endif
+	
 	bool foo = UT_UCS4_cloneString_char(&m_string, string);
 	return foo;
 }
@@ -122,6 +152,13 @@ bool XAP_Preview_Zoom::setString(UT_UCSChar * string)
 	UT_ASSERT(string);
 	
 	FREEP(m_string);
+
+#ifdef WITH_PANGO
+	// free the glyph string and set it to NULL, we will leave it to the draw() routine
+	// to refill it
+	_freeGlyphString();
+#endif
+
 	bool foo = UT_UCS4_cloneString(&m_string, string);
 	return foo;
 }
@@ -133,5 +170,14 @@ void XAP_Preview_Zoom::draw(void)
 	
 	// TODO : replace 5,5 with real coordinates
 	m_gc->clearArea(0, 0, getWindowWidth(), getWindowHeight());
+
+#ifndef WITH_PANGO	
 	m_gc->drawChars(m_string, 0, UT_UCS4_strlen(m_string), 5, 5);
+#else
+	if(!m_pGlyphString)
+		m_pGlyphString = m_gc->getPangoGlyphString(m_string,UT_UCS4_strlen(m_string));
+
+	m_gc->drawPangoGlyphString(m_pGlyphString, 5, 5);
+#endif
+	
 }

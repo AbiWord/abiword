@@ -49,7 +49,11 @@ public:
 
     // where all the zoom-specific drawing happens
 	void	draw(void);
-	
+#ifdef WITH_PANGO
+ private:
+	void _freeGlyphString();
+#endif
+		
 protected:
 
 	XAP_Preview_Zoom::tPos	m_pos;
@@ -59,6 +63,9 @@ protected:
 	UT_UCSChar * 			m_string;
 
 	GR_Font *				m_pFont;	// so we can delete it
+#ifdef WITH_PANGO	
+	GList *                 m_pGlyphString;
+#endif	
 };
 
 #endif /* XAP_PREVIEW_ZOOM_H */

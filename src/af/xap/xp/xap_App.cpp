@@ -47,6 +47,7 @@
 #ifdef HAVE_CURLHASH	
 #include "xap_HashDownloader.h"
 #endif
+
 /*****************************************************************/
 
 XAP_App * XAP_App::m_pApp = NULL;
@@ -205,6 +206,7 @@ bool XAP_App::initialize()
 	//
 	UT_uint32 t = (UT_uint32) time( NULL);
 	UT_srandom(t);
+
 	return true;
 }
 

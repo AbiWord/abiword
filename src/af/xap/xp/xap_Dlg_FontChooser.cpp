@@ -388,6 +388,9 @@ bool XAP_Dialog_FontChooser::getChangedBottomline(bool * pbBottomline) const
 
 XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Char * pszClrBackground)
 	: XAP_Preview(gc)
+#ifdef WITH_PANGO
+	  , m_pGlyphString(NULL)
+#endif	
 {
 	if(pszClrBackground != NULL && strcmp(pszClrBackground,"transparent")!=0)
 		UT_parseColor(pszClrBackground,m_clrBackground);
@@ -396,8 +399,22 @@ XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Cha
 	
 }
 
+#ifdef WITH_PANGO
+static void s_free1PangoGlyphString(gpointer pGlyphString, gpointer /*data*/)
+{
+	pango_glyph_string_free((PangoGlyphString*)pGlyphString);
+}
+#endif
+
 XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
 {
+#ifdef WITH_PANGO
+	if(m_pGlyphString)
+	{
+		g_list_foreach(m_pGlyphString, s_free1PangoGlyphString, NULL);
+		g_list_free(m_pGlyphString);
+	}
+#endif	
 }
 
 /*!
@@ -525,7 +542,25 @@ void XAP_Preview_FontPreview::draw(void)
 	UT_sint32 iWinHeight = getWindowHeight();
 	UT_sint32 iTop = (iWinHeight - iHeight)/2;
 	UT_sint32 len = UT_UCS4_strlen(m_pszChars);
+#ifndef WITH_PANGO	
 	UT_sint32 twidth = m_gc->measureString(m_pszChars,0,len,NULL);
+#else
+	PangoRectangle ink_rect;
+	UT_uint32 twidth = 0;
+	
+	if(!m_pGlyphString)
+		m_pGlyphString = m_gc->getPangoGlyphString(m_pszChars,len);
+	
+	GList * pListItem = g_list_first(m_pGlyphString);
+	while (pListItem)
+	{
+		PangoGlyphString * pGString = (PangoGlyphString *) pListItem->data;
+		pango_glyph_string_extents(pGString, pFont, & ink_rect, NULL);
+		twidth += ink_rect.width;
+		pListItem = pListItem->next;
+	}
+#endif
+	
 	UT_sint32 iLeft = (iWinWidth - twidth)/2;
 //
 // Fill the background color
@@ -536,7 +571,12 @@ void XAP_Preview_FontPreview::draw(void)
 // Do the draw chars at last!
 //
 	m_gc->setColor(FGcolor);
+#ifndef WITH_PANGO	
 	m_gc->drawChars(m_pszChars, 0, len, iLeft, iTop);
+#else
+	m_gc->drawPangoGlyphString(m_pGlyphString, iLeft, iTop);
+#endif
+	
 //
 // Do the decorations
 //

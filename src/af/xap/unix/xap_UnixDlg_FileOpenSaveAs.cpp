@@ -779,7 +779,12 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// attach and clear the area immediately
+#ifndef WITH_PANGO	
 	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
+#else
+	GR_UnixGraphics* pGr = new GR_UnixGraphics(m_preview->window, m_pApp);
+#endif
+	
 	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
 
 	gchar * buf = gtk_file_selection_get_filename (m_FS);
@@ -806,7 +811,11 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	if (!buf)
 	  {
+#ifndef WITH_PANGO 		  
 	    pGr->drawChars (ucstext, 0, len, 12, 35);
+#else
+		pGr->drawCharsDirectly(ucstext,0,len,12,35);
+#endif		
 	    goto Cleanup;
 	  }
 
@@ -814,12 +823,20 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	struct stat st;
 	if (!stat (buf, &st)) {
 		if (!S_ISREG(st.st_mode)) {
+#ifndef WITH_PANGO			
 			pGr->drawChars (ucstext, 0, len, 12, 35);
+#else
+			pGr->drawCharsDirectly(ucstext,0,len,12,35);
+#endif		
 			goto Cleanup;
 		}
 	}
 	else {
+#ifndef WITH_PANGO		
 		pGr->drawChars (ucstext, 0, len, 12, 35);
+#else
+		pGr->drawCharsDirectly(ucstext,0,len,12,35);
+#endif		
 		goto Cleanup;
 	}
 
@@ -832,7 +849,11 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	if ((errorCode != UT_OK) || !pIEG)
 	{
 		DELETEP(pBB);
+#ifndef WITH_PANGO		
 		pGr->drawChars (ucstext, 0, len, 12, 35);
+#else
+		pGr->drawCharsDirectly(ucstext,0,len,12,35);
+#endif		
 		goto Cleanup;
 	}
 
@@ -840,7 +861,11 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 
 	if ((errorCode != UT_OK) || !pGraphic)
 	  {
+#ifndef WITH_PANGO		  
 	    pGr->drawChars (ucstext, 0, len, 12, 35);
+#else
+		pGr->drawCharsDirectly(ucstext,0,len,12,35);
+#endif		
 	    goto Cleanup;
 	  }
 

@@ -21,7 +21,13 @@
 #define XAP_UNIXDIALOG_FONTCHOOSER_H
 
 #include "xap_App.h"
+
+#ifndef WITH_PANGO
 #include "xap_UnixFontManager.h"
+#else
+#include "xap_PangoFontManager.h"
+#endif
+
 #include "xap_Dlg_FontChooser.h"
 #include "ut_misc.h"
 
@@ -52,7 +58,11 @@ public:
 
 	// the state of what data is hidden and what is public is
 	// pretty grave here.
+#ifndef WITH_PANGO	
 	XAP_UnixFontManager * 	m_fontManager;
+#else
+	const XAP_PangoFontManager * 	m_fontManager;
+#endif	
 	GtkWidget * 			m_fontList;
 	GtkWidget * 			m_styleList;
 	GtkWidget * 			m_sizeList;
@@ -105,7 +115,11 @@ protected:
 
 	// a temporary font to hold dynamically allocated "rented"
 	// fonts between style changes
+#ifndef WITH_PANGO	
 	XAP_UnixFontHandle * 	m_lastFont;
+#else
+	PangoFont *             m_lastFont;
+#endif	
 
 	// parent frame
 	XAP_UnixFrame *			m_pUnixFrame;

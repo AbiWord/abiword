@@ -146,7 +146,12 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 
 	// attach a new graphics context
 	XAP_App *pApp = pUnixFrame->getApp();
+	
+#ifndef WITH_PANGO	
 	m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, NULL, pApp);
+#else
+	m_gc = new GR_UnixGraphics(m_drawingareaGraphic->window, pApp);
+#endif
 	
 	// Run into the GTK event loop for this window.
 	gtk_main();
