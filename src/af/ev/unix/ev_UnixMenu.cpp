@@ -512,15 +512,11 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 
 					// check boxes 
 					if (GTK_IS_CHECK_MENU_ITEM(item))
-						gtk_check_menu_item_set_state((GtkCheckMenuItem *) item, bCheck);
+						GTK_CHECK_MENU_ITEM(item)->active = bCheck;
 					// all get the gray treatment
 					gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 					break;
 				}
-
-				// get the current menu info for this item.
-//				bEnable = GTK_WIDGET_SENSITIVE(item);
-//				bCheck = item->check;
 
 				// this item has a dynamic label...
 				// compute the value for the label.
@@ -552,7 +548,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 
 						// check boxes and disable
 						if (GTK_IS_CHECK_MENU_ITEM(item))
-							gtk_check_menu_item_set_state((GtkCheckMenuItem *) item, bCheck);
+							GTK_CHECK_MENU_ITEM(item)->active = bCheck;
 						gtk_widget_set_sensitive((GtkWidget *) item, bEnable);
 
 						// Will we need to handle this case?
@@ -608,7 +604,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 			UT_ASSERT(0);
 			break;
 		}
-
+		
 	}
 
 	return UT_TRUE;
