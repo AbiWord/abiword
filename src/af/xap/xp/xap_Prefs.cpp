@@ -117,8 +117,8 @@ bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 		if (strcmp(szValue,pEntry) == 0)
 			return true;				// equal values, no changes required
 		
-		FREEP(pEntry);
 		m_hash.set (szKey, UT_strdup (szValue));
+		FREEP(pEntry);
 	}
 	else
 	{
