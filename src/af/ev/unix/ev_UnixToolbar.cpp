@@ -480,13 +480,6 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					// Disable/enable toolbar item
 					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
 
-					// NOTE: we always update the control even if !bString
-					// Is this logic correct at all?
-					//if (GTK_ENTRY(item->entry)->text_length > 0)
-					//	gtk_entry_select_region(GTK_ENTRY(item->entry), 0, GTK_ENTRY(item->entry)->text_length);
-					//else
-
-					// block the signals
 					// Block the signal, throw the toggle event
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
@@ -502,24 +495,6 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 								 ((bString) ? szState : "no state")));
 					
 
-					/////////////////////////////////////////////////
-#if 0					
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					UT_Bool bString = EV_TIS_ShouldUseString(tis);
-
-					HWND hwndCombo = _getControlWindow(id);
-					UT_ASSERT(hwndCombo);
-
-					// NOTE: we always update the control even if !bString
-					int idx = SendMessage(hwndCombo, CB_SELECTSTRING, (WPARAM)-1, (LPARAM)szState);
-					if (idx==CB_ERR)
-						SetWindowText(hwndCombo, szState);
-
-					UT_DEBUGMSG(("refreshToolbar: ComboBox [%s] is %s and %s\n",
-								 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
-								 ((bGrayed) ? "disabled" : "enabled"),
-								 ((bString) ? szState : "no state")));
-#endif
 				}
 				break;
 				case EV_TBIT_StaticLabel:
