@@ -727,8 +727,8 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
 	GR_Win32Graphics* pGr = new GR_Win32Graphics(hdc,hThumbnail,XAP_App::getApp());
 	pGr->drawImage(pImage,
-				  (r.right	- scaled_width ) / 2,
-				  (r.bottom - scaled_height) / 2);
+				   pGr->tlu((r.right	- scaled_width ) / 2),
+				   pGr->tlu((r.bottom - scaled_height) / 2));
 	EndPaint(hThumbnail,&ps);
 
 	DELETEP(pBB);
