@@ -8,6 +8,7 @@
 #       and we can state that dev people need Perl on their machine
 #
 
+rm -rf autom4te.cache
 rm -f autogen.err
 
 automake --version | perl -ne 'if (/\(GNU automake\) ([0-9].[0-9])/) {print;  if ($1 < 1.4) {exit 1;}}'
@@ -90,3 +91,4 @@ echo ""
 echo "You can run ./configure now."
 echo ""
 
+rm -rf autom4te.cache
