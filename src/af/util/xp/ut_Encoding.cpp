@@ -61,6 +61,10 @@
 static XML_Char * enc_armscii[]	= {"ARMSCII-8",0};
 static XML_Char * enc_big5[]	= {"BIG5","BIG-5","BIG-FIVE","BIGFIVE","CN-BIG5",0};
 static XML_Char * enc_big5hkscs[]	= {"BIG5-HKSCS","BIG5HKSCS",0};
+#ifdef WIN32 /* DOS/Win32 console encodings, peer iconv supports, others may not */
+static XML_Char * enc_cp437[]	= {"C437","IBM437","437",0};
+static XML_Char * enc_cp850[]	= {"C850","IBM850","850",0};
+#endif
 static XML_Char * enc_cp874[]	= {"CP874",0};
 static XML_Char * enc_cp932[]	= {"CP932",0};
 static XML_Char * enc_cp936[]	= {"CP936","GBK",0};
@@ -141,6 +145,10 @@ static enc_entry s_Table[] =
 	{enc_armscii,			NULL, XAP_STRING_ID_ENC_ARME_ARMSCII},
 	{enc_big5,				NULL, XAP_STRING_ID_ENC_CHTR_BIG5},
 	{enc_big5hkscs,				NULL, XAP_STRING_ID_ENC_CHTR_BIG5HKSCS},
+#ifdef WIN32
+	{enc_cp437,				NULL, XAP_STRING_ID_ENC_US_DOS},
+	{enc_cp850,				NULL, XAP_STRING_ID_ENC_MLNG_DOS},
+#endif
 	{enc_cp874,				NULL, XAP_STRING_ID_ENC_THAI_WIN},
 	{enc_cp932,				NULL, XAP_STRING_ID_ENC_JAPN_WIN},
 	{enc_cp936,				NULL, XAP_STRING_ID_ENC_CHSI_WIN},

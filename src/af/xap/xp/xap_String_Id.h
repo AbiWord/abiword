@@ -360,6 +360,8 @@ dcl(ENC_WEST_ASCII, 					"US-ASCII")
 /* Western Europe */
 dcl(ENC_WEST_ISO,						"Western European, ISO-8859-1")
 dcl(ENC_WEST_WIN,						"Western European, Windows Code Page 1252")
+dcl(ENC_US_DOS,						"Western European, DOS/Windows Code Page 437")
+dcl(ENC_MLNG_DOS,						"Western European, DOS/Windows Code Page 850")
 dcl(ENC_WEST_MAC,						"Western European, Macintosh")
 dcl(ENC_WEST_HP,						"Western European, HP")
 dcl(ENC_WEST_NXT,						"Western European, NeXT")

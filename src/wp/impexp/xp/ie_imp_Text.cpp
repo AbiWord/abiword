@@ -787,8 +787,11 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream)
 				break;
 
 		// if we encounter any of the following characters we will
-		// return error code immediately, as these have no
-		// business in text files
+		// substitute a '?' as they correspond to control characters,
+		// though some text files use them for their character representations
+		// We do this instead of of immediately returning an error
+		// (and assuming they have no business in a text file) so we can
+		// still show usable text to a user who has one of these files.
 		case 0x0000:
 		case 0x0001:
 		case 0x0002:
@@ -816,7 +819,9 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream)
 		case 0x001d:
 		case 0x001e:
 		case 0x001f:
-			return UT_ERROR;
+			UT_ASSERT(!(c <= 0x001f));
+			c = '?';
+			/* return UT_ERROR; // fall through with modified character */
 			
 		default:
 			X_ReturnNoMemIfError(gbBlock.append(reinterpret_cast<UT_GrowBufElement*>(&c),1));
