@@ -2257,19 +2257,27 @@ bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 				XAP_App * pApp = XAP_App::getApp();
 
 				UT_UCSChar theWord[101];
-				// convert smart quote apostrophe to ASCII single quote to be compatible with ispell
+
+				UT_uint32 newLength = wordLength;
 				for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
 				{
 					UT_UCSChar currentChar;
 					currentChar = pBlockText[wordBeginning + ldex];
+
+					// remove UCS_ABI_OBJECT from the word
+					if (currentChar == UCS_ABI_OBJECT) {
+					  newLength--; continue;
+					}
+
+				        // convert smart quote apostrophe to ASCII single quote to be compatible with ispell
 					if (currentChar == UCS_RQUOTE) currentChar = '\'';
-					theWord[ldex] = currentChar;
+					theWord[ldex - (wordLength - newLength)] = currentChar;
 				}
 				
-			   	if (!SpellCheckNWord16(theWord, wordLength) &&
-					!pApp->isWordInDict(theWord, wordLength))
+			   	if (!SpellCheckNWord16(theWord, newLength) &&
+					!pApp->isWordInDict(theWord, newLength))
 				{
-					bool bIsIgnored = pDoc->isIgnore(theWord, wordLength);
+					bool bIsIgnored = pDoc->isIgnore(theWord, newLength);
 
 					// unknown word...
 					if (bToggleIP && !bUpdateScreen)
