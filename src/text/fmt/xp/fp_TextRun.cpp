@@ -61,7 +61,6 @@ UT_Timer * fp_TextRun::s_pPrefsTimer = 0;
 UT_uint32  fp_TextRun::s_iClassInstanceCount = 0;
 UT_sint32 * fp_TextRun::s_pCharAdvance = NULL;
 UT_uint32  fp_TextRun::s_iCharAdvanceSize = 0;
-UT_UCSChar getMirrorChar(UT_UCSChar c);
 
 
 fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
@@ -2409,41 +2408,31 @@ void fp_TextRun::_refreshDrawBuffer()
 
 			UT_uint32 iTrueLen = (lenSpan > len) ? len : lenSpan;
 
-			if(_getDirection() != FRIBIDI_TYPE_ON || iVisDir != FRIBIDI_TYPE_RTL)
+			/*
+			  here we need to handle context glyph shapes. For that we will
+			  use our class UT_contextGlyph, for which we need to retrieve
+			  one character before the one in question and an unspecified
+			  number of chars to follow.
+			*/
+			if(s_bUseContextGlyphs)
 			{
-				/*
-					here we need to handle context glyph shapes. For that we will
-					use our class UT_contextGlyph, for which we need to retrieve
-					one character before the one in question and an unspecified
-					number of chars to follow.
-				*/
-				if(s_bUseContextGlyphs)
-				{
-					// now we will retrieve 5 characters that follow this part of the run
-					// and two chars that precede it
+				// now we will retrieve 5 characters that follow this part of the run
+				// and two chars that precede it
 
-					// three small buffers, one to keep the chars past this part
-					// and one that we will use to create the "trailing" chars
-					// for each character in this fragment
-					UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
-					UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
+				// three small buffers, one to keep the chars past this part
+				// and one that we will use to create the "trailing" chars
+				// for each character in this fragment
+				UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
+				UT_UCSChar prev[CONTEXT_BUFF_SIZE + 1];
 
 
-					// NB: _getContext requires block offset
-					_getContext(pSpan,lenSpan,len,offset+getBlockOffset(),&prev[0],&next[0]);
-					cg.renderString(pSpan, &m_pSpanBuff[offset],iTrueLen,&prev[0],&next[0],m_pLanguage);
-				}
-				else //do not use context glyphs
-				{
-					UT_UCS4_strncpy(m_pSpanBuff + offset, pSpan, iTrueLen);
-				}
+				// NB: _getContext requires block offset
+				_getContext(pSpan,lenSpan,len,offset+getBlockOffset(),&prev[0],&next[0]);
+				cg.renderString(pSpan, &m_pSpanBuff[offset],iTrueLen,&prev[0],&next[0],m_pLanguage, iVisDir);
 			}
-			else
+			else //do not use context glyphs
 			{
-				//this is 'other neutral' visually rtl span, we need to deal
-				//with mirror characters
-				for (UT_uint32 i = 0; i < iTrueLen; i++)
-					m_pSpanBuff[offset + i] = getMirrorChar(pSpan[i]);
+				UT_UCS4_strncpy(m_pSpanBuff + offset, pSpan, iTrueLen);
 			}
 
 			if(iTrueLen == len)
@@ -3551,17 +3540,6 @@ void fp_TextRun::setDirection(FriBidiCharType dir, FriBidiCharType dirOverride)
 			//getLine()->setNeedsRedraw();
 		}
 	}
-}
-
-UT_UCSChar getMirrorChar(UT_UCSChar c)
-{
-	//got to do this, otherwise bsearch screws up
-	FriBidiChar fbc = (FriBidiChar) c, mfbc;
-
-	if (fribidi_get_mirror_char (/* Input */ fbc, /* Output */&mfbc))
-		return (UT_UCSChar) mfbc;
-	else
-		return c;
 }
 
 void fp_TextRun::_refreshPrefs(UT_Worker * /*pWorker*/)

@@ -356,20 +356,18 @@ s_fieldFontForListStyle (MSWordListIdType id)
 // weak characters; this function translates language id to the
 // overrided direction
 // TODO: list of RTL languages is incomplete (the values are found in winnt.h)
-#if 0
 #define PRIMARY_LANG_ID(lgid)    ((short int)(lgid) & 0x3ff)
-static FriBidiCharType s_LanguageToDirection(short unsigned int lid)
+static bool s_isLanguageRTL(short unsigned int lid)
 {
 	switch(PRIMARY_LANG_ID(lid))
 	{
 		case 0x0d:
 	    case 0x01:
-			return FRIBIDI_TYPE_RTL;
+			return true;
 		default:
-		    return FRIBIDI_TYPE_LTR;
+		    return false;
 	}
 }
-#endif
 /****************************************************************************/
 /****************************************************************************/
 
@@ -537,6 +535,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bPrevStrongCharRTL(false),
 	m_bLTRCharContext(true),
 	m_bLTROverrideIssued(false),
+	m_bLanguageRTL(false),
 	m_iDocPosition(0),
 	m_pBookmarks(NULL),
 	m_iBookmarksCount(0),
@@ -1136,18 +1135,24 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	if (chartype == 1 && eachchar == 146)
 		eachchar = 39; // apostrophe
 
-	// deal with the thorny problem of mirror characters
-	if(m_bPrevStrongCharRTL)
-	{
-		FriBidiChar mirror_char;
-		if(fribidi_get_mirror_char((FriBidiChar)eachchar, &mirror_char))
-			eachchar = (U16)mirror_char;
-	}
+	// deal with the thorny problem of mirror characters and languge
+	// as direction override
+	FriBidiCharType cType = fribidi_get_type((FriBidiChar)eachchar);
+	
+#if 0
+		FriBidiChar dbg_mirror_char;
+		fribidi_get_mirror_char((FriBidiChar)eachchar, &dbg_mirror_char);
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: 0x%04x, LTR=%d, RTL lang=%d\n",
+						 eachchar,m_bLTRCharContext,m_bLanguageRTL));
+#endif
 
+#if 0
+
+	// I am going to disable this for now, to simplify debugging
+	// processing of numbers in RTL context (Tomas, Jan 30, 2003)
 
 	// if the character is a weak and we are in LTR context then we
 	// need to issue a direction override
-	FriBidiCharType cType = fribidi_get_type((FriBidiChar)eachchar);
 	if(!FRIBIDI_IS_STRONG(cType) && m_bLTRCharContext && !m_bLTROverrideIssued)
 	{
 		this->_flush();
@@ -1203,8 +1208,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		}
 		m_bLTROverrideIssued = false;
 	}
-	
-	
+#endif
 	//
 	// Append the character to our character buffer
 	//
@@ -2303,11 +2307,21 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	m_charProps += "lang:";
 
 	if (achp->fBidi)
+	{
 		m_charProps += wvLIDToLangConverter (achp->lidBidi);
+		m_bLanguageRTL = s_isLanguageRTL(achp->lidBidi);
+	}
 	else if (!ps->fib.fFarEast)
+	{
 		m_charProps += wvLIDToLangConverter (achp->lidDefault);
+		m_bLanguageRTL = s_isLanguageRTL(achp->lidBidi);
+	}
 	else
+	{
 		m_charProps += wvLIDToLangConverter (achp->lidFE);
+		m_bLanguageRTL = s_isLanguageRTL(achp->lidBidi);
+	}
+		
 	m_charProps += ";";
 
 	// decide best codepage based on the lid (as lang code above)
