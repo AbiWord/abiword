@@ -75,4 +75,5 @@ libXap_unix_a_SOURCES=\
 	xap_UnixFrameImpl.cpp			\
 	xap_UnixGtkColorPicker.cpp              \
 	xap_UnixTableWidget.cpp \
-	xap_UnixDlg_ListDocuments.cpp
+	xap_UnixDlg_ListDocuments.cpp \
+	xap_UnixDlg_History.cpp

@@ -59,7 +59,8 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixGtkColorPicker.cpp              \
 	        xap_UnixTableWidget.cpp		\
 			xap_UnixFontManager.cpp \
-			xap_UnixDlg_ListDocuments.cpp
+			xap_UnixDlg_ListDocuments.cpp \
+			xap_UnixDlg_History.cpp
 
 # only build these for non-gnome
 ifneq ($(ABI_OPT_GNOME),1)

@@ -45,7 +45,9 @@ libXap_qnx_a_SOURCES=		\
 	xap_QNXFontPreview.cpp \
 	xap_QNXFrameImpl.cpp	\
 	xap_QNXModule.cpp	\
-	xap_QNXToolbar_Icons.cpp
+	xap_QNXToolbar_Icons.cpp \
+	xap_QNXDlg_History.cpp 
+
 
 
 

@@ -92,6 +92,7 @@
 #include "fv_FrameEdit.h"
 #include "fl_FootnoteLayout.h"
 
+#include "xad_Document.h"
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_About.h"
@@ -108,6 +109,7 @@
 #include "xap_Dlg_PluginManager.h"
 #include "xap_Dlg_Image.h"
 #include "xap_Dlg_ListDocuments.h"
+#include "xap_Dlg_History.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -652,6 +654,9 @@ public:
 	static EV_EditMethod_Fn toggleShowRevisionsAfterPrevious;
 	static EV_EditMethod_Fn revisionCompareDocuments;
 
+	static EV_EditMethod_Fn history;
+
+	
 	static EV_EditMethod_Fn insertTable;
 
 
@@ -871,6 +876,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(helpIndex),			0,		""),
 	EV_EditMethod(NF(helpReportBug), 0, ""),
 	EV_EditMethod(NF(helpSearch),			0,		""),
+	EV_EditMethod(NF(history),	            0,      ""),
 	EV_EditMethod(NF(hyperlinkJump),		0,		""),
 	EV_EditMethod(NF(hyperlinkStatusBar),	0,		""),
 	// i
@@ -11577,6 +11583,54 @@ Defun1(revisionSetViewLevel)
 	UT_return_val_if_fail(pFrame,false);
 
 	s_doListRevisions(pFrame, pDoc, pView);
+
+	return true;
+}
+
+static bool s_doHistory(XAP_Frame * pFrame, AD_Document * pDoc, FV_View * pView)
+{
+	UT_return_val_if_fail(pFrame, false);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+	XAP_Dialog_History * pDialog
+	  = static_cast<XAP_Dialog_History *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_HISTORY));
+	
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	pDialog->setDocument(pDoc);
+	pDialog->runModal(pFrame);
+	
+	bool bShow   = (pDialog->getAnswer() == XAP_Dialog_History::a_SHOW);
+	bool bCancel = (pDialog->getAnswer() == XAP_Dialog_History::a_CANCEL);
+
+	if (bShow)
+	{
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+	}
+
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return !bCancel;
+}
+
+Defun1(history)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	AD_Document * pDoc = (AD_Document *) pView->getDocument();
+	UT_return_val_if_fail(pDoc,false);
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame,false);
+
+	s_doHistory(pFrame, pDoc, pView);
 
 	return true;
 }

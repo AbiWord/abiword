@@ -47,7 +47,8 @@ CPPSRCS=		xap_QNXApp.cpp				\
 			xap_QNXFontPreview.cpp	\
 			xap_QNXDlg_HTMLOptions.cpp	\
 			xap_QNXFrameImpl.cpp \
-			xap_QNXDlg_ListDocuments.cpp
+			xap_QNXDlg_ListDocuments.cpp \
+			xap_QNXDlg_History.cpp 
 
 TARGETS=		$(OBJS)
 

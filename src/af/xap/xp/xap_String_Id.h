@@ -492,7 +492,7 @@ dcl(DLG_History_LastSaved, "Last saved:")
 dcl(DLG_History_EditTime, "Editing time:")
 dcl(DLG_History_Id, "Identifier:")
 
-dcl(DLG_History_List_Title, "Versions history")
+dcl(DLG_History_List_Title, "Version history")
 dcl(DLG_History_Version_Version, "Version")
 dcl(DLG_History_Version_Started, "Created")
 dcl(DLG_History_Version_AutoRevisioned, "Auto-revision")

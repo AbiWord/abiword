@@ -65,7 +65,8 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_ModuleManager.cpp		\
 		xap_Dlg_Language.cpp		\
 		xap_Dlg_Encoding.cpp \
-		xap_Dlg_ListDocuments.cpp
+		xap_Dlg_ListDocuments.cpp \
+		xap_Dlg_History.cpp
 
 
 ifeq ($(OS_NAME),WIN32)

@@ -46,7 +46,8 @@ CPPSRCS=		xap_BeOSApp.cpp			\
 			xap_BeOSDlg_Encoding.cpp		\
 			xap_BeOSDlg_HTMLOptions.cpp	\
 			xap_BeOSFontPreview.cpp \
-			xap_BeOSDlg_ListDocuments.cpp
+			xap_BeOSDlg_ListDocuments.cpp \
+			xap_BeOSDlg_History.cpp
 
 
 CPPSRCS+=		be_GRDrawView.cpp
