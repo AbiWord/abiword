@@ -616,8 +616,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		{
 			SendMessage(f->m_hwndRebar,WM_SYSCOLORCHANGE,0,0);
 
-			REBARBANDINFO rbbi;
-			ZeroMemory(&rbbi, sizeof(rbbi));
+			REBARBANDINFO rbbi = { 0 };
 			rbbi.cbSize = sizeof(REBARBANDINFO);
 			rbbi.fMask = RBBIM_COLORS;
 			rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
