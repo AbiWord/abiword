@@ -153,7 +153,6 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	gnome_dialog_close(GNOME_DIALOG(gpd));
 
 	m_gpm = gnome_print_master_new();
-	gnome_print_master_set_paper(m_gpm, gnome_paper_with_name(gnome_paper_name_default()));
 	if (printer)
 		gnome_print_master_set_printer(m_gpm, printer);
 

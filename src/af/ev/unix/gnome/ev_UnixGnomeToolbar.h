@@ -46,6 +46,7 @@ public:
 	virtual UT_Bool synthesize(void);
 	virtual void show(void);
 	virtual void hide(void);
+	virtual UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
 private:
 	GtkWidget *_makeToolbar(void);

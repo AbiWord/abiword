@@ -193,14 +193,24 @@ XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 }
 
 XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
-				    	   XAP_UnixFontManager * fontManager,
-				       XAP_App *pApp,
-				       UT_Bool isPreview)
+						       XAP_UnixFontManager * fontManager,
+						       XAP_App *pApp,
+						       UT_Bool isPreview)
 {
         m_pApp         = pApp;
 	m_gpm          = gpm;
 	m_gpc          = gnome_print_master_get_context(gpm);
-	m_paper        = gnome_print_master_get_paper(gpm);
+
+	const GnomePaper * paper = gnome_paper_with_name("US-Letter");
+	
+	// probably not what we want, but don't be picky
+	if(!paper)
+		paper = gnome_paper_with_name(gnome_paper_name_default());
+	UT_ASSERT(paper);
+
+	m_paper = paper;
+	gnome_print_master_set_paper(m_gpm, paper);
+
 	m_bIsPreview   = isPreview;
 	m_fm           = fontManager;
 	m_bStartPrint  = UT_FALSE;
@@ -780,7 +790,7 @@ double XAP_UnixGnomePrintGraphics::_scale_y_dir (int y)
 #if 0
 			if (m_paper)
 				{
-					page_length = gnome_paper_psheight (m_paper);
+					page_length = 96 * gnome_paper_psheight (m_paper);
 					UT_DEBUGMSG(("Dom: %f %f\n", page_length, 
 						     11 * (double) GPG_RESOLUTION));
 				}

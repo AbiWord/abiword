@@ -46,7 +46,7 @@ public:
 	UT_Bool toolbarEvent(_wd * wd, UT_UCSChar * pData, UT_uint32 dataLength);
 	virtual UT_Bool synthesize(void);
 	UT_Bool bindListenerToView(AV_View * pView);
-	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
+	virtual UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
 	XAP_UnixApp *	getApp(void);
 	XAP_UnixFrame * getFrame(void);
