@@ -136,8 +136,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	
 	// Center our new dialog in its parent and make it a transient
 	// so it won't get lost underneath
-    centerDialog(parentWindow, mainWindow);
-	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+	centerDialog(parentWindow, mainWindow);
 
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);

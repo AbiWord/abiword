@@ -80,14 +80,14 @@ void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
       // Get the GtkWindow of the parent frame
       GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
       UT_ASSERT(parentWindow);
-      
+
       // Center our new dialog in its parent and make it a transient
-      // soo it won't get lost underneath
+      // so it won't get lost underneath
       centerDialog(parentWindow, mainWindow);
       
       // Show the top level dialog
       gtk_widget_show_all(mainWindow);
-      
+
       // Make it modal, and stick it up top
       gtk_grab_add(mainWindow);
       

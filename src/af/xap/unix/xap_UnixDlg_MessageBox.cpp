@@ -368,7 +368,6 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 	// center it
     centerDialog(parent, dialog_window);
-	gtk_window_set_transient_for(GTK_WINDOW(dialog_window), GTK_WINDOW(parent));
 
 	gtk_grab_add(GTK_WIDGET(dialog_window));
 	gtk_widget_show(dialog_window);
