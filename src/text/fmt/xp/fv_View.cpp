@@ -10511,8 +10511,9 @@ bool FV_View::insertEndnote()
 	
 	//const XML_Char *cur_style;
 	//getStyle(&cur_style);
+
+	m_pDoc->beginUserAtomicGlob();	       
 	
-		
 	if (cmdInsertField("endnote_ref", attrs)==false)
 		return false;
 
@@ -10758,6 +10759,7 @@ bool FV_View::insertEndnote()
     xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstLine()->getFirstRun()->getNext()->getType(),bWidthChange));
     if(bWidthChange) pBL->setNeedsReformat();
 	
+	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 	return true;
 }

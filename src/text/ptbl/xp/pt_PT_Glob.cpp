@@ -85,6 +85,13 @@ void pt_PieceTable::beginUserAtomicGlob(void)
 	//
 	// we do not notify the listeners.
 	
+  m_atomicGlobCount++;
+  if (m_atomicGlobCount > 1)
+    {
+      // allow this call to be nested
+      return;
+    }
+
 	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
 													 PX_ChangeRecord_Glob::PXF_UserAtomicStart);
 	UT_ASSERT(pcr);
@@ -96,6 +103,13 @@ void pt_PieceTable::beginUserAtomicGlob(void)
 
 void pt_PieceTable::endUserAtomicGlob(void)
 {
+  m_atomicGlobCount--;
+  if (m_atomicGlobCount != 0)
+    {
+      // allow this call to be nested
+      return;
+    }
+
 	PX_ChangeRecord * pcr = new PX_ChangeRecord_Glob(PX_ChangeRecord::PXT_GlobMarker,
 													 PX_ChangeRecord_Glob::PXF_UserAtomicEnd);
 	UT_ASSERT(pcr);

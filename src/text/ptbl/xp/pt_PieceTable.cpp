@@ -46,10 +46,9 @@
 /*****************************************************************/
 
 pt_PieceTable::pt_PieceTable(PD_Document * pDocument) 
-	: m_hashStyles(11)
+  : m_hashStyles(11), m_pts(PTS_Create), m_pDocument(pDocument),
+    m_atomicGlobCount(0)
 {
-	m_pts = PTS_Create;
-	m_pDocument = pDocument;
 
 	setPieceTableState(PTS_Create);
 	loading.m_indexCurrentInlineAP = 0;

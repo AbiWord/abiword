@@ -399,6 +399,8 @@ protected:
 	} loading;							/* stuff only valid while m_pts==PTS_Loading */
 
 	PD_Document *			m_pDocument; /* back pointer to our document */
+
+	UT_uint32 m_atomicGlobCount;
 };
 
 #endif /* PT_PIECETABLE_H */
