@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
@@ -328,4 +329,9 @@ UT_sint32 signedHiWord(UT_uint32 dw)
 	UT_sint32      s32 = s16;
 
 	return s32;
+}
+
+char * UT_tmpnam(char * base)
+{
+  return tmpnam(base);
 }

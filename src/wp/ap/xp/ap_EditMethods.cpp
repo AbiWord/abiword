@@ -237,6 +237,8 @@ public:
 	static EV_EditMethod_Fn printPreview;
 	static EV_EditMethod_Fn printDirectly;
 	static EV_EditMethod_Fn fileInsertGraphic;
+        static EV_EditMethod_Fn fileSaveAsWeb;
+        static EV_EditMethod_Fn filePreviewWeb;
 
 	static EV_EditMethod_Fn undo;
 	static EV_EditMethod_Fn redo;
@@ -523,8 +525,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
 	EV_EditMethod(NF(fileNew),				0,	""),
 	EV_EditMethod(NF(fileOpen),				0,	""),
+	EV_EditMethod(NF(filePreviewWeb), 0, ""),
 	EV_EditMethod(NF(fileSave),				0,	""),
 	EV_EditMethod(NF(fileSaveAs),			0,	""),
+	EV_EditMethod(NF(fileSaveAsWeb),                0, ""),
 	EV_EditMethod(NF(find),					0,	""),
 	EV_EditMethod(NF(findAgain),			0,	""),	
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
@@ -771,6 +775,8 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 #define Defun1(fn)	bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData * /*pCallData*/)
 #define EX(fn)		F(fn)(pAV_View, pCallData)
 
+// forward declaration
+bool _helpOpenURL(AV_View* pAV_View, const char* helpURL);
 
 Defun1(toggleAutoSpell)
 {
@@ -973,6 +979,8 @@ static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
 										pFrame->getTitle(200));
 }
 
+#define BAD_FILETYPE ((UT_sint32)(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO) - 1)
+
 static bool s_AskForPathname(XAP_Frame * pFrame,
 								bool bSaveAs,
 								const char * pSuggestedName,
@@ -1049,14 +1057,13 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 	// AbiWord uses IEFT_AbiWord_1 as the default
 
-	#define BAD_FILETYPE (UT_sint32)(XAP_DIALOG_FILEOPENSAVEAS_FILE_TYPE_AUTO) - 1
-
 	// try to remember the previous file type
 	static UT_sint32 dflFileType = BAD_FILETYPE;
-	if (dflFileType == BAD_FILETYPE)
-	  dflFileType = (UT_sint32) IEFT_AbiWord_1;
 
-	#undef BAD_FILETYPE
+	if (*ieft != BAD_FILETYPE)
+	  dflFileType = (UT_sint32) *ieft;
+	else
+	  dflFileType = (UT_sint32) IEFT_AbiWord_1;
 
 	pDialog->setDefaultFileType(dflFileType);
 		
@@ -1370,7 +1377,7 @@ Defun1(fileOpen)
 	UT_ASSERT(pFrame);
 
 	char * pNewFile = NULL;
-	IEFileType ieft;
+	IEFileType ieft = (IEFileType)BAD_FILETYPE;
 	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
@@ -1423,8 +1430,8 @@ Defun1(fileSaveAs)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
+	IEFileType ieft = (IEFileType)BAD_FILETYPE;
 	char * pNewFile = NULL;
-	IEFileType ieft;
 	bool bOK = s_AskForPathname(pFrame,true,NULL,&pNewFile,&ieft);
 
 	if (!bOK || !pNewFile)
@@ -1457,6 +1464,57 @@ Defun1(fileSaveAs)
 	}
 
 	return true;
+}
+
+Defun1(fileSaveAsWeb)
+{
+  XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
+  IEFileType ieft = IEFT_HTML;
+  char * pNewFile = NULL;
+  bool bOK = s_AskForPathname(pFrame,true,NULL,&pNewFile,&ieft);
+  
+  if (!bOK || !pNewFile)
+    return false;
+
+  UT_Error errSaved;
+  errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft);
+  if (errSaved)
+    {
+      // throw up a dialog
+      s_TellSaveFailed(pFrame, pNewFile, errSaved);
+      free(pNewFile);
+      return false;
+    }
+
+  return true;
+}
+
+Defun1(filePreviewWeb)
+{
+  XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
+  char *tmpFileName = NULL;
+
+  tmpFileName = UT_tmpnam(NULL);
+
+  UT_Error errSaved;
+  errSaved = pAV_View->cmdSaveAs(tmpFileName, (int)IEFT_HTML);
+
+  if(errSaved)
+    {
+      // throw up a dialog
+      s_TellSaveFailed(pFrame, tmpFileName, errSaved);
+      free(tmpFileName);
+      return false;
+    }
+
+  char * tmpUrl = NULL;
+  
+  tmpUrl = UT_catPathname("file://", tmpFileName);
+
+  bool bOk = _helpOpenURL(pAV_View, tmpUrl);
+  FREEP(tmpUrl);
+
+  return bOk;
 }
 
 Defun1(undo)

@@ -1011,7 +1011,7 @@ bool IE_Imp_MsWord_97::RecognizeContents(const char * szBuf, UT_uint32 iNumbytes
 
 bool IE_Imp_MsWord_97::RecognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".doc") == 0);
+	return (!UT_stricmp(szSuffix,".doc") || !UT_stricmp(szSuffix,".dot"));
 }
 
 UT_Error IE_Imp_MsWord_97::StaticConstructor(PD_Document * pDocument,
@@ -1026,8 +1026,8 @@ bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
 				       const char ** pszSuffixList,
 				       IEFileType * ft)
 {
-	*pszDesc = "Microsoft Word (.doc)";
-	*pszSuffixList = "*.doc";
+	*pszDesc = "Microsoft Word (.doc, .dot)";
+	*pszSuffixList = "*.doc, *.dot";
 	*ft = IEFT_MsWord_97;
 	return true;
 }
@@ -1043,7 +1043,6 @@ bool IE_Imp_MsWord_97::SupportsFileType(IEFileType ft)
 void IE_Imp_MsWord_97::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				       unsigned char * pData, UT_uint32 lenData)
 {
-	xxx_UT_DEBUGMSG(("TODO IE_Imp_MsWord_97::pasteFromBuffer\n"));
 }
 
 UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)

@@ -415,7 +415,7 @@ dcl(MSG_AfterRestartNew, "This change will only take effect when you restart \
 AbiWord or create a new document.")
 
 dcl(DLG_ToggleCase_Title, "Change Case")
-dcl(DLG_ToggleCase_SentenceCase, "Sentence Case")
+dcl(DLG_ToggleCase_SentenceCase, "Sentence case")
 dcl(DLG_ToggleCase_LowerCase, "lowercase")
 dcl(DLG_ToggleCase_UpperCase, "UPPERCASE")
 dcl(DLG_ToggleCase_TitleCase, "Title Case")
