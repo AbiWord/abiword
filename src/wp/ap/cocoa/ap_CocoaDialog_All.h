@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2004 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -79,6 +79,7 @@
 #	include "ap_CocoaDialog_InsertTable.h"
 #	include "ap_CocoaDialog_FormatTable.h"
 #	include "ap_CocoaDialog_FormatFrame.h"
+#	include "ap_CocoaDialog_Stylist.h"
 #if 0
 #	include "ap_CocoaDialog_Download_File.h"
 #endif
