@@ -4804,9 +4804,11 @@ bool fl_BlockLayout::recalculateFields(UT_uint32 iUpdateCount)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
 
-			UT_DEBUGMSG(("DOM: %d %d\n", pFieldRun==0, pFieldRun->needsFrequentUpdates()));
+			xxx_UT_DEBUGMSG(("DOM: %d %d\n", pFieldRun==0, pFieldRun->needsFrequentUpdates()));
 
-			if((!iUpdateCount || !(iUpdateCount % pFieldRun->needsFrequentUpdates())))
+			if((!iUpdateCount
+				|| !pFieldRun->needsFrequentUpdates()
+				|| !(iUpdateCount % pFieldRun->needsFrequentUpdates())))
 			{
 				const bool bSizeChanged = pFieldRun->calculateValue();
 				bResult = bResult || bSizeChanged;
