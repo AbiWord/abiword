@@ -2,7 +2,7 @@
 This is the source tree for the AbiSource desktop productivity tools.
 Everything contained here is copyrighted and is available for your use
 and redistribution under certain license terms.  Please read
-LICENSE.TXT for more information.
+COPYRIGHT.TXT and TRADEMARK.TXT for more information.
 
 Current information is available at http://www.abisource.com/.
 
