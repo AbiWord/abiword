@@ -254,10 +254,8 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	
     	register int x;
 		UT_UCSChar currentChar;
-		xxx_UT_DEBUGMSG(("SEVIOR: raw char = %d \n",p[k]));
 		currentChar = remapGlyph(p[k], false);
 		x = (currentChar < 256 ? _scale(cwi[currentChar]) : 0;
-		xxx_UT_DEBUGMSG(("SEVIOR: current char = %d  width = %d \n",currentChar,x));
 		
 		iCharWidth += x;
 		pWidths[k] = x;
@@ -722,7 +720,6 @@ void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffs
 			open_bracket = true;
 			using_names = false;
 		}
-	
 	    currentChar = remapGlyph(*pS, *pS >= 256 ? true : false);
 	    currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::get_instance()->UToNative(currentChar);
 	    switch (currentChar)

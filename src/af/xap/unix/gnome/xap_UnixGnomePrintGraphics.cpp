@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <glib.h>
 
 #include "ut_types.h"
@@ -31,7 +32,7 @@
 #include "xap_UnixGnomePrintGraphics.h"
 #include "xap_EncodingManager.h"
 #include "gr_UnixGnomeImage.h"
-
+#include "ut_string_class.h"
 #include <libgnomeprint/gnome-print-master-preview.h>
 
 /***********************************************************************/
@@ -210,6 +211,19 @@ XAP_UnixGnomePrintGraphics::~XAP_UnixGnomePrintGraphics()
 		// unref the resource
 		if(m_pCurrentFont != NULL && GNOME_IS_FONT(m_pCurrentFont))
 				gnome_font_unref(m_pCurrentFont);
+		delete m_eAdobeFull;
+		delete m_localFont;
+		if(m_eSymbol)
+				delete m_eSymbol;
+		if(m_eDingbats)
+				delete m_eDingbats;
+		m_encSymbol = NULL;
+		m_encDingbats = NULL;
+		m_encAdobeFull = NULL;
+		m_eSymbol = NULL;
+		m_eDingbats = NULL;
+		m_eAdobeFull = NULL;
+		m_localFont = NULL;
 }
 
 struct pageSizeMapping {
@@ -274,12 +288,29 @@ XAP_UnixGnomePrintGraphics::XAP_UnixGnomePrintGraphics(GnomePrintMaster *gpm,
 	m_bStartPage   = false;
 	m_pCurrentFont = NULL;
 	m_pCurrentPSFont = NULL;
-
+	m_bisSymbol = false;
+	m_bisDingbats = false;
+	m_encSymbol = NULL;
+	m_encDingbats = NULL;
+	m_encAdobeFull = NULL;
+	m_eSymbol = NULL;
+    m_eDingbats = NULL;
+	m_eAdobeFull = NULL;
+    m_localFont = NULL;
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
 
 	m_currentColor.m_red = 0;
 	m_currentColor.m_grn = 0;
 	m_currentColor.m_blu = 0;
+//
+// Now I need a local copy of the adobe full unicode to glyph tables
+//
+	m_localFont = new XAP_UnixFont();
+	UT_String AdobeName(XAP_App::getApp()->getAbiSuiteLibDir());
+	AdobeName += "/fonts/adobe-full.u2g";
+	char * szName = const_cast<char *>(AdobeName.c_str());
+	m_encAdobeFull = m_localFont->loadEncodingFile(szName);
+	m_eAdobeFull = new UT_AdobeEncoding(m_encAdobeFull, m_localFont->getEncodingTableSize());
 }
 
 UT_uint32 XAP_UnixGnomePrintGraphics::measureUnRemappedChar(const UT_UCSChar c)
@@ -329,13 +360,36 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 	for (pS = pChars + iCharOffset; pS < pEnd; pS += OUR_LINE_LIMIT) {
 			const UT_UCSChar * pB;
 			UT_UCSChar currentChar;
-
+   
 			pD = buf;
 			for (pB = pS; (pB < pS + OUR_LINE_LIMIT) && (pB < pEnd); pB++) {
 					currentChar = remapGlyph(*pB, *pB >= 256 ? true : false);
-					currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::get_instance()->UToNative(currentChar);
+					if(!m_bisSymbol && !m_bisDingbats)
+					{
+							currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::get_instance()->UToNative(currentChar);
+					}
+					else if(m_bisSymbol)
+					{
+//
+// Convert to Symbol glyph then to unicode value..
+//
+							const char * glyph = m_eSymbol->ucsToAdobe(currentChar);
+							UT_DEBUGMSG(("SEVIOR: Adobe glyph for current char is %s current char %x \n",glyph,currentChar));
+							currentChar = m_eAdobeFull->adobeToUcs(glyph);
+							UT_DEBUGMSG(("SEVIOR: After glyph mapping current char is %x \n",currentChar));
+					}
+					else if(m_bisDingbats)
+					{
+//
+// Convert to Symbol glyph then to unicode value..
+//
+							const char * glyph = m_eDingbats->ucsToAdobe(currentChar);
+							currentChar = m_eAdobeFull->adobeToUcs(glyph);
+					}
+					UT_DEBUGMSG(("SEVIOR: currentChar = %x \n",currentChar));
 					pD += unichar_to_utf8 (currentChar, pD);
 			}
+			UT_DEBUGMSG(("SEVIOR: Calling show_sized \n"));
 			gnome_print_show_sized (m_gpc, (gchar *) buf, pD - buf);
 	}
 }
@@ -355,9 +409,45 @@ void XAP_UnixGnomePrintGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 {
 	UT_ASSERT(pFont);
+	//
+	// Need this psFont to get the scales correct
+	//
 	PSFont * psFont = (static_cast<PSFont*> (pFont));
 	m_pCurrentPSFont = psFont;
-
+	//
+	// We have to see if we must do fancy encoding to unicode for gnomeprint
+	//
+	UT_String pszFname(psFont->getUnixFont()->getName());
+	UT_sint32 i;
+	for(i=0; pszFname[i] != 0; i++)
+	{
+			pszFname[i] = tolower(pszFname[i]);
+	}
+	UT_DEBUGMSG(("SEVIOR: Found  font %s \n",pszFname.c_str()));
+	if(strstr(pszFname.c_str(),"symbol") != 0)
+	{
+			UT_DEBUGMSG(("SEVIOR: Found symbol font building unicode conversion stuff \n"));
+			m_bisSymbol = true;
+			if(!m_eSymbol)
+			{
+				m_encSymbol = psFont->getUnixFont()->loadEncodingFile();
+				m_eSymbol = new UT_AdobeEncoding(m_encSymbol, psFont->getUnixFont()->getEncodingTableSize());
+			}
+	}
+	else if (strstr(pszFname.c_str(),"dingbats") !=0 )
+	{
+			m_bisDingbats = true;
+			if(!m_eDingbats)
+			{
+				m_encDingbats = psFont->getUnixFont()->loadEncodingFile();
+				m_eDingbats = new UT_AdobeEncoding(m_encDingbats, psFont->getUnixFont()->getEncodingTableSize());
+			}
+	}
+	else
+	{
+			m_bisSymbol = false;
+			m_bisDingbats = false;
+	}
 
 	// TODO: We *must* be smarter about this, maybe a hash
 	// TODO: of PSFonts -> GnomeFonts

@@ -26,6 +26,7 @@
 
 #include "xap_UnixPSFont.h"
 #include "xap_UnixFontManager.h"
+#include "xap_UnixFont.h"
 
 // hack
 extern "C" {
@@ -154,7 +155,15 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	PSFont *       m_pCurrentPSFont;
 	// temporary
 	GnomeFont *m_pCurrentFont;
-
+	bool                 m_bisSymbol;
+	bool                 m_bisDingbats;
+	const encoding_pair*       m_encSymbol;
+	const encoding_pair*       m_encDingbats;
+	const encoding_pair*       m_encAdobeFull;
+	UT_AdobeEncoding*    m_eSymbol;
+	UT_AdobeEncoding*    m_eDingbats;
+	UT_AdobeEncoding*    m_eAdobeFull;
+	XAP_UnixFont *       m_localFont;
 	XAP_UnixFontManager *	m_fm;
 };
 
