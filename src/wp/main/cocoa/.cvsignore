@@ -4,3 +4,4 @@ GNUmakefile
 abi_ver.cpp
 AbiWord
 AbiWord.app
+*~.nib
