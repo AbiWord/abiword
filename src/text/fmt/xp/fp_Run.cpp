@@ -116,7 +116,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iOverlineXoff(0),
 	m_pHyperlink(0),
 	m_pRevisions(NULL),
-	m_eHidden(FP_VISIBLE),
+	m_eVisibility(FP_VISIBLE),
 	m_bIsCleared(true),
 	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT),
 	m_bPrinting(false),
@@ -198,7 +198,8 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 	xxx_UT_DEBUGMSG(("fp_Run: pSpanAP %x \n",pSpanAP));
 	//evaluate the "display" property
 
-	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	const XML_Char *pszDisplay = PP_evalProperty("display",pSpanAP,pBlockAP,
+												 pSectionAP, pDoc, true);
 
 	if(pszDisplay && !UT_strcmp(pszDisplay,"none"))
 	{
@@ -230,9 +231,30 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 		UT_uint32 iId  = pView->getRevisionLevel();
 		bool bShow     = pView->isShowRevisions();
 
-		if(!bShow || (iId && !m_pRevisions->isVisible(iId)))
+		if(!bShow)
 		{
-			if(isHidden() == FP_HIDDEN_TEXT)
+			// revisions are not to be shown, i.e., additions are to
+			// be hidden, fmt changes ignored, and deletions will be visible
+			const PP_Revision * pRev = m_pRevisions->getLastRevision();
+
+			if( pRev &&
+				(  (pRev->getType() == PP_REVISION_ADDITION)
+				 ||(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)))
+			{
+				if(getVisibility() == FP_HIDDEN_TEXT)
+				{
+					setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
+				}
+				else
+				{
+					setVisibility(FP_HIDDEN_REVISION);
+				}
+			}
+		}
+		else if(!m_pRevisions->isVisible(iId))
+		{
+			// we are to show revisions with id <= iId
+			if(getVisibility() == FP_HIDDEN_TEXT)
 			{
 				setVisibility(FP_HIDDEN_REVISION_AND_TEXT);
 			}
@@ -240,6 +262,13 @@ void fp_Run::lookupProperties(GR_Graphics * pG)
 			{
 				setVisibility(FP_HIDDEN_REVISION);
 			}
+		}
+		else
+		{
+			// this revision is visible; we need to call
+			// setVisibility() if the revision was not so in the
+			// previous incarnation of this run
+			UT_DEBUGMSG(("fp_Run::lookupProperties: visible revision\n"));
 		}
 	}
 
@@ -820,21 +849,10 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		return;
 	}
 
-	// now revisions handling
-	FV_View * pView = _getView();
-	UT_return_if_fail(pView);
-	bool bShowRevs = pView->isShowRevisions();
-	
-	if(!bShowRevs && m_pRevisions)
+	if(isHidden())
 	{
-		const PP_Revision * pRev = m_pRevisions->getLastRevision();
-
-		if( pRev && (pRev->getType() == PP_REVISION_DELETION))
-		{
-			// this text is not on screen
-			UT_DEBUGMSG(("fp_Run::draw(): revision (deletion) not shown/n"));
-			return;
-		}
+		// this run is marked as hidden, nothing to do
+		return;
 	}
 	
 	
@@ -859,6 +877,10 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 	_draw(pDA);
 
+	FV_View* pView = _getView();
+	UT_return_if_fail(pView);
+	bool bShowRevs = pView->isShowRevisions();
+	
 	if(m_pRevisions && bShowRevs)
 	{
 		const PP_Revision * r = m_pRevisions->getLastRevision();
@@ -900,7 +922,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		pG->drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 	}
 
-	if(m_eHidden == FP_HIDDEN_TEXT || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+	if(m_eVisibility == FP_HIDDEN_TEXT || m_eVisibility == FP_HIDDEN_REVISION_AND_TEXT)
 	{
 		pG->setColor(getFGColor());
 		pG->setLineProperties(1.0,
@@ -920,33 +942,80 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	}
 }
 
-bool fp_Run::canContainPoint(void) const
+/*!
+    Determines if run is currently visible or hidden
+	run is hidden in the following circumstances:
+	
+	 a) it is formatted as hidden and show para is off
+	 
+	 b) it is part of a revision that makes it hidden; several cases
+	    fall into this category, but that is immaterial here (the
+	    decision on this is made in lookupProperties()
+*/
+bool fp_Run::isHidden() const
+{
+	return _wouldBeHidden(m_eVisibility);
+}
+
+/*!
+    Determines if run would be hidden if its visibility was set to the
+    given value eVisibility
+*/
+bool fp_Run::_wouldBeHidden(FPVisibility eVisibility) const
 {
 	FV_View* pView = _getView();
 	bool bShowHidden = pView->getShowPara();
 
-	// if this run is to be hidden, we must treated as if its
-	// width was 0
-	bool bHidden = ((m_eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-	              || m_eHidden == FP_HIDDEN_REVISION
-		          || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+	bool bHidden = ((eVisibility == FP_HIDDEN_TEXT && !bShowHidden)
+	              || eVisibility == FP_HIDDEN_REVISION
+		          || eVisibility == FP_HIDDEN_REVISION_AND_TEXT);
 
-	// now revisions handling
-	bool bShowRevs = pView->isShowRevisions();
+	return bHidden;
+}
 
-	if(!bShowRevs && m_pRevisions)
+/*!
+    changes the visibility of the present run; this requires
+    invalidating different things depending on circumstances
+*/
+void fp_Run::setVisibility(FPVisibility eVis)
+{
+	if(m_eVisibility == eVis)
+		return;
+
+	if(    (isHidden() && _wouldBeHidden(eVis))
+	    || (!isHidden() && !_wouldBeHidden(eVis)))
 	{
-		const PP_Revision * pRev = m_pRevisions->getLastRevision();
-
-		if( pRev && (pRev->getType() == PP_REVISION_DELETION))
-		{
-			// this text is not on screen
-			bHidden = false;
-		}
+		// this run will remain as it is, so we just set visibility to
+		// the new value
+		m_eVisibility = eVis;
+		return;
 	}
-	
-	if(bHidden)
-			return false;
+
+	if(_wouldBeHidden(eVis))
+	{
+		// we are going into hiding, so we need to clear screen first
+		clearScreen();
+
+		// we do not need to redraw
+		m_bDirty = false;
+		m_bRecalcWidth = true;
+		m_eVisibility = eVis;
+		return;
+	}
+
+	// we are unhiding: need to mark everything dirty
+	m_bIsCleared = true;
+	m_bDirty = true;
+	m_bRecalcWidth = true;
+	m_eVisibility = eVis;
+	return;
+}
+
+
+bool fp_Run::canContainPoint(void) const
+{
+	if(isHidden())
+		return false;
 	else
 		return _canContainPoint();
 }
@@ -958,16 +1027,7 @@ bool fp_Run::_canContainPoint(void) const
 
 bool fp_Run::letPointPass(void) const
 {
-	FV_View* pView = _getView();
-	bool bShowHidden = pView->getShowPara();
-
-	// if this run is to be hidden, we must treated as if its
-	// width was 0
-	bool bHidden = ((m_eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-	              || m_eHidden == FP_HIDDEN_REVISION
-		          || m_eHidden == FP_HIDDEN_REVISION_AND_TEXT);
-
-	if(bHidden)
+	if(isHidden())
 			return true;
 	else
 		return _letPointPass();
@@ -979,6 +1039,22 @@ bool fp_Run::_letPointPass(void) const
 }
 
 bool fp_Run::recalcWidth(void)
+{
+	if(isHidden())
+	{
+		if(m_iWidth != 0)
+		{
+			m_iWidth = 0;
+			return true;
+		}
+		
+		return false;
+	}
+	else
+		return _recalcWidth();
+}
+
+bool fp_Run::_recalcWidth(void)
 {
 	// do nothing.  subclasses may override this.
 	return false;
@@ -2388,7 +2464,7 @@ fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 }
 
 
-bool fp_EndOfParagraphRun::recalcWidth(void)
+bool fp_EndOfParagraphRun::_recalcWidth(void)
 {
 	return false;
 }
@@ -3044,7 +3120,7 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 
 	m_sFieldValue[0] = 0;
 }
 
-bool fp_FieldRun::recalcWidth()
+bool fp_FieldRun::_recalcWidth()
 {
 	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	// TODO -- is this really needed ???

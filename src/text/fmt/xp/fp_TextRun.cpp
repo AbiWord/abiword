@@ -836,7 +836,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| ((  getRevisions() && pNext->getRevisions())
 		    && !(*getRevisions() == *(pNext->getRevisions()))) //
 															   //non-null but different
-		|| (pNext->isHidden() != isHidden())
+		|| (pNext->getVisibility() != getVisibility())
 
 		// I do not think this should happen at all
 		|| ((pNext->m_bIsJustified && m_bIsJustified)
@@ -1062,7 +1062,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 		pNew->_setRevisions(new PP_RevisionAttr(getRevisions()->getXMLstring()));
 	}
 
-	pNew->setVisibility(this->isHidden());
+	pNew->setVisibility(this->getVisibility());
 
 	// do not force recalculation of the draw buffer and widths
 	pNew->setPrevRun(this, false);
@@ -1236,7 +1236,7 @@ void fp_TextRun::_measureCharWidths()
 
     \return returns true if the width of this run changed
  */
-bool fp_TextRun::recalcWidth(void)
+bool fp_TextRun::_recalcWidth(void)
 {
 	// _refreshDrawBuffer() takes care of recalculating width since
 	// the width and the content of the buffer are linked. if the
@@ -2391,7 +2391,7 @@ UT_sint32 fp_TextRun::countJustificationPoints(void) const
 	}
 }
 
-bool fp_TextRun::canContainPoint(void) const
+bool fp_TextRun::_canContainPoint(void) const
 {
 	if (getField())
 	{

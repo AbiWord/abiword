@@ -177,14 +177,15 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			// now we need to see if revision with this id is already
 			// present, and if it is, whether it might not be addition
 			UT_uint32 iId = m_pDocument->getRevisionId();
-			const PP_Revision * pRev = Revisions.getGreatestLesserOrEqualRevision(iId);
+			const PP_Revision * pS;
+			const PP_Revision * pRev = Revisions.getGreatestLesserOrEqualRevision(iId, &pS);
 
 			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pf1->getLength());
 
 			if(pRev && iId == pRev->getId())
 			{
 				// OK, we already have a revision with this id here,
-				// which means that the editor made a change earlier
+				// which means that the user made a change earlier
 				// (insertion or format change) but now wants this deleted
 				//
 				// so if the previous revision is an addition, we just

@@ -389,17 +389,25 @@ void PP_RevisionAttr::_init(const XML_Char *r)
     in revision with the original id
 
     \param UT_uint32 id : the id of this revision
+    \param PP_Revision ** ppR: location where to store pointer to one
+                               of the special revisions in case return
+                               value is NULL
+                              
     \return : pointer to PP_Revision, or NULL if the revision
     attribute should be ignored for the present level
 */
 
 // these are special instances of PP_Revision that are used to in the
 // following function to handle special cases
-static const PP_Revision s_hidden(0, PP_REVISION_DELETION, (XML_Char*)0, (XML_Char*)0);
-static const PP_Revision s_visible(0, PP_REVISION_ADDITION, (XML_Char*)0, (XML_Char*)0);
+static const PP_Revision s_del(0, PP_REVISION_DELETION, (XML_Char*)0, (XML_Char*)0);
+static const PP_Revision s_add(0, PP_REVISION_ADDITION, (XML_Char*)0, (XML_Char*)0);
 
-const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32 id)
+const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32 id,
+																	   const PP_Revision ** ppR)
 {
+	if(ppR)
+		*ppR = NULL;
+	
 	if(id == 0)
 		return getLastRevision();
 
@@ -433,13 +441,13 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 
 	// now that we have the biggest revision with ID lesser or equal
 	// id, we have to deal with the special case when this is NULL
-	// i.e., this fragment only figures in revisions > id the problem
+	// i.e., this fragment only figures in revisions > id; the problem
 	// with NULL is that it is visible if the smallest revision ID is
-	// negative, and hidden in the opposite case -- if this is to be
-	// visible we return the special static variables s_visible and
-	// s_hidden
+	// negative, and hidden in the opposite case -- we use the special
+	// static variables s_del and s_add to indicate what should
+	// be done
 
-	if(r == NULL)
+	if(r == NULL && ppR)
 	{
 		if(!m)
 		{
@@ -449,15 +457,15 @@ const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32
 		}
 
 		if(m->getType() == PP_REVISION_DELETION)
-			return &s_visible;
+			*ppR = &s_del;
 		else if((m->getType() == PP_REVISION_ADDITION)
 				||(m->getType() == PP_REVISION_ADDITION_AND_FMT))
-			return &s_hidden;
+			*ppR = &s_add;
 		else // the initial revision was fmt change, so ignore it
-			return NULL;
+			*ppR = NULL;
 	}
-	else
-		return r;
+
+	return r;
 }
 
 /*! finds the highest revision number in this attribute
@@ -484,6 +492,7 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
 		}
 	}
 
+	UT_ASSERT( m_pLastRevision );
 	return m_pLastRevision;
 }
 
@@ -493,21 +502,38 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
 */
 bool PP_RevisionAttr::isVisible(UT_uint32 id)
 {
-	PP_RevisionType eType = getGreatestLesserOrEqualRevision(id)->getType();
+	if(id == 0)
+	{
+		// id 0 means show all revisions
+		return true;
+	}
 
-	return ((eType == PP_REVISION_ADDITION) || (eType == PP_REVISION_ADDITION_AND_FMT));
+	const PP_Revision * pSpecial;
+	const PP_Revision * pR = getGreatestLesserOrEqualRevision(id, &pSpecial);
+
+	if(pR)
+	{
+		// found compliant revision ...
+		return true;
+	}
+	
+
+	if(pSpecial)
+	{
+		// pSpecial is of the same type as the revision with the
+		// lowest id
+		PP_RevisionType eType = pSpecial->getType();
+
+		// deletions and fmt changes can be ignored; insertions need
+		// to be hidden
+		return ((eType != PP_REVISION_ADDITION) && (eType == PP_REVISION_ADDITION_AND_FMT));
+	}
+
+	// the revision with the lowest id is a change of format, this
+	// text has to remain visible
+	return true;
 }
 
-/*! returns true if the text should be visible according to the last
-    revision
-*/
-
-bool PP_RevisionAttr::isVisible()
-{
-	PP_RevisionType eType = getLastRevision()->getType();
-
-	return ((eType == PP_REVISION_ADDITION) || (eType == PP_REVISION_ADDITION_AND_FMT));
-}
 
 /*! adds id to the revision vector handling the special cases where id
     is already present in this attribute.
@@ -795,8 +821,13 @@ bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
 */
 bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue)
 {
-	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId);
-	return r->getProperty(pName, pValue);
+	const PP_Revision * s;
+	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId, &s);
+
+	if(r)
+		return r->getProperty(pName, pValue);
+
+	return false;
 }
 
 /*! returns true if after the last revision this fragment carries revised
@@ -813,7 +844,15 @@ bool PP_RevisionAttr::hasProperty(const XML_Char * pName, const XML_Char * &pVal
  */
 PP_RevisionType PP_RevisionAttr::getType(UT_uint32 iId)
 {
-	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId);
+	const PP_Revision * s;
+	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId,&s);
+
+	if(!r)
+	{
+		// HACK need to return something
+		return PP_REVISION_FMT_CHANGE;
+	}
+	
 	return r->getType();
 }
 

@@ -412,9 +412,9 @@ public:
 	// Functions for dealing with revisions
 	//
 	bool                    isMarkRevisions() const{ return m_bMarkRevisions;}
-	void                    toggleMarkRevisions(){m_bMarkRevisions = m_bMarkRevisions ? false : true;}
+	void                    toggleMarkRevisions();
 	bool                    isShowRevisions() const{ return m_bShowRevisions;}
-	void                    setShowRevisions(bool bShow) { m_bShowRevisions = bShow;}
+	void                    setShowRevisions(bool bShow);
 	UT_uint32               getRevisionId() const{ return m_iRevisionID;}
 	void                    setRevisionId(UT_uint32 iId) {m_iRevisionID  = iId;}
 	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc);

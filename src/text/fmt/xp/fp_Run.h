@@ -213,7 +213,7 @@ public:
 	bool				isDirty(void) const { return m_bDirty; }
 	bool			    canContainPoint(void) const;
 	virtual const PP_AttrProp* getAP(void) const;
-	virtual	bool		recalcWidth(void);
+	bool		        recalcWidth(void);
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
 
     virtual UT_Rect *   getScreenRect();
@@ -277,8 +277,9 @@ public:
 	// getLastRevision() and related functions use internal cache so
 	// they could not be called
 	PP_RevisionAttr *   getRevisions() const {return m_pRevisions;}
-	FPVisibility        isHidden() const {return m_eHidden;}
-	void                setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
+	FPVisibility        getVisibility() const {return m_eVisibility;}
+	inline bool         isHidden() const;
+	void                setVisibility(FPVisibility eVis);
 	void                Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y,
 							 UT_sint32 width, UT_sint32 height);
 	
@@ -347,7 +348,8 @@ protected:
 
 	virtual bool        _canContainPoint(void) const;
 	virtual bool        _letPointPass(void) const;
-
+	virtual	bool		_recalcWidth(void);
+	inline bool         _wouldBeHidden(FPVisibility eVis) const;
 //
 // Variables to draw underlines for all runs
 //
@@ -405,7 +407,7 @@ private:
 	// A local cache of the page color. This makes clearscreen() a bit faster
 	UT_RGBColor       		m_pColorPG;
 	UT_RGBColor 			m_pColorFG;
-	FPVisibility            m_eHidden;
+	FPVisibility            m_eVisibility;
 	bool                    m_bIsCleared;
 	fg_FillType             m_FillType;
 	bool                    m_bPrinting;
@@ -551,7 +553,6 @@ class ABI_EXPORT fp_EndOfParagraphRun : public fp_Run
 public:
 	fp_EndOfParagraphRun(fl_BlockLayout* pBL,  UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual bool			recalcWidth(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
@@ -571,6 +572,7 @@ protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_letPointPass(void) const;
+	virtual bool			_recalcWidth(void);
 
 private:
 	UT_uint32				m_iXoffText;
@@ -783,7 +785,6 @@ public:
 	bool					_setValue(const UT_UCSChar *p_new_value);
 
 	virtual bool			calculateValue(void);
-	virtual bool			recalcWidth(void);
 	virtual const UT_UCSChar *    getValue(void) const { return reinterpret_cast<const UT_UCSChar *>(m_sFieldValue);}
 	virtual UT_uint32		needsFrequentUpdates() {return 0;}
 
@@ -798,6 +799,7 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	const XML_Char *		_getParameter() const { return m_pParameter; }
 	virtual bool			_letPointPass(void) const;
+	virtual bool			_recalcWidth(void);
 
 private:
 

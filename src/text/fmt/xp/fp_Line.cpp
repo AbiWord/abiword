@@ -510,28 +510,17 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 							  bool& bBOL, bool& bEOL)
 {
 	UT_uint32 count = m_vecRuns.getItemCount();
-
-	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView->getShowPara();
 	UT_uint32 i = 0;
 	fp_Run* pFirstRun;
-	bool bHidden;
-	FPVisibility eHidden;
 
 	do {
 
 		pFirstRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(i++))); //#TF retrieve first visual run
 		UT_ASSERT(pFirstRun);
 
-		// if this tab is to be hidden, we must treated as if its
-		// width was 0
-		eHidden  = pFirstRun->isHidden();
-		bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		              || eHidden == FP_HIDDEN_REVISION
-		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
-	}while(bHidden && (i < count));
+	}while(pFirstRun->isHidden() && (i < count));
 
-	if(bHidden && (i < count))
+	if(pFirstRun->isHidden() && (i < count))
 	{
 		//all runs on this line are hidden, at the moment just assert
 		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
@@ -1285,9 +1274,6 @@ void fp_Line::draw(GR_Graphics* pG)
 	da.bDirtyRunsOnly = true; //magic line to give a factor 2 speed up!
 	const UT_Rect* pRect = pG->getClipRect();
 
-	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView->getShowPara();
-
 	for (int i=0; i < count; i++)
 	{
 #if 0
@@ -1301,10 +1287,7 @@ void fp_Line::draw(GR_Graphics* pG)
 		fp_Run* pRun = getRunAtVisPos(i);
 #endif
 		
-		FPVisibility eHidden  = pRun->isHidden();
-		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		   || eHidden == FP_HIDDEN_REVISION
-		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+		if(pRun->isHidden())
 			continue;
 
 		FP_RUN_TYPE rType = pRun->getType();
@@ -1362,9 +1345,6 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		return;
 
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line %x in line pDA, width %d \n",this,getWidth()));
-	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView->getShowPara();
-	bShowHidden = bShowHidden && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN);
 	pDA->yoff += m_iAscent;
 	const UT_Rect* pRect = pDA->pG->getClipRect();
 
@@ -1381,10 +1361,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		fp_Run* pRun = getRunAtVisPos(i);
 #endif
 
-		FPVisibility eHidden  = pRun->isHidden();
-		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		   || eHidden == FP_HIDDEN_REVISION
-		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+		if(pRun->isHidden())
 			continue;
 
 		FP_RUN_TYPE rType = pRun->getType();
@@ -1558,18 +1535,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 	if(!pRun)
 		return;
 
-	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView->getShowPara();
-	FPVisibility eHidden  = pRun->isHidden();
-
-	bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-					|| eHidden == FP_HIDDEN_REVISION
-					|| eHidden == FP_HIDDEN_REVISION_AND_TEXT);
-
 	// If the run is to be hidden just return, since the positions
 	// should remain as they were, but it would be preferable if this
 	// situation was trapped higher up (thus the assert)
-	if(bHidden)
+	if(pRun->isHidden())
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return;
@@ -2083,9 +2052,6 @@ void fp_Line::layout(void)
 	// now we work our way through the runs on this line
 	xxx_UT_DEBUGMSG(("fp_Line::layout ------------------- \n"));
 
-	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView ? pView->getShowPara() : false;
-
 	UT_sint32 ii = 0;
 	for (; ii<iCountRuns; ++ii)
 	{
@@ -2100,12 +2066,7 @@ void fp_Line::layout(void)
 
 		// if this tab is to be hidden, we must treat it as if its
 		// width was 0
-		FPVisibility eHidden  = pRun->isHidden();
-		bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		              || eHidden == FP_HIDDEN_REVISION
-		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
-
-		if(bHidden)
+		if(pRun->isHidden())
 			continue;
 
 		// if we are working from the left, we want to set the
@@ -2174,12 +2135,7 @@ void fp_Line::layout(void)
 
 					// if this tab is to be hidden, we must treated as if its
 					// width was 0
-					FPVisibility eHidden  = pRun->isHidden();
-					bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-								  || eHidden == FP_HIDDEN_REVISION
-								  || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
-
-					if(bHidden)
+					if(pRun->isHidden())
 						continue;
 
 					//eClearScreen = iStartX == pOldXs[k] ?
@@ -2239,12 +2195,7 @@ void fp_Line::layout(void)
 
 					// if this tab is to be hidden, we must treated as if its
 					// width was 0
-					FPVisibility eHidden  = pRun->isHidden();
-					bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-								  || eHidden == FP_HIDDEN_REVISION
-								  || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
-
-					if(bHidden)
+					if(pRun->isHidden())
 						continue;
 
 					if(eWorkingDirection == WORK_BACKWARD)
@@ -2291,12 +2242,7 @@ void fp_Line::layout(void)
 
 					// if this tab is to be hidden, we must treated as if its
 					// width was 0
-					FPVisibility eHidden  = pRun->isHidden();
-					bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-								  || eHidden == FP_HIDDEN_REVISION
-								  || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
-
-					if(bHidden)
+					if(pRun->isHidden())
 						continue;
 
 					UT_sint32 iCurX = pRun->getX();
@@ -2788,18 +2734,12 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 	const UT_uint32 iCountRuns = m_vecRuns.getItemCount();
 	UT_sint32 iX = 0;
 
-	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView->getShowPara();
-
 	// first calc the width of the line
 	for (UT_uint32 i = 0; i < iCountRuns; ++i)
 	{
 		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(i));
 
-		FPVisibility eHidden  = pRun->isHidden();
-		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		   || eHidden == FP_HIDDEN_REVISION
-		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+		if(pRun->isHidden())
 			continue;
 
 		iX += pRun->getWidth();
@@ -2827,19 +2767,13 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 	UT_sint32 i;
 	UT_sint32 iCountRuns = m_vecRuns.getItemCount();
 
-	FV_View* pView = getBlock()->getDocLayout()->getView();
-	bool bShowHidden = pView->getShowPara();
-
 	for (i=iCountRuns -1 ; i >= 0; i--)
 	{
 		// work from the run on the visual end of the line
 		UT_sint32 k = iBlockDir == FRIBIDI_TYPE_LTR ? i : iCountRuns - i - 1;
 		fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(k)));
 
-		FPVisibility eHidden  = pRun->isHidden();
-		if((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		   || eHidden == FP_HIDDEN_REVISION
-		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT)
+		if(pRun->isHidden())
 			continue;
 
 		if(!pRun->doesContainNonBlankData())

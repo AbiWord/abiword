@@ -3018,10 +3018,8 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 				}
 			}
 		}
-		FPVisibility eHidden  = pCurRun->isHidden();
-		if(!((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
-		   || eHidden == FP_HIDDEN_REVISION
-		   || eHidden == FP_HIDDEN_REVISION_AND_TEXT))
+
+		if(!pCurRun->isHidden())
 		{
 			if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
 			{
@@ -4780,8 +4778,16 @@ void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocP
 	UT_uint32 i;
 	UT_uint32 iRealDeleteCount;
 
-	const PP_Revision * pRev = pRevAttr->getGreatestLesserOrEqualRevision(m_iViewRevision);
+	const PP_Revision * pSpecial;
+	const PP_Revision * pRev = pRevAttr->getGreatestLesserOrEqualRevision(m_iViewRevision,
+																		  &pSpecial);
 
+	// pRev == NULL means that the text contains no revision with
+	// id <= m_iViewRevision. In this case, we should not be asked to
+	// accept or reject the revision, hence the assert (I suspect that
+	// this will happen though).
+	UT_return_if_fail(pRev);
+	
 	if(bReject)
 	{
 		switch(pRev->getType())

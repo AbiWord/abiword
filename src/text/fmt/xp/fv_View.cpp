@@ -9488,10 +9488,10 @@ void FV_View::toggleShowRevisions()
 	// used setting
 	m_pDoc->setShowRevisions(m_bShowRevisions);
 
-	// now we have to re-do document layout
-	_generalUpdate();
+	// now we have to re-do document layout from bottom up
+	m_pDoc->signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_REBUILD);
+
 	_fixInsertionPointCoords();
-	
 }
 
 bool FV_View::isMarkRevisions()

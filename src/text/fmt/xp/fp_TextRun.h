@@ -59,8 +59,6 @@ public:
 	void                    appendTextToBuf(UT_GrowBuf & buf);
 	virtual bool			hasLayoutProperties(void) const;
 	//virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
-	virtual bool			recalcWidth(void);
-	virtual bool			canContainPoint(void) const;
 	bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
 	bool                    findFirstNonBlankSplitPoint(fp_RunSplitInfo & splitInfo);
@@ -129,6 +127,8 @@ public:
 #endif
 
 protected:
+	virtual bool			_recalcWidth(void);
+	virtual bool			_canContainPoint(void) const;
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect = true);
 

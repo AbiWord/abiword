@@ -99,6 +99,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_bMarkRevisions(false),
 	  m_bShowRevisions(true),
 	  m_iRevisionID(1),
+	  m_indexAP(0xffffffff),
 	  m_bDontImmediatelyLayout(false),
 	  m_iLastDirMarker(0),
 	  m_pVDBl(NULL),
@@ -342,7 +343,12 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	if (impProps && strlen(impProps))
 		pie->setProps (impProps);
 
-	m_indexAP =  99999999;
+	// set standard document properties and attributes, such as dtd,
+	// lang, dom-dir, etc., which the importer can then overwite this
+	// also initializes m_indexAP
+	m_indexAP = 0xffffffff;
+	setAttrProp(NULL);
+	
 	errorCode = pie->importFile(szFilename);
 	delete pie;
 	m_bLoading = false;
@@ -353,36 +359,30 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		DELETEP(m_pPieceTable);
 		return errorCode;
 	}
-	if(m_indexAP ==  99999999)
-	{
-		// set standard document properties, such as dtd, lang,
-		// dom-dir, etc. (some of the code that used to be here is
-		// now in the setAttrProp() function, since it is shared
-		// both by new documents and documents being loaded from disk
-		// this also initializes m_indexAP
-		setAttrProp(NULL);
-	}
 
-	// get document-wide revision settings
+	// get document-wide settings from the AP
 	const PP_AttrProp * pAP = getAttrProp();
 	
 	if(pAP)
 	{
 		const XML_Char * pA = NULL;
 		UT_uint32 iOn;
-		bool bFound = pAP->getAttribute("revisions-mark", pA);
-		if(bFound)
+
+		if(pAP->getAttribute("revisions-mark", pA))
 		{
 			iOn = atoi(pA);
 			m_bMarkRevisions = (iOn != 0);
 		}
 
-		
-		bFound = pAP->getAttribute("revisions-show", pA);
-		if(bFound)
+		if(pAP->getAttribute("revisions-show", pA))
 		{
 			iOn = atoi(pA);
 			m_bShowRevisions = (iOn != 0);
+		}
+
+		if(pAP->getAttribute("styles", pA))
+		{
+			m_bLockedStyles = !(strcmp(pA, "locked"));
 		}
 	}
 	
@@ -448,7 +448,13 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		pie->setProps (impProps);
 
 	_syncFileTypes(false);
-	m_indexAP = 99999999;
+
+	// set standard document properties and attributes, such as dtd, lang,
+	// dom-dir, etc., which the importer can then overwite
+	// this also initializes m_indexAP
+	m_indexAP = 0xffffffff;
+	setAttrProp(NULL);
+
 	errorCode = pie->importFile(szFilename);
 	delete pie;
 
@@ -464,36 +470,30 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		UT_DEBUGMSG(("PD_Document::readFromFile -- no memory\n"));
 		return UT_IE_NOMEMORY;
 	}
-	if(m_indexAP ==  99999999)
-	{
-		// set standard document properties, such as dtd, lang,
-		// dom-dir, etc. (some of the code that used to be here is
-		// now in the setAttrProp() function, since it is shared
-		// both by new documents and documents being loaded from disk
-		// this also initializes m_indexAP
-		setAttrProp(NULL);
-	}
 
-	// get document-wide revision settings
+	// get document-wide settings from the AP
 	const PP_AttrProp * pAP = getAttrProp();
 	
 	if(pAP)
 	{
 		const XML_Char * pA = NULL;
 		UT_uint32 iOn;
-		bool bFound = pAP->getAttribute("revisions-mark", pA);
-		if(bFound)
+		
+		if(pAP->getAttribute("revisions-mark", pA))
 		{
 			iOn = atoi(pA);
 			m_bMarkRevisions = (iOn != 0);
 		}
 
-		
-		bFound = pAP->getAttribute("revisions-show", pA);
-		if(bFound)
+		if(pAP->getAttribute("revisions-show", pA))
 		{
 			iOn = atoi(pA);
 			m_bShowRevisions = (iOn != 0);
+		}
+
+		if(pAP->getAttribute("styles", pA))
+		{
+			m_bLockedStyles = !(strcmp(pA, "locked"));
 		}
 	}
 
@@ -602,6 +602,7 @@ UT_Error PD_Document::newDocument(void)
 			// now in the setAttrProp() function, since it is shared
 			// both by new documents and documents being loaded from disk
 			// this also initializes m_indexAP
+			m_indexAP = 0xffffffff;
 			setAttrProp(NULL);
 
 			m_pPieceTable->setPieceTableState(PTS_Editing);
@@ -3679,6 +3680,32 @@ const PP_AttrProp * PD_Document::getAttrProp() const
 	return VARSET.getAP(m_indexAP);
 }
 
+/*!
+    Sets document attributes and properties
+    can only be used while loading documents
+    
+    \param const XML_Char ** ppAttr: array of attribute/value pairs
+
+	    if ppAttr == NULL and m_indexAP == 0xffffffff, the function
+    	creates a new AP and sets it to the default values hardcoded
+    	in it
+
+        if ppAttr == NULL and m_indexAP != 0xffffffff, the function
+        does nothing
+
+        if ppAttr != NULL the function overlays passed attributes over
+        the existing attributes (creating a new AP first if necessary)
+
+    When initialising document attributes and props, we need to set
+    m_indexAP to 0xffffffff and then call setAttributes(NULL).
+
+    Importers should just call setAttributes(NULL) in the
+    initialisation stage, this ensures that default values are set
+    without overwriting existing values if those were set by the
+    caller of the importer.
+
+    Tomas, Dec 6, 2003
+*/
 bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 {
 	// this method can only be used while loading  ...
@@ -3687,71 +3714,76 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 		UT_return_val_if_fail(0,false);
 	}
 
-	bool bRet = VARSET.storeAP(ppAttr, &m_indexAP);
-	UT_DEBUGMSG(( "pd_Document::setAttrProp: document %x storeAP res %d indexAP %d  \n", this,bRet,m_indexAP));
-
-	if(!bRet)
-		return false;
-
-	const XML_Char * attr[25];
-	attr[24] = NULL;
-
-	attr[0] = "xmlns";
-	attr[1] = "http://www.abisource.com/awml.dtd";
-
-	attr[2] = "xml:space";
-	attr[3] = "preserve";
-
-	attr[4] = "xmlns:awml";
-	attr[5] = "http://www.abisource.com/awml.dtd";
-
-	attr[6] = "xmlns:xlink";
-	attr[7] = "http://www.w3.org/1999/xlink";
-
-	attr[8] = "xmlns:svg";
-	attr[9] = "http://www.w3.org/2000/svg";
-
-	attr[10] = "xmlns:fo";
-	attr[11] = "http://www.w3.org/1999/XSL/Format";
-
-	attr[12] = "xmlns:math";
-	attr[13] = "http://www.w3.org/1998/Math/MathML";
-
-	attr[14] = "xmlns:dc";
-	attr[15] = "http://purl.org/dc/elements/1.1/";
-
-	attr[16] = "fileformat";
-	attr[17] = ABIWORD_FILEFORMAT_VERSION;
-
-	UT_String rev_m;
-	UT_String_sprintf(rev_m, "%d", isMarkRevisions());
-	attr[18] = "revisions-mark";
-	attr[19] = rev_m.c_str();
-
-	UT_String rev_s;
-	UT_String_sprintf(rev_s, "%d", isShowRevisions());
-	attr[20] = "revisions-show";
-	attr[21] = rev_s.c_str();
-
-	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
+	bool bRet = true;
+	
+	if(m_indexAP == 0xffffffff)
 	{
-		attr[22] = "version";
-		attr[23] = XAP_App::s_szBuild_Version;
-	}
-	else
-		attr[22] = NULL;
+		// AP not initialised, do so and set standard document attrs
+		// and properties
 
-	bRet =  setAttributes(attr);
-	if(!bRet)
-		return false;
+		// first create an empty AP by passing NULL to storeAP
+		// cast needed to disambiguate function signature
+		bRet = VARSET.storeAP(static_cast<const XML_Char **>(0), &m_indexAP);
 
-	// see if the document has dominant direction set and if not, set
-	// dominant direction from preferences
-	const PP_AttrProp * docAP =  getAttrProp();
-	const XML_Char * doc_dir;
+		if(!bRet)
+			return false;
 
-	if(docAP && !docAP->getProperty("dom-dir", doc_dir))
-	{
+		// now set standard attributes
+		const XML_Char * attr[25];
+		attr[24] = NULL;
+
+		attr[0] = "xmlns";
+		attr[1] = "http://www.abisource.com/awml.dtd";
+
+		attr[2] = "xml:space";
+		attr[3] = "preserve";
+
+		attr[4] = "xmlns:awml";
+		attr[5] = "http://www.abisource.com/awml.dtd";
+
+		attr[6] = "xmlns:xlink";
+		attr[7] = "http://www.w3.org/1999/xlink";
+
+		attr[8] = "xmlns:svg";
+		attr[9] = "http://www.w3.org/2000/svg";
+
+		attr[10] = "xmlns:fo";
+		attr[11] = "http://www.w3.org/1999/XSL/Format";
+
+		attr[12] = "xmlns:math";
+		attr[13] = "http://www.w3.org/1998/Math/MathML";
+
+		attr[14] = "xmlns:dc";
+		attr[15] = "http://purl.org/dc/elements/1.1/";
+
+		attr[16] = "fileformat";
+		attr[17] = ABIWORD_FILEFORMAT_VERSION;
+
+		UT_String rev_m;
+		UT_String_sprintf(rev_m, "%d", isMarkRevisions());
+		attr[18] = "revisions-mark";
+		attr[19] = rev_m.c_str();
+
+		UT_String rev_s;
+		UT_String_sprintf(rev_s, "%d", isShowRevisions());
+		attr[20] = "revisions-show";
+		attr[21] = rev_s.c_str();
+
+		if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
+		{
+			attr[22] = "version";
+			attr[23] = XAP_App::s_szBuild_Version;
+		}
+		else
+			attr[22] = NULL;
+
+		bRet =  setAttributes(attr);
+
+		if(!bRet)
+			return false;
+
+		// now set default properties, starting with dominant
+		// direction
 		const XML_Char r[] = "rtl";
 		const XML_Char l[] = "ltr";
 		const XML_Char p[] = "dom-dir";
@@ -3764,25 +3796,12 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 			props[1] = r;
 
 		UT_DEBUGMSG(( "pd_Document::setAttrProp: setting dom-dir to %s\n", props[1]));
-
 		bRet = setProperties(props);
-
 
 		if(!bRet)
 			return false;
-	}
-	else
-	{
-		UT_DEBUGMSG(( "pd_Document::setAttrProp: document has default direction %s\n", doc_dir));
-	}
 
-	// see if the document we are loading has a default language;
-	// if not, and there is a default language in the preferences, set
-	// it
-	const XML_Char * doc_lang;
-
-	if(docAP && !docAP->getProperty("lang", doc_lang))
-	{
+		// if there is a default language in the preferences, set it
 		UT_LocaleInfo locale;
 
 		UT_String lang(locale.getLanguage());
@@ -3791,21 +3810,28 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 			lang += locale.getTerritory();
 		}
 
-		const XML_Char * props[3];
 		props[0] = "lang";
 		props[1] = lang.c_str();
 		props[2] = 0;
 		bRet = setProperties(props);
+
+		if(!bRet)
+			return false;
+
+		// now overlay the attribs we were passed ...
+		bRet = setAttributes(ppAttr);
+	}
+	else if(ppAttr == NULL)
+	{
+		// we already have an AP, and have nothing to add to it
+		return true;
 	}
 	else
 	{
-		UT_DEBUGMSG(( "pd_Document::setAttrProp: document has default language %s\n", doc_lang));
+		// have an AP and given something to add to it
+		bRet = VARSET.mergeAP(PTC_AddFmt, m_indexAP, ppAttr, NULL, &m_indexAP, this);
 	}
-
-	const XML_Char * style_state;
-	if (ppAttr && (style_state = UT_getAttribute ("styles", ppAttr)) != NULL)
-		m_bLockedStyles = !(strcmp (style_state, "locked"));
-
+	
 	return bRet;
 }
 
@@ -4162,4 +4188,38 @@ pf_Frag * PD_Document::getLastFrag() const
 	UT_return_val_if_fail(m_pPieceTable,NULL);
 	return m_pPieceTable->getFragments().getLast();
 }
+
+void PD_Document::toggleMarkRevisions()
+{
+	m_bMarkRevisions = !m_bMarkRevisions;
+
+	const XML_Char * attrs[] = {0, 0, 0};
+	attrs[0] = "revisions-mark";
+		
+	UT_String rev;
+	UT_String_sprintf(rev, "%d", isMarkRevisions());
+	attrs[1] = rev.c_str();
+
+	setAttributes(attrs);
+	m_bForcedDirty = true;
+}
+
+void PD_Document::setShowRevisions(bool bShow)
+{
+	if(m_bShowRevisions != bShow)
+	{
+		m_bShowRevisions = bShow;
+
+		const XML_Char * attrs[] = {0, 0, 0};
+		attrs[0] = "revisions-show";
+		
+		UT_String rev;
+		UT_String_sprintf(rev, "%d", isShowRevisions());
+		attrs[1] = rev.c_str();
+
+		setAttributes(attrs);
+		m_bForcedDirty = true;
+	}
+}
+
 

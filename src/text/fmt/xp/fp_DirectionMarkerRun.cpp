@@ -42,7 +42,7 @@ fp_DirectionMarkerRun::fp_DirectionMarkerRun(fl_BlockLayout* pBL,
 }
 
 
-bool fp_DirectionMarkerRun::recalcWidth(void)
+bool fp_DirectionMarkerRun::_recalcWidth(void)
 {
 	UT_sint32 iOldWidth = getWidth();
 	FV_View* pView = _getView();
@@ -127,7 +127,7 @@ bool fp_DirectionMarkerRun::canBreakBefore(void) const
 	return false;
 }
 
-bool fp_DirectionMarkerRun::letPointPass(void) const
+bool fp_DirectionMarkerRun::_letPointPass(void) const
 {
 	return false;
 }
