@@ -947,11 +947,11 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				}
 			}
 		}
-		
+
 		char* szStyle = NULL;
 		const XML_Char * pStyle;
-		pAP->getAttribute("style", pStyle);
-		if(pStyle)
+		bool fnd = pAP->getAttribute("style", pStyle);
+		if(pStyle && fnd)
 		{
 			szStyle = removeWhiteSpace((const char *)pStyle);
 		}
