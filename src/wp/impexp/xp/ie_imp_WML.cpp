@@ -266,7 +266,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 	      UT_XML_cloneString(buf[1], (XML_Char *)"font-style:italic"); 
 	      break;
 	    case TT_UNDERLINE: 
-	       UT_XML_cloneString(buf[1], (XML_Char *)"text_decoration:underline"); 
+	       UT_XML_cloneString(buf[1], (XML_Char *)"text-decoration:underline"); 
 	      break;
 	    case TT_BOLD:
 	    case TT_STRONG:
@@ -274,10 +274,10 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 	       UT_XML_cloneString(buf[1],  (XML_Char *)"font-weight:bold"); 
 	      break;
 	    case TT_BIG: 
-	       UT_XML_cloneString(buf[1], (XML_Char *)"text_position:superscript"); 
+	       UT_XML_cloneString(buf[1], (XML_Char *)"text-position:superscript"); 
 	      break;
 	    case TT_SMALL: 
-	       UT_XML_cloneString(buf[1], (XML_Char *)"text_position:subscript"); 
+	       UT_XML_cloneString(buf[1], (XML_Char *)"text-position:subscript"); 
 	      break;
 
 	    default:
