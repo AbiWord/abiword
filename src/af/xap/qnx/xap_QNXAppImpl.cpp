@@ -26,7 +26,7 @@
 
 bool XAP_QNXAppImpl::openURL(const char * url)
 {
-	spawnlp(P_NOWAITO,"voyager","voyager","-u",szURL,NULL);
+	spawnlp(P_NOWAITO,"voyager","voyager","-u",url,NULL);
 	return true;
 }
 
