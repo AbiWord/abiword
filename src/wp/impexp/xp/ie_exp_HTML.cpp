@@ -257,9 +257,32 @@ IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
 
 IE_Exp_HTML::~IE_Exp_HTML ()
 {
+	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecFootnotes);
+	UT_VECTOR_PURGEALL(PD_DocumentRange *,m_vecEndnotes);
+	
 	// 
 }
 
+void IE_Exp_HTML::addFootnote(PD_DocumentRange * pDocRange)
+{
+	m_vecFootnotes.addItem(reinterpret_cast<void *>(pDocRange));
+}
+
+void IE_Exp_HTML::addEndnote(PD_DocumentRange * pDocRange)
+{
+	m_vecEndnotes.addItem(reinterpret_cast<void *>(pDocRange));
+}
+
+UT_sint32 IE_Exp_HTML::getNumFootnotes(void)
+{
+	return static_cast<UT_sint32>(m_vecFootnotes.getItemCount());
+}
+
+
+UT_sint32 IE_Exp_HTML::getNumEndnotes(void)
+{
+	return static_cast<UT_sint32>(m_vecEndnotes.getItemCount());
+}
 /*****************************************************************/
 /*****************************************************************/
 
@@ -649,6 +672,8 @@ private:
 	UT_StringPtrMap	m_SavedURLs;
 
 	s_StyleTree		m_style_tree;
+	bool            m_bIgnoreTillEnd;
+	PT_DocPosition  m_iEmbedStartPos;
 };
 
 /*****************************************************************/
@@ -3278,7 +3303,9 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_styleIndent(0),
 	m_fdCSS(0),
 	m_tlistIndent(0),
-	m_tlistListID(0)
+	m_tlistListID(0),
+	m_bIgnoreTillEnd(false),
+	m_iEmbedStartPos(0)
 {
 	// 
 }
@@ -3690,11 +3717,15 @@ void s_HTML_Listener::_handleMeta ()
 
 bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
 {
-	if (m_bFirstWrite && m_bClipBoard)
+        if (m_bFirstWrite && m_bClipBoard)
 		{
 			_openSection (0);
 			_openTag (0, 0);
 		}
+        if(m_bIgnoreTillEnd)
+        {
+            return true;
+        }
 
 	switch (pcr->getType ())
 		{
@@ -3774,10 +3805,13 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 	switch (pcrx->getStruxType ())
 		{
-		case PTX_SectionEndnote:
 		case PTX_SectionHdrFtr:
 		case PTX_Section:
 			{
+				if(m_bIgnoreTillEnd)
+				{
+					return true;
+				}
 				if (m_bInBlock) _closeTag (); // possible problem with lists??
 				_openSection (api);
 				return true;
@@ -3785,6 +3819,10 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_Block:
 			{
+				if(m_bIgnoreTillEnd)
+				{
+					return true;
+				}
 				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
 				_openTag (api, sdh);
 				return true;
@@ -3793,6 +3831,10 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 #ifdef HTML_TABLES_SUPPORTED
 		case PTX_SectionTable:
 			{
+				if(m_bIgnoreTillEnd)
+				{
+					return true;
+				}
 				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
 
 				m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
@@ -3804,6 +3846,10 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_SectionCell:
 			{
+				if(m_bIgnoreTillEnd)
+				{
+					return true;
+				}
 				if(m_TableHelper.getNestDepth() <1)
 					{
 						m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
@@ -3820,6 +3866,10 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_EndTable:
 			{
+				if(m_bIgnoreTillEnd)
+				{
+					return true;
+				}
 				_closeTag();
 				_closeTable();
 				m_TableHelper.CloseTable();
@@ -3828,6 +3878,10 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_EndCell:
 			{
+				if(m_bIgnoreTillEnd)
+				{
+					return true;
+				}
 				_closeTag();
 				_closeCell();
 				if(m_TableHelper.getNestDepth() <1)
@@ -3839,7 +3893,28 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				return true;
 			}
 #endif /* HTML_TABLES_SUPPORTED */
-
+		case PTX_SectionFootnote:
+		case PTX_SectionEndnote:
+			{
+				m_iEmbedStartPos = pcrx->getPosition() + 1;
+				m_bIgnoreTillEnd = true;
+				return true;
+			}
+		case PTX_EndFootnote:
+		case PTX_EndEndnote:
+			{
+				PD_DocumentRange * pDocRange = new PD_DocumentRange(m_pDocument, m_iEmbedStartPos, pcrx->getPosition() -1);
+				if(pcrx->getStruxType () == PTX_EndFootnote)
+				{
+					m_pie->addFootnote(pDocRange);
+				}
+				else
+				{
+					m_pie->addEndnote(pDocRange);
+				}
+				m_bIgnoreTillEnd = false;
+				return true;
+			}
 #if 0
 		case PTX_EndFrame:
 		case PTX_EndMarginnote:

@@ -183,7 +183,10 @@ public:
 	inline void			set_HTML4 (bool enable = true) { m_exp_opt.bIs4 = enable; }
 	inline void			set_PHTML (bool enable = true) { m_exp_opt.bIsAbiWebDoc = enable; }
 	inline void			set_MHTML (bool enable = true) { m_exp_opt.bMultipart = enable; }
-
+	void                addFootnote(PD_DocumentRange * pDocRange);         
+	void                addEndnote(PD_DocumentRange * pDocRange);
+	UT_sint32           getNumFootnotes(void);
+	UT_sint32           getNumEndnotes(void);
 protected:
 	virtual bool		_openFile (const char * szFilename);
 	virtual UT_Error	_writeDocument ();
@@ -191,6 +194,8 @@ protected:
 private:
 	bool				m_bSuppressDialog;
 	XAP_Exp_HTMLOptions	m_exp_opt;
+	UT_Vector           m_vecFootnotes;
+	UT_Vector           m_vecEndnotes;
 };
 
 #endif /* IE_EXP_HTML_H */

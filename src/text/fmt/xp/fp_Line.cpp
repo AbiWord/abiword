@@ -906,6 +906,10 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 // Sevior: I added this for robustness.
 //
 			pRun->markAsDirty();
+			if(pRun->getPrev() && pRun->getPrev()->getLine() == this)
+			{
+				pRun->getPrev()->markAsDirty();
+			}
 			getBlock()->setNeedsRedraw();
 			setNeedsRedraw();
 			pRun = pRun->getNext();
@@ -1032,7 +1036,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			}
 		}
 		if(xoff == xoffLine)
-				leftClear = pRun->getDescent();
+				leftClear = pRun->getAscent()/2;
 		if(getPage() == NULL)
 		{
 			return;
@@ -1055,6 +1059,10 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(0)));
 		}
 		pRun->markAsDirty();
+		if(pRun->getPrev() && pRun->getPrev()->getLine() == this)
+		{
+			pRun->getPrev()->markAsDirty();
+		}
 		pRun = pRun->getNext();
 		bool bStop = false;
 		while(pRun && !bStop)

@@ -1335,7 +1335,8 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 		//
 		fp_Line * thisLine = getLine();
 		fp_Run * pPrev = getPrev();
-		UT_sint32 leftClear = 0;
+		UT_sint32 leftClear = getAscent()/2;
+		UT_sint32 rightClear = getAscent()/2;
 		if(thisLine != NULL)
 		{
 			while(pPrev != NULL && pPrev->getLine() == thisLine && pPrev->getLength() == 0)
@@ -1345,7 +1346,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 				(pPrev->getType() == FPRUN_TEXT || pPrev->getType() == FPRUN_FIELD || pPrev->getType() == FPRUN_IMAGE))
  				leftClear = 0;
 		}
-		getGR()->fillRect(clrNormalBackground, xoff - leftClear, yoff, getWidth() + leftClear, getLine()->getHeight());
+		getGR()->fillRect(clrNormalBackground, xoff - leftClear, yoff, getWidth() + leftClear + rightClear, getLine()->getHeight());
 		xxx_UT_DEBUGMSG(("leftClear = %d width = %d xoff %d height %d \n",leftClear,getWidth(),xoff,getLine()->getHeight()));
 		if(pPrev)
 		{

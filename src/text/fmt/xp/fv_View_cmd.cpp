@@ -1952,7 +1952,14 @@ bool FV_View::cmdCharInsert(const UT_UCSChar * text, UT_uint32 count, bool bForc
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
-
+		bool bOK = true;
+		if(!isPointLegal() && bOK)
+		{
+//
+// If we're in an illegal position move forward till we're safe.
+//
+			bOK = _charMotion(true,1);
+		}
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}

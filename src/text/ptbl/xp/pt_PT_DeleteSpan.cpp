@@ -751,9 +751,19 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 	UT_uint32 length = dpos2 - dpos1;
 	UT_uint32 iTable = 0;
 	UT_sint32 iFootnoteCount = 0;
+	if(pfsContainer->getStruxType() == PTX_SectionCell)
+	{
+		bPrevWasCell = true;
+	}
+	if(pfsContainer->getStruxType() == PTX_EndTable)
+	{
+		bPrevWasEndTable = true;
+	}
 	bool bPrevWasFootnote = false;
+	UT_sint32 iLoopCount = -1;
 	while (length > 0)
 	{
+		iLoopCount++;
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
 		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
 
@@ -773,6 +783,18 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 //
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);
 			bool bResult = true;
+			if(bPrevWasCell && (iLoopCount == 0))
+			{
+//
+// Dont' delete this Block strux if the previous strux is a cell and this
+// is the start of the delete phase.
+//
+				pfNewEnd = pfs->getNext();
+				fragOffsetNewEnd = 0;
+				pfsContainer = pfs;
+				dpos1 = dpos1 +  lengthInFrag;
+				break;
+			}
 			if(_StruxIsNotTable(pfs))
 			{
 				if((bPrevWasCell || bPrevWasFootnote || bPrevWasEndTable) 
