@@ -278,8 +278,7 @@ public:
    UT_uint32 m_documentPointer;
    UT_uint16 m_indexPointer;
    bool m_undoOn;
-   bool m_paragraphChanged;
-   bool m_hasColumns;
+   bool m_bParagraphChanged;
    bool m_bInSection;
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;

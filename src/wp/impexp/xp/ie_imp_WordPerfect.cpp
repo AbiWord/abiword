@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2001 William Lachance (wlach@interlog.com)
+ * Copyright (C) 2002 Marc Maurer (j.m.maurer@student.utwente.nl)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -269,8 +270,7 @@ IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
   : IE_Imp (pDocument), m_bInSection(false)
 {
    m_undoOn = false;
-   m_paragraphChanged = true;
-   m_hasColumns = false;
+   m_bParagraphChanged = true;
 
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_EOL, &IE_Imp_WordPerfect::_insertSpace));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_SPACE, &IE_Imp_WordPerfect::_insertSpace));
@@ -653,10 +653,17 @@ UT_Error IE_Imp_WordPerfect::_handleHardEndOfLine()
    // (TODO: eliminate a prev space if it's just before this)
    UT_DEBUGMSG(("WordPerfect: Handling a hard EOL \n"));
    if(!m_undoOn)
-     {
-	X_CheckWordPerfectError(_flushText());
-	_appendCurrentParagraphProperties();		
-     }
+   {
+        if (!m_bParagraphChanged)
+        {
+            X_CheckWordPerfectError(_flushText());
+            _appendCurrentParagraphProperties();
+        }
+        else
+        {
+            X_CheckWordPerfectError(_flushText());
+        }
+   }
    
    return UT_OK;
 }
@@ -700,6 +707,13 @@ UT_Error IE_Imp_WordPerfect::_handleEndOfLineGroup()
 	   case 25: // 0x19 (deletable hard EOL at EOP)	
 	     X_CheckWordPerfectError(_handleHardEndOfLine());
 	     break;
+      case 7: // 0x07 (hard end of column)
+        {
+           X_CheckWordPerfectError(_flushText());
+           UT_UCSChar ucs = UCS_VTAB;
+	        X_CheckDocumentError(getDoc()->appendSpan(&ucs,1));
+        }
+        break;
 	   case 9: // hard EOP
 	   case 28: // deletable hard EOP
 	     { 
@@ -764,14 +778,9 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
                   unsigned char rowSpacing[5]; // a WPSP type var., which seems to be 5 bytes, but I don't what it is.
                   unsigned char numCols;
           
-                  // skip this section if there are already columns defined, 
-                  // since abiword only supports 1 single column definition per document right now
-                  if (m_hasColumns)
-                     break;
-          
                   X_CheckFileReadElementError(fread(&colType, sizeof(unsigned char), 1, m_importFile));
                   
-                  // WTF doesn't this line work? 5 bytes isn't asked to much, isn't it?
+                  // WTF doesn't this line work? 5 bytes isn't asked too much, isn't it?
                   // X_CheckFileReadElementError(fread(&rowSpacing[0], sizeof(unsigned char), 5, m_importFile));
                   
                   // instead, read 5 charachters 1 by 1
@@ -785,29 +794,45 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
           
                   UT_DEBUGMSG(("WordPerfect: Column type: %d\n", colType & 0x03));
                   UT_DEBUGMSG(("WordPerfect: # columns: %d\n", numCols));
-                  switch (colType & 0x03)
+                  
+                  // number of columns = {0,1} means columns off
+                  if ((numCols==0) || (numCols==1))
                   {
-                     // TODO: implement the seperate cases
-                     case 0: // newspaper
-                     case 1: // newspaper with vertical balance
-                     case 2: // parallel
-                     case 3: // parallel with protect [what does this mean? for now, handle the same as parallel]
-                             {
-                                UT_String propBuffer;
-                                UT_String_sprintf(propBuffer, "columns:%d", numCols);
-                                
-                                UT_DEBUGMSG(("Appending column definition: %s\n", propBuffer.c_str()));
-                                const XML_Char* propsArray[3];
-                                propsArray[0] = "props";
-                                propsArray[1] = propBuffer.c_str();
-                                propsArray[2] = NULL;
-                                // change the first Section which is inserted in the beginning of _parseDocument
-                                X_CheckDocumentError(_appendSection(propsArray));
-                                m_hasColumns = true;
-                             }
-                             break;
-                     default: // something else we don't support, since it isn't in the docs
-                              break;
+                     UT_DEBUGMSG(("End of column definition, # columns: %d\n", numCols));
+                     X_CheckWordPerfectError(_flushText());
+                     X_CheckDocumentError(_appendSection());
+                     // set m_bParagraphChanged to true so the paragraph properties will 
+                     // unconditionally be added in this new section
+                     m_bParagraphChanged = true;
+                  } 
+                  else
+                  {
+                     switch (colType & 0x03)
+                     {
+                        // TODO: implement the seperate cases
+                        case 0: // newspaper
+                        case 1: // newspaper with vertical balance
+                        case 2: // parallel
+                        case 3: // parallel with protect [what does this mean? for now, handle the same as parallel]
+                                {
+                                   UT_String propBuffer;
+                                   UT_String_sprintf(propBuffer, "columns:%d", numCols);
+                             
+                                   UT_DEBUGMSG(("Appending column definition: %s\n", propBuffer.c_str()));
+                                   const XML_Char* propsArray[3];
+                                   propsArray[0] = "props";
+                                   propsArray[1] = propBuffer.c_str();
+                                   propsArray[2] = NULL;
+                                   X_CheckWordPerfectError(_flushText());
+                                   X_CheckDocumentError(_appendSection(propsArray));
+                                   // set m_bParagraphChanged to true so the paragraph properties will 
+                                   // unconditionally be added in this new section
+                                   m_bParagraphChanged = true;
+                                }
+                                break;
+                        default: // something else we don't support, since it isn't in the docs
+                                 break;
+                     }
                   }
                   break;
           case 3: // TODO: Column Border
@@ -844,7 +869,7 @@ UT_Error IE_Imp_WordPerfect::_handleParagraphGroup()
 	X_CheckWordPerfectError(_handleParagraphGroupJustification());
 	break;
      }
-   m_paragraphChanged = true;
+   m_bParagraphChanged = true;
 	 
    X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
@@ -1261,7 +1286,15 @@ UT_Error IE_Imp_WordPerfect::_handleExtendedCharacter()
 	else if((character == 31 || character == 32) && characterSet == 4)
 	  {
 	     wc = 34; // character: "
-	  }	
+	  }
+	else if(character == 0x34 && characterSet == 0x01)
+	  {
+	     wc = 0xCF; // character: Ï
+	  }
+	else if(character == 0x35 && characterSet == 0x01)
+	  {
+	     wc = 0xEF; // character: ï
+	  }
 	else
 	  wc = 0; // whitespace
    
@@ -1425,9 +1458,9 @@ UT_Error IE_Imp_WordPerfect::_flushText()
 {
    UT_DEBUGMSG(("WordPerfect: Flushing Text\n"));
    	
-   // append the current paragraph properties if they are changed; m_paragraphChanged is initialized with true, so the first time
+   // append the current paragraph properties if they are changed; m_bParagraphChanged is initialized with true, so the first time
    // we will have a structure to insert into
-   if(m_paragraphChanged)
+   if(m_bParagraphChanged)
      {	
 	_appendCurrentParagraphProperties();
      }
@@ -1528,7 +1561,7 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
    propsArray[0] = pProps;
    propsArray[1] = propBuffer.c_str();
    propsArray[2] = NULL;
-   m_paragraphChanged = false;
+   m_bParagraphChanged = false;
    
    if ( !m_bInSection )
      {
