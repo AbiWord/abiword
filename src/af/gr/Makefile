@@ -30,7 +30,8 @@ PLATFORM_OBJS=	$(OBJDIR)/gr_$(ABI_FE)Graphics.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/gr_$(ABI_FE)Image.$(OBJ_SUFFIX)
 
 ifeq ($(ABI_FE), Win32)
-PLATFORM_OBJS += $(OBJDIR)/gr_$(ABI_FE)CharWidths.$(OBJ_SUFFIX)
+PLATFORM_OBJS += $(OBJDIR)/gr_$(ABI_FE)CharWidths.$(OBJ_SUFFIX) \
+		$(OBJDIR)/gr_$(ABI_FE)USPGraphics.$(OBJ_SUFFIX)
 endif
 
 OBJS=		$(PLATFORM_OBJS)					\
