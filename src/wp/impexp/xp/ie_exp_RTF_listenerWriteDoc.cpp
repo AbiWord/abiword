@@ -38,23 +38,13 @@
 
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {
-	if (!m_bInSection)
-		return;
-	
-	m_bInSection = UT_FALSE;
 	m_apiThisSection = NULL;
-	
 	return;
 }
 
 void s_RTF_ListenerWriteDoc::_closeBlock(void)
 {
-	if (!m_bInBlock)
-		return;
-
-	m_bInBlock = UT_FALSE;
 	m_apiThisBlock = NULL;
-	
 	return;
 }
 
@@ -151,8 +141,7 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 		case '{':
 		case '}':
 			*pBuf++ = '\\';
-			*pBuf++ = (char)pData;
-			pData++;
+			*pBuf++ = (UT_Byte)*pData++;
 			break;
 
 		case UCS_LF:					// LF -- representing a Forced-Line-Break
@@ -204,7 +193,8 @@ void s_RTF_ListenerWriteDoc::_outputData(const UT_UCSChar * data, UT_uint32 leng
 }
 
 s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
-										 IE_Exp_RTF * pie)
+											   IE_Exp_RTF * pie,
+											   UT_Bool bToClipboard)
 {
 	// The overall syntax for an RTF file is:
 	//
@@ -216,14 +206,17 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	
 	m_pDocument = pDocument;
 	m_pie = pie;
-	m_bInSection = UT_FALSE;
-	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
 	m_apiLastSpan = 0;
 	m_apiThisSection = NULL;
 	m_apiThisBlock = NULL;
-	m_bJustStartingDoc = UT_TRUE;
-	m_bJustStartingSection = UT_TRUE;
+
+	m_bToClipboard = bToClipboard;
+	// when we are going to the clipboard, we should implicitly
+	// assume that we are starting in the middle of a section
+	// and block.  when going to a file we should not.
+	m_bJustStartingDoc = !m_bToClipboard;
+	m_bJustStartingSection = !m_bToClipboard;
 	
 	// TODO emit <info> if desired
 
@@ -418,7 +411,6 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 
 void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 {
-	m_bInSection = UT_TRUE;
 	m_apiThisSection = api;
 
 	const PP_AttrProp * pSpanAP = NULL;
@@ -481,7 +473,6 @@ static int compare_tabs(const void* p1, const void* p2)
 
 void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 {
-	m_bInBlock = UT_TRUE;
 	m_apiThisBlock = api;
 
 	const PP_AttrProp * pSpanAP = NULL;

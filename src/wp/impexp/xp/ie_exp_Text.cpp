@@ -192,8 +192,11 @@ s_Text_Listener::s_Text_Listener(PD_Document * pDocument,
 {
 	m_pDocument = pDocument;
 	m_pie = pie;
-	m_bInBlock = UT_FALSE;
 	m_bToClipboard = bToClipboard;
+	// when we are going to the clipboard, we should implicitly
+	// assume that we are starting in the middle of a block.
+	// when going to a file we should not.
+	m_bInBlock = m_bToClipboard;
 }
 
 s_Text_Listener::~s_Text_Listener()

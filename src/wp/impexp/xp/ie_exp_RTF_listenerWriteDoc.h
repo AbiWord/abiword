@@ -31,7 +31,8 @@ class s_RTF_ListenerWriteDoc : public PL_Listener
 {
 public:
 	s_RTF_ListenerWriteDoc(PD_Document * pDocument,
-						   IE_Exp_RTF * pie);
+						   IE_Exp_RTF * pie,
+						   UT_Bool bToClipboard);
 	virtual ~s_RTF_ListenerWriteDoc();
 
 	virtual UT_Bool		populate(PL_StruxFmtHandle sfh,
@@ -69,11 +70,10 @@ protected:
 
 	PD_Document *		m_pDocument;
 	IE_Exp_RTF *		m_pie;
-	UT_Bool				m_bInSection;
-	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
 	UT_Bool				m_bJustStartingDoc;
 	UT_Bool				m_bJustStartingSection;
+	UT_Bool				m_bToClipboard;
 	PT_AttrPropIndex	m_apiLastSpan;
 
 	PT_AttrPropIndex	m_apiThisSection;

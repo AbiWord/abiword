@@ -321,13 +321,46 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 {
 	// copy the given subset of the given document to the
 	// system clipboard in a variety of formats.
+	// MSFT requests that we post them in the order of
+	// importance to us (most preserving to most lossy).
+	//
+	// TODO do we need to put HTML on the clipboard ??
+	// TODO on NT, do we need to put unicode text on the clipboard ??
 
 	if (!m_pClipboard->open())
 		return;
-	
-	m_pClipboard->clear();
-	
 	{
+		m_pClipboard->clear();
+	
+#if 0
+		// put our format on the clipboard
+		
+		IE_Exp_AbiWord_1 * pExpAbw = new IE_Exp_AbiWord_1(pDocRange->m_pDoc);
+		if (pExpAbw)
+		{
+			UT_ByteBuf buf;
+			IEStatus status = pExpAbw->copyToBuffer(pDocRange,&buf);
+			m_pClipboard->addData(AP_CLIPBOARD_ABIWORD_1,(UT_Byte *)buf.getPointer(0),buf.getLength());
+			DELETEP(pExpAbw);
+			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in ABIWORD_1 format.\n",buf.getLength()));
+		}
+#endif
+
+		// put RTF on the clipboard
+		
+		IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
+		if (pExpRtf)
+		{
+			UT_ByteBuf buf;
+			IEStatus status = pExpRtf->copyToBuffer(pDocRange,&buf);
+			UT_Byte b = 0;
+			buf.append(&b,1);
+			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
+			DELETEP(pExpRtf);
+			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",buf.getLength()));
+//			UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
+		}
+
 		// put raw 8bit text on the clipboard
 		
 		IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
@@ -348,35 +381,6 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 //			UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
 		}
 
-		// also put RTF on the clipboard
-		
-		IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
-		if (pExpRtf)
-		{
-			UT_ByteBuf buf;
-			IEStatus status = pExpRtf->copyToBuffer(pDocRange,&buf);
-			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
-			DELETEP(pExpRtf);
-			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",buf.getLength()));
-//			UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
-		}
-
-#if 0
-		// also put our format on the clipboard
-		
-		IE_Exp_AbiWord_1 * pExpAbw = new IE_Exp_AbiWord_1(pDocRange->m_pDoc);
-		if (pExpAbw)
-		{
-			UT_ByteBuf buf;
-			IEStatus status = pExpAbw->copyToBuffer(pDocRange,&buf);
-			m_pClipboard->addData(AP_CLIPBOARD_ABIWORD_1,(UT_Byte *)buf.getPointer(0),buf.getLength());
-			DELETEP(pExpAbw);
-			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in ABIWORD_1 format.\n",buf.getLength()));
-		}
-
-		// TODO on NT, do we need to put unicode text on the clipboard ??
-		// TODO do we need to put HTML on the clipboard ??
-#endif
 	}
 
 	m_pClipboard->close();
@@ -386,7 +390,46 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange)
 {
 	// paste from the system clipboard using the best-for-us format
 	// that is present.
-	
+
+	// We get a handle to the object in the requested format
+	// and then lock it an use the system buffer -- rather
+	// then copying it into our own.
+	//
+	// we jump thru a few bogus steps w/r/t the length of the
+	// object because MSFT docs state that the length of the
+	// object may be less than the length actually returned by
+	// GlobalSize().
+	//
+	// therefore, we do a strlen() and **hope** that this is
+	// right.  Oh, and the value returned by GlobalSize() varies
+	// from call-to-call on the same object.... sigh.
+
+#define TRY_TO_PASTE_IN_FORMAT(fmt,type)							\
+	do {															\
+		HANDLE hData;												\
+		hData = m_pClipboard->getHandleInFormat( fmt );				\
+		if (hData)													\
+		{															\
+			unsigned char * pData = (unsigned char *)GlobalLock(hData);				\
+			UT_DEBUGMSG(("Paste: [fmt %s][hdata 0x%08lx][pData 0x%08lx]\n",			\
+						 ##fmt, hData, pData));						\
+			UT_uint32 iSize = GlobalSize(hData);					\
+			UT_uint32 iStrLen = strlen((const char *)pData);		\
+			UT_uint32 iLen = MyMin(iSize,iStrLen);					\
+																	\
+			type * pImp = new type (pDocRange->m_pDoc);				\
+			if (pImp)												\
+			{														\
+				pImp->pasteFromBuffer(pDocRange,pData,iLen);		\
+				delete pImp;										\
+			}														\
+																	\
+			GlobalUnlock(hData);									\
+			goto MyEnd;												\
+		}															\
+	} while (0)
+
+
 	if (!m_pClipboard->open())
 		return;
 	
@@ -394,57 +437,13 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange)
 		// TODO decide what the proper order is for these.
 
 #if 0
-		if (m_pClipboard->hasFormat(AP_CLIPBOARD_ABIWORD_1))
-		{
-			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_ABIWORD_1);
-			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in ABIWORD_1 format.\n",iLen));
-			unsigned char * pData = new unsigned char[iLen+1];
-			memset(pData,0,iLen+1);
-			m_pClipboard->getData(AP_CLIPBOARD_ABIWORD_1,pData);
-			IE_Imp_AbiWord_1 * pImpAbw = new IE_Imp_AbiWord_1(pDocRange->m_pDoc);
-			pImpAbw->pasteFromBuffer(pDocRange,pData,iLen);
-			DELETEP(pImpAbw);
-			DELETEP(pData);
-			goto MyEnd;
-		}
+		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_ABIWORD_1, IE_Imp_AbiWord_1);
 #endif
 
-		if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
-		{
-			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_RTF);
-			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in RTF format.\n",iLen));
-			unsigned char * pData = new unsigned char[iLen+1];
-			memset(pData,0,iLen+1);
-			m_pClipboard->getData(AP_CLIPBOARD_RTF,pData);
-//			UT_DEBUGMSG(("PasteFromClipboard: [%s]\n",pData));
-			IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(pDocRange->m_pDoc);
-			pImpRTF->pasteFromBuffer(pDocRange,pData,iLen);
-			DELETEP(pImpRTF);
-			DELETEP(pData);
-			goto MyEnd;
-		}
-
-		if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
-		{
-			UT_uint32 iLen = m_pClipboard->getDataLen(AP_CLIPBOARD_TEXTPLAIN_8BIT);
-			UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in TEXTPLAIN format.\n",iLen));
-			unsigned char * pData = new unsigned char[iLen+1];
-			memset(pData,0,iLen+1);
-			m_pClipboard->getData(AP_CLIPBOARD_TEXTPLAIN_8BIT,pData);
-//			UT_DEBUGMSG(("PasteFromClipboard: [%s]\n",pData));
-			IE_Imp_Text * pImpText = new IE_Imp_Text(pDocRange->m_pDoc);
-			// NOTE: MS Docs state that the terminating zero on the string buffer is 
-			// NOTE: included in the length for CF_TEXT and CF_OEMTEXT, so we compensate
-			// NOTE: for it here.
-			if (pData[iLen-1]==0)
-				iLen--;
-			pImpText->pasteFromBuffer(pDocRange,pData,iLen);
-			DELETEP(pImpText);
-			DELETEP(pData);
-			goto MyEnd;
-		}
-
-		// TODO figure out what to do with an image....
+		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_RTF, IE_Imp_RTF);
+		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_TEXTPLAIN_8BIT, IE_Imp_Text);
+		
+		// TODO figure out what to do with an image and other formats....
 		UT_DEBUGMSG(("PasteFromClipboard: TODO support this format..."));
 	}
 

@@ -129,7 +129,7 @@ IEStatus IE_Exp_RTF::_writeDocument(void)
 	// create and install a listener to receive the document
 	// and write its content in rtf.
 	
-	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(m_pDocument,this);
+	m_pListenerWriteDoc = new s_RTF_ListenerWriteDoc(m_pDocument,this, (m_pDocRange!=NULL));
 	if (!m_pListenerWriteDoc)
 		return IES_NoMemory;
 	if (m_pDocRange)

@@ -34,6 +34,7 @@ public:
 	virtual UT_Bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
 	virtual UT_sint32		getDataLen(const char* format);
 	virtual UT_Bool			getData(const char* format, void* pData);
+	virtual HANDLE			getHandleInFormat(const char * format);
 	virtual UT_Bool			hasFormat(const char * format);
 	virtual UT_sint32		countFormats(void);
 	virtual const char *	getNthFormat(UT_sint32 n);

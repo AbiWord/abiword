@@ -20,6 +20,7 @@
 #include <windows.h>
 #include <richedit.h>
 
+#include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "xap_Win32Clipboard.h"
@@ -41,7 +42,16 @@ UT_Bool XAP_Win32Clipboard::open(void)
 
 	if (!OpenClipboard(NULL))
 		return UT_FALSE;
-	
+
+#ifdef DEBUG
+	{
+		UINT k = 0;
+		UINT f;
+		while ( (f=EnumClipboardFormats(k++)) )
+			UT_DEBUGMSG(("Clipboard contains format [%d]\n",f));
+	}
+#endif /* DEBUG */
+
 	m_bOpen = UT_TRUE;
 	return UT_TRUE;
 }
@@ -71,23 +81,25 @@ UT_Bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 
 	return (SetClipboardData(iFormat, hData) != NULL);
 }
 
-UT_Bool XAP_Win32Clipboard::hasFormat(const char * format)
+HANDLE XAP_Win32Clipboard::getHandleInFormat(const char * format)
 {
 	UINT iFormat = _convertFormatString(format);
 	if (iFormat == 0)
-		return UT_FALSE;
+		return NULL;
 
 	HANDLE hData = GetClipboardData(iFormat);
+	return (hData);
+}
+	
+UT_Bool XAP_Win32Clipboard::hasFormat(const char * format)
+{
+	HANDLE hData = getHandleInFormat(format);
 	return (hData != NULL);
 }
 
 UT_sint32 XAP_Win32Clipboard::getDataLen(const char * format)
 {
-	UINT iFormat = _convertFormatString(format);
-	if (iFormat == 0)
-		return -1;
-
-	HANDLE hData = GetClipboardData(iFormat);
+	HANDLE hData = getHandleInFormat(format);
 	if (!hData)
 		return -1;
 
@@ -96,11 +108,7 @@ UT_sint32 XAP_Win32Clipboard::getDataLen(const char * format)
 
 UT_Bool XAP_Win32Clipboard::getData(const char * format, void* pData)
 {
-	UINT iFormat = _convertFormatString(format);
-	if (iFormat == 0)
-		return UT_FALSE;
-
-	HANDLE hData = GetClipboardData(iFormat);
+	HANDLE hData = getHandleInFormat(format);
 	if (!hData)
 		return UT_FALSE;
 
