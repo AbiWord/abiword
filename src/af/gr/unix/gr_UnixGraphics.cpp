@@ -514,7 +514,7 @@ static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
     }
 }
 
-static GdkLineStyle mapLineStyle ( GR_Graphics::LineStyle in )
+static GdkLineStyle mapLineStyle ( GdkGC* pGC, GR_Graphics::LineStyle in )
 {
 	switch ( in )
     {
@@ -522,6 +522,12 @@ static GdkLineStyle mapLineStyle ( GR_Graphics::LineStyle in )
 			return GDK_LINE_ON_OFF_DASH ;
 		case GR_Graphics::LINE_DOUBLE_DASH :
 			return GDK_LINE_DOUBLE_DASH ;
+		case GR_Graphics::LINE_DOTTED:
+			{
+				gint8 dash_list[2] = { 1, 2 }; // MARCM: I chose a pattern of 1 pixel on, 2 pixels off for dotted lines
+				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
+			}
+			return GDK_LINE_ON_OFF_DASH;
 		case GR_Graphics::LINE_SOLID :
 		default:
 			return GDK_LINE_SOLID ;
@@ -548,11 +554,11 @@ void GR_UnixGraphics::setLineProperties ( double inWidthPixels,
 										  GR_Graphics::LineStyle inLineStyle )
 {
 	gdk_gc_set_line_attributes ( m_pGC, (gint)inWidthPixels,
-								 mapLineStyle ( inLineStyle ),
+								 mapLineStyle ( m_pGC, inLineStyle ),
 								 mapCapStyle ( inCapStyle ),
 								 mapJoinStyle ( inJoinStyle ) ) ;
 	gdk_gc_set_line_attributes ( m_pXORGC, (gint)inWidthPixels,
-								 mapLineStyle ( inLineStyle ),
+								 mapLineStyle ( m_pGC, inLineStyle ),
 								 mapCapStyle ( inCapStyle ),
 								 mapJoinStyle ( inJoinStyle ) ) ;
 }
