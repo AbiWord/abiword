@@ -1539,6 +1539,13 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 			}
 		}
 	}
+
+	if (isSelectionEmpty())
+	{
+		_resetSelection();
+//		_setSelectionAnchor();
+		_drawInsertionPoint();
+	}
 }
 
 void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
