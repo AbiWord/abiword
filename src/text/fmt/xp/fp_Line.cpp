@@ -1111,8 +1111,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 #ifdef BIDI_ENABLED
 				if(iDomDirection == FRIBIDI_TYPE_RTL)
 				{
-					bRes = findNextTabStopInLayoutUnits(m_iMaxWidthLayoutUnits - iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
-					iPosLayoutUnits = m_iMaxWidthLayoutUnits - iPosLayoutUnits;
+					UT_sint32 iStartPos = getContainer()->getWidthInLayoutUnits() - iXLayoutUnits;
+
+					bRes = findNextTabStopInLayoutUnits(iStartPos, iPosLayoutUnits, iTabType, iTabLeader);
+					iPosLayoutUnits = getContainer()->getWidthInLayoutUnits() - iPosLayoutUnits;
 				}
 				else
 #endif
@@ -1122,8 +1124,10 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 #ifdef BIDI_ENABLED
 			if(iDomDirection == FRIBIDI_TYPE_RTL)
 			{
-				bRes = findPrevTabStopInLayoutUnits(m_iMaxWidthLayoutUnits - iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
-				iPosLayoutUnits = m_iMaxWidthLayoutUnits - iPosLayoutUnits;
+				UT_sint32 iStartPos = getContainer()->getWidthInLayoutUnits() - iXLayoutUnits;
+
+				bRes = findPrevTabStopInLayoutUnits(iStartPos, iPosLayoutUnits, iTabType, iTabLeader);
+				iPosLayoutUnits = getContainer()->getWidthInLayoutUnits() - iPosLayoutUnits;
 			}
 			else
 #endif

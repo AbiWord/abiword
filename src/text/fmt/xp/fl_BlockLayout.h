@@ -486,6 +486,7 @@ protected:
 #endif
 
 	fl_Squiggles*			m_pSquiggles;
+
 };
 
 /*

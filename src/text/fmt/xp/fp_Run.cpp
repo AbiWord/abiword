@@ -2819,7 +2819,7 @@ void fp_FieldRun::lookupProperties(void)
 	if (!pszType) return;
 
 #ifdef BIDI_ENABLED
-	m_iDirection = FRIBIDI_TYPE_ON;
+	//m_iDirection = FRIBIDI_TYPE_ON;
 #endif
 
 	int i;

@@ -2083,6 +2083,8 @@ void FV_View::processSelectedBlocks(List_Type listType)
 
 	m_pDoc->beginUserAtomicGlob();
 
+	char margin_left [] = "margin-left";
+	char margin_right[] = "margin-right";
 
 	for(i=0; i< vBlock.getItemCount(); i++)
 	{
@@ -2103,8 +2105,18 @@ void FV_View::processSelectedBlocks(List_Type listType)
 			double blockLeft = 0.0;
 			if(pPrev != NULL)
 			{
-				prevLeft = UT_convertToInches(pPrev->getProperty("margin-left",true));
-				blockLeft = UT_convertToInches(pBlock->getProperty("margin-left",true));
+#ifdef BIDI_ENABLED
+				prevLeft = pPrev->getDominantDirection() == FRIBIDI_TYPE_LTR 
+				  ? UT_convertToInches(pPrev->getProperty(margin_left,true)) 
+				  : UT_convertToInches(pPrev->getProperty(margin_right,true));
+
+				blockLeft = pBlock->getDominantDirection() == FRIBIDI_TYPE_LTR 
+				  ? UT_convertToInches(pBlock->getProperty(margin_left,true)) 
+				  : UT_convertToInches(pBlock->getProperty(margin_right,true));;
+#else
+				prevLeft = UT_convertToInches(pPrev->getProperty(margin_left,true));
+				blockLeft = UT_convertToInches(pBlock->getProperty(margin_left,true));
+#endif
 			}
 			if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->isListItem()== true && pPrev->getAutoNum()->getType() == listType && (blockLeft <= (prevLeft - 0.00001)))
 			{

@@ -26,6 +26,10 @@
 
 fp_FieldListLabelRun::fp_FieldListLabelRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, pG, iOffsetFirst, iLen)
 {
+#ifdef BIDI_ENABLED
+    UT_ASSERT(pBL);
+	m_iDirection = pBL->getDominantDirection();
+#endif
 }
 
 bool fp_FieldListLabelRun::calculateValue(void)

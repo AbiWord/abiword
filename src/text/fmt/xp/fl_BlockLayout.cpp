@@ -316,6 +316,7 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 	}
 
 	m_vecTabs.clear();
+
 	if (pszTabStops && pszTabStops[0])
 	{
 		eTabType	iType = FL_TAB_NONE;
@@ -415,6 +416,8 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTa
 		m_vecTabs.qsort(compare_tabs);
 	}
 }
+
+
 void fl_BlockLayout::_lookupProperties(void)
 {
 	{
@@ -4761,9 +4764,39 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 		
 		if (pTab->getPosition() > iStartX)
 		{
-			iPosition = pTab->getPosition();
-			iType = pTab->getType();
-			iLeader = pTab->getLeader();
+#ifdef BIDI_ENABLED
+			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			{
+				if(m_iRightMargin > iStartX && m_iRightMargin < pTab->getPosition())
+				{
+					iPosition = m_iRightMargin;
+					iType = FL_TAB_RIGHT;
+					iLeader = FL_LEADER_NONE;
+				}
+				else
+				{
+					iPosition = pTab->getPosition();
+					iType = pTab->getType();
+					iLeader = pTab->getLeader();
+				}
+				
+			}
+			else
+#endif
+			{
+				if(m_iLeftMargin > iStartX && m_iLeftMargin < pTab->getPosition())
+				{
+					iPosition = m_iLeftMargin;
+					iType = FL_TAB_LEFT;
+					iLeader = FL_LEADER_NONE;
+				}
+				else
+				{
+					iPosition = pTab->getPosition();
+					iType = pTab->getType();
+					iLeader = pTab->getLeader();
+				}
+			}
 
 			return true;
 		}
@@ -4771,7 +4804,13 @@ bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	
 	// now, handle the default tabs
 
-	UT_sint32 iMin = m_iLeftMargin;
+	UT_sint32 iMin;
+#ifdef BIDI_ENABLED
+	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		iMin = m_iRightMargin;
+	else
+#endif
+		iMin = m_iLeftMargin;
 
 	if (iMin > iStartX)
 	{
@@ -4848,17 +4887,52 @@ bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 		
 		if (pTab->getPositionLayoutUnits() > iStartX)
 		{
-			iPosition = pTab->getPositionLayoutUnits();
-			iType = pTab->getType();
-			iLeader = pTab->getLeader();
-
+#ifdef BIDI_ENABLED
+			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			{
+				if(m_iRightMarginLayoutUnits > iStartX && m_iRightMarginLayoutUnits < pTab->getPositionLayoutUnits())
+				{
+					iPosition = m_iRightMarginLayoutUnits;
+					iType = FL_TAB_RIGHT;
+					iLeader = FL_LEADER_NONE;
+				}
+				else
+				{
+					iPosition = pTab->getPositionLayoutUnits();
+					iType = pTab->getType();
+					iLeader = pTab->getLeader();
+				}
+				
+			}
+			else
+#endif
+			{
+				if(m_iLeftMarginLayoutUnits > iStartX && m_iLeftMarginLayoutUnits < pTab->getPositionLayoutUnits())
+				{
+					iPosition = m_iLeftMarginLayoutUnits;
+					iType = FL_TAB_LEFT;
+					iLeader = FL_LEADER_NONE;
+				}
+				else
+				{
+					iPosition = pTab->getPositionLayoutUnits();
+					iType = pTab->getType();
+					iLeader = pTab->getLeader();
+				}
+			}
 			return true;
 		}
 	}
 
 	// now, handle the default tabs
 
-	UT_sint32 iMin = m_iLeftMarginLayoutUnits;
+	UT_sint32 iMin;
+#ifdef BIDI_ENABLED
+    if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		iMin = m_iRightMarginLayoutUnits;
+	else
+#endif
+		iMin = m_iLeftMarginLayoutUnits;
 
 	if (iMin > iStartX)
 	{
@@ -4941,10 +5015,39 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 			pTab = (fl_TabStop*) m_vecTabs.getNthItem(i>0?i-1:0);
 			UT_ASSERT(pTab);
 			
-			iPosition = pTab->getPosition();
-			iType = pTab->getType();
-			iLeader = pTab->getLeader();
-
+#ifdef BIDI_ENABLED
+			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			{
+				if(m_iRightMargin > pTab->getPosition() && m_iRightMargin < iStartX)
+				{
+					iPosition = m_iRightMargin;
+					iType = FL_TAB_RIGHT;
+					iLeader = FL_LEADER_NONE;
+				}
+				else
+				{
+					iPosition = pTab->getPosition();
+					iType = pTab->getType();
+					iLeader = pTab->getLeader();
+				}
+				
+			}
+			else
+#endif
+			{
+				if(m_iLeftMargin > pTab->getPosition() && m_iLeftMargin < iStartX)
+				{
+					iPosition = m_iLeftMargin;
+					iType = FL_TAB_LEFT;
+					iLeader = FL_LEADER_NONE;
+				}
+				else
+				{
+					iPosition = pTab->getPosition();
+					iType = pTab->getType();
+					iLeader = pTab->getLeader();
+				}
+			}
 			return true;
 		}
 	}
@@ -4966,7 +5069,13 @@ bool	fl_BlockLayout::findPrevTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sin
 	
 	// now, handle the default tabs
 
-	UT_sint32 iMin = m_iLeftMargin;
+	UT_sint32 iMin;
+#ifdef BIDI_ENABLED
+	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		iMin = m_iRightMargin;
+	else
+#endif
+		iMin = m_iLeftMargin;
 
 	if (iMin >= iStartX)
 	{
@@ -5024,10 +5133,39 @@ bool	fl_BlockLayout::findPrevTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 			pTab = (fl_TabStop*) m_vecTabs.getNthItem(i>0?i-1:0);
 			UT_ASSERT(pTab);
 			
-			iPosition = pTab->getPositionLayoutUnits();
-			iType = pTab->getType();
-			iLeader = pTab->getLeader();
-
+#ifdef BIDI_ENABLED
+			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			{
+				if(m_iRightMarginLayoutUnits > pTab->getPositionLayoutUnits() && m_iRightMarginLayoutUnits < iStartX)
+				{
+					iPosition = m_iRightMarginLayoutUnits;
+					iType = FL_TAB_RIGHT;
+					iLeader = FL_LEADER_NONE;
+				}
+				else
+				{
+					iPosition = pTab->getPositionLayoutUnits();
+					iType = pTab->getType();
+					iLeader = pTab->getLeader();
+				}
+				
+			}
+			else
+#endif
+			{
+				if(m_iLeftMarginLayoutUnits > pTab->getPositionLayoutUnits() && m_iLeftMarginLayoutUnits < iStartX)
+				{
+					iPosition = m_iLeftMarginLayoutUnits;
+					iType = FL_TAB_LEFT;
+					iLeader = FL_LEADER_NONE;
+				}
+				else
+				{
+					iPosition = pTab->getPositionLayoutUnits();
+					iType = pTab->getType();
+					iLeader = pTab->getLeader();
+				}
+			}
 			return true;
 		}
 	}
@@ -5049,12 +5187,25 @@ bool	fl_BlockLayout::findPrevTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 	
 	// now, handle the default tabs
 
-	UT_sint32 iMin = m_iLeftMarginLayoutUnits;
+	UT_sint32 iMin;
+#ifdef BIDI_ENABLED
+	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		iMin = m_iRightMarginLayoutUnits;
+	else
+#endif
+		iMin = m_iLeftMarginLayoutUnits;
+
 	UT_DEBUGMSG(("not tabs: using default tabs; iMin %d, iStartX %d\n", iMin, iStartX));
 	if (iMin >= iStartX)
 	{
 		iPosition = iMin;
-		iType = FL_TAB_LEFT;
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			iType = FL_TAB_RIGHT;
+		else
+#endif
+			iType = FL_TAB_LEFT;
+
 		return true;
 	}
 
@@ -5537,7 +5688,13 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 		pStyle->getProperty((const XML_Char *) "list-delim", szDelim);
 		pStyle->getProperty((const XML_Char *) "list-decimal", szDec);
 		pStyle->getProperty((const XML_Char *) "start-value", szStart);
-		pStyle->getProperty((const XML_Char *) "margin-left", szAlign);
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		   pStyle->getProperty((const XML_Char *) "margin-right", szAlign);
+	    else
+#endif
+		   pStyle->getProperty((const XML_Char *) "margin-left", szAlign);
+
 		pStyle->getProperty((const XML_Char *) "text-indent", szIndent);
 		pStyle->getProperty((const XML_Char *) "field-font", szFont);
 		pStyle->getProperty((const XML_Char *) "list-style", szListStyle);
@@ -5555,7 +5712,15 @@ void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSD
 			fIndent =  (float)-LIST_DEFAULT_INDENT_LABEL;
 		if(!szFont)
 			UT_ASSERT(0);
+#ifdef BIDI_ENABLED
+		double dLeft;
+		if(m_iDomDirection == FRIBIDI_TYPE_LTR)
+			dLeft = UT_convertToInches(getProperty("margin-left",true));
+		else
+			dLeft = UT_convertToInches(getProperty("margin-right",true));
+#else
 		double dLeft = UT_convertToInches(getProperty("margin-left",true));
+#endif
 		fAlign += dLeft;
 	}
 	else
@@ -5655,7 +5820,17 @@ void	fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 	const XML_Char * pszStart = getProperty("start-value",true);
 	const XML_Char * lDelim =  getProperty("list-delim",true);
 	const XML_Char * lDecimal =  getProperty("list-decimal",true);
+
+#ifdef BIDI_ENABLED
+	const XML_Char * pszAlign;
+	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		pszAlign =  getProperty("margin-right",true);
+	else
+		pszAlign =  getProperty("margin-left",true);
+#else
 	const XML_Char * pszAlign =  getProperty("margin-left",true);
+#endif
+
 	const XML_Char * pszIndent =  getProperty("text-indent",true);
 	const XML_Char * fFont =  getProperty("field-font",true);
 	const XML_Char * pszListStyle =  getProperty("list-style",true);
@@ -5665,7 +5840,15 @@ void	fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 	}
 	if(pszAlign != NULL)
 	{
-		vp->addItem( (void *) "margin-left");	vp->addItem( (void *) pszAlign);
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			vp->addItem( (void *) "margin-right");
+		else
+#endif
+			vp->addItem( (void *) "margin-left");
+
+		vp->addItem( (void *) pszAlign);
+
 		count++;
 	}
 	if(pszIndent != NULL)
@@ -5755,7 +5938,16 @@ void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char 
 	va.addItem( (void *) "parentid");		va.addItem( (void *) pid);
 	va.addItem( (void *) "level");			va.addItem( (void *) buf);
 	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
-	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
+
+#ifdef BIDI_ENABLED
+	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		vp.addItem( (void *) "margin-right");
+	else
+#endif
+	    vp.addItem( (void *) "margin-left");
+
+	vp.addItem( (void *) pszAlign);
+
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
 	vp.addItem( (void *) "field-font"); 	vp.addItem( (void *) fFont);
 	vp.addItem( (void *) "list-style"); 	vp.addItem( (void *) style);
@@ -5882,7 +6074,13 @@ void	fl_BlockLayout::StopListInBlock(void)
 			m_pDoc->getStyle((char *)getListStyleString(newType), &pStyle);
 			if (pStyle)
 			{
-				pStyle->getProperty((const XML_Char *)"margin-left", szAlign);
+#ifdef BIDI_ENABLED
+				if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+					pStyle->getProperty((const XML_Char *)"margin-right", szAlign);
+				else
+#endif
+					pStyle->getProperty((const XML_Char *)"margin-left", szAlign);
+
 				pStyle->getProperty((const XML_Char *)"text-indent", szIndent);
 				fAlign = (float)UT_convertToInches(szAlign);
 				fAlign *= level;
@@ -5903,7 +6101,13 @@ void	fl_BlockLayout::StopListInBlock(void)
 								UT_convertInchesToDimensionString(DIM_IN, fIndent, 0));
 			}
 			
-			vp.addItem((void *) "margin-left");
+#ifdef BIDI_ENABLED
+			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+				vp.addItem((void *) "margin-right");
+			else
+#endif
+				vp.addItem((void *) "margin-left");
+
 			vp.addItem((void *) align);
 			vp.addItem((void *) "text-indent");
 			vp.addItem((void *) indent);
@@ -5920,12 +6124,24 @@ void	fl_BlockLayout::StopListInBlock(void)
 			
 		if (pPrev)
 		{
-			szAlign = pPrev->getProperty("margin-left", true);
+#ifdef BIDI_ENABLED
+			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+				szAlign = pPrev->getProperty("margin-right", true);
+			else
+#endif
+				szAlign = pPrev->getProperty("margin-left", true);
+
 			szIndent =	pPrev->getProperty("text-indent", true);
 		}
 		else if (pNext)
 		{
-			szAlign = pNext->getProperty("margin-left", true);
+#ifdef BIDI_ENABLED
+			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+				szAlign = pNext->getProperty("margin-right", true);
+			else
+#endif
+				szAlign = pNext->getProperty("margin-left", true);
+
 			szIndent = pNext->getProperty("text-indent", true);
 		}
 		else
@@ -5933,8 +6149,16 @@ void	fl_BlockLayout::StopListInBlock(void)
 			szAlign = "0.0000in";
 			szIndent = "0.0000in";
 		}
-		vp.addItem((void *) "margin-left"); vp.addItem((void *)szAlign);
-		vp.addItem((void *) "text-indent"); vp.addItem((void *)szIndent);
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			vp.addItem((void *) "margin-right");
+		else
+#endif
+			vp.addItem((void *) "margin-left");
+
+		vp.addItem((void *)szAlign);
+		vp.addItem((void *) "text-indent");
+		vp.addItem((void *)szIndent);
 	}
 	UT_uint32 countp = vp.getItemCount() + 1;
 	UT_uint32 i;
@@ -5969,7 +6193,13 @@ void	fl_BlockLayout::StopListInBlock(void)
 		pListProps[1] =  NULL;
 		pListProps[2] =  "list-style";
 		pListProps[3] =  NULL;
-		pListProps[4] =  "margin-left";
+#ifdef BIDI_ENABLED
+		if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+			pListProps[4] =  "margin-right";
+		else
+#endif
+			pListProps[4] =  "margin-left";
+
 		pListProps[5] =  NULL;
 		pListProps[6] =  "text-indent";
 		pListProps[7] =  NULL;
@@ -6127,7 +6357,15 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
 */
 fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 {
+#ifdef BIDI_ENABLED
+    const char * szAlign;
+	if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+		szAlign = getProperty("margin-right",true);
+	else
+		szAlign = getProperty("margin-left",true);
+#else
 	const char * szAlign = getProperty("margin-left",true);
+#endif
 	double dAlignMe = UT_convertToDimension(szAlign,DIM_IN); 
 	//
 	// Find the most recent block with a list
@@ -6140,7 +6378,12 @@ fl_BlockLayout * fl_BlockLayout::getPreviousListOfSameMargin(void)
 	{
 		if(pPrev->isListItem())
 		{
-			szAlign = pPrev->getProperty("margin-left",true);
+#ifdef BIDI_ENABLED
+			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
+				szAlign = pPrev->getProperty("margin-right",true);
+			else
+#endif
+				szAlign = pPrev->getProperty("margin-left",true);
 			double dAlignThis = UT_convertToDimension(szAlign,DIM_IN);
 			float diff = (float)fabs( (float) dAlignThis-dAlignMe);
 			if(diff < 0.01)
