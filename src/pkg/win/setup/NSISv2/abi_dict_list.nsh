@@ -12,7 +12,7 @@
 ;${SectionDict} "Language name" "Language Abbr" "Locale/country code" "endianess [i386|ppc]" "filesize"
 
 ${SectionDict} "Catalan"      "ca" "ES" "i386"  4324
-${SectionDict} "Czech"        "cs" "DZ" "i386"  2558
+${SectionDict} "Czech"        "cs" "CZ" "i386"  2558
 ${SectionDict} "Danish"       "da" "DK" "i386"  1580
 ${SectionDict} "Swiss"        "de" "CH" "i386"  8501
 ${SectionDict} "Deutsch"      "de" "DE" "i386"  2277
