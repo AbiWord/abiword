@@ -125,6 +125,7 @@ ISpellChecker::ISpellChecker()
 	m_translate_out(UT_ICONV_INVALID)
 {
 	memset(m_sflagindex,0,sizeof(m_sflagindex));
+	memset(m_pflagindex,0,sizeof(m_pflagindex));
   if (mRefCnt == 0)
     {
       // load the dictionary list
