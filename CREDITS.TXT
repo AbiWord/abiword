@@ -42,6 +42,7 @@ Danny Faught <faught@rstcorp.com>
 Harald Fernengel <harry@bnro.de>                RTF compatibility fixes
 Hubert Figuiere <hfiguiere@teaser.fr>           RTF export fixes
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
+Tomas Frydrych <tomas@frydrych.uklinux.net>	ttf, utf8 locale, bidi
 Ashleigh Gordon <gordonac@ocean.com.au>         English help files
 Peter Haight <peterh@sapros.com>                Fonts location bug fix
 Vlad Harchev <hvv@hippo.ru>                     Support for non latin-1 Languages
@@ -107,7 +108,7 @@ Dave Thompson <thompson@pdnt.com>
 Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     Lots of fun stuff
 John Tunison <nosinut@WIND.REM.CMU.EDU>         GNOME dialogs
 Göran Thyni <goran@kirra.net>                   libxml support
-Kevin Vajk <kvajk@ricochet.net>                 File import/export detection
+Kevin Vajk <kvajk@ricochet.net>                 File import/export detection, hpux
 Martin Vermeer <martin.vermeer@fgi.fi>          Unicode Latex export
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
 John Wood <jyonw@asu.edu>                       NetBSD
