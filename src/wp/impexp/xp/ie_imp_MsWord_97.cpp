@@ -6145,7 +6145,7 @@ bool IE_Imp_MsWord_97::_appendFmt(const XML_Char ** attributes)
 bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
-	UT_DEBUGMSG(("Inserting strux of type %d in HdrFtr m_iCurrentHeader \n",pts,m_iCurrentHeader));
+	UT_DEBUGMSG(("Inserting strux of type %d in HdrFtr %d\n",pts,m_iCurrentHeader));
 	UT_ASSERT(m_bInSect);
 	bool bRet = true;
 	for(UT_uint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
