@@ -6087,6 +6087,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 							 m_yScrollOffset,
 							 m_iWindowHeight,
 							 y,height));
+			//TF NOTE: Can we break out here?
 		}
 		else
 		{
@@ -6109,7 +6110,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			adjustedBottom -= fl_PAGEVIEW_PAGE_SEP;
 
 			if (!bDirtyRunsOnly || pPage->needsRedraw())
-			{
+			{	
 				m_pG->fillRect(m_clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
 			}
 
@@ -6146,9 +6147,9 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			adjustedTop += 3;
 			adjustedRight += 1;
-			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom+1);
+			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 			adjustedRight += 1;
-			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom+1);
+			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 		}
 
 		curY += iPageHeight + fl_PAGEVIEW_PAGE_SEP;
