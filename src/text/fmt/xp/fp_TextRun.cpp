@@ -2949,3 +2949,31 @@ UT_uint32 fp_TextRun::adjustCaretPosition(UT_uint32 iDocumentPosition, bool bFor
 	return iRunOffset + getGraphics()->adjustCaretPosition(*m_pRenderInfo, bForward);
 }
 
+void fp_TextRun::adjustDeletePosition(UT_uint32 &iDocumentPosition, UT_uint32 &iCount)
+{
+	UT_uint32 iRunOffset = getBlockOffset() + getBlock()->getPosition();
+
+	UT_return_if_fail( iDocumentPosition >= iRunOffset && iDocumentPosition < iRunOffset + getLength() &&
+						   m_pRenderInfo);
+
+	if(!getGraphics()->needsSpecialCaretPositioning(*m_pRenderInfo))
+	   return;
+
+	// OK, this is the hard case ...
+	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
+	
+	UT_return_if_fail(text.getStatus() == UTIter_OK);
+	
+	text.setUpperLimit(text.getPosition() + getLength() - 1);
+		
+	m_pRenderInfo->m_pText = &text;
+	m_pRenderInfo->m_iOffset = iDocumentPosition - iRunOffset;
+	m_pRenderInfo->m_iLength = iCount;
+	
+	getGraphics()->adjustDeletePosition(*m_pRenderInfo);
+
+	iDocumentPosition = iRunOffset + m_pRenderInfo->m_iOffset;
+	iCount = m_pRenderInfo->m_iLength;
+}
+

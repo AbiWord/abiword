@@ -725,6 +725,8 @@ protected:
 	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
 											 PT_DocPosition &posEnd);
 	bool			    _charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce = false);
+
+	void                _adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount);
 	
 private:
 	PT_DocPosition		m_iInsPoint;

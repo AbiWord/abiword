@@ -613,6 +613,15 @@ class ABI_EXPORT GR_Graphics
 	// the default implementation simply returns the passed value
 	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward) VIRTUAL_SFX;
 
+	// Adjusts position for delete if given script restricts deletion to character clusters.
+	// The caller has to set initial position within the run in ri.m_iOffset, overall length to be
+	// deleted in ri.m_iLength and provide a text iterator over the text of the run in ri.m_pText
+	// on return ri.m_iOffset contains the adjusted (run-relative) position and ri.m_iLength the count
+	// the adjusted length of the delete
+	// 
+	// the default implementation simply returns the passed value
+	virtual void adjustDeletePosition(GR_RenderInfo & ri) VIRTUAL_SFX;
+	
 	// the AbiWord line breaking was designed looking for breaks at the right edge of a character,
 	// i.e., the character that can break is included with the left part of the split run.
 	// the Uniscribe library, however, holds breaking info for left edge, and sometimes it is useful

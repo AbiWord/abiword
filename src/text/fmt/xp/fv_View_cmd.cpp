@@ -3114,6 +3114,22 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			_setPoint(m_iInsPoint - iLength);
 			
 		}
+
+		// deal with character clusters, such as base char + vowel + tone mark in Thai
+		UT_uint32 pos1 = getPoint();
+		if(!bForward)
+		{
+			UT_ASSERT_HARMLESS( pos1 > count );
+			pos1 -= count;
+		}
+		
+		_adjustDeletePosition(pos1, count);
+
+		if(bForward)
+			_setPoint(pos1);
+		else
+			_setPoint(pos1 + count);
+
 		
 		// Code to deal with font boundary problem.
 		// TODO: This should really be fixed by someone who understands

@@ -338,6 +338,13 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 
 	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
 	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
+
+	// deal with character clusters, such as base char + vowel + tone mark in Thai
+	UT_uint32 iLen = iHigh - iLow;
+	_adjustDeletePosition(iLow, iLen); // modifies both iLow and iLen
+	iHigh = iLow + iLen;
+	
+	
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
 	if(!bDeleteTables)
 	{
@@ -5344,3 +5351,61 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 	return bResult;
 }
+
+void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
+{
+	// This code deals with character clusters, such as the Thai base character + vowel + tone
+	// mark combinations. Basically, if we are asked to delete the base character, we also have
+	// to delete any of the other characters from its cluster. We need to find the runs that
+	// contain the start and end of the requested delete segment and have them to adjust the
+	// delete offsets.
+	//
+
+	fl_BlockLayout * pBlock = _findBlockAtPosition(iDocPos);
+
+	UT_return_if_fail( pBlock );
+	
+	fp_Run * pRun = pBlock->findRunAtOffset(iDocPos - pBlock->getPosition());
+	UT_return_if_fail( pRun );
+
+	UT_uint32 pos1 = iDocPos;
+	UT_uint32 iRunOffset = pBlock->getPosition() + pRun->getBlockOffset();
+	UT_uint32 iLen = UT_MIN(iCount, pRun->getLength() - (iDocPos - iRunOffset));
+	bool bMoreThanOneRun = (iCount > iLen);
+		
+	// this call modifies both pos1, and iLen
+	pRun->adjustDeletePosition(pos1, iLen);
+		
+	if(bMoreThanOneRun)
+	{
+		// the deletion spans more than a single run
+		// locate the run that contains the last char to be deleted
+			
+		UT_uint32 iOrigEndOffset = iDocPos + iCount - 1; // doc offset of the last char to be deleted
+
+		fl_BlockLayout * pEndBlock = _findBlockAtPosition(iOrigEndOffset);
+		UT_return_if_fail( pEndBlock );
+		
+		fp_Run * pEndRun = pEndBlock->findRunAtOffset(iOrigEndOffset - pEndBlock->getPosition());
+		UT_return_if_fail( pEndRun );
+
+		UT_uint32 iEndRunOffset = pEndBlock->getPosition() + pEndRun->getBlockOffset();
+
+		// how much of the deleted sequence is in our run?
+		iLen = iDocPos + iCount - iEndRunOffset;
+		UT_ASSERT_HARMLESS( iLen <= pEndRun->getLength());
+			
+		pEndRun->adjustDeletePosition(iEndRunOffset, iLen);
+
+		iCount  = iEndRunOffset + iLen - pos1;
+	}
+	else
+	{
+		// adjust count
+		iCount  = iLen;
+	}
+
+	// adjust point
+	iDocPos = pos1;
+}
+

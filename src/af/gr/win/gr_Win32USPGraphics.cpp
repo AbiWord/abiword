@@ -800,6 +800,7 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	if(RI->s_pOwnerChar == RI)
 	{
 		// this might not be strictly necessary, but it is safer to do so
+		// no, this is necessary
 		RI->s_pOwnerChar = NULL;
 	}
 	
@@ -1224,6 +1225,76 @@ UT_uint32 GR_Win32USPGraphics::adjustCaretPosition(GR_RenderInfo & ri, bool bFor
 	return (UT_uint32)iPos;
 }
 
+void GR_Win32USPGraphics::adjustDeletePosition(GR_RenderInfo & ri)
+{
+	// for now we will call ScriptBreak from here; since most of the time caret changes happen on
+	// the same line, this should not be a performance problem
+	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+
+	if(ri.m_iLength >= RI.m_iCharCount)
+	{
+		// we are deleting the last character of the run, or past it; we will assume that clusters
+		// do not cross run boundaries and allow the deletion happen
+		return;
+	}
+
+	if(!_needsSpecialCaretPositioning(RI))
+		return;
+
+	// _scriptBreak expects the length of the segment to process to be set in ri.m_iLength which
+	// currently holds the length of the deletion (we always process the whole run, as this
+	// simplifies things)
+	UT_uint32 iCharCount = ri.m_iLength;
+	ri.m_iLength = RI.m_iCharCount;
+	
+	if(!_scriptBreak(RI))
+		return;
+
+	// deletion can start anywhere, but can only end on cluster boundary if the base character is
+	// included in the deletion
+	
+	// get the offset of the character that follows the delete segment
+	UT_sint32 iNextOffset = (UT_sint32)ri.m_iOffset + iCharCount;
+
+	if(RI.s_pLogAttr[iNextOffset].fCharStop)
+	{
+		// the next char is a valid caret position, so we are OK
+		// restore the original length
+		ri.m_iLength = iCharCount;
+		return;
+	}
+
+	// If we got this far, we were asked to end the deletion before a character that is not a valid
+	// caret position. We need to determine if the segment we are asked to delete contains thi
+	// character's base character; if it does, we have to expand the seletion to delete the entire
+	// cluster.
+
+	UT_sint32 iOffset = iNextOffset - 1;
+	while(iOffset > 0 && iOffset > ri.m_iOffset && !RI.s_pLogAttr[iOffset].fCharStop)
+		iOffset--;
+
+	if(RI.s_pLogAttr[iOffset].fCharStop)
+	{
+		// our delete segment includes the base character, so we have to delete the entire cluster
+		iNextOffset = iOffset + 1;
+		
+		while(iNextOffset < RI.m_iCharCount
+			  && !RI.s_pLogAttr[iNextOffset].fCharStop)
+			iNextOffset++;
+
+		
+		ri.m_iLength = iNextOffset - ri.m_iOffset;
+		return;
+	}
+	
+	// two posibilities: we are deleting only a cluster appendage or the run does not contain
+	// base character. The latter should probably not happen, but in both cases we will let the
+	// delete proceed as is
+
+	// restore the original length
+	ri.m_iLength = iCharCount;
+}
 bool GR_Win32USPGraphics::needsSpecialCaretPositioning(GR_RenderInfo & ri)
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, false);
@@ -1714,11 +1785,14 @@ bool GR_Win32USPRenderInfo::split (GR_RenderInfo *&pri, bool bReverse)
 
 		pri->m_iJustificationAmount = iJustAmount * pri->m_iJustificationPoints / iJustPoints;
 		m_iJustificationAmount = iJustAmount - pri->m_iJustificationAmount;
-		
-		
 	}
 	
 
+	if(s_pOwnerChar == &RI)
+	{
+		s_pOwnerChar = NULL;
+	}
+	
 	return true;
 }
 

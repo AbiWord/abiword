@@ -283,6 +283,9 @@ public:
 	virtual UT_uint32   adjustCaretPosition(UT_uint32 iDocumentPosition, bool bForward)
 	                           { return iDocumentPosition;}
 
+	virtual void        adjustDeletePosition(UT_uint32 &pos1, UT_uint32 &count)
+	                           {return;}
+
 	bool                containsRevisions(){return (m_pRevisions != NULL);}
 	// would prefer to make the return value const, but the
 	// getLastRevision() and related functions use internal cache so

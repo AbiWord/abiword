@@ -111,7 +111,7 @@ public:
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
 
 	virtual UT_uint32   adjustCaretPosition(UT_uint32 iDocumentPosition, bool bForward);
-	
+	virtual void        adjustDeletePosition(UT_uint32 &pos1, UT_uint32 &count);
 	
 	static UT_uint32	s_iClassInstanceCount;
 	UT_BidiCharType 	m_iDirOverride;

@@ -1274,6 +1274,11 @@ UT_uint32 GR_Graphics::adjustCaretPosition(GR_RenderInfo & ri, bool bForward)
 	return ri.m_iOffset;
 }
 
+void GR_Graphics::adjustDeletePosition(GR_RenderInfo & ri)
+{
+	return;
+}
+
 #endif // #ifndef ABI_GRAPHICS_PLUGIN
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -95,7 +95,7 @@ public:
 
 	virtual bool      needsSpecialCaretPositioning(GR_RenderInfo & ri);
 	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward);
-	
+	virtual void      adjustDeletePosition(GR_RenderInfo & ri);
 
   protected:
 	inline bool       _needsSpecialBreaking(GR_Win32USPRenderInfo &ri);
