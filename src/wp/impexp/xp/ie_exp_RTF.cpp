@@ -691,6 +691,10 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	_rtf_nl();
 	_rtf_keyword("kerning",0);			// turn off kerning
 	_rtf_keyword("cf",0);				// set color 0 -- black
+	_rtf_keyword("ftnbj");				// set footnotes to bottom of page
+	_rtf_keyword("fet",2);				// Allow both footnotes and endnotes
+	_rtf_keyword("ftnstart",1);			// First footnote is one - later use
+	                                    // document properties
 
 	return (m_error == 0);
 }

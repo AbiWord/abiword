@@ -614,7 +614,7 @@ private:
     void           HandleCell(void);
 	void           HandleCellX(UT_sint32 cellx);
     void           HandleRow(void);
-
+	void           HandleFootnote();
 	// Section property handlers
 	bool ApplySectionAttributes();
 	bool ResetSectionAttributes();
@@ -698,7 +698,7 @@ private:
 	UT_Vector           m_vecWord97Lists;
 	UT_Vector           m_vecWord97ListOverride;
 	void _appendHdrFtr ();
-	bool _appendField (const XML_Char *xmlField);
+	bool _appendField (const XML_Char *xmlField, const XML_Char ** pszAttribs=NULL);
 	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, bool & isXML);
 	bool                m_bAppendAnyway;
 	RTFProps_SectionProps m_sectdProps ;
@@ -708,6 +708,9 @@ private:
 	bool                  m_bParaWrittenForSection;
 	bool                  m_bCellBlank;
 	bool                  m_bEndTableOpen;
+	bool                  m_bInFootnote;
+	UT_uint32             m_iDepthAtFootnote;
+	UT_uint32             m_iLastFootnoteId;
 };
 
 #endif /* IE_IMP_RTF_H */

@@ -75,6 +75,7 @@ protected:
 
 	PT_AttrPropIndex	m_apiThisSection;
 	PT_AttrPropIndex	m_apiThisBlock;
+	PT_AttrPropIndex	m_apiSavedBlock;
 };
 
 #endif /* IE_EXP_RTF_LISTENERGETPROPS */

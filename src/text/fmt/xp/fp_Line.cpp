@@ -135,7 +135,7 @@ fp_Line::~fp_Line()
 		s_pOldXs = NULL;
 		s_iOldXsSize = 0;
 	}
-	UT_DEBUGMSG(("Deleting Line %x \n",this));
+	xxx_UT_DEBUGMSG(("Deleting Line %x \n",this));
 #ifdef USE_STATIC_MAP
 	if(!s_iClassInstanceCounter) //this is the last/only instance of the class Line
 	{

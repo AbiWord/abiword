@@ -133,14 +133,36 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			{
 				pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
 				PX_ChangeRecord * pcr = NULL;
-				bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
+				bool bStatus1 = false;
+				bool bAddOffset = true;
+				if(sfh != NULL)
+				{
+					bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
+					UT_ASSERT(bStatus1);
+				}
+				else
+				{
+					PT_DocPosition pos = pf->getPos();
+					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
+					PL_StruxDocHandle sdh = NULL;
+					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
+					pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+					blockOffset = pos - pfs->getPos() -1;
+					bStatus1 = pfo->createSpecialChangeRecord(&pcr,pos,blockOffset);
+					UT_ASSERT(bStatus1);
+					bAddOffset = false;
+				}
+
 				UT_ASSERT(bStatus1);
 				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
 					return false;
-				blockOffset += pf->getLength();
+				if(bAddOffset)
+				{
+					blockOffset += pf->getLength();
+				}
 			}
 			break;
 
@@ -148,13 +170,33 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			{
 				pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
 				PX_ChangeRecord * pcr = NULL;
-				bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
-				UT_ASSERT(bStatus1);
+				bool bStatus1 = false;
+				bool bAddOffset = true;
+				if(sfh != NULL)
+				{
+					bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
+					UT_ASSERT(bStatus1);
+				}
+				else
+				{
+					PT_DocPosition pos = pf->getPos();
+					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
+					PL_StruxDocHandle sdh = NULL;
+					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
+					pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+					blockOffset = pos - pfs->getPos() -1;
+					bStatus1 = pffm->createSpecialChangeRecord(&pcr,pos,blockOffset);
+					UT_ASSERT(bStatus1);
+					bAddOffset = false;
+				}
 				bool bStatus2 = pListener->populate(sfh,pcr);
 				DELETEP(pcr);
 				if (!bStatus2)
 					return false;
-				blockOffset += pf->getLength();
+				if(bAddOffset)
+				{
+					blockOffset += pf->getLength();
+				}
 			}
 			break;
 			

@@ -107,8 +107,8 @@ protected:
 	bool                m_bIsTabEaten;
 	PT_AttrPropIndex	m_apiThisSection;
 	PT_AttrPropIndex	m_apiThisBlock;
-	UT_Wctomb		m_wctomb;
-	PL_StruxDocHandle       m_sdh;
+	UT_Wctomb		    m_wctomb;
+	PL_StruxDocHandle   m_sdh;
 	UT_uint32           m_currID;
 	PT_DocPosition      m_posDoc;
 	bool                m_bBlankLine;
@@ -120,6 +120,9 @@ protected:
 	UT_sint32           m_iRight;
 	UT_sint32           m_iTop;
 	UT_sint32           m_iBot;
+	PT_AttrPropIndex	m_apiSavedBlock;
+	PL_StruxDocHandle   m_sdhSavedBlock;
+	bool                m_bOpennedFootnote;
 };
 
 #endif /* IE_EXP_RTF_LISTENERWRITEDOC */

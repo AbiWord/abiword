@@ -146,6 +146,11 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_ASSERT(bFoundStrux);
+	if(isEndFootnote((pf_Frag *) pfs))
+	{
+		bFoundStrux = _getStruxFromFragSkip((pf_Frag *)pfs,&pfs);
+	}
+	UT_ASSERT(bFoundStrux);
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
     pf_Frag_Object * pfo = NULL;
 	if (!_insertObject(pf,fragOffset,pto,indexAP,pfo))

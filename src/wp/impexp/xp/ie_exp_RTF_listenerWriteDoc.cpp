@@ -366,6 +366,9 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_currID = 0;
 	_rtf_info ();
 	_rtf_docfmt();						// deal with <docfmt>
+	m_apiSavedBlock = 0;
+	m_sdhSavedBlock = NULL;
+	m_bOpennedFootnote = false;;
 
 	// <section>+ will be handled by the populate code.
 }
@@ -556,6 +559,17 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 pSpanAP->getAttribute("type", pszType);
 		 if(UT_XML_strcmp(pszType,"list_label") == 0)
 		 {
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"footnote_ref") == 0)
+		 {
+			 _openSpan(api,pSpanAP);
+             m_pie->_rtf_keyword("chftn");
+			 return;
+		 }
+		 else if(UT_XML_strcmp(pszType,"footnote_anchor") == 0)
+		 {
+             m_pie->_rtf_keyword("chftn");
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"page_number") == 0)
@@ -1370,6 +1384,31 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			return true;
 #endif
 		}
+	case PTX_SectionFootnote:
+	    {
+			_closeSpan();
+			m_bOpennedFootnote = true;
+			_closeBlock();
+			m_apiSavedBlock = m_apiThisBlock;
+			m_sdhSavedBlock = m_sdh;
+			_setTabEaten(false);
+			m_sdh = sdh;
+			m_pie->_rtf_open_brace();
+			m_pie->_rtf_keyword("footnote");
+			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Openned Footnote \n"));
+			return true;
+		}
+	case PTX_EndFootnote:
+	    {
+			_closeSpan();
+			_closeBlock();
+			_setTabEaten(false);
+			m_sdh = m_sdhSavedBlock;
+			m_apiThisBlock = m_apiSavedBlock;
+			m_pie->_rtf_close_brace();
+			UT_DEBUGMSG(("_rtf_listenerWriteDoc: Closed Footnote \n"));
+			return true;
+		}
 	case PTX_SectionTable:
 	    {
 			_closeSpan();
@@ -1377,7 +1416,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			_setTabEaten(false);
 			m_sdh = sdh;
 			_open_table(pcr->getIndexAP());
-			UT_DEBUGMSG(("SEVIOR: openned table \n"));
+			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned table \n"));
 			return true;
 		}
 	case PTX_SectionCell:
@@ -1417,7 +1456,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_sdh = sdh;
 			_rtf_open_block(pcr->getIndexAP());
 			m_bBlankLine = true;	
-			UT_DEBUGMSG(("SEVIOR: openned block \n"));
+			UT_DEBUGMSG(("_rtf_listenerWriteDoc: openned block \n"));
 		return true;
 		}
 
@@ -1806,8 +1845,14 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	{
 		// begin a new paragraph. The previous
 		// definitions get applied now.
-
-		m_pie->_rtf_keyword("par");
+		if(!m_bOpennedFootnote)
+		{
+			m_pie->_rtf_keyword("par");
+		}
+		else
+		{
+			m_bOpennedFootnote = false;
+		}
 		if(m_bStartedList)
 		{
 			m_pie->_rtf_close_brace();

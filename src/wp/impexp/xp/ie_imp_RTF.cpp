@@ -1297,6 +1297,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	}
 	m_mbtowc.setInCharset(XAP_EncodingManager::get_instance()->getNativeEncodingName());
 	m_bAppendAnyway = false;
+	m_bInFootnote = false;
+	m_iDepthAtFootnote = 0;
 }
 
 
@@ -1638,10 +1640,33 @@ void IE_Imp_RTF::HandleRow(void)
 		return;
 	}
 
-	UT_DEBUGMSG(("SEVIOR: Handle Row now \n"));
+	UT_DEBUGMSG(("ie_imp_RTF: Handle Row now \n"));
 	m_TableControl.NewRow();
 }
 		
+void IE_Imp_RTF::HandleFootnote(void)
+{
+	m_bInFootnote = true;
+	m_iDepthAtFootnote = m_stateStack.getDepth();
+	const XML_Char * attribs[3] ={"footnote-id",NULL,NULL};
+	UT_String footpid;
+	UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+	attribs[1] = footpid.c_str();
+	UT_DEBUGMSG(("ie_imp_RTF: Handle Footnote now \n"));
+
+	if(m_pImportFile)
+	{
+		getDoc()->appendStrux(PTX_SectionFootnote,attribs);
+		getDoc()->appendStrux(PTX_Block,NULL);
+	}
+	else
+	{
+		getDoc()->insertStrux(m_dposPaste,PTX_SectionFootnote,attribs,NULL);
+		m_dposPaste++;
+		getDoc()->insertStrux(m_dposPaste,PTX_Block);
+		m_dposPaste++;
+	}
+}
 
 UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 {
@@ -1826,6 +1851,20 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		}
 		ok = ApplyCharacterAttributes();
 		m_bCellBlank = false;
+	}
+	if( ok && m_bInFootnote && m_stateStack.getDepth() <m_iDepthAtFootnote)
+	{
+		if(m_pImportFile)
+		{
+			getDoc()->appendStrux(PTX_EndFootnote,NULL);
+		}
+		else
+		{
+			ok = getDoc()->insertStrux(m_dposPaste,PTX_EndFootnote);
+			m_dposPaste++;
+		}
+		m_bInFootnote = false;
+		m_iDepthAtFootnote = 0;
 	}
 	return ok;
 }
@@ -3351,6 +3390,27 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			return _appendField ("page_number");
 		}
+		else if (strcmp((char*)pKeyword, "chftn") == 0)
+		{
+			const XML_Char * attribs[3] ={"footnote-id",NULL,NULL};
+			UT_String footpid;
+			UT_uint32 pid = 0;
+			if(m_bInFootnote)
+			{
+				UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+				attribs[1] = footpid.c_str();
+				return _appendField ("footnote_anchor",attribs);
+			}
+			else
+			{
+				while (pid < AUTO_LIST_RESERVED)
+					pid = UT_rand();
+				m_iLastFootnoteId = pid;
+				UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+				attribs[1] = footpid.c_str();
+				return _appendField ("footnote_ref",attribs);
+			}
+		}
  		else if (strcmp((char*)pKeyword, "cs") == 0)
  		{
  			m_currentRTFState.m_paraProps.m_styleNumber = param;
@@ -3458,6 +3518,11 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			// Height of the footer in twips
 			m_currentRTFState.m_sectionProps.m_footerYTwips = param;
+		}
+		else if( strcmp((char *)pKeyword, "footnote") == 0)
+		{
+			HandleFootnote();
+			return true;
 		}
 		break;
 	case 'h':
@@ -7438,20 +7503,48 @@ void IE_Imp_RTF::_appendHdrFtr ()
   \param xmlField the field type value
   \return true if OK
  */
-bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
+bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAttribs)
 {
 	bool ok;
-	const XML_Char* propsArray[3];
-	propsArray [0] = "type";
-	propsArray [1] = xmlField;
-	propsArray [2] = NULL;
+	const XML_Char** propsArray = NULL;
+	UT_String propBuffer;
+	buildCharacterProps(propBuffer);
 
+	if(pszAttribs == NULL)
+	{
+		propsArray = (const XML_Char **) UT_calloc(5, sizeof(XML_Char *));		
+		propsArray [0] = "type";
+		propsArray [1] = xmlField;
+		propsArray [2] = "props";
+		propsArray [3] = propBuffer.c_str();
+		propsArray [4] = NULL;
+	}
+	else
+	{
+		UT_uint32 isize =0;
+		while(pszAttribs[isize] != NULL)
+		{
+			isize++;
+		}
+		propsArray = (const XML_Char **) UT_calloc(5+isize, sizeof(XML_Char *));		
+		propsArray [0] = "type";
+		propsArray [1] = xmlField;
+		propsArray [2] = "props";
+		propsArray [3] = propBuffer.c_str();
+		UT_uint32 i = 0;
+		for(i=0; i< isize;i++)
+		{
+			propsArray[4+i] = pszAttribs[i];
+		}
+		propsArray[4+isize] = NULL;
+	}
+	UT_uint32 k =0;
 	// TODO get text props to apply them to the field
 	ok = FlushStoredChars (true);
 	UT_return_val_if_fail (ok, false);
 	if (m_pImportFile != NULL || m_bAppendAnyway)
 	{
-		UT_DEBUGMSG(("SEVIOR: Appending Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
+		xxx_UT_DEBUGMSG(("SEVIOR: Appending Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 		if(m_bCellBlank || m_bEndTableOpen)
 		{
 			getDoc()->appendStrux(PTX_Block,NULL);
@@ -7465,6 +7558,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
 		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, NULL);
 		m_dposPaste++;
 	}
+	delete [] propsArray;
 	return ok;
 }
 

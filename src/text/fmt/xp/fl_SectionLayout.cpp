@@ -386,6 +386,11 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 	}
 }
 
+FootnoteType fl_DocSectionLayout::getFootnoteType(void) const
+{
+	return m_FootnoteType;
+}
+
 fl_FootnoteLayout * fl_DocSectionLayout::getFootnoteLayout(UT_uint32 pid)
 {
 	fl_ContainerLayout * pCL = getFirstLayout();
@@ -1425,6 +1430,77 @@ void fl_DocSectionLayout::_lookupProperties(void)
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		m_iFootnoteLineThicknessLayoutUnits = UT_convertToLayoutUnits("0.005in");
 #endif
+	}
+
+	const XML_Char * pszFootnoteType = NULL;
+	pSectionAP->getProperty("section-footnote-type", (const XML_Char *&)pszFootnoteType);
+	if (pszFootnoteType == NULL)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(pszFootnoteType[0] == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-square-brackets") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-open-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren-open") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren-open") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN_PAREN;
+	}
+	else
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
 	}
 
 	setPaperColor();
