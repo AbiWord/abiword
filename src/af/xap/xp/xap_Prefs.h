@@ -73,17 +73,29 @@ public:
 
 	UT_Bool					getAutoSave(void) const;
 	void					setAutoSave(UT_Bool bAuto);
+
+	UT_uint32				getMaxRecent(void) const;
+	void					setMaxRecent(UT_uint32 k);
+	UT_uint32				getRecentCount(void) const;
+	const char *			getRecent(UT_uint32 k) const;		// one-based
+	void					addRecent(const char * szRecent);
+	void					removeRecent(UT_uint32 k);			// one-based
 	
 	virtual UT_Bool				loadBuiltinPrefs(void) = 0;
 	virtual const XML_Char *	getBuiltinSchemeName(void) const = 0;
 	virtual const char *		getPrefsPathname(void) const = 0;
 
 protected:
+	void					_pruneRecent(void);
+
 	XAP_App *				m_pApp;
 	UT_Bool					m_bAutoSave; /* save on any changes or only when user asks */
 
 	UT_Vector				m_vecSchemes;		/* vector of XAP_PrefsScheme */
 	XAP_PrefsScheme *		m_currentScheme;
+
+	UT_uint32				m_iMaxRecent;
+	UT_Vector				m_vecRecent;		/* vector of (char *) */
 
 public:						/* these 3 are needed by the XML parser interface */
 	void					_startElement(const XML_Char *name, const XML_Char **atts);
@@ -97,6 +109,7 @@ private:
 		UT_Bool				m_bFoundAbiPreferences;
 		UT_Bool				m_bFoundSelect;
 		XML_Char *			m_szSelectedSchemeName;
+		UT_Bool				m_bFoundRecent;
 	} m_parserState;
 };
 
@@ -109,6 +122,7 @@ private:
 #define XAP_PREF_KEY_ToolbarAppearance		"ToolbarAppearance"
 #define XAP_PREF_KEY_ToolbarLabelSet		"ToolbarLabelSet"
 #define XAP_PREF_KEY_ToolbarLayouts			"ToolbarLayouts"
+#define XAP_PREF_KEY_MaxRecent				"Max"
 
 // The following are the set of default values for the above set of keys.
 
@@ -118,5 +132,10 @@ private:
 #define XAP_PREF_DEFAULT_ToolbarAppearance	"icon"
 #define XAP_PREF_DEFAULT_ToolbarLabelSet	"EnUS"
 #define XAP_PREF_DEFAULT_ToolbarLayouts		"FileEditOps FormatOps"
+#define XAP_PREF_DEFAULT_MaxRecent			"4"
+
+// This is just convenient for keeping the MRU list in check
+
+#define XAP_PREF_LIMIT_MaxRecent			9
 
 #endif /* XAP_PREFS_H */

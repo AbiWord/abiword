@@ -72,6 +72,11 @@ UT_Bool AP_UnixApp::shutdown(void)
 	return UT_TRUE;
 }
 
+XAP_Prefs * AP_UnixApp::getPrefs(void) const
+{
+	return m_prefs;
+}
+
 UT_Bool AP_UnixApp::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)

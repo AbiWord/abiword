@@ -72,6 +72,11 @@ UT_Bool AP_MacApp::shutdown(void)
 	return UT_TRUE;
 }
 
+XAP_Prefs * AP_MacApp::getPrefs(void) const
+{
+	return m_prefs;
+}
+
 UT_Bool AP_MacApp::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)

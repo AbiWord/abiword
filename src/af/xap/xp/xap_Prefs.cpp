@@ -118,6 +118,103 @@ void XAP_Prefs::setAutoSave(UT_Bool bAuto)
 	// TODO if turning autosave on, we should do a save now....
 }
 
+/*****************************************************************/
+
+UT_uint32 XAP_Prefs::getMaxRecent(void) const
+{
+	return m_iMaxRecent;
+}
+
+void XAP_Prefs::setMaxRecent(UT_uint32 k)
+{
+	UT_ASSERT(k<=XAP_PREF_LIMIT_MaxRecent);
+
+	if (k > XAP_PREF_LIMIT_MaxRecent)
+		k = XAP_PREF_LIMIT_MaxRecent;
+
+	m_iMaxRecent = k;
+}
+
+UT_uint32 XAP_Prefs::getRecentCount(void) const
+{
+	return m_vecRecent.getItemCount();
+}
+
+const char * XAP_Prefs::getRecent(UT_uint32 k) const
+{
+	// NB: k is one-based
+	UT_ASSERT(k <= m_iMaxRecent);
+
+	const char * pRecent = NULL;
+	
+	if (k <= m_vecRecent.getItemCount())
+	{
+		pRecent = (const char *) m_vecRecent.getNthItem(k - 1);
+	}
+
+	return pRecent;
+}
+	
+void XAP_Prefs::addRecent(const char * szRecent)
+{
+	const char * sz;
+
+	if (m_iMaxRecent == 0)
+		return;		// NOOP
+
+	// was it already here? 
+	UT_sint32 ndx = m_vecRecent.findItem((void *)szRecent);
+
+	if (ndx >= 0)
+	{
+		// yep, we're gonna move it up
+		m_vecRecent.deleteNthItem(ndx);
+		sz = szRecent;
+	}
+	else
+	{
+		// nope.  make a new copy to store
+		UT_cloneString((char *&)sz, szRecent);
+	}
+
+	m_vecRecent.insertItemAt((void *)sz, 0);
+	_pruneRecent();
+}
+
+void XAP_Prefs::removeRecent(UT_uint32 k)
+{
+	UT_ASSERT(k>0);
+	UT_ASSERT(k<getRecentCount());
+
+	char * sz = (char *) m_vecRecent.getNthItem(k-1);
+	FREEP(sz);
+
+	m_vecRecent.deleteNthItem(k-1);
+}
+
+void XAP_Prefs::_pruneRecent(void)
+{
+	UT_sint32 i;
+	UT_uint32 count = getRecentCount();
+
+	if (m_iMaxRecent == 0)
+	{
+		// nuke the whole thing
+		for (i = (signed) count; i > 0 ; i--)
+		{
+			char * sz = (char *) m_vecRecent.getNthItem(i-1);
+			FREEP(sz);
+		}
+
+		m_vecRecent.clear();
+	}
+	else if (count > m_iMaxRecent)
+	{
+		// prune entries past m_iMaxRecent
+		for (i = (signed) count; i > (signed) m_iMaxRecent; i--)
+			removeRecent(i);
+	}
+}
 
 /*****************************************************************/
 
@@ -126,6 +223,7 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 	m_pApp = pApp;
 	m_bAutoSave = UT_TRUE;				// TODO this is true for testing, set it to false later.
 	m_currentScheme = NULL;
+	m_iMaxRecent = atoi(XAP_PREF_DEFAULT_MaxRecent);
 
 	// NOTE: since constructors cannot report malloc
 	// NOTE: failures (and since it is virtual back
@@ -140,6 +238,7 @@ XAP_Prefs::XAP_Prefs(XAP_App * pApp)
 XAP_Prefs::~XAP_Prefs(void)
 {
 	UT_VECTOR_PURGEALL(XAP_PrefsScheme *, m_vecSchemes);
+	UT_VECTOR_PURGEALL(char *, m_vecRecent);
 }
 
 XAP_PrefsScheme * XAP_Prefs::getNthScheme(UT_uint32 k) const
@@ -292,7 +391,7 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 				// save any changes in the preferences during
 				// interactive use/manipulation of the UI or if
 				// we wait until the user explicitly does a save.
-				// MSFT has this annoyning tendency to session-persist
+				// MSFT has this annoying tendency to session-persist
 				// almost everything in the UI -- we can do that,
 				// but lets not make it the default....
 				
@@ -366,6 +465,38 @@ void XAP_Prefs::_startElement(const XML_Char *name, const XML_Char **atts)
 			goto MemoryError;
 		pNewScheme = NULL;				// we don't own it anymore
 	}
+	else if (UT_XML_stricmp(name, "Recent") == 0)
+	{
+		m_parserState.m_bFoundRecent = UT_TRUE;
+		
+		// we expect something of the form:
+		// <Recent max="4" name1="v1" name2="v2" ... />
+
+		const XML_Char ** a = atts;
+		while (*a)
+		{
+			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
+
+			if (UT_XML_stricmp(a[0], "max") == 0)
+			{
+				m_iMaxRecent = atoi(a[1]);
+			}
+			else if (UT_strnicmp(a[0], "name", 4) == 0)
+			{
+				// HACK: taking advantage of the fact that XML_Char == char
+				// TODO: be safe
+				XML_Char * sz;
+				UT_XML_cloneString((char *&)sz, a[1]);
+
+				// NOTE: we keep the copied string in the vector
+				m_vecRecent.addItem((void *)sz);
+			}
+
+			a += 2;
+		}
+
+		_pruneRecent();
+	}
 
 	// successful parse of tag...
 	
@@ -408,6 +539,7 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	m_parserState.m_bFoundAbiPreferences = UT_FALSE;
 	m_parserState.m_bFoundSelect = UT_FALSE;
 	m_parserState.m_szSelectedSchemeName = NULL;
+	m_parserState.m_bFoundRecent = UT_FALSE;
 
 	szFilename = getPrefsPathname();
 	if (!szFilename)
@@ -465,6 +597,11 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	if (!m_parserState.m_bFoundSelect)
 	{
 		UT_DEBUGMSG(("Did not find <Select...>\n"));
+		goto Cleanup;
+	}
+	if (!m_parserState.m_bFoundRecent)
+	{
+		UT_DEBUGMSG(("Did not find <Recent...>\n"));
 		goto Cleanup;
 	}
 
@@ -596,6 +733,20 @@ UT_Bool XAP_Prefs::savePrefsFile(void)
 				
 			fprintf(fp,"\t\t/>\n");
 		}
+
+		fprintf(fp,"\n\t<Recent\n\t\tmax=\"%ld\"\n",
+				(UT_uint32)m_iMaxRecent);
+
+		kLimit = m_vecRecent.getItemCount();
+
+		for (k=0; k<kLimit; k++)
+		{
+			const char * szRecent = getRecent(k+1);
+
+			fprintf(fp,"\t\tname%ld=\"%s\"\n",k+1,szRecent);
+		}
+				
+		fprintf(fp,"\t\t/>\n");
 	}
 
 	fprintf(fp,"\n</AbiPreferences>\n");

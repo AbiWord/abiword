@@ -30,8 +30,47 @@
 #include "xap_App.h"
 #include "xap_Clipboard.h"
 #include "xap_Frame.h"
+#include "xap_Prefs.h"
 #include "xav_View.h"
 #include "fv_View.h"
+
+
+/*****************************************************************/
+/*****************************************************************/
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
+{
+	// Compute the menu label for _recent_1 thru _recent_9 on the menu.
+	// We return a pointer to a static string (which will be overwritten
+	// on the next call).
+	
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id >= AP_MENU_ID_FILE_RECENT_1);
+	UT_ASSERT(id <= AP_MENU_ID_FILE_RECENT_9);
+	
+	UT_uint32 ndx = (id - AP_MENU_ID_FILE_RECENT_1 + 1);
+
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	if (ndx <= pPrefs->getRecentCount())
+	{
+		const char * szFormat = pLabel->getMenuLabel();
+		static char buf[128];	// BUGBUG: possible buffer overflow
+
+		const char * szRecent = pPrefs->getRecent(ndx);
+
+		sprintf(buf,szFormat,szRecent);	
+		return buf;
+	}
+	
+	// for the other slots, return a null string to tell
+	// the menu code to remove this item from the menu.
+
+	return NULL;
+}
 
 
 /*****************************************************************/

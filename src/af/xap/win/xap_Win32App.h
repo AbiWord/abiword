@@ -48,6 +48,7 @@ public:
 
 	virtual AP_DialogFactory *				getDialogFactory(void);
 	virtual AP_Toolbar_ControlFactory *		getControlFactory(void);
+	virtual XAP_Prefs *		getPrefs(void) const = 0;
 	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const = 0;
 
 protected:

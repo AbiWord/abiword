@@ -33,6 +33,7 @@
 #include "xap_Frame.h"
 #include "xap_EditMethods.h"
 #include "xap_Menu_Layouts.h"
+#include "xap_Prefs.h"
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
@@ -219,6 +220,16 @@ public:
 	static EV_EditMethod_Fn middleSpace;
 	static EV_EditMethod_Fn doubleSpace;
 
+	static EV_EditMethod_Fn openRecent_1;
+	static EV_EditMethod_Fn openRecent_2;
+	static EV_EditMethod_Fn openRecent_3;
+	static EV_EditMethod_Fn openRecent_4;
+	static EV_EditMethod_Fn openRecent_5;
+	static EV_EditMethod_Fn openRecent_6;
+	static EV_EditMethod_Fn openRecent_7;
+	static EV_EditMethod_Fn openRecent_8;
+	static EV_EditMethod_Fn openRecent_9;
+
 	static EV_EditMethod_Fn activateWindow_1;
 	static EV_EditMethod_Fn activateWindow_2;
 	static EV_EditMethod_Fn activateWindow_3;
@@ -393,13 +404,23 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(paraBefore0),			0,		""),
 	EV_EditMethod(NF(paraBefore12),			0,		""),
 
-	EV_EditMethod(NF(sectColumns1),		0,		""),
-	EV_EditMethod(NF(sectColumns2),		0,		""),
-	EV_EditMethod(NF(sectColumns3),		0,		""),
+	EV_EditMethod(NF(sectColumns1),			0,		""),
+	EV_EditMethod(NF(sectColumns2),			0,		""),
+	EV_EditMethod(NF(sectColumns3),			0,		""),
 	
 	EV_EditMethod(NF(singleSpace),			0,		""),
 	EV_EditMethod(NF(middleSpace),			0,		""),
 	EV_EditMethod(NF(doubleSpace),			0,		""),
+
+	EV_EditMethod(NF(openRecent_1),			0,		""),
+	EV_EditMethod(NF(openRecent_2),			0,		""),
+	EV_EditMethod(NF(openRecent_3),			0,		""),
+	EV_EditMethod(NF(openRecent_4),			0,		""),
+	EV_EditMethod(NF(openRecent_5),			0,		""),
+	EV_EditMethod(NF(openRecent_6),			0,		""),
+	EV_EditMethod(NF(openRecent_7),			0,		""),
+	EV_EditMethod(NF(openRecent_8),			0,		""),
+	EV_EditMethod(NF(openRecent_9),			0,		""),
 
 	EV_EditMethod(NF(activateWindow_1),		0,		""),
 	EV_EditMethod(NF(activateWindow_2),		0,		""),
@@ -760,7 +781,7 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 /*****************************************************************/
 
 static AP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame,
-															   char * pNewFile)
+															   const char * pNewFile)
 {
 	pFrame->raise();
 
@@ -784,24 +805,16 @@ static AP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFram
 	return (ans);
 }
 
-Defun1(fileOpen)
+static UT_Bool _fileOpen(XAP_Frame * pFrame, const char * pNewFile)
 {
-	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
-	UT_ASSERT(pFrame);
-	UT_Bool bRes = UT_FALSE;
-
-	char * pNewFile = NULL;
-	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile);
-
-	if (!bOK || !pNewFile)
-		return UT_FALSE;
-
-	// we own storage for pNewFile and must free it.
-
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
 	XAP_Frame * pNewFrame = NULL;
+	UT_Bool bRes = UT_FALSE;
 
 	// see if requested file is already open in another frame
 	UT_sint32 ndx = pApp->findFrame(pNewFile);
@@ -817,16 +830,20 @@ Defun1(fileOpen)
 
 			bRes = pNewFrame->loadDocument(pNewFile);
 			if (bRes)
+			{
 				pNewFrame->show();
+				pPrefs->addRecent(pNewFile);
+			}
 			else
+			{
 				s_CouldNotLoadFileMessage(pNewFrame,pNewFile);
+			}
 		}
 		else
 		{
 			// cancel the FileOpen.
 		}
 		
-		free(pNewFile);
 		return bRes;
 	}
 
@@ -847,7 +864,6 @@ Defun1(fileOpen)
 		pNewFrame = pApp->newFrame();
 		if (!pNewFrame)
 		{
-			free(pNewFile);
 			return UT_FALSE;
 		}
 		
@@ -855,6 +871,7 @@ Defun1(fileOpen)
 		if (bRes)
 		{
 			pNewFrame->show();
+			pPrefs->addRecent(pNewFile);
 		}
 		else
 		{
@@ -885,7 +902,6 @@ Defun1(fileOpen)
 			s_CouldNotLoadFileMessage(pNewFrame,pNewFile);
 		}
 		
-		free(pNewFile);
 		return bRes;
 	}
 
@@ -896,9 +912,33 @@ Defun1(fileOpen)
 
 	bRes = pFrame->loadDocument(pNewFile);
 	if (bRes)
+	{
 		pFrame->show();
+		pPrefs->addRecent(pNewFile);
+	}
 	else
+	{
 		s_CouldNotLoadFileMessage(pFrame,pNewFile);
+	}
+
+	return bRes;
+}
+
+Defun1(fileOpen)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	char * pNewFile = NULL;
+	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile);
+
+	if (!bOK || !pNewFile)
+		return UT_FALSE;
+
+	// we own storage for pNewFile and must free it.
+
+	UT_Bool bRes = _fileOpen(pFrame, pNewFile);
+
 	free(pNewFile);
 	return bRes;
 }
@@ -962,6 +1002,13 @@ Defun1(fileSaveAs)
 		pApp->updateClones(pFrame);
 	}
 
+	// update the MRU list
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	pPrefs->addRecent(pNewFile);
+
 	return UT_TRUE;
 }
 
@@ -983,6 +1030,65 @@ Defun1(newWindow)
 	UT_ASSERT(pFrame);
 
 	return (pFrame->cloneFrame() ? UT_TRUE : UT_FALSE);
+}
+
+static UT_Bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	UT_ASSERT(ndx > 0);
+	UT_ASSERT(ndx <= pPrefs->getRecentCount());
+
+	const char * szRecent = pPrefs->getRecent(ndx);
+
+	UT_Bool bRes = _fileOpen(pFrame, szRecent);
+
+	if (!bRes)
+		pPrefs->removeRecent(ndx);
+
+	return bRes;
+}
+
+Defun1(openRecent_1)
+{
+	return _openRecent(pAV_View, 1);
+}
+Defun1(openRecent_2)
+{
+	return _openRecent(pAV_View, 2);
+}
+Defun1(openRecent_3)
+{
+	return _openRecent(pAV_View, 3);
+}
+Defun1(openRecent_4)
+{
+	return _openRecent(pAV_View, 4);
+}
+Defun1(openRecent_5)
+{
+	return _openRecent(pAV_View, 5);
+}
+Defun1(openRecent_6)
+{
+	return _openRecent(pAV_View, 6);
+}
+Defun1(openRecent_7)
+{
+	return _openRecent(pAV_View, 7);
+}
+Defun1(openRecent_8)
+{
+	return _openRecent(pAV_View, 8);
+}
+Defun1(openRecent_9)
+{
+	return _openRecent(pAV_View, 9);
 }
 
 static UT_Bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)

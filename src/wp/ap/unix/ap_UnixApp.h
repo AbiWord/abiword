@@ -38,6 +38,7 @@ public:
 
 	virtual UT_Bool			initialize(void);
 	virtual UT_Bool			shutdown(void);
+	virtual XAP_Prefs *		getPrefs(void) const;
 	virtual UT_Bool			getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	
 	static int main (const char * szAppName, int argc, char ** argv);
