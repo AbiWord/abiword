@@ -169,6 +169,7 @@ public:
 	static EV_EditMethod_Fn fileOpen;
 	static EV_EditMethod_Fn fileSave;
 	static EV_EditMethod_Fn fileSaveAs;
+	static EV_EditMethod_Fn pageSetup;
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
 	static EV_EditMethod_Fn fileInsertImage;
@@ -184,6 +185,8 @@ public:
 	static EV_EditMethod_Fn replace;
 
 	static EV_EditMethod_Fn dlgFont;
+	static EV_EditMethod_Fn dlgParagraph;
+	static EV_EditMethod_Fn dlgTabs;
 	static EV_EditMethod_Fn fontFamily;
 	static EV_EditMethod_Fn fontSize;
 	static EV_EditMethod_Fn toggleBold;
@@ -224,6 +227,8 @@ public:
 	static EV_EditMethod_Fn cycleWindowsBck;
 	static EV_EditMethod_Fn closeWindow;
 	static EV_EditMethod_Fn querySaveAndExit;
+
+	static EV_EditMethod_Fn noop;
 
 	// Test routines
 
@@ -341,6 +346,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(fileOpen),				_M_,	""),
 	EV_EditMethod(NF(fileSave),				_M_,	""),
 	EV_EditMethod(NF(fileSaveAs),			_M_,	""),
+	EV_EditMethod(NF(pageSetup),			_M_,	""),
 	EV_EditMethod(NF(print),				_M_,	""),
 	EV_EditMethod(NF(printTB),				_M_,	""), // avoid query if possible
 	EV_EditMethod(NF(fileInsertImage),		_M_,	""),
@@ -356,6 +362,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(replace),				_M_,	""),
 
 	EV_EditMethod(NF(dlgFont),				0,		""),
+	EV_EditMethod(NF(dlgParagraph),			0,		""),
+	EV_EditMethod(NF(dlgTabs),				0,		""),
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
 	EV_EditMethod(NF(fontSize),				_D_,	""),
 	EV_EditMethod(NF(toggleBold),			0,		""),
@@ -396,6 +404,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cycleWindowsBck),		_M_,	""),
 	EV_EditMethod(NF(closeWindow),			_M_,	""),
 	EV_EditMethod(NF(querySaveAndExit),		_M_,	""),
+
+	EV_EditMethod(NF(noop),					_M_,	""),
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
 	EV_EditMethod(NF(Test_Dump),			_M_,	"")
@@ -542,6 +552,31 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName)
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage("Save failed for file %s.", fileName);
+	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+
+	pDialog->runModal(pFrame);
+
+//	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+}
+
+static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iLine)
+{
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	char buf[1024];
+	sprintf(buf, "%s not implemented yet.\n\nAdd code in %s, line %d and mail patches to:\n\n\tabiword-dev@abisource.com", szWhat, __FILE__, iLine);
+
+	pDialog->setMessage(buf);
 	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
 	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
 
@@ -2673,6 +2708,39 @@ Defun1(printTB)
 
 	ABIWORD_VIEW;
 	return s_doPrint(pView,UT_TRUE);
+}
+
+Defun1(pageSetup)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Page setup dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(dlgParagraph)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Paragraph settings dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(dlgTabs)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun1(noop)
+{
+	// this is a no-op, so unbound menus don't assert at Linux World
+	return UT_TRUE;
 }
 
 /****************************************************************/

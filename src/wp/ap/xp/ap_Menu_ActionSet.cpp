@@ -73,7 +73,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_SAVE,		0,0,0,	"fileSave",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,	"fileSaveAs",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	"closeWindow",		NULL,					NULL);
-	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,	"pageSetup",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PRINT,		0,1,0,	"print",			NULL,					NULL);
 	_s(AP_MENU_ID_FILE_EXIT,		0,0,0,	"querySaveAndExit",	NULL,					NULL);
 
@@ -91,8 +91,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	_s(AP_MENU_ID_FORMAT,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	"dlgFont",			NULL,					NULL);
-	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_FMT_TABS,			0,1,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,	"dlgParagraph",		NULL,					NULL);
+	_s(AP_MENU_ID_FMT_TABS,			0,1,0,	"dlgTabs",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_BOLD,			0,0,1,	"toggleBold",		ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_ITALIC,		0,0,1,	"toggleItalic",		ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_UNDERLINE,	0,0,1,	"toggleUline",		ap_GetState_CharFmt,	NULL);
@@ -118,8 +118,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"moreWindowsDlg",	NULL,					ap_GetLabel_WindowMore);
 	
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_HELP_READSRC,		0,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_HELP_FIXBUGS,		0,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_HELP_READSRC,		0,0,0,	"noop",				NULL,					NULL);
+	_s(AP_MENU_ID_HELP_FIXBUGS,		0,0,0,	"noop",				NULL,					NULL);
 
 	// ... add others here ...
 	
