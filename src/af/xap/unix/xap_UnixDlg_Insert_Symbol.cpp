@@ -541,7 +541,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_previewNew (int w, int h)
 {
-	GtkWidget *pre = gtk_drawing_area_new ();
+	GtkWidget *pre = createDrawingArea ();
 	gtk_widget_show (pre);
 	gtk_widget_set_usize (pre, w, h);
 	

@@ -427,7 +427,7 @@ UT_uint32 fp_Container::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 		return dx;
 	}
 
-	UT_uint32 dist = (UT_uint32) (sqrt((dx * dx) + (dy * dy)));
+	UT_uint32 dist = (UT_uint32) (sqrt((float)(dx * dx) + (dy * dy)));
 
 	UT_ASSERT(dist > 0);
 	

@@ -496,7 +496,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
 		  {
-		    GtkWidget * preview = gtk_drawing_area_new ();
+			  GtkWidget * preview = createDrawingArea ();
 		    gtk_widget_show (preview);
 		    m_preview = preview;
 

@@ -322,7 +322,7 @@ GtkWidget * XAP_UnixGnomeDialog_Zoom::_constructWindow(void)
 
 	// *** This is how we do a preview widget ***
 	{
-		drawingareaPreview = gtk_drawing_area_new ();
+		drawingareaPreview = createDrawingArea ();
 		gtk_object_set_data (GTK_OBJECT (windowZoom), "drawingareaPreview", drawingareaPreview);
 		gtk_widget_show (drawingareaPreview);
 		gtk_container_add (GTK_CONTAINER (frameSampleText), drawingareaPreview);

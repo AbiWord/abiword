@@ -100,7 +100,7 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 {
 	UT_ASSERT(!m_pG && !m_wStatusBar);
 	
-	m_wStatusBar = gtk_drawing_area_new();
+	m_wStatusBar = createDrawingArea ();
 
 	gtk_object_set_user_data(GTK_OBJECT(m_wStatusBar),this);
 	gtk_widget_show(m_wStatusBar);

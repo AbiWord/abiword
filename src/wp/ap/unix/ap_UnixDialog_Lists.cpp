@@ -784,7 +784,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_container_set_border_width (GTK_CONTAINER (preview_frame), 3);
 	gtk_frame_set_shadow_type (GTK_FRAME (preview_frame), GTK_SHADOW_IN);
 	
-	preview_area = gtk_drawing_area_new ();
+	preview_area = createDrawingArea ();
         gtk_drawing_area_size (GTK_DRAWING_AREA(preview_area),180,225);
 	//	gtk_widget_set_usize(preview_area, 180, 225);
 	gtk_widget_show (preview_area);

@@ -1097,7 +1097,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_set_usize (framePreview, 400, 150);
 	gtk_frame_set_shadow_type (GTK_FRAME (framePreview), GTK_SHADOW_NONE);
 
-	drawingareaPreview = gtk_drawing_area_new ();
+	drawingareaPreview = createDrawingArea ();
 	gtk_widget_ref (drawingareaPreview);
 	gtk_object_set_data_full (GTK_OBJECT (windowMain), "drawingareaPreview", drawingareaPreview,
 							  (GtkDestroyNotify) gtk_widget_unref);

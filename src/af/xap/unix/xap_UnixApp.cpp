@@ -181,6 +181,7 @@ bool XAP_UnixApp::_loadFonts(void)
 {
 	// create a font manager for our app to use
 	UT_uint32 relativePathsSoFar = 0, relativePathCount = 0;
+	UT_uint32 i = 0;
 	
 	m_fontManager = new XAP_UnixFontManager();
 	UT_ASSERT(m_fontManager);
@@ -194,7 +195,7 @@ bool XAP_UnixApp::_loadFonts(void)
 		      (const XML_Char**)&szPrefFontPath);
 	UT_ASSERT((szPrefFontPath) && (*szPrefFontPath));
 
- 	for (UT_uint32 i = 0; szPrefFontPath[i]; i++)
+ 	for (i = 0; szPrefFontPath[i]; i++)
   	{
   		// count the number of segments in the path
   		// path looks like: "/font/dir;dir/anotherdir;/more/fonts"
@@ -210,7 +211,7 @@ bool XAP_UnixApp::_loadFonts(void)
  	// make pointer to the font path. ignore the cast to make gcc shut up
 	char *szPrefFontPathPtr = (char *)szPrefFontPath;
 
-	for (UT_uint32 i = 0; szPrefFontPathPtr[i]; i++)
+	for (i = 0; szPrefFontPathPtr[i]; i++)
  		if ( ((i == 0) || (szPrefFontPathPtr[i-1] == ';')) && (szPrefFontPathPtr[i] != '/'))
  		{
 		        // if relative path in prefs, prepend library directory.
@@ -244,7 +245,7 @@ bool XAP_UnixApp::_loadFonts(void)
 #ifdef DEBUG
 	XAP_UnixFont ** fonts = m_fontManager->getAllFonts();
 	UT_DEBUGMSG(("Found Fonts:\n"));
-	for (UT_uint32 i = 0; i < m_fontManager->getCount(); i++)
+	for (i = 0; i < m_fontManager->getCount(); i++)
 	{
 		UT_DEBUGMSG(("\tName [%s] at [%s], metrics [%s]\n",
 					 fonts[i]->getName(), fonts[i]->getFontfile(),

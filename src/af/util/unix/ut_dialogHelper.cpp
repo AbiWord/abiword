@@ -692,3 +692,18 @@ get_ensured_style (GtkWidget * w)
 
 	return style;
 }
+
+GtkWidget *createDrawingArea ()
+{
+	GtkWidget *area;
+	
+	gtk_widget_push_visual (gdk_rgb_get_visual ());
+	gtk_widget_push_colormap (gdk_rgb_get_cmap ());
+
+	area = gtk_drawing_area_new ();
+
+	gtk_widget_pop_colormap ();
+	gtk_widget_pop_visual ();
+
+	return area;
+}

@@ -864,7 +864,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkObject *paren
 	gtk_container_border_width (GTK_CONTAINER (frame4), PREVIEW_BOX_BORDER_WIDTH_PIXELS);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame4), GTK_SHADOW_IN);
 
-	entryArea = gtk_drawing_area_new ();
+	entryArea = createDrawingArea ();
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
 	gtk_signal_connect(GTK_OBJECT(entryArea), "expose_event",
 					   GTK_SIGNAL_FUNC(s_drawing_area_expose), NULL);

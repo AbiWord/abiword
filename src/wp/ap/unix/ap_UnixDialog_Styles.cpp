@@ -651,7 +651,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameParaPrev = gtk_frame_new(
 		pSS->getValue(AP_STRING_ID_DLG_Styles_ParaPrev));
-	ParaPreviewArea = gtk_drawing_area_new();
+	ParaPreviewArea = createDrawingArea ();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(ParaPreviewArea), 300, 70);
 	gtk_container_add(GTK_CONTAINER(frameParaPrev), ParaPreviewArea);
 
@@ -661,7 +661,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 
 	frameCharPrev = gtk_frame_new(
 		pSS->getValue(AP_STRING_ID_DLG_Styles_CharPrev));
-	CharPreviewArea = gtk_drawing_area_new();
+	CharPreviewArea = createDrawingArea ();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(CharPreviewArea), 300, 50);
 	gtk_container_add(GTK_CONTAINER(frameCharPrev), CharPreviewArea);
 
@@ -1048,7 +1048,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	gtk_container_set_border_width (GTK_CONTAINER (previewFrame), 5);
 	gtk_frame_set_shadow_type (GTK_FRAME (previewFrame), GTK_SHADOW_IN);
 
-	modifyDrawingArea = gtk_drawing_area_new ();
+	modifyDrawingArea = createDrawingArea ();
 	gtk_widget_show (modifyDrawingArea);
 	gtk_container_add (GTK_CONTAINER (previewFrame), modifyDrawingArea);
 	gtk_widget_set_usize (modifyDrawingArea, -2, 120);

@@ -71,6 +71,9 @@ void setDefaultButton (GnomeDialog * dlg, int which);
 
 GtkStyle * get_ensured_style (GtkWidget * w);
 
+// creates a GtkDrawingArea, and pushes/pops correct visual and colormap
+GtkWidget *createDrawingArea ();
+
 #endif /* UT_DIALOGHELPER_H */
 
 

@@ -25,7 +25,7 @@
 
 #include "xap_Dialog_Id.h"
 
-typedef enum _AP_Dialog_Id
+enum _AP_Dialog_Id
 {
 	AP_DIALOG_ID__FIRST__			= XAP_DIALOG_ID__LAST__+1,	/* must be first */
 	AP_DIALOG_ID_FILE_NEW, /* new/template dialog */

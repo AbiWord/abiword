@@ -96,6 +96,8 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	AV_ListenerId lidScrollbarViewListener;
 	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
+	UT_uint32 k = 0;
+
 	gboolean bFocus;
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
 	
@@ -194,7 +196,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		goto Cleanup;
 
 	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (UT_uint32 k=0; k < nrToolbars; k++)
+	for (k = 0; k < nrToolbars; k++)
 	{
 		// TODO Toolbars are a frame-level item, but a view-listener is
 		// TODO a view-level item.  I've bound the toolbar-view-listeners
@@ -764,7 +766,7 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow()
 	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
 
 	// create a drawing area in the for our document window.
-	m_dArea = gtk_drawing_area_new();
+	m_dArea = createDrawingArea ();
 	
 	gtk_object_set_user_data(GTK_OBJECT(m_dArea),this);
 	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |

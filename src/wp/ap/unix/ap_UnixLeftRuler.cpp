@@ -104,7 +104,7 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
 {
 	UT_ASSERT(!m_pG && !m_wLeftRuler);
 	
-	m_wLeftRuler = gtk_drawing_area_new();
+	m_wLeftRuler = createDrawingArea ();
 
 	gtk_object_set_user_data(GTK_OBJECT(m_wLeftRuler),this);
 	gtk_widget_show(m_wLeftRuler);

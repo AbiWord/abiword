@@ -89,6 +89,8 @@ AP_UnixGnomeApp::~AP_UnixGnomeApp()
 
 int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 {
+	int k = 0;
+
 	static const struct poptOption options[] =
 	{{"geometry", 'g', POPT_ARG_STRING, NULL, 0, "set initial frame geometry", "GEOMETRY"},
 	 {"nosplash", 'n', POPT_ARG_NONE,   NULL, 0, "do not show splash screen", NULL},
@@ -124,7 +126,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
  	// Do a quick and dirty find for "--to"
   	bool bShowSplash = true;
  	bool bShowApp = true;
-  	for (int k = 1; k < Args.m_argc; k++)
+  	for (k = 1; k < Args.m_argc; k++)
   		if (*Args.m_argv[k] == '-')
   			if ((UT_stricmp(Args.m_argv[k],"--to") == 0) ||
  				(UT_stricmp(Args.m_argv[k],"-t") == 0))
@@ -135,7 +137,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
   			}
  
  	// Do a quick and dirty find for "--show"
-  	for (int k = 1; k < Args.m_argc; k++)
+  	for (k = 1; k < Args.m_argc; k++)
   		if (*Args.m_argv[k] == '-')
   			if (UT_stricmp(Args.m_argv[k],"--show") == 0)
   			{
@@ -145,7 +147,7 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
   			}
  
  	// Do a quick and dirty find for "--nosplash"
- 	for (int k = 1; k < Args.m_argc; k++)
+ 	for (k = 1; k < Args.m_argc; k++)
  		if (*Args.m_argv[k] == '-')
  			if ((UT_stricmp(Args.m_argv[k],"--nosplash") == 0) ||
 				(UT_stricmp(Args.m_argv[k], "-n") == 0))

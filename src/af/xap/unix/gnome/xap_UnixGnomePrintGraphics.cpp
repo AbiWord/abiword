@@ -52,7 +52,7 @@
 /*      map abi's fonts to gnome fonts, or at least try to             */
 /***********************************************************************/
 
-typedef struct _fontMapping 
+struct _fontMapping 
 {
         char *abi;   // what abiword calls a font's name
         char *gnome; // what gnome refers to it as (or a close substitute)

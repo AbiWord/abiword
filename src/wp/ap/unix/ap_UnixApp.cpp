@@ -1094,7 +1094,7 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		gtk_widget_show(frame);
 
 		// create a drawing area
-		GtkWidget * da = gtk_drawing_area_new ();
+		GtkWidget * da = createDrawingArea ();
 		gtk_widget_set_events(da, GDK_ALL_EVENTS_MASK);
 		gtk_drawing_area_size(GTK_DRAWING_AREA (da), iSplashWidth, iSplashHeight);
 		gtk_signal_connect(GTK_OBJECT(da), "expose_event",

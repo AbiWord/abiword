@@ -438,7 +438,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_container_set_border_width (GTK_CONTAINER (wDrawFrame), 4);
 	gtk_frame_set_shadow_type (GTK_FRAME (wDrawFrame), GTK_SHADOW_OUT);
 
-	wPreviewArea = gtk_drawing_area_new ();
+	wPreviewArea = createDrawingArea ();
 	gtk_widget_ref (wPreviewArea);
 	gtk_object_set_data_full (GTK_OBJECT (windowColumns), "wPreviewArea", wPreviewArea,
 								  (GtkDestroyNotify) gtk_widget_unref);

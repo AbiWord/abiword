@@ -30,7 +30,7 @@
 // (defined in ap_Types.h as the actual parameter type (this
 // solves some compiler oddities)).
 
-typedef enum _XAP_Dialog_Id
+enum _XAP_Dialog_Id
 {
 	XAP_DIALOG_ID__FIRST__				= 0, /* must be first */
 

@@ -136,6 +136,9 @@ static fp_PageSize::Unit last_margin_unit = fp_PageSize::inch;
 
 // a *huge* convenience macro
 static char _ev_buf[256];
+#ifdef _
+#undef _
+#endif
 #define _(a, x) _ev_convert (_ev_buf, pSS->getValue (a##_STRING_ID_##x))
 
 // string tags to stuff stored in widget data
