@@ -27,6 +27,8 @@
 
 class UT_ByteBuf;
 
+#define _MAX_CACHE_PENS 64
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -166,7 +168,8 @@ public:
 	virtual void		  restoreRectangle(UT_uint32 iIndx);
 	
 	void setBrush(HBRUSH hBrush){ m_hClearBrush = hBrush;};
-
+	
+	
 protected:
 	virtual UT_uint32 	getDeviceResolution(void) const;
 	void					_setColor(DWORD clrRef);
@@ -210,6 +213,19 @@ private:
 	HBRUSH					m_hClearBrush;
 	int						m_nLogPixelsY;
 	HGLOBAL					m_hDevMode;
+	
+	
+	typedef struct
+	{
+		HPEN 	hPen;
+		int	 	nStyle;
+		int 	nWidth;
+		DWORD	dwColour;
+	
+	} CACHE_PEN;
+	
+	CACHE_PEN*				   m_pArPens;
+	int						   m_nArPenPos;
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

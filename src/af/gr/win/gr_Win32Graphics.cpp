@@ -112,6 +112,20 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 
 	m_nLogPixelsY = GetDeviceCaps(m_hdc, LOGPIXELSY);
 	m_hDevMode = NULL;
+	
+	
+	typedef struct
+	{
+		HPEN hPen;
+		int	 nStyle;
+		int  nWidth;
+		int	 nColour;
+	
+	} CACHE_PEN;
+	
+	m_pArPens = new GR_Win32Graphics::CACHE_PEN [_MAX_CACHE_PENS];
+	memset (m_pArPens, 0, _MAX_CACHE_PENS*sizeof(CACHE_PEN));
+	m_nArPenPos = 0;
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -148,6 +162,14 @@ GR_Win32Graphics::~GR_Win32Graphics()
 
 	delete [] m_remapBuffer;
 	delete [] m_remapIndices;
+	
+
+	/*Release created pens*/
+	CACHE_PEN * pArPens =  m_pArPens;
+	for (int n = 0; n<m_nArPenPos; n++, pArPens++)
+		DeleteObject(pArPens->hPen);	
+
+	delete m_pArPens;
 }
 
 bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -595,68 +617,27 @@ void GR_Win32Graphics::_setColor(DWORD dwColor)
 	SetTextColor(m_hdc, m_clrCurrent);
 }
 
+static nCacheHit = 0;
+static nCacheFailed = 0;
+
 void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {	
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::drawLine %u %u %u %u\n", x1,  y1, x2,  y2));	
 	#endif			   	
 	
-	GR_CaretDisabler caretDisabler(getCaret());
-	
-	if (m_eLineStyle == LINE_SOLID &&
-		((x1 == x2 && y1 != y2) || (y1 == y2 && x1 != x2))
-	 && m_iLineWidth <= tlu(1))
-	{
-		// TMN: A little bloaty, though a TREMENDOUS speedup (like 45 TIMES
-		// last I checked).
-		UT_RGBColor color(	GetRValue(m_clrCurrent),
-							GetGValue(m_clrCurrent),
-							GetBValue(m_clrCurrent));
-		const bool bVert = x1 == x2;
-		const UT_sint32 nLineWidth = m_iLineWidth ? m_iLineWidth : tlu(1);
+	GR_CaretDisabler caretDisabler(getCaret());	
 
-		if (bVert)
-		{
-			if (y2 < y1)
-			{
-				++y2;
-				const UT_sint32 temp = y1;
-				y1 = y2;
-				y2 = temp;
-			}
-			else
-				--y2;
-		}
-		else
-		{
-			if (x2 < x1) 
-			{
-				++x2;
-				const UT_sint32 temp = x1;
-				x1 = x2;
-				x2 = temp;
-			}
-			else
-				--x2;
-		}
-
-		UT_ASSERT(x1 <= x2);
-		UT_ASSERT(y1 <= y2);
-
-		fillRect(color,
-					x1, y1,
-					nLineWidth + (!bVert ? x2 - x1: 0),
-					nLineWidth + ( bVert ? y2 - y1: 0));
-		return;
-	}
-
-	
 	_UUD(x1); //tdu((a)
 	_UUD(x2);
 	_UUD(y1);
-	_UUD(y2);
-	
+	_UUD(y2);	
+
 	int penStyle;
+	HPEN hPen = NULL;
+	bool bCached = false;
+	UT_sint32 iLineWidth = tdu (m_iLineWidth);
+	
 	switch(m_eLineStyle)
 	{
 		case LINE_DOUBLE_DASH:
@@ -665,21 +646,62 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 		case LINE_DOTTED:           penStyle = PS_DOT;   break;
 
 		default:
-			UT_ASSERT( UT_NOT_IMPLEMENTED );
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
 			penStyle = PS_SOLID;
+	}	
+	
+	
+	
+	/*Look for a cached pen*/
+	CACHE_PEN * pArPens =  m_pArPens;
+	for (int n = 0; n<m_nArPenPos; n++, pArPens++)
+	{
+		if (pArPens->nStyle==penStyle &&
+			pArPens->nWidth==iLineWidth &&
+			pArPens->dwColour==m_clrCurrent)
+			{
+				hPen = pArPens->hPen;
+				bCached = true;
+				nCacheHit++;
+				break;
+			}		
 	}
+	
+	/*If not cached, let's create it*/
+	if (!hPen)
+	{
+		hPen = CreatePen(penStyle, iLineWidth, m_clrCurrent);
 
-	HPEN hPen = CreatePen(penStyle, tdu (m_iLineWidth), m_clrCurrent);
-	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
+		if (m_nArPenPos<_MAX_CACHE_PENS)
+		{			
+			pArPens =  m_pArPens + m_nArPenPos;
+			pArPens->nStyle=penStyle;
+			pArPens->nWidth=iLineWidth;
+			pArPens->dwColour=m_clrCurrent;
+			pArPens->hPen = hPen;
+			bCached = true;
+			m_nArPenPos++;
+			nCacheFailed++;
+		}
+	}	
+
+	#ifdef GR_GRAPHICS_DEBUG
+	UT_DEBUGMSG(("GR_Win32Graphics::drawline: cached elements %u cached hits %u  failed %u\n", m_nArPenPos, 
+		 nCacheHit, nCacheFailed));	
+	#endif
+	
+	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);	
 
 	MoveToEx(m_hdc, x1, y1, NULL);
 	LineTo(m_hdc, x2, y2);
 
 	(void) SelectObject(m_hdc, hOldPen);
-	DeleteObject(hPen);
+	
+	if (!bCached)
+		DeleteObject(hPen);
 }
 
-void GR_Win32Graphics::setLineProperties(double inWidthPixels,
+void GR_Win32Graphics::setLineProperties(double iLineWidth,
 										 JoinStyle inJoinStyle,
 										 CapStyle inCapStyle,
 										 LineStyle inLineStyle)
@@ -687,7 +709,8 @@ void GR_Win32Graphics::setLineProperties(double inWidthPixels,
 	m_eJoinStyle = inJoinStyle;
 	m_eCapStyle  = inCapStyle;
 	m_eLineStyle = inLineStyle;
-	m_iLineWidth = tlu((int)inWidthPixels);
+	//m_iLineWidth = tlu((int)inWidthPixelS);
+	m_iLineWidth = iLineWidth;
 }
 
 
