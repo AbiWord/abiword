@@ -1882,6 +1882,10 @@ UT_UCSChar * FV_View::getSelectionText(void)
 
 void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 {
+  const XML_Char * properties[] = { "font-family", NULL, 0};
+  const XML_Char ** props_in = NULL;
+  const XML_Char * currentfont;
+  
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
@@ -1896,10 +1900,23 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	}
 	else
 	{
-		_eraseInsertionPoint();
+	  /*
+	    Code to deal with font boundary problem. 
+TODO: This should really be fixed by someone who understands how this code
+ works! In the meantime save current font to be restored after character is
+deleted.
+Blame Martin Sevior (msevior@physics.unimelb.edu.au) if this screws up
+something
+	  */
+        	getCharFormat(&props_in);
+		currentfont = UT_getAttribute("font-family",props_in);
+		properties[1] = currentfont;
 
+		_eraseInsertionPoint();
 		UT_uint32 amt = count;
 		UT_uint32 posCur = getPoint();
+		UT_uint32 nposCur = getPoint();
+		UT_Bool fontFlag = UT_FALSE;
 
 		if (!bForward)
 		{
@@ -1911,6 +1928,14 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 			}
 
 			posCur = getPoint();
+  /* 
+     Code to deal with change of font boundaries: 
+  */
+			if((posCur == nposCur) && (posCur > 0)) 
+			  {
+			    fontFlag = UT_TRUE;
+			    posCur--;
+			  }
 		}
 		else
 		{
@@ -1930,9 +1955,14 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 		if (amt > 0)
 		{
 			m_pDoc->deleteSpan(posCur, posCur+amt);
-		}
+			if(fontFlag)
+			  {
+			    setCharFormat(properties);
+			  }
+	}
 
 		_generalUpdate();
+		free(props_in);
 
 		if (!_ensureThatInsertionPointIsOnScreen())
 		{
