@@ -144,6 +144,7 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 			case LBN_DBLCLK:
 				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
 				_setLanguage( m_ppLanguages[nItem] );
+				m_bChangedLanguage = true;
 				m_answer = a_OK;
 				EndDialog(hWnd,0);
 				return 1;
@@ -164,6 +165,7 @@ BOOL XAP_Win32Dialog_Language::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		if( nItem != LB_ERR)
 		{
 			_setLanguage( m_ppLanguages[nItem] );
+			m_bChangedLanguage = true;
 			m_answer = a_OK;
 		}
 		else
