@@ -197,7 +197,14 @@ UT_Bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	// indents), then we redraw the ruler.
 	
 	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK))
-		draw(NULL);
+	{
+		UT_Rect pClipRect;
+		pClipRect.top = 0;
+		pClipRect.left = UT_MAX(m_iLeftRulerWidth, s_iFixedWidth);
+		pClipRect.height = m_iHeight;
+		pClipRect.width = m_iWidth;
+		draw(&pClipRect);
+	}
 	
 	return UT_TRUE;
 }
@@ -1210,7 +1217,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 
 void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_sint32 x, UT_sint32 y)
 {
-	if (!m_bValidMouseClick || (m_bEventIgnored && m_draggingWhat != DW_TABSTOP))
+	if (!m_bValidMouseClick || (m_bEventIgnored && m_draggingWhat != DW_TABSTOP)
 	{
 		m_draggingWhat = DW_NOTHING;
 		return;
@@ -1227,18 +1234,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		return;
 	}
 
-	// if they drag horizontally off the ruler, we probably want to ignore
-	// the whole thing.  but this may interact with the current scroll.
-
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	if ((x < xFixed) || (x > (UT_sint32)m_iWidth))
-	{
-		_ignoreEvent(UT_TRUE);
-		m_draggingWhat = DW_NOTHING;
-		return;
-	}
-
-	// mouse up was in the ruler portion of the window, we cannot ignore it.
+	// mouse up was in the ruler portion of the window, or horizontally
+	// off - we cannot ignore it.
 	// i'd like to assert that we can just use the data computed in the
 	// last mouseMotion() since the Release must be at the same spot or
 	// we'd have received another Motion before the release.  therefore,
@@ -1416,13 +1413,12 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			unsigned char iType;
 			UT_sint32 iTab = _findTabStop(&m_infoCache, x, y, iType);
 
-			if ((iTab >= 0) && (iTab == m_draggingTab))
+			if (iTab >= 0)
 			{
-				// this tabstop is already set here ==> NOOP
+				// a tabstop is already set here ==> delete the one we're dragging
 				m_draggingWhat = DW_NOTHING;
-				return;
+				_setTabStops(tick, iTab, UT_TRUE); // UT_TRUE for the last arg will cause this to be deleted
 			}
-
 			_setTabStops(tick, iTab, UT_FALSE);
 		}
 		return;
@@ -1492,6 +1488,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	if (!m_bValidMouseClick)
 		return;
 		
+	m_bEventIgnored = UT_FALSE;
+
 	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
@@ -1510,22 +1508,19 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	// the whole thing.  but this may interact with the current scroll.
 
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	UT_sint32 xStartPixel = xFixed + (UT_sint32) m_infoCache.m_xPageViewMargin;
 	UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
 		m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
 	ap_RulerTicks tick(m_pG,m_dim);
 
-	if ((x < xFixed + m_infoCache.m_xPageViewMargin)
-		|| (x > xAbsRight))
+	if (x < xStartPixel)
 	{
-		if(!m_bEventIgnored)
-		{
-			_ignoreEvent(UT_FALSE);
-			m_bEventIgnored = UT_TRUE;
-		}
-		return;
+		x = xStartPixel;
 	}
-
-	m_bEventIgnored = UT_FALSE;
+	else if (x > xAbsRight)
+	{
+		x = xAbsRight;
+	}
 
 	// mouse motion was in the ruler portion of the window, we cannot ignore it.
 
@@ -1775,12 +1770,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			if (m_dragging2Center < xFixed + m_infoCache.m_xPageViewMargin)
 			{
 				m_dragging2Center = oldDragging2Center;
-				m_draggingCenter = oldDragging2Center;
-				if(!m_bEventIgnored)
-				{
-					_ignoreEvent(UT_FALSE);
-					m_bEventIgnored = UT_TRUE;
-				}
+				m_draggingCenter = oldDraggingCenter;
 				return;
 			}
 
