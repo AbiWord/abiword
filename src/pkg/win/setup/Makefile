@@ -25,6 +25,8 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 CSRCS=			setup.c			\
 			$(OBJDIR)/data.c
 
+RCSRCS=			setup.rc
+
 PROGRAM=		$(BINDIR)/setup.exe
 
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
