@@ -34,6 +34,8 @@
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
 
+#include "ap_Prefs.h"
+
 #include "xap_EncodingManager.h"
 /*****************************************************************/	
 /*****************************************************************/	
@@ -132,7 +134,6 @@ void IE_Imp_XML::_closeFile(void)
     }
 }
 
-// should we use throw/catch here for errors? -aaronl
 UT_Error IE_Imp_XML::importFile(const char * szFilename)
 {
 #ifdef HAVE_LIBXML2
@@ -209,19 +210,19 @@ IE_Imp_XML::~IE_Imp_XML()
 }
 
 IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
-	: IE_Imp(pDocument)
+	: IE_Imp(pDocument), m_parseState(_PS_Init), m_bLoadIgnoredWords(false),
+	  m_error(UT_OK), m_lenCharDataSeen(0), m_lenCharDataExpected(0), 
+	  m_iOperationCount(0), m_bSeenCR(false), 
+	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
+	  m_currentDataItemName(NULL), m_currentDataItemMimeType(NULL)
 {
-	m_error = UT_OK;
-	m_parseState = _PS_Init;
-	m_lenCharDataSeen = 0;
-	m_lenCharDataExpected = 0;
-	m_bSeenCR = false;
-	m_bWhiteSignificant = whiteSignificant;
-	m_bWasSpace = false;
-	m_iOperationCount = 0;
-
-	m_currentDataItemName = NULL;
-	m_currentDataItemMimeType = NULL;
+	XAP_App *pApp = m_pDocument->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs *pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+	
+	pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsLoad, 
+							  &m_bLoadIgnoredWords);
 }
 
 /*****************************************************************/
@@ -233,140 +234,46 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 	// TODO as a 'char' not as a 'unsigned char'.
 	// TODO does this cause any problems ??
 	
-	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
+	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 
 	switch (m_parseState)
 	{
 	default:
-		{
-			xxx_UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));
-			return;
-		}
-		
-     case _PS_Field:
-         {
-            // discard contents of the field - force recalculation
-            // this gives us a higher chance of correcting fields 
-            // with the wrong values
-            return;
-        }
+	{
+		xxx_UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));
+		return;
+	}
+	
+	case _PS_Field:
+	{
+		// discard contents of the field - force recalculation
+		// this gives us a higher chance of correcting fields 
+		// with the wrong values
+		return;
+	}
  	
 	case _PS_Block:
 	case _PS_IgnoredWordsItem:
+	{
+		UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
+		UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
+		
+		// parse UTF-8 text and convert to Unicode.
+		// also take care of some white-space issues:
+		//    [] convert CRLF to SP.
+		//    [] convert CR to SP.
+		//    [] convert LF to SP.
+		// ignored words processing doesn't care about the 
+		// white-space stuff, but it does no harm
+		
+		UT_Byte * ss = (UT_Byte *)s;
+		UT_UCSChar _buf[1024], *buf = _buf;
+		UT_Byte currentChar;
+		int bufLen = 0;
+		
+		for (int k=0; k<len; k++)
 		{
-			UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
-			UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
-
-			// parse UTF-8 text and convert to Unicode.
-			// also take care of some white-space issues:
-			//    [] convert CRLF to SP.
-			//    [] convert CR to SP.
-			//    [] convert LF to SP.
-			// ignored words processing doesn't care about the 
-			// white-space stuff, but it does no harm
-
-			UT_Byte * ss = (UT_Byte *)s;
-			UT_UCSChar _buf[1024], *buf = _buf;
-			// len is an upper bound on the length of the decoded stuff
-			if (len > 1000) buf = new UT_UCSChar[len+1];
-			UT_Byte currentChar;
-			int bufLen = 0;
-
-			for (int k=0; k<len; k++)
-			{
-				if (bufLen == NrElements(buf))		// pump it out in chunks
-				{
-					X_CheckError(m_pDocument->appendSpan(buf,bufLen));
-					bufLen = 0;
-				}
-
-				currentChar = ss[k];
-
-				if ((ss[k] < 0x80) && (m_lenCharDataSeen > 0))
-				{
-					// is it us-ascii and we are in a UTF-8
-					// multi-byte sequence.  puke.
-					X_CheckError(0);
-				}
-
-				if (currentChar == UCS_CR)
-				{
-					buf[bufLen++] = UCS_SPACE;		// substitute a SPACE
-					m_bSeenCR = true;
-					continue;
-				}
-
-				// only honor one space
-				// if !m_bWhiteSignificant (XHTML, WML)
-				// else just blissfully ignore everything
-				// (ABW)
-				if (!m_bWhiteSignificant)
-				{
-				  if(UT_UCS_isspace(currentChar))
-				    {
-				      if(!m_bWasSpace)
-					{
-					  buf[bufLen++] = UCS_SPACE;
-					  m_bWasSpace = true;
-					}
-				      continue;
-				    }
-				  else
-				    {
-				      m_bWasSpace = false;
-				    }
-				}
-
-				if (currentChar == UCS_LF)				// LF
-				{
-					if (!m_bSeenCR)					// if not immediately after a CR,
-						buf[bufLen++] = UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
-					m_bSeenCR = false;
-					continue;
-				}
-				
-				m_bSeenCR = false;
-
-				if (currentChar < 0x80)					// plain us-ascii part of latin-1
-				{
-					buf[bufLen++] = ss[k];			// copy as is.
-				}
-				else if ((currentChar & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
-				{
-					// surrogate pairs are defined in section 3.7 of the
-					// unicode standard version 2.0 as an extension
-					// mechanism for rare characters in future extensions
-					// of the unicode standard.
-					UT_ASSERT(m_lenCharDataSeen == 0);
-					UT_ASSERT(UT_NOT_IMPLEMENTED);
-				}
-				else if ((currentChar & 0xe0) == 0xe0)		// lead byte in 3-byte sequence
-				{
-					UT_ASSERT(m_lenCharDataSeen == 0);
-					m_lenCharDataExpected = 3;
-					m_charDataSeen[m_lenCharDataSeen++] = currentChar;
-				}
-				else if ((currentChar & 0xc0) == 0xc0)		// lead byte in 2-byte sequence
-				{
-					UT_ASSERT(m_lenCharDataSeen == 0);
-					m_lenCharDataExpected = 2;
-					m_charDataSeen[m_lenCharDataSeen++] = currentChar;
-				}
-				else if ((currentChar & 0x80) == 0x80)		// trailing byte in multi-byte sequence
-				{
-					UT_ASSERT(m_lenCharDataSeen > 0);
-					m_charDataSeen[m_lenCharDataSeen++] = currentChar;
-					if (m_lenCharDataSeen == m_lenCharDataExpected)
-					{
-						buf[bufLen++] = UT_decodeUTF8char(m_charDataSeen,m_lenCharDataSeen);
-						m_lenCharDataSeen = 0;
-					}
-				}
-			}
-
-			// flush out the buffer
-
-			if (bufLen > 0)
+			if (bufLen == NrElements(_buf))		// pump it out in chunks
 			{
 				switch (m_parseState)
 				{
@@ -374,54 +281,162 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 					X_CheckError(m_pDocument->appendSpan(buf,bufLen));
 					break;
 				case _PS_IgnoredWordsItem:
-					if (m_bLoadIgnoredWords) X_CheckError(m_pDocument->appendIgnore(buf,bufLen));
+					if (m_bLoadIgnoredWords)
+					{ 
+						X_CheckError(m_pDocument->appendIgnore(buf,bufLen));
+					}
 					break;
 				default:
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
+				bufLen = 0;
 			}
-			if (buf != _buf) DELETEPV(buf);
+			
+			currentChar = ss[k];
+			
+			if ((ss[k] < 0x80) && (m_lenCharDataSeen > 0))
+			{
+				// is it us-ascii and we are in a UTF-8
+				// multi-byte sequence.  puke.
+				X_CheckError(0);
+			}
+			
+			if (currentChar == UCS_CR)
+			{
+				buf[bufLen++] = UCS_SPACE;		// substitute a SPACE
+				m_bSeenCR = true;
+				continue;
+			}
+			
+			// only honor one space
+			// if !m_bWhiteSignificant (XHTML, WML)
+			// else just blissfully ignore everything
+			// (ABW)
+			if (!m_bWhiteSignificant)
+			{
+				if(UT_UCS_isspace(currentChar))
+				{
+					if(!m_bWasSpace)
+					{
+						buf[bufLen++] = UCS_SPACE;
+						m_bWasSpace = true;
+					}
+					continue;
+				}
+				else
+				{
+					m_bWasSpace = false;
+				}
+			}
+			
+			if (currentChar == UCS_LF)	// LF
+			{
+				if (!m_bSeenCR)		// if not immediately after a CR,
+					buf[bufLen++] = UCS_SPACE;	// substitute a SPACE.  otherwise, eat.
+				m_bSeenCR = false;
+				continue;
+			}
+			
+			m_bSeenCR = false;
+			
+			if (currentChar < 0x80)			// plain us-ascii part of latin-1
+			{
+				buf[bufLen++] = ss[k];		// copy as is.
+			}
+			else if ((currentChar & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
+			{
+				// surrogate pairs are defined in section 3.7 of the
+				// unicode standard version 2.0 as an extension
+				// mechanism for rare characters in future extensions
+				// of the unicode standard.
+				UT_ASSERT(m_lenCharDataSeen == 0);
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+			}
+			else if ((currentChar & 0xe0) == 0xe0)  // lead byte in 3-byte sequence
+			{
+				UT_ASSERT(m_lenCharDataSeen == 0);
+				m_lenCharDataExpected = 3;
+				m_charDataSeen[m_lenCharDataSeen++] = currentChar;
+			}
+			else if ((currentChar & 0xc0) == 0xc0)	// lead byte in 2-byte sequence
+			{
+				UT_ASSERT(m_lenCharDataSeen == 0);
+				m_lenCharDataExpected = 2;
+				m_charDataSeen[m_lenCharDataSeen++] = currentChar;
+			}
+			else if ((currentChar & 0x80) == 0x80)		// trailing byte in multi-byte sequence
+			{
+				UT_ASSERT(m_lenCharDataSeen > 0);
+				m_charDataSeen[m_lenCharDataSeen++] = currentChar;
+				if (m_lenCharDataSeen == m_lenCharDataExpected)
+				{
+					buf[bufLen++] = UT_decodeUTF8char(m_charDataSeen,m_lenCharDataSeen);
+					m_lenCharDataSeen = 0;
+				}
+			}
+		}
+		
+		// flush out the buffer
+		
+		if (bufLen > 0)
+		{
+			switch (m_parseState)
+			{
+			case _PS_Block:
+				X_CheckError(m_pDocument->appendSpan(buf,bufLen));
+				break;
+			case _PS_IgnoredWordsItem:
+				if (m_bLoadIgnoredWords) 
+				{
+					X_CheckError(m_pDocument->appendIgnore(buf,bufLen));
+				}
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
+			}
+		}
+		return;
+	}
+	
+	case _PS_DataItem:
+	{
+#define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
+		
+		
+		if (m_currentDataItemEncoded)
+		{
+			
+			// DataItem data consists of Base64 encoded data with
+			// white space added for readability.  strip out any
+			// white space and put the rest in the ByteBuf.
+			
+			UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
+			
+			const UT_Byte * ss = (UT_Byte *)s;
+			const UT_Byte * ssEnd = ss + len;
+			while (ss < ssEnd)
+			{
+				while ((ss < ssEnd) && MyIsWhite(*ss))
+					ss++;
+				UT_uint32 k=0;
+				while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
+					k++;
+				if (k > 0)
+					m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
+				
+				ss += k;
+			}
+			
 			return;
 		}
-
-	case _PS_DataItem:
+		else
 		{
-#define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
-			
-		   
-		   	if (m_currentDataItemEncoded)
-		        {
-
-			   	// DataItem data consists of Base64 encoded data with
-			   	// white space added for readability.  strip out any
-			   	// white space and put the rest in the ByteBuf.
-
-			   	UT_ASSERT((sizeof(XML_Char) == sizeof(UT_Byte)));
-			
-			   	const UT_Byte * ss = (UT_Byte *)s;
-			   	const UT_Byte * ssEnd = ss + len;
-			   	while (ss < ssEnd)
-			   	{
-					while ((ss < ssEnd) && MyIsWhite(*ss))
-						ss++;
-					UT_uint32 k=0;
-					while ((ss+k < ssEnd) && ( ! MyIsWhite(ss[k])))
-						k++;
-					if (k > 0)
-						m_currentDataItem.ins(m_currentDataItem.getLength(),ss,k);
-
-					ss += k;
-			   	}
-
-			   	return;
-			}
-		   	else
-		        {
-			   	m_currentDataItem.append((UT_Byte*)s, len);
-			}
-#undef MyIsWhite
+			m_currentDataItem.append((UT_Byte*)s, len);
 		}
+#undef MyIsWhite
+	}
 	}
 }
 

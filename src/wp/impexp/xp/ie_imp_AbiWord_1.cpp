@@ -30,8 +30,6 @@
 #include "ie_types.h"
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
-#include "xap_Prefs.h"
-#include "ap_Prefs.h"
 #include "xap_EncodingManager.h"
 
 /*****************************************************************/
@@ -217,7 +215,7 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 {
 	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
 
-	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
+	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 	
 	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
 
@@ -390,13 +388,13 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		return;
 
 	case TT_IGNOREDWORDS:
-		X_VerifyParseState(_PS_IgnoredWordsSec);
-		m_parseState = _PS_Doc;
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_IgnoredWordsSec;
 		return;
 
 	case TT_IGNOREDWORD:
-		X_VerifyParseState(_PS_IgnoredWordsItem);
-		m_parseState = _PS_IgnoredWordsSec;
+		X_VerifyParseState(_PS_IgnoredWordsSec);
+		m_parseState = _PS_IgnoredWordsItem;
 		return;
 
 
@@ -415,12 +413,6 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
   	xxx_UT_DEBUGMSG(("endElement %s\n", name));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
-
-	UT_ASSERT(m_pDocument);
-	XAP_App *pApp = m_pDocument->getApp();
-	UT_ASSERT(pApp);
-	XAP_Prefs *pPrefs = pApp->getPrefs();
-	UT_ASSERT(pPrefs);
 	
 	UT_uint32 trim;
 	UT_uint32 len;
@@ -551,20 +543,13 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		return;
 		
 	case TT_IGNOREDWORDS:
-		X_VerifyParseState(_PS_Doc);
-		// This caches the preference value.  Our assumption is that the ignored words
-		// list is small with respect to the document size, but nothing forces that.
-		// The scheme is to parse the ignored words list as usual, but if we don't want
-		// it loaded from the file, it just isn't added to the in-memory ignored words
-		// list.  The cached preference value keeps us from looking it up for each word.
-		pPrefs->getPrefsValueBool((XML_Char *)AP_PREF_KEY_SpellCheckIgnoredWordsLoad, &m_bLoadIgnoredWords);
-
-		m_parseState = _PS_IgnoredWordsSec;
+		X_VerifyParseState(_PS_IgnoredWordsSec);
+		m_parseState = _PS_Doc;
 		return;
 
 	case TT_IGNOREDWORD:
-		X_VerifyParseState(_PS_IgnoredWordsSec);
-		m_parseState = _PS_IgnoredWordsItem;
+		X_VerifyParseState(_PS_IgnoredWordsItem);
+		m_parseState = _PS_IgnoredWordsSec;
 		return;
 			
 	case TT_OTHER:
