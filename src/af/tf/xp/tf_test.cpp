@@ -23,10 +23,12 @@
 #ifdef HAVE_VALGRIND_MEMCHECK_H
 # include <valgrind/memcheck.h>
 # include <valgrind/valgrind.h>
+# define CC_EXTENSION __extension__
 #else
 # define VALGRIND_COUNT_ERRORS 0
 # define VALGRIND_DO_LEAK_CHECK
 # define VALGRIND_COUNT_LEAKS(a,b,c,d) (a=b=c=d=0)
+# define CC_EXTENSION
 #endif
 
 #define MAX_TEST_TIME 40     // max seconds for a single test to run
@@ -34,7 +36,7 @@
 
 static int memerrs()
 {
-    return (int)VALGRIND_COUNT_ERRORS;
+    return (int)(CC_EXTENSION VALGRIND_COUNT_ERRORS);
 }
 
 static int memleaks()

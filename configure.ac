@@ -398,6 +398,18 @@ fi
 AC_SUBST(PEERDIRS)
 AC_SUBST(PEERS)
 
+dnl Check for valgrind for the UniTest
+AC_CHECK_PROG(VALGRIND, valgrind, valgrind)
+AC_CHECK_HEADERS(valgrind/memcheck.h)
+if test "$VALGRIND" = ""; then
+    AC_MSG_WARN([Valgrind is missing. UnitTesting will run without])
+fi
+if test "$VALGRIND" != ""; then
+    VALGRIND="valgrind --tool=memcheck --leak-check=yes --num-callers=10 --logfile-fd=-1 "
+fi
+AC_SUBST(VALGRIND)
+
+
 AC_CONFIG_FILES([GNUmakefile
  src/GNUmakefile
  src/af/GNUmakefile
@@ -464,6 +476,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/test/GNUmakefile
  src/wp/test/xp/GNUmakefile
  src/wp/test/unix/GNUmakefile
+ src/wp/test/unix/testwrap.sh
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile

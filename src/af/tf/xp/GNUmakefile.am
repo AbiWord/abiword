@@ -1,5 +1,6 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
+## Copyright (C) 200% Hubert Figuiere
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -22,7 +23,7 @@ INCLUDES= $(AF_INCLUDES) $(OTHER_INCLUDES) $(ICONV_INCLUDES) $(LIBPNG_INCLUDES)
 
 check_LIBRARIES = libTF_xp.a
 
-CFLAGS+=-frepo
+CFLAGS+=-frepo 
 
 
 libTF_xp_a_SOURCES= tf_test.cpp

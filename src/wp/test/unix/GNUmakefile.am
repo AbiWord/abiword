@@ -1,5 +1,5 @@
 ## AbiSource Applications
-## Copyright (C) 2004 Hubert Figuiere <hfiguiere@teaser.fr>
+## Copyright (C) 2004-2005 Hubert Figuiere <hfiguiere@teaser.fr>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@
 
 include $(top_srcdir)/includes.mk
 
-TESTS = AbiWord-test
+TESTS = testwrap.sh
 
 check_PROGRAMS = AbiWord-test
 
