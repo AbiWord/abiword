@@ -50,6 +50,7 @@
 #	include "ap_UnixDialog_Insert_DateTime.h"
 
 #ifdef HAVE_GNOME
+#   include "xap_UnixGnomeDlg_MessageBox.h"
 #   include "xap_UnixGnomeDlg_Zoom.h"
 
 #   include "ap_UnixGnomeDialog_Replace.h"
@@ -61,7 +62,7 @@
 #else
 
 #   ifdef HAVE_GNOME
-	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
+	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixGnomeDialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixDialog_Print)
