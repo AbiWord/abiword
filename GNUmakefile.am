@@ -68,4 +68,11 @@ install-data-local:
 	  echo "Warning: abidistfiles package not found." ;\
 	fi
 	$(mkinstalldirs) $(DESTDIR)$(pkglibdir)/AbiWord
-	cp -r $(top_srcdir)/user/wp/* $(DESTDIR)$(pkglibdir)/AbiWord
+	for dir in `cd $(top_srcdir)/user/wp; find . -type d ! -name CVS` ; do \
+	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/AbiWord/$$dir ;\
+	  for file in $(top_srcdir)/user/wp/$$dir/* ; do \
+	    if test -f $$file ; then \
+	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/AbiWord/$$dir; \
+	    fi ; \
+	  done; \
+	done
