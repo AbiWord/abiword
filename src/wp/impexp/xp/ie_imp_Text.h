@@ -56,6 +56,51 @@ protected:
 									   bool bDeep);
 };
 
+// Stream class can be File or Clipboard
+
+class ImportStream
+{
+public:
+	ImportStream();
+	virtual ~ImportStream() {};
+	bool init(const char *szEncoding);
+	bool getChar(UT_UCSChar &b);
+	UT_UCSChar peekChar() { return m_ucsLookAhead; }
+private:
+	virtual bool _getByte(unsigned char &b) = 0;
+	bool getRawChar(UT_UCSChar &b);
+	UT_Mbtowc m_Mbtowc;
+	UT_UCSChar m_ucsLookAhead;
+	bool m_bEOF;
+};
+
+// File stream class
+
+class ImportStreamFile : public ImportStream
+{
+public:
+	ImportStreamFile(FILE *pFile);
+	~ImportStreamFile() {};
+	bool getChar();
+private:
+	bool _getByte(unsigned char &b);
+	FILE *m_pFile;
+};
+
+// Clipboard stream class
+
+class ImportStreamClipboard : public ImportStream
+{
+public:
+	ImportStreamClipboard(unsigned char *pClipboard, UT_uint32 iLength);
+	~ImportStreamClipboard() {};
+	bool getChar();
+private:
+	bool _getByte(unsigned char &b);
+	unsigned char *m_p;
+	unsigned char *m_pEnd;
+};
+
 // The importer/reader for Plain Text Files with selectable encoding.
 
 class IE_Imp_EncodedText_Sniffer : public IE_Imp_Text_Sniffer
@@ -81,7 +126,7 @@ class IE_Imp_Text : public IE_Imp
 {
 public:
 	IE_Imp_Text(PD_Document * pDocument, bool bEncoded=false);
-	~IE_Imp_Text();
+	~IE_Imp_Text() {}
 
 	virtual UT_Error	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
@@ -89,12 +134,12 @@ public:
 	
 protected:
 	UT_Error			_recognizeEncoding(FILE * fp);
-	UT_Error			_parseFile(FILE * fp);
+	UT_Error			_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes);
+	UT_Error			_parseStream(ImportStream & stream, class Inserter & ins);
 	UT_Error			_writeHeader(FILE * fp);
 	bool				_doEncodingDialog(const char *szEncoding);
 	void				_setEncoding(const char *szEncoding);
 
-	UT_Mbtowc 		m_Mbtowc;
 	const char *	m_szEncoding;
 	bool			m_bIsEncoded;
 	bool			m_bIs16Bit;

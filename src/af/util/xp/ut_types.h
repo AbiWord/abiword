@@ -127,6 +127,11 @@ typedef	UT_sint32		UT_Error;
 #define UCS_SPACE		((UT_UCSChar)0x0020)
 #define UCS_NBSP		((UT_UCSChar)0x00a0)
 #define UCS_PILCROW		((UT_UCSChar)0x00b6)
+#define UCS_LINESEP		((UT_UCSChar)0x2028)			/* Unicode line separator */
+#define UCS_PARASEP		((UT_UCSChar)0x2029)			/* Unicode paragraph separator */
+#define UCS_BOM			((UT_UCSChar)0xFEFF)			/* Byte order mark */
+
+/* Note: the following are our interpretations, not Unicode's */
 #define UCS_FIELDSTART		((UT_UCSChar)0xFFFE)
 #define UCS_FIELDEND		((UT_UCSChar)0xFFFD)
 
@@ -137,10 +142,13 @@ typedef	UT_sint32		UT_Error;
 #define UCS_EN_DASH		((UT_UCSChar)0x2013)
 #define UCS_EM_DASH		((UT_UCSChar)0x2014)
 #define UCS_BULLET		((UT_UCSChar)0x2022)
+/* TODO Quote marks need to be localized - not hard-coded */
 #define UCS_LQUOTE		((UT_UCSChar)0x2018)
 #define UCS_RQUOTE		((UT_UCSChar)0x2019)
 #define UCS_LDBLQUOTE		((UT_UCSChar)0x201c)
 #define UCS_RDBLQUOTE		((UT_UCSChar)0x201d)
+
+/* Note: the following is our interpretation, not Unicode's */
 #define UCS_UNKPUNK 		((UT_UCSChar)0xFFFF)  /* "unknown punctuation" used with UT_isWordDelimiter() */
 
 #else /* see bug 512 */

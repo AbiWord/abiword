@@ -36,6 +36,197 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Encoding.h"
 
+/*!
+  Construct ImportStream
+ */
+ImportStream::ImportStream() :
+	m_ucsLookAhead(0),
+	m_bEOF(false)
+{
+}
+
+/*!
+  Initialize ImportStream
+ \param szEncoding Text encoding to convert from
+
+ Sets encoding and prefetches lookahead character
+ */
+bool ImportStream::init(const char *szEncoding)
+{
+	UT_ASSERT(szEncoding);
+	m_Mbtowc.setInCharset(szEncoding);
+	UT_UCSChar dummy;
+	return getChar(dummy);
+}
+
+/*!
+  Get UCS-2 character from stream
+ \param ucs Reference to the character
+
+ Returns single character for CRLF combination
+ */
+bool ImportStream::getChar(UT_UCSChar &ucs)
+{
+	if (!getRawChar(ucs))
+		return false;
+	if (ucs == UCS_CR && peekChar() == UCS_LF)
+		getRawChar(ucs);
+	return true;
+}
+
+/*!
+  Get UCS-2 character from stream
+ \param ucs Reference to the character
+
+ Get the next UCS character, converting from file's encoding
+ */
+bool ImportStream::getRawChar(UT_UCSChar &ucs)
+{
+	wchar_t wc = 0;
+	unsigned char b;
+
+	if (m_bEOF)
+		return false;
+
+	do
+	{
+		if (!_getByte(b))
+		{
+			m_bEOF = true;
+			break;
+		}
+
+	} while (!m_Mbtowc.mbtowc(wc,b));
+
+	ucs = m_ucsLookAhead;
+	m_ucsLookAhead = wc;
+
+	return true;
+}
+
+/*!
+  Construct ImportStreamFile from FILE pointer
+ \param pFile File to read from
+ */
+ImportStreamFile::ImportStreamFile(FILE *pFile) :
+	m_pFile(pFile)
+{
+}
+
+/*!
+  Get next byte from file
+ \param b Reference to the byte
+ */
+bool ImportStreamFile::_getByte(unsigned char &b)
+{
+	UT_ASSERT(m_pFile);
+
+	return fread(&b, 1, sizeof(b), m_pFile) > 0;
+}
+
+/*!
+  Construct ImportStreamClipboard from memory buffer
+ \param pClipboard Buffer to read from
+ \param iLength Length of buffer
+ */
+ImportStreamClipboard::ImportStreamClipboard(unsigned char *pClipboard, UT_uint32 iLength) :
+	m_p(pClipboard),
+	m_pEnd(pClipboard + iLength)
+{
+}
+
+/*!
+  Get next byte from clipboard
+ \param b Reference to the byte
+ */
+bool ImportStreamClipboard::_getByte(unsigned char &b)
+{
+	if (m_p >= m_pEnd)
+		return false;
+	b = *m_p++;
+	return true;
+}
+
+// Helper class so we can parse files and clipboard with same code
+
+class Inserter
+{
+public:
+	Inserter(PD_Document * pDocument);
+	Inserter(PD_Document * pDocument, PT_DocPosition dPos);
+	bool insertBlock();
+	bool insertSpan(UT_GrowBuf &b);
+private:
+	PD_Document * m_pDocument;
+	bool m_bClipboard;
+	PT_DocPosition m_dPos;
+};
+
+/*!
+  Construct Inserter helper class
+ \param pDocument Document to insert data into
+ */
+Inserter::Inserter(PD_Document * pDocument) :
+	m_pDocument(pDocument),
+	m_bClipboard(false)
+{
+}
+
+/*!
+  Construct Inserter helper class
+ \param pDocument Document to insert data into
+ \param dPos Position in document to begin inserting at
+ */
+Inserter::Inserter(PD_Document * pDocument, PT_DocPosition dPos) :
+	m_pDocument(pDocument),
+	m_bClipboard(true),
+	m_dPos(dPos)
+{
+}
+
+/*!
+  Insert a Block into the document
+
+ Uses appropriate function for clipboard or file
+ */
+bool Inserter::insertBlock()
+{
+	bool bRes;
+	
+	if (m_bClipboard)
+	{
+		bRes = m_pDocument->insertStrux(m_dPos, PTX_Block);
+		m_dPos++;
+	}
+	else
+		bRes = m_pDocument->appendStrux(PTX_Block, NULL);
+
+	return bRes;
+}
+
+/*!
+  Insert a span of text into the document
+ \param b Buffer containing UCS text to insert
+
+ Uses appropriate function for clipboard or file
+ */
+bool Inserter::insertSpan(UT_GrowBuf &b)
+{
+	bool bRes;
+	
+	if (m_bClipboard)
+	{
+		bRes = m_pDocument->insertSpan(m_dPos, b.getPointer(0), b.getLength());
+		m_dPos += b.getLength();
+	}
+	else
+		bRes = m_pDocument->appendSpan(b.getPointer(0), b.getLength());
+
+	b.truncate(0);
+
+	return bRes;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -269,17 +460,14 @@ bool IE_Imp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 /*****************************************************************/
 /*****************************************************************/
 
-/*
-  Import data from a plain text file.  We allow either
-  LF or CR or CRLF line termination.  Each line
-  terminator is taken to be a paragraph break.
-*/
-
-/*****************************************************************/
-/*****************************************************************/
-
 #define X_CleanupIfError(error,exp)	do { if (((error)=(exp)) != UT_OK) goto Cleanup; } while (0)
 
+/*
+  Import data from a plain text file
+ \param szFilename Name of file to import
+  
+ Each line terminator is taken to be a paragraph break
+*/
 UT_Error IE_Imp_Text::importFile(const char * szFilename)
 {
 	// We must open in binary mode for UCS-2 compatibility.
@@ -295,10 +483,18 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 	// First we try to determine the encoding.
 	if (_recognizeEncoding(fp) == UT_OK)
 		m_pDocument->setEncodingName(m_szEncoding);
-	X_CleanupIfError(error,_writeHeader(fp));
-	X_CleanupIfError(error,_parseFile(fp));
 
-	error = UT_OK;
+	// Call encoding dialog
+	if (!m_bIsEncoded || _doEncodingDialog(m_szEncoding))
+	{
+		ImportStreamFile stream(fp);
+		Inserter ins(m_pDocument);
+		X_CleanupIfError(error,_writeHeader(fp));
+		X_CleanupIfError(error,_parseStream(stream,ins));
+		error = UT_OK;
+	}
+	else
+		error = UT_ERROR;
 
 Cleanup:
 	fclose(fp);
@@ -310,13 +506,13 @@ Cleanup:
 /*****************************************************************/
 /*****************************************************************/
 
-/*!
-  Destruct text importer
- */
-IE_Imp_Text::~IE_Imp_Text()
-{
-}
-
+/*
+  Construct text importer
+ \param pDocument Document to import text into
+ \param bEncoded True if we should show encoding dialog
+  
+ Uses current document's encoding if it is set
+*/
 IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 	: IE_Imp(pDocument)
 {
@@ -328,7 +524,6 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
 
 	m_bIsEncoded = bEncoded;
 
-	// TODO Use persistent document encoding when it exists
 	_setEncoding(szEncodingName);
 }
 
@@ -353,6 +548,19 @@ UT_Error IE_Imp_Text::_recognizeEncoding(FILE * fp)
 	iNumbytes = fread(szBuf, 1, sizeof(szBuf), fp);
 	fseek(fp, 0, SEEK_SET);
 
+	return _recognizeEncoding(szBuf, iNumbytes);
+}
+
+/*!
+  Detect encoding of text buffer
+ \param pData Buffer
+ \param lenData Length of buffer
+
+ Supports UTF-8 and UCS-2 big and little endian
+ CJK encodings could be added
+ */
+UT_Error IE_Imp_Text::_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes)
+{
 	if (IE_Imp_Text_Sniffer::_recognizeUTF8(szBuf, iNumbytes))
 	{
 		_setEncoding("UTF-8");
@@ -372,92 +580,63 @@ UT_Error IE_Imp_Text::_recognizeEncoding(FILE * fp)
 	return UT_OK;
 }
 
+/*!
+  Write header to document
+
+ Writes the minimum needed Section and Block before we begin import
+ */
 UT_Error IE_Imp_Text::_writeHeader(FILE * /* fp */)
 {
 	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
+	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
 
 	return UT_OK;
 }
 
-UT_Error IE_Imp_Text::_parseFile(FILE * fp)
+/*!
+  Parse stream contents into the document
+ \param stream Stream to import from
+ \param ins Inserter helper class
+
+ This code is used for both files and the clipboard
+ */
+UT_Error IE_Imp_Text::_parseStream(ImportStream & stream, Inserter & ins)
 {
 	UT_GrowBuf gbBlock(1024);
-	bool bEatLF = false;
-	bool bEmptyFile = true;
-	unsigned char b;
 	UT_UCSChar c;
-	wchar_t wc;
 
-	// Call encoding dialog
-	if (!m_bIsEncoded || _doEncodingDialog(m_szEncoding))
+	stream.init(m_szEncoding);
+
+	while (stream.getChar(c))
 	{
-		UT_ASSERT(m_szEncoding);
-		m_Mbtowc.setInCharset(m_szEncoding);
-
-		while (fread(&b, 1, sizeof(b), fp) > 0)
+		// TODO We should switch fonts when we encounter
+		// TODO characters from different scripts
+		switch (c)
 		{
-			if(!m_Mbtowc.mbtowc(wc,b))
-				continue;
-			c = (UT_UCSChar)wc;
-
-			// TODO We should switch fonts when we encounter
-			// TODO characters from different scripts
-			switch (c)
-			{
-			case (UT_UCSChar)'\r':
-			case (UT_UCSChar)'\n':
-			case 0x2028:			// Unicode line separator
-			case 0x2029:			// Unicode paragraph separator
-				
-				if ((c == (UT_UCSChar)'\n') && bEatLF)
-				{
-					bEatLF = false;
-					break;
-				}
-
-				if (c == (UT_UCSChar)'\r')
-				{
-					bEatLF = true;
-				}
-				
-				// we interpret either CRLF, CR, or LF as a paragraph break.
-				// we also accept U+2028 (line separator) and U+2029 (para separator)
-				// especially since these are recommended by Mac OS X.
-				
-				// start a paragraph and emit any text that we
-				// have accumulated.
-				X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-				bEmptyFile = false;
-				if (gbBlock.getLength() > 0)
-				{
-					X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
-					gbBlock.truncate(0);
-				}
-				break;
-
-			default:
-				bEatLF = false;
-				X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&c,1));
-				break;
-			}
-		} 
-
-		if (gbBlock.getLength() > 0 || bEmptyFile)
-		{
-			// if we have text left over (without final CR/LF),
-			// or if we read an empty file,
-			// create a paragraph and emit the text now.
-			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
+		case UCS_CR:
+		case UCS_LF:
+		case UCS_LINESEP:
+		case UCS_PARASEP:
+			// we interpret either CRLF, CR, or LF as a paragraph break.
+			// we also accept U+2028 (line separator) and U+2029 (para separator)
+			// especially since these are recommended by Mac OS X.
+			
+			// flush out what we have
 			if (gbBlock.getLength() > 0)
-				X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
+				X_ReturnNoMemIfError(ins.insertSpan(gbBlock));
+			X_ReturnNoMemIfError(ins.insertBlock());
+			break;
+
+		default:
+			X_ReturnNoMemIfError(gbBlock.append(&c,1));
+			break;
 		}
-		return UT_OK;
-	}
+	} 
 
-	// TODO If the encoding dialog was cancelled we still get an empty new document
-	// TODO with an error dialog ):
+	if (gbBlock.getLength() > 0)
+		X_ReturnNoMemIfError(ins.insertSpan(gbBlock));
 
-	return UT_ERROR;
+	return UT_OK;
 }
 
 /*!
@@ -518,19 +697,22 @@ void IE_Imp_Text::_setEncoding(const char *szEncoding)
 
 	m_szEncoding = szEncoding;
 
-	// TODO some iconvs use a different string!
-	if (!strncmp(m_szEncoding,"UCS-2",5))
+	// TODO Should BOM use be a user pref?
+	// TODO Does Mac OSX prefer BOMs?
+	if (!strcmp(m_szEncoding,XAP_EncodingManager::get_instance()->getUCS2LEName()))
 	{
 		m_bIs16Bit = true;
-		if (!strcmp(m_szEncoding + strlen(m_szEncoding) - 2, "BE"))
-			m_bBigEndian = true;
-		else if (!strcmp(m_szEncoding + strlen(m_szEncoding) - 2, "LE"))
-			m_bBigEndian = false;
-		else
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-		// TODO Should BOM use be a user pref?
-		// TODO Does Mac OSX prefer BOMs?
+		m_bBigEndian = false;
+#ifdef WIN32
+		m_bUseBOM = true;
+#else
+		m_bUseBOM = false;
+#endif
+	}
+	else if (!strcmp(m_szEncoding,XAP_EncodingManager::get_instance()->getUCS2BEName()))
+	{
+		m_bIs16Bit = true;
+		m_bBigEndian = true;
 #ifdef WIN32
 		m_bUseBOM = true;
 #else
@@ -564,91 +746,11 @@ void IE_Imp_Text::pasteFromBuffer(PD_DocumentRange * pDocRange,
 	UT_ASSERT(pDocRange->m_pos1 == pDocRange->m_pos2);
 
 	// Attempt to guess whether we're pasting 8 bit or unicode text
-	IE_Imp_Text_Sniffer::UCS2_Endian eUcs2 = IE_Imp_Text_Sniffer::_recognizeUCS2((const char *)pData, lenData, true);
-	
-	if (eUcs2 == IE_Imp_Text_Sniffer::UE_BigEnd)
-		_setEncoding(XAP_EncodingManager::get_instance()->getUCS2BEName());
-	else if (eUcs2 == IE_Imp_Text_Sniffer::UE_LittleEnd)
-		_setEncoding(XAP_EncodingManager::get_instance()->getUCS2LEName());
-	else
-		_setEncoding(XAP_EncodingManager::get_instance()->getNativeEncodingName());
+	_recognizeEncoding((const char *)pData, lenData);
 
-	m_Mbtowc.setInCharset(m_szEncoding);
+	ImportStreamClipboard stream(pData, lenData);
+	Inserter ins(m_pDocument, pDocRange->m_pos1);
 
-	UT_GrowBuf gbBlock(1024);
-	bool bEatLF = false;
-	bool bSuppressLeadingParagraph = true;
-	bool bInColumn1 = true;
-	unsigned char * pc;
-
-	PT_DocPosition dpos = pDocRange->m_pos1;
-	
-	for (pc=pData; (pc<pData+lenData); pc++)
-	{
-		unsigned char b = *pc;
-		UT_UCSChar c;
-		wchar_t wc;
-		if(!m_Mbtowc.mbtowc(wc,b))
-		    continue;
-		c = (UT_UCSChar)wc;
-		
-		// TODO We should switch fonts when we encounter
-		// TODO characters from different scripts
-		switch (c)
-		{
-		case (UT_UCSChar)'\r':
-		case (UT_UCSChar)'\n':
-		case 0x2028:			// Unicode line separator
-		case 0x2029:			// Unicode paragraph separator
-			if ((c == (UT_UCSChar)'\n') && bEatLF)
-			{
-				bEatLF = false;
-				break;
-			}
-
-			if (c == (UT_UCSChar)'\r')
-			{
-				bEatLF = true;
-			}
-			
-			// we interpret either CRLF, CR, or LF as a paragraph break.
-			// we also accept U+2028 (line separator) and U+2029 (para separator)
-			// especially since these are recommended by Mac OS X.
-			
-			if (gbBlock.getLength() > 0)
-			{
-				// flush out what we have
-				m_pDocument->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
-				dpos += gbBlock.getLength();
-				gbBlock.truncate(0);
-			}
-			bInColumn1 = true;
-			break;
-
-		default:
-			bEatLF = false;
-			if (bInColumn1 && !bSuppressLeadingParagraph)
-			{
-				m_pDocument->insertStrux(dpos,PTX_Block);
-				dpos++;
-			}
-			
-			gbBlock.ins(gbBlock.getLength(),&c,1);
-
-			bInColumn1 = false;
-			bSuppressLeadingParagraph = false;
-			break;
-		}
-	} 
-
-	if (gbBlock.getLength() > 0)
-	{
-		// if we have text left over (without final CR/LF),
-		m_pDocument->insertSpan(dpos, gbBlock.getPointer(0), gbBlock.getLength());
-		dpos += gbBlock.getLength();
-	}
-
-	return;
+	_parseStream(stream,ins);
 }
-
 
