@@ -114,6 +114,17 @@ class fl_CharWidths
 
 };
 
+///////////////////////////////////////////////////////////////////////
+// Lists Definitions
+///////////////////////////////////////////////////////////////////////
+typedef enum 
+{
+        NUMBERED_LIST,
+	LOWERCASE_LIST,
+	UPPERCASE_LIST,
+	BULLETED_LIST,
+	NOT_A_LIST
+}       List_Type;
 
 /*
 	Blocks are stored in a linked list which contains all of the blocks in
@@ -175,7 +186,12 @@ public:
 
 	void remItemFromList(void);
 	virtual void listUpdate(void); 
-	void resumeList( fl_BlockLayout * prevList, UT_uint32 id, XML_Char * style);
+	void resumeList( fl_BlockLayout * prevList);
+        List_Type decodeListType(char * listformat);
+	List_Type getListType(void);
+	XML_Char* getListStyleString( List_Type iListType);
+
+	void StopList(void);
 	XML_Char * getListLabel(void);
 	void transferListFlags(void);
 	UT_uint32 getLevel(void);

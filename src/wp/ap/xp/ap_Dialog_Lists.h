@@ -78,7 +78,7 @@ public:
 	UT_uint32                                       m_newStartValue;
 	UT_uint32                                       m_curListLevel;
 	UT_uint32                                       m_newListLevel;
-	UT_uint32                                       m_iListType;
+	List_Type                                       m_iListType;
 
 	UT_Bool                                         m_bStartList;
 	UT_Bool                                         m_bStopList;

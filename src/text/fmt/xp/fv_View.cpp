@@ -1715,12 +1715,12 @@ UT_Bool FV_View::cmdStartList(const XML_Char * style)
 	UT_Bool bRet;
 	UT_uint32 id;
 
+	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
+
 	id = rand();
 	sprintf(lid, "%i", id);
         moveInsPtTo(FV_DOCPOS_BOB); // put point at Beginning of the Block
         _eraseInsertionPoint();
-
-	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
 
 	UT_uint32 currLevel = pBlock->getLevel();
 	currLevel++;
@@ -1760,49 +1760,10 @@ void    FV_View::changeListStyle( fl_AutoNum * pAuto, XML_Char * style)
 
 UT_Bool FV_View::cmdStopList(void)
 {
-	XML_Char lid[15], buf[5];
-	UT_Bool bRet;
-	UT_uint32 id;
 
 	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
-
-	UT_uint32 currLevel = pBlock->getLevel();
-
-	UT_ASSERT(currLevel > 0);
-	currLevel--;
-	sprintf(buf, "%i", currLevel);
-	
-	if (currLevel == 0)
-	{
-		id = 0;
-	}
-	else
-	{
-		id = pBlock->getAutoNum()->getParent()->getID();
-	}
-	sprintf(lid, "%i", id);
-
-	pBlock->setStopping(UT_FALSE);
-	_eraseInsertionPoint();
-	pBlock->format();
-	if (currLevel == 0)
-	{
-	        const XML_Char * attribs[] = { 	"listid", lid,
-					"level", buf,"style","Normal", 0 };
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
-	}
-	else
-	{
-	        const XML_Char * attribs[] = { 	"listid", lid,
-					"level", buf,0 };
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), attribs, NULL, PTX_Block);
-		pBlock->listUpdate();
-	}
-	// pBlock->format();
-	_fixInsertionPointCoords();
-	_generalUpdate();
-	_drawInsertionPoint();
-	return bRet;
+	pBlock->StopList();
+	return UT_TRUE;
 }
 
 UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)

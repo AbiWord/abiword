@@ -169,8 +169,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Bullets)
         UT_ASSERT(pBlock);
 	if(pBlock->isListItem() == UT_FALSE)
 	        return s;
-	const char * tmp2 = pBlock->getAutoNum()->getType();
-	if(strstr(tmp2,"%b") != NULL)
+	if(pBlock->getListType() == BULLETED_LIST)
 	        s = EV_TIS_Toggled;
         return s;
 }
@@ -187,8 +186,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Numbers)
         UT_ASSERT(pBlock);
 	if(pBlock->isListItem() == UT_FALSE)
 	        return s;
-	const char * tmp2 = pBlock->getAutoNum()->getType();
-	if(strstr(tmp2,"%*%d") != NULL)
+	if(pBlock->getListType() == NUMBERED_LIST)
 	        s = EV_TIS_Toggled;
         return s;
 }

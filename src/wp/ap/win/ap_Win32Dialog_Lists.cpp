@@ -193,7 +193,7 @@ void AP_Win32Dialog_Lists::enableControls(void)
 	_win32Dialog.enableControl( AP_RID_DIALOG_LIST_EDIT_NEW_STARTING_VALUE, bStartChecked);
 
 	_win32Dialog.enableControl( AP_RID_DIALOG_LIST_COMBO_CURRENT_LIST_TYPE, m_isListAtPoint && !bStartChecked && !bStopChecked);
-	_win32Dialog.selectComboItem(AP_RID_DIALOG_LIST_COMBO_CURRENT_LIST_TYPE, m_iListType);
+	_win32Dialog.selectComboItem(AP_RID_DIALOG_LIST_COMBO_CURRENT_LIST_TYPE, (UT_uint32) m_iListType);
 
 	_win32Dialog.enableControl( AP_RID_DIALOG_LIST_EDIT_CURRENT_STARTING_VALUE, m_isListAtPoint && !bStartChecked && !bStopChecked);
 	_win32Dialog.setControlInt( AP_RID_DIALOG_LIST_EDIT_CURRENT_STARTING_VALUE, m_curStartValue);
@@ -213,20 +213,20 @@ void AP_Win32Dialog_Lists::_onApply()
 	if(m_bStartList)
 	{
 		m_newStartValue = _win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_NEW_STARTING_VALUE);
-		m_iListType = _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_NEW_LIST_TYPE);
-		if(m_iListType == 0)
+		m_iListType = (List_Type) _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_NEW_LIST_TYPE);
+		if(m_iListType == NUMBERED_LIST)
 		{
 			strcpy(m_newListType, "%*%d.");
 		}
-		else if (m_iListType == 1)
+		else if (m_iListType == LOWERCASE_LIST)
 		{
 			strcpy(m_newListType,"%*%a.");
 		}
-		else if (m_iListType == 2)
+		else if (m_iListType == UPPERCASE_LIST)
 		{
 			strcpy(m_newListType,"%*%A.");
 		}
-		else if (m_iListType == 3)
+		else if (m_iListType == BULLETED_LIST)
 		{
 			m_curStartValue = 1;
 			strcpy(m_newListType, "%b");
@@ -244,23 +244,23 @@ void AP_Win32Dialog_Lists::_onApply()
 			int newStartValue = _win32Dialog.getControlInt(AP_RID_DIALOG_LIST_EDIT_CURRENT_STARTING_VALUE);
 			int newListType = _win32Dialog.getComboSelectedIndex(AP_RID_DIALOG_LIST_COMBO_NEW_LIST_TYPE);
 
-			if(newStartValue != m_curStartValue && newListType != m_iListType)
+			if(newStartValue != m_curStartValue && newListType != (UT_uint32) m_iListType)
 			{
 				m_bChangeStartValue = UT_TRUE;
 				m_curStartValue = newStartValue;
-				if(newListType == 0)
+				if(newListType == (int) NUMBERED_LIST)
 				{
 					strcpy(m_newListType, "%*%d.");
 				}
-				else if (newListType == 1)
+				else if (newListType == (int) LOWERCASE_LIST)
 				{
 					strcpy(m_newListType,"%*%a.");
 				}
-				else if (newListType == 2)
+				else if (newListType == (int) UPPERCASE_LIST)
 				{
 					strcpy(m_newListType,"%*%A.");
 				}
-				else if (newListType == 3)
+				else if (newListType == (int) BULLETED_LIST)
 				{
 					m_curStartValue = 1;
 					strcpy(m_newListType, "%b");

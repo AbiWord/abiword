@@ -58,7 +58,7 @@ AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const
 void  AP_Dialog_Lists::StartList(void)
 {
        getBlock()->listUpdate();
-       getView()->cmdStartList(getListStyleString(m_iListType));
+       getView()->cmdStartList(getBlock()->getListStyleString(m_iListType));
 }
 
 
@@ -66,33 +66,6 @@ void  AP_Dialog_Lists::StopList(void)
 {
        getBlock()->listUpdate();
        getView()->cmdStopList();
-}
-
-XML_Char* AP_Dialog_Lists::getListStyleString( UT_uint32 iListType)
-{
-       XML_Char* style;
-
-       // These strings match piece table styles and should not be 
-       // internationalized
-
-       switch (iListType)
-       {
-       case 0:
-	      style = (XML_Char *)  "Numbered List";
-	      break;
-       case 1:
-     	      style = (XML_Char *)  "Lower Case List";
-	      break;
-       case 2:
-	      style = (XML_Char *)  "Upper Case List"; 
-	      break;
-       case 3:
-	      style = (XML_Char *)  "Bullet List";
-	      break;
-       default:
-	      return (XML_Char *) NULL;
-       }
-       return style;
 }
 
 fl_AutoNum * AP_Dialog_Lists::getAutoNum(void)
@@ -112,7 +85,7 @@ void  AP_Dialog_Lists::Apply(void)
        if(m_bChangeStartValue == UT_TRUE)
        {
               getAutoNum()->setAsciiOffset(0);
-	      style = getListStyleString(m_iListType);
+	      style = getBlock()->getListStyleString(m_iListType);
 	      getView()->changeListStyle(getAutoNum(),style);
        	      getAutoNum()->setStartValue(m_curStartValue);
 	      getAutoNum()->setFormat((XML_Char*)m_newListType);
@@ -131,20 +104,20 @@ void  AP_Dialog_Lists::Apply(void)
 	                   //and starting value
 	      switch(m_iListType)
 	      {
-	      case 0:  // Numbered List
+	      case NUMBERED_LIST:  // Numbered List
 	      
 		       getAutoNum()->setStartValue(m_newStartValue);
      		       getAutoNum()->setFormat((XML_Char*)m_newListType);
 		       break;
-	      case 1:  // Lowe Case List
+	      case LOWERCASE_LIST:  // Lowe Case List
 		       getAutoNum()->setStartValue(m_newStartValue); 
      		       getAutoNum()->setFormat((XML_Char*)m_newListType);
 		       break;
-	      case 2:  // Upper Case List
+	      case UPPERCASE_LIST:  // Upper Case List
 		       getAutoNum()->setStartValue(m_newStartValue); 
      		       getAutoNum()->setFormat((XML_Char*)m_newListType);
 		       break;
-	      case 3:  // Bulleted List
+	      case BULLETED_LIST:  // Bulleted List
 		       getAutoNum()->setFormat((XML_Char*)m_newListType);
 		       break;
 	      default:
@@ -158,30 +131,11 @@ void  AP_Dialog_Lists::Apply(void)
 	      fl_BlockLayout * rBlock = getBlock()->getPreviousList();
 	      if(rBlock == NULL)
 		       return;
-	      char * cType = rBlock->getAutoNum()->getType();
-	      UT_uint32 rType = decodeListType( cType);
-	      XML_Char * style = getListStyleString(rType);
-	      UT_uint32 rId = rBlock->getAutoNum()->getID();
-	      getBlock()->resumeList(rBlock,rId,style);
+	      getBlock()->resumeList(rBlock);
 	      return;
        }
 }
 
-UT_uint32 AP_Dialog_Lists::decodeListType(char * listformat)
-{
-       UT_uint32 iType = 0;
-       if(strstr(listformat,"%*%d.")!= NULL)
-              iType = 0;
-       else if(strstr(listformat,"%*%a.")!= NULL)
-	      iType = 1;
-       else if(strstr(listformat,"%*%A.")!= NULL)
-	      iType = 2;
-       else if(strstr(listformat,"%b")!= NULL)
-	      iType = 3;
-       else
-	      iType = 1000;
-       return iType;
-}
 
 void  AP_Dialog_Lists::PopulateDialogData(void)
 {
@@ -202,20 +156,20 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
               m_curListLevel = getBlock()->getLevel();
               m_curStartValue = getAutoNum()->getStartValue32();
 	      char * tmp2 = getAutoNum()->getType();
-	      m_iListType = decodeListType(tmp2);
-	      if(m_iListType == 0)
+	      m_iListType = getBlock()->decodeListType(tmp2);
+	      if(m_iListType == NUMBERED_LIST)
 	      {
 		      strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List));
 	      }
-	      else if(m_iListType == 1)
+	      else if(m_iListType == LOWERCASE_LIST)
 	      {
 		      strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List));
 	      }	      
-	      else if(m_iListType == 2)
+	      else if(m_iListType == UPPERCASE_LIST)
 	      {
 		      strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List));
 	      }
-	      else if(m_iListType == 3)
+	      else if(m_iListType == BULLETED_LIST)
 	      {
 		      strcpy(m_curListType,pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List));
 	      }
@@ -226,7 +180,7 @@ void  AP_Dialog_Lists::PopulateDialogData(void)
        }
        else
        {
-              m_iListType = 0;
+              m_iListType = NUMBERED_LIST;
 	      m_curStartValue = 1;
        }
 

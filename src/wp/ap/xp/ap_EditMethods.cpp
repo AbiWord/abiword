@@ -4455,7 +4455,7 @@ Defun1(doBullets)
 	ABIWORD_VIEW;
 #ifndef NDEBUG
         fl_BlockLayout * pBlock = pView->getCurrentBlock();
-	if(pBlock->isListItem() == UT_TRUE)
+	if(pBlock->getListType() == BULLETED_LIST)
 	{
 	        const char * tmp = pBlock->getAutoNum()->getType();
 	        if(strstr(tmp,"%b")!= NULL)
@@ -4466,8 +4466,17 @@ Defun1(doBullets)
 	}
 	else
 	{
-	        pBlock->listUpdate();
-		pView->cmdStartList((XML_Char*)"Bullet List");
+	        fl_BlockLayout * pPrev = pBlock->getPrev();
+		if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->getListType() == BULLETED_LIST)
+		{
+	              pBlock->listUpdate();
+		      pBlock->resumeList(pPrev);
+		}
+		else if(pBlock->isListItem()== NULL)
+		{
+	              pBlock->listUpdate();
+		      pView->cmdStartList((XML_Char*)"Bullet List");
+		}
 	}
 	return UT_TRUE;
 #else
@@ -4484,7 +4493,7 @@ Defun1(doNumbers)
 	ABIWORD_VIEW;
 #ifndef NDEBUG
         fl_BlockLayout * pBlock = pView->getCurrentBlock();
-	if(pBlock->isListItem() == UT_TRUE)
+	if(pBlock->getListType() == NUMBERED_LIST)
 	{
 	        const char * tmp = pBlock->getAutoNum()->getType();
 	        if(strstr(tmp,"%*%d.")!= NULL)
@@ -4495,8 +4504,17 @@ Defun1(doNumbers)
 	}
 	else
 	{
-	        pBlock->listUpdate();
-		pView->cmdStartList((XML_Char*)"Numbered List");
+	        fl_BlockLayout * pPrev = pBlock->getPrev();
+		if(pBlock->isListItem()== NULL && pPrev != NULL && pPrev->getListType() == NUMBERED_LIST)
+		{
+	              pBlock->listUpdate();
+		      pBlock->resumeList(pPrev);
+		}
+		else if(pBlock->isListItem()== NULL)
+		{
+	              pBlock->listUpdate();
+		      pView->cmdStartList((XML_Char*)"Numbered List");
+		}
 	}
 	return UT_TRUE;
 #else

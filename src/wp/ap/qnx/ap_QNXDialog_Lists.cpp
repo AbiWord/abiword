@@ -198,25 +198,25 @@ void  AP_QNXDialog_Lists::applyClicked(void)
        if (GTK_TOGGLE_BUTTON (m_wCheckstartlist)->active)
        {
 	       wlisttype=gtk_menu_get_active(GTK_MENU(m_wOption_types_menu));
-	       m_iListType = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
+	       m_iListType = (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
 	       szStartValue =gtk_entry_get_text( GTK_ENTRY (m_wNew_startingvaluev) );
 	       m_bStartList = UT_TRUE;
-	       if(m_iListType == 0)
+	       if(m_iListType == NUMBERED_LIST)
 	       {
 		      m_newStartValue = atoi(szStartValue);
 		      strcpy((gchar *) m_newListType, "%*%d.");
 	       }
-	       else if (m_iListType == 1)
+	       else if (m_iListType == LOWERCASE_LIST)
 	       {
 		      m_newStartValue = atoi(szStartValue);
 		      strcpy((gchar *) m_newListType,"%*%a.");
 	       }
-	       else if (m_iListType == 2)
+	       else if (m_iListType == UPPERCASE_LIST)
 	       {
 		      m_newStartValue = atoi(szStartValue);
 		      strcpy((gchar *) m_newListType,"%*%A.");
 	       }
-	       else if (m_iListType == 3)
+	       else if (m_iListType == BULLETED_LIST)
 	       {
 		 //	      gchar c = *szStartValue;
 		      m_newStartValue = 1;
@@ -235,25 +235,25 @@ void  AP_QNXDialog_Lists::applyClicked(void)
        {
 	       m_bChangeStartValue = UT_TRUE;
 	       wlisttype=gtk_menu_get_active(GTK_MENU(m_wCur_Option_types_menu));
-	       m_iListType = GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
+	       m_iListType = (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
 	       szStartValue =gtk_entry_get_text( GTK_ENTRY (m_wCur_startingvaluev) );
 	       m_bStartList = UT_TRUE;
-	       if(m_iListType == 0)
+	       if(m_iListType == NUMBERED_LIST)
 	       {
 		      m_curStartValue = atoi(szStartValue);
 		      strcpy((gchar *) m_newListType, "%*%d.");
 	       }
-	       else if (m_iListType == 1)
+	       else if (m_iListType == LOWERCASE_LIST)
 	       {
 		      m_curStartValue = atoi(szStartValue);
 		      strcpy((gchar *) m_newListType,"%*%a.");
 	       }
-	       else if (m_iListType == 2)
+	       else if (m_iListType == UPPERCASE_LIST)
 	       {
 		      m_curStartValue = atoi(szStartValue);
 		      strcpy((gchar *) m_newListType,"%*%A.");
 	       }
-	       else if (m_iListType == 3)
+	       else if (m_iListType == BULLETED_LIST)
 	       {
 		 //	      gchar c = *szStartValue;
 		      m_curStartValue = 1;

@@ -4063,6 +4063,62 @@ void fl_BlockLayout::recheckIgnoredWords()
 //List Item Stuff
 ///////////////////////////////////////////////////////////////////////////
 
+XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
+{
+       XML_Char* style;
+
+       // These strings match piece table styles and should not be 
+       // internationalized
+
+       switch (iListType)
+       {
+       case NUMBERED_LIST:
+	      style = (XML_Char *)  "Numbered List";
+	      break;
+       case LOWERCASE_LIST:
+     	      style = (XML_Char *)  "Lower Case List";
+	      break;
+       case UPPERCASE_LIST:
+	      style = (XML_Char *)  "Upper Case List"; 
+	      break;
+       case BULLETED_LIST:
+	      style = (XML_Char *)  "Bullet List";
+	      break;
+       default:
+	      return (XML_Char *) NULL;
+       }
+       return style;
+}
+
+
+List_Type fl_BlockLayout::decodeListType(char * listformat)
+{
+        List_Type iType = NOT_A_LIST;
+	if(strstr(listformat,"%*%d")!= NULL)
+              iType = NUMBERED_LIST;
+	else if(strstr(listformat,"%*%a")!= NULL)
+	      iType = LOWERCASE_LIST;
+	else if(strstr(listformat,"%*%A")!= NULL)
+	      iType = UPPERCASE_LIST;
+	else if(strstr(listformat,"%b")!= NULL)
+	      iType = BULLETED_LIST;
+	else
+	      iType = NOT_A_LIST;
+	return iType;
+}
+
+List_Type fl_BlockLayout::getListType(void)
+{
+        if(isListItem()==UT_FALSE)
+	{
+	      return NOT_A_LIST;
+	}
+	else
+	{
+	      return decodeListType(getAutoNum()->getType());
+	}
+}
+
 void fl_BlockLayout::_startList(UT_uint32 id)
 {
 	const XML_Char * format = getProperty((XML_Char*)"format",UT_TRUE);
@@ -4138,6 +4194,7 @@ void fl_BlockLayout::remItemFromList(void)
 		       const XML_Char * attribs[] = { 	"listid", lid,
 						"level", buf,"style","Normal", 0 };
 		       bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+		       m_bListItem = UT_FALSE;
 		}
 		else
 		{
@@ -4149,10 +4206,58 @@ void fl_BlockLayout::remItemFromList(void)
 		       listUpdate();
 		}
        		//format();
+                pView->AV_View::notifyListeners(AV_CHG_FMTBLOCK);
 		pView->_fixInsertionPointCoords();
 		pView->_generalUpdate();
 		pView->_drawInsertionPoint();
 	}
+}
+
+void    fl_BlockLayout::StopList(void)
+{
+	XML_Char lid[15], buf[5];
+	UT_Bool bRet;
+	UT_uint32 id;
+	FV_View* pView = m_pLayout->getView();
+	UT_ASSERT(pView);
+
+	UT_uint32 currLevel = getLevel();
+
+	UT_ASSERT(currLevel > 0);
+	currLevel--;
+	sprintf(buf, "%i", currLevel);
+	
+	if (currLevel == 0)
+	{
+		id = 0;
+	}
+	else
+	{
+		id = getAutoNum()->getParent()->getID();
+	}
+	sprintf(lid, "%i", id);
+
+	setStopping(UT_FALSE);
+	pView->_eraseInsertionPoint();
+	format();
+	if (currLevel == 0)
+	{
+	        const XML_Char * attribs[] = { 	"listid", lid,
+					"level", buf,"style","Normal", 0 };
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, NULL, PTX_Block);
+		m_bListItem = UT_FALSE;
+	}
+	else
+	{
+	        const XML_Char * attribs[] = { 	"listid", lid,
+					"level", buf,0 };
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, NULL, PTX_Block);
+		listUpdate();
+	}
+	// format();
+	pView->_fixInsertionPointCoords();
+	pView->_generalUpdate();
+	pView->_drawInsertionPoint();
 }
 
 fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 level)
@@ -4184,10 +4289,15 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList( void)
         return pPrev;
 }
 
-void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList, UT_uint32 id, XML_Char * style)
+void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 {
         UT_ASSERT(prevList);
 	XML_Char lid[15], buf[5];
+
+	List_Type rType = prevList->getListType();
+	XML_Char * style = getListStyleString(rType);
+	UT_uint32 id = prevList->getAutoNum()->getID();
+
 	UT_uint32 currLevel = prevList->getLevel();
 	sprintf(buf, "%i", currLevel);
 	sprintf(lid, "%i", id);
