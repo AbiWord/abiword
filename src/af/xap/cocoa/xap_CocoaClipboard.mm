@@ -67,7 +67,7 @@ bool XAP_CocoaClipboard::addData(const char* format, void* pData, UT_sint32 iNum
 
 bool XAP_CocoaClipboard::getClipboardData(const char** formatAccepted, void ** ppData, UT_uint32 * pLen, const char ** szFormatFound)
 {
-	char** current = formatAccepted;
+	const char** current = formatAccepted;
 	NSString* pbType = nil;
 	NSPasteboard* pb = _getPasteboard();
 	while (current) {
@@ -117,5 +117,6 @@ bool XAP_CocoaClipboard::hasFormat(const char* format)
 	{
 		
 	}
+	return false;
 }
 
