@@ -51,13 +51,7 @@ AP_Win32Toolbar_FontCombo::AP_Win32Toolbar_FontCombo(EV_Toolbar * pToolbar,
 
 AP_Win32Toolbar_FontCombo::~AP_Win32Toolbar_FontCombo(void)
 {
-	int max = m_vecContents.getItemCount();
-	for (int i=max-1; i>=0; i--)
-	{
-		char * p = (char *) m_vecContents.getNthItem(i);
-		UT_ASSERT(p);
-		FREEP(p);
-	}
+	UT_VECTOR_FREEALL(char *, m_vecContents);
 }
 
 /*****************************************************************/

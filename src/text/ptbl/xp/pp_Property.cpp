@@ -127,10 +127,9 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	{
 		UT_ASSERT(szValue && szValue[0]);
 		if (pDoc)
-		{
 			pDoc->getStyle(szValue, &pStyle);
-			UT_ASSERT(pStyle);
-		}
+
+		// NOTE: we silently fail if style is referenced, but not defined
 	}
 
 	return pStyle;

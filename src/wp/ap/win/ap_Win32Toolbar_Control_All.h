@@ -30,6 +30,7 @@
 
 #	define AP_WIN32TOOLBAR_CONTROL_ALL_H
 
+#	include "ap_Win32Toolbar_StyleCombo.h"
 #	include "ap_Win32Toolbar_FontCombo.h"
 #	include "ap_Win32Toolbar_SizeCombo.h"
 #	include "ap_Win32Toolbar_ZoomCombo.h"
@@ -38,9 +39,10 @@
 
 #else
 
-	Declare_Control(AP_TOOLBAR_ID_FMT_FONT,	AP_Win32Toolbar_FontCombo)
-	Declare_Control(AP_TOOLBAR_ID_FMT_SIZE,	AP_Win32Toolbar_SizeCombo)
-	Declare_Control(AP_TOOLBAR_ID_ZOOM,		AP_Win32Toolbar_ZoomCombo)
+	Declare_Control(AP_TOOLBAR_ID_FMT_STYLE,	AP_Win32Toolbar_StyleCombo)
+	Declare_Control(AP_TOOLBAR_ID_FMT_FONT,		AP_Win32Toolbar_FontCombo)
+	Declare_Control(AP_TOOLBAR_ID_FMT_SIZE,		AP_Win32Toolbar_SizeCombo)
+	Declare_Control(AP_TOOLBAR_ID_ZOOM,			AP_Win32Toolbar_ZoomCombo)
 
 	// ... also add new controls here ...
 

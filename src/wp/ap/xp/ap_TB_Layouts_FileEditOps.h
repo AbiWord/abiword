@@ -43,6 +43,12 @@ BeginLayout(FileEditOps)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_CUT)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_COPY)
 	ToolbarItem(AP_TOOLBAR_ID_EDIT_PASTE)
+
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_1COLUMN)
+	ToolbarItem(AP_TOOLBAR_ID_2COLUMN)
+	ToolbarItem(AP_TOOLBAR_ID_3COLUMN)
+
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_ZOOM)
 

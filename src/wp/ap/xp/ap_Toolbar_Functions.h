@@ -33,6 +33,7 @@
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard);
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt);

@@ -33,6 +33,7 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)			\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)				\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)StatusBar.$(OBJ_SUFFIX)			\
+		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_StyleCombo.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_ZoomCombo.$(OBJ_SUFFIX)		\

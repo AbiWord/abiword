@@ -27,6 +27,7 @@
 
 BeginLayout(FormatOps)
 
+	ToolbarItem(AP_TOOLBAR_ID_FMT_STYLE)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_FONT)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_SIZE)
 
@@ -52,10 +53,5 @@ BeginLayout(FormatOps)
 	ToolbarItem(AP_TOOLBAR_ID_SINGLE_SPACE)
 	ToolbarItem(AP_TOOLBAR_ID_MIDDLE_SPACE)
 	ToolbarItem(AP_TOOLBAR_ID_DOUBLE_SPACE)
-
-	Spacer()
-	ToolbarItem(AP_TOOLBAR_ID_1COLUMN)
-	ToolbarItem(AP_TOOLBAR_ID_2COLUMN)
-	ToolbarItem(AP_TOOLBAR_ID_3COLUMN)
 	
 EndLayout()

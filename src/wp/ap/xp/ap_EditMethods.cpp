@@ -217,6 +217,7 @@ public:
 	static EV_EditMethod_Fn dlgBullets;
 	static EV_EditMethod_Fn dlgBorders;
 	static EV_EditMethod_Fn dlgColumns;
+	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgTabs;
 	static EV_EditMethod_Fn fontFamily;
@@ -421,7 +422,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewPara),				0,		""),
 	EV_EditMethod(NF(viewHeadFoot),			0,		""),
 	EV_EditMethod(NF(zoom),					0,		""),
-	EV_EditMethod(NF(dlgZoom),					0,		""),
+	EV_EditMethod(NF(dlgZoom),				0,		""),
 
 	EV_EditMethod(NF(insBreak),				0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
@@ -434,7 +435,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgBullets),			0,		""),
 	EV_EditMethod(NF(dlgBorders),			0,		""),
 	EV_EditMethod(NF(dlgColumns),			0,		""),
-	EV_EditMethod(NF(dlgStyle),				0,		""),
+	EV_EditMethod(NF(style),				0,		""),
+	EV_EditMethod(NF(dlgStyle),				_D_,	""),
 	EV_EditMethod(NF(dlgTabs),				0,		""),
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
 	EV_EditMethod(NF(fontSize),				_D_,	""),
@@ -3233,6 +3235,14 @@ Defun1(dlgColumns)
 	UT_ASSERT(pFrame);
 
 	s_TellNotImplemented(pFrame, "Column settings dialog", __LINE__);
+	return UT_TRUE;
+}
+
+Defun(style)
+{
+	ABIWORD_VIEW;
+	const XML_Char * style = (const XML_Char *) pCallData->m_pData;
+	pView->setStyle(style);
 	return UT_TRUE;
 }
 

@@ -41,6 +41,7 @@
 #include "fp_Run.h"
 #include "pd_Document.h"
 #include "pp_Property.h"
+#include "pp_AttrProp.h"
 #include "gr_Graphics.h"
 #include "gr_DrawArgs.h"
 #include "ie_types.h"
@@ -325,6 +326,12 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 			FREEP(propsSection);
 			mask ^= AV_CHG_FMTSECTION;
 		}
+	}
+
+	if (mask & AV_CHG_FMTSTYLE)
+	{
+		// NOTE: we don't attempt to filter this
+		// TODO: we probably should
 	}
 
 	if (mask & AV_CHG_PAGECOUNT)
@@ -937,6 +944,307 @@ void FV_View::insertParagraphBreak(void)
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
 	}
+}
+
+UT_Bool FV_View::setStyle(const XML_Char * style)
+{
+	// TODO: lookup this pStyle
+	// TODO: if block-level, then apply to each block in selection
+	// TODO: else, apply to each frag in span
+
+	UT_Bool bRet;
+
+	PD_Style * pStyle = NULL;
+	m_pDoc->getStyle(style, &pStyle);
+	if (!pStyle)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+
+	const XML_Char * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
+	attribs[1] = style;
+
+	UT_Bool bCharStyle = UT_FALSE /* pStyle->isCharStyle() */;
+
+	// TODO: condense these some more
+	if (bCharStyle)
+	{
+		if (isSelectionEmpty())
+		{
+			_eraseInsertionPoint();
+		}
+
+		PT_DocPosition posStart = getPoint();
+		PT_DocPosition posEnd = posStart;
+
+		if (!isSelectionEmpty())
+		{
+			if (m_iSelectionAnchor < posStart)
+			{
+				posStart = m_iSelectionAnchor;
+			}
+			else
+			{
+				posEnd = m_iSelectionAnchor;
+			}
+		}
+
+		_eraseSelection();
+		
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,attribs,NULL);
+	}
+	else
+	{
+		_clearPointAP(UT_TRUE);
+		_eraseInsertionPoint();
+
+		PT_DocPosition posStart = getPoint();
+		PT_DocPosition posEnd = posStart;
+
+		if (!isSelectionEmpty())
+		{
+			if (m_iSelectionAnchor < posStart)
+			{
+				posStart = m_iSelectionAnchor;
+			}
+			else
+			{
+				posEnd = m_iSelectionAnchor;
+			}
+		}
+
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,NULL,PTX_Block);
+	}
+
+	_generalUpdate();
+	
+	if (isSelectionEmpty())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	return bRet;
+}
+
+static const XML_Char * x_getStyle(const PP_AttrProp * pAP, UT_Bool bBlock)
+{
+	UT_ASSERT(pAP);
+	const XML_Char* sz = NULL;
+
+	pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, sz);
+
+	// TODO: should we have an explicit default for char styles? 
+	if (!sz && bBlock)
+		sz = "Normal";
+
+	return sz;
+}
+
+UT_Bool FV_View::getStyle(const XML_Char ** style)
+{
+	// TODO: walk over selection, figuring out block and char-level styles
+	// TODO: if char-level conflict, use block
+	// TODO: if block-level conflict, use nothing
+	// TODO: if not explicit, assume "Normal"
+
+	UT_Bool bCharStyle = UT_FALSE;
+	const XML_Char * szChar = NULL;
+	const XML_Char * szBlock = NULL;
+
+	const PP_AttrProp * pBlockAP = NULL;
+
+	/*
+		IDEA: We want to know the style, iff it's constant across the 
+		entire selection.  Usually, this will be a block-level style. 
+		However, if the entire span has the same char-level style, 
+		we'll report that instead. 
+	*/
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd = posStart;
+	UT_Bool bSelEmpty = isSelectionEmpty();
+
+	if (!bSelEmpty)
+	{
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
+	}
+
+	// 1. get block style at insertion point
+	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	pBlock->getAttrProp(&pBlockAP);
+
+	szBlock = x_getStyle(pBlockAP, UT_TRUE);
+
+	// 2. prune if block style varies across selection
+	if (!bSelEmpty)
+	{
+		fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
+
+		while (pBlock && (pBlock != pBlockEnd))
+		{
+			const PP_AttrProp * pAP;
+			UT_Bool bCheck = UT_FALSE;
+
+			pBlock = pBlock->getNextBlockInDocument();
+
+			if (!pBlock)
+			{
+				// at EOD, so just bail
+				break;
+			}
+
+			// did block format change?
+			pBlock->getAttrProp(&pAP);
+			if (pBlockAP != pAP)
+			{
+				pBlockAP = pAP;
+				bCheck = UT_TRUE;
+			}
+
+			if (bCheck)
+			{
+				const XML_Char* sz = x_getStyle(pBlockAP, UT_TRUE);
+				
+				if (UT_stricmp(sz, szBlock))
+				{
+					// doesn't match, so stop looking
+					szBlock = NULL;
+					pBlock = NULL;
+					break;
+				}
+			}
+		}
+	}
+
+	// NOTE: if block style varies, no need to check char style
+
+	if (szBlock && szBlock[0])
+	{
+		const PP_AttrProp * pSpanAP = NULL;
+
+		// 3. locate char style at insertion point
+		UT_sint32 xPoint;
+		UT_sint32 yPoint;
+		UT_sint32 iPointHeight;
+
+		fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+		fp_Run* pRun = pBlock->findPointCoords(posStart, UT_FALSE,
+											   xPoint, yPoint, iPointHeight);
+
+		if (_isPointAP())
+		{
+			/*
+				We have a temporary span format at the insertion point.  
+			*/
+			UT_ASSERT(bSelEmpty);
+			m_pDoc->getAttrProp(_getPointAP(), &pSpanAP);
+		}
+		else
+		{
+			if (bSelEmpty)
+			{
+				if (
+					(posStart == pBlock->getPosition())
+					&& (pRun->getLength() > 0)
+					)
+				{
+					posStart++;
+				}
+			}
+			else
+			{
+				/*
+					NOTE: getSpanAttrProp is optimized for insertions, so it 
+					essentially returns the properties on the left side of the 
+					specified position.  
+					
+					This is exactly what we want at the insertion point. 
+
+					However, to get properties for a selection, we need to 
+					start looking one position to the right.  
+				*/
+				posStart++;
+
+				/*
+					Likewise, findPointCoords will return the run to the right 
+					of the specified position, so we need to stop looking one 
+					position to the left. 
+				*/
+				posEnd--;
+			}
+
+			pBlock->getSpanAttrProp(posStart - pBlock->getPosition(),&pSpanAP);
+		}
+
+		if (pSpanAP)
+		{
+			szChar = x_getStyle(pSpanAP, UT_FALSE);
+			bCharStyle = (szChar && szChar[0]);
+		}
+
+		// 4. prune if char style varies across selection
+		if (!bSelEmpty)
+		{
+			fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
+			fp_Run* pRunEnd = pBlockEnd->findPointCoords(posEnd, UT_FALSE,
+												   xPoint, yPoint, iPointHeight);
+		
+			while (pRun && (pRun != pRunEnd))
+			{
+				const PP_AttrProp * pAP;
+				UT_Bool bCheck = UT_FALSE;
+
+				pRun = pRun->getNext();
+
+				if (!pRun)
+				{
+					// go to first run of next block
+					pBlock = pBlock->getNextBlockInDocument();
+
+					if (!pBlock)
+					{
+						// at EOD, so just bail
+						break;
+					}
+
+					pRun = pBlock->getFirstRun();
+				}
+
+				// did span format change?
+
+				pAP = NULL;
+				pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),&pAP);
+				if (pAP && (pSpanAP != pAP))
+				{
+					pSpanAP = pAP;
+					bCheck = UT_TRUE;
+				}
+
+				if (bCheck)
+				{
+					const XML_Char* sz = x_getStyle(pSpanAP, UT_TRUE);
+					UT_Bool bHere = (sz && sz[0]);
+
+					if ((bCharStyle != bHere) || 
+						(UT_stricmp(sz, szChar)))
+					{
+						// doesn't match, so stop looking
+						bCharStyle = UT_FALSE;
+						szChar = NULL;
+						pRun = NULL;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	*style = (bCharStyle ? szChar : szBlock);
+
+	return UT_TRUE;
 }
 
 UT_Bool FV_View::setCharFormat(const XML_Char * properties[])

@@ -26,6 +26,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_growbuf.h"
+#include "xmlparse.h"
 #include "pt_Types.h"
 #include "fl_Layout.h"
 
@@ -245,6 +246,7 @@ protected:
 	UT_Bool					m_bExactSpacing;
 	UT_Bool					m_bKeepTogether;
 	UT_Bool					m_bKeepWithNext;
+	const XML_Char *		m_szStyle;
 
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;

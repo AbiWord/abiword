@@ -123,6 +123,41 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 	return s;
 }
 
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+	switch(id)
+	{
+	case AP_TOOLBAR_ID_FMT_STYLE:
+		{
+			const XML_Char * sz;
+
+			if (!pView->getStyle(&sz))
+				return s;
+
+			if (sz)
+			{	
+				static const char * sz2;
+				sz2 = sz;
+				*pszState = sz2;
+				s = EV_TIS_UseString;
+			}
+
+			break;
+		}
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	return s;
+}
+
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 {
 	ABIWORD_VIEW;

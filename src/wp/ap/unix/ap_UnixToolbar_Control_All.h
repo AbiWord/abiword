@@ -30,6 +30,7 @@
 
 #	define AP_UNIXTOOLBAR_CONTROL_ALL_H
 
+#	include "ap_UnixToolbar_StyleCombo.h"
 #	include "ap_UnixToolbar_FontCombo.h"
 #	include "ap_UnixToolbar_SizeCombo.h"
 #	include "ap_UnixToolbar_ZoomCombo.h"
@@ -38,9 +39,10 @@
 
 #else
 
-	Declare_Control(AP_TOOLBAR_ID_FMT_FONT,	AP_UnixToolbar_FontCombo)
-	Declare_Control(AP_TOOLBAR_ID_FMT_SIZE,	AP_UnixToolbar_SizeCombo)
-	Declare_Control(AP_TOOLBAR_ID_ZOOM,		AP_UnixToolbar_ZoomCombo)
+	Declare_Control(AP_TOOLBAR_ID_FMT_STYLE,	AP_UnixToolbar_StyleCombo)
+	Declare_Control(AP_TOOLBAR_ID_FMT_FONT,		AP_UnixToolbar_FontCombo)
+	Declare_Control(AP_TOOLBAR_ID_FMT_SIZE,		AP_UnixToolbar_SizeCombo)
+	Declare_Control(AP_TOOLBAR_ID_ZOOM,			AP_UnixToolbar_ZoomCombo)
 
 	// ... also add new controls here ...
 

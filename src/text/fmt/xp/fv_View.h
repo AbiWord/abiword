@@ -135,6 +135,9 @@ public:
 	UT_Bool setCharFormat(const XML_Char * properties[]);
 	UT_Bool getCharFormat(const XML_Char *** properties,UT_Bool bExpandStyles=UT_TRUE);
 
+	UT_Bool setStyle(const XML_Char * style);
+	UT_Bool getStyle(const XML_Char ** style);
+
 	void insertParagraphBreak(void);
 	void insertSectionBreak(void);
 

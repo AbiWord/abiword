@@ -33,6 +33,7 @@
 #include "pd_Document.h"
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
+#include "pt_Types.h"
 #include "gr_Graphics.h"
 #include "sp_spell.h"
 #include "px_CR_Object.h"
@@ -117,6 +118,14 @@ static int compare_tabs(const void* p1, const void* p2)
 
 void fl_BlockLayout::_lookupProperties(void)
 {
+	{
+		const PP_AttrProp * pBlockAP = NULL;
+		getAttrProp(&pBlockAP);
+
+		if (!pBlockAP || !pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, m_szStyle))
+			m_szStyle = NULL;
+	}
+
 	{
 		const char* pszOrphans = getProperty("orphans");
 		if (pszOrphans && pszOrphans[0])
@@ -2311,7 +2320,28 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 	clearScreen(m_pLayout->getGraphics());
 	setAttrPropIndex(pcrxc->getIndexAP());
 
+	const XML_Char * szOldStyle = m_szStyle;
+
 	_lookupProperties();
+
+	if ((szOldStyle != m_szStyle) && 
+		(!szOldStyle || !m_szStyle || !!(UT_XML_strcmp(szOldStyle, m_szStyle))))
+	{
+		/*
+			A block-level style change means that we also need to update 
+			all the run-level properties.
+		*/
+		fp_Run* pRun = m_pFirstRun;
+
+		while (pRun)
+		{
+			pRun->lookupProperties();
+			pRun->fetchCharWidths(&m_gbCharWidths);
+			pRun->recalcWidth();
+
+			pRun = pRun->getNext();
+		}
+	}
 
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
