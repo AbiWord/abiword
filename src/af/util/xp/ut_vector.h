@@ -122,8 +122,8 @@ class ABI_EXPORT UT_Vector
 	void*		getNthItem(UT_uint32 n) const;
 	const void*	operator[](UT_uint32 i) const;
 	UT_sint32	setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld);
-	const void*	getFirstItem() const;
-	const void*	getLastItem() const;
+	void*	getFirstItem() const;
+	void*	getLastItem() const;
 	UT_uint32	getItemCount() const;
 	UT_sint32	findItem(void*) const;
 

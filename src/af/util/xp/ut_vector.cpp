@@ -317,12 +317,12 @@ UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
 
 void* UT_Vector::getLastItem() const
 {
-	return m_STLVec.back();
+	return (void*)m_STLVec.back();
 }
 
 void* UT_Vector::getFirstItem() const
 {
-	return m_STLVec.front();
+	return (void*)m_STLVec.front();
 }
 
 void UT_Vector::deleteNthItem(UT_uint32 n)

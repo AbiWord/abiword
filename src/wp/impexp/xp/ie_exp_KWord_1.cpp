@@ -115,9 +115,9 @@ private:
 
 // completely generic code to allow this to be a plugin
 
-ABI_PLUGIN_DECLARE("KWord")
-
 #include "xap_Module.h"
+
+ABI_PLUGIN_DECLARE("KWord")
 
 // we use a reference-counted sniffer
 static IE_Exp_KWord_1_Sniffer * m_sniffer = 0;

@@ -71,7 +71,7 @@ int abi_plugin_register (XAP_ModuleInfo *mi)
   mi->name = "KWord 1.x Importer";
   mi->desc = "Import KWord 1.x Documents";
   mi->version = ABI_VERSION_STRING;
-  mi->author = "Abi the Ant"
+  mi->author = "Abi the Ant";
   mi->usage = "No Usage";
 
   IE_Imp::registerImporter(m_sniffer);

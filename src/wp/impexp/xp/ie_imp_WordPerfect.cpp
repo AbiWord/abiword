@@ -91,7 +91,8 @@ WordPerfectByteTag::WordPerfectByteTag(unsigned char byte, UT_Error (IE_Imp_Word
 
 #include "xap_Module.h"
 
-#ABI_PLUGIN_DECLARE("WordPerfect")
+ABI_PLUGIN_DECLARE("WordPerfect")
+static IE_Imp_WordPerfect_Sniffer * m_sniffer = 0;
 
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)

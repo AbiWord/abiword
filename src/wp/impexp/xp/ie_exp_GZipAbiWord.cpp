@@ -41,9 +41,9 @@ IE_Exp_GZipAbiWord::~IE_Exp_GZipAbiWord()
 
 // completely generic code to allow this to be a plugin
 
-ABI_PLUGIN_DECLARE("GZAbw")
-
 #include "xap_Module.h"
+
+ABI_PLUGIN_DECLARE("GZAbw")
 
 // we use a reference-counted sniffer
 static IE_Exp_GZipAbiWord_Sniffer * m_sniffer = 0;

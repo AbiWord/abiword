@@ -180,7 +180,7 @@ endif
 GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
 GNOME_CONFIG    	= gnome-config
-LIBXML_CONFIG		= xml-config
+LIBXML_CONFIG		= xml2-config
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
