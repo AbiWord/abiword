@@ -47,6 +47,8 @@ HWND		g_hwndStatic_BrowseDir;
 HWND		g_hwndStatic_DiskSpace;
 char		g_szBrowseDir[1024];
 
+HFONT		g_hfontMain;
+
 #define		ID_PANE			1000
 #define		ID_BTN_NEXT		1001
 #define		ID_BTN_CANCEL	1002
@@ -162,6 +164,7 @@ void _updateDirAndSpace(void)
 	DWORD iBytes;
 
 	// first set the name of the dir
+	ASK_fixSlashes(g_szBrowseDir);
 	SetWindowText(g_hwndStatic_BrowseDir, g_szBrowseDir);
 
 	// now find out how much free disk space we've got
@@ -577,7 +580,7 @@ LRESULT CALLBACK WndProc_Graphic(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-#define BUTTON_WIDTH		80
+#define BUTTON_WIDTH		64
 #define BUTTON_HEIGHT		24
 #define BUTTON_GAP			20
 
@@ -589,10 +592,11 @@ LRESULT CALLBACK WndProc_Graphic(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 int ASK_Win32_Init(HINSTANCE hInstance)
 {
-	int iScreenWidth;
-	int iScreenHeight;
-	int iWindowWidth;
-	int iWindowHeight;
+	int 		iScreenWidth;
+	int 		iScreenHeight;
+	int 		iWindowWidth;
+	int 		iWindowHeight;
+	LOGFONT		lf;
 	
 	{
 		HWND hwndDesktop = GetDesktopWindow();
@@ -658,6 +662,23 @@ int ASK_Win32_Init(HINSTANCE hInstance)
 
 		return -1;
 	}
+
+	lf.lfWidth = 0;
+	lf.lfEscapement = 0; 
+	lf.lfOrientation = 0; 
+	lf.lfItalic = 0; 
+	lf.lfUnderline = 0; 
+	lf.lfStrikeOut = 0; 
+	lf.lfCharSet = 0; 
+	lf.lfOutPrecision = 0; 
+	lf.lfClipPrecision = 0; 
+	lf.lfQuality = 0; 
+	lf.lfPitchAndFamily = 0; 
+	strcpy(lf.lfFaceName, "MS Sans Serif");
+	
+	lf.lfHeight = 12;
+	lf.lfWeight = 0;
+	g_hfontMain = CreateFontIndirect(&lf);
 
 	g_hwndMain = CreateWindow("AbiSetup_MainWindow",
 						  "AbiSetup",
@@ -726,6 +747,8 @@ int ASK_Win32_Init(HINSTANCE hInstance)
 									(HMENU) ID_BTN_CANCEL,
 									hInstance,
 									NULL);
+	SendMessage(g_hwndButtonNext, WM_SETFONT, (WPARAM) g_hfontMain, (LPARAM) 0);
+	SendMessage(g_hwndButtonCancel, WM_SETFONT, (WPARAM) g_hfontMain, (LPARAM) 0);
 
 	initGraphic();
 	
@@ -777,8 +800,8 @@ int ASK_YesNo(char* pszTitle, char* pszMessage)
 
 #define WELCOME_STATIC_MARGIN		16
 
-#define WELCOME_TEXT1_PERCENT		15
-#define WELCOME_TEXT2_PERCENT		50
+#define WELCOME_TEXT1_PERCENT		10
+#define WELCOME_TEXT2_PERCENT		55
 #define WELCOME_TEXT3_PERCENT		35
 
 #define WELCOME_FONT1_SIZE			36
@@ -862,6 +885,8 @@ int ASK_DoScreen_welcome(char* pszHeading, char* pszIntro, char* pszFinePrint)
 	lf.lfWeight = FW_BOLD; 
 	hFont1 = CreateFontIndirect(&lf);
 
+	strcpy(lf.lfFaceName, "MS Sans Serif");
+	
 	lf.lfHeight = WELCOME_FONT2_SIZE; 
 	lf.lfWeight = 0; 
 	hFont2 = CreateFontIndirect(&lf);
@@ -903,7 +928,6 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 	char	buf2[64];
 	int 	result;
 	
-	HFONT	hFont;
 	HWND	hwndStatic_Top;
 	HWND	hwndStatic_DirLabel;
 	HWND	hwndStatic_SpaceLabel;
@@ -913,8 +937,6 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 	int		iWidth;
 	int		iHeight;
 	RECT	r;
-
-	LOGFONT	lf;
 
 	if (pSet->bFixedPath)
 	{
@@ -975,7 +997,7 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 										 NULL);
 	hwndStatic_Dir = CreateWindow("STATIC",
 								  "TODO the dir",
-								  WS_CHILD | WS_VISIBLE | SS_LEFT | WS_BORDER,
+								  WS_CHILD | WS_VISIBLE | SS_LEFT,
 								  BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP,
 								  iHeight - BUTTON_GAP/2 - BUTTON_HEIGHT - BUTTON_GAP/2 - BUTTON_HEIGHT,
 								  iWidth - (BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP) - (BUTTON_WIDTH + 2*BUTTON_GAP),
@@ -986,7 +1008,7 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 								  NULL);
 	hwndStatic_Space = CreateWindow("STATIC",
 									"TODO the space",
-									WS_CHILD | WS_VISIBLE | SS_LEFT | WS_BORDER,
+									WS_CHILD | WS_VISIBLE | SS_LEFT,
 									BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP,
 									iHeight - BUTTON_GAP/2 - BUTTON_HEIGHT,
 									iWidth - (BUTTON_GAP + BUTTON_WIDTH + BUTTON_GAP) - (BUTTON_WIDTH + 2*BUTTON_GAP),
@@ -1007,28 +1029,14 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 								  (HMENU) 2004,
 								  g_hInstance,
 								  NULL);
-	lf.lfWidth = 0;
-	lf.lfEscapement = 0; 
-	lf.lfOrientation = 0; 
-	lf.lfItalic = 0; 
-	lf.lfUnderline = 0; 
-	lf.lfStrikeOut = 0; 
-	lf.lfCharSet = 0; 
-	lf.lfOutPrecision = 0; 
-	lf.lfClipPrecision = 0; 
-	lf.lfQuality = 0; 
-	lf.lfPitchAndFamily = 0; 
-	strcpy(lf.lfFaceName, "Arial");
-	
-	lf.lfHeight = 20; 
-	lf.lfWeight = 0;
-	hFont = CreateFontIndirect(&lf);
 
-	SendMessage(hwndStatic_Top, WM_SETFONT, (WPARAM) hFont, 0);
-//	SendMessage(hwndStatic_DirLabel, WM_SETFONT, (WPARAM) hFont, 0);
-//	SendMessage(hwndStatic_SpaceLabel, WM_SETFONT, (WPARAM) hFont, 0);
-//	SendMessage(hwndStatic_Dir, WM_SETFONT, (WPARAM) hFont, 0);
-//	SendMessage(hwndStatic_Space, WM_SETFONT, (WPARAM) hFont, 0);
+	SendMessage(hwndStatic_Top, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+
+	SendMessage(hwndButton, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+	SendMessage(hwndStatic_DirLabel, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+	SendMessage(hwndStatic_SpaceLabel, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+	SendMessage(hwndStatic_Dir, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+	SendMessage(hwndStatic_Space, WM_SETFONT, (WPARAM) g_hfontMain, 0);
 
 	ASK_convertBytesToString(ASK_getFileSetTotalSizeInBytes(pSet), buf2);
 	
@@ -1050,14 +1058,6 @@ int ASK_DoScreen_chooseDirForFileSet(ASK_FileSet* pSet)
 	g_hwndStatic_BrowseDir = NULL;
 	g_hwndStatic_DiskSpace = NULL;
 	
-	SendMessage(hwndStatic_Top, WM_SETFONT, (WPARAM) 0, 0);
-	SendMessage(hwndStatic_DirLabel, WM_SETFONT, (WPARAM) 0, 0);
-	SendMessage(hwndStatic_SpaceLabel, WM_SETFONT, (WPARAM) 0, 0);
-	SendMessage(hwndStatic_Dir, WM_SETFONT, (WPARAM) 0, 0);
-	SendMessage(hwndStatic_Space, WM_SETFONT, (WPARAM) 0, 0);
-
-	DeleteObject(hFont);
-
 	DestroyWindow(hwndStatic_Top);
 	DestroyWindow(hwndStatic_DirLabel);
 	DestroyWindow(hwndStatic_SpaceLabel);
@@ -1078,7 +1078,7 @@ int ASK_DoScreen_readyToCopy(int iNumSets, ASK_FileSet** ppSets)
 	
 	char buf[4096];
 
-	sprintf(buf, "\r\nFinal Confirmation\r\n\r\nSo far, nothing has been installed on your computer.\r\n\
+	sprintf(buf, "\r\nFinal Confirmation\r\n\r\nSo far, nothing has been installed on your computer.\r\n\r\n\
 Please click the Next button to confirm that\r\n\
 you would like to proceed with the installation.\r\n");
 
@@ -1128,7 +1128,6 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 
 	char 	buf[1024];
 	
-	HFONT	hFont;
 	HWND	hwndStatic_Top;
 	HWND	hwndStatic_CurSet;
 	HWND	hwndStatic_CurFile;
@@ -1137,8 +1136,6 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 	int		iWidth;
 	int		iHeight;
 	RECT	r;
-
-	LOGFONT	lf;
 
 	SetWindowText(g_hwndMain, "Copying Files");
 
@@ -1190,6 +1187,10 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 								  g_hInstance,
 								  NULL);
 
+	SendMessage(hwndStatic_CurSet, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+	SendMessage(hwndStatic_CurFile, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+	SendMessage(hwndStatic_CurBytes, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+	
 	hwndProgress = CreateWindowEx(0,
 								  PROGRESS_CLASS,
 								  NULL,
@@ -1215,24 +1216,8 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 								  (HMENU) 2004,
 								  g_hInstance,
 								  NULL);
-	lf.lfWidth = 0;
-	lf.lfEscapement = 0; 
-	lf.lfOrientation = 0; 
-	lf.lfItalic = 0; 
-	lf.lfUnderline = 0; 
-	lf.lfStrikeOut = 0; 
-	lf.lfCharSet = 0; 
-	lf.lfOutPrecision = 0; 
-	lf.lfClipPrecision = 0; 
-	lf.lfQuality = 0; 
-	lf.lfPitchAndFamily = 0; 
-	strcpy(lf.lfFaceName, "Arial");
-	
-	lf.lfHeight = 20; 
-	lf.lfWeight = 0;
-	hFont = CreateFontIndirect(&lf);
 
-	SendMessage(hwndStatic_Top, WM_SETFONT, (WPARAM) hFont, 0);
+	SendMessage(hwndStatic_Top, WM_SETFONT, (WPARAM) g_hfontMain, 0);
 	
 	sprintf(buf,
 			"\r\nPlease wait while files are currently being installed on your computer."
@@ -1324,10 +1309,6 @@ int ASK_DoScreen_copy(int iNumSets, ASK_FileSet** ppSets)
 
 	EnableWindow(g_hwndButtonCancel, TRUE);
 	
-	SendMessage(hwndStatic_Top, WM_SETFONT, (WPARAM) 0, 0);
-	
-	DeleteObject(hFont);
-	
 	DestroyWindow(hwndStatic_Top);
 	DestroyWindow(hwndStatic_CurSet);
 	DestroyWindow(hwndStatic_CurFile);
@@ -1343,9 +1324,6 @@ int ASK_DoScreen_license(char* pszText)
 	HWND	hwndText;
 	HWND	hwndStatic;
 	RECT 	r;
-	HFONT	hFontText;
-	HFONT	hFontStatic;
-	LOGFONT	lf;
 
 	SetWindowText(g_hwndMain, "You must accept this license in order to install the software.");
 	
@@ -1375,29 +1353,8 @@ int ASK_DoScreen_license(char* pszText)
 							  g_hInstance,
 							  NULL);
 
-	lf.lfWidth = 0;
-	lf.lfEscapement = 0; 
-	lf.lfOrientation = 0; 
-	lf.lfItalic = 0; 
-	lf.lfUnderline = 0; 
-	lf.lfStrikeOut = 0; 
-	lf.lfCharSet = 0; 
-	lf.lfOutPrecision = 0; 
-	lf.lfClipPrecision = 0; 
-	lf.lfQuality = 0; 
-	lf.lfPitchAndFamily = 0; 
-	strcpy(lf.lfFaceName, "Arial");
-
-	lf.lfHeight = 14; 
-	lf.lfWeight = 0; 
-	hFontText= CreateFontIndirect(&lf);
-	
-	lf.lfHeight = 16; 
-	lf.lfWeight = FW_BOLD; 
-	hFontStatic= CreateFontIndirect(&lf);
-
-	SendMessage(hwndStatic, WM_SETFONT, (WPARAM) hFontStatic, 0);
-	SendMessage(hwndText, WM_SETFONT, (WPARAM) hFontText, 0);
+	SendMessage(hwndStatic, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+	SendMessage(hwndText, WM_SETFONT, (WPARAM) g_hfontMain, 0);
 	
 	SetWindowText(hwndStatic, "Do you accept the terms of this license?");
 	
@@ -1411,12 +1368,6 @@ int ASK_DoScreen_license(char* pszText)
 	SetWindowText(g_hwndButtonNext, "Next");
 	SetWindowText(g_hwndButtonCancel, "Cancel");
 
-	SendMessage(hwndStatic, WM_SETFONT, (WPARAM) 0, 0);
-	SendMessage(hwndText, WM_SETFONT, (WPARAM) 0, 0);
-	
-	DeleteObject(hFontText);
-	DeleteObject(hFontStatic);
-	
 	DestroyWindow(hwndText);
 	DestroyWindow(hwndStatic);
 	
@@ -1446,7 +1397,8 @@ int ASK_DoScreen_readme(char* pszTitle, char* pszText)
 							  (HMENU) 2000,
 							  g_hInstance,
 							  NULL);
-
+	SendMessage(hwndText, WM_SETFONT, (WPARAM) g_hfontMain, 0);
+	
 	SetWindowText(hwndText, pszText);
 
 	result = DoEventLoop();
