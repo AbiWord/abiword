@@ -1135,7 +1135,7 @@ rms:  I'm adding something here to get a localized splash screen
 		      remember that having multiple / in a path equals
 		      having just one. So this is faster.
 		*/
-		snprintf(buf, iSplashPathSize, "%s/%s", szDirectory, szFile);
+		g_snprintf(buf, iSplashPathSize, "%s/%s", szDirectory, szFile);
 		/*
 		strcpy(buf,szDirectory);
 		int len = strlen(buf);
