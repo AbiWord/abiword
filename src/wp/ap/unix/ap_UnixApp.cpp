@@ -200,7 +200,7 @@ bool AP_UnixApp::initialize(void)
 	UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
 	
 	UT_String szPathname = szISpellDirectory;
-	if (szISpellDirectory[szPathname.size()-1]=='/')
+	if (szISpellDirectory[szPathname.size()-1] != '/')
 	  szPathname += "/";
 	szPathname += szSpellCheckWordList;
 	    
