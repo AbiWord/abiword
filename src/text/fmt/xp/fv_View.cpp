@@ -1063,6 +1063,13 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 	notifyListeners(AV_CHG_MOTION);
 }
 
+/*!
+  Find block at document position
+  \param pos Document position
+  \return Block at specified posistion, or the first block to the
+          rigth of that position. May return NULL.
+  \see m_pLayout->findBlockAtPosition
+*/
 fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 {
 	return m_pLayout->findBlockAtPosition(pos);
@@ -1678,8 +1685,7 @@ UT_Bool FV_View::getStyle(const XML_Char ** style)
 		IDEA: We want to know the style, if it's constant across the 
 		entire selection.  Usually, this will be a block-level style. 
 		However, if the entire span has the same char-level style, 
-		we'll report that instead. 
-	*/
+		we'll report that instead.  */
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 	UT_Bool bSelEmpty = isSelectionEmpty();
@@ -4939,36 +4945,33 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
 
-	PT_DocPosition posEOD;
-	UT_Bool bRes;
-
-
-	// The idea of the following code is thus: we need the previous block in 
-	// the document.  But at the beginning of the document, sometimes there
-	// isn't a previous block.  So we get the next block in the document.  
-	// If we don't do this, we end up in big trouble, since we reference
-	// that block in about 8 lines.   Sam, 11.9.00
-
-	bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
-	UT_ASSERT(bRes);
+	// Get the previous block in the document. _findBlockAtPosition
+	// will iterate forwards until it actually find a block if there
+	// isn't one previous to pos.  
+	// (Removed code duplication. Jesper, 2001.01.25)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
-	while(!pBlock && (pos < posEOD))
-	{
-		pBlock = _findBlockAtPosition((PT_DocPosition) pos++);
-	}
-	pos = (PT_DocPosition) pos; 
-
-	//UT_ASSERT(pBlock);
-
+	
 	// probably an empty document, return instead of
 	// dereferencing NULL.  Dom 11.9.00
 	if(!pBlock)
 	{
+		// Do the assert. Want to know from debug builds when this happens.
+		UT_ASSERT(pBlock);
+
 		x = 0;
 		y = 0;
 		height = 0;
 		*ppBlock = 0;
 		return;
+	}
+
+	// If block is actually to the right of the requested position
+	// (this happens in an empty document), update the pos with the
+	// start pos of the block.
+	PT_DocPosition iBlockPos = pBlock->getPosition(UT_FALSE);
+	if (iBlockPos > pos)
+	{
+		pos = iBlockPos;
 	}
 
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
@@ -5744,6 +5747,11 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
 	UT_ASSERT(bRes);
 
+	// FIXME:jskov want to rewrite this code to use simplified
+	// versions of findPositionCoords. I think there's been some bugs
+	// due to that function being overloaded to be used from this
+	// code.
+
 	if (bForward)
 	{
 		m_iInsPoint += countChars;
@@ -5758,10 +5766,6 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	else
 	{
 		m_iInsPoint -= countChars;
-//		if (m_iInsPoint < posBOD)
-//		{
-//			m_iInsPoint = posBOD;
-//		}
 		_findPositionCoords(m_iInsPoint, UT_FALSE, x, y, uheight, &pBlock, &pRun);
 		while(pRun != NULL && pRun->isField() == UT_TRUE && m_iInsPoint > posBOD)
 		{

@@ -1252,6 +1252,13 @@ const char*	fl_BlockLayout::getProperty(const XML_Char * pszName, UT_Bool bExpan
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 }
 
+/*!
+ Get block's position in document
+ \param bActualBlockPos When true return block's position. When false
+                        return position of first run in block
+ \return Position of block (or first run in block)
+ \fixme Split in two functions if called most often with FALSE
+*/
 UT_uint32 fl_BlockLayout::getPosition(UT_Bool bActualBlockPos) const
 {
 	PT_DocPosition pos = m_pDoc->getStruxPosition(m_sdh);

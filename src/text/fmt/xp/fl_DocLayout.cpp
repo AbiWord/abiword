@@ -426,22 +426,33 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 	return pPage;
 }
 
+/*!
+  Find block at document position
+  \param pos Document position
+  \return Block at specified posistion, or the first block to the
+          rigth of that position. May return NULL.
+
+*/
 fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 {
 	fl_BlockLayout* pBL = NULL;
 	PL_StruxFmtHandle sfh;
 
-        PT_DocPosition posEOD;
-        UT_Bool bRes;
+	PT_DocPosition posEOD;
+	UT_Bool bRes;
 
-        bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
-        UT_ASSERT(bRes);
+	bRes = m_pDoc->getBounds(UT_TRUE, posEOD);
+	UT_ASSERT(bRes);
 
 	bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
-
+	// If block wasn't found at position, try finding it to the right,
+	// limited only by the EOD.
 	while(!bRes && (pos < posEOD))
-		bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, ++pos, PTX_Block, &sfh);
-		
+	{
+		pos++;
+		bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
+	}
+
 	if (bRes)
 	{
 		fl_Layout * pL = (fl_Layout *)sfh;
@@ -465,13 +476,13 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 
 	if(pBL->getSectionLayout()->getType() == FL_SECTION_HDRFTR)
 	{
-	        fl_HdrFtrShadow * pShadow = ((fl_HdrFtrSectionLayout *) pBL->getSectionLayout())->getFirstShadow();
+		fl_HdrFtrShadow * pShadow = ((fl_HdrFtrSectionLayout *) pBL->getSectionLayout())->getFirstShadow();
 		if(pShadow != NULL)
-	                pBL = pShadow->findMatchingBlock(pBL);
+			pBL = pShadow->findMatchingBlock(pBL);
 		else
 		{
-		        UT_DEBUGMSG(("SEVIOR: No Shadow! But there should be ! \n"));
-		        UT_ASSERT(0);
+			UT_DEBUGMSG(("SEVIOR: No Shadow! But there should be ! \n"));
+			UT_ASSERT(0);
 		}
 	}
 	return pBL;
