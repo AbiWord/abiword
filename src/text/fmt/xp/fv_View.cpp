@@ -3891,7 +3891,7 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 	_checkPendingWord();
 }
 
-void FV_View::_checkPendingWord(void) const
+void FV_View::_checkPendingWord(void)
 {
 	// deal with pending word, if any
 	if (m_pLayout->isPendingWord())
@@ -3904,7 +3904,8 @@ void FV_View::_checkPendingWord(void) const
 			if (!m_pLayout->touchesPendingWord(pBL, iOffset, 0))
 			{
 				// no longer there, so check it
-				m_pLayout->checkPendingWord();
+				if (m_pLayout->checkPendingWord())
+					updateScreen();
 			}
 		}
 	}

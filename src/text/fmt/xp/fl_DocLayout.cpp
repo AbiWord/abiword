@@ -608,19 +608,23 @@ void FL_DocLayout::setPendingWord(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord)
 	m_pPendingWord = pWord;
 }
 
-void FL_DocLayout::checkPendingWord(void)
+UT_Bool FL_DocLayout::checkPendingWord(void)
 {
+	UT_Bool bUpdate = UT_FALSE;
+
 	if (!m_pPendingBlock)
-		return;
+		return bUpdate;
 
 	// check pending word
 	UT_ASSERT(m_pPendingWord);
-	m_pPendingBlock->checkWord(m_pPendingWord);
+	bUpdate = m_pPendingBlock->checkWord(m_pPendingWord);
 
 	m_pPendingWord = NULL;	// NB: already freed by checkWord
 
 	// not pending any more
 	setPendingWord(NULL, NULL);
+
+	return bUpdate;
 }
 
 UT_Bool FL_DocLayout::isPendingWord(void) const

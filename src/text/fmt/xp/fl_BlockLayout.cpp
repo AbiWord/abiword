@@ -1438,7 +1438,7 @@ void fl_BlockLayout::checkSpelling(void)
 	_purgeSquiggles();
 
 	// now start checking
-	bUpdateScreen &= _checkMultiWord(pBlockText, 0, eor, UT_TRUE);
+	bUpdateScreen |= _checkMultiWord(pBlockText, 0, eor, UT_TRUE);
 
 	if (bUpdateScreen && pView)
 	{
@@ -1538,11 +1538,13 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 	return bUpdateScreen;
 }
 
-void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
+UT_Bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 {
+	UT_Bool bUpdate = UT_FALSE;
+
 	UT_ASSERT(pPOB);
 	if (!pPOB)
-		return;
+		return bUpdate;
 
 	// consume word in pPOB -- either squiggle or delete it
 
@@ -1595,6 +1597,8 @@ void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 			m_vecSquiggles.addItem(pPOB);
 
 			_updateSquiggle(pPOB);
+
+			bUpdate = UT_TRUE;
 		}
 		else
 		{
@@ -1607,6 +1611,8 @@ void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		// forget about it
 		delete pPOB;
 	}
+
+	return bUpdate;
 }
 
 /*****************************************************************/

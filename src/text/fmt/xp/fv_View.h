@@ -282,7 +282,7 @@ protected:
 	void				_doPaste(UT_Bool bUseClipboard);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
-	void				_checkPendingWord(void) const;
+	void				_checkPendingWord(void);
 
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;

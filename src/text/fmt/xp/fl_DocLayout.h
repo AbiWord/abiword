@@ -110,7 +110,7 @@ public:
 								   UT_uint32 iOffset, 
 								   UT_sint32 chg) const;
 	void		setPendingWord(fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
-	void		checkPendingWord(void);
+	UT_Bool		checkPendingWord(void);
 	
 	void 		queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead=UT_FALSE);
 	void 		dequeueBlock(fl_BlockLayout *pBlock);
