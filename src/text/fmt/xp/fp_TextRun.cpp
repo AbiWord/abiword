@@ -72,7 +72,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	m_bSquiggled = false;
 	m_iSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
 	m_pField = NULL;
-	m_iLanguage = 0;
+	m_pLanguage = NULL;
 #ifdef BIDI_ENABLED
 	m_iDirection = 2; //we will use this as an indication that the direction property has not been yet set
 			  //normal values are -1,0,1 (neutral, ltr, rtl)
@@ -201,8 +201,8 @@ void fp_TextRun::lookupProperties(void)
 	//set the language member
 	UT_Language *lls = new UT_Language;
 	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-	m_iLanguage = lls->getIdFromProperty(pszLanguage);
-	//UT_DEBUGMSG(("fp_TextRun::lookupProperties: m_iLanguage = %d\n", m_iLanguage));
+	m_pLanguage = lls->getPropertyFromProperty(pszLanguage);
+	//UT_DEBUGMSG(("fp_TextRun::lookupProperties: m_pLanguage = %s\n", m_pLanguage));
 	delete lls;
 
 #ifdef BIDI_ENABLED
@@ -616,7 +616,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_pField != m_pField)
-		|| (pNext->m_iLanguage != m_iLanguage)
+		|| (pNext->m_pLanguage != m_pLanguage)  //this is not a bug
 #ifdef BIDI_ENABLED
 		|| (pNext->m_iDirection != m_iDirection)  //#TF cannot merge runs of different direction of writing
 #endif
@@ -644,7 +644,7 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(m_iDescent == pNext->m_iDescent);
 	UT_ASSERT(m_iHeight == pNext->m_iHeight);
 	UT_ASSERT(m_iLineWidth == pNext->m_iLineWidth);
-	UT_ASSERT(m_iLanguage == pNext->m_iLanguage);
+	UT_ASSERT(m_pLanguage == pNext->m_pLanguage); //this is not a bug
 #ifdef BIDI_ENABLED
 	UT_ASSERT(m_iDirection == pNext->m_iDirection); //#TF
 #endif
@@ -689,7 +689,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_iHeightLayoutUnits = this->m_iHeightLayoutUnits;
 	pNew->m_iLineWidth = this->m_iLineWidth;
 	pNew->m_bDirty = this->m_bDirty;
-	pNew->m_iLanguage = this->m_iLanguage;
+	pNew->m_pLanguage = this->m_pLanguage;
 #ifdef BIDI_ENABLED
 	pNew->m_iDirection = this->m_iDirection; //#TF
 #endif

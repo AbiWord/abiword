@@ -102,6 +102,10 @@ public:
 		{ return m_pFont; }
 	UT_RGBColor				getFGColor(void) const
 		{ return m_colorFG; }
+
+	const XML_Char * 			getLanguage() const
+		{ return m_pLanguage; }
+
 #ifdef BIDI_ENABLED
 	UT_sint32               getStr(UT_UCSChar * str, UT_uint32 &iMax);
 	//bool                 setUnicodeDirection();
@@ -191,7 +195,10 @@ protected:
 	UT_sint32                               m_imaxUnderline;
 	UT_sint32                               m_iminOverline;
 	UT_sint32                               m_iOverlineXoff;
-	UT_uint32				m_iLanguage;
+
+	// !!! the m_pLanguage member cannot be set to an arbitrary string pointer
+	// but only a pointer in the static table of the UT_Language class !!!
+	const XML_Char *			m_pLanguage;
 };
 
 #endif /* FP_TEXTRUN_H */
