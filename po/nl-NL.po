@@ -275,7 +275,7 @@ msgstr "&Over %s"
 #. MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h.h:164
 msgid "&Accept revision"
-msgstr "Wijzigingen &accepteren"
+msgstr "Revisie &accepteren"
 
 #. DLG_Spell_AddToDict
 #. MENU_LABEL_SPELL_ADD
@@ -704,7 +704,7 @@ msgstr "&Marge"
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:340
 msgid "&Mark revisions while typing"
-msgstr "Wijzigingen &markeren tijdens het typen"
+msgstr "Revisies &markeren tijdens het typen"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:342
@@ -869,7 +869,7 @@ msgstr "Terugzetten naar de &standaard layout"
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h.h:406
 msgid "&Revisions"
-msgstr "Wij&zigingen"
+msgstr "Re&visies"
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:408
@@ -2014,7 +2014,7 @@ msgstr "Opmerking"
 #. DLG_MarkRevisions_Comment2Label
 #: po/tmp/ap_String_Id.h.h:863
 msgid "Comment to be associated with the revision:"
-msgstr "Opmerking behorend bij de wijzigingen:"
+msgstr "Opmerking behorend bij de revisie:"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h.h:865
@@ -3843,7 +3843,7 @@ msgstr "Plugins beheren"
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1617
 msgid "Mark Revisions"
-msgstr "Wijzigingen markeren"
+msgstr "Revisies markeren"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h.h:1619
