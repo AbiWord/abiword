@@ -40,7 +40,8 @@
 // Note: constant "NoIcon" in that column.
 
 // Polish translated by Sercxemulo <explo@poczta.wp.pl>
-// Last update: 07.14.2000A.D.
+// Since December '01 maintained by Piotr Banski <bansp@bigfoot.com>
+// Last update: 27-dec-2001
 BeginSetEnc(pl,PL,true,"iso-8859-2")
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS1__,		NULL,		NoIcon,			NULL,NULL)
@@ -49,45 +50,70 @@ BeginSetEnc(pl,PL,true,"iso-8859-2")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Nowy", 		tb_new_xpm,		NULL, "Stwórz nowy dokument")	
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Otwórz",		tb_open_xpm,	NULL, "Otwórz istniej±cy dokument")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Zapisz", 	tb_save_xpm,	NULL, "Zachowaj dokument")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Zapisz jako", 	tb_save_as_xpm,	NULL, "Zachowaj dokument pod inn± nazw±")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Zapisz", 	tb_save_xpm,	NULL, "Zapisz dokument")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Zapisz jako", 	tb_save_as_xpm,	NULL, "Zapisz dokument pod inn± nazw±")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Drukuj",	tb_print_xpm,	NULL, "Drukuj dokument")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,	"Podgl±d",	tb_print_preview_xpm, NULL, "Wy¶wietl podgl±d wydruku")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Cofnij",		tb_undo_xpm,	NULL, "Cofnij ostatni± czynno¶æ")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Ponów",		tb_redo_xpm,	NULL, "Ponów ostatni± czynno¶æ")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Wytnij",		tb_cut_xpm,		NULL, "Wytnij zaznaczony tekst i umie¶æ go w Schowku")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopiuj",		tb_copy_xpm,	NULL, "Umie¶æ zaznaczony tekst w Schowku")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Wklej",	tb_paste_xpm,	NULL, "Wklej ze Schowka")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,	 "Nag³ówek",		tb_edit_editheader_xpm,			NULL, "Edycja nag³ówka")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,	 "Stopka",		tb_edit_editfooter_xpm,			NULL, "Edycja stopki")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER, "Usuñ nag³ówek",		tb_edit_removeheader_xpm,			NULL, "Usuñ nag³ówek")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER, "Usuñ stopkê",		tb_edit_removefooter_xpm,			NULL, "Usuñ stopkê")
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Pisownia",	tb_spellcheck_xpm,		NULL, "Sprawd¼ pisowniê w dokumencie")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG,				"Rysunek",	tb_insert_graphic_xpm,	NULL, "Wstaw rysunek do dokumentu")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Styl",	NoIcon,			NULL, "Ustaw styl akapitu")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Czcionka",		NoIcon,			NULL, "Ustaw czcionkê")
+   ToolbarLabel(AP_TOOLBAR_ID_FMT_HYPERLINK, "£±cze", tb_hyperlink, NULL, "Wstaw ³±cze do dokumentu")
+   ToolbarLabel(AP_TOOLBAR_ID_FMT_BOOKMARK, "Zak³adka", tb_anchor, NULL, "Wstaw zak³adkê do dokumentu")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Wielko¶æ czcionki", NoIcon,		NULL, "Ustaw wielko¶æ czcionki")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Pogrubiona",		tb_text_bold_xpm,		NULL, "Czcionka pogrubiona")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursywa",	tb_text_italic_xpm,	NULL, "Czcionka pochy³a")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Podkre¶lona",tb_text_underline_xpm,	NULL, "Czcionka podkre¶lona")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Nadkre¶lona",		tb_text_overline_xpm,	NULL, "Czcionka nadkre¶lona")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Przekre¶lona",   tb_text_strikeout_xpm,	NULL, "Czcionka przekre¶lona")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,		"Linia górna",		tb_text_topline_xpm,	NULL, "Linia wzd³u¿ górnego marginesu tekstu")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,		"Linia dolna",		tb_text_bottomline_xpm,	NULL, "Linia wzd³u¿ dolnego marginesu tekstu")
+	ToolbarLabel(AP_TOOLBAR_ID_HELP,			"Pomoc",			tb_help_xpm,			NULL, "Menu systemu pomocy")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Indeks górny",	tb_text_superscript_xpm,	NULL, "Indeks górny")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Indeks dolny",	tb_text_subscript_xpm,		NULL, "Indeks dolny")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbol",		tb_symbol_xpm,				NULL, "Wstaw symbol")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Do lewej",		tb_text_align_left_xpm,		NULL, "Wyrównanie do lewej")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Wycentruj",	tb_text_center_xpm,	NULL, "Wyrównanie do ¶rodka")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Do prawej",	tb_text_align_right_xpm,	NULL, "Wyrównanie do prawej")
+	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justowanie",	tb_text_justify_xpm,	NULL, "Wyrównanie do lewej i prawej")
 
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Odwo³aj",		tb_undo_xpm,	NULL, "Cofnij  zmiany")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Cofnij zmiany",		tb_redo_xpm,	NULL, "Cofnij poprzednie poprawki")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Zachowaj i wytnij",		tb_cut_xpm,		NULL, "Wytnij i zachowaj w schowku")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Zachowaj",		tb_copy_xpm,	NULL, "Zapisz do schowka")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Wklej",	tb_paste_xpm,	NULL, "Wklej ze schowka")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Nic przed",		tb_para_0before_xpm,	NULL, "Bez odstêpu przed akapitem")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12pkt przed",		tb_para_12before_xpm,	NULL, "Odstêp 12 punktów przed akapitem")
 
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Styl",	NoIcon,			NULL, "Styl")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Czcionka",		NoIcon,			NULL, "Rodzaj czcionki")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Wielko¶æ czcionki", NoIcon,		NULL, "Rozmiar czcionki")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Podgrubiona",		tb_text_bold_xpm,		NULL, "Pogrubiona")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursywa",	tb_text_italic_xpm,	NULL, "Pochylona")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Podkre¶lona",tb_text_underline_xpm,	NULL, "Podkre¶lona")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Przekre¶lona",   tb_text_strikeout_xpm,	NULL, "Przekre¶lona")
-
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Indeks Górny",	tb_text_superscript_xpm,	NULL, "Indeks górny")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Indeks Dolny",	tb_text_subscript_xpm,		NULL, "Indeks dolny")
-
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"W lewo",		tb_text_align_left_xpm,		NULL, "Wyrównanie w lewo")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Wycentruj",	tb_text_center_xpm,	NULL, "Wyrównanie na ¶rodek")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"W prawo",	tb_text_align_right_xpm,	NULL, "Wyrównanie w prawo")
-	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Justowanie",	tb_text_justify_xpm,	NULL, "Wyrównanie do dwóch brzegów na raz")
-
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Nic przed",		tb_para_0before_xpm,	NULL, "Bez odstêpu przed")
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pkt przed",		tb_para_12before_xpm,	NULL, "wstaw 12 punktów przed")
-
-	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Pojedyñczy odstêp",	tb_line_single_space_xpm,	NULL, "Pojedyñczy odstêp miêdzy liniami")
-	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1.5 odstêp",		tb_line_middle_space_xpm,	NULL, "Pó³torej odstêpu miêdzy liniami")
-	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Podwójny odstêp",	tb_line_double_space_xpm,	NULL, "Podwójny odstêp miêdzy liniami")
+	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Odstêp 1",	tb_line_single_space_xpm,	NULL, "Pojedynczy odstêp miêdzy wierszami")
+	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"Odstêp 1.5",		tb_line_middle_space_xpm,	NULL, "Pó³tora odstêpu miêdzy wierszami")
+	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Odstêp 2",	tb_line_double_space_xpm,	NULL, "Podwójny odstêp miêdzy wierszami")
 
 	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,			"1 Kolumna",			tb_1column_xpm,			NULL, "1 Kolumna")
-	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 Kolumna",		tb_2column_xpm,			NULL, "2 Kolumna")
-	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Kolumna",		tb_3column_xpm,			NULL, "3 Kolumna")
+	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 Kolumny",		tb_2column_xpm,			NULL, "2 Kolumny")
+	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Kolumny",		tb_3column_xpm,			NULL, "3 Kolumny")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Powiêkszenie",		NoIcon,			NULL, "Powiêkszenie")
-	
+	ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,	"Poka¿ wszystko",			tb_view_showpara_xpm,		NULL, "Poka¿/ukryj znaki niedrukowane")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Powiêkszenie",		NoIcon,			NULL, "Zmiana skali podgl¹du")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Wypunktowanie",			tb_lists_bullets_xpm,	NULL, "Lista wypunktowana")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Numerowanie",		tb_lists_numbers_xpm,	NULL, "Lista numerowana")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Kolor czcionki",		tb_text_fgcolor_xpm,	NULL, "Kolor czcionki")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Wyró¿nienie",		tb_text_bgcolor_xpm,	NULL, "Wyró¿nienie odcinka tekstu")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Zwiêksz wciêcie",	tb_text_indent_xpm, 	NULL, "Zwiêksz wciêcie akapitu")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Zmniejsz wciêcie",	tb_text_unindent_xpm,	NULL, "Zmniejsz wciêcie akapitu")
+
+	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,		"Skrypt",	tb_script_play_xpm,		NULL, "Wykonaj skrypt")
+
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,	"Tekst L->P",		tb_text_direction_ltr_xpm,	NULL, "Wymu¶ kierunek z lewej do prawej")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,	"Tekst P->L",		tb_text_direction_rtl_xpm,	NULL, "Wymu¶ kierunek z prawej do lewej")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Kierunek tekstu",	tb_text_dom_direction_rtl_xpm,	NULL, "Zmieñ kierunek tekstu w akapicie")
+#endif
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
