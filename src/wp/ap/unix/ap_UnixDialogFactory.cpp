@@ -44,7 +44,7 @@ AP_UnixDialogFactory::AP_UnixDialogFactory(AP_App * pApp)
 {
 }
 
-AP_UnixDialogFactory::AP_UnixDialogFactory(AP_Frame * pFrame)
+AP_UnixDialogFactory::AP_UnixDialogFactory(XAP_Frame * pFrame)
 	: AP_DialogFactory(pFrame, NrElements(s_dlg_table), s_dlg_table)
 {
 }

@@ -43,7 +43,7 @@ public:
 	virtual ~AP_UnixApp(void);
 
 	virtual UT_Bool					initialize(void);
-	virtual AP_Frame * 				newFrame(void);
+	virtual XAP_Frame * 			newFrame(void);
 	virtual void					reallyExit(void);
 
 	virtual AP_DialogFactory *				getDialogFactory(void);

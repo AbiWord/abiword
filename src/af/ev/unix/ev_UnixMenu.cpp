@@ -107,7 +107,7 @@ static const char * _ev_GetLabelName(AP_UnixApp * pUnixApp,
 
 /*****************************************************************/
 
-EV_UnixMenu::EV_UnixMenu(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame,
+EV_UnixMenu::EV_UnixMenu(AP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 						 const char * szMenuLayoutName,
 						 const char * szMenuLabelSetName)
 	: EV_Menu(pUnixApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
@@ -132,7 +132,7 @@ UT_Bool EV_UnixMenu::refreshMenu(AV_View * pView)
 	return UT_TRUE;
 }
 
-AP_UnixFrame * EV_UnixMenu::getFrame(void)
+XAP_UnixFrame * EV_UnixMenu::getFrame(void)
 {
 	return m_pUnixFrame;
 }

@@ -139,7 +139,7 @@ public:									// we create...
 
 /*****************************************************************/
 
-EV_UnixToolbar::EV_UnixToolbar(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame,
+EV_UnixToolbar::EV_UnixToolbar(AP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 							   const char * szToolbarLayoutName,
 							   const char * szToolbarLabelSetName)
 	: EV_Toolbar(pUnixApp->getEditMethodContainer(),

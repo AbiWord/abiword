@@ -22,7 +22,7 @@
 
 #include "xap_UnixFrame.h"
 #include "xap_Dialog_Print.h"
-class AP_UnixFrame;
+class XAP_UnixFrame;
 class PS_Graphics;
 
 /*****************************************************************/
@@ -34,7 +34,7 @@ public:
 	virtual ~AP_UnixDialog_Print(void);
 
 	virtual void			useStart(void);
-	virtual void			runModal(AP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 	virtual void			useEnd(void);
 
 	virtual DG_Graphics *	getPrinterGraphicsContext(void);
@@ -44,10 +44,10 @@ public:
 
 protected:
 
-	void					_raisePrintDialog(AP_Frame * pFrame);
+	void					_raisePrintDialog(XAP_Frame * pFrame);
 	void					_getGraphics(void);
 	
-	AP_UnixFrame *			m_pUnixFrame;
+	XAP_UnixFrame *			m_pUnixFrame;
 	PS_Graphics *			m_pPSGraphics;
 	struct
 	{

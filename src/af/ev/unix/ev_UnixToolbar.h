@@ -28,7 +28,7 @@
 #include "xav_Listener.h"
 
 class AP_UnixApp;
-class AP_UnixFrame;
+class XAP_UnixFrame;
 class AP_UnixToolbar_Icons;
 class EV_UnixToolbar_ViewListener;
 
@@ -36,7 +36,7 @@ class EV_UnixToolbar_ViewListener;
 class EV_UnixToolbar : public EV_Toolbar
 {
 public:
-	EV_UnixToolbar(AP_UnixApp * pUnixApp, AP_UnixFrame * pUnixFrame,
+	EV_UnixToolbar(AP_UnixApp * pUnixApp, XAP_UnixFrame * pUnixFrame,
 				   const char * szToolbarLayoutName,
 				   const char * szToolbarLabelSetName);
 	
@@ -51,7 +51,7 @@ protected:
 	void							_releaseListener(void);
 	
 	AP_UnixApp *					m_pUnixApp;
-	AP_UnixFrame *					m_pUnixFrame;
+	XAP_UnixFrame *					m_pUnixFrame;
 	EV_UnixToolbar_ViewListener *	m_pViewListener;
 	AV_ListenerId					m_lid;	/* view listener id */
 

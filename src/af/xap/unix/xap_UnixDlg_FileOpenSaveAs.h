@@ -21,7 +21,7 @@
 #define AP_UNIXDIALOG_FILEOPENSAVEAS_H
 
 #include "xap_Dialog_FileOpenSaveAs.h"
-class AP_UnixFrame;
+class XAP_UnixFrame;
 
 /*****************************************************************/
 
@@ -31,18 +31,18 @@ public:
 	AP_UnixDialog_FileOpenSaveAs(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_UnixDialog_FileOpenSaveAs(void);
 
-	virtual void			runModal(AP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
 protected:
 
-	UT_Bool					_run_gtk_main(AP_Frame * pFrame, void * pFSvoid, UT_Bool bCheckWritePermission);
-	void 					_notifyError_OKOnly(AP_Frame * pFrame, const char * message);
-	void 					_notifyError_OKOnly(AP_Frame * pFrame, const char * message, const char * sz1);
-	UT_Bool 				_askOverwrite_YesNo(AP_Frame * pFrame, const char * fileName);
+	UT_Bool					_run_gtk_main(XAP_Frame * pFrame, void * pFSvoid, UT_Bool bCheckWritePermission);
+	void 					_notifyError_OKOnly(XAP_Frame * pFrame, const char * message);
+	void 					_notifyError_OKOnly(XAP_Frame * pFrame, const char * message, const char * sz1);
+	UT_Bool 				_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName);
 	
-	AP_UnixFrame *			m_pUnixFrame;
+	XAP_UnixFrame *			m_pUnixFrame;
 };
 
 #endif /* AP_UNIXDIALOG_FILEOPENSAVEAS_H */

@@ -86,7 +86,7 @@ static void s_closeCallback(GtkWidget * object, GtkWidget * data)
 	gtk_main_quit();
 }
 
-void AP_UnixDialog_Goto::runModeless(AP_Frame * pFrame)
+void AP_UnixDialog_Goto::runModeless(XAP_Frame * pFrame)
 {
 	GtkWidget * topLevel;
 	GtkWidget * vbox;
@@ -280,7 +280,7 @@ void AP_UnixDialog_Goto::runModeless(AP_Frame * pFrame)
 	GTK_WIDGET_SET_FLAGS(cancelButton, GTK_CAN_DEFAULT);
 	
 	// get top level window and it's GtkWidget *
-	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);

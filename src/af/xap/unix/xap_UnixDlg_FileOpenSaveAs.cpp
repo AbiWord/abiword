@@ -68,7 +68,7 @@ static void s_cancel_clicked(GtkWidget * widget,
 	gtk_main_quit();
 }
 
-UT_Bool AP_UnixDialog_FileOpenSaveAs::_run_gtk_main(AP_Frame * pFrame,
+UT_Bool AP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 													void * pFSvoid,
 													UT_Bool bCheckWritePermission)
 {
@@ -206,7 +206,7 @@ ReturnTrue:
 }
 
 
-UT_Bool AP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(AP_Frame * pFrame, const char * fileName)
+UT_Bool AP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(XAP_Frame * pFrame, const char * fileName)
 {
 	// return UT_TRUE if we should overwrite the file
 	AP_DialogFactory * pDialogFactory
@@ -230,7 +230,7 @@ UT_Bool AP_UnixDialog_FileOpenSaveAs::_askOverwrite_YesNo(AP_Frame * pFrame, con
 }
 
 	
-void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(AP_Frame * pFrame, const char * message)
+void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame, const char * message)
 {
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
@@ -250,7 +250,7 @@ void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(AP_Frame * pFrame, const 
 	pDialogFactory->releaseDialog(pDialog);
 }
 
-void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(AP_Frame * pFrame,
+void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(XAP_Frame * pFrame,
 													   const char * message, const char * sz1)
 {
 	AP_DialogFactory * pDialogFactory
@@ -274,9 +274,9 @@ void AP_UnixDialog_FileOpenSaveAs::_notifyError_OKOnly(AP_Frame * pFrame,
 
 /*****************************************************************/
 
-void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
+void AP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
-	m_pUnixFrame = (AP_UnixFrame *)pFrame;
+	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
 
 	// do we want to let this function handle stating the Unix
@@ -380,7 +380,7 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	}
 
 	// get top level window and it's GtkWidget *
-	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);

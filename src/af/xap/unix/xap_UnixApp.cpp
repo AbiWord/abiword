@@ -26,6 +26,8 @@
 #include "xap_UnixToolbar_ControlFactory.h"
 #include "sp_spell.h"
 
+#include "ap_UnixFrame.h"				// TODO move this
+
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
@@ -80,7 +82,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	return UT_TRUE;
 }
 
-AP_Frame * AP_UnixApp::newFrame(void)
+XAP_Frame * AP_UnixApp::newFrame(void)
 {
 	AP_UnixFrame * pUnixFrame = new AP_UnixFrame(this);
 

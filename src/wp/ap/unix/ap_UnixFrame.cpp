@@ -33,6 +33,10 @@
 #include "pd_Document.h"
 #include "gr_UnixGraphics.h"
 #include "xap_Scrollbar_ViewListener.h"
+#include "ap_UnixFrame.h"
+#include "xap_UnixApp.h"
+
+/*****************************************************************/
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -215,4 +219,213 @@ void AP_UnixFrame::setYScrollRange(void)
 	m_pVadj->page_increment = (gfloat) windowHeight;
 	m_pVadj->page_size = (gfloat) windowHeight;
 	gtk_signal_emit_by_name(GTK_OBJECT(m_pVadj), "changed");
+}
+
+
+AP_UnixFrame::AP_UnixFrame(AP_UnixApp * app)
+	: XAP_UnixFrame(app)
+{
+	// TODO
+}
+
+AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
+	: XAP_UnixFrame(static_cast<XAP_UnixFrame *>(f))
+{
+	// TODO
+}
+
+AP_UnixFrame::~AP_UnixFrame(void)
+{
+	killFrameData();
+}
+
+UT_Bool AP_UnixFrame::initialize(void)
+{
+	if (!initFrameData())
+		return UT_FALSE;
+
+	if (!XAP_UnixFrame::initialize())
+		return UT_FALSE;
+
+	_createTopLevelWindow();
+	gtk_widget_show(m_wTopLevelWindow);
+
+	return UT_TRUE;
+}
+
+/*****************************************************************/
+
+UT_Bool AP_UnixFrame::initFrameData(void)
+{
+	UT_ASSERT(!m_pData);
+
+	m_pData = new AP_FrameData();
+	
+	return (m_pData ? UT_TRUE : UT_FALSE);
+}
+
+void AP_UnixFrame::killFrameData(void)
+{
+	DELETEP(m_pData);
+	m_pData = NULL;
+}
+
+UT_Bool AP_UnixFrame::_loadDocument(const char * szFilename)
+{
+	// are we replacing another document?
+	if (m_pDoc)
+	{
+		// yep.  first make sure it's OK to discard it, 
+		// TODO: query user if dirty...
+	}
+
+	// load a document into the current frame.
+	// if no filename, create a new document.
+
+	AD_Document * pNewDoc = new PD_Document();
+	UT_ASSERT(pNewDoc);
+	
+	if (!szFilename || !*szFilename)
+	{
+		pNewDoc->newDocument();
+		m_iUntitled = _getNextUntitledNumber();
+		goto ReplaceDocument;
+	}
+
+	if (pNewDoc->readFromFile(szFilename))
+		goto ReplaceDocument;
+	
+	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
+	delete pNewDoc;
+	return UT_FALSE;
+
+ReplaceDocument:
+	// NOTE: prior document is bound to m_pData->m_pDocLayout, which gets discarded by subclass
+	m_pDoc = pNewDoc;
+	return UT_TRUE;
+}
+	
+XAP_Frame * AP_UnixFrame::cloneFrame(void)
+{
+	AP_UnixFrame * pClone = new AP_UnixFrame(this);
+	ENSUREP(pClone);
+
+	if (!pClone->initialize())
+		goto Cleanup;
+
+	if (!pClone->_showDocument())
+		goto Cleanup;
+
+	pClone->show();
+
+	return pClone;
+
+Cleanup:
+	// clean up anything we created here
+	if (pClone)
+	{
+		m_pUnixApp->forgetFrame(pClone);
+		delete pClone;
+	}
+
+	return NULL;
+}
+
+UT_Bool AP_UnixFrame::loadDocument(const char * szFilename)
+{
+	if (! _loadDocument(szFilename))
+	{
+		// we could not load the document.
+		// TODO how should we complain to the user ??
+
+		return UT_FALSE;
+	}
+
+	return _showDocument();
+}
+
+void AP_UnixFrame::_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff)
+{
+	// this is a static callback function and doesn't have a 'this' pointer.
+	
+	AP_UnixFrame * pUnixFrame = static_cast<AP_UnixFrame *>(pData);
+		
+	pUnixFrame->m_pVadj->value = (gfloat) yoff;
+	gtk_signal_emit_by_name(GTK_OBJECT(pUnixFrame->m_pVadj), "changed");
+
+	pUnixFrame->m_pHadj->value = (gfloat) xoff;
+	gtk_signal_emit_by_name(GTK_OBJECT(pUnixFrame->m_pHadj), "changed");
+}
+
+GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
+{
+	GtkWidget * wSunkenBox;
+
+	// set up for scroll bars.
+	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
+	m_hScroll = gtk_hscrollbar_new(m_pHadj);
+	gtk_object_set_user_data(GTK_OBJECT(m_hScroll),this);
+
+	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_pHadj), "changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
+
+	m_pVadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	gtk_object_set_user_data(GTK_OBJECT(m_pVadj),this);
+	m_vScroll = gtk_vscrollbar_new(m_pVadj);
+	gtk_object_set_user_data(GTK_OBJECT(m_vScroll),this);
+
+	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
+	gtk_signal_connect(GTK_OBJECT(m_pVadj), "changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
+
+	// we don't want either scrollbar grabbing events from us
+	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
+	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
+
+	// create a drawing area in the for our document window.
+	m_dArea = gtk_drawing_area_new();
+	
+	gtk_object_set_user_data(GTK_OBJECT(m_dArea),this);
+	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
+												GDK_BUTTON_PRESS_MASK |
+												GDK_POINTER_MOTION_MASK |
+												GDK_BUTTON_RELEASE_MASK |
+												GDK_KEY_PRESS_MASK |
+												GDK_KEY_RELEASE_MASK));
+
+	gtk_signal_connect(GTK_OBJECT(m_dArea), "expose_event",
+					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
+  
+	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_press_event",
+					   GTK_SIGNAL_FUNC(_fe::button_press_event), NULL);
+
+	gtk_signal_connect(GTK_OBJECT(m_dArea), "button_release_event",
+					   GTK_SIGNAL_FUNC(_fe::button_release_event), NULL);
+
+	gtk_signal_connect(GTK_OBJECT(m_dArea), "motion_notify_event",
+					   GTK_SIGNAL_FUNC(_fe::motion_notify_event), NULL);
+  
+	gtk_signal_connect(GTK_OBJECT(m_dArea), "configure_event",
+					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
+
+	// create a table for scroll bars and drawing area
+	m_table = gtk_table_new(1, 2, FALSE);
+	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
+
+	gtk_table_attach(GTK_TABLE(m_table), m_dArea,   0, 1, 0, 1, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0); 
+	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_FILL), 0, 0);
+	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1, (GtkAttachOptions) (GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+
+	wSunkenBox = gtk_frame_new(NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(wSunkenBox), GTK_SHADOW_IN);
+							  
+	// the table goes in the 3D box
+	gtk_container_add(GTK_CONTAINER(wSunkenBox), m_table);
+
+	gtk_widget_show(m_hScroll);
+	gtk_widget_show(m_vScroll);
+	gtk_widget_show(m_dArea);
+	gtk_widget_show(m_table);
+
+	return wSunkenBox;
 }

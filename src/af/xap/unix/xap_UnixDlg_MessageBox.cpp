@@ -157,9 +157,9 @@ void AP_UnixDialog_MessageBox::_setAnswer(AP_Dialog_MessageBox::tAnswer answer)
 	m_answer = answer;
 }
 
-void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
+void AP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
-	m_pUnixFrame = (AP_UnixFrame *)pFrame;
+	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
 	AP_UnixApp * pApp = (AP_UnixApp *)m_pUnixFrame->getApp();
 	UT_ASSERT(pApp);
@@ -346,7 +346,7 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 	gtk_widget_set_usize(dialog_window, dialog_window->requisition.width + 40, 0);
 	
 	// get top level window and it's GtkWidget *
-	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);

@@ -101,9 +101,9 @@ void AP_UnixDialog_Print::releasePrinterGraphicsContext(DG_Graphics * pGraphics)
 
 /*****************************************************************/
 
-void AP_UnixDialog_Print::runModal(AP_Frame * pFrame)
+void AP_UnixDialog_Print::runModal(XAP_Frame * pFrame)
 {
-	m_pUnixFrame = static_cast<AP_UnixFrame *>(pFrame);
+	m_pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(m_pUnixFrame);
 	
 	// see if they just want the properties of the printer without
@@ -146,7 +146,7 @@ static void entry_toggle_enable (GtkWidget *checkbutton, GtkWidget *entry)
 	gtk_widget_grab_focus (entry);
 }
 
-void AP_UnixDialog_Print::_raisePrintDialog(AP_Frame * pFrame)
+void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 {
 	// raise the actual dialog and wait for an answer.
 	// return true if they hit ok.
@@ -379,7 +379,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(AP_Frame * pFrame)
 
 
 	// get top level window and it's GtkWidget *
-	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);

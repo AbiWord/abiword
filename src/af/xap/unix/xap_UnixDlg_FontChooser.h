@@ -21,7 +21,7 @@
 #define AP_UNIXDIALOG_FONTCHOOSER_H
 
 #include "xap_Dialog_FontChooser.h"
-class AP_UnixFrame;
+class XAP_UnixFrame;
 
 /*****************************************************************/
 
@@ -31,7 +31,7 @@ public:
 	AP_UnixDialog_FontChooser(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_UnixDialog_FontChooser(void);
 
-	virtual void			runModal(AP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
@@ -42,7 +42,7 @@ protected:
 
 	UT_Bool bAbusingTheFontSize;
 	
-	AP_UnixFrame *			m_pUnixFrame;
+	XAP_UnixFrame *			m_pUnixFrame;
 	
 };
 

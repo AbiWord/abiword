@@ -28,6 +28,10 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 
+#include "ap_UnixFrame.h"				// TODO move this
+
+/*****************************************************************/
+
 int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 {
 	/*

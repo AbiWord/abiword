@@ -18,8 +18,8 @@
  */
 
 
-#ifndef AP_UNIXFRAME_H
-#define AP_UNIXFRAME_H
+#ifndef XAP_UNIXFRAME_H
+#define XAP_UNIXFRAME_H
 
 #include <gtk/gtk.h>
 #include "xap_Frame.h"
@@ -39,16 +39,16 @@ class EV_UnixMenu;
 ******************************************************************
 *****************************************************************/
 
-class AP_UnixFrame : public AP_Frame
+class XAP_UnixFrame : public XAP_Frame
 {
 public:
-	AP_UnixFrame(AP_UnixApp * app);
-	AP_UnixFrame(AP_UnixFrame * f);
-	~AP_UnixFrame(void);
+	XAP_UnixFrame(AP_UnixApp * app);
+	XAP_UnixFrame(XAP_UnixFrame * f);
+	virtual ~XAP_UnixFrame(void);
 
 	virtual UT_Bool				initialize(void);
-	virtual	AP_Frame *			cloneFrame(void);
-	virtual UT_Bool				loadDocument(const char * szFilename);
+	virtual	XAP_Frame *			cloneFrame(void)=0;
+	virtual UT_Bool				loadDocument(const char * szFilename)=0;
 	virtual UT_Bool				close(void);
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);
@@ -60,13 +60,12 @@ public:
 	ev_UnixKeyboard *			getUnixKeyboard(void);
 
 	virtual AP_DialogFactory *	getDialogFactory(void);
-	virtual void				setXScrollRange(void);
-	virtual void				setYScrollRange(void);
+	virtual void				setXScrollRange(void)=0;
+	virtual void				setYScrollRange(void)=0;
 	
 protected:
-	void						_createTopLevelWindow(void);
-	UT_Bool						_showDocument(void);
-	static void					_scrollFunc(void * pData, UT_sint32 xoff, UT_sint32 yoff);
+	virtual GtkWidget *			_createDocumentWindow(void)=0;
+	virtual void				_createTopLevelWindow(void);
 
 	// TODO see why ev_UnixKeyboard has lowercase prefix...
 	AP_UnixApp *				m_pUnixApp;
@@ -77,16 +76,27 @@ protected:
 	
 	GtkWidget *					m_wTopLevelWindow;
 	GtkWidget *					m_wVBox;
-
-	GtkAdjustment *				m_pVadj;
-	GtkAdjustment *				m_pHadj;
-	GtkWidget *					m_hScroll;
-	GtkWidget *					m_vScroll;
-	GtkWidget *					m_dArea;
-	GtkWidget *					m_table;
 	GtkWidget * 				m_wSunkenBox;
 
 	AP_UnixDialogFactory		m_dialogFactory;
+
+protected:
+
+	class _fe
+	{
+	public:
+		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
+		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
+		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
+		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
+		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
+		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
+		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
+		static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/);
+		static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/);
+		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
+	};
+
 };
 
-#endif /* AP_UNIXFRAME_H */
+#endif /* XAP_UNIXFRAME_H */

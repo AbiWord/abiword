@@ -252,9 +252,9 @@ void AP_UnixDialog_FontChooser::parseXLFD(char * buf)
 }
 
 	
-void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
+void AP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 {
-	m_pUnixFrame = (AP_UnixFrame *)pFrame;
+	m_pUnixFrame = (XAP_UnixFrame *)pFrame;
 	UT_ASSERT(m_pUnixFrame);
 	AP_UnixApp * pApp = (AP_UnixApp *)m_pUnixFrame->getApp();
 	UT_ASSERT(pApp);
@@ -359,7 +359,7 @@ void AP_UnixDialog_FontChooser::runModal(AP_Frame * pFrame)
 	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
 
 	// get top level window and it's GtkWidget *
-	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);

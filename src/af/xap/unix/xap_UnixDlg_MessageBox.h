@@ -23,7 +23,7 @@
 #include "xap_UnixFrame.h"
 #include "xap_Dialog_MessageBox.h"
 #include <glib.h>
-class AP_UnixFrame;
+class XAP_UnixFrame;
 
 /*****************************************************************/
 
@@ -33,7 +33,7 @@ public:
 	AP_UnixDialog_MessageBox(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id);
 	virtual ~AP_UnixDialog_MessageBox(void);
 
-	virtual void			runModal(AP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
@@ -42,7 +42,7 @@ public:
 	void 				_setAnswer(AP_Dialog_MessageBox::tAnswer answer);
 		
 protected:
-	AP_UnixFrame *			m_pUnixFrame;
+	XAP_UnixFrame *			m_pUnixFrame;
 	UT_Vector 				m_keyBindings;
 
 	struct keyBinding

@@ -21,7 +21,7 @@
 #define AP_UNIXDIALOG_REPLACE_H
 
 #include "ap_Dialog_Replace.h"
-class AP_UnixFrame;
+class XAP_UnixFrame;
 
 /*****************************************************************/
 
@@ -33,7 +33,7 @@ public:
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 
-	virtual void			runModal(AP_Frame * pFrame);
+	virtual void			runModal(XAP_Frame * pFrame);
 
 	// public so callbacks can access them
    	GtkWidget *				findEntry;

@@ -164,7 +164,7 @@ static void CancelCallback(GtkWidget * object, GtkWidget * data)
   Since this function builds both the Find and the Replace
   dialogs, it gets kinda hairy.
 */
-void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
+void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 {
 	GtkWidget * topLevel;
 	GtkWidget * vbox;
@@ -363,7 +363,7 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	GTK_WIDGET_SET_FLAGS(cancelButton, GTK_CAN_DEFAULT);
 	
 	// get top level window and it's GtkWidget *
-	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);
+	XAP_UnixFrame * frame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);

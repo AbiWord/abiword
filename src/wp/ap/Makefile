@@ -42,7 +42,6 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)				\
 OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_LoadBindings_DeadAbovedot.$(OBJ_SUFFIX)		\
