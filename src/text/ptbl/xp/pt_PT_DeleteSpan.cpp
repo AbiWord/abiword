@@ -106,6 +106,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			PT_BlockOffset Offset1, Offset2;
 			bool bTableStrux = false;
 			bool bHasEndStrux = false;
+			UT_sint32 iTableDepth = 0;
 
 			if(!getFragsFromPositions(dpos1,dpos2, &pf1, &Offset1, &pf2, &Offset2))
 				return bRet;
@@ -137,6 +138,8 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 						break;
 						
 					case PTX_SectionTable:
+						iTableDepth = 1;
+						// fall through
 					case PTX_SectionCell:
 						bTableStrux = true;
 						bHasEndStrux = true;
@@ -236,19 +239,25 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 
 							pf_Frag_Strux * pfs = (pf_Frag_Strux*) pf;
 							PTStruxType eStrux2Type = pfs->getStruxType();
+
+							if(eStrux2Type == PTX_SectionTable)
+								iTableDepth++;
+							else if (eStrux2Type == PTX_EndTable)
+								iTableDepth--;
+								
 							
-							switch(eStruxType)
+							switch(eStruxType )
 							{
 								case PTX_SectionEndnote:
 									if(eStrux2Type != PTX_EndEndnote)
 										continue;
 									break;
 								case PTX_SectionTable:
-									if(eStrux2Type != PTX_EndTable)
+									if(iTableDepth > 0 || eStrux2Type != PTX_EndTable)
 										continue;
 									break;
 								case PTX_SectionCell:
-									if(eStrux2Type != PTX_EndCell)
+									if(iTableDepth > 0 || eStrux2Type != PTX_EndCell)
 										continue;
 									break;
 								case PTX_SectionFootnote:
