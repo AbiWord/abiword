@@ -1902,10 +1902,10 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 			const XML_Char * pRevision;
 			AttrProp_Before.getAttribute("revision", pRevision);
 
-			PP_Revision Revision(pRevision);
-			Revision.addRevisionId(m_pDoc->getRevisionId());
+			PP_RevisionAttr Revisions(pRevision);
+			Revisions.addRevision(m_pDoc->getRevisionId(),PP_REVISION_ADDITION,NULL);
 
-			AttrProp_Before.setAttribute("revision", Revision.getXMLstring());
+			AttrProp_Before.setAttribute("revision", Revisions.getXMLstring());
 		}
 		else
 		{
@@ -1971,30 +1971,51 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		if (doInsert == true)
 		{
 #ifdef REVISION_TEST
-			PP_AttrProp *AttrProp_Before;
+			PP_AttrProp *pAttrProp;
 			const fl_BlockLayout * pBL = getCurrentBlock();
 
 			// not entirely sure whether we can get away witht he
 			// const_cast here, we might have to make a copy ... #TF
-			pBL->getSpanAttrProp(getPoint(),false,const_cast<const PP_AttrProp **>(&AttrProp_Before));
+			pBL->getSpanAttrProp(getPoint() - pBL->getPosition(false),false,const_cast<const PP_AttrProp **>(&pAttrProp));
+			bool bMyAttrProp = false;
 
 			if(isMarkRevisions())
 			{
 				// need to set the revision attribute to current id
 				const XML_Char * pRevision;
-				AttrProp_Before->getAttribute("revision", pRevision);
 
-				PP_Revision Revision(pRevision);
-				Revision.addRevisionId(m_pDoc->getRevisionId());
+				if(pAttrProp)
+				{
+					pAttrProp->getAttribute("revision", pRevision);
+				}
+				else
+				{
+					pAttrProp = new PP_AttrProp;
+					pRevision = NULL;
+					bMyAttrProp = true;
+				}
 
-				AttrProp_Before->setAttribute("revision", Revision.getXMLstring());
+
+				PP_RevisionAttr Revisions(pRevision);
+				Revisions.addRevision(m_pDoc->getRevisionId(), PP_REVISION_ADDITION, NULL);
+
+				pAttrProp->setAttribute("revision", Revisions.getXMLstring());
 			}
 			else
 			{
-				AttrProp_Before->setAttribute("revision", NULL);
+				if(pAttrProp)
+					pAttrProp->setAttribute("revision", NULL);
+				else
+				{
+					pAttrProp = new PP_AttrProp;
+					bMyAttrProp = true;
+				}
 			}
 
-			bResult = m_pDoc->insertSpan(getPoint(), text, count, AttrProp_Before);
+			bResult = m_pDoc->insertSpan(getPoint(), text, count, pAttrProp);
+
+			if(bMyAttrProp)
+				delete pAttrProp;
 #else
 			bResult = m_pDoc->insertSpan(getPoint(), text, count);
 #endif
