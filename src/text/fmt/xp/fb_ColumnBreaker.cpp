@@ -205,6 +205,14 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				pCurContainer = _getNext(pCurContainer);
 				continue;
 			}
+			if(pCurContainer->getContainerType() == FP_CONTAINER_FRAME)
+			{
+//
+// skip this! It's height is ignored in the layout
+//
+				pCurContainer = _getNext(pCurContainer);
+				continue;
+			}
 			UT_sint32 iContainerHeight = 0;
 			UT_sint32 iContainerMarginAfter = pCurContainer->getMarginAfter();
 			fp_Container * pVTab = NULL;
@@ -654,7 +662,29 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				}
 				if(pCurContainer->getContainer() != pCurColumn)
 				{
-					pCurColumn->addContainer(pCurContainer);
+					if(pCurContainer->getContainerType() != FP_CONTAINER_FRAME)
+					{
+						pCurColumn->addContainer(pCurContainer);
+					}
+					else
+					{
+						fp_Page * pPage = pCurContainer->getPage();
+						fp_Page * pNextPage = pCurColumn->getPage();
+						if(pNextPage && pPage && (pNextPage != pPage))
+						{
+							FL_DocLayout * pDL = m_pDocSec->getDocLayout();
+							fp_FrameContainer * pFC = reinterpret_cast<fp_FrameContainer *>(pCurContainer);
+							if((pDL->findPage(pPage) >= 0) && (pDL->findPage(pNextPage) >= 0))
+							{
+								if((pPage->findFrameContainer(pFC) >=0) &&
+								   (pNextPage->findFrameContainer(pFC) < 0))
+								{
+									pPage->removeFrameContainer(pFC);
+									pNextPage->insertFrameContainer(pFC);
+								}				
+							}			
+						}
+					}
 				}
 			}
 //
