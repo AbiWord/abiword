@@ -26,6 +26,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "ut_map.h"
 #include "ev_EditMethod.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Toolbar_Actions.h"
@@ -81,6 +82,11 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 #ifdef HAVE_CURLHASH	
 	m_pHashDownloader = NULL;
 #endif
+
+	// hack to force the linker to link in UT_Map functions; thanks to fjf
+	if (this == 0)
+		UT_Map foo;
+
 }
 
 XAP_App::~XAP_App()
