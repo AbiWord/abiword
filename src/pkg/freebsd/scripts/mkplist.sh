@@ -1,8 +1,6 @@
 #!/bin/sh
-# remove the static binary and strip the dynamic one
 ls -Flags $prefix/AbiSuite/bin
-strip $prefix/AbiSuite/bin/AbiWord_d
-rm -f $prefix/AbiSuite/bin/AbiWord_s
+strip $prefix/AbiSuite/bin/AbiWord-2.0
 
 # check and list the depend package
 echo "@cwd $prefix" > $OUTFILE
