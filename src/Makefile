@@ -23,6 +23,8 @@ ABI_ROOT:=$(shell pwd)/..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 DIRS=		config tools other af text wp ask
+REQUIREREALCLEAN=		clean_ABI_ clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_ clean_LIBICONV_
+
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
@@ -35,8 +37,7 @@ abiclean::
 clean::
 	rm -rf $(OBJDIR)
 
-realclean::
-	rm -rf $(OUTDIR) $(DIST)
+realclean:: $(REQUIREREALCLEAN)
 
 ##################################################################
 ## Build system library files (strings, dictionaries, example
@@ -174,3 +175,32 @@ distribution:
 	@echo
 	@exit 1
 endif
+
+#################################################################
+
+clean_ZLIB_:
+	@if [ -d $(ABI_ROOT)/../zlib ]; then		\
+		$(MAKE) -C $(ABI_ROOT)/../zlib clean;	\
+	fi
+
+clean_LIBPNG_:
+	@if [ -d $(ABI_ROOT)/../libpng ]; then		\
+		$(MAKE) -C $(ABI_ROOT)/../libpng clean;	\
+	fi
+
+# we have to make a realclean here so the configure script reruns
+# if no makefile exists, it is already clean
+clean_LIBWV_:
+	@if [ -d $(ABI_ROOT)/../wv -a -f $(ABI_ROOT)/../wv/Makefile ]; then		\
+		$(MAKE) -C $(ABI_ROOT)/../wv realclean;	\
+	fi	
+
+# we have to make a distclean here to ensure that the configure script reruns
+# if no makefile exists, it is already clean
+clean_LIBICONV_:
+	@if [ -d $(ABI_ROOT)/../libiconv -a -f $(ABI_ROOT)/../libiconv/Makefile ]; then	\
+		$(MAKE) -C $(ABI_ROOT)/../libiconv distclean;	\
+	fi	
+
+clean_ABI_:
+	rm -rf $(OUTDIR) $(DIST)
