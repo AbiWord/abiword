@@ -52,6 +52,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	void					updateFromDocument(void);
 	void					setAllSensitivity(void);
 	void					updateDialog(void);
+	bool                                    dontUpdate(void);
 	static void				autoupdateLists(UT_Timer * pTimer);
 
  protected:
@@ -83,6 +84,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 	bool					m_bDestroy_says_stopupdating;
 	bool					m_bAutoUpdate_happening_now;
 	bool					m_bisCustomFrameHidden;
+	bool                                    m_bDontUpdate;
 	UT_Timer *				m_pAutoUpdateLists;
 
 	GtkWidget *				m_wMainWindow;

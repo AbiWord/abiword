@@ -47,6 +47,7 @@ AP_UnixDialog_Lists::AP_UnixDialog_Lists(XAP_DialogFactory * pDlgFactory,
 	Current_Dialog = this;
 	m_pPreviewWidget = NULL;
 	m_bManualListStyle = true;
+	m_bDontUpdate = false;
 }
 
 XAP_Dialog * AP_UnixDialog_Lists::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
@@ -93,8 +94,9 @@ static void s_styleChangedNumbered (GtkWidget * widget, AP_UnixDialog_Lists * me
 
 static void s_typeChanged (GtkWidget * widget, AP_UnixDialog_Lists * me)
 {
+        if(me->dontUpdate())
+	        return;
   	me->setDirty();
-	UT_DEBUGMSG(("SEVIOR: style_changed !!!!! \n"));
 	me->setXPFromLocal();
 	me->previewExposed();
 }
@@ -133,7 +135,6 @@ static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_Uni
 
 static gboolean s_update (void)
 {
-  UT_DEBUGMSG(("SEVIOR: Dialog Dirtiness = %d \n", Current_Dialog->isDirty()));
 	if( Current_Dialog->isDirty())
 	        return TRUE;
 	if(Current_Dialog->getAvView()->getTick() != Current_Dialog->getTick())
@@ -162,7 +163,7 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 
 	// Populate the dialog
 	updateDialog();
-
+	m_bDontUpdate = false;
 
 	// Now Display the dialog
 	gtk_widget_show(m_wMainWindow);
@@ -206,7 +207,6 @@ void AP_UnixDialog_Lists::autoupdateLists(UT_Timer * pTimer)
 
 	AP_Dialog_Lists * pList = ( AP_Dialog_Lists *) pDialog;
 
-	// UT_DEBUGMSG(("SEVIOR: Dialog Dirtiness = %d \n", pList->isDirty()));
         if(pList->isDirty())
 	        return;
 	if(pDialog->getAvView()->getTick() != pDialog->getTick())
@@ -253,6 +253,7 @@ void AP_UnixDialog_Lists::activate (void)
 	UT_ASSERT (m_wMainWindow);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), m_WindowName);
+	m_bDontUpdate = false;
 	updateDialog();
 	gdk_window_raise (m_wMainWindow->window);
 }
@@ -262,6 +263,7 @@ void AP_UnixDialog_Lists::notifyActiveFrame(XAP_Frame *pFrame)
 	UT_ASSERT(m_wMainWindow);
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_wMainWindow), m_WindowName);
+	m_bDontUpdate = false;
 	updateDialog();
 	previewExposed();
 }
@@ -383,13 +385,11 @@ void AP_UnixDialog_Lists::updateFromDocument(void)
 	PopulateDialogData();
 	_setRadioButtonLabels();
 	m_newListType = m_iListType;
-	UT_DEBUGMSG(("SEVIOR: In Local before m_newListType = %d \n",m_newListType));
 	_loadXPDataIntoLocal();
 }
 
 void AP_UnixDialog_Lists::updateDialog(void)
 {
-  UT_DEBUGMSG(("SEVIOR: UpdateDialog isDirty()= %d \n",isDirty()));
 	if(!isDirty())
 	{
 	        updateFromDocument();
@@ -484,7 +484,6 @@ void AP_UnixDialog_Lists::_fillFontMenu(GtkWidget* menu)
 	gtk_menu_append (GTK_MENU (menu), glade_menuitem);
 	gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
 						GTK_SIGNAL_FUNC (s_typeChanged), this);
-
 	for(i = 0; i < nfonts; i++)
 	{
 		glade_menuitem = gtk_menu_item_new_with_label ((gchar *) g_list_nth_data (m_glFonts, i));
@@ -1102,6 +1101,10 @@ void AP_UnixDialog_Lists::_loadXPDataIntoLocal(void)
 	gtk_signal_handler_block(  GTK_OBJECT(m_wDecimalEntry), m_iDecimalEntryID);
 	gtk_signal_handler_block(  GTK_OBJECT(m_wDelimEntry), m_iDelimEntryID );
 	gint i;
+	//
+	// HACK to effectively block an update during this method
+	//
+	m_bDontUpdate = true;
 
 	UT_DEBUGMSG(("_loadXP newListType = %d \n",m_newListType));
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wAlignListSpin),m_fAlign);
@@ -1116,7 +1119,6 @@ void AP_UnixDialog_Lists::_loadXPDataIntoLocal(void)
 	//
 	// Code to work out which is active Font
 	//
-	UT_DEBUGMSG(("SEVIOR: m_pszFont = %s \n",m_pszFont));
 	if(strcmp((char *) m_pszFont,"NULL") == 0 )
 	{
 		gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
@@ -1144,14 +1146,12 @@ void AP_UnixDialog_Lists::_loadXPDataIntoLocal(void)
 
 	//
 	// Now set the list type and style
-	UT_DEBUGMSG(("_loadXP newListType just before style change = %d \n",m_newListType));
 	List_Type save = m_newListType;
 	if(m_newListType == NOT_A_LIST)
 	{
 		styleChanged(0);
 		m_newListType = save;
 		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),(gint) NOT_A_LIST);
-		UT_DEBUGMSG(("SEVIOR: Setting list type 0 \n"));
 	}
 	else if(m_newListType >= BULLETED_LIST)
 	{
@@ -1159,7 +1159,6 @@ void AP_UnixDialog_Lists::_loadXPDataIntoLocal(void)
 		m_newListType = save;
 		gtk_option_menu_set_history(  GTK_OPTION_MENU (m_wListTypeBox),1);
 		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),(gint) (m_newListType - BULLETED_LIST));
-		UT_DEBUGMSG(("SEVIOR: Setting list type 1 \n"));
 	}
 	else
 	{
@@ -1167,7 +1166,6 @@ void AP_UnixDialog_Lists::_loadXPDataIntoLocal(void)
 		m_newListType = save;
 		gtk_option_menu_set_history(  GTK_OPTION_MENU (m_wListTypeBox),2);
 		gtk_option_menu_set_history( GTK_OPTION_MENU (m_wListStyleBox),(gint) m_newListType);
-		UT_DEBUGMSG(("SEVIOR: Setting list type 2 \n"));
 	}
 
 	//
@@ -1176,8 +1174,16 @@ void AP_UnixDialog_Lists::_loadXPDataIntoLocal(void)
 	gtk_signal_handler_unblock(  GTK_OBJECT(m_oIndentAlign_adj), m_iIndentAlignSpinID);
 	gtk_signal_handler_unblock(  GTK_OBJECT(m_wDelimEntry), m_iDelimEntryID );
 	gtk_signal_handler_unblock(  GTK_OBJECT(m_wDecimalEntry), m_iDecimalEntryID);
+	//
+	// HACK to allow an update during this method
+	//
+	m_bDontUpdate = false;
 }
 
+bool    AP_UnixDialog_Lists::dontUpdate(void)
+{
+        return m_bDontUpdate;
+}
 
 void AP_UnixDialog_Lists::_gatherData(void)
 {
