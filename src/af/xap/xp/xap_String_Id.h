@@ -267,7 +267,7 @@ dcl(LANG_PT_BR, 							"Portuguese (Brazil)")
 dcl(LANG_PT_PT, 							"Portuguese (Portugal)")
 dcl(LANG_RU_RU, 							"Russian (Russia)")
 dcl(LANG_SK_SK, 							"Slovak")				// or Slovakian?
-dcl(LANG_SL_SL, 							"Slovene")				// or Slovenian?
+dcl(LANG_SL_SI, 							"Slovenian")
 dcl(LANG_ES_MX, 							"Spanish (Mexico)")
 dcl(LANG_ES_ES, 							"Spanish (Spain)")
 dcl(LANG_SV_SE, 							"Swedish")

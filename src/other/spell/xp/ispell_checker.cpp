@@ -307,7 +307,7 @@ static const Ispell2Lang_t m_mapping[] = {
   { "portugues.hash",  "pt-PT" },
   { "brazilian.hash",  "pt-BR" },
   { "russian.hash",    "ru-RU" },
-  { "slovensko.hash",  "sl-SL" },
+  { "slovensko.hash",  "sl-SI" },
   { "svenska.hash",    "sv-SE" },
   { "ukrainian.hash",  "uk-UA" }
 };
