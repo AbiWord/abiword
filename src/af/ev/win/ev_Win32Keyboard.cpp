@@ -174,14 +174,8 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		// into a control code, this is not what we want
 		keyboardState[VK_CONTROL] &= 0x7F;		// mask off high bit
 
-		if (_scanCodeToChars(nVirtKey, 
-								keyData & 0x00FF0000, 	// scan code in bits 16-23
-								keyboardState, 
-								char_value, 
-								2) == 0)
-		{
-			return true;	// OK, let windows deal with it then
-		}
+		if (ToAsciiEx(nVirtKey, keyData & 0x00FF0000, keyboardState, (unsigned short*) &char_value[0], 0, m_hKeyboardLayout)==0)
+			return true;
 
 		charLen		= 1;
 		charData[0]	= UT_UCSChar(char_value[0]);
