@@ -21,8 +21,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-#include "gr_BeOSGraphics.h"
-
 #include "xap_App.h"
 #include "xap_BeOSApp.h"
 #include "xap_BeOSFrame.h"
@@ -47,12 +45,10 @@ AP_BeOSDialog_Paragraph::AP_BeOSDialog_Paragraph(XAP_DialogFactory * pDlgFactory
 												 XAP_Dialog_Id id)
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
-	m_pBeOSGraphics = NULL;
 }
 
 AP_BeOSDialog_Paragraph::~AP_BeOSDialog_Paragraph(void)
 {
-	DELETEP(m_pBeOSGraphics);
 }
 
 /*****************************************************************/

@@ -22,7 +22,6 @@
 
 #include "ap_Dialog_Paragraph.h"
 
-class GR_BeOSGraphics;
 class XAP_BeOSFrame;
 
 /*****************************************************************/
@@ -38,8 +37,6 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 protected:
-
-	GR_BeOSGraphics *		m_pBeOSGraphics;
 };
 
 #endif /* XAP_BEOSDIALOG_PARAGRAPH_H */
