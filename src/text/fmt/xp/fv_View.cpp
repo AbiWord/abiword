@@ -7618,6 +7618,15 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 			m_iInsPoint--;
 			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 		}
+
+		// if the run which declared itself for our position is end of paragraph run,
+		// we need to ensure that the position is just before the run, not after it
+		// (fixes bug 1120)
+		if(pRun && pRun->getType() == FPRUN_ENDOFPARAGRAPH 
+		   && (pRun->getBlockOffset() + pRun->getBlock()->getPosition()) < m_iInsPoint)
+ 	    {
+		    m_iInsPoint--;
+		}
 	}
 
 	UT_ASSERT(bRes);
