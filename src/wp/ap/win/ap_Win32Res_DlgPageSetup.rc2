@@ -103,7 +103,7 @@ END
 
 // The sub-dialog for the Page tab of the PageSetup dialog
 AP_RID_DIALOG_PAGE_SETUP_PAGE DIALOG DISCARDABLE  0, 0, 240, 180
-STYLE DS_CONTROL | WS_CHILD
+STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
 	GROUPBOX        "Paper...",
@@ -180,7 +180,7 @@ END
 
 // The sub-dialog for the Margins tab of the PageSetup dialog
 AP_RID_DIALOG_PAGE_SETUP_MARGINS DIALOG DISCARDABLE  0, 0, 240, 180
-STYLE DS_CONTROL | WS_CHILD
+STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
 	RTEXT           "Units:",

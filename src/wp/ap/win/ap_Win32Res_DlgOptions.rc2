@@ -142,7 +142,7 @@ END
 
 // The sub-dialog for the SPELL tab of the Options dialog
 AP_RID_DIALOG_OPT_SPELL DIALOG DISCARDABLE  0, 0, 290, 135
-STYLE DS_CONTROL | WS_CHILD
+STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "General",AP_RID_DIALOG_OPTIONS_FRM_SpellGeneral,2,2,143,
@@ -188,7 +188,7 @@ END
 
 // The sub-dialog for the LAYOUT tab of the Options dialog
 AP_RID_DIALOG_OPT_LAYOUT DIALOG DISCARDABLE  0, 0, 290, 135
-STYLE DS_CONTROL | WS_CHILD
+STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "Show/Hide...",AP_RID_DIALOG_OPTIONS_FRM_SHOWHIDE,2,2,143,
@@ -226,7 +226,7 @@ END
 
 // The sub-dialog for the PREFERENCES tab of the Options dialog
 AP_RID_DIALOG_OPT_PREF DIALOG DISCARDABLE  0, 0, 290, 135
-STYLE DS_CONTROL | WS_CHILD
+STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
 	GROUPBOX		"Preference Schemes",
