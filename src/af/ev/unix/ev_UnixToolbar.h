@@ -32,6 +32,7 @@ class XAP_UnixFrame;
 class AP_UnixToolbar_Icons;
 class EV_UnixToolbar_ViewListener;
 
+class _wd;
 
 class EV_UnixToolbar : public EV_Toolbar
 {
@@ -42,7 +43,7 @@ public:
 	
 	~EV_UnixToolbar(void);
 
-	UT_Bool toolbarEvent(AP_Toolbar_Id id, UT_UCSChar * pData, UT_uint32 dataLength);
+	UT_Bool toolbarEvent(_wd * wd, UT_UCSChar * pData, UT_uint32 dataLength);
 	UT_Bool synthesize(void);
 	UT_Bool bindListenerToView(AV_View * pView);
 	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);

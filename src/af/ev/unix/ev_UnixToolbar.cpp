@@ -66,7 +66,7 @@ public:									// we create...
 		UT_ASSERT(wd);
 
 		if (!wd->m_blockSignal)
-			wd->m_pUnixToolbar->toolbarEvent(wd->m_id, 0, 0);
+			wd->m_pUnixToolbar->toolbarEvent(wd, 0, 0);
 	};
 
 	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
@@ -104,7 +104,7 @@ public:									// we create...
 					UT_UCSChar * text = (UT_UCSChar *) wd->m_comboEntryBuffer;
 					UT_ASSERT(text);
 
-					wd->m_pUnixToolbar->toolbarEvent(wd->m_id, text, size);
+					wd->m_pUnixToolbar->toolbarEvent(wd, text, size);
 				}
 			}
 		}
@@ -158,7 +158,7 @@ EV_UnixToolbar::~EV_UnixToolbar(void)
 	_releaseListener();
 }
 
-UT_Bool EV_UnixToolbar::toolbarEvent(AP_Toolbar_Id id,
+UT_Bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 									 UT_UCSChar * pData,
 									 UT_uint32 dataLength)
 
@@ -167,6 +167,8 @@ UT_Bool EV_UnixToolbar::toolbarEvent(AP_Toolbar_Id id,
 	// invoke the appropriate function.
 	// return UT_TRUE iff handled.
 
+	AP_Toolbar_Id id = wd->m_id;
+	
 	const EV_Toolbar_ActionSet * pToolbarActionSet = m_pUnixApp->getToolbarActionSet();
 	UT_ASSERT(pToolbarActionSet);
 
@@ -185,8 +187,17 @@ UT_Bool EV_UnixToolbar::toolbarEvent(AP_Toolbar_Id id,
 		{
 			// if this assert fires, you got a click while the button is down
 			// if your widget set won't let you prevent this, handle it here
-			UT_ASSERT(UT_TODO);
+
+			UT_ASSERT(wd && wd->m_widget);
 			
+			// Block the signal, throw the button back up/down
+			bool wasBlocked = wd->m_blockSignal;
+			wd->m_blockSignal = true;
+			gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wd->m_widget),
+										!GTK_TOGGLE_BUTTON(wd->m_widget)->active);
+			//gtk_toggle_button_toggled(item);
+			wd->m_blockSignal = wasBlocked;
+
 			// can safely ignore this event
 			return UT_TRUE;
 		}
@@ -371,7 +382,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 					}
 				}
  
-				// Give a final show
+				// give a final show
 				gtk_widget_show(comboBox);
 
 				// stick it in the toolbar
