@@ -32,9 +32,9 @@ class XAP_App;
 
 enum AV_Focus
 {
-  AV_FOCUS_HERE,
-  AV_FOCUS_NEARBY,
-  AV_FOCUS_NONE
+	AV_FOCUS_HERE,
+	AV_FOCUS_NEARBY,
+	AV_FOCUS_NONE
 };
 
 typedef enum _AV_ScrollCmd
@@ -118,12 +118,16 @@ protected:
 	UT_sint32			m_yScrollOffset;
 	UT_sint32			m_iWindowHeight;
 	UT_sint32			m_iWindowWidth;
-	AV_Focus m_focus;
+	AV_Focus			m_focus;
 
 	UT_Bool				m_bInsertMode;
 
 	UT_Vector			m_scrollListeners;
 	UT_Vector			m_vecListeners;
+
+private:
+	AV_View(const AV_View&);	// no impl.
+	void operator=(AV_View&);	// no impl.
 };
 
 #endif /* AV_VIEW_H */
