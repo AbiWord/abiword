@@ -601,7 +601,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 	if(m_bIsSymbol && iChar < 255  && iChar >= 32)
 	{
 		iChar = adobeToUnicode(Char);
-		UT_DEBUGMSG(("DrawGlyph remapped %d to %d \n",Char,iChar));
+		xxx_UT_DEBUGMSG(("DrawGlyph 1 remapped %d to %d \n",Char,iChar));
 	}
 	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFont, xoff + m_iXoff, yoff + m_pXftFont->ascent + m_iYoff, &iChar, 1);
 #else
@@ -647,14 +647,10 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
   _UUD(yoff);
   
 #ifdef USE_XFT
+	xxx_UT_DEBUGMSG(("UnixGraphics:drawChars: m_bIsSymbol %d iLength %d \n",m_bIsSymbol,iLength));
 	if (iLength == 0)
 		return;
-	
 	yoff += m_pXftFont->ascent;
-	if(m_bIsSymbol && pCharWidths == NULL)
-	{
-		UT_DEBUGMSG(("FIXME: Put some code here!!! \n"));
-	}
 	if (!pCharWidths)
 	{
 		if(!m_bIsSymbol)
@@ -664,18 +660,19 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 		else
 		{
+			xxx_UT_DEBUGMSG(("Doing draw symbols length %d offset %d \n",iLength,iCharOffset));
 			UT_uint32 * uChars = new UT_uint32[iLength];
 			for(UT_uint32 i = (UT_uint32) iCharOffset; i< (UT_uint32) iLength; i++)
 			{
-				uChars[i] = (UT_uint32) pChars[i];
+				uChars[i] = (UT_uint32) pChars[iCharOffset + i];
 				if(uChars[i] < 255 && uChars[i] >= 32)
 				{
 					uChars[i] = adobeToUnicode(uChars[i]);
-					UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
+					xxx_UT_DEBUGMSG(("drawchars: mapped %d to %d \n",pChars[i],uChars[i]));
 				}
 			}
 			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFont, xoff + m_iXoff, yoff + m_iYoff,
-							const_cast<XftChar32*> (uChars + iCharOffset), iLength);
+							const_cast<XftChar32*> (uChars), iLength);
 			delete [] uChars;
 		}
 	}
@@ -693,17 +690,22 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		pCharSpec[0].y = yoff;
 		if(m_bIsSymbol && uChar < 255 && uChar >=32)
 		{
+			uChar = (UT_uint32) pChars[iCharOffset];
 			pCharSpec[0].ucs4 = (FT_UInt) adobeToUnicode(uChar);
-			UT_DEBUGMSG(("DrawGlyph remapped %d to %d \n",uChar,pCharSpec[0].ucs4));
+			xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[0].ucs4));
 		}
 		for (int i = 1; i < iLength; ++i)
 		{
-			uChar = (UT_uint32) pCharSpec[i].ucs4;
+			uChar = (UT_uint32) pChars[i + iCharOffset];
 			if(m_bIsSymbol && uChar < 255 && uChar >=32)
 			{
 				pCharSpec[i].ucs4 = (FT_UInt) adobeToUnicode(uChar);
+				xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
 			}
-			pCharSpec[i].ucs4 = (FT_UInt) pChars[i + iCharOffset];
+			else
+			{
+				pCharSpec[i].ucs4 = (FT_UInt) pChars[i + iCharOffset];
+			}
 			pCharSpec[i].x = (short) (pCharSpec[i - 1].x + pCharWidths[i - 1]);
 			pCharSpec[i].y = yoff;
 		}
@@ -887,11 +889,11 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	//   so I will not meddle with this, but it needs to be
 	//   investigated by someone who knows better -- Tomas
 	
-	m_bIsSymbol = false;
-	m_bIsDingbat = false;
 	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) &&
 	   (pUFont->getSize() == m_pFont->getSize()))
 		return;
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
 
 	m_pFont = pUFont;
 	char * szUnixFontName = UT_strdup(m_pFont->getUnixFont()->getName());
@@ -906,7 +908,7 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 			{
 				m_bIsSymbol = false;
 			}
-			UT_DEBUGMSG(("UnixGraphics: Found Symbol font \n"));
+			xxx_UT_DEBUGMSG(("UnixGraphics: Found Symbol font \n"));
 		}
 		if(strstr(szFontName,"dingbat") != NULL)
 		{
@@ -920,9 +922,10 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 		if(strstr(szFontName,"Symbol") != NULL)
 		{
 			m_bIsSymbol = true;
-			UT_DEBUGMSG(("unixGraphics: Found Symbol Font! \n"));
+			xxx_UT_DEBUGMSG(("unixGraphics: Found Symbol Font! \n"));
 		}
 	}
+	xxx_UT_DEBUGMSG(("unixGraphics: Font set to %s m_bIsSymbol %d\n",szFontName,m_bIsSymbol));
 	if (size < MAX_ABI_GDK_FONT_SIZE)
 	{
 		m_bLayoutUnits = false;
@@ -941,6 +944,7 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	if(pUFont->getSize()< MAX_ABI_GDK_FONT_SIZE)
 		m_pFont->explodeGdkFonts(m_pSingleByteFont,m_pMultiByteFont);
 #endif
+	delete [] szFontName;
 }
 
 UT_uint32 GR_UnixGraphics::getFontHeight(GR_Font * fnt)
@@ -999,6 +1003,7 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 		UT_UCSChar cc = c;
 		if(m_bIsSymbol)
 		{
+			xxx_UT_DEBUGMSG(("unixGraphics: measureUnremapped char symbol val %d \n",cc));
 			cc = adobeToUnicode((UT_uint32) cc);
 		}
 		XftTextExtents32(GDK_DISPLAY(), m_pXftFont, static_cast<XftChar32*> (&cc), 1, &extents);

@@ -76,8 +76,7 @@ XAP_UnixDialog_Insert_Symbol::XAP_UnixDialog_Insert_Symbol(XAP_DialogFactory * p
 	m_areaCurrentSym = NULL;
 	m_InsertS_Font_list = NULL;
 	m_Insert_Symbol_no_fonts = 0;
-
-	memset(m_fontlist, 0, sizeof(m_fontlist));
+	m_fontlist.clear();
 	m_ix = 0;
 	m_iy = 0;
 }
@@ -447,8 +446,11 @@ void XAP_UnixDialog_Insert_Symbol::destroy(void)
 {
 
 	g_list_free( m_InsertS_Font_list);
-	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) g_free(m_fontlist[i]);
-        modeless_cleanup();
+	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
+	{
+		delete [] (gchar * )m_fontlist.getNthItem(i);
+	}
+	modeless_cleanup();
 
 	// Just nuke this dialog
        
@@ -461,12 +463,13 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 	m_answer = XAP_Dialog_Insert_Symbol::a_CANCEL;	
 	g_list_free( m_InsertS_Font_list);
 
-	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++)
-		delete [] (m_fontlist[i]);
-
-        modeless_cleanup();
-        gtk_widget_destroy(m_windowMain);
-        m_windowMain = NULL;
+	for(UT_uint32 i = 0; i < m_Insert_Symbol_no_fonts; i++) 
+	{
+		delete [] (gchar * )m_fontlist.getNthItem(i);
+	}
+	modeless_cleanup();
+	gtk_widget_destroy(m_windowMain);
+	m_windowMain = NULL;
 }
 
 
@@ -563,8 +566,9 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 		if((strstr(currentfont.c_str(),lgn)==NULL) || (currentfont.size() !=strlen(lgn)) )
 		{
 			currentfont = lgn;
-			m_fontlist[j] = UT_strdup(currentfont.c_str());
-			glFonts = g_list_prepend(glFonts, m_fontlist[j++]);
+			m_fontlist.addItem((void *) UT_strdup(currentfont.c_str()));
+			glFonts = g_list_prepend(glFonts, (gchar *) m_fontlist.getNthItem(j));
+			j++;
 		}
 	}
 	
