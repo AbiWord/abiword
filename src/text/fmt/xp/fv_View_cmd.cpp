@@ -3959,7 +3959,29 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	// I see no obvious need for hyperlinks to span more than a single block
 	fl_BlockLayout * pBl1 = _findBlockAtPosition(posStart);
 	fl_BlockLayout * pBl2 = _findBlockAtPosition(posEnd);
-
+//
+// Handle corner case of selection from outside the left column
+//
+	if(isInFootnote(posStart))
+	{
+		if((pBl1 != NULL) && (pBl1->getPosition(true) == posStart))
+		{
+			if(posEnd > posStart+1)
+			{
+				posStart++;
+			}
+		}
+	}
+	if(isInEndnote(posStart))
+	{
+		if((pBl1 != NULL) && (pBl1->getPosition(true) == posStart))
+		{
+			if(posEnd > posStart+1)
+			{
+				posStart++;
+			}
+		}
+	}
 	if(pBl1 != pBl2)
 	{
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(getParentData());
@@ -4072,6 +4094,23 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 
 	fl_BlockLayout * pBL1 =_findBlockAtPosition(posStart);
 	fl_BlockLayout * pBL2 =_findBlockAtPosition(posEnd);
+//
+// Handle corner case of selection from outside the left column
+//
+	if((pBL1!= NULL) && isInFootnote(posStart) && (pBL1->getPosition(true) == posStart))
+	{
+		if(posEnd > posStart+1)
+		{
+			posStart++;
+		}
+	}
+	if((pBL1 != NULL) && isInEndnote(posStart) && (pBL1->getPosition(true) == posStart))
+	{
+		if(posEnd > posStart+1)
+		{
+			posStart++;
+		}
+	}
 	if(pBL1 != pBL2)
 	{
 //
