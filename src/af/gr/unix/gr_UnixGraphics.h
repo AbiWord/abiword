@@ -53,7 +53,7 @@ public:
 
 protected:
   AP_UnixFont * 		m_hFont;
-  UT_uint32				m_pointSize;
+  UT_uint32				m_pixelSize;
 };
 
 class GR_UNIXGraphics : public GR_Graphics

@@ -285,6 +285,8 @@ AP_UnixFont * AP_UnixFontManager::getFont(const char * fontname,
 void AP_UnixFontManager::_allocateThisFont(const char * line,
 										   const char * workingdir)
 {
+	// TODO (this one's easy): Make this function use the xap_UnixFontXLFD
+	// TODO (this one's easy): class!  It'll save lots of work.
 	/*
 	  Each line comes in as:
 	  

@@ -73,13 +73,13 @@ public:
 	UT_Bool					closePFA(void);	
 
 	const char * 			getFontKey(void);
-	GdkFont *				getGdkFont(UT_uint32 pointsize);
+	GdkFont *				getGdkFont(UT_uint32 pixelsize);
 
 protected:
 
 	struct allocFont
 	{
-		UT_uint32			pointSize;
+		UT_uint32			pixelSize;
 		GdkFont *			gdkFont;
 	};
 

@@ -46,7 +46,7 @@ GR_UnixFont::GR_UnixFont(AP_UnixFont * pFont, UT_uint32 size)
 	UT_ASSERT(pFont);
   
 	m_hFont = pFont;
-	m_pointSize = size;
+	m_pixelSize = size;
 }
 
 GR_UnixFont::~GR_UnixFont(void)
@@ -65,7 +65,7 @@ AP_UnixFont * GR_UnixFont::getUnixFont(void)
 GdkFont * GR_UnixFont::getGdkFont(void)
 {
 	UT_ASSERT(m_hFont);
-	return m_hFont->getGdkFont(m_pointSize);
+	return m_hFont->getGdkFont(m_pixelSize);
 }
 
 GR_UNIXGraphics::GR_UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManager)
@@ -254,7 +254,13 @@ UT_uint32 GR_UNIXGraphics::measureString(const UT_UCSChar* s, int iOffset,
 
 UT_uint32 GR_UNIXGraphics::getResolution() const
 {
-	return 75;
+	// this is hard-coded at 100 for X now, since 75 (which
+	// most X servers return when queried for a resolution)
+	// makes for tiny fonts on modern resolutions.
+
+	// we'll implement a zoom around this factor soon enough
+	// so that it's a true option for people
+	return 100;
 }
 
 void GR_UNIXGraphics::setColor(UT_RGBColor& clr)

@@ -105,7 +105,7 @@ protected:
 	char *			m_weight;
 	char *			m_slant;
 	char *			m_width;
-	char *			m_adStyle;	// what is this?
+	char *			m_adStyle;
 	UT_uint32		m_pixelSize;
 	UT_uint32		m_deciPointSize;	// we store decipoints (points * 10) to feed to X server
 	UT_uint32		m_resX;

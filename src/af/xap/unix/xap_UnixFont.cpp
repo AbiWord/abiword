@@ -298,7 +298,7 @@ const char * AP_UnixFont::getFontKey(void)
 	return m_fontKey;
 }
 
-GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pointsize)
+GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 {
 	// this might return NULL, but that means a font at a certain
 	// size couldn't be found
@@ -309,7 +309,7 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pointsize)
 	while (l < count)
 	{
 		entry = (allocFont *) m_allocFonts.getNthItem(l);
-		if (entry && entry->pointSize == pointsize)
+		if (entry && entry->pixelSize == pixelsize)
 			return entry->gdkFont;
 		else
 			l++;
@@ -318,23 +318,18 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pointsize)
 	GdkFont * gdkfont = NULL;
 	
 	// GDK/X wants to load fonts with point sizes 2 and up
-	if (pointsize < 2)
+	if (pixelsize < 2)
 		return NULL;
-
-	/*
-	  NOTE: when we get the XLFD, it will (most likely) have a "0"
-	  for both its pixel size and point size.  This means the X
-	  server will scale the font to any requested size.  This also
-	  means that it's up to us to re-format the XLFD in this font
-	  so that the proper point size is in the proper field.  Also,
-	  X wants requests in decipoints, so we multiply by 10 while we're
-	  at it.
-	*/
 
 	// create a real object around that string
 	AP_UnixFontXLFD myXLFD(m_xlfd);
 
-	myXLFD.setPointSize(pointsize);
+	// Must set a pixel size, or a point size, but we're getting
+	// automunged pixel sizes appropriate for our resolution from
+	// the layout engine, so use pixel sizes.  They're not really
+	// much more accurate this way, but they're more consistent
+	// with how the layout engine wants fonts.
+	myXLFD.setPixelSize(pixelsize);
 
 	// TODO  add any other special requests, like for a specific encoding
 	// TODO  or registry, or resolution here
@@ -347,7 +342,8 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pointsize)
 	{
 		char message[1024];
 		g_snprintf(message, 1024,
-				   "Could not load X font [%s].\n"
+				   "Could not load X font\n"
+				   "[%s].\n"
 				   "If this font is an AbiWord Type 1 font, has this font file\n"
 				   "been properly installed according to the instructions at\n"
 				   "'http://www.abisource.com/dev_download.phtml#type1'?\n",
@@ -359,7 +355,7 @@ GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pointsize)
 	free(newxlfd);
 	
 	allocFont * item = new allocFont;
-	item->pointSize = pointsize;
+	item->pixelSize = pixelsize;
 	item->gdkFont = gdkfont;
 	m_allocFonts.addItem((void *) item);
 
