@@ -1610,7 +1610,11 @@ UT_Bool fl_PartOfBlock::doesTouch(UT_uint32 offset, UT_uint32 length) const
 	UT_uint32 start1, end1, start2, end2;
 
 	start1 = iOffset;
+	/*TF CHANGE: Don't artificially extend the length of the block
 	end1 =   iOffset + iLength + 1;
+	*/
+	end1 =   iOffset + iLength;
+
 	start2 = offset;
 	end2 =   offset + length;
 
@@ -1810,14 +1814,14 @@ void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength)
 	// remove all deleted squiggles
 	UT_uint32 iSquiggles = m_vecSquiggles.getItemCount();
 	UT_uint32 j;
-	for (j=iSquiggles; j>0; j--)
+	for (j=iSquiggles-1; j>=0; j--)
 	{
-		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j-1);
+		fl_PartOfBlock* pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(j);
 
 		if (pPOB->doesTouch(iOffset, iLength))
 		{
 			_updateSquiggle(pPOB);
-			m_vecSquiggles.deleteNthItem(j-1);
+			m_vecSquiggles.deleteNthItem(j);
 			delete pPOB;
 		}
 	}
