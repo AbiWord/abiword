@@ -71,7 +71,7 @@ XAP_Dialog * XAP_UnixDialog_FileOpenSaveAs::static_constructor(XAP_DialogFactory
 
 XAP_UnixDialog_FileOpenSaveAs::XAP_UnixDialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory,
 														   XAP_Dialog_Id id)
-  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FS(0), m_preview(0), m_bExport(true)
+  : XAP_Dialog_FileOpenSaveAs(pDlgFactory,id), m_FC(0), m_preview(0), m_bExport(true)
 {
 	m_szFinalPathnameCandidate = NULL;
 }
@@ -83,18 +83,21 @@ XAP_UnixDialog_FileOpenSaveAs::~XAP_UnixDialog_FileOpenSaveAs(void)
 
 /*****************************************************************/
 
-static void s_ok_clicked(GtkWidget * /* widget */,
-						 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
+static void s_dialog_response(GtkWidget * /* widget */,
+						gint answer,
+						XAP_Dialog_FileOpenSaveAs::tAnswer *ptr)
 {
-	*answer = XAP_Dialog_FileOpenSaveAs::a_OK;
-	gtk_main_quit();
-}
-
-static void s_cancel_clicked(GtkWidget * /* widget */,
-							 XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
-{
-	*answer = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
-	gtk_main_quit();
+	switch (answer)
+	{
+		case XAP_Dialog_FileOpenSaveAs::a_CANCEL:
+		case XAP_Dialog_FileOpenSaveAs::a_OK:
+			*ptr = static_cast<XAP_Dialog_FileOpenSaveAs::tAnswer> (answer);
+			gtk_main_quit();
+			break;
+		default:
+			// do nothing
+			break;
+	}
 }
 
 static void s_delete_clicked(GtkWidget * /* widget*/, gpointer /* data */, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
@@ -107,7 +110,7 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 			      GdkEventExpose * /* pExposeEvent */,
 			      gpointer ptr)
 {
-        XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
+	XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
 	UT_ASSERT(dlg);
 	dlg->previewPicture();
 	return FALSE;
@@ -136,19 +139,16 @@ fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs
 static void file_selection_changed  (GtkTreeSelection  *selection,
 				     gpointer           ptr)
 {
-  XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
-
-  UT_ASSERT(dlg);
-  dlg->previewPicture();
+	XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
+	
+	UT_ASSERT(dlg);
+	dlg->previewPicture();
 }
 
 bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
-													 void * pFSvoid,
 													 bool bCheckWritePermission,
 													 GtkWidget * filetypes_pulldown)
 {
-	GtkFileSelection * pFS = static_cast<GtkFileSelection *>(pFSvoid);
-
 	/*
 	  Run the dialog in a loop to catch bad filenames.
 	  The location of this check being in this dialog loop
@@ -195,7 +195,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			// a file, so we have to catch it, change the dialog, and not return
 			// any filename yet.
 
-			UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(pFS));
+			UT_cloneString(szDialogFilename, gtk_file_chooser_get_filename(m_FC));
 			UT_ASSERT(szDialogFilename);
 
 			err = stat(szDialogFilename, &buf);
@@ -210,7 +210,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 				{
 					g_string_append_c(s, '/');
 				}
-				gtk_file_selection_set_filename(pFS, s->str);
+				gtk_file_chooser_set_filename(m_FC, s->str);
 				g_string_free(s, TRUE);
 
 				// free the string and continue along
@@ -223,11 +223,11 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			// if we got here, the text wasn't a directory, so it's a file,
 			// and life is good
 			return (m_answer == a_OK);
+			printf("e\n");
 		}
 	}		
 		
 	// if bCheckWritePermission is set, we're looking to SAVE a file.
-
 	while(1)
 	{
 		gtk_main();
@@ -236,7 +236,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 		// Give us a filename we can mangle
 
-		UT_cloneString(szDialogFilename, gtk_file_selection_get_filename(pFS));
+		UT_cloneString(szDialogFilename, gtk_file_chooser_get_filename(m_FC));
 		UT_ASSERT(szDialogFilename);
 
 		// We append the suffix of the default type, so the user doesn't
@@ -312,10 +312,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			// free szDialogFilename since it's been put into szFinalPathname (with
 			// or without changes) and it's invalid (missing an extension which
 			// might have been appended)                            
-			
 			FREEP(szDialogFilename);   
-
-			
 		}
 		
 		UT_cloneString(szFinalPathnameCopy, szFinalPathname);
@@ -348,7 +345,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			{
 				g_string_append_c(s, '/');
 			}
-			gtk_file_selection_set_filename(pFS, s->str);
+			gtk_file_chooser_set_filename(m_FC, s->str);
 			g_string_free(s, TRUE);
 			goto ContinueLoop;
 		}
@@ -456,7 +453,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	{
 		return;
 	}
-	UT_String sFileName = 	gtk_file_selection_get_filename(m_FS);
+	UT_String sFileName = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (m_FC));
 	UT_String sSuffix = m_szSuffixes[nFileType-1];
 	sSuffix = sSuffix.substr(1,sSuffix.length()-1);
 	UT_uint32 i = 0;
@@ -495,7 +492,7 @@ void XAP_UnixDialog_FileOpenSaveAs::fileTypeChanged(GtkWidget * w)
 	}
 	sFileName = sFileName.substr(0,i);
 	sFileName += sSuffix;
-	gtk_file_selection_set_filename(m_FS,sFileName.c_str());
+	gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (m_FC), sFileName.c_str());
 }
 
 /*****************************************************************/
@@ -580,55 +577,62 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: title and the error/confirmation message boxes.  we
 	// NOTE: let GTK take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
-	
-	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle.utf8_str()));
-	m_FS = pFS;
 
-	abiSetupModalDialog(GTK_DIALOG(pFS), pFrame, this, GTK_RESPONSE_CANCEL);
+	
+	// Get the GtkWindow of the parent frame
+	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
+	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();	
+	
+	m_FC = GTK_FILE_CHOOSER( gtk_file_chooser_dialog_new (szTitle.utf8_str(),
+				      GTK_WINDOW(parent),
+				      (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_EXPORT || m_id == XAP_DIALOG_ID_INSERT_FILE ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
+				      GTK_STOCK_CANCEL, XAP_Dialog_FileOpenSaveAs::a_CANCEL,
+				      GTK_STOCK_OK, XAP_Dialog_FileOpenSaveAs::a_OK,
+				      NULL)
+			);
+	
+	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_CANCEL);
 	GtkWidget * filetypes_pulldown = NULL;
 
 	UT_UTF8String s;
 	
 	/*
-	  To facilitate a file-types selection, we dig around in some
-	  private data for the dialog layout, and add a drop-down list
-	  of known types.  We store an indexer in the user data
-	  for each menu item in the popup, so we can read the type
-	  we need to return.
+	Add a drop-down list of known types for file-types selection.
+	We store an indexer in the user data for each menu item in the popup,
+	so we can read the type we need to return.
 	*/
 	{
-		GtkWidget * main_vbox = pFS->main_vbox;
-		UT_ASSERT(main_vbox);
-
 		// hbox for our pulldown menu (GTK does its pulldown this way */
 		GtkWidget * pulldown_hbox = gtk_hbox_new(FALSE, 15);
-		gtk_box_pack_start(GTK_BOX(main_vbox), pulldown_hbox, TRUE, TRUE, 0);
 		gtk_widget_show(pulldown_hbox);
+		gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
 
 		if (m_id == XAP_DIALOG_ID_INSERT_PICTURE)
-		  {
-			  GtkWidget * preview = createDrawingArea ();
-		    gtk_widget_show (preview);
-		    m_preview = preview;
-
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Activate_Label,s);
-		    GtkWidget * frame = gtk_frame_new (s.utf8_str());
-			gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_NONE);
-		    gtk_widget_show (frame);
-		    gtk_container_add (GTK_CONTAINER(frame), preview);
-
-		    gtk_box_pack_start(GTK_BOX(pulldown_hbox), frame, FALSE, TRUE, 0);
-		    gtk_widget_set_size_request (frame, PREVIEW_WIDTH, PREVIEW_HEIGHT);
-
-		    // the expose event off the preview
-		    g_signal_connect(G_OBJECT(preview),
-				       "expose_event",
-				       G_CALLBACK(s_preview_exposed),
-				       static_cast<gpointer>(this));
-
-		    g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (pFS->file_list)), "changed", G_CALLBACK (file_selection_changed), this);
-
-		  }
+		{
+			// create the picture preview area
+			GtkWidget * preview = createDrawingArea();
+			gtk_widget_show (preview);
+			gtk_widget_set_size_request (preview, PREVIEW_WIDTH, PREVIEW_HEIGHT);
+			
+			// place the preview area inside a container to get a nice border
+			GtkWidget * preview_hbox = gtk_hbox_new(FALSE, 0);
+			gtk_container_set_border_width  (GTK_CONTAINER(preview_hbox), 4);
+			gtk_box_pack_start(GTK_BOX(preview_hbox), preview, TRUE, TRUE, 0);
+			
+			// attach the preview area to the dialog
+			gtk_file_chooser_set_preview_widget (m_FC, preview_hbox);
+			gtk_file_chooser_set_preview_widget_active (m_FC, true);
+		
+			// connect some signals			
+			g_signal_connect (m_FC, "update_preview",
+					G_CALLBACK (file_selection_changed), static_cast<gpointer>(this));
+			
+			g_signal_connect (preview, "expose_event",
+					G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
+			
+			// and store the preview area
+			m_preview = preview;
+		}
 
 		// pulldown label
 		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel.utf8_str());
@@ -725,20 +729,18 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 	
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
-	g_signal_connect(G_OBJECT(pFS),
+	g_signal_connect(G_OBJECT(m_FC),
 							 "delete_event",
 							 G_CALLBACK(s_delete_clicked),
 							 &m_answer);
 
-	g_signal_connect (G_OBJECT (pFS),
+	g_signal_connect (G_OBJECT (m_FC),
 			    "key_press_event",
 			    G_CALLBACK(fsel_key_event), &m_answer);
-	g_signal_connect(G_OBJECT(pFS->ok_button), "clicked",
-					   G_CALLBACK(s_ok_clicked), &m_answer);
-	g_signal_connect(G_OBJECT(pFS->cancel_button), "clicked",
-					   G_CALLBACK(s_cancel_clicked), &m_answer);
-	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_EXPORT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture
-	  gtk_file_selection_hide_fileop_buttons(pFS);
+	
+	g_signal_connect (G_OBJECT (m_FC),
+			    "response",
+			    G_CALLBACK(s_dialog_response), &m_answer);
 
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
@@ -762,7 +764,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
-			gtk_file_selection_set_filename(pFS,szPersistDirectory);
+			gtk_file_chooser_set_filename(m_FC, szPersistDirectory);
 		}
 		else
 		{
@@ -783,33 +785,27 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		{
 			// use m_szInitialPathname
 			
-			gtk_file_selection_set_filename(pFS, m_szInitialPathname);
+			gtk_file_chooser_set_filename(m_FC, m_szInitialPathname);
 		}
 		else
 		{
 			// use directory(m_szInitialPathname)
 			
-			UT_cloneString(szPersistDirectory,m_szInitialPathname);
+			UT_cloneString(szPersistDirectory, m_szInitialPathname);
 			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
-			gtk_file_selection_set_filename(pFS,szPersistDirectory);
+			gtk_file_chooser_set_filename(m_FC, szPersistDirectory);
 		}
 	}
 
-	// get top level window and its GtkWidget *
-	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
-	UT_ASSERT(pUnixFrameImpl);
-	GtkWidget * parent = pUnixFrameImpl->getTopLevelWindow();
-	UT_ASSERT(parent);
-
-	// center it
-	centerDialog(parent, GTK_WIDGET(pFS));
+	// center the dialog
+	centerDialog(parent, GTK_WIDGET(m_FC));
 	
-	gtk_widget_show(GTK_WIDGET(pFS));
-	gtk_grab_add(GTK_WIDGET(pFS));
+	gtk_widget_show(GTK_WIDGET(m_FC));
+	gtk_grab_add(GTK_WIDGET(m_FC));
 
-	bool bResult = _run_gtk_main(pFrame,pFS,bCheckWritePermission,filetypes_pulldown);
+	bool bResult = _run_gtk_main(pFrame,bCheckWritePermission,filetypes_pulldown);
 	
 	if (bResult)
 	{
@@ -826,8 +822,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		m_nFileType = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(activeItem), "user_data"));
 	}
 			  
-	if(pFS && GTK_IS_WIDGET(pFS))
-	  gtk_widget_destroy (GTK_WIDGET(pFS));
+	if(m_FC && GTK_IS_WIDGET(m_FC))
+	  gtk_widget_destroy (GTK_WIDGET(m_FC));
 
 	FREEP(szPersistDirectory);
 
@@ -836,8 +832,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 {
-        UT_ASSERT (m_FS && m_preview);
-
+	UT_ASSERT (m_FC && m_preview);
+	
 	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
 	UT_ASSERT(unixapp);
 
@@ -848,7 +844,7 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_UnixAllocInfo ai(m_preview->window, unixapp->getFontManager(), m_pApp);
 	GR_UnixGraphics* pGr = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
 
-	const gchar * buf = gtk_file_selection_get_filename (m_FS);
+	const gchar * file_name = gtk_file_chooser_get_preview_filename (m_FC);
 
 	GR_Font * fnt = pGr->findFont("Times New Roman", "normal", "", "normal", "", "12pt");
 	pGr->setFont(fnt);
@@ -872,45 +868,45 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	GR_Painter painter(pGr);
 	painter.clearArea(0, 0, pGr->tlu(m_preview->allocation.width), pGr->tlu(m_preview->allocation.height));
 
-	if (!buf)
-	  {
-	    painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
-	    goto Cleanup;
-	  }
+	if (!file_name)
+	{
+		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		goto Cleanup;
+	}
 
 	// are we dealing with a file or directory here?
 	struct stat st;
-	if (!stat (buf, &st)) {
+	if (!stat (file_name, &st)) {
 		if (!S_ISREG(st.st_mode)) {
-			painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
+			painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 			goto Cleanup;
 		}
 	}
 	else {
-		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
+		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 		goto Cleanup;
 	}
 
 	// Load File into memory
 	pBB     = new UT_ByteBuf(0);
-	pBB->insertFromFile(0, buf);
+	pBB->insertFromFile(0, file_name);
 
 	// Build an Import Graphic based on file type
-	errorCode = IE_ImpGraphic::constructImporter(buf, IEGFT_Unknown, &pIEG);
+	errorCode = IE_ImpGraphic::constructImporter(file_name, IEGFT_Unknown, &pIEG);
 	if ((errorCode != UT_OK) || !pIEG)
 	{
 		DELETEP(pBB);
-		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
+		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
 		goto Cleanup;
 	}
 
 	errorCode = pIEG->importGraphic (pBB, &pGraphic);
 
 	if ((errorCode != UT_OK) || !pGraphic)
-	  {
-		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(35));
-	    goto Cleanup;
-	  }
+	{
+		painter.drawChars (str.ucs4_str().ucs4_str(), 0, str.size(), pGr->tlu(12), pGr->tlu(static_cast<int>(m_preview->allocation.height / 2)) - pGr->getFontHeight(fnt)/2);
+		goto Cleanup;
+	}
 
 	if ( FGT_Raster == pGraphic->getType () )
 	{
