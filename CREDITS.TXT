@@ -67,7 +67,7 @@ Joaquín Cuenca Abela <cuenca@ie2.u-psud.fr> 		GNOME front end,
 							misc. fixes
 Kenneth J. Davis <jeremyd@computer.org> 		Bidi fixes
 Philippe Defert <Philippe.Defert@cern.ch>		AIX, HPUX, IRIX64, OSF1
-Andrew Dunbar <falconsquire@start.com.au>		UTF-8 text recognition,
+Andrew Dunbar <hippietrail@yahoo.com>			UTF-8 text recognition,
 							encoding stuff
 Ryan Dooley <ryan@coe.missouri.edu> 			started IRIX port
 Paul Egli <pegli@sourcegear.com>
@@ -119,7 +119,7 @@ Matt Kimball <robozapp@xmission.com>			layout fixes
 Andrew Klassen <ak@dkp.com> 				Irix 64 fixes
 Michael Kobas <michael238@ozemail.com.au>		Win32 Setup icon and Installer mods
 Larry Kollar <kollar@alltel.net>			MkLinux
-Egmont Koblingen   egmont@uhulinux.hu                                     Encoding fix 4782
+Egmont Koblingen <egmont@uhulinux.hu>			Encoding fix 4782
 Matt Kraai <kraai@subdimension.com>
 Tuomas Kuosmanen <tigert@gimp.org>			artist
 William Lachance <william.lachance@sympatico.ca>	WordPerfect import, 
@@ -215,9 +215,10 @@ Robert Wilhelm <robert.wilhelm@gmx.net>			Word import fixes
 Alec Wolman <wolman@cs.washington.edu>			Various autoconf fixes
 John Wood <jyonw@asu.edu>				NetBSD
 Alan Young <ayoung@teleport.com>			Alpha/NT
-Justin Zaun <jzaun@telerama.com> Some templates
+Justin Zaun <jzaun@telerama.com>			Some templates
 Belcon Zhao <rainfall@yeah.net> 			Testing/fixing CJK support
-Johan BjÃ¶rk <phearbear@home.se>			QNX Maintainer
+Johan Björk <phearbear@home.se>				QNX Maintainer
+Justin McPherson <ysidro@io.com>			Win32 Keyboard fixes
 
 translators
 -----------
