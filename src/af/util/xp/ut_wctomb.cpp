@@ -79,7 +79,7 @@ enum
 	
 #endif
 
-#if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__) || defined(__FreeBSD__)
+#if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__) || defined(__FreeBSD__) || defined (TARGET_OS_MAC)
 #include <stdlib.h>
 
 //We have to do this since wctomb clashes with the class name
@@ -140,7 +140,7 @@ int my_wctomb( char* s, wchar_t wchar, int *state ) {
 
 int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
 {
-#if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__) || defined(__FreeBSD__)
+#if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__) || defined(__FreeBSD__)|| defined (TARGET_OS_MAC)
   size_t len=my_wctomb(pC,wc, &m_state);
 #else
   size_t len=wcrtomb(pC,wc, &m_state);
