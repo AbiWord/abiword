@@ -136,6 +136,8 @@ int n=0;
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
 //	PtSetArg(&args[n++],Pt_ARG_WINDOW_MODAL_FLAGS,Pt_FALSE,ABI_MODAL_WDINWO_MANAGE_FLAGS);
 	MainWindow= PtCreateWidget(PtWindow,NULL,n,args);
+	PtAddHotkeyHandler(MainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
+
 	n=0;
 	
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);

@@ -256,6 +256,8 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtSetArg(&args[n++],Pt_ARG_WIDTH,0,0);
 	PtSetArg(&args[n++],Pt_ARG_HEIGHT,0,0);
 	m_windowMain = PtCreateWidget(PtWindow, Pt_DEFAULT_PARENT, n, args);
+	PtAddHotkeyHandler(m_windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
+
   PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	
 	/* Create a vertical box in which to stuff things */

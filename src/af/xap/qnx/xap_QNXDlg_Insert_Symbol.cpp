@@ -436,6 +436,8 @@ PtWidget_t * XAP_QNXDialog_Insert_Symbol::_constructWindow(void)
 	PtSetArg(&args[n++],Pt_ARG_WIDTH,0,0);
 	PtSetArg(&args[n++],Pt_ARG_HEIGHT,0,0);
 	windowInsertS = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddHotkeyHandler(windowInsertS,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
+
 	PtAddCallback(windowInsertS, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	//Create a vertical group to contain the font selector, 
 	// raw drawing area and then a horizontal group of buttons

@@ -192,6 +192,8 @@ PtWidget_t * AP_QNXDialog_Insert_DateTime::_constructWindow(void)
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	windowMain = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddHotkeyHandler(windowMain,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
+
 	PtAddCallback(windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 	n = 0;

@@ -60,11 +60,8 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	area.pos.y = pQNXFrameImpl->m_AvailableArea.pos.y + s_iFixedWidth;
 	area.size.w = s_iFixedWidth;
 	area.size.h = pQNXFrameImpl->m_AvailableArea.size.h - s_iFixedWidth;
-//	pQNXFrameImpl->m_AvailableArea.pos.x += area.size.w + 3;
-//	pQNXFrameImpl->m_AvailableArea.size.w -= area.size.w + 3;
+
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-	UT_DEBUGMSG(("LR: Offset %d,%d Size %d/%d ",
-                area.pos.x, area.pos.y, area.size.w, area.size.h));
 #define _LR_ANCHOR_     (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_LEFT | \
                          Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _LR_ANCHOR_, _LR_ANCHOR_); 
@@ -75,12 +72,16 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	PtAddCallback(m_wLeftRulerGroup, Pt_CB_RESIZE, _fe::resize, this);
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_DIM,&area.size,0);
+	PtCreateWidget(PtOSContainer,m_wLeftRulerGroup,n,args);
+
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TRUE, Pt_GETS_FOCUS|Pt_SELECTABLE); 
 
-	m_wLeftRuler = PtCreateWidget(PtRaw, m_wLeftRulerGroup, n, args);
+	m_wLeftRuler = PtCreateWidget(PtRaw, Pt_DEFAULT_PARENT, n, args);
 	PtAddEventHandler(m_wLeftRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
 								  _fe::motion_notify_event, this);
 	PtAddEventHandler(m_wLeftRuler, Ph_EV_BUT_PRESS, _fe::button_press_event, this);

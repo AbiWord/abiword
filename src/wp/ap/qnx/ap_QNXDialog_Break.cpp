@@ -192,6 +192,7 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
 	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddHotkeyHandler(windowBreak,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(windowBreak, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 	n = 0;

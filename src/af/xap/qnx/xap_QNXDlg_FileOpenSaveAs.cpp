@@ -72,15 +72,13 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	bool bCheckWritePermission = true;
 	const XML_Char * szTitle = NULL;
-	const XML_Char * szFileTypeLabel = NULL;
 	int   flags = 0;
 
 	switch (m_id)
 	{
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
-szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle).c_str();
-szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel).c_str();
+szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle).c_str());
 		bCheckWritePermission = true;
 		/* Allow non-existant files to be selected and confirm overwrite */
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
@@ -88,43 +86,38 @@ szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel).c_
 	}
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
-szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle).c_str();
-szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel).c_str();
+szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle).c_str());
 		bCheckWritePermission = true;
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
 		break;
 	}
 		case XAP_DIALOG_ID_INSERT_PICTURE:
 	  {
-szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title).c_str();
-szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel).c_str();
+szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title).c_str());
 		bCheckWritePermission = false;    
+		break;
 	  }
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
-szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle).c_str();
-szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel).c_str();
+szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle).c_str());
 		bCheckWritePermission = false;
 		break;
 	}
 	case XAP_DIALOG_ID_FILE_IMPORT:
 	  {
-szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle).c_str();
-szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel).c_str();
+szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle).c_str());
 		bCheckWritePermission = false;
 	    break;
 	  }
 	case XAP_DIALOG_ID_INSERT_FILE:
 	  {
-szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle).c_str();
-szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel).c_str();
+szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle).c_str());
 		bCheckWritePermission = false;
 		break;
 	  }
 	case XAP_DIALOG_ID_FILE_EXPORT:
 	  {
-szTitle = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle).c_str();
-szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel).c_str();
+szTitle = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle).c_str());
 		bCheckWritePermission = true;
 		flags = Pt_FSR_NO_FCHECK | Pt_FSR_CONFIRM_EXISTING;
     break;
@@ -266,7 +259,6 @@ while((tmp=strchr(tmp,';')))
 						  "nkd", 							/* Format (Name, Kb Size, date) */
 						  &info,							/* Returned info structure */
 						  flags);							/* Flags we might want */
-
 	if (ret != -1 && (info.ret == Pt_FSDIALOG_BTN1)) {
 		m_answer = XAP_Dialog_FileOpenSaveAs::a_OK;
 		
@@ -292,7 +284,7 @@ while((tmp=strchr(tmp,';')))
 
 		//Not sure if I should do this here or not
 		if (m_szPersistPathname)
-			FREEP(szPersistDirectory);
+			FREEP(m_szPersistPathname);
 		UT_cloneString(m_szPersistPathname, info.path);
 
 		//Store other info here too ....
@@ -304,6 +296,7 @@ while((tmp=strchr(tmp,';')))
 	
 		   
 	FREEP(szPersistDirectory);
+	FREEP(szTitle);
 	m_pQNXFrame = NULL;
 
 	return;

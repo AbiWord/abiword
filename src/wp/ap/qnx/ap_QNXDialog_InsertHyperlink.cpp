@@ -164,6 +164,8 @@ PtWidget_t *PtButton_cancel;
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_TITLE,_(AP,DLG_InsertHyperlink_Title),0);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,ABI_MODAL_WINDOW_RENDER_FLAGS);
 	windowHyperlink= PtCreateWidget(PtWindow,NULL,n,args);
+	PtAddHotkeyHandler(windowHyperlink,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
+
 	n=0;
 
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,4,0);

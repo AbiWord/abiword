@@ -412,6 +412,8 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtSetArg(&args[n++],Pt_ARG_WIDTH,0,0);
 	PtSetArg(&args[n++],Pt_ARG_HEIGHT,0,0);
 	m_mainWindow = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddHotkeyHandler(m_mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
+
 	PtAddCallback(m_mainWindow, Pt_CB_WINDOW_CLOSING, s_deleteClicked, this);
 
 	n = 0;

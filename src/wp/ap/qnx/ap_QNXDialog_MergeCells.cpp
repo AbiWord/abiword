@@ -177,6 +177,7 @@ const XAP_StringSet * pSS = m_pApp->getStringSet();
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS );
 	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_TRUE,Pt_RESIZE_XY_AS_REQUIRED);
 	mainwindow= PtCreateWidget(PtWindow,Pt_NO_PARENT,n,args);
+	PtAddHotkeyHandler(mainwindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(mainwindow, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 	n=0;
 

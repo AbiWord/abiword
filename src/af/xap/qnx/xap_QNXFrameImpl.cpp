@@ -324,7 +324,6 @@ int XAP_QNXFrameImpl::_fe::expose(PtWidget_t * w, PhTile_t * damage)
 			rClip.left = pGr->tlu((damage->rect.ul.x - pnt.x) > 0 ? damage->rect.ul.x - pnt.x : 0 );
 			rClip.top = pGr->tlu((damage->rect.ul.y - pnt.y) > 0 ? damage->rect.ul.y - pnt.y : 0);
 
-			fprintf(stderr,"pnt.x=%d,pnt.y=%d, rect= %d,%d,%d,%d\n\n",pnt.x,pnt.y,damage->rect.ul.x,damage->rect.ul.y,damage->rect.lr.x,damage->rect.lr.y);
 			//OR: Pass the draw function the clipping rectangle
 			//This is preferred since this way the application
 			//can optimize their drawing routines as well.
@@ -350,7 +349,7 @@ int XAP_QNXFrameImpl::_fe::vScrollChanged(PtWidget_t * w, void *data, PtCallback
 	XAP_Frame	*pFrame	= pFrameImpl->getFrame();
 
 	AV_View * pView = pFrame->getCurrentView();
-
+	
 	if (pView)
 		pView->sendVerticalScrollEvent((UT_sint32)sb->position);
 	return 0;
@@ -638,8 +637,9 @@ void XAP_QNXFrameImpl::createTopLevelWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, m_pQNXApp->getApplicationTitleForTitleBar(), 0);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this));
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, Ph_WM_CLOSE);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, Ph_WM_HELP, Ph_WM_CLOSE|Ph_WM_HELP);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_NOTIFY_FLAGS, Ph_WM_CLOSE, Ph_WM_CLOSE);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS,Pt_TRUE,Ph_WM_RENDER_HELP);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS,Pt_TRUE,Pt_CALLBACKS_ACTIVE);
 	PtSetArg(&args[n++], Pt_ARG_MINIMUM_DIM,&minsize,0);
 

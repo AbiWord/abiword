@@ -60,10 +60,8 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	area.pos.y = pQNXFrameImpl->m_AvailableArea.pos.y;
 	area.size.w = pQNXFrameImpl->m_AvailableArea.size.w;
 	area.size.h = s_iFixedHeight;
-//	pQNXFrameImpl->m_AvailableArea.pos.y += area.size.h + 3;
-//	pQNXFrameImpl->m_AvailableArea.size.h -= area.size.h + 3;
+
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-	UT_DEBUGMSG(("TR: Offset %d,%d Size %d/%d ", area.pos.x, area.pos.y, area.size.w, area.size.h));
 #define _TR_ANCHOR_     (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
                          Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_TOP)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _TR_ANCHOR_, _TR_ANCHOR_);
@@ -73,11 +71,13 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	m_wTopRulerGroup = PtCreateWidget(PtGroup, m_rootWindow, n, args);
 	PtAddCallback(m_wTopRulerGroup, Pt_CB_RESIZE, _fe::resize, this);
 
+
+	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
-   PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TRUE, Pt_GETS_FOCUS); 
+   PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_FALSE, Pt_GETS_FOCUS); 
 	m_wTopRuler = PtCreateWidget(PtRaw, m_wTopRulerGroup, n, args);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
 								  _fe::motion_notify_event, this);
