@@ -520,7 +520,7 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 
 	// this should work though, the allocation number is unique, even
 	// if the pointers are identical
-	if (pFont->getAllocNumber() != m_iFontAllocNo)
+	if (m_pFont == NULL || pFont->getAllocNumber() != m_iFontAllocNo)
 	{
 		m_pFont = pWin32Font;
 		m_iFontAllocNo = pFont->getAllocNumber();
