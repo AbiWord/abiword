@@ -42,7 +42,7 @@ MINGRES_INCS=--include-dir=../../ap/win --include-dir=../../../af/xap/win
 CPPSRCS+=		dummy.cpp
 
 ABI_LIBS=	kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-			shell32 uuid comctl32 ole32 snmpapi ws2_32 netapi32
+			shell32 uuid comctl32 ole32
 
 ifeq ($(ABI_OPT_UNICODE),1)
 ABI_LIBS += unicows
@@ -70,7 +70,7 @@ ABI_APPLIBDEP=		$(ABI_APPLIBS)
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 ####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
-			shell32 uuid comctl32 msvcprt ole32 snmpapi ws2_32 netapi32
+			shell32 uuid comctl32 msvcprt ole32
 
 ifeq ($(ABI_OPT_UNICODE),1)
 ABI_LIBS += unicows

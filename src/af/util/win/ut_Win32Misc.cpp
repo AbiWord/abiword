@@ -45,9 +45,6 @@ void UT_gettimeofday(struct timeval *tv)
     tv->tv_usec = (long) ((_100ns.LowPart % (DWORD) (10000 * 1000)) / 10);
 }
 
-/*!
-    retrieve the 6-byte address of the network card; returns true on success
-*/
 
 typedef struct _ASTAT
 {
@@ -59,38 +56,73 @@ typedef BOOL(WINAPI * pSnmpExtensionInit) (IN DWORD dwTimeZeroReference,
 										   OUT HANDLE * hPollForTrapEvent,
 										   OUT AsnObjectIdentifier * supportedView);
 
-typedef BOOL(WINAPI * pSnmpExtensionTrap) (OUT AsnObjectIdentifier * enterprise,
-										   OUT AsnInteger * genericTrap,
-										   OUT AsnInteger * specificTrap,
-										   OUT AsnTimeticks * timeStamp,
-										   OUT RFC1157VarBindList * variableBindings);
-
 typedef BOOL(WINAPI * pSnmpExtensionQuery) (IN BYTE requestType,
 											IN OUT RFC1157VarBindList * variableBindings,
 											OUT AsnInteger * errorStatus,
 											OUT AsnInteger * errorIndex);
 
-typedef BOOL(WINAPI * pSnmpExtensionInitEx) (OUT AsnObjectIdentifier * supportedView);
+typedef VOID (WINAPI * pSnmpUtilVarBindFree) (RFC1157VarBind *VarBind);
+
+typedef SNMPAPI (WINAPI * pSnmpUtilOidNCmp )(AsnObjectIdentifier *ObjIdA,
+											 AsnObjectIdentifier *ObjIdB,
+											 UINT Len);
+
+typedef SNMPAPI (WINAPI * pSnmpUtilOidCpy) (AsnObjectIdentifier *DestObjId,
+											AsnObjectIdentifier *SrcObjId);
+
+typedef int (WINAPI * pWSAStartup) (WORD wVersionRequested,LPWSADATA lpWSAData);
+
+typedef UCHAR (WINAPI * pNetbios) (PNCB pncb);
 
 
-
+/*!
+    retrieve the 6-byte address of the network card; returns true on success
+*/
 bool UT_getEthernetAddress(UT_EthernetAddress &A)
 {
 	// the following code by James Marsh <James.Marsh@sandtechnology.com>
 	// was found at http://tangentsoft.net/wskfaq/examples/getmac-snmp.html
-    WSADATA WinsockData;
-    if(WSAStartup(MAKEWORD(2, 0), &WinsockData) != 0)
+	// I adjusted it, so all the libs are dynamically loaded and unloaded
+
+	HINSTANCE m_hWSInst = NULL;
+	m_hWSInst = LoadLibrary("ws2_32.dll");
+	pWSAStartup m_WSAStartup = NULL;
+	
+	if(m_hWSInst < (HINSTANCE) HINSTANCE_ERROR)
 	{
-		UT_DEBUGMSG(("UT_getEthernetAddress (win32): need Winsock 2.x!\n"));
+		UT_DEBUGMSG(("UT_getEthernetAddress: could not load ws2_32.dll\n"));
+		m_hWSInst = NULL;
 		goto  try_netbios;
-    }
+	}
+	else
+	{
+		m_WSAStartup = (pWSAStartup)   GetProcAddress(m_hWSInst, "WSAStartup");
+		if(!m_WSAStartup)
+		{
+			UT_DEBUGMSG(("UT_getEthernetAddress: no WSAStartup\n"));
+			FreeLibrary(m_hWSInst);
+		}
+	}
 	
 	{
-		HINSTANCE            m_hInst;
-		pSnmpExtensionInit   m_Init;
-		pSnmpExtensionInitEx m_InitEx;
-		pSnmpExtensionQuery  m_Query;
-		pSnmpExtensionTrap   m_Trap;
+		
+		WSADATA WinsockData;
+		if(m_WSAStartup(MAKEWORD(2, 0), &WinsockData) != 0)
+		{
+			UT_DEBUGMSG(("UT_getEthernetAddress: need Winsock 2.x!\n"));
+			FreeLibrary(m_hWSInst);
+			goto  try_netbios;
+		}
+
+		HINSTANCE            m_hSNMPInst = NULL;
+		pSnmpUtilVarBindFree m_SnmpUtilVarBindFree = NULL;
+		pSnmpUtilOidNCmp     m_SnmpUtilOidNCmp = NULL;
+		pSnmpUtilOidCpy      m_SnmpUtilOidCpy = NULL;
+
+		
+		HINSTANCE            m_hInst = NULL;
+		pSnmpExtensionInit   m_Init = NULL;
+		pSnmpExtensionQuery  m_Query = NULL;
 		HANDLE               PollForTrapEvent;
 		AsnObjectIdentifier  SupportedView;
 
@@ -117,27 +149,57 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 		int dtmp;
 		int i = 0, j = 0;
 		bool bFound = false;
-	
-		m_Init = NULL;
-		m_InitEx = NULL;
-		m_Query = NULL;
-		m_Trap = NULL;
 
 		/* Load the SNMP dll and get the addresses of the functions
 		   necessary */
+		m_hSNMPInst = LoadLibrary("snmpapi.dll");
+		if(m_hSNMPInst < (HINSTANCE) HINSTANCE_ERROR)
+		{
+			UT_DEBUGMSG(("UT_getEthernetAddress: could not load snmpapi.dll\n"));
+			m_hSNMPInst = NULL;
+			goto  try_netbios;
+		}
+
+		m_SnmpUtilVarBindFree = (pSnmpUtilVarBindFree) GetProcAddress(m_hSNMPInst,
+																	  "SnmpUtilVarBindFree");
+		
+		m_SnmpUtilOidNCmp = (pSnmpUtilOidNCmp) GetProcAddress(m_hSNMPInst,
+																	  "SnmpUtilOidNCmp");
+		
+		m_SnmpUtilOidCpy = (pSnmpUtilOidCpy) GetProcAddress(m_hSNMPInst,
+																	  "SnmpUtilOidCpy");
+		
+		
+		if(!m_SnmpUtilVarBindFree || !m_SnmpUtilOidNCmp || !m_SnmpUtilOidCpy)
+		{
+			UT_DEBUGMSG(("UT_getEthernetAddress (win32): could not load SNMP functions\n"));
+			FreeLibrary(m_hSNMPInst);
+			goto try_netbios;
+		}
+
+
+		// load the SNMP extension library
 		m_hInst = LoadLibrary("inetmib1.dll");
+
 		if(m_hInst < (HINSTANCE) HINSTANCE_ERROR)
 		{
-			UT_DEBUGMSG(("UT_getEthernetAddress (win32): could not load inetmib1.dll\n"));
+			UT_DEBUGMSG(("UT_getEthernetAddress: could not load inetmib1.dll\n"));
 			m_hInst = NULL;
+			FreeLibrary(m_hSNMPInst);
 			goto  try_netbios;
 		}
 	
 		m_Init =   (pSnmpExtensionInit)   GetProcAddress(m_hInst, "SnmpExtensionInit");
-		m_InitEx = (pSnmpExtensionInitEx) GetProcAddress(m_hInst, "SnmpExtensionInitEx");
 		m_Query =  (pSnmpExtensionQuery)  GetProcAddress(m_hInst, "SnmpExtensionQuery");
-		m_Trap =   (pSnmpExtensionTrap)   GetProcAddress(m_hInst, "SnmpExtensionTrap");
-	
+
+		if(!m_Init || !m_Query)
+		{
+			UT_DEBUGMSG(("UT_getEthernetAddress (win32): could not load SNMP ext functions\n"));
+			FreeLibrary(m_hInst);
+			FreeLibrary(m_hSNMPInst);
+			goto try_netbios;
+		}
+		
 		m_Init(GetTickCount(), &PollForTrapEvent, &SupportedView);
 
 		/* Initialize the variable list to be retrieved by m_Query */
@@ -148,20 +210,20 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 		/* Copy in the OID to find the number of entries in the
 		   Inteface table */
 		varBindList.len = 1;        /* Only retrieving one item */
-		SNMP_oidcpy(&varBind[0].name, &MIB_ifEntryNum);
+		m_SnmpUtilOidCpy(&varBind[0].name, &MIB_ifEntryNum);
 	
 		ret = m_Query(ASN_RFC1157_GETNEXTREQUEST, &varBindList, &errorStatus, &errorIndex);
 	
-		UT_DEBUGMSG(("UT_getEthernetAddress (win32): adapters in this system : %i\n",
+		UT_DEBUGMSG(("UT_getEthernetAddress: adapters in this system : %i\n",
 					 varBind[0].value.asnValue.number));
 	
 		varBindList.len = 2;
 
 		/* Copy in the OID of ifType, the type of interface */
-		SNMP_oidcpy(&varBind[0].name, &MIB_ifEntryType);
+		m_SnmpUtilOidCpy(&varBind[0].name, &MIB_ifEntryType);
 
 		/* Copy in the OID of ifPhysAddress, the address */
-		SNMP_oidcpy(&varBind[1].name, &MIB_ifMACEntAddr);
+		m_SnmpUtilOidCpy(&varBind[1].name, &MIB_ifMACEntAddr);
 
 		do {
 
@@ -177,22 +239,25 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 			else
 			{
 				/* Confirm that the proper type has been returned */
-				ret = SNMP_oidncmp(&varBind[0].name, &MIB_ifEntryType, MIB_ifEntryType.idLength);
+				ret = m_SnmpUtilOidNCmp(&varBind[0].name,
+										&MIB_ifEntryType,
+										MIB_ifEntryType.idLength);
 			}
 		
 			if (!ret)
 			{
 				j++;
 				dtmp = varBind[0].value.asnValue.number;
-				UT_DEBUGMSG(("UT_getEthernetAddress (win32): Interface #%i type : %i\n", j, dtmp));
+				UT_DEBUGMSG(("UT_getEthernetAddress (win32): Interface #%i type : %i\n"
+							 , j, dtmp));
 
 				/* Type 6 describes ethernet interfaces */
 				if(dtmp == 6)
 				{
 					/* Confirm that we have an address here */
-					ret = SNMP_oidncmp(&varBind[1].name,
-									   &MIB_ifMACEntAddr,
-									   MIB_ifMACEntAddr.idLength);
+					ret = m_SnmpUtilOidNCmp(&varBind[1].name,
+											&MIB_ifMACEntAddr,
+											MIB_ifMACEntAddr.idLength);
 				
 					if((!ret) && (varBind[1].value.asnValue.address.stream != NULL))
 					{
@@ -202,9 +267,8 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 						   && (varBind[1].value.asnValue.address.stream[3] == 0x54)
 						   && (varBind[1].value.asnValue.address.stream[4] == 0x00))
 						{
-
 							/* Ignore all dial-up networking adapters */
-							UT_DEBUGMSG(("UT_getEthernetAddress (win32): Interface #%i is a DUN adapter\n", j));
+							UT_DEBUGMSG(("UT_getEthernetAddress: #%i is a DUN adapter\n", j));
 							continue;
 						}
 						if(   (varBind[1].value.asnValue.address.stream[0] == 0x00)
@@ -241,18 +305,45 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 								 be examined */
 
 		/* Free the bindings */
-		SNMP_FreeVarBind(&varBind[0]);
-		SNMP_FreeVarBind(&varBind[1]);
+		m_SnmpUtilVarBindFree(&varBind[0]);
+		m_SnmpUtilVarBindFree(&varBind[1]);
+		
+		FreeLibrary(m_hInst);
+		FreeLibrary(m_hSNMPInst);
+		FreeLibrary(m_hWSInst);
 
 		if(bFound)
 			return true;
 	}
-	
+
  try_netbios:
 	// this is the method described in MS win32 docs; it has one
-	// fundamental shortcoming: not everyone uses netbios
+	// fundamental shortcoming: not everyone uses netbios, so it is
+	// here as a fall back in case the previous method does not work
+	// I have adjusted the MS code so as to load and unload the dlls
+	// dynamically
 	{
-		UT_DEBUGMSG(("UT_getEthernetAddress (win32): unable to use SNMP\n"));
+		UT_DEBUGMSG(("UT_getEthernetAddress: unable to use SNMP\n"));
+
+		HINSTANCE m_hInst;
+
+		m_hInst = LoadLibrary("netapi32.dll");
+		if(m_hInst < (HINSTANCE) HINSTANCE_ERROR)
+		{
+			UT_DEBUGMSG(("UT_getEthernetAddress: could not load netapi32.dll\n"));
+			return false;
+		}
+
+		pNetbios m_Netbios = NULL;
+		m_Netbios = (pNetbios) GetProcAddress(m_hInst, "Netbios");
+
+		if(!m_Netbios)
+		{
+			UT_DEBUGMSG(("UT_getEthernetAddress: could load netbios functions\n"));
+			FreeLibrary(m_hInst);
+			return false;
+		}
+		
 		NCB Ncb;
 		UT_uint32 iRet;
 		bool bRet = true;
@@ -261,12 +352,13 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 		Ncb.ncb_command = NCBRESET;
 		Ncb.ncb_lana_num = 0;
 
-		iRet = Netbios(&Ncb);
+		iRet = m_Netbios(&Ncb);
 		bRet = (NRC_GOODRET	== iRet);
 
 		if(!bRet)
 		{
-			UT_DEBUGMSG(("UT_getEthernetAddress (win32): unable to use NETBIOS either\n"));
+			UT_DEBUGMSG(("UT_getEthernetAddress: unable to use NETBIOS either\n"));
+			FreeLibrary(m_hInst);
 			return false;
 		}
 		
@@ -281,12 +373,13 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 		Ncb.ncb_buffer = (unsigned char *) &Adapter;
 		Ncb.ncb_length = sizeof(Adapter);
 
-		iRet = Netbios(&Ncb);
+		iRet = m_Netbios(&Ncb);
 		bRet &= (NRC_GOODRET	== iRet);
 	
 		if(!bRet)
 		{
-			UT_DEBUGMSG(("UT_getEthernetAddress (win32): unable to use NETBIOS either\n"));
+			UT_DEBUGMSG(("UT_getEthernetAddress: unable to use NETBIOS2 either\n"));
+			FreeLibrary(m_hInst);
 			return false;
 		}
 		
@@ -296,6 +389,7 @@ bool UT_getEthernetAddress(UT_EthernetAddress &A)
 		UT_DEBUGMSG(("MAC Address is %02x-%02x-%02x-%02x-%02x-%02x\n",
 					 A[0],A[1],A[2],A[3],A[4],A[5]));
 
+		FreeLibrary(m_hInst);
 		return true;
 	}
 }
