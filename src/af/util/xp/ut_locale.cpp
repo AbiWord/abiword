@@ -49,8 +49,8 @@ explicit_setlocale (int category, const char * locale)
 UT_LocaleTransactor::UT_LocaleTransactor (int category, const char * locale)
   : mCategory (category), mOldLocale (0)
 {
-	mOldLocale = UT_strdup(setlocale(category, NULL));
-	explicit_setlocale (category, locale);
+	char * old_locale = explicit_setlocale (category, locale);
+	mOldLocale = UT_strdup(old_locale);
 
 	// TODO: win32 may need to free old_locale
 }
