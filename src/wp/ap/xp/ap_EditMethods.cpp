@@ -3304,8 +3304,39 @@ Defun(selectObject)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	
+	// check if the run to select is a fp_ImageRun. If, so, don't move the view
+	PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
+	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
+	if(pBlock)
+	{
+		UT_sint32 x1,x2,y1,y2,iHeight;
+		bool bEOL = false;
+		bool bDir = false;
+		
+		fp_Run * pRun = NULL;
+		
+		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && pRun->getType() != FPRUN_IMAGE)
+		{
+			pRun = pRun->getNext();
+		}
+		if(pRun && pRun->getType() == FPRUN_IMAGE)
+		{
+			// we've found an image: do not move the view, just select the image and exit
+			pView->cmdSelect(pos,pos+1);
+			return true;
+		}
+		else
+		{
+			// do nothing...
+		}
+	}
+	
+	// no, the run is something else (ie. not a fp_ImageRun)
 	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos, true);
 	pView->extSelHorizontal(true, 1); // move point forward one
+	
 	return true;
 }
 
@@ -11175,4 +11206,3 @@ Defun(dropImage)
 	
 	return true;
 }
-
