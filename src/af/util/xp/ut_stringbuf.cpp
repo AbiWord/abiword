@@ -228,7 +228,7 @@ UT_UCS2Char UT_UCS2Stringbuf::UTF8_to_UCS2 (const char *& buffer, size_t & lengt
 			continue;
 		}
 
-		if (length < seql) { // huh? broken sequence perhaps? anyway, let's just ignore it
+		if (length < seql - 1) { // huh? broken sequence perhaps? anyway, let's just ignore it
 			continue;
 		}
 
@@ -983,7 +983,7 @@ UT_UCS4Char UT_UCS4Stringbuf::UTF8_to_UCS4 (const char *& buffer, size_t & lengt
 			continue;
 		}
 
-		if (length < seql) { // huh? broken sequence perhaps? anyway, let's just ignore it
+		if (length < seql - 1) { // huh? broken sequence perhaps? anyway, let's just ignore it
 			continue;
 		}
 
