@@ -86,6 +86,7 @@
 
 #include "ap_Strings.h"
 
+#include "pt_PieceTable.h"
 // extern prototype - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 /*****************************************************************/
@@ -449,7 +450,226 @@ const XAP_StringSet * AP_Win32App::getStringSet(void) const
 	return m_pStringSet;
 }
 
-void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard)
+#ifdef COPY_ON_DEMAND
+/*!
+    indicate to the clipboard that we can provide data in this format
+    on demand
+*/
+void AP_Win32App::_indicateFmtToClipboard(const char * pszFmt) const
+{
+	UT_return_if_fail(m_pClipboard && pszFmt);
+	UINT iFmt = m_pClipboard->convertFormatString(pszFmt);
+
+	SetClipboardData(iFmt, NULL);
+}
+
+bool AP_Win32App::_cacheClipboardDoc(PD_DocumentRange *pDocRange)
+{
+	UT_return_val_if_fail(m_pClipboard && pDocRange, false);
+
+	UT_ByteBuf buf;
+	UT_Error status;;
+	UT_Byte b = 0;
+
+	IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
+	if (pExpRtf)
+	{
+		status = pExpRtf->copyToBuffer(pDocRange,&buf);
+
+		if(status != UT_OK)
+			return false;
+			
+		buf.append(&b,1);			// NULL terminate the string
+		DELETEP(pExpRtf);
+	}
+	else
+	{
+		return false;
+	}
+
+	// now create a subdocument ...
+	PD_Document * pDoc = new PD_Document(XAP_App::getApp());
+
+	if(!pDoc)
+		return false;
+	
+	pDoc->newDocument();
+	
+	PD_DocumentRange DocRange(pDoc, 2, 2);
+	
+	IE_Imp * pImp = 0;
+	IE_Imp::constructImporter(pDoc, 0, IE_Imp::fileTypeForSuffix(".rtf"),&pImp,0);
+
+	if(pImp)
+	{
+		pImp->pasteFromBuffer(&DocRange,buf.getPointer(0),buf.getLength(),NULL);
+		delete pImp;
+	}
+	else
+	{
+		return false;
+	}
+	
+	m_pClipboard->setClipboardDoc(pDoc);
+	return true;
+}
+
+/*!
+    copy the required format to the clipboard on demand
+    see docs on WM_RENDERFORMAT
+*/
+bool AP_Win32App::copyFmtToClipboardOnDemand(UINT iFmt)
+{
+	UT_return_val_if_fail(m_pClipboard, false);
+
+	PD_DocumentRange DocRange;
+	DocRange.m_pDoc = m_pClipboard->getClipboardDoc();
+	UT_return_val_if_fail(DocRange.m_pDoc, false);
+
+	DocRange.m_pos1 = 2;
+	DocRange.m_pos2 = DocRange.m_pDoc->getLastFrag()->getPos() + DocRange.m_pDoc->getLastFrag()->getLength();
+	
+	if(!_copyFmtToClipboard(&DocRange, iFmt))
+		return false;
+
+	return true;
+}
+
+/*!
+    copy data to the clipboard in all formats on demand (this is
+    called when application is exiting and leaving data on clipboard
+    that and indicating that data in addtional formats is available
+    see docs on WM_RENDERALLFORMATS
+*/
+bool AP_Win32App::copyAllFmtsToClipboardOnDemand()
+{
+	UT_return_val_if_fail(m_pClipboard, false);
+
+	// I will use NULL here, since we are about to shut down anyway ...
+	if(!m_pClipboard->openClipboard(NULL))			// try to lock the clipboard
+		return false;
+
+	// need to clear clipboard in order to become its owners
+	m_pClipboard->clearClipboard();
+	
+	// what we need is to get the data from the clipboard and convert
+	// it to the format requested
+	PD_DocumentRange DocRange;
+	DocRange.m_pDoc = m_pClipboard->getClipboardDoc();
+	UT_return_val_if_fail(DocRange.m_pDoc, false);
+
+	DocRange.m_pos1 = 2;
+	DocRange.m_pos2 = DocRange.m_pDoc->getLastFrag()->getPos() + DocRange.m_pDoc->getLastFrag()->getLength();
+
+	_copyFmtToClipboard(&DocRange, AP_CLIPBOARD_RTF);
+	_copyFmtToClipboard(&DocRange, AP_CLIPBOARD_TEXTPLAIN_UCS2);
+	_copyFmtToClipboard(&DocRange, AP_CLIPBOARD_TEXTPLAIN_8BIT);
+
+	return true;
+}
+
+#endif // COPY_ON_DEMAND
+
+/*!
+    copy data in required format to the clipboard
+*/
+bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, UINT iFmt)
+{
+	UT_return_val_if_fail(m_pClipboard, false);
+	const char * pszFmt = m_pClipboard->convertToFormatString(iFmt);
+	UT_return_val_if_fail(pszFmt, false);
+
+	return _copyFmtToClipboard(pDocRange, pszFmt);
+}
+
+/*!
+    copy data in required format to the clipboard
+*/
+bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char * pszFmt)
+{
+	UT_return_val_if_fail(m_pClipboard && pszFmt, false);
+	
+	UT_ByteBuf buf;
+	UT_Error status;;
+	UT_Byte b = 0;
+
+	if(0 == UT_strcmp(AP_CLIPBOARD_TEXTPLAIN_8BIT, pszFmt))
+	{
+		IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
+		if (pExpText)
+		{
+			status = pExpText->copyToBuffer(pDocRange,&buf);
+
+			if(status != UT_OK)
+				return false;
+			
+			buf.append(&b,1);			// NULL terminate the string
+			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,
+								  (UT_Byte *)buf.getPointer(0),buf.getLength());
+			DELETEP(pExpText);
+			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",
+						 buf.getLength()));
+		}
+		else
+		{
+			return false;
+		}
+		
+	}
+	else if(0 == UT_strcmp(AP_CLIPBOARD_TEXTPLAIN_UCS2, pszFmt))
+	{
+		const char *szEnc = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName(); 
+		IE_Exp_Text * pExpUnicodeText = new IE_Exp_Text(pDocRange->m_pDoc,szEnc);
+		if (pExpUnicodeText)
+		{
+			status = pExpUnicodeText->copyToBuffer(pDocRange,&buf);
+
+			if(status != UT_OK)
+				return false;
+			
+			UT_Byte b[2] = {0,0};
+			buf.append(b,2);			// NULL terminate the string
+			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_UCS2,
+								  (UT_Byte *)buf.getPointer(0),buf.getLength());
+			DELETEP(pExpUnicodeText);
+			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN UNICODE format.\n",
+						 buf.getLength()*2));
+		}
+		else
+		{
+			return false;
+		}
+	}
+	else if(0 == UT_strcmp(AP_CLIPBOARD_RTF, pszFmt))
+	{
+		IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
+		if (pExpRtf)
+		{
+			status = pExpRtf->copyToBuffer(pDocRange,&buf);
+
+			if(status != UT_OK)
+				return false;
+			
+			buf.append(&b,1);			// NULL terminate the string
+			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
+			DELETEP(pExpRtf);
+			UT_DEBUGMSG(("CopyFmtToClipboard: copying %d bytes in RTF format.\n",
+						 buf.getLength()));
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+/*!
+    copy data to the clipboard; this is what gets called when the user
+    presses Ctrl+C
+*/
+void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange, bool /*bUseClipboard*/)
 {
 	// copy the given subset of the given document to the
 	// system clipboard in a variety of formats.
@@ -458,70 +678,52 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboa
 	//
 	// TODO do we need to put something in .ABW format on the clipboard ??
 
-	if (!m_pClipboard->openClipboard())			// try to lock the clipboard
+	AP_Win32FrameImpl * pFrameImp = static_cast<AP_Win32FrameImpl*>(getLastFocussedFrame()->getFrameImpl());
+	UT_return_if_fail(pFrameImp);
+	
+	if (!m_pClipboard->openClipboard(pFrameImp->getHwndDocument()))
 		return;
+
+	m_pClipboard->clearClipboard(); // this also gives us the ownership
+
+	// Be smart: always place RTF on clipboard; the
+	// remaining formats we will generate on demand.
+	// most of the time it will save us creating multiple importers,
+	// but when the user requests other than the default format, it
+	// will be a little bit more involved
+	// Tomas, June 28, 2003.
+
+#ifndef COPY_ON_DEMAND
+	_copyFmtToClipboard(pDocRange, AP_CLIPBOARD_RTF);
+#else
+	// we need to both cache the present doc and put rtf version on
+	// the clipboard, because win32 will ask for it immediately;
+	// appart from that, the rtf exporter needs some layout info to
+	// deal with bidi issues, which means we cannot construct the rtf
+	// from the chached doc properly
+	_cacheClipboardDoc(pDocRange);
+	_copyFmtToClipboard(pDocRange, AP_CLIPBOARD_RTF);
+#endif
+	
+	// TODO Should use a finer-grain technique than IsWinNT()
+	// since Win98 supports unicode clipboard.
+	if (UT_IsWinNT())
 	{
-		m_pClipboard->clearClipboard();
-
-		// put RTF on the clipboard
-		
-		IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(pDocRange->m_pDoc);
-		if (pExpRtf)
-		{
-			UT_ByteBuf buf;
-			UT_Error status = pExpRtf->copyToBuffer(pDocRange,&buf);
-			UT_Byte b = 0;
-			buf.append(&b,1);			// NULL terminate the string
-			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
-			DELETEP(pExpRtf);
-			UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in RTF format.\n",buf.getLength()));
-			//UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
-		}
-
-		// put raw text on the clipboard
-
-		// TODO Should use a finer-grain technique than IsWinNT() since Win98 supports unicode clipboard.
-		if (UT_IsWinNT())
-		{
-			// put raw unicode text on the clipboard
-			// TODO On NT we should always put unicode text on the clipboard regardless of locale.
-			// TODO The system allows old apps to access it as 8 bit.
-			// TODO We can't do this yet due to the design of Abi's clipboard and import/export modules.
-
-		        const char * szEncoding = XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName(); 
-			IE_Exp_Text * pExpUnicodeText = new IE_Exp_Text(pDocRange->m_pDoc,szEncoding);
-			if (pExpUnicodeText)
-			{
-				UT_ByteBuf buf;
-				UT_Error status = pExpUnicodeText->copyToBuffer(pDocRange,&buf);
-				UT_Byte b[2] = {0,0};
-				buf.append(b,2);			// NULL terminate the string
-				m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_UCS2,(UT_Byte *)buf.getPointer(0),buf.getLength());
-				DELETEP(pExpUnicodeText);
-				UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN UNICODE format.\n",buf.getLength()*2));
-				//UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
-			}
-		}
-		else
-		{
-			// put raw 8bit text on the clipboard
-			// TODO Windows adds CF_LOCALE data to the clipboard based on the current input locale.
-			// TODO We should try to do better so that users can load a Japanese document and
-			// TODO cut and paste without a Japanese input locale (keyboard).
-
-			IE_Exp_Text * pExpText = new IE_Exp_Text(pDocRange->m_pDoc);
-			if (pExpText)
-			{
-				UT_ByteBuf buf;
-				UT_Error status = pExpText->copyToBuffer(pDocRange,&buf);
-				UT_Byte b = 0;
-				buf.append(&b,1);			// NULL terminate the string
-				m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,(UT_Byte *)buf.getPointer(0),buf.getLength());
-				DELETEP(pExpText);
-				UT_DEBUGMSG(("CopyToClipboard: copying %d bytes in TEXTPLAIN format.\n",buf.getLength()));
-				//UT_DEBUGMSG(("CopyToClipboard: [%s]\n",buf.getPointer(0)));
-			}
-		}
+		// put raw unicode text on the clipboard
+#ifndef COPY_ON_DEMAND
+		_copyFmtToClipboard(pDocRange, AP_CLIPBOARD_TEXTPLAIN_UCS2);
+#else
+		_indicateFmtToClipboard(AP_CLIPBOARD_TEXTPLAIN_UCS2);
+#endif
+	}
+	else
+	{
+		// put raw 8bit text on the clipboard
+#ifndef COPY_ON_DEMAND
+		_copyFmtToClipboard(pDocRange, AP_CLIPBOARD_TEXTPLAIN_8BIT);
+#else
+		_indicateFmtToClipboard(AP_CLIPBOARD_TEXTPLAIN_8BIT);
+#endif
 	}
 
 	m_pClipboard->closeClipboard();				// release clipboard lock
@@ -672,8 +874,10 @@ void AP_Win32App::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 	// therefore, we do a strlen() and **hope** that this is
 	// right.  Oh, and the value returned by GlobalSize() varies
 	// from call-to-call on the same object.... sigh.
-
-	if (!m_pClipboard->openClipboard())			// try to lock the clipboard
+	AP_Win32FrameImpl * pFrameImp = static_cast<AP_Win32FrameImpl*>(getLastFocussedFrame()->getFrameImpl());
+	UT_return_if_fail(pFrameImp);
+	
+	if (!m_pClipboard->openClipboard(pFrameImp->getHwndDocument())) // lock clipboard
 		return;
 	
 	{
@@ -794,7 +998,10 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 
 bool AP_Win32App::canPasteFromClipboard(void)
 {
-	if (!m_pClipboard->openClipboard())
+	AP_Win32FrameImpl * pFrameImp = static_cast<AP_Win32FrameImpl*>(getLastFocussedFrame()->getFrameImpl());
+	UT_return_val_if_fail(pFrameImp, false);
+	
+	if (!m_pClipboard->openClipboard(pFrameImp->getHwndDocument()))
 		return false;
 
 	// TODO decide if we need to support .ABW format on the clipboard.	

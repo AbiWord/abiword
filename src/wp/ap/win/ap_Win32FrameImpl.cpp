@@ -325,7 +325,7 @@ void AP_Win32FrameImpl::_showOrHideStatusbar(void)
  */
 void AP_Win32FrameImpl::_getDocumentArea(RECT &r)
 {
-	HWND hwnd = _getHwndDocument();
+	HWND hwnd = getHwndDocument();
 	GetClientRect(hwnd, &r);
 	InvalidateRect(hwnd, NULL, TRUE);
 }
@@ -840,7 +840,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 	{
 		case WM_SETFOCUS:
 		{
-			SetFocus(fImpl->_getHwndDocument());
+			SetFocus(fImpl->getHwndDocument());
 			return 0;
 		}
 
@@ -1241,7 +1241,19 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 		case WM_INPUTLANGCHANGE:	// let the XAP_Win32Frame handle this
 			return ::SendMessage(fImpl->_getTopLevelWindow(), WM_INPUTLANGCHANGE, wParam, lParam);
-
+#ifdef COPY_ON_DEMAND
+		case WM_RENDERFORMAT:
+			if(static_cast<AP_Win32App *>(XAP_App::getApp())->copyFmtToClipboardOnDemand((UINT)wParam))
+				return 0;
+			else
+				break;
+			
+		case WM_RENDERALLFORMATS:
+			if(static_cast<AP_Win32App *>(XAP_App::getApp())->copyAllFmtsToClipboardOnDemand())
+				return 0;
+			else
+				break;
+#endif
 	} /* switch (iMsg) */
 
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);

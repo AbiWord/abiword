@@ -35,6 +35,8 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame, XAP_App *pApp);
 
 	virtual UT_RGBColor getColorSelBackground () const;
+
+	HWND						getHwndDocument(void)  {  return m_hwndDocument;  }
 	
  protected:
 	friend class AP_Win32Frame;
@@ -66,12 +68,12 @@ class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 	HWND						_getHwndContainer(void) {  return m_hwndContainer; }
 	HWND						_getHwndTopRuler(void)  {  return m_hwndTopRuler;  }
 	HWND						_getHwndLeftRuler(void) {  return m_hwndLeftRuler; }
-	HWND						_getHwndDocument(void)  {  return m_hwndDocument;  }
+	//	HWND					_getHwndDocument(void)  {  return m_hwndDocument;  } now public
 	HWND						_getHwndHScroll(void)   {  return m_hWndHScroll;   }
 	HWND						_getHwndVScroll(void)   {  return m_hWndVScroll;   }
 
 	void						_updateContainerWindow(void) { UpdateWindow(_getHwndContainer()); }
-	GR_Win32Graphics *			_createDocWnd_GR_Graphics(void) { return new GR_Win32Graphics(GetDC(_getHwndDocument()), _getHwndDocument(), XAP_App::getApp()); }
+	GR_Win32Graphics *			_createDocWnd_GR_Graphics(void) { return new GR_Win32Graphics(GetDC(getHwndDocument()), getHwndDocument(), XAP_App::getApp()); }
 
 	void						_setVerticalScrollInfo(const SCROLLINFO * psi);
 	void						_getVerticalScrollInfo(SCROLLINFO * psi);

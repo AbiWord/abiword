@@ -28,12 +28,13 @@
 #include "ut_vector.h"
 #include "ap_Clipboard.h"
 #include "ap_Win32Clipboard.h"
+#include "pd_Document.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
 AP_Win32Clipboard::AP_Win32Clipboard(void)
-	: XAP_Win32Clipboard()
+	: XAP_Win32Clipboard(), m_pClipboardDoc(NULL)
 {
 #define AddFmt(szFormat,cf)	do { m_vecFormat.addItem((void*)szFormat); m_vecCF.addItem((void *)cf); } while (0)
 
@@ -49,3 +50,18 @@ AP_Win32Clipboard::AP_Win32Clipboard(void)
 
 #undef AddFmt
 }
+
+AP_Win32Clipboard::~AP_Win32Clipboard()
+{
+	if(m_pClipboardDoc)
+		m_pClipboardDoc->unref();
+}
+
+void AP_Win32Clipboard::setClipboardDoc(PD_Document * pDoc)
+{
+	if(m_pClipboardDoc)
+		m_pClipboardDoc->unref();
+		   
+	m_pClipboardDoc = pDoc;
+}
+

@@ -35,6 +35,26 @@
 #include "ie_types.h"
 #include "ut_string_class.h"
 
+/*
+  The following turns on code that tries to place data on the
+  clipboard on demand rather than blindly. The idea was that we place
+  data on clipboard in RTF format only, cache the document state, and
+  indicate that we can provide other formats if required.
+
+  The main advantage, obviously, is being able to provide data for the
+  clipboard in a myriad of formats, but without taking up system
+  resources.
+
+  At present this code is turned off, since we currently only put on
+  the clipboard RTF and text and the latter is quite undemading as far
+  as resources go. When we add more export formats, such as AW native,
+  this line should be uncommented.
+  
+  Tomas, June 28, 2003
+*/
+//#define COPY_ON_DEMAND
+
+
 class PD_DocumentRange;
 
 //////////////////////////////////////////////////////////////////
@@ -55,6 +75,13 @@ public:
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
+
+#ifdef COPY_ON_DEMAND
+	// see comments in the cpp file
+	bool                            copyFmtToClipboardOnDemand(UINT iFmt);
+	bool                            copyAllFmtsToClipboardOnDemand();
+#endif
+	
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting);
 	virtual bool					canPasteFromClipboard(void);
 	virtual void					cacheCurrentSelection(AV_View *) {};
@@ -86,7 +113,14 @@ public:
 	
 	
 	bool handleModelessDialogMessage( MSG * msg );
-		
+
+private:	
+	bool               _copyFmtToClipboard(PD_DocumentRange * pDocRange, UINT iFmt);
+	bool               _copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *pszFmt);
+#ifdef COPY_ON_DEMAND
+	bool               _cacheClipboardDoc(PD_DocumentRange *pDocRange);
+	void               _indicateFmtToClipboard(const char * pszFmt) const;
+#endif
 protected:
 
 	bool					_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const char * szFormat,

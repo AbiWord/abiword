@@ -29,16 +29,14 @@ class XAP_Win32Clipboard
 public:
 	XAP_Win32Clipboard(void);
 	
-	virtual bool			openClipboard(void);
+	virtual bool			openClipboard(HWND hWnd);
 	virtual bool			closeClipboard(void);
 	virtual bool			clearClipboard(void);
 	virtual bool			addData(const char* format, void* pData, UT_sint32 iNumBytes);
 	virtual HANDLE			getHandleInFormat(const char * format);
 	virtual bool			hasFormat(const char * format);
-	
-protected:
-	virtual UT_uint32		_convertFormatString(const char * format) const;
-	virtual const char *	_convertToFormatString(UT_uint32 fmt) const;
+	virtual UT_uint32		convertFormatString(const char * format) const;
+	virtual const char *	convertToFormatString(UT_uint32 fmt) const;
 
 	bool					m_bOpen;
 	UT_Vector				m_vecFormat;

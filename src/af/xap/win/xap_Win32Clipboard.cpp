@@ -33,12 +33,12 @@ XAP_Win32Clipboard::XAP_Win32Clipboard(void)
 	m_bOpen = false;
 }
 
-bool XAP_Win32Clipboard::openClipboard(void)
+bool XAP_Win32Clipboard::openClipboard(HWND hWnd)
 {
 	if (m_bOpen)
 		return false;
 
-	if (!OpenClipboard(NULL))
+	if (!OpenClipboard(hWnd))
 		return false;
 
 #ifdef DEBUG
@@ -70,7 +70,7 @@ bool XAP_Win32Clipboard::clearClipboard(void)
 
 bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNumBytes)
 {
-	UINT iFormat = _convertFormatString(format);
+	UINT iFormat = convertFormatString(format);
 	if (iFormat == 0)
 		return false;
 
@@ -89,7 +89,7 @@ bool XAP_Win32Clipboard::addData(const char * format, void* pData, UT_sint32 iNu
 
 HANDLE XAP_Win32Clipboard::getHandleInFormat(const char * format)
 {
-	UINT iFormat = _convertFormatString(format);
+	UINT iFormat = convertFormatString(format);
 	if (iFormat == 0)
 		return NULL;
 
@@ -106,7 +106,7 @@ bool XAP_Win32Clipboard::hasFormat(const char * format)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-UT_uint32 XAP_Win32Clipboard::_convertFormatString(const char * format) const
+UT_uint32 XAP_Win32Clipboard::convertFormatString(const char * format) const
 {
 	// convert from named type (like "text-8bit") to a registered
 	// clipboard format (either a MSFT-defined CF_ symbol or something
@@ -122,7 +122,7 @@ UT_uint32 XAP_Win32Clipboard::_convertFormatString(const char * format) const
 	return 0;
 }
 
-const char * XAP_Win32Clipboard::_convertToFormatString(UT_uint32 fmt) const
+const char * XAP_Win32Clipboard::convertToFormatString(UT_uint32 fmt) const
 {
 	// convert from a CF_ symbol or something that we registered
 	// into a named format type (like "text-8bit").

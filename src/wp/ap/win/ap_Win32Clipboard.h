@@ -36,11 +36,19 @@
 #define AP_CLIPBOARD_BMP					"bitmap"
 #define AP_CLIPBOARD_UNKNOWN 				"unknown"
 
+class PD_Document;
 
 class AP_Win32Clipboard : public XAP_Win32Clipboard
 {
 public:
 	AP_Win32Clipboard(void);
+	~AP_Win32Clipboard();
+
+	void setClipboardDoc(PD_Document * pDoc);
+	PD_Document * getClipboardDoc() {return m_pClipboardDoc;}
+	
+private:
+	PD_Document * m_pClipboardDoc;
 };
 
 #endif /* AP_WIN32CLIPBOARD_H */
