@@ -148,6 +148,8 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	_DS(FORMATTABLE_TEXT_BACKGROUND,	DLG_FormatTable_Background);
 	_DS(FORMATTABLE_TEXT_PREVIEW,		DLG_FormatTable_Preview);
 	_DS(FORMATTABLE_TEXT_BORDER,		DLG_FormatTable_Border_Color);
+	_DS(FORMATTABLE_TEXT_BORDERS, 		DLG_FormatTable_Borders);
+	_DS(FORMATTABLE_TEXT_BACKGROUNDS, 	DLG_FormatTable_Background);
 	
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatTableTitle));	
 	
@@ -164,7 +166,7 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 
 	m_pPreviewWidget = new XAP_Win32PreviewWidget(static_cast<XAP_Win32App *>(m_pApp),  hwndChild, 0);	
 	m_pPreviewWidget->getWindowSize(&w,&h);
-	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), m_pPreviewWidget->getGraphics()->tlu(w), 	m_pPreviewWidget->getGraphics()->tlu(h));	
+	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);	
 	m_pPreviewWidget->setPreview(m_pFormatTablePreview); 
 							
 	startUpdater();
@@ -276,7 +278,7 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			applyChanges();			
 			return 1;			
 			
-		default:							// we did not handle this notification
+		default:							// we did not handle this notification 
 			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 			return 0;						// return zero to let windows take care of it.
 	}
