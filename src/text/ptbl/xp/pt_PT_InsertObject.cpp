@@ -41,13 +41,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 								 const XML_Char ** attributes,
 								 const XML_Char ** properties,  pf_Frag_Object ** ppfo)
 {
-	if(!_realInsertObject(dpos, pto, attributes, properties, ppfo))
-		return false;
-
 	if(m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
-		const XML_Char ** ppRevAttrib = NULL;
+		const XML_Char ** ppRevAttrs  = NULL;
 		const XML_Char ** ppRevProps  = NULL;
 
 		pf_Frag * pf = NULL;
@@ -58,12 +55,45 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
 		UT_uint32 length = pf->getLength();
 		
-		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps);
-		
-		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
-	}
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
+									ppRevAttrs, ppRevProps, NULL, NULL);
 
-	return true;
+		// count original attributes and the revision-inherited attributes and add them to the revision attribute
+		UT_uint32 iAttrCount = 0;
+		for (; attributes && attributes[iAttrCount]; iAttrCount++){}
+
+		UT_uint32 iRevAttrCount = 0;
+		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount++){}
+
+		const XML_Char ** ppRevAttrib = NULL;
+		if(iAttrCount + iRevAttrCount > 0)
+		{
+			ppRevAttrib = new const XML_Char * [iAttrCount + iRevAttrCount + 1];
+			UT_return_val_if_fail( ppRevAttrib, false );
+
+			UT_uint32 i = 0;
+			for (i = 0; i < iAttrCount; ++i)
+			{
+				ppRevAttrib[i] = attributes[i];
+			}
+
+			for (; i < iRevAttrCount + iAttrCount; ++i)
+			{
+				ppRevAttrib[i] = ppRevAttrs[i - iAttrCount];
+			}
+		
+			ppRevAttrib[i]   = NULL;
+		}
+		
+		//return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
+		bool bRet =  _realInsertObject(dpos, pto, ppRevAttrib, ppRevProps, ppfo);
+		delete [] ppRevAttrib;
+		return bRet;
+	}
+	else
+	{
+		return _realInsertObject(dpos, pto, attributes, properties, ppfo);
+	}
 }
 
 bool pt_PieceTable::insertObject(PT_DocPosition dpos,
@@ -71,13 +101,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 								 const XML_Char ** attributes,
 								 const XML_Char ** properties )
 {
-	if(!_realInsertObject(dpos, pto, attributes, properties))
-		return false;
-
 	if(m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
-		const XML_Char ** ppRevAttrib = NULL;
+		const XML_Char ** ppRevAttrs = NULL;
 		const XML_Char ** ppRevProps  = NULL;
 
 		pf_Frag * pf = NULL;
@@ -88,12 +115,45 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
 		UT_uint32 length = pf->getLength();
 
-		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps);
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
+									ppRevAttrs, ppRevProps, attributes, properties);
 		
-		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
-	}
+		// count original attributes and the revision-inherited attributes and add them to the revision attribute
+		UT_uint32 iAttrCount = 0;
+		for (; attributes && attributes[iAttrCount]; iAttrCount++){}
 
-	return true;
+		UT_uint32 iRevAttrCount = 0;
+		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount++){}
+
+		const XML_Char ** ppRevAttrib = NULL;
+		if(iAttrCount + iRevAttrCount > 0)
+		{
+			ppRevAttrib = new const XML_Char * [iAttrCount + iRevAttrCount + 1];
+			UT_return_val_if_fail( ppRevAttrib, false );
+
+			UT_uint32 i = 0;
+			for (i = 0; i < iAttrCount; ++i)
+			{
+				ppRevAttrib[i] = attributes[i];
+			}
+
+			for (; i < iRevAttrCount + iAttrCount; ++i)
+			{
+				ppRevAttrib[i] = ppRevAttrs[i - iAttrCount];
+			}
+		
+			ppRevAttrib[i]   = NULL;
+		}
+
+		// return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
+		bool bRet = _realInsertObject(dpos, pto, ppRevAttrib, ppRevProps);
+		delete [] ppRevAttrib;
+		return bRet;
+	}
+	else
+	{
+		return _realInsertObject(dpos, pto, attributes, properties);
+	}
 }
 
 bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,

@@ -49,6 +49,8 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 							   UT_uint32 length, fd_Field * pField,
 							   bool bAddChangeRec)
 {
+	// since span insertion never includes attrs and props, the revsion marking has to be inserted
+	// using a separate call to _realChangeSpanFmt()
 	if(!_realInsertSpan(dpos, p, length, pField, bAddChangeRec))
 		return false;
 
@@ -65,7 +67,7 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
 
-		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps);
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps, 0, 0);
 		
 		return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
 	}

@@ -526,7 +526,9 @@ protected:
 	bool                    _translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
 														PP_RevisionType eType,
 														const XML_Char ** & ppRevAttrib,
-														const XML_Char ** & ppRevProps);
+														const XML_Char ** & ppRevProps,
+														const XML_Char **   ppAttrib,
+														const XML_Char **   ppProps);
 	
 
 	PTState					m_pts;		/* are we loading or editing */

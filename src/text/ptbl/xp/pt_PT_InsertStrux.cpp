@@ -52,11 +52,16 @@
     ppRevAttrib -- pointers to arrays of attributes and properties; the actual props and attribs are
     ppRevProps     found inside the Revisions variable, so the returned pointers are only valid
                    within the Revisions scope !!!.
+
+    ppAttrib -- pointers to any attributes/properties that are to be added to this revision, can be NULL
+    ppProps
 */
 bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
 												PP_RevisionType eType,
 												const XML_Char ** & ppRevAttrib,
-												const XML_Char ** & ppRevProps)
+												const XML_Char ** & ppRevProps,
+												const XML_Char **   ppAttrib,
+												const XML_Char **   ppProps)
 {
 	// foolproofing
 	ppRevAttrib = NULL;
@@ -88,7 +93,7 @@ bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_
 			PP_RevisionAttr Revisions2(NULL);
 
 			// now add the revision attribute
-			Revisions2.addRevision(m_pDocument->getRevisionId(),eType,NULL,NULL);
+			Revisions2.addRevision(m_pDocument->getRevisionId(),eType,ppAttrib,ppProps);
 			const_cast<PP_AttrProp*>(pRevisedAP)->setAttribute(name, Revisions2.getXMLstring());
 		}
 	}
@@ -97,7 +102,7 @@ bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_
 	{
 		// there was either no pAP or no pRev, just add the current revision ...
 		// we need to create a rev. instance in Revisions
-		Revisions.addRevision(m_pDocument->getRevisionId(),eType,NULL,NULL);
+		Revisions.addRevision(m_pDocument->getRevisionId(),eType,ppAttrib,ppProps);
 		pRevisedAP = Revisions.getLastRevision();
 		UT_return_val_if_fail( pRevisedAP, false );
 
@@ -116,11 +121,15 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 								PTStruxType pts,
 								pf_Frag_Strux ** ppfs_ret)
 {
-	if(!_realInsertStrux(dpos,pts,0,0,ppfs_ret))
-		return false;
-
 	if(m_pDocument->isMarkRevisions())
 	{
+		// when the strux is inserted in non-revision mode, it inherits the AP from the previous
+		// strux. In revision mode this does not necessarily work because we may need to have a
+		// different revision attribute. Consequently, we need to ensure that the AP that gets
+		// assigned to the new strux contains all relevant attrs and props from the AP of the
+		// previous strux -- we do this by obtaining the index of the AP of the previous strux and
+		// running it through _translateRevisionAttribute() which will gives back all attrs and
+		// props that need to be passed to _realInsertStrux()
 		pf_Frag_Strux * pfsContainer = NULL;
 		bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer); // the orig. strux
 		UT_return_val_if_fail(bFoundContainer, false);
@@ -141,48 +150,15 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		const XML_Char ** ppRevAttrib = NULL;
 		const XML_Char ** ppRevProps  = NULL;
 
-		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps);
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps, 0, 0);
 
-		UT_uint32 iLen;
-
-		switch (pts)
-		{
-			case PTX_Block:
-				iLen = pf_FRAG_STRUX_BLOCK_LENGTH;
-				break;
-
-			case PTX_Section:
-			case PTX_SectionHdrFtr:
-			case PTX_SectionEndnote:
-			case PTX_SectionTable:
-			case PTX_SectionCell:
-			case PTX_SectionFootnote:
-			case PTX_SectionMarginnote:
-			case PTX_SectionFrame:
-			case PTX_SectionTOC:
-			case PTX_EndCell:
-			case PTX_EndTable:
-			case PTX_EndFootnote:
-			case PTX_EndEndnote:
-			case PTX_EndMarginnote:
-			case PTX_EndFrame:
-			case PTX_EndTOC:
-				iLen = pf_FRAG_STRUX_SECTION_LENGTH;
-				break;
-
-			default:
-				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-				iLen = 1;
-				break;
-		}
-
-		dpos += iLen; // we want to change the format of the new
-					  // strux, not the old one
-
-		return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,ppRevProps,pts);
+		//return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,ppRevProps,pts);
+		return _realInsertStrux(dpos,pts,ppRevAttrib,ppRevProps,ppfs_ret);
 	}
-
-	return true;
+	else
+	{
+		return _realInsertStrux(dpos,pts,0,0,ppfs_ret);
+	}
 }
 
 bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
@@ -191,61 +167,70 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 								const XML_Char ** properties,
 								pf_Frag_Strux ** ppfs_ret)
 {
-
-	if(!_realInsertStrux(dpos,pts,attributes,properties,ppfs_ret))
-		return false;
-
 	if(m_pDocument->isMarkRevisions())
 	{
-		PP_RevisionAttr Revisions(NULL);
-		Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_ADDITION,attributes,properties);
-
-		const XML_Char name[] = "revision";
-		const XML_Char * ppRevAttrib[3];
-		ppRevAttrib[0] = name;
-		ppRevAttrib[1] = Revisions.getXMLstring();
-		ppRevAttrib[2] = NULL;
-
-		UT_uint32 iLen;
-
-		switch (pts)
+		// This is just like the previous method, except that in addition to calling
+		// _translateRevisionAttribute() we also need to set the attrs and props
+		// passed to us.
+		pf_Frag_Strux * pfsContainer = NULL;
+		bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer); // the orig. strux
+		UT_return_val_if_fail(bFoundContainer, false);
+	
+		if(isEndFootnote(pfsContainer))
 		{
-			case PTX_Block:
-				iLen = pf_FRAG_STRUX_BLOCK_LENGTH;
-				break;
-
-			case PTX_Section:
-			case PTX_SectionHdrFtr:
-			case PTX_SectionEndnote:
-			case PTX_SectionTable:
-			case PTX_SectionCell:
-			case PTX_SectionFootnote:
-			case PTX_SectionMarginnote:
-			case PTX_SectionFrame:
-			case PTX_SectionTOC:
-			case PTX_EndCell:
-			case PTX_EndTable:
-			case PTX_EndFootnote:
-			case PTX_EndEndnote:
-			case PTX_EndMarginnote:
-			case PTX_EndFrame:
-		    case PTX_EndTOC:	
-				iLen = pf_FRAG_STRUX_SECTION_LENGTH;
-				break;
-
-			default:
-				UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
-				iLen = 1;
-				break;
+			bFoundContainer = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
+			UT_return_val_if_fail(bFoundContainer, false);
 		}
 
-		dpos += iLen; // we want to change the format of the new
-					  // strux, not the old one
+		PT_AttrPropIndex indexAP = 0;
+		if (pfsContainer->getStruxType() == pts)
+		{
+			indexAP = pfsContainer->getIndexAP();
+		}
 
-		return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,NULL,pts);
+		PP_RevisionAttr Revisions(NULL);
+		const XML_Char ** ppRevAttrs = NULL;
+		const XML_Char ** ppRevProps  = NULL;
+
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
+									ppRevAttrs, ppRevProps, NULL, NULL);
+
+		// count original attributes and the revision-inherited attributes and add them to the revision attribute
+		UT_uint32 iAttrCount = 0;
+		for (; attributes && attributes[iAttrCount]; iAttrCount++){}
+
+		UT_uint32 iRevAttrCount = 0;
+		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount++){}
+
+		const XML_Char ** ppRevAttrib = NULL;
+		if(iAttrCount + iRevAttrCount > 0)
+		{
+			ppRevAttrib = new const XML_Char * [iAttrCount + iRevAttrCount + 1];
+			UT_return_val_if_fail( ppRevAttrib, false );
+
+			UT_uint32 i = 0;
+			for (i = 0; i < iAttrCount; ++i)
+			{
+				ppRevAttrib[i] = attributes[i];
+			}
+
+			for (; i < iRevAttrCount + iAttrCount; ++i)
+			{
+				ppRevAttrib[i] = ppRevAttrs[i - iAttrCount];
+			}
+		
+			ppRevAttrib[i]   = NULL;
+		}
+		
+		//return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,NULL,pts);
+		bool bRet = _realInsertStrux(dpos,pts,ppRevAttrib,properties,ppfs_ret);
+		delete [] ppRevAttrib;
+		return bRet;
 	}
-
-	return true;
+	else
+	{
+		return _realInsertStrux(dpos,pts,attributes,properties,ppfs_ret);
+	}
 }
 
 
