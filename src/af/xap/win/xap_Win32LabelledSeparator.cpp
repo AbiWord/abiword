@@ -19,6 +19,12 @@
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+
+/* Force MSVC5 to use WNDPROC and not FARPROC for CallWindowProc 
+ * this must be defined before including winuser.h via windows.h
+ */
+#define STRICT
+
 #include "xap_Win32App.h"
 #include "xap_Win32LabelledSeparator.h"
 #include <CommCtrl.h>
@@ -141,11 +147,7 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		break;
 	}
 
-	return CallWindowProc(
-#if defined(_MSC_VER) && (_MSC_VER <= 1100)  /* VC5==1100, VC6==1200 */
-		(FARPROC) /* MSVC5 seems to want FARPROC here, else its a WNDPROC */
-#endif
-		s_pfnWndProc, hwnd, iMsg, wParam, lParam);   	
+	return CallWindowProc(s_pfnWndProc, hwnd, iMsg, wParam, lParam);   	
 }
 
 /*!
