@@ -267,12 +267,6 @@ void fp_Line::runSizeChanged(void *p, UT_sint32 oldWidth, UT_sint32 newWidth)
 	{
 		fp_RunInfo* pInfo = (fp_RunInfo*) m_vecRunInfos.getNthItem(i);
 
-		/*
-		  The following line is suspect.  We're getting things
-		  erased that aren't supposed to be.  Is the Run struct
-		  actually in sync with its notion of its screen position?
-		  If not, we'll be erasing random stuff here.
-		*/
 		pInfo->pRun->clearScreen();
 		
 		if (pRI == pInfo)

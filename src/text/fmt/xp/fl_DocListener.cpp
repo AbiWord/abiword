@@ -340,7 +340,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					}
 					else
 					{
-//						pBL->setNeedsReformat(UT_TRUE);
 						pBL->reformat();
 					}
 
@@ -348,7 +347,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					m_pLayout->reformat();
 
 					if (pView)
+					{
 						pView->_setPoint(pcr->getPosition()+len);
+					}
 				}
 				return UT_TRUE;
 					
