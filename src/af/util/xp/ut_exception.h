@@ -47,6 +47,7 @@
 #define ABI_DOESNT_SUPPORT_EXCEPTIONS = 1
 #endif
 
+//
 // UT_TRY will begin a 'try' block
 // UT_CATCH will 'catch' a specific exception type
 // UT_END_CATCH evaluates to nothing, basically, but use it
@@ -56,6 +57,9 @@
 // UT_THROWS will declare a C++ method as throwing an exception
 //           usage:
 //           UT_THROWS((MyException1, MyException2))
+// UT_RETHROW will rethrow a caught exception from within the 
+//            exception handler
+//
 
 #ifdef ABI_DOESNT_SUPPORT_EXCEPTIONS
 
@@ -75,7 +79,7 @@
 #define UT_END_CATCH    }
 #define UT_THROW(x)     (void)0
 #define UT_CATCH_ANY    (void)0
-#define UT_RETHROW      (void)0;
+#define UT_RETHROW      (void)0
 
 #else
 
