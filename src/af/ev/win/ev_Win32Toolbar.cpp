@@ -319,6 +319,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 				WS_CHILD | WS_VISIBLE 
 				| WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
 				| TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
+				| ( bText && !bIcons ? TBSTYLE_LIST : 0 )
 				| CCS_NOPARENTALIGN | CCS_NODIVIDER
 				| CCS_NORESIZE
 				,						// window style
@@ -342,13 +343,16 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	// size.  we could go thru the layout twice and compute the
 	// maxium before calling this, but this seems overkill since
 	// we know at compile time what all of the bitmaps are....
-	// so, let's just put in the code to assert if someone adds
-	// an overly large bitmap to the source....
+	//
+	// Now bitmaps are cut down to requested size if to large - HB
 	
-#define MY_MAXIMUM_BITMAP_X		24
-#define MY_MAXIMUM_BITMAP_Y		24
-	SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0,
-				(LPARAM) MAKELONG(MY_MAXIMUM_BITMAP_X,MY_MAXIMUM_BITMAP_Y));
+#define MY_MAXIMUM_BITMAP_X		21
+#define MY_MAXIMUM_BITMAP_Y		21
+	if( bIcons )
+		SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0,
+					(LPARAM) MAKELONG(MY_MAXIMUM_BITMAP_X,MY_MAXIMUM_BITMAP_Y));
+	else
+		SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0, (LPARAM) MAKELONG(0,0));
 
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);
 	UT_RGBColor backgroundColor(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
@@ -552,6 +556,8 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 					if (bText)
 					{
 						const char * szLabel = pLabel->getToolbarLabel();
+						// As long as translators don't cut the text short, we need to autosize just to squize anything insize 1280 :)
+						tbb.fsStyle |= TBSTYLE_AUTOSIZE;
 						tbb.iString = SendMessage(m_hwnd, TB_ADDSTRING, (WPARAM) 0, (LPARAM) (LPSTR) szLabel);
 					}
 					
@@ -644,11 +650,11 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
 	rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
 	rbbi.fStyle = RBBS_NOVERT |	// do not display in vertical orientation
-		RBBS_CHILDEDGE | 
+		/* RBBS_CHILDEDGE | */  // NOT using RBBS_CHILDEDGE gives us a slimmer look, better with the flat button style
 		RBBS_BREAK |
 		0;
 	rbbi.hwndChild = m_hwnd;
-	rbbi.cxMinChild = 0;
+	rbbi.cxMinChild = LOWORD(dwBtnSize);
 	rbbi.cyMinChild = HIWORD(dwBtnSize);
 	rbbi.cx = iWidth;
 

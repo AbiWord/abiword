@@ -49,17 +49,22 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 
 	// first row contains: width height, number of colors, chars per pixel
 
-	UT_uint32 width, height, nrColors, charsPerPixel;
+	UT_uint32 width, height, xpm_width, xpm_height, nrColors, charsPerPixel;
+	UT_uint32 cut_left, cut_top;
 	UT_uint32 n = sscanf(pIconData[0],"%ld %ld %ld %ld",
-						 &width,&height,&nrColors,&charsPerPixel);
+						 &xpm_width,&xpm_height,&nrColors,&charsPerPixel);
 	UT_ASSERT(n == 4);
-	UT_ASSERT(width > 0);
-	UT_ASSERT(height > 0);
+	UT_ASSERT(xpm_width > 0);
+	UT_ASSERT(xpm_height > 0);
 	UT_ASSERT((nrColors > 0) && (nrColors < 256));
 	UT_ASSERT(charsPerPixel > 0);
 
-	UT_ASSERT(width <= maxWidth);
-	UT_ASSERT(height <= maxHeight);
+	width = xpm_width < maxWidth ? xpm_width : maxWidth;
+	cut_left = xpm_width - width;
+	cut_left -= cut_left / 2;
+	height = xpm_height < maxHeight ? xpm_height : maxHeight;
+	cut_top = xpm_height - height;
+	cut_top -= cut_top / 2;
 	
 	UT_uint32 sizeofColorData = nrColors * sizeof(RGBQUAD);
 	UT_uint32 widthRoundedUp = _RoundUp(width,sizeof(LONG));
@@ -146,8 +151,9 @@ UT_Bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 	const char ** pIconDataImage = &pIconDataPalette[nrColors];
 	for (UT_uint32 kRow=0; (kRow < height); kRow++)
 	{
-		const char * p = pIconDataImage[kRow];
+		const char * p = pIconDataImage[kRow+cut_top];
 		
+		p += cut_left * charsPerPixel;
 		for (UT_uint32 kCol=0; (kCol < width); kCol++)
 		{
 			char bufPixel[10];
