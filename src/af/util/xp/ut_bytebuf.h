@@ -47,7 +47,7 @@ public:
 	bool				insertFromFile(UT_uint32 iPosition, const char* pszFilename);
 	bool                insertFromFile(UT_uint32 iPosition, FILE * fp);
 	
-protected:
+private:
 	bool				_byteBuf(UT_uint32 spaceNeeded);
 
 	UT_Byte *			m_pBuf;

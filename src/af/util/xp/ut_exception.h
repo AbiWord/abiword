@@ -88,7 +88,7 @@
 #if defined(ABI_DOESNT_SUPPORT_EXCEPTIONS) || defined(ABI_DOESNT_SUPPORT_THROWS)
 #define UT_THROWS(x)
 #else
-#define UT_THROWS(x)     throw(x)
+#define UT_THROWS(x)     throw x
 #endif
 
 #endif /* UT_EXCEPTION_H */

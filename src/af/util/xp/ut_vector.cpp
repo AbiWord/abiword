@@ -29,12 +29,9 @@
 #ifndef ABI_OPT_STL
 
 UT_Vector::UT_Vector(UT_uint32 sizehint)
+  : m_pEntries(NULL), m_iCount(0), m_iSpace(0),
+    m_iCutoffDouble(sizehint), m_iPostCutoffIncrement(32)
 {
-	m_iCutoffDouble = sizehint;		/* After this point we stop doubling our allocations */		
-	m_iPostCutoffIncrement = 32;	/* We only increment the array by this much after our allocations */
-	m_iCount = 0;					/* The number of slots we have filled */
-	m_iSpace = 0;					/* The number of slots we have allocated */
-	m_pEntries = NULL;				/* The actual array of pointers itself */
 }
 
 UT_Vector::UT_Vector(const UT_Vector& utv)

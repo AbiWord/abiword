@@ -33,7 +33,7 @@ public:
 	bool			viewTop(void ** ppVoid) const;
 	UT_uint32		getDepth(void) const;
 
-protected:
+private:
 	UT_Vector		m_vecStack;
 };
 

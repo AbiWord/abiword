@@ -43,8 +43,12 @@ auto_iconv::auto_iconv(iconv_t iconv)
  * Convert characters from in_charset to out_charset
  */
 auto_iconv::auto_iconv(const char * in_charset, const char *out_charset)
+  UT_THROWS((iconv_t))
 {
   m_h = iconv_open (out_charset, in_charset);
+  
+  if (!is_valid())
+    UT_THROW(m_h);
 }
 
 /*!
@@ -52,7 +56,7 @@ auto_iconv::auto_iconv(const char * in_charset, const char *out_charset)
  */
 auto_iconv::~auto_iconv() 
 { 
-  if (m_h != (iconv_t)-1) 
+  if (is_valid()) 
     { 
       iconv_close(m_h); 
     } 
@@ -97,12 +101,12 @@ void UT_iconv_reset(iconv_t cd)
  * TODO: Check for out-of-memory allocations etc.
  */
 extern "C"
-char *UT_convert(const char*	str,
-		UT_uint32	len,
-		const char*	to_codeset,
-		const char*	from_codeset,
-		UT_uint32*	bytes_read_arg,
-		UT_uint32*	bytes_written_arg)
+char * UT_convert(const char*	str,
+		  UT_uint32	len,
+		  const char*	to_codeset,
+		  const char*	from_codeset,
+		  UT_uint32*	bytes_read_arg,
+		  UT_uint32*	bytes_written_arg)
 {
 
 	if (!str || !to_codeset || !from_codeset)
@@ -118,102 +122,110 @@ char *UT_convert(const char*	str,
 	UT_uint32& bytes_read = bytes_read_arg ? *bytes_read_arg : bytes_read_local; 
 	UT_uint32& bytes_written = bytes_written_arg ? *bytes_written_arg : bytes_written_local;
 
-	auto_iconv cd(to_codeset, from_codeset);
+	UT_TRY
+	  {
+	    auto_iconv cd(to_codeset, from_codeset);
 
-	if (!cd.is_valid())
-	{
-		bytes_read = 0;
-		bytes_written = 0;
-		return NULL;
-	}
-
-	if (len < 0)
-	{
+	    if (len < 0)
+	      {
 		len = strlen(str);
-	}
-
-	const char* p = str;
-	size_t inbytes_remaining = len;
-
-	/* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
-	/* + 1 for nul in case len == 1 */
-	size_t outbuf_size = ((len + 3) & ~3) + 15;
-	size_t outbytes_remaining = outbuf_size - 1; /* -1 for nul */
-
-	char* pDest = (char*)malloc(outbuf_size);
-	char* outp = pDest;
-
-	bool have_error = false;
-	bool bAgain = true;
-
-	while (bAgain)
-	{
+	      }
+	    
+	    const char* p = str;
+	    size_t inbytes_remaining = len;
+	    
+	    /* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
+	    /* + 1 for nul in case len == 1 */
+	    size_t outbuf_size = ((len + 3) & ~3) + 15;
+	    size_t outbytes_remaining = outbuf_size - 1; /* -1 for nul */
+	    
+	    char* pDest = (char*)malloc(outbuf_size);
+	    char* outp = pDest;
+	    
+	    bool have_error = false;
+	    bool bAgain = true;
+	    
+	    while (bAgain)
+	      {
   		size_t err = iconv(cd,
 				   const_cast<ICONV_CONST char**>(&p),
 				   &inbytes_remaining,
 				   &outp, &outbytes_remaining);
-
+		
 		if (err == (size_t) -1)
-		{
-			switch (errno)
-			{
-			case EINVAL:
+		  {
+		    switch (errno)
+		      {
+		      case EINVAL:
 				/* Incomplete text, do not report an error */
-				bAgain = false;
-				break;
-			case E2BIG:
-				{
-					size_t used = outp - pDest;
-
-					/* glibc's iconv can return E2BIG even if there is space
-					 * remaining if an internal buffer is exhausted. The
-					 * folllowing is a heuristic to catch this. The 16 is
-					 * pretty arbitrary.
-					*/
-					if (used + 16 > outbuf_size)
-					{
-						outbuf_size = outbuf_size  + 15;
-						pDest = (char*)realloc(pDest, outbuf_size);
-						
-						outp = pDest + used;
-						outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
-					}
-
-					bAgain = true;
-					break;
-				}
-			default:
-				have_error = true;
-				bAgain = false;
-				break;
+			bAgain = false;
+			break;
+		      case E2BIG:
+			{
+			  size_t used = outp - pDest;
+			  
+			  /* glibc's iconv can return E2BIG even if there is space
+			   * remaining if an internal buffer is exhausted. The
+			   * folllowing is a heuristic to catch this. The 16 is
+			   * pretty arbitrary.
+			   */
+			  if (used + 16 > outbuf_size)
+			    {
+			      outbuf_size = outbuf_size  + 15;
+			      pDest = (char*)realloc(pDest, outbuf_size);
+			      
+			      outp = pDest + used;
+			      outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
+			    }
+			  
+			  bAgain = true;
+			  break;
 			}
-		} else {
-		  bAgain = false;
-		}
-	}
-
-	*outp = '\0';
-  
-	const size_t nNewLen = p - str;
-
-	if (bytes_read_arg)
-	{
-		bytes_read = nNewLen;
-	}
-	else
-	{
-		if (nNewLen != len) 
-		{
+		      default:
 			have_error = true;
-		}
-	}
-
-	bytes_written = outp - pDest;	/* Doesn't include '\0' */
-
-	if (have_error && pDest)
-	{
+			bAgain = false;
+			break;
+		      }
+		  } 
+		else 
+		  {
+		    bAgain = false;
+		  }
+	      }
+	    
+	    *outp = '\0';
+	    
+	    const size_t nNewLen = p - str;
+	    
+	    if (bytes_read_arg)
+	      {
+		bytes_read = nNewLen;
+	      }
+	    else
+	      {
+		if (nNewLen != len) 
+		  {
+		    have_error = true;
+		  }
+	      }
+	    
+	    bytes_written = outp - pDest;	/* Doesn't include '\0' */
+	    
+	    if (have_error && pDest)
+	      {
 		free(pDest);
-	}
+	      }
 
-	return have_error?NULL:pDest;
+	    if (have_error)
+	      return NULL;
+
+	    return pDest;
+	  }
+	UT_CATCH(UT_CATCH_ANY)
+	  {
+	    bytes_read = 0;
+	    bytes_written = 0;
+	    return NULL;
+	  }
+	UT_END_CATCH
 }

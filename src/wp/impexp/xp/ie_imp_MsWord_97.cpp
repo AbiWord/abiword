@@ -42,6 +42,9 @@
 
 #define X_CheckError(v)			do { if (!(v)) return 1; } while (0)
 
+// undef this to disable support for older images (<= Word95)
+#define SUPPORTS_OLD_IMAGES 1
+
 //
 // Just FYI, "dir" and "dom-dir" only get set if BIDI_ENABLED is set.
 // Regardless of BIDI_ENABLED, if CHP::fBidi == 1, the BiDi versions

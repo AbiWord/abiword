@@ -20,8 +20,13 @@
 #ifndef UT_ICONV_H
 #define UT_ICONV_H
 
+// make freebsd happy
+extern "C" {
 #include <iconv.h>
+}
+
 #include "ut_types.h"
+#include "ut_exception.h"
 
 typedef void* UT_iconv_t;
 
@@ -30,9 +35,13 @@ class auto_iconv
  public:
 
   explicit auto_iconv(iconv_t iconv);
-  explicit auto_iconv(const char * in_charset, const char *out_charset);
+
+  explicit auto_iconv(const char * in_charset, const char *out_charset)
+    UT_THROWS((iconv_t));
   ~auto_iconv();
   operator iconv_t();
+
+ protected:
   bool is_valid() const;
 
  private:

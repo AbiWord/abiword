@@ -65,6 +65,7 @@ public:
 protected:
 	UT_Timer();		// should only be called from static_constructor()
 
+ private:
 	void* m_pInstanceData;
 	UT_TimerCallback m_pCallback;
 	UT_uint32 m_iIdentifier;

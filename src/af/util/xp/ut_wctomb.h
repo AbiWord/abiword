@@ -27,22 +27,19 @@ size_t wcrtomb(char *,wchar_t,mbstate_t *);
 
 class UT_Wctomb
 {
-  mbstate_t m_state;
 public:
   void initialize();
   UT_Wctomb();
   int wctomb(char * pC,int &length,wchar_t wc);
+ private:
+  mbstate_t m_state;
 };
 #else /*portable version using iconv*/
 
-// make freebsd happy - sam 11-1-00
-extern "C" {
-#include "iconv.h"
-}
+#include "ut_iconv.h"
 
 class UT_Wctomb
 {
-  iconv_t cd;
 public:
   void initialize();
   UT_Wctomb();
@@ -53,6 +50,8 @@ public:
   void wctomb_or_fallback(char * pC,int &length,wchar_t wc);  
   
   void setOutCharset(const char* charset);
+ private:
+  iconv_t cd;
 };
 #endif
 #endif // UT_WCTOMB_H

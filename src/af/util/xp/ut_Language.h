@@ -25,7 +25,7 @@ public:
 	UT_uint32 	getIndxFromProperty(const XML_Char * prop);
 	UT_uint32 	getIdFromProperty(const XML_Char * prop);
 
-protected:
+private:
 	static bool	s_Init;
 };
 

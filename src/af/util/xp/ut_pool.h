@@ -31,7 +31,7 @@ public:
 	~UT_StringPool();
 	char* addString(const char*);
 
-protected:
+private:
 	int	addBucket(int);
 
 	struct UT_PoolBucket

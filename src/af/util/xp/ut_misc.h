@@ -62,8 +62,6 @@ public:
 	UT_sint32	top;
 	UT_sint32	width;
 	UT_sint32	height;
-
-protected:
 };
 
 // ----------------------------------------------------------------

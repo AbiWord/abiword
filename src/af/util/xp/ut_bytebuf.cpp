@@ -30,23 +30,18 @@
 #define MIN_CHUNK			256
 
 UT_ByteBuf::UT_ByteBuf(UT_uint32 iChunk)
+  : m_pBuf(0), m_iSize(0), m_iSpace(0)
 {
 	if (iChunk < MIN_CHUNK)
 		iChunk = DEFAULT_CHUNK;
 	m_iChunk = iChunk;
 
-	// since constructors cannot report failure, we defer
-	// the malloc until the first use.
-
-	m_pBuf = 0;
-	m_iSize = 0;
-	m_iSpace = 0;
+	// we defer the malloc until the first use.
 }
 
 UT_ByteBuf::~UT_ByteBuf()
 {
-	if (m_pBuf)
-		free(m_pBuf);
+  FREEP(m_pBuf);
 }
 
 bool UT_ByteBuf::_byteBuf(UT_uint32 spaceNeeded)

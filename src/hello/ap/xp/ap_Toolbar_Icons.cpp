@@ -47,7 +47,7 @@ struct _it
 	UT_uint32					m_sizeofVariable;
 };
 
-#define DefineToolbarIcon(name)		{ #name, (const char **) ##name, sizeof(##name)/sizeof(##name[0]) },
+#define DefineToolbarIcon(name)		{ #name, (const char **) name, sizeof(name)/sizeof(name[0]) },
 
 static struct _it s_itTable[] =
 {

@@ -26,26 +26,21 @@ typedef int mbstate_t;
 
 class UT_Mbtowc
 {
-  char m_buf[MB_LEN_MAX];
-  int m_bufLen;
-  mbstate_t m_state;
-public:
+ public:
   void initialize();
   UT_Mbtowc();
   int mbtowc(wchar_t &wc,char mb);
+ private:
+  char m_buf[MB_LEN_MAX];
+  int m_bufLen;
+  mbstate_t m_state;
 };
 #else
 
-//make freebsd happy -sam 11-1-00
-extern "C" {
-#include "iconv.h"
-}
+#include "ut_iconv.h"
 
 class UT_Mbtowc
 {
-  char m_buf[MB_LEN_MAX];
-  int m_bufLen;
-  iconv_t cd;
 public:
   void initialize();
   UT_Mbtowc();
@@ -54,6 +49,10 @@ public:
   ~UT_Mbtowc();  
   int mbtowc(wchar_t &wc,char mb);
   void setInCharset(const char* charset);
+ private:
+  char m_buf[MB_LEN_MAX];
+  int m_bufLen;
+  iconv_t cd;
 };
 
 #endif

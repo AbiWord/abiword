@@ -43,7 +43,7 @@ public:
 	UT_uint32			getLength(void) const;
 	UT_uint16 *			getPointer(UT_uint32 position) const;				/* temporary use only */
 	
-protected:
+private:
 	bool				_growBuf(UT_uint32 spaceNeeded);
 
 	UT_uint16 *			m_pBuf;

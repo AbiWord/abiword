@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#include "iconv.h"
+#include "ut_iconv.h"
 
 #include "ut_Encoding.h"
 #include "ut_string.h"

@@ -27,8 +27,8 @@
 #define UT_POOL_MIN_BUCKET_SIZE		1024
 
 UT_StringPool::UT_StringPool()
+  : m_pFirstBucket(NULL)
 {
-	m_pFirstBucket = NULL;
 	addBucket(UT_POOL_MIN_BUCKET_SIZE);
 }
 

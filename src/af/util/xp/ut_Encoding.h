@@ -43,7 +43,7 @@ public:
 	UT_uint32 	getIndxFromEncoding(const XML_Char * enc);
 	UT_uint32 	getIdFromEncoding(const XML_Char * enc);
 
-protected:
+private:
 	static bool	s_Init;
 	static UT_uint32	s_iCount;
 };
