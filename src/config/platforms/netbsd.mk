@@ -32,6 +32,8 @@
 
 OS_ARCH		:= $(shell uname -m)
 
+ABI_OPT_PEER_EXPAT=1 # See below
+
 ifneq (,$(shell $(CC) -E - -dM </usr/include/machine/endian.h | grep BYTE_ORDER.*LITTLE_ENDIAN))
 OS_ENDIAN	= LittleEndian32
 else
@@ -128,6 +130,8 @@ GTK_CONFIG		= gtk-config
 ifeq ($(ABI_OPT_GNOME),1)
 GNOME_CONFIG    	= gnome-config
 endif
+# For now hardwire expat.  To be fixed soon.
+
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
