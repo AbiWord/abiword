@@ -30,6 +30,8 @@ CPPSRCS=		ev_Win32Keyboard.cpp		\
 
 TARGETS=		$(OBJS)
 
+INCLUDES=		-I$(ABI_XX_ROOT)/../libiconv/include
+
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)

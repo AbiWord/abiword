@@ -44,7 +44,7 @@ protected:
 	void				_translateMessage(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 	void				_emitChar(AV_View * pView,
 								  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
-								  BYTE b, EV_EditModifierState ems);
+								  WORD w, EV_EditModifierState ems);
 };
 
 #endif /* EV_WIN32KEYBOARD_H */

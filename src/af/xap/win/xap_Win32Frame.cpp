@@ -582,6 +582,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 	}
 
 	case WM_DESTROY:
+		f->m_pWin32Keyboard->remapKeyboard(0);
 		return 0;
 
 	} /* switch (iMsg) */
