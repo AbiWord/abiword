@@ -165,16 +165,11 @@ void AP_UnixDialog_Replace::event_Find(void)
 	char * findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry));
 	if (strlen(findEntryText) == 0) // do nothing when the find field is empty
 		return;
-	
-	UT_UCSChar * findString;
 
-	UT_UCS4_cloneString_char(&findString, findEntryText);
-	
-	setFindString(findString);
+	// utf8->ucs4
+	setFindString(UT_UCS4String(findEntryText).ucs4_str());
 	
 	findNext();
-
-	FREEP(findString);
 }
 
 void AP_UnixDialog_Replace::event_FindEntryChange(void)
@@ -197,19 +192,10 @@ void AP_UnixDialog_Replace::event_Replace(void)
 	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry));
 	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboReplace)->entry));
 	
-	UT_UCSChar * findString;
-	UT_UCSChar * replaceString;
-
-	UT_UCS4_cloneString_char(&findString, findEntryText);
-	UT_UCS4_cloneString_char(&replaceString, replaceEntryText);
-	
-	setFindString(findString);
-	setReplaceString(replaceString);
+	setFindString(UT_UCS4String(findEntryText).ucs4_str());
+	setReplaceString(UT_UCS4String(replaceEntryText).ucs4_str());
 	
 	findReplace();
-
-	FREEP(findString);
-	FREEP(replaceString);
 }
 
 void AP_UnixDialog_Replace::event_ReplaceAll(void)
@@ -220,19 +206,10 @@ void AP_UnixDialog_Replace::event_ReplaceAll(void)
 	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboFind)->entry));
 	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboReplace)->entry));
 	
-	UT_UCSChar * findString;
-	UT_UCSChar * replaceString;
-
-	UT_UCS4_cloneString_char(&findString, findEntryText);
-	UT_UCS4_cloneString_char(&replaceString, replaceEntryText);
-	
-	setFindString(findString);
-	setReplaceString(replaceString);
+	setFindString(UT_UCS4String(findEntryText).ucs4_str());
+	setReplaceString(UT_UCS4String(replaceEntryText).ucs4_str());
 	
 	findReplaceAll();
-
-	FREEP(findString);
-	FREEP(replaceString);
 }
 
 void AP_UnixDialog_Replace::event_MatchCaseToggled(void)
