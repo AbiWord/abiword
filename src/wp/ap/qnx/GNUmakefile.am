@@ -57,6 +57,7 @@ libWpAp_qnx_a_SOURCES=\
 	ap_@ABI_FE@Dialog_PageSetup.cpp		\
 	ap_@ABI_FE@Dialog_PageNumbers.cpp	\
 	ap_@ABI_FE@Dialog_InsertBookmark.cpp	\
+	ap_@ABI_FE@Dialog_FormatFootnotes.cpp	\
 	ap_@ABI_FE@Dialog_InsertHyperlink.cpp	\
 	ap_@ABI_FE@Dialog_MarkRevisions.cpp	\
 	ap_@ABI_FE@Dialog_ListRevisions.cpp	\

@@ -75,6 +75,7 @@
 #   include "ap_UnixDialog_ListRevisions.h"
 #   include "ap_UnixDialog_MergeCells.h"
 #   include "ap_UnixDialog_FormatTable.h"
+#   include "ap_UnixDialog_FormatFootnotes.h"
 #ifdef HAVE_CURL
 #	include "ap_UnixDialog_Download_File.h"
 #endif
@@ -141,12 +142,14 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_UnixDialog_New)
  	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_UnixDialog_InsertBookmark)
  	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_UnixDialog_InsertHyperlink)
-    DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixDialog_MetaData)
-    DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_UnixDialog_MarkRevisions)
-    DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_UnixDialog_ListRevisions)
-    DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,	AP_UnixDialog_InsertTable)
-    DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_UnixDialog_MergeCells)
-	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_UnixDialog_FormatTable)
+     DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_UnixDialog_Image)
+     DeclareDialog(AP_DIALOG_ID_METADATA,		AP_UnixDialog_MetaData)
+     DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,		AP_UnixDialog_MarkRevisions)
+     DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,		AP_UnixDialog_ListRevisions)
+     DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,		AP_UnixDialog_InsertTable)
+     DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_UnixDialog_MergeCells)
+	 DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,		AP_UnixDialog_FormatTable)
+	 DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,		AP_UnixDialog_FormatFootnotes)
 #ifdef HAVE_CURL
 	DeclareDialog(AP_DIALOG_ID_DOWNLOAD_FILE,	AP_UnixDialog_Download_File)
 #endif

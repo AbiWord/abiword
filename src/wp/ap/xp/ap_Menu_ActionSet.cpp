@@ -168,6 +168,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,	"dlgColumns",		ap_GetState_ColumnsActive,					NULL);
 	_s(AP_MENU_ID_FMT_BACKGROUND, 0,1,0, "dlgBackground", NULL, NULL);
 	_s(AP_MENU_ID_FMT_HDRFTR,     0,1,0, "dlgHdrFtr", NULL, NULL);
+	_s(AP_MENU_ID_FMT_FOOTNOTES,     0,1,0, "formatFootnotes", NULL, NULL);
 	_s(AP_MENU_ID_FMT_IMAGE, 0,1,0, "dlgFmtImage", NULL, NULL);
 	_s(AP_MENU_ID_FMT_STYLE,		0,1,0,	"dlgStyle",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_TABS,			0,1,0,	"dlgTabs",			NULL,					NULL);

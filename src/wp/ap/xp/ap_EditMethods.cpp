@@ -79,6 +79,7 @@
 #include "ap_Dialog_ListRevisions.h"
 #include "ap_Dialog_MergeCells.h"
 #include "ap_Dialog_FormatTable.h"
+#include "ap_Dialog_FormatFootnotes.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -387,6 +388,7 @@ public:
 	static EV_EditMethod_Fn dlgBackground;
 	static EV_EditMethod_Fn dlgStyle;
 	static EV_EditMethod_Fn dlgTabs;
+	static EV_EditMethod_Fn formatFootnotes;
 	static EV_EditMethod_Fn dlgToggleCase;
 	static EV_EditMethod_Fn rotateCase;
 	static EV_EditMethod_Fn dlgLanguage;
@@ -767,6 +769,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(findAgain),			0,	""),
 	EV_EditMethod(NF(fontFamily),			_D_,	""),
 	EV_EditMethod(NF(fontSize), 			_D_,	""),
+	EV_EditMethod(NF(formatFootnotes),        0,  ""),
 	EV_EditMethod(NF(formatPainter),		0,	""),
 	EV_EditMethod(NF(formatTable),			0,		""),
 
@@ -8314,7 +8317,56 @@ static bool s_doStylesDlg(FV_View * pView)
 	return bOK;
 }
 
+Defun1(formatFootnotes)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+	ABIWORD_VIEW;
+	pFrame->raise();
 
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_FormatFootnotes * pDialog
+		= (AP_Dialog_FormatFootnotes *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+	pDialog->runModal(pFrame);
+#if 0
+	AP_Dialog_FormatFootnotes::tAnswer ans = pDialog->getAnswer();
+	if(ans == b_OK)
+	{
+//
+// update all the layouts.
+//
+		XAP_App * pApp = pFrame->getApp();
+		UT_ASSERT(pApp);
+	//
+	// Get all clones of this frame and reset the layouts
+	//
+		UT_Vector vClones;
+		if(pFrame->getViewNumber() > 0)
+		{
+			pApp->getClones(&vClones,pFrame);
+			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+			{
+				XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+				FV_View * pV = f->getCurrentView();
+				pV->getLayout()->updatePropsNoRebuild();
+			}
+		}
+		else
+		{
+			FV_View * pV = pFrame->getCurrentView();
+			pV->getLayout()->updatePropsNoRebuild();
+			pFrame->repopulateCombos();
+		}
+	}
+#endif
+	return true;
+}
 Defun1(dlgStyle)
 {
 	CHECK_FRAME;

@@ -29,6 +29,25 @@
 #include "fl_Layout.h"
 #include "ut_units.h"
 
+
+typedef enum _FootnoteType
+{
+	FOOTNOTE_TYPE_NUMERIC,
+	FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS,
+	FOOTNOTE_TYPE_NUMERIC_PAREN,
+	FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN,
+	FOOTNOTE_TYPE_LOWER,
+	FOOTNOTE_TYPE_LOWER_PAREN,
+	FOOTNOTE_TYPE_LOWER_OPEN_PAREN,
+	FOOTNOTE_TYPE_UPPER,
+	FOOTNOTE_TYPE_UPPER_PAREN,
+	FOOTNOTE_TYPE_UPPER_OPEN_PAREN,
+	FOOTNOTE_TYPE_LOWER_ROMAN,
+	FOOTNOTE_TYPE_LOWER_ROMAN_PAREN,
+	FOOTNOTE_TYPE_UPPER_ROMAN,
+	FOOTNOTE_TYPE_UPPER_ROMAN_PAREN
+} FootnoteType;
+
 class FV_View;
 class fl_DocListener;
 class fl_SectionLayout;
@@ -161,7 +180,8 @@ public:
 	fl_FootnoteLayout * getNthFootnote(UT_sint32 i);
 	UT_sint32           getFootnoteVal(UT_uint32 footpid);
 	fl_FootnoteLayout * findFootnoteLayout(UT_uint32 footpid);
-
+	FootnoteType        getFootnoteType(void) const;
+	void                getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType);
 // --------------------------------------------------------------------
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
@@ -191,7 +211,12 @@ public:
 	inline void		addList(fl_AutoNum * pAutoNum);
 	bool            isLayoutDeleting(void) const {return m_bDeletingLayout;}
 	UT_uint32       getRedrawCount() {return m_iRedrawCount;}
-	
+
+
+	void            updatePropsNoRebuild(void);
+	void            updatePropsRebuild(void);
+
+
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
 	static		FL_DocLayout* m_pDocLayout;
@@ -211,6 +236,7 @@ protected:
 	static void			_redrawUpdate(UT_Worker * pTimer);
 
 private:
+	void                _lookupProperties(void);
 	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;
 	FV_View*			m_pView;
@@ -247,6 +273,7 @@ private:
 	bool                m_bisLayoutFilling;
 	UT_uint32           m_iRedrawCount;
 	UT_Vector           m_vecFootnotes;
+	FootnoteType        m_FootnoteType;
 };
 
 #endif /* DOCLAYOUT_H */

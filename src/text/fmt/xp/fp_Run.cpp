@@ -47,6 +47,7 @@
 #include "fl_TableLayout.h"
 #include "fl_FootnoteLayout.h"
 #include "fp_FootnoteContainer.h"
+#include "fl_AutoNum.h"
 
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
@@ -4141,12 +4142,10 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 
-	UT_String szFieldValue;
-
-	// How do we superscript the endnote?
-	szFieldValue = UT_String_sprintf ("[%d]", footnoteNo);
-
-	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
+	UT_String sFieldValue;
+	FootnoteType iFootType = pView->getLayout()->getFootnoteType();
+	pView->getLayout()->getStringFromFootnoteVal(sFieldValue,footnoteNo,iFootType);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, sFieldValue.c_str());
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -4176,12 +4175,11 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 
-	UT_String szFieldValue;
+	FootnoteType iFootType = pView->getLayout()->getFootnoteType();
 
-	// How do we superscript the endnote?
-	szFieldValue = UT_String_sprintf ("[%d]", footnoteNo);
-
-	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
+	UT_String sFieldValue;
+	pView->getLayout()->getStringFromFootnoteVal(sFieldValue,footnoteNo,iFootType);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, sFieldValue.c_str());
 
 	return _setValue(sz_ucs_FieldValue);
 }

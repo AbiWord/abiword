@@ -121,6 +121,9 @@ dcl(DLG_InsertTable_AutoFit,		"AutoFit behavior")
 dcl(DLG_InsertTable_AutoColSize, 	"Automatic column size")
 dcl(DLG_InsertTable_FixedColSize,	"Fixed column size:")
 
+/* Format FootNotes dialog */
+dcl(DLG_FormatFootnotes_Title,   "Format Footnotes and Endnotes")
+
 /* Word Count dialog */
 dcl(DLG_WordCount_WordCountTitle,	"Word Count")
 dcl(DLG_WordCount_Statistics,		"Statistics:")
@@ -780,6 +783,7 @@ dcl(MENU_LABEL_FMT_BULLETS,"Bullets and &Numbering")
 dcl(MENU_LABEL_FMT_DOCUMENT,"&Document")
 dcl(MENU_LABEL_FMT_BORDERS,"Borders and Shading")
 dcl(MENU_LABEL_FMT_HDRFTR,"Format Header/Footers")
+dcl(MENU_LABEL_FMT_FOOTNOTES,"Format Footnotes and Endnotes")
 dcl(MENU_LABEL_FMT_COLUMNS,"&Columns")
 dcl(MENU_LABEL_FMT_TOGGLECASE,"C&hange Case")
 dcl(MENU_LABEL_FMT_BACKGROUND,"Back&ground")
@@ -1019,6 +1023,7 @@ dcl(MENU_STATUSLINE_FMT_BULLETS,"Add or modify bullets and numbering for selecte
 dcl(MENU_STATUSLINE_FMT_DOCUMENT,"Setup your document's page properties such as page size and margins")
 dcl(MENU_STATUSLINE_FMT_BORDERS,"Add borders and shading to the selection")
 dcl(MENU_STATUSLINE_FMT_HDRFTR,"Set the types of Headers and Footers")
+dcl(MENU_STATUSLINE_FMT_FOOTNOTES,"Set the types of Footnotes and Endnotes")
 dcl(MENU_STATUSLINE_FMT_COLUMNS,"Change the number of columns")
 dcl(MENU_STATUSLINE_FMT_TOGGLECASE,"Change the case of the selected text")
 dcl(MENU_STATUSLINE_FMT_BACKGROUND,"Change your document's background color")

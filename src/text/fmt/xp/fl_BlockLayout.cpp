@@ -1808,16 +1808,18 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 		}
 		if (getPrev() && getPrev()->getLastContainer())
 		{
-			pPrevLine = (fp_Line *) getPrev()->getLastContainer();
-			if(pPrevLine->getContainerType() != FP_CONTAINER_FOOTNOTE)
+			fp_Container * pPrevCon = (fp_Container *) getPrev()->getLastContainer();
+			if(pPrevCon->getContainerType() == FP_CONTAINER_LINE)
 			{
-				pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
+				pContainer = (fp_VerticalContainer *) pPrevCon->getContainer();
+				pPrevLine = (fp_Line *) pPrevCon;
 				UT_ASSERT(pContainer);
+				UT_ASSERT(pContainer->getWidth() >0);
 			}
 			else
 			{
-				fp_Container * ppPrev = (fp_Container *) pPrevLine;
-				while(ppPrev && ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE)
+				fp_Container * ppPrev = (fp_Container *) pPrevCon;
+				while(ppPrev && ppPrev->getContainerType() != FP_CONTAINER_LINE)
 				{
 					ppPrev = (fp_Container *)ppPrev->getPrev();
 				}
@@ -1825,6 +1827,8 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 				{
 					pPrevLine = (fp_Line *) ppPrev;
 					pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
+					UT_ASSERT(pContainer);
+					UT_ASSERT(pContainer->getWidth() >0);
 				}
 				else
 				{
@@ -1837,12 +1841,14 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 		{
 			pContainer = (fp_VerticalContainer *) getNext()->getFirstContainer()->getContainer();
 			UT_ASSERT(pContainer);
+			UT_ASSERT(pContainer->getWidth() >0);
 		}
 		else if (m_pSectionLayout->getFirstContainer())
 		{
 			// TODO assert something here about what's in that container
 			pContainer = (fp_VerticalContainer *) m_pSectionLayout->getFirstContainer();
 			UT_ASSERT(pContainer);
+			UT_ASSERT(pContainer->getWidth() >0);
 		}
 		else
 		{

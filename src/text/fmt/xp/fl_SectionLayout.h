@@ -51,24 +51,6 @@ typedef enum _HdrFtrType
 	FL_HDRFTR_NONE
 } HdrFtrType;
 
-typedef enum _FootnoteType
-{
-	FOOTNOTE_TYPE_NUMERIC,
-	FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS,
-	FOOTNOTE_TYPE_NUMERIC_PAREN,
-	FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN,
-	FOOTNOTE_TYPE_LOWER,
-	FOOTNOTE_TYPE_LOWER_PAREN,
-	FOOTNOTE_TYPE_LOWER_OPEN_PAREN,
-	FOOTNOTE_TYPE_UPPER,
-	FOOTNOTE_TYPE_UPPER_PAREN,
-	FOOTNOTE_TYPE_UPPER_OPEN_PAREN,
-	FOOTNOTE_TYPE_LOWER_ROMAN,
-	FOOTNOTE_TYPE_LOWER_ROMAN_PAREN,
-	FOOTNOTE_TYPE_UPPER_ROMAN,
-	FOOTNOTE_TYPE_UPPER_ROMAN_PAREN
-} FootnoteType;
-
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -297,7 +279,6 @@ public:
 	void                addValidPages(void);
 	void                setNeedsSectionBreak(bool bSet, fp_Page * pPage );
 	bool                needsSectionBreak(void) const { return m_bNeedsSectionBreak;}
-	FootnoteType        getFootnoteType(void) const;
 
 private:
 	virtual void		_lookupProperties(void);
@@ -366,8 +347,6 @@ private:
 	bool                m_bNeedsFormat;
 	bool                m_bNeedsRebuild;
 	bool                m_bNeedsSectionBreak;
-
-	FootnoteType        m_FootnoteType;
 };
 
 class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout

@@ -4213,6 +4213,16 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						{
 							return HandleBookmark (RBT_END);
 						}
+#if 0
+//
+// Fixme I need to be able to handle footnotes inside tables in RTF
+//
+						else if (strcmp((char*)keyword_star, "footnote") == 0)
+						{
+							HandleFootnote();
+							return true;
+						}
+#endif
 //
 // Decode our own field extensions
 //
@@ -7557,7 +7567,7 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, NULL);
 		m_dposPaste++;
 	}
-	delete [] propsArray;
+	free(propsArray);
 	return ok;
 }
 

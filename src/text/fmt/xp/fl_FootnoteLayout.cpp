@@ -63,6 +63,7 @@ fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout*
 	  m_bHasEndFootnote(false),
 	  m_bIsOnPage(false)
 {
+	UT_ASSERT(m_pDocSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	m_pLayout->addFootnote(this);
 	_createFootnoteContainer();
 }

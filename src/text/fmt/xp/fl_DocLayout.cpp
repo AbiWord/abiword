@@ -96,6 +96,7 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 #endif
 	m_iRedrawCount = 0;
 	m_vecFootnotes.clear();
+	m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -159,11 +160,112 @@ FL_DocLayout::~FL_DocLayout()
 
 	UT_HASH_PURGEDATA(GR_Font *, &m_hashFontCache, delete);
 }
+
+/*!
+ * This method reads the document properties and saves local versions of them
+ * here.
+ */
+void FL_DocLayout::_lookupProperties(void)
+{
+	const XML_Char * pszFootnoteType = NULL;
+#if 0
+	const PP_AttrProp* pDocAP = getDocument()->getAttrProp();
+	pDocAP->getProperty("document-footnote-type", (const XML_Char *&)pszFootnoteType);
+#endif
+	if (pszFootnoteType == NULL)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(pszFootnoteType[0] == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-square-brackets") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"numeric-open-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-paren-open") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-paren-open") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"lower-roman-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN;
+	}
+	else if(UT_XML_strcmp(pszFootnoteType,"upper-roman-paren") == 0)
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_UPPER_ROMAN_PAREN;
+	}
+	else
+	{
+		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+
+}
+
+void FL_DocLayout::updatePropsNoRebuild(void)
+{
+	_lookupProperties();
+}
+
+
+void FL_DocLayout::updatePropsRebuild(void)
+{
+	_lookupProperties();
+	rebuildFromHere( m_pFirstSection);
+}
+
+FootnoteType FL_DocLayout::getFootnoteType(void) const
+{
+	return m_FootnoteType;
+}
+
 /*!
  * This Method fills the layout structures from the PieceTable.
  */
 void FL_DocLayout::fillLayouts(void)
 {
+	_lookupProperties();
 	setLayoutIsFilling(true);
 	if(m_pView)
 	{
@@ -267,6 +369,64 @@ void FL_DocLayout::setView(FV_View* pView)
 				addBackgroundCheckReason(bgcrDebugFlash);
 			}
 		}
+	}
+}
+
+/*!
+ * This method fills the referenced string with the character representation
+ * of the decimal footnote value based on the FootnoteType passed as a 
+ * parameter
+ */
+void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType)
+{
+	fl_AutoNum autoCalc(0,0,NUMBERED_LIST,0,NULL,NULL,NULL);
+
+	switch (iFootType)
+	{
+	case FOOTNOTE_TYPE_NUMERIC:
+		UT_String_sprintf (sVal,"%d", iVal);
+		break;
+	case FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS:
+		UT_String_sprintf (sVal,"[%d]", iVal);
+		break;
+	case FOOTNOTE_TYPE_NUMERIC_PAREN:
+		UT_String_sprintf (sVal,"(%d)", iVal);
+		break;
+	case FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN:
+		UT_String_sprintf (sVal,"%d)", iVal);
+		break;
+	case FOOTNOTE_TYPE_LOWER:
+		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,97));
+		break;
+	case FOOTNOTE_TYPE_LOWER_PAREN:
+		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,97));
+		break;
+	case FOOTNOTE_TYPE_LOWER_OPEN_PAREN:
+		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,97));
+		break;
+	case FOOTNOTE_TYPE_UPPER:
+		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,65));
+		break;
+	case FOOTNOTE_TYPE_UPPER_PAREN:
+		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,65));
+		break;
+	case FOOTNOTE_TYPE_UPPER_OPEN_PAREN:
+		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,65));
+		break;
+	case FOOTNOTE_TYPE_LOWER_ROMAN:
+		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,true));
+		break;
+	case FOOTNOTE_TYPE_LOWER_ROMAN_PAREN:
+		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2roman(iVal,true));
+		break;
+	case FOOTNOTE_TYPE_UPPER_ROMAN:
+		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,false));
+		break;
+	case FOOTNOTE_TYPE_UPPER_ROMAN_PAREN:
+		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,false));
+		break;
+	default:
+		UT_String_sprintf (sVal,"%d", iVal);
 	}
 }
 
@@ -1695,6 +1855,7 @@ void FL_DocLayout::_redrawUpdate(UT_Worker * pWorker)
 //
 	FV_View * pView = pDocLayout->getView();
 	bool bEnd,bDir;
+	bEnd = false;
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run *pRun = NULL;
 	UT_sint32 x1,x2,y1,y2;

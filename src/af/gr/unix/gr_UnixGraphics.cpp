@@ -944,7 +944,7 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	if(pUFont->getSize()< MAX_ABI_GDK_FONT_SIZE)
 		m_pFont->explodeGdkFonts(m_pSingleByteFont,m_pMultiByteFont);
 #endif
-	delete [] szFontName;
+	free(szFontName);
 }
 
 UT_uint32 GR_UnixGraphics::getFontHeight(GR_Font * fnt)
