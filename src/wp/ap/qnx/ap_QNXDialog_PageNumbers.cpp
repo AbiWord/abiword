@@ -328,6 +328,10 @@ PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
 	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
 
 	n = 0;
+    PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH + ABI_DEFAULT_BUTTON_WIDTH / 2,  0);
+	PtCreateWidget(PtLabel, hgroup, n, args);
+
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_OK), 0);
     PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	m_buttonOK = PtCreateWidget(PtButton, hgroup, n, args);

@@ -894,16 +894,16 @@ PtWidget_t * AP_QNXDialog_Paragraph::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_OK));
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	buttonCancel = PtCreateWidget(PtButton, hbuttongroup, n, args);
+	buttonOK = PtCreateWidget(PtButton, hbuttongroup, n, args);
 	FREEP(unixstr);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_OK));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	buttonOK = PtCreateWidget(PtButton, hbuttongroup, n, args);
+	buttonCancel = PtCreateWidget(PtButton, hbuttongroup, n, args);
 	FREEP(unixstr);
 
 	// Update member variables with the important widgets that

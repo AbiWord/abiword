@@ -274,35 +274,29 @@ void AP_QNXDialog_Columns::event_Toggle( PtWidget_t *widget)
 
 	PtGetResource(m_wlineBetween, Pt_ARG_FLAGS, &flags, 0);
 	if (flags == NULL) {
-		printf("No flags! \n");
 		setLineBetween(false);
 	}
 	else if (*flags & Pt_SET) {
-		printf("Set line between on \n");
 		setLineBetween(true);
 	}
 	else {
-		printf("Set line between off \n");
 		setLineBetween(false);
 	}
 
 	/* There has to be a better way to do this ... */
 	if (widget == m_wtoggleOne) {
-		printf("Setting one \n");
 		//PtSetResource(m_wtoggleOne, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 		PtSetResource(m_wtoggleTwo, Pt_ARG_FLAGS, 0, Pt_SET);
 		PtSetResource(m_wtoggleThree, Pt_ARG_FLAGS, 0, Pt_SET);
 		setColumns(1);
 	}
 	else if (widget == m_wtoggleTwo) {
-		printf("Setting two \n");
 		PtSetResource(m_wtoggleOne, Pt_ARG_FLAGS, 0, Pt_SET);
 		//PtSetResource(m_wtoggleTwo, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 		PtSetResource(m_wtoggleThree, Pt_ARG_FLAGS, 0, Pt_SET);
 		setColumns(2);
 	}
 	else if (widget == m_wtoggleThree) {
-		printf("Setting three \n");
 		PtSetResource(m_wtoggleOne, Pt_ARG_FLAGS, 0, Pt_SET);
 		PtSetResource(m_wtoggleTwo, Pt_ARG_FLAGS, 0, Pt_SET);
 		//PtSetResource(m_wtoggleThree, Pt_ARG_FLAGS, Pt_SET, Pt_SET);
@@ -343,7 +337,8 @@ void AP_QNXDialog_Columns::event_previewExposed(void)
 
 /*****************************************************************/
 
-#define GROUP_HEIGHT 250
+//This is required since the GROUP widget is so broken!
+#define GROUP_HEIGHT 175
 
 PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 {
@@ -391,6 +386,8 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtWidget_t *group;
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_VERTICAL, Pt_GROUP_EQUAL_SIZE_VERTICAL);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
 	group = PtCreateWidget(PtGroup, vbuttons, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_FOCUS_RENDER | Pt_TOGGLE);
@@ -406,6 +403,8 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtCreateWidget(PtLabel, group, n, args);
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_VERTICAL, Pt_GROUP_EQUAL_SIZE_VERTICAL);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
 	group = PtCreateWidget(PtGroup, vbuttons, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_FOCUS_RENDER | Pt_TOGGLE);
@@ -417,6 +416,8 @@ PtWidget_t * AP_QNXDialog_Columns::_constructWindow(void)
 	PtCreateWidget(PtLabel, group, n, args);
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_VERTICAL, Pt_GROUP_EQUAL_SIZE_VERTICAL);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
 	group = PtCreateWidget(PtGroup, vbuttons, n, args);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_TOGGLE, Pt_FOCUS_RENDER | Pt_TOGGLE);

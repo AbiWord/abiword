@@ -168,161 +168,144 @@ PtWidget_t * AP_QNXDialog_Break::_constructWindow(void)
 {
 
 	PtWidget_t * windowBreak;
-	PtWidget_t * boxTop;
-	PtWidget_t * labelInsert;
+	PtWidget_t * vgroup, * hgroup;
 	PtWidget_t * radiobuttonPageBreak;
 	PtWidget_t * radiobuttonNextPage;
 	PtWidget_t * radiobuttonContinuous;
 	PtWidget_t * radiobuttonColumnBreak;
 	PtWidget_t * radiobuttonEvenPage;
 	PtWidget_t * radiobuttonOddPage;
-	PtWidget_t * labelSectionBreaks;
 	PtWidget_t * buttonOK;
 	PtWidget_t * buttonCancel;
 	PtArg_t	   args[10];
-	int 	   bmi, n, height, width;
-	PhArea_t 	area;
+	int 	   bmi, n;
+	PhRect_t	zero;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
 
-#define WIN_WIDTH  280
-#define WIN_HEIGHT 140
+#define _ANCHOR_WIDTH (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT)
+#define _ANCHOR_ALL (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT |\
+				     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
+	memset(&zero, 0, sizeof(zero));
+
 	n = bmi = 0;
-	height = WIN_HEIGHT; width = WIN_WIDTH;
-    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle));
-	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, unixstr, 0);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, 
+	    UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle)), 0);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
     PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
+    PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
 	windowBreak = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowBreak, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	/* TODO: Add all these items to a group */
 	n = 0;
-	//PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
-	PtSetArg(&args[n++], Pt_ARG_HEIGHT, height, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, width, 0);
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_ASIS, 0);
-	boxTop = PtCreateWidget(PtGroup, windowBreak, n, args);	
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_STRETCH_HORIZONTAL, Pt_GROUP_STRETCH_HORIZONTAL);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
+	PtSetArg(&args[n++], Pt_ARG_RESIZE_FLAGS, Pt_RESIZE_XY_AS_REQUIRED, 
+											  Pt_RESIZE_XY_AS_REQUIRED | Pt_RESIZE_XY_ALWAYS);
+    PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
+	vgroup = PtCreateWidget(PtGroup, windowBreak, n, args);
 
-#define LABEL_WIDTH  100
-#define RADIO_WIDTH  150 
-#define GEN_HEIGHT   20 
-#define GEN_OFFSET   5
-/* 
-	printf("Area set to %d,%d %d/%d \n", 
-			area.pos.x, area.pos.y, area.size.w, area.size.h);
-*/
-
+	/* First group ... "Insert" */
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Insert));
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = GEN_OFFSET; area.pos.y = GEN_OFFSET;
-	area.size.w = LABEL_WIDTH; area.size.h = GEN_HEIGHT;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	labelInsert = PtCreateWidget(PtLabel, boxTop, n, args);
-
-	/* TODO: Add a seperator */
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);	
+	pretty_group(hgroup, UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_Insert)));
 
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_PageBreak));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = 2*GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_PageBreak)), 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_SET, Pt_SET);
 	bm[bmi].widget =
-	radiobuttonPageBreak = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	radiobuttonPageBreak = PtCreateWidget(PtToggleButton, hgroup, n, args);
 	PtAddCallback(radiobuttonPageBreak, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_PAGE;
 
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_ColumnBreak));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x += area.size.w + GEN_OFFSET; 
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_ColumnBreak)), 0);	
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonColumnBreak = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	radiobuttonColumnBreak = PtCreateWidget(PtToggleButton, hgroup, n, args);
 	PtAddCallback(radiobuttonColumnBreak, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_COLUMN;
 
-	/* --- */
+	/* Second group ... "Section Breaks" */
+#if 0
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EXCLUSIVE, Pt_GROUP_EXCLUSIVE);
+	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
+	pretty_group(hgroup, UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_SectionBreaks)));
+#else
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_SectionBreaks)), 0);
+	PtCreateWidget(PtLabel, hgroup, n, args);
+	n = 0;
+	PtCreateWidget(PtLabel, hgroup, n, args);
+#endif
 
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_SectionBreaks));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
-	labelSectionBreaks = PtCreateWidget(PtLabel, boxTop, n, args);
-
-	/* TODO: Add a seperator */
-
-	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_NextPage));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = 2*GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_NextPage)), 0);	
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonNextPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	radiobuttonNextPage = PtCreateWidget(PtToggleButton, hgroup, n, args);
 	PtAddCallback(radiobuttonNextPage, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_NEXTPAGE;
 
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_EvenPage));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x += area.size.w + GEN_OFFSET; 
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_EvenPage)), 0);	
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonEvenPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	radiobuttonEvenPage = PtCreateWidget(PtToggleButton, hgroup, n, args);
 	PtAddCallback(radiobuttonEvenPage, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_EVENPAGE;
 
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_Continuous));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x = 2*GEN_OFFSET; area.pos.y += area.size.h + GEN_OFFSET;
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_Continuous)), 0);	
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonContinuous = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	radiobuttonContinuous = PtCreateWidget(PtToggleButton, hgroup, n, args);
 	PtAddCallback(radiobuttonContinuous, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_CONTINUOUS;
 
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Break_OddPage));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
-	area.pos.x += area.size.w + GEN_OFFSET; 
-	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_Break_OddPage)), 0);	
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_ONE_OF_MANY, 0);
 	bm[bmi].widget = 
-	radiobuttonOddPage = PtCreateWidget(PtToggleButton, boxTop, n, args);
+	radiobuttonOddPage = PtCreateWidget(PtToggleButton, hgroup, n, args);
 	PtAddCallback(radiobuttonOddPage, Pt_CB_ACTIVATE, s_radio_clicked, this);
 	bm[bmi++].type = AP_Dialog_Break::b_ODDPAGE;
 
+	/* Bottom row of buttons */
+	n = 0;
+	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtCreateWidget(PtLabel, hgroup, n, args);
+
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Cancel), 0);
-	area.pos.y += area.size.h + GEN_OFFSET;
-	area.pos.x = WIN_WIDTH - ABI_DEFAULT_BUTTON_WIDTH - GEN_OFFSET; 
-	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonCancel = PtCreateWidget(PtButton, boxTop, n, args);
+	buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_OK), 0);
-	area.pos.x -= ABI_DEFAULT_BUTTON_WIDTH + GEN_OFFSET; 
-	PtSetArg(&args[n++], Pt_ARG_POS, &area.pos, 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonOK = PtCreateWidget(PtButton, boxTop, n, args);
+	buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
-	// Update member variables with the important widgets that
-	// might need to be queried or altered later.
 
 	m_windowMain = windowBreak;
 	m_buttonOK = buttonOK;

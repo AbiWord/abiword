@@ -294,7 +294,6 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_WordCount_WordCountTitle), 0);
@@ -304,12 +303,16 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	PtAddCallback(m_windowMain, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
+	PtWidget_t *vgroup = PtCreateWidget(PtGroup, m_windowMain, n, args);
+
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
-#define MARGIN_SIZE 10 
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, MARGIN_SIZE, 0);
-	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, MARGIN_SIZE, 0);
-	PtWidget_t *hbox = PtCreateWidget(PtGroup, m_windowMain, n, args);
+	PtWidget_t *hbox = PtCreateWidget(PtGroup, vgroup, n, args);
+	pretty_group(hbox, "Statistics");
 
 	/* TODO: Add in a checkbox and spinner at the top here, and
 	         Remove the Statistics stuff
@@ -325,20 +328,11 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
 	PtWidget_t *vboxvalue = PtCreateWidget(PtGroup, hbox, n, args);
 
-	/* Statistics placeholder */
-	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Statistics:", 0);
-	PtCreateWidget(PtLabel, vboxlabel, n, args);
-	n = 0;	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, " ", 0);
-	PtCreateWidget(PtLabel, vboxvalue, n, args);
-
 	/* Pages */
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Pages));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Pages)), 0);	
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
-	FREEP(unixstr);
 
 	n = 0;
 	sprintf(buffer, "%d", m_count.page);
@@ -348,10 +342,9 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 	/* Words */
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Words));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Words)), 0);	
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
-	FREEP(unixstr);
 
 	n = 0;
 	sprintf(buffer, "%d", m_count.word);
@@ -361,10 +354,9 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 	/* Characters (no spaces) */
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_No));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_No)), 0);	
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
-	FREEP(unixstr);
 
 	n = 0;
 	sprintf(buffer, "%d", m_count.ch_no);
@@ -374,10 +366,9 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 	/* Characters (spaces) */
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_Sp));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Characters_Sp)), 0);	
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
-	FREEP(unixstr);
 
 	n = 0;
 	sprintf(buffer, "%d", m_count.ch_sp);
@@ -385,13 +376,11 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 	PtSetArg(&args[n++], Pt_ARG_HORIZONTAL_ALIGNMENT, Pt_RIGHT, 0);
 	m_labelCCount = PtCreateWidget(PtLabel, vboxvalue, n, args);
 
-
 	/* Paragraphs */
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Paragraphs));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Paragraphs)), 0);	
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
-	FREEP(unixstr);
 
 	n = 0;
 	sprintf(buffer, "%d", m_count.para);
@@ -401,10 +390,9 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 	/* Lines */
 	n = 0;
-	UT_XML_cloneNoAmpersands(unixstr,  pSS->getValue(AP_STRING_ID_DLG_WordCount_Lines));	
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING,
+		UT_XML_transNoAmpersands(pSS->getValue(AP_STRING_ID_DLG_WordCount_Lines)), 0);	
 	PtCreateWidget(PtLabel, vboxlabel, n, args);
-	FREEP(unixstr);
 
 	n = 0;
 	sprintf(buffer, "%d", m_count.line);
@@ -414,15 +402,22 @@ PtWidget_t * AP_QNXDialog_WordCount::_constructWindow(void)
 
 	/* Close button */	
 	n = 0;
+	PtWidget_t *hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtCreateWidget(PtLabel, hgroup, n, args);
+
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Update), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonUpdate = PtCreateWidget(PtButton, vboxlabel, n, args);
+	buttonUpdate = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonUpdate, Pt_CB_ACTIVATE, s_update_clicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(XAP_STRING_ID_DLG_Close), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
-	buttonOK = PtCreateWidget(PtButton, vboxvalue, n, args);
+	buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
 	PtAddCallback(buttonOK, Pt_CB_ACTIVATE, s_ok_clicked, this);
 
 	return m_windowMain;
