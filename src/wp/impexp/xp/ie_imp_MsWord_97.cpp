@@ -108,10 +108,14 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 
 int CharProc(wvParseStruct *ps,U16 eachchar,U8 chartype)
 	{
-	IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
-	UT_UCSChar *pbuf=&eachchar;
-	UT_DEBUGMSG(("word 97 char is %c, type is %d\n",eachchar,chartype));
-	return(pDocReader->_charData(&eachchar, 1));
+	   IE_Imp_MsWord_97* pDocReader = (IE_Imp_MsWord_97 *) ps->userData;
+	   UT_UCSChar *pbuf=&eachchar;
+	   UT_DEBUGMSG(("word 97 char is %c (%d), type is %d",eachchar,(int)eachchar,chartype));
+
+	   // the following character appears to be an apostrophe in Microsoft's "encoding"
+	   if (chartype == 1 && eachchar == 146) eachchar = 39; // apostrophe
+
+	   return(pDocReader->_charData(&eachchar, 1));
 	}
 
 int DocProc(wvParseStruct *ps,wvTag tag)
@@ -141,11 +145,12 @@ int IE_Imp_MsWord_97::_docProc(wvParseStruct *ps,wvTag tag)
 	switch(tag)
 		{
 		case DOCBEGIN:
-			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
-			break;
+		   /* a section will be started in the eleProc handler */
+		   break;
 		case DOCEND:	
-			/*abiword doesn't need this*/
-			break;
+		   /*abiword doesn't need this*/
+		default:
+		   break;
 		}
 	return(0);
 	}
@@ -160,10 +165,70 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 	UT_DEBUGMSG((" started\n"));
 	PAP *apap;
 	CHP *achp;
-
+	SEP *asep;
+	   
 	switch(tag)
 		{
-		case PARABEGIN:
+		 case SECTIONBEGIN:
+		   UT_DEBUGMSG(("section properties..."));
+		   asep = (SEP*)props;
+
+		   // page margins
+		   // -left
+		   sprintf(propBuffer + strlen(propBuffer),
+			   "page-margin-left:%1.4fin;", 
+			   (((float)asep->dxaLeft) / 1440));
+		   // -right
+		   sprintf(propBuffer + strlen(propBuffer),
+			   "page-margin-right:%1.4fin;", 
+			   (((float)asep->dxaRight) / 1440));
+		   // -top
+		   sprintf(propBuffer + strlen(propBuffer),
+			   "page-margin-top:%1.4fin;", 
+			   (((float)asep->dyaTop) / 1440));
+		   // -left
+		   sprintf(propBuffer + strlen(propBuffer),
+			   "page-margin-bottom:%1.4fin;", 
+			   (((float)asep->dyaBottom) / 1440));
+
+		   // columns
+		   if (asep->ccolM1) {
+		      // number of columns
+		      sprintf(propBuffer + strlen(propBuffer),
+			      "columns:%d;", (asep->ccolM1+1));
+		      // gap between columns
+		      sprintf(propBuffer + strlen(propBuffer),
+			      "column-gap:%1.4in;", 
+			      (((float)asep->dxaColumns) / 1440));
+		   }
+		   
+		   // the following are mostly guesses...
+		   
+		   // space after section (this is the gutter, right?)
+		   sprintf(propBuffer + strlen(propBuffer),
+			   "section-space-after:%1.4fin;",
+			   (((float)asep->dzaGutter) / 1440));
+
+		   // page width (assuming that's what width is...)
+		   sprintf(propBuffer + strlen(propBuffer),
+			   "width:%1.4fin;",
+			   (((float)asep->xaPage) / 1440));
+		   // page height (assuming that's what height is...)
+		   sprintf(propBuffer + strlen(propBuffer),
+			   "height:%1.4fin;",
+			   (((float)asep->yaPage) / 1440));
+
+		   // remove trailing semi-colon
+		   propBuffer[strlen(propBuffer)-1] = 0;
+
+		   propsArray[0] = pProps;
+		   propsArray[1] = propBuffer;
+		   propsArray[2] = NULL;
+		   UT_DEBUGMSG(("the propBuffer is %s\n",propBuffer));
+		   X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, propsArray));
+		   break;
+
+		 case PARABEGIN:
 		   apap = (PAP*)props;
 
 		   // paragraph alignment
@@ -231,7 +296,47 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 			      "%dpt;", (apap->dyaAfter / 20));
 		   }
 
-		   // remove trailing ;
+		   // keep paragraph together?
+		   if (apap->fKeep) {
+		      strcat(propBuffer, "keep-together:yes;");
+		   }
+		   // keep with next paragraph?
+		   if (apap->fKeepFollow) {
+		      strcat(propBuffer, "keep-with-next:yes;");
+		   }
+		   
+		   // widowed lines
+		   if (!apap->fWidowControl) {
+		      // this appears to just be a flag, but I don't know
+		      // how many lines are needed before it's ok?
+		      // also, I don't see anything for orphaned lines..
+		   }
+
+		   // tabs
+		   if (apap->itbdMac) {
+		      for (int iTab = 0; iTab < apap->itbdMac; iTab++) {
+			 sprintf(propBuffer + strlen(propBuffer),
+				 "%1.4fin/",
+				 (((float)apap->rgdxaTab[iTab]) / 1440));
+			 switch (apap->rgtbd[iTab].jc) {
+			  case 1:
+			    strcat(propBuffer, "C,");
+			  case 2:
+			    strcat(propBuffer, "R,");
+			  case 3:
+			    strcat(propBuffer, "D,");
+			  case 4:
+			    strcat(propBuffer, "B,");
+			  case 0:
+			  default:
+			    strcat(propBuffer, "L,");
+			 }
+		      }
+		      // replace final comma with semi-colon
+		      propBuffer[strlen(propBuffer)-1] = ';';
+		   }
+			 
+		   // remove trailing semi-colon
 		   propBuffer[strlen(propBuffer)-1] = 0;
 
 		   propsArray[0] = pProps;
@@ -247,25 +352,21 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   // bold text
 		   if (achp->fBold) { 
 		      strcat(propBuffer, "font-weight:bold;");
-		   } else {
-		      strcat(propBuffer, "font-weight:normal;");
 		   }
 		   // italic text
 		   if (achp->fItalic) {
 		      strcat(propBuffer, "font-style:italic;");
-		   } else {
-		      strcat(propBuffer, "font-style:normal;");
 		   }
 		   // underline and strike-through
-		   strcat(propBuffer, "text-decoration:");
-		   if (achp->fStrike && achp->kul) {
-		      strcat(propBuffer, "underline line-through;");
-		   } else if (achp->fStrike) {
-		      strcat(propBuffer, "line-through;");
-		   } else if (achp->kul) {
-		      strcat(propBuffer, "underline;");
-		   } else {
-		      strcat(propBuffer, "normal;");
+		   if (achp->fStrike || achp->kul) {
+			 strcat(propBuffer, "text-decoration:");
+		      if (achp->fStrike && achp->kul) {
+			 strcat(propBuffer, "underline line-through;");
+		      } else if (achp->kul) {
+			 strcat(propBuffer, "underline;");
+		      } else {
+			 strcat(propBuffer, "line-through;");
+		      }
 		   }
 		   // text color
 		   if (achp->ico) {
@@ -290,16 +391,12 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   // and the logic to know when somehow depends on the
 		   // character sets or encoding types? it's in the docs.
 		   
+		   UT_ASSERT(fname != NULL);
 		   UT_DEBUGMSG(("font-family = %s\n", fname));
 
-		   // this if really shouldn't be needed, but due to
-		   // massive character property problems in complex docs
-		   // at the moment, it does prevent a segfault...
-		   if (fname != NULL) {
-		      strcat(propBuffer, "font-family:");
-		      strcat(propBuffer, fname);
-		      strcat(propBuffer, ";");
-		   }
+		    strcat(propBuffer, "font-family:");
+		    strcat(propBuffer, fname);
+		    strcat(propBuffer, ";");
 		   
 		   // font size (hps is half-points)
 		   sprintf(propBuffer + strlen(propBuffer), 
@@ -314,8 +411,9 @@ int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps,wvTag tag, void *props)
 		   UT_DEBUGMSG(("the propBuffer is %s\n",propBuffer));
 		   X_ReturnNoMemIfError(m_pDocument->appendFmt(propsArray));
 		   break;
-		case PARAEND:	/* not needed */
 		case CHARPROPEND: /* not needed */
+		case PARAEND:	/* not needed */
+		case SECTIONEND: /* not needed */
 		default:
 		   break;
 			 }
