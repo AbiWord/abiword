@@ -66,6 +66,14 @@ IE_Imp::~IE_Imp()
 {
 }
 
+void IE_Imp::setProps (const char * props)
+{
+	m_props = props;
+
+	m_props_map.clear ();
+	m_props_map.parse_properties (props);
+}
+
 PT_DocPosition IE_Imp::getDocPos() const
 {
 	return m_dpos;

@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ie_types.h"
 
+#include "ut_IntStrMap.h"
 #include "ut_AbiObject.h"
 #include "ut_vector.h"
 #include "ut_string_class.h"
@@ -146,9 +147,7 @@ public:
 		return m_fidelity;
 	}
 
-	void setProps (const char * props) {
-		m_props = props;
-	}
+	void setProps (const char * props);
 
  protected:
 	IE_Imp(PD_Document * pDocument, UT_Confidence_t fidelity = 0);
@@ -165,8 +164,12 @@ public:
 	bool appendFmt(const XML_Char ** attributes);
 	bool appendFmt(const UT_Vector * pVecAttributes);
 
+public:
 	const UT_UTF8String & getProps () {
 		return m_props;
+	}
+	const UT_UTF8String * getProperty (const char * key) {
+		return m_props_map[key];
 	}
 
  private:
@@ -177,6 +180,8 @@ public:
 	bool m_bDocProps;
 
 	UT_UTF8String m_props;
+	UT_UTF8Hash   m_props_map;
+
 	UT_Confidence_t m_fidelity;
 };
 
