@@ -40,10 +40,10 @@ NSIS_DEF = "//D"
 NSIS_OPT = //V3 $(NSIS_DEF)MINGW32=1
 else
 NSIS_DEF = "/D"
-NSIS_OPT = /V3
+NSIS_OPT =
 endif
 
-NSIS_SRC 	:= ./NSISv2/*.ns*
+NSIS_SRC 	:= ./NSISv2/*
 NSIS_PLUGIN_SRC := ./plugin*.nsi
 
 NSIS_OPT += $(NSIS_DEF)VERSION=$(ABI_BUILD_VERSION) $(NSIS_DEF)VERSION_MAJOR=$(ABI_BUILD_VERSION_MAJOR)
@@ -69,7 +69,7 @@ endif
 
 $(PROGRAM): 
 	@rm -f $(BINDIR)/*.ns*
-	@$(ABICOPY) $(NSIS_SRC) $(BINDIR)
+	@$(ABICOPY) -r $(NSIS_SRC) $(BINDIR)
 	@cd $(BINDIR); \
 	$(NSIS_ROOT)/makensis$(EXE_SUFFIX) $(NSIS_OPT) ./AbiWord.nsi
 

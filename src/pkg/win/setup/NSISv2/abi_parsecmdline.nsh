@@ -21,6 +21,11 @@
 ; name, including any spaces.  Do not put in quotes.
 ; Note: /D is processed fully by NSIS so we never see it.
 
+; /INSTALLTYPE=#
+; Selects the default Install Type, normally Typical=0
+; This is a 0 based number, where 0 is the 1st in the
+; list presented.  Most useful with /S (silent install).
+
 ; /RESPONSEFILE=filename
 ; Indicates responses to use (instead of defaults) for various
 ; prompts.  Not yet implemented
@@ -76,6 +81,7 @@ Var v_opt_enable_win95only
   Support options are $\r$\n  \
   /S silent install $\r$\n  \
   /D=path sets default install dir, MUST be last option, No quotes, supports spaces $\r$\n  \
+  /INSTALLTYPE=# sets default install type to nth option, e.g. 0=Typical $\r$\n  \
   /RESPONSEFILE=filename indicates choices to use instead of defaults (TODO) $\r$\n  \
   /M or /MODIFYINSTALL invokes installer in modify mode$\r$\n        \
         ( change components installed for current installation of AbiWord$\r$\n  \
@@ -103,6 +109,8 @@ Var v_opt_enable_win95only
       ${DoHelpCmd}
     ${Case2} "/S" "/D"
       ; Dummy case, these options are handled by NSIS internally but not always removed
+    ${Case} "/INSTALLTYPE"
+      SetCurInstType "${optval}"
     ${Case2} "/RESPONSEFILE" "/R"
       StrCpy $v_responsefile "${optval}"
     ${Case2} "/MODIFYINSTALL" "/M"
@@ -235,6 +243,9 @@ Var v_opt_enable_win95only
   !endif
 
   StrCpy $v_responsefile ""
+
+  ; force Typical as default install type
+  SetCurInstType 0
 
   ; now cycle through all the cmd line options and set the values
   ${ProcessParameters}

@@ -51,6 +51,14 @@
 		!insertmacro cycle_over_dictionary_sections "${MUI_DESCRIPTION_TEXT} $R1 $(DESC_ssection_dictionary)"
 !endif
 
+!ifdef OPT_PLUGINS
+		${MUI_DESCRIPTION_TEXT} ${ssection_plugins} $(DESC_ssection_plugins)
+!macro PLUGIN_FUNC id
+		${MUI_DESCRIPTION_TEXT} ${${id}} $(DESC_${id})
+!macroend
+		!include "plugins\plugin_list.nsh"
+!endif
+
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
