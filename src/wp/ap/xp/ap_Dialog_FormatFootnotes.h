@@ -33,7 +33,7 @@
 
 class XAP_Frame;
 
-ABI_EXPORT class AP_Dialog_FormatFootnotes : public XAP_Dialog_NonPersistent
+class AP_Dialog_FormatFootnotes : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_FormatFootnotes(XAP_DialogFactory * pDlgFactory,

@@ -172,7 +172,7 @@ public:
 
 	static const char * linestyle_for_CSS (const char * property);
 
-	class Line
+	class ABI_EXPORT Line
 	{
 	public:
 		Line ();
@@ -186,7 +186,7 @@ public:
 		UT_RGBColor		m_color;		// in case of color_color
 		UT_uint32		m_thickness;	// in case of thickness_length
 	};
-	class Background
+	class ABI_EXPORT Background
 	{
 	public:
 		Background ();
