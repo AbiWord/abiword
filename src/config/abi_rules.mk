@@ -167,6 +167,7 @@ $(OBJDIR)/%.$(OBJ_SUFFIX): %.c
 ifeq ($(OS_NAME), WINNT)
 	@$(CC) -Fo$@ -c $(CFLAGS) $*.c
 else
+	@echo $<:
 	@$(CC) -o $@ -c $(CFLAGS) $*.c
 endif
 
