@@ -28,25 +28,13 @@
 #include "pt_Types.h"
 
 class FL_DocLayout;
+class fp_Column;
 class fl_SectionLayout;
-class fp_SectionSlice;
 class FV_View;
 class DG_Graphics;
 struct dg_DrawArgs;
 
 // ----------------------------------------------------------------
-/*
-	fp_Page is a concrete class used to represent a page.  A fp_Page manages
-	a group of children, each of which must be a fp_SectionSlice.
-*/
-struct fp_SectionSliceInfo
-{
-	fp_SectionSliceInfo(fp_SectionSlice*, UT_uint32, UT_uint32);
-	fp_SectionSlice*		pSlice;
-	UT_uint32 xoff;
-	UT_uint32 yoff;
-};
-
 class fp_Page
 {
  public:
@@ -60,29 +48,46 @@ class fp_Page
 			UT_uint32 iBottom);
 	~fp_Page();
 
-	UT_Bool 		requestSpace(fl_SectionLayout*, fp_SectionSlice** si);
-
-	int				getWidth();
-	int				getHeight();
-	fp_Page*		getNext();
+	UT_sint32		getWidth(void) const;
+	UT_sint32		getHeight(void) const;
+	fp_Page*		getNext(void) const;
+	fp_Page*		getPrev(void) const;
 	void			setNext(fp_Page*);
-	FL_DocLayout*	getLayout();
+	void			setPrev(fp_Page*);
+	
+	FL_DocLayout*	getDocLayout();
 	void            setView(FV_View*);
 
 	void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
-	void			getOffsets(fp_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff);
-	void			getScreenOffsets(fp_SectionSlice*, void*, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
+	void			getOffsets(fp_Column*, UT_sint32& xoff, UT_sint32& yoff);
+	void			getScreenOffsets(fp_Column*, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 
 	void			draw(dg_DrawArgs*);
+	UT_Bool			needsRedraw(void) const;
 
+	void 			columnHeightChanged(fp_Column* pLeader);
+	UT_uint32 		countColumnLeaders(void) const;
+	fp_Column*		getNthColumnLeader(UT_sint32 n) const;
+	UT_Bool			insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
+#if 0
+	UT_Bool			addColumnLeader(fp_Column* pLeader);
+#endif
+	void			removeColumnLeader(fp_Column* pLeader);
+	UT_Bool			isEmpty(void) const;
+	
 #ifdef FMT_TEST
 	void			__dump(FILE * fp) const;
 #endif
 	
 protected:
+	void				_reformat(void);
+
+	UT_Bool				m_bReformatting;
+	
 	FL_DocLayout*		m_pLayout;
 	FV_View*			m_pView;
 	fp_Page*			m_pNext;
+	fp_Page*			m_pPrev;
 
 	UT_sint32			m_iWidth;
 	UT_sint32			m_iHeight;
@@ -91,7 +96,9 @@ protected:
 	UT_sint32			m_iRight;
 	UT_sint32			m_iBottom;
 
-	UT_Vector			m_vecSliceInfos;
+	UT_Bool				m_bNeedsRedraw;
+
+	UT_Vector			m_vecColumnLeaders;
 };
 
 #endif /* PAGE_H */

@@ -28,39 +28,37 @@
 #include "fl_Layout.h"
 
 class FL_DocLayout;
-class fl_ColumnSetLayout;
 class fl_BlockLayout;
 class fb_LineBreaker;
 class fp_Column;
 class PD_Document;
 class PP_AttrProp;
 
-/*
-	A section keeps track of all of its columns, as well as all of its
-	section slices.
-*/
 class fl_SectionLayout : public fl_Layout
 {
 	friend class fl_DocListener;
 
 public:
-	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh);
+	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
 	~fl_SectionLayout();
 
-	FL_DocLayout*		getLayout() const;
+	FL_DocLayout*		getDocLayout() const;
 	fp_Column*			getNewColumn();
 	fp_Column*			getFirstColumn() const;
+	fp_Column*			getLastColumn() const;
 	int					format();
 	UT_Bool				reformat();
 
-	void				setColumnSetLayout(fl_ColumnSetLayout * pcsl);
-	fl_ColumnSetLayout*	getColumnSetLayout(void) const;
+	UT_uint32			getNumColumns(void) const;
+	UT_uint32			getColumnGap(void) const;
 
 	fl_BlockLayout *	getFirstBlock(void) const;
 	fl_BlockLayout *	getLastBlock(void) const;
-	fl_BlockLayout *	appendBlock(PL_StruxDocHandle sdh);
-	fl_BlockLayout *	insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev);
+	fl_BlockLayout *	appendBlock(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP);
+	fl_BlockLayout *	insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev, PT_AttrPropIndex indexAP);
 	fl_BlockLayout *	removeBlock(fl_BlockLayout * pBL);
+
+	void				deleteEmptyColumns(void);
 
 protected:
 	void				_purgeLayout();
@@ -68,13 +66,17 @@ protected:
 
 	FL_DocLayout*		m_pLayout;
 	fb_LineBreaker*		m_pLB;
-	fl_ColumnSetLayout*	m_pColumnSetLayout;
 
 	fl_BlockLayout*		m_pFirstBlock;
 	fl_BlockLayout*		m_pLastBlock;
-	
-	UT_Vector			m_vecSlices;
-	UT_Vector			m_vecColumns;
+
+	UT_uint32			m_iNumColumns;
+	UT_uint32			m_iColumnGap;
+
+	UT_Bool				m_bForceNewPage;
+
+	fp_Column*			m_pFirstColumn;
+	fp_Column*			m_pLastColumn;
 };
 
 #endif /* SECTIONLAYOUT_H */

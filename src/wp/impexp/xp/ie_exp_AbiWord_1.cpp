@@ -137,7 +137,6 @@ public:
 
 protected:
 	void				_closeSection(void);
-	void				_closeColumnSet(void);
 	void				_closeBlock(void);
 	void				_closeSpan(void);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
@@ -147,7 +146,6 @@ protected:
 	PD_Document *		m_pDocument;
 	IE_Exp_AbiWord_1 *	m_pie;
 	UT_Bool				m_bInSection;
-	UT_Bool				m_bInColumnSet;
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
 };
@@ -159,16 +157,6 @@ void ie_Exp_Listener::_closeSection(void)
 	
 	m_pie->write("</section>\n");
 	m_bInSection = UT_FALSE;
-	return;
-}
-
-void ie_Exp_Listener::_closeColumnSet(void)
-{
-	if (!m_bInColumnSet)
-		return;
-
-	m_pie->write("</columnmodel>\n");
-	m_bInColumnSet = UT_FALSE;
 	return;
 }
 
@@ -309,7 +297,6 @@ ie_Exp_Listener::ie_Exp_Listener(PD_Document * pDocument,
 	m_pDocument = pDocument;
 	m_pie = pie;
 	m_bInSection = UT_FALSE;
-	m_bInColumnSet = UT_FALSE;
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
 	
@@ -320,7 +307,6 @@ ie_Exp_Listener::~ie_Exp_Listener()
 {
 	_closeSpan();
 	_closeBlock();
-	_closeColumnSet();
 	_closeSection();
 
 	m_pie->write("</awml>\n");
@@ -361,29 +347,14 @@ UT_Bool ie_Exp_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		{
 			_closeSpan();
 			_closeBlock();
-			_closeColumnSet();
 			_closeSection();
 			_openTag("section","",UT_TRUE,pcr->getIndexAP());
 			m_bInSection = UT_TRUE;
 			return UT_TRUE;
 		}
 
-	case PTX_ColumnSet:
-		{
-			_openTag("columnmodel","",UT_TRUE,pcr->getIndexAP());
-			m_bInColumnSet = UT_TRUE;
-			return UT_TRUE;
-		}
-
-	case PTX_Column:
-		{
-			_openTag("column","/",UT_TRUE,pcr->getIndexAP());
-			return UT_TRUE;
-		}
-
 	case PTX_Block:
 		{
-			_closeColumnSet();
 			_closeSpan();
 			_closeBlock();
 			_openTag("p","",UT_FALSE,pcr->getIndexAP());

@@ -1,9 +1,5 @@
 <AWML>
 <SECTION>
-<ColumnModel>
-  <Column type="Box" left="0in" top="0in" width="6.5in" height="*"/>
-</ColumnModel>
-
 <P PROPS="font-size:20pt; font-weight:bold; text-align:center">Bill of Rights of the United States of America</P>
 
 <P PROPS="font-size:14pt; font-style:italic; text-align:left"><C PROPS="font-weight:bold">THE</C>

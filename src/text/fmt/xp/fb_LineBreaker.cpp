@@ -75,12 +75,7 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				fp_Line* pNewLine = NULL;
 				if (!pNextLine)
 				{
-					UT_uint32 iGuessLineHeight = pFirstRunOnLine->getHeight();
-							
-					UT_uint32 iNewLineWidth = pBlock->requestLineSpace(iGuessLineHeight);
-					UT_ASSERT(iNewLineWidth > 0);
-							
-					pNewLine = new fp_Line(iNewLineWidth);
+					pNewLine = pBlock->getNewLine();
 					UT_ASSERT(pNewLine);	// TODO check for outofmem
 							
 					pNextLine = pNewLine;
@@ -257,7 +252,6 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				if (pNewLine)
 				{
 					UT_ASSERT(pNewLine == pNextLine);
-					pBlock->addLine(pNewLine);
 					UT_ASSERT(pLine->getNext() == pNewLine);
 				}
 			}

@@ -29,8 +29,6 @@
 #include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
-#include "pf_Frag_Strux_Column.h"
-#include "pf_Frag_Strux_ColumnSet.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
@@ -76,8 +74,6 @@ UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		return UT_TRUE;
 
 	case PTX_Section:
-	case PTX_ColumnSet:
-	case PTX_Column:
 		// we are the first paragraph in this section.  if we have
 		// content, we cannot be deleted, since there is no one to
 		// inherit our content.
@@ -110,8 +106,6 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 	switch (pfs->getStruxType())
 	{
 	case PTX_Section:
-	case PTX_ColumnSet:
-	case PTX_Column:
 		UT_ASSERT(0);					// TODO
 		break;
 		

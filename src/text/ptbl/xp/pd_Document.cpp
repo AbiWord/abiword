@@ -109,23 +109,8 @@ UT_Bool PD_Document::newDocument(void)
 	m_pPieceTable->setPieceTableState(PTS_Loading);
 
 	// add just enough structure to empty document so we can edit
+
 	appendStrux(PTX_Section,NULL);
-
-	// need to set up a default column model, too
-	const XML_Char * properties[] = 
-	{
-		"type",		"box", 
-		"left",		"0in",
-		"top",		"0in", 
-		"width",	"*",
-		"height",	"*", 
-		0
-	};
-
-	const XML_Char** atts = properties;
-
-	appendStrux(PTX_ColumnSet,NULL);
-	appendStrux(PTX_Column,atts);
 	appendStrux(PTX_Block,NULL);
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
@@ -370,7 +355,7 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 	PL_ListenerId lidCount = m_vecListeners.getItemCount();
 
 	// for each listener in our vector, we send a notification.
-	// we step over null listners (for listeners which have been
+	// we step over null listeners (for listeners which have been
 	// removed (views that went away)).
 	
 	for (lid=0; lid<lidCount; lid++)

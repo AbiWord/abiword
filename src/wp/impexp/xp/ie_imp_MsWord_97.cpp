@@ -80,8 +80,6 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 	nBytes = fib.fcMac - fib.fcMin;
 	
 	m_pDocument->appendStrux(PTX_Section, NULL);
-	m_pDocument->appendStrux(PTX_ColumnSet, NULL);
-	m_pDocument->appendStrux(PTX_Column, attr);
 	m_pDocument->appendStrux(PTX_Block, NULL);
 
 	while (i < nBytes)
@@ -168,11 +166,8 @@ UT_Bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
 #define TT_OTHER		0
 #define TT_DOCUMENT		1
 #define TT_SECTION		2
-#define TT_COLUMNSET	3
-#define TT_COLUMN		4
-#define TT_BLOCK		5
-#define TT_INLINE		6
-
+#define TT_BLOCK		3
+#define TT_INLINE		4
 struct _TokenTable
 {
 	const char *	m_name;
@@ -182,8 +177,6 @@ struct _TokenTable
 static struct _TokenTable s_Tokens[] =
 {	{	"awml",			TT_DOCUMENT		},
 	{	"section",		TT_SECTION		},
-	{	"columnmodel",	TT_COLUMNSET	},
-	{	"column",		TT_COLUMN		},
 	{	"p",			TT_BLOCK		},
 	{	"c",			TT_INLINE		},
 	{	"*",			TT_OTHER		}};	// must be last

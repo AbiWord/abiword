@@ -27,8 +27,6 @@
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
-#include "fl_ColumnSetLayout.h"
-#include "fl_ColumnLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Page.h"
 #include "fv_View.h"
@@ -214,6 +212,34 @@ fp_Page* FL_DocLayout::getLastPage()
 	return (fp_Page*) m_vecPages.getNthItem(m_vecPages.getItemCount()-1);
 }
 
+void FL_DocLayout::deletePage(fp_Page* pPage)
+{
+	UT_sint32 ndx = m_vecPages.findItem(pPage);
+	UT_ASSERT(ndx >= 0);
+
+	if (pPage->getPrev())
+	{
+		pPage->getPrev()->setNext(pPage->getNext());
+	}
+
+	if (pPage->getNext())
+	{
+		pPage->getNext()->setPrev(pPage->getPrev());
+	}
+		
+	m_vecPages.deleteNthItem(ndx);
+	delete pPage;
+		
+	// let the view know that we created a new page,
+	// so that it can update the scroll bar ranges
+	// and whatever else it needs to do.
+
+	if (m_pView)
+	{
+		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
+	}
+}
+
 fp_Page* FL_DocLayout::addNewPage()
 {
 	fp_Page*		pLastPage;
@@ -236,6 +262,7 @@ fp_Page* FL_DocLayout::addNewPage()
 
 		pLastPage->setNext(pPage);
 	}
+	pPage->setPrev(pLastPage);
 	m_vecPages.addItem(pPage);
 
 	// let the view know that we created a new page,
@@ -243,7 +270,9 @@ fp_Page* FL_DocLayout::addNewPage()
 	// and whatever else it needs to do.
 
 	if (m_pView)
+	{
 		m_pView->notifyListeners(AV_CHG_PAGECOUNT);
+	}
 	
 	return pPage;
 }
@@ -263,8 +292,6 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 			break;
 				
 		case PTX_Section:
-		case PTX_ColumnSet:
-		case PTX_Column:
 		default:
 			UT_ASSERT((0));
 		}
@@ -308,6 +335,30 @@ fl_SectionLayout* FL_DocLayout::getNextSection(fl_SectionLayout* pSL) const
 	}
 
 	return pNext;
+}
+
+void FL_DocLayout::deleteEmptyColumnsAndPages(void)
+{
+	int i;
+	
+	int countSections = m_vecSectionLayouts.getItemCount();
+	for (i=0; i<countSections; i++)
+	{
+		fl_SectionLayout* pSL = (fl_SectionLayout*) m_vecSectionLayouts.getNthItem(i);
+
+		pSL->deleteEmptyColumns();
+	}
+
+	int countPages = m_vecPages.getItemCount();
+	for (i=0; i<countPages; i++)
+	{
+		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
+
+		if (p->isEmpty())
+		{
+			deletePage(p);
+		}
+	}
 }
 
 int FL_DocLayout::formatAll()

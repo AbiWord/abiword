@@ -1,4 +1,7 @@
 
+[ NOTE -- as of 26 January 1999, this file is utter fiction.  Ignore
+          everything this document says.]
+
 [ NOTE -- as of 4 December, this file is terribly, terribly out-of-date
           and should be gutted and/or deleted as soon as possible.]
 
@@ -232,6 +235,61 @@ anything inside it.
 --------------------------------
 --------------------------------
 $Log$
+Revision 1.6  1999/01/26 20:16:36  eric
+Here's a BIG checkin:
+
+I've rewritten a LOT of the layout engine, fixing
+many problems, as well as laying the groundwork for
+more fixes and new features.  Info you might want
+to know:
+
+1.  The column model is code completely different now.
+Support for non-rectangular columns is gone, and the
+new multiple-column support is reasonably simplistic.
+
+2.  Multiple sections with differing column models is
+partially functional.  See the new version of Interview.abw
+for a sample of how this can work.
+
+3.  Old documents will NOT read properly.  The column model
+tags choke the parser.
+
+4.  Multiple section support has problems.  Deleting across
+a section boundary will crash.  There is no way to insert
+a section boundary.  There is no way to change the attributes
+of a section.  These things will come...
+
+5.  The beginnings of some widow-orphan control code have been
+added.  Not done yet.
+
+6.  I have NOT yet update the redraw code for find/replace as
+I promised to Shaw.  Coming soon.
+
+7.  Bug 72 should be fixed now.  The layout engine knows how to
+delete empty pages.
+
+8.  Bug 93 should be fixed now.  Things flow back and forth between
+columns with relative ease.
+
+9.  Bug 136 should be fixed now.  Editing of centered text should
+no longer be a problem.
+
+10.  I still unhappy about the fact that a single character
+addition to the end of a line causes that entire line to be
+redrawn.
+
+11.  I do not yet know if this will build and work on Linux.
+Right after this commit, I'll go check it out there.  I expect
+no problems.
+
+12.  I added a programmer guidelines document to src/docs.
+As we become more of a Bazaar, we'll need to give more of this
+kind of help to outside developers.
+
+13.  Several files have been deleted, and several have been added.
+
+14.  You'll need a full rebuild of the whole tree.  :-)
+
 Revision 1.5  1998/12/05 04:29:58  jeff
 Updated build instructions.
 Started work on a document to describe our document format.

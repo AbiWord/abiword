@@ -183,7 +183,7 @@ void fp_Run::lookupProperties(void)
 	m_pBL->getAttrProp(&pBlockAP);
 
 	// look for fonts in this DocLayout's font cache
-	FL_DocLayout * pLayout = m_pBL->getLayout();
+	FL_DocLayout * pLayout = m_pBL->getDocLayout();
 	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP),
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP), m_colorFG);

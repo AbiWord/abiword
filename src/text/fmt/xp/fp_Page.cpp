@@ -27,7 +27,9 @@
 
 #include "fp_Page.h"
 #include "fl_DocLayout.h"
-#include "fp_SectionSlice.h"
+#include "fl_SectionLayout.h"
+#include "fp_Column.h"
+#include "gr_Graphics.h"
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
 
@@ -59,56 +61,48 @@ fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
 	m_iBottom = UT_docUnitsFromPaperUnits(pG,iBottom);
 
 	m_pNext = NULL;
-}
+	m_pPrev = NULL;
 
-fp_SectionSliceInfo::fp_SectionSliceInfo(fp_SectionSlice* p, UT_uint32 x, UT_uint32 y)
-{
-	pSlice = p;
-	xoff = x;
-	yoff = y;
+	m_bNeedsRedraw = UT_TRUE;
 }
 
 fp_Page::~fp_Page()
 {
-	UT_VECTOR_PURGEALL(fp_SectionSliceInfo *, m_vecSliceInfos);
 }
 
+UT_Bool fp_Page::isEmpty(void) const
+{
+	return m_vecColumnLeaders.getItemCount() == 0;
+}
 
-int fp_Page::getWidth()
+UT_sint32 fp_Page::getWidth(void) const
 {
 	return m_iWidth;
 }
 
-int fp_Page::getHeight()
+UT_sint32 fp_Page::getHeight(void) const
 {
 	return m_iHeight;
 }
 
-void fp_Page::getOffsets(fp_SectionSlice* pSS, void* pData, UT_sint32& xoff, UT_sint32& yoff)
+void fp_Page::getScreenOffsets(fp_Column* pCol, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height)
 {
-	fp_SectionSliceInfo* pSSI = (fp_SectionSliceInfo*) pData;
-	UT_ASSERT(pSS == pSSI->pSlice);
-
-	xoff = pSSI->xoff;
-	yoff = pSSI->yoff;
-}
-
-void fp_Page::getScreenOffsets(fp_SectionSlice* pSS, void* pData, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height)
-{
-	fp_SectionSliceInfo* pSSI = (fp_SectionSliceInfo*) pData;
-	UT_ASSERT(pSS == pSSI->pSlice);
-
 	UT_ASSERT(m_pView);
 	
 	m_pView->getPageScreenOffsets(this, xoff, yoff, width, height);
 
-	xoff += pSSI->xoff;
-	yoff += pSSI->yoff;
+	xoff += pCol->getX();
+	yoff += pCol->getY();
 }
 
-fp_Page* fp_Page::getNext()
+fp_Page* fp_Page::getNext(void) const
 {
 	return m_pNext;
+}
+
+fp_Page* fp_Page::getPrev(void) const
+{
+	return m_pPrev;
 }
 
 void fp_Page::setNext(fp_Page* p)
@@ -116,116 +110,220 @@ void fp_Page::setNext(fp_Page* p)
 	m_pNext = p;
 }
 
-FL_DocLayout* fp_Page::getLayout()
+void fp_Page::setPrev(fp_Page* p)
+{
+	m_pPrev = p;
+}
+
+FL_DocLayout* fp_Page::getDocLayout()
 {
 	return m_pLayout;
 }
 
 void fp_Page::draw(dg_DrawArgs* pDA)
 {
-	/*
-		draw each slice on the page
-	*/
-	int count = m_vecSliceInfos.getItemCount();
-	fp_SectionSlice* p;
+	// draw each column on the page
+	int count = m_vecColumnLeaders.getItemCount();
 
 	for (int i=0; i<count; i++)
 	{
-		fp_SectionSliceInfo* pci = (fp_SectionSliceInfo*) m_vecSliceInfos.getNthItem(i);
-		p = pci->pSlice;
+		fp_Column* pCol = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
 
-		dg_DrawArgs da = *pDA;
-		da.xoff += pci->xoff;
-		da.yoff += pci->yoff;
-		p->draw(&da);
+		fp_Column* pTmpCol = pCol;
+		while (pTmpCol)
+		{
+			dg_DrawArgs da = *pDA;
+			da.xoff += pTmpCol->getX();
+			da.yoff += pTmpCol->getY();
+			pTmpCol->draw(&da);
+
+			pTmpCol = pTmpCol->getFollower();
+		}
 	}
+
+	m_bNeedsRedraw = UT_FALSE;
+}
+
+UT_Bool fp_Page::needsRedraw(void) const
+{
+	return m_bNeedsRedraw;
 }
 
 #ifdef FMT_TEST
 void fp_Page::__dump(FILE * fp) const
 {
-	int count = m_vecSliceInfos.getItemCount();
-	fp_SectionSlice* p;
-
-	for (int i=0; i<count; i++)
-	{
-		fp_SectionSliceInfo* pci = (fp_SectionSliceInfo*) m_vecSliceInfos.getNthItem(i);
-		p = pci->pSlice;
-
-		fprintf(fp,"\tfp_Page::dump(%p) - fp_SectionSlice %p\n", this, p);
-		p->__dump(fp);
-	}
 }
 #endif
 
-UT_Bool fp_Page::requestSpace(fl_SectionLayout*, fp_SectionSlice** ppsi)
+UT_uint32 fp_Page::countColumnLeaders(void) const
 {
-	UT_sint32 iHeight = 0;
-	int count = m_vecSliceInfos.getItemCount();
+	return m_vecColumnLeaders.getItemCount();
+}
+
+fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
+{
+	return (fp_Column*) m_vecColumnLeaders.getNthItem(n);
+}
+
+void fp_Page::_reformat(void)
+{
+	m_bReformatting = UT_TRUE;
+	
+	UT_uint32 iY = m_iTop;
+	
+	int count = countColumnLeaders();
 	for (int i=0; i<count; i++)
 	{
-		fp_SectionSliceInfo* pSSI = (fp_SectionSliceInfo*) m_vecSliceInfos.getNthItem(i);
-		iHeight += pSSI->pSlice->getHeight();
+		fp_Column* pLeader = getNthColumnLeader(i);
+		fl_SectionLayout* pSL = pLeader->getSectionLayout();
+		UT_uint32 iNumColumns = pSL->getNumColumns();
+		UT_uint32 iColumnGap = pSL->getColumnGap();
+
+		UT_uint32 iSpace = m_iWidth - m_iLeft - m_iRight;
+		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
+		
+		UT_uint32 iX = m_iLeft;
+		
+		fp_Column* pTmpCol = pLeader;
+		UT_sint32 iMostHeight = 0;
+		while (pTmpCol)
+		{
+			pTmpCol->setX(iX);
+			pTmpCol->setY(iY);
+			pTmpCol->setMaxHeight(m_iHeight - m_iBottom - iY);
+			pTmpCol->setWidth(iColWidth);
+			iX += (iColWidth + iColumnGap);
+
+			iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
+
+			pTmpCol = pTmpCol->getFollower();
+		}
+
+		iY += iMostHeight;
+
+		iY += m_pLayout->getGraphics()->convertDimension("0.25in");	// TODO
+
+		if (iY >= (m_iHeight - m_iBottom))
+		{
+			break;
+		}
 	}
 
-	UT_sint32 yBottom = m_iTop + iHeight;
-	UT_sint32 iAvailable = m_iHeight - m_iBottom - yBottom;
-
-	if (iAvailable > 0)
+	while (i < count)
 	{
-		fp_SectionSlice* pSS = new fp_SectionSlice(m_iWidth - (m_iRight + m_iLeft), iAvailable);
-		fp_SectionSliceInfo* pSSI = new fp_SectionSliceInfo(pSS, m_iLeft, yBottom);
-		pSS->setPage(this, pSSI);
-		m_vecSliceInfos.addItem(pSSI);
-		*ppsi = pSS;
+		fp_Column* pLeader = getNthColumnLeader(i);
+		fl_SectionLayout* pSL = pLeader->getSectionLayout();
 
-		return UT_TRUE;
+		// TODO move this column to the next page.
+		i++;
+	}
+
+	m_bReformatting = UT_FALSE;
+}
+
+#if 0
+UT_Bool fp_Page::addColumnLeader(fp_Column* pLeader)
+{
+	m_vecColumnLeaders.addItem(pLeader);
+
+	_reformat();
+
+	// TODO this shouldn't ALWAYS return true, right?
+	
+	return UT_TRUE;
+}
+#endif
+
+void fp_Page::removeColumnLeader(fp_Column* pLeader)
+{
+	UT_sint32 ndx = m_vecColumnLeaders.findItem(pLeader);
+	UT_ASSERT(ndx >= 0);
+
+	m_vecColumnLeaders.deleteNthItem(ndx);
+		
+	fp_Column* pTmpCol = pLeader;
+	while (pTmpCol)
+	{
+		pTmpCol->setPage(NULL);
+		
+		pTmpCol = pTmpCol->getFollower();
+	}
+
+	_reformat();
+}
+
+UT_Bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
+{
+	/*
+	  TODO we should check to see if there is ANY hope of this
+	  column leader actually fitting on the page.
+	*/
+	
+	if (pAfter)
+	{
+		UT_sint32 ndx = m_vecColumnLeaders.findItem(pAfter);
+		UT_ASSERT(ndx >= 0);
+
+		m_vecColumnLeaders.insertItemAt(pLeader, ndx+1);
 	}
 	else
 	{
-		return UT_FALSE;
+		m_vecColumnLeaders.insertItemAt(pLeader, 0);
 	}
+
+	fp_Column* pTmpCol = pLeader;
+	while (pTmpCol)
+	{
+		pTmpCol->setPage(this);
+		
+		pTmpCol = pTmpCol->getFollower();
+	}
+
+	_reformat();
+
+	return UT_TRUE;
+}
+
+void fp_Page::columnHeightChanged(fp_Column* pCol)
+{
+	fp_Column* pLeader = pCol->getLeader();
+	
+	UT_sint32 ndx = m_vecColumnLeaders.findItem(pLeader);
+	UT_ASSERT(ndx >= 0);
+
+	_reformat();
 }
 
 void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
-	int count = m_vecSliceInfos.getItemCount();
-	fp_SectionSlice* p;
+	int count = m_vecColumnLeaders.getItemCount();
 	UT_uint32 iMinDist = 0xffffffff;
-	fp_SectionSliceInfo* pMinDist = NULL;
-	
+	fp_Column* pMinDist = NULL;
 	for (int i=0; i<count; i++)
 	{
-		fp_SectionSliceInfo* pci = (fp_SectionSliceInfo*) m_vecSliceInfos.getNthItem(i);
-		p = pci->pSlice;
+		fp_Column* pLeader = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
 
-		// when hit testing for SectionSlices on a page, we ignore X coords
-//		if (((x - pci->xoff) > 0) && ((x - pci->xoff) < p->getWidth()))
+		fp_Column* pColumn = pLeader;
+		while (pColumn)
 		{
-			if (((y - (UT_sint32)pci->yoff) > 0) && ((y - (UT_sint32)pci->yoff) < (UT_sint32)p->getHeight()))
+			if (pColumn->containsPoint(x - pColumn->getX(), y - pColumn->getY()))
 			{
-				p->mapXYToPosition(x - pci->xoff, y - pci->yoff, pos, bBOL, bEOL);
+				pColumn->mapXYToPosition(x - pColumn->getX(), y - pColumn->getY(), pos, bBOL, bEOL);
 				return;
 			}
-		}
-
-		UT_uint32 iDistTop;
-		UT_uint32 iDistBottom;
-		UT_uint32 iDist;
-
-		iDistTop = UT_ABS((y - (UT_sint32) pci->yoff));
-		iDistBottom = UT_ABS((y - (UT_sint32) (pci->yoff + p->getHeight())));
-			
-		iDist = UT_MIN(iDistTop, iDistBottom);
-		if (iDist < iMinDist)
-		{
-			pMinDist = pci;
-			iMinDist = iDist;
+			UT_uint32 iDist = pColumn->distanceFromPoint(x - pColumn->getX(), y - pColumn->getY());
+			if (iDist < iMinDist)
+			{
+				iMinDist = iDist;
+				pMinDist = pColumn;
+			}
+			pColumn = pColumn->getFollower();
 		}
 	}
 
 	UT_ASSERT(pMinDist);
-	pMinDist->pSlice->mapXYToPosition(x - pMinDist->xoff, y - pMinDist->yoff, pos, bBOL, bEOL);
+
+	pMinDist->mapXYToPosition(x - pMinDist->getX(), y - pMinDist->getY(), pos, bBOL, bEOL);
 }
 
 void fp_Page::setView(FV_View* pView)

@@ -103,6 +103,8 @@ public:
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos);
 	fl_SectionLayout* getPrevSection(fl_SectionLayout* pSL) const;
 	fl_SectionLayout* getNextSection(fl_SectionLayout* pSL) const;
+	void deleteEmptyColumnsAndPages(void);
+	void	deletePage(fp_Page*);
 
 	int			formatAll();
 	int			reformat();

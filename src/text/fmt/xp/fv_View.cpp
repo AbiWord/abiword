@@ -34,9 +34,7 @@
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Page.h"
-#include "fp_SectionSlice.h"
 #include "fp_Column.h"
-#include "fp_BlockSlice.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "pd_Document.h"
@@ -739,6 +737,8 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
 
+	m_pLayout->deleteEmptyColumnsAndPages();
+		
 	_updateScreen();
 	
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -768,6 +768,8 @@ void FV_View::insertParagraphBreak()
 
 	m_pDoc->insertStrux(_getPoint(), PTX_Block);
 	
+	m_pLayout->deleteEmptyColumnsAndPages();
+		
 	_updateScreen();
 	
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -882,6 +884,17 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 				Likewise, findPointCoords will return the run to the right 
 				of the specified position, so we need to stop looking one 
 				position to the left. 
+			*/
+
+			/*
+			  TODO -- the following line looks a bit suspicious.  Is it is
+			  valid to decrement posEnd without checking to see what kind
+			  of structure posEnd will then point to?  Specifically, if you
+			  load Interview.abw (the new 2-section version), and with the
+			  ins pt at the very beginning of the document, hold down the
+			  shift key and press the down arrow (to select the line), an
+			  assertion fires.  I have traced the root of that problem to
+			  the following line, but I'm not quite sure how to change it.
 			*/
 			posEnd--;
 		}
@@ -1254,6 +1267,8 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
+
+		m_pLayout->deleteEmptyColumnsAndPages();
 		
 		_fixInsertionPointCoords();
 		_drawInsertionPoint();
@@ -1296,6 +1311,8 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 			m_pDoc->deleteSpan(posCur, posCur+amt);
 		}
 
+		m_pLayout->deleteEmptyColumnsAndPages();
+		
 		_updateScreen();
 	
 		if (!_ensureThatInsertionPointIsOnScreen())
@@ -1331,7 +1348,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 
 	if (pDestLine)
 	{
-		fl_BlockLayout* pNewBlock = pDestLine->getBlockSlice()->getBlock();
+		fl_BlockLayout* pNewBlock = pDestLine->getBlock();
 		
 		if (bNext)
 		{
@@ -2327,7 +2344,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
 
 	// we now have coords relative to the page containing the ins pt
-	fp_Page* pPointPage = pRun->getLine()->getBlockSlice()->getColumn()->getSectionSlice()->getPage();
+	fp_Page* pPointPage = pRun->getLine()->getColumn()->getPage();
 
 	UT_sint32 iPageOffset;
 	getPageYOffset(pPointPage, iPageOffset);
@@ -2675,7 +2692,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			adjustedBottom -= fl_PAGEVIEW_PAGE_SEP;
 
-			if (!bDirtyRunsOnly)
+			if (!bDirtyRunsOnly || pPage->needsRedraw())
 			{
 				UT_RGBColor clrPaper(255,255,255);
 				m_pG->fillRect(clrPaper,adjustedLeft+1,adjustedTop+1,iPageWidth-1,iPageHeight-1);
@@ -3094,6 +3111,8 @@ void FV_View::cmdCut(void)
 	cmdCopy();
 	_deleteSelection();
 
+	m_pLayout->deleteEmptyColumnsAndPages();
+		
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
 }
@@ -3382,6 +3401,8 @@ void FV_View::_doPaste(void)
 		pClip->close();
 	}
 
+	m_pLayout->deleteEmptyColumnsAndPages();
+		
 	_updateScreen();
 	
 	if (!_ensureThatInsertionPointIsOnScreen())

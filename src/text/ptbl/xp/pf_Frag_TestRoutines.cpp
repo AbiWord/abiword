@@ -24,8 +24,6 @@
 #include "ut_test.h"
 #include "pf_Frag.h"
 #include "pf_Frag_Strux_Block.h"
-#include "pf_Frag_Strux_Column.h"
-#include "pf_Frag_Strux_ColumnSet.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
 #include "pt_PieceTable.h"
@@ -43,18 +41,6 @@ void pf_Frag_Strux_Block::__dump(FILE * fp) const
 {
 	fprintf(fp,"      Block %p api[%08lx] preferredSpanAPI[%08lx]\n",
 			this,m_indexAP,m_preferredSpanAPI);
-}
-
-void pf_Frag_Strux_Column::__dump(FILE * fp) const
-{
-	fprintf(fp,"      Column %p api[%08lx]\n",
-			this,m_indexAP);
-}
-
-void pf_Frag_Strux_ColumnSet::__dump(FILE * fp) const
-{
-	fprintf(fp,"      ColumnSet %p api[%08lx]\n",
-			this,m_indexAP);
 }
 
 void pf_Frag_Strux_Section::__dump(FILE * fp) const

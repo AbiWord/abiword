@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -29,7 +27,6 @@
 #include "fl_SectionLayout.h"
 #include "fb_LineBreaker.h"
 #include "fp_Column.h"
-#include "fp_BlockSlice.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "pd_Document.h"
@@ -50,7 +47,8 @@
 fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fb_LineBreaker* pBreaker,
 							   fl_BlockLayout* pPrev,
-							   fl_SectionLayout* pSectionLayout)
+							   fl_SectionLayout* pSectionLayout,
+							   PT_AttrPropIndex indexAP)
 	: fl_Layout(PTX_Block, sdh), m_gbCharWidths(256)
 {
 	m_pSectionLayout = pSectionLayout;
@@ -58,13 +56,45 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pFirstRun = NULL;
 	m_pFirstLine = NULL;
 	m_pLastLine = NULL;
-	m_pCurrentSlice = NULL;
 	m_bFormatting = UT_FALSE;
 	m_bNeedsReformat = UT_FALSE;
-	
-	m_pLayout = m_pSectionLayout->getLayout();
+
+	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
 
+	setAttrPropIndex(indexAP);
+
+	{
+		const char* pszOrphans = getProperty("orphans");
+		if (pszOrphans && pszOrphans[0])
+		{
+			m_iOrphansProperty = atoi(pszOrphans);
+		}
+		else
+		{
+			m_iOrphansProperty = 1;
+		}
+		
+		const char* pszWidows = getProperty("widows");
+		if (pszWidows && pszWidows[0])
+		{
+			m_iWidowsProperty = atoi(pszWidows);
+		}
+		else
+		{	
+			m_iWidowsProperty = 1;
+		}
+
+		if (m_iOrphansProperty < 1)
+		{
+			m_iOrphansProperty = 1;
+		}
+		if (m_iWidowsProperty < 1)
+		{
+			m_iWidowsProperty = 1;
+		}
+	}
+	
 	m_pPrev = pPrev;
 	if (m_pPrev)
 	{
@@ -87,7 +117,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	_purgeLayout(UT_FALSE);
 }
 
-FL_DocLayout* fl_BlockLayout::getLayout()
+FL_DocLayout* fl_BlockLayout::getDocLayout()
 {
 	return m_pLayout;
 }
@@ -97,156 +127,19 @@ fl_SectionLayout * fl_BlockLayout::getSectionLayout()
 	return m_pSectionLayout;
 }
 
-/*
-	_createNewSlice is only called when a new slice is needed to continue a flow
-	which is already in progress.  This routine is not used to create the first
-	slice of the block.
-*/
-void fl_BlockLayout::_createNewSlice()
+void fl_BlockLayout::_fixColumns(void)
 {
-	UT_ASSERT(m_pCurrentSlice);
-
-	fp_Column* pCol = m_pCurrentSlice->getColumn();
-	UT_ASSERT(pCol);
-
-	pCol = pCol->getNext();
-	if (!pCol)
+	fp_Column* pCol = NULL;
+	fp_Line* pLine = m_pFirstLine;
+	while (pLine)
 	{
-		/*
-			This happens when we have hit the last column in the fl_SectionLayout
-		*/
-		pCol = m_pSectionLayout->getNewColumn();
-	}
-
-	// Could it be NULL due to outofmem?  Perhaps we shouldn't assert - TODO
-
-	fp_BlockSlice* pNewSlice = new fp_BlockSlice(this);
-	_addSlice(pNewSlice);
-
-	UT_ASSERT(m_pFirstRun);
-	int err = pCol->insertBlockSliceAfter(pNewSlice, NULL, m_pFirstRun->getHeight());
-	UT_ASSERT(err == 0);
-}
-
-/*
-	_verifyCurrentSlice is used to ensure that the first slice of the block has
-	been created.  If not, it creates one.  By default, it is created immediately
-	after the last slice in the previous block.  If there is no previous block, then
-	we assume this block to be the first one in its flow.  In that case, we simply
-	find the first page which has a column into which our flow can be placed, and
-	create a new slice at the top of that column.
-*/
-void fl_BlockLayout::_verifyCurrentSlice()
-{
-	if (m_pCurrentSlice)
-	{
-		return;
-	}
-
-	// There is no current slice.  We need to start one.
-
-	fp_BlockSlice* pNewSlice = new fp_BlockSlice(this);
-	_addSlice(pNewSlice);
-
-	UT_DEBUGMSG(("_verifyCurrentSlice: fl_BlockLayout=0x%x, m_pPrev=0x%x\n", this, m_pPrev));
-
-	UT_uint32 iLineHeight;
-	if (m_pFirstRun)
-	{
-		iLineHeight = m_pFirstRun->getHeight();
-	}
-	else
-	{
-		// this must be an empty paragraph
-		iLineHeight = 20;		// TODO hack -- this is a guess.
-		// we cannot pass 0, because a circular column will choke
-	}
-	
-	if (m_pPrev)
-	{
-		fp_BlockSlice* pPrevSlice = m_pPrev->getLastSlice();
-		UT_ASSERT(pPrevSlice);
-		UT_DEBUGMSG(("_verifyCurrentSlice:  pPrevSlice=0x%x\n", pPrevSlice));
-
-		fp_Column* pCol = pPrevSlice->getColumn();
-		UT_ASSERT(pCol);
-		UT_DEBUGMSG(("_verifyCurrentSlice:  pCol=0x%x\n", pCol));
-
-		if (pCol->insertBlockSliceAfter(pNewSlice, pPrevSlice, iLineHeight))
+		if (pLine->getColumn() != pCol)
 		{
-			// failed.  try next column
-			pCol = pCol->getNext();
-
-			// no more columns exist, so need a new one
-			if (!pCol)
-				pCol = m_pSectionLayout->getNewColumn();
-
-			int err = pCol->insertBlockSliceAfter(pNewSlice, NULL, iLineHeight);
-			UT_ASSERT(err==0);
+			pCol = pLine->getColumn();
+			pCol->updateLayout();
 		}
-	}
-	else
-	{
-		/* 
-			There is no previous paragraph.  This must be the first paragraph
-			in the section.  We need to ask our section for a column.
-		*/
-
-		fp_Column *pCol = m_pSectionLayout->getFirstColumn();
-		if (!pCol)
-		{
-			pCol = m_pSectionLayout->getNewColumn();
-		}
-
-		int err = pCol->insertBlockSliceAfter(pNewSlice, NULL, iLineHeight);
-		UT_ASSERT(err==0);
-	}
-}
-
-/*
-	This routine simply adds the slice to our list of them.  It is also the place
-	where we ensure that m_pCurrentSlice is always up to date with the most
-	recent slice for flow purposes.
-*/
-void fl_BlockLayout::_addSlice(fp_BlockSlice* p)
-{
-	m_vecSlices.addItem(p);
-	m_pCurrentSlice = p;
-}
-
-void fl_BlockLayout::fixColumns(void)
-{
-	int countSlices = m_vecSlices.getItemCount();
-	for (int i=0; i<countSlices; i++)
-	{
-		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		UT_ASSERT(pSlice && pSlice->getColumn());
-
-		pSlice->getColumn()->updateSlicePositions();
-	}
-}
-
-void fl_BlockLayout::draw(DG_Graphics* pG)
-{
-	int countSlices = m_vecSlices.getItemCount();
-	for (int i=0; i<countSlices; i++)
-	{
-		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		UT_ASSERT(pSlice);
-
-		pSlice->draw(pG);
-	}
-}
-
-void fl_BlockLayout::clearScreen(DG_Graphics* pG)
-{
-	int countSlices = m_vecSlices.getItemCount();
-	for (int i=0; i<countSlices; i++)
-	{
-		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		UT_ASSERT(pSlice);
-
-		pSlice->clearScreen(pG);
+ 
+		pLine = pLine->getNext();
 	}
 }
 
@@ -305,54 +198,46 @@ UT_uint32 fl_BlockLayout::getAlignment()
 
 void fl_BlockLayout::align()
 {
-	int countSlices = m_vecSlices.getItemCount();
-	for (int i=0; i<countSlices; i++)
+	fp_Line* pLine = m_pFirstLine;
+	while (pLine)
 	{
-		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		UT_ASSERT(pSlice);
+	    alignOneLine(pLine);
+ 
+		pLine = pLine->getNext();
+	}
+}
 
-		pSlice->align();
+void fl_BlockLayout::clearScreen(DG_Graphics* pG)
+{
+	fp_Line* pLine = m_pFirstLine;
+	while (pLine)
+	{
+		pLine->clearScreen();
+ 
+		pLine = pLine->getNext();
 	}
 }
 
 void fl_BlockLayout::_purgeLayout(UT_Bool bVisible)
 {
-	int countSlices = m_vecSlices.getItemCount();
-	for (int i=0; i<countSlices; i++)
+	fp_Line* pLine;
+
+	pLine = m_pFirstLine;
+	while (pLine)
 	{
-		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		UT_ASSERT(pSlice);
-
-		if (bVisible)
-		{
-			UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
-			pSlice->clearScreen(m_pLayout->getGraphics());
-		}
-		pSlice->deleteLines();
-
-		if (bVisible)
-		{
-			pSlice->remove();
-		}
-
-		delete pSlice;
+		_removeLine(pLine);
+		pLine = m_pFirstLine;
 	}
 
-	for (int j=countSlices-1; j>=0; j--)
-	{
-		m_vecSlices.deleteNthItem(j);
-	}
-	UT_ASSERT(m_vecSlices.getItemCount() == 0);
-
-	m_pFirstLine = m_pLastLine = NULL;
+	UT_ASSERT(m_pFirstLine == NULL);
+	UT_ASSERT(m_pLastLine == NULL);
+	
 	while (m_pFirstRun)
 	{
 		fp_Run* pNext = m_pFirstRun->getNext();
 		delete m_pFirstRun;
 		m_pFirstRun = pNext;
 	}
-
-	m_pCurrentSlice = NULL;
 }
 
 void fl_BlockLayout::_removeLine(fp_Line* pLine)
@@ -366,8 +251,11 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 	{
 		m_pLastLine = m_pLastLine->getPrev();
 	}
-			
+
+	pLine->setBlock(NULL);
 	pLine->remove();
+
+	delete pLine;
 }
 
 void fl_BlockLayout::_removeAllEmptyLines(void)
@@ -445,77 +333,26 @@ UT_Bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 
 	_removeAllEmptyLines();
 	
-	// remove any empty slices, and reclaim space from the rest
-	int countSlices = m_vecSlices.getItemCount();
-	for (int i=countSlices-1; i>=0; i--)
-	{
-		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		UT_ASSERT(pSlice);
-
-		if ((pSlice->countLines()) || (i == 0))
-		{
-			pSlice->returnExtraSpace();
-		}
-		else
-		{
-			pSlice->remove();
-			delete pSlice;
-			m_vecSlices.deleteNthItem(i);
-		}
-	}
-
-	UT_ASSERT(m_vecSlices.getItemCount() > 0);
-
 	return UT_TRUE;
 }
 
-/*
-  Notes on reformatting.
-
-  Editing operations frequently cause the need to reformat a block.
-  For the purpose of this note, 'reformat' means formatting something
-  after it has already been formatted.
-  
-  The following things can happen when a block is reformatted:
-
-  1.  Erase the screen space used by all the current slices.
-
-      This one is serious.  It causes the entire block to flicker.
-
-  2.  Purge the lines.
-
-      Also serious.  This means that all the lines need to be rebuilt.
-	  If the lines are purged, you must call breakParagraph.  Otherwise,
-	  you must call relayoutParagraph.
-
-  3.  Clobber the slices.
-
-      Quite serious.  This means that the location of the first slice
-	  for this block will be calculated by looking at the previous block.
-	  In some cases, this is necessary.  For example, if a block is currently
-	  beginning in column D, but there is now room for it to begin in
-	  column C (the predecessor to D), then the slices should be purged
-	  so that the block will be reformatted to place it in the previous
-	  column.
-
-  4.  Clobber runs.
-
-      The most serious.  This means that nearly everything is tossed out,
-	  and the entire layout is being constructed from scratch.
-*/
-
-int fl_BlockLayout::minor_reformat()
+int fl_BlockLayout::format()
 {
-	UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
-	UT_DEBUGMSG(("BEGIN reformat block: 0x%x\n", this));
-
-	UT_ASSERT(!m_bFormatting);
-	m_bFormatting = UT_TRUE;
-
-	m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
-
 	if (m_pFirstRun)
 	{
+		if (!m_pFirstLine)
+		{
+			// start a new line
+			fp_Line* pLine = getNewLine();
+
+			fp_Run* pTempRun = m_pFirstRun;
+			while (pTempRun)
+			{
+				pLine->addRun(pTempRun);
+				pTempRun = pTempRun->getNext();
+			}
+		}
+		
 		m_pBreaker->breakParagraph(this);
 
 		/*
@@ -527,252 +364,35 @@ int fl_BlockLayout::minor_reformat()
 			fp_Line* pLine = m_pLastLine;
 		
 			m_pLastLine = pLine->getPrev();
-			pLine->remove();
+			_removeLine(pLine);
 
 			// note that we do NOT delete pLine here.  It is deleted elsewhere.
 		}
-	
-		int countSlices = m_vecSlices.getItemCount();
-		for (int i=0; i<countSlices; i++)
-		{
-			fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-			UT_ASSERT(pSlice);
-
-			pSlice->returnExtraSpace();
-		}
-	
-		// TODO should we call _align here?
-
-	}
-	else
-	{
-		_purgeLayout(UT_TRUE);
-		
-		// we don't ... construct just enough to keep going
-		UT_ASSERT(!m_pFirstLine);
-
-		// the run is empty 
-		DG_Graphics* pG = m_pLayout->getGraphics();
-
-		m_pFirstRun = new fp_Run(this, pG, 0, 0);
-		UT_ASSERT(m_pFirstRun);	// TODO check for outofmem
-		
-		m_pFirstRun->calcWidths(&m_gbCharWidths);
-
-		// the line just contains the empty run
-		UT_uint32 iGuessLineHeight = m_pFirstRun->getHeight();
-
-		UT_uint32 iMaxLineWidth = requestLineSpace(iGuessLineHeight);
-		UT_ASSERT(iMaxLineWidth > 0);
-
-		fp_Line*	pLine = new fp_Line(iMaxLineWidth);
-		pLine->addRun(m_pFirstRun);
-		addLine(pLine);
-	}
-
-	UT_DEBUGMSG(("END reformat block: 0x%x\n", this));
-
-#if 0	
-	// NOTE we no longer clear the bNeedsCompleteReformat flag
-	// on a minor reformat.  See me for the reason.  -EWS
-
-	setNeedsCompleteReformat(UT_FALSE);
-#endif	
-	
-	m_bFormatting = UT_FALSE;
-	return 0;
-}
-
-int fl_BlockLayout::complete_format()
-{
-	UT_DEBUGMSG(("BEGIN Formatting block: 0x%x\n", this));
-
-	UT_ASSERT(!m_bFormatting);
-	m_bFormatting = UT_TRUE;
-
-	if (m_vecSlices.getItemCount() > 0)
-	{
-		/*
-		  If this method is called after a format has already been
-		  done, we assume that what we should do is a clobber and reformat.
-		  The operation will be slow.
-		*/
-		UT_ASSERT(m_pLayout->getGraphics()->queryProperties(DG_Graphics::DGP_SCREEN));
-		UT_DEBUGMSG(("######## WARNING:  Brute-force reformat of block: 0x%x\n", this));
-
-		/*
-		  TODO originally this routine was a brute-force reformat of a block.
-		  It has since been modified such that the runs are no longer destroyed.
-		  In other words, it has been modified to do essentially what minor_reformat()
-		  is supposed to do.  I've changed the names of the methods and comments
-		  to make things clearer.  However, for now, I'm not changing the behavior
-		  of this method much.
-
-		  It is now clear that there are going to be several kinds of reformat
-		  operations.  In some cases, we will want to stomp all the runs.
-		  In some cases, we will want to stomp the slices.  In some cases
-		  we want to call relayoutBlock and in others breakParagraph.
-		*/
-
-#define CLOBBER_SLICES
-		
-		int countSlices = m_vecSlices.getItemCount();
-		for (int i=0; i<countSlices; i++)
-		{
-			fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-			UT_ASSERT(pSlice);
-
-			pSlice->clearScreen(m_pLayout->getGraphics());
-			pSlice->deleteLines();
-#ifdef CLOBBER_SLICES
-			pSlice->remove();
-
-			delete pSlice;
-#else
-			pSlice->verifyColumnFit();
-#endif
-		}
-		m_pFirstLine = m_pLastLine = NULL;
-
-#ifdef CLOBBER_SLICES
-		for (int j=countSlices-1; j>=0; j--)
-		{
-			m_vecSlices.deleteNthItem(j);
-		}
-		UT_ASSERT(m_vecSlices.getItemCount() == 0);
-		m_pCurrentSlice = NULL;
-#else
-		m_pCurrentSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
-#endif		
-
-		/*
-		  NOTE that we currently leave the runs alone.  If we were
-		  to stomp them too, then we should just call _purgeLayout().
-		*/
-	}
-	
-#if 0
-	_createRuns();
-	_verifyCurrentSlice(); // this is helpful for empty paragraphs
-#endif 
-
-	if (m_pFirstRun)
-	{
-		UT_ASSERT(m_pFirstLine == NULL);
-		
-		// start a new line
-		UT_uint32 iGuessLineHeight = m_pFirstRun->getHeight();
-
-		UT_uint32 iMaxLineWidth = requestLineSpace(iGuessLineHeight);
-		UT_ASSERT(iMaxLineWidth > 0);
-
-		fp_Line*	pLine = new fp_Line(iMaxLineWidth);
-
-		fp_Run* pTempRun = m_pFirstRun;
-		while (pTempRun)
-		{
-			pLine->addRun(pTempRun);
-			pTempRun = pTempRun->getNext();
-		}
-		
-		addLine(pLine);
-		
-		m_pBreaker->breakParagraph(this);
 	}
 	else
 	{
 		// we don't ... construct just enough to keep going
-		UT_ASSERT(!m_pFirstLine);
+		if (!m_pFirstLine)
+		{
+			getNewLine();
+		}
 
-		// the run is empty 
 		DG_Graphics* pG = m_pLayout->getGraphics();
 
 		m_pFirstRun = new fp_Run(this, pG, 0, 0);
 		m_pFirstRun->calcWidths(&m_gbCharWidths);
 
 		// the line just contains the empty run
-		UT_uint32 iGuessLineHeight = m_pFirstRun->getHeight();
-
-		UT_uint32 iMaxLineWidth = requestLineSpace(iGuessLineHeight);
-		UT_ASSERT(iMaxLineWidth > 0);
-
-		fp_Line*	pLine = new fp_Line(iMaxLineWidth);
-		pLine->addRun(m_pFirstRun);
-		addLine(pLine);
-	}
-
-	int countSlices = m_vecSlices.getItemCount();
-	for (int i=0; i<countSlices; i++)
-	{
-		fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		UT_ASSERT(pSlice);
-
-		pSlice->returnExtraSpace();
+		m_pFirstLine->addRun(m_pFirstRun);
 	}
 
 	align();
 
-	m_bFormatting = UT_FALSE;
+	_fixColumns();
 
-	setNeedsCompleteReformat(UT_FALSE);
+	setNeedsReformat(UT_FALSE);
 	
-	UT_DEBUGMSG(("END Formatting block: 0x%x\n", this));
-
 	return 0;	// TODO return code
-}
-
-/*
-	requestLineSpace is called by the fb_LineBreaker when it needs to ask for space in which
-	to put a new line of content.  The return value is the width of the line.  LineBreakers
-	do not know which slice a line is stored in.  That is managed entirely by the fl_BlockLayout
-	itself.
-*/
-int	fl_BlockLayout::requestLineSpace(int iHeight)
-{
-	_verifyCurrentSlice();
-
-	// TODO assert that iHeight is reasonable
-	int wid = m_pCurrentSlice->requestLineSpace(iHeight);
-
-	if (wid == 0)
-	{
-		UT_sint32 ndx = m_vecSlices.findItem(m_pCurrentSlice);
-		UT_ASSERT(ndx >= 0);
-
-		fp_BlockSlice* pNextSlice;
-		if (m_vecSlices.getItemCount() > (UT_uint32)(ndx+1))
-		{
-			pNextSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(ndx+1);
-		}
-		else
-		{
-			pNextSlice = NULL;
-		}
-		
-		if (pNextSlice)
-		{
-			m_pCurrentSlice = pNextSlice;
-			
-			wid = m_pCurrentSlice->requestLineSpace(iHeight);
-			
-			// if wid were 0 here, then iHeight is larger than the height of the col
-		}
-		else
-		{
-			UT_DEBUGMSG(("No more space.  Need a new slice.  m_pCurrentSlice=0x%x and its height is %d\n",
-						 m_pCurrentSlice,
-						 m_pCurrentSlice->getHeight()));
-			UT_DEBUGMSG(("A requestLineSpace: m_pCurrentSlice=0x%x, col=0x%x\n", m_pCurrentSlice, m_pCurrentSlice->getColumn()));
-
-			_createNewSlice();
-
-			UT_DEBUGMSG(("B requestLineSpace: m_pCurrentSlice=0x%x, col=0x%x\n", m_pCurrentSlice, m_pCurrentSlice->getColumn()));
-			wid = m_pCurrentSlice->requestLineSpace(iHeight);
-			// if wid were 0 here, then iHeight is larger than the height of the col
-		}
-	}
-
-	return wid;
 }
 
 fp_Run* fl_BlockLayout::getFirstRun()
@@ -780,23 +400,29 @@ fp_Run* fl_BlockLayout::getFirstRun()
 	return m_pFirstRun;
 }
 
-int	fl_BlockLayout::addLine(fp_Line* pLine)
+fp_Line* fl_BlockLayout::getNewLine(void)
 {
+	fp_Line* pLine = new fp_Line();
 	UT_ASSERT(pLine);
-	UT_ASSERT(m_pCurrentSlice);
-	
-	m_pCurrentSlice->addLine(pLine);
 
+	pLine->setBlock(this);
 	pLine->setNext(NULL);
+	
+	fp_Line* pOldLastLine = NULL;
+	fp_Column* pCol = NULL;
 	
 	if (m_pLastLine)
 	{
+		pOldLastLine = m_pLastLine;
+		
 		UT_ASSERT(m_pFirstLine);
 		UT_ASSERT(!m_pLastLine->getNext());
 
 		pLine->setPrev(m_pLastLine);
 		m_pLastLine->setNext(pLine);
 		m_pLastLine = pLine;
+
+		pCol = pOldLastLine->getColumn();
 	}
 	else
 	{
@@ -804,33 +430,49 @@ int	fl_BlockLayout::addLine(fp_Line* pLine)
 		m_pFirstLine = pLine;
 		m_pLastLine = m_pFirstLine;
 		pLine->setPrev(NULL);
+
+		if (m_pPrev)
+		{
+			pOldLastLine = m_pPrev->getLastLine();
+			pCol = pOldLastLine->getColumn();
+		}
+		else
+		{
+			pCol = m_pSectionLayout->getNewColumn();
+		}
 	}
 
-	return 0; // TODO return code
+	if (!(pCol->insertLineAfter(pLine, pOldLastLine)))
+	{
+		pCol = pCol->getNext();
+		if (!pCol)
+		{
+			pCol = m_pSectionLayout->getNewColumn();
+		}
+
+		UT_ASSERT(pCol);
+		
+		pCol->insertLineAfter(pLine, NULL);
+	}
+
+	return pLine;
 }
 
-void fl_BlockLayout::_createRuns()
-{
-	// TODO -- this is obsolete now, right?
-	// ==>: if not, trigger fl_Listener::populate() via PD_Document downcall 
-	// EX:  m_pDoc->repopulate(m_sdh, this);	// or get lid from m_pLayout
-}
-
-void fl_BlockLayout::setNeedsCompleteReformat(UT_Bool b)
+void fl_BlockLayout::setNeedsReformat(UT_Bool b)
 {
 	m_bNeedsReformat = b;
 }
 
-UT_Bool fl_BlockLayout::needsCompleteReformat()
+UT_Bool fl_BlockLayout::needsReformat()
 {
 	return m_bNeedsReformat;
 }
 
-const char*	fl_BlockLayout::getProperty(const XML_Char * pszName)
+const char*	fl_BlockLayout::getProperty(const XML_Char * pszName) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	
 	getAttrProp(&pBlockAP);
 	
@@ -853,6 +495,15 @@ UT_GrowBuf * fl_BlockLayout::getCharWidths(void)
 	return &m_gbCharWidths;
 }
 
+UT_uint32 fl_BlockLayout::getOrphansProperty(void) const
+{
+	return m_iOrphansProperty;
+}
+
+UT_uint32 fl_BlockLayout::getWidowsProperty(void) const
+{
+	return m_iWidowsProperty;
+}
 
 UT_Bool fl_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
@@ -932,58 +583,39 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_ui
 
 fp_Line* fl_BlockLayout::getLastLine()
 {
-	fp_BlockSlice* pLastSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(m_vecSlices.getItemCount()-1);
-	fp_Line* pLastLine = pLastSlice->getNthLine(pLastSlice->countLines()-1);
-	return pLastLine;
+	return m_pLastLine;
 }
 
 fp_Line* fl_BlockLayout::getFirstLine()
 {
-	fp_BlockSlice* pSlice = (fp_BlockSlice*) m_vecSlices.getNthItem(0);
-	fp_Line* pLine = pSlice->getNthLine(0);
-	return pLine;
+	return m_pFirstLine;
 }
 
 fp_Line* fl_BlockLayout::findPrevLineInDocument(fp_Line* pLine)
 {
-	int count = m_vecSlices.getItemCount();
-	fp_Line* pPrev = NULL;
-	for (int i=0; i<count; i++)
+	if (pLine->getPrev())
 	{
-		fp_BlockSlice* pBS = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		int count2 = pBS->countLines();
-		for (int j=0; j<count2; j++)
+		return pLine->getPrev();
+	}
+	else
+	{
+		if (m_pPrev)
 		{
-			fp_Line* pL = pBS->getNthLine(j);
-			if (pL == pLine)
+			return m_pPrev->getLastLine();
+		}
+		else
+		{
+			fl_SectionLayout* pSL = m_pLayout->getPrevSection(m_pSectionLayout);
+
+			if (!pSL)
 			{
-				if (pPrev)
-				{
-					return pPrev;
-				}
-				else
-				{
-					if (m_pPrev)
-					{
-						return m_pPrev->getLastLine();
-					}
-					else
-					{
-						fl_SectionLayout* pSL = m_pLayout->getPrevSection(m_pSectionLayout);
-
-						if (!pSL)
-						{
-							// at EOD, so just bail
-							return NULL;
-						}
-
-						fl_BlockLayout* pBlock = pSL->getLastBlock();
-						UT_ASSERT(pBlock);
-						return pBlock->getLastLine();
-					}
-				}
+				// at EOD, so just bail
+				return NULL;
 			}
-			pPrev = pL;
+
+			fl_BlockLayout* pBlock = pSL->getLastBlock();
+			UT_ASSERT(pBlock);
+			return pBlock->getLastLine();
 		}
 	}
 	
@@ -998,49 +630,27 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 		return pLine->getNext();
 	}
 	
-	int count = m_vecSlices.getItemCount();
-	for (int i=0; i<count; i++)
+	if (m_pNext)
 	{
-		fp_BlockSlice* pBS = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-		int count2 = pBS->countLines();
-		for (int j=0; j<count2; j++)
-		{
-			fp_Line* pL = pBS->getNthLine(j);
-			if (pL == pLine)
-			{
-				// found the line.
-				UT_ASSERT(!((j+1) < count2));	// if this were true, it would have been caught above
-				
-				if ((i+1) < count)
-				{
-					// grab the first line from the next blockslice
-					pBS = (fp_BlockSlice*) m_vecSlices.getNthItem(i+1);
-					return pBS->getNthLine(0);
-				}
-				else if (m_pNext)
-				{
-					// grab the first line from the next block
-					return m_pNext->getFirstLine();
-				}
-				else
-				{
-					// there is no next line in this section, try the next
-					fl_SectionLayout* pSL = m_pLayout->getNextSection(m_pSectionLayout);
-
-					if (!pSL)
-					{
-						// at EOD, so just bail
-						return NULL;
-					}
-
-					fl_BlockLayout* pBlock = pSL->getFirstBlock();
-					UT_ASSERT(pBlock);
-					return pBlock->getFirstLine();
-				}
-			}
-		}
+		// grab the first line from the next block
+		return m_pNext->getFirstLine();
 	}
-	
+	else
+	{
+		// there is no next line in this section, try the next
+		fl_SectionLayout* pSL = m_pLayout->getNextSection(m_pSectionLayout);
+
+		if (!pSL)
+		{
+			// at EOD, so just bail
+			return NULL;
+		}
+
+		fl_BlockLayout* pBlock = pSL->getFirstBlock();
+		UT_ASSERT(pBlock);
+		return pBlock->getFirstLine();
+	}
+ 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
@@ -1081,36 +691,8 @@ fl_BlockLayout* fl_BlockLayout::getPrev(UT_Bool bKeepGoing) const
 	return pBL;
 }
 
-fp_BlockSlice* fl_BlockLayout::getFirstSlice()
-{
-	return (fp_BlockSlice*) m_vecSlices.getNthItem(0);
-}
-
-fp_BlockSlice* fl_BlockLayout::getLastSlice()
-{
-	return (fp_BlockSlice*) m_vecSlices.getNthItem(m_vecSlices.getItemCount()-1);
-}
-
 void fl_BlockLayout::dump()
 {
-	int count = m_vecSlices.getItemCount();
-	UT_DEBUGMSG(("fl_BlockLayout 0x%x is from element 0x%x and contains %d slices.\n", this, m_sdh, count));
-
-	for (int i=0; i<count; i++)
-	{
-		fp_BlockSlice* p = (fp_BlockSlice*) m_vecSlices.getNthItem(i);
-
-		UT_DEBUGMSG(("fl_BlockLayout::dump(0x%x) - fp_BlockSlice 0x%x, height=%d, in column 0x%x\n", this, p, p->getHeight(), p->getColumn()));
-	}
-
-	UT_DEBUGMSG(("fl_BlockLayout 0x%x contains the following runs:\n",this));
-
-	fp_Run * pRun = getFirstRun();
-	while (pRun)
-	{
-		pRun->dumpRun();
-		pRun = pRun->getNext();
-	}
 }
 
 fl_PartOfBlock::fl_PartOfBlock(void)
@@ -1571,6 +1153,7 @@ void fl_BlockLayout::checkSpelling(void)
 		m_lstNotSpellChecked.remove();
 	}
 
+#if 0	
 	/*
 	  TODO we don't REALLY want to redraw the whole block after every spell check.
 	  This is causing display dirt, since the insertion point gets erased outside
@@ -1582,6 +1165,7 @@ void fl_BlockLayout::checkSpelling(void)
 	m_pLayout->getView()->_eraseInsertionPoint();
 	draw(m_pLayout->getGraphics());
 	m_pLayout->getView()->_drawInsertionPoint();
+#endif	
 }
 
 /*****************************************************************/
@@ -1719,8 +1303,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		pRun = pRun->getNext();
 	}
 
-	minor_reformat();
-	fixColumns();
+	format();
 	m_pLayout->reformat();
 
 	if (pView)
@@ -1837,10 +1420,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 		}
 	}
 
-	minor_reformat();
-	fixColumns();
-					
-	// in case anything else moved
+	format();
 	m_pLayout->reformat();
 
 	FV_View* pView = m_pLayout->getView();
@@ -2025,8 +1605,7 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 		pRun = pRun->getNext();
 	}
 
-	minor_reformat();
-	fixColumns();
+	format();
 	m_pLayout->reformat();
 
 	FV_View* pView = m_pLayout->getView();
@@ -2120,7 +1699,9 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 			pLastRun->setNext(m_pFirstRun);
 
 			if (m_pFirstRun)
+			{
 				m_pFirstRun->setPrev(pLastRun);
+			}
 		}
 		else
 		{
@@ -2132,6 +1713,8 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 
 		pPrevBL->m_gbCharWidths.ins(offset, m_gbCharWidths.getPointer(0), lenNew);
 
+		fp_Line* pLastLine = pPrevBL->getLastLine();
+		
 		// tell all the new runs where they live
 		pRun = m_pFirstRun;
 		while (pRun)
@@ -2145,6 +1728,8 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 			
 			pLine->removeRun(pRun);
 			pRun->calcWidths(&pPrevBL->m_gbCharWidths);
+
+			pLastLine->addRun(pRun);
 
 			pRun = pRun->getNext();
 		}
@@ -2166,8 +1751,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	pSL->removeBlock(this);
 
 	// update the display
-	pPrevBL->complete_format();
-	pPrevBL->fixColumns();
+	pPrevBL->format();
 
 	pPrevBL->_destroySpellCheckLists();
 	m_pLayout->addBlockToSpellCheckQueue(pPrevBL);
@@ -2202,12 +1786,7 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 
 	// TODO: may want to figure out the specific change and do less work
 	// TODO right, don't reformat anything on a simple align operation.  Just erase, re-align, and draw.
-	minor_reformat();
-	align();
-
-	fixColumns();
-					
-	// in case anything else moved
+	format();
 	m_pLayout->reformat();
 
 	FV_View* pView = m_pLayout->getView();
@@ -2227,7 +1806,7 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 					
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
-	fl_BlockLayout*	pNewBL = pSL->insertBlock(sdh, this);
+	fl_BlockLayout*	pNewBL = pSL->insertBlock(sdh, this, pcrx->getIndexAP());
 	if (!pNewBL)
 	{
 		UT_DEBUGMSG(("no memory for BlockLayout"));
@@ -2235,8 +1814,6 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	}
 	*ppNewBL = pNewBL;
 	
-	pNewBL->setAttrPropIndex(pcrx->getIndexAP());
-
 	/*
 	  The idea here is to divide the runs of the existing block 
 	  into two equivalence classes.  This may involve 
@@ -2323,15 +1900,14 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 		pRun = pRun->getNext();
 	}
 
+	// we don't need a full format here, just an align.
+	align();
+	
 	_destroySpellCheckLists();
 
 	m_pLayout->addBlockToSpellCheckQueue(this);
 	
-	// Note that in the case below, we really DO need to call complete_format().
-	pNewBL->complete_format();
-
-	fixColumns();
-	pNewBL->fixColumns();
+	pNewBL->format();
 
 	m_pLayout->addBlockToSpellCheckQueue(pNewBL);
 	
@@ -2390,3 +1966,40 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 		pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
 	}
 }
+
+void fl_BlockLayout::alignOneLine(fp_Line* pLine)
+{
+	UT_sint32 iExtraWidth = pLine->getMaxWidth() - pLine->getWidth();
+	UT_uint32 iAlignCmd = getAlignment();
+
+//	if (iExtraWidth > 0)
+	{
+		/*
+		  the line is not as wide as the space allocated for it.  check to see if
+		  we need to justify it.
+		*/
+		switch (iAlignCmd)
+		{
+		case FL_ALIGN_BLOCK_LEFT:
+			pLine->setX(pLine->getBaseX());
+			break;
+		case FL_ALIGN_BLOCK_RIGHT:
+			pLine->setX(pLine->getBaseX() + iExtraWidth);
+			break;
+		case FL_ALIGN_BLOCK_CENTER:
+			pLine->setX(pLine->getBaseX() + (iExtraWidth / 2));
+			break;
+		case FL_ALIGN_BLOCK_JUSTIFY:
+			pLine->setX(pLine->getBaseX());
+			/*
+			  TODO the following line is commented out because it doesn't work.  yet.
+			*/
+			// pLine->expandWidthTo(pSliver->iWidth);
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
+	}
+}
+

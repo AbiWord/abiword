@@ -152,10 +152,8 @@ UT_Bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 #define TT_OTHER		0
 #define TT_DOCUMENT		1
 #define TT_SECTION		2
-#define TT_COLUMNSET	3
-#define TT_COLUMN		4
-#define TT_BLOCK		5
-#define TT_INLINE		6
+#define TT_BLOCK		3
+#define TT_INLINE		4
 
 struct _TokenTable
 {
@@ -166,8 +164,6 @@ struct _TokenTable
 static struct _TokenTable s_Tokens[] =
 {	{	"awml",			TT_DOCUMENT		},
 	{	"section",		TT_SECTION		},
-	{	"columnmodel",	TT_COLUMNSET	},
-	{	"column",		TT_COLUMN		},
 	{	"p",			TT_BLOCK		},
 	{	"c",			TT_INLINE		},
 	{	"*",			TT_OTHER		}};	// must be last
@@ -227,18 +223,6 @@ void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts
 		X_CheckError(m_pDocument->appendStrux(PTX_Section,atts));
 		return;
 
-	case TT_COLUMNSET:
-		X_VerifyParseState(_PS_Sec);
-		m_parseState = _PS_ColSet;
-		X_CheckError(m_pDocument->appendStrux(PTX_ColumnSet,atts));
-		return;
-		
-	case TT_COLUMN:
-		X_VerifyParseState(_PS_ColSet);
-		m_parseState = _PS_Col;
-		X_CheckError(m_pDocument->appendStrux(PTX_Column,atts));
-		return;
-		
 	case TT_BLOCK:
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
@@ -277,16 +261,6 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		m_parseState = _PS_Doc;
 		return;
 
-	case TT_COLUMNSET:
-		X_VerifyParseState(_PS_ColSet);
-		m_parseState = _PS_Sec;
-		return;
-		
-	case TT_COLUMN:
-		X_VerifyParseState(_PS_Col);
-		m_parseState = _PS_ColSet;
-		return;
-		
 	case TT_BLOCK:
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Sec;

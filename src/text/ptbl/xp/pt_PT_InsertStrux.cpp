@@ -29,8 +29,6 @@
 #include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
-#include "pf_Frag_Strux_Column.h"
-#include "pf_Frag_Strux_ColumnSet.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
@@ -56,14 +54,6 @@ UT_Bool pt_PieceTable::_createStrux(PTStruxType pts,
 	{
 	case PTX_Section:
 		pfs = new pf_Frag_Strux_Section(this,indexAP);
-		break;
-		
-	case PTX_ColumnSet:
-		pfs = new pf_Frag_Strux_ColumnSet(this,indexAP);
-		break;
-		
-	case PTX_Column:
-		pfs = new pf_Frag_Strux_Column(this,indexAP);
 		break;
 		
 	case PTX_Block:

@@ -27,9 +27,11 @@
 #include "ut_vector.h"
 #include "pt_Types.h"
 
-class fp_BlockSlice;
 class fp_Run;
 class DG_Graphics;
+class fl_BlockLayout;
+class fp_Column;
+
 struct dg_DrawArgs;
 
 // ----------------------------------------------------------------
@@ -41,15 +43,19 @@ struct dg_DrawArgs;
 class fp_Line
 {
 public:
-	fp_Line(UT_sint32);
+	fp_Line();
 	~fp_Line();
 
-	void		setBlockSlice(fp_BlockSlice*, void*);
-	fp_BlockSlice* getBlockSlice() const;
+	void		setColumn(fp_Column*);
+	fp_Column* 	getColumn() const;
+
+	void				setBlock(fl_BlockLayout*);
+	fl_BlockLayout*		getBlock() const;
 
 	UT_uint32 	getHeight() const;
 	UT_uint32 	getWidth() const;
 	UT_uint32 	getMaxWidth() const;
+	void		setMaxWidth(UT_sint32);
 
 	UT_sint32	getX(void) const;
 	UT_sint32	getY(void) const;
@@ -91,14 +97,15 @@ public:
 	UT_uint32	getAscent(void) const;
 	
 	UT_Bool		isEmpty(void) const;
-	
-	UT_Bool         m_bDirty;	// line contents changed, needs to be reformatted
 
+	UT_Bool 	isFirstLineInBlock(void) const;
+	UT_Bool 	isLastLineInBlock(void) const;
+	
 protected:
 	void			_recalcHeight();
 
-	fp_BlockSlice*	m_pBlockSlice;
-	void*			m_pBlockSliceData;
+	fl_BlockLayout*	m_pBlock;
+	fp_Column*		m_pColumn;
 	
 	UT_uint32	 	m_iWidth;
 	UT_uint32	 	m_iMaxWidth;

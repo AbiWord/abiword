@@ -84,11 +84,7 @@ IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument)
 
 IEStatus IE_Imp_Text::_writeHeader(FILE * fp)
 {
-	const char *attr[] = {"type", "Box", "left", "0pt", "top", "0pt", "width", "*", "height", "*", NULL};
-
 	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Section, NULL));
-	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_ColumnSet, NULL));
-	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Column, attr));
 	X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
 
 	return IES_OK;

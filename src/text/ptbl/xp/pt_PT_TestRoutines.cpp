@@ -28,8 +28,6 @@
 #include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
-#include "pf_Frag_Strux_Column.h"
-#include "pf_Frag_Strux_ColumnSet.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"

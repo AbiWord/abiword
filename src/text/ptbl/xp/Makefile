@@ -40,8 +40,6 @@ HEADERS=		$(EXPORT_HEADERS)		\
 			pf_Frag_Object.h		\
 			pf_Frag_Strux.h			\
 			pf_Frag_Strux_Block.h		\
-			pf_Frag_Strux_Column.h		\
-			pf_Frag_Strux_ColumnSet.h	\
 			pf_Frag_Strux_Section.h		\
 			pf_Frag_Text.h			\
 			pf_Fragments.h			\
@@ -58,8 +56,6 @@ CPPSRCS=		pd_Document.cpp			\
 			pf_Frag.cpp			\
 			pf_Frag_Strux.cpp		\
 			pf_Frag_Strux_Block.cpp		\
-			pf_Frag_Strux_Column.cpp	\
-			pf_Frag_Strux_ColumnSet.cpp	\
 			pf_Frag_Strux_Section.cpp	\
 			pf_Frag_TestRoutines.cpp	\
 			pf_Frag_Text.cpp		\

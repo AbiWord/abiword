@@ -1,0 +1,24 @@
+<awml>
+<section COLUMN_GAP="0.25in" NUM_COLUMNS="1">
+<p><c PROPS="font-family:courier; font-size:11pt">$Id$</c></p>
+<p PROPS="text-align:center"><c PROPS="font-size:24pt; font-weight:bold">AbiWord Layout Engine Design Overview</c></p>
+<p PROPS="text-align:center"><c PROPS="font-size:11pt">Copyright (C) 1999 AbiSource, Inc. All Rights Reserved.</c></p>
+<p PROPS="text-align:center"><c PROPS="font-style:italic">Eric W. Sink</c>, <c PROPS="font-family:courier">eric@abisource.com</c></p>
+<p PROPS="text-align:center">AbiSource, Inc.</p>
+<p PROPS="text-align:center"><c PROPS="font-family:courier">$Date$</c></p>
+<p></p>
+<p><c PROPS="font-weight:bold">Introduction</c></p>
+<p>This document gives an overview of the architecture and design of the AbiWord text layout engine.</p>
+<p><c PROPS="font-weight:bold">Terms</c></p>
+<p>The layout engine manages a hierarchy of spatial objects which are used to represent the formatted view of a document.  The hierarchy involves the following terms:  Page, Column, Line and Run.</p>
+<p>In addition to the layout hierarchy, there is also a hierarchy which represents the actual content of a document.  This hierarchy involves Document, Section and Block.</p>
+<p>A Section is a portion of a document.  It contains one or more Blocks.  A Block is a paragraph.</p>
+<p>A Page represents a physical sheet of paper.  Its dimensions are fixed.  A Page contains one or more Columns.</p>
+<p>A Column is a container into which text can be flowed.  It is rectangular.  A Column contains one or more Lines.</p>
+<p>A Line is a single line of text.  A Line contains one or more Runs.</p>
+<p>A Run is a piece of content.  Currently, all Runs contain text.  All text within a Run must be of the same font and formatting information.</p>
+<p><c PROPS="font-weight:bold">Multiple Columns</c></p>
+<p>AbiWord supports multiple columns using a very simple model.  Each Section specifies its column model as the number of columns, and the gap spacing between them.  That model will be used for all content in the Section.</p>
+<p></p>
+</section>
+</awml>

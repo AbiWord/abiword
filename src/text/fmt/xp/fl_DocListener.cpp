@@ -37,12 +37,11 @@
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
-#include "fl_ColumnSetLayout.h"
-#include "fl_ColumnLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "pd_Document.h"
+#include "pp_AttrProp.h"
 
 
 fl_DocListener::fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout)
@@ -76,8 +75,6 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 		}
 			
 	case PTX_Section:
-	case PTX_ColumnSet:
-	case PTX_Column:
 	default:
 		UT_ASSERT((0));
 		return UT_FALSE;
@@ -99,62 +96,18 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_Section:
 		{
 			// append a SectionLayout to this DocLayout
-			fl_SectionLayout* pSL = new fl_SectionLayout(m_pLayout, sdh);
+			fl_SectionLayout* pSL = new fl_SectionLayout(m_pLayout, sdh, pcr->getIndexAP());
 			if (!pSL)
 			{
 				UT_DEBUGMSG(("no memory for SectionLayout"));
 				return UT_FALSE;
 			}
-			pSL->setAttrPropIndex(pcr->getIndexAP());
 			m_pLayout->m_vecSectionLayouts.addItem(pSL);
 
 			*psfh = (PL_StruxFmtHandle)pSL;
 		}
 		break;
 
-	case PTX_ColumnSet:
-		{
-			// locate the last SectionLayout
-			int countSections = m_pLayout->m_vecSectionLayouts.getItemCount();
-			UT_ASSERT(countSections > 0);
-			fl_SectionLayout* pSL = (fl_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
-			UT_ASSERT(pSL);
-			fl_ColumnSetLayout * pCSL = new fl_ColumnSetLayout(pSL,sdh);
-			if (!pCSL)
-			{
-				UT_DEBUGMSG(("no memory for ColumnSetLayout"));
-				return UT_FALSE;
-			}
-			pCSL->setAttrPropIndex(pcr->getIndexAP());
-			UT_ASSERT(pSL->getColumnSetLayout()==NULL);
-			pSL->setColumnSetLayout(pCSL);
-
-			*psfh = (PL_StruxFmtHandle)pCSL;
-		}
-		break;
-			
-	case PTX_Column:
-		{
-			// locate the last SectionLayout
-			int countSections = m_pLayout->m_vecSectionLayouts.getItemCount();
-			UT_ASSERT(countSections > 0);
-			fl_SectionLayout* pSL = (fl_SectionLayout*) m_pLayout->m_vecSectionLayouts.getNthItem(countSections - 1);
-			UT_ASSERT(pSL);
-			fl_ColumnSetLayout * pCSL =	pSL->getColumnSetLayout();
-			UT_ASSERT(pCSL);
-			fl_ColumnLayout * pCL = new fl_ColumnLayout(pCSL,sdh);
-			if (!pCL)
-			{
-				UT_DEBUGMSG(("no memory for ColumnLayout"));
-				return UT_FALSE;
-			}
-			pCL->setAttrPropIndex(pcr->getIndexAP());
-			pCSL->appendColumnLayout(pCL);
-
-			*psfh = (PL_StruxFmtHandle)pCL;
-		}
-		break;
-			
 	case PTX_Block:
 		{
 			// locate the last SectionLayout
@@ -164,13 +117,12 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			UT_ASSERT(pSL);
 
 			// append a new BlockLayout to that SectionLayout
-			fl_BlockLayout*	pBL = pSL->appendBlock(sdh);
+			fl_BlockLayout*	pBL = pSL->appendBlock(sdh, pcr->getIndexAP());
 			if (!pBL)
 			{
 				UT_DEBUGMSG(("no memory for BlockLayout"));
 				return UT_FALSE;
 			}
-			pBL->setAttrPropIndex(pcr->getIndexAP());
 
 			*psfh = (PL_StruxFmtHandle)pBL;
 		}
@@ -227,8 +179,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			}
 					
 		case PTX_Section:
-		case PTX_ColumnSet:
-		case PTX_Column:
 		default:
 			UT_ASSERT((0));
 			return UT_FALSE;
@@ -250,8 +200,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			}
 					
 		case PTX_Section:
-		case PTX_ColumnSet:
-		case PTX_Column:
 		default:
 			UT_ASSERT((0));
 			return UT_FALSE;
@@ -273,8 +221,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			}
 					
 		case PTX_Section:
-		case PTX_ColumnSet:
-		case PTX_Column:
 		default:
 			UT_ASSERT((0));
 			return UT_FALSE;
@@ -328,8 +274,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		switch (pcrx->getStruxType())
 		{
 		case PTX_Section:
-		case PTX_ColumnSet:
-		case PTX_Column:
 			UT_ASSERT(UT_TODO);
 			return UT_FALSE;
 					
@@ -345,8 +289,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				}
 							
 			case PTX_Section:
-			case PTX_ColumnSet:
-			case PTX_Column:
 			default:
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return UT_FALSE;
@@ -376,8 +318,6 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		switch (pL->getType())
 		{
 		case PTX_Section:
-		case PTX_ColumnSet:
-		case PTX_Column:
 			pL->setAttrPropIndex(pcr->getIndexAP());
 			UT_ASSERT(UT_TODO);
 			return UT_FALSE;
@@ -422,8 +362,6 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:
-	case PTX_ColumnSet:
-	case PTX_Column:
 		UT_ASSERT(UT_TODO);
 		return UT_FALSE;
 			
@@ -442,8 +380,6 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 				}
 				
 			case PTX_Section:
-			case PTX_ColumnSet:
-			case PTX_Column:
 			default:
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				return UT_FALSE;

@@ -32,6 +32,11 @@
 
 /*****************************************************************/
 
+/*
+  TODO do we want this list of last-resort default settings to be here?
+  It seems out of place... --EWS
+*/
+
 static PP_Property _props[] =
 {
 	{ "color",					"000000",			1},
@@ -41,8 +46,8 @@ static PP_Property _props[] =
 	{ "font-style",				"normal",			1},
 	{ "font-variant",			"normal",			1},
 	{ "font-weight",			"normal",			1},
-	{ "margin-bottom",			"0.25in",			0},
-	{ "margin-top",				"0.25in",			0},
+	{ "margin-bottom",			"0.25in",			0},	// TODO - These defaults need to change to
+	{ "margin-top",				"0.25in",			0}, // zero to be consistent with other WPs
 	{ "text-align",				"left",				1},
 	{ "text-decoration",		"none",				1},
 
@@ -57,6 +62,9 @@ static PP_Property _props[] =
 	{ "page-break-after",		"auto",				0},
 	{ "page-break-before",		"auto",				0},
 	{ "page-break-inside",		"auto",				0},
+
+	{ "orphans",				"2",				0},
+	{ "widows",					"2",				0},
 };
 
 /*****************************************************************/

@@ -20,7 +20,7 @@
 
 
 #include "fp_Line.h"
-#include "fp_BlockSlice.h"
+#include "fp_Column.h"
 #include "fl_BlockLayout.h"
 #include "fp_Run.h"
 #include "gr_DrawArgs.h"
@@ -28,18 +28,25 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-fp_Line::fp_Line(UT_sint32 maxWidth) 
+fp_Line::fp_Line() 
 {
-	m_iMaxWidth = maxWidth;
+	m_iMaxWidth = 0;
 	m_iWidth = 0;
 	m_iHeight = 0;
-	m_pBlockSlice = NULL;
-	m_pBlockSliceData = NULL;
-	m_bDirty = UT_FALSE;
+	m_iX = 0;
+	m_iY = 0;
+	m_iBaseX = 0;
+	m_pColumn = NULL;
+	m_pBlock = NULL;
 }
 
 fp_Line::~fp_Line()
 {
+}
+
+void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
+{
+	m_iMaxWidth = iMaxWidth;
 }
 
 UT_Bool fp_Line::isEmpty(void) const
@@ -47,15 +54,24 @@ UT_Bool fp_Line::isEmpty(void) const
 	return ((m_vecRuns.getItemCount()) == 0);
 }
 
-void fp_Line::setBlockSlice(fp_BlockSlice* pBlockSlice, void* p)
+void fp_Line::setColumn(fp_Column* pColumn)
 {
-	m_pBlockSlice = pBlockSlice;
-	m_pBlockSliceData = p;
+	m_pColumn = pColumn;
 }
 
-fp_BlockSlice* fp_Line::getBlockSlice() const
+fp_Column* fp_Line::getColumn() const
 {
-	return m_pBlockSlice;
+	return m_pColumn;
+}
+
+void fp_Line::setBlock(fl_BlockLayout* pBlock)
+{
+	m_pBlock = pBlock;
+}
+
+fl_BlockLayout* fp_Line::getBlock(void) const
+{
+	return m_pBlock;
 }
 
 UT_uint32 fp_Line::getHeight() const
@@ -237,9 +253,6 @@ void fp_Line::runSizeChanged(fp_Run* pRun, UT_sint32 oldWidth, UT_sint32 newWidt
 {
 	UT_ASSERT(pRun);
 	
-	// we've changed ...
-	m_bDirty = UT_TRUE;
-
 	UT_sint32 dx = newWidth - oldWidth;
 
 	if (dx != 0)
@@ -280,7 +293,7 @@ void fp_Line::runSizeChanged(fp_Run* pRun, UT_sint32 oldWidth, UT_sint32 newWidt
 
 	_recalcHeight();
 
-	m_pBlockSlice->alignOneLine(this, m_pBlockSliceData);
+	m_pBlock->alignOneLine(this);
 }
 
 void fp_Line::remove()
@@ -295,7 +308,7 @@ void fp_Line::remove()
 		m_pPrev->setNext(m_pNext);
 	}
 
-	m_pBlockSlice->removeLine(this, m_pBlockSliceData);
+	m_pColumn->removeLine(this);
 }
 
 void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
@@ -355,7 +368,7 @@ void fp_Line::getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
 
-	m_pBlockSlice->getOffsets(this, m_pBlockSliceData, my_xoff, my_yoff);
+	m_pColumn->getOffsets(this, my_xoff, my_yoff);
 	
 	xoff = my_xoff + pRun->getX();
 	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
@@ -368,8 +381,7 @@ void fp_Line::getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff,
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
 
-	m_pBlockSlice->getScreenOffsets(this, m_pBlockSliceData, my_xoff,
-									my_yoff, width, height);
+	m_pColumn->getScreenOffsets(this, my_xoff, my_yoff, width, height);
 	
 	xoff = my_xoff + pRun->getX();
 
@@ -381,19 +393,6 @@ void fp_Line::getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff,
 	width = m_iWidth;
 	height = m_iHeight;
 }
-
-#if UNUSED
-void fp_Line::getAbsoluteCoords(UT_sint32& x, UT_sint32& y)
-{
-	UT_sint32 my_xoff;
-	UT_sint32 my_yoff;
-
-	m_pBlockSlice->getOffsets(this, m_pBlockSliceData, my_xoff, my_yoff);
-
-	x = my_xoff;
-	y = my_yoff + m_iAscent;
-}
-#endif
 
 void fp_Line::_recalcHeight()
 {
@@ -428,13 +427,13 @@ void fp_Line::_recalcHeight()
 	m_iAscent = iMaxAscent;
 	m_iHeight = iMaxAscent + iMaxDescent;
 
-	if ((iOldHeight != m_iHeight) && m_pBlockSlice)
+	if ((iOldHeight != m_iHeight) && m_pColumn)
 	{
-		// We need to let our slice know that we changed height.
+		// We need to let our column know that we changed height.
 
 		DG_Graphics* pG = getFirstRun()->getGraphics();
 		
-		m_pBlockSlice->lineHeightChanged(this, m_pBlockSliceData, pG, iOldHeight, m_iHeight);
+		m_pColumn->lineHeightChanged(this, pG, iOldHeight, m_iHeight);
 	}
 }
 
@@ -499,8 +498,7 @@ void fp_Line::draw(DG_Graphics* pG)
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	UT_sint32 width, height;
 	
-	m_pBlockSlice->getScreenOffsets(this, m_pBlockSliceData, my_xoff,
-									my_yoff, width, height);
+	m_pColumn->getScreenOffsets(this, my_xoff, my_yoff, width, height);
 
 	dg_DrawArgs da;
 	
@@ -564,9 +562,9 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 
 void fp_Line::align()
 {
-	UT_ASSERT(m_pBlockSlice);
+	UT_ASSERT(m_pColumn);
 	
-	m_pBlockSlice->alignOneLine(this, m_pBlockSliceData);
+	m_pBlock->alignOneLine(this);
 }
 
 UT_sint32 fp_Line::getX(void) const
@@ -586,18 +584,44 @@ UT_sint32 fp_Line::getBaseX(void) const
 
 void fp_Line::setX(UT_sint32 iX)
 {
+	if (m_iX == iX)
+	{
+		return;
+	}
+
+	clearScreen();
+	
 	m_iX = iX;
 }
 
 void fp_Line::setY(UT_sint32 iY)
 {
+	if (m_iY == iY)
+	{
+		return;
+	}
+	
+	clearScreen();
+	
 	m_iY = iY;
 }
 
 void fp_Line::setBaseX(UT_sint32 iBaseX)
 {
+	if (m_iBaseX == iBaseX)
+	{
+		return;
+	}
+	
 	m_iBaseX = iBaseX;
 }
 
+UT_Bool fp_Line::isFirstLineInBlock(void) const
+{
+	return m_pBlock->getFirstLine() == this;
+}
 
-
+UT_Bool fp_Line::isLastLineInBlock(void) const
+{
+	return m_pBlock->getLastLine() == this;
+}
