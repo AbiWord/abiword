@@ -687,12 +687,12 @@ msgstr "&Overstrepen"
 #: po/tmp/ap_String_Id.h.h:324
 #, fuzzy
 msgid "&Page Width"
-msgstr "Pagina breedte"
+msgstr "&Pagina breedte"
 
 #. DLG_Break_PageBreak
 #: po/tmp/ap_String_Id.h.h:326
 msgid "&Page break"
-msgstr "Pagina-einde"
+msgstr "&Pagina-einde"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:328
@@ -954,9 +954,8 @@ msgstr "(geen)"
 #. TOOLBAR_STATUSLINE_1COLUMN
 #. TOOLBAR_TOOLTIP_1COLUMN
 #: po/tmp/ap_String_Id.h.h:429
-#, fuzzy
 msgid "1 Column"
-msgstr "Kolommen"
+msgstr "1 Kolom"
 
 #. TOOLBAR_LABEL_MIDDLE_SPACE
 #: po/tmp/ap_String_Id.h.h:431
@@ -1421,9 +1420,8 @@ msgstr "Cirkel Lijst"
 #. TOOLBAR_STATUSLINE_LISTS_BULLETS
 #. TOOLBAR_TOOLTIP_LISTS_BULLETS
 #: po/tmp/ap_String_Id.h.h:613
-#, fuzzy
 msgid "Bullets"
-msgstr "Cirkel"
+msgstr "Cirkels"
 
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:615
@@ -1497,9 +1495,8 @@ msgstr "&Centreer Tab"
 #. TOOLBAR_STATUSLINE_ALIGN_CENTER
 #. TOOLBAR_TOOLTIP_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:644
-#, fuzzy
 msgid "Center alignment"
-msgstr "Uitlijning"
+msgstr "Centreren"
 
 #. MENU_STATUSLINE_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:646
@@ -1736,7 +1733,7 @@ msgstr "Sluit alle vensters en verlaat programma?"
 #. MENU_STATUSLINE_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:736
 msgid "Close all windows in the application and exit"
-msgstr "Sluit alle vensters en beeindig programma"
+msgstr "Sluit alle vensters en beëindig het programma"
 
 #. MENU_STATUSLINE_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:738
@@ -1976,9 +1973,8 @@ msgstr "Gestreepte lijst"
 
 #. FIELD_Document_Date
 #: po/tmp/ap_String_Id.h.h:830
-#, fuzzy
 msgid "Date"
-msgstr "&Plakken"
+msgstr "Datum"
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:832
@@ -2508,7 +2504,7 @@ msgstr "Lettertype grootte"
 #. TOOLBAR_TOOLTIP_COLOR_FORE
 #: po/tmp/ap_String_Id.h.h:1043
 msgid "Font color"
-msgstr "Lettertype kleur"
+msgstr "Tekstkleur"
 
 #. DLG_Lists_ButtonFont
 #: po/tmp/ap_String_Id.h.h:1045
@@ -2953,16 +2949,14 @@ msgstr "Voeg een berekend veld in"
 #. TOOLBAR_STATUSLINE_FMT_HYPERLINK
 #. TOOLBAR_TOOLTIP_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1221
-#, fuzzy
 msgid "Insert a hyperlink into the document"
-msgstr "Open een nieuw venster voor het document"
+msgstr "Een hyperlink in uw document invoegen"
 
 #. TOOLBAR_STATUSLINE_INSERT_TABLE
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1224
-#, fuzzy
 msgid "Insert a new table into your document"
-msgstr "Open een bestaand document"
+msgstr "Een nieuwe tabel in uw document invoegen"
 
 #. MENU_STATUSLINE_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:1226
@@ -2998,14 +2992,13 @@ msgstr "Eindnoot invoegen"
 #. MENU_STATUSLINE_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:1238
 msgid "Insert an existing picture from another file"
-msgstr "Voeg een bestaande afbeelding uit een ander bestand toe"
+msgstr "Voeg een bestaande afbeelding uit een ander bestand in"
 
 #. TOOLBAR_STATUSLINE_IMG
 #. TOOLBAR_TOOLTIP_IMG
 #: po/tmp/ap_String_Id.h.h:1241
-#, fuzzy
 msgid "Insert an image into the document"
-msgstr "Open een bestaand document"
+msgstr "Een afbeelding in uw document invoegen"
 
 #. MENU_STATUSLINE_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:1243
@@ -3026,13 +3019,11 @@ msgstr "Hyperlink invoegen"
 #. TOOLBAR_STATUSLINE_INSERT_SYMBOL
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1250
-#, fuzzy
 msgid "Insert symbol"
-msgstr "Symbool invoegen"
+msgstr "Speciaal teken invoegen"
 
 #. TOOLBAR_LABEL_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:1252
-#, fuzzy
 msgid "Insert table"
 msgstr "Tabel invoegen"
 
@@ -3113,7 +3104,7 @@ msgstr "Trefwoorden:"
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:1283
 msgid "Label Align:"
-msgstr "Label Uitlijning:"
+msgstr "Label uitlijnen:"
 
 #. AUTOTEXT_SALUTATION_3
 #: po/tmp/ap_String_Id.h.h:1285
@@ -3179,14 +3170,13 @@ msgstr "Linker Marge [%s]"
 #: po/tmp/ap_String_Id.h.h:1310
 #, fuzzy
 msgid "Left Tab"
-msgstr "&Linker Tab"
+msgstr "Linker tab"
 
 #. TOOLBAR_STATUSLINE_ALIGN_LEFT
 #. TOOLBAR_TOOLTIP_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:1313
-#, fuzzy
 msgid "Left alignment"
-msgstr "Uitlijning"
+msgstr "Links uitlijnen"
 
 #. MENU_STATUSLINE_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:1315
@@ -3757,7 +3747,7 @@ msgstr "Pagina&nummers"
 #. FIELD_Numbers_PageNumber
 #: po/tmp/ap_String_Id.h.h:1536
 msgid "Page Number"
-msgstr "Pagina nummer"
+msgstr "Paginanummer"
 
 #. DLG_HdrFtr_PageNumberProperties
 #: po/tmp/ap_String_Id.h.h:1538
@@ -3848,9 +3838,8 @@ msgstr "Wachtwoord vereist, dit is een versleuteld document"
 #. TOOLBAR_STATUSLINE_EDIT_PASTE
 #. TOOLBAR_TOOLTIP_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:1573
-#, fuzzy
 msgid "Paste"
-msgstr "&Plakken"
+msgstr "Plakken"
 
 #. DLG_MetaData_TAB_Permission
 #: po/tmp/ap_String_Id.h.h:1575
@@ -4167,7 +4156,7 @@ msgstr "Hoogachtend,"
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h.h:1703
 msgid "Restart Page Numbers on new Sections"
-msgstr "Herstart pagina nummers op nieuwe secties"
+msgstr "Herstart paginanummers op nieuwe secties"
 
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1705
@@ -4241,9 +4230,8 @@ msgstr "&Rechter Tab"
 #. TOOLBAR_STATUSLINE_ALIGN_RIGHT
 #. TOOLBAR_TOOLTIP_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:1734
-#, fuzzy
 msgid "Right alignment"
-msgstr "Uitlijning"
+msgstr "Rechts uitlijnen"
 
 #. MENU_STATUSLINE_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:1736
@@ -4595,9 +4583,8 @@ msgstr "Toon..."
 #. TOOLBAR_STATUSLINE_VIEW_SHOWPARA
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1869
-#, fuzzy
 msgid "Show/hide formatting marks"
-msgstr "Op&maaktekens tonen"
+msgstr "Opmaaktekens tonen/verbergen"
 
 #. AUTOTEXT_CLOSING_8
 #: po/tmp/ap_String_Id.h.h:1871
@@ -4613,14 +4600,14 @@ msgstr "Enkel"
 #: po/tmp/ap_String_Id.h.h:1875
 #, fuzzy
 msgid "Single Spacing"
-msgstr "Re&gelafstand"
+msgstr "Enkele regelafstand"
 
 #. TOOLBAR_STATUSLINE_SINGLE_SPACE
 #. TOOLBAR_TOOLTIP_SINGLE_SPACE
 #: po/tmp/ap_String_Id.h.h:1878
 #, fuzzy
 msgid "Single spacing"
-msgstr "Re&gelafstand"
+msgstr "Enkele regelafstand"
 
 #. MENU_LABEL_TABLE_SORT
 #: po/tmp/ap_String_Id.h.h:1880
@@ -4656,7 +4643,7 @@ msgstr "Ruimte voor: 12 pt"
 #: po/tmp/ap_String_Id.h.h:1892
 #, fuzzy
 msgid "Space before: None"
-msgstr "Afstand na kolom"
+msgstr "Afstand na kolom: geen"
 
 #. DLG_Para_LabelSpacing
 #: po/tmp/ap_String_Id.h.h:1894
@@ -4665,16 +4652,14 @@ msgstr "Regelafstand"
 
 #. TOOLBAR_LABEL_SPELLCHECK
 #: po/tmp/ap_String_Id.h.h:1896
-#, fuzzy
 msgid "Spellcheck"
-msgstr "&Automatische spellingscontrole"
+msgstr "Spellingscontrole"
 
 #. TOOLBAR_STATUSLINE_SPELLCHECK
 #. TOOLBAR_TOOLTIP_SPELLCHECK
 #: po/tmp/ap_String_Id.h.h:1899
-#, fuzzy
 msgid "Spellcheck the document"
-msgstr "Document opslaan"
+msgstr "Spellingscontrole uitvoeren op document"
 
 #. DLG_Spell_SpellTitle
 #. DLG_Options_TabLabel_Spelling
@@ -4699,7 +4684,6 @@ msgstr "Cellen splitsen"
 
 #. MENU_STATUSLINE_TABLE_SPLIT_TABLE
 #: po/tmp/ap_String_Id.h.h:1910
-#, fuzzy
 msgid "Split Table"
 msgstr "Tabel splitsen"
 
@@ -4712,9 +4696,8 @@ msgstr "Cellen splitsen"
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h.h:1915
-#, fuzzy
 msgid "Split this cell"
-msgstr "Cellen splitsen"
+msgstr "Deze cell splitsen"
 
 #. DLG_Lists_Square_List
 #: po/tmp/ap_String_Id.h.h:1917 po/tmp/xap_String_Id.h.h:554
@@ -4782,9 +4765,8 @@ msgstr "&Doorhalen"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1944 po/tmp/xap_String_Id.h.h:558
-#, fuzzy
 msgid "Strike"
-msgstr "&Doorhalen"
+msgstr "Doorhalen"
 
 #. MENU_STATUSLINE_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1946
@@ -4795,14 +4777,13 @@ msgstr "Het geselecteerde doorhalen (omschakelen)"
 #. TOOLBAR_STATUSLINE_FMT_STYLE
 #. TOOLBAR_TOOLTIP_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:1950
-#, fuzzy
 msgid "Style"
-msgstr "Stijlen"
+msgstr "Stijl"
 
 #. DLG_Styles_ErrNotTitle1
 #: po/tmp/ap_String_Id.h.h:1952
 msgid "Style Name - "
-msgstr "Stijl Naam - "
+msgstr "Stijlnaam - "
 
 #. DLG_Styles_ModifyName
 #: po/tmp/ap_String_Id.h.h:1954
@@ -4812,7 +4793,7 @@ msgstr "Stijl Naam:"
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h.h:1956
 msgid "Style Type"
-msgstr "Stijl Type"
+msgstr "Stijl type"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h.h:1958
@@ -4879,20 +4860,18 @@ msgstr "Supe&rscript"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h.h:1987 po/tmp/xap_String_Id.h.h:564
-#, fuzzy
 msgid "Superscript"
-msgstr "Supe&rscript"
+msgstr "Superscript"
 
 #. MENU_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1989
 msgid "Sy&mbol"
-msgstr "&Symbool"
+msgstr "&Speciaal teken"
 
 #. TOOLBAR_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1991
-#, fuzzy
 msgid "Symbol"
-msgstr "&Symbool"
+msgstr "Speciaal teken"
 
 #. MENU_LABEL_TABLE
 #: po/tmp/ap_String_Id.h.h:1993
@@ -5153,7 +5132,7 @@ msgstr "Romeinse-Hoofdletter Lijst"
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:2089
 msgid "Use RTL Order"
-msgstr "Gebruik RnL volgorde"
+msgstr "Gebruik \"Rechts naar Links\" volgorde"
 
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:2091
@@ -5998,7 +5977,6 @@ msgstr "Breedte"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h.h:255
-#, fuzzy
 msgid "Flemish (Belgium)"
 msgstr "Vlaams (België)"
 
@@ -6285,7 +6263,7 @@ msgstr "Afbeelding invoegen"
 #. DLG_Insert_SymbolTitle
 #: po/tmp/xap_String_Id.h.h:371
 msgid "Insert Symbol"
-msgstr "Symbool invoegen"
+msgstr "Speciaal teken invoegen"
 
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:373
