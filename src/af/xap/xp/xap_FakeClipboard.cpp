@@ -53,7 +53,7 @@ _ClipboardItem::~_ClipboardItem()
 
 void _ClipboardItem::replace(const void * pData, UT_uint32 iLen)
 {
-	DELETEP(m_pData);
+	DELETEPV(m_pData);
 	m_pData = new unsigned char[iLen];
 	memcpy(m_pData, pData, iLen);
 	m_iLen = iLen;
