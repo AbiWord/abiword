@@ -34,11 +34,18 @@ fb_LineBreaker::fb_LineBreaker()
 {
 }
 
-// LineBreaker shouldn't break a line until it finds a non-blank
-// item past the end of the line.
-// All trailing spaces should remain on the end of the line.
 
-UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
+/*!
+  Break paragraph of text into lines
+  \param pBlock Paragraph (block) of text
+  \return 0
+
+  LineBreaker shouldn't break a line until it finds a non-blank
+  item past the end of the line.
+  All trailing spaces should remain on the end of the line.
+*/
+UT_sint32
+fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 {
 	fp_Line* pLine = pBlock->getFirstLine();
 	UT_ASSERT(pLine);
@@ -71,7 +78,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 
 			while (true)
 			{
-				// if this run is past the end of the line... 
+				// If this run is past the end of the line... 
 
 				bool bRunIsNonBlank = true;
 				if(pCurrentRun)
@@ -84,10 +91,13 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				
 				if (bRunIsNonBlank && (m_iWorkingLineWidth  > m_iMaxLineWidth))
 				{
-					// This is the first run which will start past the end of the line
+					// This is the first run which will start past the
+					// end of the line
 
 					UT_ASSERT(pPreviousRun);
-					UT_sint32 iTrailingSpace = _moveBackToFirstNonBlankData(pPreviousRun, &pOffendingRun);
+					UT_sint32 iTrailingSpace = 
+						_moveBackToFirstNonBlankData(pPreviousRun,
+													 &pOffendingRun);
 
 					m_iWorkingLineWidth -= iTrailingSpace;
 					if (m_iWorkingLineWidth > m_iMaxLineWidth)
@@ -132,12 +142,16 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					m_pLastRunToKeep = pCurrentRun;
 					goto done_with_run_loop;
 				}
+				case FPRUN_ENDOFPARAGRAPH:
+				{
+					m_pLastRunToKeep = pCurrentRun;
+					goto done_with_run_loop;
+				}
 				case FPRUN_TAB:
 				{
-					/*
-					  find the position of this tab and its type.
-					  if it's a left tab, then add its width to the m_iWorkingLineWidth
-					*/
+					// Find the position of this tab and its type.  If
+					// it's a left tab, then add its width to the
+					// m_iWorkingLineWidth
 
 					UT_sint32	iPos;
 					eTabType	iType;
@@ -152,14 +166,14 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					if (bRes)
 					{
 						UT_DEBUGMSG(("%s:%d tab run: type=%d leader=%d height=%d width=%d offset=%d length=%d",
-								 __FILE__, __LINE__,
-								(int)iType,
-								(int)iLeader,
-								pCurrentRun->getHeight(),
-								pCurrentRun->getWidth(),
-								pCurrentRun->getBlockOffset(),
-								pCurrentRun->getLength()
-								));
+									 __FILE__, __LINE__,
+									 (int)iType,
+									 (int)iLeader,
+									 pCurrentRun->getHeight(),
+									 pCurrentRun->getWidth(),
+									 pCurrentRun->getBlockOffset(),
+									 pCurrentRun->getLength()
+							));
 
 
 						UT_ASSERT(iPos > m_iWorkingLineWidth);
@@ -169,7 +183,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						{
 						case FL_TAB_BAR:
 							UT_DEBUGMSG(("BAR - not implemented - defaulting to LEFT"));
-
+							// Fall through!
 						case FL_TAB_LEFT:
 							m_iWorkingLineWidth = iPos;
 							break;
@@ -180,7 +194,8 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 							int iScanWidth = 0;
 
 							for ( pScanRun = pCurrentRun->getNext();	
-								  pScanRun && pScanRun->getType() != FPRUN_TAB && (iScanWidth / 2 < iPos-m_iWorkingLineWidth); 
+								  (pScanRun && pScanRun->getType() != FPRUN_TAB
+								   && (iScanWidth / 2 < iPos-m_iWorkingLineWidth));
 								  pScanRun = pScanRun->getNext() )
 							{
 								iScanWidth += pScanRun->getWidthInLayoutUnits();
@@ -196,8 +211,9 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 							fp_Run *pScanRun;
 							int iScanWidth = 0;
 
-							for ( pScanRun = pCurrentRun->getNext();	
-								  pScanRun && pScanRun->getType() != FPRUN_TAB && (iScanWidth < iPos-m_iWorkingLineWidth); 
+							for ( pScanRun = pCurrentRun->getNext();
+								  (pScanRun && pScanRun->getType() != FPRUN_TAB
+								   && (iScanWidth < iPos-m_iWorkingLineWidth));
 								  pScanRun = pScanRun->getNext() )
 							{
 								iScanWidth += pScanRun->getWidthInLayoutUnits();
@@ -219,8 +235,9 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 							UT_UCS_cloneString_char(&pDecimalStr, ".");
 
 
-							for ( pScanRun = pCurrentRun->getNext();	
-								  pScanRun && pScanRun->getType() != FPRUN_TAB && (iScanWidth < iPos-m_iWorkingLineWidth); 
+							for ( pScanRun = pCurrentRun->getNext();
+								  (pScanRun && pScanRun->getType() != FPRUN_TAB
+								   && (iScanWidth < iPos-m_iWorkingLineWidth));
 								  pScanRun = pScanRun->getNext() )
 							{
 								bool foundDecimal = false;
@@ -246,7 +263,9 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 									{
 										iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
 									}
-									break; // we found our decimal, don't search any further
+									// we found our decimal, don't
+									// search any further
+									break; 
 								}
 								else	
 								{
@@ -270,12 +289,13 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					}
 					else
 					{
-						// tab won't fit.  bump it to the next line
+						// Tab won't fit.  bump it to the next line
 						UT_ASSERT(pCurrentRun->getPrev());
 						UT_ASSERT(pCurrentRun != m_pFirstRunToKeep);
 					
-						// TODO - FIXIT - HACK - white space should be wrapped	???
-						// shouldn't the end of the line eat up the last of the white space?
+						// TODO - FIXIT - HACK - white space should be
+						// wrapped ???  shouldn't the end of the line
+						// eat up the last of the white space?
 						m_pLastRunToKeep = pCurrentRun->getPrev();
 						goto done_with_run_loop;
 					}
@@ -298,11 +318,11 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				} /* switch */
+				} // switch
 			
 				pPreviousRun = pCurrentRun;
 				pCurrentRun = pCurrentRun->getNext();
-			} /* the run loop */
+			} // the run loop
 
 		done_with_run_loop:
 			
@@ -337,7 +357,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			pLine->layout();
 
 
-		} /* if countruns > 0 */
+		} // if countruns > 0
 		
 		pLine = pLine->getNext();
 	}
@@ -549,7 +569,7 @@ void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo
 }
 
 void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine, 
-													fl_BlockLayout *pBlock)
+												  fl_BlockLayout *pBlock)
 {
 
 	/*
