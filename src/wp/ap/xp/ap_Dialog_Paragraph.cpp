@@ -93,9 +93,9 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 		id_CHECK_PAGE_BREAK,			(void*)check_INDETERMINATE,
 		id_CHECK_SUPPRESS,			(void*)check_INDETERMINATE,
 		id_CHECK_NO_HYPHENATE,			(void*)check_INDETERMINATE,
-		id_CHECK_KEEP_NEXT,			(void*)check_INDETERMINATE,
+		id_CHECK_KEEP_NEXT,			(void*)check_INDETERMINATE
 #ifdef BIDI_ENABLED		
-		id_CHECK_DOMDIRECTION,		(void*)check_TRUE
+		,id_CHECK_DOMDIRECTION,		(void*)check_TRUE
 #endif		
 	};
 

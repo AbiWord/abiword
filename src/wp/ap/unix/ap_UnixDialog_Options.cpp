@@ -265,8 +265,10 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *label10;
 
 #ifdef BIDI_ENABLED
-	GtkWidget *checkbuttonUseUnicodeDirection = 0;
-	GtkWidget *checkbuttonDirectionRtl = 0;
+	GtkWidget *frame42;
+	GtkWidget *vbox59;
+	GtkWidget *unicode_direction;
+	GtkWidget *rtl_dominant;
 #endif
 	
 	mainWindow = m_windowMain;
@@ -699,41 +701,37 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_widget_show (current_scheme);
 	gtk_box_pack_start (GTK_BOX (hbox25), current_scheme, TRUE, TRUE, 0);
 	//gtk_entry_set_editable (GTK_ENTRY (current_scheme), FALSE);
-	
+
+#ifdef BIDI_ENABLED
+	frame42 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Options_Label_BiDiOptions));
+	gtk_widget_show (frame42);
+	gtk_box_pack_start (GTK_BOX (vbox36), frame42, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (frame42), 4);
+
+	vbox59 = gtk_vbox_new (FALSE, 0);
+	gtk_widget_show (vbox59);
+	gtk_container_add (GTK_CONTAINER (frame42), vbox59);
+
+	unicode_direction = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_UseUnicodeDirection));
+	gtk_widget_show (unicode_direction);
+	gtk_box_pack_start (GTK_BOX (vbox59), unicode_direction, FALSE, FALSE, 0);
+
+	rtl_dominant = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_DirectionRtl));
+	gtk_widget_show (rtl_dominant);
+	gtk_box_pack_start (GTK_BOX (vbox59), rtl_dominant, FALSE, FALSE, 0);
+#endif		
+
 	label10 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences));
 	gtk_widget_show (label10);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label10);
 
 
-//this needs to be brought into line with the new design; did not have
-//time to do this at this point
-#if 0	
-#ifdef BIDI_ENABLED
-	checkbuttonUseUnicodeDirection = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_UseUnicodeDirection));
-	gtk_widget_ref (checkbuttonUseUnicodeDirection);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonUseUnicodeDirection", checkbuttonUseUnicodeDirection,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonUseUnicodeDirection);
-	gtk_table_attach (GTK_TABLE (tableOther), checkbuttonUseUnicodeDirection, 0, 3, 2, 3,
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
-
-	checkbuttonDirectionRtl = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_DirectionRtl));
-	gtk_widget_ref (checkbuttonDirectionRtl);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonDirectionRtl", checkbuttonDirectionRtl,
-	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (checkbuttonDirectionRtl);
-	gtk_table_attach (GTK_TABLE (tableOther), checkbuttonDirectionRtl, 0, 3, 3, 4,
-	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-	                  (GtkAttachOptions) (0), 0, 0);
-#endif
-#endif	
 	//////////////////////////////////////////////////////////////////
 
 	m_notebook = notebook1;
 #ifdef BIDI_ENABLED
-	m_checkbuttonOtherUseUnicodeDirection = checkbuttonUseUnicodeDirection;
-	m_checkbuttonOtherDirectionRtl = checkbuttonDirectionRtl;
+	m_checkbuttonOtherUseUnicodeDirection = unicode_direction;
+	m_checkbuttonOtherDirectionRtl = rtl_dominant;
 #endif
 
 	m_checkbuttonSpellCheckAsType	        = check_spell;

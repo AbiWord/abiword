@@ -203,6 +203,7 @@ dcl(DLG_Options_Label_DefaultPageSize, "Default page size")
 #ifdef BIDI_ENABLED
 dcl(DLG_Options_Label_UseUnicodeDirection,"Use Unicode direction of text")
 dcl(DLG_Options_Label_DirectionRtl, "Default to right-to-left direction of text")
+dcl(DLG_Options_Label_BiDiOptions, "Bi-Directional Options")
 #endif
 
 dcl(DLG_Options_Label_PrefsAutoSave,	"&Automatically save this Scheme")
