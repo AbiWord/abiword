@@ -29,6 +29,112 @@
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/
+class TopRulerDrawView: public be_GRDrawView {
+public:
+ 	TopRulerDrawView(AP_BeOSTopRuler *pRuler, AV_View *pView, 
+			 BRect frame, const char *name,
+                         uint32 resizeMask, uint32 flags);
+	virtual void FrameResized(float new_width, float new_height);
+	virtual void Draw(BRect invalid);
+
+	AP_BeOSTopRuler *m_pAPRuler;
+};
+
+class RulerFilter: public BMessageFilter {
+        public:
+                RulerFilter(TopRulerDrawView *pRuler);
+                filter_result Filter(BMessage *message, BHandler **target);
+        private:
+                TopRulerDrawView  *m_pRuler;
+};
+
+RulerFilter::RulerFilter(TopRulerDrawView *pRuler)
+          : BMessageFilter(B_PROGRAMMED_DELIVERY, B_LOCAL_SOURCE) {
+        m_pRuler = pRuler;
+}
+
+filter_result RulerFilter::Filter(BMessage *msg, BHandler **target) {
+        switch(msg->what) {
+        case B_MOUSE_DOWN:
+        case B_MOUSE_UP:
+        case B_MOUSE_MOVED:
+                break;
+        default:
+                return(B_DISPATCH_MESSAGE);
+        }
+
+	if (!m_pRuler)
+		return(B_DISPATCH_MESSAGE);
+        AP_BeOSTopRuler * pBeOSTopRuler = m_pRuler->m_pAPRuler;
+	if (!pBeOSTopRuler)
+		return(B_DISPATCH_MESSAGE);
+
+  	BPoint  pt;
+        int32   clicks, mod, buttons;
+        EV_EditModifierState ems = 0;
+        EV_EditMouseButton emb = 0;
+
+        msg->FindInt32("clicks", &clicks);
+        msg->FindInt32("buttons", &buttons);
+        msg->FindInt32("modifiers", &mod);
+        msg->FindPoint("where", &pt);
+
+        if (mod & B_SHIFT_KEY)
+                ems |= EV_EMS_SHIFT;
+        if (mod & B_CONTROL_KEY)
+                ems |= EV_EMS_CONTROL;
+        if (mod & B_OPTION_KEY)
+                ems |= EV_EMS_ALT;
+
+        if (buttons & B_PRIMARY_MOUSE_BUTTON)
+                emb = EV_EMB_BUTTON1;
+        else if (buttons & B_PRIMARY_MOUSE_BUTTON)
+                emb = EV_EMB_BUTTON2;
+        else if (buttons & B_PRIMARY_MOUSE_BUTTON)
+                emb = EV_EMB_BUTTON3;           
+
+	
+	printf("Mouse Position: "); pt.PrintToStream();
+
+#if SEND_MOUSE_EVENT
+	if (msg->what == B_MOUSE_DOWN)
+		pBeOSTopRuler->mousePress(ems, emb,(long)pt.x,(long)pt.y);
+	else if (msg->what == B_MOUSE_UP)
+	        pBeOSTopRuler->mouseRelease(ems, emb, (long)pt.x, (long)pt.y);
+	else if (msg->what == B_MOUSE_MOVED && emb)
+ 		pBeOSTopRuler->mouseMotion(ems, (long)pt.x, (long)pt.y);   
+
+        return(B_DISPATCH_MESSAGE);
+#endif
+        return(B_SKIP_MESSAGE);
+}                                             
+
+TopRulerDrawView::TopRulerDrawView(AP_BeOSTopRuler *pRuler, AV_View *pView, 
+				   BRect frame, const char *name,
+                                   uint32 resizeMask, uint32 flags) 
+		: be_GRDrawView(pView, frame, name, resizeMask, flags) {
+	m_pAPRuler = pRuler;
+ 	//Window()->Lock();
+        AddFilter(new RulerFilter(this));
+        //Window()->Unlock(); 
+}
+
+void TopRulerDrawView::FrameResized(float new_width, float new_height) {
+	m_pAPRuler->setHeight((int)new_height);
+        m_pAPRuler->setWidth((int)new_width);
+	//Then call the inherited version (only on grow?)
+	//be_GRDrawView::FrameResized(new_width, new_height);
+	m_pAPRuler->draw(NULL);
+}
+
+void TopRulerDrawView::Draw(BRect invalid) {
+	UT_Rect rect(invalid.left,invalid.top, 
+		     invalid.Width(), invalid.Height());
+	m_pAPRuler->draw(&rect);
+	//m_pAPRuler->draw(NULL);
+}
+
+/*****************************************************************/
 
 AP_BeOSTopRuler::AP_BeOSTopRuler(XAP_Frame * pFrame)
 	: AP_TopRuler(pFrame)
@@ -43,9 +149,15 @@ AP_BeOSTopRuler::~AP_BeOSTopRuler(void)
 void AP_BeOSTopRuler::createWidget(BRect r)
 {
 	printf("TOPRULER: create widget \n");
+	/*
 	m_wTopRuler = new be_GRDrawView(NULL, r, "TopRuler", 
 					B_FOLLOW_TOP | B_FOLLOW_LEFT_RIGHT,
 					B_WILL_DRAW);
+	*/
+	m_wTopRuler = new TopRulerDrawView(this, NULL, r, "TopRuler", 
+					B_FOLLOW_TOP | B_FOLLOW_LEFT_RIGHT,
+					B_WILL_DRAW);
+
 	//Attach the widget to the window ...
 	be_Window *pBWin = (be_Window*)((XAP_BeOSFrame *)m_pFrame)->getTopLevelWindow();
 	pBWin->AddChild(m_wTopRuler);
