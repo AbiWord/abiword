@@ -58,8 +58,7 @@
 // WL: ONLY ENABLE NEW FRAME CODE ON UNIX/GTK FOR NOW (AND MACOSX, HUB)
 #if defined(XP_UNIX_TARGET_GTK)  || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32) || defined(__QNXNTO__)
 XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
-	: m_pFrameImpl(pFrameImpl),
-	  m_pApp(pApp),
+	: m_pApp(pApp),
 	  m_pDoc(0),
 	  m_pView(0),
 	  m_pViewListener(0),
@@ -86,14 +85,14 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	  m_bFirstDraw(false),
 	  m_bShowStatusbar(true),
 	  m_bShowMenubar(true),
-	  m_bIsFrameLocked(false)
+	  m_bIsFrameLocked(false),
+	  m_pFrameImpl(pFrameImpl)
 {
 	m_pApp->rememberFrame(this);
 }
 
 XAP_Frame::XAP_Frame(XAP_Frame * f)
-	: m_pFrameImpl(f->m_pFrameImpl->createInstance(this, f->m_pApp)),
-	m_pApp(f->m_pApp),
+	: m_pApp(f->m_pApp),
 	m_pDoc(REFP(f->m_pDoc)),
 	m_pView(0),
 	m_pViewListener(0),
@@ -116,7 +115,8 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_bHasDropped(false),
 	m_bHasDroppedTB(false),
 	m_bFirstDraw(false),
-	m_bIsFrameLocked(false)
+	m_bIsFrameLocked(false),
+	m_pFrameImpl(f->m_pFrameImpl->createInstance(this, f->m_pApp))
 {
 	m_pApp->rememberFrame(this, f);
 }
