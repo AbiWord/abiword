@@ -289,7 +289,6 @@ static int awt_only (struct dirent *d)
 PtWidget_t * AP_QNXDialog_New::_constructWindow ()
 {
 	PtWidget_t *mainWindow;
-	PtWidget_t *dialog_vbox1;
 	PtWidget_t *hgroup, *vgroup;
 
 	PtArg_t args[10];

@@ -43,7 +43,7 @@ dlg->SetPassword((char*)password_entered);
 return Pt_PWD_ACCEPT;
 }
 
-void * XAP_QNXDialog_Password::SetPassword(char* pass)
+void XAP_QNXDialog_Password::SetPassword(char* pass)
 {
 m_pass=strdup(pass);
 }

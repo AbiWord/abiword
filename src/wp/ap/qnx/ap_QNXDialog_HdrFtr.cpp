@@ -39,7 +39,7 @@ int ph_event_ok( PtWidget_t *widget, AP_QNXDialog_HdrFtr * dlg,
 {
 UT_ASSERT(widget && dlg);
 dlg->event_OK();
-
+return Pt_CONTINUE;
 }
 
 void AP_QNXDialog_HdrFtr::event_OK(void)
@@ -52,6 +52,7 @@ int ph_event_cancel( PtWidget_t *widget,AP_QNXDialog_HdrFtr *dlg, PtCallbackInfo
 {
 UT_ASSERT(widget && dlg);
 dlg->event_Cancel();
+return Pt_CONTINUE;
 }
 
 void AP_QNXDialog_HdrFtr::event_Cancel(void)
@@ -65,11 +66,13 @@ int ph_event_close( PtWidget_t *widget, AP_QNXDialog_HdrFtr * dlg, PtCallbackInf
 {
 UT_ASSERT(widget && dlg);
 dlg->done=1;
+return Pt_CONTINUE;
 }
 
 int ph_event_activate_updown(PtWidget_t *widget,AP_QNXDialog_HdrFtr *dlg,PtCallbackInfo_t *info)
 {
 dlg->UpDown(info->reason_subtype);
+return Pt_CONTINUE;
 }
 void AP_QNXDialog_HdrFtr::UpDown(int updown)
 {
@@ -97,37 +100,44 @@ int ph_activate_restart( PtWidget_t *widget, AP_QNXDialog_HdrFtr * dlg, PtCallba
 {
 UT_ASSERT(widget && dlg);
 dlg->RestartChanged();
+return Pt_CONTINUE;
 }
 
 int ph_HdrFirst( PtWidget_t *widget,AP_QNXDialog_HdrFtr * dlg, PtCallbackInfo_t *info)
 {
 UT_ASSERT(dlg);
 dlg->CheckChanged(AP_Dialog_HdrFtr::HdrFirst);
+return Pt_CONTINUE;
 }
 int ph_HdrLast( PtWidget_t *widget,AP_QNXDialog_HdrFtr * dlg, PtCallbackInfo_t *info)
 {
 UT_ASSERT(dlg);
 dlg->CheckChanged(AP_Dialog_HdrFtr::HdrLast);
+return Pt_CONTINUE;
 }
 int ph_HdrEven( PtWidget_t *widget,AP_QNXDialog_HdrFtr * dlg, PtCallbackInfo_t *info)
 {
 UT_ASSERT(dlg);
 dlg->CheckChanged(AP_Dialog_HdrFtr::HdrEven);
+return Pt_CONTINUE;
 }
 int ph_FtrFirst( PtWidget_t *widget,AP_QNXDialog_HdrFtr * dlg, PtCallbackInfo_t *info)
 {
 UT_ASSERT(dlg);
 dlg->CheckChanged(AP_Dialog_HdrFtr::FtrFirst);
+return Pt_CONTINUE;
 }
 int ph_FtrLast( PtWidget_t *widget,AP_QNXDialog_HdrFtr * dlg, PtCallbackInfo_t *info)
 {
 UT_ASSERT(dlg);
 dlg->CheckChanged(AP_Dialog_HdrFtr::FtrLast);
+return Pt_CONTINUE;
 }
 int ph_FtrEven( PtWidget_t *widget,AP_QNXDialog_HdrFtr * dlg, PtCallbackInfo_t *info)
 {
 UT_ASSERT(dlg);
 dlg->CheckChanged(AP_Dialog_HdrFtr::FtrEven);
+return Pt_CONTINUE;
 }
 
 XAP_Dialog * AP_QNXDialog_HdrFtr::static_constructor(XAP_DialogFactory * pFactory,

@@ -66,6 +66,7 @@ bool XAP_QNXClipboard::addData(const char* format, void* pData, UT_sint32 iNumBy
 	}
 	else
 		XAP_FakeClipboard::addData(format, pData, iNumBytes);
+return true;
 }
 
 bool XAP_QNXClipboard::hasFormat(const char *format)

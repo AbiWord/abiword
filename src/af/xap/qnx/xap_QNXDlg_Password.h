@@ -36,7 +36,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	void *SetPassword(char* pass);
+	void SetPassword(char* pass);
 protected:
 char *m_pass;
 };

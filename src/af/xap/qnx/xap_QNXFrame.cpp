@@ -554,8 +554,6 @@ bool XAP_QNXFrame::show()
 
 bool XAP_QNXFrame::openURL(const char * szURL)
 {
-	char execstring[4096];
-
 	//TODO: I should use spawn here
 	spawnlp(P_NOWAITO,"voyager","voyager","-u",szURL,NULL);
 	return true;
