@@ -306,7 +306,7 @@ fp_Page * fp_Container::getPage(void) const
 
 void fp_Container::insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 {
-#if DEBUG
+#if 0 // DEBUG
 	if(pCon->getContainerType() == FP_CONTAINER_LINE)
 	{
 		fp_Line * pLine = static_cast<fp_Line *>(pCon);
@@ -329,7 +329,7 @@ void fp_Container::insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 
 void fp_Container::addCon(fp_ContainerObject * pCon)
 {
-#if DEBUG
+#if 0 // DEBUG
 	if(pCon->getContainerType() == FP_CONTAINER_LINE)
 	{
 		fp_Line * pLine = static_cast<fp_Line *>(pCon);

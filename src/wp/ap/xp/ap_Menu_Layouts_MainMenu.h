@@ -371,12 +371,14 @@ BeginLayout(Main,0)
 #endif
 		MenuItem(AP_MENU_ID_TABLE_FORMAT)
 		MenuItem(AP_MENU_ID_TABLE_TEXTTOTABLE)
+#if DEBUG
 	    BeginSubMenu(AP_MENU_ID_TABLE_SORT)
 	       MenuItem(AP_MENU_ID_TABLE_SORTROWSASCEND)
 	       MenuItem(AP_MENU_ID_TABLE_SORTROWSDESCEND)
 	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSASCEND)
 	       MenuItem(AP_MENU_ID_TABLE_SORTCOLSDESCEND)
 	    EndSubMenu()
+#endif
 		MenuItem(AP_MENU_ID_TABLE_AUTOFIT)
 
 #if 0

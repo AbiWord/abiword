@@ -467,6 +467,13 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	pf_Frag_Strux * pfsContainer = NULL;
 	bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer);
 	UT_return_val_if_fail (bFoundContainer,false);
+	//
+	// Can only insert an endTOC into a TOC
+	//
+	if((pfsContainer->getStruxType() == PTX_SectionTOC) && (pts != PTX_EndTOC))
+	{
+		bFoundContainer = _getStruxFromPosition(pfsContainer->getPos(),&pfsContainer);
+	}
 	if(isEndFootnote(pfsContainer))
 	{
 		bFoundContainer = _getStruxFromFragSkip(pfsContainer,&pfsContainer);

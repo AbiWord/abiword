@@ -1303,7 +1303,7 @@ void fp_Page::_reformatColumns(void)
 		if (iY >= (static_cast<UT_sint32>(getHeight() - iBottomMargin - iFootnoteHeight)))
 		{
 			UT_DEBUGMSG(("SEVIOR: Page incorrectly laid out iYlayoutuints= %d  \n",iY));
-			m_pOwner->markForRebuild();
+//			m_pOwner->markForRebuild();
 //
 // FIXME see if this code works instead
 //
@@ -1397,7 +1397,7 @@ void fp_Page::_reformatColumns(void)
 			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)  || (countFootnoteContainers() > 0) || (pNext->countFootnoteContainers() > 0);
 			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - getFootnoteHeight() - iBottomMargin))
 			{
-//		   		m_pOwner->markForRebuild();
+		   		m_pOwner->markForRebuild();
 //
 // FIXME see if this code works instead
 //
