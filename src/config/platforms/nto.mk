@@ -85,7 +85,7 @@ endif
 
 GLIB_CONFIG		=
 GTK_CONFIG		=
-
+LIBXML_CONFIG		= xml2-config
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
