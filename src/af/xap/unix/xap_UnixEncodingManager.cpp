@@ -411,19 +411,22 @@ XAP_EncodingManager *XAP_EncodingManager::get_instance()
 
 /************************************************************/
 
-XAP_UnixEncodingManager::XAP_UnixEncodingManager() 
-{
-}
-
-XAP_UnixEncodingManager::~XAP_UnixEncodingManager() {}
-
-static const char * NativeEncodingName;
+static char * NativeEncodingName = 0;
 static const char * NativeSystemEncodingName;
 static const char * Native8BitEncodingName;
 static const char * NativeNonUnicodeEncodingName;
 static const char * NativeUnicodeEncodingName;
 static const char * LanguageISOName;
 static const char * LanguageISOTerritory;
+
+XAP_UnixEncodingManager::XAP_UnixEncodingManager() 
+{
+}
+
+XAP_UnixEncodingManager::~XAP_UnixEncodingManager() 
+{
+	FREEP(NativeEncodingName); // allocated in initialize() as 'name' or 'NativeEncodingName'
+}
 
 const char* XAP_UnixEncodingManager::getNativeEncodingName() const
 {     
@@ -464,15 +467,15 @@ void  XAP_UnixEncodingManager::initialize()
 {	
 	const GList* lst = g_i18n_get_language_list ("LANG");
 	const char* locname = static_cast<char*>(lst->data);
-	
-	NativeEncodingName =
+
+	NativeEncodingName =  UT_strdup ("ISO-8859-1");
 	NativeSystemEncodingName =
 	Native8BitEncodingName =
-	NativeNonUnicodeEncodingName = "ISO-8859-1";
+	NativeNonUnicodeEncodingName = NativeEncodingName;
 	NativeUnicodeEncodingName = "UTF-8";
 	LanguageISOName = "en";
-	LanguageISOTerritory = "US";
-	
+	LanguageISOTerritory = "US";   
+
 	if (!*locname || !strcmp(locname,"C"))
 	{ 	/* paranoic case - broken system */
 		; /*already initialized*/
@@ -524,6 +527,7 @@ void  XAP_UnixEncodingManager::initialize()
 											name[8] = '-';
 										}
 								}
+							FREEP(NativeEncodingName);
 							NativeEncodingName = name;
 						}
 				}
