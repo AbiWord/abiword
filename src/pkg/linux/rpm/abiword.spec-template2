@@ -1,6 +1,10 @@
 # BUILD OPTIONS: 1 for yes, 0 for no
+## Hardwiring (like bidi,debug,jpeg,optimization)
+## indicates that this should be the value for
+## release builds (those published on SourceForge
+## or Savannah).
 %define enable_static __UNIX_CAN_BUILD_STATIC__
-%define enable_debug __ABI_OPT_DEBUG__
+%define enable_debug 0
 %define enable_gnome __ABI_OPT_GNOME__
 %define enable_bidi 1
 %define enable_perl __ABI_OPT_PERL__
@@ -18,8 +22,10 @@
 %define version __ABI_BUILD_VERSION__
 %define release	__ABI_RELEASE_NUMBER__
 
-%if %{enable_gnome}
-%define enable_gdkpixbuf 0
+%if !%{enable_gnome}
+%define enable_gdkpixbuf --enable-gdkpixbuf
+%else
+%define enable_gdkpixbuf --disable-gdkpixbuf
 %endif
 
 %if %{enable_tools}
@@ -29,7 +35,7 @@
 %endif
 
 %if %{enable_impexp}
-%define plugin_bz2abw --enable-bz2abw --enable-gdkpixbuf --enable-html --enable-openwriter
+%define plugin_bz2abw --enable-bz2abw %{enable_gdkpixbuf} --enable-html --enable-openwriter
 %else
 %define plugin_bz2abw --disable-bz2abw --disable-gdkpixbuf --disable-html --disable-openwriter
 %endif
@@ -236,65 +242,27 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %attr(644,root,root) %{prefix}/share/gnome/apps/Applications/abiword.desktop
 %attr(644,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
 
-%if %{enable_abicommand}
+%if %{enable_tools}
 %files plugins-tools
 %attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiCommand.*
-%endif
-
-%if %{enable_abigimp}
-%files plugins-tools
 %attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGimp.*
-%endif
-
-%if %{enable_aiksaurus}
-%files plugins-tools
 %attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAikSaurusABI.*
-%endif
-
-%if %{enable_babelfish}
-%files plugins-tools
 %attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiBabelfish.*
-%endif
-
-%if %{enable_bz2abw}
-%files plugins-impexp
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libBZ2Abw.*
-%endif
-
-%if %{enable_gdict}
-%files plugins-tools
 %attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libGdictAbiPlugin.*
-%endif
-
-%if %{enable_gdkpixbuf} && ! %{enable_gnome}
-%files plugins-impexp
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
-%endif
-
-%if %{enable_html}
-%files plugins-impexp
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHTML.*
-%endif
-
-%if %{enable_openwriter}
-%files plugins-impexp
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiSDW.*
-%endif
-
-%if %{enable_shell}
-%files plugins-tools
 %attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libScriptHappy.*
-%endif
-
-%if %{enable_urldict}
-%files plugins-tools
+%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWikipedia.*
 %attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiURLDict.*
 %endif
 
-%if %{enable_wikipedia}
-%files plugins-tools
-%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWikipedia.*
+%if %{enable_impexp}
+%files plugins-impexp
+%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libBZ2Abw.*
+%if ! %{enable_gnome}
+%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
+%endif
+%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHTML.*
+%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
+%attr(-,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiSDW.*
 %endif
 
 %files clipart
