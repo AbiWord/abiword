@@ -150,7 +150,7 @@ UT_Bool XAP_Win32Frame::initialize(void)
 	return UT_TRUE;
 }
 
-UT_sint32 XAP_UnixFrame::setInputMode(const char * szName)
+UT_sint32 XAP_Win32Frame::setInputMode(const char * szName)
 {
 	UT_sint32 result = XAP_Frame::setInputMode(szName);
 	if (result == 1)
