@@ -805,7 +805,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	*ppfs = NULL;
 
 	pf_Frag_Strux * pfs = NULL;
-	if (!_getStruxFromPosition(dpos,&pfs, !(pts == PTX_EndFootnote || pts == PTX_SectionFootnote || pts == PTX_SectionTOC)))
+	if (!_getStruxFromPosition(dpos,&pfs, !(pts == PTX_EndFootnote || pts == PTX_SectionFootnote || pts == PTX_EndEndnote || pts == PTX_SectionEndnote || pts == PTX_SectionTOC)))
 		return false;
 
 	PTStruxType pfsType = pfs->getStruxType();
