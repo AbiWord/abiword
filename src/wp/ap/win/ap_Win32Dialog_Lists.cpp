@@ -771,7 +771,7 @@ void AP_Win32Dialog_Lists::_previewExposed()
 // if they don't need to be updated since every update, from
 // user actions or from API update calls generates EN_CHANGE
 // messages.
-static updateControlValue(XAP_Win32DialogHelper& helper, UT_sint32 id, int val)
+static void updateControlValue(XAP_Win32DialogHelper& helper, UT_sint32 id, int val)
 {
 	int nOld = helper.getControlInt(id);
 	if (nOld != val)
@@ -780,7 +780,7 @@ static updateControlValue(XAP_Win32DialogHelper& helper, UT_sint32 id, int val)
 	}
 }
 
-static updateControlValue(XAP_Win32DialogHelper& helper, UT_sint32 id, LPCSTR val)
+static void updateControlValue(XAP_Win32DialogHelper& helper, UT_sint32 id, LPCSTR val)
 {
 	char szBuff[100];
 	helper.getControlText(id, szBuff, sizeof(szBuff));
