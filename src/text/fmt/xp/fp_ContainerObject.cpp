@@ -28,6 +28,8 @@
 #include "ut_assert.h"
 #include "fp_Column.h"
 #include "fv_View.h"
+#include "fp_FootnoteContainer.h"
+#include "fl_FootnoteLayout.h"
 
 /*!
   Create container
@@ -59,7 +61,9 @@ bool fp_ContainerObject::isColumnType(void) const
 {
   bool b = (m_iType == FP_CONTAINER_COLUMN) 
 	  || (m_iType == FP_CONTAINER_COLUMN_SHADOW)
-	  || (m_iType == FP_CONTAINER_COLUMN_POSITIONED);
+	  || (m_iType == FP_CONTAINER_COLUMN_POSITIONED)
+	  || (m_iType == FP_CONTAINER_FOOTNOTE)
+	  ;
   return b;
 }
 
@@ -144,6 +148,10 @@ fp_Page * fp_Container::getPage(void) const
 	{
 		return ((fp_ShadowContainer *)(pCon))->getPage();
 	}
+	if(pCon->getContainerType() == FP_CONTAINER_FOOTNOTE)
+	{
+		return ((fp_FootnoteContainer *)(pCon))->getPage();
+	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
@@ -155,11 +163,20 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 	fp_Container * pColumnC = getColumn();
 	
 	UT_return_val_if_fail(pColumnC,false);
-
-	fp_Column * pColumn = (fp_Column*) pColumnC;
-	fl_DocSectionLayout * pDSL = pColumn->getDocSectionLayout();
-
+	fl_DocSectionLayout * pDSL = NULL;
+	if(pColumnC->getContainerType() != FP_CONTAINER_FOOTNOTE)
+	{
+		fp_Column * pColumn = (fp_Column*) pColumnC;
+		pDSL = pColumn->getDocSectionLayout();
+	}
+	else
+	{
+		fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) pColumnC;
+		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pFC;
+		pDSL = (fl_DocSectionLayout *) pFL->myContainingLayout();
+	}
 	UT_return_val_if_fail(pDSL,false);
+	UT_ASSERT(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION);
 	r.left   = pDSL->getLeftMargin();
 	r.top    = pDSL->getTopMargin();
 	r.width  = getDrawingWidth();
@@ -202,6 +219,12 @@ bool fp_Container::isOnScreen() const
 
 				if(pPage == pMyPage)
 				{
+//
+// Just getting an on screen page is enough for now I think.
+//
+					bRet = true;
+					break;
+#if 0
 					UT_Rect r;
 					UT_Rect *pR = (UT_Rect*)vRect.getNthItem(i);
 
@@ -209,6 +232,7 @@ bool fp_Container::isOnScreen() const
 						break;
 
 					bRet = r.intersectsRect(pR);
+#endif
 					break;
 				}
 		

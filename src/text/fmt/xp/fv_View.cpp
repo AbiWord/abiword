@@ -7394,68 +7394,68 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 	return true;
 }
 
-bool FV_View::insertEndnote()
+bool FV_View::insertFootnote()
 {
 	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
 
-	// can only insert endnote into an FL_SECTION_DOC
+	// can only insert Footnote into an FL_SECTION_DOC
 	if (_findBlockAtPosition(getPoint())->getSectionLayout()
 		      ->getType() != FL_SECTION_DOC)
 		return false;
 
-	// add field for endnote reference
+	// add field for footnote reference
 	// first, make up an id for this endnote.
-	static XML_Char enpid[15];
+	static XML_Char footpid[15];
 	UT_uint32 pid = 0;
 	while (pid < AUTO_LIST_RESERVED)
 		pid = UT_rand();
-	sprintf(enpid, "%i", pid);
+	sprintf(footpid, "%i", pid);
 
 	const XML_Char* attrs[] = {
-		"endnote-id", enpid,
+		"endnote-id", footpid,
 		NULL, NULL
 	};
 
 	/*	Apply the character style at insertion point and insert the
 		Endnote reference. */
 
-	PT_DocPosition ErefStart = getPoint();
-	PT_DocPosition ErefEnd = ErefStart + 1;
-	PT_DocPosition EanchStart;
-	PT_DocPosition EanchEnd;
-	PT_DocPosition EbodyEnd;
+	PT_DocPosition FrefStart = getPoint();
+	PT_DocPosition FrefEnd = FrefStart + 1;
+	PT_DocPosition FanchStart;
+	PT_DocPosition FanchEnd;
+	PT_DocPosition FbodyEnd;
 
 	const XML_Char *cur_style;
 	getStyle(&cur_style);
 
 	m_pDoc->beginUserAtomicGlob();
 
-	bool bCreatedEndnoteSL = false;
+	bool bCreatedFootnoteSL = false;
 
-	PT_DocPosition dpEN = 0;
+	PT_DocPosition dpFT = 0;
 
 	if (pDSL->getEndnote() == NULL)
 	{
 		PT_DocPosition dpBody = getPoint();
 
-		if (!insertEndnoteSection(enpid))
+		if (!insertFootnoteSection(footpid))
 			return false;
-		dpEN = getPoint()+1; // +1 compensates for field insertion
-		bCreatedEndnoteSL = true;
+		dpFT = getPoint()+1; // +1 compensates for field insertion
+		bCreatedFootnoteSL = true;
 		_setPoint(dpBody);
 	}
-	fl_DocSectionLayout * pEndnoteSL = pDSL->getEndnote();
+	fl_DocSectionLayout * pFootnoteSL = pDSL->getEndnote();
 
 	if (cmdInsertField("endnote_ref", attrs)==false)
 		return false;
-	setStyleAtPos("Endnote Reference", ErefStart, ErefEnd,true);
+	setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
 
 	// Also endnote-id should not follow to next paras.
 
 	fl_BlockLayout * pBL;
 
-	if (bCreatedEndnoteSL)
-		_setPoint(dpEN);
+	if (bCreatedFootnoteSL)
+		_setPoint(dpFT);
 	else
 	{
 		// warp to endnote section.
@@ -7480,7 +7480,7 @@ bool FV_View::insertEndnote()
 
 				while(pRun)
 				{
-					if( (pBL->getPosition(false)+ pRun->getBlockOffset()) >= ErefStart)
+					if( (pBL->getPosition(false)+ pRun->getBlockOffset()) >= FrefStart)
 					{
 						bFinished = true;
 						break;
@@ -7510,11 +7510,11 @@ bool FV_View::insertEndnote()
 		}
 
 
-		pBL = (fl_BlockLayout *) pEndnoteSL->getFirstLayout();
+		pBL = (fl_BlockLayout *) pFootnoteSL->getFirstLayout();
 
 		// now we will find the block just after us, move the start of it
 		// and insert a new block
-		UT_DEBUGMSG(("fv_View::insertEndnote: ErefStart %d, enoteCount %d\n", ErefStart, enoteCount));
+		UT_DEBUGMSG(("fv_View::insertFootnote: FrefStart %d, enoteCount %d\n", FrefStart, enoteCount));
 
 		// count through enoteCount distinct endnote ids
 		XML_Char * previd = NULL;
@@ -7559,7 +7559,7 @@ bool FV_View::insertEndnote()
 		if(!pBL)
 		{
 			UT_DEBUGMSG(("no block\n"));
-			pBL = (fl_BlockLayout *) pEndnoteSL->getLastLayout();
+			pBL = (fl_BlockLayout *) pFootnoteSL->getLastLayout();
 #ifdef DEBUG
 			const XML_Char * someid;
 			const PP_AttrProp *pp;
@@ -7567,7 +7567,7 @@ bool FV_View::insertEndnote()
 			if (bRes)
 			{
 				pp->getAttribute("endnote-id", someid);
-				UT_DEBUGMSG(("	   enpid [%s], someid [%s]\n",enpid,someid));
+				UT_DEBUGMSG(("	   enpid [%s], someid [%s]\n",footpid,someid));
 			}
 #endif
 			dp = pBL->getPosition();
@@ -7587,7 +7587,7 @@ bool FV_View::insertEndnote()
 			if (bRes)
 			{
 				pp->getAttribute("endnote-id", someid);
-				UT_DEBUGMSG(("	   enpid [%s], someid [%s]\n",enpid,someid));
+				UT_DEBUGMSG(("	   enpid [%s], someid [%s]\n",footpid,someid));
 			}
 #endif
 			dp = pBL->getPosition(true);
@@ -7598,7 +7598,7 @@ bool FV_View::insertEndnote()
 
 		// add new block.
 		const XML_Char* block_attrs[] = {
-			"endnote-id", enpid,
+			"endnote-id", footpid,
 			NULL, NULL
 		};
 
@@ -7612,26 +7612,26 @@ bool FV_View::insertEndnote()
 		_setPoint(dp+1,false);
 	}
 
-	// add endnote anchor, inside endnote section
-	//get ready to apply Endnote Reference style
-	EanchStart = getPoint()-1;
+	// add footnote anchor, inside footnote section
+	//get ready to apply Footnote Reference style
+	FanchStart = getPoint()-1;
 
 	// if the block after which were inserted was not the last block
 	// we have to adjust the postion, because we are now siting at the
 	// start of the next block instead of our own
-	UT_DEBUGMSG(("fv_View::insertEndnote: EanchStart %d\n",EanchStart));
+	UT_DEBUGMSG(("fv_View::insertFootnote: FanchStart %d\n",FanchStart));
 
 	_clearSelection();
-	_setPoint(EanchStart);
+	_setPoint(FanchStart);
 	if (cmdInsertField("endnote_anchor", attrs)==false)
 		return false;
-	EanchEnd = getPoint();
+	FanchEnd = getPoint();
 
 	//insert a space after the anchor
 	UT_UCSChar space = UCS_SPACE;
-	m_pDoc->insertSpan(EanchEnd, &space, 1);
+	m_pDoc->insertSpan(FanchEnd, &space, 1);
 
-	EbodyEnd = getPoint();
+	FbodyEnd = getPoint();
 
 	/*	some magic to make the endnote reference and anchor recalculate
 		its widths
@@ -7640,7 +7640,7 @@ bool FV_View::insertEndnote()
 	UT_sint32 x, y, x2, y2;
 	UT_uint32 height;
 	bool bDirection;
-	_findPositionCoords(ErefStart, false, x, y, x2, y2, height, bDirection,&pBL,&pRun);
+	_findPositionCoords(FrefStart, false, x, y, x2, y2, height, bDirection,&pBL,&pRun);
 
 	UT_ASSERT(pBL != 0);
 	UT_ASSERT(pRun != 0);
@@ -7650,7 +7650,7 @@ bool FV_View::insertEndnote()
 	if(bWidthChange) pBL->setNeedsReformat();
 
 
-	pBL = _findBlockAtPosition(EanchStart);
+	pBL = _findBlockAtPosition(FanchStart);
 	UT_ASSERT(pBL != 0);
 
 	if (pBL->getFirstRun()->getNext())
@@ -7665,7 +7665,7 @@ bool FV_View::insertEndnote()
 	return true;
 }
 
-bool FV_View::insertEndnoteSection(const XML_Char * enpid)
+bool FV_View::insertFootnoteSection(const XML_Char * enpid)
 {
 	const XML_Char* block_attrs[] = {
 		"endnote-id", enpid,
@@ -7681,7 +7681,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
 	// Signal PieceTable Changes have Started
-	//UT_DEBUGMSG(("insertEndnoteSection: about to save and notify\n"));
+	//UT_DEBUGMSG(("insertFootnoteSection: about to save and notify\n"));
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 
@@ -7714,7 +7714,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
   	e |= m_pDoc->insertStrux(getPoint(),PTX_EndFootnote,block_attrs,NULL);
 	UT_DEBUGMSG(("plam: inserted everything\n"));
 
-	// Now create the endnotes section
+	// Now create the Footnotes section
 	// If there is a list item here remove it!
 
  	fl_BlockLayout* pBlock = _findBlockAtPosition(getPoint());
@@ -7738,7 +7738,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	_generalUpdate();
 
 	// Signal PieceTable Changes have Ended
-	//UT_DEBUGMSG(("insertEndnoteSection: about to restore\n"));
+	//UT_DEBUGMSG(("insertFootnoteSection: about to restore\n"));
 	_restorePieceTableState();
 	_updateInsertionPoint();
 

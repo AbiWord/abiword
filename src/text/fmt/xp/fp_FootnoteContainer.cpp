@@ -43,7 +43,8 @@
   \param pSectionLayout Section layout type used for this container
  */
 fp_FootnoteContainer::fp_FootnoteContainer(fl_SectionLayout* pSectionLayout) 
-	: fp_VerticalContainer(FP_CONTAINER_FOOTNOTE, pSectionLayout)
+	: fp_VerticalContainer(FP_CONTAINER_FOOTNOTE, pSectionLayout),
+	  m_pPage(NULL)
 {
 }
 
@@ -56,6 +57,16 @@ fp_FootnoteContainer::fp_FootnoteContainer(fl_SectionLayout* pSectionLayout)
  */
 fp_FootnoteContainer::~fp_FootnoteContainer()
 {
+	m_pPage = NULL;
+}
+
+void fp_FootnoteContainer::setPage(fp_Page * pPage)
+{
+	if(pPage && (m_pPage != NULL) && m_pPage != pPage)
+	{
+		m_pPage->removeFootnoteContainer(this);
+	}
+	m_pPage = pPage;
 }
 
 void fp_FootnoteContainer::clearScreen(void)

@@ -28,6 +28,7 @@
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
 #include "fp_TableContainer.h"
+#include "fp_FootnoteContainer.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -391,6 +392,14 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	{
 		fp_ShadowContainer * pCol = (fp_ShadowContainer *) pCon;
 		pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
+
+		xoff += col_x;
+		yoff += col_y;
+	}
+	else if(pCon->getContainerType() == FP_CONTAINER_FOOTNOTE)
+	{
+		fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) pCon;
+		pFC->getPage()->getScreenOffsets(pFC, col_x, col_y);
 
 		xoff += col_x;
 		yoff += col_y;

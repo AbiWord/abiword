@@ -85,8 +85,8 @@ public:
 	UT_sint32           getAvailableHeightInLayoutUnits(void) const;
 #else
     UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
-	UT_sint32           getAvailableHeight(void) const;
 #endif
+	UT_sint32           getAvailableHeight(void) const;
 
 	// Leader (e.g. column) functions.
 	void 				columnHeightChanged(fp_Column* pLeader);

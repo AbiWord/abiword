@@ -1385,6 +1385,23 @@ void fl_DocSectionLayout::_lookupProperties(void)
 #endif
 	}
 
+	const XML_Char * pszFootnoteLine;
+	pSectionAP->getProperty("section-footnote-line-thickness", (const XML_Char *&)pszFootnoteLine);
+	if (pszFootnoteLine && pszFootnoteLine[0])
+	{
+		m_iFootnoteLineThickness = m_pLayout->getGraphics()->convertDimension(pszFootnoteLine);
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		m_iFootnoteLineThicknessLayoutUnits = UT_convertToLayoutUnits(pszFootnoteLine);
+#endif
+	}
+	else
+	{
+		m_iFootnoteLineThickness = m_pLayout->getGraphics()->convertDimension("0.05in");
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		m_iFootnoteLineThicknessLayoutUnits = UT_convertToLayoutUnits("0.05in");
+#endif
+	}
+
 	setPaperColor();
 	m_bForceNewPage = false;
 }

@@ -207,6 +207,8 @@ public:
 	inline UT_sint32			getSpaceAfter(void) const { return m_iSpaceAfter; }
 	inline UT_sint32            getMaxSectionColumnHeight(void) const { return m_iMaxSectionColumnHeight;}
 	UT_uint32                   getColumnGap(void) const;
+	UT_uint32			        getFootnoteLineThickness(void) const
+		{ return m_iFootnoteLineThickness;}
 	
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	inline UT_sint32			getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
@@ -218,6 +220,8 @@ public:
 	inline UT_sint32			getSpaceAfterInLayoutUnits(void) const { return m_iSpaceAfterLayoutUnits; }
 	inline UT_sint32            getMaxSectionColumnHeightInLayoutUnits(void) const { return m_iMaxSectionColumnHeightInLayoutUnits;}
 	UT_uint32			        getColumnGapInLayoutUnits(void) const;
+	UT_uint32			        getFootnoteLineThicknessLayoutUnits(void) const
+		{ return m_iFootnoteLineThicknessLayoutUnits;}
 #endif
 	void                completeBreakSection(void);
 	bool                arePageNumbersRestarted (void) const { return m_bRestart;}
@@ -309,7 +313,7 @@ private:
 	double				m_dHeaderMarginUserUnits;
 	UT_sint32           m_iMaxSectionColumnHeight;
 	double              m_dMaxSectionColumnHeight;
-	
+	UT_sint32           m_iFootnoteLineThickness;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_uint32			m_iColumnGapLayoutUnits;
 	UT_sint32			m_iSpaceAfterLayoutUnits;
@@ -320,6 +324,7 @@ private:
 	UT_sint32			m_iFooterMarginLayoutUnits;
 	UT_sint32			m_iHeaderMarginLayoutUnits;
 	UT_sint32           m_iMaxSectionColumnHeightInLayoutUnits;
+	UT_sint32           m_iFootnoteLineThicknessLayoutUnits;
 #endif
 
 	bool				m_bForceNewPage;

@@ -367,6 +367,7 @@ public:
 	static EV_EditMethod_Fn insField;
 	static EV_EditMethod_Fn insSymbol;
 	static EV_EditMethod_Fn insFile;
+	static EV_EditMethod_Fn insFootnote;
 	static EV_EditMethod_Fn insEndnote;
 
 	static EV_EditMethod_Fn dlgSpell;
@@ -826,6 +827,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insEndnote),			0,		""),
 	EV_EditMethod(NF(insField), 		0,		""),
 	EV_EditMethod(NF(insFile), 0, ""),
+	EV_EditMethod(NF(insFootnote),			0,		""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
 	EV_EditMethod(NF(insSymbol),			0,		""),
 	EV_EditMethod(NF(insertAbovedotData),	_D_,	""),
@@ -4332,6 +4334,15 @@ Defun1(insertSectionBreak)
 //
 	if(pView->isHdrFtrEdit())
 		return true;
+	if(pView->isInTable())
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
+
 	pView->insertSectionBreak();
 	return true;
 }
@@ -4373,6 +4384,15 @@ Defun1(insertColumnBreak)
 //
 	if(pView->isHdrFtrEdit())
 		return true;
+	if(pView->isInTable())
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
+
 	UT_UCSChar c = UCS_VTAB;
 	pView->cmdCharInsert(&c,1);
 	return true;
@@ -4545,6 +4565,14 @@ Defun1(insertPageBreak)
 //
 	if(pView->isHdrFtrEdit())
 		return true;
+	if(pView->isInTable())
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
 	pView->cmdCharInsert(&c,1);
 	return true;
 }
@@ -7552,6 +7580,14 @@ Defun1(insBreak)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	if(pView->isInTable())
+	{
+		XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+		pFrame->showMessageBox(AP_STRING_ID_MSG_NoBreakInsideTable,
+							   XAP_Dialog_MessageBox::b_O,
+							   XAP_Dialog_MessageBox::a_OK);
+		return true;
+	}
 	return s_doBreakDlg(pView);
 }
 
@@ -7719,12 +7755,21 @@ Defun1(insSymbol)
 	return s_InsertSymbolDlg(pView,id);
 }
 
+Defun1(insFootnote)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	return pView->insertFootnote();
+}
+
+
 Defun1(insEndnote)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	return pView->insertEndnote();
+	return true;
 }
 
 

@@ -39,6 +39,7 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 
+
 fp_Page::fp_Page(FL_DocLayout* pLayout,
 		 FV_View* pView,
 		 const fp_PageSize& pageSize,
@@ -113,16 +114,18 @@ UT_sint32 fp_Page::getColumnGap(void) const
  */
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 UT_sint32 fp_Page::getAvailableHeightInLayoutUnits(void) const
-#else
-UT_sint32 fp_Page::getAvailableHeight(void) const
-#endif
 {
 	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();
-#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	UT_sint32 avail = getHeightInLayoutUnits() - pDSL->getTopMarginInLayoutUnits() - pDSL->getBottomMarginInLayoutUnits();
-#else
-	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
+	return avail;
+}
 #endif
+
+
+UT_sint32 fp_Page::getAvailableHeight(void) const
+{
+	fl_DocSectionLayout * pDSL = getNthColumnLeader(0)->getDocSectionLayout();
+	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
 	return avail;
 }
 
@@ -411,6 +414,21 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	for (i=0; i<count; i++)
 	{
 		fp_FootnoteContainer* pFC = (fp_FootnoteContainer*) m_vecFootnotes.getNthItem(i);
+		if(i==0)
+		{
+			UT_RGBColor black(0,0,0);
+			UT_sint32 iLeftMargin = m_pOwner->getLeftMargin();
+			UT_sint32 iRightMargin = m_pOwner->getRightMargin();
+			UT_sint32 diff = getWidth()/10;
+			UT_sint32 xoffStart = pDA->xoff + iLeftMargin + diff;
+			UT_sint32 xoffEnd = pDA->xoff + getWidth() - iRightMargin - diff;
+			UT_sint32 yline = pFC->getY() + pDA->yoff;
+			pDA->pG->setColor(black);
+			UT_sint32 iLineThick = m_pOwner->getFootnoteLineThickness();
+			pDA->pG->setLineWidth(iLineThick);
+			yline = yline - iLineThick - 3;
+			pDA->pG->drawLine(xoffStart, yline, xoffEnd, yline);
+		}
 		dg_DrawArgs da = *pDA;
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
@@ -733,9 +751,9 @@ void fp_Page::_reformatColumns(void)
 
 	// we need the height of the footnotes on this page, to deduct.
 	UT_uint32 i = 0;
-	UT_uint32 iFootnoteHeight = 0;
+	UT_uint32 iFootnoteHeight = 2*pFirstSectionLayout->getFootnoteLineThickness();
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_uint32 iFootnoteHeightLayoutUnits = 0;
+	UT_uint32 iFootnoteHeightLayoutUnits = 2*pFirstSectionLayout->getFootnoteLineThicknessLayoutUnits();
 #endif
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
@@ -888,30 +906,34 @@ void fp_Page::_reformatColumns(void)
 
 void fp_Page::_reformatFootnotes(void)
 {
+
+	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+	UT_ASSERT(m_pOwner == pFirstSectionLayout);
+	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-	UT_uint32 pageHeightLayoutUnits = getAvailableHeightInLayoutUnits();
+	UT_sint32 iBottomMarginLayoutUnits = pFirstSectionLayout->getBottomMarginInLayoutUnits();
+
+	UT_uint32 pageHeightLayoutUnits = getHeightInLayoutUnits() -iBottomMarginLayoutUnits;
 	UT_uint32 iFootnoteHeightLayoutUnits = 0;
-#else
-	UT_uint32 pageHeight = getAvailableHeight();
-	UT_uint32 iFootnoteHeight = 0;
 #endif
+	UT_uint32 pageHeight = getHeight() - iBottomMargin;
+	UT_uint32 iFootnoteHeight = 0;
 	UT_uint32 i = 0;
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iFootnoteHeightLayoutUnits += getNthFootnoteContainer(i)->getHeightInLayoutUnits();
-#else
-		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
 #endif
+		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
 	}
 
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	pageHeightLayoutUnits -= iFootnoteHeightLayoutUnits;
 	UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeightLayoutUnits, iFootnoteHeightLayoutUnits));
-#else
+#endif
 	pageHeight -= iFootnoteHeight;
 	UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeight, iFootnoteHeight));
-#endif
 	for (i = 0; i < countFootnoteContainers(); i++)
 	{
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
@@ -919,12 +941,12 @@ void fp_Page::_reformatFootnotes(void)
 
 		pFC->setX(pSL->getLeftMargin());
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		UT_DEBUGMSG(("Set Footnote Ypos to %d \n",pageHeightLayoutUnits));
 		pFC->setYInLayoutUnits(pageHeightLayoutUnits);
 		pageHeightLayoutUnits += getNthFootnoteContainer(i)->getHeightInLayoutUnits();
-#else
+#endif
 		pFC->setY(pageHeight);
 		pageHeight += getNthFootnoteContainer(i)->getHeight();
-#endif
 	}
 }
 
@@ -1407,7 +1429,10 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC,
 	{
 		m_vecFootnotes.insertItemAt(pFC, 0);
 	}
-
+	if(pFC)
+	{
+		pFC->setPage(this);
+	}
 	_reformat();
 
 	return true;
@@ -1415,5 +1440,10 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC,
 
 void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)
 {
+	UT_sint32 ndx = m_vecFootnotes.findItem(pFC);
+	if(ndx>=0)
+	{
+		m_vecFootnotes.deleteNthItem(ndx);
+	}
 }
 

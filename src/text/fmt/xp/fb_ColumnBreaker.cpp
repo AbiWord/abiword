@@ -511,16 +511,28 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		UT_sint32 conPos = 0;
 		while (pCurContainer)
 		{
-			if (pCurContainer->getContainer() != pCurColumn)
+			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
+			{
+//
+// Skip this. It doesn't go in this column at all.
+//
+				pCurContainer = pCurContainer->getNextContainerInSection();
+				continue;
+			}
+			if (pCurContainer->getContainer() != pCurColumn || (pCurColumn->findCon(pCurContainer) < 0) )
 			{
 				UT_ASSERT(pCurContainer->getContainer());
-				static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
+				if(pCurContainer->getContainer()->findCon(pCurContainer) >= 0)
+				{
+					static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
+				}
 				pCurColumn->addContainer(pCurContainer);
 			}
+		
 //
 // Code to fix order in the column
 //
-			if(pCurColumn->findCon(pCurContainer) != conPos)
+			if((pCurColumn->findCon(pCurContainer) >= 0) && (pCurColumn->findCon(pCurContainer)  != conPos))
 			{
 				xxx_UT_DEBUGMSG(("fb_ColumnBreaker:Container out of order. Should be at %d is at %d \n",conPos,pCurColumn->findCon(pCurContainer)));
 				xxx_UT_DEBUGMSG(("fb_ColumnBreak: Fixing this now \n"));

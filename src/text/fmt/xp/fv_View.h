@@ -356,10 +356,10 @@ public:
 
 //
 // ----------------------
-// Stuff for edittable endnotes
+// Stuff for edittable Footnote/Endnotes
 //
-	bool	insertEndnote();
-	bool	insertEndnoteSection(const XML_Char * enpid);
+	bool	insertFootnote();
+	bool	insertFootnoteSection(const XML_Char * enpid);
 
 // ----------------------
 
