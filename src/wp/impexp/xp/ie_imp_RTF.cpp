@@ -153,7 +153,7 @@ RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uin
 {
 	levelStartAt = 1;
 	AbiLevelID = rand();
-	while(AbiLevelID < 100000)
+	while(AbiLevelID < 10000)
 		AbiLevelID = rand();
 	pParaProps = NULL;
 	pCharProps = NULL;
