@@ -808,7 +808,7 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
 					  else
 					  {
 						  m_rightMargin = marginInch;
-						  m_bLeftMarginSet = true;
+						  m_bRightMarginSet = true;
 					  }
                       
 					  // if we are already in a section, but there is no PTX_Block (= paragraph) inside it,

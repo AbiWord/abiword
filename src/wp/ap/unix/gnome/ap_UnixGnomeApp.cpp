@@ -309,16 +309,19 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 //
 	    const char * szName = NULL;
 		XAP_Module * pModule = NULL;
-
-		const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+		plugin = poptGetArg(poptcon);
 		bool bFound = false;
-		for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+		if(plugin != NULL)
 		{
-			pModule = (XAP_Module *)pVec->getNthItem (i);
-			szName = pModule->getModuleInfo()->name;
-			if(UT_strcmp(szName,plugin) == 0)
+			const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
 			{
-				bFound = true;
+				pModule = (XAP_Module *)pVec->getNthItem (i);
+				szName = pModule->getModuleInfo()->name;
+				if(UT_strcmp(szName,plugin) == 0)
+				{
+					bFound = true;
+				}
 			}
 		}
 		if(!bFound)
