@@ -25,23 +25,14 @@
 #include "ut_OverstrikingChars.h"
 
 //////////////////////////////////////////////////////////////////
-//#define USE_HIGH_RESOLUTION
-#if 0
-#undef _UUL
-#undef _UUD
-#undef _UL
-#undef _UD
-#define _UUL(x)
-#define _UUD(x)
-#define _UD(x) x
-#define _UL(x) x
-#define GR_WIN32_CW_REDEF_UNITS
-#endif
-void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1)
+
+#define _UL(x) pGr->tlu((x))
+#define _UUL(x) (x) = pGR->tlu((x))
+
+void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1, GR_Graphics * pGr)
 {
 	UINT k;
 	int w;
-	//float f=0;
 
 	// Windows NT and Windows 95 support the Unicode Font file. 
 	// All of the Unicode glyphs can be rendered if the glyph is found in
@@ -191,11 +182,3 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 		}
 	}
 }
-
-#ifdef GR_WIN32_CW_REDEF_UNITS
-#undef _UUL
-#undef _UUD
-#undef _UL
-#undef _UD
-#undef GR_WIN32_CW_REDEF_UNITS
-#endif

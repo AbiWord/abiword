@@ -36,25 +36,9 @@
 #include "ut_string.h"
 #include "ut_Win32OS.h"
 
-#if 0
-#undef _UUL
-#undef _UUD
-#undef _UL
-#undef _UD
-#define _UUL(x)
-#define _UUD(x)
-#define _UD(x) x
-#define _UL(x) x
-#define GR_WIN32_REDEF_UNITS
-#endif
 /*****************************************************************/
 
-#ifndef USE_LAYOUT_UNITS
-UT_sint32* GR_Win32Graphics::s_pCharAdvances = NULL;
-UT_uint32  GR_Win32Graphics::s_iCharAdvancesSize = 0;
-UT_uint32  GR_Win32Graphics::s_iInstanceCount = 0;
-#endif
-
+#define _UUD(a) (a) = tdu((a))
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -126,29 +110,6 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_eJoinStyle = JOIN_MITER;
 	m_eCapStyle  = CAP_BUTT;
 	m_eLineStyle = LINE_SOLID;
-#if 0
-#ifndef USE_LAYOUT_UNITS
-	if(UT_IsWinNT())
-	{
-		// enable advanced graphics mode
-		bool res = (SetGraphicsMode(m_hdc, GM_ADVANCED) != 0);
-		UT_ASSERT( res );
-	}
-	else
-	{
-		bool res = (SetMapMode(m_hdc, MM_ISOTROPIC) != 0);
-		UT_ASSERT( res );
-	}
-	
-	
-	// now set world transform for our logical units
-	_setTransform(getTransform());
-#endif
-#endif
-
-#ifndef USE_LAYOUT_UNITS
-	s_iInstanceCount++;	
-#endif
 
 	setBrush((HBRUSH) GetStockObject(WHITE_BRUSH));	// Default brush
 }
@@ -179,18 +140,6 @@ GR_Win32Graphics::~GR_Win32Graphics()
 
 	delete [] m_remapBuffer;
 	delete [] m_remapIndices;
-
-
-#ifndef USE_LAYOUT_UNITS
-	s_iInstanceCount--;
-
-	if(!s_iInstanceCount)
-	{
-		delete [] s_pCharAdvances;
-		s_pCharAdvances = NULL;
-		s_iCharAdvancesSize = 0;
-	}
-#endif
 }
 
 bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
@@ -209,20 +158,18 @@ bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 	}
 }
 
-
 GR_Font* GR_Win32Graphics::getGUIFont(void)
 {
 	if (!m_pFontGUI)
 	{
 		// lazily grab this (once)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-		m_pFontGUI = new GR_Win32Font(f);
+		m_pFontGUI = new GR_Win32Font(f, this);
 		UT_ASSERT(m_pFontGUI);
 	}
 
 	return m_pFontGUI;
 }
-
 
 extern "C"
 int CALLBACK
@@ -235,7 +182,6 @@ win32Internal_fontEnumProcedure(ENUMLOGFONT* pLogFont,
 	lf->lfCharSet = pLogFont->elfLogFont.lfCharSet;
 	return 0;
 }
-
 
 GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 									const char* pszFontStyle,
@@ -252,15 +198,10 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 		now, we're hard-coding a hack.
 	*/
 
-#ifdef USE_LAYOUT_UNITS
-	UT_sint32 iHeight = convertDimension(pszFontSize);
-	lf.lfHeight = -(iHeight);
-#else
 	// we need to get the size in logpixels for the current DC, which
 	// simply means to divide points by 72 and multiply by device Y resolution
 	UT_sint32 iHeight = (UT_sint32)UT_convertToPoints(pszFontSize);
 	lf.lfHeight = -MulDiv(/*UT_LOG_UNITS*/(iHeight), GetDeviceCaps(m_hdc, LOGPIXELSY), 72);
-#endif
 
 	// TODO note that we don't support all those other ways of expressing weight.
 	if (0 == UT_stricmp(pszFontWeight, "bold"))
@@ -317,7 +258,7 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	if (!hFont)
 		return 0;
 
-	return new GR_Win32Font(hFont);
+	return new GR_Win32Font(hFont, this);
 }
 
 void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -327,8 +268,9 @@ void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 
 void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-	_UUD(xoff);
-	_UUD(yoff);
+	xoff = tdu(xoff);
+	yoff = tdu(yoff);
+
 	HFONT hFont = GR_Win32Font::Acq::getHFONT(*m_pFont);
 	SelectObject(m_hdc, hFont);
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
@@ -373,8 +315,10 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 								 int * pCharWidths)
 {
 	UT_ASSERT(pChars);
-	_UUD(xoff);
-	_UUD(yoff);
+
+	xoff = tdu(xoff);
+	yoff = tdu(yoff);
+
 	// iLength can be modified by _remapGlyphs
 	int iLength = iLengthOrig;
 	HFONT hFont = GR_Win32Font::Acq::getHFONT(*m_pFont);
@@ -382,7 +326,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
-	UT_uint16* currentChars = _remapGlyphs(pChars, iCharOffset, iLength, pCharWidths);
+	UT_uint16* currentChars = _remapGlyphs(pChars, iCharOffset, iLength);
 
 	// Windows NT and Windows 95 support the Unicode Font file.
 	// All of the Unicode glyphs can be rendered if the glyph is found in
@@ -407,9 +351,17 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	}
 	else
 	{
-#ifdef USE_LAYOUT_UNITS
-#define s_pCharAdvances pCharWidths
-#endif
+		int duCharWidths [256];
+		int *pCharAdvances = 0;
+
+		if (iLengthOrig > sizeof(duCharWidths))
+			pCharAdvances = new int [iLengthOrig];
+		else
+			pCharAdvances = duCharWidths;
+
+		for (UT_uint32 i = 0; i < iLengthOrig; i++)
+			pCharAdvances[i] = tdu (pCharWidths[i]);
+
 		// Unicode font and default character set handling for WinNT and Win9x
 
 		// The bidi aspect of the drawing is handled as follows:
@@ -430,7 +382,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 			gcpResult.lStructSize = sizeof(GCP_RESULTS);
 			gcpResult.lpOutString = NULL;			// Output string
 			gcpResult.lpOrder = NULL;				// Ordering indices
-			gcpResult.lpDx = s_pCharAdvances;	    // Distances between character cells
+			gcpResult.lpDx = pCharAdvances;	    // Distances between character cells
 			gcpResult.lpCaretPos = NULL;			// Caret positions	
 			gcpResult.lpClass = NULL;				// Character classifications
 #ifdef __MINGW32__
@@ -463,15 +415,14 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 simple_exttextout:
 			ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, (LPCWSTR) currentChars, iLength, s_pCharAdvances);
 		}
+
+		if (iLengthOrig > sizeof(duCharWidths))
+			delete[] pCharAdvances;
 	}
 
 }
-#ifdef USE_LAYOUT_UNITS
-#undef s_pCharAdvances
-#endif
 
-
-UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength, int * pCharWidths)
+UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength)
 {
 	// TODO -- make this handle 32-bit chars properly
 	if (iLength > (int)m_remapBufferSize)
@@ -488,25 +439,11 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 		m_remapBufferSize = iLength;
 	}
 
-#ifndef USE_LAYOUT_UNITS
-	if(pCharWidths && iLength > (int) s_iCharAdvancesSize)
-	{
-		delete [] s_pCharAdvances;
-		s_pCharAdvances = new UT_sint32 [iLength];
-		s_iCharAdvancesSize = iLength;
-	}
-#endif
-
     // Need to handle zero-width spaces correctly
 	int i, j;
 	for (i = 0, j = 0; i < iLength; ++i, ++j)
 	{
 		m_remapBuffer[j] = (UT_UCS2Char)remapGlyph(pChars[iCharOffset + i], false);
-
-#ifndef USE_LAYOUT_UNITS
-		if(pCharWidths)
-			s_pCharAdvances[j] = _UD(pCharWidths[iCharOffset + i]);
-#endif
 		
 		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF)
 			j--;
@@ -601,19 +538,9 @@ UT_uint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	return GR_Win32Font::Acq::measureUnRemappedChar(*m_pFont, c);
 }
 
-#if 0
-UT_uint32 GR_Win32Graphics::measureString(const UT_UCSChar* s, int iOffset, int num, unsigned short* pWidths)
+UT_uint32 GR_Win32Graphics::getDeviceResolution(void) const
 {
-	UT_ASSERT(m_pFont);
-	return m_pFont->measureString(s,iOffset,num,pWidths);
-}
-#endif
-
-UT_uint32 GR_Win32Graphics::_getResolution(void) const
-{
-	int result = GetDeviceCaps(m_hdc, LOGPIXELSY); // NOTE: assumes square pixels
-	_UUL(result);
-	return result;
+	return GetDeviceCaps(m_hdc, LOGPIXELSY); // NOTE: assumes square pixels
 }
 
 void GR_Win32Graphics::setColor(const UT_RGBColor& clr)
@@ -637,7 +564,7 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 {
 	if (m_eLineStyle == LINE_SOLID &&
 		((x1 == x2 && y1 != y2) || (y1 == y2 && x1 != x2))
-	 && m_iLineWidth <= _UL(1))
+	 && m_iLineWidth <= tlu(1))
 	{
 		// TMN: A little bloaty, though a TREMENDOUS speedup (like 45 TIMES
 		// last I checked).
@@ -645,7 +572,7 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 							GetGValue(m_clrCurrent),
 							GetBValue(m_clrCurrent));
 		const bool bVert = x1 == x2;
-		const UT_sint32 nLineWidth = m_iLineWidth ? m_iLineWidth : _UL(1);
+		const UT_sint32 nLineWidth = m_iLineWidth ? m_iLineWidth : tlu(1);
 
 		if (bVert)
 		{
@@ -771,8 +698,8 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 
 	for (UT_uint32 i = 0; i < nPoints; i++)
 	{
-		points[i].x = _UD(pts[i].x);
-		points[i].y = _UD(pts[i].y);
+		points[i].x = tdu(pts[i].x);
+		points[i].y = tdu(pts[i].y);
 	}
 
 	Polyline(m_hdc, points, nPoints);
@@ -785,25 +712,17 @@ void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 void GR_Win32Graphics::fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	RECT r;
-	r.left = _UD(x);
-	r.top = _UD(y);
-	r.right = r.left + _UD(w);
-	r.bottom = r.top + _UD(h);
+	r.left = tdu(x);
+	r.top = tdu(y);
+	r.right = r.left + tdu(w);
+	r.bottom = r.top + tdu(h);
 
-#if 0
-	// This is what one might think is reasonable. Forget it,
-	// CreateSolidBrush is dog slow.
-	HBRUSH hBrush = CreateSolidBrush(RGB(c.m_red, c.m_grn, c.m_blu));
-
-	FillRect(m_hdc, &r, hBrush);
-	DeleteObject(hBrush);
-#else
 	// This might look wierd (and I think it is), but it's MUCH faster.
+	// CreateSolidBrush is dog slow.
 	HDC hdc = m_hdc;
 	const COLORREF cr = ::SetBkColor(hdc, RGB(c.m_red, c.m_grn, c.m_blu));
 	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &r, NULL, 0, NULL);
 	::SetBkColor(hdc, cr);
-#endif
 }
 
 bool GR_Win32Graphics::startPrint(void)
@@ -920,10 +839,10 @@ void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 {
 	RECT r;
 
-	r.left = _UD(pRect->left);
-	r.top = _UD(pRect->top);
-	r.right = _UD(pRect->left + pRect->width);
-	r.bottom = _UD(pRect->top + pRect->height);
+	r.left = tdu(pRect->left);
+	r.top = tdu(pRect->top);
+	r.right = tdu(pRect->left + pRect->width);
+	r.bottom = tdu(pRect->top + pRect->height);
 
 	InvertRect(m_hdc, &r);
 }
@@ -940,10 +859,10 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		// set the clip rectangle
-		HRGN hrgn = CreateRectRgn(_UD(pRect->left),
-								  _UD(pRect->top),
-								  _UD(pRect->left + pRect->width),
-								  _UD(pRect->top + pRect->height));
+		HRGN hrgn = CreateRectRgn(tdu(pRect->left),
+								  tdu(pRect->top),
+								  tdu(pRect->left + pRect->width),
+								  tdu(pRect->top + pRect->height));
 		UT_ASSERT(hrgn);
 
 		res = SelectClipRgn(m_hdc, hrgn);
@@ -972,7 +891,7 @@ GR_Image* GR_Win32Graphics::createNewImage(const char* pszName, const UT_ByteBuf
 	else
 		pImg = new GR_VectorImage(pszName);
 
-	pImg->convertFromBuffer(pBB, iDisplayWidth, iDisplayHeight);
+	pImg->convertFromBuffer(pBB, iDisplayWidth,iDisplayHeight);
 
 	return pImg;
 }
@@ -1007,7 +926,7 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
 	int iRes = StretchDIBits(m_hdc,
 							 xDest, yDest,
-							 _UD(pImg->getDisplayWidth()), _UD(pImg->getDisplayHeight()),
+							 tdu(pImg->getDisplayWidth()), tdu(pImg->getDisplayHeight()),
 							 0, 0,
 							 pDIB->bmiHeader.biWidth, pDIB->bmiHeader.biHeight,
 							 pBits, pDIB, DIB_RGB_COLORS, SRCCOPY);
@@ -1156,10 +1075,10 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 	HBRUSH hBrush = CreateSolidBrush(m_3dColors[c]);
 
 	RECT r;
-	r.left = _UD(x);
-	r.top = _UD(y);
-	r.right = r.left + _UD(w);
-	r.bottom = r.top + _UD(h);
+	r.left = tdu(x);
+	r.top = tdu(y);
+	r.right = r.left + tdu(w);
+	r.bottom = r.top + tdu(h);
 
 	FillRect(m_hdc, &r, hBrush);
 	DeleteObject(hBrush);
@@ -1240,11 +1159,12 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	return;
 }
 
-GR_Win32Font::GR_Win32Font(HFONT hFont)
+GR_Win32Font::GR_Win32Font(HFONT hFont, GR_Graphics * pG)
 :	m_oldHDC(0),
 	m_hFont(hFont),
 	m_defaultCharWidth(0),
-	m_tm(TEXTMETRIC())
+	m_tm(TEXTMETRIC()),
+	m_pG(pG)
 {
 	UT_ASSERT(m_hFont);
 
@@ -1304,24 +1224,12 @@ void GR_Win32Font::setupFontInfo()
 	// the rest of unicode.
 	//m_cw.setCharWidthsOfRange(hdc,0,255);
 
-	m_cw.setCharWidthsOfRange(m_oldHDC, 0x20, 0x7f);
+	m_cw.setCharWidthsOfRange(m_oldHDC, 0x20, 0x7f, m_pG);
 
 	GetTextMetrics(m_oldHDC, &m_tm);
 
-#ifndef USE_LAYOUT_UNITS
-	// have to adjust the text metrics to our LOG units
-
-	_UUL(m_tm.tmHeight); 
-    _UUL(m_tm.tmAscent); 
-    _UUL(m_tm.tmDescent); 
-    _UUL(m_tm.tmInternalLeading); 
-    _UUL(m_tm.tmExternalLeading); 
-    _UUL(m_tm.tmAveCharWidth); 
-    _UUL(m_tm.tmMaxCharWidth);
-#endif
-
 	UINT d = m_tm.tmDefaultChar;
-	m_cw.setCharWidthsOfRange(m_oldHDC, d, d);
+	m_cw.setCharWidthsOfRange(m_oldHDC, d, d, m_pG);
 	m_defaultCharWidth = m_cw.getWidth(d);
 }
 
@@ -1338,7 +1246,7 @@ UT_uint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSCha
 	iWidth = font.m_cw.getWidth(c);
 	if (iWidth == GR_CW_UNKNOWN)
 	{
-		font.m_cw.setCharWidthsOfRange(font.m_oldHDC, c, c);
+		font.m_cw.setCharWidthsOfRange(font.m_oldHDC, c, c, m_pG);
 		iWidth = font.m_cw.getWidth(c);
 		// [[Why the default width?  I think zero is better in that case?]]
 		// because the win32 font rendering engine will remap the
@@ -1370,7 +1278,7 @@ UT_uint32 GR_Win32Font::Acq::measureString(GR_Win32Font& font, const UT_UCSChar*
 		iWidth = font.m_cw.getWidth(currentChar);
 		if (!iWidth)
 		{
-			font.m_cw.setCharWidthsOfRange(font.m_oldHDC,currentChar,currentChar);
+			font.m_cw.setCharWidthsOfRange(font.m_oldHDC,currentChar,currentChar, m_pG);
 			iWidth = font.m_cw.getWidth(currentChar);
 		}
 
@@ -1415,8 +1323,8 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 
 	for (UT_uint32 i = 0; i < nPoints; ++i)
 	{
-		points[i].x = _UD(pts[i].x);
-		points[i].y = _UD(pts[i].y);
+		points[i].x = tdu(pts[i].x);
+		points[i].y = tdu(pts[i].y);
 	}
 
 	Polygon(m_hdc, points, nPoints);
@@ -1436,7 +1344,7 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 	if(UT_IsWinNT())
 	{
 		XFORM xForm;
-		float fScale = (float)((_UL(1) * getZoomPercentage()) / 100);
+		float fScale = (float)((tlu(1) * getZoomPercentage()) / 100);
 	
 		xForm.eM11 = (float)(tr.getM11() * fScale);
 		xForm.eM12 = (float)tr.getM12();
@@ -1453,7 +1361,7 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 	{
 		// world tranforms are not supported, fiddle with the view
 		// port, etc
-		UT_sint32 iScale = (_UL(1) * getZoomPercentage())/100;
+		UT_sint32 iScale = (tlu(1) * getZoomPercentage())/100;
 		
 		bool res = (SetWindowExtEx(m_hdc, iScale, iScale, NULL) != 0);
 		UT_ASSERT( res );
@@ -1478,23 +1386,7 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 }
 
 
-void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) {
-	
-	
-#if 0
-	// had to turn this off -- the fact the the rectangle coordinances
-	// are the same does not guarantee that the bitmap is (e.g., in a
-	// right-aligned paragraph the text moves while the caret remains
-	// static. Tomas, Jan 18, 2003
-	if (m_vSaveRect.getItemCount()>iIndx && m_vSaveRect.getNthItem(iIndx) && 
-		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->left == r.left &&
-		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->top == r.top &&
-		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->width == r.width && 
-		((UT_Rect *)(m_vSaveRect.getNthItem(iIndx)))->height == r.height) {
-		return;
-		}
-#endif
-	
+void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) {	
 	void * oldR = NULL;
 	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),&oldR);
 	if(oldR)
@@ -1526,10 +1418,3 @@ void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) {
 		}
 }
 
-#ifdef GR_WIN32_REDEF_UNITS
-#undef _UUL
-#undef _UUD
-#undef _UL
-#undef _UD
-#undef GR_WIN32_REDEF_UNITS
-#endif

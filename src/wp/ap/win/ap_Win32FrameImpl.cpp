@@ -42,13 +42,10 @@
 #define GWL(hwnd)		reinterpret_cast<AP_Win32Frame *>(GetWindowLong((hwnd), GWL_USERDATA))
 #define SWL(hwnd, f)	reinterpret_cast<AP_Win32Frame *>(SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f)))
 
-
 // reserve space for static variables
 char AP_Win32FrameImpl::s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
 char AP_Win32FrameImpl::s_DocumentWndClassName[MAXDOCWNDCLSNMSIZE];
 //static char s_LeftRulerWndClassName[256];
-
-
 
 AP_Win32FrameImpl::AP_Win32FrameImpl(AP_Frame *pFrame) :
 	XAP_Win32FrameImpl(static_cast<XAP_Frame *>(pFrame)),
@@ -398,7 +395,7 @@ void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 		UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
 		AP_Win32TopRuler * pWin32TopRuler = NULL;
 		pWin32TopRuler =  static_cast<AP_Win32TopRuler *>(static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pTopRuler);
-		pWin32TopRuler->setOffsetLeftRuler(_UD(xLeftRulerWidth));
+		pWin32TopRuler->setOffsetLeftRuler(pWin32LeftRuler->getGR()->(xLeftRulerWidth));
 	}
 }
 
@@ -490,7 +487,7 @@ void AP_Win32FrameImpl::_setXScrollRange(AP_FrameData * pData, AV_View *pView)
 	RECT r;
 	GetClientRect(m_hwndDocument, &r);
 	const UT_uint32 iWindowWidth = r.right - r.left;
-	const UT_uint32 iWidth = _UD(pData->m_pDocLayout->getWidth());
+	const UT_uint32 iWidth = pView->getGraphics()->tdu(pData->m_pDocLayout->getWidth());
 
 	SCROLLINFO si = { 0 };
 
@@ -498,11 +495,11 @@ void AP_Win32FrameImpl::_setXScrollRange(AP_FrameData * pData, AV_View *pView)
 	si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
 	si.nMin = 0;
 	si.nMax = iWidth;
-	si.nPos = ((pView) ? _UD(pView->getXScrollOffset()) : 0);
+	si.nPos = ((pView) ? pView->getGraphics()->tdu(pView->getXScrollOffset()) : 0);
 	si.nPage = iWindowWidth;
 	SetScrollInfo(m_hWndHScroll, SB_CTL, &si, TRUE);
 
-	pView->sendHorizontalScrollEvent(_UL(si.nPos),_UL(si.nMax-si.nPage));
+	pView->sendHorizontalScrollEvent(pView->getGraphics()->tlu(si.nPos),pView->getGraphics()->tlu(si.nMax-si.nPage));
 }
 
 void AP_Win32FrameImpl::_setYScrollRange(AP_FrameData * pData, AV_View *pView)
@@ -512,7 +509,7 @@ void AP_Win32FrameImpl::_setYScrollRange(AP_FrameData * pData, AV_View *pView)
 	RECT r;
 	GetClientRect(m_hwndDocument, &r);
 	const UT_uint32 iWindowHeight = r.bottom - r.top;
-	const UT_uint32 iHeight = _UD(pData->m_pDocLayout->getHeight());
+	const UT_uint32 iHeight = pView->getGraphics()->tdu(pData->m_pDocLayout->getHeight());
 
 	SCROLLINFO si = { 0 };
 
@@ -520,11 +517,11 @@ void AP_Win32FrameImpl::_setYScrollRange(AP_FrameData * pData, AV_View *pView)
 	si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
 	si.nMin = 0;
 	si.nMax = iHeight;
-	si.nPos = ((pView) ? _UD(pView->getYScrollOffset()) : 0);
+	si.nPos = ((pView) ? pView->getGraphics()->tdu(pView->getYScrollOffset()) : 0);
 	si.nPage = iWindowHeight;
 	_setVerticalScrollInfo(&si);
 
-	pView->sendVerticalScrollEvent(_UL(si.nPos),_UL(si.nMax-si.nPage));
+	pView->sendVerticalScrollEvent(pView->getGraphics()->tlu(si.nPos),pView->getGraphics()->tlu(si.nMax-si.nPage));
 }
 
 // scroll event came in (probably from an EditMethod (like a PageDown
@@ -536,11 +533,13 @@ void AP_Win32FrameImpl::_scrollFuncY(UT_sint32 yoff, UT_sint32 ylimit)
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 
+	GR_Graphics *pGr = getFrame()->getCurrentView()->getGraphics();
+
 	_getVerticalScrollInfo(&si);
-	si.nPos = _UD(yoff);
+	si.nPos = pGr->tdu (yoff);
 	_setVerticalScrollInfo(&si);
 	_getVerticalScrollInfo(&si); // values may have been clamped
-	getFrame()->getCurrentView()->setYScrollOffset(_UL(si.nPos));
+	getFrame()->getCurrentView()->setYScrollOffset(pGr->tlu(si.nPos));
 }
 
 void AP_Win32FrameImpl::_scrollFuncX(UT_sint32 xoff, UT_sint32 xlimit)
@@ -549,14 +548,16 @@ void AP_Win32FrameImpl::_scrollFuncX(UT_sint32 xoff, UT_sint32 xlimit)
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 
+	GR_Graphics *pGr = getFrame()->getCurrentView()->getGraphics();
+
 	HWND hwndH = _getHwndHScroll();
 	GetScrollInfo(hwndH, SB_CTL, &si);
 
-	si.nPos = _UD(xoff);
+	si.nPos = pGr->tdu(xoff);
 	SetScrollInfo(hwndH, SB_CTL, &si, TRUE);
 
 	GetScrollInfo(hwndH, SB_CTL, &si);	// may have been clamped
-	getFrame()->getCurrentView()->setXScrollOffset(_UL(si.nPos));
+	getFrame()->getCurrentView()->setXScrollOffset(pGr->tlu(si.nPos));
 }
 
 bool AP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
@@ -629,12 +630,12 @@ void AP_Win32FrameImpl::_getRulerSizes(AP_FrameData * pData, int &yTopRulerHeigh
 	UT_return_if_fail(pData);
 
 	if (pData->m_pTopRuler)
-		yTopRulerHeight = _UD(pData->m_pTopRuler->getHeight());
+		yTopRulerHeight = pData->m_pG->tdu(pData->m_pTopRuler->getHeight());
 	else
 		yTopRulerHeight = 0;
 
 	if (pData->m_pLeftRuler)
-		xLeftRulerWidth = _UD(pData->m_pLeftRuler->getWidth());
+		xLeftRulerWidth = pData->m_pG->tdu(pData->m_pLeftRuler->getWidth());
 	else
 		xLeftRulerWidth = 0;
 }
@@ -874,7 +875,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 
 			fImpl->_setVerticalScrollInfo(&si);				// notify window of new value.
 			fImpl->_getVerticalScrollInfo(&si);				// update from window, in case we got clamped
-			pView->sendVerticalScrollEvent(_UL(si.nPos));	// now tell the view
+			pView->sendVerticalScrollEvent(pView->getGraphics()->tlu(si.nPos));	// now tell the view
 
 			return 0;
 		}
@@ -929,7 +930,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 				GetScrollInfo(fImpl->m_hWndHScroll, SB_CTL, &si);
 
 				// now tell the view
-				pView->sendHorizontalScrollEvent(_UL(si.nPos));
+				pView->sendHorizontalScrollEvent(pView->getGraphics()->tlu(si.nPos));
 			}
 
 			return 0;
@@ -1172,10 +1173,10 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 				si.fMask = SIF_ALL;
 
 				fImpl->_getVerticalScrollInfo(&si);
-				pView->sendVerticalScrollEvent(_UL(si.nPos),_UL(si.nMax-si.nPage));
+				pView->sendVerticalScrollEvent(pView->getGraphics()->tlu(si.nPos),pView->getGraphics()->tlu(si.nMax-si.nPage));
 
 				GetScrollInfo(fImpl->m_hWndHScroll, SB_CTL, &si);
-				pView->sendHorizontalScrollEvent(_UL(si.nPos),_UL(si.nMax-si.nPage));
+				pView->sendHorizontalScrollEvent(pView->getGraphics()->tlu(si.nPos),pView->getGraphics()->tlu(si.nMax-si.nPage));
 			}
 			return 0;
 		}

@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef GR_WIN32GRAPHICS_H
 #define GR_WIN32GRAPHICS_H
 
@@ -35,7 +33,7 @@ class UT_ByteBuf;
 class GR_Win32Font : public GR_Font
 {
 public:
-	GR_Win32Font(HFONT hFont);
+	GR_Win32Font(HFONT hFont, GR_Graphics * pGr);
 	~GR_Win32Font();
 
 
@@ -77,6 +75,7 @@ private:
 	UT_uint32				m_defaultCharWidth;
 	TEXTMETRIC				m_tm;
 	GR_Win32CharWidths		m_cw;
+	GR_Graphics            *m_pG;
 };
 
 //////////////////////////////////////////////////////////////////
@@ -97,7 +96,6 @@ public:
 									  int * pCharWidth);
 	virtual void			setFont(GR_Font* pFont);
 	virtual UT_uint32		getFontHeight();
-	//virtual UT_uint32		measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32		measureUnRemappedChar(const UT_UCSChar c);
 	virtual void			setColor(const UT_RGBColor& clr);
 	virtual void            getColor(UT_RGBColor& clr);
@@ -168,7 +166,7 @@ public:
 	void setBrush(HBRUSH hBrush){ m_hClearBrush = hBrush;};
 
 protected:
-	virtual UT_uint32 		_getResolution(void) const;
+	virtual UT_uint32 	getDeviceResolution(void) const;
 	void					_setColor(DWORD clrRef);
 
 
@@ -194,7 +192,7 @@ protected:
 
 private:
 	void 					_constructorCommonCode(HDC);
-	UT_uint16*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength, int * pCharWidths);
+	UT_uint16*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength);
 	virtual bool            _setTransform(const GR_Transform & tr);
 	
 	DWORD					m_clrXorPen;
@@ -203,12 +201,6 @@ private:
 	UT_UCS2Char*			m_remapBuffer;
 	UT_uint32				m_remapBufferSize;
 	UT_UCS2Char*				m_remapIndices;
-
-#ifndef USE_LAYOUT_UNITS
-	static UT_sint32*       s_pCharAdvances;
-	static UT_uint32        s_iCharAdvancesSize;
-	static UT_uint32        s_iInstanceCount;
-#endif
 
 	UT_RGBColor				m_curColor;
 	UT_Vector				m_vSaveRect;

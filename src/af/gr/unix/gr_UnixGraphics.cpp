@@ -43,68 +43,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
 
-#if 0
-/* XPM */
-static char * cursor_select_vline_xpm[] = {
-"24 24 2 1",
-" 	c None",
-".	c #000000",
-"                        ",
-"                        ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"     .....   .....      ",
-"     .....   .....      ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"        ..   ..         ",
-"                        ",
-"                        ",
-"                        "};
-
-/* XPM */
-static char * cursor_select_hline_xpm[] = {
-"24 24 2 1",
-" 	c None",
-".	c #000000",
-"                        ",
-"                        ",
-"                        ",
-"                        ",
-"                        ",
-"                        ",
-"           ..           ",
-"           ..           ",
-"           ..           ",
-"   ..................   ",
-"   ..................   ",
-"                        ",
-"                        ",
-"                        ",
-"   ..................   ",
-"   ..................   ",
-"           ..           ",
-"           ..           ",
-"           ..           ",
-"                        ",
-"                        ",
-"                        ",
-"                        ",
-"                        "};
-#endif
-
 static UT_uint32 adobeSUni[/*185*/][2] =
 	{
 		{32,32},
@@ -542,7 +480,6 @@ void GR_UnixGraphics::setLineProperties ( double inWidth,
 								 mapJoinStyle ( inJoinStyle ) ) ;
 }
 
-#ifndef WITH_PANGO
 void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_uint32 iChar = Char;
@@ -553,39 +490,6 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 	}
 	// FIXME ascent in wrong unit
 	XftDrawGlyphs(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(xoff + m_iXoff), tdu(m_pXftFontL->ascent * getResolution() / s_getDeviceResolution() + yoff + m_iYoff), &iChar, 1);
-#else
-	UT_UCSChar Wide_char = remapGlyph(Char, false);
-	if(Wide_char == 0x200B || Wide_char == 0xFEFF) //zero width spaces
-		return;
-
-	GdkFont *font = XAP_EncodingManager::get_instance()->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
-
-	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
-	{
-		/*  if the locale is unicode (i.e., UTF-8) then we do not want
-			to convert the UCS string to anything,
-			gdk_draw_text can draw 16-bit string, if the font is
-			a matrix; however, the byte ordering is interpreted as big-endian
-		*/
-		if(isFontUnicode(font))
-		{
-			LE2BE16((&Wide_char),(&Wide_char)) //declared in ut_endian.h
-				gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+tlu(font->ascent),reinterpret_cast<gchar*>(&Wide_char),2);
-		}
-		else
-		{
-			//non-unicode font, Wide char is guaranteed to be <= 0xff
-			gchar gc = static_cast<gchar>(Wide_char);
-			gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+tlu(font->ascent),static_cast<gchar*>(&gc),1);
-		}
-	}
-	else
-	{
-		WCTOMB_DECLS;
-		CONVERT_TO_MBS(Wide_char);
-		gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+tlu(font->ascent),m_text,m_text_length);
-	}
-#endif
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,

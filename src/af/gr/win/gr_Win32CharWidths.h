@@ -21,6 +21,7 @@
 #define GR_WIN32CHARWIDTHS_H
 
 #include "gr_CharWidths.h"
+class GR_Graphics;
 
 //////////////////////////////////////////////////////////////////
 // the only reason that we subclass is because Win32 provides a
@@ -29,7 +30,7 @@
 class GR_Win32CharWidths : public GR_CharWidths
 {
 public:
-	void			setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1);
+	void  setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1, GR_Graphics * pGr);
 };
 
 #endif /* GR_WIN32CHARWIDTHS_H */
