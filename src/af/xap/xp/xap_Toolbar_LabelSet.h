@@ -34,7 +34,5 @@
 class EV_Toolbar_LabelSet;
 
 EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage);
-UT_uint32 AP_GetToolbarLabelSetLanguageCount(void);
-const char * AP_GetNthToolbarLabelLanguageName(UT_uint32 ndx);
 
 #endif /* XAP_TOOLBAR_LABELSET_H */

@@ -22,95 +22,10 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ev_Toolbar_Labels.h"
+#include "xap_App.h"
 #include "xap_Toolbar_ActionSet.h"
 #include "ap_Toolbar_Id.h"
-#include "xap_EncodingManager.h"
-
-/*****************************************************************
-******************************************************************
-** Here we begin a little CPP magic to load labels for each
-** language.  It is important that all of the ...LabelSet_*.h files
-** allow themselves to be included more than one time.
-******************************************************************
-*****************************************************************/
-
-#define BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,Encoding)										\
-	static EV_Toolbar_LabelSet * _ap_CreateLabelSet_##Language##Locale(void)					\
-	{	\
-		EV_Toolbar_LabelSet * pLabelSet;														\
-		if (UT_strcmp(#Language#Locale, "enUS") == 0)										\
-			pLabelSet = new EV_Toolbar_LabelSet(#Language"-"#Locale,AP_TOOLBAR_ID__BOGUS1__,AP_TOOLBAR_ID__BOGUS2__);	\
-		else \
-		{	\
-			pLabelSet = _ap_CreateLabelSet_enUS(); \
-			pLabelSet->setLanguage(#Language"-"#Locale); \
-		} \
-		UT_ASSERT(pLabelSet);											\
-		char* encoding = (Encoding);										\
-		char namebuf[2000], tooltipbuf[2000], statusmsgbuf[2000];
-
-#define BeginSet(Language,Locale,bIsDefaultSetForLanguage) \
-		BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,"")
-	
-#define ToolbarLabel(id,szName,iconName,szToolTip,szStatusMsg)									\
-		pLabelSet->setLabel((id),											\
-			XAP_EncodingManager::get_instance()->strToNative((szName),encoding,namebuf,sizeof(namebuf)),(#iconName),	\
-			XAP_EncodingManager::get_instance()->strToNative((szToolTip),encoding,tooltipbuf,sizeof(tooltipbuf),true),		\
-			XAP_EncodingManager::get_instance()->strToNative((szStatusMsg),encoding,statusmsgbuf,sizeof(statusmsgbuf))	\
-		);
-			
-#define EndSet()																				\
-		return pLabelSet;																		\
-	}
-
-
-#include "ap_TB_LabelSet_Languages.h"
-
-#undef BeginSet
-#undef BeginSetEnc
-#undef ToolbarLabel
-#undef EndSet
-
-/*****************************************************************
-******************************************************************
-** Here we begin a little CPP magic to construct a table of
-** language names and function pointers to the constructor
-** for that language.
-******************************************************************
-*****************************************************************/
-
-typedef EV_Toolbar_LabelSet * (*ap_CreateLabelSet_pFn)(void);
-
-struct _lt
-{
-	const char *				m_name;
-	ap_CreateLabelSet_pFn		m_fn;
-	bool						m_bIsDefaultSetForLanguage;
-};
-
-#define BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,Encoding)	{ #Language"-"#Locale, _ap_CreateLabelSet_##Language##Locale, bIsDefaultSetForLanguage },
-#define BeginSet(Language,Locale,bIsDefaultSetForLanguage) \
-		BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,"")
-#define ToolbarLabel(id,szName,iconName,szToolTip,szStatusMsg)	/*nothing*/
-#define EndSet()												/*nothing*/
-
-static struct _lt s_ltTable[] =
-{
-
-#include "ap_TB_LabelSet_Languages.h"
-	
-};
-
-#undef BeginSet
-#undef BeginSetEnc
-#undef ToolbarLabel
-#undef EndSet
-
-/*****************************************************************
-******************************************************************
-** Put it all together and have a "load LabelSet by Language"
-******************************************************************
-*****************************************************************/
+#include "ap_Strings.h"
 
 EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage_)
 {
@@ -118,46 +33,30 @@ EV_Toolbar_LabelSet * AP_CreateToolbarLabelSet(const char * szLanguage_)
 	strcpy(buf,szLanguage_ ? szLanguage_ : "");
 	char* szLanguage = buf;
 
+	/* remove encoding part from locale name */
 	char* dot = strrchr(szLanguage,'.');
 	if (dot)
-		*dot = '\0'; /* remove encoding part from locale name */
-
-	if (szLanguage && *szLanguage)
 	{
-		UT_uint32 k;
-		
-		for (k=0; k<NrElements(s_ltTable); k++)
-			if (UT_stricmp(szLanguage,s_ltTable[k].m_name)==0)
-				return (s_ltTable[k].m_fn)();
-
-		// if we didn't find an exact match (Language and Locale),
-		// try finding the default set for this language.
-
-		char * dash = strchr(szLanguage, '-');
-		int len = (dash ? dash - szLanguage : 2);
-
-		for (k=0; k<NrElements(s_ltTable); k++)
-			if (   (UT_strnicmp(szLanguage,s_ltTable[k].m_name,len)==0)
-				&& (s_ltTable[k].m_bIsDefaultSetForLanguage))
-				return (s_ltTable[k].m_fn)();
+		*dot = '\0'; 
 	}
+
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-	// we fall back to en-US if they didn't give us a valid language name.
+	EV_Toolbar_LabelSet * pLabelSet = new EV_Toolbar_LabelSet(szLanguage,AP_TOOLBAR_ID__BOGUS1__,AP_TOOLBAR_ID__BOGUS2__);
+	UT_String iconname;
 	
-	return _ap_CreateLabelSet_enUS();
+	#define toolbaritem(id) \
+		iconname = #id; \
+		iconname += "_"; \
+		iconname += szLanguage; \
+		pLabelSet->setLabel(	(AP_TOOLBAR_ID_##id), \
+								iconname.c_str(), \
+								pSS->getValue(AP_STRING_ID_TOOLBAR_LABEL_##id), \
+								pSS->getValue(AP_STRING_ID_TOOLBAR_TOOLTIP_##id), \
+								pSS->getValue(AP_STRING_ID_TOOLBAR_STATUSLINE_##id) );
+		#include "ap_Toolbar_Id_List.h"
+	#undef toolbaritem
+	return pLabelSet;
 }
-
-UT_uint32 AP_GetToolbarLabelSetLanguageCount(void)
-{
-	return NrElements(s_ltTable);
-}
-
-const char * AP_GetNthToolbarLabelLanguageName(UT_uint32 ndx)
-{
-	UT_ASSERT(ndx < NrElements(s_ltTable));
-
-	return s_ltTable[ndx].m_name;
-}
-
 
 

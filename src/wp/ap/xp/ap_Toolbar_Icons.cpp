@@ -58,6 +58,29 @@ static struct _it s_itTable[] =
 
 /*****************************************************************
 ******************************************************************
+** Here we begin a little CPP magic to construct a table of
+** the icon IDs to iconnames.
+******************************************************************
+*****************************************************************/
+struct _im
+{
+	const char *	m_id;
+	const char *	m_iconname;
+};
+
+#define toolbariconmap(id,name)	{#id, #name},
+
+static struct _im s_imTable[] =
+{
+		
+#include "ap_Toolbar_Iconmap.h"
+
+};
+
+#undef toolbariconmap
+
+/*****************************************************************
+******************************************************************
 ** With the tables fully loaded, now define the class.
 ******************************************************************
 *****************************************************************/
@@ -70,26 +93,72 @@ AP_Toolbar_Icons::~AP_Toolbar_Icons(void)
 {
 }
 
-bool AP_Toolbar_Icons::_findIconDataByName(const char * szName,
+bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
 											  const char *** pIconData,
 											  UT_uint32 * pSizeofData)
 {
 	// This is a static function.
+	if (!szID || !*szID )
+		return false;
+	
+	bool bIDFound = false;
+	UT_uint32 m;
+	UT_uint32 mLimit = NrElements(s_imTable);
 
-	if (!szName || !*szName || (UT_stricmp(szName,"NoIcon")==0))
+	// Search the map for overloaded ID_LANG to iconname
+	for (m=0; m < mLimit; m++)
+	{
+		if (UT_stricmp(szID, s_imTable[m].m_id ) == 0)
+		{
+			bIDFound = true;
+			break;
+		}
+	}
+
+	// Search the toolbariconmap for ID to iconname
+	if( !bIDFound )
+	{
+		// Get BaseID from szId
+		char buf[300];
+		strcpy(buf,szID);
+		char * szBaseID = buf;
+		UT_uint32 length = strlen(szBaseID);
+		length -= 6; // removal of language ID _xx-XX
+		if (length < 0 )
+				return false;
+		szBaseID[length] = '\0';
+				
+		for (m=0; m < mLimit; m++)
+		{
+			if (UT_stricmp(szBaseID, s_imTable[m].m_id ) == 0)
+			{
+				bIDFound = true;
+				break;
+			}
+		}		
+	}
+
+	if( !bIDFound )
+		return false;
+
+	if( UT_stricmp(s_imTable[m].m_iconname,"NoIcon") == 0)
 		return false;
 	
 	UT_uint32 kLimit = NrElements(s_itTable);
 	UT_uint32 k;
 
+	// Search to match icon name with data
 	for (k=0; k < kLimit; k++)
-		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
+	{
+		if (UT_stricmp(s_imTable[m].m_iconname,s_itTable[k].m_name) == 0)
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;
 			return true;
 		}
+	}
 
+	// Not found - no icon available.
 	return false;
 }
 
