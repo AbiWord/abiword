@@ -1231,10 +1231,29 @@ PT_DocPosition FV_View::saveSelectedImage (const char * toFile )
 		UT_Vector vBlock;
 		getBlocksInSelection( &vBlock);
 		UT_uint32 i=0;
-		for(i=0; (i< vBlock.getItemCount()) && !bFoundImage; i++)
+		UT_uint32 count = vBlock.getItemCount();
+		fl_BlockLayout * pBlock = NULL; 
+		for(i=0; (i< count) && !bFoundImage; i++)
 		{
-			fl_BlockLayout * pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
-			pRun = pBlock->getFirstRun();
+			if(i==0)
+			{
+				if(getPoint() < m_iSelectionAnchor)
+				{
+					pos = getPoint();
+				}
+				pBlock = _findBlockAtPosition(pos);
+				UT_sint32 x,y,x2,y2,height;
+				bool bEOL = false;
+				bool bDirection;
+				pRun = pBlock->findPointCoords(pos,bEOL,x,y,x2,y2,
+												  height,bDirection);
+			}
+			else
+			{
+				pBlock = (fl_BlockLayout *) vBlock.getNthItem(i);
+				pRun = pBlock->getFirstRun();
+			}
+
 			while(pRun && pRun->getType() != FPRUN_IMAGE)
 			{
 				pRun = pRun->getNext();
