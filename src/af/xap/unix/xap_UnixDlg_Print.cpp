@@ -386,9 +386,12 @@ void XAP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	    
 	    m_persistPrintDlg.colorSpace = GR_Graphics::GR_COLORSPACE_COLOR;
 	    
-	    UT_cloneString(m_persistPrintDlg.szPrintCommand, "lpr");
+		 //UT_cloneString(m_persistPrintDlg.szPrintCommand, "lpr");
 	  }
-	
+	// Force the print command to default to "lpr" every time the print dialog is invoked.
+	// The mechanism for keeping persistant data seems to be broken.
+	UT_cloneString(m_persistPrintDlg.szPrintCommand, "lpr");
+
 	// Turn some widgets on or off based on settings
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonPrint), !m_persistPrintDlg.bDoPrintToFile);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonFile), m_persistPrintDlg.bDoPrintToFile);
