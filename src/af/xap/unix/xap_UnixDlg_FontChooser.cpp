@@ -200,12 +200,9 @@ static void s_select_row_size(GtkWidget * /* widget */,
 	dlg->sizeRowChanged();
 }
 
-static gint s_drawing_area_expose(GtkWidget * w,
-								  GdkEventExpose * /* pExposeEvent */)
+static gboolean do_update(gpointer p)
 {
-	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
-		                              gtk_object_get_user_data(GTK_OBJECT(w));
-
+	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *) p;
 //
 // Look if updates are blocked and quit if they are.
 //
@@ -213,6 +210,15 @@ static gint s_drawing_area_expose(GtkWidget * w,
 		return FALSE;
 	dlg->updatePreview();
 	return FALSE;
+}
+
+static gboolean s_drawing_area_expose(GtkWidget * w,
+								  GdkEventExpose * /* pExposeEvent */)
+{
+	XAP_UnixDialog_FontChooser * dlg = (XAP_UnixDialog_FontChooser *)
+		                              gtk_object_get_user_data(GTK_OBJECT(w));
+	gtk_idle_add((GtkFunction ) do_update,(gpointer) dlg);
+	return TRUE;
 }
 
 static void s_underline_toggled(GtkWidget * w,  XAP_UnixDialog_FontChooser * dlg)
