@@ -20,8 +20,6 @@
  * 02111-1307, USA.
  */
 
-#undef GTK_DISABLE_DEPRECATED
-
 #include <string.h>
 
 #include "abiwidget.h"
@@ -41,9 +39,6 @@
 #include "ut_sleep.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
-
-
-static UT_Vector vecAbi;
 
 /**************************************************************************/
 /**************************************************************************/
@@ -539,14 +534,7 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	{
 		return false;
 	}
-#ifdef LOGFILE
-	UT_uint32 j =0;
-	for(j=0; j<vecAbi.getItemCount(); j++)
-	{
-		AbiWidget * pAbi = (AbiWidget *) vecAbi.getNthItem(j);
-		fprintf(getlogfile(),"Refcount abi %d is %d at next file load \n",j,G_OBJECT(pAbi)->ref_count);
-	}
-#endif
+
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
 		return false;
@@ -1219,12 +1207,12 @@ abiwidget_remove (GtkContainer *container,
 // Needed for the gtkbin class
 //
 static GtkType
-abiwidget_child_type  (GtkContainer     *container)
+abiwidget_child_type (GtkContainer *container)
 {
   if (!GTK_BIN (container)->child)
     return GTK_TYPE_WIDGET;
   else
-    return GTK_TYPE_NONE;
+    return G_TYPE_NONE;
 }
 
 static void
@@ -1578,7 +1566,6 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	container_class->add = abiwidget_add;
 	container_class->remove = abiwidget_remove;
 	container_class->child_type = abiwidget_child_type;
-
 
 	// AbiWidget's master "invoke" method
 	abi_class->invoke    = abi_widget_invoke;
@@ -2373,7 +2360,6 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 #ifdef LOGFILE
 	fprintf(getlogfile(),"AbiWidget Constructed %x \n",abi);
 #endif
-	vecAbi.addItem((void *) abi);
 }
 
 /**************************************************************************/
@@ -2445,26 +2431,26 @@ abi_widget_turn_on_cursor(AbiWidget * abi)
 	}
 }
 
-extern "C" GtkType
+extern "C" GType
 abi_widget_get_type (void)
 {
-	// boilerplate code
-
-	static GtkType abi_type = 0;
+	static GType abi_type = 0;
 
 	if (!abi_type){
-		GtkTypeInfo info = {
-			"AbiWidget",
-			sizeof (AbiWidget),
+		GTypeInfo info = {
 			sizeof (AbiWidgetClass),
-			reinterpret_cast<GtkClassInitFunc>(abi_widget_class_init),
-			reinterpret_cast<GtkObjectInitFunc>(abi_widget_init),
-			NULL, /* reserved 1 */
-			NULL, /* reserved 2 */
-			static_cast<GtkClassInitFunc>(NULL)
+			NULL,
+			NULL,
+			(GClassInitFunc)abi_widget_class_init,
+			NULL,
+			NULL,
+			sizeof(AbiWidget),
+			0,
+			(GInstanceInitFunc)abi_widget_init,
 		};
 		
-		abi_type = gtk_type_unique (gtk_bin_get_type (), &info);
+		abi_type = g_type_register_static (gtk_bin_get_type (), "AbiWidget",
+										   &info, (GTypeFlags)0);
 	}
 	
 	return abi_type;
@@ -2480,7 +2466,7 @@ abi_widget_new (void)
 {
 	AbiWidget * abi;
 
-	abi = static_cast<AbiWidget *>(gtk_type_new (abi_widget_get_type ()));
+	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
 	abi_widget_construct (abi, 0, NULL);
 
 	return GTK_WIDGET (abi);
@@ -2501,7 +2487,7 @@ abi_widget_new_with_file (const gchar * file)
 
 	g_return_val_if_fail (file != 0, 0);
 
-	abi = static_cast<AbiWidget *>(gtk_type_new (abi_widget_get_type ()));
+	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
 	abi_widget_construct (abi, file,NULL);
 
 	return GTK_WIDGET (abi);
@@ -2519,7 +2505,7 @@ abi_widget_new_with_app (AP_UnixApp * pApp)
 
 	g_return_val_if_fail (pApp != 0, 0);
 
-	abi = static_cast<AbiWidget *>(gtk_type_new (abi_widget_get_type ()));
+	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
 	abi_widget_construct (abi, 0, pApp);
 
 	return GTK_WIDGET (abi);
@@ -2542,7 +2528,7 @@ abi_widget_new_with_app_file (AP_UnixApp * pApp, const gchar * file)
 	g_return_val_if_fail (file != 0, 0);
 	g_return_val_if_fail (pApp != 0, 0);
 
-	abi = static_cast<AbiWidget *>(gtk_type_new (abi_widget_get_type ()));
+	abi = static_cast<AbiWidget *>(g_object_new (abi_widget_get_type (), NULL));
 	abi_widget_construct (abi, file, pApp);
 
 	return GTK_WIDGET (abi);
