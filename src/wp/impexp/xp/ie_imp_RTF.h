@@ -338,6 +338,20 @@ private:
 	RTF_msword97_list* m_pList;
 };
 
+struct ABI_EXPORT RTFProps_ImageProps
+{
+	enum IPSizeType { ipstNone, ipstGoal, ipstScale };
+	
+	RTFProps_ImageProps ();
+	IPSizeType sizeType;
+	UT_uint32 wGoal;
+	UT_uint32 hGoal;
+	UT_uint16 scaleX;
+	UT_uint16 scaleY;
+	UT_uint32 width;
+	UT_uint32 height;
+};
+
 // Section properties
 struct ABI_EXPORT RTFProps_SectionProps
 {
@@ -487,8 +501,10 @@ private:
 	bool SkipCurrentGroup(bool bConsumeLastBrace = false);
 	bool StuffCurrentGroup(UT_ByteBuf & buf);
 	bool CanHandlePictFormat(PictFormat format);
-	bool LoadPictData(PictFormat format, char * image_name);
-	bool InsertImage (const UT_ByteBuf * buf, const char * image_name);
+	bool LoadPictData(PictFormat format, char * image_name, 
+					  struct RTFProps_ImageProps & imgProps);
+	bool InsertImage (const UT_ByteBuf * buf, const char * image_name,
+					  const struct RTFProps_ImageProps & imgProps);
 	
 	RTFFontTableItem* GetNthTableFont(UT_uint32 fontNum);
 	UT_uint32 GetNthTableColour(UT_uint32 colNum);

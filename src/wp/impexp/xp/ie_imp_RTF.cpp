@@ -27,6 +27,8 @@
 #include <stddef.h>
 #include <ctype.h>
 #include <math.h>
+#include <locale.h>
+
 #include "ut_iconv.h"
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -1171,6 +1173,14 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 }
 
 
+RTFProps_ImageProps::RTFProps_ImageProps()
+{
+	sizeType = ipstNone;
+	wGoal = hGoal = width = height = 0;
+	scaleX = scaleY = 0;
+};
+
+
 RTFProps_SectionProps::RTFProps_SectionProps()
 {
 	m_numCols = 1;
@@ -1910,6 +1920,7 @@ bool IE_Imp_RTF::CanHandlePictFormat(PictFormat format)
   Load the picture data
   \param format the Picture Format.
   \param image_name the name of the image. Must be unique.
+  \param imgProps the RTF properties for the image.
   \return true if success, otherwise false.
   \desc Load the picture data from the flow. Will move the file position
   and assume proper RTF file structure. It will take care of inserting
@@ -1918,7 +1929,8 @@ bool IE_Imp_RTF::CanHandlePictFormat(PictFormat format)
   as we might have to handle binary data as well
   \see IE_Imp_RTF::HandlePicture
 */
-bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
+bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name,
+							  struct RTFProps_ImageProps & imgProps)
 {
 	// first, we load the actual data into a buffer
 	bool ok;
@@ -2003,7 +2015,8 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 
 		UT_ByteBuf * buf;
 		buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-
+		imgProps.width = static_cast<FG_GraphicRaster *>(pFG)->getWidth ();
+		imgProps.height = static_cast<FG_GraphicRaster *>(pFG)->getHeight ();
 		// Not sure whether this is the right way, but first, we should
 		// insert any pending chars
 		if (!FlushStoredChars(true))
@@ -2013,7 +2026,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 			return false;
 		} 
 
-		ok = InsertImage (buf, image_name);
+		ok = InsertImage (buf, image_name, imgProps);
 		if (!ok) 
 		{
 			delete pictData;
@@ -2031,23 +2044,69 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, char * image_name)
 
 
 /*!
+  \param buf the buffer the image content is in.
+  \param image_name the image name inside the XML file or the piecetable.
+  \param imgProps the RTF image properties.
+  \return true is successful.
   Insert and image at the current position. 
   Check whether we are pasting or importing
  */
-bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name)
+bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
+							  const struct RTFProps_ImageProps & imgProps)
 {
 	if ((m_pImportFile != NULL) || (m_parsingHdrFtr))
 	{	
 		// non-null file, we're importing a doc
 		// Now, we should insert the picture into the document
+		XML_Char propBuffer [1024];
+		double wInch = 0.0f; 
+		double hInch = 0.0f;
+		bool resize = false;
 		
 		const char * mimetype = NULL;
 		mimetype = UT_strdup("image/png");
-		
-		const XML_Char* propsArray[3];
+
+		switch (imgProps.sizeType)
+		{
+		case RTFProps_ImageProps::ipstGoal:
+			UT_DEBUGMSG (("Goal\n"));
+			resize = true;
+			wInch = (double)imgProps.wGoal / 1440.0f;
+			hInch = (double)imgProps.hGoal / 1440.0f;
+			break;
+		case RTFProps_ImageProps::ipstScale:
+			UT_DEBUGMSG (("Scale: x=%d, y=%d, w=%d, h=%d\n", imgProps.scaleX, imgProps.scaleY, imgProps.width, imgProps.height));
+			resize = true;
+			wInch = (((double)imgProps.scaleX / 100.0f) * imgProps.width);
+			hInch = (((double)imgProps.scaleY / 100.0f) * imgProps.height);
+			break;
+		default:
+			resize = false;
+			break;
+		}
+
+		if (resize) {
+			UT_DEBUGMSG (("resizing...\n"));
+			setlocale(LC_NUMERIC, "C");
+			sprintf(propBuffer, "width:%fin; height:%fin", 
+					wInch, hInch);
+			setlocale(LC_NUMERIC, "");
+			UT_DEBUGMSG (("props are %s\n", propBuffer));
+		}
+
+		const XML_Char* propsArray[5];
 		propsArray[0] = (XML_Char *)"dataid";
 		propsArray[1] = (XML_Char *) image_name;
-		propsArray[2] = NULL;
+		if (resize) 
+		{
+			propsArray[2] = (XML_Char *)"props";
+			propsArray[3] = propBuffer;
+			propsArray[4] = NULL;
+		}
+		else 
+		{
+			propsArray[2] = NULL;
+		}
 		
 		if (!getDoc()->appendObject(PTO_Image, propsArray)) 
 		{
@@ -2137,6 +2196,7 @@ bool IE_Imp_RTF::HandlePicture()
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	long parameter = 0;
 	bool parameterUsed = false;
+	RTFProps_ImageProps imageProps;
 
 	do {
 		if (!ReadCharFromFile(&ch))
@@ -2160,6 +2220,54 @@ bool IE_Imp_RTF::HandlePicture()
 			else if (strcmp((char *)keyword, "jpegblip") == 0)
 			{
 				format = picJPEG;
+			}
+			else if (strcmp((char *)keyword, "picwgoal") == 0) 
+			{
+				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
+					|| (imageProps.sizeType == RTFProps_ImageProps::ipstGoal)) 
+				{
+					if (parameterUsed) 
+					{
+						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
+						imageProps.wGoal = parameter;
+					}
+				}
+			}
+			else if (strcmp((char *)keyword, "pichgoal") == 0) 
+			{
+				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
+					|| (imageProps.sizeType == RTFProps_ImageProps::ipstGoal)) 
+				{
+					if (parameterUsed) 
+					{
+						imageProps.sizeType = RTFProps_ImageProps::ipstGoal;
+						imageProps.hGoal = parameter;
+					}
+				}
+			}
+			else if (strcmp((char *)keyword, "picscalex") == 0) 
+			{
+				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
+					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale)) 
+				{
+					if (parameterUsed) 
+					{
+						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
+						imageProps.scaleX = parameter;
+					}
+				}
+			}
+			else if (strcmp((char *)keyword, "picscaley") == 0) 
+			{
+				if ((imageProps.sizeType == RTFProps_ImageProps::ipstNone) 
+					|| (imageProps.sizeType == RTFProps_ImageProps::ipstScale)) 
+				{
+					if (parameterUsed) 
+					{
+						imageProps.sizeType = RTFProps_ImageProps::ipstScale;
+						imageProps.scaleY = parameter;
+					}
+				}
 			}
 			break;
 		case '{':
@@ -2190,7 +2298,7 @@ bool IE_Imp_RTF::HandlePicture()
 
 				// the first char belongs to the picture too
 				SkipBackChar(ch);
-				LoadPictData(format, image_name);
+				LoadPictData(format, image_name, imageProps);
 			}
 			else 
 			{
@@ -2623,11 +2731,12 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 					// load file to buffer
 					if (error == UT_OK) 
 					{
+						RTFProps_ImageProps imgProps;
 						error = pGraphicImporter->importGraphic(fileName, &pFG);
 						DELETEP(pGraphicImporter);
 						UT_ByteBuf * buf;
 						buf = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-						ok = InsertImage (buf, fileName);
+						ok = InsertImage (buf, fileName, imgProps);
 					}
 					else 
 					{
@@ -3277,6 +3386,12 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						else if( strcmp((char*)keyword_star,"listtag") == 0)
 						{ 
 							return HandleListTag(parameter_star);
+						}
+						else if (strcmp((char*)keyword_star,"shppict") == 0)
+						{
+							UT_DEBUGMSG (("ignoring shppict\n"));
+							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
 						}
 					}
 				}
