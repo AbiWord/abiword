@@ -46,7 +46,21 @@ cat >${DESTDIR}${LIBEXECDIR}/${PROGRAM_NAME} <<EOF
 # from abi/src/pkg/common/unix/scripts/makewrapper.sh.
 
 #currentFonts=\`xset q | grep Abi\`
+EOF
 
+# On SunOS (Solaris), set the library path to contain /usr/local/lib
+# where gtk and other support libraries supposedly lies.
+# See bug 1739 <http://bugzilla.abisource.com/show_bug.cgi?id=1739>
+if [ `uname` = "SunOS" ]
+then
+	cat >>${DESTDIR}${LIBEXECDIR}/${PROGRAM_NAME} <<EOF
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+export LD_LIBRARY_PATH
+
+EOF
+fi
+
+cat >>${DESTDIR}${LIBEXECDIR}/${PROGRAM_NAME} <<EOF
 # Change this if you move the AbiSuite tree.
 ABISUITE_HOME=$INSTALL_BASE
 export ABISUITE_HOME
