@@ -84,7 +84,7 @@
 #define WP_PARAGRAPH_GROUP_JUSTIFICATION_RESERVED 5
 
 // Character properties
-class WordPerfectTextAttributes
+class ABI_EXPORT WordPerfectTextAttributes
 {
  public:
 
