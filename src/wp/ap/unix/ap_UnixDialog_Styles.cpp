@@ -885,7 +885,7 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 	else
 		gtk_window_set_title (GTK_WINDOW (modifyDialog), pSS->getValue(AP_STRING_ID_DLG_Styles_NewTitle));
 	gtk_window_set_policy (GTK_WINDOW (modifyDialog), TRUE, TRUE, FALSE);
-	_constructModifyDialogContents(modifyDialog);
+	_constructModifyDialogContents(GTK_DIALOG (modifyDialog)->vbox);
 
 	dialog_action_area = GTK_DIALOG (modifyDialog)->action_area;
 	gtk_widget_show (dialog_action_area);
@@ -899,10 +899,11 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 //
 	_connectModifySignals();
 
+	m_wModifyDialog = modifyDialog;
 	return modifyDialog;
 }
 
-void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDialog)
+void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container)
 {
 
 	GtkWidget *dialog_vbox1 = NULL;
@@ -930,7 +931,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	GtkWidget *deletePropButton = NULL;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	dialog_vbox1 = GTK_DIALOG (modifyDialog)->vbox;
+	dialog_vbox1 = container;
 	gtk_widget_show (dialog_vbox1);
 
 	OverallVbox = gtk_vbox_new (FALSE, 0);
@@ -1098,13 +1099,12 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * modifyDia
 	m_wStyleNameEntry = styleNameEntry;
 	m_wBasedOnCombo = basedOnCombo;
 	m_wBasedOnEntry = basedOnEntry;
-    m_wFollowingCombo = followingCombo;
+	m_wFollowingCombo = followingCombo;
 	m_wFollowingEntry = followingEntry;
 	m_wStyleTypeCombo = styleTypeCombo;
 	m_wStyleTypeEntry = styleTypeEntry;
 	m_wModifyDrawingArea = modifyDrawingArea;
 	m_wLabDescription = DescriptionText;
-	m_wModifyDialog = modifyDialog;
 	m_wDeletePropCombo = deletePropCombo;
 	m_wDeletePropEntry = deletePropEntry;
 	m_wDeletePropButton = deletePropButton;
@@ -1281,6 +1281,21 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 
 void AP_UnixDialog_Styles::event_Modify_OK(void)
 {
+  const char * text = gtk_entry_get_text (GTK_ENTRY (m_wStyleNameEntry));
+
+  if (!text || !strlen (text))
+    {
+      // error message!
+      const XAP_StringSet * pSS = m_pApp->getStringSet ();
+      const char * msg = pSS->getValue (AP_STRING_ID_DLG_Styles_ErrBlackName);
+
+      getFrame()->showMessageBox ((const char *)msg,
+				  XAP_Dialog_MessageBox::b_O,
+				  XAP_Dialog_MessageBox::a_OK);
+
+      return;
+    }
+
 	// TODO save out state of radio items
 	m_answer = AP_Dialog_Styles::a_OK;
 	gtk_main_quit();

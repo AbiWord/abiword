@@ -37,6 +37,9 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+#include "xap_Frame.h"
+#include "ap_Strings.h"
+
 #define X_CheckError(v)			do { if (!(v)) return 1; } while (0)
 
 //
@@ -365,7 +368,19 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 
 // TODO: DOM: *actually define these*
 #define GetPassword() NULL
-#define ErrorMessage(x)
+
+#define ErrorMessage(x) do { XAP_Frame *_pFrame = m_pDocument->getApp()->getLastFocussedFrame(); _errorMessage (_pFrame, (x)); } while (0)
+
+static void _errorMessage (XAP_Frame * pFrame, int id)
+{
+  const XAP_StringSet * pSS = XAP_App::getApp ()->getStringSet ();
+
+  const char * text = pSS->getValue (id);
+
+  pFrame->showMessageBox (text,
+			  XAP_Dialog_MessageBox::b_O,
+			  XAP_Dialog_MessageBox::a_OK);
+}
 
 UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 {
@@ -386,7 +401,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 		ret = 0;
 		if (password == NULL)
 		  {
-		    ErrorMessage("Password required, this is an encrypted document\n");
+		    ErrorMessage(AP_STRING_ID_WORD_PassRequired);
 		    ErrCleanupAndExit(UT_IE_PROTECTED);
 		  }
 		else
@@ -394,7 +409,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 		    wvSetPassword (password, &ps);
 		    if (wvDecrypt97 (&ps))
 		      {
-			ErrorMessage("Incorrect Password\n");
+			ErrorMessage(AP_STRING_ID_WORD_PassInvalid);
 			ErrCleanupAndExit(UT_IE_PROTECTED);
 		      }
 		  }
@@ -404,7 +419,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 		ret = 0;
 		if (password == NULL)
 		  {
-		    ErrorMessage("Password required, this is an encrypted document\n");
+		    ErrorMessage(AP_STRING_ID_WORD_PassRequired);
 		    ErrCleanupAndExit(UT_IE_PROTECTED);
 		  }
 		else

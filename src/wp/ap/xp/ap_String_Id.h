@@ -161,6 +161,7 @@ dcl(DLG_Styles_ErrNoStyle,       "No Style selected \n so it cannot be modified"
 dcl(DLG_Styles_ErrStyleNot,      "This style does not exist \n so it cannot be modified")
 dcl(DLG_Styles_ErrStyleBuiltin, "Cannot modify a builtin style")
 dcl(DLG_Styles_ErrStyleCantDelete, "Cannot delete this style")
+dcl(DLG_Styles_ErrBlackName, "Style name cannot be left blank")
 
 
 /* Paragraph dialog */
@@ -486,6 +487,9 @@ dcl(DLG_Background_Title, "Change Background Color")
 dcl(DLG_Background_ClearClr, "Clear Background Color")
 
 dcl(MSG_EmptySelection, "Current Selection is Empty")
+
+dcl(WORD_PassRequired, "Password required, this is an encrypted document")
+dcl(WORD_PassInvalid, "Incorrect Password")
 
      /* below are autotext defaults */
 

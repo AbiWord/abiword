@@ -83,3 +83,42 @@ GtkWidget * AP_UnixGnomeDialog_Styles::_constructWindow(void)
 	setDefaultButton (GNOME_DIALOG(windowStyles), 1);
 	return windowStyles;
 }
+
+void   AP_UnixGnomeDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_action_area)
+{
+	GtkWidget *bottomButtons;
+	GtkWidget *buttonOK;
+	GtkWidget *cancelButton;
+	GtkWidget *FormatMenu;
+	GtkWidget *shortCutButton;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	bottomButtons = gtk_hbox_new (TRUE, 5);
+	gtk_widget_show (bottomButtons);
+	gtk_box_pack_start (GTK_BOX (dialog_action_area), bottomButtons, TRUE, TRUE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (bottomButtons), 3);
+	
+	buttonOK = gnome_stock_button ( GNOME_STOCK_BUTTON_OK );
+	gtk_widget_show (buttonOK);
+	gtk_box_pack_start (GTK_BOX (bottomButtons), buttonOK, TRUE, TRUE, 0);
+
+	cancelButton = gnome_stock_button ( GNOME_STOCK_BUTTON_CANCEL );
+	gtk_widget_show (cancelButton);
+	gtk_box_pack_start (GTK_BOX (bottomButtons), cancelButton, TRUE, TRUE, 0);
+
+	FormatMenu = gtk_option_menu_new ();
+	gtk_widget_show (FormatMenu);
+	gtk_box_pack_start (GTK_BOX (bottomButtons), FormatMenu, FALSE, FALSE, 0);
+
+	_constructFormatList(FormatMenu);
+
+	shortCutButton = gtk_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyShortCut));
+	gtk_widget_show (shortCutButton);
+	gtk_box_pack_start (GTK_BOX (bottomButtons), shortCutButton, TRUE, TRUE, 0);
+
+	m_wModifyOk = buttonOK;
+	m_wModifyCancel = cancelButton;
+	m_wFormatMenu = FormatMenu;
+	m_wModifyShortCutKey = shortCutButton;
+	
+}

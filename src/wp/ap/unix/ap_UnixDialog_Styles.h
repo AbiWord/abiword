@@ -127,8 +127,8 @@ protected:
 // Modify window
 /////////////////////////////////////////////////////////////////////////
 
-	GtkWidget * _constructModifyDialog(void);
-	void        _constructGnomeModifyButtons( GtkWidget * dialog_sction_area1);
+	virtual GtkWidget * _constructModifyDialog(void);
+	virtual void        _constructGnomeModifyButtons( GtkWidget * dialog_action_area1);
 	void        _constructFormatList(GtkWidget * FormatMenu);
 	void        _connectModifySignals(void);
 	void        _constructModifyDialogContents(GtkWidget * modifyDialog);

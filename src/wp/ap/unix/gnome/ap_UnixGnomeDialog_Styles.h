@@ -38,6 +38,7 @@ protected:
 
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
+	virtual void _constructGnomeModifyButtons( GtkWidget * dialog_action_area);
 };
 
 #endif /* AP_UnixGnomeDialog_Styles_H */
