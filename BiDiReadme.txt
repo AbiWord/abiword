@@ -33,11 +33,24 @@ the default direction (however, this change will only take place
 when a new document is created or AbiWord restarted).
 
 
+Known Issues
+------------
+* the direction flag of insertion point does not work correctly 
+  in all situations (e.g. end of line in progress, with last run
+  of a different direction than that of the paragraph)
+
+* Only single level of quoting works (i.e., if you have an English
+  paragraph with a Hebrew quote which in turn contains an English
+  quote, the text will not be displayed correctly, the English quote
+  will be treated as a continuation of the main text) -- we will provide
+  manual override to group the Hebrew quote together, one day.
+
+
 TECHNICAL NOTES
 ===============
 
-The BiDi Problem
-----------------
+Brief Introduction to the BiDi Problem
+--------------------------------------
 
 Let's say that the user inputs a string 'abcd XYZ UVW klm' where
 small letters represent text that is from left to right (ltr) while
@@ -59,8 +72,8 @@ is in AbiWord terminology called run. In BiDi mode, text in a run
 has to be also of consistent direction, with three possible options:
 ltr, rtl, and neutral. The last of these applies basically to whitespace,
 which derives its actual direction from the context. The direction of
-the run is worked out either automatically from the Unicode value of a
-character, or is indicated by the user if in manual mode.
+the run is worked out automatically from the Unicode value of a
+character, but can be overriden by the user.
 
 The heart of BiDi in AbiWord is built into fp_Line class (guess why?).
 Each run of text stores its direction, and this is used by the function
@@ -86,7 +99,9 @@ complicated than this introduction might lead you to believe. For instance
 the insertion point can appear on two places on the screen at the same time,
 because the the visual position of the next character to be input is the
 function of the direction of this character, which we do not know, since
-it has not been typed in yet :-).
+it has not been typed in yet :-). Or, things are more complicated if you
+want to display say rtl quote in an ltr paragraph, but the quote itself
+contains another ltr quote.
 
 
 Developing BiDi
@@ -127,5 +142,7 @@ silently merge the change.
 Any new code should be 'littered' with asserts, because these
 are great help in tracing bugs. In particular, put an assert in
 before dereferencing any pointers; virtually all SIGSEGVs I have
-experienced with BiDi in AW had to do with dereferencing 0.
+experienced with BiDi in AW had to do with dereferencing 0 (we 
+often need to refer to things earlier than the non-BiDi version,
+so sometimes these things do not exist yet).
 
