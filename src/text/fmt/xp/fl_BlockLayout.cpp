@@ -1231,7 +1231,7 @@ UT_sint32 fl_BlockLayout::getTOCTabPosition(UT_sint32 iOff)
 	UT_ASSERT(pTOCL->getContainerType() == FL_CONTAINER_TOC);
 	if(iOff > 1)
 	{
-		return pTOCL->getTabPosition(m_iTOCLevel);
+		return pTOCL->getTabPosition(m_iTOCLevel,this);
 	}
 	return 0;
 }

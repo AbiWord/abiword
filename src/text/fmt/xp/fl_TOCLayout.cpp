@@ -295,7 +295,7 @@ eTabLeader fl_TOCLayout::getTabLeader(UT_sint32 iLevel)
 	return static_cast<eTabLeader>(0);
 }
 
-UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel)
+UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock)
 {
 	fp_TOCContainer * pTOCC = static_cast<fp_TOCContainer *>(getFirstContainer());
 	if(pTOCC == NULL)
@@ -303,7 +303,7 @@ UT_sint32 fl_TOCLayout::getTabPosition(UT_sint32 iLevel)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
 	}
-	UT_sint32 iWidth = pTOCC->getWidth();
+	UT_sint32 iWidth = pTOCC->getWidth() -pBlock->getLeftMargin();
 	UT_UTF8String sStr("");
 	if(iLevel == 1)
 	{

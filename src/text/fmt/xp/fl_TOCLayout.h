@@ -141,7 +141,7 @@ public:
 		{ return m_iCurrentLevel;}
 	FootnoteType             getNumType(UT_sint32 iLevel);
 	eTabLeader               getTabLeader(UT_sint32 iLevel);
-	UT_sint32                getTabPosition(UT_sint32 iLevel);
+	UT_sint32                getTabPosition(UT_sint32 iLevel, fl_BlockLayout * pBlock);
 private:
 	virtual void             _purgeLayout(void);
 	virtual void		     _lookupProperties(void);
