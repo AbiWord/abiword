@@ -56,13 +56,14 @@ BeginSet(id,ID,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Simpan", 	tb_save_xpm,	NULL, "Simpan dokumen")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Simpan Sbg", 	tb_save_as_xpm,	NULL, "Simpan dokumen dengan nama lain")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Cetak",	tb_print_xpm,	NULL, "Cetak dokumen")
-
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,  "Tunjukkan cetak", tb_print_preview_xpm, NULL, "Tunjukkan bentuk cetak")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Kembali",	tb_undo_xpm,	NULL, "Batalkan perintah terakhir")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Berlaku lagi",		tb_redo_xpm,	NULL, "Yang dibatalkan tadi berlaku lagi")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Potong",	tb_cut_xpm,	NULL, "Potong")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Salin",	tb_copy_xpm,	NULL, "Salin")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Letakkan",	tb_paste_xpm,	NULL, "Letakkan")
-
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,          "Cek ejaan", tb_spellcheck_xpm, NULL, "Periksa ejaan dokumen")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG,                 "Selipkan gambar", tb_insert_graphic_xpm, NULL, "Selipkan gambar")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Model",	NoIcon,			NULL, "Model")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Huruf",		NoIcon,			NULL, "Huruf")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Ukuran huruf",	NoIcon,			NULL, "Ukuran huruf")
@@ -71,6 +72,7 @@ BeginSet(id,ID,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Garis bawah",tb_text_underline_xpm,	NULL, "Garis bawah")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Garis atas",tb_text_overline_xpm,	NULL, "Garis atas")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Coret",   tb_text_strikeout_xpm,	NULL, "Dicoret")
+        ToolbarLabel(AP_TOOLBAR_ID_HELP,                "Bantuan", tb_help_xpm, NULL, "Bantuan")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Huruf dinaikkan",	tb_text_superscript_xpm,	NULL, "Huruf dinaikkan")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Huruf diturunkan",	tb_text_subscript_xpm,		NULL, "Huruf diturunkan")
@@ -88,16 +90,23 @@ BeginSet(id,ID,true)
 	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1.5 Spasi",	tb_line_middle_space_xpm,	NULL, "1,5 spasi")
 	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Dua Spasi",	tb_line_double_space_xpm,	NULL, "Dua spasi")
 
-	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"1 Kolom",		tb_1column_xpm,			NULL, "1 Kolom")
-	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 Kolom",		tb_2column_xpm,			NULL, "2 Kolom")
-	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 Kolom",		tb_3column_xpm,			NULL, "3 Kolom")
+	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"1 Kolom",		tb_1column_xpm,	NULL, "1 Kolom")
+	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 Kolom",		tb_2column_xpm,	NULL, "2 Kolom")
+	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 Kolom",		tb_3column_xpm,	NULL, "3 Kolom")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Perbesar",		NoIcon,			NULL, "Perbesar")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Daftar bundar kitam",		tb_lists_xpm,		NULL,		"Daftar bundar hitam")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Daftar bernomor",		tb_lists_numbers_xpm,		NULL,		"Daftar bernomor")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Perbesar",		NoIcon,	                NULL, "Perbesar")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Daftar bundar kitam",	tb_lists_xpm,		NULL, "Daftar bundar hitam")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Daftar bernomor",	tb_lists_numbers_xpm,	NULL, "Daftar bernomor")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Warna Depan",	        NoIcon,			NULL, "Warna depan")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Warna Belakang",	NoIcon,		        NULL, "Warna belakang")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Inden Paragraf", tb_text_indent_xpm, 	        NULL, "Inden ke kanan paragraf")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Batal Inden", tb_text_unindent_xpm,	        NULL, "Inden balik ke kiri")
 	
 	// ... add others here ...
-
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,		"Arah Teks",	tb_text_direction_rtl_xpm,	NULL, "Mengganti arah teks")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Arah Teks Paragraf",	tb_text_dom_direction_rtl_xpm,	NULL, "Mengganti arah teks paragraf")
+#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()
