@@ -97,6 +97,7 @@ protected:
 	void			_emit_PrologMacros(void);
 	void			_emit_FontMacros(void);
 	void			_emit_SetFont(void);
+	void 			_emit_SetColor(UT_RGBColor& clr);
 	
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;

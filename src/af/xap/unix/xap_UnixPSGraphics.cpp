@@ -158,8 +158,9 @@ UT_uint32 PS_Graphics::getResolution() const
 	return PS_RESOLUTION;
 }
 
-void PS_Graphics::setColor(UT_RGBColor& /*clr*/)
+void PS_Graphics::setColor(UT_RGBColor& clr)
 {
+	_emit_SetColor(clr);
 }
 
 DG_Font* PS_Graphics::getGUIFont()
@@ -613,5 +614,18 @@ void PS_Graphics::_emit_SetFont(void)
 {
 	char buf[1024];
 	sprintf(buf,"F%ld\n", m_pCurrentFont->getIndex());
+	m_ps->writeBytes(buf);
+}
+
+void PS_Graphics::_emit_SetColor(UT_RGBColor& clr)
+{
+	// We're printing 8 digits of color... do we want to
+	// be any more precise, or perhaps less?  8 was a
+	// completely arbitrary decision on my part.  :)
+	char buf[128];
+	sprintf(buf,"%.8f %.8f %.8f setrgbcolor\n",
+			((float) clr.m_red / 255.0),
+			((float) clr.m_grn / 255.0),
+			((float) clr.m_blu / 255.0));
 	m_ps->writeBytes(buf);
 }
