@@ -74,6 +74,7 @@ g_i18n_get_language_list (const gchar *category_name);
 
 static GHashTable *alias_table = NULL;
 static GHashTable *category_table= NULL;
+bool prepped_table = 0;
 
 /*read an alias file for the locales*/
 static void
@@ -81,8 +82,10 @@ read_aliases (char *file)
 {
   FILE *fp;
   char buf[256];
-  if (!alias_table)
+  if (!prepped_table) {
     alias_table = g_hash_table_new (g_str_hash, g_str_equal);
+    prepped_table = 1;
+    }
   fp = fopen (file,"r");
   if (!fp)
     return;
@@ -110,7 +113,7 @@ unalias_lang (char *lang)
 {
   char *p;
   int i;
-  if (!alias_table)
+  if (!prepped_table)
     {
       read_aliases ("/usr/lib/locale/locale.alias");
       read_aliases ("/usr/local/lib/locale/locale.alias");
@@ -136,7 +139,7 @@ unalias_lang (char *lang)
   return lang;
 }
 
-void
+static void
 free_entry (void *ekey,void *eval,void *user_data)
 {
 g_free(ekey);
@@ -314,6 +317,7 @@ const GList *
 g_i18n_get_language_list (const gchar *category_name)
 {
   GList *list;
+  prepped_table = 0;
 
   if (!category_name)
     category_name= "LC_ALL";
@@ -385,6 +389,8 @@ g_i18n_get_language_list (const gchar *category_name)
 
    g_hash_table_foreach(alias_table, free_entry, NULL);
    g_hash_table_destroy(alias_table);  
+   prepped_table = 0;
+
   return list;
 }
 
@@ -531,21 +537,15 @@ void  XAP_UnixEncodingManager::initialize()
 					MYLANG += LanguageISOTerritory;
 					setenv ("LANG", MYLANG.c_str(), 1);
 #endif
-					const GList* my_lst = g_i18n_get_language_list ("LANG");
-					const char* my_locname = (char*)my_lst->data;
-
-					char* my_lang,*my_terr,*my_cs,*my_mod;
-					int my_mask = explode_locale (my_locname,&my_lang,&my_terr,&my_cs,&my_mod);
-
-					if (my_mask & COMPONENT_CODESET)
+					if (mask & COMPONENT_CODESET)
 						{
-							Native8BitEncodingName = my_cs+1;
+							Native8BitEncodingName = cs+1;
 							xxx_UT_DEBUGMSG(("Native8BitEncodingName (1) %s\n", Native8BitEncodingName));
-							if (!strncmp(my_cs+1,"ISO8859",strlen("ISO8859")))
+							if (!strncmp(cs+1,"ISO8859",strlen("ISO8859")))
 								{
 									static char buf[40];
 									strcpy(buf,"ISO-");
-									strcat(buf,my_cs+1+3);
+									strcat(buf,cs+1+3);
 									Native8BitEncodingName = buf;
 								}
 							xxx_UT_DEBUGMSG(("Native8BitEncodingName (2) %s\n", Native8BitEncodingName));
