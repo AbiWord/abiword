@@ -167,7 +167,6 @@ const PD_Revision * PD_Document::getHighestRevision() const
 	return r;
 }
 
-
 bool PD_Document::addRevision(UT_uint32 iId, UT_UCS4Char * pDesc)
 {
 	for(UT_uint32 i = 0; i < m_vRevisions.getItemCount(); i++)
@@ -267,9 +266,38 @@ void PD_Document::setMailMergeField(const UT_String & key,
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+static void buildTemplateList(UT_String *template_list, const UT_String & base)
+{
+	UT_LocaleInfo locale(UT_LocaleInfo::system());
+
+	UT_String lang (locale.getLanguage());
+	UT_String terr (locale.getTerritory());
+
+	/* try *6* combinations of the form:
+	   1) /templates/normal.awt-en_US
+	   2) /templates/normal.awt-en
+	   3) /templates/normal.awt
+	   4) /templates/normal.awt-en_US
+	   5) /templates/normal.awt-en
+	   6) /templates/normal.awt
+	*/
+
+	UT_String user_template_base (XAP_App::getApp()->getUserPrivateDirectory());
+	user_template_base += UT_String_sprintf("/templates/%s", base.c_str());
+
+	UT_String global_template_base (XAP_App::getApp()->getAbiSuiteLibDir());
+	global_template_base += UT_String_sprintf("/templates/%s", base.c_str());
+
+	template_list[0] = user_template_base; // always try to load user's normal.awt first
+	template_list[1] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.c_str(), terr.c_str());
+	template_list[2] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.c_str());
+	template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.c_str(), terr.c_str());
+	template_list[4] = UT_String_sprintf ("%s-%s", global_template_base.c_str(), lang.c_str());
+	template_list[5] = global_template_base; // always try to load global normal.awt last
+}
 
 UT_Error PD_Document::importFile(const char * szFilename, int ieft,
-				 bool markClean)
+								 bool markClean, bool bImportStylesFirst)
 {
 	if (!szFilename || !*szFilename)
 	{
@@ -284,6 +312,21 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		return UT_NOPIECETABLE;
 	}
 
+	m_bLoading = true;
+	m_pPieceTable->setPieceTableState(PTS_Loading);
+
+	if (bImportStylesFirst) {
+		UT_String template_list[6];
+
+		buildTemplateList (template_list, "normal.awt");
+
+		bool success = false;
+		for (UT_uint32 i = 0; i < 6 && !success; i++)
+			success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
+
+		// don't worry if this fails
+	}
+
 	IE_Imp * pie = NULL;
 	UT_Error errorCode;
 
@@ -295,8 +338,6 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		DELETEP(m_pPieceTable);
 		return errorCode;
 	}
-	m_bLoading = true;
-	m_pPieceTable->setPieceTableState(PTS_Loading);
 	m_indexAP =  99999999;
 	errorCode = pie->importFile(szFilename);
 	delete pie;
@@ -351,6 +392,20 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 		return UT_NOPIECETABLE;
 	}
 
+	m_pPieceTable->setPieceTableState(PTS_Loading);
+
+	{
+		UT_String template_list[6];
+		
+		buildTemplateList (template_list, "normal.awt");
+
+		bool success = false;
+		for (UT_uint32 i = 0; i < 6 && !success; i++)
+			success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
+
+		// don't worry if this fails
+	}
+
 	IE_Imp * pie = NULL;
 	UT_Error errorCode;
 
@@ -363,7 +418,6 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 
 	_syncFileTypes(false);
 	m_indexAP = 99999999;
-	m_pPieceTable->setPieceTableState(PTS_Loading);
 	errorCode = pie->importFile(szFilename);
 	delete pie;
 
@@ -463,44 +517,19 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocP
 			updateDocForStyleChange(pStyle->getName(),!pStyle->isCharStyle());
 	}
 
-	return UT_OK;
-	
+	return UT_OK;	
 }
 
 UT_Error PD_Document::newDocument(void)
 {
-	UT_LocaleInfo locale(UT_LocaleInfo::system());
-
-	UT_String lang (locale.getLanguage());
-	UT_String terr (locale.getTerritory());
-
-	/* try *6* combinations of the form:
-	   1) /templates/normal.awt-en_US
-	   2) /templates/normal.awt-en
-	   3) /templates/normal.awt
-	   4) /templates/normal.awt-en_US
-	   5) /templates/normal.awt-en
-	   6) /templates/normal.awt
-	*/
-
-	UT_String user_template_base (XAP_App::getApp()->getUserPrivateDirectory());
-	user_template_base += "/templates/normal.awt";
-
-	UT_String global_template_base (XAP_App::getApp()->getAbiSuiteLibDir());
-	global_template_base += "/templates/normal.awt";
-
 	UT_String template_list[6];
-	template_list[0] = user_template_base; // always try to load user's normal.awt first
-	template_list[1] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.c_str(), terr.c_str());
-	template_list[2] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.c_str());
-	template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.c_str(), terr.c_str());
-	template_list[4] = UT_String_sprintf ("%s-%s", global_template_base.c_str(), lang.c_str());
-	template_list[5] = global_template_base; // always try to load global normal.awt last
+
+	buildTemplateList(template_list, "normal.awt");
 
 	bool success = false;
 
 	for (UT_uint32 i = 0; i < 6 && !success; i++)
-		success = (importFile (template_list[i].c_str(), IEFT_Unknown, true) == UT_OK);
+		success = (importFile (template_list[i].c_str(), IEFT_Unknown, true, false) == UT_OK);
 
 	if (!success) {
 			m_pPieceTable = new pt_PieceTable(this);
@@ -639,11 +668,8 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 								  const XML_Char ** attributes,
 								  const XML_Char ** properties)
 {
-	bool res = m_pPieceTable->insertObject(dpos, pto, attributes, properties);
-	return res;
+	return m_pPieceTable->insertObject(dpos, pto, attributes, properties);
 }
-
-
 
 bool	PD_Document::insertObject(PT_DocPosition dpos,
 								  PTObjectType pto,
@@ -655,7 +681,6 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 	*pField = pfo->getField();
 	return bres;
 }
-
 
 bool PD_Document::insertSpan(PT_DocPosition dpos,
 							 const UT_UCSChar * pbuf,
@@ -822,10 +847,8 @@ bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 // Update frames during load.
 //
 	XAP_Frame * pFrame = m_pApp->getLastFocussedFrame();
-	if(pFrame )
-	{
+	if(pFrame)
 		pFrame->nullUpdate();
-	}
 	return m_pPieceTable->appendStrux(pts,attributes);
 }
 
@@ -979,10 +1002,8 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttr
 PT_AttrPropIndex PD_Document::getAPIFromSDH( PL_StruxDocHandle sdh)
 {
 	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
-	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
-	return indexAP;
+	return pfStrux->getIndexAP();
 }
-
 
 /*!
  * This method returns the value associated with attribute szProperty
@@ -1019,8 +1040,7 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
 {
 	pf_Frag_Strux * pfStrux = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
 	UT_ASSERT(pfStrux);
-	bool bres = m_pPieceTable->changeSectionAttsNoUpdate(pfStrux, attr, attvalue);
-	return bres;
+	return m_pPieceTable->changeSectionAttsNoUpdate(pfStrux, attr, attvalue);
 }
 
 /*!
@@ -1031,9 +1051,7 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
  */
 bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes )
 {
-
-	bool bres =  m_pPieceTable->insertStruxNoUpdateBefore(sdh, pts, attributes );
-	return bres;
+	return m_pPieceTable->insertStruxNoUpdateBefore(sdh, pts, attributes );
 }
 
 /*!
@@ -1045,14 +1063,10 @@ bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	pf_Frag * pfb = pfs->getPrev();
 	if(pfb->getType() != pf_Frag::PFT_Strux)
-	{
 		return false;
-	}
 	pf_Frag_Strux * pfsb = static_cast<pf_Frag_Strux *>(pfb);
 	if(pfsb->getStruxType() == pts)
-	{
 		return true;
-	}
 	return false;
 }
 
@@ -1101,9 +1115,7 @@ PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
 	bool bFound = false;
 	UT_sint32 nest = 0;
 	if(pts == PTX_SectionTable)
-	{
 		nest = 1;
-	}
 	while (!bFound && currentFrag!=m_pPieceTable->getFragments().getFirst())
 	{
 		UT_ASSERT(currentFrag);
@@ -1113,13 +1125,9 @@ PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
 			 if(pts != PTX_EndTable)
 			 { 
 				 if(pfSec->getStruxType() == PTX_EndTable)
-				 {
 					 nest++;
-				 }
 				 if(pfSec->getStruxType() == PTX_SectionTable)
-				 {
-					 nest--;
-				 }
+ 					 nest--;
 			 }
 		     if((pfSec->getStruxType() == pts) && (nest == 0))
 		     {
@@ -1156,45 +1164,28 @@ bool PD_Document::verifySectionID(const XML_Char * pszId)
 				 const XML_Char * pszIDName = NULL;
 				 (pAP)->getAttribute("header", pszIDName);
 				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-				 {
 					 return true;
-				 }
 				 (pAP)->getAttribute("header-first", pszIDName);
 				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-				 {
 					 return true;
-				 }
 				 (pAP)->getAttribute("header-last", pszIDName);
 				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-				 {
 					 return true;
-				 }
 				 (pAP)->getAttribute("header-even", pszIDName);
 				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-				 {
 					 return true;
-				 }
 				 (pAP)->getAttribute("footer", pszIDName);
 				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-				 {
 					 return true;
-				 }
 				 (pAP)->getAttribute("footer-first", pszIDName);
 				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-				 {
 					 return true;
-				 }
 				 (pAP)->getAttribute("footer-last", pszIDName);
 				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-				 {
 					 return true;
-				 }
 				 (pAP)->getAttribute("footer-even", pszIDName);
 				 if(pszIDName && UT_XML_stricmp(pszIDName,pszId) == 0)
-				 {
 					 return true;
-				 }
-
 		     }
 		}
 //
@@ -1236,9 +1227,7 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 				 (pAP)->getAttribute(PT_TYPE_ATTRIBUTE_NAME, pszHeaderName);
 				 (pAP)->getAttribute(PT_ID_ATTRIBUTE_NAME, pszIDName);
 				 if(pszIDName && pszHeaderName && (UT_XML_stricmp(pszIDName,pszHdrFtrID) == 0) && (UT_XML_stricmp(pszHeaderName,pszHdrFtr) == 0))
-				 {
 					 return static_cast<PL_StruxDocHandle>(pfSec) ;
-				 }
 			 }
 		}
 //
@@ -1259,9 +1248,7 @@ bool PD_Document::isFootnoteAtPos(PT_DocPosition pos)
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf->getLength() == 0)
-	{
 		pf = pf->getPrev();
-	}
 	return m_pPieceTable->isFootnote(pf);
 }
 
@@ -1276,9 +1263,7 @@ bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
 	pf_Frag * pf = NULL;
 	/*bool bRes = */m_pPieceTable->getFragFromPosition(pos,&pf,&pOffset);
 	while(pf->getLength() == 0)
-	{
 		pf = pf->getPrev();
-	}
 	return m_pPieceTable->isEndFootnote(pf);
 }
 
@@ -1302,9 +1287,7 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle ta
 		{
 			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
 			if(pfSec->getStruxType() == PTX_SectionTable)
-			{
 				depth++;
-			}
 			else if(pfSec->getStruxType() == PTX_EndTable)
 			{
 				if(depth == 0)
@@ -1313,9 +1296,7 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle ta
 					return EndTableSDH;
 				}
 				else
-				{
 					depth--;
-				}
 			}
 		}
 //
@@ -1369,9 +1350,7 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTablePos(PT_DocPosition table
 	PL_StruxDocHandle EndTableSDH = NULL;
 	bool bRes =	getStruxOfTypeFromPosition(tablePos, PTX_SectionTable, &tableSDH);
 	if(!bRes)
-	{
 		return NULL;
-	}
 	EndTableSDH = getEndTableStruxFromTableSDH(tableSDH);
 	return EndTableSDH;
 }
@@ -1411,38 +1390,26 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 				pfSec = static_cast<const pf_Frag_Strux *>(endSDH);
 			}
 			else if(pfSec->getStruxType() == PTX_EndTable)
-			{
 				return true;
-			}
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
 				cellSDH = static_cast<PL_StruxDocHandle>(pfSec);
 				bool bres = getPropertyFromSDH(cellSDH,"right-attach",&szRight);
 				if(szRight && *szRight)
-				{
 					iRight = atoi(szRight);
-				}
 				bres = getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
 				if(szBot && *szBot)
-				{
 					iBot = atoi(szBot);
-				}
 
 				if(*numCols < iRight)
-				{
 					*numCols = iRight;
-				}
 				if(*numRows < iBot)
-				{
 					*numRows = iBot;
-				}
 			}
 			currentFrag = static_cast<const pf_Frag *>(pfSec);
 		}
 		if(currentFrag)
-		{
 			currentFrag = currentFrag->getNext();
-		}
 	}
 	return false;
 }
@@ -1456,22 +1423,16 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 	{
 		pf = pf->getPrev();
 		while(pf && pf->getType() != pf_Frag::PFT_Strux)
-		{
 			pf = pf->getPrev();
-		}
 		pfs = static_cast<const pf_Frag_Strux *>(pf);
 	}
 	if(pfs == NULL)
 	{
 		pf =  m_pPieceTable->getFragments().getFirst();
 		while(pf && (pf->getType() != pf_Frag::PFT_Strux))
-		{
 			pf = pf->getNext();
-		}
 		if(pf)
-		{
 			pfs = static_cast<const pf_Frag_Strux *>(pfs);
-		}
 	}
 	for(i=0; pfs && (i< 2*nstruxes); i++)
 	{
@@ -1480,45 +1441,26 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		PL_StruxDocHandle sdhTemp = static_cast<PL_StruxDocHandle>(pfs);
 		const char * szStrux = NULL;
 		if(pfs->getStruxType() == PTX_Block)
-		{
 			szStrux = "Block";
-		}
 		else if(pfs->getStruxType() == PTX_SectionTable)
-		{
 			szStrux = "Table";
-		}
 		else if(pfs->getStruxType() == PTX_SectionCell)
-		{
 			szStrux = "Cell";
-		}
 		else if(pfs->getStruxType() == PTX_EndTable)
-		{
 			szStrux = "End Table";
-		}
 		else if(pfs->getStruxType() == PTX_EndCell)
-		{
 			szStrux = "End Cell";
-		}
 		else if(pfs->getStruxType() == PTX_SectionFootnote)
-		{
 			szStrux = "Footnote";
-		}
 		else if(pfs->getStruxType() == PTX_EndFootnote)
-		{
 			szStrux = "End Footnote";
-		}
 		else if(pfs->getStruxType() == PTX_SectionEndnote)
-		{
 			szStrux = "Endnote";
-		}
 		else if(pfs->getStruxType() == PTX_EndEndnote)
-		{
 			szStrux = "End Endnote";
-		}
 		else
-		{
 			szStrux = "Other Strux";
-		}
+
 		UT_DEBUGMSG(("MiniDump Frag %x Type %s \n",pfs,szStrux));
 		const char * szLeft=NULL;
 		const char * szRight=NULL;
@@ -1539,9 +1481,7 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 			pf = pf->getNext();
 		}
 		if(pf)
-		{
 			pfs= static_cast<const pf_Frag_Strux *>(pf);
-		}
 	}
 }
 		
@@ -1599,36 +1539,25 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH, 
 				Bot = -1;
 				bool bres = getPropertyFromSDH(cellSDH,"left-attach",&szLeft);
 				if(szLeft && *szLeft)
-				{
 					Left = atoi(szLeft);
-				}
 				bres = getPropertyFromSDH(cellSDH,"top-attach",&szTop);
 				if(szTop && *szTop)
-				{
 					Top = atoi(szTop);
-				}
 				bres = getPropertyFromSDH(cellSDH,"right-attach",&szRight);
 				if(szRight && *szRight)
-				{
 					Right = atoi(szRight);
-				}
 				bres = getPropertyFromSDH(cellSDH,"bot-attach",&szBot);
 				if(szBot && *szBot)
-				{
 					Bot = atoi(szBot);
-				}
 				if( (Top <= row) && (row < Bot) && (Left <= col) && (Right > col))
 				{
-					cellSDH = static_cast<PL_StruxDocHandle>(pfSec);
-					return cellSDH;
+					return static_cast<PL_StruxDocHandle>(pfSec);
 				}
 			}
 			currentFrag = static_cast<const pf_Frag *>(pfSec);
 		}
 		if(currentFrag)
-		{
 			currentFrag = currentFrag->getNext();
-		}
 	}
 	return NULL;
 }
@@ -1657,21 +1586,13 @@ void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
 //
 		PT_AttrPropIndex indexAP = 0;
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
-		{
 			indexAP = static_cast<pf_Frag_Strux *>(currentFrag)->getIndexAP();
-		}
 		else if(currentFrag->getType()  == pf_Frag::PFT_Text)
-		{
 			indexAP = static_cast<pf_Frag_Text *>(currentFrag)->getIndexAP();
-		}
 		else if(currentFrag->getType()  == pf_Frag::PFT_Object)
-		{
 			indexAP = static_cast<pf_Frag_Object *>(currentFrag)->getIndexAP();
-		}
 		else if(currentFrag->getType()  == pf_Frag::PFT_FmtMark)
-		{
 			indexAP = static_cast<pf_Frag_FmtMark *>(currentFrag)->getIndexAP();
-		}
 		const PP_AttrProp * pAP = NULL;
 		m_pPieceTable->getAttrProp(indexAP,&pAP);
 		UT_ASSERT(pAP);
@@ -1687,25 +1608,19 @@ void PD_Document::getAllUsedStyles(UT_Vector * pVecStyles)
 			if(pStyle)
 			{
 				if(pVecStyles->findItem(static_cast<void *>(pStyle)) < 0)
-				{
 					pVecStyles->addItem(static_cast<void *>(pStyle));
-				}
 				PD_Style * pBasedOn = pStyle->getBasedOn();
 				i = 0;
 				while(pBasedOn != NULL && i <  pp_BASEDON_DEPTH_LIMIT)
 				{
 					if(pVecStyles->findItem(static_cast<void *>(pBasedOn)) < 0)
-					{
 						pVecStyles->addItem(static_cast<void *>(pBasedOn));
-					}
 					i++;
 					pBasedOn = pBasedOn->getBasedOn();
 				}
 				PD_Style * pFollowedBy = pStyle->getFollowedBy();
 				if(pFollowedBy && (pVecStyles->findItem(static_cast<void *>(pFollowedBy)) < 0))
-				{
 					pVecStyles->addItem(static_cast<void *>(pFollowedBy));
-				}
 			}
 		}
 //
@@ -4033,9 +3948,7 @@ pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, 
 	pf_Frag * pf = const_cast<pf_Frag *>(pfStart);
 	
 	if(!pf)
-	{
 		pf = m_pPieceTable->getFragments().getFirst();
-	}
 
 	UT_return_val_if_fail(pf, NULL);
 

@@ -169,7 +169,7 @@ public:
 	PD_Document(XAP_App *pApp);
 
 	virtual UT_Error		readFromFile(const char * szFilename, int ieft);
-	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false);
+	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true);
 	virtual UT_Error		importStyles(const char * szFilename, int ieft, bool bDocProps = false);
 
 	virtual UT_Error		newDocument(void);

@@ -71,7 +71,7 @@ dcl(InsertModeFieldOVR, 		"OVR")
 
 /* */
 dcl(DLG_NEW_Title,				"Choose a Template")
-dcl(DLG_NEW_Create, 			"Create new document from a Template")
+dcl(DLG_NEW_Create, 			"Create new document from a template")
 dcl(DLG_NEW_Open,				"Open an existing document")
 dcl(DLG_NEW_NoFile, 			"No File")
 dcl(DLG_NEW_Choose, 			"Choose")
