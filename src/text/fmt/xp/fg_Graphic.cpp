@@ -38,7 +38,7 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
    if (bFoundSpanAP && pSpanAP)
    {
       const XML_Char *pszDataID;
-      bool bFoundDataID = pSpanAP->getAttribute((XML_Char*)"dataid", pszDataID);
+      bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
       
       if (bFoundDataID && pszDataID)
       {

@@ -327,10 +327,10 @@ void fl_BlockLayout::_lookupProperties(void)
 
 	{
 #ifdef BIDI_ENABLED
-		m_bDomDirection = !UT_stricmp(getProperty((XML_Char *) "dom-dir", true), "rtl");
-		//UT_DEBUGMSG(("Block: _lookupProperties, m_bDomDirection=%d (%s)\n", m_bDomDirection, getProperty((XML_Char *) "dom-dir", true)));
+		m_bDomDirection = !UT_stricmp(getProperty("dom-dir", true), "rtl");
+		//UT_DEBUGMSG(("Block: _lookupProperties, m_bDomDirection=%d (%s)\n", m_bDomDirection, getProperty("dom-dir", true)));
 #endif
-		const char* pszOrphans = getProperty((XML_Char*)"orphans");
+		const char* pszOrphans = getProperty("orphans");
 		if (pszOrphans && pszOrphans[0])
 		{
 			m_iOrphansProperty = atoi(pszOrphans);
@@ -340,7 +340,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			m_iOrphansProperty = 1;
 		}
 		
-		const char* pszWidows = getProperty((XML_Char*)"widows");
+		const char* pszWidows = getProperty("widows");
 		if (pszWidows && pszWidows[0])
 		{
 			m_iWidowsProperty = atoi(pszWidows);
@@ -361,7 +361,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 
 	{
-		const char* pszKeepTogether = getProperty((XML_Char*)"keep-together");
+		const char* pszKeepTogether = getProperty("keep-together");
 		if (pszKeepTogether
 			&& (0 == UT_strcmp("yes", pszKeepTogether))
 			)
@@ -369,7 +369,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			m_bKeepTogether = true;
 		}
 	
-		const char* pszKeepWithNext = getProperty((XML_Char*)"keep-with-next");
+		const char* pszKeepWithNext = getProperty("keep-with-next");
 		if (pszKeepWithNext
 			&& (0 == UT_strcmp("yes", pszKeepWithNext))
 			)
@@ -403,7 +403,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 
 	{
-		const char* pszAlign = getProperty((XML_Char*)"text-align");
+		const char* pszAlign = getProperty("text-align");
 
 		DELETEP(m_pAlignment);
 		
@@ -432,23 +432,23 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 
 	// parse any new tabstops
-	const char* pszTabStops = getProperty((XML_Char*)"tabstops");
+	const char* pszTabStops = getProperty("tabstops");
 	buildTabStops(pG, pszTabStops, m_vecTabs);
 
 
 #if 0
 	UT_DEBUGMSG(("XXXX: [default-tab-interval:%s][yields %d][resolution %d][zoom %d]\n",
-				 getProperty((XML_Char*)"default-tab-interval"),
-				 pG->convertDimension(getProperty((XML_Char*)"default-tab-interval")),
+				 getProperty("default-tab-interval"),
+				 pG->convertDimension(getProperty("default-tab-interval")),
 				 pG->getResolution(),
 				 pG->getZoomPercentage()));
 #endif
 	
-	m_iDefaultTabInterval = pG->convertDimension(getProperty((XML_Char*)"default-tab-interval"));
-	m_iDefaultTabIntervalLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"default-tab-interval"));
+	m_iDefaultTabInterval = pG->convertDimension(getProperty("default-tab-interval"));
+	m_iDefaultTabIntervalLayoutUnits = UT_convertToLayoutUnits(getProperty("default-tab-interval"));
 
 
-	const char * pszSpacing = getProperty((XML_Char*)"line-height");
+	const char * pszSpacing = getProperty("line-height");
 
 	// NOTE : Parsing spacing strings:
 	// NOTE : - if spacing string ends with "+", it's marked as an "At Least" measurement
@@ -575,9 +575,9 @@ void fl_BlockLayout::_lookupProperties(void)
 		//
 		if(pAutoNum == NULL)
 		{
-		        const XML_Char * pszStart = getProperty((XML_Char*)"start-value",true);
-			const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",true);
-			const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",true);
+		        const XML_Char * pszStart = getProperty("start-value",true);
+			const XML_Char * lDelim =  getProperty("list-delim",true);
+			const XML_Char * lDecimal =  getProperty("list-decimal",true);
 			UT_uint32 start = atoi(pszStart);
 			const XML_Char * style = NULL;
  	                pBlockAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,style);
@@ -2570,7 +2570,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	// Get the field type.
 
 	const XML_Char* pszType = NULL;
-	pSpanAP->getAttribute((XML_Char*)"type", pszType);
+	pSpanAP->getAttribute("type", pszType);
 	UT_ASSERT(pszType);
 
 	// Create the field run.
@@ -4622,9 +4622,9 @@ void fl_BlockLayout::remItemFromList(void)
 		       {
 		               if( i > 0 &&
 				   UT_XML_strcmp(props[i-1],
-						 (XML_Char *) "text-indent")==0)
+						 "text-indent")==0)
 			       {
-				        props[i] = (XML_Char *) "0.0000in";
+				        props[i] = "0.0000in";
 			       }
 			       else
 			       {
@@ -4644,9 +4644,9 @@ void fl_BlockLayout::remItemFromList(void)
 		       {
 		               if( i > 0 &&
 				   UT_XML_strcmp(props[i-1],
-						 (XML_Char *) "text-indent")==0)
+						 "text-indent")==0)
 			       {
-				        props[i] = (XML_Char *) "0.0000in";
+				        props[i] = "0.0000in";
 			       }
 			       else
 			       {
@@ -4806,12 +4806,12 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
   // quantities are const XML_Char *
   //
         UT_uint32 count=0;
-	const XML_Char * pszStart = getProperty((XML_Char*)"start-value",true);
-        const XML_Char * lDelim =  getProperty((XML_Char*)"list-delim",true);
-        const XML_Char * lDecimal =  getProperty((XML_Char*)"list-decimal",true);
-        const XML_Char * pszAlign =  getProperty((XML_Char*)"margin-left",true);
-        const XML_Char * pszIndent =  getProperty((XML_Char*)"text-indent",true);
-        const XML_Char * fFont =  getProperty((XML_Char*)"field-font",true);
+	const XML_Char * pszStart = getProperty("start-value",true);
+        const XML_Char * lDelim =  getProperty("list-delim",true);
+        const XML_Char * lDecimal =  getProperty("list-decimal",true);
+        const XML_Char * pszAlign =  getProperty("margin-left",true);
+        const XML_Char * pszIndent =  getProperty("text-indent",true);
+        const XML_Char * fFont =  getProperty("field-font",true);
 	if(pszStart != NULL)
 	{
 	       vp->addItem( (void *) "start-value");	vp->addItem( (void *) pszStart);

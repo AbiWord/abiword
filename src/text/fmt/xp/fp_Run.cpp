@@ -1123,7 +1123,7 @@ void fp_FieldRun::lookupProperties(void)
 		 m_fPosition = TEXT_POSITION_NORMAL;
 	}
 
-	pSpanAP->getAttribute((XML_Char*)"type", pszType);
+	pSpanAP->getAttribute("type", pszType);
 	UT_ASSERT(pszType);
 
 #ifdef BIDI_ENABLED

@@ -514,16 +514,16 @@ bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 	
 	// Check for all possible paragraph-level layout.
 	if (m_pDocument->getAttrProp(api,&pAP) && pAP) {
-		if (pAP->getProperty((XML_Char*)"margin-left",szValue))
+		if (pAP->getProperty("margin-left",szValue))
 			m_currentParagraphPLayout->indent_left = 
 			              (float)UT_convertToDimension((const char *) szValue,DIM_CM);
-		if (pAP->getProperty((XML_Char*)"margin-right",szValue)) 
+		if (pAP->getProperty("margin-right",szValue)) 
 			m_currentParagraphPLayout->indent_right = 
 			              (float)UT_convertToDimension((const char *) szValue,DIM_CM);
-		if (pAP->getProperty((XML_Char*)"text-indent",szValue)) 
+		if (pAP->getProperty("text-indent",szValue)) 
 			m_currentParagraphPLayout->indent_first = 
 			              (float)UT_convertToDimension((const char *) szValue,DIM_CM);
-		if (pAP->getProperty((XML_Char*)"text-align",szValue)) {
+		if (pAP->getProperty("text-align",szValue)) {
 			if (!UT_strcmp((const char *) szValue,"center"))
 				m_currentParagraphPLayout->justify_hor = psiconv_justify_centre;
 			else if (!UT_strcmp((const char *) szValue,"right"))
@@ -533,7 +533,7 @@ bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 			else
 				m_currentParagraphPLayout->justify_hor = psiconv_justify_left;
 		}
-		if (pAP->getProperty((XML_Char*)"line-height",szValue)) {
+		if (pAP->getProperty("line-height",szValue)) {
 			m_currentParagraphPLayout->linespacing_exact =
 			       szValue[strlen((char *)szValue)-1]=='+'?psiconv_bool_false:
 			                                               psiconv_bool_true;
@@ -544,19 +544,19 @@ bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 			              (float)UT_convertToDimension(tempstr,DIM_PT);
 			free(tempstr);
 		}
-		if (pAP->getProperty((XML_Char*)"margin-top",szValue)) 
+		if (pAP->getProperty("margin-top",szValue)) 
 			m_currentParagraphPLayout->space_above = 
 			              (float)UT_convertToDimension((const char *) szValue,DIM_PT);
-		if (pAP->getProperty((XML_Char*)"margin-bottom",szValue)) 
+		if (pAP->getProperty("margin-bottom",szValue)) 
 			m_currentParagraphPLayout->space_below = 
 			              (float)UT_convertToDimension((const char *) szValue,DIM_PT);
-		if (pAP->getProperty((XML_Char*)"keep-together",szValue)) { 
+		if (pAP->getProperty("keep-together",szValue)) { 
 			if (!UT_strcmp((const char *) szValue,"yes"))
 				m_currentParagraphPLayout->keep_together = psiconv_bool_true;
 			else
 				m_currentParagraphPLayout->keep_together = psiconv_bool_false;
 		}
-		if (pAP->getProperty((XML_Char*)"keep-with-next",szValue)) {
+		if (pAP->getProperty("keep-with-next",szValue)) {
 			if (!UT_strcmp((const char *) szValue,"yes"))
 				m_currentParagraphPLayout->keep_with_next = psiconv_bool_true;
 			else
@@ -565,16 +565,16 @@ bool s_Psion_Listener::_openParagraph(PT_AttrPropIndex api)
 		// Set widowsorphans if either widows or orphans is set and 
 		// unequal to "0".
 		widowsorphans = false;
-		if (pAP->getProperty((XML_Char*)"widows",szValue)) 
+		if (pAP->getProperty("widows",szValue)) 
 			widowsorphans |= (UT_strcmp((const char *) szValue,"0") != 0);
-		if (pAP->getProperty((XML_Char*)"orphans",szValue)) 
+		if (pAP->getProperty("orphans",szValue)) 
 			widowsorphans |= (UT_strcmp((const char *) szValue,"0") != 0);
 		m_currentParagraphPLayout->no_widow_protection = 
 		                   widowsorphans?psiconv_bool_false:psiconv_bool_true;
-		if (pAP->getProperty((XML_Char*)"default-tab-interval",szValue))  
+		if (pAP->getProperty("default-tab-interval",szValue))  
 			m_currentParagraphPLayout->tabs->normal = 
 			              (float)UT_convertToDimension((const char *) szValue,DIM_CM);
-		if (pAP->getProperty((XML_Char*)"tabstops",szValue))  
+		if (pAP->getProperty("tabstops",szValue))  
 			if (!_parseTabs((char *)szValue,
 			                m_currentParagraphPLayout->tabs->extras)) {
 				psiconv_free_character_layout(m_currentParagraphCLayout);
@@ -655,7 +655,7 @@ bool s_Psion_Listener::_addInLine(PT_AttrPropIndex api,UT_uint32 textlen)
 		return false;
 
 	if (m_pDocument->getAttrProp(api,&pAP) && pAP) {
-		if (pAP->getProperty((XML_Char*)"font-family",szValue)) {
+		if (pAP->getProperty("font-family",szValue)) {
 			tempstr = curInLine.layout->font->name;
 			if (!(curInLine.layout->font->name = 
 			                               UT_strdup((const char*) szValue))) {
@@ -677,22 +677,22 @@ bool s_Psion_Listener::_addInLine(PT_AttrPropIndex api,UT_uint32 textlen)
 			else
 				curInLine.layout->font->screenfont = psiconv_font_serif;
 		}
-		if (pAP->getProperty((XML_Char*)"font-size",szValue))
+		if (pAP->getProperty("font-size",szValue))
 			curInLine.layout->font_size = 
 			              (float)UT_convertToDimension((const char *) szValue,DIM_PT);
-		if (pAP->getProperty((XML_Char*)"font-weight",szValue)) {
+		if (pAP->getProperty("font-weight",szValue)) {
 			if (!UT_strcmp((const char *) szValue,"bold"))
 				curInLine.layout->bold = psiconv_bool_true;
 			else
 				curInLine.layout->bold = psiconv_bool_false;
 		}
-		if (pAP->getProperty((XML_Char*)"font-style",szValue)) {
+		if (pAP->getProperty("font-style",szValue)) {
 			if (!UT_strcmp((const char *) szValue,"italic"))
 				curInLine.layout->italic = psiconv_bool_true;
 			else
 				curInLine.layout->italic = psiconv_bool_false;
 		}
-		if (pAP->getProperty((XML_Char*)"text-decoration",szValue)) {
+		if (pAP->getProperty("text-decoration",szValue)) {
 			if (strstr((const char *) szValue,"underline")) 
 				curInLine.layout->underline = psiconv_bool_true;
 			else
@@ -702,7 +702,7 @@ bool s_Psion_Listener::_addInLine(PT_AttrPropIndex api,UT_uint32 textlen)
 			else
 				curInLine.layout->strikethrough = psiconv_bool_false;
 		}
-		if (pAP->getProperty((XML_Char*)"text-position",szValue)) {
+		if (pAP->getProperty("text-position",szValue)) {
 			if (!UT_strcmp((const char *) szValue,"superscript"))
 				curInLine.layout->super_sub = psiconv_superscript;
 			else if (!UT_strcmp((const char *) szValue,"subscript"))
@@ -710,9 +710,9 @@ bool s_Psion_Listener::_addInLine(PT_AttrPropIndex api,UT_uint32 textlen)
 			else
 				curInLine.layout->super_sub = psiconv_normalscript;
 		}
-		if (pAP->getProperty((XML_Char*)"color",szValue)) 
+		if (pAP->getProperty("color",szValue)) 
 			_parseColor((char *) szValue,curInLine.layout->color);
-		if (pAP->getProperty((XML_Char*)"bgcolor",szValue)) 
+		if (pAP->getProperty("bgcolor",szValue)) 
 			_parseColor((char *) szValue,curInLine.layout->back_color);
 	}
 	if (psiconv_list_add(m_currentParagraphInLines,&curInLine))

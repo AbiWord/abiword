@@ -234,24 +234,24 @@ void IE_Imp_DocBook::_startElement(const XML_Char *name,
 	    {
 		const XML_Char **p_atts;
 		XML_Char *buf[3];
-		UT_XML_cloneString(buf[0], (XML_Char *)"props");
+		UT_XML_cloneString(buf[0], "props");
 		buf[2] = NULL;
 		
 		switch(s_Tokens[tokenIndex].m_type) {
 		case TT_EMPHASIS: 
-		    UT_XML_cloneString(buf[1], (XML_Char *)"font-style:italic"); 
+		    UT_XML_cloneString(buf[1], "font-style:italic"); 
 		    break;
 		case TT_SUPERSCRIPT: 
-		    UT_XML_cloneString(buf[1], (XML_Char *)"text-position:superscript"); 
+		    UT_XML_cloneString(buf[1], "text-position:superscript"); 
 		    break;
 		case TT_SUBSCRIPT: 
-		    UT_XML_cloneString(buf[1], (XML_Char *)"text-position:subscript"); 
+		    UT_XML_cloneString(buf[1], "text-position:subscript"); 
 		    break;
 		case TT_PHRASE:
 		{
 		    const XML_Char *p_val = _getXMLPropValue((const XML_Char *)"role", atts);
 		    if(p_val != NULL && !strcmp(p_val, "strong"))
-			UT_XML_cloneString(buf[1],  (XML_Char *)"font-weight:bold");
+			UT_XML_cloneString(buf[1],  "font-weight:bold");
 		    else
 			buf[0] = NULL;
 		    break;

@@ -535,12 +535,12 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 
 const XML_Char * IE_Imp_AbiWord_1::_getDataItemName(const XML_Char ** atts)
 {
-	return _getXMLPropValue ((XML_Char *)"name", atts);
+	return _getXMLPropValue ("name", atts);
 }
 
 const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
 {
-	const XML_Char *val = _getXMLPropValue ((XML_Char *)"mime-type", atts);
+	const XML_Char *val = _getXMLPropValue ("mime-type", atts);
 
 	// if the mime-type was not specified, for backwards 
  	// compatibility we assume that it is a png image
@@ -549,7 +549,7 @@ const XML_Char * IE_Imp_AbiWord_1::_getDataItemMimeType(const XML_Char ** atts)
 
 bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 { 
-  	const XML_Char *val = _getXMLPropValue ((XML_Char *)"base64", atts);
+  	const XML_Char *val = _getXMLPropValue ("base64", atts);
 
 	if ((!val) || (UT_XML_strcmp (val, "no") != 0))
 	  return true;

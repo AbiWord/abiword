@@ -371,63 +371,63 @@ static void convertFontColor(char *szDest, const char *szFrom)
     {
       col = atoi(szFrom);
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"green"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "green"))
     {
       col = 0x008000;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"silver"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "silver"))
     {
       col = 0xC0C0C0;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"lime"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "lime"))
     {
       col = 0x00FF00;
     }
-   else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"gray"))
+   else if(!UT_XML_stricmp((XML_Char *)szFrom, "gray"))
     {
       col = 0x808080;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"olive"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "olive"))
     {
       col = 0x808000;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"white"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "white"))
     {
       col = 0xFFFFFF;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"yellow"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "yellow"))
     {
       col = 0xFFFF00;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"maroon"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "maroon"))
     {
       col = 0x800000;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"navy"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "navy"))
     {
       col = 0x000080;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"red"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "red"))
     {
       col = 0xFF0000;
     }
-   else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"blue"))
+   else if(!UT_XML_stricmp((XML_Char *)szFrom, "blue"))
     {
       col = 0x0000FF;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"purple"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "purple"))
     {
       col = 0x800080;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"teal"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "teal"))
     {
       col = 0x008080;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"fuchsia"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "fuchsia"))
     {
       col = 0xFF00FF;
     }
-  else if(!UT_XML_stricmp((XML_Char *)szFrom, (XML_Char *)"aqua"))
+  else if(!UT_XML_stricmp((XML_Char *)szFrom, "aqua"))
     {
       col = 0x00FFFF;
     }

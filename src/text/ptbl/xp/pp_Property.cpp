@@ -194,11 +194,11 @@ void PP_resetInitialBiDiValues(const XML_Char * pszValue)
 
 	for (i=0; i<count; i++)
 	{
-		if ((0 == UT_stricmp(_props[i].m_pszName, (XML_Char*) "dir"))||(0 == UT_stricmp(_props[i].m_pszName, (XML_Char*) "dom-dir")))
+		if ((0 == UT_stricmp(_props[i].m_pszName, "dir"))||(0 == UT_stricmp(_props[i].m_pszName, "dom-dir")))
 		{
 			UT_XML_strncpy(_props[i].m_pszInitial, 3,pszValue);
 		}
-		else if ((0 == UT_stricmp(_props[i].m_pszName, (XML_Char*) "text-align")))
+		else if ((0 == UT_stricmp(_props[i].m_pszName, "text-align")))
 		{
 			UT_DEBUGMSG(("reseting text-align (%s)\n", pszValue));
 			if(pszValue[0] == (XML_Char)'r')

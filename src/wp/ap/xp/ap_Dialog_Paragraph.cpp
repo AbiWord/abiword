@@ -1087,28 +1087,28 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
 		{
 		case spacing_SINGLE:
-			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"1.0", op_SYNC);
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "1.0", op_SYNC);
 			break;
 
 		case spacing_ONEANDHALF:
-			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"1.5", op_SYNC);
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "1.5", op_SYNC);
 			break;
 
 		case spacing_DOUBLE:
-			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"2.0", op_SYNC);
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "2.0", op_SYNC);
 			break;
 
 		case spacing_ATLEAST:
 		case spacing_EXACTLY:
 			// only change to default if not dimensioned
 			if (dimOld == DIM_none)
-				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"12pt", op_SYNC);
+				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "12pt", op_SYNC);
 			break;
 
 		case spacing_MULTIPLE:
 			// only change to default if dimensioned
 			if (dimOld != DIM_none)
-				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"1.0", op_SYNC);
+				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "1.0", op_SYNC);
 			break;
 
 		default:

@@ -218,10 +218,10 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 		const XML_Char * szListID;
 
 		if (
-		   (pAP->getAttribute((XML_Char*)"style", szValue))
+		   (pAP->getAttribute("style", szValue))
 		   )
 		{
-			if(pAP->getAttribute((XML_Char*)"listid", szListID) &&
+			if(pAP->getAttribute("listid", szListID) &&
 			   0 != UT_strcmp(szListID, "0"))
 			{	// we're in a list
 				if(!m_bInList)
@@ -326,7 +326,7 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 		/* Assumption: never get property set with block text, plain text. Probably true. */
 
 		if (
-			m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT && (pAP->getProperty((XML_Char*)"text-align", szValue))
+			m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT && (pAP->getProperty("text-align", szValue))
 			)
 		{
 			m_pie->write(" style=\"text-align: ");
@@ -435,7 +435,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		const XML_Char * szValue;
 
 		if (
-			(pAP->getProperty((XML_Char*)"font-weight", szValue))
+			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
@@ -451,7 +451,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 		
 		if (
-			(pAP->getProperty((XML_Char*)"font-style", szValue))
+			(pAP->getProperty("font-style", szValue))
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
@@ -468,7 +468,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 		
 		if (
-			(pAP->getProperty((XML_Char*)"text-decoration", szValue))
+			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
@@ -510,7 +510,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 
 		if (
-			(pAP->getProperty((XML_Char*)"text-decoration", szValue))
+			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
@@ -552,7 +552,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 
 		if (
-			(pAP->getProperty((XML_Char*)"text-decoration", szValue))
+			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
@@ -593,7 +593,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			free(p);
 		}
 
-		if (pAP->getProperty((XML_Char*)"text-position", szValue))
+		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!UT_strcmp("superscript", szValue))
 			{
@@ -606,18 +606,18 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 		
 		if (
-			(pAP->getProperty((XML_Char*)"color", szValue))
-		    || (pAP->getProperty((XML_Char*)"font-size", szValue))
-		    || (pAP->getProperty((XML_Char*)"font-family", szValue))
+			(pAP->getProperty("color", szValue))
+		    || (pAP->getProperty("font-size", szValue))
+		    || (pAP->getProperty("font-family", szValue))
 			)
 		{
 			const XML_Char* pszColor = NULL;
 			const XML_Char* pszFontSize = NULL;
 			const XML_Char* pszFontFamily = NULL;
 
-			pAP->getProperty((XML_Char*)"color", pszColor);
-		    pAP->getProperty((XML_Char*)"font-size", pszFontSize);
-		    pAP->getProperty((XML_Char*)"font-family", pszFontFamily);
+			pAP->getProperty("color", pszColor);
+		    pAP->getProperty("font-size", pszFontSize);
+		    pAP->getProperty("font-family", pszFontFamily);
 
 			if (pszColor)
 			{
@@ -704,15 +704,15 @@ void s_HTML_Listener::_closeSpan(void)
 		const XML_Char * szValue;
 		
 		if (
-			(pAP->getProperty((XML_Char*)"color", szValue))
-		    || (pAP->getProperty((XML_Char*)"font-size", szValue))
-		    || (pAP->getProperty((XML_Char*)"font-family", szValue))
+			(pAP->getProperty("color", szValue))
+		    || (pAP->getProperty("font-size", szValue))
+		    || (pAP->getProperty("font-family", szValue))
 			)
 		{
 		  closeSpan = true;
 		}
 
-		if (pAP->getProperty((XML_Char*)"text-position", szValue))
+		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!UT_strcmp("superscript", szValue))
 			{
@@ -727,7 +727,7 @@ void s_HTML_Listener::_closeSpan(void)
 
 
 		if (
-			(pAP->getProperty((XML_Char*)"text-decoration", szValue))
+			(pAP->getProperty("text-decoration", szValue))
 			&& UT_strcmp(szValue, "none")
 			)
 		{
@@ -735,7 +735,7 @@ void s_HTML_Listener::_closeSpan(void)
 		}
 
 		if (
-			(pAP->getProperty((XML_Char*)"font-style", szValue))
+			(pAP->getProperty("font-style", szValue))
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
@@ -743,7 +743,7 @@ void s_HTML_Listener::_closeSpan(void)
 		}
 		
 		if (
-			(pAP->getProperty((XML_Char*)"font-weight", szValue))
+			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
@@ -1095,7 +1095,7 @@ bool s_HTML_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute((XML_Char*)"type", pszSectionType);
+			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
 				|| (0 == UT_strcmp(pszSectionType, "doc"))

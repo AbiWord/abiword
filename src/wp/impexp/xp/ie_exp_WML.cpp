@@ -226,7 +226,7 @@ void s_WML_Listener::_openParagraph(PT_AttrPropIndex api)
 		const XML_Char * szValue;
 
 		m_pie->write("<p");
-		if (pAP->getProperty((XML_Char*)"text-align", szValue))
+		if (pAP->getProperty("text-align", szValue))
 		{
 		  if (!UT_strcmp(szValue, "center")) 
 			m_pie->write(" align=\"center\"");
@@ -388,7 +388,7 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 		const XML_Char * szValue;
 
 		if (
-			(pAP->getProperty((XML_Char*)"font-weight", szValue))
+			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
@@ -396,7 +396,7 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 		
 		if (
-			(pAP->getProperty((XML_Char*)"font-style", szValue))
+			(pAP->getProperty("font-style", szValue))
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
@@ -405,7 +405,7 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 
 		
 		if (
-			(pAP->getProperty((XML_Char*)"text-decoration", szValue))
+			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
@@ -434,7 +434,7 @@ void s_WML_Listener::_openSpan(PT_AttrPropIndex api)
 		// In my WML world...
 		// superscript = big
 		// subscript = small
-		if (pAP->getProperty((XML_Char*)"text-position", szValue))
+		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!UT_strcmp("superscript", szValue))
 			{
@@ -617,7 +617,7 @@ void s_WML_Listener::_closeSpan(void)
 
 		const XML_Char * szValue;
 		
-		if (pAP->getProperty((XML_Char*)"text-position", szValue))
+		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!UT_strcmp("superscript", szValue))
 			{
@@ -629,7 +629,7 @@ void s_WML_Listener::_closeSpan(void)
 			}
 		}
 
-		if ((pAP->getProperty((XML_Char*)"text-decoration", szValue)))
+		if ((pAP->getProperty("text-decoration", szValue)))
 		{
 			const XML_Char* pszDecor = szValue;
 
@@ -655,7 +655,7 @@ void s_WML_Listener::_closeSpan(void)
 		}
 
 		if (
-			(pAP->getProperty((XML_Char*)"font-style", szValue))
+			(pAP->getProperty("font-style", szValue))
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
@@ -663,7 +663,7 @@ void s_WML_Listener::_closeSpan(void)
 		}
 		
 		if (
-			(pAP->getProperty((XML_Char*)"font-weight", szValue))
+			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{

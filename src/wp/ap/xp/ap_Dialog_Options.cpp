@@ -339,7 +339,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 
 	currentPage = _gatherNotebookPageNum();
 
-	pPrefs->setCurrentScheme((XML_Char*)"_builtin_");		
+	pPrefs->setCurrentScheme("_builtin_");		
 	
 	_populateWindowData();
 

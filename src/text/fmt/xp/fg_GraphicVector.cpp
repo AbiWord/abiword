@@ -49,7 +49,7 @@ FG_Graphic* FG_GraphicVector::createFromChangeRecord(const fl_Layout* pFL,
 						    &pFG->m_pSpanAP);
 	if (bFoundSpanAP && pFG->m_pSpanAP)
 	{
-		bool bFoundDataID = pFG->m_pSpanAP->getAttribute((XML_Char*)"dataid", pFG->m_pszDataID);
+		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
 			bFoundDataItem = pDoc->getDataItemDataByName((char*)pFG->m_pszDataID, (const UT_ByteBuf **)&pFG->m_pbbSVG, NULL, NULL);
@@ -113,8 +113,8 @@ GR_Image* FG_GraphicVector::generateImage(GR_Graphics* pG)
 
 	const XML_Char *pszWidth;
 	const XML_Char *pszHeight;
-	bool bFoundWidthProperty = m_pSpanAP->getProperty((XML_Char*)"width", pszWidth);
-	bool bFoundHeightProperty = m_pSpanAP->getProperty((XML_Char*)"height", pszHeight);
+	bool bFoundWidthProperty = m_pSpanAP->getProperty("width", pszWidth);
+	bool bFoundHeightProperty = m_pSpanAP->getProperty("height", pszHeight);
 
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;

@@ -175,7 +175,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute((XML_Char*)"type", pszSectionType);
+			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
 				|| (0 == UT_strcmp(pszSectionType, "doc"))
@@ -200,7 +200,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				if (0 == UT_strcmp(pszSectionType, "header"))
 				{
 					const XML_Char* pszID = NULL;
-					pAP->getAttribute((XML_Char*)"id", pszID);
+					pAP->getAttribute("id", pszID);
 
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
@@ -222,7 +222,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				else if (0 == UT_strcmp(pszSectionType, "footer"))
 				{
 					const XML_Char* pszID = NULL;
-					pAP->getAttribute((XML_Char*)"id", pszID);
+					pAP->getAttribute("id", pszID);
 
 					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
@@ -472,7 +472,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 			PL_StruxDocHandle sdh = pL->getStruxDocHandle();
 	
 			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute((XML_Char*)"type", pszSectionType);
+			pAP->getAttribute("type", pszSectionType);
 
 			//
 			// OK Sevior adds code to actually change a 
@@ -491,7 +491,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				//  matching ID
 				//
 				const XML_Char* pszID = NULL;
-				pAP->getAttribute((XML_Char*)"id", pszID);
+				pAP->getAttribute("id", pszID);
 
 				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 				UT_ASSERT(pDocSL); 
@@ -523,7 +523,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				//  matching ID
 				//
 				const XML_Char* pszID = NULL;
-				pAP->getAttribute((XML_Char*)"id", pszID);
+				pAP->getAttribute("id", pszID);
 
 				fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 				UT_ASSERT(pDocSL); 

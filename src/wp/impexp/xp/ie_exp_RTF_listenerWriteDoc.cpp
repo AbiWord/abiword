@@ -982,7 +982,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	// fetch the "name" of the image and use it to fetch the actual image data.
 	
 	const XML_Char * szDataID = NULL;
-	bool bFoundDataID = pImageAP->getAttribute((XML_Char*)"dataid",szDataID);
+	bool bFoundDataID = pImageAP->getAttribute("dataid",szDataID);
 	if (!bFoundDataID)
 	{
 		UT_DEBUGMSG(("RTF_Export: cannot get dataid for image\n"));
@@ -1003,8 +1003,8 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	
 	const XML_Char * szWidthProp = NULL;
 	const XML_Char * szHeightProp = NULL;
-	bool bFoundWidthProperty = pImageAP->getProperty((XML_Char*)"width",szWidthProp);
-	bool bFoundHeightProperty = pImageAP->getProperty((XML_Char*)"height",szHeightProp);
+	bool bFoundWidthProperty = pImageAP->getProperty("width",szWidthProp);
+	bool bFoundHeightProperty = pImageAP->getProperty("height",szHeightProp);
 
 	// get the width/height of the image from the image itself.
 

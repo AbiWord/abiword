@@ -191,22 +191,22 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 		  XML_Char *buf[3];
 		  bool left = false;
 
-		  UT_XML_cloneString(buf[0], (XML_Char*)"props");
+		  UT_XML_cloneString(buf[0], "props");
 		  buf[2] = NULL;
 
-		  p_val = (XML_Char*)_getXMLPropValue((XML_Char *)"align", atts);
+		  p_val = (XML_Char*)_getXMLPropValue("align", atts);
 		  if(!p_val || !atts) {
 		    UT_DEBUGMSG(("WML: got <p> with no props\n"));
 		    left = true;
 		  }
 		  else {
-		    if(!UT_XML_strcmp(p_val, (XML_Char *)"center"))
+		    if(!UT_XML_strcmp(p_val, "center"))
 		      {
-			UT_XML_cloneString(buf[1], (XML_Char*)"text-align:center");
+			UT_XML_cloneString(buf[1], "text-align:center");
 		      }
-		    else if(!UT_XML_strcmp(p_val, (XML_Char *)"right"))
+		    else if(!UT_XML_strcmp(p_val, "right"))
 		      {
-			UT_XML_cloneString(buf[1], (XML_Char*)"text-align:right");
+			UT_XML_cloneString(buf[1], "text-align:right");
 		      }
 		    else
 		      left = true;
@@ -239,26 +239,26 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 	  {
 	    const XML_Char **p_atts;
 	    XML_Char *buf[3];
-	    UT_XML_cloneString(buf[0], (XML_Char *)"props");
+	    UT_XML_cloneString(buf[0], "props");
 	    buf[2] = NULL;
 
 	    switch(s_Tokens[tokenIndex].m_type) {
 	    case TT_ITALIC: 
-	      UT_XML_cloneString(buf[1], (XML_Char *)"font-style:italic"); 
+	      UT_XML_cloneString(buf[1], "font-style:italic"); 
 	      break;
 	    case TT_UNDERLINE: 
-	       UT_XML_cloneString(buf[1], (XML_Char *)"text-decoration:underline"); 
+	       UT_XML_cloneString(buf[1], "text-decoration:underline"); 
 	      break;
 	    case TT_BOLD:
 	    case TT_STRONG:
 	    case TT_EMPHASIS:
-	       UT_XML_cloneString(buf[1],  (XML_Char *)"font-weight:bold"); 
+	       UT_XML_cloneString(buf[1],  "font-weight:bold"); 
 	      break;
 	    case TT_BIG: 
-	       UT_XML_cloneString(buf[1], (XML_Char *)"text-position:superscript"); 
+	       UT_XML_cloneString(buf[1], "text-position:superscript"); 
 	      break;
 	    case TT_SMALL: 
-	       UT_XML_cloneString(buf[1], (XML_Char *)"text-position:subscript"); 
+	       UT_XML_cloneString(buf[1], "text-position:subscript"); 
 	      break;
 
 	    default:

@@ -142,7 +142,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 
 		m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
-		PP_resetInitialBiDiValues((XML_Char *) "rtl");
+		PP_resetInitialBiDiValues("rtl");
 	}
 #else
 	if(!m_bDefaultDirectionRtl)
@@ -156,7 +156,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 		
 		m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
-		PP_resetInitialBiDiValues((XML_Char *) "ltr");
+		PP_resetInitialBiDiValues("ltr");
 	}
 #endif
 #endif
@@ -1211,12 +1211,12 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 					UT_uint32 currID = pBlock->getAutoNum()->getID();
 					curlevel++;
 					fl_AutoNum * pAuto = pBlock->getAutoNum();
-					const XML_Char * pszAlign = pBlock->getProperty((XML_Char*)"margin-left",true);
-					const XML_Char * pszIndent = pBlock->getProperty((XML_Char*)"text-indent",true);
+					const XML_Char * pszAlign = pBlock->getProperty("margin-left",true);
+					const XML_Char * pszIndent = pBlock->getProperty("text-indent",true);
 					float fAlign = (float)atof(pszAlign);
 					float fIndent = (float)atof(pszIndent);
 					fAlign += (float) LIST_DEFAULT_INDENT;
-					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),(XML_Char *) "NULL",fAlign,fIndent, currID,curlevel);
+					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),"NULL",fAlign,fIndent, currID,curlevel);
 					doInsert = false;
 				}
 			}
@@ -2004,16 +2004,16 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 
 	pBlock->getAttrProp(&pBlockAP);
 
-	v.addItem(new _fmtPair((XML_Char*)"font-family",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"font-size",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"font-weight",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"font-style",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"text-position",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"color",			pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"bgcolor",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-family",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-size",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-weight",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-style",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("text-position",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("color",			pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("bgcolor",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 #ifdef BIDI_ENABLED
-	v.addItem(new _fmtPair((XML_Char*)"dir",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("dir",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 #endif
 
 	// 2. prune 'em as they vary across selection
@@ -2468,15 +2468,15 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
 	pSection->getAttrProp(&pSectionAP);
 
-	v.addItem(new _fmtPair((XML_Char*)"columns", NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair((XML_Char*)"column-line", NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair((XML_Char*)"column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair((XML_Char*)"page-margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair((XML_Char*)"page-margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair((XML_Char*)"page-margin-right",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair((XML_Char*)"page-margin-bottom",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair((XML_Char*)"page-margin-footer",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair((XML_Char*)"page-margin-header",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("columns", NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("column-line", NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("page-margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("page-margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("page-margin-right",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("page-margin-bottom",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("page-margin-footer",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("page-margin-header",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())
@@ -2590,21 +2590,21 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	pBlock->getAttrProp(&pBlockAP);
 
-	v.addItem(new _fmtPair((XML_Char*)"text-align",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"text-indent",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"margin-left",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"margin-right",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"margin-top",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"margin-bottom",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"line-height",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"tabstops",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"default-tab-interval",	NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"keep-together",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"keep-with-next",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"orphans",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair((XML_Char*)"widows",					NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("text-align",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("text-indent",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-left",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-right",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-top",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-bottom",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("line-height",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("tabstops",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("default-tab-interval",	NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("keep-together",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("keep-with-next",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("orphans",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("widows",					NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 #ifdef BIDI_ENABLED
-	v.addItem(new _fmtPair((XML_Char*)"dom-dir",		NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("dom-dir",		NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 #endif
 
 	// 2. prune 'em as they vary across selection
@@ -2880,7 +2880,7 @@ bool FV_View::isTabListAheadPoint(void)
 
 void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 {
-	const XML_Char * properties[] = { (XML_Char*)"font-family", NULL, 0};
+	const XML_Char * properties[] = { "font-family", NULL, 0};
 	const XML_Char ** props_in = NULL;
 	const XML_Char * currentfont;
 	bool bisList = false;
@@ -2941,7 +2941,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	// restored after character is deleted.
 
 		getCharFormat(&props_in);
-		currentfont = UT_getAttribute((XML_Char*)"font-family",props_in);
+		currentfont = UT_getAttribute("font-family",props_in);
 		properties[1] = currentfont;
 
 		_eraseInsertionPoint();
@@ -4500,13 +4500,13 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 	const XML_Char ** props_in = NULL;
 	const XML_Char * currentfont;
 	getCharFormat(&props_in);
-	currentfont = UT_getAttribute((XML_Char*)"font-family",props_in);
+	currentfont = UT_getAttribute("font-family",props_in);
 	free(props_in);
 
 	if(strstr(symfont,currentfont) == NULL)
 	{
 		// Set the font
-		const XML_Char* properties[] = { (XML_Char*)"font-family", 0, 0 };
+		const XML_Char* properties[] = { "font-family", 0, 0 };
 		properties[1] = symfont ;
 		setCharFormat(properties);
 
@@ -6379,15 +6379,15 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		pInfo->m_xPageViewMargin = fl_PAGEVIEW_MARGIN_X;
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
-		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty((XML_Char*)"margin-left"));
-		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty((XML_Char*)"margin-right"));
-		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty((XML_Char*)"text-indent"));
+		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
+		pInfo->m_xrRightIndent = m_pG->convertDimension(pBlock->getProperty("margin-right"));
+		pInfo->m_xrFirstLineIndent = m_pG->convertDimension(pBlock->getProperty("text-indent"));
 
 		pInfo->m_pfnEnumTabStops = pBlock->s_EnumTabStops;
 		pInfo->m_pVoidEnumTabStopsData = (void *)pBlock;
 		pInfo->m_iTabStops = (UT_sint32) pBlock->getTabsCount();
 		pInfo->m_iDefaultTabInterval = pBlock->getDefaultTabInterval();
-		pInfo->m_pszTabStops = pBlock->getProperty((XML_Char*)"tabstops");
+		pInfo->m_pszTabStops = pBlock->getProperty("tabstops");
 
 	}
 	else
@@ -7001,7 +7001,7 @@ void FV_View::cmdContextAdd(void)
 		delete[](szMsg);
 	
 	/*
-		UT_DEBUGMSG(("View: Resetting default direction to %s\n", b ?(XML_Char *) "rtl" :(XML_Char *) "ltr"));
+		UT_DEBUGMSG(("View: Resetting default direction to %s\n", b ?"rtl" :"ltr"));
 		
 		if(b)
 		{
@@ -7031,7 +7031,7 @@ void FV_View::cmdContextAdd(void)
 		}
 		
 		UT_DEBUGMSG(("calling PP_resetInitialBiDiValues ..."));
-		PP_resetInitialBiDiValues(b ?(XML_Char *) "rtl" :(XML_Char *) "ltr");
+		PP_resetInitialBiDiValues(b ?"rtl" :"ltr");
 		UT_DEBUGMSG(("done.\n"));			
 		pView->m_bDefaultDirectionRtl = b;
 		pView->_generalUpdate();

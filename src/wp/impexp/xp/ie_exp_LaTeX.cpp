@@ -240,7 +240,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 	{
 		const XML_Char * szValue;
 
-		if (pAP->getAttribute((XML_Char*)"style", szValue))
+		if (pAP->getAttribute("style", szValue))
 		{
 			
 			if(0 == UT_strcmp(szValue, "Heading 1")) 
@@ -282,7 +282,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		// TODO: Split this function in several ones
 		if (m_iBlockType == BT_NORMAL)
 		{
-			if (pAP->getProperty((XML_Char*)"text-align", szValue))
+			if (pAP->getProperty("text-align", szValue))
 			{
 				if (0 == UT_strcmp(szValue, "center"))
 				{
@@ -301,7 +301,7 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 				}
 			}
 
-			if (pAP->getProperty((XML_Char*)"line-height", szValue))
+			if (pAP->getProperty("line-height", szValue))
 			{
 				double height = atof(szValue);
 
@@ -341,9 +341,9 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 		const XML_Char* pszPageMarginLeft = NULL;
 		const XML_Char* pszPageMarginRight = NULL;
 
-		pAP->getProperty((XML_Char*)"columns", pszNbCols);
-		pAP->getProperty((XML_Char*)"page-margin-right", pszPageMarginLeft);
-		pAP->getProperty((XML_Char*)"page-margin-left", pszPageMarginRight);
+		pAP->getProperty("columns", pszNbCols);
+		pAP->getProperty("page-margin-right", pszPageMarginLeft);
+		pAP->getProperty("page-margin-left", pszPageMarginRight);
 
 		if (pszNbCols != NULL && ((0 == UT_strcmp(pszNbCols, "2"))
 								  || (0 == UT_strcmp(pszNbCols, "3"))))
@@ -446,7 +446,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		const XML_Char * szValue;
 
 		if (
-			(pAP->getProperty((XML_Char*)"font-weight", szValue))
+			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
@@ -454,14 +454,14 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		}
 		
 		if (
-			(pAP->getProperty((XML_Char*)"font-style", szValue))
+			(pAP->getProperty("font-style", szValue))
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
 			m_pie->write("\\textit{");
 		}
 		
-		if (pAP->getProperty((XML_Char*)"text-decoration", szValue))
+		if (pAP->getProperty("text-decoration", szValue))
 		{
 			const XML_Char* pszDecor = szValue;
 
@@ -497,7 +497,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			free(p);
 		}
 
-		if (pAP->getProperty((XML_Char*)"text-position", szValue))
+		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!UT_strcmp("superscript", szValue))
 			{
@@ -509,10 +509,10 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			}
 		}
 		
-		if (pAP->getProperty((XML_Char*)"color", szValue))
+		if (pAP->getProperty("color", szValue))
 			; // TODO
 
-		if (pAP->getProperty((XML_Char*)"font-size", szValue))
+		if (pAP->getProperty("font-size", szValue))
 		{
 			if (strcmp (szValue, DEFAULT_SIZE) != 0)
 			{
@@ -524,7 +524,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			}
 		}
 		
-		if (pAP->getProperty((XML_Char*)"font-family", szValue))
+		if (pAP->getProperty("font-family", szValue))
 			; // TODO
 
 		m_bInSpan = true;
@@ -543,16 +543,16 @@ void s_LaTeX_Listener::_closeSpan(void)
 	{
 		const XML_Char * szValue;
 		
-		if (// (pAP->getProperty((XML_Char*)"color", szValue)) ||    // TODO
-		    (pAP->getProperty((XML_Char*)"font-size", szValue))
-//		    || (pAP->getProperty((XML_Char*)"font-family", szValue))  // TODO
+		if (// (pAP->getProperty("color", szValue)) ||    // TODO
+		    (pAP->getProperty("font-size", szValue))
+//		    || (pAP->getProperty("font-family", szValue))  // TODO
 			)
 		{
 			if (strcmp (szValue, DEFAULT_SIZE) != 0)
 				m_pie->write("}");
 		}
 
-		if (pAP->getProperty((XML_Char*)"text-position", szValue))
+		if (pAP->getProperty("text-position", szValue))
 		{
 			if (!UT_strcmp("superscript", szValue))
 			{
@@ -565,7 +565,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 		}
 
 		if (
-			(pAP->getProperty((XML_Char*)"text-decoration", szValue))
+			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
@@ -593,7 +593,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 		}
 
 		if (
-			(pAP->getProperty((XML_Char*)"text-decoration", szValue))
+			(pAP->getProperty("text-decoration", szValue))
 			)
 		{
 			const XML_Char* pszDecor = szValue;
@@ -626,7 +626,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 		}
 
 		if (
-			(pAP->getProperty((XML_Char*)"font-style", szValue))
+			(pAP->getProperty("font-style", szValue))
 			&& !UT_strcmp(szValue, "italic")
 			)
 		{
@@ -634,7 +634,7 @@ void s_LaTeX_Listener::_closeSpan(void)
 		}
 		
 		if (
-			(pAP->getProperty((XML_Char*)"font-weight", szValue))
+			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
 			)
 		{
@@ -946,7 +946,7 @@ bool s_LaTeX_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 		if (m_pDocument->getAttrProp(indexAP, &pAP) && pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute((XML_Char*)"type", pszSectionType);
+			pAP->getAttribute("type", pszSectionType);
 			if (
 				!pszSectionType
 				|| (0 == UT_strcmp(pszSectionType, "doc"))
