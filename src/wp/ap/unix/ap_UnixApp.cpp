@@ -151,9 +151,11 @@ UT_Bool AP_UnixApp::initialize(void)
 		
 		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
 		UT_ASSERT(pBuiltinStringSet);
+#if 0
 #ifdef DEBUG
 		// TODO Change this to be someplace more friendly.
 		pBuiltinStringSet->dumpBuiltinSet("/tmp/EnUS.strings");
+#endif
 #endif
 		m_pStringSet = pBuiltinStringSet;
 
