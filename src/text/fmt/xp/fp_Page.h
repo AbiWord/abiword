@@ -92,7 +92,8 @@ public:
 	fp_ShadowContainer*             getHdrFtrP(HdrFtrType hfType);
 	fp_ShadowContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
 	fp_ShadowContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
-	fp_ShadowContainer*	buildHeaderContainer(fl_HdrFtrSectionLayout*);
+	fp_ShadowContainer*	buildHdrFtrContainer(fl_HdrFtrSectionLayout*, 
+											 HdrFtrType hfType);
 	fp_ShadowContainer*	buildFooterContainer(fl_HdrFtrSectionLayout*);
 
 #ifdef FMT_TEST

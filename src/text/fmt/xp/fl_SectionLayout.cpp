@@ -3990,13 +3990,11 @@ fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFt
 	m_pHdrFtrSL = pHdrFtrSL;
 	m_pPage = pPage;
 	if (m_pHdrFtrSL->getHFType() < FL_HDRFTR_FOOTER)
-	{
-		m_pContainer = m_pPage->buildHeaderContainer(m_pHdrFtrSL);
-	}
+		m_pContainer = m_pPage->buildHdrFtrContainer(m_pHdrFtrSL, 
+													 FL_HDRFTR_HEADER);
 	else
-	{
-		m_pContainer =  m_pPage->buildFooterContainer(m_pHdrFtrSL);
-	}
+		m_pContainer = m_pPage->buildHdrFtrContainer(m_pHdrFtrSL,
+													 FL_HDRFTR_FOOTER);
 	xxx_UT_DEBUGMSG(("SEVIOR: created shadow %x with container %x \n",this,m_pContainer));
 	m_iType = FL_SECTION_SHADOW;
 	fl_Layout::setType(PTX_Section); // Set the type of this strux

@@ -1181,131 +1181,102 @@ fp_ShadowContainer* fp_Page::getHdrFtrP(HdrFtrType hfType)
 	}
 }
 
-fp_ShadowContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
+fp_ShadowContainer* 
+fp_Page::buildHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL,
+							  HdrFtrType hfType)
 {
-	if (m_pHeader)
-	{
-		return m_pHeader;
-	}
+	UT_ASSERT(hfType == FL_HDRFTR_HEADER || hfType == FL_HDRFTR_FOOTER);
+	bool bIsHead = (hfType == FL_HDRFTR_HEADER);
+	fp_ShadowContainer ** ppHF = bIsHead ? &m_pHeader : &m_pFooter;
 
-	// TODO fix these coordinates - Done!
+	if (*ppHF)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		(*ppHF)->getHdrFtrSectionLayout()->deletePage(this);
+	}
+	xxx_UT_DEBUGMSG(("SEVIOR: Building header container. page = %x hdrftr = %x \n",this,pHFSL));
+
 	//
 	// headerMargin is the height from the top of the page.
 	//
+	if (bIsHead)
+	{
 #ifndef WITH_PANGO
-	m_pHeader = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+		*ppHF = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+									 m_pOwner->getHeaderMargin(),
+									 getWidth() - (m_pOwner->getLeftMargin() + 
+												   m_pOwner->getRightMargin()),
+									 m_pOwner->getTopMargin() - 
 									   m_pOwner->getHeaderMargin(),
-									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
-									   m_pOwner->getTopMargin() - m_pOwner->getHeaderMargin(),
-									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
-									   m_pOwner->getTopMarginInLayoutUnits() - m_pOwner->getHeaderMarginInLayoutUnits(),
-									   pHFSL);
+									 getWidthInLayoutUnits() - 
+									  (m_pOwner->getLeftMarginInLayoutUnits() +
+								      m_pOwner->getRightMarginInLayoutUnits()),
+									 m_pOwner->getTopMarginInLayoutUnits() - 
+									 m_pOwner->getHeaderMarginInLayoutUnits(),
+									 pHFSL);
 #else
 	// for the time being just pass 0's for the layout units, one day
 	// we will change the signature ...
-	m_pHeader = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+	    *ppHF = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+									 m_pOwner->getHeaderMargin(),
+									 getWidth() - (m_pOwner->getLeftMargin() + 
+												   m_pOwner->getRightMargin()),
+									 m_pOwner->getTopMargin() - 
 									   m_pOwner->getHeaderMargin(),
-									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
-									   m_pOwner->getTopMargin() - m_pOwner->getHeaderMargin(),
-									   0,
-									   0,
-									   pHFSL);
+									 0,
+									 0,
+									 pHFSL);
 #endif
+	}
+	else
+	{
+#ifndef WITH_PANGO
+		*ppHF = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+									 getHeight() - m_pOwner->getBottomMargin()+
+									              m_pOwner->getFooterMargin(),
+									 getWidth() - (m_pOwner->getLeftMargin()+ 
+                                                  m_pOwner->getRightMargin()),
+									 m_pOwner->getBottomMargin(),
+									 getWidthInLayoutUnits() - 
+								      (m_pOwner->getLeftMarginInLayoutUnits()+
+								      m_pOwner->getRightMarginInLayoutUnits()),
+									 m_pOwner->getBottomMarginInLayoutUnits() -
+									  m_pOwner->getFooterMarginInLayoutUnits(),
+									 pHFSL);
+#else
+	// for the time being just pass 0's for the layout units, one day
+	// we will change the signature ...
+		*ppHF = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
+									 getHeight() - m_pOwner->getBottomMargin()+
+									              m_pOwner->getFooterMargin(),
+									 getWidth() - (m_pOwner->getLeftMargin()+ 
+                                                  m_pOwner->getRightMargin()),
+									 m_pOwner->getBottomMargin(),
+									 0,
+									 0,
+									 pHFSL);
+#endif
+	}
 
-	// TODO outofmem
+	UT_return_val_if_fail(*ppHF, NULL);
 
-	m_pHeader->setPage(this);
-
-	return m_pHeader;
+	(*ppHF)->setPage(this);
+	UT_DEBUGMSG(("SEVIOR: Page for shadow %x is %x \n",*ppHF,this));
+	return *ppHF;
 }
 
-
-fp_ShadowContainer* fp_Page::buildHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
+fp_ShadowContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 {
 	if (m_pHeader)
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		m_pHeader->getHdrFtrSectionLayout()->deletePage(this);
-	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Building header container. page = %x hdrftr = %x \n",this,pHFSL));
-	// TODO fix these coordinates - Done!
-	//
-	// headerMargin is the height from the top of the page.
-	//
-	m_pHeader = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
-									   m_pOwner->getHeaderMargin(),
-									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
-									   m_pOwner->getTopMargin() - m_pOwner->getHeaderMargin(),
-									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
-									   m_pOwner->getTopMarginInLayoutUnits() - m_pOwner->getHeaderMarginInLayoutUnits(),
-									   pHFSL);
-	// TODO outofmem
-
-	m_pHeader->setPage(this);
-	UT_DEBUGMSG(("SEVIOR: Page for shadow %x is %x \n",m_pHeader,this));
-	return m_pHeader;
+		return m_pHeader;
+	else
+		return buildHdrFtrContainer(pHFSL, FL_HDRFTR_HEADER);
 }
 
 fp_ShadowContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 {
 	if (m_pFooter)
-	{
 		return m_pFooter;
-	}
-
-	// TODO fix these coordinates -Done !
-	//
-	// footerMargin is the distance from the bottom of the text to the
-	// top of the footer
-	//
-	m_pFooter = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
-									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
-									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
-									   m_pOwner->getBottomMargin(),
-									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
-									   m_pOwner->getBottomMarginInLayoutUnits() - m_pOwner->getFooterMarginInLayoutUnits(),
-									   pHFSL);
-	// TODO outofmem
-
-	m_pFooter->setPage(this);
-
-	return m_pFooter;
-}
-
-fp_ShadowContainer* fp_Page::buildFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
-{
-	if (m_pFooter)
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		m_pHeader->getHdrFtrSectionLayout()->deletePage(this);
-	}
-
-	// TODO fix these coordinates -Done !
-	//
-	// footerMargin is the distance from the bottom of the text to the
-	// top of the footer
-	//
-#ifdef WITH_PANGO
-	m_pFooter = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
-									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
-									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
-									   m_pOwner->getBottomMargin(),
-									   0,
-									   0,
-									   pHFSL);
-#else
-	m_pFooter = new fp_ShadowContainer(m_pOwner->getLeftMargin(),
-									   getHeight() - m_pOwner->getBottomMargin() + m_pOwner->getFooterMargin(),
-									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
-									   m_pOwner->getBottomMargin(),
-									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
-									   m_pOwner->getBottomMarginInLayoutUnits() - m_pOwner->getFooterMarginInLayoutUnits(),
-									   pHFSL);
-#endif
-
-	// TODO outofmem
-
-	m_pFooter->setPage(this);
-
-	return m_pFooter;
+	else
+		return buildHdrFtrContainer(pHFSL, FL_HDRFTR_FOOTER);
 }
