@@ -273,7 +273,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	rbbi.clrFore = GetSysColor(COLOR_BTNTEXT);
 	rbbi.clrBack = GetSysColor(COLOR_BTNFACE);
 	rbbi.fStyle = RBBS_NOVERT |	// do not display in vertical orientation
-		RBBS_CHILDEDGE |
+		RBBS_CHILDEDGE | RBBS_BREAK |
 		/* RBBS_FIXEDBMP */ 0;
 //	rbbi.hbmBack = LoadBitmap(hInst, MAKEINTRESOURCE(IDB_BACK));
 //	rbbi.lpText = TEXT("Cool sites:");
