@@ -5507,6 +5507,16 @@ bool IE_Imp_RTF::HandleStarKeyword()
 							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 							return true;
 						}
+						if(pView->isInTable())
+						{
+//
+// No nested Tables in header/footer
+//
+							m_iIsInHeaderFooter =1;
+							m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+							return true;
+						}
+
 						m_iIsInHeaderFooter = 2;
 					}
 					return HandleAbiTable();
