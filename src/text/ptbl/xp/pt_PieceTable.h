@@ -200,6 +200,12 @@ public:
 										   const XML_Char ** properties,
 										   PTStruxType pts=PTX_StruxDummy);
 
+
+	bool					changeStruxFmtNoUndo(PTChangeFmt ptc,
+										   pf_Frag_Strux * pfs,
+										   const XML_Char ** attributes,
+										   const XML_Char ** properties);
+
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux * pfs,const XML_Char ** attributes);
 
 	bool                    changeStruxForLists(PL_StruxDocHandle sdh,

@@ -1021,10 +1021,10 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 		return;
 	}
 	const char * pProps = pDSL->m_sHdrFtrChangeProps.c_str();
-	PT_DocPosition pos = pDoc->getStruxPosition(pDSL->getStruxDocHandle()) +1;
 	const XML_Char * pszAtts[4] = {"props",pProps,NULL,NULL};
 	pDoc->notifyPieceTableChangeStart();
 	FV_View * pView =  pDSL->m_pLayout->getView();
+	PL_StruxDocHandle sdh = pDSL->getStruxDocHandle();
     PT_DocPosition insPos = pView->getPoint();
 	fl_HdrFtrShadow * pShadow = pView->getEditShadow();
 	HdrFtrType hfType = FL_HDRFTR_HEADER;
@@ -1037,7 +1037,7 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 	{
 		iPage = pDSL->m_pLayout->findPage(pShadow->getPage());
 	}
-	pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,pszAtts,NULL,PTX_Section);
+	pDoc->changeStruxFmtNoUndo(PTC_AddFmt,sdh,pszAtts,NULL);
 //
 // update the screen
 //

@@ -247,6 +247,12 @@ public:
 										   const XML_Char ** attributes,
 										   const XML_Char ** properties);
 
+
+	bool					changeStruxFmtNoUndo(PTChangeFmt ptc,
+										   PL_StruxDocHandle sdh,
+										   const XML_Char ** attributes,
+										   const XML_Char ** properties);
+
 	bool					changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
 

@@ -860,6 +860,17 @@ bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 }
 
 
+bool PD_Document::changeStruxFmtNoUndo(PTChangeFmt ptc,
+								 PL_StruxDocHandle sdh,
+								 const XML_Char ** attributes,
+								 const XML_Char ** properties)
+{
+	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
+	UT_return_val_if_fail (pfs->getType() == pf_Frag::PFT_Strux,false);
+	return m_pPieceTable->changeStruxFmtNoUndo(ptc,pfs,attributes,properties);
+}
+
+
 /*!
  * This method changes *all* the strux fragments in the specified region.
  */

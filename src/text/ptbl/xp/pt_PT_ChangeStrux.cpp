@@ -55,6 +55,50 @@ bool pt_PieceTable::changeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
 	return _realChangeSectionAttsNoUpdate(pfs, atts, attsValue);
 }
 
+
+/*!
+ * This method sends out change records to the layouts but it does put
+ * revision marks on them nor are they saved in the undo stack.
+ * It's used by the strux resizer for the hdrftr and maybe later for the frame.
+ */
+bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
+										 pf_Frag_Strux * pfs,
+										 const XML_Char ** attributes,
+										 const XML_Char ** properties)
+{
+	PT_AttrPropIndex indexNewAP;
+	PTStruxType pts = pfs->getStruxType();
+
+	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
+	bool bMerged;
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	UT_ASSERT_HARMLESS(bMerged);
+	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
+	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
+		return true;
+
+	// convert this fragStrux into a doc position.  we add the length
+	// of the strux (in doc position coords) so that when undo looks
+	// it up by position it will be to the right of the beginning of
+	// the fragment and will find us -- rather than finding the end of
+	// the previous fragment.
+
+	PT_DocPosition dpos = getFragPosition(pfs) + pfs->getLength();
+
+	PX_ChangeRecord_StruxChange * pcr
+		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
+										  dpos,
+										  indexOldAP,indexNewAP,pts);
+	UT_return_val_if_fail (pcr,false);
+
+	bool bResult;
+	bResult = _fmtChangeStrux(pfs,indexNewAP);
+	UT_return_val_if_fail (bResult,false);
+	m_pDocument->notifyListeners(pfs,pcr);
+
+	return true;
+}
+
 bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 									  PT_DocPosition dpos1,
 									  PT_DocPosition dpos2,
