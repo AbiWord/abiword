@@ -1,6 +1,11 @@
 #ifndef UT_CASE_H
 #define UT_CASE_H
 
+// this file is to be included in ut_string.cpp only !!!
+#ifndef UT_STRING_CPP
+#error !!! This file can only be included in ut_string.cpp !!!
+#endif
+
 struct case_entry
 {
 	UT_UCSChar code;
@@ -1311,5 +1316,24 @@ case_entry case_table[] =
 
 #undef Lu
 #undef Ll
+
+struct ucs_range
+{
+	UT_UCSChar low;
+	UT_UCSChar high;
+};
+
+ucs_range whitespace_table[] =
+{
+	{0x0009, 0x000d},
+	{0x001c, 0x0020},
+	{0x0085, 0x0085},
+	{0x00A0, 0x00A0}, // had to add this by hand, for some reason in Unicode 3.1 it is marked as CS, not WS
+	{0x1680, 0x1680},
+	{0x2000, 0x200a},
+	{0x2028, 0x2029},
+	{0x202f, 0x202f},
+	{0x3000, 0x3000}
+};
 
 #endif

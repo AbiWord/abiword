@@ -44,7 +44,9 @@
 
 #include "xap_EncodingManager.h"
 
+#define UT_STRING_CPP
 #include "ut_case.h"
+#undef  UT_STRING_CPP
 
 // really simple way to determine if something is a hyperlink
 // probably not 100% correct, but better than !stricmp(http://), ...
@@ -563,6 +565,7 @@ UT_UCSChar UT_UCS_toupper(UT_UCSChar c)
 #endif
 }
 
+
 /*	Converts the given character to lowercase if it is an uppercase letter.
 	Returns it unchanged if it is not.
 	This function created by Pierre Sarrazin 1999-02-06
@@ -1029,6 +1032,22 @@ bool UT_UCS_islower(UT_UCSChar c)
     return false;
 #endif
 };
+
+bool UT_UCS_isspace(UT_UCSChar c)
+{
+	// the whitespace table is small, so use linear search
+	for (UT_uint32 i = 0; i < NrElements(whitespace_table); i++)
+	{
+		if(whitespace_table[i].high < c)
+			continue;
+		if(whitespace_table[i].low <= c)
+			return true;
+		// if we got here, then low > c
+		return false;
+	}
+	return false;
+};
+
 
 bool UT_UCS_isalpha(UT_UCSChar c)
 {
