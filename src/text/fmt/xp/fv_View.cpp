@@ -2229,7 +2229,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 // Loop through all the format handles that match our sdh until we find the one
 // in our View. (Not that it really matter I suppose.)
 //
-			for(i=0; !bFound ; i++)
+			for(i = 0; !bFound; ++i)
 			{
 //
 // Cast it into a fl_BlockLayout and we're done!
@@ -2249,10 +2249,10 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 				}
 			}
 			UT_ASSERT(sfh);
-			for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+			for(UT_uint32 j = 0; j < vBlock.getItemCount(); ++j)
 			{
-				pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
-				if(i == 0)
+				pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
+				if(j == 0)
 					pBL->resumeList(pBlock);
 				else
 					pBL->resumeList(pBL->getPrev());
@@ -2291,10 +2291,10 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 				}
 			}
 			UT_ASSERT(sfh);
-			for(UT_uint32 i=0; i< vBlock.getItemCount(); i++)
+			for(UT_uint32 j = 0; j < vBlock.getItemCount(); j++)
 			{
-				pBL = (fl_BlockLayout *)  vBlock.getNthItem(i);
-				if(i == 0)
+				pBL = (fl_BlockLayout *)  vBlock.getNthItem(j);
+				if (j == 0)
 					pBL->prependList(pBlock);
 				else
 					pBL->resumeList(pBL->getPrev());

@@ -25,6 +25,7 @@
 #include "ut_base64.h"
 #include "ut_debugmsg.h"
 #include "pt_Types.h"
+#include "ut_set.h"
 #include "ie_exp_AbiWord_1.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
@@ -209,6 +210,11 @@ protected:
 	PT_AttrPropIndex	m_apiLastSpan;
     fd_Field *          m_pCurrentField;
 	bool                m_bOpenChar;
+
+private:
+	UT_Set				m_pUsedImages;
+	const XML_Char*		getObjectKey(const PT_AttrPropIndex& api, const XML_Char* key);
+
 };
 
 void s_AbiWord_1_Listener::_closeSection(void)
@@ -439,6 +445,7 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 										   IE_Exp_AbiWord_1 * pie,
 										   bool isTemplate)
+	: m_pUsedImages(ut_lexico_lesser)
 {
 	m_bIsTemplate = isTemplate;
 	m_pDocument = pDocument;
@@ -585,6 +592,23 @@ s_AbiWord_1_Listener::~s_AbiWord_1_Listener()
 	m_pie->write("</abiword>\n");
 }
 
+
+const XML_Char*
+s_AbiWord_1_Listener::getObjectKey(const PT_AttrPropIndex& api, const XML_Char* key)
+{
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	if (bHaveProp && pAP)
+	{
+		const XML_Char* value;
+		if (pAP->getAttribute(key, value))
+			return value;
+	}
+
+	return 0;
+}
+
+
 bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 									  const PX_ChangeRecord * pcr)
 {
@@ -613,11 +637,17 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
+				{
 				_closeSpan();
                 _closeField();
+
+				const XML_Char* image_name = getObjectKey(api, (const XML_Char*) "dataid");
+				if (image_name)
+					m_pUsedImages.insert(image_name);
+
 				_openTag("image","/",false,api);
 				return true;
-
+				}
 			case PTO_Field:
                 {
                     _closeSpan();
@@ -901,9 +931,22 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	const UT_ByteBuf * pByteBuf;
 
 	UT_ByteBuf bbEncoded(1024);
+	UT_Set::Iterator end(m_pUsedImages.end());
 
 	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
 	{
+		UT_Set::Iterator it(m_pUsedImages.find_if(szName, ut_lexico_equal));
+		if (it == end)
+		{
+			printf("item #%s# not found in set:\n", szName);
+			break;
+		}
+		else
+		{
+			printf("item #%s# found:\n", szName);
+			m_pUsedImages.erase(it);
+		}
+
 		if (!bWroteOpenDataSection)
 		{
 			m_pie->write("<data>\n");
@@ -914,7 +957,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	   	bool encoded = true;
 	   
 		if (szMimeType && (UT_strcmp(szMimeType, "image/svg-xml") == 0 || UT_strcmp(szMimeType, "text/mathml") == 0))
-	     	{
+	    {
 		   bbEncoded.truncate(0);
 		   bbEncoded.append((UT_Byte*)"<![CDATA[", 9);
 		   UT_uint32 off = 0;
@@ -944,15 +987,16 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 		}
 
 	   	if (status)
-	     	{
+	    {
 	   		m_pie->write("<d name=\"");
 			m_pie->write(szName);
-		   	if (szMimeType) {
+		   	if (szMimeType)
+			{
 			   m_pie->write("\" mime-type=\"");
 			   m_pie->write(szMimeType);
 			}
 		   	if (encoded) 
-		     	{
+		    {
 			   	m_pie->write("\" base64=\"yes\">\n");
 				// break up the Base64 blob as a series lines
 				// like MIME does.
@@ -968,8 +1012,8 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 				}
 			}
 		   	else
-		     	{
-		     		m_pie->write("\" base64=\"no\">\n");
+		    {
+		     	m_pie->write("\" base64=\"no\">\n");
 			   	m_pie->write((const char*)bbEncoded.getPointer(0), bbEncoded.getLength());
 			}
 			m_pie->write("</d>\n");
