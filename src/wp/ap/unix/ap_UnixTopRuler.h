@@ -42,7 +42,11 @@ public:
 
 	GtkWidget *		createWidget(void);
 	virtual void	setView(AV_View * pView);
-	
+
+	// cheats for the callbacks
+	void 			getWidgetPosition(gint * x, gint * y);
+	GtkWidget * 	getWidget(void) { return m_wTopRuler; };
+			
 protected:
 	GtkWidget *		m_wTopRuler;
 

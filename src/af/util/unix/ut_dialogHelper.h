@@ -21,7 +21,9 @@
 #define UT_DIALOGHELPER_H
 
 #include <gtk/gtk.h>
+#include <gdk/gdkx.h>
 
+GdkWindowPrivate * getRootWindow(GtkWidget * widget);
 void centerDialog(GtkWidget * parent, GtkWidget * child);
 
 #endif /* UT_DIALOGHELPER_H */

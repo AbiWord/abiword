@@ -21,6 +21,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_dialogHelper.h"
 #include "xap_Frame.h"
 #include "xap_UnixFrame.h"
 #include "ap_UnixTopRuler.h"
@@ -93,6 +94,13 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 	AP_UnixFontManager * fontManager = app->getFontManager();
 	m_pG = new GR_UNIXGraphics(m_wTopRuler->window, fontManager);
 	UT_ASSERT(m_pG);
+}
+
+void AP_UnixTopRuler::getWidgetPosition(gint * x, gint * y)
+{
+	UT_ASSERT(x && y);
+	
+	gdk_window_get_position(m_wTopRuler->window, x, y);
 }
 
 /*****************************************************************/
@@ -192,8 +200,20 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	if (e->state & GDK_MOD1_MASK)
 		ems |= EV_EMS_ALT;
 
-	pUnixTopRuler->mouseMotion(ems, e->x, e->y);
-	
+	// root (absolute) coordinates
+	gint rx, ry;
+	GdkModifierType mask;
+	GdkWindowPrivate * rootWindow = getRootWindow(pUnixTopRuler->getWidget());
+	gdk_window_get_pointer((GdkWindow *) rootWindow, &rx, &ry, &mask);
+
+	// local (ruler widget) coordinates
+	gint wx, wy;
+	pUnixTopRuler->getWidgetPosition(&wx, &wy);
+
+	// subtract one from the other to catch all coordinates
+	// relative to the widget's 0,
+	pUnixTopRuler->mouseMotion(ems, rx - wx, ry - wy);
+
 	return 1;
 
 }

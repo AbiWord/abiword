@@ -22,10 +22,22 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#include <gdk/gdkx.h>
 #include <glib.h>
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
+GdkWindowPrivate * getRootWindow(GtkWidget * widget)
+{
+	UT_ASSERT(widget);
+
+	GdkWindowPrivate * priv = (GdkWindowPrivate *) widget->window;
+	while (priv->parent && ((GdkWindowPrivate*) priv->parent)->parent)
+		priv = (GdkWindowPrivate*) priv->parent;
+
+	return (GdkWindowPrivate *) priv;
+}
+	  
 void centerDialog(GtkWidget * parent, GtkWidget * child)
 {
 	UT_ASSERT(parent);
