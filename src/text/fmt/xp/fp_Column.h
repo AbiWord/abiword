@@ -20,6 +20,10 @@
 #ifndef COLUMN_H
 #define COLUMN_H
 
+#ifdef FMT_TEST
+#include <stdio.h>
+#endif
+
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -236,6 +240,10 @@ public:
 	
 	void 				bumpLines(fp_Line* pLastLineToKeep);
 	
+#ifdef FMT_TEST
+	void				__dump(FILE * fp) const;
+#endif	
+
 protected:
 	UT_uint32 				_getBottomOfLastLine(void) const;
 

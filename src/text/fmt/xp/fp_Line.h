@@ -20,6 +20,10 @@
 #ifndef FP_LINE_H
 #define FP_LINE_H
 
+#ifdef FMT_TEST
+#include <stdio.h>
+#endif
+
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -177,6 +181,11 @@ public:
 	 * is necessary or not; */
 	static UT_uint32       s_iClassInstanceCounter;	
 #endif
+
+#ifdef FMT_TEST
+	void		__dump(FILE * fp) const;
+#endif	
+
 protected:
 	fl_BlockLayout*	m_pBlock;
 	fp_Container*	m_pContainer;

@@ -27,21 +27,63 @@
 
 #include "fl_BlockLayout.h"
 #include "fp_Run.h"
+#include "fp_Column.h"
+#include "fp_Line.h"
 #include "fp_TextRun.h"
 #include "fp_Page.h"
+#include "fp_Column.h"
+
+/*!
+  Dump fp_Column information
+  \param fp File where the dump should be written to
+*/
+void fp_Column::__dump(FILE * fp) const
+{
+	fprintf(fp, "Col: %p X=%d Y=%d W=%d H=%d E=%s\n",
+			(void*) this, getX(), getY(), getWidth(), getHeight(),
+			(isEmpty() ? "Yes" : "No"));
+}
 
 /*!
   Dump fp_Page information
   \param fp File where the dump should be written to
+
+  The column leader is identified by a plus sign.
 */
 void fp_Page::__dump(FILE * fp) const
 {
-	fprintf(fp,"\tPage: 0x%p\n",(void*)this);
+	int i, count;
+
+	fprintf(fp,"  Page: %p\n",(void*)this);
+	
+	for (count = countColumnLeaders(), i = 0; i < count; i++)
+	{
+		fp_Column* pCol = getNthColumnLeader(i);
+
+		if (pCol)
+		{
+			fprintf(fp, "  +");
+			pCol->__dump(fp);
+
+			while ((pCol = pCol->getFollower()))
+			{
+				fprintf(fp, "   ");
+				pCol->__dump(fp);
+			}
+		}
+		else
+		{
+			fprintf(fp, "   Col: ** NULL **\n");
+		}
+
+	}
 }
 
 /*!
   Dump fp_Run information
   \param fp File where the dump should be written to
+
+  Prefix non-text runs with + to make them stand out in the dump.
 */
 void fp_Run::__dump(FILE * fp) const
 {
@@ -54,14 +96,18 @@ void fp_Run::__dump(FILE * fp) const
 		(((m_iType >= FPRUN__FIRST__) && (m_iType <= FPRUN__LAST__)) 
 		 ? s_names[m_iType-1] : "Unknown");
 
-	fprintf(fp,"   Run: %p T=%s Off=%d Len=%d D=%c Line=%p "
-			"[x %d y %d w %d h %d]\n",
+	if (m_iType != FPRUN_TEXT)
+		fprintf(fp,"   +");
+	else
+		fprintf(fp,"    ");
+
+	fprintf(fp,"Run: %p T=%s Off=%d Len=%d D=%c [x %d y %d w %d h %d]\n",
 			(void*)this, szName, m_iOffsetFirst, m_iLen, 
-			((m_bDirty) ? 'y' : 'n'), (void*)m_pLine,
+			((m_bDirty) ? 'y' : 'n'),
 			m_iX, m_iY, m_iWidth, m_iHeight);
 
 	if (m_iType != FPRUN_TEXT)
-		fprintf(fp, "      [<%s>]\n", szName);
+		fprintf(fp, "         [<%s>]\n", szName);
 }
 
 /*!
@@ -72,7 +118,7 @@ void fp_TextRun::__dump(FILE * fp) const
 {
 	fp_Run::__dump(fp);
 
-	fprintf(fp,"      [");
+	fprintf(fp,"         [");
 	if (m_iLen != 0)
 	{
 		const UT_UCSChar* pSpan = NULL;
@@ -97,6 +143,17 @@ void fp_TextRun::__dump(FILE * fp) const
 	}
 	fprintf(fp,"]\n");
 		
+}
+
+/*!
+  Dump fp_Line information
+  \param fp File where the dump should be written to
+*/
+void fp_Line::__dump(FILE * fp) const
+{
+	fprintf(fp,"Line: %p Col=%p X=%d Y=%d H=%d W=%d\n",
+			(void*) this, (void*) getContainer(),
+			getX(), getY(), getHeight(), getMaxWidth());
 }
 
 #endif

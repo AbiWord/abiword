@@ -27,6 +27,7 @@
 
 #include "fp_Page.h"
 #include "fp_Run.h"
+#include "fp_Line.h"
 #include "fl_BlockLayout.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
@@ -86,7 +87,7 @@ void FL_DocLayout::__dump(FILE * fp) const
 {
 	int count = m_vecPages.getItemCount();
 
-	fprintf(fp,"FL_DocLayout::__dump(0x%p) contains %d pages.\n", 
+	fprintf(fp,"FL_DocLayout::__dump(%p) contains %d pages.\n", 
 			(void*)this, m_vecPages.getItemCount());
 	for (int i=0; i<count; i++)
 	{
@@ -94,7 +95,7 @@ void FL_DocLayout::__dump(FILE * fp) const
 		p->__dump(fp);
 	}
 
-	fprintf(fp,"FL_DocLayout::__dump(0x%p) sections:\n",(void*)this);
+	fprintf(fp,"FL_DocLayout::__dump(%p) sections:\n",(void*)this);
 	for (fl_SectionLayout * psl=getFirstSection(); (psl); psl=psl->getNext())
 	{
 		psl->__dump(fp);
@@ -107,7 +108,7 @@ void FL_DocLayout::__dump(FILE * fp) const
 */
 void fl_SectionLayout::__dump(FILE * fp) const
 {
-	fprintf(fp,"Section: 0x%p [type %d]\n",(void*)this,getType());
+	fprintf(fp,"Section: %p [type %d]\n",(void*)this,getType());
 	for (fl_BlockLayout * pBL=getFirstBlock(); (pBL); pBL=pBL->getNext())
 		pBL->__dump(fp);
 }
@@ -115,12 +116,57 @@ void fl_SectionLayout::__dump(FILE * fp) const
 /*!
   Dump runs contained in this fl_BlockLayout
   \param fp File where the dump should be written to
+
+  We use an asterix to mark the first line of a container, making it
+  easier to cross reference with the page/column list.
 */
 void fl_BlockLayout::__dump(FILE * fp) const
 {
-	fprintf(fp,"  Block: 0x%p [sdh 0x%p]\n",(void*)this,(void*)m_sdh);
-	for (fp_Run* pRun=m_pFirstRun; (pRun); pRun=pRun->getNext())
+	fprintf(fp,"  Block: %p [sdh %p]\n",(void*)this,(void*)m_sdh);
+	fp_Container* pContainer = (fp_Container*)-1;
+	fp_Run* pRun;
+	fp_Line* pLine;
+
+	// Get last line of previous block and its container.
+	fl_BlockLayout* pPrev = getPrev();
+	if (pPrev)
+	{
+		pLine = pPrev->getLastLine();
+		if (pLine)
+		{
+			pContainer = pLine->getContainer();
+		}
+	}
+
+	pRun = m_pFirstRun;
+	pLine = (fp_Line*)-1;
+	for (; (pRun); pRun=pRun->getNext())
+	{
+		if (pRun->getLine() != pLine)
+		{
+			pLine = pRun->getLine();
+			if (pLine)
+			{
+				// Set a mark each time we change container
+				if (pLine->getContainer() != pContainer)
+				{
+					pContainer = pLine->getContainer();
+					fprintf(fp, "  *");
+				}
+				else
+				{
+					fprintf(fp, "   ");
+				}
+
+				pLine->__dump(fp);
+			}
+			else
+			{
+				fprintf(fp, "   Line: ** NULL **\n");
+			}
+		}
 		pRun->__dump(fp);
+	}
 }
 
 #endif
