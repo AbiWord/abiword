@@ -550,7 +550,12 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 					pBL = (fl_BlockLayout *) pShadow->findBlockAtPosition(pos);
 					return pBL;
 				}
-				pBL = NULL;
+				// Ok, we're really confused now, point is nowhere to be found.
+				// It might be OK if pos-1 is in here, though...
+				if (!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos-1))
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				}
 			}
 
 		}

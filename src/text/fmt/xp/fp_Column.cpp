@@ -235,7 +235,8 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 	UT_sint32 my_yoff = 0;
 	fp_Container * pCon = (fp_Container *) this;
 	fp_Container * pPrev = NULL;
-	while(pCon->getContainerType() != FP_CONTAINER_COLUMN)
+	while(pCon->getContainerType() != FP_CONTAINER_COLUMN &&
+		  pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW)
 	{
 		my_xoff += pCon->getX();
 		UT_sint32 iycon = pCon->getY();
@@ -308,7 +309,8 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 
 	fp_Container * pCon = (fp_Container *) this;
 	fp_Container * pPrev = NULL;
-	while(pCon->getContainerType() != FP_CONTAINER_COLUMN)
+	while(pCon->getContainerType() != FP_CONTAINER_COLUMN &&
+		  pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW)
 	{
 		my_xoff += pCon->getX();
 		UT_sint32 iycon = pCon->getY();
@@ -348,11 +350,27 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 	}
 	UT_sint32 col_x =0;
 	UT_sint32 col_y =0;
-	fp_Column * pCol = (fp_Column *) pCon;
-	pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
+	xoff = my_xoff + pContainer->getX();
+	yoff = my_yoff + pContainer->getY();
 
-	xoff = my_xoff + pContainer->getX() + col_x;
-	yoff = my_yoff + pContainer->getY() + col_y;
+	if (pCon->getContainerType() == FP_CONTAINER_COLUMN)
+	{
+		fp_Column * pCol = (fp_Column *) pCon;
+		pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
+
+		xoff += col_x;
+		yoff += col_y;
+	}
+	else if (pCon->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
+	{
+		fp_ShadowContainer * pCol = (fp_ShadowContainer *) pCon;
+		pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
+
+		xoff += col_x;
+		yoff += col_y;
+	}
+	else
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
 /*!

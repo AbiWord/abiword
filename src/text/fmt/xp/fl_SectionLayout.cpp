@@ -3104,7 +3104,7 @@ bool fl_HdrFtrSectionLayout::isPointInHere(PT_DocPosition pos)
 		{
 			return true;
 		}
-		return false;;
+		return false;
 	}
 //
 // OK see if the next hdrftr is ahaead of the pos
@@ -3118,6 +3118,8 @@ bool fl_HdrFtrSectionLayout::isPointInHere(PT_DocPosition pos)
 		{
 			return true;
 		}
+		// This happens when you're erasing the last character in the document.
+		// Not sure if assert should stay or not.
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}

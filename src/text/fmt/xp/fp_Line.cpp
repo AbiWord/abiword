@@ -2473,7 +2473,9 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	UT_ASSERT(pSL);
 	if(pSL->getNumColumns() > 1)
 	{
-		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN)
+		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN ||
+			getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW ||
+			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getColumnGap();
 			m_iClearLeftOffset = pSL->getColumnGap() -1;
@@ -2493,7 +2495,9 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	}
 	else
 	{
-		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN)
+		if(getContainer()->getContainerType() == FP_CONTAINER_COLUMN ||
+			getContainer()->getContainerType() == FP_CONTAINER_COLUMN_SHADOW ||
+			getContainer()->getContainerType() == FP_CONTAINER_HDRFTR)
 		{
 			m_iClearToPos = iMaxWidth + pSL->getRightMargin() - 2;
 			m_iClearLeftOffset = pSL->getLeftMargin() -1;
