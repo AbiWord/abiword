@@ -1762,7 +1762,7 @@ UT_Bool FV_View::findSetExtents(PT_DocPosition start, PT_DocPosition end)
 	bRes = m_pDoc->getBounds(UT_FALSE, BOD);
 	UT_ASSERT(bRes);
 	
-	bRes = m_pDoc->getBounds(UT_FALSE, EOD);
+	bRes = m_pDoc->getBounds(UT_TRUE, EOD);
 	UT_ASSERT(bRes);
 
 	if (start >= BOD && start <= EOD && end >= BOD && end <= EOD)
@@ -1934,7 +1934,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	{
 		// adjust end of region by length of replacement difference so we
 		// won't search off a newly changed end of block
-		m_iFindPosEnd += (UT_UCS_strlen(replace) - UT_UCS_strlen(find));
+		m_iFindPosEnd += ((long) UT_UCS_strlen(replace) - (long) UT_UCS_strlen(find));
 
 		_deleteSelection();
 
