@@ -965,16 +965,6 @@ bool IE_Imp_RTF::HandleField()
 		return false;
 	}
 
-#if 0
-	if (bUseResult == false) 
-	{ 
-		while ((tokenType != RTF_TOKEN_CLOSE_BRACE) && (tokenType != RTF_TOKEN_ERROR))
-		{
-			tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN);
-		}
-		return (tokenType != RTF_TOKEN_ERROR);
-	}
-#endif
 	// field result
 	// TODO: push and pop the state as expected.
 	if (tokenType == RTF_TOKEN_OPEN_BRACE) 
@@ -1073,7 +1063,10 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 	/*
 	  {\field\fldpriv{\*\fldinst{\\import sv8968971.jpg}}{\fldrslt }}
 	*/
-	
+	/* Microsoft doc on field usages in Word is at:
+	   <http://support.microsoft.com/support/word/usage/fields/>
+	*/
+
 	char *instr;
 	char *newBuf;
 	UT_uint32  len;
@@ -1107,10 +1100,24 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 			UT_DEBUGMSG (("RTF: AUTHOR fieldinst not handled yet\n"));
 		}
 		break;
+	case 'F':
+		if (strcmp (instr, "FILENAME") == 0)
+		{
+			// TODO handle parameters
+			xmlField = UT_strdup ("file_name");
+			UT_ASSERT (xmlField);
+		}
+		break;
 	case 'H':
 		if (strcmp (instr, "HYPERLINK") == 0)
 		{
 			UT_DEBUGMSG (("RTF: HYPERLINK fieldinst not handled yet\n"));
+		}
+		break;
+	case 'I':
+		if (strcmp (instr, "INCLUDEPICTURE") == 0)
+		{
+			UT_DEBUGMSG (("RTF: INCLUDEPICTURE fieldinst not handled yet\n"));
 		}
 		break;
 	case 'P':
@@ -1121,16 +1128,41 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField)
 		}
 		break;
 	case 'N':
+		if (strcmp (instr, "NUMCHARS") == 0)
+		{ 
+			xmlField = UT_strdup ("char_count");
+			UT_ASSERT (xmlField);
+		}
 		// this one have been found with ApplixWare exported RTF.
-		if (strcmp (instr, "NUMPAGES") == 0)
+		else if (strcmp (instr, "NUMPAGES") == 0)
 		{
 			xmlField = UT_strdup ("page_count");
+			UT_ASSERT (xmlField);
+		}
+		else if (strcmp (instr, "NUMWORDS") == 0)
+		{ 
+			xmlField = UT_strdup ("word_count");
+			UT_ASSERT (xmlField);
+		}
+		break;
+	case 'T':
+		if (strcmp (instr, "TIME") == 0)
+		{ 
+			// TODO handle parameters
+			xmlField = UT_strdup ("time");
+			UT_ASSERT (xmlField);
+		}
+		break;
+	case 'd':
+		if (strcmp (instr, "date") == 0)
+		{ 
+			// TODO handle parameters
+			xmlField = UT_strdup ("date");
 			UT_ASSERT (xmlField);
 		}
 		break;
 	case '\\':
 		/* mostly StarOffice RTF fields */
-		
 		if (strcmp (instr, "\\filename") == 0)
 		{
 			xmlField = UT_strdup ("file_name");
