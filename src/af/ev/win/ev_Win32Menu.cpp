@@ -22,6 +22,7 @@
 #include <string.h>
 #include "ut_types.h"
 #include "ut_stack.h"
+#include "ut_debugmsg.h"
 #include "xap_Types.h"
 #include "ev_Win32Menu.h"
 #include "xap_Win32App.h"
@@ -174,6 +175,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 	
 	UT_Stack stack;
 	stack.push(menuBar);
+	UT_DEBUGMSG(("MenuBar::synthesize [menuBar 0x%08lx]\n",menuBar));
 	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -203,11 +205,9 @@ UT_Bool EV_Win32Menu::synthesize(void)
 
 				// set standard flags on the item, we'll update the
 				// state on an onInitMenu().
-				
-				UINT flags = MF_STRING | MF_ENABLED | MF_UNCHECKED;
-
 				// map our AP_Menu_Id into a windows WM_COMMAND id.
 				
+				UINT flags = MF_STRING | MF_ENABLED | MF_UNCHECKED;
 				UINT u = WmCommandFromMenuId(id);
 
 				if (pLayoutItem->getMenuLayoutFlags() == EV_MLF_BeginSubMenu)
@@ -216,10 +216,13 @@ UT_Bool EV_Win32Menu::synthesize(void)
 					UT_ASSERT(sub);
 
 					flags |= MF_POPUP;
-
 					stack.push(sub);
-
 					u = (UINT) sub;
+					UT_DEBUGMSG(("menuBar::synthesize [name %s][subMenu 0x%08lx]\n",szLabelName,u));
+				}
+				else
+				{
+					UT_DEBUGMSG(("menuBar::synthesize [name %s]\n",szLabelName));
 				}
 
 				if (szLabelName && *szLabelName)
@@ -232,6 +235,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 				HMENU m = NULL;
 				bResult = stack.pop((void **)&m);
 				UT_ASSERT(bResult);
+				UT_DEBUGMSG(("menuBar::synthesize [endSubMenu 0x%08lx]\n",m));
 			}
 			break;
 			
@@ -242,6 +246,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 				UT_ASSERT(bResult);
 
 				AppendMenu(m, MF_SEPARATOR, 0, NULL);
+				UT_DEBUGMSG(("menuBar::synthesize [separator appended to submenu 0x%08lx]\n",m));
 			}
 			break;
 
@@ -297,8 +302,10 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 	UT_Stack stackMenu;
 	stackMenu.push(hMenuBar);
 
+	HMENU mTemp;
 	HMENU m = hMenuBar;
-		
+	UT_DEBUGMSG(("menuBar::onInitMenu: [menubar 0x%08lx]\n",m));
+	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
@@ -407,25 +414,27 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 			break;
 
 		case EV_MLF_BeginSubMenu:
+			mTemp = m;
 			pos++;
-			stackMenu.push(m);
+			stackMenu.push(mTemp);
 			stackPos.push((void*)pos);
 
-			m = GetSubMenu(m, pos-1);
+			m = GetSubMenu(mTemp, pos-1);
+			UT_DEBUGMSG(("menuBar::onInitMenu: [menu 0x%08lx] at [pos %d] has [submenu 0x%08lx]\n",
+						 mTemp,pos-1,m));
 			UT_ASSERT(m);
 			pos = 0;
 			break;
 
 		case EV_MLF_EndSubMenu:
-			bResult = stackMenu.pop((void **)&m);
+			bResult = stackMenu.pop((void **)&mTemp);
 			UT_ASSERT(bResult);
 			bResult = stackPos.pop((void **)&pos);
 			UT_ASSERT(bResult);
 
-			// restore the previous menu
-			bResult = stackMenu.viewTop((void **)&m);
-			UT_ASSERT(bResult);
-
+			UT_DEBUGMSG(("menuBar::onInitMenu: endSubMenu [popping to menu 0x%08lx pos %d] from 0x%08lx\n",
+						 mTemp,pos,m));
+			m = mTemp;
 			break;
 
 		default:
@@ -434,6 +443,13 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 		}
 
 	}
+
+#ifdef UT_DEBUG
+	HMENU wDbg = NULL;
+	bResult = stackMenu.pop((void **)&wDbg);
+	UT_ASSERT(bResult);
+	UT_ASSERT(wDbg == hMenuBar);
+#endif
 
 	// TODO some of the documentation refers to a need to call DrawMenuBar(hWnd)
 	// TODO after any change to it.  other parts of the documentation makes no
