@@ -91,44 +91,44 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		const XML_Char name[] = "revision";
 		const XML_Char * pRevision = NULL;
 
-		// first retrive the starting and ending fragments
-		pf_Frag * pf1, * pf2;
-		PT_BlockOffset Offset1, Offset2;
+		// we cannot retrieve the start and end fragments here and
+		// then work between them in a loop using getNext() because
+		// processing might result in merging of fargments. so we have
+		// to use the doc position to keep track of where we are and
+		// retrieve the fragments afresh in each step of the loop
+		// Tomas, Oct 28, 2003
 
-		if(!getFragsFromPositions(dpos1,dpos2, &pf1, &Offset1, &pf2, &Offset2))
-			return false;
-
-		// now we have to traverse the fragments and change their
-		// formatting
-
-		pf_Frag * pTemp;
-		pf_Frag * pEnd = pf2->getNext();
-		pf_Frag * pNext;
-
-
-		for(pTemp = pf1; pTemp != pEnd; pTemp = pNext)
+		bool bRet = false;
+		for(PT_DocPosition curPos = dpos1; curPos < dpos2; )
 		{
-			// we cannot ask for the next in the for statement,
-			// because we might have deleted that fragment by then
-			pNext = pTemp->getNext();
+			// first retrive the starting and ending fragments
+			pf_Frag * pf1, * pf2;
+			PT_BlockOffset Offset1, Offset2;
 
+			if(!getFragsFromPositions(curPos,dpos2, &pf1, &Offset1, &pf2, &Offset2))
+				return bRet;
+			else
+				bRet = true;
+
+			curPos += pf1->getLength();
+							
 			// get attributes for this fragement
 			const PP_AttrProp * pAP;
-			pf_Frag::PFType eType = pTemp->getType();
+			pf_Frag::PFType eType = pf1->getType();
 			UT_uint32 iLen = 1;
 			PTStruxType eStruxType;
 
 			if(eType == pf_Frag::PFT_Text)
 			{
-				if(!getAttrProp(static_cast<pf_Frag_Text*>(pTemp)->getIndexAP(),&pAP))
+				if(!getAttrProp(static_cast<pf_Frag_Text*>(pf1)->getIndexAP(),&pAP))
 					return false;
 			}
 			else if(eType == pf_Frag::PFT_Strux)
 			{
-				if(!getAttrProp(static_cast<pf_Frag_Strux*>(pTemp)->getIndexAP(),&pAP))
+				if(!getAttrProp(static_cast<pf_Frag_Strux*>(pf1)->getIndexAP(),&pAP))
 					return false;
 
-				eStruxType = static_cast<pf_Frag_Strux*>(pTemp)->getStruxType();
+				eStruxType = static_cast<pf_Frag_Strux*>(pf1)->getStruxType();
 
 				switch (eStruxType)
 				{
@@ -158,7 +158,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			}
 			else if(eType == pf_Frag::PFT_Object)
 			{
-				if(!getAttrProp(static_cast<pf_Frag_Object*>(pTemp)->getIndexAP(),&pAP))
+				if(!getAttrProp(static_cast<pf_Frag_Object*>(pf1)->getIndexAP(),&pAP))
 					return false;
 			}
 			else
@@ -177,7 +177,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			UT_uint32 iId = m_pDocument->getRevisionId();
 			const PP_Revision * pRev = Revisions.getGreatestLesserOrEqualRevision(iId);
 
-			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
+			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pf1->getLength());
 
 			if(pRev && iId == pRev->getId())
 			{
