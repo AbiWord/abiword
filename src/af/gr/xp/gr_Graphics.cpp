@@ -47,6 +47,8 @@ XAP_PrefsScheme *GR_Graphics::m_pPrefsScheme = 0;
 UT_uint32 GR_Graphics::m_uTick = 0;
 
 UT_uint32 GR_Graphics::m_instanceCount = 0;
+UT_uint32 GR_Graphics::s_iScreenResolution = 100;
+
 
 GR_Font::GR_Font() 
 {

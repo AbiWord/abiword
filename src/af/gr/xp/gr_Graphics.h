@@ -134,6 +134,7 @@ public:
 	
 	virtual bool queryProperties(GR_Graphics::Properties gp) const = 0;
 	virtual UT_sint32 getScreenResolution(void) {return 100;} //subclasses to overide
+	static  UT_uint32 s_getScreenResolution() {return s_iScreenResolution;}
 	virtual UT_sint32 getPaperResolution(void) {return 7200;} // sebclasses to override
 	/* the following 3 are only used for printing */
 	
@@ -236,6 +237,8 @@ public:
 	bool                        doMerge(void) const;
 protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
+	void setStaticScreenResolution(UT_uint32 iRes){s_iScreenResolution = iRes;}
+	
 	
 	XAP_App	*	m_pApp;
 	UT_uint32	m_iZoomPercentage;
@@ -263,6 +266,7 @@ private:
 	bool                        m_bIsExposedAreaAccessed;
 	bool                        m_bDontRedraw;
 	bool                        m_bDoMerge;
+	static UT_uint32 s_iScreenResolution;
 };
 
 #endif /* GR_GRAPHICS_H */

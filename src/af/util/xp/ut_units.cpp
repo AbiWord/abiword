@@ -36,9 +36,13 @@
 #include "ut_debugmsg.h"
 #include "gr_Graphics.h"
 
+#if 0
+// WRONG !!! -- the resolution depends on the system, and has to be
+// obtained from the Graphics class at runtime !!!
 // the CSS 1 spec recommends 90 but abi assumes 100. 
 // let's stay internally consistent
 static const UT_uint32 DPI_PER_PIXEL = 100 ;
+#endif
 
 const char * UT_dimensionName(UT_Dimension dim)
 {
@@ -128,7 +132,11 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	case DIM_MM:    valueScaled = (inches * 25.4);  break;
 	case DIM_PI:	valueScaled = (inches * 6);		break;
 	case DIM_PT:	valueScaled = (inches * 72);	break;
+#if 0
 	case DIM_PX:    valueScaled = (inches * DPI_PER_PIXEL); break;
+#else	
+	case DIM_PX:    valueScaled = (inches * GR_Graphics::s_getScreenResolution()); break;
+#endif		
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;
@@ -189,7 +197,7 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 		break;
 
 	case DIM_PX:
-	  valueScaled = (valueInInches * DPI_PER_PIXEL);
+		valueScaled = (valueInInches * GR_Graphics::s_getScreenResolution()/*DPI_PER_PIXEL*/);
 	  sprintf(bufFormat,"%%%sfpx",((szPrecision && *szPrecision) ? szPrecision : ".0"));
 	  break;
 
@@ -362,7 +370,7 @@ double UT_convertDimToInches (double f, UT_Dimension dim)
     case DIM_PT: result = f / 72;   break;
     case DIM_CM: result = f / 2.54; break;
     case DIM_MM: result = f / 25.4; break;
-    case DIM_PX: result = f / DPI_PER_PIXEL; break;
+		case DIM_PX: result = f / GR_Graphics::s_getScreenResolution()/*DPI_PER_PIXEL*/; break;
     default:
       UT_DEBUGMSG(("Unknown dimension type: %d", dim));
       UT_ASSERT(0);
@@ -398,7 +406,7 @@ double UT_convertToPoints(const char* s)
 	      case DIM_IN: result = f * 72;        break;
 	      case DIM_CM: result = f * 72 / 2.54; break;
 	      case DIM_MM: result = f * 72 / 25.4; break;
-	      case DIM_PX: result = f * 72 / DPI_PER_PIXEL; break;
+			  case DIM_PX: result = f * 72 / GR_Graphics::s_getScreenResolution()/*DPI_PER_PIXEL*/; break;
 	      default:
 		UT_DEBUGMSG(("Unknown dimension type: %s", p));
 		UT_ASSERT(0);

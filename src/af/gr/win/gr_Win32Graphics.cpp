@@ -98,7 +98,11 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_remapIndices = NULL;
 #endif
 	if(!s_iScreenResolution)
+	{
 		s_iScreenResolution = _getResolution();
+		setStaticScreenResolution(s_iScreenResolution);
+	}
+	
 	UT_DEBUGMSG(("GR_Win32Graphics: screen resolution %d\n", s_iScreenResolution));
 }
 
