@@ -230,8 +230,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 			   // try ignore all list and user dictionaries here, too
 			   XAP_App * pApp = m_pFrame->getApp();
 
-			   if (!m_pDoc->isIgnore(m_pWord, m_iWordLength) &&
-			       !_spellCheckWord(m_pWord, m_iWordLength)) 
+			   if (!_spellCheckWord(m_pWord, m_iWordLength)) 
 			   {
 				   // unknown word... update dialog
 
@@ -340,7 +339,8 @@ bool AP_Dialog_Spell::makeWordVisible(void)
 
 bool AP_Dialog_Spell::addIgnoreAll(void)
 {
-	return m_pDoc->appendIgnore(m_pWord,m_iWordLength);
+	_getDict ()->ignoreWord(m_pWord,m_iWordLength);
+	return true;
 }
 
 void AP_Dialog_Spell::ignoreWord(void)

@@ -12,6 +12,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_hash.h"
 
 // for a silly messagebox
 #include <stdio.h>
@@ -96,8 +97,94 @@ UT_Vector & ISpellChecker::getMapping()
 
 /***************************************************************************/
 
+void ISpellChecker::ignoreWord (const UT_UCSChar *pWord, size_t len)
+{
+	UT_ASSERT(m_pIgnoreList);
+
+	char _key[150], *key = _key;
+	if (len > 145) key = new char[len + 1];
+	UT_UCSChar *copy = new UT_UCSChar[len + 1];
+
+	for (UT_uint32 i = 0; i < len; i++)
+	{
+		UT_UCSChar currentChar;
+		currentChar = pWord[i];
+		// convert smart quote apostrophe to ASCII single quote
+		if (currentChar == UCS_RQUOTE) currentChar = '\'';
+		key[i] = static_cast<char>(currentChar);
+		copy[i] = currentChar;
+	}
+	key[len] = 0;
+	copy[len] = 0;
+
+	if (!isIgnore(pWord, len))
+	{
+		// If it's already on the ignored word list, don't add it again.
+		// This can happen if you are looking at a longish document.  You
+		// "ignore all" a word, but spell-check doesn't get around to removing
+		// the squiggles in the background for a while.  Then, you "ignore all"
+		// that word (or another instance of it) again, and ka-bloom, the 
+		// hash table stuff asserts on a duplicate entry.
+		m_pIgnoreList->insert(key, static_cast<void *>(copy));
+	}
+
+	if (key != _key) DELETEPV(key);
+}
+
+bool ISpellChecker::isIgnored(const UT_UCSChar * pWord, UT_uint32 len) const
+{
+	UT_ASSERT(m_pIgnoreList);
+
+	char _key[150], *key = _key;
+	if (len > 145) key = new char[len + 1];
+
+	for (UT_uint32 i = 0; i < len; i++)
+	{
+		UT_UCSChar currentChar;
+		currentChar = pWord[i];
+		// convert smart quote apostrophe to ASCII single quote
+		if (currentChar == UCS_RQUOTE) currentChar = '\'';
+		key[i] = static_cast<char>(currentChar);
+	}
+	key[len] = 0;
+
+	const void * pHE = m_pIgnoreList->pick(key);
+
+	if (key != _key) DELETEPV(key);
+
+	if (pHE != NULL)
+		return true;
+	else 
+		return false;  
+}
+
+bool ISpellChecker::clearIgnores()
+{
+	UT_ASSERT(m_pIgnoreList);
+
+	UT_Vector * pVec = m_pIgnoreList->enumerate();
+	UT_ASSERT(pVec);
+
+	UT_uint32 size = pVec->size();
+
+	for (UT_uint32 i = 0; i < size; i++)
+	{
+		UT_UCSChar * pData = static_cast<UT_UCSChar *>(pVec->getNthItem(i));
+		DELETEPV(pData);
+	}
+
+	DELETEP(pVec);
+	DELETEP(m_pIgnoreList);
+   
+	m_pIgnoreList = new UT_StringPtrMap(11);
+	UT_ASSERT(m_pIgnoreList);
+   
+	return true;
+}
+
 ISpellChecker::ISpellChecker()
-  : deftflag(-1),
+  : m_pIgnoreList(new UT_StringPtrMap(11)),
+	deftflag(-1),
 	prefstringchar(-1),
 	m_bSuccessfulInit(false),
 	m_BC(NULL),
@@ -167,6 +254,9 @@ ISpellChecker::~ISpellChecker()
 	if (UT_iconv_isValid(m_translate_out))
 		UT_iconv_close(m_translate_out);
 	m_translate_out = UT_ICONV_INVALID;
+
+	clearIgnores()
+	DELETEP(m_pIgnoreList);
 }
 
 SpellChecker::SpellCheckResult
@@ -175,6 +265,9 @@ ISpellChecker::_checkWord(const UT_UCSChar *ucszWord, size_t length)
     SpellChecker::SpellCheckResult retVal;
     ichar_t iWord[INPUTWORDLEN + MAXAFFIXLEN];
     char szWord[INPUTWORDLEN + MAXAFFIXLEN];
+
+	if (isIgnored (ucszWord, length))
+		return SpellChecker::LOOKUP_SUCCEEDED;
 
     if (!m_bSuccessfulInit)
         return SpellChecker::LOOKUP_FAILED;

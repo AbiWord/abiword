@@ -3309,7 +3309,7 @@ void FV_View::cmdContextIgnoreAll(void)
 	const UT_UCSChar * pBuf = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(pPOB->getOffset()));
 
 	// make the change
-	if (m_pDoc->appendIgnore(pBuf, pPOB->getLength()))
+	getDictForSelection ()->ignoreWord ((const UT_UCSChar *)pBuf, (size_t)pPOB->getLength());
 	{
 		// remove the squiggles, too
 		fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();

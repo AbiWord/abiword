@@ -34,6 +34,10 @@ public:
 	virtual bool addToCustomDict (const UT_UCSChar *word, size_t len);
 	virtual void correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
 							  const UT_UCSChar *correct, size_t correctLen);
+
+	virtual void ignoreWord (const UT_UCSChar *toCorrect, size_t toCorrectLen);
+	virtual bool isIgnored (const UT_UCSChar * pWord, UT_uint32 len) const;
+
 protected:
 
 	EnchantChecker();

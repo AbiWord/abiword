@@ -586,13 +586,16 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 			  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 			  (GtkAttachOptions) (0), 0, 0);
 
+	gtk_widget_set_sensitive (button_reset, FALSE);
+	gtk_widget_set_sensitive (button_edit, FALSE);
+	gtk_widget_set_sensitive (button_dict, FALSE);
+	gtk_widget_set_sensitive (custom_dict, FALSE);
+
 	label2 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Options_TabLabel_Spelling).utf8_str());
 	gtk_widget_show (label2);
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 1), label2);
 
-
 	// LAYOUT TAB
-
 
 	vbox45 = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (vbox45);
@@ -940,22 +943,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_checkbuttonViewHideTB         = hide_toolbar;
 	m_toolbarClist = toolbar_clist;
 
-
-	g_signal_connect(G_OBJECT(m_buttonSpellIgnoreEdit),
-			   "clicked",
-			   G_CALLBACK(s_ignore_edit_clicked),
-			   static_cast<gpointer>(this));
-
-	g_signal_connect(G_OBJECT(m_buttonSpellIgnoreReset),
-			   "clicked",
-			   G_CALLBACK(s_ignore_reset_clicked),
-			   static_cast<gpointer>(this));
-
-	g_signal_connect(G_OBJECT(m_buttonSpellDictionary),
-			   "clicked",
-			   G_CALLBACK(s_dict_edit_clicked),
-			   static_cast<gpointer>(this));
-
 	// to enable/disable other controls (hide errors)
 	g_signal_connect(G_OBJECT(m_checkbuttonSpellCheckAsType),
 			   "toggled",
@@ -1084,18 +1071,6 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 
 	case id_CHECK_SPELL_INTERNET:
 		return m_checkbuttonSpellInternet;
-
-	case id_LIST_DICTIONARY:
-		return m_listSpellDicts;
-
-	case id_BUTTON_DICTIONARY_EDIT:
-		return m_buttonSpellDictionary;
-
-	case id_BUTTON_IGNORE_RESET:
-		return m_buttonSpellIgnoreReset;
-
-	case id_BUTTON_IGNORE_EDIT:
-		return m_buttonSpellIgnoreEdit;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// other
@@ -1431,27 +1406,6 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 	AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *>(data);
 	UT_ASSERT(widget && dlg);
 	dlg->event_Apply();
-}
-
-/*static*/ void AP_UnixDialog_Options::s_ignore_reset_clicked( GtkWidget * /* widget */, gpointer  data )
-{
-	AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *>(data);
-	UT_ASSERT(dlg);
-	dlg->_event_IgnoreReset();
-}
-
-/*static*/ void AP_UnixDialog_Options::s_ignore_edit_clicked( GtkWidget * /* widget */, gpointer  data )
-{
-	AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *>(data);
-	UT_ASSERT(dlg);
-	dlg->_event_IgnoreEdit();
-}
-
-/*static*/ void AP_UnixDialog_Options::s_dict_edit_clicked( GtkWidget * /* widget */, gpointer  data )
-{
-	AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *>(data);
-	UT_ASSERT(dlg);
-	dlg->_event_DictionaryEdit();
 }
 
 /*static*/ void AP_UnixDialog_Options::s_defaults_clicked( GtkWidget *widget, gpointer data )

@@ -50,21 +50,9 @@
 class AP_CocoaDialog_OptionsController_proxy
 {
 public:
-	static void _event_DictionaryEdit(AP_CocoaDialog_Options *obj)
-		{
-			obj->_event_DictionaryEdit();
-		};
 	static void _event_SetDefaults(AP_CocoaDialog_Options *obj)
 		{
 			obj->_event_SetDefaults();
-		};
-	static void _event_IgnoreEdit(AP_CocoaDialog_Options *obj)
-		{
-			obj->_event_IgnoreEdit();
-		};
-	static void _event_IgnoreReset(AP_CocoaDialog_Options *obj)
-		{
-			obj->_event_IgnoreReset();
 		};
 private:
 	AP_CocoaDialog_OptionsController_proxy ();	//don't allow contruction
@@ -703,18 +691,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	case AP_Dialog_Options::id_CHECK_SPELL_INTERNET:
 		return m_spellIgnoreFileAddrBtn;
 
-	case AP_Dialog_Options::id_LIST_DICTIONARY:
-		return m_spellDictionaryPopup;
-
-	case AP_Dialog_Options::id_BUTTON_DICTIONARY_EDIT:
-		return m_spellDictEditBtn;	
-
-	case AP_Dialog_Options::id_BUTTON_IGNORE_RESET:
-		return m_spellResetDictBtn;
-
-	case AP_Dialog_Options::id_BUTTON_IGNORE_EDIT:
-		return m_spellIgnoreEditBtn;  
-
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// other
 	case AP_Dialog_Options::id_CHECK_SMART_QUOTES_ENABLE:
@@ -835,11 +811,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	m_xap->event_Cancel();	
 }
 
-- (IBAction)chooseDictAction:(id)sender
-{
-	AP_CocoaDialog_OptionsController_proxy::_event_DictionaryEdit(m_xap);
-}
-
 - (IBAction)chooseScreenAction:(id)sender
 {
 	m_xap->event_ChooseTransparentColor();
@@ -850,11 +821,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	AP_CocoaDialog_OptionsController_proxy::_event_SetDefaults(m_xap);
 }
 
-- (IBAction)editDictAction:(id)sender
-{
-	AP_CocoaDialog_OptionsController_proxy::_event_IgnoreEdit(m_xap);
-}
-
 - (IBAction)increaseMinutesAction:(id)sender
 {
 }
@@ -862,11 +828,6 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 - (IBAction)okAction:(id)sender
 {
 	m_xap->event_OK();	
-}
-
-- (IBAction)resetDictAction:(id)sender
-{
-	AP_CocoaDialog_OptionsController_proxy::_event_IgnoreReset(m_xap);
 }
 
 - (IBAction)autoSaveStepperAction:(id)sender

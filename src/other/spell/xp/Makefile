@@ -29,8 +29,8 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CSRCS=
 CPPSRCS= spell_manager.cpp barbarisms.cpp
 
-ifeq ($(ABI_OPT_PSPELL),1)
-	CPPSRCS+= pspell_checker.cpp
+ifeq ($(ABI_OPT_ENCHANT),1)
+	CPPSRCS+= enchant_checker.cpp
 else
 	CPPSRCS+= ispell_checker.cpp good.cpp tgood.cpp lookup.cpp makedent.cpp hash.cpp \
 correct.cpp 

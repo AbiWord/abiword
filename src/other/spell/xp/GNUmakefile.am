@@ -30,16 +30,10 @@ else
 ENCHANTSOURCES = 
 endif
 
-if WITH_PSPELL
-PSPELLSOURCES = pspell_checker.cpp
-else
-PSPELLSOURCES = 
-endif
-
 if WITH_ISPELL
 ISPELLSOURCES = ispell_checker.cpp good.cpp tgood.cpp lookup.cpp makedent.cpp hash.cpp correct.cpp
 else
 ISPELLSOURCES = 
 endif
 
-libSpell_a_SOURCES = $(COMMONSOURCES) $(ENCHANTSOURCES) $(PSPELLSOURCES) $(ISPELLSOURCES)
+libSpell_a_SOURCES = $(COMMONSOURCES) $(ENCHANTSOURCES) $(ISPELLSOURCES)

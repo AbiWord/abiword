@@ -104,9 +104,6 @@ public:
 	static int s_cancel_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
 	static int s_apply_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
 	static int s_delete_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
-	static int s_ignore_reset_clicked	(PtWidget_t *, void *, PtCallbackInfo_t *info);
-	static int s_ignore_edit_clicked	(PtWidget_t *, void *, PtCallbackInfo_t *info);
-	static int s_dict_edit_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
 	static int s_defaults_clicked		(PtWidget_t *, void *, PtCallbackInfo_t *info);
 
 	static int s_checkbutton_toggle	(PtWidget_t *, void *, PtCallbackInfo_t *info);

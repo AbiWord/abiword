@@ -128,6 +128,24 @@ bool EnchantChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
 	}
 	return false;
 }
+
+bool EnchantChecker::isIgnored (const UT_UCSChar *toCorrect, size_t toCorrectLen) const
+{
+	UT_return_val_if_fail (m_dict, false);
+
+	UT_UTF8String ignore (toCorrect, toCorrectLen);
+	return enchant_dict_is_in_session (m_dict, ignore.utf8_str(), ignore.byteLength());
+}
+
+void EnchantChecker::ignoreWord (const UT_UCSChar *toCorrect, size_t toCorrectLen)
+{
+	UT_return_if_fail (m_dict);
+	UT_return_if_fail (toCorrect && toCorrectLen);
+
+	UT_UTF8String ignore (toCorrect, toCorrectLen);
+
+	enchant_dict_add_to_session (m_dict, ignore.utf8_str(), ignore.byteLength());
+}
    
 void EnchantChecker::correctWord (const UT_UCSChar *toCorrect, size_t toCorrectLen,
 								  const UT_UCSChar *correct, size_t correctLen)

@@ -744,17 +744,7 @@ endif #ifeq(platform,unix)
 
 ##################################################################
 ##################################################################
-## Pspell spell checker
-## Should only be enabled for unix or else do the
-## addprefix addsuffix stuff as shown above
-## Need ltdl for dynamic loading/linking on Solaris
-ifeq ($(ABI_OPT_PSPELL),1)
-EXTRA_LIBS      += -lpspell -lpspell-modules -lltdl
-ABI_OPTIONS+=Pspell:On
-CFLAGS += -DHAVE_PSPELL
-else
 ABI_OPTIONS+=Pspell:Off
-endif
 
 # Perl scripting support
 ifeq ($(ABI_OPT_PERL),1)

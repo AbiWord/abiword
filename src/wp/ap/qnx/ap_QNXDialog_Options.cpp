@@ -72,31 +72,6 @@ int AP_QNXDialog_Options::s_delete_clicked(PtWidget_t *widget, void *data, PtCal
 	return Pt_CONTINUE;
 }
 
-int AP_QNXDialog_Options::s_ignore_reset_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg);
-	dlg->_event_IgnoreReset();
-	return Pt_CONTINUE;
-}
-
-int AP_QNXDialog_Options::s_ignore_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg);
-	dlg->_event_IgnoreEdit();
-	return Pt_CONTINUE;
-}
-
-int AP_QNXDialog_Options::s_dict_edit_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
-	UT_ASSERT(dlg);
-	printf("dict edit clicked \n");
-	dlg->_event_DictionaryEdit();
-	return Pt_CONTINUE;
-}
-
 int AP_QNXDialog_Options::s_defaults_clicked(PtWidget_t *widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_Options * dlg = (AP_QNXDialog_Options *)data;
@@ -758,10 +733,6 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValueUTF8(XAP_STRING_ID_DLG_
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
 	PtAddCallback(buttonDefaults, Pt_CB_ACTIVATE, s_defaults_clicked, this);
 	PtAddCallback(buttonApply, Pt_CB_ACTIVATE, s_apply_clicked, this);
-	PtAddCallback(buttonSpellIgnoreEdit, Pt_CB_ACTIVATE, s_ignore_edit_clicked, this);
-	PtAddCallback(buttonSpellIgnoreReset, Pt_CB_ACTIVATE, s_ignore_reset_clicked, this);
-	PtAddCallback(buttonSpellDictionary, Pt_CB_ACTIVATE, s_dict_edit_clicked, this);
-
 
   m_windowMain = windowOptions;
   m_notebook = notebook1 = NULL;
@@ -840,22 +811,6 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 
 	case id_CHECK_SPELL_INTERNET:
 		return m_checkbuttonSpellInternet;
-		break;
-
-	case id_LIST_DICTIONARY:
-		return m_listSpellDicts;
-		break;
-
-	case id_BUTTON_DICTIONARY_EDIT:
-		return m_buttonSpellDictionary;
-		break;
-
-	case id_BUTTON_IGNORE_RESET:
-		return m_buttonSpellIgnoreReset;
-		break;
-
-	case id_BUTTON_IGNORE_EDIT:
-		return m_buttonSpellIgnoreEdit;
 		break;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

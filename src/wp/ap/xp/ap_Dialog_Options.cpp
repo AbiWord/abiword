@@ -412,9 +412,6 @@ void AP_Dialog_Options::_initEnableControls()
 	_controlEnable( id_CHECK_SPELL_HIDE_ERRORS, 	false );
 	_controlEnable( id_CHECK_SPELL_MAIN_ONLY,		false );
 	_controlEnable( id_CHECK_SPELL_INTERNET,		true );
-	_controlEnable( id_LIST_DICTIONARY, 			false );
-	_controlEnable( id_BUTTON_DICTIONARY_EDIT,		false );
-	_controlEnable( id_BUTTON_IGNORE_EDIT,			false );
 
 	// prefs
 	_controlEnable( id_COMBO_PREFS_SCHEME,			false );
@@ -481,86 +478,4 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 	// TODO scheme and fill in the new value.  --jeff
 	_setNotebookPageNum( currentPage );
 	pPrefs->setCurrentScheme(old_name);
-}
-
-void AP_Dialog_Options::_event_IgnoreReset(void)
-{
-	UT_DEBUGMSG(("AP_Dialog_Options::_event_IgnoreReset\n"));
-	UT_ASSERT( m_pFrame );
-
-	// TODO:  shack@uiuc.edu: waiting for a vote for reset strings...
-
-	// Ask "Do you want to reset ignored words in the current document?"
-	XAP_Dialog_MessageBox::tAnswer ans = m_pFrame->showMessageBox(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetCurrent,
-								XAP_Dialog_MessageBox::b_YNC,
-								XAP_Dialog_MessageBox::a_NO); // should this be YES?
-
-
-	// if hit cancel, go no further
-	// if no hit, don't do anything else, even prompt for other docs
-	if (ans == XAP_Dialog_MessageBox::a_CANCEL ||
-		ans == XAP_Dialog_MessageBox::a_NO )
-	{
-		UT_DEBUGMSG(("No/Canceled\n"));
-		return;
-	}
-
-	// do it
-	UT_DEBUGMSG(("Yes\n"));
-	UT_ASSERT(ans == XAP_Dialog_MessageBox::a_YES );
-
-	// ask another question : "Do you want to reset ignored words in all the
-	// documents?" , but only if # frames > 1
-	XAP_App *pApp = m_pFrame->getApp();
-	UT_ASSERT(pApp);
-	if (pApp->getFrameCount() > 1)
-	{
-
-		ans = m_pFrame->showMessageBox(AP_STRING_ID_DLG_Options_Prompt_IgnoreResetAll,
-									XAP_Dialog_MessageBox::b_YNC,
-									XAP_Dialog_MessageBox::a_NO); // should this be YES?
-
-
-		// if cancel, don't to ANYTHING
-		if (ans == XAP_Dialog_MessageBox::a_CANCEL )
-		{
-			UT_DEBUGMSG(("No/Canceled\n"));
-			return;
-		}
-	}
-
-	// ------------------------- actually do it
-	if ( ans == XAP_Dialog_MessageBox::a_NO )
-	{
-		// if no to all documents, then just reset current (because we made it
-		// this far
-		m_pFrame->getCurrentDoc()->clearIgnores();
-
-		((FV_View *)m_pFrame->getCurrentView())->getLayout()->recheckIgnoredWords();
-	}
-	else
-	{
-		// reset all doc's ignored words
-		UT_uint32 ndx;
-		for ( ndx = 0; ndx < pApp->getFrameCount(); ndx++ )
-		{
-			XAP_Frame *pFrame = pApp->getFrame(ndx);
-
-			pFrame->getCurrentDoc()->clearIgnores();
-			((FV_View *)pFrame->getCurrentView())->getLayout()->recheckIgnoredWords();
-		}
-	}
-
-	// TODO : recheck spelling
-
-}
-
-void AP_Dialog_Options::_event_IgnoreEdit(void)
-{
-	UT_DEBUGMSG(("AP_Dialog_Options::_event_IgnoreEdit\n"));
-}
-
-void AP_Dialog_Options::_event_DictionaryEdit(void)
-{
-	UT_DEBUGMSG(("AP_Dialog_Options::_event_DictionaryEdit\n"));
 }

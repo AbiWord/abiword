@@ -172,7 +172,6 @@ protected:
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_outputXMLChar(const XML_Char * data, UT_uint32 length);
 	void				_handleStyles(void);
-	void				_handleIgnoredWords(void);
 	void				_handleLists(void);
 	void				_handlePageSize(void);
 	void				_handleDataItems(void);
@@ -576,7 +575,6 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	_handleMetaData();
 	_handleRevisions();
 	_handleStyles();
-	_handleIgnoredWords();
 	_handleLists();
 	_handlePageSize();
 }
@@ -1012,45 +1010,6 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 
 	if (bWroteOpenStyleSection)
 		m_pie->write("</styles>\n");
-
-	return;
-}
-
-void s_AbiWord_1_Listener::_handleIgnoredWords(void)
-{
-	UT_return_if_fail(m_pDocument);
-
-	XAP_App *pApp = m_pDocument->getApp();
-	UT_return_if_fail(pApp);
-
-	XAP_Prefs *pPrefs = pApp->getPrefs();
-	UT_return_if_fail(pPrefs);
-
-	bool saveIgnores = false;
-	pPrefs->getPrefsValueBool(static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckIgnoredWordsSave), &saveIgnores);
-
-	bool bWroteIgnoredWords = false;
-
-	if (!saveIgnores)
-		return;  // don't bother
-
-	const UT_UCSChar *word;
-	for (UT_uint32 i = 0; m_pDocument->enumIgnores(i, &word); i++)
-	{
-
-		if (!bWroteIgnoredWords)
-		{
-			bWroteIgnoredWords = true;
-			m_pie->write("<ignoredwords>\n");
-		}
-
-		m_pie->write("<iw>");
-		_outputData (word, UT_UCS4_strlen (word));
-		m_pie->write("</iw>\n");
-	}
-
-	if (bWroteIgnoredWords)
-		m_pie->write("</ignoredwords>\n");
 
 	return;
 }

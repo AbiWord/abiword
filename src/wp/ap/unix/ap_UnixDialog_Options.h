@@ -163,9 +163,6 @@ private:
 	static void s_toolbars_toggled		( GtkWidget *, gpointer );
 	static void s_apply_clicked			( GtkWidget *, gpointer );
 	static void s_defaults_clicked		( GtkWidget *, gpointer );
-	static void s_ignore_reset_clicked	( GtkWidget *, gpointer );
-	static void s_ignore_edit_clicked	( GtkWidget *, gpointer );
-	static void s_dict_edit_clicked		( GtkWidget *, gpointer );
 	static void s_chooseTransparentColor( GtkWidget *, gpointer );
 	static void s_allowTransparentColor ( GtkWidget *, gpointer );
 	static void s_color_changed(GtkWidget * csel,  AP_UnixDialog_Options * dlg);

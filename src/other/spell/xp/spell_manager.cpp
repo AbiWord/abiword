@@ -24,10 +24,7 @@
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
 
-#ifdef HAVE_PSPELL
-#include "pspell_checker.h"
-typedef PSpellChecker SpellCheckerClass;
-#elif HAVE_ENCHANT
+#ifdef HAVE_ENCHANT
 #include "enchant_checker.h"
 typedef EnchantChecker SpellCheckerClass;
 #else
@@ -92,7 +89,6 @@ UT_Vector *SpellChecker::suggestWord(const UT_UCSChar* word, size_t len)
 
 bool SpellChecker::addToCustomDict (const UT_UCSChar *word, size_t len)
 {
-	// TODO: make this support language tags, subclass this for pspell
 	return XAP_App::getApp()->addWordToDict (word, len);
 }
 

@@ -35,7 +35,6 @@
 #include "ut_string_class.h"
 #include "time.h"
 
-
 // fwd. decl.
 class UT_StringPtrMap;
 
@@ -75,12 +74,6 @@ public:
 	 * Returns the # of seconds since the last save of this file 
 	 */
 	UT_uint32       getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
-
-   	// "ignore all" list for spell check
-   	bool					appendIgnore(const UT_UCSChar * pWord, UT_uint32 len);
-   	bool					isIgnore(const UT_UCSChar * pWord, UT_uint32 len) const;
-   	bool					enumIgnores(UT_uint32 k, const UT_UCSChar ** pszWord) const;
-   	bool					clearIgnores();
    
 	void					setEncodingName(const char * szEncodingName);
 	const char *			getEncodingName() const;
@@ -93,7 +86,6 @@ protected:
 	const char *	m_szFilename;
 	UT_String		m_szEncodingName;
 
-	UT_StringPtrMap *		m_pIgnoreList;
 	time_t          m_lastSavedTime;
 	bool			m_bPieceTableChanging;
 };

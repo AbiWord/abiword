@@ -160,7 +160,7 @@ IE_Imp_XML::~IE_Imp_XML()
 
 IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	: IE_Imp(pDocument), m_pReader(NULL), m_pParser(NULL), m_error(UT_OK),
-          m_parseState(_PS_Init), m_bLoadIgnoredWords(false),
+          m_parseState(_PS_Init),
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
@@ -170,9 +170,6 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	UT_return_if_fail(pApp);
 	XAP_Prefs *pPrefs = pApp->getPrefs();
 	UT_return_if_fail(pPrefs);
-
-	pPrefs->getPrefsValueBool(static_cast<XML_Char *>(AP_PREF_KEY_SpellCheckIgnoredWordsLoad),
-							  &m_bLoadIgnoredWords);
 
 	_data_NewBlock ();
 }
@@ -245,8 +242,6 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 						m_bStripLeading = (buf[buf.size()-1] == UCS_SPACE);
 						return;
 					case _PS_IgnoredWordsItem:
-						if (m_bLoadIgnoredWords)
-							X_CheckError(getDoc()->appendIgnore(buf.ucs4_str(), buf.size()));
 						return;
 					case _PS_Meta:
 						{

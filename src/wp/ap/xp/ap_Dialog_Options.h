@@ -49,9 +49,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	typedef enum { id_CHECK_SPELL_CHECK_AS_TYPE = 0, id_CHECK_SPELL_HIDE_ERRORS,
 				   id_CHECK_SPELL_SUGGEST, id_CHECK_SPELL_MAIN_ONLY,
 				   id_CHECK_SPELL_UPPERCASE, id_CHECK_SPELL_NUMBERS,
-				   id_CHECK_SPELL_INTERNET, id_LIST_DICTIONARY,
-				   id_BUTTON_DICTIONARY_EDIT, id_BUTTON_IGNORE_RESET,
-				   id_BUTTON_IGNORE_EDIT, id_BUTTON_SPELL_AUTOREPLACE,
+				   id_CHECK_SPELL_INTERNET, id_BUTTON_SPELL_AUTOREPLACE,
 
 				   id_CHECK_SMART_QUOTES_ENABLE,
 
@@ -194,10 +192,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	XML_Char			m_CurrentTransparentColor[10];
 
 	int m_pageNum;
-	// AP level handlers	
-	void _event_IgnoreReset(void);
-	void _event_IgnoreEdit(void);
-	void _event_DictionaryEdit(void);
 private:
 	bool                m_bInitialPop;
 

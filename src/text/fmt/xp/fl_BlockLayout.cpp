@@ -80,9 +80,8 @@
 #include "ispell_def.h"
 #endif
 
-bool
-fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
-								UT_uint32 len, UT_uint32 blockPos)
+SpellChecker *
+fl_BlockLayout::_getSpellChecker (UT_uint32 blockPos)
 {
 	// the idea behind the static's here is to cache the dictionary, so
 	// we do not have to do dictionary lookup all the time; rather, we
@@ -92,8 +91,8 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 	// it will create a new AP with the new attr/props, rather than
 	// add them to the existing AP for the section of the document, so
 	// that identical AP's always imply identical formatting, and thus
-	// language
-	
+	// language	
+
 	static SpellChecker * checker = NULL;
 	
 	// initialize these to 1, so as to force initial lang evaluation
@@ -105,8 +104,6 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 		
 	getSpanAttrProp(blockPos, false, &pSpanAP);
 	getAttrProp(&pBlockAP);
-
-	
 
 	if(pSpanAP != pPrevSpanAP || pBlockAP != pPrevBlockAP)
 	{
@@ -127,7 +124,15 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 		pPrevSpanAP = pSpanAP;
 		pPrevBlockAP = pBlockAP;
 	}
-	
+
+	return checker;
+}
+
+bool
+fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
+								UT_uint32 len, UT_uint32 blockPos)
+{
+	SpellChecker * checker = _getSpellChecker (blockPos);
 
 	if (!checker)
 	{
@@ -2920,14 +2925,13 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 
 	do {
 		// Spell check the word, return if correct
-		//XAP_App * pApp = XAP_App::getApp();
 		if (_spellCheckWord(pWord, iLength, iBlockPos))
 			break;
 
 		// Find out if the word is in the document's list of ignored
 		// words
 		PD_Document * pDoc = m_pLayout->getDocument();
-		pPOB->setIsIgnored(pDoc->isIgnore(pWord, iLength));
+		pPOB->setIsIgnored(_getSpellChecker(iBlockPos)->isIgnored(pWord, iLength));
 
 		// Word not correct or recognized, so squiggle it
 		if (bAddSquiggle)

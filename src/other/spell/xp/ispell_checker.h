@@ -6,8 +6,7 @@
 #include "ut_string_class.h"
 #include "ut_vector.h"
 
-
-
+class UT_StringPtrMap;
 
 class ISpellChecker : public SpellChecker
 {
@@ -21,7 +20,9 @@ public:
 	virtual	UT_Vector & getMapping();
 	virtual bool  doesDictionaryExist (const char * szLang);
 
-protected:
+	virtual void ignoreWord (const UT_UCSChar *toCorrect, size_t toCorrectLen);
+
+	virtual bool isIgnored (const UT_UCSChar * pWord, UT_uint32 len) const;
 
 private:
 	ISpellChecker(const ISpellChecker&);	// no impl
@@ -45,6 +46,10 @@ private:
 	//
 
 	void try_autodetect_charset(const UT_String & inEncoding);
+
+	void clearIgnores ();
+
+	UT_StringPtrMap * m_pIgnoreList;
 
 	//
 	// From ispell correct.c

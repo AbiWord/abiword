@@ -140,6 +140,7 @@ public:
 	the normal flow, in order.
 */
 
+class SpellChecker;
 class fl_TabStop;
 void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTabs);
 
@@ -367,6 +368,7 @@ protected:
 										 bool bClearScreen = true);
 
 	bool					_spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos);
+	SpellChecker * _getSpellChecker (UT_uint32 blockPos);
 
 	bool					_truncateLayout(fp_Run* pTruncRun);
 

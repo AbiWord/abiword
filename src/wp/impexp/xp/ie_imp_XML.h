@@ -131,7 +131,6 @@ protected:
     UT_Error        m_error;
     ParseState      m_parseState;
 
-    bool			m_bLoadIgnoredWords;
     XML_Char		m_charDataSeen[4];
     UT_uint32		m_lenCharDataSeen;
     UT_uint32		m_lenCharDataExpected;

@@ -730,19 +730,6 @@ void AP_Win32Dialog_Options_Spelling::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 		case AP_RID_DIALOG_OPTIONS_CHK_SpellUppercase:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SPELL_UPPERCASE);		return ;
 		case AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SPELL_NUMBERS);		return ;
 		case AP_RID_DIALOG_OPTIONS_CHK_SpellInternet:		pParent->_enableDisableLogic(AP_Dialog_Options::id_CHECK_SPELL_INTERNET);		return ;
-		case AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT:
-			return;
-		case AP_RID_DIALOG_OPTIONS_BTN_CUSTOMDICT:
-			UT_DEBUGMSG(("WM_Command for BtnCustomDict\n"));
-			return;
-		case AP_RID_DIALOG_OPTIONS_BTN_IGNOREDRESET:
-			//_event_IgnoreReset();
-			UT_DEBUGMSG(("WM_Command for BtnIgnoreReset\n"));
-			return;
-		case AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT:
-			UT_DEBUGMSG(("WM_Command for BtnIgnoreEdit\n"));
-			return;		
-		
 		default:
 		break;
 	}
