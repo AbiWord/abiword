@@ -1515,7 +1515,8 @@ fl_HdrFtrSectionLayout::~fl_HdrFtrSectionLayout()
 void fl_HdrFtrSectionLayout::collapse(void)
 {
 	UT_uint32 iCount = m_vecPages.getItemCount();
-	for (UT_uint32 i=0; i<iCount; i++)
+	UT_uint32 i;
+	for (i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		fp_Page * ppPage = pPair->pPage;
@@ -1528,9 +1529,11 @@ void fl_HdrFtrSectionLayout::collapse(void)
 		{
 		       ppPage->removeFooter();
 		}
+		UT_DEBUGMSG(("SEVIOR: Removing page %x \n",ppPage));
 		delete pPair;
-		m_vecPages.deleteNthItem(i);
 	}
+	m_vecPages.clear();
+	UT_DEBUGMSG(("SEVIOR: Number of shadows left %d \n",m_vecPages.getItemCount()));
 }
 
 bool fl_HdrFtrSectionLayout::recalculateFields(void)
@@ -1703,6 +1706,8 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 
 	delete pShadowListener;
 
+	UT_DEBUGMSG(("SEVIOR: Number of shadows = %d \n",m_vecPages.getItemCount()));
+
 	//
 	// Now generate the container for this page
 	//
@@ -1720,11 +1725,23 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	UT_ASSERT(pPair);
 
 	UT_ASSERT(pPair->pShadow);
+
+
+	fp_Page * ppPage = pPair->pPage; 
 	delete pPair->pShadow;
+	if (getHFType() == FL_HDRFTR_HEADER)
+	{
+	        ppPage->removeHeader();
+	}
+	else 
+	{
+        	ppPage->removeFooter();
+	}
 
 	delete pPair;
-
 	m_vecPages.deleteNthItem(iShadow);
+
+	UT_DEBUGMSG(("SEVIOR: Deleting page %x Number of shadows = %d \n",ppPage,m_vecPages.getItemCount()));
 }
 
 void fl_HdrFtrSectionLayout::format(void)
