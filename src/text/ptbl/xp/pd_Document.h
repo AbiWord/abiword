@@ -196,10 +196,6 @@ public:
 	virtual bool			undoCmd(UT_uint32 repeatCount);
 	virtual bool			redoCmd(UT_uint32 repeatCount);
 
-	UT_Error				saveAs(const char * szFilename, int ieft, const char * expProps = NULL);
-	UT_Error   				saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL);
-	UT_Error				save(void);
-
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
 
@@ -597,6 +593,11 @@ public:
 protected:
 	~PD_Document();
 
+	virtual UT_Error		_saveAs(const char * szFilename, int ieft, const char * expProps = NULL);
+	virtual UT_Error   		_saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL);
+	virtual UT_Error		_save(void);
+	
+	
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
 	bool					_syncFileTypes(bool bReadSaveWriteOpen);

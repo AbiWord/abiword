@@ -148,10 +148,12 @@ public:
 	virtual bool			undoCmd(UT_uint32 repeatCount) = 0;
 	virtual bool			redoCmd(UT_uint32 repeatCount) = 0;
 
-	virtual UT_Error		saveAs(const char * szFilename, int ieft, const char * props = NULL) = 0;
-	virtual UT_Error		saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL) = 0;
-	virtual UT_Error		save(void) = 0;
-
+	UT_Error		        saveAs(const char * szFilename, int ieft, const char * props = NULL);
+	UT_Error		        saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL);
+	UT_Error		        save(void);
+		
+public:
+	
 	/**
 	 * Returns the # of seconds since the last save of this file 
 	 */
@@ -251,6 +253,12 @@ public:
 	
 	
 protected:
+
+ protected:	
+	virtual UT_Error	_saveAs(const char * szFilename, int ieft, const char * props = NULL) = 0;
+	virtual UT_Error	_saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL) = 0;
+	virtual UT_Error	_save(void) = 0;
+
 	void            _purgeRevisionTable();
 	void            _adjustHistoryOnSave();
 	UT_UUID *       _getDocUUID()const {return m_pUUID;};
@@ -296,6 +304,7 @@ private:
 	UT_UUID *       m_pUUID;
 	UT_UUID *       m_pNewUUID;
 	bool            m_bDoNotAdjustHistory;
+	bool            m_bAfterFirstSave;
 };
 
 

@@ -601,13 +601,13 @@ UT_Error PD_Document::newDocument(void)
 	return UT_OK;
 }
 
-UT_Error PD_Document::saveAs(const char * szFilename, int ieft,
+UT_Error PD_Document::_saveAs(const char * szFilename, int ieft,
 							 const char * expProps)
 {
-  return saveAs(szFilename, ieft, true, expProps);
+  return _saveAs(szFilename, ieft, true, expProps);
 }
 
-UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
+UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 							 const char * expProps)
 {
 	if (!szFilename)
@@ -664,7 +664,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 	return UT_OK;
 }
 
-UT_Error PD_Document::save(void)
+UT_Error PD_Document::_save(void)
 {
 	if (!getFilename() || !*getFilename())
 		return UT_SAVE_NAMEERROR;
