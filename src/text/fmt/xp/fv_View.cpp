@@ -727,7 +727,14 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
 	case FV_DOCPOS_BOB:
 		{
-#if 0
+#if 1
+
+// DOM: This used to be an #if 0. I changed it to #if 1
+// DOM: because after enabling this code, I can no
+// DOM: longer reproduce bug 403 (the bug caused by this
+// DOM: code being if 0'd) or bug 92 (the bug that if 0'ing
+// DOM: this code supposedly fixes)
+
 // TODO this piece of code attempts to go back
 // TODO to the previous block if we are on the
 // TODO edge.  this causes bug #92 (double clicking
