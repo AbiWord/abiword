@@ -1,24 +1,29 @@
-# German po for abiword.
-# Copyright (C) 2001 Free Software Foundation, Inc.
+# German translation for abiword.
+# Copyright (C) 2001. 2002 Free Software Foundation, Inc.
 #
 # Contributors/Mitwirkende:
 # Damon Allen Davison <allolex@users.sourceforge.net>
 # Martin Gansser <mgansser@ngi.de>
 # Dom Lachowicz <cinamod@hotmail.com>, 2001
 # Kai Lahmann <kl@linuxfaqs.de>, 2001
-# Christian Meyer <chrisime@uni.de>, 2001 (maintainer)
+# Christian Meyer <chrisime@gnome.org>, 2001, 2002 (maintainer)
+#
+# Please be careful while translating and stick to the following suggestions:
 # 
-# Updated/Aktualisiert am 2002-02-01 
+# endnote == Endnote ??
+# indent == Einzug
+# to indent == einrücken
+# selection == Markierung
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: abiword 0.9\n"
+"Project-Id-Version: abiword 1.0.x\n"
 "POT-Creation-Date: 2002-02-01 02:34-0800\n"
-"PO-Revision-Date: 2001-07-23 17:05+0200\n"
+"PO-Revision-Date: 2002-03-04 19:20+0100\n"
 "Last-Translator: Christian Meyer <chrisime@gnome.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #.
@@ -77,7 +82,7 @@ msgstr ""
 "\n"
 "\tabiword-dev@abisource.com\n"
 "\n"
-"Andernfalls haben Sie bitte Geduld."
+"Andernfalls haben Sie bitte etwas Geduld."
 
 #. MENU_LABEL_WINDOW_1
 #: po/tmp/ap_String_Id.h.h:19
@@ -109,9 +114,8 @@ msgstr "&3 %s"
 
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h.h:29
-#, fuzzy
 msgid "&3 ----------"
-msgstr "&3\t----------"
+msgstr "&3 ----------"
 
 #. MENU_LABEL_WINDOW_4
 #: po/tmp/ap_String_Id.h.h:31
@@ -158,7 +162,7 @@ msgstr "&9 %s"
 #: po/tmp/ap_String_Id.h.h:45
 #, c-format
 msgid "&About %s"
-msgstr "&Über %s"
+msgstr "&Info zu %s"
 
 #. MENU_LABEL_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:47
@@ -170,6 +174,7 @@ msgstr "&Hinzu"
 msgid "&Adjust to:"
 msgstr "&Vergrößern auf:"
 
+# CHECK
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h.h:51
 msgid "&Align"
@@ -183,7 +188,7 @@ msgstr "&Alles"
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h.h:55
 msgid "&At:"
-msgstr "&von:"
+msgstr "&Von:"
 
 #. MENU_LABEL_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:57
@@ -193,7 +198,7 @@ msgstr "&Automatisch Rechtschreibung"
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h.h:59
 msgid "&Automatically save this Scheme"
-msgstr "&Dieses Schema automatisch speichern"
+msgstr "Dieses Schema &automatisch speichern"
 
 #. MENU_LABEL_INSERT_AUTOTEXT
 #: po/tmp/ap_String_Id.h.h:61
@@ -237,9 +242,8 @@ msgstr "Ä&ndern"
 
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:77
-#, fuzzy
 msgid "&Clip Art"
-msgstr "Clipart"
+msgstr "&Clipart"
 
 #. MENU_LABEL_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:79
@@ -264,13 +268,12 @@ msgstr "&Kopieren"
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:87
 msgid "&Current Preferences Scheme"
-msgstr "&Aktuelles Einstellungsschema"
+msgstr "&Aktuelles Vorliebenschema"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:89
-#, fuzzy
 msgid "&Delete hyperlink"
-msgstr "Markierung löschen"
+msgstr "Hyperlink &löschen"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:91
@@ -299,14 +302,13 @@ msgstr "Anführungs&zeichen automatisch"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:101
-#, fuzzy
 msgid "&Endnote"
-msgstr "&Bearbeiten"
+msgstr ""
 
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:103
 msgid "&Even page"
-msgstr "&Gerade Seitezahlen"
+msgstr "&Gerade Seite"
 
 #. MENU_LABEL_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:105
@@ -316,7 +318,7 @@ msgstr "&Extra"
 #. MENU_LABEL_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:107
 msgid "&Field"
-msgstr "F&eld"
+msgstr "&Feld"
 
 #. DLG_Field_Fields
 #: po/tmp/ap_String_Id.h.h:109
@@ -390,9 +392,8 @@ msgstr "&Verborgener Text"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:137
-#, fuzzy
 msgid "&Hyperlink"
-msgstr "&Überstrichen"
+msgstr "&Hyperlink"
 
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h.h:139
@@ -402,7 +403,7 @@ msgstr "&Ignorieren"
 #. MENU_LABEL_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:141
 msgid "&Ignore All"
-msgstr "&Ignoriere alle"
+msgstr "Alle &ignorieren"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:143
@@ -416,9 +417,8 @@ msgstr "&Einfügen"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:147
-#, fuzzy
 msgid "&Insert File"
-msgstr "&Einfügen"
+msgstr "Datei &einfügen"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:149
@@ -468,13 +468,12 @@ msgstr "Groß-/Klein&schreibung"
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:167
 msgid "&More Windows"
-msgstr "&Mehr Fenster"
+msgstr "&Weitere Fenster"
 
 #. DLG_Goto_Label_Name
 #: po/tmp/ap_String_Id.h.h:169
-#, fuzzy
 msgid "&Name:"
-msgstr "Name"
+msgstr "&Name:"
 
 #. MENU_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:171
@@ -499,7 +498,7 @@ msgstr "&Normal"
 #. DLG_Goto_Label_Number
 #: po/tmp/ap_String_Id.h.h:179
 msgid "&Number:"
-msgstr "N&ummer:"
+msgstr "&Nummer:"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:181
@@ -534,7 +533,7 @@ msgstr "E&infügen"
 #. MENU_LABEL_INSERT_PICTURE
 #: po/tmp/ap_String_Id.h.h:193
 msgid "&Picture"
-msgstr "&Grafik"
+msgstr "&Bild"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:195
@@ -544,7 +543,7 @@ msgstr "&Hochformat"
 #. MENU_LABEL_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:197
 msgid "&Preferences"
-msgstr "&Optionen"
+msgstr "&Vorlieben"
 
 #. MENU_LABEL_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:199
@@ -573,9 +572,8 @@ msgstr "&Zurücksetzen"
 
 #. MENU_LABEL_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:209
-#, fuzzy
 msgid "&Revert"
-msgstr "&Zurücksetzen"
+msgstr ""
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:211
@@ -605,12 +603,12 @@ msgstr "In der Hilfe &suchen"
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:221
 msgid "&Show Status Bar"
-msgstr "Status&leiste"
+msgstr "Status&leiste zeigen"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:223
 msgid "&Special:"
-msgstr "&Speziel:"
+msgstr "&Spezial:"
 
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h.h:225
@@ -650,12 +648,12 @@ msgstr "&Tabulatoren..."
 #. MENU_LABEL_VIEW_TOOLBARS
 #: po/tmp/ap_String_Id.h.h:239
 msgid "&Toolbars"
-msgstr "&Symbolleisten"
+msgstr "&Werkzeugleisten"
 
 #. MENU_LABEL_TOOLS
 #: po/tmp/ap_String_Id.h.h:241
 msgid "&Tools"
-msgstr "E&xtras"
+msgstr "&Werkzeuge"
 
 #. DLG_PageSetup_Top
 #: po/tmp/ap_String_Id.h.h:243
@@ -680,7 +678,7 @@ msgstr "&Rückgängig"
 #. DLG_PageSetup_Units
 #: po/tmp/ap_String_Id.h.h:251
 msgid "&Units:"
-msgstr "&Einheiten"
+msgstr "&Einheiten:"
 
 #. MENU_LABEL_VIEW
 #: po/tmp/ap_String_Id.h.h:253
@@ -730,7 +728,7 @@ msgstr "(kein)"
 #. DLG_Para_SpacingHalf
 #: po/tmp/ap_String_Id.h.h:271
 msgid "1.5 lines"
-msgstr "1.5-zeilig"
+msgstr "1,5-zeilig"
 
 #. DLG_Goto_Btn_Prev
 #: po/tmp/ap_String_Id.h.h:273
@@ -740,8 +738,9 @@ msgstr "<< Zurück"
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h.h:275
 msgid "A&lways suggest corrections"
-msgstr "Vorschläge immer anzeigen"
+msgstr "Vorschläge &immer anzeigen"
 
+# CHECK
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h.h:277
 msgid "AM/PM"
@@ -756,14 +755,12 @@ msgstr "VORSICHT:"
 #: po/tmp/ap_String_Id.h.h:281
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be a bogus or invalid document"
-msgstr ""
-"AbiWord kann %s nicht öffnen. Es scheint ein ungültiges Dokument zu sein"
+msgstr "AbiWord kann %s nicht öffnen. Es scheint ein ungültiges Dokument zu sein"
 
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h.h:283
 #, c-format
-msgid ""
-"AbiWord has finished its search of the document and has made %d replacements."
+msgid "AbiWord has finished its search of the document and has made %d replacements."
 msgstr "AbiWord hat das Dokument durchsucht und %d Ersetzungen gemacht."
 
 #. DLG_FR_FinishedFind
@@ -773,19 +770,18 @@ msgstr "AbiWord hat das Dokument durchsucht."
 
 #. MENU_LABEL_HELP_ABOUT_GNU
 #: po/tmp/ap_String_Id.h.h:287
-#, fuzzy
 msgid "About &GNU Free Software"
-msgstr "Über &Open Source"
+msgstr "Info zu &GNU Free Software"
 
 #. MENU_LABEL_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:289
 msgid "About &Open Source"
-msgstr "Über &Open Source"
+msgstr "Info zu &Open Source"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:291
 msgid "About G&NOME Office"
-msgstr "Über G&NOME Office"
+msgstr "Info zu G&NOME Office"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:293
@@ -805,12 +801,12 @@ msgstr "Rahmen und Schattierung der Markierung bearbeiten"
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:299
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr "Aufzählungszeichen oder Numerierung einfügen"
+msgstr "Aufzählungszeichen oder Numerierung für ausgewählte Absätze hinzufügen oder ändern"
 
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:301
 msgid "Add this word to the custom dictionary"
-msgstr "Füge dieses Wort zum benutzerdefinierten Wörterbuch hinzu"
+msgstr "Dieses Wort zum benutzerdefinierten Wörterbuch hinzufügen"
 
 #. DLG_Styles_ModifyTemplate
 #: po/tmp/ap_String_Id.h.h:303
@@ -845,12 +841,12 @@ msgstr "Alles"
 #. DLG_Options_Label_CheckAllowCustomToolbars
 #: po/tmp/ap_String_Id.h.h:315
 msgid "Allow Custom Toolbars"
-msgstr "Angepaßte Tool-Leisten zulassen"
+msgstr "Angepasste Werkzeugeisten zulassen"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:317
 msgid "Allow screen colors other than white"
-msgstr "Andere Bildschirmfarbe als weiß erlauben"
+msgstr "Andere Bildschirmfarbe als weiß zulassen"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h.h:319
@@ -869,9 +865,8 @@ msgstr "Auf aktuelle Liste anwenden"
 
 #. DLG_Lists_Arabic_List
 #: po/tmp/ap_String_Id.h.h:325
-#, fuzzy
 msgid "Arabic List"
-msgstr "Arabische Liste"
+msgstr ""
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:327
@@ -881,7 +876,7 @@ msgstr "Mindestens"
 #. DLG_Lists_Resume
 #: po/tmp/ap_String_Id.h.h:329
 msgid "Attach to Previous List"
-msgstr "An vorige Liste anhängen"
+msgstr "An vorherige Liste anhängen"
 
 #. MENU_LABEL_AUTOTEXT_ATTN
 #: po/tmp/ap_String_Id.h.h:331
@@ -896,7 +891,7 @@ msgstr "Aktuelle Datei automatisch &speichern alle"
 #. DLG_Options_Label_AutoSave
 #: po/tmp/ap_String_Id.h.h:335
 msgid "Auto Save"
-msgstr "Automatisch &speichern:"
+msgstr "Automatisch speichern"
 
 #. DLG_Options_Label_SpellAutoReplace
 #: po/tmp/ap_String_Id.h.h:337
@@ -911,7 +906,7 @@ msgstr "Gefundene Plugins automatisch laden"
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h.h:341
 msgid "Automatically spell-check the document"
-msgstr "Überprüfe das Dokument auf Rechtschreibfehler automatisch"
+msgstr "Das Dokument auf Rechtschreibfehler automatisch überprüfen"
 
 #. DLG_Styles_ModifyAutomatic
 #: po/tmp/ap_String_Id.h.h:343
@@ -943,11 +938,11 @@ msgstr "&Hintergrund"
 msgid "Bar"
 msgstr "Leiste"
 
+# CHECK
 #. TabToggleBarTab
 #: po/tmp/ap_String_Id.h.h:355
-#, fuzzy
 msgid "Bar Tab"
-msgstr "Leiste"
+msgstr "Leistentab"
 
 #. DLG_Styles_ModifyBasedOn
 #: po/tmp/ap_String_Id.h.h:357
@@ -983,12 +978,12 @@ msgstr "Lesezeichen"
 #: po/tmp/ap_String_Id.h.h:369
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Das Lesezeichen \"%s\" wurde in diesem Dokument nicht gefunden."
+msgstr "Das Lesezeichen »%s« wurde in diesem Dokument nicht gefunden."
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h.h:371
 msgid "Borders and Shading"
-msgstr "&Rahmen und Schattierung"
+msgstr "Rahmen und Schattierung"
 
 #. BottomMarginStatus
 #: po/tmp/ap_String_Id.h.h:373
@@ -996,10 +991,11 @@ msgstr "&Rahmen und Schattierung"
 msgid "Bottom Margin [%s]"
 msgstr "Unterer Rand [%s]"
 
+# CHECK
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:375 po/tmp/xap_String_Id.h.h:81
 msgid "Bottomline"
-msgstr "Untere Linie"
+msgstr "Untere Zeile"
 
 #. DLG_Lists_Box_List
 #: po/tmp/ap_String_Id.h.h:377
@@ -1053,7 +1049,6 @@ msgstr "&Gross/Kleinschreibung"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:397
-#, fuzzy
 msgid "C&redits"
 msgstr "Mitwi&rkende"
 
@@ -1074,9 +1069,8 @@ msgstr "VERTRAULICH"
 
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h.h:405
-#, fuzzy
 msgid "Camel Caps"
-msgstr "Groß-/Kleinschreibung ändern"
+msgstr "Große Anfangsbuchstaben"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h.h:407
@@ -1095,9 +1089,8 @@ msgstr "Zentrieren"
 
 #. TabToggleCenterTab
 #: po/tmp/ap_String_Id.h.h:413
-#, fuzzy
 msgid "Center Tab"
-msgstr "Zentrieren"
+msgstr "Tab zentrieren"
 
 #. MENU_STATUSLINE_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:415
@@ -1135,7 +1128,7 @@ msgid ""
 "Change Current \n"
 "List"
 msgstr ""
-"aktuelle Liste\n"
+"aktuelle Liste \n"
 "ändern"
 
 #. DLG_Background_TitleHighlight
@@ -1151,42 +1144,43 @@ msgstr "Textfarbe ändern"
 #. MENU_STATUSLINE_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h.h:433
 msgid "Change the case of the selected text"
-msgstr "Verändere die Gross/Kleinschreibung"
+msgstr "Die Gross/Kleinschreibung für den ausgewählten Text ändern"
 
 #. MENU_STATUSLINE_FMT_FONT
 #: po/tmp/ap_String_Id.h.h:435
 msgid "Change the font of the selected text"
-msgstr "Schrifteigenschaften der Markierung ändern"
+msgstr "Schrift des ausgewählten Texts ändern"
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:437
 msgid "Change the format of the selected paragraph"
-msgstr "Absatzeigenschaften der Markierung ändern"
+msgstr "Format des ausgewählten Absatzes ändern"
 
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:439
 msgid "Change the language of the selected text"
-msgstr "Ändere die Sprache des aktuellen Textes"
+msgstr "Die Sprache des ausgewählten Texts ändern"
 
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:441
 msgid "Change the number of columns"
-msgstr "Spaltenzahl der Markierung ändern"
+msgstr "Spaltenzahl ändern"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:443
 msgid "Change the printing options"
-msgstr "Layout-Optionen für aktuelles Dokument festlegen"
+msgstr "Druckoptionen ändern"
 
+# CHECK
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
 #: po/tmp/ap_String_Id.h.h:445
 msgid "Change to this suggested spelling"
-msgstr "Ändere in diesen Vorschlag"
+msgstr "In diesen Vorschlag ändern"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h.h:447
 msgid "Change your document's background color"
-msgstr "Hintergrundfarbe verändern"
+msgstr "Die Dokument-Hintergrundfarbe ändern"
 
 #. DLG_Styles_ModifyCharacter
 #: po/tmp/ap_String_Id.h.h:449
@@ -1226,22 +1220,22 @@ msgstr "&Rechtschreibung"
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:463
 msgid "Check &Version"
-msgstr "&Version"
+msgstr "&Version überprüfen"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:465
 msgid "Check s&pelling as you type"
-msgstr "Recht&schreibung automatisch prüfen"
+msgstr "Recht&schreibung während des Schreibens prüfen"
 
 #. MENU_STATUSLINE_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:467
 msgid "Check the document for incorrect spelling"
-msgstr "Überprüfe das Dokument auf Rechtschreibfehler"
+msgstr "Das Dokument auf Rechtschreibfehler überprüfen"
 
 #. DLG_NEW_Choose
 #: po/tmp/ap_String_Id.h.h:469
 msgid "Choose"
-msgstr "Auswählen"
+msgstr "Wählen"
 
 #. DLG_Options_Label_ChooseForTransparent
 #: po/tmp/ap_String_Id.h.h:471
@@ -1251,7 +1245,7 @@ msgstr "Bildschirmfarbe wählen"
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h.h:473
 msgid "Choose a Template"
-msgstr "Wählen Sie eine Vorlage"
+msgstr "Eine Vorlage wählen"
 
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h.h:475
@@ -1260,7 +1254,6 @@ msgstr "Bildschirmfarbe für Abiword wählen"
 
 #. DLG_Goto_Label_Help
 #: po/tmp/ap_String_Id.h.h:477
-#, fuzzy
 msgid ""
 "Choose your target in the left side.\n"
 "If you want to use the \"Go To\" button, just fill the Number Entry with the "
@@ -1268,10 +1261,11 @@ msgid ""
 "you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
 "below your current position."
 msgstr ""
-"Wählen Sie das gewünschte Ziel auf der linken Seite und geben Sie die "
-"gewünschte Nummer ein. Sie können + und - für relative Sprünge verwenden. "
-"Wählen Sie z.B. links &quot;Seite&quot; und Tragen Sie &quot;+2&quot; in das "
-"Nummernfeld, springen Sie zwei Seiten nach vorne."
+"Wählen Sie das gewünschte Ziel auf der linken Seite.\n"
+"Wenn Sie den »Gehe zu«-Knopf verwenden wollen, geben Sie die gewünschte "
+"Zahl ein. Sie können + und - für relative Sprünge verwenden,\t wenn Sie "
+"beispielsweise »+2« schreiben und Sie »Zeile« auswählen, springen Sie zwei "
+"Zeilen unter Ihre aktuelle Position."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:479
@@ -1316,7 +1310,7 @@ msgstr "Aktuelles Dokument schließen"
 #. MENU_LABEL_AUTOTEXT_CLOSING
 #: po/tmp/ap_String_Id.h.h:495
 msgid "Closing:"
-msgstr "Abschied:"
+msgstr "Schließen:"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h.h:497
@@ -1332,12 +1326,12 @@ msgstr "Spalten"
 #. FIELD_Application_CompileDate
 #: po/tmp/ap_String_Id.h.h:501
 msgid "Compile Date"
-msgstr "Kompilierungsdatum"
+msgstr "Übersetzungsdatum"
 
 #. FIELD_Application_CompileTime
 #: po/tmp/ap_String_Id.h.h:503
 msgid "Compile Time"
-msgstr "Kompilierungszeit"
+msgstr "Übersetzungszeit"
 
 #. DLG_Break_Continuous
 #: po/tmp/ap_String_Id.h.h:505
@@ -1358,25 +1352,25 @@ msgstr "Herzlichst,"
 #: po/tmp/ap_String_Id.h.h:511
 #, c-format
 msgid "Could not open file %s for writing"
-msgstr "Datei %s kann nicht zum Schreiben geöffnet werden"
+msgstr "Datei %s konnte nicht zum Schreiben geöffnet werden"
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h.h:513
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open file %s."
-msgstr "Datei %s kann nicht geschreiben werden."
+msgstr "Datei %s konnte nicht geöffnet werden."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h.h:515
 #, c-format
 msgid "Could not write to file %s"
-msgstr "Datei %s kann nicht geschrieben werden"
+msgstr "Datei %s konnte nicht geschrieben werden"
 
 #. MSG_SaveFailed
 #: po/tmp/ap_String_Id.h.h:517
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "Datei %s kann nicht geschreiben werden."
+msgstr "Datei %s konnte nicht geschreiben werden."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:519
@@ -1431,7 +1425,7 @@ msgstr "Aktueller Listentyp"
 #. MSG_EmptySelection
 #: po/tmp/ap_String_Id.h.h:539
 msgid "Current Selection is Empty"
-msgstr "Aktuelle Auswahl ist leer"
+msgstr "Aktuelle Markierung ist leer"
 
 #. DLG_Styles_DefCurrent
 #: po/tmp/ap_String_Id.h.h:541
@@ -1461,7 +1455,7 @@ msgstr "Benutzerdefinierte Liste"
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:551
 msgid "Cut the selection and put it on the Clipboard"
-msgstr "Markierung löschen und in die Zwischenablage kopieren"
+msgstr "Markierung ausschneiden und in die Zwischenablage kopieren"
 
 #. DLG_Lists_Dashed_List
 #: po/tmp/ap_String_Id.h.h:553
@@ -1503,11 +1497,11 @@ msgstr "Sehr geehrte Damen und Herren,"
 msgid "Decimal"
 msgstr "Dezimal"
 
+# CHECK
 #. TabToggleDecimalTab
 #: po/tmp/ap_String_Id.h.h:569
-#, fuzzy
 msgid "Decimal Tab"
-msgstr "Dezimal"
+msgstr "Dezimal Tab"
 
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h.h:571
@@ -1546,9 +1540,8 @@ msgstr "Löschen"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:585
-#, fuzzy
 msgid "Delete hyperlink"
-msgstr "Markierung löschen"
+msgstr "Hyperlink löschen"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:587
@@ -1563,7 +1556,7 @@ msgstr "Beschreibung"
 #. DLG_Options_Label_UseContextGlyphs
 #: po/tmp/ap_String_Id.h.h:591
 msgid "Determine correct glyph shapes from context"
-msgstr "Bestimme richtige Glyphen-Formen vom Zusammenhang"
+msgstr "Richtige Glyphen-Formen vom Zusammenhang bestimmen"
 
 #. DLG_Lists_Diamond_List
 #: po/tmp/ap_String_Id.h.h:593
@@ -1572,14 +1565,13 @@ msgstr "Diamant-Liste"
 
 #. DLG_HdrFtr_FooterFirst
 #: po/tmp/ap_String_Id.h.h:595
-#, fuzzy
 msgid "Different Footer on First page"
-msgstr "Verschiedene Fußzeile auf der ersten Seite"
+msgstr "Andere Fußzeile auf der ersten Seite"
 
 #. DLG_HdrFtr_FooterLast
 #: po/tmp/ap_String_Id.h.h:597
 msgid "Different Footer on Last page"
-msgstr "Verschiedene Fußzeile auf der letzten Seite"
+msgstr "Andere Fußzeile auf der letzten Seite"
 
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:599
@@ -1588,14 +1580,13 @@ msgstr "Verschiedene Fußzeilen auf gegenüberliegenden Seiten"
 
 #. DLG_HdrFtr_HeaderFirst
 #: po/tmp/ap_String_Id.h.h:601
-#, fuzzy
 msgid "Different Header on First page"
-msgstr "Verschiedene Kopfzeile auf der ersten Seite"
+msgstr "Andere Kopfzeile auf der ersten Seite"
 
 #. DLG_HdrFtr_HeaderLast
 #: po/tmp/ap_String_Id.h.h:603
 msgid "Different Header on Last page"
-msgstr "Verschiedene Kopfzeile auf der letzten Seite"
+msgstr "Andere Kopfzeile auf der letzten Seite"
 
 #. DLG_HdrFtr_HeaderEven
 #: po/tmp/ap_String_Id.h.h:605
@@ -1604,24 +1595,23 @@ msgstr "Verschiedene Kopfzeilen auf gegenüberliegenden Seiten"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:607
-#, fuzzy
 msgid "Display Credits"
-msgstr "Inhalt der Hilfe anzeigen (lokal)"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:609
 msgid "Display Help Contents"
-msgstr "Inhalt der Hilfe anzeigen (lokal)"
+msgstr "Inhalt der Hilfe anzeigen"
 
 #. MENU_STATUSLINE_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:611
 msgid "Display Help Index"
-msgstr "Benutzerhandbuch anzeigen (lokal)"
+msgstr "Benutzerhandbuch anzeigen"
 
 #. MENU_STATUSLINE_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:613
 msgid "Display information about Open Source"
-msgstr "Informationen über Open Source anzeigen (lokal)"
+msgstr "Informationen über Open Source anzeigen"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:615
@@ -1636,18 +1626,17 @@ msgstr "Programminformation, Version und Copyright anzeigen"
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h.h:619
 msgid "Display program version number"
-msgstr "Versionsnummer anzeigen (WWW)"
+msgstr "Versionsnummer anzeigen"
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h.h:621
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr "Möchten Sie die ignorierten Wörter von allen Dokumenten zurücksetzen"
+msgstr "Möchten Sie die ignorierten Wörter von allen Dokumenten zurücksetzen?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h.h:623
 msgid "Do you want to reset ignored words in the current document?"
-msgstr ""
-"Möchten Sie die ignorierten Wörter vom aktuellen Dokument zurücksetzen?"
+msgstr "Möchten Sie die ignorierten Wörter vom aktuellen Dokument zurücksetzen?"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h.h:625
@@ -1667,12 +1656,12 @@ msgstr "Fußzeile bearbeiten"
 #. MENU_LABEL_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h.h:631
 msgid "Edit Header"
-msgstr "Kopfzeile"
+msgstr "Kopfzeile bearbeiten"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h.h:633
 msgid "Edit text at the top or bottom of every page"
-msgstr "Kopf- und Fußzeilen editieren"
+msgstr "Text der Kopf- und Fußzeilen auf jeder seite bearbeiten"
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:635
@@ -1689,6 +1678,7 @@ msgstr "Kopfzeile auf der aktuellen Seite bearbeiten"
 msgid "Email:"
 msgstr "E-Mail:"
 
+# CHECK
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:641
 msgid "Endnote anchor"
@@ -1696,20 +1686,19 @@ msgstr "Endnoten-Verankerung"
 
 #. FIELD_Numbers_EndnoteReference
 #: po/tmp/ap_String_Id.h.h:643
-#, fuzzy
 msgid "Endnote reference"
-msgstr "Verweis auf eine Endnote"
+msgstr "Verweis auf Endnote"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h.h:645
 msgid "Error calculating value!"
-msgstr "Fehler bei der Berechnung eines Werts"
+msgstr "Fehler bei der Berechnung eines Werts!"
 
 #. SCRIPT_CANTRUN
 #: po/tmp/ap_String_Id.h.h:647
-#, fuzzy, c-format
+#, c-format
 msgid "Error executing script %s"
-msgstr "Fehler beim Importieren der Datei %s."
+msgstr "Fehler beim Ausführen von Skript %s."
 
 #. MSG_ImportError
 #: po/tmp/ap_String_Id.h.h:649
@@ -1721,13 +1710,13 @@ msgstr "Fehler beim Importieren der Datei %s."
 #: po/tmp/ap_String_Id.h.h:651
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr "Fehler beim Speichern von %s: Konnte Exporter nicht erstellen"
+msgstr "Fehler beim Speichern von %s: Exporter konnte nicht erstellt werden"
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:653
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
-msgstr "Datei %s konnte nicht geschreiben werden."
+msgstr "Datei %s konnte nicht gespeichert werden: ungültiger Name"
 
 #. DLG_Para_SpacingExactly
 #: po/tmp/ap_String_Id.h.h:655
@@ -1742,7 +1731,7 @@ msgstr "Hilfskripts ausführen"
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h.h:659
 msgid "Extra Toolbar"
-msgstr "&Extra Werkzeugleiste"
+msgstr "Extra Werkzeugleiste"
 
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h.h:661
@@ -1757,7 +1746,7 @@ msgstr "Forma&t"
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:665
 msgid "F&ull Screen"
-msgstr "Voller Bildschirm"
+msgstr "&Vollbildansicht"
 
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h.h:667
@@ -1806,13 +1795,14 @@ msgstr "Suchen"
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:683
 msgid "Find the specified text"
-msgstr "Text im Dokument suchen"
+msgstr "Angegebener Text im Dokument suchen"
 
+# CHECK
 #. FirstLineIndentStatus
 #: po/tmp/ap_String_Id.h.h:685
 #, c-format
 msgid "First Line Indent [%s]"
-msgstr "Erste Zeile [%s]"
+msgstr "Einzug erste Zeile [%s]"
 
 #. DLG_Para_SpecialFirstLine
 #: po/tmp/ap_String_Id.h.h:687
@@ -1835,9 +1825,8 @@ msgstr "Schrift"
 
 #. DLG_Lists_ButtonFont
 #: po/tmp/ap_String_Id.h.h:693
-#, fuzzy
 msgid "Font..."
-msgstr "Schrift"
+msgstr "Schrift..."
 
 #. DLG_Lists_Font
 #: po/tmp/ap_String_Id.h.h:695 po/tmp/xap_String_Id.h.h:199
@@ -1852,7 +1841,7 @@ msgstr "Fußzeile"
 #. DLG_HdrFtr_FooterFrame
 #: po/tmp/ap_String_Id.h.h:699
 msgid "Footer Properties"
-msgstr "Fußzeile-Eigenschaften"
+msgstr "Eigenschaften der Fußzeile"
 
 #. FooterStatus
 #: po/tmp/ap_String_Id.h.h:701
@@ -1867,20 +1856,19 @@ msgstr "Format"
 
 #. MENU_LABEL_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:705
-#, fuzzy
 msgid "Format &Image"
-msgstr "Bild formatieren"
+msgstr "&Bild formatieren"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:707
-#, fuzzy
 msgid "Format Header/Footers"
-msgstr "&Kopf- und Fußzeilen formatieren"
+msgstr "Kopf- und Fußzeilen formatieren"
 
+# CHECK
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:709
 msgid "Format Toolbar"
-msgstr "&Formatierungs-Werkzeugleiste"
+msgstr "Formatierungs-Werkzeugleiste"
 
 #. DLG_Lists_Format
 #: po/tmp/ap_String_Id.h.h:711
@@ -1907,10 +1895,11 @@ msgstr "Allgemein"
 msgid "Go To"
 msgstr "Gehe zu"
 
+# CHECK
 #. DLG_Goto_Label_What
 #: po/tmp/ap_String_Id.h.h:721
 msgid "Go To &What:"
-msgstr "Gehe zu:"
+msgstr "Gehe &wohin:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h.h:723
@@ -1935,7 +1924,7 @@ msgstr "Kopfzeile"
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h.h:731
 msgid "Header Properties"
-msgstr "Kopfzeile-Eigenschaften"
+msgstr "Eigenschaften der Kopfzeile"
 
 #. HeaderStatus
 #: po/tmp/ap_String_Id.h.h:733
@@ -1951,10 +1940,10 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Kopf- und Fußzeilen können nur im Druckansicht-Modus erstellt undbearbeitet "
+"Kopf- und Fußzeilen können nur im Druckansicht-Modus erstellt und bearbeitet "
 "werden. \n"
 "Um diesen Modus einzuschalten, wählen Sie bitte Ansicht, dann "
-"Druckansichtaus dem Menü. \n"
+"Druckansicht aus dem Menü. \n"
 "Möchten Sie jetzt den Druckansicht-Modus einschalten?"
 
 #. DLG_Lists_Heart_List
@@ -1964,9 +1953,8 @@ msgstr "Herz-Liste"
 
 #. DLG_Lists_Hebrew_List
 #: po/tmp/ap_String_Id.h.h:739
-#, fuzzy
 msgid "Hebrew List"
-msgstr "Herz-Liste"
+msgstr ""
 
 #. MENU_LABEL_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:741
@@ -1976,7 +1964,7 @@ msgstr "&Inhalt"
 #. MENU_LABEL_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:743
 msgid "Help &Index"
-msgstr "&Benutzerhandbuch"
+msgstr "Hilfe&index"
 
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:745
@@ -2011,12 +1999,12 @@ msgstr "Ignorieren"
 #. DLG_Options_Label_SpellInternet
 #: po/tmp/ap_String_Id.h.h:757
 msgid "Ignore Internet and &file addresses"
-msgstr "Internet- und Dateiadressen ignorieren"
+msgstr "Internet- und &Dateiadressen ignorieren"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:759
 msgid "Ignore all occurrences of this word in the document"
-msgstr "Ignoriere alle Vorkommnisse in diesem Dokument"
+msgstr "Alle Vorkommnisse in diesem Dokument ignorieren"
 
 #. DLG_Options_Label_SpellUppercase
 #: po/tmp/ap_String_Id.h.h:761
@@ -2075,9 +2063,8 @@ msgstr "Inhalt der Zwischenablage einfügen"
 
 #. DLG_InsertHyperlink_Title
 #: po/tmp/ap_String_Id.h.h:783
-#, fuzzy
 msgid "Insert Hyperlink"
-msgstr "Symbol einfügen"
+msgstr "Hyperlink einfügen"
 
 #. MENU_STATUSLINE_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:785
@@ -2102,42 +2089,37 @@ msgstr "Symbol oder Sonderzeichen einfügen"
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:793
 msgid "Insert an automatically-updated page number"
-msgstr "Seitenzahlen einfügen"
+msgstr "Automatisch aktualisierte Seitenzahl einfügen"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:795
-#, fuzzy
 msgid "Insert an endnote"
-msgstr "Bild einfügen"
+msgstr "Endnote einfügen"
 
 #. MENU_STATUSLINE_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:797
 msgid "Insert an existing picture from another file"
-msgstr "Grafik aus Datei einfügen"
+msgstr "Bild aus anderer Datei einfügen"
 
 #. MENU_STATUSLINE_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:799
-#, fuzzy
 msgid "Insert bookmark"
-msgstr "Symbol einfügen"
+msgstr "Lesezeichen einfügen"
 
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:801
-#, fuzzy
 msgid "Insert clipart"
-msgstr "Inhalt der Zwischenablage einfügen"
+msgstr "Clipart einfügen"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:803
-#, fuzzy
 msgid "Insert hyperlink"
-msgstr "Symbol einfügen"
+msgstr "Hyperlink einfügen"
 
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:805
-#, fuzzy
 msgid "Insert the contents of another file"
-msgstr "Grafik aus Datei einfügen"
+msgstr "Inhalt aus anderer Datei einfügen"
 
 #. MENU_STATUSLINE_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:807
@@ -2146,9 +2128,8 @@ msgstr "Datum und/oder Uhrzeit einfügen"
 
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:809
-#, fuzzy
 msgid "Insert unformatted clipboard contents"
-msgstr "Inhalt der Zwischenablage einfügen"
+msgstr "Inhalt der unformatierten Zwischenablage einfügen"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:811
@@ -2168,7 +2149,7 @@ msgstr "Absatz ausrichten"
 #. DLG_Para_PushKeepWithNext
 #: po/tmp/ap_String_Id.h.h:817
 msgid "Keep with ne&xt"
-msgstr "beim nächsten bei&behalten"
+msgstr "Beim Nächsten bei&behalten"
 
 #. FIELD_PieceTable_Test
 #: po/tmp/ap_String_Id.h.h:819
@@ -2178,7 +2159,7 @@ msgstr "Kevins Test"
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h.h:821
 msgid "Label Align:"
-msgstr "Label-Ausrichtung"
+msgstr "Label-Ausrichtung:"
 
 #. AUTOTEXT_SALUTATION_3
 #: po/tmp/ap_String_Id.h.h:823
@@ -2195,6 +2176,7 @@ msgstr "Sprache"
 msgid "Layout"
 msgstr "Layout"
 
+# CHECK
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h.h:829
 msgid "Leader"
@@ -2215,7 +2197,7 @@ msgstr "Linker Einzug [%s]"
 #: po/tmp/ap_String_Id.h.h:835
 #, c-format
 msgid "Left Indent [%s] First Line Indent [%s]"
-msgstr "Linker Rand [%s] Erste Zeile [%s]"
+msgstr "Linker Einzug [%s] Einzug erste Zeile [%s]"
 
 #. LeftMarginStatus
 #: po/tmp/ap_String_Id.h.h:837
@@ -2225,9 +2207,8 @@ msgstr "Linker Rand [%s]"
 
 #. TabToggleLeftTab
 #: po/tmp/ap_String_Id.h.h:839
-#, fuzzy
 msgid "Left Tab"
-msgstr "Links"
+msgstr "Linker Tab"
 
 #. MENU_STATUSLINE_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h.h:841
@@ -2261,9 +2242,8 @@ msgstr "Zeilenzählung"
 
 #. MENU_STATUSLINE_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h.h:853
-#, fuzzy
 msgid "Line above the selection (toggle)"
-msgstr "Markierung überstrichen (ändern)"
+msgstr "Zeile über der Markierung (ändern)"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
 #: po/tmp/ap_String_Id.h.h:855
@@ -2272,9 +2252,8 @@ msgstr "Zeilen- und &Seitenumbrüche"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:857
-#, fuzzy
 msgid "Line below the selection (toggle)"
-msgstr "Markierung überstrichen (ändern)"
+msgstr "Zeile unter der Markierung (ändern)"
 
 #. DLG_Column_Line_Between
 #: po/tmp/ap_String_Id.h.h:859
@@ -2348,9 +2327,8 @@ msgstr "Markierung höhergestellt (ändern)"
 
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:887
-#, fuzzy
 msgid "Manage plugins"
-msgstr "Plugin deaktivieren"
+msgstr "Plugin verwalten"
 
 #. FIELD_PieceTable_MartinTest
 #: po/tmp/ap_String_Id.h.h:889
@@ -2359,9 +2337,8 @@ msgstr "Martins Test"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h.h:891
-#, fuzzy
 msgid "Max Column size"
-msgstr "Spalten"
+msgstr "Maximale Spaltengröße"
 
 #. FIELD_DateTime_MilTime
 #: po/tmp/ap_String_Id.h.h:893
@@ -2376,7 +2353,7 @@ msgstr "Versch."
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h.h:897
 msgid "Modify Styles"
-msgstr "Veränderte Stile"
+msgstr "Stile verändern"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h.h:899
@@ -2391,7 +2368,7 @@ msgstr "Monat Tag, Jahr"
 #. MENU_STATUSLINE_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:903
 msgid "Move the insertion point to a specific location"
-msgstr "Einfügemarke im Dokument bewegen"
+msgstr "Einfügemarke zu einer bestimmten Stelle im Dokument bewegen"
 
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h.h:905
@@ -2452,7 +2429,7 @@ msgid ""
 "No Style selected \n"
 " so it cannot be modified"
 msgstr ""
-"Keine Stil ausgewählt\n"
+"Kein Stil ausgewählt\n"
 " daher kann er auch nicht verändert werden"
 
 #. SCRIPT_NOSCRIPTS
@@ -2478,17 +2455,17 @@ msgstr "Nicht im Wörterbuch&:"
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h.h:933
 msgid "Number of Columns"
-msgstr "Spaltenzahl"
+msgstr "Spaltenanzahl"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h.h:935
 msgid "Number of Pages"
-msgstr "Anzahl der Seiten"
+msgstr "Seitenanzahl"
 
 #. DLG_Column_Number
 #: po/tmp/ap_String_Id.h.h:937
 msgid "Number of columns"
-msgstr "Anzahl der Spalten"
+msgstr "Spaltenanzahl"
 
 #. DLG_Lists_Type_numbered
 #: po/tmp/ap_String_Id.h.h:939
@@ -2505,6 +2482,7 @@ msgstr "Nummerierte Liste"
 msgid "Numbering"
 msgstr "Nummerierung"
 
+# CHECK
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h.h:945
 msgid "Numbers"
@@ -2522,15 +2500,13 @@ msgstr "Eins"
 
 #. MENU_LABEL_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:951
-#, fuzzy
 msgid "Op&en Copy"
-msgstr "&Kopieren"
+msgstr "Kopie Öffn&en"
 
 #. MENU_LABEL_OPEN_TEMPLATE
 #: po/tmp/ap_String_Id.h.h:953
-#, fuzzy
 msgid "Open Template"
-msgstr "Wählen Sie eine Vorlage"
+msgstr "Vorlage öffnen"
 
 #. MENU_STATUSLINE_FILE_IMPORT
 #: po/tmp/ap_String_Id.h.h:955
@@ -2566,7 +2542,7 @@ msgstr "Andere"
 #: po/tmp/ap_String_Id.h.h:967
 #, c-format
 msgid "Out of memory attempting to open %s"
-msgstr "Fehler beim Öffnen von %s : Kein freier Speicher mehr"
+msgstr "Fehler beim Öffnen von %s: Kein freier Speicher mehr"
 
 #. MENU_STATUSLINE_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:969
@@ -2580,9 +2556,8 @@ msgstr "Unform&atiert einfügen"
 
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:973
-#, fuzzy
 msgid "P&lugins"
-msgstr "Plugin-Liste"
+msgstr "P&lugins"
 
 #. AUTOTEXT_MAIL_3
 #: po/tmp/ap_String_Id.h.h:975
@@ -2616,9 +2591,8 @@ msgstr "Seitenzahlen"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h.h:987
-#, fuzzy
 msgid "Page Reference"
-msgstr "Referenz:"
+msgstr "Seitenreferenz"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:989
@@ -2628,7 +2602,7 @@ msgstr "Seite ein&richten"
 #. DLG_PageSetup_Title
 #: po/tmp/ap_String_Id.h.h:991
 msgid "Page Setup"
-msgstr "Seiteneinrichtung"
+msgstr "Seiten einrichten"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h.h:993
@@ -2689,7 +2663,7 @@ msgstr "Bild"
 #. FIELD_Type_PieceTable
 #: po/tmp/ap_String_Id.h.h:1015
 msgid "Piece Table"
-msgstr "Foo!"
+msgstr ""
 
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1017
@@ -2704,12 +2678,12 @@ msgstr "&Vorschau als Webseite"
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h.h:1021
 msgid "Preference Schemes"
-msgstr "Einstellungsschema"
+msgstr "Vorliebenschema"
 
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h.h:1023
 msgid "Preferences"
-msgstr "Optionen"
+msgstr "Vorlieben"
 
 #. DLG_PageNumbers_Preview
 #: po/tmp/ap_String_Id.h.h:1025 po/tmp/xap_String_Id.h.h:345
@@ -2719,12 +2693,12 @@ msgstr "Vorschaubild"
 #. MENU_STATUSLINE_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:1027
 msgid "Preview the document as a web page"
-msgstr "Zeige das Dokument in dem Browser an"
+msgstr "Vorschau des Dokuments im Browser"
 
 #. MENU_STATUSLINE_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1029
 msgid "Preview the document before printing"
-msgstr "Dokument sehen bevor drucken"
+msgstr "Vorschau des Dokuments bevor gedruckt wird"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h.h:1031
@@ -2733,12 +2707,12 @@ msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr ""
 "Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz "
-"Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz"
+"Vorheriger Absatz Vorheriger Absatz Vorheriger Absatz"
 
 #. MENU_LABEL_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1033
 msgid "Print &directly"
-msgstr "Drucke &direkt"
+msgstr "&Direkt drucken"
 
 #. MENU_STATUSLINE_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:1035
@@ -2758,13 +2732,13 @@ msgstr "Dokument oder Teile davon drucken"
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1041
 msgid "Print using the internal PS driver"
-msgstr "Drucke über den internen PS Treiber"
+msgstr "Über den internen PS-Treiber drucken"
 
 #. MSG_PrintStatus
 #: po/tmp/ap_String_Id.h.h:1043
 #, c-format
 msgid "Printing page %d of %d"
-msgstr "Drucke Seite %d von %d"
+msgstr "Seite %d von %d wird gedruckt"
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1045
@@ -2791,6 +2765,7 @@ msgstr "Zu diesem Fenster wechseln"
 msgid "Re&place with:"
 msgstr "E&rsetzen durch:"
 
+# CHECK
 #. MENU_STATUSLINE_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1055
 msgid "Redo previously undone editing"
@@ -2818,15 +2793,13 @@ msgstr "Entfernen"
 
 #. MENU_LABEL_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1065
-#, fuzzy
 msgid "Remove Footer"
-msgstr "Fußzeile"
+msgstr "Fußzeile entfernen"
 
 #. MENU_LABEL_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1067
-#, fuzzy
 msgid "Remove Header"
-msgstr "Kopfzeile"
+msgstr "Kopfzeile entfernen"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h.h:1069
@@ -2856,18 +2829,18 @@ msgstr "&Alles ersetzen"
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1079
 msgid "Replace the specified text with different text"
-msgstr "Text im Dokument ersetzen"
+msgstr "Angegebener Text im Dokument mit anderem Text ersetzen"
 
 #. MENU_LABEL_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1081
 msgid "Report a &Bug"
-msgstr "Bug-Hinweis schicken"
+msgstr "&Bugreport einsenden"
 
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1083
 msgid "Report a bug and help AbiWord become a better product"
 msgstr ""
-"Einen Hinweis über einen Bug schicken und dazu beitragen, daßAbiWord ein "
+"Einen Hinweis über einen Bug schicken und dazu beitragen, dass AbiWord ein "
 "besseres Produkt wird."
 
 #. MENU_STATUSLINE_FMT_IMAGE
@@ -2888,12 +2861,12 @@ msgstr "Hochachtungsvoll,"
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h.h:1091
 msgid "Restart Page Numbers on new Sections"
-msgstr "Neustart der Seitenzahlen auf neuen Kapiteln"
+msgstr "Neustart der Seitenzahlen bei neuen Kapiteln"
 
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1093
 msgid "Restart numbering at:"
-msgstr "Seitenzahlen neuanfangen bei:"
+msgstr "Seitenzahlen neu anfangen bei:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1095
@@ -2902,15 +2875,13 @@ msgstr "Vorherige Liste fortsetzen"
 
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h.h:1097
-#, fuzzy
 msgid "Revert file to last saved state?"
-msgstr "Zum zuletzt gesicherten Stand zurückkehren?"
+msgstr "Datei auf zuletzt gesicherten Stand zurücksetzen?"
 
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1099
-#, fuzzy
 msgid "Revert the document to the last saved state"
-msgstr "Zurück zum zuletzt gesicherten Dokument Stand"
+msgstr "Das Dokument auf zuletzt gesicherten Stand zurücksetzen"
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1101
@@ -2937,9 +2908,8 @@ msgstr "Rechter Rand [%s]"
 
 #. TabToggleRightTab
 #: po/tmp/ap_String_Id.h.h:1109
-#, fuzzy
 msgid "Right Tab"
-msgstr "Rechts"
+msgstr "Rechter Tab"
 
 #. MENU_STATUSLINE_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h.h:1111
@@ -2949,13 +2919,12 @@ msgstr "Absatz rechts ausrichten"
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h.h:1113
 msgid "Right-to-left &dominant"
-msgstr "Schreibweise von rechts nach links vorherrschend"
+msgstr "Schreibweise von rechts nach links &vorherrschend"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:1115
-#, fuzzy
 msgid "S&cripts"
-msgstr "&Hochgestellt"
+msgstr "S&kripts"
 
 #. AUTOTEXT_MAIL_5
 #: po/tmp/ap_String_Id.h.h:1117
@@ -2965,13 +2934,12 @@ msgstr "SPEZIELLE POST"
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h.h:1119
 msgid "Sa&ve"
-msgstr "&Speichern"
+msgstr "S&peichern"
 
 #. MENU_LABEL_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:1121
-#, fuzzy
 msgid "Sa&ve Copy"
-msgstr "&Speichern"
+msgstr "Kopie S&peichern"
 
 #. MENU_LABEL_AUTOTEXT_SALUTATION
 #: po/tmp/ap_String_Id.h.h:1123
@@ -3002,7 +2970,7 @@ msgstr "Aktuelles Dokument speichern"
 #. MENU_STATUSLINE_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:1133
 msgid "Save the document as a web page"
-msgstr "Speichere das Dokument als eine Webseite"
+msgstr "Das Dokument als eine Webseite speichern"
 
 #. MENU_STATUSLINE_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1135
@@ -3011,14 +2979,13 @@ msgstr "Aktuelles Dokument unter einem anderen Namen speichern"
 
 #. MENU_STATUSLINE_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:1137
-#, fuzzy
 msgid "Save the document without changing the current name"
-msgstr "Aktuelles Dokument unter einem anderen Namen speichern"
+msgstr "Aktuelles Dokument ohne den Namen zu ändern speichern"
 
 #. DLG_Options_Label_SaveContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1139
 msgid "Save visual glyph shapes"
-msgstr ""
+msgstr "Sichtbare Glyphen-Formen speichern"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h.h:1141
@@ -3028,7 +2995,7 @@ msgstr "Skalieren..."
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:1143
 msgid "Search for help about..."
-msgstr "Aufrufen der Suchseite (WWW)"
+msgstr "Nach Hilfe suchen über..."
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h.h:1145
@@ -3053,7 +3020,7 @@ msgstr "&Alles markieren"
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h.h:1153
 msgid "Select a target bookmark from the list."
-msgstr "Bitte ein Ziel-Lesezeichen aus der Liste wählen"
+msgstr "Bitte ein Ziel-Lesezeichen aus der Liste auswählen."
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1155
@@ -3073,40 +3040,39 @@ msgstr "Festlegen"
 #. MENU_LABEL_FMT_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:1161
 msgid "Set &Language"
-msgstr "&Sprache"
+msgstr "&Sprache festlegen"
 
 #. DLG_Lists_SetDefault
 #: po/tmp/ap_String_Id.h.h:1163
 msgid "Set Default Values"
-msgstr "Vorgabewerte setzen"
+msgstr "Vorgabewerte festlegen"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:1165
 msgid "Set preferences"
-msgstr "Einstellungen für das Programm ändern"
+msgstr "Vorlieben festlegen"
 
 #. MENU_STATUSLINE_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:1167
 msgid "Set tab stops"
-msgstr "Tabulatoren setzen"
+msgstr "Tabulatoren festlegen"
 
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:1169
-#, fuzzy
 msgid "Set the types of Headers and Footers"
-msgstr "&Kopf- und Fußzeilen"
+msgstr "Typen von Kopf- und Fußzeilen festlegen"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:1171
-#, fuzzy
 msgid "Set your spelling preferences"
-msgstr "Einstellungen für das Programm ändern"
+msgstr "Vorlieben für die Rechtschreibung festlegen"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:1173
 msgid "Setup your document's page properties such as page size and margins"
 msgstr "Layout-Optionen für aktuelles Dokument festlegen"
 
+# CHECK
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h.h:1175
 msgid "Shortcut Key"
@@ -3120,13 +3086,12 @@ msgstr "Zeigen"
 #. MENU_LABEL_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1179
 msgid "Show &Ruler"
-msgstr "&Lineal"
+msgstr "&Lineal zeigen"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1181
-#, fuzzy
 msgid "Show For&matting Marks"
-msgstr "&Format"
+msgstr "&Formatmarkierungen zeigen"
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:1183
@@ -3136,27 +3101,27 @@ msgstr "Liste aller Fenster zeigen"
 #. MENU_STATUSLINE_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:1185
 msgid "Show or hide the extra toolbar"
-msgstr "Symbolleiste <Extra> anzeigen oder verbergen"
+msgstr "Symbolleiste <Extra> zeigen oder verbergen"
 
 #. MENU_STATUSLINE_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:1187
 msgid "Show or hide the formatting toolbar"
-msgstr "Symbolleiste <Format> anzeigen oder verbergen"
+msgstr "Symbolleiste <Format> zeigen oder verbergen"
 
 #. MENU_STATUSLINE_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1189
 msgid "Show or hide the rulers"
-msgstr "Lineale anzeigen oder verbergen"
+msgstr "Lineale zeigen oder verbergen"
 
 #. MENU_STATUSLINE_VIEW_TB_STD
 #: po/tmp/ap_String_Id.h.h:1191
 msgid "Show or hide the standard toolbar"
-msgstr "Symbolleiste <Standard> anzeigen oder verbergen"
+msgstr "Symbolleiste <Standard> zeigen oder verbergen"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:1193
 msgid "Show or hide the status bar"
-msgstr "Statusleiste anzeigen oder verbergen"
+msgstr "Statusleiste zeigen oder verbergen"
 
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:1195
@@ -3165,9 +3130,8 @@ msgstr "Den AbiWord-Begrüßungsbildschirm beim Starten zeigen"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:1197
-#, fuzzy
 msgid "Show..."
-msgstr "Zeigen/Verbergen..."
+msgstr "Zeigen..."
 
 #. AUTOTEXT_CLOSING_8
 #: po/tmp/ap_String_Id.h.h:1199
@@ -3181,9 +3145,8 @@ msgstr "Einfach"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h.h:1203
-#, fuzzy
 msgid "Space after Column"
-msgstr "Aktuelles Dokument speichern"
+msgstr "Leerzeichen nach Spalte"
 
 #. DLG_Para_LabelSpacing
 #: po/tmp/ap_String_Id.h.h:1205
@@ -3197,9 +3160,8 @@ msgstr "Rechtschreibung"
 
 #. MENU_LABEL_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:1209
-#, fuzzy
 msgid "Spelling &Options"
-msgstr "Rechtschreibung"
+msgstr "&Optionen von Rechtschreibung"
 
 #. DLG_Lists_Square_List
 #: po/tmp/ap_String_Id.h.h:1211
@@ -3214,7 +3176,7 @@ msgstr "St&il"
 #. DLG_Options_Label_ViewStandardTB
 #: po/tmp/ap_String_Id.h.h:1215
 msgid "Standard Toolbar"
-msgstr "&Standard-Werkzeugleiste"
+msgstr "Standard-Werkzeugleiste"
 
 #. DLG_Lists_Star_List
 #: po/tmp/ap_String_Id.h.h:1217
@@ -3224,12 +3186,12 @@ msgstr "Stern-Liste"
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h.h:1219
 msgid "Start At:"
-msgstr "Anfangen mit:"
+msgstr "Anfangen bei:"
 
 #. DLG_Lists_Start_New
 #: po/tmp/ap_String_Id.h.h:1221
 msgid "Start New List"
-msgstr "Neue Liste beginnen"
+msgstr "Neue Liste anfangen"
 
 #. DLG_Lists_Start_Sub
 #: po/tmp/ap_String_Id.h.h:1223
@@ -3239,7 +3201,7 @@ msgstr "Unterliste anfangen"
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h.h:1225
 msgid "Start with an empty document"
-msgstr "Mit einem leeren Dokument beginnen"
+msgstr "Mit einem leeren Dokument anfangen"
 
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:1227
@@ -3259,7 +3221,7 @@ msgstr "&Durchgestrichen"
 #. MENU_STATUSLINE_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1233
 msgid "Strikeout the selection (toggle)"
-msgstr "Markierung durchgestrichen (ändern)"
+msgstr "Markierung durchstreichen (ändern)"
 
 #. DLG_Styles_ErrNotTitle1
 #: po/tmp/ap_String_Id.h.h:1235
@@ -3345,18 +3307,18 @@ msgstr "Zu löschende Tabstopps:"
 #. DLG_Tab_TabTitle
 #: po/tmp/ap_String_Id.h.h:1267
 msgid "Tabs"
-msgstr "Tabulator"
+msgstr "Tabulatoren"
 
 #. AUTOTEXT_CLOSING_9
 #: po/tmp/ap_String_Id.h.h:1269
 msgid "Take care,"
 msgstr "Viel Glück,"
 
+# CHECK
 #. MENU_LABEL_FMT
 #: po/tmp/ap_String_Id.h.h:1271
-#, fuzzy
 msgid "Te&xt Formatting"
-msgstr "&Format"
+msgstr "Te&xt-Formatierung"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h.h:1273
@@ -3371,7 +3333,7 @@ msgstr "Textausrichtung:"
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:1277
 msgid "Text and Icon"
-msgstr "Text und Symbole"
+msgstr "Text und Icon"
 
 #. AUTOTEXT_CLOSING_10
 #: po/tmp/ap_String_Id.h.h:1279
@@ -3386,22 +3348,22 @@ msgstr "Danke,"
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h.h:1283
 msgid "The margins selected are too large to fit on the page."
-msgstr ""
-"Die ausgewählten Seitenränder sind zu groß, um auf der Seite zu passen."
+msgstr "Die ausgewählten Seitenränder sind zu groß, um auf der Seite zu passen."
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h.h:1285
 msgid "The spelling check is complete."
 msgstr "Die Rechtschreibprüfung ist abgeschlossen."
 
+# CHECK
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:1287
 msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr ""
-"Der Text, an dem das Hyperlink angefügt wird, muß sich in einem "
-"einzigenAbsatz befinden."
+"Der Text, an dem der Hyperlink angefügt wird, muss sich in einem "
+"einzigen Absatz befinden."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:1289
@@ -3414,8 +3376,8 @@ msgid ""
 "This change will only take effect when you restart AbiWord or create a new "
 "document."
 msgstr ""
-"Diese Änderung wird nur dann übernommen werden, wenn Sie AbiWordneu starten "
-"oder ein neues Dokument öffnen."
+"Diese Änderung wird nur dann übernommen werden, wenn Sie AbiWord neu "
+"starten oder ein neues Dokument öffnen."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:1293
@@ -3424,9 +3386,9 @@ msgid ""
 "see text from your document used in this preview, position your cursor in a "
 "document paragraph with some text in it and open this dialog."
 msgstr ""
-"Dieser Absatz zeigt Wörter wie sie in Ihrem Dokument erscheinen könnten.Um "
-"Text aus Ihrem Dokument in dieser Vorschau zu sehen, plazieren Sie denCursor "
-"in einen Absatz, der etwas Text enthält und öffnen Sie dieses Fenster."
+"Dieser Absatz zeigt Wörter wie sie in Ihrem Dokument erscheinen könnten.  Um "
+"Text aus Ihrem Dokument in dieser Vorschau zu sehen, plazieren Sie den Cursor "
+"in einen Absatz, der etwas Text enthält und öffnen Sie diesen Dialog."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:1295
@@ -3460,7 +3422,7 @@ msgstr "Wortanfänge groß"
 #. AUTOTEXT_SALUTATION_4
 #: po/tmp/ap_String_Id.h.h:1305
 msgid "To Whom It May Concern:"
-msgstr "Wen es auch immer betrifft:"
+msgstr "Sehr geehrte Damen uns Herren!"
 
 #. AUTOTEXT_EMAIL_1
 #: po/tmp/ap_String_Id.h.h:1307
@@ -3470,7 +3432,7 @@ msgstr "An:"
 #. DLG_Options_Label_Toolbars
 #: po/tmp/ap_String_Id.h.h:1309
 msgid "Toolbars"
-msgstr "Symbolleisten"
+msgstr "Werkzeugleisten"
 
 #. TopMarginStatus
 #: po/tmp/ap_String_Id.h.h:1311
@@ -3496,9 +3458,7 @@ msgstr "Zwei"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h.h:1319
 msgid "Type a name for the bookmark, or select existing one from the list."
-msgstr ""
-"Bitte einen Namen für das Lesezeichen eingeben, oder einen aus derListe "
-"wählen."
+msgstr "Bitte einen Namen für das Lesezeichen eingeben, oder einen aus der Liste wählen."
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h.h:1321
@@ -3513,17 +3473,17 @@ msgstr "GROßBUCHSTABEN"
 #. MENU_STATUSLINE_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:1325
 msgid "Underline the selection (toggle)"
-msgstr "Markierung unterstrichen (ändern)"
+msgstr "Markierung unterstreichen (ändern)"
 
 #. MENU_STATUSLINE_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:1327
 msgid "Undo editing"
-msgstr "Letzten Editiervorgang rückgängig machen"
+msgstr "Letzte Bearbeitung rückgängig machen"
 
 #. DLG_Lists_Upper_Case_List
 #: po/tmp/ap_String_Id.h.h:1329
 msgid "Upper Case List"
-msgstr "Liste aus Grossbuchstaben"
+msgstr "Liste aus Großbuchstaben"
 
 #. DLG_Lists_Upper_Roman_List
 #: po/tmp/ap_String_Id.h.h:1331
@@ -3573,12 +3533,13 @@ msgstr "Ansicht"
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:1349
 msgid "View the document in full screen mode"
-msgstr "Zeige das Dokument als Vollbild"
+msgstr "Vollbildansicht des Dokuments"
 
+# CHECK
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:1351
 msgid "View tooltips"
-msgstr "Tooltips anzeigen"
+msgstr "Minihilfen anzeigen"
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:1353
@@ -3651,7 +3612,7 @@ msgstr "Sie haben den Richtungsmodus geändert."
 #: po/tmp/ap_String_Id.h.h:1379
 msgid "You must select a portion of the document before inserting a hyperlink."
 msgstr ""
-"Ein Teil des Dokuments muß ausgewählt werden, bevor ein Hyperlink eingfügt "
+"Ein Teil des Dokuments muss ausgewählt werden, bevor ein Hyperlink eingfügt "
 "werden kann."
 
 #. AUTOTEXT_CLOSING_12
@@ -3691,7 +3652,7 @@ msgstr "Auf &Seitenbreite zoomen"
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:1393
 msgid "Zoom to &Whole Page"
-msgstr "Auf &Ganze Seite zoomen"
+msgstr "Auf &ganze Seite zoomen"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:1395
@@ -3720,12 +3681,12 @@ msgstr "Auf 75% zoomen"
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:1403
 msgid "Zoom to page width"
-msgstr "Zoome auf Seitenbreite"
+msgstr "Auf Seitenbreite zoomen"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:1405
 msgid "Zoom to whole page"
-msgstr "Zoome auf Ganze Seite"
+msgstr "Auf ganze Seite zoomen"
 
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h.h:1407
@@ -3763,7 +3724,6 @@ msgstr "Groß-/Kleinschreibung"
 #.
 #. DLG_UFS_FontTab
 #: po/tmp/xap_String_Id.h.h:7
-#, fuzzy
 msgid "\tFont   "
 msgstr "\tSchrift   "
 
@@ -3813,8 +3773,7 @@ msgstr "AbiWord Plugin-Manager"
 #. MSG_ShowUnixFontWarning
 #: po/tmp/xap_String_Id.h.h:27
 msgid "AbiWord was not able to add its fonts to the X font path.\n"
-msgstr ""
-"AbiWord konnte seine Schriftarten dem X-Schriftartenpfad nicht hinzufügen.\n"
+msgstr "AbiWord konnte seine Schriften dem X-Schriftartenpfad nicht hinzufügen.\n"
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:29
@@ -3865,7 +3824,7 @@ msgstr "Alle Bilderdateien"
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:51
 msgid "Arabic (Egypt)"
-msgstr "Arabisch (Ägipten)"
+msgstr "Arabisch (Ägypten)"
 
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:53
@@ -3885,7 +3844,7 @@ msgstr "Arabisch, Macintosh"
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h.h:59
 msgid "Arabic, Windows Code Page 1256"
-msgstr "Arabic,·Windows·Code·Page·1256"
+msgstr "Arabisch,·Windows·Code·Page·1256"
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h.h:61
@@ -4030,7 +3989,7 @@ msgstr "Schließen"
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h.h:119
 msgid "Collate"
-msgstr "Sortieren"
+msgstr "Vergleichen"
 
 #. DLG_UP_Color
 #: po/tmp/xap_String_Id.h.h:121
@@ -4061,7 +4020,7 @@ msgstr "Plugin konnte nicht deaktiviert werden"
 #: po/tmp/xap_String_Id.h.h:131
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr "Das Wörterbuch für %s konnte nicht geladen werden."
+msgstr "Das Wörterbuch für die %s Sprache konnte nicht geladen werden."
 
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h.h:133
@@ -4110,9 +4069,8 @@ msgstr "Plugin deaktivieren"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:155
-#, fuzzy
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr "Möchten Sie dieses Symbol von der Werkzeugleiste entfernen?"
+msgstr "Möchten Sie dieses Icon von der Werkzeugleiste entfernen?"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h.h:157
@@ -4122,7 +4080,7 @@ msgstr "Niederlandisch/Flämisch (Belgien)"
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:159
 msgid "Dutch (Netherlands)"
-msgstr "Niederländisch (Niederlände)"
+msgstr "Niederländisch (Niederlande)"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h.h:161
@@ -4162,7 +4120,7 @@ msgstr "Englisch (Irland)"
 #. LANG_EN_NZ
 #: po/tmp/xap_String_Id.h.h:175
 msgid "English (New Zealand)"
-msgstr "Englisch (Neu Seeland)"
+msgstr "Englisch (Neuseeland)"
 
 #. LANG_EN_ZA
 #: po/tmp/xap_String_Id.h.h:177
@@ -4181,9 +4139,8 @@ msgstr "Englisch (USA)"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h.h:183
-#, fuzzy
 msgid "Enter Password"
-msgstr "Falsches Kennwort"
+msgstr "Passwort eingeben"
 
 #. LANG_EO
 #: po/tmp/xap_String_Id.h.h:185
@@ -4209,7 +4166,7 @@ msgstr "Datei"
 #: po/tmp/xap_String_Id.h.h:193
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Datei ist schon vorhanden.  Datei '%s' überschreiben?"
+msgstr "Datei ist schon vorhanden.  Datei »%s« überschreiben?"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:195
@@ -4218,13 +4175,11 @@ msgstr "Finnisch"
 
 #. LANG_FR_BE
 #: po/tmp/xap_String_Id.h.h:201
-#, fuzzy
 msgid "French (Belgium)"
 msgstr "Französisch (Belgien)"
 
 #. LANG_FR_CA
 #: po/tmp/xap_String_Id.h.h:203
-#, fuzzy
 msgid "French (Canada)"
 msgstr "Französisch (Kanada)"
 
@@ -4235,7 +4190,6 @@ msgstr "Französisch (Frankreich)"
 
 #. LANG_FR_CH
 #: po/tmp/xap_String_Id.h.h:207
-#, fuzzy
 msgid "French (Switzerland)"
 msgstr "Französisch (Schweiz)"
 
@@ -4276,7 +4230,6 @@ msgstr "Deutsch (Deutschland)"
 
 #. LANG_DE_CH
 #: po/tmp/xap_String_Id.h.h:223
-#, fuzzy
 msgid "German (Switzerland)"
 msgstr "Deutsch (Schweiz)"
 
@@ -4328,7 +4281,7 @@ msgstr "Hebräisch,·Windows·Code·Page·1255"
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:243
 msgid "Height in pixels:"
-msgstr "Pixelhöhe"
+msgstr "Pixelhöhe:"
 
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h.h:245
@@ -4347,15 +4300,13 @@ msgstr "Hindu"
 
 #. LANG_HU_HU
 #: po/tmp/xap_String_Id.h.h:251
-#, fuzzy
 msgid "Hungarian"
 msgstr "Ungarisch"
 
 #. LANG_IS_IS
 #: po/tmp/xap_String_Id.h.h:253
-#, fuzzy
 msgid "Icelandic"
-msgstr "Isländisch, Macintosh"
+msgstr "Isländisch"
 
 #. ENC_ICEL_MAC
 #: po/tmp/xap_String_Id.h.h:255
@@ -4374,7 +4325,6 @@ msgstr "Datei importieren"
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:263
-#, fuzzy
 msgid "Insert File"
 msgstr "Datei einfügen"
 
@@ -4396,7 +4346,7 @@ msgstr "Neues Plugin installieren"
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:271
 msgid "Invalid pathname."
-msgstr "Ungültiger Pfad."
+msgstr "Ungültiger Pfadname."
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h.h:273
@@ -4461,7 +4411,7 @@ msgstr "Koreanisch,·Windows·Code·Page·949"
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h.h:299
 msgid "Latin (Renaissance)"
-msgstr "Mittellatein"
+msgstr "Latein (Rennaissance)"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h.h:301
@@ -4521,7 +4471,7 @@ msgstr "Datei öffnen"
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h.h:323
 msgid "Open file as type:"
-msgstr "Datei öffnen als Typ:"
+msgstr "Datei als Typ öffnen:"
 
 #. DLG_UFS_OverlineCheck
 #: po/tmp/xap_String_Id.h.h:325
@@ -4591,12 +4541,12 @@ msgstr "Datei drucken als Typ:"
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:355
 msgid "Print in: "
-msgstr "Drucke in: "
+msgstr "Druckeen in: "
 
 #. DLG_UP_PrintTo
 #: po/tmp/xap_String_Id.h.h:357
 msgid "Print to: "
-msgstr "Ausgabe auf: "
+msgstr "Drucken auf: "
 
 #. DLG_UP_Printer
 #: po/tmp/xap_String_Id.h.h:359
@@ -4606,7 +4556,7 @@ msgstr "Drucker"
 #. DLG_UP_PrinterCommand
 #: po/tmp/xap_String_Id.h.h:361
 msgid "Printer command: "
-msgstr "Druckerkommando: "
+msgstr "Druckerbefehl: "
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h.h:363
@@ -4626,7 +4576,7 @@ msgstr "Rumänisch, Macintosh"
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:369
 msgid "Russian (Russia)"
-msgstr "Russisch (Rußland)"
+msgstr "Russisch (Russland)"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h.h:371
@@ -4665,9 +4615,8 @@ msgstr "Auswahl"
 
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h.h:385
-#, fuzzy
 msgid "Set no Highlight Color"
-msgstr "keine Hervorhebungsfarbe einstellen"
+msgstr "Keine Hervorhebungsfarbe festlegen"
 
 #. DLG_Options_Label_UnixFontWarning
 #: po/tmp/xap_String_Id.h.h:387
@@ -4692,7 +4641,7 @@ msgstr "Slowenisch"
 #. DLG_UFS_SmallCapsCheck
 #: po/tmp/xap_String_Id.h.h:395
 msgid "Small Caps"
-msgstr "kleine Kapitälchen"
+msgstr "Kleine Großbuchstaben"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h.h:397
@@ -4743,7 +4692,7 @@ msgstr "Thai, Windows Code Page 874"
 #: po/tmp/xap_String_Id.h.h:417
 #, c-format
 msgid "The directory '%s' is write-protected."
-msgstr "Das Verzeichnis '%s' ist schreibgeschützt."
+msgstr "Das Verzeichnis »%s« ist schreibgeschützt."
 
 #. MSG_UnixFontSizeWarning
 #: po/tmp/xap_String_Id.h.h:419
@@ -4753,7 +4702,7 @@ msgstr "Das Betriebssystem konnte keine Schriftarten zuordnen von\n"
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:421
 msgid "The print command string is not valid."
-msgstr "Ungültiges Druckerkommando."
+msgstr "Der Druckbefehl ist ungültig."
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:425
@@ -4929,7 +4878,7 @@ msgstr "Breite"
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:495
 msgid "Width in pixels:"
-msgstr "Pixelbreite"
+msgstr "Breite in Pixel:"
 
 #. DLG_IP_Width_Label
 #: po/tmp/xap_String_Id.h.h:497
@@ -4991,9 +4940,3 @@ msgstr "pica"
 msgid "points"
 msgstr "Punkte"
 
-#, fuzzy
-#~ msgid "Import the document"
-#~ msgstr "Aktuelles Dokument schließen"
-
-#~ msgid "Show Para&graphs"
-#~ msgstr "Para&graph"
