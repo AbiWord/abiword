@@ -1040,9 +1040,9 @@ UT_sint32 AP_TopRuler::_snapPixelToGrid(UT_sint32 xDist, ap_RulerTicks & tick)
 	
 	UT_sint32 xrel = xDist * tick.tickUnitScale;
 	if (xrel > 0)
-		xrel =   (( xrel + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta / tick.tickUnitScale;
+		xrel =              ((  xrel  + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta / tick.tickUnitScale;
 	else
-		xrel = -(((-xrel + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta / tick.tickUnitScale);
+		xrel = -(UT_sint32)((((-xrel) + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta / tick.tickUnitScale);
 
 	return xrel;
 }
@@ -1053,9 +1053,9 @@ double AP_TopRuler::_scalePixelDistanceToUnits(UT_sint32 xDist, ap_RulerTicks & 
 
 	UT_sint32 xrel = xDist * tick.tickUnitScale;
 	if (xrel > 0)
-		xrel =   (( xrel + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta;
+		xrel =              ((  xrel  + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta;
 	else
-		xrel = -(((-xrel + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta);
+		xrel = -(UT_sint32)((((-xrel) + (tick.dragDelta/2) - 1) / tick.dragDelta) * tick.dragDelta);
 
 	double dxrel = ((double)xrel) / ((double)tick.tickUnitScale);
 	return dxrel;
@@ -1102,9 +1102,9 @@ void AP_TopRuler::_drawSculptedRect(UT_Rect &r)
 	_drawHollowRect(clrBlack,clrLiteGray,r);
 	m_pG->setColor(clrWhite);
 	m_pG->drawLine(r.left+1, r.top+r.height-2, r.left+1, r.top+1);
-	m_pG->drawLine(r.left+1, r.top+1, r.left+r.width-2, r.top+1);
+	m_pG->drawLine(r.left+1, r.top+1, r.left+r.width-1, r.top+1);
 	m_pG->setColor(clrDarkGray);
 	m_pG->drawLine(r.left+2, r.top+r.height-2, r.left+r.width-2, r.top+r.height-2);
-	m_pG->drawLine(r.left+r.width-2, r.top+r.height-2, r.left+r.width-2, r.top+2);
+	m_pG->drawLine(r.left+r.width-2, r.top+r.height-2, r.left+r.width-2, r.top+1);
 }
 
