@@ -237,148 +237,148 @@ public:
 #define NF(fn)			N(fn), F(fn)
 
 static EV_EditMethod s_arrayEditMethods[] = 
-	{
-		EV_EditMethod(NF(scrollPageDown),		_M_,	""),
-		EV_EditMethod(NF(scrollPageUp),			_M_,	""),
-		EV_EditMethod(NF(scrollPageLeft),		_M_,	""),
-		EV_EditMethod(NF(scrollPageRight),		_M_,	""),
-		EV_EditMethod(NF(scrollLineDown),		_M_,	""),
-		EV_EditMethod(NF(scrollLineUp),			_M_,	""),
-		EV_EditMethod(NF(scrollLineLeft),		_M_,	""),
-		EV_EditMethod(NF(scrollLineRight),		_M_,	""),
-		EV_EditMethod(NF(scrollToTop),			_M_,	""),
-		EV_EditMethod(NF(scrollToBottom),		_M_,	""),
+{
+	EV_EditMethod(NF(scrollPageDown),		_M_,	""),
+	EV_EditMethod(NF(scrollPageUp),			_M_,	""),
+	EV_EditMethod(NF(scrollPageLeft),		_M_,	""),
+	EV_EditMethod(NF(scrollPageRight),		_M_,	""),
+	EV_EditMethod(NF(scrollLineDown),		_M_,	""),
+	EV_EditMethod(NF(scrollLineUp),			_M_,	""),
+	EV_EditMethod(NF(scrollLineLeft),		_M_,	""),
+	EV_EditMethod(NF(scrollLineRight),		_M_,	""),
+	EV_EditMethod(NF(scrollToTop),			_M_,	""),
+	EV_EditMethod(NF(scrollToBottom),		_M_,	""),
 
-		EV_EditMethod(NF(warpInsPtToXY),		_M_,	""),
-		EV_EditMethod(NF(warpInsPtLeft),		_M_,	""),
-		EV_EditMethod(NF(warpInsPtRight),		_M_,	""),
-		EV_EditMethod(NF(warpInsPtBOL),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtEOL),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtBOW),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtEOW),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtBOS),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtEOS),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtBOB),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtEOB),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtBOD),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtEOD),			_M_,	""),
-		EV_EditMethod(NF(warpInsPtPrevLine),	_M_,	""),
-		EV_EditMethod(NF(warpInsPtNextLine),	_M_,	""),
+	EV_EditMethod(NF(warpInsPtToXY),		_M_,	""),
+	EV_EditMethod(NF(warpInsPtLeft),		_M_,	""),
+	EV_EditMethod(NF(warpInsPtRight),		_M_,	""),
+	EV_EditMethod(NF(warpInsPtBOL),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtEOL),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtBOW),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtEOW),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtBOS),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtEOS),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtBOB),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtEOB),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtBOD),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtEOD),			_M_,	""),
+	EV_EditMethod(NF(warpInsPtPrevLine),	_M_,	""),
+	EV_EditMethod(NF(warpInsPtNextLine),	_M_,	""),
 
-		EV_EditMethod(NF(extSelToXY),			_M_,	""),
-		EV_EditMethod(NF(extSelLeft),			_M_,	""),
-		EV_EditMethod(NF(extSelRight),			_M_,	""),
-		EV_EditMethod(NF(extSelBOL),			_M_,	""),
-		EV_EditMethod(NF(extSelEOL),			_M_,	""),
-		EV_EditMethod(NF(extSelBOW),			_M_,	""),
-		EV_EditMethod(NF(extSelEOW),			_M_,	""),
-		EV_EditMethod(NF(extSelBOS),			_M_,	""),
-		EV_EditMethod(NF(extSelEOS),			_M_,	""),
-		EV_EditMethod(NF(extSelBOB),			_M_,	""),
-		EV_EditMethod(NF(extSelEOB),			_M_,	""),
-		EV_EditMethod(NF(extSelBOD),			_M_,	""),
-		EV_EditMethod(NF(extSelEOD),			_M_,	""),
-		EV_EditMethod(NF(extSelPrevLine),		_M_,	""),
-		EV_EditMethod(NF(extSelNextLine),		_M_,	""),
-		EV_EditMethod(NF(extSelPageDown),		_M_,	""),
-		EV_EditMethod(NF(extSelPageUp),			_M_,	""),
-		EV_EditMethod(NF(selectAll),			_M_,	""),
-		EV_EditMethod(NF(selectWord),			_M_,	""),
-		EV_EditMethod(NF(selectLine),			_M_,	""),
-		EV_EditMethod(NF(selectBlock),			_M_,	""),
+	EV_EditMethod(NF(extSelToXY),			_M_,	""),
+	EV_EditMethod(NF(extSelLeft),			_M_,	""),
+	EV_EditMethod(NF(extSelRight),			_M_,	""),
+	EV_EditMethod(NF(extSelBOL),			_M_,	""),
+	EV_EditMethod(NF(extSelEOL),			_M_,	""),
+	EV_EditMethod(NF(extSelBOW),			_M_,	""),
+	EV_EditMethod(NF(extSelEOW),			_M_,	""),
+	EV_EditMethod(NF(extSelBOS),			_M_,	""),
+	EV_EditMethod(NF(extSelEOS),			_M_,	""),
+	EV_EditMethod(NF(extSelBOB),			_M_,	""),
+	EV_EditMethod(NF(extSelEOB),			_M_,	""),
+	EV_EditMethod(NF(extSelBOD),			_M_,	""),
+	EV_EditMethod(NF(extSelEOD),			_M_,	""),
+	EV_EditMethod(NF(extSelPrevLine),		_M_,	""),
+	EV_EditMethod(NF(extSelNextLine),		_M_,	""),
+	EV_EditMethod(NF(extSelPageDown),		_M_,	""),
+	EV_EditMethod(NF(extSelPageUp),			_M_,	""),
+	EV_EditMethod(NF(selectAll),			_M_,	""),
+	EV_EditMethod(NF(selectWord),			_M_,	""),
+	EV_EditMethod(NF(selectLine),			_M_,	""),
+	EV_EditMethod(NF(selectBlock),			_M_,	""),
 
-		EV_EditMethod(NF(singleClick),			_M_,	""),
-		EV_EditMethod(NF(doubleClick),			_M_,	""),
+	EV_EditMethod(NF(singleClick),			_M_,	""),
+	EV_EditMethod(NF(doubleClick),			_M_,	""),
 
-		EV_EditMethod(NF(delLeft),				_M_,	""),
-		EV_EditMethod(NF(delRight),				_M_,	""),
-		EV_EditMethod(NF(delBOL),				_M_,	""),
-		EV_EditMethod(NF(delEOL),				_M_,	""),
-		EV_EditMethod(NF(delBOW),				_M_,	""),
-		EV_EditMethod(NF(delEOW),				_M_,	""),
-		EV_EditMethod(NF(delBOS),				_M_,	""),
-		EV_EditMethod(NF(delEOS),				_M_,	""),
-		EV_EditMethod(NF(delBOB),				_M_,	""),
-		EV_EditMethod(NF(delEOB),				_M_,	""),
-		EV_EditMethod(NF(delBOD),				_M_,	""),
-		EV_EditMethod(NF(delEOD),				_M_,	""),
+	EV_EditMethod(NF(delLeft),				_M_,	""),
+	EV_EditMethod(NF(delRight),				_M_,	""),
+	EV_EditMethod(NF(delBOL),				_M_,	""),
+	EV_EditMethod(NF(delEOL),				_M_,	""),
+	EV_EditMethod(NF(delBOW),				_M_,	""),
+	EV_EditMethod(NF(delEOW),				_M_,	""),
+	EV_EditMethod(NF(delBOS),				_M_,	""),
+	EV_EditMethod(NF(delEOS),				_M_,	""),
+	EV_EditMethod(NF(delBOB),				_M_,	""),
+	EV_EditMethod(NF(delEOB),				_M_,	""),
+	EV_EditMethod(NF(delBOD),				_M_,	""),
+	EV_EditMethod(NF(delEOD),				_M_,	""),
 
-		EV_EditMethod(NF(insertData),			_DM_,	""),
-		EV_EditMethod(NF(insertTab),			_M_,	""),
-		EV_EditMethod(NF(insertSoftBreak),		_M_,	""),
-		EV_EditMethod(NF(insertParagraphBreak),	_M_,	""),
-		EV_EditMethod(NF(insertLineBreak),		_M_,	""),
-		EV_EditMethod(NF(insertPageBreak),		_M_,	""),
-		EV_EditMethod(NF(insertColumnBreak),	_M_,	""),
+	EV_EditMethod(NF(insertData),			_DM_,	""),
+	EV_EditMethod(NF(insertTab),			_M_,	""),
+	EV_EditMethod(NF(insertSoftBreak),		_M_,	""),
+	EV_EditMethod(NF(insertParagraphBreak),	_M_,	""),
+	EV_EditMethod(NF(insertLineBreak),		_M_,	""),
+	EV_EditMethod(NF(insertPageBreak),		_M_,	""),
+	EV_EditMethod(NF(insertColumnBreak),	_M_,	""),
 
-		EV_EditMethod(NF(insertSpace),			_M_,	""),
-		EV_EditMethod(NF(insertNBSpace),		_M_,	""),
+	EV_EditMethod(NF(insertSpace),			_M_,	""),
+	EV_EditMethod(NF(insertNBSpace),		_M_,	""),
 
-		EV_EditMethod(NF(insFmtFaceTimes),		_M_,	""),
-		EV_EditMethod(NF(insFmtFaceCourier),	_M_,	""),
-		EV_EditMethod(NF(insFmtFaceArial),		_M_,	""),
-		EV_EditMethod(NF(insFmtSize08),			_M_,	""),
-		EV_EditMethod(NF(insFmtSize10),			_M_,	""),
-		EV_EditMethod(NF(insFmtSize12),			_M_,	""),
-		EV_EditMethod(NF(insFmtSize14),			_M_,	""),
-		EV_EditMethod(NF(insFmtSize16),			_M_,	""),
-		EV_EditMethod(NF(insFmtSize24),			_M_,	""),
-		EV_EditMethod(NF(insFmtSize36),			_M_,	""),
-		EV_EditMethod(NF(insFmtColorBlack),		_M_,	""),
-		EV_EditMethod(NF(insFmtColorRed),		_M_,	""),
-		EV_EditMethod(NF(insFmtColorGreen),		_M_,	""),
-		EV_EditMethod(NF(insFmtColorBlue),		_M_,	""),
+	EV_EditMethod(NF(insFmtFaceTimes),		_M_,	""),
+	EV_EditMethod(NF(insFmtFaceCourier),	_M_,	""),
+	EV_EditMethod(NF(insFmtFaceArial),		_M_,	""),
+	EV_EditMethod(NF(insFmtSize08),			_M_,	""),
+	EV_EditMethod(NF(insFmtSize10),			_M_,	""),
+	EV_EditMethod(NF(insFmtSize12),			_M_,	""),
+	EV_EditMethod(NF(insFmtSize14),			_M_,	""),
+	EV_EditMethod(NF(insFmtSize16),			_M_,	""),
+	EV_EditMethod(NF(insFmtSize24),			_M_,	""),
+	EV_EditMethod(NF(insFmtSize36),			_M_,	""),
+	EV_EditMethod(NF(insFmtColorBlack),		_M_,	""),
+	EV_EditMethod(NF(insFmtColorRed),		_M_,	""),
+	EV_EditMethod(NF(insFmtColorGreen),		_M_,	""),
+	EV_EditMethod(NF(insFmtColorBlue),		_M_,	""),
 
-		EV_EditMethod(NF(fileNew),				_M_,	""),
-		EV_EditMethod(NF(fileOpen),				_M_,	""),
-		EV_EditMethod(NF(fileSave),				_M_,	""),
-		EV_EditMethod(NF(fileSaveAs),			_M_,	""),
-		EV_EditMethod(NF(print),				_M_,	""),
+	EV_EditMethod(NF(fileNew),				_M_,	""),
+	EV_EditMethod(NF(fileOpen),				_M_,	""),
+	EV_EditMethod(NF(fileSave),				_M_,	""),
+	EV_EditMethod(NF(fileSaveAs),			_M_,	""),
+	EV_EditMethod(NF(print),				_M_,	""),
 
-		EV_EditMethod(NF(undo),					_M_,	""),
-		EV_EditMethod(NF(redo),					_M_,	""),
-		EV_EditMethod(NF(cut),					_M_,	""),
-		EV_EditMethod(NF(copy),					_M_,	""),
-		EV_EditMethod(NF(paste),				_M_,	""),
-		EV_EditMethod(NF(find),					_M_,	""),
-		EV_EditMethod(NF(go),					_M_,	""),
-		EV_EditMethod(NF(replace),				_M_,	""),
+	EV_EditMethod(NF(undo),					_M_,	""),
+	EV_EditMethod(NF(redo),					_M_,	""),
+	EV_EditMethod(NF(cut),					_M_,	""),
+	EV_EditMethod(NF(copy),					_M_,	""),
+	EV_EditMethod(NF(paste),				_M_,	""),
+	EV_EditMethod(NF(find),					_M_,	""),
+	EV_EditMethod(NF(go),					_M_,	""),
+	EV_EditMethod(NF(replace),				_M_,	""),
 
-		EV_EditMethod(NF(dlgFont),				0,		""),
-		EV_EditMethod(NF(toggleBold),			0,		""),
-		EV_EditMethod(NF(toggleItalic),			0,		""),
-		EV_EditMethod(NF(toggleUline),			0,		""),
-		EV_EditMethod(NF(toggleStrike),			0,		""),
-		EV_EditMethod(NF(togglePlain),			0,		""),
+	EV_EditMethod(NF(dlgFont),				0,		""),
+	EV_EditMethod(NF(toggleBold),			0,		""),
+	EV_EditMethod(NF(toggleItalic),			0,		""),
+	EV_EditMethod(NF(toggleUline),			0,		""),
+	EV_EditMethod(NF(toggleStrike),			0,		""),
+	EV_EditMethod(NF(togglePlain),			0,		""),
 
-		EV_EditMethod(NF(alignLeft),			0,		""),
-		EV_EditMethod(NF(alignCenter),			0,		""),
-		EV_EditMethod(NF(alignRight),			0,		""),
-		EV_EditMethod(NF(alignJustify),			0,		""),
+	EV_EditMethod(NF(alignLeft),			0,		""),
+	EV_EditMethod(NF(alignCenter),			0,		""),
+	EV_EditMethod(NF(alignRight),			0,		""),
+	EV_EditMethod(NF(alignJustify),			0,		""),
 
-		EV_EditMethod(NF(singleSpace),			0,		""),
-		EV_EditMethod(NF(middleSpace),			0,		""),
-		EV_EditMethod(NF(doubleSpace),			0,		""),
+	EV_EditMethod(NF(singleSpace),			0,		""),
+	EV_EditMethod(NF(middleSpace),			0,		""),
+	EV_EditMethod(NF(doubleSpace),			0,		""),
 
-		EV_EditMethod(NF(activateWindow_1),		0,		""),
-		EV_EditMethod(NF(activateWindow_2),		0,		""),
-		EV_EditMethod(NF(activateWindow_3),		0,		""),
-		EV_EditMethod(NF(activateWindow_4),		0,		""),
-		EV_EditMethod(NF(activateWindow_5),		0,		""),
-		EV_EditMethod(NF(activateWindow_6),		0,		""),
-		EV_EditMethod(NF(activateWindow_7),		0,		""),
-		EV_EditMethod(NF(activateWindow_8),		0,		""),
-		EV_EditMethod(NF(activateWindow_9),		0,		""),
-		EV_EditMethod(NF(moreWindowsDlg),		0,		""),
+	EV_EditMethod(NF(activateWindow_1),		0,		""),
+	EV_EditMethod(NF(activateWindow_2),		0,		""),
+	EV_EditMethod(NF(activateWindow_3),		0,		""),
+	EV_EditMethod(NF(activateWindow_4),		0,		""),
+	EV_EditMethod(NF(activateWindow_5),		0,		""),
+	EV_EditMethod(NF(activateWindow_6),		0,		""),
+	EV_EditMethod(NF(activateWindow_7),		0,		""),
+	EV_EditMethod(NF(activateWindow_8),		0,		""),
+	EV_EditMethod(NF(activateWindow_9),		0,		""),
+	EV_EditMethod(NF(moreWindowsDlg),		0,		""),
 
-		EV_EditMethod(NF(newWindow),			_M_,	""),
-		EV_EditMethod(NF(cycleWindows),			_M_,	""),
-		EV_EditMethod(NF(cycleWindowsBck),		_M_,	""),
-		EV_EditMethod(NF(closeWindow),			_M_,	""),
-		EV_EditMethod(NF(querySaveAndExit),		_M_,	""),
+	EV_EditMethod(NF(newWindow),			_M_,	""),
+	EV_EditMethod(NF(cycleWindows),			_M_,	""),
+	EV_EditMethod(NF(cycleWindowsBck),		_M_,	""),
+	EV_EditMethod(NF(closeWindow),			_M_,	""),
+	EV_EditMethod(NF(querySaveAndExit),		_M_,	""),
 		
-		EV_EditMethod(NF(Test_Dump),			_M_,	"")
-	};
+	EV_EditMethod(NF(Test_Dump),			_M_,	"")
+};
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 
@@ -1556,8 +1556,8 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 {
 	/* 
-		WARNING: any changes to this function should be closely coordinated 
-		with the equivalent logic in Win32Graphics::FindFont()
+	   WARNING: any changes to this function should be closely coordinated 
+	   with the equivalent logic in Win32Graphics::FindFont()
 	*/
 	AP_Win32Frame * pWin32Frame = static_cast<AP_Win32Frame *>(pFrame);
 	AP_Win32App * pWin32App = static_cast<AP_Win32App *>(pFrame->getApp());
@@ -1944,9 +1944,9 @@ char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs)
 
 	/* Connect the signals for Ok and Cancel */
 	gtk_signal_connect(GTK_OBJECT(pFS->ok_button), "clicked",
-			    GTK_SIGNAL_FUNC(set_ok), &accepted);
+					   GTK_SIGNAL_FUNC(set_ok), &accepted);
 	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
-			    GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
+					   GTK_SIGNAL_FUNC(gtk_main_quit), NULL);
 
 	// Do we really want to position at the cursor?
 	//gtk_window_position(GTK_WINDOW(pFS), GTK_WIN_POS_MOUSE);
@@ -1968,19 +1968,16 @@ char * _promptFile(AP_Frame * /*pFrame*/, UT_Bool bSaveAs)
 	return fileName;
 }
 
-UT_Bool _chooseFont(AP_Frame * /*pFrame*/, FV_View * /*pView*/)
+UT_Bool _chooseFont(AP_Frame * pFrame, FV_View * pView)
 {
 	GtkFontSelectionDialog * cf;
-
 	UT_Bool accepted = FALSE;
 	gchar * selectedFont = NULL;
 
-	// move that title to resources
+	// TODO move this title to resources?
 	cf = (GtkFontSelectionDialog *) gtk_font_selection_dialog_new("Font Selection");
 
-	// TODO: get the view's current font to pass in to selection dialog
-	
-	/* Connect the signals for Ok and Cancel */
+    // Connect the signals to the buttons
 	gtk_signal_connect(GTK_OBJECT(cf->ok_button),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(set_ok),
@@ -1995,9 +1992,161 @@ UT_Bool _chooseFont(AP_Frame * /*pFrame*/, FV_View * /*pView*/)
 					   "destroy",
 					   GTK_SIGNAL_FUNC(NULL),
 					   NULL);
-
-	// Do we really want to position at the cursor?  
+	// Do we really want to position a new window at the cursor?  
 	//gtk_window_position(GTK_WINDOW(cf), GTK_WIN_POS_MOUSE);
+
+
+	// We're now ready to query the view for its properties, to set
+	// the font dialog's pop-up appearance to match.
+	const XML_Char ** props_in = NULL;
+	const XML_Char * s;
+	DG_Graphics * pG = pView->getLayout()->getGraphics();
+
+	if (!pView->getCharFormat(&props_in))
+		return UT_FALSE;
+
+	// TODO set the proper length.
+	// This length is completely arbitrary.  If you know the max X font
+	// descriptor length, please set this array to that size and check
+	// accordingly.	
+	gchar * fontString = new gchar[1024];
+	fontString[0] = NULL;
+	
+	// Query the view for attributes to enable in our font preview
+	// TODO: what about generic family names?
+	// TODO: also, I don't like doing two strcats to tack on the "-"
+	// seperator.  Maybe write wrappers for an XLFD string.
+
+	// we don't have a "foundry" attribute to match X's, fake it
+	strcat(fontString, "-*");
+
+	// family is *,[name]
+	s = UT_getAttribute("font-family", props_in);
+	if (s)
+	{
+		if (!UT_stricmp(s, ""))
+		{
+			// this satisfies the condition the view doesn't have
+			// a family set
+			strcat(fontString, "-");
+			strcat(fontString, "Times");
+		}
+		else
+		{
+			strcat(fontString, "-");
+			strcat(fontString, s);
+		}
+	}
+	else
+		// this is kind of redundant, fix it
+		strcat(fontString, "-*");
+	
+	// weight is *,black,bold,demibold,medium,regular
+	s = UT_getAttribute("font-weight", props_in);
+	if (s)
+	{
+		if (!UT_stricmp(s, "bold"))
+			strcat(fontString, "-bold");
+		else
+			strcat(fontString, "-medium");
+	}
+	else
+		strcat(fontString, "-*");
+		
+	// slant is *,i,o,r
+	s = UT_getAttribute("font-style", props_in);
+	if (s)
+	{
+		if (!UT_stricmp(s, "italic"))
+			strcat(fontString, "-i");
+		else
+			strcat(fontString, "-r");
+	}
+	else
+		strcat(fontString, "-*");
+
+	// sWidth
+	strcat(fontString, "-*");
+	// adStyle
+	strcat(fontString, "-*");
+
+	// pxlsz (we use points)
+	strcat(fontString, "-*");
+
+	// point size
+	s = UT_getAttribute("font-size", props_in);
+	if (s)
+	{
+		strcat(fontString, "-");
+		char fontSize[5];
+		snprintf(fontSize, 5, "%d", (pG->convertDimension(s)) * 10);
+		UT_DEBUGMSG(("font is size %s\n", fontSize));
+		strcat(fontString, fontSize);
+	}
+	else
+		// is this the default size?
+		strcat(fontString, "-12");
+
+	// Fill in the last 6 attributes we don't touch
+	strcat(fontString, "-*");
+	strcat(fontString, "-*");
+	strcat(fontString, "-*");
+	strcat(fontString, "-*");
+	strcat(fontString, "-*");
+	strcat(fontString, "-*");
+	
+	UT_DEBUGMSG(("Priming with XLFD: [%s]\n", fontString));
+	
+	// TODO make this work
+/*
+  s = UT_getAttribute("text-decoration", props_in);
+  if (s)
+  {
+  XML_Char*	p = strdup(s);
+  UT_ASSERT(p);
+  XML_Char*	q = strtok(p, " ");
+
+  while (q)
+  {
+  if (0 == UT_stricmp(q, "underline"))
+  lf.lfUnderline = TRUE;
+
+  else if (0 == UT_stricmp(q, "line-through"))
+  lf.lfStrikeOut = TRUE;
+
+  q = strtok(NULL, " ");
+  }
+
+  free(p);
+  }
+*/
+	
+	// TODO color in X, GTK font dialog doesn't support
+	// color, we do that seperately.
+/*
+  s = UT_getAttribute("color", props_in);
+  if (s)
+  {
+  UT_RGBColor c;
+  UT_parseColor(s, c);
+  DWORD rgbCurrent;		// current text color
+
+  rgbCurrent = RGB(c.m_red, c.m_grn, c.m_blu);
+
+  cf.rgbColors = rgbCurrent;
+  }
+*/
+	if (!gtk_font_selection_dialog_set_font_name(cf, fontString))
+	{
+		// We couldn't set the name, which means we don't have it
+		// TODO maybe do substitution, does it matter?
+		UT_DEBUGMSG(("Couldn't hint to font selection dialog to use XLFD.\n"
+					 "This XLFD is probably not valid.\n"));
+	}
+
+	// Set up a nice sample string
+	gchar * sampleString = "Microsoft What?";
+	gtk_font_selection_dialog_set_preview_text(cf, (const gchar *) sampleString);
 
 	/* Run the dialog */
 	gtk_widget_show(GTK_WIDGET(cf));
@@ -2006,18 +2155,146 @@ UT_Bool _chooseFont(AP_Frame * /*pFrame*/, FV_View * /*pView*/)
 
 	if (accepted)
 	{
-		// should we grab a GdkFont* via gtk_font_selection_dialog_get_font()?
-		// this depends on the view's set/query architecture
+
 		selectedFont = gtk_font_selection_dialog_get_font_name(cf);
+
+		if (selectedFont)
+		{
+	   		
+			UT_DEBUGMSG(("Font selection returned [%s].\n\n", selectedFont));
+
+			// *************************************************************
+			// BIG ASS HACK ALERT - we can't just access the props throgh
+			// and ever-incrementing [i] index, since it doesn't match
+			// the order in which we tokenize our X string!  I'm using simple
+			// numbers, but as the props may change, we should really
+			// use enumerated constants.
+			// *************************************************************
+			
+			// currently a maximum of six simultaneous properties
+			const XML_Char * props_out[] = { 
+				NULL, NULL, 	// 0,1   font family
+				NULL, NULL, 	// 2,3   point size
+				NULL, NULL, 	// 4,5   weight
+				NULL, NULL, 	// 6,7   slant
+				NULL, NULL, 	// 8,9   decoration (strike or underline)
+				NULL, NULL, 	// 10,11 color (not used here)
+				0 };
 		
-		printf("User wants to use font [%s].\n\n", selectedFont);
+			// duplicate and tokenize the XLFD
+			gchar * cloneString = strdup(selectedFont);
+			UT_ASSERT(cloneString);
+
+			// first call gets foundry, which we ignore
+			gchar * token = strtok(cloneString, "-");
+
+			// font family name
+			if ((token = strtok(NULL, "-")))
+			{
+				props_out[0] = "font-family";
+				props_out[1] = token;
+			}
+
+			/* weight (X has lots of defined weights, we just
+			   cast them to bold or normal for now)
+			*/
+			if ((token = strtok(NULL, "-")))
+			{
+				if (!UT_stricmp(token, "black"))
+				{
+					props_out[4] = "font-weight";
+					props_out[5] = "bold";
+				}
+				else if (!UT_stricmp(token, "bold"))
+				{
+					props_out[4] = "font-weight";
+					props_out[5] = "bold";
+				}
+				else if (!UT_stricmp(token, "demibold"))
+				{
+					props_out[4] = "font-weight";
+					props_out[5] = "bold";
+				}
+				else if (!UT_stricmp(token, "medium"))
+				{
+					props_out[4] = "font-weight";
+					props_out[5] = "normal";
+				}
+				else if (!UT_stricmp(token, "regular"))
+				{
+					props_out[4] = "font-weight";
+					props_out[5] = "normal";
+				}
+				else
+				{
+					props_out[4] = "font-weight";
+					props_out[5] = "normal";
+				}
+			}
+
+			// slant (X has i,o,r, which we cast to italic or normal)
+			if ((token = strtok(NULL, "-")))
+			{
+				if (!UT_stricmp(token, "i"))
+				{
+					props_out[6] = "font-style";
+					props_out[7] ="italic";
+				}
+				else // o and r
+				{
+					props_out[6] = "font-style";
+					props_out[7] ="normal";
+				}
+			}
+
+// TODO: make these work 
+/* 
+   if ((lf.lfUnderline == TRUE) && 
+   (lf.lfStrikeOut == TRUE))
+   {
+   props_out[i] = "text-decoration";
+   props_out[i+1] ="underline line-through";
+   i += 2;
+   }
+*/
+			// sWidth
+			strtok(NULL, "-");
+			// adStyle
+			strtok(NULL, "-");
+			// pxlStyle
+			strtok(NULL, "-");
 		
-		// TODO: set the view's font through it's super-duper yet-to-be methods
+			// point size
+			char buf_size[5];
+			if ((token = strtok(NULL, "-")))
+			{
+				sprintf(buf_size, "%dpt", (atoi(token)/10));
+				props_out[2] = "font-size";
+				props_out[3] = buf_size;
+			}
+
+			// dummies
+			props_out[8] = "text_decoration";
+			props_out[9] ="none";
+
+			char buf_color[6];
+			sprintf(buf_color, "%02x%02x%02x", 0, 0, 0);
+			props_out[10] = "color";
+			props_out[11] = buf_color;
+
+			// apply changes
+			pView->setCharFormat(props_out);
+
+			if (cloneString)
+				free(cloneString);
+		}
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(cf));
 
+	delete fontString;
 	return UT_TRUE;
+
 }
 
 dlg_Answer _askUser(AP_Frame * pFrame, const char * szQ, dlg_Buttons b, int defButton)
@@ -2039,6 +2316,7 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	UT_ASSERT(0);
 	return UT_TRUE;
 }
+
 #endif /* LINUX */
 
 /*****************************************************************/
