@@ -818,7 +818,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 				break;
 			case 2:		// SYMBOL_CHARSET
 				UT_DEBUGMSG(("RTF Font charset 'Symbol' not implemented\n"));
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				//UT_ASSERT(UT_NOT_IMPLEMENTED);
 				break;
 			case 77:    // Source Vlad Harchev from OpenOffice
 				m_szEncoding = "MACINTOSH";
@@ -892,7 +892,7 @@ RTFFontTableItem::RTFFontTableItem(FontFamilyEnum fontFamily, int charSet, int c
 				break;
 			default:
 				UT_DEBUGMSG(("RTF Font charset unknown: %d\n", m_charSet));
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
+				// don't assert like we used to do. just silently ignore.
 		}
 	}
 }
@@ -2202,7 +2202,8 @@ bool IE_Imp_RTF::HandleField()
 			// TODO: handle the \cpg keyword that can possible lies here. Hence we will need
 			// to push and pop the state
 			case  RTF_TOKEN_KEYWORD:
-				if (strcmp ((char *)keyword, "\\"))
+				UT_DEBUGMSG (("RTF Field: found %s\n", keyword));
+				if (strcmp ((char *)keyword, "\\") == 0)
 				{
 					if (bUseResult) 
 					{ 
@@ -4578,7 +4579,10 @@ bool IE_Imp_RTF::HandleTableListOveride(void)
 bool IE_Imp_RTF::ReadFontTable()
 {
 	// Ensure the font table is empty before we start
-	UT_ASSERT(m_fontTable.getItemCount() == 0);
+//	UT_ASSERT(m_fontTable.getItemCount() == 0);
+	if (m_fontTable.getItemCount() != 0) {
+		UT_DEBUGMSG (("Font table already contains %d items !\n", m_fontTable.getItemCount()));
+	}
 	UT_VECTOR_PURGEALL(RTFFontTableItem*, m_fontTable);	
 
 	unsigned char ch;
