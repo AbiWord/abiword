@@ -554,7 +554,7 @@ XAP_Frame * AP_CocoaFrame::cloneFrame()
 {
 	AP_CocoaFrame * pClone = new AP_CocoaFrame(this);
 	ENSUREP(pClone);
-	return static_cast<XAP_Frame * pClone);
+	return static_cast<XAP_Frame *> (pClone);
 
 Cleanup:
 	// clean up anything we created here
@@ -567,7 +567,7 @@ Cleanup:
 	return NULL;
 }
 
-XAP_Frame * AP_CocoaFrame::buildFrame(xap_Frame * pF)
+XAP_Frame * AP_CocoaFrame::buildFrame(XAP_Frame * pF)
 {
 	AP_CocoaFrame * pClone = static_cast<AP_CocoaFrame *>(pF);
 	UT_Error error = UT_OK;
