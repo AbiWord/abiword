@@ -329,17 +329,17 @@ static void init_values(const XAP_EncodingManager* that)
 	const char * naten = that->getNativeEncodingName ();
 
 	iconv_handle_N2U = UT_iconv_open (ucs4i, naten);
-	if (iconv_handle_N2U == UT_ICONV_INVALID)
+	if (!UT_iconv_isValid(iconv_handle_N2U))
 		{
 			UT_DEBUGMSG(("WARNING: UT_iconv_open(%s,%s) failed!\n",ucs4i,naten));
 		}
 	iconv_handle_U2N = UT_iconv_open (naten, ucs4i);
-	if (iconv_handle_U2N == UT_ICONV_INVALID)
+	if (!UT_iconv_isValid(iconv_handle_U2N))
 		{
 			UT_DEBUGMSG(("WARNING: UT_iconv_open(%s,%s) failed!\n",naten,ucs4i));
 		}
 	iconv_handle_U2Latin1 = UT_iconv_open ("ISO-8859-1", ucs4i);
-	if (iconv_handle_U2Latin1 == UT_ICONV_INVALID)
+	if (!UT_iconv_isValid(iconv_handle_U2Latin1))
 		{
 			UT_DEBUGMSG(("WARNING: UT_iconv_open(ISO-8859-1,%s) failed!\n",ucs4i));
 		}

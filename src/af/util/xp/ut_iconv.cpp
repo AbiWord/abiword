@@ -146,7 +146,7 @@ static void s_internal_init ()
 	const char ** pszEnc = s_ucs2_list;
 	while (*pszEnc)
 		{
-			if ((handle = UT_iconv_open (*pszEnc, latin)) == UT_ICONV_INVALID)
+			if (!UT_iconv_isValid(handle = UT_iconv_open (*pszEnc, latin)))
 				{
 					pszEnc++;
 					continue;
@@ -183,7 +183,7 @@ static void s_internal_init ()
 	pszEnc = s_ucs4_list;
 	while (*pszEnc)
 		{
-			if ((handle = UT_iconv_open (*pszEnc, latin)) == UT_ICONV_INVALID)
+			if (!UT_iconv_isValid(handle = UT_iconv_open (*pszEnc, latin)))
 				{
 					pszEnc++;
 					continue;
