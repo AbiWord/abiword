@@ -4432,8 +4432,8 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
   //
 	List_Type lType;
 	PD_Style * pStyle;
-	const XML_Char * szDelim, * szStart, * szAlign, * szIndent;
-	XML_Char font[30], lDecimal[20];
+	const XML_Char * szDelim,*szDec, * szStart, * szAlign, * szIndent;
+	XML_Char font[30];
 	UT_uint32 startv, level, currID;
 	float fAlign, fIndent;
 	
@@ -4442,6 +4442,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	{
 		// Use the props in the style
 		pStyle->getProperty((const XML_Char *) "list-delim", szDelim);
+		pStyle->getProperty((const XML_Char *) "list-decimal", szDec);
 		pStyle->getProperty((const XML_Char *) "start-value", szStart);
 		pStyle->getProperty((const XML_Char *) "margin-left", szAlign);
 		pStyle->getProperty((const XML_Char *) "text-indent", szIndent);
@@ -4452,7 +4453,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 		if (szAlign)
 			fAlign = (float)atof(szAlign);
 		else
- 		        fAlign = (float)LIST_DEFAULT_INDENT;
+ 		        fAlign = (float) LIST_DEFAULT_INDENT;
 		if (szIndent)
 			fIndent = (float)atof(szIndent);
 		else
@@ -4462,10 +4463,12 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	{
 		szDelim = "%L";
 		startv = 1;
-		fAlign =  (float)LIST_DEFAULT_INDENT;
-		fIndent =  (float)-LIST_DEFAULT_INDENT;
+		szDec = ".";
+		fAlign =  (float) LIST_DEFAULT_INDENT;
+		fIndent =  (float) -LIST_DEFAULT_INDENT;
 	}
-	
+	fAlign = (float) LIST_DEFAULT_INDENT;
+	fIndent =  (float) -LIST_DEFAULT_INDENT;
 	if (m_pAutoNum)
 	{
 		level = m_pAutoNum->getLevel();
@@ -4483,18 +4486,16 @@ void    fl_BlockLayout::StartList( const XML_Char * style)
 	if(lType < BULLETED_LIST)
 	{   
                UT_XML_strncpy((XML_Char *) font,30,(const XML_Char *) "NULL");
-               UT_XML_strncpy((XML_Char *) lDecimal, 20, (const XML_Char *) ".");
-       }
-       else
-       {
+	}
+	else
+	{
                UT_XML_strncpy((XML_Char *)font,20,(const XML_Char *) "NULL");
-               UT_XML_strncpy((XML_Char *)lDecimal, 10, (const XML_Char *) "NULL");
-       }	       
-       if(lType == BULLETED_LIST)
-       {
+	}	       
+	if(lType == BULLETED_LIST)
+        {
                UT_XML_strncpy((XML_Char *)font,30, (const XML_Char *)"Symbol");
-       }
-       StartList( lType, startv,szDelim, lDecimal, font, fAlign, fIndent, currID,level);
+	}
+	StartList( lType, startv,szDelim, szDec, font, fAlign, fIndent, currID,level);
 }
 
 void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
@@ -4621,7 +4622,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	va.addItem( (void *) "style");	va.addItem( (void *) style);
 
 
-	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, m_pDoc);
+	pAutoNum = new fl_AutoNum(id, iParentID, lType, start, lDelim, lDecimal, m_pDoc);
 	if (!pAutoNum)
 	{
 		// TODO Out of Mem.

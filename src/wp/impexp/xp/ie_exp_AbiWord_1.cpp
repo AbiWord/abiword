@@ -711,7 +711,7 @@ void s_AbiWord_1_Listener::_handleLists(void)
 		m_pie->write("<l");
 		for (attr = pAutoNum->getAttributes(); (*attr); attr++)
 		{
-			if (LCheck("id") || LCheck("parentid") || LCheck("type") || LCheck("start-value") || LCheck("list-delim"))
+			if (LCheck("id") || LCheck("parentid") || LCheck("type") || LCheck("start-value") || LCheck("list-delim") || LCheck("list-decimal"))
 			{
 				m_pie->write(" ");
 				m_pie->write(attr[0]);

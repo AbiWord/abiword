@@ -127,7 +127,11 @@ static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_Uni
 
 static gboolean s_update (void)
 {
-	Current_Dialog->updateDialog();
+	if(Current_Dialog->getAvView()->getTick() != Current_Dialog->getTick())
+	{
+	        Current_Dialog->setTick(Current_Dialog->getAvView()->getTick());
+		Current_Dialog->updateDialog();
+	}
 	return TRUE;
 }
 
@@ -260,6 +264,7 @@ void  AP_UnixDialog_Lists::typeChanged(gint style)
   //
 
 	gtk_option_menu_remove_menu(GTK_OPTION_MENU (m_wListStyleBox));
+	m_bDoExpose = UT_TRUE;
 	if(style == 0)
 	{
 	  //     gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
@@ -291,6 +296,7 @@ void  AP_UnixDialog_Lists::typeChanged(gint style)
 	{
 	        GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
 		m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
+		m_iListType = m_newListType;
 	}
 	previewExposed();
 }
@@ -305,6 +311,7 @@ void  AP_UnixDialog_Lists::setMemberVariables(void)
 	
 	GtkWidget * wlisttype=gtk_menu_get_active(GTK_MENU(m_wListStyle_menu));
 	m_newListType =  (List_Type) GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wlisttype)));
+	m_bguiChanged = UT_TRUE;
 	if(m_bisCustomized == UT_TRUE)
 	{
 	        _gatherData();
@@ -327,6 +334,7 @@ void  AP_UnixDialog_Lists::setMemberVariables(void)
 		m_bApplyToCurrent = UT_FALSE;
                 m_bStartSubList = UT_TRUE;
 	}
+	m_bDoExpose = UT_TRUE;
 }
 
 
@@ -355,6 +363,7 @@ void  AP_UnixDialog_Lists::customChanged(void)
 		gtk_arrow_set(GTK_ARROW(m_wCustomArrow),GTK_ARROW_RIGHT,GTK_SHADOW_OUT);
 		m_bisCustomFrameHidden = UT_TRUE;
                 m_bisCustomized = UT_FALSE;
+		fillUncustomizedValues();
 		_setData();
 	}
 }
@@ -375,8 +384,9 @@ void AP_UnixDialog_Lists::updateDialog(void)
         if(m_bisCustomized == UT_FALSE)
 	{
                 _populateWindowData();
+                m_iID = getID();
 	}
-        if((oldID != m_iID  || m_newListType != m_iListType) && (m_bisCustomized == UT_FALSE))
+	if((oldID != getID()) && (m_bisCustomized == UT_FALSE))
 	{               
                  m_newListType = m_iListType;
                  m_bDoExpose = UT_TRUE;
@@ -412,7 +422,7 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 	m_wMainWindow = windowMain;
 	gtk_widget_set_name (windowMain, "windowMain");
 	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
-	gtk_widget_set_usize (windowMain, 428, 341);
+	//	gtk_widget_set_usize (windowMain, 428, 341);
         ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (m_wMainWindow),m_WindowName);
 	gtk_window_set_policy(GTK_WINDOW(m_wMainWindow), FALSE, FALSE, FALSE);
@@ -441,14 +451,14 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow (void)
 	m_wClose = Close;
 	gtk_widget_show (Close);
 	gtk_box_pack_end (GTK_BOX (gnomeButtons), Close, FALSE, FALSE, 3);
-	gtk_widget_set_usize (Close, 57, -2);
+	//gtk_widget_set_usize (Close, 57, -2);
 	gtk_container_set_border_width (GTK_CONTAINER (Close), 2);
 	
 	Apply = gtk_button_new_with_label (pSS->getValue (XAP_STRING_ID_DLG_Apply));
 	m_wApply = Apply;
 	gtk_widget_show (Apply);
 	gtk_box_pack_end (GTK_BOX (gnomeButtons), Apply, FALSE, FALSE, 3);
-	gtk_widget_set_usize (Apply, 57, -2);
+	//gtk_widget_set_usize (Apply, 57, -2);
 	gtk_container_set_border_width (GTK_CONTAINER (Apply), 2);
 
 	//-------------------------------------------------------------------
@@ -498,7 +508,6 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkWidget *fontOptions_menu;
 	GtkObject *startSpin_adj;
 	GtkWidget *startSpin;
-	GtkObject *levelSpin_adj;
 	GtkWidget *levelSpin;
 	GtkObject *alignListSpin_adj;
 	GtkWidget *alignListSpin;
@@ -535,7 +544,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	listChoiceBox = gtk_hbox_new (FALSE, 0);
 	gtk_widget_show (listChoiceBox);
 	gtk_box_pack_start (GTK_BOX (overallSelectionVbox), listChoiceBox, FALSE, FALSE, 0);
-	gtk_widget_set_usize (listChoiceBox, -2, 32);
+	//gtk_widget_set_usize (listChoiceBox, -2, 32);
 	
 	typeLabel = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Lists_Type));
 	gtk_widget_show (typeLabel);
@@ -545,7 +554,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	listType = gtk_option_menu_new ();
 	gtk_widget_show (listType);
 	gtk_box_pack_start (GTK_BOX (listChoiceBox), listType, FALSE, FALSE, 0);
-	gtk_widget_set_usize (listType, -2, 18);
+	//	gtk_widget_set_usize (listType, -2, 18);
 	gtk_container_set_border_width (GTK_CONTAINER (listChoiceBox), 3);
 	listType_menu = gtk_menu_new ();
 	GtkWidget * menu_none = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Lists_Type_none));
@@ -582,7 +591,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	listStyleBox = gtk_option_menu_new ();
 	gtk_widget_show (listStyleBox);
 	gtk_box_pack_start (GTK_BOX (hbox3), listStyleBox, FALSE, FALSE, 0);
-	gtk_widget_set_usize (listStyleBox, -2, 32);
+	//	gtk_widget_set_usize (listStyleBox, -2, 32);
 	gtk_container_set_border_width (GTK_CONTAINER (listStyleBox), 3);
 
 	m_wListStyleNone_menu = gtk_menu_new();
@@ -619,7 +628,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	customizeLabel = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_Lists_Customize));
 	gtk_box_pack_start (GTK_BOX (arrowBox), customizeLabel, FALSE, FALSE, 0);
 	gtk_widget_show (customizeLabel);
-	gtk_widget_set_usize (customizeLabel, -2, 18);
+	//	gtk_widget_set_usize (customizeLabel, -2, 18);
 	
 	customFrame = gtk_frame_new ("");
 	gtk_box_pack_start (GTK_BOX (customizeVbox), customFrame, TRUE, TRUE, 2);
@@ -682,7 +691,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_table_attach (GTK_TABLE (table1), fontOptions, 1, 2, 1, 2,
 			  (GtkAttachOptions) (GTK_SHRINK),
 			  (GtkAttachOptions) (0), 0, 0);
-	gtk_widget_set_usize (fontOptions, 130, -2);
+	//gtk_widget_set_usize (fontOptions, 130, -2);
 	
 	m_glFonts = _getGlistFonts();
 	gint i;
@@ -712,15 +721,14 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	startSpin_adj = gtk_adjustment_new (1, -100, 100, 1, 2, 2);
 	startSpin = gtk_spin_button_new (GTK_ADJUSTMENT (startSpin_adj), 1, 0);
 	gtk_widget_show (startSpin);
-	gtk_widget_set_usize (startSpin,60, -2);
+	//gtk_widget_set_usize (startSpin,60, -2);
 	gtk_table_attach(GTK_TABLE (table1), startSpin, 1, 2, 3, 4,
        			  (GtkAttachOptions) (GTK_SHRINK),
 			  (GtkAttachOptions) (0), 0, 0);
 	
-	levelSpin_adj = gtk_adjustment_new (1, 0, 100, 1, 2, 2);
-	levelSpin = gtk_spin_button_new (GTK_ADJUSTMENT (levelSpin_adj), 1, 0);
+	levelSpin = gtk_entry_new_with_max_length(20);
 	gtk_widget_show (levelSpin);
-	gtk_widget_set_usize (levelSpin,60, -2);
+	//	gtk_widget_set_usize (levelSpin,60, -2);
 	gtk_table_attach(GTK_TABLE (table1), levelSpin, 1, 2, 2, 3,
       			  (GtkAttachOptions) (GTK_SHRINK),
 			  (GtkAttachOptions) (0), 0, 0);
@@ -728,7 +736,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	alignListSpin_adj = gtk_adjustment_new (0.25, 0.0, 10, 0.01, 0.02, 0.02);
 	alignListSpin = gtk_spin_button_new (GTK_ADJUSTMENT (alignListSpin_adj), 0.2, 2);
 	gtk_widget_show (alignListSpin);
-	gtk_widget_set_usize (alignListSpin,60, -2);
+	//	gtk_widget_set_usize (alignListSpin,60, -2);
 	gtk_table_attach(GTK_TABLE (table1), alignListSpin, 1, 2, 4, 5,
       			  (GtkAttachOptions) (GTK_SHRINK),
 			  (GtkAttachOptions) (0), 0, 0);
@@ -736,7 +744,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	indentAlignSpin_adj = gtk_adjustment_new (0.25, 0.0, 10, 0.01, 0.02, 0.02);
 	indentAlignSpin = gtk_spin_button_new (GTK_ADJUSTMENT (indentAlignSpin_adj), 0.2, 2);
 	gtk_widget_show (indentAlignSpin);
-	gtk_widget_set_usize (indentAlignSpin,60, -2);
+	//gtk_widget_set_usize (indentAlignSpin,60, -2);
 	gtk_table_attach(GTK_TABLE (table1), indentAlignSpin, 1, 2, 5, 6,
       			  (GtkAttachOptions) (GTK_SHRINK),
 			  (GtkAttachOptions) (0), 0, 0);
@@ -745,7 +753,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_table_attach (GTK_TABLE (table1), delimEntry, 1, 2, 0, 1,
 			  (GtkAttachOptions) (GTK_EXPAND),
 			  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-	gtk_widget_set_usize (delimEntry, 71, -2);
+	//	gtk_widget_set_usize (delimEntry, 71, -2);
 	gtk_entry_set_text (GTK_ENTRY (delimEntry), "%L");
 	
 	previewFrame = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_Lists_Preview));
@@ -821,7 +829,6 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	m_wAlignListSpin = alignListSpin;
 	m_oIndentAlign_adj = indentAlignSpin_adj;
 	m_wIndentAlignSpin = indentAlignSpin;
-	m_oLevelSpin_adj = levelSpin_adj;
 	m_wLevelSpin = levelSpin;
 	m_oStartSpin_adj = startSpin_adj;
 	m_wStartSpin = startSpin;
@@ -1107,13 +1114,13 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 					GTK_SIGNAL_FUNC (s_typeChangedNumbered), this);
 	gtk_signal_connect (GTK_OBJECT (m_oStartSpin_adj), "value_changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
-	gtk_signal_connect (GTK_OBJECT (m_oLevelSpin_adj), "value_changed",
+	m_iLevelSpinID = gtk_signal_connect (GTK_OBJECT (m_wLevelSpin), "changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
 	gtk_signal_connect (GTK_OBJECT (m_oAlignList_adj), "value_changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
 	gtk_signal_connect (GTK_OBJECT (m_oIndentAlign_adj), "value_changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
-	gtk_signal_connect (GTK_OBJECT (GTK_ENTRY(m_wDelimEntry)), "changed",
+	m_iDelimEntryID = gtk_signal_connect (GTK_OBJECT (GTK_ENTRY(m_wDelimEntry)), "changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
 
 
@@ -1138,7 +1145,7 @@ void AP_UnixDialog_Lists::_setData(void)
   // into the dialog variables.
   //
         gint i;
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wLevelSpin), (float) m_iLevel);
+
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wAlignListSpin),m_fAlign);
 	float indent = m_fAlign + m_fIndent;
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin),indent);
@@ -1173,11 +1180,19 @@ void AP_UnixDialog_Lists::_setData(void)
 	}
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wStartSpin),(float) m_iStartValue);
 	// first, we stop the entry from sending the changed signal to our handler
-	gtk_signal_handler_block_by_data(  GTK_OBJECT(m_wDelimEntry), (gpointer) this );
+        gtk_signal_handler_block(  GTK_OBJECT(m_wLevelSpin), m_iLevelSpinID);
+
+	gtk_entry_set_text( GTK_ENTRY(m_wLevelSpin), (const gchar *) m_pszDecimal);
+	// turn signals back on
+        gtk_signal_handler_unblock(  GTK_OBJECT(m_wLevelSpin), m_iLevelSpinID);
+
+	// first, we stop the entry from sending the changed signal to our handler
+	gtk_signal_handler_block(  GTK_OBJECT(m_wDelimEntry), m_iDelimEntryID );
 
 	gtk_entry_set_text( GTK_ENTRY(m_wDelimEntry), (const gchar *) m_pszDelim);
 	// turn signals back on
-	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(m_wDelimEntry), (gpointer) this );
+	gtk_signal_handler_unblock(  GTK_OBJECT(m_wDelimEntry), m_iDelimEntryID );
+
 	//
 	// Now set the list type and style
 	if(m_newListType == NOT_A_LIST)
@@ -1204,7 +1219,8 @@ void AP_UnixDialog_Lists::_gatherData(void)
   // This function reads the various elements in customize box and loads
   // the member variables with them
   //
-        m_iLevel =  gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wLevelSpin));
+        m_iLevel =  1;
+	//gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wLevelSpin));
 	m_fAlign = gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_wAlignListSpin));
 	float indent = gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON( m_wIndentAlignSpin));
 	m_fIndent = indent - m_fAlign;
@@ -1224,7 +1240,8 @@ void AP_UnixDialog_Lists::_gatherData(void)
 	{
                  UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  g_list_nth_data(m_glFonts, ifont-1));
 	}
-	UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+	gchar * pszDec = gtk_entry_get_text( GTK_ENTRY(m_wLevelSpin));
+	UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) pszDec);
 	m_iStartValue =  gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wStartSpin));
 	gchar * pszDel = gtk_entry_get_text( GTK_ENTRY(m_wDelimEntry));
         UT_XML_strncpy((XML_Char *)m_pszDelim, 80, (const XML_Char *) pszDel);

@@ -33,7 +33,7 @@ class fl_AutoNum
 {
 public:
 	fl_AutoNum(UT_uint32 id, UT_uint32 start, PL_StruxDocHandle pItem, fl_AutoNum * pParent, const XML_Char * lDelim, const XML_Char * lDecimal, List_Type lType, PD_Document * pDoc);
-	fl_AutoNum(UT_uint32 id, UT_uint32 parent_id, List_Type lType, UT_uint32 start, const XML_Char * lDelim, PD_Document * pDoc);
+	fl_AutoNum(UT_uint32 id, UT_uint32 parent_id, List_Type lType, UT_uint32 start, const XML_Char * lDelim, const XML_Char * lDecimal, PD_Document * pDoc);
 	void					fixHierarchy(PD_Document *);
 	~fl_AutoNum();
 		
@@ -48,6 +48,7 @@ public:
 	void					setDelim(const XML_Char * pszDelim);
 	const XML_Char *                        getDelim(void);
 	void					setDecimal(const XML_Char * pszDecimal);
+	const XML_Char *			getDecimal(void);
 	UT_Bool                                 isDirty(void);
 	UT_uint16				getStartValue(void) { return m_iStartValue; }
 

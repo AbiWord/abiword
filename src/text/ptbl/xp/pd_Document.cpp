@@ -1065,7 +1065,7 @@ void PD_Document::StopList(PL_StruxDocHandle sdh )
 
 UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 {
-	const XML_Char * szID, * szPid, * szType, * szStart, * szDelim;
+	const XML_Char * szID=NULL, * szPid=NULL, * szType=NULL, * szStart=NULL, * szDelim=NULL, *szDec=NULL;
 	UT_uint32 id, parent_id, start;
 	List_Type type;
 	
@@ -1081,6 +1081,8 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 			szStart = a[1];
 		else if (UT_XML_stricmp(a[0], "list-delim") == 0)
 			szDelim = a[1];
+		else if (UT_XML_stricmp(a[0], "list-decimal") == 0)
+			szDec = a[1];
 	}
 
 	if(!szID)
@@ -1093,7 +1095,8 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 		return UT_FALSE;
 	if(!szDelim)
 		return UT_FALSE;
-
+	if(!szDec)
+	        szDec = (const XML_Char *) ".";
 	id = atoi(szID);
 	UT_uint32 i;
 	UT_uint32 numlists = m_vecLists.getItemCount();
@@ -1109,7 +1112,7 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 	type = (List_Type)atoi(szType);
 	start = atoi(szStart);
 
-	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,this);
+	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,szDec,this);
 	addList(pAutoNum);
 	
 	return UT_TRUE;
@@ -1183,3 +1186,11 @@ void PD_Document::removeList(fl_AutoNum * pAutoNum)
 	if (ndx != -1)
 		m_vecLists.deleteNthItem(ndx);
 }
+
+
+
+
+
+
+
+

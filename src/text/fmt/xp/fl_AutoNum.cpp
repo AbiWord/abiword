@@ -66,7 +66,7 @@ fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 start,  PL_StruxDocHandle pFirst,
 	
 }
 
-fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 parent_id, List_Type lType, UT_uint32 start, const XML_Char * lDelim, PD_Document * pDoc)
+fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 parent_id, List_Type lType, UT_uint32 start, const XML_Char * lDelim, const XML_Char * lDecimal, PD_Document * pDoc)
 {
 	m_iID = id;
 	m_iParentID = parent_id;
@@ -79,7 +79,7 @@ fl_AutoNum::fl_AutoNum(UT_uint32 id, UT_uint32 parent_id, List_Type lType, UT_ui
 
 	// Set in Block???
 	UT_XML_strncpy( m_pszDelim, 80, lDelim);
-	UT_XML_strncpy( m_pszDecimal, 80, ".");
+	UT_XML_strncpy( m_pszDecimal, 80, lDecimal);
 
 	m_pParent = NULL;
 	m_pDoc = pDoc;
@@ -366,6 +366,12 @@ void fl_AutoNum::setDelim(const XML_Char * lDelim)
 const XML_Char * fl_AutoNum::getDelim( void)
 {
         return m_pszDelim;
+}
+
+
+const XML_Char * fl_AutoNum::getDecimal( void)
+{
+        return m_pszDecimal;
 }
 
 void fl_AutoNum::setDecimal(const XML_Char * lDecimal)
@@ -899,6 +905,8 @@ const char ** fl_AutoNum::getAttributes(void)
         va.addItem( (void *) "start-value"); va.addItem(szStart);
 	
 	va.addItem( (void *) "list-delim"); va.addItem( (void *) m_pszDelim);
+	
+	va.addItem( (void *) "list-decimal"); va.addItem( (void *) m_pszDecimal);
 	
         UT_uint32 counta = va.getItemCount() + 1;
 	UT_uint32 i;

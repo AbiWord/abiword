@@ -116,6 +116,8 @@ protected:
 	GtkWidget * m_wMenu_Num;
 	GtkWidget * m_wStartSub_label;
 	GtkWidget * m_wStartNew_label;
+	gint m_iLevelSpinID;
+	gint m_iDelimEntryID;
 };
 
 #endif /* AP_UNIXDIALOG_LISTS_H */
