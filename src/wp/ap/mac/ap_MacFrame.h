@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
+ * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +43,9 @@ public:
 
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
+
+	virtual void                            toggleTopRuler(bool bRulerOn);
+	virtual void                            toggleLeftRuler(bool bRulerOn);
 
 	virtual void 				setStatusMessage(const char * szMsg);
 protected:

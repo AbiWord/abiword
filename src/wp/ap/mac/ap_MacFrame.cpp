@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 1999 John Brewer DBA Jera Design
+ * Copyright (C) 2001 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -468,4 +469,87 @@ void AP_MacFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*
 	gtk_adjustment_set_value(GTK_ADJUSTMENT(pUnixFrame->m_pHadj),xoffNew);
 	pView->setXScrollOffset((UT_sint32)xoffNew);
 #endif
+}
+
+
+void AP_MacFrame::toggleTopRuler(bool bRulerOn)
+{
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+		
+	AP_MacTopRuler * pMacTopRuler = NULL;
+
+	UT_DEBUGMSG(("AP_MacTopRuler::toggleTopRuler %d, %d\n", 
+		     bRulerOn, pFrameData->m_pTopRuler));
+
+	if ( bRulerOn )
+	{
+		UT_ASSERT(!pFrameData->m_pTopRuler);
+
+		pMacTopRuler = new AP_MacTopRuler(this);
+		UT_ASSERT(pMacTopRuler);
+//		m_topRuler = pMacTopRuler->createWidget();
+
+		// get the width from the left ruler and stuff it into the 
+		// top ruler.
+
+//		if (((AP_FrameData*)m_pData)->m_pLeftRuler)
+//		  pMacTopRuler->setOffsetLeftRuler(((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth());
+//		else
+//		  pMacTopRuler->setOffsetLeftRuler(0);
+
+		// attach everything	
+        UT_DEBUGMSG(("Actually do the stuff: %s:%d\n", __FILE__, __LINE__));
+//		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0,
+//				 1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+//				 (GtkAttachOptions)(GTK_FILL),
+//				 0, 0);
+
+		pMacTopRuler->setView(m_pView);
+	}
+	else {
+		// delete the actual widgets
+//		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
+        UT_DEBUGMSG(("Actually do the stuff: %s:%d\n", __FILE__, __LINE__));	
+        DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
+//		m_topRuler = NULL;
+    }
+
+	((AP_FrameData*)m_pData)->m_pTopRuler = pMacTopRuler;
+}
+
+void AP_MacFrame::toggleLeftRuler(bool bRulerOn)
+{
+	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	UT_ASSERT(pFrameData);
+
+	AP_MacLeftRuler * pMacLeftRuler = NULL;
+
+	UT_DEBUGMSG(("AP_MacFrame::toggleLeftRuler %d, %d\n", 
+		     bRulerOn, pFrameData->m_pLeftRuler));
+
+	if (bRulerOn) {
+		pMacLeftRuler = new AP_MacLeftRuler(this);
+		UT_ASSERT(pMacLeftRuler);
+//		m_leftRuler = pMacLeftRuler->createWidget();
+
+        UT_DEBUGMSG(("Actually do the stuff: %s:%d\n", __FILE__, __LINE__));
+
+//		gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
+//				 (GtkAttachOptions)(GTK_FILL),
+//				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+//				 0,0);
+		pMacLeftRuler->setView(m_pView);
+	  }
+	else
+	  {
+//	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
+//		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
+        UT_DEBUGMSG(("Actually do the stuff: %s:%d\n", __FILE__, __LINE__));
+	    
+	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
+//	    m_leftRuler = NULL;
+	  }
+
+	((AP_FrameData*)m_pData)->m_pLeftRuler = pMacLeftRuler;
 }
