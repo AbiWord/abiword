@@ -117,9 +117,10 @@ bool AP_Prefs::loadBuiltinPrefs(void)
 	// Must do XML special character decoding on the default values
 	// since that will automatically happen in the case of values
 	// values read from preferences files.
+	UT_uint32 k;
 	UT_XML parser;
 	if (!parser.startDecoder ()) goto Failed;
-	for (UT_uint32 k=0; k<NrElements(_t); k++)
+	for (k=0; k<NrElements(_t); k++)
 	{
 		XML_Char *xp = parser.decode (_t[k].m_szValue);
 		UT_DEBUGMSG(("DEFAULT %s |%s|%s|\n", _t[k].m_szKey, _t[k].m_szValue, xp));
