@@ -44,22 +44,10 @@ void ap_usb_TextListener::notify()
 {
 
 	const UT_UCS4Char * buf = ((AP_StatusBarField_TextInfo *)m_pStatusBarField)->getBufUCS();
-	UT_UCS4String * ucs = new UT_UCS4String(buf);
-	
+	UT_UTF8String	utf8(buf);	
 	UT_ASSERT(m_pLabel);
-#if 0
-	// HACK: there's no decent way of giving some left padding on the gtklabel (that I know of)
-	// which looks aesthetically pleasing, so we add an extra space to the label text
-	char paddedLabel[AP_MAX_MESSAGE_FIELD];
-	paddedLabel[0] = ' ';
-	paddedLabel[1] = '\0';
-	UT_ASSERT(strlen(ucs->utf8_str()) < (AP_MAX_MESSAGE_FIELD - 2));
-	if (strlen(ucs->utf8_str()) < (AP_MAX_MESSAGE_FIELD - 2)) // buffer overflow check
-		strcat(paddedLabel, ucs->utf8_str());
-#endif
 
-	PtSetResource(m_pLabel,Pt_ARG_TEXT_STRING,ucs->utf8_str(),0);
-	delete(ucs);
+	PtSetResource(m_pLabel,Pt_ARG_TEXT_STRING,utf8.utf8_str(),0);
 }
 
 //////////////////////////////////////////////////////////////////
@@ -82,9 +70,6 @@ void AP_QNXStatusBar::setView(AV_View * pView)
 	AP_StatusBar::setView(pView);
 }
 
-// FIXME: we need more sanity checking here to make sure everything allocates correctly
-// FIXME: we need to call a view update when this happens, to make sure the elements get
-// their needed updates. this is why the page numbering doesn't appear on startup
 PtWidget_t * AP_QNXStatusBar::createWidget(void)
 {
 	PtArg_t args[10];
@@ -128,14 +113,8 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
 			
 			// size and place
 			if (pf_TextInfo->getFillMethod() == REPRESENTATIVE_STRING) {
-/*				GtkRequisition requisition;
-				gtk_widget_size_request(pStatusBarElementLabel, &requisition);				
-				gtk_widget_set_size_request(pStatusBarElementLabel, requisition.width, -1);
-				
-				gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, FALSE, FALSE, 0);*/
 			}
 			else { // fill
-		//		gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, TRUE, TRUE, 0);
 			}
 		}
 		else {
