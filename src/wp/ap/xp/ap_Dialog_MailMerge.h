@@ -44,6 +44,9 @@ public:
 	virtual void			activate(void) {}
 
 protected:
+
+	void init ();
+
 	void          setMergeField(const UT_UTF8String & name);
 
 	virtual void setFieldList();

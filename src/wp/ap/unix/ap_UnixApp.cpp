@@ -1314,7 +1314,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		// continue out the door.
 		// We used to check for bShowApp here.  It shouldn't be needed
 		// anymore, because doWindowlessArgs was supposed to bail already. -PL
-		if (pMyUnixApp->openCmdLineFiles(Args.poptcon))
+		if (pMyUnixApp->openCmdLineFiles(&Args))
 			// turn over control to gtk
 			gtk_main();
 		else

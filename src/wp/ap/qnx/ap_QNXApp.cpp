@@ -628,7 +628,7 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	// continue out the door.
 	// We used to check for bShowApp here.  It shouldn't be needed
 	// anymore, because doWindowlessArgs was supposed to bail already. -PL
-	if (pMyQNXApp->openCmdLineFiles(Args.poptcon))
+	if (pMyQNXApp->openCmdLineFiles(&Args))
 	{
 		PtMainLoop();
 	}

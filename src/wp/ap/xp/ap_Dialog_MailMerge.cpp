@@ -26,6 +26,7 @@
 #include "xap_Frame.h"
 #include "fv_View.h"
 #include "ut_assert.h"
+#include "pd_Document.h"
 
 AP_Dialog_MailMerge::AP_Dialog_MailMerge(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
@@ -46,6 +47,27 @@ void AP_Dialog_MailMerge::setMergeField(const UT_UTF8String & name)
 const UT_UTF8String& AP_Dialog_MailMerge::getMergeField() const
 {
 	return m_mergeField;
+}
+
+void AP_Dialog_MailMerge::init ()
+{
+	UT_return_if_fail(m_pFrame);
+
+	PD_Document * pDoc = static_cast<PD_Document*>(m_pFrame->getCurrentDoc());
+	UT_UTF8String link (pDoc->getMailMergeLink());
+
+	if (link.size()) {
+		
+		IE_MailMerge * pie = NULL;
+		UT_Error errorCode = IE_MailMerge::constructMerger(link.utf8_str(), IEMT_Unknown, &pie);
+		if (!errorCode && pie)
+		{
+			pie->getHeaders (link.utf8_str(), m_vecFields);
+			DELETEP(pie);
+		}
+	}
+
+	setFieldList();
 }
 
 void AP_Dialog_MailMerge::eventOpen ()
@@ -89,14 +111,14 @@ void AP_Dialog_MailMerge::eventOpen ()
 	
 	if (bOK)
     {
-		UT_String filename (pDialog->getPathname());
+		UT_UTF8String filename (pDialog->getPathname());
 		UT_sint32 type = pDialog->getFileType();
 		
 		IE_MailMerge * pie = NULL;
-		UT_Error errorCode = IE_MailMerge::constructMerger(filename.c_str(), static_cast<IEMergeType>(type), &pie);
-		if (!errorCode)
+		UT_Error errorCode = IE_MailMerge::constructMerger(filename.utf8_str(), static_cast<IEMergeType>(type), &pie);
+		if (!errorCode && pie)
 		{
-			pie->getHeaders (filename.c_str(), m_vecFields);
+			pie->getHeaders (filename.utf8_str(), m_vecFields);
 			DELETEP(pie);
 		}
 	}

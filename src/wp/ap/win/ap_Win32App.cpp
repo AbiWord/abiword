@@ -1048,7 +1048,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// continue out the door.
 	// We used to check for bShowApp here.  It shouldn't be needed
 	// anymore, because doWindowlessArgs was supposed to bail already. -PL
-	if (!pMyWin32App->openCmdLineFiles(Args.poptcon))
+	if (!pMyWin32App->openCmdLineFiles(&Args))
 	{
 		pMyWin32App->shutdown();	// properly shutdown the app 1st
 		delete pMyWin32App;

@@ -446,6 +446,15 @@ public:
 	void setMailMergeField(const UT_String & key,
 						   const UT_UTF8String & value);
 
+	void setMailMergeLink (const char * file) {
+		m_mailMergeLink = file;
+	}
+
+	UT_UTF8String getMailMergeLink () const {
+		// return a copy of me
+		return m_mailMergeLink;
+	}
+
 protected:
 	~PD_Document();
 
@@ -496,6 +505,8 @@ private:
 	UT_StringPtrMap         m_mailMergeMap;
 
 	UT_UCS4Char             m_iLastDirMarker;
+
+	UT_UTF8String           m_mailMergeLink;
 
 public:
 	UT_XML_ID_Generator		m_XML_ID;

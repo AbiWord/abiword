@@ -20,6 +20,7 @@
 #include "ap_App.h"
 #include "ap_Args.h"
 #include "xap_Frame.h"
+#include "pd_Document.h"
 
 #include "ie_imp.h"
 
@@ -43,10 +44,11 @@ AP_App::~AP_App ()
  * \return False if an unknown command line option was used, true
  * otherwise.  
  */
-bool AP_App::openCmdLineFiles(poptContext poptcon)
+bool AP_App::openCmdLineFiles(AP_Args * args)
 {
 	int kWindowsOpened = 0;
 	const char *file = NULL;
+	poptContext poptcon = args->poptcon;
 
 	while ((file = poptGetArg (poptcon)) != NULL) {
 		XAP_Frame * pFrame = newFrame(this);
@@ -68,6 +70,10 @@ bool AP_App::openCmdLineFiles(poptContext poptcon)
 			// I've got other things to do now though.
 			kWindowsOpened++;
 			pFrame->loadDocument(NULL, IEFT_Unknown);
+			if (args->m_sMerge) {
+				PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
+				pDoc->setMailMergeLink(args->m_sMerge);
+			}
 			pFrame->raise();
 
 			errorMsgBadFile (pFrame, file, error);
@@ -80,6 +86,10 @@ bool AP_App::openCmdLineFiles(poptContext poptcon)
 		
 		XAP_Frame * pFrame = newFrame(this);
 		pFrame->loadDocument(NULL, IEFT_Unknown);
+		if (args->m_sMerge) {
+			PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
+			pDoc->setMailMergeLink(args->m_sMerge);
+		}
 	}
 
 	return true;

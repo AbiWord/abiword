@@ -112,6 +112,7 @@ void AP_UnixDialog_MailMerge::runModeless(XAP_Frame * pFrame)
 
 	abiSetupModelessDialog(GTK_DIALOG(m_windowMain),
 						   pFrame, this, GTK_RESPONSE_CANCEL);
+	init ();
 	gtk_widget_show_all(m_windowMain);
 }
 

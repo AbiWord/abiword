@@ -1074,7 +1074,7 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     // continue out the door.
 	// We used to check for bShowApp here.  It shouldn't be needed
 	// anymore, because doWindowlessArgs was supposed to bail already. -PL
-    if (pMyCocoaApp->openCmdLineFiles(Args.poptcon))
+    if (pMyCocoaApp->openCmdLineFiles(&Args))
     {
 		// turn over control to Cocoa
 		[NSApp run];
