@@ -430,7 +430,7 @@ void XAP_UnixFrameImpl::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,g
 
 gint XAP_UnixFrameImpl::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
 {
-  return FALSE;
+	return FALSE; 
 }
 
 gint XAP_UnixFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer /*data*/)
@@ -461,17 +461,25 @@ void XAP_UnixFrameImpl::resetIMContext()
 
 gboolean XAP_UnixFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
-// 	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(gtk_object_get_user_data(GTK_OBJECT(w)));
-// 	UT_ASSERT(pFrameImpl);
-// 	XAP_Frame* pFrame = pFrameImpl->getFrame();
-// 	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
-// 						GINT_TO_POINTER(TRUE));
-// 	if (pFrame->getCurrentView())
-// 	{
-// 		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
-// 	}
-// 	pFrameImpl->focusIMIn ();
-	return FALSE;
+	XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(gtk_object_get_user_data(GTK_OBJECT(w)));
+	UT_ASSERT(pFrameImpl);
+	XAP_Frame* pFrame = pFrameImpl->getFrame();
+	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
+						GINT_TO_POINTER(TRUE));
+	if (pFrame->getCurrentView())
+	{
+		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
+	}
+	pFrameImpl->focusIMIn ();
+	//
+	// FIXME: Return TRUE because of a bug in gtk2. If you return FALSE (like
+	// you really should) you get a superfluous expose event which causes the
+	// the screen to flicker. Thanks the Bernhard Herzoff (of Sketch fame) 
+	// for giving the helpful clue here. 
+    //
+	// Try it again for gtk2.2 to see if this bug is still present.
+	//
+	return TRUE; 
 }
 
 gboolean XAP_UnixFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
@@ -750,6 +758,8 @@ gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	{
 		GR_Graphics * pGr = pView->getGraphics ();
 		UT_Rect rClip;
+		UT_DEBUGMSG(("Expose area: x %d y %d width %d  height %d \n",pExposeEvent->area.x,pExposeEvent->area.y,pExposeEvent->area.width,pExposeEvent->area.height));
+		UT_DEBUGMSG(("Widget pointer %x \n",w));
 		rClip.left = pGr->tlu(pExposeEvent->area.x);
 		rClip.top = pGr->tlu(pExposeEvent->area.y);
 		rClip.width = pGr->tlu(pExposeEvent->area.width);
@@ -1627,11 +1637,6 @@ bool XAP_UnixFrameImpl::_openURL(const char * szURL)
   	}
 	if (fmtstring == 0)
 	{
-		if(progExists("konqueror"))
-		{
-			fmtstring = "konqueror '%s' &";
-			execstring = g_strdup_printf(fmtstring, szURL);
-		}
 		else if(progExists("galeon"))
 		{
 		  	fmtstring = "galeon '%s' &";
@@ -1654,6 +1659,11 @@ bool XAP_UnixFrameImpl::_openURL(const char * szURL)
 			// Try to connect to a running Netscape, if not, start new one
 			fmtstring = "netscape -remote openURL\\('%s'\\) || netscape '%s' &";
 			execstring = g_strdup_printf(fmtstring, szURL, szURL);
+		}
+		if(progExists("konqueror"))
+		{
+			fmtstring = "konqueror '%s' &";
+			execstring = g_strdup_printf(fmtstring, szURL);
 		}
 		else if(progExists("khelpcenter"))
 		{
