@@ -4908,7 +4908,13 @@ FriBidiCharType fp_Run::getVisDirection()
 {
 	if(m_iVisDirection == FRIBIDI_TYPE_UNSET)
 	{
-		if(getBlock())
+		if(m_pLine)
+		{
+			m_pLine->_createMapOfRuns();
+			UT_ASSERT(m_iVisDirection != FRIBIDI_TYPE_UNSET);
+			return m_iVisDirection;
+		}
+		else if(getBlock())
 			return getBlock()->getDominantDirection();
 		else
 		{
@@ -4926,7 +4932,7 @@ FriBidiCharType fp_Run::getVisDirection()
 
 void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
-    if(iDir != getVisDirection())
+    if(iDir != m_iVisDirection)
 		m_bRefreshDrawBuffer = true;
 	m_iVisDirection = iDir;
 }

@@ -76,6 +76,9 @@ enum FL_WHICH_TABSTOP {USE_PREV_TABSTOP,USE_NEXT_TABSTOP,USE_FIXED_TABWIDTH};
 
 class ABI_EXPORT fp_Line : public fp_Container
 {
+	friend class fp_Run; // this is to allow access to
+						 // _createMapOfRuns() which I do not want to
+						 // make public
 public:
 	fp_Line(fl_SectionLayout * pSectionLayout);
 	~fp_Line();
@@ -237,7 +240,6 @@ void		_splitRunsAtSpaces(void);
 	UT_uint32       _getRunVisIndx(UT_uint32 indx);
 	UT_uint32       _getRunLogIndx(UT_uint32 indx);
 	UT_sint32       _createMapOfRuns();
-
 #ifdef USE_STATIC_MAP
 	static FriBidiLevel    * s_pEmbeddingLevels;
 	static FriBidiStrIndex * s_pMapOfRunsL2V;

@@ -880,24 +880,27 @@ void fp_TextRun::mergeWithNext(void)
 	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
 		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL);
 
-	if((m_iSpanBuffSize <= getLength() + pNext->getLength()) || (bReverse && (getLength() > pNext->getLength())))
+	UT_uint32 iNextLen = pNext->getLength();
+	UT_uint32 iMyLen   = getLength();
+	
+	if((m_iSpanBuffSize <= iMyLen + iNextLen) || (bReverse && (iMyLen > iNextLen)))
 	{
 		xxx_UT_DEBUGMSG(("fp_TextRun::mergeWithNext: reallocating span buffer\n"));
-		m_iSpanBuffSize = getLength() + pNext->getLength() + 1;
+		m_iSpanBuffSize = iMyLen + iNextLen + 1;
 		UT_UCSChar * pSB = new UT_UCSChar[m_iSpanBuffSize];
 		UT_ASSERT(pSB);
 		if(bReverse)
 		{
-			UT_UCS4_strncpy(pSB, pNext->m_pSpanBuff, pNext->getLength());
-			UT_UCS4_strncpy(pSB + pNext->getLength(),m_pSpanBuff, getLength());
+			UT_UCS4_strncpy(pSB, pNext->m_pSpanBuff, iNextLen);
+			UT_UCS4_strncpy(pSB + iNextLen,m_pSpanBuff, iMyLen);
 		}
 		else
 		{
-			UT_UCS4_strncpy(pSB,m_pSpanBuff, getLength());
-			UT_UCS4_strncpy(pSB + getLength(), pNext->m_pSpanBuff, pNext->getLength());
+			UT_UCS4_strncpy(pSB,m_pSpanBuff, iMyLen);
+			UT_UCS4_strncpy(pSB + iMyLen, pNext->m_pSpanBuff, iNextLen);
 		}
 
-		*(pSB + getLength() + pNext->getLength()) = 0;
+		*(pSB + iMyLen + iNextLen) = 0;
 		delete [] m_pSpanBuff;
 		m_pSpanBuff = pSB;
 	}
@@ -908,18 +911,18 @@ void fp_TextRun::mergeWithNext(void)
 		{
 			// can only shift the text directly in the existing buffer if
 			// getLength() <= pNext->getLength()
-			UT_ASSERT(getLength() <= pNext->getLength());
-			UT_UCS4_strncpy(m_pSpanBuff + pNext->getLength(), m_pSpanBuff, getLength());
-			UT_UCS4_strncpy(m_pSpanBuff, pNext->m_pSpanBuff, pNext->getLength());
+			UT_ASSERT(iMyLen <= iNextLen);
+			UT_UCS4_strncpy(m_pSpanBuff + iNextLen, m_pSpanBuff, iMyLen);
+			UT_UCS4_strncpy(m_pSpanBuff, pNext->m_pSpanBuff, iNextLen);
 		}
 		else
 		{
-			UT_UCS4_strncpy(m_pSpanBuff + getLength(), pNext->m_pSpanBuff, pNext->getLength());
+			UT_UCS4_strncpy(m_pSpanBuff + iMyLen, pNext->m_pSpanBuff, iNextLen);
 		}
-		*(m_pSpanBuff + getLength() + pNext->getLength()) = 0;
+		*(m_pSpanBuff + iMyLen + iNextLen) = 0;
 	}
 
-	setLength(getLength() + pNext->getLength());
+	setLength(iMyLen + iNextLen);
 	_setDirty(isDirty() || pNext->isDirty());
 
 	setNext(pNext->getNext(), false);

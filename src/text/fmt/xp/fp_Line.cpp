@@ -2868,13 +2868,14 @@ UT_sint32 fp_Line::_createMapOfRuns()
 		if(!count)
 			return UT_OK;  // do not even try to map a line with no runs
 
+#if 0
 		if(count == 1)	 //if there is just one run, then make sure that it maps on itself and return
 		{
 			s_pMapOfRunsL2V[0] = 0;
 			s_pMapOfRunsV2L[0] = 0;
 			return UT_OK;
 		}
-
+#endif
 		if (count >= s_iMapOfRunsSize) //the MapOfRuns member is too small, reallocate
 		{
 			delete[] s_pMapOfRunsL2V;
