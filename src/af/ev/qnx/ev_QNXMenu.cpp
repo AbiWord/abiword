@@ -277,7 +277,7 @@ static int s_menu_init(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 */
 static char get_hotkey_key(const char *str) {
 	//Find the next character after the =
-	char *p;
+	const char *p;
 	if ((p = strchr(str, '+')) && *++p) {
 		//This fixes problems like Alt-F4 for quitting ... for now
 		if (*(p+1) == '\0') {
