@@ -6088,6 +6088,9 @@ A more typical set of styles would be
 }
 
 */
+
+#define RTF_BASEDON_NONE		222		// the default
+
 bool IE_Imp_RTF::HandleStyleDefinition(void)
 {
 	bool status = true;
@@ -6128,7 +6131,8 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else if (strcmp((char *)keyword, "sbasedon") == 0)
 			{
-				if (parameter != styleNumber)
+				if ((parameter != styleNumber) &&
+					(parameter != RTF_BASEDON_NONE))
 				{
 //
 // Have to deal with out of sequence styles. ie A style maybe basedon a style that 
