@@ -23,7 +23,6 @@
 #include <string.h>
 #include "ut_types.h"
 #include "ut_assert.h"
-#include "ut_debugmsg.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 #include "ev_EditMethod.h"
@@ -37,8 +36,8 @@
 
 //////////////////////////////////////////////////////////////////
 
-static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval);
-static bool s_isVirtualKeyCode(gint keyval);
+static EV_EditBits s_mapVirtualKeyCodeToNVK(guint keyval);
+static bool s_isVirtualKeyCode(guint keyval);
 static GdkModifierType s_getAltMask(void);
 
 //////////////////////////////////////////////////////////////////
@@ -81,8 +80,6 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	if (e->state & (s_alt_mask))
 		state |= EV_EMS_ALT;
 
-	//UT_DEBUGMSG(("KeyPressEvent: keyval=%x state=%x\n",e->keyval,state));
-
 	if (s_isVirtualKeyCode(e->keyval))
 	{
 		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(e->keyval);
@@ -113,7 +110,6 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
-				//UT_DEBUGMSG(("invokeKeyboardMethod (1)\n"));
 				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
 				return true;
 
@@ -128,8 +124,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	}
 	else
 	{
-		UT_uint16 charData = e->keyval;
-		//UT_DEBUGMSG(("UnixKeyboard::pressKeyEvent: key value %x\n", charData));
+		UT_uint32 charData = e->keyval;
 
 		if(charData>0xff || charData == 0)
 		  result = m_pEEM->Keystroke(EV_EKP_PRESS|state|'a',&pEM);
@@ -167,24 +162,15 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 
 				if the current locale is utf-8, we will also use keysym2ucs
 			*/
-
 			if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || mLength == 0)
 			{
-				UT_sint32 u = keysym2ucs(e->keyval);
+			  //UT_sint32 u = keysym2ucs(e->keyval);
+			  UT_uint32 u = gdk_keyval_to_unicode (e->keyval);
 
-				if(u == -1 || u > 0xFFFF) //conversion failed, or more than 16 bit requied
-				{
-					mLength = 0;
-				}
-				else
-				{
-					mLength = 1;
-					ucs = new UT_UCSChar[1];
-					ucs[0] = u;
-				}
-
-				uLength = mLength;
-				//UT_DEBUGMSG(("#TF: keyval=%x, ucs=%x\n", ucs[0]));
+			  mLength = 1;
+			  ucs = new UT_UCSChar[1];
+			  ucs[0] = u;
+			  uLength = mLength;
 			}
 			else
 			{
@@ -195,11 +181,8 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 					UT_UCS4Char wc;
 					if(m.mbtowc(wc,mbs[i]))
 					  ucs[uLength++]=wc;
-					//UT_DEBUGMSG(("ucs[i] 0x%04x, ",ucs[i]));
 			  	}
-			  	//UT_DEBUGMSG((" uLength %d\n",uLength));
 			 }
-			//UT_DEBUGMSG(("invokeKeyboardMethod (2)\n"));
 			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
 			delete[] ucs;
  			return true;
@@ -218,7 +201,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 }
 
 // pulled in from gdk/gdkkeysyms.h
-static EV_EditBits s_Table_NVK_0xff[] =
+static const EV_EditBits s_Table_NVK_0xff[] =
 {	0, // 00
 	0, // 01
 	0, // 02
@@ -386,7 +369,7 @@ static EV_EditBits s_Table_NVK_0xff[] =
 	EV_NVK_DELETE,       // GDK_Delete 0xFFFF
 };
 
-static EV_EditBits s_Table_NVK_0xfe[] =		// ISO 9995 Function and Modifier Keys
+static const EV_EditBits s_Table_NVK_0xfe[] =		// ISO 9995 Function and Modifier Keys
 {											// see /usr/include/X11/keysymdef.h
 	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe00 - 0xfe0f
 	0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,		// 0xfe10 - 0xfe1f
@@ -422,7 +405,7 @@ static EV_EditBits s_Table_NVK_0xfe[] =		// ISO 9995 Function and Modifier Keys
 };
 
 
-static bool s_isVirtualKeyCode(gint keyval)
+static bool s_isVirtualKeyCode(guint keyval)
 {
 	// X11 has several segregated sets of keys
 	// 0xff00 - 0xffff has most function keys and non-letter keys
@@ -456,7 +439,7 @@ static bool s_isVirtualKeyCode(gint keyval)
 	return false;
 }
 
-static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval)
+static EV_EditBits s_mapVirtualKeyCodeToNVK(guint keyval)
 {
 	// map the given virtual key into a "named virtual key".
 	// these are referenced by NVK_ symbol so that the cross
@@ -557,8 +540,6 @@ static GdkModifierType s_getAltMask(void)
 
 	if (!alt_mask)						// if nothing set, fall back to MOD1
 		alt_mask = GDK_MOD1_MASK;
-
-	//UT_DEBUGMSG(("Keycodes for alt [l 0x%x][r 0x%x] using modifiers [%d %d] yields [0x%x]\n",kcAltL,kcAltR,mAltL-2,mAltR-2,alt_mask));
 
 	return (GdkModifierType)alt_mask;
 }
