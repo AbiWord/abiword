@@ -7316,7 +7316,7 @@ Defun(scriptPlay)
 
 	char * pNewFile = NULL;
 	IEFileType ieft = IEFT_Bogus;
-	bool bOK = s_AskForPathname(pFrame, false, NULL, &pNewFile, &ieft);
+	bool bOK = s_AskForPathname(pFrame, false, XAP_DIALOG_ID_FILE_OPEN, NULL, &pNewFile, &ieft);
 
 	if (!bOK || !pNewFile)
 		return false;
