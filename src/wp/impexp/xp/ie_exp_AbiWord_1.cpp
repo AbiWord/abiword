@@ -1264,7 +1264,6 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 	bool bWroteOpenRevisionsSection = false;
 
 	const PD_Revision * pRev=NULL;
-	char buf[35];
 
 	UT_Vector & vRevisions = m_pDocument->getRevisions();
 
@@ -1272,14 +1271,20 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
 		pRev = static_cast<PD_Revision *>(vRevisions.getNthItem(k));
+		UT_String s;
+		
 		if (!bWroteOpenRevisionsSection)
 		{
-			m_pie->write("<revisions>\n");
+			UT_String_sprintf(s, "<revisions show=\"%d\" mark=\"%d\" show-level=\"%d\">\n",
+							  m_pDocument->isShowRevisions(),
+							  m_pDocument->isMarkRevisions(),
+							  m_pDocument->getShowRevisionId());
+			
+			m_pie->write(s.c_str());
 			bWroteOpenRevisionsSection = true;
 		}
-		UT_String s = "<r id=\"";
-		sprintf(buf, "%d\">", pRev->getId());
-		s += buf;
+
+		UT_String_sprintf(s, "<r id=\"%d\">", pRev->getId());
 		m_pie->write(s.c_str());
 
 		_outputData(pRev->getDescription(), UT_UCS4_strlen(pRev->getDescription()));

@@ -365,6 +365,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 
 	// should we display revisions?
 	m_bShowRevisions = m_pDoc->isShowRevisions();
+	m_iViewRevision =  m_pDoc->getShowRevisionId();
 	
 	// initialize change cache
 	m_chg.bUndo = false;

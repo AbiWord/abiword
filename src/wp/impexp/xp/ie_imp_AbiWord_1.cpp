@@ -588,12 +588,36 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	}
 
 	case TT_REVISIONSECTION:
+	{
+				
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_RevisionSec;
-		// We don't need to notify the piece table of the style section,
-		// it will get the hint when we begin sending styles.
-		return;
 
+		// parse the attributes ...
+		const XML_Char * szS = UT_getAttribute("show",atts);
+		UT_uint32 i;
+		if(szS)
+		{
+			i = atoi(szS);
+			getDoc()->setShowRevisions(i != 0);			
+		}
+
+		szS = UT_getAttribute("mark",atts);
+		if(szS)
+		{
+			i = atoi(szS);
+			getDoc()->setMarkRevisions(i != 0);
+		}
+		
+		szS = UT_getAttribute("show-level",atts);
+		if(szS)
+		{
+			i = atoi(szS);
+			getDoc()->setShowRevisionId(i);
+		}
+		return;
+	}
+			
 	case TT_REVISION:
 	{
 		X_VerifyParseState(_PS_RevisionSec);

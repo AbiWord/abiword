@@ -4220,3 +4220,13 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 	_restorePieceTableState();
 }
 
+void FV_View::cmdSetRevisionLevel(UT_uint32 i)
+{
+	m_iViewRevision = i;
+
+	// set the same in Doc; this way the doc will always save the
+	// state the user last used
+	// NB: the doc id and the view id can be differnt if the user
+	// changed it in some other view
+	m_pDoc->setShowRevisionId(i);
+}

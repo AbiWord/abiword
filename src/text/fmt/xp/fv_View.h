@@ -542,7 +542,7 @@ public:
 	bool                isShowRevisions() const {return m_bShowRevisions;}
 	void                toggleShowRevisions();
 		
-	void                cmdSetRevisionLevel(UT_uint32 i){m_iViewRevision = i;}
+	void                cmdSetRevisionLevel(UT_uint32 i);
 	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
 
 	/* Table related functions */

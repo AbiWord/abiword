@@ -413,10 +413,14 @@ public:
 	//
 	bool                    isMarkRevisions() const{ return m_bMarkRevisions;}
 	void                    toggleMarkRevisions();
+	void                    setMarkRevisions(bool bMark);
 	bool                    isShowRevisions() const{ return m_bShowRevisions;}
 	void                    setShowRevisions(bool bShow);
+	void                    toggleShowRevisions();
+	UT_uint32               getShowRevisionId() const {return m_iShowRevisionID;}
+	void                    setShowRevisionId(UT_uint32 iId);
 	UT_uint32               getRevisionId() const{ return m_iRevisionID;}
-	void                    setRevisionId(UT_uint32 iId) {m_iRevisionID  = iId;}
+	void                    setRevisionId(UT_uint32 iId);
 	bool                    addRevision(UT_uint32 iId, UT_UCS4Char * pDesc);
 	bool                    addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen);
 	UT_Vector &             getRevisions() {return m_vRevisions;}
@@ -544,6 +548,7 @@ private:
 	bool                    m_bMarkRevisions;
 	bool                    m_bShowRevisions;
 	UT_uint32               m_iRevisionID;
+	UT_uint32               m_iShowRevisionID;
 	UT_Vector               m_vRevisions;
 	PT_AttrPropIndex        m_indexAP;
 	bool                    m_bDontImmediatelyLayout;

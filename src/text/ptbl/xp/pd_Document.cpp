@@ -99,6 +99,7 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_bMarkRevisions(false),
 	  m_bShowRevisions(true),
 	  m_iRevisionID(1),
+	  m_iShowRevisionID(0), // show all
 	  m_indexAP(0xffffffff),
 	  m_bDontImmediatelyLayout(false),
 	  m_iLastDirMarker(0),
@@ -366,20 +367,9 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	if(pAP)
 	{
 		const XML_Char * pA = NULL;
-		UT_uint32 iOn;
 
-		if(pAP->getAttribute("revisions-mark", pA))
-		{
-			iOn = atoi(pA);
-			m_bMarkRevisions = (iOn != 0);
-		}
-
-		if(pAP->getAttribute("revisions-show", pA))
-		{
-			iOn = atoi(pA);
-			m_bShowRevisions = (iOn != 0);
-		}
-
+		// TODO this should probably be stored as an attribute of the
+		// styles section rather then the whole doc ...
 		if(pAP->getAttribute("styles", pA))
 		{
 			m_bLockedStyles = !(strcmp(pA, "locked"));
@@ -3729,8 +3719,8 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 			return false;
 
 		// now set standard attributes
-		const XML_Char * attr[25];
-		attr[24] = NULL;
+		const XML_Char * attr[21];
+		attr[20] = NULL;
 
 		attr[0] = "xmlns";
 		attr[1] = "http://www.abisource.com/awml.dtd";
@@ -3759,23 +3749,13 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 		attr[16] = "fileformat";
 		attr[17] = ABIWORD_FILEFORMAT_VERSION;
 
-		UT_String rev_m;
-		UT_String_sprintf(rev_m, "%d", isMarkRevisions());
-		attr[18] = "revisions-mark";
-		attr[19] = rev_m.c_str();
-
-		UT_String rev_s;
-		UT_String_sprintf(rev_s, "%d", isShowRevisions());
-		attr[20] = "revisions-show";
-		attr[21] = rev_s.c_str();
-
 		if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
 		{
-			attr[22] = "version";
-			attr[23] = XAP_App::s_szBuild_Version;
+			attr[18] = "version";
+			attr[19] = XAP_App::s_szBuild_Version;
 		}
 		else
-			attr[22] = NULL;
+			attr[18] = NULL;
 
 		bRet =  setAttributes(attr);
 
@@ -4189,37 +4169,47 @@ pf_Frag * PD_Document::getLastFrag() const
 	return m_pPieceTable->getFragments().getLast();
 }
 
+void PD_Document::setMarkRevisions(bool bMark)
+{
+	if(m_bMarkRevisions != bMark)
+	{
+		m_bMarkRevisions = bMark;
+		m_bForcedDirty = true;
+	}
+}
+
 void PD_Document::toggleMarkRevisions()
 {
-	m_bMarkRevisions = !m_bMarkRevisions;
-
-	const XML_Char * attrs[] = {0, 0, 0};
-	attrs[0] = "revisions-mark";
-		
-	UT_String rev;
-	UT_String_sprintf(rev, "%d", isMarkRevisions());
-	attrs[1] = rev.c_str();
-
-	setAttributes(attrs);
-	m_bForcedDirty = true;
+	setMarkRevisions(!m_bMarkRevisions);
 }
 
 void PD_Document::setShowRevisions(bool bShow)
 {
 	if(m_bShowRevisions != bShow)
 	{
-		m_bShowRevisions = bShow;
-
-		const XML_Char * attrs[] = {0, 0, 0};
-		attrs[0] = "revisions-show";
-		
-		UT_String rev;
-		UT_String_sprintf(rev, "%d", isShowRevisions());
-		attrs[1] = rev.c_str();
-
-		setAttributes(attrs);
 		m_bForcedDirty = true;
 	}
 }
 
+void PD_Document::toggleShowRevisions()
+{
+	setShowRevisions(!m_bShowRevisions);
+}
 
+void PD_Document::setShowRevisionId(UT_uint32 iId)
+{
+	if(iId != m_iShowRevisionID)
+	{
+		m_iShowRevisionID = iId;
+		m_bForcedDirty = true;
+	}
+}
+
+void PD_Document::setRevisionId(UT_uint32 iId)
+{
+	if(iId != m_iRevisionID)
+	{
+		m_iRevisionID  = iId;
+		m_bForcedDirty = true;
+	}
+}
