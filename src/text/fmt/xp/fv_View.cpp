@@ -1380,12 +1380,17 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 	}
 	pBL = m_pLayout->findBlockAtPosition(pos);
 	UT_ASSERT(pBL);
+//
+// Sevior should remove this after a while..
+//
+#if(0)
 	if(pBL->isHdrFtr())
 	{
-		fl_HdrFtrSectionLayout * pSSL = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
-		pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
-		UT_DEBUGMSG(("<<<<SEVIOR>>>: getfirstshadow in view \n"));
+		  fl_HdrFtrSectionLayout * pSSL = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
+		  pBL = pSSL->getFirstShadow()->findMatchingBlock(pBL);
+		  UT_DEBUGMSG(("<<<<SEVIOR>>>: getfirstshadow in view \n"));
 	}
+#endif
 	return pBL;
 }
 
