@@ -89,7 +89,7 @@ AP_Dialog_Spell::_spellCheckWord (const UT_UCSChar * word, UT_uint32 len)
 }
 
 AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id), m_Suggestions(0)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogspelling.html"), m_Suggestions(0)
 {
    m_iWordOffset = 0;
    m_iWordLength = -1;

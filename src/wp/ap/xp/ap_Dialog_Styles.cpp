@@ -46,7 +46,7 @@
 #include "ap_Dialog_Tab.h"
 
 AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogstyles.html")
 {
 
 	m_answer = a_OK;

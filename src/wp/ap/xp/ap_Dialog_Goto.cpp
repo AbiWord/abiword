@@ -45,7 +45,7 @@ char * AP_Dialog_Goto::s_pJumpTargets[] = {
 
 
 AP_Dialog_Goto::AP_Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_Modeless(pDlgFactory, id)
+	: XAP_Dialog_Modeless(pDlgFactory, id, "interface/dialoggoto.html")
 {
   	m_pView = NULL;
 	m_answer = a_CLOSE;

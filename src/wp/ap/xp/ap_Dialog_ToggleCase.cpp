@@ -23,7 +23,7 @@
 
 AP_Dialog_ToggleCase::AP_Dialog_ToggleCase(XAP_DialogFactory * pDlgFactory, 
 					   XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id), m_answer(a_CANCEL), 
+  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogchangecase.html"), m_answer(a_CANCEL), 
   m_case(CASE_SENTENCE)
 {
 }
