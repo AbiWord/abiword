@@ -2898,6 +2898,13 @@ bool FV_View::_insertField(const char* szName,
 {
 	bool bResult;
 	int attrCount = 0;
+	if(szName && ((UT_strcmp(szName,"sum_rows") == 0) || (UT_strcmp(szName,"sum_cols") == 0)))
+	{
+	     if(!isInTable())
+	     {
+	          return false;
+	     }
+	}
 	while (extra_attrs && extra_attrs[attrCount] != NULL)
 	{
 		attrCount++;

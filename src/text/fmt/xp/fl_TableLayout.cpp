@@ -1560,7 +1560,24 @@ UT_uint32 fl_TableLayout::getLength(void)
 {
 	PL_StruxDocHandle sdhTab = getStruxDocHandle();
 	PL_StruxDocHandle sdhEnd = m_pDoc-> getEndTableStruxFromTableSDH(sdhTab);
-	UT_uint32 len = m_pDoc->getStruxPosition(sdhEnd) -  m_pDoc->getStruxPosition(sdhTab) + 1;
+	PT_DocPosition posEnd = 0;
+	PT_DocPosition posStart = 0;
+	UT_uint32 len = 0;
+	if(sdhTab && (sdhEnd == NULL)) // handle case of endStrux not in yet
+	{
+		posStart = m_pDoc->getStruxPosition(sdhTab);
+		m_pDoc->getBounds(true,posEnd);
+		len = posEnd - posStart + 1;
+	}
+	else if(sdhTab == NULL)
+	{
+		return 0;
+	}
+	else
+	{
+		posEnd = m_pDoc->getStruxPosition(sdhEnd);
+		len = posEnd -  m_pDoc->getStruxPosition(sdhTab) + 1;
+	}
 	return len;
 }
 
