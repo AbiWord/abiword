@@ -26,6 +26,15 @@
 #include "ut_string.h"
 #include "ut_units.h"
 
+GR_Font::GR_Font() 
+{
+}
+
+GR_Font::~GR_Font() 
+{
+	// need this so children can clean up
+}
+
 GR_Graphics::GR_Graphics()
 {
 	m_iZoomPercentage = 100;
