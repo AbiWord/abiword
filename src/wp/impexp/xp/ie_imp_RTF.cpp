@@ -8666,7 +8666,17 @@ bool IE_Imp_RTF::HandleRevisedTextTimestamp(UT_uint32 iDttm)
 	if(!pRev->getStartTime())
 	{
 		// set the start time to what ever is represented by dttm
-		
+		struct tm TM;
+		TM.tm_sec = 0;
+		TM.tm_min = (iDttm & 0x3f);
+		TM.tm_hour = (iDttm & 0x7c0) >> 6;
+		TM.tm_mday = (iDttm & 0xf800) >> 11;
+		TM.tm_mon = ((iDttm & 0xf0000) >> 16)- 1;
+		TM.tm_year = (iDttm & 0x1ff00000) >> 20;
+		TM.tm_isdst = 0;
+
+		time_t tT = mktime(&TM);
+		pRev->setStartTime(tT);
 	}
 	
 	return true;
