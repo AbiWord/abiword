@@ -17,29 +17,25 @@
  * 02111-1307, USA.
  */
 
-#ifndef _UT_IDLE_H
-#define _UT_IDLE_H
+#ifndef _UT_UNIX_IDLE_H
+#define _UT_UNIX_IDLE_H
 
-#include "ut_worker.h"
+#include "ut_idle.h"
+#include "ut_types.h"
 
-class UT_Idle : public UT_Worker
+class UT_UnixIdle : public UT_Idle
 {
-
  public:
-  virtual ~UT_Idle ();
+  UT_UnixIdle ( UT_WorkerCallback cb, void * data );
+  ~UT_UnixIdle ();
 
-  virtual void stop(void) = 0;            /* suspend events */
-  virtual void start(void) = 0;           /* resume events */
-
-  static UT_Idle * static_constructor (UT_WorkerCallback pCallback, void* pData); /* implemented in platform-specific code */
-
- protected:
-
-  UT_Idle ();
-  UT_Idle ( UT_WorkerCallback cb, void * data );
+  void start ();
+  void stop ();
 
  private:
 
+  UT_sint32 m_id;
+
 };
 
-#endif /* _UT_IDLE_H */
+#endif /* _UT_UNIX_IDLE_H */

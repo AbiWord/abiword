@@ -17,23 +17,61 @@
  * 02111-1307, USA.
  */
 
-#include "ut_idle.h"
+#include <gtk/gtk.h>
+
+#include "ut_unixIdle.h"
+#include "ut_assert.h"
+
+//
+// timer procedure callback
+//
+static gint _Timer_Proc(void *p)
+{
+  UT_UnixIdle * pIdle = static_cast<UT_UnixIdle*>(p);
+  UT_ASSERT(pIdle);
+
+  pIdle->fire();
+
+  return TRUE;
+}
 
 /*!
- * Protected constructor
+ * Returns a new UT_Idle
  */
-UT_Idle::UT_Idle ()
+UT_Idle * UT_Idle::static_constructor ( UT_WorkerCallback cb, void *data )
+{
+  return new UT_UnixIdle ( cb, data );
+}
+
+/*!
+ * Constructs a new Unix idle
+ */
+UT_UnixIdle::UT_UnixIdle ( UT_WorkerCallback cb, void * data )
+  : UT_Idle ( cb, data ), m_id(-1)
 {
 }
 
-UT_Idle::UT_Idle ( UT_WorkerCallback cb, void * data )
-  : UT_Worker ( cb, data )
-{  
+/*!
+ * Destructor. Will stop() the idle
+ */
+UT_UnixIdle::~UT_UnixIdle ()
+{
+  stop ();
 }
 
 /*!
- * Public destructor
+ * Start this idle running
  */
-UT_Idle::~UT_Idle ()
+void UT_UnixIdle::start ()
 {
+  m_id = gtk_idle_add(_Timer_Proc, this);
+}
+
+/*!
+ * Stop this idle from running
+ */
+void UT_UnixIdle::stop ()
+{
+  if ( m_id > 0 )
+    gtk_idle_remove(m_id);
 }

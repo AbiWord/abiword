@@ -707,3 +707,7 @@ endif
 # with it set (to prevent linker mismatches with wv's version)
 #  
 CFLAGS += -DLIBICONV_PLUG
+
+ifeq ($(ABI_NATIVE),unix)
+CFLAGS += -DSUPPORTS_UT_IDLE=1
+endif
