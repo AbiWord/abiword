@@ -653,8 +653,8 @@ DLG_PageSetup_Left="&amp;Gauche :"
 DLG_PageSetup_Right="&amp;Droite :"
 DLG_PageSetup_Margin="&amp;Marge"
 
-MSG_DirectionModeChg="Vous avez changez le mode d'orientation de texte."
-MSG_DefaultDirectionChg="Vous avez changez l'orientation par défaut."
+MSG_DirectionModeChg="Vous avez changé le mode d'orientation de texte."
+MSG_DefaultDirectionChg="Vous avez changé l'orientation par défaut."
 MSG_AfterRestartNew="Les changements prendront effet au prochain redémarrage d'AbiWord ou à la création d'un nouveau document."
 
 DLG_ToggleCase_Title="Changer la casse"
