@@ -39,7 +39,11 @@ AC_ARG_WITH(curl,[  --with-curl[=DIR]  Use curl [in DIR]],[
 		abi_curl=yes
 		ABI_CURL_DIR="$withval"
 	fi
-],[	abi_curl=check
+],[	if test "x$abi_spell" = "xispell"; then
+		abi_curl=check
+	else
+		abi_curl=no
+	fi
 ])
 
 if test $abi_curl != no; then

@@ -155,12 +155,14 @@ AC_ARG_ENABLE(stable,[  --enable-static          build static AbiWord (UNIX/GTK 
 AM_CONDITIONAL(ABI_BUILD_SHARED,[test $abi_build_shared = yes])
 AM_CONDITIONAL(ABI_BUILD_STATIC,[test $abi_build_static = yes])
 
-ABI_CURL
-AM_CONDITIONAL(WITH_CURL, test x$abi_curl = xyes)
-
+dnl spell-checker detection precedes curl setting
+dnl 
 AC_LANG_CPLUSPLUS
 ABI_SPELL
 AC_LANG_C
+
+ABI_CURL
+AM_CONDITIONAL(WITH_CURL, test x$abi_curl = xyes)
 
 ABI_FRIBIDI
 
