@@ -3536,6 +3536,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	}
 	UT_VECTOR_PURGEALL(CellLine *, vecTables);
 	xxx_UT_DEBUGMSG(("Finished Drawing lines in tables \n"));
+	m_pG->flush();
 	return true;
 }
 
