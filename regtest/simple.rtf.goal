@@ -1,0 +1,47 @@
+{\rtf1\ansi\ansicpg1252\deff0
+{\fonttbl
+{\f0\fnil\fcharset0\fprq0\fttruetype Bitstream Vera Serif;}
+{\f1\fnil\fcharset0\fprq0\fttruetype NULL;}
+{\f2\fnil\fcharset0\fprq0\fttruetype Dingbats;}
+{\f3\fnil\fcharset0\fprq0\fttruetype Symbol;}
+{\f4\fnil\fcharset0\fprq0\fttruetype Chapter;}
+{\f5\fnil\fcharset0\fprq0\fttruetype Bitstream Vera Sans;}
+{\f6\fnil\fcharset0\fprq0\fttruetype Courier New;}
+{\f7\fnil\fcharset0\fprq0\fttruetype Section;}}
+{\colortbl
+\red0\green0\blue0;
+\red255\green255\blue255;}
+{\stylesheet
+{\s17\fi-431\li720\sbasedon18 Lower Roman List;}
+{\s19\tx431\sbasedon11\snext18 Numbered Heading 1;}
+{\s20\tx431\sbasedon12\snext18 Numbered Heading 2;}
+{\s21\tx431\sbasedon13\snext18 Numbered Heading 3;}
+{\s8\sbasedon18 Endnote Text;}
+{\s6\fi-431\li720 Diamond List;}
+{\s22\fi-431\li720 Numbered List;}
+{\*\cs7\fs20\super Endnote Reference;}
+{\s28\fi-431\li720 Triangle List;}
+{\s25\fi-431\li720 Square List;}
+{\s5\fi-431\li720 Dashed List;}
+{\s30\fi-431\li720\sbasedon22 Upper Roman List;}
+{\s14\fi-431\li720 Heart List;}
+{\s29\fi-431\li720\sbasedon22 Upper Case List;}
+{\s3\fi-431\li720 Bullet List;}
+{\s10\fi-431\li720 Hand List;}
+{\s11\sb440\sa60\f5\fs34\b\sbasedon18\snext18 Heading 1;}
+{\s12\sb440\sa60\f5\fs28\b\sbasedon18\snext18 Heading 2;}
+{\s13\sb440\sa60\f5\fs24\b\sbasedon18\snext18 Heading 3;}
+{\s27\fi-431\li720 Tick List;}
+{\s18\f0\fs24 Normal;}
+{\s16\fi-431\li720\sbasedon22 Lower Case List;}
+{\s1\li1440\ri1440\sa120\sbasedon18 Block Text;}
+{\*\cs9\fs20\super Footnote Reference;}
+{\s24\tx1584\sbasedon19\snext18 Section Heading;}
+{\s15\fi-431\li720 Implies List;}
+{\s2\fi-431\li720 Box List;}
+{\s26\fi-431\li720 Star List;}
+{\s23\f6\sbasedon18 Plain Text;}
+{\s4\tx1584\sbasedon19\snext18 Chapter Heading;}}
+\kerning0\cf0\ftnbj\fet2\ftnstart1{\info}\viewkind1\paperw12240\paperh15840\margl1440\margr1440\widowctl
+\sectd\sbknone\colsx360\pgncont\ltrsect
+\pard\plain\ltrpar\s18\itap0{\f0\fs24\lang1033{\*\listtag0}This is a very simple document.}}

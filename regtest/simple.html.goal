@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- ================================================================================  -->
+<!-- This HTML file was created by AbiWord.                                            -->
+<!-- AbiWord is a free, Open Source word processor.                                    -->
+<!-- More information about AbiWord is available at http://www.abisource.com                -->
+<!-- ================================================================================  -->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:awml="http://www.abisource.com/awml.dtd">
+ <head>
+  <title>/home/sam/source/abi/abi/regtest/simple.html</title>
+  <style type="text/css">
+   <!--
+@media print {
+	body {
+		padding-top: 1in;
+		padding-bottom: 1in;
+		padding-left: 1in;
+		padding-right: 1in;
+	}
+}
+body {
+	font-family: 'Bitstream Vera Serif';
+	font-variant: normal;
+	text-indent: 0in;
+	widows: 2;
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: none;
+	color: #000000;
+	text-align: left;
+	font-size: 12pt;
+	background-color: #ffffff;
+}
+table {
+	width: 100%;
+}
+td {
+	text-align: left;
+	vertical-align: top;
+}
+     -->
+  </style>
+ </head>
+ <body>
+  <div>
+   <p>This is a very simple document.</p>
+  </div>
+ </body>
+</html>
