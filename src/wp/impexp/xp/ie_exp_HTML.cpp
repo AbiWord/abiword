@@ -274,10 +274,10 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 		  wasWritten = UT_TRUE;
 		}
 
-		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
+		/* Assumption: never get property set with block text, plain text. Probably true. */
 
 		if (
-			m_iBlockType == BT_NORMAL && (pAP->getProperty("text-align", szValue))
+			m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT && (pAP->getProperty("text-align", szValue))
 			)
 		{
 			m_pie->write(" align=\"");
