@@ -1161,12 +1161,12 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 
 		m_isList = other.m_isList;
 		m_level = other.m_level;
-		strcpy(static_cast<char *>(m_pszStyle), static_cast<char *>(other.m_pszStyle));
+		strcpy(static_cast<char *>(m_pszStyle), static_cast<const char *>(other.m_pszStyle));
 		m_rawID = other.m_rawID;
 		m_rawParentID = other.m_rawParentID;
-		strcpy(static_cast<char *>(m_pszListDecimal), static_cast<char *>(other.m_pszListDecimal));
-		strcpy(static_cast<char *>(m_pszListDelim), static_cast<char *>(other.m_pszListDelim));
-		strcpy(static_cast<char *>(m_pszFieldFont), static_cast<char *>(other.m_pszFieldFont));
+		strcpy(static_cast<char *>(m_pszListDecimal), static_cast<const char *>(other.m_pszListDecimal));
+		strcpy(static_cast<char *>(m_pszListDelim), static_cast<const char *>(other.m_pszListDelim));
+		strcpy(static_cast<char *>(m_pszFieldFont), static_cast<const char *>(other.m_pszFieldFont));
 		m_startValue = other.m_startValue;
 		m_iOverride = other.m_iOverride;
 		m_iOverrideLevel = other.m_iOverrideLevel;
@@ -7903,16 +7903,16 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 
 		while(j < nAtts)
 		{
-			const char * szAtt = static_cast<const char *>(pCurStyleVec->getNthItem(j++));
+			const char * szAtt = static_cast<char *>(pCurStyleVec->getNthItem(j++));
 			attribs[attribsCount++] = szAtt;
 			if( UT_strcmp(szAtt, PT_NAME_ATTRIBUTE_NAME)== 0)
 			{
-				szName = static_cast<const char *>(pCurStyleVec->getNthItem(j++));
+				szName = static_cast<char *>(pCurStyleVec->getNthItem(j++));
 				attribs[attribsCount++] = szName;
 			}
 			else if( UT_strcmp(szAtt, PT_BASEDON_ATTRIBUTE_NAME)== 0)
 			{
-				const char * szNext = static_cast<const char *>(pCurStyleVec->getNthItem(j++));
+				const char * szNext = static_cast<char *>(pCurStyleVec->getNthItem(j++));
 				if(NULL == szNext)
 				{
 					UT_sint32 istyle = BasedOn[i];
@@ -7928,7 +7928,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else if( UT_strcmp(szAtt, PT_FOLLOWEDBY_ATTRIBUTE_NAME)== 0)
 			{
-				const char * szNext = static_cast<const char *>(pCurStyleVec->getNthItem(j++));
+				const char * szNext = static_cast<char *>(pCurStyleVec->getNthItem(j++));
 				if(NULL == szNext)
 				{
 					UT_sint32 istyle = FollowedBy[i];
@@ -7944,7 +7944,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else
 			{
-				szAtt = static_cast<const char *>(pCurStyleVec->getNthItem(j++));
+				szAtt = static_cast<char *>(pCurStyleVec->getNthItem(j++));
 				attribs[attribsCount++] = szAtt;
 			}
 			attribs[attribsCount] = NULL;

@@ -73,7 +73,7 @@ void XAP_FontPreview::addOrReplaceVecProp(const XML_Char * pszProp,
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = static_cast<const XML_Char *>(m_vecProps.getNthItem(i));
+		pszV = reinterpret_cast<const XML_Char *>(m_vecProps.getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}

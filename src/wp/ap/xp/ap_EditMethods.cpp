@@ -6042,7 +6042,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 		if (bMultiple)
 		{
 			// some properties have multiple values
-			XML_Char*	p = static_cast<XML_Char *>(strstr(s, vOn));
+			const XML_Char*	p = strstr(s, vOn);
 
 			if (p)
 			{

@@ -6592,12 +6592,12 @@ void	fl_BlockLayout::StopListInBlock(void)
 			}
 
 			if(m_iDomDirection == FRIBIDI_TYPE_RTL)
-				vp.addItem(static_cast<void *>("margin-right"));
+				vp.addItem("margin-right");
 			else
-				vp.addItem(static_cast<void *>("margin-left"));
+				vp.addItem("margin-left");
 
 			vp.addItem(static_cast<void *>(align));
-			vp.addItem(static_cast<void *>("text-indent"));
+			vp.addItem("text-indent");
 			vp.addItem(static_cast<void *>(indent));
 		}
 	}
@@ -7114,7 +7114,7 @@ void fl_BlockLayout::_createListLabel(void)
 	}
 	sprintf(tagID,"%d",itag);
 	tagatt[1] = static_cast<XML_Char *>(&tagID[0]);
-	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,static_cast<const char **>(tagatt));
+	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,const_cast<const XML_Char **>(tagatt));
 #endif
 
 	const XML_Char* attributes[] = {
@@ -7329,7 +7329,7 @@ void fl_BlockLayout::setDominantDirection(FriBidiCharType iDirection)
 	getDocument()->changeStruxFmt(static_cast<PTChangeFmt>(PTC_AddFmt),
 								  offset, offset2,
 								  static_cast<const XML_Char **>(NULL),
-								  static_cast<const XML_Char **>(prop),
+								  const_cast<const XML_Char **>(prop),
 								  static_cast<PTStruxType>(PTX_Block));
 	UT_DEBUGMSG(("Block::setDominantDirection: offset=%d\n", offset));
 }

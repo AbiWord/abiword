@@ -713,8 +713,8 @@ void XAP_FrameImpl::_createToolbars(void)
 	for (UT_uint32 k=0; k < nrToolbars; k++)
 	{
 		EV_Toolbar * pToolbar = m_pFrame->_newToolbar(m_pFrame->m_pApp, m_pFrame,
-							      static_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(k)),
-							      static_cast<const char *>(m_szToolbarLabelSetName));
+							      reinterpret_cast<const char *>(m_vecToolbarLayoutNames.getNthItem(k)),
+							      reinterpret_cast<const char *>(m_szToolbarLabelSetName));
 		UT_ASSERT(pToolbar);
 		bResult = pToolbar->synthesize();
 		UT_ASSERT(bResult);
@@ -998,9 +998,9 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 	{
 		if(m_isrcId != m_idestId)
 		{
-			const char * szTBSrcName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
+			const char * szTBSrcName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
 			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
-			const char * szTBDestName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
+			const char * szTBDestName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
 			getApp()->getToolbarFactory()->addIconBefore(szTBDestName,m_isrcId,m_idestId);
 			m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 			if(m_isrcTBNr != m_idestTBNr)
@@ -1014,9 +1014,9 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 //
 	if(m_bisDragging && m_bHasDroppedTB)
 	{
-		const char * szTBSrcName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
+		const char * szTBSrcName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
 		getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
-		const char * szTBDestName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
+		const char * szTBDestName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_idestTBNr));
 		getApp()->getToolbarFactory()->addIconAtEnd(szTBDestName,m_isrcId);
 		m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 		if(m_isrcTBNr != m_idestTBNr)
@@ -1034,7 +1034,7 @@ void XAP_Frame::dragEnd(XAP_Toolbar_Id srcId)
 //
 		if(XAP_Dialog_MessageBox::a_YES == showMessageBox(XAP_STRING_ID_DLG_Remove_Icon,XAP_Dialog_MessageBox::b_YN,XAP_Dialog_MessageBox::a_NO))
 		{
-			const char * szTBSrcName = static_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
+			const char * szTBSrcName = reinterpret_cast<const char *>(m_pFrameImpl->m_vecToolbarLayoutNames.getNthItem(m_isrcTBNr));
 			getApp()->getToolbarFactory()->removeIcon(szTBSrcName,m_isrcId);
 			m_pFrameImpl->_rebuildToolbar(m_isrcTBNr);
 		}
@@ -1108,7 +1108,7 @@ bool XAP_InputModes::setCurrentMap(const char * szName)
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,static_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
+		if (UT_stricmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
 		{
 			m_indexCurrentEventMap = k;
 			return true;
@@ -1124,7 +1124,7 @@ EV_EditEventMapper * XAP_InputModes::getCurrentMap(void) const
 
 const char * XAP_InputModes::getCurrentMapName(void) const
 {
-	return static_cast<const char *>(m_vecNames.getNthItem(m_indexCurrentEventMap));
+	return reinterpret_cast<const char *>(m_vecNames.getNthItem(m_indexCurrentEventMap));
 }
 
 EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
@@ -1133,7 +1133,7 @@ EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (UT_stricmp(szName,static_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
+		if (UT_stricmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
 			return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(k));
 
 	return NULL;

@@ -154,7 +154,7 @@ void AP_Dialog_FormatTable::addOrReplaceVecProp(UT_Vector &vec,
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = static_cast<const XML_Char *>(vec.getNthItem(i));
+		pszV = reinterpret_cast<const XML_Char *>(vec.getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
@@ -191,13 +191,13 @@ void AP_Dialog_FormatTable::getVecProp(UT_Vector &vec,
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = static_cast<const XML_Char *>(vec.getNthItem(i));
+		pszV = reinterpret_cast<const XML_Char *>(vec.getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
 	if(i < iCount)
 	{
-		pszVal = static_cast<const XML_Char *>(vec.getNthItem(i+1));
+		pszVal = reinterpret_cast<const XML_Char *>(vec.getNthItem(i+1));
 	}
 	return;
 }
@@ -220,7 +220,7 @@ void AP_Dialog_FormatTable::removeVecProp(UT_Vector &vec, const XML_Char * pszPr
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = static_cast<const XML_Char *>(vec.getNthItem(i));
+		pszV = reinterpret_cast<const XML_Char *>(vec.getNthItem(i));
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}

@@ -127,7 +127,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer *>(static_cast<const IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem (k)));
+		IE_ImpGraphicSniffer * s = static_cast<IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem (k));
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
 		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
@@ -158,7 +158,7 @@ bool IE_ImpGraphic::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getImporterCount();
 	if (ndx < nrElements)
 	{
-		IE_ImpGraphicSniffer * s = const_cast<IE_ImpGraphicSniffer *>(static_cast<const IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem (ndx)));
+		IE_ImpGraphicSniffer * s = static_cast<IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem (ndx));
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 

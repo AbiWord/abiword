@@ -8702,7 +8702,6 @@ const XML_Char ** fv_PropCache::getCopyOfProps(void) const
 		xxx_UT_DEBUGMSG((" copy i %d m_pszProps[i] %x m_pszProps %s props %x props %s\n",i,m_pszProps[i],m_pszProps[i],props[i],props[i]));
 	}
 	xxx_UT_DEBUGMSG(("getCopy: props %x m_pszProps %x \n",props,m_pszProps));
-	UT_ASSERT(props != m_pszProps);
 	UT_ASSERT(NULL != m_pszProps);
 	return props;
 }
@@ -8718,7 +8717,6 @@ void fv_PropCache::fillProps(UT_uint32 numProps, const XML_Char ** props)
 		m_pszProps[i] = const_cast<XML_Char *>(props[i]);
 		xxx_UT_DEBUGMSG((" i %d m_pszProps[i] %x m_pszProps %s \n",i,m_pszProps[i],m_pszProps[i]));
 	}
-	UT_ASSERT(props != m_pszProps);
 	UT_ASSERT(NULL != m_pszProps);
 }
 
