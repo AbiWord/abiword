@@ -34,7 +34,7 @@ cat <<EOF
    in which this program arrived for more details.
 EOF
 
-# Make sure the fonts are really here
+# Make sure the data file is really here
 if [ ! -f ${INSTALL_DATA_FILE} ]
 then
     echo ""
@@ -121,17 +121,25 @@ cd ${INSTALL_BASE}
 tar xf ${INSTALL_DATA_FILE}
 
 ########################################################################
-# If we're on Solaris, run makepsres (for DPS X servers)
+# If we're on Solaris, do the PostScript resource thing.  This script
+# and the main install script share this code... change one, change the
+# other (please).
 ########################################################################
 
-#OS_NAME=`uname -s`
-#OS_RELEASE_MAJOR=`uname -r | sed -e "s/\..*//"`
+OS_NAME=`uname -s`
+OS_RELEASE_MAJOR=`uname -r | sed -e "s/\..*//"`
 
-#if [ OS_NAME == "SunOS" && OS_RELEASE_MAJOR == "5" ]
-#then
-#    cd ${INSTALL_BASE}/fonts
-#    makepsres 1>/dev/null 2>/dev/null
-#fi
+if [ "${OS_NAME}" = "SunOS" -a "${OS_RELEASE_MAJOR}" = "5" ]
+then
+    if [ -d ${INSTALL_BASE}/fonts ]
+    then
+	echo ""
+	echo "Building PostScript font resource database for installed fonts..."
+	cd ${INSTALL_BASE}/fonts
+	makepsres
+    fi
+fi
+cd ${INSTALL_BASE}
 
 ########################################################################
 # Dynamically construct a wrapper for AbiSuite binaries
