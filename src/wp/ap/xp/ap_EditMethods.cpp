@@ -474,7 +474,7 @@ Defun1(fileNew)
 static UT_Bool s_AskRevertFile(AP_Frame * pFrame)
 {
 	// return UT_TRUE if we should revert the file (back to the saved copy).
-	
+
 	pFrame->raise();
 
 	AP_DialogFactory * pDialogFactory
@@ -500,7 +500,7 @@ static UT_Bool s_AskRevertFile(AP_Frame * pFrame)
 static UT_Bool s_AskCloseAllAndExit(AP_Frame * pFrame)
 {
 	// return UT_TRUE if we should quit.
-	
+
 	pFrame->raise();
 
 	AP_DialogFactory * pDialogFactory
@@ -558,17 +558,17 @@ static UT_Bool s_AskForPathname(AP_Frame * pFrame,
 	// return a pointer a strdup()'d string containing the
 	// pathname the user entered -- ownership of this goes
 	// to the caller (so free it when you're done with it).
-	
+
 	UT_DEBUGMSG(("s_AskForPathname: frame 0x%08lx, bSaveAs %ld, suggest=[%s]\n",
 				 pFrame,bSaveAs,((pSuggestedName) ? pSuggestedName : "")));
-	
+
 	UT_ASSERT(ppPathname);
 	*ppPathname = NULL;
 
 	pFrame->raise();
 
 	AP_Dialog_Id id = ((bSaveAs) ? XAP_DIALOG_ID_FILE_SAVEAS : XAP_DIALOG_ID_FILE_OPEN);
-	
+
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
@@ -603,7 +603,7 @@ static UT_Bool s_AskForPathname(AP_Frame * pFrame,
 		if (szResultPathname && *szResultPathname)
 			*ppPathname = strdup(szResultPathname);
 	}
-	
+
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
@@ -611,7 +611,7 @@ static UT_Bool s_AskForPathname(AP_Frame * pFrame,
 
 /*****************************************************************/
 /*****************************************************************/
-	
+
 Defun1(fileOpen)
 {
 	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
@@ -623,9 +623,9 @@ Defun1(fileOpen)
 
 	if (!bOK || !pNewFile)
 		return UT_FALSE;
-	
+
 	// we own storage for pNewFile and must free it.
-		
+
 	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -650,12 +650,12 @@ Defun1(fileOpen)
 	else if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
 	{
 		/*
-		  We generally open documents in a new frame, which keeps the 
-		  contents of the current frame available.  
-		  
-		  However, as a convenience we do replace the contents of the 
-		  current frame if it's the only top-level view on an empty, 
-		  untitled document.  
+		  We generally open documents in a new frame, which keeps the
+		  contents of the current frame available.
+
+		  However, as a convenience we do replace the contents of the
+		  current frame if it's the only top-level view on an empty,
+		  untitled document.
 		*/
 		pNewFrame = pApp->newFrame();
 		UT_ASSERT(pNewFrame);
@@ -863,7 +863,7 @@ Defun(closeWindow)
 		(pFrame->isDirty()))
 	{
 		AP_Dialog_MessageBox::tAnswer ans = s_AskSaveFile(pFrame);
-		
+
 		switch (ans)
 		{
 		case AP_Dialog_MessageBox::a_YES:				// save it first
@@ -876,7 +876,7 @@ Defun(closeWindow)
 
 		case AP_Dialog_MessageBox::a_NO:				// just close it
 			break;
-			
+
 		case AP_Dialog_MessageBox::a_CANCEL:			// don't close it
 			return UT_FALSE;
 
@@ -1391,7 +1391,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 	pFrame->raise();
 
 	AP_Dialog_Id id = XAP_DIALOG_ID_FONT;
-	
+
 	AP_DialogFactory * pDialogFactory
 		= (AP_DialogFactory *)(pFrame->getDialogFactory());
 
@@ -1402,7 +1402,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 	// stuff the DG_Graphics into the dialog so that it
 	// can query the system for font info relative to our
 	// context.
-	
+
 	pDialog->setGraphicsContext(pView->getLayout()->getGraphics());
 
 	// get current font info from pView
@@ -1426,7 +1426,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 		// probably just check boxes and we don't have to
 		// worry about initializing a combo box with a choice
 		// (and because they are all stuck under one CSS attribute).
-	
+
 		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
 		UT_Bool bUnderline = (strstr(s, "underline") != NULL);
 		UT_Bool bStrikeOut = (strstr(s, "line-through") != NULL);
@@ -1436,7 +1436,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 	}
 
 	// run the dialog
-	
+
 	pDialog->runModal(pFrame);
 
 	// extract what they did
@@ -1448,7 +1448,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 		UT_uint32  k = 0;
 		const XML_Char * props_out[17];
 		const XML_Char * s;
-		
+
 		if (pDialog->getChangedFontFamily(&s))
 		{
 			props_out[k++] = "font-family";
@@ -1478,7 +1478,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 			props_out[k++] = "color";
 			props_out[k++] = s;
 		}
-		
+
 		UT_Bool bUnderline = UT_FALSE;
 		UT_Bool bChangedUnderline = pDialog->getChangedUnderline(&bUnderline);
 		UT_Bool bStrikeOut = UT_FALSE;
@@ -1494,7 +1494,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 				s = "line-through";
 			else
 				s = "none";
-			
+
 			props_out[k++] = "text-decoration";
 			props_out[k++] = s;
 		}
@@ -1505,7 +1505,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 		if (k > 0)								// if something changed
 			pView->setCharFormat(props_out);
 	}
-		
+
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
@@ -1669,7 +1669,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 	pDialog->setTryToBypassActualDialog(bTryToSuppressDialog);
 
 	pDialog->runModal(pFrame);
-	
+
 	AP_Dialog_Print::tAnswer ans = pDialog->getAnswer();
 	UT_Bool bOK = (ans == AP_Dialog_Print::a_OK);
 
@@ -1689,9 +1689,9 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		{
 			nToPage = pDocLayout->countPages();
 		}
-		
+
 		UT_ASSERT(nToPage <= pDocLayout->countPages());
-		
+
 		// TODO add code to handle getDoPrintSelection()
 
 		UT_uint32 nCopies = pDialog->getNrCopies();
@@ -1706,10 +1706,10 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		da.width /= pLayout->countPages();
 		da.height /= pLayout->countPages();
-		
+
 		UT_uint32 j,k;
 
-		char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
+		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
 
 		pGraphics->startPrint();
 		if (bCollate)
@@ -1734,7 +1734,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 
 		delete pDocLayout;
 		delete pPrintView;
-		
+
 		pDialog->releasePrinterGraphicsContext(pGraphics);
 	}
 
@@ -1756,7 +1756,7 @@ Defun1(printTB)
 {
 	// print (intended to be from the tool-bar (where we'd like to
 	// suppress the dialog if possible))
-	
+
 	ABIWORD_VIEW;
 	return s_doPrint(pView,UT_TRUE);
 }
