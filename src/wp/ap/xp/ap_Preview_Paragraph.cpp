@@ -158,7 +158,7 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 													  * (double) DIMENSION_INCH_SCALE_FACTOR);
 	// right margins are in or out from the default stop
 	if (rightMargin)
-		m_rightStop = DEFAULT_RIGHT_STOP + (UT_uint32) (UT_convertToInches(leftMargin)
+		m_rightStop = DEFAULT_RIGHT_STOP + (UT_uint32) (UT_convertToInches(rightMargin)
 														* (double) DIMENSION_INCH_SCALE_FACTOR);
 
 	STORE_CONVERTED(m_beforeSpacing, beforeSpacing);
@@ -169,13 +169,12 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 		m_indent = indent;
 		switch (m_indent)
 		{
+			// the signage for these two is handled in the conversion through
+			// UT_convertToInches()
 		case AP_Dialog_Paragraph::indent_FIRSTLINE:
-			m_firstLineLeftStop = m_leftStop + ((UT_uint32) UT_convertToInches(firstLineIndent)
-												* DIMENSION_INCH_SCALE_FACTOR);
-			break;
 		case AP_Dialog_Paragraph::indent_HANGING:
-			m_firstLineLeftStop = m_leftStop - ((UT_uint32) UT_convertToInches(firstLineIndent)
-												* DIMENSION_INCH_SCALE_FACTOR);
+			m_firstLineLeftStop = m_leftStop
+				+ (UT_uint32) (UT_convertToInches(firstLineIndent) * (double) DIMENSION_INCH_SCALE_FACTOR);
 			break;
 		case AP_Dialog_Paragraph::indent_NONE:
 			m_firstLineLeftStop = m_leftStop;
@@ -202,15 +201,15 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 		case AP_Dialog_Paragraph::spacing_ATLEAST:
 			// TODO : is this right?  I think we just use what they asked for
 			// TODO : unless it's less than the height of a line
-			if (((UT_uint32) UT_convertToInches(lineSpacing) * DIMENSION_INCH_SCALE_FACTOR) > m_fontHeight)
-				m_lineSpacing = ((UT_uint32) UT_convertToInches(lineSpacing)
-								 * DIMENSION_INCH_SCALE_FACTOR);
+			if ((UT_uint32) (UT_convertToInches(lineSpacing) * (double) DIMENSION_INCH_SCALE_FACTOR) > m_fontHeight)
+				m_lineSpacing = (UT_uint32) (UT_convertToInches(lineSpacing)
+											 * (double) DIMENSION_INCH_SCALE_FACTOR);
 			break;
 		case AP_Dialog_Paragraph::spacing_EXACTLY:
 			// TODO : is this right?  I think we just use the spacing they asked
 			// TODO : for.  If it's less than one line height, oh well.
-			m_lineSpacing = ((UT_uint32) UT_convertToInches(lineSpacing)
-								 * DIMENSION_INCH_SCALE_FACTOR);
+			m_lineSpacing = (UT_uint32) (UT_convertToInches(lineSpacing)
+										 * (double) DIMENSION_INCH_SCALE_FACTOR);
 		case AP_Dialog_Paragraph::spacing_MULTIPLE:
 			m_lineSpacing = m_fontHeight * ((UT_uint32) UT_convertDimensionless(lineSpacing) - 1);
 			break;
@@ -492,7 +491,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	// we have "i" words to plot on this line, and they will take pixelsForThisLine space
 
-	// TODO : reworkd following code to remove this variable for more speed
+	// TODO : maybe rework following code to remove this variable for more speed
 	UT_uint32 willDrawAt = left;
 		
 	// obey alignment requests
@@ -525,44 +524,3 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	// return number of words drawn
 	return k - startWithWord;
 }
-
-	
-#if 0	
-	// starting at m_x and m_y, we flow text until we hit the margins,
-	// then wrap and start over again at m_y + lineheight
-	while (wordCounter < wordCount)
-	{
-		UT_UCSChar * word = (UT_UCSChar *) words->getNthItem(wordCounter);
-		UT_ASSERT(word);
-
-		// TODO : maybe move this strlen to the block's setText() member to
-		// TODO : speed things up
-		wordLen = UT_UCS_strlen(word);
-
-		wordWidth = 
-
-		// if it won't fit, wrap the Y coordinate before plotting
-		if ((wordWidth + m_x) >= (getWindowWidth() - m_defaultRightMargin))
-		{
-			m_y += m_fontHeight + 1;
-			m_x = m_defaultLeftMargin;
-		}
-
-		// plot the text
-		m_gc->setColor((UT_RGBColor &) block->getColor());
-		m_gc->drawChars(word, 0, wordLen, m_x, m_y);
-		m_x += wordWidth;
-
-		// print a space as 3 pixels
-		m_x += 3;
-		
-		// next word
-		wordCounter++;
-	}
-
-	// always drop down one more line to start next paragraph
-	m_y += m_fontHeight + 1;
-
-	// start next at margin
-	m_x = m_defaultLeftMargin;
-#endif
