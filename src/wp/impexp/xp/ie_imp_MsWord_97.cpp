@@ -3401,7 +3401,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
     unsigned long uncomprLen, comprLen;
     comprLen = size;
     uncomprLen = b->blip.metafile.m_cb;
-    unsigned char *uncompr = new unsigned char[uncomprLen];    
+    Bytef *uncompr = new Bytef[uncomprLen];    
     int err = uncompress (uncompr, &uncomprLen, reinterpret_cast<const unsigned char *>(data), comprLen);
     if (err != Z_OK)
       {
