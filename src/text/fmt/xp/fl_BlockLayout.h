@@ -356,6 +356,9 @@ public:
 	virtual void			markAllRunsDirty(void);
 	bool					checkWord(fl_PartOfBlock* pPOB);
 	void					recheckIgnoredWords();
+	void                    setStyleInTOC(bool b)
+	{	m_bStyleInTOC = b;}
+
 	bool                    isContainedByTOC(void) const
 	    { return m_bIsTOC;}
 	FootnoteType            getTOCNumType(void);

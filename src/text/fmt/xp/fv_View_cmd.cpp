@@ -3781,15 +3781,22 @@ UT_Error FV_View::cmdInsertTOC(void)
 //
 // Close off the current block
 //
+	PT_DocPosition pos = getPoint(); 
 	insertParagraphBreak();
 //
-// insert just before this block to make the TOC get inserted just BEFORE
+// insert just before this block to make the TOC gets inserted just BEFORE
 // the Block we just created.
 //
-	PT_DocPosition pos = getPoint(); 
+// we want this sort of structure in the PT
+//
+// <Strux Block><Frag><frag><frag><TOC></TOC><Strux Block>|
+//                                                        |
+// Point is here after insert TOC-------------------------|
+//
 	m_pDoc->insertStrux(pos,PTX_SectionTOC);
 	pos++;
 	m_pDoc->insertStrux(pos,PTX_EndTOC);
+	setPoint(getPoint()+1);
 	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
 

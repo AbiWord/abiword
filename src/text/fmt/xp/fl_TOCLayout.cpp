@@ -405,6 +405,10 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	{
 		pVecBlocks->addItem(static_cast<void *>(pNewBlock));
 	}
+//
+// Tell the block it's shadowed in a TOC
+//
+	pBlock->setStyleInTOC(true);
 }
 
 UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock, UT_Vector * pVecBlocks)
