@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
+<abiword xmlns:awml="http://www.abisource.com/awml.dtd" version="unnumbered" fileformat="1.0" styles="unlocked">
+<!-- =====================================================================  -->
+<!-- This file is an AbiWord document.                                      -->
+<!-- AbiWord is a free, Open Source word processor.                         -->
+<!-- You may obtain more information about AbiWord at www.abisource.com     -->
+<!-- You should not edit this file by hand.                                 -->
+<!-- =====================================================================  -->
+
+<styles>
+<s type="P" basedon="Normal" followedby="Normal" name="Heading 1" props="keep-with-next:1; font-size:17pt; field-font:NULL; margin-bottom:3pt; font-weight:bold; font-family:Arial; margin-top:22pt"/>
+<s type="P" basedon="" followedby="Current Settings" name="Normal" props="font-family:Times New Roman; margin-top:0pt; font-variant:normal; margin-left:0pt; text-indent:0in; widows:2; font-style:normal; font-weight:normal; text-decoration:none; color:000000; line-height:1.0; text-align:left; margin-bottom:0pt; text-position:normal; margin-right:0pt; bgcolor:transparent; font-size:12pt; field-font:NULL; font-stretch:normal"/>
+<s type="P" name="Sample" basedon="Normal" followedby="Sample" props="text-indent:-2.1250in; tabstops:0.6250in/L0; margin-left:2.1250in"/>
+<s type="C" name="ISO" props="lang:-none-; font-size:10pt; font-family:Courier New"/>
+</styles>
+<ignoredwords>
+<iw>Romanian</iw>
+<iw>Slovenian</iw>
+<iw>Inuktitut</iw>
+<iw>Occitan</iw>
+<iw>Bokmål</iw>
+<iw>Farsi</iw>
+<iw>Nynorsk</iw>
+<iw>Unicode</iw>
+<iw>Esperanto</iw>
+<iw>Marathi</iw>
+</ignoredwords>
+<pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="in" page-scale="1.000000"/>
+<section>
+<p style="Heading 1"><c props="lang:en-US">When the world wants to talk, it speaks Unicode</c></p>
+<p></p>
+<p><c props="font-weight:bold">Content in these languages Just Works</c></p>
+<p>(using the Times New Roman that ships with NT 4.0)</p>
+<p></p>
+<p style="Sample"><c style="ISO">ca-ES</c>	Catalan	<c props="lang:ca-ES">Quan el món vol conversar, parla Unicode</c></p>
+<p style="Sample"><c style="ISO">cs-CZ</c>	Czech	<c props="lang:cs-CZ">Když chce svět mluvit, mluví Unicode</c></p>
+<p style="Sample"><c style="ISO">da-DK</c>	Danish	<c props="lang:da-DK">Når verden vil tale, taler den Unicode</c></p>
+<p style="Sample"><c style="ISO">nl-NL</c>	Dutch	<c props="lang:nl-NL">Als de wereld wil praten, spreekt hij Unicode</c></p>
+<p style="Sample"><c style="ISO">eo</c>	Esperanto	<c props="lang:eo">Kiam la mondo volas paroli, ĝi parolas Unicode</c></p>
+<p style="Sample"><c style="ISO">fi-FI</c>	Finnish	<c props="lang:fi-FI">Kun maailma haluaa puhua, se puhuu Unicodea</c></p>
+<p style="Sample"><c style="ISO">fr-FR</c>	French	<c props="lang:fr-FR">Quand le monde veut communiquer, il parle en Unicode</c></p>
+<p style="Sample"><c style="ISO">de-DE</c>	German	<c props="lang:de-DE">Wenn die Welt miteinander spricht, spricht sie Unicode</c></p>
+<p style="Sample"><c style="ISO">el-GR</c>	Greek	<c props="lang:el-GR">Όταν ο κόσμος θέλει να μιλήσει, μιλάει Unicode</c></p>
+<p style="Sample"><c style="ISO">hu-HU</c>	Hungarian	<c props="lang:hu-HU">Ha a világ beszélni akar, azt Unicode-ul mondja</c></p>
+<p style="Sample"><c style="ISO">ga-IE</c>	Irish Gaelic	<c props="lang:ga-IE">Nuair a bhualann fonn cainte an domhan, is as Unicode a labhrann sé</c></p>
+<p style="Sample"><c style="ISO">it-IT</c>	Italian	<c props="lang:it-IT">Quando il mondo vuole comunicare, parla Unicode</c></p>
+<p style="Sample"><c style="ISO">nb-NO</c>	Norwegian (Bokmål)	<c props="lang:nb-NO">Når verden vil snakke, snakker den Unicode</c></p>
+<p style="Sample"><c style="ISO">nn-NO</c>	Norwegian (Nynorsk)	<c props="lang:nn-NO">Når verda ønskjer å snakke, talar ho Unicode</c></p>
+<p style="Sample"><c style="ISO">pl-PL</c>	Polish	<c props="lang:pl-PL">Kiedy świat chce mówić, mówi w Unicode</c></p>
+<p style="Sample"><c style="ISO">pt-PT</c>	Portuguese	<c props="lang:pt-PT">Quando o mundo quer falar, fala Unicode</c></p>
+<p style="Sample"><c style="ISO">ro-RO</c>	Romanian	<c props="lang:ro-RO">Când lumea vrea să comunice, vorbeşte Unicode</c></p>
+<p style="Sample"><c style="ISO">ru-RU</c>	Russian	<c props="lang:ru-RU">Когда мир желает общаться, он общается на Unicode</c></p>
+<p style="Sample"><c style="ISO">sl-SL</c>	Slovenian	<c props="lang:sl-SL">Ko se želi svet pogovarjati, govori Unicode</c></p>
+<p style="Sample"><c style="ISO">es-ES</c>	Spanish	<c props="lang:es-ES">Cuando el mundo quiere conversar, habla Unicode</c></p>
+<p style="Sample"><c style="ISO">sv-SE</c>	Swedish	<c props="lang:sv-SE">När världen vill tala, så talar den Unicode</c></p>
+<p></p>
+<p><c props="font-weight:bold">These work too, but don't have dictionaries</c></p>
+<p></p>
+<p style="Sample"><c style="ISO">eu-ES</c>	Basque	<c props="lang:eu-ES">Munduak hitz egin nahi duenean, Unicodez hitz egiten du</c></p>
+<p style="Sample"><c style="ISO">bg-BG</c>	Bulgarian	<c props="lang:bg-BG">Когато светът иска да общува, той говори на Unicode</c></p>
+<p style="Sample"><c style="ISO">hr-HR</c>	Croatian	<c props="lang:hr-HR">Kad svijet želi razgovarati, govori Unicode</c></p>
+<p style="Sample"><c style="ISO">et-EE</c>	Estonian	<c props="lang:et-EE">Kui maailm tahab rääkida, siis ta kõneleb Unicode'is</c></p>
+<p style="Sample"><c style="ISO">is-IS</c>	Icelandic	<c props="lang:is-IS">Thegar heimurinn vill tala talar hann Unicode</c></p>
+<p style="Sample"><c style="ISO">oc-FR</c>	Occitan	<c props="lang:oc-FR">Quan lo mond vòl conversar, parla en Unicode</c></p>
+<p style="Sample"><c style="ISO">sr-YU</c>	Serbian	<c props="lang:sr-YU">Кад свет жели да разговара, говори Unicode</c></p>
+<p style="Sample"><c style="ISO">tr-TR</c>	Turkish	<c props="lang:tr-TR">Dünya birbiriyle konuşmak isterse bunu Unicode vasıtası ile yapar</c></p>
+<p></p>
+<p><c props="font-weight:bold"><pbr/>These have dictionaries, and probably work</c></p>
+<p></p>
+<p style="Sample"><c style="ISO">af-ZA</c>	Afrikaans	<c props="lang:af-ZA">[ untranslated ] </c></p>
+<p style="Sample"><c style="ISO">be-BY</c>	Belarusian	<c props="lang:?">[ untranslated ] </c></p>
+<p style="Sample"><c style="ISO">gl-ES</c>	Galician (Minimos)	<c props="lang:gl-ES">[ untranslated ] </c></p>
+<p style="Sample"><c style="ISO">ia</c>	Interlingua	<c props="lang:ia">[ untranslated ] </c></p>
+<p style="Sample"><c style="ISO">la-IT</c>	Latin	<c props="lang:la-IT">[ untranslated ] </c></p>
+<p style="Sample"><c style="ISO">lt-LT</c>	Lithuanian	<c props="lang:lt-LT">[ untranslated ] </c></p>
+<p style="Sample"><c style="ISO">uk-UA</c>	Ukrainian	<c props="lang:uk-UA">[ untranslated ] </c></p>
+<p></p>
+<p><c props="font-weight:bold">Additional fonts, etc. needed</c></p>
+<p></p>
+<p style="Sample"><c style="ISO">hy-AM</c>	Armenian	<c props="lang:hy-AM">Երբ աջխհարը կուզէ խոսիլ կը գործածէ յունիգոտ լէզուն</c></p>
+<p style="Sample">	Chinese (Simplified)	当世界需要沟通时，请用Unicode</p>
+<p style="Sample">	Chinese (Traditional)	當世界需要溝通時，請用統一碼（Unicode）</p>
+<p style="Sample"><c style="ISO">ka-GE</c>	Georgian	<c props="lang:ka-GE">როდესაც მსოფლიოს ურთირთობა სურს, იგი </c>Unicode<c props="lang:ka-GE">-ის ენაზე ლაპარაკობს</c></p>
+<p style="Sample"><c style="ISO">hi-IN</c>	Hindi	<c props="lang:hi-IN">जब दुनिया बोलती है तो </c>Unicode<c props="lang:hi-IN"> में बोलती है</c></p>
+<p style="Sample"><c style="ISO">iu-CA</c>	Inuktitut	<c props="lang:iu-CA">ᓯᓚᕐᔪᐊᕐᒥᐅᑦ ᑐᓴᖅᑕᐅᔪᒪᔭᕌᖓᒥᒃ ᑎᑎᕈᓯᑐᐊᑎᒍᑦ ᐅᖃᖅᐸᒃᐳᑦ</c></p>
+<p style="Sample"><c style="ISO">ja-JP</c>	Japanese	<c props="lang:ja-JP">世界的に話すなら、 </c>Unicode<c props="lang:ja-JP"> です</c></p>
+<p style="Sample"><c style="ISO">mr-IN</c>	Marathi	<c props="lang:mr-IN">जगाचे संभाषण Unicode मध्ये होते</c></p>
+<p style="Sample"><c style="ISO">ta-IN</c>	Tamil	<c props="lang:ta-IN">உலகம் பேச நினைக்கும் போது Unicode பேசுகிறது</c></p>
+<p style="Sample"><c style="ISO">th-TH</c>	Thai	<c props="lang:th-TH">'ยูนิโค้ด'ภาษาเพื่อการสื่อสารของคนทั่วโลก</c></p>
+<p style="Sample"><c style="ISO">vi-VN</c>	Vietnamese	<c props="lang:vi-VN">Khi thế giới muốn đàm thoại với nhau, họ sẽ dùng Unicode</c></p>
+<p></p>
+<p><c props="font-weight:bold">Right to Left</c></p>
+<p></p>
+<p style="Sample"><c style="ISO">ar-EG</c>	Arabic	<c props="lang:ar-EG">عندما يريدالعالم أن يتكلّم، فهو يتحدّث بلغة يونيكود</c></p>
+<p style="Sample"><c style="ISO">fa-IR</c>	Farsi	<c props="lang:fa-IR">وقتى که دنيا صحبت ميکند، با زبان </c>Unicode <c props="lang:fa-IR">حرف ميزند</c></p>
+<p style="Sample"><c style="ISO">he-IL</c>	Hebrew	<c props="lang:he-IL">כאשר העולם רוצה לדבר, הוא מדבר ב-</c>Unicode</p>
+<p style="Sample"><c style="ISO">ur-PK</c>	Urdu	<c props="lang:ur-PK">جب دنيا بات كرتى ہے تو يه يونيكوڈ بولتى ہے</c></p>
+<p style="Sample"><c style="ISO">yi</c>	Yiddish	<c props="lang:yi">אַז די װעלט װיל רעדן, רעדט זי אוניקאָד</c></p>
+<p></p>
+</section>
+</abiword>
