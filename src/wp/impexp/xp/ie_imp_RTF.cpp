@@ -462,10 +462,10 @@ RTF_msword97_list::~RTF_msword97_list(void)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-RTF_msword97_listOveride::RTF_msword97_listOveride(IE_Imp_RTF * pie_rtf )
+RTF_msword97_listOverride::RTF_msword97_listOverride(IE_Imp_RTF * pie_rtf )
 {
 	m_RTF_listID = 0;
-	m_OverideCount = 0;
+	m_OverrideCount = 0;
 	m_pParaProps = NULL;
 m_pParaProps = NULL;
 	m_pbParaProps = NULL;
@@ -474,7 +474,7 @@ m_pParaProps = NULL;
 	m_pList = NULL;
 }
 
-RTF_msword97_listOveride::~RTF_msword97_listOveride(void)
+RTF_msword97_listOverride::~RTF_msword97_listOverride(void)
 {
 	DELETEP(m_pParaProps);
 	DELETEP(m_pParaProps);
@@ -483,10 +483,10 @@ RTF_msword97_listOveride::~RTF_msword97_listOveride(void)
 }
 
 /*!
- * This function sets the pointer to the list structure for this overide.
+ * This function sets the pointer to the list structure for this override.
  * It just scans the defined lists and looks for a matching Identifier.
  */
-bool RTF_msword97_listOveride::setList(void)
+bool RTF_msword97_listOverride::setList(void)
 {
 	UT_sint32 count = m_pie_rtf->get_vecWord97ListsCount();
 	UT_sint32 i = 0;
@@ -504,7 +504,7 @@ bool RTF_msword97_listOveride::setList(void)
 /*!
  * This returns returns a pointer to the tabstop vector defined in the list level.
  */
-UT_Vector * RTF_msword97_listOveride::getTabStopVect(UT_uint32 iLevel)
+UT_Vector * RTF_msword97_listOverride::getTabStopVect(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return &(pLevel->m_pParaProps->m_tabStops);
@@ -512,7 +512,7 @@ UT_Vector * RTF_msword97_listOveride::getTabStopVect(UT_uint32 iLevel)
 /*!
  * This returns returns a pointer to the tab Type vector defined in the list level.
  */
-UT_Vector * RTF_msword97_listOveride::getTabTypeVect(UT_uint32 iLevel)
+UT_Vector * RTF_msword97_listOverride::getTabTypeVect(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return &(pLevel->m_pParaProps->m_tabTypes);
@@ -520,7 +520,7 @@ UT_Vector * RTF_msword97_listOveride::getTabTypeVect(UT_uint32 iLevel)
 /*!
  * This returns returns a pointer to the tab Leadervector defined in the list level.
  */
-UT_Vector * RTF_msword97_listOveride::getTabLeaderVect(UT_uint32 iLevel)
+UT_Vector * RTF_msword97_listOverride::getTabLeaderVect(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return &(pLevel->m_pParaProps->m_tabLeader);
@@ -528,7 +528,7 @@ UT_Vector * RTF_msword97_listOveride::getTabLeaderVect(UT_uint32 iLevel)
 /*!
  * This function returns true is there is a tab defined in the list definition.
  */
-bool RTF_msword97_listOveride::isTab(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isTab(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbParaProps->bm_tabStops);
@@ -536,7 +536,7 @@ bool RTF_msword97_listOveride::isTab(UT_uint32 iLevel)
 /*!
  * This function returns true if deleted is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isDeletedChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isDeletedChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_deleted);
@@ -544,7 +544,7 @@ bool RTF_msword97_listOveride::isDeletedChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Deleted state in the list definition
  */
-bool RTF_msword97_listOveride::getDeleted(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::getDeleted(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_deleted);
@@ -552,7 +552,7 @@ bool RTF_msword97_listOveride::getDeleted(UT_uint32 iLevel)
 /*!
  * This function returns true if Bold is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isBoldChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isBoldChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_bold);
@@ -560,7 +560,7 @@ bool RTF_msword97_listOveride::isBoldChanged(UT_uint32 iLevel)
 /*!
  * This function the bold state in the List definition.
  */
-bool RTF_msword97_listOveride::getBold(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::getBold(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_bold);
@@ -568,7 +568,7 @@ bool RTF_msword97_listOveride::getBold(UT_uint32 iLevel)
 /*!
  * This function returns true if Italic is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isItalicChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isItalicChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_italic);
@@ -576,7 +576,7 @@ bool RTF_msword97_listOveride::isItalicChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Italic state in the list definition.
  */
-bool RTF_msword97_listOveride::getItalic(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::getItalic(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_italic);
@@ -584,7 +584,7 @@ bool RTF_msword97_listOveride::getItalic(UT_uint32 iLevel)
 /*!
  * This function returns true if Underline is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isUnderlineChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isUnderlineChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_underline);
@@ -592,7 +592,7 @@ bool RTF_msword97_listOveride::isUnderlineChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Underline state in the list definition.
  */
-bool RTF_msword97_listOveride::getUnderline(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::getUnderline(UT_uint32 iLevel)
 {
 
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
@@ -601,7 +601,7 @@ bool RTF_msword97_listOveride::getUnderline(UT_uint32 iLevel)
 /*!
  * This function returns true if Strikeout is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isStrikeoutChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isStrikeoutChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_strikeout);
@@ -609,7 +609,7 @@ bool RTF_msword97_listOveride::isStrikeoutChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Strikeout state in the list definition.
  */
-bool RTF_msword97_listOveride::getStrikeout(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::getStrikeout(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_strikeout);
@@ -617,7 +617,7 @@ bool RTF_msword97_listOveride::getStrikeout(UT_uint32 iLevel)
 /*!
  * This function returns true if Superscript is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isSuperscriptChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isSuperscriptChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_superscript);
@@ -625,7 +625,7 @@ bool RTF_msword97_listOveride::isSuperscriptChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Superscript state in the list definition.
  */
-bool RTF_msword97_listOveride::getSuperscript(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::getSuperscript(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_superscript);
@@ -634,7 +634,7 @@ bool RTF_msword97_listOveride::getSuperscript(UT_uint32 iLevel)
  * This function returns true if Superscript Position is changed in the list
  * definition.
  */
-bool RTF_msword97_listOveride::isSuperscriptPosChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isSuperscriptPosChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_superscript_pos);
@@ -642,7 +642,7 @@ bool RTF_msword97_listOveride::isSuperscriptPosChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Superscript Position in the list definition.
  */
-double RTF_msword97_listOveride::getSuperscriptPos(UT_uint32 iLevel)
+double RTF_msword97_listOverride::getSuperscriptPos(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_superscript_pos);
@@ -650,7 +650,7 @@ double RTF_msword97_listOveride::getSuperscriptPos(UT_uint32 iLevel)
 /*!
  * This function returns true if Subscript is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isSubscriptChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isSubscriptChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_subscript);
@@ -658,7 +658,7 @@ bool RTF_msword97_listOveride::isSubscriptChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Subscript state in the list definition.
  */
-bool RTF_msword97_listOveride::getSubscript(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::getSubscript(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_subscript);
@@ -666,7 +666,7 @@ bool RTF_msword97_listOveride::getSubscript(UT_uint32 iLevel)
 /*!
  * This function returns the Subscript state in the list definition.
  */
-bool RTF_msword97_listOveride::isSubscriptPosChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isSubscriptPosChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_subscript_pos);
@@ -674,7 +674,7 @@ bool RTF_msword97_listOveride::isSubscriptPosChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Subscript state in the list definition.
  */
-double RTF_msword97_listOveride::getSubscriptPos(UT_uint32 iLevel)
+double RTF_msword97_listOverride::getSubscriptPos(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_subscript_pos);
@@ -682,7 +682,7 @@ double RTF_msword97_listOveride::getSubscriptPos(UT_uint32 iLevel)
 /*!
  * This function returns true if Fontsize is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isFontSizeChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isFontSizeChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_fontSize);
@@ -690,7 +690,7 @@ bool RTF_msword97_listOveride::isFontSizeChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Fontsize in the list definition.
  */
-double RTF_msword97_listOveride::getFontSize(UT_uint32 iLevel)
+double RTF_msword97_listOverride::getFontSize(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_fontSize);
@@ -698,7 +698,7 @@ double RTF_msword97_listOveride::getFontSize(UT_uint32 iLevel)
 /*!
  * This function returns true if the Hascolor state has changed.
  */
-bool RTF_msword97_listOveride::isHasColourChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isHasColourChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_hasColour);
@@ -706,7 +706,7 @@ bool RTF_msword97_listOveride::isHasColourChanged(UT_uint32 iLevel)
 /*!
  * This function returns the Hascolor state in the list definition.
  */
-bool RTF_msword97_listOveride::getHasColour(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::getHasColour(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_hasColour);
@@ -714,7 +714,7 @@ bool RTF_msword97_listOveride::getHasColour(UT_uint32 iLevel)
 /*!
  * This function returns true if ColourNumber is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isColourNumberChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isColourNumberChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_colourNumber);
@@ -722,7 +722,7 @@ bool RTF_msword97_listOveride::isColourNumberChanged(UT_uint32 iLevel)
 /*!
  * This function returns the ColourNumber in the list definition.
  */
-UT_uint32 RTF_msword97_listOveride::getColourNumber(UT_uint32 iLevel)
+UT_uint32 RTF_msword97_listOverride::getColourNumber(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_colourNumber);
@@ -730,7 +730,7 @@ UT_uint32 RTF_msword97_listOveride::getColourNumber(UT_uint32 iLevel)
 /*!
  * This function returns true if HasBgcolour is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isHasBgColourChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isHasBgColourChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_hasBgColour);
@@ -738,7 +738,7 @@ bool RTF_msword97_listOveride::isHasBgColourChanged(UT_uint32 iLevel)
 /*!
  * This function returns the HasBgcolour state in the list definition.
  */
-bool RTF_msword97_listOveride::getHasBgColour(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::getHasBgColour(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_hasBgColour);
@@ -746,7 +746,7 @@ bool RTF_msword97_listOveride::getHasBgColour(UT_uint32 iLevel)
 /*!
  * This function returns true if BgColourNumber is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isBgColourNumberChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isBgColourNumberChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_bgcolourNumber);
@@ -754,7 +754,7 @@ bool RTF_msword97_listOveride::isBgColourNumberChanged(UT_uint32 iLevel)
 /*!
  * This function returns the BgColourNumber  in the list definition.
  */
-UT_uint32 RTF_msword97_listOveride::getBgColourNumber(UT_uint32 iLevel)
+UT_uint32 RTF_msword97_listOverride::getBgColourNumber(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_bgcolourNumber);
@@ -762,7 +762,7 @@ UT_uint32 RTF_msword97_listOveride::getBgColourNumber(UT_uint32 iLevel)
 /*!
  * This function returns true if FontNumber is changed in the list definition.
  */
-bool RTF_msword97_listOveride::isFontNumberChanged(UT_uint32 iLevel)
+bool RTF_msword97_listOverride::isFontNumberChanged(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pbCharProps->bm_fontNumber);
@@ -770,7 +770,7 @@ bool RTF_msword97_listOveride::isFontNumberChanged(UT_uint32 iLevel)
 /*!
  * This function returns the FontNumber if changed in the list definition.
  */
-UT_uint32 RTF_msword97_listOveride::getFontNumber(UT_uint32 iLevel)
+UT_uint32 RTF_msword97_listOverride::getFontNumber(UT_uint32 iLevel)
 {
 	RTF_msword97_level * pLevel = m_pList->m_RTF_level[iLevel];
 	return (pLevel->m_pCharProps->m_fontNumber);
@@ -780,7 +780,7 @@ UT_uint32 RTF_msword97_listOveride::getFontNumber(UT_uint32 iLevel)
 /*!
  * This method returns all the stuff Abi needs to reconstruct a list
  */
-void RTF_msword97_listOveride::buildAbiListProperties( const char ** szListID,
+void RTF_msword97_listOverride::buildAbiListProperties( const char ** szListID,
 								 const char ** szParentID,
 								 const char ** szLevel,
 								 const char ** szStartat,
@@ -1096,8 +1096,8 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_startValue = 0;
 	m_curTabType = FL_TAB_LEFT;
 	m_curTabLeader = FL_LEADER_NONE;
-	m_iOveride = 0;
-	m_iOverideLevel = 0;
+	m_iOverride = 0;
+	m_iOverrideLevel = 0;
 	m_styleNumber = -1;
 	m_dom_dir = FRIBIDI_TYPE_UNSET;
 };
@@ -1154,8 +1154,8 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 		strcpy((char *) m_pszListDelim, (char *) other.m_pszListDelim);
 		strcpy((char *) m_pszFieldFont, (char *) other.m_pszFieldFont);
 		m_startValue = other.m_startValue;
-		m_iOveride = other.m_iOveride;
-		m_iOverideLevel = other.m_iOverideLevel;
+		m_iOverride = other.m_iOverride;
+		m_iOverrideLevel = other.m_iOverrideLevel;
 		if(m_tabTypes.getItemCount() > 0)
 		{
 			UT_uint32 dum = (UT_uint32) m_tabTypes.getNthItem(0);
@@ -1236,8 +1236,8 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_currentHdrLastID = 0;
 	m_currentFtrLastID = 0;
 	m_parsingHdrFtr = false;
-	m_icurOveride = 0;
-	m_icurOverideLevel = 0;
+	m_icurOverride = 0;
+	m_icurOverrideLevel = 0;
 	m_szFileDirName = NULL;
 	if(m_vecAbiListTable.getItemCount() != 0)
 	{
@@ -1278,7 +1278,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	UT_VECTOR_PURGEALL(_rtfAbiListTable *,m_vecAbiListTable);
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 	UT_VECTOR_PURGEALL(RTF_msword97_list *, m_vecWord97Lists);
-	UT_VECTOR_PURGEALL(RTF_msword97_listOveride *, m_vecWord97ListOveride);
+	UT_VECTOR_PURGEALL(RTF_msword97_listOverride *, m_vecWord97ListOverride);
 	FREEP (m_szFileDirName);
 }
 
@@ -3136,7 +3136,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}
 		else if (strcmp((char*)pKeyword, "ilvl") == 0)
 		{
-			m_currentRTFState.m_paraProps.m_iOverideLevel = (UT_uint32) param;
+			m_currentRTFState.m_paraProps.m_iOverrideLevel = (UT_uint32) param;
 			return true;
 		}
 		break;
@@ -3180,7 +3180,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp((char*)pKeyword, "ls") == 0)
 		{
 			// This paragraph is a member of a list.
-			m_currentRTFState.m_paraProps.m_iOveride = (UT_uint32) param;
+			m_currentRTFState.m_paraProps.m_iOverride = (UT_uint32) param;
 			m_currentRTFState.m_paraProps.m_isList = true;
 			return true;
 		}
@@ -3596,7 +3596,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						}
 						else if( strcmp((char*)keyword_star,"listoverridetable") == 0)
 						{
-							return ReadListOverideTable();
+							return ReadListOverrideTable();
 						}
 						else if( strcmp((char*)keyword_star,"abilist") == 0)
 						{
@@ -4016,28 +4016,28 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	bool bWord97List = m_currentRTFState.m_paraProps.m_isList && isWord97Lists();
 	bool bAbiList = m_currentRTFState.m_paraProps.m_isList && ( 0 != m_currentRTFState.m_paraProps.m_rawID);
 	bWord97List = bWord97List && !bAbiList;
-	RTF_msword97_listOveride * pOver = NULL;
+	RTF_msword97_listOverride * pOver = NULL;
 	UT_uint32 iLevel = 0;
-	UT_uint32 iOveride = 0;
+	UT_uint32 iOverride = 0;
 //
 // Need to get some pointers to add List tabs to the tab definitions.
 //
 	if(bWord97List)
 	{
-		iOveride = m_currentRTFState.m_paraProps.m_iOveride;
-		iLevel = m_currentRTFState.m_paraProps.m_iOverideLevel;
-		if(iOveride < 1)
+		iOverride = m_currentRTFState.m_paraProps.m_iOverride;
+		iLevel = m_currentRTFState.m_paraProps.m_iOverrideLevel;
+		if(iOverride < 1)
 		{
-			iOveride = m_icurOveride;
-			iLevel = m_icurOverideLevel;
+			iOverride = m_icurOverride;
+			iLevel = m_icurOverrideLevel;
 		}
-		UT_ASSERT_HARMLESS(iOveride); // see bug #2173
+		UT_ASSERT_HARMLESS(iOverride); // see bug #2173
 //
 // Now get the properties we've painstakingly put together.
 //
-		if ( iOveride > 0 && iOveride <= m_vecWord97ListOveride.size () )
+		if ( iOverride > 0 && iOverride <= m_vecWord97ListOverride.size () )
 		{
-			pOver = (RTF_msword97_listOveride *) m_vecWord97ListOveride.getNthItem(iOveride - 1);
+			pOver = (RTF_msword97_listOverride *) m_vecWord97ListOverride.getNthItem(iOverride - 1);
 		}
 		else
 		{
@@ -4341,7 +4341,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		{
 			UT_String_sprintf(tempBuffer, " font-size:%spt;", std_size_string((float)pOver->getFontSize(iLevel)));
 			propBuffer += tempBuffer;
-			UT_DEBUGMSG(("RTF: IMPORT!!!!! font sized changed in overide %d \n",pOver->getFontSize(iLevel)));
+			UT_DEBUGMSG(("RTF: IMPORT!!!!! font sized changed in override %d \n",pOver->getFontSize(iLevel)));
 		}
 		// typeface
 		if(pOver->isFontNumberChanged(iLevel))
@@ -4950,7 +4950,7 @@ bool IE_Imp_RTF::ReadListTable()
 		{
 			return false;
 		}
-		if(ch == '{')  //new list or listoveride?
+		if(ch == '{')  //new list or listoverride?
 		{
 			if (!ReadCharFromFile(&ch))
 			{
@@ -5150,7 +5150,7 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 					break;
 				}
 			}
-			else if(strcmp((char *) keyword,"levelStartAt") == 0)
+			else if(strcmp((char *) keyword,"levelstartat") == 0)
 			{
 				pLevel->m_levelStartAt = (UT_uint32) parameter;
 			}
@@ -5448,12 +5448,12 @@ bool IE_Imp_RTF::ParseCharParaProps( unsigned char * pKeyword, long param, bool 
 }
 
 
-bool IE_Imp_RTF::ReadListOverideTable(void)
+bool IE_Imp_RTF::ReadListOverrideTable(void)
 {
 //
 // Ensure the list tables are empty to start.
 //
-	UT_VECTOR_PURGEALL(RTF_msword97_listOveride*, m_vecWord97ListOveride);
+	UT_VECTOR_PURGEALL(RTF_msword97_listOverride*, m_vecWord97ListOverride);
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
 	long parameter = 0;
@@ -5463,7 +5463,7 @@ bool IE_Imp_RTF::ReadListOverideTable(void)
 	{
 		if (!ReadCharFromFile(&ch))
 			return false;
-		if(ch == '{')  //new list or listoveride?
+		if(ch == '{')  //new list or listoverride?
 		{
 			if (!ReadCharFromFile(&ch))
 				return false;
@@ -5473,7 +5473,7 @@ bool IE_Imp_RTF::ReadListOverideTable(void)
 			}
 			if (strcmp((char*)keyword, "listoverride") == 0)
 			{
-				if(!HandleTableListOveride())
+				if(!HandleTableListOverride())
 				{
 					return false;
 				}
@@ -5488,7 +5488,7 @@ bool IE_Imp_RTF::ReadListOverideTable(void)
 }
 
 
-bool IE_Imp_RTF::HandleTableListOveride(void)
+bool IE_Imp_RTF::HandleTableListOverride(void)
 {
 	unsigned char keyword[MAX_KEYWORD_LEN];
 	unsigned char ch;
@@ -5497,11 +5497,11 @@ bool IE_Imp_RTF::HandleTableListOveride(void)
 //
 // OK define this in the data structure.
 //
-	RTF_msword97_listOveride * pLOver = new  RTF_msword97_listOveride(this);
+	RTF_msword97_listOverride * pLOver = new  RTF_msword97_listOverride(this);
 //
-// Increment overide counting vector
+// Increment override counting vector
 //
-	m_vecWord97ListOveride.addItem((void *) pLOver);
+	m_vecWord97ListOverride.addItem((void *) pLOver);
     RTFProps_ParaProps * pParas =  new RTFProps_ParaProps();
 	RTFProps_CharProps *  pChars = new	RTFProps_CharProps();
     RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
@@ -5542,11 +5542,11 @@ bool IE_Imp_RTF::HandleTableListOveride(void)
 			}
 			else if(strcmp((char *)keyword,"listoverridecount")==0)
 			{
-				UT_DEBUGMSG(("SEVIOR: Found list listoveride count. Ignore for now\n"));
+				UT_DEBUGMSG(("SEVIOR: Found list listoverride count. Ignore for now\n"));
 			}
 			else if(strcmp((char *)keyword,"ls")== 0)
 			{
-				pLOver->m_OverideCount = (UT_uint32) parameter;
+				pLOver->m_OverrideCount = (UT_uint32) parameter;
 			}
 		    else
 			{
@@ -6213,8 +6213,8 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 			}
 			else if (strcmp((char*)keyword, "ls") == 0)
 			{
-				UT_DEBUGMSG(("FOUND ls in stream - overide number \n",parameter));
-				rtfTable.iWord97Overide =  (UT_uint32) parameter;
+				UT_DEBUGMSG(("FOUND ls in stream - override number \n",parameter));
+				rtfTable.iWord97Override =  (UT_uint32) parameter;
 				// Word 97 list table identifier
 			}
 			else if (strcmp((char*)keyword, "ilvl") == 0)
