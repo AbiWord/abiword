@@ -5584,7 +5584,7 @@ void    fl_BlockLayout::StopList(void)
 		pView->_fixInsertionPointCoords();
 		pView->_drawInsertionPoint();
 	}
-	DELETEP(props);
+	FREEP(props);
 }
 
 /*!
