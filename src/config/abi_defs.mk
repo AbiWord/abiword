@@ -18,7 +18,15 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
-ABI_OPT_DEBUG=1		// TODO remove this later
+#### To get a debug build:  add the following line back to the
+#### Makefile, add the variable to the make command line, or set
+#### this variable as an environment variable.  Note all object
+#### files and libraries for debug and non-debug builds will be
+#### kept separately.  However, the executable will be overwritten.
+#### This may change in the near future.
+####
+#### ABI_OPT_DEBUG=1
+####
 
 ##################################################################
 ##################################################################
