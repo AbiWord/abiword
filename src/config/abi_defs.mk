@@ -379,7 +379,11 @@ endif
 
 ifeq ($(ABI_OPT_LIBJPEG),1)
 LIBJPEG_CFLAGS=-DHAVE_LIBJPEG
+ifeq ($(OS_NAME),Win32)
+LIBJPEG_LIBS=libjpeg.lib
+else
 LIBJPEG_LIBS=-ljpeg
+endif
 ABI_OPTIONS+=libjpeg:On
 else
 LIBJPEG_CFLAGS=
@@ -391,7 +395,7 @@ endif
 
 LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
-CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(OS_INCLUDES) $(XCFLAGS)	\
+CFLAGS		= $(OPTIMIZER) $(WARNFLAGS) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(OS_INCLUDES) $(XCFLAGS)	\
 			$(ABI_TMDEFS) $(ABI_NAMEDEFS) $(ABI_APPLIBDIRDEF)	\
 			$(ABI_DBGDEFS) $(ABI_BIDI_ENABLED) $(ABI_INCS) $(LIBJPEG_CFLAGS)
 
@@ -510,14 +514,14 @@ OUT			= $(ABI_ROOT)/src
 ##################################################################
 ## Symbols to uniquely identify the build.
 ##
-## ABI_BUILD_VERSION	should be set to the build version (1.0.0)
+## ABI_BUILD_VERSION	should be set to the build version (1.0.3)
 ##			for a numbered build.
 ##
 ## ABI_BUILD_ID		can be used as a identifying label (such as
 ##			a date stamp in a nightly build system).
 ##
 
-ABI_BUILD_VERSION	= 1.0.0
+ABI_BUILD_VERSION	= 1.0.3
 ABI_BUILD_ID		=
 
 CFLAGS  += -DABI_BUILD_VERSION=\"$(ABI_BUILD_VERSION)\"
@@ -561,7 +565,7 @@ USERDIR			= $(ABI_ROOT)/user
 
 ifeq ($(OS_NAME),WIN32)
 EXTRA_LIBS	= 	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
-			$(addsuffix .lib,$(ABI_LIBS))
+			$(addsuffix .lib,$(ABI_LIBS)) $(LIBJPEG_LIBS)
 EXTRA_LIBDEP	=	$(addprefix $(LIBDIR)/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBDEP)))
 else
 EXTRA_LIBS	=	-L$(LIBDIR) 							\
@@ -629,7 +633,7 @@ GNOME_CFLAGS += $(shell $(GLIB_CONFIG) --cflags)
 ifeq ($(ABI_OPT_BONOBO),1)
 GNOME_CFLAGS    += $(shell $(GNOME_CONFIG) --cflags oaf bonobo)
 GNOME_CFLAGS    += -DHAVE_BONOBO
-GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil $(shell $(GNOME_CONFIG) --libs bonobox)
+GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil $(shell $(GNOME_CONFIG) --libs bonobox) -lbonobo-print
 ABI_OPTIONS+=Bonobo:On
 else
 ABI_OPTIONS+=Bonobo:Off

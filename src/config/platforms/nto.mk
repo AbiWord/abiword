@@ -32,11 +32,13 @@
 
 OS_ARCH		:=$(shell uname -m)
 
+ifneq ($(ABI_OPT_LIBXML2),1)
+ABI_OPT_PEER_EXPAT=1
+endif # I shouldn't have to do this, it's already set higher up, but maybe it'll work.
+
 # Compiler defaults should be fine for Intel.
 i386_ARCH_FLAGS		=
 PPC_ARCH_FLAGS		=
-ALPHA_ARCH_FLAGS 	= 
-SPARC_ARCH_FLAGS 	= 
 
 # Define tools (should gcc be cc/qcc ... same for ar?)
 CC		= qcc
@@ -80,11 +82,6 @@ ifeq ($(OS_ARCH), ppc)
 PLATFORM_FLAGS	+= $(PPC_ARCH_FLAGS)
 OS_ENDIAN	= BigEndian32
 endif
-
-# ...
-
-GLIB_CONFIG		=
-GTK_CONFIG		=
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)

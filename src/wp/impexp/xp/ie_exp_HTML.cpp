@@ -1004,17 +1004,17 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 		  if (!span)
 		    {
-		      m_pie->write("<span style=\"text-position: ");	
+		      m_pie->write("<span style=\"vertical-align: ");	
 		      span = true;
 		    }
 		  else 
 		    {
-		      m_pie->write("; text-position: ");
+		      m_pie->write("; vertical-align: ");
 		    }
 
 			if (!UT_strcmp("superscript", szValue))
 			{
-				m_pie->write("sup");
+				m_pie->write("super");
 			}
 			else if (!UT_strcmp("subscript", szValue))
 			{
@@ -1095,16 +1095,16 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 				if (!span)
 				{
-					setlocale (LC_NUMERIC, "C");
+					char * old_locale = setlocale (LC_NUMERIC, "C");
 					m_pie->write(UT_String_sprintf("<span style=\"font-size: %fpt", UT_convertToPoints(pszFontSize)));
-					setlocale (LC_NUMERIC, "");
+					setlocale (LC_NUMERIC, old_locale);
 					span = true;
 				}
 				else 
 				{
-					setlocale (LC_NUMERIC, "C");
+					char * old_locale = setlocale (LC_NUMERIC, "C");
 					m_pie->write(UT_String_sprintf("; font-size: %fpt", UT_convertToPoints(pszFontSize)));
-					setlocale (LC_NUMERIC, "");
+					setlocale (LC_NUMERIC, old_locale);
 				}
 			}
 			
@@ -1227,12 +1227,12 @@ void s_HTML_Listener::_closeSpan(void)
 			closeSpan = true;
 		}
 		
-		if (pAP->getProperty("text-position", szValue))
+		else if (pAP->getProperty("text-position", szValue))
 		{
 			closeSpan = true;
 		}
 
-		if (
+		else if (
 			(pAP->getProperty("text-decoration", szValue))
 			&& UT_strcmp(szValue, "none")
 			)
@@ -1240,7 +1240,7 @@ void s_HTML_Listener::_closeSpan(void)
 			closeSpan = true;
 		}
 
-		if (
+		else if (
 			(pAP->getProperty("font-style", szValue))
 			&& !UT_strcmp(szValue, "italic")
 			)
@@ -1248,7 +1248,7 @@ void s_HTML_Listener::_closeSpan(void)
 			closeSpan = true;
 		}
 		
-		if (
+		else if (
 			(pAP->getProperty("font-weight", szValue))
 			&& !UT_strcmp(szValue, "bold")
 			)
@@ -1256,7 +1256,7 @@ void s_HTML_Listener::_closeSpan(void)
 			closeSpan = true;
 		}
 
-		if(pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
+		else if(pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
 		{
 			closeSpan = true;
 		}

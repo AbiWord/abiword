@@ -32,7 +32,7 @@ INCLUDES=\
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) \
 	$(TEXT_INCLUDES) @GMODULE_CFLAGS@ @GTK_CFLAGS@ 
 
-AbiWord_s_LDFLAGS = -all-static
+AbiWord_s_LDFLAGS = -static
 
 AbiWord_d_SOURCES = abi_ver.cpp UnixMain.cpp
 AbiWord_s_SOURCES = abi_ver.cpp UnixMain.cpp

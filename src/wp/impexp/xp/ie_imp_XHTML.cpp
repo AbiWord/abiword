@@ -825,10 +825,10 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 			UT_String_sprintf(szListID, "%u", thisID);
 			UT_String_sprintf(szParentID, "%u", *parentID);
 			UT_String_sprintf(szLevel, "%u", m_utsParents.getDepth());
-			setlocale (LC_NUMERIC, "C");
+			char * old_locale = setlocale (LC_NUMERIC, "C");
 			UT_String_sprintf(szMarginLeft, " margin-left: %.2fin", 
 					  m_utsParents.getDepth() * 0.5);
-			setlocale (LC_NUMERIC, "");
+			setlocale (LC_NUMERIC, old_locale);
 
 			const int LevelPos = 1;
 			const int IDpos = 3;

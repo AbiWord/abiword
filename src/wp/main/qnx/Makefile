@@ -35,14 +35,13 @@ PROGRAM_S=		$(BINDIR)/AbiWord_s
 
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv \
-			Abi_libpng Abi_zlib Abi_libiconv
 
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_APPLIBDEP=		$(LoadOrder)
 
 # libdl flags go into the process later
 # We needed libstdc++ at one point, not any more apparently
-ABI_LIBS=		ph phrender m 
+ABI_LIBS=		ph phrender m z png  iconv
 STUPID_STATIC_LIBS= -Wl,-Bstatic -lph
 
 # include both dynamic and static binaries
@@ -73,9 +72,9 @@ endif
 
 $(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(QNX_CAN_BUILD_STATIC),1)
-	$(MAKE_OBJDIR)
-	echo Linking static $(PROGRAM_S)
-	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) $(STUPID_STATIC_LIBS)
+	@$(MAKE_OBJDIR)
+	@echo Linking static $(PROGRAM_S)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) $(STUPID_STATIC_LIBS)
 	@bindres -q $@ Icon.wgti
 else
 	@echo "Not linking static $(PROGRAM)"

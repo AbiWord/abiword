@@ -20,8 +20,21 @@
 #ifndef ap_EditMethodsDefined
 #define ap_EditMethodsDefined
 
+#include "fv_View.h"
 
 UT_Error fileOpen(XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft);
 
+// defined in ap_editmethods.cpp
+bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
+		     FV_View * pPrintView, const char *pDocName,
+		     UT_uint32 nCopies, bool bCollate,
+		     UT_sint32 inWidth,  UT_sint32 inHeight,
+		     UT_uint32 nToPage, UT_uint32 nFromPage) ;
+
+void s_getPageMargins(FV_View * inView,
+					  double &margin_left,
+					  double &margin_right,
+					  double &page_margin_left,
+					  double &page_margin_right);
 
 #endif

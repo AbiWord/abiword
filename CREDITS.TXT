@@ -13,6 +13,11 @@ current maintainer
 -----------------------------
 Dom Lachowicz <dominicl@seas.upenn.edu>
 
+stable branch maintainers
+-------------------------
+Hubert Figuiere <hfiguiere@teaser.fr>
+Mark Gilbert <webmaster@dofty.zzn.com>
+
 contributors
 ------------
 Pierre Abbat <phma@webjockey.net>			LaTeX Testing,
@@ -218,6 +223,7 @@ Javier Yáñez <javier@cibal.es>				Spanish
 Luis Miguel García <ktech@wanadoo.es>			Spanish
 Tamas Decsi <tamas@pressflex.com>			Hungarian
 Vadim Frolov <vadim@krug.uch.net>			Ukrainian (uk-UA)
+Olexij Tkatchenko <ot@parcs.de>				Ukrainian (uk-UA)
 GPS <GrandPooh@telkom.net>				Indonesian
 I Made Wiryana <made@nakula.rvs.uni-bielefeld.de>	Indonesian
 Martin Willemoes Hansen <mwh@stampede.org>		Danish
@@ -232,7 +238,7 @@ Marco Innocenti <dot0037@iperbole.bologna.it>		Italian
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>			Finnish
 Mantas Kriauciunas <mantelis@centras.lt>		Lithuanian (lt-LT)
 Michl Ladislav <xmichl03@stud.fee.vutbr.cz> 		Czech
-Karl Ove Hufthammer <huftis@bigfoot.com>		Norwegian (Nynorsk)
+Karl Ove Hufthammer <karl@huftis.org>		Norwegian (Nynorsk)
 Gro Elin Hansen  <Gro.Hansen@student.uib.no>		Norwegian (Bokmål)
 Edouard Lafargue <Edouard.Lafargue@bigfoot.com>		Norwegian (Bokmål)
 Kjartan Maraas <kmaraas@online.no>			Norwegian (Bokmål)
@@ -257,6 +263,8 @@ Alper <shullgum@yahoo.com>				Turkish
 Nikos Niktaris <niktarin@yahoo.com>			Greek
 Damon Allen Davison <allolex@users.sourceforge.net>	German
 Masayuki Hatta <mhatta@gnu.org>				Japanese
+Alfredo Barrainkua Zallo <alfredobz@euskalnet.net>	Basque
+Mugurel Tudor <mugurelu@go.ro>				Romanian
 unsung heroes
 -------------
 Mary Eppich

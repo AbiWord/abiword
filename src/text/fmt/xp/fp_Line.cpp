@@ -3029,7 +3029,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 
 		UT_DEBUGMSG(("DOM: must split iAmount %d between iSpaceCount %d spaces for count %d runs\n", iAmount, iSpaceCount, count));
 
-			for (UT_sint32 i=0; i < count && iSpaceCount > 0; i++)
+			for (UT_sint32 i=count-1; i >= 0 && iSpaceCount > 0; i--)
 			{
 #ifdef BIDI_ENABLED
 				// work from the run on the visual end of the line
@@ -3057,6 +3057,7 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 					{
 						UT_uint32 iMySpaces = abs(iSpacesInText);
 						UT_sint32 iJustifyAmountForRun = (int)((double)iAmount / (iSpaceCount-1) * iMySpaces);
+						if (iSpaceCount == 1) iJustifyAmountForRun = 0;
 						pTR->distributeJustificationAmongstSpaces(iJustifyAmountForRun, iMySpaces);
 
 						iAmount -= iJustifyAmountForRun;

@@ -25,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ev_Toolbar_Layouts.h"
+#include "ev_Toolbar_Actions.h"
 #include "xap_Toolbar_Layouts.h"
 #include "xap_Prefs.h"
 #include "xap_Prefs_SchemeIds.h"
@@ -612,6 +613,14 @@ bool  XAP_Toolbar_Factory::restoreToolbarsFromCurrentScheme(void)
 				pScheme->getValue((const XML_Char *)sTBBase.c_str(),&szCurId);
 				UT_ASSERT(szCurId && *szCurId);
 				XAP_Toolbar_Id curId = (XAP_Toolbar_Id) atoi(szCurId);
+//
+// Here we should check whether the ID exists or not
+// 
+				EV_Toolbar_Action * pAction = m_pApp->getToolbarActionSet()->getAction(curId);
+				if (pAction == NULL) {
+					UT_DEBUGMSG (("Found an unknown toolbar item in prefs. Ignoring.\n"));
+					continue;
+				}
 //
 // Restore flags from the constructed key
 //

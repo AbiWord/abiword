@@ -35,9 +35,12 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#ifdef ABI_OPT_PERL
 #include "ut_PerlBindings.h"
+#endif
 #include "ut_Script.h"
 #include "ut_unixDirent.h"
+#include "ut_sleep.h"
 
 #include "xap_Args.h"
 #include "ap_Convert.h"
@@ -586,6 +589,13 @@ bool AP_UnixApp::canPasteFromClipboard(void)
 #if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) \
 	|| defined(_AIX)
 static int so_only (struct dirent *d)
+#elif defined(__osf__)
+// The Tru64 UNIX vendor C++ compiler will complain when scandir is
+// called in loadAllPlugins because it expects the third argument to
+// scandir to be a pointer to a function with C linkage.  Since that's
+// the case, make the function extern "C".
+extern "C" {
+static int so_only (struct dirent *d)
 #else
 static int so_only (const struct dirent *d)
 #endif
@@ -610,6 +620,9 @@ static int so_only (const struct dirent *d)
     }
   return 0;
 }
+#if defined(__osf__)
+} // extern "C"
+#endif
 
 void AP_UnixApp::loadAllPlugins ()
 {
@@ -1124,7 +1137,7 @@ rms:  I'm adding something here to get a localized splash screen
 		      remember that having multiple / in a path equals
 		      having just one. So this is faster.
 		*/
-		snprintf(buf, iSplashPathSize, "%s/%s", szDirectory, szFile);
+		g_snprintf(buf, iSplashPathSize, "%s/%s", szDirectory, szFile);
 		/*
 		strcpy(buf,szDirectory);
 		int len = strlen(buf);
@@ -1445,9 +1458,8 @@ bool AP_UnixApp::parseCommandLine()
 				XParseGeometry(m_pArgs->m_argv[k], &x, &y, &width, &height);
 		
 				// use both by default
-				XAP_UNIXBASEAPP::windowGeometryFlags f = (XAP_UNIXBASEAPP::windowGeometryFlags)
-					(XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
-					 | XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
+				UT_uint32 f = (XAP_UNIXBASEAPP::GEOMETRY_FLAG_SIZE
+						| XAP_UNIXBASEAPP::GEOMETRY_FLAG_POS);
 		
 				// if pos (x and y) weren't provided just use size
 				if (x == dummy || y == dummy)
@@ -1708,7 +1720,14 @@ void AP_UnixApp::catchSignals(int sig_num)
     // Reset the signal handler 
     // (not that it matters - this is mostly for race conditions)
     signal(SIGSEGV, signalWrapper);
-    
+
+#if 0 // !!! remove this!!!! before committing 
+	// Use for debug Bonobo server
+    while(1)
+	{
+		UT_usleep(1000);
+	}
+#endif
     s_signal_count = s_signal_count + 1;
     if(s_signal_count > 1)
     {

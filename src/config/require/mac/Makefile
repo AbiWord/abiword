@@ -66,7 +66,7 @@ _LIBICONV_:
 _LIBPNG_:
 	@if [ -d $(ABI_ROOT)/../libpng ]; then                        \
 		echo Found libpng in peer directory;                  \
-		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../libpng;		\
+		$(MAKE) -f Makefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../libpng;	\
 	else                                                            \
 		echo libpng not found;                                \
 		echo TODO provide a nicer error message;                \
