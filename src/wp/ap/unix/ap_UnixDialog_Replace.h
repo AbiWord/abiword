@@ -44,12 +44,13 @@ public:
 
 	// callbacks can fire these events
 	virtual void			event_Find(void);
+	virtual void			event_FindEntryChange(void);
 	virtual void			event_Replace(void);
 	virtual void			event_ReplaceAll(void);
 	virtual void			event_MatchCaseToggled(void);	
 	virtual void			event_Cancel(void);
 	virtual void			event_WindowDelete(void);
-
+		
 protected:
 
 	// private construction functions
@@ -60,13 +61,13 @@ protected:
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
-	GtkWidget * m_entryFind;
-	GtkWidget * m_entryReplace;
-	GtkWidget * m_checkbuttonMatchCase;
-
 	GtkWidget * m_buttonFindNext;
 	GtkWidget * m_buttonReplace;
 	GtkWidget * m_buttonReplaceAll;
+	
+	GtkWidget * m_entryFind;
+	GtkWidget * m_entryReplace;
+	GtkWidget * m_checkbuttonMatchCase;
 
 	GtkWidget * m_buttonCancel;
 };
