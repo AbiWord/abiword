@@ -27,10 +27,13 @@
  * 02111-1307, USA.
  */
 
-#include "ut_iconv.h"
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+
+#include "ut_iconv.h"
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
 
 #include "xap_EncodingManager.h"
 
@@ -108,11 +111,121 @@ UT_iconv_t auto_iconv::getHandle ()
 // everything below this line is extern "C"
 //
 
+static const char * s_ucs2_internal = 0;
+static const char * s_ucs4_internal = 0;
+
+static const char * s_ucs2_list[] = {
+	"UCS-2-INTERNAL",
+	"UCS-2-LE",
+	"UCS-2-BE",
+	"UCS-2LE",
+	"UCS-2BE",
+	"UCS2",
+	0
+};
+
+static const char * s_ucs4_list[] = {
+	"UCS-4-INTERNAL",
+	"UCS-4-LE",
+	"UCS-4-BE",
+	"UCS-4LE",
+	"UCS-4BE",
+	"UCS4",
+	0
+};
+
+static void s_internal_init ()
+{
+	static const char * latin = "ISO-8859-1";
+
+	UT_iconv_t handle = UT_ICONV_INVALID;
+
+	s_ucs2_internal = 0;
+	s_ucs4_internal = 0;
+
+	const char ** pszEnc = s_ucs2_list;
+	while (*pszEnc)
+		{
+			if ((handle = UT_iconv_open (*pszEnc, latin)) == UT_ICONV_INVALID)
+				{
+					pszEnc++;
+					continue;
+				}
+			const char ibuf = 0x20;
+			const char * iptr = &ibuf;
+			size_t ilen = 1;
+			UT_UCS2Char obuf[2];
+			char * optr = reinterpret_cast<char *>(obuf);
+			size_t olen = 2;
+
+			bool success = ((size_t)(-1) != UT_iconv (handle, &iptr, &ilen, &optr, &olen));
+
+			UT_iconv_close (handle);
+			handle = UT_ICONV_INVALID;
+
+			if (success) success = (olen == 0);
+			if (success) success = (obuf[0] == 0x20);
+			if (success)
+				{
+					s_ucs2_internal = *pszEnc;
+					break;
+				}
+			pszEnc++;
+		}
+	UT_ASSERT(s_ucs2_internal);
+	if (s_ucs2_internal == 0)
+		{
+			s_ucs2_internal = s_ucs2_list[0];
+			UT_DEBUGMSG(("WARNING! this test failed to determine correct UCS-2 setting!\n"));
+		}
+	UT_DEBUGMSG(("using '%s' for UCS-2 internal\n", s_ucs2_internal));
+
+	pszEnc = s_ucs4_list;
+	while (*pszEnc)
+		{
+			if ((handle = UT_iconv_open (*pszEnc, latin)) == UT_ICONV_INVALID)
+				{
+					pszEnc++;
+					continue;
+				}
+			const char ibuf = 0x20;
+			const char * iptr = &ibuf;
+			size_t ilen = 1;
+			UT_UCS4Char obuf[4];
+			char * optr = reinterpret_cast<char *>(&obuf);
+			size_t olen = 4;
+
+			bool success = ((size_t)(-1) != UT_iconv (handle, &iptr, &ilen, &optr, &olen));
+
+			UT_iconv_close (handle);
+			handle = UT_ICONV_INVALID;
+
+			if (success) success = (olen == 0);
+			if (success) success = (obuf[0] == 0x20);
+			if (success)
+				{
+					s_ucs4_internal = *pszEnc;
+					break;
+				}
+			pszEnc++;
+		}
+	UT_ASSERT(s_ucs4_internal);
+	if (s_ucs4_internal == 0)
+		{
+			s_ucs4_internal = s_ucs4_list[0];
+			UT_DEBUGMSG(("WARNING! this test failed to determine correct UCS-4 setting!\n"));
+		}
+	UT_DEBUGMSG(("using '%s' for UCS-4 internal\n", s_ucs4_internal));
+}
+
 /*!
  * \return the internal iconv UCS-2 charset name
  */
 const char * ucs2Internal ()
 {
+	if (s_ucs2_internal == 0) s_internal_init ();
+	return s_ucs2_internal;
+
 #if defined(WIN32)
   // we special-case the win32 build, otherwise spelling and other stuff
   // just doesn't work
@@ -125,10 +238,7 @@ const char * ucs2Internal ()
   return "UCS2";
 #else
   // general case, found by hub and dom
-  if (XAP_EncodingManager__swap_stou)
-    return "UCS-2BE";
-  else
-    return "UCS-2LE";
+  // put the stuff at the top of the function here...
 #endif
 }
 
@@ -137,22 +247,22 @@ const char * ucs2Internal ()
  */
 const char * ucs4Internal ()
 {
+	if (s_ucs4_internal == 0) s_internal_init ();
+	return s_ucs4_internal;
+
 #if defined(WIN32)
   // we special-case the win32 build, otherwise spelling and other stuff
   // just doesn't work
   return "UCS-4LE";
 #elif defined(_LIBICONV_H)
-  // libiconv seems to prefer UCS-2-INTERNAL to UCS-2BE and UCS-2LE
+  // libiconv seems to prefer UCS-4-INTERNAL to UCS-4BE and UCS-4LE
   return "UCS-4-INTERNAL";
 #elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
   // we special case the BSDs since spelling just doesn't work
   return "UCS4";
 #else
   // general case, found by hub and dom
-  if (XAP_EncodingManager__swap_stou)
-    return "UCS-4BE";
-  else
-    return "UCS-4LE";
+  // put the stuff at the top of the function here...
 #endif
 }
 

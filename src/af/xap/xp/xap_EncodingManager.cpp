@@ -131,7 +131,6 @@ const char* XAP_EncodingManager::getUCS4LEName() const
 
 XAP_EncodingManager::~XAP_EncodingManager()
 {
-	UT_DEBUGMSG(("CLOSING XAP_ENCODINGMANAGER\n"));
 	if(UT_iconv_isValid(iconv_handle_N2U))
 		UT_iconv_close(iconv_handle_N2U);
 

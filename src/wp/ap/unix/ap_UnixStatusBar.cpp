@@ -42,22 +42,24 @@ protected:
 
 void ap_usb_TextListener::notify()
 {
-
-	const UT_UCS4Char * buf = ((AP_StatusBarField_TextInfo *)m_pStatusBarField)->getBufUCS();
-	UT_UCS4String * ucs = new UT_UCS4String(buf);
-	
 	UT_ASSERT(m_pLabel);
+
+	AP_StatusBarField_TextInfo * textInfo = ((AP_StatusBarField_TextInfo *)m_pStatusBarField);
+	const UT_UCS4Char * buf = textInfo->getBufUCS();
+	UT_UTF8String utf8 (buf);	
+
+#if 0
+	char paddedLabel[AP_MAX_MESSAGE_FIELD];
 	// HACK: there's no decent way of giving some left padding on the gtklabel (that I know of)
 	// which looks aesthetically pleasing, so we add an extra space to the label text
-	char paddedLabel[AP_MAX_MESSAGE_FIELD];
 	paddedLabel[0] = ' ';
 	paddedLabel[1] = '\0';
-	UT_ASSERT(strlen(ucs->utf8_str()) < (AP_MAX_MESSAGE_FIELD - 2));
-	if (strlen(ucs->utf8_str()) < (AP_MAX_MESSAGE_FIELD - 2)) // buffer overflow check
-		strcat(paddedLabel, ucs->utf8_str());
+	UT_ASSERT(utf8.size() < (AP_MAX_MESSAGE_FIELD));
+	if (utf8.size() < (AP_MAX_MESSAGE_FIELD)) // buffer overflow check
+		strcat(paddedLabel, utf8.utf8_str());
+#endif
 
-	gtk_label_set_label(GTK_LABEL(m_pLabel), paddedLabel);
-	delete(ucs);
+	gtk_label_set_label(GTK_LABEL(m_pLabel), utf8.utf8_str());
 }
 
 //////////////////////////////////////////////////////////////////
@@ -67,8 +69,6 @@ AP_UnixStatusBar::AP_UnixStatusBar(XAP_Frame * pFrame)
 	: AP_StatusBar(pFrame)
 {
 	m_wStatusBar = NULL;
-
-	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
 }
 
 AP_UnixStatusBar::~AP_UnixStatusBar(void)
