@@ -279,6 +279,15 @@ void IE_Exp::write(const char * sz, UT_uint32 length)
 /*****************************************************************/
 /*****************************************************************/
 
+/*! 
+  Find the filetype for the given suffix.
+ \param szSuffix File suffix
+
+ Returns IEFT_AbiWord_1 if no exporter knows this suffix.
+ Note that more than one exporter may support a suffix.
+ We return the first one we find.
+ This function should closely resemble IE_Exp::fileTypeForSuffix()
+*/
 IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 {
 	if (!szSuffix)
@@ -291,13 +300,13 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ExpSniffer * s = (IE_ExpSniffer*) m_sniffers.getNthItem(k);
+		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem(k));
 		if (s->recognizeSuffix(szSuffix))
 		{
 			for (UT_uint32 a = 0; a < nrElements; a++)
 			{
-				if (s->supportsFileType((IEFileType) a+1))
-					return (IEFileType) a+1;
+				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
+					return static_cast<IEFileType>(a+1);
 			}
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -314,24 +323,68 @@ IEFileType IE_Exp::fileTypeForSuffix(const char * szSuffix)
 	
 }
 
+/*! 
+  Find the suffixes for the given filetype.
+ \param szSuffix File suffix
+
+ Returns 0 if no exporter knows this filetype.
+ This function should closely resemble IE_Exp::suffixesForFileType()
+*/
+const char * IE_Exp::suffixesForFileType(IEFileType ieft)
+{
+	const char * szSuffixes = 0;
+
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a suffix match for all file types
+	UT_uint32 nrElements = getExporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
+	{
+		IE_ExpSniffer * s = static_cast<IE_ExpSniffer*>(m_sniffers.getNthItem(k));
+		if (s->supportsFileType(ieft))
+		{
+			const char *szDummy;
+			IEFileType ieftDummy;
+			if (s->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
+				return szSuffixes;
+			else
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+
+	// The passed in filetype is invalid.
+	return 0;
+}
+
+/*! 
+  Construct an exporter of the right type.
+ \param pDocument Document
+ \param szFilename Name of file - optional
+ \param ieft Desired filetype - pass IEFT_Unknown for best guess
+ \param ppie Pointer to return importer in
+ \param pieft Pointer to fill in actual filetype
+
+ Caller is responsible for deleting the exporter object
+ when finished with it.
+ This function should closely match IE_Imp::contructImporter()
+*/
 UT_Error IE_Exp::constructExporter(PD_Document * pDocument,
 								   const char * szFilename,
 								   IEFileType ieft,
 								   IE_Exp ** ppie,
 								   IEFileType * pieft)
 {
-	// construct the right type of exporter.
-	// caller is responsible for deleing the exporter object
-	// when finished with it.
+	bool bUseGuesswork = (ieft != IEFT_Unknown);
 
 	UT_ASSERT(pDocument);
-	UT_ASSERT(szFilename && *szFilename);
+	UT_ASSERT(ieft != IEFT_Unknown || (szFilename && *szFilename));
 	UT_ASSERT(ppie);
 
 	// no filter will support IEFT_Unknown, so we detect from the
 	// suffix of the filename, the real exporter to use and assign
 	// that back to ieft.
-	if (ieft == IEFT_Unknown)
+	if (ieft == IEFT_Unknown && szFilename && *szFilename)
 	{
 		ieft = IE_Exp::fileTypeForSuffix(UT_pathSuffix(szFilename));
 	}

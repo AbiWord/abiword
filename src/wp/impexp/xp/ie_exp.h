@@ -77,6 +77,7 @@ public:
 	// with it.
 
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
+	static const char * suffixesForFileType(IEFileType ieft);
 	
 	static UT_Error		constructExporter(PD_Document * pDocument,
 										  const char * szFilename,

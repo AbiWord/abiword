@@ -51,7 +51,7 @@
 #include "fl_AutoNum.h"
 #include "xap_App.h"
 #include "ut_units.h"
-
+#include "ut_string_class.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -61,9 +61,6 @@ struct _dataItemPair
 	UT_ByteBuf* pBuf;
 	void*		pToken;
 };
-
-// quick hack, not really dirty though :)
-#define IEFT_AbiWord_1 IE_Exp::fileTypeForSuffix (".abw")
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -77,7 +74,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_ballowListUpdates(false),
 	m_pPieceTable(0),
 	m_hashDataItems(11),
-	m_lastSavedAsType(IEFT_AbiWord_1),
+	m_lastOpenedType(IE_Imp::fileTypeForSuffix(".abw")),
+	m_lastSavedAsType(IE_Exp::fileTypeForSuffix(".abw")),
 	m_bPieceTableChanging(false),
 	m_bDoingPaste(false),
 	m_bAllowInsertPointChange(true)
@@ -170,12 +168,14 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	IE_Imp * pie = NULL;
 	UT_Error errorCode;
 
-	errorCode = IE_Imp::constructImporter(this, szFilename, (IEFileType) ieft, &pie, &m_lastSavedAsType);
+	errorCode = IE_Imp::constructImporter(this, szFilename, (IEFileType) ieft, &pie, &m_lastOpenedType);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
 		return errorCode;
 	}
+
+	_syncFileTypes(false);
 
 	m_pPieceTable->setPieceTableState(PTS_Loading);
 	errorCode = pie->importFile(szFilename);
@@ -242,6 +242,8 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 		return UT_SAVE_EXPORTERROR;
 	}
 
+	_syncFileTypes(true);
+
 	errorCode = pie->writeFile(szFilename);
 	delete pie;
 
@@ -291,6 +293,8 @@ UT_Error PD_Document::save(void)
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
 		return UT_SAVE_EXPORTERROR;
 	}
+
+	_syncFileTypes(true);
 
 	errorCode = pie->writeFile(m_szFilename);
 	delete pie;
@@ -1310,6 +1314,48 @@ void PD_Document::_destroyDataItemData(void)
 	}
 }
 
+/*! 
+  Synchronize the last opened/last saves filetypes.
+ \param bBool bOpenedFromSaved True to set opened from saved, otherwise the reverse
+
+ There are actually two filetypes - one for importers and one for
+ exporters.  This function tries to synchronize the one to the other.
+*/
+bool PD_Document::_syncFileTypes(bool bOpenedFromSaved)
+{
+	const char *szSuffixes;
+
+	if (bOpenedFromSaved)
+		szSuffixes = IE_Exp::suffixesForFileType(m_lastSavedAsType);
+	else
+		szSuffixes = IE_Imp::suffixesForFileType(m_lastOpenedType);
+
+	// Pull first suffix from the file dialog pattern string
+	UT_String suffix;
+	for (const char *p = szSuffixes; *p && *p != ';'; ++p)
+		if (*p != '*')
+			suffix += *p;
+
+	IEFileType ieft;
+	if (bOpenedFromSaved)
+	{
+		ieft = IE_Imp::fileTypeForSuffix(suffix.c_str());
+		m_lastOpenedType = ieft;
+	}
+	else
+	{
+		ieft = IE_Exp::fileTypeForSuffix(suffix.c_str());
+		m_lastSavedAsType = ieft;
+	}
+
+	if (ieft == IEFT_Unknown || ieft == IEFT_Bogus)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+	
+	return true;
+}
 
 ///////////////////////////////////////////////////////////////////
 // Styles represent named collections of formatting properties.

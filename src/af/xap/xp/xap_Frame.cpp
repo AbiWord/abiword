@@ -731,7 +731,7 @@ UT_Error XAP_Frame::backup()
 		UT_DEBUGMSG(("Filename [%s]\n", oldName.c_str()));
 
 	backupName = oldName + ext;
-	UT_Error error = m_pDoc->saveAs(backupName.c_str(), m_pDoc->getLastType(), false);
+	UT_Error error = m_pDoc->saveAs(backupName.c_str(), m_pDoc->getLastSavedAsType(), false);
 	UT_DEBUGMSG(("File %s saved.\n", backupName.c_str()));
 
 	m_bBackupRunning = false;

@@ -188,7 +188,7 @@ public:
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 
 	const char *			getFileName() { return m_szFilename; }
-	UT_uint32				getLastType() { return m_lastSavedAsType; }
+	UT_uint32				getLastSavedAsType() { return m_lastSavedAsType; }
 	XAP_App *				getApp() { return m_pApp; }
 	bool					updateFields(void);
 	bool					getField(PL_StruxDocHandle sdh, 
@@ -240,6 +240,7 @@ protected:
 
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
+	bool					_syncFileTypes(bool bOpenedFromSaved);
 	bool					m_ballowListUpdates;
 	pt_PieceTable *			m_pPieceTable;
 	UT_Vector				m_vecListeners;
@@ -247,6 +248,7 @@ protected:
 	
 	UT_StringPtrMap		    m_hashDataItems;
 
+	IEFileType				m_lastOpenedType;
 	IEFileType				m_lastSavedAsType;
 	XAP_App *				m_pApp;
 	bool					m_bPieceTableChanging;

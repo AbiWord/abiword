@@ -75,6 +75,7 @@ public:
 											UT_uint32 iNumbytes);
 
 	static IEFileType	fileTypeForSuffix(const char * szSuffix);
+	static const char * suffixesForFileType(IEFileType ieft);
 	
 	static UT_Error		constructImporter(PD_Document * pDocument,
 										  const char * szFilename,

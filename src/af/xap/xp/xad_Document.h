@@ -37,7 +37,7 @@ public:
 	void				unref(void);
 
 	const char *			getFilename(void) const;
-	virtual UT_uint32               getLastType() = 0; 
+	virtual UT_uint32               getLastSavedAsType() = 0; 
 	// TODO - this should be returning IEFileType, 
 	// but that's AP stuff, so it's not here
 

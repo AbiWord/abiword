@@ -226,24 +226,17 @@ bool Inserter::insertSpan(UT_GrowBuf &b)
 /*****************************************************************/
 
 /*!
-  Check buffer for identifiable encoded characters
- \param szBuf Buffer to check
- \param iNumbytes Size of buffer
+  Check if buffer contains data meant for this importer.
+
+ We don't attmpt to recognize since other filetypes (HTML) can
+ use the same encodings a text file can.
+ We also don't want to steal recognition when user wants to use
+ the Encoded Text importer.
  */
-bool IE_Imp_Text_Sniffer::recognizeContents(const char * szBuf, 
-											UT_uint32 iNumbytes)
+bool IE_Imp_Text_Sniffer::recognizeContents(const char * /* szBuf */,
+											UT_uint32 /* iNumbytes */)
 {
-	// TODO It may or may not be worthwhile trying to recognize CJK encodings.
-	
-	bool bSuccess = false;
-
-	bSuccess = _recognizeUTF8(szBuf, iNumbytes);
-
-	if (bSuccess == false)
-		if (_recognizeUCS2(szBuf, iNumbytes, false) != UE_NotUCS)
-			bSuccess = true;
-
-	return bSuccess;
+	return false;
 }
 
 /*!
@@ -422,6 +415,17 @@ bool IE_Imp_Text_Sniffer::getDlgLabels(const char ** pszDesc,
 }
 
 /*!
+  Check if buffer contains data meant for this importer.
+
+ We don't attempt to recognize.  User must specifically choose Encoded Text.
+ */
+bool IE_Imp_EncodedText_Sniffer::recognizeContents(const char * /* szBuf */,
+												   UT_uint32 /* iNumbytes */)
+{
+	return false;
+}
+
+/*!
   Check filename extension for filetypes we support
  \param szSuffix Filename extension
  */
@@ -469,6 +473,7 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 		return UT_IE_FILENOTFOUND;
 	}
 	
+	ImportStream *pStream = 0;
 	UT_Error error;
 
 	// First we try to determine the encoding.
@@ -478,7 +483,6 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 	// Call encoding dialog
 	if (!m_bIsEncoded || _doEncodingDialog(m_szEncoding))
 	{
-		ImportStream *pStream = 0;
 		X_CleanupIfError(error,_constructStream(pStream,fp));
 		Inserter ins(m_pDocument);
 		X_CleanupIfError(error,_writeHeader(fp));
@@ -489,6 +493,7 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 		error = UT_ERROR;
 
 Cleanup:
+	delete pStream;
 	fclose(fp);
 	return error;
 }

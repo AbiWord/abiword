@@ -127,6 +127,15 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 	
 }
 
+/*! 
+  Find the filetype for the given suffix.
+ \param szSuffix File suffix
+
+ Returns IEFT_Unknown if no importer knows this suffix.
+ Note that more than one importer may support a suffix.
+ We return the first one we find.
+ This function should closely resemble IE_Exp::fileTypeForSuffix()
+*/
 IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 {
 	if (!szSuffix)
@@ -139,13 +148,13 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
+		IE_ImpSniffer * s = static_cast<IE_ImpSniffer *>(m_sniffers.getNthItem(k));
 		if (s->recognizeSuffix(szSuffix))
 		{
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
 			{
-				if (s->supportsFileType((IEFileType) (a+1)))
-					return (IEFileType) (a+1);
+				if (s->supportsFileType(static_cast<IEFileType>(a+1)))
+					return static_cast<IEFileType>(a+1);
 			}
 
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -161,6 +170,40 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 }
 
 /*! 
+  Find the suffixes for the given filetype.
+ \param szSuffix File suffix
+
+ Returns 0 if no exporter knows this filetype.
+ This function should closely resemble IE_Exp::suffixesForFileType()
+*/
+const char * IE_Imp::suffixesForFileType(IEFileType ieft)
+{
+	const char * szSuffixes = 0;
+
+	// we have to construct the loop this way because a
+	// given filter could support more than one file type,
+	// so we must query a suffix match for all file types
+	UT_uint32 nrElements = getImporterCount();
+
+	for (UT_uint32 k=0; k < nrElements; k++)
+	{
+		IE_ImpSniffer * s = static_cast<IE_ImpSniffer*>(m_sniffers.getNthItem(k));
+		if (s->supportsFileType(ieft))
+		{
+			const char *szDummy;
+			IEFileType ieftDummy;
+			if (s->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
+				return szSuffixes;
+			else
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+
+	// The passed in filetype is invalid.
+	return 0;
+}
+
+/*! 
   Construct an importer of the right type.
  \param pDocument Document
  \param szFilename Name of file - optional
@@ -170,6 +213,7 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 
  Caller is responsible for deleting the importer object
  when finished with it.
+ This function should closely match IE_Exp::contructExporter()
 */
 UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 								   const char * szFilename,

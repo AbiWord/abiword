@@ -121,7 +121,7 @@ protected:
 
 // The importer/reader for Plain Text Files with selectable encoding.
 
-class IE_Imp_EncodedText_Sniffer : public IE_Imp_Text_Sniffer
+class IE_Imp_EncodedText_Sniffer : public IE_ImpSniffer
 {
 	friend class IE_Imp;
 	friend class IE_Imp_Text;
@@ -130,6 +130,8 @@ public:
 	IE_Imp_EncodedText_Sniffer() {}
 	virtual ~IE_Imp_EncodedText_Sniffer() {}
 
+	virtual bool recognizeContents (const char * szBuf,
+									UT_uint32 iNumbytes);
 	virtual bool recognizeSuffix (const char * szSuffix);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
