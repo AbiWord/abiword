@@ -446,20 +446,37 @@ static void _ev_strip_underline(char * bufResult,
 	*b = 0;
 }
 
+// change the first '&' character, which we assume to be an accelerator character, to a '_' character as used 
+// by GTK+. Furthermore, escape all '_' characters with another '_' character for a literal '_'
 static void _ev_convert(char * bufResult,
 						const char * szString)
 {
 	UT_ASSERT(szString && bufResult);
-	
-	strcpy(bufResult, szString);
 
-	char * pl = bufResult;
-	while (*pl)
+	bool foundAmpersand = false;
+	const char * src = szString;
+	char * dest = bufResult;
+	while (*src)
 	{
-		if (*pl == '&')
-			*pl = '_';
-		pl++;
+		if (*src == '&' && !foundAmpersand)
+		{
+			*dest = '_';
+			foundAmpersand = true;
+		}
+		else if (*src == '_')
+		{
+			*dest = '_';
+			dest++;
+			*dest = '_';
+		}
+		else
+		{
+			*dest = *src;
+		}
+		dest++;
+		src++;
 	}
+	*dest = 0;
 }
 
 struct mapping {
