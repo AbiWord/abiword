@@ -48,6 +48,9 @@ class UT_Rect
 public:
 	UT_Rect();
 	UT_Rect(int iLeft, int iTop, int iWidth, int iHeight);
+
+	UT_Bool containsPoint(UT_sint32 x, UT_sint32 y) const;
+	void set(int iLeft, int iTop, int iWidth, int iHeight);
 	
 	UT_sint32	left;
 	UT_sint32	top;

@@ -357,6 +357,10 @@ void PS_Graphics::fillRect(UT_RGBColor& /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/,
 {
 }
 
+void PS_Graphics::fillRect(UT_RGBColor& /*c*/, UT_Rect & /*r*/)
+{
+}
+
 void PS_Graphics::invertRect(const UT_Rect* /*pRect*/)
 {
 	// invertRect is only used for drawing the selection region, which does not apply on paper.

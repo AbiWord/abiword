@@ -440,6 +440,11 @@ void GR_UNIXGraphics::setClipRect(const UT_Rect* pRect)
 	}
 }
 
+void GR_UNIXGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
+{
+	fillRect(c,r.left,r.top,r.width,r.height);
+}
+
 void GR_UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 							UT_sint32 w, UT_sint32 h)
 {

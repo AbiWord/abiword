@@ -101,7 +101,30 @@ gint AP_UnixTopRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixTopRuler: [p %p] received button_press_event\n",pUnixTopRuler));
+
+	// grab the mouse for the duration of the drag.
+	gtk_grab_add(w);
+	
+	EV_EditModifierState ems;
+	EV_EditMouseButton emb = 0;
+	
+	ems = 0;
+	
+	if (e->state & GDK_SHIFT_MASK)
+		ems |= EV_EMS_SHIFT;
+	if (e->state & GDK_CONTROL_MASK)
+		ems |= EV_EMS_CONTROL;
+	if (e->state & GDK_MOD1_MASK)
+		ems |= EV_EMS_ALT;
+
+	if (e->state & GDK_BUTTON1_MASK)
+		emb = EV_EMB_BUTTON1;
+	else if (e->state & GDK_BUTTON2_MASK)
+		emb = EV_EMB_BUTTON2;
+	else if (e->state & GDK_BUTTON3_MASK)
+		emb = EV_EMB_BUTTON3;
+
+	pUnixTopRuler->mousePress(ems, emb, e->x, e->y);
 	return 1;
 }
 
@@ -109,7 +132,31 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 {
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	UT_DEBUGMSG(("UnixTopRuler: [p %p] received button_release_event\n",pUnixTopRuler));
+
+	EV_EditModifierState ems;
+	EV_EditMouseButton emb = 0;
+	
+	ems = 0;
+	
+	if (e->state & GDK_SHIFT_MASK)
+		ems |= EV_EMS_SHIFT;
+	if (e->state & GDK_CONTROL_MASK)
+		ems |= EV_EMS_CONTROL;
+	if (e->state & GDK_MOD1_MASK)
+		ems |= EV_EMS_ALT;
+
+	if (e->state & GDK_BUTTON1_MASK)
+		emb = EV_EMB_BUTTON1;
+	else if (e->state & GDK_BUTTON2_MASK)
+		emb = EV_EMB_BUTTON2;
+	else if (e->state & GDK_BUTTON3_MASK)
+		emb = EV_EMB_BUTTON3;
+
+	pUnixTopRuler->mouseRelease(ems, emb, e->x, e->y);
+
+	// release the mouse after we are done.
+	gtk_grab_remove(w);
+	
 	return 1;
 }
 	
@@ -117,9 +164,6 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 {
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-
-	// UT_DEBUGMSG(("UnixTopRuler: [p %p] [size w %d h %d] received configure_event\n",
-	//				 pUnixTopRuler, e->width, e->height));
 
 	UT_uint32 iHeight = (UT_uint32)e->height;
 	if (iHeight != pUnixTopRuler->getHeight())
@@ -135,9 +179,23 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 {
 	// a static function
-	// AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
-	// UT_DEBUGMSG(("UnixTopRuler: [p %p] received motion_notify_event\n",pUnixTopRuler));
+	AP_UnixTopRuler * pUnixTopRuler = (AP_UnixTopRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+
+	EV_EditModifierState ems;
+	
+	ems = 0;
+	
+	if (e->state & GDK_SHIFT_MASK)
+		ems |= EV_EMS_SHIFT;
+	if (e->state & GDK_CONTROL_MASK)
+		ems |= EV_EMS_CONTROL;
+	if (e->state & GDK_MOD1_MASK)
+		ems |= EV_EMS_ALT;
+
+	pUnixTopRuler->mouseMotion(ems, e->x, e->y);
+	
 	return 1;
+
 }
 	
 gint AP_UnixTopRuler::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)

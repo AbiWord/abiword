@@ -29,6 +29,9 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 
+/*****************************************************************/
+/*****************************************************************/
+
 UT_Rect::UT_Rect()
 {
 	left = top = height = width = 0;
@@ -41,6 +44,29 @@ UT_Rect::UT_Rect(int iLeft, int iTop, int iWidth, int iHeight)
 	width = iWidth;
 	height = iHeight;
 }
+
+UT_Bool UT_Rect::containsPoint(UT_sint32 x, UT_sint32 y) const
+{
+	// return true iff the given (x,y) is inside the rectangle.
+
+	if ((x < left) || (x >= left+width))
+		return UT_FALSE;
+	if ((y < top) || (y >= top+height))
+		return UT_FALSE;
+
+	return UT_TRUE;
+}
+
+void UT_Rect::set(int iLeft, int iTop, int iWidth, int iHeight)
+{
+	left = iLeft;
+	top = iTop;
+	width = iWidth;
+	height = iHeight;
+}
+
+/*****************************************************************/
+/*****************************************************************/
 
 static int x_hexDigit(char c)
 {

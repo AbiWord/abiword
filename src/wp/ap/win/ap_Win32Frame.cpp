@@ -537,8 +537,6 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 	if (f)
 		pView = f->m_pView;
 
-	UT_DEBUGMSG(("ContainerWndProc: [iMsg 0x%08lx][wParam 0x%08lx][lParam 0x%08lx]\n",iMsg,wParam,lParam));
-	
 	switch (iMsg)
 	{
 	case WM_SIZE:
@@ -770,7 +768,6 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 	{
 		hdc = BeginPaint(hwnd, &ps);
 
-		UT_DEBUGMSG(("Calling draw()\n"));
 		UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,
 				  ps.rcPaint.right-ps.rcPaint.left,
 				  ps.rcPaint.bottom-ps.rcPaint.top);

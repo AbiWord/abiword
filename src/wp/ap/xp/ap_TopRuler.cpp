@@ -46,7 +46,8 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 	m_iWidth = 0;
 	m_iLeftRulerWidth = 0;
 	m_xScrollOffset = 0;
-
+	m_bValidMouseClick = UT_FALSE;
+	
 	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
@@ -367,8 +368,8 @@ void AP_TopRuler::_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
 	}
 }
 
-void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
-										   UT_sint32 xOrigin)
+void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo &info, UT_sint32 xOrigin,
+										   UT_Rect &rLeftIndent, UT_Rect &rRightIndent, UT_Rect &rFirstLineIndent)
 {
 	UT_uint32 yTop = s_iFixedHeight/4;
 	UT_uint32 yBar = s_iFixedHeight/2;
@@ -381,16 +382,25 @@ void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo &info, UT_RGBColor &c
 	UT_sint32 hs = 2;					// halfSize
 	UT_sint32 fs = hs * 2 + 1;			// fullSize
 
-	m_pG->fillRect(clr, xAbsLeft + info.m_xrLeftIndent - hs,
-				   yBottom-fs, fs, fs);
-	m_pG->fillRect(clr, xAbsLeft + info.m_xrLeftIndent + info.m_xrFirstLineIndent - hs,
-				   yBottom-2*fs-1, fs, fs);
-	m_pG->fillRect(clr, xAbsRight - info.m_xrRightIndent - hs,
-				   yBottom-fs, fs, fs);
+	rLeftIndent.set(xAbsLeft + info.m_xrLeftIndent - hs, yBottom-fs, fs, fs);
+	rFirstLineIndent.set(xAbsLeft + info.m_xrLeftIndent + info.m_xrFirstLineIndent - hs, yBottom-2*fs-1, fs, fs);
+	rRightIndent.set(xAbsRight - info.m_xrRightIndent - hs, yBottom-fs, fs, fs);
 }
 
-void AP_TopRuler::_drawColumnProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
-										UT_uint32 kCol)
+void AP_TopRuler::_drawParagraphProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
+										   UT_sint32 xOrigin)
+{
+	UT_Rect rLeftIndent;
+	UT_Rect rRightIndent;
+	UT_Rect rFirstLineIndent;
+
+	_getParagraphMarkerRects(info, xOrigin, rLeftIndent, rRightIndent, rFirstLineIndent);
+	m_pG->fillRect(clr, rLeftIndent);
+	m_pG->fillRect(clr, rRightIndent);
+	m_pG->fillRect(clr, rFirstLineIndent);
+}
+
+void AP_TopRuler::_getColumnMarkerRect(AP_TopRulerInfo &info, UT_uint32 kCol, UT_Rect &rCol)
 {
 	UT_uint32 yTop = s_iFixedHeight/4;
 
@@ -402,10 +412,18 @@ void AP_TopRuler::_drawColumnProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
 	UT_sint32 hs = 2;					// halfSize
 	UT_sint32 fs = hs * 2 + 1;			// fullSize
 
-	m_pG->fillRect(clr, xAbsLeft  -hs, yTop-fs,     fs, fs);
+	rCol.set(xAbsLeft -hs, yTop-fs, fs, fs);
 }
 
-void AP_TopRuler::_drawMarginProperties(AP_TopRulerInfo &info, UT_RGBColor &clr)
+void AP_TopRuler::_drawColumnProperties(AP_TopRulerInfo &info, UT_RGBColor &clr, UT_uint32 kCol)
+{
+	UT_Rect rCol;
+	
+	_getColumnMarkerRect(info,kCol,rCol);
+	m_pG->fillRect(clr,rCol);
+}
+
+void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo &info, UT_Rect &rLeft, UT_Rect &rRight)
 {
 	UT_uint32 yTop = s_iFixedHeight/4;
 
@@ -435,8 +453,17 @@ void AP_TopRuler::_drawMarginProperties(AP_TopRulerInfo &info, UT_RGBColor &clr)
 	UT_sint32 hs = 2;					// halfSize
 	UT_sint32 fs = hs * 2 + 1;			// fullSize
 
-	m_pG->fillRect(clr, xAbsLeft  -hs, yTop-fs,     fs, fs);
-	m_pG->fillRect(clr, xAbsRight -hs, yTop-fs,     fs, fs);
+	rLeft.set( xAbsLeft  -hs, yTop-fs, fs, fs);
+	rRight.set(xAbsRight -hs, yTop-fs, fs, fs);
+}
+
+void AP_TopRuler::_drawMarginProperties(AP_TopRulerInfo &info, UT_RGBColor &clr)
+{
+	UT_Rect rLeft, rRight;
+
+	_getMarginMarkerRects(info,rLeft,rRight);
+	m_pG->fillRect(clr,rLeft);
+	m_pG->fillRect(clr,rRight);
 }
 
 void AP_TopRuler::_draw(void)
@@ -539,9 +566,94 @@ void AP_TopRuler::_draw(void)
 	// and the current paragraph properties {left-indent, right-indent, first-left-indent}.
 
 	_drawMarginProperties(info,clrBlack);
-	for (k=0; (k < info.m_iNumColumns-1); k++)
-		_drawColumnProperties(info,clrBlack,k);
+	if (info.m_iNumColumns > 1)
+		_drawColumnProperties(info,clrBlack,0);
 	_drawParagraphProperties(info,clrBlack, xTickOrigin);
 	
 	return;
 }
+
+/*****************************************************************/
+
+void AP_TopRuler::mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y)
+{
+	UT_DEBUGMSG(("mousePress: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
+
+	// get the complete state of what should be on the ruler at the time of the grab.
+	// we assume that nothing in the document can change during our grab unless we
+	// change it.
+
+	m_bValidMouseClick = UT_FALSE;
+	m_pView->getTopRulerInfo(&m_infoCache);
+
+	UT_Rect rLeftMargin, rRightMargin, rCol, rLeftIndent, rRightIndent, rFirstLineIndent;
+
+	_getMarginMarkerRects(m_infoCache,rLeftMargin,rRightMargin);
+	if (rLeftMargin.containsPoint(x,y))
+	{
+		UT_DEBUGMSG(("hit left margin block\n"));
+		m_bValidMouseClick = UT_TRUE;
+		return;
+	}
+	if (rRightMargin.containsPoint(x,y))
+	{
+		UT_DEBUGMSG(("hit right margin block\n"));
+		m_bValidMouseClick = UT_TRUE;
+		return;
+	}
+
+	if (m_infoCache.m_iNumColumns > 1)
+	{
+		_getColumnMarkerRect(m_infoCache,0,rCol);
+		if (rCol.containsPoint(x,y))
+		{
+			UT_DEBUGMSG(("hit in column gap block\n"));
+			m_bValidMouseClick = UT_TRUE;
+			return;
+		}
+	}
+
+	UT_sint32 xTickOrigin = m_infoCache.u.c.m_xaLeftMargin;
+	if (m_infoCache.m_iCurrentColumn > 0)
+		xTickOrigin += m_infoCache.m_iCurrentColumn * (m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xColumnGap);
+
+	_getParagraphMarkerRects(m_infoCache, xTickOrigin, rLeftIndent, rRightIndent, rFirstLineIndent);
+	if (rLeftIndent.containsPoint(x,y))
+	{
+		UT_DEBUGMSG(("hit left indent block\n"));
+		m_bValidMouseClick = UT_TRUE;
+		return;
+	}
+	if (rRightIndent.containsPoint(x,y))
+	{
+		UT_DEBUGMSG(("hit right indent block\n"));
+		m_bValidMouseClick = UT_TRUE;
+		return;
+	}
+	if (rFirstLineIndent.containsPoint(x,y))
+	{
+		UT_DEBUGMSG(("hit first-line-indent block\n"));
+		m_bValidMouseClick = UT_TRUE;
+		return;
+	}
+
+	return;
+}
+
+void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y)
+{
+	if (!m_bValidMouseClick)
+		return;
+
+	m_bValidMouseClick = UT_FALSE;
+	UT_DEBUGMSG(("mouseRelease: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
+}
+
+void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y)
+{
+	if (!m_bValidMouseClick)
+		return;
+		
+	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
+}
+

@@ -406,6 +406,11 @@ void GR_Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sin
 	DeleteObject(hBrush);
 }
 
+void GR_Win32Graphics::fillRect(UT_RGBColor& c, UT_Rect &r)
+{
+	fillRect(c,r.left,r.top,r.width,r.height);
+}
+
 UT_Bool GR_Win32Graphics::startPrint(void)
 {
 	UT_ASSERT(m_bPrint);

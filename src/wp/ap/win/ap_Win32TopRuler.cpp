@@ -73,7 +73,7 @@ UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_DBLCLKS | CS_OWNDC;
+	wndclass.style         = CS_OWNDC;
 	wndclass.lpfnWndProc   = AP_Win32TopRuler::_TopRulerWndProc;
 	wndclass.cbClsExtra    = 0;
 	wndclass.cbWndExtra    = 0;
@@ -111,6 +111,20 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 	return m_hwndTopRuler;
 }
 
+static EV_EditModifierState s_GetEMS(WPARAM fwKeys)
+{
+	EV_EditModifierState ems = 0;
+
+	if (fwKeys & MK_SHIFT)
+		ems |= EV_EMS_SHIFT;
+	if (fwKeys & MK_CONTROL)
+		ems |= EV_EMS_CONTROL;
+	if (GetKeyState(VK_MENU) & 0x8000)
+		ems |= EV_EMS_ALT;
+
+	return ems;
+}
+	
 LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	// this is a static member function.
@@ -123,15 +137,37 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 	switch (iMsg)
 	{
 	case WM_LBUTTONDOWN:
+		SetCapture(hwnd);
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,LOWORD(lParam),HIWORD(lParam));
+		return 0;
+		
 	case WM_MBUTTONDOWN:
+		SetCapture(hwnd);
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,LOWORD(lParam),HIWORD(lParam));
+		return 0;
+		
 	case WM_RBUTTONDOWN:
-	case WM_LBUTTONDBLCLK:
-	case WM_MBUTTONDBLCLK:
-	case WM_RBUTTONDBLCLK:
+		SetCapture(hwnd);
+		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,LOWORD(lParam),HIWORD(lParam));
+		return 0;
+		
 	case WM_MOUSEMOVE:
+		pRuler->mouseMotion(s_GetEMS(wParam),LOWORD(lParam),HIWORD(lParam));
+		return 0;
+
 	case WM_LBUTTONUP:
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON1,LOWORD(lParam),HIWORD(lParam));
+		ReleaseCapture();
+		return 0;
+
 	case WM_MBUTTONUP:
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON2,LOWORD(lParam),HIWORD(lParam));
+		ReleaseCapture();
+		return 0;
+		
 	case WM_RBUTTONUP:
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON3,LOWORD(lParam),HIWORD(lParam));
+		ReleaseCapture();
 		return 0;
 
 	case WM_SIZE:

@@ -27,6 +27,7 @@
 #include "ut_misc.h"
 #include "xav_Listener.h"
 #include "ap_Ruler.h"
+#include "ev_EditBits.h"
 
 class XAP_Frame;
 class AV_ScrollObj;
@@ -99,6 +100,10 @@ public:
 	void				draw(const UT_Rect * pClipRect);
 	void				scrollRuler(UT_sint32 xoff);
 
+	void				mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y);
+	void				mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y);
+	void				mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y);
+
 	/* used with AV_Listener */
 	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
@@ -115,10 +120,15 @@ protected:
 	void				_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
 								   UT_RGBColor &clr, GR_Font * pFont,
 								   UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo);
-	void				_drawParagraphProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
-												 UT_sint32 xOrigin);
-	void				_drawColumnProperties(AP_TopRulerInfo &info, UT_RGBColor &clr,
-											  UT_uint32 kCol);
+
+	void				_getParagraphMarkerRects(AP_TopRulerInfo &info, UT_sint32 xOrigin,
+												 UT_Rect &rLeftIndent, UT_Rect &rRightIndent, UT_Rect &rFirstLineIndent);
+	void				_drawParagraphProperties(AP_TopRulerInfo &info, UT_RGBColor &clr, UT_sint32 xOrigin);
+
+	void				_getColumnMarkerRect(AP_TopRulerInfo &info, UT_uint32 kCol, UT_Rect &rCol);
+	void				_drawColumnProperties(AP_TopRulerInfo &info, UT_RGBColor &clr, UT_uint32 kCol);
+
+	void				_getMarginMarkerRects(AP_TopRulerInfo &info, UT_Rect &rLeft, UT_Rect &rRight);
 	void				_drawMarginProperties(AP_TopRulerInfo &info, UT_RGBColor &clr);
 	
 	XAP_Frame *			m_pFrame;
@@ -130,6 +140,9 @@ protected:
 	UT_uint32			m_iLeftRulerWidth;
 	UT_sint32			m_xScrollOffset;
 
+	AP_TopRulerInfo		m_infoCache;
+	UT_Bool				m_bValidMouseClick;
+	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */
 };

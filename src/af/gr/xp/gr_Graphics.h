@@ -85,12 +85,8 @@ public:
 	virtual void setLineWidth(UT_sint32) = 0;
 
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
-
-	/* For fillRect() and ??:
-	**   begin fill at x0,y0,
-	**   ?? should x0+w,y0+h or x0+w+1,y0+h+1 be the last pixel affected ??
-	*/
 	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
+	virtual void fillRect(UT_RGBColor& c, UT_Rect &r) = 0;
 	virtual void invertRect(const UT_Rect* pRect) = 0;
 	virtual void setClipRect(const UT_Rect* pRect) = 0;
 	virtual void scroll(UT_sint32, UT_sint32) = 0;
