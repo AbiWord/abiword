@@ -3287,7 +3287,6 @@ Defun1(replace)
 
 static bool s_doLangDlg(FV_View * pView)
 {
-#ifdef LANGUAGE
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
@@ -3341,9 +3340,6 @@ static bool s_doLangDlg(FV_View * pView)
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
-#else
-	return false;
-#endif
 }
 
 /*****************************************************************/

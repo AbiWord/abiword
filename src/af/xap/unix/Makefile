@@ -44,7 +44,8 @@ CPPSRCS=		xap_UnixApp.cpp				\
 			xap_UnixModule.cpp                      \
 			xap_UnixPSImage.cpp			\
 			xap_UnixPSParseAFM.cpp			\
-			xap_UnixEncodingManager.cpp
+			xap_UnixEncodingManager.cpp \
+			xap_UnixDlg_Language.cpp
 
 # only build these for non-gnome
 ifndef ABI_OPT_GNOME

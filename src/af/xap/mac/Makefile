@@ -27,6 +27,7 @@ CPPSRCS=		xap_MacApp.cpp			\
 			xap_MacDlg_About.cpp		\
 			xap_MacDlg_FileOpenSaveAs.cpp	\
 			xap_MacDlg_FontChooser.cpp		\
+			xap_MacDlg_Language.cpp		\
 			xap_MacDlg_Insert_Symbol.cpp	\
 			xap_MacDlg_MessageBox.cpp		\
 			xap_MacDlg_Print.cpp		\

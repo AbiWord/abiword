@@ -29,6 +29,7 @@ CPPSRCS=		xap_BeOSApp.cpp			\
 			xap_BeOSDlg_About.cpp		\
 			xap_BeOSDlg_FileOpenSaveAs.cpp	\
 			xap_BeOSDlg_FontChooser.cpp	\
+			xap_BeOSDlg_Language.cpp	\
 			xap_BeOSDlg_MessageBox.cpp	\
 			xap_BeOSDlg_Print.cpp		\
 			xap_BeOSDlg_PrintPreview.cpp    \

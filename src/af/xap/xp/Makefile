@@ -50,7 +50,8 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Toolbar_ControlFactory.cpp	\
 		xap_ViewListener.cpp		\
 		xav_View.cpp			\
-		xap_EncodingManager.cpp
+		xap_EncodingManager.cpp \
+		xap_Dlg_Language.cpp
 
 TARGETS=		$(OBJS)
 

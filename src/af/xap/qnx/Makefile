@@ -29,6 +29,7 @@ CPPSRCS=		xap_QNXApp.cpp				\
 			xap_QNXDlg_About.cpp			\
 			xap_QNXDlg_FileOpenSaveAs.cpp	\
 			xap_QNXDlg_FontChooser.cpp		\
+			xap_QNXDlg_Language.cpp		\
 			xap_QNXDlg_MessageBox.cpp		\
 			xap_QNXDlg_Print.cpp			\
 			xap_QNXDlg_PrintPreview.cpp             \
