@@ -35,35 +35,6 @@
 
 /*****************************************************************/
 
-static void s_getWidgetRelativeMouseCoordinates(AP_UnixTopRuler * pUnixTopRuler,
-												gint * prx, gint * pry)
-{
-	// TODO there is what appears to be a bug in GTK where
-	// TODO mouse coordinates that we receive (motion and
-	// TODO release) when we have a grab are relative to
-	// TODO whatever window the mouse is over ***AND NOT***
-	// TODO relative to our window.  the following ***HACK***
-	// TODO is used to map the mouse coordinates relative to
-	// TODO our widget.
-
-	// root (absolute) coordinates
-	gint rx, ry;
-	GdkModifierType mask;
-	gdk_window_get_pointer((GdkWindow *) pUnixTopRuler->getRootWindow(), &rx, &ry, &mask);
-
-	// local (ruler widget) coordinates
-	gint wx, wy;
-	pUnixTopRuler->getWidgetPosition(&wx, &wy);
-
-	// subtract one from the other to catch all coordinates
-	// relative to the widget's 0,
-	*prx = rx - wx;
-	*pry = ry - wy;
-	return;
-}
-
-/*****************************************************************/
-
 //evil ugly hack
 static int ruler_style_changed (GtkWidget * w, GdkEventClient * event,
 								AP_UnixTopRuler * ruler)
@@ -241,11 +212,7 @@ gint AP_UnixTopRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * 
 	else if (3 == e->button)
 		emb = EV_EMB_BUTTON3;
 
-	// Map the mouse into coordinates relative to our window.
-	gint xrel, yrel;
-	s_getWidgetRelativeMouseCoordinates(pUnixTopRuler,&xrel,&yrel);
-
-	pUnixTopRuler->mouseRelease(ems, emb, xrel, yrel);
+	pUnixTopRuler->mouseRelease(ems, emb, (UT_uint32)e->x, (UT_uint32)e->y);
 
 	// release the mouse after we are done.
 	gtk_grab_remove(w);
@@ -290,10 +257,10 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 		ems |= EV_EMS_ALT;
 
 	// Map the mouse into coordinates relative to our window.
-	gint xrel, yrel;
-	s_getWidgetRelativeMouseCoordinates(pUnixTopRuler,&xrel,&yrel);
+	//gint xrel, yrel;
+	//s_getWidgetRelativeMouseCoordinates(pUnixTopRuler,&xrel,&yrel);
 
-	pUnixTopRuler->mouseMotion(ems, xrel, yrel);
+	pUnixTopRuler->mouseMotion(ems, (UT_uint32)e->x, (UT_uint32)e->y);
 	pUnixTopRuler->isMouseOverTab((UT_uint32) e->x,(UT_uint32)e->y);
 
 	return 1;
