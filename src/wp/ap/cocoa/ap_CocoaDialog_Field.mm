@@ -243,6 +243,7 @@ void AP_CocoaDialog_Field::setFieldsList(void)
 			LocalizeControl(_fieldsLabel,     pSS,  AP_STRING_ID_DLG_Field_Fields);
 			LocalizeControl(_extraParamLabel, pSS,  AP_STRING_ID_DLG_Field_Parameters);
 
+			[_typesList  setDelegate:self];
 			[_typesList  setAction:@selector(typesAction:)];
 			[_fieldsList setDoubleAction:@selector(okAction:)];
 		}
@@ -269,10 +270,16 @@ void AP_CocoaDialog_Field::setFieldsList(void)
 	return [_extraParamData stringValue];
 }
 
-- (void)typesAction:(id)sender
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
 	_xap->types_changed([_typesList selectedRow]);
 	[_fieldsList reloadData];
+}
+
+- (void)typesAction:(id)sender
+{
+	// _xap->types_changed([_typesList selectedRow]);
+	// [_fieldsList reloadData];
 }
 
 - (IBAction)cancelAction:(id)sender
