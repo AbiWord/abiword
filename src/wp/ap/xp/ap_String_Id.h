@@ -168,9 +168,7 @@ dcl(DLG_Column_Line_Between,	"Line between")
    strings just like this to simulate text, and if your translation
    ends up very, very wordy, it will take up too much room in the preview.
 */
-dcl(DLG_Para_PreviewSampleFallback, "This paragraph represents words as they might appear in your document.  "
-                                    "To see text from your document used in this preview, position your cursor "
-                                    "in a document paragraph with some text in it and open this dialog.")
+dcl(DLG_Para_PreviewSampleFallback, "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog.")
 dcl(DLG_Para_PreviewPrevParagraph,  "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph")
 dcl(DLG_Para_PreviewFollowParagraph,"Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph")
 
@@ -223,8 +221,8 @@ dcl(DLG_Options_Label_ViewAll,			"&All")
 dcl(DLG_Options_Label_ViewHiddenText,	"&Hidden Text")
 dcl(DLG_Options_Label_ViewUnprintable,	"Invisible &Layout Marks")
 
-dcl(DLG_Options_Prompt_IgnoreResetCurrent,	"Do you want to reset ignored words in the current document?" )
-dcl(DLG_Options_Prompt_IgnoreResetAll,		"Do you want to reset ignored words in all the documents?" )
+dcl(DLG_Options_Prompt_IgnoreResetCurrent,	"Do you want to reset ignored words in the current document?")
+dcl(DLG_Options_Prompt_IgnoreResetAll,		"Do you want to reset ignored words in all the documents?")
 
 dcl(DLG_Options_Label_Icons, "Icons")
 dcl(DLG_Options_Label_Text, "Text")
@@ -281,14 +279,7 @@ dcl(FIELD_PieceTable_Test,		"Kevins Test")
 dcl(FIELD_PieceTable_MartinTest,		"Martins Test")
 
 dcl(DLG_Goto_Title,						"Go to...")
-dcl(DLG_Goto_Label_Help,				"Choose your target in the left side.\n"
-										"If you want to use the \"Go To\" button, "
-										"just fill the Number Entry with the "
-										"desired number.  You can use + and - "
-										"to perform relative movement.  I.e., if "
-										"you write \"+2\" and you select \"Line\", "
-										"the \"Go To\" will go 2 lines below your "
-										"current position.")
+dcl(DLG_Goto_Label_Help,			"Choose your target in the left side.\nIf you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.  I.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position.")
 dcl(DLG_Goto_Btn_Prev,					"<< Prev")
 dcl(DLG_Goto_Btn_Next,					"Next >>")
 dcl(DLG_Goto_Label_What,				"Go To &What:")

@@ -61,7 +61,7 @@ BeginSet(nn,NO,true)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopier",		tb_copy_xpm,	NULL, "Kopier")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Lim inn",	tb_paste_xpm,	NULL, "Lim inn")
         ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, "Stavekontroll", tb_spellcheck_xpm, NULL, "Stavekontrollerer dokumentet")
-
+	ToolbarLabel(AP_TOOLBAR_ID_IMG, "Sett inn bilde", tb_insert_graphic_xpm, NULL, "Sett inn eit bilde i dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",	NoIcon,			NULL, "Stil")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Skrift",		NoIcon,			NULL, "Skrift")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Skriftstorleik", NoIcon,		NULL, "Skriftstorleik")
@@ -96,8 +96,8 @@ BeginSet(nn,NO,true)
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Nummerert liste",		tb_lists_numbers_xpm,		NULL,		"Start/avsluttar nummerert liste")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Forgrunnsfarge",	NoIcon,			NULL, "Change Foreground Color")
         ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Bakgrunnsfarge",	NoIcon,			NULL, "Change Background Color")
-        ToolbarLabel(AP_TOOLBAR_ID_INDENT, "Auk innrykk", tb_text_indent_xpm, NULL, "Auker avsnittsinnrykk")
-        ToolbarLabel(AP_TOOLBAR_ID_UNINDENT, "Reduser innrykk", tb_text_unindent_xpm, NULL, "Reduserer avsnittsinnrykk")
+        ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Auk innrykk", tb_text_indent_xpm, NULL, "Aukar avsnittsinnrykk")
+        ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Reduser innrykk", tb_text_unindent_xpm, NULL, "Reduserer avsnittsinnrykk")
 	
      // ... add others here ...
 

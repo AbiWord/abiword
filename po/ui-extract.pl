@@ -228,7 +228,7 @@ sub Convert($) {
         ### For generic translatable XP header files ###
         
         if ($FILE =~ /\/xp\/(.*)\.h$/sg){
-        while ($input =~ /\((.*),(.+)\"(.*)\"/g) {
+        while ($input =~ /\((\w+),(\s*)\"(.*)\"/g) {
                my $tag = $1;
                $string{$3} = [$tag];
         }}

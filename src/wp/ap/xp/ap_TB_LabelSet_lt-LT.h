@@ -49,26 +49,27 @@ BeginSet(lt,LT,true)
 
 	//          (id, 		                    szLabel,	IconName,	    szToolTip,	szStatusMsg)
 
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Naujas",		tb_new_xpm,		NULL,		"")	
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_NEW,		"Naujas",	tb_new_xpm,	NULL,		"")	
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_OPEN,		"Atidaryti",	tb_open_xpm,	NULL,		"")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Saugoti", 	tb_save_xpm,NULL,		"")
-	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Saugoti kaip", 	tb_save_as_xpm,	NULL,	"")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Saugoti", 	tb_save_xpm,	NULL,		"")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Saugoti kaip",	tb_save_as_xpm,	NULL,		"")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Spausdinti",	tb_print_xpm,	NULL,		"")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,  "Sp. perþiûra", tb_print_preview_xpm, NULL, 	"Perþiûrëti kaip atrodys iðspausdinus")	
 
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Atðaukti",	tb_undo_xpm,NULL,		"")
-	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Kartoti",	tb_redo_xpm,NULL,		"")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Atðaukti",	tb_undo_xpm,	NULL,		"")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Kartoti",	tb_redo_xpm,	NULL,		"")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Iðkirpti",	tb_cut_xpm,	NULL,		"")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopijuoti",	tb_copy_xpm,	NULL,		"")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Ádëti",	tb_paste_xpm,	NULL,		"")
 
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stilius",		NoIcon,			NULL,		"")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Ðriftas",   NoIcon,		NULL,		"")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stilius",	NoIcon,		NULL,		"")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Ðriftas",	NoIcon,		NULL,		"")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Ðrifto dydis", NoIcon,		NULL,		"")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Storas",		tb_text_bold_xpm,	NULL,	"")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Storas",	tb_text_bold_xpm,	NULL,	"")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_ITALIC,		"Kursyvas",	tb_text_italic_xpm,	NULL,	"")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Pabrauktas",tb_text_underline_xpm,	NULL,	"")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Brûkðnys virð",tb_text_overline_xpm,	NULL, "")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Perbrauktas", tb_text_strikeout_xpm,	NULL,	"")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Pabrauktas",	tb_text_underline_xpm,	NULL,	"")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Brûkðnys virð",tb_text_overline_xpm,	NULL,	"")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Perbrauktas",	tb_text_strikeout_xpm,	NULL,	"")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Pakeltas",	tb_text_superscript_xpm,	NULL, "")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Nuleistas",	tb_text_subscript_xpm,		NULL, "")
@@ -82,16 +83,26 @@ BeginSet(lt,LT,true)
 	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt",	tb_para_12before_xpm,	NULL,	"Tarpas prieð: 12 pt")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Viengubi",	tb_line_single_space_xpm,	NULL,	"Viengubi tarpai tarp eiluèiø")
-	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1,5 eilutës",	   tb_line_middle_space_xpm,	NULL, "1,5 eilutës tarpai")
+	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1,5 eilutës",	tb_line_middle_space_xpm,	NULL, "1,5 eilutës tarpai")
 	ToolbarLabel(AP_TOOLBAR_ID_DOUBLE_SPACE,	"Dvigubi",	tb_line_double_space_xpm,	NULL, "Dvigubi tarpai")
 
-	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"1 stulpelis",		tb_1column_xpm,	NULL,	"")
-	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 stulpeliai",	tb_2column_xpm,	NULL,	"")
-	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 stulpeliai",	tb_3column_xpm,	NULL,	"")
+	ToolbarLabel(AP_TOOLBAR_ID_1COLUMN,		"1 stulpelis",	tb_1column_xpm,		NULL,	"1 stulpelis")
+	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,		"2 stulpeliai",	tb_2column_xpm,		NULL,	"2 stulpeliai")
+	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,		"3 stulpeliai",	tb_3column_xpm,		NULL,	"3 stulpeliai")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Mastelis",			NoIcon,			NULL,	"")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Punktø sàraðai",	tb_lists_bullets_xpm,		NULL,		"Pradëti/Sustabdyti punktø sàraðus")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Numeruoti sàraðai",	tb_lists_numbers_xpm,		NULL,		"Pradëti/Sustabdyti numeruotus sàraðus")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,		"Mastelis",	NoIcon,			NULL,	"Mastelis")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Punktø sàr.",	tb_lists_bullets_xpm,	NULL,	"Pradëti/Uþbaigti punktø sàraðus")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Numeruotas",	tb_lists_numbers_xpm,	NULL,	"Pradëti/Uþbaigti numeruotus sàraðus")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Fonas",	NoIcon,			NULL,	"Fono spalva")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Spalva",	NoIcon,			NULL,	"Teksto spalva")	
+	
+	// New
+	
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Simbolis",	tb_symbol_xpm,		NULL,	"Áterpti simbolá")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Átraukti",	tb_text_indent_xpm,	NULL,	"Átraukti nuo dokumento kraðto")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Pritraukti",	tb_text_unindent_xpm,	NULL,	"Pritraukti arèiau dokumento kraðto")
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,		"Raðyba",	tb_spellcheck_xpm,	NULL,	"Patikrinti dokumento raðybà")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG,			"Paveikslëlis", tb_insert_graphic_xpm,	NULL,	"Áterpti paveikslëlá á dokumentà")
 	
 	// ... add others here ...
 
