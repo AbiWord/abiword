@@ -900,8 +900,6 @@ UT_Error XAP_Frame::backup(const char* szExt)
 
 	UT_String backupName = makeBackupName ( szExt );
 
-	showMessageBox(backupName.c_str(),XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
-
 	UT_Error error = m_pDoc->saveAs(backupName.c_str(), m_pDoc->getLastSavedAsType(), false);
 	UT_DEBUGMSG(("File %s saved.\n", backupName.c_str()));
 
