@@ -8497,7 +8497,7 @@ static bool s_doInsertTableDlg(FV_View * pView)
 				propBuffer += tmp;
 			}
 			const XML_Char * propsArray[3];
-	        	propsArray[0] = "table-column-props";
+			propsArray[0] = "table-column-props";
 			propsArray[1] = propBuffer.c_str();
 			propsArray[2] = NULL;
 			pView->cmdInsertTable(pDialog->getNumRows(),pDialog->getNumCols(),propsArray);
@@ -8783,7 +8783,7 @@ Defun(colorForeTB)
 	ABIWORD_VIEW;
 
   const XML_Char * properties[] = { "color", NULL, 0};
-  properties[1] = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
+  properties[1] = reinterpret_cast<const XML_Char *>(UT_UTF8String(pCallData->m_pData).utf8_str());
   pView->setCharFormat(properties);
 
   return true;
@@ -8795,7 +8795,7 @@ Defun(colorBackTB)
 	ABIWORD_VIEW;
 
 	const XML_Char * properties[] = { "bgcolor", NULL, 0};
-	properties[1] = reinterpret_cast<const XML_Char *>(pCallData->m_pData);
+	properties[1] = reinterpret_cast<const XML_Char *>(UT_UTF8String(pCallData->m_pData).utf8_str());
 	pView->setCharFormat(properties);
 
 	return true;

@@ -87,7 +87,6 @@ PSpellChecker::requestDictionary (const char * szLang)
 	
 	spell_error = new_pspell_manager(spell_config);
 	delete_pspell_config(spell_config);
-	UT_DEBUGMSG(("Attempting to load %s \n",lang));
 	
 	FREEP(lang);
 	
@@ -158,9 +157,8 @@ PSpellChecker::suggestWord (const UT_UCSChar * szWord,
 	count       = pspell_word_list_size(word_list);
 
 	// no suggestions, not an error
-	if(count == 0) {
+	if(count == 0)
 		return 0;
-	}
 	
 	UT_Vector * sg = new UT_Vector ();
 	

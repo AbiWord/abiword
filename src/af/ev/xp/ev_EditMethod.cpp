@@ -24,7 +24,6 @@
 
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
-#include "ut_debugmsg.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_string.h"
@@ -136,7 +135,6 @@ bool EV_EditMethod::Fn(AV_View * pView, EV_EditMethodCallData * pCallData) const
 	else if (m_CtxtFn)
 		return (*m_CtxtFn) (pView, pCallData, m_context);
 
-	UT_DEBUGMSG(("no function pointer in edit-method!\n"));
 	UT_ASSERT(m_fn || m_CtxtFn);
 	return false;
 }
