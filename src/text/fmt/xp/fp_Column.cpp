@@ -123,7 +123,7 @@ void fp_VerticalContainer::setHeight(UT_sint32 iHeight)
  */
 void fp_VerticalContainer::setMaxHeight(UT_sint32 iMaxHeight)
 {
-	UT_ASSERT(iMaxHeight > 0);
+	//UT_ASSERT(iMaxHeight > 0);
 
 	if (iMaxHeight == m_iMaxHeight)
 	{
