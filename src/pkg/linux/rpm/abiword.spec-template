@@ -55,7 +55,7 @@
 
 %if %{enable_impexp}
 #%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-docbook --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --enable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --enable-xsl-fo
-%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --disable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --disable-xsl-fo --enable-librsvg --disable-docbook
+%define plugin_impexp --enable-gdkpixbuf --enable-bmp --enable-jpeg --enable-wmf --enable-applix --enable-bz2abw --enable-clarisworks --enable-eml --enable-hancom --enable-hrtext --enable-html --enable-iscii-text --enable-kword --enable-latex --enable-mif --enable-mswrite --enable-nroff --enable-OpenWriter --enable-pdb --enable-psion --enable-pw --enable-sdw --enable-t602 --enable-wml --enable-wordperfect --enable-xhtml --enable-xsl-fo --enable-librsvg --enable-docbook
 %else
 %define plugin_impexp --disable-gdkpixbuf --disable-bmp --disable-jpeg --disable-wmf --disable-applix --disable-bz2abw --disable-clarisworks --disable-docbook --disable-eml --disable-hancom --disable-hrtext --disable-html --disable-iscii-text --disable-kword --disable-latex --disable-mif --disable-mswrite --disable-nroff --disable-OpenWriter --disable-pdb --disable-psion --disable-pw --disable-sdw --disable-t602 --disable-wml --disable-wordperfect --disable-xhtml --disable-xsl-fo
 %endif
@@ -100,9 +100,7 @@ BuildRequires: libxml2-devel >= 2.4.2
 
 %if %{enable_xft}
 Requires: fontconfig
-Requires: Xft
 BuildRequires: fontconfig-devel
-BuildRequires: Xft-devel
 %endif
 
 # Requirements for GNOME build
@@ -220,7 +218,7 @@ This is the clipart portfolio used by AbiWord.
 cd ../abiword-plugins
 ./nextgen.sh
 ##%configure --prefix=$RPM_BUILD_ROOT/%{ABIPREFIX}/%{AbiSuite} --disable-all --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
-%configure --prefix=%{_prefix} --disable-openwriter --disable-sdw --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
+%configure --prefix=%{_prefix} --disable-nroff --disable-eg %{plugin_tools} %{plugin_impexp}
 %__make
 
 cd ../abi
@@ -310,11 +308,12 @@ cd ../abi
 %defattr(644,root,root,755)
 # comment if not working
 %{_libdir}/%{AbiWord}/plugins/libAbiCommand.*
-%{_libdir}/%{AbiWord}/plugins/libAbiGimp.*
 #%{_libdir}/%{AbiWord}/plugins/libAbiAikSaurus.so
 %{_libdir}/%{AbiWord}/plugins/libAbiBabelfish.*
 %{_libdir}/%{AbiWord}/plugins/libAbiFreeTranslation.*
 %{_libdir}/%{AbiWord}/plugins/libAbiGdict.*
+%{_libdir}/%{AbiWord}/plugins/libAbiGimp.*
+%{_libdir}/%{AbiWord}/plugins/libAbiGoogle.*
 %{_libdir}/%{AbiWord}/plugins/libAbiURLDict.*
 %{_libdir}/%{AbiWord}/plugins/libAbiWikipedia.*
 %{_libdir}/%{AbiWord}/plugins/libAbiReferee.*
@@ -329,7 +328,7 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiBZ2.*
 %{_libdir}/%{AbiWord}/plugins/libAbiClarisWorks.*
 %{_libdir}/%{AbiWord}/plugins/libAbiCoquille.*
-#%{_libdir}/%{AbiWord}/plugins/libAbiDocBook.*
+%{_libdir}/%{AbiWord}/plugins/libAbiDocBook.*
 %{_libdir}/%{AbiWord}/plugins/libAbiEML.*
 %{_libdir}/%{AbiWord}/plugins/libAbiGdkPixbuf.*
 %{_libdir}/%{AbiWord}/plugins/libAbiHancom.*
@@ -342,16 +341,16 @@ cd ../abi
 %{_libdir}/%{AbiWord}/plugins/libAbiMIF.*
 %{_libdir}/%{AbiWord}/plugins/libAbiMSWrite.*
 %{_libdir}/%{AbiWord}/plugins/libAbiNroff.*
-#%{_libdir}/%{AbiWord}/plugins/libAbiOpenWriter.so
+%{_libdir}/%{AbiWord}/plugins/libAbiOpenWriter.so
 %{_libdir}/%{AbiWord}/plugins/libAbiPW.*
 %{_libdir}/%{AbiWord}/plugins/libAbiPalmDoc.*
 %{_libdir}/%{AbiWord}/plugins/libAbiRSVG.*
-#%{_libdir}/%{AbiWord}/plugins/libAbiSDW.so
+%{_libdir}/%{AbiWord}/plugins/libAbiSDW.so
 %{_libdir}/%{AbiWord}/plugins/libAbiT602.*
 %{_libdir}/%{AbiWord}/plugins/libAbiWML.*
 #%{_libdir}/%{AbiWord}/plugins/libAbiWordPerfect.*
 %{_libdir}/%{AbiWord}/plugins/libAbiXHTML.*
-#%{_libdir}/%{AbiWord}/plugins/libAbiXSLFO.*
+%{_libdir}/%{AbiWord}/plugins/libAbiXSLFO.*
 %endif
 
 %files clipart
