@@ -3968,6 +3968,7 @@ UT_Error FV_View::cmdInsertTOC(void)
 	// Signal piceTable is stable again
 	_restorePieceTableState();
 	_generalUpdate();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 
 	return bRet;
 
