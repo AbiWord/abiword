@@ -32,6 +32,7 @@ Stephen Hack <shack@uiuc.edu>                   options dialog
 Martin Willemoes Hansen <mwh@stampede.org>
 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>    m68k Endian patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
+Perry Ismangil (perry@trabas.com) 		AbiHello
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog, .zabw impexp
 Cuenca Abela Joaquin <cuenca@ie2.u-psud.fr>     GNOME front end, LaTeX exporter
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
