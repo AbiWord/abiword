@@ -1606,7 +1606,7 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 				UT_sint32 iFilled = pLayout->getPercentFilled();
 				UT_String sFilled;
 				UT_String_sprintf(sFilled," %d",iFilled);
-				msg += sFilled;
+				msg += sFilled+"%";
 				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
 				
 			}
