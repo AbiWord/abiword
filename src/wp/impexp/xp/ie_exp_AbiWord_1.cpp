@@ -697,7 +697,17 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                     UT_ASSERT_HARMLESS(m_pCurrentField);
                     return true;
                 }
-   			case PTO_Bookmark:
+ 			case PTO_Math:
+                {
+                    _closeSpan();
+                    _closeField();
+                    _openTag("math","/",false,api,pcr->getXID());
+				const XML_Char* image_name = getObjectKey(api, static_cast<const XML_Char*>("dataid"));
+				if (image_name)
+					m_pUsedImages.insert(image_name);
+                    return true;
+                }
+  			case PTO_Bookmark:
    				{
    					_closeSpan();
    					_closeField();

@@ -235,6 +235,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_HISTORYSECTION  32 //<history>
 #define TT_VERSION         33 //<version>
 #define TT_TOC             34 //<toc> (Table of Contents
+#define TT_MATH            35 //<math> Math Run
 
 
 /*
@@ -279,6 +280,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"lists",		TT_LISTSECTION	},
 	{       "m",        TT_META         },
 	{	"margin",		TT_MARGINNOTE	},
+	{	"math",		    TT_MATH     	},
 	{       "metadata", TT_METADATA     },
 	{	"p",			TT_BLOCK		},
 	{   "pagesize",     TT_PAGESIZE     },
@@ -489,6 +491,12 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		//
 		X_CheckError(appendObject(PTO_Image,atts));
 #endif
+		return;
+	}
+	case TT_MATH:
+	{
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(appendObject(PTO_Math,atts));
 		return;
 	}
 	case TT_BOOKMARK:
@@ -940,6 +948,11 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		return;
 
 	case TT_IMAGE:						// not a container, so we don't pop stack
+		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
+		X_VerifyParseState(_PS_Block);
+		return;
+
+	case TT_MATH:						// not a container, so we don't pop stack
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		return;

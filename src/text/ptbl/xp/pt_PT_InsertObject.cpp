@@ -176,7 +176,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									const XML_Char ** attributes,
 									const XML_Char ** properties,  pf_Frag_Object ** ppfo)
 {
-	UT_return_val_if_fail (properties == NULL, false);
+	UT_ASSERT_HARMLESS((pto == PTO_Math) || (properties == NULL));
 
 	// dpos == 1 seems to be generally bad. - plam
 	// I'm curious about how often it happens.  Please mail me if it does!
@@ -304,6 +304,7 @@ bool pt_PieceTable::_createObject(PTObjectType pto,
 	{
 		case PTO_Hyperlink:
 		case PTO_Image:
+	        case PTO_Math:
 		case PTO_Field:
 			{
 				pfo = new pf_Frag_Object(this,pto,indexAP);
