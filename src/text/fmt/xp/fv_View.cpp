@@ -3630,7 +3630,18 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	bool bBOL = false;
 	bool bEOL = false;
 	fl_HdrFtrShadow * pShadow=NULL;
-	pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+//
+// If we're not in a Header/Footer we can't get off the page with the click
+// version of mapXYToPosition
+//
+	if(isHdrFtrEdit())
+	{
+		pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+	}
+	else
+	{
+		pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
+	}
 //
 // Check we're not moving out of allowed region.
 //
