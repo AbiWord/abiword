@@ -45,7 +45,7 @@ void PX_ChangeRecord::__dump(void) const
 	case PX_ChangeRecord::PXT_TempSpanFmt:				name = "TempSFmt";	break;
 	}
 	
-	UT_DEBUGMSG(("CRec: T[%s] [ap %08lx]\n", name,m_indexAP));
+	UT_DEBUGMSG(("CRec: T[%s] [ap %p]\n", name,m_indexAP));
 }
 
 #endif /* PT_TEST */

@@ -152,7 +152,7 @@ void fp_Page::__dump(FILE * fp) const
 		fp_SectionSliceInfo* pci = (fp_SectionSliceInfo*) m_vecSliceInfos.getNthItem(i);
 		p = pci->pSlice;
 
-		fprintf(fp,"\tfp_Page::dump(0x%08lx) - fp_SectionSlice 0x%08lx\n", (UT_uint32)this, (UT_uint32)p);
+		fprintf(fp,"\tfp_Page::dump(%p) - fp_SectionSlice %p\n", this, p);
 		p->__dump(fp);
 	}
 }

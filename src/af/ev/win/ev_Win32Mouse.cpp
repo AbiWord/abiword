@@ -65,7 +65,7 @@ void EV_Win32Mouse::onButtonDown(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	UT_DEBUGMSG(("onButtonDown: 0x%08lx [b=%d m=%d]\n",EV_EMO_SINGLECLICK|emb|ems,emb,ems));
+	UT_DEBUGMSG(("onButtonDown: %p [b=%d m=%d]\n",EV_EMO_SINGLECLICK|emb|ems,emb,ems));
 	
 	result = m_pEEM->Mouse(EV_EMO_SINGLECLICK|emb|ems, &pEM,&iPrefix);
 	switch (result)
@@ -108,7 +108,7 @@ void EV_Win32Mouse::onButtonMove(AV_View * pView,
 
 	// report movements under the mouse button that we did the capture on
 
-	UT_DEBUGMSG(("onButtonMove: 0x%08lx [b=%d m=%d]\n",EV_EMO_DRAG|m_embCaptured|ems, m_embCaptured, ems));
+	UT_DEBUGMSG(("onButtonMove: %p [b=%d m=%d]\n",EV_EMO_DRAG|m_embCaptured|ems, m_embCaptured, ems));
 	
 	result = m_pEEM->Mouse(EV_EMO_DRAG|m_embCaptured|ems, &pEM,&iPrefix);
 	switch (result)
@@ -154,7 +154,7 @@ void EV_Win32Mouse::onButtonUp(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	UT_DEBUGMSG(("onButtonUp  : 0x%08lx [b=%d m=%d]\n",EV_EMO_RELEASE|m_embCaptured|ems, m_embCaptured, ems));
+	UT_DEBUGMSG(("onButtonUp  : %p [b=%d m=%d]\n",EV_EMO_RELEASE|m_embCaptured|ems, m_embCaptured, ems));
 
 	result = m_pEEM->Mouse(EV_EMO_RELEASE|m_embCaptured|ems, &pEM,&iPrefix);
 	switch (result)
@@ -201,7 +201,7 @@ void EV_Win32Mouse::onDoubleClick(AV_View * pView,
 	if (GetKeyState(VK_MENU) & 0x8000)
 		ems |= EV_EMS_ALT;
 
-	UT_DEBUGMSG(("onDoubleClick: 0x%08lx [b=%d m=%d]\n",EV_EMO_DOUBLECLICK|emb|ems,emb,ems));
+	UT_DEBUGMSG(("onDoubleClick: %p [b=%d m=%d]\n",EV_EMO_DOUBLECLICK|emb|ems,emb,ems));
 	
 	result = m_pEEM->Mouse(EV_EMO_DOUBLECLICK|emb|ems, &pEM,&iPrefix);
 	switch (result)

@@ -887,7 +887,7 @@ void fp_Run::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 
 void fp_Run::dumpRun(void) const
 {
-	UT_DEBUGMSG(("Run: 0x%08lx offset %8d length %4d  width=%d\n",this,m_iOffsetFirst,m_iLen,m_iWidth));
+	UT_DEBUGMSG(("Run: %p offset %8d length %4d  width=%d\n",this,m_iOffsetFirst,m_iLen,m_iWidth));
 	m_pLine->dumpRunInfo(this, m_pLineData);
 	
 	return;

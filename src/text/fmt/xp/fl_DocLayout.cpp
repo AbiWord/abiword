@@ -334,7 +334,7 @@ void FL_DocLayout::__dump(FILE * fp) const
 {
 	int count = m_vecPages.getItemCount();
 
-	fprintf(fp,"FL_DocLayout::dump(0x%08lx) contains %ld pages.\n", (UT_uint32)this, m_vecPages.getItemCount());
+	fprintf(fp,"FL_DocLayout::dump(%p) contains %ld pages.\n", (UT_uint32)this, m_vecPages.getItemCount());
 
 	for (int i=0; i<count; i++)
 	{

@@ -559,7 +559,7 @@ static UT_Bool s_AskForPathname(AP_Frame * pFrame,
 	// pathname the user entered -- ownership of this goes
 	// to the caller (so free it when you're done with it).
 
-	UT_DEBUGMSG(("s_AskForPathname: frame 0x%08lx, bSaveAs %ld, suggest=[%s]\n",
+	UT_DEBUGMSG(("s_AskForPathname: frame %P, bSaveAs %ld, suggest=[%s]\n",
 				 pFrame,bSaveAs,((pSuggestedName) ? pSuggestedName : "")));
 
 	UT_ASSERT(ppPathname);

@@ -210,9 +210,14 @@ const char * AP_Frame::getViewKey(void) const
 
 		So, we just use the AD_Document pointer.  :-)
 	*/
-	static char buf[9];
 
-	sprintf(buf, "%08lx", (UT_uint32)m_pDoc);
+	// The buffer must be wide enough to hold character representation
+	// of a pointer on any platform.  For Intel that would be 32-bits, which
+	// would be 8 chars plus a null.  Double that for 64.
+	// Why "+3"?  For the "0x" and the null. 
+	static char buf[(sizeof(void *) * 2) + 3];
+
+	sprintf(buf, "%p", m_pDoc);
 
 	return buf;
 }

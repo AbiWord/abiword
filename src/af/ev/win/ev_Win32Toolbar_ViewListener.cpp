@@ -35,7 +35,7 @@ UT_Bool EV_Win32Toolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMas
 {
 	UT_ASSERT(pView == m_pView);
 	
-	UT_DEBUGMSG(("Win32Toolbar_ViewListener::notify [view 0x%08lx tb 0x%08lx][mask 0x%08lx]\n",
+	UT_DEBUGMSG(("Win32Toolbar_ViewListener::notify [view %p tb %p][mask %p]\n",
 				 pView,this,mask));
 	
 	// this code really could be in EV_Win32Toolbar, but I didn't want

@@ -598,5 +598,5 @@ void fp_Line::dumpRunInfo(const fp_Run* pRun, void *p)
 	fp_RunInfo* pRI = (fp_RunInfo*) p;
 	UT_ASSERT(pRI->pRun == pRun);
 
-	UT_DEBUGMSG(("Run: 0x%08lx xoff=%d\n", pRun, pRI->xoff));
+	UT_DEBUGMSG(("Run: %p xoff=%d\n", pRun, pRI->xoff));
 }

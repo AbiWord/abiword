@@ -178,7 +178,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 
 #ifdef UT_DEBUG
 	if ( ! (keyData & 0x40000000))		// omit message on auto-repeat events
-		UT_DEBUGMSG(("%s: 0x%08lx 0x%08lx\n",((iMsg==WM_KEYDOWN)?"onKeyDown":"onSysKeyDown"),nVirtKey,keyData));
+		UT_DEBUGMSG(("%s: %p %p\n",((iMsg==WM_KEYDOWN)?"onKeyDown":"onSysKeyDown"),nVirtKey,keyData));
 #endif
 
 	EV_EditMethod * pEM;
@@ -200,7 +200,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 
 #ifdef UT_DEBUG
 		if ( ! (keyData & 0x40000000))		// omit message on auto-repeat events
-			UT_DEBUGMSG(("    NVK_Ignore: 0x%08lx\n",nVirtKey));
+			UT_DEBUGMSG(("    NVK_Ignore: %p\n",nVirtKey));
 #endif
 		_translateMessage(hWnd,iMsg,nVirtKey,keyData);
 		return UT_FALSE;
@@ -310,7 +310,7 @@ UT_Bool ev_Win32Keyboard::onChar(AV_View * pView,
 
 #ifdef UT_DEBUG
 	if ( ! (keyData & 0x40000000))		// omit message on auto-repeat events
-		UT_DEBUGMSG(("%s: 0x%08lx 0x%08lx\n",((iMsg==WM_CHAR)?"wm_char":"wm_syschar"),nVirtKey,keyData));
+		UT_DEBUGMSG(("%s: %p %p\n",((iMsg==WM_CHAR)?"wm_char":"wm_syschar"),nVirtKey,keyData));
 #endif
 	UT_Bool bIgnoreCharacter = UT_TRUE;
 #ifdef HACK_FOR_MENU

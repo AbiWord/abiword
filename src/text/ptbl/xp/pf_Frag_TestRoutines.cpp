@@ -36,37 +36,37 @@
 
 void pf_Frag::__dump(FILE * fp) const
 {
-	fprintf(fp,"      BaseDump 0x%08lx type[%d]\n",(UT_uint32)this,m_type);
+	fprintf(fp,"      BaseDump %p type[%d]\n",this,m_type);
 }
 
 void pf_Frag_Strux_Block::__dump(FILE * fp) const
 {
-	fprintf(fp,"      Block 0x%08lx api[%08lx] preferredSpanAPI[%08lx]\n",
-			(UT_uint32)this,m_indexAP,m_preferredSpanAPI);
+	fprintf(fp,"      Block %p api[%08lx] preferredSpanAPI[%08lx]\n",
+			this,m_indexAP,m_preferredSpanAPI);
 }
 
 void pf_Frag_Strux_Column::__dump(FILE * fp) const
 {
-	fprintf(fp,"      Column 0x%08lx api[%08lx]\n",
-			(UT_uint32)this,m_indexAP);
+	fprintf(fp,"      Column %p api[%08lx]\n",
+			this,m_indexAP);
 }
 
 void pf_Frag_Strux_ColumnSet::__dump(FILE * fp) const
 {
-	fprintf(fp,"      ColumnSet 0x%08lx api[%08lx]\n",
-			(UT_uint32)this,m_indexAP);
+	fprintf(fp,"      ColumnSet %p api[%08lx]\n",
+			this,m_indexAP);
 }
 
 void pf_Frag_Strux_Section::__dump(FILE * fp) const
 {
-	fprintf(fp,"      Section 0x%08lx api[%08lx]\n",
-			(UT_uint32)this,m_indexAP);
+	fprintf(fp,"      Section %p api[%08lx]\n",
+			this,m_indexAP);
 }
 
 void pf_Frag_Text::__dump(FILE * fp) const
 {
-	fprintf(fp,"      TextFragment 0x%08lx b[%08lx,%ld] api[%08lx]\n",
-			(UT_uint32)this,m_bufIndex,m_length,m_indexAP);
+	fprintf(fp,"      TextFragment %p b[%08lx,%ld] api[%08lx]\n",
+			this,m_bufIndex,m_length,m_indexAP);
 
 	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
 	char c;
