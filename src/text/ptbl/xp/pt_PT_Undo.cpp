@@ -94,10 +94,13 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr)
 
 				_fmtChangeSpan(pft,fragOffset,lengthThisStep,pcrs->getIndexAP(),&pfEnd,&fragOffsetEnd);
 
-				UT_ASSERT(pfEnd->getType() == pf_Frag::PFT_Text);
+				length -= lengthThisStep;
+				if (length > 0)
+				{
+					UT_ASSERT(pfEnd->getType() == pf_Frag::PFT_Text);
+				}
 				pft = static_cast<pf_Frag_Text *> (pfEnd);
 				fragOffset = fragOffsetEnd;
-				length -= lengthThisStep;
 			}
 			
 			m_pDocument->notifyListeners(pfs,pcr);

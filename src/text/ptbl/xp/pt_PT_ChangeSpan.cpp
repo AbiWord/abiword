@@ -153,14 +153,33 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	UT_ASSERT(length > 0);
 #endif
 
+	UT_ASSERT(fragOffset+length <= pft->getLength());
+	
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
 	UT_Bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP);
 	UT_ASSERT(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
+	{
+		if (fragOffset+length == pft->getLength())
+		{
+			if (ppfNewEnd)
+				*ppfNewEnd = pft->getNext();
+			if (pfragOffsetNewEnd)
+				*pfragOffsetNewEnd = 0;
+		}
+		else
+		{
+			if (ppfNewEnd)
+				*ppfNewEnd = pft;
+			if (pfragOffsetNewEnd)
+				*pfragOffsetNewEnd = fragOffset+length;
+		}
+		
 		return UT_TRUE;
-
+	}
+	
 	// we do this before the actual change because various fields that
 	// we need may be blown away during the change.  we then notify all
 	// listeners of the change.
@@ -169,7 +188,7 @@ UT_Bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	PX_ChangeRecord_SpanChange * pcr
 		= new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
 										 PX_ChangeRecord::PXF_Null,
-										 dpos,bLeftSide,pfs->getIndexAP(),indexNewAP,ptc,
+										 dpos,bLeftSide,indexOldAP,indexNewAP,ptc,
 										 m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
 										 length);
 	UT_ASSERT(pcr);
@@ -265,6 +284,7 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 				dpos1 += 0;				// TODO when strux have length, change this to 1.
 				pfNewEnd = pf->getNext();
 				fragOffsetNewEnd = 0;
+				f.x_pfs = pfs;			// everything following this is in this strux
 			}
 			break;
 

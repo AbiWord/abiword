@@ -234,6 +234,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 				UT_Bool bResult = _deleteStruxWithNotify(dpos,f.x_bLeftSide,pfs,
 														 &pfNewEnd,&fragOffsetNewEnd);
 				UT_ASSERT(bResult);
+				// we do not update f.x_pfs because we just deleted pfs.
 			}
 			break;
 
