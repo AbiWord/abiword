@@ -48,13 +48,24 @@ TFScrollBar::TFScrollBar(XAP_BeOSFrame *pFrame, BRect frame, const char *name,
         m_pBeOSFrame = pFrame;
 }
 
+/*
+ This is triggered when the user changes the value of the
+ scroll bar.  When this function is called, the value has
+ already changed. (Just to be sure we shouldn't send an
+ event if the newValue matches the old value).
+*/
 void TFScrollBar::ValueChanged(float newValue) {
         AV_View * pView = m_pBeOSFrame->getCurrentView();
-        if (pView && Orientation() == B_VERTICAL) {
-                pView->setYScrollOffset((UT_sint32) newValue);
+		if (!pView) {
+			return;
+		}
+        if (Orientation() == B_VERTICAL &&
+			(UT_sint32)newValue != pView->getYScrollOffset()) {
+				pView->sendVerticalScrollEvent((UT_sint32) newValue);
         }
-        else if (pView && Orientation() == B_HORIZONTAL) {
-                pView->setXScrollOffset((UT_sint32) newValue);
+        else if (Orientation() == B_HORIZONTAL &&
+				 (UT_sint32)newValue != pView->getXScrollOffset()) {
+				pView->sendHorizontalScrollEvent((UT_sint32) newValue);
         }
 }
 
