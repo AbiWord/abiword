@@ -8827,10 +8827,10 @@ fl_BlockSpellIterator::nextWordForSpellChecking(const UT_UCSChar*& pWord, UT_sin
 		m_iStartIndex = iWordEnd;
 		   
 		// Find length of word
-		UT_uint32 iWordLength = iWordEnd - m_iWordOffset;
+		UT_sint32 iWordLength = static_cast<UT_sint32>(iWordEnd) - static_cast<UT_sint32>(m_iWordOffset);
 
 		// ignore some terminal characters
-		UT_uint32 tempIDX = m_iWordOffset + iWordLength - 1;
+		UT_sint32 tempIDX = static_cast<UT_sint32>(m_iWordOffset) + iWordLength - 1;
 		UT_ASSERT(tempIDX >= 0);
 		if (_ignoreLastWordCharacter(m_pText[tempIDX]))
 		{

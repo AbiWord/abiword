@@ -1815,9 +1815,9 @@ void AP_UnixApp::catchSignals(int sig_num)
 		AP_UnixFrame * curFrame = const_cast<AP_UnixFrame*>(static_cast<const AP_UnixFrame*>(m_vecFrames[i]));
 		UT_ASSERT(curFrame);
 		if (NULL == curFrame->getFilename())
-		  curFrame->backup(".abw.CRASHED",abiType);
+		  curFrame->backup(".abw.SAVED",abiType);
 		else
-		  curFrame->backup(".CRASHED",abiType);
+		  curFrame->backup(".SAVED",abiType);
     }
     
     fflush(stdout);

@@ -5550,8 +5550,12 @@ bool IE_Imp_RTF::HandleStarKeyword()
 					return HandleAbiEndCell();
 					break;
 				case RTF_KW_shppict:
-					UT_DEBUGMSG (("ignoring shppict\n"));
-					SkipCurrentGroup();
+					UT_DEBUGMSG (("Doing shppict\n"));
+//
+// MES says why was this disabled? 
+// We can't import our images if shppict is ignored??
+//
+//					SkipCurrentGroup();
 //					m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 					return true;
 					break;
