@@ -2,12 +2,11 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {addAction = id; closeAction = id; fontSelectAction = id; }; 
+            ACTIONS = {addAction = id; fontSelectAction = id; }; 
             CLASS = "XAP_CocoaDlg_Insert_SymbolController"; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 "_addBtn" = NSButton; 
-                "_closeBtn" = NSButton; 
                 "_fontCombo" = NSComboBox; 
                 "_grid" = "XAP_CocoaNSView"; 
                 "_preview" = "XAP_CocoaNSView"; 
