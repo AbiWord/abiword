@@ -1747,6 +1747,35 @@ void FV_View::findReset(void)
 }
 
 /*
+  Call this to set the start and end positions of your document.
+  The way the search works, it may not actually constrain itself
+  to the space between the positions (hey, it might), but it will
+  search only the blocks that contain these points and in between.
+*/
+
+UT_Bool FV_View::findSetExtents(PT_DocPosition start, PT_DocPosition end)
+{
+	PT_DocPosition BOD, EOD;
+
+	UT_Bool bRes;
+	
+	bRes = m_pDoc->getBounds(UT_FALSE, BOD);
+	UT_ASSERT(bRes);
+	
+	bRes = m_pDoc->getBounds(UT_FALSE, EOD);
+	UT_ASSERT(bRes);
+
+	if (start >= BOD && start <= EOD && end >= BOD && end <= EOD)
+	{
+		m_iFindPosStart = start;
+		m_iFindPosEnd = end;
+		return UT_TRUE;
+	}
+	else
+		return UT_FALSE;
+}
+
+/*
   This needs to be far more readable, starting with tossing the
   goto call and reworking the loop to flow better.
 
@@ -1918,8 +1947,6 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 		// a replace, but account for the 1 that the find advanced.
 		m_iFindBufferOffset += (UT_UCS_strlen(replace) - 1);
 
-
-						  
 		// we find the next occurance after our insertion.
 		findNext(find, UT_TRUE, bWrapped);
 		
