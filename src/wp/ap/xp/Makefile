@@ -29,6 +29,7 @@ CPPSRCS=	ap_Dialog_Replace.cpp		\
 		ap_Frame.cpp			\
 		ap_FrameData.cpp		\
 		ap_LoadBindings.cpp		\
+		ap_LoadBindings_DeadAcute.cpp	\
 		ap_LoadBindings_DeadGrave.cpp	\
 		ap_LoadBindings_Default.cpp	\
 		ap_Menu_ActionSet.cpp		\

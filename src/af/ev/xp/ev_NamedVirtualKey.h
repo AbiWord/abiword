@@ -88,9 +88,10 @@ public:
 #define EV_NVK_F34			EV_NamedKey(0x0032)
 #define EV_NVK_F35			EV_NamedKey(0x0033)
 #define EV_NVK_DEAD_GRAVE	EV_NamedKey(0x0034)	// prefix key for certain european keys
+#define EV_NVK_DEAD_ACUTE	EV_NamedKey(0x0035)	// prefix key for certain european keys
 
 #define EV_NVK__FIRST__		EV_NVK_BACKSPACE	// must be set to first in the list
-#define EV_NVK__LAST__		EV_NVK_DEAD_GRAVE	// must be set to last in the list 
+#define EV_NVK__LAST__		EV_NVK_DEAD_ACUTE	// must be set to last in the list 
 
 #define EV_COUNT_NVK		(EV_NVK_ToNumber(EV_NVK__LAST__)+1)	// +1 to include zero which we skipped
 

@@ -146,6 +146,7 @@ public:
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
 	static EV_EditMethod_Fn insertGraveData; // for certain european keys
+	static EV_EditMethod_Fn insertAcuteData; // for certain european keys
 
 	// TODO add functions for all of the standard menu commands.
 	// TODO here are a few that i started.
@@ -299,6 +300,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertSpace),			_M_,	""),
 	EV_EditMethod(NF(insertNBSpace),		_M_,	""),
 	EV_EditMethod(NF(insertGraveData),		_M_,	""),
+	EV_EditMethod(NF(insertAcuteData),		_M_,	""),
 
 	EV_EditMethod(NF(fileNew),				_M_,	""),
 	EV_EditMethod(NF(fileOpen),				_M_,	""),
@@ -1379,6 +1381,8 @@ Defun1(insertNBSpace)
 	return UT_TRUE;
 }
 
+/*****************************************************************/
+
 Defun(insertGraveData)
 {
 	ABIWORD_VIEW;
@@ -1419,6 +1423,44 @@ Defun(insertGraveData)
 	pView->cmdCharInsert(&graveChar, 1);
 	return UT_TRUE;
 }
+
+Defun(insertAcuteData)
+{
+	ABIWORD_VIEW;
+
+	// This function provides an interlude.  All of the keys
+	// on the Dead_Acute map are mapped here.  The desired
+	// character is in the argument (just like in insertData()).
+	// We do the character mapping here.
+	//
+	// See note in Defun(insertAcuteData)
+	
+	UT_ASSERT(pCallData->m_dataLength==1);
+	UT_UCSChar acuteChar = 0x0000;
+	switch (pCallData->m_pData[0])
+	{
+	case 0x41:		acuteChar=0x00c1;	break;	// Aacute
+	case 0x45:		acuteChar=0x00c9;	break;	// Eacute
+	case 0x49:		acuteChar=0x00cd;	break;	// Iacute
+	case 0x4f:		acuteChar=0x00d3;	break;	// Oacute
+	case 0x55:		acuteChar=0x00da;	break;	// Uacute
+	case 0x59:		acuteChar=0x00dd;	break;	// Yacute
+
+	case 0x61:		acuteChar=0x00e1;	break;	// aacute
+	case 0x65:		acuteChar=0x00e9;	break;	// eacute
+	case 0x69:		acuteChar=0x00ed;	break;	// iacute
+	case 0x6f:		acuteChar=0x00f3;	break;	// oacute
+	case 0x75:		acuteChar=0x00fa;	break;	// uacute
+	case 0x79:		acuteChar=0x00fd;	break;	// yacute
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	
+	pView->cmdCharInsert(&acuteChar, 1);
+	return UT_TRUE;
+}
+
+/*****************************************************************/
 
 Defun1(cut)
 {

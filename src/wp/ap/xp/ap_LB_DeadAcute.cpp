@@ -20,7 +20,7 @@
 
 // ********************************************************************************
 // ********************************************************************************
-// *** THIS FILE DEFINES THE BINDINGS TO HANG OFF THE DeadGrave PREFIX KEY IN   ***
+// *** THIS FILE DEFINES THE BINDINGS TO HANG OFF THE DeadAcute PREFIX KEY IN   ***
 // *** THE DEFAULT BINDINGS TABLE.                                              ***
 // ********************************************************************************
 // ********************************************************************************
@@ -61,16 +61,18 @@ struct _iChar
 static struct _iChar s_CharTable[] =
 {
 //	{char, /* desc   */ { none,						_C,		_A,		_A_C	}},
-	{0x41, /* A      */ { "insertGraveData",		"",		"",		""		}},
-	{0x45, /* E      */ { "insertGraveData",		"",		"",		""		}},
-	{0x49, /* I      */ { "insertGraveData",		"",		"",		""		}},
-	{0x4f, /* O      */ { "insertGraveData",		"",		"",		""		}},
-	{0x55, /* U      */ { "insertGraveData",		"",		"",		""		}},
-	{0x61, /* a      */ { "insertGraveData",		"",		"",		""		}},
-	{0x65, /* e      */ { "insertGraveData",		"",		"",		""		}},
-	{0x69, /* i      */ { "insertGraveData",		"",		"",		""		}},
-	{0x6f, /* o      */ { "insertGraveData",		"",		"",		""		}},
-	{0x75, /* u      */ { "insertGraveData",		"",		"",		""		}},
+	{0x41, /* A      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x45, /* E      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x49, /* I      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x4f, /* O      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x55, /* U      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x59, /* Y      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x61, /* a      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x65, /* e      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x69, /* i      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x6f, /* o      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x75, /* u      */ { "insertAcuteData",		"",		"",		""		}},
+	{0x79, /* y      */ { "insertAcuteData",		"",		"",		""		}},
 };
 
 static void s_loadChar(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pebm)
@@ -93,7 +95,7 @@ static void s_loadChar(EV_EditMethodContainer * /*pemc*/, EV_EditBindingMap * pe
 ******************************************************************
 *****************************************************************/
 
-UT_Bool ap_LoadBindings_DeadGrave(EV_EditMethodContainer * pemc,
+UT_Bool ap_LoadBindings_DeadAcute(EV_EditMethodContainer * pemc,
 								  EV_EditBindingMap **ppebm)
 {
 	UT_ASSERT(pemc);

@@ -213,6 +213,8 @@ static struct _iNVK_P s_NVKTable_P[] =
 
 	{EV_NVK_DEAD_GRAVE,	{ "deadgrave",			"deadgrave",		"",				"",
 						  "",					"",					"",				""					}},
+	{EV_NVK_DEAD_ACUTE,	{ "deadacute",			"deadacute",		"",				"",
+						  "",					"",					"",				""					}},
 };
 
 static void s_loadNVK(EV_EditMethodContainer * pemc, EV_EditBindingMap * pebm)

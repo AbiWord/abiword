@@ -30,6 +30,7 @@
 #include "ut_string.h"
 #include "xap_LoadBindings.h"
 #include "ap_LoadBindings_Default.h"
+#include "ap_LoadBindings_DeadAcute.h"
 #include "ap_LoadBindings_DeadGrave.h"
 
 /****************************************************************/
@@ -46,6 +47,7 @@ struct _lb
 static struct _lb s_lbTable[] =
 {
 	{	"default",		ap_LoadBindings_Default		},
+	{	"deadacute",	ap_LoadBindings_DeadAcute	},
 	{	"deadgrave",	ap_LoadBindings_DeadGrave	},
 };
 

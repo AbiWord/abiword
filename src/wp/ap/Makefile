@@ -45,6 +45,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)				\
 		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_LoadBindings_DeadAcute.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_LoadBindings_DeadGrave.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_LoadBindings_Default.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)			\
