@@ -113,7 +113,7 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 		m_leftRuler = pQNXLeftRuler->createWidget();
 		((AP_FrameData*)pData)->m_pLeftRuler = pQNXLeftRuler;
 		// get the width from the left ruler and stuff it into the top ruler.
-		pQNXTopRuler->setOffsetLeftRuler(pQNXLeftRuler->getWidth());
+		pQNXTopRuler->setOffsetLeftRuler(pQNXTopRuler->getGR()->tdu(pQNXLeftRuler->getWidth()));
 
 		// create the scrollbars horizontal then vertical
 
@@ -176,12 +176,10 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_AREA, &area, 0); 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL);
 #define _DA_ANCHOR_ (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_RIGHT | \
 		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _DA_ANCHOR_, _DA_ANCHOR_);
-#define _DA_STRETCH_ (Pt_GROUP_STRETCH_VERTICAL | Pt_GROUP_STRETCH_HORIZONTAL)
-	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _DA_STRETCH_, _DA_STRETCH_);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_STRETCH_VERTICAL|Pt_GROUP_STRETCH_HORIZONTAL);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
 	m_dAreaGroup = PtCreateWidget(PtGroup, getTopLevelWindow(), n, args);
 	PtAddCallback(m_dAreaGroup, Pt_CB_RESIZE,_fe::resize, this);
