@@ -97,8 +97,8 @@ dcl(DLG_QNXMB_Yes,				"Yes")
 dcl(DLG_QNXMB_No,				"No")
 
 /* More Windows dialog */
-dcl(DLG_MW_MoreWindows, 		"Activate Window")
-dcl(DLG_MW_Activate,			"Activate:")
+dcl(DLG_MW_MoreWindows, 		"View Document")
+dcl(DLG_MW_Activate,			"View:")
 
 /* Remove Toolbar Icon */
 dcl(DLG_Remove_Icon,			"Do you want to remove this icon from the toolbar?")
