@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002,2003 Tomas Frydrych
@@ -591,7 +593,7 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy)
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
-		return UT_SAVE_WRITEERROR;
+		return (errorCode == UT_SAVE_CANCELLED) ? UT_SAVE_CANCELLED : UT_SAVE_WRITEERROR;
 	}
 
 	if (cpy) // we want to make the current settings persistent
@@ -638,7 +640,7 @@ UT_Error PD_Document::save(void)
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not write file\n"));
-		return UT_SAVE_WRITEERROR;
+		return (errorCode == UT_SAVE_CANCELLED) ? UT_SAVE_CANCELLED : UT_SAVE_WRITEERROR;
 	}
 
 	_setClean();
@@ -3832,7 +3834,7 @@ bool PD_Document::_exportFindVisDirectionRunAtPos(PT_DocPosition pos)
 }
 
 bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-										const XML_Char ** attributes)
+										const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	UT_ASSERT(m_pPieceTable);
 
@@ -3845,7 +3847,7 @@ bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 	{
 		pFrame->nullUpdate();
 	}
-	return m_pPieceTable->insertStruxBeforeFrag(pF,pts,attributes);
+	return m_pPieceTable->insertStruxBeforeFrag(pF,pts,attributes,ppfs_ret);
 }
 
 bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT_uint32 length)

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -194,7 +196,7 @@ bool pt_PieceTable::appendFmtMark(void)
 }
 
 bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-										  const XML_Char ** attributes)
+										  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	// cannot insert before first fragment
 	UT_return_val_if_fail(pF && pF->getPrev() && pF != m_fragments.getFirst(), false);
@@ -204,6 +206,8 @@ bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 		return false;
 
 	m_fragments.insertFragBefore(pF, pfs);
+	if (ppfs_ret)
+		*ppfs_ret = pfs;
 	return true;
 }
 

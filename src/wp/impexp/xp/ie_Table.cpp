@@ -1,6 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
- * Copyright (C) 2002 Martin Sevior
- *               msevior@physics.unimelb.edu.au
+ * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
+ * Copyright (C) 2003 Francis James Franklin <fjf@alinameridon.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,13 +39,18 @@ current table via ie_Table::get* methods.
 #include <time.h>
 #include <locale.h>
 
-#include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_debugmsg.h"
+#include "ut_exception.h"
 #include "ut_string.h"
-#include "ut_units.h"
 #include "ut_string_class.h"
-#include "ie_Table.h"
+#include "ut_units.h"
+
+#include "pd_Document.h"
+
 #include "pp_AttrProp.h"
+
+#include "ie_Table.h"
 
 /*!
  * Class to hold a particular table and cell.
@@ -1679,3 +1686,779 @@ bool ie_imp_table_control::NewRow(void)
 //	UT_ASSERT(0);
 	return true;
 }
+
+#ifdef USE_IE_IMP_TABLEHELPER
+
+IE_Imp_TableHelper::CellHelper::CellHelper () :
+	m_style(""),
+	m_pfsCell(0),
+	m_bottom(0),
+	m_left(0),
+	m_right(0),
+	m_top(0),
+	m_rowspan(0),
+	m_colspan(0),
+	m_next(0)
+{
+	// 
+}
+
+IE_Imp_TableHelper::IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux * pfsInsertionPoint, const char * style) :
+	m_pDocument(pDocument),
+	m_style_table(style),
+	m_style_tzone(""),
+	m_style(""),
+	m_pfsInsertionPoint(pfsInsertionPoint),
+	m_pfsTableStart(0),
+	m_pfsTableEnd(pfsInsertionPoint),
+	m_rows(0),
+	m_rows_head(0),
+	m_rows_head_max(0),
+	m_rows_foot(0),
+	m_rows_foot_max(0),
+	m_rows_body(0),
+	m_rows_body_max(0),
+	m_cols(0),
+	m_cols_max(16),
+	m_col_next(0),
+	m_row_next(0),
+	m_garbage_count(0),
+	m_thead(0),
+	m_tfoot(0),
+	m_tbody(0),
+	m_current(0),
+	m_garbage(0),
+	m_tzone(tz_body)
+{
+	// 
+}
+
+IE_Imp_TableHelper::~IE_Imp_TableHelper ()
+{
+	UT_uint32 row;
+	UT_uint32 col;
+
+	for (row = 0; row < m_rows_head; row++)
+		{
+			for (col = 0; col < m_cols; col++)
+				if (m_thead[row][col])
+					delete m_thead[row][col];
+			if (m_thead[row])
+				free (m_thead[row]);
+		}
+	if (m_thead)
+		free (m_thead);
+
+	for (row = 0; row < m_rows_foot; row++)
+		{
+			for (col = 0; col < m_cols; col++)
+				if (m_tfoot[row][col])
+					delete m_tfoot[row][col];
+			if (m_tfoot[row])
+				free (m_tfoot[row]);
+		}
+	if (m_tfoot)
+		free (m_tfoot);
+
+	for (row = 0; row < m_rows_body; row++)
+		{
+			for (col = 0; col < m_cols; col++)
+				if (m_tbody[row][col])
+					delete m_tbody[row][col];
+			if (m_tbody[row])
+				free (m_tbody[row]);
+		}
+	if (m_tbody)
+		free (m_tbody);
+
+	while (m_garbage)
+		{
+			CellHelper * ch = m_garbage;
+			m_garbage = ch->m_next;
+			delete ch;
+		}
+}
+
+/* garbage control
+ */
+IE_Imp_TableHelper::CellHelper * IE_Imp_TableHelper::recoverCellHelper (bool create_if_none)
+{
+	CellHelper * ch = m_garbage;
+
+	if (ch)
+		{
+			--m_garbage_count;
+
+			m_garbage = ch->m_next;
+
+			ch->m_style = "";
+			ch->m_pfsCell = 0;
+			ch->m_bottom = 0;
+			ch->m_left = 0;
+			ch->m_right = 0;
+			ch->m_top = 0;
+			ch->m_rowspan = 0;
+			ch->m_colspan = 0;
+			ch->m_next = 0;
+		}
+	else if (create_if_none)
+		{
+			UT_TRY
+				{
+					ch = new CellHelper;
+				}
+			UT_CATCH(...)
+				{
+					ch = 0;
+				}
+		}
+	return ch;
+}
+
+void IE_Imp_TableHelper::discardCellHelper (CellHelper * ch)
+{
+	if (ch)
+		{
+			ch->m_next = m_garbage;
+			m_garbage = ch;
+			++m_garbage_count;
+		}
+}
+
+bool IE_Imp_TableHelper::requireCellHelper (UT_uint32 number)
+{
+	if (number <= m_garbage_count)
+		return true;
+
+	UT_uint32 extra = number - m_garbage_count;
+
+	bool okay = true;
+
+	for (UT_uint32 i = 0; i < extra; i++)
+		{
+			CellHelper * ch = m_garbage;
+
+			UT_TRY
+				{
+					ch = new CellHelper;
+				}
+			UT_CATCH(...)
+				{
+					ch = 0;
+				}
+			if (ch == 0)
+				{
+					okay = false;
+					break;
+				}
+			discardCellHelper (ch);
+		}
+	return okay;
+}
+
+bool IE_Imp_TableHelper::tableStart ()
+{
+	if (!getDoc()->appendStrux (PTX_SectionTable, 0))
+		return false;
+
+	// TODO: set the frag
+
+	return tbodyStart ();
+}
+
+bool IE_Imp_TableHelper::tableEnd ()
+{
+	if (!tdPending ())
+		return false;
+
+	// TODO: unset frag - & other clean-up?
+
+	return getDoc()->appendStrux (PTX_EndTable, 0) ? true : false;
+}
+
+bool IE_Imp_TableHelper::theadStart (const char * style)
+{
+	if (!tdPending ())
+		return false;
+
+	m_tzone = tz_head;
+
+	m_col_next = 0;
+	m_row_next = m_rows_head;
+
+	if (style)
+		m_style_tzone = style;
+	else
+		m_style_tzone = "";
+
+	return true;
+}
+
+bool IE_Imp_TableHelper::tfootStart (const char * style)
+{
+	if (!tdPending ())
+		return false;
+
+	m_tzone = tz_foot;
+
+	m_col_next = 0;
+	m_row_next = m_rows_foot;
+
+	if (style)
+		m_style_tzone = style;
+	else
+		m_style_tzone = "";
+
+	return true;
+}
+
+bool IE_Imp_TableHelper::tbodyStart (const char * style)
+{
+	if (!tdPending ())
+		return false;
+
+	m_tzone = tz_body;
+
+	m_col_next = 0;
+	m_row_next = m_rows_body;
+
+	if (style)
+		m_style_tzone = style;
+	else
+		m_style_tzone = "";
+
+	return true;
+}
+
+bool IE_Imp_TableHelper::trStart (const char * style)
+{
+	if (m_current)
+		if (!trEnd ())
+			return false;
+
+	// TODO ??
+
+	if (style)
+		m_style = style;
+	else
+		m_style = "";
+
+	return true;
+}
+
+bool IE_Imp_TableHelper::trEnd ()
+{
+	bool okay = false;
+
+	while (tdStart (1, 1, 0, true))
+		{
+			if (m_current)
+				{
+					// TODO: is it necessary/wise to add a PTX_Block here?
+					continue;
+				}
+			okay = true;
+			break;
+		}
+	if (!okay)
+		return false;
+
+	/* discard cells no longer in use
+	 */
+	trClean ();
+
+	/* find next cell position
+	 */
+	m_row_next++;
+	m_col_next = 0;
+
+	UT_uint32 rows = 0;
+
+	switch (m_tzone)
+		{
+		case tz_head:
+			rows = m_rows_head;
+			break;
+		case tz_foot:
+			rows = m_rows_foot;
+			break;
+		case tz_body:
+			rows = m_rows_body;
+			break;
+		}
+	if (m_row_next < rows)
+		while (m_col_next < m_cols)
+			{
+				CellHelper * ch = 0;
+
+				switch (m_tzone)
+					{
+					case tz_head:
+						ch = m_thead[m_row_next][m_col_next];
+						break;
+					case tz_foot:
+						ch = m_tfoot[m_row_next][m_col_next];
+						break;
+					case tz_body:
+						ch = m_tbody[m_row_next][m_col_next];
+						break;
+					}
+				if (ch->isVirtual ())
+					{
+						m_col_next++;
+						continue;
+					}
+				break;
+			}
+	return true;
+}
+
+void IE_Imp_TableHelper::trClean ()
+{
+	CellHelper ** Row = 0;
+
+	UT_uint32 row_offset = 0;
+
+	switch (m_tzone)
+		{
+		case tz_head:
+			row_offset = 0;
+			Row = m_thead[m_row_next];
+			break;
+		case tz_foot:
+			row_offset = m_rows_head + m_rows_body;
+			Row = m_tfoot[m_row_next];
+			break;
+		case tz_body:
+			row_offset = m_rows_head;
+			Row = m_tbody[m_row_next];
+			break;
+		}
+	for (UT_uint32 col = 0; col < m_cols - 1; col++)
+		{
+			CellHelper * ch = Row[col];
+
+			UT_uint32 bottom = ch->m_bottom - row_offset;
+			UT_uint32 left   = ch->m_left;
+			UT_uint32 right  = ch->m_right;
+			UT_uint32 top    = ch->m_top    - row_offset;
+
+			if (ch->isVirtual ())
+				{
+					if ((bottom == m_row_next + 1) && (right == col + 1))
+						switch (m_tzone)
+							{
+							case tz_head:
+								discardCellHelper (m_thead[top][left]);
+								m_thead[top][left] = 0;
+								break;
+							case tz_foot:
+								discardCellHelper (m_tfoot[top][left]);
+								m_tfoot[top][left] = 0;
+								break;
+							case tz_body:
+								discardCellHelper (m_tbody[top][left]);
+								m_tbody[top][left] = 0;
+								break;
+							}
+					discardCellHelper (Row[col]);
+					Row[col] = 0;
+				}
+			else if ((bottom == m_row_next + 1) && (right == col + 1))
+				{
+					discardCellHelper (Row[col]);
+					Row[col] = 0;
+				}
+		}
+}
+
+bool IE_Imp_TableHelper::tdStart (UT_uint32 rowspan, UT_uint32 colspan, const char * style, bool bounded)
+{
+	if (m_current)
+		if (!tdEnd ())
+			return false;
+
+	/* at this point m_current is 0 if the next cell is outside the current table extent;
+	 * if non-zero then there is a CellHelper instance for the cell but the cell doesn't
+	 * yet exist in the piecetable
+	 */
+	if (bounded && !m_current)
+		return true;
+
+	// X_CheckError(getDoc()->appendStrux(PTX_SectionCell,props)); // TODO
+
+	return true;
+}
+
+bool IE_Imp_TableHelper::tdEnd ()
+{
+	m_current = 0;
+
+	while (++m_col_next < m_cols)
+		{
+			CellHelper * ch = 0;
+
+			switch (m_tzone)
+				{
+				case tz_head:
+					ch = m_thead[m_row_next][m_col_next];
+					break;
+				case tz_foot:
+					ch = m_tfoot[m_row_next][m_col_next];
+					break;
+				case tz_body:
+					ch = m_tbody[m_row_next][m_col_next];
+					break;
+				}
+			if (ch->isVirtual ())
+				continue;
+
+			m_current = ch;
+			break;
+		}
+	return getDoc()->appendStrux (PTX_EndCell, 0) ? true : false;
+}
+
+bool IE_Imp_TableHelper::tdPending ()
+{
+	// create any cells that are still awaiting creation
+	return true;
+}
+
+bool IE_Imp_TableHelper::grow_cols (UT_uint32 cols)
+{
+	if (m_cols + cols <= m_cols_max)
+		return true;
+	if (m_rows == 0)
+		{
+			m_cols_max = m_cols + cols;
+			return true;
+		}
+	cols = (cols < 16) ? 16 : cols;
+
+	UT_uint32 new_cols = m_cols_max + cols;
+
+	UT_uint32 row;
+
+	bool okay = true;
+
+	for (row = 0; row < m_rows_head; row++)
+		{
+			CellHelper ** more = reinterpret_cast<CellHelper **>(realloc (m_thead[row], new_cols * sizeof (CellHelper *)));
+			if (more == 0)
+				{
+					okay = false;
+					break;
+				}
+			m_thead[row] = more;
+		}
+	if (okay)
+		m_cols_max = new_cols;
+
+	return okay;
+}
+
+bool IE_Imp_TableHelper::grow_rows (UT_uint32 rows)
+{
+	bool okay = true;
+
+	switch (m_tzone)
+		{
+		case tz_head:
+			if (m_thead == 0)
+				{
+					rows = (rows < 16) ? 16 : rows;
+
+					m_thead = reinterpret_cast<CellHelper ***>(malloc (rows * sizeof (CellHelper **)));
+					if (m_thead == 0)
+						{
+							okay = false;
+							break;
+						}
+					m_rows_head = 0;
+					m_rows_head_max = rows;
+				}
+			else if (m_rows_head + rows < m_rows_head_max)
+				{
+					rows = (rows < 16) ? 16 : rows;
+
+					UT_uint32 new_rows = (m_rows_head_max + rows);
+
+					CellHelper *** more = 0;
+					more = reinterpret_cast<CellHelper ***>(realloc (m_thead, new_rows * sizeof (CellHelper **)));
+					if (more == 0)
+						{
+							okay = false;
+							break;
+						}
+					m_thead = more;
+					m_rows_head_max = new_rows;
+				}
+			break;
+
+		case tz_foot:
+			if (m_tfoot == 0)
+				{
+					rows = (rows < 16) ? 16 : rows;
+
+					m_tfoot = reinterpret_cast<CellHelper ***>(malloc (rows * sizeof (CellHelper **)));
+					if (m_tfoot == 0)
+						{
+							okay = false;
+							break;
+						}
+					m_rows_foot = 0;
+					m_rows_foot_max = rows;
+				}
+			else if (m_rows_foot + rows < m_rows_foot_max)
+				{
+					rows = (rows < 16) ? 16 : rows;
+
+					UT_uint32 new_rows = (m_rows_foot_max + rows);
+
+					CellHelper *** more = 0;
+					more = reinterpret_cast<CellHelper ***>(realloc (m_tfoot, new_rows * sizeof (CellHelper **)));
+					if (more == 0)
+						{
+							okay = false;
+							break;
+						}
+					m_tfoot = more;
+					m_rows_foot_max = new_rows;
+				}
+			break;
+
+		case tz_body:
+			if (m_tbody == 0)
+				{
+					rows = (rows < 16) ? 16 : rows;
+
+					m_tbody = reinterpret_cast<CellHelper ***>(malloc (rows * sizeof (CellHelper **)));
+					if (m_tbody == 0)
+						{
+							okay = false;
+							break;
+						}
+					m_rows_body = 0;
+					m_rows_body_max = rows;
+				}
+			else if (m_rows_body + rows < m_rows_body_max)
+				{
+					rows = (rows < 16) ? 16 : rows;
+
+					UT_uint32 new_rows = (m_rows_body_max + rows);
+
+					CellHelper *** more = 0;
+					more = reinterpret_cast<CellHelper ***>(realloc (m_tbody, new_rows * sizeof (CellHelper **)));
+					if (more == 0)
+						{
+							okay = false;
+							break;
+						}
+					m_tbody = more;
+					m_rows_body_max = new_rows;
+				}
+			break;
+		}
+	return okay;
+}
+
+bool IE_Imp_TableHelper::append_cols (UT_uint32 cols)
+{
+	if (!grow_cols (cols))
+		return false;
+	if (!requireCellHelper (m_rows))
+		return false;
+
+	// TODO
+
+	return true;
+}
+
+bool IE_Imp_TableHelper::append_col ()
+{
+	// TODO
+	return true;
+}
+
+bool IE_Imp_TableHelper::append_rows (UT_uint32 rows)
+{
+	if (!grow_rows (rows))
+		return false;
+	if (!requireCellHelper (rows * m_cols))
+		return false;
+
+	// TODO
+
+	return true;
+}
+
+bool IE_Imp_TableHelper::append_row ()
+{
+	// TODO
+	return true;
+}
+
+#if 0
+appendTableCell ()
+{
+	if (!appendStrux (PTX_SectionCell, 0))
+		return false;
+
+	pf_Frag * pf = getDoc()->getPieceTable()->getFragments().getLast ();
+	UT_ASSERT( pf->getType() == pf_Frag::PFT_Strux );
+
+	pf_Frag_Strux * pCell = static_cast<pf_Frag_Strux *>(pf);
+	UT_ASSERT( pCell->getStruxType() == PTX_SectionCell );
+	/*
+	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
+												  const XML_Char ** attributes);
+	*/
+	return true;
+}
+#endif
+
+IE_Imp_TableHelperStack::IE_Imp_TableHelperStack (PD_Document * pDocument) :
+	m_pDocument(pDocument),
+	m_count(0),
+	m_max(0),
+	m_stack(0)
+{
+	// 
+}
+
+IE_Imp_TableHelperStack::~IE_Imp_TableHelperStack ()
+{
+	if (m_stack)
+		{
+			clear ();
+			free (m_stack);
+		}
+}
+
+void IE_Imp_TableHelperStack::clear ()
+{
+	for (UT_uint32 i = 0; i < m_count; i++)
+		delete m_stack[i];
+
+	m_count = 0;
+}
+
+bool IE_Imp_TableHelperStack::push (const char * style)
+{
+	if (m_stack == 0)
+		{
+			m_stack = reinterpret_cast<IE_Imp_TableHelper **>(malloc (16 * sizeof (IE_Imp_TableHelper *)));
+			if (m_stack == 0)
+				return false;
+			m_count = 0;
+			m_max = 16;
+		}
+	else if (m_count == m_max)
+		{
+			IE_Imp_TableHelper ** more = 0;
+			more = reinterpret_cast<IE_Imp_TableHelper **>(realloc (m_stack, (m_max + 16) * sizeof (IE_Imp_TableHelper *)));
+			if (more == 0)
+				return false;
+			m_max += 16;
+			m_stack = more;
+		}
+
+	IE_Imp_TableHelper * th = 0;
+
+	UT_TRY
+		{
+			th = new IE_Imp_TableHelper(m_pDocument,0 /* TODO */,style);
+		}
+	UT_CATCH(...)
+		{
+			th = 0;
+		}
+	if (th == 0)
+		return false;
+
+	m_stack[m_count++] = th;
+
+	return true;
+}
+
+bool IE_Imp_TableHelperStack::pop ()
+{
+	if (!m_count)
+		return false;
+
+	delete m_stack[--m_count];
+
+	return true;
+}
+
+bool IE_Imp_TableHelperStack::tableStart (const char * style)
+{
+	bool okay = push (style);
+
+	// TODO ??
+
+	return okay;
+}
+
+bool IE_Imp_TableHelperStack::tableEnd ()
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th == 0)
+		return false;
+
+	bool okay = th->tableEnd ();
+
+	pop ();
+
+	// TODO ??
+
+	return okay;
+}
+
+bool IE_Imp_TableHelperStack::theadStart (const char * style)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th == 0)
+		return false;
+
+	return th->theadStart (style);
+}
+
+bool IE_Imp_TableHelperStack::tfootStart (const char * style)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th == 0)
+		return false;
+
+	return th->tfootStart (style);
+}
+
+bool IE_Imp_TableHelperStack::tbodyStart (const char * style)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th == 0)
+		return false;
+
+	return th->tbodyStart (style);
+}
+
+bool IE_Imp_TableHelperStack::trStart (const char * style)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th == 0)
+		return false;
+
+	return th->trStart (style);
+}
+
+bool IE_Imp_TableHelperStack::tdStart (UT_uint32 rowspan, UT_uint32 colspan, const char * style)
+{
+	IE_Imp_TableHelper * th = top ();
+	if (th == 0)
+		return false;
+
+	return th->tdStart (rowspan, colspan, style);
+}
+
+#endif /* USE_IE_IMP_TABLEHELPER */

@@ -42,6 +42,7 @@
 
 #include "ie_types.h"
 #include "ie_impGraphic.h"
+#include "ie_Table.h"
 #include "ie_impexp_HTML.h"
 #include "ie_imp_XHTML.h"
 
@@ -206,6 +207,11 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
 	IE_Imp_XML(pDocument,false),
+#ifdef USE_IE_IMP_TABLEHELPER
+	m_TableHelperStack(new IE_Imp_TableHelperStack(pDocument)),
+#else
+	m_TableHelperStack(0),
+#endif
 	m_listType(L_NONE),
     m_iListID(0),
 	m_bFirstDiv(true),
@@ -220,6 +226,9 @@ IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument) :
 
 IE_Imp_XHTML::~IE_Imp_XHTML()
 {
+#ifdef USE_IE_IMP_TABLEHELPER
+	DELETEP(m_TableHelperStack);
+#endif
 	UT_VECTOR_PURGEALL(UT_UTF8String *,m_divStyles);
 }
 
@@ -244,8 +253,11 @@ static struct xmlToIdMapping s_Tokens[] =
 	{ "blockquote",	TT_BLOCKQUOTE	},
 	{ "body",		TT_BODY			},
 	{ "br",			TT_BR			},
+	{ "caption",	TT_CAPTION		},
 	{ "cite",		TT_CITE			},
 	{ "code",		TT_CODE			},
+	{ "col",		TT_COL			},
+	{ "colgroup",	TT_COLGROUP		},
 	{ "dd",			TT_DD			},
 	{ "dfn",		TT_DFN			},
 	{ "div",		TT_DIV			},
@@ -283,6 +295,12 @@ static struct xmlToIdMapping s_Tokens[] =
 	{ "style",		TT_STYLE		},
 	{ "sub",		TT_SUB			},
 	{ "sup",		TT_SUP			},
+	{ "table",		TT_TABLE		},
+	{ "tbody",		TT_TBODY		},
+	{ "td",			TT_TD			},
+	{ "tfoot",		TT_TFOOT		},
+	{ "th",			TT_TH			},
+	{ "thead",		TT_THEAD		},
 	{ "title",		TT_TITLE		},
 	{ "tr",			TT_TR			},	
 	{ "tt",			TT_TT			},
@@ -772,7 +790,6 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_BLOCKQUOTE:
 		// &...
 	case TT_P:
-	case TT_TR:
 	case TT_H4:
 	case TT_H5:
 	case TT_H6:
@@ -1153,7 +1170,73 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		UT_DEBUGMSG(("insertion successful\n"));
 		}
 		return;
+#ifdef USE_IE_IMP_TABLEHELPER
+	case TT_CAPTION:
+	case TT_COLGROUP:
+	case TT_COL:
+		// TODO
+		break;
+	case TT_TABLE:
+		{
+			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
 
+			X_CheckError(m_TableHelperStack->tableStart (static_cast<const char *>(szStyle)));
+		}
+		break;
+	case TT_THEAD:
+		{
+			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+
+			m_TableHelperStack->theadStart (static_cast<const char *>(szStyle));
+		}
+		break;
+	case TT_TFOOT:
+		{
+			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+
+			m_TableHelperStack->tfootStart (static_cast<const char *>(szStyle));
+		}
+		break;
+	case TT_TBODY:
+		{
+			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+
+			m_TableHelperStack->tbodyStart (static_cast<const char *>(szStyle));
+		}
+		break;
+	case TT_TR:
+		{
+			const XML_Char * szStyle = _getXMLPropValue (static_cast<const XML_Char *>("style"), atts);
+
+			m_TableHelperStack->trStart (static_cast<const char *>(szStyle));
+		}
+		break;
+	case TT_TH:
+	case TT_TD:
+		{
+			const XML_Char * szStyle   = _getXMLPropValue (static_cast<const XML_Char *>("style"),   atts);
+			const XML_Char * szColSpan = _getXMLPropValue (static_cast<const XML_Char *>("colspan"), atts);
+			const XML_Char * szRowSpan = _getXMLPropValue (static_cast<const XML_Char *>("rowspan"), atts);
+
+			UT_uint32 colspan = 1;
+			UT_uint32 rowspan = 1;
+
+			if (szColSpan)
+				{
+					int span = atoi (static_cast<const char *>(szColSpan));
+					if (span > 1)
+						colspan = static_cast<UT_uint32>(span);
+				}
+			if (szRowSpan)
+				{
+					int span = atoi (static_cast<const char *>(szRowSpan));
+					if (span > 1)
+						rowspan = static_cast<UT_uint32>(span);
+				}
+			m_TableHelperStack->tdStart (colspan, rowspan, static_cast<const char *>(szStyle));
+		}
+		break;
+#endif /* USE_IE_IMP_TABLEHELPER */
 	case TT_HEAD:
 	case TT_TITLE:
 	case TT_META:
@@ -1255,7 +1338,6 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		return;
 
 	case TT_P:
-	case TT_TR:
 	case TT_H1:
 	case TT_H2:
 	case TT_H3:
@@ -1314,7 +1396,32 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		//UT_DEBUGMSG(("B %d\n", m_parseState));
 //		X_VerifyParseState(_PS_Block);
 		return;
-
+#ifdef USE_IE_IMP_TABLEHELPER
+	case TT_CAPTION:
+	case TT_COLGROUP:
+	case TT_COL:
+		// TODO
+		break;
+	case TT_TABLE:
+		{
+			m_TableHelperStack->tableEnd ();
+		}
+		break;
+	case TT_THEAD:
+	case TT_TFOOT:
+	case TT_TBODY:
+		{
+			m_TableHelperStack->tbodyStart ();
+		}
+		break;
+	case TT_TR:
+		// 
+		break;
+	case TT_TH:
+	case TT_TD:
+		// 
+		break;
+#endif /* USE_IE_IMP_TABLEHELPER */
 	case TT_HEAD:
 	case TT_TITLE:
 	case TT_META:

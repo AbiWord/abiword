@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -222,7 +224,7 @@ public:
 	bool					appendStyle(const XML_Char ** attributes);
 
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-												  const XML_Char ** attributes);
+												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
 	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 												   const XML_Char ** attributes);

@@ -1,7 +1,9 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
- * Copyright (C) 2002 Martin Sevior
- *                    <msevior@physics.unimelb.edu.au>
- * 
+ * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
+ * Copyright (C) 2003 Francis James Franklin <fjf@alinameridon.com>
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -250,9 +252,171 @@ private:
 	PD_Document *       m_pDoc;
 };
 
+// EXPERIMENTAL CODE
+/* #define USE_IE_IMP_TABLEHELPER 1 */
 
+#ifdef USE_IE_IMP_TABLEHELPER
+
+class ABI_EXPORT IE_Imp_TableHelper
+{
+private:
+	enum TableZone
+		{
+			/* tz_caption, */
+			tz_head,
+			tz_foot,
+			tz_body
+		};
+	class ABI_EXPORT CellHelper
+	{
+	public:
+		CellHelper ();
+
+		UT_UTF8String		m_style;
+
+		/* cell frag/strux
+		 */
+		pf_Frag_Strux *		m_pfsCell;
+		
+		/* cell-attach points
+		 */
+		UT_uint32			m_bottom;
+		UT_uint32			m_left;
+		UT_uint32			m_right;
+		UT_uint32			m_top;
+
+		UT_uint32			m_rowspan;
+		UT_uint32			m_colspan;
+
+		CellHelper *		m_next;
+
+		bool	isVirtual () const { return (m_next != 0); }
+	};
+
+	/* 1. Need a section on column definitions, allowing for <col> and <colgroup><col>
+	 * 2. <thead> & <tfoot> should come before <tbody>; any repeats or trailing entries
+	 *    shall be treated as additional <tbody> sections for the moment
+	 */
+	
+	PD_Document *		m_pDocument;
+
+	UT_UTF8String		m_style_table;
+	UT_UTF8String		m_style_tzone; // thead,tfoot,tbody
+	UT_UTF8String		m_style; // tr
+
+	/* cell frag/strux
+	 */
+	pf_Frag_Strux *		m_pfsInsertionPoint;
+	pf_Frag_Strux *		m_pfsTableStart;
+	pf_Frag_Strux *		m_pfsTableEnd;
+		
+	UT_uint32			m_rows;
+	UT_uint32			m_rows_head;
+	UT_uint32			m_rows_head_max;
+	UT_uint32			m_rows_foot;
+	UT_uint32			m_rows_foot_max;
+	UT_uint32			m_rows_body;
+	UT_uint32			m_rows_body_max;
+
+	UT_uint32			m_cols;
+	UT_uint32			m_cols_max;
+
+	UT_uint32			m_col_next;
+	UT_uint32			m_row_next;
+
+	UT_uint32			m_garbage_count;
+
+	CellHelper ***		m_thead;
+	CellHelper ***		m_tfoot;
+	CellHelper ***		m_tbody;
+
+	CellHelper *		m_current;
+
+	CellHelper *		m_garbage;
+
+	TableZone			m_tzone;
+
+	PD_Document *	getDoc () const { return m_pDocument; }
+
+	pf_Frag_Strux *	getInsertionPoint () const { return m_pfsInsertionPoint; }
+
+	/* garbage collection & recycling
+	 */
+	CellHelper *	recoverCellHelper (bool create_if_none = true);
+	void			discardCellHelper (CellHelper * cell_helper);
+	bool			requireCellHelper (UT_uint32 number);
+
+public:
+	IE_Imp_TableHelper (PD_Document * pDocument, pf_Frag_Strux * pfsInsertionPoint, const char * style);
+
+	~IE_Imp_TableHelper ();
+
+private:
+	bool	tableStart ();
+public:
+	bool	tableEnd ();
+
+	bool	theadStart (const char * style);
+	bool	tfootStart (const char * style);
+	bool	tbodyStart (const char * style = 0);
+
+	bool	trStart (const char * style);
+private:
+	bool	trEnd ();
+	void	trClean ();
+public:
+	bool	tdStart (UT_uint32 rowspan, UT_uint32 colspan, const char * style, bool bounded = false);
+private:
+	bool	tdEnd ();
+	bool	tdPending ();
+
+	/* these confirm capacities of existing arrays, they do not create new arrays
+	 */
+	bool	grow_cols (UT_uint32 cols);
+	bool	grow_rows (UT_uint32 rows);
+
+	/* these add new (virtual and/or pending) cells and increase effective table size
+	 */
+	bool	append_cols (UT_uint32 cols = 1);
+	bool	append_rows (UT_uint32 rows = 1);
+
+	bool	append_col (); // use these via the above
+	bool	append_row ();
+};
+
+class ABI_EXPORT IE_Imp_TableHelperStack
+{
+private:
+	PD_Document *			m_pDocument;
+
+	UT_uint32				m_count;
+	UT_uint32				m_max;
+
+	IE_Imp_TableHelper **	m_stack;
+
+public:
+	IE_Imp_TableHelperStack (PD_Document * pDocument);
+
+	~IE_Imp_TableHelperStack ();
+
+	void					clear ();
+
+private:
+	bool					push (const char * style);
+	bool					pop ();
+public:
+	IE_Imp_TableHelper *	top () const { return m_stack ? m_stack[m_count] : 0; }
+
+	bool					tableStart (const char * style);
+	bool					tableEnd ();
+
+	bool					theadStart (const char * style);
+	bool					tfootStart (const char * style);
+	bool					tbodyStart (const char * style = 0);
+	bool					trStart (const char * style);
+	bool					tdStart (UT_uint32 rowspan, UT_uint32 colspan, const char * style);
+};
+
+#endif /* USE_IE_IMP_TABLEHELPER */
 
 #endif /* IE_TABLE */
-
-
-

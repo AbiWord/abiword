@@ -51,6 +51,7 @@
 
 class PD_Document;
 class FG_Graphic;
+class IE_Imp_TableHelperStack;
 
 // The importer/reader for XHTML 1.0
 
@@ -105,6 +106,8 @@ private:
 	bool					requireBlock ();
 	bool					requireSection ();
 	bool					childOfSection ();
+
+	IE_Imp_TableHelperStack *	m_TableHelperStack;
 
 	enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
 	UT_uint16	m_iListID;
