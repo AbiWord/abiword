@@ -33,6 +33,7 @@
 
 XAP_Resource::XAP_Resource (const char * resource_name, bool resource_internal) : 
 	bInternal(resource_internal),
+	Description(""),
 	m_resource_name(resource_name),
 	m_ref_count(1)
 {

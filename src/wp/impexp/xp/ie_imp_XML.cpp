@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* Abiword
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -232,8 +234,27 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 
 	case _PS_DataItem:
 	{
-#define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
+#ifdef ENABLE_RESOURCE_MANAGER
+		XAP_Resource * resource = RM.current ();
+		if (resource == 0) break;
+		if (!resource->bInternal) break;
+		XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(resource);
 
+		if (m_currentDataItemEncoded) // base64-encoded data
+			{
+				re->buffer (s, len, true);
+			}
+		else // old file-format keeping MathML & SVG in CDATA section :-(
+			{
+				/* since SVG import was only ever a DEBUG option, and is currently disabled (why?),
+				 * since MathML was never supported except in principle, and since this CDATA stuff
+				 * (unencoded) is pretty unsafe anyway, I'm going to postpone import support
+				 * indefinitely...                                              - fjf Aug. 19th '02
+				 */
+			}
+#else /* ENABLE_RESOURCE_MANAGER */
+
+#define MyIsWhite(c)			(((c)==' ') || ((c)=='\t') || ((c)=='\n') || ((c)=='\r'))
 
 		if (m_currentDataItemEncoded)
 		{
@@ -266,6 +287,7 @@ void IE_Imp_XML::charData(const XML_Char *s, int len)
 			m_currentDataItem.append((UT_Byte*)s, len);
 		}
 #undef MyIsWhite
+#endif /* ENABLE_RESOURCE_MANAGER */
 	}
 	}
 }

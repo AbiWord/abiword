@@ -197,8 +197,9 @@ UT_Error XAP_ResourceManager::write_xml (void * context, Writer & writer)
 
 	static const char * psz_id = "id";
 	static const char * psz_content_type = "type";
+	static const char * psz_description = "desc";
 
-	const char * atts[6];
+	const char * atts[8];
 
 	atts[4] = NULL;
 	atts[5] = NULL;
@@ -206,24 +207,30 @@ UT_Error XAP_ResourceManager::write_xml (void * context, Writer & writer)
 	for (UT_uint32 i = 0; i < m_resource_count; i++)
 		if (m_resource[i]->bInternal)
 			{
-				atts[0] = psz_id;
-				atts[1] = m_resource[i]->name().utf8_str ();
+				XAP_InternalResource * ri = dynamic_cast<XAP_InternalResource *>(m_resource[i]);
 
-				if (dynamic_cast<XAP_InternalResource *>(m_resource[i])->type().empty ())
+				UT_uint32 n = 0;
+
+				atts[n++] = psz_id;
+				atts[n++] = ri->name().utf8_str ();
+
+				if (!(ri->type().empty ()))
 					{
-						atts[2] = NULL;
-						atts[3] = NULL;
+						atts[n++] = psz_content_type;
+						atts[n++] = ri->type().utf8_str ();
 					}
-				else
+				if (!(ri->Description.empty ()))
 					{
-						atts[2] = psz_content_type;
-						atts[3] = dynamic_cast<XAP_InternalResource *>(m_resource[i])->type().utf8_str ();
+						atts[n++] = psz_description;
+						atts[n++] = ri->Description.utf8_str ();
 					}
+				atts[n++] = NULL;
+				atts[n++] = NULL;
 
 				err = writer.write_xml (context, "resource", atts);
 				if (err != UT_OK) break;
 
-				err = dynamic_cast<XAP_InternalResource *>(m_resource[i])->write_base64 (context, writer);
+				err = ri->write_base64 (context, writer);
 				if (err != UT_OK) break;
 
 				err = writer.write_xml (context, "resource");

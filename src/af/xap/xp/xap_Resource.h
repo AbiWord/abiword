@@ -42,6 +42,8 @@ public:
 	UT_uint32 count () const { return m_ref_count; }
 
 	const bool bInternal;
+
+	UT_UTF8String Description; // Doesn't seem to be any point in hiding this...
 private:
 	UT_UTF8String m_resource_name;
 

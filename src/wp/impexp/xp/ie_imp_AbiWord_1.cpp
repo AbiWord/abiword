@@ -963,10 +963,11 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 
 	if (isResource)
 		{
-			// <resource id="ID" type=""> ... </resource>
+			// <resource id="ID" type="" desc=""> ... </resource>
 
 			const XML_Char * r_id = 0;
 			const XML_Char * r_mt = 0;
+			const XML_Char * r_ds = 0;
 
 			const XML_Char ** attr = atts;
 			while (*attr)
@@ -981,6 +982,11 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 							attr++;
 							r_mt = *attr++;
 						}
+					else if (strcmp (*attr, "desc") == 0)
+						{
+							attr++;
+							r_ds = *attr++;
+						}
 					else
 						{
 							attr++;
@@ -993,6 +999,7 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 			if (ri == 0) return false;
 
 			if (r_mt) ri->type (r_mt);
+			if (r_ds) ri->Description = r_ds;
 
 			m_currentDataItemEncoded = true;
 
