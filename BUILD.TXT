@@ -1,3 +1,25 @@
+Introduction
+------------
+
+AbiWord has two or three unrelated build systems, the two principal build
+systems being:
+
+1. "diving make" - the original build system, which uses makefiles called
+                   "Makefile" or, occasionally, "Makefile.abi". If you want
+                   to use these then DON'T run configure, *just* "make".
+
+                   Supported Platforms: QNX, Win32, UNIX (except MacOSX)
+
+2. "auto*" - i.e., "./autogen.sh" (if you're using CVS), "configure" and
+                   "make", the usual autoconf/automake cocktail. For a list
+                   of options, do "./configure --help". Some helpful hints
+                   given in this file. Uses "GNUmakefile".
+
+                   Supported Platforms: MacOSX & other UNIX
+
+             NOTE: if building in a subdirectory of abi (e.g., abi/build)
+                   then "../../abi/configure" should be used instead of
+                   just "../configure".
 
 Build Instructions -- Linux, Solaris, AIX, ...
 ----------------------------------------------
