@@ -21,18 +21,20 @@
 /* XAP_CocoaToolbarWindow */
 
 #import <Cocoa/Cocoa.h>
+#include "ut_vector.h"
 
 class EV_CocoaToolbar;
 
 @interface XAP_CocoaToolbarWindow : NSWindowController
 {
-	IBOutlet NSView *m_topView;
+	UT_Vector * m_toolbarVector;
 }
 + (XAP_CocoaToolbarWindow *)sharedToolbar;
-+ (XAP_CocoaToolbarWindow *)createFromNib;
-- (void)windowDidLoad;
++ (XAP_CocoaToolbarWindow *)create;
+- (id)init;
+- (void)dealloc;
 - (void)removeAllToolbars;
 - (BOOL)addToolbar:(EV_CocoaToolbar *)aToolbar;
 - (BOOL)removeToolbar:(EV_CocoaToolbar *)aToolbar;
-- (NSView *)getTopView;
+- (void)autoResize;
 @end

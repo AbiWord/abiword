@@ -19,6 +19,7 @@
  
 #import "xap_CocoaToolbarWindow.h"
 
+#include "ut_vector.h"
 #include "ut_debugmsg.h"
 #include "ev_CocoaToolbar.h"
 
@@ -27,11 +28,23 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 
 @implementation XAP_CocoaToolbarWindow
 
-+ (XAP_CocoaToolbarWindow *)createFromNib
++ (XAP_CocoaToolbarWindow *)create
 {
-	UT_DEBUGMSG (("Cocoa: @XAP_CocoaToolbarWindow createFromNib\n"));
+	UT_DEBUGMSG (("Cocoa: @XAP_CocoaToolbarWindow create\n"));
 
-	XAP_CocoaToolbarWindow * tlbr = [[XAP_CocoaToolbarWindow alloc] initWithWindowNibName:@"xap_CocoaToolbarWindow"];
+	NSScreen * mainScreen = [NSScreen mainScreen];
+	NSRect screenFrame = [mainScreen visibleFrame];
+	NSRect windowFrame;
+	windowFrame.size.height = 100.0f;	// TODO calc the bottom
+	windowFrame.size.width = screenFrame.size.width;
+	windowFrame.origin.x = 0.0f;
+	windowFrame.origin.y = screenFrame.size.height - windowFrame.size.height;		
+	NSWindow * myWindow = [[NSWindow alloc] initWithContentRect:windowFrame styleMask:NSBorderlessWindowMask 
+											backing:NSBackingStoreBuffered defer:YES];
+	UT_ASSERT (myWindow);
+	[myWindow setHidesOnDeactivate:YES];
+	
+	XAP_CocoaToolbarWindow * tlbr = [[XAP_CocoaToolbarWindow alloc] initWithWindow:myWindow];
 
 	return tlbr;
 }
@@ -39,27 +52,30 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 + (XAP_CocoaToolbarWindow *)sharedToolbar
 {
 	if (pSharedToolbar == NULL) {
-		pSharedToolbar = [XAP_CocoaToolbarWindow createFromNib];
-		[pSharedToolbar window];
+		/* no toolbar created. create one and show it */
+		pSharedToolbar = [XAP_CocoaToolbarWindow create];
+		[pSharedToolbar showWindow:pSharedToolbar];
+		xxx_UT_DEBUGMSG (("Toolbar is visible ? : %d\n", [myWindow isVisible]));
 	}
 	return pSharedToolbar;
 }
 
-/*!
-	Standard method override
- */
-- (void)windowDidLoad
+
+- (id) init
 {
-	NSWindow * myWindow = [self window];
-	UT_ASSERT (myWindow);	// if does not occur, then this is real bad news.
-	NSRect screenFrame = [[myWindow screen] frame];
-	NSRect windowFrame = [myWindow frame];
-	windowFrame.size.width = screenFrame.size.width;
-	windowFrame.origin.x = 0.0f;
-	windowFrame.origin.y = 0.0f;		// TODO calc to be stuck to the bottom of the menubar.
-	[myWindow setFrame:windowFrame display:YES];
-	[myWindow setFrameOrigin:windowFrame.origin];
-	[super windowDidLoad];
+	self = [super init];
+	if (self) {
+		m_toolbarVector = new UT_Vector (5);
+	}
+	return self;
+}
+
+- (void)dealloc
+{
+	if (m_toolbarVector) {
+		delete m_toolbarVector;
+	}
+	[super dealloc];
 }
 
 - (void)removeAllToolbars
@@ -76,9 +92,17 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 {
 }
 
-- (NSView *)getTopView
+- (void)autoResize
 {
-	return m_topView;
+
 }
 
+#if 0
+- (NSView *)getTopView
+{
+	return [[self window] contentView];
+}
+#endif
+
 @end
+

@@ -79,7 +79,6 @@ public:									// we create...
 		UT_UCS2Char * data = (UT_UCS2Char *)malloc (sizeof (UT_UCS2Char) * (numChars + 1));
 		[str getCharacters:data];
 		wd->m_pCocoaToolbar->toolbarEvent (wd, data, numChars * sizeof(UT_UCS2Char));
-//		wd->m_pCocoaToolbar->toolbarEvent (wd, NULL, 0);
 		FREEP (data);
 	}
 	else {
@@ -480,7 +479,7 @@ bool EV_CocoaToolbar::synthesize(void)
 
 	XAP_CocoaToolbarWindow * pToolbarWinCtrl = [XAP_CocoaToolbarWindow sharedToolbar];
 	UT_ASSERT (pToolbarWinCtrl);
-	NSView * toolbarParent = [pToolbarWinCtrl getTopView];
+	NSView * toolbarParent = [[pToolbarWinCtrl window] contentView];
 	UT_ASSERT (toolbarParent);
 	NSRect viewBounds = [toolbarParent bounds];
 	float viewHeight = viewBounds.size.height;	// the toolbar window view height
