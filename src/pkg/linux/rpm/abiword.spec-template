@@ -2,10 +2,9 @@
 %define enable_static __UNIX_CAN_BUILD_STATIC__
 %define enable_debug __ABI_OPT_DEBUG__
 %define enable_gnome __ABI_OPT_GNOME__
-%define enable_bidi __ABI_OPT_BIDI_ENABLED__
 %define enable_perl __ABI_OPT_PERL__
 %define enable_jpeg __ABI_OPT_LIBJPEG__
-%define enable_xml2 1
+%define enable_expat 0
 %define enable_optimize __ABI_OPT_OPTIMIZE__
 %define enable_pspell __ABI_OPT_PSPELL__
 
@@ -67,12 +66,12 @@ Requires: pspell >= 0.11.1
 BuildRequires: pspell-devel >= 0.11.1
 %endif
 
-%if %{enable_xml2}
-Requires: libxml2 >= 2.4.2
-BuildRequires: libxml2-devel >= 2.4.2
-%else
+%if %{enable_expat}
 Requires: expat >= 1.95.1
 BuildRequires: expat-devel >= 1.95.1
+%else
+Requires: libxml2 >= 2.4.2
+BuildRequires: libxml2-devel >= 2.4.2
 %endif
 
 # Requirements for GNOME build
@@ -172,11 +171,11 @@ This is the clipart portfolio used by AbiWord.
 
 %build
 
-%__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
+%__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} compile canonical prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 cd ../abiword-plugins
 ./nextgen.sh
-./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite --disable-all %{plugin_tools} %{plugin_impexp}
+./configure --prefix=$RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite --disable-nroff --disable-eg
 %__make
 
 cd ../abi
@@ -188,19 +187,22 @@ cd ../abiword-plugins
 %__make install
 cd ../abi
 
-%__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} ABI_OPT_LIBXML2=%{enable_xml2} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
+%__make %{version_flag} ABI_OPT_DEBUG=%{enable_debug} UNIX_CAN_BUILD_STATIC=%{enable_static} ABI_OPT_GNOME=%{enable_gnome} ABI_OPT_LIBJPEG=%{enable_jpeg} ABI_OPT_PERL=%{enable_perl} ABI_OPT_OPTIMIZE=%{enable_optimize} install prefix=$RPM_BUILD_ROOT%{ABIPREFIX}
 
 # Manual fixes to Abi package
 
-# Fixes Abi start script
+# Fixes Abi start script and creates links
 %__perl -p -i -e "s|$RPM_BUILD_ROOT||" $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/bin/AbiWord
+%__mkdir_p $RPM_BUILD_ROOT/%{prefix}/bin/
+%__ln_s %{ABIPREFIX}/AbiSuite/bin/AbiWord $RPM_BUILD_ROOT/%{prefix}/bin/abiword
+%__ln_s %{ABIPREFIX}/AbiSuite/bin/AbiWord $RPM_BUILD_ROOT/%{prefix}/bin/AbiWord
 
 # Creates GNOME menu entries
 %__mkdir_p $RPM_BUILD_ROOT%{prefix}/share/pixmaps
-cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT%{prefix}/share/pixmaps/abiword_48.png
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT%{prefix}/share/pixmaps/abiword_48.png
 %if %{enable_gnome}
 %__mkdir_p $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/
-cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/abiword.desktop
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT%{prefix}/share/gnome/apps/Applications/abiword.desktop
 %endif
 
 %if %{enable_gnome}
@@ -224,6 +226,8 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 
 %files
 %defattr(-,root,root)
+%{prefix}/bin/abiword
+%{prefix}/bin/AbiWord
 %{ABIPREFIX}/AbiSuite/COPYING
 %{ABIPREFIX}/AbiSuite/readme.txt
 %{ABIPREFIX}/AbiSuite/AbiWord/readme.txt
@@ -238,32 +242,51 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %{ABIPREFIX}/oaf
 %if %{enable_gnome}
 %attr(644,root,root) %{prefix}/share/gnome/apps/Applications/abiword.desktop
-%attr(644,root,root) %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
 %endif
 
 %if %{enable_tools}
 %files plugins-tools
 %defattr(644,root,root)
+# comment if not working
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiCommand.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGimp.*
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAikSaurusABI.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiAikSaurus.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiBabelfish.*
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libGdictAbiPlugin.*
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libScriptHappy.*
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWikipedia.*
+#%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiFreeTranslation.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdict.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiURLDict.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWikipedia.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiScriptHappy.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiBMP.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiJPEG.*
 %endif
 
 %if %{enable_impexp}
 %files plugins-impexp
 %defattr(644,root,root)
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libBZ2Abw.*
-%if ! %{enable_gnome}
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiGdkPixbuf.*
-%endif
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiApplix.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiBZ2.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiClarisWorks.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiDocBook.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiEML.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHancom.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHRText.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiHTML.*
-%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiISCII.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiKWord.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiLaTeX.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiMIF.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiMSWrite.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiPalmDoc.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiPW.*
 %{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiSDW.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiT602.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWML.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiWordPerfect.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiXHTML.*
+%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libAbiXSLFO.*
+#%{ABIPREFIX}/AbiSuite/AbiWord/plugins/libOpenWriter.*
 %endif
 
 %files clipart
@@ -279,17 +302,6 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %{ABIPREFIX}/AbiSuite/fonts/*.pfb
 %{ABIPREFIX}/AbiSuite/fonts/*.e2u
 %{ABIPREFIX}/AbiSuite/fonts/*.u2g
-
-%post
-
-# Fixes for symlink in {prefix}/bin
-%__mkdir_p %{prefix}/bin
-%__ln_s -f %{ABIPREFIX}/AbiSuite/bin/AbiWord %{prefix}/bin/abiword
-
-%postun
-if test ! -x %{ABIPREFIX}/AbiSuite/bin/AbiWord ; then
-  %__rm -f %{prefix}/bin/abiword
-fi
 
 %post fonts
 if test -z "`grep AbiSuite /etc/X11/fs/config`" ; then
