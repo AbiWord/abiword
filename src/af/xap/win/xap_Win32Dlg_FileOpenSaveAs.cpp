@@ -168,6 +168,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		
 	switch (m_id)
 	{
+	case XAP_DIALOG_ID_INSERT_PICTURE:
 	case XAP_DIALOG_ID_FILE_OPEN:
 		ofn.Flags |= OFN_FILEMUSTEXIST;
 		bDialogResult = GetOpenFileName(&ofn);

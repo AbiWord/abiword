@@ -990,18 +990,12 @@ static UT_Bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 	XAP_DialogFactory * pDialogFactory
 		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
-	/* 
-	   TODO  Use something like XAP_DIALOG_ID_INSERT_GRAPHIC rather
-	   TODO  than using XAP_DIALOG_ID_FILE_OPEN so that the insert
-	   TODO  image dialog can be different and so that it can
-	   TODO  have its own directory memory.
-	*/
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= (XAP_Dialog_FileOpenSaveAs *)
-		      (pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
+		      (pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERT_PICTURE));
 	UT_ASSERT(pDialog);
 
-	pDialog->setCurrentPathname(pFrame->getFilename());
+	pDialog->setCurrentPathname(NULL);
 	pDialog->setSuggestFilename(UT_FALSE);
 
 	// to fill the file types popup list, we need to convert AP-level

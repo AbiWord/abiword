@@ -85,6 +85,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixGnomeDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixGnomeDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixGnomeDialog_Insert_Symbol)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_UnixDialog_FileOpenSaveAs)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
@@ -108,6 +109,7 @@
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_UnixDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_UnixDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixDialog_Insert_Symbol)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_UnixDialog_FileOpenSaveAs)
 
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixDialog_About)
 

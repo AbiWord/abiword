@@ -73,6 +73,7 @@ void XAP_QNXDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	int   flags = 0;
 	switch (m_id)
 	{
+	case XAP_DIALOG_ID_INSERT_PICTURE:
 	case XAP_DIALOG_ID_FILE_OPEN:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_OpenTitle);

@@ -61,6 +61,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_BeOSDialog_Zoom) 
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_BeOSDialog_About) 
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,		XAP_BeOSDialog_Insert_Symbol) 
+	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_BeOSDialog_FileOpenSaveAs)
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_BeOSDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_BeOSDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_BeOSDialog_Break)

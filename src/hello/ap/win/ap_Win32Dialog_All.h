@@ -48,6 +48,7 @@
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_Win32Dialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_Win32Dialog_WindowMore)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE, XAP_Win32Dialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_Win32Dialog_About)
 
 	// ... also add new dialogs here ...

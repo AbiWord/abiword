@@ -130,6 +130,7 @@ void XAP_BeOSDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_pOpenPanel = m_pSavePanel = NULL;
 		
 	switch (m_id) {
+	case XAP_DIALOG_ID_INSERT_PICTURE:
 	case XAP_DIALOG_ID_FILE_OPEN: {
 		szTitle = "AbiWord - Open File";
 		bCheckWritePermission = UT_FALSE;

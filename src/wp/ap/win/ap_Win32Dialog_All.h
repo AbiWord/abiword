@@ -63,6 +63,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_Win32Dialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_Win32Dialog_About)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,	XAP_Win32Dialog_Insert_Symbol)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE, XAP_Win32Dialog_FileOpenSaveAs)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)

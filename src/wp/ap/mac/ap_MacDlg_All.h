@@ -54,6 +54,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_MacDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_WINDOWMORE,		XAP_MacDialog_WindowMore)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,	XAP_MacDialog_Insert_Symbol)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_MacDialog_FileOpenSaveAs)
 //	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_MacDialog_About)
 
 //	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_MacDialog_Replace)

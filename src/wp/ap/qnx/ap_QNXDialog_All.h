@@ -65,6 +65,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ZOOM,			XAP_QNXDialog_Zoom)
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_QNXDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,	XAP_QNXDialog_Insert_Symbol)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_QNXDialot_FileOpenSaveAs)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_QNXDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_QNXDialog_Replace)
