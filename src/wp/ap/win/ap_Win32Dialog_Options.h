@@ -101,9 +101,6 @@ public:
 	int							m_nrSubDlgs;		// number of tabs on tab control
 	UT_Vector					m_vecSubDlgHWnd;	// hwnd to each sub-dialog
 	
-	// FIXME: replace this with *real* gui code */
-	fp_PageSize::Predefined		defaultPageSize;
-
 private:
 	XAP_DialogFactory *			m_pDialogFactory;
 };

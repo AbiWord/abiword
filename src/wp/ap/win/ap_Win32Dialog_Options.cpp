@@ -45,6 +45,8 @@
 #include "ap_Win32Dialog_Options.h"
 #include "ap_Win32Dialog_Background.h"
 
+#include "fp_PageSize.h"
+
 /*****************************************************************/
 
 #define GWL(hwnd)		(AP_Win32Dialog_Options*)GetWindowLong((hwnd), DWL_USER)
@@ -417,25 +419,22 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_DS(OPTIONS_CHK_SmartQuotesEnable,		DLG_Options_Label_SmartQuotesEnable);
 			_DS(OPTIONS_CHK_BGColorEnable,			DLG_Options_Label_CheckWhiteForTransparent);
 			_DS(OPTIONS_BTN_BGColor,				DLG_Options_Label_ChooseForTransparent);
-/*			_CASX(hwndAlign, DLG_Unit_inch);
-			_CASX(hwndAlign, DLG_Unit_cm);
-			_CASX(hwndAlign, DLG_Unit_points);
-			_CASX(hwndAlign, DLG_Unit_pico);
-*/
+
 			// Populate values in the _COMBO_UNITS
 			HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
 			for( int n1 = 0; n1 < SIZE_aAlignUnit; n1++ ) 
 			{
 				SendMessage(hwndAlign, CB_ADDSTRING, 0, (LPARAM)pSS->getValue(s_aAlignUnit[n1].id));
 			}
-			SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM) 0, 0);
 
-//			_CDB(OPTIONS_CHK_ViewShowRuler,			id_CHECK_VIEW_SHOW_RULER);
-//			_CDB(OPTIONS_CHK_ViewCursorBlink,		id_CHECK_VIEW_CURSOR_BLINK);
-//			_CDB(OPTIONS_CHK_ViewShowToolbars,		id_CHECK_VIEW_SHOW_TOOLBARS);
-//			_CDB(OPTIONS_CHK_ViewAll,				id_CHECK_VIEW_ALL);
-//			_CDB(OPTIONS_CHK_ViewHiddenText,		id_CHECK_VIEW_HIDDEN_TEXT);
-//			_CDB(OPTIONS_CHK_ViewUnprintable,		id_CHECK_VIEW_UNPRINTABLE);
+			HWND hwndPaperSize = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
+			for( int n2 = 0; n2 < (int)fp_PageSize::_last_predefined_pagesize_dont_use_; n2++ ) 
+			{
+				SendMessage( hwndPaperSize, 
+                             CB_INSERTSTRING, 
+                             (WPARAM) n2,
+                             (LPARAM) fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)n2) );
+			}
 		}
 		break;
 	
@@ -846,20 +845,26 @@ int AP_Win32Dialog_Options::_gatherNotebookPageNum(void)
 	return 0;
 }
 
-void    AP_Win32Dialog_Options::_setNotebookPageNum(const int pn) 
+void AP_Win32Dialog_Options::_setNotebookPageNum(const int pn) 
 {
 }
 
-void	AP_Win32Dialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
+void AP_Win32Dialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
 {
-	// FIXME: replace this with *real* gui code
-	defaultPageSize = pre;
+	HWND hwndPaperSize = GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX), 
+		                             AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
+	SendMessage(hwndPaperSize, CB_SETCURSEL, (WPARAM)pre, 0);
 }
 
 fp_PageSize::Predefined AP_Win32Dialog_Options::_gatherDefaultPageSize(void)
 {
-	// FIXME: replace this with *real* gui code
-	return defaultPageSize;
+	HWND hwndPaperSize = GetDlgItem( (HWND)m_vecSubDlgHWnd.getNthItem(LAYOUT_INDEX), 
+		                             AP_RID_DIALOG_OPTIONS_COMBO_DefaultPageSize);
+	int nSel = SendMessage(hwndPaperSize, CB_GETCURSEL, 0, 0);
+
+	if( nSel != CB_ERR )
+		return (fp_PageSize::Predefined) nSel;
+	return fp_PageSize::Letter;
 }
 
 void AP_Win32Dialog_Options::_initializeTransperentToggle(void)
