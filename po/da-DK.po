@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord\n"
-"POT-Creation-Date: 2002-02-21 18:27+0100\n"
-"PO-Revision-Date: 2002-02-21 18:27+0100\n"
+"POT-Creation-Date: 2002-02-24 00:04+0100\n"
+"PO-Revision-Date: 2002-02-24 00:04+0100\n"
 "Last-Translator: Birger Langkjer <bl@dci.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
 "MIME-Version: 1.0\n"
@@ -1043,7 +1043,7 @@ msgstr "Kopi:"
 #. AUTOTEXT_MAIL_1
 #: po/tmp/ap_String_Id.h.h:401
 msgid "CERTIFIED MAIL"
-msgstr "CERTIFICERET E-POST"
+msgstr "BEKRÆFTET POST"
 
 #. AUTOTEXT_MAIL_2
 #: po/tmp/ap_String_Id.h.h:403
@@ -1207,7 +1207,7 @@ msgstr "Tjek &version"
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h.h:465
 msgid "Check s&pelling as you type"
-msgstr "Udfør stave&kontrol mens du skriver"
+msgstr "Stave&kontrol mens du skriver"
 
 #. MENU_STATUSLINE_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:467
@@ -2727,7 +2727,7 @@ msgstr "Svar:"
 #. AUTOTEXT_MAIL_4
 #: po/tmp/ap_String_Id.h.h:1051
 msgid "REGISTERED MAIL"
-msgstr "REGISTRERET E-POST"
+msgstr "ANBEFALET BREV"
 
 #. MENU_STATUSLINE_WINDOW_9
 #: po/tmp/ap_String_Id.h.h:1053
@@ -2900,7 +2900,7 @@ msgstr "S&kripter"
 #. AUTOTEXT_MAIL_5
 #: po/tmp/ap_String_Id.h.h:1119
 msgid "SPECIAL DELIVERY"
-msgstr "SPECIALLEVERENCE"
+msgstr "EKSPRESBREV"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h.h:1121
@@ -3607,7 +3607,7 @@ msgstr "Forstør til &50%"
 #: po/tmp/ap_String_Id.h.h:1391
 #, c-format
 msgid "Zoom to &75%"
-msgstr "Fostør til &75%"
+msgstr "Forstør til &75%"
 
 #. MENU_LABEL_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:1393
@@ -4105,7 +4105,7 @@ msgstr "Engelsk (New Zealand)"
 #. LANG_EN_ZA
 #: po/tmp/xap_String_Id.h.h:183
 msgid "English (South Africa)"
-msgstr "Engelsk (Sydsfrika)"
+msgstr "Engelsk (Sydafrika)"
 
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h.h:185
@@ -4261,7 +4261,7 @@ msgstr "Hebraisk, Windows 1255"
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:249
 msgid "Height in pixels:"
-msgstr "Højde:"
+msgstr "Højde i pixler:"
 
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h.h:251
