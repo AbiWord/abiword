@@ -321,11 +321,11 @@ void s_HTML_Listener::_closeTag(void)
 
 	if(m_iBlockType == BT_NORMAL)
 	{
-       	m_pie->write("</p>\n");
 		if(!m_bWroteText)
 		{
 			m_pie->write("<br />\n");
 		}
+		m_pie->write("</p>\n");
 	}
 
 	else if(m_iBlockType == BT_HEADING1)
