@@ -56,6 +56,10 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_Language.cpp		\
 		ut_Encoding.cpp
 
+ifdef ABI_OPT_BIDI_ENABLED
+CPPSRCS += ut_contextGlyph.cpp
+endif		
+		
 ifdef ABI_OPT_PERL
 CPPSRCS += ut_PerlBindings.cpp
 endif

@@ -115,6 +115,10 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_Encoding.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_path.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)
+		
+ifdef ABI_OPT_BIDI_ENABLED
+OBJS +=	$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX)
+endif
 
 ifdef ABI_OPT_PERL
 OBJS += $(OBJDIR)/ut_PerlBindings.$(OBJ_SUFFIX)

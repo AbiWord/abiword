@@ -46,6 +46,7 @@
 #ifdef BIDI_ENABLED
 //#define CAPS_TEST
 #include "fribidi.h"
+#include "ut_contextGlyph.h"
 #include "ap_Prefs.h"
 #endif
 
@@ -1312,7 +1313,28 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 		UT_uint32 iTrueLen = (lenSpan > len) ? len : lenSpan;
 		
 		if(m_iDirection != FRIBIDI_TYPE_ON || iVisDir != FRIBIDI_TYPE_RTL)
-			UT_UCS_strncpy(s_pSpanBuff, pSpan, iTrueLen);
+		{
+			//UT_UCS_strncpy(s_pSpanBuff, pSpan, iTrueLen);
+			
+			// handle context glyphs
+			UT_contextGlyph cg;
+			
+			// get the char before and after this run
+			const UT_UCSChar *pPrev, *pNext;
+			UT_uint32 lenPrev, lenNext;
+			
+			if(!m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
+				pPrev = NULL;
+			if(!m_pBL->getSpanPtr(offset + iLen, &pNext, &lenNext))
+				pNext = NULL;
+				
+			s_pSpanBuff[0] = cg.getGlyph(&pSpan[0], pPrev, &pSpan[1]);
+			
+			for (UT_uint32 i = 1; i < iTrueLen - 1; i++)
+				s_pSpanBuff[i] = cg.getGlyph(&pSpan[i], &pSpan[i-1], &pSpan[i+1]);
+			
+			s_pSpanBuff[iTrueLen - 1] = cg.getGlyph(&pSpan[iTrueLen-1], &pSpan[iTrueLen-2], pNext);
+		}
 		else
 		{
 			//this is 'other neutral' visually rtl span, we need to deal
