@@ -417,8 +417,8 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 	PtWidget_t *vgroup = PtCreateWidget(PtGroup, windowPlugins, n, args);
 
 	n = 0;
-#define PANEL_WIDTH (530)
-#define PANEL_HEIGHT (390)
+#define PANEL_WIDTH 300
+#define PANEL_HEIGHT 200
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, PANEL_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, PANEL_HEIGHT, 0);
 	PtWidget_t *panelGroup = PtCreateWidget(PtPanelGroup, vgroup, n, args);	
@@ -430,10 +430,11 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 	PtWidget_t *tabList = PtCreateWidget(PtPane, panelGroup, n, args);
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	PtWidget_t *hgroup = PtCreateWidget(PtGroup, tabList, n, args);
 
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_WIDTH, 80, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 150, 0);
 	clistPlugins = PtCreateWidget(PtList, hgroup, n, args);
 	//lblActivePlugins = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE));
 /*
@@ -470,6 +471,7 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ROWS_COLS, 2, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	PtWidget_t *detailgroup = PtCreateWidget(PtGroup, tabDetail, n, args);	
 	
 	n = 0;
@@ -477,6 +479,7 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 	lblName = PtCreateWidget(PtLabel, detailgroup, n, args);
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 100, 0);
 	entryName = PtCreateWidget(PtText, detailgroup, n, args);
 
 	n = 0;
