@@ -110,6 +110,8 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	{
 		if (strstr(szFontDecoration,"underline") != 0)
 			m_pie->_rtf_keyword("ul");
+		if (strstr(szFontDecoration,"overline") != 0)
+			m_pie->_rtf_keyword("overline");
 		if (strstr(szFontDecoration,"line-through") != 0)
 			m_pie->_rtf_keyword("strike");
 	}

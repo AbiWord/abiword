@@ -65,6 +65,7 @@ public:
 	UT_Bool	m_bold;
 	UT_Bool	m_italic;
 	UT_Bool	m_underline;
+	UT_Bool m_overline;
 	UT_Bool	m_strikeout;
 	UT_Bool m_superscript;
 	UT_Bool m_subscript;
@@ -216,6 +217,7 @@ private:
 		UT_Bool HandleBold(UT_Bool state);
 		UT_Bool HandleItalic(UT_Bool state);
 		UT_Bool HandleUnderline(UT_Bool state);
+		UT_Bool HandleOverline(UT_Bool state);
 		UT_Bool HandleStrikeout(UT_Bool state);
 		UT_Bool HandleSuperscript(UT_Bool state);
 		UT_Bool HandleSubscript(UT_Bool state);

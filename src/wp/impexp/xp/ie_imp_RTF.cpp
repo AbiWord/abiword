@@ -67,6 +67,7 @@ RTFProps_CharProps::RTFProps_CharProps()
 	m_bold = UT_FALSE;
 	m_italic = UT_FALSE;
 	m_underline = UT_FALSE;
+	m_overline = UT_FALSE;
 	m_strikeout = UT_FALSE;
 	m_superscript = UT_FALSE;
 	m_subscript = UT_FALSE;
@@ -757,6 +758,13 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 			m_currentRTFState.m_paraProps.m_indentLeft = param;
 		}
 		break;
+	case 'o':
+	  if (strcmp((char*)pKeyword,"overline") ==  0 || strcmp((char*)pKeyword,"over") ==  0 || strcmp((char*)pKeyword,"ov") ==  0)
+	        { 
+	       // Sevior: I have no idea what the RTF sequence for overline is!
+			return HandleOverline(fParam ? param : 1);
+		}
+	        break;
 
 	case 'p':
 		if (strcmp((char*)pKeyword, "par") == 0)
@@ -956,19 +964,35 @@ UT_Bool IE_Imp_RTF::ApplyCharacterAttributes()
 	// italic
 	strcat(propBuffer, "; font-style:");
 	strcat(propBuffer, m_currentRTFState.m_charProps.m_italic ? "italic" : "normal");
-	// underline & strike-out
+	// underline & overline & strike-out
 	strcat(propBuffer, "; text-decoration:");
-	if (m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout)
+	if (m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout && !m_currentRTFState.m_charProps.m_overline)
 	{
 		strcat(propBuffer, "underline line-through");
 	}
-	else if (m_currentRTFState.m_charProps.m_underline  &&  !m_currentRTFState.m_charProps.m_strikeout)
+	else if (m_currentRTFState.m_charProps.m_underline  &&  !m_currentRTFState.m_charProps.m_strikeout  && !m_currentRTFState.m_charProps.m_overline)
 	{
 		strcat(propBuffer, "underline");
 	}
-	else if (!m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout)
+	else if (!m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout  && !m_currentRTFState.m_charProps.m_overline)
 	{
 		strcat(propBuffer, "line-through");
+	}
+	else if(m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout && m_currentRTFState.m_charProps.m_overline)
+	{
+		strcat(propBuffer, "underline overline line-through");
+	}
+	else if(!m_currentRTFState.m_charProps.m_underline  &&  m_currentRTFState.m_charProps.m_strikeout && m_currentRTFState.m_charProps.m_overline)
+	{
+		strcat(propBuffer, "overline line-through");
+	}
+	else if(m_currentRTFState.m_charProps.m_underline  &&  !m_currentRTFState.m_charProps.m_strikeout && m_currentRTFState.m_charProps.m_overline)
+	{
+		strcat(propBuffer, "underline overline");
+	}
+	else if(!m_currentRTFState.m_charProps.m_underline  &&  !m_currentRTFState.m_charProps.m_strikeout && m_currentRTFState.m_charProps.m_overline)
+	{
+		strcat(propBuffer, "overline");
 	}
 	else
 	{
@@ -1531,6 +1555,11 @@ UT_Bool IE_Imp_RTF::HandleItalic(UT_Bool state)
 UT_Bool IE_Imp_RTF::HandleUnderline(UT_Bool state)
 {
 	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_underline);
+}
+
+UT_Bool IE_Imp_RTF::HandleOverline(UT_Bool state)
+{
+	return HandleBoolCharacterProp(state, &m_currentRTFState.m_charProps.m_overline);
 }
 
 UT_Bool IE_Imp_RTF::HandleStrikeout(UT_Bool state)
