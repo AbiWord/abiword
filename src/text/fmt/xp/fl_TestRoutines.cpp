@@ -103,7 +103,7 @@ void __dump_sq(void)
 	{
 		fprintf(stdout,"Section: %p [type %d]\n",(void*)psl,psl->getType());
 		for (fl_BlockLayout * pBL=(fl_BlockLayout *) psl->getFirstLayout(); (pBL); pBL= (fl_BlockLayout *) pBL->getNext())
-			pBL->getSquiggles()->__dump(stdout);
+			pBL->getSpellSquiggles()->__dump(stdout);
 	}
 }
 

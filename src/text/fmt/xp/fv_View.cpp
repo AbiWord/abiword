@@ -8845,7 +8845,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_TEXT:
 		if (!isPosSelected(pos))
 		{
-			if (pBlock->getSquiggles()->get(pos - pBlock->getPosition()))
+			if (pBlock->getSpellSquiggles()->get(pos - pBlock->getPosition()))
 			{
 				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (8) misspelt pos %d \n",pos));
 				m_prevMouseContext = EV_EMC_MISSPELLEDTEXT;
@@ -9111,7 +9111,7 @@ bool FV_View::isTextMisspelled() const
 		return false;
 	}
 	if (!isPosSelected(pos))
-		if (pBlock->getSquiggles()->get(pos - pBlock->getPosition()))
+		if (pBlock->getSpellSquiggles()->get(pos - pBlock->getPosition()))
 		{
 			return true;
 		}
@@ -9207,7 +9207,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 	{
 	case FPRUN_TEXT:
 		if (!isPosSelected(m_iInsPoint))
-			if (pBlock->getSquiggles()->get(m_iInsPoint - pBlock->getPosition()))
+			if (pBlock->getSpellSquiggles()->get(m_iInsPoint - pBlock->getPosition()))
 			{
 				return EV_EMC_MISSPELLEDTEXT;
 			}
@@ -9389,7 +9389,7 @@ UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 	PT_DocPosition epos = 0;
 	getDocument()->getBounds(true, epos);
 	UT_DEBUGMSG(("end bound is %d\n", epos));
-	pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
+	pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
 	UT_return_val_if_fail(pPOB, NULL);
 
 	// grab the suggestion

@@ -47,6 +47,8 @@
 #define fl_BLOCK_STRUX_OFFSET	1
 
 class fl_Squiggles;
+class fl_SpellSquiggles;
+class fl_GrammarSquiggles;
 class FL_DocLayout;
 class fl_SectionLayout;
 class fl_ContainerLayout;
@@ -102,6 +104,8 @@ void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_GenericVector<f
 class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 {
 	friend class fl_Squiggles;
+	friend class fl_SpellSquiggles;
+	friend class fl_GrammarSquiggles;
 	friend class fl_DocListener;
 	friend class fl_TOCLayout;
 	friend class fb_LineBreaker;
@@ -228,7 +232,7 @@ public:
 	inline UT_BidiCharType getDominantDirection(void) const { return m_iDomDirection; }
 	void setDominantDirection(UT_BidiCharType iDirection);
 
-	inline fl_Squiggles* getSquiggles(void) const { return m_pSquiggles; }
+	inline fl_SpellSquiggles* getSpellSquiggles(void) const { return m_pSpellSquiggles; }
 
 	bool isHdrFtr(void);
 	void setHdrFtr(void) { m_bIsHdrFtr = true;}
@@ -441,7 +445,7 @@ protected:
 	bool                    m_bStartList;
 	bool                    m_bStopList;
     bool                    m_bListLabelCreated;
-	fl_Squiggles *          m_pSquiggles;
+	fl_SpellSquiggles *     m_pSpellSquiggles;
 	bool                    m_bListItem;
 	const XML_Char *		m_szStyle;
 	bool                    m_bIsCollapsed;

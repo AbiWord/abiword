@@ -3975,7 +3975,7 @@ void FV_View::_fixInsertionPointCoords()
 	xxx_UT_DEBUGMSG(("SEVIOR: m_yPoint = %d m_iPointHeight = %d \n",m_yPoint,m_iPointHeight));
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();
-	if(pBlock && pBlock->getSquiggles()->get(getPoint() - pBlock->getPosition()))
+	if(pBlock && pBlock->getSpellSquiggles()->get(getPoint() - pBlock->getPosition()))
 	{
 		if(m_prevMouseContext == EV_EMC_TEXT)
 		{

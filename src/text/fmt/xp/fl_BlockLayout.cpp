@@ -258,8 +258,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 		_insertEndOfParagraphRun();
 	}
 
-	m_pSquiggles = new fl_Squiggles(this);
-	UT_ASSERT(m_pSquiggles);
+	m_pSpellSquiggles = new fl_SpellSquiggles(this);
+	UT_ASSERT(m_pSpellSquiggles);
 	setUpdatableField(false);
 	updateEnclosingBlockIfNeeded();
 }
@@ -881,7 +881,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 fl_BlockLayout::~fl_BlockLayout()
 {
-	DELETEP(m_pSquiggles);
+	DELETEP(m_pSpellSquiggles);
 	purgeLayout();
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 	DELETEP(m_pAlignment);
@@ -1141,7 +1141,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 //
 // Now update the PartOfBlocks in the squiggles
 //
-		getSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
+		getSpellSquiggles()->updatePOBs(iFirstOffset,iSuggestDiff);
 	}
 #if 0
 #if DEBUG
@@ -3983,7 +3983,7 @@ bool fl_BlockLayout::checkSpelling(void)
 	}
 	
 	// Remove any existing squiggles from the screen...
-	bool bUpdateScreen = m_pSquiggles->deleteAll();
+	bool bUpdateScreen = m_pSpellSquiggles->deleteAll();
 
 	// Now start checking
 	bUpdateScreen |= _checkMultiWord(0, -1, bIsCursorInBlock);
@@ -4093,12 +4093,12 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 		// Word not correct or recognized, so squiggle it
 		if (bAddSquiggle)
 		{
-			m_pSquiggles->add(pPOB);
+			m_pSpellSquiggles->add(pPOB);
 		}
 
 		if(bClearScreen)
 		{
-			m_pSquiggles->clear(pPOB);
+			m_pSpellSquiggles->clear(pPOB);
 		}
 
 		// Display was updated
@@ -5404,7 +5404,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	format();
 	updateEnclosingBlockIfNeeded();
 
-	m_pSquiggles->textInserted(blockOffset, len);
+	m_pSpellSquiggles->textInserted(blockOffset, len);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -5844,7 +5844,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	xxx_UT_DEBUGMSG(("fl_BlockLayout:: deleteSpan offset %d len %d \n",blockOffset,len));
 	_delete(blockOffset, len);
 
-	m_pSquiggles->textDeleted(blockOffset, len);
+	m_pSpellSquiggles->textDeleted(blockOffset, len);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -6293,7 +6293,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 		// This call will dequeue the block from background checking
 		// if necessary
-		m_pSquiggles->join(offset, pPrevBL);
+		m_pSpellSquiggles->join(offset, pPrevBL);
 		pPrevBL->setNeedsReformat();
 		//
 		// Update if it's TOC entry by removing then restoring
@@ -6678,7 +6678,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	updateEnclosingBlockIfNeeded();
 
 	// Split squiggles between this and the new block
-	m_pSquiggles->split(blockOffset, pNewBL);
+	m_pSpellSquiggles->split(blockOffset, pNewBL);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -7333,7 +7333,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 	UT_sint32 runBlockOffset = pRun->getBlockOffset();
 	UT_sint32 runBlockEnd = runBlockOffset + pRun->getLength();
 	UT_sint32 iFirst, iLast;
-	if (m_pSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast))
+	if (m_pSpellSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast))
 	{
 		UT_sint32 iStart = 0, iEnd;
 		fl_PartOfBlock* pPOB;
@@ -7341,7 +7341,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 
 		// The first POB may only be partially within the region. Clip
 		// it if necessary.
-		pPOB = m_pSquiggles->getNth(i++);
+		pPOB = m_pSpellSquiggles->getNth(i++);
 		if (!pPOB->getIsIgnored())
 		{
 			iStart = pPOB->getOffset();
@@ -7359,7 +7359,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 		// The ones in the middle don't need clipping.
 		for (; i < iLast; i++)
 		{
-			pPOB = m_pSquiggles->getNth(i);
+			pPOB = m_pSpellSquiggles->getNth(i);
 			if (pPOB->getIsIgnored()) continue;
 
 			iStart = pPOB->getOffset();
@@ -7368,7 +7368,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 		}
 		// The last POB may only be partially within the region. Clip
 		// it if necessary. Note the load with iLast instead of i.
-		pPOB = m_pSquiggles->getNth(iLast);
+		pPOB = m_pSpellSquiggles->getNth(iLast);
 		if (!pPOB->getIsIgnored())
 		{
 			// Only load start if this POB is different from the first
@@ -7497,7 +7497,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 		pView->_setPoint(pView->getPoint() + 1);
 
 	// TODO: are objects always one wide?
-	m_pSquiggles->textInserted(blockOffset, 1);
+	m_pSpellSquiggles->textInserted(blockOffset, 1);
 
 	_assertRunListIntegrity();
 	//
@@ -7586,8 +7586,8 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 		pView->_setPoint(pView->getPoint() - 1);
 
 	// TODO: are objects always one wide?
-	if(m_pSquiggles)
-		m_pSquiggles->textDeleted(blockOffset, 1);
+	if(m_pSpellSquiggles)
+		m_pSpellSquiggles->textDeleted(blockOffset, 1);
 
 	_assertRunListIntegrity();
 	//
@@ -8217,7 +8217,7 @@ fl_BlockLayout::recheckIgnoredWords(void)
 	UT_ASSERT(bRes);
 	const UT_UCSChar* pBlockText = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(0));
 
-	bool bUpdate = m_pSquiggles->recheckIgnoredWords(pBlockText);
+	bool bUpdate = m_pSpellSquiggles->recheckIgnoredWords(pBlockText);
 
 	// Update screen if any words squiggled
 	FV_View* pView = getView();
@@ -9718,8 +9718,8 @@ fl_BlockLayout::debugFlashing(void)
 	fl_PartOfBlock* pPOB = new fl_PartOfBlock(0, eor);
 	UT_ASSERT(pPOB);
 	if (pPOB) {
-		m_pSquiggles->add(pPOB);
-		m_pSquiggles->clear(pPOB);
+		m_pSpellSquiggles->add(pPOB);
+		m_pSpellSquiggles->clear(pPOB);
 
 		pView->updateScreen();
 		UT_usleep(250000);

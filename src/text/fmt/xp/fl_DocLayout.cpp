@@ -2100,7 +2100,7 @@ FL_DocLayout::_toggleAutoSpell(bool bSpell)
 				if(b->getContainerType() == FL_CONTAINER_BLOCK)
 				{
 					static_cast<fl_BlockLayout *>(b)->removeBackgroundCheckReason(bgcrSpelling);
-					static_cast<fl_BlockLayout *>(b)->getSquiggles()->deleteAll();
+					static_cast<fl_BlockLayout *>(b)->getSpellSquiggles()->deleteAll();
 					b = static_cast<fl_BlockLayout *>(b)->getNextBlockInDocument();
 				}
 				else

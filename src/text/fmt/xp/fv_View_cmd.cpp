@@ -4836,7 +4836,7 @@ void FV_View::cmdContextSuggest(UT_uint32 ndx, fl_BlockLayout * ppBL,
 	UT_ASSERT(pBL);
 
 	if (!ppPOB)
-		pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
+		pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
 	else
 		pPOB = ppPOB;
 	UT_ASSERT(pPOB);
@@ -4868,7 +4868,7 @@ void FV_View::cmdContextIgnoreAll(void)
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
 	UT_ASSERT(pBL);
-	fl_PartOfBlock* pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
+	fl_PartOfBlock* pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
 	UT_ASSERT(pPOB);
 
 	// grab a copy of the word
@@ -4903,7 +4903,7 @@ void FV_View::cmdContextAdd(void)
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
 	UT_ASSERT(pBL);
-	fl_PartOfBlock* pPOB = pBL->getSquiggles()->get(pos - pBL->getPosition());
+	fl_PartOfBlock* pPOB = pBL->getSpellSquiggles()->get(pos - pBL->getPosition());
 	UT_ASSERT(pPOB);
 
 	// grab a copy of the word

@@ -22,11 +22,17 @@
 
 #include "fl_BlockLayout.h"
 
+typedef enum 
+{
+  FL_SQUIGGLE_SPELL,
+  FL_SQUIGGLE_GRAMMAR
+} FL_SQUIGGLE_TYPE;
+
 class ABI_EXPORT fl_Squiggles
 {
 public:
-	fl_Squiggles(fl_BlockLayout* pOwner);
-	~fl_Squiggles(void);
+	fl_Squiggles(fl_BlockLayout* pOwner, FL_SQUIGGLE_TYPE iType);
+virtual	~fl_Squiggles(void);
 
 	void					add(fl_PartOfBlock* pPOB);
 
@@ -42,6 +48,9 @@ public:
 										 UT_sint32 iLength);
 	void					textDeleted(UT_sint32 iOffset,
 										UT_sint32 iLength);
+	FL_SQUIGGLE_TYPE        getSquiggleType(void) const
+	  { return m_iSquiggleType;}
+
 	void                    updatePOBs(UT_sint32 iOffset, UT_sint32 shift);
 	void					join(UT_sint32 iOffset, 
 								 fl_BlockLayout* pPrevBL);
@@ -74,9 +83,23 @@ private:
 	inline UT_sint32		_getCount(void) const 
 		{ return m_vecSquiggles.getItemCount(); }
 
-	UT_Vector				m_vecSquiggles;
+	UT_Vector			m_vecSquiggles;
 	fl_BlockLayout*			m_pOwner;
+	FL_SQUIGGLE_TYPE                m_iSquiggleType;
 };
+
+class ABI_EXPORT fl_SpellSquiggles : public fl_Squiggles
+{
+ public:
+  fl_SpellSquiggles(fl_BlockLayout* pOwner);  
+};
+
+class ABI_EXPORT fl_GrammarSquiggles : public fl_Squiggles
+{
+ public:
+  fl_GrammarSquiggles(fl_BlockLayout* pOwner);  
+};
+
 
 #endif /* FL_SQUIGGLES_H */
 

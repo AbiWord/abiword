@@ -76,9 +76,10 @@ the pending word.
  Constructor
  \param pOwner The owning block
 */
-fl_Squiggles::fl_Squiggles(fl_BlockLayout* pOwner)
+fl_Squiggles::fl_Squiggles(fl_BlockLayout* pOwner,FL_SQUIGGLE_TYPE iType) :
+  m_pOwner(pOwner),
+  m_iSquiggleType(iType)
 {
-	m_pOwner = pOwner;
 }
 
 /*!
@@ -212,7 +213,7 @@ fl_Squiggles::_move(UT_sint32 iOffset, UT_sint32 chg,
 		if (pNewBlock)
 		{
 			UT_ASSERT(pNewBlock != m_pOwner);
-			pNewBlock->getSquiggles()->add(pPOB);
+			pNewBlock->getSpellSquiggles()->add(pPOB);
 			m_vecSquiggles.deleteNthItem(j);
 		}	
 	}
@@ -604,7 +605,7 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 		deleteAll();
 		m_pOwner->checkSpelling();
 		pNewBL->checkSpelling();
-		pNewBL->getSquiggles()->_deleteAtOffset(0);
+		pNewBL->getSpellSquiggles()->_deleteAtOffset(0);
 	}
 	else
 	{
@@ -678,7 +679,7 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 		// spell-checking. Clear all existing squiggles and do a check
 		// of the combined block.
 		deleteAll();
-		pPrevBL->getSquiggles()->deleteAll();
+		pPrevBL->getSpellSquiggles()->deleteAll();
 		pPrevBL->checkSpelling();
 	}
 	else
@@ -693,7 +694,7 @@ fl_Squiggles::join(UT_sint32 iOffset, fl_BlockLayout* pPrevBL)
 	}
 
 	// Delete squiggle touching IP
-	pPrevBL->getSquiggles()->_deleteAtOffset(iOffset);
+	pPrevBL->getSpellSquiggles()->_deleteAtOffset(iOffset);
 
 	// Update pending word
 	pPrevBL->_recalcPendingWord(iOffset, 0);
@@ -796,3 +797,13 @@ fl_Squiggles::recheckIgnoredWords(const UT_UCSChar* pBlockText)
 
 	return bUpdate;
 }
+
+fl_SpellSquiggles::fl_SpellSquiggles(fl_BlockLayout* pOwner) : fl_Squiggles(pOwner,FL_SQUIGGLE_SPELL)
+{
+}
+
+
+fl_GrammarSquiggles::fl_GrammarSquiggles(fl_BlockLayout* pOwner) : fl_Squiggles(pOwner,FL_SQUIGGLE_GRAMMAR)
+{
+}
+
