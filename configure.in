@@ -27,7 +27,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
-AM_ACLOCAL_INCLUDE(macros)
+AM_ACLOCAL_INCLUDE(ac-helpers)
 
 
 dnl It would be nice to eventually add -Werror
