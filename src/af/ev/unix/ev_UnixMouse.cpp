@@ -43,15 +43,19 @@ void EV_UnixMouse::mouseClick(FV_View* pView, GdkEventButton* e)
 	EV_EditMouseButton emb = 0;
 	EV_EditMouseOp mop = 0;
 
-	//      the following line was removed.  using '3' seems to work properly. -Eric
-	//	else if (e->button == GDK_3BUTTON_PRESS)
-
 	if (e->button == 1)
 		emb = EV_EMB_BUTTON1;
 	else if (e->button == 2)
 		emb = EV_EMB_BUTTON2;
 	else if (e->button == 3)
 		emb = EV_EMB_BUTTON3;
+	else
+	{
+		// TODO decide something better to do here....
+		UT_DEBUGMSG(("EV_UnixMouse::mouseClick: unknown button %d\n",e->button));
+		return;
+	}
+	
 		
 	if (e->state & GDK_SHIFT_MASK)
 		state |= EV_EMS_SHIFT;
@@ -62,8 +66,16 @@ void EV_UnixMouse::mouseClick(FV_View* pView, GdkEventButton* e)
 
 	if (e->type == GDK_BUTTON_PRESS)
 		mop = EV_EMO_SINGLECLICK;
+	else if (e->type == GDK_2BUTTON_PRESS)
+		mop = EV_EMO_DOUBLECLICK;
 	else if (e->type == GDK_BUTTON_RELEASE)
 		mop = EV_EMO_RELEASE;
+	else
+	{
+		// TODO decide something better to do here....
+		UT_DEBUGMSG(("EV_UnixMouse::mouseClick:: unknown type %d\n",e->type));
+		return;
+	}
 	
 	result = m_pEEM->Mouse(mop|emb|state, &pEM,&iPrefix);
 	
