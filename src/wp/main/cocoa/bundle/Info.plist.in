@@ -7,7 +7,7 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
-			<key>CFBudnleTypeOSTypes</key>
+			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>W6BN</string>
 				<string>WDBN</string>
@@ -59,6 +59,23 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>rtf</string>
+				<string>RTF</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>RTFDocument.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>AbiWord RTF Document</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>RTF </string>
+				<string>TEXT</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
