@@ -68,11 +68,14 @@ public:
 
 	AP_TopRulerInfo(void) : 	m_mode(TRI_MODE_COLUMNS),
 								m_vecTableColInfo(NULL),
+								m_vecFullTable(NULL),
 								m_iCells(0)
 		{
+			xxx_UT_DEBUGMSG(("SEVIOR: Creating AP_TopRulerInfo %x \n",this));
 		}
 	virtual ~AP_TopRulerInfo(void)
 		{
+			xxx_UT_DEBUGMSG(("SEVIOR: Deleting AP_TopRulerInfo %x \n",this));
 			if(m_vecTableColInfo)
 			{
 				UT_sint32 count = (UT_sint32) m_vecTableColInfo->getItemCount();
@@ -82,6 +85,17 @@ public:
 					delete (AP_TopRulerTableInfo *) m_vecTableColInfo->getNthItem(i);
 				}
 				delete m_vecTableColInfo;
+			}
+			if(m_vecFullTable)
+			{
+				UT_sint32 count = (UT_sint32) m_vecFullTable->getItemCount();
+				UT_sint32 i =0;
+				for(i=0; i< count; i++)
+				{
+					delete (AP_TopRulerTableInfo *) m_vecFullTable->getNthItem(i);
+				}
+				delete m_vecFullTable;
+				m_vecFullTable = NULL;
 			}
 		}		
 		
@@ -113,6 +127,7 @@ public:
 // Column information for current table
 
 	UT_Vector             * m_vecTableColInfo;
+	UT_Vector             * m_vecFullTable;
 	UT_sint32               m_iTablePadding;
 	UT_sint32               m_iCells;
 	UT_sint32               m_iCurCell;

@@ -5309,7 +5309,6 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 {
-	memset(pInfo,0,sizeof(*pInfo));
 	if(getPoint() == 0)
 	{
 		return;
@@ -5341,6 +5340,21 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		delete pInfo->m_vecTableColInfo;
 		pInfo->m_vecTableColInfo =NULL;
 	}
+	if(pInfo->m_vecFullTable)
+	{
+		UT_sint32 count = (UT_sint32) pInfo->m_vecFullTable->getItemCount();
+		UT_sint32 i =0;
+		for(i=0; i< count; i++)
+		{
+			delete (AP_TopRulerTableInfo *) pInfo->m_vecFullTable->getNthItem(i);
+		}
+		delete pInfo->m_vecFullTable;
+		pInfo->m_vecFullTable =NULL;
+	}
+//
+// Clear the rest of the info
+//
+	memset(pInfo,0,sizeof(*pInfo));
 	if (pSection->getType() == FL_SECTION_DOC)
 	{
 		fp_Column* pColumn = (fp_Column*) pContainer;
@@ -5428,6 +5442,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		fp_TableContainer * pTab = (fp_TableContainer *) pCell->getContainer();
 		UT_sint32 row = pCell->getTopAttach();
 		UT_sint32 numcols = pTab->getNumCols();
+		UT_sint32 numrows = pTab->getNumRows();
 		UT_sint32 i =0;
 		fp_CellContainer * pCur = NULL;
 		UT_sint32 iCellCount = 0;
@@ -5465,6 +5480,39 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 			}
 		}
 		pInfo->m_iCells = pInfo->m_vecTableColInfo->getItemCount();
+//
+// Now fill the full vector including merged cells.
+//
+		pInfo->m_vecFullTable = new UT_Vector();
+		for( i=0;i < numcols;i++)
+		{
+			pCur = pTab->getCellAtRowColumn(0,i);
+			UT_sint32 j =0;
+			while(((pCur->getLeftAttach()+1) != pCur->getRightAttach()) && j <= numrows)
+			{
+				pCur = pTab->getCellAtRowColumn(j,i);
+				j++;
+			}
+			UT_sint32 ioff_x = 0;
+			fp_Container * pCon = (fp_Container*) pTab->getContainer();
+			while(!pCon->isColumnType())
+			{
+				ioff_x += pCon->getX();
+				pCon = (fp_Container *) pCon->getContainer();
+			}
+			if(pCur)
+			{
+				AP_TopRulerTableInfo *pTInfo = new  AP_TopRulerTableInfo;
+				pTInfo->m_pCell = pCur;
+				pTInfo->m_iLeftCellPos = pCur->getLeftPos() +ioff_x;
+				pTInfo->m_iRightCellPos = pCur->getRightPos() +ioff_x;
+				pTInfo->m_iLeftSpacing = (pCur->getX() - pCur->getLeftPos());
+				pTInfo->m_iRightSpacing = ( pCur->getRightPos() - pCur->getX()
+											- pCur->getWidth());
+				pInfo->m_vecFullTable->addItem((void *) pTInfo);
+			}
+		}
+
 	}
 
 	else

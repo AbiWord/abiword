@@ -2482,40 +2482,58 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			UT_DEBUGMSG(("cellPos dragged to position %s from left column edge difference in pixels %d \n",sCellPos.c_str(),xdelta));
 			UT_String sColWidths;
 			UT_sint32 i;
-			for(i=1; i <= nCells;i++)
+			bool bDragRightMost = false;
+			UT_sint32 leftDrag = -1;
+			if(m_draggingCell == m_infoCache.m_vecTableColInfo->getItemCount())
+			{
+				bDragRightMost = true;
+			}
+			else
+			{
+				pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(m_draggingCell);
+				leftDrag = pTInfo->m_iLeftCellPos ;
+			}
+			
+			for(i=1; i <= m_infoCache.m_vecFullTable->getItemCount();i++)
 			{
 				UT_sint32 left =0;
 				UT_sint32 right = 0;
 				
 				//
-
-				if((i - 1) != m_draggingCell)
+				pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i-1);
+				bool bOnDraggingRight = false;
+				if(leftDrag != pTInfo->m_iLeftCellPos)
 				{
-					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
 					left = pTInfo->m_iLeftCellPos + xAbsLeft +pTInfo->m_iLeftSpacing;
 				}
 				else
 				{
 					left =  m_draggingCenter;
 				}
-				if(i != nCells && i != m_draggingCell)
+				if(i < m_infoCache.m_vecFullTable->getItemCount())
 				{
-					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i);
+					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i);
+					bOnDraggingRight = (leftDrag == pTInfo->m_iLeftCellPos);
+				}
+//
+// Now set the right marker
+//
+				if(i != m_infoCache.m_vecFullTable->getItemCount() && !bOnDraggingRight)
+				{
+					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i);
 					right = pTInfo->m_iLeftCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 				}
-				else if(i == nCells && i != m_draggingCell)
+				else if(i == m_infoCache.m_vecFullTable->getItemCount() && !bDragRightMost)
 				{
-					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
+					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecFullTable->getNthItem(i-1);
 					right = pTInfo->m_iRightCellPos + xAbsLeft + pTInfo->m_iLeftSpacing;
 				}
-				else if(i == nCells)
+				else if(i == m_infoCache.m_vecFullTable->getItemCount() && bDragRightMost )
 				{
-					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i-1);
 					right =   m_draggingCenter;
 				}
 				else
 				{
-					pTInfo = (AP_TopRulerTableInfo *) m_infoCache.m_vecTableColInfo->getNthItem(i);
 					right = m_draggingCenter;
 				}
 				
