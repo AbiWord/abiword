@@ -286,6 +286,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 		_charMotion(true,iHigh - iLow - iRealDeleteCount);
 	}
 
+	m_pG->getCaret()->enable();
 }
 
 /*!
