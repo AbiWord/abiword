@@ -628,7 +628,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 		UT_PNG_getDimensions(pBB, iSplashWidth, iSplashHeight);
 
 		// create a centered window the size of our bitmap
-		hwndSplash = CreateWindow(s_SplashWndClassName, 
+		hwndSplash = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_TOPMOST,s_SplashWndClassName, 
 								  NULL, WS_POPUP | WS_BORDER,
 								  (rect.right  / 2) - (iSplashWidth  / 2),
 								  (rect.bottom / 2) - (iSplashHeight / 2),
@@ -645,7 +645,6 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 			DELETEP(pG);
 
 			// now bring the window up front & center
-			SetWindowPos(hwndSplash, HWND_TOPMOST, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE); 
 			ShowWindow(hwndSplash, SW_SHOWNORMAL);
 			UpdateWindow(hwndSplash);
 		}
