@@ -56,6 +56,7 @@
 #include "ap_Dialog_Field.h"
 #include "ap_Dialog_WordCount.h"
 #include "ap_Dialog_Columns.h"
+#include "ap_Dialog_Tab.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -3483,7 +3484,7 @@ static UT_Bool s_doTabDlg(FV_View * pView)
 	pDialogFactory->releaseDialog(pDialog);
 	return UT_TRUE;	
 #else
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
 	return UT_TRUE;
 
@@ -4438,14 +4439,14 @@ static UT_Bool s_doWordCountDlg(FV_View * pView)
 		= (AP_Dialog_WordCount *)(pDialogFactory->requestDialog(AP_DIALOG_ID_WORDCOUNT));
 	UT_ASSERT(pDialog);
 
-        if(pDialog->isRunning())
+	if(pDialog->isRunning())
 	{
 		pDialog->activate();
 	}
-        else
+	else
 	{
-        	pDialog->setCount(pView->countWords());
-	        pDialog->runModeless(pFrame);
+		pDialog->setCount(pView->countWords());
+		pDialog->runModeless(pFrame);
 	}
 	UT_Bool bOK = UT_TRUE;
 	return bOK;
