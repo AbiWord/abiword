@@ -161,6 +161,7 @@ static PP_Property _props[] =
 	{ "table-row-spacing",     "0.1in",           false, NULL, PP_LEVEL_TABLE},
 	{ "tabstops",              "",                false, NULL, PP_LEVEL_BLOCK},
 	{ "text-align",            text_align,	      true,  NULL, PP_LEVEL_BLOCK},
+	{ "text-collapsed",        "0",               false, NULL, PP_LEVEL_BLOCK},
 	{ "text-decoration",       "none",            true,  NULL, PP_LEVEL_CHAR},
 	{ "text-indent",           "0in",             false, NULL, PP_LEVEL_BLOCK},
 	{ "text-position",         "normal",          true,  NULL, PP_LEVEL_CHAR},

@@ -59,7 +59,8 @@ fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDo
 	  m_pLastL(NULL),
 	  m_pFirstContainer(NULL),
 	  m_pLastContainer(NULL),
-	  m_eHidden(FP_VISIBLE)
+	  m_eHidden(FP_VISIBLE),
+	  m_bIsTextCollapsed(false)
 {
 	setAttrPropIndex(indexAP);
 	if(pMyLayout)
@@ -95,6 +96,29 @@ const char*	fl_ContainerLayout::getAttribute(const char * pszName) const
 	return pszAtt;
 }
 
+void fl_ContainerLayout:: setCollapsedState(void)
+{
+ 	const PP_AttrProp* pSectionAP = NULL;
+
+	getDocLayout()->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
+
+	const XML_Char *pszTEXTCOLLAPSED = NULL;
+	if(!pSectionAP || !pSectionAP->getProperty("text-collapsed",pszTEXTCOLLAPSED))
+	{
+		m_bIsTextCollapsed = false;
+	}
+	else
+	{
+		if(UT_stricmp(pszTEXTCOLLAPSED,"1") == 0)
+		{
+			m_bIsTextCollapsed = true;
+		}
+		else
+		{
+			m_bIsTextCollapsed = false;
+		}
+	}
+}
 
 /*!
  * This method appends all the text in the current layout to the supplied 

@@ -919,7 +919,8 @@ void fp_TOCContainer::layout(void)
 	{
 		return;
 	}
-
+	xxx_UT_DEBUGMSG(("Height in TOCContainer set to %d Old Height %d \n",iY,getHeight()));
 	setHeight(iY);
+	deleteBrokenTOCs(true);
 }
 

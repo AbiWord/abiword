@@ -122,6 +122,7 @@ public:
 		abi_table_row_spacing,
 		abi_tabstops,
 		abi_text_align,
+		abi_text_collapsed,
 		abi_text_decoration,
 		abi_text_indent,
 		abi_text_position,

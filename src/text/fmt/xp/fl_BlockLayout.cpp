@@ -1922,14 +1922,7 @@ UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
   will fit in the container.  */
 void fl_BlockLayout::format()
 {
-	// do not format if we are not on the screen
-#if 0
-	if(!isOnScreen())
-	{
-		return;
-		UT_DEBUGMSG(("block 0x%08x not on screen\n",this));
-	}
-#endif
+
 	bool bJustifyStuff = false;
 	xxx_UT_DEBUGMSG(("Format block %x needsreformat %d m_pFirstRun %x \n",this,m_iNeedsReformat,m_pFirstRun));
 	//

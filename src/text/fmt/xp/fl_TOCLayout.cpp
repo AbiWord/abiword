@@ -479,6 +479,16 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 		pNewBlock->_doInsertTOCListLabelRun(0);
 	}
 	
+	fp_Container * pTOCC = getFirstContainer();
+	fl_DocSectionLayout * pDSL = getDocSectionLayout();
+	if(pTOCC && pTOCC->getPage())
+	{
+		fp_Page * pPage = pTOCC->getPage();
+		pDSL->setNeedsSectionBreak(true,pPage );
+	}
+	markAllRunsDirty();
+	setNeedsReformat(0);
+	setNeedsRedraw();
 }
 
 UT_sint32 fl_TOCLayout::isInVector(fl_BlockLayout * pBlock, 

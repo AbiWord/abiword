@@ -45,8 +45,7 @@ typedef enum _fl_ContainerType
 typedef enum {FP_VISIBLE = 0,
 			  FP_HIDDEN_TEXT,
 			  FP_HIDDEN_REVISION,
-			  FP_HIDDEN_REVISION_AND_TEXT,
-			  FP_COLLAPSED
+			  FP_HIDDEN_REVISION_AND_TEXT
 } FPVisibility;
 
 
@@ -132,7 +131,7 @@ public:
 	fp_FrameContainer *     getNthFrameContainer(UT_sint32 i) const;
 	void                    addFrame(fl_FrameLayout * pFrame);
 	void                    removeFrame(fl_FrameLayout * pFrame);
-
+    void                    setCollapsedState(void);
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
@@ -154,6 +153,7 @@ private:
 	fp_Container *              m_pLastContainer;
 	FPVisibility                m_eHidden;
 	UT_Vector                   m_vecFrames;
+    bool                        m_bIsTextCollapsed;
 };
 
 #endif /* CONTAINERLAYOUT_H */
