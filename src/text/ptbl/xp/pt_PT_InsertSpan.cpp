@@ -675,6 +675,11 @@ bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const
 	if (m_varset.getBufIndex(biUndo,lengthUndo) != biSpan)
 		return false;
 
+	// "Coalescing not allowed across a save." - PL
+	// So, if we're clean, make us dirty.
+	if (!m_history.isDirty())
+		return false;
+
 	return true;
 }
 
