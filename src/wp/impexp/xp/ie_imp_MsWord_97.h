@@ -272,6 +272,7 @@ private:
 	UT_uint32   m_iTextEnd;
 	bool        m_bPageBreakPending;
 	UT_NumberVector m_vListIdMap;
+	bool        m_bSymbolFont;
 };
 
 #endif /* IE_IMP_MSWORD_H */

@@ -798,7 +798,8 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iMacrosEnd(0xffffffff),
 	m_iTextStart(0xffffffff),
 	m_iTextEnd(0xffffffff),
-	m_bPageBreakPending(false)
+	m_bPageBreakPending(false),
+	m_bSymbolFont(false)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1570,6 +1571,11 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// take care of any oddities in Microsoft's character encoding
 	if (chartype == 1 && eachchar == 146)
 		eachchar = 39; // apostrophe
+
+	if(m_bSymbolFont)
+	{
+		eachchar &= 0x00ff;
+	}
 	
 	this->_appendChar (static_cast<UT_UCSChar>(eachchar));
 
@@ -2319,8 +2325,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	UT_uint32 iAWListId = UT_UID_INVALID;
 	UT_String szListId, szParentId, szLevel, szStartValue, szNumberProps;
 	
-	// all lists have ilfo set 
-	if(apap->ilfo)
+	// all lists have ilfo set; some lists can be 'customised' by
+	// having the number field removed (see bug 3622) -- they are
+	// still lists in Word, but do not look like it, and we will not
+	// treat them as lists (Tomas, May 26, 2003)
+	if(apap->ilfo && apap->linfo.numberstr)
 	{
 		UT_uint32 j;
 		// if we are in a new list, then do some clean up first and remember the list id
@@ -2738,6 +2747,17 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	m_charProps.clear();
 	m_charStyle.clear();
 
+	if(ps->fonts.ffn[achp->ftcAscii].chs == 0)
+		m_bSymbolFont = false;
+	else if(ps->fonts.ffn[achp->ftcAscii].chs == 2)
+		m_bSymbolFont = true;
+	else
+	{
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_beginChar: unknow font encoding %d\n",
+					 ps->fonts.ffn[achp->ftcAscii].chs));
+		m_bSymbolFont = false;
+	}
+	
 	memset (propsArray, 0, sizeof(propsArray));
 
 	_generateCharProps(m_charProps, achp, ps);
@@ -3900,7 +3920,7 @@ void IE_Imp_MsWord_97::_generateParaProps(UT_String &s, const PAP * apap, wvPars
 	// foreground color
 	U8 ico = apap->shd.icoFore;
 	if (ico) {
-		UT_String_sprintf(propBuffer, "background-color:%s;",
+		UT_String_sprintf(propBuffer, "color:%s;",
 						  sMapIcoToColor(ico).c_str());
 		s += propBuffer;
 	}
