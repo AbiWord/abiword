@@ -238,6 +238,37 @@ bool GR_UnixImage::saveToPNG(const char * szFile)
 
 }
 
+/*! 
+ * Returns true if pixel at point (x,y) in device units is transparent.
+ */
+bool GR_UnixImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
+{
+  if(!hasAlpha())
+  {
+    return false;
+  }
+  UT_return_val_if_fail(m_image,false);
+  UT_sint32 iBitsPerPixel = gdk_pixbuf_get_bits_per_sample(m_image);
+  UT_sint32 iRowStride = gdk_pixbuf_get_rowstride(m_image);
+  UT_sint32 iWidth =  gdk_pixbuf_get_width(m_image);
+  UT_sint32 iHeight =  gdk_pixbuf_get_height(m_image);
+  UT_return_val_if_fail((x>= 0) && (x < iWidth), false);
+  UT_return_val_if_fail((y>= 0) && (y < iHeight), false);
+  guchar * pData = gdk_pixbuf_get_pixels(m_image);
+  UT_DEBUGMSG(("BitsPerPixel = %d /n",iBitsPerPixel));
+  UT_sint32 iOff = iRowStride*y*4;
+  guchar pix0 = pData[iOff+ x*4];
+  guchar pix1 = pData[iOff+ x*4 +1];
+  guchar pix2 = pData[iOff+ x*4 +2];
+  guchar pix3 = pData[iOff+ x*4 +3];
+  UT_DEBUGMSG(("pix0 %d pix1 %d pix2 %d pix3 %d \n",pix0,pix1,pix2,pix3));
+  if(pix3 == 255)
+  {
+    return true;
+  }
+  return false;
+}
+
 bool GR_UnixImage::hasAlpha (void) const
 {
 	UT_return_val_if_fail(m_image, false);

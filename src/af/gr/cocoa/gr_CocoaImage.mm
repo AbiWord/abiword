@@ -68,6 +68,29 @@ bool		GR_CocoaImage::convertToBuffer(UT_ByteBuf** ppBB) const
 	return true;
 }
 
+ 
+
+/*! 
+ * Returns true if pixel at point (x,y) in device units is transparent.
+ * See gr_UnixImage.cpp for how it's done in GTK.
+ */
+bool	GR_CocoaImage::isTransparentAt(UT_sint32 x, UT_sint32 y)
+{
+	UT_ASSERT(0);
+	return false;
+}
+
+
+/*!
+ * Returns true if there is any transparency in the image.
+ */ 
+bool	GR_CocoaImage::hasAlpha(void) const
+{
+	UT_ASSERT(0);
+	return false;
+}
+
+
 bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	const char *buffer = (const char *) pBB->getPointer(0);

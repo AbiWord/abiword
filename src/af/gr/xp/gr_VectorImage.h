@@ -45,6 +45,9 @@ public:
 
    	virtual GRType		getType() const { return GRT_Vector; }
    	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+	virtual bool            hasAlpha(void) const;
+	virtual bool            isTransparentAt(UT_sint32 x, UT_sint32 y);
+
 
 private:
    	bool m_status;

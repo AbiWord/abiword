@@ -31,6 +31,7 @@ GR_Image::GR_Image()
 
 GR_Image::~GR_Image()
 {
+  DestroyOutline();
 }
 
 void GR_Image::getName(char* p) const
@@ -60,6 +61,111 @@ void GR_Image::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 void GR_Image::setName ( const char * name )
 {
   m_szName = name;
+}
+
+/*!
+ * Return the distance from the left side of the image that is "pad" distance
+ * to the nearest point in the transparent outline from the line segment
+ * start at Y and running for distance Height below it.
+ * All distances are in logical units.
+ *                -----------------
+ *                |               |
+ *                |      *        |
+ *                |    *****      |
+ *             ||||||   ***       |
+ *                | |    **       |
+ *                |---------------|
+ *                | |
+ *                | |
+ *
+ * This case would give a -ve distance.
+ */
+UT_sint32 GR_Image::GetOffsetFromLeft(GR_Graphics * pG, UT_sint32 pad, UT_sint32 yTop, UT_sint32 height)
+{
+  return pad;
+}
+
+
+/*!
+ * Return the distance from the right side of the image that is "pad" distance
+ * to the nearest point in the transparent outline from the line segment
+ * start at Y and running for distance Height below it.
+ * All distances are in logical units.
+ *                -----------------
+ *                |               |
+ *                |      *        |
+ *                |    *****      |
+ *                |     ***       |
+ *                |      **       |
+ *                |---------------|
+ */
+UT_sint32 GR_Image::GetOffsetFromRight(GR_Graphics * pG, UT_sint32 pad, UT_sint32 yTop, UT_sint32 height)
+{
+  return pad;
+}
+
+/*!
+ * Generate an outline of an image with transparency. This is a collection
+ * of (x,y) points marking the first non-transparent point from the left
+ * and right side of the image.
+ * This outline is used by GetOffsetFromLeft and facitates "tight" 
+ * text wrapping
+ * around objects.
+ */
+void GR_Image::GenerateOutline(void)
+{
+  DestroyOutline();
+  UT_sint32 width = getDisplayWidth();
+  UT_sint32 height = getDisplayHeight();
+  UT_sint32 i,j=0;
+  //
+  // Generate from left
+  //
+  for(i=0; i< height;i++)
+  {
+    for(j =0; j< width;j++)
+    {
+      if(!isTransparentAt(i,j))
+      {
+	break;
+      }
+    }
+    if( j < width)
+    {
+      GR_Image_Point * pXY = new GR_Image_Point();
+      pXY->m_iX = i;
+      pXY->m_iY = j;
+      m_vecOutLine.addItem(pXY);
+    }
+  }
+  //
+  // Generate from Right
+  //
+  for(i=0; i< height;i++)
+  {
+    for(j =width-1; j>= 0;j--)
+    {
+      if(!isTransparentAt(i,j))
+      {
+	break;
+      }
+    }
+    if( j >= 0)
+    {
+      GR_Image_Point * pXY = new GR_Image_Point();
+      pXY->m_iX = i;
+      pXY->m_iY = j;
+      m_vecOutLine.addItem(pXY);
+    }
+  }
+}
+
+/*!
+ * Destroy the outline
+ */
+void GR_Image::DestroyOutline(void)
+{
+  UT_VECTOR_PURGEALL(GR_Image_Point *, m_vecOutLine);
 }
 
 void GR_Image::setName ( const UT_String & name )

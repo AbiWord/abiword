@@ -151,7 +151,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 
 	/* TODO: don't strip alpha */
 	if (color_type & PNG_COLOR_MASK_ALPHA) {
-#if 1
+#if 0
 		png_set_strip_alpha(png_ptr);
 #endif
 		m_hasAlpha = true;		
@@ -222,4 +222,20 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	png_destroy_read_struct(&png_ptr, &info_ptr, static_cast<png_infopp>(NULL));
 
 	return true;
+}
+
+bool PS_Image::isTransparentAt(UT_sint32 x, UT_sint32 y)
+{
+  UT_ASSERT(0);
+  if(!hasAlpha())
+  {
+    return false;
+  }
+  UT_sint32 iOff = y*4*m_image->width + x*4 + 3;
+  guchar p = m_image->data[iOff];
+  if(p == 255)
+  {
+    return true;
+  }
+  return false;
 }

@@ -47,6 +47,8 @@ public:
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
     virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
+	virtual bool hasAlpha (void) const;
+	virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
 
 //	void			setData(Fatmap * image) { m_image = image; }
 
