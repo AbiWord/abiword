@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 0.99.2\n"
 "POT-Creation-Date: 2002-02-21 16:14+0900\n"
-"PO-Revision-Date: 2002-02-27 22:33+0900\n"
+"PO-Revision-Date: 2002-03-21 11:48+0900\n"
 "Last-Translator: Masayuki Hatta <mhatta@gnu.org>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -38,7 +38,7 @@ msgstr " 自動更新"
 #: po/tmp/ap_String_Id.h.h:13
 #, c-format
 msgid "% of normal size"
-msgstr ""
+msgstr "% (通常サイズに対して)"
 
 #. MENU_LABEL_AUTOTEXT_EMAIL_6
 #: po/tmp/ap_String_Id.h.h:15
@@ -796,17 +796,17 @@ msgstr ""
 #. DLG_Para_LabelAlignment
 #: po/tmp/ap_String_Id.h.h:307
 msgid "Ali&gnment:"
-msgstr ""
+msgstr "配置(&G)"
 
 #. DLG_Tab_Label_Alignment
 #: po/tmp/ap_String_Id.h.h:309
 msgid "Alignment"
-msgstr ""
+msgstr "配置"
 
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h.h:311
 msgid "Alignment:"
-msgstr ""
+msgstr "配置:"
 
 #. DLG_Styles_LBL_All
 #: po/tmp/ap_String_Id.h.h:313 po/tmp/xap_String_Id.h.h:43
@@ -1170,17 +1170,17 @@ msgstr ""
 #. DLG_Styles_CharPrev
 #: po/tmp/ap_String_Id.h.h:455
 msgid "Character Preview"
-msgstr ""
+msgstr "文字プレビュー"
 
 #. DLG_WordCount_Characters_No
 #: po/tmp/ap_String_Id.h.h:457
 msgid "Characters (no spaces)"
-msgstr ""
+msgstr "文字(スペース除く)"
 
 #. DLG_WordCount_Characters_Sp
 #: po/tmp/ap_String_Id.h.h:459
 msgid "Characters (with spaces)"
-msgstr ""
+msgstr "文字(スペース込み)"
 
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h.h:461
@@ -1215,7 +1215,7 @@ msgstr ""
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h.h:473
 msgid "Choose a Template"
-msgstr ""
+msgstr "テンプレートの選択"
 
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h.h:475
@@ -1306,7 +1306,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h.h:507
 msgid "Copy the selection and put it on the Clipboard"
-msgstr ""
+msgstr "選択範囲をコピーしクリップボードへ送る"
 
 #. AUTOTEXT_CLOSING_3
 #: po/tmp/ap_String_Id.h.h:509
@@ -1420,7 +1420,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_CUT
 #: po/tmp/ap_String_Id.h.h:551
 msgid "Cut the selection and put it on the Clipboard"
-msgstr ""
+msgstr "選択範囲を切り取りクリップボードへ送る"
 
 #. DLG_Lists_Dashed_List
 #: po/tmp/ap_String_Id.h.h:553
@@ -1510,7 +1510,7 @@ msgstr "ハイパーリンクを削除"
 #. MENU_STATUSLINE_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:587
 msgid "Delete the selection"
-msgstr ""
+msgstr "選択範囲を削除"
 
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h.h:589 po/tmp/xap_String_Id.h.h:159
@@ -1580,7 +1580,7 @@ msgstr "オープンソースについての情報を表示"
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:615
 msgid "Display non-printing characters"
-msgstr ""
+msgstr "印刷されない文字を表示"
 
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h.h:617
@@ -1630,12 +1630,12 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
 #: po/tmp/ap_String_Id.h.h:635
 msgid "Edit the Footer on the current page"
-msgstr ""
+msgstr "現在のページのフッタを編集"
 
 #. MENU_STATUSLINE_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h.h:637
 msgid "Edit the Header on the current page"
-msgstr ""
+msgstr "現在のページのヘッダを編集"
 
 #. MENU_LABEL_AUTOTEXT_EMAIL
 #: po/tmp/ap_String_Id.h.h:639
@@ -1758,7 +1758,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h.h:683
 msgid "Find the specified text"
-msgstr ""
+msgstr "指定したテキストを探す"
 
 #. FirstLineIndentStatus
 #: po/tmp/ap_String_Id.h.h:685
@@ -1812,7 +1812,7 @@ msgstr ""
 #. DLG_Styles_ModifyFormat
 #: po/tmp/ap_String_Id.h.h:703
 msgid "Format"
-msgstr ""
+msgstr "フォーマット"
 
 #. MENU_LABEL_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:705
@@ -1822,7 +1822,7 @@ msgstr ""
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h.h:707
 msgid "Format Header/Footers"
-msgstr ""
+msgstr "ヘッダ/フッタのフォーマット"
 
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:709
@@ -1832,7 +1832,7 @@ msgstr "フォーマットツールバー"
 #. DLG_Lists_Format
 #: po/tmp/ap_String_Id.h.h:711
 msgid "Format:"
-msgstr ""
+msgstr "フォーマット:"
 
 #. AUTOTEXT_EMAIL_2
 #: po/tmp/ap_String_Id.h.h:713
@@ -1877,7 +1877,7 @@ msgstr ""
 #. DLG_PageNumbers_Header
 #: po/tmp/ap_String_Id.h.h:729
 msgid "Header"
-msgstr ""
+msgstr "ヘッダ"
 
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h.h:731
@@ -2012,12 +2012,12 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:781
 msgid "Insert Clipboard contents"
-msgstr ""
+msgstr "クリップボードの内容を挿入"
 
 #. DLG_InsertHyperlink_Title
 #: po/tmp/ap_String_Id.h.h:783
 msgid "Insert Hyperlink"
-msgstr ""
+msgstr "ハイパーリンクを挿入"
 
 #. MENU_STATUSLINE_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:785
@@ -2037,12 +2037,12 @@ msgstr ""
 #. MENU_STATUSLINE_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:791
 msgid "Insert a symbol or other special character"
-msgstr ""
+msgstr "記号やその他の特別な文字を挿入"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:793
 msgid "Insert an automatically-updated page number"
-msgstr ""
+msgstr "自動更新のページ番号を挿入"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:795
@@ -2052,42 +2052,42 @@ msgstr ""
 #. MENU_STATUSLINE_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:797
 msgid "Insert an existing picture from another file"
-msgstr ""
+msgstr "他のファイルから既存の画像を挿入"
 
 #. MENU_STATUSLINE_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:799
 msgid "Insert bookmark"
-msgstr ""
+msgstr "ブックマークを挿入"
 
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:801
 msgid "Insert clipart"
-msgstr ""
+msgstr "クリップアートを挿入"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:803
 msgid "Insert hyperlink"
-msgstr ""
+msgstr "ハイパーリンクを挿入"
 
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:805
 msgid "Insert the contents of another file"
-msgstr ""
+msgstr "他のファイルの内容を挿入"
 
 #. MENU_STATUSLINE_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h.h:807
 msgid "Insert the date and/or time"
-msgstr ""
+msgstr "日付または時間を挿入"
 
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h.h:809
 msgid "Insert unformatted clipboard contents"
-msgstr ""
+msgstr "クリップボードの内容を整形せずに挿入"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h.h:811
 msgid "Invisible &Layout Marks"
-msgstr ""
+msgstr "レイアウトマークを見えなくする(&L)"
 
 #. DLG_Para_AlignJustified
 #: po/tmp/ap_String_Id.h.h:813
@@ -2215,7 +2215,7 @@ msgstr ""
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h.h:861
 msgid "Lines"
-msgstr ""
+msgstr "行"
 
 #. DLG_Styles_List
 #: po/tmp/ap_String_Id.h.h:863
@@ -2300,7 +2300,7 @@ msgstr ""
 #. DLG_Options_TabLabel_Misc
 #: po/tmp/ap_String_Id.h.h:895
 msgid "Misc."
-msgstr ""
+msgstr "その他"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h.h:897
@@ -2369,7 +2369,7 @@ msgstr ""
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h.h:921
 msgid "No File"
-msgstr ""
+msgstr "ファイルを指定して下さい"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h.h:923
@@ -2391,7 +2391,7 @@ msgstr ""
 #. MENU_STATUSLINE_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:929
 msgid "Normal View"
-msgstr ""
+msgstr "通常ビュー"
 
 #. DLG_Spell_UnknownWord
 #: po/tmp/ap_String_Id.h.h:931
@@ -2522,17 +2522,17 @@ msgstr ""
 #. MENU_LABEL_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:981
 msgid "Page N&umbers"
-msgstr ""
+msgstr "ページ番号(&U)"
 
 #. FIELD_Numbers_PageNumber
 #: po/tmp/ap_String_Id.h.h:983
 msgid "Page Number"
-msgstr ""
+msgstr "ページ番号"
 
 #. DLG_PageNumbers_Title
 #: po/tmp/ap_String_Id.h.h:985
 msgid "Page Numbers"
-msgstr ""
+msgstr "ページ番号"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h.h:987
@@ -2558,7 +2558,7 @@ msgstr "ページ: %d/%d"
 #. DLG_WordCount_Pages
 #: po/tmp/ap_String_Id.h.h:995
 msgid "Pages"
-msgstr ""
+msgstr "ページ"
 
 #. DLG_Para_LabelPagination
 #: po/tmp/ap_String_Id.h.h:997
@@ -2593,7 +2593,7 @@ msgstr "段落プレビュー"
 #. DLG_WordCount_Paragraphs
 #: po/tmp/ap_String_Id.h.h:1009
 msgid "Paragraphs"
-msgstr ""
+msgstr "段落"
 
 #. WORD_PassRequired
 #: po/tmp/ap_String_Id.h.h:1011
@@ -2613,17 +2613,17 @@ msgstr ""
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1017
 msgid "Position:"
-msgstr ""
+msgstr "場所:"
 
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:1019
 msgid "Pre&view web page"
-msgstr ""
+msgstr "ウェブページをプレビュー(&V)"
 
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h.h:1021
 msgid "Preference Schemes"
-msgstr ""
+msgstr "設定スキーム"
 
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h.h:1023
@@ -2633,7 +2633,7 @@ msgstr "設定"
 #. DLG_PageNumbers_Preview
 #: po/tmp/ap_String_Id.h.h:1025 po/tmp/xap_String_Id.h.h:353
 msgid "Preview"
-msgstr ""
+msgstr "プレビュー"
 
 #. MENU_STATUSLINE_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:1027
@@ -2660,7 +2660,7 @@ msgstr ""
 #. MENU_STATUSLINE_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:1035
 msgid "Print Layout"
-msgstr ""
+msgstr "印刷用レイアウト"
 
 #. MENU_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1037
@@ -2670,7 +2670,7 @@ msgstr "印刷プレビュー(&R)"
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1039
 msgid "Print all or part of the document"
-msgstr ""
+msgstr "文書の全部または一部を印刷"
 
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1041
@@ -2716,7 +2716,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:1057
 msgid "Redo previously undone editing"
-msgstr ""
+msgstr "前にアンドゥした編集をリドゥ"
 
 #. MENU_STATUSLINE_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h.h:1059
@@ -2756,12 +2756,12 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h.h:1073
 msgid "Remove the Footer on this page from the Document"
-msgstr ""
+msgstr "このページのフッタを文書から削除"
 
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h.h:1075
 msgid "Remove the Header on this page from the Document"
-msgstr ""
+msgstr "このページのヘッダを文書から削除"
 
 #. DLG_FR_ReplaceTitle
 #: po/tmp/ap_String_Id.h.h:1077
@@ -2776,7 +2776,7 @@ msgstr "すべて置換(&A)"
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1081
 msgid "Replace the specified text with different text"
-msgstr ""
+msgstr "指定したテキストを違うテキストに置き換える"
 
 #. MENU_LABEL_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1083
@@ -2786,7 +2786,7 @@ msgstr "バグを報告(&B)"
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h.h:1085
 msgid "Report a bug and help AbiWord become a better product"
-msgstr ""
+msgstr "バグを報告しAbiWordがよりよい製品になる手助けをする"
 
 #. MENU_STATUSLINE_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:1087
@@ -2826,7 +2826,7 @@ msgstr "ファイルを最後に保存した状態に戻しますか?"
 #. MENU_STATUSLINE_FILE_REVERT
 #: po/tmp/ap_String_Id.h.h:1101
 msgid "Revert the document to the last saved state"
-msgstr ""
+msgstr "文書を最後に保存した状態に戻す"
 
 #. MSG_RevertBuffer
 #: po/tmp/ap_String_Id.h.h:1103
@@ -2837,7 +2837,7 @@ msgstr ""
 #. DLG_PageNumbers_Right
 #: po/tmp/ap_String_Id.h.h:1105
 msgid "Right"
-msgstr ""
+msgstr "右"
 
 #. RightIndentStatus
 #: po/tmp/ap_String_Id.h.h:1107
@@ -2910,22 +2910,22 @@ msgstr "%s への変更を保存しますか?"
 #. MENU_STATUSLINE_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:1133
 msgid "Save the document"
-msgstr ""
+msgstr "文書を保存"
 
 #. MENU_STATUSLINE_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:1135
 msgid "Save the document as a web page"
-msgstr ""
+msgstr "文書をウェブページとして保存"
 
 #. MENU_STATUSLINE_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h.h:1137
 msgid "Save the document under a different name"
-msgstr ""
+msgstr "違う名前で文書を保存"
 
 #. MENU_STATUSLINE_FILE_EXPORT
 #: po/tmp/ap_String_Id.h.h:1139
 msgid "Save the document without changing the current name"
-msgstr ""
+msgstr "現在の名前を変えずに文書を保存"
 
 #. DLG_Options_Label_SaveContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1141
@@ -2970,7 +2970,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h.h:1157
 msgid "Select the entire document"
-msgstr ""
+msgstr "文書全体を選択"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:1159
@@ -3035,7 +3035,7 @@ msgstr "ルーラーを表示(&R)"
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1183
 msgid "Show For&matting Marks"
-msgstr ""
+msgstr "フォーマッティングマークを表示(&M)"
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:1185
@@ -3045,32 +3045,32 @@ msgstr ""
 #. MENU_STATUSLINE_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:1187
 msgid "Show or hide the extra toolbar"
-msgstr ""
+msgstr "特別ツールバーの表示/非表示"
 
 #. MENU_STATUSLINE_VIEW_TB_FORMAT
 #: po/tmp/ap_String_Id.h.h:1189
 msgid "Show or hide the formatting toolbar"
-msgstr ""
+msgstr "フォーマッティングツールバーの表示/非表示"
 
 #. MENU_STATUSLINE_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1191
 msgid "Show or hide the rulers"
-msgstr ""
+msgstr "ルーラーの表示/非表示"
 
 #. MENU_STATUSLINE_VIEW_TB_STD
 #: po/tmp/ap_String_Id.h.h:1193
 msgid "Show or hide the standard toolbar"
-msgstr ""
+msgstr "標準ツールバーの表示/非表示"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:1195
 msgid "Show or hide the status bar"
-msgstr ""
+msgstr "ステータスバーの表示/非表示"
 
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:1197
 msgid "Show the AbiWord splash screen on application startup"
-msgstr ""
+msgstr "アプリケーション起動時にAbiWordのスプラッシュ画面を表示"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:1199
@@ -3145,7 +3145,7 @@ msgstr ""
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h.h:1227
 msgid "Start with an empty document"
-msgstr ""
+msgstr "最初から文書を作成"
 
 #. DLG_WordCount_Statistics
 #: po/tmp/ap_String_Id.h.h:1229
@@ -3160,12 +3160,12 @@ msgstr ""
 #. MENU_LABEL_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1233
 msgid "Stri&ke"
-msgstr ""
+msgstr "打消(&K)"
 
 #. MENU_STATUSLINE_FMT_STRIKE
 #: po/tmp/ap_String_Id.h.h:1235
 msgid "Strikeout the selection (toggle)"
-msgstr ""
+msgstr "選択範囲に打消線を引く(トグル)"
 
 #. DLG_Styles_ErrNotTitle1
 #: po/tmp/ap_String_Id.h.h:1237
@@ -3200,7 +3200,7 @@ msgstr ""
 #. DLG_Styles_StylesTitle
 #: po/tmp/ap_String_Id.h.h:1249
 msgid "Styles"
-msgstr ""
+msgstr "スタイル"
 
 #. AUTOTEXT_SUBJECT_1
 #: po/tmp/ap_String_Id.h.h:1251
@@ -3225,7 +3225,7 @@ msgstr ""
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h.h:1259
 msgid "Supe&rscript"
-msgstr ""
+msgstr "上付(&R)"
 
 #. MENU_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1261
@@ -3411,7 +3411,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:1329
 msgid "Undo editing"
-msgstr ""
+msgstr "編集をアンドゥ"
 
 #. DLG_Lists_Upper_Case_List
 #: po/tmp/ap_String_Id.h.h:1331
@@ -3466,7 +3466,7 @@ msgstr ""
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:1351
 msgid "View the document in full screen mode"
-msgstr ""
+msgstr "文書をフルスクリーンモードで閲覧"
 
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:1353
@@ -3497,7 +3497,7 @@ msgstr ""
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:1363
 msgid "Web Layout"
-msgstr ""
+msgstr "ウェブ用レイアウト"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:1365
@@ -3522,7 +3522,7 @@ msgstr ""
 #. DLG_WordCount_Words
 #: po/tmp/ap_String_Id.h.h:1373
 msgid "Words"
-msgstr ""
+msgstr "単語"
 
 #. MSG_SaveFailedWrite
 #: po/tmp/ap_String_Id.h.h:1375
@@ -3554,30 +3554,30 @@ msgstr ""
 #: po/tmp/ap_String_Id.h.h:1385
 #, c-format
 msgid "Zoom to &100%"
-msgstr ""
+msgstr "&100%に拡大"
 
 #. MENU_LABEL_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:1387
 #, c-format
 msgid "Zoom to &200%"
-msgstr ""
+msgstr "&200%に拡大"
 
 #. MENU_LABEL_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:1389
 #, c-format
 msgid "Zoom to &50%"
-msgstr ""
+msgstr "&50%に縮小"
 
 #. MENU_LABEL_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:1391
 #, c-format
 msgid "Zoom to &75%"
-msgstr ""
+msgstr "&75%に縮小"
 
 #. MENU_LABEL_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:1393
 msgid "Zoom to &Page Width"
-msgstr ""
+msgstr "ページ幅までズーム(&P)"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:1395
@@ -3799,7 +3799,7 @@ msgstr "アッサム語"
 #. DLG_PLUGIN_MANAGER_AUTHOR
 #: po/tmp/xap_String_Id.h.h:69
 msgid "Author"
-msgstr "著者"
+msgstr "作者"
 
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:71
@@ -3965,7 +3965,7 @@ msgstr "プラグインを無効にすることができませんでした"
 #: po/tmp/xap_String_Id.h.h:137
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr "言語 %s のための辞書を読み込むことができませんでした"
+msgstr "言語 %s 用の辞書を読み込むことができませんでした"
 
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h.h:139
@@ -4010,7 +4010,7 @@ msgstr "すべてのプラグインを無効にする"
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:155
 msgid "Deactivate plugin"
-msgstr "プラグインを無効にする"
+msgstr "このプラグインを無効にする"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:161
@@ -4376,7 +4376,7 @@ msgstr "リトアニア語"
 #. DLG_Options_Label_ModifyUnixFontPath
 #: po/tmp/xap_String_Id.h.h:313
 msgid "Modify Unix Font Path"
-msgstr ""
+msgstr "Unixのフォントパスを変更"
 
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h.h:315
