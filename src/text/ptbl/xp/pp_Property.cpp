@@ -71,6 +71,9 @@ static PP_Property _props[] =
 
 	{ "columns",				"1",				0},
 	{ "column-gap",				"0.25in",			0},
+	
+	{ "default-tab-interval",	"1in",				0},
+	{ "tabstops",				"",					0},
 };
 
 /*****************************************************************/

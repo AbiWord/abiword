@@ -92,6 +92,12 @@ fl_SectionLayout * fl_BlockLayout::getSectionLayout()
 	return m_pSectionLayout;
 }
 
+fl_TabStop::fl_TabStop()
+{
+	iPosition = 0;
+	iType = 0;
+}
+
 void fl_BlockLayout::_lookupProperties(void)
 {
 	{
@@ -158,8 +164,100 @@ void fl_BlockLayout::_lookupProperties(void)
 		}
 	}
 
-	// TODO lookup the tab stops and default tab interval
-	m_iDefaultTabInterval = pG->convertDimension("1in");
+	const char* pszTabStops = getProperty("tabstops");
+	if (pszTabStops && pszTabStops[0])
+	{
+		UT_uint32 iCount = m_vecTabs.getItemCount();
+		UT_uint32 i;
+
+		for (i=0; i<iCount; i++)
+		{
+			fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
+
+			delete pTab;
+		}
+		m_vecTabs.clear();
+
+		unsigned char iType = 0;
+		UT_sint32 iPosition = 0;
+		
+		const char* pStart = pszTabStops;
+		while (*pStart)
+		{
+			const char* pEnd = pStart;
+			while (*pEnd && (*pEnd != ','))
+			{
+				pEnd++;
+			}
+
+			const char* p1 = pStart;
+			while ((p1 < pEnd) && (*p1 != '/'))
+			{
+				p1++;
+			}
+
+			if (
+				(p1 == pEnd)
+				|| ((p1+1) == pEnd)
+				)
+			{
+				iType = FL_TAB_LEFT;
+			}
+			else
+			{
+				switch (p1[1])
+				{
+				case 'L':
+					iType = FL_TAB_LEFT;
+					break;
+				case 'R':
+					iType = FL_TAB_RIGHT;
+					break;
+				case 'C':
+					iType = FL_TAB_CENTER;
+					break;
+				default:
+					iType = FL_TAB_LEFT;
+					break;
+				}
+			}
+
+			char pszPosition[32];
+			UT_uint32 iPosLen = p1 - pStart;
+		
+			UT_ASSERT(iPosLen < 32);
+
+			for (i=0; i<iPosLen; i++)
+			{
+				pszPosition[i] = pStart[i];
+			}
+			pszPosition[i] = 0;
+
+			iPosition = pG->convertDimension(pszPosition);
+
+			UT_ASSERT(iType > 0);
+			UT_ASSERT(iPosition >= 0);
+			
+			fl_TabStop* pTabStop = new fl_TabStop();
+			pTabStop->iPosition = iPosition;
+			pTabStop->iType = iType;
+
+			m_vecTabs.addItem(pTabStop);
+
+			pStart = pEnd;
+			if (*pStart)
+			{
+				while (*pStart == 32)
+				{
+					pStart++;
+				}
+			}
+		}
+
+		// TODO sort the tabs vector by position, ascending
+	}
+	
+	m_iDefaultTabInterval = pG->convertDimension(getProperty("default-tab-interval"));
 
 	// for now, just allow fixed multiples
 	// TODO: if units were used, convert to exact spacing required
@@ -2642,7 +2740,20 @@ UT_Bool fl_BlockLayout::recalculateFields(void)
 
 UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType)
 {
-	// TODO support something other than default tabs
+	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
+	UT_uint32 i;
+	for (i=0; i<iCountTabs; i++)
+	{
+		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
+
+		if (pTab->iPosition > iStartX)
+		{
+			iPosition = pTab->iPosition;
+			iType = pTab->iType;
+
+			return UT_TRUE;
+		}
+	}
 	
 	// now, handle the default tabs
 

@@ -1475,6 +1475,12 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	UT_sint32 iPageOffset;
 	getPageYOffset(pOldPage, iPageOffset);
 
+	UT_sint32 iLineX = 0;
+	UT_sint32 iLineY = 0;
+
+	pOldColumn->getOffsets(pOldLine, iLineX, iLineY);
+	yPoint = iLineY;
+
 	iLineHeight = pOldLine->getHeight();
 
 	UT_Bool bNOOP = UT_FALSE;
@@ -1484,7 +1490,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		if (pOldLine != pOldColumn->getLastLine())
 		{
 			// just move off this line
-			yPoint += iPointHeight + pOldLine->getMarginAfter();
+			yPoint += (iLineHeight + pOldLine->getMarginAfter());
 		}
 		else if (pOldSL->getLastColumn()->getLeader() == pOldLeader)
 		{
@@ -1519,7 +1525,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		if (pOldLine != pOldColumn->getFirstLine())
 		{
 			// just move off this line
-			yPoint -= (iLineHeight - iPointHeight) + pOldLine->getMarginBefore() + 1;
+			yPoint -= (pOldLine->getMarginBefore() + 1);
 		}
 		else if (pOldSL->getFirstColumn() == pOldLeader)
 		{

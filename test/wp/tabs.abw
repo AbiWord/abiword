@@ -1,0 +1,9 @@
+<awml>
+<section>
+<p PROPS="text-align:center"><c PROPS="font-size:14pt">Using Tabs To Simulate a Table</c></p>
+<p></p>
+<p>The following table is simulated using tabs.  There should be two columns of numbers.  The column on the right should be tabstopped at 3 inches.</p>
+<p></p>
+<p PROPS="tabstops:3in; text-align:left">1	1<br/>2	4<br/>3	9<br/>4	16<br/>5	25<br/>6	36<br/>7	49<br/>8	64<br/>9	81<br/></p>
+</section>
+</awml>
