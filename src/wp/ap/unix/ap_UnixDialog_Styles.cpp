@@ -193,7 +193,7 @@ static gboolean s_paraPreview_exposed(GtkWidget * widget, gpointer /* data */, A
 static gboolean s_charPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
 {
 	UT_ASSERT(widget && me);
-	me->event_paraPreviewExposed();
+	me->event_charPreviewExposed();
 	return FALSE;
 }
 
@@ -202,23 +202,6 @@ static gboolean s_modifyPreview_exposed(GtkWidget * widget, gpointer /* data */,
 {
 	UT_ASSERT(widget && me);
 	me->event_ModifyPreviewExposed();
-	return FALSE;
-}
-
-
-static gboolean s_modify_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(widget && me);
-	me->event_ModifyPreviewExposed();
-	return FALSE;
-}
-
-
-static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
-{
-	UT_ASSERT(widget && me);
-	me->event_paraPreviewExposed();
-	me->event_charPreviewExposed();
 	return FALSE;
 }
 
@@ -236,14 +219,12 @@ static void s_modify_font(GtkWidget * /* widget */,
 	me->event_ModifyFont();
 }
 
-
 static void s_modify_numbering(GtkWidget * /* widget */,
 			     AP_UnixDialog_Styles * me)
 {
 	UT_ASSERT(me);
 	me->event_ModifyNumbering();
 }
-
 
 static void s_modify_language (GtkWidget * /* w */,
 							   AP_UnixDialog_Styles * me)
@@ -258,7 +239,6 @@ static void s_modify_tabs(GtkWidget * /* widget */,
 	UT_ASSERT(me);
 	me->event_ModifyTabs();
 }
-
 
 /*****************************************************************/
 
@@ -283,9 +263,6 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	abiSetupModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL);
 
-	// populate the member variables for the  previews
-
-	_populatePreviews(false);
 	// *** this is how we add the gc for the para and char Preview's ***
 	// attach a new graphics context to the drawing area
 
@@ -316,7 +293,10 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	_createCharPreviewFromGC(m_pCharPreviewWidget,
 				 static_cast<UT_uint32>(m_wCharPreviewArea->allocation.width), 
 				 static_cast<UT_uint32>(m_wCharPreviewArea->allocation.height));
-	
+
+	// Populate the window's data items
+	_populateWindowData();
+
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wParaPreviewArea),
 					   "expose_event",
@@ -328,26 +308,10 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 					   G_CALLBACK(s_charPreview_exposed),
 					   reinterpret_cast<gpointer>(this));
 	
-	g_signal_connect_after(G_OBJECT(m_windowMain),
-			       "expose_event",
-			       G_CALLBACK(s_window_exposed),
-			       reinterpret_cast<gpointer>(this));
-	
 	// connect the select_row signal to the clist
 	g_signal_connect (G_OBJECT (m_wclistStyles), "select_row",
 			  G_CALLBACK (s_clist_clicked), reinterpret_cast<gpointer>(this));
-
-	// Run into the GTK event loop for this window.
 	
-//
-// Draw the previews!!
-//
-	// Populate the window's data items
-	_populateWindowData();
-
-	event_paraPreviewExposed();
-	event_charPreviewExposed();
-
 	// main loop for the dialog
 	while(true)
 	  {
@@ -598,7 +562,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ParaPrev).c_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(frameParaPrev), GTK_SHADOW_NONE);
 
-	ParaPreviewArea = gtk_drawing_area_new();
+	ParaPreviewArea = createDrawingArea();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(ParaPreviewArea), 300, 70);
 	gtk_container_add(GTK_CONTAINER(frameParaPrev), ParaPreviewArea);
 
@@ -609,7 +573,7 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	frameCharPrev = gtk_frame_new(
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_CharPrev).c_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(frameCharPrev), GTK_SHADOW_NONE);
-	CharPreviewArea = gtk_drawing_area_new();
+	CharPreviewArea = createDrawingArea();
 	gtk_drawing_area_size(GTK_DRAWING_AREA(CharPreviewArea), 300, 50);
 	gtk_container_add(GTK_CONTAINER(frameCharPrev), CharPreviewArea);
 
@@ -890,7 +854,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_table_attach (GTK_TABLE (comboTable), styleNameEntry, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_widget_set_size_request (styleNameEntry, 158, -2);
+	gtk_widget_set_size_request (styleNameEntry, 158, -1);
 
 	basedOnCombo = gtk_combo_new ();
 	gtk_widget_show (basedOnCombo);
@@ -900,7 +864,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 		
 	basedOnEntry = GTK_COMBO (basedOnCombo)->entry;
 	gtk_widget_show (basedOnEntry);
-	gtk_widget_set_size_request (basedOnEntry, 158, -2);
+	gtk_widget_set_size_request (basedOnEntry, 158, -1);
 
 	followingCombo = gtk_combo_new ();
 	gtk_widget_show (followingCombo);
@@ -910,7 +874,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	followingEntry = GTK_COMBO (followingCombo)->entry;
 	gtk_widget_show (followingEntry);
-	gtk_widget_set_size_request (followingEntry, 158, -2);
+	gtk_widget_set_size_request (followingEntry, 158, -1);
 //
 // Cannot modify style type attribute
 //	
@@ -924,7 +888,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 		styleTypeEntry = GTK_COMBO (styleTypeCombo)->entry;
 		gtk_widget_show (styleTypeEntry);
-		gtk_widget_set_size_request (styleTypeEntry, 158, -2);
+		gtk_widget_set_size_request (styleTypeEntry, 158, -1);
 	}
 	else
 	{
@@ -933,7 +897,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 		gtk_table_attach (GTK_TABLE (comboTable), styleTypeEntry, 1, 2, 1, 2,
 						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 						  (GtkAttachOptions) (0), 0, 0);
-		gtk_widget_set_size_request (styleTypeEntry, 158, -2);
+		gtk_widget_set_size_request (styleTypeEntry, 158, -1);
 	}
 
 	previewFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyPreview).c_str());
@@ -942,11 +906,11 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_box_pack_start (GTK_BOX (OverallVbox), previewFrame, TRUE, TRUE, 2);
 	gtk_container_set_border_width (GTK_CONTAINER (previewFrame), 5);
 
-	modifyDrawingArea = gtk_drawing_area_new ();
+	modifyDrawingArea = createDrawingArea();
 	gtk_widget_show (modifyDrawingArea);
 	gtk_container_add (GTK_CONTAINER (previewFrame), modifyDrawingArea);
-	gtk_widget_set_size_request (modifyDrawingArea, -2, 120);
-
+	gtk_widget_set_size_request (modifyDrawingArea, -1, 120);
+	
 	GtkWidget * descriptionFrame = gtk_frame_new (pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyDescription).c_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(descriptionFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (descriptionFrame);
@@ -977,7 +941,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
     deletePropEntry = GTK_COMBO (deletePropCombo)->entry;
 	gtk_widget_show (deletePropEntry);
-	gtk_widget_set_size_request (deletePropEntry, 158, -2);
+	gtk_widget_set_size_request (deletePropEntry, 158, -1);
 	
 	deletePropButton = gtk_button_new_with_label(pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_RemoveButton).c_str());
 	gtk_widget_show(deletePropButton);
@@ -1141,12 +1105,6 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 					   "changed",
 					   G_CALLBACK(s_styletype),
 					   static_cast<gpointer>(this));
-
-	
-	g_signal_connect_after(G_OBJECT(m_wModifyDialog),
-							 "expose_event",
-							 G_CALLBACK(s_modify_window_exposed),
-							 static_cast<gpointer>(this));
 }
 
 
@@ -1306,13 +1264,13 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 	DELETEP (m_pAbiPreviewWidget);
 	m_pAbiPreviewWidget = new GR_UnixGraphics(m_wModifyDrawingArea->window, unixapp->getFontManager(), m_pApp);
 	
-        // let the widget materialize
+	// let the widget materialize
 
 	_createAbiPreviewFromGC(m_pAbiPreviewWidget,
 				static_cast<UT_uint32>(m_wModifyDrawingArea->allocation.width),
 				static_cast<UT_uint32>(m_wModifyDrawingArea->allocation.height));
+	
 	_populateAbiPreview(isNew());
-	event_ModifyPreviewExposed();
 
 	switch(abiRunModalDialog(GTK_DIALOG(m_wModifyDialog), false))
 	  {

@@ -1043,7 +1043,7 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 		{
 			return;
 		}
-		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) < getPage()->getWidth());
+		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
 
 		pRun->getGraphics()->fillRect(pRun->getPageColor(),
 									  xoff - leftClear,
@@ -2509,7 +2509,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	UT_ASSERT(iMaxWidth > 0);
 	if(getPage())
 	{
-		UT_ASSERT(iMaxWidth < getPage()->getWidth());
+		UT_ASSERT(iMaxWidth <= getPage()->getWidth());
 	}
 	setMaxWidth(iMaxWidth);
 }

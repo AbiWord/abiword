@@ -140,13 +140,6 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 	return FALSE;
 }
 
-static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
-{
-	UT_ASSERT(widget && me);
-	me->previewExposed();
-	return FALSE;
-}
-
 static gboolean s_update (void)
 {
 	if( Current_Dialog->isDirty())
@@ -200,7 +193,6 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 
 	// Restore our value
 	setNewListType(savedListType);
-	previewExposed();
 	
 	abiRunModalDialog ( GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false );
 	
@@ -302,7 +294,6 @@ void AP_UnixDialog_Lists::destroy(void)
 	if(isModal())
 	{
 		setAnswer(AP_Dialog_Lists::a_QUIT);
-		gtk_main_quit();
 	}
 	else
 	{
@@ -313,8 +304,7 @@ void AP_UnixDialog_Lists::destroy(void)
 
 		g_list_free( m_glFonts);
 		modeless_cleanup();
-		if(m_wMainWindow && GTK_IS_WIDGET(m_wMainWindow))
-			gtk_widget_destroy(m_wMainWindow);
+		abiDestroyWidget(m_wMainWindow);
 		m_wMainWindow = NULL;
 		DELETEP(m_pAutoUpdateLists);
 		DELETEP (m_pPreviewWidget);
@@ -464,7 +454,6 @@ void  AP_UnixDialog_Lists::setXPFromLocal(void)
 	}
 }
 
-
 void  AP_UnixDialog_Lists::applyClicked(void)
 {
 	setXPFromLocal();
@@ -473,7 +462,6 @@ void  AP_UnixDialog_Lists::applyClicked(void)
 	if(isModal())
 	{
 		setAnswer(AP_Dialog_Lists::a_OK);
-		gtk_main_quit();
 	}
 }
 
@@ -1187,14 +1175,6 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 					   "expose_event",
 					   G_CALLBACK(s_preview_exposed),
 					   static_cast<gpointer>(this));
-
-
-	g_signal_connect_after(G_OBJECT(m_wMainWindow),
-							 "expose_event",
-		     				 G_CALLBACK(s_window_exposed),
-							 static_cast<gpointer>(this));
-
-
 	g_signal_connect(G_OBJECT(m_wMainWindow),
 					 "destroy",
 					 G_CALLBACK(s_destroy_clicked),
