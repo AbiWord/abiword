@@ -311,7 +311,8 @@ void FV_VisualDragText::drawCursor(PT_DocPosition newPos)
 	m_pView->_findPositionCoords(newPos, bEOL, xLow, yLow, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRunLow);
 	m_recCursor.left = xLow;
 	m_recCursor.top = yLow;
-	m_recCursor.width =  2;
+	m_recCursor.width =  getGraphics()->tlu(2); // the cursor is 2 device units wide, not
+												// logical units
 	m_recCursor.height = heightCaret;
 	UT_ASSERT(m_pDocUnderCursor == NULL);
 	GR_Painter painter(getGraphics());
