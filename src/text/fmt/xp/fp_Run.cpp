@@ -3946,6 +3946,9 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 
 	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
+	
+	UT_return_if_fail(len);
+	
 	/*UT_sint32 iNewWidth = */ getGraphics()->measureString(m_sFieldValue, 0, len, aCharWidths);
 
 	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, aCharWidths);
