@@ -358,40 +358,12 @@ UT_Error PD_Document::newDocument(void)
 			appendStrux(PTX_Section,NULL);
 			appendStrux(PTX_Block, NULL);
 
-			// set standard document properties, such as dtd, etc.
+			// set standard document properties, such as dtd, lang,
+			// dom-dir, etc. (some of the code that used to be here is
+			// now in the setAttrProp() function, since it is shared
+			// both by new documents and documents being loaded from disk
 			// this also initializes m_indexAP
 			setAttrProp(NULL);
-
-			// set dominant direction from preferences
-			const XML_Char r[] = "rtl";
-			const XML_Char l[] = "ltr";
-			const XML_Char p[] = "dom-dir";
-			const XML_Char * props[3] = {p,l,NULL};
-
-			bool bRTL = false;
-			XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&bRTL);
-
-			if(bRTL)
-				props[1] = r;
-
-			setProperties(props);
-
-			// what we want to do here is to set the default language
-			// that we're editing in
-
-			const XML_Char * doc_locale = NULL;
-			if (XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale) && doc_locale)
-			{
-				const XML_Char * props[3];
-				props[0] = "lang";
-				props[1] = doc_locale;
-				props[2] = 0;
-
-				// insert a format mark since we're not putting anything inside of the block
-				appendFmt((const XML_Char **)props);
-				appendFmtMark () ;
-				UT_DEBUGMSG(("DOM: new document set lang to %s\n", doc_locale));
-			}
 
 			m_pPieceTable->setPieceTableState(PTS_Editing);
 		}
@@ -2911,7 +2883,68 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	else
 		attr[18] = NULL;
 
-	return setAttributes(attr);
+	bRet =  setAttributes(attr);
+	if(!bRet)
+		return false;
+
+
+	// see if the document has dominant direction set and if not, set
+	// dominant direction from preferences
+	const PP_AttrProp * docAP =  getAttrProp();
+	const XML_Char * doc_dir;
+
+	if(docAP && !docAP->getProperty("dom-dir", doc_dir))
+	{
+		const XML_Char r[] = "rtl";
+		const XML_Char l[] = "ltr";
+		const XML_Char p[] = "dom-dir";
+		const XML_Char * props[3] = {p,l,NULL};
+
+		bool bRTL = false;
+		XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&bRTL);
+
+		if(bRTL)
+			props[1] = r;
+
+		UT_DEBUGMSG(( "pd_Document::setAttrProp: setting dom-dir to %s\n", props[1]));
+
+		bRet = setProperties(props);
+
+
+		if(!bRet)
+			return false;
+	}
+	else
+	{
+		UT_DEBUGMSG(( "pd_Document::setAttrProp: document has default direction %s\n", doc_dir));
+	}
+
+	// see if the document we are loading has a default language;
+	// if not, and there is a default language in the preferences, set
+	// it
+	const XML_Char * doc_lang;
+
+	if(docAP && !docAP->getProperty("lang", doc_lang))
+	{
+		const XML_Char * doc_locale = NULL;
+		if (XAP_App::getApp()->getPrefs()->getPrefsValue(XAP_PREF_KEY_DocumentLocale,&doc_locale) && doc_locale)
+		{
+			const XML_Char * props[3];
+			props[0] = "lang";
+			props[1] = doc_locale;
+			props[2] = 0;
+			UT_DEBUGMSG(( "pd_Document::setAttrProp: setting lang to %s\n", doc_locale ));
+
+			bRet = setProperties(props);
+		}
+	}
+	else
+	{
+		UT_DEBUGMSG(( "pd_Document::setAttrProp: document has default language %s\n", doc_lang));
+	}
+
+
+	return bRet;
 }
 
 bool PD_Document::setAttributes(const XML_Char ** ppAttr)
