@@ -206,10 +206,7 @@ abi_table_embed_on_toolbar (AbiTable* abi_table, GtkToolbar* toolbar)
 		gtk_widget_hide(abi_table->label);
 #endif
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	gtk_toolbar_insert_element (toolbar, GTK_TOOLBAR_CHILD_WIDGET,
-				GTK_WIDGET(abi_table), NULL,
-					pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable).c_str(), NULL, 
-				toolbar->num_children);
+	gtk_toolbar_append_widget (toolbar, GTK_WIDGET(abi_table), pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable).c_str(), NULL);
 }
 
 static gboolean
