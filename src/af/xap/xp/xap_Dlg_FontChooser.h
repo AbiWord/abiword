@@ -34,6 +34,7 @@
 
 #include "xap_Dialog.h"
 #include "xap_Preview.h"
+#include "gr_Graphics.h"
 
 class GR_Graphics;
 
@@ -56,6 +57,20 @@ protected:
 #ifdef WITH_PANGO
 	GList * m_pGlyphString;
 #endif
+	
+private:
+	GR_Font * m_pFont;
+	
+	UT_sint32 m_iAscent;
+	UT_sint32 m_iDescent;
+	UT_sint32 m_iHeight;
+	
+	char * m_fontFamily;
+	char * m_fontStyle;
+	char * m_fontVariant;
+	char * m_fontWeight;
+	char * m_fontStretch;
+	char * m_fontSize;
 };
 
 /*****************************************************************/

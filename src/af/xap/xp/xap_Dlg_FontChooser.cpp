@@ -418,9 +418,19 @@ bool XAP_Dialog_FontChooser::getChangedBottomline(bool * pbBottomline) const
 /////////////////////////////////////////////////////////////////////////
 
 XAP_Preview_FontPreview::XAP_Preview_FontPreview(GR_Graphics * gc, const XML_Char * pszClrBackground)
-	: XAP_Preview(gc)
+	: XAP_Preview(gc),
+		m_pFont(NULL),
+		m_iAscent(0),
+		m_iDescent(0),
+		m_iHeight(0),
+		m_fontFamily(NULL),
+		m_fontStyle(NULL),
+		m_fontVariant(NULL),
+		m_fontWeight(NULL),
+		m_fontStretch(NULL),
+		m_fontSize(NULL)
 #ifdef WITH_PANGO
-	  , m_pGlyphString(NULL)
+		, m_pGlyphString(NULL)
 #endif
 {
 	if(pszClrBackground != NULL && strcmp(pszClrBackground,"transparent")!=0)
@@ -517,7 +527,7 @@ void XAP_Preview_FontPreview::draw(void)
 //
 // Get the font and bold/italic- ness
 //
-	GR_Font * pFont;
+	//GR_Font * pFont;
 	const char* pszFamily	= getVal("font-family");
 	const char* pszStyle	= getVal("font-style");
 	const char* pszVariant	= getVal("font-variant");
@@ -535,7 +545,7 @@ void XAP_Preview_FontPreview::draw(void)
 		pszVariant = "normal";
 
 	if(!pszStretch)
-		pszVariant = "normal";
+		pszStretch = "normal";
 
 	if(!pszSize)
 		pszSize="12pt";
@@ -543,18 +553,40 @@ void XAP_Preview_FontPreview::draw(void)
 	if(!pszWeight)
 		pszWeight = "normal";
 
-	pFont = m_gc->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
-	UT_ASSERT(pFont);
-	if(!pFont)
+	if (
+		!m_pFont ||
+		
+		UT_stricmp(m_fontFamily, pszFamily) != 0   ||
+		UT_stricmp(m_fontStyle, pszStyle) != 0     ||
+		UT_stricmp(m_fontVariant, pszVariant) != 0 ||
+		UT_stricmp(m_fontWeight, pszWeight) != 0   ||
+		UT_stricmp(m_fontStretch, pszStretch) != 0  ||
+		UT_stricmp(m_fontSize, pszSize) != 0 
+	   )
 	{
-		clearScreen();
-		return;
-	}
+		m_pFont = m_gc->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
 
-	m_gc->setFont(pFont);
-	UT_sint32 iAscent = m_gc->getFontAscent(pFont);
-    UT_sint32 iDescent = m_gc->getFontDescent(pFont);
-	UT_sint32 iHeight = m_gc->getFontHeight(pFont);
+		UT_ASSERT(m_pFont);
+		if(!m_pFont)
+		{
+			clearScreen();
+			return;
+		}
+	
+		m_gc->setFont(m_pFont);		
+
+		m_iAscent = m_gc->getFontAscent(m_pFont);
+		m_iDescent = m_gc->getFontDescent(m_pFont);
+		m_iHeight = m_gc->getFontHeight(m_pFont);		
+		
+		UT_replaceString (m_fontFamily, pszFamily);
+		UT_replaceString (m_fontStyle, pszStyle);
+		UT_replaceString (m_fontVariant, pszVariant);
+		UT_replaceString (m_fontWeight, pszWeight);
+		UT_replaceString (m_fontStretch, pszStretch);
+		UT_replaceString (m_fontSize, pszSize);
+	}
+	
 //
 // Clear the screen!
 //
@@ -564,7 +596,7 @@ void XAP_Preview_FontPreview::draw(void)
 //
 	UT_sint32 iWinWidth = _UL(getWindowWidth());
 	UT_sint32 iWinHeight = _UL(getWindowHeight());
-	UT_sint32 iTop = (iWinHeight - iHeight)/2;
+	UT_sint32 iTop = (iWinHeight - m_iHeight)/2;
 	UT_sint32 len = UT_UCS4_strlen(m_pszChars);
 #ifndef WITH_PANGO
 	UT_sint32 twidth = m_gc->measureString(m_pszChars,0,len,NULL);
@@ -590,7 +622,7 @@ void XAP_Preview_FontPreview::draw(void)
 // Fill the background color
 //
 	if(pszBGColor)
-		m_gc->fillRect(BGcolor,iLeft,iTop,twidth,iHeight);
+		m_gc->fillRect(BGcolor,iLeft,iTop,twidth,m_iHeight);
 //
 // Do the draw chars at last!
 //
@@ -606,20 +638,22 @@ void XAP_Preview_FontPreview::draw(void)
 //
 	if(isUnder)
 	{
-		UT_sint32 iDrop = iTop + iAscent + iDescent/3;
+		UT_sint32 iDrop = iTop + m_iAscent + m_iDescent/3;
 		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	if(isOver)
 	{
-		UT_sint32 iDrop = iTop + _UL(1) + (UT_MAX(_UL(10),iAscent) - _UL(10))/8;
+		UT_sint32 iDrop = iTop + _UL(1) + (UT_MAX(_UL(10),m_iAscent) - _UL(10))/8;
 		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 	if(isStrike)
 	{
-		UT_sint32 iDrop = iTop + iAscent * 2 /3;
+		UT_sint32 iDrop = iTop + m_iAscent * 2 /3;
 		m_gc->drawLine(iLeft,iDrop,iLeft+twidth,iDrop);
 	}
 
+	// bad hardcoded color, but this will probably [ <-this assumption is the bad thing :) ] never be different anyway
+	m_gc->setColor(UT_RGBColor(0,0,0));
 	m_gc->drawLine(0, 0, _UL(getWindowWidth()), 0);
 	m_gc->drawLine(_UL(getWindowWidth()) - _UL(1), 0, _UL(getWindowWidth()) - _UL(1),
 		_UL(getWindowHeight()));
@@ -633,7 +667,8 @@ void XAP_Preview_FontPreview::clearScreen(void)
 	UT_sint32 iWidth = _UL(getWindowWidth());
 	UT_sint32 iHeight = _UL(getWindowHeight());
 
-	m_gc->fillRect(m_clrBackground, 0, 0, iWidth, iHeight);
+	// clear the whole drawing area, except for the border
+	m_gc->fillRect(m_clrBackground, 0 + _UL(1), 0 + _UL(1), iWidth - _UL(2), iHeight - _UL(2));
 }
 
 
