@@ -61,6 +61,9 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 
 	virtual UTIterStatus getStatus() const {return m_status;}
 
+	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true);
+	virtual UT_uint32 find(UT_TextIterator & text, UT_uint32 iLen, bool bForward = true);
+	
 	virtual UT_TextIterator * makeCopy();
 	
 	virtual UT_TextIterator & operator ++ ();
@@ -107,6 +110,9 @@ class ABI_EXPORT PD_StruxIterator : public UT_TextIterator
 	virtual void setPosition(UT_uint32 pos);
 
 	virtual UTIterStatus getStatus() const {return m_status;}
+
+	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true);
+	virtual UT_uint32 find(UT_TextIterator & text, UT_uint32 iLen, bool bForward = true);
 
 	virtual UT_TextIterator * makeCopy();
 

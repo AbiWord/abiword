@@ -4503,6 +4503,345 @@ bool PD_Document::areDocumentStylesheetsEqual(const PD_Document &d) const
 	return true;
 }
 
+bool PD_Document::diffDocuments(const PD_Document &d, UT_Vector & vDiff) const
+{
+	PT_DocPosition pos1 = 0;
+	UT_sint32 iOffset2 = 0;
+	UT_uint32 iKnownLength = 0;
+
+	PT_DocPosition pos1Diff = 0;
+	UT_sint32 iOffset2Diff = 0;
+	
+	vDiff.clear();
+
+	bool bRet = false;
+
+	// the following loop gets terminated when we do not find a
+	// similarity or we do not find a difference
+	while(true)
+	{
+		bool bDiff = findFirstDifferenceInContent(pos1, iOffset2,d);
+
+		UT_DEBUGMSG(("PD_Document::diffDocuments: difference found? %d\n", bDiff));
+		
+		if(!bDiff)
+			return bRet;
+		else
+			bRet = true;
+	
+		pos1Diff = pos1;
+		iOffset2Diff = iOffset2;
+	
+		bDiff = findWhereSimilarityResumes(pos1Diff, iOffset2Diff, iKnownLength, d);
+
+		UT_DEBUGMSG(("PD_Document::diffDocuments: similarity found? %d\n", bDiff));
+
+		if(!bDiff)
+		{
+			// no further similarities found
+			// insertion if the change in iOffset2 is negative
+			bool bDel = (iOffset2 - iOffset2Diff > 0);
+			UT_uint32 iLen = 0xffffffff; // to the end
+	
+			PD_DocumentDiff * pDiff = new PD_DocumentDiff(bDel, pos1, pos1 + iOffset2, iLen);
+			vDiff.addItem((void*)pDiff);
+#ifdef DEBUG
+			pDiff->_dump();
+#endif
+			return true;
+		}
+
+		// text is deleted if the extra offset from the similarity is positive
+		bool bDel = (iOffset2Diff - iOffset2 > 0);
+		UT_uint32 iLen;
+
+		if(bDel)
+		{
+			// need to use the coords of the second doc for calculations
+			iLen = pos1+iOffset2 > pos1Diff+iOffset2Diff ? pos1+iOffset2-pos1Diff-iOffset2Diff :
+				pos1Diff+iOffset2Diff-pos1-iOffset2;
+		}
+		else
+		{
+			iLen = pos1 > pos1Diff ? pos1 - pos1Diff : pos1Diff - pos1;
+		}
+	
+		PD_DocumentDiff * pDiff = new PD_DocumentDiff(bDel, pos1, pos1 + iOffset2, iLen);
+		vDiff.addItem((void*)pDiff);
+
+#ifdef DEBUG
+		pDiff->_dump();
+#endif
+
+		// skip over the known length
+		pos1 = pos1Diff + iKnownLength;
+		iOffset2 = iOffset2Diff;
+	}
+}
+
+
+/*!
+    Starting to search this document at position pos where the two
+    documents are known to become different, attepts to find location
+    at which similarities resume
+
+    \param pos: when called, should contain offset in present document
+                at which the difference starts; on successfult return
+                it will contain offset in present document where
+                similarities resume
+
+    \param iOffset2: when called contains offset to be added to
+                     position pos in order to correctly position start
+                     of the search in document d; on return it
+                     contains offset to be add to pos in order to
+                     obtain correct location of the resumption of
+                     similarites in document d
+
+   \param iKnownLength: on return contains the minium guaranteed length of the similarity
+
+   \param d the document to which this document is to be compared
+
+   \return returns true if it succeeds; if no further similarities are
+           found returns false
+*/
+bool PD_Document::findWhereSimilarityResumes(PT_DocPosition &pos, UT_sint32 &iOffset2,
+											 UT_uint32 & iKnownLength,
+											 const PD_Document &d) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, true);
+
+	if(m_pPieceTable->getFragments().areFragsDirty())
+		m_pPieceTable->getFragments().cleanFrags();
+	
+	if(d.m_pPieceTable->getFragments().areFragsDirty())
+		d.m_pPieceTable->getFragments().cleanFrags();
+		
+	//  scroll through the documents comparing contents
+	PD_DocIterator t1(*this, pos);
+	PD_DocIterator t2(d, pos + iOffset2);
+
+	// first, let's assume that the difference is an insertion in doc
+	// 2; we will take a few chars from doc 1 and try to locate them
+	// in doc 2
+
+	// this is a similarity threshold, very arbitrary ...  if we match
+	// iTry chars we will be happy if we do not match at least
+	// iMinOverlap we will give up. We will use variable step
+	UT_sint32 iTry = 128; 
+	UT_sint32 iMinOverlap = 3;
+	UT_sint32 iStep = 128;
+	UT_sint32 i = 0;
+
+	UT_uint32 iFoundPos1 = 0;
+	UT_uint32 iFoundPos2 = 0;
+	UT_sint32 iFoundOffset1 = 0;
+	UT_sint32 iFoundOffset2 = 0;
+
+	for(i = iTry; i >= iMinOverlap; i -= iStep)
+	{
+		UT_uint32 pos1 = t1.getPosition();
+		UT_uint32 pos2 = t2.getPosition();
+
+		UT_uint32 iPos = t2.find(t1,i,true);
+
+		if(t2.getStatus() == UTIter_OK)
+		{
+			// we found what we were looking for
+			iFoundPos1 = pos1;
+			iFoundOffset1 = iPos - iFoundPos1;
+			break;
+		}
+		else
+		{
+			// we did not find our text, reset position ...
+			t2.setPosition(pos2);
+			t1.setPosition(pos1);
+			
+			if(iStep > 1)
+				iStep /= 2;
+		}
+	}
+
+	// remember the length we found ...
+	UT_sint32 iLen1 = i >= iMinOverlap ? i : 0;
+
+	if(i == iTry)
+	{
+		// we found the whole iTry chunk, we will stop here ...
+		pos = iFoundPos1;
+		iOffset2 = iFoundOffset1;
+		iKnownLength = iTry;
+		return true;
+	}
+	
+	// now do the same, but assuming our text is deleted from doc 2
+	t2.setPosition(pos);
+	t1.setPosition(pos + iOffset2);
+	iStep = 128;
+	
+	for(i = iTry; i >= iMinOverlap; i -= iStep)
+	{
+		UT_uint32 pos1 = t1.getPosition();
+		UT_uint32 pos2 = t2.getPosition();
+
+		UT_uint32 iPos = t1.find(t2,i,true);
+
+		if(t1.getStatus() == UTIter_OK)
+		{
+			// we found what we were looking for
+			iFoundPos2 = iPos;
+			iFoundOffset2 = pos2 - iFoundPos2;
+			break;
+		}
+		else
+		{
+			// we did not find our text, reset position ...
+			t2.setPosition(pos2);
+			t1.setPosition(pos1);
+
+			if(iStep > 1)
+				iStep /= 2;
+		}
+	}
+
+	UT_sint32 iLen2 = i >= iMinOverlap ? i : 0;
+
+	if( !iLen1 && !iLen2)
+		return false;
+	
+	// now we will go with whatever is longer
+	if(iLen1 >= iLen2)
+	{
+		pos = iFoundPos1;
+		iOffset2 = iFoundOffset1;
+		iKnownLength = iLen1;
+	}
+	else
+	{
+		pos = iFoundPos2;
+		iOffset2 = iFoundOffset2;
+		iKnownLength = iLen2;
+	}
+	
+	return true;
+}
+
+
+/*!
+    finds the position of the first difference in content between this
+    document and document d, starting search at given position
+
+    \param pos when called this variable should contian document
+               offset at which to start searching; on success this
+               variable will contain offset of the difference in
+               present document
+
+    \param iOffset2 when called contains offset to be added to pos to
+                    locate identical position in document d
+
+    \param d   the document to compare with
+
+    \return    returns false if no difference was found, true otherwise
+*/
+bool PD_Document::findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &iOffset2,
+											   const PD_Document &d) const
+{
+	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, true);
+
+	if(m_pPieceTable->getFragments().areFragsDirty())
+		m_pPieceTable->getFragments().cleanFrags();
+	
+	if(d.m_pPieceTable->getFragments().areFragsDirty())
+		d.m_pPieceTable->getFragments().cleanFrags();
+		
+	//  scroll through the documents comparing contents
+	PD_DocIterator t1(*this, pos);
+	PD_DocIterator t2(d, pos + iOffset2);
+
+	while(t1.getStatus() == UTIter_OK && t2.getStatus() == UTIter_OK)
+	{
+		const pf_Frag * pf1 = t1.getFrag();
+		const pf_Frag * pf2 = t2.getFrag();
+
+		if(!pf1 || !pf2)
+		{
+			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			return true;
+		}
+		
+		if(pf1->getType() != pf2->getType())
+		{
+			pos = pf1->getPos();
+			return true;
+		}
+		
+		UT_uint32 iFOffset1 = t1.getPosition() - pf1->getPos();
+		UT_uint32 iFOffset2 = t2.getPosition() - pf2->getPos();
+		
+		UT_uint32 iLen1 = pf1->getLength() - iFOffset1;
+		UT_uint32 iLen2 = pf2->getLength() - iFOffset2;
+		UT_uint32 iLen  = UT_MIN(iLen1, iLen2);
+
+		if(   iLen1 == iLen2 && iFOffset1 == 0 && iFOffset2 == 0
+		   && pf1->getType() != pf_Frag::PFT_Text)
+		{
+			// completely overlapping non-text frags ..
+			if(!(pf1->isContentEqual(*pf2)))
+			{
+				pos = pf1->getPos();
+				return true;
+			}
+		}
+		else if(pf1->getType() != pf_Frag::PFT_Text)
+		{
+			// partially overlapping frags and not text
+			pos = pf1->getPos();
+			return true;
+		}
+		else
+		{
+			// we have two textual frags that overlap
+			// work our way along the overlap ...
+			for(UT_uint32 i = 0; i < iLen; ++i)
+			{
+				if(t1.getChar() != t2.getChar())
+				{
+					pos = t1.getPosition();
+					return true;
+				}
+				
+				++t1;
+				++t2;
+			}
+
+			// we are already past the end of the shorter frag
+			continue;
+		}
+
+		// advance both iterators by the processed length
+		t1 += iLen;
+		t2 += iLen;
+	}
+
+	if(t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
+	{
+		// document two is shorter ...
+		pos = t1.getPosition();
+		return true;
+	}
+
+	if(t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK)
+	{
+		// document 1 is shorter
+		pos = t2.getPosition() - iOffset2;
+		return true;
+	}
+
+	// if we got this far, we found no differences at all ...
+	return false;
+}
+
+
 
 /*!
     Returns true if the contents of the two documents are identical
@@ -4662,9 +5001,9 @@ bool PD_Document::areDocumentFormatsEqual(const PD_Document &d) const
 			}
 		}
 		
-
-		++t1;
-		++t2;
+		UT_uint32 iLen = UT_MIN(pf1->getLength(),pf2->getLength());
+		t1 += iLen;
+		t2 += iLen;
 	}
 
 	if(   (t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
@@ -4700,6 +5039,15 @@ const char * PD_Document::getDocUIDString() const
 
 	return m_pDocUID->getUIDString();
 }
+
+#ifdef DEBUG
+void PD_DocumentDiff::_dump() const
+{
+	UT_DEBUGMSG(("PD_DocumentDiff: del=%d, p1=%d, p2=%d, len=%d\n",
+				 m_bDeleted, m_pos1, m_pos2, m_len));
+}
+#endif
+
 
 ///////////////////////////////////////////////////
 // PD_VersionData

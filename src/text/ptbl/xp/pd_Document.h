@@ -237,6 +237,22 @@ class PD_DocumentUID
 	UT_String m_sUID;
 };
 
+class PD_DocumentDiff
+{
+  public:
+	PD_DocumentDiff(bool bDel, PT_DocPosition p1, PT_DocPosition p2, UT_uint32 len)
+		:m_bDeleted(bDel), m_pos1(p1), m_pos2(p2), m_len(len){};
+
+#ifdef DEBUG
+	void _dump() const;
+#endif
+	
+	bool           m_bDeleted;
+	PT_DocPosition m_pos1;
+	PT_DocPosition m_pos2;
+	UT_uint32      m_len;
+};
+
 
 
 /*!
@@ -611,6 +627,15 @@ public:
 	bool      areDocumentFormatsEqual(const PD_Document &d) const;
 	bool      areDocumentStylesheetsEqual(const PD_Document &d) const;
 
+	bool      findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &iOffset2,
+										   const PD_Document &d) const;
+	
+	bool      findWhereSimilarityResumes(PT_DocPosition &pos, UT_sint32 &iOffset2,
+										 UT_uint32 & iKnownLength,
+										 const PD_Document &d) const;
+
+	bool      diffDocuments(const PD_Document &d, UT_Vector & vDiff) const;
+	
 	const PD_DocumentUID * getDocUID()const {return m_pDocUID;}
 	void                   setDocUID(PD_DocumentUID * u);
 	const char *           getDocUIDString()const;

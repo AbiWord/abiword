@@ -62,6 +62,10 @@ bool pf_Frag_Text::_isContentEqual(const pf_Frag & f2) const
 	{
 		if(t1.getChar() != t2.getChar())
 			return false;
+
+		++i;
+		++t1;
+		++t2;
 	}
 
 	return true;
