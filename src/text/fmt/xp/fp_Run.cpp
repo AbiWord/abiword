@@ -155,7 +155,7 @@ fp_Run::_inheritProperties(void)
 	else
 	{
 		// look for fonts in this DocLayout's font cache
-		UT_DEBUGMSG(("fp_Run::_inheritProperties: from current font\n"));
+		//UT_DEBUGMSG(("fp_Run::_inheritProperties: from current font\n"));
 		const PP_AttrProp * pSpanAP = NULL;
 		const PP_AttrProp * pBlockAP = NULL;
 		const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
