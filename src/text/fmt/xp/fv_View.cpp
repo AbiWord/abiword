@@ -944,7 +944,16 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		if(pBlock->getSectionLayout()->getType() == FL_SECTION_HDRFTR)
 		{
 			// General question for msevior: When is this triggered?
-			// Usually we have an FL_SETION_SHADOW. - PL
+			// Usually we have an FL_SECTION_SHADOW. - PL
+			// The answer: 
+
+			// That if was put in to guard against an extremely
+			// convoluted crasher that occured once. I forget the
+			// details and you really don't want to know. Something
+			// like calling a _generalUpdate() from an insertStrux
+			// while editting the first header and it had been
+            // modified or something...
+
 			if(m_bEditHdrFtr)
 			{
 				pContainer = m_pEditShadow->getFirstContainer();
