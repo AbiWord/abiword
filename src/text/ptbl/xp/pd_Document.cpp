@@ -1636,6 +1636,7 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, UT_sint32 
 
 void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 {
+#if DEBUG
 	UT_sint32 i=0;
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	const pf_Frag * pf = static_cast<const pf_Frag *>(pfs);
@@ -1719,6 +1720,7 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		if(pf)
 			pfs= static_cast<const pf_Frag_Strux *>(pf);
 	}
+#endif
 }
 		
 
