@@ -534,8 +534,14 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %__mkdir_p %{prefix}/bin
 %__ln_s -f %{ABIPREFIX}/AbiSuite/bin/AbiWord %{prefix}/bin/abiword
 
+%postun
+%__rm -f %{prefix}/bin/abiword
 
 %changelog
+* Sun Mar c31 2002 Rui M. Silva Seabra <rms@1407.org>
+- Partially solve bug http://bugzilla.abisource.com/show_bug.cgi?id=1938
+  Added postun to remove the symlink
+
 * Thu Mar 28 2002 Rui M. Silva Seabra <rms@1407.org>
 - Solved bug http://bugzilla.abisource.com/show_bug.cgi?id=1938
   fonts.dir and fonts.scale will no longer be replaced.
