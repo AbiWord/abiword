@@ -173,11 +173,15 @@ void GR_UNIXGraphics::setFont(GR_Font* pFont)
 	UT_ASSERT(pFont);
 
 	GR_UnixFont * pUFont = static_cast<GR_UnixFont*> (pFont);
-  
+
+	// want to only call this once, if possible, on a new font
+	GdkFont * newGdkFont = pUFont->getGdkFont();
+	UT_ASSERT(newGdkFont);
+	
 	if (m_pFont)
     {
 		XFontStruct* pCurFont = (XFontStruct *)((GdkFontPrivate*)m_pFont->getGdkFont())->xfont;
-		XFontStruct* pNewFont = (XFontStruct *)((GdkFontPrivate*)pUFont->getGdkFont())->xfont;
+		XFontStruct* pNewFont = (XFontStruct *)((GdkFontPrivate*)newGdkFont)->xfont;
 
 		UT_ASSERT(pCurFont && pNewFont);
 		
@@ -189,7 +193,7 @@ void GR_UNIXGraphics::setFont(GR_Font* pFont)
 		     
 	m_pFont = pUFont;
   
-	gdk_gc_set_font(m_pGC, m_pFont->getGdkFont());
+	gdk_gc_set_font(m_pGC, newGdkFont);
 	memset(m_aCharWidths, 0, 256 * sizeof(int));
 }
 

@@ -29,6 +29,7 @@
 #include "ut_debugmsg.h"
 #include "ut_dialogHelper.h"
 #include "xap_UnixFont.h"
+#include "xap_UnixFontXLFD.h"
 
 #define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
@@ -299,79 +300,46 @@ const char * AP_UnixFont::getFontKey(void)
 
 GdkFont * AP_UnixFont::getGdkFont(UT_uint32 pointsize)
 {
-	allocFont * entry = NULL;
-
 	// this might return NULL, but that means a font at a certain
 	// size couldn't be found
-	UT_uint32 l;
-	UT_uint32 count;
-	for (l = 0, count = m_allocFonts.getItemCount();
-		 l < count; entry = (allocFont *) m_allocFonts.getNthItem(l), l++)
+	UT_uint32 l = 0;
+	UT_uint32 count = m_allocFonts.getItemCount();
+	allocFont * entry;
+
+	while (l < count)
 	{
+		entry = (allocFont *) m_allocFonts.getNthItem(l);
 		if (entry && entry->pointSize == pointsize)
 			return entry->gdkFont;
+		else
+			l++;
 	}
 
 	GdkFont * gdkfont = NULL;
 	
 	// GDK/X wants to load fonts with point sizes 2 and up
-	if (pointsize <= 1)
+	if (pointsize < 2)
 		return NULL;
 
-		/*
-		  NOTE: when we get the XLFD, it will (most likely) have a "0"
-		  for both its pixel size and point size.  This means the X
-		  server will scale the font to any requested size.  This also
-		  means that it's up to us to re-format the XLFD in this font
-		  so that the proper point size is in the proper field.  Also,
-		  X wants requests in decipoints, so we multiply by 10 while we're
-		  at it.  As a sidenote, if the font does NOT have a "0" for
-		  the point size, it was registered at a specific size and (1)
-		  users shouldn't do that and (2) it should probably work anyway,
-		  since X will scale fonts for you (with pretty horrible
-		  results sometimes).
-		*/
+	/*
+	  NOTE: when we get the XLFD, it will (most likely) have a "0"
+	  for both its pixel size and point size.  This means the X
+	  server will scale the font to any requested size.  This also
+	  means that it's up to us to re-format the XLFD in this font
+	  so that the proper point size is in the proper field.  Also,
+	  X wants requests in decipoints, so we multiply by 10 while we're
+	  at it.
+	*/
 
-	// add 5; 1 for the new NULL, 4 for the max size the new size
-	// number could use
-	char * newxlfd = (char *) calloc(strlen(m_xlfd) + 5, sizeof (char));
-	char * oldcursor = (char *) m_xlfd;
-	char * newcursor = (char *) newxlfd;
-	int dashcount = 0;
-	while (*oldcursor != NULL)
-	{
-		if (*oldcursor == '-')
-			dashcount++;
-		
-		// after the eighth, insert the size
-		if (dashcount == 8)
-		{
-			// do the copy
-			*newcursor = *oldcursor;
-			 
-			// do a temp termination so strcat() does the right thing
-			newcursor++;
-			*newcursor = 0;
-			char number[5];
-			g_snprintf(number, 5, "%ld", pointsize);
-			strcat(newxlfd, number);
-			// advance by the number of characters in the number string
-			newcursor += strlen(number);
-			oldcursor++;
+	// create a real object around that string
+	AP_UnixFontXLFD myXLFD(m_xlfd);
 
-			dashcount++;
-			
-			continue;
-		}
-		else
-		{
-			// copy the character
-			*newcursor = *oldcursor;
-		}
+	myXLFD.setPointSize(pointsize);
 
-		newcursor++;
-		oldcursor++;
-	}
+	// TODO  add any other special requests, like for a specific encoding
+	// TODO  or registry, or resolution here
+
+	char * newxlfd = myXLFD.getXLFD();
 
 	gdkfont = gdk_font_load(newxlfd);
 
