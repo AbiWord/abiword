@@ -20,8 +20,7 @@
 
 
 #include "xap_Win32FrameImpl.h"
-
-#include <commctrl.h>
+#include "commctrl.h"
 #include <limits.h>					/* for INT_MAX */
 
 #include "zmouse.h"

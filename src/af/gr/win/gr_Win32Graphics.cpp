@@ -36,6 +36,9 @@
 #include "ut_string.h"
 #include "ut_Win32OS.h"
 
+#define WIN_SCALE_RATIO 1440.0/72.
+#define NEW_SCALE 1
+
 //#define GR_GRAPHICS_DEBUG	1
 
 /*****************************************************************/
@@ -194,7 +197,10 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 	{
 		// lazily grab this (once)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-		m_pFontGUI = new GR_Win32Font(f, this);
+		LOGFONT lf;
+		int iRes = GetObject(f, sizeof(LOGFONT), &lf);
+		UT_sint32 iHeight = static_cast<UT_sint32>(lf.lfHeight);
+		m_pFontGUI = new GR_Win32Font(f, this,iHeight);
 		UT_ASSERT(m_pFontGUI);
 	}
 
@@ -279,7 +285,7 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	if (!hFont)
 		return 0;
 
-	return new GR_Win32Font(hFont, this);
+	return new GR_Win32Font(hFont, this,iHeight);
 }
 
 void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -1279,12 +1285,13 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 	return;
 }
 
-GR_Win32Font::GR_Win32Font(HFONT hFont, GR_Graphics * pG)
+GR_Win32Font::GR_Win32Font(HFONT hFont, GR_Graphics * pG, UT_sint32 iHeight)
 :	m_oldHDC(0),
 	m_hFont(hFont),
 	m_defaultCharWidth(0),
 	m_tm(TEXTMETRIC()),
-	m_pG(pG)
+	m_pG(pG),
+	m_iUnScaled(iHeight)
 {
 	UT_ASSERT(m_hFont);
 
@@ -1368,8 +1375,20 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 	// calculate the limits of the 256-char page
 	UT_UCS4Char base = (cChar & 0xffffff00);
 	UT_UCS4Char limit = (cChar | 0x000000ff);
-	
+#if NEW_SCALE
+	LOGFONT lf;
+	int iRes = GetObject(m_hFont, sizeof(LOGFONT), &lf);
+	lf.lfHeight= static_cast<LONG>(static_cast<double>(m_iUnScaled)*  WIN_SCALE_RATIO);
+	HFONT hFont = CreateFontIndirect(&lf);
+	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
+	SelectObject(hdc,hFont);
+	_getCharWidths()->setCharWidthsOfRange(hdc, base, limit, m_pG);
+	DeleteObject(hFont);
+	DeleteDC(hdc);
+#else
 	_getCharWidths()->setCharWidthsOfRange(m_oldHDC, base, limit, m_pG);
+
+#endif	
 	return _getCharWidths()->getWidth(cChar);
 }
 
@@ -1394,7 +1413,19 @@ void GR_Win32Font::setupFontInfo()
 	UINT d = m_tm.tmDefaultChar;
 
 	UT_return_if_fail(_getCharWidths());
+#if NEW_SCALE
+	LOGFONT lf;
+	int iRes = GetObject(m_hFont, sizeof(LOGFONT), &lf);
+	lf.lfHeight = static_cast<LONG>(static_cast<double>(m_iUnScaled)*  WIN_SCALE_RATIO);
+	HFONT hFont = CreateFontIndirect(&lf);
+	HDC hdc = CreateDC("DISPLAY",NULL,NULL,NULL);
+	SelectObject(hdc,hFont);
+	_getCharWidths()->setCharWidthsOfRange(hdc, d, d, m_pG);
+	DeleteObject(hFont);
+	DeleteDC(hdc);
+#else
 	_getCharWidths()->setCharWidthsOfRange(m_oldHDC, d, d, m_pG);
+#endif
 	m_defaultCharWidth = getCharWidthFromCache(d);
 }
 

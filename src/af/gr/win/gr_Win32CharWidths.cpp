@@ -27,10 +27,17 @@
 #include "ut_endian.h"
 
 //////////////////////////////////////////////////////////////////
+#if 1
+
+#define _UL(x) (x)
+#define _UUL(x)(x) = (x)
+
+#else
 
 #define _UL(x) pGr->tlu((x))
 #define _UUL(x) (x) = pGr->tlu((x))
 
+#endif
 void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1, GR_Graphics * pGr)
 {
 	if(m_vRanges.getItemCount() == 0)
