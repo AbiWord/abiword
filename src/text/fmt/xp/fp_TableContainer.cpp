@@ -3843,6 +3843,65 @@ bool fp_TableContainer::containsFootnoteReference(void)
 	return bFound;
 }
 
+UT_sint32 fp_TableContainer::getMarginBefore(void) const
+{
+	if(isThisBroken())
+	{
+		if(getPrev() && getPrev() == static_cast<fp_ContainerObject *>(getMasterTable()))
+		{
+			// getMargin of revious block
+			fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+			fl_ContainerLayout * pCL = pTL->getPrev();
+			if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				return static_cast<fl_BlockLayout *>(pCL)->getBottomMargin();
+			}
+			return 0;
+		}
+		else if( getPrev() == NULL)
+		{
+			// getMargin of revious block
+			fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+			fl_ContainerLayout * pCL = pTL->getPrev();
+			if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				return static_cast<fl_BlockLayout *>(pCL)->getBottomMargin();
+			}
+			return 0;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	fl_ContainerLayout * pCL = pTL->getPrev();
+	if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
+	{
+		return static_cast<fl_BlockLayout *>(pCL)->getBottomMargin();
+	}
+	return 0;
+}
+
+
+UT_sint32 fp_TableContainer::getMarginAfter(void) const
+{
+	if(isThisBroken())
+	{
+		if(getNext())
+		{
+			return 0; // still in the table list
+		}
+	}
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	fl_ContainerLayout * pCL = pTL->getNext();
+	if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
+	{
+		return static_cast<fl_BlockLayout *>(pCL)->getTopMargin();
+	}
+	return 0;
+}
+
 /*!
  * This method returns a vector of call the footnote layouts in this table
  */

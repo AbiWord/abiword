@@ -346,6 +346,8 @@ public:
 	virtual void        setContainer(fp_Container * pContainer);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
+ 	virtual UT_sint32   getMarginBefore(void) const;
+	virtual UT_sint32   getMarginAfter(void) const;
 	void                drawLines();
 	bool                containsFootnoteReference(void);
 	bool                getFootnoteContainers(UT_Vector * pvecFoots);
