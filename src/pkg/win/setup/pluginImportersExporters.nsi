@@ -10,8 +10,14 @@ CRCCheck on
 
 ; The name of the installer
 Name "AbiWord's Importer/Exporter Plugins"
+
+; Personal build
 Icon "..\..\pkg\win\setup\setup.ico"
+UninstallIcon "..\..\pkg\win\setup\setup.ico"
+; Trademarked build
 ;Icon "..\..\pkg\win\setup\setup_tm.ico"
+;UninstallIcon "..\..\pkg\win\setup\setup_tm.ico"
+
 OutFile "AbiWord_IE_Plugins.exe"
 
 ; License Information
@@ -34,8 +40,11 @@ InstType "Full"
 ; The text to prompt the user to enter a directory
 DirText "Choose the AbiSuite directory where you previously installed Abiword:"
 
-EnabledBitmap  ..\..\pkg\win\setup\checkbox.bmp
-DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
+; For NSIS 2.xx
+CheckBitmap ..\..\pkg\win\setup\modern.bmp
+; For NSIS 1.xx
+;EnabledBitmap  ..\..\pkg\win\setup\checkbox.bmp
+;DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
 
 ; The stuff that must be installed
 ; binary, license, or whatever
@@ -62,6 +71,7 @@ SectionEnd
 
 ;SectionDivider
 ; OPTIONAL
+SubSection /e "Image Manipulation"
 
 Section "ImageMagick Plugin"
 	SectionIn 1 2
@@ -80,9 +90,12 @@ Section "ImageMagick Plugin"
 	End:
 SectionEnd
 
-SectionDivider
+;SectionDivider
+SubSectionEnd
+SubSection /e "Additional File Format Importers/Exporters"
 
-Section "BZ2ABW (*.bzabw) Plugin"
+SubSection "BZ2ABW (*.bzabw) Plugin"
+Section "The .bzabw Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -113,8 +126,9 @@ Section "Add .bzabw Association (to Registry)"
 
 	End:
 SectionEnd
+SubSectionEnd
 
-SectionDivider
+;SectionDivider
 
 Section "AbiEML Plugin"
 	SectionIn 1 2
@@ -133,7 +147,7 @@ Section "AbiEML Plugin"
 	End:
 SectionEnd
 
-SectionDivider
+;SectionDivider
 
 Section "OpenWriter (*.sxw) Plugin"
 	SectionIn 2
@@ -152,7 +166,7 @@ Section "OpenWriter (*.sxw) Plugin"
 	End:
 SectionEnd
 
-SectionDivider
+;SectionDivider
 
 Section "AbiSDW (*.sdw) Plugin"
 	SectionIn 2
@@ -171,7 +185,7 @@ Section "AbiSDW (*.sdw) Plugin"
 	End:
 SectionEnd
 
-SectionDivider
+;SectionDivider
 
 Section "AbiHTML (*.html) Plugin"
 	SectionIn 2
@@ -190,7 +204,7 @@ Section "AbiHTML (*.html) Plugin"
 	End:
 SectionEnd
 
-SectionDivider
+;SectionDivider
 
 ; uncomment [here and in uninstall] & change .ext if this plugin adds support for new type (with new extension)
 ; OPTIONAL Registry Settings
@@ -201,6 +215,9 @@ SectionDivider
 ;	WriteRegStr HKCR ".ext" "Content Type" "application/abiword"
 ;
 ;SectionEnd
+
+; Additional File Format importer/exporters
+SubSectionEnd
 
 
 ; OPTIONAL Create Uninstaller for Plugin

@@ -10,8 +10,14 @@ CRCCheck on
 
 ; The name of the installer
 Name "AbiWord's Tools Plugins"
+
+; Personal build
 Icon "..\..\pkg\win\setup\setup.ico"
+UninstallIcon "..\..\pkg\win\setup\setup.ico"
+; Trademarked build
 ;Icon "..\..\pkg\win\setup\setup_tm.ico"
+;UninstallIcon "..\..\pkg\win\setup\setup_tm.ico"
+
 OutFile "AbiWord_Tools_Plugins.exe"
 
 ; License Information
@@ -34,8 +40,11 @@ InstType "Full"
 ; The text to prompt the user to enter a directory
 DirText "Choose the AbiSuite directory where you previously installed Abiword:"
 
-EnabledBitmap  ..\..\pkg\win\setup\checkbox.bmp
-DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
+; For NSIS 2.xx
+CheckBitmap ..\..\pkg\win\setup\modern.bmp
+; For NSIS 1.xx
+;EnabledBitmap  ..\..\pkg\win\setup\checkbox.bmp
+;DisabledBitmap ..\..\pkg\win\setup\emptybox.bmp
 
 ; The stuff that must be installed
 ; binary, license, or whatever
@@ -61,9 +70,11 @@ Section
 SectionEnd
 
 ;SectionDivider
+SubSection /e "Dictionary, Thesaurus, etc."
 
+SubSection "AikSaurus (thesaurus) Plugins"
 ; OPTIONAL
-Section "AikSaurus (thesaurus) Plugin"
+Section "The AikSaurus Plugin"
 	SectionIn 1 2
 
 	; Testing clause to Overwrite Existing Version - if exists
@@ -106,8 +117,52 @@ Section "AikSaurus Data Files && Update Registry)"
 
 	End:
 SectionEnd
+; AikSaurus
+SubSectionEnd
 
-SectionDivider
+; OPTIONAL
+Section "AbiURLDict Plugin"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiURLDict.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiURLDict Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiURLDict Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbiURLDict.dll"
+
+	End:
+SectionEnd
+
+;SectionDivider
+
+; OPTIONAL
+Section "AbiWikipedia Plugin"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiWikipedia.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiWikipedia Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiWikipedia Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbiWikipedia.dll"
+
+	End:  
+SectionEnd
+
+; Dictionary, thesaurus, encyclopedia, etc.
+SubSectionEnd
+
+;SectionDivider
+SubSection /e "Translation Plugins"
 
 ; OPTIONAL
 Section "AbiBabelfish Plugin"
@@ -127,7 +182,7 @@ Section "AbiBabelfish Plugin"
 	End:  
 SectionEnd
 
-SectionDivider
+;SectionDivider
 
 ; OPTIONAL
 ;Section "AbiFreeTranslation Plugin"
@@ -148,46 +203,10 @@ SectionDivider
 ;SectionEnd
 ;
 ;SectionDivider
+SubSectionEnd
 
-; OPTIONAL
-Section "AbiURLDict Plugin"
-	SectionIn 1 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiURLDict.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiURLDict Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiURLDict Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "libAbiURLDict.dll"
-
-	End:
-SectionEnd
-
-SectionDivider
-
-; OPTIONAL
-Section "AbiWikipedia Plugin"
-	SectionIn 1 2
-
-	; Testing clause to Overwrite Existing Version - if exists
-	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiWikipedia.dll" 0 DoInstall
-	
-	MessageBox MB_YESNO "Overwrite Existing AbiWikipedia Plugin?" IDYES DoInstall
-	
-	DetailPrint "Skipping AbiWikipedia Plugin (already exists)!"
-	Goto End
-
-	DoInstall:
-	File "libAbiWikipedia.dll"
-
-	End:  
-SectionEnd
-
-SectionDivider
+;SectionDivider
+SubSection /e "Image Manipulation"
 
 ; OPTIONAL
 ;Section "AbiGimp Plugin"
@@ -227,7 +246,28 @@ Section "AbiPaint Plugin"
 	End:
 SectionEnd
 
-SectionDivider
+;SectionDivider
+SubSectionEnd
+SubSection /e "Script Related Plugins"
+
+Section "AbiScriptHappy Plugin"
+	SectionIn 1 2
+
+	; Testing clause to Overwrite Existing Version - if exists
+	IfFileExists "$INSTDIR\AbiWord\plugins\libAbiScriptHappy.dll" 0 DoInstall
+	
+	MessageBox MB_YESNO "Overwrite Existing AbiScriptHappy Plugin?" IDYES DoInstall
+	
+	DetailPrint "Skipping AbiScriptHappy Plugin (already exists)!"
+	Goto End
+
+	DoInstall:
+	File "libAbiScriptHappy.dll"
+  
+	End:
+SectionEnd
+
+SubSectionEnd
 
 ; uncomment [here and in uninstall] & change .ext if this plugin adds support for new type (with new extension)
 ; OPTIONAL Registry Settings
@@ -299,6 +339,9 @@ Section "Uninstall"
 
 	; AbiPaint
 	Delete "$INSTDIR\libAbiPaint.dll"
+
+	; AbiScriptHappy
+	Delete "$INSTDIR\libAbiScriptHappy.dll"
 
 	; remove uninstaller
 	Delete /REBOOTOK "$INSTDIR\UninstallAbiWordToolsPlugins.exe"
