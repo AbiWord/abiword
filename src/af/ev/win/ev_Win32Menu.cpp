@@ -47,59 +47,92 @@
 	This table assigns an icon to every menu entry
 */
 static const EV_Menu_Bitmap s_bitmaps[] = 
-{
-	// File
-	{AP_MENU_ID_FILE_NEW,		"FILE_NEW_16"},                                               
-	{AP_MENU_ID_FILE_OPEN,		"FILE_OPEN_16"},                                                      
-	{AP_MENU_ID_FILE_PRINT,		"FILE_PRINT_16"}, 
-	{AP_MENU_ID_FILE_SAVE,		"FILE_SAVE_16"}, 
-	{AP_MENU_ID_FILE_SAVEAS,	"FILE_SAVEAS_16"}, 
-	{AP_MENU_ID_FILE_EXIT,		"FILE_EXIT_16"},	
-     
-  	// Edit
-	{AP_MENU_ID_EDIT_PASTE, "EDIT_PASTE_16"},				
-	{AP_MENU_ID_EDIT_CUT, "EDIT_CUT_16"},				
-	{AP_MENU_ID_EDIT_COPY, "EDIT_COPY_16"},				
-	{AP_MENU_ID_EDIT_UNDO, "EDIT_UNDO_16"},				
-	{AP_MENU_ID_EDIT_REDO, "EDIT_REDO_16"},				
-  
-  	// Insert
-	{AP_MENU_ID_INSERT_SYMBOL,	"INSERT_SYMBOL_16"},				
-	{AP_MENU_ID_INSERT_PICTURE, "IMG_16"},				
-	{AP_MENU_ID_INSERT_HYPERLINK,	"FMT_HYPERLINK_16"},	
-  	
-  	// Format
-	{AP_MENU_ID_FMT_BOLD, "FMT_BOLD_16"},
-	{AP_MENU_ID_FMT_ITALIC, "FMT_ITALIC_16"},
-	{AP_MENU_ID_FMT_UNDERLINE, "FMT_UNDERLINE_16"},
-	{AP_MENU_ID_FMT_STRIKE, "FMT_STRIKE_16"},		
-	{AP_MENU_ID_FMT_TOPLINE, "FMT_TOPLINE_16"},
-	{AP_MENU_ID_FMT_BOTTOMLINE, "FMT_BOTTOMLINE_16"},
-	{AP_MENU_ID_FMT_SUPERSCRIPT, "FMT_SUPERSCRIPT_16"},
-	{AP_MENU_ID_FMT_SUBSCRIPT, "FMT_SUBSCRIPT_16"},
-	{AP_MENU_ID_FMT_OVERLINE, "FMT_OVERLINE_16"},
-  		
-	//{AP_MENU_ID_ALIGN_LEFT, "ALIGN_LEFT_16"},
-	//{AP_MENU_ID_ALIGN_RIGHT, "ALIGN_RIGHT_16"},
-	//{AP_MENU_ID_ALIGN_CENTER, "ALIGN_CENTER_16"},
-	//{AP_MENU_ID_ALIGN_JUSTIFY, "ALIGN_JUSTIFY_16"},	
-	{AP_MENU_ID_TABLE_INSERT_TABLE, "INSERT_TABLE_16"},			
-  	//{AP_MENU_ID_VIEW_SHOWPARA, "VIEW_SHOWPARA"},			
-	{AP_MENU_ID_TOOLS_SPELL, "SPELLCHECK_16"},			
-  
-  	// Table
-	{AP_MENU_ID_TABLE_INSERT_TABLE, "INSERT_TABLE_16"},
-	{AP_MENU_ID_TABLE_MERGE_CELLS, "TB_MERGE_CELLS_16"},
-	{AP_MENU_ID_TABLE_SPLIT_CELLS, "TB_SPLIT_CELLS_16"},
-	{AP_MENU_ID_TABLE_INSERTCOLUMN, "TB_ADD_COLUMN_16"},
-	{AP_MENU_ID_TABLE_INSERTROW, "TB_ADD_ROW_16"},
-	{AP_MENU_ID_TABLE_DELETECOLUMN, "TB_DELETE_COLUMN_16"},
-	{AP_MENU_ID_TABLE_DELETEROW, "TB_DELETE_ROW_16"},
-  	
-  	// Help
-	{AP_MENU_ID_HELP_CONTENTS,      "HELP_16"},    
+{	  
 
+	
+    // File
+	{AP_MENU_ID_FILE_CLOSE,  "Menu_AbiWord_Close"},
+	{AP_MENU_ID_FILE_EXIT,		"Menu_AbiWord_Exit"},	
+	{AP_MENU_ID_FILE_EXPORT, "Menu_AbiWord_Export"},
+	{AP_MENU_ID_FILE_IMPORT, "Menu_AbiWord_Import"},
+	{AP_MENU_ID_FILE_NEW,	 "Menu_AbiWord_New"},
+	{AP_MENU_ID_FILE_OPEN,	 "Menu_AbiWord_Open"},
+	{AP_MENU_ID_FILE_PRINT,		"Menu_AbiWord_Print"}, 
+	{AP_MENU_ID_FILE_SAVE,		"Menu_AbiWord_Save"}, 
+	{AP_MENU_ID_FILE_SAVEAS,	"Menu_AbiWord_SaveAs"}, 
+	{AP_MENU_ID_FILE_REVERT, "Menu_AbiWord_Revert"},
+	{AP_MENU_ID_FILE_PROPERTIES, "Menu_AbiWord_Properties"},
+	{AP_MENU_ID_FILE_PAGESETUP, "Menu_AbiWord_Print_Setup"},
+    
+	// Edit
+	{AP_MENU_ID_EDIT_PASTE, "Menu_AbiWord_Paste"},				
+	{AP_MENU_ID_EDIT_CUT, "Menu_AbiWord_Cut"},				
+	{AP_MENU_ID_EDIT_COPY, "Menu_AbiWord_Copy"},				
+	{AP_MENU_ID_EDIT_UNDO, "Menu_AbiWord_Undo"},				
+	{AP_MENU_ID_EDIT_REDO, "Menu_AbiWord_Redo"},				
+	{AP_MENU_ID_EDIT_PASTE_SPECIAL, "Menu_AbiWord_Paste"},
+	{AP_MENU_ID_EDIT_CLEAR, "Menu_AbiWord_Clear"},
+	{AP_MENU_ID_EDIT_FIND, "Menu_AbiWord_Search"},
+	{AP_MENU_ID_EDIT_REPLACE, "Menu_AbiWord_Replace"},
+	{AP_MENU_ID_EDIT_GOTO, "Menu_AbiWord_Goto"},
+
+	// Insert
+	{AP_MENU_ID_INSERT_SYMBOL,	"Menu_AbiWord_Insert_Symbol"},
+	{AP_MENU_ID_INSERT_PICTURE, "Menu_AbiWord_Img"},
+	{AP_MENU_ID_INSERT_HYPERLINK,	"Menu_AbiWord_Hyperlink"},	
+
+	// Format
+	{AP_MENU_ID_FMT_FONT, "Menu_AbiWord_Font"},
+
+	/*{AP_MENU_ID_FMT_BOLD, "Menu_AbiWord_Bold"},
+	{AP_MENU_ID_FMT_ITALIC, "Menu_AbiWord_Italic"},
+	{AP_MENU_ID_FMT_UNDERLINE, "Menu_AbiWord_Underline"},
+	{AP_MENU_ID_FMT_STRIKE, "Menu_AbiWord_Strike"},		
+	{AP_MENU_ID_FMT_TOPLINE, "Menu_AbiWord_Topline"},
+	{AP_MENU_ID_FMT_BOTTOMLINE, "Menu_AbiWord_Bottomline"},
+	{AP_MENU_ID_SUPERSCRIPT, "Menu_AbiWord_Superscript"},
+	{AP_MENU_ID_SUBSCRIPT, "Menu_AbiWord_Subscript"},
+	{AP_MENU_ID_OVERLINE, "Menu_AbiWord_Overline"},*/
+		
+
+	//{AP_MENU_ID_ALIGN_LEFT, "Menu_AbiWord_Align_Left"},
+	//{AP_MENU_ID_ALIGN_RIGHT, "Menu_AbiWord_Align_Right"},
+	//{AP_MENU_ID_ALIGN_CENTER, "Menu_AbiWord_Align_Center"},
+	//{AP_MENU_ID_ALIGN_JUSTIFY, "Menu_AbiWord_Align_Justify"},	
+	{AP_MENU_ID_TABLE_INSERT_TABLE, "Menu_AbiWord_Insert_Table"},
+	//{AP_MENU_ID_VIEW_SHOWPARA, "Menu_AbiWord_View_Showpara"},
+	{AP_MENU_ID_TOOLS_SPELL, "Menu_AbiWord_Spellcheck"},			
+	{AP_MENU_ID_TOOLS_OPTIONS, "Menu_AbiWord_Preferences"},
+	{AP_MENU_ID_TOOLS_SCRIPTS, "Menu_AbiWord_Execute"},
+	{AP_MENU_ID_TOOLS_LANGUAGE, "Menu_AbiWord_Book"},
+	{AP_MENU_ID_FMT_LANGUAGE, "Menu_AbiWord_Book"},
+
+
+	// Table
+	{AP_MENU_ID_TABLE_INSERT_TABLE, "Menu_AbiWord_Insert_Table"},
+	{AP_MENU_ID_TABLE_DELETE_TABLE, "Menu_AbiWord_Delete_Table"},
+	{AP_MENU_ID_TABLE_INSERTTABLE, "Menu_AbiWord_Insert_Table"},
+	{AP_MENU_ID_TABLE_DELETETABLE, "Menu_AbiWord_Delete_Table"},
+	{AP_MENU_ID_TABLE_MERGE_CELLS, "Menu_AbiWord_Merge_Cells"},
+	{AP_MENU_ID_TABLE_SPLIT_CELLS, "Menu_AbiWord_Split_Cells"},
+	{AP_MENU_ID_TABLE_INSERTCOLUMN, "Menu_AbiWord_Add_Column"},
+	{AP_MENU_ID_TABLE_INSERTROW, "Menu_AbiWord_Add_Row"},
+	{AP_MENU_ID_TABLE_DELETECOLUMN, "Menu_AbiWord_Delete_Column"},
+	{AP_MENU_ID_TABLE_DELETEROW, "Menu_AbiWord_Delete_Row"},
+	{AP_MENU_ID_TABLE_DELETE_COLUMNS, "Menu_AbiWord_Delete_Column"},
+	{AP_MENU_ID_TABLE_DELETE_ROWS, "Menu_AbiWord_Delete_Row"},
+	
+
+	// Help
+	{AP_MENU_ID_HELP_CONTENTS,      "Menu_AbiWord_Help"},    
+	//{AP_MENU_ID_HELP_INDEX, GTK_STOCK_INDEX},
+	{AP_MENU_ID_HELP_SEARCH, "Menu_AbiWord_Search"},
+	{AP_MENU_ID_HELP_ABOUT, "Menu_AbiWord_About"},
+	{AP_MENU_ID_HELP_CREDITS, "Menu_AbiWord_Credits"},
+	
 	{0, NULL}
+
+		
 };
 
 

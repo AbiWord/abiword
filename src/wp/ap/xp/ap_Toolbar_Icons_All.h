@@ -133,8 +133,8 @@
 #	include "menu_insert_table.xpm"
 #	include "menu_insert_graphic.xpm"
 #	include "menu_insert_symbol.xpm"
-#	include "menu_hyperlink.xpm"
-#   include "menu_insert_bookmark.xpm"
+#	include "menu_insert_hyperlink.xpm"
+#	include "menu_insert_bookmark.xpm"
 #	include "menu_help.xpm"
 #	include "menu_text_center.xpm"
 #	include "menu_text_justify.xpm"
@@ -156,6 +156,23 @@
 #	include "menu_delete_column.xpm"
 #	include "menu_merge_cells.xpm"
 #	include "menu_split_cells.xpm"
+#	include "menu_revert.xpm"
+#	include "menu_export.xpm"
+#	include "menu_import.xpm"
+#	include "menu_file-properties.xpm"
+#	include "menu_print-setup.xpm"
+#	include "menu_close.xpm"
+#	include "menu_search.xpm"
+#	include "menu_search_replace.xpm"
+#	include "menu_delete.xpm"
+#	include "menu_jump_to.xpm"
+#	include "menu_preferences.xpm"
+#	include "menu_exec.xpm"
+#	include "menu_book.xpm"
+#	include "menu_delete_table.xpm"
+#	include "menu_font.xpm"
+#	include "menu_credits.xpm"
+#	include "menu_about.xpm"
 
 #else
 
@@ -259,7 +276,7 @@
 	DefineToolbarIcon(menu_insert_graphic_xpm)
 	DefineToolbarIcon(menu_insert_symbol_xpm)
 	DefineToolbarIcon(menu_insert_bookmark_xpm)
-	DefineToolbarIcon(menu_hyperlink_xpm)
+	DefineToolbarIcon(menu_insert_hyperlink_xpm)
 	DefineToolbarIcon(menu_help_xpm)
 	DefineToolbarIcon(menu_text_center_xpm)
 	DefineToolbarIcon(menu_text_justify_xpm)
@@ -281,6 +298,23 @@
 	DefineToolbarIcon(menu_delete_column_xpm)
 	DefineToolbarIcon(menu_merge_cells_xpm)
 	DefineToolbarIcon(menu_split_cells_xpm)
+	DefineToolbarIcon(menu_revert_xpm)
+	DefineToolbarIcon(menu_export_xpm)
+	DefineToolbarIcon(menu_import_xpm)
+	DefineToolbarIcon(menu_print_setup_xpm)
+	DefineToolbarIcon(menu_file_properties_xpm)
+	DefineToolbarIcon(menu_close_xpm)
+	DefineToolbarIcon(menu_search_xpm)
+	DefineToolbarIcon(menu_search_replace_xpm)
+	DefineToolbarIcon(menu_delete_xpm)
+	DefineToolbarIcon(menu_jump_to_xpm)
+	DefineToolbarIcon(menu_preferences_xpm)
+	DefineToolbarIcon(menu_exec_xpm)
+	DefineToolbarIcon(menu_book_xpm)
+	DefineToolbarIcon(menu_delete_table_xpm)
+	DefineToolbarIcon(menu_font_xpm)
+	DefineToolbarIcon(menu_credits_xpm)
+	DefineToolbarIcon(menu_about_xpm)
 
 	// these are specific to one or more translations
 
