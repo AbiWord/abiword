@@ -47,6 +47,8 @@ public:
 	~UT_String();
 
 	size_t		size() const;
+	size_t length () const { return size () ; }
+
 	bool		empty() const;
 	void        clear() const;
 
@@ -124,6 +126,8 @@ public:
 	~UT_UCS2String();
 
 	size_t		size() const;
+	size_t length () const { return size () ; }
+
 	bool		empty() const;
 	void        clear() const;
 
@@ -185,6 +189,8 @@ public:
 	~UT_UCS4String();
 
 	size_t		size() const;
+	size_t length () const { return size () ; }
+
 	bool		empty() const;
 	void        clear() const;
 
@@ -245,6 +251,8 @@ public:
 	~UT_UTF8String ();
 
 	size_t		size () const;
+	size_t length () const { return size () ; }
+
 	bool		empty () const;
 	void		clear () const;
 	size_t		byteLength() const;
