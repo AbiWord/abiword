@@ -70,6 +70,7 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	m_dlg = [XAP_CocoaDlg_MessageBoxController loadFromNibWithButtons:m_buttons];	// autoreleased
 	[m_dlg setXAPOwner:this];
 	NSWindow *win = [m_dlg window];		// force the window to be loaded.
+	[win setTitle:[NSString stringWithCString:szCaption]];
 	[m_dlg setMessage:[NSString stringWithCString:m_szMessage]];	// string autoreleased
 
 
