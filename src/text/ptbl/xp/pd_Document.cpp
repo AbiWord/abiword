@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -56,6 +55,7 @@
 #include "ut_units.h"
 #include "ut_string_class.h"
 #include "ut_sleep.h"
+#include "ut_path.h"
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -167,23 +167,16 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 
 UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 {
-	struct stat fStats;
-
 	if (!szFilename || !*szFilename)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- invalid filename\n"));
 		return UT_INVALIDFILENAME;
 	}
 
-	if (stat (szFilename, &fStats) == -1) 
+	if ( !UT_isRegularFile(szFilename) )
 	{
-		UT_DEBUGMSG (("PD_Document::readFromFile -- could not stat the file\n"));
-		return UT_INVALIDFILENAME;
-	}
-	if ((S_IFREG & fStats.st_mode) == 0) 
-	{
-		UT_DEBUGMSG (("PD_Document::readFromFile -- file is not plain file, but %o\n", fStats.st_mode));
-		return UT_INVALIDFILENAME;
+	  UT_DEBUGMSG (("PD_Document::readFromFile -- file is not plain file\n"));
+	  return UT_INVALIDFILENAME;
 	}
 
 	m_pPieceTable = new pt_PieceTable(this);
