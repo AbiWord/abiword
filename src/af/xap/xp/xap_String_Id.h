@@ -95,6 +95,10 @@ dcl(DLG_Zoom_WholePage,					"&Whole page")
 dcl(DLG_Zoom_Percent,					"P&ercent:")	
 dcl(DLG_Zoom_PreviewFrame,				"Preview")
 
+/* Zoom tool bar */
+dcl(TB_Zoom_PageWidth,					"Width")
+dcl(TB_Zoom_WholePage,					"Page")
+
 /* Unix Print dialog */
 dcl(DLG_UP_PrintTitle,					"Print")
 dcl(DLG_UP_PrintTo,						"Print to: ")

@@ -49,44 +49,45 @@ public:
 			);
 	~fp_Page();
 
-	UT_sint32		getWidth(void) const;
-	UT_sint32		getWidthInLayoutUnits(void) const;
-	UT_sint32		getHeight(void) const;
-	UT_sint32		getHeightInLayoutUnits(void) const;
-	UT_sint32		getBottom(void) const;
-	fp_Page*		getNext(void) const;
-	fp_Page*		getPrev(void) const;
-	void			setNext(fp_Page*);
-	void			setPrev(fp_Page*);
+	UT_sint32			getWidth(void) const;
+	UT_sint32			getWidthInLayoutUnits(void) const;
+	const fp_PageSize&	getPageSize() const;
+	UT_sint32			getHeight(void) const;
+	UT_sint32			getHeightInLayoutUnits(void) const;
+	UT_sint32			getBottom(void) const;
+	fp_Page*			getNext(void) const;
+	fp_Page*			getPrev(void) const;
+	void				setNext(fp_Page*);
+	void				setPrev(fp_Page*);
 
-	UT_sint32		getColumnGap(void) const {return getOwningSection()->getColumnGap(); }
-
-	FL_DocLayout*	getDocLayout();
-	void            setView(FV_View*);
+	UT_sint32			getColumnGap(void) const {return getOwningSection()->getColumnGap(); }
+						
+	FL_DocLayout*		getDocLayout();
+	void				setView(FV_View*);
 
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
-	PT_DocPosition	getFirstLastPos(UT_Bool bFirst) const;
-	void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
-	void			getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
-	void			getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
-
-	void			draw(dg_DrawArgs*);
-	UT_Bool			needsRedraw(void) const;
-
-	void 			columnHeightChanged(fp_Column* pLeader);
-	UT_uint32 		countColumnLeaders(void) const;
-	fp_Column*		getNthColumnLeader(UT_sint32 n) const;
-	UT_Bool			insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
-	void			removeColumnLeader(fp_Column* pLeader);
-	UT_Bool			isEmpty(void) const;
+	PT_DocPosition		getFirstLastPos(UT_Bool bFirst) const;
+	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	void				getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
+	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
+						
+	void				draw(dg_DrawArgs*);
+	UT_Bool				needsRedraw(void) const;
+						
+	void 				columnHeightChanged(fp_Column* pLeader);
+	UT_uint32 			countColumnLeaders(void) const;
+	fp_Column*			getNthColumnLeader(UT_sint32 n) const;
+	UT_Bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
+	void				removeColumnLeader(fp_Column* pLeader);
+	UT_Bool				isEmpty(void) const;
 
 	fp_HdrFtrContainer*	getHeaderContainer(fl_HdrFtrSectionLayout*);
 	fp_HdrFtrContainer*	getFooterContainer(fl_HdrFtrSectionLayout*);
 	
 #ifdef FMT_TEST
-	void			__dump(FILE * fp) const;
-#endif
+	void				__dump(FILE * fp) const;
+#endif				  
 	
 protected:
     void                _drawCropMarks(dg_DrawArgs*);

@@ -253,8 +253,12 @@ public:
 
 // -----------------------
 
-    void            setShowPara(UT_Bool);    
-    inline UT_Bool  getShowPara(void) const { return m_bShowPara; };
+    void				setShowPara(UT_Bool);    
+    inline UT_Bool		getShowPara(void) const { return m_bShowPara; };
+	
+	const fp_PageSize&	getPageSize(void) const;
+	UT_uint32			calculateZoomPercentForPageWidth();
+	UT_uint32			calculateZoomPercentForWholePage();
 
 protected:
 	void				_generalUpdate(void);
@@ -324,6 +328,7 @@ protected:
 
 
 	UT_Bool                         _insertHeaderFooter(const XML_Char ** props, UT_Bool ftr);
+
 
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;

@@ -61,6 +61,11 @@ UT_Bool AP_BeOSToolbar_ZoomCombo::populate(void)
 	m_vecContents.addItem((void *)"50%");
 	m_vecContents.addItem((void *)"25%");
 
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	
+	m_vecContents.addItem((void *)pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth));
+	m_vecContents.addItem((void *)pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage));
+
 	return UT_TRUE;
 }
 

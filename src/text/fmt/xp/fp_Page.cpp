@@ -524,6 +524,11 @@ void fp_Page::setView(FV_View* pView)
 	m_pView = pView;
 }
 
+const fp_PageSize&	fp_Page::getPageSize(void) const
+{
+	return m_pageSize;
+}
+
 fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 {
 	if (m_pHeader)
@@ -567,3 +572,4 @@ fp_HdrFtrContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 
 	return m_pFooter;
 }
+

@@ -5784,9 +5784,57 @@ UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
 	return bResult;
 }
 
-
+const fp_PageSize & FV_View::getPageSize(void) const
+{
+	return m_pLayout->getFirstPage()->getPageSize();
+}
 	
 		
+UT_uint32 FV_View::calculateZoomPercentForPageWidth()
+{
+
+	const fp_PageSize pageSize = getPageSize();
+	double pageWidth = pageSize.Width(fp_PageSize::inch);
+	
+	// Set graphics zoom to 100 so we can get the display resolution.
+	GR_Graphics *pG = getGraphics();
+	UT_sint32 temp_zoom = pG->getZoomPercentage();
+	pG->setZoomPercentage(100);
+	UT_sint32 resolution = pG->getResolution();
+	pG->setZoomPercentage(temp_zoom);
+
+	double scale = (double)(getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X) / 
+											(pageWidth * (double)resolution);
+	return (UT_uint32)(scale * 100.0);
+}
+
+UT_uint32 FV_View::calculateZoomPercentForWholePage()
+{
+	const fp_PageSize pageSize = getPageSize();
+	double pageWidth = pageSize.Width(fp_PageSize::inch);
+	double pageHeight = pageSize.Height(fp_PageSize::inch);
+	
+	// Set graphics zoom to 100 so we can get the display resolution.
+	GR_Graphics *pG = getGraphics();
+	UT_sint32 temp_zoom = pG->getZoomPercentage();
+	pG->setZoomPercentage(100);
+	UT_sint32 resolution = pG->getResolution();
+	pG->setZoomPercentage(temp_zoom);
+
+	double scaleWidth = (double)(getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X) / 
+											(pageWidth * (double)resolution);
+	double scaleHeight = (double)(getWindowHeight() - 2 * fl_PAGEVIEW_MARGIN_Y) / 
+											(pageHeight * (double)resolution);
+	if(scaleWidth < scaleHeight)
+	{
+		return (UT_uint32)(scaleWidth * 100.0);
+	}
+	else
+	{
+		return(UT_uint32)(scaleHeight * 100.0);
+	}
+}
+
 	
 
 	

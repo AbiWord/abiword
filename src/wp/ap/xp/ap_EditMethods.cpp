@@ -39,6 +39,7 @@
 #include "ap_Strings.h"
 #include "ap_LoadBindings.h"
 #include "ap_FrameData.h"
+#include "ap_LeftRuler.h"
 #include "ap_Prefs.h"
 
 #include "ap_Dialog_Id.h"
@@ -3699,10 +3700,10 @@ static UT_Bool s_doZoomDlg(FV_View * pView)
 		{
 		// special cases
 		case XAP_Dialog_Zoom::z_PAGEWIDTH:
-			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			newZoom = pView->calculateZoomPercentForPageWidth();
 			break;
 		case XAP_Dialog_Zoom::z_WHOLEPAGE:
-			UT_ASSERT(UT_NOT_IMPLEMENTED);
+			newZoom = pView->calculateZoomPercentForWholePage();
 			break;
 		default:
 			newZoom = pDialog->getZoomPercent();
@@ -4037,11 +4038,31 @@ Defun1(viewHeadFoot)
 
 Defun(zoom)
 {
+	ABIWORD_VIEW;
+
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
 
 	// TODO the cast below is ugly
-	UT_uint32 iZoom = atoi((char*) (pCallData->m_pData));
+
+	UT_uint32 iZoom = 0;
+	char *p_zoom = (char*) (pCallData->m_pData);
+
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	
+	if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_PageWidth)) == 0)
+	{
+		iZoom = pView->calculateZoomPercentForPageWidth();
+	}
+	else if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage)) == 0)
+	{
+		iZoom = pView->calculateZoomPercentForWholePage();
+	}
+	else
+	{
+		iZoom = atoi(p_zoom);
+	}
+
 	UT_ASSERT(iZoom > 0);
 
 	pFrame->setZoomPercentage(iZoom);
