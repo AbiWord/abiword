@@ -25,7 +25,7 @@ typedef struct {UT_UCSChar min; UT_UCSChar max; UT_uint32 dir;} char_bounds;
 
 // the following table is heuristic; we will add to it more characters
 // when we need to (we could try to generate this table for the whole
-// UCS-2 space, but at the moment that might be an overkill)
+// UCS-2 space, but at the moment that might be overkill)
 
 // the table contains pairs of UCS-2 values between which all characters
 // are overstriking (this is inclusive of the two boundary values in the

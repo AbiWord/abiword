@@ -242,7 +242,7 @@ const char * ucs2Internal ()
 }
 
 /*!
- * \return the internal iconv UCS-2 charset name
+ * \return the internal iconv UCS-4 charset name
  */
 const char * ucs4Internal ()
 {

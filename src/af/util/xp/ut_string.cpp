@@ -62,7 +62,7 @@ bool UT_isUrl ( const char * szName )
 
 /*
  * This is cut & pasted from glib 1.3 (c) RedHat
- * We need this for to convert UTF16 to UTF8
+ * We need this for to convert UTF32 to UTF8
  */
 int
 unichar_to_utf8 (int c, unsigned char *outbuf)
@@ -405,6 +405,7 @@ UT_uint32 UT_pointerArrayLength(void ** array)
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifdef ENABLE_UCS2_STRINGS
 /*
  * My personal strstr() implementation that beats most other algorithms.
  * Until someone tells me otherwise, I assume that this is the
@@ -738,6 +739,8 @@ bool UT_UCS2_cloneString_char(UT_UCS2Char ** dest, const char * src)
   return false;
 }
 
+#endif
+
 // convert each character in a string to ASCII uppercase
 char * UT_upperString(char * string)
 {
@@ -915,6 +918,8 @@ bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 	return (result);
 }
 
+#ifdef ENABLE_UCS2_STRINGS
+
 bool UT_UCS2_isupper(UT_UCS2Char c)
 {
 	if(c < 127)
@@ -969,6 +974,8 @@ bool UT_UCS2_isSentenceSeparator(UT_UCS2Char c)
 			return false;
 	}
 }
+
+#endif
 
 
 bool UT_UCS4_isupper(UT_UCS4Char c)

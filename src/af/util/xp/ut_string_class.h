@@ -40,7 +40,22 @@
 #include "ut_string.h"
 #include "ut_stringbuf.h"
 
+// Forward declarations
+class UT_String;
+class UT_UTF8String;
+class UT_UCS2String;
+class UT_UCS4String;
+
 // yes, this is screaming for a template
+
+////////////////////////////////////////////////////////////////////////
+//
+//  8-bit string
+//
+//  String is built of 8-bit units (bytes)
+//  Encoding could be any single-byte or multi-byte encoding
+//
+////////////////////////////////////////////////////////////////////////
 
 //!
 //	UT_String, a simple wrapper for zero terminated 'char' strings.
@@ -130,6 +145,140 @@ ABI_EXPORT UT_String UT_String_getPropVal(const UT_String & sPropertyString, con
 ABI_EXPORT void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sProp);
 ABI_EXPORT void UT_String_setProperty(UT_String & sPropertyString, const UT_String &sProp, const UT_String & sVal);
 
+////////////////////////////////////////////////////////////////////////
+//
+//  UTF-8 string: encoding is *always* UTF-8
+//
+////////////////////////////////////////////////////////////////////////
+
+//!
+//	UT_UTF8String, a simple wrapper for zero terminated 'UTF8' strings.
+//
+
+class ABI_EXPORT UT_UTF8String
+{
+public:
+	UT_UTF8String ();
+	UT_UTF8String (const char * sz);
+	UT_UTF8String (const UT_UTF8String & rhs);
+#ifdef ENABLE_UCS2_STRINGS
+	UT_UTF8String (const UT_UCS2String & rhs);
+#endif
+	UT_UTF8String (const UT_UCS4String & rhs);
+	UT_UTF8String (const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
+
+	~UT_UTF8String ();
+
+	size_t		size () const;
+	size_t length () const { return size () ; }
+
+	bool		empty () const;
+	void		clear () const;
+	size_t		byteLength() const;
+
+	UT_UTF8String &	operator=(const char *          rhs);
+	UT_UTF8String &	operator=(const UT_UTF8String & rhs);
+#ifdef ENABLE_UCS2_STRINGS
+	UT_UTF8String &	operator=(const UT_UCS2String & rhs);
+#endif
+	UT_UTF8String &	operator=(const UT_UCS4String & rhs);
+
+	UT_UTF8String &	operator+=(const char *          rhs);
+	UT_UTF8String &	operator+=(const UT_UTF8String & rhs);
+#ifdef ENABLE_UCS2_STRINGS
+	UT_UTF8String &	operator+=(const UT_UCS2String & rhs);
+#endif
+	UT_UTF8String &	operator+=(const UT_UCS4String & rhs);
+
+	// The returned pointer is valid until the next non-const
+	// operation. You will _always_ get a legal pointer back,
+	// even if to an empty (0) string.
+	const char * utf8_str () const;
+
+	UT_UCS2String ucs2_str ();
+	UT_UCS4String ucs4_str ();
+
+#ifdef ENABLE_UCS2_STRINGS
+	void appendUCS2 (const UT_UCS2Char * sz, size_t n = 0 /* 0 == zero-terminate */);
+#endif
+	void appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
+
+	const UT_UTF8String & escapeXML ();  // escapes '<', '>' & '&' in the current string
+	const UT_UTF8String & escapeMIME (); // translates the current string to MIME "quoted-printable" format
+
+	/* UTF8String - NOTES
+	 * 
+	 * TODO:
+	 * 1. Maybe have a search&replace function, something like:
+	 * 
+	 * 	int replace (const char * utf_newstr, const char * utf_oldstr);
+	 * 
+	 *    which could be used to do substitutions, e.g.:
+	 * 
+	 * 	UTF8String xmlstr = "expr: if ((c > 0) && (c < 0x80)) return c;";
+	 * 	xmlstr.replace ("&lt;", "<");
+	 * 	xmlstr.replace ("&gt;", ">");
+	 * 	xmlstr.replace ("&amp;","&");
+	 * 
+	 * getIterator:
+	 * returns a home-made iterator associated with the UTF-8 string, e.g.:
+	 * 
+	 * 	UTF8String str = "This is a UTF-8 string.";
+	 * 	UT_UTF8Stringbuf::UTF8Iterator & iter = str.getIterator ();
+	 * 	iter = iter.start (); // iter.start() returns 0 if no string, so:
+	 * 	if (iter.current ())
+	 * 	{
+	 * 		while (true)
+	 * 		{
+	 * 			char * pUTF = iter.current ();
+	 * 			if (*pUTF == 0) break; // end-of-string
+	 * 			// etc.
+	 * 			iter.advance (); // or ++iter;
+	 * 		}
+	 * 	}
+	 * 
+	 * The iterator will be well behaved provided the string is not being edited.
+	 */
+	UT_UTF8Stringbuf::UTF8Iterator getIterator () const
+	{
+		return UT_UTF8Stringbuf::UTF8Iterator(pimpl);
+	}
+
+private:
+	class UT_UTF8Stringbuf * pimpl;
+};
+
+ABI_EXPORT bool operator==(const UT_UTF8String& s1, const UT_UTF8String& s2);
+ABI_EXPORT UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2);
+ABI_EXPORT UT_UTF8String UT_UTF8String_sprintf(const char * inFormat, ...);
+ABI_EXPORT UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inFormat, ...);
+
+#ifdef ENABLE_UCS2_STRINGS
+
+////////////////////////////////////////////////////////////////////////
+//
+//  UCS-2 string
+//
+//  String is built of 16-bit units (words)
+//
+//  TODO: Is this really UCS-2 or UTF-16?
+//  TODO:  meaning, does it support surrogates or is it intended to
+//  TODO:  support them at any time in the future?
+//  TODO: Correctly, UCS-2 does not support surrogates and UTF-16 does.
+//  TODO: BUT Microsoft calls their native Unicode encoding UCS-2
+//  TODO:  while it supports surrogates and is thus really UTF-16.
+//  TODO: Surrogates are Unicode characters with codepoints above
+//  TODO:  65535 which cannot therefore fit into a 2-byte word.
+//  TODO: This means that TRUE UCS-2 is a single-word encoding and
+//  TODO:  UTF-16 is a multi-word encoding.
+//
+//  NOTE: We shouldn't actually need 16-bit strings anymore since
+//  NOTE:  AbiWord is now fully converted to using 32-bit Unicode
+//  NOTE:  internally. The only possible needs for this is for
+//  NOTE:  Windows GUI, filesystem and API functions where applicable;
+//  NOTE:  and perhaps some file formats or external libraries
+//
+////////////////////////////////////////////////////////////////////////
 
 //!
 //	UT_UCS2String, a simple wrapper for zero terminated 'UCS2' strings.
@@ -169,9 +318,9 @@ public:
 	// The returned pointer is valid until the next non-const
 	// operation. You will _always_ get a legal pointer back,
 	// even if to an empty (0) string.
+	const char*        utf8_str();
 	const UT_UCS2Char* ucs2_str() const;
 	const UT_UCS4Char* ucs4_str();
-	const char*        utf8_str();
 
 private:
 	class UT_UCS2Stringbuf* pimpl;
@@ -190,7 +339,19 @@ bool operator<(const UT_UCS2String& s1, const UT_UCS2String& s2);
 
 UT_UCS2String operator+(const UT_UCS2String& s1, const UT_UCS2String& s2);
 
-/***************************************************************************/
+#endif
+
+////////////////////////////////////////////////////////////////////////
+//
+//  UCS-4 string
+//
+//  String is built of 32-bit units (longs)
+//
+//  NOTE: Ambiguity between UCS-2 and UTF-16 above makes no difference
+//  NOTE:  in the case of UCS-4 and UTF-32 since they really are
+//  NOTE:  identical
+//
+////////////////////////////////////////////////////////////////////////
 
 //!
 //	UT_UCS4String, a simple wrapper for zero terminated 'UCS4' strings.
@@ -204,6 +365,7 @@ public:
 	UT_UCS4String();
 	UT_UCS4String(const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
 	UT_UCS4String(const UT_UCS4String& rhs);
+
 	UT_UCS4String(const UT_UCS2String& rhs);
 
 	/* construct from a string in UTF-8 format
@@ -265,100 +427,5 @@ bool operator<(const UT_UCS4String& s1, const UT_UCS4String& s2);
 UT_UCS4String operator+(const UT_UCS4String& s1, const UT_UCS4String& s2);
 
 
-/***************************************************************************/
-
-//!
-//	UT_UTF8String, a simple wrapper for zero terminated 'UTF8' strings.
-//
-
-class ABI_EXPORT UT_UTF8String
-{
-public:
-	UT_UTF8String ();
-	UT_UTF8String (const char * sz);
-	UT_UTF8String (const UT_UTF8String & rhs);
-	UT_UTF8String (const UT_UCS2String & rhs);
-	UT_UTF8String (const UT_UCS4String & rhs);
-	UT_UTF8String (const UT_UCSChar * sz, size_t n = 0 /* 0 == zero-terminate */);
-
-	~UT_UTF8String ();
-
-	size_t		size () const;
-	size_t length () const { return size () ; }
-
-	bool		empty () const;
-	void		clear () const;
-	size_t		byteLength() const;
-
-	UT_UTF8String &	operator=(const char *          rhs);
-	UT_UTF8String &	operator=(const UT_UTF8String & rhs);
-	UT_UTF8String &	operator=(const UT_UCS2String & rhs);
-	UT_UTF8String &	operator=(const UT_UCS4String & rhs);
-
-	UT_UTF8String &	operator+=(const char *          rhs);
-	UT_UTF8String &	operator+=(const UT_UTF8String & rhs);
-	UT_UTF8String &	operator+=(const UT_UCS2String & rhs);
-	UT_UTF8String &	operator+=(const UT_UCS4String & rhs);
-
-	// The returned pointer is valid until the next non-const
-	// operation. You will _always_ get a legal pointer back,
-	// even if to an empty (0) string.
-	const char * utf8_str () const;
-
-	UT_UCS2String ucs2_str ();
-	UT_UCS4String ucs4_str ();
-
-	void appendUCS4 (const UT_UCS4Char * sz, size_t n = 0 /* 0 == zero-terminate */);
-	void appendUCS2 (const UT_UCS2Char * sz, size_t n = 0 /* 0 == zero-terminate */);
-
-	const UT_UTF8String & escapeXML ();  // escapes '<', '>' & '&' in the current string
-	const UT_UTF8String & escapeMIME (); // translates the current string to MIME "quoted-printable" format
-
-	/* UTF8String - NOTES
-	 * 
-	 * TODO:
-	 * 1. Maybe have a search&replace function, something like:
-	 * 
-	 * 	int replace (const char * utf_newstr, const char * utf_oldstr);
-	 * 
-	 *    which could be used to do substitutions, e.g.:
-	 * 
-	 * 	UTF8String xmlstr = "expr: if ((c > 0) && (c < 0x80)) return c;";
-	 * 	xmlstr.replace ("&lt;", "<");
-	 * 	xmlstr.replace ("&gt;", ">");
-	 * 	xmlstr.replace ("&amp;","&");
-	 * 
-	 * getIterator:
-	 * returns a home-made iterator associated with the UTF-8 string, e.g.:
-	 * 
-	 * 	UTF8String str = "This is a UTF-8 string.";
-	 * 	UT_UTF8Stringbuf::UTF8Iterator & iter = str.getIterator ();
-	 * 	iter = iter.start (); // iter.start() returns 0 if no string, so:
-	 * 	if (iter.current ())
-	 * 	{
-	 * 		while (true)
-	 * 		{
-	 * 			char * pUTF = iter.current ();
-	 * 			if (*pUTF == 0) break; // end-of-string
-	 * 			// etc.
-	 * 			iter.advance (); // or ++iter;
-	 * 		}
-	 * 	}
-	 * 
-	 * The iterator will be well behaved provided the string is not being edited.
-	 */
-	UT_UTF8Stringbuf::UTF8Iterator getIterator () const
-	{
-		return UT_UTF8Stringbuf::UTF8Iterator(pimpl);
-	}
-
-private:
-	class UT_UTF8Stringbuf * pimpl;
-};
-
-ABI_EXPORT bool operator==(const UT_UTF8String& s1, const UT_UTF8String& s2);
-ABI_EXPORT UT_UTF8String operator+(const UT_UTF8String & s1, const UT_UTF8String & s2);
-ABI_EXPORT UT_UTF8String UT_UTF8String_sprintf(const char * inFormat, ...);
-ABI_EXPORT UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inFormat, ...);
 
 #endif	// UT_STRING_CLASS_H

@@ -70,7 +70,7 @@ UT_LocaleTransactor::~UT_LocaleTransactor ()
  */
 UT_LocaleInfo::UT_LocaleInfo ()
 {
-  // should work on any platform, as opposted to init(getenv("LANG"))
+  // should work on any platform, as opposed to init(getenv("LANG"))
   XAP_EncodingManager * instance = XAP_EncodingManager::get_instance ();
 
   if (instance->getLanguageISOName () != NULL)
