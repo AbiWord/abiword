@@ -3995,7 +3995,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 				else // found last page
 				{
 					UT_sint32 botfill = getWindowHeight() - adjustedBottom - m_pG->tlu(1) ;
-					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill);
+					painter.fillRect(clrMargin, adjustedLeft, adjustedBottom + m_pG->tlu(1), getWindowWidth() - adjustedLeft + m_pG->tlu(1), botfill + m_pG->tlu(1));
 				}
 			}
 
