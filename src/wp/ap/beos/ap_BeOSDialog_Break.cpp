@@ -33,13 +33,99 @@
 #include "ut_Rehydrate.h"
 
 /*****************************************************************/
+//						Localization Stuff						 //
+
+// Note the character string returned will not be valid after another call to any of the set functions , do not multithread
+// this stuff, etc.
+// This should probably be but into a dialog helper class or something.
+
+/* Note : copied from ev_BeOSMenu.cpp
+ Control strings are punctuated with & in front of the key
+ which is to serve as accelerators for that item.  This
+ routine zips through and removes those &'s and returns
+ the accelerator key as an int (think unicode!), and
+ places the real string to be shown in bufResult.
+*/
+
+int _dialog_convert(char * bufResult, const char * szString) {
+	int	 accel = 0;
+	const char *psrc = szString;
+	char *pdst = bufResult;
+	
+	while (*psrc) {
+		if (*psrc != '&') {
+			*(pdst++) = *psrc;
+		}
+		else {
+			accel = *(psrc+1);
+		}
+		psrc++;
+	}
+	*pdst = '\0';
+	return(accel);
+}
+
+#include <UTF8.h>
+
+	char buf[1024];
+	char buf2[1024];
+	int32 srcLength;
+	int32 destLength;
+	int32 state;
+	const XML_Char *pString;
+	
+inline char* LOAD_STRINGX(_XAP_String_Id_Enum stringID , const XAP_StringSet *pSS)
+{
+	pString = pSS->getValue(stringID);
+	srcLength = UT_XML_strlen(pString);
+	destLength = 1024;
+	state = 0;
+	convert_to_utf8(B_ISO1_CONVERSION , pString , &srcLength , buf , &destLength , &state);
+	buf[destLength] = '\0';
+	
+	_dialog_convert(buf2 , buf);
+	
+	return &buf2[0]; // Neccesary because of macro / function scope stuff..
+}
+
+	
+inline char* LOAD_STRING(_AP_String_Id_Enum stringID , const XAP_StringSet *pSS)
+{
+	pString = pSS->getValue(stringID);
+	srcLength = UT_XML_strlen(pString);
+	destLength = 1024;
+	state = 0;
+	convert_to_utf8(B_ISO1_CONVERSION , pString , &srcLength , buf , &destLength , &state);
+	buf[destLength] = '\0';
+	
+	_dialog_convert(buf2 , buf);
+	
+	return &buf2[0]; // Neccesary because of macro / function scope stuff..
+}
+	
+#define _SETBUTTONTEXT(button , string) \
+	button->SetLabel( LOAD_STRINGX(XAP_STRING_ID_##string , pSS) );
+//	button->SetLabel(buf);
+
+#define _SETSTRINGVIEWTEXT(stringview , string) \
+	stringview->SetText(LOAD_STRING(AP_STRING_ID_##string , pSS) );
+
+#define _SETWINDOWTITLE(window , string) \
+	window->SetTitle(LOAD_STRING(AP_STRING_ID_##string , pSS) );
+	
+// Note: _SETCONTROLTEXT also works for BBox'es as they also use SetLabel, but derive straight from BView
+
+#define _SETCONTROLTEXT(control , string) \
+	control->SetLabel(LOAD_STRING(AP_STRING_ID_##string , pSS) );
+
+/*****************************************************************/
 #define RAD_ON(rad, str) ((rad = (BRadioButton *)FindView(str)) && \
 			  (rad->Value() == B_CONTROL_ON))
 
 class BreakWin:public BWindow {
 	public:
 		BreakWin(BMessage *data);
-		void SetDlg(AP_BeOSDialog_Break *brk);
+		void SetDlg(AP_BeOSDialog_Break *brk , const XAP_StringSet *pSS);
 		virtual void DispatchMessage(BMessage *msg, BHandler *handler);
 		virtual bool QuitRequested(void);
 		
@@ -48,6 +134,9 @@ class BreakWin:public BWindow {
 	
 		status_t WaitForDelete(sem_id blocker);
 		sem_id modalSem;	
+		
+		void _LocalizeControls(const XAP_StringSet *pSS);
+		
 };
 
 BreakWin::BreakWin(BMessage *data) 
@@ -55,6 +144,39 @@ BreakWin::BreakWin(BMessage *data)
 {
 
 } //BreakWin::BreakWin
+
+void BreakWin::_LocalizeControls(const XAP_StringSet *pSS)
+{	
+	_SETWINDOWTITLE(this , DLG_Break_BreakTitle )
+	
+	BControl* pControl = (BControl *)FindView("radPageBreak");
+	if(pControl)
+		_SETCONTROLTEXT(pControl , DLG_Break_PageBreak)
+	
+	pControl = (BControl *)FindView("radColBreak");
+	if(pControl)
+		_SETCONTROLTEXT(pControl , DLG_Break_ColumnBreak)
+		
+	pControl = (BControl *)FindView("radNextBreak");
+	if(pControl)
+		_SETCONTROLTEXT(pControl , DLG_Break_NextPage)
+		
+	pControl = (BControl *)FindView("radContBreak");
+	if(pControl)
+		_SETCONTROLTEXT(pControl , DLG_Break_Continuous)
+		
+	pControl = (BControl *)FindView("radEvenBreak");
+	if(pControl)
+		_SETCONTROLTEXT(pControl , DLG_Break_EvenPage)
+		
+	pControl = (BControl *)FindView("radOddBreak");
+	if(pControl)
+		_SETCONTROLTEXT(pControl , DLG_Break_OddPage)
+						
+	BButton* pButton = (BButton *) FindView("butOK");
+	if(pButton)
+		_SETBUTTONTEXT(pButton , DLG_OK);
+}
 
 status_t BreakWin::WaitForDelete(sem_id blocker)
 {
@@ -83,7 +205,8 @@ status_t BreakWin::WaitForDelete(sem_id blocker)
 	return result;
 }
 
-void BreakWin::SetDlg(AP_BeOSDialog_Break *brk) {
+void BreakWin::SetDlg(AP_BeOSDialog_Break *brk , const XAP_StringSet *pSS) 
+{
 	BRadioButton *on = NULL;
 
 	m_DlgBreak = brk;
@@ -113,6 +236,8 @@ void BreakWin::SetDlg(AP_BeOSDialog_Break *brk) {
 	}
 
 
+	_LocalizeControls(pSS);
+	
 //	We need to tie up the caller thread for a while ...
 	Show();
 
@@ -206,12 +331,15 @@ void AP_BeOSDialog_Break::runModal(XAP_Frame * pFrame)
 	*/
 	BMessage msg;
 	BreakWin  *newwin;
-	if (RehydrateWindow("BreakWindow", &msg)) {
-                newwin = new BreakWin(&msg);
-		newwin->SetDlg(this);
+	if (RehydrateWindow("BreakWindow", &msg)) 
+	{
+        newwin = new BreakWin(&msg);
+        
+        const XAP_StringSet * pSS = m_pApp->getStringSet();
+		newwin->SetDlg(this , pSS);
 		//Take the information here ...
 		newwin->Lock();
 		newwin->Quit();
-        }                                                
+    }                                                
 }
 
