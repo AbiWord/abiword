@@ -146,6 +146,7 @@ public:
 #endif
 
 	PtWidget_t * m_checkbuttonSmartQuotesEnable;
+	PtWidget_t * m_checkbuttonAutoSaveFile;
 
 	PtWidget_t * m_buttonSave;
 	PtWidget_t * m_buttonDefaults;
