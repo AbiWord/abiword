@@ -63,6 +63,11 @@ BeginSetEnc(nb,NO,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopier",               tb_copy_xpm,                    NULL, "Kopier")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Lim inn",              tb_paste_xpm,                   NULL, "Lim inn")
 
+        ToolbarLabel(AP_TOOLBAR_ID_EDIT_HEADER,         "Rediger topptekst",    tb_edit_editheader_xpm,         NULL, "Rediger topptekst")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_FOOTER,	        "Rediger bunntekst",    tb_edit_editfooter_xpm,         NULL, "Rediger bunntekst")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEHEADER,   "Fjern topptekst",      tb_edit_removeheader_xpm,       NULL, "Fjern topptekst")
+	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REMOVEFOOTER,   "Fjern bunntekst",      tb_edit_removefooter_xpm,       NULL, "Fjern bunntekst")
+
         ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,          "Stavekontroll",        tb_spellcheck_xpm,              NULL, "Stavekontrollerer dokumentet")
 
         ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",                 NoIcon,                         NULL, "Stil")
@@ -75,6 +80,10 @@ BeginSetEnc(nb,NO,true,"iso-8859-1")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Gjennomstreket",       tb_text_strikeout_xpm,	        NULL, "Gjennomstreket")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Hevet",                tb_text_superscript_xpm,	NULL, "Hevet")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Senket",               tb_text_subscript_xpm,		NULL, "Senket")
+   	ToolbarLabel(AP_TOOLBAR_ID_FMT_TOPLINE,         "Topplinje",            tb_text_topline_xpm,            NULL, "Topplinje")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOTTOMLINE,      "Bunnlinje",            tb_text_bottomline_xpm,         NULL, "Botnlinje")
+
+   	ToolbarLabel(AP_TOOLBAR_ID_VIEW_SHOWPARA,       "Vis alt",              tb_view_showpara_xpm,           NULL, "Vis/skjul ¶")
 
    	ToolbarLabel(AP_TOOLBAR_ID_IMG,                 "Sett inn bilde",       tb_insert_graphic_xpm,          NULL, "Sett inn et bilde i dokumentet")
 
@@ -103,12 +112,17 @@ BeginSetEnc(nb,NO,true,"iso-8859-1")
    	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Forgrunnsfarge",	tb_text_fgcolor_xpm,			        NULL, "Endre forgrunnsfarge")
         ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Bakgrunnsfarge",	tb_text_bgcolor_xpm,			        NULL, "Endre bakgrunnsfarge")
    
-        ToolbarLabel(AP_TOOLBAR_ID_INDENT,               "Øk innrykk",          tb_text_indent_xpm,             NULL, "Øker avsnittsinnrykk")
-        ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,             "Reduser innrykk",     tb_text_unindent_xpm,           NULL, "Reduserer avsnittsinnrykk")
+        ToolbarLabel(AP_TOOLBAR_ID_INDENT,              "Øk innrykk",           tb_text_indent_xpm,             NULL, "Øker avsnittsinnrykk")
+        ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,            "Reduser innrykk",      tb_text_unindent_xpm,           NULL, "Reduserer avsnittsinnrykk")
+
+   	ToolbarLabel(AP_TOOLBAR_ID_SCRIPT_PLAY,         "Kjør skript",          tb_script_play_xpm,             NULL, "Kjør skript")
 
 #ifdef BIDI_ENABLED
 	//ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,         "Tekstretning",	tb_text_direction_rtl_xpm,	NULL, "Endre retning på tekst")
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,     "Avsnittretning",	tb_text_dom_direction_rtl_xpm,	NULL, "Endre dominant retning på avsnitt")
+   	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_LTR,"Tving VTH-retning",    tb_text_direction_ltr_xpm,      NULL, "Tvingar venstre til høgre-retning for tekst")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIR_OVERRIDE_RTL,"Tving HTV-retning",    tb_text_direction_rtl_xpm,      NULL, "Tvingar høgre til venstre-retning for tekst")
+
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,   "Avsnittretning",	tb_text_dom_direction_rtl_xpm,	NULL, "Endre dominant retning på avsnitt")
 #endif
 
    // ... add others here ...
