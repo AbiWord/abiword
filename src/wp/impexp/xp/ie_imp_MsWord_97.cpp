@@ -1976,6 +1976,9 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		// such as list-style, field-font, ...
 
 		// start-value
+		// Need to put the ";" back in the para string.
+		//
+		m_paraProps[m_paraProps.size() - 1] = ';';
 		m_paraProps += "start-value:";
 		m_paraProps += szStartValue;
 		m_paraProps += ";";
