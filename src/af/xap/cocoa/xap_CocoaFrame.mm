@@ -190,8 +190,24 @@
 {
 	[_eventDelegate mouseDown:theEvent from:self];
 }
+- (void)rightMouseDown:(NSEvent *)theEvent
+{
+	[_eventDelegate mouseDown:theEvent from:self];
+}
+- (void)otherMouseDown:(NSEvent *)theEvent
+{
+	[_eventDelegate mouseDown:theEvent from:self];
+}
 
 - (void)mouseDragged:(NSEvent *)theEvent
+{
+	[_eventDelegate mouseDragged:theEvent from:self];
+}
+- (void)rightMouseDragged:(NSEvent *)theEvent
+{
+	[_eventDelegate mouseDragged:theEvent from:self];
+}
+- (void)otherMouseDragged:(NSEvent *)theEvent
 {
 	[_eventDelegate mouseDragged:theEvent from:self];
 }
@@ -199,6 +215,32 @@
 - (void)mouseUp:(NSEvent *)theEvent
 {
 	[_eventDelegate mouseUp:theEvent from:self];
+}
+- (void)rightMouseUp:(NSEvent *)theEvent
+{
+	[_eventDelegate mouseUp:theEvent from:self];
+}
+- (void)otherMouseUp:(NSEvent *)theEvent
+{
+	[_eventDelegate mouseUp:theEvent from:self];
+}
+
+- (void)scrollWheel:(NSEvent *)theEvent
+{
+	AV_View *pAV_View = m_pFrame->getCurrentView ();
+
+	UT_sint32 deltaX = (UT_sint32)rint([theEvent deltaX]);
+	UT_sint32 deltaY = (UT_sint32)rint([theEvent deltaY]);
+
+	if (deltaX < 0)
+		pAV_View->cmdScroll(AV_SCROLLCMD_LINERIGHT, m_pGR->tlu(-30*deltaX));
+	if (deltaX > 0)
+		pAV_View->cmdScroll(AV_SCROLLCMD_LINELEFT,  m_pGR->tlu( 30*deltaX));
+
+	if (deltaY > 0)
+		pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP,    m_pGR->tlu( 30*deltaY));
+	if (deltaY < 0)
+		pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN,  m_pGR->tlu(-30*deltaY));
 }
 
 @end

@@ -247,10 +247,12 @@ EV_EditMouseButton EV_CocoaMouse::_convertMouseButton(int btn, bool rightBtn)
 		}
 		break;
 	case 1:
-		emb = EV_EMB_BUTTON2; // middle 
-		break;
-	case 2:
 		emb = EV_EMB_BUTTON3; // right
+		break;
+	// mac mouse with scroll wheel and 2 buttons, numbered 0 and 1 - don't know about other mice
+
+	case 2:
+		emb = EV_EMB_BUTTON2; // middle 
 		break;
 	// these are often used for X scrolling mice, 4 is down, 5 is up
 	case 3:
