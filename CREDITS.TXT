@@ -311,6 +311,7 @@ The KAD Association (Korvigelloù An Drouizig)
 		    <drouizig@drouizig.org>		Breton
 Team Turca <team_turca@yahoo.com>			Turkish
 Ismo Mäkinen <ismtaol@luukku.com>			Finnish
+Marek Laane <bald@online.ee>				Estonian
 
 unsung heroes
 -------------
