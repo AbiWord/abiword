@@ -683,8 +683,7 @@ void XAP_UnixFont::fetchXftFont(UT_uint32 pixelsize) const
 	FcPatternAddInteger(layout_fp, FC_PIXEL_SIZE, pixelsize);
 
 // This doesn't seem to actually do anything.  Boo!
-	FcPatternAddDouble(layout_fp, FC_DPI, 
-			   static_cast<double>(UT_LAYOUT_RESOLUTION));
+	FcPatternAddDouble(layout_fp, FC_DPI, 72.0);
 	pXftFont = XftFontOpenPattern(GDK_DISPLAY(), layout_fp);
 
 	// That means that we should should be 100% sure that,
