@@ -37,10 +37,24 @@ XAP_EncodingManager*	XAP_EncodingManager::_instance = NULL;
 
 /*!
  * Returns the native encoding, no matter what
+ *
+ * If the OS supports a system locale and a user locale,
+ * this will be the user locale's encoding.
  */
 const char* XAP_EncodingManager::getNativeEncodingName() const
 {
     return "ISO-8859-1"; /* this will definitely work*/
+}
+
+/*!
+ * Returns the system's underlying native encoding, no matter what
+ *
+ * If the OS supports a system locale and a user locale,
+ * this will be the system locale's encoding.
+ */
+const char* XAP_EncodingManager::getNativeSystemEncodingName() const
+{
+    return getNativeEncodingName();
 }
 
 /*!
@@ -53,7 +67,7 @@ const char* XAP_EncodingManager::getNativeEncodingName() const
  */
 const char* XAP_EncodingManager::getNative8BitEncodingName() const
 {
-    return "ISO-8859-1"; /* this will definitely work*/
+    return getNativeEncodingName();
 }
 
 /*!
@@ -195,18 +209,20 @@ UT_UCSChar XAP_EncodingManager::UToWindows(UT_UCSChar c)  const
 };
 
 
-const char* XAP_EncodingManager::strToNative(const char* in,const char* charset) const
+const char* XAP_EncodingManager::strToNative(const char* in,const char* charset,bool bUseSysEncoding) const
 {
 	static char buf[500];
-	return strToNative(in, charset, buf, sizeof(buf));
+	return strToNative(in, charset, buf, sizeof(buf), bUseSysEncoding);
 };
 
-const char* XAP_EncodingManager::strToNative(const char* in, const char* charset, char* buf, int bufsz) const
+const char* XAP_EncodingManager::strToNative(const char* in, const char* charset, char* buf, int bufsz,
+											 bool bUseSysEncoding) const
 {
 	if (!charset || !*charset || !in || !*in || !buf)
 		return in; /*won't translate*/
 
-	iconv_t iconv_handle = iconv_open(getNativeEncodingName(), charset);
+	iconv_t iconv_handle = iconv_open(
+		bUseSysEncoding ? getNativeSystemEncodingName() : getNativeEncodingName(), charset);
 
 	if (iconv_handle == (iconv_t)-1)
 		return in;

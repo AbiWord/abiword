@@ -54,7 +54,7 @@
 	
 #define MenuLabel(id,szName,szStatusMsg) \
 		pLabelSet->setLabel((id),											\
-			XAP_EncodingManager::get_instance()->strToNative((szName),encoding,namebuf,sizeof(namebuf)),			\
+			XAP_EncodingManager::get_instance()->strToNative((szName),encoding,namebuf,sizeof(namebuf),true),			\
 			XAP_EncodingManager::get_instance()->strToNative((szStatusMsg),encoding,statusmsgbuf,sizeof(statusmsgbuf))	\
 		);
 

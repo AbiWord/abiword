@@ -56,6 +56,12 @@ public:
     virtual const char* getNativeEncodingName() const;
 
     /*
+	this can return NULL. Don't free or write to returned string. 
+	The string should be uppercased (extra font tarballs assume this).
+    */
+    virtual const char* getNativeSystemEncodingName() const;
+
+    /*
 	this shouldn't return NULL. Don't free or write to returned string. 
 	The string should be uppercased (extra font tarballs assume this).
     */
@@ -234,12 +240,12 @@ public:
 
 	  Of course it uses iconv internally.
 	*/
-	const char* strToNative(const char* in,const char* charset) const;
+	const char* strToNative(const char* in,const char* charset,bool bUseSysEncoding=false) const;
 
 	/*
 	 Same as above, but it will use buffer provided by caller.
 	*/
-	const char* strToNative(const char* in,const char* charset,char* buf,int bufsz) const;
+	const char* strToNative(const char* in,const char* charset,char* buf,int bufsz,bool bUseSysEncoding=false) const;
 #ifndef	HAVE_LIBXML2
 	/*this is used by code that reads xml using expat*/
 	static int XAP_XML_UnknownEncodingHandler(void *encodingHandlerData,

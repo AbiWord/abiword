@@ -29,6 +29,7 @@ XAP_Win32EncodingManager::XAP_Win32EncodingManager()
 XAP_Win32EncodingManager::~XAP_Win32EncodingManager() {}
 
 static const char * NativeEncodingName;
+static const char * NativeSystemEncodingName;
 static const char * Native8BitEncodingName;
 static const char * NativeUnicodeEncodingName;
 static const char * LanguageISOName;
@@ -36,6 +37,9 @@ static const char * LanguageISOTerritory;
 
 const char* XAP_Win32EncodingManager::getNativeEncodingName() const
 {     return NativeEncodingName; };
+
+const char* XAP_Win32EncodingManager::getNativeSystemEncodingName() const
+{     return NativeSystemEncodingName; };
 
 const char* XAP_Win32EncodingManager::getNative8BitEncodingName() const
 {     return Native8BitEncodingName; };
@@ -54,11 +58,12 @@ void  XAP_Win32EncodingManager::initialize()
 {
 	char szLocaleInfo[64];
 	static char szCodepage[64];
+	static char szSystemCodepage[64];
 	static char szLanguage[64];
 	static char szTerritory[64];
 	bool bNorwaySpecialCase = false;
 
-	Native8BitEncodingName = NativeEncodingName = "CP1252";
+	Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName = "CP1252";
 	LanguageISOName = "en";
 	LanguageISOTerritory = NULL;
 
@@ -68,7 +73,8 @@ void  XAP_Win32EncodingManager::initialize()
 	// TODO Does NT use UCS-2BE internally on non-Intel CPUs?
 	NativeUnicodeEncodingName = getUCS2LEName();
 
-	// Encoding 
+	// Encodings
+	// User Encoding (Set via Region/Locale; does not require reboot)
 	if (GetLocaleInfo(LOCALE_USER_DEFAULT,LOCALE_IDEFAULTANSICODEPAGE,szLocaleInfo,sizeof(szLocaleInfo)/sizeof(szLocaleInfo[0])))
 	{
 		// Windows Unicode locale?
@@ -84,6 +90,24 @@ void  XAP_Win32EncodingManager::initialize()
 			strcpy(szCodepage+2,szLocaleInfo);
 			Native8BitEncodingName = NativeEncodingName = szCodepage;
 			m_bIsUnicodeLocale = false;
+		}
+	}
+	// System Encoding (Used by GUI,DOS; Set via Region/Default Language; requires reboot)
+	if (GetLocaleInfo(LOCALE_SYSTEM_DEFAULT,LOCALE_IDEFAULTANSICODEPAGE,szLocaleInfo,sizeof(szLocaleInfo)/sizeof(szLocaleInfo[0])))
+	{
+		// Windows Unicode locale?
+		if (!strcmp(szLocaleInfo,"0"))
+		{
+			NativeSystemEncodingName = NativeUnicodeEncodingName;
+			//m_bIsUnicodeLocale = true;
+		}
+		else
+		{
+			szSystemCodepage[0] = 'C';
+			szSystemCodepage[1] = 'P';
+			strcpy(szSystemCodepage+2,szLocaleInfo);
+			NativeSystemEncodingName = szSystemCodepage;
+			//m_bIsUnicodeLocale = false;
 		}
 	}
 
