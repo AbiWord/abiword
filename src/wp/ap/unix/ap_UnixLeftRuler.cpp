@@ -56,7 +56,7 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	m_pG = NULL;
 	m_iBackgroundRedrawID = 0;
     // change ruler color on theme change
-	GtkWidget * toplevel = (static_cast<XAP_UnixFrame *> (m_pFrame))->getTopLevelWindow();
+	GtkWidget * toplevel = static_cast<XAP_UnixFrameHelper *>(pFrame->getFrameHelper())->getTopLevelWindow();
 	g_signal_connect_after (G_OBJECT(toplevel),
 							  "client_event",
 							  G_CALLBACK(ruler_style_changed),

@@ -23,7 +23,7 @@
 #include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
 #include "pd_Document.h"
-#include "xap_UnixFrame.h"
+#include "ap_UnixFrame.h"
 
 class EV_Toolbar;
 
@@ -41,7 +41,7 @@ public:
 
 protected:
     PD_Document * m_pDocument;
-	XAP_UnixFrame * m_pFrame;
+    AP_UnixFrame * m_pFrame;
 };
 
 #endif /* AP_UNIXTOOLBAR_STYLECOMBO_H */

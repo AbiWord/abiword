@@ -45,7 +45,7 @@ AP_UnixToolbar_StyleCombo::AP_UnixToolbar_StyleCombo(EV_Toolbar * pToolbar,
 
 	m_nPixels = 120;		// TODO: do a better calculation
 	m_nLimit = 15;         // 15 styles before the scroll bar??.
-	m_pFrame = static_cast<EV_UnixToolbar *>(pToolbar)->getFrame();
+	m_pFrame = static_cast<AP_UnixFrame *>(static_cast<EV_UnixToolbar *>(pToolbar)->getFrame());
 }
 
 AP_UnixToolbar_StyleCombo::~AP_UnixToolbar_StyleCombo(void)

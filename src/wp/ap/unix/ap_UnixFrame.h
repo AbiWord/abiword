@@ -22,19 +22,46 @@
 
 class GR_Graphics;
 
-#ifdef HAVE_GNOME
-#include "xap_UnixGnomeFrame.h"
-#define XAP_UNIXBASEFRAME XAP_UnixGnomeFrame
-#else
+#include "xap_Frame.h"
 #include "xap_UnixFrame.h"
-#define XAP_UNIXBASEFRAME XAP_UnixFrame
-#endif
-
 #include "ie_types.h"
+
+class XAP_UnixApp;
+class AP_UnixFrame;
+
+/*****************************************************************/
+class AP_UnixFrameHelper : public XAP_UnixFrameHelper
+{
+ public:
+	AP_UnixFrameHelper(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp); 
+
+ protected:
+	void _showOrHideStatusbar(void);
+
+	void _showOrHideToolbars(void);
+	virtual void _refillToolbarsInFrameData();
+	void _bindToolbars(AV_View * pView);
+
+	virtual GtkWidget * _createDocumentWindow();
+	virtual GtkWidget * _createStatusBarWindow();
+
+	friend class AP_UnixFrame;
+	virtual void _setWindowIcon();
+	GtkWidget * m_dArea;
+	GtkAdjustment *	m_pVadj;
+	GtkAdjustment *	m_pHadj;
+	GtkWidget * m_hScroll;
+	GtkWidget * m_vScroll;
+	GtkWidget * m_topRuler;
+	GtkWidget * m_leftRuler;
+	GtkWidget * m_table;
+	GtkWidget * m_innertable;
+	GtkWidget * m_wSunkenBox;
+};
 
 /*****************************************************************/
 
-class AP_UnixFrame : public XAP_UNIXBASEFRAME
+class AP_UnixFrame : public XAP_Frame
 {
 public:
 	AP_UnixFrame(XAP_UnixApp * app);
@@ -50,6 +77,7 @@ public:
 	virtual bool				initFrameData(void);
 	virtual void				killFrameData(void);
 
+	// WL_REFACTOR: the implementation of these functions (e.g.: the widget stuff) to the frame helper
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
 	virtual void				translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y);
@@ -62,31 +90,15 @@ public:
 	virtual void                            toggleLeftRuler(bool bRulerOn);
 	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
 	virtual void				toggleStatusBar(bool bStatusBarOn);
-	virtual void                refillToolbarsInFrameData(void);
-
+	
 protected:
-	virtual GtkWidget *			_createDocumentWindow(void);
-	virtual GtkWidget *			_createStatusBarWindow(void);
-	virtual void				_setWindowIcon(void);
+	friend class AP_UnixFrameHelper;
 	UT_Error   					_loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
 	virtual UT_Error            _importDocument(const char * szFilename, int ieft, bool markClean);
 	UT_Error   					_showDocument(UT_uint32 iZoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	UT_Error					_replaceDocument(AD_Document * pDoc);
-	virtual void				_showOrHideToolbars(void);
-	virtual void				_showOrHideStatusbar(void);
-	
-	GtkAdjustment *				m_pVadj;
-	GtkAdjustment *				m_pHadj;
-	GtkWidget *					m_hScroll;
-	GtkWidget *					m_vScroll;
-	GtkWidget *					m_dArea;
-	GtkWidget *					m_table;
-	GtkWidget *					m_innertable;
-	GtkWidget *					m_topRuler;
-	GtkWidget *					m_leftRuler;
-	GtkWidget *					m_wSunkenBox;
 };
 
 #endif /* AP_UNIXFRAME_H */

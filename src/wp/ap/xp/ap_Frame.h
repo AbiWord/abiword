@@ -27,6 +27,6 @@ class AP_Frame
   virtual ~AP_Frame () ;
 
  private:
-} ;
+};
 
 #endif // AP_FRAME_H

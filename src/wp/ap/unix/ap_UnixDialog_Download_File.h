@@ -55,7 +55,7 @@ public:
 	GtkWidget			*m_progressBar;
 	
 	GR_UnixGraphics		*m_gc;
-	XAP_UnixFrame 		*m_pFrame;
+	XAP_Frame 		*m_pFrame;
 };
 
 #endif /* AP_UNIXDIALOG_DOWNLOAD_FILE_H */

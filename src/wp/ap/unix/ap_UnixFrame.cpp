@@ -63,6 +63,264 @@
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
 /*****************************************************************/
+#include "ap_UnixApp.h"
+AP_UnixFrameHelper::AP_UnixFrameHelper(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp) :
+	XAP_UnixFrameHelper(static_cast<XAP_Frame *>(pUnixFrame), static_cast<AP_App *>(pUnixApp)) 
+{
+}
+
+void AP_UnixFrameHelper::_bindToolbars(AV_View * pView)
+{
+	int nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (int k = 0; k < nrToolbars; k++)
+	{
+		// TODO Toolbars are a frame-level item, but a view-listener is
+		// TODO a view-level item.  I've bound the toolbar-view-listeners
+		// TODO to the current view within this frame and have code in the
+		// TODO toolbar to allow the view-listener to be rebound to a different
+		// TODO view.  in the future, when we have support for multiple views
+		// TODO in the frame (think splitter windows), we will need to have
+		// TODO a loop like this to help change the focus when the current
+		// TODO view changes.
+		
+		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecToolbars.getNthItem(k);
+		pUnixToolbar->bindListenerToView(pView);
+	}	
+}
+
+// Does the initial show/hide of toolbars (based on the user prefs).
+// This is needed because toggleBar is called only when the user
+// (un)checks the show {Stantandard,Format,Extra} toolbar checkbox,
+// and thus we have to manually call this function at startup.
+void AP_UnixFrameHelper::_showOrHideToolbars()
+{
+	bool *bShowBar = static_cast<AP_FrameData*>(m_pFrame->getFrameData())->m_bShowBar;
+	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
+
+	for (UT_uint32 i = 0; i < cnt; i++)
+	{
+		// TODO: The two next lines are here to bind the EV_Toolbar to the
+		// AP_FrameData, but their correct place are next to the toolbar creation (JCA)
+		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
+		static_cast<AP_FrameData*> (m_pFrame->getFrameData())->m_pToolbar[i] = pUnixToolbar;
+		static_cast<AP_UnixFrame *>(m_pFrame)->toggleBar(i, bShowBar[i]);
+	}
+}
+
+/*!
+ * Refills the framedata class with pointers to the current toolbars. We 
+ * need to do this after a toolbar icon and been dragged and dropped.
+ */
+void AP_UnixFrameHelper::_refillToolbarsInFrameData()
+{
+	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
+
+	for (UT_uint32 i = 0; i < cnt; i++)
+	{
+		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
+		static_cast<AP_FrameData*>(m_pFrame->getFrameData())->m_pToolbar[i] = pUnixToolbar;
+	}
+}
+
+// Does the initial show/hide of statusbar (based on the user prefs).
+// Idem.
+void AP_UnixFrameHelper::_showOrHideStatusbar()
+{
+	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pFrame->getFrameData())->m_bShowStatusBar;
+	static_cast<AP_UnixFrame *>(m_pFrame)->toggleStatusBar(bShowStatusBar);
+}
+
+
+GtkWidget * AP_UnixFrameHelper::_createDocumentWindow()
+{
+	bool bShowRulers = static_cast<AP_FrameData*>(m_pFrame->getFrameData())->m_bShowRuler;
+
+	// create the rulers
+	AP_UnixTopRuler * pUnixTopRuler = NULL;
+	AP_UnixLeftRuler * pUnixLeftRuler = NULL;
+
+	if ( bShowRulers )
+	{
+		pUnixTopRuler = new AP_UnixTopRuler(this->m_pFrame);
+		UT_ASSERT(pUnixTopRuler);
+		m_topRuler = pUnixTopRuler->createWidget();
+		
+		if (static_cast<AP_FrameData*>(m_pFrame->getFrameData())->m_pViewMode == VIEW_PRINT)
+		  {
+		    pUnixLeftRuler = new AP_UnixLeftRuler(m_pFrame);
+		    UT_ASSERT(pUnixLeftRuler);
+		    m_leftRuler = pUnixLeftRuler->createWidget();
+
+		    // get the width from the left ruler and stuff it into the top ruler.
+		    pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
+		  }
+		else
+		  {
+		    m_leftRuler = NULL;
+		    pUnixTopRuler->setOffsetLeftRuler(0);
+		  }
+	}
+	else
+	{
+		m_topRuler = NULL;
+		m_leftRuler = NULL;
+	}
+
+	((AP_FrameData*)m_pFrame->getFrameData())->m_pTopRuler = pUnixTopRuler;
+	((AP_FrameData*)m_pFrame->getFrameData())->m_pLeftRuler = pUnixLeftRuler;
+
+	// set up for scroll bars.
+	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	gtk_object_set_user_data(GTK_OBJECT(m_pHadj), this);
+	m_hScroll = gtk_hscrollbar_new(m_pHadj);
+	gtk_object_set_user_data(GTK_OBJECT(m_hScroll), this);
+
+	g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(XAP_UnixFrameHelper::_fe::hScrollChanged), NULL);
+
+	m_pVadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	gtk_object_set_user_data(GTK_OBJECT(m_pVadj), this);
+	m_vScroll = gtk_vscrollbar_new(m_pVadj);
+	gtk_object_set_user_data(GTK_OBJECT(m_vScroll), this);
+
+	g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(XAP_UnixFrameHelper::_fe::vScrollChanged), NULL);
+
+	// we don't want either scrollbar grabbing events from us
+	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
+	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
+
+	// create a drawing area in the for our document window.
+	m_dArea = createDrawingArea ();
+	
+	gtk_object_set_user_data(GTK_OBJECT(m_dArea), this);
+	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
+												GDK_BUTTON_PRESS_MASK |
+												GDK_POINTER_MOTION_MASK |
+												GDK_BUTTON_RELEASE_MASK |
+												GDK_KEY_PRESS_MASK |
+												GDK_KEY_RELEASE_MASK));
+	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea),FALSE);
+	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
+					   G_CALLBACK(XAP_UnixFrameHelper::_fe::expose), NULL);
+  
+	g_signal_connect(G_OBJECT(m_dArea), "button_press_event",
+					   G_CALLBACK(XAP_UnixFrameHelper::_fe::button_press_event), NULL);
+
+	g_signal_connect(G_OBJECT(m_dArea), "button_release_event",
+					   G_CALLBACK(XAP_UnixFrameHelper::_fe::button_release_event), NULL);
+
+	g_signal_connect(G_OBJECT(m_dArea), "motion_notify_event",
+					   G_CALLBACK(XAP_UnixFrameHelper::_fe::motion_notify_event), NULL);
+
+	g_signal_connect(G_OBJECT(m_dArea), "scroll_event",
+					   G_CALLBACK(XAP_UnixFrameHelper::_fe::scroll_notify_event), NULL);
+
+	g_signal_connect(G_OBJECT(m_dArea), "configure_event",
+					   G_CALLBACK(XAP_UnixFrameHelper::_fe::configure_event), NULL);
+
+	// create a table for scroll bars, rulers, and drawing area
+
+	m_table = gtk_table_new(1, 1, FALSE); //was 1,1
+	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
+
+	// NOTE:  in order to display w/ and w/o rulers, gtk needs two tables to
+	// work with.  The 2 2x2 tables, (i)nner and (o)uter divide up the 3x3
+	// table as follows.  The inner table is at the 1,1 table.
+	//	+-----+---+
+	//	| i i | o |
+	//	| i i |   |
+	//	+-----+---+
+	//	|  o  | o |
+	//	+-----+---+
+		
+	// scroll bars
+	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2,
+					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
+					 0, 0);
+
+	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1,
+					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
+					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+					 0, 0);
+
+
+	// arrange the widgets within our inner table.
+	m_innertable = gtk_table_new(2,2,FALSE);
+	gtk_table_attach( GTK_TABLE(m_table), m_innertable, 0, 1, 0, 1,
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 0, 0); 
+
+	if ( bShowRulers )
+	{
+		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0, 1,
+						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+						 (GtkAttachOptions)(GTK_FILL),
+						 0, 0);
+
+		if (m_leftRuler)
+			gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
+							 (GtkAttachOptions)(GTK_FILL),
+							 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+							 0, 0);
+
+		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 0, 0); 
+	}
+	else	// no rulers
+	{
+		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+						 0, 0); 
+	}
+
+	// create a 3d box and put the table in it, so that we
+	// get a sunken in look.
+	m_wSunkenBox = gtk_frame_new(NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(m_wSunkenBox), GTK_SHADOW_IN);
+	gtk_container_add(GTK_CONTAINER(m_wSunkenBox), m_table);
+
+	gtk_widget_show(m_hScroll);
+	gtk_widget_show(m_vScroll);
+	gtk_widget_show(m_dArea);
+	gtk_widget_show(m_innertable);
+	gtk_widget_show(m_table);
+
+	return m_wSunkenBox;
+}
+
+void AP_UnixFrameHelper::_setWindowIcon()
+{
+	// attach program icon to window
+	GtkWidget * window = getTopLevelWindow();
+	UT_ASSERT(window);
+
+	// create a pixmap from our included data
+	GdkBitmap * mask;
+	GdkPixmap * pixmap = gdk_pixmap_create_from_xpm_d(window->window, &mask, NULL, abiword_48_xpm);
+	UT_ASSERT(pixmap && mask);
+
+	gdk_window_set_icon(window->window, NULL, pixmap, mask);
+	gdk_window_set_icon_name(window->window, "AbiWord Application Icon");
+}
+
+GtkWidget * AP_UnixFrameHelper::_createStatusBarWindow()
+{
+	AP_UnixStatusBar * pUnixStatusBar = new AP_UnixStatusBar(m_pFrame);
+	UT_ASSERT(pUnixStatusBar);
+
+	((AP_FrameData *)m_pFrame->getFrameData())->m_pStatusBar = pUnixStatusBar;
+	
+	GtkWidget * w = pUnixStatusBar->createWidget();
+
+	return w;
+}
+
+/*****************************************************************/
+
 
 void AP_UnixFrame::setZoomPercentage(UT_uint32 iZoom)
 {
@@ -87,13 +345,15 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return UT_IE_IMPORTERROR;
 	}
-	if(m_bShowDocLocked)
-	{
-		UT_DEBUGMSG(("Evil race condition detected. Fix this!!! \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return  UT_IE_ADDLISTENERERROR;
-	}
-	m_bShowDocLocked = true;
+
+        if(static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->getShowDocLocked())
+        {
+                UT_DEBUGMSG(("Evil race condition detected. Fix this!!! \n"));
+                UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+                return  UT_IE_ADDLISTENERERROR;
+        }                                                                       
+	static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->setShowDocLocked(true);
+
 	GR_UnixGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	AV_View * pView = NULL;
@@ -103,15 +363,15 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
 	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
-	UT_uint32 nrToolbars;
 	UT_uint32 point = 0;
-	UT_uint32 k = 0;
+
 	xxx_UT_DEBUGMSG(("_showDocument: Initial m_pView %x \n",m_pView));
 	gboolean bFocus;
 	XAP_UnixFontManager * fontManager = ((XAP_UnixApp *) getApp())->getFontManager();
-	gtk_widget_show(m_dArea);
-	pG = new GR_UnixGraphics(m_dArea->window, fontManager, getApp());
+	gtk_widget_show(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_dArea);
+	pG = new GR_UnixGraphics(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_dArea->window, fontManager, getApp());
 	ENSUREP(pG);
+
 	pG->setZoomPercentage(iZoom);
 
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
@@ -120,8 +380,9 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	pView = new FV_View(getApp(), this, pDocLayout);
 	ENSUREP(pView);
 
-	bFocus=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(m_wTopLevelWindow),"toplevelWindowFocus"));
-	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==m_wTopLevelWindow) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(m_wTopLevelWindow)) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
+	bFocus=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->getTopLevelWindow()),
+						 "toplevelWindowFocus"));
+	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->getTopLevelWindow()) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->getTopLevelWindow())) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
 	// The "AV_ScrollObj pScrollObj" receives
 	// send{Vertical,Horizontal}ScrollEvents
 	// from both the scroll-related edit methods
@@ -162,21 +423,8 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
 							&lidScrollbarViewListener))
 		goto Cleanup;
-	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-	for (k = 0; k < nrToolbars; k++)
-	{
-		// TODO Toolbars are a frame-level item, but a view-listener is
-		// TODO a view-level item.  I've bound the toolbar-view-listeners
-		// TODO to the current view within this frame and have code in the
-		// TODO toolbar to allow the view-listener to be rebound to a different
-		// TODO view.  in the future, when we have support for multiple views
-		// TODO in the frame (think splitter windows), we will need to have
-		// TODO a loop like this to help change the focus when the current
-		// TODO view changes.
-		
-		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecToolbars.getNthItem(k);
-		pUnixToolbar->bindListenerToView(pView);
-	}
+
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->_bindToolbars(pView);
 
 	/****************************************************************
 	*****************************************************************
@@ -185,6 +433,8 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 	** within the structure.  Nothing below this point should fail.
 	*****************************************************************
 	****************************************************************/
+
+	UT_DEBUGMSG(("WL: 'Nothing below this point should fail'. Yeah, right. We shouldn't be grabbing fmt handles right now\n"));
 	
 	// switch to new view, cleaning up previous settings
 	if (((AP_FrameData*)m_pData)->m_pDocLayout)
@@ -194,6 +444,7 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 
 	REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
 	REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
+
 	if (pOldDoc != m_pDoc)
 	{
 		UNREFP(pOldDoc);
@@ -223,14 +474,15 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		((AP_FrameData*)m_pData)->m_pLeftRuler->setView(pView, iZoom);
 	}
 
-	if ( ((AP_FrameData*)m_pData)->m_pStatusBar && (m_iFrameMode != XAP_NoMenusWindowLess))
+	if ( ((AP_FrameData*)m_pData)->m_pStatusBar && (getFrameMode() != XAP_NoMenusWindowLess))
 	  ((AP_FrameData*)m_pData)->m_pStatusBar->setView(pView);
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
+	UT_DEBUGMSG(("WL: Ok, got here\n"));
 
 	pView->setInsertMode(((AP_FrameData*)m_pData)->m_bInsertMode);
 	
-	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
-						   GTK_WIDGET(m_dArea)->allocation.height);
+	m_pView->setWindowSize(GTK_WIDGET(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_dArea)->allocation.width,
+			       GTK_WIDGET(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_dArea)->allocation.height);
 
 	setXScrollRange();
 	setYScrollRange();
@@ -277,7 +529,9 @@ UT_Error AP_UnixFrame::_showDocument(UT_uint32 iZoom)
 		m_pView->notifyListeners(AV_CHG_ALL);
 		m_pView->focusChange(AV_FOCUS_HERE);
 	}
-	m_bShowDocLocked = false;
+
+	static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->setShowDocLocked(false);
+
 	return UT_OK;
 
 Cleanup:
@@ -292,14 +546,16 @@ Cleanup:
 	// change back to prior document
 	UNREFP(m_pDoc);
 	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
-	m_bShowDocLocked = false;
+	static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->setShowDocLocked(false);
 	return UT_IE_ADDLISTENERERROR;
 }
 
+// WL_REFACTOR: this code is crying out to be seperated into two functions,
+// one of course, should go in AP_UnixFrameHelper
 void AP_UnixFrame::setXScrollRange(void)
 {
 	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
-	int windowWidth = GTK_WIDGET(m_dArea)->allocation.width;
+	int windowWidth = GTK_WIDGET(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_dArea)->allocation.width;
 
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	int newmax = width - windowWidth; /* upper - page_size */
@@ -308,25 +564,29 @@ void AP_UnixFrame::setXScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
-	bool bDifferentLimits = ((width-windowWidth) != (int)(m_pHadj->upper-m_pHadj->page_size));
+	bool bDifferentPosition = (newvalue != (int)static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->value);
+	bool bDifferentLimits = ((width-windowWidth) != (int)(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->upper-
+							      static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->page_size));
 	
-	m_pHadj->value = newvalue;
-	m_pHadj->lower = 0.0;
-	m_pHadj->upper = (gfloat) width;
-	m_pHadj->step_increment = 20.0;
-	m_pHadj->page_increment = (gfloat) windowWidth;
-	m_pHadj->page_size = (gfloat) windowWidth;
-	g_signal_emit_by_name(G_OBJECT(m_pHadj), "changed");
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->value = newvalue;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->lower = 0.0;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->upper = (gfloat) width;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->step_increment = 20.0;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->page_increment = (gfloat) windowWidth;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->page_size = (gfloat) windowWidth;
+	g_signal_emit_by_name(G_OBJECT(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj), "changed");
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendHorizontalScrollEvent(newvalue, (int)(m_pHadj->upper-m_pHadj->page_size));
+		m_pView->sendHorizontalScrollEvent(newvalue, (int)(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->upper-
+								   static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pHadj->page_size));
 }
 
+// WL_REFACTOR: this code is crying out to be seperated into two functions,
+// one of course, should go in AP_UnixFrameHelper
 void AP_UnixFrame::setYScrollRange(void)
 {
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
-	int windowHeight = GTK_WIDGET(m_dArea)->allocation.height;
+	int windowHeight = GTK_WIDGET(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_dArea)->allocation.height;
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
 	int newmax = height - windowHeight;	/* upper - page_size */
@@ -335,35 +595,38 @@ void AP_UnixFrame::setYScrollRange(void)
 	else if (newvalue > newmax)
 		newvalue = newmax;
 
-	bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
-	bool bDifferentLimits ((height-windowHeight) != (int)(m_pVadj->upper-m_pVadj->page_size));
+	bool bDifferentPosition = (newvalue != (int)static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->value);
+	bool bDifferentLimits ((height-windowHeight) != (int)(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->upper-
+							      static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->page_size));
 	
-	m_pVadj->value = newvalue;
-	m_pVadj->lower = 0.0;
-	m_pVadj->upper = (gfloat) height;
-	m_pVadj->step_increment = 20.0;
-	m_pVadj->page_increment = (gfloat) windowHeight;
-	m_pVadj->page_size = (gfloat) windowHeight;
-	g_signal_emit_by_name(G_OBJECT(m_pVadj), "changed");
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->value = newvalue;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->lower = 0.0;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->upper = (gfloat) height;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->step_increment = 20.0;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->page_increment = (gfloat) windowHeight;
+	static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->page_size = (gfloat) windowHeight;
+	g_signal_emit_by_name(G_OBJECT(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj), "changed");
 
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendVerticalScrollEvent(newvalue, (int)(m_pVadj->upper-m_pVadj->page_size));
+		m_pView->sendVerticalScrollEvent(newvalue, (int)(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->upper -
+								 static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_pVadj->page_size));
 }
 
 
-AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * app)
-	: XAP_UNIXBASEFRAME(app)
+AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * pApp)
+	: XAP_Frame(pApp)
 {
-	// TODO
+
+	m_pFrameHelper = new AP_UnixFrameHelper(this, pApp);
 	m_pData = NULL;
-	m_bShowDocLocked = false;
+	static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->setShowDocLocked(false);
 
 }
 
 AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
-	: XAP_UNIXBASEFRAME(static_cast<XAP_UNIXBASEFRAME *>(f))
+	: XAP_Frame(static_cast<XAP_Frame *>(f))
 {
-	// TODO
+	m_pFrameHelper = new AP_UnixFrameHelper(this, static_cast<XAP_UnixApp *>(f->m_pApp));
 	m_pData = NULL;
 }
 
@@ -375,77 +638,37 @@ AP_UnixFrame::~AP_UnixFrame()
 bool AP_UnixFrame::initialize(XAP_FrameMode frameMode)
 {
 	UT_DEBUGMSG(("AP_UnixFrame::initialize!!!! \n"));
-	m_iFrameMode = frameMode;
-	m_bShowDocLocked = false;
+
+	setFrameMode(frameMode);
+	static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->setShowDocLocked(false);
+
 	if (!initFrameData())
 		return false;
-	UT_DEBUGMSG(("AP_UnixFrame:: Initializing base class!!!! \n"));
+	UT_DEBUGMSG(("AP_UnixFrame:: Initializing base classes!!!! \n"));
 
-	if (!XAP_UNIXBASEFRAME::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
-								   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
-								   AP_PREF_KEY_StringSet, AP_PREF_KEY_StringSet,
-								   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
-								   AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
+	if (!XAP_Frame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
+				  AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
+				  AP_PREF_KEY_StringSet, AP_PREF_KEY_StringSet,
+				  AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
+				  AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
 		return false;
 
+	// WL_REFACTOR: almost everything below should go into the helper, at a lower levelmake
 	UT_DEBUGMSG(("AP_UnixFrame:: Creating Toplevel Window!!!! \n"));
 
-	_createTopLevelWindow();
-	gtk_widget_show(m_wTopLevelWindow);
-	if(m_iFrameMode == XAP_NormalFrame)
+	static_cast<XAP_UnixFrameHelper *>(m_pFrameHelper)->createTopLevelWindow();
+	gtk_widget_show(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->getTopLevelWindow());
+	if(getFrameMode() == XAP_NormalFrame)
 	{
 		// needs to be shown so that the following functions work
 		// TODO: get rid of cursed flicker caused by initially
 		// TODO: showing these and then hiding them (esp.
 		// TODO: noticable in the gnome build with a toolbar disabled)
-		_showOrHideToolbars();
-		_showOrHideStatusbar();
+		static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->_showOrHideToolbars();
+		static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->_showOrHideStatusbar();
 	}
 
 	return true;
-}
-
-// Does the initial show/hide of toolbars (based on the user prefs).
-// This is needed because toggleBar is called only when the user
-// (un)checks the show {Stantandard,Format,Extra} toolbar checkbox,
-// and thus we have to manually call this function at startup.
-void AP_UnixFrame::_showOrHideToolbars()
-{
-	bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
-	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
-
-	for (UT_uint32 i = 0; i < cnt; i++)
-	{
-		// TODO: The two next lines are here to bind the EV_Toolbar to the
-		// AP_FrameData, but their correct place are next to the toolbar creation (JCA)
-		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
-		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pUnixToolbar;
-		toggleBar(i, bShowBar[i]);
-	}
-}
-
-/*!
- * Refills the framedata class with pointers to the current toolbars. We 
- * need to do this after a toolbar icon and been dragged and dropped.
- */
-void AP_UnixFrame::	refillToolbarsInFrameData(void)
-{
-	UT_uint32 cnt = m_vecToolbarLayoutNames.getItemCount();
-
-	for (UT_uint32 i = 0; i < cnt; i++)
-	{
-		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
-		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pUnixToolbar;
-	}
-}
-
-
-// Does the initial show/hide of statusbar (based on the user prefs).
-// Idem.
-void AP_UnixFrame::_showOrHideStatusbar()
-{
-	bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
-	toggleStatusBar(bShowStatusBar);
 }
 
 /*****************************************************************/
@@ -454,7 +677,7 @@ bool AP_UnixFrame::initFrameData()
 {
 	UT_ASSERT(!((AP_FrameData*)m_pData));
 
-	AP_FrameData* pData = new AP_FrameData(m_pUnixApp);
+	AP_FrameData* pData = new AP_FrameData(static_cast<XAP_App *>(m_pApp));
 
 	m_pData = (void*)pData;
 	return (pData ? true : false);
@@ -585,7 +808,7 @@ XAP_Frame * AP_UnixFrame::cloneFrame()
 	// clean up anything we created here
 	if (pClone)
 	{
-		m_pUnixApp->forgetFrame(pClone);
+		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
 		delete pClone;
 	}
 	return NULL;
@@ -611,14 +834,13 @@ XAP_Frame * AP_UnixFrame::buildFrame(XAP_Frame * pF)
 	// clean up anything we created here
 	if (pClone)
 	{
-		m_pUnixApp->forgetFrame(pClone);
+		static_cast<XAP_App *>(m_pApp)->forgetFrame(pClone);
 		delete pClone;
 	}
 	return NULL;
 }
 
-UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft,
-									bool createNew)
+UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft, bool createNew)
 {
 	bool bUpdateClones;
 	UT_Vector vClones;
@@ -698,6 +920,7 @@ UT_Error AP_UnixFrame::importDocument(const char * szFilename, int ieft,
 	return _showDocument();
 }
 
+// WL_REFACTOR: Put this in the helper
 void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
@@ -710,15 +933,17 @@ void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange
 	// (with clamping).  then cause the view to scroll.
 	
 	gfloat yoffNew = (gfloat)yoff;
-	gfloat yoffMax = pUnixFrame->m_pVadj->upper - pUnixFrame->m_pVadj->page_size;
+	gfloat yoffMax = static_cast<AP_UnixFrameHelper *>(pUnixFrame->m_pFrameHelper)->m_pVadj->upper - 
+		static_cast<AP_UnixFrameHelper *>(pUnixFrame->m_pFrameHelper)->m_pVadj->page_size;
 	if (yoffMax <= 0)
 		yoffNew = 0;
 	else if (yoffNew > yoffMax)
 		yoffNew = yoffMax;
-	gtk_adjustment_set_value(GTK_ADJUSTMENT(pUnixFrame->m_pVadj),yoffNew);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(static_cast<AP_UnixFrameHelper *>(pUnixFrame->m_pFrameHelper)->m_pVadj),yoffNew);
 	pView->setYScrollOffset((UT_sint32)yoffNew);
 }
 
+// WL_REFACTOR: Put this in the helper
 void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*/)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
@@ -731,175 +956,14 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	// (with clamping).  then cause the view to scroll.
 
 	gfloat xoffNew = (gfloat)xoff;
-	gfloat xoffMax = pUnixFrame->m_pHadj->upper - pUnixFrame->m_pHadj->page_size;
+	gfloat xoffMax = static_cast<AP_UnixFrameHelper *>(pUnixFrame->m_pFrameHelper)->m_pHadj->upper - 
+		static_cast<AP_UnixFrameHelper *>(pUnixFrame->m_pFrameHelper)->m_pHadj->page_size;
 	if (xoffMax <= 0)
 		xoffNew = 0;
 	else if (xoffNew > xoffMax)
 		xoffNew = xoffMax;
-	gtk_adjustment_set_value(GTK_ADJUSTMENT(pUnixFrame->m_pHadj),xoffNew);
+	gtk_adjustment_set_value(GTK_ADJUSTMENT(static_cast<AP_UnixFrameHelper *>(pUnixFrame->m_pFrameHelper)->m_pHadj),xoffNew);
 	pView->setXScrollOffset((UT_sint32)xoffNew);
-}
-
-
-GtkWidget * AP_UnixFrame::_createDocumentWindow()
-{
-	bool bShowRulers = static_cast<AP_FrameData*> (m_pData)->m_bShowRuler;
-
-	// create the rulers
-	AP_UnixTopRuler * pUnixTopRuler = NULL;
-	AP_UnixLeftRuler * pUnixLeftRuler = NULL;
-
-	if ( bShowRulers )
-	{
-		pUnixTopRuler = new AP_UnixTopRuler(this);
-		UT_ASSERT(pUnixTopRuler);
-		m_topRuler = pUnixTopRuler->createWidget();
-		
-		if (static_cast<AP_FrameData*> (m_pData)->m_pViewMode == VIEW_PRINT)
-		  {
-		    pUnixLeftRuler = new AP_UnixLeftRuler(this);
-		    UT_ASSERT(pUnixLeftRuler);
-		    m_leftRuler = pUnixLeftRuler->createWidget();
-
-		    // get the width from the left ruler and stuff it into the top ruler.
-		    pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
-		  }
-		else
-		  {
-		    m_leftRuler = NULL;
-		    pUnixTopRuler->setOffsetLeftRuler(0);
-		  }
-	}
-	else
-	{
-		m_topRuler = NULL;
-		m_leftRuler = NULL;
-	}
-
-	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
-	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
-
-	// set up for scroll bars.
-	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
-	m_hScroll = gtk_hscrollbar_new(m_pHadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_hScroll),this);
-
-	g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(_fe::hScrollChanged), NULL);
-
-	m_pVadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	gtk_object_set_user_data(GTK_OBJECT(m_pVadj),this);
-	m_vScroll = gtk_vscrollbar_new(m_pVadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_vScroll),this);
-
-	g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(_fe::vScrollChanged), NULL);
-
-	// we don't want either scrollbar grabbing events from us
-	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
-	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
-
-	// create a drawing area in the for our document window.
-	m_dArea = createDrawingArea ();
-	
-	gtk_object_set_user_data(GTK_OBJECT(m_dArea),this);
-	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
-												GDK_BUTTON_PRESS_MASK |
-												GDK_POINTER_MOTION_MASK |
-												GDK_BUTTON_RELEASE_MASK |
-												GDK_KEY_PRESS_MASK |
-												GDK_KEY_RELEASE_MASK));
-	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea),FALSE);
-	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
-					   G_CALLBACK(_fe::expose), NULL);
-  
-	g_signal_connect(G_OBJECT(m_dArea), "button_press_event",
-					   G_CALLBACK(_fe::button_press_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "button_release_event",
-					   G_CALLBACK(_fe::button_release_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "motion_notify_event",
-					   G_CALLBACK(_fe::motion_notify_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "scroll_event",
-					   G_CALLBACK(_fe::scroll_notify_event), NULL);
-
-	g_signal_connect(G_OBJECT(m_dArea), "configure_event",
-					   G_CALLBACK(_fe::configure_event), NULL);
-
-	// create a table for scroll bars, rulers, and drawing area
-
-	m_table = gtk_table_new(1, 1, FALSE); //was 1,1
-	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
-
-	// NOTE:  in order to display w/ and w/o rulers, gtk needs two tables to
-	// work with.  The 2 2x2 tables, (i)nner and (o)uter divide up the 3x3
-	// table as follows.  The inner table is at the 1,1 table.
-	//	+-----+---+
-	//	| i i | o |
-	//	| i i |   |
-	//	+-----+---+
-	//	|  o  | o |
-	//	+-----+---+
-		
-	// scroll bars
-	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2,
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
-					 0, 0);
-
-	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1,
-					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 0, 0);
-
-
-	// arrange the widgets within our inner table.
-	m_innertable = gtk_table_new(2,2,FALSE);
-	gtk_table_attach( GTK_TABLE(m_table), m_innertable, 0, 1, 0, 1,
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 0, 0); 
-
-	if ( bShowRulers )
-	{
-		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0, 1,
-						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions)(GTK_FILL),
-						 0, 0);
-
-		if (m_leftRuler)
-			gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
-							 (GtkAttachOptions)(GTK_FILL),
-							 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-							 0, 0);
-
-		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 0, 0); 
-	}
-	else	// no rulers
-	{
-		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 0, 0); 
-	}
-
-	// create a 3d box and put the table in it, so that we
-	// get a sunken in look.
-	m_wSunkenBox = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(m_wSunkenBox), GTK_SHADOW_IN);
-	gtk_container_add(GTK_CONTAINER(m_wSunkenBox), m_table);
-
-	gtk_widget_show(m_hScroll);
-	gtk_widget_show(m_vScroll);
-	gtk_widget_show(m_dArea);
-	gtk_widget_show(m_innertable);
-	gtk_widget_show(m_table);
-
-	return m_wSunkenBox;
 }
 
 void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
@@ -907,39 +971,9 @@ void AP_UnixFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 	UT_ASSERT_NOT_REACHED();
 }
 
-GtkWidget * AP_UnixFrame::_createStatusBarWindow()
-{
-	AP_UnixStatusBar * pUnixStatusBar = new AP_UnixStatusBar(this);
-	UT_ASSERT(pUnixStatusBar);
-
-	((AP_FrameData *)m_pData)->m_pStatusBar = pUnixStatusBar;
-	
-	GtkWidget * w = pUnixStatusBar->createWidget();
-
-	return w;
-}
-
 void AP_UnixFrame::setStatusMessage(const char * szMsg)
 {
 	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
-}
-
-void AP_UnixFrame::_setWindowIcon()
-{
-	// attach program icon to window
-	GtkWidget * window = getTopLevelWindow();
-	UT_ASSERT(window);
-
-	// create a pixmap from our included data
-	GdkBitmap * mask;
-	GdkPixmap * pixmap = gdk_pixmap_create_from_xpm_d(window->window,
-													  &mask,
-													  NULL,
-													  abiword_48_xpm);
-	UT_ASSERT(pixmap && mask);
-		
-	gdk_window_set_icon(window->window, NULL, pixmap, mask);
-	gdk_window_set_icon_name(window->window, "AbiWord Application Icon");
 }
 
 UT_Error AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
@@ -966,7 +1000,7 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 
 		pUnixTopRuler = new AP_UnixTopRuler(this);
 		UT_ASSERT(pUnixTopRuler);
-		m_topRuler = pUnixTopRuler->createWidget();
+		static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_topRuler = pUnixTopRuler->createWidget();
 
 		// get the width from the left ruler and stuff it into the 
 		// top ruler.
@@ -977,8 +1011,10 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 		  pUnixTopRuler->setOffsetLeftRuler(0);
 
 		// attach everything	
-		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0,
-				 1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+		gtk_table_attach(GTK_TABLE(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_innertable), 
+				 static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_topRuler, 
+				 0, 2, 0, 1, 
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 (GtkAttachOptions)(GTK_FILL),
 				 0, 0);
 
@@ -987,9 +1023,9 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 	else
 	  {
 		// delete the actual widgets
-		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
+		gtk_object_destroy( GTK_OBJECT(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_topRuler) );
 		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
-		m_topRuler = NULL;
+		static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_topRuler = NULL;
 	  }
 
 	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
@@ -1010,15 +1046,17 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 //
 // if there is an old ruler just return.
 //
-		if(m_leftRuler)
+		if(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_leftRuler)
 		{
 			return;
 		}
 		pUnixLeftRuler = new AP_UnixLeftRuler(this);
 		UT_ASSERT(pUnixLeftRuler);
-		m_leftRuler = pUnixLeftRuler->createWidget();
+		static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_leftRuler = pUnixLeftRuler->createWidget();
 
-		gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
+		gtk_table_attach(GTK_TABLE(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_innertable), 
+				 static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_leftRuler, 
+				 0, 1, 1, 2,
 				 (GtkAttachOptions)(GTK_FILL),
 				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 				 0,0);
@@ -1027,11 +1065,12 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 	}
 	else
 	{
-	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
-		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
+	    if (static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_leftRuler && 
+		GTK_IS_OBJECT(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_leftRuler))
+		gtk_object_destroy(GTK_OBJECT(static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_leftRuler) );
 	    
 	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
-	    m_leftRuler = NULL;
+	    static_cast<AP_UnixFrameHelper *>(m_pFrameHelper)->m_leftRuler = NULL;
 	}
 
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pUnixLeftRuler;
