@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2003-08-31 15:34-0400\n"
-"PO-Revision-Date: 2003-09-06 09:12-0000\n"
+"PO-Revision-Date: 2003-09-07 07:58-0000\n"
 "Last-Translator: Rhoslyn Prys <rhoslyn.prys@meddal.org.uk>\n"
 "Language-Team: Yiddish <raphael@cs.uky.edu>\n"
 "MIME-Version: 1.0\n"
@@ -5586,7 +5586,7 @@ msgstr "Basg"
 #. LANG_BE_BY
 #: po/tmp/xap_String_Id.h.h:91
 msgid "Belarusian"
-msgstr "Belaswseg"
+msgstr "Belarwseg"
 
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h.h:93
@@ -5666,7 +5666,7 @@ msgstr "Tseinëeg (PRC)"
 #. LANG_ZH_SG
 #: po/tmp/xap_String_Id.h.h:131
 msgid "Chinese (Singapore)"
-msgstr "Tseineëg (Singapore)"
+msgstr "Tseinëeg (Singapore)"
 
 #. LANG_ZH_TW
 #: po/tmp/xap_String_Id.h.h:133
@@ -5676,7 +5676,7 @@ msgstr "Tseinëeg (Taiwan)"
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h.h:135
 msgid "Chinese Simplified, EUC-CN (GB2312)"
-msgstr "Tseineëg Syml, EUC-CN (GB2312)"
+msgstr "Tseinëeg Syml, EUC-CN (GB2312)"
 
 #. ENC_CHSI_GB
 #: po/tmp/xap_String_Id.h.h:137
@@ -5701,7 +5701,7 @@ msgstr "Tseinëeg Traddodiadol, BIG5"
 #. ENC_CHTR_BIG5HKSCS
 #: po/tmp/xap_String_Id.h.h:145
 msgid "Chinese Traditional, BIG5-HKSCS"
-msgstr "Tseineëg Traddodiadol, BIG5-HKSCS"
+msgstr "Tseinëeg Traddodiadol, BIG5-HKSCS"
 
 #. ENC_CHTR_EUC
 #: po/tmp/xap_String_Id.h.h:147
@@ -6547,7 +6547,7 @@ msgstr "Rwmaneg"
 #. ENC_ROMA_MAC
 #: po/tmp/xap_String_Id.h.h:512
 msgid "Romanian, Macintosh"
-msgstr "Romaneg, Macintosh"
+msgstr "Rwmaneg, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h.h:514
