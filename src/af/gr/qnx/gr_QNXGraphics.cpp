@@ -711,108 +711,79 @@ inline void adjust_rect(PhRect_t *rect, PhPoint_t *offset) {
 	}
 }
 
+//TODO: FIXup this code!
 void GR_QNXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	PhRect_t  rect;
 	PhPoint_t offset;
-
-	dx = tdu(dx);
-	dy = tdu(dy);
-	
+	UT_sint32 newY = getPrevYOffset() + dy;
+	UT_sint32 newX = getPrevXOffset() + dx;
 	GR_CaretDisabler caretDisabler(getCaret());
+	UT_sint32 ddx = -tdu(newX - getPrevXOffset());
+	UT_sint32 ddy = -tdu(newY - getPrevYOffset());
+	setPrevYOffset(newY);
+	setPrevXOffset(newX);
+	if(ddx == 0 && ddy == 0)
+	{
+		return;
+	}
 	PtCalcCanvas(m_pDraw, &rect);
+	UT_sint32 iddy = labs(ddy);
+	offset.x = ddx;
+	offset.y = ddy;
+	bool bEnableSmooth = m_pApp->isSmoothScrollingEnabled();
+	bEnableSmooth = bEnableSmooth && (iddy < 30) && (ddx == 0);
 
-	offset.x = -1*dx;
-	offset.y = -1*dy;
-
-/*
-	UT_DEBUGMSG(("GR Scroll1 Before %d,%d %d,%d  by %d,%d",
-			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
-*/
-
-	//This does the blit on the region, so the rect must be in
-	//the windows co-ordinates.  But it doesn't automatically
-	//generate a damage event like PtBlit does so we only re-draw once.
-	PhPoint_t shift;
-	PtWidgetOffset(m_pDraw, &shift);
-	PhTranslateRect(&rect, &shift);
-
-	//The problem here is with clipping ... can I clip the the rect?
-	//Alternately, I should be able to adjust the rect by the offset
-	//on the opposite side that it is scrolling ... clipping would be
-	//way easier though.
-	adjust_rect(&rect, &offset);
-
-
-	xxx_UT_DEBUGMSG(("GR Scroll1 %d,%d %d,%d  by %d,%d",
-			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
-
-	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
-	//to get an expose call PtDamageExtent(region_widget, damage_rect)
+	if(bEnableSmooth) 
+	{
+		if(ddy < 0)
+		{
+			UT_sint32 i = 0;
+			offset.x=0;
+			offset.y=-1;
+			for(i = 0; i< iddy; i++)
+			{
+				PtBlit(m_pDraw,&rect,&offset);
+			}
+		}
+		else
+		{
+			offset.x=0;
+			offset.y=1;
+			UT_sint32 i = 0;
+			for(i = 0; i< iddy; i++)
+			{
+				PtBlit(m_pDraw,&rect,&offset);
+			}
+		}
+	} else 
+	{
+		PhPoint_t shift;
+		PtWidgetOffset(m_pDraw, &shift);
+		PhTranslateRect(&rect, &shift);	
+		adjust_rect(&rect, &offset);
+		PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
+	}
 }
 
 void GR_QNXGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	PhRect_t 	rect, widgetrect;
-	PhPoint_t 	offset;
-
-	x_dest = tdu(x_dest);
-	y_dest = tdu(y_dest);
-	x_src = tdu(x_src);
-	y_src = tdu(y_src);
-	width = tdu(width);
-	height = tdu(height);
 	GR_CaretDisabler caretDisabler(getCaret());
+	PhPoint_t shift,offset;
+	PhRect_t rect;
 
-	PtCalcCanvas(m_pDraw, &widgetrect);
+	rect.ul.x = tdu(x_src);
+	rect.ul.y = tdu(y_src);
+	rect.lr.x = tdu(width+x_src);
+	rect.lr.y = tdu(height+y_src);
 
-/*
-	UT_DEBUGMSG(("GR Scroll2 dest:%d,%d src:%d,%d %dx%d ",
-					x_dest, y_dest, x_src, y_src, width, height));
-*/
-	if (width < 0) {
-		UT_ASSERT(0);
-		x_src -= width;
-		width = -1*width;
-	}
-	if (height < 0) {
-		UT_ASSERT(0);
-		y_src -= height;
-		height = -1*height;
-	}
+	offset.x = tdu(x_dest - x_src);
+	offset.y = tdu(y_dest - y_src); 
 
-	rect.ul.x = rect.lr.x = x_src;
-	rect.ul.y = rect.lr.y = y_src;
-	rect.lr.x += width;
-	rect.lr.y += height;
-
-	offset.x = x_dest - x_src;
-	offset.y = y_dest - y_src;
-
-/*
-	UT_DEBUGMSG(("GR Scroll2 Before %d,%d %d,%d  by %d,%d",
-			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
-*/
-
-	if (PtRectIntersect(&widgetrect, &rect) == 0) {
-		UT_DEBUGMSG(("No intersection! "));
-		UT_ASSERT(0);
-	}
-	else {
-		rect = widgetrect;
-	}
-
-	PhPoint_t shift;
 	PtWidgetOffset(m_pDraw, &shift);
-	PhTranslateRect(&rect, &shift);
-
-
-	xxx_UT_DEBUGMSG(("GR Scroll2 %d,%d %d,%d  by %d,%d",
-			rect.ul.x, rect.ul.y, rect.lr.x, rect.lr.y, offset.x, offset.y));
-
-
+	PhTranslateRect(&rect, &shift);	
 	PhBlit(PtWidgetRid(PtFindDisjoint(m_pDraw)), &rect, &offset);
 }
 
