@@ -264,6 +264,7 @@ Damon Allen Davison <allolex@users.sourceforge.net>	German
 Masayuki Hatta <mhatta@gnu.org>				Japanese
 Daniel Yacob <locales@geez.org>				Amharic
 Pierre Abbat <phma@webjockey.net>			Lojban
+Alfredo Barrainkua Zallo <alfredobz@euskalnet.net>	Basque
 unsung heroes
 -------------
 Mary Eppich
