@@ -651,3 +651,30 @@ void UT_UUID::clear()
 	m_bIsValid = false;
 }
 
+UT_uint32 UT_UUID::hash32() const
+{
+	// based on UT_String
+	UT_uint32 h = 0;
+	char * p = (char*) & m_uuid;
+	
+	for (UT_uint32 i = 0; i < sizeof(m_uuid); ++i,++p)
+	{
+		h = (h << 5) - h + *p;
+	}
+	
+	return h;
+}
+
+UT_uint64 UT_UUID::hash64() const
+{
+	// based on UT_String
+	UT_uint64 h = 0;
+	char * p = (char*) & m_uuid;
+	
+	for (UT_uint32 i = 0; i < sizeof(m_uuid); ++i,++p)
+	{
+		h = (h << 5) - h + *p;
+	}
+	
+	return h;
+}

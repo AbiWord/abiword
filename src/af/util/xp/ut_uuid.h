@@ -122,6 +122,9 @@ class ABI_EXPORT UT_UUID
 	bool            toString(UT_String & to) const;
 	bool            toString(const uuid_t &from, UT_String & to) const;
 
+	UT_uint32       hash32() const;
+	UT_uint64       hash64() const;
+	
 	static const UT_UUID & getNull() {return s_Null;}
 
 	// these retrieve various information from UUID
