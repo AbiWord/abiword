@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  *
- * Translation by SoftCatalà (jmas@softcatala.org)
+ * Translation by SoftCatalà (jesus@softcatala.org)
  */
 
 
@@ -55,12 +55,15 @@ BeginSet(ca,ES,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Desa", 	tb_save_xpm,	NULL, "Desa el document")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Anomena i desa", 	tb_save_as_xpm,	NULL, "Desa el document amb un altre nom")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Imprimeix",	tb_print_xpm,	NULL, "Imprimeix el document")
+	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,  "Previsualitza", tb_print_preview_xpm, NULL, "Previsualitza el document abans d'imprimir-lo")
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Desfés",		tb_undo_xpm,	NULL, "Desfés l'edició")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Refés",		tb_redo_xpm,	NULL, "Refés l'edició")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Retalla",		tb_cut_xpm,		NULL, "Retalla")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copia",		tb_copy_xpm,	NULL, "Copia")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Enganxa",	tb_paste_xpm,	NULL, "Enganxa")
+	ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, 		"Ortografia", tb_spellcheck_xpm, NULL, "Comprova l'ortografia")
+	ToolbarLabel(AP_TOOLBAR_ID_IMG, 		"Insereix una imatge", tb_insert_graphic_xpm, NULL, "Insereix una imatge en el document")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Estil",	NoIcon,			NULL, "Estil")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Tipus de lletra",		NoIcon,			NULL, "Tipus de lletra")
@@ -98,7 +101,7 @@ BeginSet(ca,ES,true)
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Color",		NoIcon,			NULL,	"Canvia el color")
 	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Color de fons",	NoIcon,			NULL,	"Canvia el color de fons")
 	ToolbarLabel(AP_TOOLBAR_ID_INDENT,		"Identació",	tb_text_indent_xpm,	NULL,	"Augmenta la identació del paràgraf")
-	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desidentació",	tb_text_unindent_xpm,	NULL,	"Diminueix la identació del paràgraf")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Desidentació",	tb_text_unindent_xpm,	NULL,	"Disminueix la identació del paràgraf")
 	
 	// ... add others here ...
 
