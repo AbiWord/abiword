@@ -38,7 +38,7 @@
 #include "fg_Graphic.h"
 #include "fl_AutoLists.h"
 #include "pp_Property.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 #include "fl_ContainerLayout.h"
 #include "fl_SectionLayout.h"
 #include "fb_LineBreaker.h"

@@ -32,7 +32,7 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Lists.h"
 
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 /************************************************************************/
 

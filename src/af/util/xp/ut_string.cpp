@@ -30,7 +30,7 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 #include "ut_mbtowc.h"
 #include "ut_wctomb.h"
 

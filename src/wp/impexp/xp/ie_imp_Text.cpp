@@ -37,7 +37,7 @@
 #include "xap_DialogFactory.h"
 #include "xap_Dlg_Encoding.h"
 #include "ap_Prefs.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 
 #include "pt_PieceTable.h"
 #include "pf_Frag_Strux.h"

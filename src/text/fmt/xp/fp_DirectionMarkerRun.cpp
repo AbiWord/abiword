@@ -18,7 +18,7 @@
  */
 
 #include "fp_DirectionMarkerRun.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 #include "fl_BlockLayout.h"
 #include "fv_View.h"
 #include "fp_TextRun.h"

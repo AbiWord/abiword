@@ -35,7 +35,7 @@
 #include "ut_assert.h"
 #include "ap_Strings.h"
 #include "fl_BlockLayout.h"
-#include <fribidi/fribidi.h>
+#include <fribidi.h>
 #include "pp_Revision.h"
 #include "ut_string_class.h"
 
