@@ -101,6 +101,7 @@ dcl(TB_Zoom_WholePage,					"Page")
 
 /* Unix Print dialog */
 dcl(DLG_UP_PrintTitle,					"Print")
+dcl(DLG_UP_PrintPreviewTitle,                      "AbiWord: Print Preview")
 dcl(DLG_UP_PrintTo,						"Print to: ")
 dcl(DLG_UP_Printer,						"Printer")
 dcl(DLG_UP_File,						"File")

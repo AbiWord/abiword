@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_misc.h"
+#include "xap_Strings.h"
 #include "xap_UnixGnomePrintGraphics.h"
 #include "xap_UnixPSImage.h"
 
@@ -504,9 +505,10 @@ UT_Bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 	else
 	  {
 	    GnomePrintMasterPreview *preview;
-	    
+	    const XAP_StringSet * pSS = m_pApp->getStringSet();
+
 	    // TODO: translate me
-	    preview = gnome_print_master_preview_new(m_gpm, "AbiWord: Print Preview");
+	    preview = gnome_print_master_preview_new(m_gpm, pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle));
 	    gtk_widget_show(GTK_WIDGET(preview));
 	  }
 	
