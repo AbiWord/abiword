@@ -348,7 +348,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	  rec.top -= getAscent();
 	}
 	getMathManager()->render(m_iMathUID,rec);
-	if(m_bNeedsSnapshot && !getMathManager()->isDefault())
+	if(m_bNeedsSnapshot && !getMathManager()->isDefault() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)  )
 	{
 	  rec.top -= getAscent();
 	  getMathManager()->makeSnapShot(m_iMathUID,rec);
