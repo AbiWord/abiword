@@ -1076,6 +1076,33 @@ bool GR_QNXGraphics::endPrint(void) {
 	return true;
 }
 
+/* capture the area and convert it to a image */
+GR_Image * GR_QNXGraphics::genImageFromRectangle(UT_Rect & r) {
+	PhRect_t rect;
+	short int x,y;
+	PhImage_t *pImgshmem,*pImg;
+
+	r.left =  tdu(r.left);
+	r.top =   tdu(r.top);
+	r.width = tdu(r.width);
+	r.height =tdu(r.height); 
+
+	PtGetAbsPosition(m_pDraw,&x,&y);
+	rect.ul.x=x + r.left;
+	rect.ul.y=y + r.top;
+	rect.lr.x= rect.ul.x + r.width;
+	rect.lr.y= rect.ul.y + r.height;
+	pImgshmem =PgReadScreen(&rect,NULL);
+
+	//PgReadScreen is kind of stupid and you need to free that image using PgShmemDestroy, therefor duplicate it so GR_QNXImage won't go nuts.
+
+	pImg = PiDuplicateImage(pImgshmem,NULL);
+	PgShmemDestroy(pImgshmem);
+	GR_QNXImage *img = new GR_QNXImage("ScreenShot");
+	img->setData(pImg);
+	return static_cast<GR_Image *>(img);
+}
+
 void GR_QNXGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndx)
 {
 	
