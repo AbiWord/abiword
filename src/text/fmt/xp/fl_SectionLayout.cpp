@@ -3785,8 +3785,11 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_ContainerLayout* pBL
 	}
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);
-	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_populateSpan(pcrs,blockOffset,len)
-			&& bResult;
+	if(pBL)
+	{
+	  bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_populateSpan(pcrs,blockOffset,len)
+	    && bResult;
+	}
 	return bResult;
 }
 
@@ -3879,15 +3882,21 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_ContainerLayout* pBL, 
 		// Find matching block in this shadow.
 
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteSpan(pcrs)
-			&& bResult;
+		if(pShadowBL)
+		{
+		  bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteSpan(pcrs)
+		    && bResult;
+		}
 	}
 	// Update the overall block too.
 
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);
-	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteSpan(pcrs)
-		&& bResult;
+	if(pBL)
+        {
+	  bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteSpan(pcrs)
+	    && bResult;
+	}
 	return bResult;
 }
 
@@ -4038,14 +4047,20 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pB
 		// Find matching block in this shadow.
 
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeFmtMark(pcrfmc)
-			&& bResult;
+		if(pShadowBL)
+		{
+		  bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeFmtMark(pcrfmc)
+		    && bResult;
+		}
 	}
 	// Update the overall block too.
 
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);
-   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc) && bResult;
+	if(pBL)
+	{
+	  bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeFmtMark(pcrfmc) && bResult;
+	}
 	return bResult;
 }
 
@@ -4292,13 +4307,16 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL,
 	if(pBL)
 	{
 		fl_ContainerLayout * ppBL = findMatchingContainer(pBL);
-		static_cast<fl_BlockLayout *>(ppBL)->setHdrFtr();
-		bResult = static_cast<fl_BlockLayout *>(ppBL)->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
+		if(ppBL)
+		{
+		  static_cast<fl_BlockLayout *>(ppBL)->setHdrFtr();
+		  bResult = static_cast<fl_BlockLayout *>(ppBL)->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 			&& bResult;
 //
 // Mark the Block as HdrFtr
 //
-		static_cast<fl_BlockLayout *>(ppBL->getNext())->setHdrFtr();
+		  static_cast<fl_BlockLayout *>(ppBL->getNext())->setHdrFtr();
+		}
 		setNeedsReformat();
 	}
 	else
