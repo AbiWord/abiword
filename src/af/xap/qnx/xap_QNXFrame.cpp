@@ -742,6 +742,37 @@ bool XAP_QNXFrame::raise()
 	return true;
 }
 
+void XAP_QNXFrame::setFullScreen(bool changeToFullScreen)
+{
+PtWidget_t *app = getTopLevelWindow();
+static PhArea_t pharea;
+static unsigned short phflags;
+
+PhArea_t *area;
+unsigned short *flags;
+PgDisplaySettings_t disp;
+
+if(changeToFullScreen == false)
+{
+	PtSetResource(app,Pt_ARG_AREA,&pharea,0);	
+	PtSetResource(app,Pt_ARG_WINDOW_RENDER_FLAGS,Pt_TRUE,phflags);
+}
+else
+{
+	PtGetResource(app,Pt_ARG_WINDOW_RENDER_FLAGS,&flags,0);
+	phflags = *flags;
+	PtSetResource(app,Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,Pt_TRUE);
+	PtGetResource(app,Pt_ARG_AREA,&area,0);
+
+	pharea.pos.x = pharea.pos.y=0;
+	PgGetVideoMode(&disp);
+	pharea.size.w=disp.xres;
+	pharea.size.h=disp.yres;
+	PtSetResource(app,Pt_ARG_AREA,&pharea,0);
+	pharea = *area;
+}
+}
+
 bool XAP_QNXFrame::show()
 {
 	raise();
