@@ -45,6 +45,10 @@ compile:
 	@echo Building AbiSuite with [ABI_ROOT=$(ABI_ROOT)]
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src
 
+compile_dbg:
+	@echo Building AbiSuite with [ABI_ROOT=$(ABI_ROOT)]
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) ABI_OPT_DEBUG=1 -C src
+
 ##################################################################
 ## Compile with BiDiRectional support
 
