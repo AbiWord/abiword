@@ -205,14 +205,14 @@ s_mapPageIdToString (UT_uint16 id)
 */
 typedef enum
 {
-  WLNF_INVALID         = -1,
+  WLNF_INVALID		   = -1,
   WLNF_EUROPEAN_ARABIC = 0,
-  WLNF_UPPER_ROMAN     = 1,
-  WLNF_LOWER_ROMAN     = 2,
+  WLNF_UPPER_ROMAN	   = 1,
+  WLNF_LOWER_ROMAN	   = 2,
   WLNF_UPPER_LETTER    = 3,
   WLNF_LOWER_LETTER    = 4,
-  WLNF_ORDINAL         = 5,
-  WLNF_BULLETS         = 23,
+  WLNF_ORDINAL		   = 5,
+  WLNF_BULLETS		   = 23,
   WLNF_HEBREW_NUMBERS  = 45  
 } MSWordListIdType;
 
@@ -223,26 +223,26 @@ static const char *
 s_mapDocToAbiListId (MSWordListIdType id)
 {
   switch (id)
-    {
-    case WLNF_UPPER_ROMAN: // upper roman
-      return "4";
+	{
+	case WLNF_UPPER_ROMAN: // upper roman
+	  return "4";
 
-    case WLNF_LOWER_ROMAN: // lower roman
-      return "3";
+	case WLNF_LOWER_ROMAN: // lower roman
+	  return "3";
 
-    case WLNF_UPPER_LETTER: // upper letter
-      return "2";
+	case WLNF_UPPER_LETTER: // upper letter
+	  return "2";
 
-    case WLNF_LOWER_LETTER: // lower letter
-      return "1";
+	case WLNF_LOWER_LETTER: // lower letter
+	  return "1";
 
-    case WLNF_BULLETS: // bullet list
-      return "5";
+	case WLNF_BULLETS: // bullet list
+	  return "5";
 
-    case WLNF_ORDINAL: // ordinal
-    default:
-      return "0";
-    }
+	case WLNF_ORDINAL: // ordinal
+	default:
+	  return "0";
+	}
 }
 
 /*!
@@ -252,26 +252,26 @@ static const char *
 s_mapDocToAbiListDelim (MSWordListIdType id)
 {
   switch (id)
-    {
-    case WLNF_UPPER_ROMAN: // upper roman
-      return "%L";
+	{
+	case WLNF_UPPER_ROMAN: // upper roman
+	  return "%L";
 
-    case WLNF_LOWER_ROMAN: // lower roman
-      return "%L";
+	case WLNF_LOWER_ROMAN: // lower roman
+	  return "%L";
 
-    case WLNF_UPPER_LETTER: // upper letter
-      return "%L)";
+	case WLNF_UPPER_LETTER: // upper letter
+	  return "%L)";
 
-    case WLNF_LOWER_LETTER: // lower letter
-      return "%L)";
+	case WLNF_LOWER_LETTER: // lower letter
+	  return "%L)";
 
-    case WLNF_BULLETS: // bullet list
-      return "%L";
+	case WLNF_BULLETS: // bullet list
+	  return "%L";
 
-    case WLNF_ORDINAL: // ordinal
-    default:
-      return "%L.";
-    }
+	case WLNF_ORDINAL: // ordinal
+	default:
+	  return "%L.";
+	}
 }
 
 /*!
@@ -281,26 +281,26 @@ static const char *
 s_mapDocToAbiListStyle (MSWordListIdType id)
 {
   switch (id)
-    {
-    case WLNF_UPPER_ROMAN: // upper roman
-      return "Upper Roman List";
+	{
+	case WLNF_UPPER_ROMAN: // upper roman
+	  return "Upper Roman List";
 
-    case WLNF_LOWER_ROMAN: // lower roman
-      return "Lower Roman List";
+	case WLNF_LOWER_ROMAN: // lower roman
+	  return "Lower Roman List";
 
-    case WLNF_UPPER_LETTER: // upper letter
-      return "Upper Case List";
+	case WLNF_UPPER_LETTER: // upper letter
+	  return "Upper Case List";
 
-    case WLNF_LOWER_LETTER: // lower letter
-      return "Lower Case List";
+	case WLNF_LOWER_LETTER: // lower letter
+	  return "Lower Case List";
 
-    case WLNF_BULLETS: // bullet list
-      return "Bullet List";
+	case WLNF_BULLETS: // bullet list
+	  return "Bullet List";
 
-    case WLNF_ORDINAL: // ordinal
-    default:
-      return "Numbered List";
-    }
+	case WLNF_ORDINAL: // ordinal
+	default:
+	  return "Numbered List";
+	}
 }
 
 /*!
@@ -310,26 +310,26 @@ static const char *
 s_fieldFontForListStyle (MSWordListIdType id)
 {
   switch (id)
-    {
-    case WLNF_UPPER_ROMAN: // upper roman
-      return "NULL";
+	{
+	case WLNF_UPPER_ROMAN: // upper roman
+	  return "NULL";
 
-    case WLNF_LOWER_ROMAN: // lower roman
-      return "NULL";
+	case WLNF_LOWER_ROMAN: // lower roman
+	  return "NULL";
 
-    case WLNF_UPPER_LETTER: // upper letter
-      return "Times New Roman";
+	case WLNF_UPPER_LETTER: // upper letter
+	  return "Times New Roman";
 
-    case WLNF_LOWER_LETTER: // lower letter
-      return "Times New Roman";
+	case WLNF_LOWER_LETTER: // lower letter
+	  return "Times New Roman";
 
-    case WLNF_BULLETS: // bullet list
-      return "Symbol";
+	case WLNF_BULLETS: // bullet list
+	  return "Symbol";
 
-    case WLNF_ORDINAL: // ordinal
-    default:
-      return "Times New Roman";
-    }
+	case WLNF_ORDINAL: // ordinal
+	default:
+	  return "Times New Roman";
+	}
 }
 
 /****************************************************************************/
@@ -1327,12 +1327,12 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 		if (paper_name) 
 		  {
-		    // we found a paper name, let's use it
-		    getDoc()->m_docPageSize.Set (paper_name);
+			// we found a paper name, let's use it
+			getDoc()->m_docPageSize.Set (paper_name);
 		  }
 		else
 		  {
-		    getDoc()->m_docPageSize.Set ("Custom");
+			getDoc()->m_docPageSize.Set ("Custom");
 		  }
 
 		// always use the passed size
@@ -1602,166 +1602,166 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	if ( apap->ilfo )
 	{
 	  // all lists have ilfo set
-	  UT_DEBUGMSG(("list: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));  //ilvl is the list level
+	  UT_DEBUGMSG(("list: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));	//ilvl is the list level
 	  LVL * myLVL = NULL;
 	  LFO * myLFO = NULL;
 	  LST * myLST = NULL;
 	  LSTF * myLSTF = NULL;
 	  LFOLVL * myLFOLVL = NULL;
-	  
+
 	  UT_sint32 myStartAt = -1;
 	  U8 * mygPAPX = NULL;
 	  U8 * mygCHPX = NULL;
 	  XCHAR * myNumberStr = NULL;
 	  UT_sint32 myNumberStr_count = 0;
 	  UT_uint32 mygPAPX_count = 0, mygCHPX_count = 0;
-	  
+
 	  PAPX myPAPX;
 	  CHPX myCHPX;
-	  
+
 	  // first, get the LFO, and then find the lfovl for this paragraph
 	  myLFO = &ps->lfo[apap->ilfo - 1];
-	  
+
 	  UT_uint32 i = 0, j = 0, k = 0;
 	  while(i < apap->ilfo - 1 && i < ps->nolfo)
-	    {
-	      j += ps->lfo[i].clfolvl;
-	      i++;
-	    }
-	  
+		{
+		  j += ps->lfo[i].clfolvl;
+		  i++;
+		}
+
 	  // remember how many overrides are there for this record
 	  k = ps->lfo[i].clfolvl;
-	  
+
 	  // if there are any overrides, then see if one of them applies to this level
 	  if(k)
-	    {
-	      i = 0;
-	      while(i < k && ps->lfolvl[j].ilvl != apap->ilvl)
+		{
+		  i = 0;
+		  while(i < k && ps->lfolvl[j].ilvl != apap->ilvl)
 		{
 		  j++;
 		  i++;
 		}
-	      
-	      if(ps->lfolvl[--j].ilvl != apap->ilvl)
+
+		  if(ps->lfolvl[--j].ilvl != apap->ilvl)
 		{
 		  UT_DEBUGMSG(("list: no LFOLVL found for this level (1)\n"));
 		  myLFOLVL = NULL;
 		}
-	      else
+		  else
 		{
 		  myLFOLVL = &ps->lfolvl[j];
 		  UT_DEBUGMSG(("list: lfovl: iStartAt %d, fStartAt", myLFOLVL->iStartAt,myLFOLVL->fStartAt,myLFOLVL->fFormatting));
 		  if(!myLFOLVL->fFormatting && myLFOLVL->fStartAt)
-		    myStartAt = myLFOLVL->iStartAt;
+			myStartAt = myLFOLVL->iStartAt;
 		}
-	    }
+		}
 	  else
-	    {
-	      UT_DEBUGMSG(("list: no LFOLVL found for this level (2)\n"));
-	      myLFOLVL = NULL;
-	    }
-	  
+		{
+		  UT_DEBUGMSG(("list: no LFOLVL found for this level (2)\n"));
+		  myLFOLVL = NULL;
+		}
+
 	  // now that we might have the LFOLVL, let's see if we should use the LVL from the LFO
 	  bool bNeedLST_LVL = (!myLFOLVL || !myLFOLVL->fStartAt || !myLFOLVL->fFormatting);
 	  bool bLST_LVL_format = true;
 	  if(myLFOLVL)
-	    {
-	      // this branch has not been debugged, as I have not been able to create a
-	      // Word document that would use the LFO LVL
-	      UT_DEBUGMSG(("list: using the LVL from LFO\n"));
-	      myListId = myLFOLVL->iStartAt;
-	      i = 0;
-	      xxx_UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
-	      while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
+		{
+		  // this branch has not been debugged, as I have not been able to create a
+		  // Word document that would use the LFO LVL
+		  UT_DEBUGMSG(("list: using the LVL from LFO\n"));
+		  myListId = myLFOLVL->iStartAt;
+		  i = 0;
+		  xxx_UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
+		  while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
 		{
 		  i++;
 		  UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
 		}
-	      
-	      if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
+
+		  if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
 		{
 		  UT_DEBUGMSG(("error: could not locate LST entry\n"));
 		  goto list_error;
 		}
-	      
-	      myLST = &ps->lst[i];
-	      myLVL = &myLST->lvl[apap->ilvl];
-	      
-	      // now we should have the LVL
-	      UT_ASSERT(myLVL);
-	      
-	      myLVLF = &myLVL->lvlf;
-	      UT_ASSERT(myLVLF);
-	      
-	      myStartAt = myLFOLVL->fStartAt ? myLVLF->iStartAt : -1;
-	      
-	      mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
-	      mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;
-	      
-	      // not sure about this, the CHPX applies to the number, so it might be
-	      // that we should take this if the fStartAt is set -- the docs are not clear
-	      mygCHPX = myLFOLVL->fFormatting ? myLVL->grpprlChpx : NULL;
-	      mygCHPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlChpx : 0;
-	      
-	      myNumberStr = myLFOLVL->fStartAt ? myLVL->numbertext + 1 : NULL;
-	      myNumberStr_count = myLFOLVL->fStartAt ? *(myLVL->numbertext) : 0;
-	      
-	      if(myLFOLVL->fFormatting)
+
+		  myLST = &ps->lst[i];
+		  myLVL = &myLST->lvl[apap->ilvl];
+
+		  // now we should have the LVL
+		  UT_ASSERT(myLVL);
+
+		  myLVLF = &myLVL->lvlf;
+		  UT_ASSERT(myLVLF);
+
+		  myStartAt = myLFOLVL->fStartAt ? myLVLF->iStartAt : -1;
+
+		  mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
+		  mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;
+
+		  // not sure about this, the CHPX applies to the number, so it might be
+		  // that we should take this if the fStartAt is set -- the docs are not clear
+		  mygCHPX = myLFOLVL->fFormatting ? myLVL->grpprlChpx : NULL;
+		  mygCHPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlChpx : 0;
+
+		  myNumberStr = myLFOLVL->fStartAt && myLVL->numbertext ? myLVL->numbertext + 1 : NULL;
+		  myNumberStr_count = myNumberStr ? *(myLVL->numbertext) : 0;
+
+		  if(myLFOLVL->fFormatting)
 		bLST_LVL_format = false;
-	      
-	    }
-	  
+
+		}
+
 	  if(bNeedLST_LVL)
-	    {
-	      LVL * prevLVL = myLVL;
-	      LVLF * prevLVLF = myLVLF;
-	      myListId = myLFO->lsid;
-	      UT_DEBUGMSG(("list: using the LVL from LST\n"));
-	      i = 0;
-	      UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
-	      while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
+		{
+		  LVL * prevLVL = myLVL;
+		  LVLF * prevLVLF = myLVLF;
+		  myListId = myLFO->lsid;
+		  UT_DEBUGMSG(("list: using the LVL from LST\n"));
+		  i = 0;
+		  UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
+		  while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
 		{
 		  i++;
 		  xxx_UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
 		}
-	      
-	      if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
+
+		  if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
 		{
 		  UT_DEBUGMSG(("error: could not locate LST entry\n"));
 		  goto list_error;
 		}
-	      
-	      myLST = &ps->lst[i];
-	      myLVL = &myLST->lvl[apap->ilvl];
-	      
-	      // now we should have the correct LVL
-	      UT_ASSERT(myLVL);
-	      
-	      myLVLF = &myLVL->lvlf;
-	      UT_ASSERT(myLVLF);
-	      
-	      // retrieve any stuff we need from here (i.e., only what we did not get from the LFO LVL)
-	      myStartAt = myStartAt == -1 ? myLVLF->iStartAt : myStartAt;
-	      
-	      mygPAPX_count = !mygPAPX ? myLVLF->cbGrpprlPapx : mygPAPX_count;
-	      mygPAPX = !mygPAPX ? myLVL->grpprlPapx : mygPAPX;
-	      
-	      mygCHPX_count = !mygCHPX ? myLVLF->cbGrpprlChpx : mygCHPX_count;
-	      mygCHPX = !mygCHPX ? myLVL->grpprlChpx : mygCHPX;
-	      
-	      myNumberStr_count = !myNumberStr ? *(myLVL->numbertext) : myNumberStr_count;
-	      myNumberStr = !myNumberStr ? (myLVL->numbertext + 1) : myNumberStr;
-	      
-	      
-	      // if there was a valid LFO LVL record that pertained to formatting
-	      // then we will set the myLVL and myLVLF variables back to this record
-	      // so that it can be used
-	      if(!bLST_LVL_format && prevLVL && prevLVLF)
+
+		  myLST = &ps->lst[i];
+		  myLVL = &myLST->lvl[apap->ilvl];
+
+		  // now we should have the correct LVL
+		  UT_ASSERT(myLVL);
+
+		  myLVLF = &myLVL->lvlf;
+		  UT_ASSERT(myLVLF);
+
+		  // retrieve any stuff we need from here (i.e., only what we did not get from the LFO LVL)
+		  myStartAt = myStartAt == -1 ? myLVLF->iStartAt : myStartAt;
+
+		  mygPAPX_count = !mygPAPX ? myLVLF->cbGrpprlPapx : mygPAPX_count;
+		  mygPAPX = !mygPAPX ? myLVL->grpprlPapx : mygPAPX;
+
+		  mygCHPX_count = !mygCHPX ? myLVLF->cbGrpprlChpx : mygCHPX_count;
+		  mygCHPX = !mygCHPX ? myLVL->grpprlChpx : mygCHPX;
+
+		  myNumberStr_count = !myNumberStr && myLVL->numbertext ? *(myLVL->numbertext) : myNumberStr_count;
+		  myNumberStr = !myNumberStr && myLVL->numbertext ? myLVL->numbertext + 1 : myNumberStr;
+
+
+		  // if there was a valid LFO LVL record that pertained to formatting
+		  // then we will set the myLVL and myLVLF variables back to this record
+		  // so that it can be used
+		  if(!bLST_LVL_format && prevLVL && prevLVLF)
 		{
 		  myLVL = prevLVL;
 		  myLVLF = prevLVLF;
 		}
-	    }
+		}
 
 	  UT_DEBUGMSG(("list: number text len %d, papx len %d, chpx len%d\n",myNumberStr_count,mygPAPX_count,mygCHPX_count));
 	  myPAPX.cb = mygPAPX_count;
@@ -1773,34 +1773,34 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  myCHPX.istd = 4095; // no style
 	  
 	  /*
-	    IMPORTANT now we have the list formatting sutff retrieved; it is found in several
-	    different places:
-	    apap->ilvl - the level of this list (0-8)
-	    
-	    myStartAt	- the value at which the numbering for this listshould start
-	    (i.e., the number of the first item on the list)
-	    
-	    myListId	- the id of this list, we need this to know to which list this
-	    paragraph belongs
-	    
-	    PAPX		- the formatting information that needs to be added to the format
-	    of this list
-	    
-	    CHPX		- the formatting of the list number
-	    
-	    myNumberStr - the actual number string to display (XCHAR *); we probably need
-	    this to work out the number separator, since there does not seem
-	    to be any reference to this anywhere
-	    
-	    myNumberStr_count - length of the number string
-	    
-	    myLVLF->nfc - number format (see the enum below)
-	    
-	    myLVLF->jc  - number alignment [0: lft, 1: rght, 2: cntr]
-	    
-	    myLVLF->ixchFollow - what character stands between the number and the para
-	    [0:= tab, 1: spc, 2: none]
-	    
+		IMPORTANT now we have the list formatting sutff retrieved; it is found in several
+		different places:
+		apap->ilvl - the level of this list (0-8)
+		
+		myStartAt	- the value at which the numbering for this listshould start
+		(i.e., the number of the first item on the list)
+		
+		myListId	- the id of this list, we need this to know to which list this
+		paragraph belongs
+		
+		PAPX		- the formatting information that needs to be added to the format
+		of this list
+		
+		CHPX		- the formatting of the list number
+		
+		myNumberStr - the actual number string to display (XCHAR *); we probably need
+		this to work out the number separator, since there does not seem
+		to be any reference to this anywhere
+		
+		myNumberStr_count - length of the number string
+		
+		myLVLF->nfc - number format (see the enum below)
+		
+		myLVLF->jc	- number alignment [0: lft, 1: rght, 2: cntr]
+		
+		myLVLF->ixchFollow - what character stands between the number and the para
+		[0:= tab, 1: spc, 2: none]
+		
 	  */
 	  UT_DEBUGMSG(("list: id %d \n",myListId));
 	  UT_DEBUGMSG(("list: iStartAt %d\n", myStartAt));
@@ -1881,11 +1881,11 @@ list_error:
 	propsArray[2] = "level";
 	if (myListId > 0)
 	  {
-	    sprintf(propBuffer, "%d", apap->ilvl+1);
+		sprintf(propBuffer, "%d", apap->ilvl+1);
 	  }
 	else
 	  {
-	    sprintf(propBuffer, "0");
+		sprintf(propBuffer, "0");
 	  }
 	UT_String szLevel ( propBuffer );
 	propsArray[3] = szLevel.c_str();
@@ -1915,25 +1915,25 @@ list_error:
 
 	if (myListId > 0)
 	  {
-	    // TODO: honor more props
-	    const XML_Char *list_field_fmt[3];
-	    list_field_fmt[0] = "type";
-	    list_field_fmt[1] = "list_label";
-	    list_field_fmt[2] = 0;
-	    getDoc()->appendObject(PTO_Field, (const XML_Char**)list_field_fmt);
+		// TODO: honor more props
+		const XML_Char *list_field_fmt[3];
+		list_field_fmt[0] = "type";
+		list_field_fmt[1] = "list_label";
+		list_field_fmt[2] = 0;
+		getDoc()->appendObject(PTO_Field, (const XML_Char**)list_field_fmt);
 
-	    // the character following the list label - 0=tab, 1=space, 2=none
-	    if ( myLVLF->ixchFollow == 0 ) // tab
-	      {
+		// the character following the list label - 0=tab, 1=space, 2=none
+		if ( myLVLF->ixchFollow == 0 ) // tab
+		  {
 		UT_UCSChar tab = UCS_TAB;
 		getDoc()->appendSpan(&tab, 1);
-	      }
-	    else if ( myLVLF->ixchFollow == 1 ) // space
-	      {
+		  }
+		else if ( myLVLF->ixchFollow == 1 ) // space
+		  {
 		UT_UCSChar space = UCS_SPACE;
 		getDoc()->appendSpan(&space, 1);
-	      }
-	    // else none
+		  }
+		// else none
 	  }
 	m_bInPara = true;
 	return 0;
@@ -2431,12 +2431,12 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   if ( imgType == MSWord_RasterImage )
 	{
 	  while (EOF != (data = getc(b->blip.bitmap.m_pvBits->stream.file_stream)))
-	    pictData->append((UT_Byte*)&data, 1);
+		pictData->append((UT_Byte*)&data, 1);
 	}
   else if ( imgType == MSWord_VectorImage )
 	{
 	  while (EOF != (data = getc(b->blip.metafile.m_pvBits->stream.file_stream)))
-	    pictData->append((UT_Byte*)&data, 1);
+		pictData->append((UT_Byte*)&data, 1);
 	}
   else
 	{
@@ -2446,7 +2446,11 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	  return UT_ERROR;
 	}
 
-  error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
+  if(!pictData->getPointer(0))
+	  error =  UT_ERROR;
+  else
+	  error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
+
   if ((error != UT_OK) || !importer)
 	{
 	  UT_DEBUGMSG(("Could not create image importer object\n"));
