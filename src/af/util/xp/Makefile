@@ -60,7 +60,7 @@ CPPSRCS=	ut_base64.cpp		\
 		ut_Language.cpp		\
 		ut_Encoding.cpp
 
-ifdef ABI_OPT_BIDI_ENABLED
+ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 CPPSRCS += ut_contextGlyph.cpp
 endif		
 

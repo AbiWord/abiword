@@ -42,7 +42,7 @@ LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 endif
 
 # fribidi library
-ifdef ABI_OPT_BIDI_ENABLED
+ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 LoadOrder += Abi_fribidi
 endif
 

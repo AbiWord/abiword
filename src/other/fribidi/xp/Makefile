@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-ifdef ABI_OPT_BIDI_ENABLED
+ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 
 CSRCS= \
 	fribidi.c \
