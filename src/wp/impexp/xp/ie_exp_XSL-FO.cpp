@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -18,6 +20,7 @@
  */
 
 #include <locale.h>
+#include <ctype.h>
 
 #include "ut_string_class.h"
 #include "ut_string.h"
@@ -27,56 +30,27 @@
 #include "ut_debugmsg.h"
 #include "ut_map.h"
 #include "ut_pair.h"
-#include "pt_Types.h"
-#include "ie_exp_XSL-FO.h"
+#include "ut_path.h"
+
+#include "xap_EncodingManager.h"
+
+#include "pd_Style.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
+#include "pp_Property.h"
+#include "pt_Types.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
-#include "pp_Property.h"
-#include "ap_Prefs.h"
-#include "pd_Style.h"
+
 #include "fd_Field.h"
-#include "xap_EncodingManager.h"
 #include "fl_AutoNum.h"
 #include "fp_PageSize.h"
 
-#include "ut_string_class.h"
+#include "ap_Prefs.h"
 
-//////////////////////////////////////////////////
-// Some helper functions to prevent the use of static buffers.
-// may we should add these hacks to ut_string_class
-//////////////////////////////////////////////////
-
-UT_String&
-operator<< (UT_String& st, int i)
-{
-  return (st += UT_String_sprintf ("%d", i));
-}
- 
-UT_UCS2String&
-operator<< (UT_UCS2String& st, int i)
-{
-	UT_UCSChar tmp2[16];
-	UT_UCS_strcpy_char(tmp2, UT_String_sprintf("%d", i).c_str());
-	return (st += tmp2);
-}
-
-UT_String&
-operator<< (UT_String& st, const UT_String& st2)
-{
-	st += st2;
-	return st;
-}
-
-UT_UCS2String&
-operator<< (UT_UCS2String& st, const UT_UCS2String& st2)
-{
-	st += st2;
-	return st;
-}
+#include "ie_exp_XSL-FO.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -128,9 +102,7 @@ public:
 private:
 	UT_String int2label(UT_uint32 i)
 	{
-		UT_String retval;
-		retval << i;
-		return retval;
+		return UT_String_sprintf ("%lu", static_cast<unsigned long>(i));
 	}
 
 	const fl_AutoNum* m_pan;
@@ -142,6 +114,23 @@ private:
 UT_Map  ListHelper::myLists;
 
 /************************************************************/
+
+#define TT_OTHER               0 // ? Tag not recognized (not an error, though)
+
+#define TT_ROOT		           1 // <root> Document main/first tag
+#define TT_BLOCK               2 // <block>
+#define TT_LIST_BLOCK          3 // <list-block>
+#define TT_FLOW                4 // <flow>
+#define TT_INLINE              5 // <inline>
+
+#define TT_LIST_ITEM_LABEL    11 // <list-item-label>
+#define TT_EXTERNAL_GRAPHIC   12 // <external-graphic>
+#define TT_STATIC_CONTENT     13 // <static-content>
+#define TT_LAYOUT_MASTER_SET  14 // <layout-master-set>
+#define TT_SIMPLE_PAGE_MASTER 15 // <simple-page-master>
+#define TT_REGION_BODY        16 // <region-body>
+#define TT_PAGE_SEQUENCE      17 // <page-sequence>
+
 /************************************************************/
 
 class s_XSL_FO_Listener : public PL_Listener
@@ -173,13 +162,13 @@ public:
 
 protected:
 	void                _handlePageSize(PT_AttrPropIndex api);
-	void				_handleDataItems();
+	void				_writeImage (const UT_ByteBuf * pByteBuf,
+									 const UT_String & imagedir,
+									 const UT_String & filename);
+	void				_handleImage(PT_AttrPropIndex api);
 	void				_handleLists();
 	void				_handleField(PT_AttrPropIndex api);
 	void                _outputData(const UT_UCSChar * data, UT_uint32 length);
-
-	void				_convertFontSize(UT_String& szDest, const char* szFontSize);
-	void                _convertColor(UT_String& szDest, const char* pszColor);
 
 	void				_closeSection();
 	void				_closeBlock();
@@ -187,6 +176,41 @@ protected:
 	void				_openBlock(PT_AttrPropIndex api);
 	void				_openSection(PT_AttrPropIndex api);
 	void				_openSpan(PT_AttrPropIndex api);
+
+	enum WhiteSpace
+	{
+		ws_None = 0,
+		ws_Pre  = 1,
+		ws_Post = 2,
+		ws_Both = 3
+	};
+
+	/* these may use m_utf8_0
+	 */
+	void			tagNewIndent (UT_uint32 extra = 0);
+	void			tagOpenClose (const UT_UTF8String & content, bool suppress,
+								  WhiteSpace ws = ws_Both);
+	void			tagOpen  (UT_uint32 tagID, const UT_UTF8String & content,
+							  WhiteSpace ws = ws_Both);
+	void			tagClose (UT_uint32 tagID, const UT_UTF8String & content,
+							  WhiteSpace ws = ws_Both);
+	void			tagClose (UT_uint32 tagID);
+	UT_uint32		tagTop ();
+	void			tagPI (const char * target, const UT_UTF8String & content);
+	void			tagComment (const UT_UTF8String & content);
+	void			tagCommentOpen ();
+	void			tagCommentClose ();
+
+	void			textTrusted (const UT_UTF8String & text);
+	void			textUntrusted (const char * text);
+
+	/* temporary strings; use with extreme caution
+	 */
+	UT_UTF8String	m_utf8_0; // low-level
+	UT_UTF8String	m_utf8_xmlns;
+	UT_UTF8String	m_utf8_span;
+
+	UT_Stack		m_tagStack;
 
 private:
 	PD_Document *		m_pDocument;
@@ -320,6 +344,206 @@ UT_Error IE_Exp_XSL_FO::_writeDocument()
 /*****************************************************************/
 /*****************************************************************/
 
+void s_XSL_FO_Listener::tagNewIndent (UT_uint32 extra)
+{
+	m_utf8_0 = "";
+
+	UT_uint32 depth = m_tagStack.getDepth () + extra;
+
+	UT_uint32 i;  // MSVC DOES NOT SUPPORT CURRENT for SCOPING RULES!!!
+	for (i = 0; i < (depth >> 3); i++) m_utf8_0 += "\t";
+	for (i = 0; i < (depth &  7); i++) m_utf8_0 += " ";
+}
+
+void s_XSL_FO_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress,
+									  WhiteSpace ws)
+{
+	if (ws & ws_Pre)
+		tagNewIndent ();
+	else
+		m_utf8_0 = "";
+
+	m_utf8_0 += "<";
+
+	if (!m_utf8_xmlns.empty ())
+		{
+			m_utf8_0 += m_utf8_xmlns;
+			m_utf8_0 += ":";
+		}
+	m_utf8_0 += content;
+	if (suppress)
+		m_utf8_0 += ">";
+	else
+		m_utf8_0 += " />";
+
+	if (ws & ws_Post) m_utf8_0 += "\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str ());
+}
+
+void s_XSL_FO_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
+								 WhiteSpace ws)
+{
+	if (ws & ws_Pre)
+		tagNewIndent ();
+	else
+		m_utf8_0 = "";
+
+	m_utf8_0 += "<";
+
+	if (!m_utf8_xmlns.empty ())
+		{
+			m_utf8_0 += m_utf8_xmlns;
+			m_utf8_0 += ":";
+		}
+	m_utf8_0 += content;
+	m_utf8_0 += ">";
+
+	if (ws & ws_Post) m_utf8_0 += "\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str ());
+
+	void * vptr = reinterpret_cast<void *>(tagID);
+	m_tagStack.push (vptr);
+}
+
+void s_XSL_FO_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
+								  WhiteSpace ws)
+{
+	tagClose (tagID);
+
+	if (ws & ws_Pre)
+		tagNewIndent ();
+	else
+		m_utf8_0 = "";
+
+	m_utf8_0 += "</";
+
+	if (!m_utf8_xmlns.empty ())
+		{
+			m_utf8_0 += m_utf8_xmlns;
+			m_utf8_0 += ":";
+		}
+	m_utf8_0 += content;
+	m_utf8_0 += ">";
+
+	if (ws & ws_Post) m_utf8_0 += "\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str ());
+}
+
+void s_XSL_FO_Listener::tagClose (UT_uint32 tagID)
+{
+	void * vptr = 0;
+	m_tagStack.pop (&vptr);
+
+	if (reinterpret_cast<UT_uint32>(vptr) == tagID) return;
+
+	UT_DEBUGMSG(("WARNING: possible tag mis-match in XSL-FO output!\n"));
+}
+
+UT_uint32 s_XSL_FO_Listener::tagTop ()
+{
+	void * vptr = 0;
+	if (m_tagStack.viewTop (&vptr)) return reinterpret_cast<UT_uint32>(vptr);
+	return 0;
+}
+
+void s_XSL_FO_Listener::tagPI (const char * target, const UT_UTF8String & content)
+{
+	tagNewIndent ();
+
+	m_utf8_0 += "<?";
+	m_utf8_0 += target;
+	m_utf8_0 += " ";
+	m_utf8_0 += content;
+	m_utf8_0 += "?>\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str ());
+}
+
+void s_XSL_FO_Listener::tagComment (const UT_UTF8String & content)
+{
+	tagNewIndent ();
+
+	m_utf8_0 += "<!-- ";
+	m_utf8_0 += content;
+	m_utf8_0 += " -->\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str ());
+}
+
+void s_XSL_FO_Listener::tagCommentOpen ()
+{
+	tagNewIndent ();
+
+	m_utf8_0 += "<!--\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str ());
+}
+
+void s_XSL_FO_Listener::tagCommentClose ()
+{
+	tagNewIndent (2);
+
+	m_utf8_0 += "-->\r\n";
+
+	m_pie->write (m_utf8_0.utf8_str ());
+}
+
+void s_XSL_FO_Listener::textTrusted (const UT_UTF8String & text)
+{
+	m_pie->write (text.utf8_str ());
+}
+
+void s_XSL_FO_Listener::textUntrusted (const char * text)
+{
+	if ( text == 0) return;
+	if (*text == 0) return;
+
+	m_utf8_0 = "";
+
+	char buf[2];
+	buf[1] = 0;
+
+	const char * ptr = text;
+	while (*ptr)
+		{
+			if ((*ptr & 0x7f) == *ptr) // ASCII
+				{
+					switch (*ptr)
+						{
+						case '<':
+							m_utf8_0 += "&lt;";
+							break;
+						case '>':
+							m_utf8_0 += "&gt;";
+							break;
+						case '&':
+							m_utf8_0 += "&amp;";
+							break;
+						default:
+							buf[0] = *ptr;
+							m_utf8_0 += buf;
+							break;
+						}
+				}
+			/* TODO: translate non-ASCII characters
+			 */
+			ptr++;
+		}
+	if (m_utf8_0.byteLength ()) m_pie->write (m_utf8_0.utf8_str ());
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+static const char * s_hdr[3] = {
+	" This XSL-FO document was created by AbiWord        ",
+	" AbiWord is a free, open source word processor      ",
+	" See http://www.abisource.com/ for more information "
+};
+
 s_XSL_FO_Listener::s_XSL_FO_Listener(PD_Document * pDocument,
 									 IE_Exp_XSL_FO * pie)
 	: m_pDocument(pDocument),
@@ -331,38 +555,32 @@ s_XSL_FO_Listener::s_XSL_FO_Listener(PD_Document * pDocument,
 	  m_bFirstWrite(true),
 	  m_iImgCnt(0)
 {
-	// Be nice to XML apps.  See the notes in _outputData() for more 
-	// details on the charset used in our documents.  By not declaring 
-	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
-	// is a strict subset of UTF-8. 
+	UT_UTF8String content("version=\"1.0\"");
+	tagPI ("xml", content);
 
-	if (!XAP_EncodingManager::get_instance()->cjk_locale() &&
-	    (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1)) {
-	    // use utf8 for CJK locales and latin1 locales and unicode locales
-	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
-	    m_pie->write(XAP_EncodingManager::get_instance()->getNativeEncodingName());
-	    m_pie->write("\"?>\n");
-	} else {
-	    m_pie->write("<?xml version=\"1.0\"?>\n");
-	}
+#ifndef XSL_FO_OMIT_NAMESPACE
+	m_utf8_xmlns = "fo";
+	content = "root xmlns:fo=\"http://www.w3.org/1999/XSL/Format\"";
+#else
+	content = "root xmlns=\"http://www.w3.org/1999/XSL/Format\"";
+#endif
+	tagOpen (TT_ROOT, content);
 
-	m_pie->write("<fo:root xmlns:fo=\"http://www.w3.org/1999/XSL/Format\">\n\n");
-
-	m_pie->write("<!-- This document was created by AbiWord -->\n");
-	m_pie->write("<!-- AbiWord is a free, Open Source word processor. -->\n");
-	m_pie->write("<!-- You may obtain more information about AbiWord at www.abisource.com -->\n\n");
+	for (int i = 0; i < 3; i++)
+		{
+			content = s_hdr[i];
+			tagComment (content);
+		}
 
 	_handleLists();
 }
 
 s_XSL_FO_Listener::~s_XSL_FO_Listener()
 {
-	_closeSpan();
-	_closeBlock();
 	_closeSection();
-	_handleDataItems();
 
-	m_pie->write ("</fo:root>\n");
+	UT_UTF8String content("root");
+	tagClose (TT_ROOT, content);
 }
 
 void s_XSL_FO_Listener::_handleLists()
@@ -385,19 +603,215 @@ void s_XSL_FO_Listener::_handleField(PT_AttrPropIndex api)
 	
 	if (bHaveProp && pAP)
 	{
-		const XML_Char* szValue;
+		const XML_Char * szValue = 0;
 		if (pAP->getAttribute("type", szValue))
 		{
 			if (szValue[0] == 'l' && strcmp((const char*) szValue, "list_label") == 0)
 			{
-				m_pie->write("<fo:list-item-label end-indent=\"label-end()\">\n"
-							 "  <fo:block>\n");
-				m_pie->write(m_List.getNextLabel().c_str());
-				m_pie->write("  </fo:block>\n"
-							 "</fo:list-item-label>\n");
+				UT_UTF8String content("list-item-label end-indent=\"label-end()\"");
+				tagOpen (TT_LIST_ITEM_LABEL, content, ws_None);
+
+				content = "block";
+				tagOpen (TT_BLOCK, content, ws_None);
+
+				textUntrusted (m_List.getNextLabel().c_str());
+
+				tagClose (TT_BLOCK, content, ws_None);
+
+				content = "list-item-label";
+				tagClose (TT_LIST_ITEM_LABEL, content, ws_None);
 			}
 		}
 	}
+}
+
+/* dataid   is the raw string with the data ID
+ * imagedir is the name of the directory in which we'll write the image
+ * filename is the name of the file to which we'll write the image
+ * url      is the URL which we'll use
+ */
+void s_XSL_FO_Listener::_writeImage (const UT_ByteBuf * pByteBuf,
+									 const UT_String & imagedir,
+									 const UT_String & filename)
+{
+	/* hmm, bit lazy this - attempt to create directory whether or not
+	 * it exists already... if it does, well hey. if this fails to
+	 * create a directory then fopen() will fail as well, so no biggie
+	 */
+	m_pDocument->getApp()->makeDirectory (imagedir.c_str (), 0750);
+
+	UT_String path(imagedir);
+	path += "/";
+	path += filename;
+
+	FILE * out = fopen (path.c_str (), "wb+");
+	if (out)
+		{
+			fwrite (pByteBuf->getPointer (0), sizeof (UT_Byte), pByteBuf->getLength (), out);
+			fclose (out);
+		}
+}
+
+/* TODO: is there a better way to do this?
+ */
+static UT_UTF8String s_string_to_url (UT_String & str)
+{
+	UT_UTF8String url;
+
+	static const char hex[16] = {
+		'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
+	};
+	char buf[4];
+	buf[0] = '%';
+	buf[3] = 0;
+
+	const char * ptr = str.c_str ();
+	while (*ptr)
+		{
+			bool isValidPunctuation = false;
+			switch (*ptr)
+				{
+				case '-': // TODO: any others?
+				case '_':
+				case '.':
+					isValidPunctuation = true;
+					break;
+				default:
+					break;
+				}
+			unsigned char u = (unsigned char) *ptr;
+			if (!isalnum ((int) u) && !isValidPunctuation)
+				{
+					buf[1] = hex[(u >> 4) & 0x0f];
+					buf[2] = hex[ u       & 0x0f];
+					url += buf;
+				}
+			else
+				{
+					buf[2] = (char) *ptr;
+					url += (buf + 2);
+				}
+			ptr++;
+		}
+	return url;
+}
+
+void s_XSL_FO_Listener::_handleImage (PT_AttrPropIndex api)
+{
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	if (!bHaveProp || (pAP == 0)) return;
+
+	const XML_Char * szDataID = 0;
+	pAP->getAttribute ("dataid", szDataID);
+
+	if (szDataID == 0) return;
+
+ 	const char * szName = 0;
+	const char * szMimeType = 0;
+
+	const UT_ByteBuf * pByteBuf = 0;
+
+	UT_uint32 k = 0;
+	while (m_pDocument->enumDataItems (k, 0, &szName, &pByteBuf, (void**) &szMimeType))
+		{
+			k++;
+			if (szName == 0) continue;
+			if (UT_strcmp (szDataID, szName) == 0) break;
+
+			szName = 0;
+			szMimeType = 0;
+			pByteBuf = 0;
+		}
+	if ((pByteBuf == 0) || (szMimeType == 0)) return; // ??
+
+	if (UT_strcmp (szMimeType, "image/png") != 0)
+		{
+			UT_DEBUGMSG(("Object not of MIME type image/png - ignoring...\n"));
+			return;
+		}
+
+	const char * dataid = UT_basename ((const char *) szDataID);
+
+	const char * suffix = dataid + strlen (dataid);
+	const char * suffid = suffix;
+	const char * ptr = 0;
+
+	/* Question: What does the DataID look like for images pasted
+	 *           from the clipboard?
+	 */
+	ptr = suffix;
+	while (ptr > dataid)
+		if (*--ptr == '_')
+			{
+				suffix = ptr;
+				suffid = suffix;
+				break;
+			}
+	ptr = suffix;
+	while (ptr > dataid)
+		if (*--ptr == '.')
+			{
+				suffix = ptr;
+				break;
+			}
+	if (dataid == suffix) return;
+
+	/* hmm; who knows what locale the system uses
+	 */
+	UT_String imagebasedir = UT_basename (m_pie->getFileName ());
+	imagebasedir += "_data";
+	UT_String imagedir = m_pie->getFileName ();
+	imagedir += "_data";
+
+	UT_String filename(dataid,suffix-dataid);
+	filename += suffid;
+	filename += ".png";
+
+	UT_UTF8String url;
+
+	url += s_string_to_url (imagebasedir);
+	url += "/";
+	url += s_string_to_url (filename);
+
+	/* szDataID is the raw string with the data ID
+	 * imagedir is the name of the directory in which we'll write the image
+	 * filename is the name of the file to which we'll write the image
+	 * url      is the URL which we'll use
+	 */
+	_writeImage (pByteBuf, imagedir, filename);
+
+	UT_UTF8String content("external-graphic");
+
+	content += " src=\"";
+	content += url;
+	content += "\"";
+
+	const XML_Char * szWidth  = 0;
+	const XML_Char * szHeight = 0;
+
+	pAP->getProperty ("width",  szWidth);
+	pAP->getProperty ("height", szHeight);
+
+	char buf[16];
+
+	if (szWidth)
+		{
+			sprintf (buf, "%d", (int) UT_convertToDimension (szWidth, DIM_PX));
+			content += " width=\"";
+			content += buf;
+			content += "\"";
+		}
+	if(szHeight)
+		{
+			sprintf (buf, "%d", (int) UT_convertToDimension (szHeight, DIM_PX));
+			content += " height=\"";
+			content += buf;
+			content += "\"";
+		}
+
+	tagOpenClose (content, false, ws_None);
 }
 
 bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
@@ -411,18 +825,11 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				static_cast<const PX_ChangeRecord_Span *> (pcr);
 
 			PT_AttrPropIndex api = pcr->getIndexAP();
-			if (api)
-			{
-				_openSpan(api);
-			}
+			if (api) _openSpan (api);
 			
 			PT_BufIndex bi = pcrs->getBufIndex();
 			_outputData(m_pDocument->getPointer(bi),pcrs->getLength());
 
-			if (api)
-			{
-				_closeSpan();
-			}
 			return true;
 		}
 
@@ -434,7 +841,7 @@ bool s_XSL_FO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			{
 			case PTO_Image:
 			{
-			        m_pie->write(UT_String_sprintf("<fo:external-graphic src=\"%s-%d.png\"/>\n", m_pie->getFileName(), m_iImgCnt++));
+				_handleImage (pcr->getIndexAP());
 				return true;
 			}
 
@@ -479,8 +886,6 @@ bool s_XSL_FO_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	{
 	case PTX_Section:
 	{
-		_closeSpan();
-		_closeBlock();
 		_closeSection();
 		
 		PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -512,7 +917,6 @@ bool s_XSL_FO_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	
 	case PTX_SectionHdrFtr:
 	{
-		_closeSpan();
 		_closeBlock();
 		
 //		<fo:static-content flow-name="xsl-region-before">
@@ -527,7 +931,6 @@ bool s_XSL_FO_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 	
 	case PTX_Block:
 	{
-		_closeSpan();
 		_closeBlock();
 		_openBlock(pcr->getIndexAP());
 		return true;
@@ -591,61 +994,85 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
   //
   // Code to write out the PageSize Definitions to disk
   // 
-	char *old_locale;
-
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
-	old_locale = setlocale (LC_NUMERIC, "C");
+	char * old_locale = setlocale (LC_NUMERIC, "C");
 
-	m_pie->write("<fo:layout-master-set>\n");
-	m_pie->write("<fo:simple-page-master");
+	UT_UTF8String content("layout-master-set");
+	tagOpen (TT_LAYOUT_MASTER_SET, content);
+
+	content = "simple-page-master";
 
 	// query and output properties
 	// todo - validate these and make sure they all make sense
 	if (bHaveProp && pAP)
 	{
-		const XML_Char * szValue;
+		const XML_Char * szValue = 0;
 
 		szValue = PP_evalProperty("page-margin-top",
 								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write(" margin-top=\"");
-		m_pie->write(szValue);
-		m_pie->write("\"");
+		if (szValue)
+		{
+			content += " margin-top=\"";
+			content += szValue;
+			content += "\"";
+		}
 
 		szValue = PP_evalProperty("page-margin-bottom",
 								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write(" margin-bottom=\"");
-		m_pie->write(szValue);
-		m_pie->write("\"");
+		if (szValue)
+		{
+			content += " margin-bottom=\"";
+			content += szValue;
+			content += "\"";
+		}
 
 		szValue = PP_evalProperty("page-margin-left",
 								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write(" margin-left=\"");
-		m_pie->write(szValue);
-		m_pie->write("\"");
+		if (szValue)
+		{
+			content += " margin-left=\"";
+			content += szValue;
+			content += "\"";
+		}
 
 		szValue = PP_evalProperty("page-margin-right",
 								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write(" margin-right=\"");
-		m_pie->write(szValue);
-		m_pie->write("\"");
+		if (szValue)
+		{
+			content += " margin-right=\"";
+			content += szValue;
+			content += "\"";
+		}
 		
 		UT_Dimension docUnit = m_pDocument->m_docPageSize.getDims(); 
-		char buf[20];
+		UT_String page_dim;
 
-		m_pie->write( UT_String_sprintf(" page-width=\"%f%s\"", m_pDocument->m_docPageSize.Width(docUnit), UT_dimensionName(docUnit)) );
+		page_dim = UT_String_sprintf("%g", m_pDocument->m_docPageSize.Width(docUnit));
+		content += " page-width=\"";
+		content += page_dim.c_str ();
+		content += UT_dimensionName (docUnit);
+		content += "\"";
 
-		m_pie->write(UT_String_sprintf(" page-height=\"%f%s\"", m_pDocument->m_docPageSize.Height(docUnit), UT_dimensionName(docUnit)) );
+		page_dim = UT_String_sprintf("%g", m_pDocument->m_docPageSize.Height(docUnit));
+		content += " page-height=\"";
+		content += page_dim.c_str ();
+		content += UT_dimensionName (docUnit);
+		content += "\"";
 	}
-	// page-width, page-height
 
-	m_pie->write(" master-name=\"first\"");
+	content += " master-name=\"first\"";
+	tagOpen (TT_SIMPLE_PAGE_MASTER, content, ws_Pre);
 
-	m_pie->write(">\n");
-	m_pie->write("\t<fo:region-body/>\n");
-	m_pie->write("</fo:simple-page-master>\n\n");
-	m_pie->write("</fo:layout-master-set>\n\n");
+	content = "region-body";
+	tagOpenClose (content, false, ws_None);
+
+	content = "simple-page-master";
+	tagClose (TT_SIMPLE_PAGE_MASTER, content, ws_Post);
+
+	content = "layout-master-set";
+	tagClose (TT_LAYOUT_MASTER_SET, content);
 
 	setlocale (LC_NUMERIC, old_locale);
 
@@ -653,103 +1080,113 @@ void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 	return;
 }
 
-void s_XSL_FO_Listener::_handleDataItems()
-{
-	const char * szName;
-   	const char * szMimeType;
-	const UT_ByteBuf * pByteBuf;
-
-	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
-	{	  	  
-	  FILE *fp;
-	  UT_String fname;
-	  
-	  if (!UT_strcmp(szMimeType, "image/svg-xml"))
-	    UT_String_sprintf(fname, "%s-%d.svg", m_pie->getFileName(), k);
-	  if (!UT_strcmp(szMimeType, "text/mathml"))
-	    UT_String_sprintf(fname, "%s-%d.mathml", m_pie->getFileName(), k);
-	  else // PNG Image
-	    UT_String_sprintf(fname, "%s-%d.png", m_pie->getFileName(), k);
-	  
-	  fp = fopen (fname.c_str(), "wb+");
-	  
-	  if(!fp)
-	    continue;
-	  
-	  int cnt = 0, len = pByteBuf->getLength();
-	  
-	  while (cnt < len)
-	    {
-	      xxx_UT_DEBUGMSG(("DOM: len: %d cnt: %d\n", len, cnt));
-	      cnt += fwrite (pByteBuf->getPointer(cnt), sizeof(UT_Byte), len-cnt, fp);
-	    }
-	  
-	  fclose(fp);
-	}
-	
-	return;
-}
-
 void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 {
-	if (m_bFirstWrite)
-	{
-		_handlePageSize(api);
-	}
+	if (m_bFirstWrite) _handlePageSize (api);
+
+	UT_UTF8String content("page-sequence master-reference=\"first\"");
+	tagOpen (TT_PAGE_SEQUENCE, content);
+
+	content = "flow flow-name=\"xsl-region-body\"";
+	tagOpen (TT_FLOW, content);
 
 	m_bInSection = true;
-
-	m_pie->write("<fo:page-sequence master-reference=\"first\">\n");
-	m_pie->write("<fo:flow flow-name=\"xsl-region-body\">\n");
 }
 
-#define PROPERTY(x) \
-	if (pAP->getProperty(x, szValue)) \
-		content_st << " "x"=\"" << (const char*) szValue << "\"";
+void s_XSL_FO_Listener::_closeSection()
+{
+	if (!m_bInSection) return;
+
+	if (m_bInBlock) _closeBlock ();
+
+	UT_UTF8String content("flow");
+	tagClose (TT_FLOW, content);
+
+	content = "page-sequence";
+	tagClose (TT_PAGE_SEQUENCE, content);
+
+	m_bInSection = false;
+}
 
 void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 {
-	if (!m_bInSection)
-		return;
+	if (!m_bInSection) return;
 
-	UT_String start_st;
-	UT_String content_st;
-	const PP_AttrProp* pAP = 0;
-	bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
+	UT_uint32 tagID = TT_BLOCK;
+	UT_UTF8String content("block");
 
-	m_bInBlock = true;
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	const XML_Char * szValue = 0;
+
+	if (pAP && pAP->getAttribute ("listid", szValue))
+	{
+		tagID = TT_LIST_BLOCK;
+		content = "list-block";
+
+		UT_uint32 listid = (UT_uint32) atoi ((const char *) szValue);
+		m_List.setIdList (listid);
+	}
 
 	// query and output properties
 	// todo - validate these and make sure they all make sense
-	const XML_Char* szValue;
 
 	if (bHaveProp && pAP)
 	{
+		char buf[2];
+		buf[1] = 0;
+
 		if (pAP->getProperty("bgcolor", szValue))
 		{
-			content_st += " background-color=\"";
+			content += " background-color=\"";
 
 			if (*szValue >= '0' && *szValue <= '9')
-				content_st += '#';
-
-			content_st << (const char*) szValue << "\"";
+			{
+				buf[0] = '#';
+				content += buf;
+			}
+			content += szValue;
+			content += "\"";
 		}
 
 		if (pAP->getProperty("color", szValue))
 		{
-			content_st += " color=\"";
+			content += " color=\"";
 
 			if (*szValue >= '0' && *szValue <= '9')
-				content_st += '#';
-
-			content_st << (const char*) szValue << "\"";
+			{
+				buf[0] = '#';
+				content += buf;
+			}
+			content += szValue;
+			content += "\"";
 		}
 
 		if (pAP->getProperty("lang", szValue))
-			content_st << " language=\"" << (const char*) szValue << "\"";
+		{
+			content += " language=\"";
+			content += szValue;
+			content += "\"";
+		}
 
-		if (pAP->getProperty("font-size", szValue))
-			content_st << " font-size=\"" << purgeSpaces((const char *)szValue).c_str() << "\"";
+		if (pAP->getProperty("font-size", szValue)) // TODO: ??
+		{
+			content += " font-size=\"";
+			content += purgeSpaces((const char *)szValue).c_str();
+			content += "\"";
+		}
+
+#ifdef PROPERTY
+#undef PROPERTY
+#endif
+#define PROPERTY(N) \
+		if (pAP->getProperty(N, szValue)) \
+		{ \
+			content += " "N"=\""; \
+			content += szValue; \
+			content += "\""; \
+		}
 
 		PROPERTY("font-family");
 		PROPERTY("font-weight");
@@ -764,78 +1201,122 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 		PROPERTY("margin-right");
 		PROPERTY("text-align");
 		PROPERTY("widows");
-	}
 
-	if (pAP && pAP->getAttribute("listid", szValue))
+#undef PROPERTY
+	}
+	tagOpen (tagID, content, ws_Pre);
+
+	m_utf8_span = "";
+
+	m_bInBlock = true;
+}
+
+void s_XSL_FO_Listener::_closeBlock()
+{
+	if (!m_bInBlock) return;
+
+	if (m_bInSpan) _closeSpan ();
+
+	UT_uint32 tagID;
+	UT_UTF8String content;
+
+	if (tagTop () == TT_BLOCK)
 	{
-		start_st = "<fo:list-block";
-		UT_uint32 id = (UT_uint32) atoi((const char*)szValue);
-		m_List.setIdList(id);
+		tagID = TT_BLOCK;
+		content = "block";
 	}
-
-	if ( true /*!content_st.empty()*/ )
+	else if (tagTop () == TT_LIST_BLOCK)
 	{
-		if (start_st.empty())
-			start_st = "<fo:block";
-
-		start_st += content_st;
-		start_st += '>';
-		m_pie->write(start_st.c_str());
+		tagID = TT_LIST_BLOCK;
+		content = "list-block";
 	}
+	else
+	{
+		UT_DEBUGMSG(("s_XSL_FO_Listener::_closeBlock: tag mis-match!\n"));
+		return;
+	}
+	tagClose (tagID, content, ws_Post);
+
+	m_bInBlock = false;
 }
 
 void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 {
-	if (!m_bInBlock)
-		return;
+	if (!m_bInBlock) return;
 
-	const PP_AttrProp* pAP = 0;
-	bool bHaveProp = m_pDocument->getAttrProp(api, &pAP);
-	UT_String start_st("<fo:inline");
-	UT_String content_st;
-	
-	m_bInSpan = true;
+	UT_UTF8String content("inline");
+	bool bInSpan = false;
+
+	const PP_AttrProp * pAP = 0;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 
 	// query and output properties
 	if (bHaveProp && pAP)
 	{
-		const XML_Char * szValue;
+		char buf[2];
+		buf[1] = 0;
+
+		const XML_Char * szValue = 0;
 
 		if (pAP->getProperty("bgcolor", szValue))
 		{
-			content_st += " background-color=\"";
+			content += " background-color=\"";
 
 			if (*szValue >= '0' && *szValue <= '9')
-				content_st += "#";
+			{
+				buf[0] = '#';
+				content += buf;
+			}
+			content += szValue;
+			content += "\"";
 
-			content_st += (const char *)szValue;
-			content_st += "\"";
+			bInSpan = true;
 		}
 
 		if (pAP->getProperty("color", szValue))
 		{
-			content_st += " color=\"";
+			content += " color=\"";
 
 			if (*szValue >= '0' && *szValue <= '9')
-				content_st += "#";
+			{
+				buf[0] = '#';
+				content += buf;
+			}
+			content += szValue;
+			content += "\"";
 
-			content_st += (const char *)szValue;
-			content_st += "\"";
+			bInSpan = true;
 		}
 
 		if (pAP->getProperty("lang", szValue))
 		{
-			content_st += " language=\"";
-			content_st += (const char *)szValue;
-			content_st += "\"";
+			content += " language=\"";
+			content += szValue;
+			content += "\"";
+
+			bInSpan = true;
 		}
 		
 		if (pAP->getProperty("font-size", szValue))
 		{
-			content_st += " font-size=\"";
-			content_st += purgeSpaces((const char *)szValue).c_str();
-			content_st += "\"";
+			content += " font-size=\"";
+			content += purgeSpaces((const char *)szValue).c_str();
+			content += "\"";
+
+			bInSpan = true;
 		}		
+
+#ifdef PROPERTY
+#undef PROPERTY
+#endif
+#define PROPERTY(N) \
+		if (pAP->getProperty(N, szValue)) \
+		{ \
+			content += " "N"=\""; \
+			content += szValue; \
+			content += "\""; \
+			bInSpan = true; \
+		}
 
 		PROPERTY("font-family");
 		PROPERTY("font-weight");
@@ -844,62 +1325,34 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		PROPERTY("keep-together");
 		PROPERTY("keep-with-next");
 		PROPERTY("text-decoration");
-	}
-
-	if (!content_st.empty())
-	{
-		start_st += content_st;
-		start_st += '>';
-		m_pie->write(start_st.c_str());
-	}
-}
 
 #undef PROPERTY
+	}
 
-void s_XSL_FO_Listener::_closeBlock()
-{
-	if (!m_bInBlock)
-		return;
+	if (bInSpan)
+		{
+			if (m_bInSpan)
+				{
+					if (m_utf8_span == content) return; // this span same as last...
+					m_utf8_span = content;
+					_closeSpan ();
+				}
+			else m_utf8_span = content;
 
-	m_bInBlock = false;
-	m_pie->write("\n</fo:block>\n");
-}
-
-void s_XSL_FO_Listener::_closeSection()
-{
-	if (!m_bInSection)
-		return;
-	
-	m_bInSection = false;
-	m_pie->write("</fo:flow>\n");
-	m_pie->write("</fo:page-sequence>\n");
+			tagOpen (TT_INLINE, m_utf8_span, ws_None);
+			m_bInSpan = true;
+		}
+	else if (m_bInSpan) _closeSpan ();
 }
 
 void s_XSL_FO_Listener::_closeSpan()
 {
-	if (!m_bInSpan)
-		return;
+	if (!m_bInSpan) return;
+
+	UT_UTF8String content("inline");
+	tagClose (TT_INLINE, content, ws_None);
 
 	m_bInSpan = false;
-	m_pie->write("</fo:inline>");
-}
-
-/*****************************************************************/
-/*****************************************************************/
-
-void s_XSL_FO_Listener::_convertColor(UT_String& szDest, const char* pszColor)
-{
-	/*
-	 * TODO we might want to be a little more careful about this.
-	 * The proper XSL-FO color is #rrggbb, which is basically the same
-	 * as what we use this.
-	 */
-	szDest = pszColor;
-}
-
-void s_XSL_FO_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)
-{
-	szDest = pszFontSize;
 }
 
 /*****************************************************************/
@@ -907,106 +1360,46 @@ void s_XSL_FO_Listener::_convertFontSize(UT_String& szDest, const char* pszFontS
 
 void s_XSL_FO_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 {
-	UT_String sBuf;
-	const UT_UCSChar * pData;
+	if (!m_bInBlock) return;
 
-	UT_ASSERT(sizeof(UT_Byte) == sizeof(char));
+	UT_UTF8String content;
 
-	for (pData=data; (pData<data+length); /**/)
+	const UT_UCSChar * ucs2ptr = data;
+	for (UT_uint32 i = 0; i < length; i++)
 	{
-		switch (*pData)
+		switch (*ucs2ptr)
 		{
-		case '<':
-			sBuf += "&lt;";
-			pData++;
-			break;
-			
-		case '>':
-			sBuf += "&gt;";
-			pData++;
-			break;
-			
-		case '&':
-			sBuf += "&amp;";
-			pData++;
-			break;
-
-		case UCS_LF:					// LF -- representing a Forced-Line-Break
+		case UCS_LF:   // LF   -- representing a Forced-Line-Break
+		case UCS_VTAB: // VTAB -- representing a Forced-Column-Break
+		case UCS_FF:   // FF   -- representing a Forced-Page-Break
 			// TODO
-			UT_ASSERT(UT_TODO);
-			pData++;
-			break;
-			
-		case UCS_VTAB:					// VTAB -- representing a Forced-Column-Break
-			// TODO
-			UT_ASSERT(UT_TODO);
-			pData++;
-			break;
-			
-		case UCS_FF:					// FF -- representing a Forced-Page-Break
-			// TODO:
-			UT_ASSERT(UT_TODO);
-			pData++;
 			break;
 			
 		default:
-
-			if (*pData > 0x007f)
+			if ((*ucs2ptr & 0x007f) == *ucs2ptr) // ASCII
 			{
-				if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || 
-				   (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) == 0xa1))
+				char c = static_cast<char>(*ucs2ptr & 0x007f);
 
+				switch (c)
 				{
-					XML_Char * pszUTF8 = UT_encodeUTF8char(*pData++);
-					while (*pszUTF8)
-					{
-						sBuf += (char)*pszUTF8;
-						pszUTF8++;
-					}
-				}
-				else
-				{
-					/*
-					Try to convert to native encoding and if
-					character fits into byte, output raw byte. This 
-					is somewhat essential for single-byte non-latin
-					languages like russian or polish - since
-					tools like grep and sed can be used then for
-					these files without any problem.
-					Networks and mail transfers are 8bit clean
-					these days.  - VH
-					*/
-					UT_UCSChar c = XAP_EncodingManager::get_instance()->try_UToNative(*pData);
-					if (c==0 || c>255)
-					{
-					  sBuf += UT_String_sprintf("&#x%x;",*pData++);
-					}
-					else
-					{
-						sBuf += (char)c;
-						pData++;
-					}
+				case '<':
+					content += "&lt;";
+					break;
+				case '>':
+					content += "&gt;";
+					break;
+				case '&':
+					content += "&amp;";
+					break;
+				default:
+					content.append (ucs2ptr, 1);
+					break;
 				}
 			}
-			else
-			{
-				sBuf += (char)*pData++;
-			}
+			else content.append (ucs2ptr, 1); // !ASCII, just append... ??
 			break;
 		}
+		ucs2ptr++;
 	}
-
-	m_pie->write(sBuf.c_str(), sBuf.size());
+	if (content.byteLength ()) textTrusted (content);
 }
-
-
-
-
-
-
-
-
-
-
-
-

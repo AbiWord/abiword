@@ -2412,6 +2412,7 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 									break;
 								}
 						}
+					else m_utf8_1.append (ucs2ptr, 1); // !ASCII, just append... ??
 					break;
 				}
 			prev_space = space;
@@ -2591,7 +2592,9 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 	/* hmm; who knows what locale the system uses
 	 */
-	UT_String imagedir = UT_basename (m_pie->getFileName ());
+	UT_String imagebasedir = UT_basename (m_pie->getFileName ());
+	imagebasedir += "_data";
+	UT_String imagedir = m_pie->getFileName ();
 	imagedir += "_data";
 
 	UT_String filename(dataid,suffix-dataid);
@@ -2600,7 +2603,7 @@ void s_HTML_Listener::_handleImage (PT_AttrPropIndex api)
 
 	UT_UTF8String url;
 
-	url += s_string_to_url (imagedir);
+	url += s_string_to_url (imagebasedir);
 	url += "/";
 	url += s_string_to_url (filename);
 
