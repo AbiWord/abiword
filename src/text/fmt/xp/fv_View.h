@@ -313,6 +313,10 @@ public:
 	bool                isFooterOnPage(void);
 	bool                isHeaderOnPage(void);
 
+    void                removeThisHdrFtr(HdrFtrType hfType);
+	void                createThisHdrFtr(HdrFtrType hfType);
+	void                populateThisHdrFtr(HdrFtrType hfType);
+//
 // ----------------------
 // Stuff for edittable endnotes
 //

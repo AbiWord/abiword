@@ -810,7 +810,6 @@ fl_BlockLayout::~fl_BlockLayout()
 	_purgeSquiggles();
 	purgeLayout();
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
-
 	DELETEP(m_pAlignment);
 	//  if (m_pAutoNum)
 //  	{
@@ -820,7 +819,6 @@ fl_BlockLayout::~fl_BlockLayout()
 //  	}
 
 	UT_ASSERT(m_pLayout != NULL);
-
 	m_pLayout->notifyBlockIsBeingDeleted(this);
 }
 
@@ -3992,8 +3990,10 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 #endif
 		pLine = pLine->getNext();
 	}
-	
-	setNeedsReformat();
+
+//	This was...
+//	setNeedsReformat();
+	format();
 	m_bCursorErased = false;
 
 	_assertRunListIntegrity();
@@ -4296,7 +4296,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 			(m_pLayout, sdh, pcrx->getIndexAP(), FL_SECTION_DOC);
 		break;
 	case FL_SECTION_HDRFTR:
-		pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_HEADER,m_pLayout,NULL, sdh, pcrx->getIndexAP());
+		pSL = new fl_HdrFtrSectionLayout(FL_HDRFTR_NONE,m_pLayout,NULL, sdh, pcrx->getIndexAP());
 		break;
 	case FL_SECTION_ENDNOTE:
 		pSL = new fl_DocSectionLayout

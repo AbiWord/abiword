@@ -205,6 +205,10 @@ BeginLayout(Main,0)
 #endif
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_COLUMNS)
+#ifdef DEBUG
+        // QUACK Un-DEBUG here to activate Header/Footer formatting
+	    MenuItem(AP_MENU_ID_FMT_HDRFTR)
+#endif
 		MenuItem(AP_MENU_ID_FMT_TABS)
                 Separator()
                 MenuItem(AP_MENU_ID_FMT_TOGGLECASE)

@@ -48,6 +48,7 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_AUTOTEXT,   /* insert some autotext */
 	AP_DIALOG_ID_TOGGLECASE, /* change the case of a run of text */
 	AP_DIALOG_ID_BACKGROUND, /* change the doc's bg color */
+	AP_DIALOG_ID_HDRFTR, /* change the doc's bg color */
 	
 	/* ... add others here ... */
 

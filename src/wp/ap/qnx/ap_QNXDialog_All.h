@@ -63,6 +63,7 @@
 #   include "ap_QNXDialog_ToggleCase.h"
 #   include "ap_QNXDialog_Background.h"
 #   include "ap_QNXDialog_New.h"
+#   include "ap_QNXDialog_HdrFtr.h"
 
 	// ... add new dialogs here ...
 
@@ -85,6 +86,7 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_QNXDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_QNXDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_HDRFTR,  		AP_QNXDialog_HdrFtr)
 	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_QNXDialog_Background)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_QNXDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_QNXDialog_Break)

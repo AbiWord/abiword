@@ -2002,6 +2002,11 @@ void FL_DocLayout::notifyBlockIsBeingDeleted(fl_BlockLayout *pBlock)
 	{
 		m_pPendingBlockForSmartQuote = NULL;
 	}
+	UT_sint32 loc = m_vecUncheckedBlocks.findItem((void *) pBlock);
+	if(loc >= 0)
+	{
+		m_vecUncheckedBlocks.deleteNthItem(loc);
+	}
 }
 
 inline fl_AutoNum * FL_DocLayout::getListByID(UT_uint32 id) const

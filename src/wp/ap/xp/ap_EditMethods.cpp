@@ -67,6 +67,7 @@
 #include "ap_Dialog_ToggleCase.h"
 #include "ap_Dialog_Background.h"
 #include "ap_Dialog_New.h"
+#include "ap_Dialog_HdrFtr.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -304,7 +305,7 @@ public:
 	static EV_EditMethod_Fn insEndnote;
 
 	static EV_EditMethod_Fn dlgSpell;
-        static EV_EditMethod_Fn dlgSpellPrefs;
+    static EV_EditMethod_Fn dlgSpellPrefs;
 	static EV_EditMethod_Fn dlgWordCount;
 	static EV_EditMethod_Fn dlgOptions;
   
@@ -313,6 +314,7 @@ public:
 	static EV_EditMethod_Fn dlgBullets;
 	static EV_EditMethod_Fn dlgBorders;
 	static EV_EditMethod_Fn dlgColumns;
+	static EV_EditMethod_Fn dlgHdrFtr;
 	static EV_EditMethod_Fn style;
 	static EV_EditMethod_Fn dlgBackground;
 	static EV_EditMethod_Fn dlgStyle;
@@ -587,13 +589,14 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(delLeft),				0,	""),
 	EV_EditMethod(NF(delRight),				0,	""),
 	EV_EditMethod(NF(dlgAbout),				0,	""),
-	EV_EditMethod(NF(dlgBackground),                0,              ""),
-	EV_EditMethod(NF(dlgBorders),			0,		""),
-	EV_EditMethod(NF(dlgBullets),			0,		""),
-	EV_EditMethod(NF(dlgColorPickerBack),                0,              ""),
-	EV_EditMethod(NF(dlgColorPickerFore),                0,              ""),
+	EV_EditMethod(NF(dlgBackground),        0,  ""),
+	EV_EditMethod(NF(dlgBorders),			0,	""),
+	EV_EditMethod(NF(dlgBullets),			0,	""),
+	EV_EditMethod(NF(dlgColorPickerBack),   0,  ""),
+	EV_EditMethod(NF(dlgColorPickerFore),   0,  ""),
 	EV_EditMethod(NF(dlgColumns),			0,		""),
-	EV_EditMethod(NF(dlgFont),			0,		""),
+	EV_EditMethod(NF(dlgFont),  			0,		""),
+	EV_EditMethod(NF(dlgHdrFtr),			0,		""),
 	EV_EditMethod(NF(dlgLanguage),			0,		""),
 	EV_EditMethod(NF(dlgMoreWindows),		0,		""),
 	EV_EditMethod(NF(dlgOptions),			0,	        ""),
@@ -7498,6 +7501,7 @@ Defun(dlgBackground)
 	UT_ASSERT(pDialog);
 	if (!pDialog)
 		return false;
+
 //
 // Get Current background color
 //
@@ -7522,5 +7526,226 @@ Defun(dlgBackground)
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
 }
+
+
+Defun(dlgHdrFtr)
+{
+	FV_View * pView = static_cast<FV_View *>(pAV_View);
+
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+    AP_Dialog_HdrFtr * pDialog = (AP_Dialog_HdrFtr *) (pDialogFactory->requestDialog(AP_DIALOG_ID_HDRFTR));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+//
+// Get stuff we need from the view
+//
+	if(pView->isHdrFtrEdit())
+	{
+		pView->eraseInsertionPoint();
+		pView->clearHdrFtrEdit();
+		pView->warpInsPtToXY(0,0,false);
+	}
+	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pView->getCurrentBlock()->getSectionLayout();
+
+	bool bOldHdr = false;
+	bool bOldHdrEven = false;
+	bool bOldHdrFirst = false;
+	bool bOldHdrLast = false;
+    bool bOldFtr = false;
+    bool bOldFtrEven = false;
+    bool bOldFtrFirst = false;
+    bool bOldFtrLast = false;
+	bool bOldBools[6];
+	UT_sint32 i = 0;
+	for(i=0; i<6; i++)
+	{
+		bOldBools[i] = false;
+	}
+	if(NULL != pDSL->getHeader())
+	{
+		bOldHdr = true;
+	}
+	if(NULL != pDSL->getHeaderEven())
+	{
+		bOldHdrEven = true;
+		bOldBools[AP_Dialog_HdrFtr::HdrEven] = true;
+	}
+	if(NULL != pDSL->getHeaderFirst())
+	{
+		bOldHdrFirst = true;
+		bOldBools[AP_Dialog_HdrFtr::HdrFirst] = true;
+	}
+	if(NULL != pDSL->getHeaderLast())
+	{
+		bOldHdrLast = true;
+		bOldBools[AP_Dialog_HdrFtr::HdrLast] = true;
+	}
+	if(NULL != pDSL->getFooter())
+	{
+		bOldFtr = true;
+	}
+	if(NULL != pDSL->getFooterEven())
+	{
+		bOldFtrEven = true;
+		bOldBools[AP_Dialog_HdrFtr::FtrEven] = true;
+	}
+	if(NULL != pDSL->getFooterFirst())
+	{
+		bOldFtrFirst = true;
+		bOldBools[AP_Dialog_HdrFtr::FtrFirst] = true;
+	}
+	if(NULL != pDSL->getFooterLast())
+	{
+		bOldFtrLast = true;
+		bOldBools[AP_Dialog_HdrFtr::FtrLast] = true;
+	}
+	for(i =0; i < 6; i++)
+	{
+		pDialog->setValue((AP_Dialog_HdrFtr::HdrFtr_Control) i, 
+						  bOldBools[i], false);
+	}
+	const XML_Char ** propsSectionIn = NULL;
+	pView->getSectionFormat(&propsSectionIn);
+	const char * szRestart = NULL;
+	szRestart = UT_getAttribute("section-restart",propsSectionIn);
+	const char * szRestartValue = NULL;
+	szRestartValue = UT_getAttribute("section-restart-value",propsSectionIn);
+	bool bRestart = false;
+	if(szRestart && *szRestart && (UT_strcmp(szRestart,"1") == 0))
+	{
+		bRestart = true;
+	}
+	UT_sint32 restartValue = 1;
+	if(szRestartValue && *szRestartValue)
+	{
+		restartValue = atoi(szRestartValue);
+	}
+	pDialog->setRestart(bRestart, restartValue, false);
+	free(propsSectionIn);
+
+	pDialog->runModal (pFrame);
+
+	AP_Dialog_HdrFtr::tAnswer ans = pDialog->getAnswer();
+	bool bOK = (ans == AP_Dialog_HdrFtr::a_OK);
+
+	if (bOK)
+	{
+	    // let the view set the proper value in the
+	    // document and refresh/redraw itself
+//
+// Read back hdr/ftr type changes
+//
+		bool bNewHdrEven = pDialog->getValue(AP_Dialog_HdrFtr::HdrEven);
+		bool bNewHdrFirst = pDialog->getValue(AP_Dialog_HdrFtr::HdrFirst);
+		bool bNewHdrLast = pDialog->getValue(AP_Dialog_HdrFtr::HdrLast);
+		bool bNewFtrEven = pDialog->getValue(AP_Dialog_HdrFtr::FtrEven);
+		bool bNewFtrFirst = pDialog->getValue(AP_Dialog_HdrFtr::FtrFirst);
+		bool bNewFtrLast = pDialog->getValue(AP_Dialog_HdrFtr::FtrLast);
+//
+// Now delete the header/footers that need to be deleted.
+//
+		if(bOldHdrEven && !bNewHdrEven)
+		{
+			pView->removeThisHdrFtr(FL_HDRFTR_HEADER_EVEN);
+		}
+		if(bOldHdrFirst && !bNewHdrFirst)
+		{
+			pView->removeThisHdrFtr(FL_HDRFTR_HEADER_FIRST);
+		}
+		if(bOldHdrLast && !bNewHdrLast)
+		{
+			pView->removeThisHdrFtr(FL_HDRFTR_HEADER_LAST);
+		}
+		if(bOldFtrEven && !bNewFtrEven)
+		{
+			pView->removeThisHdrFtr(FL_HDRFTR_FOOTER_EVEN);
+		}
+		if(bOldHdrFirst && !bNewHdrFirst)
+		{
+			pView->removeThisHdrFtr(FL_HDRFTR_FOOTER_FIRST);
+		}
+		if(bOldHdrLast && !bNewHdrLast)
+		{
+			pView->removeThisHdrFtr(FL_HDRFTR_FOOTER_LAST);
+		}
+//
+// Now create odd header/footers if there are none and any other Header/Footer
+// types are asked for
+//
+		if(!bOldHdr && (bNewHdrEven || bNewHdrFirst || bNewHdrLast))
+		{
+			pView->createThisHdrFtr(FL_HDRFTR_HEADER);
+		}
+		if(!bOldFtr && (bNewFtrEven || bNewFtrFirst || bNewFtrLast))
+		{
+			pView->createThisHdrFtr(FL_HDRFTR_FOOTER);
+		}
+//
+// OK now create and populate the  requested header/footer types
+//
+		if(bNewHdrEven && !bOldHdrEven)
+		{
+			pView->createThisHdrFtr(FL_HDRFTR_HEADER_EVEN);
+			pView->populateThisHdrFtr(FL_HDRFTR_HEADER_EVEN);
+		}
+		if(bNewHdrFirst && !bOldHdrFirst)
+		{
+			pView->createThisHdrFtr(FL_HDRFTR_HEADER_FIRST);
+			pView->populateThisHdrFtr(FL_HDRFTR_HEADER_FIRST);
+		}
+		if(bNewHdrLast && !bOldHdrLast)
+		{
+			pView->createThisHdrFtr(FL_HDRFTR_HEADER_LAST);
+			pView->populateThisHdrFtr(FL_HDRFTR_HEADER_LAST);
+		}
+		if(bNewFtrEven && !bOldFtrEven)
+		{
+			pView->createThisHdrFtr(FL_HDRFTR_FOOTER_EVEN);
+			pView->populateThisHdrFtr(FL_HDRFTR_FOOTER_EVEN);
+		}
+		if(bNewFtrFirst && !bOldFtrFirst)
+		{
+			pView->createThisHdrFtr(FL_HDRFTR_FOOTER_FIRST);
+			pView->populateThisHdrFtr(FL_HDRFTR_FOOTER_FIRST);
+		}
+		if(bNewFtrLast && !bOldFtrLast)
+		{
+			pView->createThisHdrFtr(FL_HDRFTR_FOOTER_LAST);
+			pView->populateThisHdrFtr(FL_HDRFTR_FOOTER_LAST);
+		}
+		if(pDialog->isRestartChanged())
+		{
+			const char * props_out[] = {"section-restart",NULL,"section-restart-value",NULL,NULL};
+			static char szRestartValue[12];
+			if(pDialog->isRestart())
+			{
+				props_out[1] = "1";
+				sprintf((char *) szRestartValue,"%i",pDialog->getRestartValue());
+				props_out[3] = (const char *) szRestartValue;
+			}
+			else
+			{
+				props_out[1] = "0";
+				props_out[2] = NULL;
+			}
+		    pView->setSectionFormat((const char **) props_out);
+		}
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+	return bOK;
+}
+
+
+
+
 
 

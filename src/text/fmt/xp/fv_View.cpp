@@ -3063,7 +3063,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const XML_Char ** atts)
 // header/footer. Let's get the header/footer now.
 //
 	fl_HdrFtrSectionLayout * pHFSL = NULL;
-	if(hfType == FL_HDRFTR_FOOTER)
+	if(hfType >= FL_HDRFTR_FOOTER)
 		pHFSL = pDSL->getFooter();
 	else
 		pHFSL = pDSL->getHeader();
@@ -3364,7 +3364,16 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	v.addItem(new _fmtPair("column-line", NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	v.addItem(new _fmtPair("section-space-after",NULL,pBlockAP,pSectionAP,m_pDoc,false));
-	v.addItem(new _fmtPair("section-max-column-height",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("section-restart",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("section-restart-value",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("footer",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("footer-even",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("footer-first",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("footer-last",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("header",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("header-even",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("header-first",NULL,pBlockAP,pSectionAP,m_pDoc,false));
+	v.addItem(new _fmtPair("header-last",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 #ifdef BIDI_ENABLED
 	//v.addItem(new _fmtPair("column-order",NULL,pBlockAP,pSectionAP,m_pDoc,false));
 	//N.B. we do not want this property to propagate up from the block formating
@@ -6977,42 +6986,6 @@ void FV_View::cmdSelect(PT_DocPosition dpBeg, PT_DocPosition dpEnd)
 void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd)
 {
 	UT_DEBUGMSG(("Double click on mouse \n"));
-//
-// Code to handle footer/header insertion 
-//
-// TODO: Consider whether we want to create a header/footer on a double click. Leave this
-// code commented out until; we decide. Wwe can fix the left click biz by
-//
-//  	fp_Page * pPage = getCurrentPage();
-//  	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
-//  	if(pPage->getHeaderP() == NULL && !IS_SELECTALL(dpBeg, dpEnd))
-//  	{
-//  //
-//  // No header. Look to see if the user has clicked in the header region.
-//  //
-//  		if(xPos >=0 && yPos >=0 && yPos < pDSL->getTopMargin())
-//  		{
-//  //
-//  // Yes so insert a header put the cursor there and return
-//  //
-//  			insertHeaderFooter(FL_HDRFTR_HEADER);
-//  			return;
-//  		}
-//  	}
-//  	if(pPage->getFooterP() == NULL && !IS_SELECTALL(dpBeg, dpEnd))
-//  	{
-//  //
-//  // No Footer. Look to see if the user has clicked in the footer region.
-//  //
-//  		if(xPos >=0 && yPos < (pPage->getBottom() + pDSL->getBottomMargin()) && yPos > pPage->getBottom())
-//  		{
-//  //
-//  // Yes so insert a footer put the cursor there and return
-//  //
-//  			insertHeaderFooter(FL_HDRFTR_FOOTER);
-//  			return;
-//  		}
-//  	}
 
 	warpInsPtToXY(xPos, yPos,true);
 
@@ -8500,6 +8473,258 @@ void FV_View::setShowPara(bool bShowPara)
 };
 
 /*!
+ * Remove the Header/Footer type specified by hfType
+\params HdrFtrType hfType the type of the Header/Footer to be removed.
+ */
+void FV_View::removeThisHdrFtr(HdrFtrType hfType)
+{
+//
+// Fix up the insertion point stuff.
+//
+	if (isSelectionEmpty())
+		_eraseInsertionPoint();
+	else
+		_clearSelection();
+	
+	m_pDoc->beginUserAtomicGlob();
+
+	_saveAndNotifyPieceTableChange();
+//
+// Save current document position.
+//
+	PT_DocPosition curPoint = getPoint();
+
+    fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) getCurrentBlock()->getDocSectionLayout();
+
+	if(hfType == FL_HDRFTR_HEADER)
+	{
+		_removeThisHdrFtr(pDSL->getHeader());
+	}
+	else if(hfType == FL_HDRFTR_HEADER_EVEN)
+	{
+		_removeThisHdrFtr(pDSL->getHeaderEven());
+	}
+	else if(hfType == FL_HDRFTR_HEADER_LAST)
+	{
+		_removeThisHdrFtr(pDSL->getHeaderLast());
+	}
+	else if(hfType == FL_HDRFTR_HEADER_FIRST)
+	{
+		_removeThisHdrFtr(pDSL->getHeaderFirst());
+	}
+	else if(hfType == FL_HDRFTR_FOOTER)
+	{
+		_removeThisHdrFtr(pDSL->getFooter());
+	}
+	else if(hfType == FL_HDRFTR_FOOTER_EVEN)
+	{
+		_removeThisHdrFtr(pDSL->getFooterEven());
+	}
+	else if(hfType == FL_HDRFTR_FOOTER_LAST)
+	{
+		_removeThisHdrFtr(pDSL->getFooterLast());
+	}
+	else if(hfType == FL_HDRFTR_FOOTER_FIRST)
+	{
+		_removeThisHdrFtr(pDSL->getFooterFirst());
+	}
+//
+// After erarsing the cursor, Restore to the point before all this mess started.
+//
+	_eraseInsertionPoint();
+	_setPoint(curPoint);
+
+	_generalUpdate();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	updateScreen (); // fix 1803, force screen update/redraw
+
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	m_pDoc->endUserAtomicGlob();
+}
+
+
+/*!
+ *   Insert the header/footer. Save the cursor position before we do this and
+ *   restore it to where it was before we did this.
+\params HdrFtrType hfType
+ */
+void FV_View::createThisHdrFtr(HdrFtrType hfType)
+{
+	const XML_Char*	block_props[] = {
+		"text-align", "left",
+		NULL, NULL
+	};
+
+	if(isHdrFtrEdit())
+		clearHdrFtrEdit();
+//
+// Fix up the insertion point stuff.
+//
+	if (isSelectionEmpty())
+		_eraseInsertionPoint();
+	else
+		_clearSelection();
+	PT_DocPosition oldPos = getPoint();
+	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
+
+	// Signal PieceTable Changes have Started
+	m_pDoc->notifyPieceTableChangeStart();
+
+	m_pDoc->disableListUpdates();
+
+	insertHeaderFooter(block_props, hfType); // cursor is now in the header/footer
+	
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have Ended
+
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
+	m_pDoc->endUserAtomicGlob(); // End the big undo block
+
+// Update Layout everywhere. This actually creates the header/footer container
+
+//	m_pLayout->updateLayout(); // Update document layout everywhere
+//
+// Restore old point
+//
+	_setPoint(oldPos);
+	_generalUpdate();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+
+}
+
+
+/*!
+ * OK, This method copies the content from either the header or footer to
+ * the HdrFtrType specified here. This is used by the set HdrFtr properties
+ * types in the GUI.
+\params HdrFtrType hfType
+ */
+void FV_View::populateThisHdrFtr(HdrFtrType hfType)
+{
+//
+// Fix up the insertion point stuff.
+//
+	if (isSelectionEmpty())
+		_eraseInsertionPoint();
+	else
+		_clearSelection();
+
+	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
+
+	// Signal PieceTable Changes have Started
+	m_pDoc->notifyPieceTableChangeStart();
+
+	m_pDoc->disableListUpdates();
+//
+// Save Old Position
+//
+	PT_DocPosition oldPos = getPoint();
+
+	PD_DocumentRange dr_source;
+	PT_DocPosition iPos1,iPos2;
+	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) getCurrentBlock()->getSectionLayout();
+	fl_HdrFtrSectionLayout * pHFSL = NULL;
+	if(hfType<FL_HDRFTR_FOOTER)
+	{
+		pHFSL = pDSL->getHeader();
+	}
+	else
+	{
+		pHFSL = pDSL->getFooter();
+	}
+	iPos1 = m_pDoc->getStruxPosition(pHFSL->getFirstBlock()->getStruxDocHandle());
+	fl_BlockLayout * pLast = pHFSL->getLastBlock();
+	iPos2 = pLast->getPosition(false);
+//
+// This code assumes there is an End of Block run at the end of the Block. 
+// Thanks to Jesper, there always is!
+//
+	while(pLast->getNext() != NULL)
+	{
+		pLast = pLast->getNext();
+	}
+	fp_Run * pRun = pLast->getFirstRun();
+	while( pRun->getNext() != NULL)
+	{
+		pRun = pRun->getNext();
+	}
+	iPos2 += pRun->getBlockOffset();
+//
+// OK got the doc range for the source. Set it and copy it.
+//
+	dr_source.set(m_pDoc,iPos1,iPos2);
+//
+// Copy to and from clipboard to populate the header/Footer
+//
+	m_pApp->copyToClipboard(&dr_source);
+	PT_DocPosition posDest = 0;
+	fl_HdrFtrSectionLayout * pHFDest = NULL;
+	if(hfType == FL_HDRFTR_HEADER_EVEN)
+	{
+		pHFDest = pDSL->getHeaderEven();
+	}
+	if(hfType == FL_HDRFTR_HEADER_FIRST)
+	{
+		pHFDest = pDSL->getHeaderFirst();
+	}
+	if(hfType == FL_HDRFTR_HEADER_LAST)
+	{
+		pHFDest = pDSL->getHeaderLast();
+	}
+	if(hfType == FL_HDRFTR_FOOTER_EVEN)
+	{
+		pHFDest = pDSL->getFooterEven();
+	}
+	if(hfType == FL_HDRFTR_FOOTER_LAST)
+	{
+		pHFDest = pDSL->getFooterLast();
+	}
+	if(hfType == FL_HDRFTR_FOOTER_FIRST)
+	{
+		pHFDest = pDSL->getFooterFirst();
+	}
+	posDest = pHFDest->getFirstBlock()->getPosition(true);
+	PD_DocumentRange dr_dest(m_pDoc,posDest,posDest);
+	m_pApp->pasteFromClipboard(&dr_dest,true,true);
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+	_setPoint(oldPos);
+	// Signal PieceTable Changes have Ended
+
+	m_pDoc->notifyPieceTableChangeEnd();
+	m_iPieceTableState = 0;
+	m_pDoc->endUserAtomicGlob(); // End the big undo block
+
+// Update Layout everywhere. This actually creates the header/footer container
+
+//	m_pLayout->updateLayout(); // Update document layout everywhere
+
+	_generalUpdate();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+
+}
+
+/*!
  * Remove all the Headers or footers from the section owning the current Page.
 \params bool isHeader remove the header if true, the footer if false.
 */
@@ -8515,7 +8740,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 	if(isHeader)
 	{
 		fp_Page * pPage = getCurrentPage();
-		pHFCon = pPage->getHeaderP();
+		pHFCon = pPage->getHdrFtrP(FL_HDRFTR_HEADER);
 		if(pHFCon == NULL)
 		{
 			return;
@@ -8536,7 +8761,7 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 	else
 	{
 		fp_Page * pPage = getCurrentPage();
-		pHFCon = pPage->getFooterP();
+		pHFCon = pPage->getHdrFtrP(FL_HDRFTR_FOOTER);
 		if(pHFCon == NULL)
 		{
 			return;
@@ -8623,7 +8848,7 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 		return;
 	}
 	PT_DocPosition 	posBOS = m_pDoc->getStruxPosition(pHdrFtr->getStruxDocHandle());
-fl_BlockLayout * pLast = pHdrFtr->getLastBlock();
+	fl_BlockLayout * pLast = pHdrFtr->getLastBlock();
 	PT_DocPosition posEOS = pLast->getPosition(false);
 //
 // This code assumes there is an End of Block run at the end of the Block. Thanks
@@ -8682,7 +8907,7 @@ bool FV_View::isHeaderOnPage(void)
 		return false;
 	}
 	fp_ShadowContainer * pHFCon = NULL;
-	pHFCon = pPage->getHeaderP();
+	pHFCon = pPage->getHdrFtrP(FL_HDRFTR_HEADER);
 	if(pHFCon == NULL)
 	{
 		return false;
@@ -8703,7 +8928,7 @@ bool FV_View::isFooterOnPage(void)
 		return false;
 	}
 	fp_ShadowContainer * pHFCon = NULL;
-	pHFCon = pPage->getFooterP();
+	pHFCon = pPage->getHdrFtrP(FL_HDRFTR_FOOTER);
 	if(pHFCon == NULL)
 	{
 		return false;
@@ -8905,7 +9130,7 @@ void FV_View::cmdEditHeader(void)
 //
 	fl_HdrFtrShadow * pShadow = NULL;
 	fp_ShadowContainer * pHFCon = NULL;
-	pHFCon = pPage->getHeaderP();
+	pHFCon = pPage->getHdrFtrP(FL_HDRFTR_HEADER);
 	if(pHFCon == NULL)
 	{
 		insertHeaderFooter(FL_HDRFTR_HEADER);
@@ -8949,7 +9174,7 @@ void FV_View::cmdEditFooter(void)
 //
 	fl_HdrFtrShadow * pShadow = NULL;
 	fp_ShadowContainer * pHFCon = NULL;
-	pHFCon = pPage->getFooterP();
+	pHFCon = pPage->getHdrFtrP(FL_HDRFTR_FOOTER);
 	if(pHFCon == NULL)
 	{
 		insertHeaderFooter(FL_HDRFTR_FOOTER);
@@ -9045,17 +9270,16 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 // Update Layout everywhere. This actually creates the header/footer container
 
 	m_pLayout->updateLayout(); // Update document layout everywhere
-//	updateScreen(false);
 //
 // Now extract the shadow section from this.
 //
 	fp_Page * pPage = m_pLayout->getNthPage(iPageNo);
 	fl_HdrFtrShadow * pShadow = NULL;
 	fp_ShadowContainer * pHFCon = NULL;
-	if(hfType == FL_HDRFTR_FOOTER)
-		pHFCon = pPage->getFooterP();
-	else if (hfType == FL_HDRFTR_HEADER)
-		pHFCon = pPage->getHeaderP();
+	if(hfType >= FL_HDRFTR_FOOTER)
+		pHFCon = pPage->getHdrFtrP(FL_HDRFTR_FOOTER);
+	else if (hfType < FL_HDRFTR_FOOTER)
+		pHFCon = pPage->getHdrFtrP(FL_HDRFTR_HEADER);
 	else
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -9078,7 +9302,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 
 bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 {
-	UT_ASSERT(hfType == FL_HDRFTR_HEADER || hfType == FL_HDRFTR_FOOTER);
+//	UT_ASSERT(hfType == FL_HDRFTR_HEADER || hfType == FL_HDRFTR_FOOTER);
 
 	/*
 	  This inserts a header/footer at the end of the document,
@@ -9086,12 +9310,39 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 	  This provides NO undo stuff.  Do it yourself.
 	*/
 
-	const XML_Char* szString = (hfType==FL_HDRFTR_FOOTER) 
-		? "footer" : "header";
-
-	// TODO: This stuff shouldn't be hardcoded
-	// TODO: The fact that it is hardcoded means that only
-	// TODO: one section can have footers at one time, currently
+	UT_String szString;
+	if(hfType == FL_HDRFTR_HEADER)
+	{
+		szString = "header";
+	}
+	else if( hfType == FL_HDRFTR_HEADER_EVEN)
+	{
+		szString = "header-even";
+	}
+	else if( hfType == FL_HDRFTR_HEADER_FIRST)
+	{
+		szString = "header-first";
+	}
+	else if( hfType == FL_HDRFTR_HEADER_LAST)
+	{
+		szString = "header-last";
+	}
+	else if(hfType == FL_HDRFTR_FOOTER)
+	{
+		szString = "footer";
+	}
+	else if( hfType == FL_HDRFTR_FOOTER_EVEN)
+	{
+		szString = "footer-even";
+	}
+	else if( hfType == FL_HDRFTR_FOOTER_FIRST)
+	{
+		szString = "footer-first";
+	}
+	else if( hfType == FL_HDRFTR_FOOTER_LAST)
+	{
+		szString = "footer-last";
+	}
 
 	static XML_Char sid[15];
 	UT_uint32 id = 0;
@@ -9100,13 +9351,13 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 	sprintf(sid, "%i", id);
 
 	const XML_Char*	sec_attributes1[] = {
-		"type", szString,
+		"type", szString.c_str(),
 		"id",sid,"listid","0","parentid","0",
 		NULL, NULL
 	};
 
 	const XML_Char*	sec_attributes2[] = {
-		szString, sid,
+		szString.c_str(), sid,
 		NULL, NULL
 	};
 
@@ -9123,7 +9374,6 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 	{
 		_eraseInsertionPoint();
 	}
-
 //
 // Find the section that owns this page.
 //
@@ -9147,8 +9397,6 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 
 	UT_uint32 iPoint = getPoint();
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
-
-
 	//
 	// If there is a list item here remove it!
 	//
@@ -9161,7 +9409,6 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 			m_pDoc->StopList(sdh);
 		}     
 	} 
-
 //
 // Next set the style to Normal Clean so weird properties at the end of the 
 // doc aren't
@@ -9180,7 +9427,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType)
 // correct DocSectionLayout.
 //
 	m_iInsPoint++;
-      	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_SectionHdrFtr);
+	m_pDoc->changeStruxFmt(PTC_AddFmt, getPoint(), getPoint(), sec_attributes1, NULL, PTX_SectionHdrFtr);
 
 	// Change the formatting of the new footer appropriately 
     //(currently just center it)

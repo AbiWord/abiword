@@ -910,11 +910,11 @@ void fl_DocSectionLayout::markAllRunsDirty(void)
 	}
 	if(m_pHeaderFirstSL)
 	{
-		m_pHeaderEvenSL->markAllRunsDirty();
+		m_pHeaderFirstSL->markAllRunsDirty();
 	}
 	if(m_pHeaderLastSL)
 	{
-		m_pHeaderEvenSL->markAllRunsDirty();
+		m_pHeaderLastSL->markAllRunsDirty();
 	}
 	if(m_pFooterSL)
 	{
@@ -1632,14 +1632,14 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 		fl_HdrFtrSectionLayout * pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
 		if(pHdrFtr->getHFType() < FL_HDRFTR_FOOTER)
 		{
-			if(pPrev && pPrev->getOwningSection() == this && pPrev->getHeaderP() == NULL )
+			if(pPrev && pPrev->getOwningSection() == this && pPrev->getHdrFtrP(FL_HDRFTR_HEADER) == NULL )
 				prependOwnedHeaderPage(pPrev);
 
 			pHdrFtr->addPage(pPage);
 		}
 		else
 		{
-			if(pPrev && pPrev->getOwningSection() == this && pPrev->getFooterP() == NULL)
+			if(pPrev && pPrev->getOwningSection() == this && pPrev->getHdrFtrP(FL_HDRFTR_FOOTER) == NULL)
 			{
 				prependOwnedFooterPage(pPrev);
 			}
@@ -1661,7 +1661,7 @@ void fl_DocSectionLayout::prependOwnedHeaderPage(fp_Page* pPage)
 	// Skip back through the pages until the first owned page of this section
 	//
 	fp_Page * pPrev = pPage->getPrev();
-	if(pPrev && pPrev->getOwningSection() == this && pPrev->getHeaderP() == NULL)
+	if(pPrev && pPrev->getOwningSection() == this && pPrev->getHdrFtrP(FL_HDRFTR_HEADER) == NULL)
 	{
 		prependOwnedHeaderPage(pPrev);
 	}
@@ -1688,23 +1688,23 @@ void fl_DocSectionLayout::prependOwnedFooterPage(fp_Page* pPage)
 	// Skip back through the pages until the first owned page of this section
 	//
 	fp_Page * pPrev = pPage->getPrev();
-	if(pPrev && pPrev->getOwningSection() == this && pPrev->getFooterP() == NULL)
+	if(pPrev && pPrev->getOwningSection() == this && pPrev->getHdrFtrP(FL_HDRFTR_FOOTER) == NULL)
+	{
 		prependOwnedFooterPage(pPrev);
-	if(m_pFooterFirstSL)
-	{
-		m_pFooterFirstSL->addPage(pPage);
 	}
-	if(m_pFooterLastSL)
+//
+// The addPage methods will add the page to the correct HdrFtrSL.
+//
+	UT_Vector vecHdrFtr;
+	getVecOfHdrFtrs( &vecHdrFtr);
+	UT_uint32 i = 0;
+	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
-		m_pFooterLastSL->addPage(pPage);
-	}
-	if(m_pFooterEvenSL)
-	{
-		m_pFooterEvenSL->addPage(pPage);
-	}
-	if(m_pFooterSL)
-	{
-		m_pFooterSL->addPage(pPage);
+		fl_HdrFtrSectionLayout * pHdrFtr = (fl_HdrFtrSectionLayout *) vecHdrFtr.getNthItem(i);
+		if(pHdrFtr->getHFType() >= FL_HDRFTR_FOOTER)
+		{
+			pHdrFtr->addPage(pPage);
+		}
 	}
 }
 
@@ -2188,6 +2188,13 @@ bool fl_DocSectionLayout::isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage
 	PageType FirstLast = odd;
 	PageType OddEven = odd;
 	fp_Page * pPage = m_pFirstOwnedPage;
+//
+// No header/footerness assigned yet. Page is invalid.
+//
+	if(hfType == FL_HDRFTR_NONE)
+	{
+		return false;
+	}
 	if(pThisPage == pPage)
 	{
 		FirstLast = first;
@@ -2311,7 +2318,7 @@ bool fl_DocSectionLayout::isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage
 	{
 		return false;
 	}
-	if(m_pFooterEvenSL && (OddEven == even) &&  (hfType > FL_HDRFTR_FOOTER))
+	if(m_pFooterEvenSL && (OddEven == even) &&  (hfType >= FL_HDRFTR_FOOTER))
 	{
 		return false;
 	}
@@ -2426,14 +2433,7 @@ void fl_HdrFtrSectionLayout::collapse(void)
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		fp_Page * ppPage = pPair->pPage;
 		delete pPair->pShadow;
-		if (getHFType() < FL_HDRFTR_FOOTER)
-		{
-			ppPage->removeHeader();
-		}
-		else 
-		{
-			ppPage->removeFooter();
-		}
+		ppPage->removeHdrFtr(getHFType());
 		delete pPair;
 	}
 	m_vecPages.clear();
@@ -2745,16 +2745,7 @@ void fl_HdrFtrSectionLayout::deletePage(fp_Page* pPage)
 	delete pPair->pShadow;
 	if(getDocLayout()->findPage(ppPage) >= 0)
 	{
-		if (getHFType() < FL_HDRFTR_FOOTER)
-		{
-			UT_DEBUGMSG(("SEVIOR: Remove header from shadow \n"));
-			ppPage->removeHeader();
-		}
-		else 
-		{
-			UT_DEBUGMSG(("SEVIOR: Remove footer form shadow \n"));
-			ppPage->removeFooter();
-		}
+			ppPage->removeHdrFtr(getHFType());
 	}
 	delete pPair;
 	m_vecPages.deleteNthItem(iShadow);

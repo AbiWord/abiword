@@ -59,6 +59,7 @@
 #	include "ap_Win32Dialog_PageSetup.h"
 #	include "ap_Win32Dialog_ToggleCase.h"
 #	include "ap_Win32Dialog_Background.h"
+#	include "ap_Win32Dialog_HdrFtr.h"
 
 	// ... add new dialogs here ...
 
@@ -97,6 +98,7 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,	AP_Win32Dialog_PageSetup)
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,		AP_Win32Dialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_Win32Dialog_Background)
+	DeclareDialog(AP_DIALOG_ID_HDRFTR,  		AP_Win32Dialog_HdrFtr)
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_Win32Dialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_Win32Dialog_FileOpenSaveAs)
 	// ... also add new dialogs here ...

@@ -1071,23 +1071,35 @@ const fp_PageSize&	fp_Page::getPageSize(void) const
 	return m_pageSize;
 }
 
-void fp_Page::removeHeader(void)
+void fp_Page::removeHdrFtr(HdrFtrType hfType)
 {
-	UT_DEBUGMSG(("SEVIOR: Deleting header from page %x m_pHeader = %x \n",this, m_pHeader));
-	if(m_pHeader == NULL)
-		return;
-	delete m_pHeader;
-	m_pHeader = NULL;
+	if(hfType < FL_HDRFTR_FOOTER)
+	{
+		UT_DEBUGMSG(("SEVIOR: Deleting header from page %x m_pHeader = %x \n",this, m_pHeader));
+		if(m_pHeader == NULL)
+			return;
+		delete m_pHeader;
+		m_pHeader = NULL;
+	}
+	else
+	{
+		UT_DEBUGMSG(("SEVIOR: Deleting footer from page %x m_pFooter = %x \n",this,m_pFooter));
+		if(m_pFooter == NULL)
+			return;
+		delete m_pFooter;
+		m_pFooter = NULL;
+	}
 }
-
-
-void fp_Page::removeFooter(void)
+fp_ShadowContainer* fp_Page::getHdrFtrP(HdrFtrType hfType)
 {
-	UT_DEBUGMSG(("SEVIOR: Deleting footer from page %x m_pFooter = %x \n",this,m_pFooter));
-	if(m_pFooter == NULL)
-		return;
-	delete m_pFooter;
-	m_pFooter = NULL;
+	if(hfType < FL_HDRFTR_FOOTER)
+	{
+		return m_pHeader;
+	}
+	else
+	{
+		return m_pFooter;
+	}
 }
 
 fp_ShadowContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)

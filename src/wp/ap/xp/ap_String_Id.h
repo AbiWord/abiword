@@ -511,6 +511,18 @@ dcl(DLG_Background_TitleFore, "Change Text Color")
 dcl(DLG_Background_TitleHighlight, "Change Highlight Color")
 dcl(DLG_Background_ClearHighlight, "Clear Highlight Color")
 
+dcl(DLG_HdrFtr_Title, "Format Header/Footers")
+dcl(DLG_HdrFtr_HeaderFrame, "Header Properties")
+dcl(DLG_HdrFtr_HeaderEven, "Different Header on even pages")
+dcl(DLG_HdrFtr_HeaderFirst, "Different Header on First page")
+dcl(DLG_HdrFtr_HeaderLast, "Different Header on Last page")
+dcl(DLG_HdrFtr_FooterFrame, "Footer Properties")
+dcl(DLG_HdrFtr_FooterEven, "Different Footer on even pages")
+dcl(DLG_HdrFtr_FooterFirst, "Different Footer on First page")
+dcl(DLG_HdrFtr_FooterLast, "Different Footer on Last page")
+dcl(DLG_HdrFtr_RestartCheck, "Restart Page Numbers on new Sections")
+dcl(DLG_HdrFtr_RestartNumbers, "Restart numbering at:")
+
 dcl(MSG_EmptySelection, "Current Selection is Empty")
 
 dcl(WORD_PassRequired, "Password required, this is an encrypted document")

@@ -56,6 +56,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)_TB_CFactory.cpp		\
 			ap_$(ABI_FE)TopRuler.cpp		\
 			ap_$(ABI_FE)Dialog_Background.cpp	\
+			ap_$(ABI_FE)Dialog_HdrFtr.cpp	\
 			ap_$(ABI_FE)ViewListener.cpp
 
 TARGETS=		$(OBJS)

@@ -64,6 +64,7 @@
 #   include "ap_UnixDialog_ToggleCase.h"
 #   include "ap_UnixDialog_Background.h"
 #   include "ap_UnixDialog_New.h"
+#   include "ap_UnixDialog_HdrFtr.h"
 
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
@@ -95,6 +96,7 @@
 #   include "ap_UnixGnomeDialog_ToggleCase.h"
 #   include "ap_UnixGnomeDialog_Background.h"
 #   include "ap_UnixGnomeDialog_New.h"
+#   include "ap_UnixGnomeDialog_HdrFtr.h"
 
 #	ifdef HAVE_GNOME_DIRECT_PRINT
 #		include "xap_UnixDlg_Print.h"
@@ -125,6 +127,7 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
+	DeclareDialog(AP_DIALOG_ID_HDRFTR,			AP_UnixGnomeDialog_HdrFtr)
     DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_UnixGnomeDialog_Background)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixGnomeDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixGnomeDialog_Break)
@@ -155,7 +158,6 @@
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_PRINT,			XAP_UnixDialog_Print)
-    DeclareDialog(AP_DIALOG_ID_BACKGROUND, AP_UnixDialog_Background)
 	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser)
 	DeclareDialog(XAP_DIALOG_ID_LANGUAGE,		XAP_UnixDialog_Language)
@@ -168,6 +170,8 @@
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixDialog_Replace)
+    DeclareDialog(AP_DIALOG_ID_HDRFTR,          AP_UnixDialog_HdrFtr)
+    DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_UnixDialog_Background)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
