@@ -2556,7 +2556,7 @@ bool fl_HdrFtrSectionLayout::isPointInHere(PT_DocPosition pos)
 		return false;
 	}
 //
-// OK see if the next hdrftr is ahaead of the pos
+// OK see if the next hdrftr is ahead of the pos
 //
 	fl_HdrFtrSectionLayout * pHF = (fl_HdrFtrSectionLayout *) getNext();
 	if(pHF == NULL)
