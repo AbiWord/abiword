@@ -973,6 +973,10 @@ bool IE_Imp_RTF::HandleField()
 					UT_DEBUGMSG (("RTF: unexpected keyword\n"));
 				}
 			}
+			else if (ch == '{')
+			{
+				UT_DEBUGMSG (("RTF Debug: met a new block\n"));
+			}
 			else if (ch != '}') 
 			{
 				// STOP
@@ -1128,9 +1132,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 	case 'm':
 		if (strcmp((char *)pKeyword, "mac") == 0) 
 		{
-			// TODO
-			//			m_mbtowc.setInCharset(XAP_EncodingManager::instance->charsetFromCodepage(850));
-			UT_DEBUGMSG (("RTF: unhandled charset Macintosh"));
+			m_mbtowc.setInCharset("MACINTOSH");
 			return true;
 		}
 	case 'o': 
