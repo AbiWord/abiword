@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= $(EXPAT_INCLUDES) $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES)
+INCLUDES= $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES)
 
 noinst_LIBRARIES = libPtbl.a
 

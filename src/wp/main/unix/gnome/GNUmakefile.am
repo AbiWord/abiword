@@ -25,8 +25,8 @@ bin_PROGRAMS = AbiWord_d
 INCLUDES=\
 	 -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) \
-	$(TEXT_INCLUDES) @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
-	$(EXPAT_INCLUDES)
+	$(TEXT_INCLUDES) @GMODULE_CFLAGS@ @GTK_CFLAGS@
+
 
 AbiWord_d_SOURCES = abi_ver.cpp UnixGnomeMain.cpp
 
@@ -36,15 +36,3 @@ AbiWord_d_LDADD = $(REPEAT_LIBS) $(PEER_LIBS) @GTK_LIBS@ @GMODULE_LIBS@ $(OTHER_
 
 abi_ver.cpp:
 	cp $(srcdir)/../../xp/abi_ver.cpp .
-
-
-
-
-
-
-
-
-
-
-
-
