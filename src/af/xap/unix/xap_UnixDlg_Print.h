@@ -85,9 +85,6 @@ protected:
 		char *		szPrintCommand;
 		
 	} m_persistPrintDlg;
-	
-	bool	m_bEmbedFonts;
-	
 };
 
 #endif /* XAP_UNIXDIALOG_PRINT_H */

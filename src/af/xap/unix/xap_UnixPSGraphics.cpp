@@ -830,12 +830,7 @@ void PS_Graphics::_emit_DocumentNeededResources(void)
 	}
 
 	// TODO add any other resources here
-	bool bEmbedFonts;
-	XAP_App::getApp()->getPrefsValueBool(reinterpret_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), &bEmbedFonts);
-	if(bEmbedFonts)
-	  m_ps->formatComment("DocumentSuppliedResources",&vec);
-	else
-	  m_ps->formatComment("DocumentNeededResources",&vec);
+	m_ps->formatComment("DocumentSuppliedResources",&vec);
 
 	UT_VECTOR_FREEALL(char*, vec);
 }
@@ -846,114 +841,71 @@ void PS_Graphics::_emit_IncludeResource(void)
    	UT_uint32 k,n;
    	UT_uint32 kLimit = m_vecFontList.getItemCount();
 
-	// we want to have a checkbox in the Preferences that would allow
-	// to disable splating of the fonts into the output, since people who
-	// use Ghostscript my simply register their fonts with GS and do not
-	// need them in the document
-	bool bEmbedFonts;
-	XAP_App::getApp()->getPrefsValueBool(reinterpret_cast<const XML_Char *>(XAP_PREF_KEY_EmbedFontsInPS), &bEmbedFonts);
-	UT_DEBUGMSG(("bEmbedFonts: %d\n",bEmbedFonts));
+	// fonts are always embedded in the document now, as this was causing way
+	// too many bugreports; just try to live with it that the document 
+	// is a bit bigger now; see bug 6585, comment 14
 
-    if(bEmbedFonts)
-    {
-    	for (k=0; k<kLimit; k++)
-    	{
-    		char buf[128];
-
-    		PSFont * psf = m_vecFontList.getNthItem(k);
-
-    		// Instead of including the resources, we actually splat the fonts
-    		// into the document.  This looks really slow... perhaps buffer line
-    		// by line or in larger chunks the font data.
-    		XAP_UnixFont * unixfont = psf->getUnixFont();
-
-			UT_DEBUGMSG(("ps: Look at Embedding font number %d name %s \n",k,unixfont->getFontKey()));
-		
-    		bool match = false;
-            const char * pName = unixfont->getFontKey();
-    		for(size_t i = 0; i < vec.getItemCount(); ++i)
-    		{
-				if(!strcmp(pName,reinterpret_cast<const char*>(vec.getNthItem(i))))
-    			{
-
-					UT_DEBUGMSG(("_ps: Font already emitted, forget it. \n"));
-			    	match=true;
-    				break;
-    			}
-    		}
-    		if(match)
-		    	continue;
-            
-            vec.addItem(reinterpret_cast<const void*>(pName));
-			UT_DEBUGMSG(("PS: Aboiut to embed font %s \n",pName));
-    		// Make sure the font file will open, maybe it disappeared...
-			UT_ASSERT(m_ps);
-			if (!unixfont->embedInto(*m_ps))
-    		{
-				UT_String message("Font data file [");
-				message += unixfont->getFontfile();
-				message += "cannot be opened for reading!\n"
-					"Did it disappear on us?  AbiWord can't print without\n"
-					"this file; your PostScript might be missing this resource.";
-
-    			// we don't have any frame info, so we use the non-parented dialog box
-    			messageBoxOK(message.c_str());
-    			return;
-    		}
-		
-    		// NOTE : here's an internationalization process step.  If the font
-    		// NOTE : encoding is NOT "iso8859", we do not emit this macro.
-    		// NOTE : this keeps fonts like Standard Symbols, and really
-    		// NOTE : any other encoding, from being mangled.  however, it's
-    		// NOTE : not intended to guarantee that these other encodings
-    		// NOTE : actually work.  that requires more design work.
-
-    		// write findfont
-			UT_String stName(psf->getUnixFont()->getPostscriptName());
-    		g_snprintf(buf, sizeof (buf), "/%s findfont\n", stName.c_str());
-    		m_ps->writeBytes(buf);
-
-    		// exec the swapper macro
-    		g_snprintf(buf, sizeof (buf), "/%s EXC\n", stName.c_str());
-    		m_ps->writeBytes(buf);
-
-    	}
-    }
-	else
+	for (k=0; k<kLimit; k++)
 	{
-		// when not embeding fonts, we have to issue %IncludeResource statement
-		bool bFontKeyword = true;
-		const char* pFResource[2] = {"font", NULL};
-		for (k=0; k<kLimit; k++)
+		char buf[128];
+
+		PSFont * psf = m_vecFontList.getNthItem(k);
+
+		// Instead of including the resources, we actually splat the fonts
+		// into the document.  This looks really slow... perhaps buffer line
+		// by line or in larger chunks the font data.
+		XAP_UnixFont * unixfont = psf->getUnixFont();
+
+		UT_DEBUGMSG(("ps: Look at Embedding font number %d name %s \n",k,unixfont->getFontKey()));
+	
+		bool match = false;
+		const char * pName = unixfont->getFontKey();
+		for(size_t i = 0; i < vec.getItemCount(); ++i)
 		{
-			PSFont * psf = m_vecFontList.getNthItem(k);
-			if(bFontKeyword)
+			if(!strcmp(pName,reinterpret_cast<const char*>(vec.getNthItem(i))))
 			{
-				vec.addItem(static_cast<void *>(UT_strdup("font")));
-				bFontKeyword = false;
-			}
-            
-			// only include each font name once
-			UT_String pName(psf->getUnixFont()->getPostscriptName());
-			bool bFound = false;
-			for(n = 0; n < vec.getItemCount(); n++)
-			{
-				if(!UT_strcmp(pName.c_str(), reinterpret_cast<const char *>(vec.getNthItem(n))))
-				{
-					bFound = true;
-					break;
-				}
-			}
-            
-			if(!bFound)
-			{
-				vec.addItem(reinterpret_cast<void*>(UT_strdup(pName.c_str())));
-				pFResource[1] = pName.c_str();
-				m_ps->formatComment("IncludeResource", pFResource, 2);
+
+				UT_DEBUGMSG(("_ps: Font already emitted, forget it. \n"));
+				match=true;
+				break;
 			}
 		}
+		if(match)
+			continue;
+		
+		vec.addItem(reinterpret_cast<const void*>(pName));
+		UT_DEBUGMSG(("PS: Aboiut to embed font %s \n",pName));
+		// Make sure the font file will open, maybe it disappeared...
+		UT_ASSERT(m_ps);
+		if (!unixfont->embedInto(*m_ps))
+		{
+			UT_String message("Font data file [");
+			message += unixfont->getFontfile();
+			message += "cannot be opened for reading!\n"
+				"Did it disappear on us?  AbiWord can't print without\n"
+				"this file; your PostScript might be missing this resource.";
 
-		UT_VECTOR_FREEALL(char*, vec);
+			// we don't have any frame info, so we use the non-parented dialog box
+			messageBoxOK(message.c_str());
+			return;
+		}
+	
+		// NOTE : here's an internationalization process step.  If the font
+		// NOTE : encoding is NOT "iso8859", we do not emit this macro.
+		// NOTE : this keeps fonts like Standard Symbols, and really
+		// NOTE : any other encoding, from being mangled.  however, it's
+		// NOTE : not intended to guarantee that these other encodings
+		// NOTE : actually work.  that requires more design work.
+
+		// write findfont
+		UT_String stName(psf->getUnixFont()->getPostscriptName());
+		g_snprintf(buf, sizeof (buf), "/%s findfont\n", stName.c_str());
+		m_ps->writeBytes(buf);
+
+		// exec the swapper macro
+		g_snprintf(buf, sizeof (buf), "/%s EXC\n", stName.c_str());
+		m_ps->writeBytes(buf);
+
 	}
         
 	// TODO add any other IncludeResource's here

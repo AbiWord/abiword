@@ -79,9 +79,6 @@
 #define XAP_PREF_DEFAULT_AutoSaveFileExt			".bak~"
 #endif
 
-#define XAP_PREF_KEY_EmbedFontsInPS 				"EmbedFontsInPs"
-#define XAP_PREF_DEFAULT_EmbedFontsInPS 			"1"
-
 #define XAP_PREF_KEY_ColorForTransparent			"TransparentColor"
 #define XAP_PREF_DEFAULT_ColorForTransparent		"ffffff"
 
@@ -179,7 +176,6 @@ dcl(LatinLigatures)
 dcl(AutoSaveFile)
 dcl(AutoSaveFilePeriod)
 dcl(AutoSaveFileExt)
-dcl(EmbedFontsInPS)
 dcl(ColorForTransparent)
 dcl(ColorForShowPara)
 dcl(ColorForSquiggle)
