@@ -24,6 +24,11 @@
 #include "gr_UnixGraphics.h"
 #include "xap_UnixDialogHelper.h"
 
+static void expose_event(GtkWidget * widget, XAP_UnixFontPreview * prev)
+{
+  prev->draw();
+}
+
 XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_uint32 top)
 	: XAP_FontPreview()
 {
@@ -40,6 +45,11 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	gtk_container_add(GTK_CONTAINER(m_pPreviewWindow), m_pDrawingArea);
 
 	gtk_widget_show_all(m_pPreviewWindow);
+
+#if 0
+	g_signal_connect(G_OBJECT(m_pDrawingArea), "expose_event",
+			 G_CALLBACK(expose_event), this);
+#endif
 
 	XAP_App *pApp = m_pUnixFrame->getApp();
 #ifndef WITH_PANGO
