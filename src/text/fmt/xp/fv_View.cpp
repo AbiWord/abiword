@@ -5341,8 +5341,8 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	// return UT_FALSE if we ran into an end (or had an error).
 
 	PT_DocPosition posOld = m_iInsPoint;
-	fp_Run* pRun;
-	fl_BlockLayout* pBlock;
+	fp_Run* pRun = NULL;
+	fl_BlockLayout* pBlock = NULL;
 	UT_sint32 x;
 	UT_sint32 y;
 	UT_uint32 uheight;
