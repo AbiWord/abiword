@@ -207,26 +207,40 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 {
 	RECT r;
 	UT_uint32 iHeight, iWidth;
+	UT_sint32 iPosX, iPosY;
+	static bool firstWindow = true;	/* position only 1st window! */
 
 	// create a top-level window for us.
-	// TODO get the default window size from preferences or something.
-	// Win32App will set position & size for 1st frame opened only.
+	// get the default window size from preferences or something.
+	// should set size for all, but position only on 1st created
+	// TODO determine where to save & restore from Window flag (since
+	//      we can't use the geometry flag (its some other junk about validity of pos & size)
+	//      so we can properly restore Maximized/Minimized/Normal mode windows
+	// For now we can let Win32App set the flag for the 1st opened window
 
 	// get window width & height from preferences
-	UT_sint32 t_x,t_y;  // dummy variables
-	UT_uint32 t_flag;
-	if ( !(this->getApp()->getGeometry(&t_x,&t_y,&iWidth,&iHeight,&t_flag)) ||
+	UT_uint32 t_flag;		// dummy variable
+	if ( !(XAP_App::getApp()->getGeometry(&iPosX,&iPosY,&iWidth,&iHeight,&t_flag)) ||
            !((iWidth > 0) && (iHeight > 0)) )
 	{
+		UT_DEBUGMSG(("Unable to obtain saved geometry, using window defaults!\n"));
 		iWidth = CW_USEDEFAULT;
 		iHeight = CW_USEDEFAULT;
+		iPosX = CW_USEDEFAULT;
+		iPosY = CW_USEDEFAULT;
 	}
-
+	/* let Windows(R) place the Window for all but 1st one, for stairstep effect */
+	if (!firstWindow)
+	{
+		iPosX = CW_USEDEFAULT;
+		iPosY = CW_USEDEFAULT;
+	}
+	else firstWindow = false;
 
 	m_hwndFrame = CreateWindow(m_pWin32App->getApplicationName(),
 							   m_pWin32App->getApplicationTitleForTitleBar(),
 							   WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-							   CW_USEDEFAULT, CW_USEDEFAULT, iWidth, iHeight,
+							   iPosX, iPosY, iWidth, iHeight,
 							   NULL, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndFrame);
 
@@ -321,7 +335,11 @@ bool XAP_Win32Frame::close()
 				wndPlacement.rcNormalPosition.top, 
 				wndPlacement.rcNormalPosition.right - wndPlacement.rcNormalPosition.left,
 				wndPlacement.rcNormalPosition.bottom - wndPlacement.rcNormalPosition.top,
+				/* flag is meant for info about the position & size info stored, not a generic flag
+				 * TODO: figure out where to store this then, so we can max/min/normal again
 				wndPlacement.showCmd
+				*/
+				PREF_FLAG_GEOMETRY_POS | PREF_FLAG_GEOMETRY_SIZE
 				);
 	}
 	else
