@@ -47,6 +47,7 @@
 #	include "ap_Win32Dialog_Insert_DateTime.h"
 #	include "ap_Win32Dialog_WordCount.h"
 #	include "ap_Win32Dialog_Field.h"
+#	include "ap_Win32Dialog_Goto.h"
 
 	// ... add new dialogs here ...
 
@@ -72,6 +73,7 @@
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_Win32Dialog_Insert_DateTime)
 	DeclareDialog(AP_DIALOG_ID_WORDCOUNT,		AP_Win32Dialog_WordCount)
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_Win32Dialog_Field)
+	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_Win32Dialog_Goto)
 	
 	// ... also add new dialogs here ...
 

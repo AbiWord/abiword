@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_WIN32DIALOG_STUB_H
-#define AP_WIN32DIALOG_STUB_H
+#ifndef AP_WIN32DIALOG_GOTO_H
+#define AP_WIN32DIALOG_GOTO_H
 
 #include "ap_Dialog_Goto.h"
 class XAP_Win32Frame;
@@ -28,7 +28,7 @@ class XAP_Win32Frame;
 class AP_Win32Dialog_Goto: public AP_Dialog_Goto
 {
 public:
-	AP_UnixDialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_Win32Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Goto(void);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);

@@ -36,20 +36,17 @@
 
 /*****************************************************************/
 
-XAP_Dialog * AP_Win32Dialog_Goto::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+XAP_Dialog * AP_Win32Dialog_Goto::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id)
 {
 	AP_Win32Dialog_Goto * p = new AP_Win32Dialog_Goto(pFactory,id);
 	return p;
 }
 
-AP_Win32Dialog_Stub::AP_Win32Dialog_Goto(XAP_DialogFactory * pDlgFactory,
-										 XAP_Dialog_Id id)
-	: AP_Dialog_Goto(pDlgFactory,id)
+AP_Win32Dialog_Goto::AP_Win32Dialog_Goto(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id) : AP_Dialog_Goto(pDlgFactory,id)
 {
 }
 
-AP_Win32Dialog_Stub::~AP_Win32Dialog_Goto(void)
+AP_Win32Dialog_Goto::~AP_Win32Dialog_Goto(void)
 {
 }
 
