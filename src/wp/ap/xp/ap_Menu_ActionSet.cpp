@@ -153,6 +153,18 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_HELP_ABOUT,		0,1,0,	"dlgAbout",			NULL,					ap_GetLabel_About);
 
+	_s(AP_MENU_ID_SPELL_SUGGEST_1,	0,0,0,	"spellSuggest_1",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
+	_s(AP_MENU_ID_SPELL_SUGGEST_2,	0,0,0,	"spellSuggest_2",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
+	_s(AP_MENU_ID_SPELL_SUGGEST_3,	0,0,0,	"spellSuggest_3",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
+	_s(AP_MENU_ID_SPELL_SUGGEST_4,	0,0,0,	"spellSuggest_4",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
+	_s(AP_MENU_ID_SPELL_SUGGEST_5,	0,0,0,	"spellSuggest_5",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
+	_s(AP_MENU_ID_SPELL_SUGGEST_6,	0,0,0,	"spellSuggest_6",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
+	_s(AP_MENU_ID_SPELL_SUGGEST_7,	0,0,0,	"spellSuggest_7",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
+	_s(AP_MENU_ID_SPELL_SUGGEST_8,	0,0,0,	"spellSuggest_8",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
+	_s(AP_MENU_ID_SPELL_SUGGEST_9,	0,0,0,	"spellSuggest_9",	ap_GetState_Suggest,	ap_GetLabel_Suggest);
+	_s(AP_MENU_ID_SPELL_IGNOREALL,	0,0,0,	"spellIgnoreAll",	NULL,					NULL);
+	_s(AP_MENU_ID_SPELL_ADD,		0,0,0,	"spellAdd",			NULL,					NULL);
+
 	// ... add others here ...
 	
 	_s(AP_MENU_ID__BOGUS2__,		0,0,0,	NULL,				NULL,					NULL);

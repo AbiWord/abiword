@@ -35,6 +35,7 @@
 /*****************************************************************/
 
 static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
+									 XAP_Frame * pFrame, 
 									 const EV_EditEventMapper * pEEM,
 									 EV_Menu_Action * pAction,
 									 EV_Menu_Label * pLabel)
@@ -42,7 +43,7 @@ static const char * _ev_GetLabelName(XAP_Win32App * pWin32App,
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pWin32App,pLabel);
+		szLabelName = pAction->getDynamicLabel(pFrame,pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
@@ -110,7 +111,7 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 
 EV_Win32Menu::~EV_Win32Menu(void)
 {
-	// we let the derrived classes handle destruction of m_myMenu iff appropriate.
+	// we let the derived classes handle destruction of m_myMenu iff appropriate.
 }
 
 UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
@@ -150,7 +151,7 @@ UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
 	return UT_TRUE;
 }
 
-UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
+UT_Bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 {
 	// create a Win32 menu from the info provided.
 
@@ -183,7 +184,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
 
 		// get the name for the menu item
 
-		const char * szLabelName = _ev_GetLabelName(m_pWin32App,m_pEEM,pAction,pLabel);
+		const char * szLabelName = _ev_GetLabelName(m_pWin32App,pFrame,m_pEEM,pAction,pLabel);
 		
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
@@ -263,7 +264,7 @@ UT_Bool EV_Win32Menu::synthesizeMenu(HMENU menuRoot)
 	return UT_TRUE;
 }
 
-UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
+UT_Bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HMENU hMenuBar)
 {
 	// deal with WM_INITMENU.
 
@@ -302,6 +303,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 				
 				UINT uEnable = MF_BYCOMMAND | MF_ENABLED;
 				UINT uCheck = MF_BYCOMMAND | MF_UNCHECKED;
+				UINT uBold = 0;
 				if (pAction->hasGetStateFunction())
 				{
 					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
@@ -309,6 +311,8 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 						uEnable |= MF_GRAYED;
 					if (mis & EV_MIS_Toggled)
 						uCheck |= MF_CHECKED;
+					if (mis & EV_MIS_Bold)
+						uBold = MFS_DEFAULT;
 				}
 
 				if (!pAction->hasDynamicLabel())
@@ -336,7 +340,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 				// compute the value for the label.
 				// if it is blank, we remove the item from the menu.
 
-				const char * szLabelName = _ev_GetLabelName(m_pWin32App,m_pEEM,pAction,pLabel);
+				const char * szLabelName = _ev_GetLabelName(m_pWin32App,pFrame,m_pEEM,pAction,pLabel);
 
 				BOOL bRemoveIt = (!szLabelName || !*szLabelName);
 
@@ -362,12 +366,19 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 
 						EnableMenuItem(hMenuBar,cmd,uEnable);
 						CheckMenuItem(hMenuBar,cmd,uCheck);
+
+						if (uBold)
+						{
+							mif.fState = uCheck | uEnable | uBold;
+							mif.fMask = MIIM_STATE | MIIM_ID;
+							SetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
+						}
 					}
 					else
 					{
 						// dynamic label has changed, do the complex modify.
 						
-						mif.fState = uCheck | uEnable;
+						mif.fState = uCheck | uEnable | uBold;
 						mif.fType = MFT_STRING;
 						mif.dwTypeData = (LPTSTR)szLabelName;
 						SetMenuItemInfo(hMenuBar,cmd,FALSE,&mif);
@@ -378,7 +389,7 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 				{
 					// insert new item at the correct location
 
-					mif.fState = uCheck | uEnable;
+					mif.fState = uCheck | uEnable | uBold;
 					mif.fType = MFT_STRING;
 					mif.wID = cmd;
 					mif.dwTypeData = (LPTSTR)szLabelName;
@@ -497,11 +508,11 @@ EV_Win32MenuBar::~EV_Win32MenuBar(void)
 	// TODO should we destroy m_myMenu if set ??
 }
 
-UT_Bool EV_Win32MenuBar::synthesizeMenuBar(void)
+UT_Bool EV_Win32MenuBar::synthesizeMenuBar(XAP_Frame * pFrame)
 {
 	m_myMenu = CreateMenu();
 
-	return (synthesizeMenu(m_myMenu));
+	return (synthesizeMenu(pFrame, m_myMenu));
 }
 
 /*****************************************************************/
@@ -520,9 +531,9 @@ EV_Win32MenuPopup::~EV_Win32MenuPopup(void)
 		DestroyMenu(m_myMenu);
 }
 
-UT_Bool EV_Win32MenuPopup::synthesizeMenuPopup(void)
+UT_Bool EV_Win32MenuPopup::synthesizeMenuPopup(XAP_Frame * pFrame)
 {
 	m_myMenu = CreatePopupMenu();
 
-	return synthesizeMenu(m_myMenu);
+	return synthesizeMenu(pFrame, m_myMenu);
 }

@@ -178,13 +178,14 @@ int _ev_convert(char * bufResult, const char * szString) {
 
 // Is there a reason why this couldn't be made generic?
 const char * _ev_GetLabelName(XAP_BeOSApp * pBeOSApp,
-			  EV_Menu_Action * pAction,
-			  EV_Menu_Label * pLabel)
+							  XAP_Frame * pBeOSFrame,
+							  EV_Menu_Action * pAction,
+							  EV_Menu_Label * pLabel)
 {
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pBeOSApp, pLabel);
+		szLabelName = pAction->getDynamicLabel(pBeOSFrame, pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
@@ -260,7 +261,7 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
                                 	bCheck = UT_TRUE;
                         }                 
 #endif
-			szLabelName = _ev_GetLabelName(m_pBeOSApp, pAction, pLabel);
+			szLabelName = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
                         //const char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
                         //szLabelName = data[0];
                         //szMnemonicName = data[1];            
@@ -290,7 +291,7 @@ UT_Bool EV_BeOSMenu::synthesize(void) {
 			break;
 		}
 		case EV_MLF_BeginSubMenu: {
-			szLabelName = _ev_GetLabelName(m_pBeOSApp, pAction, pLabel);
+			szLabelName = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
 			//char ** data = _ev_GetLabelName(m_pBeOSApp, m_pBeOSFrame, pAction, pLabel);
                         //szLabelName = data[0];
                         //szMnemonicName = data[1];           

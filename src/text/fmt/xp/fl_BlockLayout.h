@@ -183,6 +183,7 @@ public:
 	inline UT_Bool			needsReformat(void) const { return m_bNeedsReformat; }
 
 	void					checkWord(fl_PartOfBlock* pPOB);
+	fl_PartOfBlock*			getSquiggle(UT_uint32 iOffset) const;
 
 	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset);
 	

@@ -42,6 +42,7 @@
 #include "xap_Types.h"
 
 class XAP_App;
+class XAP_Frame;
 class AV_View;
 class EV_Menu_Label;
 
@@ -54,7 +55,8 @@ typedef enum _ev_Menu_ItemState			/* values may be ORed */
 {
 	EV_MIS_ZERO		= 0x00,				/* nothing is turned on */
 	EV_MIS_Gray		= 0x01,				/* item is or should be gray */
-	EV_MIS_Toggled	= 0x02				/* checkable item should be checked */
+	EV_MIS_Toggled	= 0x02,				/* checkable item should be checked */
+	EV_MIS_Bold		= 0x04				/* item is or should be bold */
 
 } EV_Menu_ItemState;
 
@@ -67,9 +69,12 @@ typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(AV_View * pView, XAP_Menu_I
 // TODO the ap.  but for view-specific things (like toggles where we change the menu
 // TODO item name rather than doing a checkmark), we need the view.
 
-typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(XAP_App * pApp, const EV_Menu_Label * pLabel, XAP_Menu_Id id);
-typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(XAP_App * pApp, const EV_Menu_Label * pLabel, XAP_Menu_Id id);
-#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(XAP_App * pApp, const EV_Menu_Label * pLabel, XAP_Menu_Id id)
+// for now, current (quick) compromise is to pass the XAP_Frame, 
+// because you can get to either of them easily from there -- pcr
+
+typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id);
+typedef const char * (*EV_GetMenuItemComputedLabel_pFn)(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id);
+#define Defun_EV_GetMenuItemComputedLabel_Fn(fn) const char * fn(XAP_Frame * pFrame, const EV_Menu_Label * pLabel, XAP_Menu_Id id)
 
 /*****************************************************************/
 
@@ -87,7 +92,7 @@ public:
 
 	XAP_Menu_Id						getMenuId(void) const;
 	UT_Bool							hasDynamicLabel(void) const;
-	const char *					getDynamicLabel(XAP_App * pApp, const EV_Menu_Label * pLabel) const;
+	const char *					getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_Label * pLabel) const;
 	const char *					getMethodName(void) const;
 	UT_Bool							hasGetStateFunction(void) const;
 	EV_Menu_ItemState				getMenuItemState(AV_View * pView) const;

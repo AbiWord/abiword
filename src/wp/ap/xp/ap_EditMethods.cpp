@@ -119,6 +119,20 @@ public:
 
 	static EV_EditMethod_Fn contextMenu;
 	static EV_EditMethod_Fn contextText;
+	static EV_EditMethod_Fn contextMisspellText;
+
+	static EV_EditMethod_Fn spellSuggest_1;
+	static EV_EditMethod_Fn spellSuggest_2;
+	static EV_EditMethod_Fn spellSuggest_3;
+	static EV_EditMethod_Fn spellSuggest_4;
+	static EV_EditMethod_Fn spellSuggest_5;
+	static EV_EditMethod_Fn spellSuggest_6;
+	static EV_EditMethod_Fn spellSuggest_7;
+	static EV_EditMethod_Fn spellSuggest_8;
+	static EV_EditMethod_Fn spellSuggest_9;
+
+	static EV_EditMethod_Fn spellIgnoreAll;
+	static EV_EditMethod_Fn spellAdd;
 
 	static EV_EditMethod_Fn dragToXY;
 	static EV_EditMethod_Fn dragToXYword;
@@ -378,6 +392,20 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	EV_EditMethod(NF(contextMenu),			0,	""),
 	EV_EditMethod(NF(contextText),			0,	""),
+	EV_EditMethod(NF(contextMisspellText),	0,	""),
+
+	EV_EditMethod(NF(spellSuggest_1),		0,	""),
+	EV_EditMethod(NF(spellSuggest_2),		0,	""),
+	EV_EditMethod(NF(spellSuggest_3),		0,	""),
+	EV_EditMethod(NF(spellSuggest_4),		0,	""),
+	EV_EditMethod(NF(spellSuggest_5),		0,	""),
+	EV_EditMethod(NF(spellSuggest_6),		0,	""),
+	EV_EditMethod(NF(spellSuggest_7),		0,	""),
+	EV_EditMethod(NF(spellSuggest_8),		0,	""),
+	EV_EditMethod(NF(spellSuggest_9),		0,	""),
+
+	EV_EditMethod(NF(spellIgnoreAll),		0,	""),
+	EV_EditMethod(NF(spellAdd),				0,	""),
 
 	EV_EditMethod(NF(dragToXY),				0,	""),
 	EV_EditMethod(NF(dragToXYword),			0,	""),
@@ -1916,6 +1944,10 @@ Defun(contextText)
 	XAP_Frame * pFrame = (XAP_Frame *)pView->getParentData();
 	UT_ASSERT(pFrame);
 
+	// move the IP so actions have the right context
+	if (!pView->isXYSelected(pCallData->m_xPos, pCallData->m_yPos))
+		EX(warpInsPtToXY);
+
 	const char * szContextMenuName = AP_FindContextMenu(EV_EMC_TEXT);
 	if (!szContextMenuName)
 		return UT_FALSE;
@@ -1923,6 +1955,85 @@ Defun(contextText)
 	return pFrame->runModalContextMenu(pView,szContextMenuName,
 									   pCallData->m_xPos,pCallData->m_yPos);
 }
+
+Defun(contextMisspellText)
+{
+	ABIWORD_VIEW;
+	XAP_Frame * pFrame = (XAP_Frame *)pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	// move the IP so actions have the right context
+	EX(warpInsPtToXY);
+
+	const char * szContextMenuName = AP_FindContextMenu(EV_EMC_MISSPELLEDTEXT);
+	if (!szContextMenuName)
+		return UT_FALSE;
+	
+	return pFrame->runModalContextMenu(pView,szContextMenuName,
+									   pCallData->m_xPos,pCallData->m_yPos);
+}
+
+static UT_Bool _spellSuggest(AV_View* pAV_View, UT_uint32 ndx)
+{
+	ABIWORD_VIEW;
+	pView->cmdContextSuggest(ndx);
+	return UT_TRUE;
+}
+
+Defun1(spellSuggest_1)
+{
+	return _spellSuggest(pAV_View, 1);
+}
+Defun1(spellSuggest_2)
+{
+	return _spellSuggest(pAV_View, 2);
+}
+Defun1(spellSuggest_3)
+{
+	return _spellSuggest(pAV_View, 3);
+}
+Defun1(spellSuggest_4)
+{
+	return _spellSuggest(pAV_View, 4);
+}
+Defun1(spellSuggest_5)
+{
+	return _spellSuggest(pAV_View, 5);
+}
+Defun1(spellSuggest_6)
+{
+	return _spellSuggest(pAV_View, 6);
+}
+Defun1(spellSuggest_7)
+{
+	return _spellSuggest(pAV_View, 7);
+}
+Defun1(spellSuggest_8)
+{
+	return _spellSuggest(pAV_View, 8);
+}
+Defun1(spellSuggest_9)
+{
+	return _spellSuggest(pAV_View, 9);
+}
+
+Defun1(spellIgnoreAll)
+{
+	ABIWORD_VIEW;
+
+	pView->cmdContextIgnoreAll();
+	return UT_TRUE;
+}
+
+Defun1(spellAdd)
+{
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	s_TellNotImplemented(pFrame, "Spell Add menu", __LINE__);
+	return UT_TRUE;
+}
+
 
 /*****************************************************************/
 

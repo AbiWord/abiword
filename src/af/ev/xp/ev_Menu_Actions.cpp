@@ -65,10 +65,10 @@ UT_Bool EV_Menu_Action::hasDynamicLabel(void) const
 	return (m_pfnGetLabel != NULL);
 }
 
-const char * EV_Menu_Action::getDynamicLabel(XAP_App * pApp, const EV_Menu_Label * pLabel) const
+const char * EV_Menu_Action::getDynamicLabel(XAP_Frame * pFrame, const EV_Menu_Label * pLabel) const
 {
 	if (m_pfnGetLabel)
-		return m_pfnGetLabel(pApp,pLabel,m_id);
+		return m_pfnGetLabel(pFrame,pLabel,m_id);
 	else
 		return NULL;
 }

@@ -37,6 +37,7 @@
 class FL_DocLayout;
 class fl_DocListener;
 class fl_BlockLayout;
+class fl_PartOfBlock;
 class fp_Page;
 class fp_Run;
 class FG_Graphic;
@@ -171,6 +172,15 @@ public:
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 
 	void			updateScreen(void);
+
+// ----------------------
+
+	UT_Bool			isPosSelected(PT_DocPosition pos) const;
+	UT_Bool			isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const;
+
+	UT_UCSChar *	getContextSuggest(UT_uint32 ndx);
+	void			cmdContextSuggest(UT_uint32 ndx);
+	void			cmdContextIgnoreAll(void);
 	
 // ----------------------
 
@@ -235,7 +245,7 @@ protected:
 	fp_Page*			_getPageForXY(UT_sint32 xPos, 
 									  UT_sint32 yPos, 
 									  UT_sint32& xClick, 
-									  UT_sint32& yClick);
+									  UT_sint32& yClick) const;
 
 	void				_moveToSelectionEnd(UT_Bool bForward);
 	void				_eraseSelection(void);
@@ -254,6 +264,8 @@ protected:
 	void				_extSel(UT_uint32 iOldPoint);
 	void				_extSelToPos(PT_DocPosition pos);
 	UT_Bool				_insertGraphic(FG_Graphic*, const char*);
+
+	UT_UCSChar *		_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx);
 
 	static void			_autoScroll(UT_Timer * pTimer);
 	static void			_autoDrawPoint(UT_Timer * pTimer);

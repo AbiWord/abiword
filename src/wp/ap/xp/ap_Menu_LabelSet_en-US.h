@@ -121,6 +121,18 @@ BeginSet(EnUS)
 	MenuLabel(AP_MENU_ID_HELP,				"&Help",			NULL)
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"&About %s",		"Display program information, version number, and copyright")
 
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Change to this suggested spelling")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Change to this suggested spelling")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_3,	"%s",				"Change to this suggested spelling")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_4,	"%s",				"Change to this suggested spelling")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_5,	"%s",				"Change to this suggested spelling")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_6,	"%s",				"Change to this suggested spelling")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_7,	"%s",				"Change to this suggested spelling")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_8,	"%s",				"Change to this suggested spelling")
+	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_9,	"%s",				"Change to this suggested spelling")
+	MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,	"&Ignore All", 		"Ignore all occurrences of this word in the document")
+	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Add", 			"Add this word to the custom dictionary")
+
 	// ... add others here ...
 
 	MenuLabel(AP_MENU_ID__BOGUS2__,			NULL,				NULL)

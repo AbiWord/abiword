@@ -28,6 +28,7 @@
 class AV_View;
 class XAP_Win32App;
 class EV_EditEventMapper;
+class XAP_Frame;
 class XAP_Win32Frame;
 
 /*****************************************************************/
@@ -41,9 +42,9 @@ public:
 				 const char * szMenuLabelSetName);
 	~EV_Win32Menu(void);
 
-	UT_Bool				synthesizeMenu(HMENU menuRoot);
+	UT_Bool				synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot);
 	UT_Bool				onCommand(AV_View * pView, HWND hWnd, WPARAM wParam);
-	UT_Bool				onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar);
+	UT_Bool				onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HMENU hMenuBar);
 	UT_Bool				onMenuSelect(XAP_Win32Frame * pFrame, AV_View * pView,
 									 HWND hWnd, HMENU hMenu, WPARAM wParam);
 
@@ -69,7 +70,7 @@ public:
 					const char * szMenuLabelSetName);
 	~EV_Win32MenuBar(void);
 
-	UT_Bool				synthesizeMenuBar(void);
+	UT_Bool				synthesizeMenuBar(XAP_Frame * pFrame);
 };
 
 /*****************************************************************/
@@ -82,7 +83,7 @@ public:
 					  const char * szMenuLabelSetName);
 	~EV_Win32MenuPopup(void);
 
-	UT_Bool				synthesizeMenuPopup(void);
+	UT_Bool				synthesizeMenuPopup(XAP_Frame * pFrame);
 };
 
 #endif /* EV_WIN32MENU_H */

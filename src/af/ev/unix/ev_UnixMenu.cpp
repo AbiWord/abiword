@@ -175,7 +175,7 @@ static const char ** _ev_GetLabelName(XAP_UnixApp * pUnixApp,
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pUnixApp,pLabel);
+		szLabelName = pAction->getDynamicLabel(pUnixFrame,pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 

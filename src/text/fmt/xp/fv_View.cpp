@@ -52,6 +52,8 @@
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
 
+#include "sp_spell.h"
+
 /****************************************************************/
 
 class _fmtPair
@@ -2207,7 +2209,7 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 }
 
 
-fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClick, UT_sint32& yClick)
+fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClick, UT_sint32& yClick) const
 {
 	xClick = xPos + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X;
 	yClick = yPos + m_yScrollOffset - fl_PAGEVIEW_MARGIN_Y;
@@ -4319,6 +4321,48 @@ UT_Bool FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 	return bOK;
 }
 
+UT_Bool FV_View::isPosSelected(PT_DocPosition pos) const
+{
+	if (!isSelectionEmpty())
+	{
+		PT_DocPosition posStart = getPoint();
+		PT_DocPosition posEnd = posStart;
+
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
+
+		return ((pos >= posStart) && (pos <= posEnd));
+	}
+
+	return UT_FALSE;
+}
+
+UT_Bool FV_View::isXYSelected(UT_sint32 xPos, UT_sint32 yPos) const
+{
+	if (isSelectionEmpty())
+		return UT_FALSE;
+
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
+	if (!pPage)
+		return UT_FALSE;
+
+	if (   (yClick < 0)
+		|| (xClick < 0)
+		|| (xClick > pPage->getWidth()) )
+	{
+		return UT_FALSE;
+	}
+
+	PT_DocPosition pos;
+	UT_Bool bBOL, bEOL;
+	pPage->mapXYToPosition(xClick, yClick, pos, bBOL, bEOL);
+
+	return isPosSelected(pos);
+}
+
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
 	UT_sint32 xClick, yClick;
@@ -4353,8 +4397,10 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	switch (pRun->getType())
 	{
 	case FPRUN_TEXT:
-		// TODO see if the text at the current x,y is
-		// TODO misspelled. if so, return EV_EMC_MISSPELLEDTEXT.
+		if (!isPosSelected(pos))
+			if (pBlock->getSquiggle(pos - pBlock->getPosition()))
+				return EV_EMC_MISSPELLEDTEXT;
+
 		return EV_EMC_TEXT;
 		
 	case FPRUN_IMAGE:
@@ -4456,3 +4502,120 @@ void FV_View::_clearIfAtFmtMark(PT_DocPosition dpos)
 	m_pDoc->clearIfAtFmtMark(dpos);
 	_generalUpdate();
 }
+
+// ndx is one-based, not zero-based
+UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
+{
+	// locate the squiggle
+	PT_DocPosition pos = getPoint();
+	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
+	UT_ASSERT(pBL);
+	fl_PartOfBlock* pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+	UT_ASSERT(pPOB);
+
+	// grab the suggestion
+	return _lookupSuggestion(pBL, pPOB, ndx);
+}
+
+// NB: returns a UCS string that the caller needs to FREEP
+UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx)
+{
+	// grab a copy of the word
+	UT_GrowBuf pgb(1024);
+	UT_Bool bRes = pBL->getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
+
+	const UT_UCSChar * pWord = pgb.getPointer(pPOB->iOffset);
+	UT_UCSChar * szSuggest = NULL;
+
+	// lookup suggestions
+	sp_suggestions sg;
+	memset(&sg, 0, sizeof(sg));
+
+	SpellCheckSuggestNWord16(pWord, pPOB->iLength,&sg);
+
+	// we currently return all requested suggestions
+	// TODO: prune lower-weighted ones??
+	if ((sg.count) && 
+		((int) ndx <= sg.count)) 
+	{
+		UT_UCS_cloneString(&szSuggest, (UT_UCSChar *) sg.word[ndx-1]);
+	}
+
+	// clean up
+	for (int i = 0; i < sg.count; i++)
+		FREEP(sg.word[i]);
+	FREEP(sg.word);
+	FREEP(sg.score);
+
+	return szSuggest;
+}
+
+void FV_View::cmdContextSuggest(UT_uint32 ndx)
+{
+	// locate the squiggle
+	PT_DocPosition pos = getPoint();
+	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
+	UT_ASSERT(pBL);
+	fl_PartOfBlock* pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+	UT_ASSERT(pPOB);
+
+	// grab the suggestion
+	UT_UCSChar * replace = _lookupSuggestion(pBL, pPOB, ndx);
+
+	// make the change
+	UT_ASSERT(isSelectionEmpty());
+
+	moveInsPtTo((PT_DocPosition) (pBL->getPosition() + pPOB->iOffset));
+	extSelHorizontal(UT_TRUE, pPOB->iLength);
+	cmdCharInsert(replace, UT_UCS_strlen(replace));
+
+	FREEP(replace);
+}
+
+void FV_View::cmdContextIgnoreAll(void)
+{
+	// locate the squiggle
+	PT_DocPosition pos = getPoint();
+	fl_BlockLayout* pBL = _findBlockAtPosition(pos);
+	UT_ASSERT(pBL);
+	fl_PartOfBlock* pPOB = pBL->getSquiggle(pos - pBL->getPosition());
+	UT_ASSERT(pPOB);
+
+	// grab a copy of the word
+	UT_GrowBuf pgb(1024);
+	UT_Bool bRes = pBL->getBlockBuf(&pgb);
+	UT_ASSERT(bRes);
+
+	const UT_UCSChar * pBuf = pgb.getPointer(pPOB->iOffset);
+
+	UT_UCSChar * szWord = (UT_UCSChar*) calloc(pPOB->iLength + 1, sizeof(UT_UCSChar));
+	if (szWord)
+	{
+		for (UT_uint32 i = 0; i < pPOB->iLength; i++) 
+			szWord[i] = (UT_UCSChar) pBuf[i];
+
+		// make the change
+		UT_Bool bRes = m_pDoc->appendIgnore(szWord);
+
+		// remove the squiggles, too
+		{
+			fl_DocSectionLayout * pSL = m_pLayout->getFirstSection();
+			while (pSL)
+			{
+				fl_BlockLayout* b = pSL->getFirstBlock();
+				while (b)
+				{
+					// TODO: just check and remove matching squiggles
+					// for now, destructively recheck the whole thing
+					m_pLayout->queueBlockForSpell(b, UT_FALSE);
+					b = b->getNext();
+				}
+				pSL = (fl_DocSectionLayout *) pSL->getNext();
+			}
+		}
+	}
+
+	FREEP(szWord);
+}
+

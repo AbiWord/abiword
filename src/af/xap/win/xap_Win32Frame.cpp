@@ -221,7 +221,7 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 									   m_szMenuLayoutName,
 									   m_szMenuLabelSetName);
 	UT_ASSERT(m_pWin32Menu);
-	UT_Bool bResult = m_pWin32Menu->synthesizeMenuBar();
+	UT_Bool bResult = m_pWin32Menu->synthesizeMenuBar(this);
 	UT_ASSERT(bResult);
 
 	HMENU oldMenu = GetMenu(m_hwndFrame);
@@ -406,10 +406,10 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 	case WM_INITMENU:
 		if (f->m_pWin32Popup)
 		{
-			if (f->m_pWin32Popup->onInitMenu(pView,hwnd,(HMENU)wParam))
+			if (f->m_pWin32Popup->onInitMenu(f,pView,hwnd,(HMENU)wParam))
 				return 0;
 		}
-		else if (f->m_pWin32Menu->onInitMenu(pView,hwnd,(HMENU)wParam))
+		else if (f->m_pWin32Menu->onInitMenu(f,pView,hwnd,(HMENU)wParam))
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 
@@ -580,7 +580,7 @@ UT_Bool XAP_Win32Frame::runModalContextMenu(AV_View * pView, const char * szMenu
 	UT_ASSERT(!m_pWin32Popup);
 
 	m_pWin32Popup = new EV_Win32MenuPopup(m_pWin32App,szMenuName,m_szMenuLabelSetName);
-	if (m_pWin32Popup && m_pWin32Popup->synthesizeMenuPopup())
+	if (m_pWin32Popup && m_pWin32Popup->synthesizeMenuPopup(this))
 	{
 		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
 

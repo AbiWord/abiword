@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998,1999 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,8 +25,23 @@
 ******************************************************************
 *****************************************************************/
 
-// Include each menu layout that we want to build.
+BeginLayout(ContextSquiggle,EV_EMC_MISSPELLEDTEXT)
 
-#include "ap_Menu_Layouts_MainMenu.h"
-#include "ap_ML_ContextText.h"
-#include "ap_ML_ContextSquiggle.h"
+	BeginPopupMenu()
+		MenuItem(AP_MENU_ID_SPELL_SUGGEST_1)
+		MenuItem(AP_MENU_ID_SPELL_SUGGEST_2)
+		MenuItem(AP_MENU_ID_SPELL_SUGGEST_3)
+		MenuItem(AP_MENU_ID_SPELL_SUGGEST_4)
+		MenuItem(AP_MENU_ID_SPELL_SUGGEST_5)
+		MenuItem(AP_MENU_ID_SPELL_SUGGEST_6)
+		MenuItem(AP_MENU_ID_SPELL_SUGGEST_7)
+		MenuItem(AP_MENU_ID_SPELL_SUGGEST_8)
+		MenuItem(AP_MENU_ID_SPELL_SUGGEST_9)
+		Separator()
+		MenuItem(AP_MENU_ID_SPELL_IGNOREALL)
+		MenuItem(AP_MENU_ID_SPELL_ADD)
+		Separator()
+		MenuItem(AP_MENU_ID_EDIT_SPELL)
+	EndPopupMenu()
+
+EndLayout()

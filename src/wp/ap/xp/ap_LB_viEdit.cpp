@@ -115,7 +115,7 @@ static struct ap_bs_Mouse s_MouseTable[] =
 	//{_CU _B3,	{ "contextDefault",		"",			"",		"",			"",			""				}},
 	{_CT _B3,	{ "contextText",		"",			"",		"",			"",			""				}},
 	//{_CL _B3,	{ "contextLeftOfText",	"",			"",		"",			"",			""				}},
-	//{_CM _B3,	{ "contextMisspellText","",			"",		"",			"",			""				}},
+	{_CM _B3,	{ "contextMisspellText","",			"",		"",			"",			""				}},
 	//{_CI _B3,	{ "contextImage",		"",			"",		"",			"",			""				}},
 	//{_CZ _B3,	{ "contextImageSize",	"",			"",		"",			"",			""				}},
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},

@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ap_Strings.h"
 #include "ap_Menu_Id.h"
 #include "ap_Menu_Functions.h"
 #include "ev_Menu_Actions.h"
@@ -45,6 +46,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 	// We return a pointer to a static string (which will be overwritten
 	// on the next call).
 	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 
@@ -77,8 +80,11 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 {
 	// Compute the menu label for the _help_about item.
 	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
+
 	UT_ASSERT(id == AP_MENU_ID_HELP_ABOUT);
 	
 	const char * szFormat = pLabel->getMenuLabel();
@@ -91,7 +97,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 
 	return NULL;
 }
-
 
 /*****************************************************************/
 /*****************************************************************/
@@ -124,8 +129,11 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 	// We return a pointer to a static string (which will be overwritten
 	// on the next call).
 	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
+
 
 	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
 	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
@@ -160,6 +168,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 {
 	// Compute the menu label for the _window_more ("More Windows...") item.
 	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
 	UT_ASSERT(pLabel);
 	UT_ASSERT(id == AP_MENU_ID_WINDOW_MORE);
@@ -170,6 +180,92 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 	// item from the menu.
 	if (8 < pApp->getFrameCount())
 		return pLabel->getMenuLabel();
+
+	return NULL;
+}
+
+/*****************************************************************/
+/*****************************************************************/
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Suggest)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	UT_ASSERT(id >= AP_MENU_ID_SPELL_SUGGEST_1);
+	UT_ASSERT(id <= AP_MENU_ID_SPELL_SUGGEST_9);
+	
+	UT_uint32 ndx = (id - AP_MENU_ID_SPELL_SUGGEST_1 + 1);
+
+	EV_Menu_ItemState s = EV_MIS_Gray;
+
+	const UT_UCSChar *p = pView->getContextSuggest(ndx);
+
+	if (p)
+	{
+		s = EV_MIS_Bold;
+	}
+
+	FREEP(p);
+
+	return s;
+}
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
+{
+	// Compute the menu label for _suggest_1 thru _suggest_9 on the menu.
+	// We return a pointer to a static string (which will be overwritten
+	// on the next call).
+	
+	UT_ASSERT(pFrame);
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	AV_View * pAV_View = pFrame->getCurrentView();
+	ABIWORD_VIEW;
+
+	UT_ASSERT(id >= AP_MENU_ID_SPELL_SUGGEST_1);
+	UT_ASSERT(id <= AP_MENU_ID_SPELL_SUGGEST_9);
+	
+	UT_uint32 ndx = (id - AP_MENU_ID_SPELL_SUGGEST_1 + 1);
+
+	const char * c = NULL;
+	const UT_UCSChar *p;
+	static char cBuf[128];		// BUGBUG: possible buffer overflow
+	UT_uint32 len = 0;
+
+	p = pView->getContextSuggest(ndx);
+	if (p && *p)
+		len = UT_UCS_strlen(p);
+
+	if (len)
+	{
+		// this is a suggestion
+		UT_UCS_strcpy_to_char(cBuf, p);
+		c = cBuf;
+	}
+	else if (ndx == 1)
+	{
+		// placeholder when no suggestions
+		const XAP_StringSet * pSS = pApp->getStringSet();
+		c = pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions);
+	}
+
+	FREEP(p);
+
+	if (c && *c)
+	{
+		const char * szFormat = pLabel->getMenuLabel();
+		static char buf[128];	// BUGBUG: possible buffer overflow
+
+		sprintf(buf,szFormat,c);
+		
+		return buf;
+	}
+
+	// for the other slots, return a null string to tell
+	// the menu code to remove this item from the menu.
 
 	return NULL;
 }

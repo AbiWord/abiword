@@ -1063,6 +1063,18 @@ void fl_BlockLayout::_purgeSquiggles(void)
 	m_vecSquiggles.clear();
 }
 
+fl_PartOfBlock* fl_BlockLayout::getSquiggle(UT_uint32 iOffset) const
+{
+	fl_PartOfBlock* pPOB = NULL;
+
+	UT_sint32 i = _findSquiggle(iOffset);
+
+	if (i >= 0)
+		pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(i);
+
+	return pPOB;
+}
+
 UT_sint32 fl_BlockLayout::_findSquiggle(UT_uint32 iOffset) const
 {
 	// get the squiggle which spans iOffset, if any

@@ -33,13 +33,14 @@
 /*****************************************************************/
 
 static const char * _ev_GetLabelName(XAP_MacApp * pMacApp,
+									 XAP_MacFrame * pMacFrame,
 									 EV_Menu_Action * pAction,
 									 EV_Menu_Label * pLabel)
 {
 	const char * szLabelName;
 	
 	if (pAction->hasDynamicLabel())
-		szLabelName = pAction->getDynamicLabel(pMacApp,pLabel);
+		szLabelName = pAction->getDynamicLabel(pMacFrame,pLabel);
 	else
 		szLabelName = pLabel->getMenuLabel();
 
