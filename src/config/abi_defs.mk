@@ -746,7 +746,7 @@ EXTRA_LIBS      +=      $(LIBCURL_LIBS)
 endif
 ifeq ($(OS_NAME),WIN32)
 CFLAGS += -DHAVE_CURL=1 -DCURLHASH_INSTALL_SYSTEMWIDE
-INCLUDES += -I$(ABI_ROOT)/../libcurl/include -I$(ABI_ROOT)/../zlib
+INCLUDES += -I$(ABI_ROOT)/../curl/include -I$(ABI_ROOT)/../zlib
 endif
 endif	##ifeq ($(ABI_OPT_CURL),1)
 

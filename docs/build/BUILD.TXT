@@ -28,7 +28,7 @@ AbiWord can also take advantage of the Xft2/FontConfig X11 font rendering extens
 
 AbiWord can be scripted (controlled and added onto via extensions) via a PERL interface if you so wish. PERL is available from http://www.perl.org/ See also: "configure --enable-scripting"
 
-AbiWord can make use of CURL - a neat little file downloading tool. It can automatically install things like dictionaries using CURL if you want it to. If you're using pspell, you don't want CURL. If not, you may want to grab it: http://curl.haxx.se/ See also: "configure --with-curl"
+AbiWord can make use of CURL - a neat little file downloading tool. It can automatically install things like dictionaries using CURL if you want it to. If you're using pspell, you don't want CURL. If not, you may want to grab it: http://curl.haxx.se/ or from the 'curl' peer module.  See also: "configure --with-curl"
 Getting the source:
 
 Well, if you're here, you've probably downloaded the latest and greatest AbiWord sources. If not, you can always get the latest AbiWord source and binary packages from http://www.sourceforge.net/projects/abiword
@@ -50,6 +50,7 @@ if you don't have these already:
 	psiconv (if you want to build the psion importer plugin)
 and if you don't have FontConfig/Xft2 installed, you'll need
 	unixfonts
+	curl (optional for ispell builds, may already exist on most systems)
 Configuring what you want built:
 
 Because AbiWord uses the automake/autoconf build tools, you might already be familiar with this step and some of its more-common behaviors, quirks, and options.
@@ -124,16 +125,18 @@ CVS modules required to check out are:
 	fribidi
 	libiconv
 	libpng
-	nsis
+	nsis		(optionally, there is a NSIS_20 branch for newer features)
 	popt
 	wv
 	zlib
-optionally the following module may be checked out if attempting to use MSVC project files:
-	MSVC6
+
+The following modules may optionally be checked out as well:
+	MSVC6	(if attempting to use MSVC project files)
+	curl		(for automatic hash downloader support)
 
 If you wish to use JPEG images in AbiWord, you will need to download and install the libjpeg library.  More information on libjpeg can be found at http://www.ijg.org/   However building with JPEG support is obsolete, you should instead use the JPEG plugin or one of the other image supporting plugins (e.g. AbiMagick).
 
-If you wish to enable the automatic dictionary downloader you will need to download and install libcurl as well.  More information may be found at http://curl.haxx.se/
+If you wish to enable the automatic dictionary downloader you will need to download and install libcurl as well.  More information may be found at http://curl.haxx.se/  or in peer 'curl' module.
 Building AbiWord:
 
 If using the MSYS/MinGW build system, start MSYS.  

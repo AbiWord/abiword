@@ -122,13 +122,14 @@ _NSIS_:
 	fi
 
 _PEER_LIBCURL_:
-	@if [ -d $(ABI_ROOT)/../libcurl/lib ]; then	\
+	@if [ -d $(ABI_ROOT)/../curl/lib ]; then	\
 		echo Found libcurl in peer directory;	\
-		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libcurl/lib;		\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../curl/lib;		\
 	else									\
-		echo libcurl not found;						\
-		echo Please extract the curl library as a peer;			\
-		echo directory named libcurl;			\
+		echo libcurl not found.  You can check it out of cvs by; \
+		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout curl; \
+		echo or download from http://curl.haxx.se and extract the library as a peer;	\
+		echo directory named curl;			\
 		exit 1;								\
 	fi
 #		cd $(ABI_ROOT)/../libcurl/lib
