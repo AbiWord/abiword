@@ -22,12 +22,17 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
+ifeq ($(ABI_NATIVE), mac)
+endif
 CPPSRCS=		ut_debugmsg.cpp		\
 			ut_MacFiles.cpp	\
 			ut_MacString.cpp	\
 			ut_MacAssert.cpp	\
 			ut_MacTimer.cpp	\
+                        ut_unixAssert.cpp 	\
 			ut_Xpm2Bmp.cpp
+
+REZSRCS=		ut_MacAssert.r
 
 TARGETS=		$(OBJS)
 

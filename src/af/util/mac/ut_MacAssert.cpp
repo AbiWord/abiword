@@ -30,7 +30,7 @@
 #include <CarbonCore/NumberFormatting.h>
 #endif
 
-#include "ap_Mac_ResID.h"
+#include "xap_Mac_ResID.h"
 #include "xap_MacApp.h"
 
 #include "ut_assert.h"

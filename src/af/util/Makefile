@@ -38,7 +38,10 @@ endif
 ifeq ($(ABI_NATIVE), mac)
 PLATFORM_OBJS= $(OBJDIR)/ut_MacString.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_MacFiles.$(OBJ_SUFFIX)	\
-		$(OBJDIR)/ut_MacTimer.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_MacAssert.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_MacTimer.$(OBJ_SUFFIX)	\
+                $(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 
 ifeq ($(ABI_NATIVE), win)
