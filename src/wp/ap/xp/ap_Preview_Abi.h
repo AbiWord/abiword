@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,32 +17,46 @@
  * 02111-1307, USA.
  */
 
-#include "ut_assert.h"
+
+#ifndef AP_PREVIEW_ABI_H
+#define AP_PREVIEW_ABI_H
+
+#include "ut_misc.h"
 #include "ut_types.h"
+#include "ut_vector.h"
 
 #include "xap_Preview.h"
+#include "xap_Frame.h"
+#include "xap_App.h"
+#include "fv_View.h"
+#include "pd_Document.h"
 
-XAP_Preview::XAP_Preview(GR_Graphics * gc)
+class GR_Font;
+
+class AP_Preview_Abi : public XAP_Preview
 {
-	UT_ASSERT(gc);
+public:
+
+	AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,  UT_uint32 iHeight,
+				   XAP_Frame * pFrame, PreViewMode previewMode);
+	virtual ~AP_Preview_Abi(void);
+
+	FV_View * getView(void) const;
+	PD_Document * getDoc(void) const;
+	XAP_App * getApp(void) const {return m_pApp;}
+	virtual void draw(void);
 	
-	// maybe later we'll need scroll offsets
+protected:
 	
-	m_iWindowHeight = 0;
-	m_iWindowWidth = 0;
+private:
+	XAP_Frame * m_pFrame;
+	FV_View * m_pView;
+	FL_DocLayout * m_pDocLayout;
+    PD_Document * m_pDocument;
+	XAP_App * m_pApp;
+};
 
-	m_gc = gc;
-}
+#endif /* AP_PREVIEW_ABI_H */
 
-XAP_Preview::~XAP_Preview()
-{
-}
 
-/************************************************************************/
-
-void XAP_Preview::setWindowSize(UT_sint32 width, UT_sint32 height)
-{
-	m_iWindowWidth = width;
-	m_iWindowHeight = height;
-}
 

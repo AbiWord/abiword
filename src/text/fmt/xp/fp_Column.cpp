@@ -84,7 +84,6 @@ void fp_Container::setWidth(UT_sint32 iWidth)
 	{
 		return;
 	}
-	
 	m_iWidth = iWidth;
 
 	// TODO we really need to force a re-line-break operation on every block herein
@@ -99,7 +98,6 @@ void fp_Container::setWidth(UT_sint32 iWidth)
 void fp_Container::setWidthInLayoutUnits(UT_sint32 iWidth)
 {
 	m_iWidthLayoutUnits = iWidth;
-
 }
 
 /*!

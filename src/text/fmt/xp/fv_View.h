@@ -86,8 +86,20 @@ typedef enum
 {
   VIEW_PRINT,
   VIEW_NORMAL,
-  VIEW_WEB
+  VIEW_WEB,
+  VIEW_PREVIEW
 } ViewMode;
+
+typedef enum
+{
+  PREVIEW_NONE,
+  PREVIEW_ZOOMED,
+  PREVIEW_ADJUSTED_PAGE,
+  PREVIEW_CLIPPED,
+  PREVIEW_ZOOMED_SCROLL,
+  PREVIEW_ADJUSTED_PAGE_SCROLL,
+  PREVIEW_CLIPPED_SCROLL
+} PreViewMode;
 
 struct fv_ChangeState
 {
@@ -175,8 +187,9 @@ public:
 	
 	void	getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
 	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
-	virtual	UT_uint32 getPageViewLeftMargin(void) const;
-	virtual	UT_uint32 getPageViewTopMargin(void) const;
+	virtual	UT_sint32 getPageViewLeftMargin(void) const;
+	virtual	UT_sint32 getPageViewTopMargin(void) const;
+	virtual	UT_sint32 getPageViewSep(void) const;
 	
 	bool	setSectionFormat(const XML_Char * properties[]);
 	bool	getSectionFormat(const XML_Char *** properties);
@@ -336,10 +349,11 @@ public:
 	UT_uint32			calculateZoomPercentForPageWidth();
 	UT_uint32			calculateZoomPercentForPageHeight();
 	UT_uint32			calculateZoomPercentForWholePage();
-
 	inline void             setViewMode (ViewMode vm) {m_viewMode = vm;}
 	inline ViewMode         getViewMode (void) const  {return m_viewMode;}
-
+	bool                isPreview(void) const {return VIEW_PREVIEW == m_viewMode;}
+	void                setPreviewMode(PreViewMode pre) {m_previewMode = pre;}
+	PreViewMode         getPreviewMode(void) { return m_previewMode;}
 protected:
 	void				_generalUpdate(void);
 	
@@ -489,6 +503,7 @@ protected:
 
 	bool		m_bShowPara;
 	ViewMode        m_viewMode;
+	PreViewMode m_previewMode;
 };
 
 #endif /* FV_VIEW_H */

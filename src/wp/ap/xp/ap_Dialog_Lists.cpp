@@ -102,8 +102,7 @@ AP_Dialog_Lists::~AP_Dialog_Lists(void)
 
 	DELETEP(m_pFakeAuto);
 	
-	// I want to delete this but C++ won't let me. Any Ideas? Sevior
-	//DELETEP(m_pFakeDoc);
+	UNREFP(m_pFakeDoc);
 }
 
 AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const

@@ -273,18 +273,18 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
     char p[100], leftDelim[10], rightDelim[10];
 	UT_uint32 i,psz;
 	//
-	// Only get the next level if the list type is not bullet or similar
+	// Don't get the next level if we don't have a list
 	//
 	if(m_List_Type == NOT_A_LIST)
 	{
 		*insPoint = 0;
 		return;
 	}
-	if(depth > 0 && m_List_Type >= BULLETED_LIST)
-	{
-		*insPoint = 0;
-		return;
-	}
+//	if(depth > 0 && m_List_Type >= BULLETED_LIST)
+//	{
+//		*insPoint = 0;
+//		return;
+//	}
 
 	// TODO This is a bit of a hack to split the delim string. It would be 
 	// TODO nice to clear it up.
@@ -310,11 +310,9 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	rightDelim[i - rTmp] = '\0';
 	//UT_DEBUGMSG(("Left Delim: %s, Right Delim: %s\n", leftDelim, rightDelim));
 	
-
 	if(m_pParent != NULL  && m_List_Type < BULLETED_LIST)
 	{
 		m_pParent->_getLabelstr( labelStr, insPoint, depth+1,getParentItem());
-		//     UT_DEBUGMSG(("JORDAN: Parent Label: %s\n", labelStr));
 		if(*insPoint != 0)
 		{
 			psz = UT_XML_strlen(m_pszDecimal);
@@ -355,8 +353,8 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case UPPERCASE_LIST:
 		sprintf(p,"%s",dec2ascii(place - 1, 65));
 		psz = UT_XML_strlen( p);
@@ -364,8 +362,8 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case LOWERCASE_LIST:
 		sprintf(p,"%s",dec2ascii(place - 1, 97));
 		psz = UT_XML_strlen( p);
@@ -373,8 +371,8 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case UPPERROMAN_LIST:
 		sprintf(p,"%s",dec2roman(place,false));
 		psz = UT_XML_strlen( p);
@@ -382,8 +380,8 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case LOWERROMAN_LIST:
 		sprintf(p,"%s",dec2roman(place,true));
 		psz = UT_XML_strlen( p);
@@ -391,58 +389,57 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		{
 			labelStr[(*insPoint)++] =  CONV_TO_UCS p[i];
 		}
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case BULLETED_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xb7; // was UCS_BULLET;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case DASHED_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS '-';
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case SQUARE_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x6E;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case TRIANGLE_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x73;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case DIAMOND_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xA9;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case STAR_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x53;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case IMPLIES_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xDE;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case TICK_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x33;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case BOX_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x72;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case HAND_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x2B;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	case HEART_LIST:
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xAA;
-		//labelStr[(*insPoint)] = NULL;
 		break;
+
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 	
-	//if (depth == 0)
 	if( m_List_Type < BULLETED_LIST && 
 	    (UT_XML_strnicmp(m_pszDecimal,rightDelim,4) != 0 || depth == 0) )
 	{

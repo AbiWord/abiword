@@ -72,8 +72,9 @@ public:
 	void         event_ModifyFont();
 	void         event_ModifyNumbering();
 	void         event_ModifyTabs();
+	void         event_ModifyPreviewExposed();
 
-	void         modifyRunModal(void);
+	void         modifyRunModal(bool isNew);
 
 protected:
 
@@ -113,13 +114,15 @@ protected:
 // Modify window
 /////////////////////////////////////////////////////////////////////////
 
-	GtkWidget * _constructModifyDialog(void);
+	GtkWidget * _constructModifyDialog(bool isNew);
 	void        _constructGnomeModifyButtons( GtkWidget * dialog_sction_area1);
 	void        _constructFormatList(GtkWidget * FormatMenu);
 	void        _connectModifySignals(void);
 	void        _constructModifyDialogContents(GtkWidget * modifyDialog);
 	virtual void setModifyDescription( const char * desc);
-	bool        _populateModify(void);
+	bool        _populateModify(bool isNew);
+
+	GR_UnixGraphics	* 		m_pAbiPreviewWidget;
 
 	GtkWidget *	m_wModifyDialog;
 	GtkWidget *	m_wStyleNameEntry;

@@ -191,8 +191,17 @@ UT_sint32 FL_DocLayout::getHeight()
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// add page view dimensions 
-		iHeight += fl_PAGEVIEW_PAGE_SEP * (count - 1);
-		iHeight += fl_PAGEVIEW_MARGIN_Y * 2;
+		FV_View * pView = getView();
+		if(pView)
+		{
+			iHeight += pView->getPageViewSep();
+			iHeight += pView->getPageViewTopMargin();
+		}
+		else
+		{
+			iHeight += fl_PAGEVIEW_PAGE_SEP * (count - 1);
+			iHeight += fl_PAGEVIEW_MARGIN_Y * 2;
+		}
 	}
 
 	return iHeight;
@@ -215,9 +224,11 @@ UT_sint32 FL_DocLayout::getWidth()
 	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// add page view dimensions 
-		iWidth += fl_PAGEVIEW_MARGIN_X * 2;
+		if(getView())
+			iWidth += getView()->getPageViewLeftMargin();
+		else
+			iWidth += fl_PAGEVIEW_MARGIN_X * 2;
 	}
-
 	return iWidth;
 }
 
@@ -405,7 +416,6 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner)
 	{
 		pLastPage = NULL;
 	}
-
 	fp_Page* pPage = new fp_Page(	this,
 									m_pView,
 									m_pDoc->m_docPageSize,
@@ -496,7 +506,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos)
 			ppBL = pShadow->findMatchingBlock(pBL);
 		else
 		{
-			UT_DEBUGMSG(("SEVIOR: No Shadow! But there should be ! \n"));
+			UT_DEBUGMSG(("No Shadow! But there should be ! \n"));
 			//	UT_ASSERT(0);
 		}
 //

@@ -353,8 +353,8 @@ void fp_Page::_reformat(void)
 		// fp_Column* pLeader = getNthColumnLeader(i);
 		// fl_DocSectionLayout* pSL = pLeader->getDocSectionLayout();
 
-		UT_ASSERT(UT_TODO);
-		
+		//UT_ASSERT(UT_TODO);
+		UT_DEBUGMSG((" fp_Page::_reformat i < count, i= %d count= %d \n",i,count)); 
 		i++;
 	}
 }

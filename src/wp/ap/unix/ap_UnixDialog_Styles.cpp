@@ -71,8 +71,10 @@ AP_UnixDialog_Styles::AP_UnixDialog_Styles(XAP_DialogFactory * pDlgFactory,
 	m_wBasedOnEntry = NULL;
 	m_wFollowingCombo = NULL;
 	m_wFollowingEntry = NULL;
-	m_wModifyDrawingArea = NULL;
 	m_wLabDescription = NULL;
+
+	m_pAbiPreviewWidget = NULL;
+	m_wModifyDrawingArea = NULL;
 
 	m_wModifyOk = NULL;
 	m_wModifyCancel = NULL;
@@ -92,6 +94,7 @@ AP_UnixDialog_Styles::~AP_UnixDialog_Styles(void)
 {
 	DELETEP (m_pParaPreviewWidget);
 	DELETEP (m_pCharPreviewWidget);
+	DELETEP (m_pAbiPreviewWidget);
 }
 
 /*****************************************************************/
@@ -169,6 +172,22 @@ static gboolean s_charPreview_exposed(GtkWidget * widget, gpointer /* data */, A
 {
 	UT_ASSERT(widget && me);
 	me->event_paraPreviewExposed();
+	return FALSE;
+}
+
+
+static gboolean s_modifyPreview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(widget && me);
+	me->event_ModifyPreviewExposed();
+	return FALSE;
+}
+
+
+static gboolean s_modify_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Styles * me)
+{
+	UT_ASSERT(widget && me);
+	me->event_ModifyPreviewExposed();
 	return FALSE;
 }
 
@@ -396,8 +415,37 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 
 void AP_UnixDialog_Styles::event_NewClicked(void)
 {
-	// TODO: dialog for new clicked
-	messageBoxOK("New Clicked");
+//
+// Hide the old window
+//
+	UT_DEBUGMSG(("SEVIOR: Hiding main window for New \n"));
+    gtk_widget_hide( m_windowMain);
+//
+// fill the data structures needed for the Modify dialog
+//
+	modifyRunModal(true);
+	UT_DEBUGMSG(("SEVIOR: Finished New \n"));
+	if(m_answer == AP_Dialog_Styles::a_OK)
+	{
+//
+// Do stuff
+//
+	}
+	else
+	{
+//
+// Do other stuff
+//
+	}
+//  
+// Restore the values in the main dialog
+//
+
+//
+// Reveal main window again
+//
+	gtk_widget_show( m_windowMain);
+
 }
 
 void AP_UnixDialog_Styles::event_ClistClicked(gint row, gint col)
@@ -771,7 +819,7 @@ const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
 	return szStyleBuf.c_str();
 }
 
-GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
+GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(bool isNew)
 {
 	GtkWidget *modifyDialog;
 	GtkWidget *dialog_action_area;
@@ -779,7 +827,10 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 
 	modifyDialog = gtk_dialog_new ();
 	gtk_container_set_border_width (GTK_CONTAINER (modifyDialog), 5);
-	gtk_window_set_title (GTK_WINDOW (modifyDialog), pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTitle));
+	if(!isNew)
+		gtk_window_set_title (GTK_WINDOW (modifyDialog), pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTitle));
+	else
+		gtk_window_set_title (GTK_WINDOW (modifyDialog), "New Style");
 	gtk_window_set_policy (GTK_WINDOW (modifyDialog), TRUE, TRUE, FALSE);
 	_constructModifyDialogContents(modifyDialog);
 
@@ -1048,6 +1099,17 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 					   GTK_SIGNAL_FUNC(s_modify_tabs),
 					   (gpointer) this);
 
+	gtk_signal_connect(GTK_OBJECT(m_wModifyDrawingArea),
+					   "expose_event",
+					   GTK_SIGNAL_FUNC(s_modifyPreview_exposed),
+					   (gpointer) this);
+
+	
+	gtk_signal_connect_after(GTK_OBJECT(m_wModifyDialog),
+							 "expose_event",
+							 GTK_SIGNAL_FUNC(s_modify_window_exposed),
+							 (gpointer) this);
+
 	// the catch-alls
 	
 	gtk_signal_connect(GTK_OBJECT(m_wModifyDialog),
@@ -1081,7 +1143,7 @@ void AP_UnixDialog_Styles::event_ModifyDelete(void)
 	gtk_main_quit();
 }
 
-void  AP_UnixDialog_Styles::modifyRunModal(void)
+void  AP_UnixDialog_Styles::modifyRunModal(bool isNew)
 {
 //
 // OK Construct the new dialog and make it modal.
@@ -1091,13 +1153,13 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 //
 // Center our new dialog in its parent and make it a transient
 
-	_constructModifyDialog();
+	_constructModifyDialog(isNew);
 
 	connectFocus(GTK_WIDGET(m_wModifyDialog),m_pFrame);
 //
 // populate the dialog with useful info
 //
-    if(!_populateModify())
+    if(!_populateModify(isNew))
 	{
 		if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
 			gtk_widget_destroy(m_wModifyDialog);
@@ -1113,21 +1175,54 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 	// Make it modal, and stick it up top
 	gtk_grab_add(m_wModifyDialog);
 
-//
-// TODO setting up the preview stuff
-//
-	gtk_main();
+	// make a new Unix GC
+	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
+	UT_ASSERT(unixapp);
+
+	DELETEP (m_pAbiPreviewWidget);
+	m_pAbiPreviewWidget = new GR_UnixGraphics(m_wModifyDrawingArea->window, unixapp->getFontManager(), m_pApp);
 	
+        // let the widget materialize
+
+	_createAbiPreviewFromGC(m_pAbiPreviewWidget,
+							 (UT_uint32) m_wModifyDrawingArea->allocation.width, 
+							 (UT_uint32) m_wModifyDrawingArea->allocation.height);
+    _populateAbiPreview(isNew);
+	event_ModifyPreviewExposed();
+	gtk_main();
+
 	if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
+	{
+//
+// Free the old glists
+//
+		if(m_gbasedOnStyles != NULL)
+		{	
+			g_list_free (m_gbasedOnStyles);
+			m_gbasedOnStyles = NULL;
+		}
+
+		if(m_gfollowedByStyles != NULL)
+		{
+			g_list_free (m_gfollowedByStyles);
+			m_gfollowedByStyles = NULL;
+		}
 	    gtk_widget_destroy(m_wModifyDialog);
+	}
+//
+// Have to delete this now since the destructor is not run till later
+//	
+	destroyAbiPreview();
+	DELETEP(m_pAbiPreviewWidget);
+}
+
+void AP_UnixDialog_Styles::event_ModifyPreviewExposed(void)
+{
+	drawLocal();
 }
 
 void AP_UnixDialog_Styles::event_ModifyClicked(void)
 {
-//
-// TODO Extract useful info from main Window
-//
-
 //
 // Hide the old window
 //
@@ -1136,7 +1231,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 //
 // fill the data structures needed for the Modify dialog
 //
-	modifyRunModal();
+	modifyRunModal(false);
 	UT_DEBUGMSG(("SEVIOR: Finished Modify \n"));
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
@@ -1166,22 +1261,30 @@ void  AP_UnixDialog_Styles::setModifyDescription( const char * desc)
 	gtk_label_set_text (GTK_LABEL(m_wLabDescription), desc);
 }
 
-bool  AP_UnixDialog_Styles::_populateModify(void)
+bool  AP_UnixDialog_Styles::_populateModify(bool isNew)
 {
 	setModifyDescription( m_curStyleDesc.c_str());
 //
 // Get Style name and put in in the text entry
 //
 	const char * szCurrentStyle = NULL;
-	szCurrentStyle= getCurrentStyle();
-	if(!szCurrentStyle)
+	if(!isNew)
 	{
-		messageBoxOK("No Style selected \n so it cannot be modified");
-		m_answer = AP_Dialog_Styles::a_CANCEL;
-		return false;
+		szCurrentStyle= getCurrentStyle();
+		if(!szCurrentStyle)
+		{
+			messageBoxOK("No Style selected \n so it cannot be modified");
+			m_answer = AP_Dialog_Styles::a_CANCEL;
+			return false;
+		}
+		gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), getCurrentStyle());
+		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),FALSE );
 	}
-	gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), getCurrentStyle());
-	gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),FALSE );
+	else
+	{
+		gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), " ");
+		gtk_entry_set_editable( GTK_ENTRY(m_wStyleNameEntry),TRUE );
+	}
 //
 // Next interogate the current style and find the based on and followed by
 // Styles
@@ -1205,18 +1308,6 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 // Next make a glists of all styles and attach them to the BasedOn and FollowedBy
 //
-	if(m_gbasedOnStyles != NULL)
-	{	
-		g_list_free (m_gbasedOnStyles);
-		m_gbasedOnStyles = NULL;
-	}
-
-	if(m_gfollowedByStyles != NULL)
-	{
-		g_list_free (m_gfollowedByStyles);
-		m_gbasedOnStyles = NULL;
-	}
-
 	size_t nStyles = m_pDoc->getStyleCount();
 	const char * name = NULL;
 	const PD_Style * pcStyle = NULL;

@@ -178,7 +178,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 								   PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pLayout);
-	UT_DEBUGMSG(("fl_DocListener::populateStrux in doclistner \n"));
+//	UT_DEBUGMSG(("fl_DocListener::populateStrux in doclistner \n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);

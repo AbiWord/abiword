@@ -978,7 +978,7 @@ Defun1(fileNew)
 	UT_Error error = pFrame->loadDocument(NULL, IEFT_Unknown);
 
 	if (pNewFrame)
-        {
+	{
 		pNewFrame->show();
 	}
 	return E2B(error);
@@ -2017,13 +2017,13 @@ Defun(closeWindow)
 	UT_ASSERT(pApp);
 
 
-        if(pFrame == pApp->getLastFocussedFrame())
+	if(pFrame == pApp->getLastFocussedFrame())
 	{
 
 	  // This probabally not necessary given the code that's in xap_App
-          // but I hate seg faults.
+		// but I hate seg faults.
 
-	       pApp->clearLastFocussedFrame();
+		pApp->clearLastFocussedFrame();
 	}
 	
 
@@ -2036,12 +2036,12 @@ Defun(closeWindow)
 		switch (ans)
 		{
 		case XAP_Dialog_MessageBox::a_YES:				// save it first
-			{
-				bool bRet = EX(fileSave);
-				if (!bRet)								// didn't successfully save,
-					return false;					//    so don't close
-			}
-			break;
+		{
+			bool bRet = EX(fileSave);
+			if (!bRet)								// didn't successfully save,
+				return false;					//    so don't close
+		}
+		break;
 
 		case XAP_Dialog_MessageBox::a_NO:				// just close it
 			break;
@@ -2060,8 +2060,8 @@ Defun(closeWindow)
 	{
 	  // Delete all the open modeless dialogs
 
-	       pApp->closeModelessDlgs();
-	       pApp->reallyExit();
+		pApp->closeModelessDlgs();
+		pApp->reallyExit();
 	}
 
 	// nuke the window
@@ -4127,9 +4127,9 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 			       UT_sint32 iWidth,  UT_sint32 iHeight,
 			       UT_uint32 nToPage, UT_uint32 nFromPage)
 {
-        UT_uint32 j,k;
+	UT_uint32 j,k;
 
-        dg_DrawArgs da;
+	dg_DrawArgs da;
 	memset(&da, 0, sizeof(da));
 	da.pG = NULL;
 
@@ -4138,35 +4138,35 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	pGraphics->setPortrait (ps.isPortrait ());
 
 	if(pGraphics->startPrint())
-	  {
+	{
 	    if (bCollate)
-	      {
-		for (j=1; (j <= nCopies); j++)
-		  for (k=nFromPage; (k <= nToPage); k++)
-		    {
+		{
+			for (j=1; (j <= nCopies); j++)
+				for (k=nFromPage; (k <= nToPage); k++)
+				{
 		      // NB we will need a better way to calc
-		      // pGraphics->m_iRasterPosition when
-		      // iHeight is allowed to vary page to page
-		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
-		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
-		      pPrintView->draw(k-1, &da);
-		    }
-	      }
+					// pGraphics->m_iRasterPosition when
+					// iHeight is allowed to vary page to page
+					pGraphics->m_iRasterPosition = (k-1)*iHeight;
+					pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
+					pPrintView->draw(k-1, &da);
+				}
+		}
 	    else
-	      {
-		for (k=nFromPage; (k <= nToPage); k++)
-		  for (j=1; (j <= nCopies); j++)
-		    {
-		      // NB we will need a better way to calc
-		      // pGraphics->m_iRasterPosition when
-		      // iHeight is allowed to vary page to page
-		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
-		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
-		      pPrintView->draw(k-1, &da);
-		    }
-	      }
+		{
+			for (k=nFromPage; (k <= nToPage); k++)
+				for (j=1; (j <= nCopies); j++)
+				{
+					// NB we will need a better way to calc
+					// pGraphics->m_iRasterPosition when
+					// iHeight is allowed to vary page to page
+					pGraphics->m_iRasterPosition = (k-1)*iHeight;
+					pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
+					pPrintView->draw(k-1, &da);
+				}
+		}
 	    pGraphics->endPrint();
-	  }
+	}
 	
 	return true;
 }
@@ -4456,7 +4456,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	AP_Dialog_PageSetup::Orientation orig_ori,final_ori;
 	orig_ori =  AP_Dialog_PageSetup::PORTRAIT;
 	if(pDoc->m_docPageSize.isPortrait() == false)
-	       orig_ori = AP_Dialog_PageSetup::LANDSCAPE;
+		orig_ori = AP_Dialog_PageSetup::LANDSCAPE;
 	pDialog->setPageOrientation(orig_ori);
 	fp_PageSize::Unit orig_unit,final_unit,orig_margu,final_margu;
 	double orig_scale,final_scale;
@@ -4492,62 +4492,62 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	}
 	if(props_in && props_in[0])
 	{
-	        pszLeftMargin = UT_getAttribute("page-margin-left", props_in);
+		pszLeftMargin = UT_getAttribute("page-margin-left", props_in);
 		if(pszLeftMargin)
 		{
-		       dLeftMargin = UT_convertToInches(pszLeftMargin);
-		       docMargUnits = UT_determineDimension(pszLeftMargin);
+			dLeftMargin = UT_convertToInches(pszLeftMargin);
+			docMargUnits = UT_determineDimension(pszLeftMargin);
 		}
 
-	        pszRightMargin = UT_getAttribute("page-margin-right", props_in);
+		pszRightMargin = UT_getAttribute("page-margin-right", props_in);
 		if(pszRightMargin)
 		{
-		       dRightMargin = UT_convertToInches(pszRightMargin);
-		       docMargUnits = UT_determineDimension(pszRightMargin);
+			dRightMargin = UT_convertToInches(pszRightMargin);
+			docMargUnits = UT_determineDimension(pszRightMargin);
 		}
 
-	        pszTopMargin = UT_getAttribute("page-margin-top", props_in);
+		pszTopMargin = UT_getAttribute("page-margin-top", props_in);
 		if(pszTopMargin)
 		{
-		       dTopMargin = UT_convertToInches(pszTopMargin);
-		       docMargUnits = UT_determineDimension(pszTopMargin);
+			dTopMargin = UT_convertToInches(pszTopMargin);
+			docMargUnits = UT_determineDimension(pszTopMargin);
 		}
 
-	        pszBottomMargin = UT_getAttribute("page-margin-bottom", props_in);
+		pszBottomMargin = UT_getAttribute("page-margin-bottom", props_in);
 		if(pszBottomMargin)
 		{
-		       dBottomMargin = UT_convertToInches(pszBottomMargin);
-		       docMargUnits = UT_determineDimension(pszBottomMargin);
+			dBottomMargin = UT_convertToInches(pszBottomMargin);
+			docMargUnits = UT_determineDimension(pszBottomMargin);
 		}
 
-	        pszFooterMargin = UT_getAttribute("page-margin-footer", props_in);
+		pszFooterMargin = UT_getAttribute("page-margin-footer", props_in);
 		if(pszFooterMargin)
-		       dFooterMargin = UT_convertToInches(pszFooterMargin);
+			dFooterMargin = UT_convertToInches(pszFooterMargin);
 
-	        pszHeaderMargin = UT_getAttribute("page-margin-header", props_in);
+		pszHeaderMargin = UT_getAttribute("page-margin-header", props_in);
 		if(pszHeaderMargin)
-		       dHeaderMargin = UT_convertToInches(pszHeaderMargin);
+			dHeaderMargin = UT_convertToInches(pszHeaderMargin);
 	}
 	FREEP(props_in);
 	orig_margu = fp_PageSize::inch;
 	if(docMargUnits == DIM_MM)
 	{
-	        dLeftMargin = dLeftMargin * 25.4;
-	        dRightMargin = dRightMargin * 25.4;
-	        dTopMargin = dTopMargin * 25.4;
-	        dBottomMargin = dBottomMargin * 25.4;
-	        dFooterMargin = dFooterMargin * 25.4;
-	        dHeaderMargin = dHeaderMargin * 25.4;
+		dLeftMargin = dLeftMargin * 25.4;
+		dRightMargin = dRightMargin * 25.4;
+		dTopMargin = dTopMargin * 25.4;
+		dBottomMargin = dBottomMargin * 25.4;
+		dFooterMargin = dFooterMargin * 25.4;
+		dHeaderMargin = dHeaderMargin * 25.4;
 		orig_margu = fp_PageSize::mm;
 	}
 	else if(docMargUnits == DIM_CM)
 	{
-	        dLeftMargin = dLeftMargin * 2.54;
-	        dRightMargin = dRightMargin * 2.54;
-	        dTopMargin = dTopMargin * 2.54;
-	        dBottomMargin = dBottomMargin * 2.54;
-	        dFooterMargin = dFooterMargin * 2.54;
-	        dHeaderMargin = dHeaderMargin * 2.54;
+		dLeftMargin = dLeftMargin * 2.54;
+		dRightMargin = dRightMargin * 2.54;
+		dTopMargin = dTopMargin * 2.54;
+		dBottomMargin = dBottomMargin * 2.54;
+		dFooterMargin = dFooterMargin * 2.54;
+		dHeaderMargin = dHeaderMargin * 2.54;
 		orig_margu = fp_PageSize::cm;
 	}
 
@@ -4579,52 +4579,52 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	  //
 	  // Set the new Page Stuff
 	  //
-	       pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
-	       pDoc->m_docPageSize.Set(final_unit);
-	       bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
-	       if( p == true)
-	       { 
-		      pDoc->m_docPageSize.setPortrait();
-	       }
-	       else
-	       { 
-		      pDoc->m_docPageSize.setLandscape();
-	       }
-	       pDoc->m_docPageSize.setScale(final_scale);
+		pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
+		pDoc->m_docPageSize.Set(final_unit);
+		bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
+		if( p == true)
+		{ 
+			pDoc->m_docPageSize.setPortrait();
+		}
+		else
+		{ 
+			pDoc->m_docPageSize.setLandscape();
+		}
+		pDoc->m_docPageSize.setScale(final_scale);
 
-	       //
-	       // Get all clones of this frame and set the new page dimensions
-	       //
+		//
+		// Get all clones of this frame and set the new page dimensions
+		//
 		  
-	       UT_Vector vClones;
-	       if(pFrame->getViewNumber() > 0)
-	       {
-		      pApp->getClones(&vClones,pFrame);
-		      for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
-		      {
-			     XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
-				 FV_View * pV =  (FV_View *) f->getCurrentView();
-				 if(pV->isHdrFtrEdit())
-				 {
-					 pV->eraseInsertionPoint();
-					 pV->clearHdrFtrEdit();
-					 pV->warpInsPtToXY(0,0,false);
-				 }
-			     UT_uint32 izoom = f->getZoomPercentage();
-			     f->setZoomPercentage(izoom);
-		      }
-	       }
-	       else
-	       {
-			   FV_View * pV =  (FV_View *) pFrame->getCurrentView();
-			   if(pV->isHdrFtrEdit())
-			   {
-				   pV->clearHdrFtrEdit();
-				   pV->warpInsPtToXY(0,0,false);
-			   }
-		      UT_uint32 izoom = pFrame->getZoomPercentage();
-		      pFrame->setZoomPercentage(izoom);
-	       }
+		UT_Vector vClones;
+		if(pFrame->getViewNumber() > 0)
+		{
+			pApp->getClones(&vClones,pFrame);
+			for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+			{
+				XAP_Frame * f = (XAP_Frame *) vClones.getNthItem(i);
+				FV_View * pV =  (FV_View *) f->getCurrentView();
+				if(pV->isHdrFtrEdit())
+				{
+					pV->eraseInsertionPoint();
+					pV->clearHdrFtrEdit();
+					pV->warpInsPtToXY(0,0,false);
+				}
+				UT_uint32 izoom = f->getZoomPercentage();
+				f->setZoomPercentage(izoom);
+			}
+		}
+		else
+		{
+			FV_View * pV =  (FV_View *) pFrame->getCurrentView();
+			if(pV->isHdrFtrEdit())
+			{
+				pV->clearHdrFtrEdit();
+				pV->warpInsPtToXY(0,0,false);
+			}
+			UT_uint32 izoom = pFrame->getZoomPercentage();
+			pFrame->setZoomPercentage(izoom);
+		}
 	}
 
 	XAP_Prefs * pPrefs = pApp->getPrefs();
@@ -4633,7 +4633,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	UT_ASSERT(pPrefsScheme);
 
 	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
-			       (XML_Char*)UT_dimensionName(fp_2_dim (final_unit)));
+						   (XML_Char*)UT_dimensionName(fp_2_dim (final_unit)));
 
 	//
 	// Recover ppView
@@ -4661,23 +4661,23 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	docMargUnits = DIM_IN;
 	if(final_margu == fp_PageSize::cm)
 	{
-	       docMargUnits = DIM_CM;
-	       dLeftMargin = dLeftMargin / 2.54;
-	       dRightMargin = dRightMargin / 2.54;
-	       dTopMargin = dTopMargin / 2.54;
-	       dBottomMargin = dBottomMargin / 2.54;
-	       dFooterMargin = dFooterMargin / 2.54;
-	       dHeaderMargin = dHeaderMargin / 2.54;
+		docMargUnits = DIM_CM;
+		dLeftMargin = dLeftMargin / 2.54;
+		dRightMargin = dRightMargin / 2.54;
+		dTopMargin = dTopMargin / 2.54;
+		dBottomMargin = dBottomMargin / 2.54;
+		dFooterMargin = dFooterMargin / 2.54;
+		dHeaderMargin = dHeaderMargin / 2.54;
 	}
 	else if (final_margu == fp_PageSize::mm)
 	{
-	       docMargUnits = DIM_MM;
-	       dLeftMargin = dLeftMargin / 25.4;
-	       dRightMargin = dRightMargin / 25.4;
-	       dTopMargin = dTopMargin / 25.4;
-	       dBottomMargin = dBottomMargin / 25.4;
-	       dFooterMargin = dFooterMargin / 25.4;
-	       dHeaderMargin = dHeaderMargin / 25.4;
+		docMargUnits = DIM_MM;
+		dLeftMargin = dLeftMargin / 25.4;
+		dRightMargin = dRightMargin / 25.4;
+		dTopMargin = dTopMargin / 25.4;
+		dBottomMargin = dBottomMargin / 25.4;
+		dFooterMargin = dFooterMargin / 25.4;
+		dHeaderMargin = dHeaderMargin / 25.4;
 	}
 	//
 	// Convert them into const char strings and change the section format
@@ -5536,13 +5536,8 @@ Defun1(dlgStyle)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_ASSERT(pFrame);
-#ifndef NDEBUG
 	ABIWORD_VIEW;
 	return s_doStylesDlg(pView);
-#else
-	s_TellNotImplemented(pFrame, "Styles dialog", __LINE__);
-#endif
-	return true;
 }
 
 Defun1(dlgTabs)

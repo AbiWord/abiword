@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#include "ut_misc.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -46,6 +47,7 @@ AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 	m_answer = a_OK;
 	m_pParaPreview = NULL;
 	m_pCharPreview = NULL;
+	m_pAbiPreview = NULL;
 	if(m_vecCharProps.getItemCount() > 0)
 		m_vecCharProps.clear();
 }
@@ -54,6 +56,7 @@ AP_Dialog_Styles::~AP_Dialog_Styles(void)
 {
 	DELETEP(m_pParaPreview);
 	DELETEP(m_pCharPreview);
+	DELETEP(m_pAbiPreview);
 }
 
 AP_Dialog_Styles::tAnswer AP_Dialog_Styles::getAnswer(void) const
@@ -111,6 +114,153 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 // set our Vector of Character Properties into the preview class.
 //
 	m_pCharPreview->setVecProperties( &m_vecCharProps);
+}
+
+
+void AP_Dialog_Styles::_createAbiPreviewFromGC(GR_Graphics * gc,
+                                                UT_uint32 width,
+											   UT_uint32 height )
+{
+	UT_ASSERT(gc);
+	if(m_pAbiPreview)
+		DELETEP(m_pAbiPreview);
+	m_pAbiPreview = new AP_Preview_Abi(gc,width,height,m_pFrame,PREVIEW_ZOOMED);
+	UT_ASSERT(m_pAbiPreview);
+}
+
+FV_View * AP_Dialog_Styles::getLView(void) const
+{
+	return m_pAbiPreview->getView();
+}
+
+PD_Document * AP_Dialog_Styles::getLDoc(void) const
+{
+	return m_pAbiPreview->getDoc();
+}
+
+void  AP_Dialog_Styles::drawLocal(void)
+{
+	m_pAbiPreview->draw();
+}
+
+void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
+{
+//
+// Text for the Preview
+//
+
+	static UT_UCSChar szString[60];
+	static UT_UCSChar sz1[4];
+	static UT_UCSChar sz2[4];
+	static UT_UCSChar sz3[4];
+	static UT_UCSChar szSpace[4];
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	UT_UCS_strcpy_char( (UT_UCSChar *) szString, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
+	UT_UCS_strcpy_char( (UT_UCSChar *) sz1, " 1");
+	UT_UCS_strcpy_char( (UT_UCSChar *) sz2, " 2");
+	UT_UCS_strcpy_char( (UT_UCSChar *) sz3, " 3");
+	UT_UCS_strcpy_char( (UT_UCSChar *) szSpace, "  ");
+	UT_uint32 len =UT_UCS_strlen(szString);
+	UT_uint32 len1 =UT_UCS_strlen(sz1);
+	UT_uint32 lenSpace =UT_UCS_strlen(szSpace);
+	const char * szStyle = NULL;
+	if(!isNew)
+		szStyle = getCurrentStyle();
+//
+// Set all the margins to 0
+//
+	const XML_Char * props[] = {"page-margin-left","0.0in",
+							   "page-margin-right","0.0in",
+							   "page-margin-top","0.0in",
+							   "page-margin-bottom","0.0in",
+							   "page-margin-footer","0.0in",
+							   "page-margin-header","0.0in",NULL};
+	getLView()->setSectionFormat(props);
+//
+// First Paragraph 
+//
+	m_posBefore = getLView()->getPoint();
+	UT_uint32 i=0;
+	for(i=0;i<15;i++)
+	{
+		getLView()->cmdCharInsert((UT_UCSChar *) szString,len);
+		getLView()->cmdCharInsert((UT_UCSChar *) szSpace,lenSpace);
+	}
+	getLView()->cmdCharInsert((UT_UCSChar *) sz1,len1);
+
+	const XML_Char * pszFGColor = NULL;
+    const XML_Char * pszBGColor = NULL;
+	static XML_Char Grey[8];
+	static XML_Char szFGColor[8];
+	UT_RGBColor FGColor(0,0,0);
+	UT_RGBColor BGColor(255,255,255);
+	UT_RGBColor * pageCol = NULL;
+	if(!isNew)
+		getLView()->setStyle(szStyle);
+
+	const XML_Char ** props_in = NULL;
+	getLView()->getCharFormat(&props_in);
+	pszFGColor = UT_getAttribute("color", props_in);
+	pszBGColor = UT_getAttribute("bgcolor",props_in);
+	if(pszFGColor != NULL)
+		UT_parseColor(pszFGColor,FGColor);
+//
+// Save the Foreground color for later
+//
+	sprintf(szFGColor, "%02x%02x%02x",FGColor.m_red,
+				FGColor.m_grn, FGColor.m_blu);
+	if(pszBGColor == NULL && strcmp(pszBGColor,"transparent")==0)
+	{
+		pageCol = getLView()->getCurrentPage()->getOwningSection()->getPaperColor();
+		sprintf(Grey, "%02x%02x%02x",(pageCol->m_red+FGColor.m_red)/2,
+				(pageCol->m_grn+FGColor.m_grn)/2, (pageCol->m_blu+FGColor.m_blu)/2);
+	}
+	else
+	{
+		UT_parseColor(pszBGColor,BGColor);
+		sprintf(Grey, "%02x%02x%02x",(BGColor.m_red+FGColor.m_red)/2,
+				(BGColor.m_grn + FGColor.m_grn)/2, (BGColor.m_blu+FGColor.m_blu)/2);
+	}
+//
+// Set the "Greyed" color for text in previous block
+//
+	const XML_Char * GreyCol[3] = {"color",(const XML_Char *) Grey,NULL};
+	getLDoc()->changeSpanFmt(PTC_AddFmt,m_posBefore,getLView()->getPoint(),NULL,GreyCol);
+	
+	getLView()->insertParagraphBreak();
+//
+// Second Paragraph in focus
+//
+	m_posFocus = getLView()->getPoint();
+//
+// Set Color Back
+//
+	const XML_Char * FGCol[3] = {"color",(const XML_Char *) szFGColor,NULL};
+	getLView()->setCharFormat(FGCol);
+	for(i=0; i<8; i++)
+	{
+		getLView()->cmdCharInsert((UT_UCSChar *) szString,len);
+		getLView()->cmdCharInsert((UT_UCSChar *) szSpace,lenSpace);
+	}
+	getLView()->cmdCharInsert((UT_UCSChar *) sz2,len1);
+//
+// Third Paragraph
+//
+	getLView()->insertParagraphBreak();
+	m_posAfter = getLView()->getPoint();
+	getLView()->setCharFormat(GreyCol);
+	for(i=0; i<15; i++)
+	{
+		getLView()->cmdCharInsert((UT_UCSChar *) szString,len);
+		getLView()->cmdCharInsert((UT_UCSChar *) szSpace,lenSpace);
+	}
+	getLView()->cmdCharInsert((UT_UCSChar *) sz3,len1);
+}
+
+
+void AP_Dialog_Styles::destroyAbiPreview(void)
+{
+	DELETEP(m_pAbiPreview);
 }
 
 //////////////////////////////////////////////////////////////////

@@ -85,13 +85,10 @@ const char*	fl_SectionLayout::getAttribute(const char * pszName) const
 {
 	const PP_AttrProp * pAP = NULL;
 	getAttrProp(&pAP);
-	
-	UT_DEBUGMSG(("SEVIOR: In get Attribute, pAP = %x looking for %s \n",pAP,pszName));
+
 	const XML_Char* pszAtt = NULL;
 	pAP->getAttribute((XML_Char*)pszName, pszAtt);
 	
-	UT_DEBUGMSG(("SEVIOR: In getAttribute Found %s \n",pszAtt));
-
 	return pszAtt;
 }
 

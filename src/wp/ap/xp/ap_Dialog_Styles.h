@@ -25,7 +25,7 @@
 #include "fv_View.h"
 #include "xap_Dlg_FontChooser.h"
 #include "ut_string_class.h"
-
+#include "ap_Preview_Abi.h"
 class XAP_Frame;
 
 #include "xap_Preview.h"
@@ -58,17 +58,22 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	virtual void setDescription (const char * desc) const = 0;
 	virtual void setModifyDescription (const char * desc) = 0;
 	virtual void _populatePreviews(bool isModify);
-
+	FV_View * getLView(void) const;
+	PD_Document * getLDoc(void) const;
+	void drawLocal(void);
+	void destroyAbiPreview(void);
 
  protected:
 
 	void				  _createParaPreviewFromGC(GR_Graphics * gc,  UT_uint32 width,  UT_uint32 height);
 
 	void				  _createCharPreviewFromGC(GR_Graphics * gc,  UT_uint32 width, UT_uint32 height);
-
+	void				  _createAbiPreviewFromGC(GR_Graphics * gc,  UT_uint32 width, UT_uint32 height);
+	void                  _populateAbiPreview(bool isNew);
 	AP_Dialog_Styles::tAnswer	  m_answer;
 	AP_Preview_Paragraph  *		  m_pParaPreview;
 	XAP_Preview_FontPreview *	  m_pCharPreview;
+	AP_Preview_Abi *	          m_pAbiPreview;
 	XAP_Frame *                   m_pFrame;
 	FV_View *                     m_pView;
 	PD_Document *                 m_pDoc;
@@ -77,7 +82,9 @@ class AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	UT_Vector                     m_vecCharProps;
     UT_String                     m_curStyleDesc;
 	UT_Vector                     m_vecAllProps;
-
+	PT_DocPosition                m_posBefore;
+	PT_DocPosition                m_posFocus;
+	PT_DocPosition                m_posAfter;
 private:
 };
 

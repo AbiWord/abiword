@@ -1372,12 +1372,12 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 		m_docPageSize.setLandscape();
 	}
 	else
-	        return false;
+		return false;
 	if( !szWidth || !szHeight || !szUnits || !szPageScale)
-	        return false;
+		return false;
 	else
 	{
-	        width = UT_convertDimensionless(szWidth);
+		width = UT_convertDimensionless(szWidth);
 		height = UT_convertDimensionless(szHeight);
 		scale =  UT_convertDimensionless(szPageScale);
 		if(UT_XML_stricmp(szUnits,"cm"))

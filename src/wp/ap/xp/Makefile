@@ -74,6 +74,7 @@ CPPSRCS=	ap_Convert.cpp			\
 		ap_Menu_Layouts.cpp		\
 		ap_Prefs.cpp			\
 		ap_Preview_Paragraph.cpp	\
+		ap_Preview_Abi.cpp		\
 		ap_Ruler.cpp			\
 		ap_StatusBar.cpp		\
 		ap_Strings.cpp			\

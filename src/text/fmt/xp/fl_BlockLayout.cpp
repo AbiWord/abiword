@@ -3100,7 +3100,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pcrs->getPosition() + len);
 		pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
@@ -3302,7 +3302,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 	{
  		pView->_resetSelection();
 		pView->_setPoint(pcrs->getPosition());
@@ -3603,7 +3603,7 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	m_pLayout->dequeueBlockForBackgroundCheck(this);
 
 	FV_View* pView = pSL->getDocLayout()->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pcrx->getPosition());
 	}
@@ -3697,7 +3697,7 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrx->getPosition());
 	else if (pView) pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
@@ -3890,7 +3890,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	pNewBL->setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
 	else if(pView && pView->getPoint() > pcrx->getPosition())
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
@@ -3984,7 +3984,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	pOldSL->deleteEmptyColumns();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 	}
@@ -4074,7 +4074,7 @@ bool fl_BlockLayout::doclistener_insertHdrFtrSection(const PX_ChangeRecord_Strux
 	pOldSL->deleteEmptyColumns();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 	}
@@ -4209,7 +4209,7 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcro->getPosition() + 1);
 	else if(pView && pView->getPoint() > pcro->getPosition())
 		pView->_setPoint(pView->getPoint() + 1);
@@ -4262,7 +4262,7 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcro->getPosition());
@@ -4324,8 +4324,7 @@ bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange
 
  done:
 	setNeedsReformat();
-
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcroc->getPosition());
@@ -4571,7 +4570,7 @@ bool fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * p
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 		pView->_setPoint(pcrfm->getPosition());
 
 	if (pView)
@@ -4605,7 +4604,7 @@ bool fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * p
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcrfm->getPosition());
@@ -4710,7 +4709,7 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
-	if (pView && pView->isActive())
+	if (pView && (pView->isActive() || pView->isPreview()))
 	{
 		pView->_resetSelection();
 		pView->_setPoint(pcrfmc->getPosition());

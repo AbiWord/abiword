@@ -112,7 +112,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bNeedSavedPosition(false),
 		_m_matchCase(false),
 		_m_findNextString(0),
-		m_bShowPara(false)
+		m_bShowPara(false),
+		m_previewMode(PREVIEW_NONE)
 {
 //	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
@@ -213,28 +214,28 @@ static void _toggleSentence (const UT_UCSChar * src,
     dest[0] = UT_UCS_toupper (src[0]);
 
     for (UT_uint32 i = 1; i < len; i++)
-      {
-	dest[i] = src[i];
-      }
+	{
+		dest[i] = src[i];
+	}
 }
 
 // all gets set to lowercase
 static void _toggleLower (const UT_UCSChar * src, 
 			  UT_UCSChar * dest, UT_uint32 len)
 {
-  for (UT_uint32 i = 0; i < len; i++)
-    {
-      dest[i] = UT_UCS_tolower (src[i]);
-    }
+	for (UT_uint32 i = 0; i < len; i++)
+	{
+		dest[i] = UT_UCS_tolower (src[i]);
+	}
 }
 
 // all gets set to uppercase
 static void _toggleUpper (const UT_UCSChar * src, 
 			  UT_UCSChar * dest, UT_uint32 len)
 {
-  for (UT_uint32 i = 0; i < len; i++)
+	for (UT_uint32 i = 0; i < len; i++)
     {
-      dest[i] = UT_UCS_toupper (src[i]);
+		dest[i] = UT_UCS_toupper (src[i]);
     }
 }
 
@@ -243,27 +244,27 @@ static void _toggleTitle (const UT_UCSChar * src,
 			  UT_UCSChar * dest, UT_uint32 len,
                           bool spaceBeforeFirstChar)
 {
-  bool wasSpace = spaceBeforeFirstChar;
+	bool wasSpace = spaceBeforeFirstChar;
 
-  UT_UCSChar ch;
-  
-  for (UT_uint32 i = 0; i < len; i++)
+	UT_UCSChar ch;
+	
+	for (UT_uint32 i = 0; i < len; i++)
     {
-      ch = src[i];
-      if (wasSpace && !UT_UCS_isspace (ch))
-	{
-	  dest[i] = UT_UCS_toupper (ch);
-	  wasSpace = false;
-	}
-      else if (UT_UCS_isspace (ch))
-	{
-	  dest[i] = ch;
-	  wasSpace = true;
-	}
-      else
-	{
-	  dest[i] = ch;
-	}
+		ch = src[i];
+		if (wasSpace && !UT_UCS_isspace (ch))
+		{
+			dest[i] = UT_UCS_toupper (ch);
+			wasSpace = false;
+		}
+		else if (UT_UCS_isspace (ch))
+		{
+			dest[i] = ch;
+			wasSpace = true;
+		}
+		else
+		{
+			dest[i] = ch;
+		}
     }
 }
 
@@ -271,15 +272,15 @@ static void _toggleTitle (const UT_UCSChar * src,
 static void _toggleToggle (const UT_UCSChar * src, 
 			   UT_UCSChar * dest, UT_uint32 len)
 {
-  UT_UCSChar ch;
-  for (UT_uint32 i = 0; i < len; i++)
-    {
-      ch = src[i];
+	UT_UCSChar ch;
+	for (UT_uint32 i = 0; i < len; i++)
+	{
+		ch = src[i];
 
-      if (UT_UCS_islower (ch))
-	dest[i] = UT_UCS_toupper (ch);
-      else
-	dest[i] = UT_UCS_tolower (src[i]);
+		if (UT_UCS_islower (ch))
+			dest[i] = UT_UCS_toupper (ch);
+		else
+			dest[i] = UT_UCS_tolower (src[i]);
     }
 }
 
@@ -289,26 +290,26 @@ static void _toggleToggle (const UT_UCSChar * src,
 // -returns false if pos is not within the document
 bool FV_View::_isSpaceBefore(PT_DocPosition pos)
 {
-      UT_GrowBuf buffer;
+	UT_GrowBuf buffer;
+	
+	fl_BlockLayout * block = m_pLayout->findBlockAtPosition(pos);
+	if (block)
+	{
 
-      fl_BlockLayout * block = m_pLayout->findBlockAtPosition(pos);
-      if (block)
-      {
-
-            PT_DocPosition offset = pos - block->getPosition(false);
-            // Just look at the previous character in this block, if there is one...
-            if (offset > 0)
-            {
-                  block->getBlockBuf(&buffer);
-                  return (UT_UCS_isspace(*(UT_UCSChar *)buffer.getPointer(offset - 1)));
-            }
-            else
-            {      
-                  return true;
-            }
-      }
-      else
-            return false;
+		PT_DocPosition offset = pos - block->getPosition(false);
+		// Just look at the previous character in this block, if there is one...
+		if (offset > 0)
+		{
+			block->getBlockBuf(&buffer);
+			return (UT_UCS_isspace(*(UT_UCSChar *)buffer.getPointer(offset - 1)));
+		}
+		else
+		{      
+			return true;
+		}
+	}
+	else
+		return false;
 }
 
 void FV_View::toggleCase (ToggleCase c)
@@ -319,56 +320,56 @@ void FV_View::toggleCase (ToggleCase c)
 
   // TODO: we currently lose *all* formatting information. Fix this.
 
-  if (isSelectionEmpty())
-    return;
+	if (isSelectionEmpty())
+		return;
 
-  UT_UCSChar * cur, * replace;
-  UT_GrowBuf buffer;
+	UT_UCSChar * cur, * replace;
+	UT_GrowBuf buffer;
 
-  cur = getSelectionText();
-  PT_DocPosition low = (m_iInsPoint < m_iSelectionAnchor ? m_iInsPoint : m_iSelectionAnchor);
+	cur = getSelectionText();
+	PT_DocPosition low = (m_iInsPoint < m_iSelectionAnchor ? m_iInsPoint : m_iSelectionAnchor);
 
-  if (!cur)
-    return;
+	if (!cur)
+		return;
 
-  UT_uint32 replace_len = UT_UCS_strlen (cur);
-  replace = new UT_UCSChar [replace_len + 1];
+	UT_uint32 replace_len = UT_UCS_strlen (cur);
+	replace = new UT_UCSChar [replace_len + 1];
 
-  UT_UCS_strcpy(replace,cur);
+	UT_UCS_strcpy(replace,cur);
 
-  switch (c)
+	switch (c)
     {
 
     case CASE_SENTENCE: _toggleSentence (cur, replace, replace_len);
-      break;
+		break;
 
     case CASE_LOWER: _toggleLower (cur, replace, replace_len);
-      break;
+		break;
 
     case CASE_UPPER: _toggleUpper (cur, replace, replace_len);
-      break;
+		break;
 
     case CASE_TITLE: _toggleTitle (cur, replace, replace_len, _isSpaceBefore(low));
-      break;
+		break;
 
     case CASE_TOGGLE: _toggleToggle (cur, replace, replace_len);
-      break;
+		break;
 
     default:
-      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
     }
 
-  m_pDoc->notifyPieceTableChangeStart();
-  m_pDoc->beginUserAtomicGlob();
+	m_pDoc->notifyPieceTableChangeStart();
+	m_pDoc->beginUserAtomicGlob();
 
-  cmdCharInsert (replace, replace_len, true);
+	cmdCharInsert (replace, replace_len, true);
 
-  m_pDoc->endUserAtomicGlob();
-  _generalUpdate();
-  m_pDoc->notifyPieceTableChangeEnd();
+	m_pDoc->endUserAtomicGlob();
+	_generalUpdate();
+	m_pDoc->notifyPieceTableChangeEnd();
 
-  FREEP(cur);
-  delete[] replace;
+	FREEP(cur);
+	delete[] replace;
 }
 
 void FV_View::setPaperColor(const XML_Char * clr)
@@ -431,6 +432,11 @@ FL_DocLayout* FV_View::getLayout() const
 
 bool FV_View::notifyListeners(const AV_ChangeMask hint)
 {
+//
+// No need to update stuff if we're in preview mode
+//
+	if(isPreview())
+		return true;
 	/*
 	  IDEA: The view caches its change state as of the last notification,
 	  to minimize noise from duplicate notifications.
@@ -1432,7 +1438,6 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 //
 // Now increase list level for bullet lists too
 //
-//				if(IS_NUMBERED_LIST_TYPE(curType) == true)
 				{
 					UT_uint32 curlevel = pBlock->getLevel();
 					UT_uint32 currID = pBlock->getAutoNum()->getID();
@@ -1440,10 +1445,11 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 					fl_AutoNum * pAuto = pBlock->getAutoNum();
 					const XML_Char * pszAlign = pBlock->getProperty("margin-left",true);
 					const XML_Char * pszIndent = pBlock->getProperty("text-indent",true);
+					const XML_Char * pszFieldF = pBlock->getProperty("field-font",true);
 					float fAlign = (float)atof(pszAlign);
 					float fIndent = (float)atof(pszIndent);
 					fAlign += (float) LIST_DEFAULT_INDENT;
-					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),"NULL",fAlign,fIndent, currID,curlevel);
+					pBlock->StartList(curType,pAuto->getStartValue32(),pAuto->getDelim(),pAuto->getDecimal(),pszFieldF,fAlign,fIndent, currID,curlevel);
 					doInsert = false;
 				}
 			}
@@ -3712,7 +3718,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	}
 
 	// change to screen coordinates
-	xPoint = m_xPointSticky - m_xScrollOffset + fl_PAGEVIEW_MARGIN_X;
+	xPoint = m_xPointSticky - m_xScrollOffset + getPageViewLeftMargin();
 	yPoint += iPageOffset - m_yScrollOffset;
 
 	// hit-test to figure out where that puts us
@@ -3788,12 +3794,12 @@ bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 	*/
 	if (m_xPoint < 0)
 	{
-		cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(m_xPoint) + fl_PAGEVIEW_MARGIN_X/2));
+		cmdScroll(AV_SCROLLCMD_LINELEFT, (UT_uint32) (-(m_xPoint) + getPageViewLeftMargin()/2));
 		bRet = true;
 	}
 	else if (((UT_uint32) (m_xPoint)) >= ((UT_uint32) m_iWindowWidth))
 	{
-		cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(m_xPoint - m_iWindowWidth + fl_PAGEVIEW_MARGIN_X/2));
+		cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32)(m_xPoint - m_iWindowWidth + getPageViewLeftMargin()/2));
 		bRet = true;
 	}
 	if(bRet == false)
@@ -3875,7 +3881,7 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 	UT_sint32 iPageOffset;
 	getPageYOffset(page, iPageOffset);
 
-	iPageOffset -= fl_PAGEVIEW_PAGE_SEP /2;
+	iPageOffset -= getPageViewSep() /2;
 	iPageOffset -= m_yScrollOffset;
 	
 	bool bVScroll = false;
@@ -4112,8 +4118,8 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 
 fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClick, UT_sint32& yClick) const
 {
-	xClick = xPos + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X;
-	yClick = yPos + m_yScrollOffset - fl_PAGEVIEW_MARGIN_Y;
+	xClick = xPos + m_xScrollOffset - getPageViewLeftMargin();
+	yClick = yPos + m_yScrollOffset - getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
@@ -4125,7 +4131,7 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 		}
 		else
 		{
-			yClick -= iPageHeight + fl_PAGEVIEW_PAGE_SEP;
+			yClick -= iPageHeight + getPageViewSep();
 		}
 		pPage = pPage->getNext();
 	}
@@ -4136,7 +4142,7 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
 		pPage = m_pLayout->getLastPage();
 
 		UT_sint32 iPageHeight = pPage->getHeight();
-		yClick += iPageHeight + fl_PAGEVIEW_PAGE_SEP;
+		yClick += iPageHeight + getPageViewSep();
 	}
 
 	return pPage;
@@ -5077,7 +5083,11 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 void FV_View::_generalUpdate(void)
 {
 	m_pDoc->signalListeners(PD_SIGNAL_UPDATE_LAYOUT);
-
+//
+// No need to update other stuff if we're doing a preview
+//
+	if(isPreview())
+		return;
 	/*
 	  TODO note that we are far too heavy handed with the mask we
 	  send here.  I ripped out all the individual calls to notifyListeners
@@ -5461,7 +5471,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 								   UT_sint32& yoff)
 {
-	UT_uint32 y = fl_PAGEVIEW_MARGIN_Y;
+	UT_uint32 y = getPageViewTopMargin();
 	
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
@@ -5470,18 +5480,18 @@ void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 		{
 			break;
 		}
-		y += pPage->getHeight() + fl_PAGEVIEW_PAGE_SEP;
+		y += pPage->getHeight() + getPageViewSep();
 
 		pPage = pPage->getNext();
 	}
 
 	yoff = y - m_yScrollOffset;
-	xoff = fl_PAGEVIEW_MARGIN_Y - m_xScrollOffset;
+	xoff = getPageViewTopMargin() - m_xScrollOffset;
 }
 
 void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 {
-	UT_uint32 y = fl_PAGEVIEW_MARGIN_Y;
+	UT_uint32 y = getPageViewTopMargin();
 	
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
@@ -5490,7 +5500,7 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 		{
 			break;
 		}
-		y += pPage->getHeight() + fl_PAGEVIEW_PAGE_SEP;
+		y += pPage->getHeight() + getPageViewSep();
 
 		pPage = pPage->getNext();
 	}
@@ -5498,22 +5508,38 @@ void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
 	yoff = y;
 }
 
-UT_uint32 FV_View::getPageViewLeftMargin(void) const
+UT_sint32 FV_View::getPageViewSep(void) const
 {
 	// return the amount of gray-space we draw to the left
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
-
-	return fl_PAGEVIEW_MARGIN_X;
+	if(isPreview())
+		return 0;
+	else
+		return fl_PAGEVIEW_PAGE_SEP;
 }
 
-UT_uint32 FV_View::getPageViewTopMargin(void) const
+
+UT_sint32 FV_View::getPageViewLeftMargin(void) const
+{
+	// return the amount of gray-space we draw to the left
+	// of the paper in "Page View".  return zero if not in
+	// "Page View".
+	if(isPreview())
+		return 0;
+	else
+		return fl_PAGEVIEW_MARGIN_X;
+}
+
+UT_sint32 FV_View::getPageViewTopMargin(void) const
 {
 	// return the amount of gray-space we draw above the top
 	// of the paper in "Page View".  return zero if not in
 	// "Page View".
-
-	return fl_PAGEVIEW_MARGIN_Y;
+	if(isPreview())
+		return 0;
+	else
+		return fl_PAGEVIEW_MARGIN_Y;
 }
 
 /*
@@ -5751,10 +5777,10 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		getPageYOffset(pPointPage, iPageOffset);
 
 		yPoint += iPageOffset;
-		xPoint += fl_PAGEVIEW_MARGIN_X;
+		xPoint += getPageViewLeftMargin();
 #ifdef BIDI_ENABLED
 		yPoint2 += iPageOffset;
-		xPoint2 += fl_PAGEVIEW_MARGIN_X;
+		xPoint2 += getPageViewLeftMargin();
 #endif
 		// now, we have coords absolute, as if all pages were stacked vertically
 		xPoint -= m_xScrollOffset;
@@ -5791,7 +5817,7 @@ void FV_View::_fixInsertionPointCoords()
 	_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
 	_saveCurrentPoint();
 	// hang onto this for _moveInsPtNextPrevLine()
-	m_xPointSticky = m_xPoint + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X;
+	m_xPointSticky = m_xPoint + m_xScrollOffset - getPageViewLeftMargin();
 }
 
 void FV_View::_updateInsertionPoint()
@@ -6139,27 +6165,27 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	if (!bDirtyRunsOnly)
 	{
-		if (m_xScrollOffset < fl_PAGEVIEW_MARGIN_X)
+		if (m_xScrollOffset < getPageViewLeftMargin())
 		{
 			// fill left margin
-			m_pG->fillRect(clrMargin, 0, 0, fl_PAGEVIEW_MARGIN_X - m_xScrollOffset, m_iWindowHeight);
+			m_pG->fillRect(clrMargin, 0, 0, getPageViewLeftMargin() - m_xScrollOffset, m_iWindowHeight);
 		}
 
-		if (m_yScrollOffset < fl_PAGEVIEW_MARGIN_Y)
+		if (m_yScrollOffset < getPageViewTopMargin())
 		{
 			// fill top margin
-			m_pG->fillRect(clrMargin, 0, 0, m_iWindowWidth, fl_PAGEVIEW_MARGIN_Y - m_yScrollOffset);
+			m_pG->fillRect(clrMargin, 0, 0, m_iWindowWidth, getPageViewTopMargin() - m_yScrollOffset);
 		}
 	}
 
-	UT_sint32 curY = fl_PAGEVIEW_MARGIN_Y;
+	UT_sint32 curY = getPageViewTopMargin();
 	fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
 		UT_sint32 iPageWidth		= pPage->getWidth();
 		UT_sint32 iPageHeight		= pPage->getHeight();
 		UT_sint32 adjustedTop		= curY - m_yScrollOffset;
-		UT_sint32 adjustedBottom	= adjustedTop + iPageHeight + fl_PAGEVIEW_PAGE_SEP;
+		UT_sint32 adjustedBottom	= adjustedTop + iPageHeight + getPageViewSep();
 		if (adjustedTop > m_iWindowHeight)
 		{
 			// the start of this page is past the bottom
@@ -6225,13 +6251,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			da.bDirtyRunsOnly = bDirtyRunsOnly;
 			da.pG = m_pG;
-			da.xoff = fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
+			da.xoff = getPageViewLeftMargin() - m_xScrollOffset;
 			da.yoff = adjustedTop;
 
-			UT_sint32 adjustedLeft	= fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
+			UT_sint32 adjustedLeft	= getPageViewLeftMargin() - m_xScrollOffset;
 			UT_sint32 adjustedRight	= adjustedLeft + iPageWidth;
 
-			adjustedBottom -= fl_PAGEVIEW_PAGE_SEP;
+			adjustedBottom -= getPageViewSep();
 
 			if (!bDirtyRunsOnly || pPage->needsRedraw())
 			{	
@@ -6246,11 +6272,13 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			m_pG->setColor(clr);
 
 			// one pixel border
-			m_pG->drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
-			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
-			m_pG->drawLine(adjustedRight, adjustedBottom, adjustedLeft, adjustedBottom);
-			m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedLeft, adjustedTop);
-
+			if(!isPreview())
+			{
+				m_pG->drawLine(adjustedLeft, adjustedTop, adjustedRight, adjustedTop);
+				m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
+				m_pG->drawLine(adjustedRight, adjustedBottom, adjustedLeft, adjustedBottom);
+				m_pG->drawLine(adjustedLeft, adjustedBottom, adjustedLeft, adjustedTop);
+			}
 			// fill to right of page
 			if (m_iWindowWidth - (adjustedRight + 1) > 0)
 			{
@@ -6260,7 +6288,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			// fill separator below page
 			if (m_iWindowHeight - (adjustedBottom + 1) > 0)
 			{
-				m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, fl_PAGEVIEW_PAGE_SEP);
+				m_pG->fillRect(clrMargin, adjustedLeft, adjustedBottom + 1, m_iWindowWidth - adjustedLeft, getPageViewSep());
 			}
 			
 			// two pixel drop shadow
@@ -6277,7 +6305,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			m_pG->drawLine(adjustedRight, adjustedTop, adjustedRight, adjustedBottom);
 		}
 
-		curY += iPageHeight + fl_PAGEVIEW_PAGE_SEP;
+		curY += iPageHeight + getPageViewSep();
 
 		pPage = pPage->getNext();
 	}
@@ -6372,10 +6400,10 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 		break;
 	case AV_SCROLLCMD_TOBOTTOM:
 		fp_Page* pPage = m_pLayout->getFirstPage();
-		UT_sint32 iDocHeight = fl_PAGEVIEW_MARGIN_Y;
+		UT_sint32 iDocHeight = getPageViewTopMargin();
 		while (pPage)
 		{
-			iDocHeight += pPage->getHeight() + fl_PAGEVIEW_PAGE_SEP;
+			iDocHeight += pPage->getHeight() + getPageViewSep();
 			pPage = pPage->getNext();
 		}
 		yoff = iDocHeight;
@@ -6492,7 +6520,6 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 //
 // No Footer. Look to see if the user has clicked in the footer region.
 //
-		UT_DEBUGMSG(("SEVIOR: ypos = %d pPage->getBottom() = %d pDSL->getBottomMargin() %d \n",yPos,pPage->getBottom(),pDSL->getBottomMargin()));
 		if(xPos >=0 && yPos < (pPage->getBottom() + pDSL->getBottomMargin()) && yPos > pPage->getBottom())
 		{
 //
@@ -7061,7 +7088,7 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 		pInfo->m_xPaperSize = m_pG->convertDimension("8.5in"); // TODO eliminate this constant
-		pInfo->m_xPageViewMargin = fl_PAGEVIEW_MARGIN_X;
+		pInfo->m_xPageViewMargin = getPageViewLeftMargin();
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
 		pInfo->m_xrLeftIndent = m_pG->convertDimension(pBlock->getProperty("margin-left"));
@@ -7522,13 +7549,13 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPO
 
 	// we currently return all requested suggestions
 	if ((sg->getItemCount()) &&
-		((int) ndx <= sg->getItemCount()))
+		( ndx <= sg->getItemCount()))
 	{
 		UT_UCS_cloneString(&szSuggest, (UT_UCSChar *) sg->getNthItem(ndx-1));
 	}
 
 	// clean up
-	for (int i = 0; i < sg->getItemCount(); i++)
+	for (UT_uint32 i = 0; i < sg->getItemCount(); i++)
 	{
 		UT_UCSChar * sug = (UT_UCSChar *)sg->getNthItem(i);
 		if(sug)
@@ -8354,10 +8381,10 @@ UT_uint32 FV_View::calculateZoomPercentForPageWidth()
 	pG->setZoomPercentage(temp_zoom);
 
 	// Verify scale as a positive non-zero number else return old zoom
-	if ( ( getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X ) <= 0 )
+	if ( ( getWindowWidth() - 2 * getPageViewLeftMargin() ) <= 0 )
 		return temp_zoom;
 
-	double scale = (double)(getWindowWidth() - 2 * fl_PAGEVIEW_MARGIN_X) / 
+	double scale = (double)(getWindowWidth() - 2 * getPageViewLeftMargin()) / 
 		(pageWidth * (double)resolution);
 	return (UT_uint32)(scale * 100.0);
 }
@@ -8376,10 +8403,10 @@ UT_uint32 FV_View::calculateZoomPercentForPageHeight()
 	pG->setZoomPercentage(temp_zoom);
 
 	// Verify scale as a positive non-zero number else return old zoom
-	if ( ( getWindowHeight() - 2 * fl_PAGEVIEW_MARGIN_Y ) <= 0 )
+	if ( ( getWindowHeight() - 2 * getPageViewTopMargin() ) <= 0 )
 		return temp_zoom;
 
-	double scale = (double)(getWindowHeight() - 2 * fl_PAGEVIEW_MARGIN_Y) /
+	double scale = (double)(getWindowHeight() - 2 * getPageViewTopMargin()) /
 		(pageHeight * (double)resolution);
 	return (UT_uint32)(scale * 100.0);
 }

@@ -143,6 +143,7 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Prefs.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Preview_Paragraph.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_Preview_Abi.$(OBJ_SUFFIX)	        \
 		$(OBJDIR)/ap_Ruler.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_StatusBar.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Strings.$(OBJ_SUFFIX)		\
