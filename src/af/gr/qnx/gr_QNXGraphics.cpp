@@ -582,7 +582,6 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 	if (pRect)
 	{
 		PhRect_t r;
-		UT_DEBUGMSG(("Adding cliprect\n"));	
 		r.ul.x = _UD(pRect->left);
 		r.ul.y = _UD(pRect->top);
 		r.lr.x = r.ul.x + _UD(pRect->width);
@@ -597,7 +596,6 @@ void GR_QNXGraphics::setClipRect(const UT_Rect* pRect)
 	else
 	{
 		if (m_pClipList) {
-			UT_DEBUGMSG(("Removing cliprect\n"));
 			PhFreeTiles(m_pClipList);
 			m_pClipList = NULL;
 		}
