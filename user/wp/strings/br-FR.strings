@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
+<?xml version="1.0" encoding="iso-8859-15"?>
 
 <!-- ==============================================================  -->
 <!-- This file contains AbiWord Strings.  AbiWord is an Open Source  -->
@@ -8,9 +8,14 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<!-- breton translation provided by the KAD association (Korvigelloù An Drouizig) <drouizig@drouizig.org> -->
+<!-- Troidigezh e brezhoneg gant ar gevredigezh Korvigelloù An Drouizig, http://www.drouizig.org/drouizig/ -->
+<!-- Kasit deomp ho evezhiadennoù e-keñver an droidigezh-mañ da drouizig@drouizig.org -->
+<!-- Breton translation provided by the Korvigelloù An Drouizig association, http://www.drouizig.org/drouizig/ -->
+<!-- Feel free to send comments about this translation to drouizig@drouizig.org -->
+<!-- Traduction bretonne réalisée par l'association Korvigelloù An Drouizig, http://www.drouizig.org/drouizig/ -->
+<!-- N'hésitez pas à envoyer vos remarques à drouizig@drouizig.org -->
 
-<AbiStrings app="AbiWord" ver="1.0" language="br-BR">
+<AbiStrings app="AbiWord" ver="2.0.1" language="br-BR">
 
 <Strings	class="XAP"
 MSG_ImportingDoc="Ebarzhiñ un teul..."
@@ -1101,6 +1106,8 @@ MENU_LABEL_INSERT_CLIPART="&amp;Skeudennigoù arzel"
 MENU_LABEL_INSERT_GRAPHIC="&amp;Luc'hskeudenn"
 MENU_LABEL_INSERT_BOOKMARK="Si&amp;ned"
 MENU_LABEL_INSERT_HYPERLINK="Go&amp;urliamm"
+MENU_LABEL_INSERT_INSERTFOOTER="Ensoc'hañ un diaz pajenn"
+MENU_LABEL_INSERT_INSERTHEADER="Ensoc'hañ un talbenn"
 MENU_LABEL_INSERT_MAILMERGE="Maez &amp;kendeuziñ ar postelioù"
 MENU_LABEL_INSERT_DELETE_HYPERLINK="&amp;Diverkañ ar gourliamm"
 MENU_LABEL_FORMAT="Furmaoza&amp;ñ"
