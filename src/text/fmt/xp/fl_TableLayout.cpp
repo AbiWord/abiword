@@ -329,7 +329,7 @@ void fl_TableLayout::redrawUpdate(void)
 	{
 		if (pBL->needsRedraw())
 		{
-			UT_DEBUGMSG(("SEVIOR: Doing redraw in table \n"));
+			xxx_UT_DEBUGMSG(("SEVIOR: Doing redraw in table \n"));
 			pBL->redrawUpdate();
 		}
 		pBL = pBL->getNext();

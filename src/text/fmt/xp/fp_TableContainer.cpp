@@ -217,7 +217,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 			iBot += col_y;
 		}
 	}
-	
+
 	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
 }
 
@@ -284,7 +284,8 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			getGraphics()->setColor(pClr);
 		}
 		getGraphics()->setLineWidth(1/*pTab->getLineThickness()*/);
-		
+
+		xxx_UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
 // only clear the lines if no background is set: the background clearing will also clear the lines
 // FIXME MARCM: this switch SHOULD work but it doesn't... adding it will show clearing errors when moving
 // FIXME MARCM: tables around with cells in it that have their bgcolor set. 
@@ -413,6 +414,7 @@ void fp_CellContainer::_drawLine(UT_RGBColor clr, UT_sint32 lineStyle, UT_sint32
 		default:
 			break;
 	}
+	xxx_UT_DEBUGMSG(("_drawLine: top %d bot %d \n",top,bot));
 // draw the actual line
 	if (lineStyle != LS_OFF)
 		pGr->drawLine(left, top, right, bot);
@@ -506,13 +508,13 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		}
 		iTop -= pBroke->getYBreak();
 		iBot -= pBroke->getYBreak();
-		UT_DEBUGMSG(("SEVIOR: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d \n",iBot,col_y,m_iBotY,pCol->getHeight()));
+		xxx_UT_DEBUGMSG(("SEVIOR: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d left %d top %d \n",iBot,col_y,m_iBotY,pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
 		if(iTop < col_y)
 		{
 			iTop = col_y;
 			bDrawTop = true;
 		}
-		UT_DEBUGMSG(("SEVIOR: After ibot = %d  sum %d \n",iBot,col_y + pCol->getHeight()));
+		xxx_UT_DEBUGMSG(("drawlines: After iTop %d iBot = %d  sum %d left %d top %d  \n",iTop,iBot,col_y + pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
 		if(iBot > col_y + pCol->getHeight())
 		{
 			iBot =  col_y + pCol->getHeight();
@@ -530,7 +532,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		{
 			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
 		}
-		UT_DEBUGMSG(("SEVIOR: m_bDrawbot %d  bDrawBot %d \n",m_bDrawBot, bDrawBot));
+		xxx_UT_DEBUGMSG(("SEVIOR: m_bDrawbot %d  bDrawBot %d \n",m_bDrawBot, bDrawBot));
 		if(m_bDrawBot || bDrawBot)
 		{
 			_drawLine(m_cBottomColor, m_iBottomStyle, iLeft, iBot, iRight, iBot);
@@ -1297,7 +1299,7 @@ fp_TableContainer::~fp_TableContainer()
 {
 	UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecRows);
 	UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecColumns);
-	deleteBrokenTables();
+	deleteBrokenTables(false);
 	UT_DEBUGMSG(("SEVIOR: deleting table %x \n",this));
 }
 
@@ -1710,11 +1712,15 @@ void fp_TableContainer::adjustBrokenTables(void)
  * This deletes all the broken tables from this master table.
  * This routine assumes that a clear screen has been set already.
  */
-void fp_TableContainer::deleteBrokenTables(void)
+void fp_TableContainer::deleteBrokenTables(bool bClearFirst = true)
 {
 	if(isThisBroken())
 	{
 		return;
+	}
+	if(bClearFirst)
+	{
+		clearScreen();
 	}
 	fp_TableContainer * pBroke = NULL;
 	fp_TableContainer * pNext = NULL;

@@ -398,7 +398,7 @@ public:
 	fp_TableContainer * getLastBrokenTable(void) const;
 	void                setFirstBrokenTable(fp_TableContainer * pBroke);
 	void                setLastBrokenTable(fp_TableContainer * pBroke);
-	void                deleteBrokenTables(void);
+	void                deleteBrokenTables(bool bClearFirst=true);
 	void                adjustBrokenTables(void);
 	UT_sint32           getNumRows(void) const;
 	UT_sint32           getNumCols(void) const;
