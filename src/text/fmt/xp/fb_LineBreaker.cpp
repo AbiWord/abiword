@@ -151,7 +151,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					if (bRes)
 					{
 
-						UT_DEBUGMSG(("%s:%d tab run: p=%p type=%d height=%d width=%d offset=%d length=%d\n",
+						UT_DEBUGMSG(("%s(%d) tab run: type=%d height=%d width=%d offset=%d length=%d\n",
 								 __FILE__, __LINE__,
 								iType,
 								pCurrentRun->getHeight(),
