@@ -2659,7 +2659,9 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		{
 			UT_ASSERT(!bInserted);
 			
-			UT_ASSERT(FP_RUN_INSIDE == pRun->containsOffset(blockOffset));
+			UT_ASSERT((blockOffset >= pRun->getBlockOffset()) &&
+					  (blockOffset < 
+					   (pRun->getBlockOffset() + pRun->getLength())));
 			UT_ASSERT(pRun->getType() == FPRUN_TEXT);	// only textual runs can be split anyway
 
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
@@ -3047,10 +3049,10 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 	while (pRun)
 	{
 		UT_uint32 runOffset = pRun->getBlockOffset();
-		UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
 
 		if (pRun->getType() == FPRUN_TEXT)
 		{
+			UT_uint32 iWhere = pRun->containsOffset(blockOffset+len);
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
 			if ((iWhere == FP_RUN_INSIDE) && ((blockOffset+len) > runOffset))
 			{
@@ -3429,7 +3431,8 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 		// We have passed the point. Why didn't previous Run claim to
 		// hold the offset? Make the best of it in non-debug
 		// builds. But keep the assert to get us information...
-		if (pRun->getBlockOffset() > blockOffset) {
+		if (pRun->getBlockOffset() > blockOffset)
+		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			pFirstNewRun = pRun;
 			break;
@@ -3439,13 +3442,17 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 		// FIXME: past the point by only comparing getBlockOffset.
 
 		if (pRun->getBlockOffset() <= blockOffset &&
-			(pRun->getBlockOffset() + pRun->getLength()) > blockOffset) {
+			(pRun->getBlockOffset() + pRun->getLength()) > blockOffset) 
+		{
 			// We found the Run. Now handle splitting.
 
-			if (pRun->getBlockOffset() == blockOffset) {
+			if (pRun->getBlockOffset() == blockOffset)
+			{
 				// Split between this Run and the previous one
 				pFirstNewRun = pRun;
-			} else {
+			} 
+			else
+			{
 				// Need to split current Run
 				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 
