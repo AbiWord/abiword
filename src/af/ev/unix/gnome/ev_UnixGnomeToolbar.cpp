@@ -357,7 +357,7 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 			UT_ASSERT(wd);
 			m_vecToolbarWidgets.addItem(wd);
 
-			gtk_widget_show_all(m_wToolbar);
+			gtk_widget_show(m_wToolbar);
 			_addToolbar(m_wToolbar);
 			m_wToolbar = _makeToolbar();
 			break;
@@ -459,5 +459,6 @@ void EV_UnixGnomeToolbar::hide(void)
 	{
 		GtkWidget *toolbar = static_cast<GtkWidget *> (m_vecToolbars.getNthItem(i));
 		gtk_widget_hide (toolbar->parent);
+		gtk_widget_queue_resize (toolbar->parent->parent);
 	}
 }

@@ -73,6 +73,7 @@ BeginSet(fr,FR,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Exposant",			tb_text_superscript_xpm,	NULL, "Exposant")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Indice",			tb_text_subscript_xpm,		NULL, "Indice")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Simbole",			tb_symbol_xpm,				NULL, "Insèrer simbole")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Gauche",			tb_text_align_left_xpm,		NULL, "Alignement à gauche")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Centré",			tb_text_center_xpm,			NULL, "Paragraphe centré")
