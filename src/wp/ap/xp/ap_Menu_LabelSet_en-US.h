@@ -164,7 +164,7 @@ BeginSet(en,US,true)
 	MenuLabel(AP_MENU_ID_SPELL_ADD,			"&Add", 			"Add this word to the custom dictionary")
 
      /* autotext submenu labels */
-     MenuLabel(AP_MENU_ID_INSERT_AUTOTEXT, "Autotext", "")
+     MenuLabel(AP_MENU_ID_INSERT_AUTOTEXT, "&Autotext", "")
      MenuLabel(AP_MENU_ID_AUTOTEXT_ATTN, "Attention:", "")
      MenuLabel(AP_MENU_ID_AUTOTEXT_CLOSING, "Closing:", "") 
      MenuLabel(AP_MENU_ID_AUTOTEXT_MAIL, "Mail Instructions:", "")
