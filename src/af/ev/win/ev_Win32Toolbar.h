@@ -27,6 +27,8 @@
 #include "xap_Types.h"
 #include "ev_Toolbar.h"
 #include "xav_Listener.h"
+#include "ap_Toolbar_Id.h"
+#include "ap_Win32Toolbar_StyleCombo.h"
 
 class XAP_Win32App;
 class XAP_Win32Frame;
@@ -54,10 +56,13 @@ public:
 						 UT_uint32 dataLength = 0);
 	virtual bool synthesize(void);
 	bool bindListenerToView(AV_View * pView);
-	bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
+	virtual bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
+	virtual bool repopulateStyles(void);
 	bool getToolTip(LPARAM lParam);
 
 	HWND getWindow(void) const;
+
+	XAP_Win32Frame * getFrame(void);
 
 	/*
 		Note that the namespaces for toolbar and menu command ids 

@@ -1087,3 +1087,80 @@ void EV_Win32Toolbar::_addToRebar()
 	SendMessage(hRebar, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbbi);
 }
 
+
+XAP_Win32Frame * EV_Win32Toolbar::getFrame(void)
+{
+	return m_pWin32Frame;
+}
+
+
+/*!
+ * This method examines the current document and repopulates the Styles
+ * Combo box with what is in the document. It returns false if no styles 
+ * combo box was found. True if it all worked.
+ */
+bool EV_Win32Toolbar::repopulateStyles(void)
+{
+//
+// First off find the Styles combobox in a toolbar somewhere
+//
+	UT_uint32 count = m_pToolbarLayout->getLayoutItemCount();
+	UT_uint32 i =0;
+	EV_Toolbar_LayoutItem * pLayoutItem = NULL;
+	XAP_Toolbar_Id id;
+	for(i=0; i < count; i++)
+	{
+		pLayoutItem = m_pToolbarLayout->getLayoutItem(i);
+		id = pLayoutItem->getToolbarId();
+	//	wd = (_wd *) m_vecToolbarWidgets.getNthItem(i);
+		if(id == AP_TOOLBAR_ID_FMT_STYLE)
+			break;
+	}
+	if(i>=count)
+		return false;
+//
+// GOT IT!
+//
+  //	UT_ASSERT(wd->m_id == AP_TOOLBAR_ID_FMT_STYLE);
+	XAP_Toolbar_ControlFactory * pFactory = m_pWin32App->getControlFactory();
+	UT_ASSERT(pFactory);
+	EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
+	AP_Win32Toolbar_StyleCombo * pStyleC = static_cast<AP_Win32Toolbar_StyleCombo *>(pControl);
+	pStyleC->repopulate();
+
+	HWND hwndCombo = _getControlWindow(id);
+	UT_ASSERT(hwndCombo);
+	// GtkCombo * item = GTK_COMBO(wd->m_widget);
+//
+// Now the combo box has to be refilled from this
+//						
+	const UT_Vector * v = pControl->getContents();
+	UT_ASSERT(v);
+//
+// Now  we must remove and delete the old data so we add the new
+// list of styles to the combo box.
+//
+// Try this....
+	SendMessage(hwndCombo, CB_RESETCONTENT, 0 , 0);
+//
+//	GtkList * oldlist = GTK_LIST(item->list);
+//	gtk_list_clear_items(oldlist,0,-1);
+//
+// Now make a new one.
+//
+	UT_uint32 items = v->getItemCount();
+	for (UT_uint32 k=0; k < items; k++)
+	{
+		char * sz = (char *)v->getNthItem(k);
+		SendMessage(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)sz);
+	}
+//
+// Don't need this anymore and we don't like memory leaks in abi
+//
+	delete pStyleC;
+//
+// I think we've finished!
+//
+	return true;
+}
+
