@@ -391,6 +391,8 @@ public:
 	static EV_EditMethod_Fn viCmd_yw;
 	static EV_EditMethod_Fn viCmd_yy;
 
+        static EV_EditMethod_Fn toggleAutoSpell;
+
 	static EV_EditMethod_Fn noop;
 
 	// Test routines
@@ -639,6 +641,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(style),				_D_,	""),
 
 	// t
+	EV_EditMethod(NF(toggleAutoSpell), 0, ""),
 	EV_EditMethod(NF(toggleBold),			0,		""),
 #ifdef BIDI_ENABLED
 	EV_EditMethod(NF(toggleDirection),		0,		""),
@@ -755,6 +758,25 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 #define Defun1(fn)	bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData * /*pCallData*/)
 #define EX(fn)		F(fn)(pAV_View, pCallData)
 
+
+Defun1(toggleAutoSpell)
+{
+        XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_ASSERT(pPrefsScheme);
+
+	bool b = false;
+
+	pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, &b);
+	return pPrefsScheme->setValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck, !b);
+}
 
 Defun1(scrollPageDown)
 {
