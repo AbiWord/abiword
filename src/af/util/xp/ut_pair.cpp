@@ -1,6 +1,6 @@
 #include"ut_pair.h"
 #include <stdlib.h>
-#include <string.h>
+#include "ut_string.h"
 
 
 UT_Pair::UT_Pair()
@@ -49,10 +49,10 @@ const char *UT_Pair::getSecond(const char *s) const
 void  UT_Pair::add(const char *f, const char *s)
 {
     m_first = (char**)realloc((void*)m_first,(m_n+1)*sizeof(char*));
-    m_first[m_n] = strdup(f);
+    m_first[m_n] = UT_strdup(f);
 
     m_second = (char**)realloc((void*)m_second,(m_n+1)*sizeof(char*));
-    m_second[m_n] = strdup(s);
+    m_second[m_n] = UT_strdup(s);
     ++m_n;
 };
 
