@@ -123,15 +123,16 @@ void AP_CocoaDialog_Replace::runModeless(XAP_Frame * pFrame)
 void AP_CocoaDialog_Replace::event_Find(void)
 {
 	NSString * findWhat = [m_dlg findWhat];
-	
-	setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
-	
-	if (!getReverseFind())	{
-		findNext();
-	}
-	else {
-		findPrev();
-	}
+
+	if ([findWhat length])
+		{
+			setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
+
+			if (getReverseFind())
+				findPrev();
+			else
+				findNext();
+		}
 }
 		
 void AP_CocoaDialog_Replace::event_Replace(void)
