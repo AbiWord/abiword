@@ -81,7 +81,7 @@ bool XAP_QNXApp::initialize(void)
 void XAP_QNXApp::reallyExit(void)
 {
 	//There must be a nicer way to drop out of the event loop
-	PtExit(0);
+	PtQuitMainLoop();
 }
 
 UT_sint32 XAP_QNXApp::makeDirectory(const char *path, UT_sint32 mode) const
