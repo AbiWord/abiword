@@ -153,6 +153,8 @@ public:
 	static EV_EditMethod_Fn warpInsPtEOD;
 	static EV_EditMethod_Fn warpInsPtPrevPage;
 	static EV_EditMethod_Fn warpInsPtNextPage;
+	static EV_EditMethod_Fn warpInsPtPrevScreen;
+	static EV_EditMethod_Fn warpInsPtNextScreen;
 	static EV_EditMethod_Fn warpInsPtPrevLine;
 	static EV_EditMethod_Fn warpInsPtNextLine;
 
@@ -204,6 +206,8 @@ public:
 	static EV_EditMethod_Fn extSelNextLine;
 	static EV_EditMethod_Fn extSelPageDown;
 	static EV_EditMethod_Fn extSelPageUp;
+	static EV_EditMethod_Fn extSelScreenUp;
+	static EV_EditMethod_Fn extSelScreenDown;
 	static EV_EditMethod_Fn selectAll;
 	static EV_EditMethod_Fn selectWord;
 	static EV_EditMethod_Fn selectLine;
@@ -662,6 +666,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(extSelPageUp), 		0,	""),
 	EV_EditMethod(NF(extSelPrevLine),		0,	""),
 	EV_EditMethod(NF(extSelRight),			0,	""),
+	EV_EditMethod(NF(extSelScreenDown),		0,	""),
+	EV_EditMethod(NF(extSelScreenUp),		0,	""),
 	EV_EditMethod(NF(extSelToXY),			0,	""),
 
 	// f
@@ -944,8 +950,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(warpInsPtLeft),		0,	""),
 	EV_EditMethod(NF(warpInsPtNextLine),	0,	""),
 	EV_EditMethod(NF(warpInsPtNextPage),	0,	""),
+	EV_EditMethod(NF(warpInsPtNextScreen),	0,	""),
 	EV_EditMethod(NF(warpInsPtPrevLine),	0,	""),
 	EV_EditMethod(NF(warpInsPtPrevPage),	0,	""),
+	EV_EditMethod(NF(warpInsPtPrevScreen),	0,	""),
 	EV_EditMethod(NF(warpInsPtRight),		0,	""),
 	EV_EditMethod(NF(warpInsPtToXY),		0,	""),
 
@@ -2904,6 +2912,20 @@ Defun1(warpInsPtNextPage)
 	return true;
 }
 
+Defun1(warpInsPtPrevScreen)
+{
+	ABIWORD_VIEW;
+	pView->warpInsPtNextPrevScreen(false);
+	return true;
+}
+
+Defun1(warpInsPtNextScreen)
+{
+	ABIWORD_VIEW;
+	pView->warpInsPtNextPrevScreen(true);
+	return true;
+}
+
 Defun1(warpInsPtPrevLine)
 {
 	ABIWORD_VIEW;
@@ -3321,6 +3343,20 @@ Defun1(extSelPageUp)
 {
 	ABIWORD_VIEW;
 	pView->extSelNextPrevPage(false);
+	return true;
+}
+
+Defun1(extSelScreenDown)
+{
+	ABIWORD_VIEW;
+	pView->extSelNextPrevScreen(true);
+	return true;
+}
+
+Defun1(extSelScreenUp)
+{
+	ABIWORD_VIEW;
+	pView->extSelNextPrevScreen(false);
 	return true;
 }
 

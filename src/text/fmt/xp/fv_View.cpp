@@ -1620,12 +1620,16 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	return iPos;
 }
 
-void FV_View::moveInsPtTo(FV_DocPos dp)
+void FV_View::moveInsPtTo(FV_DocPos dp, bool bClearSelection)
 {
-	if (!isSelectionEmpty())
-		_clearSelection();
-	else
-		_eraseInsertionPoint();
+	if(bClearSelection)
+	{
+		if (!isSelectionEmpty())
+			_clearSelection();
+		else
+			_eraseInsertionPoint();
+	}
+	
 	
 	PT_DocPosition iPos = _getDocPos(dp);
 
@@ -4834,15 +4838,109 @@ void FV_View::_moveInsPtNextPrevPage(bool bNext)
 
 	fp_Page* pOldPage = _getCurrentPage();
 
+	// TODO when moving to the prev page, we should move to its end, not begining
 	// try to locate next/prev page
 	fp_Page* pPage = (bNext ? pOldPage->getNext() : pOldPage->getPrev());
 
-	// if couldn't move, go to top of this page instead
+	// if couldn't move, go to top of this page if we are looking for the previous page
+	// or the end of this page if we are looking for the next page
 	if (!pPage)
-		pPage = pOldPage;
+	{
+		if(!bNext)
+		{
+			pPage = pOldPage;
+		}
+		else
+		{
+			moveInsPtTo(FV_DOCPOS_EOD,false);
+			return;
+		}
+	}
 
 	_moveInsPtToPage(pPage);
 }
+
+void FV_View::_moveInsPtNextPrevScreen(bool bNext)
+{
+	fl_BlockLayout * pBlock;
+	fp_Run * pRun;
+	UT_sint32 x,y,x2,y2;
+	UT_uint32 iHeight;
+	bool bDirection;
+	
+	_findPositionCoords(getPoint(),false,x,y,x2,y2,iHeight,bDirection,&pBlock,&pRun);
+	if(!pRun)
+		return;
+
+	fp_Line * pLine = pRun->getLine();
+	UT_ASSERT(pLine);
+
+	fp_Line * pOrigLine = pLine;
+	fp_Line * pPrevLine = pLine;
+	fp_Container * pCont = pLine->getContainer();
+	fp_Page * pPage  = pCont->getPage();
+	getPageYOffset(pPage, y);
+			
+	y += pCont->getY() + pLine->getY();
+	
+	if(bNext)
+		y-= pLine->getHeight();
+	
+	while(pLine)
+	{
+		pCont = pLine->getContainer();
+		pPage = pCont->getPage();
+		getPageYOffset(pPage, y2);
+		y2 += pCont->getY() + pLine->getY();
+		if(!bNext)
+			y2 -= pLine->getHeight();
+				
+		if(abs(y - y2) >=  m_iWindowHeight)
+			break;
+		
+		pPrevLine = pLine;
+		pLine = bNext ? pLine->getNext() : pLine->getPrev();
+		if(!pLine)
+		{
+			fl_BlockLayout * pPrevBlock = pBlock;
+			pBlock = bNext ? pPrevLine->getBlock()->getNext() : pPrevLine->getBlock()->getPrev();
+			if(!pBlock)
+			{
+				// see if there is another section after/before this block
+				fl_SectionLayout* pSection = bNext ? pPrevBlock->getSectionLayout()->getNext()
+					                               : pPrevBlock->getSectionLayout()->getPrev();
+				
+				if(pSection && (pSection->getType() == FL_SECTION_DOC || pSection->getType() == FL_SECTION_ENDNOTE))
+					pBlock = bNext ? pSection->getFirstBlock() : pSection->getLastBlock();
+			}
+			
+			if(pBlock)
+				pLine = bNext ? pBlock->getFirstLine() : pBlock->getLastLine();
+		}
+	}
+
+	//if(!pLine)
+	pLine  = pPrevLine;
+	UT_ASSERT(pLine);
+
+	if(pLine == pOrigLine)
+	{
+		// need to do this, since the caller might have erased the point and will
+		// expect us to draw in the new place
+		_ensureThatInsertionPointIsOnScreen(true);
+		return;
+	}
+	
+	
+	pRun = pLine->getFirstRun();
+	UT_ASSERT(pRun);
+	pBlock = pRun->getBlock();
+	UT_ASSERT(pBlock);
+	
+	moveInsPtTo(pBlock->getPosition(false) + pRun->getBlockOffset());
+	_ensureThatInsertionPointIsOnScreen(true);
+}
+
 
 fp_Page *FV_View::_getCurrentPage(void)
 {
@@ -4918,6 +5016,30 @@ void FV_View::_moveInsPtToPage(fp_Page *page)
 		_drawInsertionPoint();
 	}
 }
+
+/*!
+  Move point by one screen
+  \param bNext True if moving to next screen
+*/
+void FV_View::warpInsPtNextPrevScreen(bool bNext)
+{
+	if (!isSelectionEmpty())
+	{
+		_moveToSelectionEnd(bNext);
+		_drawInsertionPoint();
+		return;
+	}
+	else
+		_eraseInsertionPoint();
+
+	_resetSelection();
+	_clearIfAtFmtMark(getPoint());
+	_moveInsPtNextPrevScreen(bNext);
+
+	notifyListeners(AV_CHG_MOTION);
+}
+
+
 
 /*!
   Move point to next or previous page
@@ -5007,40 +5129,54 @@ void FV_View::extSelNextPrevLine(bool bNext)
 	notifyListeners(AV_CHG_MOTION);
 }
 
-// TODO preferably we should implement a new function for the simple
-// page Up/Down that actually moves the insertion point (currently
-// the PgUp and PgDown keys are bound to scrolling the window, but
-// they do not move the insertion point, which is a real nuisance)
-// once we fix that, we can use it in the function bellow to get
-// a consistent behaviour
-// 
-// the number 100 is heuristic, it is to get the end of the selection
-// on screen, but it does not work well with large gaps in the text
-// and on page boundaries
-#define TOP_OF_PAGE_OFFSET 100
-
-void FV_View::extSelNextPrevPage(bool bNext)
+void FV_View::extSelNextPrevScreen(bool bNext)
 {
-	// Figure out which page we clicked on.
-	// Pass the click down to that page.
-	UT_sint32 xClick, yClick;
-	fp_Page* pPage;
-
-	PT_DocPosition iNewPoint;
-	bool bBOL = false;
-	bool bEOL = false;
-	fl_HdrFtrShadow * pShadow = NULL;
-
 	if (isSelectionEmpty())
 	{
 		_eraseInsertionPoint();
 		_setSelectionAnchor();
 		_clearIfAtFmtMark(getPoint());
-		cmdScroll(bNext ? AV_SCROLLCMD_PAGEDOWN : AV_SCROLLCMD_PAGEUP);
-		pPage = _getPageForXY(0, TOP_OF_PAGE_OFFSET, xClick, yClick);
-		pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+		_moveInsPtNextPrevScreen(bNext);
+
+		if (isSelectionEmpty())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+		else
+		{
+			_drawSelection();
+		}
+	}
+	else
+	{
+		PT_DocPosition iOldPoint = getPoint();
+		_moveInsPtNextPrevScreen(bNext);
+
+		// top/bottom of doc - nowhere to go
+		if (iOldPoint == getPoint())
+			return;
+
+		_extSel(iOldPoint);
 		
-		_setPoint(iNewPoint);
+		if (isSelectionEmpty())
+		{
+			_resetSelection();
+			_drawInsertionPoint();
+		}
+	}
+
+	notifyListeners(AV_CHG_MOTION);
+}
+
+void FV_View::extSelNextPrevPage(bool bNext)
+{
+	if (isSelectionEmpty())
+	{
+		_eraseInsertionPoint();
+		_setSelectionAnchor();
+		_clearIfAtFmtMark(getPoint());
+		_moveInsPtNextPrevPage(bNext);
 		
 		if (isSelectionEmpty())
 		{
@@ -5055,15 +5191,10 @@ void FV_View::extSelNextPrevPage(bool bNext)
 	else
 	{
 		PT_DocPosition iOldPoint = getPoint();
-
-		cmdScroll(bNext ? AV_SCROLLCMD_PAGEDOWN : AV_SCROLLCMD_PAGEUP);
-		pPage = _getPageForXY(0, TOP_OF_PAGE_OFFSET, xClick, yClick);
-		pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
-		
-		_setPoint(iNewPoint);
+		_moveInsPtNextPrevPage(bNext);
 
 		// top/bottom of doc - nowhere to go
-		if (iOldPoint == iNewPoint)
+		if (iOldPoint == getPoint())
 			return;
 
 		_extSel(iOldPoint);

@@ -285,16 +285,18 @@ public:
 #endif
 	inline PT_DocPosition  getInsPoint () const { return m_iInsPoint; }
 	void			warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick);
-	void			moveInsPtTo(FV_DocPos dp);
+	void			moveInsPtTo(FV_DocPos dp, bool bClearSelection = true);
 	void			moveInsPtTo(PT_DocPosition dp);
 	void			warpInsPtNextPrevPage(bool bNext);
 	void			warpInsPtNextPrevLine(bool bNext);
+	void            warpInsPtNextPrevScreen(bool bNext);
 	void			extSelHorizontal(bool bForward, UT_uint32 count);
 	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelTo(FV_DocPos dp);
 	void			extSelNextPrevLine(bool bNext);
 	void            extSelNextPrevPage(bool bNext);
+	void            extSelNextPrevScreen(bool bNext);
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 
 	void			updateScreen(bool bDirtyRunsOnly=true);
@@ -433,6 +435,7 @@ protected:
 	
 	bool				_ensureThatInsertionPointIsOnScreen(bool bDrawIP = true);
 	void				_moveInsPtNextPrevPage(bool bNext);
+	void				_moveInsPtNextPrevScreen(bool bNext);
 	void				_moveInsPtNextPrevLine(bool bNext);
 	fp_Page *			_getCurrentPage(void);
 	void				_moveInsPtNthPage(UT_uint32 n);
