@@ -466,7 +466,7 @@ on_notebook_switch_page				   (GtkNotebook		*notebook,
  * To process a notebook page
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-void process_notebook_page( GtkWidget *notebook, 
+static void process_notebook_page( GtkWidget *notebook, 
 							GtkWidget *page,
 							struct fix_label_data *data )
 {
@@ -500,7 +500,7 @@ void process_notebook_page( GtkWidget *notebook,
 #else
 # define TRACE(a)
 #endif
-void fix_label_callback( GtkWidget *widget, gpointer _data )
+static void fix_label_callback( GtkWidget *widget, gpointer _data )
 {
 	struct fix_label_data *data = (struct fix_label_data *)_data;
 	struct fix_label_data newdata;

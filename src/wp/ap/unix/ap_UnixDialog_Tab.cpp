@@ -182,6 +182,10 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
 	gtk_window_set_title (GTK_WINDOW (windowTabs), pSS->getValue( AP_STRING_ID_DLG_Tab_TabTitle));
 
 	_constructWindowContents(windowTabs);
+
+	// create the accelerators from &'s
+	createLabelAccelerators(windowTabs);
+
 	gtk_window_add_accel_group (GTK_WINDOW (windowTabs), accel_group);
 
 	return windowTabs;
@@ -727,9 +731,6 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 		// set the "userdata" to be the tALignment
 		gtk_object_set_user_data( GTK_OBJECT(w), (gpointer)((UT_uint32)id - (UT_uint32)id_LEADER_NONE + (UT_uint32)FL_LEADER_NONE));
 	}
-
-	// create the accelerators from &'s
-	createLabelAccelerators(windowTabs);
 
 	// create user data tControl -> stored in widgets 
 	for ( int i = 0; i < id_last; i++ )

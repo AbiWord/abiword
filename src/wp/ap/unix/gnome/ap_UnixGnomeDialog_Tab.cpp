@@ -74,6 +74,9 @@ GtkWidget* AP_UnixGnomeDialog_Tab::_constructWindow (void )
 
 	_constructWindowContents(GNOME_DIALOG(windowTabs)->vbox);
 
+	// create the accelerators from &'s
+	createLabelAccelerators(windowTabs);
+
 	gtk_widget_show_all(GNOME_DIALOG(windowTabs)->vbox);
 	gtk_widget_show_all(windowTabs);
 
