@@ -5476,6 +5476,14 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	}
 	else
 	{
+		bool bOK = true;
+		if(!isPointLegal() && bOK)
+		{
+//
+// If we're in an illegal position move forward till we're safe.
+//
+			bOK = _charMotion(true,1);
+		}
 		bool bOverwrite = (!m_bInsertMode && !bForce);
 
 		if (bOverwrite)

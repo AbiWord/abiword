@@ -153,6 +153,7 @@ bool PS_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth,
 	if (color_type & PNG_COLOR_MASK_ALPHA) {
 #if 1
 		png_set_strip_alpha(png_ptr);
+		m_hasAlpha = true;		
 #else
 		m_hasAlpha = true;		
 #endif
