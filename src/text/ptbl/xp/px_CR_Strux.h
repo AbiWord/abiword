@@ -3,6 +3,7 @@
 #define PX_CHANGERECORD_STRUX_H
 
 #include "ut_types.h"
+#include "px_ChangeRecord.h"
 
 // PX_ChangeRecord_Strux describes an insertStrux or
 // deleteStrux change made to the document.

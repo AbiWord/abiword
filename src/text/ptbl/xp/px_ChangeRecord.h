@@ -37,6 +37,8 @@ public:
 	virtual ~PX_ChangeRecord();
 	
 protected:
+	PXType					m_type;
+
 	UT_Bool					m_bMultiStepStart;
 	UT_Bool					m_bMultiStepEnd;
 	PT_DocPosition			m_position;	/* absolute document position of the change */

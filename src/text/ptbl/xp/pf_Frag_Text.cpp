@@ -1,6 +1,7 @@
 
 #include "pf_Frag_Text.h"
 #include "pt_PieceTable.h"
+#include "px_ChangeRecord.h"
 
 
 pf_Frag_Text::pf_Frag_Text(pt_PieceTable * pPT,
@@ -18,6 +19,28 @@ pf_Frag_Text::pf_Frag_Text(pt_PieceTable * pPT,
 
 pf_Frag_Text::~pf_Frag_Text()
 {
+}
+
+UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
+{
+	UT_ASSERT(ppcr);
+	
+	PX_ChangeRecord * pcr
+#if 1
+		= NULL;
+#else
+	// TODO -- jeff, what goes here?
+		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,UT_FALSE,UT_FALSE,
+									0, /* doc position is undefined for strux */
+									m_vsIndex,
+									UT_TRUE, /* bleftside is undefined for strux */
+									m_indexAP,m_struxType);
+#endif
+	if (!pcr)
+		return UT_FALSE;
+
+	*ppcr = pcr;
+	return UT_TRUE;
 }
 
 void pf_Frag_Text::dump(FILE * fp) const

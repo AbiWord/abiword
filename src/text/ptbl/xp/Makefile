@@ -71,7 +71,9 @@ CPPSRCS=		pc_ColumnSet.cpp		\
 			pp_Property.cpp			\
 			pp_TableAttrProp.cpp		\
 			pt_PieceTable.cpp		\
-			px_ChangeHistory.cpp
+			px_ChangeHistory.cpp	\
+			px_ChangeRecord.cpp		\
+			px_ChangeRecord_Strux.cpp
 
 INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG
 
