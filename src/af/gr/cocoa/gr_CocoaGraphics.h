@@ -128,6 +128,7 @@ private:
 	void 						*m_updateCBparam;
 	XAP_CocoaFontManager * 	m_pFontManager;
 	XAP_CocoaNSView *  			m_pWin;
+	CGContextRef				m_CGContext;
 	NSImage*					m_offscreen;
 	NSColor *					m_currentColor;
 
