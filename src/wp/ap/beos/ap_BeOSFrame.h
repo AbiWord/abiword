@@ -34,7 +34,7 @@ public:
 
 	virtual UT_Bool				initialize(void);
 	virtual	XAP_Frame *			cloneFrame(void);
-	virtual UT_Bool 			loadDocument(const char * szFilename, int ieft);
+	virtual UT_Error 			loadDocument(const char * szFilename, int ieft);
 	virtual UT_Bool				initFrameData(void);
 	virtual void				killFrameData(void);
 
@@ -49,11 +49,11 @@ public:
 
 protected:
 	//virtual GtkWidget *			_createDocumentWindow(void);
-	UT_Bool 				_loadDocument(const char * szFilename, IEFileType ieft);
-	UT_Bool						_showDocument(UT_uint32 zoom=100);
+	UT_Error	 				_loadDocument(const char * szFilename, IEFileType ieft);
+	UT_Error					_showDocument(UT_uint32 zoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
-	UT_Bool						_replaceDocument(AD_Document * pDoc);
+	UT_Error					_replaceDocument(AD_Document * pDoc);
 
 /*
 	GtkAdjustment *				m_pVadj;

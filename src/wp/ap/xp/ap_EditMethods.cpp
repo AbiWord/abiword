@@ -731,7 +731,7 @@ Defun1(fileNew)
 		pFrame = pNewFrame;
 
 	// the IEFileType here doesn't really matter, since the name is NULL
-	UT_Error bRet = pFrame->loadDocument(NULL, IEFT_Unknown);
+	UT_Bool bRet = E2B(pFrame->loadDocument(NULL, IEFT_Unknown));
 
 	if (pNewFrame)
 		pNewFrame->show();
@@ -1320,7 +1320,7 @@ Defun1(fileOpen)
 	
 	// we own storage for pNewFile and must free it.
 
-	UT_Bool bRes = _fileOpen(pFrame, pNewFile, ieft);
+	UT_Bool bRes = E2B(_fileOpen(pFrame, pNewFile, ieft));
 
 	free(pNewFile);
 	return bRes;
@@ -1335,18 +1335,17 @@ Defun(fileSave)
 	if (!pFrame->getFilename())
 		return EX(fileSaveAs);
 
-	       
-	UT_Error bSaved;
-	bSaved = pAV_View->cmdSave();
+	UT_Error errSaved;
+	errSaved = pAV_View->cmdSave();
 
 	// if it has a problematic extension save as instead
-	if (bSaved == UT_EXTENSIONERROR)
+	if (errSaved == UT_EXTENSIONERROR)
 	  return EX(fileSaveAs);
 
-	if (bSaved)
+	if (errSaved)
 	{
 		// throw up a dialog
-		s_TellSaveFailed(pFrame, pFrame->getFilename(), bSaved);
+		s_TellSaveFailed(pFrame, pFrame->getFilename(), errSaved);
 		return UT_FALSE;
 	}
 
@@ -1375,12 +1374,12 @@ Defun1(fileSaveAs)
 
 	UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
 	
-	UT_Error bSaved;
-	bSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft);
-	if (bSaved)
+	UT_Error errSaved;
+	errSaved = pAV_View->cmdSaveAs(pNewFile, (int) ieft);
+	if (errSaved)
 	{
 		// throw up a dialog
-		s_TellSaveFailed(pFrame, pNewFile, bSaved);
+		s_TellSaveFailed(pFrame, pNewFile, errSaved);
 		free(pNewFile);
 		return UT_FALSE;
 	}
@@ -1443,7 +1442,7 @@ static UT_Bool _openRecent(AV_View* pAV_View, UT_uint32 ndx)
 	// BROKEN: since the user can explictly export as any type.
 	// TODO HACK BROKEN BUSTED BLAH WARNING NOTE ERROR
 	
-	UT_Bool bRes = _fileOpen(pFrame, szRecent, IEFT_Unknown);
+	UT_Bool bRes = E2B(_fileOpen(pFrame, szRecent, IEFT_Unknown));
 
 	if (!bRes)
 		pPrefs->removeRecent(ndx);

@@ -66,20 +66,20 @@ UT_uint32 AP_QNXFrame::getZoomPercentage(void)
 	return ((AP_FrameData*)m_pData)->m_pG->getZoomPercentage();
 }
 
-UT_Bool AP_QNXFrame::_showDocument(UT_uint32 iZoom)
+UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 {
 	UT_DEBUGMSG(("Frame: _showDocument \n"));
 
 	if (!m_pDoc)
 	{
 		UT_DEBUGMSG(("Can't show a non-existent document\n"));
-		return UT_FALSE;
+		return UT_IE_FILENOTFOUND;
 	}
 
 	if (!((AP_FrameData*)m_pData))
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return UT_FALSE;
+		return UT_IE_IMPORTERROR;
 	}
 
 	GR_QNXGraphics * pG = NULL;
@@ -246,7 +246,7 @@ UT_Bool AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 #if 0
 	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 #endif
-	return UT_TRUE;
+	return UT_OK;
 
 Cleanup:
 	// clean up anything we created here
@@ -262,7 +262,7 @@ Cleanup:
 	m_pDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 
 	UT_DEBUGMSG(("Frame: return from _showDocument false \n"));
-	return UT_FALSE;
+	return UT_IE_ADDLISTENERERROR;
 }
 
 static int getwidgetsize(PtWidget_t *widget, int *w, int *h) {
@@ -452,12 +452,14 @@ UT_Bool AP_QNXFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 		goto ReplaceDocument;
 	}
 
-	if (pNewDoc->readFromFile(szFilename, ieft))
+	UT_Error err; 
+	err = pNewDoc->readFromFile(szFilename, ieft);
+	if (!err)
 		goto ReplaceDocument;
 	
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
 	UNREFP(pNewDoc);
-	return UT_FALSE;
+	return err;
 
 ReplaceDocument:
 	getApp()->forgetClones(this);
@@ -475,7 +477,7 @@ XAP_Frame * AP_QNXFrame::cloneFrame(void)
 	if (!pClone->initialize())
 		goto Cleanup;
 
-	if (!pClone->_showDocument())
+	if (!E2B(pClone->_showDocument()))
 		goto Cleanup;
 
 	pClone->show();
@@ -507,18 +509,20 @@ UT_Bool AP_QNXFrame::loadDocument(const char * szFilename, int ieft)
 		pApp->getClones(&vClones, this);
 	}
 
-	UT_DEBUGMSG(("Frame: calling _loadDocumnet \n"));
-	if (! _loadDocument(szFilename, (IEFileType) ieft))
+	UT_DEBUGMSG(("Frame: calling _loadDocument \n"));
+	UT_Error err;
+	err = _loadDocument(szFilename, (IEFileType) ieft); 
+	if (err)
 	{
-		UT_DEBUGMSG(("Frame: _loadDocumnet failed \n"));
+		UT_DEBUGMSG(("Frame: _loadDocument failed \n"));
 		// we could not load the document.
 		// we cannot complain to the user here, we don't know
 		// if the app is fully up yet.  we force our caller
 		// to deal with the problem.
-		return UT_FALSE;
+		return err;
 	}
 
-	UT_DEBUGMSG(("Frame: _loadDocumnet passed \n"));
+	UT_DEBUGMSG(("Frame: _loadDocument passed \n"));
 	pApp->rememberFrame(this);
 	if (bUpdateClones)
 	{
@@ -781,7 +785,7 @@ void AP_QNXFrame::_setWindowIcon(void)
 #endif
 }
 
-UT_Bool AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
+UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
 {
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = REFP(pDoc);

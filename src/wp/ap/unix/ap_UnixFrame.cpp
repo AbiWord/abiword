@@ -420,7 +420,7 @@ XAP_Frame * AP_UnixFrame::cloneFrame(void)
 	if (!pClone->initialize())
 		goto Cleanup;
 
-	if (pClone->_showDocument())
+	if (!E2B(pClone->_showDocument()))
 		goto Cleanup;
 
 	pClone->show();
@@ -722,7 +722,7 @@ void AP_UnixFrame::_setWindowIcon(void)
 	gdk_window_set_icon_name(window->window, "AbiWord Application Icon");
 }
 
-UT_Bool AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
+UT_Error AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
 {
 	// NOTE: prior document is discarded in _showDocument()
 	m_pDoc = REFP(pDoc);

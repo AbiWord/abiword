@@ -752,7 +752,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 			
 			AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(this);
 			pFirstWin32Frame->initialize();
-			if (pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
+			if (E2B(pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown)))
 			{
 				kWindowsOpened++;
 

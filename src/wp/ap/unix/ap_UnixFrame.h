@@ -60,11 +60,11 @@ protected:
 	virtual GtkWidget *			_createDocumentWindow(void);
 	virtual GtkWidget *			_createStatusBarWindow(void);
 	virtual void				_setWindowIcon(void);
-	UT_Error   				_loadDocument(const char * szFilename, IEFileType ieft);
+	UT_Error   					_loadDocument(const char * szFilename, IEFileType ieft);
 	UT_Error   					_showDocument(UT_uint32 iZoom=100);
 	static void					_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 xlimit);
 	static void					_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
-	UT_Bool						_replaceDocument(AD_Document * pDoc);
+	UT_Error					_replaceDocument(AD_Document * pDoc);
 	
 	GtkAdjustment *				m_pVadj;
 	GtkAdjustment *				m_pHadj;

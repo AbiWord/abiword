@@ -67,13 +67,13 @@ typedef		unsigned char		UT_Bool;
 */
 typedef		UT_sint32				UT_Error;
 #define		UT_OK					((UT_Error) 0)
-#define		UT_ERROR            	((UT_Error) -1) 	// VERY generic
+#define		UT_ERROR            	((UT_Error) -1) 	/* VERY generic */
 #define		UT_OUTOFMEM				((UT_Error) -100)
 #define     UT_SAVE_WRITEERROR      ((UT_Error) -201)
 #define     UT_SAVE_NAMEERROR       ((UT_Error) -202)
 #define     UT_SAVE_EXPORTERROR     ((UT_Error) -203)
 #define     UT_EXTENSIONERROR       ((UT_Error) -204)
-#define     UT_SAVE_OTHERERROR      ((UT_Error) -200) 	// This should eventually dissapear.
+#define     UT_SAVE_OTHERERROR      ((UT_Error) -200) 	/* This should eventually dissapear. */
 #define     UT_IE_FILENOTFOUND      ((UT_Error) -301)
 #define     UT_IE_NOMEMORY          ((UT_Error) -302)
 #define     UT_IE_UNKNOWNTYPE       ((UT_Error) -303)
@@ -84,7 +84,7 @@ typedef		UT_sint32				UT_Error;
 #define     UT_INVALIDFILENAME      ((UT_Error) -308)
 #define     UT_NOPIECETABLE         ((UT_Error) -309)
 #define		UT_IE_ADDLISTENERERROR  ((UT_Error) -310)
-#define     UT_IE_IMPORTERROR       ((UT_Error) -300) 	// The general case
+#define     UT_IE_IMPORTERROR       ((UT_Error) -300) 	/* The general case */
 
 
 /* 
@@ -152,5 +152,7 @@ typedef		UT_sint32				UT_Error;
 #define MyMin(a,b)		(((a)<(b)) ? (a) : (b))
 
 #define UT_UNUSED(v)	do { (v)=(v); } while (0)
+
+#define E2B(err)		((err) == UT_OK)
 
 #endif /* UT_TYPES_H */

@@ -912,7 +912,7 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
                         
 			AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
 			pFirstUnixFrame->initialize();
-			if (!pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
+			if (E2B(pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown)))
 			{
 				kWindowsOpened++;
 			}

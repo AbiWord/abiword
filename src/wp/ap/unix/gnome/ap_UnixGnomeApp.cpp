@@ -240,7 +240,7 @@ UT_Bool AP_UnixGnomeApp::parseCommandLine(void)
 	while ((file = poptGetArg (poptcon)) != NULL) {
 		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
 		pFirstUnixFrame->initialize();
-		if (!pFirstUnixFrame->loadDocument(file, IEFT_Unknown))
+		if (E2B(pFirstUnixFrame->loadDocument(file, IEFT_Unknown)))
 		{
 			kWindowsOpened++;
 		}

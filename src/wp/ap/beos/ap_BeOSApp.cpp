@@ -542,7 +542,7 @@ void AP_BeOSApp::ParseCommandLine(void)
 			
 			AP_BeOSFrame * pFirstBeOSFrame = new AP_BeOSFrame(this);
 			pFirstBeOSFrame->initialize();
-			if (pFirstBeOSFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
+			if (E2B(pFirstBeOSFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown)))
 			{
 				kWindowsOpened++;
 			}
