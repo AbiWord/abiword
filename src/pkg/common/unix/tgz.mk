@@ -51,6 +51,7 @@ tgz_dirs=	bin AbiSuite
 tgz:	tgz_fonts tgz_dynamic_nofonts tgz_dynamic_fonts tgz_static_nofonts tgz_static_fonts
 
 tgz_dynamic_nofonts:
+ifdef UNIX_CAN_BUILD_DYNAMIC
 	@echo "* Building .tar.gz package [dynamic,nofonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS),$(VERIFY_DIRECTORY))
@@ -64,8 +65,10 @@ tgz_dynamic_nofonts:
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); rm -rf AbiSuite)
 	(cd $(DIST); tar cf - $(PKGBASENAME_DYNAMIC_NOFONTS) | gzip - - > $(PKGBASENAME_DYNAMIC_NOFONTS).tar.gz)
 	(cd $(DIST); rm -rf $(PKGBASENAME_DYNAMIC_NOFONTS))
+endif
 
 tgz_dynamic_fonts:
+ifdef UNIX_CAN_BUILD_DYNAMIC
 	@echo "* Building .tar.gz package [dynamic,fonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_DYNAMIC_FONTS),$(VERIFY_DIRECTORY))
@@ -78,8 +81,10 @@ tgz_dynamic_fonts:
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); rm -rf AbiSuite)
 	(cd $(DIST); tar cf - $(PKGBASENAME_DYNAMIC_FONTS) | gzip - - > $(PKGBASENAME_DYNAMIC_FONTS).tar.gz)
 	(cd $(DIST); rm -rf $(PKGBASENAME_DYNAMIC_FONTS))
+endif
 
 tgz_static_nofonts:
+ifdef UNIX_CAN_BUILD_STATIC
 	@echo "* Building .tar.gz package [static,nofonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_STATIC_NOFONTS),$(VERIFY_DIRECTORY))
@@ -93,8 +98,10 @@ tgz_static_nofonts:
 	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); rm -rf AbiSuite)
 	(cd $(DIST); tar cf - $(PKGBASENAME_STATIC_NOFONTS) | gzip - - > $(PKGBASENAME_STATIC_NOFONTS).tar.gz)
 	(cd $(DIST); rm -rf $(PKGBASENAME_STATIC_NOFONTS))
+endif
 
 tgz_static_fonts:
+ifdef UNIX_CAN_BUILD_STATIC
 	@echo "* Building .tar.gz package [static,fonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_STATIC_FONTS),$(VERIFY_DIRECTORY))
@@ -107,3 +114,4 @@ tgz_static_fonts:
 	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); rm -rf AbiSuite)
 	(cd $(DIST); tar cf - $(PKGBASENAME_STATIC_FONTS) | gzip - - > $(PKGBASENAME_STATIC_FONTS).tar.gz)
 	(cd $(DIST); rm -rf $(PKGBASENAME_STATIC_FONTS))
+endif
