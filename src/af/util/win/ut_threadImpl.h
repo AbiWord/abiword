@@ -58,7 +58,7 @@ class ABI_EXPORT UT_ThreadImpl
 	{
 	  //printf ( "thread create failed!!\n" ) ;
 	  //MessageBox( NULL, "thread create failed!!\n", NULL, MB_OK );
-	  UT_ASSERT(mTrhead != -1);
+	  UT_ASSERT(mThread != -1);
 	}
     }
 
