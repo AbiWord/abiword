@@ -14,10 +14,66 @@
 
 <Strings    class="XAP"
 
+STYLE_TOCHEADING="Innhaldnivåsoverskrift"
+STYLE_TOCHEADING1="Innhaldsliste 1"
+STYLE_TOCHEADING2="Innhaldsliste 2"
+STYLE_TOCHEADING3="Innhaldsliste 3"
+STYLE_TOCHEADING4="Innhaldsliste 4"
+
+
+MSG_HistoryPartRestore1="AbiWord kan ikkje gå tilbake til versjon %d av dokumentet, då endringsloggen ikkje er fullstendig."
+MSG_HistoryPartRestore2="Versjon %d er næraste versjon du kan gå tilbake til. Ønskjer du å gå tilbake til denne versjonen? For delvis gjenoppretting av versjon %d kan du svara «Nei»."
+MSG_HistoryPartRestore3="Trykk «OK» for å halda fram likevel"
+MSG_HistoryPartRestore4="Trykk «Avbryt» viss du ikkje vil prøva å gå tilbake til ein tidlegare versjon likevel."
+MSG_HistoryNoRestore="Kan ikkje gå tilbake til versjon %d av dokumentet, då endringsloggen ikkje er til stade."
+MSG_HistoryConfirmSave="Du må lagra endringane i dokumentet «%s» før du kan gå vidare. Vil du lagra endringane?"
+
+
+
+MSG_AutoRevision="Automatisk endringslogg"
+
+DLG_DocComparison_WindowLabel="Dokumentsamanlikning"
+DLG_DocComparison_DocsCompared="Samanlinka dokument"
+DLG_DocComparison_Results="Resultat"
+DLG_DocComparison_Relationship="Forhold:"
+DLG_DocComparison_Content="Innhald:"
+DLG_DocComparison_Fmt="Format:"
+DLG_DocComparison_Styles="Stilar:"
+
+DLG_DocComparison_Identical="identisk"
+DLG_DocComparison_Unrelated="ikkje i slekt"
+DLG_DocComparison_Siblings="søsken"
+DLG_DocComparison_Diverging="forskjellig etter versjon %d av %s"
+DLG_DocComparison_DivergingPos="forskjellig etter dokumentposisjon %d"
+DLG_DocComparison_TestSkipped="(hoppa over test)"
+DLG_DocComparison_Different="forskjellig"
+
+DLG_Restore="Tilbakestill"
+DLG_Show="Vis"
+
+
+DLG_History_WindowLabel="Endringslogg"
+DLG_History_DocumentDetails="Dokumentdetaljar"
+DLG_History_Path="Dokumentnamn"
+DLG_History_Created="Oppretta:"
+DLG_History_Version="Versjon:"
+DLG_History_LastSaved="Sist lagra:"
+DLG_History_EditTime="Redigeringstid:"
+DLG_History_Id="Identifikator:"
+
+DLG_History_List_Title="Versjonslogg"
+DLG_History_Version_Version="Versjon"
+DLG_History_Version_Started="Oppretta"
+DLG_History_Version_AutoRevisioned="Autorevisjon"
+
+
+
+
 DLG_Compare="Samanlikn"
 DLG_Image_LblAlt="Alternativ tekst:"
 DLG_Image_LblTitle="Tittel:"
 DLG_LISTDOCS_Title="Opne dokument"
+DLG_LISTDOCS_Heading1="Vel dokument frå lista:"
 
 DLG_Merge="Slå saman"
 
@@ -87,6 +143,7 @@ STYLE_HANDLIST="Liste (hender)"
 STYLE_HEADING1="Overskrift 1"
 STYLE_HEADING2="Overskrift 2"
 STYLE_HEADING3="Overskrift 3"
+STYLE_HEADING4="Overskrift 4"
 STYLE_HEARTLIST="Liste (hjarter)"
 STYLE_IMPLIES_LIST="Liste (implikasjonspiler)"
 STYLE_LOWERCASELIST="Liste (små bokstavar)"
@@ -394,6 +451,54 @@ UntitledDocument="Utan namn%d"
 
 <Strings    class="AP"
 
+MSG_MergeDocsNotRelated="Dokumenta du prøver å slå saman er ikkje i slekt, AbiWord kan prøva å slå dei saman likevel, men det mogleg resultatet blir meiningslaust."
+
+TOC_TocHeading="Innhaldsliste"
+
+FIELD_Numbers_TOCPageNumber="Innhaldslisteside"
+FIELD_Numbers_TOCListLabel="Innhaldslistelistemerkelapp"
+
+MENU_LABEL_FMT_TABLEOFCONTENTS="Innhaldsliste"
+MENU_LABEL_INSERT_TABLEOFCONTENTS="Innhaldsliste"
+MENU_LABEL_TOOLS_HISTORY="&amp;Endringslogg"
+MENU_LABEL_TOOLS_HISTORY_SHOW="&amp;Vis endringslogg"
+
+MENU_LABEL_TOOLS_REVISIONS_AUTO="&amp;Ta vare på full endringslogg"
+MENU_LABEL_TOOLS_REVISIONS_MERGE_DOCUMENTS="&amp;Slå saman dokument"
+
+MENU_STATUSLINE_FMT_TABLEOFCONTENTS="Vel type og stil på innhaldsliste"
+MENU_STATUSLINE_INSERT_TABLEOFCONTENTS="Set inn ei innhaldsliste basert på overskrifter"
+MENU_STATUSLINE_TOOLS_HISTORY="Sjå endringar i dokumentet"
+MENU_STATUSLINE_TOOLS_HISTORY_SHOW="Vis endringslogg"
+MENU_STATUSLINE_TOOLS_REVISIONS_AUTO="Hald på endringslogg"
+MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS="Slå saman dette og eit anna dokument basert på revisjonsmerker"
+
+MSG_AutoRevisionOffWarning="Er du sikker på at du ikkje vil halda på ein full endringslogg? Utan denne kan du ikkje gå tilbake til tidlegare utgåver av dokumentet."
+
+DLG_FormatTOC_Title="Formater innhaldsliste"
+DLG_FormatTOC_Heading="Definer overskrift"
+DLG_FormatTOC_HeadingText="Overskriftstekst"
+DLG_FormatTOC_HeadingStyle="Overskriftsstil"
+DLG_FormatTOC_HaveHeading="Har overskrift"
+DLG_FormatTOC_ChangeStyle="Endra stil"
+DLG_FormatTOC_Level1Defs="Definer nivå 1-eigenskapar"
+DLG_FormatTOC_Level2Defs="Definer nivå 2-eigenskapar"
+DLG_FormatTOC_Level3Defs="Definer nivå 3-eigenskapar"
+DLG_FormatTOC_Level4Defs="Definer nivå 4-eigenskapar"
+DLG_FormatTOC_HaveLabel="Har merkelapp"
+DLG_FormatTOC_FillStyle="Fyll med stil"
+DLG_FormatTOC_DispStyle="Vis med stil"
+DLG_FormatTOC_TabLeader="Fyll teikn"
+DLG_FormatTOC_Indent="Inntrykk"
+DLG_FormatTOC_PageNumber="Sidetal"
+
+DLG_HelpButton="&amp;Hjelp"
+
+
+
+DLG_ApplyButton="&amp;Bruk"
+DLG_CloseButton="&amp;Lukk"
+
 MSG_AutoMerge="Automatisk samanslåing"
 
 MSG_Exception="Det har skjedd ein alvorleg feil. AbiWord blir no avslutta.\nGjeldande dokument har blitt lagra med etternamnet «.saved»."
@@ -495,6 +600,12 @@ DLG_SplitCells_VertMid="Del i midten"
 DLG_SplitCells_Below="Del nedst"
 
 DLG_Stylist_Title="Stilveljar"
+DLG_Stylist_ListStyles="Listestilar"
+DLG_Stylist_HeadingStyles="Overskriftsstilar"
+DLG_Stylist_FootnoteStyles="Merknadsstilar"
+DLG_Stylist_UserStyles="Brukardefinerte stilar"
+DLG_Stylist_MiscStyles="Ymse stilar"
+DLG_Stylist_Styles="Stilar"
 
 DLG_FormatFrameTitle="Formater tekstboks"
 DLG_FormatFrame_Borders="Kantlinje"
@@ -981,7 +1092,7 @@ DLG_Lists_Box_List="Boksar"
 DLG_Lists_Bullet_List="Fylte sirklar"
 DLG_Lists_Cur_Change_Start="Endra&#x000a;liste"
 DLG_Lists_Current_Font="Gjeldande skrift"
-DLG_Lists_Current_List_Label="Gjeldande listeetikett"
+DLG_Lists_Current_List_Label="Gjeldande listemerkelapp"
 DLG_Lists_Current_List_Type="Gjeldande listetype"
 DLG_Lists_Customize="Tilpass"
 DLG_Lists_Dashed_List="Tankestrekar"
@@ -994,7 +1105,7 @@ DLG_Lists_Indent="Innrykk ved:"
 DLG_Lists_Level="Nivå:"
 DLG_Lists_Lower_Case_List="Små bokstavar"
 DLG_Lists_Lower_Roman_List="Små romartal"
-DLG_Lists_New_List_Label="Ny listeetikett"
+DLG_Lists_New_List_Label="Ny listemerkelapp"
 DLG_Lists_New_List_Type="Ny liste-&#x000a;type"
 DLG_Lists_Numbered_List="Tal"
 DLG_Lists_Resume="Hald fram med førre liste"
@@ -1242,7 +1353,7 @@ FIELD_Datetime_CurrentDate="Gjeldande dato"
 FIELD_Datetime_CurrentTime="Gjeldande klokkeslett"
 FIELD_Numbers_CharCount="Talet på teikn"
 FIELD_Numbers_LineCount="Talet på linjer"
-FIELD_Numbers_ListLabel="Listeetikett"
+FIELD_Numbers_ListLabel="Listemerkelapp"
 FIELD_Numbers_NbspCount="Talet på teikn (ikkje mellomrom)"
 FIELD_Numbers_PageNumber="Sidetal"
 FIELD_Numbers_PagesCount="Talet på sider"
