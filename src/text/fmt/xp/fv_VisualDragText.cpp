@@ -658,7 +658,7 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	}
 	if(!bPasteTableCol)
 	{
-		m_pView->cmdSelect(oldPoint,newPoint);
+	        m_pView->cmdSelect(oldPoint,newPoint);
 	}
 	else
 	{
