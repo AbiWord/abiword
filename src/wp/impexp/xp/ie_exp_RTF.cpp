@@ -563,7 +563,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 	bool wrote_cpg = 0;
 	if (langcode)
 	{
-		char* cpgname = wvLIDToCodePageConverter(langcode);
+		const char* cpgname = wvLIDToCodePageConverter(langcode);
 		UT_DEBUGMSG(("Belcon,after wvLIDToCodePageConverter(%d),cpgname=%s\n",langcode,cpgname));
 		if (UT_strnicmp(cpgname,"cp",2)==0 && UT_UCS4_isdigit(cpgname[2]))
 		{
@@ -579,7 +579,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		// NOTE:but we need convert them to CPxx.:-(
 		else
 		{
-			const char* codepage=XAP_EncodingManager::get_instance()->CodepageFromCharset(cpgname);
+			const char* codepage=XAP_EncodingManager::get_instance()->CodepageFromCharset(const_cast<char*>(cpgname));
 			if(UT_strnicmp(codepage,"cp",2)==0 && UT_UCS4_isdigit(codepage[2]))
 			{
 				int cpg;
