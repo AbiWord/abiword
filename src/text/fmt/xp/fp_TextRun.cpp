@@ -644,6 +644,7 @@ void fp_TextRun::mergeWithNext(void)
 	UT_ASSERT(m_iDescent == pNext->m_iDescent);
 	UT_ASSERT(m_iHeight == pNext->m_iHeight);
 	UT_ASSERT(m_iLineWidth == pNext->m_iLineWidth);
+	UT_ASSERT(m_iLanguage == pNext->m_iLanguage);
 #ifdef BIDI_ENABLED
 	UT_ASSERT(m_iDirection == pNext->m_iDirection); //#TF
 #endif
@@ -688,6 +689,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	pNew->m_iHeightLayoutUnits = this->m_iHeightLayoutUnits;
 	pNew->m_iLineWidth = this->m_iLineWidth;
 	pNew->m_bDirty = this->m_bDirty;
+	pNew->m_iLanguage = this->m_iLanguage;
 #ifdef BIDI_ENABLED
 	pNew->m_iDirection = this->m_iDirection; //#TF
 #endif
