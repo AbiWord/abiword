@@ -772,8 +772,11 @@ void FV_View::insertParagraphBreak()
 
 	m_pDoc->insertStrux(_getPoint(), PTX_Block);
 	
-	_fixInsertionPointCoords();
-	_drawInsertionPoint();
+	if (!_ensureThatInsertionPointIsOnScreen())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
 }
 
 UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
@@ -1278,7 +1281,8 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	}
 	else
 	{
-		// cannot move.  should we beep?  TODO
+		// cannot move.  should we beep?
+		_drawInsertionPoint();
 	}
 
 	notifyListeners(FV_CHG_MOTION);
