@@ -154,7 +154,6 @@
     bool is_valid() -- returns true if the cursor points to a valid node.
 */
 
-typedef	enum {TNR_Parent, TNR_Sibling, TNR_Child, TNR_Uncle, TNR_None} UT_TreeNodeRelationship;
 
 template <class T> class ABI_EXPORT UT_GenericTree
 {
@@ -168,9 +167,10 @@ template <class T> class ABI_EXPORT UT_GenericTree
   	UT_GenericTree(): m_data(NULL){};
 	~UT_GenericTree() {clear();}
 
-	bool      buildTree( UT_TreeNodeRelationship (*next)(T& n, void* param), void * callerdata);
-	bool      insert(T value, UT_TreeNodeRelationship r);
+	bool      buildTree( UT_sint32 (*next)(T& n, void* param), void * callerdata);
+	bool      insert(T value, UT_sint32 iRelativeLevel);
 
+	
 	void      clear();           // empty and deallocate internal data structures (but not node data !!!)
 	void      freeData(void);    // deallocate node data using free()
 	void      purgeData(void);   // deallocate node data using delete
@@ -195,6 +195,8 @@ template <class T> class ABI_EXPORT UT_GenericTree
 
 		void setLevel(UT_uint32 i) {level = i;}
 		UT_uint32 getLevel()const {return level;}
+
+		bool isLeaf() const {return firstChild == NULL;}
 
 	  private:
 		T      me;
@@ -371,10 +373,12 @@ template <class T> class ABI_EXPORT UT_GenericTree
 			return is_valid() ? m_node->getContent() : s;
 		}
 
-		inline bool is_valid()
+		inline bool is_valid() const
 		{
 			return (m_node != NULL);
 		}
+
+		bool isLeaf() const {return is_valid() ? m_node->isLeaf() : true;}
 		
 	  private:
 		
@@ -400,6 +404,7 @@ private:
 	bool _insertChild(T value);
 	bool _insertSibling(T value);
 	bool _insertUncle(T value);
+	bool _dropLevel();
 
 	bool   _mapNode(Node *);
 	Node * _getNthNodeForLevel(UT_uint32 iLevel, UT_uint32 n) const;
@@ -447,16 +452,16 @@ UT_GenericTree<T>::freeData(void)
 
 
 template <class T> bool
-UT_GenericTree<T>::buildTree( UT_TreeNodeRelationship (*next)(T& t, void* param), void * callerdata)
+UT_GenericTree<T>::buildTree( UT_sint32 (*next)(T& t, void* param), void * callerdata)
 {
 	// first of all reset current state
 	clear();
 	
 	T n;
-	UT_TreeNodeRelationship r = next(n, callerdata);
+	UT_sint32 r = next(n, callerdata);
 	bool b = true;
 	
-	while (r != TNR_None && b)
+	while (r <= 1 && b)
 	{
 		b = insert(n,r);
 		r = next(n, callerdata);
@@ -466,23 +471,36 @@ UT_GenericTree<T>::buildTree( UT_TreeNodeRelationship (*next)(T& t, void* param)
 }
 
 
+/*!
+    Insert value in a relative relationship r into the tree
+    valid values or r are:
+       1  ~ child of the previous node
+       0  ~ sibling of the previous node
+       -n ~ sibling of n-th level ancestor of the previous node
+*/
 template <class T> bool
-UT_GenericTree<T>::insert(T value, UT_TreeNodeRelationship r)
+UT_GenericTree<T>::insert(T value, UT_sint32 r)
 {
-	switch (r)
+	UT_return_val_if_fail( r <= 1, false );
+	
+	if(r == 1)
+		return _insertChild(value);
+	else if(r == 0)
+		return _insertSibling(value);
+	else
 	{
-		case TNR_Child:
-			return _insertChild(value);
-		case TNR_Sibling:
-			return _insertSibling(value);
-		case TNR_Uncle:
-			return _insertUncle(value);
+		bool bOK = true;
+		for(UT_sint32 i = r; bOK && i < 0; i++)
+		{
+			bOK = _dropLevel();
+		}
 
-		default:
-			UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
-			return false;
+		UT_return_val_if_fail( bOK, false );
+
+		return _insertSibling(value);
 	}
 
+	UT_ASSERT_HARMLESS( UT_NOT_REACHED );
 	return false;
 }
 
@@ -655,16 +673,19 @@ UT_GenericTree<T>::_insertUncle(T value)
 	
 	UT_uint32 iLevel = s ? s->getLevel() : 0;
 
+	bool bOK = true;
+	
 	if(iLevel)
 	{
-		do
+		while(bOK && s && s->getLevel() >= iLevel)
 		{
 			m_nodeStack.pop((void**)&s);
+			bOK = m_nodeStack.viewTop((void**)&s);
 		}
-		while(s && s->getLevel() >= iLevel);
 	}
 	
-
+	UT_return_val_if_fail( bOK, false );
+	
 	if(s)
 	{
 		n->setLevel(s->getLevel());
@@ -683,6 +704,27 @@ UT_GenericTree<T>::_insertUncle(T value)
 	
 	m_nodeStack.push((void*)n);
 	return _mapNode(n);
+}
+
+template <class T> bool
+UT_GenericTree<T>::_dropLevel()
+{
+	Node * s;
+	m_nodeStack.viewTop((void**)&s);
+	
+	UT_uint32 iLevel = s ? s->getLevel() : 0;
+	bool bOK = true;
+
+	if(iLevel)
+	{
+		while(bOK && s && s->getLevel() >= iLevel)
+		{
+			m_nodeStack.pop((void**)&s);
+			bOK = m_nodeStack.viewTop((void**)&s);
+		}
+	}
+
+	return bOK;
 }
 
 template <class T> bool

@@ -284,6 +284,7 @@ typedef FriBidiCharType UT_BidiCharType;
 #define UT_BIDI_IS_RTL FRIBIDI_IS_RTL
 #define UT_BIDI_IS_NEUTRAL FRIBIDI_IS_NEUTRAL
 #define UT_BIDI_IS_LETTER FRIBIDI_IS_LETTER
+#define UT_BIDI_IS_NSM(x) ((x) & FRIBIDI_MASK_NSM)
 
 
 ABI_EXPORT UT_BidiCharType UT_bidiGetCharType(UT_UCS4Char c);
