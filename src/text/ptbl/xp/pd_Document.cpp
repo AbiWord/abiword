@@ -2129,7 +2129,7 @@ bool PD_Document::getNextStrux(PL_StruxDocHandle sdh,
 	UT_ASSERT(pfs);
 	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
 	UT_sint32 iEmbedDepth = 0;
-	for (pf_Frag * pf=pfs; (pf); pf=pf->getNext())
+	for (pf_Frag * pf=static_cast<pf_Frag *>(const_cast<pf_Frag_Strux *>(pfs)); (pf); pf=pf->getNext())
 	{
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
