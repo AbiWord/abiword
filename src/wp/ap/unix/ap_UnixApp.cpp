@@ -575,9 +575,17 @@ static int so_only (const struct dirent *d)
   if ( name )
     {
       int len = strlen (name);
+#ifdef DEBUG
+      if (len >= 7)
+	{
+	  UT_DEBUGMSG(("FJF: name is %s (%d) [bundle test]\n", name, len));
+	  if(!strcmp(name+(len-7), ".bundle"))
+	    return 1;
+	}
+#endif
       if (len >= 3)
 	{
-	  UT_DEBUGMSG(("DOM: name is %s (%d)\n", name, len));
+	  UT_DEBUGMSG(("DOM: name is %s (%d) [so test]\n", name, len));
 	  if(!strcmp(name+(len-3), ".so"))
 	    return 1;
 	}
@@ -594,7 +602,7 @@ void AP_UnixApp::loadAllPlugins ()
   UT_String pluginDir;
 
   // the global plugin directory
-  pluginDir = getAbiSuiteAppDir();
+  pluginDir = getAbiSuiteLibDir();
   pluginDir += "/plugins/";
   pluginList[0] = pluginDir;
 
@@ -607,7 +615,7 @@ void AP_UnixApp::loadAllPlugins ()
   {
       pluginDir = pluginList[i];
 
-      UT_DEBUGMSG(("DOM: leading plugins from %s\n", pluginDir.c_str()));
+      UT_DEBUGMSG(("DOM: loading plugins from %s\n", pluginDir.c_str()));
       
       n = scandir(pluginDir.c_str(), &namelist, so_only, alphasort);
       if (n < 0)
@@ -619,6 +627,68 @@ void AP_UnixApp::loadAllPlugins ()
 		  while(n--) 
 		  {
 			  UT_String plugin (pluginDir + namelist[n]->d_name);
+#ifdef DEBUG
+			  struct stat pluginInfo;
+			  if (stat (plugin.c_str(), &pluginInfo) != 0)
+			  {
+				  UT_DEBUGMSG(("FJF: stat failed... odd.\n"));
+				  free(namelist[n]);
+				  continue;
+			  }
+#ifdef S_ISDIR
+			  bool pluginIsBundle = (S_ISDIR (pluginInfo.st_mode) != 0);
+#else
+			  bool pluginIsBundle = ((pluginInfo.st_mode & S_IFDIR) != 0);
+#endif
+			  /* Bundles "*.bundle" are directories, plugins "*.so" are modules.
+			   * so_only checks only the suffix, so we need to confirm nature here:
+			   */
+			  if (pluginIsBundle)
+			  {
+				  int len = strlen (namelist[n]->d_name);
+				  if (len < 8)
+				  {
+					  UT_DEBUGMSG(("FJF: bad name for a bundle\n"));
+					  free(namelist[n]);
+					  continue;
+				  }
+				  if(strcmp (namelist[n]->d_name+(len-7), ".bundle") != 0)
+				  {
+					  UT_DEBUGMSG(("FJF: not really a bundle?\n"));
+					  free(namelist[n]);
+					  continue;
+				  }
+			  }
+			  else
+			  {
+				  int len = strlen (namelist[n]->d_name);
+				  if (len < 4)
+				  {
+					  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
+					  free(namelist[n]);
+					  continue;
+				  }
+				  if(strcmp (namelist[n]->d_name+(len-3), ".so") != 0)
+				  {
+					  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
+					  free(namelist[n]);
+					  continue;
+				  }
+			  }
+			  if (pluginIsBundle)
+			  {
+				  if (XAP_ModuleManager::instance().loadBundle (plugin.c_str(), namelist[n]->d_name))
+				  {
+					  UT_DEBUGMSG(("FJF: loaded bundle: %s\n", namelist[n]->d_name));
+				  }
+				  else
+				  {
+					  UT_DEBUGMSG(("FJF: didn't load bundle: %s\n", namelist[n]->d_name));
+				  }
+				  free(namelist[n]);
+				  continue;
+			  }
+#endif /* DEBUG */
 			  if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
 			  {
 				  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));

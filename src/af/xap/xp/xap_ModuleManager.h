@@ -40,6 +40,7 @@ public:
 
 	static XAP_ModuleManager & instance ();
 
+	bool         loadBundle (const char * szFilename, const char * szBundlename);
 	bool         loadModule (const char * szFilename);
 	bool         unloadModule (XAP_Module * module);
 

@@ -21,6 +21,7 @@
 #include "xap_ModuleManager.h"
 #include "xap_Module.h"
 
+#include "ut_string_class.h"
 #include "ut_vector.h"
 #include "ut_assert.h"
 
@@ -88,6 +89,54 @@ XAP_ModuleManager & XAP_ModuleManager::instance ()
 {
 	static XAP_ModuleManager me;
 	return me;
+}
+
+/*!
+ * Request that the ModuleManager load the module represented by
+ * szFilename. Returns a valid XAP_Module on success, 0 on failure
+ *
+ * \param szFilename   - the .bundle on your system that you wish to load
+ * \param szBundlename - basename of szFilename (must be "*.bundle")
+ * \return a valid XAP_Module or 0
+ */
+bool XAP_ModuleManager::loadBundle (const char * szFilename, const char * szBundlename)
+{
+	UT_ASSERT (szFilename);
+	UT_ASSERT (szBundlename);
+
+	if (!szFilename || !szBundlename) // be a *little* forgiving
+	{
+		UT_DEBUGMSG(("Attempt to load a null filename should fail\n"));
+		return false;
+	}
+
+	char * szRelPath = UT_strdup (szBundlename);
+	if (szRelPath == 0) return false;
+
+	/* This assumes "*.bundle" - TODO: make this more xp
+	 */
+	strcpy (szRelPath,"/lib");
+	strncat (szRelPath,szBundlename,strlen(szBundlename)-7);
+	strcat (szRelPath,".so");
+
+	UT_String plugin(szFilename);
+	plugin += szRelPath;
+
+	free (szRelPath);
+
+	if (loadModule (plugin.c_str()))
+	{
+		XAP_Module * pModule = (XAP_Module *) m_modules->getLastItem();
+		int (*setPath) (const char * szBundlePath) = 0;
+		if (pModule->resolveSymbol ("abi_plugin_bundle_path", &(void *)setPath))
+		{
+			UT_DEBUGMSG(("FJF: Setting bundle path...\n"));
+			setPath (szFilename);
+		}
+		return true;
+	}
+
+	return false;
 }
 
 /*!
