@@ -49,7 +49,8 @@ public:
 						   UT_uint32 iXID,
 						   PTObjectType ObjectType,
 						   PT_BlockOffset blockOffset,
-                           fd_Field * field);
+                           fd_Field * field,
+			   PL_ObjectHandle pOH);
 	~PX_ChangeRecord_Object();
 
 	virtual PX_ChangeRecord * reverse(void) const;
@@ -57,12 +58,15 @@ public:
 	PTObjectType			getObjectType(void) const;
 	PT_BlockOffset			getBlockOffset(void) const;
     fd_Field *              getField(void) const {return m_field;}; 
+    PL_ObjectHandle                     getObjectHandle(void) const
+      { return  m_OH;}
 protected:
 	PTObjectType			m_objectType;		/* our type (image, etc.) */
 	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
     // this only serves as a unique identifier of a field
     // it should not be thought of as a valid pointer
     fd_Field *              m_field; 
+    PL_ObjectHandle         m_OH;
 };
 
 #endif /* PX_CHANGERECORD_OBJECT_H */

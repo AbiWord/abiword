@@ -212,6 +212,8 @@ public:
 
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux * pfs,const XML_Char ** attributes);
 
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Object * pfo,const XML_Char ** attributes,const XML_Char ** properties);
+
 	bool                    changeStruxForLists(PL_StruxDocHandle sdh,
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
@@ -484,7 +486,6 @@ protected:
 													 pf_Frag_Strux * pfs,
 													 pf_Frag ** ppfNewEnd,
 													 UT_uint32 * pfragOffsetNewEnd);
-
 	bool					_fmtChangeObject(pf_Frag_Object * pfo,
 											 PT_AttrPropIndex indexNewAP,
 											 pf_Frag ** ppfNewEnd,

@@ -34,7 +34,7 @@
 #include "gr_EmbedManager.h"
 
 fp_MathRun::fp_MathRun(fl_BlockLayout* pBL, 
-					   UT_uint32 iOffsetFirst,PT_AttrPropIndex indexAP)	: 
+					   UT_uint32 iOffsetFirst,PT_AttrPropIndex indexAP,PL_ObjectHandle oh)	: 
 	fp_Run(pBL,  iOffsetFirst,1, FPRUN_MATH ),
 	m_iImageWidth(0),
 	m_iImageHeight(0),
@@ -49,7 +49,8 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
         m_iMathUID(-1),
         m_iIndexAP(indexAP),
         m_pDocLayout(NULL),
-	m_bNeedsSnapshot(true)
+	m_bNeedsSnapshot(true),
+	m_OH(oh)
 {
         m_pDocLayout = getBlock()->getDocLayout();
 	lookupProperties(getGraphics());

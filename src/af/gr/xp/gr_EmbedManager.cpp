@@ -51,7 +51,8 @@ GR_EmbedView::GR_EmbedView(AD_Document * pDoc, UT_uint32 api )
     m_bHasPNGSnapshot(false),
     m_SVGBuf(NULL),
     m_PNGBuf(NULL),
-    m_pPreview(NULL)    
+    m_pPreview(NULL),
+    m_iZoom(0)
 {
 }
 
@@ -193,6 +194,7 @@ UT_sint32 GR_EmbedManager::makeEmbedView(AD_Document * pDoc, UT_uint32  api, con
   UT_sint32 iNew = static_cast<UT_sint32>(m_vecSnapshots.getItemCount())-1;
   pEmV->m_sDataID = szDataID;
   pEmV->getSnapShots();
+  pEmV->m_iZoom = getGraphics()->getZoomPercentage();
   return iNew;
 }
 /*!
@@ -367,6 +369,11 @@ void GR_EmbedManager::render(UT_sint32 uid ,UT_Rect & rec )
       return;
     }
   GR_EmbedView * pEView = m_vecSnapshots.getNthItem(uid);
+  if(pEView->m_iZoom != getGraphics()->getZoomPercentage())
+  {
+    pEView->m_iZoom = getGraphics()->getZoomPercentage();
+    DELETEP(pEView->m_pPreview);
+  }
   if(pEView->m_pPreview)
   {
       GR_Painter painter(getGraphics());

@@ -29,12 +29,14 @@ PX_ChangeRecord_Object::PX_ChangeRecord_Object(PXType type,
 											   UT_uint32 iXID,
 											   PTObjectType objectType,
 											   PT_BlockOffset blockOffset,
-                                               fd_Field * pField)
+                                               fd_Field * pField,
+					       PL_ObjectHandle pOH)
 	: PX_ChangeRecord(type, position, indexAP, iXID)
 {
 	m_objectType = objectType;
 	m_blockOffset = blockOffset;
     m_field = pField;
+    m_OH = pOH;
 }
 
 PX_ChangeRecord_Object::~PX_ChangeRecord_Object()
@@ -44,7 +46,7 @@ PX_ChangeRecord_Object::~PX_ChangeRecord_Object()
 PX_ChangeRecord * PX_ChangeRecord_Object::reverse(void) const
 {
 	PX_ChangeRecord_Object * pcr
-		= new PX_ChangeRecord_Object(getRevType(),m_position,m_indexAP,getXID(),m_objectType,m_blockOffset,m_field);
+		= new PX_ChangeRecord_Object(getRevType(),m_position,m_indexAP,getXID(),m_objectType,m_blockOffset,m_field,reinterpret_cast<PL_ObjectHandle>(this));
 	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }

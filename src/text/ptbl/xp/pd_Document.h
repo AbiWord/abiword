@@ -287,6 +287,7 @@ public:
 	bool					appendFmtMark(void);
 	bool					appendStyle(const XML_Char ** attributes);
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const XML_Char ** attributes);	
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const XML_Char ** attributes,const XML_Char ** properties );	
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 												  const XML_Char ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);

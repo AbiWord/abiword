@@ -1294,6 +1294,7 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
 	return m_pPieceTable->changeSectionAttsNoUpdate(pfStrux, attr, attvalue);
 }
 
+
 /*!
  * This method inserts a strux of type pts immediately before the sdh given.
  * Attributes of the strux can be optionally passed. This method does not throw
@@ -5074,6 +5075,17 @@ bool PD_Document::changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle s
 {
 	pf_Frag_Strux * pfs = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
 	return m_pPieceTable->changeStruxFormatNoUpdate(ptc ,pfs,attributes);
+}
+
+
+/*!
+ * Change the attributes of an object without generating a Change Record.
+ * Use with extreme care.
+ */
+bool PD_Document::changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const XML_Char ** attributes,const XML_Char ** properties )
+{
+	pf_Frag_Object * pfo = const_cast<pf_Frag_Object *>(static_cast<const pf_Frag_Object *>(odh));
+	return m_pPieceTable->changeObjectFormatNoUpdate(ptc ,pfo,attributes,properties);
 }
 
 bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const XML_Char ** attributes)

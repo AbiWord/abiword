@@ -38,6 +38,23 @@
 /****************************************************************/
 /****************************************************************/
 
+bool pt_PieceTable::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object * pfo, const XML_Char ** attributes, const XML_Char ** properties)
+{
+	PT_AttrPropIndex indexNewAP;
+	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
+	bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	UT_ASSERT_HARMLESS(bMerged);
+
+	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
+	{
+		return true;
+	}
+	// actually apply the format change.
+	
+	pfo->setIndexAP(indexNewAP);
+	return true;
+}
+
 bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 												  pf_Frag_Object * pfo, UT_uint32 fragOffset,
 												  PT_DocPosition dpos,
