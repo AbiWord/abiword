@@ -1594,7 +1594,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 
 	m_gbCharWidths.ins(blockOffset, len);
 
-	AV_ChangeMask mask = AV_CHG_TYPING + AV_CHG_FMTCHAR;
+	AV_ChangeMask mask = AV_CHG_TYPING | AV_CHG_FMTCHAR;
 	
 	/*
 	  walk through the characters provided and find any
@@ -2364,6 +2364,16 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 	if (pView)
 	{
 		pView->_setPoint(pcrx->getPosition() + fl_BLOCK_STRUX_OFFSET);
+		/*
+		  TODO
+		  We SHOULD include AV_CHG_FMTCHAR here, but doing so
+		  ends up crashing, since it tries to request char formatting
+		  info from the current block, which we just inserted, and
+		  so it's not fully cooked yet.
+
+		  We need a "PostMessage" style functionality here, rather than
+		  the "SendMessage" functionality provided by notifyListeners.
+		*/
 		pView->notifyListeners(AV_CHG_TYPING);
 	}
 	

@@ -389,7 +389,10 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 			// TODO the paragraph.
 
 			pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pfPrev);
-			if (pfsPrev->getStruxType() == PTX_Block)
+			if (
+				(pfsPrev->getStruxType() == PTX_Block)
+				&& (pf->getType() != pf_Frag::PFT_Text)
+				)
 			{
 				pf_Frag_Strux_Block * pfsbPrev = static_cast<pf_Frag_Strux_Block *>(pfsPrev);
 				return pfsbPrev->getPreferredSpanFmt();
