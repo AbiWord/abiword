@@ -20,7 +20,7 @@
 #include "xap_UnixModule.h"
 #include "ut_string.h"
 
-XAP_UnixModule::XAP_UnixModule () : m_szname (NULL), m_module (NULL)
+XAP_UnixModule::XAP_UnixModule () : m_szname (NULL), m_module (NULL), m_bLoaded(false)
 {
 }
 
@@ -44,23 +44,38 @@ bool XAP_UnixModule::getModuleName (char ** dest) const
 
 bool XAP_UnixModule::load (const char * name)
 {
+  if (m_bLoaded)
+    return false;
+
   m_module = g_module_open (name, (GModuleFlags)0);
 
-  return (m_module ? true : false);
+  if (m_module)
+    {
+      m_bLoaded = true;
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
 
 bool XAP_UnixModule::unload (void)
 {
-  if (m_module)
+  if (m_bLoaded && m_module)
     {
-      return (bool)g_module_close (m_module);
+      if (g_module_close (m_module))
+	{
+	  m_bLoaded = false;
+	  return true;
+	}
     }
   return false;
 }
 
 bool XAP_UnixModule::resolveSymbol (const char * symbol_name, void ** symbol)
 {
-  return (bool) g_module_symbol (m_module, symbol_name, symbol);
+  return (g_module_symbol (m_module, symbol_name, symbol) ? true : false);
 }
 
 bool XAP_UnixModule::getErrorMsg (char ** dest) const

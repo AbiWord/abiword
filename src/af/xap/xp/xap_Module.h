@@ -25,8 +25,6 @@
 // Pass the intended file name (dll, so, whatever)
 // To a valid child instance of this class.
 
-#include "ut_types.h"
-
 class XAP_Module {
 
  protected:

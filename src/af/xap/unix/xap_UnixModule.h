@@ -26,7 +26,6 @@
 
 class XAP_UnixModule : public XAP_Module 
 {
-
 public:
 
    XAP_UnixModule () ;
@@ -39,6 +38,7 @@ public:
    virtual bool   getErrorMsg (char ** dest) const;
 
  private:
+   bool m_bLoaded;
    char * m_szname;
    GModule * m_module;
 };
