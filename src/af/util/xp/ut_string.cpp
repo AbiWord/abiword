@@ -1048,10 +1048,21 @@ bool UT_UCS_isspace(UT_UCSChar c)
 	return false;
 };
 
+/*
+	TODO: proper Unicode implementation required
+	This function is not working -- it assumes that c can be translated to the
+	native encoding, which does not have to be always true. We will treat all
+	non-translatable characters as alpha characters, because more often than
+	not this will be true, but we need a proper Unicode implementation here
+*/
 
 bool UT_UCS_isalpha(UT_UCSChar c)
 {
 	UT_UCSChar local = XAP_EncodingManager::get_instance()->try_UToNative(c);
+    if(!local)
+        return true;
+        
+    xxx_UT_DEBUGMSG(("UT_UCS_isalpha: c 0x%x, local 0x%x\n",c, loacal));
 	return local && local < 0xff ? 
 		isalpha(local)!=0 : 
 		local > 0xff /* we consider it alpha if it's > 0xff */;
