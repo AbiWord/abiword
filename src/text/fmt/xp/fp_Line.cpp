@@ -1139,8 +1139,8 @@ UT_uint32 fp_Line::countJustificationPoints(void) const
 		
 		if (pRun->getType() == FPRUN_TAB)
 		{
-			UT_ASSERT(UT_FALSE);
-			
+		  //			UT_ASSERT(UT_FALSE);
+		  UT_DEBUGMSG(("TODO - decide if tab is a space \n"));
 			// TODO: decide if a tab is a space.
 
 		}

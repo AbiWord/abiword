@@ -431,7 +431,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		prevBlockInList = (fl_BlockLayout *) getAutoNum()->getPrevInList(this);
 		if(prevBlockInList != NULL)
 		{
-			last_id = getAutoNum()->getID();
+			last_id = prevBlockInList->getAutoNum()->getID();
 		}
 	}
 	else 
@@ -462,7 +462,11 @@ void fl_BlockLayout::_lookupProperties(void)
 		last_level = 0;
 	}
 
-	if (id != last_id) 
+	if(id == 0 && level == 0 &&  m_pAutoNum != NULL)
+	{
+	        _stopList();
+	}
+	else if (id != last_id) 
 	{
 		if ((level > last_level) && !m_bStartList)
 		{
