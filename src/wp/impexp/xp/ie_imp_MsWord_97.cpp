@@ -141,10 +141,10 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	
 	xxx_UT_DEBUGMSG(("just here\n"));
 	ps.userData = this;
-	wvSetElementHandler(ElementProc);
-	wvSetCharHandler(CharProc);
-        wvSetSpecialCharHandler(SpecCharProc);
-        wvSetDocumentHandler(DocProc);
+	wvSetElementHandler(&ps, ElementProc);
+	wvSetCharHandler(&ps, CharProc);
+	wvSetSpecialCharHandler(&ps, SpecCharProc);
+	wvSetDocumentHandler(&ps, DocProc);
 
 	wvText(&ps);
 

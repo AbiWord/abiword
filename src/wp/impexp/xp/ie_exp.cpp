@@ -47,6 +47,7 @@
 
 #include "ie_exp_MIF.h"
 #include "ie_exp_Applix.h"
+#include "ie_exp_XSL-FO.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -77,6 +78,7 @@ static struct _xp s_expTable[] =
 	DeclareExporter(IE_Exp_MsWord_97),
 	//	Don't declare until it works
 #endif
+	DeclareExporter(IE_Exp_XSL_FO),
 	DeclareExporter(IE_Exp_HTML),
 	DeclareExporter(IE_Exp_LaTeX),
 #if 0

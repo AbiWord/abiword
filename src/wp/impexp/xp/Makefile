@@ -39,6 +39,7 @@ CPPSRCS=		ie_exp.cpp				\
 			ie_exp_DocBook.cpp			\
 			ie_exp_Psion.cpp			\
 			ie_exp_MIF.cpp				\
+			ie_exp_XSL-FO.cpp			\
 			ie_imp.cpp				\
 			ie_imp_XML.cpp				\
 			ie_imp_AbiWord_1.cpp			\
