@@ -558,40 +558,12 @@ int AP_BeOSApp::main(const char * szAppName, int argc, const char ** argv) {
 		return -1;	// make this something standard?
 	}
 
-	pMyBeOSApp->ParseCommandLine();
+	// Turn control over to the runtime (don't return until done)
+	pMyBeOSApp->m_BApp.Run();
 
-#if CONVERT
-	int nFirstArg = 1;
-	int k;
-
-	for (k=nFirstArg; (k<Args.m_argc); k++) {
-		if (*Args.m_argv[k] == '-') {
-			if (UT_stricmp(Args.m_argv[k],"-to") == 0) {
-				bShowApp = false;
-			}
-		}
-	}	
-
-	for (k=nFirstArg; (k<Args.m_argc); k++) {
-		if (*Args.m_argv[k] == '-') {
-			if (UT_stricmp(Args.m_argv[k],"-show") == 0) {
-				bShowApp = true;
-			}
-		}
-	}	
-
-	if (bShowApp)
-	{
-#endif
-		// Turn control over to the runtime (don't return until done)
-		pMyBeOSApp->m_BApp.Run();
-	
-		// destroy the App.  It should take care of deleting all frames.
-		pMyBeOSApp->shutdown();
-		sleep(1);
-#if CONVERT
-	}
-#endif
+	// destroy the App.  It should take care of deleting all frames.
+	pMyBeOSApp->shutdown();
+	sleep(1);
 
 	delete pMyBeOSApp;
 	return 0;

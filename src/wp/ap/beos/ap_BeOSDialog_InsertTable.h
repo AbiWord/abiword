@@ -1,5 +1,6 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2004 Daniel Furrer
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,11 +18,27 @@
  * 02111-1307, USA.
  */
 
-#include <stdio.h>
-#include "ap_BeOSApp.h"
+#ifndef AP_BEOSDIALOG_INSERTTABLE_H
+#define AP_BEOSDIALOG_INSERTTABLE_H
 
-int main(int argc, const char ** argv)
+#include "ap_Dialog_InsertTable.h"
+
+class BWindow;
+
+/*****************************************************************/
+
+class AP_BeOSDialog_InsertTable: public AP_Dialog_InsertTable
 {
-	printf("Starting! \n");
-	return AP_BeOSApp::main(ABIWORD_APP_NAME, argc, argv);
-}
+public:
+	AP_BeOSDialog_InsertTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_BeOSDialog_InsertTable(void);
+
+	virtual void			runModal(XAP_Frame * pFrame);
+
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+
+protected:
+	BWindow * _constructWindow();
+};
+
+#endif /* AP_BEOSDIALOG_INSERTTABLE_H */

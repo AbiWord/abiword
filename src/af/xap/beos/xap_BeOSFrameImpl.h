@@ -23,11 +23,11 @@
 #define XAP_BEOSFRAMEIMPL_H
 
 #include <InterfaceKit.h>
-
-#include "xap_BeOSApp.h"
-#include "xap_FrameImpl.h"
 #include "ut_vector.h"
+#include "xap_BeOSApp.h"
 #include "xap_BeOSDialogFactory.h"
+#include "xap_FrameImpl.h"
+#include "ev_BeOSMenu.h"
 
 /*****************************************************************
 ******************************************************************
@@ -77,6 +77,9 @@ protected:
 	
 private:
 
+	XAP_BeOSApp *			m_pBeOSApp;
+	EV_BeOSMenu *			m_pBeOSMenu;
+	EV_BeOSMenuPopup *		m_pBeOSMenuPopup; /* only valid while a context popup is up */
 
 	AP_BeOSDialogFactory	m_dialogFactory;
 };

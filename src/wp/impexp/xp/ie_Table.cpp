@@ -273,7 +273,7 @@ void ie_PartTable::setCellApi(PT_AttrPropIndex iApi)
  */
 const char * ie_PartTable::getTableProp(const char * pProp)
 {
-	const char * szVal = NULL;
+	const XML_Char * szVal = NULL;
 	if(m_TableAttProp == NULL)
 	{
 		return NULL;
@@ -289,7 +289,7 @@ const char * ie_PartTable::getTableProp(const char * pProp)
  */
 const char * ie_PartTable::getCellProp(const char * pProp)
 {
-	const char * szVal = NULL;
+	const XML_Char * szVal = NULL;
 	if(m_CellAttProp == NULL)
 	{
 		return NULL;

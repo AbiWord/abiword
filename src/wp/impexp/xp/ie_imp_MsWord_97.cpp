@@ -2931,13 +2931,13 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	if (achp->fRMark)
 	{
-	    propsArray[propsOffset++] = static_cast<XML_Char *>("revision");
+	    propsArray[propsOffset++] = static_cast<const XML_Char *>("revision");
 		m_charRevs = "1";
 	    propsArray[propsOffset++] = m_charRevs.c_str();
 	}
 	else if (achp->fRMarkDel)
 	{
-	    propsArray[propsOffset++] = static_cast<XML_Char *>("revision");
+	    propsArray[propsOffset++] = static_cast<const XML_Char *>("revision");
 		m_charRevs = "-1";
 	    propsArray[propsOffset++] = m_charRevs.c_str();
 	}
@@ -2952,7 +2952,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		
 		if(achp->istd != istdNil && achp->istd < iCount)
 		{
-			propsArray[propsOffset++] = static_cast<XML_Char *>("style");
+			propsArray[propsOffset++] = static_cast<const XML_Char *>("style");
 			char * t = NULL;
 			const XML_Char * pName = s_translateStyleId(pSTD[achp->istd].sti);
 		

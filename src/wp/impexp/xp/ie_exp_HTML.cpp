@@ -4411,7 +4411,7 @@ const s_StyleTree * s_StyleTree::find (PD_Style * style) const
 {
 	const XML_Char * style_name = 0;
 	style->getAttribute (PT_NAME_ATTRIBUTE_NAME, style_name);
-	if (!style_name) return false;
+	if (!style_name) return NULL;
 
 	return find (style_name);
 }

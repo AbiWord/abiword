@@ -36,6 +36,7 @@
 #include "ap_BeOSLeftRuler.h"
 #include "ap_Prefs.h"
 #include "ap_BeOSStatusBar.h"
+//#include "ap_BeOSViewListener.h"
 
 #include "ev_BeOSKeyboard.h"
 #include "ev_BeOSMouse.h"
@@ -403,3 +404,52 @@ void AP_BeOSFrame::translateDocumentToScreen(UT_sint32 &x, UT_sint32 &y)
 }
 
 
+
+UT_sint32 AP_BeOSFrame::_getDocumentAreaWidth()
+{
+	return 0;
+}
+
+UT_sint32 AP_BeOSFrame::_getDocumentAreaHeight()
+{
+	return 0;
+}
+
+bool AP_BeOSFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
+{
+//	pG = new GR_BeOSGraphics(static_cast<AP_BeOSFrameImpl *>(getFrameImpl())->getTopLevelWindow(),static_cast<AP_BeOSFrameImpl *>(getFrameImpl())->m_dArea,getApp());
+//	UT_ASSERT(pG);
+//	pG->setZoomPercentage(iZoom);
+	return true;
+}
+
+void AP_BeOSFrame::_setViewFocus(AV_View *pView)
+{
+}
+
+void AP_BeOSFrame::_bindToolbars(AV_View *pView)
+{
+	static_cast<AP_BeOSFrameImpl *>(getFrameImpl())->_bindToolbars(pView);
+}
+
+bool AP_BeOSFrame::_createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
+					     ap_ViewListener *& pViewListener, ap_Scrollbar_ViewListener *& pScrollbarViewListener,
+					     AV_ListenerId &lid, AV_ListenerId &lidScrollbarViewListener)
+{
+/*
+	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+	UT_ASSERT(pScrollObj);
+
+	pViewListener = new ap_BeOSViewListener(this);
+	UT_ASSERT(pViewListener);
+	pScrollbarViewListener = new ap_Scrollbar_ViewListener(this,pView);
+	UT_ASSERT(pScrollbarViewListener);
+	
+	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
+		return false;
+	if (!pView->addListener(static_cast<AV_Listener *>(pScrollbarViewListener),
+							&lidScrollbarViewListener))
+		return false;
+*/
+	return true;
+}

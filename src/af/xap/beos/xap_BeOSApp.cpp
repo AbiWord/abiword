@@ -27,7 +27,7 @@
 #include "xap_Args.h"
 #include "xap_BeOSApp.h"
 #include "xap_FakeClipboard.h"
-#include "xap_BeOSFrame.h"
+//#include "xap_BeOSFrame.h"
 #include "xap_BeOSToolbar_Icons.h"
 #include "xap_BeOSToolbar_ControlFactory.h"
 #include "ut_debugmsg.h"

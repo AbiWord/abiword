@@ -1,5 +1,6 @@
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2004 Daniel Furrer
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,11 +18,28 @@
  * 02111-1307, USA.
  */
 
-#include <stdio.h>
-#include "ap_BeOSApp.h"
+#ifndef AP_BEOSDIALOG_STYLIST_H
+#define AP_BEOSDIALOG_STYLIST_H
 
-int main(int argc, const char ** argv)
+#include "ap_Dialog_Stylist.h"
+
+
+/*****************************************************************/
+
+class AP_BeOSDialog_Stylist: public AP_Dialog_Stylist
 {
-	printf("Starting! \n");
-	return AP_BeOSApp::main(ABIWORD_APP_NAME, argc, argv);
-}
+public:
+	AP_BeOSDialog_Stylist(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_BeOSDialog_Stylist(void);
+
+	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			destroy();
+	virtual void			activate();
+	virtual void            setStyleInGUI(void);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	
+protected:
+
+};
+
+#endif /* AP_BEOSDIALOG_STYLIST_H */
