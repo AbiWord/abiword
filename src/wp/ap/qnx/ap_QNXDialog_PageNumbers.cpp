@@ -17,24 +17,351 @@
  * 02111-1307, USA.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "ut_types.h"
 #include "ut_string.h"
+#include "ut_units.h"
+#include "ut_assert.h"
+#include "ut_debugmsg.h"
+
+#include "gr_QNXGraphics.h"
+
+#include "xap_App.h"
+#include "xap_QNXApp.h"
+#include "xap_QNXFrame.h"
+
+#include "ap_Dialog_Id.h"
+#include "ap_Prefs_SchemeIds.h"
+
+#include "ap_Strings.h"
 #include "ap_QNXDialog_PageNumbers.h"
+#include "ut_qnxHelper.h"
 
-AP_QNXDialog_PageNumbers::AP_QNXDialog_PageNumbers (XAP_DialogFactory * pDlgFactory,
-						     XAP_Dialog_Id id) : AP_Dialog_PageNumbers (pDlgFactory, id)
+// static event callbacks
+/***************************************************************/
+
+static int s_ok_clicked (PtWidget_t * w, void *data, PtCallbackInfo_t *info) 
 {
+	AP_QNXDialog_PageNumbers *dlg = (AP_QNXDialog_PageNumbers *)data;
+	UT_ASSERT(dlg);
+	dlg->event_OK();
+	return Pt_CONTINUE;
+}
 
+static int s_cancel_clicked (PtWidget_t * w, void *data, PtCallbackInfo_t *info) 
+{
+	AP_QNXDialog_PageNumbers *dlg = (AP_QNXDialog_PageNumbers *)data;
+	UT_ASSERT(dlg);
+	dlg->event_Cancel();
+	return Pt_CONTINUE;
+}
+
+static int s_delete_clicked(PtWidget_t * w, void *data, PtCallbackInfo_t *info) 
+{
+	AP_QNXDialog_PageNumbers *dlg = (AP_QNXDialog_PageNumbers *)data;
+	UT_ASSERT(dlg);
+	dlg->event_WindowDelete();
+	return Pt_CONTINUE;
+}
+
+static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage) 
+{
+	PtArg_t args[1];
+	UT_Rect rClip;
+
+   	PhRect_t rect;
+   	PtSuperClassDraw(PtBasic, w, damage);
+   	PtBasicWidgetCanvas(w, &rect);
+	//clip to our basic canvas (it's only polite).
+    PtClipAdd( w, &rect );
+
+	AP_QNXDialog_PageNumbers *pQNXDlg, **ppQNXDlg = NULL;
+	PtSetArg(&args[0], Pt_ARG_USER_DATA, &ppQNXDlg, 0);
+	PtGetResources(w, 1, args);
+	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
+
+	UT_ASSERT(pQNXDlg);
+	pQNXDlg->event_PreviewExposed();
+
+    PtClipRemove();
+	return Pt_CONTINUE;
+}
+
+static int s_position_changed (PtWidget_t * w, void *data, PtCallbackInfo_t *info) 
+{
+	AP_QNXDialog_PageNumbers *dlg = (AP_QNXDialog_PageNumbers *)data;
+	/*
+	int pos = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
+	dlg->event_HdrFtrChanged((AP_Dialog_PageNumbers::tControl)pos);
+	*/
+	return Pt_CONTINUE;
+}
+
+static int s_alignment_changed (PtWidget_t * w, void *data, PtCallbackInfo_t *info) 
+{
+	AP_QNXDialog_PageNumbers *dlg = (AP_QNXDialog_PageNumbers *)data;
+	/*
+	int align = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
+	dlg->event_AlignChanged ((AP_Dialog_PageNumbers::tAlign)align);
+	*/
+	return Pt_CONTINUE;
+}
+
+/***************************************************************/
+
+XAP_Dialog * AP_QNXDialog_PageNumbers::static_constructor(XAP_DialogFactory * pFactory,
+                                                         XAP_Dialog_Id id)
+{
+    AP_QNXDialog_PageNumbers * p = new AP_QNXDialog_PageNumbers(pFactory,id);
+    return p;
+}
+
+AP_QNXDialog_PageNumbers::AP_QNXDialog_PageNumbers(XAP_DialogFactory * pDlgFactory,
+                                                 XAP_Dialog_Id id)
+    : AP_Dialog_PageNumbers(pDlgFactory,id)
+{
+  m_recentAlign   = AP_Dialog_PageNumbers::id_RALIGN;
+  m_recentControl = AP_Dialog_PageNumbers::id_FTR;
+  m_qnxGraphics  = NULL;
 }
 
 AP_QNXDialog_PageNumbers::~AP_QNXDialog_PageNumbers(void)
 {
+  DELETEP (m_qnxGraphics);
+}
+
+void AP_QNXDialog_PageNumbers::event_OK(void)
+{
+	m_answer = AP_Dialog_PageNumbers::a_OK;
+
+	// set the align and control data
+	m_align   = m_recentAlign;
+	m_control = m_recentControl;
+	done++;
+}
+
+void AP_QNXDialog_PageNumbers::event_Cancel(void)
+{
+	if (!done++) {
+		m_answer = AP_Dialog_PageNumbers::a_CANCEL;
+	}
+}
+
+void AP_QNXDialog_PageNumbers::event_WindowDelete(void)
+{
+	event_Cancel();
+}
+
+void AP_QNXDialog_PageNumbers::event_PreviewExposed(void)
+{
+	if(m_preview)
+		m_preview->draw();
+}
+
+void AP_QNXDialog_PageNumbers::event_AlignChanged(AP_Dialog_PageNumbers::tAlign   align)
+{
+	m_recentAlign = align;
+	_updatePreview(m_recentAlign, m_recentControl);
+}
+
+void AP_QNXDialog_PageNumbers::event_HdrFtrChanged(AP_Dialog_PageNumbers::tControl control)
+{
+	m_recentControl = control;
+	_updatePreview(m_recentAlign, m_recentControl);
 }
 
 void AP_QNXDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 {
+	// To center the dialog, we need the frame of its parent.
+    XAP_QNXFrame * pQNXFrame = static_cast<XAP_QNXFrame *>(pFrame);
+    UT_ASSERT(pQNXFrame);
+    
+    // Get the of the parent frame
+    PtWidget_t * parentWindow = pQNXFrame->getTopLevelWindow();
+    UT_ASSERT(parentWindow);
+	PtSetParentWidget(parentWindow);
+
+    // Build the window's widgets and arrange them
+    PtWidget_t * mainWindow = _constructWindow();
+    UT_ASSERT(mainWindow);
+
+    //connectFocus(mainWindow, pFrame);
+
+    // save for use with event
+    m_pFrame = pFrame;
+
+	// Center the widget, make it modal and realize it.
+	UT_QNXCenterWindow(parentWindow, mainWindow);
+	UT_QNXBlockWidget(parentWindow, 1);
+	PtRealizeWidget(mainWindow);
+
+    // *** this is how we add the gc ***
+	{
+	  // attach a new graphics context to the drawing area
+	  XAP_QNXApp * app = static_cast<XAP_QNXApp *> (m_pApp);
+
+	  UT_ASSERT(app);
+	  UT_ASSERT(m_previewArea);
+	  DELETEP (m_qnxGraphics);
+	  
+	  // make a new QNX GC
+	  m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_previewArea, m_pApp);
+	  
+	  // let the widget materialize
+	  unsigned short *w, *h;
+	  w = h = NULL;
+	  PtGetResource(m_previewArea, Pt_ARG_WIDTH, &w, 0);
+	  PtGetResource(m_previewArea, Pt_ARG_HEIGHT, &h, 0);
+	  _createPreviewFromGC(m_qnxGraphics, (UT_uint32)*w, (UT_uint32)*h);
+
+	  // hack in a quick draw here
+	  _updatePreview(m_recentAlign, m_recentControl);
+	  event_PreviewExposed ();
+	}
+
+    // Run into the GTK event loop for this window.
+	int count = PtModalStart();
+	done = 0;
+	while(!done) {
+		PtProcessEvent();
+	}
+	PtModalEnd(MODAL_END_ARG(count));
+
+    DELETEP (m_qnxGraphics);
+
+	UT_QNXBlockWidget(parentWindow, 0);
+	PtDestroyWidget(mainWindow);
 }
 
+#if 0
+void AP_QNXDialog_PageNumbers::_connectSignals (void)
+{
+  	// the control buttons
+	gtk_signal_connect(GTK_OBJECT(m_buttonOK),
+			   "clicked",
+			   GTK_SIGNAL_FUNC(s_ok_clicked),
+			   (gpointer) this);
+	
+	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
+			   "clicked",
+			   GTK_SIGNAL_FUNC(s_cancel_clicked),
+			   (gpointer) this);
 
+	// the catch-alls
+	
+	gtk_signal_connect_after(GTK_OBJECT(m_window),
+				 "delete_event",
+				 GTK_SIGNAL_FUNC(s_delete_clicked),
+				 (gpointer) this);
 
+	gtk_signal_connect_after(GTK_OBJECT(m_window),
+				 "destroy",
+				 NULL,
+				 NULL);
+
+}
+#endif
+
+PtWidget_t * AP_QNXDialog_PageNumbers::_constructWindow (void)
+{  
+  PtWidget_t *vgroup;
+  PtWidget_t *vgroup_inner;
+  PtWidget_t *hgroup;
+
+  PtWidget_t *label1;
+  PtWidget_t *combo1;
+  PtWidget_t *label2;
+  PtWidget_t *combo2;
+
+  PtArg_t	args[10];
+  int		n;
+
+  const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title), 0);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
+	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
+	m_window = PtCreateWidget(PtWindow, NULL, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, ABI_MODAL_MARGIN_SIZE, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
+	vgroup = PtCreateWidget(PtGroup, m_window, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
+	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 0);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 5, 0);
+	vgroup_inner = PtCreateWidget(PtGroup, hgroup, n, args);
+
+	//Create the first label/combo combination
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Position), 0);
+	label1 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
+
+	n = 0;
+    PtSetArg(&args[n++], Pt_ARG_WIDTH,  2* ABI_DEFAULT_BUTTON_WIDTH, 0);
+	combo1 = PtCreateWidget(PtComboBox, vgroup_inner, n, args);
+	const char *add;
+	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Footer); 
+	PtListAddItems(combo1, &add, 1, 0);
+	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Header); 
+	PtListAddItems(combo1, &add, 1, 0);
+	m_vecposition.addItem((void *)AP_Dialog_PageNumbers::id_FTR);
+	m_vecposition.addItem((void *)AP_Dialog_PageNumbers::id_HDR);
+
+	//Create the second label/combo combination
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Alignment), 0);
+	label2 = PtCreateWidget(PtLabel, vgroup_inner, n, args);
+
+	n = 0;
+    PtSetArg(&args[n++], Pt_ARG_WIDTH,  2* ABI_DEFAULT_BUTTON_WIDTH, 0);
+	combo2 = PtCreateWidget(PtComboBox, vgroup_inner, n, args);
+	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Right); 
+	PtListAddItems(combo2, &add, 1, 0);
+	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Left); 
+	PtListAddItems(combo2, &add, 1, 0);
+	add = pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Center); 
+	PtListAddItems(combo2, &add, 1, 0);
+
+	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_RALIGN);
+	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_LALIGN);
+	m_vecalign.addItem((void *)AP_Dialog_PageNumbers::id_CALIGN);
+
+	//Create the preview area
+	//frame1 = gtk_frame_new (pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Preview));
+	n = 0;
+	PtWidget_t *rgroup = PtCreateWidget(PtGroup, hgroup, n, args);
+	n = 0;
+	void *data = (void *)this;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 95, 0);
+	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 115, 0);
+	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
+	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &s_preview_exposed, 1); 
+	m_previewArea = PtCreateWidget( PtRaw, rgroup, n, args);
+
+	//Create the buttons on the bottom
+	n = 0;
+	hgroup = PtCreateWidget(PtGroup, vgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_OK), 0);
+    PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	m_buttonOK = PtCreateWidget(PtButton, hgroup, n, args);
+	PtAddCallback(m_buttonOK, Pt_CB_ACTIVATE, s_cancel_clicked, this);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValue (XAP_STRING_ID_DLG_Cancel), 0);
+    PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
+	m_buttonCancel = PtCreateWidget(PtButton, hgroup, n, args);
+	PtAddCallback(m_buttonCancel, Pt_CB_ACTIVATE, s_ok_clicked, this);
+
+	return m_window;
+}
