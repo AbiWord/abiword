@@ -115,7 +115,8 @@
 # OS_RELEASE, etc. are for some reason a performance killer.
 # Allowing them to be predefined in a persistent makefile speeds
 # up the build quite a bit.
--include $(ABI_ROOT)/src/config/predefines.mk
+PREDEF_FILE := $(shell eval "if test ! -e $(ABI_ROOT)/src/config/predefines.mk; then echo '.sample'; fi")
+include $(ABI_ROOT)/src/config/predefines.mk$(PREDEF_FILE)
 
 
 ##################################################################
