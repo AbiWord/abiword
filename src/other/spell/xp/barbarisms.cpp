@@ -51,7 +51,7 @@ bool BarbarismChecker::load(const char *szLang)
 
 	m_sLang = szLang;
 
-	fullPath = XAP_App::getApp()->getUserPrivateDirectory();
+	fullPath = XAP_App::getApp()->getAbiSuiteLibDir();
 #if defined(WIN32)
 	fullPath += "\\dictionary\\";
 #else
@@ -117,7 +117,7 @@ bool BarbarismChecker::suggestExactWord(const UT_UCSChar *word32, size_t length,
 		suggest32 = static_cast<UT_UCS4Char*>(malloc(nSize));
 		memcpy (suggest32, pWord, nSize);
 		
-		pVecsugg->addItem(static_cast<void *>(suggest32));
+		pVecsugg->insertItemAt(static_cast<void *>(suggest32), 0);
 	}
 
 	return true;
