@@ -23,7 +23,11 @@
 #ifndef GR_MACGRAPHICS_h
 #define GR_MACGRAPHICS_h
 
+#if 0
 #include <QuickDraw.h>
+#endif
+
+#include <CoreGraphics/CoreGraphics.h>
 
 #include "ut_misc.h"
 #include "gr_Graphics.h"
@@ -41,8 +45,8 @@ private:
 class MacGraphics : public GR_Graphics
 {
 public:
-	MacGraphics(GrafPtr grafPort, XAP_App * app);					/* for screen */
-	~MacGraphics();
+	MacGraphics(CGContextRef context, XAP_App * app);	/* for screen */
+	virtual ~MacGraphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff);
@@ -99,7 +103,7 @@ public:
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 
-        GrafPtr m_GrafPort;
+        CGContextRef m_CGContext;
 	
 };
 
