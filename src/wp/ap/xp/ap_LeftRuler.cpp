@@ -258,10 +258,16 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	FV_View *pView = static_cast<FV_View *>(m_pView);
 	bool hdrftr = pView->isHdrFtrEdit();
 
+	fl_HdrFtrShadow * pShadow = pView->getEditShadow();
+
 	bool hdr = (hdrftr && 
-				pView->getEditShadow()->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
+				pShadow->getHdrFtrSectionLayout()->getHFType() == FL_HDRFTR_HEADER);
 
 	double dxrel = 0.0;
+	UT_sint32 yOrigin = m_infoCache.m_yPageStart + 
+		m_infoCache.m_yTopMargin - m_yScrollOffset;
+	UT_sint32 yEnd = yOrigin - m_infoCache.m_yTopMargin + 
+		m_infoCache.m_yPageSize;
 	
 	switch (m_draggingWhat)
 	{
@@ -272,25 +278,38 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	case DW_TOPMARGIN:
 		{
 			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
-			if (!hdrftr || !hdr)
+			if (!hdrftr)
 				properties[0] = "page-margin-top";
 			else
-				properties[0] = "page-margin-header";
+			{
+				if (hdr)
+					properties[0] = "page-margin-header";
+				else
+				{
+					properties[0] = "page-margin-bottom";
+					dxrel = tick.scalePixelDistanceToUnits(yEnd - 
+												  m_draggingCenter);
+				}
+			}
 		}
 		break;
 
 	case DW_BOTTOMMARGIN:
 		{
-			UT_sint32 yOrigin = m_infoCache.m_yPageStart + 
-				m_infoCache.m_yTopMargin - m_yScrollOffset;
-			UT_sint32 yEnd = yOrigin - m_infoCache.m_yTopMargin + 
-				m_infoCache.m_yPageSize;
-
 			dxrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
-			if (!hdrftr || hdr)
+			if (!hdrftr)
 				properties[0] = "page-margin-bottom";
 			else
-				properties[0] = "page-margin-footer";
+			{
+				if (hdr)
+				{
+					properties[0] = "page-margin-top";
+					dxrel = tick.scalePixelDistanceToUnits
+						(m_draggingCenter - yAbsTop);
+				}
+				else
+					properties[0] = "page-margin-footer";
+			}
 		}
 		break;
 	}
@@ -305,8 +324,10 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 
 	if(hdrftr)
 	{
+		pView->rememberCurrentPosition();
+
 		pView->clearHdrFtrEdit();
-		pView->warpInsPtToXY(0,0,false);
+  		pView->warpInsPtToXY(0,0,false);
 	}
 
 	//
@@ -314,6 +335,27 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	//
 
 	pView->setSectionFormat(properties);
+
+    // todo: make this warp back to the last saved editing position
+    // todo: instead of just the header/footer in general
+	if (hdrftr)
+	{
+		if (hdr)
+			pView->cmdEditHeader();
+		else
+			pView->cmdEditFooter();
+
+		xxx_UT_DEBUGMSG(("DOM: %d\n", pView->getSavedPosition()));
+
+		pView->setPoint(pView->getSavedPosition());
+
+		{
+			pView->moveInsPtTo(pView->getSavedPosition());
+			pView->eraseInsertionPoint();
+			pView->drawInsertionPoint();
+		}
+		pView->clearSavedPosition();
+	}
 
 	return;
 }
