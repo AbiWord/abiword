@@ -485,7 +485,7 @@ UT_contextGlyph::UT_contextGlyph()
 		if(!bHebrewContextGlyphs)
 		{
 			s_iGlyphTableSize -= (HEBREW_END - HEBREW_START + 1) * sizeof(Letter);
-			memcpy(&s_table[HEBREW_START], &s_table[HEBREW_END + 1],s_iGlyphTableSize - HEBREW_START);
+			memmove(&s_table[HEBREW_START], &s_table[HEBREW_END + 1],s_iGlyphTableSize - HEBREW_START);
 		}
 
 		memcpy(s_pLigRev,s_pLigature, sizeof(s_ligature));
