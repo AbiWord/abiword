@@ -583,8 +583,7 @@ UT_Error XAP_Frame::backup()
 	}
 	backupName = (char *) malloc(strlen(oldName) + strlen(ext) + 1);
 	UT_ASSERT(backupName);
-	backupName = strcat(oldName, ext);
-	UT_ASSERT(backupName);
+	sprintf(backupName, "%s%s", oldName, ext);
 	
 	UT_Error error = m_pDoc->saveAs(backupName, m_pDoc->getLastType());
 	UT_DEBUGMSG(("File %s saved.\n", backupName));
