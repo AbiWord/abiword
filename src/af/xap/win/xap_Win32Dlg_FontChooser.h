@@ -41,7 +41,8 @@ public:
 protected:
 	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-
+	BOOL					_callHelp();
+	
 	XAP_Frame *				m_pWin32Frame;
 	XAP_Win32PreviewWidget* m_pPreviewWidget;
 

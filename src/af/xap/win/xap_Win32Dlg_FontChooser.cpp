@@ -122,7 +122,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		// This fixes bug 4494
 		UT_uint32 ioldPer = m_pGraphics->getZoomPercentage();
 		m_pGraphics->setZoomPercentage(100);
-		lf.lfHeight = -(UT_convertToPoints(m_pFontSize));
+		lf.lfHeight = (long) -(UT_convertToPoints(m_pFontSize));
 		m_pGraphics->setZoomPercentage(ioldPer);
 		
 	}
@@ -297,7 +297,14 @@ UINT CALLBACK XAP_Win32Dialog_FontChooser::s_hookProc(HWND hDlg, UINT msg, WPARA
 			return pThis->_onCommand(hDlg,wParam,lParam);
 		else
 			return 0;
-
+		
+	case WM_HELP:
+		pThis = (XAP_Win32Dialog_FontChooser *)GetWindowLong(hDlg,DWL_USER);
+		if (pThis)
+			return pThis->_callHelp();
+		else
+			return 0;
+		
 	default:
 		return 0;
 
@@ -412,5 +419,24 @@ BOOL XAP_Win32Dialog_FontChooser::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
 		return 0;						// return zero to let windows take care of it.
 	}
+}
+
+extern bool helpLocalizeAndOpenURL(XAP_Frame * pFrame, bool bLocal, const char* pathBeforeLang, const char* pathAfterLang);
+
+BOOL XAP_Win32Dialog_FontChooser::_callHelp()
+{
+	XAP_Frame *pFrame = m_pApp->findValidFrame();
+	
+	if ( getHelpUrl().size () > 0 )
+    {
+		helpLocalizeAndOpenURL ( pFrame, true, "AbiWord/help", getHelpUrl().c_str() ) ;
+    }
+	else
+    {
+		// TODO: warn no help on this topic
+		UT_DEBUGMSG(("NO HELP FOR THIS TOPIC!!\n"));
+    }
+
+	return TRUE;
 }
 
