@@ -37,8 +37,6 @@ GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName)
     {
 		strcpy(m_szName, "UnixGnomeImage");
     }
-	m_width = 0;
-	m_height = 0;
 }
 
 GR_UnixGnomeImage::~GR_UnixGnomeImage()
@@ -48,12 +46,12 @@ GR_UnixGnomeImage::~GR_UnixGnomeImage()
 
 UT_sint32	GR_UnixGnomeImage::getDisplayWidth(void) const
 {
-    return m_width;
+    return gdk_pixbuf_get_width (m_image);
 }
 
 UT_sint32	GR_UnixGnomeImage::getDisplayHeight(void) const
 {
-    return m_height;
+    return gdk_pixbuf_get_height (m_image);
 }
 
 bool		GR_UnixGnomeImage::convertToBuffer(UT_ByteBuf** ppBB) const
@@ -91,16 +89,22 @@ bool	GR_UnixGnomeImage::convertFromBuffer(const UT_ByteBuf* pBB,
 							 (gsize)pBB->getLength ());
 #endif
 	
-	m_image = gdk_pixbuf_loader_get_pixbuf (ldr);
-	UT_ASSERT(m_image);
-	if (!m_image)
+	GdkPixbuf * image = gdk_pixbuf_loader_get_pixbuf (ldr);
+	UT_ASSERT(image);
+	if (!image)
 	{
 		UT_DEBUGMSG(("DOM: couldn't get image from loader!\n"));
 		return false;
 	}
+	m_image = gdk_pixbuf_scale_simple (image, iDisplayWidth, iDisplayHeight, GDK_INTERP_NEAREST);
+	UT_ASSERT(m_image);
+	if (!m_image)
+	{
+		UT_DEBUGMSG(("HUB: couldn't scale image!\n"));
+		return false;
+	}
 	gdk_pixbuf_ref(m_image);
-	m_width = iDisplayWidth;
-	m_height = iDisplayHeight;
+	gdk_pixbuf_unref(image);
 #ifdef HAVE_GTK_2_0
 	g_error_free (err);
 #endif
