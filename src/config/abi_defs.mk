@@ -703,10 +703,17 @@ endif
 endif #ifeq(platform,unix)
 
 ifeq ($(ABI_OPT_CURLHASH),1)
+ABI_OPTIONS+=Curlhash:On
+ifneq ($(OS_NAME),WIN32)
 LIBCURL_CFLAGS  =       $(shell curl-config --cflags)
 LIBCURL_LIBS    =       $(shell curl-config --libs)
 CFLAGS          +=      $(LIBCURL_CFLAGS) -DHAVE_CURLHASH=1
 EXTRA_LIBS      +=      $(LIBCURL_LIBS)
+endif
+ifeq ($(OS_NAME),WIN32)
+CFLAGS += -DHAVE_CURLHASH=1 -DCURLHASH_INSTALL_SYSTEMWIDE
+INCLUDES += -I$(ABI_ROOT)/../libcurl/include -I$(ABI_ROOT)/../zlib
+endif
 endif
 
 ##################################################################

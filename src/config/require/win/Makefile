@@ -24,6 +24,9 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _POPT_ _NSIS_
 REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_
+ifeq ($(ABI_OPT_CURLHASH),1)
+REQUIRE += _PEER_LIBCURL_
+endif
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
@@ -113,6 +116,19 @@ _NSIS_:
 		exit 1;								\
 	fi
 
+_PEER_LIBCURL_:
+	@if [ -d $(ABI_ROOT)/../libcurl/lib ]; then	\
+		echo Found libcurl in peer directory;	\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libcurl/lib;		\
+	else									\
+		echo libcurl not found;						\
+		echo Please extract the curl library as a peer;			\
+		echo directory named libcurl;			\
+		exit 1;								\
+	fi
+#		cd $(ABI_ROOT)/../libcurl/lib
+#		nmake /f Makefile.vc6 cfg=release
+
 #################################################################
 
 realclean_LIBICONV_:
@@ -128,4 +144,4 @@ realclean_LIBWV_:
 clean_POPT_:
 	@if [ -d $(ABI_ROOT)/../popt ]; then              \
 		$(MAKE) -C $(ABI_ROOT)/../popt clean;     \
-
+	fi
