@@ -85,10 +85,11 @@
 #include <bonobo.h>
 #include <liboaf/liboaf.h>
 #include "abiwidget.h"
+
 #if 0
 #include "ap_NautilusView.h"
 #include <libnautilus/nautilus-view-standard-main.h>
-#endif 0
+#endif // 0
 
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
@@ -307,12 +308,14 @@ void AP_UnixGnomeApp::initPopt(AP_Args *Args)
 
 	Args->options = opts;
 
-#ifndef ABI_OPT_WIDGET
+#if 1
 	// This is deprecated.  We're supposed to use gnome_program_init!
-	gnome_init_with_popt_table("AbiWord", "1.0.0", 
+	gnome_init_with_popt_table("AbiWord", "1.1.0", 
 				   Args->XArgs->m_argc, (char **)Args->XArgs->m_argv, 
 				   Args->options, 0, &Args->poptcon);
 #endif
+
+	UT_DEBUGMSG(("DOM: initted gnome\n"));
 }
 
 //-------------------------------------------------------------------

@@ -57,19 +57,24 @@ class AP_UnixDialog_MarkRevisions: public AP_Dialog_MarkRevisions
 	    me->event_Cancel () ;
 	  }
 
+	static void focus_toggled_callback ( GtkWidget *, AP_UnixDialog_MarkRevisions * me )
+	  {
+	    me->event_FocusToggled () ;
+	  }
+
 	void event_Ok () ;
 	void event_Cancel () ;
+	void event_FocusToggled () ;
 
  private:
 
 	void constructWindowContents ( GtkWidget * container ) ;
 
 	GtkWidget * mRadio1 ;
-	GtkWidget * mComment1 ;
-
 	GtkWidget * mRadio2 ;
-	GtkWidget * mComment2Lbl ;
-	GtkWidget * mComment2 ;
+
+	GtkWidget * mEntryLbl ;
+	GtkWidget * mComment ;
 };
 
 #endif /* AP_UNIXDIALOG_MARKREVISIONS_H */

@@ -152,7 +152,7 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	range = gnome_print_dialog_get_range_page(gpd, &first, &end);
 	gnome_dialog_close(GNOME_DIALOG(gpd));
 
-	m_gpm = gnome_print_master_new();
+	m_gpm = gnome_print_master_new_from_dialog(gpd); //gnome_print_master_new();
 	if (printer)
 		gnome_print_master_set_printer(m_gpm, printer);
 

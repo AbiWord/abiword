@@ -223,7 +223,10 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * dialog_v
   for ( UT_uint32 i = 0; i < itemCnt; i++ )
   {
     gchar * txt[3];
-    txt[0] = (gchar*)UT_String_sprintf ( "%d", getNthItemId ( i ) ).c_str();
+    gchar buf [ 35 ] ;
+
+    sprintf ( buf, "%d", getNthItemId( i ) ) ;
+    txt[0] = (gchar*)buf;
     txt[1] = (gchar*)getNthItemText ( i );
     txt[2] = NULL;
 
@@ -231,7 +234,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * dialog_v
 
     UT_DEBUGMSG(("DOM: appending revision %s : %s\n", txt[1], txt[0]));
 
-    FREEP(txt[0]);
+    FREEP(txt[1]);
   }
   gtk_clist_thaw ( GTK_CLIST ( clist1 ) ) ;
   gtk_clist_select_row (GTK_CLIST (clist1), 0, 0);
@@ -241,6 +244,11 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * dialog_v
 
   g_signal_connect (G_OBJECT(clist1), "unselect-row",
 		    G_CALLBACK(select_row_callback), this);
+
+  g_signal_connect(G_OBJECT(clist1),
+		   "button_press_event",
+		   G_CALLBACK(dblclick_callback),
+		   (gpointer) this);
 
   mClist = clist1 ;
 }

@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2000-2002 Dom Lachowicz <cinamod@hotmail.com>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,8 +51,7 @@ XAP_UnixGnomeDialog_PrintPreview::~XAP_UnixGnomeDialog_PrintPreview(void)
 
 void XAP_UnixGnomeDialog_PrintPreview::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
-	UT_ASSERT(pGraphics == m_pGnomePrintGraphics);
-	
+	UT_return_if_fail(pGraphics == m_pGnomePrintGraphics);	
 	DELETEP(m_pGnomePrintGraphics);
 }
 
@@ -64,16 +63,15 @@ GR_Graphics * XAP_UnixGnomeDialog_PrintPreview::getPrinterGraphicsContext(void)
 void XAP_UnixGnomeDialog_PrintPreview::runModal(XAP_Frame * pFrame) 
 {
        m_pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
-       UT_ASSERT(m_pUnixFrame);
+       UT_return_if_fail(m_pUnixFrame);
 
        XAP_App * app = m_pUnixFrame->getApp();
-       UT_ASSERT(app);
+       UT_return_if_fail(app);
        
        XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (app);
-       UT_ASSERT(unixapp);
        
        XAP_UnixFontManager * fontmgr = unixapp->getFontManager();
-       UT_ASSERT(fontmgr);
+       UT_return_if_fail(fontmgr);
        
        m_pGnomePrintGraphics = new XAP_UnixGnomePrintGraphics(gnome_print_master_new(),
 							      m_szPaperSize,
@@ -81,7 +79,7 @@ void XAP_UnixGnomeDialog_PrintPreview::runModal(XAP_Frame * pFrame)
 							      unixapp,
 							      1);
 
-       UT_ASSERT(m_pGnomePrintGraphics);
+       UT_return_if_fail(m_pGnomePrintGraphics);
        
        // set the color mode
        m_pGnomePrintGraphics->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);

@@ -70,6 +70,17 @@ class AP_UnixDialog_ListRevisions: public AP_Dialog_ListRevisions
 	    me->unselect_Row ();
 	  }
 
+	static void dblclick_callback(GtkWidget * widget,
+				      GdkEventButton * event,
+				      AP_UnixDialog_ListRevisions * me)
+	  {
+	    // Only respond to double clicks
+	    if (event->type == GDK_2BUTTON_PRESS)
+	      {
+		me->event_Ok();
+	      }
+	  }
+
 	void event_Ok () ;
 	void event_Cancel () ;
 
