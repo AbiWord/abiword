@@ -80,9 +80,9 @@ bool AP_CocoaToolbar_FontCombo::populate(void)
 	m_vecContents.clear();
 
 	while (item = [enumerator nextObject]) {
-		const char * fName = strdup([item cString]);
+		const char * fName = strdup([item UTF8String]);
 		UT_ASSERT (fName);
-		if (*fName != '.') {
+		if ((*fName != '.') && (*fName != '#')) {	// this is also what Camino does.
 			m_vecContents.addItem((void *)(fName));
 		}
 		else {
