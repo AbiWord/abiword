@@ -53,12 +53,12 @@ public:
 #define IE_MIME_MSWord		"application/msword"
 #define IE_MIME_RichText	"application/richtext"
 #define IE_MIME_RTF			"application/rtf"
+#define IE_MIME_KWord		"application/vnd.kde.kword"
 #define IE_MIME_Palm		"application/vnd.palm"
 #define IE_MIME_SDW			"application/vnd.stardivision.writer"
 #define IE_MIME_WP_51		"application/wordperfect5.1"
 #define IE_MIME_AbiWord		"application/x-abiword"
 #define IE_MIME_Applix		"application/x-applix-word"
-#define IE_MIME_KWord		"application/x-kword"
 #define IE_MIME_XHTML		"application/xhtml+xml"
 #define IE_MIME_XML			"application/xml"
 

@@ -59,6 +59,7 @@ const struct AliasMIME s_list[] = {
 	{ "application/abiword-template",			IE_MIME_AbiWord	},
 	{ "application/mathml",						IE_MIME_MathML	},
 	{ "application/xhtml",						IE_MIME_XHTML	},
+	{ "application/x-kword",					IE_MIME_KWord	},
 	{ "application/x-staroffice-word",			IE_MIME_SDW		},
 	{ "application/x-staroffice-words",			IE_MIME_SDW		},
 	{ "application/x-starwriter",				IE_MIME_SDW		},
