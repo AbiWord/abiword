@@ -18,3 +18,12 @@
  */
 
 #include "ap_App.h"
+
+AP_App::AP_App (XAP_Args * pArgs, const char * szAppName)
+  : XAP_App_BaseClass ( pArgs, szAppName )
+{
+}
+
+AP_App::~AP_App ()
+{
+}

@@ -25,6 +25,12 @@ INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
 
 noinst_LIBRARIES = libWpAp_xp.a
 
+if WITH_CURL
+CURL_SOURCE_OBJ=ap_HashDownloader.cpp
+else
+CURL_SOURCE_OBJ=
+endif
+
 libWpAp_xp_a_SOURCES=	ap_Args.cpp		\
 		ap_Convert.cpp			\
 		ap_Dialog_Background.cpp	\
@@ -50,7 +56,6 @@ libWpAp_xp_a_SOURCES=	ap_Args.cpp		\
 		ap_Dialog_InsertBookmark.cpp 	\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
-		ap_HashDownloader.cpp		\
 		ap_LeftRuler.cpp		\
 		ap_LoadBindings.cpp		\
 		ap_LB_DeadAbovedot.cpp		\
@@ -93,6 +98,7 @@ libWpAp_xp_a_SOURCES=	ap_Args.cpp		\
 		ap_TopRuler.cpp			\
 		ap_App.cpp			\
 		ap_Frame.cpp			\
+		$(CURL_SOURCE_OBJ)		\
 		ap_wp_splash.cpp		\
 		ap_wp_sidebar.cpp
 

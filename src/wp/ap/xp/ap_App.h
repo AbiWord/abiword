@@ -20,4 +20,43 @@
 #ifndef AP_APP_H
 #define AP_APP_H
 
+// this ugliness is needed for proper inheritence
+
+#if defined(WIN32)
+#include "xap_Win32App.h"
+#define XAP_App_BaseClass XAP_Win32App
+#elif defined(__BEOS__)
+#include "xap_BeOSApp.h"
+#define XAP_BeOSApp XAP_App_BaseClass
+#elif defined(__QNX__)
+#include "xap_QNXApp.h"
+#define XAP_QNXApp XAP_App_BaseClass
+#elif (defined(XP_MAC_TARGET_CARBON) && XP_MAC_TARGET_CARBON) && (!defined(CARBON_ON_MACH_O) || (CARBON_ON_MACH_O == 0)) // Carbon on Mach-O as UNIX
+#include "xap_MacApp.h"
+#define XAP_MacApp XAP_App_BaseClass
+#elif defined(XP_TARGET_COCOA)
+#include "xap_CocoaApp.h"
+#define XAP_CocoaApp XAP_App_BaseClass
+#elif defined(HAVE_GNOME)
+#include "xap_UnixGnomeApp.h"
+#define XAP_App_BaseClass XAP_UnixGnomeApp
+#else
+#include "xap_UnixApp.h"
+#define XAP_App_BaseClass XAP_UnixApp
+#endif
+
+/*!
+ * Generic application base class
+ */
+class AP_App : public XAP_App_BaseClass
+{
+ public:
+
+  AP_App (XAP_Args * pArgs, const char * szAppName);
+  virtual ~AP_App ();
+
+ private:
+
+};
+
 #endif // AP_APP_H
