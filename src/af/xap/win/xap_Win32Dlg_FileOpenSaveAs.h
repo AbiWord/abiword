@@ -84,9 +84,9 @@ private:
 			DWORD         dwReserved;
 			DWORD         FlagsEx;
 			//#endif // (_WIN32_WINNT >= 0x0500)		
-	} OPENFILENAME_WIN50;
+	};
 	
-	BOOL GetSaveFileName_Hooked(OPENFILENAME_WIN50* lpofn);
+	BOOL GetSaveFileName_Hooked(OPENFILENAME_WIN50* lpofn,  BOOL bSave);
 	
 };
 

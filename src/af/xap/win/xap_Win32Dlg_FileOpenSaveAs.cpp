@@ -187,7 +187,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::_buildFilterList(UT_String& sFilter)
   user does not have a places bar capable common dialog box DLL
   anyway.
 */
-BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50* lpofn)
+BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50* lpofn, BOOL bSave)
 {
 		BOOL  bRslt;	
 		
@@ -196,8 +196,10 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 		lpofn->dwReserved = 0;
 		lpofn->FlagsEx = 0;		
 		
-				
-		bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+		if (bSave)				
+			bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+		else
+			bRslt = GetOpenFileName((OPENFILENAME *)lpofn);
 		
 		if (!bRslt) // Error
 		{			
@@ -207,9 +209,12 @@ BOOL  XAP_Win32Dialog_FileOpenSaveAs::GetSaveFileName_Hooked(OPENFILENAME_WIN50*
 			{								
 					//  Try with the old one
 					lpofn->lStructSize = sizeof(OPENFILENAME);	
-					bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
-			}
+					if (bSave)				
+						bRslt = GetSaveFileName((OPENFILENAME *)lpofn);
+					else
+						bRslt = GetOpenFileName((OPENFILENAME *)lpofn);
 				
+			}				
 		}	
 		
 		return bRslt;
@@ -358,7 +363,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLEHOOK;
 				
-		bDialogResult = GetSaveFileName_Hooked(&ofn);
+		bDialogResult = GetSaveFileName_Hooked(&ofn, TRUE);
 		break;
 
 	case XAP_DIALOG_ID_INSERT_PICTURE:
@@ -370,7 +375,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLETEMPLATE;
 		ofn.Flags |= OFN_ENABLEHOOK;
-		bDialogResult = GetSaveFileName_Hooked(&ofn);
+		bDialogResult = GetSaveFileName_Hooked(&ofn, FALSE);
 		break;
 
 	case XAP_DIALOG_ID_FILE_IMPORT:
@@ -386,7 +391,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLEHOOK;
-		bDialogResult = GetSaveFileName_Hooked(&ofn);
+		bDialogResult = GetSaveFileName_Hooked(&ofn, TRUE);
 		break;
 
 	case XAP_DIALOG_ID_INSERT_FILE:
