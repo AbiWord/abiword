@@ -37,12 +37,12 @@ ifdef ABI_OPT_GNOME_XML2
 LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv
 else
-LoadOrder=		Abi_libiconv AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
+LoadOrder=		AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libwv
 endif
 
 ifdef __FreeBSD__
-#LoadOrder+= Abi_libiconv
+LoadOrder+= Abi_libiconv
 endif
 
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
@@ -84,8 +84,8 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(UNIX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
-	@echo $(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -lintl -lAbi_libiconv  $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -lintl -lAbi_libiconv  $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
+	@echo $(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
 
 else
 	@echo "Not linking dynamic $(PROGRAM)"
