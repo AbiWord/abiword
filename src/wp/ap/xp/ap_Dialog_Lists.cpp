@@ -240,7 +240,6 @@ void AP_Dialog_Lists::setTick(UT_uint32 iTick)
 
 void AP_Dialog_Lists::Apply(void)
 {
-    UT_DEBUGMSG(("SEVIOR: Apply clicked m_newListType = %d \n",m_newListType));
 	XML_Char szStart[20];
 	if(m_newListType == BULLETED_LIST || m_newListType == IMPLIES_LIST)
 	{
@@ -263,10 +262,8 @@ void AP_Dialog_Lists::Apply(void)
 		m_OutProps.addItem((void *) "start-value"); 
 		m_Output[0] = (XML_Char *) szStart;
 		m_OutProps.addItem((void *) m_Output[0].c_str());
-		UT_DEBUGMSG(("!!!!!SEVIOR: Start Value %s \n",szStart));
 		m_OutProps.addItem((void *) "list-style"); 
 		m_Output[1] = getBlock()->getListStyleString(m_newListType);
-		UT_DEBUGMSG(("!!!!!SEVIOR: list-style %s \n",m_Output[1].c_str()));
 		m_OutProps.addItem((void *) m_Output[1].c_str());
 		m_OutProps.addItem((void *) "list-delim");
 		m_OutProps.addItem((void *)  m_pszDelim);

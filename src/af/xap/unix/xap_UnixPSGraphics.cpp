@@ -216,10 +216,13 @@ UT_uint32 PS_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	for (int k=0; k<num; k++)
 	{
 		//UT_ASSERT(p[k] < 256);			// TODO deal with Unicode
-		register int x;
+	
+    	register int x;
 		UT_UCSChar currentChar;
+		UT_DEBUGMSG(("SEVIOR: raw char = %d \n",p[k]));
 		currentChar = remapGlyph(p[k], false);
 		x = (currentChar < 256 ? _scale(cwi[currentChar]) : 0;
+		UT_DEBUGMSG(("SEVIOR: current char = %d  width = %d \n",currentChar,x));
 		
 		iCharWidth += x;
 		pWidths[k] = x;

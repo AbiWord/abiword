@@ -163,12 +163,21 @@ static gboolean s_update (void)
 
 void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 {
+	List_Type  savedListType;
 	setModal();
 	_constructWindow();
 	UT_ASSERT (m_wMainWindow);
 	connectFocus(GTK_WIDGET(m_wMainWindow),pFrame);
 	clearDirty();
-	
+
+	// Populate the dialog
+	m_bDontUpdate = false;
+	loadXPDataIntoLocal();
+//
+// Need this to stop this being stomped during the contruction of preview
+// widget
+//
+	savedListType = m_newListType;
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(pUnixFrame);
@@ -186,9 +195,6 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 
 	// Make it modal, and stick it up top
 	gtk_grab_add(m_wMainWindow);
-	// Populate the dialog
-	m_bDontUpdate = false;
-	loadXPDataIntoLocal();
 
 	// Now Display the dialog
 	gtk_widget_show(m_wMainWindow);
@@ -209,6 +215,10 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 						 (UT_uint32) m_wPreviewArea->allocation.width, 
 						 (UT_uint32) m_wPreviewArea->allocation.height);
         // Run into the GTK event loop for this window.
+//
+// Restore our value
+//
+	m_newListType = savedListType;
 	previewExposed();
 	gtk_main();
 //

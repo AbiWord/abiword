@@ -741,7 +741,7 @@ void GR_UnixGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	if(dx > 0)
 	{
 		//
-		// We're moving left so left is reduced
+		// We're moving right so left is reduced
 		//
 		exposeArea.width += dx;
 		exposeArea.left -= dx;
