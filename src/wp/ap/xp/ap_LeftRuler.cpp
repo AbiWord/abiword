@@ -134,7 +134,7 @@ UT_uint32 AP_LeftRuler::getHeight(void) const
 void AP_LeftRuler::setWidth(UT_uint32 iWidth)
 {
 	m_iWidth = iWidth;
-	AP_FrameData * pFrameData = m_pFrame->getFrameData();
+	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
 	if (pFrameData && pFrameData->m_pTopRuler)
 		pFrameData->m_pTopRuler->setOffsetLeftRuler(m_iWidth);
 }
