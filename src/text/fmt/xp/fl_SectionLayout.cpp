@@ -1711,105 +1711,133 @@ void fl_HdrFtrSectionLayout::_lookupProperties(void)
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_populateSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_populateSpan(pcrs,blockOffset,len)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_populateSpan(pcrs,blockOffset,len)
+			&& bResult;
 	return bResult;
 }
 
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_populateObject(fl_BlockLayout* pBL, PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_populateObject(pBL, blockOffset, pcro)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_populateObject(blockOffset,pcro)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_populateObject(blockOffset,pcro)
+			&& bResult;
 	return bResult;
 }
 	
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_insertSpan(pBL, pcrs)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_insertSpan(pcrs)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_insertSpan(pcrs)
+			&& bResult;
 	return bResult;
 }
 
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_Span * pcrs)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_deleteSpan(pBL, pcrs)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_deleteSpan(pcrs)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_deleteSpan(pcrs)
+			&& bResult;
 	return bResult;
 }
 
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeSpan(fl_BlockLayout* pBL, const PX_ChangeRecord_SpanChange * pcrsc)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_changeSpan(pBL, pcrsc)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_changeSpan(pcrsc)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_changeSpan(pcrsc)
+			&& bResult;
 	return bResult;
 }
 
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_Strux * pcrx)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_deleteStrux(pBL, pcrx)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_deleteStrux(pcrx)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_deleteStrux(pcrx)
+			&& bResult;
 	return bResult;
 }
 
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_BlockLayout* pBL, const PX_ChangeRecord_StruxChange * pcrxc)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_changeStrux(pBL, pcrxc)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_changeStrux(pcrxc)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_changeStrux(pcrxc)
+			&& bResult;
 	return bResult;
 }
 
@@ -1821,15 +1849,19 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_BlockLayout* pBL, 
 															PL_StruxFmtHandle sfhNew))
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_insertBlock(pBL, pcrx, sdh, lid, pfnBindHandles)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_insertBlock(pcrx,sdh,lid,pfnBindHandles)
+			&& bResult;
 	return bResult;
 }
 
@@ -1865,7 +1897,6 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL,
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
 		// Find matching block in this shadow.
 		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
-		//		bResult = pPair->pShadow->bl_doclistener_insertObject(pShadowBL, pcro)
 		bResult = pShadowBL->doclistener_insertObject(pcro)
 			&& bResult;
 	}
@@ -1878,75 +1909,95 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertObject(fl_BlockLayout* pBL,
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteObject(fl_BlockLayout* pBL, const PX_ChangeRecord_Object * pcro)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_deleteObject(pBL, pcro)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_deleteObject(pcro)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_deleteObject(pcro)
+			&& bResult;
 	return bResult;
 }
 
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const PX_ChangeRecord_ObjectChange * pcroc)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_changeObject(pBL, pcroc)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_changeObject(pcroc)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_changeObject(pcroc)
+			&& bResult;
 	return bResult;
 }
 
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_insertFmtMark(pBL, pcrfm)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_insertFmtMark(pcrfm)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_insertFmtMark(pcrfm)
+			&& bResult;
 	return bResult;
 }
 
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_deleteFmtMark(pBL, pcrfm)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_deleteFmtMark(pcrfm)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_deleteFmtMark(pcrfm)
+			&& bResult;
 	return bResult;
 }
 
 UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
 {
 	UT_Bool bResult = UT_TRUE;
+	fl_BlockLayout * pShadowBL = NULL;
 	UT_uint32 iCount = m_vecPages.getItemCount();
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
-
-		bResult = pPair->pShadow->bl_doclistener_changeFmtMark(pBL, pcrfmc)
+		// Find matching block in this shadow.
+		pShadowBL = pPair->pShadow->findMatchingBlock(pBL);
+		bResult = pShadowBL->doclistener_changeFmtMark(pcrfmc)
 			&& bResult;
 	}
-
+	// Update the overall block too.
+        bResult = pBL->doclistener_changeFmtMark(pcrfmc)
+			&& bResult;
 	return bResult;
 }
 
@@ -2131,8 +2182,22 @@ UT_Bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 			bResult = m_pCurrentBL->doclistener_populateObject(blockOffset,pcro);
 			goto finish_up;
 		}
+	
+	case PX_ChangeRecord::PXT_InsertFmtMark:
+                {
+		  //	const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
+
+			{
+				fl_Layout * pL = (fl_Layout *)sfh;
+				UT_ASSERT(pL->getType() == PTX_Block);
+				UT_ASSERT(m_pCurrentBL == (static_cast<fl_BlockLayout *>(pL)));
+			}
+			bResult = m_pCurrentBL->doclistener_insertFmtMark( (const PX_ChangeRecord_FmtMark *) pcr);
+			goto finish_up;
+		}
 
 	default:
+	        UT_DEBUGMSG(("SEVIOR: Unknown Change record = %d \n",pcr->getType())); 
 		UT_ASSERT(0);
 		return UT_FALSE;
 	}
