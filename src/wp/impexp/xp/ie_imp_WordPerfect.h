@@ -18,6 +18,10 @@
  * 02111-1307, USA.
  */
 
+/* See bug 1764
+ * This product is not manufactured, approved, or supported by 
+ * Corel Corporation or Corel Corporation Limited."
+ */
 
 #ifndef IE_IMP_WP_H
 #define IE_IMP_WP_H

@@ -64,6 +64,11 @@ GtkWidget * AP_UnixGnomeDialog_InsertBookmark::_constructWindow(void)
 	m_buttonOK = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowInsertBookmark)->buttons)->data);
 	GTK_WIDGET_SET_FLAGS (m_buttonOK, GTK_CAN_DEFAULT);
 
+	// delete button
+	gnome_dialog_append_button(GNOME_DIALOG(windowInsertBookmark), pSS->getValue(XAP_STRING_ID_DLG_Delete));
+	m_buttonDelete = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowInsertBookmark)->buttons)->data);
+	GTK_WIDGET_SET_FLAGS (m_buttonDelete, GTK_CAN_DEFAULT);
+
 	// cancel button
 	//
 	gnome_dialog_append_button(GNOME_DIALOG(windowInsertBookmark), GNOME_STOCK_BUTTON_CANCEL);

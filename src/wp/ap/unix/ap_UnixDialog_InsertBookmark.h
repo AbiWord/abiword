@@ -38,6 +38,7 @@ public:
 
 	void event_OK(void);
 	void event_Cancel(void);
+	void event_Delete(void);
 
 protected:
 	virtual GtkWidget *		_constructWindow(void);
@@ -49,6 +50,7 @@ protected:
 
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
+	GtkWidget * m_buttonDelete;
 
 	GtkWidget * m_comboEntry;
 	GtkWidget * m_comboBookmark;

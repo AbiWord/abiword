@@ -8688,7 +8688,10 @@ UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 	UT_ASSERT(pFG);
 	UT_ASSERT(szName);
 
-	double fDPI = m_pG->getResolution() * 100 / m_pG->getZoomPercentage();
+	if (!pFG)
+	  return UT_ERROR;
+
+	double fDPI = m_pG->getResolution() * 100. / m_pG->getZoomPercentage();
 	return pFG->insertIntoDocument(m_pDoc, fDPI, getPoint(), szName);
 }
 

@@ -75,6 +75,12 @@ static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_InsertBookmark * 
 	dlg->event_Cancel();
 }
 
+static void s_delete_clicked(GtkWidget * widget, AP_UnixDialog_InsertBookmark * dlg)
+{
+	UT_ASSERT(widget && dlg);
+	dlg->event_Delete();
+}
+
 /***********************************************************************/
 void AP_UnixDialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 {
@@ -136,6 +142,12 @@ void AP_UnixDialog_InsertBookmark::event_OK(void)
 void AP_UnixDialog_InsertBookmark::event_Cancel(void)
 {
 	setAnswer(AP_Dialog_InsertBookmark::a_CANCEL);
+	gtk_main_quit();
+}
+
+void AP_UnixDialog_InsertBookmark::event_Delete(void)
+{
+	setAnswer(AP_Dialog_InsertBookmark::a_DELETE);
 	gtk_main_quit();
 }
 
@@ -213,6 +225,11 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
   gtk_box_pack_start (GTK_BOX (hbox1), m_buttonOK, FALSE, FALSE, 3);
   gtk_widget_set_usize (m_buttonOK, DEFAULT_BUTTON_WIDTH, 0);
 
+  m_buttonDelete = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Delete));
+  gtk_widget_show (m_buttonDelete);
+  gtk_box_pack_start (GTK_BOX (hbox1), m_buttonDelete, FALSE, FALSE, 3);
+  gtk_widget_set_usize (m_buttonDelete, DEFAULT_BUTTON_WIDTH, 0);
+
   m_buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
   gtk_widget_show (m_buttonCancel);
   gtk_box_pack_start (GTK_BOX (hbox1), m_buttonCancel, FALSE, FALSE, 3);
@@ -238,6 +255,10 @@ void AP_UnixDialog_InsertBookmark::_connectSignals (void)
 	gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
 					   "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   (gpointer) this);
+	gtk_signal_connect(GTK_OBJECT(m_buttonDelete),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_delete_clicked),
 					   (gpointer) this);
 	
 	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),

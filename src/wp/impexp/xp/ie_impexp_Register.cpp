@@ -99,7 +99,7 @@ void IE_ImpExp_RegisterXP ()
   IE_ImpGraphic::registerImporter(new IE_ImpGraphicJPEG_Sniffer ());
 #endif
   IE_ImpGraphic::registerImporter(new IE_ImpGraphicPNG_Sniffer ());
-  IE_ImpGraphic::registerImporter(new IE_ImpGraphicSVG_Sniffer ());
+  //IE_ImpGraphic::registerImporter(new IE_ImpGraphicSVG_Sniffer ());
 #ifdef HAVE_LIBWMF
   IE_ImpGraphic::registerImporter(new IE_ImpGraphicWMF_Sniffer ());
 #endif

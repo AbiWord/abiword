@@ -706,25 +706,32 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 #ifdef SUPPORTS_OLD_IMAGES
 		wvStream_goto(ps->data, achp->fcPic_fcObj_lTagObj);
 		
-		wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf, ps->data);		
-		fil = picf.rgb;
-		
-		if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
-		{
+		if (1 == wvGetPICF(wvQuerySupported(&ps->fib, NULL), &picf, 
+				   ps->data) && NULL != picf.rgb)
+		  {	
+		    fil = picf.rgb;
+		    
+		    if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
+		      {
 			this->_handleImage(&blip, picf.dxaGoal, picf.dyaGoal);
-		}
-		else
-		{
+		      }
+		    else
+		      {
 			UT_DEBUGMSG(("Dom: no graphic data\n"));
-		}
+		      }
 #else
-		UT_DEBUGMSG(("DOM: 0x01 graphics support is disabled at the moment\n"));
+		    UT_DEBUGMSG(("DOM: 0x01 graphics support is disabled at the moment\n"));
 #endif
-
-		wvStream_goto(ps->data, pos);
-		
-		return 0;
-		
+		    
+		    wvStream_goto(ps->data, pos);
+		    
+		    return 0;
+		  }
+		else
+		  {
+		    UT_DEBUGMSG(("Couldn't import graphic!\n"));
+		    return 0;
+		  }
 	case 0x08: // Word 97, 2000, XP image
 		
 		if (wvQuerySupported(&ps->fib, NULL) >= WORD8) // sanity check
@@ -1574,11 +1581,13 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   UT_ByteBuf * pictData     = new UT_ByteBuf();
   
   // suck the data into the ByteBuffer
-  
+
   int data = 0;
-  while (EOF != (data = getc((FILE*)(b->blip.bitmap.m_pvBits))))
+  while (EOF != (data = getc(((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream)))
     pictData->append((UT_Byte*)&data, 1);
   
+  fclose (((wvStream*)(b->blip.bitmap.m_pvBits))->stream.file_stream);
+
   error = IE_ImpGraphic::constructImporter (pictData, IEGFT_Unknown, &importer);
   if ((error != UT_OK) || !importer)
     {

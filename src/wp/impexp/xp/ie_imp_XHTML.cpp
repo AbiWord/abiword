@@ -217,6 +217,7 @@ IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
 {
 	m_iListID = 0;
 	m_iNewListID = 0;
+	m_bFirstDiv = true;
 }
 
 IE_Imp_XHTML::~IE_Imp_XHTML()
@@ -520,7 +521,6 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	                                                // this just avoids all the processing if there is an error
-
 #define NEW_ATTR_SZ 3
  	const XML_Char *new_atts[NEW_ATTR_SZ];
 	XML_Char * sz = NULL;
@@ -543,13 +543,21 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_BODY:
 	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
 		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_Sec;
+		X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
 		return;		
 
 	case TT_DIV:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
-		X_VerifyParseState(_PS_Doc);
-		m_parseState = _PS_Sec;
-		X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
+		X_VerifyParseState(_PS_Sec);
+		if( !m_bFirstDiv )
+		{
+			X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
+		}
+		else
+		{
+			m_bFirstDiv = false;
+		}
 		return;
 
 	case TT_Q:
@@ -916,14 +924,13 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 
 	case TT_BODY:
 	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
-		X_VerifyParseState(_PS_Doc);
+		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Doc;
 		return;
 
 	case TT_DIV:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
 		X_VerifyParseState(_PS_Sec);
-		m_parseState = _PS_Doc;
 		return;
 
 	case TT_OL:
@@ -1023,3 +1030,16 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 	}
 }
 
+
+void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
+{
+  if( m_parseState == _PS_Sec )
+       { 
+               // Sets a block Strux and falls through.  
+               // Hack to work around the need for <p> etc to enter data 
+               // from HTML. 
+               X_CheckError(getDoc()->appendStrux(PTX_Block,NULL)); 
+       } 
+
+  IE_Imp_XML::charData ( buffer, length );
+}

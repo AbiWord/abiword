@@ -17,6 +17,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
+
+/* See bug 1764
+ * This product is not manufactured, approved, or supported by 
+ * Corel Corporation or Corel Corporation Limited."
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

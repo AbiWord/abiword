@@ -56,10 +56,13 @@ public:
 								  const XML_Char **atts);
     void			endElement(const XML_Char *name);
 
+    virtual void charData (const XML_Char * buffer, int length);
+
 protected:
     
 	enum listType {L_NONE = 0, L_OL = 1, L_UL = 2 } m_listType;
 	UT_uint16	m_iListID;
+	bool        m_bFirstDiv;
 	UT_uint16	m_iNewListID;
 
 	UT_Stack	m_utsParents;

@@ -31,8 +31,6 @@
 #include "xap_UnixFrame.h"
 
 #ifdef HAVE_GNOME
-#include <gnome.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
 #include "gr_UnixGnomeImage.h"
 #endif
 

@@ -1421,7 +1421,8 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 		k++;
 
 	pDialog->setFileTypeList(szDescList, szSuffixList, (const UT_sint32 *) nTypeList);
-	
+	if (iegft != NULL)
+	  pDialog->setDefaultFileType(*iegft);
 	pDialog->runModal(pFrame);
 
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
@@ -2705,7 +2706,7 @@ Defun1(fileInsertGraphic)
 	char* pNewFile = NULL;
 
 
-	IEGraphicFileType iegft;
+	IEGraphicFileType iegft = IEGFT_Unknown;
 	bool bOK = s_AskForGraphicPathname(pFrame,&pNewFile,&iegft);
 
 	if (!bOK || !pNewFile)
@@ -2720,7 +2721,7 @@ Defun1(fileInsertGraphic)
 	UT_Error errorCode;
 
 	errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
-	if(errorCode)
+	if(errorCode != UT_OK)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
@@ -2728,7 +2729,7 @@ Defun1(fileInsertGraphic)
 	  }
 	
 	errorCode = pIEG->importGraphic(pNewFile, &pFG);
-	if(errorCode)
+	if(errorCode != UT_OK || !pFG)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
@@ -2741,7 +2742,7 @@ Defun1(fileInsertGraphic)
 	ABIWORD_VIEW;
 
 	errorCode = pView->cmdInsertGraphic(pFG, pNewFile);
-	if (errorCode)
+	if (errorCode != UT_OK)
 	{
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 

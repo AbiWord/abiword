@@ -65,8 +65,6 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 #else
 	_s("Normal",	"P", "",       "Current Settings", "font-family:Times New Roman; font-size:12pt; font-weight:normal; font-style:normal; font-stretch:normal; font-variant:normal; margin-top:0pt; margin-bottom:0pt; margin-left:0pt; margin-right:0pt; text-decoration:none; text-indent:0in; text-position:normal; text-align:left; line-height:1.0; color:000000; bgcolor:transparent; widows:2; field-font:NULL");
 #endif
-	_s("Normal Clean",	"P", "Normal",    "Current Settings", "font-weight:normal; font-style:normal; margin-top:0pt; text-align:left; line-height:1.0; field-font:NULL");
-
 	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:17pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
 	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
 	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:12pt; font-weight:bold; margin-top:22pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");

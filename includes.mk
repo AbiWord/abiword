@@ -119,7 +119,7 @@ else
 BIDI_LIBS=
 endif
 ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a $(BIDI_LIBS)
-ABI_LIBS+=$(top_builddir)/src/wp/impexp/xp/libImpexp.a
+ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
 ABI_LIBS+=$(top_builddir)/src/af/xap/libXap.a
 ABI_LIBS+=$(top_builddir)/src/af/util/libUtil.a
 ABI_LIBS+=$(top_builddir)/src/af/gr/libGr.a
@@ -139,7 +139,7 @@ ABI_OBJECTS=xp/*.o @PLATFORM@/*.o
 SUFFIXES=.mm
 .mm.o:
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) $<
-	
+
 # MacOS X resource compiling
 # TODO add autoconf macros to detect Rez, ResMerger and other stuff. 
 #      currently we use the hardcode locations
