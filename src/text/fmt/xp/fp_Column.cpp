@@ -1279,6 +1279,8 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 
 					if(pVisibleLine)
 					{
+#if 0
+						// !!! This results in an endless loop (bug 7420)
 						// get the container that holds this line, so we deal with wrapped
 						// lines, etc.
 						fp_Container * pVisibleContainer = pVisibleLine->getContainer();
@@ -1287,6 +1289,11 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 													  y - pContainer->getY() , 
 													  pos, bBOL, bEOL,isTOC);
 
+#else
+						pVisibleLine->mapXYToPosition(x - pVisibleLine->getX(),
+													  y - pVisibleLine->getY() , 
+													  pos, bBOL, bEOL,isTOC);
+#endif
 						return;
 					}
 					
