@@ -59,6 +59,7 @@
 #include "fp_Page.h"
 #include "fp_ContainerObject.h"
 #include "fp_Column.h"
+#include "gr_Graphics.h"
 
 class fl_TableLayout;
 
@@ -240,6 +241,7 @@ public:
 private:
 		
 	void                _clear(fp_TableContainer * pBroke);
+	void				_drawLine(UT_RGBColor clr, UT_sint32 lineStyle, UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot);
 	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec);
 		
 //

@@ -351,6 +351,38 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 #endif
 }
 
+// just a little helper function
+void fp_CellContainer::_drawLine(UT_RGBColor clr, UT_sint32 lineStyle, UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot)
+{
+	GR_Graphics * pGr = getGraphics();
+	
+	pGr->setColor(clr);
+	switch (lineStyle)
+	{
+		case LS_OFF: // do nothing
+			break;
+		case LS_NORMAL: // normal line style is default, so don't do anything
+			break;
+		case LS_ON_OFF_DASH:
+			pGr->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_ON_OFF_DASH);
+			break;
+		case LS_DOUBLE_DASH:
+			pGr->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOUBLE_DASH);
+			break;
+		case LS_DOTTED:
+			pGr->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED);
+			break;
+		default:
+			break;
+	}
+// draw the actual line
+	if (lineStyle != LS_OFF)
+		pGr->drawLine(left, top, right, bot);
+	
+// set the line style to normal again, because nobody sets it themself when drawing something
+	pGr->setLineProperties(1, GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+}
+
 /*!
  * Draw background and lines around a cell in a broken table.
  */
@@ -447,59 +479,19 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		//
 		if(m_bDrawLeft)
 		{
-			getGraphics()->setColor(m_cLeftColor);
-			switch (m_iLeftStyle)
-			{
-				case LS_OFF: // do nothing
-					break;
-				case LS_NORMAL:
-					getGraphics()->drawLine(iLeft,iTop, iLeft, iBot);
-					break;
-				default:
-					break;
-			}
+			_drawLine(m_cLeftColor, m_iLeftStyle, iLeft,iTop, iLeft, iBot);
 		}
 		if(m_bDrawTop && bDrawTop)
 		{
-			getGraphics()->setColor(m_cTopColor);
-			switch (m_iTopStyle)
-			{
-				case LS_OFF: // do nothing
-					break;
-				case LS_NORMAL:
-					getGraphics()->drawLine(iLeft, iTop, iRight, iTop);
-					break;
-				default:
-					break;
-			}
+			_drawLine(m_cTopColor, m_iTopStyle, iLeft, iTop, iRight, iTop);
 		}
 		if(m_bDrawRight && m_iRightStyle == LS_NORMAL)
 		{
-			getGraphics()->setColor(m_cRightColor);
-			switch (m_iRightStyle)
-			{
-				case LS_OFF: // do nothing
-					break;
-				case LS_NORMAL:
-					getGraphics()->drawLine(iRight, iTop, iRight, iBot);
-					break;
-				default:
-					break;
-			}
+			_drawLine(m_cRightColor, m_iRightStyle, iRight, iTop, iRight, iBot);
 		}
 		if(m_bDrawBot && bDrawBot)
 		{
-			getGraphics()->setColor(m_cBottomColor);
-			switch (m_iBottomStyle)
-			{
-				case LS_OFF: // do nothing
-					break;
-				case LS_NORMAL:
-					getGraphics()->drawLine(iLeft, iBot, iRight, iBot);
-					break;
-				default:
-					break;
-			}
+			_drawLine(m_cBottomColor, m_iBottomStyle, iLeft, iBot, iRight, iBot);
 		}
 	}
 	m_bLinesDrawn = true;

@@ -325,8 +325,11 @@ struct xmlToIdMapping {
 #define FS_FILL		1	// normal full fill
 
 // define the line styles for the cell borders
-#define LS_OFF		0	// off
-#define LS_NORMAL	1	// normal line
+#define LS_OFF			0	// off
+#define LS_NORMAL		1	// normal
+#define LS_ON_OFF_DASH	2	// on-off-dash
+#define LS_DOUBLE_DASH	3	// doube-dash
+#define LS_DOTTED		4	// dotted
 
 ///
 /// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
@@ -343,8 +346,11 @@ static struct xmlToIdMapping s_FillStyleTokens[] =
 ///
 static struct xmlToIdMapping s_LineStyleTokens[] =
 {
-	{	"normal",		LS_NORMAL		},
-	{	"off",			LS_OFF			}
+	{	"dotted",			LS_DOTTED		},
+	{	"double-dash",		LS_DOUBLE_DASH	},
+	{	"normal",			LS_NORMAL		},
+	{	"off",				LS_OFF			},
+	{	"on-off-dash",		LS_ON_OFF_DASH	}
 };
 #define s_LineStyleTokenTableSize	((sizeof(s_LineStyleTokens)/sizeof(s_LineStyleTokens[0])))
 
