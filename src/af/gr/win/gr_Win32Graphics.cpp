@@ -442,7 +442,10 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 				if(! (pChars[iCharOffset+i] == 0x200B || pChars[iCharOffset+i] == 0xFEFF
 				   /*|| pChars[iCharOffset+i] == UCS_LIGATURE_PLACEHOLDER*/ ) )
 				{
-#if 0
+#if 1
+					// I rather stupidly changed this to the version
+					// below the #else, but this one produces much
+					// smaller rounding errors. Tomas, Dec 6, 2003
 					iwidth += pCharWidths[i];
 					inextAdvance = tdu(iwidth);
 					pCharAdvances[j] = inextAdvance - iadvance;
