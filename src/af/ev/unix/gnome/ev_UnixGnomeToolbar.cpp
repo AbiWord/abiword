@@ -39,10 +39,18 @@
 #include "xap_Prefs.h"
 #include "ev_UnixGnomeToolbar.h"
 
-// hack until gal 0.3 comes out with my c++ changes
+// hack to support gal < 0.3 
 extern "C" {
 #include <gal/widgets/gtk-combo-text.h>
+#include <gal/widgets/widget-color-combo.h>
+#include <gal/widgets/widget-pixmap-combo.h>
 }
+
+/*
+ * Pixmaps for the color combos
+ */
+#include "font.xpm"
+#include "bucket.xpm"
 
 #define NUM_TOOLBARS_PER_APP 3
 
@@ -162,6 +170,43 @@ static int s_combo_changed(GtkWidget * widget, gpointer user_data)
 	  }
 	return 0;
 }
+
+#define COLOR_NORMALIZE(c) (gint)(c)
+
+static void
+s_color_changed (ColorCombo * combo, GdkColor * color, _wd * wd)
+{
+       	gchar str [7];
+	gchar r[3], g[3], b[3];
+
+	// if nothing has been set, color will be null
+	// and we don't want to dereference null do we ;)
+	if (!color || !combo || !wd)
+	  return;
+
+	if (color->red == 0)
+	  strcpy (r, "00");
+	else
+	  g_snprintf (r, 3, "%2x", COLOR_NORMALIZE (color->red));
+
+	if (color->green == 0)
+	  strcpy (g, "00");
+	else
+	  g_snprintf (g, 3, "%2x", COLOR_NORMALIZE (color->green));
+
+	if (color->blue == 0)
+	  strcpy (b, "00");
+	else
+	  g_snprintf (b, 3, "%2x", COLOR_NORMALIZE (color->blue));
+
+	g_snprintf (str, 7, "%s%s%s", r, g, b);
+
+	//UT_DEBUGMSG(("DOM: the color is '%s' (%s, %s, %s)\n", str, r, g, b));
+
+	wd->m_pUnixToolbar->toolbarEvent(wd, (UT_UCSChar *)str, strlen (str));
+}
+
+#undef COLOR_NORMALIZE
 
 /*
  * Some toolbar items are too damn wide to put into the toolbar
@@ -379,7 +424,41 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 				DELETEP(pControl);
 			}
 			break;
-					
+				
+			case EV_TBIT_ColorFore:
+			  {
+			    GtkWidget * fore_combo;
+			    fore_combo = color_combo_new (font_xpm, szToolTip, NULL, NULL);
+			    _wd * wd = new _wd (this, id);
+			    wd->m_widget = fore_combo;
+			    gtk_combo_box_set_title (GTK_COMBO_BOX (fore_combo),
+						     szToolTip);
+			    toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
+							 fore_combo,
+							 szToolTip,
+							 (const char *)NULL);
+			    gtk_signal_connect (GTK_OBJECT (fore_combo), "changed",
+						GTK_SIGNAL_FUNC (s_color_changed), wd);
+			    break;
+			  }
+
+			case EV_TBIT_ColorBack:
+			  {
+			    GtkWidget * back_combo;
+			    back_combo = color_combo_new (bucket_xpm, szToolTip, NULL, NULL);
+			    _wd * wd = new _wd (this, id);
+			    wd->m_widget = back_combo;
+			    gtk_combo_box_set_title (GTK_COMBO_BOX (back_combo),
+						     szToolTip);
+			    toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
+							 back_combo,
+							 szToolTip,
+							 (const char *)NULL);
+			    gtk_signal_connect (GTK_OBJECT (back_combo), "changed",
+						GTK_SIGNAL_FUNC (s_color_changed), wd);
+			    break;
+			  }
+
 			case EV_TBIT_StaticLabel:
 				// TODO do these...
 				break;

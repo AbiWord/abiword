@@ -34,4 +34,12 @@ BeginLayout(ExtraOps)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_SUPERSCRIPT)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_SUBSCRIPT)
 	ToolbarItem(AP_TOOLBAR_ID_INSERT_SYMBOL)
+
+#ifdef HAVE_GNOME
+     /* TODO: these should be moved out into the general public */
+     Spacer()
+     ToolbarItem(AP_TOOLBAR_ID_COLOR_FORE)
+     ToolbarItem(AP_TOOLBAR_ID_COLOR_BACK)
+#endif
+
 EndLayout()

@@ -96,8 +96,9 @@ BeginSet(en,US,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,			NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Bullet Lists",		tb_lists_bullets_xpm,		NULL,		"Start/Stop Bullet Lists")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Numbered Lists",		tb_lists_numbers_xpm,		NULL,		"Start/Stop Numbered Lists")
-	
-	// ... add others here ...
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Foreground Color",	NoIcon,			NULL, "Change Foreground Color")
+        ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Background Color",	NoIcon,			NULL, "Change Background Color")
+     // ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 

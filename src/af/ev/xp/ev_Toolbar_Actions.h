@@ -73,8 +73,10 @@ typedef enum _ev_Toolbar_ItemType
 	EV_TBIT_DropDown		= 5,			/* list box w/no text entry */
 	EV_TBIT_ComboBox		= 6,			/* list box w/ text entry */
 	EV_TBIT_StaticLabel		= 7,			/* a static control */
-	EV_TBIT_Spacer			= 8				/* for extra space between buttons */
-	
+	EV_TBIT_Spacer			= 8,				/* for extra space between buttons */
+	EV_TBIT_ColorFore               = 9,                    /* control to set the foreground color */
+	EV_TBIT_ColorBack               = 10                    /* control to set the background color */
+
 } EV_Toolbar_ItemType;
 
 /*****************************************************************/

@@ -284,6 +284,9 @@ public:
 	static EV_EditMethod_Fn doBullets;
 	static EV_EditMethod_Fn doNumbers;
 
+        static EV_EditMethod_Fn colorForeTB;
+        static EV_EditMethod_Fn colorBackTB;
+
 	static EV_EditMethod_Fn alignLeft;
 	static EV_EditMethod_Fn alignCenter;
 	static EV_EditMethod_Fn alignRight;
@@ -574,6 +577,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	EV_EditMethod(NF(doNumbers),			0,		""),
 	EV_EditMethod(NF(doBullets),			0,		""),
+	
+	EV_EditMethod(NF(colorForeTB), _D_, ""),
+	EV_EditMethod(NF(colorBackTB), _D_, ""),
 
 	EV_EditMethod(NF(dlgWordCount),			0,		""),
    	EV_EditMethod(NF(dlgSpell),			0,		""),
@@ -4662,6 +4668,33 @@ Defun1(doNumbers)
 	return UT_TRUE;
 }
 
+Defun(colorForeTB)
+{
+  ABIWORD_VIEW;
+
+  const XML_Char * properties[] = { "color", NULL, 0};
+  properties[1] = (const XML_Char *) pCallData->m_pData;
+  pView->setCharFormat(properties);
+
+  return UT_TRUE;
+}
+
+Defun(colorBackTB)
+{
+        ABIWORD_VIEW;
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+#if 1
+	pFrame->raise();
+	s_TellNotImplemented(pFrame, "Background Color", __LINE__);
+#else
+	const XML_Char * properties[] = { "bgcolor", NULL, 0};
+	properties[1] = (const XML_Char *) pCallData->m_pData;
+	pView->setCharFormat(properties);
+#endif
+	return UT_TRUE;
+}
 
 Defun0(togglePlain)
 {

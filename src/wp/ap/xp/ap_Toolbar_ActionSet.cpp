@@ -79,7 +79,8 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 #ifdef HAVE_GNOME
 	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton, "printPreview", AV_CHG_NONE, NULL);
 #endif	
-
+	_s(AP_TOOLBAR_ID_COLOR_FORE, EV_TBIT_ColorFore, "colorForeTB", AV_CHG_NONE, NULL);
+	_s(AP_TOOLBAR_ID_COLOR_BACK, EV_TBIT_ColorBack, "colorBackTB", AV_CHG_NONE, NULL);
 	_s(AP_TOOLBAR_ID_EDIT_UNDO,		EV_TBIT_PushButton,		"undo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);
 	_s(AP_TOOLBAR_ID_EDIT_REDO,		EV_TBIT_PushButton,		"redo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);
 	_s(AP_TOOLBAR_ID_EDIT_CUT,		EV_TBIT_PushButton,		"cut",			AV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
