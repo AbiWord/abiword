@@ -216,7 +216,6 @@ public:
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										unsigned char * pData, UT_uint32 lenData);
 
-	enum PictFormat {picNone, picPNG};
 protected:
 	UT_Error			_parseFile(FILE * fp);
 	UT_Error			_writeHeader(FILE * fp);
@@ -224,6 +223,17 @@ protected:
 
 // importer helper methods
 private:
+	enum PictFormat {
+		picNone, 
+		picPNG,
+		picJPEG, 
+		picBMP, 
+		picWMF, 
+		picPICT, 
+		picEMF, 
+		picGIF
+	};
+
 	bool AddChar(UT_UCSChar ch);
 	bool FlushStoredChars(bool forceInsertPara = false);
 	bool StartNewPara();
