@@ -63,6 +63,7 @@ static lang_entry s_Table[] =
 	{"fr-CA",		NULL, XAP_STRING_ID_LANG_FR_CA},
 	{"fr-CH",		NULL, XAP_STRING_ID_LANG_FR_CH},
 	{"fr-FR",		NULL, XAP_STRING_ID_LANG_FR_FR},
+	{"ga-IE",               NULL, XAP_STRING_ID_LANG_GA_IE},
 	{"gl-ES",               NULL, XAP_STRING_ID_LANG_GL_ES},
 	{"hi-IN",		NULL, XAP_STRING_ID_LANG_HI_IN},
 	{"hu-HU",		NULL, XAP_STRING_ID_LANG_HU_HU},
