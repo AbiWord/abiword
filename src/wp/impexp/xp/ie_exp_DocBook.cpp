@@ -251,7 +251,7 @@ void s_DocBook_Listener::_openParagraph(PT_AttrPropIndex api)
 
 void s_DocBook_Listener::_openSection(PT_AttrPropIndex /* api*/)
 {
-	m_pie->write("<chapter>\n");
+	m_pie->write("<chapter>\n<title></title>\n");
 }
 
 
