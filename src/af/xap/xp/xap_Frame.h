@@ -284,6 +284,13 @@ private:
 
 };
 #else
+typedef enum _FrameModes
+{
+	XAP_NormalFrame,	// Normal Frame
+	XAP_NoMenusWindowLess,	// No toplevel window or menus
+	XAP_WindowLess // No toplevel window but menus are OK.
+} XAP_FrameMode;
+
 class ABI_EXPORT XAP_Frame
 {
 public:
