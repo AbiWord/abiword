@@ -1614,7 +1614,7 @@ void fl_CellLayout::_lookupProperties(void)
 		}
 	}
 	const char* pszBgColor = NULL;
-	pSectionAP->getProperty("bg-color", (const XML_Char *&)pszBgColor);
+	pSectionAP->getProperty("bgcolor", (const XML_Char *&)pszBgColor);
 	if(pszBgColor && pszBgColor[0])
 	{
 		UT_parseColor(pszBgColor, m_cBgColor);
