@@ -118,7 +118,10 @@ BOOL CALLBACK XAP_Win32Dialog_Zoom::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,L
 		
 	case WM_COMMAND:
 		pThis = (XAP_Win32Dialog_Zoom *)GetWindowLong(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
+		if (pThis)
+			return pThis->_onCommand(hWnd,wParam,lParam);
+		else
+			return 0;
 
 	case WM_NOTIFY:
 		pThis = (XAP_Win32Dialog_Zoom *)GetWindowLong(hWnd,DWL_USER);
