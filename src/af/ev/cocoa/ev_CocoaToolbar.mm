@@ -63,19 +63,17 @@
 	else  if ([sender isKindOfClass:[NSComboBox class]]){
 		XAP_Toolbar_Id tlbrID = [sender tag];
 		NSString * str = [sender stringValue];
-		UT_UCS4Char * data = NULL;
-		size_t dataSize = 0;
+		const char * text = NULL;
 	    if (tlbrID == AP_TOOLBAR_ID_FMT_SIZE)
 		{
-		    data = (UT_UCS4Char*)UT_strdup(XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str UTF8String]));
+		    text = UT_strdup(XAP_EncodingManager::fontsizes_mapping.lookupByTarget([str UTF8String]));
 		}
 		else
 		{
-			data = (UT_UCS4Char*)UT_strdup([str UTF8String]);
+			text = UT_strdup([str UTF8String]);
 		}
-		dataSize = strlen((char*)data);
-		_xap->toolbarEvent (tlbrID, data, dataSize);
-		FREEP (data);
+		UT_UCS4String ucsText(text);
+		_xap->toolbarEvent (tlbrID, ucsText.ucs4_str(), ucsText.length());
 	}
 	else {
 		UT_DEBUGMSG (("Unexpected object class\n"));
@@ -158,7 +156,7 @@ NSButton * EV_CocoaToolbar::_makeToolbarButton (int type, EV_Toolbar_Label * pLa
 }
 
 bool EV_CocoaToolbar::toolbarEvent(XAP_Toolbar_Id tlbrid,
-									 UT_UCSChar * pData,
+									 const UT_UCSChar * pData,
 									 UT_uint32 dataLength)
 
 {
