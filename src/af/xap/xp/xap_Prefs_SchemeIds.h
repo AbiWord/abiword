@@ -84,7 +84,7 @@
 #endif  /* BIDI_ENABLED */
 
 #define XAP_PREF_KEY_AutoSaveFile					"AutoSaveFile"
-#define XAP_PREF_DEFAULT_AutoSaveFile				"1"							/* Auto save files by default */
+#define XAP_PREF_DEFAULT_AutoSaveFile				"0"							/* Auto save files by default */
 
 #define XAP_PREF_KEY_AutoSaveFilePeriod					"AutoSaveFilePeriod"
 #define XAP_PREF_DEFAULT_AutoSaveFilePeriod				"5"							/* Auto save files by default */
