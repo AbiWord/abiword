@@ -209,12 +209,12 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
     _s(AP_MENU_ID_TABLE_INSERT_ROWS_BEFORE,0,0,0,"insertRowsBefore", ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_INSERT_ROWS_AFTER,0,0,0,"insertRowsAfter", ap_GetState_InTable, NULL);
      _s(AP_MENU_ID_TABLE_INSERT_CELLS,0,0,0, NULL, ap_GetState_InTable, NULL);
-   _s(AP_MENU_ID_TABLE_DELETE,1,0,0, NULL, NULL, NULL);
+   _s(AP_MENU_ID_TABLE_DELETE,1,0,0, NULL, ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_DELETE_TABLE,0,0,0, NULL, ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_DELETE_COLUMNS,0,0,0, "deleteColumns", ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_DELETE_ROWS,0,0,0, "deleteRows", ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_DELETE_CELLS,0,0,0, "deleteCell", ap_GetState_InTable, NULL);
-    _s(AP_MENU_ID_TABLE_SELECT,1,0,0, NULL, NULL, NULL);
+    _s(AP_MENU_ID_TABLE_SELECT,1,0,0, NULL, ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_SELECT_TABLE,0,0,0, NULL, ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_SELECT_COLUMN,0,0,0, NULL, ap_GetState_InTable, NULL);
     _s(AP_MENU_ID_TABLE_SELECT_ROW,0,0,0, NULL, ap_GetState_InTable, NULL);
@@ -244,8 +244,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_WINDOW_9,			0,0,0,	"activateWindow_9",	ap_GetState_Window,		ap_GetLabel_Window);
 	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"dlgMoreWindows",	NULL,					ap_GetLabel_WindowMore);
 
-	_s(AP_MENU_ID_WEB, 1,0,0, NULL, NULL, NULL);
-	_s(AP_MENU_ID_WEB_SAVEASWEB, 0,1,0, "fileSaveAsWeb", NULL, NULL);
 	_s(AP_MENU_ID_WEB_WEBPREVIEW, 0,1,0, "filePreviewWeb", NULL, NULL);
 
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);

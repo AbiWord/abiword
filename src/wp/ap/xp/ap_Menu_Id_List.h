@@ -214,8 +214,6 @@ menuitem(WINDOW_8)
 menuitem(WINDOW_9)
 menuitem(WINDOW_MORE)
 
-menuitem(WEB)
-menuitem(WEB_SAVEASWEB)
 menuitem(WEB_WEBPREVIEW)
 
 menuitem(HELP)
