@@ -79,6 +79,9 @@ public:
  	SET_GATHER			(ViewUnprintable,	bool );
   
  	SET_GATHER			(NotebookPageNum,	int );
+#ifdef BIDI_ENABLED
+	SET_GATHER			(OtherDirectionRtl, bool);
+#endif
 #undef SET_GATHER
 
  protected:
@@ -131,6 +134,9 @@ public:
 	PtWidget_t * m_checkbuttonViewAll;
 	PtWidget_t * m_checkbuttonViewHiddenText;
 	PtWidget_t * m_checkbuttonViewUnprintable;
+#ifdef BIDI_ENABLED
+    PtWidget_t * m_checkbuttonOtherDirectionRtl;
+#endif
 
 	PtWidget_t * m_checkbuttonSmartQuotesEnable;
 
@@ -139,6 +145,8 @@ public:
 	PtWidget_t * m_buttonApply;
 	PtWidget_t * m_buttonOK;
 	PtWidget_t * m_buttonCancel;
+
+	UT_Vector	 m_vecUnits;
 
 	int			 done;
 

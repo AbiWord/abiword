@@ -310,6 +310,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *checkbuttonViewUnprintable;
 
 	PtArg_t args[10];
+	const char *item;
 	int		n;
 
 #define WIN_WIDTH  450	
@@ -496,9 +497,24 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  ABI_DEFAULT_BUTTON_WIDTH, 0);
 	listViewRulerUnit = PtCreateWidget(PtComboBox, hrulergroup, n, args);
-	const char *items2[] = { "inch", "mm", "cm", "twips", "points", "pico"  };
-	PtListAddItems(listViewRulerUnit, items2, 6, 0);
-	UT_QNXComboSetPos(listViewRulerUnit, 1);
+	//Populate the list with the units and set the vector
+    m_vecUnits.clear();
+	item = pSS->getValue(XAP_STRING_ID_DLG_Unit_inch);
+	PtListAddItems(listViewRulerUnit, &item, 1, 0);
+    m_vecUnits.addItem((void *)DIM_IN);
+	item = pSS->getValue(XAP_STRING_ID_DLG_Unit_cm);
+	PtListAddItems(listViewRulerUnit, &item, 1, 0);
+    m_vecUnits.addItem((void *)DIM_CM);
+	item = pSS->getValue(XAP_STRING_ID_DLG_Unit_points);
+	PtListAddItems(listViewRulerUnit, &item, 1, 0);
+    m_vecUnits.addItem((void *)DIM_PT);
+	item = pSS->getValue(XAP_STRING_ID_DLG_Unit_pico);
+	PtListAddItems(listViewRulerUnit, &item, 1, 0);
+    m_vecUnits.addItem((void *)DIM_PI);
+
+	/*
+	TODO: Page Size
+	*/
 	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB)), 0);
@@ -563,6 +579,22 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	m_checkbuttonSmartQuotesEnable = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 
 
+#ifdef BIDI_ENABLED
+/*
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_BiDiOptions)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtCreateWidget(PtGroup, vmiscgroup, n, args);
+*/
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_DirectionRtl)), 0);
+	PtSetArg(&args[n++], Pt_ARG_WIDTH,  2 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtWidget_t *rtl_dominant = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
+#endif		
+
+
 	/*** Create the horizontal button group ***/
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, 5, 0);
@@ -605,6 +637,9 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 
     m_windowMain = windowOptions;
 	m_notebook = notebook1 = NULL;
+#ifdef BIDI_ENABLED
+	m_checkbuttonOtherDirectionRtl = rtl_dominant;
+#endif
 
     m_checkbuttonSpellCheckAsType	= checkbuttonSpellCheckAsType;
     m_checkbuttonSpellHideErrors	= checkbuttonSpellHideErrors;
@@ -697,6 +732,16 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 	case id_CHECK_SMART_QUOTES_ENABLE:
 		return m_checkbuttonSmartQuotesEnable;
 		break;
+
+/* TODO: Page Size
+	case id_LIST_DEFAULT_PAGE_SIZE:
+		return m_listDefaultPageSize;
+*/
+
+#ifdef BIDI_ENABLED
+	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
+		return m_checkbuttonOtherDirectionRtl;
+#endif
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// prefs
@@ -818,8 +863,11 @@ DEFINE_GET_SET_BOOL(SpellMainOnly);
 DEFINE_GET_SET_BOOL(SpellUppercase);
 DEFINE_GET_SET_BOOL(SpellNumbers);
 DEFINE_GET_SET_BOOL(SpellInternet);
-
 DEFINE_GET_SET_BOOL(SmartQuotesEnable);
+
+#ifdef BIDI_ENABLED
+DEFINE_GET_SET_BOOL(OtherDirectionRtl);
+#endif
 
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 
@@ -831,48 +879,30 @@ DEFINE_GET_SET_BOOL(ViewShowStatusBar);
 
 UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void) 
 {				
-#if 0
-	UT_ASSERT(m_listViewRulerUnits && GTK_IS_OPTION_MENU(m_listViewRulerUnits)); 
-	return (UT_Dimension)((gint)gtk_object_get_data( GTK_OBJECT(m_listViewRulerUnits), WIDGET_MENU_VALUE_TAG )); 
-#endif
-}			
+	int selection;
+    selection = UT_QNXComboGetPos(m_listViewRulerUnits);
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// This function will lookup a option box by the value stored in the 
-//	user data under the key WIDGET_MENU_VALUE_TAG
-//
-typedef struct {
-	int index;
-	int found;
-	char *key;
-	void *data;
-} search_data;
+	UT_ASSERT(m_listViewRulerUnits && selection > 0);
 
-static void search_for_value ( PtWidget_t *widget, void * _value )
-{
-#if 0
-	search_data *value = (search_data *)_value;
-
-	if ( !GTK_IS_MENU_ITEM(widget))
-		return;
-
-	value->index++;
-
-	gint v = (gint) gtk_object_get_data( GTK_OBJECT(widget), value->key );
-	if ( v == (gint)value->data )
-	{
-		// UT_DEBUGMSG(("search_for_value [%d]", (gint) value->data ));
-		value->found = value->index;
-	}
-#endif
+/*
+ 	void *junk;
+ 	junk = m_vecUnits.getNthItem(selection - 1);
+ 	return (UT_Dimension)((int)junk);
+*/
+ 	return (UT_Dimension)((int)m_vecUnits.getNthItem(selection - 1));
 }
 
 void    AP_QNXDialog_Options::_setViewRulerUnits(UT_Dimension dim) 
 {	
-	UT_DEBUGMSG(("TODO: setViewRulerUnits "));
-#if 0
-	int r = option_menu_set_by_key ( m_listViewRulerUnits, (void *)dim, WIDGET_MENU_VALUE_TAG ); 
-#endif
+	UT_uint32 i;
+
+	for(i = 0; i < m_vecUnits.getItemCount(); i++) {
+		if((UT_Dimension)((int)m_vecUnits.getNthItem(i)) == dim) {
+			UT_QNXComboSetPos(m_listViewRulerUnits, i+1);
+			return;
+		}
+	}
+	UT_ASSERT(0);
 }
 
 DEFINE_GET_SET_BOOL	(ViewCursorBlink);
