@@ -567,6 +567,12 @@ bool AP_CocoaApp::canPasteFromClipboard(void)
 #endif
 }
 
+/* While I suppose it's possible there's a use for loading shared objects
+ * like this, it would make better sense to support only bundle-loading;
+ * I think the finder tracks application plugins...? I'm sure there was
+ * some note recommending that plugins be given a distinctive suffix,
+ * however; if so, for Cocoa perhaps ".abi" is best? e.g. "Aiksaurus.abi"
+ */
 // return > 0 for directory entries ending in ".so"
 #if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__)
 static int so_only (struct dirent *d)
@@ -580,13 +586,7 @@ static int so_only (const struct dirent *d)
     {
       int len = strlen (name);
 
-      if (len >= 7)
-	{
-	  if(!strcmp(name+(len-7), ".bundle"))
-	    return 1;
-	}
-
-      if (len >= 3)
+      if (len >= 3) // See note above...
 	{
 	  if(!strcmp(name+(len-3), ".so"))
 	    return 1;
@@ -628,68 +628,20 @@ void AP_CocoaApp::loadAllPlugins ()
 
 			  UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin.c_str()));
 
-			  struct stat pluginInfo;
-			  if (stat (plugin.c_str(), &pluginInfo) != 0)
+			  int len = strlen (namelist[n]->d_name);
+			  if (len < 4)
 			  {
-				  UT_DEBUGMSG(("FJF: stat failed... odd.\n"));
+				  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
 				  free(namelist[n]);
 				  continue;
 			  }
-#ifdef S_ISDIR
-			  bool pluginIsBundle = (S_ISDIR (pluginInfo.st_mode) != 0);
-#else
-			  bool pluginIsBundle = ((pluginInfo.st_mode & S_IFDIR) != 0);
-#endif
-			  /* Bundles "*.bundle" are directories, plugins "*.so" are modules.
-			   * so_only checks only the suffix, so we need to confirm nature here:
-			   */
-			  if (pluginIsBundle)
+			  if(strcmp (namelist[n]->d_name+(len-3), ".so") != 0)
 			  {
-				  int len = strlen (namelist[n]->d_name);
-				  if (len < 8)
-				  {
-					  UT_DEBUGMSG(("FJF: bad name for a bundle\n"));
-					  free(namelist[n]);
-					  continue;
-				  }
-				  if(strcmp (namelist[n]->d_name+(len-7), ".bundle") != 0)
-				  {
-					  UT_DEBUGMSG(("FJF: not really a bundle?\n"));
-					  free(namelist[n]);
-					  continue;
-				  }
-			  }
-			  else
-			  {
-				  int len = strlen (namelist[n]->d_name);
-				  if (len < 4)
-				  {
-					  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
-					  free(namelist[n]);
-					  continue;
-				  }
-				  if(strcmp (namelist[n]->d_name+(len-3), ".so") != 0)
-				  {
-					  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
-					  free(namelist[n]);
-					  continue;
-				  }
-			  }
-#if 0
-			  if (pluginIsBundle)
-			  {
-				  if (XAP_ModuleManager::instance().loadBundle (plugin.c_str(), namelist[n]->d_name))
-				  {
-					  UT_DEBUGMSG(("FJF: loaded bundle: %s\n", namelist[n]->d_name));
-				  }
-				  else
-				  {
-					  UT_DEBUGMSG(("FJF: didn't load bundle: %s\n", namelist[n]->d_name));
-				  }
+				  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
 				  free(namelist[n]);
 				  continue;
 			  }
-#endif
+
 			  if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
 			  {
 				  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));
@@ -703,6 +655,11 @@ void AP_CocoaApp::loadAllPlugins ()
 		  free(namelist);
       }
   }
+
+  /* SPI modules don't register automatically on loading, so
+   * now that we've loaded the modules we need to register them:
+   */
+  XAP_ModuleManager::instance().registerPending ();
 }
 
 /*****************************************************************/

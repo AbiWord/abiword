@@ -1124,7 +1124,9 @@ void AP_QNXApp::catchSignals(int sig_num)
 	abort();
 }
 
-/*Taken from unix july 1'th.*/
+/* Taken from unix july 1'th.
+ * Updated similarly July 20th (fjf)
+ */
 static int so_only (struct dirent *d)
 {
 	const char * name = d->d_name;
@@ -1132,12 +1134,6 @@ static int so_only (struct dirent *d)
 	if ( name )
 	{
 		int len = strlen (name);
-		
-		if (len >= 7)
-		{
-			if(!strcmp(name+(len-7), ".bundle"))
-				return 1;
-		}
 		
 		if (len >= 3)
 		{
@@ -1181,65 +1177,16 @@ void AP_QNXApp::loadAllPlugins ()
 
 			  UT_DEBUGMSG(("DOM: loading plugin %s\n", plugin.c_str()));
 
-			  struct stat pluginInfo;
-			  if (stat (plugin.c_str(), &pluginInfo) != 0)
+			  int len = strlen (namelist[n]->d_name);
+			  if (len < 4)
 			  {
-				  UT_DEBUGMSG(("FJF: stat failed... odd.\n"));
+				  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
 				  free(namelist[n]);
 				  continue;
 			  }
-#ifdef S_ISDIR
-			  bool pluginIsBundle = (S_ISDIR (pluginInfo.st_mode) != 0);
-#else
-			  bool pluginIsBundle = ((pluginInfo.st_mode & S_IFDIR) != 0);
-#endif
-			  /* Bundles "*.bundle" are directories, plugins "*.so" are modules.
-			   * so_only checks only the suffix, so we need to confirm nature here:
-			   */
-			  if (pluginIsBundle)
+			  if(strcmp (namelist[n]->d_name+(len-3), ".so") != 0)
 			  {
-				  int len = strlen (namelist[n]->d_name);
-				  if (len < 8)
-				  {
-					  UT_DEBUGMSG(("FJF: bad name for a bundle\n"));
-					  free(namelist[n]);
-					  continue;
-				  }
-				  if(strcmp (namelist[n]->d_name+(len-7), ".bundle") != 0)
-				  {
-					  UT_DEBUGMSG(("FJF: not really a bundle?\n"));
-					  free(namelist[n]);
-					  continue;
-				  }
-			  }
-			  else
-			  {
-				  int len = strlen (namelist[n]->d_name);
-				  if (len < 4)
-				  {
-					  UT_DEBUGMSG(("FJF: bad name for a plugin\n"));
-					  free(namelist[n]);
-					  continue;
-				  }
-				  if(strcmp (namelist[n]->d_name+(len-3), ".so") != 0)
-				  {
-					  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
-					  free(namelist[n]);
-					  continue;
-				  }
-			  }
-			  if (pluginIsBundle)
-			  {
-	#if 0
-				  if (XAP_ModuleManager::instance().loadBundle (plugin.c_str(), namelist[n]->d_name))
-				  {
-					  UT_DEBUGMSG(("FJF: loaded bundle: %s\n", namelist[n]->d_name));
-				  }
-				  else
-				  {
-	#endif 
-					  UT_DEBUGMSG(("FJF: didn't load bundle: %s\n", namelist[n]->d_name));
-//				  }
+				  UT_DEBUGMSG(("FJF: not really a plugin?\n"));
 				  free(namelist[n]);
 				  continue;
 			  }
@@ -1257,5 +1204,10 @@ void AP_QNXApp::loadAllPlugins ()
 		  free(namelist);
       }
   }
+
+  /* SPI modules don't register automatically on loading, so
+   * now that we've loaded the modules we need to register them:
+   */
+  XAP_ModuleManager::instance().registerPending ();
 }
 

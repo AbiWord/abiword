@@ -296,6 +296,11 @@ bool AP_Win32App::initialize(void)
 	}
 	_findclose( findtag );
 
+	/* SPI modules don't register automatically on loading, so
+	 * now that we've loaded the modules we need to register them:
+	 */
+	XAP_ModuleManager::instance().registerPending ();
+
 	return true;
 }
 
