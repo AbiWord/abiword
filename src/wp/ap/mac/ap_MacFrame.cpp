@@ -30,7 +30,14 @@
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
-#include "gr_MacGraphics.h"
+#ifndef XP_MAC_TARGET_QUARTZ
+# include "xap_MacFontManager.h"
+# include "gr_MacFont.h"
+# include "gr_MacQDGraphics.h"
+#else
+# include "gr_MacGraphics.h"
+#endif
+
 #include "ap_Prefs.h"
 #include "xap_Scrollbar_ViewListener.h"
 #include "ap_MacTopRuler.h"
@@ -173,6 +180,8 @@ void AP_MacFrame::killFrameData(void)
 	m_pData = NULL;
 }
 
+// Could these two procedures be combined ...
+// Seems to be called twice ???
 void AP_MacFrame::setXScrollRange(void)
 {
 	UT_ASSERT (UT_NOT_IMPLEMENTED); 
@@ -251,7 +260,7 @@ UT_Error AP_MacFrame::_showDocument(UT_uint32 iZoom)
 		return UT_IE_IMPORTERROR;
 	}
 
-	GR_MacGraphics * pG = NULL;
+  	GR_MacGraphics * pG = NULL; 
 	FL_DocLayout * pDocLayout = NULL;
 	AV_View * pView = NULL;
 	AV_ScrollObj * pScrollObj = NULL;
@@ -265,12 +274,12 @@ UT_Error AP_MacFrame::_showDocument(UT_uint32 iZoom)
 //	bool bFocus;
 	XAP_MacFontManager * fontManager = ((XAP_MacApp *) getApp())->getFontManager();
 	
-	pG = new GR_MacGraphics(m_MacWindowPort, fontManager, getApp());
-	UT_ASSERT(pG);
-	pG->setZoomPercentage(iZoom);
+	pG = new GR_MacGraphics (m_MacWindowPort, fontManager, getApp());
+	UT_ASSERT(pG); 
+	pG->setZoomPercentage(iZoom); 
 	
-	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
-	UT_ASSERT(pDocLayout);
+	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG); 
+	UT_ASSERT(pDocLayout); 
   
 //	pDocLayout->formatAll();
 
@@ -353,7 +362,7 @@ UT_Error AP_MacFrame::_showDocument(UT_uint32 iZoom)
 		pOldDoc = ((AP_FrameData*)m_pData)->m_pDocLayout->getDocument();
 	}
 
-	REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG);
+ 	REPLACEP(((AP_FrameData*)m_pData)->m_pG, pG); 
 	REPLACEP(((AP_FrameData*)m_pData)->m_pDocLayout, pDocLayout);
 	if (pOldDoc != m_pDoc)
 	{
@@ -430,7 +439,7 @@ UT_Error AP_MacFrame::_showDocument(UT_uint32 iZoom)
 
 Cleanup:
 	// clean up anything we created here
-	DELETEP(pG);
+ 	DELETEP(pG); 
 	DELETEP(pDocLayout);
 	DELETEP(pView);
 	DELETEP(pViewListener);

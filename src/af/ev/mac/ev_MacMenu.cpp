@@ -37,6 +37,7 @@
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
+#include "ap_Menu_Id.h"
 
 /*****************************************************************/
 
@@ -54,14 +55,14 @@ EV_MacMenu::EV_MacMenu(XAP_MacApp * pMacApp, XAP_MacFrame * pMacFrame,
 
 EV_MacMenu::~EV_MacMenu(void)
 {
-    if (m_hMacMenubar) {
-#if UNIVERSAL_INTERFACES_VERSION <= 0x0330
-        ::DisposeHandle (m_hMacMenubar);
+	if (m_hMacMenubar) {
+#if TARGET_API_MAC_CARBON
+		::DisposeMenuBar (m_hMacMenubar);
 #else
-        ::DisposeMenuBar (m_hMacMenubar);
+		::DisposeHandle (m_hMacMenubar);
 #endif
-        m_hMacMenubar = NULL;
-    }
+		m_hMacMenubar = NULL;
+	}
 }
 
 bool EV_MacMenu::onCommand(XAP_Menu_Id id)
@@ -110,6 +111,7 @@ bool EV_MacMenu::synthesizeMenuBar(void)
 #else
 	m_hMacMenubar = ::GetMenuBar();
 	::HandToHand (&m_hMacMenubar);
+	// Check MemErr ???
 #endif
 
        
@@ -208,8 +210,8 @@ bool EV_MacMenu::synthesize(void)
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
         
-        UT_ASSERT(m_hMacMenubar);
-        ::SetMenuBar (m_hMacMenubar);
+	UT_ASSERT(m_hMacMenubar);
+	::SetMenuBar (m_hMacMenubar);
 
 	UT_Stack stack;
 	UT_Stack typeStack;
@@ -218,12 +220,7 @@ bool EV_MacMenu::synthesize(void)
 	
 	m_lastSubMenuID++;
 	
-	parentMenu = ::GetMenu (RES_MENU_APPLE);
-	UT_ASSERT (parentMenu);
-	if (parentMenu == NULL) {
-		UT_DEBUGMSG(("GetMenu (RES_MENU_APPLE) failed: %d\n", ::ResError()));
-	}
-	::InsertMenu (parentMenu, 0);			
+    _insertAppleMenu ();
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++) {
 		short currentItem;
@@ -272,7 +269,7 @@ bool EV_MacMenu::synthesize(void)
 			UT_ASSERT(bResult);
 			bResult = typeStack.viewTop ((void **)&menuType);
 			UT_ASSERT(bResult);
-			// we only create non empty menus. Otherwise it does not work... (menu manger do not like it).
+			// we only create non empty menus. Otherwise it does not work... (menu manager does not like it).
 			// TODO handle the MRU list as it looks like it is the only case were this happens.
 			if (menuLabel [0] != 0) {
 				currentItem = ::CountMenuItems (parentMenu);
@@ -337,7 +334,7 @@ bool EV_MacMenu::synthesize(void)
 		}
 		case EV_MLF_EndSubMenu:
 		{
-			// pop to go on level up
+			// pop to go one level up
 			bResult = stack.pop((void **)&parentMenu);
 			UT_ASSERT(bResult);
 			bResult = typeStack.pop ((void **)&menuType);
@@ -375,11 +372,30 @@ bool EV_MacMenu::synthesize(void)
 	bResult = stack.pop((void **)&menu);
 	UT_ASSERT(bResult);
 	UT_ASSERT(menu == m_hMacMenubar);
-	return true;
+	return true;  // only returns true
 }
 
+OSErr EV_MacMenu::_insertAppleMenu(void)
+{
+	OSErr ose;
+	MenuHandle 	ppm  = ::GetMenu (RES_MENU_APPLE);
+	UT_ASSERT (ppm);
+	
+	if (ppm == NULL) {
+		UT_DEBUGMSG(("GetMenu (RES_MENU_APPLE) failed: %d\n", ::ResError()));
+	} 
+	else {  
+		// populate Apple Menu  
+		::AppendResMenu(ppm, 'DRVR' ); 	// never fails
+	} 	
+	::InsertMenu (ppm, 0);		 		// never fails
+		
+	ose = ::SetMenuItemCommandID (ppm, 1, AP_MENU_ID_HELP_ABOUT );
+	UT_ASSERT (ose == noErr);
+	
+	return ose; 
+}
 
-//
 // Find the XAP_Menu_Id stored for the item #<item> on the menu ID <menu>.
 XAP_Menu_Id EV_MacMenu::findMenuId (short menu, short item)
 {

@@ -37,6 +37,8 @@
 #include "ut_MacAssert.h"
 #include "ut_MacString.h"
 
+Boolean bStopAsking = false;
+
 void UT_MacAssertMsg(const char * szMsg, const char * szFile, int iLine)
 {
 	static int count = 0;
@@ -44,7 +46,13 @@ void UT_MacAssertMsg(const char * szMsg, const char * szFile, int iLine)
 	
 	if (XAP_MacApp::m_NotInitialized) {
 		::DebugStr ("\pFatal error: toolbox not yet initialized. Can't raise exception.");
+		return;
 	}
+	
+	if( bStopAsking ) {
+		// Continue through assertion failures
+		return;
+	};
 	
 	C2PStr (msgStr, szMsg);
 	C2PStr (fileStr, szFile);
@@ -55,17 +63,28 @@ void UT_MacAssertMsg(const char * szMsg, const char * szFile, int iLine)
 	while (1)
 	{
 		short item;
-		item = ::Alert (RES_ALRT_ASSERT, NULL);
+		item = ::StopAlert (RES_ALRT_ASSERT, NULL);
 	
 		switch (item)
 		{
 		case 1:
-			return;		// continue the application
-
-		case 2:
-			::DebugStr ("\pAssert failed");
-			abort();	// kill the application
+			abort();	// Quit the application
 			return;
+			
+		case 2:
+			return;		// Continue the application
+
+		case 3:
+			Str255 szBuf;
+			sprintf( ( char * )szBuf+1, "[%s %d] Assert failed : %s", szFile, iLine, szMsg );
+			szBuf[0] = strlen( ( char * )szBuf+1 );
+			::DebugStr ( szBuf );
+			return;	    // Debug the application
+			
+		case 4:
+			bStopAsking = true;
+			return;		// Continue the application & stop asking
+
 		default:
 			break;		// ?? ask them again
 		}

@@ -19,6 +19,9 @@
  */
 
 #include <stdio.h>
+
+#include <ATSUnicode.h>
+
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -27,6 +30,7 @@
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
 #ifndef XP_MAC_TARGET_QUARTZ
+# include "gr_MacFont.h"
 # include "gr_MacQDGraphics.h"
 #else
 # include "gr_MacGraphics.h"

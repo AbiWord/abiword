@@ -22,6 +22,7 @@
 #include <MacWindows.h>
 #include <Controls.h>
 #include <ControlDefinitions.h>
+#include <ATSUnicode.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -30,6 +31,7 @@
 #include "xap_MacFrame.h"
 #include "xap_MacApp.h"
 #ifndef XP_MAC_TARGET_QUARTZ
+# include "gr_MacFont.h"
 # include "gr_MacQDGraphics.h"
 #else
 # include "gr_MacGraphics.h"
@@ -60,28 +62,28 @@ void AP_MacStatusBar::setView(AV_View * pView)
 	// unfortunately, the actual window (m_wStatusBar->window)
 	// is not created until the frame's top-level window is
 	// shown.
-    CGrafPtr controlPort;
+	CGrafPtr controlPort = NULL;
     
 	DELETEP(m_pG);	
 	XAP_MacApp * app = static_cast<XAP_MacApp *>(m_pFrame->getApp());
 	XAP_MacFontManager * fontManager = app->getFontManager();
 
-    UT_ASSERT (m_wStatusBar);    
+	UT_ASSERT (m_wStatusBar);
 	controlPort = ::GetWindowPort (::GetControlOwner (m_wStatusBar));
 	GR_MacGraphics * pG = new GR_MacGraphics(controlPort, fontManager, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
-	
+
 	//	GtkStyle * style = gtk_widget_get_style((static_cast<XAP_MacFrame *> (m_pFrame))->getTopLevelWindow());
 	//	UT_ASSERT(style);
 	//	pG->init3dColors(style);
 	
 	GR_Font * pFont = m_pG->getGUIFont();
-	m_pG->setFont(pFont);
+	m_pG->setFont(pFont); 
 	
 	// Now that we've initialized the graphics context and
 	// installed the GUI font, let the base class do it's
-	// think and layout the fields.
+	// thing and layout the fields.
 	
 	AP_StatusBar::setView(pView);
 }

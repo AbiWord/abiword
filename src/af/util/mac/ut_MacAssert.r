@@ -30,47 +30,99 @@
 # include <MacTypes.r>
 #else
 # include <Carbon.r>
-#endif
+#endif /*  REZ_CARBON */
 
 #define __INCLUDING_REZ__
 #include "xap_Mac_ResID.h"
 
-
 resource 'ALRT' (RES_ALRT_ASSERT) {
-	{ 0, 0, 150, 250 },
+	{ 0, 0, 300, 470 },
 	RES_DITL_ALRT_ASSERT,
-	{
+	{	/* array: 4 elements */
+		/* [1] */
 		OK, visible, silent,
+		/* [2] */
 		OK, visible, silent,
+		/* [3] */
 		OK, visible, silent,
+		/* [4] */
 		OK, visible, silent
 	},
 	centerParentWindow
 };
 
-
 resource 'DITL' (RES_DITL_ALRT_ASSERT) {
-	{
-		{114, 189, 137, 237},
+	{	/* array DITLarray: 12 elements */
+		/* [1] */
+		{263, 368, 283, 446},
 		Button {
 			enabled,
-			"Yes"
+			"Quit"
 		},
-		{114, 128, 137, 176},
+		/* [2] */
+		{263, 280, 283, 358},
 		Button {
 			enabled,
-			"No"
+			"Muddle on"
 		},
-/*
-		{114, 67, 137, 115},
+		/* [8] */
+		{263, 190, 283, 268},
 		Button {
 			enabled,
-			"Cancel"
-		},*/
-		{13, 78, 101, 237},
+			"Debug"
+		},
+		/* [9] */
+		{263, 102, 283, 180},
+		Button {
+			enabled,
+			"Stop asking"
+		},
+		/* [3] */
+		{260, 365, 286, 449},
+		UserItem {
+			disabled
+		},
+		/* [4] */
+		{0, 64, 16, 280},
 		StaticText {
 			disabled,
-			"Assert \"^0\" failed at ^1:^2. Continue ?"
+			"Assert"
+		},
+		/* [5] */
+		{0, 422, 16, 467},
+		UserItem {
+			disabled
+		},
+		/* [6] */
+		{18, 64, 22, 467},
+		UserItem {
+			disabled
+		},
+		/* [7] */
+		{253, 4, 254, 466},
+		UserItem {
+			disabled
+		},
+		/* [11] */
+		{48, 64, 108, 420},
+		StaticText {
+			disabled,
+			"I most humbly apologise, and regret to r"
+			"eport that there has been an assertion f"
+			"ailure with these details."
+		},
+		/* [10] */
+		{96, 64, 156, 420},
+		StaticText {
+			disabled,
+			"File: ^1, ^2\n"
+		},
+		/* [12] */
+		{168, 64, 228, 420},
+		StaticText {
+			disabled,
+			"Message:  ^0"
 		}
 	}
 };
+

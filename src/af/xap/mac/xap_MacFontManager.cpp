@@ -21,9 +21,12 @@
 
 
 /*
-	The aim of this class is to provide abstraction ove ATSUI for simple purpose.
+	The aim of this class is to provide abstraction over ATSUI for simple purpose.
 	TODO: make it part of the XP to be used form XP code for all platforms.
  */
+ 
+#include <string.h>
+ 
 #include "ut_debugmsg.h"
 #include "xap_MacFontManager.h"
 
@@ -100,10 +103,12 @@ ATSUStyle  XAP_MacFontManager::findFont (const char* pszFontFamily,
 
 
 
-/* MakeThemeATSUIStyle creates a simple ATSUI style record
-    that based on the current theme font ID that can be used in
+/*  MakeThemeATSUIStyle creates a simple ATSUI style record
+    that is based on the current theme font ID and can be used in
     calls to the ATSUI text drawing routines. */ 
-/* see http://developer.apple.com/qa/qa2001/qa1027.html for me reference */
+    
+/*  see <URL: http://developer.apple.com/qa/qa2001/qa1027.html > for 
+    theme reference */
 OSStatus XAP_MacFontManager::_makeThemeATSUIStyle(ThemeFontID themeFontID,
 												  ATSUStyle *theStyle) 
 {
@@ -116,7 +121,7 @@ OSStatus XAP_MacFontManager::_makeThemeATSUIStyle(ThemeFontID themeFontID,
 	Style fontStyle;
 	Boolean trueV = true, falseV = false;
     
-	/* Three parrallel arrays for setting up attributes. */
+	/* Three parallel arrays for setting up attributes. */
 	ATSUAttributeTag theTags[] = {
 		kATSUFontTag, kATSUSizeTag, kATSUVerticalCharacterTag,
 		kATSUQDBoldfaceTag, kATSUQDItalicTag, kATSUQDUnderlineTag, 

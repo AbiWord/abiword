@@ -24,6 +24,7 @@
 #ifndef XAP_MACFRAME_H
 #define XAP_MACFRAME_H
 
+/* Mac headers */
 #include <MacWindows.h>
 #include <MacTypes.h>
 #include <Controls.h>
@@ -79,7 +80,7 @@ public:
 	virtual XAP_DialogFactory *	getDialogFactory(void);
 	virtual void				setXScrollRange(void);
 	virtual void				setYScrollRange(void);
-	virtual bool 			runModalContextMenu(AV_View * pView, const char * szMenuName, UT_sint32 x, UT_sint32 y);
+	virtual bool 				runModalContextMenu(AV_View * pView, const char * szMenuName, UT_sint32 x, UT_sint32 y);
 	
 	virtual void				setStatusMessage(const char * szMsg) { UT_ASSERT (UT_NOT_IMPLEMENTED); };
 

@@ -28,16 +28,6 @@
 #include "ut_misc.h"
 #include "gr_Graphics.h"
 
-class MacFont : public GR_Font
-{
-public:
-	MacFont(int font, int face, int pointSize);
-private:
-	int m_font;
-	int m_face;
-	int m_pointSize;
-};
-
 class MacGraphics : public GR_Graphics
 {
 public:
@@ -55,6 +45,10 @@ public:
 	//virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	
+	virtual UT_uint32 getFontAscent(GR_Font *);
+	virtual UT_uint32 getFontDescent(GR_Font *);
+	virtual UT_uint32 getFontHeight(GR_Font *);
+
 	virtual void setColor(UT_RGBColor& clr);
 	virtual GR_Font* getGUIFont();
 	virtual GR_Font* findFont(
@@ -71,7 +65,7 @@ public:
 	*/
 	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-
+	virtual void setLineWidth(UT_sint32);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);
 
 	/* For fillRect() and ??:
@@ -79,8 +73,10 @@ public:
 	**   ?? should x0+w,y0+h or x0+w+1,y0+h+1 be the last pixel affected ??
 	*/
 	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(UT_RGBColor& c, UT_Rect &r);
 	virtual void invertRect(const UT_Rect* pRect);
 	virtual void setClipRect(const UT_Rect* pRect);
+	virtual void scroll(UT_sint32, UT_sint32, XAP_Frame * pFrame = NULL);
 	virtual void scroll(UT_sint32, UT_sint32);
 	virtual void scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						UT_sint32 x_src, UT_sint32 y_src,
@@ -96,10 +92,22 @@ public:
 							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual bool endPrint(void);
 	void _syncQDOrigin() {};
+	virtual void setColorSpace(GR_Graphics::ColorSpace c);
+	virtual GR_Graphics::ColorSpace getColorSpace(void) const ;
+	virtual void setCursor(GR_Graphics::Cursor c);
+	virtual GR_Graphics::Cursor getCursor(void) const ;
+	virtual void setColor3D(GR_Color3D c);
+	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	virtual void fillRect(GR_Color3D c, UT_Rect &r);
+	
 protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 
-        GrafPtr m_GrafPort;
+	UT_RGBColor m_3Dcolors[COUNT_3D_COLORS];
+    GrafPtr m_GrafPort;
+    GR_MacFont	*m_pMacFont;
+	XAP_MacFontManager	*m_pMacFontManager;
+
 	
 };
 

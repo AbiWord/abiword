@@ -20,6 +20,7 @@
 
 #include <Appearance.h>
 #include <ControlDefinitions.h>
+
 #include <Controls.h>
 
 #include "ut_assert.h"

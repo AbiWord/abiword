@@ -24,15 +24,63 @@
 
 #include "ut_timer.h"
 
+// Forward declaration
+class UT_MacTimer;
+
+//  Define an extended task record. 
+struct ExtendedTimerRec {
+	TMTask tmTask;
+	UT_MacTimer* pTimer;
+#if TARGET_CPU_PPC
+	//  Nothing needed for PowerPC 
+	
+#elif TARGET_CPU_68K
+	long applicationA5;
+	
+#else
+	#error "Huh?"
+	
+#endif //  TARGET_CPU_PPC 
+};
+
+typedef struct ExtendedTimerRec ExtendedTimerRec, *ExtendedTimerPtr;
+
+
 class UT_MacTimer : public UT_Timer
 {
 public:
+	UT_MacTimer(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG);
 	~UT_MacTimer();
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
-	virtual void stop(void);		/* suspend events */
-	virtual void start(void);		/* resume events */
+	virtual void stop(void);		//  suspend calling timer task 
+	virtual void start(void);		//  resume calling timer task 
+	
+	// Accessors
+	bool bGetStarted( void ) { return m_bStarted; };
+	UT_sint32 msGetInterval( void ) { return m_iMilliseconds; };
+
+	
+private:
+	UT_sint32			m_iMilliseconds;  // why not in  base class UT_Timer ???
+	bool				m_bStarted;
+	ExtendedTimerRec 	m_et;
+
+#if TARGET_CPU_PPC
+	static pascal void TimerCallbackProc( ExtendedTimerPtr tmTaskPtr );
+	
+#elif TARGET_CPU_68K
+	static pascal void TimerCallbackProc( void );
+	
+#else
+	#error "Huh?"
+	
+#endif //  TARGET_CPU_PPC 
+
+	static int 			_compareIdentifiers(const void* p1, const void* p2);
+	UT_uint32 			_createIdentifier(void);
+
 };
 
-#endif /* UT_MACTIMER_H */
+#endif //  UT_MACTIMER_H 
 

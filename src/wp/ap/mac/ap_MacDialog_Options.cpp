@@ -24,6 +24,8 @@
 
 
 #ifndef XP_MAC_TARGET_QUARTZ
+# include "xap_MacFontManager.h"
+# include "gr_MacFont.h"
 # include "gr_MacQDGraphics.h"
 #else
 # include "gr_MacGraphics.h"

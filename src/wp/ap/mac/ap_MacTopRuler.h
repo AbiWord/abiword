@@ -28,11 +28,7 @@
 
 #include "ut_types.h"
 #include "ap_TopRuler.h"
-#ifndef XP_MAC_TARGET_QUARTZ
-# include "gr_MacQDGraphics.h"
-#else
-# include "gr_MacGraphics.h"
-#endif
+
 class XAP_MacApp;
 class XAP_Frame;
 

@@ -12,7 +12,7 @@
 #endif
 
 /*
-	defined to 1 if we compile for Classic
+	defined to 1 if we compile for Carbon
 */
 #if TARGET_API_MAC_CARBON
 #define XP_MAC_TARGET_CARBON 	1

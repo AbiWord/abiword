@@ -1,3 +1,4 @@
+/* -*- c-basic-offset: 4; tab-width: 4; indent-tabs-mode: t -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -32,6 +33,9 @@ class AV_View;
 class XAP_MacApp;
 class XAP_MacFrame;
 
+#if UNIVERSAL_INTERFACES_VERSION <= 0x0330
+	typedef Handle MenuBarHandle;
+#endif
 
 /*****************************************************************/
 
@@ -48,7 +52,7 @@ public:
 	bool synthesize(void);
 
 
-    bool synthesizeMenuBar(void);
+	bool synthesizeMenuBar(void);
     
     XAP_Menu_Id findMenuId (short menu, short item);
 private:
@@ -65,11 +69,12 @@ private:
     MenuBarHandle	m_hMacMenubar;
     
     short m_lastSubMenuID;
-		
+
+	static OSErr _insertAppleMenu(void);
 	static void _convertToMac (char * buf, size_t bufSize, const char * label);
 	static char _getItemCmd (const char * mnemonic, UInt8 & modifiers, SInt16 & glyph);
-
-protected:
+    
+ protected:
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos) { UT_ASSERT(UT_NOT_IMPLEMENTED); }
 };
 

@@ -26,6 +26,8 @@
 #include "ut_debugmsg.h"
 #include "ut_types.h"
 
+#include <ATSUnicode.h>
+
 #include "xap_App.h"
 #include "xap_MacApp.h"
 #include "xap_MacFrame.h"
@@ -35,6 +37,7 @@
 #include "ap_Strings.h"
 
 #ifndef XP_MAC_TARGET_QUARTZ
+# include "gr_MacFont.h"
 # include "gr_MacQDGraphics.h"
 #else
 # include "gr_MacGraphics.h"
@@ -130,7 +133,7 @@ class ParagraphWin:public BWindow {
 		
 	private:
 		AP_MacDialog_Paragraph 	*m_DlgParagraph;
-		GR_MacGraphics				*m_MacGraphics;
+ 		GR_MacGraphics				*m_MacGraphics;
 				
 		sem_id modalSem;
 		status_t WaitForDelete(sem_id blocker);
@@ -280,7 +283,7 @@ void ParagraphWin::SetDlg(AP_MacDialog_Paragraph *brk)
 	Show();
 
 	//Create our preview window graphics
-	m_MacGraphics  = new GR_MacGraphics(preview, m_DlgParagraph->m_pApp);
+ 	m_MacGraphics  = new GR_MacGraphics(preview, m_DlgParagraph->m_pApp);  
 
 	if (preview->Window()->Lock())
 	{

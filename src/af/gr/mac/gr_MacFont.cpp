@@ -19,15 +19,17 @@
  * 02111-1307, USA.
  */
  
-/* patform: MacOS 8/9 and MacOS X */
+/* platform: MacOS 8/9 and MacOS X */
  
 /*
-   WARNING: this code make heavy use of ASTUI
+   WARNING: this code make heavy use of ATSUI
    If you don't know ATSUI, please don't try to modify it
    If you know ATSUI, please feel free and correct me
  */
+
 #include <ATSUnicode.h>
 #include <FixMath.h>
+#include <TextEncodingConverter.h>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -56,9 +58,6 @@ GR_MacFont::~GR_MacFont ()
 		UT_ASSERT (err == noErr);
 	}
 }
-
-
-
 
 UT_uint32 GR_MacFont::getAscent()
 {
@@ -97,7 +96,8 @@ UT_uint32 GR_MacFont::getHeight()
 	}
 	status = ATSUMeasureText(m_MeasurementText, 0, 1, NULL, NULL, &ascent, &descent);
 	UT_ASSERT (status == noErr);
-	
+/*	kATSUInvalidTextLayoutErr   = -8790,    An attempt was made to use a ATSUTextLayout which hadn't been initialized or is otherwise invlid */
+
 	return (UT_uint32)FixRound(descent + ascent);
 }
 
@@ -132,8 +132,9 @@ UT_uint32 GR_MacFont::getTextWidth (const UT_UCSChar * text) const
 
 /*
   From a UNICODE null terminated string (UCS-2) with specified length, create an ATSUTextLayout
-
-  layout is returned on exit. WARNING: you need to dispose it after use.
+  layout is returned on exit. 
+  
+  NOTE: It is the caller's responsibilty to dispose it after use.
  */
 OSStatus				 
 GR_MacFont::_UCSTextToATSUTextLayout (const UT_UCSChar *text, UT_uint32 textlen, ATSUTextLayout * layout) const
@@ -172,6 +173,7 @@ GR_MacFont::_initMeasurements ()
 	status = ATSUCreateTextLayoutWithTextPtr (uniText, 0, 2, uniTextLen, 1, 
 											  &runLengths, &m_fontStyle, &m_MeasurementText);
 	UT_ASSERT (status == noErr);
+/*    kATSUInvalidStyleErr        = -8791,    An attempt was made to use a ATSUStyle which hadn't been properly allocated or is otherwise  */
 	::DisposePtr ((Ptr)uniText);
 }
 /*
@@ -205,5 +207,6 @@ GR_MacFont::_quickAndDirtySetUnicodeTextFromASCII_C_Chars(UniCharArrayPtr *ucap,
 	DisposePtr(buffer);
 	*ucc = aol / 2;
 }
+
 
 
