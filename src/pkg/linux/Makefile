@@ -173,6 +173,7 @@ rpm: pack_rpm
 	      -e 's/__ABI_OPT_PEER_EXPAT__/$(ABI_OPT_PEER_EXPAT)/' \
 	      -e 's/__ABI_OPT_OPTIMIZE__/$(ABI_OPT_OPTIMIZE)/' \
 	      -e 's/__ABI_OPT_PSPELL__/$(ABI_OPT_PSPELL)/' \
+	      -e 's/__ABI_OPT_XFT__/$(ABI_OPT_XFT)/' \
 	      -e 's/__ABI_BUILD_PACKAGER__/$(ABI_BUILD_PACKAGER)/' \
 	      -e 's/__ABI_PLUGINS_TOOLS__/$(ABI_PLUGINS_TOOLS)/' \
 	      -e 's/__ABI_PLUGINS_IMPEXP__/$(ABI_PLUGINS_IMPEXP)/' \

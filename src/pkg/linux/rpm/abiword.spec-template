@@ -216,7 +216,7 @@ cd ../abi
 # Creates GNOME menu entries
 %__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/pixmaps
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{prefix}/share/pixmaps/abiword_48.png
-%__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/gnome/apps/Applications/
+%__mkdir_p $RPM_BUILD_ROOT/%{prefix}/share/applications/
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop $RPM_BUILD_ROOT/%{prefix}/share/applications/abiword.desktop
 
 # Copies oaf files
@@ -235,7 +235,7 @@ cd ../abi
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/templates/*
 
 %clean
-%__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
+##%__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 
 %files
 %defattr(644,root,root,755)
@@ -243,7 +243,7 @@ cd ../abi
 #%attr(755,root,root) %{ABIPREFIX}/AbiSuite/bin/*
 #%{ABIPREFIX}/AbiSuite/COPYING
 #%{ABIPREFIX}/AbiSuite/readme.txt
-#%{ABIPREFIX}/AbiSuite/AbiWord/readme.txt
+%{ABIPREFIX}/AbiSuite/AbiWord/readme.txt
 %{ABIPREFIX}/AbiSuite/AbiWord/help/en-US
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
 %{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
@@ -251,7 +251,7 @@ cd ../abi
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
 %{prefix}/share/pixmaps/abiword_48.png
-%{prefix}/share/gnome/apps/Applications/abiword.desktop
+%{prefix}/share/applications/abiword.desktop
 
 %files embeddable
 %defattr(644,root,root,755)
