@@ -186,7 +186,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	char *buffer;
 
 	DPRINTF(printf("GR: Draw Chars\n"));
-
+	
 	/*Wow, this really sucks here, we are allocating memory/releasing it 
 	 * on every drawString. We should find a way around this
 	 */
@@ -201,13 +201,13 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	for (i=0; i<iLength; i++) {
 		char * utf8char;
 		utf8char =  UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], UT_FALSE));
-		/*	
-		printf("GR: 0x%x -UCS2 2 UTF8-> ", pChars[i+iCharOffset]);
-		for (int t=0; utf8char[t]; t++) {
-			printf("0x%x ", utf8char[t]);
-		}
-		printf("\n");
-		*/
+			
+//		printf("GR: 0x%x -UCS2 2 UTF8-> ", pChars[i+iCharOffset]);
+//		for (int t=0; utf8char[t]; t++) {
+//			printf("0x%x ", utf8char[t]);
+//		}
+//		printf("\n");
+		
 		strcat(buffer, utf8char);						
 	}
 	
@@ -227,6 +227,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
  * Perfectly.
  */
 	int offset=(int)(fh.ascent + 0.5);
+
 	BFont viewFont;
 	m_pShadowView->GetFont(&viewFont);
 	BPoint *escapementArray=new BPoint[iLength];
@@ -240,17 +241,19 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	// TODO: need remapGlyph() before the following function call?
 	m_pShadowView->DrawString(UT_encodeUTF8char(pChars[0+iCharOffset]),
 							  BPoint(xoff,yoff+offset));
+								  
 	for (i=1; i<iLength; i++)
 	{
 		int widthAbiWants;
 		/*Measure the width of the previous character, draw char at new
 		 * offset
 		 */
-		widthAbiWants=(unsigned short int)ceil(escapementArray[i-1].x*fontsize);
+		widthAbiWants=(unsigned short int)ceil(escapementArray[i-1].x*fontsize - 1.0f);
 		xoff+=widthAbiWants;
 		m_pShadowView->DrawString(UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], UT_FALSE)),
 								  BPoint(xoff,yoff+offset));
 	}
+
 	m_pShadowView->Window()->Unlock();
 	delete [] escapementArray;
 	delete [] buffer;
@@ -467,7 +470,7 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	viewFont.GetEscapements(buffer,1,&tempdelta,escapementArray);
 	float fontsize=viewFont.Size();
 
-	return ceil(escapementArray[0].x *fontsize);
+	return ceil(escapementArray[0].x *fontsize - 1.0f);
 }
 #if 0
 UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
