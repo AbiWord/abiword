@@ -122,7 +122,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		// This fixes bug 4494
 		UT_uint32 ioldPer = m_pGraphics->getZoomPercentage();
 		m_pGraphics->setZoomPercentage(100);
-		lf.lfHeight = -(UT_convertToLogicalUnits(m_pFontSize));
+		lf.lfHeight = -(UT_convertToPoints(m_pFontSize));
 		m_pGraphics->setZoomPercentage(ioldPer);
 		
 	}

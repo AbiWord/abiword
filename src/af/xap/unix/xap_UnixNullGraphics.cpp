@@ -243,7 +243,7 @@ GR_Font* UnixNull_Graphics::findFont(const char* pszFontFamily,
 	XAP_UnixFont * unixfont = m_fm->getFont(pszFontFamily, s);
 	XAP_UnixFontHandle * item = NULL;
 
-	UT_uint32 iSize = UT_convertToLogicalUnits(pszFontSize);
+	UT_uint32 iSize = UT_convertToPoints(pszFontSize);
 	if (unixfont)
 	{
 		// Make a handle on the unixfont.

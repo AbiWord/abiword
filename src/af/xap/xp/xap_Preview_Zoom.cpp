@@ -100,9 +100,9 @@ void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
 			m_gc->setFont(found);
 			REPLACEP(m_pFont, found);
 		}
-		else 
+		else {
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
+		}
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -110,7 +110,6 @@ void XAP_Preview_Zoom::setFont(XAP_Preview_Zoom::tFont f)
 
 	// store it for next time
 	m_previewFont = f;
-
 }
 
 void XAP_Preview_Zoom::setZoomPercent(UT_uint32 percent)
