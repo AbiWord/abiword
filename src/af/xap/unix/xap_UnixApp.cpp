@@ -81,7 +81,7 @@ UT_Bool AP_UnixApp::initialize(void)
 	{
 		UT_DEBUGMSG(("$ABIWORD_FONTPATH not set, using default font path.\n"));
 		// change this?
-		m_fontManager->setFontPath("../../lib/unix/fonts");
+		m_fontManager->setFontPath("src/wp/lib/unix/fonts;wp/lib/unix/fonts;../../lib/unix/fonts");
 	}
 
 	// let it loose
