@@ -639,7 +639,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	AV_View * pView = pFrame->getCurrentView();
-
+	XAP_Frame::tZoomType zType = pFrame->getZoomType();
 	if (pView)
 	{
 		pUnixFrameImpl->m_iNewWidth = e->width;
@@ -647,7 +647,6 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 		XAP_App * pApp = pFrame->getApp();
 		UT_sint32 x,y;
 		UT_uint32 width,height,flags;
-
 		pApp->getGeometry(&x,&y,&width,&height,&flags);
 //
 // Who ever wants to change this code in the future. The height and widths you
@@ -668,9 +667,10 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 
 		// Dynamic Zoom Implementation
 
-        if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
-            pUnixFrameImpl->m_iZoomUpdateID = g_idle_add(static_cast<GSourceFunc>(do_ZoomUpdate), static_cast<gpointer>(pUnixFrameImpl));
-
+		if(!pUnixFrameImpl->m_bDoZoomUpdate && (pUnixFrameImpl->m_iZoomUpdateID == 0))
+		{
+			pUnixFrameImpl->m_iZoomUpdateID = g_idle_add(static_cast<GSourceFunc>(do_ZoomUpdate), static_cast<gpointer>(pUnixFrameImpl));
+		}
 	}
 	return 1;
 }
@@ -842,6 +842,10 @@ gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	FV_View * pView = static_cast<FV_View *>(pUnixFrameImpl->getFrame()->getCurrentView());
+	if((pUnixFrameImpl->m_bDoZoomUpdate) || (pUnixFrameImpl->m_iZoomUpdateID != 0))
+	{
+		return TRUE;
+	}
 	if(pView)
 	{
 		GR_Graphics * pGr = pView->getGraphics ();

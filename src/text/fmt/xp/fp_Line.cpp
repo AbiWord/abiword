@@ -1423,7 +1423,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	pVCon->getScreenOffsets(this, my_xoff, my_yoff);
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
 
-	if(((my_yoff < -32000) || (my_yoff > 32000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	if(((my_yoff < -128000) || (my_yoff > 128000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 
 //

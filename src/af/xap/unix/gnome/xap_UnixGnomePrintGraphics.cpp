@@ -97,7 +97,7 @@ GnomePrintConfig * XAP_UnixGnomePrintGraphics::s_setup_config (XAP_Frame * pFram
 	gnome_print_config_set (cfg, reinterpret_cast<const guchar *>(GNOME_PRINT_KEY_PAGE_ORIENTATION) ,
 							pView->getPageSize().isPortrait () ? reinterpret_cast<const guchar *>("R0") : reinterpret_cast<const guchar *>("R90"));
 
-	if (!strcmp (pView->getPageSize().getPredefinedName (), "Custom")) 
+	//   	if (!strcmp (pView->getPageSize().getPredefinedName (), "Custom")) 
 	{
 
 		const GnomePrintUnit *from = gnome_print_unit_get_by_abbreviation (reinterpret_cast<const guchar*>("mm"));
