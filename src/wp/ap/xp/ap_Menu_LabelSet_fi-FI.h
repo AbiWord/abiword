@@ -103,8 +103,9 @@ BeginSet(fi,FI,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_STRIKE,		"&Yliviivattu",			"Muuta valinta yliviivatuksi (p‰‰lle/pois)")
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,   	"Yl‰&indeksi",         		"Muuta valinta yl‰indeksiksi (p‰‰lle/pois)")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,             "Alai&ndeksi",         		"Muuta valinta alaindeksiksi (p‰‰lle/pois)")
-
+	MenuLabel(AP_MENU_ID_TOOLS,                             "&Tyˆkalut",                       NULL)
         MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Oikoluku",		        "Tarkista asiakirja virheellisit‰ sanoista")
+	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,   "&Laske sanat",          "Lasketaan sanat asiakirjassa")
 	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Asetukset",			"Muuta asetuksia")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Tasaus",			NULL)
