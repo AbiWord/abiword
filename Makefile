@@ -20,25 +20,11 @@
 
 DEPENDS=
 
-ifdef ABI_OPT_JS
-DEPENDS+=		_JS_
-endif
-
 DEPENDS_ABIWORD=	$(DEPENDS)
-DEPENDS_ABICALC=	$(DEPENDS) _GLIB_ _GXML_
-
-# all:		$(DEPENDS_ABIWORD) $(DEPENDS_ABICALC)
-#	@echo Building AbiWord and AbiCalc...
-# 	$(MAKE) -C src T=all  &&  echo AbiWord and AbiCalc build complete.
 
 abiword:	$(DEPENDS_ABIWORD)
 	@echo Building AbiWord...
 	$(MAKE) -C src T=abiword  &&  echo AbiWord build complete.
-
-abicalc:	$(DEPENDS_ABICALC)
-	@echo Building AbiCalc...
-	$(MAKE) -C src T=abicalc  &&  echo AbiCalc build complete.
-
 
 clean:
 	$(MAKE) -C src clean
@@ -47,18 +33,3 @@ realclean:
 	$(MAKE) -C src realclean
 	rm -rf dist
 
-## phony targets to build the 3rd-party libraries that we need.
-
-_JS_:
-	@echo Building JavaScript...
-	sh ./src/other/buildscripts/BUILD_JS.sh 		\
-		&& sh ./src/other/buildscripts/GET_JS.sh	\
-		&& echo JavaScript build complete.
-
-_GXML_:
-	@echo Building GXML...
-	sh BUILD_GXML.sh  &&  echo GXML build complete.
-
-_GLIB_:
-	@echo Building GLIB...
-	sh BUILD_GLIB.sh  &&  echo GLIB build complete.

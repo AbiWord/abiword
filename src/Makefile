@@ -23,20 +23,8 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 
 T=abiword
 
-#ifneq ($(OS_NAME), WIN32)
-#PS_DIRS=	ps
-#endif
-
-# ifeq ($(T), all)
-# DIRS=		require ver other util $(PS_DIRS) ev xap gr wp calc
-# endif
-
 ifeq ($(T), abiword)
-DIRS=		require ver other util $(PS_DIRS) ev xap gr wp
-endif
-
-ifeq ($(T), abicalc)
-DIRS=		require ver other util $(PS_DIRS) ev ap gr calc
+DIRS=		config other af wp
 endif
 
 include $(ABI_DEPTH)/config/abi_rules.mk
