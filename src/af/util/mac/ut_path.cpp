@@ -19,6 +19,7 @@
 
 
 #include "ut_path.h"
+#include "ut_assert.h"
 #include <string.h>
 
 /*!	This function takes a char* representing a path to a file and returns
