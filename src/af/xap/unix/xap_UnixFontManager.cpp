@@ -301,8 +301,8 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 	char * linedup = UT_strdup(line);
 
 	// Look for either first space or first tab
-	char * firstspace = index(linedup, ' ');
-	char * firsttab = index(linedup, '\t');
+	char * firstspace = strchr(linedup, ' ');
+	char * firsttab = strchr(linedup, '\t');
 
 	UT_uint32 whitespace;
 

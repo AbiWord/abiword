@@ -277,7 +277,7 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		// for a matching directory.  We can then proceed with the file
 		// if another stat of that dir passes.
 
-		pLastSlash = rindex(szFinalPathnameCopy,'/');
+		pLastSlash = strrchr(szFinalPathnameCopy,'/');
 		if (!pLastSlash)
 		{
 			_notifyError_OKOnly(pFrame,XAP_STRING_ID_DLG_InvalidPathname);
@@ -580,7 +580,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// the dialog there (but without a filename).
 
 			UT_cloneString(szPersistDirectory,m_szPersistPathname);
-			char * pLastSlash = rindex(szPersistDirectory, '/');
+			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
 			gtk_file_selection_set_filename(pFS,szPersistDirectory);
@@ -611,7 +611,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			// use directory(m_szInitialPathname)
 			
 			UT_cloneString(szPersistDirectory,m_szInitialPathname);
-			char * pLastSlash = rindex(szPersistDirectory, '/');
+			char * pLastSlash = strrchr(szPersistDirectory, '/');
 			if (pLastSlash)
 				pLastSlash[1] = 0;
 			gtk_file_selection_set_filename(pFS,szPersistDirectory);
