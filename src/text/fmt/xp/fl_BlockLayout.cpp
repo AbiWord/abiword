@@ -2272,6 +2272,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 					rec.width = diff;
 				}
 			}
+			delete pRec;
 		}
 		iX = rec.left - xoff;
 		pLine->setX(iX);
@@ -2418,6 +2419,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 					projRec.width = diff;
 				}
 			}
+			delete pRec;
 		}
 		if(projRec.width <  20*4)
 		{

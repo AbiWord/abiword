@@ -624,7 +624,14 @@ void fp_Run::getSpanAP(const PP_AttrProp * &pSpanAP)
 	{
 		getBlock()->getSpanAttrProp(getBlockOffset(),true,&pSpanAP,&m_pRevisions,bShow,iId,bHiddenRevision);
 	}
-
+	if(pSpanAP == NULL)
+	{
+		// FIXME for now lets work around this
+		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN); track these down later.
+		//
+		getBlockAP(pSpanAP);
+		return;
+	}
 	if(bHiddenRevision)
 	{
 		setVisibility(FP_HIDDEN_REVISION);
@@ -3125,6 +3132,7 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									GR_Graphics * pG)
 {
 	fd_Field * fd = NULL;
+	UT_ASSERT(pSpanAP);
 	m_pSpanAP = pSpanAP;
 	getBlock()->getField(getBlockOffset(), fd);
 	_setField(fd);
