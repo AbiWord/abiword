@@ -252,10 +252,14 @@ bool Inserter::insertSpan(UT_GrowBuf &b)
  We also don't want to steal recognition when user wants to use
  the Encoded Text importer.
  */
-UT_Confidence_t IE_Imp_Text_Sniffer::recognizeContents(const char * /* szBuf */,
-											UT_uint32 /* iNumbytes */)
+UT_Confidence_t IE_Imp_Text_Sniffer::recognizeContents(const char * szBuf,
+						       UT_uint32 iNumbytes)
 {
-  return UT_CONFIDENCE_ZILCH; // anything can be a text document - we'll unfairly weight this down
+  if (_recognizeUTF8 (szBuf, iNumbytes))
+    return UT_CONFIDENCE_PERFECT;
+  else if (UE_NotUCS != _recognizeUCS2(szBuf, iNumbytes, false))
+    return UT_CONFIDENCE_PERFECT;
+  return UT_CONFIDENCE_POOR; // anything can be a text document - we'll unfairly weight this down
 }
 
 /*!
@@ -614,12 +618,14 @@ UT_Error IE_Imp_Text::_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes)
 	{
 		IE_Imp_Text_Sniffer::UCS2_Endian eUcs2 = IE_Imp_Text_Sniffer::UE_NotUCS;
 
-		eUcs2 = IE_Imp_Text_Sniffer::_recognizeUCS2(szBuf, iNumbytes, true);
+		eUcs2 = IE_Imp_Text_Sniffer::_recognizeUCS2(szBuf, iNumbytes, false);
 
 		if (eUcs2 == IE_Imp_Text_Sniffer::UE_BigEnd)
 			_setEncoding(XAP_EncodingManager::get_instance()->getUCS2BEName());
 		else if (eUcs2 == IE_Imp_Text_Sniffer::UE_LittleEnd)
 			_setEncoding(XAP_EncodingManager::get_instance()->getUCS2LEName());
+		else
+		  _setEncoding ("ISO-8859-1");
 	}
 
 	return UT_OK;
