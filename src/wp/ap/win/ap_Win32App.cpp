@@ -692,7 +692,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
-	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG );
+	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG | _CRTDBG_MODE_WNDW);
 
 	// Ensure that common control DLL is loaded
 	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
