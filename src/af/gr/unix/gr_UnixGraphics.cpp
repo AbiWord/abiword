@@ -598,6 +598,87 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 		m_pFallBackFontHandle = NULL;
 }
 
+GR_UnixGraphics::GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App * app, bool bUseDrawable):m_iLineWidth(tlu(1))
+{
+	m_pApp = app;
+	m_pWin = static_cast<GdkWindow *>(win);
+	m_pFontManager = fontManager;
+	m_pFont = NULL;
+	m_pSingleByteFont = NULL;
+	m_pMultiByteFont = NULL;
+	m_pFontGUI = NULL;
+	s_iInstanceCount++;
+	m_pColormap = gdk_rgb_get_colormap();
+
+
+	//
+	// Martin's attempt to make double buffering work.with xft
+	//
+	m_iXoff = 0;
+	m_iYoff = 0;
+	GdkDrawable * realDraw = static_cast<GdkDrawable *>(win);
+	if(bUseDrawable)
+	{
+		realDraw = static_cast<GdkDrawable *>(win);
+	}
+
+    m_iXoff = tlu(m_iXoff); m_iYoff = tlu(m_iYoff);
+	m_pGC = gdk_gc_new(realDraw);
+	m_pXORGC = gdk_gc_new(realDraw);
+	m_pVisual = GDK_VISUAL_XVISUAL( gdk_drawable_get_visual(realDraw));
+	m_Drawable = gdk_x11_drawable_get_xid(realDraw);
+
+	m_pXftFontL = NULL;
+	m_pXftFontD = NULL;
+	m_Colormap = GDK_COLORMAP_XCOLORMAP(m_pColormap);
+	m_pXftDraw = XftDrawCreate(GDK_DISPLAY(), m_Drawable, m_pVisual, m_Colormap);
+	gdk_gc_set_function(m_pXORGC, GDK_XOR);
+
+ 	GdkColor clrWhite;
+	clrWhite.red = clrWhite.green = clrWhite.blue = 65535;
+	gdk_colormap_alloc_color (m_pColormap, &clrWhite, FALSE, TRUE);
+	gdk_gc_set_foreground(m_pXORGC, &clrWhite);
+
+ 	GdkColor clrBlack;
+	clrBlack.red = clrBlack.green = clrBlack.blue = 0;
+	gdk_colormap_alloc_color (m_pColormap, &clrBlack, FALSE, TRUE);
+	gdk_gc_set_foreground(m_pGC, &clrBlack);
+
+	m_XftColor.color.red = clrBlack.red;
+	m_XftColor.color.green = clrBlack.green;
+	m_XftColor.color.blue = clrBlack.blue;
+	m_XftColor.color.alpha = 0xffff;
+	m_XftColor.pixel = clrBlack.pixel;
+
+	// I only want to set CAP_NOT_LAST, but the call takes all
+	// arguments (and doesn't have a default value).  Set the
+	// line attributes to not draw the last pixel.
+
+	// We force the line width to be zero because the CAP_NOT_LAST
+	// stuff does not seem to work correctly when the width is set
+	// to one.
+
+	gdk_gc_set_line_attributes(m_pGC,   0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+	gdk_gc_set_line_attributes(m_pXORGC,0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+
+	// Set GraphicsExposes so that XCopyArea() causes an expose on
+	// obscured regions rather than just tiling in the default background.
+	gdk_gc_set_exposures(m_pGC,1);
+	gdk_gc_set_exposures(m_pXORGC,1);
+
+	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
+	m_cursor = GR_CURSOR_INVALID;
+	setCursor(GR_CURSOR_DEFAULT);
+	m_bIsSymbol = false;
+	m_bIsDingbat = false;
+
+	if (m_pFontManager)
+		m_pFallBackFontHandle = new XAP_UnixFontHandle(m_pFontManager->getDefaultFont(),
+													   FALLBACK_FONT_SIZE);
+	else
+		m_pFallBackFontHandle = NULL;
+}
+
 GR_UnixGraphics::~GR_UnixGraphics()
 {
 	DELETEP(m_pFontGUI);

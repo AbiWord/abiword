@@ -108,6 +108,7 @@ public:
 	virtual void initPopt (AP_Args *);
 	virtual bool doWindowlessArgs (const AP_Args *);
 	virtual XAP_Frame * newFrame(AP_App *);
+	bool makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight);
 
 protected:	// JCA: Why in the hell we have so many (any) protected variables?
 	static GR_Image*		_showSplash(UT_uint32);

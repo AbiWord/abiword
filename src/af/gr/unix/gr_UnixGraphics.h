@@ -22,6 +22,7 @@
 #ifndef GR_UNIXGRAPHICS_H
 #define GR_UNIXGRAPHICS_H
 
+
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include "xap_UnixApp.h"
@@ -45,6 +46,7 @@ class GR_UnixGraphics : public GR_Graphics
 	friend class GR_UnixImage;
  public:
  	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
+	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
 	virtual ~GR_UnixGraphics();
 
 	virtual void		setFont(GR_Font* pFont);

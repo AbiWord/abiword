@@ -61,10 +61,11 @@
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_Toolbar_Layouts.h"
 #include "xav_View.h"
-
+#include <gdk/gdk.h>
 #include "gr_Graphics.h"
 #include "gr_UnixGraphics.h"
 #include "gr_Image.h"
+#include "gr_UnixImage.h"
 #include "ut_bytebuf.h"
 #include "ut_png.h"
 #include "xap_UnixDialogHelper.h"
@@ -90,6 +91,7 @@
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
 #include "ie_imp_XHTML.h"
+#include "gr_DrawArgs.h"
 
 #include "xap_Prefs.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -100,6 +102,10 @@
 #include "abiwidget.h"
 #include "ut_sleep.h"
 #include "gr_Painter.h"
+#include "ap_Preview_Abi.h"
+#include "xap_UnixDialogHelper.h"
+//#include <gtk/gtk.h>
+
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
@@ -108,7 +114,6 @@
 #endif
 
 #include <popt.h>
-
 #include "ie_impGraphic.h"
 #include "ut_math.h"
 
@@ -1019,6 +1024,73 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
     *pLen = m_selectionByteBuf.getLength();
     *pszFormatFound = formatList[j];
     return true;
+}
+
+bool AP_UnixApp:: makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight)
+{
+	//
+	// Create a private visual to draw with
+	//
+	GdkVisual * vis = gdk_visual_get_system (); // don't delete this!
+	//
+	// Create a private color map to draw with.
+	//
+	GdkColormap*  visColorMap = gdk_colormap_new(vis,true);
+	//
+	// Create a private set of attributes for our GdkWindow
+	// 
+	GdkWindowAttr attributes;
+	attributes.title = NULL;
+	attributes.event_mask = 0;
+	attributes.x = 0;
+	attributes.y = 0;
+	attributes.width = iWidth;
+	attributes.height = iHeight;
+	attributes.wclass = 	GDK_INPUT_OUTPUT ;
+	attributes.visual = vis;
+	attributes.colormap = visColorMap;
+	attributes.window_type = GDK_WINDOW_CHILD;
+	attributes.cursor = NULL;
+	attributes.wmclass_name = NULL;
+	attributes.wmclass_class = NULL;
+	attributes.override_redirect = true;
+
+	gint attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_COLORMAP | GDK_WA_VISUAL;
+	GdkWindow*  pWindow = gdk_window_new (NULL, &attributes,
+                                             attributes_mask);
+	GdkPixmap * pMap =  gdk_pixmap_new(pWindow,iWidth,iHeight,-1); 	
+
+	GR_UnixGraphics * pG =  new GR_UnixGraphics(pMap, getFontManager(), this,true);
+	pG->createCaret();
+	UT_Error error = UT_OK;
+	PD_Document * pNewDoc = new PD_Document(this);
+	error = pNewDoc->readFromFile(pszInFile,IEFT_Unknown, NULL);
+
+	if (error != UT_OK) 
+	{
+		return false;
+	}
+	AP_Preview_Abi * pPrevAbi = new AP_Preview_Abi(pG,iWidth,iHeight,NULL, PREVIEW_ZOOMED,pNewDoc);
+	dg_DrawArgs da;
+	memset(&da, 0, sizeof(da));
+	da.pG = pG;
+	pPrevAbi->getView()->draw(0, &da);
+	GR_Painter * pPaint = new GR_Painter(pG);
+	UT_Rect r;
+	r.left = 0;
+	r.top = 0;
+	r.width = pG->tlu(iWidth);
+	r.height = pG->tlu(iHeight);
+	GR_Image * pImage = pPaint->genImageFromRectangle(r);
+	DELETEP(pPaint);
+	static_cast<GR_UnixImage *>(pImage)->saveToPNG( pszPNGFile);
+	DELETEP(pImage);
+	DELETEP(pG);
+	delete pWindow;
+	delete pMap;
+	delete visColorMap;
+	DELETEP(pPrevAbi); // This deletes pNewDoc
+	return true;
 }
 
 /*****************************************************************/
