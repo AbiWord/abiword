@@ -236,8 +236,17 @@ void XAP_CocoaApp::_setAbiSuiteLibDir()
 		XAP_App::_setAbiSuiteLibDir(p);
 		return;
 	}
+	
+	// get Bundle resource directory and use that.
+	NSString* resDir = [[NSBundle mainBundle] resourcePath];
+	if (resDir != nil) {
+		XAP_App::_setAbiSuiteLibDir([resDir UTF8String]);
+		return;
+	}
 
 	// otherwise, use the hard-coded value
+	// this is unlikely to happen
+	UT_DEBUGMSG(("Couldn't get resource bundle directory."));
 	XAP_App::_setAbiSuiteLibDir(getAbiSuiteHome());
 	return;
 }
