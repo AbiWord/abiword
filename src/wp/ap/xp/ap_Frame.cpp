@@ -491,10 +491,13 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 {
 	bool holdsSelection = false;
 	PD_DocumentRange range;
+	PT_DocPosition inspt = 0;
 	if (m_pView && !m_pView->isSelectionEmpty ()) {
 		holdsSelection = true;
 		static_cast<FV_View*>(m_pView)->getDocumentRangeOfCurrentSelection (&range);
-	} 
+	} else if (m_pView) {
+		inspt = static_cast<FV_View*>(m_pView)->getInsPoint ();
+	}
 
 	// switch to new view, cleaning up previous settings
 	if (((AP_FrameData*)m_pData)->m_pDocLayout)
@@ -546,26 +549,10 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 
 	if (holdsSelection)
 		static_cast<FV_View*>(m_pView)->cmdSelect (range.m_pos1, range.m_pos2);
-
-	_resetInsertionPoint();
+	else
+		static_cast<FV_View*>(m_pView)->moveInsPtTo(inspt);
 }
 
-// _resetInsertionPoint: sets the current insertion point in the document to be the end
-// of the editable bound in the current view, if and only if the upper editable bound of 
-// pView is less than the current insertion point. Resets it to the current position 
-// otherwise. 
-void AP_Frame::_resetInsertionPoint()
-{
-	UT_uint32 point = 0;
-
-	if (m_pView != NULL) {
-		point = (static_cast<FV_View *>(m_pView))->getPoint();
-		PT_DocPosition posEOD;
-		static_cast<FV_View *>(m_pView)->getEditableBounds(true, posEOD, false);
-		if(point > posEOD)
-			(static_cast<FV_View *>(m_pView))->moveInsPtTo(posEOD);
-	}		
-}
 #else
 AP_Frame::~AP_Frame()
 {
