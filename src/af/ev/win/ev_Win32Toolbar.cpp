@@ -369,13 +369,6 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 			{								
 				case CBN_SELCHANGE:
 				{
-					// are we currently dropped down?
-					if (!SendMessage(hWnd, CB_GETDROPPEDSTATE, 0, 0))
-						break;
-
-					// yep, we're done 
-					SendMessage(hWnd, CB_SHOWDROPDOWN, (WPARAM) FALSE, 0);
-
 					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);
 									
 					if(iSelected != -1)
