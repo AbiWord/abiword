@@ -119,7 +119,7 @@
 #include "xap_UnixGnomePrintGraphics.h"
 #include "ap_EditMethods.h"
 
-static int mainBonobo(int argc, char ** argv);
+static int mainBonobo(int argc, const char ** argv);
 #endif
 
 // quick hack - this is defined in ap_EditMethods.cpp
@@ -1185,8 +1185,8 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	// Step 1: Initialize GTK and create the APP.
 	// hack needed to intialize gtk before ::initialize
     gtk_set_locale();
-	// const_cast doesn't work on g++ - should it?
-    gboolean have_display = gtk_init_check(&XArgs.m_argc,&XArgs.m_argv);
+
+    gboolean have_display = gtk_init_check(&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
 
     if (have_display) {
 #ifndef HAVE_GNOME
@@ -1206,7 +1206,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 					GNOME_PARAM_POPT_CONTEXT, &Args.poptcon,
 					NULL);
       gnome_vfs_init ();
-	  bonobo_init (&XArgs.m_argc, XArgs.m_argv);
+	  bonobo_init (&XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
 	  // GNOME handles 'parsePoptOpts'.  Isn't it grand?
 #endif
     }
@@ -1336,7 +1336,7 @@ void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 void AP_UnixApp::initPopt (AP_Args * Args)
 {
 #ifdef HAVE_GNOME
-	UT_uint32 v, i;
+	UT_sint32 v = -1, i;
 
 	// stop at --version.
 	for (i = 0; Args->const_opts[i].longName != NULL; i++)
@@ -1350,7 +1350,7 @@ void AP_UnixApp::initPopt (AP_Args * Args)
 
 	struct poptOption * opts = (struct poptOption *)
 		UT_calloc(v+1, sizeof(struct poptOption));
-	for (UT_uint32 j = 0; j < v; j++)
+	for (UT_sint32 j = 0; j < v; j++)
 		opts[j] = Args->const_opts[j];
 
 	Args->options = opts;
@@ -1823,7 +1823,7 @@ abiwidget_get_object(BonoboItemContainer *item_container,
 	g_return_val_if_fail(abi != NULL, CORBA_OBJECT_NIL);
 	g_return_val_if_fail(IS_ABI_WIDGET(abi), CORBA_OBJECT_NIL);
 
-	object = static_cast<BonoboObject *>(AbiWidget_control_new(abi));
+	object = BONOBO_OBJECT (AbiWidget_control_new(abi));
 
 	if (object == NULL)
 		return NULL;
@@ -1851,7 +1851,7 @@ load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 	//
 	// Load the file.
 	//
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",static_cast<gchar *>(filename),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",reinterpret_cast<const gchar *>(filename),NULL);
 	return 0;
 }
 
@@ -2010,7 +2010,7 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 
 	guint n_pspecs = 0;
 	BonoboPropertyBag * pb = bonobo_property_bag_new (NULL, NULL, NULL);
-	const GParamSpec ** pspecs = static_cast<const GParamSpec **>(g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs));
+	const GParamSpec ** pspecs = (const GParamSpec **)(g_object_class_list_properties (G_OBJECT_GET_CLASS (G_OBJECT (abiwidget)), &n_pspecs));
 	bonobo_property_bag_map_params (pb, G_OBJECT (abiwidget), pspecs, n_pspecs);
 	bonobo_object_add_interface (BONOBO_OBJECT (to_aggregate), BONOBO_OBJECT (pb));
 
@@ -2127,9 +2127,9 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory,
   return BONOBO_OBJECT (AbiWidget_control_new (ABI_WIDGET (abi)));
 }
 
-static int mainBonobo(int argc, char ** argv)
+static int mainBonobo(int argc, const char ** argv)
 {
-	BONOBO_FACTORY_INIT ("abiword-component", "0.1", &argc, argv);
+	BONOBO_FACTORY_INIT ("abiword-component", "0.1", &argc, const_cast<char **>(argv));
 
 	return bonobo_generic_factory_main ("OAFIID:GNOME_AbiWord_Factory",
 										bonobo_AbiWidget_factory, NULL);
