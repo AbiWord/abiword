@@ -491,7 +491,6 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_hWndHScroll(0),
 	m_hWndVScroll(0),
 	m_bFirstAfterFocus(false),
-	m_bFirstAfterFocus(false),
 	m_hWndGripperHack(0)
 {
 	m_hwndContainer = NULL;
