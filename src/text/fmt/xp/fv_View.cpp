@@ -10289,7 +10289,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-	UT_ASSERT(pHFCon);
+	UT_return_if_fail(pHFCon);
 	pShadow = pHFCon->getShadow();
 	UT_ASSERT(pShadow);
 //
