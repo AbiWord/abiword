@@ -35,6 +35,15 @@
 #define UT_END_EXTERN_C
 #endif
 
+/*
+ *  This macro allow using GNUC extension with -pedantic
+ */
+#if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 8)
+#  define GNUC_EXTENSION __extension__
+#else
+#  define GNUC_EXTENSION
+#endif
+
 typedef unsigned char		UT_Byte;
 
 /* NOTA BENE: UT_UCSChar is deprecated; all new code must use
@@ -54,14 +63,12 @@ typedef signed short        UT_sint16;
 typedef unsigned int		UT_uint32;
 typedef signed int		    UT_sint32;
 
-#if 0
 #ifdef  WIN32
 typedef DWORDLONG           UT_uint64;
 typedef LONGLONG            UT_sint64;
 #else
-typedef unsigned long long  UT_uint64;
-typedef long long           UT_sint64;
-#endif
+GNUC_EXTENSION typedef unsigned long long  UT_uint64;
+GNUC_EXTENSION typedef signed long long           UT_sint64;
 #endif
 
 /* If expat is in use, include <expat.h> before "ut_types.h"
