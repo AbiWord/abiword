@@ -127,14 +127,17 @@ public:
 	void           setParent(fg_FillType * pParent);
 	void           setColor(UT_RGBColor & color);
 	void           setColor(const char * pszColor);
+	void           setTransColor(UT_RGBColor & color);
+	void           setTransColor(const char * pszColor);
 	void           setImage(FG_Graphic * pGraphic, GR_Image * pImage);
 	void           setTransparent(void);
 	void           setDocLayout(FL_DocLayout * pDocLayout);
-	void           setTransparentForPrint(bool bTransparentForPrint);
+	void           markTransparentForPrint(void);
 	void           Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height);
 	fg_FillType *  getParent(void) const;
 	FG_Fill_Type   getFillType(void) const;
 	FL_DocLayout * getDocLayout(void);
+	UT_RGBColor *  getColor(void);
 private:
     void        	     _regenerateImage(GR_Graphics * pG);
 	fg_FillType *        m_pParent;
@@ -146,6 +149,9 @@ private:
 	UT_uint32            m_iGraphicTick;
 	bool                 m_bTransparentForPrint;
 	UT_RGBColor          m_color;
+	UT_RGBColor          m_TransColor;
+	bool                 m_bTransColorSet;
+	bool                 m_bColorSet;
 };
 
 

@@ -1328,6 +1328,19 @@ fl_HdrFtrShadow * fp_ShadowContainer::getShadow(void)
 	return  pHdrFtrSL->findShadow( getPage() );
 }
 
+/*!
+ *  Set the page for this shadow. Also set the fg_FillType parent.
+ */
+
+void fp_ShadowContainer::setPage(fp_Page *pPage)
+{
+	m_pPage = pPage;
+	if(pPage)
+	{
+		getFillType()->setParent(pPage->getFillType());
+	}
+}
+
 fl_HdrFtrSectionLayout* fp_ShadowContainer::getHdrFtrSectionLayout(void) const
 {
 	UT_ASSERT(getSectionLayout()->getType() == FL_SECTION_HDRFTR);
@@ -1464,7 +1477,7 @@ void fp_ShadowContainer::clearHdrFtrBoundaries(void)
 {
 	if(!m_bHdrFtrBoxDrawn)
 		return;
-	UT_RGBColor * pClr = getPage()->getOwningSection()->getPaperColor();
+	UT_RGBColor * pClr = getPage()->getFillType()->getColor();
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
 	getGraphics()->setColor(*pClr);
 //

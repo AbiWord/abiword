@@ -99,7 +99,6 @@ public:
 	virtual bool        isCollapsed(void) const = 0;
 	virtual bool        needsReformat(void) const = 0;
 	virtual bool        needsRedraw(void) const = 0;
-	virtual void        updateBackgroundColor() = 0;
 	virtual fl_DocSectionLayout * getDocSectionLayout(void);
 	virtual fl_SectionLayout * getSectionLayout() const = 0;
 	virtual fl_HdrFtrSectionLayout * getHdrFtrSectionLayout(void) const;

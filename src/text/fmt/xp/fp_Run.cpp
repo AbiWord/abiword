@@ -123,12 +123,6 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_bIsCleared(true),
 	m_FillType(NULL,static_cast<fp_ContainerObject *>(this),FG_FILL_TRANSPARENT)
 {
-        // set the default background color and the paper color of the
-	    // section owning the run.
-
-	// will do this in ::lookupProperties
-	//updateHighlightColor();
-	//updatePageColor();
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 }
 
@@ -215,9 +209,6 @@ void fp_Run::lookupProperties()
 	const char * pszBGcolor = PP_evalProperty("bgcolor",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	_setColorHL(pszBGcolor);
 	m_FillType.setColor(pszBGcolor);
-
-	// updateHighlightColor();
-	updatePageColor();
 
 	_lookupProperties(pSpanAP, pBlockAP, pSectionAP);
 
@@ -343,130 +334,9 @@ fp_Run::_inheritProperties(void)
 	}
 }
 
-#if 0
-/*!
- * This method returns the High Light color as defined for this page. It examines
- * the bgcolor property and uses that over the page color if it's defined as not
- * transparent. It sets the m_pColorHL member variable.
- */
-bool fp_Run::updateHighlightColor(void)
-{
-	if(m_pColorHL.isTransparent())
-	{
-		UT_RGBColor oldColor = m_pColorHL;
-
-		fp_Page * pPage = NULL;
-		fp_Line * pLine = getLine();
-		if(pLine != NULL)
-		{
-			fp_Container * pCon = pLine->getContainer();
-			if(pCon)
-			{
-				// Check if we are in a table cell which has a NON-transparent background
-				// if it is, then use the cell background color
-				if(pCon->getContainerType() == FP_CONTAINER_CELL)
-				{
-					fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
-					PP_PropertyMap::Background background = pCell->getBackground ();
-					if (background.m_t_background == PP_PropertyMap::background_solid)
-					{
-						_setColorHL(background.m_color);
-						return m_pColorHL != oldColor;
-					}
-				}
-				pPage = pCon->getPage();
-			}
-		}
-		if (pPage != NULL)
-		{
-			if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
-				_setColorHL(*pPage->getOwningSection()->getPaperColor());
-			else
-			{
-				UT_setColor (m_pColorHL, 255, 255, 255);
-				return m_pColorHL != oldColor;
-			}
-		}
-		else if(getBlock()->isHdrFtr())
-		{
-			UT_setColor (m_pColorHL, 255, 255, 255);
-			return m_pColorHL != oldColor;
-		}
-		else
-			_setColorHL(*getBlock()->getDocSectionLayout()->getPaperColor());
-
-		return m_pColorHL != oldColor;
-	}
-
-	return false;
-}
-#endif
-
-/*!
- * This method updates the page color member variable as defined for
- * this page. It is used for clearscreen() methods and so does not
- * examine the bgcolor property.
- */
-bool fp_Run::updatePageColor(void)
-{
-	UT_RGBColor oldColor = m_pColorPG;
-
-	UT_RGBColor * pClr = NULL;
-	fp_Page * pPage = NULL;
-	fp_Line * pLine = getLine();
-
-	if(pLine != NULL)
-	{
-		fp_Container * pCon = pLine->getContainer();
-		if(pCon)
-		{
-
-			// Check if we are in a table cell which has a NON-transparent background
-			// if it is, then use the cell backgound color
-			if(pCon->getContainerType() == FP_CONTAINER_CELL)
-			{
-				fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
-				PP_PropertyMap::Background background = pCell->getBackground ();
-				if (background.m_t_background == PP_PropertyMap::background_solid)
-				{
-					m_pColorPG = background.m_color;
-					return m_pColorPG != oldColor;
-				}
-			}
-			pPage = pCon->getPage();
-		}
-	}
-	if (pPage != NULL)
-	{
-		pClr = pPage->getOwningSection()->getPaperColor();
-	}
-	else if(getBlock()->isHdrFtr())
-	{
-		UT_setColor (m_pColorPG, 255, 255, 255);
-		return m_pColorPG != oldColor;
-	}
-	else
-		pClr = getBlock()->getDocSectionLayout()->getPaperColor();
-	UT_setColor (m_pColorPG, pClr->m_red, pClr->m_grn, pClr->m_blu);
-
-	return m_pColorPG != oldColor;
-}
-
 GR_Graphics * fp_Run::getGraphics(void) const
 {
 	return getBlock()->getDocLayout()->getGraphics();
-}
-
-/*!
- * This method updates the Highlight and Page color underneath a run.
- * It would typically be called after a change in the SectionLevel properties or
- * if a line cotaining a run is moved from one color page to another.
- */
-bool fp_Run::updateBackgroundColor(void)
-{
-	bool h = false; // updateHighlightColor();
-	bool p = updatePageColor();
-	return h || p;
 }
 
 void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
@@ -851,11 +721,6 @@ const UT_RGBColor fp_Run::getFGColor(void) const
 	return s_fgColor;
 }
 
-const UT_RGBColor fp_Run::getPageColor(void)
-{
-	updatePageColor(); // TODO -- why ??? Tomas
-	return _getColorPG();
-}
 
 void fp_Run::_setDirty(bool b)
 {

@@ -258,8 +258,6 @@ public:
 	void getLineSpacing(double& dSpacing,
 						eSpacingPolicy& eSpacing) const;
 
-	virtual void updateBackgroundColor(void);
-
 	inline UT_uint32 getProp_Orphans(void) const { return m_iOrphansProperty; }
 	inline UT_uint32 getProp_Widows(void) const { return m_iWidowsProperty; }
 	inline bool getProp_KeepTogether(void) const { return m_bKeepTogether; }

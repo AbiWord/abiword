@@ -117,7 +117,6 @@ public:
 		{return m_bNeedsRedraw;}
 	virtual void                clearNeedsRedraw(void)
 		{m_bNeedsRedraw = false;}
-	virtual void        updateBackgroundColor(void);
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc) = 0;
 	void                        checkAndAdjustCellSize(void);
@@ -225,7 +224,6 @@ public:
 	bool				getColumnLineBetween(void) const {return m_bColumnLineBetween;}
 	UT_uint32			getColumnOrder(void) const;
 	void                setPaperColor();
-	UT_RGBColor *       getPaperColor(void);
 	void				deleteEmptyColumns(void);
 	virtual bool 	    doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
@@ -316,7 +314,6 @@ private:
 	//! Last column in the section
 	fp_Column*			m_pLastColumn;
 	fp_Page *           m_pFirstOwnedPage;
-	UT_RGBColor         m_clrPaper;
 
 	bool                m_bNeedsFormat;
 	bool                m_bNeedsRebuild;
@@ -324,6 +321,8 @@ private:
 	fp_EndnoteContainer * m_pFirstEndnoteContainer;
 	fp_EndnoteContainer * m_pLastEndnoteContainer;
 	bool                m_bDeleteingBrokenContainers;
+	UT_String           m_sPaperColor;
+	UT_String           m_sScreenColor;
 };
 
 class ABI_EXPORT fl_HdrFtrSectionLayout : public fl_SectionLayout
@@ -354,7 +353,6 @@ public:
 	void                        layout(void);
 	fl_ContainerLayout *        findMatchingContainer( fl_ContainerLayout * pBL);
 	virtual void				redrawUpdate(void);
-	void                        updateBackgroundColor(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
 	virtual fp_Container*		getFirstContainer() const;
 	virtual fp_Container*		getLastContainer() const;

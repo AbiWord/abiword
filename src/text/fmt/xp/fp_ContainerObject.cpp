@@ -294,7 +294,10 @@ fg_FillType::fg_FillType(fg_FillType *pParent, fp_ContainerObject * pContainer, 
 	m_pGraphic(NULL),
 	m_iGraphicTick(0),
 	m_bTransparentForPrint(false),
-	m_color(255,255,255)
+	m_color(255,255,255),
+	m_TransColor(255,255,255),
+	m_bTransColorSet(false),
+	m_bColorSet(false)
 {
 }
 
@@ -320,13 +323,15 @@ void fg_FillType::setColor(UT_RGBColor & color)
 	UT_DEBUGMSG(("Fill type set to color class \n"));
 	m_FillType = FG_FILL_COLOR;
 	m_color = color;
+	m_bColorSet = true;
+	m_bTransparentForPrint = false;
 	DELETEP(m_pImage);
 	DELETEP(m_pGraphic);
 }
 
 /*!
  * set this class to have a solid color fill unless this is a NULL string
- * pointer 
+ * pointer. This is an on-screen color only. Don't print this.
  */
 void fg_FillType::setColor(const char * pszColor)
 {
@@ -334,17 +339,79 @@ void fg_FillType::setColor(const char * pszColor)
 	{
 		if(UT_strcmp(pszColor,"transparent") == 0)
 		{
-			m_FillType = FG_FILL_TRANSPARENT;
+			if(!m_bTransColorSet)
+			{
+				m_FillType = FG_FILL_TRANSPARENT;
+			}
+			m_bColorSet = false;
 		}
 		else
 		{
 			m_FillType = FG_FILL_COLOR;
+			m_bColorSet = true;
+			DELETEP(m_pImage);
+			DELETEP(m_pGraphic);
 		}
 		m_color.setColor(pszColor);
+		m_bTransparentForPrint = false;
 	}
 	else
 	{
-		m_FillType = FG_FILL_TRANSPARENT;
+		if(!m_bTransColorSet)
+		{
+			m_FillType = FG_FILL_TRANSPARENT;
+			m_bColorSet = false;
+		}
+	}
+}
+
+
+/*!
+ * set this class to have a solid color fill but not print this color.
+ */
+void fg_FillType::setTransColor(UT_RGBColor & color)
+{
+	UT_DEBUGMSG(("Fill type set to color class \n"));
+	m_FillType = FG_FILL_COLOR;
+	m_TransColor = color;
+	DELETEP(m_pImage);
+	DELETEP(m_pGraphic);
+	m_bTransColorSet = true;
+}
+
+/*!
+ * set this class to have a solid color fill unless this is a NULL string
+ * pointer 
+ */
+void fg_FillType::setTransColor(const char * pszColor)
+{
+	if(pszColor)
+	{
+		if(UT_strcmp(pszColor,"transparent") == 0)
+		{
+			if(!m_bColorSet)
+			{
+				m_FillType = FG_FILL_TRANSPARENT;
+			}
+			m_bTransColorSet = false;
+			m_bTransparentForPrint = false;
+		}
+		else
+		{
+			m_FillType = FG_FILL_COLOR;
+			m_bTransColorSet = true;
+			m_bTransparentForPrint = true;
+		}
+		m_TransColor.setColor(pszColor);
+	}
+	else
+	{
+		if(!m_bColorSet)
+		{
+			m_FillType = FG_FILL_TRANSPARENT;
+			m_bTransparentForPrint = false;
+		}
+		m_bTransparentForPrint = false;
 	}
 	DELETEP(m_pImage);
 	DELETEP(m_pGraphic);
@@ -358,6 +425,7 @@ void fg_FillType::setTransparent(void)
 	m_FillType = FG_FILL_TRANSPARENT;
 	DELETEP(m_pImage);
 	DELETEP(m_pGraphic);	
+	m_bTransparentForPrint = false;
 }
 
 /*!
@@ -370,6 +438,7 @@ void fg_FillType::setImage(FG_Graphic * pGraphic, GR_Image * pImage)
 	DELETEP(m_pGraphic);	
 	m_pImage = pImage;
 	m_pGraphic = pGraphic;
+	m_bTransparentForPrint = false;
 }
 
 /*!
@@ -387,9 +456,9 @@ void  fg_FillType::setDocLayout(FL_DocLayout * pDocLayout)
 /*!
  * Set that the fill should be transperent if we're printing.
  */
-void fg_FillType::setTransparentForPrint(bool bTransparentForPrint)
+void fg_FillType::markTransparentForPrint(void)
 {
-	m_bTransparentForPrint = bTransparentForPrint;
+	m_bTransparentForPrint = true;
 }
 
 /*!
@@ -415,6 +484,26 @@ void fg_FillType::_regenerateImage(GR_Graphics * pG)
 	DELETEP(m_pImage);
 	m_pImage = m_pGraphic->regenerateImage(pG);
 	m_iGraphicTick = m_pDocLayout->getGraphicTick();
+}
+
+/*!
+ * Return the most appropriate color.
+ */
+UT_RGBColor * fg_FillType::getColor(void)
+{
+	if(m_bColorSet)
+	{
+		return & m_color;
+	}
+	if(m_bTransColorSet)
+	{
+		return &m_TransColor;
+	}
+	if(getParent())
+	{
+		return getParent()->getColor();
+	}
+	return &m_color;
 }
 
 /*!
@@ -464,11 +553,12 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 pG->fillRect(m_pImage,src,dest);
 			 return;
 		 }
-		 if(m_FillType == FG_FILL_COLOR)
+		 if(m_FillType == FG_FILL_COLOR && m_bColorSet)
 		 {
 			 pG->fillRect(m_color,x,y,width,height);
 			 return;
 		 }
+		 return;
 	 }
 	 if(m_FillType == FG_FILL_TRANSPARENT)
 	 {
@@ -486,7 +576,7 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		 pG->fillRect(white,x,y,width,height);
 		 return;
 	 }
-	 if(m_FillType == FG_FILL_COLOR)
+	 if(m_FillType == FG_FILL_COLOR && m_bColorSet)
 	 {
 		 xxx_UT_DEBUGMSG(("Fill type Color ! \n"));
 		 pG->fillRect(m_color,x,y,width,height);
@@ -509,6 +599,12 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 		dest.height = height;
 		pG->fillRect(m_pImage,src,dest);
 	}		
+	 if(m_FillType == FG_FILL_COLOR && m_bTransColorSet)
+	 {
+		 xxx_UT_DEBUGMSG(("Fill type Trans Color ! \n"));
+		 pG->fillRect(m_TransColor,x,y,width,height);
+		 return;
+	 }
 	return;
 }
 

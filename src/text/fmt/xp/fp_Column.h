@@ -250,7 +250,7 @@ public:
 	void                layout(bool bForce);
  	virtual void		clearScreen(void);
 	void                clearHdrFtrBoundaries(void);
-	void				setPage(fp_Page* pPage) {m_pPage = pPage ;}
+	void				setPage(fp_Page* pPage);
 	virtual inline fp_Page*		getPage(void) const
 		{ return m_pPage; }
 protected:

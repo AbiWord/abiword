@@ -1639,9 +1639,17 @@ void FL_DocLayout::updateColor()
 	while (pDSL)
 	{
 		pDSL->setPaperColor();
-		pDSL->updateBackgroundColor();
 		pDSL = pDSL->getNextDocSection();
 	}
+	fp_Page * pPage = NULL;
+	UT_uint32 i =0;
+	for(i=0; i<m_vecPages.getItemCount(); i++)
+	{
+		pPage = static_cast<fp_Page *>(m_vecPages.getNthItem(i));
+		pPage->getFillType()->setTransColor(m_szCurrentTransparentColor);
+		pPage->getFillType()->markTransparentForPrint();
+	}
+
 //
 // Redraw the view associated with this document.
 //

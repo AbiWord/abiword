@@ -428,13 +428,14 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	if(!bAlwaysUseWhiteBackground && !pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		xxx_UT_DEBUGMSG(("Doing a rectangular color fill \n"));
-		UT_RGBColor * pClr = getOwningSection()->getPaperColor();
  		UT_sint32 xmin = pDA->xoff;
   		UT_sint32 ymin = pDA->yoff;
 
 		UT_sint32 height =getHeight();
 		UT_sint32 width = getWidth();
-		pDA->pG->fillRect(*pClr,xmin,ymin,width,height);
+		UT_sint32 srcX = xmin;
+		UT_sint32 srcY = ymin;
+		getFillType()->Fill(pDA->pG,srcX,srcY,xmin,ymin,width,height);
 	}
 
     _drawCropMarks(pDA);

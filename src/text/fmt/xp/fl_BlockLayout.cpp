@@ -1618,21 +1618,6 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 }
 
 /*!
- * This method updates the background Colour stored in all the runs. We call
- * this after a Section Level change where the background colour might have
- * changed.
- */
-void fl_BlockLayout::updateBackgroundColor(void)
-{
-	fp_Run * pRun  = m_pFirstRun;
-	while(pRun!= NULL)
-	{
-		pRun->updateBackgroundColor();
-		pRun = pRun->getNextRun();
-	}
-}
-
-/*!
  * Calculate the height of the all the text contained by this block
  */
 UT_sint32 fl_BlockLayout::getHeightOfBlock(void)

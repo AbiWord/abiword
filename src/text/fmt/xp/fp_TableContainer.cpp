@@ -598,11 +598,6 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	markAsDirty();
 	if (pPage != NULL)
 	{
-		if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
-		{
-			page_color = *(pPage->getOwningSection()->getPaperColor ());
-		}
-
 		xxx_UT_DEBUGMSG(("_clear: top %d bot %d cell left %d top %d \n",bRec.top,bRec.top+bRec.height,m_iLeftAttach,m_iTopAttach));
 // only clear the lines if no background is set: the background clearing will also clear the lines
 // FIXME MARCM: this switch SHOULD work but it doesn't... adding it will show clearing errors when moving
@@ -613,13 +608,13 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			if (lineLeft.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{
 				lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineLeft.m_color = page_color;
+				lineLeft.m_color = *getFillType()->getColor();
 				_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
 			}
 			if (lineTop.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{	
 				lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineTop.m_color = page_color;
+				lineTop.m_color =  *getFillType()->getColor();
 				_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
 				if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
 				{
@@ -632,13 +627,13 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			if (lineRight.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{	
 				lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineRight.m_color = page_color;
+				lineRight.m_color =  *getFillType()->getColor();
 				_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
 			}
 			if (lineBottom.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{	
 				lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
-				lineBottom.m_color = page_color;
+				lineBottom.m_color =  *getFillType()->getColor();
 				_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
 				xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
 				if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
@@ -662,7 +657,9 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		{
 			xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
 			//			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
-			getGraphics()->fillRect (page_color,bRec.left,bRec.top,bRec.width,bRec.height);
+			UT_sint32 srcX = getX();
+			UT_sint32 srcY = getY();
+			getFillType()->Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 	}
 	m_bDirty = true;
@@ -1656,7 +1653,9 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			case PP_PropertyMap::background_none:
 				break;
 			case PP_PropertyMap::background_solid:
-				pG->fillRect(background.m_color,bRec.left,bRec.top,bRec.width,bRec.height);
+				UT_sint32 srcX = getX();
+				UT_sint32 srcY = getY();
+				getFillType()->Fill(pG,srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 				break;
 		}	
 		m_bBgDirty = false;

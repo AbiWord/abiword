@@ -126,7 +126,6 @@ public:
 	bool		containsForcedPageBreak(void) const;
 	bool        containsFootnoteReference(void);
 	bool        getFootnoteContainers(UT_Vector * pvecFoots);
-	void        updateBackgroundColor();
 	void 		addRun(fp_Run*);
 	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
 	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);

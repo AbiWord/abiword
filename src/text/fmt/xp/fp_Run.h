@@ -172,11 +172,6 @@ public:
 	bool					isField(void) const { return (bool) (m_pField != NULL); }
 	void					unlinkFromRunList();
 
-	bool                    updateBackgroundColor(void);
-	// bool		            updateHighlightColor(void);
-	bool				    updatePageColor(void);
-
-	const UT_RGBColor		getPageColor(void);
 	const UT_RGBColor 		getFGColor(void) const;
 
 	virtual bool			hasLayoutProperties(void) const;

@@ -3348,7 +3348,7 @@ void FV_View::_fixInsertionPointCoords()
 		pPage = getCurrentPage();
 		UT_RGBColor * pClr = NULL;
 		if (pPage)
-			pClr = pPage->getOwningSection()->getPaperColor();
+			pClr = pPage->getFillType()->getColor();
 		UT_sint32 yoff = 0;
 		if(m_yPoint < 0)
 		{
@@ -3565,7 +3565,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 			if (!bDirtyRunsOnly || pPage->needsRedraw() && (getViewMode() == VIEW_PRINT))
 			{
-			  UT_RGBColor * pClr = pPage->getOwningSection()->getPaperColor();
+			  UT_RGBColor * pClr = pPage->getFillType()->getColor();
 			  m_pG->fillRect(*pClr,adjustedLeft+m_pG->tlu(1),adjustedTop+m_pG->tlu(1),iPageWidth-m_pG->tlu(1),iPageHeight-m_pG->tlu(1));
 //
 // Since we're clearing everything we have to draw every run no matter
@@ -3596,7 +3596,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 //
 // Draw page seperator
 //
-			UT_RGBColor paperColor = *(pPage->getOwningSection()->getPaperColor());
+			UT_RGBColor paperColor = *(pPage->getFillType()->getColor());
 
 			// only in NORMAL MODE - draw a line across the screen
 			// at a page boundary. Not used in online/web and print

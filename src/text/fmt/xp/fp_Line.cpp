@@ -305,15 +305,6 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	setMaxWidth(pContainer->getWidth());
 }
 
-void fp_Line::updateBackgroundColor()
-{
-	UT_uint32 count = m_vecRuns.getItemCount();
-	UT_uint32 i = 0;
-	for(i=0;i<count;i++)
-		static_cast<fp_Run *>(m_vecRuns.getNthItem(i))->updateBackgroundColor();
-}
-
-
 UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)
 {
 	UT_sint32 width = 0;

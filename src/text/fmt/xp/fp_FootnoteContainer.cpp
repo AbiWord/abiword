@@ -68,6 +68,14 @@ void fp_FootnoteContainer::setPage(fp_Page * pPage)
 		getSectionLayout()->markAllRunsDirty();
 	}
 	m_pPage = pPage;
+	if(pPage)
+	{
+		getFillType()->setParent(pPage->getFillType());
+	}
+	else
+	{
+		getFillType()->setParent(NULL);
+	}
 }
 
 /*! 
@@ -90,7 +98,7 @@ void fp_FootnoteContainer::clearScreen(void)
 	if(pos == 0)
 	{
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
-		UT_RGBColor * pBGColor = pDSL->getPaperColor();
+		UT_RGBColor * pBGColor = getFillType()->getColor();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
 		UT_sint32 diff = getPage()->getWidth()/10;
@@ -104,7 +112,9 @@ void fp_FootnoteContainer::clearScreen(void)
 		UT_sint32 yline = yoff;
 		yline = yline - iLineThick - 4; // FIXME This should not be a magic numer!
 		xxx_UT_DEBUGMSG(("fp_TableContainer: clearScreen (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
-		getGraphics()->fillRect(*pBGColor,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
+		UT_sint32 srcX = getX();
+		UT_sint32 srcY = getY();
+		getFillType()->Fill(getGraphics(),srcX,srcY,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
 	}
 
 	fp_Container * pCon = NULL;
@@ -363,14 +373,15 @@ void fp_EndnoteContainer::clearScreen(void)
 		{
 			return;
 		}
-		UT_RGBColor * pBGColor = pDSL->getPaperColor();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
 		UT_sint32 iWidth = getPage()->getWidth();
 		iWidth = iWidth - iLeftMargin - iRightMargin;
 		UT_sint32 xoff,yoff;
 		static_cast<fp_Column *>(getColumn())->getScreenOffsets(this,xoff,yoff);
-		getGraphics()->fillRect(*pBGColor,xoff, yoff, iWidth, getHeight());
+		UT_sint32 srcX = getX();
+		UT_sint32 srcY = getY();
+		getFillType()->Fill(getGraphics(),srcX,srcY,xoff,yoff,iWidth,getHeight());
 	}
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;

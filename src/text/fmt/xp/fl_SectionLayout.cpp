@@ -304,31 +304,6 @@ bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_ContainerLayout* pBL, con
 	return bres;
 }
 
-/*!
- * This method updates the Background color in all the runs from the Page color
- * in the DocSectionLayout.
- */
-void fl_SectionLayout::updateBackgroundColor(void)
-{
-	fl_ContainerLayout*	pL = getFirstLayout();
-	while (pL)
-	{
-		pL->updateBackgroundColor();
-		pL = pL->getNext();
-	}
-	if(getType() != FL_SECTION_DOC)
-		return;
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(this);
-	UT_Vector vecHdrFtr;
-	pDSL->getVecOfHdrFtrs( &vecHdrFtr);
-	UT_uint32 i = 0;
-	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
-	{
-		fl_HdrFtrSectionLayout * pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
-		pHdrFtr->updateBackgroundColor();
-	}
-}
-
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 #ifdef _MSC_VER	// MSVC++ warns about using 'this' in initializer list.
@@ -381,7 +356,8 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandl
 	m_iMaxSectionColumnHeight = 0;
 	m_dMaxSectionColumnHeight = 0.0;
 	m_iFootnoteLineThickness = 0;
-
+	m_sPaperColor.clear();
+	m_sScreenColor.clear();
 	_lookupProperties();
 }
 
@@ -765,9 +741,6 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 			else
 			{
 				pPage = pTmpPage;
-#if 0 // This fixes bug 966 but introduces new problems - jskov 2001.06.10
-				pAfterColumn = pPrevCol;
-#else
 				if(prevContainer == NULL)
 				{
 					pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
@@ -776,7 +749,6 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 				{
 					pAfterColumn = static_cast<fp_Column *>(prevContainer->getContainer())->getLeader();
 				}
-#endif
 			}
 		}
 		else
@@ -1106,7 +1078,6 @@ void fl_DocSectionLayout::updateDocSection(void)
 	}
 	setNeedsSectionBreak(true,NULL);
 	format();
-	updateBackgroundColor();
 	checkAndRemovePages();
 	formatAllHdrFtr();
 	markAllRunsDirty();
@@ -1400,27 +1371,24 @@ void fl_DocSectionLayout::setPaperColor(void)
 	pSectionAP->getProperty("background-color", (const XML_Char *&)pszClrPaper);
 	FV_View * pView = m_pLayout->getView();
 	if(pszClrPaper && UT_strcmp(pszClrPaper,"transparent") != 0)
-		UT_parseColor(pszClrPaper,m_clrPaper);
+	{
+		m_sPaperColor = pszClrPaper;
+		m_sScreenColor.clear();
+	}
 	else if( pView && pView->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) )
 	{
 		XAP_App * pApp = pView->getApp();
 		XAP_Prefs * pPrefs = pApp->getPrefs();
 		const XML_Char * pszTransparentColor = NULL;
 		pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
-		UT_parseColor(pszTransparentColor,m_clrPaper);
+		m_sPaperColor = pszTransparentColor;
+		m_sScreenColor.clear();
 	}
 	else
 	{
-		UT_parseColor("ffffff",m_clrPaper);
+		m_sPaperColor.clear();
+		m_sScreenColor.clear();
 	}
-}
-
-/*!
- * Return a pointer the current background color.
- */
-UT_RGBColor * fl_DocSectionLayout::getPaperColor(void)
-{
-	return &m_clrPaper;
 }
 
 /*!
@@ -1727,6 +1695,15 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 	if(m_pFirstOwnedPage == NULL)
 		m_pFirstOwnedPage = pPage;
 	fp_Page * pPrev = m_pFirstOwnedPage;
+	if(m_sScreenColor.size() > 0)
+	{
+		pPage->getFillType()->setColor(m_sScreenColor.c_str());
+	}
+	else if(m_sPaperColor.size() > 0)
+	{
+		pPage->getFillType()->setTransColor(m_sPaperColor.c_str());
+		pPage->getFillType()->markTransparentForPrint();
+	}		
 
 //
 // The addPage methods will add the page to the correct HdrFtrSL.
@@ -2807,31 +2784,6 @@ void fl_HdrFtrSectionLayout::layout(void)
 		pPair->getShadow()->layout();
 	}
 }
-
-/*!
- * This method updates the background color in the header/footer section and
- * all the shadows associated with it.
- */
-void fl_HdrFtrSectionLayout::updateBackgroundColor(void)
-{
-	fl_ContainerLayout*	pBL = getFirstLayout();
-	while (pBL)
-	{
-		pBL->updateBackgroundColor();
-		pBL = pBL->getNext();
-	}
-	//
-	// update Just the  blocks in the shadowlayouts
-	//
-  	UT_uint32 iCount = m_vecPages.getItemCount();
-	for (UT_uint32 i=0; i<iCount; i++)
-	{
-		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
-
-		pPair->getShadow()->updateBackgroundColor();
-	}
-}
-
 
 void fl_HdrFtrSectionLayout::clearScreen(void)
 {
