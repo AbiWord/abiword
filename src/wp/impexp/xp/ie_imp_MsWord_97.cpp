@@ -1463,6 +1463,15 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate(UT_uint32 iDocPosition)
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
+	// make sure we are not past the end of the document ...
+	// this can happen with some complex documents
+	if(ps->currentcp >= m_iEndnotesEnd)
+	{
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: processing past end of document !!!\n"));
+		return 0;
+	}
+	
+	
 	// reset the page break tracker
 	if(m_bPageBreakPending)
 	{
@@ -1553,6 +1562,14 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 
 int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 {
+	// make sure we are not past the end of the document ...
+	// this can happen with some complex documents
+	if(ps->currentcp >= m_iEndnotesEnd)
+	{
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_specCharProc: processing past end of document !!!\n"));
+		return 0;
+	}
+	
 	Blip blip;
 	long pos;
 	FSPA * fspa;
@@ -1721,6 +1738,14 @@ int IE_Imp_MsWord_97::_endComment(wvParseStruct *ps, UT_uint32 tag,
 int IE_Imp_MsWord_97::_eleProc(wvParseStruct *ps, UT_uint32 tag,
 							   void *props, int dirty)
 {
+	// make sure we are not past the end of the document ...
+	// this can happen with some complex documents
+	if(ps->currentcp >= m_iEndnotesEnd)
+	{
+		UT_DEBUGMSG(("IE_Imp_MsWord_97::_eleProc: processing past end of document !!!\n"));
+		return 0;
+	}
+	
 	//
 	// Marshall these off to the correct handlers
 	//
