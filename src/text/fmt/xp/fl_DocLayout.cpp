@@ -1142,6 +1142,7 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 			// Wait for checking to complete before returning.
 			while(m_bImSpellCheckingNow == true)
 			{
+				// TODO shouldn't we have a little sleep here?
 			}
 		}
 	}
