@@ -29,12 +29,12 @@ GR_UnixImage::~GR_UnixImage()
 
 UT_sint32	GR_UnixImage::getWidth(void) const
 {
-	return m_pDIB->bmiHeader.biWidth;
+	return 0; // TODO
 }
 
 UT_sint32	GR_UnixImage::getHeight(void) const
 {
-	return m_pDIB->bmiHeader.biHeight;
+	return 0; // TODO
 }
 
 void		GR_UnixImage::getByteBuf(UT_ByteBuf** ppBB) const
