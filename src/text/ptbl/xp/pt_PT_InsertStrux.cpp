@@ -200,6 +200,10 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		pfs = new pf_Frag_Strux_SectionFrame(this, indexAP);
 		break;
 
+	case PTX_SectionTable:
+		pfs = new pf_Frag_Strux_SectionTable(this, indexAP);
+		break;
+
 	case PTX_EndFrame:
 		pfs = new pf_Frag_Strux_SectionEndFrame(this, indexAP);
 		break;

@@ -592,6 +592,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 //
 		m_pDoc->setDontImmediatelyLayout(true);
 	}
+	break;
 	case PTX_SectionFrame:
 	{
 		UT_ASSERT(m_pCurrentSL);
