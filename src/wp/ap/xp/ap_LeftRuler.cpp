@@ -143,7 +143,11 @@ void AP_LeftRuler::setWidth(UT_uint32 iWidth)
 
 UT_uint32 AP_LeftRuler::getWidth(void) const
 {
-	return s_iFixedWidth;
+	// Well, someone did this to ap_TopRuler.cpp, so I assume that this must be
+	// correct here too.  Otherwise setWidth never gets called, and that just sucks,
+	// because m_iWidth does get used. -PL
+	//     return s_iFixedWidth;
+	return m_iWidth;
 }
 
 /*****************************************************************/
