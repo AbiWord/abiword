@@ -44,7 +44,6 @@ install: build-stamp
 	cp debian/copyright debian/tmp/usr/share/doc/abiword/.
 	cp debian/changelog debian/tmp/usr/share/doc/abiword/changelog.Debian
 	cp abi-$(ABI_VER)/user/wp/readme.txt debian/tmp/usr/share/doc/abiword/README
-	cp -r abi-$(ABI_VER)/user/wp/sample/* debian/tmp/usr/share/doc/abiword/examples/.
 	gzip -9 debian/tmp/usr/share/doc/abiword/README
 	gzip -9 debian/tmp/usr/share/doc/abiword/changelog.Debian
 	gzip -9 debian/tmp/usr/share/man/man1/AbiWord_d.1
