@@ -68,7 +68,6 @@ GR_UnixImage::~GR_UnixImage()
 {
 	if (m_image)
 	{
-		// TODO free the image buffer data
 		if (m_image->data)
 		{
 			free(m_image->data);
