@@ -779,11 +779,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 			s = EV_MIS_ZERO;
 		break;
 	case AP_MENU_ID_VIEW_STATUSBAR:
-		if ( pFrameData->m_bShowStatusBar && !pFrameData->m_bIsFullScreen && (pFrameData->m_bShowRuler == VIEW_PRINT))
-			s = EV_MIS_Toggled;
-		else
-			s = EV_MIS_ZERO;
-		break;
+              if ( pFrameData->m_bShowStatusBar && 
+				   !pFrameData->m_bIsFullScreen )
+				  s = EV_MIS_Toggled;
+			  else
+				  s = EV_MIS_ZERO;
+			  break;
 
 	case AP_MENU_ID_VIEW_FULLSCREEN:
 	        if ( pFrameData->m_bIsFullScreen )
