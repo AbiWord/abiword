@@ -66,6 +66,8 @@
 #define _CTC		EV_EMC_TOPCELL
 #define _CTO		EV_EMC_TOC
 #define _CPO		EV_EMC_POSOBJECT
+#define _CMA		EV_EMC_MATH
+#define _CEM		EV_EMC_EMBED
 
 #define _B0		| EV_EMB_BUTTON0
 #define _B1		| EV_EMB_BUTTON1
@@ -102,6 +104,7 @@ ap_bs_Mouse MouseTable[] =
 	{_CVD _B0,	{ "",	"",			"btn0VisualText",	"",			"",			"",				}},
 	{_CTC _B0,	{ "",	"",			"cursorTopCell",	"",			"",			"",				}},
 	{_CTO _B0,	{ "",	"",			"cursorTOC",	"",			"",			"",				}},
+	{_CMA _B0,	{ "",	"",			"cursorDefault",		"",			"",			""		        }},
 
 
 //	Button-1, VisualTextDrag context
@@ -149,6 +152,11 @@ ap_bs_Mouse MouseTable[] =
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},
 	{_CZ _B1,	{ "",				"",				"resizeImage",	"",		"endResizeImage",	""				}},
+//	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
+
+//	Button-1, Math-context
+	{_CMA _B1, {"selectMath",                "selectMath",   "selectMath",            "",             "",                       "" }},
+
 //	{_CI _B1,	{ "selectImage",	"editImage",	"moveImage","",			"endImageMove",	""				}},
 
 //	Button-1, TableLine-context

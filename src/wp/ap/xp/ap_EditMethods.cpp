@@ -251,6 +251,7 @@ public:
 	static EV_EditMethod_Fn selectCell;
 	static EV_EditMethod_Fn selectColumn;
 	static EV_EditMethod_Fn selectColumnClick;
+	static EV_EditMethod_Fn selectMath;
 	static EV_EditMethod_Fn selectTOC;
 
 	static EV_EditMethod_Fn delLeft;
@@ -1079,6 +1080,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(selectColumnClick),			0,	""),
 	EV_EditMethod(NF(selectFrame),			0,	""),
 	EV_EditMethod(NF(selectLine),			0,	""),
+	EV_EditMethod(NF(selectMath),			0,	""),
 	EV_EditMethod(NF(selectObject), 		0,	""),
 	EV_EditMethod(NF(selectRow),			0,	""),
 	EV_EditMethod(NF(selectTOC),			0,	""),
@@ -4721,6 +4723,18 @@ Defun(selectTOC)
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Select TOC \n"));
 	pView->cmdSelectTOC(pCallData->m_xPos, pCallData->m_yPos);
+	return true;
+}
+
+
+Defun(selectMath)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Select Math \n"));
+        PT_DocPosition posL = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
+	PT_DocPosition posH = posL+1;
+	pView->cmdSelect(posL,posH);
 	return true;
 }
 

@@ -8922,8 +8922,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_FIELD;
 
 	case FPRUN_MATH:
-		m_prevMouseContext = EV_EMC_UNKNOWN;
-		return EV_EMC_UNKNOWN;
+		m_prevMouseContext = EV_EMC_MATH;
+		return EV_EMC_MATH;
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (12)\n"));
@@ -9098,6 +9098,12 @@ void FV_View::setCursorToContext()
 		{
 			cursor = GR_Graphics::GR_CURSOR_GRAB;
 		}
+		break;
+	case EV_EMC_MATH:
+		cursor = GR_Graphics::GR_CURSOR_IMAGE;
+		break;
+	case EV_EMC_EMBED:
+		cursor = GR_Graphics::GR_CURSOR_IMAGE;
 		break;
 	default:
 		break;
