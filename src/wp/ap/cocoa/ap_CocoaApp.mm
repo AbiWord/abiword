@@ -1158,10 +1158,9 @@ rms:  I'm adding something here to get a localized splash screen
 		[theWindow setContentSize:size];
 
 		NSImage *theImage;
-		NSString *theFileName = [NSString stringWithCString:buf];
+		NSString *theFileName = [NSString stringWithCString:buf];	// autoreleased 
 		theImage = [[NSImage alloc] initWithContentsOfFile:theFileName];
 		[[splash getImageView] setImage:theImage];
-		[theFileName release];
 		[theImage release];
 #if 0
 		// create a drawing area
