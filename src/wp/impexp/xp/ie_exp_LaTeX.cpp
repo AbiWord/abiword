@@ -384,7 +384,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 			while (q)
 			{
-				if (0 == UT_stricmp(q, "underline"))
+			  if (0 == UT_stricmp(q, "underline")) // TODO: \def\undertext#1{$\underline{\vphantom{y}\smash{\hbox{#1}}}$}
 				{
 					m_pie->write("\\underline{");
 				}
@@ -672,6 +672,7 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			*pBuf++ = 'a';
 			*pBuf++ = 'g';
 			*pBuf++ = 'e';
+			*pBuf++ = '\n';
 			pData++;
 			break;
 			
