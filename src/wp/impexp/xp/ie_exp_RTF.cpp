@@ -939,9 +939,10 @@ void IE_Exp_RTF::_selectStyles()
 					if (_findFont(&fi) == -1)
 						_addFont(&fi);
 				}
-				UT_CATCH(_rtf_no_font)
+				UT_CATCH(_rtf_no_font e)
 				{
 				}
+				UT_END_CATCH
 			}
 		}
     }
@@ -1054,15 +1055,16 @@ UT_sint32 IE_Exp_RTF::_findFont(const s_RTF_AttrPropAdapter * apa) const
 {
 	static UT_sint32 ifont = 0;
 	UT_TRY
-	{
-		ifont = _findFont(&(_rtf_font_info(*apa)));
-		return ifont;
-	}
-	UT_CATCH(_rtf_no_font)
-	{
-		return -1;
-	}
-	UT_END_CATCH;
+	  {
+	    _rtf_font_info fi(*apa);
+	    ifont = _findFont(&fi);
+	    return ifont;
+	  }
+	UT_CATCH(_rtf_no_font e)
+	  {
+	    return -1;
+	  }
+	UT_END_CATCH
 }
 
 /*!
@@ -1085,8 +1087,12 @@ _rtf_font_info::_rtf_font_info(const s_RTF_AttrPropAdapter & apa)
     // Not a typo. The AbiWord "font-family" property is what RTF
     // calls font name. It has values like "Courier New".
     szName = apa.getProperty("font-family");
-	if (szName == NULL) UT_THROWS(_rtf_no_font());
-    
+    if (szName == NULL)
+      {
+	_rtf_no_font e;
+	UT_THROW(e);
+      }    
+
     static const char * t_ff[] = { "fnil", "froman", "fswiss", "fmodern", "fscript", "fdecor", "ftech", "fbidi" };
     GR_Font::FontFamilyEnum ff;
     GR_Font::FontPitchEnum fp;

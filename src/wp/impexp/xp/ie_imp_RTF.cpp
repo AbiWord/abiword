@@ -5659,13 +5659,29 @@ IE_Imp_RTF::RTFTokenType IE_Imp_RTF::NextToken (unsigned char *pKeyword, long* p
 	*pParamUsed = false;
 	pKeyword [0] = ' ';
 
+#if 0
+	// see bug 1211 and bug 1207.rtf - invalid RTF coming in
+	// this code instead violates the RTF spec in order to fix that problem,
+	// but instead breaks other things like field values:
+	// If a space delimits the control word, the space does not appear in the 
+	// document. Any characters following the delimiter, including spaces, will
+	// appear in the document. For this reason, you should use spaces only 
+	// where necessary; do not use spaces merely to break up RTF code.
+
 	while( pKeyword[0] == ' ')
-	{
+		{
+			if (!ReadCharFromFile(pKeyword))
+				{
+					tokenType = RTF_TOKEN_ERROR;
+				}
+		}
+#else
 	if (!ReadCharFromFile(pKeyword))
-	{
-		tokenType = RTF_TOKEN_ERROR;
-	}
-	}
+		{
+			tokenType = RTF_TOKEN_ERROR;
+		}
+#endif
+
 	switch (*pKeyword)
 	{
 	case '\\':
