@@ -55,6 +55,7 @@ protected:
 	FV_ListenerId					m_lid;	/* view listener id */
 
 	GtkWidget *						m_wToolbar;
+	GtkWidget * 					m_wHandleBox;
 	AP_UnixToolbar_Icons *			m_pUnixToolbarIcons;
 	UT_Vector						m_vecToolbarWidgets;
 };

@@ -64,6 +64,7 @@ protected:
 	AP_UnixFrame *		m_pUnixFrame;
 
 	GtkWidget *			m_wMenuBar;
+	GtkWidget * 		m_wHandleBox;
 	GtkAccelGroup *		m_wAccelGroup;
 	GtkItemFactory *	m_wMenuBarItemFactory;
 	GtkItemFactoryEntry * m_menuFactoryItems;

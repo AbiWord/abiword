@@ -130,8 +130,13 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 	GtkWidget * wTLW = m_pUnixFrame->getTopLevelWindow();
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
+	m_wHandleBox = gtk_handle_box_new();
+	UT_ASSERT(m_wHandleBox);
+	
 	m_wToolbar = gtk_toolbar_new(GTK_ORIENTATION_HORIZONTAL, GTK_TOOLBAR_BOTH);
-	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NORMAL);
+	UT_ASSERT(m_wToolbar);
+	
+	gtk_toolbar_set_button_relief(GTK_TOOLBAR(m_wToolbar), GTK_RELIEF_NONE);
 	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_space_size(GTK_TOOLBAR(m_wToolbar), 10);
 
@@ -234,13 +239,18 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 		}
 	}
 
+	// show the complete thing
 	gtk_widget_show(m_wToolbar);
-	
-	// TODO: Can we do this only vertically, so we can align the leftmost
-	// buttons with the menu bar?
+
+	// an arbitrary padding to make our document not run into our buttons
 	gtk_container_border_width(GTK_CONTAINER(m_wToolbar), 2);
+
+	// pack it in a handle box
+	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wToolbar);
+	gtk_widget_show(m_wHandleBox);
 	
-	gtk_box_pack_start(GTK_BOX(wVBox), m_wToolbar, FALSE, TRUE, 0);
+	// put it in the vbox
+	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, FALSE, 0);
 
 	return UT_TRUE;
 }

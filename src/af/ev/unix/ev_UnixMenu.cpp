@@ -181,6 +181,9 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	GtkWidget * wTLW = m_pUnixFrame->getTopLevelWindow();
 	GtkWidget * wVBox = m_pUnixFrame->getVBoxWidget();
 
+	m_wHandleBox = gtk_handle_box_new();
+	UT_ASSERT(m_wHandleBox);
+	
 	m_wAccelGroup = gtk_accel_group_new();
 	const char * szMenuBarName = _ev_gtkMenuFactoryName(m_pMenuLayout->getName());
 	m_wMenuBarItemFactory = gtk_item_factory_new(GTK_TYPE_MENU_BAR,szMenuBarName,m_wAccelGroup);
@@ -278,11 +281,16 @@ UT_Bool EV_UnixMenu::synthesize(void)
 		delete *ppString;
 	}
 	delete ppString;
-
+	
 	// show up the properly connected menu structure
 	gtk_widget_show(m_wMenuBar);
 
- 	gtk_box_pack_start(GTK_BOX(wVBox),m_wMenuBar,FALSE,TRUE,0);
+	// pack it in a handle box
+	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wMenuBar);
+	gtk_widget_show(m_wHandleBox);
+	
+	// put it in the vbox
+ 	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
 
 	return UT_TRUE;
 }
@@ -304,20 +312,6 @@ static void _ev_strip_accel(char * bufResult,
 	bufResult[j++] = NULL;
 }
 
-static void _ev_convert(char * bufResult,
-						const char * szString)
-{
-	strcpy(bufResult, szString);
-
-	char * pl = bufResult;
-	while (*pl)
-	{
-		if (*pl == '&')
-			*pl = '_';
-		pl++;
-	}
-}
-				
 static void _ev_concat_and_convert(char * bufResult,
 								   const char * szPrefix,
 								   const char * szLabelName)
@@ -499,11 +493,9 @@ UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
 
 					// Strip out the underscores from the path
 					// or else the lookup in the hash will fail.
-					gchar * buf = new gchar[strlen(szMenuFactoryItemPath)];
 					_ev_strip_accel(buf, szMenuFactoryItemPath);
-					GtkWidget * item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
+					item = gtk_item_factory_get_widget(m_wMenuBarItemFactory,
 																   buf);
-					delete buf;
 					UT_ASSERT(item);
 
 					// check boxes 
