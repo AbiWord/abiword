@@ -50,7 +50,7 @@ ifndef ABI_REQUIRE_PEER_ICONV
 ABI_LIBS+= iconv 
 endif
 
-STUPID_STATIC_LIBS= -Wl,-Bstatic -lph
+STUPID_STATIC_LIBS= -Wl,-Bstatic -lphS
 
 # include both dynamic and static binaries
 TARGETS=		$(PROGRAM) $(PROGRAM_S)
@@ -71,7 +71,7 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(QNX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) $(STUPID_STATIC_LIBS)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/lib -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)-lstdc++ $(STUPID_STATIC_LIBS)
 	@bindres -q $@ Icon.wgti
 else
 	@echo "Not linking dynamic $(PROGRAM)"
