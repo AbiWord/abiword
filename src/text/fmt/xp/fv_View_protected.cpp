@@ -4701,7 +4701,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotCo
 		_setPoint(posBOD);
 		bRes = false;
 	}
-	else if (static_cast<UT_sint32>(m_iInsPoint) >= static_cast<UT_sint32>(posEOD))
+	else if (static_cast<UT_sint32>(m_iInsPoint) > static_cast<UT_sint32>(posEOD))
 	{
 		m_bPointEOL = true;
 		_setPoint(posEOD);
