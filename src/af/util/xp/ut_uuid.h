@@ -33,7 +33,13 @@
 
 #include <time.h>
 
-#include "ut_misc.h"
+#ifdef WIN32
+#  include <winsock.h> // this is where timeval etc is defined ...
+#  include <rpc.h>   // this is where uuid_t is define
+#else
+#  include <sys/time.h> // this is where timeval should be ...
+#  include <sys/uuid.h> // this is where uuid_t should be ...
+#endif
 
 class UT_String;
 
@@ -47,7 +53,17 @@ typedef enum
 		UUID_VARIANT_ERROR = 0xffffffff
 } UT_UUIDVariant;
 
-typedef unsigned char uuid_t[16];
+#if 0
+// this is what uuid_t is supposed to look; if it is not defined for
+// your platform, enable this definition
+typedef struct _uuid_t
+{
+    UT_uint32 d1;
+    UT_uint16 d2;
+    UT_uint16 d3;
+    unsigned char d4[8];
+} uuid_t;
+#endif
 
 struct uuid
 {
@@ -64,6 +80,15 @@ class UT_UUIDGenerator;
 
 /*!
     Class for generating and managing UUIDs
+
+    On platforms which provide means of generating random data that
+    is superior to calling UT_rand() a platform specific derrived
+    class should implement virtual _getRandomBytes().
+
+    If a derived class is created, it will need to be accompanied by
+    corresponding derived UT_UUIDGenerator class (described below) and
+    the call in xap_*App constructor to _setUUIDGenerator() will need
+    to be passed an instance of the platfrom-specific class.
 */
 class ABI_EXPORT UT_UUID
 {
@@ -85,7 +110,15 @@ class ABI_EXPORT UT_UUID
 	bool            setUUID(const UT_String &s);
 	bool            setUUID(const char *s);
 	bool            setUUID(const uuid_t &uu);
-	
+
+	/* convert uuid to and from strings */
+	bool            fromString(const UT_String &from) {return setUUID(from);}
+	bool            fromString(const UT_String &from, uuid_t &to) const;
+	bool            fromString(const char * from, uuid_t &to) const;
+
+	bool            toString(UT_String & to) const;
+	bool            toString(const uuid_t &from, UT_String & to) const;
+
 	// these retrieve various information from UUID
 	time_t          getTime() const;
 	time_t          getTime(const uuid_t & u) const;
@@ -95,11 +128,6 @@ class ABI_EXPORT UT_UUID
 
 	UT_UUIDVariant  getVariant() const;
 	UT_UUIDVariant  getVariant(const uuid_t &uu) const;
-
-	/* convert strings into uuid_t and vice versa */
-	bool            strToUUID(const char * in, uuid_t &u) const;
-	bool            strToUUID(const UT_String &s, uuid_t &u) const;
-	bool            UUIDtoStr(const uuid_t &uu, UT_String & s) const;
 
 	// NB: these are spatial operators, not temporal ...
 	bool            operator ==(const UT_UUID &u) const;
@@ -111,6 +139,11 @@ class ABI_EXPORT UT_UUID
 	bool            isOlder(const UT_UUID &u) const;
 	bool            isYounger(const UT_UUID &u) const;
 	bool            isOfSameAge(const UT_UUID &u) const;
+
+	bool            isValid() const {return m_bIsValid;}
+	bool            isNull() const;
+
+	void            clear();
 	
    protected:
 	friend class UT_UUIDGenerator;
@@ -132,7 +165,7 @@ class ABI_EXPORT UT_UUID
 	bool            _parse(const char * in, struct uuid &u) const;
 	
 	bool            _makeUUID(struct uuid & u) const;
-	bool            _UUIDtoStr(const struct uuid &uu, UT_String & s) const;
+	bool            _toString(const struct uuid &uu, UT_String & s) const;
 
 	time_t          _getTime(const struct uuid & uu) const;
 	UT_sint32       _getType(const struct uuid &uu) const;
@@ -148,9 +181,12 @@ class ABI_EXPORT UT_UUID
 };
 
 /*
-    We will create an instance of this (or derived) class in XAP_App()
-    and have XAP_App::getUUIDGenerator(). This will allow us to create
-    platform specific instances of UT_UUID from xp code
+    This class mediates creation of UT_UUID class.
+    
+    We create an instance of UT_UUIDGeneratr (or derived) class in
+    XAP_App() and have XAP_App::getUUIDGenerator() to gain access to
+    it.  This allows us to create platform specific instances of
+    UT_UUID from xp code.
 */
 class ABI_EXPORT UT_UUIDGenerator
 {

@@ -25,7 +25,9 @@
 #include "ut_string_class.h"
 #include "ut_rand.h"
 
-bool UT_UUID::s_bInitDone = false;
+bool          UT_UUID::s_bInitDone = false;
+unsigned char UT_UUID::s_node[6] = {0,0,0,0,0,0};
+
 
 /*!
     This constructor is used if the object is only used to generate new UUIDs
@@ -68,13 +70,13 @@ UT_UUID::UT_UUID(const UT_UUID &u)
 /*!
     Converts string represenation of UUID to uuid_t
 */
-bool UT_UUID::strToUUID(const UT_String &s, uuid_t &u) const
+bool UT_UUID::fromString(const UT_String &s, uuid_t &u) const
 {
-	return strToUUID(s.c_str(), u);
+	return fromString(s.c_str(), u);
 }
 
 
-bool UT_UUID::strToUUID(const char * in, uuid_t &u) const
+bool UT_UUID::fromString(const char * in, uuid_t &u) const
 {
 	struct uuid uuid;
 	
@@ -140,7 +142,7 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
 bool UT_UUID::_pack(const uuid &uu, uuid_t &u) const
 {
     UT_uint32   tmp;
-    unsigned char   *out = &u[0];
+    unsigned char   *out = (unsigned char *)&u;
 
     tmp = uu.time_low;
     out[3] = (unsigned char) tmp;
@@ -174,7 +176,7 @@ bool UT_UUID::_pack(const uuid &uu, uuid_t &u) const
 /*!
     convert internal UUID struct to a string
 */
-bool UT_UUID::_UUIDtoStr(const uuid &uu, UT_String & s) const
+bool UT_UUID::_toString(const uuid &uu, UT_String & s) const
 {
     UT_String_sprintf(s,"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
         uu.time_low, uu.time_mid, uu.time_high_and_version,
@@ -188,13 +190,19 @@ bool UT_UUID::_UUIDtoStr(const uuid &uu, UT_String & s) const
 /*!
     convert uuid_t to a string
  */
-bool UT_UUID::UUIDtoStr(const uuid_t &uu, UT_String & s) const
+bool UT_UUID::toString(const uuid_t &uu, UT_String & s) const
 {
     struct uuid uuid;
     bool bRet = _unpack(uu, uuid);
-	bRet &= _UUIDtoStr(uuid, s);
+	bRet &= _toString(uuid, s);
 
 	return bRet;
+}
+
+bool UT_UUID::toString(UT_String & s) const
+{
+	UT_return_val_if_fail(m_bIsValid, false);
+	return _toString(m_uuid, s);
 }
 
 /*!
@@ -202,7 +210,7 @@ bool UT_UUID::UUIDtoStr(const uuid_t &uu, UT_String & s) const
 */
 bool UT_UUID::_unpack(const uuid_t &in, uuid &uu) const
 {
-    const unsigned char  *ptr = &in[0];
+    const unsigned char  *ptr = (const unsigned char*)&in;
     UT_uint32       tmp;
 
     tmp = *ptr++;
@@ -266,7 +274,7 @@ bool UT_UUID::makeUUID(UT_String & s) const
 {
 	struct uuid uuid;
 	bool bRet = _makeUUID(uuid);
-	bRet &= _UUIDtoStr(uuid, s);
+	bRet &= _toString(uuid, s);
 	return bRet;
 }
 
@@ -603,5 +611,23 @@ bool UT_UUID::isOfSameAge(const UT_UUID &u) const
 	return true;
 }
 
+bool UT_UUID::isNull() const
+{
+	// will treat it as null if not valid ...
+	UT_return_val_if_fail(isValid(),true);
 
+	const unsigned char * c = (const unsigned char *) &(this->m_uuid);
+
+	for(UT_uint32 i = 0; i < sizeof(m_uuid); ++i, ++c)
+		if(*c != 0)
+			return false;
+
+	return true;
+}
+
+void UT_UUID::clear()
+{
+	memset(&(this->m_uuid), sizeof(m_uuid), 0);
+	m_bIsValid = false;
+}
 
