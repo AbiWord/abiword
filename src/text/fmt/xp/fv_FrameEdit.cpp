@@ -858,6 +858,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 // Need this for offset to column
 //
 		fp_Container * pCol = pLine->getColumn();
+		UT_ASSERT(pCol->getContainerType() == FP_CONTAINER_COLUMN);
 //
 // Find the screen coords of pCol and substrct then from x,y
 //

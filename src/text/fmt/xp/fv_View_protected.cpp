@@ -1173,7 +1173,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 {
 	fl_BlockLayout * pBL=NULL;
-	if(m_bEditHdrFtr && m_pEditShadow != NULL)
+	if(m_bEditHdrFtr && (m_pEditShadow != NULL) && (m_FrameEdit.getFrameEditMode() == FV_FrameEdit_NOT_ACTIVE))
 	{
 		pBL = static_cast<fl_BlockLayout *>(m_pEditShadow->findBlockAtPosition(pos));
 		if(pBL != NULL)
