@@ -143,8 +143,8 @@ There are 2 ways to build and run AbiWord:
     help AbiWord find the dictionary and other support files.
 
 [2] End-User Style:  just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z'
-    This will build a distribution zip file (abi/dist/AbiSuite-x.y.z-$(arch).zip).
-    Expand this in /boot/apps.  You can then run /boot/apps/AbiSuite/bin/AbiWord.
+    This will build a QNX 'Repository in a File'(src/build/qnx/abiword-x.y.z.qpr).
+		Install this with 'pkg-installer -u abiword-x.y.z.qpr'.
 
 Components that you will need to checkout from CVS, or have installed, are:
 	abi 
