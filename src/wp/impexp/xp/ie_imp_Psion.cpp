@@ -48,6 +48,13 @@
 
 #include "ut_string_class.h"
 
+#include "ut_math.h"
+#include "ut_growbuf.h"
+#include "ie_impGraphic.h"
+#include "fg_Graphic.h"
+#include "fg_GraphicRaster.h"
+#include "png.h"
+
 #include "ie_imp_Psion.h"
 #include <psiconv/parse.h>
 
@@ -346,7 +353,7 @@ bool IE_Imp_Psion::applyStyles(psiconv_word_styles_section style_sec)
 		else
 			stylename = (const XML_Char *) style->name;
 
-		// UT_DEBUGMSG(("Style attributes: %s\n",props.getPointer(0)));
+		//UT_DEBUGMSG(("Style attributes: %s\n",props.getPointer(0)));
 
 		const XML_Char* propsArray[7];
 		propsArray[0] = (const XML_Char *) "props";
@@ -791,16 +798,256 @@ bool IE_Imp_Psion::applyCharacterAttributes(psiconv_character_layout layout)
 	return getDoc()->appendFmt(propsArray);
 }
 
+
+// HACK KJD so embedded objects get same attributes (only valid in limited calls)
+const XML_Char * embobjStylename = NULL;
+psiconv_paragraph_layout embobjLayout = NULL;
+
+/* pBB is a PNG byte buffer, inserts picture in current spot */
+UT_Error  IE_Imp_Psion::insertGraphicFile(UT_ByteBuf* pBB, int width, int height)
+{
+    if (!pBB) return UT_ERROR;
+
+	class UT_ByteBuf sectprops(256);
+	const XML_Char* propsArray[5];
+
+	// Get all attributes into prop
+	if (!(getParagraphAttributes(embobjLayout,&sectprops)))
+		return false;
+
+	// Append the string termination character '\000'
+	sectprops.append((unsigned char *) "",1);
+
+	// UT_DEBUGMSG(("Paragraph: %s\n",sectprops.getPointer(0)));
+	propsArray[0] = (const XML_Char *) "props";
+	propsArray[1] = (const XML_Char *) sectprops.getPointer(0);
+	propsArray[2] = (const XML_Char *) "style";
+	propsArray[3] = embobjStylename;
+	propsArray[4] = (const XML_Char *) NULL;
+
+	if (!getDoc()->appendStrux(PTX_Section, NULL) ||
+	    !getDoc()->appendStrux(PTX_Block, propsArray))
+     		return UT_IE_NOMEMORY;
+
+
+   	FG_Graphic* pFG;
+	FG_GraphicRaster *pFGR;
+
+	pFGR = new FG_GraphicRaster();
+	if(pFGR == NULL)
+		return UT_IE_NOMEMORY;
+
+	if(!pFGR->setRaster_PNG(pBB)) {
+		DELETEP(pFGR);
+		
+		return UT_IE_FAKETYPE;
+	}
+
+	pFG = static_cast<FG_Graphic *>(pFGR);
+   
+
+   	UT_ByteBuf * buf;
+   	const char * mimetype = NULL;
+    buf = (static_cast<FG_GraphicRaster*>(pFG))->getRaster_PNG();
+    mimetype =UT_strdup("image/png");
+
+   	//const XML_Char* propsArray[5];
+		UT_uint32 iid = UT_newNumber();
+		UT_String szName;
+		UT_String_sprintf(szName, "image_%d", iid);
+   	propsArray[0] = "dataid";
+   	propsArray[1] = szName.c_str(); //"image_0";
+	propsArray[2] = static_cast<const XML_Char *>("props");
+		UT_String szSize;
+		float fHeight = static_cast<float>(UT_convertDimToInches((double)height, DIM_PT));
+		float fWidth  = static_cast<float>(UT_convertDimToInches((double)width, DIM_PT));
+		UT_String_sprintf(szSize, "width:%fin; height:%fin", fWidth, fHeight);
+	propsArray[3] = szSize.c_str();
+   	propsArray[4] = NULL;
+   
+   	if (!getDoc()->appendObject(PTO_Image, propsArray)) {
+	   delete pFG;
+	   FREEP(mimetype);
+	   return UT_IE_NOMEMORY;
+	}
+
+   	if (!getDoc()->createDataItem(const_cast<char *>(szName.c_str()), false,
+					buf, const_cast<void *>(static_cast<const void*>(mimetype)), NULL)) {
+	   delete pFG;
+	   // mimetype will be freed by crateDataItem
+	   //FREEP(mimetype);
+	   return UT_IE_NOMEMORY;
+	}
+
+   	delete pFG;
+
+	return UT_OK;
+}
+
+static void _write_png( png_structp png_ptr, 
+		        png_bytep data, 
+		        png_size_t length )
+{
+	UT_ByteBuf* bb = static_cast<UT_ByteBuf*>(png_get_io_ptr(png_ptr));
+	bb->append(data, length);
+}
+
+static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
+
+
+/* takes an [embedded] sketch image and converts to PNG byte data */
+void IE_Imp_Psion::convertSketch2Png(psiconv_sketch_f sketchfile)
+{
+   psiconv_paint_data_section pic = sketchfile->sketch_sec->picture;
+
+   png_structp png_ptr;
+   png_infop info_ptr;
+   png_colorp palette;
+
+   /* Create and initialize the png_struct with the desired error handler
+    * functions.  If you want to use the default stderr and longjump method,
+    * you can supply NULL for the last three parameters.  We also check that
+    * the library version is compatible with the one used at compile time,
+    * in case we are using dynamically linked libraries.  REQUIRED.
+    */
+   png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
+      NULL, NULL, NULL); //png_voidp user_error_ptr, user_error_fn, user_warning_fn
+
+   if (png_ptr == NULL)
+   {
+      return;
+   }
+
+   /* Allocate/initialize the image information data.  REQUIRED */
+   info_ptr = png_create_info_struct(png_ptr);
+   if (info_ptr == NULL)
+   {
+      png_destroy_write_struct(&png_ptr,  png_infopp_NULL);
+      return;
+   }
+
+   /* Set error handling.  REQUIRED if you aren't supplying your own
+    * error handling functions in the png_create_write_struct() call.
+    */
+   if (setjmp(png_jmpbuf(png_ptr)))
+   {
+      /* If we get here, we had a problem reading the file */
+      png_destroy_write_struct(&png_ptr, &info_ptr);
+      return;
+   }
+
+   UT_ByteBuf *pBB = new UT_ByteBuf;  /* Byte Buffer for Converted Data */
+
+   /* Setting up the Data Writing Function */
+   png_set_write_fn(png_ptr, static_cast<void *>(pBB), 
+      static_cast<png_rw_ptr>(_write_png), static_cast<png_flush_ptr>(_write_flush));
+
+
+   png_uint_32 height=pic->ysize, width=pic->xsize, bitdepth=8;
+
+
+   /* Set the image information here.  Width and height are up to 2^31,
+    * bit_depth is one of 1, 2, 4, 8, or 16, but valid values also depend on
+    * the color_type selected. color_type is one of PNG_COLOR_TYPE_GRAY,
+    * PNG_COLOR_TYPE_GRAY_ALPHA, PNG_COLOR_TYPE_PALETTE, PNG_COLOR_TYPE_RGB,
+    * or PNG_COLOR_TYPE_RGB_ALPHA.  interlace is either PNG_INTERLACE_NONE or
+    * PNG_INTERLACE_ADAM7, and the compression_type and filter_type MUST
+    * currently be PNG_COMPRESSION_TYPE_BASE and PNG_FILTER_TYPE_BASE. REQUIRED
+    */
+   png_set_IHDR(png_ptr, info_ptr, width, height, bitdepth, PNG_COLOR_TYPE_RGB,
+      PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+
+   /* set the palette if there is one.  REQUIRED for indexed-color images */
+   palette = (png_colorp)png_malloc(png_ptr, PNG_MAX_PALETTE_LENGTH
+             * sizeof (png_color));
+   for (int i = (PNG_MAX_PALETTE_LENGTH)-1; i >= 0; i--)
+   {
+		palette[i].red = 0xAA;
+		palette[i].green = 0xAA;
+		palette[i].blue = 0xAA;
+   }
+   /* ... set palette colors ... */
+   png_set_PLTE(png_ptr, info_ptr, palette, PNG_MAX_PALETTE_LENGTH);
+   /* You must not free palette here, because png_set_PLTE only makes a link to
+      the palette that you malloced.  Wait until you are about to destroy
+      the png structure. */
+
+
+   /* Write the file header information.  REQUIRED */
+   png_write_info(png_ptr, info_ptr);
+
+
+   /* The easiest way to write the image (you may have a different memory
+    * layout, however, so choose what fits your needs best).  You need to
+    * use the first method if you aren't handling interlacing yourself.
+    */
+   png_uint_32 k;
+   png_bytep image = new png_byte[height*width*3]; //png_byte image[height][width*bytes_per_pixel];
+   png_bytep *row_pointers = new png_bytep[height];
+   for (k = 0; k < height; k++)
+   {
+     register png_uint_32 offset = k*width;
+     for (png_uint_32 j = 0; j < width; j++)
+     { /* Note that we must convert from 0.0-1.0 to 0-255 */
+       image[(offset+j)*3]   = static_cast<png_byte>(pic->red[offset+j]   * 255.0);
+       image[(offset+j)*3+1] = static_cast<png_byte>(pic->green[offset+j] * 255.0);
+       image[(offset+j)*3+2] = static_cast<png_byte>(pic->blue[offset+j]  * 255.0);
+     }
+     row_pointers[k] = image+offset*3; /*+ k*width*bytes_per_pixel*/
+   }
+
+   /* One of the following output methods is REQUIRED */
+   /* write out the entire image data in one call */
+   png_write_image(png_ptr, row_pointers);
+
+   /* It is REQUIRED to call this to finish writing the rest of the file */
+   png_write_end(png_ptr, info_ptr);
+
+   /* If you png_malloced a palette, free it here (don't free info_ptr->palette,
+      as recommended in versions 1.0.5m and earlier of this example; if
+      libpng mallocs info_ptr->palette, libpng will free it).  If you
+      allocated it with malloc() instead of png_malloc(), use free() instead
+      of png_free(). */
+   png_free(png_ptr, palette);
+   palette=NULL;
+
+   /* clean up after the write, and free any memory allocated */
+   png_destroy_write_struct(&png_ptr, &info_ptr);
+
+   /* that's it */
+   insertGraphicFile(pBB, width, height);
+}
+
+
+// append a string (assumes ASCII 7bit C-String) to block
+static bool appendCStr(const char *input, UT_GrowBuf *gbBlock)
+{
+	register UT_UCSChar uc;
+	register const char *p = input;
+
+	while(p && *p)
+	{
+		uc = (UT_UCSChar)*p;
+		if (!(gbBlock->append((const UT_uint16 *)&uc,1)))
+			return false;
+		p++;
+	}
+
+	return true;
+}
+
 // Read length character from input, translate them to the internal
 // Abiword format, and append them to the gbBlock.
 // You must insure the input has at least length characters!
 bool IE_Imp_Psion::prepareCharacters(char *input, int length,
-                                        UT_GrowBuf *gbBlock)
+                                        UT_GrowBuf *gbBlock,
+                                        psiconv_list embobjlst)
 {
 	class UT_Mbtowc mbtowc;
 	UT_UCSChar uc;
 	wchar_t wc;
 	int i;
+	psiconv_file embfile;
 
 	const char *szEncoding = XAP_EncodingManager::get_instance()->
                                                      charsetFromCodepage(1252);
@@ -829,8 +1076,44 @@ bool IE_Imp_Psion::prepareCharacters(char *input, int length,
 		else if (input[i] == '\015') // Unknown functionality
 			continue;
 		else if (input[i] == '\016') // Object placeholder 
-		                             // Not yet implemented in psiconv 
+		{
+			if (psiconv_list_is_empty(embobjlst))
+				appendCStr("<embedded object missing>", gbBlock);
+			else
+			{
+				embfile = static_cast<psiconv_file>(psiconv_list_get(embobjlst,embobjN));
+				if (embfile == NULL)
+					appendCStr("<embedded object missing>", gbBlock);
+				else
+				switch(embfile->type)
+				{
+					case psiconv_sketch_file:
+						//appendCStr("<sketch object>", gbBlock);
+						convertSketch2Png(static_cast<psiconv_sketch_f>(embfile->file));
+					break;
+					case psiconv_sheet_file:
+						appendCStr("<sheet object>", gbBlock);
+					break;
+					case psiconv_word_file:
+						appendCStr("<word object>", gbBlock);
+					break;
+					case psiconv_texted_file:
+						appendCStr("<texted object>", gbBlock);
+					break;
+					case psiconv_mbm_file:
+						appendCStr("<mbm object>", gbBlock);
+					break;
+					case psiconv_clipart_file:
+						appendCStr("<clipart object>", gbBlock);
+					break;
+					// psiconv_unknown_file:
+					default:
+						appendCStr("<unknown embedded object>", gbBlock);
+				}
+				embobjN++;  // point to next embedded object
+			}
 			continue;
+		}
 		else if (input[i] == '\017') // Visible space. Handle as normal space.
 			uc = UCS_SPACE; 
 		else if (input[i] == '\020') // Unbreakable space
@@ -848,7 +1131,8 @@ bool IE_Imp_Psion::prepareCharacters(char *input, int length,
 }
 
 UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
-                                      psiconv_word_styles_section style_sec)
+                                      psiconv_word_styles_section style_sec,
+									  psiconv_list embobjlst)
 {
 	unsigned int i,inline_nr,loc;
 	psiconv_paragraph paragraph;
@@ -871,6 +1155,10 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 			stylename = (const XML_Char *) "Normal";
 
 		loc = 0;
+			// HACK KJD so embedded objects get same attributes (only valid in calls from this loop)
+			embobjStylename = stylename;  
+			embobjLayout = paragraph->base_paragraph;
+			
 		if (!(applyParagraphAttributes(paragraph->base_paragraph,stylename))) 
 			return UT_IE_NOMEMORY;
 		for(inline_nr=0; inline_nr < psiconv_list_length(paragraph->in_lines);
@@ -882,7 +1170,7 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 			}
 			gbBlock.truncate(0);
 			if (!(prepareCharacters(paragraph->text + loc,in_line->length,
-			      &gbBlock))) 
+			      &gbBlock, embobjlst))) 
 				return UT_IE_NOMEMORY;
 			// Yes, gbBlock may be empty!
 			if (gbBlock.getLength()) {
@@ -897,7 +1185,7 @@ UT_Error IE_Imp_Psion::readParagraphs(psiconv_text_and_layout psiontext,
 		if (loc < strlen(paragraph->text)) {
 			gbBlock.truncate(0);
 			if (!(prepareCharacters(paragraph->text+loc,
-			                       strlen(paragraph->text - loc),&gbBlock))) 
+			                       strlen(paragraph->text - loc),&gbBlock, embobjlst))) 
 				return UT_IE_NOMEMORY;
 			// Yes, gbBlock may be empty!
 			if (gbBlock.getLength()) {
@@ -926,6 +1214,8 @@ IE_Imp_Psion_Word::IE_Imp_Psion_Word(PD_Document * pDocument)
 
 UT_Error IE_Imp_Psion_Word::parseFile(psiconv_file psionfile)
 {
+	embobjN = 0;  // reset embedded object index
+
 	if (psionfile->type != psiconv_word_file) 
 		return UT_IE_BOGUSDOCUMENT;
 
@@ -934,7 +1224,8 @@ UT_Error IE_Imp_Psion_Word::parseFile(psiconv_file psionfile)
 	if (!applyPageAttributes(((psiconv_word_f) (psionfile->file))->page_sec))
 		return UT_IE_NOMEMORY;
 	return readParagraphs(((psiconv_word_f) (psionfile->file))->paragraphs,
-	                      ((psiconv_word_f) (psionfile->file))->styles_sec);
+	                      ((psiconv_word_f) (psionfile->file))->styles_sec,
+						  psionfile->embobjlst);
 }
 
 /*****************************************************************/
@@ -951,13 +1242,16 @@ IE_Imp_Psion_TextEd::IE_Imp_Psion_TextEd(PD_Document * pDocument)
 
 UT_Error IE_Imp_Psion_TextEd::parseFile(psiconv_file psionfile)
 {
+	embobjN = 0;  // reset embedded object index
+
 	if (psionfile->type != psiconv_texted_file) 
 		return UT_IE_BOGUSDOCUMENT;
 
 	if (!applyPageAttributes(((psiconv_texted_f) (psionfile->file))->page_sec))
 		return UT_IE_NOMEMORY;
 	return readParagraphs(((psiconv_texted_f) 
-	                       (psionfile->file))->texted_sec->paragraphs,NULL);
+	                       (psionfile->file))->texted_sec->paragraphs,NULL,
+						   psionfile->embobjlst);
 }
 
 /*****************************************************************/

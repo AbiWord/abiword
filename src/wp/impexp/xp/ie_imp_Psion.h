@@ -48,11 +48,17 @@ protected:
 		bool			applyParagraphAttributes(psiconv_paragraph_layout layout,const XML_Char *stylename);
 		bool			applyPageAttributes(psiconv_page_layout_section layout);
 		bool			prepareCharacters(char *input, int length, 
-						                  UT_GrowBuf *gbBlock);
-		UT_Error		readParagraphs(psiconv_text_and_layout psiontext, psiconv_word_styles_section style_sec);
+						                  UT_GrowBuf *gbBlock,
+						                  psiconv_list embobjlst);
+		UT_Error		readParagraphs(psiconv_text_and_layout psiontext, psiconv_word_styles_section style_sec, psiconv_list embobjlst);
 		bool 		applyStyles(psiconv_word_styles_section style_sec);
+		UT_Error		insertGraphicFile(UT_ByteBuf* pBB, int width, int height);
+		void			convertSketch2Png(psiconv_sketch_f sketchfile);
 
 	virtual	UT_Error	parseFile(psiconv_file psionfile) = 0;
+
+		psiconv_u32		embobjN;  // which embedded object next placement char represents
+
  private:
 	const XML_Char *listid;
 };
