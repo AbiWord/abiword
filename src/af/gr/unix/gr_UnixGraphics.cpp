@@ -36,37 +36,6 @@
 #include "ut_string.h"
 #include "ut_dialogHelper.h"
 
-
-/*****************************************************************/
-#if 0
-GR_UnixFont::GR_UnixFont(XAP_UnixFont * pFont, UT_uint32 size)
-{
-	UT_ASSERT(pFont);
-  
-	m_hFont = pFont;
-	m_pixelSize = size;
-}
-
-GR_UnixFont::~GR_UnixFont(void)
-{
-	;
-	// don't remove where our font points, since it's
-	// owned by the font manager (we don't keep our own copy)
-}
-
-XAP_UnixFont * GR_UnixFont::getUnixFont(void)
-{
-	UT_ASSERT(m_hFont);
-	return m_hFont;
-}
-
-GdkFont * GR_UnixFont::getGdkFont(void)
-{
-	UT_ASSERT(m_hFont);
-	return m_hFont->getGdkFont(m_pixelSize);
-}
-#endif
-
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager)
 {
 	m_pWin = win;
