@@ -79,6 +79,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_pNext(0),
 		m_pPrev(0),
 		m_iX(0),
+		m_iOldX(0),
 		m_iY(0),
 		m_iHeight(0),
 		m_iHeightLayoutUnits(0),
@@ -340,16 +341,38 @@ void fp_Run::unlinkFromRunList()
 	m_pPrev = 0;
 }
 
-void	fp_Run::setX(UT_sint32 iX)
+// the parameter eClearScreen has a default value AUTO
+// we need this extra parameter be able to specify false when calling from
+// inside of the first pass of fp_Line::layout(), which sets
+// only a temporary value of iX which is then adjusted in the
+// second pass, without this the run will redraw twice, once always unnecessarily
+// and most of the time both times unnecessarily
+void	fp_Run::setX(UT_sint32 iX, FPRUN_CLEAR_SCREEN eClearScreen)
 {
-	if (iX == m_iX)
+	switch(eClearScreen)
 	{
-		return;
+		case FP_CLEARSCREEN_AUTO:
+			if (iX == m_iX)
+			{
+				return;
+			}
+			//otherwise fall through
+		case FP_CLEARSCREEN_FORCE:
+			m_iX = m_iOldX;
+			clearScreen();
+			m_iOldX = iX;
+			m_iX = iX;
+			break;
+		case FP_CLEARSCREEN_NEVER:
+			// only set m_iX and leave m_iOldX alone; this allows for
+			// multiple calls to setX with the NEVER parameter without
+			// intervening FORCE or AUTO
+			m_iX = iX;
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-
-	clearScreen();
-	
-	m_iX = iX;
+			
 }
 
 void	fp_Run::setY(UT_sint32 iY)

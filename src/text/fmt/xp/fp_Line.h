@@ -181,6 +181,7 @@ public:
 	bool		findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader);
 	
 	void		setNeedsRedraw(void);
+	//void		setRedoLayout(void){ m_bRedoLayout = true; }
 	bool		needsRedraw(void) { return m_bNeedsRedraw; }
 	void		redrawUpdate(void);
 #ifdef BIDI_ENABLED
@@ -245,6 +246,7 @@ protected:
 	fp_Line*        m_pPrev;
 
 	bool			m_bNeedsRedraw;
+	//bool			m_bRedoLayout;
 #ifdef BIDI_ENABLED
 	UT_uint32       _getRunVisIndx(UT_uint32 indx);
 	UT_uint32       _getRunLogIndx(UT_uint32 indx);

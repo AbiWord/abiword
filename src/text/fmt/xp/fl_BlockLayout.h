@@ -193,6 +193,7 @@ public:
 	
 	inline fp_Line* getFirstLine(void) const { return m_pFirstLine; }
 	inline fp_Line* getLastLine(void) const { return m_pLastLine; }
+	inline void setLastLine(fp_Line * pLine) {m_pLastLine = pLine;}
 
 	fp_Line* findPrevLineInDocument(fp_Line*);
 	fp_Line* findNextLineInDocument(fp_Line*);

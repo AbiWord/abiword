@@ -231,7 +231,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			*/
 
 			_breakTheLineAtLastRunToKeep(pLine, pBlock);
-
 			
 			/*
 			  Now we know all the runs which belong on this line.
@@ -254,7 +253,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 
 
 		} // if countruns > 0
-		
+			
 		pLine = pLine->getNext();
 	}
 
@@ -498,7 +497,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 	}
 
 	fp_Line* pNextLine = NULL;
-
+    xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... \n"));
 	if ( m_pLastRunToKeep != NULL
 		&& (pLine->getLastRun() != m_pLastRunToKeep)
 		)
@@ -511,6 +510,14 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 			UT_ASSERT(pNewLine);	// TODO check for outofmem
 					
 			pNextLine = pNewLine;
+		}
+		else
+		{
+			xxx_UT_DEBUGMSG(("fb_LineBreaker::_breakThe ... pLine 0x%x, pNextLine 0x%x, blocks last 0x%x\n",
+			pLine, pNextLine, pBlock->getLastLine()));
+			if(pBlock->getLastLine() == pLine)
+				pBlock->setLastLine(pNextLine);
+		
 		}
 
 		fp_Run* pRunToBump = pLine->getLastRun();

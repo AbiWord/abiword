@@ -560,7 +560,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		// than the current one
 		//DELETEP(m_pAlignment);
 		
-		//UT_DEBUGMSG(("block: _lookupProperties, text-align=%s\n", pszAlign));
+		xxx_UT_DEBUGMSG(("block: _lookupProperties, text-align=%s, current %d\n", pszAlign, m_pAlignment?m_pAlignment->getType():0xffff));
 
 		if (0 == UT_strcmp(pszAlign, "left"))
 		{

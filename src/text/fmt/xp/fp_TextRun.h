@@ -123,6 +123,7 @@ private:
 										 UT_uint32 offset,
 										 UT_UCSChar *prev,
 										 UT_UCSChar *next) const;
+	fp_Run * 			_getOldNext()const{return m_pOldNext;};
 #endif
 
 #ifdef FMT_TEST

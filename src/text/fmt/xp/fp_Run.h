@@ -81,6 +81,14 @@ enum FP_RUN_TYPE
 	FPRUN__LAST__					= 12
 };
 
+// specifies how setX should handle screen clearing
+enum FPRUN_CLEAR_SCREEN
+{
+	FP_CLEARSCREEN_AUTO,
+	FP_CLEARSCREEN_FORCE,
+	FP_CLEARSCREEN_NEVER
+};
+
 /*
 	fp_Run represents a contiguous homogenous chunk on a single line.  
 	This file also defines the following subclasses:
@@ -138,7 +146,7 @@ public:
 	
 	void					setLine(fp_Line*);
 	void					setBlock(fl_BlockLayout *);
-	void					setX(UT_sint32);
+	void					setX(UT_sint32, FPRUN_CLEAR_SCREEN eClearScreen = FP_CLEARSCREEN_AUTO);
 	void					setY(UT_sint32);
 	void					setBlockOffset(UT_uint32);
 	void					setLength(UT_uint32);
@@ -224,6 +232,7 @@ protected:
 	fp_Run*					m_pNext;
 	fp_Run*					m_pPrev;
 	UT_sint32				m_iX;
+	UT_sint32				m_iOldX;
 	UT_sint32				m_iY;
 	UT_sint32				m_iHeight;
 	UT_sint32				m_iHeightLayoutUnits;

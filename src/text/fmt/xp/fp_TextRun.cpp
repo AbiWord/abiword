@@ -589,6 +589,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 		}
 	}
 
+	UT_DEBUGMSG(("fp_TextRun::mapXYToPosition: x %d, m_iWidth %d\n", x,m_iWidth));
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }
 
@@ -1020,10 +1021,13 @@ bool fp_TextRun::recalcWidth(void)
 	
 	In the Bidi build though when using the automatic glyph shape selection
 	the width can also change when the context changes, i.e., we have a new
-	next or new prev run. Since the change of length would also result
-	in change of context (we either merged or split), we only need to test the
-	context (note that there is never a TextRun with context 0,0, since it is
-	always followed by at least the EndOfParagraph run)
+	next or new prev run. Unfortunately, when the ultimate character in the run
+	is the first part of a ligature, we also need to check whether what follows
+	the second part of that ligature has not changed -- we have to test for the
+	change of the next run of our next run (we will do that for all runs, not
+	just ligatures, since there is no fast test whether a character is a
+	ligature, and going through the hoops to find out would beat the reasons
+	why we test this in the first place).
 	
 	Further, we can seriously speed up things for the bidi build, if we
 	calculate width here directly, rather than calling simpleRecalcWidth
@@ -1057,11 +1061,17 @@ bool fp_TextRun::recalcWidth(void)
 	             this,m_pOldPrev, m_pOldNext, m_iOldLen, m_pPrev, m_pNext, m_iLen, m_pOldScreenFont,m_pScreenFont));
 	if(s_bUseContextGlyphs)
 	{
-		bIsDirty = (m_pOldNext != m_pNext
+		bIsDirty = (m_iOldLen  != m_iLen
+				 || m_pOldNext != m_pNext
 				 || m_pOldPrev != m_pPrev
 				 || m_pOldScreenFont != m_pScreenFont
 				 ||	m_iOldSpaceWidthBeforeJustification != 	m_iSpaceWidthBeforeJustification);
 
+		// now check for change of context of the next run
+		if(!bIsDirty && m_pNext && m_pNext->getType() == FPRUN_TEXT)
+		{
+			bIsDirty = (static_cast<fp_TextRun*>(m_pNext)->_getOldNext() != m_pNext->getNext());
+		}
 	}
 	else
 #endif
@@ -1077,6 +1087,7 @@ bool fp_TextRun::recalcWidth(void)
 #endif
 		m_iOldLen = m_iLen;
 		m_pOldScreenFont = m_pScreenFont;
+		m_iOldSpaceWidthBeforeJustification = 	m_iSpaceWidthBeforeJustification;
 		
 #ifdef BIDI_ENABLED		
 		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
@@ -1155,7 +1166,7 @@ bool fp_TextRun::recalcWidth(void)
 		if(m_iWidth)
 			// this is really needed ...
 			clearScreen();
-		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x): m_iWidth %d, m_iWidthLayoutUnits %d\n",this,m_iWidth, m_iWidthLayoutUnits));
+		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth (0x%x, L 0x%x): m_iWidth %d, m_iW*L*U* %d\n",this,m_pLine,m_iWidth, m_iWidthLayoutUnits));
 		return true;
 	}
 	else
@@ -1496,26 +1507,31 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 	// into the undo buffer
 	const UT_UCSChar * pPrev = 0, * pNext = 0;
 	UT_uint32 lenPrev, lenAfter;
+	prev[0] = 0;
+	prev[1] = 0;
+	prev[2]	= 0;
 	
 	if(m_iOffsetFirst > 1)
 	{
-		m_pBL->getSpanPtr(offset - 2, &pPrev, &lenPrev);
-		prev[0] = *(pPrev+1);
-		prev[1] = *pPrev;
+		if(m_pBL->getSpanPtr(offset - 2, &pPrev, &lenPrev))
+		{
+			prev[1] = *pPrev;
+			if(lenPrev > 1)
+				prev[0] = *(pPrev+1);
+			else if(m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
+				prev[0] = *(pPrev+1);
+		}
+		else if(m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
+		{
+			prev[0] = *pPrev;
+		}
 	}
 	else if(m_iOffsetFirst > 0)
 	{
-		m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev);
-		prev[0] = *pPrev;
-		prev[1] = 0;
-	}
-	else
-	{
-		prev[0] = 0;
-		prev[1] = 0;
+		if(m_pBL->getSpanPtr(offset - 1, &pPrev, &lenPrev))
+			prev[0] = *pPrev;
 	}
 				
-	prev[2]	= 0;
 	lenPrev = 2;
 				
 	xxx_UT_DEBUGMSG(("fp_TextRun::_getContext: prev[0] %d, prev[1] %d\n"

@@ -77,7 +77,7 @@ fp_Line::fp_Line()
 	m_pNext = NULL;
 	m_pPrev = NULL;
 	m_bNeedsRedraw = false;
-	
+	//m_bRedoLayout = true;	
 #ifdef BIDI_ENABLED
 	m_iRunsRTLcount = 0;
 	m_iRunsLTRcount = 0;
@@ -243,7 +243,7 @@ void fp_Line::addRun(fp_Run* pNewRun)
 #ifdef BIDI_ENABLED
 	addDirectionUsed(pNewRun->getDirection());
 #endif
-	setNeedsRedraw();
+	//setNeedsRedraw();
 }
 
 void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
@@ -1027,10 +1027,10 @@ fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIn
 		//iXreal = iXreal;
 	}
 
-	xxx_UT_DEBUGMSG(("fp_Line::calculateWidthOfRun: \n"
+	xxx_UT_DEBUGMSG(("fp_Line::calculateWidthOfRun (0x%x L 0x%x): \n"
 				 "       iXreal %d, iXLreal %d, iIndxVisual %d, iCountRuns %d,\n"
 				 "       eWorkingDirection %d, eUseTabStop %d,\n"
-				         ,iXreal, iXLreal, iIndxVisual, iCountRuns,
+				         ,pRun,this,iXreal, iXLreal, iIndxVisual, iCountRuns,
 						 eWorkingDirection, eUseTabStop
 				));
 				
@@ -1404,7 +1404,20 @@ void fp_Line::layout(void)
 			the previous tabstop instead, since we cannot shav the text in
 			the normal direction.
 	*/
-
+#if 0	
+	// if the line does not need to be redrawn, there is no need to recalculate
+	// the layout
+	// the redraw variable is not suitable for this, but we might want to consider
+	// adding m_bRedoLayout to avoid unnecessary work here (the layout calculation
+	// is quite involved and requires two passes over the runs).
+	if(!m_bNeedsRedraw)
+	{
+		UT_DEBUGMSG(("fp_Line::layout: m_bNeedsRedraw not set, returning\n"));
+		return;
+	}
+#endif
+	xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x)\n",this));		
+	
 	// first of all, work out the height
    	recalcHeight();
    	
@@ -1415,7 +1428,51 @@ void fp_Line::layout(void)
 	UT_ASSERT(pAlignment);
     FB_AlignmentType eAlignment 	  = pAlignment->getType();
 
-	const UT_uint32 iCountRuns		  = m_vecRuns.getItemCount();
+	UT_uint32 iCountRuns		  = m_vecRuns.getItemCount();
+	
+	//we have to remember the old X coordinances of these runs
+	//to be able to decide latter whether and where from to erase
+	//(this is a real nuisance, but since it takes two passes to do the layout
+	//I do not see a way to avoid this)
+	//we will use a static buffer for this initialised to a decent size and
+	//reallocated as needed
+#ifdef DEBUG
+	const UT_uint32 iDefinesLine = __LINE__;
+#endif
+	#define STATIC_BUFFER_INCREMENT 20
+	#define STATIC_BUFFER_INITIAL 5 * STATIC_BUFFER_INCREMENT
+	static UT_sint32 *pOldXs = new UT_sint32[STATIC_BUFFER_INITIAL];
+	static UT_uint32 iOldXsSize = STATIC_BUFFER_INITIAL;
+
+#ifdef DEBUG
+	UT_uint32 iRealocCount = 0;
+#endif	
+	while(iOldXsSize < iCountRuns + 1)
+	{
+		// always make sure there is one space available past the last run
+		// we will set that to 0 and it will help us to handle the justified
+		// alignment spliting runs while we are working on them (see notes after
+		// the main loop)
+		UT_DEBUGMSG(("fp_Line::layout: static buffer pOldXs too small\n"
+					 "       (original size %d, new size %d)\n"
+					 "       IF THIS MESSAGE APPEARS TOO OFTEN, INCREASE \"STATIC_BUFFER_INITIAL\"\n"
+					 "       (line %d in %s)\n",
+					 iOldXsSize, iOldXsSize+STATIC_BUFFER_INCREMENT, iDefinesLine + 2, __FILE__));
+		delete[] pOldXs;
+		iOldXsSize += STATIC_BUFFER_INCREMENT;
+		pOldXs = new UT_sint32[iOldXsSize];
+#ifdef DEBUG
+		iRealocCount++;
+		if(iRealocCount > 1)
+			UT_DEBUGMSG(("fp_Line::layout: static buffer required repeated reallocation\n"
+						 "       IF THIS MESSAGE APPEARS INCREASE \"STATIC_BUFFER_INCREMENT\"\n"
+						 "       (line %d in %s)\n", iDefinesLine+1, __FILE__));
+
+#endif
+	}
+
+	UT_ASSERT(pOldXs);
+	
 	UT_sint32 iStartX 				  = 0;
 	UT_sint32 iStartXLayoutUnits 	  = 0;
 
@@ -1574,7 +1631,9 @@ void fp_Line::layout(void)
 
 	// now we work our way through the runs on this line
 	xxx_UT_DEBUGMSG(("fp_Line::layout ------------------- \n"));
- 	for (UT_uint32 ii=0; ii<iCountRuns; ++ii)
+	
+	UT_uint32 ii = 0;
+ 	for (; ii<iCountRuns; ++ii)
 	{
 		//work out the real index based on working direction
   		UT_uint32 iIndx;
@@ -1594,12 +1653,8 @@ void fp_Line::layout(void)
 		// also, decide whether erasure is needed
 		if(eWorkingDirection == WORK_FORWARD)
 		{
-			if(!bLineErased && pRun->getX()!= iX)
-			{
-				bLineErased = true;				
-				iIndxToEraseFrom = iIndx;
-			}
-			pRun->setX(iX);
+			pOldXs[iIndx] = pRun->getX();
+			pRun->setX(iX,FP_CLEARSCREEN_NEVER);
 		}
 		xxx_UT_DEBUGMSG(("fp_Line::layout: iX %d, iXL %d, ii %d, iCountRuns %d\n"
 					 "       run type %d\n",
@@ -1620,98 +1675,144 @@ void fp_Line::layout(void)
 		// and decide if line needs erasing
 		if(eWorkingDirection == WORK_BACKWARD)
 		{
-			if(!bLineErased && pRun->getX()!= iX)
-			{
-				bLineErased = true;				
-				iIndxToEraseFrom = iIndx;
-			}
-			pRun->setX(iX);
+			pOldXs[iIndx] = pRun->getX();
+			pRun->setX(iX,FP_CLEARSCREEN_NEVER);
 		}
 	} //for
 	
-	//now we are ready to deal with the alignment
-	//we only need to do this in case of centered lines and justified lines,
-	// so we will move it below
-	//pAlignment->initialize(this);
+	// this is to simplify handling justified alignment -- see below
+	pOldXs[ii] = 0;
+	
+	
+	///////////////////////////////////////////////////////////////////
+	//  now we are ready to deal with the alignment
+	//
+	pAlignment->initialize(this);
+	iStartX = pAlignment->getStartPosition();
+	
+	// now we have to get the iCountRuns value afresh, because if the alignment
+	// is justified then it is possible that the call to pAlignment->initialize()
+	// will split the previous set of runs into more ... (took me many frustrated
+	// hours to work this out) -- this happens on loading a document where each
+	// line is initially just a single run in the non-bidi build
+	//
+	// This also means that the pOldX array may be of no
+	// use, but then we will only need to worry about pOldXs just after the last
+	// run, since as long as the first new run kicks in, the rest will follow
+	
+	iCountRuns		  = m_vecRuns.getItemCount();	
 
-	if(eAlignment == FB_ALIGNMENT_JUSTIFY)
-	{
-		pAlignment->initialize(this);
+    xxx_UT_DEBUGMSG(("fp_Line::layout(): original run count %d, new count %d\n",
+    			ii, iCountRuns));
+    switch(eAlignment)
+    {
+    	case FB_ALIGNMENT_LEFT:
+		case FB_ALIGNMENT_RIGHT:
+    		{
+				for (UT_uint32 k = 0; k < iCountRuns; k++)
+				{
+#ifdef BIDI_ENABLED
+			  		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
+#else
+					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(k);
+#endif
+					UT_ASSERT(pRun);
+					
+					//eClearScreen = iStartX == pOldXs[k] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
+					if(!bLineErased && iStartX != pOldXs[k])
+					{
+						bLineErased = true;
+						iIndxToEraseFrom = k;
+					}
+					
+					pRun->setX(iStartX,FP_CLEARSCREEN_NEVER);
+					iStartX += pRun->getWidth();
+				}
+    	
+    		}
+    	break;
+    	case FB_ALIGNMENT_JUSTIFY:
+    		{
+				// now we need to shift the x-coordinances to reflect the new widths
+				// of the spaces
+				for (UT_uint32 k = 0; k < iCountRuns; k++)
+				{
+					UT_uint32 iK = (eWorkingDirection == WORK_FORWARD) ? k : iCountRuns - k - 1;
+#ifdef BIDI_ENABLED
+	  				fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iK));
+#else
+					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(iK);
+#endif
+					UT_ASSERT(pRun);
+
+#ifdef BIDI_ENABLED
+					if(eWorkingDirection == WORK_BACKWARD)
+					{
+						iStartX -= pRun->getWidth();
+						//eClearScreen = iStartX == pOldXs[iK] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
+						if(!bLineErased && iStartX != pOldXs[iK])
+						{
+							bLineErased = true;
+							iIndxToEraseFrom = iK;
+						}
+						pRun->setX(iStartX, FP_CLEARSCREEN_NEVER);
+					}
+					else
+#endif
+					{
+						//eClearScreen = iStartX == pOldXs[iK] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
+						if(!bLineErased && iStartX != pOldXs[iK])
+						{
+							bLineErased = true;
+							iIndxToEraseFrom = iK;
+						}
+						
+						pRun->setX(iStartX, FP_CLEARSCREEN_NEVER);
+						iStartX += pRun->getWidth();
+					}
+				}
+		}
+		break;
+		case FB_ALIGNMENT_CENTER:
+			{
+				//if the line is centered we will have to shift the iX of each run
+				//since we worked on the assumption that the line starts at 0
+				//only now are we in the position to enquire of the alignment what
+				//the real starting position should be
 		
-		// now we need to shift the x-coordinances to reflect the new widths
-		// of the spaces
-		iStartX = pAlignment->getStartPosition();
-		for (UT_uint32 k = 0; k < iCountRuns; k++)
-		{
+				for (UT_uint32 k = 0; k < iCountRuns; k++)
+				{
 #ifdef BIDI_ENABLED
-			UT_uint32 iK = (eWorkingDirection == WORK_FORWARD) ? k : iCountRuns - k - 1;
-	  		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iK));
+			  		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
 #else
-			fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(k);
+					fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(k);
 #endif
-			UT_ASSERT(pRun);
+					UT_ASSERT(pRun);
+				
+					UT_sint32 iCurX = pRun->getX();
+					//eClearScreen = iCurX + iStartX == pOldXs[k] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
+					if(!bLineErased && iCurX + iStartX != pOldXs[k])
+					{
+						bLineErased = true;
+						iIndxToEraseFrom = k;
+					}
+				
+					pRun->setX(iCurX + iStartX, FP_CLEARSCREEN_NEVER);
+				}
+			}
+		break;			
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    } //switch eAlignment
 
-#ifdef BIDI_ENABLED
-			if(eWorkingDirection == WORK_BACKWARD)
-			{
-				iStartX -= pRun->getWidth();
-				pRun->setX(iStartX);
-			}
-			else
-#endif
-			{
-				pRun->setX(iStartX);
-				iStartX += pRun->getWidth();
-			}
-		}
+    if(bLineErased)
+    {
+    	xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x): clearling line from indx %d\n", this, iIndxToEraseFrom));
+		clearScreenFromRunToEnd(iIndxToEraseFrom);
 	}
 	else
-	//if the line is centered we will have to shift the iX of each run
-	//since we worked on the assumption that the line starts at 0
-	//only now are we in the position to enquire of the alignment what
-	//the real starting position should be
-	if(eAlignment == FB_ALIGNMENT_CENTER)
-	{
-		pAlignment->initialize(this);
-		iStartX = pAlignment->getStartPosition();
-		for (UT_uint32 k = 0; k < iCountRuns; k++)
-		{
-#ifdef BIDI_ENABLED
-	  		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
-#else
-			fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(k);
-#endif
-			UT_ASSERT(pRun);
-			pRun->setX(pRun->getX() + iStartX);
-		}
-	}
-	else
-	if(eAlignment == FB_ALIGNMENT_RIGHT)
-	{   // we have not dealt with trailing spaces ...
-		pAlignment->initialize(this);
-		iStartX = pAlignment->getStartPosition();
-#ifdef BIDI_ENABLED
-  		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(0));
-#else
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(0);
-#endif
-		if(pRun->getX() != iStartX)
-			for (UT_uint32 k = 0; k < iCountRuns; k++)
-			{
-#ifdef BIDI_ENABLED
-	  			pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(k));
-#else
-				pRun = (fp_Run*) m_vecRuns.getNthItem(k);
-#endif
-				UT_ASSERT(pRun);
-				pRun->setX(iStartX);
-				iStartX += pRun->getWidth();
-			}	
-	}
-	//not entirely sure about this, by now all the coordinances have
-	//changed, but it seems to work :-)
-	//pAlignment->eraseLineFromRun(this, iIndxToEraseFrom);
-	clearScreenFromRunToEnd(iIndxToEraseFrom);
+    	xxx_UT_DEBUGMSG(("fp_Line::layout (0x%x): nothing to clear\n", this));
+	
 }
 #else
 void fp_Line::layout(void)

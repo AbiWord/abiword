@@ -44,6 +44,8 @@ void fb_Alignment_left::initialize(fp_Line * pLine )
 	 		m_iStartPositionLayoutUnits = 0;
 	 	}
 #endif
+	xxx_UT_DEBUGMSG(("fb_Alignment_left::initialize (0x%x)\n",this));
+
 }
 
 UT_sint32 fb_Alignment_left::getStartPosition()
@@ -121,6 +123,7 @@ void fb_Alignment_right::initialize(fp_Line *pLine)
 {
 	UT_sint32 iTrailing = pLine->calculateWidthOfTrailingSpaces();
 	UT_sint32 iWidth = pLine->calculateWidthOfLine() - iTrailing;
+	xxx_UT_DEBUGMSG(("fb_Alignment_right::initialize (0x%x), iWidth %d\n",this,iWidth));
 
 	m_startPosition = pLine->getMaxWidth() - iWidth;
 
