@@ -880,12 +880,12 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize)
 {
-	xxx_UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
+	UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
 	fp_Run * pRun = getFirstRun();
 	PT_DocPosition posInBlock = getPosition(true);
 	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
 	{
-		xxx_UT_DEBUGMSG(("Look at run %x posindoc %d \n",pRun,posInBlock+pRun->getBlockOffset()));
+		UT_DEBUGMSG(("Look at run %x posindoc %d \n",pRun,posInBlock+pRun->getBlockOffset()));
 		pRun = pRun->getNextRun();
 	}
 	if(pRun == NULL)
@@ -902,15 +902,15 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	else
 	{
 		posRun = posInBlock + pPrev->getBlockOffset();
-		if((posRun == posEmbedded) && pRun->getNextRun())
+		if(posRun + pPrev->getLength() <= posEmbedded)
+		{
+			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
+			UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
+		}
+		else if((posRun == posEmbedded) && pRun->getNextRun())
 		{
 			iDiff = static_cast<UT_sint32>((pRun->getNextRun()->getBlockOffset() -pRun->getBlockOffset() - pRun->getLength()));
 			pRun = pRun->getNextRun();
-		}
-		else if(posRun + pPrev->getLength() <= posEmbedded)
-		{
-			iDiff = static_cast<UT_sint32>((pRun->getBlockOffset() - pPrev->getBlockOffset() - pPrev->getLength()));
-			xxx_UT_DEBUGMSG(("updateOffsets: after BlockOffset %d or pos %d \n",pRun->getBlockOffset(),posInBlock+pRun->getBlockOffset())); 
 		}
 //
 // here if the last run starts beyond the point where the footnote is embedded
@@ -927,7 +927,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 				// We're here if the first run of the block is the footnote
 				// field and we've just deleted the footnote
 				//
-				xxx_UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNextRun()->getBlockOffset()));
+				UT_DEBUGMSG(("posEmbedded %d posInBlock %d prev pos %d next pos %d \n",posEmbedded,posInBlock,posInBlock+pRun->getBlockOffset(),posInBlock+pRun->getNextRun()->getBlockOffset()));
 				iDiff = pRun->getNextRun()->getBlockOffset() - pRun->getBlockOffset();
 				pPrev = pRun;
 				pRun = pRun->getNextRun();
@@ -936,8 +936,8 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			{
 				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
 				fp_TextRun * pTRun = static_cast<fp_TextRun *>(pRun);
-				UT_uint32 splitOffset = posEmbedded - posInBlock;
-				xxx_UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
+				UT_uint32 splitOffset = posEmbedded - posInBlock -1;
+				UT_DEBUGMSG(("updateOffsets: Split at offset %d \n",splitOffset));
 				bool bres = pTRun->split(splitOffset);
 				UT_ASSERT(bres);
 				pRun = pTRun->getNextRun();
@@ -947,7 +947,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		}
 	}
 	UT_ASSERT(iDiff >= 0);
-	xxx_UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
+	UT_DEBUGMSG(("Updating block %x with orig shift %d new shift %d \n",this,iDiff,iEmbeddedSize));
 	if(iDiff != static_cast<UT_sint32>(iEmbeddedSize))
 	{
 //
