@@ -1048,7 +1048,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 		case WM_SETFOCUS:			
 			if (pView)
-			{
+			{					
 				pView->focusChange(AV_FOCUS_HERE);
 			
 				if (GetKeyState(VK_LBUTTON)>0)
@@ -1067,7 +1067,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			}
 			return 0;
 
-		case WM_KILLFOCUS:
+		case WM_KILLFOCUS:			
 			if (pView)
 			{
 				pView->focusChange(AV_FOCUS_NONE);			
@@ -1303,12 +1303,16 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 		case WM_PAINT:
 		{
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hwnd, &ps);
-
+						
 			FV_View * pFV = static_cast<FV_View *>(pView);
 			GR_Graphics * pG = pFV->getGraphics();
 
+			GR_CaretDisabler caretDisabler(pG->getCaret());
+			
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(hwnd, &ps);
+
+			
 			UT_Rect r(pG->tlu(ps.rcPaint.left), pG->tlu(ps.rcPaint.top),
 					pG->tlu(ps.rcPaint.right-ps.rcPaint.left),
 					pG->tlu(ps.rcPaint.bottom-ps.rcPaint.top));
