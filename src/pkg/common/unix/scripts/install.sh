@@ -80,7 +80,7 @@ echo "Installing program data files to [$TARGET]..."
 
 echo "Installing program binaries to [$LIBEXECDIR]..."
 # Setup bins 
-(cd $SRCDIR/bin; tar cf - Abi*) | (cd $LIBEXECDIR; tar xf -)
+(cd $SRCDIR/bin; tar cf - *) | (cd $LIBEXECDIR; tar xf -)
 
 ########################################################################
 # If we're on Solaris, run makepsres on the font path
