@@ -26,8 +26,11 @@ CPPSRCS=		UnixMain.cpp
 
 INCLUDES=		$(GTK_CFLAGS)
 
-PROGRAM=		$(BINDIR)/AbiWord_d
-PROGRAM_S=		$(BINDIR)/AbiWord_s
+PROGRAM=		$(BINDIR)/AbiWord-2.0
+# For all I care, we can allow concurrent building of staticly and dynamically linked executables
+# I simply aim for consistency with auto*, until this is phased out entirely.
+PROGRAM_S=		$(BINDIR)/AbiWord-2.0
+# If both build successfully, one overrides the other.
 
 # TODO the Linux linker is fussy about the ordering of libraries.
 # TODO in order to get all symbols to resolve, i had to list them
@@ -59,7 +62,11 @@ ABI_LIBS=		png z
 #endif # OpenBSD
 
 # include both dynamic and static binaries
-TARGETS=		$(PROGRAM) $(PROGRAM_S)
+ifeq ($(UNIX_CAN_BUILD_STATIC),1)
+TARGETS=		$(PROGRAM_S)
+else
+TARGETS=		$(PROGRAM)
+endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
