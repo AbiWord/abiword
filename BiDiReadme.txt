@@ -15,36 +15,33 @@ change default direction at runtime, see below.
 
 Using BiDi
 ----------
-The Bi-Directional extension uses three properties, a character
-properties 'dir' (direction) and 'dir-override' and paragraph 
-property 'dom-dir' (dominant direction).
-
 The BiDi algorithm is Unicode-based, so that text is correctly
-arranged as it is typed in; however the user can force any 
-segement of the text into a particular direction using two 
-toolbar buttons.
+arranged as it is typed in. It uses the FriBidi library to calculate
+the layout, which in truns follows the Unicode bidirectional algorithm.
+When the user requires the text to be handled differently than the
+Unicode algorithm prescribes, he or she can force any segement of the 
+text into a particular direction using two toolbar buttons (the three
+bidi buttons are now located on the Extra toolbar).
 
 The dominant direction of the paragraph can be selected either
 using a third toolbar button, or from the Format->Paragraph
 dialogue.
 
 The 'Other' tab of the Preferences dialogue allows to change 
-the default direction (however, this change will only take place 
-when a new document is created or AbiWord restarted).
+the default direction; however, this change will only take place 
+when a new document is created or AbiWord restarted.
+The other two bidi checkboxes in the preferences allow to turn
+the shaping engine on and off, and to specify whether when
+the shaping engine is used, it should only change the visual
+output, or the actual document.
 
-
-Known Issues
-------------
-
-* Only single level of quoting works (i.e., if you have an English
-  paragraph with a Hebrew quote which in turn contains an English
-  quote, the text will not be displayed correctly, the English quote
-  will be treated as a continuation of the main text) -- we will provide
-  manual override to group the Hebrew quote together, one day. If you 
-  need a work around for this, this is what to do: type in the text
-  up to the start of the outer quote; type in the *second* part of the
-  outer quote; type in the inner quote; type in the *first* part of the
-  outer quote; continue the main text.
+It should be noted that while the shaping engine supports Arabic,
+in the Unix version this will only work under utf-8 locale with
+Unicode fonts (see UnixLocale.txt and UnixFonts.txt); those wishing 
+to use Arabic with AW under an 8-bit locale will have to swich the 
+shaping engine off (as mentioned in the previous paragraph) and put 
+up with the basic letter forms (the shaping engine is very basic, and
+will one day be replaced by something better, probably Pango).
 
 
 TECHNICAL NOTES
@@ -84,16 +81,14 @@ to translate logical coordinances to visual ones and vice versa. Any
 operations on the actual text buffer have to use logical order, while
 any operations on the screen have to use visual order.
 
-In addition to direction being the property of any chunk of text, each
-paragraph has also a new property, in AW called dom-dir (dominant 
+Each paragraph has also a new property, in AW called dom-dir (dominant 
 direction). This can be either ltr or rtl. The string of text we used 
 in the illustration earlier ('abcd XYZ UVW klm') will look differently,
 if the overall direction is ltr, say an English document with a Hebrew 
 quote in it ('abcd WVU ZYX klm') or rtl, such as Hebrew document with 
 an English quote ('klm WVU ZYX abcd'). This paragraph property is in AW
 always explicitely specified by the user, we do not use any heuristic 
-algorithm that would try to guess (there is really no reliable way to 
-guess ...).
+algorithm that would try to guess.
 
 This really is all there is to BiDi, just sometimes it makes life more
 complicated than this introduction might lead you to believe. For instance
@@ -102,7 +97,8 @@ because the the visual position of the next character to be input is the
 function of the direction of this character, which we do not know, since
 it has not been typed in yet :-). Or, things are more complicated if you
 want to display say rtl quote in an ltr paragraph, but the quote itself
-contains another ltr quote.
+contains another ltr quote. Fortunately, the bulk of this work is done for
+us by the well tested FriBidi library.
 
 
 Developing BiDi
