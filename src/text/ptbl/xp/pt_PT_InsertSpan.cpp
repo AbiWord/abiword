@@ -240,9 +240,8 @@ UT_Bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 	PX_ChangeRecord * pcr;
 	UT_Bool bHaveUndo = m_history.getUndo(&pcr);
 
-	// since we don't load _FmtMarks from disk this one must be from an edit operation.
-	UT_ASSERT(bHaveUndo && pcr);	
-
+	if (!bHaveUndo)
+		return UT_FALSE;
 	if (!pcr)
 		return UT_FALSE;
 	if (pcr->getPosition() != dpos)
