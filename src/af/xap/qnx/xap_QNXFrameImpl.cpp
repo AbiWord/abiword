@@ -49,11 +49,11 @@
 XAP_QNXFrameImpl::XAP_QNXFrameImpl(XAP_Frame *pFrame,XAP_QNXApp *pApp) : 
 	XAP_FrameImpl(pFrame),
 	m_bDoZoomUpdate(false),
-	m_iZoomUpdateID(0),
+	m_pZoomUpdateID(0),
 	m_iAbiRepaintID(0),
 	m_pQNXApp(pApp),
-//	m_pQNXMenu(NULL),
-//	m_pQNXPopup(NULL),
+	m_pQNXMenu(NULL),
+	m_pQNXPopup(NULL),
 	m_dialogFactory(pFrame,static_cast<XAP_App *>(pApp))
 {
 }
@@ -151,16 +151,81 @@ int XAP_QNXFrameImpl::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *
 		UT_DEBUGMSG(("Document Area Resizing to %d,%d %d,%d ",
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
 			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
-		pView->setWindowSize(cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 
-				             cbinfo->new_size.lr.y - cbinfo->new_size.ul.y);
+		pFrameImpl->m_iNewWidth = cbinfo->new_dim.w;
+		pFrameImpl->m_iNewHeight = cbinfo->new_dim.h;
+		
+
 	}
 
 	// Dynamic Zoom Implimentation
-	//Make this as a idleadd instead!
-	pFrame->updateZoom();
+	if(!pFrameImpl->m_bDoZoomUpdate && (pFrameImpl->m_pZoomUpdateID == 0))
+		pFrameImpl->m_pZoomUpdateID = PtAppAddWorkProc(NULL,do_ZoomUpdate,pFrameImpl);
+	
 
 	return Pt_CONTINUE;
 }
+
+int XAP_QNXFrameImpl::_fe::do_ZoomUpdate(void * /*XAP_QNXFrameImpl * */ p)
+{
+	XAP_QNXFrameImpl * pQNXFrameImpl = static_cast<XAP_QNXFrameImpl *>(p);
+	XAP_Frame* pFrame = pQNXFrameImpl->getFrame();
+	AV_View * pView = pFrame->getCurrentView();
+	if(!pView || pFrame->isFrameLocked())
+	{
+		pQNXFrameImpl->m_pZoomUpdateID = 0;
+		pQNXFrameImpl->m_bDoZoomUpdate = false;
+		return Pt_END;
+	}
+	if(pQNXFrameImpl->m_bDoZoomUpdate && (pView->getWindowWidth() == pQNXFrameImpl->m_iNewWidth) && (pView->getWindowHeight() == pQNXFrameImpl->m_iNewHeight))
+	{
+		pQNXFrameImpl->m_pZoomUpdateID = 0;
+		pQNXFrameImpl->m_bDoZoomUpdate = false;
+		return Pt_END;
+	}
+
+	pQNXFrameImpl->m_bDoZoomUpdate = true;
+	UT_sint32 iNewWidth = 0;
+	UT_sint32 iNewHeight = 0;
+	do
+	{
+		AV_View * pView = pFrame->getCurrentView();
+		if(!pView)
+		{
+			pQNXFrameImpl->m_pZoomUpdateID = 0;
+			pQNXFrameImpl->m_bDoZoomUpdate = false;
+			return Pt_END;
+		}
+		while(pView->isLayoutFilling())
+		{
+//
+// Comeback when it's finished.
+//
+			return Pt_CONTINUE;
+		}
+		iNewWidth = pQNXFrameImpl->m_iNewWidth;
+		iNewHeight = pQNXFrameImpl->m_iNewHeight;
+		pView = pFrame->getCurrentView();
+		if(pView)
+		{
+			pQNXFrameImpl->_startViewAutoUpdater(); 
+			pView->setWindowSize(iNewWidth, iNewHeight);
+			pFrame->updateZoom();
+			PtFlush();
+		}
+		else
+		{
+			pQNXFrameImpl->m_pZoomUpdateID = 0;
+			pQNXFrameImpl->m_bDoZoomUpdate = false;
+			return Pt_END; 
+		}
+	}
+	while((iNewWidth != pQNXFrameImpl->m_iNewWidth) || (iNewHeight != pQNXFrameImpl->m_iNewHeight));
+	pQNXFrameImpl->m_pZoomUpdateID = 0;
+	pQNXFrameImpl->m_bDoZoomUpdate = false;
+	return Pt_END;
+
+}
+
 
 int XAP_QNXFrameImpl::_fe::window_resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
 {
@@ -174,8 +239,8 @@ int XAP_QNXFrameImpl::_fe::window_resize(PtWidget_t * w, void *data, PtCallbackI
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
 			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
 		pApp->setGeometry(-1, -1, 
-						   cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 
-				           cbinfo->new_size.lr.y - cbinfo->new_size.ul.y);
+						   cbinfo->new_dim.w, 
+				           cbinfo->new_dim.h);
 	}
 	}
 
@@ -712,12 +777,14 @@ void XAP_QNXFrameImpl::_setGeometry()
 
 void XAP_QNXFrameImpl::_rebuildMenus(void)
 {
-
 }
 
 void XAP_QNXFrameImpl::_rebuildToolbar(UT_uint32 ibar)
 {
-
+	XAP_Frame*	pFrame = getFrame();
+	
+	pFrame->refillToolbarsInFrameData();
+	pFrame->repopulateCombos();
 }
 
 bool XAP_QNXFrameImpl::_close()

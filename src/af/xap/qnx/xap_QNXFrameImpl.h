@@ -58,6 +58,7 @@ class XAP_QNXFrameImpl : public XAP_FrameImpl
 private:
 	void _setGeometry ();
 	int m_PopupDone;
+
 protected:
 	virtual bool _close();
 	virtual bool _raise();
@@ -111,15 +112,15 @@ protected:
 		static int vScrollChanged(PtWidget_t *w, void *data, PtCallbackInfo_t *info) ;
 		static int hScrollChanged(PtWidget_t *w, void *data, PtCallbackInfo_t *info) ;
 		static int dnd(PtWidget_t *w, void *data, PtCallbackInfo_t *info) ;
-
+		static int do_ZoomUpdate(void *p);
 	};
 	friend class _fe;
 
  private:
 	bool                        m_bDoZoomUpdate;
+	PtWorkProcId_t	*m_pZoomUpdateID;
 	UT_sint32                   m_iNewWidth;
 	UT_sint32                   m_iNewHeight;
-	int                       m_iZoomUpdateID;
 	int                       m_iAbiRepaintID;
 
 	PtWidget_t *		    m_wTopLevelWindow;
