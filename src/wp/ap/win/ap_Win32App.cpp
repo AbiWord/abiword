@@ -842,6 +842,37 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	return msg.wParam;
 }
 
+/* This function takes a description and compares it all the registerd 
+   importers descriptions and returns either the appropriate importer's
+   IEFileType or returns IEFT_Unknown if no match was made.
+*/
+IEFileType AP_Win32App::_getFileTypeFromDesc(const char *desc)
+{
+	const char *iftDesc;
+	const char *iftSuffixList;
+	IEFileType ift;
+
+	// no description given or description == 'UNKNOWN' then unknown
+	if (!desc || !*desc || (UT_stricmp(desc, "Unknown")==0)) 
+		return IEFT_Unknown;  
+
+	UT_uint32 i = 0;
+	while (IE_Imp::enumerateDlgLabels(i, &iftDesc, &iftSuffixList, &ift))
+	{
+		// TODO: change to actually test all but suffixes, 
+		// ie if iftDesc == 'Some FileType (*.sft, *.someft)' then only
+            // test against 'Some FileType'
+		if (UT_strnicmp(iftDesc, desc, strlen(desc)) == 0)
+			return ift;
+		
+		// try next importer
+		i++;
+	}
+
+	// if we made it here then description didn't match anything, so unknown.
+	return IEFT_Unknown;
+}
+
 void AP_Win32App::ParseCommandLine(int iCmdShow)
 {
 	// parse the command line
@@ -860,6 +891,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 	char *to = NULL;
 	int verbose = 1;
 	bool show = false, bHelp = false;
+	char *iftDesc = NULL;
 	
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{
@@ -910,6 +942,15 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 					verbose = atoi (m_pArgs->m_argv[k]);
 				}
 			}
+			else if ( (UT_stricmp (m_pArgs->m_argv[k], "-filetype") == 0) ||
+			          (UT_stricmp (m_pArgs->m_argv[k], "-ft") == 0) )
+			{
+				if ((k+1) < m_pArgs->m_argc) // if no more arguments follow then ignore
+				{
+					k++;	// point to description
+					iftDesc = m_pArgs->m_argv[k];  // store description
+				}
+			}
 			else if ( (UT_stricmp (m_pArgs->m_argv[k], "-help") == 0) && (!bHelp) )
 			{
 				char *pszMessage = (char*)malloc( 500 );
@@ -952,7 +993,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 			{
 				AP_Win32Frame* pFirstWin32Frame = (AP_Win32Frame*)newFrame();
 
-				UT_Error error = pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
+				UT_Error error = pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], _getFileTypeFromDesc(iftDesc));
 				if (!error)
 				{
 					kWindowsOpened++;
@@ -975,7 +1016,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 					// TODO for now.  this would cause us to get 2 untitled documents
 					// TODO if the user gave us 2 bogus pathnames....
 					kWindowsOpened++;
-					pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
+					pFirstWin32Frame->loadDocument(NULL, _getFileTypeFromDesc(iftDesc));
 					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
 					if (kWindowsOpened > 1) // only set 1st opened window to stored state
 					ShowWindow(hwnd, iCmdShow);
@@ -1000,7 +1041,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 
 		AP_Win32Frame* pFirstWin32Frame = (AP_Win32Frame*)newFrame();
 
-		pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
+		pFirstWin32Frame->loadDocument(NULL, _getFileTypeFromDesc(iftDesc));
 
 		HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
 		ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));

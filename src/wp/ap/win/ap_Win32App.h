@@ -30,6 +30,7 @@
 #include "xap_Win32App.h"
 #include "ap_Win32Prefs.h"
 #include "ap_Win32Clipboard.h"
+#include "ie_types.h"
 class PD_DocumentRange;
 
 //////////////////////////////////////////////////////////////////
@@ -68,6 +69,9 @@ public:
 protected:
 	bool					_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const char * szFormat,
 													 const char * szType, bool bWide);
+
+	IEFileType 				_getFileTypeFromDesc(const char *desc);
+
 	XAP_StringSet *			m_pStringSet;
 	AP_Win32Clipboard *		m_pClipboard;
 };
