@@ -17,7 +17,7 @@
 <p></p>
 <p>3.  We use C++, but we use it carefully.  We <c PROPS="font-style:normal; font-weight:bold">generally </c>follow the <c PROPS="font-style:italic">C++ Portability Guide</c> document at www.mozilla.org.  Don't use templates, exceptions, multiple inheritance, RTTI, or namespaces.  Avoid multiple inheritance.  The C++ filename suffix is <c PROPS="font-family:Courier New">.cpp</c>. </p>
 <p></p>
-<p>4.  C is allowed, but if you're writing new code, we'd prefer that you change the suffix to .cpp and compile it as C++.  :-)  The type checking is stronger that way.</p>
+<p>4.  C is allowed, but if you're writing new code, we'd prefer that you change the suffix to .cpp and compile it as C++.  :-)  The type checking is stronger that way.  If you do use C, do <c PROPS="font-weight:bold">not </c>use C++ style comments (// this is a comment).</p>
 <p></p>
 <p>5.  We care about compiler warnings.  Turn on the highest warning level of your compiler which is reasonable and fix everything it complains about.  Our goal is to have a warning-free build.  In practice, we usually come very close to that goal.</p>
 <p></p>
