@@ -1263,11 +1263,20 @@ GR_Win32Font::GR_Win32Font(HFONT hFont, GR_Graphics * pG)
 		}
 		else
 		{
-			setupFontInfo();
 			// Setting the m_hashKey 
 			char lpFaceName[1000];
+			TEXTMETRIC tm;
+			
 			GetTextFace( hDC, 1000, lpFaceName );
-			m_hashKey = lpFaceName;
+			GetTextMetrics(hDC,	&tm);
+
+			UT_String_sprintf(m_hashKey, "%s-%d-%d-%d-%d-%d",
+							  lpFaceName,
+							  tm.tmHeight, tm.tmWeight, tm.tmItalic, tm.tmUnderlined,
+							  tm.tmStruckOut);
+
+			setupFontInfo();
+
 			SelectObject(hDC, (HGDIOBJ)hOldFont);
 		}
 		m_oldHDC = 0;
