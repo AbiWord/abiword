@@ -93,10 +93,12 @@ static bool SuffixInList(const char *haystack, const char *needle)
  */
 char * XAP_Win32Dialog_FileOpenSaveAs::_getDefaultExtension(UT_uint32 indx)
 {
-	strncpy(m_szDefaultExtension, m_szSuffixes[indx] + 2, 3);
-	m_szDefaultExtension[3] = 0;
-	// make sure that if the file ext is shorter than 3, we get rid off the
-	// semicolon
+	// copy at most 4 characters from the suffix;
+	strncpy(m_szDefaultExtension, m_szSuffixes[indx] + 2, 4);
+	
+	m_szDefaultExtension[4] = 0;
+	
+	// make sure that we get rid off the semicolon if it got copied
 	char * semicolon = strchr(m_szDefaultExtension, ';');
 	if(semicolon)
 		*semicolon = 0;

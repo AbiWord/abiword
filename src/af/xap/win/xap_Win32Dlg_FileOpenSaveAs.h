@@ -48,7 +48,7 @@ protected:
 	void _buildFilterList(UT_String& sFilter);
 private:
 	char * _getDefaultExtension(UT_uint32 indx);
-	char m_szDefaultExtension[4];
+	char m_szDefaultExtension[5];
 };
 
 #endif /* XAP_WIN32DIALOG_FILEOPENSAVEAS_H */

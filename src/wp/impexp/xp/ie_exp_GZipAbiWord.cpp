@@ -121,7 +121,7 @@ bool IE_Exp_GZipAbiWord_Sniffer::getDlgLabels(const char ** pszDesc,
 											IEFileType * ft)
 {
 	*pszDesc = "GZipped AbiWord (.zabw)";
-	*pszSuffixList = "*.abw.gz; *.zabw";
+	*pszSuffixList = "*.zabw; *.abw.gz";
 	*ft = getFileType();
 	return true;
 }
