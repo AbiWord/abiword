@@ -8390,7 +8390,7 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 		else if(pContainer->getContainerType() == FP_CONTAINER_FRAME)
 		{
 			fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(pContainer);
-			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pSection);
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(pFC->getSectionLayout());
 			pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_FRAME;
 			fl_DocSectionLayout * pDSL = pFL->getDocSectionLayout();
 			if(pDSL == NULL)
@@ -9073,7 +9073,7 @@ void FV_View::setCursorToContext()
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragLeftEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragTopEdge)
 		{
@@ -9081,7 +9081,7 @@ void FV_View::setCursorToContext()
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragRightEdge)
 		{
-			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_W;
+			cursor = GR_Graphics::GR_CURSOR_IMAGESIZE_E;
 		}
 		else if(m_FrameEdit.getFrameEditDragWhat() ==FV_FrameEdit_DragBotEdge)
 		{
