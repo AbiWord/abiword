@@ -229,8 +229,7 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_REVISIONSECTION 28 //<revisions>
 #define TT_REVISION        29 //<r>
 #define TT_RESOURCE        30 // <resource>
-#define TT_ENDENDNOTE      31
-#define TT_ENDNOTE         32 //<endnote>
+#define TT_ENDNOTE         31 //<endnote>
 
 /*
   TODO remove tag synonyms.  We're currently accepted
@@ -260,7 +259,6 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"cell",		    TT_CELL		    },
 	{	"d",			TT_DATAITEM		},
 	{	"data",			TT_DATASECTION	},
-	{   "endendnote",   TT_ENDENDNOTE   },
 	{   "endnote",      TT_ENDNOTE      },
 	{	"f",			TT_FIELD		},
 	{	"field",		TT_FIELD		},
@@ -645,7 +643,7 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_ENDNOTE:
 		X_VerifyParseState(_PS_Sec);
 		X_CheckError(getDoc()->appendStrux(PTX_EndEndnote,NULL));
-		xxx_UT_DEBUGMSG(("FInished Append End Endnote strux \n"));
+		xxx_UT_DEBUGMSG(("Finished Append End Endnote strux \n"));
 		m_parseState = _PS_Block;
 		return;
 
