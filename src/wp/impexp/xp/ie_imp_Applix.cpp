@@ -239,6 +239,7 @@ IE_Imp_Applix::Applix_mapping_t IE_Imp_Applix::axwords[] =
     {"WP400", WP400_T},
     {"text", TEXT_T},
     {"T", TEXT_T},
+	{"page_break", PAGE_BREAK_T},
     {"para", PARA_T},
     {"P", PARA_T},
     {"start_vars", START_VARS_T},
@@ -417,6 +418,7 @@ short IE_Imp_Applix::s_8bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
 short IE_Imp_Applix::s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
 {
     short decoded = 0;
+	char x, y, z;
     
     UT_ASSERT (len >= 3);
     UT_ASSERT (str);
@@ -430,8 +432,19 @@ short IE_Imp_Applix::s_16bitsToUCS (const char *str, size_t len, UT_UCSChar * c)
     }
     if (len >= 3) 
     {
-		// TODO handle `
-		decoded = ((str[0] - ' ') << 10) + ((str[1] - ' ') << 5) + (str[2] - ' ');
+		// the ` us used instead of ". to simply we just replace.
+		x = str[0];
+		y = str[1];
+		z = str[2];
+
+		if (x == '`')
+			x = '"';
+		if (y == '`')
+			y = '"';
+		if (z == '`')
+			z = '"';
+		   
+		decoded = ((x - ' ') << 10) + ((y - ' ') << 5) + (z - ' ');
 		*c = decoded;
     }
 	return 3;
@@ -556,6 +569,9 @@ void IE_Imp_Applix::_dispatchTag (Applix_tag_t tag, const char *buf, size_t len)
 {
     switch (tag)
     {
+	case PAGE_BREAK_T:
+		_applixPageBreak (buf, len);
+		break;
 	case PARA_T:
 		_applixNewPara (buf, len);
 		break;
@@ -635,12 +651,6 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
 				ch = 0;
 			}
 			break;
-#if 0
-		case '"':
-			// skip a " alone: a real " would be escaped.
-			ch = 0;
-			break;
-#endif
 		}
 		// here if ch == 0 then don't add anything. NUL gets ignored
 		if (ch) 
@@ -649,7 +659,6 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
 			c = (UT_UCSChar)wc;
 			m_textBuf.append(&c, 1);
 		}
-		
 		pos++;
 	}
 	while ((pos < len) && (buf [pos] != '"'));
@@ -663,6 +672,14 @@ void IE_Imp_Applix::_applixDecodeText (const char *buf, size_t len)
 	}
 }
 
+/*!
+  Insert a new paragraph tag.
+  \param buf the buffer containing current reassembled line (ie not wrapped)
+  \param len length of the content of buf
+  \return void
+  Insert a new paragraph
+  \note TODO handle the style and paragraph attributes.
+*/
 void IE_Imp_Applix::_applixNewPara (const char *buf, size_t len)
 {
 	// flush the current run
@@ -670,13 +687,31 @@ void IE_Imp_Applix::_applixNewPara (const char *buf, size_t len)
 	runlen = m_textBuf.getLength ();
 	if (runlen > 0) 
 	{
-		UT_DEBUGMSG(("applix: flushing\n"));
+		xxx_UT_DEBUGMSG(("applix: flushing\n"));
 		m_pDocument->appendSpan (m_textBuf.getPointer (0), runlen);
 	}
-	UT_DEBUGMSG(("applix: new para\n"));
+	
+	xxx_UT_DEBUGMSG(("applix: new para\n"));
 	m_pDocument->appendStrux (PTX_Block, NULL);	
 }
 
+
+/*!
+  Decode a Page Break tag.
+  \param buf the buffer containing current reassembled line (ie not wrapped)
+  \param len length of the content of buf
+  \return void
+  Insert a page break in the current flow
+  \note TODO handle even/odd page, currently ignored by Abiword
+*/
+void IE_Imp_Applix::_applixPageBreak (const char * /*buf*/, size_t /*len*/)
+{
+	UT_UCSChar c;
+	c = UCS_FF;
+	m_textBuf.append(&c, 1);
+	m_pDocument->appendSpan (m_textBuf.getPointer (0), m_textBuf.getLength ());
+	m_textBuf.truncate(0);
+}
 
 
 /*****************************************************************/

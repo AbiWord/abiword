@@ -84,6 +84,7 @@ protected:
 	    END_FLOW_T,
 	    WP400_T,
 	    TEXT_T,
+		PAGE_BREAK_T,
 	    PARA_T,
 	    START_VARS_T,
 	    END_VARS_T,
@@ -100,6 +101,14 @@ protected:
 	    tag_Unknown
 	} Applix_tag_t;
 
+	// container
+	typedef enum {
+		axCtnNone,
+		axCtnText,
+		axCtnField,
+		axCtnGlossary,
+	} Applix_content_t;
+	
 	// context in the file
 	// because T tag have different meanings.
 	typedef enum {
@@ -128,6 +137,7 @@ protected:
 	bool                    _applixGetLine (UT_ByteBuf* pBuf, FILE *fp);
 	void                    _applixDecodeText (const char * buf, size_t len);
 	void                    _applixNewPara (const char * buf, size_t len);
+	void                    _applixPageBreak (const char * buf, size_t len);
 };
 
 #endif /* IE_IMP_APPLIX_H */
