@@ -56,7 +56,7 @@
 #include "ut_sleep.h"
 
 // WL: ONLY ENABLE NEW FRAME CODE ON UNIX/GTK FOR NOW (AND MACOSX, HUB)
-#if defined(ANY_UNIX)  || (defined(__APPLE__) && defined(__MACH__))
+#if defined(ANY_UNIX)  || (defined(__APPLE__) && defined(__MACH__)) || defined(WIN32)
 XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	: m_pFrameImpl(pFrameImpl),
 	  m_pApp(pApp),
