@@ -278,8 +278,6 @@ public:
 	bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
 	const UT_UCSChar *		getPointer(PT_BufIndex bi) const; /* see warning on this function */
-	bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
-									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
 
 	bool					getBounds(bool bEnd, PT_DocPosition & docPos) const;

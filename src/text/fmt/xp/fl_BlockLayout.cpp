@@ -2250,11 +2250,6 @@ void fl_BlockLayout::getLineSpacing(double& dSpacing, eSpacingPolicy& eSpacing) 
 	eSpacing = m_eSpacingPolicy;
 }
 
-bool fl_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
-{
-	return m_pDoc->getSpanPtr(m_sdh, offset+fl_BLOCK_STRUX_OFFSET, ppSpan, pLength);
-}
-
 bool	fl_BlockLayout::getBlockBuf(UT_GrowBuf * pgb) const
 {
 	return m_pDoc->getBlockBuf(m_sdh, pgb);

@@ -2222,12 +2222,6 @@ const UT_UCSChar * PD_Document::getPointer(PT_BufIndex bi) const
 	return m_pPieceTable->getPointer(bi);
 }
 
-bool PD_Document::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
-								const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
-{
-	return m_pPieceTable->getSpanPtr(sdh,offset,ppSpan,pLength);
-}
-
 bool PD_Document::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const
 {
 	return m_pPieceTable->getBlockBuf(sdh,pgb);

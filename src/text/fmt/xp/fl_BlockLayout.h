@@ -241,7 +241,6 @@ public:
 
 	fp_Run* findRunAtOffset(UT_uint32 offset) const;
 	
-	bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	bool	getBlockBuf(UT_GrowBuf * pgb) const;
 
 	void clearScreen(GR_Graphics*);

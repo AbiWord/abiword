@@ -259,8 +259,6 @@ public:
 			return m_varset.getPointer(bi);
 		}
 
-	bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
-									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
 
 	bool					getBounds(bool bEnd, PT_DocPosition & docPos) const;

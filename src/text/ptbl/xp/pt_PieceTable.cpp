@@ -294,7 +294,9 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 	return false;
 }
 
-
+#if 0
+// I will leave the code here for now to aid in debugging any problems
+// with the new iterator (should there be any, that is) Tomas, Nov 15, 2003
 bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 								  const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
@@ -360,7 +362,7 @@ bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 	xxx_UT_DEBUGMSG(("getSpanPtr: Error 3 offset %d cumOffset %d \n",offset,cumOffset));
 	return false;
 }
-
+#endif
 
 PD_Document * pt_PieceTable::getDocument(void)
 {
