@@ -60,7 +60,7 @@ _LIBPNG_:
 		$(MAKE) -f Makefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../libpng;	\
 	else									\
 		echo peer libpng not found.  You can check it out of cvs by; \
-		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout libpng; \
+		echo cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout libpng; \
 		exit 1;						\
 	fi
 
@@ -75,7 +75,7 @@ _LIBICONV_:
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;	\
 	else								\
 		echo peer libiconv not found.  You can check it out of cvs by; \
-		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout libiconv; \
+		echo cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout libiconv; \
 		exit 1;						\
 	fi
 #			$(CCSET) ./configure --enable-extra-encodings;
@@ -90,7 +90,7 @@ _LIBWV_:
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\
 		echo peer wv not found.  You can check it out of cvs by; \
-		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout wv; \
+		echo cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout wv; \
 		exit 1;						\
 	fi
 #			$(CCSET) ./configure --with-peer-iconv=abi;
@@ -105,7 +105,7 @@ _POPT_:
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../popt;                         \
 	else										\
 		echo peer popt not found.  You can check it out of cvs by; \
-		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout popt; \
+		echo cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout popt; \
 		exit 1;						\
 	fi								
 #			$(CCSET) ./configure --enable-static --disable-shared;  
@@ -127,7 +127,7 @@ _PEER_LIBCURL_:
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../curl/lib;		\
 	else									\
 		echo libcurl not found.  You can check it out of cvs by; \
-		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout curl; \
+		echo cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout curl; \
 		echo or download from http://curl.haxx.se and extract the library as a peer;	\
 		echo directory named curl;			\
 		exit 1;								\
