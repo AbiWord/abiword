@@ -2543,10 +2543,33 @@ void fp_TextRun::setDirection(UT_BidiCharType dir, UT_BidiCharType dirOverride)
 		// only do this once
 		if(_getDirection() == UT_BIDI_UNSET)
 		{
-			UT_UCSChar firstChar;
-			getCharacter(0, firstChar);
+			// here we used to check the first character; we can no longer do that,
+			// because the latest versions of USP create items that are not homogenous and
+			// can contain strong chars prefixed by weak chars. So if the first char is
+			// not strong, we try the rest of the run to see if it might contain any
+			// strong chars
+			PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 
-			_setDirection(UT_bidiGetCharType(firstChar));
+			text.setUpperLimit(text.getPosition() + getLength() - 1);
+
+			UT_ASSERT_HARMLESS( text.getStatus() == UTIter_OK );
+			
+			UT_BidiCharType t = UT_BIDI_UNSET;
+			
+			while(text.getStatus() == UTIter_OK)
+			{
+				UT_UCS4Char c = text.getChar();
+
+				t = UT_bidiGetCharType(c);
+
+				if(UT_BIDI_IS_STRONG(t))
+					break;
+				
+				++text;
+			}
+			
+			_setDirection(t);
 		}
 	}
 	else //meaningfull value received
