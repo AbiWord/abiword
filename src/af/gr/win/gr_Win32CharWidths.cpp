@@ -27,18 +27,8 @@
 #include "ut_endian.h"
 
 //////////////////////////////////////////////////////////////////
-#if 1
 
-#define _UL(x) (x)
-#define _UUL(x)(x) = (x)
-
-#else
-
-#define _UL(x) pGr->tlu((x))
-#define _UUL(x) (x) = pGr->tlu((x))
-
-#endif
-void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1, GR_Graphics * pGr)
+void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar c1)
 {
 	if(m_vRanges.getItemCount() == 0)
 	{
@@ -71,7 +61,6 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 			else
 			{
 				GetCharWidth32W(hdc,k,k,&w);
-				_UUL(w);
 				// handle overstriking chars here
 				UT_uint32 iOver = UT_isOverstrikingChar(k);
 				if(!w || iOver != UT_NOT_OVERSTRIKING)
@@ -92,11 +81,11 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 						if(iOver == UT_OVERSTRIKING_LEFT)
 						{
 							UT_ASSERT( abc.abcB <  GR_OC_MAX_WIDTH);
-							w = _UL(abc.abcB) | GR_OC_LEFT_FLUSHED;
+							w = abc.abcB | GR_OC_LEFT_FLUSHED;
 						}
 						else
 						{
-							w = _UL(abc.abcB /*+ abc.abcA + abc.abcC*/);
+							w = abc.abcB /*+ abc.abcA + abc.abcC*/;
 							w = -w;
 						}
 					}
@@ -131,7 +120,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 					int iConverted = WideCharToMultiByte(CP_ACP, NULL, (LPCWSTR) &k, 1,
 														 str, sizeof(str), NULL, NULL);
 					GetTextExtentPoint32A(hdc, str, iConverted, &Size);
-					setWidth(k,_UL(Size.cx));
+					setWidth(k, Size.cx);
 				}
 			}
 		}
@@ -153,7 +142,6 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 					sz1[0] = k;
 					
 					GetTextExtentPoint32W(hdc, sz1, 1, &Size);
-					_UUL(Size.cx);
 					// handle overstriking chars here
 					UT_uint32 iOver = UT_isOverstrikingChar(k);
 					if(!Size.cx ||  iOver != UT_NOT_OVERSTRIKING)
@@ -186,11 +174,11 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 							if(iOver == UT_OVERSTRIKING_LEFT)
 							{
 								UT_ASSERT( abc.abcB <  GR_OC_MAX_WIDTH);
-								Size.cx = _UL(abc.abcB) | GR_OC_LEFT_FLUSHED;
+								Size.cx = abc.abcB | GR_OC_LEFT_FLUSHED;
 							}
 							else
 							{
-								Size.cx = _UL(abc.abcB);
+								Size.cx = abc.abcB;
 								Size.cx = -Size.cx;
 							}
 						}
