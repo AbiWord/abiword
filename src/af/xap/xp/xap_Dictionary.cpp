@@ -382,7 +382,7 @@ bool XAP_Dictionary::addWord(const char * word)
 	{
 		return false;
 	}
-	UT_UCSChar * ucs_dup = (UT_UCSChar *) calloc(len, sizeof(UT_UCSChar));
+	UT_UCSChar * ucs_dup = (UT_UCSChar *) calloc(len+1, sizeof(UT_UCSChar));
 	UT_UCS_strcpy_char(ucs_dup, word);
 	addWord(ucs_dup,len);
 	FREEP(ucs_dup);
