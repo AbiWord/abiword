@@ -108,6 +108,7 @@ public:
     
     virtual char fallbackChar(UT_UCSChar c) const;
 	static XAP_EncodingManager *get_instance();
+	void Delete_instance();
 
     /*  This tries to approximate the character with the string, e.g.
 	horizontal-elipsis -> "...". Returns # of chars written or 0 if can't. 

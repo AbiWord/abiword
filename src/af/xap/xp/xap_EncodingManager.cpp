@@ -62,6 +62,12 @@ XAP_EncodingManager::~XAP_EncodingManager()
 
 XAP_EncodingManager::XAP_EncodingManager() { }
 
+void XAP_EncodingManager::Delete_instance()
+{
+	delete _instance;
+	_instance = NULL;
+}
+
 const char* XAP_EncodingManager::getLanguageISOName() const 
 {
     return "en";

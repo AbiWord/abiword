@@ -81,6 +81,9 @@ XAP_App::~XAP_App()
 	DELETEP(m_pToolbarActionSet);
 	DELETEP(m_pDict);
 	DELETEP(m_prefs);
+
+	// Delete the instance of the Encoding Manager.
+	XAP_EncodingManager::get_instance()->Delete_instance();
 }
 
 /*! this function is silly */
