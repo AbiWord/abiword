@@ -44,14 +44,16 @@ fi
 if test "$good_libpng_prefix" = "yes"; then
     saved_ldflags="$LDFLAGS"
     LDFLAGS="-L$libpng_prefix/lib"
-    AC_CHECK_LIB(png,png_create_info_struct,
-        abi_libpng_libs="-L$libpng_prefix/lib -lpng" abi_found_libpng="yes")
+    AC_CHECK_LIB(png, png_create_info_struct,
+        abi_libpng_libs="-L$libpng_prefix/lib -lpng -lm -lz" abi_found_libpng="yes",
+	abi_found_libpng="no", -lm -lz)
     LDFLAGS="$saved_ldflags"
 else
     if test "$abi_found_libpng" = "no"; then
 	echo "checking for libpng"
 	AC_CHECK_LIB(png, png_create_info_struct,
-           abi_libpng_libs="-lpng" abi_found_libpng="yes")
+           abi_libpng_libs="-lpng -lm -lz" abi_found_libpng="yes",
+           abi_found_libpng="no", -lm -lz)
     fi
 fi
 

@@ -1,5 +1,6 @@
 dnl AbiWord
 dnl Copyright (C) 2001 Sam Tobin-Hochstadt
+dnl MacOS X hackery by Hubert Figuiere <hfiguiere@teaser.fr>
 dnl
 dnl This program is free software; you can redistribute it and/or
 dnl modify it under the terms of the GNU General Public License
@@ -24,7 +25,7 @@ AC_CONFIG_SRCDIR([src/af/ev/xp/ev_Menu.h])
 AC_CONFIG_AUX_DIR(ac-helpers)
 AC_CONFIG_HEADERS(config.h)
 
-AM_INIT_AUTOMAKE(AbiSuite,0.9.0)
+AM_INIT_AUTOMAKE(AbiSuite,0.9.2)
 
 dnl APR [ Apache Portable Runtime ] does it this way, but I don't know
 dnl why.  I figure they probably have a good reason. 
