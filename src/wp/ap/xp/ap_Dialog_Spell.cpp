@@ -328,10 +328,10 @@ UT_Bool AP_Dialog_Spell::changeWordWith(UT_UCSChar * newword)
    return result;
 }
 
-UT_Bool AP_Dialog_Spell::addToDict(UT_UCSChar * dict)
+UT_Bool AP_Dialog_Spell::addToDict(void)
 {
-   UT_ASSERT(dict);
-   // TODO: add word to the passed dictionary
+   // TODO: add word to the current custom dictionary
+   // TODO: needs an implementation of xap_Spell
    return UT_TRUE;
 }
 

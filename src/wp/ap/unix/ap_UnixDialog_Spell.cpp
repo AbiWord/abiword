@@ -187,27 +187,20 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
 {
    GtkWidget *windowSpell;
-   GtkWidget *hbox1;
-   GtkWidget *vbox2;
+   GtkWidget *tableMain;
+   
    GtkWidget *label1;
    GtkWidget *scroll2;
    GtkWidget *textWord;
-   GtkWidget *hbox2;
    GtkWidget *label2;
    GtkWidget *entryChange;
    GtkWidget *scroll1;
    GtkWidget *clistSuggestions;
-   GtkWidget *vbox3;
    GtkWidget *buttonChange;
    GtkWidget *buttonChangeAll;
-   GtkWidget *hseparator1;
    GtkWidget *buttonIgnore;
    GtkWidget *buttonIgnoreAll;
-   GtkWidget *hseparator2;
    GtkWidget *buttonAddToDict;
-   GtkWidget *comboDictList;
-   GtkWidget *combo_entryDict;
-   GtkWidget *alignment1;
    GtkWidget *buttonCancel;
 
    const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -216,22 +209,26 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    windowSpell = gtk_window_new (GTK_WINDOW_DIALOG);
    gtk_object_set_data (GTK_OBJECT (windowSpell), "windowSpell", windowSpell);
    gtk_window_set_title (GTK_WINDOW (windowSpell),  pSS->getValue(AP_STRING_ID_DLG_Spell_SpellTitle));
-   gtk_window_set_policy (GTK_WINDOW (windowSpell), FALSE, FALSE, FALSE);
+   gtk_window_set_policy (GTK_WINDOW (windowSpell), TRUE, TRUE, FALSE);
 
-   hbox1 = gtk_hbox_new (FALSE, 0);
-   gtk_widget_ref (hbox1);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "hbox1", hbox1,
+   tableMain = gtk_table_new (10, 3, FALSE);
+   gtk_widget_ref (tableMain);
+   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "tableMain", tableMain,
 			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (hbox1);
-   gtk_container_add (GTK_CONTAINER (windowSpell), hbox1);
-
-   vbox2 = gtk_vbox_new (FALSE, 2);
-   gtk_widget_ref (vbox2);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "vbox2", vbox2,
+   gtk_widget_show (tableMain);
+   gtk_container_add (GTK_CONTAINER (windowSpell), tableMain);
+   gtk_container_set_border_width (GTK_CONTAINER(tableMain), 5);
+   gtk_table_set_row_spacings (GTK_TABLE(tableMain), 2);
+   gtk_table_set_row_spacing (GTK_TABLE(tableMain), 4, 7);
+   gtk_table_set_row_spacing (GTK_TABLE(tableMain), 8, 7);
+   gtk_table_set_col_spacings (GTK_TABLE(tableMain), 2);
+   
+   GtkWidget * alignmentLabel = gtk_alignment_new (0, 1, 0, 0);
+   gtk_widget_ref (alignmentLabel);
+   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "alignmentLabel", alignmentLabel,
 			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (vbox2);
-   gtk_box_pack_start (GTK_BOX (hbox1), vbox2, TRUE, TRUE, 0);
-   gtk_container_set_border_width (GTK_CONTAINER (vbox2), 2);
+   gtk_widget_show (alignmentLabel);
+   gtk_table_attach (GTK_TABLE(tableMain), alignmentLabel, 0, 2, 0, 1, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
 
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_UnknownWord));
    label1 = gtk_label_new (unixstr);
@@ -240,8 +237,9 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "label1", label1,
 			     (GtkDestroyNotify) gtk_widget_unref);
    gtk_widget_show (label1);
-   gtk_box_pack_start (GTK_BOX (vbox2), label1, FALSE, FALSE, 0);
-
+   gtk_label_set_justify (GTK_LABEL(label1), GTK_JUSTIFY_LEFT);
+   gtk_container_add (GTK_CONTAINER(alignmentLabel), label1);
+   
    scroll2 = gtk_scrolled_window_new (NULL, NULL);
    gtk_widget_ref (scroll2);
    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll2),
@@ -249,8 +247,8 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "scroll2", scroll2,
 			     (GtkDestroyNotify) gtk_widget_unref);
    gtk_widget_show (scroll2);
-   gtk_box_pack_start (GTK_BOX (vbox2), scroll2, FALSE, TRUE, 0);
-   
+   gtk_table_attach_defaults (GTK_TABLE(tableMain), scroll2, 0, 2, 1, 4);   
+
    textWord = gtk_text_new (NULL, NULL);
    gtk_widget_ref (textWord);
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "textWord", textWord,
@@ -258,16 +256,56 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    gtk_widget_show (textWord);
    gtk_container_add (GTK_CONTAINER (scroll2), textWord);
    gtk_text_set_word_wrap(GTK_TEXT(textWord), TRUE);
-   gtk_widget_set_usize (textWord, 200, 80);
+   gtk_widget_set_usize (textWord, 350, 80);
 
    gtk_widget_realize (textWord);
 
-   hbox2 = gtk_hbox_new (FALSE, 0);
-   gtk_widget_ref (hbox2);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "hbox2", hbox2,
+   // ignore button set
+   GtkWidget * vboxIgnoreButtons = gtk_vbox_new(FALSE, 5);
+   gtk_widget_ref (vboxIgnoreButtons);
+   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "vboxIgnoreButtons", vboxIgnoreButtons,
 			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (hbox2);
-   gtk_box_pack_start (GTK_BOX (vbox2), hbox2, FALSE, FALSE, 0);
+   gtk_widget_show (vboxIgnoreButtons);
+   gtk_table_attach_defaults (GTK_TABLE(tableMain), vboxIgnoreButtons, 2, 3, 1, 4);
+   
+   UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_Ignore));
+   buttonIgnore = gtk_button_new_with_label (unixstr);
+   FREEP(unixstr);
+   gtk_widget_ref (buttonIgnore);
+   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonIgnore", buttonIgnore,
+			     (GtkDestroyNotify) gtk_widget_unref);
+   gtk_widget_show (buttonIgnore);
+   gtk_box_pack_start (GTK_BOX(vboxIgnoreButtons), buttonIgnore, FALSE, FALSE, 5);
+//   gtk_table_attach (GTK_TABLE(tableMain), buttonIgnore, 2, 3, 1, 2, GTK_FILL, GTK_EXPAND, 2, 0);
+   
+   UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_IgnoreAll));
+   buttonIgnoreAll = gtk_button_new_with_label (unixstr);
+   FREEP(unixstr);
+   gtk_widget_ref (buttonIgnoreAll);
+   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonIgnoreAll", buttonIgnoreAll,
+			     (GtkDestroyNotify) gtk_widget_unref);
+   gtk_widget_show (buttonIgnoreAll);
+   gtk_box_pack_start (GTK_BOX(vboxIgnoreButtons), buttonIgnoreAll, FALSE, FALSE, 5);
+//   gtk_table_attach (GTK_TABLE(tableMain), buttonIgnoreAll, 2, 3, 2, 3, GTK_FILL, GTK_EXPAND, 2, 5);
+   
+   UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_AddToDict));
+   buttonAddToDict = gtk_button_new_with_label (unixstr);
+   FREEP(unixstr);
+   gtk_widget_ref (buttonAddToDict);
+   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonAddToDict", buttonAddToDict,
+			     (GtkDestroyNotify) gtk_widget_unref);
+   gtk_widget_show (buttonAddToDict);
+   gtk_box_pack_start (GTK_BOX(vboxIgnoreButtons), buttonAddToDict, FALSE, FALSE, 5);
+//   gtk_table_attach (GTK_TABLE(tableMain), buttonAddToDict, 2, 3, 3, 4, GTK_FILL, GTK_EXPAND, 2, 0);
+
+
+   // suggestion half
+   GtkWidget * hboxChangeTo = gtk_hbox_new(FALSE, 5);
+   gtk_widget_ref (hboxChangeTo);
+   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "hboxChangeTo", hboxChangeTo,
+			     (GtkDestroyNotify) gtk_widget_unref);
+   gtk_widget_show (hboxChangeTo);
+   gtk_table_attach_defaults (GTK_TABLE(tableMain), hboxChangeTo, 0, 2, 5, 6);
 
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_ChangeTo));
    label2 = gtk_label_new (unixstr);
@@ -276,16 +314,18 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "label2", label2,
 			     (GtkDestroyNotify) gtk_widget_unref);
    gtk_widget_show (label2);
-   gtk_box_pack_start (GTK_BOX (hbox2), label2, FALSE, FALSE, 0);
-   gtk_misc_set_padding (GTK_MISC (label2), 5, 0);
+   gtk_box_pack_start (GTK_BOX(hboxChangeTo), label2, FALSE, FALSE, 5);
+//   gtk_table_attach (GTK_TABLE(tableMain), label2, 0, 1, 5, 6, GTK_SHRINK, GTK_SHRINK, 0, 0);
+   gtk_label_set_justify( GTK_LABEL(label2), GTK_JUSTIFY_LEFT);
+//   gtk_misc_set_padding (GTK_MISC (label2), 5, 0);
 
    entryChange = gtk_entry_new ();
    gtk_widget_ref (entryChange);
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "entryChange", entryChange,
                             (GtkDestroyNotify) gtk_widget_unref);
    gtk_widget_show (entryChange);
-   gtk_box_pack_start (GTK_BOX (hbox2), entryChange, TRUE, TRUE, 0);
-
+   gtk_box_pack_start (GTK_BOX(hboxChangeTo), entryChange, TRUE, TRUE, 0);
+//   gtk_table_attach_defaults (GTK_TABLE(tableMain), entryChange, 1, 2, 5, 6);
 
    scroll1 = gtk_scrolled_window_new (NULL, NULL);
    gtk_widget_ref (scroll1);
@@ -294,7 +334,7 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "scroll1", scroll1,
 			     (GtkDestroyNotify) gtk_widget_unref);
    gtk_widget_show (scroll1);
-   gtk_box_pack_end (GTK_BOX (vbox2), scroll1, TRUE, TRUE, 0);
+   gtk_table_attach_defaults (GTK_TABLE(tableMain), scroll1, 0, 2, 6, 9);
 
    clistSuggestions = gtk_clist_new (1);
    gtk_widget_ref (clistSuggestions);
@@ -307,13 +347,13 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    gtk_clist_column_titles_hide (GTK_CLIST (clistSuggestions));
 
    
-   vbox3 = gtk_vbox_new (FALSE, 9);
-   gtk_widget_ref (vbox3);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "vbox3", vbox3,
+   // change buttons
+   GtkWidget * vboxChangeButtons = gtk_vbox_new(FALSE, 5);
+   gtk_widget_ref (vboxChangeButtons);
+   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "vboxChangeButtons", vboxChangeButtons,
 			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (vbox3);
-   gtk_box_pack_start (GTK_BOX (hbox1), vbox3, FALSE, TRUE, 0);
-   gtk_container_set_border_width (GTK_CONTAINER (vbox3), 6);
+   gtk_widget_show (vboxChangeButtons);
+   gtk_table_attach_defaults (GTK_TABLE(tableMain), vboxChangeButtons, 2, 3, 6, 9);
 
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_Change));
    buttonChange = gtk_button_new_with_label (unixstr);
@@ -322,8 +362,9 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonChange", buttonChange,
 			     (GtkDestroyNotify) gtk_widget_unref);
    gtk_widget_show (buttonChange);
-   gtk_box_pack_start (GTK_BOX (vbox3), buttonChange, FALSE, FALSE, 0);
-
+   gtk_box_pack_start (GTK_BOX(vboxChangeButtons), buttonChange, FALSE, FALSE, 5);
+//   gtk_table_attach (GTK_TABLE(tableMain), buttonChange, 2, 3, 6, 7, GTK_FILL, GTK_EXPAND, 2, 0);
+   
    UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_ChangeAll));
    buttonChangeAll = gtk_button_new_with_label (unixstr);
    FREEP(unixstr);
@@ -331,75 +372,17 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonChangeAll", buttonChangeAll,
 			     (GtkDestroyNotify) gtk_widget_unref);
    gtk_widget_show (buttonChangeAll);
-   gtk_box_pack_start (GTK_BOX (vbox3), buttonChangeAll, FALSE, FALSE, 0);
-
-   hseparator1 = gtk_hseparator_new ();
-   gtk_widget_ref (hseparator1);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "hseparator1", hseparator1,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (hseparator1);
-   gtk_box_pack_start (GTK_BOX (vbox3), hseparator1, FALSE, FALSE, 0);
-
-   UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_Ignore));
-   buttonIgnore = gtk_button_new_with_label (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (buttonIgnore);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonIgnore", buttonIgnore,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (buttonIgnore);
-   gtk_box_pack_start (GTK_BOX (vbox3), buttonIgnore, FALSE, FALSE, 0);
+   gtk_box_pack_start (GTK_BOX(vboxChangeButtons), buttonChangeAll, FALSE, FALSE, 5);
+//   gtk_table_attach (GTK_TABLE(tableMain), buttonChangeAll, 2, 3, 7, 8, GTK_FILL, GTK_EXPAND, 2, 5);
    
-   UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_IgnoreAll));
-   buttonIgnoreAll = gtk_button_new_with_label (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (buttonIgnoreAll);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonIgnoreAll", buttonIgnoreAll,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (buttonIgnoreAll);
-   gtk_box_pack_start (GTK_BOX (vbox3), buttonIgnoreAll, FALSE, FALSE, 0);
    
-   hseparator2 = gtk_hseparator_new ();
-   gtk_widget_ref (hseparator2);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "hseparator2", hseparator2,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (hseparator2);
-   gtk_box_pack_start (GTK_BOX (vbox3), hseparator2, FALSE, FALSE, 0);
-   
-   UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Spell_AddToDict));
-   buttonAddToDict = gtk_button_new_with_label (unixstr);
-   FREEP(unixstr);
-   gtk_widget_ref (buttonAddToDict);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonAddToDict", buttonAddToDict,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (buttonAddToDict);
-   gtk_box_pack_start (GTK_BOX (vbox3), buttonAddToDict, FALSE, FALSE, 0);
-   
-   comboDictList = gtk_combo_new ();
-   gtk_widget_ref (comboDictList);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "comboDictList", comboDictList,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (comboDictList);
-   gtk_box_pack_start (GTK_BOX (vbox3), comboDictList, FALSE, FALSE, 0);
-
-   combo_entryDict = GTK_COMBO (comboDictList)->entry;
-   gtk_widget_ref (combo_entryDict);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "combo_entryDict", combo_entryDict,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (combo_entryDict);
-   
-   alignment1 = gtk_alignment_new (0.5, 0.5, 1, 1);
-   gtk_widget_ref (alignment1);
-   gtk_object_set_data_full (GTK_OBJECT (windowSpell), "alignment1", alignment1,
-			     (GtkDestroyNotify) gtk_widget_unref);
-   gtk_widget_show (alignment1);
-   gtk_box_pack_end (GTK_BOX (vbox3), alignment1, FALSE, FALSE, 0);
    
    buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
    gtk_widget_ref (buttonCancel);
    gtk_object_set_data_full (GTK_OBJECT (windowSpell), "buttonCancel", buttonCancel,
 			     (GtkDestroyNotify) gtk_widget_unref);
    gtk_widget_show (buttonCancel);
-   gtk_container_add (GTK_CONTAINER (alignment1), buttonCancel);
+   gtk_table_attach (GTK_TABLE(tableMain), buttonCancel, 2, 3, 9, 10, GTK_FILL, GTK_EXPAND, 2, 5);
    
    // connect signals to handlers
 
@@ -457,7 +440,6 @@ GtkWidget * AP_UnixDialog_Spell::_constructWindow(void)
    m_textWord = textWord;
    m_entryChange = entryChange;
    m_clistSuggestions = clistSuggestions;
-   m_comboDictList = comboDictList;
    
    GdkColormap * cm = gdk_colormap_get_system();
    m_highlight.red = 0xffff;
@@ -617,10 +599,7 @@ void AP_UnixDialog_Spell::event_IgnoreAll()
 
 void AP_UnixDialog_Spell::event_AddToDict()
 {
-   UT_UCSChar * dict = _convertFromMB(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(m_comboDictList)->entry)));
-   
-   addToDict(dict);
-   FREEP(dict);
+   addToDict();
    
    ignoreWord();
    gtk_main_quit();
@@ -680,23 +659,28 @@ void AP_UnixDialog_Spell::event_ReplacementChanged()
 char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 {
    int mbindex = 0, wcindex = 0;
-   int mblen = 0;
-   while (wword[wcindex]) {
-      int len = wctomb(NULL, wword[wcindex++]);
-      mblen += len;
+   int mblength = 0;
+   int wclength = UT_UCS_strlen(wword);
+   while (wcindex < wclength) {
+      int len = wctomb(NULL, (wchar_t)(wword[wcindex]));
+      UT_ASSERT(len >= 0);
+      mblength += len;
+      wcindex++;
    }
    wcindex = 0;
-   int wclen = UT_UCS_strlen(wword);
-   char * word = (char*) calloc(mblen + 1, sizeof(char));
+   char * word = (char*) calloc(mblength + 1, sizeof(char));
    if (word == NULL) return NULL;
      
-   while (wword[wcindex]) {
-      int len = wctomb(word+mbindex, (wchar_t)wword[wcindex++]);
-      mbindex += len; 
+   while (mbindex < mblength) {
+      int len = wctomb(word+mbindex, (wchar_t)(wword[wcindex]));
+      UT_ASSERT(len >= 0);
+      mbindex += len;
+      wcindex++;
    }
-   word[mblen] = 0;
+   word[mblength] = 0;
 
-   UT_ASSERT(mblen >= mbindex);
+   UT_DEBUGMSG(("wc2mb: wc %i/%i - mb %i/%i", wcindex, wclength, mbindex, mblength));
+   UT_ASSERT(mblength >= mbindex);
    
    return word;
 }
@@ -705,27 +689,30 @@ char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
 UT_UCSChar * AP_UnixDialog_Spell::_convertFromMB(char *word)
 {
    int wcindex = 0, mbindex = 0;
-   int wclen = 0;
-   while (word[mbindex]) {
-      int len = mbtowc(NULL, word+mbindex, 10);
+   int wclength = 0;
+   int mblength = strlen(word);
+   while (mbindex < mblength) {
+      int len = mblen(word+mbindex, mblength-mbindex);
+      UT_ASSERT(len >= 0);
       mbindex += len;
-      wclen++;
+      wclength++;
    }
    mbindex = 0;
-   int mblen = strlen(word);
 
    wchar_t wch; // we only support two bytes, so this is a temp Unicode char holder
-   UT_UCSChar * wword = (UT_UCSChar*) calloc(wclen + 1, sizeof(UT_UCSChar));
+   UT_UCSChar * wword = (UT_UCSChar*) calloc(wclength + 1, sizeof(UT_UCSChar));
    if (wword == NULL) return NULL;
      
-   while (word[mbindex]) {
-      int len = mbtowc(&wch, word+mbindex, 10);
+   while (wcindex < wclength) {
+      int len = mbtowc(&wch, word+mbindex, mblength-mbindex);
+      UT_ASSERT(len >= 0);
       mbindex += len;
       wword[wcindex++] = (UT_UCSChar) wch;
    }
-   wword[wclen] = 0;
+   wword[wclength] = 0;
    
-   UT_ASSERT(wclen >= wcindex);
+   UT_DEBUGMSG(("mb2wc: mb %i/%i - wc %i/%i", mbindex, mblength, wcindex, wclength));
+   UT_ASSERT(wclength >= wcindex);
    
    return (UT_UCSChar*)wword;
 }

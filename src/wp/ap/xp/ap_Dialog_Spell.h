@@ -67,8 +67,8 @@ class AP_Dialog_Spell : public XAP_Dialog_NonPersistent
 
    // make the word visible in the document behind the dialog
    UT_Bool makeWordVisible(void);
-   // add the word to user dictionaries
-   UT_Bool addToDict(UT_UCSChar * dict);
+   // add the word to current user dictionary
+   UT_Bool addToDict(void);
 
    // change/ignore all hash tables
    UT_HashTable * m_pChangeAll;

@@ -66,7 +66,6 @@ class AP_UnixDialog_Spell: public AP_Dialog_Spell
    GtkWidget * m_textWord;
    GtkWidget * m_entryChange;
    GtkWidget * m_clistSuggestions;
-   GtkWidget * m_comboDictList;
    
    GtkWidget * m_buttonChange;
    GtkWidget * m_buttonChangeAll;
