@@ -176,6 +176,12 @@ UT_sint32  GR_UnixImage::getDisplayHeight(void) const
 	return gdk_pixbuf_get_height (m_image);
 }
 
+/*!
+ * This method fills a byte buffer with a PNG representation of itself.
+ * This can be saved in the PT as a data-item and recreated.
+ * ppBB is a pointer to a pointer of a byte buffer. It's the callers
+ * job to delete it.
+ */
 bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
   if (!m_image)
@@ -185,16 +191,21 @@ bool  GR_UnixImage::convertToBuffer(UT_ByteBuf** ppBB) const
 		return false;
     }
   
-	const guchar * pixels = gdk_pixbuf_get_pixels(m_image);
-	UT_ByteBuf * pBB = 0;
+  
+  UT_ByteBuf * pBB = 0;
+  const guchar * pixels = gdk_pixbuf_get_pixels(m_image);
 
 	if (pixels)
 	{
 		// length is height * rowstride
 		UT_uint32 len = gdk_pixbuf_get_height (m_image) * 
 			gdk_pixbuf_get_rowstride (m_image);
+		gchar * pData = new gchar[len];
+		gsize sizeBuf = 0;
+		gdk_pixbuf_save_to_buffer(m_image,&pData,&sizeBuf,"png",NULL);
 		pBB = new UT_ByteBuf();		
-		pBB->append(static_cast<const UT_Byte *>(pixels), len);		
+		pBB->append(reinterpret_cast<const UT_Byte *>(pData), sizeBuf);
+		delete [] pData;
 	}
 
 	*ppBB = pBB;
