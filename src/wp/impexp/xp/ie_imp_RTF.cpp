@@ -4834,7 +4834,7 @@ bool IE_Imp_RTF::_insertSpan()
 						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
 							return false;
 						
-						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, i - iLast,
+						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + i - iLast,
 													propsArray,NULL))
 							return false;
 						
@@ -4854,7 +4854,7 @@ bool IE_Imp_RTF::_insertSpan()
 						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
 							return false;
 						
-						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, i - iLast,
+						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + i - iLast,
 													propsArray,NULL))
 							return false;
 						
@@ -4877,7 +4877,7 @@ bool IE_Imp_RTF::_insertSpan()
 						if(!getDoc()->insertSpan(m_dposPaste, p ,i - iLast))
 							return false;
 						
-						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, i - iLast,
+						if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + i - iLast,
 													propsArray,NULL))
 							return false;
 						
@@ -4900,7 +4900,7 @@ bool IE_Imp_RTF::_insertSpan()
 			if(!getDoc()->insertSpan(m_dposPaste, p ,iLen - iLast))
 				return false;
 						
-			if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, iLen - iLast,
+			if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + iLen - iLast,
 										propsArray,NULL))
 				return false;
 						
@@ -4914,7 +4914,7 @@ bool IE_Imp_RTF::_insertSpan()
 		if(!getDoc()->insertSpan(m_dposPaste, p ,iLen))
 			return false;
 						
-		if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, iLen,
+		if(!getDoc()->changeSpanFmt(PTC_AddFmt, m_dposPaste, m_dposPaste + iLen,
 									propsArray,NULL))
 			return false;
 						
