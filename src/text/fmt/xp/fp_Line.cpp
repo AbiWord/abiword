@@ -1372,7 +1372,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 		}
 
 		da.yoff += pRun->getY();
-		UT_Rect runRect(da.xoff, da.yoff - m_iAscent, pRun->getWidth(), pRun->getHeight());
+		UT_Rect runRect(da.xoff, da.yoff - pRun->getAscent(), pRun->getWidth(), pRun->getHeight());
 
 		if (pRect == NULL || pRect->intersectsRect(&runRect))
 			pRun->draw(&da);
