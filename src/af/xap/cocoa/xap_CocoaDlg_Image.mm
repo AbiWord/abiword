@@ -42,7 +42,7 @@ void XAP_CocoaDialog_Image::event_Ok ()
 {
 	setAnswer(XAP_Dialog_Image::a_OK);
 	setTitle ([[m_dlg titleEntry] UTF8String]);
-	setAlt ([[m_dlg altEntry] UTF8String]);
+	setDescription ([[m_dlg altEntry] UTF8String]);
 	[NSApp stopModal];
 }
 
@@ -235,11 +235,11 @@ void XAP_CocoaDialog_Image::runModal(XAP_Frame * pFrame)
 		LocalizeControl(_heightLabel, pSS, XAP_STRING_ID_DLG_Image_Height);
 		LocalizeControl(_widthLabel, pSS, XAP_STRING_ID_DLG_Image_Width);
 		LocalizeControl(_titleLabel, pSS, XAP_STRING_ID_DLG_Image_LblTitle);
-		LocalizeControl(_altLabel, pSS, XAP_STRING_ID_DLG_Image_LblAlt);
+		LocalizeControl(_altLabel, pSS, XAP_STRING_ID_DLG_Image_LblDescription);
 		LocalizeControl(_preserveAspectBtn, pSS, XAP_STRING_ID_DLG_Image_Aspect);
 		[_preserveAspectBtn setState:(_xap->getPreserveAspect()?NSOnState:NSOffState)];
 		[_titleData setStringValue:[NSString stringWithUTF8String:_xap->getTitle().utf8_str()]];
-		[_altData setStringValue:[NSString stringWithUTF8String:_xap->getAlt().utf8_str()]];
+		[_altData setStringValue:[NSString stringWithUTF8String:_xap->getDescription().utf8_str()]];
 		/* FIXME: we probably have smarter default values Unix code doesn't.*/
 		[_heightNumStepper setIntValue:1];
 		[_heightNumData setIntValue:1];

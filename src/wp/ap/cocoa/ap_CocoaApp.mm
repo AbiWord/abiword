@@ -603,7 +603,7 @@ void AP_CocoaApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClip
 		  
 		  DELETEP(pIEG);
 		  
-		  error = pView->cmdInsertGraphic(pFG, newName.utf8_str());
+		  error = pView->cmdInsertGraphic(pFG);
 		  if (error)
 		  {
 			  UT_DEBUGMSG(("DOM: could not insert graphic (%d)\n", error));
