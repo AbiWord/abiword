@@ -658,13 +658,16 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 			m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
 
 			UT_ASSERT(pInfo->m_iDefaultTabInterval > 0);
-			UT_sint32 iPos = xAbsLeft;
-			for (;iPos < xAbsRight; iPos += pInfo->m_iDefaultTabInterval)
+			if (pInfo->m_iDefaultTabInterval > 0)			// prevent infinite loop -- just in case
 			{
-				if (iPos <= left)
-					continue;
-
-				m_pG->drawLine(iPos, yBottom + 1, iPos, yBottom + 4);				
+				UT_sint32 iPos = xAbsLeft;
+				for (;iPos < xAbsRight; iPos += pInfo->m_iDefaultTabInterval)
+				{
+					if (iPos <= left)
+						continue;
+					
+					m_pG->drawLine(iPos, yBottom + 1, iPos, yBottom + 4);				
+				}
 			}
 		}
 	}
