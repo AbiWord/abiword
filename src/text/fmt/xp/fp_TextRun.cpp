@@ -1433,6 +1433,8 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
     bool bContinue = true;
     UT_uint32 offset = m_iOffsetFirst;
 
+	UT_RGBColor clrShowPara(127,127,127);
+
 #ifndef NDEBUG
     FV_View* ppView = m_pBL->getDocLayout()->getView();
     if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
@@ -1452,7 +1454,7 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 
             for (UT_uint32 i = 0;i < lenSpan;i++){
                if(pSpan[i] == UCS_SPACE){
-                   m_pG->fillRect(m_colorFG,xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
+                   m_pG->fillRect(clrShowPara,xoff + iWidth + (pCharWidths[i + offset] - iRectSize) / 2,iy,iRectSize,iRectSize);
                }
                iWidth += pCharWidths[i + offset];
             }

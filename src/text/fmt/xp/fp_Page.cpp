@@ -169,8 +169,8 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
         UT_sint32 iTopHeight = UT_MIN(iTopMargin,20);
         UT_sint32 iBottomHeight = UT_MIN(iBottomMargin,20);
 
-        UT_RGBColor clr(127,127,127);
-        pDA->pG->setColor(clr);
+        UT_RGBColor clrShowPara(127,127,127);
+        pDA->pG->setColor(clrShowPara);
         pDA->pG->drawLine(xoffStart, yoffStart, xoffStart, yoffStart - iTopHeight);
         pDA->pG->drawLine(xoffStart, yoffStart, xoffStart - iLeftWidth, yoffStart);
 

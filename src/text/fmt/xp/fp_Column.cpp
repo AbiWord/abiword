@@ -299,8 +299,8 @@ void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
 {
     UT_ASSERT(pDA->pG == m_pG);
     if(m_pPage->getDocLayout()->getView()->getShowPara() && m_pG->queryProperties(GR_Graphics::DGP_SCREEN)){
-        UT_RGBColor clr(127,127,127);
-        m_pG->setColor(clr);
+        UT_RGBColor clrShowPara(127,127,127);
+        m_pG->setColor(clrShowPara);
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
         UT_sint32 xoffEnd = pDA->xoff + m_iWidth + 2;

@@ -585,29 +585,36 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
         return;
     }
 
-    #define NPOINTS 4
+    #define NPOINTS 6
 
     UT_Point points[NPOINTS];
 
     UT_sint32 cur_linewidth = 1 + (UT_MAX(10,m_iAscent) - 10) / 8;
     UT_uint32 iyAxis = iTop + m_pLine->getAscent() * 2 / 3;
-    UT_uint32 iMaxWidth = iWidth / 10 * 6;
+    UT_uint32 iMaxWidth = UT_MIN(iWidth / 10 * 6, (UT_uint32) cur_linewidth * 9);
     UT_uint32 ixGap = (iWidth - iMaxWidth) / 2;
 
     points[0].x = iLeft + ixGap + iMaxWidth - cur_linewidth * 4;
     points[0].y = iyAxis - cur_linewidth * 2;
 
-    points[1].x = iLeft + iWidth - ixGap;
-    points[1].y = iyAxis;
+    points[1].x = points[0].x + cur_linewidth;
+    points[1].y = points[0].y;
 
-    points[2].x = points[0].x;
-    points[2].y = iyAxis + cur_linewidth * 2;
+    points[2].x = iLeft + iWidth - ixGap;
+    points[2].y = iyAxis;
 
-    points[3].x = points[0].x;
-    points[3].y = points[0].y;
+    points[3].x = points[1].x;
+    points[3].y = iyAxis + cur_linewidth * 2;
 
-    m_pG->polygon(m_colorFG,points,NPOINTS);
-    m_pG->fillRect(m_colorFG,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+    points[4].x = points[0].x;
+    points[4].y = points[3].y;
+
+    points[5].x = points[0].x;
+    points[5].y = points[0].y;
+
+    UT_RGBColor clrShowPara(127,127,127);
+    m_pG->polygon(clrShowPara,points,NPOINTS);
+    m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 }
 
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
@@ -992,7 +999,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	{
 		UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
 		UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
-		UT_RGBColor colorFG;
+		UT_RGBColor clrShowPara(127,127,127);
 		UT_sint32 iAscent;
 
 		fp_Run* pPropRun = _findPrevPropertyRun();
@@ -1001,13 +1008,11 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
 			m_pG->setFont(pTextRun->getFont());
 			iAscent = pTextRun->getAscent();
-			colorFG = pTextRun->getFGColor();
 		}
 		else
 		{
 			m_pG->setFont(m_pG->getGUIFont());
 			iAscent = m_iAscent;
-			UT_setColor(colorFG, 0, 0, 0);
 		}
 
 		m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
@@ -1017,7 +1022,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 
         m_pG->fillRect(m_colorBG, m_iXoffText, m_iYoffText, 
 					   m_iWidth, m_iHeight);
-		m_pG->setColor(colorFG);
+		m_pG->setColor(clrShowPara);
         m_pG->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
 }
