@@ -50,7 +50,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	typedef enum { id_CHECK_SPELL_CHECK_AS_TYPE = 0, id_CHECK_SPELL_HIDE_ERRORS,
 				   id_CHECK_SPELL_SUGGEST, id_CHECK_SPELL_MAIN_ONLY,
 				   id_CHECK_SPELL_UPPERCASE, id_CHECK_SPELL_NUMBERS,
-				   id_CHECK_SPELL_INTERNET, id_BUTTON_SPELL_AUTOREPLACE,
+				   id_BUTTON_SPELL_AUTOREPLACE,
 
 				   id_CHECK_SMART_QUOTES_ENABLE,
 
@@ -73,7 +73,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS,
 				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
 				   id_SHOWSPLASH,
-				   id_UNIXFONTWARNING,
 				   id_CHECK_ALLOW_CUSTOM_TOOLBARS,
 				   id_CHECK_ENABLE_SMOOTH_SCROLLING,
 				   id_CHECK_AUTO_LOAD_PLUGINS,
@@ -92,7 +91,9 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	void _enableDisableLogic( tControl id );
 	
 	virtual void _storeWindowData(void);	// calls the following functions to
-									// lookup values to set as preferences
+						// lookup values to set as preferences
+	virtual void _storeDataForControl (tControl id);	// sets preferences for a particular control
+							 	// needed by instant apply and friends
 									
 	void _event_SetDefaults(void);									
 
@@ -131,7 +132,6 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(SpellMainOnly, 	bool);
 	SET_GATHER			(SpellUppercase,	bool);
 	SET_GATHER			(SpellNumbers,		bool);
-	SET_GATHER			(SpellInternet, 	bool);
 
 	SET_GATHER			(ShowSplash,bool);
 	SET_GATHER			(SmartQuotesEnable, bool);

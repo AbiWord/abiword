@@ -551,6 +551,12 @@ static void help_button_cb (GObject * button, XAP_Dialog * pDlg)
 
 static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 {
+  // prevent help button from being added twice
+  gint has_button = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (me), "has-help-button"));
+
+  if (has_button)
+	  return;
+
   if (pDlg && pDlg->getHelpUrl().size () > 0) {
     GtkWidget * button = gtk_button_new_from_stock (GTK_STOCK_HELP);
 
@@ -561,6 +567,8 @@ static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
     g_signal_connect (G_OBJECT (button), "clicked",
 		      G_CALLBACK(help_button_cb), pDlg);
     gtk_widget_show (button);
+
+    g_object_set_data (G_OBJECT (me), "has-help-button", GINT_TO_POINTER (1));
   }
 }
 

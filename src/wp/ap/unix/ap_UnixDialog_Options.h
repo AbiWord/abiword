@@ -35,9 +35,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	//void initializeTransperentToggle(void);
 	void event_ChooseTransparentColor(void);
-	void event_AllowTransparentColor(void);
 
  protected:
 
@@ -48,134 +46,167 @@ public:
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
  					    virtual void _set##a(t)
 
- 	SET_GATHER			(SpellCheckAsType,	bool );
- 	SET_GATHER			(SpellHideErrors,	bool );
- 	SET_GATHER			(SpellSuggest,		bool );
- 	SET_GATHER			(SpellMainOnly,		bool );
- 	SET_GATHER			(SpellUppercase,	bool );
- 	SET_GATHER			(SpellNumbers,		bool );
- 	SET_GATHER			(SpellInternet,		bool );
 
- 	SET_GATHER			(ShowSplash,	bool);
+ 	SET_GATHER			(NotebookPageNum,		int);
 
-	SET_GATHER			(SmartQuotesEnable,	bool );
+//	// Tabs
+//		// Categories
+//			// Subordinate Controls
 
- 	SET_GATHER			(PrefsAutoSave,		bool );
+	// General
 
- 	SET_GATHER			(ViewShowRuler,		bool );
+		// User Interface
 
-	virtual bool _gatherViewShowToolbar(UT_uint32 t);
-	virtual void _setViewShowToolbar(UT_uint32 row, bool b);
+		SET_GATHER (ViewCursorBlink,	 bool);
+		SET_GATHER (SmartQuotesEnable,	 bool);
+		SET_GATHER (AllowCustomToolbars, bool);
+		SET_GATHER (ViewRulerUnits,	 UT_Dimension);
 
- 	SET_GATHER			(ViewShowStatusBar,	bool );
+		// Application Startup
 
-	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
-	SET_GATHER			(ViewCursorBlink,	bool);
+ 		SET_GATHER (ShowSplash,		 bool);
+		SET_GATHER (AutoLoadPlugins,	 bool);
 
+	// Documents
 
- 	SET_GATHER			(ViewAll,			bool );
- 	SET_GATHER			(ViewHiddenText,	bool );
- 	SET_GATHER			(ViewUnprintable,	bool );
-    SET_GATHER          (AllowCustomToolbars, bool);
-    SET_GATHER          (EnableSmoothScrolling, bool);
-    SET_GATHER          (AutoLoadPlugins,    bool);
- 	SET_GATHER			(NotebookPageNum,	int);
+		// AutoSave
 
-	SET_GATHER			(OtherDirectionRtl, bool);
-	SET_GATHER			(OtherHebrewContextGlyphs, bool);
+		SET_GATHER (AutoSaveFile,	      bool);
+			virtual void _gatherAutoSaveFilePeriod (      UT_String &stRetVal);
+			virtual void _setAutoSaveFilePeriod    (const UT_String &stPeriod);
+			virtual void _gatherAutoSaveFileExt    (      UT_String &stRetVal);
+			virtual void _setAutoSaveFileExt       (const UT_String &stExt);
 
-	SET_GATHER			(AutoSaveFile, bool);
-	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
-	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
-	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
-	virtual void _setAutoSaveFileExt(const UT_String &stExt);
+		// RTL Text Layout
+
+		SET_GATHER (OtherDirectionRtl,	      bool);
+		SET_GATHER (OtherHebrewContextGlyphs, bool);
+
+	// Spell Checking
+
+		// General
+
+	 	SET_GATHER (SpellCheckAsType, bool);
+ 		SET_GATHER (SpellHideErrors,  bool);
+
+		// Ignore Words
+
+	 	SET_GATHER (SpellUppercase,   bool);
+	 	SET_GATHER (SpellNumbers,     bool);
+
+		// Dictionaries
+
+ 		SET_GATHER (SpellSuggest,     bool);
+	 	SET_GATHER (SpellMainOnly,    bool);
+
+	// unimplemented UI-wise. We need dummy implementations to satisfy the XP framework, though
+
+	SET_GATHER			(PrefsAutoSave,			bool);
+	SET_GATHER			(ViewShowRuler,			bool);
+	SET_GATHER			(ViewShowStatusBar,		bool);
+	SET_GATHER			(ViewAll,			bool);
+	SET_GATHER			(ViewHiddenText,		bool);
+	SET_GATHER			(ViewUnprintable,		bool);
+	SET_GATHER			(EnableSmoothScrolling,		bool);
+
+	virtual bool _gatherViewShowToolbar (UT_uint32 t);
+	virtual void _setViewShowToolbar    (UT_uint32 row, bool b);
 
 #undef SET_GATHER
 
  protected:
 
 	// private construction functions
+	void	    _setupUnitMenu(GtkWidget *optionmenu, const XAP_StringSet *pSS);
+	void	    _constructWindowContents(GladeXML *xml);
 	GtkWidget * _constructWindow(void);
-	GtkWidget *         _constructWindowContents(GtkWidget *);
 
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_notebook;
-
-    GtkWidget * m_checkbuttonSpellCheckAsType;
-    GtkWidget * m_checkbuttonSpellHideErrors;
-    GtkWidget * m_checkbuttonSpellSuggest;
-    GtkWidget * m_checkbuttonSpellMainOnly;
-    GtkWidget * m_checkbuttonSpellUppercase;
-    GtkWidget * m_checkbuttonSpellNumbers;
-    GtkWidget * m_checkbuttonSpellInternet;
-	GtkWidget * m_listSpellDicts;
-	GtkWidget * m_listSpellDicts_menu;
-	GtkWidget * m_buttonSpellDictionary;
-	GtkWidget * m_buttonSpellIgnoreEdit;
-	GtkWidget * m_buttonSpellIgnoreReset;
-
-    GtkWidget * m_checkbuttonSmartQuotesEnable;
-
-    GtkWidget * m_checkbuttonPrefsAutoSave;
-	GtkWidget * m_comboPrefsScheme;
-
-    GtkWidget * m_checkbuttonViewShowRuler;
-    GtkWidget * m_listViewRulerUnits;
-    GtkWidget * m_listViewRulerUnits_menu;
-    GtkWidget * m_checkbuttonViewCursorBlink;
-    GtkWidget * m_checkbuttonViewShowStatusBar;
-
-	GtkWidget * m_checkbuttonTransparentIsWhite;
-	GtkWidget * m_pushbuttonNewTransparentColor;
-
-	GtkWidget * m_checkbuttonAllowCustomToolbars;
-	GtkWidget * m_checkbuttonEnableSmoothScrolling;
-	GtkWidget * m_checkbuttonAutoLoadPlugins;
-
-    GtkWidget * m_checkbuttonViewShowTB;
-    GtkWidget * m_checkbuttonViewHideTB;
-    GtkWidget * m_toolbarClist;
-
-    GtkWidget * m_checkbuttonViewAll;
-    GtkWidget * m_checkbuttonViewHiddenText;
-    GtkWidget * m_checkbuttonViewUnprintable;
-
-    GtkWidget * m_checkbuttonOtherDirectionRtl;
-    GtkWidget * m_checkbuttonOtherHebrewContextGlyphs;
-
-	GtkWidget * m_checkbuttonAutoSaveFile;
-	GtkWidget * m_textAutoSaveFilePeriod;
-	GtkWidget * m_textAutoSaveFileExt;
-	GtkWidget * m_checkbuttonShowSplash;
 	GtkWidget * m_buttonDefaults;
-	GtkWidget * m_buttonApply;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
+	GtkWidget * m_buttonClose;
 
+//	// Tabs
+//		// Categories
+//			// Subordinate Controls
+
+	// General
+
+		// User Interface
+
+		GtkWidget *m_checkbuttonViewCursorBlink;
+		GtkWidget *m_checkbuttonSmartQuotesEnable;
+		GtkWidget *m_checkbuttonAllowCustomToolbars;
+		GtkWidget *m_pushbuttonNewTransparentColor;
+		GtkWidget *m_menuUnits;
+
+			// used inside the color selector
+
+			GtkWidget *m_buttonColSel_Defaults;
+
+		// Application Startup
+
+		GtkWidget *m_checkbuttonShowSplash;
+		GtkWidget *m_checkbuttonAutoLoadPlugins;
+
+	// Documents
+
+		// General
+
+		GtkWidget *m_checkbuttonAutoSaveFile;
+			GtkWidget *m_tableAutoSaveFile;
+				GtkWidget *m_textAutoSaveFilePeriod;
+				GtkWidget *m_textAutoSaveFileExt;
+
+		// RTL Text Layout
+
+		GtkWidget * m_checkbuttonOtherDirectionRtl;
+		GtkWidget * m_checkbuttonOtherHebrewContextGlyphs;
+
+	// Spell Checking
+
+		// General
+
+		GtkWidget *m_checkbuttonSpellCheckAsType;
+		GtkWidget *m_checkbuttonSpellHideErrors;
+
+		// Ignore Words
+
+		GtkWidget *m_checkbuttonSpellUppercase;
+		GtkWidget *m_checkbuttonSpellNumbers;
+
+		// Dictionaries
+
+		GtkWidget *m_checkbuttonSpellSuggest;
+		GtkWidget *m_checkbuttonSpellMainOnly;
+
+		GSList *m_listToolbars;
+
+    		// Dummy
+		bool m_boolEnableSmoothScrolling;
+		bool m_boolPrefsAutoSave;
+		bool m_boolViewAll;
+		bool m_boolViewHiddenText;
+		bool m_boolViewShowRuler;
+		bool m_boolViewShowStatusBar;
+		bool m_boolViewUnprintable;
 private:
 	// Unix call back handlers
-	static void s_toolbars_toggled		( GtkWidget *, gpointer );
-	static void s_apply_clicked			( GtkWidget *, gpointer );
-	static void s_defaults_clicked		( GtkWidget *, gpointer );
-	static void s_chooseTransparentColor( GtkWidget *, gpointer );
-	static void s_allowTransparentColor ( GtkWidget *, gpointer );
-	static void s_color_changed(GtkWidget * csel,  AP_UnixDialog_Options * dlg);
-	static void s_clist_clicked (GtkWidget *, gint, gint, GdkEvent *, gpointer);
-
-	static void s_checkbutton_toggle	( GtkWidget *, gpointer );
-	static gint s_menu_item_activate	( GtkWidget *, gpointer );
+	static void s_control_changed	     (GtkWidget *,	   gpointer);
+	static void s_toolbars_toggled	     (GtkWidget *,	   gpointer);
+	static void s_apply_clicked	     (GtkWidget *,         gpointer);
+	static void s_defaults_clicked	     (GtkWidget *,         gpointer);
+	static void s_chooseTransparentColor (GtkWidget *,         gpointer);
+	static void s_color_changed	     (GtkColorSelection *, gpointer);
+	static void s_auto_save_toggled	     (GtkToggleButton *,   gpointer);
+	static void s_checkbutton_toggle     (GtkWidget *,	   gpointer);
+	static gint s_menu_item_activate     (GtkWidget *,	   gpointer);
 
 	// callbacks can fire these events
-    void event_OK(void);
-    void event_Cancel(void);
-    void event_Apply(void);
-    void event_clistClicked (int row, int col);
-    void _saveUnixOnlyPrefs();
-    void _initUnixOnlyPrefs();
-    virtual void _storeWindowData(void);
+	virtual void _storeWindowData(void);
 };
 
 #endif /* AP_UNIXDIALOG_OPTIONS_H */

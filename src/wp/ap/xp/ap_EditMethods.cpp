@@ -8005,14 +8005,14 @@ Defun1(dlgSpellPrefs)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	
-#ifndef WIN32
+#if !defined (WIN32) && !defined (XP_UNIX_TARGET_GTK)
     return s_doOptionsDlg(pView, 1); // spelling tab
 #else
     // spelling tab in Windows in the tab num 2
-    // becuase 1, is language selection. We should use
-    // an enumerator instead of fixed values. Jordi,
+    // becuase 1, is language selection. For UNIX, it's
+    // tab 2 as well. We should use an enumerator instead
+    // of fixed values. Jordi,
 	return s_doOptionsDlg(pView, 2);
-									
 #endif
 }
 

@@ -106,7 +106,6 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoSpellCheck, _gatherSpellCheckAsType() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers, _gatherSpellNumbers() );
-	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckInternet, _gatherSpellInternet() );
 	Save_Pref_Bool(pPrefsScheme, AP_PREF_KEY_ShowSplash,_gatherShowSplash());
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable, _gatherSmartQuotesEnable() );
 
@@ -230,6 +229,185 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 }
 
+/* Needed for instant apply and friends. It gathers the value of the widget associated with
+ * the tControl gived and sets it as pref */
+void AP_Dialog_Options::_storeDataForControl (tControl id)
+{
+	UT_String stVal;
+	bool tmpbool;
+	UT_Dimension tmpdim;
+
+	XAP_Prefs *pPrefs = m_pApp->getPrefs();
+	UT_return_if_fail (pPrefs);
+
+	AP_FrameData *pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	UT_return_if_fail (pFrameData);
+
+	XAP_PrefsScheme *pPrefsScheme = pPrefs->getCurrentScheme();
+	UT_return_if_fail (pPrefsScheme);
+
+	// turn off all notification to PrefListeners via XAP_Prefs
+	pPrefs->startBlockChange();
+
+	switch (id)
+	{
+		case id_CHECK_SPELL_CHECK_AS_TYPE:
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_AutoSpellCheck,
+					_gatherSpellCheckAsType());
+			break;
+
+		case id_CHECK_SPELL_UPPERCASE:
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_SpellCheckCaps,
+					_gatherSpellUppercase());
+			break;
+
+		case id_CHECK_SPELL_NUMBERS:
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_SpellCheckNumbers,
+					_gatherSpellNumbers());
+			break;
+
+		case id_CHECK_SMART_QUOTES_ENABLE:
+			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_SmartQuotesEnable,
+					_gatherSmartQuotesEnable());
+			break;
+
+		case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl,
+					_gatherOtherDirectionRtl());
+			break;
+
+		case id_CHECK_OTHER_HEBREW_CONTEXT_GLYPHS:
+			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_UseHebrewContextGlyphs,
+					_gatherOtherHebrewContextGlyphs() );
+			break;
+
+		case id_CHECK_AUTO_SAVE_FILE:
+			UT_DEBUGMSG(("Saving Auto Save File [%i]\n", _gatherAutoSaveFile()));
+			Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoSaveFile, _gatherAutoSaveFile() );
+			break;
+
+		case id_TEXT_AUTO_SAVE_FILE_EXT:
+			_gatherAutoSaveFileExt(stVal);
+			UT_DEBUGMSG(("Saving Auto Save File Ext [%s]\n", stVal.c_str()));
+			pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFileExt, stVal.c_str());
+			break;
+
+		case id_TEXT_AUTO_SAVE_FILE_PERIOD:
+			_gatherAutoSaveFilePeriod(stVal);
+			UT_DEBUGMSG(("Saving Auto Save File with a period of [%s]\n", stVal.c_str()));
+			pPrefsScheme->setValue(XAP_PREF_KEY_AutoSaveFilePeriod, stVal.c_str());
+			break;
+
+		case id_CHECK_VIEW_SHOW_RULER:
+			tmpbool = _gatherViewShowRuler();
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_RulerVisible, tmpbool);
+			if (tmpbool != pFrameData->m_bShowRuler)
+			{
+				pFrameData->m_bShowRuler = _gatherViewShowRuler() ;
+				m_pFrame->toggleRuler(pFrameData->m_bShowRuler);
+			}
+			break;
+
+		case id_LIST_VIEW_RULER_UNITS:
+			pPrefsScheme->setValue ((XML_Char*)AP_PREF_KEY_RulerUnits,
+						(XML_Char*)UT_dimensionName (_gatherViewRulerUnits()));
+			break;
+
+		case id_CHECK_VIEW_CURSOR_BLINK:
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_CursorBlink,
+					_gatherViewCursorBlink());
+
+		case id_CHECK_VIEW_SHOW_STATUS_BAR:
+			tmpbool = _gatherViewShowStatusBar();
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_StatusBarVisible, tmpbool);
+			if (tmpbool != pFrameData->m_bShowStatusBar)
+			{
+				pFrameData->m_bShowStatusBar = tmpbool;
+				m_pFrame->toggleStatusBar(pFrameData->m_bShowStatusBar);
+			}
+			break;
+
+		case id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT:
+			pPrefsScheme->setValue ((XML_Char*)XAP_PREF_KEY_ColorForTransparent,
+						_gatherColorForTransparent());
+			break;
+
+		case id_CHECK_VIEW_UNPRINTABLE:
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ParaVisible,
+					_gatherViewUnprintable());
+
+		case id_SHOWSPLASH:
+			Save_Pref_Bool (pPrefsScheme, AP_PREF_KEY_ShowSplash,
+					_gatherShowSplash());
+			break;
+
+		case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
+			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars,
+					_gatherAllowCustomToolbars());
+			break;
+
+		case id_CHECK_ENABLE_SMOOTH_SCROLLING:
+#if defined(XP_UNIX_TARGET_GTK)
+			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_EnableSmoothScrolling,
+					_gatherEnableSmoothScrolling());
+#endif
+			break;
+
+		case id_CHECK_AUTO_LOAD_PLUGINS:
+			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins,
+					_gatherAutoLoadPlugins() );
+			break;
+
+		case id_CHECK_LANG_WITH_KEYBOARD:
+			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_ChangeLanguageWithKeyboard,
+					_gatherLanguageWithKeyboard() );
+			break;
+
+		case id_CHECK_DIR_MARKER_AFTER_CLOSING_PARENTHESIS:
+			Save_Pref_Bool (pPrefsScheme, XAP_PREF_KEY_DirMarkerAfterClosingParenthesis,
+					_gatherDirMarkerAfterClosingParenthesis());
+			break;
+
+		case id_NOTEBOOK:
+			XML_Char szBuffer[40];
+			sprintf( szBuffer, "%i", _gatherNotebookPageNum() );
+			pPrefsScheme->setValue ((XML_Char*)AP_PREF_KEY_OptionsTabNumber,
+						(XML_Char*)szBuffer );
+			break;
+
+		// Ignore window controls/special buttons
+		case id_BUTTON_SAVE:
+		case id_BUTTON_DEFAULTS:
+		case id_BUTTON_OK:
+		case id_BUTTON_CANCEL:
+		case id_BUTTON_APPLY:
+		case id_BUTTON_SPELL_AUTOREPLACE:
+		case id_LIST_VIEW_TOOLBARS: // this is needed for the Cocoa front-end to fetch the control
+		case id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE:
+		case id_TEXT_AUTO_SAVE_FILE_PERIOD_SPIN:  // needed by Cocoa FE
+
+		// Not implemented
+		case id_CHECK_PREFS_AUTO_SAVE:
+		case id_CHECK_SPELL_HIDE_ERRORS:
+		case id_CHECK_SPELL_MAIN_ONLY:
+		case id_CHECK_SPELL_SUGGEST:
+		case id_CHECK_VIEW_ALL:
+		case id_CHECK_VIEW_HIDDEN_TEXT:
+		case id_COMBO_PREFS_SCHEME:
+
+		// Dummy case, dummy comment :)
+		case id_last:
+		UT_DEBUGMSG (("WARNING: _storeDataForControl not implemented for this control\n"));
+		default:
+			break;
+	}
+
+	// allow the prefListeners to receive their calls and
+	pPrefs->endBlockChange();
+
+	pPrefs->savePrefsFile();
+}
+
 void AP_Dialog_Options::_setColorForTransparent(const XML_Char *
 												pzsColorForTransparent)
 {
@@ -272,9 +450,6 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellCheckNumbers,&b))
 		_setSpellNumbers (b);
-
-	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellCheckInternet,&b))
-		_setSpellInternet (b);
 
 	// ------------ Smart Quotes
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable,&b))
@@ -396,7 +571,6 @@ void AP_Dialog_Options::_initEnableControls()
 	_controlEnable( id_CHECK_SPELL_SUGGEST, 		false );
 	_controlEnable( id_CHECK_SPELL_HIDE_ERRORS, 	false );
 	_controlEnable( id_CHECK_SPELL_MAIN_ONLY,		false );
-	_controlEnable( id_CHECK_SPELL_INTERNET,		true );
 
 	// prefs
 	_controlEnable( id_COMBO_PREFS_SCHEME,			false );
@@ -418,7 +592,8 @@ void AP_Dialog_Options::_initEnableControls()
 	//
 	// If the prefs color for transparent is white initially disable the choose
 	// color button
-	//
+	// On UNIX/GTK, we have a nice color chooser and ignore this setting.
+#ifndef XP_UNIX_TARGET_GTK
 	if(UT_strcmp(m_CurrentTransparentColor,"ffffff") == 0)
 	{
 		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, false);
@@ -427,6 +602,7 @@ void AP_Dialog_Options::_initEnableControls()
 	{
 		_controlEnable( id_PUSH_CHOOSE_COLOR_FOR_TRANSPARENT, true);
 	}
+#endif
 
 	_initEnableControlsPlatformSpecific();
 }

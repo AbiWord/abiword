@@ -348,19 +348,24 @@ dcl(DLG_Options_Btn_Save,				"Sa&ve")
 dcl(DLG_Options_Btn_Apply,				"Apply")
 dcl(DLG_Options_Btn_Default,			"De&faults")
 
+dcl(DLG_Options_SpellCheckingTitle,		"Spell Checking")
+
 dcl(DLG_Options_Label_SpellCheckAsType, "Check s&pelling as you type")
 dcl(DLG_Options_Label_SpellHideErrors,	"Hide &spelling errors in the document")
+dcl(DLG_Options_Label_SpellHightlightMisspelledWords, "&Hightlight misspelled words") // Opposite of HideErrors
+										      // should be merged one day
 dcl(DLG_Options_Label_SpellSuggest, 	"A&lways suggest corrections")
 dcl(DLG_Options_Label_SpellMainOnly,	"Suggest from &main dictionary only")
 dcl(DLG_Options_Label_SpellUppercase,	"Words in &UPPERCASE")
 dcl(DLG_Options_Label_SpellNumbers, 	"Words with num&bers")
-dcl(DLG_Options_Label_SpellInternet,	"Internet and &file addresses")
 dcl(DLG_Options_Label_SpellCustomDict,	"Custom Dictionary:")
 dcl(DLG_Options_Label_SpellIgnoredWord, "Ignored words:")
+dcl(DLG_Options_Label_SpellIgnoreWords, "Ignore Words")
 dcl(DLG_Options_Btn_CustomDict, 		"&Dictionary...")
 dcl(DLG_Options_Btn_IgnoreReset,		"&Reset")
 dcl(DLG_Options_Btn_IgnoreEdit, 		"&Edit")
 dcl(DLG_Options_Label_SpellAutoReplace, "Auto replace misspelled words")
+dcl(DLG_Options_Label_SpellDictionaries,	"Dictionaries")
 
 dcl(DLG_Options_Label_SmartQuotesEnable,"&Enable smart quotes")
 dcl(DLG_Options_Label_DefaultPageSize, "Default page size")
@@ -369,14 +374,21 @@ dcl(DLG_Options_Label_DirectionRtl, "Default to right-to-left direction of text"
 dcl(DLG_Options_Label_BiDiOptions, "Bi-Directional Options")
 dcl(DLG_Options_Label_HebrewContextGlyphs, "Use glyph shaping for Hebrew")
 
+dcl(DLG_Options_Label_UI,			"User Interface")
+dcl(DLG_Options_Label_AppStartup,		"Application Startup")
+dcl(DLG_Options_Label_Documents,		"Documents")
+
 dcl(DLG_Options_Label_UILang, 					"User Interface Language")
 dcl(DLG_Options_Label_LangSettings, 			"Language settings")
 
 
 dcl(DLG_Options_Label_AutoSave, 		"Auto Save")
-dcl(DLG_Options_Label_AutoSaveCurrent,	"Auto &save current file every")
+dcl(DLG_Options_Label_AutoSaveUnderline, 	"Auto &Save")
+dcl(DLG_Options_Label_AutoSaveCurrent,		"Auto &save current file every")
+dcl(DLG_Options_Label_AutoSaveInterval, 	"&Interval:")
 dcl(DLG_Options_Label_Minutes,			"minutes")
-dcl(DLG_Options_Label_WithExtension,	"With extension:")
+dcl(DLG_Options_Label_FileExtension,		"&File extension:")
+dcl(DLG_Options_Label_WithExtension,		"With extension:")
 
 dcl(DLG_Options_Label_PrefsAutoSave,	"&Automatically save this Scheme")
 dcl(DLG_Options_Label_PrefsCurrentScheme,	"&Current Preferences Scheme")

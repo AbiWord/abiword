@@ -48,6 +48,8 @@ glade_DATA = \
 	ap_UnixDialog_Insert_DateTime.glade \
 	ap_UnixDialog_MailMerge.glade	\
 	ap_UnixDialog_MetaData.glade	\
+	ap_UnixDialog_Options.glade	\
+	ap_UnixDialog_Options_ColorSel.glade	\
 	ap_UnixDialog_PageNumbers.glade		\
 	ap_UnixDialog_Replace.glade		\
 	ap_UnixDialog_New.glade		\
