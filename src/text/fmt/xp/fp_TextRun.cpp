@@ -2770,7 +2770,7 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 		m_pRenderInfo->m_iVisDir = getVisDirection();
 		m_pRenderInfo->m_eState = _getRefreshDrawBuffer();
 		m_pRenderInfo->m_pText = &text;
-		if(m_pRenderInfo->cut(offset,iLenToDelete))
+		if(!m_pRenderInfo->cut(offset,iLenToDelete))
 		{
 			// mark draw buffer dirty ...
 			orDrawBufferDirty(GRSR_Unknown);
