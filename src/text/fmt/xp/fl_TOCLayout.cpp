@@ -395,7 +395,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 	{
 		pEntry = static_cast<TOCEntry *>(m_vecEntries.getNthItem(i));
 		pPrevBL = pEntry->getBlock();
-		UT_DEBUGMSG(("Looking at Block %x pos %d \n",pPrevBL,pPrevBL->getPosition()));
+		xxx_UT_DEBUGMSG(("Looking at Block %x pos %d \n",pPrevBL,pPrevBL->getPosition()));
 		if(pPrevBL->getPosition() > posNew)
 		{
 			bFound = true;
@@ -736,11 +736,11 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 {
 	UT_UTF8String sTmpStyle = sStyle;
 	const char * sLStyle = sTOCStyle.utf8_str();
-	UT_DEBUGMSG(("Looking at Style %s \n",sLStyle));
-	UT_DEBUGMSG(("Base input style is %s \n",sTmpStyle.utf8_str()));
+	xxx_UT_DEBUGMSG(("Looking at Style %s \n",sLStyle));
+	xxx_UT_DEBUGMSG(("Base input style is %s \n",sTmpStyle.utf8_str()));
 	if(UT_stricmp(sLStyle,sTmpStyle.utf8_str()) == 0)
 	{
-		UT_DEBUGMSG(("Found initial match \n"));
+		xxx_UT_DEBUGMSG(("Found initial match \n"));
 		return true;
 	}
 	PD_Style * pStyle = NULL;
@@ -753,7 +753,7 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 			pStyle = pStyle->getBasedOn();
 			iLoop++;
 			sTmpStyle = pStyle->getName();
-			UT_DEBUGMSG(("Level %d style is %s \n",iLoop,sTmpStyle.utf8_str()));
+			xxx_UT_DEBUGMSG(("Level %d style is %s \n",iLoop,sTmpStyle.utf8_str()));
 			if(UT_stricmp(sLStyle,sTmpStyle.utf8_str()) == 0)
 			{
 				UT_DEBUGMSG(("Found match  at Level %d \n",iLoop));
@@ -761,7 +761,7 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 			}
 		}
 	}
-	UT_DEBUGMSG(("No match Found \n"));
+	xxx_UT_DEBUGMSG(("No match Found \n"));
 	return false;
 }
 
@@ -1773,8 +1773,20 @@ void fl_TOCLayout::_localCollapse(void)
 
 void fl_TOCLayout::collapse(void)
 {
-	_localCollapse();
 	fp_TOCContainer *pTC = static_cast<fp_TOCContainer *>(getFirstContainer());
+	if(pTC)
+	{
+		fp_TOCContainer * pBroke = pTC->getFirstBrokenTOC();
+		while(pBroke)
+		{
+			xxx_UT_DEBUGMSG(("DOing clearscreen on broken toc in collapse \n"));
+			pBroke->clearScreen();
+			pBroke = static_cast<fp_TOCContainer *>(pBroke->getNext());
+		}
+		pTC->deleteBrokenTOCs(true);
+		pTC->clearScreen();
+	}
+	_localCollapse();
 	if (pTC)
 	{
 //

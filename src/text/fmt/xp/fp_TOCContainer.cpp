@@ -108,6 +108,27 @@ void fp_TOCContainer::clearScreen(void)
 	{
 		return;
 	}
+	if(isThisBroken() && getContainer())
+	{
+		xxx_UT_DEBUGMSG(("Doing Clear Screen on Broken TOC %x \n",this));
+		UT_sint32 iHeight = getHeight();
+		UT_sint32 iWidth = getContainer()->getWidth();
+		UT_sint32 srcX  = getX();
+		UT_sint32 srcY = getY();
+		if(getFirstBrokenTOC() == this)
+		{
+			srcY = getMasterTOC()->getY();
+		}
+		fp_Column * pCol = static_cast<fp_Column *>(getColumn());
+		UT_sint32 x,y;
+		getPage()->getScreenOffsets(pCol,x,y);
+		x += srcX;
+		y += srcY;
+		getFillType()->setWidthHeight(getGraphics(),iWidth,iHeight);
+		getFillType()->Fill(getGraphics(),srcX,srcY,x,y,iWidth,iHeight);
+		xxx_UT_DEBUGMSG(("x %d y %d width %d height %d \n",x,y,iWidth,iHeight));
+		return;
+	}
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< static_cast<UT_sint32>(countCons()); i++)
@@ -214,7 +235,6 @@ fp_Container * fp_TOCContainer::getNextContainerInSection() const
 	{
 		pNext = pNext->getNext();
 	}
-	UT_ASSERT(pNext);
 	if(pNext)
 	{
 		return pNext->getFirstContainer();

@@ -267,6 +267,28 @@ void AP_Dialog_FormatTOC::setPropFromDoc(const char * szProp)
 	setTOCProperty(szProp,szVal);
 }
 
+/*!
+ * Increment the "start at" property
+ */
+void AP_Dialog_FormatTOC::incrementStartAt(UT_sint32 iLevel, bool bInc)
+{
+	UT_UTF8String sProp = "toc-label-start";
+	UT_UTF8String sLevel = UT_UTF8String_sprintf("%d",iLevel);
+	sProp += sLevel.utf8_str();
+	UT_UTF8String sStartVal = getTOCPropVal(sProp);
+	UT_sint32 iVal = atoi(sStartVal.utf8_str());
+	if(bInc)
+	{
+		iVal++;
+	}
+	else
+	{
+		iVal--;
+	}
+	sStartVal = UT_UTF8String_sprintf("%d",iVal);
+	setTOCProperty(sProp,sStartVal);
+}
+
 void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 {
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
@@ -349,6 +371,11 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 	setPropFromDoc("toc-tab-leader2");
 	setPropFromDoc("toc-tab-leader3");
 	setPropFromDoc("toc-tab-leader4");
+
+	setPropFromDoc("toc-label-start1");
+	setPropFromDoc("toc-label-start2");
+	setPropFromDoc("toc-label-start3");
+	setPropFromDoc("toc-label-start4");
 }
 
 void AP_Dialog_FormatTOC::applyTOCPropsToDoc(void)

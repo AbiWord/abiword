@@ -66,6 +66,7 @@ public:
 		{ return & m_vecTABLeadersProp;}
 	UT_Vector *       getVecLabelPropValue(void)
 		{ return & m_vecLabelPropValue;}
+	void              incrementStartAt(UT_sint32 iLevel, bool bInc);
 private:
 	PD_Document *         m_pDoc;
 	UT_Timer *            m_pAutoUpdater;
