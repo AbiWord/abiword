@@ -42,6 +42,7 @@ i386_ARCH_FLAGS		=
 # Jerry LeVan <levan@eagle.eku.edu> provided the PPC flags
 # Gary Thomas <gdt@linuxppc.org> suggests using -fno-schedule-insns2
 # for some EGCS builds
+
 PPC_ARCH_FLAGS		= -fsigned-char -fno-schedule-insns2
 
 ALPHA_ARCH_FLAGS 	=
@@ -72,66 +73,41 @@ ifeq ($(ABI_OPT_PROF),1)
 OPTIMIZER   	= -pg -Wall -ansi -pedantic -fprofile-arcs -ftest-coverage
 DEFINES  	=
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
-ABI_OPT_DEBUG 	= ""
-ABI_OPT_OPTIMIZE= ""
+ABI_OPT_DEBUG 	= 0
+ABI_OPT_OPTIMIZE= 1
 ABI_OPTIONS	+= Profile:On
 else
-
-	ifeq ($(ABI_OPT_OPTIMIZE),1)
-	OPTIMIZER	= -O3 -Wall -ansi -pedantic
-	DEFINES		=
-	OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
-	ABI_OPTIONS	+= Optimize:On
-	ABI_OPT_DEBUG	= ""
-	else #/* OPTIMIZE*/
-
 	ifeq ($(ABI_OPT_DEBUG),1)
 #	OPTIMIZER	= -g -Wall -ansi -pedantic
 	OPTIMIZER	= -g -Wall -pedantic -Wno-long-long
 	DEFINES		= -DDEBUG -UNDEBUG
-		ifeq ($(ABI_OPT_GNOME),1)
-			ifeq ($(ABI_OPT_PEER_EXPAT),1)
-			OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
-			else
-			OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_XML_
-			endif #/* EXPAT */
-		else
-			ifeq ($(ABI_OPT_PEER_EXPAT),1)
-			#OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
-			else
-			OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)XML_
-			endif #/* EXPAT */
-		endif #/* GNOME */
 	OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)DBG
+	ABI_OPT_OPTIMIZE = 0
+	endif
+endif
 
-	else # DEBUG
-	OPTIMIZER	= -O2 -Wall -ansi -pedantic
-	DEFINES		=
-		ifeq ($(ABI_OPT_GNOME),1)
-			ifeq ($(ABI_OPT_PEER_EXPAT),1)
-				OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
-			else
-				OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_XML_
-		endif #/* EXPAT */
-	else #/* not GNOME */
-		ifeq ($(ABI_OPT_PEER_EXPAT),1)
-		#OBJ_DIR_SFX	=
-		else
-		OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)XML_
-		endif #/* EXPAT */
-	endif #/* GNOME */
+ifeq ($(ABI_OPT_OPTIMIZE),1)
+OPTIMIZER	+= -O3 -fomit-frame-pointer -Wall -ansi -pedantic
+DEFINES		=
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
+ABI_OPTIONS	+= Optimize:On
+else
+OPTIMIZER	= -O2 -Wall -ansi -pedantic
+DEFINES		=
+endif
 
-	OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
-	endif #/* DEBUG */
-	endif #/* OPTIMIZE */
+ifeq ($(ABI_OPT_GNOME),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)GNOME_
+endif	
+ifneq ($(ABI_OPT_PEER_EXPAT),1)
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)XML_
+endif
 
-endif #/* PROF */
+OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OBJ
 
 ifeq ($(ABI_OPT_WAY_TOO_MANY_WARNINGS),1)
 	OPTIMIZER 	+= -Weffc++
 endif #/* WAY_TOO_MANY_WARNINGS */
-
-OPTIMIZER	+= -pipe
 
 # Includes
 OS_INCLUDES		=
