@@ -164,12 +164,13 @@ PtWidget_t * AP_QNXDialog_Goto::_constructWindow (void)
 
 	n = 0;
 	ConstructWindowName();
-	m_mainWindow = abiCreatePhabDialog("ap_QNXDialog_Goto",m_WindowName);
+	m_mainWindow = abiCreatePhabDialog("ap_QNXDialog_Goto",pSS,XAP_STRING_ID_DLG_OK);
+	PtSetResource(m_mainWindow,Pt_ARG_WINDOW_TITLE,m_WindowName,0);
 	SetupContextHelp(m_mainWindow,this);
 	PtAddHotkeyHandler(m_mainWindow,Pk_F1,0,Pt_HOTKEY_SYM,this,OpenHelp);
 	PtAddCallback(m_mainWindow, Pt_CB_WINDOW_CLOSING, s_deleteClicked, this);
 	
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblWhat"), Pt_ARG_TEXT_STRING, (_(AP,DLG_Goto_Label_What )), 0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblWhat"), pSS, (AP_STRING_ID_DLG_Goto_Label_What ));
 
 	m_wList = abiPhabLocateWidget(m_mainWindow,"listWhat");
 	char **tmp2 = getJumpTargets ();
@@ -178,26 +179,26 @@ PtWidget_t * AP_QNXDialog_Goto::_constructWindow (void)
 	PtListAddItems(m_wList, (const char **)tmp2, indx, 0);
 	PtListSelectPos(m_wList, 1);
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"lblNumber"), Pt_ARG_TEXT_STRING, (_(AP,DLG_Goto_Label_Number )), 0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"lblNumber"), pSS, (AP_STRING_ID_DLG_Goto_Label_Number ));
 
 	m_wEntry = abiPhabLocateWidget(m_mainWindow,"txtNumber"); 
 
-	PtSetResource(abiPhabLocateWidget(m_mainWindow,"mTxtInfo"), Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Label_Help), 0);
+	localizeLabel(abiPhabLocateWidget(m_mainWindow,"mTxtInfo"), pSS, AP_STRING_ID_DLG_Goto_Label_Help);
 
 	m_wPrev = abiPhabLocateWidget(m_mainWindow,"btnPrev");
-	PtSetResource(m_wPrev, Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Prev), NULL);
+	localizeLabel(m_wPrev, pSS, AP_STRING_ID_DLG_Goto_Btn_Prev);
 	PtAddCallback(m_wPrev, Pt_CB_ACTIVATE, s_prevClicked, this);
 
 	m_wNext = abiPhabLocateWidget(m_mainWindow,"btnNext");
-	PtSetResource(m_wNext, Pt_ARG_TEXT_STRING, _ (AP,DLG_Goto_Btn_Next), NULL);
+	localizeLabel(m_wNext, pSS, AP_STRING_ID_DLG_Goto_Btn_Next);
 	PtAddCallback(m_wNext, Pt_CB_ACTIVATE, s_nextClicked, this);
 
 	m_wGoto = abiPhabLocateWidget(m_mainWindow,"btnGoto");
-	PtSetResource(m_wGoto, Pt_ARG_TEXT_STRING, _(AP,DLG_Goto_Btn_Goto), NULL);
+	localizeLabel(m_wGoto, pSS, AP_STRING_ID_DLG_Goto_Btn_Goto);
 	PtAddCallback(m_wGoto, Pt_CB_ACTIVATE, s_gotoClicked, this);
 
 	m_wClose = abiPhabLocateWidget(m_mainWindow,"btnClose");
-	PtSetResource(m_wClose, Pt_ARG_TEXT_STRING, _ (XAP,DLG_Close), NULL);
+	localizeLabel(m_wClose, pSS, XAP_STRING_ID_DLG_Close);
 	PtAddCallback(m_wClose, Pt_CB_ACTIVATE, s_closeClicked, this);
 
 	return (m_mainWindow);
