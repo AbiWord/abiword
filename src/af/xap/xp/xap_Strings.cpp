@@ -56,7 +56,7 @@ XAP_StringSet::XAP_StringSet(XAP_App * pApp, const XML_Char * szLanguageName)
 XAP_StringSet::~XAP_StringSet(void)
 {
 	if (m_szLanguageName)
-		free((XML_Char *)m_szLanguageName);
+		free(const_cast<XML_Char *>(m_szLanguageName));
 }
 
 const XML_Char * XAP_StringSet::getLanguageName(void) const
@@ -122,7 +122,7 @@ const char * XAP_StringSet::getEncoding() const
 XAP_BuiltinStringSet::XAP_BuiltinStringSet(XAP_App * pApp, const XML_Char * szLanguageName)
 	: XAP_StringSet(pApp,szLanguageName)
 {
-#define dcl(id,s)					(const XML_Char *) s,
+#define dcl(id,s)					static_cast<const XML_Char *>(s),
 
 	static const XML_Char * s_a[] =
 	{
@@ -165,12 +165,12 @@ XAP_DiskStringSet::XAP_DiskStringSet(XAP_App * pApp)
 
 XAP_DiskStringSet::~XAP_DiskStringSet(void)
 {
-	UT_sint32 kLimit = (UT_sint32)m_vecStringsXAP.getItemCount();
+	UT_sint32 kLimit = static_cast<UT_sint32>(m_vecStringsXAP.getItemCount());
 	UT_sint32 k;
 
 	for (k=kLimit-1; k>=0; k--)
 	{
-		XML_Char * sz = (XML_Char *)m_vecStringsXAP.getNthItem(k);
+		XML_Char * sz = static_cast<XML_Char *>(m_vecStringsXAP.getNthItem(k));
 		if (sz)
 			free(sz);
 	}
@@ -182,7 +182,7 @@ XAP_DiskStringSet::~XAP_DiskStringSet(void)
 bool XAP_DiskStringSet::setLanguage(const XML_Char * szLanguageName)
 {
 	if (m_szLanguageName)
-		free((XML_Char *)m_szLanguageName);
+		free(const_cast<XML_Char *>(m_szLanguageName));
 	m_szLanguageName = NULL;
 	if (szLanguageName && *szLanguageName)
 		UT_XML_cloneString((XML_Char *&)m_szLanguageName,szLanguageName);
@@ -207,7 +207,7 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		// TODO limited to single-byte encodings by the code below.
 
 		int kLimit=gb.getLength();
-		UT_UCS4Char * p = (UT_UCS4Char*) gb.getPointer(0);
+		UT_UCS4Char * p = reinterpret_cast<UT_UCS4Char*>(gb.getPointer(0));
 		UT_ByteBuf str;
 
 		// now we run this string through fribidi
@@ -224,7 +224,7 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 				UT_sint32 i;
 				for(i = 0; i < kLimit; i++)
 				{
-					fbdStr[i] = (FriBidiChar) p[i];
+					fbdStr[i] = static_cast<FriBidiChar>(p[i]);
 				}
 
 				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
@@ -241,7 +241,7 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 
 				for(i = 0; i < kLimit; i++)
 				{
-					p[i] = (UT_uint16) fbdStr2[i];
+					p[i] = static_cast<UT_uint16>(fbdStr2[i]);
 				}
 
 				UT_ASSERT(p[i] == 0);
@@ -260,11 +260,11 @@ bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		for (int k=0; k<kLimit; k++)
 		{
 		    if (wctomb_conv.wctomb(letter_buf,length, p[k])) {
-			str.append((const UT_Byte*)letter_buf,length);
+			str.append(reinterpret_cast<const UT_Byte*>(&letter_buf[0]),length);
 		    };
 		}
 		length = str.getLength();
-		szDup = (XML_Char *)malloc(length+1);
+		szDup = static_cast<XML_Char *>(malloc(length+1));
 		if (!szDup)
 			return false;
 		memcpy(szDup,str.getPointer(0),length);
@@ -289,7 +289,7 @@ const XML_Char * XAP_DiskStringSet::getValue(XAP_String_Id id) const
 
 	if (id < kLimit)
 	{
-		const XML_Char * szValue = (const XML_Char *)m_vecStringsXAP.getNthItem(id);
+		const XML_Char * szValue = static_cast<const XML_Char *>(m_vecStringsXAP.getNthItem(id));
 		if (szValue)
 			return szValue;
 	}
@@ -339,7 +339,7 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 	if (!m_parserState.m_parserStatus)		// eat if already had an error
 		return;
 
-	if (strcmp((char*)name, "AbiStrings") == 0)
+	if (strcmp(const_cast<char*>(name), "AbiStrings") == 0)
 	{
 		// we expect something of the form:
 		// <AbiStrings app="AbiWord" ver="1.0" language="en-US">...</AbiStrings>
@@ -349,22 +349,22 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (strcmp((char*)a[0], "app") == 0)
+			if (strcmp(const_cast<char*>(a[0]), "app") == 0)
 			{
 				const char * szThisApp = m_pApp->getApplicationName();
 				UT_DEBUGMSG(("Found strings file for application [%s] (this is [%s]).\n",
 							a[1],szThisApp));
-				if (strcmp((char*)a[1],szThisApp) != 0)
+				if (strcmp(const_cast<char*>(a[1]),szThisApp) != 0)
 				{
 					UT_DEBUGMSG(("Strings file does not match this application.\n"));
 					goto InvalidFileError;
 				}
 			}
-			else if (strcmp((char*)a[0], "ver") == 0)
+			else if (strcmp(const_cast<char*>(a[0]), "ver") == 0)
 			{
 				// TODO test version number
 			}
-			else if (strcmp((char*)a[0], "language") == 0)
+			else if (strcmp(const_cast<char*>(a[0]), "language") == 0)
 			{
 				UT_DEBUGMSG(("Found strings for language [%s].\n",a[1]));
 				if (!setLanguage(a[1]))
@@ -374,7 +374,7 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 			a += 2;
 		}
 	}
-	else if (strcmp((char*)name, "Strings") == 0)
+	else if (strcmp(const_cast<char*>(name), "Strings") == 0)
 	{
 		// we found a set of strings.  we expect something of the form:
 		// <Strings class="type" n0="v0" n1="v1" ... />
@@ -399,7 +399,7 @@ void XAP_DiskStringSet::startElement(const XML_Char *name, const XML_Char **atts
 		{
 			UT_ASSERT(a[1] && *a[1]);	// require a value for each attribute keyword
 
-			if (strcmp((char*)a[0], "class") == 0)
+			if (strcmp(const_cast<char*>(a[0]), "class") == 0)
 				continue;
 
 			if (!setValue(a[0], a[1]))
@@ -504,7 +504,7 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 				{
 					if(mbtowc_conv.mbtowc(wc,szValue[i]))
 					{
-						fbdStr[j++] = (FriBidiChar) wc;
+						fbdStr[j++] = static_cast<FriBidiChar>(wc);
 					}
 				}
 

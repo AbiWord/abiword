@@ -62,8 +62,8 @@ XAP_UnixClipboard::~XAP_UnixClipboard()
 void XAP_UnixClipboard::AddFmt(const char * szFormat)
 {
   UT_return_if_fail(szFormat && strlen(szFormat));
-  m_vecFormat_AP_Name.addItem((void *) szFormat);
-  m_vecFormat_GdkAtom.addItem((void *) gdk_atom_intern(szFormat,FALSE));
+  m_vecFormat_AP_Name.addItem(static_cast<const void *>(szFormat));
+  m_vecFormat_GdkAtom.addItem(static_cast<void *>(gdk_atom_intern(szFormat,FALSE)));
 }
 
 void XAP_UnixClipboard::initialize()
@@ -74,7 +74,7 @@ void XAP_UnixClipboard::initialize()
   for (int k = 0, kLimit = m_nTargets; (k < kLimit); k++)
     {
       GtkTargetEntry * target = &(m_Targets[k]);
-      target->target = (char*)m_vecFormat_AP_Name.getNthItem(k);
+      target->target = static_cast<char*>(m_vecFormat_AP_Name.getNthItem(k));
       target->info = k;
     }
 }
@@ -105,16 +105,16 @@ void XAP_UnixClipboard::common_get_func(GtkClipboard *clipboard,
   GdkAtom needle = selection_data->target;
   for (guint i = 0 ; i < ntargets ; i++)
   {
-      if (needle == (GdkAtom)m_vecFormat_GdkAtom.getNthItem(i))
+      if (needle == static_cast<GdkAtom>(m_vecFormat_GdkAtom.getNthItem(i)))
       {
-        const gchar * format_name = (const gchar*)m_vecFormat_AP_Name.getNthItem(i);
+        const gchar * format_name = static_cast<const gchar*>(m_vecFormat_AP_Name.getNthItem(i));
 
         if(which_clip.hasFormat(format_name))
             {
 	        const gchar * data = 0;
 	        UT_uint32 data_len = 0;
-                which_clip.getClipboardData(format_name,(void**)&data,&data_len);	 
-                gtk_selection_data_set(selection_data,needle,8,(const guchar*)data,data_len);
+                which_clip.getClipboardData(format_name,reinterpret_cast<void**>(&data),&data_len);	 
+                gtk_selection_data_set(selection_data,needle,8,reinterpret_cast<const guchar*>(data),data_len);
             }
         break; // success or failure, we've found the needle in the haystack so exit the loop
       }  
@@ -238,13 +238,13 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
   
   UT_Vector atoms ;
   for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
-    atoms.addItem((void *) gdk_atom_intern(formatList[atomCounter],FALSE));
+    atoms.addItem(static_cast<void *>(gdk_atom_intern(formatList[atomCounter],FALSE)));
   
   int len = atoms.size () ;
 
   for(int i = 0; i < len; i++)
     {
-      GdkAtom atom = (GdkAtom)atoms.getNthItem(i);      
+      GdkAtom atom = static_cast<GdkAtom>(atoms.getNthItem(i));
       GtkSelectionData * selection = gtk_clipboard_wait_for_contents (clipboard, atom);
       
       if(selection)
@@ -252,9 +252,9 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 	  if (selection->data && (selection->length > 0))
 	    {
 	      m_databuf.truncate(0);
-	      m_databuf.append((UT_Byte *)selection->data, (UT_uint32)selection->length );
+	      m_databuf.append(static_cast<UT_Byte *>(selection->data), static_cast<UT_uint32>(selection->length));
 	      *pLen = selection->length;
-	      *ppData = (void*)m_databuf.getPointer(0);
+	      *ppData = reinterpret_cast<void**>(m_databuf.getPointer(0));
 	      *pszFormatFound = formatList[i];
 	      rval = true;
 	    }
@@ -286,7 +286,7 @@ bool XAP_UnixClipboard::canPaste(T_AllowGet tFrom)
 	{
 	  for (gint i = 0; (i < abi_targets) && !found; i++)
 	    {
-	      GdkAtom needle = (GdkAtom)m_vecFormat_GdkAtom.getNthItem(i);
+	      GdkAtom needle = static_cast<GdkAtom>(m_vecFormat_GdkAtom.getNthItem(i));
 	      for (gint j = 0; (j < clipboard_targets) && !found; j++)
 		if (targets[j] == needle)
 		  found = true; 

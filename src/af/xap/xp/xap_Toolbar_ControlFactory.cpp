@@ -64,7 +64,7 @@ EV_Toolbar_Control * XAP_Toolbar_ControlFactory::getControl(EV_Toolbar * pToolba
 
 	// create a fresh Toolbar_Control object and return it -- no strings attached.
 	
-	pControl = (EV_Toolbar_Control *)((m_ctl_table[index].m_pfnStaticConstructor)(pToolbar,id));
+	pControl = static_cast<EV_Toolbar_Control *>((m_ctl_table[index].m_pfnStaticConstructor)(pToolbar,id));
 	return pControl;
 }
 

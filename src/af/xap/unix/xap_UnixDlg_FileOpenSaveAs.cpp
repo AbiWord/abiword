@@ -137,7 +137,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 													 bool bCheckWritePermission,
 													 GtkWidget * filetypes_pulldown)
 {
-	GtkFileSelection * pFS = (GtkFileSelection *)pFSvoid;
+	GtkFileSelection * pFS = static_cast<GtkFileSelection *>(pFSvoid);
 
 	/*
 	  Run the dialog in a loop to catch bad filenames.
@@ -235,7 +235,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 		// If, however, the user doesn't want suffixes, they don't have to have them.  
 
 		{
-			//UT_uint32 end = UT_pointerArrayLength((void **) m_szSuffixes);
+			//UT_uint32 end = UT_pointerArrayLength(static_cast<void **>(m_szSuffixes));
 
 			GtkWidget * activeItem = gtk_menu_get_active(GTK_MENU(
 				gtk_option_menu_get_menu(GTK_OPTION_MENU(filetypes_pulldown))));
@@ -262,7 +262,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			
 			XAP_Prefs *pPrefs= pFrame->getApp()->getPrefs();
 
-			pPrefs->getPrefsValueBool((const XML_Char *)XAP_PREF_KEY_UseSuffix, &wantSuffix);
+			pPrefs->getPrefsValueBool(static_cast<const XML_Char *>(XAP_PREF_KEY_UseSuffix), &wantSuffix);
 
 			UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
 
@@ -282,7 +282,7 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 					UT_ASSERT(szSuffix);                            
 					UT_uint32 length = strlen(szDialogFilename) + strlen(szSuffix) + 1;
 					
-					szFinalPathname = (char *)UT_calloc(length,sizeof(char));
+					szFinalPathname = static_cast<char *>(UT_calloc(length,sizeof(char)));
 					
 					if (szFinalPathname)                            						
 						{                                               
@@ -603,11 +603,11 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			
 			// add list items
 			{
-				UT_ASSERT(UT_pointerArrayLength((void **) m_szSuffixes) ==
-						  UT_pointerArrayLength((void **) m_szDescriptions));
+				UT_ASSERT(UT_pointerArrayLength(static_cast<void **>(m_szSuffixes)) ==
+						  UT_pointerArrayLength(static_cast<void **>(m_szDescriptions)));
 				
 				// measure one list, they should all be the same length
-				UT_uint32 end = UT_pointerArrayLength((void **) m_szDescriptions);
+				UT_uint32 end = UT_pointerArrayLength(reinterpret_cast<void **>(m_szDescriptions));
 			  
 				for (UT_uint32 i = 0; i < end; i++)
 				{
@@ -861,17 +861,17 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 		if (m_preview->allocation.width >= iImageWidth && m_preview->allocation.height >= iImageHeight)
 		  scale_factor = 1.0;
 		else
-		  scale_factor = MIN( (double) m_preview->allocation.width/iImageWidth,
-				      (double) m_preview->allocation.height/iImageHeight);
+		  scale_factor = MIN( static_cast<double>(m_preview->allocation.width)/iImageWidth,
+				      static_cast<double>(m_preview->allocation.height)/iImageHeight);
 		
-		scaled_width  = (int)(scale_factor * iImageWidth);
-		scaled_height = (int)(scale_factor * iImageHeight);
+		scaled_width  = static_cast<int>(scale_factor * iImageWidth);
+		scaled_height = static_cast<int>(scale_factor * iImageHeight);
 
 		pImage->convertFromBuffer(png, scaled_width, scaled_height);
 		
 		pGr->drawImage(pImage,
-			       (int)((m_preview->allocation.width  - scaled_width ) / 2),
-			       (int)((m_preview->allocation.height - scaled_height) / 2));
+			       static_cast<int>((m_preview->allocation.width  - scaled_width ) / 2),
+			       static_cast<int>((m_preview->allocation.height - scaled_height) / 2));
 		
 		answer = 1;
 	}

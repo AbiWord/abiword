@@ -227,7 +227,7 @@ bool XAP_UnixApp::_loadFonts()
 	char * szTemp = NULL;
 	const char * szPrefFontPath = NULL;
 	getPrefsValue(XAP_PREF_KEY_UnixFontPath,
-		      (const XML_Char**)&szPrefFontPath);
+		      static_cast<const XML_Char**>(&szPrefFontPath));
 	UT_ASSERT((szPrefFontPath) && (*szPrefFontPath));
 
  	for (i = 0; szPrefFontPath[i]; i++)
@@ -240,17 +240,17 @@ bool XAP_UnixApp::_loadFonts()
   	
   	// cache the suiteDir's name and length instead of calculating
   	// them on every loop
-	char * suiteDirCache = (char *)getAbiSuiteLibDir();
+	char * suiteDirCache = const_cast<char *>(getAbiSuiteLibDir());
   	UT_uint32 suiteLenCache = strlen(suiteDirCache);
 
  	// make pointer to the font path. ignore the cast to make gcc shut up
-	char *szPrefFontPathPtr = (char *)szPrefFontPath;
+	char *szPrefFontPathPtr = const_cast<char *>(szPrefFontPath);
 
 	for (i = 0; szPrefFontPathPtr[i]; i++)
  		if ( ((i == 0) || (szPrefFontPathPtr[i-1] == ';')) && (szPrefFontPathPtr[i] != '/'))
  		{
 		        // if relative path in prefs, prepend library directory.
- 			szTemp = (char *)UT_calloc(suiteLenCache + strlen(szPrefFontPathPtr) + 10, sizeof(char));
+ 			szTemp = static_cast<char *>(UT_calloc(suiteLenCache + strlen(szPrefFontPathPtr) + 10, sizeof(char)));
  			strcpy(szTemp, szPrefFontPathPtr);
  			sprintf(szTemp + i, "%s/%s", suiteDirCache, szPrefFontPathPtr + i);
  			

@@ -147,7 +147,7 @@ GtkWidget * XAP_UnixDialog_About::_constructWindow(void)
   drawingareaGraphic = createDrawingArea ();
   gtk_widget_set_events(drawingareaGraphic, GDK_EXPOSURE_MASK);
   g_signal_connect (G_OBJECT(drawingareaGraphic), "expose_event",
-		    G_CALLBACK(s_drawingarea_expose), (gpointer) this);
+		    G_CALLBACK(s_drawingarea_expose), static_cast<gpointer>(this));
   gtk_widget_set_usize (drawingareaGraphic, 200, 350);
   gtk_widget_show (drawingareaGraphic);
   gtk_box_pack_start (GTK_BOX (hboxAbout), drawingareaGraphic, 
