@@ -96,7 +96,9 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_FONT)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
+#ifdef DEBUG
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
+#endif
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_COLUMNS)
 		MenuItem(AP_MENU_ID_FMT_TABS)
