@@ -1731,7 +1731,8 @@ UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument
 	{
 		// magic number; range of UT_sint32 falls short of extremely large docs
 		UT_sint32 foundAt = -1;
-		
+
+		// change this when adding new searches
 		foundAt = _findBlockSearchDumb(buffer, find);
 
 		if (foundAt != -1)
@@ -1754,6 +1755,9 @@ UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument
 		// didn't find anything, so set the offset to the end
 		// of the current area
 		offset += UT_UCS_strlen(buffer);
+
+		// must clean up buffer returned for search
+		FREEP(buffer);
 	}
 
 	if (bDoneEntireDocument)
