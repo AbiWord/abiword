@@ -357,8 +357,8 @@ void s_HTML_Listener::_closeTag(void)
 		    {
 				m_pie->write("<br>\r\n");
 		    }
-			m_pie->write("</p>\r\n");
 		}
+		m_pie->write("</p>\r\n");
 	}
 	else if(m_iBlockType == BT_HEADING1) 
 	{

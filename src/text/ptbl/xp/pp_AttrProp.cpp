@@ -299,12 +299,12 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 	UT_StringPtrMap::UT_Cursor c(m_pAttributes);
 	const void * val = NULL;
 
-	for (val = c.first(); c.is_valid(), i < ndx; val = c.next(), i++)
+	for (val = c.first(); (c.is_valid() && (i < ndx)); val = c.next(), i++)
 	{
 	  // noop
 	}
 
-	if (i == ndx)
+	if ((i == ndx) && c.is_valid())
 	  {
 	    szName = (XML_Char*) c.key().c_str();
 	    szValue = (XML_Char*) val;
@@ -325,12 +325,12 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
  	UT_StringPtrMap::UT_Cursor c(m_pProperties);
  	const void * val = NULL;
 
-	for (val = c.first(); c.is_valid(), i < ndx; val = c.next(), i++)
+	for (val = c.first(); (c.is_valid() && (i < ndx)); val = c.next(), i++)
  	{
 	  // noop
  	}
  
-	if ( i == ndx )
+	if ( (i == ndx) && c.is_valid())
  		{
 		  szName = (XML_Char*) c.key().c_str();
 		  szValue = (XML_Char*) ((UT_Pair*)val)->first();
