@@ -60,3 +60,4 @@ protected:
 };
 
 #endif /* XAP_UNIXFONTMANAGER_H */
+

@@ -34,6 +34,7 @@ class PSFont : public GR_Font
 {
 public:
 	PSFont(XAP_UnixFont * hFont, UT_uint32 size);
+	~PSFont(void);
 
 	XAP_UnixFont * 		getUnixFont(void);
 	UT_uint32			getSize(void) { return m_pointSize; };
