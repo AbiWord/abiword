@@ -60,7 +60,10 @@ void AP_Dialog_WordCount::setCount(FV_DocCount nCount)
 void AP_Dialog_WordCount::setCountFromActiveFrame(void)
 {
 	FV_View * pview = (FV_View *) getActiveFrame()->getCurrentView();
-	setCount(pview->countWords());
+	if(!pview->isLayoutFilling())
+	{
+		setCount(pview->countWords());
+	}
 }
 
 
