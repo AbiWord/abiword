@@ -29,7 +29,7 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 CSRCS=
 
 ifdef ABI_OPT_PSPELL
-	CSRCS=  pSpell.c
+	CSRCS=  pspell.c
 else
 	CSRCS=	newMain.c good.c tgood.c lookup.c makedent.c hash.c correct.c
 endif
