@@ -111,6 +111,10 @@
 #include "ie_impGraphic.h"
 #include "ut_math.h"
 
+#ifdef HAVE_GNOME
+#include <gnome.h>
+#endif
+
 // quick hack - this is defined in ap_EditMethods.cpp
 extern XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, const char * pNewFile, UT_Error errorCode);
 
@@ -1168,7 +1172,12 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
     if (!have_display && Args.getShowApp()) {
       // this is just like an abort() but with a useful error messsage
+#ifndef HAVE_GNOME
       gtk_init (&XArgs.m_argc,(char ***)&XArgs.m_argv);
+#else
+      // deprecated...
+      gnome_init ("AbiWord", ABI_BUILD_VERSION, XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
+#endif
     }
 
     UT_DEBUGMSG(("UnixApp: about to initialize \n"));

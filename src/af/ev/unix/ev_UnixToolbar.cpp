@@ -47,6 +47,10 @@
 // hack
 #include "ap_Toolbar_Id.h"
 
+#ifdef HAVE_GNOME
+#include <gnome.h>
+#endif
+
 /*****************************************************************/
 #define COMBO_BUF_LEN 256
 
@@ -527,6 +531,13 @@ bool EV_UnixToolbar::getPixmapForIcon(XAP_Toolbar_Id id, GdkWindow * window, Gdk
 		case AP_TOOLBAR_ID_SPELLCHECK: stock_id = GTK_STOCK_SPELL_CHECK ; break ;
 		case AP_TOOLBAR_ID_HELP: stock_id = GTK_STOCK_HELP ; break ;
 		case AP_TOOLBAR_ID_SCRIPT_PLAY: stock_id = GTK_STOCK_EXECUTE ; break ;
+
+#if 0//def HAVE_GNOME
+	        case AP_TOOLBAR_ID_INDENT: stock_id = GNOME_STOCK_TEXT_INDENT; break;
+         	case AP_TOOLBAR_ID_UNINDENT: stock_id = GNOME_STOCK_TEXT_UNINDENT; break;
+	        case AP_TOOLBAR_ID_LISTS_BULLETS: stock_id = GNOME_STOCK_TEXT_BULLETED_LIST; break;
+	        case AP_TOOLBAR_ID_LISTS_NUMBERS: stock_id = GNOME_STOCK_TEXT_NUMBERED_LIST; break;
+#endif
 			
 		default:
 			break ;
