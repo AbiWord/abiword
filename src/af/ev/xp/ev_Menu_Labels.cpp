@@ -132,4 +132,9 @@ const char * EV_Menu_LabelSet::getLanguage(void) const
 	return m_szLanguage;
 }
 
+void EV_Menu_LabelSet::setLanguage(const char *szLanguage)
+{
+	DELETEP(szLanguage);
+	UT_cloneString(m_szLanguage, szLanguage);
+}
 

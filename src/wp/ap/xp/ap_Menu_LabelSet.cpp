@@ -36,8 +36,15 @@
 
 #define BeginSetEnc(Language,Locale,bIsDefaultSetForLanguage,Encoding)								\
 	static EV_Menu_LabelSet * _ap_CreateLabelSet_##Language##Locale(void)				\
-	{	EV_Menu_LabelSet * pLabelSet =													\
-			new EV_Menu_LabelSet(#Language"-"#Locale,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	\
+	{ \
+		EV_Menu_LabelSet * pLabelSet; \
+ 		if (UT_strcmp(#Language#Locale, "enUS") == 0) \
+			pLabelSet =	new EV_Menu_LabelSet(#Language"-"#Locale,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	\
+		else \
+		{	\
+			pLabelSet = _ap_CreateLabelSet_enUS(); \
+			pLabelSet->setLanguage(#Language"-"#Locale); \
+		}	\
 		UT_ASSERT(pLabelSet);									\
 		char* encoding = (Encoding);								\
 		char namebuf[2000],statusmsgbuf[2000];

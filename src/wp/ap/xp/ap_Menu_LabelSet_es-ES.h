@@ -18,6 +18,7 @@
  */
 
 /* Spanish translations provided by Javier Yáñez <javier@cartero.com> */
+/* Updated by Joaquín Cuenca Abela <cuenca@celium.net> */
 
 /*****************************************************************
 ******************************************************************

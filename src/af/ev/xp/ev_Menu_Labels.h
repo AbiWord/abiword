@@ -75,6 +75,7 @@ public:
 	EV_Menu_Label *		getLabel(XAP_Menu_Id id) const;
 #endif
 	const char *		getLanguage(void) const;
+	void				setLanguage(const char *szLanguage);
 
 protected:
 	EV_Menu_Label **	m_labelTable;

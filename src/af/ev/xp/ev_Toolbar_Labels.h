@@ -79,6 +79,7 @@ public:
 								 const char * szStatusMsg);
 	EV_Toolbar_Label *	getLabel(XAP_Toolbar_Id id);
 	const char *		getLanguage(void) const;
+	void				setLanguage(const char * szLanguage);
 
 protected:
 	EV_Toolbar_Label **	m_labelTable;
