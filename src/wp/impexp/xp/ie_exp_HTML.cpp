@@ -439,9 +439,9 @@ public:
 	}
 	UT_uint32 count () const { return m_count; }
 
-	UT_UTF8String style_name () const { return m_style_name; }
-	UT_UTF8String class_name () const { return m_class_name; }
-	UT_UTF8String class_list () const { return m_class_list; }
+	const UT_UTF8String & style_name () const { return m_style_name; }
+	const UT_UTF8String & class_name () const { return m_class_name; }
+	const UT_UTF8String & class_list () const { return m_class_list; }
 
 	const char * lookup (const char * prop_name) const;
 };
@@ -2263,11 +2263,12 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 				}
 
 			if (tree)
-				{
-					m_utf8_1 += " class=\"";
-					m_utf8_1 += tree->class_list ();
-					m_utf8_1 += "\"";
-				}
+				if (tree->class_list().byteLength ())
+					{
+						m_utf8_1 += " class=\"";
+						m_utf8_1 += tree->class_list ();
+						m_utf8_1 += "\"";
+					}
 			if (bAddAWMLStyle)
 				{
 					m_utf8_1 += " awml:style=\"";
@@ -3893,9 +3894,19 @@ s_StyleTree::s_StyleTree (s_StyleTree * parent, const char * style_name, PD_Styl
 	m_class_list(style_name),
 	m_style(style)
 {
-	s_removeWhiteSpace (style_name, m_class_name);
-
-	m_class_list = m_class_name;
+	if ((m_style_name == "Heading 1") ||
+		(m_style_name == "Heading 2") ||
+		(m_style_name == "Heading 3") ||
+		(m_style_name == "Normal"))
+		{
+			m_class_name = "";
+			m_class_list = "";
+		}
+	else
+		{
+			s_removeWhiteSpace (style_name, m_class_name);
+			m_class_list = m_class_name;
+		}
 
 	if (parent->class_list () != "")
 		{
@@ -4097,7 +4108,21 @@ void s_StyleTree::print (s_HTML_Listener * listener) const
 	if (m_parent && m_map.size ())
 		{
 			UT_UTF8String selector("*.");
-			selector += m_class_name;
+			if (m_class_name.byteLength ())
+				{
+					selector += m_class_name;
+				}
+			else
+				{
+					if (m_style_name == "Normal")
+						selector = "p, h1, h2, h3";
+					else if (m_style_name == "Heading 1")
+						selector = "h1";
+					else if (m_style_name == "Heading 2")
+						selector = "h2";
+					else if (m_style_name == "Heading 3")
+						selector = "h3";
+				}
 			listener->styleOpen (selector);
 
 			UT_StringPtrMap::UT_Cursor _hc1(&m_map);
