@@ -215,16 +215,19 @@ UT_String operator+(const UT_String& s1, const UT_String& s2)
 	return s;
 }
 
-char operator[](size_t iPos) const
+char UT_String::operator[](size_t iPos) const
 {
 	UT_ASSERT(iPos <= size());
 	if (iPos == size())
 		return '\0';
-	return data()[iPos];
+	return pimpl->data()[iPos];
 }
 
-char& operator[](size_t iPos)
+char& UT_String::operator[](size_t iPos)
 {
 	UT_ASSERT(iPos <= size());
-	return data()[iPos];
+	static char ch; // hack, evil, why does this function exist?
+
+	ch = pimpl->data()[iPos];
+	return ch;
 }

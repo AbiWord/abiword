@@ -470,6 +470,47 @@ ReplaceDocument:
 	return UT_OK;
 }
 	
+UT_Error AP_UnixFrame::_importDocument(const char * szFilename, int ieft,
+									  bool markClean)
+{
+	UT_DEBUGMSG(("DOM: trying to import %s (%d, %d)\n", szFilename, ieft, markClean));
+
+	// are we replacing another document?
+	if (m_pDoc)
+	{
+		// yep.  first make sure it's OK to discard it, 
+		// TODO: query user if dirty...
+	}
+
+	// load a document into the current frame.
+	// if no filename, create a new document.
+
+	AD_Document * pNewDoc = new PD_Document(getApp());
+	UT_ASSERT(pNewDoc);
+	
+	if (!szFilename || !*szFilename)
+	{
+		pNewDoc->newDocument();
+		m_iUntitled = _getNextUntitledNumber();
+		goto ReplaceDocument;
+	}
+	UT_Error errorCode;
+	errorCode = pNewDoc->importFile(szFilename, ieft, markClean);
+	if (!errorCode)
+		goto ReplaceDocument;
+
+	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
+	UNREFP(pNewDoc);
+	return errorCode;
+
+ReplaceDocument:
+	getApp()->forgetClones(this);
+
+	// NOTE: prior document is discarded in _showDocument()
+	m_pDoc = pNewDoc;
+	return UT_OK;
+}
+
 XAP_Frame * AP_UnixFrame::cloneFrame(void)
 {
 	AP_UnixFrame * pClone = new AP_UnixFrame(this);
@@ -499,7 +540,7 @@ Cleanup:
 }
 
 UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft,
-				    bool createNew)
+									bool createNew)
 {
 	bool bUpdateClones;
 	UT_Vector vClones;
@@ -541,6 +582,42 @@ UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft,
 UT_Error AP_UnixFrame::loadDocument(const char * szFilename, int ieft)
 {
   return loadDocument(szFilename, ieft, false);
+}
+
+UT_Error AP_UnixFrame::importDocument(const char * szFilename, int ieft,
+									  bool markClean)
+{
+	bool bUpdateClones;
+	UT_Vector vClones;
+	XAP_App * pApp = getApp();
+
+	bUpdateClones = (getViewNumber() > 0);
+	if (bUpdateClones)
+	{
+		pApp->getClones(&vClones, this);
+	}
+	UT_Error errorCode;
+	errorCode =  _importDocument(szFilename, (IEFileType) ieft, markClean);
+	if (errorCode)
+	{
+		return errorCode;
+	}
+
+	pApp->rememberFrame(this);
+	if (bUpdateClones)
+	{
+		for (UT_uint32 i = 0; i < vClones.getItemCount(); i++)
+		{
+			AP_UnixFrame * pFrame = (AP_UnixFrame *) vClones.getNthItem(i);
+			if(pFrame != this)
+			{
+				pFrame->_replaceDocument(m_pDoc);
+				pApp->rememberFrame(pFrame, this);
+			}
+		}
+	}
+
+	return _showDocument();
 }
 
 void AP_UnixFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)

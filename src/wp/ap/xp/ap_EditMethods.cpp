@@ -235,6 +235,7 @@ public:
 	static EV_EditMethod_Fn fileSave;
 	static EV_EditMethod_Fn fileSaveAs;
 	static EV_EditMethod_Fn fileExport;
+	static EV_EditMethod_Fn fileImport;
 	static EV_EditMethod_Fn pageSetup;
 	static EV_EditMethod_Fn print;
 	static EV_EditMethod_Fn printTB;
@@ -582,6 +583,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// f
 	EV_EditMethod(NF(fileExport), 0, ""),
+	EV_EditMethod(NF(fileImport), 0, ""),
 	EV_EditMethod(NF(fileInsertGraphic),	0,	""),
 	EV_EditMethod(NF(fileNew),				0,	""),
 	EV_EditMethod(NF(fileOpen),				0,	""),
@@ -1577,6 +1579,94 @@ s_actuallySaveAs(AV_View * pAV_View, bool overwriteName)
 Defun1(fileExport)
 {
 	return s_actuallySaveAs(pAV_View, false);
+}
+
+static UT_Error
+s_importFile (XAP_Frame * pFrame, const char * pNewFile, IEFileType ieft)
+{
+	UT_DEBUGMSG(("fileOpen: loading [%s]\n",pNewFile));
+	XAP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+	XAP_Prefs * pPrefs = pApp->getPrefs();
+	UT_ASSERT(pPrefs);
+
+	XAP_Frame * pNewFrame = NULL;
+	// not needed bool bRes = false;
+	UT_Error errorCode = UT_IE_IMPORTERROR;
+
+	// We open documents in a new frame, which keeps the
+	// contents of the current frame available.
+	// However, as a convenience we do replace the contents of the
+	// current frame if it's the only top-level view on an empty,
+	// untitled document.
+
+	if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
+	{
+		// open new document in a new frame.  if we fail,
+		// put up an error dialog on current frame (our
+		// new one is not completely instantiated) and
+		// return.  we do not create a new untitled document
+		// in this case.
+
+		pNewFrame = pApp->newFrame();
+		if (!pNewFrame)
+		{
+			return false;
+		}
+		
+		errorCode = pNewFrame->importDocument(pNewFile, ieft);
+		if (!errorCode)
+		{
+			pNewFrame->show(); // don't add to the MRU
+		}
+		else
+		{
+			// see problem documented in ::fileOpen()
+			errorCode = pNewFrame->loadDocument(NULL, IEFT_Unknown);
+			if (!errorCode)
+				pNewFrame->show();
+			s_CouldNotLoadFileMessage(pNewFrame,pNewFile, errorCode);
+		}
+		
+		return errorCode;
+	}
+
+	// we are replacing the single-view, unmodified, untitled document.
+	// if we fail, put up an error message on the current frame
+	// and return -- we do not replace this untitled document with a
+	// new untitled document.
+
+	errorCode = pFrame->importDocument(pNewFile, ieft);
+	if (!errorCode)
+	{
+		pFrame->show(); // don't add to the MRU
+	}
+	else
+	{
+		s_CouldNotLoadFileMessage(pFrame,pNewFile, errorCode);
+	}
+
+	return errorCode;
+}
+
+Defun1(fileImport)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_ASSERT(pFrame);
+
+	char * pNewFile = NULL;
+	IEFileType ieft = (IEFileType)BAD_FILETYPE;
+	bool bOK = s_AskForPathname(pFrame,false,NULL,&pNewFile,&ieft);
+
+	if (!bOK || !pNewFile)
+	  return false;
+	
+	// we own storage for pNewFile and must free it.
+
+	UT_Error error = s_importFile(pFrame, pNewFile, ieft);
+
+	free(pNewFile);
+	return E2B(error);
 }
 
 Defun1(fileSaveAs)

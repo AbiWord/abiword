@@ -93,6 +93,53 @@ PD_Document::~PD_Document()
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+UT_Error PD_Document::importFile(const char * szFilename, int ieft, 
+								 bool markClean)
+{
+	if (!szFilename || !*szFilename)
+	{
+		UT_DEBUGMSG(("PD_Document::readFromFile -- invalid filename\n"));
+		return UT_INVALIDFILENAME;
+	}
+
+	m_pPieceTable = new pt_PieceTable(this);
+	if (!m_pPieceTable)
+	{
+		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct piece table\n"));
+		return UT_NOPIECETABLE;
+	}
+
+	IE_Imp * pie = NULL;
+	UT_Error errorCode;
+
+	IEFileType savedAsType;
+
+	errorCode = IE_Imp::constructImporter(this, szFilename, (IEFileType) ieft, &pie, &savedAsType);
+	if (errorCode)
+	{
+		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));
+		return errorCode;
+	}
+
+	m_pPieceTable->setPieceTableState(PTS_Loading);
+	errorCode = pie->importFile(szFilename);
+	delete pie;
+
+	if (errorCode)
+	{
+		UT_DEBUGMSG(("PD_Document::readFromFile -- could not import file\n"));
+		return errorCode;
+	}
+	
+	m_pPieceTable->setPieceTableState(PTS_Editing);
+	updateFields();
+
+	if(markClean)
+		_setClean();
+
+	return UT_OK;
+}
+
 UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 {
 	if (!szFilename || !*szFilename)

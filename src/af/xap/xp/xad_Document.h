@@ -42,6 +42,7 @@ public:
 	// but that's AP stuff, so it's not here
 
 	virtual UT_Error   		readFromFile(const char * szFilename, int ieft) = 0;
+	virtual UT_Error        importFile(const char * szFilename, int ieft, bool markClean = false) = 0;
 	virtual UT_Error		newDocument(void) = 0;
 	virtual bool			isDirty(void) const = 0;
 
