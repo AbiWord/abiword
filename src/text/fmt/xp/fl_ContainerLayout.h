@@ -79,6 +79,7 @@ public:
 	virtual void		updateLayout(void) = 0;
 	virtual void        markAllRunsDirty(void) =0;
 	virtual void        collapse(void) = 0;
+	void                insertIntoList(fl_ContainerLayout * pL, fl_ContainerLayout * pPrev);
 	virtual void		redrawUpdate(void) = 0;
 	virtual void        setNeedsReformat(void) = 0;
 	virtual void        setNeedsRedraw(void) = 0;

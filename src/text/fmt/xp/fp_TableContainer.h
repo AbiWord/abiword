@@ -60,6 +60,7 @@
 #include "fp_ContainerObject.h"
 #include "fp_Column.h"
 
+class fl_TableLayout;
 
 class fp_TableRowColumn
 {
@@ -97,10 +98,13 @@ public:
 
 	void                sizeRequest(fp_Requisition * pRequest);
 	void                sizeAllocate(fp_Allocation * pAllocate);
+	void				layout(void);
 
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
+	virtual void        setContainer(fp_Container * pContainer);
 	virtual void        setWidth(UT_sint32 iWidth);
+	virtual void        setHeight(UT_sint32 iHeight);
 	        void        _drawBoundaries(dg_DrawArgs* pDA);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
@@ -169,6 +173,9 @@ public:
 		{ m_bXfill = b;}
 	void                setYfill(bool b)
 		{ m_bYfill = b;}
+#ifdef FMT_TEST
+	void				__dump(FILE * fp) const;
+#endif
 
 private:
 //
@@ -231,6 +238,7 @@ public:
 	void                sizeAllocate(fp_Allocation * pAllocate);
 
 	void				layout(void);
+	virtual void        setContainer(fp_Container * pContainer);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
     virtual void        clearScreen(void);
@@ -241,17 +249,17 @@ public:
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
 	void                setToAllocation(void);
-	void                tableAttach(fp_CellContainer * pCell, 
-									UT_sint32 leftAttach,
-									UT_sint32 rightAttach,
-									UT_sint32 topAttach,
-									UT_sint32 bottomAttach,
-									UT_uint32 attachOptions,
-									UT_sint32 leftPad,
-									UT_sint32 rightPad,
-									UT_sint32 topPad,
-									UT_sint32 botPad);
-
+	void                tableAttach(fp_CellContainer * pCell);
+	void                setHomogeneous (bool bIsHomogeneous);
+	void                setColSpacings (UT_sint32  spacing);
+	void                setRowSpacings ( UT_sint32 spacing);
+	void                setColSpacing(UT_sint32 column,UT_sint32 spacing);
+	void                setRowSpacing (UT_sint32 row, UT_sint32  spacing);
+	void                resize(UT_sint32 n_rows, UT_sint32 n_cols);
+	void                setBorderWidth(UT_sint32 i);
+	void                queueResize(void);
+	virtual fp_Container * getNextContainerInSection(void) const;
+	virtual fp_Container * getPrevContainerInSection(void) const;
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -272,7 +280,7 @@ private:
 
 	UT_sint32               m_iRows;
 	UT_sint32               m_iCols;
-	UT_sint32               m_iBorderwidth;
+	UT_sint32               m_iBorderWidth;
 	bool                    m_bIsHomogeneous;
 
 	UT_Vector               m_vecRows;
@@ -282,6 +290,9 @@ private:
 
 	fp_Allocation           m_MyAllocation;
 	fp_Requisition          m_MyRequest;
+
+	UT_sint32               m_iRowSpacing;
+	UT_sint32               m_iColSpacing;
 };
 
 #endif /* TABLECONTAINER_H */

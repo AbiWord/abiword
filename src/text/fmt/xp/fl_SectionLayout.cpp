@@ -1836,35 +1836,38 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 
   \fixme This function should move to fb_ColumnBreaker.cpp
 */
-UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidBlock)
+UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidLayout)
 {
-	fl_ContainerLayout* pFirstBlock = NULL;
+	fl_ContainerLayout* pFirstLayout = NULL;
 	fp_Container* pCurrentContainer = NULL;
 	fp_Column* pCurColumn = NULL;
-	if(pLastValidBlock == NULL)
+	if(pLastValidLayout == NULL)
 	{
-		pFirstBlock = getFirstLayout();
-		if (!pFirstBlock)
+		pFirstLayout = getFirstLayout();
+		if (!pFirstLayout)
 		{
 			return 0;
 		}
-		pCurrentContainer = pFirstBlock->getFirstContainer();
+		pCurrentContainer = pFirstLayout->getFirstContainer();
 		pCurColumn = (fp_Column*) getFirstContainer();
 	}
 //
-// This branch is from _reformat in fp_Page. A column that used to exist has been bumped off
-// the page by an expanding column. We need to layout from the last valid block onwards. If
-// start the beginning we get stuck in an infinite loop. The last valid block, is the last block
+// This branch is from _reformat in fp_Page. A column that used to 
+// exist has been bumped off
+// the page by an expanding column. We need to layout from the last 
+// valid block onwards. If
+// start the beginning we get stuck in an infinite loop. The last 
+// valid block, is the last block
 // that has all it's lines correctly laid out on a page.
 //
 	else
 	{
-		pFirstBlock = pLastValidBlock;
-		if (!pFirstBlock)
+		pFirstLayout = pLastValidLayout;
+		if (!pFirstLayout)
 		{
 			return 0;
 		}
-		pCurrentContainer = pFirstBlock->getFirstContainer();
+		pCurrentContainer = pFirstLayout->getFirstContainer();
 		pCurColumn = (fp_Column*) pCurrentContainer->getContainer();
 	}
 
@@ -1944,14 +1947,28 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidBlock
 				}
 				else
 				{
-					fl_BlockLayout* pBlock = static_cast<fp_Line *>(pOffendingContainer)->getBlock();
-					UT_uint32 iWidows = pBlock->getProp_Widows();
-					UT_uint32 iOrphans = pBlock->getProp_Orphans();
-
+					UT_uint32 iWidows = 0;
+					UT_uint32 iOrphans = 0;
+					bool bIsTable = false;
+					fl_BlockLayout* pBlock = NULL;
+					fl_ContainerLayout * pConLayout = NULL;
+					if(pOffendingContainer->getContainerType() == FP_CONTAINER_LINE)
+					{
+						pBlock = static_cast<fp_Line *>(pOffendingContainer)->getBlock();
+						iWidows = pBlock->getProp_Widows();
+						iOrphans = pBlock->getProp_Orphans();
+						pConLayout = (fl_ContainerLayout *) pBlock;
+					}
+					else
+					{
+						bIsTable = true;
+						pConLayout = (fl_ContainerLayout *) pOffendingContainer->getSectionLayout();
+					}
+						
 					UT_uint32 iNumContainersBeforeOffending = 0;
 					UT_uint32 iNumContainersAfterOffending = 0;
 					bool bFoundOffending = false;
-					fp_Container* pFirstContainerInBlock = pBlock->getFirstContainer();
+					fp_Container* pFirstContainerInBlock = pConLayout->getFirstContainer();
 					pCurContainer = pFirstContainerInBlock;
 					while (pCurContainer)
 					{
@@ -1974,13 +1991,13 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidBlock
 						pCurContainer = (fp_Container *) pCurContainer->getNext();
 					}
 
-					UT_uint32 iNumContainersInBlock = iNumContainersBeforeOffending + iNumContainersAfterOffending;
+					UT_uint32 iNumContainersInLayout = iNumContainersBeforeOffending + iNumContainersAfterOffending;
 
-					UT_uint32 iNumBlockContainersInThisColumn = 0;
+					UT_uint32 iNumLayoutContainersInThisColumn = 0;
 					pCurContainer = (fp_Container *) pOffendingContainer->getPrev();
 					while (pCurContainer)
 					{
-						iNumBlockContainersInThisColumn++;
+						iNumLayoutContainersInThisColumn++;
 						if (pCurContainer == pFirstContainerToKeep)
 						{
 							break;
@@ -1988,15 +2005,19 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidBlock
 
 						pCurContainer = (fp_Container *) pCurContainer->getPrev();
 					}
-
-					if (
+					bool bKeepBlock = bIsTable;
+					if ( pBlock &&
 						pBlock->getProp_KeepTogether()
-						&& (iNumContainersBeforeOffending == iNumBlockContainersInThisColumn)
+						&& (iNumContainersBeforeOffending == iNumLayoutContainersInThisColumn)
 						&& (pBlock->getFirstContainer() != pFirstContainerToKeep)
 						)
 					{
+						bKeepBlock = true;
+					}
+					if(bKeepBlock)
+					{
 						/*
-						  This block wants to be kept all in the same column.
+						  This block or Table wants to be kept all in the same column.
 						  Bump the whole block to the next column.
 						*/
 
@@ -2015,8 +2036,8 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidBlock
 						pLastContainerToKeep = (fp_Container *) pFirstContainerInBlock->getPrevContainerInSection();
 					}
 					else if (
-						(iNumContainersInBlock < (iWidows + iOrphans))
-						&& (iNumContainersBeforeOffending == iNumBlockContainersInThisColumn)
+						(iNumContainersInLayout < (iWidows + iOrphans))
+						&& (iNumContainersBeforeOffending == iNumLayoutContainersInThisColumn)
 						)
 					{
 						/*
@@ -2028,7 +2049,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidBlock
 					}
 					else if (
 						(iNumContainersBeforeOffending < iOrphans)
-						&& (iNumContainersBeforeOffending == iNumBlockContainersInThisColumn)
+						&& (iNumContainersBeforeOffending == iNumLayoutContainersInThisColumn)
 						)
 					{
 						/*
@@ -2040,7 +2061,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidBlock
 					}
 					else if (
 						(iNumContainersAfterOffending < iWidows)
-						&& ((iWidows - iNumContainersAfterOffending) < iNumBlockContainersInThisColumn)
+						&& ((iWidows - iNumContainersAfterOffending) < iNumLayoutContainersInThisColumn)
 						)
 					{
 						/*

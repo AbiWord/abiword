@@ -522,6 +522,29 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_parseState = _PS_Meta;
 		m_currentMetaDataName = _getXMLPropValue("key", atts);
 		return;
+	case TT_TABLE:
+		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+		X_CheckError(getDoc()->appendStrux(PTX_SectionTable,atts));
+		return;
+
+	case TT_CELL:
+		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+		X_CheckError(getDoc()->appendStrux(PTX_SectionCell,atts));
+		return;
+
+	case TT_ENDTABLE:
+		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+		X_CheckError(getDoc()->appendStrux(PTX_EndTable,atts));
+		return;
+
+	case TT_ENDCELL:
+		m_parseState = _PS_Sec;
+		m_bWroteSection = true;
+		X_CheckError(getDoc()->appendStrux(PTX_EndCell,atts));
+		return;
 
 	case TT_OTHER:
 	default:
@@ -553,6 +576,26 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_SECTION:
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Doc;
+		return;
+
+	case TT_TABLE:
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Sec;
+		return;
+
+	case TT_CELL:
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Sec;
+		return;
+
+	case TT_ENDTABLE:
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Sec;
+		return;
+
+	case TT_ENDCELL:
+		X_VerifyParseState(_PS_Sec);
+		m_parseState = _PS_Sec;
 		return;
 
 	case TT_BLOCK:
@@ -745,3 +788,4 @@ bool IE_Imp_AbiWord_1::_getDataItemEncoded(const XML_Char ** atts)
 
 	return false;
 }
+

@@ -489,7 +489,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				return false;
 			}
 			fl_CellLayout * pCell = (fl_CellLayout *) pCon;
-
+			UT_DEBUGMSG(("SEVIOR: Appending block to cell %x \n",pCell));
 			// Append a new BlockLayout to this cell
 
 			pCL = pCell->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
@@ -550,9 +550,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		// Append a new TableLayout to that SectionLayout
 		fl_ContainerLayout*	pCL = m_pCurrentSL->
 			append(sdh, pcr->getIndexAP(),FL_CONTAINER_TABLE);
+		UT_DEBUGMSG(("SEVIOR: Appending Table: Table layout is %x \n",pCL));
 		if (!pCL)
 		{
-			UT_DEBUGMSG(("no memory for BlockLayout"));
+			UT_DEBUGMSG(("no memory for TableLayout"));
 			return false;
 		}
 		pushContainerLayout(pCL);
@@ -573,9 +574,11 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		}
 		fl_TableLayout * pTable = (fl_TableLayout *) pCon;
 		fl_ContainerLayout*	pCL = pTable->append(sdh, pcr->getIndexAP(),FL_CONTAINER_CELL);
+		UT_DEBUGMSG(("SEVIOR: Appending Cell: layout is %x \n",pCL));
+		pTable->attachCell(pCL);
 		if (!pCL)
 		{
-			UT_DEBUGMSG(("no memory for BlockLayout"));
+			UT_DEBUGMSG(("no memory for CellLayout"));
 			return false;
 		}
 		pushContainerLayout(pCL);

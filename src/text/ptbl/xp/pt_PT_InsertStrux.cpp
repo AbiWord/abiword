@@ -116,6 +116,19 @@ bool pt_PieceTable::_createStrux(PTStruxType pts,
 		pfs = new pf_Frag_Strux_SectionEndnote(this, indexAP);
 		break;
 
+	case PTX_SectionTable:
+		pfs = new pf_Frag_Strux_SectionTable(this, indexAP);
+		break;
+	case PTX_SectionCell:
+		pfs = new pf_Frag_Strux_SectionCell(this, indexAP);
+		break;
+	case PTX_EndTable:
+		pfs = new pf_Frag_Strux_SectionEndTable(this, indexAP);
+		break;
+	case PTX_EndCell:
+		pfs = new pf_Frag_Strux_SectionEndCell(this, indexAP);
+		break;
+
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;

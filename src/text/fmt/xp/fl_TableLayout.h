@@ -52,6 +52,7 @@ class fl_SectionLayout;
 class fl_DocSectionLayout;
 class fl_HdrFtrSectionLayout;
 class fl_HdrFtrShadow;
+class fl_CellLayout;
 class fb_LineBreaker;
 class fp_ShadowContainer;
 class fp_Column;
@@ -59,6 +60,8 @@ class fp_Run;
 class fp_Line;
 class fp_Container;
 class fp_HdrFtrContainer;
+class fp_TableContainer;
+class fp_CellContainer;
 class PD_Document;
 class PP_AttrProp;
 class PX_ChangeRecord_FmtMark;
@@ -96,16 +99,17 @@ public:
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
+	void                        setTableContainerProperties(fp_TableContainer * pTab);
 	virtual void		        format(void);
+	void                        attachCell(fl_ContainerLayout * pCell);
 	virtual void		        updateLayout(void);
 	void		                updateTable(void);
 	virtual void                collapse(void);
 	virtual void                markAllRunsDirty(void);
-	virtual fp_Container *      getFirstContainer(void) const;
-	virtual fp_Container *      getLastContainer(void) const;
 	virtual PT_DocPosition      getPosition(bool bActualBlockPosition = false) const;
 	virtual void		        redrawUpdate(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
+	virtual fl_SectionLayout *  getSectionLayout(void)  const;
 
 	void                        markForRebuild(void) { m_bNeedsRebuild = true;}
 	void                        clearRebuild(void) { m_bNeedsRebuild = false;}
@@ -129,6 +133,10 @@ UT_sint32                    getBottomOffset(void) const;
 #ifndef WITH_PANGO
 UT_sint32                    getBottomOffsetInLayoutUnits(void) const;
 #endif
+	bool                     isDirty(void) const
+		{ return m_bIsDirty;}
+	void                     setDirty(void)
+		{ m_bIsDirty = true;}
 
 protected:
 	virtual void		        _lookupProperties(void);
@@ -156,6 +164,7 @@ private:
 	UT_sint32              m_iNumberOfColumns;
 	bool                   m_bColumnsPositionedOnPage;
 	bool                   m_bRowsPositionedOnPage;
+	bool                   m_bIsDirty;
 };
 
 
@@ -177,15 +186,21 @@ public:
 											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
+
+	void                     setCellContainerProperties(fp_CellContainer * pCell);
 	virtual void		     format(void);
 	virtual void		     updateLayout(void);
 	void                     updateCell(void);
+	void                     localCollapse();
 	virtual void             collapse(void);
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
 	bool                     recalculateFields(UT_uint32 iUpdateCount);
 	virtual void		     redrawUpdate(void);
 	virtual fp_Container*	 getNewContainer(fp_Container * pFirstContainer = NULL);
+#ifdef FMT_TEST
+	void				     __dump(FILE * fp) const;
+#endif
 
 	UT_sint32                getLeftOffset(void) const;
 #ifndef WITH_PANGO
@@ -229,6 +244,18 @@ private:
 };
 
 #endif /* TABLELAYOUT_H */
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -78,7 +78,7 @@ public:
 	*/
 #endif
 
-	virtual inline UT_sint32	getWidth(void) const
+	virtual UT_sint32	getWidth(void) const
 		{ return m_iWidth; }
 
 #ifndef WITH_PANGO
@@ -86,7 +86,7 @@ public:
 	  Get container's width in layout units
 	  \return Width in layout units
 	*/
-	virtual inline UT_sint32	getWidthInLayoutUnits(void) const
+	virtual UT_sint32	getWidthInLayoutUnits(void) const
 		{ UT_ASSERT(m_iWidthLayoutUnits); return m_iWidthLayoutUnits; }
 #endif
 
@@ -101,7 +101,7 @@ public:
 	  Get container's height
 	  \return Height
 	*/
-	virtual inline UT_sint32	getHeight(void) const
+	virtual UT_sint32	getHeight(void) const
 		{ return m_iHeight; }
 
 #ifndef WITH_PANGO
@@ -109,7 +109,7 @@ public:
 	  Get container's height in layout units
 	  \return Height in layout units
 	*/
-	virtual inline UT_sint32	getHeightInLayoutUnits(void) const
+	virtual UT_sint32	getHeightInLayoutUnits(void) const
 		{ return m_iHeightLayoutUnits; }
 #endif
 
@@ -119,12 +119,12 @@ public:
 	  Get container's intentionally empty flag
 	  \return Empty
 	*/
-	inline bool			getIntentionallyEmpty(void) const
+	bool			getIntentionallyEmpty(void) const
 		{ return m_bIntentionallyEmpty; }
 	/*!
 	  Set container's intentionally empty flag
 	*/
-	inline void			setIntentionallyEmpty(bool b)
+	void			setIntentionallyEmpty(bool b)
 		{ m_bIntentionallyEmpty = b; }
 
 	fp_Container*			getFirstContainer(void) const;
@@ -243,17 +243,17 @@ public:
 
 	fl_DocSectionLayout*	getDocSectionLayout(void) const;
 
-	inline void			setLeader(fp_Column* p) { m_pLeader = p; }
-	inline void			setFollower(fp_Column* p) { m_pFollower = p; }
-	inline fp_Column*	getLeader(void) const 			{ return m_pLeader; }
-	inline fp_Column*	getFollower(void) const 		{ return m_pFollower; }
+	void			setLeader(fp_Column* p) { m_pLeader = p; }
+	void			setFollower(fp_Column* p) { m_pFollower = p; }
+	fp_Column*	getLeader(void) const  { return m_pLeader; }
+	fp_Column*	getFollower(void) const 		{ return m_pFollower; }
 	/*!
 	  Get page container is located on
 	  \return Page
 	*/
 
 	void				setPage(fp_Page* pPage) {m_pPage = pPage ;}
-	virtual inline fp_Page*		getPage(void) const
+	virtual fp_Page*		getPage(void) const
 		{ return m_pPage; }
 
 	void				layout(void);

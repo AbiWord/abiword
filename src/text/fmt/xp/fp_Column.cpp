@@ -76,7 +76,6 @@ void fp_VerticalContainer::setWidth(UT_sint32 iWidth)
 		return;
 	}
 	m_iWidth = iWidth;
-
 	// TODO we really need to force a re-line-break operation on every block herein
 
 //	UT_ASSERT(UT_NOT_IMPLEMENTED);

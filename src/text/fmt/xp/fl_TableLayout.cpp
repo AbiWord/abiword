@@ -35,6 +35,7 @@
 #include "fp_Line.h"
 #include "fp_Column.h"
 #include "fp_TableContainer.h"
+#include "fp_ContainerObject.h"
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "gr_Graphics.h"
@@ -52,11 +53,6 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_units.h"
-
-/*
-  TODO this file is now really too long.  divide it up
-  into smaller ones.
-*/
 
 fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_TABLE,FL_CONTAINER_TABLE,pMyContainerLayout),
@@ -81,12 +77,30 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_
 	  m_iNumberOfRows(0),
 	  m_iNumberOfColumns(0),
 	  m_bColumnsPositionedOnPage(false),
-	  m_bRowsPositionedOnPage(false)
+	  m_bRowsPositionedOnPage(false),
+	  m_bIsDirty(true)
 {
 	_lookupProperties();
-	fp_TableContainer * pTableContainer = new fp_TableContainer((fl_SectionLayout *) pMyContainerLayout);
+	fp_TableContainer * pTableContainer = new fp_TableContainer((fl_SectionLayout *) this);
 	setFirstContainer(pTableContainer);
 	setLastContainer(pTableContainer);
+	setTableContainerProperties(pTableContainer);
+	fl_ContainerLayout * pCL = myContainingLayout();
+	fp_Container * pCon = pCL->getLastContainer();
+	UT_ASSERT(pCon);
+	UT_sint32 iWidth = pCon->getWidth();
+	UT_sint32 iWidthLayout = pCon->getWidthInLayoutUnits();
+	if(iWidth == 0)
+	{
+		iWidth = pCon->getPage()->getWidth();
+		iWidthLayout = pCon->getPage()->getWidthInLayoutUnits();
+		pCon->setWidth(iWidth);
+		pCon->setWidthInLayoutUnits(iWidthLayout);
+	}
+	pTableContainer->setWidth(iWidth);
+	pTableContainer->setWidthInLayoutUnits(iWidthLayout);
+	pCon->addCon(pTableContainer);
+	pTableContainer->setContainer(pCon);
 }
 
 fl_TableLayout::~fl_TableLayout()
@@ -104,6 +118,17 @@ fl_TableLayout::~fl_TableLayout()
 	setLastContainer(NULL);
 }
 
+/*!
+ * This method sets all the parameters of the table container from
+ * properties of this section.
+ */
+void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
+{
+	pTab->setHomogeneous(m_bIsHomogeneous);
+	UT_sint32 borderWidth = m_iLeftOffsetLayoutUnits + m_iRightOffsetLayoutUnits;
+	pTab->setBorderWidth(borderWidth);
+}
+
 
 /*!
   Create a new Table container and plug it into the linked list of Table 
@@ -114,7 +139,7 @@ fl_TableLayout::~fl_TableLayout()
 */
 fp_Container* fl_TableLayout::getNewContainer(fp_Container * pPrevTab)
 {
-	fp_TableContainer * pNewTab = new fp_TableContainer((fl_SectionLayout *) myContainingLayout());
+	fp_TableContainer * pNewTab = new fp_TableContainer((fl_SectionLayout *) this);
 
 //
 // Now insert into linked list.
@@ -156,6 +181,10 @@ void fl_TableLayout::format(void)
 	{
 		getNewContainer(NULL);
 	}
+	if(isDirty())
+	{
+		markAllRunsDirty();
+	}
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	while (pBL)
 	{
@@ -174,7 +203,25 @@ void fl_TableLayout::format(void)
 		}
 		pBL = pBL->getNext();
 	}
+	if(isDirty())
+	{
+		m_bIsDirty = false;
+		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
+		setNeedsRedraw();
+		markAllRunsDirty();
+	}
+//
+// The layout process can trigger a width change on a cell which requires
+// a second layout pass
+//
+	if(isDirty())
+	{
+		static_cast<fp_TableContainer *>(getFirstContainer())->layout();
+		setNeedsRedraw();
+		markAllRunsDirty();
+	}
 	m_bNeedsFormat = false;
+	m_bIsDirty = false;
 }
 
 void fl_TableLayout::markAllRunsDirty(void)
@@ -226,6 +273,19 @@ bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	return true;
 }
 
+fl_SectionLayout * fl_TableLayout::getSectionLayout(void) const
+{
+	fl_ContainerLayout * pDSL = myContainingLayout();
+	while(pDSL)
+	{
+		if(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			return (fl_SectionLayout *) pDSL;
+		}
+		pDSL = pDSL->myContainingLayout();
+	}
+	return NULL;
+}
 void fl_TableLayout::updateTable(void)
 {
 
@@ -261,6 +321,19 @@ void fl_TableLayout::updateTable(void)
 	}
 
 	return;
+}
+
+
+bool fl_TableLayout::bl_doclistener_insertSection(fl_ContainerLayout*,
+											  SectionType iType,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+	return true;
 }
 
 bool fl_TableLayout::recalculateFields(UT_uint32 iUpdateCount)
@@ -322,23 +395,23 @@ void fl_TableLayout::_lookupProperties(void)
 	switch(dim)
 	{
 	case DIM_IN:
-		defaultOffset = "0.25in";
+		defaultOffset = "0.1in";
 		break;
 
 	case DIM_CM:
-		defaultOffset = "0.35cm";
+		defaultOffset = "0.254cm";
 		break;
 
 	case DIM_PI:
-		defaultOffset = "1.5pi";
+		defaultOffset = "0.5pi";
 		break;
 
 	case DIM_PT:
-		defaultOffset= "18.0pt";
+		defaultOffset= "6.0pt";
 		break;
 
 	case DIM_MM:
-		defaultOffset= "3.5mm";
+		defaultOffset= "2.54mm";
 		break;
 
 		// TODO: PX, and PERCENT
@@ -350,7 +423,7 @@ void fl_TableLayout::_lookupProperties(void)
 #endif
 	case DIM_none:
 	default:
-		defaultOffset = "0.25in";	// TODO: what to do with this.
+		defaultOffset = "0.1in";	// TODO: what to do with this.
 		break;
 
 	}
@@ -473,8 +546,6 @@ UT_sint32   fl_TableLayout::getRightOffsetInLayoutUnits(void) const
 
 void fl_TableLayout::collapse(void)
 {
-
-
 	// Clear all our Tables
 	fp_TableContainer *pTab = (fp_TableContainer *) getFirstContainer();
 	while (pTab)
@@ -537,6 +608,39 @@ bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 }
 
 /*!
+ * Return the position of the table strux. 
+ */
+PT_DocPosition fl_TableLayout::getPosition(bool bActualBlockPosition = false) const
+{
+	return fl_ContainerLayout::getPosition(bActualBlockPosition);
+}
+
+/*!
+ * This method attaches pCell to the current tablecontainer.
+ */
+void fl_TableLayout::attachCell(fl_ContainerLayout * pCell)
+{
+	//
+	// Verify the cell layout is in the table.
+    //
+	fl_ContainerLayout * pCur = getFirstLayout();
+	while(pCur && pCur !=  pCell)
+	{
+		UT_DEBUGMSG(("SEVIOR: Looking for %x found %x \n",pCell,pCur));
+		pCur = pCur->getNext();
+	}
+	if(pCur == NULL)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+	fp_TableContainer * pTab = (fp_TableContainer *) getLastContainer();
+	UT_ASSERT(pTab);
+	pTab->tableAttach((fp_CellContainer *) pCell->getLastContainer());
+	setDirty();
+}
+
+/*!
  * This method removes all layout structures contained by this layout
  * structure.
  */
@@ -576,9 +680,21 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_bCellPositionedOnPage(false)
 {
 	_lookupProperties();
-	fp_CellContainer * pCellContainer = new fp_CellContainer((fl_SectionLayout *) pMyContainerLayout);
+	fp_CellContainer * pCellContainer = new fp_CellContainer((fl_SectionLayout *) this);
 	setFirstContainer(pCellContainer);
 	setLastContainer(pCellContainer);
+	setCellContainerProperties(pCellContainer);
+	fl_ContainerLayout * pCL = myContainingLayout();
+	while(pCL!= NULL && pCL->getContainerType() != FL_CONTAINER_DOCSECTION)
+	{
+		pCL = pCL->myContainingLayout();
+	}
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pCL);
+	UT_ASSERT(pDSL != NULL);
+	UT_sint32 iWidth = pDSL->getFirstContainer()->getPage()->getWidth();
+	pCellContainer->setWidth(iWidth);
+	UT_sint32 iWidthLayout = pDSL->getFirstContainer()->getPage()->getWidthInLayoutUnits() - pDSL->getLeftMarginInLayoutUnits() - pDSL->getRightMarginInLayoutUnits();
+	pCellContainer->setWidthInLayoutUnits(iWidthLayout);
 }
 
 fl_CellLayout::~fl_CellLayout()
@@ -598,7 +714,49 @@ fl_CellLayout::~fl_CellLayout()
 
 
 /*!
-  Create a new Cell containers and plug it into the linked list of Table 
+ * This method sets all the parameters of the cell container from
+ * properties of this section 
+ */
+void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
+{
+	pCell->setLeftAttach(m_iLeftAttach);
+	pCell->setRightAttach(m_iRightAttach);
+	pCell->setTopAttach(m_iTopAttach);
+	pCell->setBottomAttach(m_iBotAttach);
+	pCell->setLeftPad(m_iLeftOffsetLayoutUnits);
+	pCell->setRightPad(m_iRightOffsetLayoutUnits);
+	pCell->setTopPad(m_iTopOffset);
+	pCell->setBotPad(m_iBottomOffset);
+}
+
+bool fl_CellLayout::bl_doclistener_insertSection(fl_ContainerLayout*,
+											  SectionType iType,
+											  const PX_ChangeRecord_Strux * pcrx,
+											  PL_StruxDocHandle sdh,
+											  PL_ListenerId lid,
+											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+																	  PL_ListenerId lid,
+																	  PL_StruxFmtHandle sfhNew))
+{
+	return true;
+}
+
+fl_SectionLayout * fl_CellLayout::getSectionLayout(void) const
+{
+	fl_ContainerLayout * pDSL = myContainingLayout();
+	while(pDSL)
+	{
+		if(pDSL->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			return (fl_SectionLayout *) pDSL;
+		}
+		pDSL = pDSL->myContainingLayout();
+	}
+	return NULL;
+}
+
+/*!
+  Create a new Cell containers and plug it into the linked list of Cell 
   containers.
   \params If pPrevCell is non-null place the new cell after this in the linked
           list, otherwise just append it to the end.
@@ -606,7 +764,7 @@ fl_CellLayout::~fl_CellLayout()
 */
 fp_Container* fl_CellLayout::getNewContainer(fp_Container * pPrevCell)
 {
-	fp_CellContainer * pNewCell = new fp_CellContainer((fl_SectionLayout *) myContainingLayout());
+	fp_CellContainer * pNewCell = new fp_CellContainer((fl_SectionLayout *) this);
 
 //
 // Now insert into linked list.
@@ -902,6 +1060,46 @@ void fl_CellLayout::_lookupProperties(void)
 #endif
 		m_dBottomOffsetUserUnits = UT_convertDimensionless(defaultOffset.c_str());
 	}
+	const char* pszLeftAttach = NULL;
+	const char* pszRightAttach = NULL;
+	const char* pszTopAttach = NULL;
+	const char* pszBotAttach = NULL;
+	pSectionAP->getProperty("left-attach", (const XML_Char *&)pszLeftAttach);
+	pSectionAP->getProperty("right-attach", (const XML_Char *&)pszRightAttach);
+	pSectionAP->getProperty("top-attach", (const XML_Char *&)pszTopAttach);
+	pSectionAP->getProperty("bot-attach", (const XML_Char *&)pszBotAttach);
+	if(pszLeftAttach && pszLeftAttach[0])
+	{
+		m_iLeftAttach = atoi(pszLeftAttach);
+	}
+	else
+	{
+		m_iLeftAttach = 0;
+	}
+	if(pszRightAttach && pszRightAttach[0])
+	{
+		m_iRightAttach = atoi(pszRightAttach);
+	}
+	else
+	{
+		m_iRightAttach = m_iLeftAttach + 1;
+	}
+	if(pszTopAttach && pszTopAttach[0])
+	{
+		m_iTopAttach = atoi(pszTopAttach);
+	}
+	else
+	{
+		m_iTopAttach = 0;
+	}
+	if(pszBotAttach && pszBotAttach[0])
+	{
+		m_iBotAttach = atoi(pszBotAttach);
+	}
+	else
+	{
+		m_iBotAttach = m_iTopAttach+1;
+	}
 }
 
 UT_sint32   fl_CellLayout::getLeftOffset(void) const
@@ -951,7 +1149,7 @@ UT_sint32 fl_CellLayout::getBottomOffsetInLayoutUnits(void) const
 #endif
 
 
-void fl_CellLayout::collapse(void)
+void fl_CellLayout::localCollapse(void)
 {
 
 	// Clear all our Cells
@@ -970,9 +1168,14 @@ void fl_CellLayout::collapse(void)
 		pCL->collapse();
 		pCL = pCL->getNext();
 	}
+}
 
-	// delete all our Cellles
-	pCell = (fp_CellContainer *) getFirstContainer();
+void fl_CellLayout::collapse(void)
+{
+	localCollapse();
+	// Clear all our Cells
+
+	fp_CellContainer *pCell = (fp_CellContainer *) getFirstContainer();
 	while (pCell)
 	{
 		fp_CellContainer * pNext = (fp_CellContainer *) pCell->getNext();

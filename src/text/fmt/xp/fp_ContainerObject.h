@@ -129,6 +129,7 @@ public:
 	virtual void        setHeightLayoutUnits(UT_sint32 ihLayout) =0;
 	virtual void		setYInLayoutUnits(UT_sint32) = 0;
 	virtual UT_sint32	getWidthInLayoutUnits(void) const = 0;
+	virtual UT_sint32	getHeightInLayoutUnits(void) const = 0;
 #endif
 
 	virtual UT_sint32	getX(void) const = 0;
@@ -142,9 +143,6 @@ public:
 	virtual inline void setDirection(FriBidiCharType c) {m_iDirection = c;}
 	virtual UT_sint32	getHeight(void) const = 0;
 
-#ifndef WITH_PANGO
-	virtual UT_sint32	getHeightInLayoutUnits(void) const = 0;
-#endif
 
 	virtual void		draw(dg_DrawArgs*) = 0;
 	virtual void		draw(GR_Graphics*) = 0;
@@ -187,7 +185,7 @@ public:
 	fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLayout);
 	virtual ~fp_Container();
 
-	void                   setContainer(fp_Container * pContainer);
+	virtual void           setContainer(fp_Container * pContainer);
     fp_Container *         getContainer(void) const;
 	fp_Container *         getColumn(void) const;
 	fp_Page *              getPage(void) const;

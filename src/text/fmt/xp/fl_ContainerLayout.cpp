@@ -30,6 +30,7 @@
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
+#include "fl_TableLayout.h"
 #include "fb_LineBreaker.h"
 #include "fp_Page.h"
 #include "fp_Line.h"
@@ -236,12 +237,22 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	fl_ContainerLayout* pL=NULL;
 	if(iType == FL_CONTAINER_BLOCK)
 	{
-		UT_ASSERT(getContainerType() != FL_CONTAINER_BLOCK);
 		if(getContainerType() ==  FL_CONTAINER_HDRFTR)
 			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP,true);
 		else
 			pL = (fl_ContainerLayout *) new fl_BlockLayout(sdh, getLineBreaker(), static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP);
 	}
+	if(iType == FL_CONTAINER_TABLE)
+	{
+		pL = (fl_ContainerLayout *) new fl_TableLayout(getDocLayout(),sdh, indexAP, this);
+		insertIntoList(pL,pPrev);
+	}
+	if(iType == FL_CONTAINER_CELL)
+	{
+		pL = (fl_ContainerLayout *) new fl_CellLayout(getDocLayout(),sdh, indexAP, this);
+		insertIntoList(pL,pPrev);
+	}
+
 	if (pL == NULL)
 	{
 		return pL;
@@ -261,7 +272,28 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 	{
 		m_pFirstL = pL;
 	}
+	if(getContainerType() == FL_CONTAINER_CELL)
+	{
+		static_cast<fl_TableLayout *>(myContainingLayout())->setDirty();
+	}
 	return pL;
+}
+
+void  fl_ContainerLayout::insertIntoList(fl_ContainerLayout * pL, fl_ContainerLayout * pPrev)
+{
+	if(pPrev == NULL)
+	{
+		return;
+	}
+	fl_ContainerLayout * pNext = pPrev->getNext();
+	pPrev->setNext(pL);
+	pL->setPrev(pPrev);
+	pL->setNext(pNext);
+	if(pNext)
+	{
+		pNext->setPrev(pL);
+	}
+	UT_DEBUGMSG(("SEVIOR: Inserting in List new pointer %x , prev %x \n",pL,pPrev)); 
 }
 
 /*!

@@ -32,6 +32,7 @@
 #include "fl_Squiggles.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
+#include "fl_TableLayout.h"
 #include "pt_PieceTable.h"
 
 FL_DocLayout* FL_DocLayout::m_pDocLayout = NULL;
@@ -148,7 +149,31 @@ void fl_SectionLayout::__dump(FILE * fp) const
 void fl_ContainerLayout::__dump(FILE * fp) const
 {
 	fprintf(fp,"ContainerLayout: %p [Containertype %d]\n",(void*)this,getContainerType());
-	for (fl_BlockLayout * pBL=(fl_BlockLayout *) getFirstLayout(); (pBL); pBL= (fl_BlockLayout *) pBL->getNext())
+	for (fl_ContainerLayout * pBL=(fl_ContainerLayout *) getFirstLayout(); (pBL); pBL= (fl_ContainerLayout *) pBL->getNext())
+		pBL->__dump(fp);
+}
+
+
+/*!
+  Dump sections contained in this fl_SectionLayout
+  \param fp File where the dump should be written to
+*/
+void fl_CellLayout::__dump(FILE * fp) const
+{
+	fprintf(fp,"CellLayout: %p [Containertype %d]\n",(void*)this,getContainerType());
+	for (fl_ContainerLayout * pBL=(fl_ContainerLayout *) getFirstLayout(); (pBL); pBL= (fl_ContainerLayout *) pBL->getNext())
+		pBL->__dump(fp);
+}
+
+
+/*!
+  Dump sections contained in this fl_SectionLayout
+  \param fp File where the dump should be written to
+*/
+void fl_TableLayout::__dump(FILE * fp) const
+{
+	fprintf(fp,"TableLayout: %p [Containertype %d]\n",(void*)this,getContainerType());
+	for (fl_ContainerLayout * pBL=(fl_ContainerLayout *) getFirstLayout(); (pBL); pBL= (fl_BlockLayout *) pBL->getNext())
 		pBL->__dump(fp);
 }
 
