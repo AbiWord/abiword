@@ -1455,13 +1455,20 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		(3) draw the whole text in a single go over the composite background
 	*/
 
-	// draw the background for the whole run
-	m_pG->fillRect( clrNormalBackground,
+	// draw the background for the whole run, but only in sreen context or if
+	// it is not white
+	UT_RGBColor clrWhite(255,255,255);
+	bool bDrawBckg = (m_pG->queryProperties(GR_Graphics::DGP_SCREEN)
+					 || clrNormalBackground != clrWhite);
+					
+	if(bDrawBckg)
+	{
+		m_pG->fillRect( clrNormalBackground,
 					pDA->xoff,
 					yTopOfSel + m_iAscent - m_pLine->getAscent(), 
 					m_iWidth, 
 					m_pLine->getHeight());
-
+	}
 
 	UT_uint32 iRunBase = iBase + m_iOffsetFirst;
 
@@ -1518,7 +1525,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		the sreen, a Windows printer can behave like this).
 	*/
 
-	if(m_pG->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
+	if(bDrawBckg && m_pG->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
 	{
 #ifdef BIDI_ENABLED
 		fp_Run * pNext = getNextVisual();
