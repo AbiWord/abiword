@@ -67,6 +67,8 @@ public:
  	SET_GATHER			(ViewShowStandardBar,	UT_Bool );
  	SET_GATHER			(ViewShowFormatBar,	UT_Bool );
  	SET_GATHER			(ViewShowExtraBar,	UT_Bool );
+
+ 	SET_GATHER			(ViewShowStatusBar,	UT_Bool );
  
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
 	SET_GATHER			(ViewCursorBlink,	UT_Bool);
@@ -124,6 +126,7 @@ public:
     PtWidget_t * m_checkbuttonViewShowStandardBar;
     PtWidget_t * m_checkbuttonViewShowFormatBar;
     PtWidget_t * m_checkbuttonViewShowExtraBar;
+    PtWidget_t * m_checkbuttonViewShowStatusBar;
 	PtWidget_t * m_checkbuttonViewAll;
 	PtWidget_t * m_checkbuttonViewHiddenText;
 	PtWidget_t * m_checkbuttonViewUnprintable;

@@ -316,6 +316,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	PtWidget_t *checkbuttonViewStandard;
 	PtWidget_t *checkbuttonViewFormat;
 	PtWidget_t *checkbuttonViewExtra;
+	PtWidget_t *checkbuttonViewStatusBar;
 	PtWidget_t *frameViewStuff;
 	PtWidget_t *vbox6;
 	PtWidget_t *checkbuttonViewAll;
@@ -527,6 +528,10 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	checkbuttonViewExtra = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
 	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStatusBar)), 0);
+	checkbuttonViewStatusBar = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
+
+	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewCursorBlink)), 0);
 	checkbuttonViewCursorBlink = PtCreateWidget(PtToggleButton, vshowgroup, n, args);
 
@@ -638,6 +643,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
     m_checkbuttonViewShowStandardBar	= checkbuttonViewStandard;
     m_checkbuttonViewShowFormatBar	= checkbuttonViewFormat;
     m_checkbuttonViewShowExtraBar	= checkbuttonViewExtra;
+    m_checkbuttonViewShowStatusBar	= checkbuttonViewStatusBar;
     m_checkbuttonViewAll			= checkbuttonViewAll;
     m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
     m_checkbuttonViewUnprintable	= checkbuttonViewUnprintable;
@@ -743,6 +749,10 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 		return m_checkbuttonViewShowExtraBar;
 		break;
 
+	case id_CHECK_VIEW_SHOW_STATUS_BAR:
+		return m_checkbuttonViewShowStatusBar;
+		break;
+
 	case id_CHECK_VIEW_ALL:
 		return m_checkbuttonViewAll;
 		break;
@@ -828,10 +838,11 @@ DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 
-DEFINE_GET_SET_BOOL	(ViewShowRuler);
-DEFINE_GET_SET_BOOL	(ViewShowStandardBar);
-DEFINE_GET_SET_BOOL	(ViewShowFormatBar);
-DEFINE_GET_SET_BOOL	(ViewShowExtraBar);
+DEFINE_GET_SET_BOOL(ViewShowRuler);
+DEFINE_GET_SET_BOOL(ViewShowStandardBar);
+DEFINE_GET_SET_BOOL(ViewShowFormatBar);
+DEFINE_GET_SET_BOOL(ViewShowExtraBar);
+DEFINE_GET_SET_BOOL(ViewShowStatusBar);
 
 UT_Dimension AP_QNXDialog_Options::_gatherViewRulerUnits(void) 
 {				
