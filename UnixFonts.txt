@@ -34,9 +34,34 @@ generate the afm file automatically, but using a vendor provided
 afm file is preferable.
 
 To update the fonts.dir file, you should add an entry for the new
-font into fonts.scale and then run mkfontdir. If you do not know
-what the entry in the fonts.scale should be, you can generate it
-using the utility ttmkfdir.
+font into fonts.scale and then either run mkfontdir, or add exactly
+the same to fonts.dir and increase the font count at the very top
+of the file accordingly. Your fonts probably came with a sample
+fonts.dir or fonts.scale file, but if you do not know what the entry
+in the fonts.scale should be, you can generate it using the utility
+ttmkfdir.
+
+If you are installing a font for a different encoding than iso8859-1,
+Things are slightly more complicated. When adding the entry for the 
+font to fonts.scale (and fonts.dir) make sure that the last two 
+parts of the line separated by a dash are set to adobe-fontspecific.
+Then you have to create a file called fonts.alias in where you alias
+the font to the actual encoding it is for. For instance if your font
+called BLAH is for iso8859-8, the entry in fonts.scale/fonts.dir 
+should look something like:
+
+blah.pfa -...-BLAH-.........-adobe-fontspecific
+
+(the dots stand for whatever makes up your specific entry). The 
+fonts.alias file should then contain the following line:
+
+-...-BLAH-.........-iso8859-8 -...-BLAH-.........-adobe-fontspecific
+
+Also, if the font name contains spaces, both parts of the alias line 
+need to be enclosed in double quotes:
+
+"-...-BLAH-.........-iso8858-8" "-...-BLAH-.........-adobe-fontspecific"
+
 
 3. TTF fonts
 ------------

@@ -53,6 +53,8 @@ class XAP_UnixFont
 		STYLE_BOLD,
 		STYLE_ITALIC,
 		STYLE_BOLD_ITALIC,
+		STYLE_OUTLINE,
+		STYLE_BOLD_OUTLINE,
 		STYLE_LAST	// this must be last
 	} style;
 

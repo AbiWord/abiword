@@ -232,7 +232,9 @@ UT_uint32 XAP_UnixFontManager::getCount(void)
 XAP_UnixFont ** XAP_UnixFontManager::getAllFonts(void)
 {
 	UT_uint32 count = getCount();
-	
+
+	UT_DEBUGMSG(("XAP_UnixFontManager::getAllFonts [count %d]\n", count));
+		
 	XAP_UnixFont ** table = new XAP_UnixFont * [count];
 
 	UT_ASSERT(table);
@@ -256,6 +258,7 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(void)
 	// this is probably not such a bad assumption, since
 	// gtk itself uses it all over (and it ships with every
 	// X11R6 I can think of)
+	UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont\n"));
 
 	XAP_UnixFont * f = new XAP_UnixFont();
 
@@ -292,6 +295,8 @@ XAP_UnixFont * XAP_UnixFontManager::getFont(const char * fontname,
 void XAP_UnixFontManager::_allocateThisFont(const char * line,
 											const char * workingdir,int iLine)
 {
+	//UT_DEBUGMSG(("XAP_UnixFontManager::_allocateThisFont\n"));
+
 	/*
 	  Each line comes in as:
 	  
@@ -391,6 +396,13 @@ void XAP_UnixFontManager::_allocateThisFont(const char * line,
 		  s = XAP_UnixFont::STYLE_BOLD_ITALIC;
 		else
 		  s= XAP_UnixFont::STYLE_ITALIC;
+	  }
+	else if(!UT_strcmp(slant, "o"))
+	  {
+		if(!UT_strcmp(weight, "bold"))
+		  s = XAP_UnixFont::STYLE_BOLD_OUTLINE;
+		else
+		  s= XAP_UnixFont::STYLE_OUTLINE;
 	  }
     else
     {

@@ -42,6 +42,18 @@ compile:
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src
 
 ##################################################################
+## Compile with BiDiRectional support
+
+bidi:
+	@echo Building BiDiRectionally enabled AbiSuite with [ABI_ROOT=$(ABI_ROOT)]
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) ABI_OPT_BIDI_ENABLED=1 UNIX_CAN_BUILD_DYNAMIC=0 -C src
+
+bidi_dbg:
+	@echo Building BiDiRectionally enabled AbiSuite with [ABI_ROOT=$(ABI_ROOT)]
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) ABI_OPT_BIDI_ENABLED=1 ABI_OPT_DEBUG=1 UNIX_CAN_BUILD_DYNAMIC=0 -C src
+
+##################################################################
+
 ## Generates documentation from the sources
 ## This creates docs/dox/html/<HTML files>
 
@@ -50,11 +62,16 @@ dox:
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src dox
 
 ##################################################################
+
 ## Quick developer install with no packaging
 
 install:
 	@echo Installing AbiSuite with [prefix=$(prefix)]
 	$(MAKE) prefix=$(prefix) -C src install
+
+install_dbg:
+	@echo Installing AbiSuite with [prefix=$(prefix)]
+	$(MAKE) prefix=$(prefix) ABI_OPT_DEBUG=1 -C src install
 
 ##################################################################
 

@@ -33,12 +33,34 @@ The default AbiWord locale is en_US. If you use a different, non-
 Latin-1 locale, you will need to provide your own fonts. AbiWord
 fonts are located in /usr/local/AbiSuite/fonts directory (unless
 you chose to install elsewhere, of course). You need to create
-a directory in the fonts directory named according to your locale. 
-For instance if you are going to use he_IL locale, you create a 
-directory he-IL (use dash instead of the underscore). Now you just
-put your fonts in this directory in the same manner you would 
-install additional fonts into the main fonts directory (you will 
-find details in the UnixFonts.txt document).
+a directory in the fonts directory named according to your encoding.
+For instance if you are going to use Hebrew locale, you create a 
+directory ISO-8859-8. The name of this directory has to correspond
+exactly to the encoding reported by your locale variables. If you 
+are using Bash, try
+
+# echo $LANG
+
+You should see something like 
+
+# he_IL.ISO-8859-8
+
+It is important that the encoding (the part after the dot) is 
+specified explicitely, i.e., if you see something like
+
+# he_IL
+
+it will not work. Setting the LANG variable prior to starting
+AbiWord is easy, in Bash you do something like
+
+# LANG=he_IL.ISO-8859-8
+# export LANG
+
+
+Once you have the locale specific directory, you put your fonts in it 
+in the same manner you would install additional fonts into the main 
+fonts directory (you will find details in the UnixFonts.txt document).
+
 
 2.2 Keyboard
 There is nothing you need to do about your keyboard for the sake of 
@@ -57,10 +79,7 @@ update this document). Thus you may have to use TTF fonts only. You
 will find general instructions on installing and using TTf fonts with
 AbiWord in the UnixFonts.txt document.
 
-Otherwise, the general procedure is the same as above, except that 
-the coding has to be specifed for the directory name. For instance, 
-if you want to use British locale with UTF-8 coding, you should call 
-your fonts directory en-GB.UTF-8.
+Otherwise, the general procedure is the same as for 8-bit locales.
 
 3.2 Keyboard
 Under UTF-8 locale AbiWord uses the same keyboard handling mechanism
