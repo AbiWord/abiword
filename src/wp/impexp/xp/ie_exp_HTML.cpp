@@ -1762,7 +1762,7 @@ s_HTML_Listener::~s_HTML_Listener()
 		DELETEP(popped);
 	}
 
-	UT_VECTOR_PURGEALL(char*, m_utvDataIDs);
+	UT_VECTOR_FREEALL(char*, m_utvDataIDs);
 
 	m_pie->write("</body>\r\n");
 	m_pie->write("</html>\r\n");
@@ -1813,8 +1813,7 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 				if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
 				{
-					char* dataid = new char[strlen((char*) szValue)];
-					strcpy(dataid, (char*) szValue);
+					char* dataid = strdup((char*) szValue);
 
 					m_utvDataIDs.push_back(dataid);
 
