@@ -7,12 +7,22 @@
 <!-- This file is covered by the GNU Public License (GPL).           -->
 <!-- ==============================================================  -->
 
-<!-- Norwegian Nynorsktranslations provided by
+<!-- Norwegian Nynorsk translations provided by
      Karl Ove Hufthammer <huftis@bigfoot.com> -->
 
 <AbiStrings app="AbiWord" ver="1.0" language="nn-NO">
 
 <Strings    class="XAP"
+
+DICTIONARY_CANTLOAD="Klarte ikkje å lasta ordlista for språket %s"
+DLG_Image_Height="Høgd:"
+DLG_Image_Width="Breidd:"
+DLG_Image_Title="Bildeeigenskapar"
+
+
+DLG_Password_Title="Skriv inn passord"
+DLG_Password_Password="Passord:"
+DLG_FOSA_InsertTitle="Sett inn fil"
 
 DLG_FOSA_ALL="Alle (*.*)"
 DLG_FOSA_ALLDOCS="Alle dokument"
@@ -238,6 +248,7 @@ ENC_UNIC_UCS_2BE="Unicode UCS-2 Big Endian"
 ENC_UNIC_UCS_2LE="Unicode UCS-2 Little Endian"
 FIELD_Application_Version="Versjon"
 LANG_0="(ingen korrektur)"
+LANG_CA_ES="Katalansk"
 LANG_CS_CZ="Tjekkisk"
 LANG_DA_DK="Dansk"
 LANG_DE_AT="Tysk (Austerrike)"
@@ -248,6 +259,7 @@ LANG_EN_US="Engelsk (US)"
 LANG_ES_ES="Spansk (Spania)"
 LANG_FI_FI="Finsk"
 LANG_FR_FR="Fransk (Frankrike)"
+LANG_GL_ES="Galisisk"
 LANG_IT_IT="Italiensk (Italia)"
 LANG_IW_IL="Hebraisk"
 LANG_LT_LT="Litauisk"
@@ -261,6 +273,53 @@ UntitledDocument="Utan namn%d"
 />
 
 <Strings    class="AP"
+
+DLG_Field_Parameters="Tilleggsparameterar:"
+DLG_InsertBookmark_Msg="Skriv inn namnet på bokmerket eller vel eit frå lista."
+DLG_InsertBookmark_Title="Sett inn bokmerke"
+DLG_InsertHyperlink_Msg="Vel bokmerke frå lista."
+DLG_InsertHyperlink_Title="Sett inn lenkje "
+FIELD_Error="Feil ved utrekning!"
+FIELD_Numbers_EndnoteAnchor="Sluttnoteanker"
+FIELD_Numbers_EndnoteReference="Sluttnotereferanse"
+FIELD_Numbers_PageReference="Sidereferanse"
+MENU_LABEL_FILE_REVERT="&amp;Tilbakestill"
+MENU_LABEL_FMT_HDRFTR="Formater topp-/botntekst "
+MENU_LABEL_INSERT_BOOKMARK="&amp;Bokmerke "
+MENU_LABEL_INSERT_DELETE_HYPERLINK="&amp;Slett lenkje "
+MENU_LABEL_INSERT_FILE="Sett inn &amp;fil "
+MENU_LABEL_INSERT_HYPERLINK="&amp;Lenkje "
+MENU_LABEL_OPEN_TEMPLATE="Opn mal "
+MENU_STATUSLINE_FILE_REVERT="Tilbakestiller dokumentet til sist lagra versjon"
+MENU_STATUSLINE_FMT_HDRFTR="Vel formatet på topp- og botntekst"
+MENU_STATUSLINE_INSERT_BOOKMARK="Sett inn bokmerke"
+MENU_STATUSLINE_INSERT_DELETE_HYPERLINK="Slett lenkje"
+MENU_STATUSLINE_INSERT_FILE="Sett inn innhaldet frå ei anna fil"
+MENU_STATUSLINE_INSERT_HYPERLINK="Sett inn lenkje"
+MENU_STATUSLINE_OPEN_TEMPLATE="Opn mal"
+MSG_HyperlinkNoBookmark="Åtvaring: Bokmerke du valte [%s] finst ikkje."
+MSG_HyperlinkNoSelection="Du må merka noko tekst før du sett inn ei lenkje."
+SCRIPT_CANTRUN="Klarte ikkje å kjøra skriptet %s"
+SCRIPT_NOSCRIPTS="Fann ingen skript"
+
+
+MSG_OpenFailed="Kunne ikkje opna fila %s."
+MSG_BookmarkNotFound="Fann ikkje bokmerket «%s»."
+DLG_Goto_Target_Bookmark="Bokmerke"
+DLG_HdrFtr_FooterEven="Forskjellig botntekst på motståande sider"
+DLG_HdrFtr_FooterFirst="Forskjellig botntekst på første side"
+DLG_HdrFtr_FooterFrame="Botntekst-eigenskapar"
+DLG_HdrFtr_FooterLast="Forskjellig botntekst på siste side"
+DLG_HdrFtr_HeaderEven="Forskjellig topptekst på motståande sider"
+DLG_HdrFtr_HeaderFirst="Forskjellig topptekst på første side"
+DLG_HdrFtr_HeaderFrame="Topptekst-eigenskapar"
+DLG_HdrFtr_HeaderLast="Forskjellig topptekst på siste side"
+DLG_HdrFtr_RestartCheck="Start sidenummerering på nytt for kvar inndeling"
+DLG_HdrFtr_RestartNumbers="Start nummerering på:"
+DLG_HdrFtr_Title="Formater topp-/botntekst"
+DLG_Lists_DelimiterString="Nivåskiljar"
+DLG_Options_Label_SaveContextGlyphs="Lagr visuelle glyff-former"
+DLG_Options_Label_UseContextGlyphs="Vel korrekt glyff-form ut frå samanhengen"
 
 DLG_Column_Number_Cols="Talet på kolonnar"
 DLG_Column_RtlOrder="Bruk HTV-retning"
