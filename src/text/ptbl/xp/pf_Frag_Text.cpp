@@ -40,16 +40,6 @@ pf_Frag_Text::~pf_Frag_Text()
 {
 }
 
-inline PT_BufIndex pf_Frag_Text::getBufIndex(void) const
-{
-	return m_bufIndex;
-}
-
-inline PT_AttrPropIndex pf_Frag_Text::getIndexAP(void) const
-{
-	return m_indexAP;
-}
-
 void pf_Frag_Text::setIndexAP(PT_AttrPropIndex indexNewAP)
 {
 	m_indexAP = indexNewAP;

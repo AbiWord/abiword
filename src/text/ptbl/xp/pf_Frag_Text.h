@@ -48,8 +48,15 @@ public:
 													  PT_BlockOffset blockOffset,
 													  PT_BlockOffset startFragOffset,
 													  PT_BlockOffset endFragOffset) const;
-	inline PT_BufIndex		getBufIndex(void) const;
-	inline PT_AttrPropIndex	getIndexAP(void) const;
+	inline PT_BufIndex getBufIndex(void) const
+	{
+	    return m_bufIndex;
+	}
+	inline PT_AttrPropIndex getIndexAP(void) const
+	{
+	    return m_indexAP;
+	}
+
 	void					setIndexAP(PT_AttrPropIndex indexNewAP);
 	void					changeLength(UT_uint32 newLength);
 	void					adjustOffsetLength(PT_BufIndex bi, UT_uint32 newLength);

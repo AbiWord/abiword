@@ -177,36 +177,6 @@ const PP_AttrProp * pt_VarSet::getAP(PT_AttrPropIndex api) const
 	return m_tableAttrProp[_varsetFromAPIndex(api)].getAP(_subscriptFromAPIndex(api));
 }
 
-inline UT_uint32 pt_VarSet::_subscriptFromBufIndex(PT_BufIndex bi) const
-{
-	return (bi & 0x7fffffff);
-}
-
-inline UT_uint32 pt_VarSet::_subscriptFromAPIndex(PT_AttrPropIndex api) const
-{
-	return (api & 0x7fffffff);
-}
-
-inline UT_uint32 pt_VarSet::_varsetFromBufIndex(PT_BufIndex bi) const
-{
-	return (bi >> 31);
-}
-
-inline UT_uint32 pt_VarSet::_varsetFromAPIndex(PT_AttrPropIndex api) const
-{
-	return (api >> 31);
-}
-
-inline PT_BufIndex pt_VarSet::_makeBufIndex(UT_uint32 varset, UT_uint32 subscript) const
-{
-	return ((varset<<31)|subscript);
-}
-
-inline PT_AttrPropIndex pt_VarSet::_makeAPIndex(UT_uint32 varset, UT_uint32 subscript) const
-{
-	return ((varset<<31)|subscript);
-}
-
 UT_Bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 						   const XML_Char ** attributes, const XML_Char ** properties,
 						   PT_AttrPropIndex * papiNew)

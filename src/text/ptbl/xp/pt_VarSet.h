@@ -51,12 +51,35 @@ public:
     UT_Bool                 overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
 
 private:
-	inline UT_uint32		_subscriptFromBufIndex(PT_BufIndex bi) const;
-	inline UT_uint32		_subscriptFromAPIndex(PT_AttrPropIndex api) const;
-	inline UT_uint32		_varsetFromBufIndex(PT_BufIndex bi) const;
-	inline UT_uint32		_varsetFromAPIndex(PT_AttrPropIndex api) const;
-	inline PT_BufIndex		_makeBufIndex(UT_uint32 varset, UT_uint32 subscript) const;
-	inline PT_AttrPropIndex	_makeAPIndex(UT_uint32 varset, UT_uint32 subscript) const;
+	inline UT_uint32 _subscriptFromBufIndex(PT_BufIndex bi) const
+	{
+		return (bi & 0x7fffffff);
+	}
+	inline UT_uint32 _subscriptFromAPIndex(PT_AttrPropIndex api) const
+	{
+	    return (api & 0x7fffffff);
+	}
+
+	inline UT_uint32 _varsetFromBufIndex(PT_BufIndex bi) const
+	{
+	    return (bi >> 31);
+	}
+
+	inline UT_uint32 _varsetFromAPIndex(PT_AttrPropIndex api) const
+	{
+	    return (api >> 31);
+	}
+
+	inline PT_BufIndex _makeBufIndex(UT_uint32 varset, UT_uint32 subscript) const
+	{
+	    return ((varset<<31)|subscript);
+		}
+
+	inline PT_AttrPropIndex _makeAPIndex(UT_uint32 varset, UT_uint32 subscript) const
+	{
+		return ((varset<<31)|subscript);
+	}
+
 	UT_Bool					_finishConstruction(void);
 
 	UT_Bool					m_bInitialized;
