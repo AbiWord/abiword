@@ -42,10 +42,11 @@ fi
 if test "$abi_found_wv" = "yes"; then
 	AC_CHECK_HEADER(wv.h, 
 	[abi_found_wvincs="yes"])
-	if "$abi_found_wvincs" = "yes"; then
+	if test "$abi_found_wvincs" = "yes"; then
 		WV_CFLAGS=""
+		abi_wv_message="wv in $abi_wv_libs"
 	else 
-		AC_MSG_WARN([wv library found but header file missing])
+		#AC_MSG_WARN([wv library found but header file missing])
 		abi_found_wv="no"
 		WV_LIBS=""
 	fi

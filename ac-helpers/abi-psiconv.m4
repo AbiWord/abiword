@@ -42,10 +42,11 @@ fi
 if test "$abi_found_psiconv" = "yes"; then
 	AC_CHECK_HEADER(psiconv.h, 
 	[abi_found_psiconvincs="yes"])
-	if "$abi_found_psiconvincs" = "yes"; then
+	if test "$abi_found_psiconvincs" = "yes"; then
 		PSICONV_CFLAGS=""
+		abi_psiconv_message="psiconv in $abi_psiconv_libs"
 	else 
-		AC_MSG_WARN([psiconv library found but header file missing])
+		#AC_MSG_WARN([psiconv library found but header file missing])
 		abi_found_psiconv="no"
 		PSICONV_LIBS=""
 	fi

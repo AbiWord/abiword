@@ -84,13 +84,11 @@ if test "$PLATFORM" = "unix"; then
 	AC_SUBST(GNOME_CFLAGS)
 	GNOME_LIBS="-lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg"
 	AC_SUBST(GNOME_LIBS)
-	PLATFORM_LIBS=""
-	PLATFORM_CFLAGS=""
 	ABI_FE="Unix"
+	AM_CONDITIONAL(WITH_UNIX, true)
+	echo "defined WITH_UNIX"
 elif test "$PLATFORM" = "mac" ; then
 
-        PLATFORM_LIBS="-framework Carbon -framework CoreServices -framework ApplicationServices"
-        PLATFORM_CFLAGS="-fpascal-strings -DCARBON_ON_MACH_O=1 -DNO_SYS_ERRLIST -I/Developer/Headers/FlatCarbon"
 	ABI_FE="Mac"
 	AM_CONDITIONAL(WITH_MACOSX, true)
 fi
@@ -103,8 +101,6 @@ AC_SUBST(ABI_FE)
 dnl iconv peer library is in libiconv as per the CVS module name.
 ICONV_INCLUDES=-I'$(top_srcdir)/../libiconv/include'
 AC_SUBST(ICONV_INCLUDES)
-LIBPNG_INCLUDES=-I'$(top_srcdir)/../libpng'
-AC_SUBST(LIBPNG_INCLUDES)
 
 if test "$PLATFORM" = "unix"; then
 	dnl ******************************
@@ -160,7 +156,7 @@ AC_ARG_ENABLE(gnome,
        no)  gnome=false ;;
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-gnome) ;;
      esac],[gnome=false])
-AM_CONDITIONAL(WITH_GNOME, test x$gnome = xtrue)
+AM_CONDITIONAL(WITH_GNOME, test "x$gnome" = "xtrue")
 
 AC_ARG_WITH(pspell,
     [  --with-pspell    Turn on pspell ],
@@ -255,10 +251,10 @@ dnl check for wv
 ABI_NEED_WV="yes"
 ABI_WV(${abs_srcdir}/../wv)
 
-dnl check for libpng. Disabled
+dnl check for libpng. 
 
-dnl ABI_NEED_LIBPNG="yes"
-dnl ABI_LIBPNG(${abs_srcdir}/../libpng)
+ABI_NEED_LIBPNG="yes"
+ABI_LIBPNG(${abs_srcdir}/../libpng)
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
@@ -356,6 +352,10 @@ echo " "
 
 cat <<EOF
   XML Parser:      ${abi_xml_parser_message}
+  PNG Library:      ${abi_libpng_message}
+  Psiconv Library:      ${abi_psiconv_message}
+  WV Library:      ${abi_wv_message}
+
 EOF
 
 AC_MSG_RESULT([Type make to build AbiWord.])

@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/includes.mk
 
-INCLUDES= @GMODULE_CFLAGS@ @GTK_CFLAGS@ \
+INCLUDES= @GMODULE_CFLAGS@ @GTK_CFLAGS@ @GNOME_CFLAGS@ \
 	$(AF_INCLUDES)
 
 
