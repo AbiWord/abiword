@@ -50,6 +50,8 @@ public:
 protected:
 	AP_Win32App *		m_pWin32App;
 	AP_Win32Frame *		m_pWin32Frame;
+
+	HMENU				m_myMenu;
 };
 
 #endif /* EV_WIN32MENU_H */

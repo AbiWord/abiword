@@ -72,6 +72,7 @@ EV_Win32Menu::EV_Win32Menu(AP_Win32App * pWin32App, AP_Win32Frame * pWin32Frame,
 {
 	m_pWin32App = pWin32App;
 	m_pWin32Frame = pWin32Frame;
+	m_myMenu = NULL;
 }
 
 EV_Win32Menu::~EV_Win32Menu(void)
@@ -226,6 +227,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 	if (SetMenu(wTLW, menuBar))
 	{
 		DrawMenuBar(wTLW);
+		m_myMenu = menuBar;
 
 		if (oldMenu)
 			DestroyMenu(oldMenu);
@@ -244,6 +246,9 @@ UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 {
 	// deal with WM_INITMENU.
 
+	if (hMenuBar != m_myMenu)			// these are not different when they
+		return UT_FALSE;				// right-click on us on the menu bar.
+	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_uint32 nrLabelItemsInLayout = m_pMenuLayout->getLayoutItemCount();
 	UT_Bool bNeedToRedrawMenu = UT_FALSE;
