@@ -399,18 +399,18 @@ void IE_Imp_PalmDoc::_uncompress( buffer *m_buf )
 	// set all of these to 0 initially
 	_zero_fill (m_new_buf->buf, BUFFER_SIZE);
 
-	for (i = j = 0; i < m_buf->position; )
+	for (i = j = 0; i < m_buf->position, j < BUFFER_SIZE; )
 	{
 		c = m_buf->buf[ i++ ];
 
 		if ( c >= 1 && c <= 8 )
-			while ( c-- )
+			while ( c-- && j < BUFFER_SIZE-1)
 				m_new_buf->buf[ j++ ] = m_buf->buf[ i++ ];
 
 		else if ( c <= 0x7F )
 			m_new_buf->buf[ j++ ] = c;
 
-		else if ( c >= 0xC0 )
+		else if ( c >= 0xC0 && j < BUFFER_SIZE-2)
 		{
 			m_new_buf->buf[ j++ ] = ' ';
 			m_new_buf->buf[ j++ ] = c ^ 0x80;
@@ -423,13 +423,13 @@ void IE_Imp_PalmDoc::_uncompress( buffer *m_buf )
 		    temp_c = (temp_c << 8) ;
 		    temp_c = temp_c + m_buf->buf[ i++ ];
 		    di = (temp_c & 0x3FFF) >> COUNT_BITS;
-		    for (n = (temp_c & ((1 << COUNT_BITS) - 1)) + 3; n--
+		    for (n = (temp_c & ((1 << COUNT_BITS) - 1)) + 3; n-- && j < BUFFER_SIZE
 			   ; ++j )
 		      m_new_buf->buf[ j ] = m_new_buf->buf[ j - di ];
 		    temp_c = 0;
 		  }
 	}
-
+	UT_ASSERT(j <= BUFFER_SIZE);
 
 	memcpy( (void *)m_buf->buf, (void *)m_new_buf->buf, (size_t) j );
 
