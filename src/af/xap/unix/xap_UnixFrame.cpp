@@ -579,11 +579,16 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	m_pUnixApp->getGeometry(&x, &y, &width, &height, &f);
 
 	// Set the size if requested
-	
+
 	if (f & XAP_UnixApp::GEOMETRY_FLAG_SIZE)
-		gtk_widget_set_usize(m_wTopLevelWindow,
-							 width,
-							 height);
+	{
+                gint abi_width = UT_MIN( gdk_screen_width() - 30, 950);
+                gint abi_height = UT_MIN( gdk_screen_height() - 50, 1200);
+	        gtk_widget_set_usize(m_wTopLevelWindow,
+							 abi_width,
+							 abi_height);
+	}
+
 
 	// Because we're clever, we only honor this flag when we
 	// are the first (well, only) top level frame available.
