@@ -26,6 +26,7 @@
 
 struct Fatmap
 {
+  Fatmap ();
 	gint width;
 	gint height;
 
@@ -47,7 +48,7 @@ public:
 	void			setData(Fatmap * image) { m_image = image; }
    	Fatmap *			getData(void) const { return m_image; }
 
-protected:
+private:
 
 	Fatmap * m_image;
 };

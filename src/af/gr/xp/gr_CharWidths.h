@@ -35,7 +35,8 @@ public:
 	void			setWidth(UT_UCSChar cIndex, UT_sint32 width);
 	UT_sint32		getWidth(UT_UCSChar cIndex) const;
 
-protected:
+private:
+	GR_CharWidths(GR_CharWidths &cp); // no impl
 
 	typedef struct _a { UT_sint32 aCW[256]; } Array256;
 

@@ -32,19 +32,21 @@ public:
 	GR_Image();
 	virtual ~GR_Image();
 	
-   	virtual void		setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { m_iDisplayWidth = iDisplayWidth; m_iDisplayHeight = iDisplayHeight; }
+   	virtual void		setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 	
-	virtual UT_sint32	getDisplayWidth(void) const { return m_iDisplayWidth; }
-	virtual UT_sint32	getDisplayHeight(void) const { return m_iDisplayHeight; }
+	virtual UT_sint32	getDisplayWidth(void) const;
+	virtual UT_sint32	getDisplayHeight(void) const;
 
-   	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const { return false; }
-	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { return false; }
+   	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
+	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
 	void				getName(char* szName) const;
+	void getName ( UT_String & copy ) const;
 
-	virtual void		setLayoutSize(UT_sint32 iLayoutWidth, UT_sint32 iLayoutHeight) { m_iLayoutWidth = iLayoutWidth; m_iLayoutHeight = iLayoutHeight; }
-	UT_sint32			getLayoutWidth(void) const { return m_iLayoutWidth;}
-	UT_sint32			getLayoutHeight(void) const { return m_iLayoutHeight;}
+	virtual void		setLayoutSize(UT_sint32 iLayoutWidth, UT_sint32 iLayoutHeight);
+
+	UT_sint32			getLayoutWidth(void) const;
+	UT_sint32			getLayoutHeight(void) const;
 								
    	enum GRType {
 	   GRT_Unknown,
@@ -53,10 +55,14 @@ public:
 	};
    
 	static GRType		getBufferType(const UT_ByteBuf* pBB);
-   	virtual GRType		getType() { return GRT_Unknown; }
-   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) { return false; }
+   	virtual GRType		getType() const;
+   	virtual bool		render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) const;
 
-protected:
+ protected:
+	void setName ( const char * szName );
+	void setName ( const UT_String & szName );
+
+private:
    	UT_String		m_szName;
 	UT_sint32		m_iLayoutWidth;
 	UT_sint32		m_iLayoutHeight;

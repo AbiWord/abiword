@@ -33,11 +33,11 @@ GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName, bool isPrintResolution)
 {
   if (szName)
   {
-      m_szName = szName;
+    setName ( szName );
   }
   else
   {
-      m_szName = "UnixGnomeImage";
+    setName ( "UnixGnomeImage" );
   }
   m_bPrintResolution = isPrintResolution;
 }

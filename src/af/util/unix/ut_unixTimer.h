@@ -34,7 +34,7 @@ public:
 	virtual void stop();
 	virtual void start();
 	
-protected:
+private:
 	UT_sint32 m_iMilliseconds;
 	UT_uint32 m_iGtkTimerId;
 };

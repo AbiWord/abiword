@@ -46,7 +46,7 @@ public:
    	void			setData(PSFatmap * image) { m_image = image; }
 	PSFatmap *			getData(void) const { return m_image; }
 
-protected:
+private:
 
 	PSFatmap * m_image;
 };

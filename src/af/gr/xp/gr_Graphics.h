@@ -260,5 +260,3 @@ private:
 };
 
 #endif /* GR_GRAPHICS_H */
-
-

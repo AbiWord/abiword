@@ -25,16 +25,15 @@
 #include "ut_bytebuf.h"
 
 PS_Image::PS_Image(const char* szName)
+  : m_image(0)
 {
-	m_image = NULL;
-	
 	if (szName)
 	{
-	  m_szName = szName;
+	  setName ( szName );
 	}
 	else
 	{
-	  m_szName = "PostScriptImage";
+	  setName ( "PostScriptImage" );
 	}
 }
 

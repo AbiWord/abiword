@@ -77,14 +77,15 @@ struct drawPath : public drawBase {
    
 
 GR_VectorImage::GR_VectorImage(const char* szName)
+  : m_status(false), m_context(0)
 {
    if (szName)
      {
-	m_szName = szName;
+       setName (szName);
      }
    else
      {
-	m_szName = "VectorImage";
+       setName ( "VectorImage" );
      }
 }
 
@@ -112,12 +113,6 @@ static void charData(void *userData, const XML_Char* text, int len)
 }
 #endif /* HAVE_GNOME */
 
-void GR_VectorImage::setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
-{
-   m_iDisplayWidth = iDisplayWidth;
-   m_iDisplayHeight = iDisplayHeight;
-}
-
 bool GR_VectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
 {
    UT_DEBUGMSG(("writing vector image data (TODO)\n"));
@@ -126,8 +121,7 @@ bool GR_VectorImage::convertToBuffer(UT_ByteBuf** ppBB) const
 
 bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
-   m_iDisplayWidth = iDisplayWidth;
-   m_iDisplayHeight = iDisplayHeight;
+  setDisplaySize ( iDisplayWidth, iDisplayHeight );
 
    UT_DEBUGMSG(("reading vector image data (TODO)\n"));
    return false;
@@ -150,14 +144,17 @@ bool GR_VectorImage::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplay
 
 bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDest)
 {
+   UT_sint32 iDisplayWidth = getDisplayWidth();
+   UT_sint32 iDisplayHeight = getDisplayHeight();
    UT_RGBColor col(0, 0xff, 0);
-   pGR->fillRect(col, xDest, yDest, m_iDisplayWidth, m_iDisplayHeight);
+
+   pGR->fillRect(col, xDest, yDest, iDisplayWidth, iDisplayHeight);
    UT_setColor(col, 0xff, 0, 0);
    pGR->setColor(col);
-   pGR->drawLine(xDest + m_iDisplayWidth/2, yDest, xDest+m_iDisplayWidth, yDest+m_iDisplayHeight/2);
-   pGR->drawLine(xDest + m_iDisplayWidth/2, yDest+m_iDisplayHeight, xDest+m_iDisplayWidth, yDest+m_iDisplayHeight/2);
-   pGR->drawLine(xDest + m_iDisplayWidth/2, yDest, xDest, yDest+m_iDisplayHeight/2);
-   pGR->drawLine(xDest + m_iDisplayWidth/2, yDest+m_iDisplayHeight, xDest, yDest+m_iDisplayHeight/2);
+   pGR->drawLine(xDest + iDisplayWidth/2, yDest, xDest+iDisplayWidth, yDest+iDisplayHeight/2);
+   pGR->drawLine(xDest + iDisplayWidth/2, yDest+iDisplayHeight, xDest+iDisplayWidth, yDest+iDisplayHeight/2);
+   pGR->drawLine(xDest + iDisplayWidth/2, yDest, xDest, yDest+iDisplayHeight/2);
+   pGR->drawLine(xDest + iDisplayWidth/2, yDest+iDisplayHeight, xDest, yDest+iDisplayHeight/2);
 		 
    return true;
 }

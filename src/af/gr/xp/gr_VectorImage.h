@@ -35,8 +35,6 @@ public:
 	GR_VectorImage(const char* szName);
 	virtual ~GR_VectorImage();
 	
-   	virtual void		setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-	
    	virtual bool		convertToBuffer(UT_ByteBuf** ppBB) const;
 	virtual bool		convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
@@ -47,7 +45,7 @@ public:
    	void _endElement(const XML_Char* name);
    	void _charData(const XML_Char* text, int len);
    
-protected:
+private:
 
    	bool m_status;
    	UT_Stack *m_context;

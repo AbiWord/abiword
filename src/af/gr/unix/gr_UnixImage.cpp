@@ -24,17 +24,21 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 
-GR_UnixImage::GR_UnixImage(const char* szName)
+Fatmap::Fatmap ()
+  : width (0), height(0), data(0)
 {
-	m_image = NULL;
-	
+}
+
+GR_UnixImage::GR_UnixImage(const char* szName)
+  : m_image(0)
+{
 	if (szName)
 	{
-		m_szName = szName;
+	  setName (szName);
 	}
 	else
 	{
-		m_szName = "UnixImage";
+	  setName("UnixImage");
 	}
 }
 

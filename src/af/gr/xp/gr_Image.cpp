@@ -41,6 +41,22 @@ void GR_Image::getName(char* p) const
 	strcpy(p, m_szName.c_str());
 }
 
+void GR_Image::getName ( UT_String & copy ) const
+{
+  // assign
+  copy = m_szName;
+}
+
+void GR_Image::setName ( const char * name )
+{
+  m_szName = name;
+}
+
+void GR_Image::setName ( const UT_String & name )
+{
+  m_szName = name;
+}
+
 GR_Image::GRType GR_Image::getBufferType(const UT_ByteBuf * pBB)
 {
    const char * buf = (const char*)pBB->getPointer(0);
@@ -72,4 +88,58 @@ GR_Image::GRType GR_Image::getBufferType(const UT_ByteBuf * pBB)
       }
    }
    return GR_Image::GRT_Unknown;
+}
+
+void GR_Image::setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) 
+{ 
+  m_iDisplayWidth = iDisplayWidth; 
+  m_iDisplayHeight = iDisplayHeight; 
+}
+	
+UT_sint32 GR_Image::getDisplayWidth(void) const 
+{ 
+  return m_iDisplayWidth; 
+}
+
+UT_sint32 GR_Image::getDisplayHeight(void) const 
+{ 
+  return m_iDisplayHeight; 
+}
+
+bool GR_Image::convertToBuffer(UT_ByteBuf** ppBB) const 
+{ 
+  // default no impl
+  return false; 
+}
+
+bool GR_Image::convertFromBuffer(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) 
+{ 
+  // default no impl
+  return false; 
+}
+
+void GR_Image::setLayoutSize(UT_sint32 iLayoutWidth, UT_sint32 iLayoutHeight) 
+{ 
+  m_iLayoutWidth = iLayoutWidth; 
+  m_iLayoutHeight = iLayoutHeight;
+}
+
+UT_sint32 GR_Image::getLayoutWidth(void) const 
+{ 
+  return m_iLayoutWidth;
+}
+
+UT_sint32 GR_Image::getLayoutHeight(void) const 
+{ 
+  return m_iLayoutHeight;
+}
+
+GR_Image::GRType GR_Image::getType() const
+{ 
+  return GRT_Unknown;
+}
+
+bool GR_Image::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) const 
+{ 
+  return false; 
 }

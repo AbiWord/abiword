@@ -120,7 +120,7 @@ class XAP_UnixGnomePrintGraphics : public GR_Graphics
 	bool loadUnicodeData(void);
 	UT_uint32 getUnicodeForDingbats(UT_uint32 code);
 	UT_uint32 getUnicodeForSymbol(UT_uint32 code);
- protected:
+ private:
 
 	bool			_startDocument(void);
 	bool			_startPage(const char * szPageLabel);
