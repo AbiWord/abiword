@@ -129,7 +129,6 @@ static int s_preview_exposed(PtWidget_t * w, PhTile_t * damage)
 	pQNXDlg = (ppQNXDlg) ? *ppQNXDlg : NULL;
 
 	UT_ASSERT(pQNXDlg);
-	printf("Calling expose area ... \n");
 	pQNXDlg->previewExposed();
 
     PtClipRemove();
@@ -260,33 +259,39 @@ void  AP_QNXDialog_Lists::typeChanged(int style)
 	//gtk_option_menu_remove_menu(GTK_OPTION_MENU (m_wListStyleBox));
 	if(style == 0)
 	{
+#if 0
 	  //     gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
-/*
 	  	m_wListStyleNone_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleNone_menu;
 		_fillNoneStyleMenu(m_wListStyleNone_menu);
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), m_wListStyleNone_menu);
-*/
+#else
+		_fillNoneStyleMenu(m_wListStyle_menu);
+#endif
 	}
 	else if(style == 1)
 	{
+#if 0
 	  //    gtk_widget_destroy(GTK_WIDGET(m_wListStyleBulleted_menu));
-/*
        		m_wListStyleBulleted_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleBulleted_menu;
         _fillBulletedStyleMenu(m_wListStyleBulleted_menu);
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), m_wListStyleBulleted_menu);
-*/
+#else
+		_fillBulletedStyleMenu(m_wListStyle_menu);
+#endif
 	}
 	else if(style == 2)
 	{
+#if 0
 	  //  gtk_widget_destroy(GTK_WIDGET(m_wListStyleNumbered_menu));
-/*
 	  	m_wListStyleNumbered_menu = gtk_menu_new();
 		m_wListStyle_menu = m_wListStyleNumbered_menu;
         _fillNumberedStyleMenu(m_wListStyleNumbered_menu);
 		gtk_option_menu_set_menu (GTK_OPTION_MENU (m_wListStyleBox), m_wListStyleNumbered_menu);
-*/
+#else
+		_fillNumberedStyleMenu(m_wListStyle_menu);
+#endif
 	}
 
 /*
@@ -343,10 +348,9 @@ void  AP_QNXDialog_Lists::customChanged(void)
 	if(m_bisCustomFrameHidden == UT_TRUE)
 	{
 		fillWidgetFromDialog();
-/*
-		gtk_widget_show(m_wCustomFrame);
-		gtk_arrow_set(GTK_ARROW(m_wCustomArrow),GTK_ARROW_DOWN,GTK_SHADOW_OUT);
-*/
+
+		PtRealizeWidget(m_wCustomFrame);
+
 		m_bisCustomFrameHidden = UT_FALSE;
 		m_bisCustomized = UT_TRUE;
 		setMemberVariables();
@@ -354,10 +358,8 @@ void  AP_QNXDialog_Lists::customChanged(void)
 	}
 	else
 	{
-/*
-		gtk_widget_hide(m_wCustomFrame);
-		gtk_arrow_set(GTK_ARROW(m_wCustomArrow),GTK_ARROW_RIGHT,GTK_SHADOW_OUT);
-*/
+		PtUnrealizeWidget(m_wCustomFrame);
+
 		m_bisCustomFrameHidden = UT_TRUE;
 		m_bisCustomized = UT_FALSE;
 		_setData();
@@ -413,6 +415,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_RENDER_FLAGS, 0, ABI_MODAL_WINDOW_RENDER_FLAGS);
 	PtSetArg(&args[n++], Pt_ARG_WINDOW_MANAGED_FLAGS, 0, ABI_MODAL_WINDOW_MANAGE_FLAGS);
 	m_mainWindow = PtCreateWidget(PtWindow, NULL, n, args);
+	PtAddCallback(m_mainWindow, Pt_CB_WINDOW_CLOSING, s_deleteClicked, this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
@@ -454,7 +457,10 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Customize ...", 0);
 	PtSetArg(&args[n++], Pt_ARG_INDICATOR_TYPE, Pt_TOGGLE_OUTLINE, 0);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_SET);
 	togCustomize = PtCreateWidget(PtToggleButton, ctlgroup, n, args);	
+	PtAddCallback(togCustomize, Pt_CB_ACTIVATE, s_customChanged, this);
+	m_bisCustomFrameHidden = UT_TRUE;
 
 	n = 0;
 #define OUTLINE_GROUP (Pt_TOP_OUTLINE | Pt_TOP_BEVEL | \
@@ -463,7 +469,7 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
                                            Pt_RIGHT_OUTLINE | Pt_RIGHT_BEVEL)
 	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, OUTLINE_GROUP, OUTLINE_GROUP);
 	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
-	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED, Pt_DELAY_REALIZE | Pt_HIGHLIGHTED);
 	grpCustomize = PtCreateWidget(PtGroup, ctlgroup, n, args);
 
 	n = 0;
@@ -501,19 +507,25 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtCreateWidget(PtButton, group, n, args);	
 	n = 0;
 	numListLevel = PtCreateWidget(PtNumericInteger, group, n, args);	
+	PtAddCallback(numListLevel, Pt_CB_ACTIVATE, s_styleChanged, this);
 	n = 0;
 	numStart = PtCreateWidget(PtNumericInteger, group, n, args);	
+	PtAddCallback(numStart, Pt_CB_ACTIVATE, s_styleChanged, this);
 	n = 0;
-	numListAlign = PtCreateWidget(PtNumericInteger, group, n, args);	
+	numListAlign = PtCreateWidget(PtNumericFloat, group, n, args);	
+	PtAddCallback(numListAlign, Pt_CB_ACTIVATE, s_styleChanged, this);
 	n = 0;
-	numIndentAlign = PtCreateWidget(PtNumericInteger, group, n, args);	
+	numIndentAlign = PtCreateWidget(PtNumericFloat, group, n, args);	
+	PtAddCallback(numIndentAlign, Pt_CB_ACTIVATE, s_styleChanged, this);
 
 	/*** Create the preview in the next dialog ***/
+	/*
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 300, 0);
 	PtSetArg(&args[n++], Pt_ARG_FILL_COLOR, Pg_WHITE, 0);
 	PtCreateWidget(PtLabel, hgroup, n, args);
+	*/
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH,  200, 0);
@@ -558,17 +570,23 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 200, 0);
 	PtCreateWidget(PtLabel, group, n, args);	
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "OK", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Apply", 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	butOK = PtCreateWidget(PtButton, group, n, args);	
+	PtAddCallback(butOK, Pt_CB_ACTIVATE, s_applyClicked, this);
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Cancel", 0);
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Close", 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
 	butCancel = PtCreateWidget(PtButton, group, n, args);	
+	PtAddCallback(butCancel, Pt_CB_ACTIVATE, s_closeClicked, this);
 
 	/** Done **/
+	lblFormat = m_wDelimEntry;
+
 	m_wCustomFrame = grpCustomize;
 	m_wCustomLabel = togCustomize;
+
+	m_wListStyle_menu = listStyle;
 
 	m_wListStyleBox = lblFormat;
 	m_wLevelSpin = numListLevel;
@@ -589,287 +607,148 @@ PtWidget_t * AP_QNXDialog_Lists::_constructWindow (void)
 
 void AP_QNXDialog_Lists::_fillNoneStyleMenu( PtWidget_t *listmenu)
 {
-#if 0
-        PtWidget_t *glade_menuitem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const char *text;
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Type_none));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) NOT_A_LIST ));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
-#endif
+	PtListDeleteAllItems(listmenu);
+
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Type_none);
+	PtListAddItems(listmenu, &text, 1, 0);
+
+//	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER((gint) NOT_A_LIST ));
+
+//TODO: Replace the callbacks
+//	PtAddCallback(listmenu, Pt_CB_ACTIVATE, s_styleChanged, this);
 }
 
 void AP_QNXDialog_Lists::_fillNumberedStyleMenu( PtWidget_t *listmenu)
 {
-#if 0
-        PtWidget_t *glade_menuitem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const char *text;
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) NUMBERED_LIST ));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	PtListDeleteAllItems(listmenu);
 
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Numbered_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-        glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) LOWERCASE_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Case_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) UPPERCASE_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Case_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Roman_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) LOWERROMAN_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Lower_Roman_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Roman_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) UPPERROMAN_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
-#endif
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Upper_Roman_List);
+	PtListAddItems(listmenu, &text, 1, 0);
+
+//TODO: Replace the callbacks
+//	PtAddCallback(listmenu, Pt_CB_ACTIVATE, s_styleChanged, this);
 }
-
 
 void AP_QNXDialog_Lists::_fillBulletedStyleMenu( PtWidget_t *listmenu)
 {
-#if 0
-        PtWidget_t *glade_menuitem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	const char *text;
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) BULLETED_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	PtListDeleteAllItems(listmenu);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Dashed_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) DASHED_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Bullet_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Dashed_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Square_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) SQUARE_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Square_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Triangle_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Triangle_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) TRIANGLE_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Diamond_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Diamond_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) DIAMOND_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Star_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Implies_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Star_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) STAR_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Tick_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Box_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Implies_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) IMPLIES_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Hand_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
+	text = pSS->getValue(AP_STRING_ID_DLG_Lists_Heart_List);
+	PtListAddItems(listmenu, &text, 1, 0);
 
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Tick_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) TICK_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
-
-
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Box_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) BOX_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
-
-
-
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Hand_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) HAND_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
-
-	glade_menuitem = gtk_menu_item_new_with_label (
-	       pSS->getValue(AP_STRING_ID_DLG_Lists_Heart_List));
-        gtk_widget_show (glade_menuitem);
-	gtk_object_set_user_data(GTK_OBJECT(glade_menuitem),GINT_TO_POINTER(
-(gint) HEART_LIST));
-	gtk_menu_append (GTK_MENU (listmenu), glade_menuitem);
-        gtk_signal_connect (GTK_OBJECT (glade_menuitem), "activate",
-					GTK_SIGNAL_FUNC (s_styleChanged), this);
-
-#endif
+//TODO: Replace the callbacks
+//	PtAddCallback(listmenu, Pt_CB_ACTIVATE, s_styleChanged, this);
 }
 
 void AP_QNXDialog_Lists::_populateWindowData (void) 
 {
-#if 0
   //	char *tmp;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-        PopulateDialogData();
-	if(m_isListAtPoint == UT_TRUE)
-	{
-	  // Button 0 is stop list, button 2 is startsub list
-	       gtk_label_set_text( GTK_LABEL(m_wStartNew_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Stop_Current_List));
-	       gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Start_Sub));
 
+	PopulateDialogData();
+	
+	if(m_isListAtPoint == UT_TRUE) {
+	  // Button 0 is stop list, button 2 is startsub list
+		   PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Stop_Current_List), 0);
+		   PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_Sub), 0);
 	}
 	else
 	{
 	  // Button 0 is Start New List, button 2 is resume list
-	       gtk_label_set_text( GTK_LABEL(m_wStartNew_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New));
-	       gtk_label_set_text( GTK_LABEL(m_wStartSub_label), pSS->getValue(AP_STRING_ID_DLG_Lists_Resume));
+		   PtSetResource(m_wStartNewList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Start_New), 0);
+		   PtSetResource(m_wStartSubList, Pt_ARG_TEXT_STRING, pSS->getValue(AP_STRING_ID_DLG_Lists_Resume), 0);
 	}
-#endif
 }
 
 #if 0
 void AP_QNXDialog_Lists::_connectSignals(void)
 {
-	gtk_signal_connect_after(GTK_OBJECT(m_wMainWindow),
-							 "destroy",
-							 NULL,
-							 NULL);
-	//
-        // Don't use connect_after in modeless dialog
-	gtk_signal_connect(GTK_OBJECT(m_wMainWindow),
-						     "delete_event",
-						     GTK_SIGNAL_FUNC(s_deleteClicked), (gpointer) this);
-
-	gtk_signal_connect (GTK_OBJECT (m_wApply), "clicked",
-						GTK_SIGNAL_FUNC (s_applyClicked), this);
-	gtk_signal_connect (GTK_OBJECT (m_wClose), "clicked",
-						GTK_SIGNAL_FUNC (s_closeClicked), this);
-	gtk_signal_connect (GTK_OBJECT (m_wCustomLabel), "clicked",
-						GTK_SIGNAL_FUNC (s_customChanged), this);
 	gtk_signal_connect (GTK_OBJECT (m_wMenu_None), "activate",
 					GTK_SIGNAL_FUNC (s_typeChangedNone), this);
 	gtk_signal_connect (GTK_OBJECT (m_wMenu_Bull), "activate",
 					GTK_SIGNAL_FUNC (s_typeChangedBullet), this);
 	gtk_signal_connect (GTK_OBJECT (m_wMenu_Num), "activate",
 					GTK_SIGNAL_FUNC (s_typeChangedNumbered), this);
-	gtk_signal_connect (GTK_OBJECT (m_oStartSpin_adj), "value_changed",
-				      GTK_SIGNAL_FUNC (s_styleChanged), this);
-	gtk_signal_connect (GTK_OBJECT (m_oLevelSpin_adj), "value_changed",
-				      GTK_SIGNAL_FUNC (s_styleChanged), this);
-	gtk_signal_connect (GTK_OBJECT (m_oAlignList_adj), "value_changed",
-				      GTK_SIGNAL_FUNC (s_styleChanged), this);
-	gtk_signal_connect (GTK_OBJECT (m_oIndentAlign_adj), "value_changed",
-				      GTK_SIGNAL_FUNC (s_styleChanged), this);
+
 	gtk_signal_connect (GTK_OBJECT (GTK_ENTRY(m_wDelimEntry)), "changed",
 				      GTK_SIGNAL_FUNC (s_styleChanged), this);
-
-
-	// the expose event of the preview
-	             gtk_signal_connect(GTK_OBJECT(m_wPreviewArea),
-					   "expose_event",
-					   GTK_SIGNAL_FUNC(s_preview_exposed),
-					   (gpointer) this);
-
-	
-		     gtk_signal_connect_after(GTK_OBJECT(m_wMainWindow),
-		     					 "expose_event",
-		     				 GTK_SIGNAL_FUNC(s_window_exposed),
-		    					 (gpointer) this);
 
 }
 #endif
 
 void AP_QNXDialog_Lists::_setData(void)
 {
-#if 0
-  //
-  // This function reads the various elements in customize box and loads
-  // the member variables with them
-  //
-        gint i;
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wLevelSpin), (float) m_iLevel);
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wAlignListSpin),m_fAlign);
-	float indent = m_fAlign + m_fIndent;
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin),indent);
-	if( (m_fIndent + m_fAlign) < 0.0)
-	{
-	         m_fIndent = - m_fAlign;
-                 gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin), 0.0);
+	double indent;
 
+	PtSetResource(m_wLevelSpin, Pt_ARG_NUMERIC_VALUE, m_iLevel, 0);
+
+	indent = m_fAlign;
+	PtSetResource(m_wAlignListSpin, Pt_ARG_NUMERIC_VALUE, &indent, sizeof(indent));
+
+	indent = m_fAlign + m_fIndent;
+	if( indent < 0.0) {
+		m_fIndent = - m_fAlign;
+		indent = 0.0;
+		PtSetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &indent, sizeof(indent));
+	} else {
+		PtSetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &indent, sizeof(indent));
 	}
+
 	//
 	// Code to work out which is active Font
 	//
+#if 0
 	if(strcmp((char *) m_pszFont,"NULL") == 0 )
 	{
                 gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
@@ -890,34 +769,41 @@ void AP_QNXDialog_Lists::_setData(void)
                          gtk_option_menu_set_history (GTK_OPTION_MENU (m_wFontOptions), 0 );
 		}
 	}
-        gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wStartSpin),(float) m_iStartValue);
-	// first, we stop the entry from sending the changed signal to our handler
-	gtk_signal_handler_block_by_data(  GTK_OBJECT(m_wDelimEntry), (gpointer) this );
-
-	gtk_entry_set_text( GTK_ENTRY(m_wDelimEntry), (const gchar *) m_pszDelim);
-	// turn signals back on
-	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(m_wDelimEntry), (gpointer) this );
+#else
 #endif
+
+	PtSetResource(m_wStartSpin, Pt_ARG_NUMERIC_VALUE, m_iStartValue, 0);
+
+	PtSetResource(m_wDelimEntry, Pt_ARG_TEXT_STRING, m_pszDelim, 0);
 }
 
 
 void AP_QNXDialog_Lists::_gatherData(void)
 {
-#if 0
-  //
-  // This function reads the various elements in customize box and loads
-  // the member variables with them
-  //
-        m_iLevel =  gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wLevelSpin));
-	m_fAlign = gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_wAlignListSpin));
-	float indent = gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON( m_wIndentAlignSpin));
-	m_fIndent = indent - m_fAlign;
-	if( (m_fIndent + m_fAlign) < 0.0)
-	{
-	         m_fIndent = - m_fAlign;
-                 gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin), 0.0);
+	double indent;
+	int *idata;
+	double *ddata;
+	char   *sdata;
 
+	PtGetResource(m_wLevelSpin, Pt_ARG_NUMERIC_VALUE, &idata, 0);
+	m_iLevel = *idata;
+
+	PtGetResource(m_wAlignListSpin, Pt_ARG_NUMERIC_VALUE, &ddata, 0);
+	m_fAlign = *ddata;
+
+	PtGetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &ddata, 0);
+	indent = *ddata;
+
+	m_fIndent = indent - m_fAlign;
+
+	if( (m_fIndent + m_fAlign) < 0.0) {
+		m_fIndent = - m_fAlign;
+		//gtk_spin_button_set_value(GTK_SPIN_BUTTON( m_wIndentAlignSpin), 0.0);
+		indent = 0.0;
+		PtSetResource(m_wIndentAlignSpin, Pt_ARG_NUMERIC_VALUE, &indent, sizeof(indent));
 	}
+
+#if 0
 	PtWidget_t * wfont = gtk_menu_get_active(GTK_MENU(m_wFontOptions_menu));
 	gint ifont =  GPOINTER_TO_INT(gtk_object_get_user_data(GTK_OBJECT(wfont)));
 	if(ifont == 0)
@@ -928,11 +814,20 @@ void AP_QNXDialog_Lists::_gatherData(void)
 	{
                  UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  g_list_nth_data(m_glFonts, ifont-1));
 	}
-	UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
-	m_iStartValue =  gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_wStartSpin));
-	gchar * pszDel = gtk_entry_get_text( GTK_ENTRY(m_wDelimEntry));
-        UT_XML_strncpy((XML_Char *)m_pszDelim, 80, (const XML_Char *) pszDel);
+#else
+	UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *)  "NULL");
 #endif
+
+	UT_XML_strncpy( (XML_Char *) m_pszDecimal, 80, (const XML_Char *) ".");
+
+	PtGetResource(m_wStartSpin, Pt_ARG_NUMERIC_VALUE, &idata, 0);
+	m_iStartValue =  *idata;
+
+/*
+	gchar * pszDel = gtk_entry_get_text( GTK_ENTRY(m_wDelimEntry));
+	PtGetResource(m_wStartSpin, Pt_ARG_TEXT_STRING, &sdata, 0);
+	UT_XML_strncpy((XML_Char *)m_pszDelim, 80, (const XML_Char *) sdata);
+*/
 }
 
 

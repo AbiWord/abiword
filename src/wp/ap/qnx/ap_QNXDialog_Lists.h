@@ -85,9 +85,9 @@ protected:
 
 	//Custom box
 	PtWidget_t * m_wCustomFrame;
-	//PtWidget_t * m_wCustomArrow;
 	PtWidget_t * m_wCustomLabel;
 	//Custom box entries
+	PtWidget_t * m_wDelimEntry;
 	PtWidget_t * m_wListStyleBox;
 	PtWidget_t * m_wLevelSpin;
 	PtWidget_t * m_wStartSpin;
@@ -105,8 +105,6 @@ protected:
 	PtWidget_t * m_wApplyCurrent;
 	PtWidget_t * m_wStartSubList;
 	PtWidget_t * m_wResumeList;
-	//PtWidget_t * m_wStartNew_label;
-	//PtWidget_t * m_wStartSub_label;
 
 	//Action buttons
 	PtWidget_t * m_wApply;
