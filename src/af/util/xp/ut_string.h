@@ -38,7 +38,9 @@
  * work for us anyway
  */
 #ifdef WIN32
-#include <windows.h>	// need it to include lstrcmpA
+
+extern "C" __declspec(dllimport) int __stdcall lstrcmpA(const char * lp1, const char * lp2);
+
 #define UT_strcoll(a, b) lstrcmpA((a), (b))
 #else
 #define UT_strcoll(a, b) strcoll((a), (b))
