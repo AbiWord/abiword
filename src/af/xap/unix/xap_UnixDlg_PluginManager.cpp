@@ -36,6 +36,7 @@
 #include "xap_ModuleManager.h"
 
 #include "ie_types.h"
+#include "ut_string_class.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -132,7 +133,11 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
 	UT_ASSERT(pDialog);
 	
-	pDialog->setCurrentPathname(0);
+	// set the intial plugin directory to the user-local plugin directory
+	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()/plugins
+	UT_String pluginDir (XAP_App::getApp()->getUserPrivateDirectory());
+	pluginDir += "/plugins";
+	pDialog->setCurrentPathname (pluginDir.c_str());
 	pDialog->setSuggestFilename(false);
 	
 	UT_uint32 filterCount = 1;
@@ -153,8 +158,6 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 							 (const UT_sint32 *) nTypeList);
 	
 	pDialog->setDefaultFileType((IEFileType)1);
-
-	// todo: cd to the proper plugin directory
 	
 	pDialog->runModal(m_pFrame);
 	
