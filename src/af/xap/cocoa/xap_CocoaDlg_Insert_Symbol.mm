@@ -88,13 +88,7 @@ void XAP_CocoaDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 void XAP_CocoaDialog_Insert_Symbol::notifyActiveFrame(XAP_Frame * pFrame)
 {
-	UT_ASSERT(m_dlg);
-	if (!m_dlg)
-		return;
-
-	ConstructWindowName();
-
-	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
+	// ...
 }
 
 void XAP_CocoaDialog_Insert_Symbol::activate(void)
@@ -103,10 +97,6 @@ void XAP_CocoaDialog_Insert_Symbol::activate(void)
 	if (!m_dlg)
 		return;
 
-	ConstructWindowName();
-
-	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
-
 	[m_dlg windowToFront];
 }
 
@@ -114,9 +104,12 @@ void XAP_CocoaDialog_Insert_Symbol::destroy(void)
 {
 	modeless_cleanup();
 
-	[m_dlg close];
-	[m_dlg release];
-	m_dlg = nil;
+	if (m_dlg)
+		{
+			[m_dlg close];
+			[m_dlg release];
+			m_dlg = nil;
+		}
 }
 
 void XAP_CocoaDialog_Insert_Symbol::insertSymbol(const char * fontFamilyName, UT_UCS4Char symbol)
@@ -298,6 +291,13 @@ static unichar s_remap[224] = {
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
+	UT_UTF8String sTitle;
+
+	if (pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert_SymbolTitle, sTitle))
+		{
+			[[self window] setTitle:[NSString stringWithUTF8String:(sTitle.utf8_str())]];
+		}
+
 	LocalizeControl(oAdd,      pSS, XAP_STRING_ID_DLG_Insert);
 //	LocalizeControl(_closeBtn, pSS, XAP_STRING_ID_DLG_Close);
 
@@ -328,6 +328,10 @@ static unichar s_remap[224] = {
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	[oSymbolTable setDelegate:nil];
+	[oSymbolTable setDataSource:nil];
+	[oSymbolTable setTarget:nil];
+
 	_xap->windowClosed();
 }
 
