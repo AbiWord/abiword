@@ -105,6 +105,7 @@ void fp_PageSize::Set(Predefined preDef)
 
 	const private_pagesize_sizes& size = pagesizes[preDef];
 	Set(size.w, size.h, size.u);
+	Set(inch);
 }
 
 void fp_PageSize::Set(const char *name)
