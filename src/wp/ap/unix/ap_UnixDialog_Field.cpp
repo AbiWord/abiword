@@ -69,13 +69,6 @@ AP_UnixDialog_Field::~AP_UnixDialog_Field(void)
 
 /*****************************************************************/
 
-/*static void s_types_clicked(GtkWidget * widget, gint row, gint column,
-							GdkEventButton *event, AP_UnixDialog_Field * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->types_changed(row);
-}*/
-
 static void s_types_clicked(GtkTreeView *treeview,
                             AP_UnixDialog_Field * dlg)
 {

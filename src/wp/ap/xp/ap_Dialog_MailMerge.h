@@ -23,6 +23,7 @@
 #include "xap_Dialog.h"
 #include "pd_Document.h"
 #include "xap_Strings.h"
+#include "ut_vector.h"
 
 class XAP_Frame;
 
@@ -40,9 +41,16 @@ public:
 	tAnswer	      getAnswer(void) const;
 	const UT_UTF8String& getMergeField() const;
 
+	void eventOpen ();
+
 protected:
 	void          setAnswer(tAnswer a);
 	void          setMergeField(const UT_UTF8String & name);
+
+	virtual void setFieldList();
+
+	XAP_Frame * m_pFrame;
+	UT_Vector m_vecFields;
 
 private:
 	UT_UTF8String m_mergeField;

@@ -36,12 +36,20 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
+	void fieldClicked(UT_uint32 index);
+
 protected:
+	virtual void setFieldList();
+
+private:
+
 	// private construction functions
 	void _constructWindow(void);
 
 	GtkWidget * m_windowMain;
 	GtkWidget * m_entry;
+	GtkWidget * m_open;
+	GtkWidget * m_treeview;
 };
 
 #endif /* AP_UNIXDIALOG_BREAK_H */

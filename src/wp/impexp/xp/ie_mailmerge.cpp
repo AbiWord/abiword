@@ -438,7 +438,7 @@ class ABI_EXPORT IE_MailMerge_XML_Listener : public IE_MailMerge,
 public:
 	
 	IE_MailMerge_XML_Listener ()
-		: IE_MailMerge(), UT_XML::Listener(), mAcceptingText(false), mLooping(true)
+		: IE_MailMerge(), UT_XML::Listener(), mAcceptingText(false), mLooping(true), m_vecHeaders(0)
 		{
 		}
 	
@@ -463,11 +463,17 @@ public:
 	
 	virtual void endElement (const XML_Char * name)
 		{
-			if (!UT_strcmp(name, "awmm:field") && mCharData.size() && mLooping) {      
-				addMergePair (mKey, mCharData);
+			if (!UT_strcmp(name, "awmm:field") && mLooping) {      
+				if (m_vecHeaders)
+					addOrReplaceVecProp (mKey);
+				else
+					addMergePair (mKey, mCharData);
 			} 
 			else if (!UT_strcmp(name, "awmm:record") && mLooping) {
-				mLooping = fireMergeSet ();
+				if (m_vecHeaders)
+					mLooping = false;
+				else
+					mLooping = fireMergeSet ();
 				// todo: UT_XML::stop()
 			}
 			mCharData.clear ();
@@ -490,12 +496,37 @@ public:
 			return default_xml.parse (szFilename);
 		}
 	
+	virtual UT_Error getHeaders (const char * szFilename, UT_Vector & out_vec) {
+		UT_XML default_xml;
+		
+		m_vecHeaders = &out_vec;
+		
+		default_xml.setListener (this);
+		return default_xml.parse (szFilename);
+	}
+
 private:
 	
+	void addOrReplaceVecProp (const UT_UTF8String & str) {
+		UT_sint32 iCount = m_vecHeaders->getItemCount();
+		
+		UT_sint32 i = 0;
+		for(i=0; i < iCount ; i ++)
+		{
+			UT_UTF8String * prop = (UT_UTF8String*)m_vecHeaders->getNthItem(i);
+			if (*prop == str)
+				return;
+		}
+
+		m_vecHeaders->addItem (new UT_UTF8String (str));
+	}
+
 	UT_UTF8String mKey;
 	UT_UTF8String mCharData;
 	bool mAcceptingText;
 	bool mLooping;
+
+	UT_Vector * m_vecHeaders;
 };
 
 class ABI_EXPORT IE_XMLMerge_Sniffer : public IE_MergeSniffer
@@ -592,16 +623,53 @@ public:
 
 		fclose (fp);
 
-		return UT_ERROR;
+		return UT_OK;
+	}
+
+	virtual UT_Error getHeaders (const char * szFilename, UT_Vector & out_vec) {
+		// TODO: this isn't utf-8 correct by a long shot
+
+		UT_UTF8String item;
+
+		char ch[2];
+		ch[1] = '\0';
+
+		FILE * fp = fopen(szFilename, "rb");
+		if (!fp)
+			return UT_ERROR;
+
+		// line 1 == Headings/titles
+		// line 2..n == Data
+
+		while ((1 == fread (ch, 1, 1, fp))){
+			if (ch[0] == '\r')
+				continue;
+			else if (ch[0] == '\n') {
+				defineItem (item, true);
+				break;
+			}
+			else if (ch[0] == m_delim) {
+				defineItem (item, true);
+				item.clear ();
+			}
+			else
+				item += ch;
+		}
+		
+		fclose (fp);
+
+		for (UT_uint32 i = 0; i < m_headers.size(); i++) {
+			UT_UTF8String * clone = new UT_UTF8String (*(UT_UTF8String *)m_headers[i]);
+			out_vec.addItem (clone);
+		}
+
+		return UT_OK;
 	}
 	
 private:
 	
 	void defineItem (const UT_UTF8String & item, bool isHeader)
 		{
-			if (!item.size())
-				return;
-
 			UT_UTF8String * dup = new UT_UTF8String (item);
 			if (isHeader)
 				m_headers.addItem (static_cast<void *>(dup));

@@ -86,7 +86,8 @@ public:
 	// with it.
 	
 	virtual UT_Error	mergeFile(const char * szFilename) = 0;
-	
+	virtual UT_Error getHeaders (const char * szFilename, UT_Vector & out_vec) = 0;	
+
 	static IEMergeType	fileTypeForContents(const char * szBuf,
 											UT_uint32 iNumbytes);
 	

@@ -409,7 +409,7 @@ dcl(DLG_Field_Types,					"&Types:")
 dcl(DLG_Field_Fields,					"&Fields:")
 dcl(DLG_Field_Parameters,				"Extra parameters:")
 
-dcl(DLG_MailMerge_MailMergeTitle, "Mail Merge")
+dcl(DLG_MailMerge_MailMergeTitle, "Insert Mail Merge Field")
 dcl(DLG_MailMerge_Insert, "Field Name:")
 
 dcl(FIELD_Error,				"Error calculating value!")
