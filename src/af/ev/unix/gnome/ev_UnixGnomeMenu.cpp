@@ -463,45 +463,45 @@ UT_Bool EV_UnixGnomeMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
 		case EV_MLF_Normal:
+		{
+			// TODO: Dinamic labels and widgets
+			// see if we need to enable/disable and/or check/uncheck it.
+			UT_Bool bEnable = UT_TRUE;
+			UT_Bool bCheck = UT_FALSE;
+			
+			if (pAction->hasGetStateFunction())
 			{
-				// TODO: Dinamic labels and widgets
-				// see if we need to enable/disable and/or check/uncheck it.
-				UT_Bool bEnable = UT_TRUE;
-				UT_Bool bCheck = UT_FALSE;
-				
-				if (pAction->hasGetStateFunction())
-				{
-					EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
-					if (mis & EV_MIS_Gray)
-						bEnable = UT_FALSE;
-					if (mis & EV_MIS_Toggled)
-						bCheck = UT_TRUE;
-				}
-
-				// Get the dynamic label
-				const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
-				const char * szLabelName = data[0];
-
-				if (szLabelName && *szLabelName)
-				{
-					char buf[1024];
-
-					_ev_convert(buf, szLabelName);
-					item = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (wMenuRoot), buf);
-				}
-				else
-					item = NULL;
-
-				if (item == NULL)
-					break;
-
-				if (GTK_IS_CHECK_MENU_ITEM(item))
-					GTK_CHECK_MENU_ITEM(item)->active = bCheck;
-
-				gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
-
-				break;
+				EV_Menu_ItemState mis = pAction->getMenuItemState(pView);
+				if (mis & EV_MIS_Gray)
+					bEnable = UT_FALSE;
+				if (mis & EV_MIS_Toggled)
+					bCheck = UT_TRUE;
 			}
+			
+			// Get the dynamic label
+			const char ** data = _ev_GetLabelName(m_pUnixApp, m_pUnixFrame, pAction, pLabel);
+			const char * szLabelName = data[0];
+			
+			if (szLabelName && *szLabelName)
+			{
+				char buf[1024];
+				
+				_ev_convert(buf, szLabelName);
+				item = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (wMenuRoot), buf);
+			}
+			else
+				item = NULL;
+			
+			if (item == NULL)
+				break;
+			
+			if (GTK_IS_CHECK_MENU_ITEM(item))
+				GTK_CHECK_MENU_ITEM(item)->active = bCheck;
+			
+			gtk_widget_set_sensitive(GTK_WIDGET(item), bEnable);
+			
+			break;
+		}
 		case EV_MLF_BeginSubMenu:
 		case EV_MLF_EndSubMenu:
 		case EV_MLF_Separator:
