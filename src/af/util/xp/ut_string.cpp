@@ -840,8 +840,12 @@ XML_Char *UT_decodeXMLstring(XML_Char *in)
 			     XML_ErrorString(XML_GetErrorCode(parser)),
 			     __FILE__, __LINE__));
 	}
-	if (parser) XML_ParserFree(parser);
+
 	// TODO: who owns the storage for this?
-	return UT_strdup(out);
+	out = UT_strdup(out);
+
+	if (parser) XML_ParserFree(parser);
+
+	return out;
 #endif
 }
