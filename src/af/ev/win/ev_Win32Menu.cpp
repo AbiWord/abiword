@@ -71,6 +71,7 @@ static const EV_Menu_Bitmap s_bitmaps[] =
 	
 
 	// Format
+/*
 	{AP_MENU_ID_FMT_BOLD, "FMT_BOLD"},
 	{AP_MENU_ID_FMT_ITALIC, "FMT_ITALIC"},
 	{AP_MENU_ID_FMT_UNDERLINE, "FMT_UNDERLINE"},
@@ -79,15 +80,13 @@ static const EV_Menu_Bitmap s_bitmaps[] =
 	{AP_MENU_ID_FMT_BOTTOMLINE, "FMT_BOTTOMLINE"},
 	{AP_MENU_ID_FMT_SUPERSCRIPT, "FMT_SUPERSCRIPT"},
 	{AP_MENU_ID_FMT_SUBSCRIPT, "FMT_SUBSCRIPT"},
-	{AP_MENU_ID_FMT_OVERLINE, "FMT_OVERLINE"},
-		
+	{AP_MENU_ID_FMT_OVERLINE, "FMT_OVERLINE"},	*/	
 
-	{AP_MENU_ID_ALIGN_LEFT, "ALIGN_LEFT"},
+	/*{AP_MENU_ID_ALIGN_LEFT, "ALIGN_LEFT"},
 	{AP_MENU_ID_ALIGN_RIGHT, "ALIGN_RIGHT"},
 	{AP_MENU_ID_ALIGN_CENTER, "ALIGN_CENTER"},
-	{AP_MENU_ID_ALIGN_JUSTIFY, "ALIGN_JUSTIFY"},	
+	{AP_MENU_ID_ALIGN_JUSTIFY, "ALIGN_JUSTIFY"},	*/
 	{AP_MENU_ID_TABLE_INSERT_TABLE, "INSERT_TABLE"},			
-	//{AP_MENU_ID_VIEW_SHOWPARA, "VIEW_SHOWPARA"},			
 	{AP_MENU_ID_TOOLS_SPELL, "SPELLCHECK"},			
 
 	// Table
@@ -97,8 +96,7 @@ static const EV_Menu_Bitmap s_bitmaps[] =
 	{AP_MENU_ID_TABLE_INSERTCOLUMN, "TB_ADD_COLUMN"},
 	{AP_MENU_ID_TABLE_INSERTROW, "TB_ADD_ROW"},
 	{AP_MENU_ID_TABLE_DELETECOLUMN, "TB_DELETE_COLUMN"},
-	{AP_MENU_ID_TABLE_DELETEROW, "TB_DELETE_ROW"},
-	
+	{AP_MENU_ID_TABLE_DELETEROW, "TB_DELETE_ROW"},	
 
 	// Help
     {AP_MENU_ID_HELP_CONTENTS,      "HELP"},    
@@ -359,16 +357,10 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 						m_vecItems.addItem(item);
 							
 						if (!m_bTrack && stack.getDepth()==2)
-						{
-							item->bMenuBar=true; 
-							AppendMenu(m, MF_POPUP|MF_STRING,u, (const char*) szLabelName);
-						}											
+							AppendMenu(m, flags,u, szLabelName);																	
 						else
-						{
-							AppendMenu(m, MF_POPUP|MF_OWNERDRAW,u, (const char*) item);
-							item->bMenuBar=false; 
-						}							
-					}			
+							AppendMenu(m, flags|MF_OWNERDRAW,u, (const char*) item);
+					}		
 						
 				}
 				else
@@ -377,8 +369,7 @@ bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 					{		  
 						EV_Menu_Item*	item = new EV_Menu_Item;
 						item->id = id;
-						item->pMenu= this;
-						item->bMenuBar=false;
+						item->pMenu= this;						
 						strcpy (item->szText, szLabelName);																						
 						m_vecItems.addItem(item);
 						
@@ -523,7 +514,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND hWnd, HM
 
 				// we want the item in the menu.
 				pos++;			
-				
+
 			}
 			break;
 	
