@@ -49,6 +49,12 @@ typedef enum _FVDocPos
 	FV_DOCPOS_BOW, FV_DOCPOS_EOW	// word
 } FV_DocPos;
 
+typedef enum _FVJumpTarget
+{
+	FV_JUMPTARGET_PAGE,				// beginning of page
+	FV_JUMPTARGET_LINE				// beginning of line
+} FV_JumpTarget;
+		
 struct fv_ChangeState
 {
 	UT_Bool				bUndo;
@@ -128,8 +134,7 @@ public:
 // ----------------------
 
 	// goto
-	
-	UT_Bool			gotoPage(UT_uint32 pageNumber);
+	UT_Bool 		gotoTarget(FV_JumpTarget type, UT_UCSChar * data);
 
 // ----------------------
 	

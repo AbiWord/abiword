@@ -30,6 +30,10 @@
 
 #	define AP_UNIXDIALOG_ALL_H
 
+// Temporary "standard" sizes for some Gtk widgets.
+// We need better cross-platform dialog layout guidelines.
+#	define DEFAULT_BUTTON_WIDTH	85
+
 #	include "xap_UnixDialog_MessageBox.h"
 #	include "xap_UnixDialog_FileOpenSaveAs.h"
 #	include "xap_UnixDialog_Print.h"

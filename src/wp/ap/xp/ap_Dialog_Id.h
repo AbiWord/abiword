@@ -32,7 +32,8 @@ typedef enum _AP_Dialog_Id
 	AP_DIALOG_ID_FILE_PAGESETUP,
 	AP_DIALOG_ID_REPLACE,				/* find/replace dialog */
 	AP_DIALOG_ID_FIND,					/* find (w/o replace) dialog  */
-
+	AP_DIALOG_ID_GOTO,					/* warp to page/section/line, etc. */
+	
 	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */

@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#ifndef AP_DIALOG_FILE_H
-#define AP_DIALOG_FILE_H
+#ifndef AP_DIALOG_GOTO_H
+#define AP_DIALOG_GOTO_H
 
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
@@ -27,10 +27,6 @@
 #include "fl_BlockLayout.h"
 #include "pt_Types.h"
 
-/*****************************************************************
-** This is the base-class for the Replace 
-*****************************************************************/
-
 class AP_Dialog_Goto : public AP_Dialog_FramePersistent
 {
 public:
@@ -38,12 +34,20 @@ public:
 	virtual ~AP_Dialog_Goto(void);
 
 	virtual void				useStart(void);
-	virtual void				runModal(AP_Frame * pFrame) = 0;
+	virtual void				runModeless(AP_Frame * pFrame) = 0;
 	virtual void				useEnd(void);
 
 	// these are kinda screwy now, but we never return anything but on
 	// "cancel" or "close"
-	typedef enum { a_VOID, a_FIND_NEXT, a_REPLACE, a_REPLACE_ALL, a_CANCEL }	tAnswer;
+	typedef enum
+		{
+			a_VOID,
+			a_FIND_NEXT,
+			a_REPLACE,
+			a_REPLACE_ALL,
+			a_CANCEL
+		}
+	tAnswer;
 
     AP_Dialog_Goto::tAnswer	 	getAnswer(void) const;
 
@@ -53,46 +57,43 @@ public:
 	// values.
 	UT_Bool						setView(AV_View * view);
 	AV_View * 					getView(void) const;
+
+	UT_Bool						setTargetType(FV_JumpTarget target);
+	FV_JumpTarget				getTargetType(void);
 	
-	UT_Bool						setPageNumberString(const UT_UCSChar * string);
-	UT_UCSChar *				getPageNumberString(void);
+	UT_Bool						setTargetData(const UT_UCSChar * string);
+	UT_UCSChar *				getTargetData(void);
 
 	// Action functions... set data using the accessors
 	// above and call one of these.
-	UT_Bool						gotoPage(void);
+	UT_Bool						gotoTarget(void);
 	
  protected:
-
+	
 	// These are the persistent dialog data items,
 	// which are carefully read and set by useStart()
 	// and useEnd(), and not by the accessors.
-	// TODO add 'persist' to variable names to help us
-	// TODO identify them as such.  remove the leading
-	// TODO '_'.
-	UT_UCSChar *			_m_pageNumberString; 
-
+	FV_JumpTarget				persist_targetType;
+	UT_UCSChar *				persist_targetData;
+		
 	// These are the "current use" dialog data items,
 	// which are liberally read and set by the
 	// accessor methods above.  Note that the buffers
 	// these may point to are destroyed when useEnd()
 	// is done storing them away
-	FV_View * 				m_pView;
-	UT_UCSChar *			m_pageNumberString; 
+	FV_View * 					m_pView;
+
+	FV_JumpTarget				m_targetType;
+	UT_UCSChar *				m_targetData;
 
 	// These are also "current use" dialog data item,
 	// but they're not user-settable; they are set
 	// on conditions that action functions or other
 	// non-accessor methods are invoked.
-	UT_Bool					m_didSomething;
+	UT_Bool						m_didSomething;
 
-	// Message boxes for events during search
-	AP_Frame *				m_pFrame;
-
-	void					_messageNoSuchPage(UT_uint32 pageNum = 0);
-	void 					_messageBox(char * message);
-	
-	// is this used in a non-persistent dialog like this?
-	tAnswer					m_answer;
+	// is this used in a modeless dialog like this?
+	tAnswer						m_answer;
 };
 
-#endif /* AP_DIALOG_REPLACE_H */
+#endif /* AP_DIALOG_GOTO_H */

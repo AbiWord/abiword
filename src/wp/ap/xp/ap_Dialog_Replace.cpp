@@ -23,6 +23,8 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+
+#include "ap_UnixDialog_All.h"
 #include "ap_Dialog_Replace.h"
 
 #include "xap_Dialog_Id.h"
@@ -38,9 +40,9 @@
 AP_Dialog_Replace::AP_Dialog_Replace(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_FramePersistent(pDlgFactory,id)
 {
-	_m_findString = NULL;
-	_m_replaceString = NULL;
-	_m_matchCase = UT_TRUE;
+	persist_findString = NULL;
+	persist_replaceString = NULL;
+	persist_matchCase = UT_TRUE;
 
 	m_pView = NULL;
 	m_pFrame = NULL;
@@ -62,8 +64,8 @@ AP_Dialog_Replace::~AP_Dialog_Replace(void)
 	FREEP(m_findString);
 	FREEP(m_replaceString);
 
-	FREEP(_m_findString);
-	FREEP(_m_replaceString);
+	FREEP(persist_findString);
+	FREEP(persist_replaceString);
 }
 
 void AP_Dialog_Replace::useStart(void)
@@ -73,12 +75,12 @@ void AP_Dialog_Replace::useStart(void)
 	AP_Dialog_FramePersistent::useStart();
 
 	// restore from persistent storage
-	if (_m_findString)
-		UT_UCS_cloneString(&m_findString, _m_findString);
-	if (_m_replaceString)
-		UT_UCS_cloneString(&m_replaceString, _m_replaceString);
+	if (persist_findString)
+		UT_UCS_cloneString(&m_findString, persist_findString);
+	if (persist_replaceString)
+		UT_UCS_cloneString(&m_replaceString, persist_replaceString);
 
-	m_matchCase = _m_matchCase;
+	m_matchCase = persist_matchCase;
 }
 
 void AP_Dialog_Replace::useEnd(void)
@@ -95,15 +97,15 @@ void AP_Dialog_Replace::useEnd(void)
 	// persistent dialogs don't destroy this data
 	if (m_didSomething)
 	{
-		FREEP(_m_findString);
+		FREEP(persist_findString);
 		if (m_findString)
-			UT_UCS_cloneString(&_m_findString, m_findString);
+			UT_UCS_cloneString(&persist_findString, m_findString);
 		
-		FREEP(_m_replaceString);
+		FREEP(persist_replaceString);
 		if (m_replaceString)
-			UT_UCS_cloneString(&_m_replaceString, m_replaceString);
+			UT_UCS_cloneString(&persist_replaceString, m_replaceString);
 
-		_m_matchCase = m_matchCase;
+		persist_matchCase = m_matchCase;
 	}
 }
 

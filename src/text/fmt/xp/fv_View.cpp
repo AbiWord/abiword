@@ -1668,17 +1668,31 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 }
 // ---------------- start goto ---------------
 
-UT_Bool FV_View::gotoPage(UT_uint32 pageNumber)
+UT_Bool FV_View::gotoTarget(FV_JumpTarget type, UT_UCSChar * data)
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+
 	UT_ASSERT(m_pLayout);
 
+	// TODO:  We need a Unicode atol/strtol.
+
+	/*
+	char * numberString = (char *) calloc(UT_UCS_strlen(m_targetData) + 1, sizeof(char));
+	UT_ASSERT(numberString);
+	
+	UT_UCS_strcpy_to_char(numberString, m_targetData);
+	
+	UT_uint32 pageNumber = atol(numberString);
+	FREEP(numberString);
+	*/
+
 	// check for range
-	if (pageNumber < 0 || pageNumber > (UT_uint32) m_pLayout->countPages())
-		return UT_FALSE;
+//	if (pageNumber < 0 || pageNumber > (UT_uint32) m_pLayout->countPages())
+//		return UT_FALSE;
 
 	// get the right page
-	fp_Page * page = m_pLayout->getNthPage(pageNumber);
-	UT_ASSERT(page);
+//	fp_Page * page = m_pLayout->getNthPage(pageNumber);
+//	UT_ASSERT(page);
 
 	// peek inside the page
 	// ...

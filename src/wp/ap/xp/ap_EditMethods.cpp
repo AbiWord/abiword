@@ -34,6 +34,7 @@
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
+#include "ap_Dialog_Goto.h"
 
 #include "xap_DialogFactory.h"
 #include "xap_Dialog_MessageBox.h"
@@ -1957,9 +1958,39 @@ Defun1(paste)
 	return UT_TRUE;
 }
 
-Defun0(go)
+/*****************************************************************/
+
+static UT_Bool s_doGotoDlg(FV_View * pView, AP_Dialog_Id id)
 {
-	return UT_TRUE;
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Goto * pDialog
+		= (AP_Dialog_Goto *)(pDialogFactory->requestDialog(id));
+	UT_ASSERT(pDialog);
+
+	pDialog->runModeless(pFrame);
+	
+	UT_Bool bOK = UT_TRUE;
+
+	// get result?
+	
+	pDialogFactory->releaseDialog(pDialog);
+
+	return bOK;
+}
+
+Defun1(go)
+{
+	ABIWORD_VIEW;
+	AP_Dialog_Id id = AP_DIALOG_ID_GOTO;
+	
+	return s_doGotoDlg(pView, id);
 }
 
 /*****************************************************************/
@@ -1989,7 +2020,8 @@ static UT_Bool s_doFindOrFindReplaceDlg(FV_View * pView, AP_Dialog_Id id)
 		FREEP(buffer);
 	}
 		
-	// run the dialog
+	// run the dialog (it should really be modeless if anyone
+	// gets the urge to make it safe that way)
 	pDialog->runModal(pFrame);
 	
 	UT_Bool bOK = UT_TRUE;

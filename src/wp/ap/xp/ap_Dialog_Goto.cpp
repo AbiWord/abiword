@@ -38,12 +38,13 @@
 AP_Dialog_Goto::AP_Dialog_Goto(AP_DialogFactory * pDlgFactory, AP_Dialog_Id id)
 	: AP_Dialog_FramePersistent(pDlgFactory,id)
 {
-	_m_pageNumberString = NULL;
-
+	persist_targetData = NULL;
+	persist_targetType = FV_JUMPTARGET_PAGE;
+		
 	m_pView = NULL;
-	m_pFrame = NULL;
-	
-	m_pageNumberString = NULL;
+
+	m_targetType = FV_JUMPTARGET_PAGE;
+	m_targetData = NULL;
 
 	m_didSomething = UT_FALSE;
 
@@ -55,7 +56,9 @@ AP_Dialog_Goto::~AP_Dialog_Goto(void)
 {
 	UT_ASSERT(!m_bInUse);
 
-	FREEP(m_pageNumberString);
+	FREEP(m_targetData);
+	
+	FREEP(persist_targetData);
 }
 
 void AP_Dialog_Goto::useStart(void)
@@ -65,8 +68,8 @@ void AP_Dialog_Goto::useStart(void)
 	AP_Dialog_FramePersistent::useStart();
 
 	// restore from persistent storage
-	if (_m_pageNumberString)
-		UT_UCS_cloneString(&m_pageNumberString, _m_pageNumberString);
+	if (persist_targetData)
+		UT_UCS_cloneString(&m_targetData, persist_targetData);
 }
 
 void AP_Dialog_Goto::useEnd(void)
@@ -75,17 +78,12 @@ void AP_Dialog_Goto::useEnd(void)
 	UT_DEBUGMSG(("AP_Dialog_Goto::useEnd(void) I've been called\n"));
 	AP_Dialog_FramePersistent::useEnd();
 
-	// Let the view know it doens't need to maintain it's
-	// "find" or "replace" session-oriented counters
-	UT_ASSERT(m_pView);
-	m_pView->findReset();
-	
 	// persistent dialogs don't destroy this data
 	if (m_didSomething)
 	{
-		FREEP(_m_pageNumberString);
-		if (m_pageNumberString)
-			UT_UCS_cloneString(&_m_pageNumberString, m_pageNumberString);
+		FREEP(persist_targetData);
+		if (m_targetData)
+			UT_UCS_cloneString(&persist_targetData, m_targetData);
 	}
 }
 
@@ -105,14 +103,7 @@ UT_Bool AP_Dialog_Goto::setView(AV_View * view)
 	// outline view, etc.
 	UT_ASSERT(view);
 
-	m_pFrame = (AP_Frame *) view->getParentData();
-	UT_ASSERT(m_pFrame);
-	
 	m_pView = static_cast<FV_View *>(view);
-
-	// must resize doc positions so we're within bounds
-	// for the whole find
-	m_pView->findReset();
 
 	return UT_TRUE;
 }
@@ -122,18 +113,29 @@ AV_View * AP_Dialog_Goto::getView(void) const
 	return m_pView;
 }
 
-UT_Bool AP_Dialog_Goto::setPageNumberString(const UT_UCSChar * string)
+UT_Bool	AP_Dialog_Goto::setTargetType(FV_JumpTarget target)
 {
-	FREEP(m_pageNumberString);
-	return UT_UCS_cloneString(&m_pageNumberString, string);
+	m_targetType = target;
+	return UT_TRUE;
 }
 
-UT_UCSChar * AP_Dialog_Goto::getPageNumberString(void)
+FV_JumpTarget AP_Dialog_Goto::getTargetType(void)
+{
+	return m_targetType;
+}
+
+UT_Bool AP_Dialog_Goto::setTargetData(const UT_UCSChar * string)
+{
+	FREEP(m_targetData);
+	return UT_UCS_cloneString(&m_targetData, string);
+}
+
+UT_UCSChar * AP_Dialog_Goto::getTargetData(void)
 {
 	UT_UCSChar * string = NULL;
-	if (m_pageNumberString)
+	if (m_targetData)
 	{
-		if (UT_UCS_cloneString(&string, m_pageNumberString))
+		if (UT_UCS_cloneString(&string, m_targetData))
 			return string;
 	}
 	else
@@ -146,25 +148,15 @@ UT_UCSChar * AP_Dialog_Goto::getPageNumberString(void)
 
 // --------------------------- Action Functions -----------------------------
 
-UT_Bool AP_Dialog_Goto::gotoPage()
+UT_Bool AP_Dialog_Goto::gotoTarget(void)
 {
 	UT_ASSERT(m_pView);
 
-	UT_ASSERT(m_pageNumberString);
+	UT_ASSERT(m_targetData);
 
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;
 
-	// TODO:  We need a Unicode atol/strtol.
-
-	char * numberString = (char *) calloc(UT_UCS_strlen(m_pageNumberString) + 1, sizeof(char));
-	UT_ASSERT(numberString);
-	
-	UT_UCS_strcpy_to_char(numberString, m_pageNumberString);
-	
-	UT_uint32 pageNumber = atol(numberString);
-	FREEP(numberString);
-	
 	// call view to do the work
-	return m_pView->gotoPage(pageNumber);
+	return m_pView->gotoTarget(m_targetType, m_targetData);
 }

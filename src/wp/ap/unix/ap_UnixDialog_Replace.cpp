@@ -35,9 +35,8 @@
 
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_Replace.h"
+#include "ap_UnixDialog_All.h"
 #include "ap_UnixDialog_Replace.h"
-
-#define DEFAULT_BUTTON_WIDTH	85
 
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 #define DELETEP(p)	do { if (p) delete p; } while (0)

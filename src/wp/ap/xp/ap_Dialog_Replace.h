@@ -68,12 +68,9 @@ public:
 	// These are the persistent dialog data items,
 	// which are carefully read and set by useStart()
 	// and useEnd(), and not by the accessors.
-	// TODO add 'persist' to variable names to help us
-	// TODO identify them as such.  remove the leading
-	// TODO '_'.
-	UT_UCSChar *			_m_findString; 
-	UT_UCSChar *			_m_replaceString;
-	UT_Bool					_m_matchCase;
+	UT_UCSChar *			persist_findString; 
+	UT_UCSChar *			persist_replaceString;
+	UT_Bool					persist_matchCase;
 
 	// These are the "current use" dialog data items,
 	// which are liberally read and set by the
@@ -98,7 +95,7 @@ public:
 	void					_messageFinishedReplace(UT_uint32 numReplaced = 0);
 	void 					_messageBox(char * message);
 	
-	// is this used in a non-persistent dialog like this?
+	// is this used in a modeless dialog like this?
 	tAnswer					m_answer;
 };
 
