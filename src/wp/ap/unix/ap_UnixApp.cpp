@@ -201,7 +201,7 @@ UT_Bool AP_UnixApp::initialize(void)
 				      (const XML_Char**)&szStringSet))
 			&& (szStringSet)
 			&& (*szStringSet)
-			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
+			&& (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
 			getPrefsValueDirectory(UT_TRUE,
 					       (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
@@ -404,7 +404,7 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseCl
 		return;
 	}
 	
-	if (UT_stricmp(szFormatFound,AP_CLIPBOARD_RTF) == 0)
+	if (strcmp(szFormatFound,AP_CLIPBOARD_RTF) == 0)
 	{
 		iLen = MyMin(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
@@ -416,8 +416,8 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, UT_Bool bUseCl
 		return;
 	}
 
-	if (   (UT_stricmp(szFormatFound,AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
-	    || (UT_stricmp(szFormatFound,AP_CLIPBOARD_STRING) == 0))
+	if (   (strcmp(szFormatFound,AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+	    || (strcmp(szFormatFound,AP_CLIPBOARD_STRING) == 0))
 	{
 		iLen = MyMin(iLen,strlen((const char *)pData));
 		UT_DEBUGMSG(("PasteFromClipboard: pasting %d bytes in format [%s].\n",iLen,szFormatFound));
@@ -645,7 +645,7 @@ UT_Bool AP_UnixApp::getCurrentSelection(const char** formatList,
 	{
 		UT_DEBUGMSG(("Clipboard::getCurrentSelection: considering format [%s]\n",formatList[j]));
 
-		if (UT_stricmp(formatList[j],AP_CLIPBOARD_RTF) == 0)
+		if (strcmp(formatList[j],AP_CLIPBOARD_RTF) == 0)
 		{
 			IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(dr.m_pDoc);
 			if (!pExpRtf)
@@ -656,8 +656,8 @@ UT_Bool AP_UnixApp::getCurrentSelection(const char** formatList,
 			goto ReturnThisBuffer;
 		}
 			
-		if (   (UT_stricmp(formatList[j],AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
-			|| (UT_stricmp(formatList[j],AP_CLIPBOARD_STRING) == 0))
+		if (   (strcmp(formatList[j],AP_CLIPBOARD_TEXTPLAIN_8BIT) == 0)
+			|| (strcmp(formatList[j],AP_CLIPBOARD_STRING) == 0))
 		{
 			IE_Exp_Text * pExpText = new IE_Exp_Text(dr.m_pDoc);
 			if (!pExpText)
@@ -829,7 +829,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	UT_Bool bShowApp = UT_TRUE;
  	for (int k = 1; k < Args.m_argc; k++)
  		if (*Args.m_argv[k] == '-')
- 			if (UT_stricmp(Args.m_argv[k],"-to") == 0)
+ 			if (strcmp(Args.m_argv[k],"-to") == 0)
  			{
 				bShowApp = UT_FALSE;
  				bShowSplash = UT_FALSE;
@@ -839,7 +839,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	// Do a quick and dirty find for "-show"
  	for (int k = 1; k < Args.m_argc; k++)
  		if (*Args.m_argv[k] == '-')
- 			if (UT_stricmp(Args.m_argv[k],"-show") == 0)
+ 			if (strcmp(Args.m_argv[k],"-show") == 0)
  			{
 				bShowApp = UT_TRUE;
  				bShowSplash = UT_TRUE;
@@ -849,17 +849,32 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	// Do a quick and dirty find for "-nosplash"
 	for (int k = 1; k < Args.m_argc; k++)
 		if (*Args.m_argv[k] == '-')
-			if (UT_stricmp(Args.m_argv[k],"-nosplash") == 0)
+			if (strcmp(Args.m_argv[k],"-nosplash") == 0)
 			{
 				bShowSplash = UT_FALSE;
+				break;
+			}
+
+	// Do a quick and dirty find for "-h", "-help", or "--help"
+	for (int k = 1; k < Args.m_argc; k++)
+		if (*Args.m_argv[k] == '-')
+			if (strncmp(Args.m_argv[k],"-h",2) == 0 ||
+				strncmp(Args.m_argv[k],"--h",3) == 0)
+			{
+				bShowSplash = UT_FALSE;
+				bShowApp = UT_FALSE;
 				break;
 			}
 
 	// HACK : these calls to gtk reside properly in XAP_UNIXBASEAPP::initialize(),
 	// HACK : but need to be here to throw the splash screen as
 	// HACK : soon as possible.
-	gtk_set_locale();
-	gtk_init(&Args.m_argc,&Args.m_argv);
+	
+	if (bShowSplash && bShowApp)
+	{
+		gtk_set_locale();
+		gtk_init(&Args.m_argc,&Args.m_argv);
+	}
 	
 	if (bShowSplash)
 		_showSplash(2000);
@@ -889,11 +904,14 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	sigaction(SIGFPE, &sa, NULL);
 	// TODO: handle SIGABRT
 	
-	// if the initialize fails, we don't have icons, fonts, etc.
-	if (!pMyUnixApp->initialize())
+	if (bShowApp)
 	{
-		delete pMyUnixApp;
-		return -1;	// make this something standard?
+		// if the initialize fails, we don't have icons, fonts, etc.
+		if (!pMyUnixApp->initialize())
+		{
+			delete pMyUnixApp;
+			return -1;	// make this something standard?
+		}
 	}
 
 	// this function takes care of all the command line args.
@@ -903,10 +921,10 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	{
 		// turn over control to gtk
 		gtk_main();
+		pMyUnixApp->shutdown();
 	}
 	
 	// destroy the App.  It should take care of deleting all frames.
-	pMyUnixApp->shutdown();
 	delete pMyUnixApp;
 	
 	return 0;
@@ -935,18 +953,18 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 	{
 		if (*m_pArgs->m_argv[k] == '-')
 		{
-			if (UT_stricmp(m_pArgs->m_argv[k],"-script") == 0)
+			if (strcmp(m_pArgs->m_argv[k],"-script") == 0)
 			{
 				// [-script scriptname]
 				k++;
 			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-lib") == 0)
+			else if (strcmp(m_pArgs->m_argv[k],"-lib") == 0)
 			{
 				// [-lib <AbiSuiteLibDirectory>]
 				// we've already processed this when we initialized the App class
 				k++;
 			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
+			else if (strcmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
 			{
 				// [-dumpstrings]
 #ifdef DEBUG
@@ -957,11 +975,11 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 				delete pBuiltinStringSet;
 #endif
 			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-nosplash") == 0)
+			else if (strcmp(m_pArgs->m_argv[k],"-nosplash") == 0)
 			{
 				// we've alrady processed this before we initialized the App class
 			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-geometry") == 0)
+			else if (strcmp(m_pArgs->m_argv[k],"-geometry") == 0)
 			{
 				// [-geometry <X geometry string>]
 
@@ -993,16 +1011,16 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 				// set the xap-level geometry for future frame use
 				setGeometry(x, y, width, height, f);
 			}
-			else if (UT_stricmp (m_pArgs->m_argv[k],"-to") == 0)
+			else if (strcmp (m_pArgs->m_argv[k],"-to") == 0)
 			{
 				k++;
 				to = m_pArgs->m_argv[k];
 			}
-			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
+			else if (strcmp (m_pArgs->m_argv[k], "-show") == 0)
 			{
 				show = UT_TRUE;
 			}
-			else if (UT_stricmp (m_pArgs->m_argv[k], "-verbose") == 0)
+			else if (strcmp (m_pArgs->m_argv[k], "-verbose") == 0)
 			{
 				k++;
 				verbose = atoi (m_pArgs->m_argv[k]);
@@ -1141,7 +1159,7 @@ void AP_UnixApp::_printUsage(void)
         printf("                    (abw, zabw, rtf, txt, utf8, html, latex)\n");
 	printf("  -verbose          The verbosity level (0, 1, 2)\n");
 	printf("  -show             If you really want to start the GUI\n");
-        printf("                    (even if you use the --to option)\n");
+        printf("                    (even if you use the -to option)\n");
 #ifdef DEBUG
 	printf("  -dumpstrings      dump strings strings to file\n");
 #endif
