@@ -342,7 +342,8 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 		}
 
 		/* Assumption: never get property set with block text, plain text. Probably true. */
-
+		bool css = false;
+	
 		if ( m_iBlockType != BT_PLAINTEXT && m_iBlockType != BT_BLOCKTEXT && 
 				(pAP->getProperty("text-align", szValue) 
 				|| pAP->getProperty("margin-bottom", szValue)
@@ -354,19 +355,25 @@ void s_HTML_Listener::_openTag(PT_AttrPropIndex api)
 			{
 				m_pie->write("text-align: ");
 				m_pie->write((char*)szValue);
-				m_pie->write("; ");
+				css = true;
 			}
 			if(pAP->getProperty("margin-bottom", szValue))
 			{
-				m_pie->write("margin-bottom: ");
+			        if (css)
+				     m_pie->write("; margin-bottom: ");
+				else 
+			             m_pie->write("margin-bottom: ");
 				m_pie->write((char*)szValue);
-				m_pie->write("; ");
+				css = true;
 			}
 			if(pAP->getProperty("margin-top", szValue))
 			{
-				m_pie->write("margin-top: ");
+			        if (css)
+				     m_pie->write("; margin-top: ");
+				else
+				     m_pie->write("margin-top: ");
 				m_pie->write((char*)szValue);
-				m_pie->write("; ");
+				css = true;
 			}
 
 			m_pie->write("\"");
