@@ -118,7 +118,7 @@ static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_Un
 static gboolean s_apply_to_changed(GtkWidget *widget, gpointer data)
 {
 	AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
-	UT_return_if_fail(widget && dlg);
+	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_ApplyToChanged();
 	return FALSE;
 }
