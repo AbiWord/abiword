@@ -386,7 +386,7 @@ s_mapPageIdToString (UT_uint16 id)
 /*!
   Surprise, surprise, there are more list numerical formats than the 5 the
   MS documentation states happens to mention, so here I will put what I found
-  out (latter we will move it to some better place)
+  out (later we will move it to some better place)
 */
 typedef enum
 {
@@ -441,7 +441,7 @@ s_mapDocToAbiListId (MSWordListIdType id)
 /*!
  * form AW list deliminator string
  */
-static s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_String &sDelim)
+static void s_mapDocToAbiListDelim (UT_uint16 * pStr, UT_uint32 iLen, UT_String &sDelim)
 {
 	// the Word format string looks like this
 	//    prefix '\0' suffix
@@ -550,6 +550,8 @@ s_fieldFontForListStyle (MSWordListIdType id)
 	}
 }
 
+#if 0
+
 // MS Word uses the langauge codes as explicit overrides when treating
 // weak characters; this function translates language id to the
 // overrided direction
@@ -560,6 +562,12 @@ static bool s_isLanguageRTL(short unsigned int lid)
 	return (UTLANG_RTL == l.getOrderFromProperty(s));
 }
 
+static FootnoteType s_convertNoteType(UT_uint32 t)
+{
+	return 	FOOTNOTE_TYPE_NUMERIC;
+}
+
+#endif
 
 /****************************************************************************/
 /****************************************************************************/
@@ -798,16 +806,16 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 
 #define ErrorMessage(x) do { XAP_Frame *_pFrame = getDoc()->getApp()->getLastFocussedFrame(); if ( _pFrame ) _errorMessage (_pFrame, (x)); } while (0)
 
-static UT_String _getPassword (XAP_Frame * pFrame)
+static UT_UTF8String _getPassword (XAP_Frame * pFrame)
 {
-  UT_String password ( "" );
+  UT_UTF8String password ( "" );
 
   if ( pFrame )
     {
       pFrame->raise ();
 
       XAP_DialogFactory * pDialogFactory
-	= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+		  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
       XAP_Dialog_Password * pDlg = static_cast<XAP_Dialog_Password*>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
       UT_return_val_if_fail(pDlg, password);
@@ -818,9 +826,7 @@ static UT_String _getPassword (XAP_Frame * pFrame)
       bool bOK = (ans == XAP_Dialog_Password::a_OK);
 
       if (bOK)
-	password = pDlg->getPassword ();
-
-      UT_DEBUGMSG(("Password is %s\n", password.c_str()));
+		  password = pDlg->getPassword ();
 
       pDialogFactory->releaseDialog(pDlg);
     }
@@ -836,9 +842,8 @@ static void _errorMessage (XAP_Frame * pFrame, int id)
 
   const char * text = pSS->getValue (id, pFrame->getApp()->getDefaultEncoding()).c_str();
 
-  pFrame->showMessageBox (text,
-			  XAP_Dialog_MessageBox::b_O,
-			  XAP_Dialog_MessageBox::a_OK);
+  pFrame->showMessageBox (text, XAP_Dialog_MessageBox::b_O,
+						  XAP_Dialog_MessageBox::a_OK);
 }
 
 UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
@@ -853,16 +858,16 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 
   if (ret & 0x8000)		/* Password protected? */
     {
-      UT_String pass = GetPassword();
+      UT_UTF8String pass (GetPassword());
       if ( pass.size () != 0 )
-	password = pass.c_str();
+		  password = pass.utf8_str();
 
       if ((ret & 0x7fff) == WORD8)
 	{
 	  ret = 0;
 	  if (password == NULL)
 	    {
-	      ErrorMessage(AP_STRING_ID_WORD_PassRequired);
+			//ErrorMessage(AP_STRING_ID_WORD_PassRequired);
 	      ErrCleanupAndExit(UT_IE_PROTECTED);
 	    }
 	  else
@@ -870,7 +875,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	      wvSetPassword (password, &ps);
 	      if (wvDecrypt97 (&ps))
 		{
-		  ErrorMessage(AP_STRING_ID_WORD_PassInvalid);
+			//ErrorMessage(AP_STRING_ID_WORD_PassInvalid);
 		  ErrCleanupAndExit(UT_IE_PROTECTED);
 		}
 	      decrypted = true ;
@@ -881,7 +886,7 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	  ret = 0;
 	  if (password == NULL)
 	    {
-	      ErrorMessage(AP_STRING_ID_WORD_PassRequired);
+			//ErrorMessage(AP_STRING_ID_WORD_PassRequired);
 	      ErrCleanupAndExit(UT_IE_PROTECTED);
 	    }
 	  else
@@ -897,8 +902,9 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	}
     }
 
-  if (ret)
+  if (ret) {
     ErrCleanupAndExit(UT_IE_BOGUSDOCUMENT);
+  }
 
   // register ourself as the userData
   ps.userData = this;
@@ -3998,11 +4004,6 @@ int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
 #endif
 	}
 	return 0;
-}
-
-static FootnoteType s_convertNoteType(UT_uint32 t)
-{
-	return 	FOOTNOTE_TYPE_NUMERIC;
 }
 
 void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)

@@ -18,55 +18,52 @@
  */
 
 #include <stdlib.h>
-#include <time.h>
+#include <glade/glade.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Unix dialogs,
-// like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
-#include "xap_UnixFrameImpl.h"
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
-#include "xap_Dlg_Stub.h"
 #include "xap_UnixDlg_Password.h"
-
-/*****************************************************************/
 
 void XAP_UnixDialog_Password::event_Ok ()
 {
-  UT_String pass ( gtk_entry_get_text (GTK_ENTRY(mTextEntry)) );
-  setPassword (pass);
-  setAnswer(XAP_Dialog_Password::a_OK);
+	const char * txt = gtk_entry_get_text (GTK_ENTRY(mTextEntry));
+	if (txt && strlen(txt)) {
+		setPassword (txt);
+		setAnswer(XAP_Dialog_Password::a_OK);
+	} else {
+		setAnswer(XAP_Dialog_Password::a_Cancel);
+	}
 }
 
 void XAP_UnixDialog_Password::event_Return()
 {
-  gtk_dialog_response ( GTK_DIALOG ( mMainWindow ), BUTTON_OK ) ;
+	gtk_dialog_response ( GTK_DIALOG ( mMainWindow ), GTK_RESPONSE_OK ) ;
 }
 
 void XAP_UnixDialog_Password::event_Cancel ()
 {
-  setAnswer(XAP_Dialog_Password::a_Cancel);
+	setAnswer(XAP_Dialog_Password::a_Cancel);
 }
 
 XAP_Dialog * XAP_UnixDialog_Password::static_constructor(XAP_DialogFactory * pFactory,
-							 XAP_Dialog_Id id)
+														 XAP_Dialog_Id id)
 {
-  XAP_UnixDialog_Password * p = new XAP_UnixDialog_Password(pFactory,id);
-  return p;
+	return new XAP_UnixDialog_Password(pFactory,id);
 }
 
 XAP_UnixDialog_Password::XAP_UnixDialog_Password(XAP_DialogFactory * pDlgFactory,
-						 XAP_Dialog_Id id)
-  : XAP_Dialog_Password(pDlgFactory,id)
+												 XAP_Dialog_Id id)
+	: XAP_Dialog_Password(pDlgFactory,id)
 {
 }
 
@@ -76,73 +73,49 @@ XAP_UnixDialog_Password::~XAP_UnixDialog_Password(void)
 
 void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 {
-  // build the dialog
-  GtkWidget * cf = _constructWindow();
-
-  gtk_widget_show (cf);
-  gdk_keyboard_grab(cf->window, FALSE, GDK_CURRENT_TIME);
-  
-  switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, BUTTON_CANCEL, false ) )
+	GtkWidget * cf = _constructWindow();
+	
+	gtk_widget_show (cf);
+	gdk_keyboard_grab(cf->window, FALSE, GDK_CURRENT_TIME);
+	
+	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_CANCEL, false ) )
     {
-    case BUTTON_OK:
-      event_Ok() ; break ;
+    case GTK_RESPONSE_OK:
+		event_Ok(); break;
     default:
-      event_Cancel() ; break;
+		event_Cancel(); break;
     }
 	
-  gdk_keyboard_ungrab(GDK_CURRENT_TIME);
-
-  abiDestroyWidget(cf);
-}
-
-void XAP_UnixDialog_Password::_constructWindowContents (GtkWidget * container)
-{
-  GtkWidget * label1;
-  GtkWidget * password;
-
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-  label1 = gtk_label_new (pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Password).c_str());
-  gtk_widget_show (label1);
-  gtk_box_pack_start (GTK_BOX (container), label1, FALSE, FALSE, 0);
-
-  password = gtk_entry_new ();
-  gtk_widget_show (password);
-  gtk_box_pack_start (GTK_BOX (container), password, TRUE, TRUE, 0);
-  gtk_entry_set_visibility (GTK_ENTRY (password), FALSE);
-
-  gtk_widget_grab_focus(password);
-
-  g_signal_connect (G_OBJECT(password), "activate",
-		    G_CALLBACK(s_return_hit),
-		    static_cast<gpointer>(this));
-
-  mTextEntry = password;
+	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+	
+	abiDestroyWidget(cf);
 }
 
 GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 {
-  GtkWidget * dialog1;
-  GtkWidget * dialog_vbox1;
-  GtkWidget * hbox1;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	// get the path where our glade file is located
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+	UT_String glade_path( pApp->getAbiSuiteAppGladeDir() );
+	glade_path += "/xap_UnixDlg_Password.glade";
+	
+	// load the dialog from the glade file
+	GladeXML *xml = abiDialogNewFromXML( glade_path.c_str() );
 
-  const XAP_StringSet * pSS = m_pApp->getStringSet();
+	// Update our member variables with the important widgets that 
+	// might need to be queried or altered later
+	mMainWindow = glade_xml_get_widget(xml, "windowMain");
+	mTextEntry = glade_xml_get_widget(xml, "passwdEntry");
+	
+	gtk_window_set_title (GTK_WINDOW(mMainWindow), pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str());
+	localizeLabelMarkup(glade_xml_get_widget(xml, "passwdLbl"), pSS, XAP_STRING_ID_DLG_Password_Password);
+	
+	g_signal_connect (G_OBJECT(mTextEntry), "activate",
+					  G_CALLBACK(s_return_hit),
+					  static_cast<gpointer>(this));
+	
+	gtk_widget_grab_focus(mTextEntry);
 
-  dialog1 = abiDialogNew ( "password dialog", TRUE, pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title).c_str());
-
-  dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
-  gtk_widget_show (dialog_vbox1);
-
-  hbox1 = gtk_hbox_new (FALSE, 0);
-  gtk_widget_show (hbox1);
-  gtk_box_pack_start (GTK_BOX (dialog_vbox1), hbox1, TRUE, TRUE, 0);
-
-  _constructWindowContents (hbox1);
-
-  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-  abiAddStockButton(GTK_DIALOG(dialog1), GTK_STOCK_OK, BUTTON_OK);
-
-  mMainWindow = dialog1;
-
-  return dialog1;
+	return mMainWindow;
 }

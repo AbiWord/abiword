@@ -39,17 +39,17 @@ public:
 
 	virtual void  runModal(XAP_Frame * pFrame) = 0;
 
-	UT_String getPassword () const { return m_passwd; }
+	UT_UTF8String getPassword () const { return m_passwd; }
 
 	tAnswer getAnswer () const { return m_answer; }
 
  protected:
 	void setPassword (const char *);
-	void setPassword (UT_String & pass);
+	void setPassword (const UT_UTF8String & pass);
 	void setAnswer ( tAnswer ans ) { m_answer = ans; }
 
  private:
-	UT_String m_passwd;
+	UT_UTF8String m_passwd;
 	tAnswer m_answer;
 };
 

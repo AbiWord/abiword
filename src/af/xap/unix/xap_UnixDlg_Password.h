@@ -37,15 +37,7 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
- protected:
-
- private:
-
-	typedef enum
-	  {
-	    BUTTON_OK,
-	    BUTTON_CANCEL
-	  } ResponseId ;
+private:
 
 	void event_Ok ();
 	void event_Cancel ();
@@ -57,8 +49,7 @@ public:
 	    me->event_Return () ;
 	  }
 
-	void _constructWindowContents (GtkWidget * container);
-	virtual GtkWidget * _constructWindow ();
+	GtkWidget * _constructWindow ();
 	
 	GtkWidget * mMainWindow;
 	GtkWidget * mTextEntry;

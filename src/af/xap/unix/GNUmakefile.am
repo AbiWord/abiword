@@ -33,6 +33,7 @@ glade_DATA = \
 	xap_UnixDlg_About.glade \
 	xap_UnixDlg_Encoding.glade \
 	xap_UnixDlg_Language.glade \
+	xap_UnixDlg_Password.glade	\
 	xap_UnixDlg_PluginManager.glade \
 	xap_UnixDlg_WindowMore.glade \
 	xap_UnixDlg_Zoom.glade

@@ -22,7 +22,7 @@
 #include "xap_Dlg_Password.h"
 
 XAP_Dialog_Password::XAP_Dialog_Password(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent (pDlgFactory, id), m_answer(a_OK)
+  : XAP_Dialog_NonPersistent (pDlgFactory, id), m_answer(a_Cancel)
 {
 }
 
@@ -32,10 +32,10 @@ XAP_Dialog_Password::~XAP_Dialog_Password ()
 
 void XAP_Dialog_Password::setPassword (const char * pass)
 {
-  m_passwd = pass;
+	m_passwd = pass;
 }
 
-void XAP_Dialog_Password::setPassword (UT_String& pass)
+void XAP_Dialog_Password::setPassword (const UT_UTF8String& pass)
 {
-  m_passwd = pass;
+	m_passwd = pass;
 }
