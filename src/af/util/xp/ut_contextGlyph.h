@@ -65,12 +65,17 @@ struct UCSRange
 
 enum GlyphContext {GC_ISOLATE,GC_INITIAL,GC_MEDIAL,GC_FINAL,GC_NOT_SET};
 
+// the following enum defines return values for renderString(); note
+// that the values are set so as to allow us to cast to UT_uint32 and
+// manipulate them using OR and AND
 enum UTShapingResult
 {
-	SR_Error = 0,
-	SR_ContextSensitive,
-	SR_Ligatures,
-	SR_ContextSensitiveAndLigatures
+	SR_Plain = 0x00,
+	SR_ContextSensitive = 0x01,
+	SR_Ligatures = 0x02,
+	SR_ContextSensitiveAndLigatures = 0x03, // SR_ContextSensitive | SR_Ligatures
+	SR_Unknown = 0xf0, // initial value for text in our runs
+	SR_Error = 0xff
 };
 
 

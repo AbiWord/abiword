@@ -51,7 +51,7 @@ struct LigatureSequence
 static LigatureData s_ligature[] =
 {
 	// code_low, code_high, intial, medial, final, stand-alone
-#if 0
+#if 1
 #define ENABLE_LATIN_LIGATURES
 #endif
 	
@@ -1266,6 +1266,7 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 		const LetterData   * pLet = 0;
 		const LigatureData * pLig = 0;
 		GlyphContext         context = GC_NOT_SET;
+		bool bLigCountAdjusted = false;
 		
 		current = text[pos + i];
 		if(text.getStatus() != UTIter_OK)
@@ -1343,6 +1344,7 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 					// no special form exists in this context, process
 					// as ordinary characters
 					iLigature--;
+					bLigCountAdjusted = true;
 					goto ligature_form_missing;
 				}
 			}
@@ -1365,7 +1367,12 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 							 glyph));
 				// we need to use the original glyphs; glyph2 is
 				// already set
-				iLigature--;
+				if(!bLigCountAdjusted)
+				{
+					iLigature--;
+					bLigCountAdjusted = true;
+				}
+				
 				glyph = current;
 			}
 			else
@@ -1393,7 +1400,12 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 				else if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
 				{
 					// we have the original glyph, so we will use it
-					iLigature--;
+					if(!bLigCountAdjusted)
+					{
+						iLigature--;
+						bLigCountAdjusted = true;
+					}
+					
 					*dst_ptr++ = glyph;
 				}
 				else
@@ -1401,7 +1413,13 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 					// bad luck, not even the original glyph exists
 					UT_DEBUGMSG(("UT_contextGlyph::render [1b] glyph 0x%x not present in font\n",
 								 glyph));
-					iLigature--;
+
+					if(!bLigCountAdjusted)
+					{
+						iLigature--;
+						bLigCountAdjusted = true;
+					}
+
 					*dst_ptr++ = s_cDefaultGlyph;
 				}
 
@@ -1524,7 +1542,10 @@ UTShapingResult UT_contextGlyph::renderString(UT_TextIterator & text,
 	if(iLigature <= 0 && iContextSensitive > 0)
 		return SR_ContextSensitive;
 	
-	return SR_ContextSensitiveAndLigatures;
+	if(iLigature > 0 && iContextSensitive > 0)
+		return SR_ContextSensitiveAndLigatures;
+
+	return SR_Plain;
 }
 
 /*!
