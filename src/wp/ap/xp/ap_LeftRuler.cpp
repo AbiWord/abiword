@@ -195,6 +195,9 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff)
 
 void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 {
+	if (!m_pG)
+		return;
+	
 	if (pClipRect)
 		m_pG->setClipRect(pClipRect);
 

@@ -468,8 +468,9 @@ UT_Bool AP_Win32Frame::loadDocument(const char * szFilename)
 	if (! _loadDocument(szFilename))
 	{
 		// we could not load the document.
-		// TODO how should we complain to the user ??
-
+		// we cannot complain to the user here, we don't know
+		// if the app is fully up yet.  we force our caller
+		// to deal with the problem.
 		return UT_FALSE;
 	}
 

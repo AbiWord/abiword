@@ -668,11 +668,36 @@ static UT_Bool s_AskForPathname(XAP_Frame * pFrame,
 /*****************************************************************/
 /*****************************************************************/
 
+static AP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame,
+															   char * pNewFile)
+{
+	pFrame->raise();
+
+	AP_DialogFactory * pDialogFactory
+		= (AP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MessageBox * pDialog
+		= (AP_Dialog_MessageBox *)(pDialogFactory->requestDialog(XAP_DIALOG_ID_MESSAGE_BOX));
+	UT_ASSERT(pDialog);
+
+	pDialog->setMessage("Error importing file %s",pNewFile);
+	pDialog->setButtons(AP_Dialog_MessageBox::b_O);
+	pDialog->setDefaultAnswer(AP_Dialog_MessageBox::a_OK);
+
+	pDialog->runModal(pFrame);
+
+	AP_Dialog_MessageBox::tAnswer ans = pDialog->getAnswer();
+
+	pDialogFactory->releaseDialog(pDialog);
+
+	return (ans);
+}
+
 Defun1(fileOpen)
 {
 	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
-	UT_Bool bRes = UT_TRUE;
+	UT_Bool bRes = UT_FALSE;
 
 	char * pNewFile = NULL;
 	UT_Bool bOK = s_AskForPathname(pFrame,UT_FALSE,NULL,&pNewFile);
@@ -689,48 +714,101 @@ Defun1(fileOpen)
 
 	// see if requested file is already open in another frame
 	UT_sint32 ndx = pApp->findFrame(pNewFile);
-
 	if (ndx >= 0)
 	{
 		// yep, reuse it
 		pNewFrame = pApp->getFrame(ndx);
 		UT_ASSERT(pNewFrame);
 
-		if (!s_AskRevertFile(pNewFrame))
+		if (s_AskRevertFile(pNewFrame))
 		{
-			// never mind
+			// re-load the document in pNewFrame
+
+			bRes = pNewFrame->loadDocument(pNewFile);
+			if (bRes)
+				pNewFrame->show();
+			else
+				s_CouldNotLoadFileMessage(pNewFrame,pNewFile);
+		}
+		else
+		{
+			// cancel the FileOpen.
+		}
+		
+		free(pNewFile);
+		return bRes;
+	}
+
+	// We generally open documents in a new frame, which keeps the
+	// contents of the current frame available.
+	// However, as a convenience we do replace the contents of the
+	// current frame if it's the only top-level view on an empty,
+	// untitled document.
+
+	if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
+	{
+		// open new document in a new frame.  if we fail,
+		// put up an error dialog on current frame (our
+		// new one is not completely instantiated) and
+		// return.  we do not create a new untitled document
+		// in this case.
+
+		pNewFrame = pApp->newFrame();
+		if (!pNewFrame)
+		{
 			free(pNewFile);
 			return UT_FALSE;
 		}
+		
+		bRes = pNewFrame->loadDocument(pNewFile);
+		if (bRes)
+		{
+			pNewFrame->show();
+		}
+		else
+		{
+			// TODO there is a problem with the way we create a
+			// TODO new frame and then load a documentent into
+			// TODO it.  if we try to load pNewFile and fail,
+			// TODO and then destroy the window, and raise a
+			// TODO message box (on the original window) we get
+			// TODO nasty race on UNIX.  raising the dialog and
+			// TODO waiting for input flushes out the show-windows
+			// TODO on the new (and not yet completely instantiated)
+			// TODO window.  this causes a view-less top-level
+			// TODO window to appear -- which causes lots of
+			// TODO expose-related problems... and then other
+			// TODO problems which appear to be related to having
+			// TODO multiple gtk_main()'s on the stack....
+			// TODO
+			// TODO for now, we force a new untitled document into
+			// TODO the new window and then raise the message on
+			// TODO this new window.
+			// TODO
+			// TODO long term, we may want to modified pApp->newFrame()
+			// TODO to take an 'UT_Bool bShowWindow' argument....
+			
+			bRes = pNewFrame->loadDocument(NULL);
+			if (bRes)
+				pNewFrame->show();
+			s_CouldNotLoadFileMessage(pNewFrame,pNewFile);
+		}
+		
+		free(pNewFile);
+		return bRes;
 	}
-	else if (pFrame->isDirty() || pFrame->getFilename() || (pFrame->getViewNumber() > 0))
-	{
-		/*
-		  We generally open documents in a new frame, which keeps the
-		  contents of the current frame available.
 
-		  However, as a convenience we do replace the contents of the
-		  current frame if it's the only top-level view on an empty,
-		  untitled document.
-		*/
-		pNewFrame = pApp->newFrame();
-		UT_ASSERT(pNewFrame);
-	}
-
-	if (pNewFrame)
-		pFrame = pNewFrame;
+	// we are replacing the single-view, unmodified, untitled document.
+	// if we fail, put up an error message on the current frame
+	// and return -- we do not replace this untitled document with a
+	// new untitled document.
 
 	bRes = pFrame->loadDocument(pNewFile);
-
-	// HACK: at least make something show
-	if (!bRes)
-		bRes = pFrame->loadDocument(NULL);
-
-	if (pNewFrame)
-		pNewFrame->show();
-
+	if (bRes)
+		pFrame->show();
+	else
+		s_CouldNotLoadFileMessage(pFrame,pNewFile);
 	free(pNewFile);
-
 	return bRes;
 }
 

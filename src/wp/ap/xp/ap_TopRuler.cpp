@@ -215,6 +215,9 @@ void AP_TopRuler::scrollRuler(UT_sint32 xoff)
 
 void AP_TopRuler::draw(const UT_Rect * pClipRect)
 {
+	if (!m_pG)
+		return;
+	
 	if (pClipRect)
 		m_pG->setClipRect(pClipRect);
 
