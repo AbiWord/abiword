@@ -89,11 +89,11 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// LC_MESSAGES - language of messages and look of affirmative/negative answer
 
 	// now, which of the categories should we use?
-	// how about LC_CTYPE?
-	// (they are probably all the same, anyway)
+	// we used to use LC_CTYPE, but decided that LC_MESSAGES was a better idea
+	// (most likely, all of LC_* are the same)
 	
 	const char * szNewLang = "en-US"; // default to US English
-	char * lc_ctype = UT_strdup(setlocale(LC_CTYPE, NULL));
+	char * lc_ctype = UT_strdup(setlocale(LC_MESSAGES, NULL));
 
 	// locale categories seem to always look like this:
 	// two letter for language (lowcase) _ two letter country code (upcase)
