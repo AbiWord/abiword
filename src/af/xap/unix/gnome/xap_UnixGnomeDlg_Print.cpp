@@ -100,37 +100,24 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	// don't set transient - this is a gnome-dialog
 
 	// 2.  Toggle dialog options to match persistent values
-	if (!m_bPersistValid)		// first time called
-	{
-		m_persistPrintDlg.bEnablePrintToFile = m_bEnablePrintToFile;
-		m_persistPrintDlg.bEnablePageRange = m_bEnablePageRange;
-		m_persistPrintDlg.bEnableSelection = m_bEnablePrintSelection;
-		m_persistPrintDlg.nFromPage = m_nFirstPage;
-		m_persistPrintDlg.nToPage = m_nLastPage;
-		// The first time through, grab the settings and set min and max for range checking
-		m_persistPrintDlg.nMinPage = m_nFirstPage;
-		m_persistPrintDlg.nMaxPage = m_nLastPage;
-
-		m_persistPrintDlg.colorSpace = GR_Graphics::GR_COLORSPACE_COLOR;
-		
-		UT_cloneString(m_persistPrintDlg.szPrintCommand, "lpr");
-	}
-
 	// TODO: We're not really persistant. I view this as a good thing, others don't.
 	// Gnome Print really doesn't do persistance too well (limited accessor
 	// functions), so we have to give something up in order to get the pretty
 	// dialog (for now)
 
+	UT_Bool preview = UT_FALSE;
+
 	// 3.  Run dialog
 	switch( gnome_dialog_run(GNOME_DIALOG(gpd)) ) {
 		case GNOME_PRINT_PRINT:
-			break;
+		  break;
 		case GNOME_PRINT_PREVIEW:
-		  /* TODO: support Gnome Print-Preview */ 
+		  preview = UT_TRUE;
+		  break;
 		default:
-			gnome_dialog_close(GNOME_DIALOG(gpd));
-			m_answer = a_CANCEL;
-			return;
+		  gnome_dialog_close(GNOME_DIALOG(gpd));
+		  m_answer = a_CANCEL;
+		  return;
 	}
 
 	// 4.  Set new persistent values from dialog
@@ -145,31 +132,34 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	m_bDoPrintRange				= (range == GNOME_PRINT_RANGE_RANGE);
 	m_bDoPrintSelection			= (range == GNOME_PRINT_RANGE_SELECTION);
 	m_bCollate				= collate;
-	m_cColorSpace				= GR_Graphics::GR_COLORSPACE_BW;  //BUG
-	m_nFirstPage				= first;
-	m_nLastPage				= end;
+	m_cColorSpace				= GR_Graphics::GR_COLORSPACE_COLOR;  //BUG
+	
+	if(m_bDoPrintRange)
+	  {
+	    m_nFirstPage		        = MIN(first, end);
+	    m_nLastPage				= MAX(first, end);
+	  }
+
 	m_nCopies				= copies;
 	m_answer 				= a_OK;
 
 	/* hack - detect the pipe ('|') gnome print adds for printing to a non-file */
-	m_bDoPrintToFile = *(printer->filename) != '|';
+	m_bDoPrintToFile = (printer->filename) && (*(printer->filename) != '|');
 	
 	if(m_bDoPrintToFile) 
 	  {
 	    /* postscript output to a file */
 	    UT_cloneString(m_szPrintToFilePathname, printer->filename);
-	    UT_cloneString(m_szPrintCommand, "");
+	    UT_cloneString(m_szPrintCommand, "foo");
 	  }
 	else
 	  {
 	    /* printing using lpr or similar */
 	    UT_cloneString(m_szPrintCommand, printer->filename+1); /* hack to remove "|" from "|lpr" */
-	    UT_cloneString(m_szPrintToFilePathname, "");
+	    UT_cloneString(m_szPrintToFilePathname, "foo");
 	  }
 
-	UT_DEBUGMSG(("Printing to file: %d\n", m_bDoPrintToFile));
-	UT_DEBUGMSG(("Print range: %d Selection: %d\n", m_bDoPrintRange, m_bDoPrintSelection));
-	UT_DEBUGMSG(("Driver: %s Filename: %s\n", m_szPrintCommand, m_szPrintToFilePathname));
+	UT_DEBUGMSG(("Gnome Print: Copies: %d Collate: %d Start: %d End: %d\n", m_nCopies, m_bCollate, m_nFirstPage, m_nLastPage));
 
 	return;
 }
@@ -190,16 +180,16 @@ void XAP_UnixGnomeDialog_Print::_getGraphics(void)
 	if (m_bDoPrintToFile)
 	{
 		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname, m_szDocumentTitle,
-										m_pUnixFrame->getApp()->getApplicationName(),
-										fontmgr,
-										UT_TRUE, app);
+						m_pUnixFrame->getApp()->getApplicationName(),
+						fontmgr,
+						UT_TRUE, app);
 	}
 	else
 	{		
 		m_pPSGraphics = new PS_Graphics(m_szPrintCommand, m_szDocumentTitle,
-										m_pUnixFrame->getApp()->getApplicationName(),
-										fontmgr,
-										UT_FALSE, app);
+						m_pUnixFrame->getApp()->getApplicationName(),
+						fontmgr,
+						UT_FALSE, app);
 	}
 
 	UT_ASSERT(m_pPSGraphics);
@@ -209,4 +199,19 @@ void XAP_UnixGnomeDialog_Print::_getGraphics(void)
 	
 	m_answer = a_OK;
 	return;
+}
+
+void XAP_UnixGnomeDialog_Print::runModal(XAP_Frame * pFrame) 
+{
+       m_pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+       UT_ASSERT(m_pUnixFrame);
+       
+       // TODO: persistance
+
+       _raisePrintDialog(pFrame);              
+       if (m_answer == a_OK)
+         _getGraphics();
+
+       m_pUnixFrame = NULL;
+       return;
 }

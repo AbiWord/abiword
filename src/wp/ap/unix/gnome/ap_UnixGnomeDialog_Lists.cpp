@@ -59,15 +59,15 @@ GtkWidget * AP_UnixGnomeDialog_Lists::_constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (GNOME_DIALOG (m_wMainWindow)->vbox),
 			    _constructWindowContents (), TRUE, TRUE, 0);
 
-	// close button
-	gnome_dialog_append_button(GNOME_DIALOG(m_wMainWindow), 
-				   GNOME_STOCK_BUTTON_CLOSE);
-	m_wClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_wMainWindow)->buttons)->data);
-	
 	// apply button
 	gnome_dialog_append_button(GNOME_DIALOG(m_wMainWindow), 
 				   GNOME_STOCK_BUTTON_APPLY);
 	m_wApply = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_wMainWindow)->buttons)->data);
+
+	// close button
+	gnome_dialog_append_button(GNOME_DIALOG(m_wMainWindow), 
+				   GNOME_STOCK_BUTTON_CLOSE);
+	m_wClose = GTK_WIDGET (g_list_last (GNOME_DIALOG (m_wMainWindow)->buttons)->data);
 
 	gtk_widget_show_all(m_wMainWindow);
 	_connectSignals();
