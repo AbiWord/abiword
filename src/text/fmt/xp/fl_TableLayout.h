@@ -143,8 +143,8 @@ public:
 	void                        markForRebuild(void) { m_bNeedsRebuild = true;}
 	void                        clearRebuild(void) { m_bNeedsRebuild = false;}
 	bool                        needsRebuild(void) const { return m_bNeedsRebuild;}
-    void                        markForReformat(void) { m_bNeedsFormat = true;}
-    bool                        needsReFormat(void) const { return m_bNeedsFormat;}
+    void                        markForReformat(void) { m_bNeedsReformat = true;}
+    bool                        needsReFormat(void) const { return m_bNeedsReformat;}
 
 	UT_sint32                getLeftOffset(void) const;
 
@@ -181,7 +181,6 @@ protected:
 	virtual void		        _lookupProperties(void);
 	void				        _purgeLayout();
 private:
-	bool                   m_bNeedsFormat;
 	bool                   m_bNeedsRebuild;
 	FL_TableJustification  m_iJustification;
 	UT_sint32              m_iLeftOffset;
@@ -279,7 +278,6 @@ protected:
 	virtual void		     _lookupProperties(void);
 	virtual void             _purgeLayout(void);
 private:
-	bool                   m_bNeedsFormat;
 	bool                   m_bNeedsRebuild;
 	UT_sint32              m_iLeftOffset;
 	double                 m_dLeftOffsetUserUnits;

@@ -915,7 +915,7 @@ void fl_DocSectionLayout::updateLayout(void)
 	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
-	bool bReformat = false;
+	bool bReformat = true;
 	while (pBL)
 	{
 		eHidden  = pBL->isHidden();

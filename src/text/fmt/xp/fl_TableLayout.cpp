@@ -57,7 +57,6 @@
 fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, 
 			       PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_TABLE,FL_CONTAINER_TABLE,PTX_SectionTable, pMyContainerLayout),
-	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false),
 	  m_iJustification(FL_TABLE_FULL),
 	  m_iLeftOffset(0),
@@ -277,10 +276,10 @@ void fl_TableLayout::format(void)
 		markAllRunsDirty();
 		m_bIsDirty = false;
 	}
-	m_bNeedsFormat = m_bIsDirty;
-	if(m_bNeedsFormat)
+	m_bNeedsReformat = m_bIsDirty;
+	if(m_bNeedsReformat)
 	{
-		xxx_UT_DEBUGMSG(("SEVIOR: After format in TableLayout need another format \n"));
+		UT_DEBUGMSG(("SEVIOR: After format in TableLayout need another format \n"));
 	}
 }
 
@@ -997,7 +996,6 @@ void fl_TableLayout::_purgeLayout(void)
 
 fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_CELL,FL_CONTAINER_CELL,PTX_SectionCell,pMyContainerLayout),
-	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false),
 	  m_iLeftOffset(0),
 	  m_dLeftOffsetUserUnits(0.0),
@@ -1263,7 +1261,7 @@ void fl_CellLayout::format(void)
 		pBL = pBL->getNext();
 	}
 	static_cast<fp_CellContainer *>(getFirstContainer())->layout();
-	m_bNeedsFormat = false;
+	m_bNeedsReformat = false;
 }
 
 void fl_CellLayout::markAllRunsDirty(void)
