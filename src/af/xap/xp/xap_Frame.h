@@ -104,7 +104,7 @@ protected:
 class ABI_EXPORT XAP_Frame
 {
 public:
-	XAP_Frame(XAP_App * pApp);
+	XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp);
 	XAP_Frame(XAP_Frame * pFrame);
 	virtual ~XAP_Frame();
 
