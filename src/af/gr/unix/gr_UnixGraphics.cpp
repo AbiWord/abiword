@@ -215,7 +215,6 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	if (!m_pFontManager)
 		return;
 	UT_ASSERT(m_pFont);
-	WCTOMB_DECLS;
 	GdkFont *font;
 	UT_sint32 x;
 	
@@ -347,6 +346,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		}
 		else
 		{
+			WCTOMB_DECLS;
 			CONVERT_TO_MBS(actual);
 			gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,text,text_length);
 			x+=gdk_text_width(font, text, text_length);
