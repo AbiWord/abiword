@@ -144,6 +144,7 @@ AP_UnixDialog_FormatTable__onBorderColorClicked (GtkWidget 		*button,
 	UT_return_val_if_fail (button && dlg, FALSE);
 
 	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
+	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
 	GtkColorSelection *colorsel = GTK_COLOR_SELECTION ((GTK_COLOR_SELECTION_DIALOG (colordlg))->colorsel);
 	gtk_color_selection_set_has_palette (colorsel, TRUE);
 	
@@ -186,6 +187,7 @@ AP_UnixDialog_FormatTable__onBackgroundColorClicked (GtkWidget 		*button,
 	UT_return_val_if_fail (button && dlg, FALSE);
 
 	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
+	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
 	GtkColorSelection *colorsel = GTK_COLOR_SELECTION ((GTK_COLOR_SELECTION_DIALOG (colordlg))->colorsel);
 	gtk_color_selection_set_has_palette (colorsel, TRUE);
 	
