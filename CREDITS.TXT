@@ -81,6 +81,7 @@ Kjartan Maraas <kmaraas@online.no>		Norwegian
 Jordi Mas <jmas@softcatala.org>                 Catalan
 Zbynek Miksa <xmiksa@informatics.muni.cz>	Czech
 Giovanni dos Reis Nunes <giovanni@skydome.net>	Portugese (Brazil)
+Rasmus Toftdahl Olesen <rto@post.tele.dk>	da-DK translation
 Eutanazy Sercxemulo <szperacz@free.net.pl>	Polish
 Rui Silva <rms@ssi.aaum.pt>                     Portugese
 Christian Terboven <cterboven@gmx.net>          German
