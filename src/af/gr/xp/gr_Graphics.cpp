@@ -158,7 +158,7 @@ GR_Graphics::~GR_Graphics()
 
 UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
 {
-	double d = ((double)layoutUnits * getDeviceResolution()) * getZoomPercentage() / (100. * getResolution());
+	double d = ((double)layoutUnits * static_cast<double>(getDeviceResolution())) * static_cast<double>(getZoomPercentage()) / (100. * static_cast<double>(getResolution()));
 	// don't know if we need this line or not -PL
 	if (d > 0) d += .5; else d -= .5;
 	return (UT_sint32)d;
@@ -166,27 +166,28 @@ UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
 
 UT_sint32 GR_Graphics::tlu(UT_sint32 deviceUnits) const
 {
-	return (deviceUnits * getResolution() / getDeviceResolution()) * 100 / getZoomPercentage();
+	return static_cast<UT_sint32>((static_cast<double>(deviceUnits) * static_cast<double>(getResolution()) / static_cast<double>(getDeviceResolution())) * 100. / static_cast<double>(getZoomPercentage()) + 0.5);
 }
 
 double GR_Graphics::tduD(double layoutUnits) const
 {
-	return (layoutUnits * getDeviceResolution() / getResolution()) * getZoomPercentage() / 100.0;
+	return (layoutUnits * static_cast<double>(getDeviceResolution()) / static_cast<double>(getResolution())) * static_cast<double>(getZoomPercentage()) / 100.0;
 }
 
 double GR_Graphics::tluD(double deviceUnits) const
 {
-	return (deviceUnits * getResolution() / getDeviceResolution()) * 100.0 / getZoomPercentage();
+	return (deviceUnits * static_cast<double>(getResolution()) / static_cast<double>(getDeviceResolution())) * 100.0 / static_cast<double>(getZoomPercentage());
 }
 
 UT_sint32	GR_Graphics::ftlu(UT_sint32 fontUnits) const
 {
-	return (fontUnits * getResolution() / getDeviceResolution());
+	UT_sint32 itmp = fontUnits * getResolution();
+	return (itmp/ getDeviceResolution());
 }
 
 double	GR_Graphics::ftluD(double fontUnits) const
 {
-	return (fontUnits * getResolution() / getDeviceResolution() + 0.5);
+	return (fontUnits * static_cast<double>(getResolution()) / static_cast<double>(getDeviceResolution()));
 }
 
 void GR_Graphics::setLineProperties ( double    inWidthPixels, 
