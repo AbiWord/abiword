@@ -2477,7 +2477,6 @@ bool fl_HdrFtrSectionLayout::isPointInHere(PT_DocPosition pos)
 		}
 		// This happens when you're erasing the last character in the document.
 		// Not sure if assert should stay or not.
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 	fl_ContainerLayout * ppBL = pHF->getFirstLayout();
