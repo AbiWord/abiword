@@ -6558,8 +6558,6 @@ static bool _toggleSpan(FV_View * pView,
 /*****************************************************************/
 /*****************************************************************/
 
-/* declare but possibly not implment them */
-bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog, bool bPrintDirectly);
 
 bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     FV_View * pPrintView, const char *pDocName,
@@ -6640,7 +6638,10 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 	return true;
 }
 
-#if !defined(XP_TARGET_COCOA)
+#if defined(XP_TARGET_COCOA)
+/* declare but possibly not implment them */
+bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog, bool bPrintDirectly);
+#else
 static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 {
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
