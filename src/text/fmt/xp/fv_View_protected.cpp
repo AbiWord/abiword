@@ -3715,27 +3715,37 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 	}
 
 	// if the block cannot contain point, find the nearest block to
-	// the left that can
-	while(!pBlock->canContainPoint())
+	// the left that can; or to the right, if none to the left exists
+	fl_BlockLayout * pOrigBL = pBlock;
+	
+	while(pBlock && !pBlock->canContainPoint())
 	{
-		UT_sint32 pos2 = pBlock->getPosition(true) - 2;
-		if(pos2 < 2)
-			break;
+		pBlock = pBlock->getPrevBlockInDocument();
+	}
 
-		pBlock = _findBlockAtPosition(pos2);
-		UT_ASSERT(pBlock->getContainerType() == FL_CONTAINER_BLOCK);
-		if(pBlock->getContainerType() != FL_CONTAINER_BLOCK)
+	if(!pBlock)
+	{
+		pBlock = pOrigBL;
+		
+		while(pBlock && !pBlock->canContainPoint())
 		{
-			x = x2 = 0;
-			y = y2 = 0;
-			
-			height = 0;
-			if(ppBlock)
-				*ppBlock = 0;
-			return;
+			pBlock = pBlock->getNextBlockInDocument();
 		}
 	}
 
+	if(!pBlock)
+	{
+		// no blocks that can take point in this document !!!
+		UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+		x = x2 = 0;
+		y = y2 = 0;
+
+		height = 0;
+		if(ppBlock)
+			*ppBlock = 0;
+		return;
+	}
+	
 	// If block is actually to the right of the requested position
 	// (this happens in an empty document), update the pos with the
 	// start pos of the block.
