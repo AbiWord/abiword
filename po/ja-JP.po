@@ -28,6 +28,8 @@ msgid ""
 " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
 msgstr ""
+" - 予約されています。 \n"
+" この名前を使うことはできません。他のを選んで下さい \n"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:11
@@ -59,6 +61,14 @@ msgid ""
 "\n"
 "Otherwise, please be patient."
 msgstr ""
+"%s はまだ実装されていません。\n"
+"\n"
+"もしあなたがプログラマなら、ぜひ %s の %d 行目にコードを追加して\n"
+"パッチを以下にメールして下さい:\n"
+"\n"
+"\tabiword-dev@abisource.com\n"
+"\n"
+"そうでなければ、どうか我慢して下さい。"
 
 #. MENU_LABEL_WINDOW_1
 #: po/tmp/ap_String_Id.h.h:19
@@ -473,7 +483,7 @@ msgstr "通常レイアウト(&N)"
 #. DLG_Goto_Label_Number
 #: po/tmp/ap_String_Id.h.h:179
 msgid "&Number:"
-msgstr ""
+msgstr "番号(&N):"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:181
@@ -583,7 +593,7 @@ msgstr "ステータスバーを表示(&S)"
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:223
 msgid "&Special:"
-msgstr "スペシャル(&S):"
+msgstr "特別(&S):"
 
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h.h:225
@@ -776,7 +786,7 @@ msgstr ""
 #. MENU_STATUSLINE_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:299
 msgid "Add or modify bullets and numbering for selected paragraphs"
-msgstr ""
+msgstr "選択された段落に黒丸や番号付けの追加や変更を行う"
 
 #. MENU_STATUSLINE_SPELL_ADD
 #: po/tmp/ap_String_Id.h.h:301
@@ -841,12 +851,12 @@ msgstr "現在のリストに適用"
 #. DLG_Lists_Arabic_List
 #: po/tmp/ap_String_Id.h.h:325
 msgid "Arabic List"
-msgstr "アラビアリスト"
+msgstr "アラビア数字リスト"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:327
 msgid "At least"
-msgstr ""
+msgstr "最低限"
 
 #. DLG_Lists_Resume
 #: po/tmp/ap_String_Id.h.h:329
@@ -998,17 +1008,17 @@ msgstr "ビルドターゲット"
 #. DLG_Lists_Type_bullet
 #: po/tmp/ap_String_Id.h.h:387
 msgid "Bullet"
-msgstr ""
+msgstr "黒丸"
 
 #. DLG_Lists_Bullet_List
 #: po/tmp/ap_String_Id.h.h:389
 msgid "Bullet List"
-msgstr ""
+msgstr "黒丸リスト"
 
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h.h:391
 msgid "Bullets and &Numbering"
-msgstr ""
+msgstr "黒丸と番号付け(&N)"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h.h:393
@@ -1068,7 +1078,7 @@ msgstr "中央タブ"
 #. MENU_STATUSLINE_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:415
 msgid "Center-align the paragraph"
-msgstr "段落を中央揃え"
+msgstr "段落を中央揃えする"
 
 #. DLG_Para_AlignCentered
 #: po/tmp/ap_String_Id.h.h:417
@@ -1093,7 +1103,7 @@ msgstr "背景色を変更"
 #. DLG_ToggleCase_Title
 #: po/tmp/ap_String_Id.h.h:425
 msgid "Change Case"
-msgstr "大小文字変換"
+msgstr "大小文字の変換"
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h.h:427
@@ -1540,7 +1550,7 @@ msgstr "最後のページは違うフッタにする"
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h.h:599
 msgid "Different Footer on facing pages"
-msgstr "見返しページは違うフッタにする"
+msgstr "対向ページは違うフッタにする"
 
 #. DLG_HdrFtr_HeaderFirst
 #: po/tmp/ap_String_Id.h.h:601
@@ -1555,7 +1565,7 @@ msgstr "最後のページには違うヘッダにする"
 #. DLG_HdrFtr_HeaderEven
 #: po/tmp/ap_String_Id.h.h:605
 msgid "Different Header on facing pages"
-msgstr "見返しページは違うヘッダにする"
+msgstr "対向ページは違うヘッダにする"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:607
@@ -1673,18 +1683,18 @@ msgstr "ファイル %s のインポートでエラー発生。"
 #: po/tmp/ap_String_Id.h.h:651
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr ""
+msgstr "%s の保存でエラー: エクスポータを構成できませんでした"
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h.h:653
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
-msgstr ""
+msgstr "%s の保存でエラー: 不正な名前"
 
 #. DLG_Para_SpacingExactly
 #: po/tmp/ap_String_Id.h.h:655
 msgid "Exactly"
-msgstr ""
+msgstr "一致"
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h.h:657
@@ -1872,7 +1882,7 @@ msgstr "ハンドリスト"
 #. DLG_Para_SpecialHanging
 #: po/tmp/ap_String_Id.h.h:727
 msgid "Hanging"
-msgstr "ハンギング"
+msgstr "ぶら下げ"
 
 #. DLG_PageNumbers_Header
 #: po/tmp/ap_String_Id.h.h:729
@@ -1907,7 +1917,7 @@ msgstr "ハートリスト"
 #. DLG_Lists_Hebrew_List
 #: po/tmp/ap_String_Id.h.h:739
 msgid "Hebrew List"
-msgstr "ヘブライリスト"
+msgstr "ヘブライ数字リスト"
 
 #. MENU_LABEL_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:741
@@ -1977,12 +1987,12 @@ msgstr "無視する語:"
 #. DLG_Lists_Implies_List
 #: po/tmp/ap_String_Id.h.h:767
 msgid "Implies List"
-msgstr ""
+msgstr "矢印リスト"
 
 #. DLG_Styles_LBL_InUse
 #: po/tmp/ap_String_Id.h.h:769
 msgid "In Use"
-msgstr ""
+msgstr "使用中"
 
 #. AUTOTEXT_REFERENCE_1
 #: po/tmp/ap_String_Id.h.h:771
@@ -2205,7 +2215,7 @@ msgstr "行とページのブレーク(&P)"
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h.h:857
 msgid "Line below the selection (toggle)"
-msgstr "選択範囲の最下部に線を引く (toggle)"
+msgstr "選択範囲の最下部に線を引く (トグル)"
 
 #. DLG_Column_Line_Between
 #: po/tmp/ap_String_Id.h.h:859
@@ -2230,7 +2240,7 @@ msgstr "リストラベル"
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h.h:867
 msgid "Lists for "
-msgstr ""
+msgstr "リスト"
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h.h:869
@@ -2250,7 +2260,7 @@ msgstr "小文字リスト"
 #. DLG_Lists_Lower_Roman_List
 #: po/tmp/ap_String_Id.h.h:875
 msgid "Lower Roman List"
-msgstr "小文字ローマンリスト"
+msgstr "小文字ローマ数字リスト"
 
 #. MENU_LABEL_AUTOTEXT_MAIL
 #: po/tmp/ap_String_Id.h.h:877
@@ -2330,7 +2340,7 @@ msgstr "月(短縮形). 日, 年"
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h.h:907
 msgid "Multiple"
-msgstr ""
+msgstr "複数"
 
 #. DLG_Lists_New_List_Label
 #: po/tmp/ap_String_Id.h.h:909
@@ -2416,17 +2426,17 @@ msgstr "列の数"
 #. DLG_Lists_Type_numbered
 #: po/tmp/ap_String_Id.h.h:939
 msgid "Numbered"
-msgstr ""
+msgstr "番号"
 
 #. DLG_Lists_Numbered_List
 #: po/tmp/ap_String_Id.h.h:941
 msgid "Numbered List"
-msgstr ""
+msgstr "番号リスト"
 
 #. DLG_Styles_ModifyNumbering
 #: po/tmp/ap_String_Id.h.h:943
 msgid "Numbering"
-msgstr ""
+msgstr "番号付け"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h.h:945
@@ -2651,6 +2661,8 @@ msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr ""
+"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
+"Previous Paragraph Previous Paragraph Previous Paragraph"
 
 #. MENU_LABEL_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1033
@@ -2811,12 +2823,12 @@ msgstr "Respectfully,"
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h.h:1095
 msgid "Restart Page Numbers on new Sections"
-msgstr "新規の選択範囲でページ番号を数え直す"
+msgstr "新規選択範囲でページ番号を数え直す"
 
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1097
 msgid "Restart numbering at:"
-msgstr ""
+msgstr "数え直し開始:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h.h:1099
@@ -2985,7 +2997,7 @@ msgstr "文書全体を選択"
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h.h:1163
 msgid "Sentence case"
-msgstr "文の大文字小文字"
+msgstr "各文頭を大文字に変換"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h.h:1165
@@ -3100,7 +3112,7 @@ msgstr "シングル"
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h.h:1209
 msgid "Space after Column"
-msgstr ""
+msgstr "列の後のスペース"
 
 #. DLG_Para_LabelSpacing
 #: po/tmp/ap_String_Id.h.h:1211
@@ -3120,7 +3132,7 @@ msgstr "スペルのオプション(&O)"
 #. DLG_Lists_Square_List
 #: po/tmp/ap_String_Id.h.h:1217
 msgid "Square List"
-msgstr ""
+msgstr "四角リスト"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h.h:1219
@@ -3135,22 +3147,22 @@ msgstr "標準ツールバー"
 #. DLG_Lists_Star_List
 #: po/tmp/ap_String_Id.h.h:1223
 msgid "Star List"
-msgstr ""
+msgstr "星印リスト"
 
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h.h:1225
 msgid "Start At:"
-msgstr ""
+msgstr "開始:"
 
 #. DLG_Lists_Start_New
 #: po/tmp/ap_String_Id.h.h:1227
 msgid "Start New List"
-msgstr "新規リストを開始"
+msgstr "新規にリストを開始"
 
 #. DLG_Lists_Start_Sub
 #: po/tmp/ap_String_Id.h.h:1229
 msgid "Start Sublist"
-msgstr ""
+msgstr "サブリストを開始"
 
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h.h:1231
@@ -3180,27 +3192,27 @@ msgstr "選択範囲に打消線を引く(トグル)"
 #. DLG_Styles_ErrNotTitle1
 #: po/tmp/ap_String_Id.h.h:1241
 msgid "Style Name - "
-msgstr ""
+msgstr "スタイル名 - "
 
 #. DLG_Styles_ModifyName
 #: po/tmp/ap_String_Id.h.h:1243
 msgid "Style Name:"
-msgstr ""
+msgstr "スタイル名:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h.h:1245
 msgid "Style Type"
-msgstr ""
+msgstr "スタイルタイプ"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h.h:1247
 msgid "Style for following paragraph"
-msgstr ""
+msgstr "以下の段落に適用するスタイル"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h.h:1249
 msgid "Style name cannot be left blank"
-msgstr ""
+msgstr "スタイル名は空白を含んでいてはいけません"
 
 #. DLG_Lists_Style
 #: po/tmp/ap_String_Id.h.h:1251 po/tmp/xap_String_Id.h.h:417
@@ -3225,7 +3237,7 @@ msgstr "Subject:"
 #. DLG_Spell_Suggestions
 #: po/tmp/ap_String_Id.h.h:1259
 msgid "Sugg&estions:"
-msgstr ""
+msgstr "訂正候補(&E):"
 
 #. DLG_Options_Label_SpellMainOnly
 #: po/tmp/ap_String_Id.h.h:1261
@@ -3281,7 +3293,7 @@ msgstr "文字"
 #. DLG_Lists_Align
 #: po/tmp/ap_String_Id.h.h:1281
 msgid "Text Align:"
-msgstr ""
+msgstr "テキスト調整:"
 
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h.h:1283
@@ -3350,7 +3362,7 @@ msgstr "三列"
 #. DLG_Lists_Tick_List
 #: po/tmp/ap_String_Id.h.h:1305
 msgid "Tick List"
-msgstr ""
+msgstr "チェックリスト"
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h.h:1307
@@ -3386,12 +3398,12 @@ msgstr "上余白 [%s]"
 #. MENU_LABEL_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h.h:1319 po/tmp/xap_String_Id.h.h:437
 msgid "Topline"
-msgstr ""
+msgstr "最上線"
 
 #. DLG_Lists_Triangle_List
 #: po/tmp/ap_String_Id.h.h:1321
 msgid "Triangle List"
-msgstr ""
+msgstr "三角リスト"
 
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h.h:1323
@@ -3411,7 +3423,7 @@ msgstr "タイプ:"
 #. DLG_ToggleCase_UpperCase
 #: po/tmp/ap_String_Id.h.h:1329
 msgid "UPPERCASE"
-msgstr "大文字"
+msgstr "大文字に変換"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:1331
@@ -3426,17 +3438,17 @@ msgstr "編集をアンドゥ"
 #. DLG_Lists_Upper_Case_List
 #: po/tmp/ap_String_Id.h.h:1335
 msgid "Upper Case List"
-msgstr ""
+msgstr "大文字リスト"
 
 #. DLG_Lists_Upper_Roman_List
 #: po/tmp/ap_String_Id.h.h:1337
 msgid "Upper Roman List"
-msgstr ""
+msgstr "大文字ローマ数字リスト"
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h.h:1339
 msgid "Use RTL Order"
-msgstr ""
+msgstr "RTLの順序にする"
 
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h.h:1341
@@ -3497,7 +3509,7 @@ msgstr "表示"
 #: po/tmp/ap_String_Id.h.h:1363
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
-msgstr ""
+msgstr "警告: 指定したブックマーク [%s] は存在しません。"
 
 #. MENU_LABEL_WEB
 #: po/tmp/ap_String_Id.h.h:1365
@@ -3512,7 +3524,7 @@ msgstr "ウェブレイアウト"
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h.h:1369
 msgid "What Hath God Wrought"
-msgstr ""
+msgstr "What Hath God Wrought"
 
 #. DLG_Options_Label_WithExtension
 #: po/tmp/ap_String_Id.h.h:1371
@@ -3641,7 +3653,7 @@ msgstr "日/月/年"
 #. DLG_ToggleCase_LowerCase
 #: po/tmp/ap_String_Id.h.h:1417
 msgid "lowercase"
-msgstr "小文字"
+msgstr "小文字に変換"
 
 #. DLG_Options_Label_Minutes
 #: po/tmp/ap_String_Id.h.h:1419
@@ -3693,12 +3705,12 @@ msgstr "75%(&7)"
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:19
 msgid "&Page width"
-msgstr "ページの幅(&P)"
+msgstr "ページ幅まで(&P)"
 
 #. DLG_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:21
 msgid "&Whole page"
-msgstr "ページ全体(&W)"
+msgstr "全体が収まる(&W)"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:23
@@ -3708,7 +3720,7 @@ msgstr "(校正しない)"
 #. DLG_NoSaveFile_DirNotExist
 #: po/tmp/xap_String_Id.h.h:25
 msgid "A directory in the given pathname does not exist."
-msgstr "指定のパス名のディレクトリは存在しません。"
+msgstr "指定されたパス名のディレクトリは存在しません。"
 
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:27
@@ -4446,7 +4458,7 @@ msgstr "上線"
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:337
 msgid "P&ercent:"
-msgstr "パーセント(%E):"
+msgstr "パーセント(&E):"
 
 #. DLG_UP_PageRanges
 #: po/tmp/xap_String_Id.h.h:341
