@@ -73,10 +73,6 @@
 #include "xap_EncodingManager.h"
 
 #include "pp_Revision.h"
-#if 1
-// todo: work around to remove the INPUTWORDLEN restriction for pspell
-#include "ispell_def.h"
-#endif
 
 // NB -- irrespective of this size, the piecetable will store
 // at max BOOKMARK_NAME_LIMIT of chars as defined in pf_Frag_Bookmark.h
@@ -8437,7 +8433,7 @@ void FV_View::startImageDrag(fp_Run * pRun, UT_sint32 xPos, UT_sint32 yPos)
 	pRun->getLine()->getScreenOffsets(pRun, xoff, yoff);
 
 	// Sevior's infamous + 1....
-	yoff += pRun->getLine()->getAscent() - pRun->getAscent() + 1;				
+	yoff += pRun->getLine()->getAscent() - pRun->getAscent() + m_pG->tlu(1);				
 	
 	// Set the image size in the image selection rect
 	m_dragImageRect = UT_Rect(xoff,yoff,pRun->getWidth(),pRun->getHeight());
