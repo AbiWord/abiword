@@ -49,19 +49,19 @@ realclean::	$(REQUIREREALCLEAN)
 _ZLIB_:
 	@if [ -r /usr/include/zlib.h \
 	      -o -d $(ABI_ROOT)/../zlib \
-	    ]; then
-		echo Found zlib.;
-	else
-	    echo zlib not found;
-	    exit 1;
+	    ]; then \
+		echo Found zlib.; \
+	else \
+	    echo zlib not found; \
+	    exit 1; \
 	fi
 
 _LIBPNG_:
 	@if [ -r /usr/include/png.h \
 	    -o -d $(ABI_ROOT)/../libpng \
-	    ]; then
-	    echo Found libpng;
-	    else
+	    ]; then \
+	    echo Found libpng; \
+	    else \
 		echo libpng not found;						\
 		exit 1;								\
 	fi
