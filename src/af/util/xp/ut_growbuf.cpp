@@ -73,7 +73,7 @@ UT_Bool UT_GrowBuf::_growBuf(UT_uint32 spaceNeeded)
 	return UT_TRUE;
 }
 		
-UT_Bool UT_GrowBuf::ins(UT_uint32 position, UT_uint16 * pValue, UT_uint32 length)
+UT_Bool UT_GrowBuf::ins(UT_uint32 position, const UT_uint16 * pValue, UT_uint32 length)
 {
 	// insert the given buffer into the growbuf
 

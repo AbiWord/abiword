@@ -236,7 +236,33 @@ UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 
 UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const
 {
-	UT_ASSERT(UT_TODO);
+	// copy the contents (unicode character data) of the
+	// paragraph (block) into the growbuf given.  we append
+	// the content onto the growbuf.
+
+	UT_ASSERT(pgb);
+	
+	pf_Frag * pf = (pf_Frag *)sdh;
+	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
+	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+
+	UT_uint32 bufferOffset = pgb->getLength();
+	
+	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp && pfTemp->getType()==pf_Frag::PFT_Text); pfTemp=pfTemp->getNext())
+	{
+		pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pfTemp);
+		const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
+		UT_uint32 length = pft->getLength();
+
+		UT_Bool bAppended = pgb->ins(bufferOffset,pSpan,length);
+		UT_ASSERT(bAppended);
+		
+		bufferOffset += length;
+	}
+
+	UT_ASSERT(bufferOffset == pgb->getLength());
+	
 	return UT_TRUE;
 }
 
