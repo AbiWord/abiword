@@ -106,7 +106,7 @@ BeginSet(en,US,UT_TRUE)
 	MenuLabel(AP_MENU_ID_TOOLS,				"&Tools",			NULL)   
 	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Spelling",		"Check the document for incorrect spelling")
 	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,	"&Word Count",		"Count the number of words in the document")
-	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Options",			"Set options")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Preferences",		"Set preferences")
 
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Align",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Left",			"Left-justify the paragraph")

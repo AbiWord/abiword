@@ -161,10 +161,10 @@ dcl(DLG_Para_PreviewPrevParagraph,  "Previous Paragraph Previous Paragraph Previ
 dcl(DLG_Para_PreviewFollowParagraph,"Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph")
 
 /* Options dialog */
-dcl(DLG_Options_OptionsTitle,			"Options")
+dcl(DLG_Options_OptionsTitle,			"Preferences")
 
 dcl(DLG_Options_TabLabel_Spelling,		"Spelling")
-dcl(DLG_Options_TabLabel_SmartQuotes,	"Smart Quotes")
+dcl(DLG_Options_TabLabel_Other,			"Other")
 dcl(DLG_Options_TabLabel_Preferences,	"Preference Schemes")
 dcl(DLG_Options_TabLabel_View,			"View")
 

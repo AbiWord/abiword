@@ -42,7 +42,7 @@
 #define AP_RID_DIALOG_FIELD						212
 #define AP_RID_DIALOG_WORDCOUNT					213
 #define AP_RID_DIALOG_GOTO						214
-#define AP_RID_DIALOG_OPT_SMARTQUOTES			215		// tab-sub-dlg
+#define AP_RID_DIALOG_OPT_OTHER					215		// tab-sub-dlg
 
 #include "ap_Win32Resources_DialogReplace.rc2"
 #include "ap_Win32Res_DlgBreak.rc2"

@@ -207,7 +207,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 	GtkWidget *glade_menuitem;
 	GtkWidget *labelSpell;
 
-	GtkWidget *tableSmartQuotes;
+	GtkWidget *tableOther;
 	GtkWidget *checkbuttonSmartQuotesEnable;
 	GtkWidget *labelSmartQuotes;
 
@@ -595,25 +595,25 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents ()
 	// END: glade stuff
 
 
-	// SMART QUOTES ////////////////////////////////////////////////////////////////
-	tableSmartQuotes = gtk_table_new (2, 3, FALSE);
-	gtk_widget_ref (tableSmartQuotes);
-	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "tableSmartQuotes", tableSmartQuotes,
+	// OTHER STUFF (including SMART QUOTES) //////////////////////////////
+	tableOther = gtk_table_new (2, 3, FALSE);
+	gtk_widget_ref (tableOther);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "tableOther", tableOther,
 	                          (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (tableSmartQuotes);
-	gtk_container_add (GTK_CONTAINER (notebook1), tableSmartQuotes);
-	gtk_container_set_border_width (GTK_CONTAINER (tableSmartQuotes), 10);
+	gtk_widget_show (tableOther);
+	gtk_container_add (GTK_CONTAINER (notebook1), tableOther);
+	gtk_container_set_border_width (GTK_CONTAINER (tableOther), 10);
 
 	checkbuttonSmartQuotesEnable = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_SmartQuotesEnable));
 	gtk_widget_ref (checkbuttonSmartQuotesEnable);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonSmartQuotesEnable", checkbuttonSmartQuotesEnable,
 	                          (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (checkbuttonSmartQuotesEnable);
-	gtk_table_attach (GTK_TABLE (tableSmartQuotes), checkbuttonSmartQuotesEnable, 0, 3, 0, 1,
+	gtk_table_attach (GTK_TABLE (tableOther), checkbuttonSmartQuotesEnable, 0, 3, 0, 1,
 	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 	                  (GtkAttachOptions) (0), 0, 0);
 
-	labelSmartQuotes = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_SmartQuotes));
+	labelSmartQuotes = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Other));
 	gtk_widget_ref (labelSmartQuotes);
 	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "labelSmartQuotes", labelSmartQuotes,
 	                          (GtkDestroyNotify) gtk_widget_unref);

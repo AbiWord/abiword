@@ -544,7 +544,7 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 
 	/*** Other/Misc Tab (smart quotes) ***/
 	n = 0;
-	PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_SmartQuotes)), 0);
+	PtSetArg(&args[n++], Pt_ARG_TITLE, TR(pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Other)), 0);
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, TAB_WIDTH, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, TAB_HEIGHT, 0);
 	PtWidget_t *miscTab = PtCreateWidget(PtPane, panelGroup, n, args);
