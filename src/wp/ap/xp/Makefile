@@ -28,6 +28,7 @@ CPPSRCS=	ap_Dialog_Replace.cpp		\
 		ap_Dialog_Goto.cpp		\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
+		ap_LeftRuler.cpp		\
 		ap_LoadBindings.cpp		\
 		ap_LoadBindings_DeadAbovedot.cpp	\
 		ap_LoadBindings_DeadAcute.cpp		\

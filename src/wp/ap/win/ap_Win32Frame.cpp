@@ -37,13 +37,12 @@
 #include "xap_Win32App.h"
 #include "ev_Win32Mouse.h"
 #include "ap_Win32TopRuler.h"
+#include "ap_Win32LeftRuler.h"
 
 /*****************************************************************/
 
 #define GWL(hwnd)		(AP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
 #define SWL(hwnd, f)	(AP_Win32Frame*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
-
-#define HACK_RULER_SIZE		40			// TODO move this
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -176,13 +175,14 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	
 	m_pView->addScrollListener(m_pScrollObj);
 
-	// Associate the new view with the existing TopRuler.
+	// Associate the new view with the existing TopRuler, LeftRuler.
 	// Because of the binding to the actual on-screen widgets
-	// we do not destroy and recreate the TopRuler when we change
+	// we do not destroy and recreate the TopRuler,LeftRuler when we change
 	// views, like we do for all the other objects.  We also do not
-	// allocate the TopRuler here; that is done as the frame is
+	// allocate the TopRuler, LeftRuler here; that is done as the frame is
 	// created.
 	m_pData->m_pTopRuler->setView(pView);
+	m_pData->m_pLeftRuler->setView(pView);
 
 	RECT r;
 	GetClientRect(hwnd, &r);
@@ -264,6 +264,7 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 		return UT_FALSE;
 
 	WNDCLASSEX  wndclass;
+	ATOM a;
 
 	// register class for the container window (this will contain the document
 	// and the rulers and the scroll bars)
@@ -284,12 +285,8 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	wndclass.lpszClassName = s_ContainerWndClassName;
 	wndclass.hIconSm       = NULL;
 
-	if (!RegisterClassEx(&wndclass))
-	{
-		DWORD err = GetLastError();
-		UT_ASSERT(err);
-		return UT_FALSE;
-	}
+	a = RegisterClassEx(&wndclass);
+	UT_ASSERT(a);
 	
 	// register class for the actual document window
 	sprintf(s_DocumentWndClassName, "%sDocument", app->getApplicationName());
@@ -308,38 +305,12 @@ UT_Bool AP_Win32Frame::RegisterClass(AP_Win32App * app)
 	wndclass.lpszClassName = s_DocumentWndClassName;
 	wndclass.hIconSm       = NULL;
 
-	if (!RegisterClassEx(&wndclass))
-	{
-		DWORD err = GetLastError();
-		UT_ASSERT(err);
-		return UT_FALSE;
-	}
+	a = RegisterClassEx(&wndclass);
+	UT_ASSERT(a);
 	
-	// register class for the left ruler
-	sprintf(s_LeftRulerWndClassName, "%sLeftRuler", app->getApplicationName());
-
-	memset(&wndclass, 0, sizeof(wndclass));
-	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_DBLCLKS;
-	wndclass.lpfnWndProc   = AP_Win32Frame::_LeftRulerWndProc;
-	wndclass.cbClsExtra    = 0;
-	wndclass.cbWndExtra    = 0;
-	wndclass.hInstance     = app->getInstance();
-	wndclass.hIcon         = NULL;
-	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
-	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = s_LeftRulerWndClassName;
-	wndclass.hIconSm       = NULL;
-
-	if (!RegisterClassEx(&wndclass))
-	{
-		DWORD err = GetLastError();
-		UT_ASSERT(err);
-		return UT_FALSE;
-	}
-
 	if (!AP_Win32TopRuler::RegisterClass(app))
+		return UT_FALSE;
+	if (!AP_Win32LeftRuler::RegisterClass(app))
 		return UT_FALSE;
 
 	return UT_TRUE;
@@ -459,30 +430,34 @@ HWND AP_Win32Frame::_createDocumentWindow(HWND hwndParent,
 	UT_ASSERT(m_hwndHScroll);
 	SWL(m_hwndHScroll, this);
 
+	// create the top ruler
+	
 	AP_Win32TopRuler * pWin32TopRuler = new AP_Win32TopRuler(this);
 	UT_ASSERT(pWin32TopRuler);
 	m_hwndTopRuler = pWin32TopRuler->createWindow(hwndContainer,
 												  0,0, (r.right - cxVScroll));
 	m_pData->m_pTopRuler = pWin32TopRuler;
 	UT_uint32 yTopRulerHeight = pWin32TopRuler->getHeight();
-	
-	m_hwndLeftRuler = CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
-									 WS_CHILD | WS_VISIBLE,
-									 0, yTopRulerHeight,
-									 HACK_RULER_SIZE, r.bottom - yTopRulerHeight - cyHScroll,
-									 hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
-	UT_ASSERT(m_hwndLeftRuler);
-	SWL(m_hwndLeftRuler, this);
 
-	// TODO get the width from the left ruler and stuff it into the top ruler.
-	pWin32TopRuler->setOffsetLeftRuler(HACK_RULER_SIZE);
+	// create the left ruler
+	
+	AP_Win32LeftRuler * pWin32LeftRuler = new AP_Win32LeftRuler(this);
+	UT_ASSERT(pWin32LeftRuler);
+	m_hwndLeftRuler = pWin32LeftRuler->createWindow(hwndContainer,0,yTopRulerHeight,
+													r.bottom - yTopRulerHeight - cyHScroll);
+	m_pData->m_pLeftRuler = pWin32LeftRuler;
+	UT_uint32 xLeftRulerWidth = pWin32LeftRuler->getWidth();
+
+	// get the width from the left ruler and stuff it into the top ruler.
+	
+	pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
 
 	// create a child window for us.
 	m_hwndDocument = CreateWindowEx(0, s_DocumentWndClassName, NULL,
 									WS_CHILD | WS_VISIBLE,
-									HACK_RULER_SIZE, HACK_RULER_SIZE,
-									r.right - HACK_RULER_SIZE - cxVScroll,
-									r.bottom - HACK_RULER_SIZE - cyHScroll,
+									xLeftRulerWidth, yTopRulerHeight,
+									r.right - xLeftRulerWidth - cxVScroll,
+									r.bottom - yTopRulerHeight - cyHScroll,
 									hwndContainer, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndDocument);
 	SWL(m_hwndDocument, this);
@@ -577,15 +552,16 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 			int cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 
 			int yTopRulerHeight = f->m_pData->m_pTopRuler->getHeight();
+			int xLeftRulerWidth = f->m_pData->m_pLeftRuler->getWidth();
 			
 			MoveWindow(f->m_hwndVScroll, nWidth-cxVScroll, 0, cxVScroll, nHeight-cyHScroll, TRUE);
 			MoveWindow(f->m_hwndHScroll, 0, nHeight-cyHScroll, nWidth - cxVScroll, cyHScroll, TRUE);
 			MoveWindow(f->m_hwndDeadLowerRight, nWidth-cxVScroll, nHeight-cyHScroll, cxVScroll, cyHScroll, TRUE);
 			MoveWindow(f->m_hwndTopRuler, 0, 0, nWidth-cxVScroll, yTopRulerHeight, TRUE);
 			MoveWindow(f->m_hwndLeftRuler, 0, yTopRulerHeight,
-					   HACK_RULER_SIZE, nHeight - yTopRulerHeight - cyHScroll, TRUE);
-			MoveWindow(f->m_hwndDocument, HACK_RULER_SIZE, yTopRulerHeight,
-					   nWidth - HACK_RULER_SIZE - cxVScroll, nHeight - yTopRulerHeight - cyHScroll, TRUE);
+					   xLeftRulerWidth, nHeight - yTopRulerHeight - cyHScroll, TRUE);
+			MoveWindow(f->m_hwndDocument, xLeftRulerWidth, yTopRulerHeight,
+					   nWidth - xLeftRulerWidth - cxVScroll, nHeight - yTopRulerHeight - cyHScroll, TRUE);
 		}
 		return 0;
 	}

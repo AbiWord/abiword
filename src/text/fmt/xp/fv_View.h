@@ -102,6 +102,7 @@ public:
 	void getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
 	void getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
 	virtual UT_uint32 getPageViewLeftMargin(void) const;
+	virtual UT_uint32 getPageViewTopMargin(void) const;
 	
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
 	UT_Bool getBlockFormat(const XML_Char *** properties);

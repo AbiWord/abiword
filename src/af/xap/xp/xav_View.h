@@ -68,6 +68,7 @@ public:
 	UT_sint32		getXScrollOffset(void) const;
 	UT_sint32		getYScrollOffset(void) const;
 	virtual UT_uint32	getPageViewLeftMargin(void) const = 0;
+	virtual UT_uint32	getPageViewTopMargin(void) const = 0;
 	
 	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL) = 0;
 

@@ -22,59 +22,59 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ap_Win32TopRuler.h"
+#include "ap_Win32LeftRuler.h"
 #include "gr_Win32Graphics.h"
 #include "xap_Win32App.h"
 #include "ap_Win32Frame.h"
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(AP_Win32TopRuler*)GetWindowLong((hwnd), GWL_USERDATA)
-#define SWL(hwnd, f)	(AP_Win32TopRuler*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
+#define GWL(hwnd)		(AP_Win32LeftRuler*)GetWindowLong((hwnd), GWL_USERDATA)
+#define SWL(hwnd, f)	(AP_Win32LeftRuler*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
 
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
-static char s_TopRulerWndClassName[256];
+static char s_LeftRulerWndClassName[256];
 
 /*****************************************************************/
 
-AP_Win32TopRuler::AP_Win32TopRuler(XAP_Frame * pFrame)
-	: AP_TopRuler(pFrame)
+AP_Win32LeftRuler::AP_Win32LeftRuler(XAP_Frame * pFrame)
+	: AP_LeftRuler(pFrame)
 {
 	m_pG = NULL;
-	m_hwndTopRuler = NULL;
+	m_hwndLeftRuler = NULL;
 }
 
-AP_Win32TopRuler::~AP_Win32TopRuler(void)
+AP_Win32LeftRuler::~AP_Win32LeftRuler(void)
 {
 	DELETEP(m_pG);
 }
 
-void AP_Win32TopRuler::setView(AV_View * pView)
+void AP_Win32LeftRuler::setView(AV_View * pView)
 {
-	AP_TopRuler::setView(pView);
+	AP_LeftRuler::setView(pView);
 
 	DELETEP(m_pG);
-	m_pG = new Win32Graphics(GetDC(m_hwndTopRuler), m_hwndTopRuler);
+	m_pG = new Win32Graphics(GetDC(m_hwndLeftRuler), m_hwndLeftRuler);
 	UT_ASSERT(m_pG);
 }
 
 /*****************************************************************/
 
-UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
+UT_Bool AP_Win32LeftRuler::RegisterClass(AP_Win32App * app)
 {
 	WNDCLASSEX  wndclass;
 	ATOM a;
 	
 	// register class for the top ruler
-	sprintf(s_TopRulerWndClassName, "%sTopRuler", app->getApplicationName());
+	sprintf(s_LeftRulerWndClassName, "%sLeftRuler", app->getApplicationName());
 
 	memset(&wndclass, 0, sizeof(wndclass));
 	wndclass.cbSize        = sizeof(wndclass);
 	wndclass.style         = CS_DBLCLKS;
-	wndclass.lpfnWndProc   = AP_Win32TopRuler::_TopRulerWndProc;
+	wndclass.lpfnWndProc   = AP_Win32LeftRuler::_LeftRulerWndProc;
 	wndclass.cbClsExtra    = 0;
 	wndclass.cbWndExtra    = 0;
 	wndclass.hInstance     = app->getInstance();
@@ -82,7 +82,7 @@ UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
 	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
 	wndclass.hbrBackground = GetSysColorBrush(COLOR_BTNFACE);
 	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = s_TopRulerWndClassName;
+	wndclass.lpszClassName = s_LeftRulerWndClassName;
 	wndclass.hIconSm       = NULL;
 
 	a = RegisterClassEx(&wndclass);
@@ -91,26 +91,26 @@ UT_Bool AP_Win32TopRuler::RegisterClass(AP_Win32App * app)
 	return UT_TRUE;
 }
 
-HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
+HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 									UT_uint32 left, UT_uint32 top,
-									UT_uint32 width)
+									UT_uint32 height)
 {
 	AP_Win32App * app = static_cast<AP_Win32App *>(m_pFrame->getApp());
-	m_hwndTopRuler = CreateWindowEx(0, s_TopRulerWndClassName, NULL,
-									WS_CHILD | WS_VISIBLE,
-									left, top, width, s_iFixedHeight,
-									hwndContainer, NULL, app->getInstance(), NULL);
-	UT_ASSERT(m_hwndTopRuler);
-	SWL(m_hwndTopRuler, this);
+	m_hwndLeftRuler = CreateWindowEx(0, s_LeftRulerWndClassName, NULL,
+									 WS_CHILD | WS_VISIBLE,
+									 left, top, s_iFixedWidth, height,
+									 hwndContainer, NULL, app->getInstance(), NULL);
+	UT_ASSERT(m_hwndLeftRuler);
+	SWL(m_hwndLeftRuler, this);
 
-	return m_hwndTopRuler;
+	return m_hwndLeftRuler;
 }
 
-LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	// this is a static member function.
 
-	AP_Win32TopRuler * pRuler = GWL(hwnd);
+	AP_Win32LeftRuler * pRuler = GWL(hwnd);
 
 	if (!pRuler)
 		return DefWindowProc(hwnd, iMsg, wParam, lParam);

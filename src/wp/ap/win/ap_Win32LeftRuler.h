@@ -16,30 +16,39 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
- 
 
-#include "ap_FrameData.h"
-#include "gr_Graphics.h"
-#include "fl_DocLayout.h"
-#include "ap_TopRuler.h"
-#include "ap_LeftRuler.h"
+#ifndef AP_WIN32LEFTRULER_H
+#define AP_WIN32LEFTRULER_H
 
-#define DELETEP(p)	do { if (p) delete p; } while (0)
+// Class for dealing with the horizontal ruler at the top of
+// a document window.
 
 /*****************************************************************/
 
-AP_FrameData::AP_FrameData()
-{
-	m_pDocLayout = NULL;
-	m_pG = NULL;
-	m_pTopRuler = NULL;
-	m_pLeftRuler = NULL;
-}
+#include "ut_types.h"
+#include "ap_LeftRuler.h"
+#include "gr_Win32Graphics.h"
+class AP_Win32App;
+class XAP_Frame;
 
-AP_FrameData::~AP_FrameData()
+/*****************************************************************/
+
+class AP_Win32LeftRuler : public AP_LeftRuler
 {
-	DELETEP(m_pDocLayout);
-	DELETEP(m_pG);
-	DELETEP(m_pTopRuler);
-	DELETEP(m_pLeftRuler);
-}
+public:
+	AP_Win32LeftRuler(XAP_Frame * pFrame);
+	virtual ~AP_Win32LeftRuler(void);
+
+	HWND					createWindow(HWND hwndContainer,
+										 UT_uint32 left, UT_uint32 top,
+										 UT_uint32 height);
+	virtual void			setView(AV_View * pView);
+
+	static UT_Bool			RegisterClass(AP_Win32App * app);
+	static LRESULT CALLBACK	_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+	
+protected:
+	HWND					m_hwndLeftRuler;
+};
+
+#endif /* AP_WIN32LEFTRULER_H */

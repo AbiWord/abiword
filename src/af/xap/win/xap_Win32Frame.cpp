@@ -50,6 +50,7 @@ UT_Bool XAP_Win32Frame::RegisterClass(AP_Win32App * app)
 {
 	// NB: can't access 'this' members from a static member function
 	WNDCLASSEX  wndclass;
+	ATOM a;
 
 	// register class for the frame window
 	wndclass.cbSize        = sizeof(wndclass);
@@ -65,12 +66,8 @@ UT_Bool XAP_Win32Frame::RegisterClass(AP_Win32App * app)
 	wndclass.lpszClassName = app->getApplicationName();
 	wndclass.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
 
-	if (!RegisterClassEx(&wndclass))
-	{
-		DWORD err = GetLastError();
-		UT_ASSERT(err);
-		return UT_FALSE;
-	}
+	a = RegisterClassEx(&wndclass);
+	UT_ASSERT(a);
 
 	return UT_TRUE;
 }

@@ -24,6 +24,7 @@
 class DG_Graphics;
 class FL_DocLayout;
 class AP_TopRuler;
+class AP_LeftRuler;
 
 // A trivial helper class to hold app-specific frame data
 
@@ -36,6 +37,7 @@ public:
 	FL_DocLayout *		m_pDocLayout;
 	DG_Graphics *		m_pG;
 	AP_TopRuler *		m_pTopRuler;
+	AP_LeftRuler *		m_pLeftRuler;
 };
 
 #endif /* AP_FRAMEDATA_H */

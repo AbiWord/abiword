@@ -2327,6 +2327,15 @@ UT_uint32 FV_View::getPageViewLeftMargin(void) const
 	return fl_PAGEVIEW_MARGIN_X;
 }
 
+UT_uint32 FV_View::getPageViewTopMargin(void) const
+{
+	// return the amount of gray-space we draw above the top
+	// of the paper in "Page View".  return zero if not in
+	// "Page View".
+
+	return fl_PAGEVIEW_MARGIN_Y;
+}
+
 /*
   This method simply iterates over every run between two doc positions
   and draws each one.  The current selection information is heeded.

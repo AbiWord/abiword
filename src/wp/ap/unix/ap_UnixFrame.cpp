@@ -36,10 +36,9 @@
 #include "ap_UnixFrame.h"
 #include "xap_UnixApp.h"
 #include "ap_UnixTopRuler.h"
+#include "ap_UnixLeftRuler.h"
 
 /*****************************************************************/
-
-#define HACK_RULER_SIZE		25			// TODO remove this
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -165,13 +164,14 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 
 	m_pView->addScrollListener(m_pScrollObj);
 
-	// Associate the new view with the existing TopRuler.
-	// Because of the binding to the actual on-screen widgets
-	// we do not destroy and recreate the TopRuler when we change
+	// Associate the new view with the existing TopRuler, LeftRuler.
+	// Because of the binding to the actual on-screen widgets we do
+	// not destroy and recreate the TopRuler, LeftRuler when we change
 	// views, like we do for all the other objects.  We also do not
-	// allocate the TopRuler here; that is done as the frame is
-	// created.
+	// allocate the TopRuler, LeftRuler  here; that is done as the
+	// frame is created.
 	m_pData->m_pTopRuler->setView(pView);
+	m_pData->m_pLeftRuler->setView(pView);
 	
 	m_pView->setWindowSize(GTK_WIDGET(m_dArea)->allocation.width,
 						   GTK_WIDGET(m_dArea)->allocation.height);
@@ -442,13 +442,14 @@ GtkWidget * AP_UnixFrame::_createDocumentWindow(void)
 	m_pData->m_pTopRuler = pUnixTopRuler;
 
 	// create the left ruler
-	m_leftRuler = gtk_drawing_area_new();
-	gtk_object_set_user_data(GTK_OBJECT(m_leftRuler),this);
-	gtk_widget_show(m_leftRuler);
-	gtk_widget_set_usize(m_leftRuler, HACK_RULER_SIZE, -1);
+	AP_UnixLeftRuler * pUnixLeftRuler = new AP_UnixLeftRuler(this);
+	UT_ASSERT(pUnixLeftRuler);
+	m_leftRuler = pUnixLeftRuler->createWidget();
+	m_pData->m_pLeftRuler = pUnixLeftRuler;
 
-	// TODO get the width from the left ruler and stuff it into the top ruler.
-	pUnixTopRuler->setOffsetLeftRuler(HACK_RULER_SIZE);
+	// get the width from the left ruler and stuff it into the top ruler.
+	
+	pUnixTopRuler->setOffsetLeftRuler(pUnixLeftRuler->getWidth());
 	
 	// set up for scroll bars.
 	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
