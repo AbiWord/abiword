@@ -636,8 +636,8 @@ void GR_UnixGraphics::invertRect(const UT_Rect* pRect)
 
 void GR_UnixGraphics::setClipRect(const UT_Rect* pRect)
 {
-	if(pRect != NULL)
-		UT_ASSERT(m_pRect==NULL);
+//	if(pRect != NULL)
+//		UT_ASSERT(m_pRect==NULL);
 	m_pRect = pRect;
 	if (pRect)
 	{

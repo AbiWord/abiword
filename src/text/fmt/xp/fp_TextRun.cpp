@@ -959,12 +959,14 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 			{
 				pPrev = pPrev->getPrev();
 			}
-			if(pPrev == NULL)
-				leftClear = getDescent();
-			else if (pPrev->getLine() != thisLine)
-				leftClear = getDescent();
-			else if (pPrev->getType() == FPRUN_TAB)
-				leftClear = getDescent();
+			leftClear = getDescent();
+			bool bthis = (pPrev != NULL) && (pPrev->getLine() ==thisLine);
+			if(bthis && pPrev->getType() == FPRUN_TEXT)
+				leftClear = 0;
+			if(bthis  && pPrev->getType() == FPRUN_FIELD)
+				leftClear = 0;
+			if(bthis && pPrev->getType() == FPRUN_IMAGE)
+				leftClear = 0;
 		}
 		m_pG->fillRect(clrNormalBackground,xoff-leftClear , yoff, m_iWidth+leftClear, m_pLine->getHeight());
 	}

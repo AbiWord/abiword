@@ -660,6 +660,9 @@ void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
   there's a line lookup - so this does not in any way affect layout,
   only the precision of the XY/position conversion code.
 
+  Sevior: I put in the 0.5 to deal with truncation errors and the +1 to deal
+  with the last line.
+
   \see fp_Line::setAssignedScreenHeight, fp_Line::recalcHeight
 */
 void fp_Column::layout(void)
@@ -674,14 +677,18 @@ void fp_Column::layout(void)
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
 		pLine = (fp_Line*) m_vecLines.getNthItem(i);
+//
+// This is to speedup redraws.
+//
 		if(pLine->getHeight() > getMaxLineHeight())
 			setMaxLineHeight(pLine->getHeight());
+
 		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
 //		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
 		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
 
 //		iY += iLineMarginBefore;
-		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);
 		if(pLine->getY() != iY)
 		{
 			pLine->clearScreen();
@@ -694,7 +701,8 @@ void fp_Column::layout(void)
 		iYLayoutUnits += iLineMarginAfterLayoutUnits;
 
 		// Update height of previous line now we know the gap between
-		// it and the current line.
+		// it and the current line. 
+
 		if (pPrevLine)
 		{
 			pPrevLine->setAssignedScreenHeight(iY - iPrevY);
@@ -706,8 +714,8 @@ void fp_Column::layout(void)
 	// Correct height position of the last line
 	if (pPrevLine)
 	{
-		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
-		pPrevLine->setAssignedScreenHeight(iY - iPrevY);
+		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits +0.5);
+		pPrevLine->setAssignedScreenHeight(iY - iPrevY + 1);
 	}
 
 

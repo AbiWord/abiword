@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <math.h>
 #include "ut_types.h"	// for FREEP
 
 #include "fl_DocLayout.h"
@@ -492,6 +493,8 @@ void fp_Line::getScreenOffsets(fp_Run* pRun,
         fp_Column::layout.
 
   \see fp_Column::layout 
+  Note bye Sevior: This method is causing pixel dirt by making lines smaller 
+  than their calculated heights!
 */
 void fp_Line::setAssignedScreenHeight(UT_sint32 iHeight)
 {
@@ -550,7 +553,6 @@ void fp_Line::recalcHeight()
 			iAscentLayoutUnits += iAscentLayoutUnits * 1/2;
 			iDescentLayoutUnits += iDescentLayoutUnits;
 		}
-
 		iMaxAscent = UT_MAX(iMaxAscent, iAscent);
 		iMaxDescent = UT_MAX(iMaxDescent, iDescent);
 		iMaxAscentLayoutUnits = UT_MAX(iMaxAscentLayoutUnits, iAscentLayoutUnits);
@@ -570,28 +572,36 @@ void fp_Line::recalcHeight()
 	double dLineSpace, dLineSpaceLayout;
 	fl_BlockLayout::eSpacingPolicy eSpacing;
 	m_pBlock->getLineSpacing(dLineSpace, dLineSpaceLayout, eSpacing);
-
+	if(fabs(dLineSpace) < 0.0001)
+	{
+		UT_DEBUGMSG(("SEVIOR: Set Linespace to 1.0 \n"));
+		dLineSpace = 1.0;
+	}
 	if (eSpacing == fl_BlockLayout::spacing_EXACT)
 	{
+		xxx_UT_DEBUGMSG(("SEVIOR: recalcHieght exact \n"));
 		iNewHeight = (UT_sint32) dLineSpace;
 		iNewHeightLayoutUnits = (UT_sint32) dLineSpaceLayout;
 	}
 	else if (eSpacing == fl_BlockLayout::spacing_ATLEAST)
 	{
+		xxx_UT_DEBUGMSG(("SEVIOR: recalcHieght at least \n"));
 		iNewHeight = UT_MAX(iNewHeight, (UT_sint32) dLineSpace);
 		iNewHeightLayoutUnits = UT_MAX(iNewHeightLayoutUnits, (UT_sint32) dLineSpaceLayout);
 	}
 	else
 	{
 		// multiple
-		iNewHeight = (UT_sint32) (iNewHeight * dLineSpace);
-		iNewHeightLayoutUnits = (UT_sint32) (iNewHeightLayoutUnits * dLineSpaceLayout);
+		iNewHeight = (UT_sint32) (iNewHeight * dLineSpace +0.5);
+		iNewHeightLayoutUnits = (UT_sint32) (iNewHeightLayoutUnits * dLineSpaceLayout +0.5);
+		xxx_UT_DEBUGMSG(("SEVIOR: recalcHeight neither dLineSpace = %f newheight =%d m_iScreenHeight =%d m_iHeight= %d\n",dLineSpace,iNewHeight,m_iScreenHeight,m_iHeight));
 	}
 
 	if (
 		(iOldHeight != iNewHeight)
 		|| (iOldAscent != iNewAscent)
 		|| (iOldDescent != iNewDescent)
+//		|| (iNewHeight > m_iScreenHeight)
 		)
 	{
 		clearScreen();
@@ -601,7 +611,6 @@ void fp_Line::recalcHeight()
 		// problem (i.e., why the assert?)
 		UT_ASSERT(iNewHeightLayoutUnits);
 #endif
-
 		m_iHeight = iNewHeight;
 		m_iScreenHeight = -1;	// undefine screen height
 		m_iHeightLayoutUnits = iNewHeightLayoutUnits;
@@ -660,7 +669,7 @@ void fp_Line::clearScreen(void)
 			// in case the line is asked to render before it's been
 			// assigned a height. Call it robustness, if you want.
 
-			xxx_UT_DEBUGMSG(("SEVIOR: Clear FullLine cleartopos = %d xoffline = %d \n",m_iClearToPos,m_iMaxWidth));
+			xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd pRun cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoffLine,getHeight()));
 			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, getHeight());
 //
 // Sevior: I added this for robustness. 
@@ -707,19 +716,22 @@ void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 				pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
 				j--;
 			}
-			if(j < 0)
-				leftClear = pRun->getDescent();
-			else if(pPrev == NULL)
-				leftClear = pRun->getDescent();
-			else if(pPrev->getType() == FPRUN_TAB)
-				leftClear = pRun->getDescent();
-
+			leftClear = pRun->getDescent();
+			if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
+				leftClear = 0;
+			if(j>= 0 && pPrev != NULL && pPrev->getType() == FPRUN_FIELD)
+				leftClear = 0;
+			if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_IMAGE)
+				leftClear = 0;
 			getScreenOffsets(pRun, xoff, yoff);
 			UT_sint32 xoffLine, yoffLine;
 		
 			m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
+			xxx_UT_DEBUGMSG(("SEVIOR: cleartoend prun xoff %d xoffline %d \n",xoff,xoffLine));
+			if(xoff == xoffLine)
+				leftClear = pRun->getDescent();
 			UT_RGBColor * pClr = pRun->getPageColor();
-			xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd cleartopos = %d xoff = %d xoffline =%d \n",m_iClearToPos,xoff,xoffLine));
+			UT_DEBUGMSG(("SEVIOR: ClearToEnd pRun cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoff,getHeight()));
 			pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos + leftClear - (xoff - xoffLine) , getHeight());
 //
 // Sevior: I added this for robustness.
@@ -798,19 +810,24 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 			pPrev = (fp_Run *) m_vecRuns.getNthItem(j);
 			j--;
 		}
-		if(j < 0)
-			leftClear = pRun->getDescent();
-		else if(pPrev == NULL)
-			leftClear = pRun->getDescent();
-		else if(pPrev->getType() == FPRUN_TAB)
-			leftClear = pRun->getDescent();
+		xxx_UT_DEBUGMSG(("SEVIOR: cleartoend index j= %d initial start %d \n",j,runIndex-1)); 
+		leftClear = pRun->getDescent();
+		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)
+			leftClear = 0;
+		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_FIELD)
+			leftClear = 0;
+		if(j>=0 && pPrev != NULL && pPrev->getType() == FPRUN_IMAGE)
+			leftClear = 0;
 
 		getScreenOffsets(pRun, xoff, yoff);
 		UT_sint32 xoffLine, yoffLine;
-//		UT_sint32 oldheight = getHeight();
-//		recalcHeight();
-//		UT_ASSERT(oldheight == getHeight());
+		UT_sint32 oldheight = getHeight();
+		recalcHeight();
+		UT_ASSERT(oldheight == getHeight());
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
+		xxx_UT_DEBUGMSG(("SEVIOR: cleartoend index xoff %d xoffline %d \n",xoff,xoffLine));
+		if(xoff == xoffLine)
+				leftClear = pRun->getDescent();
 		UT_RGBColor * pClr = pRun->getPageColor();
 		xxx_UT_DEBUGMSG(("SEVIOR: ClearToEnd index cleartopos = %d yoff = %d height =%d \n",m_iClearToPos,yoff,getHeight()));
 		pRun->getGraphics()->fillRect(*pClr,xoff - leftClear, yoff, m_iClearToPos  + leftClear - (xoff - xoffLine) , getHeight());
