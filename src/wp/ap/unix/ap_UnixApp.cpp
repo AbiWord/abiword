@@ -904,7 +904,7 @@ void AP_UnixApp::cacheCurrentSelection(AV_View * pView)
 		{
 			m_cacheDeferClear = false;
 			m_bHasSelection = false;
-			m_pClipboard->clearData(false,true);
+			//m_pClipboard->clearData(false,true);
 		}
 		m_cacheSelectionView = NULL;
     }

@@ -90,14 +90,6 @@ void XAP_UnixClipboard::initialize()
       target->target = (char*)m_vecFormat_AP_Name.getNthItem(k);
       target->info = k;
     }
-  
-  // setup clipboard selection, delay primary until assertSelection()
-  gtk_clipboard_set_with_data  (gtkClipboardForTarget(TAG_ClipboardOnly),
-				m_Targets,
-				m_nTargets,
-				s_clipboard_get_func,
-				s_clipboard_clear_func,
-				this); 
 }
 
 //////////////////////////////////////////////////////////////////
@@ -113,21 +105,25 @@ void XAP_UnixClipboard::common_get_func(GtkClipboard *clipboard,
   XAP_FakeClipboard & which_clip = ( which == TAG_ClipboardOnly ? m_fakeClipboard : m_fakePrimaryClipboard );
   pView->cmdCopy(which == TAG_ClipboardOnly);
 
-  guint ntargets = m_vecFormat_AP_Name.getItemCount();
+  guint ntargets = m_vecFormat_GdkAtom.getItemCount();
 
-  if (info < ntargets)
-    {
-      const gchar * data = 0;
-      UT_uint32 data_len = 0 ;
-      const gchar * format_name = (const gchar*)m_vecFormat_AP_Name.getNthItem(info);
+  GdkAtom needle = selection_data->target;
+  for (guint i = 0 ; i < ntargets ; i++)
+  {
+      if (needle == (GdkAtom)m_vecFormat_GdkAtom.getNthItem(i))
+      {
+        const gchar * data = 0;
+        UT_uint32 data_len = 0;
+        const gchar * format_name = (const gchar*)m_vecFormat_AP_Name.getNthItem(i);
 
-      if(which_clip.hasFormat(format_name))
-	{
-	  which_clip.getClipboardData(format_name,(void**)&data,&data_len);	 
-	  GdkAtom atom = (GdkAtom)m_vecFormat_GdkAtom.getNthItem(info);
-	  gtk_selection_data_set(selection_data,atom,8,(const guchar*)data,data_len);
-	}
-    }
+        if(which_clip.hasFormat(format_name))
+            {
+                which_clip.getClipboardData(format_name,(void**)&data,&data_len);	 
+                gtk_selection_data_set(selection_data,needle,8,(const guchar*)data,data_len);
+            }
+        break; // success or failure, we've found the needle in the haystack so exit the loop
+      }  
+  }
 }
 
 void  XAP_UnixClipboard::primary_clear_func (GtkClipboard *clipboard)
@@ -157,6 +153,8 @@ void XAP_UnixClipboard::clipboard_get_func(GtkClipboard *clipboard,
 
 bool XAP_UnixClipboard::assertSelection()
 {
+  xxx_UT_DEBUGMSG(("DOM: assertSelection\n"));
+
   // assert the X-Selection for PRIMARY.
   return ( gtk_clipboard_set_with_data (gtkClipboardForTarget(TAG_PrimaryOnly),
 					m_Targets,
@@ -224,7 +222,17 @@ bool XAP_UnixClipboard::getData(T_AllowGet tFrom, const char** formatList,
       if (ownsClipboard(tFrom))
 	return _getDataFromFakeClipboard(tFrom,formatList,ppData,pLen,pszFormatFound);
       else
-	return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
+	{
+	  // setup clipboard selection, delay primary until assertSelection()
+	  gtk_clipboard_set_with_data  (gtkClipboardForTarget(TAG_ClipboardOnly),
+					m_Targets,
+					m_nTargets,
+					s_clipboard_get_func,
+					s_clipboard_clear_func,
+					this); 
+
+	  return _getDataFromServer(tFrom,formatList,ppData,pLen,pszFormatFound);
+	}
       
     case TAG_PrimaryOnly:
       if (ownsClipboard(tFrom))
