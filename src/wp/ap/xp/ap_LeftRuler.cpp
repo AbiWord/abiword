@@ -170,7 +170,7 @@ bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	// If the caret has moved to a different page or any of the properties
 	// on the page (such as the margins) have changed, we force a redraw.
 
-	if (mask & (AV_CHG_MOTION | AV_CHG_FMTSECTION))
+	if (mask & (AV_CHG_MOTION | AV_CHG_FMTSECTION | AV_CHG_HDRFTR))
 	{
 		AP_LeftRulerInfo lfi;
 		(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);

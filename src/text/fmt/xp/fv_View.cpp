@@ -5377,7 +5377,6 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 
 	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
-
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
@@ -5411,7 +5410,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	}
 	if ((pos != getPoint()) && !bClick)
 		_clearIfAtFmtMark(getPoint());
-	
+
 	_setPoint(pos, bEOL);
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
@@ -5419,7 +5418,9 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 		_drawInsertionPoint();
 	}
 
-	notifyListeners(AV_CHG_MOTION);
+//	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
+	notifyListeners(AV_CHG_HDRFTR );
+
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();

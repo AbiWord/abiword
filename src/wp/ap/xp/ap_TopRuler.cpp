@@ -185,14 +185,14 @@ bool AP_TopRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 	// Handle AV_Listener events on the view.
 
 	UT_ASSERT(pView==m_pView);
-	//UT_DEBUGMSG(("AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
+	xxx_UT_DEBUGMSG(("AP_TopRuler::notify [view %p][mask %p]\n",pView,mask));
 
 	// if the column containing the caret has changed or any
 	// properties on the section (like the number of columns
 	// or the margins) or on the block (like the paragraph
 	// indents), then we redraw the ruler.
 	
-	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK))
+	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR ))
 	{
 		UT_Rect pClipRect;
 		pClipRect.top = 0;

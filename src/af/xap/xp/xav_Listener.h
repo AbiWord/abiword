@@ -45,6 +45,7 @@ typedef UT_uint16 AV_ChangeMask;
 #define AV_CHG_INPUTMODE	((AV_ChangeMask) 0x0800)
 #define AV_CHG_FMTSTYLE		((AV_ChangeMask) 0x1000)		// getStyle
 #define AV_CHG_INSERTMODE	((AV_ChangeMask) 0x2000)
+#define AV_CHG_HDRFTR   	((AV_ChangeMask) 0x4000)
 
 #ifdef BIDI_ENABLED
 #define AV_CHG_DIRECTIONMODE ((AV_ChangeMask)0x4000)
