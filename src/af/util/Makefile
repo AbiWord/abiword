@@ -83,6 +83,7 @@ endif
 OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_base64.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_base64_TestRoutines.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_allocator.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_rand.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_bytebuf.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_AbiObject.$(OBJ_SUFFIX)		\
@@ -115,7 +116,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_Encoding.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ut_path.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_math.$(OBJ_SUFFIX)
-		
+
 ifdef ABI_OPT_BIDI_ENABLED
 OBJS +=	$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX)
 endif

@@ -6113,10 +6113,6 @@ Defun1(insFile)
       FV_View copyView(pApp,0,pDocLayout); 
       copyView.cmdSelect(0, 0, FV_DOCPOS_BOD, FV_DOCPOS_EOD); // select all the contents of the new doc
       copyView.cmdCopy(); // copy the contents of the new document
-#if 0
-      // TODO: unselect the current selection???
-      pView->cmdUnselectSelection();
-#endif
       pView->cmdPaste ( true ); // paste the contents into the existing document honoring the formatting
       UT_DEBUGMSG(("DOM: copied and pasted\n"));
       

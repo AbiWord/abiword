@@ -27,7 +27,7 @@
  */
 UT_uint32 UT_newNumber ()
 {
-  static UT_uint32 theNumber = 1;
+  static UT_uint32 theNumber = 10000;
   //TODO: MUTEX_PROTECT this variable someday soon
   return theNumber++;
 }
