@@ -1754,11 +1754,9 @@ void AP_TopRuler::_drawCellGap(AP_TopRulerInfo * pInfo, UT_sint32 iCell)
 		
 		if(cCell.width >= 0)
 		{	
-			UT_sint32 gap = ((cCell.width == 1) ? _UL(1) : _UL(2));
-		
-			lCell.set(left, top, gap, height);
-			cCell.set(left + gap, top, right - left - gap * 2, height);
-			rCell.set(right - gap, top, gap, height);
+			lCell.set(left, top, _UL(1), height);
+			cCell.set(left + _UL(1), top, right - left - _UL(2), height);
+			rCell.set(right - _UL(1), top, _UL(1), height);
 			
 			m_pG->fillRect(GR_Graphics::CLR3D_Background, lCell);
 			if (cCell.width > 0)
