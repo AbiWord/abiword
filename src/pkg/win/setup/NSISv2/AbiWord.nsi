@@ -222,8 +222,13 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 !endif
 
 
-; Language Strings
+; Localized Installer Messages (Language Strings)
+!macro LSTR sectID sectDesc
+  LangString "${sectID}" "${LANG_X}" "${sectDesc}"
+!macroend
+!define LSTR "!insertmacro LSTR"
 !define LANG_X					; used to prevent a warning about not being defined
+
 ;!include "abi_lng_Bulgarian.nsh"
 ;!include "abi_lng_Czech.nsh"
 !include "abi_lng_Dutch.nsh"
@@ -279,6 +284,7 @@ InstType "Minimal"                        ;Section 3
 	WriteRegStr HKCR "${extension}" "" "${appType}"
 	WriteRegStr HKCR "${extension}" "Content Type" "${contentType}"
 !macroend
+!define CreateFileAssociation "!insertmacro CreateFileAssociation"
 
 
 ; Create a language localized Start Menu group
@@ -288,6 +294,7 @@ InstType "Minimal"                        ;Section 3
 	CreateDirectory "$SMPROGRAMS\$0"
 	pop $0
 !macroend
+!define lngCreateSMGroup "!insertmacro lngcreateSMGroup"
 
 ; Create a language localized Start Menu ShortCut
 ; we split the link.lnk up so we can use localized components without confusing NSIS
@@ -312,6 +319,7 @@ InstType "Minimal"                        ;Section 3
 	pop $1
 	pop $0
 !macroend
+!define lngCreateShortCut "!insertmacro lngCreateShortCut"
 
 
 ; *********************************************************************
@@ -385,9 +393,9 @@ Section "$(TITLE_section_abi)" section_abi
 	!ifndef CLASSIC_UI
 	  !insertmacro MUI_STARTMENU_WRITE_BEGIN
 		;SetShellVarContext current|all???
-		!insertmacro lngCreateSMGroup  "$MUI_STARTMENU_FOLDER"
-		!insertmacro lngCreateShortCut "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-		!insertmacro lngCreateShortCut "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
+		${lngCreateSMGroup}  "$MUI_STARTMENU_FOLDER"
+		${lngCreateShortCut} "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+		${lngCreateShortCut} "$SMPROGRAMS" "$MUI_STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 	  !insertmacro MUI_STARTMENU_WRITE_END
 	!endif
 
@@ -409,9 +417,9 @@ Section "$(TITLE_section_shellupdate)" section_shellupdate
 ;	WriteRegStr HKCR "${APPSET}.${PRODUCT}\shell\open\ddeexec\topic" "" "System"
 
 	; Write File Associations
-	!insertmacro CreateFileAssociation ".abw"  "${APPSET}.${PRODUCT}" "application/abiword"
-	!insertmacro CreateFileAssociation ".awt"  "${APPSET}.${PRODUCT}" "application/abiword-template"
-	!insertmacro CreateFileAssociation ".zabw" "${APPSET}.${PRODUCT}" "application/abiword-compressed"
+	${CreateFileAssociation} ".abw"  "${APPSET}.${PRODUCT}" "application/abiword"
+	${CreateFileAssociation} ".awt"  "${APPSET}.${PRODUCT}" "application/abiword-template"
+	${CreateFileAssociation} ".zabw" "${APPSET}.${PRODUCT}" "application/abiword-compressed"
 
 SectionEnd
 
@@ -430,16 +438,16 @@ SubSection /e "$(TITLE_ssection_shortcuts_cu)" ssection_shortcuts_cu
 Section "$(TITLE_section_sm_shortcuts_cu)" section_sm_shortcuts_cu
 	SectionIn 1 2 3
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
-	!insertmacro lngCreateSMGroup  "$(SM_PRODUCT_GROUP)"
-	!insertmacro lngCreateShortCut "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-	!insertmacro lngCreateShortCut "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
+	${lngCreateSMGroup}  "$(SM_PRODUCT_GROUP)"
+	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 SectionEnd
 
 ; OPTIONAL Desktop Shortcut for the current user profile
 Section "$(TITLE_section_desktop_shortcuts_cu)" section_desktop_shortcuts_cu
 	SectionIn 1 2 3
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
-	!insertmacro lngCreateShortCut "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	${lngCreateShortCut} "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
 SectionEnd
 
 
@@ -451,9 +459,9 @@ SubSection /e "$(TITLE_ssection_shortcuts_au)" ssection_shortcuts_au
 Section "$(TITLE_section_sm_shortcuts_au)" section_sm_shortcuts_au
 	SectionIn 2		; off by default, included in 2 Full Install
 	SetShellVarContext all  	; set to all, reset at end of section
-	!insertmacro lngCreateSMGroup  "$(SM_PRODUCT_GROUP)"
-	!insertmacro lngCreateShortCut "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
-	!insertmacro lngCreateShortCut "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
+	${lngCreateSMGroup}  "$(SM_PRODUCT_GROUP)"
+	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	${lngCreateShortCut} "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 	SetShellVarContext current  	; This is pro'ly overkill
 SectionEnd
 
@@ -462,7 +470,7 @@ SectionEnd
 Section "$(TITLE_section_desktop_shortcuts_au)" section_desktop_shortcuts_au
 	SectionIn 2	; not in default, included in 2 Full Install
 	SetShellVarContext all  	;  All users 
-	!insertmacro lngCreateShortCut "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	${lngCreateShortCut} "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
 	SetShellVarContext current  	; reset to current user
 SectionEnd
 
@@ -480,13 +488,13 @@ SubSection /e "$(TITLE_ssection_gen_file_assoc)" ssection_gen_file_assoc
 ; OPTIONAL 
 Section "$(TITLE_section_fa_doc)" section_fa_doc
 	SectionIn 2
-	!insertmacro CreateFileAssociation ".doc"  "${APPSET}.${PRODUCT}" "application/abiword"
+	${CreateFileAssociation} ".doc"  "${APPSET}.${PRODUCT}" "application/abiword"
 SectionEnd
 
 ; OPTIONAL 
 Section "$(TITLE_section_fa_rtf)" section_fa_rtf
 	SectionIn 2
-	!insertmacro CreateFileAssociation ".rtf"  "${APPSET}.${PRODUCT}" "application/abiword"
+	${CreateFileAssociation} ".rtf"  "${APPSET}.${PRODUCT}" "application/abiword"
 SectionEnd
 
 SubSectionEnd ; general file associations
@@ -726,7 +734,7 @@ Function getDLMirror
 
   noUpDate:
 
-  ; restore calless registers
+  ; restore callees registers
   Pop $R2
   Pop $R1
   Pop $R0
@@ -812,38 +820,39 @@ Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}' section_dl_opt_dict_${DICT_L
 	Call getDictionary
 SectionEnd
 !macroend
+!define SectionDict "!insertmacro SectionDict"
 
 
 ; These are listed alphabetically based on English LANG-LOCALE
 ; NOTE: if the dictinaries are updated so to should these sizes (KB)
 ; Be sure to update DICTIONARY_COUNT above (so description & selection query work correctly)
-!insertmacro SectionDict "Catalan"      "ca" "ES" "i386"  4324
-!insertmacro SectionDict "Czech"        "cs" "DZ" "i386"  2558
-!insertmacro SectionDict "Danish"       "da" "DK" "i386"  1580
-!insertmacro SectionDict "Swiss"        "de" "CH" "i386"  8501
-!insertmacro SectionDict "Deutsch"      "de" "DE" "i386"  2277
-!insertmacro SectionDict "Ellhnika"     "el" "GR" "i386"  2049  ;Greek
-!insertmacro SectionDict "English"      "en" "GB" "i386"  2109
-!insertmacro SectionDict "Esperanto"    "eo" "Xx" "i386"   942  ;no locale...
-!insertmacro SectionDict "Español"      "es" "ES" "i386"  2632
-!insertmacro SectionDict "Finnish"      "fi" "FI" "i386" 10053
-!insertmacro SectionDict "Français"     "fr" "FR" "i386"  1451
-!insertmacro SectionDict "Hungarian"    "hu" "HU" "i386"  8086
-!insertmacro SectionDict "Irish gaelic" "ga" "IE" "i386"   587
-!insertmacro SectionDict "Galician"     "gl" "ES" "i386"   807
-!insertmacro SectionDict "Italian"      "it" "IT" "i386"  1638
-!insertmacro SectionDict "Latin"        "la" "IT" "i386"  2254  ;mlatin
-!insertmacro SectionDict "Lietuviu"     "lt" "LT" "i386"  1907  ;Lithuanian
-!insertmacro SectionDict "Dutch"        "nl" "NL" "i386"  1079  ;nederlands
-!insertmacro SectionDict "Norsk"        "nb" "NO" "i386"  2460  ;Norwegian
-!insertmacro SectionDict "Nynorsk"      "nn" "NO" "i386"  3001  ;Norwegian(nynorsk)
-!insertmacro SectionDict "Polish"       "pl" "PL" "i386"  4143
-!insertmacro SectionDict "Portugues"    "pt" "PT" "i386"  1117  ;Portuguese
-!insertmacro SectionDict "Brazilian"    "pt" "BR" "i386"  1244  ;Portuguese
-!insertmacro SectionDict "Russian"      "ru" "RU" "i386"  8307
-!insertmacro SectionDict "Slovensko"    "sl" "SI" "i386"   857  ;Slovenian
-!insertmacro SectionDict "Svenska"      "sv" "SE" "i386"   753  ;Swedish
-!insertmacro SectionDict "Ukrainian"    "uk" "UA" "i386"  3490
+${SectionDict} "Catalan"      "ca" "ES" "i386"  4324
+${SectionDict} "Czech"        "cs" "DZ" "i386"  2558
+${SectionDict} "Danish"       "da" "DK" "i386"  1580
+${SectionDict} "Swiss"        "de" "CH" "i386"  8501
+${SectionDict} "Deutsch"      "de" "DE" "i386"  2277
+${SectionDict} "Ellhnika"     "el" "GR" "i386"  2049  ;Greek
+${SectionDict} "English"      "en" "GB" "i386"  2109
+${SectionDict} "Esperanto"    "eo" "Xx" "i386"   942  ;no locale...
+${SectionDict} "Español"      "es" "ES" "i386"  2632
+${SectionDict} "Finnish"      "fi" "FI" "i386" 10053
+${SectionDict} "Français"     "fr" "FR" "i386"  1451
+${SectionDict} "Hungarian"    "hu" "HU" "i386"  8086
+${SectionDict} "Irish gaelic" "ga" "IE" "i386"   587
+${SectionDict} "Galician"     "gl" "ES" "i386"   807
+${SectionDict} "Italian"      "it" "IT" "i386"  1638
+${SectionDict} "Latin"        "la" "IT" "i386"  2254  ;mlatin
+${SectionDict} "Lietuviu"     "lt" "LT" "i386"  1907  ;Lithuanian
+${SectionDict} "Dutch"        "nl" "NL" "i386"  1079  ;nederlands
+${SectionDict} "Norsk"        "nb" "NO" "i386"  2460  ;Norwegian
+${SectionDict} "Nynorsk"      "nn" "NO" "i386"  3001  ;Norwegian(nynorsk)
+${SectionDict} "Polish"       "pl" "PL" "i386"  4143
+${SectionDict} "Portugues"    "pt" "PT" "i386"  1117  ;Portuguese
+${SectionDict} "Brazilian"    "pt" "BR" "i386"  1244  ;Portuguese
+${SectionDict} "Russian"      "ru" "RU" "i386"  8307
+${SectionDict} "Slovensko"    "sl" "SI" "i386"   857  ;Slovenian
+${SectionDict} "Svenska"      "sv" "SE" "i386"   753  ;Swedish
+${SectionDict} "Ukrainian"    "uk" "UA" "i386"  3490
 
 
 !ifndef NODOWNLOADS
@@ -953,6 +962,7 @@ SubSectionEnd ; helper files
   !insertmacro UnselectSection ${SECTIONID}	; mark section as unselected
   SectionSetText ${SECTIONID} ""	; and make invisible so user doesn't see it
 !macroend
+!define SectionDisable "!insertmacro SectionDisable"
 
 Function .onInit
 
@@ -961,6 +971,26 @@ Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
 !endif
 
+
+!ifdef OPT_DICTIONARIES
+!macro cycle_over_dictionary_sections CMD
+		; we !!!assume!!! that section# of 1st dictionary section is # of dictionary subsection + 1
+		push $R1	; the 1st section
+		push $R2	; the last section
+		StrCpy $R1 ${ssection_dl_opt_dict}
+		IntOp $R1 $R1 + 1                   ; order here
+		IntOp $R2 $R1 + ${DICTIONARY_COUNT}	; matters  $R2 = ${ssection_dl_opt_dict} + 1 + ${DICTIONARY_COUNT}
+		; $R1=section of 1st downloadable dictionary
+		"loop_start:"
+			${CMD}
+			IntOp $R1 $R1 + 1  
+			IntCmpU $R1 $R2 "loop_end"
+		Goto "loop_start"
+		"loop_end:"
+		pop $R2
+		pop $R1
+!macroend
+!endif
 
 !ifndef NODOWNLOADS
   ; Disable all downloads if not connected
@@ -971,26 +1001,12 @@ Function .onInit
   ;MessageBox MB_OKCANCEL "Connected State: $R0" IDOK 0
   StrCmp $R0 "online" connected 0
   !ifdef OPT_DICTIONARIES
-	; we !!!assume!!! that section# of 1st dictionary section is # of dictionary subsection + 1
-	; here we include the subsection in the loop so we can disable it as well
-	push $R1	; the 1st section
-	push $R2	; the last section
-	StrCpy $R1 ${ssection_dl_opt_dict}
-	IntOp $R2 $R1 + ${DICTIONARY_COUNT}	; matters  $R2 = ${ssection_dl_opt_dict} + ${DICTIONARY_COUNT}
-	IntOp $R2 $R2 + 1
-	; $R1=section of 1st downloadable dictionary
-	loop_start:
-		!insertmacro SectionDisable $R1
-		IntOp $R1 $R1 + 1  
-		IntCmpU $R1 $R2 loop_end
-	Goto loop_start
-	loop_end:
-	pop $R2
-	pop $R1
+	${SectionDisable} ${ssection_dl_opt_dict}
+	!insertmacro cycle_over_dictionary_sections "${SectionDisable} $R1"
   !endif
 
   !ifdef OPT_CRTL_URL
-  	!insertmacro SectionDisable ${section_crtlib_dl}
+  	${SectionDisable} ${section_crtlib_dl}
   !endif
 
   connected:
@@ -1003,10 +1019,10 @@ Pop $R0
 ;MessageBox MB_OKCANCEL "WinVer: $R0" IDOK 0
 StrCmp $R0 '95' skipW95dl 0	; disable for all but Windows 95
   !ifdef OPT_CRTL_URL
-    !insertmacro SectionDisable ${section_crtlib_dl}
+     ${SectionDisable} ${section_crtlib_dl}
   !endif
   !ifdef OPT_CRTL_LOCAL
-    !insertmacro SectionDisable ${section_crtlib_local}
+     ${SectionDisable} ${section_crtlib_local}
   !endif
 skipW95dl:
 
@@ -1015,62 +1031,49 @@ FunctionEnd
 
 !ifndef CLASSIC_UI
 	; section and subsection descriptions (scroll over text)
+	!define MUI_DESCRIPTION_TEXT "!insertmacro MUI_DESCRIPTION_TEXT"
 	!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_abi} $(DESC_section_abi)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_shellupdate} $(DESC_section_shellupdate)
+		${MUI_DESCRIPTION_TEXT} ${section_abi} $(DESC_section_abi)
+		${MUI_DESCRIPTION_TEXT} ${section_shellupdate} $(DESC_section_shellupdate)
 
-                !ifdef CLASSIC_UI
-		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_shortcuts} $(DESC_ssection_shortcuts)
-		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_sm_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_desktop_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
-		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_shortcuts_au} $(DESC_ssection_shortcuts_au)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_sm_shortcuts_au} $(DESC_ssection_shortcuts_au)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_desktop_shortcuts_au} $(DESC_ssection_shortcuts_au)
+		!ifdef CLASSIC_UI
+		${MUI_DESCRIPTION_TEXT} ${ssection_shortcuts} $(DESC_ssection_shortcuts)
+		${MUI_DESCRIPTION_TEXT} ${ssection_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
+		${MUI_DESCRIPTION_TEXT} ${section_sm_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
+		${MUI_DESCRIPTION_TEXT} ${section_desktop_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
+		${MUI_DESCRIPTION_TEXT} ${ssection_shortcuts_au} $(DESC_ssection_shortcuts_au)
+		${MUI_DESCRIPTION_TEXT} ${section_sm_shortcuts_au} $(DESC_ssection_shortcuts_au)
+		${MUI_DESCRIPTION_TEXT} ${section_desktop_shortcuts_au} $(DESC_ssection_shortcuts_au)
 		!endif
 
-		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_core} $(DESC_ssection_core)
-		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_gen_file_assoc} $(DESC_ssection_gen_file_assoc)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_fa_doc} $(DESC_section_fa_doc)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_fa_rtf} $(DESC_section_fa_rtf)
-		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_helper_files} $(DESC_ssection_helper_files)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_help} $(DESC_section_help)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_templates} $(DESC_section_templates)
-;		!insertmacro MUI_DESCRIPTION_TEXT ${section_samples} $(DESC_section_samples)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_clipart} $(DESC_section_clipart)
+		${MUI_DESCRIPTION_TEXT} ${ssection_core} $(DESC_ssection_core)
+		${MUI_DESCRIPTION_TEXT} ${ssection_gen_file_assoc} $(DESC_ssection_gen_file_assoc)
+		${MUI_DESCRIPTION_TEXT} ${section_fa_doc} $(DESC_section_fa_doc)
+		${MUI_DESCRIPTION_TEXT} ${section_fa_rtf} $(DESC_section_fa_rtf)
+		${MUI_DESCRIPTION_TEXT} ${ssection_helper_files} $(DESC_ssection_helper_files)
+		${MUI_DESCRIPTION_TEXT} ${section_help} $(DESC_section_help)
+		${MUI_DESCRIPTION_TEXT} ${section_templates} $(DESC_section_templates)
+;		${MUI_DESCRIPTION_TEXT} ${section_samples} $(DESC_section_samples)
+		${MUI_DESCRIPTION_TEXT} ${section_clipart} $(DESC_section_clipart)
 
 !ifdef OPT_CRTL_LOCAL
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_crtlib_local} $(DESC_section_crtlib)
+		${MUI_DESCRIPTION_TEXT} ${section_crtlib_local} $(DESC_section_crtlib)
 !endif
 
 !ifndef NODOWNLOADS
 !ifdef OPT_CRTL_URL
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_crtlib_dl} $(DESC_section_crtlib)
+		${MUI_DESCRIPTION_TEXT} ${section_crtlib_dl} $(DESC_section_crtlib)
 !endif
 
-		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_dictionary} $(DESC_ssection_dictionary)
-		!insertmacro MUI_DESCRIPTION_TEXT ${section_dictinary_def_English} $(DESC_ssection_dictionary)
+		${MUI_DESCRIPTION_TEXT} ${ssection_dictionary} $(DESC_ssection_dictionary)
+		${MUI_DESCRIPTION_TEXT} ${section_dictinary_def_English} $(DESC_ssection_dictionary)
 !ifdef OPT_DICTIONARIES
-		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_dl_opt_dict} $(DESC_ssection_dictionary)
+		${MUI_DESCRIPTION_TEXT} ${ssection_dl_opt_dict} $(DESC_ssection_dictionary)
 !endif ; OPT_DICTIONARIES
 !endif ; NODOWNLOADS
 
 !ifdef OPT_DICTIONARIES
-		; we !!!assume!!! that section# of 1st dictionary section is # of dictionary subsection + 1
-		push $R1	; the 1st section
-		push $R2	; the last section
-		StrCpy $R1 ${ssection_dl_opt_dict}
-		IntOp $R1 $R1 + 1                   ; order here
-		IntOp $R2 $R1 + ${DICTIONARY_COUNT}	; matters  $R2 = ${ssection_dl_opt_dict} + 1 + ${DICTIONARY_COUNT}
-		; $R1=section of 1st downloadable dictionary
-		"loop_start:"
-			!insertmacro MUI_DESCRIPTION_TEXT $R1 $(DESC_ssection_dictionary)
-			IntOp $R1 $R1 + 1  
-			IntCmpU $R1 $R2 "loop_end"
-		Goto "loop_start"
-		"loop_end:"
-		pop $R2
-		pop $R1
+		!insertmacro cycle_over_dictionary_sections "${MUI_DESCRIPTION_TEXT} $R1 $(DESC_ssection_dictionary)"
 !endif
 
 
@@ -1100,6 +1103,7 @@ FunctionEnd
 	Skip_Del_File_Assoc.${extension}:
 	pop $0
 !macroend
+!define un.RemoveFileAssociation "!insertmacro un.RemoveFileAssociation"
 
 
 ; special uninstall section.
@@ -1116,12 +1120,12 @@ Section "Uninstall"
 
 	; remove file assoications
 	; our native ones
-	!insertMacro un.RemoveFileAssociation ".abw"  "${APPSET}.${PRODUCT}"
-	!insertMacro un.RemoveFileAssociation ".awt"  "${APPSET}.${PRODUCT}"
-	!insertMacro un.RemoveFileAssociation ".zabw" "${APPSET}.${PRODUCT}"
+	${un.RemoveFileAssociation} ".abw"  "${APPSET}.${PRODUCT}"
+	${un.RemoveFileAssociation} ".awt"  "${APPSET}.${PRODUCT}"
+	${un.RemoveFileAssociation} ".zabw" "${APPSET}.${PRODUCT}"
 	; other common ones
-	!insertMacro un.RemoveFileAssociation ".doc"  "${APPSET}.${PRODUCT}"
-	!insertMacro un.RemoveFileAssociation ".rtf"  "${APPSET}.${PRODUCT}"
+	${un.RemoveFileAssociation} ".doc"  "${APPSET}.${PRODUCT}"
+	${un.RemoveFileAssociation} ".rtf"  "${APPSET}.${PRODUCT}"
 
 	; actual apptype entry
 	DeleteRegKey HKCR "${APPSET}.${PRODUCT}"
