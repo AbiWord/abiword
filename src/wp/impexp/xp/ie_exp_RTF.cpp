@@ -1601,6 +1601,10 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 	{
 		lType = pAuto->getType();
 	}
+	else
+	{
+		return;
+	}
 	switch(lType)
 	{
 	default:

@@ -1031,7 +1031,6 @@ void fl_BlockLayout::purgeLayout(void)
 		delete m_pFirstRun;
 		m_pFirstRun = pNext;
 	}
-	m_pDoc = NULL; // remove document pointer to help with debugging.
 }
 
 void fl_BlockLayout::_removeLine(fp_Line* pLine)
@@ -1351,6 +1350,7 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 	fp_Run *pRunToStartAt = pLineToStartAt ? pLineToStartAt->getFirstRun() : NULL;
 	// Remember state of cursor
 	m_bCursorErased = false;
+		
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
@@ -3891,7 +3891,6 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 // Now fix up the previous block. Calling this format fixes bug 2702
 //
 		pPrevBL->format();
-
 		// This call will dequeue the block from background checking
 		// if necessary
 		m_pSquiggles->join(offset, pPrevBL);

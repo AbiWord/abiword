@@ -437,7 +437,6 @@ bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_S
 			break;
 		}
 	}
-	UT_ASSERT(bFound);
 	return true;
 }
 /////////////////////////////////////////////////////////////////////////////////////////

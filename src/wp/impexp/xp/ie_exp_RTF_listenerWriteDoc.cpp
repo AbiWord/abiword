@@ -1033,7 +1033,7 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 		_setListBlock( true);
 		m_pie->_rtf_open_brace();
 		m_pie->_rtf_keyword("*");
-		m_pie->_rtf_keyword("aaaabilist"); 
+		m_pie->_rtf_keyword("abilist"); 
 		m_pie->_rtf_keyword_ifnotdefault("abilistid",(char *) szListid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistparentid",(char *) szParentid,-1);
 		m_pie->_rtf_keyword_ifnotdefault("abilistlevel",szLevel.c_str(),-1);
