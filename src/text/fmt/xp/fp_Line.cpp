@@ -2356,7 +2356,7 @@ bool fp_Line::getFootnoteContainers(UT_Vector * pvecFoots)
 	PT_DocPosition posStart = getBlock()->getPosition();
 	PT_DocPosition posEnd = posStart + getLastRun()->getBlockOffset() + getLastRun()->getLength();
 	posStart += getFirstRun()->getBlockOffset();
-	for(i=0; (i< (UT_uint32) countRuns()) && !bFound; i++)
+	for(i=0; (i< (UT_uint32) countRuns()); i++)
 	{
 		pRun = getRunFromIndex(i);
 		if(pRun->getType() == FPRUN_FIELD)
@@ -2368,7 +2368,7 @@ bool fp_Line::getFootnoteContainers(UT_Vector * pvecFoots)
 				fl_FootnoteLayout * pFL = getBlock()->getDocLayout()->findFootnoteLayout(pFNRun->getPID());
 				
 				UT_ASSERT(pFL);
-				UT_DEBUGMSG(("Pos of footnote %d start of run %d end of run %d \n",pFL->getDocPosition(),posStart,posEnd));
+				xxx_UT_DEBUGMSG(("Pos of footnote %d start of run %d end of run %d \n",pFL->getDocPosition(),posStart,posEnd));
 				if(pFL && pFL->getDocPosition()>= posStart && pFL->getDocPosition() <= posEnd)
 				{
 					pFC = (fp_FootnoteContainer *) pFL->getFirstContainer();
@@ -2377,6 +2377,10 @@ bool fp_Line::getFootnoteContainers(UT_Vector * pvecFoots)
 				}
 			}
 		}
+	}
+	if(bFound)
+	{
+		UT_DEBUGMSG(("Found %d footnotes on this line %x \n",pvecFoots->getItemCount(),this));
 	}
 	return bFound;
 }

@@ -937,6 +937,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 
 		case pf_Frag::PFT_Text:
 		{
+			if(isEndFootnote(pfsContainer))
+			{
+				_getStruxFromFragSkip((pf_Frag *) pfsContainer,&pfsContainer);
+			}
 			bool bResult
 				= _deleteSpanWithNotify(dpos1,static_cast<pf_Frag_Text *>(pf_First),
 										fragOffset_First,lengthThisStep,
@@ -951,6 +955,10 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 		// to delete
 		case pf_Frag::PFT_Object:
 		{
+			if(isEndFootnote(pfsContainer))
+			{
+				_getStruxFromFragSkip((pf_Frag *) pfsContainer,&pfsContainer);
+			}
 			bool bResult, bResult2;
 			pf_Frag_Object *pO = static_cast<pf_Frag_Object *>(pf_First);
 			switch(pO->getObjectType())

@@ -44,6 +44,7 @@ private:
 							int iContainerMarginAfter);
 	fp_Page * m_pStartPage;
 	bool      m_bStartFromStart;
+	bool      m_bReBreak;
 };
 
 #endif /* COLUMNBREAKER_H */

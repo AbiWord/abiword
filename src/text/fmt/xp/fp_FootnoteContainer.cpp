@@ -65,7 +65,9 @@ void fp_FootnoteContainer::setPage(fp_Page * pPage)
 {
 	if(pPage && (m_pPage != NULL) && m_pPage != pPage)
 	{
+		clearScreen();
 		m_pPage->removeFootnoteContainer(this);
+		getSectionLayout()->markAllRunsDirty();
 	}
 	m_pPage = pPage;
 }

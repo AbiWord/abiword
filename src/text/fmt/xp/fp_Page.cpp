@@ -34,6 +34,7 @@
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
 #include "fp_FootnoteContainer.h"
+#include "fl_FootnoteLayout.h"
 #include "fp_TableContainer.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -909,7 +910,7 @@ void fp_Page::_reformatColumns(void)
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			UT_sint32 iYLayoutNext = pFirstNextContainer->getHeightInLayoutUnits();
 			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE);
-			if(!bIsTable && (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
+			if(!bIsTable && (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - getFootnoteHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 #else
 			UT_sint32 iYNext = pFirstNextContainer->getHeight();
 			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE);
@@ -962,7 +963,13 @@ UT_sint32 fp_Page::getFootnoteHeightInLayoutUnits(void)
 
 void fp_Page::_reformatFootnotes(void)
 {
-
+	if(m_vecColumnLeaders.getItemCount() == 0)
+	{
+//
+// Page is being deleted.
+//
+		return;
+	}
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
 	UT_ASSERT(m_pOwner == pFirstSectionLayout);
@@ -1570,6 +1577,16 @@ void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)
 	if(ndx>=0)
 	{
 		m_vecFootnotes.deleteNthItem(ndx);
+		for(ndx=0; ndx < (UT_sint32) countFootnoteContainers();ndx++)
+		{			
+			fp_FootnoteContainer * pFC = getNthFootnoteContainer(ndx);
+			fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pFC->getSectionLayout();
+			pFC->clearScreen();
+			pFL->markAllRunsDirty();
+		}
+		_reformat();
+		return true;
 	}
+	return false;
 }
 

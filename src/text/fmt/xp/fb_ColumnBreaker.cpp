@@ -62,6 +62,7 @@ void fb_ColumnBreaker::setStartPage(fp_Page * pPage)
 UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 {
 	bool bHasFootnote = false, bFirstColumn = true;
+	m_bReBreak = false;
 
 	fl_ContainerLayout* pFirstLayout = NULL;
 	fp_Container* pOuterContainer = NULL;
@@ -151,6 +152,14 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		while (pCurContainer)
 		{
 			xxx_UT_DEBUGMSG(("curContainer %x type %d \n",pCurContainer,pCurContainer->getContainerType()));
+			if(pCurContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
+			{
+//
+// skip this! We've already taken it's height into account.
+//
+				pCurContainer = pCurContainer->getNextContainerInSection();
+				continue;
+			}
 			UT_sint32 iContainerHeight = 0;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
@@ -173,7 +182,8 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			{
 				fp_Line* pCurLine = (fp_Line *)pCurContainer;
 				// Excellent.  If we have a footnote, we can start deducting
-				// from the working height before we lay out the text.
+				// from the working height if the footnote container is not on
+				// this page.
 				if (pCurLine->containsFootnoteReference())
 				{
 					// Ok.  Now, deduct the proper amount from iMaxColHeight.
@@ -181,7 +191,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					// OK get a vector of the footnote containers in this line.
 					UT_Vector vecFootnotes;
 					pCurLine->getFootnoteContainers(&vecFootnotes);
-					fp_Page *pCurPage = pCurLine->getPage();
+					fp_Page *pCurPage = pCurColumn->getPage();
 					// Now loop through all these and add them to the height.
 					UT_sint32 i =0;
 					for(i=0; i< (UT_sint32) vecFootnotes.getItemCount();i++)
@@ -691,6 +701,10 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 //
 	m_pStartPage = NULL;
 	m_bStartFromStart = false;
+	if(m_bReBreak)
+	{
+		breakSection(pSL);
+	}
 //
 // Look if the next DocSectionLayout needs section break.(
 // This happens if a column height changes. If so, do it!
@@ -729,42 +743,6 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 	}
 	else
 	{
-//
-// Find the right broken table to bump.
-//
-//
-#if 0
-		if( pFirstContainerToKeep == pOffendingContainer)
-		{
-			if(pTab->getNext() == NULL)
-			{
-				bDoTableBreak = true;
-				xxx_UT_DEBUGMSG(("SEVIOR: Need Table Break 2 \n"));
-			}
-			else
-			{
-				pOffendingContainer = (fp_Container *) pTab->getNext();
-			}
-		}
-		else
-		{
-//
-// We bump the broken table after this one and trust the adjustTablesize
-// method to set things right.
-//
-			if(pTab->getNext())
-			{
-				pOffendingContainer = (fp_Container *) pTab->getNextContainerInSection();
-			}
-//
-// No following table! So we need to break this.
-//
-			else
-			{
-				bDoTableBreak = true;
-			}
-		}
-#endif
 		bDoTableBreak = true;
 	}
 //
