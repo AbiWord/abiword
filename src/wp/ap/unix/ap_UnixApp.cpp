@@ -201,7 +201,10 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
 		return false;
     }
-    
+#ifdef LOGFILE
+	fprintf(getlogfile(),"New Directory created \n");
+#endif
+   
     if (mkdir(szDir,0700) == 0)
 		return true;
     
@@ -1205,10 +1208,14 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
 
 #ifdef LOGFILE
-	UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
+//	UT_String sLogFile = pMyUnixApp->getUserPrivateDirectory();
+	UT_String sLogFile = "/home/msevior/.AbiSuite";
 	sLogFile += "abiLogFile";
 	logfile = fopen(sLogFile.c_str(),"a+");
 	fprintf(logfile,"About to do gtk_set_locale \n");
+	sLogFile = "/home/msevior/abiLogFile";
+	logfile = fopen(sLogFile.c_str(),"a+");
+	fprintf(logfile,"New logfile \n");
 #endif
     
 	// Step 1: Initialize GTK and create the APP.
@@ -1217,11 +1224,19 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 
     gboolean have_display = gtk_init_check(&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
 
-    if (have_display) {
+#ifdef LOGFILE
+	fprintf(logfile,"Got display %d \n",have_display);
+	fprintf(logfile,"Really display %d \n",have_display);
+#endif
+
+    if (have_display > 0) {
 #ifndef HAVE_GNOME
       gtk_init (&XArgs.m_argc,const_cast<char ***>(&XArgs.m_argv));
 	  Args.parsePoptOpts();
 #else
+#ifdef LOGFILE
+	fprintf(logfile,"About to start gnome_program_init \n");
+#endif
 	  GnomeProgram * program = gnome_program_init ("AbiWord", ABI_BUILD_VERSION, 
 												   LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv),
 												   GNOME_PARAM_APP_PREFIX, ABIWORD_PREFIX,
@@ -1230,12 +1245,28 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 												   GNOME_PARAM_APP_LIBDIR, ABIWORD_APP_LIBDIR,
 												   GNOME_PARAM_POPT_TABLE, AP_Args::options, 
 												   GNOME_PARAM_NONE);
+#ifdef LOGFILE
+	fprintf(logfile,"gnome_program_init completed \n");
+#endif
 
 	  g_object_get (G_OBJECT (program),
 					GNOME_PARAM_POPT_CONTEXT, &Args.poptcon,
 					NULL);
+#ifdef LOGFILE
+	fprintf(logfile,"g_object_get completed \n");
+#endif
       gnome_vfs_init ();
+#ifdef LOGFILE
+	fprintf(logfile,"gnome_vfs_init completed \n");
+#endif
+#ifdef LOGFILE
+	fprintf(logfile,"About to init bonobo \n");
+#endif
+	  
 	  bonobo_init (&XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
+#ifdef LOGFILE
+	fprintf(logfile,"bonobo initialized \n");
+#endif
 	  // GNOME handles 'parsePoptOpts'.  Isn't it grand?
 #endif
     }
@@ -1286,13 +1317,14 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		//
 		bool bControlFactory = false;
 		for (UT_sint32 k = 1; k < XArgs.m_argc; k++)
+		{
 			if (*XArgs.m_argv[k] == '-')
 				if (strstr(XArgs.m_argv[k],"GNOME_AbiWord_ControlFactory") != 0)
 				{
 					bControlFactory = true;
 					break;
 				}
-		
+		}
 		if(bControlFactory)
 		{
 			int rtn = mainBonobo(XArgs.m_argc, XArgs.m_argv);
@@ -1324,6 +1356,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 		// continue out the door.
 		// We used to check for bShowApp here.  It shouldn't be needed
 		// anymore, because doWindowlessArgs was supposed to bail already. -PL
+
 		if (pMyUnixApp->openCmdLineFiles(&Args))
 			// turn over control to gtk
 			gtk_main();
@@ -1332,7 +1365,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 			UT_DEBUGMSG(("DOM: not parsing command line or showing app\n"));
 		}
 	}		
-
 	// Step 4: Destroy the App.  It should take care of deleting all frames.
 	pMyUnixApp->shutdown();
 	delete pMyUnixApp;

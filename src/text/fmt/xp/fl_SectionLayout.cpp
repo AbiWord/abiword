@@ -1880,12 +1880,14 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage, bool bReallyDeleteIt)
 	UT_Vector vecHdrFtr;
 	getVecOfHdrFtrs( &vecHdrFtr);
 	UT_uint32 i = 0;
+	UT_DEBUGMSG(("Delete Owned Page %x \n",pPage));
 	for(i = 0; i < vecHdrFtr.getItemCount(); i++)
 	{
 		fl_HdrFtrSectionLayout * pHdrFtr = static_cast<fl_HdrFtrSectionLayout *>(vecHdrFtr.getNthItem(i));
 		if(pHdrFtr->isPageHere(pPage))
 		{
 			pHdrFtr->deletePage(pPage);
+			UT_DEBUGMSG(("Delete Owned Page %x from HdrFtr %x \n",pPage,pHdrFtr));
 		}
 	}
 //
@@ -2823,8 +2825,10 @@ void fl_HdrFtrSectionLayout::redrawUpdate(void)
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
 		_PageHdrFtrShadowPair* pPair = static_cast<_PageHdrFtrShadowPair*>(m_vecPages.getNthItem(i));
-
-		pPair->getShadow()->redrawUpdate();
+		if(m_pLayout->findPage(pPair->getPage()) >= 0)
+		{
+			pPair->getShadow()->redrawUpdate();
+		}
 	}
 
 }

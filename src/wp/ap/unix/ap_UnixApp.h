@@ -42,7 +42,7 @@
 #define XAP_UNIXBASEAPP XAP_UnixApp
 #endif
 	
-//#define LOGFILE
+#define LOGFILE
 #ifdef LOGFILE
 FILE * getlogfile(void);
 #endif

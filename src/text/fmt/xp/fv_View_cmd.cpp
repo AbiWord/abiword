@@ -2347,11 +2347,13 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 	switch(cmd)
 	{
 	case AV_SCROLLCMD_PAGEDOWN:
-		yoff += getWindowHeight() - m_pG->tlu(HACK_LINE_HEIGHT);
+//		yoff += getWindowHeight() - m_pG->tlu(HACK_LINE_HEIGHT);
+		yoff += getWindowHeight();
 		bVertical = true;
 		break;
 	case AV_SCROLLCMD_PAGEUP:
-		yoff -= getWindowHeight() - m_pG->tlu(HACK_LINE_HEIGHT);
+//		yoff -= getWindowHeight() - m_pG->tlu(HACK_LINE_HEIGHT);
+		yoff -= getWindowHeight();
 		bVertical = true;
 		break;
 	case AV_SCROLLCMD_PAGELEFT:

@@ -1040,7 +1040,10 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
 		UT_ASSERT(pColumn);
 		fp_Container* pFirstContainer = static_cast<fp_Container *>(pColumn->getFirstContainer());
 		UT_ASSERT(pFirstContainer);
-
+		while(pFirstContainer->getContainerType() != FP_CONTAINER_LINE)
+		{
+			pFirstContainer = static_cast<fp_Container *>(pFirstContainer->getNthCon(0));
+		}
 		fp_Run* pFirstRun = static_cast<fp_Line *>(pFirstContainer)->getFirstRun();
 		fl_BlockLayout* pFirstBlock = static_cast<fp_Line *>(pFirstContainer)->getBlock(); // SEVIOR This needs fix me, FIXME
 

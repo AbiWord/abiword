@@ -1285,7 +1285,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 				// It might be OK if pos-1 is in here, though...
 				if (!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos-1))
 				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					//			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
 			}
 
@@ -1310,7 +1310,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 		{
 			if(!isLayoutFilling())
 			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				//			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
 		}
 		else

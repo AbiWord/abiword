@@ -312,18 +312,12 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		   return false;
 
 	   // no, so move on to the next block
-	   m_pCurrBlock = static_cast<fl_BlockLayout *>(m_pCurrBlock->getNext());
+	   m_pCurrBlock = m_pCurrBlock->getNextBlockInDocument();
 	   
-	   // next section, too?
 	   if (m_pCurrBlock == NULL) 
 	   {
-		   m_pCurrSection = static_cast<fl_DocSectionLayout*>(m_pCurrSection->getNext());
-
-		   // end of document?
-		   if (m_pCurrSection == NULL)
-			   return false;
-
-		   m_pCurrBlock = static_cast<fl_BlockLayout *>(m_pCurrSection->getFirstLayout());
+		   // end of document.
+		   return false;
 	   }
 	 
 	   // update the iterator with our new block
