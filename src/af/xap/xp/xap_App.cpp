@@ -43,7 +43,7 @@
 #include "xap_Menu_Layouts.h"
 #include "xap_Toolbar_Layouts.h"
 #include "ut_rand.h"
-
+#include "ut_contextGlyph.h"
 #include "ut_map.h"
 UT_Map * abi_ut_map_instance = 0;
 
@@ -117,6 +117,12 @@ XAP_App::~XAP_App()
 
 	// Delete the instance of the Encoding Manager.
 	XAP_EncodingManager::get_instance()->Delete_instance();
+
+	// This is to delete static data allocated by UT_contextGlyph; it
+	// is strictly speaking not necessary -- this is really to shut up
+	// the debugger complaining about memory leaks
+	UT_contextGlyph cg(true);
+	cg.static_destructor();
 }
 
 const char* XAP_App::getBuildId ()
