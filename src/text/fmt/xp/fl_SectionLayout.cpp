@@ -33,6 +33,10 @@
 #include "pd_Document.h"
 #include "pp_AttrProp.h"
 #include "gr_Graphics.h"
+#include "pp_Property.h"
+#include "px_ChangeRecord_Strux.h"
+#include "px_ChangeRecord_StruxChange.h"
+#include "fv_View.h"
 
 #include "ut_assert.h"
 #include "ut_units.h"
@@ -52,15 +56,19 @@ fl_SectionLayout::fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh,
 	m_pLastColumn = NULL;
 
 	setAttrPropIndex(indexAP);
+	
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp* pSectionAP = NULL;
+	
 	m_pLayout->getDocument()->getAttrProp(m_apIndex, &pSectionAP);
 
-	XML_Char* pszNumColumns = NULL;
-	XML_Char* pszColumnGap = NULL;
+	const char* pszNumColumns = NULL;
+	const char* pszColumnGap = NULL;
 
-	pSectionAP->getAttribute("NUM_COLUMNS", pszNumColumns);
-	pSectionAP->getAttribute("COLUMN_GAP", pszColumnGap);
-
+	pSectionAP->getProperty("columns", pszNumColumns);
+	pSectionAP->getProperty("column-gap", pszColumnGap);
+	
 	if (pszNumColumns && pszNumColumns[0] && pszColumnGap && pszColumnGap[0])
 	{
 		m_iNumColumns = atoi(pszNumColumns);
@@ -404,7 +412,7 @@ fb_LineBreaker * fl_SectionLayout::_getLineBreaker(void)
 {
 	if (!m_pLB)
 	{
-		fb_SimpleLineBreaker* slb = new fb_SimpleLineBreaker();
+		fb_LineBreaker* slb = new fb_LineBreaker();
 
 		m_pLB = slb;
 	}
@@ -422,5 +430,24 @@ UT_uint32 fl_SectionLayout::getNumColumns(void) const
 UT_uint32 fl_SectionLayout::getColumnGap(void) const
 {
 	return m_iColumnGap;
+}
+
+UT_Bool fl_SectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
+{
+	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
+
+	setAttrPropIndex(pcrxc->getIndexAP());
+
+	// TODO _lookupProperties
+	
+	UT_ASSERT(UT_TODO);
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTSECTION);
+	}
+
+	return UT_FALSE;
 }
 

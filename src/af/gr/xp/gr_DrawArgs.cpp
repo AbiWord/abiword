@@ -25,8 +25,6 @@ dg_DrawArgs::dg_DrawArgs()
 	bDirtyRunsOnly = UT_FALSE;
 	xoff = 0;
 	yoff = 0;
-	x = 0;
-	y = 0;
-	height = 0;
-	width = 0;
+	iSelPos1 = 0;
+	iSelPos2 = 0;
 }

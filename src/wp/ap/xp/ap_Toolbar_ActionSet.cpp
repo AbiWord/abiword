@@ -100,6 +100,9 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_MIDDLE_SPACE,	EV_TBIT_ToggleButton,	"middleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 	_s(AP_TOOLBAR_ID_DOUBLE_SPACE,	EV_TBIT_ToggleButton,	"doubleSpace",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 
+	_s(AP_TOOLBAR_ID_1COLUMN,		EV_TBIT_ToggleButton,	"sectColumns1",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
+	_s(AP_TOOLBAR_ID_2COLUMN,		EV_TBIT_ToggleButton,	"sectColumns2",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
+	_s(AP_TOOLBAR_ID_3COLUMN,		EV_TBIT_ToggleButton,	"sectColumns3",	AV_CHG_FMTSECTION,	ap_ToolbarGetState_SectionFmt);
 	// ... add others here ...
 	
 	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);

@@ -46,70 +46,60 @@ public:
 	fp_Line();
 	~fp_Line();
 
-	void		setColumn(fp_Column*);
-
-	void				setBlock(fl_BlockLayout*);
-
-	inline fp_Column* 			getColumn() const	{ return m_pColumn; }
-	inline fl_BlockLayout*		getBlock() const 	{ return m_pBlock; }
-	inline UT_sint32 			getHeight() const 	{ return m_iHeight; }
+	inline fp_Column* 			getColumn(void) const		{ return m_pColumn; }
+	inline fl_BlockLayout*		getBlock(void) const 		{ return m_pBlock; }
+	inline UT_sint32 			getHeight(void) const 		{ return m_iHeight; }
 	
-	inline UT_sint32			getX(void) const 	{ return m_iX; }
-	inline UT_sint32			getY(void) const 	{ return m_iY; }
+	inline UT_sint32			getX(void) const 			{ return m_iX; }
+	inline UT_sint32			getY(void) const 			{ return m_iY; }
 	
-	inline fp_Line*				getNext() const 	{ return m_pNext; }
-	inline fp_Line*    			getPrev() const 	{ return m_pPrev; }
+	inline fp_Line*				getNext(void) const 		{ return m_pNext; }
+	inline fp_Line*    			getPrev(void) const 		{ return m_pPrev; }
 
-	UT_sint32 	getWidth() const;
-	UT_sint32 	getMaxWidth() const;
+//	inline UT_sint32 			getWidth(void) const	 	{ return m_iWidth; }
+	inline UT_sint32			getMaxWidth(void) const 	{ return m_iMaxWidth; }
+	inline UT_sint32			getAscent(void) const 		{ return m_iAscent; }
+	
 	void		setMaxWidth(UT_sint32);
-
-	UT_sint32	getBaseX(void) const;
-
 	void		setX(UT_sint32);
 	void		setY(UT_sint32);
-	void		setBaseX(UT_sint32);
-
 	void		setNext(fp_Line*);
 	void        setPrev(fp_Line*);
+	void		setColumn(fp_Column*);
+	void		setBlock(fl_BlockLayout*);
 
 	void 		addRun(fp_Run*);
-	void		splitRunInLine(fp_Run* pRun1, fp_Run* pRun2);
+	void		insertRunAfter(fp_Run* pRun1, fp_Run* pRun2);
 	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);
 	void        insertRun(fp_Run*);
     UT_Bool     removeRun(fp_Run*);
-	int 		countRuns() const;
-	fp_Run*     getFirstRun() const;
-	fp_Run*     getLastRun() const;
-	UT_uint32	getNumChars() const;
- 	void        runSizeChanged(fp_Run*, UT_sint32 oldWidth, UT_sint32 newWidth);
-	void		remove();
+	
+	int 		countRuns(void) const;
+	fp_Run*     getFirstRun(void) const;
+	fp_Run*     getLastRun(void) const;
+	UT_Bool 	isFirstLineInBlock(void) const;
+	UT_Bool 	isLastLineInBlock(void) const;
+	
+	void		remove(void);
 	UT_sint32	getMarginBefore(void) const;
 	UT_sint32	getMarginAfter(void) const;
 
 	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	void		getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
-	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height, UT_Bool bLineHeight=UT_FALSE);
-#if UNUSED
-	void		getAbsoluteCoords(UT_sint32& x, UT_sint32& y);
-#endif
+	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
 
-	void        shrink(UT_sint32);
-	void		clearScreen();
+	void		clearScreen(void);
 	void		draw(dg_DrawArgs*);
 	void        draw(DG_Graphics*);
-	void		align();
-	UT_sint32	getAscent(void) const;
+	void		align(void);
+	void		layout(void);
 	UT_Bool		recalculateFields(void);
 	void		recalcHeight();
 	
 	UT_Bool		isEmpty(void) const;
-
-	UT_Bool 	isFirstLineInBlock(void) const;
-	UT_Bool 	isLastLineInBlock(void) const;
+	UT_Bool		findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType);
 	
 protected:
-
 	fl_BlockLayout*	m_pBlock;
 	fp_Column*		m_pColumn;
 	
@@ -120,7 +110,6 @@ protected:
 
 	UT_sint32		m_iX;
 	UT_sint32		m_iY;
-	UT_sint32		m_iBaseX;
 	
 	UT_Vector		m_vecRuns;
 

@@ -89,7 +89,7 @@ public:
 
 	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	void		 		getOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff);
-	void		 		getScreenOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
+	void		 		getScreenOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff);
 
 	void				draw(dg_DrawArgs*);
 	void 				dump();

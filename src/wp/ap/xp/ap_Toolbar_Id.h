@@ -68,6 +68,10 @@ enum _Ap_Toolbar_Id
 	AP_TOOLBAR_ID_MIDDLE_SPACE,
 	AP_TOOLBAR_ID_DOUBLE_SPACE,
 
+	AP_TOOLBAR_ID_1COLUMN,
+	AP_TOOLBAR_ID_2COLUMN,
+	AP_TOOLBAR_ID_3COLUMN,
+	
 	/* ... add others here ... */
 
 	AP_TOOLBAR_ID__BOGUS2__				/* must be last */

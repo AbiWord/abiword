@@ -173,13 +173,12 @@ void fp_Column::getOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff)
 }
 
 void fp_Column::getScreenOffsets(fp_Line* pLine,
-									 UT_sint32& xoff, UT_sint32& yoff,
-									 UT_sint32& width, UT_sint32& height)
+									 UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
 
-	m_pPage->getScreenOffsets(this, my_xoff, my_yoff, width, height);
+	m_pPage->getScreenOffsets(this, my_xoff, my_yoff);
 	
 	xoff = my_xoff + pLine->getX();
 	yoff = my_yoff + pLine->getY();
@@ -234,6 +233,13 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 		if ((pAfterLine->getY() + pAfterLine->getHeight() + iMargin + iHeight) > m_iMaxHeight)
 		{
 			pNewLine->setColumn(NULL);
+
+			if (pAfterLine != getLastLine())
+			{
+				fp_Line* pLastLine = getLastLine();
+
+				UT_ASSERT((pLastLine->getHeight() + pLastLine->getMarginBefore()) < (iHeight + iMargin));
+			}
 			
 			return UT_FALSE;
 		}
@@ -267,16 +273,22 @@ UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine, UT_si
 		}
 	}
 
-	UT_sint32 iBaseX = pBL->getLeftMargin();
+	UT_sint32 iX = pBL->getLeftMargin();
 
 	if (pNewLine->isFirstLineInBlock())
-		iBaseX += pBL->getTextIndent();
+	{
+		iX += pBL->getTextIndent();
+	}
 
-	pNewLine->setBaseX(iBaseX);
+	pNewLine->setX(iX);
 
 	UT_sint32 iMaxWidth = getWidth();
-	iMaxWidth -= iBaseX + pBL->getRightMargin();
-
+	iMaxWidth -= pBL->getRightMargin();
+	if (pNewLine->isFirstLineInBlock())
+	{
+		iMaxWidth -= pBL->getTextIndent();
+	}
+	
 	pNewLine->setMaxWidth(iMaxWidth);
 	pNewLine->setColumn(this);
 
@@ -290,6 +302,7 @@ UT_Bool fp_Column::isEmpty(void) const
 
 void fp_Column::moveLineFromNextColumn(fp_Line* pLine)
 {
+#if 0
 	fp_Column* pNextCol = getNext();
 	UT_ASSERT(pNextCol);
 	UT_ASSERT(pLine->getColumn() == pNextCol);
@@ -299,6 +312,16 @@ void fp_Column::moveLineFromNextColumn(fp_Line* pLine)
 	insertLineAfter(pLine, getLastLine(), pLine->getHeight());
 	UT_ASSERT(pLine->getColumn() == this);
 	UT_ASSERT(getLastLine() == pLine);
+#else
+	fp_Column* pOtherCol = pLine->getColumn();
+	UT_ASSERT(pOtherCol);
+	UT_ASSERT(pLine->getColumn()->getFirstLine() == pLine);
+
+	pOtherCol->removeLine(pLine);
+	insertLineAfter(pLine, getLastLine(), pLine->getHeight());
+	UT_ASSERT(pLine->getColumn() == this);
+	UT_ASSERT(getLastLine() == pLine);
+#endif
 }
 
 void fp_Column::moveLineToNextColumn(fp_Line* pLine)
@@ -418,11 +441,20 @@ void fp_Column::updateLayout(void)
 				UT_ASSERT(pNextColumn->getWidth() == getWidth());
 				
 				UT_Bool bDone = UT_FALSE;
-				UT_Bool bSlurpedSomething = UT_FALSE;
 
 				while (!bDone)
 				{
-					fp_Line* pFirstLineInNextCol = pNextColumn->getFirstLine();
+					fp_Line* pFirstLineInNextCol = NULL;
+					while (pNextColumn && !pFirstLineInNextCol)
+					{
+						pFirstLineInNextCol = pNextColumn->getFirstLine();
+						if (!pFirstLineInNextCol)
+						{
+							pNextColumn = pNextColumn->getNext();
+						}
+					}
+					
+					UT_Bool bSlurpedSomething = UT_FALSE;
 					UT_sint32 iMargin = 0;
 					
 					if (pFirstLineInNextCol)
@@ -488,7 +520,10 @@ void fp_Column::updateLayout(void)
 									}
 								}
 
-								if ((iNumLinesThatFit + iNumLinesAlreadyHere) >= pBlock->getOrphansProperty())
+								if (
+									(iNumLinesThatFit == iNumBlockLines)
+									|| ((iNumLinesThatFit + iNumLinesAlreadyHere) >= pBlock->getOrphansProperty())
+									)
 								{
 									/*
 									  OK.  We can slurp
@@ -522,11 +557,11 @@ void fp_Column::updateLayout(void)
 					{
 						bDone = UT_TRUE;
 					}
-				}
 
-				if (bSlurpedSomething)
-				{
-					pNextColumn->updateLayout();
+					if (bSlurpedSomething)
+					{
+						pNextColumn->updateLayout();
+					}
 				}
 			}
 		}

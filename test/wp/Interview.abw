@@ -1,10 +1,10 @@
 <AWML>
 
-<SECTION NUM_COLUMNS="1" COLUMN_GAP="0.25in">
+<SECTION PROPS="columns:1">
 <P PROPS="font-weight:bold;font-size:18pt; text-align:center">Interview with AbiSource Founder Eric Sink</P>
 </SECTION>
 
-<SECTION NUM_COLUMNS="2" COLUMN_GAP="0.25in">
+<SECTION PROPS="columns:2;column-gap:0.25in">
 <P PROPS="margin-top:0.25in;margin-bottom:0.25in;text-indent:-0.25in;margin-left:0.25in"><C PROPS="font-weight:bold">Dale: Eric, tell me a bit about yourself and how you were
 involved with Mosaic development at Spyglass?</C></P>
 

@@ -68,8 +68,8 @@ public:
 	inline fl_BlockLayout*	getBlock(void) const 			{ return m_pBL; }
 	inline UT_sint32		getX(void) const 				{ return m_iX; }
 	inline UT_sint32		getY(void) const 				{ return m_iY; }
-	inline UT_uint32		getHeight(void) const     		{ return m_iHeight; }
-	inline UT_uint32		getWidth(void) const     		{ return m_iWidth; }
+	inline UT_sint32		getHeight(void) const     		{ return m_iHeight; }
+	inline UT_sint32		getWidth(void) const     		{ return m_iWidth; }
 	inline fp_Run* 			getNext(void) const     		{ return m_pNext; }
 	inline fp_Run*			getPrev(void) const     		{ return m_pPrev; }
 	inline UT_uint32		getBlockOffset(void) const     	{ return m_iOffsetFirst; }
@@ -190,6 +190,8 @@ class fp_TabRun : public fp_Run
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
+
+	void					setWidth(UT_sint32);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);

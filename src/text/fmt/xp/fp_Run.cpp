@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -229,7 +228,7 @@ void fp_TextRun::lookupProperties(void)
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP),
+	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP), m_colorFG);
 
@@ -435,7 +434,7 @@ UT_Bool fp_TextRun::split(UT_uint32 splitOffset, UT_Bool bInsertBlock)
 		I don't like it, but it seems to work.  PCR
 	*/
 	calcWidths(pgbCharWidths);
-	m_pLine->splitRunInLine(this,pNew);
+	m_pLine->insertRunAfter(pNew, this);
 	pNew->calcWidths(pgbCharWidths);
 
 	// clean up immediately after doing the charwidths calculation 
@@ -523,27 +522,22 @@ UT_Bool fp_TextRun::calcWidths(UT_GrowBuf * pgbCharWidths)
 
 	_calcWidths(pgbCharWidths);
 	
-	// let our parent know that we are changing underneath them ...
-	if (m_pLine)
-	{
-		m_pLine->runSizeChanged(this, iOldWidth, m_iWidth);
-	}
-
 	// TODO we could be smarter about this
 	return UT_TRUE;
 }
 
 void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL)
 {
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
-	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
-
 	if  (x <= 0)
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
+		// don't set bBOL to false here
 		bEOL = UT_FALSE;
 		return;
 	}
+
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	// catch the case of a click directly on the left half of the first character in the run
 	if (x < (pCharWidths[m_iOffsetFirst] / 2))
@@ -649,11 +643,12 @@ void fp_TextRun::_clearScreen(void)
 	UT_ASSERT(!m_bDirty);
 	
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
-	UT_sint32 xoff = 0, yoff = 0, width, height;
+	UT_sint32 xoff = 0, yoff = 0;
 	
 	// need to clear full height of line, in case we had a selection
-	m_pLine->getScreenOffsets(this, xoff, yoff, width, height, UT_TRUE);
-	m_pG->clearArea(xoff, yoff, m_iWidth, height);
+	m_pLine->getScreenOffsets(this, xoff, yoff);
+	
+	m_pG->clearArea(xoff, yoff, m_iWidth, m_pLine->getHeight());
 }
 
 void fp_TextRun::_draw(dg_DrawArgs* pDA)
@@ -905,12 +900,12 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 {
 	UT_ASSERT(iLen > 0);
 	
-	UT_sint32 xoff = 0, yoff = 0, width, height;
+	UT_sint32 xoff = 0, yoff = 0;
 
 	UT_RGBColor clrSquiggle(255, 0, 0);
 	m_pG->setColor(clrSquiggle);
 	
-	m_pLine->getScreenOffsets(this, xoff, yoff, width, height, UT_TRUE);
+	m_pLine->getScreenOffsets(this, xoff, yoff);
 
 	UT_Rect r;
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
@@ -988,9 +983,23 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, U
 	UT_ASSERT(m_pLine);
 	
 	m_pLine->getOffsets(this, xoff, yoff);
-	x = xoff;
-	y = yoff;
-	height = m_iHeight;
+	if (iOffset == m_iOffsetFirst)
+	{
+		x = xoff;
+	}
+	else
+	{
+		UT_ASSERT(iOffset == (m_iOffsetFirst + m_iLen));
+		
+		x = xoff + getWidth();
+	}
+	y = yoff - m_pLine->getAscent();
+	height = m_pLine->getHeight();
+}
+
+void fp_TabRun::setWidth(UT_sint32 iWidth)
+{
+	m_iWidth = iWidth;
 }
 
 void fp_TabRun::_clearScreen(void)
@@ -1002,6 +1011,27 @@ void fp_TabRun::_clearScreen(void)
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
+	
+	UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
+	UT_ASSERT(pDA->iSelPos1 <= pDA->iSelPos2);
+
+	UT_RGBColor clrSelBackground(192, 192, 192);
+	UT_RGBColor clrNormalBackground(255,255,255);
+
+	UT_sint32 iFillHeight = m_pLine->getHeight();
+	UT_sint32 iFillTop = pDA->yoff - m_pLine->getAscent();
+		
+	if (
+		(pDA->iSelPos1 <= iRunBase)
+		&& (pDA->iSelPos2 > iRunBase)
+		)
+	{
+		m_pG->fillRect(clrSelBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+	}
+	else
+	{
+		m_pG->fillRect(clrNormalBackground, pDA->xoff, iFillTop, m_iWidth, iFillHeight);
+	}
 }
 
 fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
@@ -1068,7 +1098,7 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_
 	m_pLine->getOffsets(this, xoff, yoff);
 	x = xoff;
 	y = yoff;
-	height = m_iHeight;
+	height = m_pLine->getHeight();
 }
 
 void fp_ForcedLineBreakRun::_clearScreen(void)
@@ -1163,11 +1193,12 @@ void fp_ImageRun::_clearScreen(void)
 	UT_ASSERT(!m_bDirty);
 	
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
-	UT_sint32 xoff = 0, yoff = 0, width, height;
+	UT_sint32 xoff = 0, yoff = 0;
 	
 	// need to clear full height of line, in case we had a selection
-	m_pLine->getScreenOffsets(this, xoff, yoff, width, height, UT_TRUE);
-	m_pG->clearArea(xoff, yoff, m_iWidth, height);
+	m_pLine->getScreenOffsets(this, xoff, yoff);
+	UT_sint32 iLineHeight = m_pLine->getHeight();
+	m_pG->clearArea(xoff, yoff, m_iWidth, iLineHeight);
 }
 
 void fp_ImageRun::_draw(dg_DrawArgs* pDA)
@@ -1175,9 +1206,9 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 
 	UT_RGBColor clr(50, 50, 220);
-	UT_sint32 xoff = 0, yoff = 0, width, height;
+	UT_sint32 xoff = 0, yoff = 0;
 	
-	m_pLine->getScreenOffsets(this, xoff, yoff, width, height, UT_TRUE);
+	m_pLine->getScreenOffsets(this, xoff, yoff);
 	
 	m_pG->fillRect(clr, xoff, yoff, m_iWidth, m_iHeight);
 }
@@ -1289,21 +1320,13 @@ UT_Bool fp_FieldRun::calcWidths(UT_GrowBuf * pgbCharWidths)
 {
 	unsigned short aCharWidths[FPFIELD_MAX_LENGTH];
 	
+	m_pG->setFont(m_pFont);
 	UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
 
-	// let our parent know that we are changing underneath them ...
 	if (iNewWidth != m_iWidth)
 	{
 		clearScreen();
-
-		UT_sint32 iOldWidth = m_iWidth;
 		m_iWidth = iNewWidth;
-
-		if (m_pLine)
-		{
-			m_pLine->runSizeChanged(this, iOldWidth, m_iWidth);
-		}
-
 		return UT_TRUE;
 	}
 
@@ -1336,11 +1359,12 @@ void fp_FieldRun::_clearScreen(void)
 	UT_ASSERT(!m_bDirty);
 	
 	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
-	UT_sint32 xoff = 0, yoff = 0, width, height;
+	UT_sint32 xoff = 0, yoff = 0;
 	
 	// need to clear full height of line, in case we had a selection
-	m_pLine->getScreenOffsets(this, xoff, yoff, width, height, UT_TRUE);
-	m_pG->clearArea(xoff, yoff, m_iWidth, height);
+	m_pLine->getScreenOffsets(this, xoff, yoff);
+	UT_sint32 iLineHeight = m_pLine->getHeight();
+	m_pG->clearArea(xoff, yoff, m_iWidth, iLineHeight);
 }
 
 void fp_FieldRun::_draw(dg_DrawArgs* pDA)

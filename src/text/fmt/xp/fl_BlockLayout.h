@@ -38,7 +38,7 @@
 #define FL_ALIGN_BLOCK_RIGHT    2
 #define FL_ALIGN_BLOCK_CENTER   3
 #define FL_ALIGN_BLOCK_JUSTIFY  4
-	
+
 class FL_DocLayout;
 class fl_SectionLayout;
 class fb_LineBreaker;
@@ -69,7 +69,6 @@ public:
 
 	const char*	getProperty(const XML_Char * pszName) const;
 	void setAlignment(UT_uint32 iAlignCmd);
-	UT_uint32 getAlignment();
 
 	fl_BlockLayout* getNext(UT_Bool bKeepGoing) const;
 	fl_BlockLayout* getPrev(UT_Bool bKeepGoing) const;
@@ -97,14 +96,13 @@ public:
 	void clearScreen(DG_Graphics*);
 
 	void dump();
-	void align();
-	void alignOneLine(fp_Line* pLine);
 
 	inline UT_sint32	getTextIndent(void) const { return m_iTextIndent; }
 	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
+	inline UT_uint32	getAlignment(void) const { return m_iAlignment; }
 
 	void getLineSpacing(double& dSpacing, UT_Bool& bExact) const;
 
@@ -113,6 +111,7 @@ public:
 	void checkForWidowsAndOrphans(void);
 
 	void checkSpelling(void);
+	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType);
 
 	UT_Bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	UT_Bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
@@ -174,7 +173,8 @@ protected:
 	fp_Line*				m_pFirstLine;
 	fp_Line*				m_pLastLine;
 
-	int						m_bFormatting;
+	UT_Vector				m_vecTabs;
+	UT_sint32				m_iDefaultTabInterval;
 
 	// read-only caches of the underlying properties
 	UT_uint32				m_iOrphansProperty;
@@ -184,7 +184,7 @@ protected:
 	UT_sint32				m_iLeftMargin;
 	UT_sint32				m_iRightMargin;
 	UT_sint32				m_iTextIndent;
-
+	UT_uint32				m_iAlignment;
 	double					m_dLineSpacing;
 	UT_Bool					m_bExactSpacing;
 
@@ -210,6 +210,18 @@ struct fl_PartOfBlock
 
 	UT_uint32	iOffset;
 	UT_uint32	iLength;
+};
+
+#define FL_TAB_LEFT				1
+#define FL_TAB_RIGHT			2
+#define FL_TAB_CENTER			3
+
+struct fl_TabStop
+{
+	fl_TabStop();
+	
+	UT_sint32		iPosition;
+	unsigned char	iType;
 };
 
 #endif /* BLOCKLAYOUT_H */

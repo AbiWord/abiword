@@ -223,6 +223,59 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	return s;
 }
 
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	EV_Toolbar_ItemState s = EV_TIS_ZERO;
+
+	const XML_Char * prop = "";
+	const XML_Char * val  = NULL;
+
+	switch (id)
+	{
+	case AP_TOOLBAR_ID_1COLUMN:
+		prop = "columns";
+		val = "1";
+		break;
+	case AP_TOOLBAR_ID_2COLUMN:
+		prop = "columns";
+		val = "2";
+		break;
+	case AP_TOOLBAR_ID_3COLUMN:
+		prop = "columns";
+		val = "3";
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+	
+	if (prop && val)
+	{
+		// get current block properties from pView
+		const XML_Char ** props_in = NULL;
+		const XML_Char * sz;
+
+		if (!pView->getSectionFormat(&props_in))
+			return s;
+
+		sz = UT_getAttribute(prop, props_in);
+		if (sz)
+		{
+			if (0 == UT_stricmp(sz, val))
+			{
+				s = EV_TIS_Toggled;
+			}
+		}
+		
+		free(props_in);
+	}
+
+	return s;
+}
+
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 {
 	ABIWORD_VIEW;

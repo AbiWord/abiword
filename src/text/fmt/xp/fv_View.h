@@ -99,11 +99,14 @@ public:
 
 	// TODO some of these functions should move into protected
 	
-	void getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height);
+	void getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
 	void getPageYOffset(fp_Page* pPage, UT_sint32& yoff);
 	virtual UT_uint32 getPageViewLeftMargin(void) const;
 	virtual UT_uint32 getPageViewTopMargin(void) const;
 	
+	UT_Bool setSectionFormat(const XML_Char * properties[]);
+	UT_Bool getSectionFormat(const XML_Char *** properties);
+
 	UT_Bool setBlockFormat(const XML_Char * properties[]);
 	UT_Bool getBlockFormat(const XML_Char *** properties);
 
@@ -137,6 +140,8 @@ public:
 	// goto -- this is really not implemented
 	UT_Bool 		gotoTarget(FV_JumpTarget type, UT_UCSChar * data);
 
+	void			changeNumColumns(UT_uint32 iNumColumns);
+	
 // ----------------------
 
 	// find and replace

@@ -197,6 +197,10 @@ public:
 	static EV_EditMethod_Fn paraBefore0;
 	static EV_EditMethod_Fn paraBefore12;
 
+	static EV_EditMethod_Fn	sectColumns1;
+	static EV_EditMethod_Fn	sectColumns2;
+	static EV_EditMethod_Fn	sectColumns3;
+
 	static EV_EditMethod_Fn singleSpace;
 	static EV_EditMethod_Fn middleSpace;
 	static EV_EditMethod_Fn doubleSpace;
@@ -363,6 +367,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(paraBefore0),			0,		""),
 	EV_EditMethod(NF(paraBefore12),			0,		""),
 
+	EV_EditMethod(NF(sectColumns1),		0,		""),
+	EV_EditMethod(NF(sectColumns2),		0,		""),
+	EV_EditMethod(NF(sectColumns3),		0,		""),
+	
 	EV_EditMethod(NF(singleSpace),			0,		""),
 	EV_EditMethod(NF(middleSpace),			0,		""),
 	EV_EditMethod(NF(doubleSpace),			0,		""),
@@ -2386,14 +2394,12 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		dg_DrawArgs da;
 		memset(&da, 0, sizeof(da));
 		da.pG = NULL;
-		da.width = pDocLayout->getWidth();
-		da.height = pDocLayout->getHeight();
 
 		// TODO these are here temporarily to make printing work.  We'll fix the hack later.
 		// BUGBUG assumes all pages are same size and orientation
-		//da.width;
-		da.height /= pDocLayout->countPages();
-
+		UT_sint32 iWidth = pDocLayout->getWidth();
+		UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
+		
 		UT_uint32 j,k;
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
@@ -2406,7 +2412,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 			for (j=1; (j <= nCopies); j++)
 				for (k=nFromPage; (k <= nToPage); k++)
 				{
-					pGraphics->startPage(pDocName, k, UT_TRUE, da.width, da.height);
+					pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
 					pPrintView->draw(k-1, &da);
 				}
 		}
@@ -2415,7 +2421,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 			for (k=nFromPage; (k <= nToPage); k++)
 				for (j=1; (j <= nCopies); j++)
 				{
-					pGraphics->startPage(pDocName, k, UT_TRUE, da.width, da.height);
+					pGraphics->startPage(pDocName, k, UT_TRUE, iWidth, iHeight);
 					pPrintView->draw(k-1, &da);
 				}
 		}
@@ -2513,6 +2519,30 @@ Defun1(alignJustify)
 	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "justify", 0};
 	pView->setBlockFormat(properties);
+	return UT_TRUE;
+}
+
+Defun1(sectColumns1)
+{
+	ABIWORD_VIEW;
+	const XML_Char * properties[] =	{ "columns", "1", 0};
+	pView->setSectionFormat(properties);
+	return UT_TRUE;
+}
+
+Defun1(sectColumns2)
+{
+	ABIWORD_VIEW;
+	const XML_Char * properties[] =	{ "columns", "2", 0};
+	pView->setSectionFormat(properties);
+	return UT_TRUE;
+}
+
+Defun1(sectColumns3)
+{
+	ABIWORD_VIEW;
+	const XML_Char * properties[] =	{ "columns", "3", 0};
+	pView->setSectionFormat(properties);
 	return UT_TRUE;
 }
 

@@ -93,11 +93,11 @@ UT_sint32 fp_Page::getBottom(void) const
 	return m_iHeight - iBottomMargin - iTopMargin;
 }	
 
-void fp_Page::getScreenOffsets(fp_Column* pCol, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height)
+void fp_Page::getScreenOffsets(fp_Column* pCol, UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_ASSERT(m_pView);
 	
-	m_pView->getPageScreenOffsets(this, xoff, yoff, width, height);
+	m_pView->getPageScreenOffsets(this, xoff, yoff);
 
 	xoff += pCol->getX();
 	yoff += pCol->getY();

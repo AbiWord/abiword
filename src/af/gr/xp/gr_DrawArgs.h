@@ -33,10 +33,6 @@ struct dg_DrawArgs
 	DG_Graphics*	pG;
 	UT_sint32		xoff;
 	UT_sint32		yoff;
-	UT_sint32		x;
-	UT_sint32		y;
-	UT_sint32		width;
-	UT_sint32		height;
 	UT_Bool			bDirtyRunsOnly;
 
 	// actually the following are PT_DocPosition

@@ -58,7 +58,6 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	m_pFirstRun = NULL;
 	m_pFirstLine = NULL;
 	m_pLastLine = NULL;
-	m_bFormatting = UT_FALSE;
 
 	m_pLayout = m_pSectionLayout->getDocLayout();
 	m_pDoc = m_pLayout->getDocument();
@@ -134,6 +133,34 @@ void fl_BlockLayout::_lookupProperties(void)
 	m_iRightMargin = pG->convertDimension(getProperty("margin-right"));
 	m_iTextIndent = pG->convertDimension(getProperty("text-indent"));
 
+	{
+		const char* pszAlign = getProperty("text-align");
+
+		if (0 == UT_stricmp(pszAlign, "left"))
+		{
+			m_iAlignment = FL_ALIGN_BLOCK_LEFT;
+		}
+		else if (0 == UT_stricmp(pszAlign, "center"))
+		{
+			m_iAlignment = FL_ALIGN_BLOCK_CENTER;
+		}
+		else if (0 == UT_stricmp(pszAlign, "right"))
+		{
+			m_iAlignment = FL_ALIGN_BLOCK_RIGHT;
+		}
+		else if (0 == UT_stricmp(pszAlign, "justify"))
+		{
+			m_iAlignment = FL_ALIGN_BLOCK_JUSTIFY;
+		}
+		else
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+	}
+
+	// TODO lookup the tab stops and default tab interval
+	m_iDefaultTabInterval = pG->convertDimension("1in");
+
 	// for now, just allow fixed multiples
 	// TODO: if units were used, convert to exact spacing required
 	m_dLineSpacing = atof(getProperty("line-height"));
@@ -176,70 +203,6 @@ void fl_BlockLayout::_fixColumns(void)
 	if (pNextCol)
 	{
 		pNextCol->updateLayout();
-	}
-}
-
-void fl_BlockLayout::setAlignment(UT_uint32 /*iAlignCmd*/)
-{
-#ifdef PROPERTY
-	switch (iAlignCmd)
-	{
-	case FL_ALIGN_BLOCK_LEFT:
-		m_sdh->setProperty("text-align", "left");
-		break;
-	case FL_ALIGN_BLOCK_RIGHT:
-		m_sdh->setProperty("text-align", "right");
-		break;
-	case FL_ALIGN_BLOCK_CENTER:
-		m_sdh->setProperty("text-align", "center");
-		break;
-	case FL_ALIGN_BLOCK_JUSTIFY:
-		m_sdh->setProperty("text-align", "justify");
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		break;
-	}
-#endif
-
-	align();
-}
-
-UT_uint32 fl_BlockLayout::getAlignment()
-{
-	const char* pszAlign = getProperty("text-align");
-
-	if (0 == UT_stricmp(pszAlign, "left"))
-	{
-		return FL_ALIGN_BLOCK_LEFT;
-	}
-	else if (0 == UT_stricmp(pszAlign, "center"))
-	{
-		return FL_ALIGN_BLOCK_CENTER;
-	}
-	else if (0 == UT_stricmp(pszAlign, "right"))
-	{
-		return FL_ALIGN_BLOCK_RIGHT;
-	}
-	else if (0 == UT_stricmp(pszAlign, "justify"))
-	{
-		return FL_ALIGN_BLOCK_JUSTIFY;
-	}
-	else
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return 0;
-	}
-}
-
-void fl_BlockLayout::align()
-{
-	fp_Line* pLine = m_pFirstLine;
-	while (pLine)
-	{
-	    alignOneLine(pLine);
- 
-		pLine = pLine->getNext();
 	}
 }
 
@@ -391,24 +354,7 @@ int fl_BlockLayout::format()
 
 		recalculateFields();
 		m_pBreaker->breakParagraph(this);
-
-#if 0		
-		/*
-		  A delete could mean that there are empty lines
-		  in the block.  If so, we need to remove them.
-		*/
-		while (m_pLastLine && (m_pLastLine->isEmpty()))
-		{
-			fp_Line* pLine = m_pLastLine;
-		
-			m_pLastLine = pLine->getPrev();
-			_removeLine(pLine);
-
-			// note that we do NOT delete pLine here.  It is deleted elsewhere.
-		}
-#else
 		_removeAllEmptyLines();
-#endif
 	}
 	else
 	{
@@ -426,9 +372,9 @@ int fl_BlockLayout::format()
 
 		// the line just contains the empty run
 		m_pFirstLine->addRun(m_pFirstRun);
-	}
 
-	align();
+		m_pFirstLine->layout();
+	}
 
 	_fixColumns();
 
@@ -461,12 +407,11 @@ fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 	pLine->setBlock(this);
 	pLine->setNext(NULL);
 	
-	fp_Line* pOldLastLine = NULL;
 	fp_Column* pCol = NULL;
 	
 	if (m_pLastLine)
 	{
-		pOldLastLine = m_pLastLine;
+		fp_Line* pOldLastLine = m_pLastLine;
 		
 		UT_ASSERT(m_pFirstLine);
 		UT_ASSERT(!m_pLastLine->getNext());
@@ -476,6 +421,24 @@ fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 		m_pLastLine = pLine;
 
 		pCol = pOldLastLine->getColumn();
+
+		if (!(pCol->insertLineAfter(pLine, pOldLastLine, iHeight)))
+		{
+			fp_Column* pNextCol = pCol->getNext();
+			if (!pNextCol)
+			{
+				pNextCol = m_pSectionLayout->getNewColumn();
+			}
+			UT_ASSERT(pNextCol);
+
+			while (pCol->getLastLine() != pOldLastLine)
+			{
+				pCol->moveLineToNextColumn(pCol->getLastLine());
+			}
+			
+			pNextCol->insertLineAfter(pLine, NULL, iHeight);
+			UT_ASSERT(pLine->getColumn() == pNextCol);
+		}
 	}
 	else
 	{
@@ -483,30 +446,35 @@ fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 		m_pFirstLine = pLine;
 		m_pLastLine = m_pFirstLine;
 		pLine->setPrev(NULL);
+		fp_Line* pPrevLine = NULL;
 
 		if (m_pPrev)
 		{
-			pOldLastLine = m_pPrev->getLastLine();
-			pCol = pOldLastLine->getColumn();
+			pPrevLine = m_pPrev->getLastLine();
+			pCol = pPrevLine->getColumn();
+		}
+		else if (m_pNext && m_pNext->getFirstLine())
+		{
+			pCol = m_pNext->getFirstLine()->getColumn();
 		}
 		else
 		{
 			pCol = m_pSectionLayout->getNewColumn();
 		}
-	}
-
-	if (!(pCol->insertLineAfter(pLine, pOldLastLine, iHeight)))
-	{
-		pCol = pCol->getNext();
-		if (!pCol)
-		{
-			pCol = m_pSectionLayout->getNewColumn();
-		}
-
-		UT_ASSERT(pCol);
 		
-		pCol->insertLineAfter(pLine, NULL, iHeight);
-		UT_ASSERT(pLine->getColumn() == pCol);
+		if (!(pCol->insertLineAfter(pLine, pPrevLine, iHeight)))
+		{
+			pCol = pCol->getNext();
+			if (!pCol)
+			{
+				pCol = m_pSectionLayout->getNewColumn();
+			}
+
+			UT_ASSERT(pCol);
+		
+			pCol->insertLineAfter(pLine, NULL, iHeight);
+			UT_ASSERT(pLine->getColumn() == pCol);
+		}
 	}
 
 	return pLine;
@@ -1877,7 +1845,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 
 UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc)
 {
-
 	// TODO:  This span needs to be invalidated for the spell checker....
 
 	UT_ASSERT(pcrsc->getType()==PX_ChangeRecord::PXT_ChangeSpan);
@@ -1927,7 +1894,6 @@ UT_Bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange 
 	{
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
 	}
-
 
 	UT_DEBUGMSG(("ChangeSpan spell finished, invalid regions = %d, bad words=%d",
 							m_lstNotSpellChecked.size(),
@@ -2098,7 +2064,6 @@ UT_Bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChang
 	clearScreen(m_pLayout->getGraphics());
 	setAttrPropIndex(pcrxc->getIndexAP());
 
-	// TODO: may want to figure out the specific change and do less work
 	_lookupProperties();
 
 	fp_Column* pCol = NULL;
@@ -2188,7 +2153,7 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 
 		// last line of old block is dirty
 		pRun->getLine()->clearScreen();
-		pRun->getLine()->align();
+		pRun->getLine()->layout();
 		// we redraw the line below
 
 		// break run sequence
@@ -2229,19 +2194,12 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 		pRun = pRun->getNext();
 	}
 
-	/*
-	  we don't need to call the linebreaker here, just an align.
-	  and a check for widow-orphan problems.
-	*/
-
+	pNewBL->format();
 	checkForWidowsAndOrphans();
-	align();
+	format();
 	
 	_destroySpellCheckLists();
-
 	m_pLayout->addBlockToSpellCheckQueue(this);
-	
-	pNewBL->format();
 
 	m_pLayout->addBlockToSpellCheckQueue(pNewBL);
 	
@@ -2296,39 +2254,6 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 		}
 		
 		pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
-	}
-}
-
-void fl_BlockLayout::alignOneLine(fp_Line* pLine)
-{
-	UT_sint32 iExtraWidth = pLine->getMaxWidth() - pLine->getWidth();
-	UT_uint32 iAlignCmd = getAlignment();
-
-//	if (iExtraWidth > 0)
-	{
-		/*
-		  the line is not as wide as the space allocated for it.  check to see if
-		  we need to justify it.
-		*/
-		switch (iAlignCmd)
-		{
-		case FL_ALIGN_BLOCK_LEFT:
-			pLine->setX(pLine->getBaseX());
-			break;
-		case FL_ALIGN_BLOCK_RIGHT:
-			pLine->setX(pLine->getBaseX() + iExtraWidth);
-			break;
-		case FL_ALIGN_BLOCK_CENTER:
-			pLine->setX(pLine->getBaseX() + (iExtraWidth / 2));
-			break;
-		case FL_ALIGN_BLOCK_JUSTIFY:
-			pLine->setX(pLine->getBaseX());
-			// TODO force the line to the larger width
-			break;
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			break;
-		}
 	}
 }
 
@@ -2626,10 +2551,28 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 		return UT_TRUE;
 		
 	case PTO_Field:
+	{
 		UT_DEBUGMSG(("Edit:ChangeObject:Field:\n"));
-		// TODO ... deal with field object ...
-		return UT_TRUE;
-				
+		PT_BlockOffset blockOffset = (pcroc->getPosition() - getPosition());
+		fp_Run* pRun = m_pFirstRun;
+		while (pRun)
+		{
+			if (pRun->getBlockOffset() == blockOffset)
+			{
+				UT_ASSERT(pRun->getType() == FPRUN_FIELD);
+				fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
+
+				pFieldRun->clearScreen();
+				pFieldRun->lookupProperties();
+				pFieldRun->calcWidths(&m_gbCharWidths);
+
+				return UT_TRUE;
+			}
+			pRun = pRun->getNext();
+		}
+	
+		return UT_FALSE;
+	}		
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
@@ -2655,4 +2598,36 @@ UT_Bool fl_BlockLayout::recalculateFields(void)
 	}
 
 	return bResult;
+}
+
+UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType)
+{
+	// TODO support something other than default tabs
+	
+	// now, handle the default tabs
+
+	if (m_iLeftMargin > iStartX)
+	{
+		iPosition = m_iLeftMargin;
+		iType = FL_TAB_LEFT;
+		return UT_TRUE;
+	}
+	
+	UT_ASSERT(m_iDefaultTabInterval > 0);
+	UT_sint32 iPos = 0;
+	for (;;)
+	{
+		if (iPos > iStartX)
+		{
+			iPosition = iPos;
+			iType = FL_TAB_LEFT;
+			return UT_TRUE;
+		}
+
+		iPos += m_iDefaultTabInterval;
+	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_FALSE;
 }

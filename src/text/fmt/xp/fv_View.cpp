@@ -871,6 +871,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 			*/
 			posStart++;
 
+#if 0
 			/*
 				Likewise, findPointCoords will return the run to the right 
 				of the specified position, so we need to stop looking one 
@@ -888,6 +889,7 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 			  the following line, but I'm not quite sure how to change it.
 			*/
 			posEnd--;
+#endif
 		}
 
 		pBlock->getSpanAttrProp(posStart - pBlock->getPosition(),&pSpanAP);
@@ -954,7 +956,8 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 			// TODO in until to catch these...  -- jeff
 			
 			UT_ASSERT((pRun->getLength()>0) || (pRun->getBlockOffset()>0));
-#endif			
+#endif
+			pAP = NULL;
 			pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),&pAP);
 			if (pSpanAP != pAP)
 			{
@@ -1061,10 +1064,130 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 	return bRet;
 }
 
+UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
+{
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL;
+	UT_Vector v;
+	UT_uint32 i;
+	_fmtPair * f;
+
+	/*
+		IDEA: We want to know block-level formatting properties, iff
+		they're constant across the entire selection.  To do so, we start 
+		at the beginning of the selection, load 'em all into a vector, and 
+		then prune any property that collides.
+	*/
+	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+			posStart = m_iSelectionAnchor;
+		else
+			posEnd = m_iSelectionAnchor;
+	}
+
+	// 1. assemble complete set at insertion point
+	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	fl_SectionLayout* pSection = pBlock->getSectionLayout();
+	pSection->getAttrProp(&pSectionAP);
+
+	v.addItem(new _fmtPair("columns",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP));
+
+	// 2. prune 'em as they vary across selection
+	if (!isSelectionEmpty())
+	{
+		fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
+		fl_SectionLayout *pSectionEnd = pBlockEnd->getSectionLayout();
+
+		while (pSection && (pSection != pSectionEnd))
+		{
+			const PP_AttrProp * pAP;
+			UT_Bool bCheck = UT_FALSE;
+
+			pSection = m_pLayout->getNextSection(pSection);
+
+			if (!pSection)
+			{
+				// at EOD, so just bail
+				break;
+			}
+
+			// did block format change?
+			pSection->getAttrProp(&pAP);
+			if (pSectionAP != pAP)
+			{
+				pSectionAP = pAP;
+				bCheck = UT_TRUE;
+			}
+
+			if (bCheck)
+			{
+				i = v.getItemCount();
+
+				while (i > 0)
+				{
+					f = (_fmtPair *)v.getNthItem(i-1);
+
+					const XML_Char * value = PP_evalProperty(f->m_prop,NULL,pBlockAP,pSectionAP);
+					UT_ASSERT(value);
+
+					// prune anything that doesn't match
+					if (UT_stricmp(f->m_val, value))
+					{
+						DELETEP(f);
+						v.deleteNthItem(i-1);
+					}
+
+					i--;
+				}
+
+				// when vector is empty, stop looking
+				if (0 == v.getItemCount())
+				{
+					pSection = NULL;
+					break;
+				}
+			}
+		}
+	}
+
+	// 3. export whatever's left
+	UT_uint32 count = v.getItemCount()*2 + 1;
+
+	// NOTE: caller must free this, but not the referenced contents
+	const XML_Char ** props = (const XML_Char **) calloc(count, sizeof(XML_Char *));
+	if (!props)
+		return UT_FALSE;
+
+	const XML_Char ** p = props;
+
+	i = v.getItemCount();
+
+	while (i > 0)
+	{
+		f = (_fmtPair *)v.getNthItem(i-1);
+		i--;
+
+		p[0] = f->m_prop;
+		p[1] = f->m_val;
+		p += 2;
+	}
+
+	UT_VECTOR_PURGEALL(_fmtPair *,v);
+
+	*pProps = props;
+
+	return UT_TRUE;
+}
+
 UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 {
 	const PP_AttrProp * pBlockAP = NULL;
-	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	UT_Vector v;
 	UT_uint32 i;
 	_fmtPair * f;
@@ -1972,7 +2095,10 @@ PT_DocPosition FV_View::_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition
 UT_UCSChar * FV_View::_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition * offset)
 {
 	UT_ASSERT(m_pLayout);
+#if 0
+	// this assert doesn't work, since the startPosition CAN legitimately be zero
 	UT_ASSERT(m_startPosition);
+#endif	
 	
 	UT_ASSERT(block);
 	UT_ASSERT(*block);
@@ -2413,8 +2539,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 }
 
 void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
-										 UT_sint32& yoff, UT_sint32& width,
-										 UT_sint32& height)
+										 UT_sint32& yoff)
 {
 	UT_uint32 y = fl_PAGEVIEW_MARGIN_Y;
 	
@@ -2432,8 +2557,6 @@ void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
 
 	yoff = y - m_yScrollOffset;
 	xoff = fl_PAGEVIEW_MARGIN_Y - m_xScrollOffset;
-	height = m_iWindowHeight;
-	width = m_iWindowWidth;
 }
 
 void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff)
@@ -2485,8 +2608,6 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	fp_Run* pRun2;
 	UT_sint32 xoff;
 	UT_sint32 yoff;
-	UT_sint32 width;
-	UT_sint32 height;
 	UT_uint32 uheight;
 
 	{
@@ -2518,17 +2639,13 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 
 		fp_Line* pLine = pCurRun->getLine();
 
-		pLine->getScreenOffsets(pCurRun, xoff, yoff, width, height, UT_TRUE);
+		pLine->getScreenOffsets(pCurRun, xoff, yoff);
 
 		dg_DrawArgs da;
 			
 		da.pG = m_pG;
 		da.xoff = xoff;
 		da.yoff = yoff + pLine->getAscent();
-		da.x = 0;
-		da.y = 0;
-		da.width = width;
-		da.height = height;
 
 		if (m_bSelection)
 		{
@@ -2905,10 +3022,6 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 			da.pG = m_pG;
 			da.xoff = fl_PAGEVIEW_MARGIN_X - m_xScrollOffset;
 			da.yoff = adjustedTop;
-			da.x = x;
-			da.y = y;
-			da.width = width;
-			da.height = height;
 			if (m_bSelection)
 			{
 				if (m_iSelectionAnchor < _getPoint())
@@ -3666,3 +3779,43 @@ void FV_View::_drawRuler(void)
 
 }
 #endif
+
+UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
+{
+	UT_Bool bRet;
+
+	_clearPointAP(UT_TRUE);
+	_eraseInsertionPoint();
+
+	PT_DocPosition posStart = _getPoint();
+	PT_DocPosition posEnd = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_iSelectionAnchor < posStart)
+		{
+			posStart = m_iSelectionAnchor;
+		}
+		else
+		{
+			posEnd = m_iSelectionAnchor;
+		}
+	}
+
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Section);
+
+	_updateScreen();
+	
+	if (isSelectionEmpty())
+	{
+		_fixInsertionPointCoords();
+		_drawInsertionPoint();
+	}
+	else
+	{
+		_drawSelection();
+	}
+
+	return bRet;
+}
+

@@ -286,15 +286,16 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		switch (pL->getType())
 		{
 		case PTX_Section:
-			pL->setAttrPropIndex(pcr->getIndexAP());
-			UT_ASSERT(UT_TODO);
-			return UT_FALSE;
-					
+		{
+			fl_SectionLayout* pSL = static_cast<fl_SectionLayout*>(pL);
+			return pSL->doclistener_changeStrux(pcrxc);
+		}
+		
 		case PTX_Block:
-			{
-				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
-				return pBL->doclistener_changeStrux(pcrxc);
-			}
+		{
+			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+			return pBL->doclistener_changeStrux(pcrxc);
+		}
 					
 		default:
 			UT_ASSERT(0);

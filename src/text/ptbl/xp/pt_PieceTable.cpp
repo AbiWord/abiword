@@ -29,6 +29,7 @@
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
+#include "pf_Frag_Object.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
 #include "px_ChangeRecord_Span.h"
@@ -134,44 +135,6 @@ UT_Bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp *
 	return UT_TRUE;
 }
 
-UT_Bool	pt_PieceTable::getSpanAPIndex(PL_StruxDocHandle sdh, UT_uint32 offset,
-									  PT_AttrPropIndex* pIndexAP)
-{
-	// return the AP for the text at the given offset from the given strux.
-	// note: offset zero refers to the strux.  the first character is at
-	// note: (0 + pf->getLength()).
-	
-	UT_ASSERT(sdh);
-	UT_ASSERT(pIndexAP);
-
-	pf_Frag * pf = (pf_Frag *)sdh;
-	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
-	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
-	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
-
-	UT_uint32 cumOffset = pfsBlock->getLength();
-	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
-	{
-		if ((offset >= cumOffset) && (offset < cumOffset+pfTemp->getLength()))
-		{
-			// requested offset is within this fragment.
-
-			// if this is inside something other than a text fragment, we puke.
-			
-			if (pfTemp->getType() != pf_Frag::PFT_Text)
-				return UT_FALSE;
-
-			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
-			*pIndexAP = pfText->getIndexAP();
-
-			return UT_TRUE;
-		}
-
-		cumOffset += pfTemp->getLength();
-	}
-	return UT_FALSE;
-}
-
 UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const PP_AttrProp ** ppAP) const
 {
@@ -196,16 +159,30 @@ UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 
 			// if this is inside something other than a text fragment, we puke.
 			
-			if (pfTemp->getType() != pf_Frag::PFT_Text)
-				return UT_FALSE;
+			if (pfTemp->getType() == pf_Frag::PFT_Text)
+			{
+				pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
+				const PP_AttrProp * pAP = m_varset.getAP(pfText->getIndexAP());
+				if (!pAP)
+					return UT_FALSE;
 
-			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
-			const PP_AttrProp * pAP = m_varset.getAP(pfText->getIndexAP());
-			if (!pAP)
-				return UT_FALSE;
+				*ppAP = pAP;
+				return UT_TRUE;
+			}
+			else if (pfTemp->getType() == pf_Frag::PFT_Object)
+			{
+				pf_Frag_Object * pfObject = static_cast<pf_Frag_Object *> (pfTemp);
+				const PP_AttrProp * pAP = m_varset.getAP(pfObject->getIndexAP());
+				if (!pAP)
+					return UT_FALSE;
 
-			*ppAP = pAP;
-			return UT_TRUE;
+				*ppAP = pAP;
+				return UT_TRUE;
+			}
+			else
+			{
+				return UT_FALSE;
+			}
 		}
 
 		cumOffset += pfTemp->getLength();
@@ -279,16 +256,54 @@ UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) cons
 
 	UT_uint32 bufferOffset = pgb->getLength();
 	
-	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp && pfTemp->getType()==pf_Frag::PFT_Text); pfTemp=pfTemp->getNext())
+	for (pf_Frag * pfTemp=pfsBlock->getNext();
+		 (
+			 pfTemp
+			 && (
+				 pfTemp->getType()==pf_Frag::PFT_Text
+				 || pfTemp->getType()==pf_Frag::PFT_Object
+				 )
+			 );
+		 pfTemp=pfTemp->getNext())
 	{
-		pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pfTemp);
-		const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
-		UT_uint32 length = pft->getLength();
+		if (pfTemp->getType() == pf_Frag::PFT_Text)
+		{
+			pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pfTemp);
+			const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
+			UT_uint32 length = pft->getLength();
 
-		UT_Bool bAppended = pgb->ins(bufferOffset,pSpan,length);
-		UT_ASSERT(bAppended);
+			UT_Bool bAppended = pgb->ins(bufferOffset,pSpan,length);
+			UT_ASSERT(bAppended);
 		
-		bufferOffset += length;
+			bufferOffset += length;
+		}
+		else
+		{
+			/*
+			  Now *here* is a seriously questionable fragment
+			  of code.  :-)  We can't let getBlockBuf halt on
+			  a block when it finds an inline object.  However,
+			  we can't very well sensibly store an inline object
+			  in a UNICODE character.  So, we dump spaces in
+			  its place, to preserve the integrity of the
+			  buffer.  Obviously, those spaces aren't useful,
+			  but at least the app doesn't crash, and the rest
+			  of the text in the block is safely stored in the
+			  buffer in the proper location.
+			*/
+			UT_uint32 length = pfTemp->getLength();
+
+			UT_UCSChar* pSpaces = new UT_UCSChar[length];
+			for (UT_uint32 i=0; i<length; i++)
+			{
+				pSpaces[i] = 32;
+			}
+			UT_Bool bAppended = pgb->ins(bufferOffset, pSpaces, length);
+			delete pSpaces;
+			UT_ASSERT(bAppended);
+		
+			bufferOffset += length;
+		}
 	}
 
 	UT_ASSERT(bufferOffset == pgb->getLength());
@@ -481,7 +496,7 @@ UT_Bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
-				*ppfs = pfs;
+				*ppfs = pfsTemp;
 				return UT_TRUE;
 			}
 		}

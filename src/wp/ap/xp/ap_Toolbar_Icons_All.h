@@ -48,6 +48,9 @@
 #	include "ToolbarIcons/tb_text_underline.xpm"
 #	include "ToolbarIcons/tb_para_0before.xpm"
 #	include "ToolbarIcons/tb_para_12before.xpm"
+#	include "ToolbarIcons/tb_1column.xpm"
+#	include "ToolbarIcons/tb_2column.xpm"
+#	include "ToolbarIcons/tb_3column.xpm"
 #	include "ToolbarIcons/tb_line_single_space.xpm"
 #	include "ToolbarIcons/tb_line_middle_space.xpm"
 #	include "ToolbarIcons/tb_line_double_space.xpm"
@@ -80,6 +83,9 @@
 	DefineToolbarIcon(tb_text_underline_xpm)
 	DefineToolbarIcon(tb_para_0before_xpm)
 	DefineToolbarIcon(tb_para_12before_xpm)
+	DefineToolbarIcon(tb_1column_xpm)
+	DefineToolbarIcon(tb_2column_xpm)
+	DefineToolbarIcon(tb_3column_xpm)
 	DefineToolbarIcon(tb_line_single_space_xpm)
 	DefineToolbarIcon(tb_line_middle_space_xpm)
 	DefineToolbarIcon(tb_line_double_space_xpm)

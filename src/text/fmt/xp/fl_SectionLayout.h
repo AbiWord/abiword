@@ -33,6 +33,7 @@ class fb_LineBreaker;
 class fp_Column;
 class PD_Document;
 class PP_AttrProp;
+class PX_ChangeRecord_StruxChange;
 
 class fl_SectionLayout : public fl_Layout
 {
@@ -63,6 +64,7 @@ public:
 	fl_BlockLayout *	removeBlock(fl_BlockLayout * pBL);
 
 	void				deleteEmptyColumns(void);
+	UT_Bool 			doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 
 protected:
 	void				_purgeLayout();
