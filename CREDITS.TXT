@@ -204,6 +204,8 @@ Sam Trenholme <abiword_bugs@yahoo.com>			RTF exporter fixes
 Kevin Vajk <kvajk@ricochet.net> 			File import/export
 							detection, hpux
 Martin Vermeer <martin.vermeer@fgi.fi>			Unicode Latex export
+Ruud Vring <arvee_at_work@hotmail.com>			Various bug fixes; 
+							MsWord table import
 Robert G. Werner <rwerner@lx1.microbsys.com>		VI keybindings
 Robert Wilhelm <robert.wilhelm@gmx.net>			Word import fixes
 Alec Wolman <wolman@cs.washington.edu>			Various autoconf fixes

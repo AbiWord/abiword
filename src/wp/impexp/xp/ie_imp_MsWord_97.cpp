@@ -52,6 +52,9 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 
+#include "pf_Frag_Strux.h"
+#include "pt_PieceTable.h"
+
 #ifdef DEBUG
 #define IE_IMP_MSWORD_DUMP
 #include "ie_imp_MsWord_dump.h"
@@ -757,9 +760,16 @@ void IE_Imp_MsWord_97::_flush ()
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 {
 
-	// eat tab characters
-	if (m_bInTable && ch == 7) {
+	
+	if (m_bInTable) {
+		switch (ch) {
+			case 7:			// eat tab characters
 		return;	
+			case 30:		// ??
+				ch = '-';
+				break;
+			}
+		UT_DEBUGMSG(("%c", ch));
 		}	
 
 	if ( m_bIsLower )
@@ -1515,7 +1525,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  if (apap->fInTable) {
 	    if (!m_bInTable) {
 	      m_bInTable = true;	    
-	      _table_open(apap);
+	        _table_open(ps, apap);
 	    }
 	    
 	    if (ps->endcell) {
@@ -1541,9 +1551,6 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		for (int i = column; i < ps->nocellbounds; i++) {
 		  if (ps->cellbounds[i] >= apap->ptap.rgdxaCenter[column]) {
 		    span = (i - column);
-		    if (span) {
-		      span++;
-		    }
 		    break;
 		  }
 		}
@@ -1551,7 +1558,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	      }
 	    }
 	    
-	    _cell_open(apap);
+	    _cell_open(ps, apap);
 	    
 	    if (m_iCellsRemaining == 0) {
 	      m_iCellsRemaining = apap->ptap.itcMac + 1;
@@ -2803,9 +2810,12 @@ static int docProc (wvParseStruct *ps, wvTag tag)
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_table_open (PAP *apap) 
+void IE_Imp_MsWord_97::_table_open (const wvParseStruct *ps, const PAP *apap) 
 {
-  
+  // keep in here. i want to use these for setting up table properties
+  (void)ps;
+  (void)apap;
+ 
   UT_DEBUGMSG(("\n<TABLE>"));
   
   m_iCurrentRow = 0;
@@ -2827,14 +2837,44 @@ void IE_Imp_MsWord_97::_table_open (PAP *apap)
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_table_close () 
-{
+void IE_Imp_MsWord_97::_table_close () {
   
   _cell_close();
   _row_close();
   
   UT_DEBUGMSG(("\n</TABLE>\n"));
   
+  if (m_vecColumnWidths.size()) {
+    // build column width properties string
+    UT_String propBuffer;
+    UT_String props = "table-column-props:";
+    
+    for (UT_uint32 i = 0; i < m_vecColumnWidths.size(); i++) {
+      UT_String_sprintf(propBuffer,
+			"%s/",
+			UT_convertInchesToDimensionString(DIM_IN, (((float)(int)m_vecColumnWidths.getNthItem(i)) / 1440), "1.4")
+			);
+      props += propBuffer;
+    }
+    
+    XML_Char* pProps = "props";
+    const XML_Char* propsArray[3];
+    propsArray[0] = pProps;
+    propsArray[1] = props.c_str();
+    propsArray[2] = NULL;
+    
+    // apply properties
+    PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
+    
+    pf_Frag_Strux * pfStrux = (pf_Frag_Strux *)sdh;
+    PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
+    const PP_AttrProp * pAP = NULL;
+    getDoc()->getPieceTable()->getAttrProp(indexAP,&pAP);	
+    
+    ((PP_AttrProp *)pAP)->setAttributes(propsArray);
+  }
+  
+  // end-of-table
   getDoc()->appendStrux(
 			PTX_EndTable,
 			NULL
@@ -2845,8 +2885,7 @@ void IE_Imp_MsWord_97::_table_close ()
 //--------------------------------------------------------------------------/
 
 void IE_Imp_MsWord_97::_row_open () 
-{
-  
+{  
   if (m_bRowOpen) {
     return;
   }
@@ -2863,7 +2902,6 @@ void IE_Imp_MsWord_97::_row_open ()
 
 void IE_Imp_MsWord_97::_row_close () 
 {
-  
   if (m_bRowOpen) {
     UT_DEBUGMSG(("\t</ROW>"));
   }
@@ -2873,19 +2911,42 @@ void IE_Imp_MsWord_97::_row_close ()
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
-void IE_Imp_MsWord_97::_cell_open (PAP *apap) 
+void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap) 
 {
   
   if (m_bCellOpen || apap->fTtp) {
     return;
   }
   
+  // determine column widths
+  UT_Vector columnWidths;
+  
+  for (int i = 1; i < ps->nocellbounds; i++) {
+    int width = apap->ptap.rgdxaCenter[i] - apap->ptap.rgdxaCenter[i - 1];
+    if (width <= 0) {
+      break;
+    }				  
+    columnWidths.addItem((void *)width);
+  }
+  
+  if (columnWidths.size() > m_vecColumnWidths.size()) {
+    m_vecColumnWidths.clear();
+    m_vecColumnWidths = columnWidths;
+  }
+  
+  // add a new cell
   m_bCellOpen = true;
   m_iCurrentCell++;
   
-  UT_DEBUGMSG(("\t<CELL:%d>", m_iCurrentCell));
+  UT_DEBUGMSG(("\t<CELL:%d:%d>", (int)m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1), ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1]));
   
   UT_String propBuffer;
+  
+  int vspan = ps->vmerges[m_iCurrentRow - 1][m_iCurrentCell - 1];
+  
+  if (vspan > 0) {
+    vspan--;
+  }
   
   UT_String_sprintf(
 		    propBuffer, 
@@ -2893,7 +2954,7 @@ void IE_Imp_MsWord_97::_cell_open (PAP *apap)
 		    m_iCurrentCell - 1, 
 		    m_iCurrentCell + (int)m_vecColumnSpansForCurrentRow.getNthItem(m_iCurrentCell - 1), 
 		    m_iCurrentRow - 1, 
-		    m_iCurrentRow
+		    m_iCurrentRow + vspan
 		    );
   
   XML_Char* pProps = "props";
@@ -2906,25 +2967,20 @@ void IE_Imp_MsWord_97::_cell_open (PAP *apap)
 			PTX_SectionCell, 
 			propsArray
 			);
-  getDoc()->appendStrux(
-			PTX_Block,
-			NULL
-			);
 }
 
 //--------------------------------------------------------------------------/
 //--------------------------------------------------------------------------/
 
 void IE_Imp_MsWord_97::_cell_close () 
-{
-  
+{  
   if (!m_bCellOpen) {
     return;
   }
   
   m_bCellOpen = false;
   
-  UT_DEBUGMSG(("</TAB>"));
+  UT_DEBUGMSG(("</CELL>"));
   
   getDoc()->appendStrux(
 			PTX_EndCell, 

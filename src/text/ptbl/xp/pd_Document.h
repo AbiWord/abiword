@@ -396,10 +396,10 @@ public:
 
 
 
-#ifdef PT_TEST
-	void					__dump(FILE * fp) const;
 	pt_PieceTable *			getPieceTable(void) const
 		{ return m_pPieceTable; }
+#ifdef PT_TEST
+	void					__dump(FILE * fp) const;
 	//! Pointer to last instatiated PD_Document. Used for debugging.
 	static PD_Document*		m_pDoc;
 #endif

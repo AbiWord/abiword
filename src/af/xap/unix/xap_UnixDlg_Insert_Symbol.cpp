@@ -96,11 +96,12 @@ static void s_dlg_response ( GtkWidget * widget, gint id,
 	UT_return_if_fail(widget && dlg);
 
 	switch ( id )
-	{
-		case XAP_UnixDialog_Insert_Symbol::BUTTON_OK:
-			dlg->event_OK();
-			break;
-		case XAP_UnixDialog_Insert_Symbol::BUTTON_CANCEL:
+	  {
+               case XAP_UnixDialog_Insert_Symbol::BUTTON_INSERT:
+                       dlg->event_Insert();
+		       break;
+
+		case XAP_UnixDialog_Insert_Symbol::BUTTON_CLOSE:
 		  abiDestroyWidget(widget); // emit the destroy signal
 		  break;
 	}
@@ -230,7 +231,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	UT_return_if_fail(mainWindow);
 
 	abiSetupModelessDialog(GTK_DIALOG(mainWindow),
-						   pFrame, this, BUTTON_CANCEL);
+						   pFrame, this, BUTTON_CLOSE);
 
 	// *** this is how we add the gc for symbol table ***
 	// attach a new graphics context to the drawing area
@@ -242,7 +243,7 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	// make a new Unix GC
 	DELETEP (m_unixGraphics);
 #ifndef WITH_PANGO	
-	m_unixGraphics = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
+	m_unixarea = new GR_UnixGraphics(m_SymbolMap->window, unixapp->getFontManager(), m_pApp);
 #else
 	m_unixarea = new GR_UnixGraphics(m_areaCurrentSym->window,m_pApp);
 #endif
@@ -304,15 +305,10 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 	// to happen.
 }
 
-void XAP_UnixDialog_Insert_Symbol::event_OK(void)
+void XAP_UnixDialog_Insert_Symbol::event_Insert(void)
 {
         m_Inserted_Symbol = m_CurrentSymbol;
        	_onInsertButton();
-}
-
-void XAP_UnixDialog_Insert_Symbol::event_Cancel(void)
-{
-  event_WindowDelete();
 }
 
 void XAP_UnixDialog_Insert_Symbol::SymbolMap_exposed(void )
@@ -384,7 +380,7 @@ gboolean XAP_UnixDialog_Insert_Symbol::Key_Pressed(GdkEventKey * e)
 	case GDK_Return:
 		gtk_signal_emit_stop_by_name((GTK_OBJECT(m_windowMain)),
 					     "key_press_event");
-		event_OK();
+		event_Insert();
 		return TRUE ;
 		break;
 	}
@@ -420,7 +416,7 @@ void XAP_UnixDialog_Insert_Symbol::SymbolMap_clicked( GdkEvent * event)
 
 	// double click should also insert the symbol
 	if(event->type == GDK_2BUTTON_PRESS)
-	    event_OK();
+	    event_Insert();
 }
 
 
@@ -503,11 +499,11 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	m_SymbolMap = _previewNew (608, 147);
 	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, FALSE, FALSE, 0);
 	
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL) ;
 	m_areaCurrentSym = _previewNew (60, 45);
 	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(m_windowMain)->action_area),
 					   m_areaCurrentSym, TRUE, FALSE, 0);
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_OK, BUTTON_OK) ;
+	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_ADD, BUTTON_INSERT) ;
+	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CLOSE) ;
 	
 	_connectSignals ();
 
@@ -583,7 +579,7 @@ void XAP_UnixDialog_Insert_Symbol::CurrentSymbol_clicked(GdkEvent *event)
 {
 	// have single-click insert the symbol
         if(event->type == GDK_BUTTON_PRESS)
-	    event_OK();
+	    event_Insert();
 }
 
 GtkWidget *XAP_UnixDialog_Insert_Symbol::_createComboboxWithFonts (void)

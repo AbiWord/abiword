@@ -47,8 +47,7 @@ public:
 
 	// callbacks can fire these events
 
-	virtual void			event_OK(void);
-	virtual void			event_Cancel(void);
+	virtual void			event_Insert(void);
 	virtual void			SymbolMap_exposed( void);
 	virtual void			Symbolarea_exposed( void);
 	virtual void			SymbolMap_clicked(GdkEvent * event);
@@ -59,8 +58,8 @@ public:
 
 	typedef enum
 		{
-			BUTTON_OK,
-			BUTTON_CANCEL
+		  BUTTON_INSERT,
+			BUTTON_CLOSE
 		} ResponseId ;
 	
 protected:

@@ -173,8 +173,9 @@ UT_untgz(const char *szFName, const char *szWantedFile, const char *szDestPath, 
 						UT_String outfilename(szDestPath);
 						outfilename += "/";
 						outfilename += fname;
-						if ((outfile = fopen(outfilename.c_str(), "wb")) == NULL)
+						if ((outfile = fopen(outfilename.c_str(), "wb")) == NULL) {
 							UT_DEBUGMSG(("untgz: Unable to save %s", outfilename.c_str()));
+							}
 					}
 					else
 						outfile = NULL;

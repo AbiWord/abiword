@@ -120,11 +120,11 @@ private:
 	void	   _appendChar (UT_UCSChar ch);
 	void	   _flush ();
 
-	void		_table_open(PAP *apap);
+	void		_table_open(const wvParseStruct *ps, const PAP *apap);
 	void		_table_close();
 	void		_row_open();
 	void		_row_close();
-	void		_cell_open(PAP *apap);
+	void		_cell_open(const wvParseStruct *ps, const PAP *apap);
 	void		_cell_close();
 
 	UT_UCS4String		m_pTextRun;
@@ -162,6 +162,7 @@ private:
 	bool		m_bRowOpen;						// row strux open ?
 	bool		m_bCellOpen;					// cell strux open ?
 	UT_Vector	m_vecColumnSpansForCurrentRow;	// placeholder for horizontal cell spans
+	UT_Vector	m_vecColumnWidths;
 		
 };
 
