@@ -200,14 +200,20 @@
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
+	if (NSInputManager * inputManager = [NSInputManager currentInputManager])
+		[inputManager markedTextAbandoned:[theEvent window]];
 	[_eventDelegate mouseDown:theEvent from:self];
 }
 - (void)rightMouseDown:(NSEvent *)theEvent
 {
+	if (NSInputManager * inputManager = [NSInputManager currentInputManager])
+		[inputManager markedTextAbandoned:[theEvent window]];
 	[_eventDelegate mouseDown:theEvent from:self];
 }
 - (void)otherMouseDown:(NSEvent *)theEvent
 {
+	if (NSInputManager * inputManager = [NSInputManager currentInputManager])
+		[inputManager markedTextAbandoned:[theEvent window]];
 	[_eventDelegate mouseDown:theEvent from:self];
 }
 
