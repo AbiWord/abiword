@@ -1457,7 +1457,7 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 	UT_uint32 wordBeginning = iStart;
 	UT_uint32 wordLength = 0;
 	UT_Bool bFound;
-	UT_Bool bAllUpperCase;
+	UT_Bool bAllUpperCase, bHasNumeric;
 	
 	UT_DEBUGMSG(("fl_BlockLayout::_checkMultiWord\n"));
 
@@ -1478,6 +1478,7 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 			// we're at the start of a word. find end of word
 			bFound = UT_FALSE;
 			bAllUpperCase = UT_TRUE;
+			bHasNumeric = UT_FALSE;
 			wordLength = 0;
 			while ((!bFound) && ((wordBeginning + wordLength) < eor))
 			{
@@ -1490,6 +1491,9 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 					if (bAllUpperCase)
 						bAllUpperCase = UT_UCS_isupper(pBlockText[wordBeginning + wordLength]);
 
+					if (!bHasNumeric)
+						bHasNumeric = UT_UCS_isdigit(pBlockText[wordBeginning + wordLength]);
+
 					wordLength++;
 				}
 			}
@@ -1500,9 +1504,10 @@ UT_Bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 
 			// for some reason, the spell checker fails on all 1-char words & really big ones
 			if ((wordLength > 1) && 
-				(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		// TODO: iff relevant Option is set
-				(!UT_UCS_isdigit(pBlockText[wordBeginning]) && 
-				(wordLength < 100)))
+				(!bAllUpperCase || !m_pLayout->getSpellCheckCaps()) &&		
+				(!UT_UCS_isdigit(pBlockText[wordBeginning])) &&			// still ignore first char==num words
+				(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
+				(wordLength < 100))
 			{
 				PD_Document * pDoc = m_pLayout->getDocument();
 				XAP_App * pApp = m_pLayout->getView()->getApp();
@@ -1552,6 +1557,7 @@ void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 
 	UT_uint32 wordBeginning = pPOB->iOffset, wordLength = 0;
 	UT_Bool bAllUpperCase = UT_FALSE;
+	UT_Bool bHasNumeric = UT_FALSE;
 
 	UT_ASSERT(wordBeginning <= pgb.getLength());
 	UT_ASSERT(eor <= pgb.getLength());
@@ -1563,6 +1569,9 @@ void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		if (bAllUpperCase)
 			bAllUpperCase = UT_UCS_isupper(pBlockText[wordBeginning + wordLength]);
 
+		if (!bHasNumeric)
+			bHasNumeric = UT_UCS_isdigit(pBlockText[wordBeginning + wordLength]);
+
 		wordLength++;
 	}
 
@@ -1571,9 +1580,9 @@ void fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 	// for some reason, the spell checker fails on all 1-char words & really big ones
 	if ((wordLength > 1) && 
 		(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		
-		(!UT_UCS_isdigit(pBlockText[wordBeginning]) &&				
-				// TODO: iff relevant Option is set - need to check the whole word, not just the first letter
-		(wordLength < 100)))
+		(!UT_UCS_isdigit(pBlockText[wordBeginning])) &&			// still ignore first char==num words
+		(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
+		(wordLength < 100))
 	{
 		PD_Document * pDoc = m_pLayout->getDocument();
 		XAP_App * pApp = m_pLayout->getView()->getApp();
