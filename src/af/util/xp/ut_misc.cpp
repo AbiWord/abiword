@@ -114,6 +114,8 @@ UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
 	case '"':
 	case '-':
 //	case '\'':
+	case '(':
+	case ')':
 	case ';':
 	case ':':
 	case '!':
