@@ -51,7 +51,8 @@ AM_CONDITIONAL(WITH_ISPELL, [test $abi_spell = ispell])
 
 AC_DEFUN([ABI_SPELL_CHECK],[
 
-abi_spell_message="(ispell)"
+abi_spell=ispell
+abi_spell_message="ispell"
 SPELL_CFLAGS="-DHAVE_ISPELL=1"
 
 AC_SUBST(SPELL_CFLAGS)
