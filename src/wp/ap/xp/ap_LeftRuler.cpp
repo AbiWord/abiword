@@ -895,21 +895,12 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 		_getCellMarkerRects(pInfo,i,rCell);
 		if(rCell.width != 0)
 		{
-			UT_Rect tCell;
-			tCell.left = rCell.left;
-			tCell.top = rCell.top;
-			tCell.width = rCell.width;
-			tCell.height = 2;
+			UT_Rect tCell, bCell;
 
-			UT_Rect bCell;
-			bCell.left = rCell.left;
-			bCell.top = rCell.top + rCell.height - 2;
-			bCell.width = rCell.width;
-			bCell.height = 2;
+			tCell.set(rCell.left, rCell.top, rCell.width, 2);
+			bCell.set(rCell.left, rCell.top + rCell.height - 2, rCell.width, 2);
+			rCell.set(rCell.left, rCell.top + 2, rCell.width, rCell.height - 2);
 
-			rCell.top += 2;
-			rCell.height -= 2;
-			
 			m_pG->fillRect(GR_Graphics::CLR3D_Background, tCell);
 			m_pG->fillRect(GR_Graphics::CLR3D_BevelDown, rCell);
 			m_pG->fillRect(GR_Graphics::CLR3D_Background, bCell);
