@@ -67,6 +67,10 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	{
 		UT_DEBUGMSG(("_unlink Strux Section %x \n",pfs));
 	}
+	else if(pfs->getStruxType() == PTX_SectionHdrFtr)
+	{
+		UT_DEBUGMSG(("_unlink HdrFtr Strux Section %x \n",pfs));
+	}
 	else if(pfs->getStruxType() == PTX_SectionFootnote)
 	{
 		UT_DEBUGMSG(("_unlink Strux SectionFootnote %x \n",pfs));
@@ -83,7 +87,7 @@ bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 	{
 		UT_DEBUGMSG(("_unlink Strux EndEndnote %x \n",pfs));
 	}
-//	m_pDocument->miniDump((PL_StruxDocHandle) pfs, 1);
+	m_pDocument->miniDump((PL_StruxDocHandle) pfs, 1);
 #endif
 	switch (pfs->getStruxType())
 	{
@@ -532,6 +536,7 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 // Now find the first Non-strux frag within this hdrftr
 //
 	bool bStop = false;
+	PT_DocPosition posLastStrux = 0;
 	while((pfFrag->getType() == pf_Frag::PFT_Strux) && (pfFrag != getFragments().getLast()) && !bStop)
 	{
 		const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(pfFrag);
@@ -541,11 +546,17 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 		}
 		else
 		{
+			UT_DEBUGMSG(("Adding strux %x of type %d at Pos %d to strux vector for delete \n",pfs,pfs->getStruxType(),pfs->getPos()));
+			posLastStrux = pfs->getPos();
 			vecFragStrux.addItem((void *) pfFrag);
 			pfFrag = pfFrag->getNext();
 		}
 	}
 	PT_DocPosition TextStartPos = getFragPosition(pfFrag);
+	if(TextStartPos == posLastStrux)
+	{
+		TextStartPos++;
+	}
 	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Text Start Pos = %d \n",TextStartPos));
 //
 // Now find the end of the text in the header/footer
@@ -581,20 +592,27 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 //
 // Now delete the struxes at the start.
 //
-// I assume there are blocks then sections. First delete all the blocks, then the
-// section strux.
 //
 	UT_uint32 count = vecFragStrux.getItemCount();
 	UT_ASSERT(count > 1);
 	UT_uint32 i=0;
 	bool bres = false;
+//
+// First delete the HdrFtr strux, then delete the blocks, this will enable the
+// the HdrFtr to be properly recreated on undo (Since it needs blocks to be
+// present before it can be created.)
+//
+	bres = _deleteStruxWithNotify(pfFragStruxHdrFtr->getPos(),pfFragStruxHdrFtr,NULL,NULL);
 	for(i=1; i<count; i++)
 	{
 		pf_Frag_Strux * pfs = (pf_Frag_Strux *) vecFragStrux.getNthItem(i);
-		bres = _deleteStruxWithNotify(pfs->getPos(),pfs,NULL,NULL);
+		UT_DEBUGMSG(("Delete Strux at %d strux type is %d \n",pfs->getPos(),pfs->getStruxType()));
+		if(pfs->getStruxType() != PTX_SectionHdrFtr)
+		{
+			bres = _deleteStruxWithNotify(pfs->getPos(),pfs,NULL,NULL);
+		}
 		UT_ASSERT(bres);
 	}
-	bres = _deleteStruxWithNotify(pfFragStruxHdrFtr->getPos(),pfFragStruxHdrFtr,NULL,NULL);
 	UT_ASSERT(bres);
 //	deleteSpan(HdrFtrPos,TextStartPos,NULL,true);
 }

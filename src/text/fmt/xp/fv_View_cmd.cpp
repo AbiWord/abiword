@@ -3337,9 +3337,13 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 	setCursorWait();
 	if(isHeader)
 	{
+		UT_DEBUGMSG(("view_cmd: Attempt remove Header First \n"));
 		_removeThisHdrFtr(pDSL->getHeaderFirst());
+		UT_DEBUGMSG(("view_cmd: Attempt remove Header Last \n"));
 		_removeThisHdrFtr(pDSL->getHeaderLast());
+		UT_DEBUGMSG(("view_cmd: Attempt remove Header Even \n"));
 		_removeThisHdrFtr(pDSL->getHeaderEven());
+		UT_DEBUGMSG(("view_cmd: Attempt remove Header \n"));
 		_removeThisHdrFtr(pDSL->getHeader());
 	}
 	else

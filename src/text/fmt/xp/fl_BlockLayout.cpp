@@ -5134,7 +5134,11 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	//
 	// BUT!!! Don't move the immediate Footnotes or Endnotes
 	//
-	fl_ContainerLayout * pLastCL = pCL->getPrev();
+	fl_ContainerLayout * pLastCL = NULL;
+	if(pCL)
+	{
+		pLastCL = pCL->getPrev();
+	}
 	while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
 		  (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)))
 	{
@@ -5170,8 +5174,10 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 // Terminate blocklist here. This Block is the last in this section.
 //
 	if (pLastCL)
+	{
 		pLastCL->setNext(NULL);
-	pOldSL->setLastLayout(pLastCL);
+		pOldSL->setLastLayout(pLastCL);
+	}
 //
 // OK we have to redo all the containers now.
 //

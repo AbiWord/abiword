@@ -7022,7 +7022,7 @@ void FV_View::RestoreSavedPieceTableState(void)
  */
 void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
-		setCursorWait();
+	setCursorWait();
 	if(!bSkipPTSaves)
 	{
 //
@@ -7044,18 +7044,22 @@ void FV_View::removeThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 
 	if(hfType == FL_HDRFTR_HEADER)
 	{
+		UT_DEBUGMSG(("View: Remove HDRFTR HEADER \n"));
 		_removeThisHdrFtr(pDSL->getHeader());
 	}
 	else if(hfType == FL_HDRFTR_HEADER_EVEN)
 	{
+		UT_DEBUGMSG(("View: Remove HDRFTR HEADER_EVEN \n"));
 		_removeThisHdrFtr(pDSL->getHeaderEven());
 	}
 	else if(hfType == FL_HDRFTR_HEADER_LAST)
 	{
+		UT_DEBUGMSG(("View: Remove HDRFTR HEADER_LAST \n"));
 		_removeThisHdrFtr(pDSL->getHeaderLast());
 	}
 	else if(hfType == FL_HDRFTR_HEADER_FIRST)
 	{
+		UT_DEBUGMSG(("View: Remove HDRFTR HEADER_FIRST \n"));
 		_removeThisHdrFtr(pDSL->getHeaderFirst());
 	}
 	else if(hfType == FL_HDRFTR_FOOTER)

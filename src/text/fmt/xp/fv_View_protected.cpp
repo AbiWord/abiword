@@ -4154,11 +4154,13 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 	{
 		return;
 	}
+	UT_DEBUGMSG(("view_protected: Removing HdrFtr %x \n",pHdrFtr));
 //
 // Need this to remove the HdrFtr attributes in the section strux.
 //
 	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
 	const XML_Char * pszHdrFtrType = NULL;
+	UT_ASSERT(pHdrFtr->getContainerType() == FL_CONTAINER_HDRFTR);
 	PL_StruxDocHandle sdhHdrFtr = pHdrFtr->getStruxDocHandle();
 	m_pDoc->getAttributeFromSDH(sdhHdrFtr,PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
 	PT_DocPosition	posDSL = m_pDoc->getStruxPosition(pDSL->getStruxDocHandle());

@@ -734,7 +734,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 
 	bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_ASSERT(bFound);
-
+	UT_DEBUGMSG(("deleteComplex span dpos1 %d dpos2 %d pf_First %x pf_First pos %d \n",dpos1,dpos2,pf_First,pf_First->getPos()));
 	pf_Frag_Strux * pfsContainer = NULL;
 	bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_ASSERT(bFoundStrux);
@@ -793,7 +793,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 // Now put in code to handle deleting footnote struxtures. We have to reverse
 // the order of deleting footnote and Endfootnotes.
 // 
-					if(!isFootnote(pfs) && !isFootnote(pfs))
+					if(!isFootnote(pfs) && !isEndFootnote(pfs))
 					{ 
 						bResult = _deleteStruxWithNotify(dpos1,pfs,
 												  &pfNewEnd,&fragOffsetNewEnd);
@@ -1417,7 +1417,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 					PT_DocPosition myPos = pfs->getPos();
 					bSuccess = _deleteStruxWithNotify(myPos, pfs, &pf, &dp);
 				}
-				else
+				else if(pfs->getPos() >= dpos1)
 				{
 					_deleteFormatting(dpos1 - pfs->getLength(), dpos1);
 					bSuccess = _deleteStruxWithNotify(dpos1 - pfs->getLength(), pfs,
