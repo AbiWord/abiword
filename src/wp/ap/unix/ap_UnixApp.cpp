@@ -33,6 +33,7 @@
 
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
+#include "ut_getopt.h"
 
 #include "xap_Args.h"
 #include "ap_UnixFrame.h"
@@ -271,12 +272,12 @@ const XAP_StringSet * AP_UnixApp::getStringSet(void) const
 
 /*****************************************************************/
 
-
 static GtkWidget * wSplash = NULL;
 static GR_Image * pSplashImage = NULL;
 static GR_UnixGraphics * pUnixGraphics = NULL;
 static guint timeout_handler = 0;
 static UT_Bool firstExpose = FALSE;
+static UT_uint32 splashTimeoutValue = 0;
 
 static gint s_hideSplash(gpointer /*data*/)
 {
@@ -313,56 +314,29 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 		if (!firstExpose)
 		{
 			firstExpose = UT_TRUE;
-			timeout_handler = gtk_timeout_add(2000, s_hideSplash, NULL);
+			timeout_handler = gtk_timeout_add(splashTimeoutValue, s_hideSplash, NULL);
 		}
 	}
 
 	return FALSE;
 }
 
-static GR_Image * _showSplash(XAP_Args * pArgs, const char * /*szAppName*/)
+// szFile is optional; a NULL pointer will use the default splash screen.
+// The delay is how long the splash should stay on screen in milliseconds.
+static GR_Image * _showSplash(const char * szFile, UT_uint32 delay)
 {
 	wSplash = NULL;
 	pSplashImage = NULL;
 
 	UT_ByteBuf* pBB = NULL;
-	UT_Bool bShowSplash = UT_TRUE;
-	const char * szFile = "splash.png";
 
-	// Unix does put the program name in argv[0], unlike Win32, so [1] is the first argument
-	int nFirstArg = 1;
-	int k;
+	// use a default if they haven't specified anything
+	if (szFile == NULL)
+		szFile = "splash.png";
+
+	// store value for use by the expose event, which attaches the timer
+	splashTimeoutValue = delay;
 	
-	// scan args for splash-related stuff
-	for (k=nFirstArg; (k<pArgs->m_argc); k++)
-	{
-		if (*pArgs->m_argv[k] == '-')
-		{
-			if (UT_stricmp(pArgs->m_argv[k],"-nosplash") == 0)
-			{
-				bShowSplash = UT_FALSE;
-				break;
-			}
-#if DEBUG
-			else if (UT_stricmp(pArgs->m_argv[k],"-splash") == 0)
-			{
-				// [-splash filename]
-				szFile = pArgs->m_argv[k+1];
-				break;
-
-				// NOTE: this switch is just for debugging artwork, so 
-				// it's OK that the filename also gets opened as a document
-			}
-#endif
-		}
-
-		// TODO: platform-specific reasons to not show splash?
-		// TODO: for example, if being launched via DDE or OLE??
-	}
-
-	if (!bShowSplash)
-		goto Done;
-
 	extern unsigned char g_pngSplash[];		// see ap_wp_Splash.cpp
 	extern unsigned long g_pngSplash_sizeof;	// see ap_wp_Splash.cpp
 
@@ -420,8 +394,28 @@ static GR_Image * _showSplash(XAP_Args * pArgs, const char * /*szAppName*/)
 
 	DELETEP(pBB);
 
-Done:
 	return pSplashImage;
+}
+
+void AP_UnixApp::_printUsage(void)
+{
+	// TODO : automatically generate the output from the options struct
+	// for getopt ?
+	
+	// just print to stdout, not stderr
+	printf("Usage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
+
+	printf("  -s scriptfile,    --script=scriptfile     execute scriptfile\n");
+#ifdef DEBUG
+	printf("  -d,               --dumpstrings           dump strings strings to file\n");
+#endif
+	printf("  -l libdir,        --lib=libdir            use libdir for application components\n");
+	printf("  -n,               --nosplash              do not show splash screen\n");
+#ifdef DEBUG	
+	printf("  -S pngfile,       --splash=pngfile        use pngfile for splash screen\n");
+#endif
+
+	printf("\n");
 }
 
 /*****************************************************************/
@@ -450,108 +444,144 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 		return -1;	// make this something standard?
 	}
 
-	pMyUnixApp->ParseCommandLine();
-
-	_showSplash(&Args, szAppName);
-
-	// we just let it time out at 2 seconds, or let the user click
-//	s_hideSplash(NULL);
-
-	// turn over control to gtk
-	gtk_main();
+	// this function takes care of all the command line args.
+	// if some args are botched, it returns false and we should
+	// continue out the door.
+	if (pMyUnixApp->parseCommandLine())
+	{
+		// turn over control to gtk
+		gtk_main();
+	}
 	
 	// destroy the App.  It should take care of deleting all frames.
-
 	pMyUnixApp->shutdown();
 	delete pMyUnixApp;
 	
 	return 0;
 }
 
-void AP_UnixApp::ParseCommandLine(void)
+// TODO : move these out somewhere XP
+struct option longopts[] =
+{
+        {"script",      required_argument, 	NULL, 's'},
+#ifdef DEBUG
+        {"dumpstrings", no_argument, 		NULL, 'd'},
+#endif
+        {"lib",         required_argument, 	NULL, 'l'},
+		{"nosplash",	no_argument, 		NULL, 'n'},
+#ifdef DEBUG
+		{"splash",		required_argument, 	NULL, 'S'},
+#endif
+        {0,             0, NULL,  0 }
+};
+
+UT_Bool AP_UnixApp::parseCommandLine(void)
 {
 	// parse the command line
-	// <app> [-script <scriptname>]* [-dumpstrings] [-lib <AbiSuiteLibDirectory>] [<documentname>]*
-	
+	// <app> [--script <scriptname>]* [--dumpstrings]
+	//       [--lib <AbiSuiteLibDirectory>] [<documentname>]*
+        
 	// TODO when we refactor the App classes, consider moving
 	// TODO this to app-specific, cross-platform.
 
-	// TODO replace this with getopt or something similar.
-	
-	// Unix puts the program name in argv[0], so [1] is the first argument.
-
-	int nFirstArg = 1;
 	int k;
 	int kWindowsOpened = 0;
-	
-	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
+
+	// these options get turned on/off or set during the options parsing,
+	// but are read below when deciding what to act on.
+	UT_Bool bShowSplash = UT_TRUE;
+	const char * szSplashFile = NULL;
+
+	while ((k = getopt_long(m_pArgs->m_argc, m_pArgs->m_argv, "s:dhl:nS:", longopts, NULL)) != EOF)
 	{
-		if (*m_pArgs->m_argv[k] == '-')
+		switch (k)
 		{
-			if (UT_stricmp(m_pArgs->m_argv[k],"-script") == 0)
-			{
-				// [-script scriptname]
-				k++;
-			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-lib") == 0)
-			{
-				// [-lib <AbiSuiteLibDirectory>]
-				// we've already processed this when we initialized the App class
-				k++;
-			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
-			{
-				// [-dumpstrings]
-#ifdef DEBUG
-				// dump the string table in english as a template for translators.
-				// see abi/docs/AbiSource_Localization.abw for details.
-				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
-				pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
-				delete pBuiltinStringSet;
-#endif
-			}
-			else
-			{
-				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
-				// TODO don't know if it has a following argument or not -- assume not
-			}
+		case 's':
+		{
+			// execute a script
+			UT_DEBUGMSG(("Scripting is not yet implemented.\n"));
+			break;
+		}
+		case 'd':
+		{
+			// dump strings out to file; only honored in debug
+			AP_BuiltinStringSet * pBuiltinStringSet =
+				new AP_BuiltinStringSet(this, AP_PREF_DEFAULT_StringSet);
+			pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
+			delete pBuiltinStringSet;
+			break;
+		}
+		case 'l':
+		{
+			// [--lib <AbiSuiteLibDirectory>]
+			// we've already processed this when we initialized
+			// the App class
+			break;
+		}
+		case 'n':
+		{
+			// user doesn't want a splash screen
+			bShowSplash = UT_FALSE;
+			break;
+		}
+		case 'S':
+		{
+			// user wants a custom splash screen, but only honored in
+			// debug
+			szSplashFile = optarg;
+		    break;
+		}
+		default:
+			// if we got this, they passed an argument we can't decipher
+			// this will also catch --help or -h
+			_printUsage();
+			return UT_FALSE;
+		}
+	}
+
+	// act on some options we've parsed
+	if (bShowSplash)
+		_showSplash(szSplashFile, 2000);
+
+	// this pointer is around to be used to fork off new windows as needed
+	AP_UnixFrame * pFirstUnixFrame = NULL;
+
+	// use any outstanding command line args as documents
+	while (optind < m_pArgs->m_argc)
+	{
+		if (pFirstUnixFrame == NULL)
+		{
+			pFirstUnixFrame = new AP_UnixFrame(this);
+			pFirstUnixFrame->initialize();
+			kWindowsOpened++;
+		}
+		if (pFirstUnixFrame->loadDocument(m_pArgs->m_argv[optind],
+										  IEFT_Unknown))
+		{
+			pFirstUnixFrame = NULL;
 		}
 		else
 		{
-			// [filename]
-			
-			AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
-			pFirstUnixFrame->initialize();
-			if (pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
-			{
-				kWindowsOpened++;
-			}
-			else
-			{
-				// TODO: warn user that we couldn't open that file
-
-#if 1
-				// TODO we crash if we just delete this without putting something
-				// TODO in it, so let's go ahead and open an untitled document
-				// TODO for now.  this would cause us to get 2 untitled documents
-				// TODO if the user gave us 2 bogus pathnames....
-				kWindowsOpened++;
-				pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
-#else
-				delete pFirstUnixFrame;
-#endif
-			}
+			char message[2048];
+			g_snprintf(message, 2048,
+					   "Cannot open file %s.", m_pArgs->m_argv[optind]);
+			messageBoxOK(message);
 		}
+		optind++;
 	}
+
+	// TODO should this return success?
+	//if (pFirstUnixFrame == NULL)
+	//return UT_TRUE;
 
 	if (kWindowsOpened == 0)
 	{
 		// no documents specified or were able to be opened, open an untitled one
 
-		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+		pFirstUnixFrame = new AP_UnixFrame(this);
 		pFirstUnixFrame->initialize();
 		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
 	}
 
-	return;
+	return UT_TRUE;
 }

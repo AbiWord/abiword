@@ -17,139 +17,139 @@
  * 02111-1307, USA.
  */
 
-// This is the FSF's GetOpt class from libg++-2.8.1.1a.  libg++ is
-// not maintained anymore, the important parts of which have
-// migrated to libstdc++.  This class, however, is really handy
-// since we can't expect all platforms (Unix, Windows, BeOS) to
-// have getopt installed.  Changes by AbiSource are marked and are
-// released under the LGPL for compatibility with the original code.
+// These are the FSF's getopt functions from the GNU C library.
+// See the GNU C library source code for the original implementations.
 
-// Class names have been changed from GetOpt:: to UT_getOpt:: to be
-// consistent with other AbiSource classes.  A naming convention
-// like "thisClass" has been used in favor of "ThisClass".
+/* Declarations for getopt.
+   Copyright (C) 1989,90,91,92,93,94,96,97 Free Software Foundation, Inc.
 
-/* Getopt for GNU. 
-   Copyright (C) 1987, 1989, 1992 Free Software Foundation, Inc.
-   (Modified by Douglas C. Schmidt for use with GNU G++.)
+NOTE: The canonical source of this file is maintained with the GNU C Library.
+Bugs can be reported to bug-glibc@prep.ai.mit.edu.
 
-This file is part of the GNU C++ Library.  This library is free
-software; you can redistribute it and/or modify it under the terms of
-the GNU Library General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your
-option) any later version.  This library is distributed in the hope
-that it will be useful, but WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the GNU Library General Public License for more details.
-You should have received a copy of the GNU Library General Public
-License along with this library; if not, write to the Free Software
-Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2, or (at your option) any
+later version.
 
-/* This version of `getopt' appears to the caller like standard Unix `getopt'
-   but it behaves differently for the user, since it allows the user
-   to intersperse the options with the other arguments.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-   As `getopt' works, it permutes the elements of `argv' so that,
-   when it is done, all the options precede everything else.  Thus
-   all application programs are extended to handle flexible argument order.
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+USA.  */
 
-   Setting the environment variable _POSIX_OPTION_ORDER disables permutation.
-   Then the behavior is completely standard.
+#ifndef _GETOPT_H
+#define _GETOPT_H 1
 
-   GNU application programs can use a third alternative mode in which
-   they can distinguish the relative order of options and other arguments.  */
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
-#ifndef UT_GETOPT_H
-#define UT_GETOPT_H
+/* For communication from `getopt' to the caller.
+   When `getopt' finds an option that takes an argument,
+   the argument value is returned here.
+   Also, when `ordering' is RETURN_IN_ORDER,
+   each non-option ARGV-element is returned here.  */
 
-// #include <std.h>
-#include <stdio.h>
+extern char *optarg;
 
-class UT_getOpt
+/* Index in ARGV of the next element to be scanned.
+   This is used for communication to and from the caller
+   and for communication between successive calls to `getopt'.
+
+   On entry to `getopt', zero means this is the first call; initialize.
+
+   When `getopt' returns -1, this is the index of the first of the
+   non-option elements that the caller should itself scan.
+
+   Otherwise, `optind' communicates from one call to the next
+   how much of ARGV has been scanned so far.  */
+
+extern int optind;
+
+/* Callers store zero here to inhibit the error message `getopt' prints
+   for unrecognized options.  */
+
+extern int opterr;
+
+/* Set to an option character which was unrecognized.  */
+
+extern int optopt;
+
+/* Describe the long-named options requested by the application.
+   The LONG_OPTIONS argument to getopt_long or getopt_long_only is a vector
+   of `struct option' terminated by an element containing a name which is
+   zero.
+
+   The field `has_arg' is:
+   no_argument		(or 0) if the option does not take an argument,
+   required_argument	(or 1) if the option requires an argument,
+   optional_argument 	(or 2) if the option takes an optional argument.
+
+   If the field `flag' is not NULL, it points to a variable that is set
+   to the value given in the field `val' when the option is found, but
+   left unchanged if the option is not found.
+
+   To have a long-named option do something other than set an `int' to
+   a compiled-in constant, such as set a value from `optarg', set the
+   option's `flag' field to zero and its `val' field to a nonzero
+   value (the equivalent single-letter option character, if there is
+   one).  For long options that have a zero `flag' field, `getopt'
+   returns the contents of the `val' field.  */
+
+struct option
 {
-private:
-  /* The next char to be scanned in the option-element
-     in which the last option character we returned was found.
-     This allows us to pick up the scan where we left off.
-        
-     If this is zero, or a null string, it means resume the scan
-     by advancing to the next ARGV-element.  */
-  
-  static char *nextchar;
-  
-  
-  /* Describe how to deal with options that follow non-option ARGV-elements.
-    
-    UNSPECIFIED means the caller did not specify anything;
-    the default is then REQUIRE_ORDER if the environment variable
-    _OPTIONS_FIRST is defined, PERMUTE otherwise.
-      
-    REQUIRE_ORDER means don't recognize them as options.
-    Stop option processing when the first non-option is seen.
-    This is what Unix does.
-            
-    PERMUTE is the default.  We permute the contents of `argv' as we scan,
-    so that eventually all the options are at the end.  This allows options
-    to be given in any order, even with programs that were not written to
-    expect this.
-        
-    RETURN_IN_ORDER is an option available to programs that were written
-    to expect options and other ARGV-elements in any order and that care about
-    the ordering of the two.  We describe each non-option ARGV-element
-    as if it were the argument of an option with character code zero.
-    Using `-' as the first character of the list of option characters
-    requests this mode of operation.
-                    
-    The special argument `--' forces an end of option-scanning regardless
-    of the value of `ordering'.  In the case of RETURN_IN_ORDER, only
-    `--' can cause `getopt' to return EOF with `optind' != ARGC.  */
-  
-   enum OrderingEnum { REQUIRE_ORDER, PERMUTE, RETURN_IN_ORDER };
-   OrderingEnum ordering;
-
-  /* Handle permutation of arguments.  */
-  
-  /* Describe the part of ARGV that contains non-options that have
-     been skipped.  `first_nonopt' is the index in ARGV of the first of them;
-     `last_nonopt' is the index after the last of them.  */
-  
-  static int first_nonopt;
-  static int last_nonopt;
-  
-  void exchange (char **argv);
-public:
-  /* For communication from `getopt' to the caller.
-     When `getopt' finds an option that takes an argument,
-     the argument value is returned here.
-     Also, when `ordering' is RETURN_IN_ORDER,
-     each non-option ARGV-element is returned here.  */
-  
-  char *optarg;
-  
-  /* Index in ARGV of the next element to be scanned.
-     This is used for communication to and from the caller
-     and for communication between successive calls to `getopt'.
-     On entry to `getopt', zero means this is the first call; initialize.
-          
-     When `getopt' returns EOF, this is the index of the first of the
-     non-option elements that the caller should itself scan.
-              
-     Otherwise, `optind' communicates from one call to the next
-     how much of ARGV has been scanned so far.  */
-  
-  int optind;
-
-  /* Callers store zero here to inhibit the error message
-     for unrecognized options.  */
-  
-  int opterr;
-  
-  int    nargc;
-  char **nargv;
-  const char  *noptstring;
-  
-  UT_getOpt (int argc, char **argv, const char *optstring);
-  int operator () (void);
+#if defined (__STDC__) && __STDC__
+  const char *name;
+#else
+  char *name;
+#endif
+  /* has_arg can't be an enum because some compilers complain about
+     type mismatches in all the code that assumes it is an int.  */
+  int has_arg;
+  int *flag;
+  int val;
 };
 
-#endif /* UT_GETOPT_H */
+/* Names for the values of the `has_arg' field of `struct option'.  */
+
+#define	no_argument		0
+#define required_argument	1
+#define optional_argument	2
+
+#if defined (__STDC__) && __STDC__
+#ifdef __GNU_LIBRARY__
+/* Many other libraries have conflicting prototypes for getopt, with
+   differences in the consts, in stdlib.h.  To avoid compilation
+   errors, only prototype getopt for the GNU C library.  */
+extern int getopt (int argc, char *const *argv, const char *shortopts);
+#else /* not __GNU_LIBRARY__ */
+/* int getopt (); */
+#endif /* __GNU_LIBRARY__ */
+extern int getopt_long (int argc, char *const *argv, const char *shortopts,
+		        const struct option *longopts, int *longind);
+extern int getopt_long_only (int argc, char *const *argv,
+			     const char *shortopts,
+		             const struct option *longopts, int *longind);
+
+/* Internal only.  Users should not call this directly.  */
+extern int _getopt_internal (int argc, char *const *argv,
+			     const char *shortopts,
+		             const struct option *longopts, int *longind,
+			     int long_only);
+#else /* not __STDC__ */
+extern int getopt ();
+extern int getopt_long ();
+extern int getopt_long_only ();
+
+extern int _getopt_internal ();
+#endif /* __STDC__ */
+
+#ifdef	__cplusplus
+}
+#endif
+
+#endif /* _GETOPT_H */

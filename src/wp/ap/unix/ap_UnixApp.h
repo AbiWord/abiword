@@ -46,13 +46,17 @@ public:
 	virtual UT_Bool					getPrefsValueDirectory(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	virtual const XAP_StringSet *	getStringSet(void) const;
 	
-	void							ParseCommandLine(void);
+	UT_Bool							parseCommandLine(void);
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
 protected:
+
+	void							_printUsage(void);
+	
 	AP_UnixPrefs *			m_prefs;
 	XAP_StringSet *			m_pStringSet;
+	
 };
 
 #endif /* AP_UNIXAPP_H */
