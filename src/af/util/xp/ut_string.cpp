@@ -146,8 +146,8 @@ char * UT_strdup(const char * szSource)
   UT_return_val_if_fail(szSource, NULL);
 
 	int len = strlen(szSource)+1;
-	if(char * ret = (char *)UT_calloc(len, sizeof(char)))
-		return((char *)memcpy(ret, szSource, len));
+	if(char * ret = static_cast<char *>(UT_calloc(len, sizeof(char))))
+		return(static_cast<char *>(memcpy(ret, szSource, len)));
 	else
 		return(NULL);
 }
@@ -159,8 +159,8 @@ UT_sint32 UT_stricmp(const char * s1, const char * s2)
 
 	// Lifted from glibc.  Looks better (in a constant-factor sort of way)
 	// than what we had before.  Ideally this should be per-platform.
-	const unsigned char *p1 = (const unsigned char *) s1;
-	const unsigned char *p2 = (const unsigned char *) s2;
+	const unsigned char *p1 = reinterpret_cast<const unsigned char *>(s1);
+	const unsigned char *p2 = reinterpret_cast<const unsigned char *>(s2);
 	unsigned char c1, c2;
 
 	if (s1 == s2)
@@ -185,8 +185,8 @@ UT_sint32 UT_strnicmp(const char *s1, const char *s2, int n)
   UT_return_val_if_fail(s1, 1);
   UT_return_val_if_fail(s2, -1);
 
-	const unsigned char *p1 = (const unsigned char *) s1;
-	const unsigned char *p2 = (const unsigned char *) s2;
+	const unsigned char *p1 = reinterpret_cast<const unsigned char *>(s1);
+	const unsigned char *p2 = reinterpret_cast<const unsigned char *>(s2);
 	unsigned char c1, c2;
 
 	if (p1 == p2 || n == 0)
@@ -208,7 +208,7 @@ bool UT_cloneString(char *& rszDest, const char * szSource)
 	if (szSource && *szSource)
 	{
 		UT_uint32 length = strlen(szSource) + 1;
-		rszDest = (char *) malloc(length);
+		rszDest = static_cast<char *>(malloc(length));
 
 		if (!rszDest)
 			return false;
@@ -282,13 +282,13 @@ bool UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource)
 		return true;
 
 	XML_Char ** newmemory = (XML_Char **)
-		UT_calloc(UT_pointerArrayLength((void **) szSource) + 1, sizeof(XML_Char *));
+		UT_calloc(UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<XML_Char **>(szSource))) + 1, sizeof(XML_Char *));
 
 	if (newmemory == NULL)
 		return false;
 
-	memcpy((void *) newmemory, (const void *) szSource,
-		   UT_pointerArrayLength((void **) szSource ) * sizeof(XML_Char *));
+	memcpy(static_cast<void *>(newmemory), static_cast<const void *>(szSource),
+		   UT_pointerArrayLength(reinterpret_cast<void **>(const_cast<XML_Char **>(szSource)) ) * sizeof(XML_Char *));
 
 	rszDest = newmemory;
 
@@ -305,7 +305,7 @@ bool UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource)
 bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
 {
 	UT_uint32 length = UT_XML_strlen(szSource) + 1;
-	rszDest = (XML_Char *)UT_calloc(length,sizeof(XML_Char));
+	rszDest = static_cast<XML_Char *>(UT_calloc(length,sizeof(XML_Char)));
 	if (!rszDest)
 		return false;
 	memmove(rszDest,szSource,length*sizeof(XML_Char));
@@ -315,19 +315,19 @@ bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource)
 UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return UT_stricmp((const char*)sz1,(const char*)sz2);
+	return UT_stricmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2));
 }
 
 UT_sint32 UT_XML_strnicmp(const XML_Char * sz1, const XML_Char * sz2, const UT_uint32 n)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return UT_strnicmp((const char*)sz1,(const char*)sz2,n);
+	return UT_strnicmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2),n);
 }
 
 UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2)
 {
 	UT_ASSERT(sizeof(char) == sizeof(XML_Char));
-	return strcmp((const char*)sz1,(const char*)sz2);
+	return strcmp(static_cast<const char*>(sz1),static_cast<const char*>(sz2));
 }
 
 bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
@@ -336,7 +336,7 @@ bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
 		return false;
 
 	UT_uint32 length = UT_XML_strlen(szSource) + 1;
-	rszDest = (XML_Char *) UT_calloc(length, sizeof(XML_Char));
+	rszDest = static_cast<XML_Char *>(UT_calloc(length, sizeof(XML_Char)));
 
 	if (!rszDest)
 		return false;
@@ -371,7 +371,7 @@ XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource)
 			free(rszDestBuffer);
 		}
 		iDestBufferLength = 0;
-		rszDestBuffer = (XML_Char *) UT_calloc(length, sizeof(XML_Char));
+		rszDestBuffer = static_cast<XML_Char *>(UT_calloc(length, sizeof(XML_Char)));
 
 		if (!rszDestBuffer)
 			return NULL;
@@ -428,15 +428,15 @@ UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len)
 	switch (len)
 	{
 	case 2:
-		ucs1 = (UT_UCSChar)(p[0] & 0x1f);
-		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
+		ucs1 = static_cast<UT_UCSChar>(p[0] & 0x1f);
+		ucs2 = static_cast<UT_UCSChar>(p[1] & 0x3f);
 		ucs  = (ucs1 << 6) | ucs2;
 		return ucs;
 
 	case 3:
-		ucs1 = (UT_UCSChar)(p[0] & 0x0f);
-		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
-		ucs3 = (UT_UCSChar)(p[2] & 0x3f);
+		ucs1 = static_cast<UT_UCSChar>(p[0] & 0x0f);
+		ucs2 = static_cast<UT_UCSChar>(p[1] & 0x3f);
+		ucs3 = static_cast<UT_UCSChar>(p[2] & 0x3f);
 		ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
 		return ucs;
 
@@ -451,7 +451,7 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 	// decode the given string [ p[0]...p[len] ] and append to the given growbuf.
 
 	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
-	UT_Byte * p = (UT_Byte *)pString;	// XML_Char is signed...
+	const UT_Byte * p = reinterpret_cast<const UT_Byte *>(pString);	// XML_Char is signed...
 
 	int bytesInSequence = 0;
 	int bytesExpectedInSequence = 0;
@@ -463,7 +463,7 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 		{
 			UT_ASSERT(bytesInSequence == 0);
 			UT_UCSChar c = p[k];
-			pResult->append((UT_GrowBufElement *)&c,1);
+			pResult->append(reinterpret_cast<UT_GrowBufElement *>(&c),1);
 		}
 		else if ((p[k] & 0xf0) == 0xf0)			// lead byte in 4-byte surrogate pair
 		{
@@ -493,7 +493,7 @@ void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * p
 			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
 			{
 				UT_UCSChar c = UT_decodeUTF8char(buf,bytesInSequence);
-				pResult->append((UT_GrowBufElement *)&c,1);
+				pResult->append(reinterpret_cast<UT_GrowBufElement *>(&c),1);
 				bytesInSequence = 0;
 				bytesExpectedInSequence = 0;
 			}
@@ -583,8 +583,8 @@ UT_UCS2Char * UT_UCS2_strstr(const UT_UCS2Char * phaystack, const UT_UCS2Char * 
 	register const UT_UCS2Char *haystack, *needle;
 	register UT_UCS2Char b, c;
 
-	haystack = (const UT_UCS2Char *) phaystack;
-	needle = (const UT_UCS2Char *) pneedle;
+	haystack = phaystack;
+	needle = pneedle;
 
 	b = *needle;
 	if (b != '\0')
@@ -657,7 +657,7 @@ UT_UCS2Char * UT_UCS2_strstr(const UT_UCS2Char * phaystack, const UT_UCS2Char * 
         }
     }
  foundneedle:
-	return (UT_UCS2Char *) haystack;
+	return static_cast<UT_UCS2Char *>(haystack);
  ret0:
 	return 0;
 }
@@ -713,7 +713,7 @@ UT_UCS2Char UT_UCS2_toupper(UT_UCS2Char c)
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc! -- does not seem to work :(*/
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 1)
         return c;
     return letter->other;
@@ -732,7 +732,7 @@ UT_UCS2Char UT_UCS2_tolower(UT_UCS2Char c)
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc!*/
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 0)
         return c;
     return letter->other;
@@ -749,8 +749,8 @@ UT_UCS2Char * UT_UCS2_stristr(const UT_UCS2Char * phaystack, const UT_UCS2Char *
 	register const UT_UCS2Char *haystack, *needle;
 	register UT_UCS2Char b, c;
 
-	haystack = (const UT_UCS2Char *) phaystack;
-	needle = (const UT_UCS2Char *) pneedle;
+	haystack = phaystack;
+	needle = pneedle;
 
 	b = UT_UCS2_tolower(*needle);
 	if (b != '\0')
@@ -823,7 +823,7 @@ UT_UCS2Char * UT_UCS2_stristr(const UT_UCS2Char * phaystack, const UT_UCS2Char *
         }
     }
  foundneedle:
-	return (UT_UCS2Char *) haystack;
+	return static_cast<UT_UCS2Char *>(haystack);
  ret0:
 	return 0;
 }
@@ -835,7 +835,7 @@ UT_UCS2Char * UT_UCS2_strcpy(UT_UCS2Char * dest, const UT_UCS2Char * src)
 	UT_ASSERT(src);
 
 	UT_UCS2Char * d = dest;
-	UT_UCS2Char * s = (UT_UCS2Char *) src;
+	UT_UCS2Char * s = static_cast<UT_UCS2Char *>(src);
 
 	while (*s != 0)
 		*d++ = *s++;

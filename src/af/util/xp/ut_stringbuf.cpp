@@ -176,7 +176,7 @@ void UT_Stringbuf::grow_common(size_t n, bool bCopy)
 	if (n > capacity())
 	{
 		const size_t nCurSize = size();
-		n = priv_max(n, (size_t)(nCurSize * g_rGrowBy));
+		n = priv_max(n, static_cast<size_t>(nCurSize * g_rGrowBy));
 		char_type* pNew = new char_type[n];
 		if (bCopy && m_psz)
 		{
@@ -634,7 +634,7 @@ void UT_UTF8Stringbuf::insert (char *& ptr, const char * str, size_t utf8length)
 	char * orig_buf = m_psz;
 	char * orig_ptr = ptr;
 
-	size_t length = (size_t) strlen (str);
+	size_t length = static_cast<size_t>(strlen(str));
 
 	if (!grow (length)) return;
 
@@ -654,7 +654,7 @@ bool UT_UTF8Stringbuf::grow (size_t length)
 
 	if (m_psz == 0)
 	{
-		m_psz = (char *) malloc (length);
+		m_psz = static_cast<char *>(malloc(length));
 		if (m_psz == 0) return false;
 		m_strlen = 0;
 		m_buflen = length;
@@ -666,7 +666,7 @@ bool UT_UTF8Stringbuf::grow (size_t length)
 	size_t new_length = length + (m_pEnd - m_psz);
 	size_t end_offset = m_pEnd - m_psz;
 
-	char * more = (char *) realloc ((void *) m_psz, new_length);
+	char * more = static_cast<char *>(realloc(static_cast<void *>(m_psz), new_length));
 	if (more == 0) return false;
 	m_psz = more;
 	m_pEnd = m_psz + end_offset;
@@ -690,7 +690,7 @@ UT_UTF8Stringbuf::UTF8Iterator::~UTF8Iterator ()
 void UT_UTF8Stringbuf::UTF8Iterator::operator=(const char * position)
 {
 	if (!sync ()) return;
-	if ((unsigned)(position - m_utfbuf) > m_strbuf->byteLength ())
+	if (static_cast<unsigned>(position- m_utfbuf) > m_strbuf->byteLength ())
 	{
 		m_utfptr = m_utfbuf + m_strbuf->byteLength ();
 	}
@@ -755,7 +755,7 @@ bool UT_UTF8Stringbuf::UTF8Iterator::sync ()
 	/* note that this doesn't guarantee that m_utfptr points to the
 	 * start of utf8 char sequence
 	 */
-	if ((unsigned)(m_utfptr - m_utfbuf) > utf8_length)
+	if (static_cast<unsigned>(m_utfptr- m_utfbuf) > utf8_length)
 	{
 		m_utfptr = utf8_buffer + utf8_length;
 	}
@@ -883,7 +883,7 @@ bool UT_UCS2Stringbuf::UCS2_to_UTF8 (char *& buffer, size_t & length, UT_UCS2Cha
 		length--;
 		return true;
 	}
-	if (length < (unsigned)seql) return false;
+	if (length < static_cast<unsigned>(seql)) return false;
 	length -= seql;
 
 	switch (seql) {
@@ -1103,7 +1103,7 @@ void UT_UCS2Stringbuf::grow_common(size_t n, bool bCopy)
 	if (n > capacity())
 	{
 		const size_t nCurSize = size();
-		n = priv_max(n, (size_t)(nCurSize * g_rGrowBy));
+		n = priv_max(n, static_cast<size_t>(nCurSize * g_rGrowBy));
 		char_type* pNew = new char_type[n];
 		if (bCopy && m_psz)
 		{
@@ -1238,7 +1238,7 @@ bool UT_UCS4Stringbuf::UCS4_to_UTF8 (char *& buffer, size_t & length, UT_UCS4Cha
 		length--;
 		return true;
 	}
-	if (length < (unsigned)seql) return false;
+	if (length < static_cast<unsigned>(seql)) return false;
 	length -= seql;
 
 	switch (seql) {
@@ -1443,7 +1443,7 @@ void UT_UCS4Stringbuf::grow_common(size_t n, bool bCopy)
 	if (n > capacity())
 	{
 		const size_t nCurSize = size();
-		n = priv_max(n, (size_t)(nCurSize * g_rGrowBy));
+		n = priv_max(n, static_cast<size_t>(nCurSize * g_rGrowBy));
 		char_type* pNew = new char_type[n];
 		if (bCopy && m_psz)
 		{

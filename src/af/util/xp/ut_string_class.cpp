@@ -252,7 +252,7 @@ UT_printf_string_upper_bound (const char* format,
 		   * size we assume it to have.
 		   */
 		  format -= 1;
-		  len += strtol (format, (char**) &format, 10);
+		  len += strtol (format, const_cast<char**>(&format), 10);
 		  break;
 		case 'h':
 		  /* ignore short int flag, since all args have at least the
@@ -289,9 +289,9 @@ UT_printf_string_upper_bound (const char* format,
 		case 'X':
 		    {
 		      if (long_int)
-			(void) va_arg (args, long);
+			static_cast<void>(va_arg(args, long));
 		      else
-			(void) va_arg (args, int);
+			static_cast<void>(va_arg(args, int));
 		    }
 		  len += extra_long ? 64 : 32;
 		  done = true;
@@ -299,7 +299,7 @@ UT_printf_string_upper_bound (const char* format,
 		case 'D':
 		case 'O':
 		case 'U':
-		  (void) va_arg (args, long);
+		  static_cast<void>(va_arg(args, long));
 		  len += 32;
 		  done = true;
 		  break;
@@ -307,18 +307,18 @@ UT_printf_string_upper_bound (const char* format,
 		case 'E':
 		case 'f':
 		case 'g':
-		    (void) va_arg (args, double);
+		    static_cast<void>(va_arg(args, double));
 		  len += extra_long ? 64 : 32;
 		  done = true;
 		  break;
 		case 'c':
-		  (void) va_arg (args, int);
+		  static_cast<void>(va_arg(args, int));
 		  len += 1;
 		  done = true;
 		  break;
 		case 'p':
 		case 'n':
-		  (void) va_arg (args, void*);
+		  static_cast<void>(va_arg(args, void*));
 		  len += 32;
 		  done = true;
 		  break;
@@ -442,7 +442,7 @@ UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_Strin
 //
 // Calculate the location of the substring
 //
-		UT_sint32 offset = (UT_sint32) ((size_t) szLoc - (size_t)szProps);
+		UT_sint32 offset = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
 		offset += strlen(szWork);
 		return UT_String(sPropertyString.substr(offset,(iSLen - offset)));
 	}
@@ -467,9 +467,9 @@ UT_String UT_String_getPropVal(const UT_String & sPropertyString, const UT_Strin
 //
 // Calculate the location of the substring
 //
-		UT_sint32 offset = (UT_sint32) ((size_t) szLoc - (size_t)szProps);
+		UT_sint32 offset = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
 		offset += strlen(szWork);
-		UT_sint32 iLen = (UT_sint32) ((size_t) szDelim - (size_t) szProps) + 1; 
+		UT_sint32 iLen = static_cast<UT_sint32>(reinterpret_cast<size_t>(szDelim) - reinterpret_cast<size_t>(szProps)) + 1;
 		return UT_String(sPropertyString.substr(offset,(iLen - offset)));
 	}
 }
@@ -514,7 +514,7 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 //
 // Found it, Get left part.
 //
-	UT_sint32 locLeft = (UT_sint32) ((size_t) szLoc - (size_t) szProps);
+	UT_sint32 locLeft = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
 	UT_String sLeft;
 	if(locLeft == 0)
 	{
@@ -524,7 +524,7 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 	{
 		sLeft = sPropertyString.substr(0,locLeft);
 	}
-	locLeft = (UT_sint32) sLeft.size();
+	locLeft = static_cast<UT_sint32>(sLeft.size());
 	if(locLeft > 0)
 	{
 //
@@ -567,7 +567,7 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 		{
 			szDelim++;
 		}
-		UT_sint32 offset = (UT_sint32) ((size_t) szDelim - (size_t) szProps);
+		UT_sint32 offset = static_cast<UT_sint32>(reinterpret_cast<size_t>(szDelim) - reinterpret_cast<size_t>(szProps));
 		UT_sint32 iLen = sPropertyString.size() - offset;
 		if(sNew.size() > 0)
 		{
@@ -1029,7 +1029,7 @@ UT_UCS2String& UT_UCS2String::operator+=(UT_UCS2Char rhs)
 
 UT_UCS2String& UT_UCS2String::operator+=(char rhs)
 {
-	return this->operator+=((unsigned char)rhs);
+	return this->operator+=(static_cast<unsigned char>(rhs));
 }
 
 UT_UCS2String& UT_UCS2String::operator+=(unsigned char rhs)
@@ -1037,7 +1037,7 @@ UT_UCS2String& UT_UCS2String::operator+=(unsigned char rhs)
 	UT_UCS2Char cs[2];
 	char rs[2];
 
-	rs[0] = (char)rhs; rs[1] = 0;
+	rs[0] = static_cast<char>(rhs); rs[1] = 0;
 	UT_UCS2_strcpy_char (cs, rs);
 
 	pimpl->append(cs, 1);
@@ -1311,7 +1311,7 @@ UT_UCS4String& UT_UCS4String::operator+=(UT_UCS4Char rhs)
 
 UT_UCS4String& UT_UCS4String::operator+=(char rhs)
 {
-  return this->operator+=((unsigned char)rhs);
+  return this->operator+=(static_cast<unsigned char>(rhs));
 }
 
 UT_UCS4String& UT_UCS4String::operator+=(unsigned char rhs)
@@ -1319,7 +1319,7 @@ UT_UCS4String& UT_UCS4String::operator+=(unsigned char rhs)
 	UT_UCS4Char cs[2];
 	char rs[2];
 
-	rs[0] = (char)rhs; rs[1] = 0;
+	rs[0] = static_cast<char>(rhs); rs[1] = 0;
 	UT_UCS4_strcpy_char (cs, rs);
 
 	pimpl->append(cs, 1);

@@ -54,7 +54,7 @@ UT_Wctomb::~UT_Wctomb()
 int UT_Wctomb::wctomb(char * pC,int &length,UT_UCS4Char wc, int max_len /* = 100 */)
 {
   char* obuf = pC;
-  const char* ibuf = (const char *) &wc;
+  const char* ibuf = reinterpret_cast<const char *>(&wc);
   
   size_t inlen = 4, outlen = max_len;
   size_t len = UT_iconv(cd,&ibuf,&inlen,&obuf,&outlen);

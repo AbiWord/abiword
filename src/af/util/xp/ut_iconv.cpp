@@ -295,7 +295,7 @@ size_t  UT_iconv( UT_iconv_t cd, const char **inbuf,
     return (size_t)-1;
 
 
-  ICONV_CONST char ** buf = (ICONV_CONST char**)(inbuf);
+  ICONV_CONST char ** buf = const_cast<ICONV_CONST char**>(inbuf);
   return iconv( cd, buf, inbytesleft, outbuf, outbytesleft );
 }
 
@@ -398,7 +398,7 @@ char * UT_convert_cd(const char *str,
 	size_t outbuf_size = ((len + 3) & ~3) + 15;
 	size_t outbytes_remaining = outbuf_size - 1; /* -1 for nul */
 
-	char* pDest = (char*)malloc(outbuf_size);
+	char* pDest = static_cast<char*>(malloc(outbuf_size));
 	char* outp = pDest;
 
 	bool have_error = false;
@@ -431,7 +431,7 @@ char * UT_convert_cd(const char *str,
 		      if (used + 16 > outbuf_size)
 		        {
 		          outbuf_size = outbuf_size  + 15;
-		          pDest = (char*)realloc(pDest, outbuf_size);
+		          pDest = static_cast<char*>(realloc(pDest, outbuf_size));
 
 		          outp = pDest + used;
 		          outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
