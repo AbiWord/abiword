@@ -33,6 +33,10 @@
 #include "xap_Dlg_WindowMore.h"
 #include "xap_UnixDlg_WindowMore.h"
 
+#ifdef HAVE_GNOME
+#include <gnome.h>
+#endif
+
 /*****************************************************************/
 
 XAP_Dialog * XAP_UnixDialog_WindowMore::static_constructor(XAP_DialogFactory * pFactory,
@@ -219,30 +223,36 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	// The child of the scrollable area is our list of windows
 	GtkWidget *clistWindows;
 	
-	// The third (and bottom) item in the vbox is a horizontal
-	// button box, which holds our two action buttons.
-	GtkWidget *buttonboxAction;
-
 	// These are the buttons.
 	GtkWidget *buttonOK;
 	GtkWidget *buttonCancel;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
+#ifndef HAVE_GNOME
+	// The third (and bottom) item in the vbox is a horizontal
+	// button box, which holds our two action buttons.
+	GtkWidget *buttonboxAction;
+
 	// Create the new top level window.
 	windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
-	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
 	gtk_window_set_title (GTK_WINDOW (windowMain), pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows));
 	// This policy allows the window to let the window manager shrink and grow it.
 	gtk_window_set_policy (GTK_WINDOW (windowMain), TRUE, TRUE, FALSE);
 
 	vboxMain = gtk_vbox_new (FALSE, 0);
-	gtk_object_set_data (GTK_OBJECT (windowMain), "vboxMain", vboxMain);
 	gtk_widget_show (vboxMain);
 	gtk_container_add (GTK_CONTAINER (windowMain), vboxMain);
 
+#else
+	windowMain = gnome_dialog_new (pSS->getValue(XAP_STRING_ID_DLG_MW_MoreWindows), GNOME_STOCK_BUTTON_OK,
+				       GNOME_STOCK_BUTTON_CANCEL, NULL);
+	vboxMain = GNOME_DIALOG(windowMain)->vbox;
+	buttonOK = GTK_WIDGET (g_list_first (GNOME_DIALOG (windowMain)->buttons)->data);
+	buttonCancel = GTK_WIDGET (g_list_last (GNOME_DIALOG (windowMain)->buttons)->data);
+#endif
+
 	labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_MW_Activate));
-	gtk_object_set_data (GTK_OBJECT (windowMain), "labelActivate", labelActivate);
 	gtk_widget_show (labelActivate);
 	gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);
@@ -250,14 +260,12 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	gtk_misc_set_padding (GTK_MISC (labelActivate), 10, 5);
 
 	scrollWindows = gtk_scrolled_window_new(NULL, NULL);
-	gtk_object_set_data(GTK_OBJECT(scrollWindows), "scrollWindows", scrollWindows);
 	gtk_widget_show(scrollWindows);
 	gtk_widget_set_usize(scrollWindows, 350, 210);
 	gtk_container_set_border_width(GTK_CONTAINER(scrollWindows), 10);
 	gtk_box_pack_start(GTK_BOX(vboxMain), scrollWindows, TRUE, TRUE, 0);
 
 	clistWindows = gtk_clist_new (1);
-	gtk_object_set_data (GTK_OBJECT (windowMain), "clistWindows", clistWindows);
 	gtk_widget_show (clistWindows);
 //	gtk_box_pack_start (GTK_BOX (vboxMain), clistWindows, TRUE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER(scrollWindows), clistWindows);
@@ -266,8 +274,8 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	gtk_clist_set_column_width (GTK_CLIST (clistWindows), 0, 80);
 	gtk_clist_column_titles_hide (GTK_CLIST (clistWindows));
 
+#ifndef HAVE_GNOME
 	buttonboxAction = gtk_hbutton_box_new ();
-	gtk_object_set_data (GTK_OBJECT (windowMain), "buttonboxAction", buttonboxAction);
 	gtk_widget_show (buttonboxAction);
 	gtk_box_pack_start (GTK_BOX (vboxMain), buttonboxAction, FALSE, TRUE, 0);
 	gtk_container_border_width (GTK_CONTAINER (buttonboxAction), 11);
@@ -277,14 +285,13 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (buttonboxAction), 0, 0);
 
 	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	gtk_object_set_data (GTK_OBJECT (windowMain), "buttonOK", buttonOK);
 	gtk_widget_show (buttonOK);
 	gtk_container_add (GTK_CONTAINER (buttonboxAction), buttonOK);
 
 	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_object_set_data (GTK_OBJECT (windowMain), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
 	gtk_container_add (GTK_CONTAINER (buttonboxAction), buttonCancel);
+#endif
 
 	/*
 	  After we construct our widgets, we attach callbacks to static
