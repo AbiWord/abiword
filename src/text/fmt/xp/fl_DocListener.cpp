@@ -263,6 +263,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					pBL->m_gbCharWidths.ins(blockOffset, len);
 
 					UT_Bool bFormat = UT_FALSE;
+					FV_ChangeMask mask = FV_CHG_TYPING;
 	
 					fp_Run* pRun = pBL->m_pFirstRun;
 					/*
@@ -335,6 +336,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 					if (bFormat)
 					{
+						mask |= FV_CHG_FMTCHAR;
 						pBL->format();
 						pBL->draw(m_pLayout->getGraphics());
 					}
@@ -351,7 +353,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						pView->_setPoint(pcr->getPosition()+len);
 					}
 
-					pView->notifyListeners(FV_CHG_TYPING);
+					pView->notifyListeners(mask);
 				}
 				return UT_TRUE;
 					
@@ -433,7 +435,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					if (pView)
 					{
 						pView->_setPoint(pcr->getPosition());
-						pView->notifyListeners(FV_CHG_TYPING);
+						pView->notifyListeners(FV_CHG_TYPING | FV_CHG_FMTCHAR);
 					}
 				}
 				return UT_TRUE;
@@ -508,7 +510,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 						FV_View* pView = m_pLayout->m_pView;
 						if (pView)
-							pView->notifyListeners(FV_CHG_TYPING);
+							pView->notifyListeners(FV_CHG_TYPING | FV_CHG_FMTCHAR);
 					}
 					else
 					{
@@ -544,7 +546,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					UT_ASSERT(pView->isSelectionEmpty());
 					pView->_setPoint(pcrTSF->getPosition());
 					pView->_setPointAP(pcrTSF->getIndexAP());
-					pView->notifyListeners(FV_CHG_TYPING);
+					pView->notifyListeners(FV_CHG_TYPING | FV_CHG_FMTCHAR);
 				}
 			}
 			else
@@ -685,7 +687,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 							if (pView)
 							{
 								pView->_setPoint(pcr->getPosition());
-								pView->notifyListeners(FV_CHG_TYPING);
+								pView->notifyListeners(FV_CHG_TYPING | FV_CHG_FMTCHAR | FV_CHG_FMTBLOCK);
 							}
 						}
 						return UT_TRUE;
@@ -909,7 +911,7 @@ UT_Bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 					if (pView)
 					{
 						pView->_setPoint(pcr->getPosition()+fl_BLOCK_STRUX_OFFSET);
-						pView->notifyListeners(FV_CHG_TYPING | FV_CHG_FMTBLOCK);
+						pView->notifyListeners(FV_CHG_TYPING);
 					}
 				}
 				return UT_TRUE;

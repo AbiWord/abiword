@@ -76,6 +76,8 @@ struct fv_ChangeState
 	UT_Bool				bRedo;
 	UT_Bool				bDirty;
 	UT_Bool				bSelection;
+	const XML_Char **	propsChar;
+	const XML_Char **	propsBlock;
 };
 
 class FV_View
@@ -84,6 +86,8 @@ class FV_View
 
 public:
 	FV_View(void*, FL_DocLayout*);
+	~FV_View();
+
 	void* getParentData() const;
 	FL_DocLayout* getLayout() const;
 

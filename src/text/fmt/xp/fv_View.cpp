@@ -44,6 +44,7 @@
 
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
+#define FREEP(p)	do { if (p) free(p); } while (0)
 
 /****************************************************************/
 
@@ -92,8 +93,16 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_chg.bRedo = UT_FALSE;
 	m_chg.bDirty = UT_FALSE;
 	m_chg.bSelection = UT_FALSE;
+	m_chg.propsChar = NULL;
+	m_chg.propsBlock = NULL;
 }
 
+FV_View::~FV_View()
+{
+	FREEP(m_chg.propsChar);
+	FREEP(m_chg.propsBlock);
+}
+	
 void* FV_View::getParentData() const
 {
 	return m_pParentData;
@@ -192,11 +201,56 @@ UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
 	if (mask & FV_CHG_FMTBLOCK)
 	{
 		// TODO: do something smart here, (ie, easier than getBlockFormat)
+		// HYP: if FMTCHAR logic works, just clone it
 	}
 
 	if (mask & FV_CHG_FMTCHAR)
 	{
-		// TODO: do something smart here, (ie, easier than getCharFormat)
+		/*
+			The following brute-force solution works, but is atrociously 
+			expensive, so we should avoid using it whenever feasible.  
+
+			TODO: devise special case logic for (at minimum) char motion
+		*/
+		const XML_Char ** propsChar = NULL;
+		getCharFormat(&propsChar);
+
+		UT_Bool bMatch = UT_FALSE;
+
+		if (propsChar && m_chg.propsChar)
+		{
+			bMatch = UT_TRUE;
+
+			int i=0;
+
+			while (bMatch)
+			{
+				if (!propsChar[i] || !m_chg.propsChar[i])
+				{
+					bMatch = (propsChar[i] == m_chg.propsChar[i]);
+					break;
+				}
+
+				if (UT_stricmp(propsChar[i], m_chg.propsChar[i]))
+				{
+					bMatch = UT_FALSE;
+					break;
+				}
+
+				i++;
+			}
+		}
+
+		if (!bMatch)
+		{
+			FREEP(m_chg.propsChar);
+			m_chg.propsChar = propsChar;
+		}
+		else
+		{
+			FREEP(propsChar);
+			mask ^= FV_CHG_FMTCHAR;
+		}
 	}
 		
 	// make sure there's something left
