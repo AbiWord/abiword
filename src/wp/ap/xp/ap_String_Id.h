@@ -45,6 +45,7 @@ dcl(MSG_IE_CouldNotOpen,        "Could not open file %s for writing")
 dcl(MSG_IE_CouldNotWrite,       "Could not write to file %s")
 dcl(MSG_SpellDone,				"The spelling check is complete.")
 dcl(MSG_PrintStatus,            "Printing page %d of %d")
+dcl(MSG_RevertFile, "Revert file to last unsaved state?")
 
 // Status Bar Messages
 dcl(PageInfoField,				"Page: %d/%d")
@@ -518,7 +519,7 @@ dcl(DLG_ToggleCase_SentenceCase, "Sentence case")
 dcl(DLG_ToggleCase_LowerCase, "lowercase")
 dcl(DLG_ToggleCase_UpperCase, "UPPERCASE")
 dcl(DLG_ToggleCase_TitleCase, "Title Case")
-dcl(DLG_ToggleCase_FirstUpperCase, "First In Word Uppercase, Rest Lowercase")
+dcl(DLG_ToggleCase_FirstUpperCase, "Camel Caps")
 dcl(DLG_ToggleCase_ToggleCase, "tOGGLE cASE")
 
 dcl(DLG_Background_Title, "Change Background Color")

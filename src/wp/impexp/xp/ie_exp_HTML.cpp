@@ -199,6 +199,8 @@ IE_Exp_HTML::~IE_Exp_HTML()
 /*****************************************************************/
 /*****************************************************************/
 
+#define IS_TRANSPARENT_COLOR(c) (!UT_strcmp(c, "transparent"))
+
 #define BT_NORMAL		1
 #define BT_HEADING1		2
 #define BT_HEADING2		3
@@ -1119,14 +1121,22 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 				if (!span)
 				  {
-				    m_pie->write("<span style=\"color:#");
-				    m_pie->write(pszColor);
+				    if(IS_TRANSPARENT_COLOR(pszColor))
+				      m_pie->write("<span style=\"");
+				    else
+				      {
+					m_pie->write("<span style=\"color:#");
+					m_pie->write(pszColor);
+				      }
 				    span = true;
 				}
 				else 
 				{
-					m_pie->write("; color:#");	
-					m_pie->write(pszColor);
+				  if(!IS_TRANSPARENT_COLOR(pszColor))
+				    {
+				      m_pie->write("; color:#");	
+				      m_pie->write(pszColor);
+				    }
 				}
 			}
 			
@@ -1184,7 +1194,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				}
 			}
 			
-			if (pszBgColor)
+			if (pszBgColor && !IS_TRANSPARENT_COLOR(pszBgColor))
 			{
 				if (!span)
 				{
@@ -1198,6 +1208,11 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 					m_pie->write(pszBgColor);
 				}
 			}
+			else if (pszBgColor && !span)
+			  {
+			    m_pie->write("<span style=\"");
+			    span = true;
+			  }
 		}
 
 		char* szStyle = NULL;
@@ -1647,7 +1662,15 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 					m_pie->write("\"");
 					m_pie->write(szValue);
 					m_pie->write("\"");
-				}						// only quote non-keyword family names
+				} // only quote non-keyword family names
+				else if (!UT_strcmp(szName, "color"))
+				  {
+				    if (!IS_TRANSPARENT_COLOR(szValue))
+				      {
+					m_pie->write("#");
+					m_pie->write(szValue);
+				      }
+				  }
 				else
 					m_pie->write(szValue);
 				m_pie->write(";\r\n\t");
@@ -1658,10 +1681,13 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 
 		szValue = PP_evalProperty("background-color",
 								  NULL, NULL, pAP, m_pDocument, true);
-		m_pie->write("background-color: ");
-		if (*szValue != '#')
-			m_pie->write("#");
-		m_pie->write(szValue);
+		if(!IS_TRANSPARENT_COLOR(szValue))
+		  {
+		    m_pie->write("background-color: ");
+		    if (*szValue != '#')
+		      m_pie->write("#");
+		    m_pie->write(szValue);
+		  }
 		m_pie->write(";\r\n}\r\n\r\n@media print\r\n{\r\n\tbody\r\n\t{\r\n\t\t");
 		
 		szValue = PP_evalProperty("page-margin-top",
@@ -1755,9 +1781,11 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 				}						// only quote non-keyword family names
 				else 
 				{
-					if(strstr(szName, "color"))
-						m_pie->write("#");
-					m_pie->write(szValue);
+				  if(strstr(szName, "color") && !IS_TRANSPARENT_COLOR(szValue))
+				    {
+				      m_pie->write("#");
+				      m_pie->write(szValue);
+				    }
 				}
 				
 				m_pie->write(";");

@@ -2589,7 +2589,12 @@ Defun(fileRevert)
 {
   ABIWORD_VIEW;
 
-  pView->cmdUndo ( pView->undoCount(true) );
+  XAP_Frame * pFrame = static_cast<XAP_Frame *> (pAV_View->getParentData());
+
+  if (XAP_Dialog_MessageBox::a_YES == pFrame->showMessageBox(AP_STRING_ID_MSG_RevertFile,
+							     XAP_Dialog_MessageBox::b_YN,
+							     XAP_Dialog_MessageBox::a_NO))
+    pView->cmdUndo ( pView->undoCount(true) );
   return true;
 }
 
