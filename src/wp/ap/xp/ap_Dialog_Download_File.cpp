@@ -210,8 +210,9 @@ AP_Dialog_Download_File::event_Timer(void)
 	if (getDLDone()) {
 		/* The downloadthread is done, so it's time to destroy the dialog and clean up */
 		
-		if (_getDialogRemoved())
-			return;		// We have already done this, exit
+		if (_getDialogRemoved() || getUserAnswer() == a_CANCEL)
+			return;		// 1) We have already done this, exit
+						// or 2) user pressed cancel right under our nose, exit
 		
 		_setDialogRemoved(1);
 		_abortDialog();

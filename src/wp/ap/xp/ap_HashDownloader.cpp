@@ -115,9 +115,9 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 	UT_ASSERT((szPath) && (*szPath));
 
 #ifdef CURLHASH_NEVER_UPDATE_LIST
-	if (UT_isRegularFile(szPath)) {
+	if (!UT_isRegularFile(szPath)) {
 #else
-	if (forceDownload || UT_isRegularFile(szPath) || UT_mTime(szPath) + dictionaryListMaxAge < time(NULL)) {
+	if (forceDownload || !UT_isRegularFile(szPath) || UT_mTime(szPath) + dictionaryListMaxAge < time(NULL)) {
 #endif	
 		if (fileData.data)
 			free(fileData.data);
