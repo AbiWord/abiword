@@ -725,50 +725,82 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_H1:
 	case TT_H2:
 	case TT_H3:
+	case TT_PRE:
 	{
 	    //    UT_DEBUGMSG(("B %d\n", m_parseState));
 //		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
 		
-		const XML_Char *p_val;
+		if (tokenIndex == TT_PRE) m_bWhiteSignificant = true;
 		
-		p_val = _getXMLPropValue((const XML_Char *)"align", atts);
-		if(p_val == NULL)
-			X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
-		else
-		{
-		    sz = NULL;
-		    
-		    if(!UT_XML_strcmp(p_val, "right"))
-				UT_XML_cloneString(sz, "text-align:right");
-		    else if(!UT_XML_strcmp(p_val, "center"))
-				UT_XML_cloneString(sz, "text-align:center");
-		    
-		    if(sz != NULL)
-			{
-				new_atts[1] = sz;
-				UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-				new_atts[0] = sz;		      
-			}
-			
-		    X_CheckError(getDoc()->appendStrux(PTX_Block,new_atts));
-		}
-		
-		UT_XML_cloneString(sz, PT_STYLE_ATTRIBUTE_NAME);
-		new_atts[0]=sz;
+		const XML_Char * api_atts[5];
+
 		sz = NULL;
-		
-		if(tokenIndex == TT_H1)
-			UT_XML_cloneString(sz, "Heading 1");
-		else if(tokenIndex == TT_H2)
-			UT_XML_cloneString(sz, "Heading 2");
-		else if(tokenIndex == TT_H3)
-			UT_XML_cloneString(sz, "Heading 3");
+		UT_XML_cloneString (sz, PT_STYLE_ATTRIBUTE_NAME);
+		X_CheckError(sz);
+		api_atts[0] = sz;
+		api_atts[1] = NULL;
+		sz = NULL;
+		UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
+		X_CheckError(sz);
+		api_atts[2] = sz;
+		api_atts[3] = NULL;
+		api_atts[4] = NULL;
+
+		const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "awml:style", atts);
+		sz = NULL;
+		if (p_val)
+			UT_XML_cloneString (sz, p_val);
+		else if (tokenIndex == TT_H1)
+			UT_XML_cloneString (sz, "Heading 1");
+		else if (tokenIndex == TT_H2)
+			UT_XML_cloneString (sz, "Heading 2");
+		else if (tokenIndex == TT_H3)
+			UT_XML_cloneString (sz, "Heading 3");
+		else if (tokenIndex == TT_PRE)
+			UT_XML_cloneString (sz, "Plain Text");
 		else
-			UT_XML_cloneString(sz, "Block Text");
+			UT_XML_cloneString (sz, "Block Text");
+		X_CheckError(sz);
+		api_atts[1] = sz;
 		
-		new_atts[1]=sz;
-		X_CheckError(getDoc()->appendFmt(new_atts));
+		UT_UTF8String utf8val;
+
+		p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
+		if (p_val)
+		{
+			utf8val = (const char *) p_val;
+			utf8val = s_parseCSStyle (utf8val, CSS_MASK_BLOCK);
+			UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
+		}
+		if (strstr (utf8val.utf8_str (), "text-align") == 0)
+		{
+			p_val = _getXMLPropValue ((const XML_Char *) "align", atts);
+			if (p_val)
+			{
+				if (!UT_XML_strcmp (p_val, "right"))
+				{
+					if (utf8val.byteLength ()) utf8val += "; ";
+					utf8val += "text-align:right";
+				}
+				else if (!UT_XML_strcmp (p_val, "center"))
+				{
+					if (utf8val.byteLength ()) utf8val += "; ";
+					utf8val += "text-align:center";
+				}
+			}
+		}
+		sz = NULL;
+		UT_XML_cloneString (sz, utf8val.utf8_str ());
+		X_CheckError(sz);
+		api_atts[3] = sz;
+
+		X_CheckError(getDoc()->appendStrux (PTX_Block, api_atts));
+
+		FREEP (api_atts[0]);
+		FREEP (api_atts[1]);
+		FREEP (api_atts[2]);
+		FREEP (api_atts[3]);
 		return;
 	}
 
@@ -879,7 +911,6 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	}
 
 	case TT_P:
-	case TT_PRE:
 	case TT_TR:
 	case TT_H4:
 	case TT_H5:
@@ -888,65 +919,67 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 	{
 //		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Block;
-		
-		if(tokenIndex == TT_PRE)
-		{
-			m_bWhiteSignificant = true;
-		}
 
-		const XML_Char * p_val = 0;
+		const XML_Char * api_atts[5];
+
+		sz = NULL;
+		UT_XML_cloneString (sz, PT_STYLE_ATTRIBUTE_NAME);
+		X_CheckError(sz);
+		api_atts[0] = sz;
+		api_atts[1] = NULL;
+		sz = NULL;
+		UT_XML_cloneString (sz, PT_PROPS_ATTRIBUTE_NAME);
+		X_CheckError(sz);
+		api_atts[2] = sz;
+		api_atts[3] = NULL;
+		api_atts[4] = NULL;
+
+		const XML_Char * p_val = _getXMLPropValue ((const XML_Char *) "awml:style", atts);
+		sz = NULL;
+		if (p_val)
+			UT_XML_cloneString (sz, p_val);
+		else
+			UT_XML_cloneString (sz, "Normal");
+		X_CheckError(sz);
+		api_atts[1] = sz;
+		
 		UT_UTF8String utf8val;
 
-		p_val = _getXMLPropValue((const XML_Char *)"style", atts);
-		if(p_val)
+		p_val = _getXMLPropValue ((const XML_Char *) "style", atts);
+		if (p_val)
 		{
 			utf8val = (const char *) p_val;
 			utf8val = s_parseCSStyle (utf8val, CSS_MASK_BLOCK);
 			UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 		}
-
 		if (strstr (utf8val.utf8_str (), "text-align") == 0)
 		{
-			p_val = _getXMLPropValue((const XML_Char *)"align", atts);
+			p_val = _getXMLPropValue ((const XML_Char *) "align", atts);
 			if (p_val)
 			{
-				if(!UT_XML_strcmp (p_val, "right"))
+				if (!UT_XML_strcmp (p_val, "right"))
 				{
 					if (utf8val.byteLength ()) utf8val += "; ";
 					utf8val += "text-align:right";
 				}
-				else if(!UT_XML_strcmp (p_val, "center"))
+				else if (!UT_XML_strcmp (p_val, "center"))
 				{
 					if (utf8val.byteLength ()) utf8val += "; ";
 					utf8val += "text-align:center";
 				}
 			}
 		}
+		sz = NULL;
+		UT_XML_cloneString (sz, utf8val.utf8_str ());
+		X_CheckError(sz);
+		api_atts[3] = sz;
 
-	    sz = NULL;
+		X_CheckError(getDoc()->appendStrux (PTX_Block, api_atts));
 
-		if (utf8val.byteLength ())
-		{
-			UT_XML_cloneString (sz, utf8val.utf8_str ());
-			
-		    if (sz != NULL)
-			{
-				new_atts[1] = sz;
-
-				UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
-				new_atts[0] = sz;
-
-				if (sz != NULL)
-				{
-					X_CheckError(getDoc()->appendStrux(PTX_Block,new_atts));
-				}
-				else FREEP (new_atts[1]);
-			}
-		}
-		if (sz == NULL)
-		{
-			X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
-		}
+		FREEP (api_atts[0]);
+		FREEP (api_atts[1]);
+		FREEP (api_atts[2]);
+		FREEP (api_atts[3]);
 		return;
 	}
 	

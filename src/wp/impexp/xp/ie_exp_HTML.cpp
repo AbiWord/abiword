@@ -904,7 +904,13 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	/* open root element, i.e. <html>; namespace it if XHTML
 	 */
 	m_utf8_1 = "html";
-	if (m_bIs4) m_utf8_1 += " xmlns=\"http://www.w3.org/1999/xhtml\"";
+	if (!m_bIs4)
+		{
+			m_utf8_1 += " xmlns=\"http://www.w3.org/1999/xhtml\"";
+#ifndef HTML_NO_AWML
+			m_utf8_1 += " xmlns:awml=\"http://www.abisource.com/awml.dtd\"";
+#endif
+		}
 	tagOpen (TT_HTML, m_utf8_1);
 	
 	/* start <head> section of HTML document
@@ -1794,106 +1800,106 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			if (m_bInTList) tlistPop ();
 			listPopToDepth (0);
 
-			bool bInherits;
 			bool bAddInheritance = false;
 
-			/* <p style="Heading 1"> ...
-			 */
-			bInherits = _inherits ((const char *) szValue, "Heading1");
-			if ((UT_strcmp ((const char *) szValue, "Heading 1") == 0) || bInherits)
+			if ((UT_strcmp ((const char *) szValue, "Heading 1") == 0) ||
+				(UT_strcmp ((const char *) szValue, "Numbered Heading 1") == 0))
 				{
 					m_iBlockType = BT_HEADING1;
-
 					tagID = TT_H1;
 					tagPending = true;
-
 					m_utf8_1 = "h1";
-
-					bAddInheritance = bInherits;
 				}
-
-			/* <p style="Heading 2"> ...
-			 */
-			bInherits = _inherits ((const char *) szValue, "Heading2");
-			if ((UT_strcmp ((const char *) szValue, "Heading 2") == 0) || bInherits)
+			else if ((UT_strcmp ((const char *) szValue, "Heading 2") == 0) ||
+					 (UT_strcmp ((const char *) szValue, "Numbered Heading 2") == 0))
 				{
 					m_iBlockType = BT_HEADING2;
-
 					tagID = TT_H2;
 					tagPending = true;
-
 					m_utf8_1 = "h2";
-
-					bAddInheritance = bInherits;
 				}
-
-			/* <p style="Heading 3"> ...
-			 */
-			bInherits = _inherits ((const char *) szValue, "Heading3");
-			if ((UT_strcmp ((const char *) szValue, "Heading 3") == 0) || bInherits)
+			else if ((UT_strcmp ((const char *) szValue, "Heading 3") == 0) ||
+					 (UT_strcmp ((const char *) szValue, "Numbered Heading 3") == 0))
 				{
 					m_iBlockType = BT_HEADING3;
-
 					tagID = TT_H3;
 					tagPending = true;
-
 					m_utf8_1 = "h3";
-
-					bAddInheritance = bInherits;
 				}
-
-			/* <p style="Block Text"> ...
-			 */
-			bInherits = _inherits ((const char *) szValue, "BlockText");
-			if ((UT_strcmp ((const char *) szValue, "Block Text") == 0) || bInherits)
+			else if (UT_strcmp ((const char *) szValue, "Block Text") == 0)
 				{
 					m_iBlockType = BT_BLOCKTEXT;
-
 					tagID = TT_BLOCKQUOTE;
 					tagPending = true;
-
 					m_utf8_1 = "blockquote";
-
-					bAddInheritance = bInherits;
 				}
-
-			/* <p style="Plain Text"> ...
-			 */
-			bInherits = _inherits ((const char *) szValue, "PlainText");
-			if ((UT_strcmp ((const char *) szValue, "Plain Text") == 0) || bInherits)
+			else if (UT_strcmp ((const char *) szValue, "Plain Text") == 0)
 				{
 					m_iBlockType = BT_PLAINTEXT;
-
 					tagID = TT_PRE;
 					tagPending = true;
-
 					m_utf8_1 = "pre";
-
-					bAddInheritance = bInherits;
 				}
-
-			/* <p style="Normal"> ...
-			 */
-			bInherits = _inherits ((const char *) szValue, "Normal");
-			if ((UT_strcmp ((const char *) szValue, "Normal") == 0) || bInherits)
+			else if (UT_strcmp ((const char *) szValue, "Normal") == 0)
 				{
 					m_iBlockType = BT_NORMAL;
-
 					tagID = TT_P;
 					tagPending = true;
-
 					m_utf8_1 = "p";
-
-					bAddInheritance = bInherits;
 				}
-
-			if (!tagPending) // <p style=other... >
+			else if (_inherits ((const char *) szValue, "Heading1"))
+				{
+					m_iBlockType = BT_HEADING1;
+					tagID = TT_H1;
+					tagPending = true;
+					m_utf8_1 = "h1";
+					bAddInheritance = true;
+				}
+			else if (_inherits ((const char *) szValue, "Heading2"))
+				{
+					m_iBlockType = BT_HEADING2;
+					tagID = TT_H2;
+					tagPending = true;
+					m_utf8_1 = "h2";
+					bAddInheritance = true;
+				}
+			else if (_inherits ((const char *) szValue, "Heading3"))
+				{
+					m_iBlockType = BT_HEADING3;
+					tagID = TT_H3;
+					tagPending = true;
+					m_utf8_1 = "h3";
+					bAddInheritance = true;
+				}
+			else if (_inherits ((const char *) szValue, "BlockText"))
+				{
+					m_iBlockType = BT_BLOCKTEXT;
+					tagID = TT_BLOCKQUOTE;
+					tagPending = true;
+					m_utf8_1 = "blockquote";
+					bAddInheritance = true;
+				}
+			else if (_inherits ((const char *) szValue, "PlainText"))
+				{
+					m_iBlockType = BT_PLAINTEXT;
+					tagID = TT_PRE;
+					tagPending = true;
+					m_utf8_1 = "pre";
+					bAddInheritance = true;
+				}
+			else if (_inherits ((const char *) szValue, "Normal"))
 				{
 					m_iBlockType = BT_NORMAL;
-
 					tagID = TT_P;
 					tagPending = true;
-
+					m_utf8_1 = "p";
+					bAddInheritance = true;
+				}
+			else
+				{
+					m_iBlockType = BT_NORMAL;
+					tagID = TT_P;
+					tagPending = true;
 					m_utf8_1 = "p";
 				}
 
@@ -1903,6 +1909,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 					_appendInheritanceLine ((const char*) szValue, m_utf8_1, true);
 					m_utf8_1 += "\"";
 				}
+#ifndef HTML_NO_AWML
+			if (!m_bIs4)
+				{
+					m_utf8_1 += " awml:style=\"";
+					m_utf8_1 += szValue;
+					m_utf8_1 += "\"";
+				}
+#endif
 		}	
 	else // not a list, no style
 		{
