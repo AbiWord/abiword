@@ -262,14 +262,8 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		{
 			const XML_Char* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);
-#ifndef NDEBUG
-			if (pszSectionType) {
-				UT_DEBUGMSG(("fl_DocListener::populateStrux for '%s'\n",pszSectionType));
-			}
-			else {
-				UT_DEBUGMSG(("fl_DocListener::populateStrux for '%s'\n","(null)"));
-			}
-#endif
+			UT_DEBUGMSG(("fl_DocListener::populateStrux for '%s'\n",
+						 pszSectionType ? pszSectionType : "(null)"));
 			if (!pszSectionType	|| (0 == UT_strcmp(pszSectionType, "doc")))
 			{
 				// Append a SectionLayout to this DocLayout
