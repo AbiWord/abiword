@@ -11324,12 +11324,20 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 // Now loop through all the HdrFtrSections, find the first in the doc and 
 // use that to get the end of editttable region.
 //
-		PT_DocPosition posFirst = pSL->getFirstBlock()->getPosition(true) - 1;
+		fl_BlockLayout * pFirstBL = pSL->getFirstBlock();
+		if(pFirstBL == NULL)
+		{
+			res = m_pDoc->getBounds(isEnd,posEOD);
+			return res;
+		}
+
+		PT_DocPosition posFirst = pFirstBL->getPosition(true) - 1;
 		PT_DocPosition posNext;
-		while(pSL->getNext() != NULL)
+		while((pSL->getNext() != NULL) && (pSL->getFirstBlock() != NULL))
 		{
 			pSL = pSL->getNext();
-			posNext = pSL->getFirstBlock()->getPosition(true) - 1;
+			pFirstBL = pSL->getFirstBlock();
+			posNext = pFirstBL->getPosition(true) - 1;
 			if(posNext < posFirst)
 				posFirst = posNext;
 		}

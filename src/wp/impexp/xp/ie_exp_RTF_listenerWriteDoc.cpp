@@ -501,6 +501,10 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 // Grab the first format handle in the PieceTable and turn it into a layout class.
 // Check that is it a block.
 //
+	if(m_sdh == NULL)
+	{
+		m_pDocument->getStruxOfTypeFromPosition(m_posDoc,PTX_Block,&m_sdh);
+	}
 	PL_StruxFmtHandle sfh = m_pDocument->getNthFmtHandle(m_sdh,0);
 	fl_Layout * pL = (fl_Layout *) sfh;
 	if(pL->getType() != PTX_Block)
