@@ -424,6 +424,10 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 
 	GR_Image*				m_pImage;
+	UT_sint32               m_iImageWidth;
+	UT_sint32               m_iImageWidthLayoutUnits;
+	UT_sint32               m_iImageHeight;
+	UT_sint32               m_iImageHeightLayoutUnits;
 };
 
 #define FPFIELD_MAX_LENGTH	127

@@ -86,6 +86,9 @@ UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 		if (STR_COMPARE(p,"in") == 0)
 			return DIM_IN;
 
+		if (STR_COMPARE(p,"inch") == 0)
+			return DIM_IN;
+
 		if (STR_COMPARE(p,"cm") == 0)
 			return DIM_CM;
 

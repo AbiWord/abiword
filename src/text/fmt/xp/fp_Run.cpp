@@ -1682,7 +1682,34 @@ void fp_ImageRun::lookupProperties(void)
 		
 	UT_ASSERT(m_iWidth > 0);
 	UT_ASSERT(m_iHeight > 0);
-
+	m_iImageWidth = m_iWidth;
+	m_iImageWidthLayoutUnits = m_iWidthLayoutUnits;
+	m_iImageHeight = m_iHeight;
+	m_iImageHeightLayoutUnits = m_iHeightLayoutUnits;
+//
+// This code deals with too big images
+//
+//
+	if(getLine() != NULL)
+	{
+		if(getLine()->getMaxWidth() - 1 < m_iWidth)
+		{
+			double dw = (double) getLine()->getMaxWidth();
+			double dwL = getLine()->getMaxWidthInLayoutUnits();
+			double dnwL = dwL - dwL/dw + 0.5; 
+			m_iWidth = getLine()->getMaxWidth() -1;
+			m_iWidthLayoutUnits = (UT_sint32) dnwL;
+		}
+		if(getLine()->getContainer() != NULL && 
+		   getLine()->getContainer()->getMaxHeight() - 1 < m_iHeight)
+		{
+			double dh = (double) getLine()->getContainer()->getMaxHeight();
+			double dhL = (double) getLine()->getContainer()->getMaxHeightInLayoutUnits();
+			double dnhL = dhL - dhL/dh + 0.5; 
+			m_iHeight = getLine()->getContainer()->getMaxHeight() -1;
+			m_iHeightLayoutUnits = (UT_sint32) dnhL;
+		}
+	}
 	m_iAscent = m_iHeight;
 	m_iDescent = 0;
 	m_iAscentLayoutUnits = m_iHeightLayoutUnits;
