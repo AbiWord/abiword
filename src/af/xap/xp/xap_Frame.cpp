@@ -539,11 +539,13 @@ AD_Document * XAP_Frame::getCurrentDoc(void) const
 
 const char * XAP_Frame::getFilename(void) const
 {
+	if (m_pDoc == NULL) return NULL;
 	return m_pDoc->getFilename();
 }
 
 bool XAP_Frame::isDirty(void) const
 {
+	if (m_pDoc == NULL) return false;
 	return m_pDoc->isDirty();
 }
 
