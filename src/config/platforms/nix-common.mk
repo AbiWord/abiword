@@ -237,12 +237,8 @@ endif
 # 
 GLIB_CONFIG	= pkg-config glib-2.0 gthread-2.0
 GTK_CONFIG	= pkg-config gtk+-2.0 gthread-2.0
-
-# This is wrong.  So far the best option I've seen is gnome-desktop-2.0, but
-# that doesn't necessarily catch gnomeprint.  It also puts in libxml2 AFAICT.
-# We gotta find the best way to pull it all off real soon.  Until then, I'm commenting it. -MG
-# GNOME_CONFIG    = pkg-config gnome-2.0
-# AIYEE!  We've merged, and we still dont know...  Also, as our deps are changing rapidly (like gnome-print), I wanna wait for things to calm down.  Worse comes to worse we do separate commands for each submodule.
+# Do we need one for oaf?  If so, what?
+GNOME_CONFIG    = pkg-config libgnome-2.0 libgnomeprint-2.0 gal-2.0 libbonobo-2.0
 LIBXML_CONFIG	= xml2-config
 
 # Shared library flags
