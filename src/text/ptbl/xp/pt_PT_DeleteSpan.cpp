@@ -1555,6 +1555,9 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 			AttrProp_Before = *p_AttrProp;
 			if(p_AttrProp_Before)
 				*p_AttrProp_Before = *p_AttrProp;
+
+			// we do not want to inherit revision attribute
+			AttrProp_Before.setAttribute("revision", "");
 		}
 	}
 

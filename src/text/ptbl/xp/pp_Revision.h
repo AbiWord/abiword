@@ -141,7 +141,8 @@ class PP_RevisionAttr
 	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId);
 
 	UT_uint32             getRevisionsCount() const {return m_vRev.getItemCount();}
-
+	const PP_Revision *   getNthRevision(UT_uint32 n) const {return (const PP_Revision*)m_vRev.getNthItem(n);}
+	
 	void                  pruneForCumulativeResult(PD_Document * pDoc);
 	
 	/*! please note that the following are convenience functions; if
