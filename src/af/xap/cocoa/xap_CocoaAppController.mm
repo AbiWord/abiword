@@ -97,6 +97,7 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 	UT_DEBUGMSG(("Requested a new file\n"));
 	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pNewFrame = pApp->newFrame();
+	UT_Error error = pNewFrame->loadDocument(NULL, IEFT_Unknown);
 	pNewFrame->show();
 	return YES;
 }
