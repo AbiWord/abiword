@@ -176,6 +176,9 @@
 #define XAP_PREF_KEY_ChangeLanguageWithKeyboard "ChangeLangWithKeyboard"
 #define XAP_PREF_DEFAULT_ChangeLanguageWithKeyboard "1"
 
+#define XAP_PREF_KEY_DirMarkerAfterClosingParenthesis "DirMarkerAfterClosingParenthesis"
+#define XAP_PREF_DEFAULT_DirMarkerAfterClosingParenthesis "0"
+
 
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
@@ -224,5 +227,6 @@ dcl(ZoomPercentage)
 dcl(DefaultSaveDirectory)
 dcl(HTMLExportOptions)
 dcl(ChangeLanguageWithKeyboard)
+dcl(DirMarkerAfterClosingParenthesis)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */
