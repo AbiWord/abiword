@@ -1592,8 +1592,16 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		// if caller does not want to suggest a name, seed the dialog
 		// to the directory containing this document (if it has a
 		// name), but don't put anything in the filename portion.
-		pDialog->setCurrentPathname(pFrame->getFilename());
-		pDialog->setSuggestFilename(false);
+		PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
+		UT_UTF8String title;
+
+		if (pDoc->getMetaDataProp (PD_META_KEY_TITLE, title) && title.size()) {
+			pDialog->setCurrentPathname(title.utf8_str());
+			pDialog->setSuggestFilename(true);
+		} else {
+			pDialog->setCurrentPathname(pFrame->getFilename());
+			pDialog->setSuggestFilename(false);
+		}
 	}
 
 	// to fill the file types popup list, we need to convert
