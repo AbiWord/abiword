@@ -87,7 +87,7 @@ bool XAP_UnixApp::initialize()
 	gtk_set_locale();
 
 #ifndef ABI_OPT_WIDGET
-	gtk_init(&m_pArgs->m_argc,&m_pArgs->m_argv);
+	gtk_init(&m_pArgs->m_argc,&(char **)m_pArgs->m_argv);
 #endif
 
 	// let our base class do it's thing.
