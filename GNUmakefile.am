@@ -92,7 +92,7 @@ install-data-local:
 	        $(INSTALL_DATA) $(dictionary_list) $(DESTDIR)$(pkgdatadir)/$$dir/ispell_dictionary_list.xml; \
 	      fi; \
 	    else \
-	      for file in $(echo $(top_srcdir)/../abidistfiles/$$dir/* | grep -v MANIFEST); do \
+	      for file in `echo $(top_srcdir)/../abidistfiles/$$dir/* | grep -v MANIFEST`; do \
 	        if test -f $$file ; then \
 		  sfile=`echo "$$file" | sed 's/\.[^.]*$$//'`; \
 		  if test "$$sfile.server" = $$file; then \
