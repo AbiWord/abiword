@@ -185,6 +185,15 @@ UT_Error UT_errnoToUTError (void);
 
 #endif
 
+/* direction markers */
+#define UCS_LRM 0x200E
+#define UCS_RLM 0x200F
+#define UCS_LRE 0x202a
+#define UCS_RLE 0x202b
+#define UCS_PDF 0x202c
+#define UCS_LRO 0x202d
+#define UCS_RLO 0x202e
+
 /*
 ** Some useful macros that we use throughout
 */
