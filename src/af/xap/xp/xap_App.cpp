@@ -74,6 +74,9 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 {
 	UT_ASSERT(szAppName && *szAppName);
 	m_pApp = this;
+
+	// TODO don't build GUI when only doing commandline
+	//      file conversion
 	UT_DEBUGMSG(("SEVIOR: Building menus and toolbars \n"));
 	m_pMenuFactory = new XAP_Menu_Factory(this);
 	m_pToolbarFactory = new XAP_Toolbar_Factory(this);
@@ -82,10 +85,10 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	/* hack to force the linker to link in UT_Map functions
 	 */
 	if (abi_ut_map_instance)
-	  {
+	{
 	    delete abi_ut_map_instance;
 	    abi_ut_map_instance = new UT_Map;
-	  }
+	}
 }
 
 XAP_App::~XAP_App()
@@ -114,38 +117,38 @@ XAP_App::~XAP_App()
 
 const char* XAP_App::getBuildId ()
 {
-  return s_szBuild_ID;
+	return s_szBuild_ID;
 }
 
 const char* XAP_App::getBuildVersion ()
 {
-  return s_szBuild_Version;
+	return s_szBuild_Version;
 }
 
 const char* XAP_App::getBuildOptions ()
 {
-  return s_szBuild_Options;
+	return s_szBuild_Options;
 }
 
 const char* XAP_App::getBuildTarget ()
 {
-  return s_szBuild_Target;
+	return s_szBuild_Target;
 }
 
 const char* XAP_App::getBuildCompileTime ()
 {
-  return s_szBuild_CompileTime;
+	return s_szBuild_CompileTime;
 }
 
 const char* XAP_App::getBuildCompileDate ()
 {
-  return s_szBuild_ID;
+	return s_szBuild_ID;
 }
 
 /*! this function is silly */
 const XAP_EncodingManager* XAP_App::getEncodingManager() const 
 { 
-    return XAP_EncodingManager::get_instance();
+	return XAP_EncodingManager::get_instance();
 };
 
 EV_Menu_ActionSet *XAP_App::getMenuActionSet()
@@ -574,12 +577,12 @@ bool XAP_App::isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const
 /*!
  * Look up the custom dictionary for suggested words
  */
-void    XAP_App::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord)
+void XAP_App::suggestWord(UT_Vector * pVecSuggestions, const UT_UCSChar * pWord, UT_uint32 lenWord)
 {
-  if(m_pDict)
-  {
-       m_pDict->suggestWord(pVecSuggestions, pWord, lenWord);
-  }
+	if(m_pDict)
+	{
+		m_pDict->suggestWord(pVecSuggestions, pWord, lenWord);
+	}
 }
 
 XAP_Prefs * XAP_App::getPrefs() const
@@ -654,8 +657,8 @@ XAP_Frame* XAP_App::getLastFocussedFrame()
 
 XAP_Frame * XAP_App::findValidFrame()
 {
-        XAP_Frame * validFrame =  getFrame(0);
-        return validFrame;
+	XAP_Frame * validFrame =  getFrame(0);
+	return validFrame;
 }
 
 void XAP_App::clearIdTable()
@@ -771,7 +774,8 @@ bool XAP_App::getGeometry(UT_sint32 *x, UT_sint32 *y, UT_uint32 *width, UT_uint3
 	return prefs->getGeometry(x, y, width, height, flags);
 }
 
-void XAP_App::parseAndSetGeometry(const char *string) {
+void XAP_App::parseAndSetGeometry(const char *string)
+{
 	UT_uint32 nw, nh, nflags;
     UT_sint32 nx, ny;
     char *next;
@@ -780,23 +784,28 @@ void XAP_App::parseAndSetGeometry(const char *string) {
 	nx = ny = 0;
 
     next = (char *)string;
-    if (*next != '+' && *next != '-') {
+    if (*next != '+' && *next != '-')
+	{
         nw = strtoul(next, &next, 10);
-        if(*next == 'x' || *next == 'X') {
+        if(*next == 'x' || *next == 'X')
+		{
             nh = strtoul(++next, &next, 10);
             nflags |= PREF_FLAG_GEOMETRY_SIZE;
         }
     }
-    if (*next == '+' || *next == '-') {
+    if (*next == '+' || *next == '-')
+	{
         nx = strtoul(next, &next, 10);
-        if(*next == '+' || *next == '-') {
+        if(*next == '+' || *next == '-')
+		{
             ny = strtoul(next, &next, 10);
             nflags |= PREF_FLAG_GEOMETRY_POS;
         }
     }
 
 	//Don't update the geometry from the file
-	if(nflags) {
+	if(nflags)
+	{
 		nflags |= PREF_FLAG_GEOMETRY_NOUPDATE;
 		setGeometry(nx, ny, nw, nh, nflags);
 	}
@@ -807,10 +816,10 @@ void XAP_App::_printUsage()
 	// just print to stdout, not stderr
 	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
 	printf("  -to               The target format of the file\n");
-        printf("                    (abw, zabw, rtf, txt, utf8, html, latex)\n");
+	printf("                    (abw, zabw, rtf, txt, utf8, html, latex)\n");
 	printf("  -verbose          The verbosity level (0, 1, 2)\n");
 	printf("  -show             If you really want to start the GUI\n");
-        printf("                    (even if you use the -to option)\n");
+	printf("                    (even if you use the -to option)\n");
 #ifdef DEBUG
 	printf("  -dumpstrings      dump strings strings to file\n");
 #endif
