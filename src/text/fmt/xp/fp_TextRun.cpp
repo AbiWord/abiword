@@ -1387,7 +1387,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	
 	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - pG->tlu(1); // Hack to remove
 	UT_sint32 yTopOfSel = yTopOfRun + pG->tlu(1); // final character dirt
-
+	xxx_UT_DEBUGMSG(("_draw Text: yoff %d \n",pDA->yoff));
+	xxx_UT_DEBUGMSG(("_draw Text: getAscent %d fontAscent-1 %d fontAscent-2 %d \n",getAscent(),pG->getFontAscent(_getFont()),pG->getFontAscent()));
 	/*
 	  TODO We should add more possibilities for text placement here.
 	  It shouldn't be too hard.  Just adjust the math a little.
@@ -1661,7 +1662,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(iVisDir == FRIBIDI_TYPE_LTR)
 			iX += iSegmentWidth[iSegment];
 	}
-
+	xxx_UT_DEBUGMSG(("_draw text yoff %d yTopOfRun %d \n",pDA->yoff,yTopOfRun));
 	drawDecors(pDA->xoff, yTopOfRun,pG);
 
 	if(pView->getShowPara())

@@ -346,12 +346,15 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	m_pView->getMouseContext(x,y);
 	m_iInitialOffX = 0;
 	m_iInitialOffY = 0;
+	PT_DocPosition oldPoint = m_pView->getPoint();
 	m_pView->cmdPaste();
+	PT_DocPosition newPoint = m_pView->getPoint();
 	DELETEP(m_pDragImage);
 	if(m_bTextCut)
 	{
 		m_pView->getDocument()->endUserAtomicGlob(); // End the big undo block
 	}
+	m_pView->cmdSelect(oldPoint,newPoint);
 	m_bTextCut = false;
 }
 
