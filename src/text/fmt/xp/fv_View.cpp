@@ -7458,7 +7458,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->disableListUpdates();
 
-	UT_Error e;
+	bool e;
 
 	/*
 	  This inserts a footnote at the end of the current block,
@@ -7900,6 +7900,10 @@ void FV_View:: getVisibleDocumentPagesAndRectangles(UT_Vector &vRect, UT_Vector 
 			else if(adjustedBottom >= m_iWindowHeight && adjustedTop >=0)
 			{
 				iPortHeight = m_iWindowHeight - adjustedTop;
+			}
+			else if(adjustedBottom >= m_iWindowHeight && adjustedTop <=0)
+			{
+				iPortHeight = m_iWindowHeight;
 			}
 			else
 				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
