@@ -31,11 +31,7 @@
 
 #include <fribidi/fribidi.h>
 
-/* #include "xap_App.h" */
-/* #include "xap_Prefs.h" */
-
 class UT_StringPtrMap;
-
 class XAP_App;
 class XAP_Prefs;
 
@@ -94,6 +90,8 @@ public:
 	bool  isNotFirstInLigature(UT_UCS4Char c) const;
 	bool  isNotSecondInLigature(UT_UCS4Char c) const;
 	bool  isNotContextSensitive(UT_UCS4Char c) const;
+	bool  isNotJoiningWithNext(UT_UCS4Char c, UT_UCS4Char n, UT_UCS4Char p) const;
+	bool  isNotJoiningWithPrev(UT_UCS4Char c, UT_UCS4Char n, UT_UCS4Char p) const;
 		
 private:
 	GlyphContext _evalGlyphContext( const UT_UCSChar * code,
