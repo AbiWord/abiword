@@ -883,16 +883,32 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	UT_DEBUGMSG(("In update Offsets posEmbedded %d EmbeddedSize %d \n",posEmbedded,iEmbeddedSize));
 	fp_Run * pRun = getFirstRun();
 	PT_DocPosition posInBlock = getPosition(true);
+	fp_Run * pPrev = NULL;
 	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
 	{
-		UT_DEBUGMSG(("Look at run %x posindoc %d \n",pRun,posInBlock+pRun->getBlockOffset()));
+		UT_DEBUGMSG(("Look at run %x runType %d posindoc %d \n",pRun,pRun->getType(),posInBlock+pRun->getBlockOffset()));
+		pPrev = pRun;
 		pRun = pRun->getNextRun();
 	}
 	if(pRun == NULL)
 	{
-		return;
+		if(pPrev == NULL)
+		{
+			return;
+		}
+		//
+		// Catch case of EOP actually containing posEmebedded
+		//
+		if((posInBlock + pPrev->getBlockOffset() +1) < posEmbedded)
+		{
+			return;
+		}
+		else
+		{
+			pRun = pPrev;
+			pPrev = pRun->getPrevRun();
+		}
 	}
-	fp_Run * pPrev = pRun->getPrevRun();
 	UT_sint32 iDiff = 0;
 	PT_DocPosition posRun = 0;
 	if(pPrev == NULL)
@@ -4942,6 +4958,14 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// Deal with embedded containers if any in this block.
 	//
 	shuffleEmbeddedIfNeeded(pPrevBL, 0);
+	//
+	// The idea here is to append the runs of the deleted block, if
+	// any, at the end of the previous block. We must make sure to take
+	// of embedded footnotes/endnotes. We need to calculate the offset
+	// before we deletes the EOP run. The offset may not be contiguous
+	// because of embedded footnotes/endnotes
+	//
+	UT_uint32 offset = 0;
 	if (pPrevBL)
 	{
 		// Find the EOP Run.
@@ -4955,6 +4979,21 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			pNukeRun  = pPrevRun->getNextRun();
 		}
 		UT_ASSERT(FPRUN_ENDOFPARAGRAPH == pNukeRun->getType());
+		//
+		// The idea here is to append the runs of the deleted block, if
+		// any, at the end of the previous block. We must make sure to take
+		// account of embedded footnotes/endnotes. 
+		// We need to calculate the offset
+		// before we delete the EOP run.
+		//
+		if(FPRUN_ENDOFPARAGRAPH == pNukeRun->getType())
+		{
+			offset = pNukeRun->getBlockOffset();
+		}
+		else
+		{
+			offset =  pNukeRun->getBlockOffset() + pNukeRun->getLength();
+		}
 
 		// Detach from the line
 		fp_Line* pLine = pNukeRun->getLine();
@@ -4994,9 +5033,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 	}
 
-	// The idea here is to append the runs of the deleted block, if
-	// any, at the end of the previous block.
-	UT_uint32 offset = 0;
+	// We use the offset we calculated earlier.
+ 
 	if (m_pFirstRun)
 	{
 		// Figure out where the merge point is
@@ -5005,10 +5043,8 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		while (pRun)
 		{
 			pLastRun = pRun;
-			offset += pRun->getLength();
 			pRun = pRun->getNextRun();
 		}
-
 		// Link them together
 		if (pLastRun)
 		{
@@ -5017,13 +5053,10 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			{
 				m_pFirstRun->setPrevRun(pLastRun);
 			}
-			offset = pLastRun->getBlockOffset();
-			offset += pLastRun->getLength();
 		}
 		else
 		{
 			pPrevBL->m_pFirstRun = m_pFirstRun;
-			offset = m_pFirstRun->getBlockOffset();
 		}
 		UT_DEBUGMSG(("deleteStrux: offset = %d \n",offset));
 		// Merge charwidths

@@ -161,7 +161,6 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
 
-	case PTX_SectionEndnote:
 	case PTX_Section:
 		// we are the first paragraph in this section.  if we have
 		// content, we cannot be deleted, since there is no one to
@@ -193,7 +192,6 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		return true;
-
 
 	case PTX_SectionFrame:
     case PTX_EndFrame:
