@@ -89,7 +89,13 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					blockOffset = pos - pfs->getPos() -1;
 					bStatus1 = pft->createSpecialChangeRecord(&pcr,pos,blockOffset);
 					UT_ASSERT(bStatus1);
-					bAddOffset = false;
+					// I do not understand at all why this was set to
+					// false; if the doc contains a footnote section
+					// followed by a text fragment and another
+					// fragment, the text fragment and the fragment
+					// after it are given identical block offsets !!!
+					// Tomas, May, 12, 2003
+					bAddOffset = true;
 				}
 				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
@@ -150,7 +156,13 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 					blockOffset = pos - pfs->getPos() -1;
 					bStatus1 = pfo->createSpecialChangeRecord(&pcr,pos,blockOffset);
 					UT_ASSERT(bStatus1);
-					bAddOffset = false;
+					// I do not understand at all why this was set to
+					// false; if the doc contains a footnote section
+					// followed by a text fragment and another
+					// fragment, the text fragment and the fragment
+					// after it are given identical block offsets !!!
+					// Tomas, May, 12, 2003
+					bAddOffset = true;
 				}
 
 				UT_ASSERT(bStatus1);
