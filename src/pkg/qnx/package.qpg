@@ -517,6 +517,8 @@
          <QPG:Add file="OUTDIR/AbiSuite/templates/us-letter.awt" install="usr/local/AbiSuite/templates/"/>
          <QPG:Add file="./AbiWord" install="usr/photon/bin/"/>
          <QPG:Add file="OUTDIR/bin/AbiWord_d" install="usr/photon/bin/"/>
+				 <QPG:Add file="./Dingbats.ttf" install="/usr/photon/font_repository/"/>
+				 <QPG:Add file="./symbol.ttf" install="/usr/photon/font_repository/"/>
       </QPG:Files>
 
       <QPG:PackageFilter>
@@ -568,7 +570,7 @@
          </QPM:PackageManifest>
       </QPG:PackageFilter>
 
-      <QPG:PackageFilter proc="none" target="none">
+      <QPG:PackageFilter proc="any" target="any">
          <QPM:PackageManifest>
             <QPM:ProductInstallationDependencies>
                <QPM:ProductRequirements></QPM:ProductRequirements>
@@ -586,7 +588,20 @@
                   <QPM:ScriptTiming>Post</QPM:ScriptTiming>
                   <QPM:ScriptType>Unuse</QPM:ScriptType>
                </QPM:Script>
-            </QPM:ProductInstallationProcedure>
+
+							 <QPM:Script xmlmultiple="true">
+                  <QPM:ScriptName>/usr/photon/bin/font_install</QPM:ScriptName>
+                  <QPM:ScriptTiming>Post</QPM:ScriptTiming>
+                  <QPM:ScriptType>Unuse</QPM:ScriptType>
+               </QPM:Script>
+
+							 <QPM:Script xmlmultiple="true">
+                  <QPM:ScriptName>/usr/photon/bin/font_install</QPM:ScriptName>
+                  <QPM:ScriptTiming>Post</QPM:ScriptTiming>
+                  <QPM:ScriptType>Use</QPM:ScriptType>
+               </QPM:Script>
+            
+					</QPM:ProductInstallationProcedure>
          </QPM:PackageManifest>
 
          <QPM:Launch name="AbiWord" xmlmultiple="true">
