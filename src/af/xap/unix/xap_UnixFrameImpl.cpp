@@ -1209,7 +1209,7 @@ gint XAP_UnixFrameImpl::_imDeleteSurrounding_cb (GtkIMContext *slave, gint offse
 	FV_View * pView = static_cast<FV_View*>(pImpl->getFrame()->getCurrentView ());
 
 	PT_DocPosition insPt = pView->getInsPoint ();
-	if (offset > insPt)
+	if (offset > (gint)insPt)
 		insPt = 0;
 	else
 		insPt += offset;
