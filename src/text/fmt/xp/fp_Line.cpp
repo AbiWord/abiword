@@ -1456,11 +1456,13 @@ void fp_Line::layout(void)
 		// we will set that to 0 and it will help us to handle the justified
 		// alignment spliting runs while we are working on them (see notes after
 		// the main loop)
-		UT_DEBUGMSG(("fp_Line::layout: static buffer pOldXs too small\n"
-					 "       (original size %d, new size %d)\n"
-					 "       IF THIS MESSAGE APPEARS TOO OFTEN, INCREASE \"STATIC_BUFFER_INITIAL\"\n"
-					 "       (line %d in %s)\n",
-					 iOldXsSize, iOldXsSize+STATIC_BUFFER_INCREMENT, iDefinesLine + 2, __FILE__));
+
+		// UT_DEBUGMSG(("fp_Line::layout: static buffer pOldXs too small\n"
+					 // "       (original size %d, new size %d)\n"
+					 // "       IF THIS MESSAGE APPEARS TOO OFTEN, INCREASE \"STATIC_BUFFER_INITIAL\"\n"
+					 // "       (line %d in %s)\n",
+					 // iOldXsSize, iOldXsSize+STATIC_BUFFER_INCREMENT, iDefinesLine + 2, __FILE__));
+
 		delete[] pOldXs;
 		iOldXsSize += STATIC_BUFFER_INCREMENT;
 		pOldXs = new UT_sint32[iOldXsSize];
