@@ -912,6 +912,454 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	}
 }
 
+//this is a helper function for getRunWith; it works out working direction and
+//which tabs to use from the alignment
+//it is public, because it is only used when getRunWidth is called from
+//outside of the class
+
+void fp_Line::getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirection, FL_WHICH_TABSTOP &eUseTabStop) const
+{
+	fb_Alignment* pAlignment = m_pBlock->getAlignment();
+	UT_ASSERT(pAlignment);
+    FB_AlignmentType eAlignment 	  = pAlignment->getType();
+
+#ifdef BIDI_ENABLED
+	// find out the direction of the paragraph
+	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
+#endif
+        	
+	eWorkingDirection = WORK_FORWARD;
+	eUseTabStop = USE_NEXT_TABSTOP;
+	
+    // now from the current alignment work out which way we need to process the line
+    // and the corresponding starting positions
+
+    switch (eAlignment)
+    {
+        case FB_ALIGNMENT_LEFT:
+#ifdef BIDI_ENABLED
+			if(iDomDirection == FRIBIDI_TYPE_RTL)
+	  			eUseTabStop = USE_PREV_TABSTOP;
+	  		else
+#endif
+				eUseTabStop = USE_NEXT_TABSTOP;
+			
+            eWorkingDirection = WORK_FORWARD;
+            break;
+
+        case FB_ALIGNMENT_RIGHT:
+#ifdef BIDI_ENABLED
+			if(iDomDirection == FRIBIDI_TYPE_RTL)
+	  			eUseTabStop = USE_NEXT_TABSTOP;
+	  		else
+#endif
+				eUseTabStop = USE_PREV_TABSTOP;
+	  			
+            eWorkingDirection = WORK_BACKWARD;
+            break;
+
+        case FB_ALIGNMENT_CENTER:
+            eWorkingDirection = WORK_FORWARD;
+            eUseTabStop = USE_FIXED_TABWIDTH;
+            break;
+
+        case FB_ALIGNMENT_JUSTIFY:
+#ifdef BIDI_ENABLED
+            if(iDomDirection == FRIBIDI_TYPE_RTL)
+                eWorkingDirection = WORK_BACKWARD;
+            else
+#endif
+                eWorkingDirection = WORK_FORWARD;
+            eUseTabStop = USE_NEXT_TABSTOP;
+            break;
+
+        default:
+            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    }
+	return;
+}
+
+// this function will calculate correct width for all runs, including
+// tab runs, from a visual processing index, it return point to the run
+// at the index for the callers convenience.
+
+//NB. in bidi more iXLayoutUnits is a logical coordinance
+//however, in _calculateWidthOfRun iX and iXLayoutUnits are visual,
+//so we need to do a conversion here ...
+
+fp_Run* fp_Line::calculateWidthOfRun(UT_sint32 &iWidthLayoutUnits, UT_uint32 iIndxVisual, FL_WORKING_DIRECTION eWorkingDirection, FL_WHICH_TABSTOP eUseTabStop)
+{
+	const UT_uint32 iCountRuns		  = m_vecRuns.getItemCount();
+	UT_sint32 iXLreal, iXreal;
+	static UT_sint32 Screen_resolution = m_pBlock->getDocLayout()->getGraphics()->getResolution();
+	iXreal = iWidthLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
+	
+	//work out the real index based on working direction
+	UT_uint32 iIndx;
+   	iIndx = eWorkingDirection == WORK_FORWARD ? iIndxVisual : iCountRuns - iIndxVisual - 1;
+    		
+#ifdef BIDI_ENABLED
+	// of course, the loop is running in visual order, but the vector is
+	// in logical order
+	fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iIndx));
+#else
+	fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(iIndx);
+#endif
+
+#ifdef BIDI_ENABLED
+	// find out the direction of the paragraph
+	FriBidiCharType iDomDirection = m_pBlock->getDominantDirection();
+	
+	if(iDomDirection == FRIBIDI_TYPE_RTL)
+	{
+		iXLreal = m_iMaxWidthLayoutUnits - iWidthLayoutUnits;
+		iXreal 	= m_iMaxWidth - iXreal;
+	}
+	else
+#endif
+	{
+		iXLreal = iWidthLayoutUnits;
+		//iXreal = iXreal;
+	}
+
+	xxx_UT_DEBUGMSG(("fp_Line::calculateWidthOfRun: \n"
+				 "       iXreal %d, iXLreal %d, iIndxVisual %d, iCountRuns %d,\n"
+				 "       eWorkingDirection %d, eUseTabStop %d,\n"
+				         ,iXreal, iXLreal, iIndxVisual, iCountRuns,
+						 eWorkingDirection, eUseTabStop
+				));
+				
+	_calculateWidthOfRun(iXreal,
+						 iXLreal,
+						 pRun,
+						 iIndxVisual,
+						 iCountRuns,
+						 eWorkingDirection,
+						 eUseTabStop
+#ifdef BIDI_ENABLED
+						 ,iDomDirection
+#endif						
+						 );
+						
+	xxx_UT_DEBUGMSG(("new iXreal %d, iXLreal %d\n", iXreal, iXLreal));
+#ifdef BIDI_ENABLED
+	if(iDomDirection == FRIBIDI_TYPE_RTL)
+	{
+		iWidthLayoutUnits = m_iMaxWidthLayoutUnits - iXLreal;
+	}
+	else
+#endif
+	{
+		iWidthLayoutUnits = iXLreal;
+	}
+	
+	return pRun;
+}
+
+// private version of the above, which expect both the index and run prointer
+// to be passed to it.
+inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
+									UT_sint32 &iXLayoutUnits,
+									fp_Run * pRun,
+									UT_uint32 iIndx,
+									UT_uint32 iCountRuns,
+									FL_WORKING_DIRECTION eWorkingDirection,
+									FL_WHICH_TABSTOP eUseTabStop
+#ifdef BIDI_ENABLED
+									,FriBidiCharType iDomDirection
+#endif
+									)
+{
+	if(!pRun)
+		return;
+	
+	if(pRun->getType() != FPRUN_TAB)
+	{
+		if(eWorkingDirection == WORK_FORWARD)
+		{
+			iXLayoutUnits += pRun->getWidthInLayoutUnits();
+			iX += pRun->getWidth();
+		}
+		else
+		{
+			iXLayoutUnits -= pRun->getWidthInLayoutUnits();
+			iX -= pRun->getWidth();
+		}
+	
+		return;
+	}
+		
+	// a fixed width fraction of the font ascent which we will use for centered alignment
+	// i.e, width = font_ascent * iFixedWidthMlt / iFixedWidthDiv
+	const UT_uint32 iFixedWidthMlt = 2;
+	const UT_uint32 iFixedWidthDiv = 1;
+	static UT_sint32 Screen_resolution = m_pBlock->getDocLayout()->getGraphics()->getResolution();
+	UT_uint32 iWidth = 0;
+	fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
+	
+	// now we handle any Tab runs that are not meant to use a fixed width
+	if (eUseTabStop != USE_FIXED_TABWIDTH)
+	{
+		//if we are using the tabstops, we go through the hoops,
+		UT_sint32	iPosLayoutUnits;
+		eTabType	iTabType;
+		eTabLeader	iTabLeader;
+		bool bRes;
+				
+		// now find the tabstop for this tab, depending on whether we
+		// are to use next or previous tabstop				
+		if(eUseTabStop == USE_NEXT_TABSTOP)
+		{
+#ifdef BIDI_ENABLED
+			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			{
+				bRes = findNextTabStopInLayoutUnits(m_iMaxWidthLayoutUnits - iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+				iPosLayoutUnits = m_iMaxWidthLayoutUnits - iPosLayoutUnits;
+			}
+			else
+#endif
+				bRes = findNextTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+		}
+		else
+#ifdef BIDI_ENABLED
+			if(iDomDirection == FRIBIDI_TYPE_RTL)
+			{
+				bRes = findPrevTabStopInLayoutUnits(m_iMaxWidthLayoutUnits - iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+				iPosLayoutUnits = m_iMaxWidthLayoutUnits - iPosLayoutUnits;
+			}
+			else
+#endif
+				bRes = findPrevTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
+					
+				
+		UT_ASSERT(bRes);
+
+		fp_Run *pScanRun = NULL;
+		int iScanWidth = 0;
+		int iScanWidthLayoutUnits = 0;
+
+		pTabRun->setLeader(iTabLeader);
+		pTabRun->setTabType(iTabType);
+
+		// we need to remember what the iX was				
+		UT_sint32 iXprev;
+		iXprev = iX;		
+				
+		xxx_UT_DEBUGMSG(("pf_Line::_calculateWidthOfRun(): tab: iX %d, iXLayout %d, iPosLayout %d\n",iX,iXLayoutUnits,iPosLayoutUnits));
+			
+#ifdef BIDI_ENABLED				
+		FriBidiCharType iVisDirection = pTabRun->getVisDirection();
+#endif
+		switch ( iTabType )
+		{
+			case FL_TAB_LEFT:
+#ifdef BIDI_ENABLED
+				if(iVisDirection == FRIBIDI_TYPE_LTR && iDomDirection == FRIBIDI_TYPE_LTR)
+#endif						
+				{
+					iXLayoutUnits = iPosLayoutUnits;
+					iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
+					iWidth = abs(iX - iXprev);
+					xxx_UT_DEBUGMSG(("left tab (ltr para), iX %d, iWidth %d\n", iX,iWidth));
+				}
+#ifdef BIDI_ENABLED
+				else
+				{
+		    	    iScanWidth = 0;
+		    	    iScanWidthLayoutUnits = 0;
+					for ( UT_uint32 j = iIndx+1; j < iCountRuns; j++ )
+						{
+							UT_uint32 iJ;
+							iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
+						
+							pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
+							if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
+								break;
+					
+							iScanWidth += pScanRun->getWidth();
+							iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
+						}
+			
+						if ( iScanWidthLayoutUnits > abs(iPosLayoutUnits - iXLayoutUnits))
+						{
+							iWidth = 0;
+						}
+						else
+						{
+							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
+							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - (UT_sint32)eWorkingDirection * iScanWidth;
+							iWidth = abs(iX - iXprev);
+						}
+					}
+#endif
+					break;
+
+				case FL_TAB_CENTER:
+				{
+		    	    iScanWidth = 0;
+		    	    iScanWidthLayoutUnits = 0;
+					for ( UT_uint32 j = iIndx+1; j < iCountRuns; j++ )
+					{
+						UT_uint32 iJ;
+						iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
+#ifdef BIDI_ENABLED
+						pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
+#else							
+						pScanRun = (fp_Run*) m_vecRuns.getNthItem(iJ);
+#endif
+						if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
+							break;
+						iScanWidth += pScanRun->getWidth();
+						iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
+					}
+	
+					if ( iScanWidthLayoutUnits / 2 > abs(iPosLayoutUnits - iXLayoutUnits))
+						iWidth = 0;
+					else
+					{
+						iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits / 2;
+						iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - (UT_sint32)eWorkingDirection * iScanWidth / 2;
+						iWidth = abs(iX - iXprev);
+					}
+					break;
+				}
+			
+				case FL_TAB_RIGHT:
+#ifdef BIDI_ENABLED
+					if(iVisDirection == FRIBIDI_TYPE_RTL && iDomDirection == FRIBIDI_TYPE_RTL)
+					{
+						iXLayoutUnits = iPosLayoutUnits;
+						iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
+						iWidth = abs(iX - iXprev);
+						xxx_UT_DEBUGMSG(("right tab (rtl para), iX %d, width %d\n", iX,pTabRun->getWidth()));
+					}
+					else
+#endif
+					{
+						xxx_UT_DEBUGMSG(("right tab (ltr para), ii %d\n",ii));
+			    	    iScanWidth = 0;
+			    	    iScanWidthLayoutUnits = 0;
+						for ( UT_uint32 j = iIndx+1; j < iCountRuns; j++ )
+						{
+							UT_uint32 iJ;
+							iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
+							xxx_UT_DEBUGMSG(("iJ %d\n", iJ));
+#ifdef BIDI_ENABLED
+							pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
+#else
+							pScanRun = (fp_Run*) m_vecRuns.getNthItem(iJ);
+#endif								
+							if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
+								break;
+							iScanWidth += pScanRun->getWidth();
+							iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
+						}
+							
+						xxx_UT_DEBUGMSG(("iScanWidthLayoutUnits %d, iPosLayoutUnits %d, iXLayoutUnits %d\n",iScanWidthLayoutUnits,iPosLayoutUnits,iXLayoutUnits));
+		
+						if ( iScanWidthLayoutUnits > abs(iPosLayoutUnits - iXLayoutUnits))
+						{
+							iWidth = 0;
+						}
+						else
+						{
+							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
+							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - (UT_sint32)eWorkingDirection * iScanWidth;
+							iWidth = abs(iX - iXprev);
+						}
+			
+					}
+					break;
+
+				case FL_TAB_DECIMAL:
+				{
+					UT_UCSChar *pDecimalStr;
+					UT_uint32	runLen = 0;
+
+					// the string to search for decimals
+					if (UT_UCS_cloneString_char(&pDecimalStr, ".") != true)
+					{
+						// Out of memory. Now what?
+					}
+
+		    	    iScanWidth = 0;
+		    	    iScanWidthLayoutUnits = 0;
+					for ( UT_uint32 j = iIndx+1; j < iCountRuns; j++ )
+					{
+						UT_uint32 iJ;
+						iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
+#ifdef BIDI_ENABLED						
+						pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
+#else
+						pScanRun = (fp_Run*) m_vecRuns.getNthItem(iJ);
+#endif
+						if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
+							break;
+				
+						bool foundDecimal = false;
+						if(pScanRun->getType() == FPRUN_TEXT)
+						{
+							UT_sint32 decimalBlockOffset = ((fp_TextRun *)pScanRun)->findCharacter(0, pDecimalStr[0]);
+							if(decimalBlockOffset != -1)
+							{
+								foundDecimal = true;
+								runLen = pScanRun->getBlockOffset() - decimalBlockOffset;
+							}
+						}
+
+						xxx_UT_DEBUGMSG(("%s(%d): foundDecimal=%d len=%d iScanWidth=%d \n",
+							__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
+						if ( foundDecimal )
+						{
+							if(pScanRun->getType() == FPRUN_TEXT)
+							{
+								iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_display, runLen);
+								iScanWidthLayoutUnits += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
+							}
+							break; // we found our decimal, don't search any further
+						}
+						else
+						{
+							iScanWidth += pScanRun->getWidth();
+							iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
+						}
+					}
+			            	
+					iXLayoutUnits = iPosLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
+					iX = iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - (UT_sint32)eWorkingDirection * iScanWidth;
+					iWidth = abs(iX - iXprev);
+					FREEP(pDecimalStr);	
+					break;
+				}
+		
+				case FL_TAB_BAR:
+				{
+					iXLayoutUnits = iPosLayoutUnits;
+					iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
+					iWidth = abs(iX - iXprev);
+				}
+				break;
+
+				default:
+				UT_ASSERT(UT_NOT_IMPLEMENTED);
+			}; //switch
+
+			// if working backwards, set the new X coordinance
+			// and decide if line needs erasing
+		}
+		else //this is not a Tab run, or we are using fixed width tabs
+		{
+			iWidth = pRun->getAscent()*iFixedWidthMlt / iFixedWidthDiv;
+	
+			
+			xxx_UT_DEBUGMSG(("run[%d] (type %d) width=%d\n", i,pRun->getType(),iWidth));
+		}
+		
+	pTabRun->setWidth(iWidth);
+	return;
+		
+}
+
 #if 1
 void fp_Line::layout(void)
 {
@@ -949,7 +1397,6 @@ void fp_Line::layout(void)
 	const UT_uint32 iCountRuns		  = m_vecRuns.getItemCount();
 	UT_sint32 iStartX 				  = 0;
 	UT_sint32 iStartXLayoutUnits 	  = 0;
-	const UT_sint32 Screen_resolution = m_pBlock->getDocLayout()->getGraphics()->getResolution();
 
 #ifdef BIDI_ENABLED
 	// find out the direction of the paragraph
@@ -960,19 +1407,11 @@ void fp_Line::layout(void)
 	// NB: it is important that WORK_FORWARD is set to 1 and
 	// WORK_BACKWARD to -1; this gives us a simple way to convert
 	// addition to substraction by mulplying by the direction
-	enum {WORK_FORWARD = 1,WORK_BACKWARD = -1,WORK_CENTER = 0}
-	eWorkingDirection = WORK_FORWARD;
+	FL_WORKING_DIRECTION eWorkingDirection = WORK_FORWARD;
 
     // a variable that will tell us how to interpret the tabstops
-    enum {USE_PREV_TABSTOP,USE_NEXT_TABSTOP,USE_FIXED_TABWIDTH}
-	eUseTabStop = USE_NEXT_TABSTOP;
+	FL_WHICH_TABSTOP eUseTabStop = USE_NEXT_TABSTOP;
 	
-	// a fixed width fraction of the font ascent which we will use for centered alignment
-	// i.e, width = font_ascent * iFixedWidthMlt / iFixedWidthDiv
-	const UT_uint32 iFixedWidthMlt = 2;
-	const UT_uint32 iFixedWidthDiv = 1;
-	
-  
     // now from the current alignment work out which way we need to process the line
     // and the corresponding starting positions
         
@@ -1100,7 +1539,7 @@ void fp_Line::layout(void)
     		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
     }
     	
-	xxx_UT_DEBUGMSG(("fp_Line::layout(), this = 0x%x\n"
+	UT_DEBUGMSG(("fp_Line::layout(), this = 0x%x\n"
 				 "       alignment [%s], working direction [%s], using tabstops [%s]\n"
 				 "       fixed width multiplier %d/%d\n"
 				 "       iStartX    = %d, iStartXLayout = %d \n"
@@ -1127,313 +1566,42 @@ void fp_Line::layout(void)
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(iIndx);
 #endif
 
-		
-		// now we handle any Tab runs that are not meanto to use a fixed width
-		if ((pRun->getType() == FPRUN_TAB) && (eUseTabStop != USE_FIXED_TABWIDTH))
+		// if we are working from the left, we want to set the
+		// X coordinance now; if from the right we will do it
+		// after we have got to the width worked out
+		// also, decide whether erasure is needed
+		if(eWorkingDirection == WORK_FORWARD)
 		{
-			//if we are using the tabstops, we go through the hoops,
-			UT_sint32	iPosLayoutUnits;
-			eTabType	iTabType;
-			eTabLeader	iTabLeader;
-			bool bRes;
-				
-			// if we are working from the left, we want to set the
-			// X coordinance now; if from the right we will do it
-			// after we have got to the width worked out
-			// also, decide whether erasure is needed
-			if(eWorkingDirection == WORK_FORWARD)
+			if(!bLineErased && pRun->getX()!= iX)
 			{
-				if(!bLineErased && pRun->getX()!= iX)
-				{
-					bLineErased = true;				
-					iIndxToEraseFrom = iIndx;
-				}
-				pRun->setX(iX);
+				bLineErased = true;				
+				iIndxToEraseFrom = iIndx;
 			}
-
-			// now find the tabstop for this tab, depending on whether we
-			// are to use next or previous tabstop				
-			if(eUseTabStop == USE_NEXT_TABSTOP)
-			{
-#ifdef BIDI_ENABLED
-				if(iDomDirection == FRIBIDI_TYPE_RTL)
-				{
-					bRes = findNextTabStopInLayoutUnits(m_iMaxWidthLayoutUnits - iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
-					iPosLayoutUnits = m_iMaxWidthLayoutUnits - iPosLayoutUnits;
-				}
-				else
-#endif
-					bRes = findNextTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
-			}
-			else
-#ifdef BIDI_ENABLED
-				if(iDomDirection == FRIBIDI_TYPE_RTL)
-				{
-					bRes = findPrevTabStopInLayoutUnits(m_iMaxWidthLayoutUnits - iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
-					iPosLayoutUnits = m_iMaxWidthLayoutUnits - iPosLayoutUnits;
-				}
-				else
-#endif
-					bRes = findPrevTabStopInLayoutUnits(iXLayoutUnits, iPosLayoutUnits, iTabType, iTabLeader);
-					
-				
-			UT_ASSERT(bRes);
-
-			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
-			fp_Run *pScanRun = NULL;
-			int iScanWidth = 0;
-			int iScanWidthLayoutUnits = 0;
-
-			pTabRun->setLeader(iTabLeader);
-			pTabRun->setTabType(iTabType);
-
-			// we need to remember what the iX was				
-			UT_sint32 iXprev;
-			iXprev = iX;		
-				
-			xxx_UT_DEBUGMSG(("pf_Line::layout(): tab: iX %d, iXLayout %d, iStartx %d, iPosLayout %d\n",iX,iXLayoutUnits,iStartXLayoutUnits,iPosLayoutUnits));
-			
-#ifdef BIDI_ENABLED				
-			FriBidiCharType iVisDirection = pTabRun->getVisDirection();
-#endif
-			switch ( iTabType )
-			{
-				case FL_TAB_LEFT:
-#ifdef BIDI_ENABLED
-					if(iVisDirection == FRIBIDI_TYPE_LTR && iDomDirection == FRIBIDI_TYPE_LTR)
-#endif						
-					{
-						iXLayoutUnits = iPosLayoutUnits;
-						iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
-						pTabRun->setWidth(abs(iX - iXprev));
-						xxx_UT_DEBUGMSG(("left tab (ltr para), iX %d, width %d\n", iX,pTabRun->getWidth()));
-					}
-#ifdef BIDI_ENABLED
-					else
-					{
-			    	    iScanWidth = 0;
-			    	    iScanWidthLayoutUnits = 0;
-						for ( UT_uint32 j = ii+1; j < iCountRuns; j++ )
-						{
-							UT_uint32 iJ;
-							iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
-						
-							pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
-							if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
-								break;
-					
-							iScanWidth += pScanRun->getWidth();
-							iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
-						}
-			
-						if ( iScanWidthLayoutUnits > abs(iPosLayoutUnits - iXLayoutUnits))
-						{
-							pTabRun->setWidth(0);
-						}
-						else
-						{
-							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
-							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - (UT_sint32)eWorkingDirection * iScanWidth;
-							pTabRun->setWidth(abs(iX - iXprev));
-						}
-					}
-#endif
-					break;
-
-				case FL_TAB_CENTER:
-				{
-		    	    iScanWidth = 0;
-		    	    iScanWidthLayoutUnits = 0;
-					for ( UT_uint32 j = ii+1; j < iCountRuns; j++ )
-					{
-						UT_uint32 iJ;
-						iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
-#ifdef BIDI_ENABLED
-						pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
-#else							
-						pScanRun = (fp_Run*) m_vecRuns.getNthItem(iJ);
-#endif
-						if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
-							break;
-						iScanWidth += pScanRun->getWidth();
-						iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
-					}
-	
-					if ( iScanWidthLayoutUnits / 2 > abs(iPosLayoutUnits - iXLayoutUnits))
-						pTabRun->setWidth(0);
-					else
-					{
-						iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits / 2;
-						iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - (UT_sint32)eWorkingDirection * iScanWidth / 2;
-						pTabRun->setWidth(abs(iX - iXprev));
-					}
-					break;
-				}
-			
-				case FL_TAB_RIGHT:
-#ifdef BIDI_ENABLED
-					if(iVisDirection == FRIBIDI_TYPE_RTL && iDomDirection == FRIBIDI_TYPE_RTL)
-					{
-						iXLayoutUnits = iPosLayoutUnits;
-						iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
-						pTabRun->setWidth(abs(iX - iXprev));
-						xxx_UT_DEBUGMSG(("right tab (rtl para), iX %d, width %d\n", iX,pTabRun->getWidth()));
-					}
-					else
-#endif
-					{
-						xxx_UT_DEBUGMSG(("right tab (ltr para), ii %d\n",ii));
-			    	    iScanWidth = 0;
-			    	    iScanWidthLayoutUnits = 0;
-						for ( UT_uint32 j = ii+1; j < iCountRuns; j++ )
-						{
-							UT_uint32 iJ;
-							iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
-							xxx_UT_DEBUGMSG(("iJ %d\n", iJ));
-#ifdef BIDI_ENABLED
-							pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
-#else
-							pScanRun = (fp_Run*) m_vecRuns.getNthItem(iJ);
-#endif								
-							if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
-								break;
-							iScanWidth += pScanRun->getWidth();
-							iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
-						}
-							
-						xxx_UT_DEBUGMSG(("iScanWidthLayoutUnits %d, iPosLayoutUnits %d, iXLayoutUnits %d\n",iScanWidthLayoutUnits,iPosLayoutUnits,iXLayoutUnits));
-		
-						if ( iScanWidthLayoutUnits > abs(iPosLayoutUnits - iXLayoutUnits))
-						{
-							pTabRun->setWidth(0);
-						}
-						else
-						{
-							iXLayoutUnits += iPosLayoutUnits - iXLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
-							iX += iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - iX - (UT_sint32)eWorkingDirection * iScanWidth;
-							pTabRun->setWidth(abs(iX - iXprev));
-						}
-			
-					}
-					break;
-
-				case FL_TAB_DECIMAL:
-				{
-					UT_UCSChar *pDecimalStr;
-					UT_uint32	runLen = 0;
-
-					// the string to search for decimals
-					if (UT_UCS_cloneString_char(&pDecimalStr, ".") != true)
-					{
-						// Out of memory. Now what?
-					}
-
-		    	    iScanWidth = 0;
-		    	    iScanWidthLayoutUnits = 0;
-					for ( UT_uint32 j = ii+1; j < iCountRuns; j++ )
-					{
-						UT_uint32 iJ;
-						iJ = eWorkingDirection == WORK_FORWARD ? j : iCountRuns - j - 1;
-#ifdef BIDI_ENABLED						
-						pScanRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(iJ));
-#else
-						pScanRun = (fp_Run*) m_vecRuns.getNthItem(iJ);
-#endif
-						if(!pScanRun || pScanRun->getType() == FPRUN_TAB)
-							break;
-				
-						bool foundDecimal = false;
-						if(pScanRun->getType() == FPRUN_TEXT)
-						{
-							UT_sint32 decimalBlockOffset = ((fp_TextRun *)pScanRun)->findCharacter(0, pDecimalStr[0]);
-							if(decimalBlockOffset != -1)
-							{
-								foundDecimal = true;
-								runLen = pScanRun->getBlockOffset() - decimalBlockOffset;
-							}
-						}
-
-						xxx_UT_DEBUGMSG(("%s(%d): foundDecimal=%d len=%d iScanWidth=%d \n",
-							__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
-						if ( foundDecimal )
-						{
-							if(pScanRun->getType() == FPRUN_TEXT)
-							{
-								iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_display, runLen);
-								iScanWidthLayoutUnits += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
-							}
-							break; // we found our decimal, don't search any further
-						}
-						else
-						{
-							iScanWidth += pScanRun->getWidth();
-							iScanWidthLayoutUnits += pScanRun->getWidthInLayoutUnits();
-						}
-					}
-			            	
-					iXLayoutUnits = iPosLayoutUnits - (UT_sint32)eWorkingDirection * iScanWidthLayoutUnits;
-					iX = iPosLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS - (UT_sint32)eWorkingDirection * iScanWidth;
-					pTabRun->setWidth(abs(iX - iXprev));
-					FREEP(pDecimalStr);	
-					break;
-				}
-		
-				case FL_TAB_BAR:
-				{
-					iXLayoutUnits = iPosLayoutUnits;
-					iX = iXLayoutUnits * Screen_resolution / UT_LAYOUT_UNITS;
-					pTabRun->setWidth(abs(iX - iXprev));
-				}
-				break;
-
-				default:
-				UT_ASSERT(UT_NOT_IMPLEMENTED);
-			}; //switch
-
-			// if working backwards, set the new X coordinance
-			// and decide if line needs erasing
-			if(eWorkingDirection == WORK_BACKWARD)
-			{
-				if(!bLineErased && pRun->getX()!= iX)
-				{
-					bLineErased = true;				
-					iIndxToEraseFrom = iIndx;
-				}
-				pRun->setX(iX);
-			}
-		
+			pRun->setX(iX);
 		}
-		else //this is not a Tab run, or we are using fixed width tabs
-		{
-	    	if(pRun->getType() == FPRUN_TAB)
-				static_cast<fp_TabRun*>(pRun)->setWidth(pRun->getAscent()*iFixedWidthMlt / iFixedWidthDiv);
-	
-			if(eWorkingDirection == WORK_FORWARD)
-			{
-				if(!bLineErased && pRun->getX()!= iX)
-				{
-					bLineErased = true;				
-					iIndxToEraseFrom = iIndx;
-				}
-				pRun->setX(iX);
-				
-				iXLayoutUnits += pRun->getWidthInLayoutUnits();
-				iX += pRun->getWidth();
-			}
-			else
-			{
-				iXLayoutUnits -= pRun->getWidthInLayoutUnits();
-				iX -= pRun->getWidth();
-				
-				if(!bLineErased && pRun->getX() != iX)
-				{
-					bLineErased = true;
-					iIndxToEraseFrom = iIndx;
-				}
-					pRun->setX(iX);
-			}
+
+		_calculateWidthOfRun(iX,
+							 iXLayoutUnits,
+							 pRun,
+							 ii,
+							 iCountRuns,
+							 eWorkingDirection,
+							 eUseTabStop
+#ifdef BIDI_ENABLED
+							,iDomDirection
+#endif		
+							);
 			
-			xxx_UT_DEBUGMSG(("run[%d] (type %d) width=%d\n", i,pRun->getType(),pRun->getWidth()));
+		// if working backwards, set the new X coordinance
+		// and decide if line needs erasing
+		if(eWorkingDirection == WORK_BACKWARD)
+		{
+			if(!bLineErased && pRun->getX()!= iX)
+			{
+				bLineErased = true;				
+				iIndxToEraseFrom = iIndx;
+			}
+			pRun->setX(iX);
 		}
 	} //for
 	
@@ -2037,7 +2205,8 @@ bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 
 	iTabStopPosition -= getX();
 
-	if (iTabStopPosition < m_iMaxWidth)
+	//has to be <=
+	if (iTabStopPosition <= m_iMaxWidth)
 	{
 		iPosition = iTabStopPosition;
 		iType = iTabStopType;
@@ -2047,6 +2216,9 @@ bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	}
 	else
 	{
+		UT_DEBUGMSG(("fp_Line::findNextTabStop: iStartX %d, m_iMaxWidth %d\n"
+					 "          iPosition %d, iTabStopPosition %d, iType %d, iLeader %d\n",
+					 iStartX, m_iMaxWidth,iPosition, iTabStopPosition,(UT_sint32)iType, (UT_sint32)iLeader));
 		return false;
 	}
 }
@@ -2064,7 +2236,7 @@ bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 
 	iTabStopPosition -= getXInLayoutUnits();
 
-	if (iTabStopPosition < m_iMaxWidthLayoutUnits)
+	if (iTabStopPosition <= m_iMaxWidthLayoutUnits)
 	{
 		iPosition = iTabStopPosition;
 		iType = iTabStopType;
@@ -2074,6 +2246,9 @@ bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 	}
 	else
 	{
+		UT_DEBUGMSG(("fp_Line::findNextTabStopLayout: iStartX %d, m_iMaxWidthLayoutUnits %d\n"
+					 "           iPosition %d, iTabStopPosition %d,iType %d, iLeader %d\n",
+					 iStartX, m_iMaxWidthLayoutUnits,iPosition, iTabStopPosition,(UT_sint32)iType, (UT_sint32)iLeader));
 		return false;
 	}
 }
@@ -2089,7 +2264,7 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 
 	iTabStopPosition -= getX();
 
-	if (iTabStopPosition < m_iMaxWidth)
+	if (iTabStopPosition <= m_iMaxWidth)
 	{
 		iPosition = iTabStopPosition;
 		iType = iTabStopType;
@@ -2099,6 +2274,9 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	}
 	else
 	{
+		UT_DEBUGMSG(("fp_Line::findPrevTabStop: iStartX %d, m_iMaxWidth %d\n"
+					 "          iPosition %d, iTabStopPosition %d, iType %d, iLeader %d\n",
+					 iStartX, m_iMaxWidth,iPosition, iTabStopPosition, (UT_sint32)iType, (UT_sint32)iLeader));
 		return false;
 	}
 }
@@ -2116,8 +2294,7 @@ bool	fp_Line::findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 
 	iTabStopPosition -= getXInLayoutUnits();
 
-	UT_DEBUGMSG(("fp_Line::findPrevTabStopInLayoutUnits: iTabStopPosition %d, m_iMaxWidthLayoutUnits %d\n",iTabStopPosition, m_iMaxWidthLayoutUnits));
-	if (iTabStopPosition < m_iMaxWidthLayoutUnits)
+	if (iTabStopPosition <= m_iMaxWidthLayoutUnits)
 	{
 		iPosition = iTabStopPosition;
 		iType = iTabStopType;
@@ -2127,6 +2304,9 @@ bool	fp_Line::findPrevTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPositi
 	}
 	else
 	{
+		UT_DEBUGMSG(("fp_Line::findPrevTabStopLayout: iStartX %d, m_iMaxWidthLayoutUnits %d\n"
+					 "         iPosition %d, iTabStopPosition %d, iType %d, iLeader %d\n",
+					 iStartX, m_iMaxWidthLayoutUnits,iPosition, iTabStopPosition,(UT_sint32)iType, (UT_sint32)iLeader));
 		return false;
 	}
 }

@@ -66,8 +66,10 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 
 	while (pLine)
 	{
+		UT_uint32 iIndx = 0;
 		if (pLine->countRuns() > 0)
 		{
+
 			fp_Run *pOriginalFirstOnLine = pLine->getFirstRun();
 			fp_Run *pOriginalLastOnLine = pLine->getLastRun();
 			
@@ -161,158 +163,13 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				}
 				case FPRUN_TAB:
 				{
-					// Find the position of this tab and its type.  If
-					// it's a left tab, then add its width to the
-					// m_iWorkingLineWidth
-
-					UT_sint32	iPos;
-					eTabType	iType;
-					eTabLeader	iLeader;
-
-					// Subtract the width already added then work out new
-					// tab position.
+					FL_WORKING_DIRECTION eWorkingDirection;
+					FL_WHICH_TABSTOP eUseTabStop;
 					
 					m_iWorkingLineWidth -= pCurrentRun->getWidthInLayoutUnits();
-
-					bool bRes = pLine->findNextTabStopInLayoutUnits(m_iWorkingLineWidth, iPos, iType, iLeader);
-					if (bRes)
-					{
-						xxx_UT_DEBUGMSG(("%s:%d tab run: type=%d leader=%d height=%d width=%d offset=%d length=%d",
-									 __FILE__, __LINE__,
-									 (int)iType,
-									 (int)iLeader,
-									 pCurrentRun->getHeight(),
-									 pCurrentRun->getWidth(),
-									 pCurrentRun->getBlockOffset(),
-									 pCurrentRun->getLength()
-							));
-
-
-						UT_ASSERT(iPos > m_iWorkingLineWidth);
-						UT_ASSERT(iPos < m_iMaxLineWidth);
-
-						switch ( iType ) 
-						{
-						case FL_TAB_BAR:
-							m_iWorkingLineWidth = iPos;
-							break;
-// fl_TAB_Bar are left aligned.
-
-						case FL_TAB_LEFT:
-							m_iWorkingLineWidth = iPos;
-							break;
-
-						case FL_TAB_CENTER:
-						{
-							fp_Run *pScanRun;
-							int iScanWidth = 0;
-
-							for ( pScanRun = pCurrentRun->getNext();	
-								  (pScanRun && pScanRun->getType() != FPRUN_TAB
-								   && (iScanWidth / 2 < iPos-m_iWorkingLineWidth));
-								  pScanRun = pScanRun->getNext() )
-							{
-								iScanWidth += pScanRun->getWidthInLayoutUnits();
-							}
-				
-							m_iWorkingLineWidth = iPos - iScanWidth/2;
-
-							break;	
-						}
-
-						case FL_TAB_RIGHT:
-						{
-							fp_Run *pScanRun;
-							int iScanWidth = 0;
-
-							for ( pScanRun = pCurrentRun->getNext();
-								  (pScanRun && pScanRun->getType() != FPRUN_TAB
-								   && (iScanWidth < iPos-m_iWorkingLineWidth));
-								  pScanRun = pScanRun->getNext() )
-							{
-								iScanWidth += pScanRun->getWidthInLayoutUnits();
-							}
-				
-							m_iWorkingLineWidth = iPos - iScanWidth;
-
-							break;	
-						}
-
-						case FL_TAB_DECIMAL:
-						{
-							fp_Run *pScanRun;
-							int iScanWidth = 0;
-							UT_uint32 runLen = 0;
-
-							UT_UCSChar *pDecimalStr;
-							// the string to search for decimals
-							UT_UCS_cloneString_char(&pDecimalStr, ".");
-
-
-							for ( pScanRun = pCurrentRun->getNext();
-								  (pScanRun && pScanRun->getType() != FPRUN_TAB
-								   && (iScanWidth < iPos-m_iWorkingLineWidth));
-								  pScanRun = pScanRun->getNext() )
-							{
-								bool foundDecimal = false;
-
-								if(pScanRun->getType() == FPRUN_TEXT)
-								{
-									UT_sint32 decimalBlockOffset = ((fp_TextRun *)pScanRun)->findCharacter(0, pDecimalStr[0]);
-
-									if(decimalBlockOffset != -1)
-									{
-										foundDecimal = true;
-
-										runLen = pScanRun->getBlockOffset() - decimalBlockOffset;
-									}
-								}
-
-								//UT_DEBUGMSG(("%s:%d  foundDecimal=%d len=%d iScanWidth=%d \n", 
-								//			__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
-				
-								if ( foundDecimal )
-								{
-									if(pScanRun->getType() == FPRUN_TEXT)
-									{
-										iScanWidth += ((fp_TextRun *)pScanRun)->simpleRecalcWidth(fp_TextRun::Width_type_layout_units, runLen);
-									}
-									// we found our decimal, don't
-									// search any further
-									break; 
-								}
-								else	
-								{
-									iScanWidth += pScanRun->getWidthInLayoutUnits();
-								}
-							}
-							//UT_DEBUGMSG((" tabrun iX=%d iPos=%d iScanWidth=%d tabwidth=%d newX=%d\n", 
-							//					  iX,	iPos,   iScanWidth,   iPos-iX-iScanWidth,iPos-iScanWidth));	
-							
-							m_iWorkingLineWidth = iPos - iScanWidth;
-						
-							FREEP(pDecimalStr);	
-							break;	
-						}
-
-
-						default:
-							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-							goto done_with_run_loop;
-						};
-					}
-					else
-					{
-						// Tab won't fit.  bump it to the next line
-						UT_ASSERT(pCurrentRun->getPrev());
-						UT_ASSERT(pCurrentRun != m_pFirstRunToKeep);
 					
-						// TODO - FIXIT - HACK - white space should be
-						// wrapped ???  shouldn't the end of the line
-						// eat up the last of the white space?
-						m_pLastRunToKeep = pCurrentRun->getPrev();
-						goto done_with_run_loop;
-					}
+					pLine->getWorkingDirectionAndTabstops(eWorkingDirection, eUseTabStop);
+					pLine->calculateWidthOfRun(m_iWorkingLineWidth,iIndx,eWorkingDirection,eUseTabStop);
 					break;
 				}
 				case FPRUN_FMTMARK:
@@ -336,6 +193,9 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			
 				pPreviousRun = pCurrentRun;
 				pCurrentRun = pCurrentRun->getNext();
+			
+				iIndx++;
+
 			} // the run loop
 
 		done_with_run_loop:

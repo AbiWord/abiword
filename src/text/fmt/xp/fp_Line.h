@@ -69,6 +69,11 @@ struct dg_DrawArgs;
 #endif //BIDI_ENABLED
 
 
+enum FL_WORKING_DIRECTION {WORK_FORWARD = 1,WORK_BACKWARD = -1,WORK_CENTER = 0};
+enum FL_WHICH_TABSTOP {USE_PREV_TABSTOP,USE_NEXT_TABSTOP,USE_FIXED_TABWIDTH};
+
+
+
 class ABI_EXPORT fp_Line
 {
 public:
@@ -127,6 +132,13 @@ public:
 	inline	fp_Run*     getFirstRun(void) const			{ return ((fp_Run*) m_vecRuns.getFirstItem()); }
 	fp_Run*     getLastRun(void) const ;
 	fp_Run*     getLastTextRun(void) const ;
+	
+	fp_Run*	calculateWidthOfRun(UT_sint32 &iXLayoutUnits,
+								UT_uint32 iIndxVisual,
+								FL_WORKING_DIRECTION eWorkingDirection,
+								FL_WHICH_TABSTOP eUseTabStop);
+							
+	void		getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirection, FL_WHICH_TABSTOP &eUseTabStop) const;
 
 	inline	bool 	isFirstLineInBlock(void) const	{ return (m_pBlock->getFirstLine() == this); }
 	inline	bool 	isLastLineInBlock(void) const	{ return (m_pBlock->getLastLine() == this); }
@@ -193,6 +205,18 @@ public:
 #endif	
 
 protected:
+	void 	_calculateWidthOfRun(UT_sint32 &iX,
+							  UT_sint32 &iXLayoutUnits,
+							  fp_Run * pRun,
+							  UT_uint32 iIndx,
+							  UT_uint32 iCountRuns,
+							  FL_WORKING_DIRECTION eWorkingDirection,
+							  FL_WHICH_TABSTOP eUseTabStop
+#ifdef BIDI_ENABLED
+							  ,FriBidiCharType iDomDirection
+#endif							
+							  );
+
 	fl_BlockLayout*	m_pBlock;
 	fp_Container*	m_pContainer;
 	
