@@ -103,90 +103,90 @@ static void _fatalErrorSAXFunc(void *ctx,
 
 UT_Error UT_XML::parse (const char * szFilename)
 {
-  UT_ASSERT (m_pListener);
-  UT_ASSERT (szFilename);
-
-  if ((szFilename == 0) || (m_pListener == 0)) return UT_ERROR;
-  if (!reset_all ()) return UT_OUTOFMEM;
-
-  UT_Error ret = UT_OK;
-
-  DefaultReader defaultReader;
-  Reader * reader = &defaultReader;
-  if (m_pReader)
-	  reader = m_pReader;
-
-  if (!reader->openFile (szFilename))
+	UT_ASSERT (m_pListener);
+	UT_ASSERT (szFilename);
+	
+	if ((szFilename == 0) || (m_pListener == 0)) return UT_ERROR;
+	if (!reset_all ()) return UT_OUTOFMEM;
+	
+	UT_Error ret = UT_OK;
+	
+	DefaultReader defaultReader;
+	Reader * reader = &defaultReader;
+	if (m_pReader)
+		reader = m_pReader;
+	
+	if (!reader->openFile (szFilename))
     {
-      UT_DEBUGMSG (("Could not open file %s\n", szFilename));
-      return UT_errnoToUTError ();
+		UT_DEBUGMSG (("Could not open file %s\n", szFilename));
+		return UT_errnoToUTError ();
     }
-
-  char buffer[2048];
-
-  m_bStopped = false;
-
-  xmlSAXHandler hdl;
-  xmlParserCtxtPtr ctxt = 0;
-
-  memset(&hdl, 0, sizeof(hdl));
-
-  hdl.getEntity    = _getEntity;
-  hdl.startElement = _startElement;
-  hdl.endElement   = _endElement;
-  hdl.characters   = _charData;
-  hdl.error        = _errorSAXFunc;
-  hdl.fatalError   = _fatalErrorSAXFunc;
-
-  size_t length = reader->readBytes (buffer, sizeof (buffer));
-  int done = (length < sizeof (buffer));
-
-  if (length != 0)
+	
+	char buffer[2048];
+	
+	m_bStopped = false;
+	
+	xmlSAXHandler hdl;
+	xmlParserCtxtPtr ctxt = 0;
+	
+	memset(&hdl, 0, sizeof(hdl));
+	
+	hdl.getEntity    = _getEntity;
+	hdl.startElement = _startElement;
+	hdl.endElement   = _endElement;
+	hdl.characters   = _charData;
+	hdl.error        = _errorSAXFunc;
+	hdl.fatalError   = _fatalErrorSAXFunc;
+	
+	size_t length = reader->readBytes (buffer, sizeof (buffer));
+	int done = (length < sizeof (buffer));
+	
+	if (length != 0)
     {
-      ctxt = xmlCreatePushParserCtxt (&hdl, static_cast<void *>(this), buffer, static_cast<int>(length), szFilename);
-      if (ctxt == NULL)
-	{
-	  UT_DEBUGMSG (("Unable to create libxml2 push-parser context!\n"));
-	  reader->closeFile ();
-	  return UT_ERROR;
-	}
-      xmlSubstituteEntitiesDefault (1);
-
-      while (!done && !m_bStopped)
-	{
-	  length = reader->readBytes (buffer, sizeof (buffer));
-	  done = (length < sizeof (buffer));
-	  
-	  if (xmlParseChunk (ctxt, buffer, static_cast<int>(length), 0))
-	    {
-	      UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
-	      ret = UT_IE_IMPORTERROR;
-	      break;
-	    }
-	}
-      if (ret == UT_OK)
-	if (!m_bStopped)
-	  {
-	    if (xmlParseChunk (ctxt, "", 0, 1))
-	      {
-		UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
-		ret = UT_IE_IMPORTERROR;
-	      }
-	  }
-      if (ret == UT_OK)
-	if (!ctxt->wellFormed && !m_bStopped) ret = UT_IE_IMPORTERROR; // How does stopping mid-file affect wellFormed?
-      
-      ctxt->sax = NULL;
-      xmlFreeParserCtxt (ctxt);
+		ctxt = xmlCreatePushParserCtxt (&hdl, static_cast<void *>(this), buffer, static_cast<int>(length), szFilename);
+		if (ctxt == NULL)
+		{
+			UT_DEBUGMSG (("Unable to create libxml2 push-parser context!\n"));
+			reader->closeFile ();
+			return UT_ERROR;
+		}
+		xmlSubstituteEntitiesDefault (1);
+		
+		while (!done && !m_bStopped)
+		{
+			length = reader->readBytes (buffer, sizeof (buffer));
+			done = (length < sizeof (buffer));
+			
+			if (xmlParseChunk (ctxt, buffer, static_cast<int>(length), 0))
+			{
+				UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
+				ret = UT_IE_IMPORTERROR;
+				break;
+			}
+		}
+		if (ret == UT_OK)
+			if (!m_bStopped)
+			{
+				if (xmlParseChunk (ctxt, "", 0, 1))
+				{
+					UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
+					ret = UT_IE_IMPORTERROR;
+				}
+			}
+		if (ret == UT_OK)
+			if (!ctxt->wellFormed && !m_bStopped) ret = UT_IE_IMPORTERROR; // How does stopping mid-file affect wellFormed?
+		
+		ctxt->sax = NULL;
+		xmlFreeParserCtxt (ctxt);
     }
-  else
+	else
     {
-      UT_DEBUGMSG(("Empty file to parse - not sure how to proceed\n"));
+		UT_DEBUGMSG(("Empty file to parse - not sure how to proceed\n"));
     }
-
-  reader->closeFile ();
-
-  return ret;
+	
+	reader->closeFile ();
+	
+	return ret;
 }
 
 

@@ -394,6 +394,9 @@ GR_UnixGraphics::~GR_UnixGraphics()
 			GdkPixbuf * pix = static_cast<GdkPixbuf *>(m_vSaveRectBuf.getNthItem (i));
 			g_object_unref (G_OBJECT (pix));
 		}
+
+	gdk_gc_unref (m_pGC);
+	gdk_gc_unref (m_pXORGC);
 }
 
 bool GR_UnixGraphics::queryProperties(GR_Graphics::Properties gp) const

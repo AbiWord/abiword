@@ -3601,15 +3601,8 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 // Check we have a layout defined first. On startup we don't
 //
 // fixme
-#if 1
-	// NOTE: caller must free this, but not the referenced contents
-	const XML_Char ** tprops = static_cast<const XML_Char **>(UT_calloc(3, sizeof(XML_Char *)));
-	tprops[0] = "fred";
-	tprops[1] = "1";
-	tprops[2] = NULL;
-	*pProps = tprops;
-#endif
 
+	*pProps = NULL;
 
 	if(getLayout()->getFirstSection() == NULL)
 	{

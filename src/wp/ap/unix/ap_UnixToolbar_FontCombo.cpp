@@ -56,6 +56,7 @@ AP_UnixToolbar_FontCombo::AP_UnixToolbar_FontCombo(EV_Toolbar * pToolbar,
 	UT_ASSERT(list);
 
 	m_nLimit = list->size();
+	DELETEP(list);
 }
 
 AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)

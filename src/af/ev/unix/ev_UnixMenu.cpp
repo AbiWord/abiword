@@ -660,6 +660,8 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				// create callback info data for action handling
 				_wd * wd = new _wd(this, id);
 				UT_ASSERT(wd);
+				m_vecCallbacks.addItem(static_cast<void *>(wd));
+
 				// find parent menu item
 				GtkWidget * wParent;
 				bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
