@@ -35,7 +35,7 @@ PROGRAM=		AbiHello
 LoadOrder=		AbiGr AbiHEAp AbiXAp AbiEv AbiUtil AbiHelloVer
 ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 
-ABI_OTHLIBS=		expat $(ABI_JSLIBS) $(DL_LIBS)
+ABI_OTHLIBS=		Abi_expat $(DL_LIBS)
 ABI_LIBS=		stdc++
 
 TARGETS=		$(PROGRAM)

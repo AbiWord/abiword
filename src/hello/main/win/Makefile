@@ -30,7 +30,7 @@ PROGRAM=		AbiHello.exe
 ABI_LDFLAGS=		/nologo /subsystem:windows /incremental:no /machine:I386 /profile
 ABI_APPLIBS=		AbiVer AbiUtil AbiEv AbiXAp AbiGr AbiHEAp
 
-ABI_OTHLIBS=		expat $(ABI_JSLIBS)
+ABI_OTHLIBS=		
 ####ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
 ####			shell32 ole32 oleaut32 uuid odbc32 odbccp32
 ABI_LIBS=		kernel32 user32 gdi32 winspool comdlg32 advapi32 \
