@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,15 +21,19 @@
 #ifndef AP_CocoaDialog_Styles_H
 #define AP_CocoaDialog_Styles_H
 
+#import <Cocoa/Cocoa.h>
 #include "ap_Dialog_Columns.h"
 #include "gr_CocoaGraphics.h"
 
 #include "ut_types.h"
 #include "ut_string.h"
+#import "xap_Cocoa_NSTableUtils.h"
 #include "ap_Dialog_Styles.h"
 
 
 class XAP_CocoaFrame;
+@class AP_CocoaDialog_StylesController;
+@class AP_CocoaDialog_StylesModifyController;
 
 /*****************************************************************/
 
@@ -39,12 +43,12 @@ public:
 	typedef enum _StyleType 
 	  {USED_STYLES, ALL_STYLES, USER_STYLES} StyleType;
 
-	AP_CocoaDialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~AP_CocoaDialog_Styles(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	// callbacks can fire these events
 
@@ -54,12 +58,11 @@ public:
 	virtual void			event_Apply(void);
 	virtual void			event_Close(void);
 
-	virtual void event_DeleteClicked(void);
+	virtual void event_DeleteClicked(NSString* data);
 	virtual void event_NewClicked(void);
 	virtual void event_ModifyClicked(void);
-	virtual void event_ClistClicked(int row, int col);
-	virtual void event_ListClicked(const char * which);
-	virtual void			event_WindowDelete(void);
+	virtual void event_ClistClicked(int row);
+	virtual void event_ListFilterClicked(const StyleType which);
 	void new_styleName(void);
 
 /////////////////////////////////////////////////////////////////////////
@@ -68,7 +71,6 @@ public:
 
 	void         event_Modify_OK(void);
 	void         event_Modify_Cancel(void);
-	void         event_ModifyDelete(void);
 	void         event_ModifyParagraph();
 	void         event_ModifyFont();
 	void         event_ModifyNumbering();
@@ -81,99 +83,114 @@ public:
 	void         event_followedBy(void);
 	void         event_styleType(void);
 	void         modifyRunModal(void);
-	void         setModifySignalBlocked( bool val);
-	bool         isModifySignalBlocked(void) const;         
+	void         event_modifySheetDidEnd(int code);
 	void         setIsNew(bool isNew) {m_bIsNew = isNew;}
 	const bool   isNew(void) const { return m_bIsNew;}
 	XML_Char *   getNewStyleName(void) const {return (XML_Char *) m_newStyleName;}
 	XML_Char *   getBasedonName(void) const {return (XML_Char *) m_basedonName;}
 	XML_Char *   getFollowedbyName(void) const {return (XML_Char *) m_followedbyName;}
 	XML_Char *   getStyleType(void) const {return (XML_Char *) m_styleType;}
-protected:
-#if 0
-	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
-	GtkWidget * _constructWindowContents(GtkWidget * parent);
+
+private:
 	void				_populateWindowData(void);
-	void                            _populateCList(void) const;
+	void                            _populateCList(void);
 	void 				_storeWindowData(void) const;
-	void				_connectsignals(void) const;
 	virtual const char * getCurrentStyle (void) const;
 	virtual void setDescription (const char * desc) const;
 
 	GR_CocoaGraphics	* 		m_pParaPreviewWidget;
 	GR_CocoaGraphics	* 		m_pCharPreviewWidget;
 
-	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
-
-	GtkWidget * m_wbuttonApply;
-	GtkWidget * m_wbuttonClose;
-	GtkWidget * m_wbuttonNew;
-	GtkWidget * m_wbuttonModify;
-	GtkWidget * m_wbuttonDelete;
-	GtkWidget * m_wParaPreviewArea;
-	GtkWidget * m_wCharPreviewArea;
-	GtkWidget * m_wGnomeButtons;
-
-	GtkWidget * m_wclistStyles;
-	GtkWidget * m_wlistTypes;
-	GtkWidget * m_wlabelDesc;
-
-	gint m_whichRow, m_whichCol;
-	StyleType m_whichType;
-
-//////////////////////////////////////////////////////////////////////////
-// Modify window
-/////////////////////////////////////////////////////////////////////////
-
-	virtual GtkWidget * _constructModifyDialog(void);
-	virtual void        _constructGnomeModifyButtons( GtkWidget * dialog_action_area1);
-	void        _constructFormatList(GtkWidget * FormatMenu);
-	void        _connectModifySignals(void);
-	void        _constructModifyDialogContents(GtkWidget * modifyDialog);
 	virtual void setModifyDescription( const char * desc);
 	bool        _populateModify(void);
 
-	GR_CocoaGraphics	* 		m_pAbiPreviewWidget;
-
-	GtkWidget *	m_wModifyDialog;
-	GtkWidget *	m_wStyleNameEntry;
-	GtkWidget *	m_wBasedOnCombo;
-	GtkWidget *	m_wBasedOnEntry;
-	GtkWidget * m_wFollowingCombo;
-	GtkWidget *	m_wFollowingEntry;
-	GtkWidget * m_wStyleTypeCombo;
-	GtkWidget *	m_wStyleTypeEntry;
-	GtkWidget *	m_wModifyDrawingArea;
-	GtkWidget *	m_wLabDescription;
-	GtkWidget * m_wDeletePropCombo;
-	GtkWidget * m_wDeletePropEntry;
-	GtkWidget * m_wDeletePropButton;
-	GtkWidget *	m_wModifyOk;
-	GtkWidget *	m_wModifyCancel;
-	GtkWidget *	m_wFormatMenu;
-	GtkWidget *	m_wModifyShortCutKey;
-
-	GtkWidget *	m_wFormat;
-	GtkWidget *	m_wModifyParagraph;
-	GtkWidget *	m_wModifyFont;
-	GtkWidget *	m_wModifyNumbering;
-	GtkWidget *	m_wModifyTabs;
-	GtkWidget * m_wModifyLanguage;
-
-	GList *     m_gbasedOnStyles;
-	GList *     m_gfollowedByStyles;
-	GList *     m_gStyleType;
-#endif
-private:
 	XML_Char    m_newStyleName[40];
 	XML_Char    m_basedonName[40];
 	XML_Char    m_followedbyName[40];
 	XML_Char    m_styleType[40];
+	GR_CocoaGraphics	* 		m_pAbiPreviewWidget;
+	int m_whichRow;
+	StyleType m_whichType;
 	bool m_bIsNew;
-	bool m_bBlockModifySignal;
+	AP_CocoaDialog_StylesController* m_dlg;
+	AP_CocoaDialog_StylesModifyController* m_modifyDlg;
 };
+
+
+#if defined(INTERNAL_OBJC)
+
+@interface AP_CocoaDialog_StylesController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+@public
+    IBOutlet NSButton *_applyBtn;
+    IBOutlet NSBox *_availStylesBox;
+    IBOutlet NSTableView *_availStylesList;
+    IBOutlet XAP_CocoaNSView *_charPreview;
+    IBOutlet NSBox *_charPreviewBox;
+    IBOutlet NSButton *_closeBtn;
+    IBOutlet NSButton *_deleteBtn;
+    IBOutlet NSBox *_descriptionBox;
+    IBOutlet NSTextField *_descriptionData;
+    IBOutlet NSPopUpButton *_listCombo;
+    IBOutlet NSTextField *_listLabel;
+    IBOutlet NSButton *_modifyBtn;
+    IBOutlet NSButton *_newBtn;
+    IBOutlet XAP_CocoaNSView *_paraPreview;
+    IBOutlet NSBox *_paraPreviewBox;
+	
+	XAP_StringListDataSource* m_stylesDataSource;
+	AP_CocoaDialog_Styles* _xap;
+}
+- (IBAction)applyAction:(id)sender;
+- (IBAction)closeAction:(id)sender;
+- (IBAction)deleteAction:(id)sender;
+- (IBAction)listSelectedAction:(id)sender;
+- (IBAction)listFilterSelectedAction:(id)sender;
+- (IBAction)modifyAction:(id)sender;
+- (IBAction)newAction:(id)sender;
+
+- (void)setStyleDescription:(NSString*)desc;
+@end
+
+@interface AP_CocoaDialog_StylesModifyController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+@public
+    IBOutlet NSComboBox *_basedOnCombo;
+    IBOutlet NSTextField *_basedOnLabel;
+    IBOutlet NSButton *_cancelBtn;
+    IBOutlet NSTextField *_desc;
+    IBOutlet NSBox *_descBox;
+    IBOutlet NSComboBox *_followStyleCombo;
+    IBOutlet NSTextField *_followStyleLabel;
+    IBOutlet NSPopUpButton *_formatPopupBtn;
+    IBOutlet NSButton *_okBtn;
+    IBOutlet XAP_CocoaNSView *_preview;
+    IBOutlet NSBox *_previewBox;
+    IBOutlet NSButton *_removeBtn;
+    IBOutlet NSComboBox *_removePropCombo;
+    IBOutlet NSTextField *_removePropLabel;
+    IBOutlet NSButton *_shortcutBtn;
+    IBOutlet NSTextField *_styleNameData;
+    IBOutlet NSTextField *_styleNameLabel;
+    IBOutlet NSComboBox *_styleTypeCombo;
+    IBOutlet NSTextField *_styleTypeLabel;
+	AP_CocoaDialog_Styles* _xap;
+}
+- (IBAction)basedOnAction:(id)sender;
+- (IBAction)cancelAction:(id)sender;
+- (IBAction)followStyleAction:(id)sender;
+- (IBAction)formatAction:(id)sender;
+- (IBAction)okAction:(id)sender;
+- (IBAction)removeAction:(id)sender;
+- (IBAction)shortcutAction:(id)sender;
+- (IBAction)styleNameAction:(id)sender;
+- (IBAction)styleTypeAction:(id)sender;
+
+- (void)sheetDidEnd:(NSWindow*)sheet returnCode:(int)returnCode contextInfo:(void  *)c;
+@end
+
+#endif
+
 
 #endif /* AP_CocoaDialog_Styles_H */
 
