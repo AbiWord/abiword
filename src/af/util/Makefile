@@ -122,7 +122,7 @@ ifdef ABI_OPT_BIDI_ENABLED
 OBJS +=	$(OBJDIR)/ut_contextGlyph.$(OBJ_SUFFIX)
 endif
 
-ifdef ABI_OPT_PERL
+ifeq ($(ABI_OPT_PERL),1)
 OBJS += $(OBJDIR)/ut_PerlBindings.$(OBJ_SUFFIX)
 endif
 

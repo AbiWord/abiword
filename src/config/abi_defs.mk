@@ -335,7 +335,7 @@ ABI_ENABLED_OPTIONS=
 
 ## conditionally enable some additional debugging and test code
 
-ifdef ABI_OPT_DEBUG
+ifeq ($(ABI_OPT_DEBUG),1)
 ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST -DFMT_TEST -DUT_TEST
 ABI_OPTIONS+=Debug:On
 else
@@ -345,10 +345,10 @@ endif
 
 ## BIDI options
 
-ifdef ABI_OPT_BIDI_ENABLED
+ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 ABI_BIDI_ENABLED=-DBIDI_ENABLED
 ABI_OPTIONS+=BiDi:On
-ifdef ABI_OPT_BIDI_RTL_DOMINANT
+ifeq ($(ABI_OPT_BIDI_RTL_DOMINANT),1)
 ABI_BIDI_ENABLED+=-DBIDI_RTL_DOMINANT
 ABI_OPTIONS+=/RTL dominant/
 else
@@ -550,7 +550,7 @@ ifeq ($(ABI_NATIVE),unix)
 # ABI_OPT_BONOBO turns on ABI_OPT_GNOME
 # But we should build without gnome by default
 ABI_OPT_GNOME = 0
-ifdef ABI_OPT_BONOBO
+ifeq ($(ABI_OPT_BONOBO),1)
 	ABI_OPT_GNOME = 1
 endif
 
@@ -580,7 +580,7 @@ GNOME_CFLAGS += $(GTK_CFLAGS)
 GNOME_LIBS      += $(shell $(GNOME_CONFIG) --libs-only-L gnome gal)
 GNOME_LIBS      += -lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg 
 
-ifdef ABI_OPT_GNOMEVFS
+ifeq ($(ABI_OPT_GNOMEVFS),1)
 GNOME_CFLAGS += $(shell gnome-vfs-config --cflags)
 GNOME_CFLAGS += -DHAVE_GNOMEVFS
 GNOME_LIBS   += $(shell gnome-vfs-config --libs)
@@ -590,7 +590,7 @@ endif
 GNOME_CFLAGS += $(shell glib-config --cflags)
 
 # the bonobo target is known not to work properly yet
-ifdef ABI_OPT_BONOBO
+ifeq ($(ABI_OPT_BONOBO),1)
 GNOME_CFLAGS    += $(shell $(GNOME_CONFIG) --cflags oaf bonobo)
 GNOME_CFLAGS    += -DHAVE_BONOBO
 GNOME_LIBS      += -lbonobo -loaf -lORBitCosNaming -lORBit -lIIOP -lORBitutil
@@ -627,7 +627,7 @@ EXTRA_LIBS	+=	$(GTK_LIBS)
 ABI_OPTIONS+=Gnome:Off
 endif
 
-ifdef ABI_OPT_LIBXML2
+ifeq ($(ABI_OPT_LIBXML2),1)
 XML_CFLAGS	= $(shell $(LIBXML_CONFIG) --cflags)
 XML_LIBS	= $(shell $(LIBXML_CONFIG) --libs)
 CFLAGS 		+=	$(XML_CFLAGS) -DHAVE_LIBXML2
@@ -646,7 +646,7 @@ else
 # For psiconv. This should pick up the static psiconv library in the
 # peer directory, or the global one if it is not found. 
 EXTRA_LIBS	+= -L$(ABI_ROOT)/../psiconv/psiconv/.libs -lpsiconv
-ifndef ABI_OPT_LIBXML2
+ifneq ($(ABI_OPT_LIBXML2),1)
 EXTRA_LIBS	+= -L$(ABI_ROOT)/../expat/lib/.libs -lexpat 
 endif
 endif
@@ -657,7 +657,7 @@ endif
 ## Should only be enabled for unix or else do the
 ## addprefix addsuffix stuff as shown above
 ## Need ltdl for dynamic loading/linking on Solaris
-ifdef ABI_OPT_PSPELL
+ifeq ($(ABI_OPT_PSPELL),1)
 EXTRA_LIBS      += -lpspell -lpspell-modules -lltdl
 ABI_OPTIONS+=Pspell:On
 CFLAGS += -DHAVE_PSPELL
@@ -666,7 +666,7 @@ ABI_OPTIONS+=Pspell:Off
 endif
 
 # Perl scripting support
-ifdef ABI_OPT_PERL
+ifeq ($(ABI_OPT_PERL),1)
     ifeq ($(OS_NAME), WIN32)
 		EXTRA_LIBS += $(shell perl -MExtUtils::Embed -e ldopts | sed 's|[a-zA-Z0-9~:\\]*msvcrt\.lib||g' | sed 's|\([-/]release\|[-/]nodefaultlib\|[-/]nologo\|[-/]machine:[a-zA-Z0-9]*\)||g' | sed 's|\\|\\\\\\\\|g')
 		CFLAGS += -DABI_OPT_PERL $(shell perl -MExtUtils::Embed -e ccopts | sed 's/\(-O1\|-MD\)//g')
@@ -682,12 +682,12 @@ endif
 # conditionally enable stl-based implementations of our
 # UT_XXX classes. We may need to link against certain
 # libraries, but we don't on linux. Add these as necessary.
-ifdef ABI_OPT_STL
+ifeq ($(ABI_OPT_STL),1)
 CFLAGS += -DABI_OPT_STL
 ABI_OPTIONS+=STL:On
 endif
 
-ifdef ABI_OPT_WIDGET
+ifeq ($(ABI_OPT_WIDGET),1)
 CFLAGS += -DABI_OPT_WIDGET
 endif
 
@@ -696,7 +696,7 @@ CFLAGS += -DENABLE_PLUGINS
 ABI_OPTIONS+=Plugins:On
 endif
 
-ifdef ABI_USE_100_ISPELL
+ifeq ($(ABI_USE_100_ISPELL),1)
 CFLAGS += -DMAXSTRINGCHARS=100
 endif
 
@@ -710,7 +710,7 @@ CFLAGS += -DLIBICONV_PLUG
 ifeq ($(ABI_NATIVE),unix)
 CFLAGS += -DSUPPORTS_UT_IDLE=1
 endif
-ifdef ABI_OPT_BIDI_ENABLED
+ifeq ($(ABI_OPT_BIDI_ENABLED),1)
 EXTRA_LIBS+=-lAbi_fribidi
 endif
 

@@ -63,7 +63,7 @@ ifdef ABI_OPT_BIDI_ENABLED
 CPPSRCS += ut_contextGlyph.cpp
 endif		
 
-ifdef ABI_OPT_PERL
+ifeq ($(ABI_OPT_PERL),1)
 CPPSRCS += ut_PerlBindings.cpp
 endif
 
