@@ -1727,6 +1727,10 @@ bool PD_Document::isEndFootnoteAtPos(PT_DocPosition pos)
     {
 		pf = pf->getPrev();
     }
+	if(pf->getPos() < pos)
+	{
+		return false;
+	}
 	bool b = m_pPieceTable->isEndFootnote(pf);
 	if(b)
 	{
