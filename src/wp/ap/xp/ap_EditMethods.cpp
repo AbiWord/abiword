@@ -2314,7 +2314,9 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 
 Defun(closeWindow)
 {
-	return s_closeWindow (pAV_View, pCallData, false);
+	// TODO: change this back to false after I find out what's causing a
+	// TODO: SEGV when clicking the WM 'X' button
+	return s_closeWindow (pAV_View, pCallData, true);
 }
 
 Defun(querySaveAndExit)
