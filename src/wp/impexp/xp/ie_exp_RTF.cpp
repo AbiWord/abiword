@@ -261,9 +261,11 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 
 // First find the header/footer section and id in the document.
 	m_pListenerWriteDoc->_closeSpan();
+#if 0 //#TF
 	m_pListenerWriteDoc->_closeBlock();
 	m_pListenerWriteDoc->_closeSpan();
 	m_pListenerWriteDoc->_closeSection();
+#endif
 	m_pListenerWriteDoc->_setTabEaten(false);
 
 	PL_StruxDocHandle hdrSDH = getDoc()->findHdrFtrStrux((const XML_Char *) pszHdrFtr,(const XML_Char * ) pszHdrFtrID);
@@ -307,7 +309,9 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 // Now pump out the contents of the HdrFtr
 //
 	getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListenerWriteDoc),pExportHdrFtr);
+#if 0 //#TF
 	_rtf_keyword("par");
+#endif
 	delete pExportHdrFtr;
 	_rtf_close_brace();
 }

@@ -3645,50 +3645,63 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 
 			if(bHeader)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("header",pszHeaderID,"headerl");
 			}
 			if(bHeaderEven)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-even",pszHeaderEvenID,"headerr");
 			}
 			else if(bHeader)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("header",pszHeaderID,"headerr");
 			}
 			if(bHeaderFirst)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("header-first",pszHeaderFirstID,"headerf");
 			}
 			if(bFooter)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer",pszFooterID,"footerl");
 			}
 			if(bFooterEven)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer-even",pszFooterEvenID,"footerr");
 			}
 			else if(bFooter)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer",pszFooterID,"footerr");
 			}
 			if(bFooterFirst)
 			{
+				m_bInBlock = false;
 				m_pie->exportHdrFtr("footer-first",pszFooterFirstID,"footerf");
 			}
 			_closeSpan();
+#if 0 // #TF
 			_closeBlock();
+#endif
 			_closeSection();
 			_setTabEaten(false);
 
 			m_sdh = sdh;
 			_rtf_open_section(pcr->getIndexAP());
+			m_bInBlock = false;
 			return true;
 		}
 
 	case PTX_SectionHdrFtr:
 		{
 			_closeSpan();
+#if 0 //#TF
 			_closeBlock();
+#endif
 			_closeSection();
 			_setTabEaten(false);
 			return false;

@@ -2325,8 +2325,11 @@ UT_Error IE_Imp_RTF::_parseText()
 
 	if (ok && !getLoadStylesOnly())
 	{
-		// force this if a paragraph is flagged (can be empty)
-		ok = FlushStoredChars(m_newParaFlagged);
+		// do not force this -- a correctly formed rtf document should end in \par keyword
+		// so m_newParaFlagged will be set, but there will be nothing in the buffer, so no
+		// para should be output. If the doc is malformed and there is some stuff after
+		// the last \par, it will be output.
+		ok = FlushStoredChars(false);
 		if (!ok) {
 			UT_DEBUGMSG(("FlushStoredChars()\n"));
 		}
@@ -2441,9 +2444,15 @@ bool IE_Imp_RTF::HandleParKeyword()
 
 	if(!m_bSectionHasPara)
 	{
+		//if(m_newSectionFlagged)
+		//ApplySectionAttributes();
+		
+		//m_newSectionFlagged = false;
+		
 		getDoc()->appendStrux(PTX_Block,NULL);
-		m_bSectionHasPara = true;
 		m_newParaFlagged = false;
+		
+		m_bSectionHasPara = true;
 	}
 	
 	UT_String sProps;
@@ -2507,6 +2516,7 @@ bool IE_Imp_RTF::StartNewSection()
 	bool ok = FlushStoredChars(m_newParaFlagged);
 
 	m_newSectionFlagged = true;
+	m_newParaFlagged = true;
 	m_bSectionHasPara = false;
 	return ok;
 }
@@ -4295,8 +4305,18 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool
 			{
 				CloseTable();
 			}
+
+			if(param == 0)
+			{
+				// we closed the highest level table; in rtf table is equivalent to a block,
+				// while our table is contained in a block
+				// so we have to insert a block to get the same effect
+				StartNewPara();
+			}
+		
 		}
 		xxx_UT_DEBUGMSG(("SEVIOR!!! After itap m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+
 		return true;
 	case RTF_KW_lquote:
 		return ParseChar(UCS_LQUOTE);
