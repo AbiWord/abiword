@@ -4095,7 +4095,6 @@ static UT_Bool s_doPageSetupDlg (FV_View * pView)
 		      {
 			     UT_uint32 izoom = pFrame->getZoomPercentage();
 			     pFrame->setZoomPercentage(izoom);
-			     
 		      }
 	       }
 	  

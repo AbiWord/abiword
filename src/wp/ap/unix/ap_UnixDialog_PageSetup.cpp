@@ -35,6 +35,8 @@
 #include "orient-horizontal.xpm"
 #include "margin.xpm"
 
+#include "ut_debugmsg.h"
+
 /*********************************************************************************/
 
 // static helper functions
@@ -92,6 +94,19 @@ fp_2_dim (fp_PageSize::Unit u)
     default :
       return DIM_IN;
     }
+}
+
+static int
+fp_2_pos (fp_PageSize::Unit u)
+{
+   switch (u)
+    {
+    case fp_PageSize::cm   : return 1;
+    case fp_PageSize::mm   : return 2;
+    case fp_PageSize::inch :
+    default :
+      return 0;
+    } 
 }
 
 #define FMT_STRING "%0.2f"
@@ -186,7 +201,6 @@ static void s_page_size_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 static void s_page_units_changed (GtkWidget * w, AP_UnixDialog_PageSetup *dlg)
 {
   UT_ASSERT(w && dlg);
-
   s_menu_item_activate (w);
   dlg->event_PageUnitsChanged ();
 }
@@ -205,17 +219,11 @@ void AP_UnixDialog_PageSetup::event_OK (void)
 {
 	setAnswer (a_OK);
 
-	fp_PageSize::Predefined pd = (fp_PageSize::Predefined) gtk_object_get_data (GTK_OBJECT (m_optionPageSize),
-										    WIDGET_MENU_VALUE_TAG);
-	fp_PageSize fp (pd);
+	fp_PageSize fp (last_page_size);
 
 	setPageSize (fp);
-	setPageSize ((fp_PageSize::Predefined) gtk_object_get_data (GTK_OBJECT (m_optionPageSize),
-								    WIDGET_MENU_VALUE_TAG));
-	setMarginUnits ((fp_PageSize::Unit) gtk_object_get_data (GTK_OBJECT (m_optionMarginUnits),
-							    WIDGET_MENU_VALUE_TAG));
-	setPageUnits ((fp_PageSize::Unit) gtk_object_get_data (GTK_OBJECT (m_optionPageUnits), 
-							  WIDGET_MENU_VALUE_TAG));
+	setMarginUnits (last_margin_unit);
+	setPageUnits (last_page_unit);
 	setPageOrientation (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioPagePortrait)) ? PORTRAIT : LANDSCAPE);
 	setPageScale (gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (m_spinPageScale)));
 
@@ -246,18 +254,25 @@ void AP_UnixDialog_PageSetup::event_PageUnitsChanged (void)
 								  WIDGET_MENU_VALUE_TAG);
 
   float width, height;
-  
-  // get values
-  
-  width  = (float)atof (gtk_entry_get_text (GTK_ENTRY (m_entryPageWidth)));
-  height = (float)atof (gtk_entry_get_text (GTK_ENTRY (m_entryPageHeight)));;
 
-  CONVERT_DIMENSIONS (width, last_page_unit, pu);
-  CONVERT_DIMENSIONS (height, last_page_unit, pu);
+  fp_PageSize ps(last_page_size);
+  
+  // get values  
+  width  = (float)ps.Width (pu);
+  height = (float)ps.Height (pu);
 
   last_page_unit = pu;
   
   // set values
+  gchar * val;
+
+  val = g_strdup_printf (FMT_STRING, width);
+  gtk_entry_set_text (GTK_ENTRY (m_entryPageWidth), val);
+  g_free (val);
+
+  val = g_strdup_printf (FMT_STRING, height);
+  gtk_entry_set_text (GTK_ENTRY (m_entryPageHeight), val);
+  g_free (val);
 }
 
 void AP_UnixDialog_PageSetup::event_PageSizeChanged (void)
@@ -585,7 +600,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_menu_append (GTK_MENU (optionPageUnits_menu), glade_menuitem);
 
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionPageUnits), optionPageUnits_menu);
-  gtk_option_menu_set_history (GTK_OPTION_MENU (optionPageUnits), 0);
+  gtk_option_menu_set_history (GTK_OPTION_MENU (optionPageUnits), fp_2_pos (getPageUnits()));
 
   frameOrientation = gtk_frame_new (_(AP, DLG_PageSetup_Orient));
   gtk_widget_show (frameOrientation);
@@ -795,7 +810,7 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   gtk_menu_append (GTK_MENU (optionMarginUnits_menu), glade_menuitem);
 
   gtk_option_menu_set_menu (GTK_OPTION_MENU (optionMarginUnits), optionMarginUnits_menu);
-  gtk_option_menu_set_history (GTK_OPTION_MENU (optionMarginUnits), 0);
+  gtk_option_menu_set_history (GTK_OPTION_MENU (optionMarginUnits), fp_2_pos (getMarginUnits()));
 
   labelMargin = gtk_label_new (_(AP, DLG_PageSetup_Margin));
   gtk_widget_show (labelMargin);
