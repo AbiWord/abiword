@@ -1709,13 +1709,15 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 		
 		UT_uint32 j,k;
 
+		char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getTempNameFromTitle());
+
 		pGraphics->startPrint();
 		if (bCollate)
 		{
 			for (j=1; (j <= nCopies); j++)
 				for (k=nFromPage; (k <= nToPage); k++)
 				{
-					pGraphics->startPage(doc->getFilename(), k, UT_TRUE, da.width, da.height);
+					pGraphics->startPage(pDocName, k, UT_TRUE, da.width, da.height);
 					pPrintView->draw(k-1, &da);
 				}
 		}
@@ -1724,7 +1726,7 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 			for (k=nFromPage; (k <= nToPage); k++)
 				for (j=1; (j <= nCopies); j++)
 				{
-					pGraphics->startPage(doc->getFilename(), k, UT_TRUE, da.width, da.height);
+					pGraphics->startPage(pDocName, k, UT_TRUE, da.width, da.height);
 					pPrintView->draw(k-1, &da);
 				}
 		}
