@@ -365,6 +365,16 @@ bool fp_TextRun::canBreakAfter(void) const
 		while (bContinue)
 		{
 			bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
+
+			if(!bContinue)
+			{
+				// this block has got a text run but no span in the PT,
+				// this is clearly a bug
+				// not sure want we should return !!!
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+				return false;
+			}
+			
 			UT_ASSERT(lenSpan>0);
 
 			if (len <= lenSpan)
@@ -487,6 +497,15 @@ bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, 
 	while (bContinue)
 	{
 		bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
+
+		if(!bContinue)
+		{
+			// this block has got a text run but no span in the PT,
+			// this is clearly a bug
+			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			return false;
+		}
+		
 		UT_ASSERT(lenSpan>0);
 
 		if (lenSpan > len)
@@ -1359,6 +1378,14 @@ void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths
 	while (bContinue)
 	{
 		bContinue = getBlock()->getSpanPtr(offset, &pSpan, &lenSpan);
+
+		if(!bContinue)
+		{
+			// a bug, we have block with text runs, but no span ptr !!!
+			UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+			return;
+		}
+		
 		UT_ASSERT(lenSpan>0);
 
 		if (len <= lenSpan)

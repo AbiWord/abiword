@@ -2705,7 +2705,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 		iType = fribidi_get_type((FriBidiChar)pSpan[0]);
 
-		UT_uint32 trueLen = UT_MIN(lenSpan,len);
+		UT_uint32 trueLen = UT_MIN(lenSpan,len - (curOffset - blockOffset));
 		UT_uint32 i = 1;
 
 		
