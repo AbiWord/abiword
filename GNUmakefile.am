@@ -1,0 +1,35 @@
+
+SUBDIRS = src
+
+MAINTAINERCLEANFILES=GNUmakefile
+
+PLATFORM=unix
+
+abi: expat wv psiconv
+
+expat:
+	(cd ../expat; ./configure --enable-shared=no; make)  
+
+wv:
+	(cd ../wv; ./configure --enable-shared=no; make); 
+
+psiconv:
+	(cd ../psiconv; ./configure --enable-shared=no; make)
+
+clean: 
+	make -C src clean
+	rm -f src/wp/ap/xp/ap_wp_sidebar.cpp
+	rm -f src/wp/ap/xp/ap_wp_splash.cpp
+	rm -f src/wp/main/unix/ap_wp_ver.cpp
+
+realclean: clean
+	@rm -f config.* stamp-h stamp-h[0-9]*
+	@find ./ -name .deps | xargs rm -rf
+	@find ./ -name GNUmakefile | xargs rm -f
+
+realrealclean: realclean
+	@find ./ -name GNUmakefile.in | xargs rm -f
+	@rm -f aclocal.m4 configure install-sh missing mkinstalldirs INSTALL
+
+
+

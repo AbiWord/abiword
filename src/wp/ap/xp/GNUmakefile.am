@@ -1,0 +1,97 @@
+## AbiSource Applications
+## Copyright (C) 2001 Sam Tobin-Hochstadt
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+include $(top_srcdir)/includes.mk
+
+INCLUDES= $(AF_INCLUDES) $(WP_INCLUDES) $(TEXT_INCLUDES) \
+	@EXPAT_INCLUDES@ $(OTHER_INCLUDES)
+
+noinst_LIBRARIES = libWpAp_xp.a
+
+libWpAp_xp_a_SOURCES=	ap_Convert.cpp			\
+		ap_Dialog_Background.cpp	\
+		ap_Dialog_Break.cpp		\
+		ap_Dialog_WordCount.cpp		\
+		ap_Dialog_Field.cpp		\
+		ap_Dialog_Goto.cpp		\
+		ap_Dialog_Insert_DateTime.cpp	\
+		ap_Dialog_Lists.cpp             \
+		ap_Dialog_Options.cpp		\
+		ap_Dialog_PageNumbers.cpp       \
+		ap_Dialog_Paragraph.cpp		\
+		ap_Dialog_Replace.cpp		\
+		ap_Dialog_Spell.cpp		\
+		ap_Dialog_Styles.cpp		\
+		ap_Dialog_Columns.cpp		\
+		ap_Dialog_Tab.cpp		\
+		ap_Dialog_ToggleCase.cpp		\
+		ap_Dialog_PageSetup.cpp         \
+		ap_EditMethods.cpp		\
+		ap_FrameData.cpp		\
+		ap_LeftRuler.cpp		\
+		ap_LoadBindings.cpp		\
+		ap_LB_DeadAbovedot.cpp		\
+		ap_LB_DeadAcute.cpp		\
+		ap_LB_DeadBreve.cpp		\
+		ap_LB_DeadCaron.cpp		\
+		ap_LB_DeadCedilla.cpp		\
+		ap_LB_DeadCircumflex.cpp	\
+		ap_LB_DeadDiaeresis.cpp		\
+		ap_LB_DeadDoubleacute.cpp	\
+		ap_LB_DeadGrave.cpp		\
+		ap_LB_DeadMacron.cpp		\
+		ap_LB_DeadOgonek.cpp		\
+		ap_LB_DeadTilde.cpp		\
+		ap_LB_Default.cpp		\
+		ap_LB_Emacs.cpp			\
+		ap_LB_EmacsCtrlX.cpp		\
+		ap_LB_viEdit.cpp		\
+		ap_LB_viEdit_colon.cpp		\
+		ap_LB_viEdit_c.cpp		\
+		ap_LB_viEdit_d.cpp		\
+		ap_LB_viEdit_r.cpp		\
+		ap_LB_viEdit_y.cpp		\
+		ap_LB_viInput.cpp		\
+		ap_Menu_ActionSet.cpp		\
+		ap_Menu_Functions.cpp		\
+		ap_Menu_LabelSet.cpp		\
+		ap_Menu_Layouts.cpp		\
+		ap_Prefs.cpp			\
+		ap_Preview_Paragraph.cpp	\
+		ap_Preview_Abi.cpp		\
+		ap_Ruler.cpp			\
+		ap_StatusBar.cpp		\
+		ap_Strings.cpp			\
+		ap_Toolbar_ActionSet.cpp	\
+		ap_Toolbar_Functions.cpp	\
+		ap_Toolbar_Icons.cpp		\
+		ap_Toolbar_LabelSet.cpp		\
+		ap_Toolbar_Layouts.cpp		\
+		ap_TopRuler.cpp			\
+		ap_wp_splash.cpp		\
+		ap_wp_sidebar.cpp
+
+CDUMP=$(top_builddir)/src/tools/cdump/xp/cdump
+
+ap_wp_splash.cpp: splash.png
+	rm -f ap_wp_splash.cpp
+	$(CDUMP) splash.png g_pngSplash > ap_wp_splash.cpp
+
+ap_wp_sidebar.cpp: 
+	rm -f ap_wp_sidebar.cpp
+	$(CDUMP) sidebar.png g_pngSidebar > ap_wp_sidebar.cpp

@@ -1,1 +1,3 @@
 dist
+configure
+config.h.in

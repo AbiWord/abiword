@@ -1,0 +1,49 @@
+## AbiSource Applications
+## Copyright (C) 2001 Sam Tobin-Hochstadt
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## 02111-1307, USA.
+
+include $(top_srcdir)/includes.mk
+
+INCLUDES= @EXPAT_INCLUDES@ $(TEXT_INCLUDES) $(WP_INCLUDES) $(AF_INCLUDES) $(OTHER_INCLUDES)
+
+noinst_LIBRARIES = libFmt.a
+
+libFmt_a_SOURCES= \
+	fv_View.cpp			\
+	fv_View_TestRoutines.cpp	\
+	fb_LineBreaker.cpp		\
+	fb_Alignment.cpp		\
+	fl_BlockLayout.cpp		\
+	fl_DocLayout.cpp		\
+	fl_DocListener.cpp		\
+	fl_Layout.cpp			\
+	fl_SectionLayout.cpp		\
+	fl_AutoNum.cpp			\
+	fl_TestRoutines.cpp		\
+	fp_Column.cpp			\
+	fp_Line.cpp			\
+	fp_Page.cpp			\
+	fp_PageSize.cpp			\
+	fp_Run.cpp			\
+	fp_FmtMarkRun.cpp		\
+	fp_TextRun.cpp			\
+	fp_TestRoutines.cpp		\
+	fp_FieldListLabelRun.cpp	\
+	fg_Graphic.cpp			\
+	fg_GraphicRaster.cpp		\
+	fg_GraphicVector.cpp		
+
