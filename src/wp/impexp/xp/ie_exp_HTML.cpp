@@ -161,10 +161,10 @@ void s_HTML_Listener::_closeBlock(void)
 		return;
 	}
 
-	//	if(m_iBlockType == BT_NORMAL)
-	//	m_pie->write("</p>\n");
+       	if(m_iBlockType == BT_NORMAL)
+       	m_pie->write("</p>\n");
 
-        if(m_iBlockType == BT_HEADING1)
+	else if(m_iBlockType == BT_HEADING1)
 		m_pie->write("</h1>\n");
 
         else if(m_iBlockType == BT_HEADING2)
@@ -182,7 +182,7 @@ void s_HTML_Listener::_closeBlock(void)
         // Add "catchall" for now
 
 	else
-	  m_pie->write("<br />\n");
+	  m_pie->write("</p>\n");
 
 	m_bInBlock = UT_FALSE;
 	return;
@@ -215,6 +215,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 				m_iBlockType = BT_HEADING1;
 				m_pie->write("<h1");
+				wasWritten = UT_TRUE;
 			}
 			else if(0 == UT_stricmp(szValue, "Heading 2")) 
 			{
@@ -223,6 +224,8 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 				m_iBlockType = BT_HEADING2;
 				m_pie->write("<h2");
+				wasWritten = UT_TRUE;
+
 			}
 			else if(0 == UT_stricmp(szValue, "Heading 3")) 
 			{
@@ -231,6 +234,8 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 				m_iBlockType = BT_HEADING3;
 				m_pie->write("<h3");
+				wasWritten = UT_TRUE;
+
 			}
 			else if(0 == UT_stricmp(szValue, "Block Text"))
 			{
@@ -238,6 +243,8 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 				m_iBlockType = BT_BLOCKTEXT;
 				m_pie->write("<blockquote");
+				wasWritten = UT_TRUE;
+
 			}
 			else if(0 == UT_stricmp(szValue, "Plain Text"))
 			{
@@ -245,14 +252,16 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 				m_iBlockType = BT_PLAINTEXT;
 				m_pie->write("<pre");
+				wasWritten = UT_TRUE;
 			}
 			else 
 			{
 
 				// <p style="<anything else!>"> ...
 
-			  //	        m_iBlockType = BT_NORMAL;
-			  //    	m_pie->write("<p");
+			        m_iBlockType = BT_NORMAL;
+			      	m_pie->write("<p class=\"norm\"");
+				wasWritten = UT_TRUE;
 			}	
 		}
 		else 
@@ -260,8 +269,9 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 			// <p> with no style attribute ...
 
-		  //m_iBlockType = BT_NORMAL;
-		  //m_pie->write("<p");
+		  m_iBlockType = BT_NORMAL;
+		  m_pie->write("<p class=\"norm\"");
+		  wasWritten = UT_TRUE;
 		}
 
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
@@ -270,7 +280,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 			m_iBlockType == BT_NORMAL && (pAP->getProperty("text-align", szValue))
 			)
 		{
-			m_pie->write(" ALIGN=\"");
+			m_pie->write(" align=\"");
 			m_pie->write(szValue);
 			m_pie->write("\"");
 		}
@@ -280,8 +290,9 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 		// <p> with no style attribute, and no properties either
 
-	  //m_iBlockType = BT_NORMAL;
-	  //m_pie->write("<p");
+	  m_iBlockType = BT_NORMAL;
+	  m_pie->write("<p class=\"norm\"");
+	  wasWritten = UT_TRUE;
 	}
 	if (wasWritten)
 	  m_pie->write(">");
@@ -366,6 +377,9 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	
 	const PP_AttrProp * pAP = NULL;
 	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+
+	bool span = UT_FALSE;
+	bool textD = UT_FALSE;
 	
 	if (bHaveProp && pAP)
 	{
@@ -376,7 +390,15 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			&& !UT_stricmp(szValue, "bold")
 			)
 		{
-			m_pie->write("<b>");
+		        if (!span)
+			  {
+			    m_pie->write("<span style=\"font-weight: bold");	
+			    span = UT_TRUE;
+			  }
+			else
+			  {
+			    m_pie->write("; font-weight: bold");
+			  }
 		}
 		
 		if (
@@ -384,8 +406,17 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			&& !UT_stricmp(szValue, "italic")
 			)
 		{
-			m_pie->write("<i>");
+		  if (!span)
+			  {
+			    m_pie->write("<span style=\"font-style: italic\"");	
+			    span = UT_TRUE;
+			  }
+			else
+			  {
+			    m_pie->write("; font-style: italic");
+			  }
 		}
+
 		
 		if (
 			(pAP->getProperty("text-decoration", szValue))
@@ -406,7 +437,20 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 				if (0 == UT_stricmp(q, "underline"))
 				{
-					m_pie->write("<u>");
+				  if (!span)
+				    {
+					m_pie->write("<span style=\"text-decoration: underline");	
+					span = UT_TRUE;
+				    }
+				  else if (!textD)
+				    {
+				        m_pie->write("; text-decoration: underline");
+					textD = UT_TRUE;
+				    }
+				  else
+				    {
+				      m_pie->write(" underline");
+				    }
 				}
 
 				q = strtok(NULL, " ");
@@ -434,7 +478,20 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 				if (0 == UT_stricmp(q, "line-through"))
 				{
-					m_pie->write("<s>");	// is it <s> or <strike> ? TODO
+				  if (!span)
+				    {
+					m_pie->write("<span style=\"text-decoration: line-through");	
+					span = UT_TRUE;
+				    }
+				  else if (!textD)
+				    {
+				        m_pie->write("; text-decoration: line-through");
+					textD = UT_TRUE;
+				    }
+				  else
+				    {
+				        m_pie->write(" line-through");
+				    }
 				}
 
 				q = strtok(NULL, " ");
@@ -442,6 +499,50 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 
 			free(p);
 		}
+
+		if (
+			(pAP->getProperty("text-decoration", szValue))
+			)
+		{
+			const XML_Char* pszDecor = szValue;
+			
+			XML_Char* p;
+			if (!UT_cloneString((char *&)p, pszDecor))
+			{
+				// TODO outofmem
+			}
+			
+			UT_ASSERT(p || !pszDecor);
+			XML_Char*	q = strtok(p, " ");
+
+			while (q)
+			{
+				if (0 == UT_stricmp(q, "overline"))
+				{
+				  if (!span)
+				    {
+					m_pie->write("<span style=\"text-decoration: overline");	
+					span = UT_TRUE;
+				    }
+				  else if (!textD)
+				    {
+				        m_pie->write("; text-decoration: overline");
+					textD = UT_TRUE;
+				    }
+				  else
+				    {
+				        m_pie->write(" overline");
+				    }
+				}
+
+				q = strtok(NULL, " ");
+			}
+
+			free(p);
+		}
+
+		if (span)
+		  m_pie->write("\">");
 
 		if (pAP->getProperty("text-position", szValue))
 		{
@@ -472,7 +573,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			m_pie->write("<font");
 			if (pszColor)
 			{
-				m_pie->write(" COLOR=\"");
+				m_pie->write(" color=\"");
 				char szColor[16];
 				_convertColor(szColor, pszColor);
 				m_pie->write(szColor);
@@ -481,14 +582,14 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			
 			if (pszFontFamily)
 			{
-				m_pie->write(" FACE=\"");
+				m_pie->write(" face=\"");
 				m_pie->write(pszFontFamily);
 				m_pie->write("\"");
 			}
 			
 			if (pszFontSize)
 			{
-				m_pie->write(" SIZE=\"");
+				m_pie->write(" size=\"");
 				char szSize[16];
 				_convertFontSize(szSize, pszFontSize);
 				m_pie->write(szSize);
@@ -535,60 +636,14 @@ void s_HTML_Listener::_closeSpan(void)
 			}
 		}
 
-		if (
-			(pAP->getProperty("text-decoration", szValue))
-			)
-		{
-			const XML_Char* pszDecor = szValue;
-			
-			XML_Char* p;
-			if (!UT_cloneString((char *&)p, pszDecor))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			XML_Char*	q = strtok(p, " ");
-
-			while (q)
-			{
-				if (0 == UT_stricmp(q, "line-through"))
-				{
-					m_pie->write("</s>");	// is it <s> or <strike> ? TODO
-				}
-
-				q = strtok(NULL, " ");
-			}
-
-			free(p);
-		}
+		UT_Bool closeSpan = UT_FALSE;
 
 		if (
 			(pAP->getProperty("text-decoration", szValue))
+			&& UT_stricmp(szValue, "none")
 			)
 		{
-			const XML_Char* pszDecor = szValue;
-			
-			XML_Char* p;
-			if (!UT_cloneString((char *&)p, pszDecor))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			XML_Char*	q = strtok(p, " ");
-
-			while (q)
-			{
-				if (0 == UT_stricmp(q, "underline"))
-				{
-					m_pie->write("</u>");
-				}
-
-				q = strtok(NULL, " ");
-			}
-
-			free(p);
+		  closeSpan = UT_TRUE;
 		}
 
 		if (
@@ -596,7 +651,7 @@ void s_HTML_Listener::_closeSpan(void)
 			&& !UT_stricmp(szValue, "italic")
 			)
 		{
-			m_pie->write("</i>");
+		  closeSpan = UT_TRUE;
 		}
 		
 		if (
@@ -604,8 +659,13 @@ void s_HTML_Listener::_closeSpan(void)
 			&& !UT_stricmp(szValue, "bold")
 			)
 		{
-			m_pie->write("</b>");
+		  closeSpan = UT_TRUE;
 		}
+
+		if (closeSpan)
+		  {
+		    m_pie->write("</span>");
+		  }
 
 		m_pAP_Span = NULL;
 	}
@@ -755,9 +815,13 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	
 	m_pie->write("\n");
 	
+	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"DTD/xhtml1-strict.dtd\">\n");
 	m_pie->write("<html>\n");
 	m_pie->write("<head>\n");
 	m_pie->write("<title>AbiWord Document</title>\n");
+	m_pie->write("<style type=\"text/css\">\n");
+	m_pie->write("<!-- \n P.norm { margin-top: 0pt; margin-bottom: 0pt } \n -->\n");
+	m_pie->write("</style>\n");
 	m_pie->write("</head>\n");
 	m_pie->write("<body>\n");
 
