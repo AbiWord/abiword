@@ -261,7 +261,10 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 					fp_Page * pPage = pTopCol->getPage();
 					fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
 					UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
-					my_yoff += iColOffset;
+					if(pPage != pVCon->getPage())
+					{
+						my_yoff += iColOffset;
+					}
 				}
 				UT_sint32 col_xV =0;
 				UT_sint32 col_yV =0;
