@@ -1337,3 +1337,29 @@ void PS_Graphics::_drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) 
 }
 
 #endif
+
+/***************************************************************************/
+/***************************************************************************/
+
+PS_GraphicsFactory::PS_GraphicsFactory(const UT_String & command)
+	: GR_GraphicsFactory(), m_command(command)
+{
+}
+
+PS_GraphicsFactory::~PS_GraphicsFactory()
+{
+}
+
+GR_Graphics* PS_GraphicsFactory::getGraphics()
+{
+	/* todo: keep a running count for print to file */
+	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp());
+	PS_Graphics * pG = new PS_Graphics ((m_command[0] == '|' ? m_command.c_str()+1 : m_command.c_str()), m_command.c_str(), 
+										pApp->getApplicationName(), pApp->getFontManager(),
+										(m_command[0] != '|'), pApp);
+
+	return pG;
+}
+
+/***************************************************************************/
+/***************************************************************************/

@@ -167,4 +167,21 @@ protected:
 	XAP_UnixFontManager *	m_fm;
 };
 
+class ABI_EXPORT PS_GraphicsFactory : public GR_GraphicsFactory
+{
+public:
+	explicit PS_GraphicsFactory(const UT_String & command);
+
+	virtual ~PS_GraphicsFactory();
+
+	virtual GR_Graphics* getGraphics();
+
+private:
+
+	PS_GraphicsFactory(const PS_GraphicsFactory & other);
+	PS_GraphicsFactory& operator=(const PS_GraphicsFactory & other);
+
+	UT_String m_command;
+};
+
 #endif /* XAP_UNIXPSGRAPHICS_H */

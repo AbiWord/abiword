@@ -213,8 +213,6 @@ void AP_Convert::convertToPNG ( const char * szSourceFileName )
 	printf ("Conversion to PNG failed\n");
 }
 
-#if 0
-
 class Save_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
 {
 public:
@@ -281,9 +279,10 @@ class Print_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
 public:
 
 	explicit Print_MailMerge_Listener (PD_Document * pd,
+									   GR_GraphicsFactory & factory,
 									   const UT_UTF8String & szFile)
 		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (pd),
-		  m_szFile(szFile)
+		  m_szFile(szFile), m_factory(factory)
 		{
 
 		}
@@ -299,8 +298,7 @@ public:
 	
 	virtual bool fireUpdate () 
 		{
-			// TODO: factory class to get graphics
-			GR_Graphics *pGraphics = 0;
+			GR_Graphics *pGraphics = m_factory.getGraphics();
 
 			FL_DocLayout *pDocLayout = new FL_DocLayout(m_doc,pGraphics);
 			FV_View printView(XAP_App::getApp(),0,pDocLayout);
@@ -329,37 +327,52 @@ public:
 private:
 	PD_Document *m_doc;
 	UT_UTF8String m_szFile;
+
+	GR_GraphicsFactory & m_factory;
 };
 
-#endif
+static void handleMerge(const char * szMailMergeFile,
+						IE_MailMerge::IE_MailMerge_Listener & listener){
+	IE_MailMerge * pie = NULL;
+	UT_Error errorCode = IE_MailMerge::constructMerger(szMailMergeFile, IEMT_Unknown, &pie);
+	if (!errorCode)
+	{
+		pie->setListener (&listener);
+		pie->mergeFile (szMailMergeFile);
+		DELETEP(pie);
+	}
+}
 
-void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
+void AP_Convert::print(const char * szFile, GR_GraphicsFactory & pFactory)
 {
-  UT_return_if_fail(pGraphics);
+	GR_Graphics *pGraphics;
 
-  // get the current document
-  PD_Document *pDoc = new PD_Document(XAP_App::getApp());
-  pDoc->readFromFile(szFile, IEFT_Unknown);
+	// get the current document
+	PD_Document *pDoc = new PD_Document(XAP_App::getApp());
+	pDoc->readFromFile(szFile, IEFT_Unknown);
+	
+	pGraphics = pFactory.getGraphics ();
 
-  // create a new layout and view object for the doc
-  FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
-  FV_View printView(XAP_App::getApp(),0,pDocLayout);
-  pDocLayout->setView (&printView);
-  pDocLayout->fillLayouts();
-  pDocLayout->formatAll();
+	// create a new layout and view object for the doc
+	FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
+	FV_View printView(XAP_App::getApp(),0,pDocLayout);
+	pDocLayout->setView (&printView);
+	pDocLayout->fillLayouts();
+	pDocLayout->formatAll();
 
 #ifdef XP_UNIX_TARGET_GTK
-  PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
-  psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-  psGr->setPageSize(printView.getPageSize().getPredefinedName());
+	PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
+	psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+	psGr->setPageSize(printView.getPageSize().getPredefinedName());
 #endif
-
-  s_actuallyPrint (pDoc, pGraphics, 
-				   &printView, szFile, 
-				   1, true, 
-				   pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-				   1, pDocLayout->countPages());
-  
-  DELETEP(pDocLayout);
-  UNREFP(pDoc);
+	
+	s_actuallyPrint (pDoc, pGraphics, 
+					 &printView, szFile, 
+					 1, true, 
+					 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+					 1, pDocLayout->countPages());
+	
+	DELETEP(pDocLayout);
+	UNREFP(pDoc);
+	DELETEP(pGraphics);
 }

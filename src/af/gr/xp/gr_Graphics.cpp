@@ -1028,3 +1028,7 @@ void GR_Graphics::drawCharsDirectly(const UT_UCS4Char* pChars,
 
 #endif
 
+
+GR_GraphicsFactory::GR_GraphicsFactory ()
+{
+}

@@ -1421,23 +1421,16 @@ bool AP_UnixApp::doWindowlessArgs(const AP_Args *Args)
 	{
 		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
 	    {
-			UT_DEBUGMSG(("DOM: Printing file %s\n", Args->m_sFile));
-			
 			AP_Convert conv ;
+			PS_GraphicsFactory printFactory (Args->m_sPrintTo);
+
 			conv.setVerbose(Args->m_iVerbose);
-			
-			PS_Graphics * pG = new PS_Graphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo), Args->m_sFile, 
-												pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
-												(Args->m_sPrintTo[0] != '|'), pMyUnixApp);
-			
-			conv.print (Args->m_sFile, pG);
-	      
-			delete pG;
+			conv.print (Args->m_sFile, printFactory);
 	    }
 		else
 	    {
 			// couldn't load document
-			printf("Error: no file to print!\n");
+			fprintf(stderr, "Error: no file to print!\n");
 	    }
 
 		return false;

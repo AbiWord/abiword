@@ -490,4 +490,23 @@ void xorRect(GR_Graphics* pG, const UT_Rect& r);
 void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c);
 #endif
 
+class ABI_EXPORT GR_GraphicsFactory
+{
+public:
+
+	virtual ~GR_GraphicsFactory ()
+		{
+		}
+
+	virtual GR_Graphics* getGraphics() = 0;
+
+protected:
+	GR_GraphicsFactory ();
+
+private:
+
+	GR_GraphicsFactory(const GR_GraphicsFactory & other);
+	GR_GraphicsFactory& operator=(const GR_GraphicsFactory & other);
+};
+
 #endif /* GR_GRAPHICS_H */
