@@ -2,6 +2,7 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
+<requires lib="gnome"/>
 
 <widget class="GtkDialog" id="xap_UnixDlg_Language">
   <property name="visible">True</property>
@@ -69,7 +70,7 @@
 	  <property name="column_spacing">0</property>
 
 	  <child>
-	    <widget class="GtkLabel" id="lblLang">
+	    <widget class="GtkLabel" id="lbLanguage">
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
@@ -98,11 +99,11 @@
 	      <property name="can_focus">True</property>
 	      <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
 	      <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-	      <property name="shadow_type">GTK_SHADOW_NONE</property>
+	      <property name="shadow_type">GTK_SHADOW_IN</property>
 	      <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
 
 	      <child>
-		<widget class="GtkTreeView" id="langList">
+		<widget class="GtkTreeView" id="tvLanguages">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="headers_visible">False</property>
