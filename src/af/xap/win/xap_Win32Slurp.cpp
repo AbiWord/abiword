@@ -181,7 +181,6 @@ bool XAP_Win32Slurp::disconnectSlurper(void)
 	return true;
 }
 
-
 void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 {
 	DWORD bufSize = DdeGetData(hData,NULL,0,0);
@@ -197,16 +196,52 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 	UT_DEBUGMSG(("DDEML received command '%s'\n",pBuf));
 	
 	// we expect something of the form:
-	//     [Open(<pathname>)]
+	//     [Open("<pathname>")]
+	// if anything more complicated is needed, it may be a
+	// good idea to use a regex library
+	// TODO failures just goto Finished. Some error reporting
+	// TODO would be nice
 
-#define COMMAND_DELIMITERS		"[]()"
-
-	char * p = strtok(pBuf,COMMAND_DELIMITERS);
-	while (p)
+	// pointer to work through the incoming string
+	char * next = pBuf;
+	
+	// pointer used to copy into command and pathname
+	char * dest = 0;
+	
+	// chomp the [
+	if ( *next++ != '[' ) goto Finished;
+	
+	// find the next sequence of non ( characters
+	// this will be the dde command
+	char command[1024];
+	dest = command;
+	for ( ; *next != '('; ++next )
 	{
-		if (UT_stricmp(p,"open") == 0)
+		*dest++ = *next;
+	}
+	*dest = 0;
+
+	// chomp the ( and the "
+	if ( *next++ != '(' ) goto Finished;
+	if ( *next++ != '"' ) goto Finished;
+	// go until the next " to get the parameter
+	// " are not allowed in filenames, so we should be safe here
+	char pathname[4096];
+	dest = pathname;
+	for ( ; *next != '"'; ++next )	
+	{
+		*dest++ = *next;
+	}
+	*dest = 0;
+	
+	// chomp the ", ), and ]
+	if ( *next++ != '"' ) goto Finished;
+	if ( *next++ != ')' ) goto Finished;
+	if ( *next++ != ']' ) goto Finished;
+	
+	// now do something useful with the command and its parameter
+	if (UT_stricmp(command,"open") == 0)
 		{
-			char * pathname = strtok(NULL,COMMAND_DELIMITERS);
 			if (!pathname || !*pathname)
 			{
 				UT_DEBUGMSG(("No pathname given in DDE Open command.\n"));
@@ -225,9 +260,6 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 
 			goto Finished;
 		}
-
-		p = strtok(NULL,COMMAND_DELIMITERS);
-	}
 
 Finished:
 	FREEP(pBuf);
@@ -290,12 +322,12 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	// HKEY_CLASSES_ROOT\<suffix>\Content Type = <content_type>
 	// HKEY_CLASSES_ROOT\<foo> = <application_name> ## " Document"
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\command = <exe_pathname>
-	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec = [Open(%1)]
+	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec = [Open("%1")]
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec\application = <application_name>
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\ddeexec\topic = System
 	// HKEY_CLASSES_ROOT\<foo>\DefaultIcon = <exe_pathname,1>
 
-#define VALUE_DDEEXEC_OPEN			"[Open(%1)]"
+#define VALUE_DDEEXEC_OPEN			"[Open(\"%1\")]"
 #define FORMAT_OUR_INDIRECTION		"AbiSuite.%s"
 #define CONTENT_TYPE_KEY			"Content Type"
 #define DOCUMENT_ICON_POSITION	3
@@ -450,6 +482,9 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	// Inspect the command path
 	// HKEY_CLASSES_ROOT\<foo>\shell\open\command = <exe_pathname>
 	///////////////////////////////////////////////////////////////////
+	char commandPathWithParam[1024];
+	strcpy ( commandPathWithParam, szExePathname );
+	strcat ( commandPathWithParam, " \"%1\"" );
 
 	if (_fetchKey(hKeyFoo,"shell",&hKeyShell) == X_Error)
 		goto CleanupMess;
@@ -466,10 +501,10 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		eResult = RegQueryValueEx(hKeyCommand,NULL,0,&dType,(LPBYTE)buf,&len);
 		if ((eResult==ERROR_SUCCESS) && (dType==REG_SZ))
 		{
-			if (UT_stricmp(buf,szExePathname) == 0)
+			if (UT_stricmp(buf,commandPathWithParam) == 0)
 				break;					// already has correct value, no need to overwrite.
 			
-			if(memcmp(buf, szExePathname, strlen(szExePathname)) == 0)
+			if(memcmp(buf, commandPathWithParam, strlen(commandPathWithParam)) == 0)
 			{
 				// Path name is the same but has extra at the end.
 				// Probably "%1"
@@ -489,9 +524,9 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 		
 	case X_CreatedKey:
 		UT_ASSERT(hKeyCommand);
-		eResult = RegSetValueEx(hKeyCommand,NULL,0,REG_SZ,xx(szExePathname));
 		if (eResult != ERROR_SUCCESS)
-			goto CleanupMess;
+			eResult = RegSetValueEx(hKeyCommand,NULL,0,REG_SZ,xx(commandPathWithParam));
+		goto CleanupMess;
 		break;
 	}
 
