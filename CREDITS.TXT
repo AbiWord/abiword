@@ -91,7 +91,7 @@ Francis J Franklin <fjf@alinameridon.com> 		SVG work, XML work,
 							XDarwin maintainer.
 Stephane Fritsch <sfritsch@noos.fr> 			BeOS
 Tomas Frydrych <tomas@frydrych.uklinux.net> 		ttf, utf8 locale, bidi
-Gabriel Gerhardsson <mr.g@home.se>			Abispell work, dictionary downloader
+Gabriel Gerhardsson <gabrielg@home.se>			Abispell work, dictionary downloader
 David Given <dg@tao-group.com>				Human Readable Text
 							Export
 Daniel Glassey <danglassey@ntlworld.com>		msys Win32 build							
