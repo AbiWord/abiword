@@ -23,8 +23,8 @@
 #include "fg_GraphicRaster.h"
 
 static void _write_png( png_structp png_ptr, 
-					    png_bytep data, 
-			            unsigned int length )
+		        png_bytep data, 
+		        png_size_t length )
 {
 	UT_ByteBuf* bb = (UT_ByteBuf*) png_get_io_ptr(png_ptr);
 	bb->append(data, length);
