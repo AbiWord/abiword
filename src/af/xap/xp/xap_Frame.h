@@ -75,6 +75,8 @@ public:
 	UT_uint32					getViewNumber(void) const;
 	const char *				getViewKey(void) const;
 
+	inline AP_FrameData *		getFrameData(void) const { return m_pData; }
+
 	virtual AP_DialogFactory *	getDialogFactory(void) = 0;
 	virtual void				setXScrollRange(void) = 0;
 	virtual void				setYScrollRange(void) = 0;

@@ -122,20 +122,11 @@ gint AP_UnixTopRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 
 	UT_uint32 iHeight = (UT_uint32)e->height;
 	if (iHeight != pUnixTopRuler->getHeight())
-	{
 		pUnixTopRuler->setHeight(iHeight);
-		// TODO do we need to invalidate and redraw
-	}
 
 	UT_uint32 iWidth = (UT_uint32)e->width;
 	if (iWidth != pUnixTopRuler->getWidth())
-	{
 		pUnixTopRuler->setWidth(iWidth);
-		// TODO do we need to invalidate and redraw
-	}
-	
-	// TODO add code in the LeftRuler's configure_event code to send us
-	// TODO a setOffsetLeftRuler() message.
 	
 	return 1;
 }

@@ -27,7 +27,9 @@
 #include "ap_LeftRuler.h"
 #include "xav_View.h"
 #include "gr_Graphics.h"
-class XAP_Frame;
+#include "ap_FrameData.h"
+#include "ap_TopRuler.h"
+#include "xap_Frame.h"
 
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
@@ -115,6 +117,9 @@ UT_uint32 AP_LeftRuler::getHeight(void) const
 void AP_LeftRuler::setWidth(UT_uint32 iWidth)
 {
 	m_iWidth = iWidth;
+	AP_FrameData * pFrameData = m_pFrame->getFrameData();
+	if (pFrameData && pFrameData->m_pTopRuler)
+		pFrameData->m_pTopRuler->setOffsetLeftRuler(m_iWidth);
 }
 
 UT_uint32 AP_LeftRuler::getWidth(void) const
