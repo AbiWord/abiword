@@ -763,7 +763,7 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_widget_set_usize(GTK_COMBO(comboBox)->entry, iWidth, 0);
 
 				// the entry is read-only for now
-				gtk_entry_set_editable(GTK_ENTRY(GTK_COMBO(comboBox)->entry), FALSE);
+				gtk_editable_set_editable(GTK_EDITABLE(GTK_COMBO(comboBox)->entry), FALSE);
 										 
 				// handle popup events, so we can block our signals until the popdown
 				GtkWidget * popwin = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
