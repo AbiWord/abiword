@@ -189,6 +189,7 @@ void AP_CocoaFrameImpl::_setHScrollbarValues()
 		[m_hScrollbar setFloatValue:value knobProportion:knob];
 	}
 	[m_hScrollbar setNeedsDisplay:YES];
+	[[(_getController()) getHRuler] setNeedsDisplay:YES];
 }
 
 
@@ -217,6 +218,7 @@ void AP_CocoaFrameImpl::_setVScrollbarValues()
 		[m_vScrollbar setFloatValue:value knobProportion:knob];
 	}
 	[m_vScrollbar setNeedsDisplay:YES];
+	// [[(_getController()) getVRuler] setNeedsDisplay:YES]; // ??
 }
 
 
@@ -365,7 +367,7 @@ void AP_CocoaFrameImpl::_showLeftRulerNSView(void)
 	UT_ASSERT([ruler superview] == nil);
 	// make sure it is not visible
 	if ([ruler superview]) {
-		NSLog(@"AP_CocoaFrameImpl::_showTopRulerNSView attempted to show already visible ruler");
+		NSLog(@"AP_CocoaFrameImpl::_showLeftRulerNSView attempted to show already visible ruler");
 		return;
 	}
 	

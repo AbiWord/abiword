@@ -34,7 +34,7 @@ class XAP_CocoaDialog_About;
 {
 	XAP_CocoaDialog_About *m_xap;
     IBOutlet NSImageView *m_imageView;
-    IBOutlet NSTextField *m_licenseText;
+    IBOutlet NSTextView *m_licenseText;
     IBOutlet NSButton *m_okBtn;
     IBOutlet NSTextField *m_versionLabel;
     IBOutlet NSTextField *m_appName;

@@ -317,6 +317,8 @@ void AP_CocoaFrame::toggleRuler(bool bRulerOn)
 
 	toggleTopRuler(bRulerOn);
 	toggleLeftRuler(bRulerOn && (pFrameData->m_pViewMode == VIEW_PRINT));
+
+	[(static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->m_docAreaGRView) setNeedsDisplay:YES];
 }
 
 void AP_CocoaFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)

@@ -116,8 +116,9 @@ void XAP_CocoaDialog_About::event_URL(void)
 	[m_okBtn setTitle:[NSString stringWithUTF8String:pSS->getValue(XAP_STRING_ID_DLG_OK)]];
 	[m_appName setStringValue:[NSString stringWithUTF8String:app->getApplicationName()]];
 	[m_versionLabel setStringValue:[NSString stringWithFormat:@XAP_ABOUT_VERSION, XAP_App::s_szBuild_Version]];
-	[m_licenseText setStringValue:[NSString stringWithFormat:@"%s\n\n%@", XAP_ABOUT_COPYRIGHT,
+	[m_licenseText insertText:[NSString stringWithFormat:@"%s\n\n%@", XAP_ABOUT_COPYRIGHT,
 					[NSString stringWithFormat:@XAP_ABOUT_GPL_LONG_LF, app->getApplicationName()]]];
+	[m_licenseText setEditable:NO];
 
 	NSImage*	image = [NSImage imageNamed:XAP_COCOA_ABOUT_SIDEBAR_RESOURCE_NAME];
 	[m_imageView setImage:image];
