@@ -1045,15 +1045,24 @@ bool UT_UniqueId::isIdUnique(idType t, UT_uint32 iId)
 	return true;
 }
 
+/**
+ * UT_parseBool 
+ *
+ * Returns true if param is [true, 1, yes, allow, enable, on]
+ * Returns false if param is [false, 0, no, disallow, disable, off]
+ * Returns dfl otherwise, including if param is null
+ */
 bool UT_parseBool (const char * param, bool dfl)
 {
+	UT_return_val_if_fail (param && strlen(param), dfl);
+
 	if (!UT_strnicmp(param, "true", 4) || !UT_strnicmp(param, "1", 1) ||
 		!UT_strnicmp(param, "yes", 3) || !UT_strnicmp(param, "allow", 5) ||
-		!UT_strnicmp(param, "enable", 6))
+		!UT_strnicmp(param, "enable", 6) || !UT_strnicmp(param, "on", 2))
 		return true;
 	else if (!UT_strnicmp(param, "false", 5) || !UT_strnicmp(param, "0", 1) ||
-		!UT_strnicmp(param, "no", 2) || !UT_strnicmp(param, "disallow", 8) ||
-		!UT_strnicmp(param, "disable", 7))
+			 !UT_strnicmp(param, "no", 2) || !UT_strnicmp(param, "disallow", 8) ||
+			 !UT_strnicmp(param, "disable", 7) || !UT_strnicmp(param, "off", 3))
 		return false;
 	
 	return dfl;

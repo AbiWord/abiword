@@ -187,6 +187,15 @@ bool IE_Exp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 
 PL_Listener * IE_Exp_Text::_constructListener(void)
 {
+	if (!m_bExplicitlySetEncoding) {
+		const UT_UTF8String * prop;
+
+		prop = getProperty ("encoding");
+		if (prop) {
+			_setEncoding (prop->utf8_str());
+		}
+	}
+
 	return new Text_Listener(getDoc(),this,(getDocRange()!=NULL),m_szEncoding,
 							 m_bIs16Bit,m_bUnicode,m_bUseBOM,m_bBigEndian);
 }
@@ -353,24 +362,6 @@ void IE_Exp_Text::_setEncoding(const char *szEncoding)
  */
 void Text_Listener::_genBOM(void)
 {
-	// TODO iconv (at least libiconv) actually converts BOM to nothing at all ):
-#if 0
-	UT_UCSChar wcBOM[2] = {0,0};
-	UT_UCSChar *pWC;
-	char *pMB = static_cast<char *>(m_mbBOM);
-	int mbLen;
-
-	wcBOM[0] = UCS_BOM;
-
-	for (pWC = wcBOM; *pWC; ++pwC)
-	{
-		if (_wctomb(pMB,mbLen,(*pWC)))
-			pMB += mbLen;
-		else
-			UT_ASSERT_NOT_REACHED();
-	}
-	m_iBOMLen = pMB - m_mbBOM;
-#else
 	// Hard-coded BOM values
 	if (m_bIs16Bit)
 	{
@@ -393,7 +384,6 @@ void Text_Listener::_genBOM(void)
 		m_iBOMLen = 3;
 	}
 	// TODO UTF-7, UCS-4, UTF-32
-#endif
 }
 
 /*!
@@ -409,9 +399,9 @@ void Text_Listener::_genLineBreak(void)
 
 	// TODO Old Mac should use "\r".  Mac OSX should Use U+2028 or U+2029.
 #ifdef WIN32
-	UT_UCSChar wcLineBreak[3] = {'\r', '\n', 0};
+	static const UT_UCSChar wcLineBreak[3] = {'\r', '\n', 0};
 #else
-	UT_UCSChar wcLineBreak[3] = {'\n', 0, 0};
+	static const UT_UCSChar wcLineBreak[3] = {'\n', 0, 0};
 #endif
 
 	for (pWC = wcLineBreak; *pWC; ++pWC)
@@ -723,7 +713,6 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
-#if 1
 			// TODO decide how to indicate objects in text output.
 
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
@@ -757,9 +746,6 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				UT_ASSERT_NOT_REACHED();
 				return false;
 			}
-#else
-			return true;
-#endif
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:

@@ -750,6 +750,15 @@ UT_Error IE_Imp_Text::_parseStream(ImportStream * pStream)
 	UT_GrowBuf gbBlock(1024);
 	UT_UCSChar c;
 
+	if (!m_bExplicitlySetEncoding) {
+		const UT_UTF8String * prop;
+
+		prop = getProperty ("encoding");
+		if (prop) {
+			_setEncoding (prop->utf8_str());
+		}
+	}
+
 	pStream->init(m_szEncoding);
 
 	while (pStream->getChar(c))
