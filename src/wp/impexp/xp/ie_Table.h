@@ -118,6 +118,7 @@ class ABI_EXPORT ie_Table
 	PD_Document *     m_pDoc;
 	UT_Stack          m_sLastTable;
 	bool              m_bNewRow;
+	PL_StruxDocHandle  m_sdhLastCell;
 };			
 
 

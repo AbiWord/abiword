@@ -1844,7 +1844,8 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 
 PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 													bool bShowRevisions, UT_uint32 iRevisionLevel,
-													UT_sint32 row, UT_sint32 col)
+													UT_sint32 row, 
+													UT_sint32 col)
 {
 	UT_sint32 Top,Left,Bot,Right;
 	const char * szLeft = NULL;

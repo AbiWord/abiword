@@ -913,7 +913,6 @@ void fl_TOCLayout::_removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse)
 			break;
 		}
 	}
-	UT_sint32 iAllVec =i;
 	if(!bFound)
 	{
 		return;

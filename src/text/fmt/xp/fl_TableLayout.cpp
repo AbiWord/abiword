@@ -416,6 +416,29 @@ bool fl_TableLayout::doSimpleChange(void)
 	return true;
 }
 
+
+bool fl_TableLayout::needsReformat(void) const
+{
+	if(fl_SectionLayout::needsReformat())
+	{
+		return true;
+	}
+	fl_CellLayout * pCell = static_cast<fl_CellLayout *>(getFirstLayout());
+	if(pCell == NULL)
+	{
+		return true;
+	}
+	UT_return_val_if_fail(pCell->getContainerType() == FL_CONTAINER_CELL,true);
+	//
+	// Cell Not set
+	//
+	if(pCell->needsReformat())
+	{
+		return true;
+	}
+	return false;
+}
+
 void fl_TableLayout::setDirty(void)
 {
 	xxx_UT_DEBUGMSG(("Table Dirty set true \n"));
@@ -440,6 +463,9 @@ void fl_TableLayout::format(void)
 	}
 	m_bRecursiveFormat = true;
 	bool bRebuild = false;
+	
+	fl_ContainerLayout*	pCell = NULL;
+	pCell = getFirstLayout();
 	//
 	// Get the old height of the table
 	//
@@ -461,9 +487,16 @@ void fl_TableLayout::format(void)
 	}
 	else if( getFirstContainer()->countCons() == 0)
 	{
-		m_iHeightChanged = 0;
+		m_iHeightChanged = 10;
 		m_pNewHeightCell = NULL;
 		bRebuild = true;
+		m_bIsDirty = true;
+	}
+	else if(pCell && !static_cast<fl_CellLayout *>(pCell)->isLayedOut())
+	{
+		m_iHeightChanged = 10;
+		m_pNewHeightCell = NULL;
+		m_bIsDirty = true;
 	}
 	if(isDirty())
 	{
@@ -485,9 +518,6 @@ void fl_TableLayout::format(void)
 		m_iHeightChanged = 0;
 		m_pNewHeightCell = NULL;
 	}
-	
-	fl_ContainerLayout*	pCell = NULL;
-	pCell = getFirstLayout();
 
 	if((!bSim && isDirty()) || bRebuild)
 	{
@@ -1948,6 +1978,33 @@ void fl_CellLayout::markAllRunsDirty(void)
 		pCL->markAllRunsDirty();
 		pCL = pCL->getNext();
 	}
+}
+
+bool fl_CellLayout::needsReformat(void) const
+{
+	if(fl_SectionLayout::needsReformat())
+	{
+		return true;
+	}
+	return !isLayedOut();
+}
+
+bool fl_CellLayout::isLayedOut(void) const
+{
+	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getFirstContainer());
+	if(pCell == NULL)
+	{
+		return false;
+	}
+	UT_return_val_if_fail(pCell->getContainerType() == FP_CONTAINER_CELL,false);
+	//
+	// Cell Not set
+	//
+	if(pCell->getStartY() < -10000000)
+	{
+		return false;
+	}
+	return true;
 }
 
 void fl_CellLayout::updateLayout(void)

@@ -160,6 +160,7 @@ public:
 	void		                updateTable(void);
 	virtual void                collapse(void);
 	virtual void                markAllRunsDirty(void);
+	virtual bool                needsReformat(void) const;
 	virtual PT_DocPosition      getPosition(bool bActualBlockPosition = false) const;
 	virtual void		        redrawUpdate(void);
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL);
@@ -289,6 +290,8 @@ public:
 	virtual void		     format(void);
 	virtual void		     updateLayout(void);
 	virtual void             collapse(void);
+	bool                     isLayedOut(void) const;
+	virtual bool             needsReformat(void) const;
 	virtual void             markAllRunsDirty(void);
 	virtual fl_SectionLayout *  getSectionLayout(void)  const;
 	bool                     recalculateFields(UT_uint32 iUpdateCount);

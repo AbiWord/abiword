@@ -10268,6 +10268,23 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 	{
 		return 0;
 	}
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(const_cast<void *>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID())));
+	fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
+//
+// This is MUCH faster than linearly searching through the Piecetable.
+//
+	if(pTC != NULL)
+	{
+		fp_CellContainer * pCell = pTC->getCellAtRowColumn(row,col);
+		if(pCell)
+		{
+			fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pCell->getSectionLayout());
+			if(pCL)
+			{
+				return pCL->getPosition(true);
+			}
+		}
+	}
 	cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(), row,col);
 	if(cellSDH == NULL)
 	{

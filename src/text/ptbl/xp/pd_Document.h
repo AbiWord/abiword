@@ -423,7 +423,8 @@ public:
 													UT_sint32 * numRows, UT_sint32 * numCols);
 	PL_StruxDocHandle       getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 												 bool bShowRevisions, UT_uint32 iRevisionLevel,
-												 UT_sint32 row, UT_sint32 col);
+												 UT_sint32 row, 
+												 UT_sint32 col);
 	void                    miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes);
 
 	// List Functions
