@@ -4336,20 +4336,31 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 	for(UT_uint32 i = 0; i < I.getItemCount() - 1; ++i)
 	{
-		fp_TextRun* pNewRun = new fp_TextRun(this,
-											 blockOffset + I.getNthOffset(i),
-											 I.getNthLength(i));
-		
-		UT_return_val_if_fail(pNewRun && pNewRun->getType() == FPRUN_TEXT, false);
-		pNewRun->setDirOverride(m_iDirOverride);
+		UT_uint32 iRunOffset = I.getNthOffset(i);
+		UT_uint32 iRunLength = I.getNthLength(i);
 
-		GR_Item * pItem = I.getNthItem(i)->makeCopy();
-		UT_ASSERT( pItem );
-		pNewRun->setItem(pItem);
-		
-		if(!_doInsertRun(pNewRun))
-			return false;
+		// because of bug 8542 we do not allow runs longer than 32000 chars, so if it is
+		// longer, just split it (we do not care where we split it, this is a contingency
+		// measure only)
+		while(iRunLength)
+		{
+			UT_uint32 iRunSegment = UT_MIN(iRunLength, 32000);
+			
+			fp_TextRun* pNewRun = new fp_TextRun(this, blockOffset + iRunOffset, iRunSegment);
+			iRunOffset += iRunSegment;
+			iRunLength -= iRunSegment;
+			
+			UT_return_val_if_fail(pNewRun && pNewRun->getType() == FPRUN_TEXT, false);
+			pNewRun->setDirOverride(m_iDirOverride);
 
+			GR_Item * pItem = I.getNthItem(i)->makeCopy();
+			UT_ASSERT( pItem );
+			pNewRun->setItem(pItem);
+		
+			if(!_doInsertRun(pNewRun))
+				return false;
+		}
+		
 	}
 
 	return true;
