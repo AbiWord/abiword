@@ -43,6 +43,7 @@ Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 James Montgomerie <jamie@montgomerie.net>	ANSI C patrol
 Bruce Pearson <BruceP@wn.com.au>                full justification
+Andy Richardson <andy@promethium.chem.ucl.ac.uk>	PostScript image handling
 Duncan Rose <d.rose@salford.ac.uk>
 Pierre Sarrazin <ps@cam.org>            
 Martin Sevior <msevior@kosal0.triumf.ca>	Overline, variable width lines
