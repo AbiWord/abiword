@@ -392,7 +392,7 @@ msgstr "Alles"
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h.h:145
 msgid "Allow screen colors other than white"
-msgstr "Andere Bildschirmfargbe als weiß erlauben"
+msgstr "Andere Bildschirmfarbe als weiß erlauben"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h.h:147
@@ -1741,7 +1741,7 @@ msgstr "Zeigen"
 #. DLG_Options_Label_ShowSplash
 #: po/tmp/ap_String_Id.h.h:661
 msgid "Show the AbiWord splash screen on application startup"
-msgstr "Den AbiWord-Begrühungsbildschim beim Starten zeigen"
+msgstr "Den AbiWord-Begrüßungsbildschim beim Starten zeigen"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:663
