@@ -69,6 +69,13 @@ AP_QNXDialog_Stylist::~AP_QNXDialog_Stylist(void)
 {
 }
 
+
+void AP_QNXDialog_Stylist::runModal(XAP_Frame * pFrame)
+{
+	UT_ASSERT(pFrame);
+	UT_ASSERT(0);
+}
+
 void AP_QNXDialog_Stylist::runModeless(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);

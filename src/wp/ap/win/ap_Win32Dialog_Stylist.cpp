@@ -53,6 +53,13 @@ AP_Win32Dialog_Stylist::~AP_Win32Dialog_Stylist(void)
 {
 }
 
+
+void AP_Win32Dialog_Stylist::runModal(XAP_Frame * pFrame)
+{
+	UT_return_if_fail(pFrame);
+	UT_ASSERT(0);
+}
+
 void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);

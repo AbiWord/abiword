@@ -231,6 +231,12 @@ void AP_CocoaDialog_Stylist::styleClicked(UT_sint32 row, UT_sint32 col)
 	setCurStyle(sStyle);
 }
 
+
+void AP_CocoaDialog_Stylist::runModal(XAP_Frame * pFrame)
+{
+	UT_ASSERT(0);
+}
+
 void AP_CocoaDialog_Stylist::runModeless(XAP_Frame * pFrame)
 {
 	m_dlg = [[AP_CocoaDialog_Stylist_Controller alloc] initFromNib];
