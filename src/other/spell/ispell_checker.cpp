@@ -251,7 +251,10 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
         {
             /* out of memory, but return what was copied so far */
             sg->count = c;
-            return c;
+
+			// BUG!!!!
+			delete sg;
+            return new UT_Vector();
         }
 
         if (translate_out == (iconv_t)-1)
