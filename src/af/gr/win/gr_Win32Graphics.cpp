@@ -1653,34 +1653,37 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 		x,y, iWidth, iHeight));	
 	#endif
 
-	BITMAPINFO * bmi = (BITMAPINFO*)malloc (sizeof (BITMAPINFO));
+	BITMAPINFO bmi;
 
 	BYTE *imagedata;
 	HDC	hMemDC = CreateCompatibleDC(m_hdc);
 		
-	bmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 	
-	bmi->bmiHeader.biWidth = iWidth;
-	bmi->bmiHeader.biHeight = iHeight;
-	bmi->bmiHeader.biPlanes = 1; 
-	bmi->bmiHeader.biBitCount = 24; // as we want true-color
-	bmi->bmiHeader.biCompression = BI_RGB; // no compression
-	bmi->bmiHeader.biSizeImage = (((iWidth * bmi->bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
-	bmi->bmiHeader.biXPelsPerMeter = 0;
-	bmi->bmiHeader.biYPelsPerMeter = 0; 
-	bmi->bmiHeader.biClrImportant = 0;
-	bmi->bmiHeader.biClrUsed = 0; // we are not using palette
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER); 	
+	bmi.bmiHeader.biWidth = iWidth;
+	bmi.bmiHeader.biHeight = iHeight;
+	bmi.bmiHeader.biPlanes = 1; 
+	bmi.bmiHeader.biBitCount = 24; // as we want true-color
+	bmi.bmiHeader.biCompression = BI_RGB; // no compression
+	bmi.bmiHeader.biSizeImage = (((iWidth * bmi.bmiHeader.biBitCount + 31) & ~31) >> 3) * iHeight; 
+	bmi.bmiHeader.biXPelsPerMeter = 0;
+	bmi.bmiHeader.biYPelsPerMeter = 0; 
+	bmi.bmiHeader.biClrImportant = 0;
+	bmi.bmiHeader.biClrUsed = 0; // we are not using palette
 		
-	HBITMAP hBit = CreateDIBSection(hMemDC,bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);
+	HBITMAP hBit = CreateDIBSection(hMemDC,&bmi,DIB_RGB_COLORS,(void**)&imagedata,0,0);
 	GdiFlush();
 
 	HBITMAP hOld = (HBITMAP) SelectObject(hMemDC, hBit);
 	BitBlt(hMemDC, 0, 0, iWidth, iHeight, m_hdc, x, y, SRCCOPY);
 	hBit =  (HBITMAP)SelectObject(hMemDC, hOld);
 	DeleteDC(hMemDC);
+
+	m_vSaveRectBuf.setNthItem(iIndx, (void*) hBit, (void**)&hOld);
+	DeleteObject(hOld);
 }
 
 void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) 
-{		
+{
 	UT_Rect * r = (UT_Rect*)m_vSaveRect.getNthItem(iIndx);
 	HBITMAP hBit = (HBITMAP)m_vSaveRectBuf.getNthItem(iIndx);
 	
