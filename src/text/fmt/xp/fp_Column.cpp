@@ -618,9 +618,13 @@ void fp_Column::layout(void)
 	m_pPage->columnHeightChanged(this);
 }
 
+/*!
+  Bump lines from this column to the specified column
+  \param pLastLineToKeep Last line to keep in this column or NULL for none
+*/
 void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
 {
-	UT_sint32 ndx = m_vecLines.findItem(pLastLineToKeep);
+	UT_sint32 ndx = (NULL == pLastLineToKeep) ? 0 : (m_vecLines.findItem(pLastLineToKeep)+1);
 	UT_ASSERT(ndx >= 0);
 	UT_sint32 iCount = m_vecLines.getItemCount();
 	UT_sint32 i;
@@ -630,7 +634,7 @@ void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
 
 	if (pNextColumn->isEmpty())
 	{
-		for (i=ndx + 1; i<iCount; i++)
+		for (i=ndx; i<iCount; i++)
 		{
 			fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 
@@ -639,7 +643,7 @@ void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
 	}
 	else
 	{
-		for (i=iCount - 1; i>=(ndx+1); i--)
+		for (i=iCount - 1; i >= ndx; i--)
 		{
 			fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 		
@@ -647,7 +651,7 @@ void fp_Column::bumpLines(fp_Line* pLastLineToKeep)
 		}
 	}
 	
-	for (i=iCount - 1; i > ndx; i--)
+	for (i=iCount - 1; i >= ndx; i--)
 	{
 		m_vecLines.deleteNthItem(i);
 	}

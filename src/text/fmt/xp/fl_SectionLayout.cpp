@@ -1323,6 +1323,15 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
 	}
 }
 
+/*!
+  Layout sections on pages
+  \return zero
+
+  This is the function that controls how sections and thereby columns,
+  blocks, and lines are laid out on the pages. Doing so it refers to
+  the various layout configurations such as orphan/widow controls and
+  break Runs embedded in the text. 
+*/
 UT_sint32 fl_DocSectionLayout::breakSection(void)
 {
 	fl_BlockLayout* pFirstBlock = getFirstBlock();
@@ -1345,6 +1354,21 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 		UT_sint32 iWorkingColHeight = 0;
 
 		fp_Line* pCurLine = pFirstLineToKeep;
+
+		// Special handling of columns that should be skipped due to
+		// page breaks. If the previous line contains a page break,
+		// skip the present column if it is on the same page.
+		if (pCurLine)
+		{ 
+			fp_Line* pPrevLine = pCurLine->getPrev();
+			if (pPrevLine && pPrevLine->containsForcedPageBreak()
+				&& (pCurColumn->getPage() == pPrevLine->getContainer()->getPage()))
+			{
+				pCurColumn = pCurColumn->getNext();
+				continue;
+			}
+		}
+
 		while (pCurLine)
 		{
 			UT_sint32 iLineHeight = pCurLine->getHeightInLayoutUnits();
@@ -1358,8 +1382,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 				/*
 				  We have found the offending line (the first one which won't fit in the
 				  column) and we now need to decide whether we can break the column
-				  just before it.
-				*/
+				  just before it.  */
 
 				if (pOffendingLine == pFirstLineToKeep)
 				{
@@ -1540,30 +1563,47 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 			}
 		}
 
-		fp_Column* pNextColumn = NULL;
-		
-		if (pLastLineToKeep)
+	
+		if (pLastLineToKeep
+			&& pCurColumn->getLastLine() != pLastLineToKeep)
 		{
 			UT_ASSERT(pLastLineToKeep->getContainer() == pCurColumn);
 			
-			if (pCurColumn->getLastLine() != pLastLineToKeep)
+			fp_Page* pPrevPage = pCurColumn->getPage();
+
+			fp_Column* pNextColumn = pCurColumn;
+			do
 			{
-				// make sure there is a next column
-				pNextColumn = pCurColumn->getNext();
+				// Make sure there is a next column and that it
+				// falls on the next page if there's a page break.
+				pNextColumn = pNextColumn->getNext();
 				if (!pNextColumn)
 				{
 					pNextColumn = (fp_Column*) getNewContainer();
 				}
-
+			} while (pLastLineToKeep->containsForcedPageBreak() 
+					 && (pNextColumn->getPage() == pPrevPage));
+			
+			// Bump content down the columns
+			while (pCurColumn != pNextColumn)
+			{
 				pCurColumn->bumpLines(pLastLineToKeep);
+				pCurColumn->layout();
+				pCurColumn = pCurColumn->getNext();
+
+				// This is only relevant for the initial column. All
+				// other columns should flush their entire content.
+				pLastLineToKeep = NULL;
 			}
 		}
-
-		UT_ASSERT((!pLastLineToKeep) || (pCurColumn->getLastLine() == pLastLineToKeep));
+		else
+		{
+			UT_ASSERT((!pLastLineToKeep) || (pCurColumn->getLastLine() == pLastLineToKeep));
 			
-		pCurColumn->layout();
+			pCurColumn->layout();
 
-		pCurColumn = pCurColumn->getNext();
+			pCurColumn = pCurColumn->getNext();
+		}
 	}
 
 	return 0; // TODO return code
