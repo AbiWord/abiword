@@ -74,9 +74,9 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 
 		sprintf(filename, "%s%s", (char *) m_searchPaths.getNthItem(i), FONTS_DIR_FILE);
 
-		ifstream file;
+		FILE * file;
 
-		file.open(filename);
+		file = fopen(filename, "r");
 		if (!file)
 		{
 			UT_DEBUGMSG(("Cannot open [%s] to read fonts list.\n", filename));
@@ -86,8 +86,8 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			char buffer[512];
 
 			// first line is a count
-			file.getline(buffer, 512);
-			
+			fgets(buffer, 512, file);
+
 			long fontcount = atol(buffer);
 
 			// these should probably not be DEBUG-build only, but reworked
@@ -110,7 +110,16 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			long line;
 			for (line = 0; line < fontcount; line++)
 			{
-				file.getline(buffer, 512);
+				if (!fgets(buffer, 512, file))
+				{
+					// premature EOF (it's always premature if there are more
+					// fonts specified than found)
+					UT_DEBUGMSG(("Premature end of file from directory [%s]; "
+								 "wanted %d fonts, only got [%d]--will continue.\n",
+								 filename, fontcount, line));
+					fclose(file);
+					return UT_TRUE;
+				}
 				_allocateThisFont((const char *) buffer,
 								  (const char *) m_searchPaths.getNthItem(i));
 			}
@@ -123,8 +132,11 @@ UT_Bool AP_UnixFontManager::scavengeFonts(void)
 			UT_DEBUGMSG(("Read %d fonts from directory [%s].", line, filename));
 		}
 		FREEP(filename);
+		if (file)
+			fclose(file);
 	}
 
+	
 	if (totalfonts <= 0)
 	{
 		// we have no fonts, just quit

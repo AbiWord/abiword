@@ -20,8 +20,6 @@
 #ifndef AP_UNIXFONT_H
 #define AP_UNIXFONT_H
 
-#include <fstream.h>
-
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
@@ -99,7 +97,7 @@ protected:
 	char * 					m_fontfile;
 	char *					m_metricfile;
 
-	ifstream * 				m_PFAFile;
+	FILE *	 				m_PFAFile;
 };
 
 #endif /* AP_UNIXFONT_H */

@@ -242,8 +242,7 @@ UT_Bool AP_UnixFont::openPFA(void)
 {
 	ASSERT_MEMBERS;
 	
-	m_PFAFile = new ifstream;
-	m_PFAFile->open(m_fontfile);
+	m_PFAFile = fopen(m_fontfile, "r");
 
 	if (!m_PFAFile)
 	{
@@ -259,8 +258,7 @@ UT_Bool AP_UnixFont::closePFA(void)
 {
 	if (m_PFAFile)
 	{
-		m_PFAFile->close();
-		delete m_PFAFile;
+		fclose(m_PFAFile);
 		return UT_TRUE;
 	}
 	return UT_FALSE;
@@ -268,9 +266,7 @@ UT_Bool AP_UnixFont::closePFA(void)
 
 char AP_UnixFont::getPFAChar(void)
 {
-	char ch = 0;
-	m_PFAFile->get(ch);
-	return ch;
+	return fgetc(m_PFAFile);
 }
 
 const char * AP_UnixFont::getFontKey(void)
