@@ -55,7 +55,8 @@
 	UT_ASSERT (frame);
 	m_pFrame = frame;
 	m_pGR = NULL;
-	return [super initWithFrame:windowFrame];
+	self = [super initWithFrame:windowFrame];
+	return self;
 }
 
 - (BOOL)acceptsFirstResponder
@@ -71,7 +72,6 @@
 		if (m_pFrame->getCurrentView()) {
 			m_pFrame->getCurrentView()->focusChange(AV_FOCUS_HERE);
 		}
-	
 		UT_DEBUGMSG(("became first responder!\n"));
 		return YES;
 	}
@@ -119,4 +119,49 @@
 {
 	return YES;
 }
+
+/*
+- (XAP_Frame *)_getOwnerFrame
+{
+	id controller = [[self window] delegate];
+	if ([controller isKindOfClass:[XAP_CocoaFrameController class]])
+	{
+		XAP_Frame* frame = [(XAP_CocoaFrameController*)controller frameImpl]->getFrame();
+		return frame;
+	}
+	NSLog (@"-[_getOwnerFrame] could find owner frame");
+	return NULL;
+}
+*/
+
+- (void)mouseDown:(NSEvent *)theEvent
+{
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	AV_View * pView = m_pFrame->getCurrentView();
+	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (m_pFrame->getMouse());
+
+	if (pView)
+		pCocoaMouse->mouseClick (pView, theEvent, self);
+}
+
+- (void)mouseDragged:(NSEvent *)theEvent
+{
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	AV_View * pView = m_pFrame->getCurrentView();
+	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (m_pFrame->getMouse());
+
+	if (pView)
+		pCocoaMouse->mouseMotion (pView, theEvent, self);
+}
+
+- (void)mouseUp:(NSEvent *)theEvent
+{
+//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
+	AV_View * pView = m_pFrame->getCurrentView();
+	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (m_pFrame->getMouse());
+
+	if (pView)
+		pCocoaMouse->mouseUp (pView, theEvent, self);
+}
+
 @end

@@ -66,7 +66,7 @@ bool XAP_CocoaClipboard::clearClipboard(void)
 	// User requested us to clear the clipboard.
 
 	UT_DEBUGMSG(("Clipboard: explicit clear\n"));
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
+//	UT_ASSERT (UT_NOT_IMPLEMENTED);
 	return false;
 }
 

@@ -36,9 +36,9 @@ class EV_CocoaMouse : public EV_Mouse
 public:
 	EV_CocoaMouse(EV_EditEventMapper * pEEM);
 
-	void mouseClick(AV_View* pView, NSEvent* e);
-	void mouseUp(AV_View* pView, NSEvent* e);
-	void mouseMotion(AV_View* pView, NSEvent *event);
+	void mouseClick(AV_View* pView, NSEvent* e, NSView* hitView);
+	void mouseUp(AV_View* pView, NSEvent* e, NSView* hitView);
+	void mouseMotion(AV_View* pView, NSEvent *event, NSView *hitView);
 
 protected:
 	UT_uint32				m_clickState;	/* {NoClick,SingleClick,DoubleClick} */

@@ -139,8 +139,10 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	s_iInstanceCount++;
 	init3dColors ();
 
-	m_cache = [[NSImage alloc] init];
+	m_cache = [[NSImage alloc] initWithSize:NSMakeSize(0,0)];
 	[m_cache setFlipped:YES];
+	m_cacheRect = NSMakeRect(0,0,0,0);
+
 	m_offscreen = [[NSImage alloc] initWithSize:viewBounds.size];
 	[m_offscreen setFlipped:YES];
 
@@ -194,34 +196,6 @@ bool GR_CocoaGraphics::queryProperties(GR_Graphics::Properties gp) const
 		return false;
 	}
 }
-
-/* let's cache this, since construction of UT_Wctomb is rather slow */
-static UT_Wctomb* w = NULL;
-#if 0
-static char text[MB_LEN_MAX];
-static int text_length;
-static bool fallback_used;
-#endif 
-
-#define WCTOMB_DECLS \
-	if (!w) {	\
-	    w = new UT_Wctomb;	\
-	} else	\
-	    w->initialize();
-
-#define CONVERT_TO_MBS(c)	\
-    	if (c<=0xff) {	\
-		/* this branch is to allow Lists to function */	\
-		text[0] = (unsigned char)c;			\
-		text_length = 1;				\
-		fallback_used = 0;				\
-	} else	{\
-		fallback_used = 0;	\
-		if (!w->wctomb(text,text_length,(wchar_t)c)) {	\
-		    w->wctomb_or_fallback(text,text_length,(wchar_t)c);	\
-		    fallback_used = 1;	\
-		}	\
-	}
 
 
 void GR_CocoaGraphics::setLineProperties ( double    inWidthPixels, 
@@ -278,9 +252,6 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 								 int * pCharWidths)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawChars()\n"));
-	UT_ASSERT(m_pFont);
-	WCTOMB_DECLS;
-	NSFont *font = m_pFont->getNSFont();
 	float x;
 
 	// to be able to handle overstriking characters, we have to remember the width
@@ -336,11 +307,10 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 		NSPoint point;
 		point.x = curX;
-		point.y = yoff + [font descender];
+		point.y = yoff;
 
 		[string drawAtPoint:point withAttributes:m_fontProps];
 		
-		//gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&beucs,2);
 		x+=curWidth;
 		prevWidth = curWidth;
 /*
@@ -1079,14 +1049,16 @@ void GR_CocoaGraphics::saveRectangle(UT_Rect & rect)
 						  rect.width, rect.height);
 	[m_cache setSize:m_cacheRect.size];
 	StNSImageLocker locker(m_pWin, m_cache);
-	[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:m_cacheRect operation:NSCompositeCopy fraction:1.0];
+	[m_offscreen compositeToPoint:NSMakePoint(0.0, 0.0) fromRect:m_cacheRect operation:NSCompositeCopy];
 }
 
 
 void GR_CocoaGraphics::restoreRectangle()
 {
+	NSPoint pt = m_cacheRect.origin;
+	pt.y += m_cacheRect.size.height;
 	LOCK_CONTEXT__;
-	[m_cache compositeToPoint:m_cacheRect.origin operation:NSCompositeCopy fraction:1.0];
+	[m_cache compositeToPoint:pt operation:NSCompositeCopy];
 	[[m_pWin window] flushWindowIfNeeded];
 }
 

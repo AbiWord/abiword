@@ -77,10 +77,10 @@ void AP_CocoaFrame::setXScrollRange(void)
 {
 	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
 	NSRect rect = [static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->m_docAreaGRView frame];
-	int windowWidth = rect.size.width;
+	float windowWidth = rect.size.width;
 
-	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
-	int newmax = width - windowWidth; /* upper - page_size */
+	float newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
+	float newmax = width - windowWidth; /* upper - page_size */
 	if (newmax <= 0)
 		newvalue = 0;
 	else if (newvalue > newmax)
@@ -112,10 +112,10 @@ void AP_CocoaFrame::setYScrollRange(void)
 {
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
 	NSRect rect = [static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->m_docAreaGRView frame];
-	int windowHeight = rect.size.width;
+	float windowHeight = rect.size.width;
 
-	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
-	int newmax = height - windowHeight;	/* upper - page_size */
+	float newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
+	float newmax = height - windowHeight;	/* upper - page_size */
 	if (newmax <= 0)
 		newvalue = 0;
 	else if (newvalue > newmax)
@@ -339,7 +339,7 @@ void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
 
-	AP_CocoaLeftRuler * pCocoaLeftRuler = NULL;
+	//AP_CocoaLeftRuler * pCocoaLeftRuler = NULL;
 
 	UT_DEBUGMSG(("AP_CocoaFrame::toggleLeftRuler %d, %d\n", 
 		     bRulerOn, pFrameData->m_pLeftRuler));

@@ -830,39 +830,6 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 }
 
 
-- (void)mouseDown:(NSEvent *)theEvent
-{
-	XAP_Frame * pFrame = m_frame->getFrame();
-//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
-	AV_View * pView = pFrame->getCurrentView();
-	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (pFrame->getMouse());
-
-	if (pView)
-		pCocoaMouse->mouseClick (pView, theEvent);
-}
-
-- (void)mouseDragged:(NSEvent *)theEvent
-{
-	XAP_Frame * pFrame = m_frame->getFrame();
-//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
-	AV_View * pView = pFrame->getCurrentView();
-	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (pFrame->getMouse());
-
-	if (pView)
-		pCocoaMouse->mouseMotion (pView, theEvent);
-}
-
-- (void)mouseUp:(NSEvent *)theEvent
-{
-	XAP_Frame * pFrame = m_frame->getFrame();
-//  	pFrame->setTimeOfLastEvent([theEvent timestamp]);
-	AV_View * pView = pFrame->getCurrentView();
-	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *> (pFrame->getMouse());
-
-	if (pView)
-		pCocoaMouse->mouseUp (pView, theEvent);
-}
-
 - (void)keyDown:(NSEvent *)theEvent
 {
 	XAP_Frame * pFrame = m_frame->getFrame();
@@ -891,6 +858,7 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 	UT_DEBUGMSG (("Cocoa: @XAP_CocoaFrameController initWith:frame\n"));
 	m_frame = frame;
 	[self initWithWindowNibName:frame->_getNibName()];	/* this one will make the call to [super init]  */
+	[[self window] setAcceptsMouseMovedEvents:YES];		/* can't we set that from IB (FIXME) */
 	return self;
 }
 
@@ -907,6 +875,11 @@ void XAP_CocoaFrameImpl::_setController (XAP_CocoaFrameController * ctrl)
 - (XAP_CocoaNSStatusBar *)getStatusBar
 {
 	return statusBar;
+}
+
+- (XAP_CocoaFrameImpl *)frameImpl
+{
+	return m_frame;
 }
 
 - (NSMenuItem *)_aboutMenu

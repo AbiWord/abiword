@@ -37,7 +37,7 @@ EV_CocoaMouse::EV_CocoaMouse(EV_EditEventMapper * pEEM)
 	m_contextState = 0;
 }
 
-void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e)
+void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e, NSView* hitView)
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems = 0;
@@ -95,8 +95,12 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e)
 	switch (result)
 	{
 	case EV_EEMR_COMPLETE:
-		UT_ASSERT(pEM);
-		invokeMouseMethod(pView, pEM, (UT_sint32) [e deltaX], (UT_sint32) [e deltaY]);
+		{
+			UT_ASSERT(pEM);
+			NSPoint pt = [e locationInWindow];
+			pt = [hitView convertPoint:pt fromView:nil];
+			invokeMouseMethod(pView, pEM, (UT_sint32) pt.x, (UT_sint32) pt.y);
+		}
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -111,7 +115,7 @@ void EV_CocoaMouse::mouseUp(AV_View* pView, NSEvent* e)
 	}
 }
 
-void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e)
+void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e, NSView *hitView)
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState state = 0;
@@ -119,7 +123,8 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e)
 	EV_EditMouseButton emb = 0;
 	EV_EditMouseOp mop = 0;
 	EV_EditMouseContext emc = 0;
-
+	NSPoint pt;
+	
 	UT_DEBUGMSG (("Received mouse click...\n"));
 
 	int buttonNumber = [e buttonNumber];
@@ -169,7 +174,9 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e)
 		return;
 	}
 
-	emc = pView->getMouseContext((UT_sint32)[e deltaX],(UT_sint32)[e deltaY]);
+	pt = [e locationInWindow];
+	pt = [hitView convertPoint:pt fromView:nil];
+	emc = pView->getMouseContext((UT_sint32)pt.x, (UT_sint32)pt.y);
 	
 	m_clickState = mop;					// remember which type of click
 	m_contextState = emc;				// remember context of click
@@ -180,7 +187,7 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)[e deltaX], (UT_sint32)[e deltaY]);
+		invokeMouseMethod(pView,pEM,(UT_sint32)pt.x, (UT_sint32)pt.y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -196,7 +203,7 @@ void EV_CocoaMouse::mouseClick(AV_View* pView, NSEvent* e)
 }
 
 
-void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e)
+void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e, NSView *hitView)
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems = 0;
@@ -204,6 +211,7 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e)
 	EV_EditMouseButton emb = 0;
 	EV_EditMouseOp mop;
 	EV_EditMouseContext emc = 0;
+	NSPoint pt;
 	
 	UT_DEBUGMSG (("Received mouse motion...\n"));
 	unsigned int modifierFlags = [e modifierFlags];
@@ -233,11 +241,13 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e)
 
 	// TODO confirm that we report movements under the
 	// TODO mouse button that we did the capture on.
+	pt = [e locationInWindow];
+	pt = [hitView convertPoint:pt fromView:nil];
 
 	if (m_clickState == 0)
 	{
 		mop = EV_EMO_DRAG;
-		emc = pView->getMouseContext((UT_sint32)[e deltaX],(UT_sint32)[e deltaY]);
+		emc = pView->getMouseContext((UT_sint32)pt.x,(UT_sint32)pt.y);
 	}
 	else if (m_clickState == EV_EMO_SINGLECLICK)
 	{
@@ -261,7 +271,7 @@ void EV_CocoaMouse::mouseMotion(AV_View* pView, NSEvent *e)
 	{
 	case EV_EEMR_COMPLETE:
 		UT_ASSERT(pEM);
-		invokeMouseMethod(pView,pEM,(UT_sint32)[e deltaX],(UT_sint32)[e deltaY]);
+		invokeMouseMethod(pView,pEM,(UT_sint32)pt.x,(UT_sint32)pt.y);
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.

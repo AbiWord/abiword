@@ -176,12 +176,37 @@ static bool s_isVirtualKeyCode(UT_uint32 keyCode)
 
 static EV_EditBits s_mapVirtualKeyCodeToNVK(UT_uint32 keyCode)
 {
-	if (keyCode == 0x20)
+	switch (keyCode)
+	{
+	case 0x20:
 		return EV_NVK_SPACE;
-	else if (keyCode == 0x0d)
+	case 0x0d:
 		return EV_NVK_RETURN;
-	else if (keyCode == 0x7f)
+	case 0x7f:
 		return EV_NVK_BACKSPACE;
+	case NSUpArrowFunctionKey:
+		return EV_NVK_UP;
+	case NSDownArrowFunctionKey:
+		return EV_NVK_DOWN;
+	case NSLeftArrowFunctionKey:
+		return EV_NVK_LEFT;
+	case NSRightArrowFunctionKey:
+		return EV_NVK_RIGHT;
+	case NSInsertFunctionKey:
+		return EV_NVK_INSERT;
+	case NSDeleteFunctionKey:
+		return EV_NVK_DELETE;
+	case NSHomeFunctionKey:
+		return EV_NVK_HOME;
+	case NSEndFunctionKey:
+		return EV_NVK_END;
+	case NSPageUpFunctionKey:
+		return EV_NVK_PAGEUP;
+	case NSPageDownFunctionKey:
+		return EV_NVK_PAGEDOWN;
+	default:
+		break;
+	}
 	return EV_NVK__IGNORE__;
 }
 
