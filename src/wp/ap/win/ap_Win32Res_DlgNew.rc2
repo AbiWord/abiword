@@ -41,7 +41,7 @@
 #ifdef RC_INVOKED
 // NOTE these placeholder strings get overridden at runtime 
 
-AP_RID_DIALOG_NEW DIALOG DISCARDABLE  0, 0, 195, 190
+AP_RID_DIALOG_NEW DIALOG DISCARDABLE  30, 10, 195, 190
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Choose a Template"
 FONT 8, "MS Sans Serif"
