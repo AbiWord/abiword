@@ -13,7 +13,7 @@ contributors
 ------------
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package
-Bryan Blackburn <blb@pobox.com>			Solaris / GCC 2.95 make
+Bryan Blackburn <blb@pobox.com>                 Solaris / GCC 2.95 make
 Scott Boesch <scott@abisource.com>              artist, trade shows
 Brian Bosse <bhb002@drake.edu>
 Justin Bradford <justin@ukans.edu>              Word import
@@ -23,7 +23,7 @@ Heath D. Carr <heath@abisource.com>
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
-Martin Willemoes Hansen <mwh@stampede.org>	Danish transl., font dialog
+Martin Willemoes Hansen <mwh@stampede.org>
 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>	m68k Endian Patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog
@@ -31,12 +31,14 @@ Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
 James Lefavour <James@albany.net>               Win98/VC6
+Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
 Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Pierre Sarrazin <ps@cam.org>            
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
+Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>           
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
 John Wood <jyonw@asu.edu>                       NetBSD
@@ -51,7 +53,7 @@ Philippe Duperron <duperron@mail.dotcom.fr>     French
 Martin Willemoes Hansen <mwh@stampede.org>      Danish
 Jarmo Karvonen <jarmo@dawn.joensuu.fi>          Finnish
 Christian Terboven <cterboven@gmx.net>          German
-Javier Yáñez <javier@cibal.es>			Spanish
+Javier Yáñez <javier@cibal.es>                  Spanish
 
 unsung heroes
 -------------
