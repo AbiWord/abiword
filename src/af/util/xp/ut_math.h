@@ -42,6 +42,6 @@
 ABI_EXPORT double rint(double x);
 #endif /* _WIN32 */
 
-UT_uint32 UT_newNumber ();
+ABI_EXPORT UT_uint32 UT_newNumber ();
 
 #endif /* UTMATH_H */

@@ -771,7 +771,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 		InitCommonControls();
 		MessageBox(NULL,
 			"AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
-			"than the one currently on your system. (COMCTL32.DLL version 4.70 or newer)\n"
+			"than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
 			"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
 			"\n\thttp://www.abisource.com\n\n"
 			"You can use the program, but the toolbar may be missing.", NULL, MB_OK);
@@ -886,6 +886,9 @@ __try
 	// Un-init OLE		               
         if (bInitialized)
                 OleUninitialize();
+
+	// unload all loaded plugins (remove some of the memory leaks shown at shutdown :-)
+	XAP_ModuleManager::instance().unloadAllPlugins();
 	
 	// Step 4: Destroy the App.  It should take care of deleting all frames.
 	pMyWin32App->shutdown();

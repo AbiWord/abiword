@@ -248,9 +248,9 @@ XAP_HashDownloader::downloadFile(XAP_Frame *pFrame, const char *szFName, tFileDa
 		showProgressStop(pFrame, ch);
 
 	//TODO: figure out why I crash on Windows
-#ifndef _WIN32
+//#ifndef _WIN32
 	curl_easy_cleanup(ch);
-#endif
+//#endif
 
 	return ret;
 }
@@ -261,6 +261,9 @@ XAP_HashDownloader::getPref(XAP_Frame *pFrame)
 {
 	char *endptr, *val;
 	UT_sint32 i;
+
+	UT_return_val_if_fail((pFrame != NULL), -1);
+
 	XAP_Prefs *prefs = pFrame->getApp()->getPrefs();
 	XAP_PrefsScheme *prefsScheme = prefs->getCurrentScheme(true);
 	
@@ -279,6 +282,9 @@ UT_sint32
 XAP_HashDownloader::setPref(XAP_Frame *pFrame, UT_sint32 newVal)
 {
 	char val[10];
+
+	UT_return_val_if_fail((pFrame != NULL), -1);
+
 	XAP_Prefs *prefs = pFrame->getApp()->getPrefs();
 	UT_ASSERT(prefs);
 	XAP_PrefsScheme *prefsScheme = prefs->getCurrentScheme(true);
@@ -333,6 +339,8 @@ XAP_HashDownloader::getComparableBuildDate()
 UT_uint32
 XAP_HashDownloader::dlg_askDownload(XAP_Frame *pFrame, const char *szLang)
 {
+	UT_return_val_if_fail((pFrame != NULL), -1);
+
 	if (XAP_Dialog_MessageBox::a_NO == pFrame->showMessageBox(XAP_STRING_ID_DLG_HashDownloader_AskDownload
 				, XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_YES, szLang))
 		return(0);
@@ -387,11 +395,12 @@ fprintf(stderr, "XAP_HashDownloader::suggestDownload(): szLang=%s\n", szLang);
 	return(0);
 #endif
 	
-	/* Feature disabled in prefs */
+	/* Feature disabled in prefs, if error reading preferences then go ahead and ask */
 	if (!getPref(pFrame))
 		return(0);
 	
-	if (!dlg_askDownload(pFrame, szLang))
+	/* only download if the user really said yes, any other value [no,error] we simply return */
+	if (dlg_askDownload(pFrame, szLang) != 1)
 		return(0);
 
 	if ((i = getLangNum(szLang)) == -1)

@@ -267,3 +267,21 @@ const UT_Vector * XAP_ModuleManager::enumModules () const
 	// TODO: perhaps we should clone this
 	return m_modules;
 }
+
+/*!
+ * Unload all currently loaded plugins, in order of last added to first
+ *
+ * \return nothing
+ */
+void XAP_ModuleManager::unloadAllPlugins ()
+{
+	UT_return_if_fail(m_modules != NULL);
+	// make sure all the plugins are unloaded (reverse order loaded)
+	for (int i = m_modules->getItemCount()-1; i >= 0; i--)
+	{
+		XAP_Module *pModule = (XAP_Module *) m_modules->getNthItem(i);
+		UT_ASSERT (pModule != NULL);
+		if (pModule != NULL) 
+			unloadModule(pModule);
+	}
+}
