@@ -117,6 +117,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	typedef bool (*gr_cocoa_graphics_update) (NSRect * rect, GR_CocoaGraphics *pGr, void * param);
 	void				_setUpdateCallback (gr_cocoa_graphics_update callback, void * param);
 	bool				_callUpdateCallback(NSRect *aRect);
+	Abi_NSView*			_getView () { return m_pWin; };
 	NSImage*			_getOffscreen () { return m_offscreen; };
  protected:
 	virtual UT_uint32 	_getResolution(void) const;

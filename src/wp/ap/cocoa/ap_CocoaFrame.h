@@ -22,9 +22,9 @@
 #define AP_COCOAFRAME_H
 
 #import <Cocoa/Cocoa.h>
-#import "XAP_CocoaFrame.h"
+#import "gr_CocoaGraphics.h"
+#import "xap_CocoaFrame.h"
 
-class GR_Graphics;
 class AP_CocoaFrame;
 
 #include "ie_types.h"
@@ -35,14 +35,14 @@ class AP_CocoaFrame;
 
 @interface AP_CocoaFrameController : XAP_CocoaFrameController
 {
-    IBOutlet NSControl *hRuler;
-    IBOutlet NSControl *vRuler;
+    IBOutlet Abi_NSView *hRuler;
+    IBOutlet Abi_NSView *vRuler;
 }
 + (AP_CocoaFrameController*)createFrom:(AP_CocoaFrame *)frame;
 - (id)initWith:(XAP_CocoaFrame *)frame;
 - (IBAction)rulerClick:(id)sender;
-- (NSControl *)getVRuler;
-- (NSControl *)getHRuler;
+- (Abi_NSView *)getVRuler;
+- (Abi_NSView *)getHRuler;
 @end
 
 
@@ -90,6 +90,7 @@ protected:
 	UT_Error					_replaceDocument(AD_Document * pDoc);
 	virtual void				_showOrHideToolbars(void);
 	virtual void				_showOrHideStatusbar(void);
+	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 
 #if 0	
 	GtkAdjustment *				m_pVadj;

@@ -40,8 +40,22 @@
 #include "xap_EncodingManager.h"
 #include "ut_OverstrikingChars.h"
 
-#import <AppKit/AppKit.h>
-#import <Foundation/Foundation.h>
+#import <Cocoa/Cocoa.h>
+
+#define DISABLE_VERBOSE 1
+#define USE_OFFSCREEN 1
+//#undef USE_OFFSCREEN
+
+#ifdef DISABLE_VERBOSE
+#undef UT_DEBUGMSG
+#define UT_DEBUGMSG(x)
+#endif
+
+#ifdef USE_OFFSCREEN
+#define LOCK_CONTEXT__ 	StNSImageLocker locker (m_offscreen)
+#else
+#define LOCK_CONTEXT__	StNSViewLocker locker(m_pWin)
+#endif
 
 // create a stack object like that to lock a NSView, then it will be unlocked on scope exit.
 // never do a new
@@ -83,17 +97,27 @@ XAP_CocoaFontHandle *	GR_CocoaGraphics::s_pFontGUI = NULL;
 UT_uint32 				GR_CocoaGraphics::s_iInstanceCount = 0;
 
 GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontManager, XAP_App * app)
+	: m_updateCallback(NULL),
+	m_updateCBparam (NULL),
+	m_pFontManager (fontManager),
+	m_offscreen (nil),
+	m_currentColor (nil),
+	m_pFont (NULL)
 {
 	m_pApp = app;
 	UT_ASSERT (win);
 	NSRect viewBounds = [win bounds];
 	//xxx_UT_DEBUGMSG (("frame is %f %f %f %f\n", theRect.origin.x, theRect.origin.y, theRect.size.width, theRect.size.height));
-	m_pWin = [[Abi_NSView alloc] initWithFrame:viewBounds];
-	[win addSubview:m_pWin];
+	if (![win isKindOfClass:[Abi_NSView class]]) {
+		m_pWin = [[Abi_NSView alloc] initWithFrame:viewBounds];
+		[win addSubview:m_pWin];
+	}
+	else {
+		[win retain];
+		m_pWin = win;
+	}
 	[m_pWin setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
 	[m_pWin setGraphics:this];
-	m_pFontManager = fontManager;
-	m_pFont = NULL;
 	m_iLineWidth = 0;
 	s_iInstanceCount++;
 	init3dColors ();
@@ -101,9 +125,11 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontMana
 	m_offscreen = [[NSImage alloc] initWithSize:viewBounds.size];
 	[m_offscreen setFlipped:YES];
 	
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	
 	[NSBezierPath setDefaultLineWidth:m_iLineWidth];
+	[NSBezierPath setDefaultLineCapStyle:NSButtLineCapStyle];
+	[NSBezierPath setDefaultLineJoinStyle:NSMiterLineJoinStyle];
 	m_currentColor = [[NSColor blackColor] copy];
  	[m_currentColor set];
 		
@@ -113,6 +139,10 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_CocoaFontManager * fontMana
 	[[NSGraphicsContext currentContext] setShouldAntialias:NO];
 	/* save initial graphics state that has no clipping */
 	[NSGraphicsContext saveGraphicsState];
+# ifndef USE_OFFSCREEN
+	StNSImageLocker locker (m_offscreen);
+# endif
+	NSEraseRect ([m_pWin bounds]);
 }
 
 GR_CocoaGraphics::~GR_CocoaGraphics()
@@ -184,14 +214,13 @@ void GR_CocoaGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 							[NSData dataWithBytes:&Wide_char length:sizeof(Wide_char)] 
 							encoding:NSUnicodeStringEncoding];
 
-	//StNSViewLocker locker(m_pWin);
-	StNSImageLocker locker (m_offscreen);
 	NSPoint point;
 	point.x = xoff;
 	point.y = yoff;
 	
+	LOCK_CONTEXT__;
 	// TODO: set attributes
-	[string drawAtPoint:point withAttributes:nil];	
+	[string drawAtPoint:point withAttributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]];	
 	[string release];
 }
 
@@ -219,8 +248,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	const UT_UCSChar *pC;
 	
 	// Lock the NSView
-	//StNSViewLocker locker(m_pWin);
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	NSString * string = nil;
 
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
@@ -260,8 +288,7 @@ void GR_CocoaGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		point.x = curX;
 		point.y = yoff;
 
-		// TODO: set attributes
-		[string drawAtPoint:point withAttributes:nil];	
+		[string drawAtPoint:point withAttributes:[NSDictionary dictionaryWithObject:font forKey:NSFontAttributeName]];	
 		
 		//gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&beucs,2);
 		x+=curWidth;
@@ -340,7 +367,7 @@ NSColor	*GR_CocoaGraphics::_utRGBColorToNSColor (const UT_RGBColor& clr)
 	g = (float)clr.m_grn / 255.0f;
 	b = (float)clr.m_blu / 255.0f;
 	UT_DEBUGMSG (("converting color r=%f, g=%f, b=%f from %d, %d, %d\n", r, g, b, clr.m_red, clr.m_grn, clr.m_blu)); 
-	NSColor *c = [NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0];
+	NSColor *c = [[NSColor colorWithDeviceRed:r green:g blue:b alpha:1.0] retain];	// is autoreleased, so retain
 	return c;
 }
 
@@ -359,7 +386,7 @@ void GR_CocoaGraphics::_setColor(NSColor * c)
 	UT_DEBUGMSG (("GR_CocoaGraphics::_setColor(NSColor *): setting NSColor\n"));
 	[m_currentColor release];
 	m_currentColor = [c copy];
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	[m_currentColor set];
 }
 
@@ -378,6 +405,7 @@ GR_Font * GR_CocoaGraphics::getGUIFont(void)
 		// bury it in a new font handle
 		s_pFontGUI = new XAP_CocoaFontHandle(font, [NSFont labelFontSize]); // Hardcoded GUI font size
 		UT_ASSERT(s_pFontGUI);
+		DELETEP (font);			// s_pFontGUI has duplicated the font object. Free it.
 	}
 
 	return s_pFontGUI;
@@ -390,7 +418,7 @@ GR_Font * GR_CocoaGraphics::findFont(const char* pszFontFamily,
 									const char* /*pszFontStretch*/, 
 									const char* pszFontSize)
 {
-	UT_DEBUGMSG (("GR_CocoaGraphics::findFont()\n"));
+	UT_DEBUGMSG (("GR_CocoaGraphics::findFont(%s, %s, %s)\n", pszFontFamily, pszFontStyle, pszFontSize));
 	if (!m_pFontManager)
 		return NULL;
 
@@ -497,8 +525,7 @@ UT_uint32 GR_CocoaGraphics::getFontDescent()
 void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
-	//StNSViewLocker locker(m_pWin);
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	UT_DEBUGMSG (("GR_CocoaGraphics::drawLine(%ld, %ld, %ld, %ld) width=%f\n", x1, y1, x2, y2, 
 	              [NSBezierPath defaultLineWidth]));
 	// TODO set the line width according to m_iLineWidth	
@@ -507,8 +534,7 @@ void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 
 void GR_CocoaGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	//StNSViewLocker locker(m_pWin);
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	UT_DEBUGMSG (("GR_CocoaGraphics::setLineWidth(%ld) was %f\n", iLineWidth, [NSBezierPath defaultLineWidth]));
 	m_iLineWidth = iLineWidth;
 
@@ -519,15 +545,14 @@ void GR_CocoaGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 			    UT_sint32 y2)
 {
 	// TODO use XOR mode NSCompositeXOR
-	//StNSViewLocker locker(m_pWin);
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	[NSBezierPath strokeLineFromPoint:NSMakePoint(x1, y1) toPoint:NSMakePoint(x2, y2)];
 }
 
 void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	UT_DEBUGMSG (("GR_CocoaGraphics::polyLine() width=%f\n", [NSBezierPath defaultLineWidth]));
-	NSBezierPath *path = [NSBezierPath bezierPath];
+	NSBezierPath *path = [NSBezierPath bezierPath];		// autoreleased
 	
 	for (UT_uint32 i = 0; i < nPoints; i++) 
 	{
@@ -538,10 +563,8 @@ void GR_CocoaGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 			[path lineToPoint:NSMakePoint (pts[i].x, pts[i].y)];
 		}
 	}
-	//StNSViewLocker locker(m_pWin);
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	[path stroke];
-	[path release];
 }
 
 void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
@@ -549,7 +572,7 @@ void GR_CocoaGraphics::invertRect(const UT_Rect* pRect)
 	UT_DEBUGMSG (("GR_CocoaGraphics::invertRect()\n"));
 	UT_ASSERT(pRect);
 
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	// TODO handle invert. this is highlight.
 	
 	NSHighlightRect (NSMakeRect (pRect->left, pRect->top, pRect->width, pRect->height));
@@ -560,7 +583,7 @@ void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 	UT_DEBUGMSG (("GR_CocoaGraphics::setClipRect()\n"));
 	m_pRect = pRect;
 
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	/* discard the clipping */
 	/* currently the only way is to restore the graphic state */
 	[NSGraphicsContext restoreGraphicsState];
@@ -580,6 +603,7 @@ void GR_CocoaGraphics::setClipRect(const UT_Rect* pRect)
 
 void GR_CocoaGraphics::fillRect(UT_RGBColor& c, UT_Rect &r)
 {
+	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(UT_RGBColor&, UT_Rect &)\n"));
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
@@ -590,8 +614,7 @@ void GR_CocoaGraphics::fillRect(UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
 	// save away the current color, and restore it after we fill the rect
 	NSColor *c = _utRGBColorToNSColor (clr);
 		
-	//StNSViewLocker locker(m_pWin);
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	[NSGraphicsContext saveGraphicsState];
 	[c set];
 	NSRectFill (NSMakeRect (x, y, w, h));
@@ -603,10 +626,9 @@ void GR_CocoaGraphics::fillRect(UT_RGBColor& clr, UT_sint32 x, UT_sint32 y,
 void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
-	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D&, %ld, %ld, %ld, %ld)\n", x, y, w, h));
+	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D %d, %ld, %ld, %ld, %ld)\n", c, x, y, w, h));
 	
-	//StNSViewLocker locker(m_pWin);
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	[NSGraphicsContext saveGraphicsState];
 	[m_3dColors[c] set];
 	NSRectFill (NSMakeRect (x, y, w, h));
@@ -615,7 +637,7 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 
 void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 {
-	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D&, UT_Rect &)\n"));
+	UT_DEBUGMSG(("GR_CocoaGraphics::fillRect(GR_Color3D, UT_Rect &)\n"));
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
@@ -733,14 +755,12 @@ GR_Graphics::ColorSpace GR_CocoaGraphics::getColorSpace(void) const
 
 void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 {
-	UT_DEBUGMSG(("Don't support setting cursor\n"));
-#if 0
 	if (m_cursor == c)
 		return;
 	
 	m_cursor = c;
 	
-	GdkCursorType cursor_number;
+	NSCursor * cursor;
 	
 	switch (c)
 	{
@@ -748,12 +768,13 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		/*FALLTHRU*/
 	case GR_CURSOR_DEFAULT:
-		cursor_number = GDK_TOP_LEFT_ARROW;
+		cursor = [NSCursor arrowCursor];
 		break;
 		
 	case GR_CURSOR_IBEAM:
-		cursor_number = GDK_XTERM;
+		cursor = [NSCursor IBeamCursor];
 		break;
+#if 0
 
 	//I have changed the shape of the arrow so get a consistent
 	//behaviour in the bidi build; I think the new arrow is better
@@ -821,12 +842,10 @@ void GR_CocoaGraphics::setCursor(GR_Graphics::Cursor c)
 	case GR_CURSOR_GRAB:
 		cursor_number = GDK_HAND1;
 		break;
-	}
-
-	GdkCursor * cursor = gdk_cursor_new(cursor_number);
-	gdk_window_set_cursor(m_pWin, cursor);
-	gdk_cursor_destroy(cursor);
 #endif
+	}
+	[m_pWin addCursorRect:[m_pWin bounds] cursor:cursor];
+	[cursor setOnMouseEntered:YES];
 }
 
 GR_Graphics::Cursor GR_CocoaGraphics::getCursor(void) const
@@ -843,16 +862,17 @@ void GR_CocoaGraphics::setColor3D(GR_Color3D c)
 
 void GR_CocoaGraphics::init3dColors()
 {
-	m_3dColors[CLR3D_Foreground] = [NSColor blackColor /*controlColor*/];
-	m_3dColors[CLR3D_Background] = [NSColor controlColor /*controlBackgroundColor*/];
-	m_3dColors[CLR3D_BevelUp] = [NSColor lightGrayColor /*controlShadowColor*/];
-	m_3dColors[CLR3D_BevelDown] = [NSColor darkGrayColor /*controlDarkShadowColor*/];
-	m_3dColors[CLR3D_Highlight] = [NSColor controlHighlightColor];
+	m_3dColors[CLR3D_Foreground] = [[NSColor blackColor] retain];
+	m_3dColors[CLR3D_Background] = [[NSColor controlColor] retain];
+//	m_3dColors[CLR3D_Background] = [[NSColor grayColor] retain];
+	m_3dColors[CLR3D_BevelUp] = [[NSColor lightGrayColor] retain];
+	m_3dColors[CLR3D_BevelDown] = [[NSColor darkGrayColor] retain];
+	m_3dColors[CLR3D_Highlight] = [[NSColor controlHighlightColor] retain];
 }
 
 void GR_CocoaGraphics::polygon(UT_RGBColor& clr,UT_Point *pts,UT_uint32 nPoints)
 {
-	NSBezierPath *path = [NSBezierPath bezierPath];
+	NSBezierPath *path = [NSBezierPath bezierPath];		//autoreleased ?
 	
 	for (UT_uint32 i = 0; i < nPoints; i++) 
 	{
@@ -865,12 +885,11 @@ void GR_CocoaGraphics::polygon(UT_RGBColor& clr,UT_Point *pts,UT_uint32 nPoints)
 	}
 	[path closePath];
 	NSColor *c = _utRGBColorToNSColor (clr);
-	StNSImageLocker locker (m_offscreen);
+	LOCK_CONTEXT__;
 	[NSGraphicsContext saveGraphicsState];
 	[c set];
 	[path stroke];
 	[NSGraphicsContext restoreGraphicsState];
-	[path release];
 	[c release];
 }
 
@@ -935,10 +954,9 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 {
 #if 0 // large debug code. show Abi_NSView in red
 	[NSGraphicsContext saveGraphicsState];
-	NSColor *c = [NSColor colorWithDeviceRed:1.0 green:0.0 blue:0.0 alpha:1.0];
+	NSColor *c = [NSColor colorWithDeviceRed:1.0 green:0.0 blue:0.0 alpha:1.0]; // autoreleased
 	[c set];
 	NSRectFill ([self bounds]);
-	[c release];
 	// and show 3d colors just for fun.
 	if (m_pGR) {
 		int i;
@@ -950,13 +968,33 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	[NSGraphicsContext restoreGraphicsState];
 #else
 	if (m_pGR) {
+# ifdef USE_OFFSCREEN
+
 		NSImage * img = m_pGR->_getOffscreen ();
 		// TODO: only draw what is needed.
+# endif 
+		if ([self inLiveResize]) {
+			UT_DEBUGMSG (("Is resizing\n"));
+# ifdef USE_OFFSCREEN
+			NSRect myBounds = [self bounds];
+			[img setSize:myBounds.size];
+			// take care of erasing after resizing.
+			{
+				StNSImageLocker locker (img);
+				NSEraseRect (myBounds);
+			}
+# endif 
+			[NSGraphicsContext saveGraphicsState];
+			NSRectClip (aRect);
+			if (!m_pGR->_callUpdateCallback (&aRect)) {
+			
+			}
+			[NSGraphicsContext restoreGraphicsState];
+		}
+# ifdef USE_OFFSCREEN
 		[img drawAtPoint:aRect.origin fromRect:aRect operation:NSCompositeCopy fraction:1.0f];
+# endif
 		UT_DEBUGMSG (("- (void)drawRect:(NSRect)aRect: calling callback !\n"));
-//		if (!m_pGR->_callUpdateCallback (&aRect)) {
-		
-//		}
 	}
 #endif
 }
@@ -969,7 +1007,11 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
  */
 - (BOOL)isFlipped
 {
+# ifdef USE_OFFSCREEN
 	return NO;
+# else
+	return YES;
+#endif
 }
 
 
@@ -980,7 +1022,7 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
  */
 - (BOOL)isOpaque
 {
-	return NO;
+	return YES;
 }
 
 

@@ -103,9 +103,11 @@ UT_Error AP_CocoaFrame::_showDocument(UT_uint32 iZoom)
 
 	bool bFocus;
 	XAP_CocoaFontManager * fontManager = ((XAP_CocoaApp *) getApp())->getFontManager();
-	
-	pG = new GR_CocoaGraphics([_getController() getMainView], fontManager, getApp());
+	NSScrollView *scroller = [_getController() getMainView];
+	pG = new GR_CocoaGraphics(scroller, fontManager, getApp());
 	ENSUREP(pG);
+	[scroller setDocumentView:pG->_getView()];
+	static_cast<GR_CocoaGraphics *>(pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 	pG->setZoomPercentage(iZoom);
 	
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
@@ -292,7 +294,8 @@ Cleanup:
 void AP_CocoaFrame::setXScrollRange(void)
 {
 	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
-	NSRect rect = [[_getController() getMainView] frame];
+	NSScrollView *scroller = [_getController() getMainView];
+	NSRect rect = [[scroller documentView] frame];
 	int windowWidth = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
@@ -301,6 +304,10 @@ void AP_CocoaFrame::setXScrollRange(void)
 		newvalue = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
+	
+	[scroller setHorizontalPageScroll:windowWidth];
+	[scroller setHorizontalLineScroll:20.0f];
+	
 #if 0
 	bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
 	bool bDifferentLimits = ((width-windowWidth) != (int)(m_pHadj->upper-m_pHadj->page_size));
@@ -312,8 +319,8 @@ void AP_CocoaFrame::setXScrollRange(void)
 	m_pHadj->page_increment = (gfloat) windowWidth;
 	m_pHadj->page_size = (gfloat) windowWidth;
 #endif
-	UT_ASSERT (UT_TODO);
-//	[[_getController() getMainView] drawIfNeeded];
+//	UT_ASSERT (UT_TODO);
+//	[scroller drawIfNeeded];
 #if 0
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendHorizontalScrollEvent(newvalue, (int)(m_pHadj->upper-m_pHadj->page_size));
@@ -323,7 +330,8 @@ void AP_CocoaFrame::setXScrollRange(void)
 void AP_CocoaFrame::setYScrollRange(void)
 {
 	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
-	NSRect rect = [[_getController() getMainView] frame];
+	NSScrollView *scroller = [_getController() getMainView];
+	NSRect rect = [[scroller documentView] frame];
 	int windowHeight = rect.size.width;
 
 	int newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
@@ -332,6 +340,9 @@ void AP_CocoaFrame::setYScrollRange(void)
 		newvalue = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
+
+	[scroller setVerticalPageScroll:windowHeight];
+	[scroller setVerticalLineScroll:20.0f];
 
 #if 0
 	bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
@@ -344,8 +355,8 @@ void AP_CocoaFrame::setYScrollRange(void)
 	m_pVadj->page_increment = (gfloat) windowHeight;
 	m_pVadj->page_size = (gfloat) windowHeight;
 #endif
-	UT_ASSERT (UT_TODO);
-//	[[_getController() getMainView] drawIfNeeded];
+//	UT_ASSERT (UT_TODO);
+//	[scroller drawIfNeeded];
 #if 0
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
 		m_pView->sendVerticalScrollEvent(newvalue, (int)(m_pVadj->upper-m_pVadj->page_size));
@@ -712,6 +723,7 @@ void AP_CocoaFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrang
 	else if (yoffNew > yoffMax)
 		yoffNew = yoffMax;
 //TODO	gtk_adjustment_set_value(GTK_ADJUSTMENT(pCocoaFrame->m_pVadj),yoffNew);
+	
 	pView->setYScrollOffset((UT_sint32)yoffNew);
 }
 
@@ -783,37 +795,11 @@ void AP_CocoaFrame::_createDocumentWindow()
 	((AP_FrameData*)m_pData)->m_pTopRuler = pCocoaTopRuler;
 	((AP_FrameData*)m_pData)->m_pLeftRuler = pCocoaLeftRuler;
 
-	UT_ASSERT (UT_TODO);
+	// TODO check what really remains to be done.
+//	UT_ASSERT (UT_TODO);
 #if 0
-	// set up for scroll bars.
-	m_pHadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	gtk_object_set_user_data(GTK_OBJECT(m_pHadj),this);
-	m_hScroll = gtk_hscrollbar_new(m_pHadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_hScroll),this);
-
-	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
-
-	m_pVadj = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	gtk_object_set_user_data(GTK_OBJECT(m_pVadj),this);
-	m_vScroll = gtk_vscrollbar_new(m_pVadj);
-	gtk_object_set_user_data(GTK_OBJECT(m_vScroll),this);
-
-	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
-
-	// we don't want either scrollbar grabbing events from us
-	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
-	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
-
-	// create a drawing area in the for our document window.
-	m_dArea = createDrawingArea ();
-	
-	gtk_object_set_user_data(GTK_OBJECT(m_dArea),this);
-	gtk_widget_set_events(GTK_WIDGET(m_dArea), (GDK_EXPOSURE_MASK |
-												GDK_BUTTON_PRESS_MASK |
-												GDK_POINTER_MOTION_MASK |
-												GDK_BUTTON_RELEASE_MASK |
-												GDK_KEY_PRESS_MASK |
-												GDK_KEY_RELEASE_MASK));
+//	gtk_signal_connect(GTK_OBJECT(m_pHadj), "value_changed", GTK_SIGNAL_FUNC(_fe::hScrollChanged), NULL);
+//	gtk_signal_connect(GTK_OBJECT(m_pVadj), "value_changed", GTK_SIGNAL_FUNC(_fe::vScrollChanged), NULL);
 
 	gtk_signal_connect(GTK_OBJECT(m_dArea), "expose_event",
 					   GTK_SIGNAL_FUNC(_fe::expose), NULL);
@@ -829,78 +815,6 @@ void AP_CocoaFrame::_createDocumentWindow()
   
 	gtk_signal_connect(GTK_OBJECT(m_dArea), "configure_event",
 					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
-
-	// create a table for scroll bars, rulers, and drawing area
-
-	m_table = gtk_table_new(1, 1, FALSE);
-	gtk_object_set_user_data(GTK_OBJECT(m_table),this);
-
-	// NOTE:  in order to display w/ and w/o rulers, gtk needs two tables to
-	// work with.  The 2 2x2 tables, (i)nner and (o)uter divide up the 3x3
-	// table as follows.  The inner table is at the 1,1 table.
-	//	+-----+---+
-	//	| i i | o |
-	//	| i i |   |
-	//	+-----+---+
-	//	|  o  | o |
-	//	+-----+---+
-		
-	// scroll bars
-	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2,
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 (GtkAttachOptions) (GTK_FILL),
-					 0, 0);
-
-	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1,
-					 (GtkAttachOptions) (GTK_FILL),
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 0, 0);
-
-
-	// arrange the widgets within our inner table.
-	m_innertable = gtk_table_new(2,2,FALSE);
-	gtk_table_attach( GTK_TABLE(m_table), m_innertable, 0, 1, 0, 1,
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 0, 0); 
-
-	if ( bShowRulers )
-	{
-		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0, 1,
-						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions)(GTK_FILL),
-						 0, 0);
-
-		if (m_leftRuler)
-			gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
-							 (GtkAttachOptions)(GTK_FILL),
-							 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-							 0, 0);
-
-		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 0, 0); 
-	}
-	else	// no rulers
-	{
-		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 0, 0); 
-	}
-
-	// create a 3d box and put the table in it, so that we
-	// get a sunken in look.
-	m_wSunkenBox = gtk_frame_new(NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(m_wSunkenBox), GTK_SHADOW_IN);
-	gtk_container_add(GTK_CONTAINER(m_wSunkenBox), m_table);
-
-	gtk_widget_show(m_hScroll);
-	gtk_widget_show(m_vScroll);
-	gtk_widget_show(m_dArea);
-	gtk_widget_show(m_innertable);
-	gtk_widget_show(m_table);
 #endif
 }
 
@@ -964,7 +878,7 @@ void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 
 	UT_DEBUGMSG(("AP_CocoaFrame::toggleTopRuler %d, %d\n", 
 		     bRulerOn, pFrameData->m_pTopRuler));
-
+	UT_ASSERT (UT_TODO);
 #if 0
 	if ( bRulerOn )
 	{
@@ -1011,6 +925,7 @@ void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 
 	UT_DEBUGMSG(("AP_CocoaFrame::toggleLeftRuler %d, %d\n", 
 		     bRulerOn, pFrameData->m_pLeftRuler));
+	UT_ASSERT (UT_TODO);
 
 #if 0
 	if (bRulerOn)
@@ -1077,6 +992,37 @@ void AP_CocoaFrame::toggleStatusBar(bool bStatusBarOn)
 	}
 }
 
+bool AP_CocoaFrame::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
+{
+	// a static function
+	AP_CocoaFrame * pCocoaFrame = (AP_CocoaFrame *)param;
+	if (!pCocoaFrame)
+		return false;
+
+	UT_Rect rClip;
+	rClip.left = aRect->origin.x;
+	rClip.top = aRect->origin.y;
+	rClip.width = aRect->size.width;
+	rClip.height = aRect->size.height;
+	xxx_UT_DEBUGMSG(("Cocoa in frame expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
+	if(pG != NULL)
+	{
+		pG->doRepaint(&rClip);
+//		pCocoaFrame->draw(&rClip);
+	}
+	else {
+		return false;
+	}
+#if 0
+	else
+	{
+		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		pCocoaFrame->draw(&rClip);
+	}
+#endif
+	return true;
+}
 
 /* Objective-C section */
 
@@ -1100,12 +1046,12 @@ void AP_CocoaFrame::toggleStatusBar(bool bStatusBarOn)
 {
 }
 
-- (NSControl *)getVRuler
+- (Abi_NSView *)getVRuler
 {
 	return vRuler;
 }
 
-- (NSControl *)getHRuler
+- (Abi_NSView *)getHRuler
 {
 	return hRuler;
 }

@@ -24,6 +24,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "gr_CocoaGraphics.h"
+
 #include "xap_Frame.h"
 #include "ut_vector.h"
 #include "xap_CocoaDialogFactory.h"
@@ -49,13 +51,13 @@ class XAP_CocoaFrame;
 {
 	XAP_CocoaFrame *m_frame;
     IBOutlet NSScrollView *mainView;
-    IBOutlet NSView *statusBar;
+    IBOutlet Abi_NSView *statusBar;
 	IBOutlet NSMenu *menuBar;
 }
 - (id)initWith:(XAP_CocoaFrame *)frame;
 - (NSScrollView *)getMainView;
 - (NSMenu *)getMenuBar;
-- (NSView *)getStatusBar;
+- (Abi_NSView *)getStatusBar;
 @end
 
 

@@ -4,14 +4,15 @@
             ACTIONS = {rulerClick = id; }; 
             CLASS = AP_CocoaFrameController; 
             LANGUAGE = ObjC; 
-            OUTLETS = {hRuler = NSControl; vRuler = NSControl; }; 
+            OUTLETS = {hRuler = Abi_NSView; vRuler = Abi_NSView; }; 
             SUPERCLASS = XAP_CocoaFrameController; 
         }, 
+        {CLASS = Abi_NSView; LANGUAGE = ObjC; SUPERCLASS = NSView; }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             CLASS = XAP_CocoaFrameController; 
             LANGUAGE = ObjC; 
-            OUTLETS = {mainView = NSScrollView; menuBar = NSMenu; statusBar = NSView; }; 
+            OUTLETS = {mainView = NSScrollView; menuBar = NSMenu; statusBar = Abi_NSView; }; 
             SUPERCLASS = NSWindowController; 
         }
     ); 

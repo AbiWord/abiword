@@ -904,7 +904,7 @@ void XAP_CocoaFrame::_setController (XAP_CocoaFrameController * ctrl)
 	return menuBar;
 }
 
-- (NSView *)getStatusBar
+- (Abi_NSView *)getStatusBar
 {
 	return statusBar;
 }
