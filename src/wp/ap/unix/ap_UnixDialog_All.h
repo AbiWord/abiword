@@ -104,10 +104,9 @@
 #else
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,		XAP_UnixDialog_About)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,		XAP_UnixDialog_ClipArt)
+#endif
 	DeclareDialog(XAP_DIALOG_ID_PRINT,		XAP_UnixDialog_Print)
 	DeclareDialog(XAP_DIALOG_ID_PRINTPREVIEW,	XAP_UnixDialog_PrintPreview)
-#endif
-
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs)
