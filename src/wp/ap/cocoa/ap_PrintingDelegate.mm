@@ -29,7 +29,7 @@ void s_printPage(PD_Document *doc,  GR_Graphics *pGraphics,
 {
 	dg_DrawArgs da;
 	memset(&da, 0, sizeof(da));
-	da.pG = NULL;
+	da.pG = pGraphics;
 
 	fp_PageSize ps = pPrintView->getPageSize();	  
 
