@@ -272,6 +272,8 @@ fl_BlockLayout::~fl_BlockLayout()
 {
 	_destroySpellCheckLists();
 	purgeLayout();
+
+	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 }
 
 void fl_BlockLayout::_fixColumns(void)
