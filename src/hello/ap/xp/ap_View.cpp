@@ -47,6 +47,9 @@ void AP_View::draw(const UT_Rect* pRect)
 	if (!m_pG)
 		return;
 
+	UT_RGBColor clrWhite(255,255,255);
+	m_pG->fillRect(clrWhite, (UT_Rect &) *pRect);	// TODO: fix const on API
+
 	UT_UCSChar buf[2048];
 	UT_UCS_strcpy_char(buf, "Hello, Abi");
 	m_pG->drawChars(buf, 0, 10, 50, 50);
