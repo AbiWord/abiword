@@ -171,6 +171,47 @@ getPoint(pView)
 	OUTPUT:
 		RETVAL
 
+bool
+find(pView, pszText, matchCase)
+	FV_View* pView
+	const char* pszText
+	bool matchCase
+	CODE:
+		UT_UCSChar *text = NULL;
+		UT_UCS_cloneString_char(&text, pszText);
+		RETVAL = pView->findNext(text, matchCase);
+		free(text);
+	OUTPUT:
+		RETVAL
+
+bool
+replace(pView, pszTextToFind, pszReplacement, matchCase)
+	FV_View* pView
+	const char* pszTextToFind
+	const char* pszReplacement
+	bool matchCase
+	CODE:
+		UT_UCSChar *textToFind = NULL;
+		UT_UCS_cloneString_char(&textToFind, pszTextToFind);
+		UT_UCSChar *replacement = NULL;
+		UT_UCS_cloneString_char(&replacement, pszReplacement);
+		RETVAL = pView->findReplace(textToFind, replacement, matchCase);
+		free(textToFind);
+		free(replacement);
+	OUTPUT:
+		RETVAL
+
+char*
+getSelectionText(pView)
+	FV_View* pView
+	CODE:
+		UT_UCSChar* text = pView->getSelectionText();
+		UT_uint32 size = UT_UCS_strlen(text);
+		RETVAL = (char*) malloc(size);
+		UT_UCS_strcpy_to_char(RETVAL, text);
+	OUTPUT:
+		RETVAL
+
 MODULE = abi		PACKAGE = abi::XAP_Frame
 
 XAP_Frame *
