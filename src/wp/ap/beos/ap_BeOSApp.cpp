@@ -43,6 +43,76 @@
 #include "xap_Toolbar_ActionSet.h"       
 
 /*****************************************************************/
+/*
+ Splash Window Related Stuff
+*/
+#include "ut_Rehydrate.h"
+#include <TranslationUtils.h>
+#include <DataIO.h>
+
+extern unsigned char g_pngSplash[];             // see ap_wp_Splash.cpp
+extern unsigned long g_pngSplash_sizeof;        // see ap_wp_Splash.cpp
+       
+class SplashWin:public BWindow {
+        public:
+                SplashWin(BMessage *data);
+                virtual void DispatchMessage(BMessage *msg, BHandler *handler);
+
+        private:
+		int ignore;
+};
+
+SplashWin::SplashWin(BMessage *data)
+          :BWindow(data) {
+	BView *view = FindView("splashView");
+	if (view) {
+		BMemoryIO memio(g_pngSplash, g_pngSplash_sizeof);
+		BBitmap *bitmap = BTranslationUtils::GetBitmap(&memio);
+		if (bitmap)
+                        view->SetViewBitmap(bitmap, B_FOLLOW_ALL, 0);
+		view->Sync();
+        }                                     
+	ignore = 0;
+	SetPulseRate(5000000);	//5 s pulse
+}
+
+void SplashWin::DispatchMessage(BMessage *msg, BHandler *handler) {
+	switch (msg->what) {
+	case B_PULSE:
+		if (!ignore++)
+			break;
+	case B_KEY_DOWN:
+	case B_MOUSE_DOWN:
+		BWindow::DispatchMessage(msg, handler);
+		this->Close();
+		break;
+	default:
+		BWindow::DispatchMessage(msg, handler);
+	}
+} 
+
+void _showSplash(XAP_Args * pArgs, const char * /*szAppName*/) {
+        // Unix does put the program name in argv[0], 
+	//unlike Win32, so [1] is the first argument
+        int nFirstArg = 1;
+        int k;
+
+        // scan args for splash-related stuff
+        for (k=nFirstArg; (k<pArgs->m_argc); k++) {
+                if (*pArgs->m_argv[k] == '-') {
+                        if (UT_stricmp(pArgs->m_argv[k],"-nosplash") == 0) {
+				return;
+                        }
+                }                                   
+	}
+	BMessage *msg = new BMessage();
+        if (RehydrateWindow("SplashWindow", msg)) {
+                SplashWin *nwin = new SplashWin(msg);
+                if (nwin)
+                        nwin->Show();
+        }                                        	
+}                                             
+/*****************************************************************/
 
 AP_BeOSApp::AP_BeOSApp(XAP_Args * pArgs, const char * szAppName)
 	: XAP_BeOSApp(pArgs,szAppName)
@@ -272,10 +342,12 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	UT_DEBUGMSG(("Compile Time:\t%s\n", XAP_App::s_szBuild_CompileTime));
 	
 	// initialize our application.
-
 	XAP_Args Args = XAP_Args(argc,argv);
 
 	AP_BeOSApp * pMyBeOSApp = new AP_BeOSApp(&Args, szAppName);
+
+	//Show the splash screen perhaps
+  	_showSplash(&Args, szAppName);        
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyBeOSApp->initialize())
@@ -287,16 +359,13 @@ int AP_BeOSApp::local_main(const char * szAppName, int argc, char ** argv) {
 	pMyBeOSApp->ParseCommandLine();
 
 	// Turn control over to the runtime (don't return until done)
-	printf("Enter into infinite loop here \n");
 	pMyBeOSApp->m_BApp.Run();
-	printf("Exiting infinite loop here \n");
 	
 	// destroy the App.  It should take care of deleting all frames.
-	printf("Running Shutdown \n");
 	pMyBeOSApp->shutdown();
-	printf("Deleting App \n");
+	sleep(1);
+
 	delete pMyBeOSApp;
-	
 	return 0;
 }
 
@@ -387,3 +456,5 @@ void AP_BeOSApp::ParseCommandLine(void)
 
 	return;
 }
+
+

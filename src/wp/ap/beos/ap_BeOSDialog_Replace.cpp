@@ -92,10 +92,10 @@ void FindWin::SetDlg(AP_BeOSDialog_Replace *repl) {
 	BCheckBox *chk = (BCheckBox *)FindView("chkCase");
 	if (chk) chk->SetValue(m_DlgReplace->getMatchCase());
 
-//	We need to tie up the caller thread for a while ...
+//	For the find/replace dialog we can return right away
 	Show();
 	//while (spin) { snooze(1); }
-	Hide();
+	//Hide();
 }
 
 void FindWin::DispatchMessage(BMessage *msg, BHandler *handler) {
