@@ -178,7 +178,7 @@ int AP_QNXTopRuler::_fe::button_press_event(PtWidget_t* w, void *data, PtCallbac
 
 	UT_DEBUGMSG(("TR: Pressing the mouse %x %x %d,%d ",
 				ems, emb, mx, my));
-	pQNXTopRuler->mousePress(ems, emb, pQNXTopRuler->getGR()->tlu(mx), pQNXTopRuler->getGR()->tlu(my));
+	pQNXTopRuler->mousePress(ems, emb, pQNXTopRuler->getGraphics()->tlu(mx), pQNXTopRuler->getGraphics()->tlu(my));
 
 	return Pt_CONTINUE;
 }
@@ -215,7 +215,7 @@ int AP_QNXTopRuler::_fe::button_release_event(PtWidget_t* w, void *data, PtCallb
 		return Pt_CONTINUE;
 	}
 
-	pQNXTopRuler->mouseRelease(ems, emb,  pQNXTopRuler->getGR()->tlu(mx),  pQNXTopRuler->getGR()->tlu(my));
+	pQNXTopRuler->mouseRelease(ems, emb,  pQNXTopRuler->getGraphics()->tlu(mx),  pQNXTopRuler->getGraphics()->tlu(my));
 
 	return Pt_CONTINUE;
 }
@@ -232,7 +232,7 @@ int AP_QNXTopRuler::_fe::motion_notify_event(PtWidget_t* w, void *data, PtCallba
 	mx = my = 0;
 	get_stuff(info, &ems, NULL, &mx, &my);
 
-	pQNXTopRuler->mouseMotion(ems,  pQNXTopRuler->getGR()->tlu(mx),  pQNXTopRuler->getGR()->tlu(my));
+	pQNXTopRuler->mouseMotion(ems,  pQNXTopRuler->getGraphics()->tlu(mx),  pQNXTopRuler->getGraphics()->tlu(my));
 	PgFlush();
 
 	return Pt_CONTINUE;
@@ -295,7 +295,7 @@ int AP_QNXTopRuler::_fe::expose(PtWidget_t * w, PhTile_t *damage)
 				PhPoint_t shift;
 				PtWidgetOffset(w, &shift);
 
-				GR_Graphics * pGr = pQNXRuler->getGR();
+				GR_Graphics * pGr = pQNXRuler->getGraphics();
 				rClip.width = pGr->tlu(damage->rect.lr.x - damage->rect.ul.x);
 				rClip.height = pGr->tlu(damage->rect.lr.y - damage->rect.ul.y);
 				rClip.left = pGr->tlu((damage->rect.ul.x - shift.x) > 0 ? damage->rect.ul.x - shift.x : 0 );

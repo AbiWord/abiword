@@ -112,7 +112,7 @@ PtWidget_t * AP_QNXFrameImpl::_createDocumentWindow()
 		m_leftRuler = pQNXLeftRuler->createWidget();
 		((AP_FrameData*)pData)->m_pLeftRuler = pQNXLeftRuler;
 		// get the width from the left ruler and stuff it into the top ruler.
-		pQNXTopRuler->setOffsetLeftRuler(pQNXTopRuler->getGR()->tdu(pQNXLeftRuler->getWidth()));
+		pQNXTopRuler->setOffsetLeftRuler(pQNXTopRuler->getGraphics()->tdu(pQNXLeftRuler->getWidth()));
 
 		// create the scrollbars horizontal then vertical
 
