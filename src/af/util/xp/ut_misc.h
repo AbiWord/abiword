@@ -31,6 +31,8 @@ class UT_Vector;
 class UT_String;
 
 // ----------------------------------------------------------------
+#define UT_RGBCOLOR_PROXIMITY 45
+
 class ABI_EXPORT UT_RGBColor
 {
 public:
@@ -46,6 +48,29 @@ public:
 		return (op1.m_red == m_red && op1.m_grn == m_grn && op1.m_blu == m_blu);
 	}
 	
+	// returns true if the two colors are near each other in the RGB space
+	bool operator %= (const UT_RGBColor &op1)
+	{
+		UT_uint32 iDiff = abs(m_red - op1.m_red) + abs(m_grn - op1.m_grn) + abs(m_blu - op1.m_blu);
+		return (iDiff < UT_RGBCOLOR_PROXIMITY);
+	}
+
+	UT_RGBColor & operator ^= (const UT_RGBColor &op1)
+	{
+		m_red ^= op1.m_red;
+		m_grn ^= op1.m_grn;
+		m_blu ^= op1.m_blu;
+		return *this;
+	}
+
+	UT_RGBColor & operator += (const unsigned char inc)
+	{
+		m_red += inc;
+		m_grn += inc;
+		m_blu += inc;
+		return *this;
+	}
+
 	unsigned char m_red;
 	unsigned char m_grn;
 	unsigned char m_blu;
