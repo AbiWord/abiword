@@ -12,13 +12,13 @@ libpng_peerdir=@LIBPNG_PEERDIR@
 all-recursive: @PEERS@
 
 expat:
-	make -C $(expat_peerdir)
+	$(MAKE) -C $(expat_peerdir)
 wv:
-	make -C $(wv_peerdir)
+	$(MAKE) -C $(wv_peerdir)
 psiconv:
-	make -C $(psiconv_peerdir)
+	$(MAKE) -C $(psiconv_peerdir)
 libpng:
-	make -C $(libpng_peerdir)
+	$(MAKE) -C $(libpng_peerdir)
 
 # Hack: don't allow distclean; it will delete Makefile, which is not what
 # we want at all.
@@ -34,7 +34,7 @@ clean-local:
 	for i in . $(expat_peerdir)  $(wv_peerdir) $(psiconv_peerdir) \
                  $(libpng_peerdir); do \
 	  if test $$i != . ; then \
-	    make -C $$i clean || true; \
+	    $(MAKE) -C $$i clean || true; \
 	  fi; \
 	done
 
@@ -42,7 +42,7 @@ realclean: clean
 	for i in . $(expat_peerdir)  $(wv_peerdir) $(psiconv_peerdir) \
                  $(libpng_peerdir); do \
 	  if test $$i != . ; then \
-	    make -C $$i distclean || true; \
+	    $(MAKE) -C $$i distclean || true; \
 	  fi; \
 	done
 	@rm -f config.* stamp-h stamp-h[0-9]*
