@@ -51,8 +51,8 @@
 
 static const char ** _ev_GetLabelName(XAP_QNXApp * pQNXApp,
 									  XAP_QNXFrame * pQNXFrame,
-									  EV_Menu_Action * pAction,
-									  EV_Menu_Label * pLabel)
+									  const EV_Menu_Action * pAction,
+									  const EV_Menu_Label * pLabel)
 {
 	static const char * data[2] = {NULL, NULL};
 
@@ -325,9 +325,9 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 		UT_ASSERT(pLayoutItem);
 		
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
 		UT_ASSERT(pAction);
-		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 		UT_ASSERT(pLabel);
 
 		// get the name for the menu item
@@ -518,8 +518,8 @@ bool EV_QNXMenu::_refreshMenu(AV_View * pView, void * wMenuRoot)
 	{
 		EV_Menu_LayoutItem * pLayoutItem = m_pMenuLayout->getLayoutItem(k);
 		XAP_Menu_Id id = pLayoutItem->getMenuId();
-		EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
-		EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
+		const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+		const EV_Menu_Label * pLabel = m_pMenuLabelSet->getLabel(id);
 
 		switch (pLayoutItem->getMenuLayoutFlags())
 		{
