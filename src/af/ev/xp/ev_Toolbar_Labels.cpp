@@ -26,6 +26,11 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ev_Toolbar_Labels.h"
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#include "xap_EncodingManager.h"
+#include "xap_App.h"
+#endif
 
 /*****************************************************************/
 
@@ -35,11 +40,76 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 								   const char * szToolTip,
 								   const char * szStatusMsg)
 {
+
 	m_id = id;
 	UT_cloneString(m_szToolbarLabel,szToolbarLabel);
 	UT_cloneString(m_szIconName,szIconName);
 	UT_cloneString(m_szToolTip,szToolTip);
 	UT_cloneString(m_szStatusMsg,szStatusMsg);
+
+#ifdef BIDI_ENABLED	
+	// TODO I wish we did not have to do this here, but I see no other
+	// way; the menu mechanism is much cleaner and I think we should be
+	// using the string-set mechanism for toolbars as we do for menus.
+	// when/if we do, this whole bit can be removed
+	if(!XAP_App::getApp()->theOSHasBidiSupport())
+	{
+        UT_uint32 iOldLen = 0;
+        FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
+        char * szStr = m_szToolTip;
+        for(UT_uint32 j = 0; j < 2; j++)
+        {
+			if (szStr && *szStr)
+			{	
+				UT_uint32 iStrLen  = strlen(szStr);
+	
+				if(iStrLen > iOldLen)
+				{
+					if(fbdStr)
+					{
+						delete [] fbdStr;
+						delete [] fbdStr2;
+					}
+					
+					fbdStr   = new FriBidiChar [iStrLen];
+					UT_ASSERT(fbdStr);
+					fbdStr2  = new FriBidiChar [iStrLen];
+					UT_ASSERT(fbdStr2);
+					iOldLen = iStrLen;
+				}
+				
+				UT_uint32 i;
+				for(i = 0; i < iStrLen; i++)
+					fbdStr[i] = (FriBidiChar) XAP_EncodingManager::get_instance()->nativeToU((UT_UCSChar)szStr[i]);
+	
+				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
+#if 1
+// this has been crashing with en-US (but not en-GB), due to some
+// weird memory managment in the fribidi library; so I defined
+// USE_SIMPLE_MALLOC for it, which solved the problem
+				fribidi_log2vis (		/* input */
+				       fbdStr,
+				       iStrLen,
+				       &fbdDomDir,
+			    	   /* output */
+				       fbdStr2,
+				       NULL,
+				       NULL,
+				       NULL);	
+#endif	
+				for(i = 0; i < iStrLen; i++)
+					szStr[i] = (char) XAP_EncodingManager::get_instance()->UToNative((UT_UCSChar)fbdStr2[i]);
+				UT_ASSERT(szStr[i] == 0);
+			}
+			
+			szStr = m_szStatusMsg;
+		}
+		
+		delete[] fbdStr;
+		delete[] fbdStr2;
+	}
+	
+#endif
 }
 
 EV_Toolbar_Label::~EV_Toolbar_Label(void)

@@ -29,6 +29,9 @@
 #include "ut_wctomb.h"
 #include "xap_Strings.h"
 #include "xap_EncodingManager.h"
+#ifdef BIDI_ENABLED
+#include "fribidi.h"
+#endif
 
 //////////////////////////////////////////////////////////////////
 // base class provides interface regardless of how we got the strings
@@ -57,6 +60,8 @@ const XML_Char * XAP_StringSet::getLanguageName(void) const
 //////////////////////////////////////////////////////////////////
 // a sub-class to wrap the compiled-in (english) strings
 // (there will only be one instance of this sub-class)
+// (since these strings are English, we will not bother with any
+// (bidi processing, we only need this in the disk stringset)
 //////////////////////////////////////////////////////////////////
 
 XAP_BuiltinStringSet::XAP_BuiltinStringSet(XAP_App * pApp, const XML_Char * szLanguageName)
@@ -349,6 +354,63 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
 		goto Cleanup;
 	}
 
+#ifdef BIDI_ENABLED
+	// now we run this stringset through fribidi
+	if(!XAP_App::getApp()->theOSHasBidiSupport())
+	{
+		UT_uint32 kLimit = NrElements(s_map);
+		UT_uint32 k;
+        UT_uint32 iOldLen = 0;
+        FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
+		for (k=0; k<kLimit; k++)
+		{
+			XML_Char * szValue = const_cast<XML_Char *>(XAP_DiskStringSet::getValue(s_map[k].id));
+			if (szValue && *szValue)
+			{	
+				UT_uint32 iStrLen  = strlen(szValue);
+	
+				if(iStrLen > iOldLen)
+				{
+					if(fbdStr)
+					{
+						delete [] fbdStr;
+						delete [] fbdStr2;
+					}
+					
+					fbdStr   = new FriBidiChar [iStrLen];
+					UT_ASSERT(fbdStr);
+					fbdStr2  = new FriBidiChar [iStrLen];
+					UT_ASSERT(fbdStr2);
+					iOldLen = iStrLen;
+				}
+				
+				UT_uint32 i;
+				for(i = 0; i < iStrLen; i++)
+					fbdStr[i] = (FriBidiChar) XAP_EncodingManager::get_instance()->nativeToU((UT_UCSChar)szValue[i]);
+	
+				FriBidiCharType fbdDomDir = fribidi_get_type(fbdStr[0]);
+	
+				fribidi_log2vis (		/* input */
+				       fbdStr,
+				       iStrLen,
+				       &fbdDomDir,
+				       /* output */
+				       fbdStr2,
+				       NULL,
+				       NULL,
+				       NULL);	
+	
+				for(i = 0; i < iStrLen; i++)
+					szValue[i] = (XML_Char) XAP_EncodingManager::get_instance()->UToNative((UT_UCSChar)fbdStr2[i]);
+				UT_ASSERT(szValue[i] == 0);
+			}
+		}
+		
+		delete[] fbdStr;
+		delete[] fbdStr2;
+	}
+#endif
+	
 	// we succeeded in parsing the file,
 	// now check for higher-level consistency.
 
