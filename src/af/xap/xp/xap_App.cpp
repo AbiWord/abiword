@@ -142,7 +142,7 @@ const char* XAP_App::getBuildCompileTime ()
 
 const char* XAP_App::getBuildCompileDate ()
 {
-	return s_szBuild_ID;
+	return s_szBuild_CompileDate;
 }
 
 const char* XAP_App::getAbiSuiteHome ()
