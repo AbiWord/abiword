@@ -69,8 +69,18 @@ public:
 				UT_uint32 iWidthAvail,
 				UT_sint32 * piLeft,
 				UT_uint32 * piWidth) const;
+
+	/* For drawLine() and xorLine():
+	**   x0,y0 give the starting pixel.
+	**   x1,y1 give the first pixel ***not drawn***.
+	*/
 	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
 	virtual void xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32) = 0;
+
+	/* For fillRect() and ??:
+	**   begin fill at x0,y0,
+	**   ?? should x0+w,y0+h or x0+w+1,y0+h+1 be the last pixel affected ??
+	*/
 	virtual void fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h) = 0;
 	virtual void invertRect(const UT_Rect* pRect) = 0;
 	virtual void setClipRect(const UT_Rect* pRect) = 0;

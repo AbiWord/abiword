@@ -86,6 +86,18 @@ protected:
 
 	AP_Win32DialogFactory		m_dialogFactory;
 
+	/* These 2 variables are used in the frame
+	** to remember the last values we used to set
+	** the size of client area of the frame (on
+	** a resize of the frame window).  That is,
+	** the values we used to calculate the layout
+	** of the various toolbars, view, and anything
+	** else that goes in the frame window.  We do
+	** this because Win32 plays funny games with
+	** window sizes (NonClient vs Client coordinates).
+	** We do this so that we can short-circut some
+	** of the resizing and the resulting flashing.
+	*/
 	UT_uint32					m_iSizeWidth;
 	UT_uint32					m_iSizeHeight;
 };

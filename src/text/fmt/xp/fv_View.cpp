@@ -1966,11 +1966,10 @@ void FV_View::setXScrollOffset(UT_sint32 v)
 {
 	UT_sint32 dx = v - m_xScrollOffset;
 
-	if (dx != 0)
-	{
-		m_pG->scroll(dx, 0);
-	}
-
+	if (dx == 0)
+		return;
+	
+	m_pG->scroll(dx, 0);
 	m_xScrollOffset = v;
 	
 	if (dx > 0)
@@ -2002,15 +2001,9 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	UT_sint32 dy = v - m_yScrollOffset;
 
 	if (dy == 0)
-	{
 		return;
-	}
 	
-	if (dy != 0)
-	{
-		m_pG->scroll(0, dy);
-	}
-
+	m_pG->scroll(0, dy);
 	m_yScrollOffset = v;
 
 	if (dy > 0)
@@ -2051,26 +2044,17 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 
 void FV_View::draw(const UT_Rect* pClipRect)
 {
-	xxx_UT_DEBUGMSG(("FV_View::draw_2: [bClipRect %ld]\n",(pClipRect!=NULL)));
-
 	if (pClipRect)
-	{
-		m_pG->setClipRect(pClipRect);
-	}
-	
-	draw(0, 0, m_iWindowWidth, m_iWindowHeight);
-
-	if (pClipRect)
-	{
-		m_pG->setClipRect(NULL);
-	}
+		draw(pClipRect->left,pClipRect->top,pClipRect->width,pClipRect->height,UT_TRUE);
+	else
+		draw(0,0,m_iWindowWidth,m_iWindowHeight,UT_FALSE);
 }
 
 void FV_View::draw(UT_sint32 x, UT_sint32 y,
 				   UT_sint32 width, UT_sint32 height,
 				   UT_Bool bClip)
 {
-	xxx_UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
+	UT_DEBUGMSG(("FV_View::draw_3 [x %ld][y %ld][w %ld][h %ld][bClip %ld]\n"
 				 "\t\twith [yScrollOffset %ld][windowHeight %ld]\n",
 				 x,y,width,height,bClip,
 				 m_yScrollOffset,m_iWindowHeight));
@@ -2078,7 +2062,16 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 	// this can happen when the frame size is decreased and
 	// only the toolbars show...
 	if ((m_iWindowWidth <= 0) || (m_iWindowHeight <= 0))
+	{
+		UT_DEBUGMSG(("fv_View::draw() called with zero drawing area.\n"));
 		return;
+	}
+
+	if ((width <= 0) || (height <= 0))
+	{
+		UT_DEBUGMSG(("fv_View::draw() called with zero width or height expose.\n"));
+		return;
+	}
 
 	if (bClip)
 	{
@@ -2275,6 +2268,19 @@ void FV_View::draw(UT_sint32 x, UT_sint32 y,
 	{
 		m_pG->setClipRect(NULL);
 	}
+
+#if 0
+	{
+		// Some test code for the graphics interface.
+		UT_RGBColor clrRed(255,0,0);
+		m_pG->setColor(clrRed);
+		m_pG->drawLine(10,10,20,10);
+		m_pG->drawLine(20,11,30,11);
+		m_pG->fillRect(clrRed,50,10,10,10);
+		m_pG->fillRect(clrRed,60,20,10,10);
+	}
+#endif
+
 }
 
 #if defined(PT_TEST) || defined(FMT_TEST)

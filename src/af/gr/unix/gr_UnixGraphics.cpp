@@ -59,7 +59,17 @@ UNIXGraphics::UNIXGraphics(GdkWindow* win)
 	gdk_color_white(m_pColormap, &clrWhite);
 	gdk_gc_set_foreground(m_pXORGC, &clrWhite);
 
+	// I only want to set CAP_NOT_LAST, but the call takes all
+	// arguments (and doesn't have a default value).  Set the
+	// line attributes to not draw the last pixel.
+	gdk_gc_set_line_attributes(m_pGC,   1,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+	gdk_gc_set_line_attributes(m_pXORGC,1,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
 
+	// Set GraphicsExposes so that XCopyArea() causes an expose on
+	// obscured regions rather than just tiling in the default background.
+	gdk_gc_set_exposures(m_pGC,1);
+	gdk_gc_set_exposures(m_pXORGC,1);
+	
 	memset(m_aCharWidths, 0, 256 * sizeof(int));
 }
 
@@ -445,7 +455,7 @@ void UNIXGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
   
 	gdk_gc_set_foreground(m_pGC, &nColor);
 
-	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
+	gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w+1, h+1);
 
 	gdk_gc_set_foreground(m_pGC, &oColor);
 }
@@ -463,11 +473,11 @@ void UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 		{
 			gdk_window_copy_area(m_pWin, m_pGC, 0, 0,
 								 m_pWin, 0, dy, winWidth, winHeight - dy);
-			gdk_window_clear_area(m_pWin, 0, winHeight - dy, winWidth, dy);
+//			gdk_window_clear_area(m_pWin, 0, winHeight - dy, winWidth, dy);
 		}
 		else
 		{
-			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
+//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
 		}
     }
 	else if (dy < 0)
@@ -477,11 +487,11 @@ void UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 			gdk_window_copy_area(m_pWin, m_pGC, 0, -dy, m_pWin, 0, 0, winWidth,
 								 winHeight + dy);
 
-			gdk_window_clear_area(m_pWin, 0, 0, winWidth, -dy);
+//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, -dy);
 		}
 		else
 		{
-			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
+//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
 		}
     }
 
@@ -491,11 +501,11 @@ void UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 		{
 			gdk_window_copy_area(m_pWin, m_pGC, 0, 0,
 								 m_pWin, dx, 0, winWidth - dx, winHeight);
-			gdk_window_clear_area(m_pWin, winWidth - dx, 0, dx, winHeight);
+//			gdk_window_clear_area(m_pWin, winWidth - dx, 0, dx, winHeight);
 		}
 		else
 		{
-			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
+//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
 		}
     }
 	else if (dx < 0)
@@ -505,11 +515,11 @@ void UNIXGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 			gdk_window_copy_area(m_pWin, m_pGC, -dx, 0, m_pWin, 0, 0, winWidth + dx,
 								 winHeight);
 
-			gdk_window_clear_area(m_pWin, 0, 0, -dx, winHeight);
+//			gdk_window_clear_area(m_pWin, 0, 0, -dx, winHeight);
 		}
 		else
 		{
-			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
+//			gdk_window_clear_area(m_pWin, 0, 0, winWidth, winHeight);
 		}
     }
 	
@@ -533,7 +543,9 @@ void UNIXGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 		usleep(TURBOSLOW);
 #endif
 		
-		gdk_window_clear_area(m_pWin, x, y, width, height);
+		UT_RGBColor clrWhite(255,255,255);
+		fillRect(clrWhite, x, y, width, height);
+
 #if TURBOSLOW		
 		gdk_flush();
 		usleep(TURBOSLOW);
