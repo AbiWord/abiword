@@ -1245,7 +1245,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     // HACK: to throw the splash screen as soon as possible.
 	// hack needed to intialize gtk before ::initialize
     gtk_set_locale();
-    gtk_init(&XArgs.m_argc,&XArgs.m_argv);
+    gtk_init(&XArgs.m_argc,(char ***)&XArgs.m_argv);
     
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyUnixApp->initialize())
