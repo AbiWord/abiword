@@ -185,7 +185,6 @@ protected:
 	GtkWidget * m_wtoggleTwo;
 	GtkWidget * m_wtoggleThree;
 	GtkWidget * m_wpreviewArea;
-	GtkWidget * m_wGnomeButtons;
 	GtkWidget * m_wSpin;
 
 	guint m_oneHandlerID;
