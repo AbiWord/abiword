@@ -66,7 +66,7 @@ public:
 
 	void									enableAllTopLevelWindows(bool);
 	virtual UT_sint32					makeDirectory(const char * szPath, const UT_sint32 mode ) const;
-
+	virtual UT_sint32 				setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame);
 protected:
 	UT_uint32								_getExeDir(char* pDirBuf, UT_uint32 iBufLen);
 	void									_setAbiSuiteLibDir(void);

@@ -331,3 +331,41 @@ void XAP_Win32App::enableAllTopLevelWindows(bool b)
 	}
 }
 
+// This function gets saved geometry from preference file, attempts to validate
+// and sets window's placement.  It returns the flag that should be called to
+// ShowWindow on the first call.
+UT_sint32 XAP_Win32App::setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame)
+{
+	UT_uint32 iHeight, iWidth;
+	UT_sint32 x,y;
+	UT_uint32 flag;
+
+	// if width & height are <= 0 then assume invalid values so just use system defaults
+	if (getGeometry(&x,&y,&iWidth,&iHeight,&flag) && (iWidth > 0) && (iHeight > 0))
+	{
+		WINDOWPLACEMENT wndPlacement;
+		wndPlacement.length = sizeof(WINDOWPLACEMENT); // must do
+		// get current windowplacement info, so anything we don't set is correct
+		if (!GetWindowPlacement(hwndFrame, &wndPlacement))
+		{
+			memset(&wndPlacement, 0, sizeof(WINDOWPLACEMENT));
+			wndPlacement.length = sizeof(WINDOWPLACEMENT);
+		}
+		if (flag && (flag <= SW_MAX)) // validate flag
+		{
+			wndPlacement.showCmd = flag;
+			iCmdShow = flag; /* SW_SHOW; */
+		}
+		else
+		{
+			wndPlacement.showCmd = iCmdShow; /* SW_SHOWNORMAL; */
+		}
+		wndPlacement.rcNormalPosition.left = x;
+		wndPlacement.rcNormalPosition.top = y;
+		wndPlacement.rcNormalPosition.right = x + iWidth;
+		wndPlacement.rcNormalPosition.bottom = y + iHeight;
+		SetWindowPlacement(hwndFrame, &wndPlacement);
+	}
+
+	return iCmdShow;
+}

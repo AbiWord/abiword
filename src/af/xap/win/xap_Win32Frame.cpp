@@ -202,6 +202,7 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 
 	// create a top-level window for us.
 	// TODO get the default window size from preferences or something.
+	// Handled in Win32App for 1st frame opened.
 
 	m_hwndFrame = CreateWindow(m_pWin32App->getApplicationName(),
 							   m_pWin32App->getApplicationTitleForTitleBar(),
@@ -288,6 +289,25 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 
 bool XAP_Win32Frame::close()
 {
+	// NOTE: This may not be the proper place, but it does mean that the
+	// last window closed is the one that the window state is stored from.
+	WINDOWPLACEMENT wndPlacement;
+	wndPlacement.length = sizeof(WINDOWPLACEMENT); // must do
+	if (GetWindowPlacement(m_hwndFrame, &wndPlacement))
+	{
+		getApp()->setGeometry(wndPlacement.rcNormalPosition.left, 
+				wndPlacement.rcNormalPosition.top, 
+				wndPlacement.rcNormalPosition.right - wndPlacement.rcNormalPosition.left,
+				wndPlacement.rcNormalPosition.bottom - wndPlacement.rcNormalPosition.top,
+				wndPlacement.showCmd
+				);
+	}
+	else
+	{
+		// if failed to get placement then invalidate stored settings
+		getApp()->setGeometry(0,0,0,0,0);
+	}
+
 	// NOTE: this should only be called from the closeWindow edit method
 	DestroyWindow(m_hwndFrame);
 

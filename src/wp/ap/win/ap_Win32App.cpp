@@ -932,7 +932,12 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 					kWindowsOpened++;
 
 					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-					pFirstWin32Frame->show();
+					//pFirstWin32Frame->show();
+					if (kWindowsOpened > 1) // only set 1st opened window to stored state
+						ShowWindow(hwnd, iCmdShow);
+					else
+						ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));
+					UpdateWindow(hwnd);
 				}
 				else
 				{
@@ -946,7 +951,10 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 					kWindowsOpened++;
 					pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
 					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
+					if (kWindowsOpened > 1) // only set 1st opened window to stored state
 					ShowWindow(hwnd, iCmdShow);
+					else
+						ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));
 					UpdateWindow(hwnd);
 #else
 					delete pFirstWin32Frame;
@@ -969,7 +977,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 		pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
 
 		HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-		ShowWindow(hwnd, iCmdShow);
+		ShowWindow(hwnd, setupWindowFromPrefs(iCmdShow, hwnd));
 		UpdateWindow(hwnd);
 	}
 
