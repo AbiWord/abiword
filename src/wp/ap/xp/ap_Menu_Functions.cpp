@@ -650,6 +650,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	UT_ASSERT_HARMLESS(id >= AP_MENU_ID_SPELL_SUGGEST_1);
 	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_SPELL_SUGGEST_9);
 
+	UT_return_val_if_fail(pView != NULL, NULL);
+
 	UT_uint32 ndx = (id - AP_MENU_ID_SPELL_SUGGEST_1 + 1);
 
 	const char * c = NULL;
