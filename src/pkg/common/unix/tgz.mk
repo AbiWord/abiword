@@ -62,5 +62,5 @@ ifeq ($(UNIX_CAN_BUILD_STATIC),1)
 	(cd $(DIST); rm -rf $(TGZ_PKGBASENAME_STATIC))
 endif
 
-tgz: tgz_dynamic tgz_static
+tgz: canonical tgz_dynamic tgz_static
 
