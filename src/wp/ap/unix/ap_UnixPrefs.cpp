@@ -90,7 +90,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 #if defined (LC_MESSAGES)
 	char * lc_ctype = UT_strdup(setlocale(LC_MESSAGES, NULL));
 #else
-	char * lc_ctype = UT_strdup(setlocale(LC_CTYPE, NULL));
+	char * lc_ctype = UT_strdup(getenv("LANG"));
 #endif
 	// locale categories seem to always look like this:
 	// two letter for language (lowcase) _ two letter country code (upcase)
