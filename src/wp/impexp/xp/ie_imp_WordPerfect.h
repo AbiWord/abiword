@@ -270,6 +270,8 @@ public:
    UT_Error _flushText();
    UT_Error _flushParagraph();
    
+   bool _appendSection( const XML_Char ** props = NULL ) ;
+
  private:
    FILE *m_importFile;
    UT_uint32 m_documentEnd;
@@ -278,6 +280,7 @@ public:
    bool m_undoOn;
    bool m_paragraphChanged;
    bool m_hasColumns;
+   bool m_bInSection;
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
    UT_Vector m_fontDescriptorList;

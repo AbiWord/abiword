@@ -19,7 +19,7 @@
  */
 
 /* See bug 1764
- * This product is not manufactured, approved, or supported by 
+ * "This product is not manufactured, approved, or supported by 
  * Corel Corporation or Corel Corporation Limited."
  */
 
@@ -76,38 +76,39 @@ WordPerfectTextAttributes::WordPerfectTextAttributes()
 }
 
 static int wp_internationalCharacterMapping[32] = 
-{ 229, // lower case 'a' with a small circle
-     197, // upper case 'a' with a small circle
-     230, // lower case 'ae'
-     198, // upper case 'ae'
-     228, // lower case 'a' with diathesis
-     196, // upper case 'a' with diathesis
-     224, // lower case 'a' with acute
-     192, // lower case 'a' with grave
-     226, // lower case 'a' with circonflex
-     227, // lower case 'a' with tilde
-     195, // upper case 'a' with tilde
-     231, // lower case 'c' with hook
-     199, // upper case 'c' with hook
-     235, // lower case 'e' with diathesis
-     232, // lower case 'e' with acute
-     200, // upper case 'e' with acute
-     233, // lower case 'e' with grave
-     234, // lower case 'e' with circonflex
-     236, // lower case 'i' with acute
-     241, // lower case 'n' with tilde
-     209, // upper case 'n' with tilde
-     248, // lower case 'o' with stroke
-     216, // upper case 'o' with stroke
-     241, // lower case 'o' with tilde
-     213, // upper case 'o' with tilde
-     246, // lower case 'o' with diathesis
-     214, // upper case 'o' with diathesis
-     252, // lower case 'u' with diathesis
-     220, // upper case 'u' with diathesis
-     250, // lower case 'u' with acute
-     249, // lower case 'u' with grave
-     223 // double s
+{ 
+  229, // lower case 'a' with a small circle
+  197, // upper case 'a' with a small circle
+  230, // lower case 'ae'
+  198, // upper case 'ae'
+  228, // lower case 'a' with diathesis
+  196, // upper case 'a' with diathesis
+  224, // lower case 'a' with acute
+  192, // lower case 'a' with grave
+  226, // lower case 'a' with circonflex
+  227, // lower case 'a' with tilde
+  195, // upper case 'a' with tilde
+  231, // lower case 'c' with hook
+  199, // upper case 'c' with hook
+  235, // lower case 'e' with diathesis
+  232, // lower case 'e' with acute
+  200, // upper case 'e' with acute
+  233, // lower case 'e' with grave
+  234, // lower case 'e' with circonflex
+  236, // lower case 'i' with acute
+  241, // lower case 'n' with tilde
+  209, // upper case 'n' with tilde
+  248, // lower case 'o' with stroke
+  216, // upper case 'o' with stroke
+  241, // lower case 'o' with tilde
+  213, // upper case 'o' with tilde
+  246, // lower case 'o' with diathesis
+  214, // upper case 'o' with diathesis
+  252, // lower case 'u' with diathesis
+  220, // upper case 'u' with diathesis
+  250, // lower case 'u' with acute
+  249, // lower case 'u' with grave
+  223 // double s
 };
 
 WordPerfectParagraphProperties::WordPerfectParagraphProperties()
@@ -265,7 +266,7 @@ bool	IE_Imp_WordPerfect_Sniffer::getDlgLabels (const char ** pszDesc,
 #define DOC_PROPBUFFER_SIZE 1024
 
 IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
-  : IE_Imp (pDocument)
+  : IE_Imp (pDocument), m_bInSection(false)
 {
    m_undoOn = false;
    m_paragraphChanged = true;
@@ -329,6 +330,8 @@ UT_Error IE_Imp_WordPerfect::importFile(const char * szFilename)
 	  error = _parseDocument();   
      }
    
+   UT_DEBUGMSG(("WordPerfect: done with document parse loop\n"));
+
    fclose(m_importFile);
    return error;
 }
@@ -578,8 +581,6 @@ UT_Error IE_Imp_WordPerfect::_handleBoxGroupTemplate(int boxGroupTemplatePID)
 UT_Error IE_Imp_WordPerfect::_parseDocument()
 {
    UT_DEBUGMSG(("WordPerfect: Parsing the Document \n"));
-
-   X_CheckDocumentError(getDoc()->appendStrux(PTX_Section, NULL));
    
    if (fseek(m_importFile, m_documentPointer, SEEK_SET) != 0)
      return UT_IE_IMPORTERROR;
@@ -796,14 +797,12 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
                                 UT_String_sprintf(propBuffer, "columns:%d", numCols);
                                 
                                 UT_DEBUGMSG(("Appending column definition: %s\n", propBuffer.c_str()));
-                                const XML_Char* pProps = "props";
                                 const XML_Char* propsArray[3];
-                                propsArray[0] = pProps;
+                                propsArray[0] = "props";
                                 propsArray[1] = propBuffer.c_str();
                                 propsArray[2] = NULL;
                                 // change the first Section which is inserted in the beginning of _parseDocument
-                                X_CheckDocumentError(getDoc()->changeStruxFmt(PTC_AddFmt,0,0,
-                                                                        propsArray,NULL,PTX_Section));
+                                X_CheckDocumentError(_appendSection(propsArray));
                                 m_hasColumns = true;
                              }
                              break;
@@ -1531,8 +1530,19 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
    propsArray[2] = NULL;
    m_paragraphChanged = false;
    
+   if ( !m_bInSection )
+     _appendSection ();
+
    X_CheckDocumentError(getDoc()->appendStrux(PTX_Block, propsArray));   
    
    return UT_OK;
 }
 
+bool IE_Imp_WordPerfect::_appendSection( const XML_Char ** props )
+{
+  if (!getDoc()->appendStrux(PTX_Section, props))
+    return false ;
+
+  m_bInSection = true ;
+  return true;
+}
