@@ -23,7 +23,9 @@
 
 #include "xap_Win32AppImpl.h"
 #include "ut_string_class.h"
-
+#include "xap_Frame.h"
+#include "xap_App.h"
+#include "xap_Win32FrameImpl.h"
 
 bool XAP_Win32AppImpl::openURL(const char * szURL)
 {
