@@ -668,6 +668,11 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
                              (gpointer) this);
 
 
+    gtk_signal_connect_after(GTK_OBJECT(windowOptions),
+                             "destroy",
+                             NULL,
+                             NULL);
+
     //////////////////////////////////////////////////////////////////////
     // the control buttons
     gtk_signal_connect(GTK_OBJECT(buttonOk),
@@ -710,17 +715,6 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 						"toggled",
                        GTK_SIGNAL_FUNC(s_checkbutton_toggle),
                        (gpointer) this);
-
-    // the catch-alls
-    gtk_signal_connect_after(GTK_OBJECT(windowOptions),
-                             "delete_event",
-                             GTK_SIGNAL_FUNC(s_delete_clicked),
-                             (gpointer) this);
-
-    gtk_signal_connect_after(GTK_OBJECT(windowOptions),
-                             "destroy",
-                             NULL,
-                             NULL);
 
     // Update member variables with the important widgets that
     // might need to be queried or altered later.
@@ -978,10 +972,10 @@ int option_menu_set_by_key ( GtkWidget *option_menu, gpointer value, gchar *key 
 	if ( data.found >= 0 )
 	{
 		gtk_option_menu_set_history( GTK_OPTION_MENU(option_menu), data.found );
-		UT_DEBUGMSG(("search found %d", data.found ));
+		//UT_DEBUGMSG(("search found %d\n", data.found ));
 	}
 	else
-		UT_DEBUGMSG(("search NOT found (searched %d indexes)\n", data.index ));
+		UT_DEBUGMSG(("%s:%f search NOT found (searched %d indexes)\n", __FILE__, __LINE__, data.index ));
 
 	return data.found;
 }
@@ -1041,10 +1035,11 @@ void    AP_UnixDialog_Options::_setNotebookPageNum(int pn)
 	dlg->event_Apply(); 
 }
 
-/*static*/ void AP_UnixDialog_Options::s_delete_clicked(GtkWidget * /* widget */, gpointer data )
+/*static*/ void AP_UnixDialog_Options::s_delete_clicked(GtkWidget * /* widget */, GdkEvent * /*event*/, gpointer data )
 { 
 	AP_UnixDialog_Options * dlg = (AP_UnixDialog_Options *)data;
 	UT_ASSERT(dlg); 
+	UT_DEBUGMSG(("AP_UnixDialog_Options::s_delete_clicked\n"));
 	dlg->event_WindowDelete(); 
 }
 
