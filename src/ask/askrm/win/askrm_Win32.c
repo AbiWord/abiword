@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "ask.h"
+#include "DelExeBF.h"
 
 struct _fileref
 {
@@ -136,6 +137,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	RegDeleteKey(HKEY_LOCAL_MACHINE, szKey);
 
 	MessageBox(NULL, "The software has been removed.", "AbiSetup UnInstall", MB_OK);
-	
+
+	// Delete ourselves
+	DeleteExecutableBF();
+
 	return 0;
 }

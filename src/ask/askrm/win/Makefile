@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-CSRCS=			askrm_Win32.c
+CSRCS=			askrm_Win32.c DelExeBF.c
 
 PROGRAM=		$(BINDIR)/askrm.exe
 
