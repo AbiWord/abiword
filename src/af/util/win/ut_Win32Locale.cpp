@@ -71,6 +71,12 @@ bool UT_getISO639Language(char * szLanguage)
 			else if (*szWinLang && !UT_stricmp(szWinLang,"NOR"))
 				strcpy(szISOLang,"nb");
 		}
+		// Fix Hebrew
+		else if (!UT_stricmp(szISOLang, "iw"))
+		{
+			strcpy(szISOLang, "he");
+		}
+
 		strcpy(szLanguage,szISOLang);
 		bSuccess = true;
 	}
