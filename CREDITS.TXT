@@ -11,6 +11,7 @@ Shaw Terwilliger <sterwill@abisource.com>
 
 contributors
 ------------
+Matthew Allen <fret@ozemail.com.au>             MouseWheel fix.
 Peter Arnold <petera@intrinsica.co.uk>          RTF import
 Darren Benham <gecko@benham.net>                Debian package, ispell whiz
 Henrik Berg <henrik@lansen.se>                  ispell i18n
@@ -52,21 +53,21 @@ Bruce Pearson <BruceP@wn.com.au>                full justification
 Andy Richardson <andy@promethium.chem.ucl.ac.uk>    PostScript image handling
 Duncan Rose <d.rose@salford.ac.uk>
 Pierre Sarrazin <ps@cam.org>            
-Martin Sevior <msevior@physics.unimelb.edu.au>        Symbol dialog, Overline
+Martin Sevior <msevior@physics.unimelb.edu.au>  Symbol dialog, Overline
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
 Alexey Sinutin <megabyte@salesexplosion.com>    Insert Date/Time dialog
-Owen Stenseth (owen@pdaverticals.com)           script to output translation data
+Owen Stenseth <owen@pdaverticals.com>           script to output translation data
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
 Jim Studt <jim@federated.com>                   ARM configuration
 Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     File I/O error handling, misc fixes
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>           
+John Tunison <nosinut@WIND.REM.CMU.EDU>         GNOME dialogs
 Kevin Vajk <kvajk@ricochet.net>                 File import/export detection
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
 John Wood <jyonw@asu.edu>                       NetBSD
 Alan Young <ayoung@teleport.com>                Alpha/NT
-Matthew Allen <fret@ozemail.com.au>				MouseWheel fix.
 
 translators
 -----------
