@@ -3240,7 +3240,7 @@ bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* p
 	return _doInsertRun(pNewRun);
 }
 
-bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro /* pcro */)
+bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
 	const PP_AttrProp * pSpanAP = NULL;
 
@@ -3250,18 +3250,18 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	// Get the field type.
 
 	const XML_Char* pszType = NULL;
-	//const XML_Char* pszParam = NULL;
 	pSpanAP->getAttribute("type", pszType);
-	//pSpanAP->getAttribute("param", pszParam);
-	UT_return_val_if_fail(pszType, false);
 
 	// Create the field run.
 
 	fp_FieldRun* pNewRun;
 
-	UT_DEBUGMSG(("DOM: field type: %s\n", pszType));
-
-	if(UT_strcmp(pszType, "list_label") == 0)
+	if (!pszType) 
+		{
+			UT_ASSERT (pszType); 	
+			pNewRun = new fp_FieldRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		}
+	else if(UT_strcmp(pszType, "list_label") == 0)
 	{
 		pNewRun = new fp_FieldListLabelRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
@@ -3455,12 +3455,11 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	  }
 	else
 	{
-		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		//	pNewRun = NULL;
+		UT_ASSERT_NOT_REACHED ();
+		//
 		// New Piece Table Field Leave it for that code..
 		//
 		pNewRun = new fp_FieldRun(this, m_pLayout->getGraphics(), blockOffset, 1);
-		//		return _doInsertRun(pNewRun);
 	}
 
 	UT_ASSERT(pNewRun); // TODO check for outofmem
