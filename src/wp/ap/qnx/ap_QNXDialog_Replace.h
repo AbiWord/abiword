@@ -45,7 +45,7 @@ public:
 	virtual void			event_Find(void);
 	virtual void			event_Replace(void);
 	virtual void			event_ReplaceAll(void);
-	virtual void			event_MatchCaseToggled(void);	
+	virtual void			event_Toggled(void);	
 	virtual void			event_Cancel(void);
 	virtual void			event_WindowDelete(void);
 
@@ -63,6 +63,8 @@ protected:
 	PtWidget_t * m_comboFind;
 	PtWidget_t * m_comboReplace;
 	PtWidget_t * m_checkbuttonMatchCase;
+	PtWidget_t * m_checkbuttonReverse;
+	PtWidget_t * m_checkbuttonWholeWords;
 
 	PtWidget_t * m_buttonFindNext;
 	PtWidget_t * m_buttonReplace;

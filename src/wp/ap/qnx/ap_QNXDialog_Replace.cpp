@@ -111,10 +111,10 @@ static int s_cancel_clicked(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 	return Pt_CONTINUE;
 }
 
-static int s_match_case_toggled(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
+static int s_toggled(PtWidget_t *w, void *data, PtCallbackInfo_t * e)
 {
 	AP_QNXDialog_Replace *dlg = (AP_QNXDialog_Replace *)data;
-	dlg->event_MatchCaseToggled();
+	dlg->event_Toggled();
 	return Pt_CONTINUE;
 }
 
@@ -238,7 +238,10 @@ void AP_QNXDialog_Replace::event_Find(void)
 	
 	
 	setFindString(UT_UCS4String(findEntryText).ucs4_str());
-	findNext();
+	if(getReverseFind())
+		findPrev();
+	else
+		findNext();
 }
 		
 void AP_QNXDialog_Replace::event_Replace(void)
@@ -254,9 +257,11 @@ void AP_QNXDialog_Replace::event_Replace(void)
 	
 	setFindString(UT_UCS4String(findEntryText).ucs4_str());
 	setReplaceString(UT_UCS4String(replaceEntryText).ucs4_str());
-	
-	findReplace();
 
+	if(getReverseFind())
+		findReplaceReverse();
+	else
+		findReplace();
 }
 
 void AP_QNXDialog_Replace::event_ReplaceAll(void)
@@ -276,14 +281,13 @@ void AP_QNXDialog_Replace::event_ReplaceAll(void)
 
 }
 
-void AP_QNXDialog_Replace::event_MatchCaseToggled(void)
+void AP_QNXDialog_Replace::event_Toggled(void)
 {
-	UT_ASSERT(m_checkbuttonMatchCase);
+	UT_ASSERT(m_checkbuttonMatchCase && m_checkbuttonReverse && m_checkbuttonWholeWords);
 
-	//TODO: Turn this into a helper function
-	int *flags = NULL;
-	PtGetResource(m_checkbuttonMatchCase, Pt_ARG_FLAGS, &flags, 0);
-	setMatchCase((flags && *flags & Pt_SET) ? true: false);
+	setMatchCase((PtWidgetFlags(m_checkbuttonMatchCase) & Pt_SET) ? true: false);
+	setWholeWord((PtWidgetFlags(m_checkbuttonWholeWords) & Pt_SET) ? true: false);
+	setReverseFind((PtWidgetFlags(m_checkbuttonReverse) & Pt_SET) ? true: false);
 }
 
 void AP_QNXDialog_Replace::event_Cancel(void)
@@ -364,11 +368,22 @@ PtWidget_t * AP_QNXDialog_Replace::_constructWindow(void)
 	buttonCancel = abiPhabLocateWidget(windowReplace,"btnCancel"); 
 	PtSetResource(buttonCancel, Pt_ARG_TEXT_STRING, _(XAP,DLG_Cancel), 0);
 	PtAddCallback(buttonCancel, Pt_CB_ACTIVATE, s_cancel_clicked, this);
-	
+
 	checkbuttonMatchCase = abiPhabLocateWidget(windowReplace,"toggleCase");
-	
 	PtSetResource(checkbuttonMatchCase, Pt_ARG_TEXT_STRING, _(AP,DLG_FR_MatchCase), 0);
-	PtAddCallback(checkbuttonMatchCase, Pt_CB_ACTIVATE, s_match_case_toggled, this);
+	PtSetResource(checkbuttonMatchCase,Pt_ARG_FLAGS,getMatchCase(),Pt_SET);
+	PtAddCallback(checkbuttonMatchCase, Pt_CB_ACTIVATE, s_toggled, this);
+
+
+	m_checkbuttonWholeWords = abiPhabLocateWidget(windowReplace,"toggleWholeWord");
+	PtSetResource(m_checkbuttonWholeWords,Pt_ARG_TEXT_STRING,_(AP,DLG_FR_WholeWord),0);
+	PtSetResource(m_checkbuttonWholeWords,Pt_ARG_FLAGS,getWholeWord(),Pt_SET);
+	PtAddCallback(m_checkbuttonWholeWords,Pt_CB_ACTIVATE,s_toggled,this);
+	
+	m_checkbuttonReverse = abiPhabLocateWidget(windowReplace,"toggleReverse");
+	PtSetResource(m_checkbuttonReverse,Pt_ARG_TEXT_STRING,_(AP,DLG_FR_ReverseFind),0);
+	PtSetResource(m_checkbuttonReverse,Pt_ARG_FLAGS,getReverseFind(),Pt_SET);
+	PtAddCallback(m_checkbuttonReverse,Pt_CB_ACTIVATE,s_toggled,this);
 
 	// save pointers to members
 	m_windowMain = windowReplace;
