@@ -68,6 +68,12 @@ static void s_cancel_clicked(GtkWidget * widget,
 	gtk_main_quit();
 }
 
+static void s_delete_clicked(GtkWidget * widget, gpointer data, AP_Dialog_FileOpenSaveAs::tAnswer * answer)
+{
+	*answer = AP_Dialog_FileOpenSaveAs::a_CANCEL;
+	gtk_main_quit();
+}
+
 UT_Bool AP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 													void * pFSvoid,
 													UT_Bool bCheckWritePermission)
@@ -313,7 +319,16 @@ void AP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	
 	GtkFileSelection *pFS = (GtkFileSelection *)gtk_file_selection_new(szTitle);
 	
-	/* Connect the signals for OK and CANCEL */
+	/* Connect the signals for OK and CANCEL and the requisite clean-close signals*/
+
+	gtk_signal_connect_after(GTK_OBJECT(pFS),
+							 "destroy",
+							 NULL,
+							 NULL);
+	gtk_signal_connect_after(GTK_OBJECT(pFS),
+							 "delete_event",
+							 GTK_SIGNAL_FUNC(s_delete_clicked),
+							 &m_answer);
 
 	gtk_signal_connect(GTK_OBJECT(pFS->ok_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked), &m_answer);

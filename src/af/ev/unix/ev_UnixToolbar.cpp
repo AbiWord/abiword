@@ -111,6 +111,8 @@ public:									// we create...
 			
 	};
 
+// we don't use this, and it does nothing
+#if 0
 	// block the changed signals on popdown (so we don't get real-time formatting
 	// updating as a user scrolls through the choices)
 	static void s_combo_show(GtkWidget * widget, gpointer user_data)
@@ -118,7 +120,8 @@ public:									// we create...
 		_wd * wd = (_wd *) user_data;
 		UT_ASSERT(wd);
 	}
-
+#endif
+	
 	// unblock when the menu goes away
 	static void s_combo_hide(GtkWidget * widget, gpointer user_data)
 	{
@@ -333,6 +336,10 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				GtkWidget * comboBox = gtk_combo_new();
 				UT_ASSERT(comboBox);
 
+				// Combo boxes flash on 8-bit displays unless you set its colormap
+				// to agree with what we're using elsewhere (gdk_rgb's version)
+				gtk_widget_set_colormap(comboBox, gdk_rgb_get_cmap());
+				
 				// set the size of the entry to set the total combo size
 				gtk_widget_set_usize(GTK_COMBO(comboBox)->entry, iWidth, 0);
 
@@ -344,10 +351,13 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 				UT_ASSERT(button);
 				GtkWidget * popwin = GTK_WIDGET(GTK_COMBO(comboBox)->popwin);
 				UT_ASSERT(popwin);
+// we don't use this
+#if 0
 				gtk_signal_connect(GTK_OBJECT(popwin),
 								   "show",
 								   GTK_SIGNAL_FUNC(_wd::s_combo_show),
 								   wd);
+#endif
 				gtk_signal_connect(GTK_OBJECT(popwin),
 								   "hide",
 								   GTK_SIGNAL_FUNC(_wd::s_combo_hide),
@@ -525,7 +535,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				case EV_TBIT_ToggleButton:
 				case EV_TBIT_GroupButton:
 				{
-					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					//UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					UT_Bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
@@ -557,7 +567,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				case EV_TBIT_ComboBox:
 				{
 					UT_Bool bGrayed = EV_TIS_ShouldBeGray(tis);
-					UT_Bool bString = EV_TIS_ShouldUseString(tis);
+					//UT_Bool bString = EV_TIS_ShouldUseString(tis);
 					
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd);
