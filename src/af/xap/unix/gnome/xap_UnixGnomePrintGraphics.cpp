@@ -33,9 +33,7 @@
 #include "ut_string_class.h"
 #include "xap_UnixDialogHelper.h"
 
-#if 0
-#include <libgnomeprint/gnome-print-master-preview.h>
-#endif
+#include <libgnomeprintui/gnome-print-job-preview.h>
 
 /***********************************************************************/
 /*      This file provides an interface into Gnome Print               */
@@ -400,15 +398,14 @@ bool XAP_UnixGnomePrintGraphics::_endDocument(void)
 		gnome_print_job_print(m_gpm);
 	else
 		{
-#if 0
-			GnomePrintMasterPreview *preview;
 			const XAP_StringSet * pSS = m_pApp->getStringSet();
-			
-			preview = gnome_print_master_preview_new_with_orientation (m_gpm, 
-																	   pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle), 
-																	   !isPortrait());
-			gtk_widget_show(GTK_WIDGET(preview));
+			GtkWidget * preview = gnome_print_job_preview_new (m_gpm, 
+															   pSS->getValue(XAP_STRING_ID_DLG_UP_PrintPreviewTitle));
+#if 0
+			g_signal_connect (G_OBJECT (preview), "unrealize",
+			  G_CALLBACK (gtk_main_quit), NULL);
 #endif
+			gtk_widget_show(GTK_WIDGET(preview));
 		}
 	
 	g_object_unref(G_OBJECT(m_gpm));

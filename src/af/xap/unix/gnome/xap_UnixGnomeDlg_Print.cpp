@@ -92,10 +92,14 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 
 	switch (abiRunModalDialog (GTK_DIALOG(gpd), pFrame, this, GNOME_PRINT_DIALOG_RESPONSE_PRINT, false))
 	{
-	case GNOME_PRINT_DIALOG_RESPONSE_PRINT: break;
-	case GNOME_PRINT_DIALOG_RESPONSE_PREVIEW: m_bIsPreview = true;
+	case GNOME_PRINT_DIALOG_RESPONSE_PRINT: 
+		break;
+	case GNOME_PRINT_DIALOG_RESPONSE_PREVIEW: 
+		m_bIsPreview = true;
 	default:
-		abiDestroyWidget (gpd); m_answer = a_CANCEL; return;
+		abiDestroyWidget (gpd); 
+		m_answer = a_CANCEL; 
+		return;
 	}
 
 	gnome_print_dialog_get_copies(GNOME_PRINT_DIALOG(gpd), &copies, &collate);
@@ -119,7 +123,7 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	m_bCollate = false;
 	m_nCopies  = 1;
 
-	m_answer 				= a_OK;
+	m_answer = a_OK;
 	abiDestroyWidget (gpd);
 }
 

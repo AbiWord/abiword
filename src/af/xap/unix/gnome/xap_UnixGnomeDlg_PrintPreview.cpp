@@ -19,8 +19,6 @@
 
 #include <libgnomeprint/gnome-print.h>
 #include <libgnomeprint/gnome-print-config.h>
-#include <libgnomeprintui/gnome-print-job-preview.h>
-#include <libgnomeprintui/gnome-print-dialog.h>
 
 #include "ut_assert.h"
 #include "xap_Dialog_Id.h"
