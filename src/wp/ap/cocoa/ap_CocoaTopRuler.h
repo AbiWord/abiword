@@ -32,6 +32,7 @@
 #include "ap_TopRuler.h"
 #include "gr_CocoaGraphics.h"
 class XAP_Frame;
+@class AP_CocoaTopRulerDelegate;
 
 
 /*****************************************************************/
@@ -42,35 +43,19 @@ public:
 	AP_CocoaTopRuler(XAP_Frame * pFrame);
 	virtual ~AP_CocoaTopRuler(void);
 
-	XAP_CocoaNSView *		createWidget(void);
 	virtual void	setView(AV_View * pView);
 
 	// cheats for the callbacks
 	void 				getWidgetPosition(int * x, int * y);
 	XAP_CocoaNSView * 		getWidget(void) { return m_wTopRuler; };
 	NSWindow * 	getRootWindow(void);
-
-	void _ruler_style_changed (void);
 	
 private:
 	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 
 	XAP_CocoaNSView *			m_wTopRuler;
 	NSWindow *	m_rootWindow;
-#if 0
-	class _fe
-	{
-	public:
-		static gint button_press_event(GtkWidget * w, GdkEventButton * e);
-		static gint button_release_event(GtkWidget * w, GdkEventButton * e);
-		static gint configure_event(GtkWidget* w, GdkEventConfigure *e);
-		static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e);
-		static gint key_press_event(GtkWidget* w, GdkEventKey* e);
-		static gint delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static gint expose(GtkWidget * w, GdkEventExpose* pExposeEvent);
-		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
-	};
-#endif
+	AP_CocoaTopRulerDelegate*	m_delegate;
 };
 
 #endif /* AP_COCOATOPRULER_H */

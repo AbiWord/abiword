@@ -55,10 +55,6 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 
 	virtual NSString *			_getNibName (); /* must be public to be called from Obj-C */
 
-//	XAP_NSScroller*					getHScrollbar()
-//									{ return m_hScrollbar; };
-//	XAP_NSScroller*					getVScrollbar()
-//									{ return m_vScrollbar; };									
 	UT_sint32 _getHScrollValue()	{ return m_HCurrentScroll; };
 	UT_sint32 _getHScrollMin()	{ return m_HMinScroll; };
 	UT_sint32 _getHScrollMax()	{ return m_HMaxScroll; };
@@ -77,6 +73,10 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 	void _setVVisible(UT_sint32);
 	void _scrollAction(id sender);
 	
+	void _showTopRulerNSView(void);
+	void _hideTopRulerNSView(void);
+	void _showLeftRulerNSView(void);
+	void _hideLeftRulerNSView(void);
  protected:
 	void _showOrHideStatusbar(void);
 
@@ -97,7 +97,6 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 private:
 	XAP_NSScroller*					m_hScrollbar;
 	XAP_NSScroller*					m_vScrollbar;
-//	NSClipView*						m_scrollAreaView;
 	XAP_CocoaNSView*				m_docAreaGRView;
 	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 private:

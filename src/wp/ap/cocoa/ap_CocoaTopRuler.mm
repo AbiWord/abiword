@@ -48,31 +48,28 @@
 
 
 AP_CocoaTopRuler::AP_CocoaTopRuler(XAP_Frame * pFrame)
-	: AP_TopRuler(pFrame)
+	: AP_TopRuler(pFrame),
+		m_wTopRuler(nil),
+		m_rootWindow(nil),
+		m_delegate(nil)
 {
-	m_rootWindow = NULL;
-	m_wTopRuler = NULL;
-	m_pG = NULL;
-
 	m_wTopRuler = [(AP_CocoaFrameController *)(static_cast<XAP_CocoaFrameImpl *>(m_pFrame->getFrameImpl())->_getController()) getHRuler];
 }
 
 AP_CocoaTopRuler::~AP_CocoaTopRuler(void)
 {
 	DELETEP(m_pG);
+	if (m_delegate) {
+		[[NSNotificationCenter defaultCenter] removeObserver:m_delegate];
+		[m_wTopRuler setEventDelegate:nil];
+		[m_delegate release];
+	}
 }
 
 
-
-XAP_CocoaNSView * AP_CocoaTopRuler::createWidget(void)
-{
-	//UT_DEBUGMSG(("AP_CocoaTopRuler::createWidget - [w=%p] [this=%p]\n", m_wTopRuler,this));
-	return m_wTopRuler;
-}
 
 void AP_CocoaTopRuler::setView(AV_View * pView)
 {
-	AP_CocoaTopRulerDelegate* delegate;
 	AP_TopRuler::setView(pView);
 
 	DELETEP(m_pG);
@@ -80,13 +77,13 @@ void AP_CocoaTopRuler::setView(AV_View * pView)
 	GR_CocoaGraphics * pG = new GR_CocoaGraphics(m_wTopRuler, m_pFrame->getApp());
 	m_pG = pG;
 	UT_ASSERT(m_pG);
-	delegate = [[AP_CocoaTopRulerDelegate alloc] init];
-	[m_wTopRuler setEventDelegate:delegate];
-	[delegate setXAPOwner:this];
-	[[NSNotificationCenter defaultCenter] addObserver:delegate
+	m_delegate = [[AP_CocoaTopRulerDelegate alloc] init];
+	[m_wTopRuler setEventDelegate:m_delegate];
+	[m_delegate setXAPOwner:this];
+	[[NSNotificationCenter defaultCenter] addObserver:m_delegate
 			selector:@selector(viewDidResize:) 
 			name:NSViewFrameDidChangeNotification object:m_wTopRuler];
-	[delegate release];
+//	[m_delegate release];
 //	static_cast<GR_CocoaGraphics *>(m_pG)->_setUpdateCallback (&_graphicsUpdateCB, (void *)this);
 	NSRect bounds = [m_wTopRuler bounds];
 	setWidth(lrintf(bounds.size.width));

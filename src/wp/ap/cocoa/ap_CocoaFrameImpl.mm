@@ -280,8 +280,123 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		pView->sendVerticalScrollEvent(m_VCurrentScroll);
 	}
 	else {
-		pView->sendHorizontalScrollEvent(m_HCurrentScroll);	
+		pView->sendHorizontalScrollEvent(-m_HCurrentScroll);	
 	}
+}
+
+
+void AP_CocoaFrameImpl::_showTopRulerNSView(void)
+{
+	AP_CocoaFrameController* ctrl = _getController();
+	XAP_CocoaNSView* ruler = [ctrl getHRuler];
+	XAP_CocoaNSView* vRuler = [ctrl getVRuler];
+	NSView* mainView = [ctrl getMainView];
+	
+	UT_ASSERT([ruler superview] == nil);
+	// make sure it is not visible
+	if ([ruler superview]) {
+		NSLog(@"AP_CocoaFrameImpl::_showTopRulerNSView attempted to show already visible ruler");
+		return;
+	}
+	
+	UT_ASSERT(mainView);
+	NSRect mainFrame = [mainView frame];
+	NSRect rulerFrame = [ruler frame];
+	mainFrame.size.height -= rulerFrame.size.height;
+	[mainView setFrame:mainFrame];
+	rulerFrame.origin.y = mainFrame.origin.y + mainFrame.size.height;
+	rulerFrame.size.width = mainFrame.size.width + mainFrame.origin.x;
+	[ruler setFrame:rulerFrame];
+	if ([vRuler superview]) {
+		NSRect vRulerFrame = [vRuler frame];
+		vRulerFrame.size.height = mainFrame.size.height;
+		[vRuler setFrame:vRulerFrame];
+	}
+	[[mainView superview] addSubview:ruler];
+	[ruler release];	/* when we hide the ruler we retain the object before the removeFromSuperview */
+}
+
+
+void AP_CocoaFrameImpl::_hideTopRulerNSView(void)
+{
+	AP_CocoaFrameController* ctrl = _getController();
+	XAP_CocoaNSView* ruler = [ctrl getHRuler];
+	XAP_CocoaNSView* vRuler = [ctrl getVRuler];
+	NSView* mainView = [ctrl getMainView];
+	
+	UT_ASSERT([ruler superview]);
+	// make sure it is not visible
+	if ([ruler superview] == nil) {
+		NSLog(@"AP_CocoaFrameImpl::_hideTopRulerNSView attempted to hide already hidden ruler");
+		return;
+	}
+	
+	UT_ASSERT(mainView);
+	NSRect mainFrame = [mainView frame];
+	NSRect rulerFrame = [ruler frame];
+	mainFrame.size.height += rulerFrame.size.height;
+	[mainView setFrame:mainFrame];
+	if ([vRuler superview]) {
+		NSRect vRulerFrame = [vRuler frame];
+		vRulerFrame.size.height = mainFrame.size.height;
+		[vRuler setFrame:vRulerFrame];
+	}
+//	rulerFrame.origin.y = mainFrame.origin.y + mainFrame.size.height + rulerFrame.size.height;
+//	[ruler setFrame:rulerFrame];
+	[ruler retain];	
+	[ruler removeFromSuperview];
+}
+
+
+void AP_CocoaFrameImpl::_showLeftRulerNSView(void)
+{
+	AP_CocoaFrameController* ctrl = _getController();
+	XAP_CocoaNSView* ruler = [ctrl getVRuler];
+	NSView* mainView = [ctrl getMainView];
+	
+	UT_ASSERT([ruler superview] == nil);
+	// make sure it is not visible
+	if ([ruler superview]) {
+		NSLog(@"AP_CocoaFrameImpl::_showTopRulerNSView attempted to show already visible ruler");
+		return;
+	}
+	
+	UT_ASSERT(mainView);
+	NSRect mainFrame = [mainView frame];
+	NSRect rulerFrame = [ruler frame];
+	mainFrame.size.width -= rulerFrame.size.width;
+	mainFrame.origin.x = rulerFrame.size.width;
+	[mainView setFrame:mainFrame];
+	rulerFrame.origin.x = 0;
+	rulerFrame.origin.y = mainFrame.origin.y;
+	rulerFrame.size.height = mainFrame.size.height;
+	[ruler setFrame:rulerFrame];
+	[[mainView superview] addSubview:ruler];
+	[ruler release];	/* when we hide the ruler we retain the object before the removeFromSuperview */
+}
+
+
+void AP_CocoaFrameImpl::_hideLeftRulerNSView(void)
+{
+	AP_CocoaFrameController* ctrl = _getController();
+	XAP_CocoaNSView* ruler = [ctrl getVRuler];
+	NSView* mainView = [ctrl getMainView];
+	
+	UT_ASSERT([ruler superview]);
+	// make sure it is not visible
+	if ([ruler superview] == nil) {
+		NSLog(@"AP_CocoaFrameImpl::_hideLeftRulerNSView attempted to hide already hidden ruler");
+		return;
+	}
+	
+	UT_ASSERT(mainView);
+	NSRect mainFrame = [mainView frame];
+	NSRect rulerFrame = [ruler frame];
+	mainFrame.size.width += mainFrame.origin.x;
+	mainFrame.origin.x = 0;
+	[mainView setFrame:mainFrame];
+	[ruler retain];	
+	[ruler removeFromSuperview];
 }
 
 void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
@@ -425,20 +540,22 @@ void AP_CocoaFrameImpl::_createDocumentWindow()
 	{
 		pCocoaTopRuler = new AP_CocoaTopRuler(pFrame);
 		UT_ASSERT(pCocoaTopRuler);
-		pCocoaTopRuler->createWidget();
 		
 		if (pData->m_pViewMode == VIEW_PRINT) {
 		    pCocoaLeftRuler = new AP_CocoaLeftRuler(pFrame);
 		    UT_ASSERT(pCocoaLeftRuler);
 		    pCocoaLeftRuler->createWidget();
-
 		    // get the width from the left ruler and stuff it into the top ruler.
 		    pCocoaTopRuler->setOffsetLeftRuler(pCocoaLeftRuler->getWidth());
 		}
 		else {
-//		    m_leftRuler = NULL;
+			_hideLeftRulerNSView();
 		    pCocoaTopRuler->setOffsetLeftRuler(0);
 		}
+	}
+	else {
+		_hideTopRulerNSView();
+		_hideLeftRulerNSView();
 	}
 
 	pData->m_pTopRuler = pCocoaTopRuler;

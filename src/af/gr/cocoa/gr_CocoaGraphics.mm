@@ -745,7 +745,7 @@ void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 	dy = tduD(y_src - y_dest);
 	
 	[m_pWin scrollRect:NSMakeRect(tduD(x_src), tduD(y_src), tduD(width), tduD(height)) 
-				by:NSMakeSize(dx,dy)];
+				by:NSMakeSize(-dx,dy)];
 }
 
 void GR_CocoaGraphics::clearArea(UT_sint32 x, UT_sint32 y,

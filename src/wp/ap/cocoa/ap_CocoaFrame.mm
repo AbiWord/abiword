@@ -41,14 +41,6 @@
 
 #import "ap_CocoaFrameImpl.h"
 
-#if 0
-#ifdef ABISOURCE_LICENSED_TRADEMARKS
-#include "abiword_48_tm.xpm"
-#else
-#include "abiword_48.xpm"
-#endif
-#endif
-
 /*****************************************************************/
 #define ENSUREP_RF(p)            do { UT_ASSERT(p); if (!p) return false; } while (0)
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
@@ -245,99 +237,77 @@ void AP_CocoaFrame::setStatusMessage(const char * szMsg)
 
 void AP_CocoaFrame::toggleTopRuler(bool bRulerOn)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
-	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(getFrameData());
 	UT_ASSERT(pFrameData);
 		
 	AP_CocoaTopRuler * pCocoaTopRuler = NULL;
 
 	UT_DEBUGMSG(("AP_CocoaFrame::toggleTopRuler %d, %d\n", 
 		     bRulerOn, pFrameData->m_pTopRuler));
-	UT_ASSERT (UT_TODO);
-#if 0
-	if ( bRulerOn )
-	{
+	if (bRulerOn) {
 		AP_TopRuler * pTop = pFrameData->m_pTopRuler;
-		if(pTop)
-		{
+		if(pTop) {
 			delete pTop;
 		}
 
 		pCocoaTopRuler = new AP_CocoaTopRuler(this);
 		UT_ASSERT(pCocoaTopRuler);
-		m_topRuler = pCocoaTopRuler->createWidget();
 
 		// get the width from the left ruler and stuff it into the 
 		// top ruler.
 
-		if (((AP_FrameData*)m_pData)->m_pLeftRuler)
-		  pCocoaTopRuler->setOffsetLeftRuler(((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth());
-		else
-		  pCocoaTopRuler->setOffsetLeftRuler(0);
+		if (static_cast<AP_FrameData*>(m_pData)->m_pLeftRuler) {
+			pCocoaTopRuler->setOffsetLeftRuler(((AP_FrameData*)m_pData)->m_pLeftRuler->getWidth());
+		}
+		else {
+			pCocoaTopRuler->setOffsetLeftRuler(0);
+		}
 
 		// attach everything	
-		gtk_table_attach(GTK_TABLE(m_innertable), m_topRuler, 0, 2, 0,
-				 1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 (GtkAttachOptions)(GTK_FILL),
-				 0, 0);
+		static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->_showTopRulerNSView();
 		FV_View * pView = static_cast<FV_View *>(m_pView);
 		UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
-		static_cast<AP_TopRuler *>(pUnixTopRuler)->setView(m_pView,iZoom);
-
+		static_cast<AP_TopRuler *>(pCocoaTopRuler)->setView(m_pView,iZoom);
 	}
-	else
-	{
-		// delete the actual widgets
-		g_object_destroy( G_OBJECT(m_topRuler) );
+	else {
+		static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->_hideTopRulerNSView();
 		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
-		m_topRuler = NULL;
-	        static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
+		static_cast<FV_View *>(m_pView)->setTopRuler(NULL);
 	}
-#endif
-	((AP_FrameData*)m_pData)->m_pTopRuler = pCocoaTopRuler;
+	static_cast<AP_FrameData*>(m_pData)->m_pTopRuler = pCocoaTopRuler;
 }
 
 void AP_CocoaFrame::toggleLeftRuler(bool bRulerOn)
 {
-	UT_ASSERT (UT_NOT_IMPLEMENTED);
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
 
-	//AP_CocoaLeftRuler * pCocoaLeftRuler = NULL;
+	UT_DEBUGMSG(("AP_CocoaFrame::toggleLeftRuler %d, %d\n", bRulerOn, pFrameData->m_pLeftRuler));
+	
+	if (bRulerOn) {
+		AP_CocoaLeftRuler* pCocoaLeftRuler;
+		FV_View * pView = static_cast<FV_View *>(m_pView);		
+		UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
 
-	UT_DEBUGMSG(("AP_CocoaFrame::toggleLeftRuler %d, %d\n", 
-		     bRulerOn, pFrameData->m_pLeftRuler));
-	UT_ASSERT (UT_TODO);
-
-#if 0
-	if (bRulerOn)
-	  {
-	    if (m_leftRuler) {
-	      // there is already a ruler. Just return
-	      return;
-	    }
 		pCocoaLeftRuler = new AP_CocoaLeftRuler(this);
 		UT_ASSERT(pCocoaLeftRuler);
-		m_leftRuler = pCocoaLeftRuler->createWidget();
+		pFrameData->m_pLeftRuler = pCocoaLeftRuler;
 
-		gtk_table_attach(GTK_TABLE(m_innertable), m_leftRuler, 0, 1, 1, 2,
-				 (GtkAttachOptions)(GTK_FILL),
-				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-				 0,0);
-		pCocoaLeftRuler->setView(m_pView);
+		static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->_showLeftRulerNSView();
+		static_cast<AP_LeftRuler *>(pCocoaLeftRuler)->setView(m_pView, iZoom);
 		setYScrollRange ();
-	  }
-	else
-	  {
-	    if (m_leftRuler && GTK_IS_OBJECT(m_leftRuler))
-		g_object_destroy( G_OBJECT(m_leftRuler) );
-	    
-	    DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
-	    m_leftRuler = NULL;
-	  }
+	}
+	else  {
+		if (pFrameData->m_pLeftRuler) {
+			DELETEP(pFrameData->m_pLeftRuler);
+			static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->_hideLeftRulerNSView();
+			static_cast<FV_View *>(m_pView)->setLeftRuler(NULL);
+		}
+		else {
+			UT_DEBUGMSG(("Left Ruler already hidden\n"));
+		}
+	}
 
-	((AP_FrameData*)m_pData)->m_pLeftRuler = pCocoaLeftRuler;
-#endif
 }
 
 void AP_CocoaFrame::toggleRuler(bool bRulerOn)
