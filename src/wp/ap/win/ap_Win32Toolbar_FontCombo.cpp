@@ -84,10 +84,13 @@ int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONT lplf,
 	// filter out fonts we don't use
 	if (dwStyle & RASTER_FONTTYPE)
 		return 1 ;
-
+#if 0
+	// This is too restrictive.  Since EnumFontFamilies chooses at random
+	// the character set for the chosen font family, we were missing things
+	// here.  Perhaps use EnumFontFamiliesEx instead?
 	if (lplf->lfCharSet != ANSI_CHARSET)
 		return 1 ;
-
+#endif
 	char * p;
 	UT_cloneString(p, lplf->lfFaceName);
 
