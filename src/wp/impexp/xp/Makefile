@@ -69,7 +69,8 @@ CPPSRCS=		ie_impexp_Register.cpp			\
 			ie_imp_Psion.cpp			\
 			ie_imp_PW.cpp				\
 			ie_imp_WordPerfect.cpp			\
-			ie_imp_ISCII.cpp
+			ie_imp_ISCII.cpp			\
+			ie_imp_T602.cpp
 
 
 LIBRARY_NAME=		AbiImpExp
