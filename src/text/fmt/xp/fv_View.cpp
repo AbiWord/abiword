@@ -820,7 +820,6 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps)
 	v.addItem(new _fmtPair("font-size",pSpanAP,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("font-weight",pSpanAP,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("font-style",pSpanAP,pBlockAP,pSectionAP));
-	v.addItem(new _fmtPair("font-xlfd",pSpanAP,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP));
 
@@ -2311,9 +2310,8 @@ UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)
 		_eraseInsertionPoint();
 	}	
 
-/* this comment could get really ugly if pasting pages of text */
 #ifdef UT_DEBUG
-	UT_DEBUGMSG(("pasteBlock: pasting \"%s\" length %d.\n", text, count));
+       UT_DEBUGMSG(("pasteBlock: pasting block of length %d.\n", count));
 #endif
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);

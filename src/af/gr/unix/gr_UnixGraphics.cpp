@@ -233,8 +233,7 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 								const char* /*pszFontVariant*/, 
 								const char* pszFontWeight, 
 								const char* /*pszFontStretch*/, 
-								const char* pszFontSize,
-								const char* pszXLFD)
+								const char* pszFontSize)
 {
 	UNIXFont* pFont = NULL;
 	char xFontName[2048];
@@ -242,51 +241,6 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 	char szFamily[256];
 	char szWeight[32];
 	char szSlant[8];
-
-	/*
-	  Semi-Hack:
-	  
-	  In order to accomodate the differences between X and CSS fonts
-	  and Windows fonts, the document stores an XLFD string which is
-	  consulted first for Unix font matching.  If this explicit load
-	  fails (the font is not installed), this function consults the
-	  CSS-style attributes to find a similar font.
-
-	  This should be further extended in the future to fall back to
-	  proper character sets and encodings, for Unicode fonts, for
-	  faces that more closely match the intended font.
-	*/
-
-	// First, try XLFD
-	if (UT_stricmp(pszXLFD, ""))
-	{
-		strcpy(xFontName, pszXLFD);
-		// if we know it's valid, return it
-		if (m_pFont && m_pFont->m_strFontName)
-		{	
-			if (!UT_strnicmp(m_pFont->m_strFontName, xFontName, strlen(m_pFont->m_strFontName)))
-			{
-				return m_pFont;
-			}
-		}
-
-		// try the match
-		GdkFont* pgFont = gdk_font_load(xFontName);
-
-		// did the XLFD match?
-		if (pgFont)
-		{
-			pFont = new UNIXFont(pgFont);
-  
-			pFont->m_strFontName = new char[strlen(xFontName) + 1];
-			strcpy(pFont->m_strFontName, xFontName);
-  
-			return pFont;
-		}
-	}
-	
-
-	// We failed an XLFD lookup, so we go for fall-back CSS-style attributes
 
 	// family copied unless it maches a generic-font type or Windows, then it's cast 
 	if (!UT_stricmp(pszFontFamily, "times new roman") ||	// win font
@@ -336,7 +290,7 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 		strcpy(szSlant, "r");
 	}
 
-	sprintf(xFontName, "-adobe-%s-%s-%s-normal--%ld-0-75-75-p-0-iso8859-1", szFamily, szWeight, szSlant, height);
+	sprintf(xFontName, "-*-%s-%s-%s-normal-*-%ld-0-75-75-p-0-iso8859-1", szFamily, szWeight, szSlant, height);
 
 	if (m_pFont && m_pFont->m_strFontName)
     {

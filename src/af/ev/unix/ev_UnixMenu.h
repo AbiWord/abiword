@@ -45,6 +45,9 @@ public:
 	UT_Bool				refreshMenu(AV_View * pView);
 
 	AP_UnixFrame * 		getFrame(void);
+
+	// this should go away if/when the GTK menus are fixed
+	UT_Vector * _get_MenuVector(UT_uint32 n);
 	
 protected:
 	void				_append_NormalItem(char * bufMenuPathname,

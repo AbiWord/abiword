@@ -96,8 +96,7 @@ DG_Font* Win32Graphics::findFont(
 		const char* pszFontVariant, 
 		const char* pszFontWeight, 
 		const char* pszFontStretch, 
-		const char* pszFontSize,
-		const char* pszXLFD) /* ignored for non X platforms */
+		const char* pszFontSize)
 {
 	LOGFONT lf;
 

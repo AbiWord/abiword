@@ -53,12 +53,14 @@ public:									// we create...
 	{
 	};
 
-	static void s_onActivate(GtkMenuItem * menuItem, gpointer user_data)
+	static void s_onActivate(gpointer * callback_data, guint callback_action, GtkWidget * widget)
 	{
 		// this is a static callback method and does not have a 'this' pointer.
 		// map the user_data into an object and dispatch the event.
 	
-		_wd * wd = (_wd *)user_data;
+		EV_UnixMenu * menu = (EV_UnixMenu *) callback_data;
+
+		_wd * wd = (_wd *) menu->_get_MenuVector(callback_action);
 		UT_ASSERT(wd);
 
 		wd->m_pUnixMenu->menuEvent(wd->m_id);
@@ -246,8 +248,10 @@ UT_Bool EV_UnixMenu::synthesize(void)
 	}
  
 	gtk_item_factory_create_items(m_wMenuBarItemFactory,
-								  m_nrActualFactoryItems,m_menuFactoryItems,
-								  NULL);
+								  m_nrActualFactoryItems,
+								  m_menuFactoryItems,
+								  this); // "window" pointer lets us resolve indexes
+	
 	gtk_accel_group_attach(m_wAccelGroup,GTK_OBJECT(wTLW));
 
 	m_wMenuBar = gtk_item_factory_get_widget(m_wMenuBarItemFactory, szMenuBarName);
@@ -292,6 +296,13 @@ UT_Bool EV_UnixMenu::synthesize(void)
  	gtk_box_pack_start(GTK_BOX(wVBox), m_wHandleBox, FALSE, TRUE, 0);
 
 	return UT_TRUE;
+}
+
+UT_Vector * EV_UnixMenu::_get_MenuVector(UT_uint32 n)
+{
+	UT_ASSERT(m_vecMenuWidgets.getNthItem(n));
+       
+	return (UT_Vector *) m_vecMenuWidgets.getNthItem(n);
 }
 
 static void _ev_strip_accel(char * bufResult,
@@ -369,7 +380,7 @@ void EV_UnixMenu::_append_NormalItem(char * bufMenuPathname,const char * szLabel
 	UT_ASSERT(wd);
 	m_vecMenuWidgets.addItem(wd);
 
-	p->callback_action = (guint)wd;
+	p->callback_action = m_vecMenuWidgets.findItem(wd);
 	p->item_type = NULL;
 	if (bCheckable)
 		p->item_type = "<CheckItem>";
@@ -402,7 +413,7 @@ void EV_UnixMenu::_append_SubMenu(char * bufMenuPathname,const char * szLabelNam
 	UT_ASSERT(wd);
 	m_vecMenuWidgets.addItem(wd);
 
-	p->callback_action = (guint)wd;
+	p->callback_action = m_vecMenuWidgets.findItem(wd);
 	p->item_type = "<Branch>";
 
 	// append this name to the prefix, omitting the "&".
@@ -445,7 +456,7 @@ void EV_UnixMenu::_append_Separator(char * bufMenuPathname, AP_Menu_Id id)
 	UT_ASSERT(wd);
 	m_vecMenuWidgets.addItem(wd);
 
-	p->callback_action = (guint)wd;
+	p->callback_action = m_vecMenuWidgets.findItem(wd);
 	p->item_type = "<Separator>";
 }
 
@@ -607,7 +618,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 					_wd * wd = new _wd(this,id);
 					UT_ASSERT(wd);
 
-					p->callback_action = (guint)wd;
+					p->callback_action = m_vecMenuWidgets.findItem(wd);
 					p->item_type = NULL;
 
 					// Currently no checkable dynamic items
@@ -616,7 +627,7 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 
 					// Why am I passing a 1?  Gtk's item factory code does it when
 					// given multiple items to create.
-					gtk_item_factory_create_item(m_wMenuBarItemFactory, p, wd, 1); 
+					gtk_item_factory_create_item(m_wMenuBarItemFactory, p, this, 1); 
 				}
 			}
 			break;
@@ -642,7 +653,7 @@ const char * EV_UnixMenu::_getItemPath(AP_Menu_Id id) const
 {
 	for (UT_uint32 k=0; (k < m_nrActualFactoryItems); k++)
 	{
-		_wd * wd = (_wd *)m_menuFactoryItems[k].callback_action;
+		_wd * wd = (_wd *)m_vecMenuWidgets.getNthItem(m_menuFactoryItems[k].callback_action);
 		if (wd && (wd->m_id==id))
 			return m_menuFactoryItems[k].path;
 	}
@@ -654,7 +665,7 @@ UT_Bool EV_UnixMenu::_isItemPresent(AP_Menu_Id id) const
 {
 	for (UT_uint32 k=0; (k < m_nrActualFactoryItems); k++)
 	{
-		_wd * wd = (_wd *)m_menuFactoryItems[k].callback_action;
+		_wd * wd = (_wd *)m_vecMenuWidgets.getNthItem(m_menuFactoryItems[k].callback_action);
 		if (wd && (wd->m_id==id))
 			return UT_TRUE;
 	}
