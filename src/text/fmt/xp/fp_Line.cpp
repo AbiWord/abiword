@@ -187,20 +187,14 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 		pRun->setLine(NULL);
 	}
 
-#ifdef BIDI_ENABLED
-	removeDirectionUsed(pRun->getDirection());
-#endif
 	
 	
 	UT_sint32 ndx = m_vecRuns.findItem(pRun);
 	UT_ASSERT(ndx >= 0);
 	m_vecRuns.deleteNthItem(ndx);
+
 #ifdef BIDI_ENABLED
-	//#ifndef USE_STATIC_MAP
-	//_createMapOfRuns();
-	//#else
-	//m_bMapDirty = true;
-	//#endif
+	removeDirectionUsed(pRun->getDirection());
 #endif
 
 	return true;
@@ -221,11 +215,6 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 	m_vecRuns.insertItemAt(pNewRun, ndx);
 #ifdef BIDI_ENABLED
 	addDirectionUsed(pNewRun->getDirection());
-	//#ifndef USE_STATIC_MAP		
-	//_createMapOfRuns(); //#TF update the map
-	//#else
-	//m_bMapDirty = true;
-	//#endif	
 #endif
 }
 
@@ -239,11 +228,6 @@ void fp_Line::insertRun(fp_Run* pNewRun)
 	m_vecRuns.insertItemAt(pNewRun, 0);
 #ifdef BIDI_ENABLED
 	addDirectionUsed(pNewRun->getDirection());
-	//#ifndef USE_STATIC_MAP		
-	//_createMapOfRuns(); //#TF update the map
-	//#else
-	//m_bMapDirty = true;
-	//#endif	
 #endif
 }
 
@@ -257,11 +241,6 @@ void fp_Line::addRun(fp_Run* pNewRun)
 	m_vecRuns.addItem(pNewRun);
 #ifdef BIDI_ENABLED
 	addDirectionUsed(pNewRun->getDirection());
-	//# ifndef USE_STATIC_MAP		
-	//_createMapOfRuns();			//#TF update the map
-	//# else
-	//m_bMapDirty = true;
-	//# endif	
 #endif
 	setNeedsRedraw();
 }
@@ -282,11 +261,6 @@ void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
 	m_vecRuns.insertItemAt(pNewRun, ndx+1);
 #ifdef BIDI_ENABLED
 	addDirectionUsed(pNewRun->getDirection());
-	//#ifndef USE_STATIC_MAP		
-	//_createMapOfRuns(); //#TF update the map
-	//#else
-	//m_bMapDirty = true;
-	//#endif	
 #endif
 }
 
@@ -2088,7 +2062,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 		//from back to start
 		if(!m_iRunsLTRcount)
 		{
-			xxx_UT_DEBUGMSG(("_createMapOfRuns: rtl line only (line 0x%x)\n", this));			
+			UT_DEBUGMSG(("_createMapOfRuns: rtl line only (line 0x%x)\n", this));			
 			for(i = 0; i < count/2; i++)
 			{
 				s_pMapOfRunsL2V[i]= count - i - 1;
@@ -2112,7 +2086,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			/*
 				This is a genuine bidi line, so we have to go the full way.
 			*/
-			xxx_UT_DEBUGMSG(("_createMapOfRuns: bidi line (%d ltr runs, %d rtl runs, line 0x%x)\n", m_iRunsLTRcount, m_iRunsRTLcount, this));			
+			UT_DEBUGMSG(("_createMapOfRuns: bidi line (%d ltr runs, %d rtl runs, line 0x%x)\n", m_iRunsLTRcount, m_iRunsRTLcount, this));			
 
 			// create a pseudo line string
 			/*
@@ -2155,8 +2129,6 @@ UT_sint32 fp_Line::_createMapOfRuns()
 			}
 
 			FriBidiCharType iBlockDir = m_pBlock->getDominantDirection();
-			// NB !!! the current version of fribidi confuses
-			// the L2V and V2L arrays !!! (or we do, does it matter?)
 			
 			fribidi_log2vis(/* input */
 		     s_pPseudoString,
@@ -2164,8 +2136,8 @@ UT_sint32 fp_Line::_createMapOfRuns()
 		     &iBlockDir,
 		     /* output */
 		     /*FriBidiChar *visual_str*/ NULL,
-		     s_pMapOfRunsV2L,
 		     s_pMapOfRunsL2V,
+		     s_pMapOfRunsV2L,
 		     s_pEmbeddingLevels
 		     );
 
@@ -2174,7 +2146,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
 		     for (i=0; i<count;i++)
 		     {
 				((fp_Run*) m_vecRuns.getNthItem(i))->setVisDirection(s_pEmbeddingLevels[i]%2 ? FRIBIDI_TYPE_RTL : FRIBIDI_TYPE_LTR);
-				xxx_UT_DEBUGMSG(("L2V %d, V2L %d, emb. %d\n", s_pMapOfRunsL2V[i],s_pMapOfRunsV2L[i],s_pEmbeddingLevels[i]));
+				xxx_UT_DEBUGMSG(("L2V %d, V2L %d, emb. %d [run 0x%x]\n", s_pMapOfRunsL2V[i],s_pMapOfRunsV2L[i],s_pEmbeddingLevels[i],m_vecRuns.getNthItem(i)));
 		     }
 		}//if/else only rtl
 	}
