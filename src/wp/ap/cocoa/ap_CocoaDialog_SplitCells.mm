@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2003 Hubert Figuiere
  * 
@@ -18,39 +20,40 @@
  */
  
 #include "xap_App.h"
-
 #include "xap_CocoaDialog_Utilities.h"
-#include "ap_Strings.h"
+
 #include "ap_CocoaDialog_SplitCells.h"
+#include "ap_Strings.h"
 
-
-XAP_Dialog * AP_CocoaDialog_SplitCells::static_constructor(XAP_DialogFactory * pFactory,
-													       XAP_Dialog_Id dlgid)
+XAP_Dialog * AP_CocoaDialog_SplitCells::static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id dlgid)
 {
-	return new AP_CocoaDialog_SplitCells(pFactory,dlgid);
+	return new AP_CocoaDialog_SplitCells(pFactory, dlgid);
 }
 
-AP_CocoaDialog_SplitCells::AP_CocoaDialog_SplitCells(XAP_DialogFactory * pDlgFactory,
-										             XAP_Dialog_Id dlgid)
-	: AP_Dialog_SplitCells(pDlgFactory,dlgid)
+AP_CocoaDialog_SplitCells::AP_CocoaDialog_SplitCells(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid) :
+	AP_Dialog_SplitCells(pDlgFactory, dlgid)
 {
+	// 
 }
 
 AP_CocoaDialog_SplitCells::~AP_CocoaDialog_SplitCells(void)
 {
+	// 
 }
 
 void AP_CocoaDialog_SplitCells::runModeless(XAP_Frame * pFrame)
 {
 	m_dlg = [[AP_CocoaDialog_SplitCellsController alloc] initFromNib];
+
 	[m_dlg setXAPOwner:this];
 
-	NSWindow* window = [m_dlg window];
+	NSWindow * window = [m_dlg window];
 
 	// Populate the window's data items
 	_populateWindowData();
 
 	[window orderFront:m_dlg];
+
 	startUpdater();
 }
 
@@ -67,23 +70,20 @@ void AP_CocoaDialog_SplitCells::event_Close(void)
 void AP_CocoaDialog_SplitCells::destroy(void)
 {
 	finalize();
+
 	[m_dlg close];
 	[m_dlg release];
 	m_dlg = nil;
 }
 void AP_CocoaDialog_SplitCells::activate(void)
 {
-	ConstructWindowName();
-	NSWindow* window = [m_dlg window];
-	[window setTitle:[NSString stringWithUTF8String:m_WindowName]];
 	setAllSensitivities();
-	[window orderFront:m_dlg];
+
+	[[m_dlg window] orderFront:m_dlg];
 }
 
 void AP_CocoaDialog_SplitCells::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	ConstructWindowName();
-	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
 	setAllSensitivities();
 }
 
@@ -91,26 +91,22 @@ void AP_CocoaDialog_SplitCells::notifyActiveFrame(XAP_Frame *pFrame)
 
 void AP_CocoaDialog_SplitCells::_populateWindowData(void)
 {
-   setAllSensitivities();
+	setAllSensitivities();
 }
 
 void AP_CocoaDialog_SplitCells::_storeWindowData(void)
 {
 }
 
-
 @implementation AP_CocoaDialog_SplitCellsController
-
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_SplitCells"];
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_SplitCells"])
+		{
+			_xap = 0;
+		}
 	return self;
-}
-
--(void)discardXAP
-{
-	_xap = NULL; 
 }
 
 -(void)dealloc
@@ -120,28 +116,36 @@ void AP_CocoaDialog_SplitCells::_storeWindowData(void)
 
 - (void)setXAPOwner:(XAP_Dialog *)owner
 {
-	_xap = dynamic_cast<AP_CocoaDialog_SplitCells*>(owner);
+	_xap = static_cast<AP_CocoaDialog_SplitCells *>(owner);
+}
+
+-(void)discardXAP
+{
+	_xap = 0;
 }
 
 -(void)windowDidLoad
 {
 	if (_xap) {
 		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
-		_xap->ConstructWindowName();
-		[[self window] setTitle:[NSString stringWithUTF8String:_xap->getWindowName()]];
-		LocalizeControl(_splitCellsBox, pSS, AP_STRING_ID_DLG_SplitCells_Frame);
-		LocalizeControl(_splitLeftBtn, pSS, AP_STRING_ID_DLG_SplitCells_Left);
-		[_splitLeftBtn setImage:[NSImage imageNamed:@"tb_SplitLeft"]];
-		LocalizeControl(_splitMiddleHBtn, pSS, AP_STRING_ID_DLG_SplitCells_HoriMid);
+
+		LocalizeControl([self window],		pSS, AP_STRING_ID_DLG_SplitCellsTitle);
+
+		LocalizeControl(_splitCellsBox,		pSS, AP_STRING_ID_DLG_SplitCells_Frame);
+
+		LocalizeControl(_splitLeftBtn,		pSS, AP_STRING_ID_DLG_SplitCells_Left);
+		LocalizeControl(_splitMiddleHBtn,	pSS, AP_STRING_ID_DLG_SplitCells_HoriMid);
+		LocalizeControl(_splitRightBtn,		pSS, AP_STRING_ID_DLG_SplitCells_Right);
+		LocalizeControl(_splitTopBtn,		pSS, AP_STRING_ID_DLG_SplitCells_Above);
+		LocalizeControl(_splitMiddleVBtn,	pSS, AP_STRING_ID_DLG_SplitCells_VertMid);
+		LocalizeControl(_splitBottomBtn,	pSS, AP_STRING_ID_DLG_SplitCells_Below);
+
+		[_splitLeftBtn    setImage:[NSImage imageNamed:@"tb_SplitLeft"   ]];
 		[_splitMiddleHBtn setImage:[NSImage imageNamed:@"tb_SplitHoriMid"]];
-		LocalizeControl(_splitRightBtn, pSS, AP_STRING_ID_DLG_SplitCells_Right);
-		[_splitRightBtn setImage:[NSImage imageNamed:@"tb_SplitRight"]];
-		LocalizeControl(_splitTopBtn, pSS, AP_STRING_ID_DLG_SplitCells_Above);
-		[_splitTopBtn setImage:[NSImage imageNamed:@"tb_SplitAbove"]];
-		LocalizeControl(_splitMiddleVBtn, pSS, AP_STRING_ID_DLG_SplitCells_VertMid);
+		[_splitRightBtn   setImage:[NSImage imageNamed:@"tb_SplitRight"  ]];
+		[_splitTopBtn     setImage:[NSImage imageNamed:@"tb_SplitAbove"  ]];
 		[_splitMiddleVBtn setImage:[NSImage imageNamed:@"tb_SplitVertMid"]];
-		LocalizeControl(_splitBottomBtn, pSS, AP_STRING_ID_DLG_SplitCells_Below);
-		[_splitBottomBtn setImage:[NSImage imageNamed:@"tb_SplitBelow"]];
+		[_splitBottomBtn  setImage:[NSImage imageNamed:@"tb_SplitBelow"  ]];
 	}
 }
 
@@ -188,30 +192,29 @@ void AP_CocoaDialog_SplitCells::_storeWindowData(void)
 
 - (void)setEnableButton:(AP_CellSplitType)btn to:(bool)val
 {
-	switch(btn)
+	switch (btn)
 	{
 	case hori_left:
-		[_splitLeftBtn setEnabled:(val?YES:NO)];
+		[_splitLeftBtn    setEnabled:(val ? YES : NO)];
 		break;
 	case hori_mid:
-		[_splitMiddleHBtn setEnabled:(val?YES:NO)];
+		[_splitMiddleHBtn setEnabled:(val ? YES : NO)];
 		break;
 	case hori_right:
-		[_splitRightBtn setEnabled:(val?YES:NO)];
+		[_splitRightBtn   setEnabled:(val ? YES : NO)];
 		break;
 	case vert_above:
-		[_splitTopBtn setEnabled:(val?YES:NO)];
+		[_splitTopBtn     setEnabled:(val ? YES : NO)];
 		break;
 	case vert_mid:
-		[_splitMiddleVBtn setEnabled:(val?YES:NO)];
+		[_splitMiddleVBtn setEnabled:(val ? YES : NO)];
 		break;
 	case vert_below:
-		[_splitBottomBtn setEnabled:(val?YES:NO)];
+		[_splitBottomBtn  setEnabled:(val ? YES : NO)];
 		break;
 	default:
 		break;
 	}
 }
-
 
 @end

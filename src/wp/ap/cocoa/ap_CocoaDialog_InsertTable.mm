@@ -221,12 +221,20 @@ void AP_CocoaDialog_InsertTable::_storeWindowData(void)
 
 - (int)numRows
 {
-	return [_numOfRowData intValue];
+	int count = [_numOfRowData intValue];
+
+	count = (count < 1) ? 1 : ((count > 500) ? 500 : count);
+
+	return count;
 }
 
 - (int)numCols
 {
-	return [_numOfColData intValue];
+	int count = [_numOfColData intValue];
+
+	count = (count < 1) ? 1 : ((count > 64) ? 64 : count);
+
+	return count;
 }
 
 - (float)colWidth
