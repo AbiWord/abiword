@@ -189,6 +189,15 @@
 	[self invokeEditMethod:"warpInsPtPrevScreen"];
 }
 
+- (void)moveLeftAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelLeft"];
+}
+- (void)moveRightAndModifySelection:(id)sender
+{
+	[self invokeEditMethod:"extSelRight"];
+}
+
 - (void)moveBackwardAndModifySelection:(id)sender
 {
 	[self invokeEditMethod:"extSelLeft"];
