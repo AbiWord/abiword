@@ -74,6 +74,18 @@
 #define XAP_PREF_KEY_DefaultPageSize                "DefaultPageSize"
 #define XAP_PREF_DEFAULT_DefaultPageSize             "Letter"
 
+#ifdef BIDI_ENABLED
+#define XAP_PREF_KEY_DefaultDirectionRtl	"DefaultDirectionRtl"
+#ifndef BIDI_RTL_DOMINANT
+#define XAP_PREF_DEFAULT_DefaultDirectionRtl         "0"
+#else
+#define XAP_PREF_DEFAULT_DefaultDirectionRtl         "1"
+#endif
+
+#define XAP_PREF_KEY_UseUnicodeDirection             "UseUnicodeDirection"  /* should the direction of text be derived from */
+#define XAP_PREF_DEFAULT_UseUnicodeDirection         "1"                            /* the unicode values ? */
+#endif  /* BIDI_ENABLED */
+
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
 
@@ -88,5 +100,11 @@ dcl(RemapGlyphsTable)
 dcl(SmartQuotesEnable)
 dcl(UseSuffix)
 dcl(DefaultPageSize)
+
+#ifdef BIDI_ENABLED
+dcl(DefaultDirectionRtl)
+dcl(UseUnicodeDirection)
+#endif
+
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */

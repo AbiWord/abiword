@@ -468,6 +468,10 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	GtkWidget * checkbuttonKeepNext;
 	GtkWidget * labelBreaks;
 
+#ifdef BIDI_ENABLED
+	GtkWidget * checkbuttonDomDirection;
+#endif
+
 	XML_Char * unixstr = NULL;
 	
 	vboxContents = gtk_vbox_new (FALSE, 0);
@@ -569,6 +573,21 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listAlignment), listAlignment_menu);
+
+
+#ifdef BIDI_ENABLED
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_DomDirection));
+	checkbuttonDomDirection = gtk_check_button_new_with_label (unixstr);
+	FREEP(unixstr);
+	gtk_widget_ref (checkbuttonDomDirection);
+	gtk_object_set_data_full (GTK_OBJECT (windowMain), "checkbuttonDomDirection", checkbuttonDomDirection,
+							  (GtkDestroyNotify) gtk_widget_unref);
+	/**/ gtk_object_set_data(GTK_OBJECT(checkbuttonDomDirection), WIDGET_ID_TAG, (gpointer) id_CHECK_DOMDIRECTION);
+	gtk_widget_show (checkbuttonDomDirection);
+	gtk_table_attach ( GTK_TABLE(boxSpacing), checkbuttonDomDirection, 3,4,0,1,
+                    (GtkAttachOptions) (GTK_FILL),
+                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
+#endif
 
 	hboxIndentation = gtk_hbox_new (FALSE, 5);
 	gtk_widget_ref (hboxIndentation);
@@ -1119,6 +1138,10 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	m_checkbuttonHyphenate = checkbuttonHyphenate;
 	m_checkbuttonKeepNext = checkbuttonKeepNext;
 
+#ifdef BIDI_ENABLED
+	m_checkbuttonDomDirection = checkbuttonDomDirection;
+#endif
+
 	return vboxContents;
 }
 
@@ -1207,7 +1230,10 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
 	gtk_signal_connect(GTK_OBJECT(m_checkbuttonKeepNext), "toggled",
 					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
-	
+#ifdef BIDI_ENABLED
+	gtk_signal_connect(GTK_OBJECT(m_checkbuttonDomDirection), "toggled",
+					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
+#endif	
 	// the catch-alls
 	gtk_signal_connect_after(GTK_OBJECT(m_windowMain),
 							 "delete_event",
@@ -1283,6 +1309,10 @@ void AP_UnixDialog_Paragraph::_populateWindowData(void)
 								 (_getCheckItemValue(id_CHECK_NO_HYPHENATE) == check_TRUE));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepNext)),
 								 (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE));
+#ifdef BIDI_ENABLED
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonDomDirection)),
+								 (_getCheckItemValue(id_CHECK_DOMDIRECTION) == check_TRUE));
+#endif
 }
 
 void AP_UnixDialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false */)

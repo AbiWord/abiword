@@ -35,7 +35,6 @@
 // styles: for a bullet to be displayed, we *have to set the paragraph
 // style to `Bullet List'. The current bullet implementation is one big
 // nasty hack :-(
-
 #include <stdio.h>
 
 #include "ut_types.h"
@@ -909,5 +908,4 @@ bool IE_Imp_Psion_TextEd::SupportsFileType(IEFileType ft)
 
 /*****************************************************************/
 /*****************************************************************/
-
 

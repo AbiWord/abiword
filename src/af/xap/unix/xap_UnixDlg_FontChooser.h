@@ -52,6 +52,9 @@ public:
 	GtkWidget *				m_checkUnderline;
 	GtkWidget *				m_colorSelector;
 	GtkWidget * 			m_preview;
+#ifdef BIDI_ENABLED
+	GtkWidget *				m_checkDirection;
+#endif
 
 	bool					getFont(XAP_UnixFont ** font);
 	bool					getForegroundColor(UT_RGBColor * color);
@@ -59,11 +62,17 @@ public:
 	bool					getDecoration(bool * strikeout, bool * underline);
 	bool					getSize(UT_uint32 * pointsize);
 	bool					getEntryString(char ** string);
+#ifdef BIDI_ENABLED
+	bool					getDirection(bool * direction);
+#endif
 	GR_UnixGraphics * 		m_gc;
 
 	bool					m_doneFirstFont;
 	
 protected:
+#ifdef BIDI_ENABLED
+	virtual void _enableDirectionCheck(bool b);
+#endif
 
 	bool		 			m_blockUpdate;
 	

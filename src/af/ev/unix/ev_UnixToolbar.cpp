@@ -545,7 +545,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 						
 					// Disable/enable toolbar item
 					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
-
+     					
 					//UT_DEBUGMSG(("refreshToolbar: PushButton [%s] is %s\n",
 					//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),
 					//			 ((bGrayed) ? "disabled" : "enabled")));
@@ -555,7 +555,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 				case EV_TBIT_ToggleButton:
 				case EV_TBIT_GroupButton:
 				{
-					//bool bGrayed = EV_TIS_ShouldBeGray(tis);
+					bool bGrayed = EV_TIS_ShouldBeGray(tis);
 					bool bToggled = EV_TIS_ShouldBeToggled(tis);
 
 					_wd * wd = (_wd *) m_vecToolbarWidgets.getNthItem(k);
@@ -571,7 +571,7 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					wd->m_blockSignal = wasBlocked;
 						
 					// Disable/enable toolbar item
-					//gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
+					gtk_widget_set_sensitive(GTK_WIDGET(item), !bGrayed);
 						
 					//UT_DEBUGMSG(("refreshToolbar: ToggleButton [%s] is %s and %s\n",
 					//			 m_pToolbarLabelSet->getLabel(id)->getToolbarLabel(),

@@ -147,6 +147,10 @@ public:
 	bool					isFirstRunOnLine(void) const;
 	bool					isLastRunOnLine(void) const;
 	bool					isOnlyRunOnLine(void) const;
+#ifdef BIDI_ENABLED
+	bool					isFirstVisRunOnLine(void) const;
+	bool					isLastVisRunOnLine(void) const;
+#endif
 
 	void					draw(dg_DrawArgs*);
 	void            		clearScreen(bool bFullLineHeightRect = false);
@@ -170,7 +174,7 @@ public:
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const { return 0; }	
 	virtual bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL) = 0;
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height) = 0;
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection) = 0;
 	virtual void			lookupProperties(void) = 0;
 	virtual bool			doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
 	virtual bool			isSuperscript(void) const { return false; }
@@ -188,7 +192,19 @@ public:
 	virtual UT_sint32		getMaxUnderline(void) {return 0; };
 	virtual void			setMinOverline(UT_sint32 xoff) {return; };
 	virtual UT_sint32		getMinOverline(void) { return 0; };
-	
+
+#ifdef BIDI_ENABLED
+	UT_sint32				inline getDirection(){return m_iDirection; };
+	UT_sint32               getVisDirection();
+	virtual void            setDirection(UT_sint32 iDirection = -1);
+	UT_uint32               getVisPosition(UT_uint32 ilogPos);
+	UT_uint32               getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen);
+	UT_uint32               getOffsetFirstVis();
+	UT_uint32               getOffsetLog(UT_uint32 iVisOff);
+	//virtual bool         setUnicodeDirection();
+	virtual void            setDirectionProperty(UT_sint32 dir);	
+#endif	
+
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif	
@@ -214,6 +230,9 @@ protected:
 	GR_Graphics*			m_pG;
 	bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
 	fd_Field*				m_pField;
+#ifdef BIDI_ENABLED
+	UT_sint32				m_iDirection;   //#TF direction of the run 0 for left-to-right, 1 for right-to-left
+#endif
 
 	// the paper's color at any given time
 	UT_RGBColor             m_colorBG;
@@ -230,7 +249,7 @@ class fp_TabRun : public fp_Run
 
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
@@ -253,7 +272,7 @@ class fp_ForcedLineBreakRun : public fp_Run
 	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
@@ -272,7 +291,7 @@ class fp_FieldStartRun : public fp_Run
 	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
@@ -291,7 +310,7 @@ class fp_FieldEndRun : public fp_Run
 	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
@@ -310,7 +329,7 @@ class fp_ForcedColumnBreakRun : public fp_Run
 	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
@@ -329,7 +348,7 @@ class fp_ForcedPageBreakRun : public fp_Run
 	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
@@ -349,7 +368,7 @@ public:
 
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
@@ -425,7 +444,7 @@ public:
 
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual fp_FieldsEnum	getFieldType(void) const;
 	virtual bool			canBreakBefore(void) const;
@@ -497,7 +516,7 @@ public:
 
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;

@@ -62,7 +62,7 @@ bool AP_Win32Toolbar_StyleCombo::populate(void)
 
 #if 1
 	// HACK: for now, just hardwire it
-	m_vecContents.addItem("Normal");
+	m_vecContents.addItem("normal");
 	m_vecContents.addItem("Heading 1");
 	m_vecContents.addItem("Heading 2");
 	m_vecContents.addItem("Heading 3");

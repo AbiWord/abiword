@@ -946,6 +946,26 @@ bool PD_Document::enumStyles(UT_uint32 k,
 	return m_pPieceTable->enumStyles(k, pszName, ppStyle);
 }
 
+bool	PD_Document::setStyleProperty(const char * szStyleName, const char * szPropertyName, const char * szPropertyValue)
+{
+	PD_Style * pS;
+	PD_Style ** ppS = &pS;
+	if(!m_pPieceTable->getStyle(szStyleName, ppS))
+		return false;
+		
+	return (*ppS)->setProperty(szPropertyName, szPropertyValue);
+}
+
+bool	PD_Document::setStyleProperties(const XML_Char * szStyleName, const XML_Char ** pProperties)
+{
+	PD_Style * pS;
+	PD_Style ** ppS = &pS;
+	if(!m_pPieceTable->getStyle(szStyleName, ppS))
+		return false;
+		
+	return (*ppS)->setProperties(pProperties);
+}
+
 //////////////////////////////////////////////////////////////////
 
 void PD_Document::clearIfAtFmtMark (PT_DocPosition dpos)

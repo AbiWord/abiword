@@ -44,6 +44,11 @@ public:
 	void							setFontStyle(const XML_Char * pFontStyle);
 	void							setColor(const XML_Char * pColor);
 	void							setFontDecoration(bool bUnderline, bool bOverline, bool bStrikeOut);
+#ifdef BIDI_ENABLED
+	void                            setDirection(bool bDirection);
+#endif
+
+
 
 	XAP_Dialog_FontChooser::tAnswer	getAnswer(void) const;
 	
@@ -61,9 +66,16 @@ public:
 	bool							getChangedUnderline(bool * pbUnderline) const;
 	bool							getChangedOverline(bool * pbOverline) const;
 	bool							getChangedStrikeOut(bool * pbStrikeOut) const;
+#ifdef BIDI_ENABLED
+	bool                         	getChangedDirection(bool * pbDirection) const;
+#endif
 
 protected:
 	XAP_Dialog_FontChooser::tAnswer	m_answer;
+#ifdef BIDI_ENABLED
+	virtual void _enableDirectionCheck(bool b) = 0;
+	void _initEnableControls();
+#endif
 
 	GR_Graphics *					m_pGraphics;			/* input */
 	XML_Char *						m_pFontFamily;			/* input/output */
@@ -74,6 +86,9 @@ protected:
 	bool							m_bUnderline;			/* input/output */
 	bool							m_bOverline;			/* input/output */
 	bool							m_bStrikeOut;			/* input/output */
+#ifdef BIDI_ENABLED
+	bool							m_bDirection;
+#endif
 
 	bool							m_bChangedFontFamily;	/* output */
 	bool							m_bChangedFontSize;		/* output */
@@ -83,6 +98,9 @@ protected:
 	bool							m_bChangedUnderline;	/* output */
 	bool							m_bChangedOverline;	/* output */
 	bool							m_bChangedStrikeOut;	/* output */
+#ifdef BIDI_ENABLED
+	bool							m_bChangedDirection;
+#endif
 };
 
 #endif /* XAP_DIALOG_FONTCHOOSER_H */

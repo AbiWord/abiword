@@ -48,6 +48,9 @@ public:
 	virtual bool			isUserDefined(void) const { return true; };
 	bool					isUsed(void) const;
 	bool					isCharStyle(void) const;
+	
+	bool					setProperty(const XML_Char * szName, const XML_Char * szValue);
+	bool					setProperties(const XML_Char ** pProperties);
 
 protected:
 

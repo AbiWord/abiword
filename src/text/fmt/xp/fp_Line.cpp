@@ -35,6 +35,20 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 
+#ifdef BIDI_ENABLED
+	#ifdef USE_STATIC_MAP
+	//initialize the static members of the class
+	UT_uint32    fp_Line::s_iClassInstanceCounter = 0;
+	UT_sint32  * fp_Line::s_pMapOfRuns = 0;
+	UT_uint32    fp_Line::s_iMapOfRunsSize = 0;
+	fp_Line    * fp_Line::s_pMapOwner = 0;
+	#else
+	//make sure that any references to the static members are renamed to their non-static versions
+	#define s_iMapOfRunsSize m_iMapOfRunsSize
+	#define s_pMapOfRuns m_pMapOfRuns
+	#endif
+#endif
+
 fp_Line::fp_Line() 
 {
 	m_iAscent = 0;
@@ -49,10 +63,45 @@ fp_Line::fp_Line()
 	m_pBlock = NULL;
 
 	m_bNeedsRedraw = false;
+#ifdef BIDI_ENABLED
+	m_iRunsRTLcount = 0;
+	m_iRunsLTRcount = 0;
+	m_bMapDirty = true;    //map that has not been initialized is dirty by deafault
+
+	#ifdef USE_STATIC_MAP
+	if(!s_pMapOfRuns)
+	{
+		s_pMapOfRuns = new UT_sint32[RUNS_MAP_SIZE];
+		s_iMapOfRunsSize = RUNS_MAP_SIZE;
+	}
+	++s_iClassInstanceCounter; // this tells us how many instances of Line are out there
+	                           //we use this to decide whether the above should be
+	                           //deleted by the destructor
+	#else
+	m_pMapOfRuns = new UT_sint32[RUNS_MAP_SIZE];
+	m_iMapOfRunsSize = RUNS_MAP_SIZE;
+	#endif
+
+   	UT_ASSERT(s_pMapOfRuns);
+#endif
+	m_bNeedsRedraw = false;
 }
 
 fp_Line::~fp_Line()
 {
+#ifdef BIDI_ENABLED
+	#ifdef USE_STATIC_MAP
+	--s_iClassInstanceCounter;
+	if(!s_iClassInstanceCounter) //this is the last/only instance of the class Line
+	{
+		delete[] s_pMapOfRuns;
+		s_pMapOfRuns = 0;
+	}
+	#else
+	delete[] m_pMapOfRuns;
+	m_pMapOfRuns = 0;
+	#endif
+#endif
 }
 
 void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
@@ -87,10 +136,33 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 		pRun->setLine(NULL);
 	}
 
+#ifdef BIDI_ENABLED
+    switch(pRun->getDirection())
+    {
+		case 0:
+			m_iRunsLTRcount--;
+			UT_ASSERT((m_iRunsLTRcount >= 0));
+			break;
+			
+		case 1:
+			m_iRunsRTLcount--;
+			UT_ASSERT((m_iRunsRTLcount >= 0));
+			break;
+		default:;
+    }
+#endif
+	
+	
 	UT_sint32 ndx = m_vecRuns.findItem(pRun);
 	UT_ASSERT(ndx >= 0);
 	m_vecRuns.deleteNthItem(ndx);
-
+#ifdef BIDI_ENABLED
+	#ifndef USE_STATIC_MAP
+	_createMapOfRuns();
+	#else
+	m_bMapDirty = true;
+	#endif
+#endif
 
 	return true;
 }
@@ -107,6 +179,27 @@ void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
 	UT_ASSERT(ndx >= 0);
 
 	m_vecRuns.insertItemAt(pNewRun, ndx);
+#ifdef BIDI_ENABLED
+	switch(pNewRun->getDirection())
+	{
+		case 0:
+			m_iRunsLTRcount++;
+			break;
+					
+		case 1:
+			m_iRunsRTLcount++;
+			break;
+					
+		default:; 	//either -1 for whitespace, or 2 for 'not set'
+					//the latter only happens in Unicode mode and is
+					//rectified by subsequent call to setDirection
+	}
+	#ifndef USE_STATIC_MAP		
+	_createMapOfRuns(); //#TF update the map
+	#else
+	m_bMapDirty = true;
+	#endif	
+#endif
 }
 
 void fp_Line::insertRun(fp_Run* pNewRun)
@@ -115,6 +208,27 @@ void fp_Line::insertRun(fp_Run* pNewRun)
 	pNewRun->setLine(this);
 
 	m_vecRuns.insertItemAt(pNewRun, 0);
+#ifdef BIDI_ENABLED
+	switch(pNewRun->getDirection())
+	{
+		case 0:
+			m_iRunsLTRcount++;
+			break;
+					
+		case 1:
+			m_iRunsRTLcount++;
+			break;
+					
+		default:; 	//either -1 for whitespace, or 2 for 'not set'
+					//the latter only happens in Unicode mode and is
+					//rectified by subsequent call to setDirection
+	}
+	#ifndef USE_STATIC_MAP		
+	_createMapOfRuns(); //#TF update the map
+	#else
+	m_bMapDirty = true;
+	#endif	
+#endif
 }
 
 void fp_Line::addRun(fp_Run* pNewRun)
@@ -123,7 +237,27 @@ void fp_Line::addRun(fp_Run* pNewRun)
 	pNewRun->setLine(this);
 
 	m_vecRuns.addItem(pNewRun);
-
+#ifdef BIDI_ENABLED
+	switch(pNewRun->getDirection())
+	{
+		case 0:
+			m_iRunsLTRcount++;
+			break;
+					
+		case 1:
+			m_iRunsRTLcount++;
+			break;
+					
+		default:; 	//either -1 for whitespace, or 2 for 'not set'
+					//the latter only happens in Unicode mode and is
+					//rectified by subsequent call to setDirection
+	}
+	#ifndef USE_STATIC_MAP		
+	_createMapOfRuns(); //#TF update the map
+	#else
+	m_bMapDirty = true;
+	#endif	
+#endif
 	setNeedsRedraw();
 }
 
@@ -139,6 +273,27 @@ void fp_Line::insertRunAfter(fp_Run* pNewRun, fp_Run* pAfter)
 	UT_ASSERT(ndx >= 0);
 	
 	m_vecRuns.insertItemAt(pNewRun, ndx+1);
+#ifdef BIDI_ENABLED
+	switch(pNewRun->getDirection())
+	{
+		case 0:
+			m_iRunsLTRcount++;
+			break;
+					
+		case 1:
+			m_iRunsRTLcount++;
+			break;
+					
+		default:; 	//either -1 for whitespace, or 2 for 'not set'
+					//the latter only happens in Unicode mode and is
+					//rectified by subsequent call to setDirection
+	}
+	#ifndef USE_STATIC_MAP		
+	_createMapOfRuns(); //#TF update the map
+	#else
+	m_bMapDirty = true;
+	#endif	
+#endif
 }
 
 void fp_Line::remove(void)
@@ -160,8 +315,11 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 {
 	const int count = m_vecRuns.getItemCount();
 	UT_ASSERT(count > 0);
-
+#ifdef BIDI_ENABLED
+	fp_Run* pFirstRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(0)); //#TF retrieve first visual run
+#else
 	fp_Run* pFirstRun = (fp_Run*) m_vecRuns.getNthItem(0);
+#endif
 	UT_ASSERT(pFirstRun);
 
 	bBOL = false;
@@ -185,8 +343,11 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 
 	for (int i=0; i<count; i++)
 	{
+#ifdef BIDI_ENABLED
+		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));  //#TF get i-th visual run
+#else
 		fp_Run* pRun2 = (fp_Run*) m_vecRuns.getNthItem(i);
-
+#endif
 		if (pRun2->canContainPoint() || pRun2->isField())
 		{
 			UT_sint32 y2 = y - pRun2->getY() - m_iAscent + pRun2->getAscent();
@@ -441,7 +602,8 @@ void fp_Line::clearScreen(void)
 
 void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 {
-	fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
+	//fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
+	fp_Run* pRun; //#TF initialization not needed
 	UT_uint32 count = m_vecRuns.getItemCount();
 
 	// Find the first none dirty run.
@@ -449,7 +611,11 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	UT_uint32 i;
 	for(i = runIndex; i < count; i++)
 	{
+#ifdef BIDI_ENABLED
+		pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+#else
 		pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+#endif
 
 		if(pRun->isDirty())
 		{
@@ -465,17 +631,26 @@ void fp_Line::clearScreenFromRunToEnd(UT_uint32 runIndex)
 	{
 		UT_sint32 xoff, yoff;
 
+#ifdef BIDI_ENABLED
+		pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(runIndex));
+#else
 		pRun = (fp_Run*) m_vecRuns.getNthItem(runIndex);
+#endif
 
 		getScreenOffsets(pRun, xoff, yoff);
 		UT_sint32 xoffLine, yoffLine;
 
 		m_pContainer->getScreenOffsets(this, xoffLine, yoffLine);
+
 		pRun->getGraphics()->clearArea(xoff, yoff, m_iMaxWidth - (xoff - xoffLine), m_iHeight);
 		
 		for (i = runIndex; i < count; i++)
 		{
+#ifdef BIDI_ENABLED
+			pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+#else
 			pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+#endif
 
 			pRun->markAsDirty();
 		}
@@ -545,7 +720,6 @@ void fp_Line::layout(void)
 	
 	fb_Alignment* pAlignment = getBlock()->getAlignment();
 	UT_ASSERT(pAlignment);
-
 	pAlignment->initialize(this);
 
 	const UT_uint32 iCountRuns			= m_vecRuns.getItemCount();
@@ -561,18 +735,26 @@ void fp_Line::layout(void)
 	// TODO do we need to do this if iMoveOver is zero ??
 	for (UT_uint32 i=0; i<iCountRuns; ++i)
 	{
+#ifdef BIDI_ENABLED
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(_getRunLogIndx(i));
+#else
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+#endif
 		if(!bLineErased && iX != pRun->getX())
-			{
+		{
 
 			// Need to erase some or all of the line depending of Alignment mode.
-
+#ifdef BIDI_ENABLED
+            		pRun->setX(iX); //#TF have to set this before the call to erase, since otherwise
+                            		//we will be erasing from invalid coordinances.
+#endif
 			pAlignment->eraseLineFromRun(this, i);
 			bLineErased = true;
-			}
-			
+		}
+#ifdef BIDI_ENABLED
+		else	
+#endif			
 		pRun->setX(iX);
-
 		
 		if (pRun->getType() == FPRUN_TAB)
 		{
@@ -671,7 +853,7 @@ void fp_Line::layout(void)
 						}
 					}
 
-					UT_DEBUGMSG(("%s(%d): foundDecimal=%d len=%d iScanWidth=%d \n", 
+					UT_DEBUGMSG(("%s(%d): foundDecimal=%d len=%d iScanWidth=%d \n",
 								__FILE__, __LINE__, foundDecimal, pScanRun->getLength()-runLen, iScanWidth));
 					if ( foundDecimal )
 					{
@@ -843,7 +1025,7 @@ fp_Run* fp_Line::getLastRun(void) const
 	}
 	else
 	{
-		return ((fp_Run*) m_vecRuns.getLastItem()); 
+		return ((fp_Run*) m_vecRuns.getLastItem());
 	}
 }
 
@@ -975,7 +1157,7 @@ fp_Line*	fp_Line::getPrevLineInSection(void) const
 	return NULL;
 }
 
-bool	fp_Line::containsForcedColumnBreak(void) const 
+bool	fp_Line::containsForcedColumnBreak(void) const
 {
 	if(!isEmpty())
 	{
@@ -1289,6 +1471,9 @@ void fp_Line::distributeJustificationAmongstSpaces(UT_sint32 iAmount)
 void fp_Line::splitRunsAtSpaces(void)
 {
 	UT_uint32 count = m_vecRuns.getItemCount();
+#ifdef BIDI_ENABLED
+	UT_uint32 countOrig = count;
+#endif
 	for (UT_uint32 i=0; i<count; i++)
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
@@ -1300,7 +1485,7 @@ void fp_Line::splitRunsAtSpaces(void)
 
 			iSpacePosition = pTR->findCharacter(0, UCS_SPACE);
 
-			if ((iSpacePosition > 0) && 
+			if ((iSpacePosition > 0) &&
 				((UT_uint32) iSpacePosition < pTR->getBlockOffset() + pTR->getLength() - 1))
 			{
 				pTR->split(iSpacePosition + 1);
@@ -1318,14 +1503,271 @@ void fp_Line::splitRunsAtSpaces(void)
 		fp_TextRun* pTR = (fp_TextRun *)pRun;
 		UT_sint32 iSpacePosition = pTR->findCharacter(0, UCS_SPACE);
 
-		if ((iSpacePosition > 0) && 
+		if ((iSpacePosition > 0) &&
 			((UT_uint32) iSpacePosition < pTR->getBlockOffset() + pTR->getLength() - 1))
 		{
 			pTR->split(iSpacePosition + 1);
 		}
 	}
 
+#ifdef BIDI_ENABLED
+	if(count != countOrig)
+		m_bMapDirty = true;
+#endif
+}
 
+#ifdef BIDI_ENABLED
+//BIDI specific functions
+
+/* creates a map for conversion from visual to logical position */
+
+UT_sint32 fp_Line::_createMapOfRuns()
+{
+	if(!m_iRunsRTLcount)
+	{
+		//UT_DEBUGMSG(("_createMapOfRuns: ltr line only\n"));
+		return UT_OK;
+	}
+    //UT_DEBUGMSG(("createMapOfRuns: this=%x, Owner=%x, Dirty=%x\n", this, s_pMapOwner, m_bMapDirty));
+#ifdef USE_STATIC_MAP
+    if((s_pMapOwner != this) || (m_bMapDirty))
+    {
+        //claim the ownership of the map and mark it not dirty
+        s_pMapOwner = this;
+        m_bMapDirty = false;
+
+#else //if using non-static map, we only check for dirtiness
+    if(m_bMapDirty)
+    {
+        m_bMapDirty = false;
+	//just rename the static members to their non-static equivalents, otherwise the code below
+	//is fine
+#endif
+		UT_uint32 count = m_vecRuns.getItemCount();
+		if(!count) 
+			return UT_OK;  // do not even try to map a line with no runs
+
+        if(count == 1)   //if there is just one run, then make sure that it maps on itself and return
+        {
+            s_pMapOfRuns[0] = 0;
+            return UT_OK;
+        }
+
+        if (count >= s_iMapOfRunsSize) //the MapOfRuns member is too small, reallocate
+        {
+			delete[] s_pMapOfRuns;
+			s_iMapOfRunsSize = count + 20; //allow for 20 extra runs, so that we do not have to
+                                           //do this immediately again
+			s_pMapOfRuns = new UT_sint32[s_iMapOfRunsSize];
+			UT_ASSERT(s_pMapOfRuns);
+        }
+
+		//make sure that the map is not exessively long;
+		if ((count < RUNS_MAP_SIZE) && (s_iMapOfRunsSize > 2* RUNS_MAP_SIZE))
+		{
+         	delete[] s_pMapOfRuns;
+			s_iMapOfRunsSize = RUNS_MAP_SIZE;
+			s_pMapOfRuns = new UT_sint32[s_iMapOfRunsSize];
+			UT_ASSERT(s_pMapOfRuns);
+		}
+
+		//if this is unidirectional rtl text, we can skip the next step
+		//we only need to test absence of ltr runs
+		if(!m_iRunsLTRcount)
+		{
+			//UT_DEBUGMSG(("_createMapOfRuns: rtl line only\n"));			
+			for(UT_uint32 i = 0; i < count/2; i++)
+			{
+				s_pMapOfRuns[i]= count - i - 1;
+				s_pMapOfRuns[count - i - 1] = i;
+			}
+			if(count % 2)
+				s_pMapOfRuns[count/2] = count/2;
+		
+		}
+		else
+		{
+			//UT_DEBUGMSG(("_createMapOfRuns: bidi line (%d ltr runs, %d rtl runs)\n",m_iRunsLTRcount, m_iRunsRTLcount));        	
+			// get the dominant direction of the block and set the MapOfRuns so that all runs
+			// that have different direction than the dominant will have value 1,
+			// neutral runs -1 and the rest 0
+			UT_sint32 RTLdominant = m_pBlock->getDominantDirection();
+			UT_sint32 iRunDirection;
+			for (UT_uint32 i=0; i < count; i++)
+			{
+				fp_TextRun* pRun = (fp_TextRun*) m_vecRuns.getNthItem(i);
+				iRunDirection = pRun->getDirection();
+				if(iRunDirection == -1)
+				{
+					//if this is the very first run, then set it to the paragraph direction,
+					//this will make things easier in the next step
+					if(i == 0)
+					{
+						s_pMapOfRuns[0] = RTLdominant;
+					}
+					else
+					{					
+						s_pMapOfRuns[i] = -1;
+					}
+				}
+				else
+				{
+					s_pMapOfRuns[i] = (iRunDirection) ? !RTLdominant : RTLdominant;
+				}
+			}
+
+        	//UT_DEBUGMSG(("fp_Line::_createMapOfRuns(), s_pMapOfRuns{pre}(domDir %d) %d %d %d %d\n", RTLdominant, s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3]));
+
+        	// all sequences of runs that have direction different than the block direction have
+        	// to be put into mirror order but first of all we have to convert all directionally
+        	// neutral runs into correct direction depending on their context
+
+        	//UT_DEBUGMSG(("pre-map0 %d, %d, %d, %d, %d, %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3], s_pMapOfRuns[4], s_pMapOfRuns[5]));
+
+        	UT_uint32 j;
+        	for (UT_uint32 i=0; i < count; i++)
+        	{
+            	if(s_pMapOfRuns[i] == -1) //directionally neutral, i.e., whitespace
+				{
+            		//if we follow a run that is consistent with the direciton of the para, then so will be this
+            		//(dont have to worry about the i-1 since this will never happen on position 0
+            		//because we have already set the value for any neutral run at pos 0 to that of the
+            		//dominant direction
+                	if(s_pMapOfRuns[i-1] == 0)
+					{
+                    	s_pMapOfRuns[i] = 0;
+					}
+                	//if the preceeding run is foreign, we will have the direction of the following run
+                	//but we have to skip any following whitespace runs
+                	else
+                	{
+                    	j = i + 1;
+                    	while ((s_pMapOfRuns[j] == -1) && (j < count))
+                        	j++;
+                    	if(j == count)
+							s_pMapOfRuns[i] = s_pMapOfRuns[i-1]; //last run on the line, will have the direction of the preceding run
+                    	else
+							s_pMapOfRuns[i] = s_pMapOfRuns[j]; //otherwise the direction of the first non-white run we found
+                	}
+            	}
+        	}
+
+        	//UT_DEBUGMSG(("pre-map1 %d, %d, %d, %d, %d, %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3], s_pMapOfRuns[4], s_pMapOfRuns[5]));
+        	//now we can do the reorganisation
+        	for (UT_uint32 i=0; i < count; i++)
+        	{
+				if(s_pMapOfRuns[i] != 0) //foreign direction of text
+				{
+					j = i;
+					while(s_pMapOfRuns[i] && (i < count))
+						++i;
+					--i;
+					for (UT_uint32 n = 0; n <= i - j; n++)
+					{
+						UT_ASSERT( ((i-n) < count) && ((n+j) < count));
+						s_pMapOfRuns[i - n] = n + j;
+					}
+				}
+				else //direction consistent with dominant direction
+				{
+					s_pMapOfRuns[i] = i;
+				}
+			}
+
+		
+        // if the dominant direction is rtl, the final order of the runs
+        // has to be a mirror of the present order
+
+        UT_uint32 temp;
+
+        if(RTLdominant) //we have to switch all the runs around the centre.
+		{
+            for (UT_uint32 i = 0; i < count/2; i++)
+			{
+                UT_ASSERT((count - i - 1) < count);
+                temp = s_pMapOfRuns[i];
+                s_pMapOfRuns[i] = s_pMapOfRuns[count - i - 1];
+                s_pMapOfRuns[count - i - 1] = temp;
+			}
+		}
+		
+	}//if/else only rtl
+		
+    //UT_DEBUGMSG(("fp_Line::_createMapOfRuns(), s_pMapOfRuns{post} %d %d %d %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3]));
+    //UT_DEBUGMSG(("count=%d: %d, %d, %d, %d, %d, %d, %d\n", count, s_pMapOfRuns[0], s_pMapOfRuns[1],s_pMapOfRuns[2],s_pMapOfRuns[3],s_pMapOfRuns[4],s_pMapOfRuns[5],s_pMapOfRuns[6]));
+
+    }
+
+    return(UT_OK);
+}
+
+/* the following two functions convert the position of a run from logical to visual
+   and vice versa */
+
+UT_uint32 fp_Line::_getRunLogIndx(UT_uint32 indx)
+{
+    //UT_DEBUGMSG(("indx=%d, ItemCount=%d, s_pMapOfRuns[indx]=%d\n", indx, m_vecRuns.getItemCount(),s_pMapOfRuns[indx]));
+    UT_ASSERT((m_vecRuns.getItemCount() > indx));
+
+    if(!m_iRunsRTLcount)
+    	return(indx);
+
+    _createMapOfRuns();
+    return(s_pMapOfRuns[indx]);
 }
 
 
+UT_uint32 fp_Line::_getRunVisIndx(UT_uint32 indx)
+{
+    UT_ASSERT(m_vecRuns.getItemCount() > indx);
+
+    if(!m_iRunsRTLcount)
+    	return(indx);
+
+    UT_uint32 i = 0;
+    _createMapOfRuns();
+    //UT_DEBUGMSG(("getRunLogIndex: indx=%d, map=%d, %d, %d, %d, %d, %d\n", indx, s_pMapOfRuns[0], s_pMapOfRuns[1],s_pMapOfRuns[2],s_pMapOfRuns[3],s_pMapOfRuns[4],s_pMapOfRuns[5]));
+    for(;;)
+    {
+        UT_ASSERT(m_vecRuns.getItemCount() > i);
+        if(s_pMapOfRuns[i] == indx)
+			return(i);
+        ++i;
+    }
+}
+
+fp_Run * fp_Line::getLastVisRun()
+{
+    if(!m_iRunsRTLcount)
+    	return(getLastRun());
+
+    _createMapOfRuns();
+    UT_uint32 count = m_vecRuns.getItemCount();
+    UT_ASSERT(count > 0);
+    return((fp_Run *) m_vecRuns.getNthItem(s_pMapOfRuns[count - 1]));
+}
+
+fp_Run * fp_Line::getFirstVisRun()
+{
+    if(!m_iRunsRTLcount)
+    	return(0);
+
+    _createMapOfRuns();
+    return((fp_Run *) m_vecRuns.getNthItem(s_pMapOfRuns[0]));
+}
+
+void fp_Line::addDirectionUsed(UT_uint32 dir)
+{
+	switch(dir)
+	{
+		case 0:
+			m_iRunsLTRcount++;
+			break;
+			
+		case 1:
+			m_iRunsRTLcount++;
+			break;
+		default:;
+	}
+}
+#endif //BIDI_ENABLED

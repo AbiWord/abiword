@@ -44,6 +44,11 @@ public:
 };
 
 const PP_Property * PP_lookupProperty(const XML_Char * pszName);
+
+#ifdef BIDI_ENABLED
+void PP_resetInitialBiDiValues(const XML_Char * pszValue);
+#endif
+
 const XML_Char * PP_evalProperty(const XML_Char * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,

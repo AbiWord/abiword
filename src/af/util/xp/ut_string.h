@@ -72,9 +72,9 @@ bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource);
 XML_Char *UT_XML_transNoAmpersands(const XML_Char * szSource);
 
 UT_uint32 UT_pointerArrayLength(void ** array);
-   
+
 // the naming convention has deviated from the above.  it's kind
-// of a mutant libc/C++ naming convention.  
+// of a mutant libc/C++ naming convention.
 UT_sint32 		UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right);
 UT_UCSChar * 	UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
 UT_UCSChar * 	UT_UCS_stristr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
@@ -84,6 +84,11 @@ UT_UCSChar * 	UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src);
 char *			UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src);
 bool			UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src);
 bool			UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src);
+
+#ifdef BIDI_ENABLED
+UT_UCSChar *    UT_UCS_strncpy(UT_UCSChar * dest, const UT_UCSChar * src, UT_uint32 n);
+UT_UCSChar *    UT_UCS_strnrev(UT_UCSChar * dest, UT_uint32 n);
+#endif
 
 UT_UCSChar		UT_UCS_tolower(UT_UCSChar c);
 

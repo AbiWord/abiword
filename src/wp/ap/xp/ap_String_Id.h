@@ -149,6 +149,10 @@ dcl(DLG_Para_PushKeepWithNext,			"Keep with ne&xt")
 
 dcl(DLG_Para_ButtonTabs,		"&Tabs...")
 
+#ifdef BIDI_ENABLED
+dcl(DLG_Para_DomDirection,              "Right-to-left &dominant")
+#endif
+
 /* Columns dialog */
 dcl(DLG_Column_ColumnTitle,		"Columns")
 dcl(DLG_Column_Number,			"Number of columns")
@@ -197,6 +201,11 @@ dcl(DLG_Options_Btn_IgnoreEdit,			"&Edit")
 
 dcl(DLG_Options_Label_SmartQuotesEnable,"&Enable smart quotes")
 dcl(DLG_Options_Label_DefaultPageSize, "Default page size")
+
+#ifdef BIDI_ENABLED
+dcl(DLG_Options_Label_UseUnicodeDirection,"Use Unicode direction of text")
+dcl(DLG_Options_Label_DirectionRtl, "Default to right-to-left direction of text")
+#endif
 
 dcl(DLG_Options_Label_PrefsAutoSave,	"&Automatically save this Scheme")
 dcl(DLG_Options_Label_PrefsCurrentScheme,	"&Current Preferences Scheme")
@@ -368,3 +377,10 @@ dcl(DLG_PageSetup_Bottom, "&Bottom:")
 dcl(DLG_PageSetup_Left, "&Left:")
 dcl(DLG_PageSetup_Right, "&Right:")
 dcl(DLG_PageSetup_Margin, "&Margin")
+
+#ifdef BIDI_ENABLED
+dcl(MSG_DirectionModeChg,	"You have changed the direction mode.")
+dcl(MSG_DefaultDirectionChg,"You have changed the default direction.")
+dcl(MSG_AfterRestartNew, "This change will only take effect when you restart \
+AbiWord or create a new document.")
+#endif

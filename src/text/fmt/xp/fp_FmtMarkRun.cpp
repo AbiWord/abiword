@@ -39,6 +39,8 @@
 #include "ut_string.h"
 #include "ut_growbuf.h"
 
+#include "ap_Prefs.h"
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -74,9 +76,34 @@ void fp_FmtMarkRun::lookupProperties(void)
 	m_iDescentLayoutUnits = m_pG->getFontDescent();
 	m_iHeightLayoutUnits = m_pG->getFontHeight();
 
+#ifdef BIDI_ENABLED
+	bool bAppDirection;
+	XAP_App * pApp = XAP_App::getApp();
+	UT_ASSERT(pApp);
+	//check the preferences to see whether to use Unicode direction of text
+	pApp->getPrefsValueBool((XML_Char *) AP_PREF_KEY_UseUnicodeDirection, &bAppDirection);
+#endif
+
 	PD_Document * pDoc = m_pBL->getDocument();
 
+#ifdef BIDI_ENABLED
+	if(!bAppDirection)
+	{
+	    const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	    //UT_DEBUGMSG(( "pszDirection = %s\n", pszDirection ));
+	    if(!UT_stricmp(pszDirection, "rtl"))
+		{
+			m_iDirection = 1;
+		}
+	    else
+	    {
+	    	m_iDirection = 0;
+	    }
+	}	
+	else m_iDirection = -1;
+#endif
 	const XML_Char * pszPosition = PP_evalProperty("text-position",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+
 
 	if (0 == UT_strcmp(pszPosition, "superscript"))
 	{
@@ -85,7 +112,7 @@ void fp_FmtMarkRun::lookupProperties(void)
 	else if (0 == UT_strcmp(pszPosition, "subscript"))
 	{
 		m_fPosition = TEXT_POSITION_SUBSCRIPT;
-	} 
+	}
 	else m_fPosition = TEXT_POSITION_NORMAL;
 
 }
@@ -117,7 +144,7 @@ void fp_FmtMarkRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPo
 	bEOL = false;
 }
 
-void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint32& y, UT_sint32& height)
+void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint32& y,  UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
 	UT_sint32 xoff;
 	UT_sint32 yoff;
@@ -136,7 +163,11 @@ void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint
 	x = xoff;
 	y = yoff;
 	height = m_iHeight;
-
+#ifdef BIDI_ENABLED
+	x2 = x;
+	y2 = y;
+	bDirection = getVisDirection();
+#endif
 }
 
 void fp_FmtMarkRun::_clearScreen(bool /* bFullLineHeightRect */)

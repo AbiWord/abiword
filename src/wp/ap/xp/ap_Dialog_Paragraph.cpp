@@ -93,7 +93,10 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 		id_CHECK_PAGE_BREAK,			(void*)check_INDETERMINATE,
 		id_CHECK_SUPPRESS,			(void*)check_INDETERMINATE,
 		id_CHECK_NO_HYPHENATE,			(void*)check_INDETERMINATE,
-		id_CHECK_KEEP_NEXT,			(void*)check_INDETERMINATE
+		id_CHECK_KEEP_NEXT,			(void*)check_INDETERMINATE,
+#ifdef BIDI_ENABLED		
+		id_CHECK_DOMDIRECTION,		(void*)check_TRUE
+#endif		
 	};
 
 	for (unsigned int i = 0; i < NrElements(rgPairs); ++i)
@@ -147,7 +150,22 @@ bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 
 			_setMenuItemValue(id_MENU_ALIGNMENT, t, op_INIT);			
 		}
-								 
+#ifdef BIDI_ENABLED		
+		sz = UT_getAttribute("dom-dir", pProps);						
+		if (sz)
+		{
+			tCheckState t = check_FALSE;
+
+			if (UT_XML_strcmp(sz, "ltr") == 0)
+				t = check_FALSE;
+			else if (UT_XML_strcmp(sz, "rtl") == 0)
+				t = check_TRUE;
+			else
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+			_setCheckItemValue(id_CHECK_DOMDIRECTION, t, op_INIT);			
+		}
+#endif		
 		sz = UT_getAttribute("margin-left", pProps);
 		if (sz)
 			_setSpinItemValue(id_SPIN_LEFT_INDENT, sz, op_INIT);
@@ -369,6 +387,22 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		}
 		v.addItem(p);
 	}
+
+#ifdef BIDI_ENABLED
+	if (_wasChanged(id_CHECK_DOMDIRECTION))
+	{
+		ALLOC_PROP_PAIR(p);
+		UT_XML_cloneString(p->prop, "dom-dir");
+
+		if (_getCheckItemValue(id_CHECK_DOMDIRECTION) == check_TRUE)
+			UT_XML_cloneString(p->val, "rtl");
+		else
+			UT_XML_cloneString(p->val, "ltr");
+
+		v.addItem(p);
+
+	}
+#endif
 	
 	if (_wasChanged(id_SPIN_LEFT_INDENT))
 	{
@@ -516,7 +550,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		
 			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE)
 				UT_XML_cloneString(p->val, "2");
-			else 
+			else
 				UT_XML_cloneString(p->val, "0");
 
 			v.addItem(p);
@@ -528,7 +562,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		
 			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE)
 				UT_XML_cloneString(p->val, "2");
-			else 
+			else
 				UT_XML_cloneString(p->val, "0");
 
 			v.addItem(p);
@@ -589,7 +623,7 @@ bool AP_Dialog_Paragraph::getDialogData(const XML_Char **& pProps)
 		newitem += 2;
 	}
 
-	// DO purge the vector's CONTENTS, which are just propPair structs 
+	// DO purge the vector's CONTENTS, which are just propPair structs
 	UT_VECTOR_FREEALL(propPair *, v);
 
 	// DO NOT purge the propPair's CONTENTS, because they will be pointed to
@@ -808,11 +842,11 @@ const XML_Char * AP_Dialog_Paragraph::_getSpinItemValue(tControl item)
 }
 
 
-// _doSpin() spins the current value of the edit control (already stored 
-// in member variables) by amt units.  this method handles all of the 
+// _doSpin() spins the current value of the edit control (already stored
+// in member variables) by amt units.  this method handles all of the
 // unit conversions required, updating the member variables as needed.
-// the results get copied back to the dialog controls in the platform 
-// implementation of _syncControls().  
+// the results get copied back to the dialog controls in the platform
+// implementation of _syncControls().
 
 #define SPIN_INCR_IN	0.1
 #define SPIN_INCR_CM	0.5
@@ -900,7 +934,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 
 	// figure out spin precision, too
 	const char * szPrecision = ".1";
-	if ((dimSpin == DIM_PT) || 
+	if ((dimSpin == DIM_PT) ||
 		(dimSpin == DIM_PI))
 		szPrecision = ".0";
 
@@ -912,7 +946,7 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 	if (dimOld != dimSpin)
 	{
 		double dInches = UT_convertToInches(szOld);
-		d = UT_convertInchesToDimension(dInches, dimSpin); 
+		d = UT_convertInchesToDimension(dInches, dimSpin);
 	}
 
 	// value is now in desired units, so change it
@@ -923,22 +957,22 @@ void AP_Dialog_Paragraph::_doSpin(tControl edit, UT_sint32 amt)
 		if (d < dMin)
 			d = dMin;
 	}
-	const XML_Char* szNew = UT_formatDimensionString(dimSpin, d, szPrecision); 
+	const XML_Char* szNew = UT_formatDimensionString(dimSpin, d, szPrecision);
 
 	_setSpinItemValue(edit, szNew);
 }
 
-// after the member variable for a control has been changed by the 
-// user, we may need to synchronize the values of other controls. 
+// after the member variable for a control has been changed by the
+// user, we may need to synchronize the values of other controls.
 // this happens in two steps via this virtual function.
 //
 // step 1 -- the XP code fixes the necessary member variables
 // step 2 -- the platform code copies them into dialog controls
 //
-// to make this work, the *first* step of a platform implementation 
+// to make this work, the *first* step of a platform implementation
 // must be to call the XP (parent) implementation
 //
-// also, the platform code has to call _syncControls() once with 
+// also, the platform code has to call _syncControls() once with
 // bAll set to true.  this should happen *after* all of the 
 // member variables have been copied to the screen for the first 
 // time, but before the dialog is displayed.
@@ -952,11 +986,11 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 
 		double leftPageMargin = UT_convertToDimension(m_pageLeftMargin, m_dim);
 
-		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_LEFT_INDENT), m_dim) > 
+		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_LEFT_INDENT), m_dim) >
 					leftPageMargin)
 		{
-			_setSpinItemValue(id_SPIN_LEFT_INDENT, 
-									(const XML_Char *)UT_formatDimensionString(m_dim, -leftPageMargin), 
+			_setSpinItemValue(id_SPIN_LEFT_INDENT,
+									(const XML_Char *)UT_formatDimensionString(m_dim, -leftPageMargin),
 									op_SYNC);
 		}
 	}
@@ -968,11 +1002,11 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 
 		double rightPageMargin = UT_convertToDimension(m_pageRightMargin, m_dim);
 
-		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim) > 
+		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim) >
 					rightPageMargin)
 		{
-			_setSpinItemValue(id_SPIN_RIGHT_INDENT, 
-									(const XML_Char *)UT_formatDimensionString(m_dim, -rightPageMargin), 
+			_setSpinItemValue(id_SPIN_RIGHT_INDENT,
+									(const XML_Char *)UT_formatDimensionString(m_dim, -rightPageMargin),
 									op_SYNC);
 		}
 	}
@@ -1023,9 +1057,9 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool bAll /* = false *
 		if (bDefault)
 		{
 			if (m_dim != DIM_IN)
-				dDefault = UT_convertInchesToDimension(dDefault, m_dim); 
+				dDefault = UT_convertInchesToDimension(dDefault, m_dim);
 
-			const XML_Char* szNew = UT_convertInchesToDimensionString(m_dim, dDefault, ".1"); 
+			const XML_Char* szNew = UT_convertInchesToDimensionString(m_dim, dDefault, ".1");
 
 			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, szNew, op_SYNC);
 		}

@@ -23,6 +23,10 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "xap_Dlg_FontChooser.h"
+#ifdef BIDI_ENABLED
+#include "xap_App.h"
+#include "xap_Prefs_SchemeIds.h"
+#endif
 
 /*****************************************************************/
 
@@ -37,8 +41,11 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_pFontStyle			= NULL;
 	m_pColor				= NULL;
 	m_bUnderline			= false;
-	m_bOverline			= false;
+	m_bOverline				= false;
 	m_bStrikeOut			= false;
+#ifdef BIDI_ENABLED
+	m_bDirection            = false;
+#endif
 
 	m_bChangedFontFamily	= false;
 	m_bChangedFontSize		= false;
@@ -48,6 +55,9 @@ XAP_Dialog_FontChooser::XAP_Dialog_FontChooser(XAP_DialogFactory * pDlgFactory, 
 	m_bChangedUnderline		= false;
 	m_bChangedOverline		= false;
 	m_bChangedStrikeOut		= false;
+#ifdef BIDI_ENABLED
+	m_bChangedDirection     = false;
+#endif
 }
 
 XAP_Dialog_FontChooser::~XAP_Dialog_FontChooser(void)
@@ -58,6 +68,16 @@ XAP_Dialog_FontChooser::~XAP_Dialog_FontChooser(void)
 	FREEP(m_pFontStyle);
 	FREEP(m_pColor);
 }
+
+#ifdef BIDI_ENABLED
+void XAP_Dialog_FontChooser::_initEnableControls()
+{
+	XAP_App * pApp = XAP_App::getApp();
+	bool bUseUnicode;
+	pApp->getPrefsValueBool((XML_Char *) XAP_PREF_KEY_UseUnicodeDirection, &bUseUnicode);
+	_enableDirectionCheck(!bUseUnicode);
+}
+#endif
 
 void XAP_Dialog_FontChooser::setGraphicsContext(GR_Graphics * pGraphics)
 {
@@ -96,6 +116,12 @@ void XAP_Dialog_FontChooser::setFontDecoration(bool bUnderline, bool bOverline, 
 	m_bStrikeOut = bStrikeOut;
 }
 
+#ifdef BIDI_ENABLED
+void XAP_Dialog_FontChooser::setDirection(bool bDirection)
+{
+    m_bDirection = bDirection;
+}
+#endif
 
 XAP_Dialog_FontChooser::tAnswer XAP_Dialog_FontChooser::getAnswer(void) const
 {
@@ -157,3 +183,11 @@ bool XAP_Dialog_FontChooser::getChangedStrikeOut(bool * pbStrikeOut) const
 		*pbStrikeOut = m_bStrikeOut;
 	return m_bChangedStrikeOut;
 }
+#ifdef BIDI_ENABLED
+bool XAP_Dialog_FontChooser::getChangedDirection(bool * pbDirection) const
+{
+    if (pbDirection)
+        *pbDirection = m_bDirection;
+    return m_bChangedDirection;
+}
+#endif

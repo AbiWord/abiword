@@ -43,7 +43,15 @@
 
 bool pt_PieceTable::_loadBuiltinStyles(void)
 {
-	_s("Normal",	"P", "",       "normal", "font-family:Times New Roman; font-size:12pt; text-align:left; line-height:1.0; field-font:NULL");
+#ifdef BIDI_ENABLED
+#ifdef BIDI_RTL_DOMINANT	
+	_s("normal",	"P", "",       "normal", "font-family:Tahoma; font-size:12pt; dir:rtl; dom-dir:rtl; text-align:right; line-height:1.0; field-font:NULL");
+#else
+	_s("normal",	"P", "",       "normal", "font-family:Tahoma; font-size:12pt; dir:ltr; dom-dir:ltr; text-align:left; line-height:1.0; field-font:NULL");
+#endif	
+#else
+	_s("normal",	"P", "",       "normal", "font-family:Times New Roman; font-size:12pt; text-align:left; line-height:1.0; field-font:NULL");
+#endif
 	_s("Heading 1",	"P", "normal", "normal", "font-family:Arial; font-size:16pt; font-weight:bold; margin-top:12pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");
 	_s("Heading 2",	"P", "normal", "normal", "font-family:Arial; font-size:14pt; font-weight:bold; font-style:italic; margin-top:12pt; margin-bottom:3pt; keep-with-next:1; field-font:NULL");
 	_s("Heading 3",	"P", "normal", "normal", "font-family:Arial; font-size:14pt; margin-top:14pt; margin-bottom:3pt; keep-with-next:1;  field-font:NULL");

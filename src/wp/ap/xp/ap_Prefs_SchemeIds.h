@@ -114,6 +114,18 @@
 #define AP_PREF_KEY_StringSetDirectory				"StringSetDirectory"		/* where we find StringSets */
 #define AP_PREF_DEFAULT_StringSetDirectory			"strings"					/* if relative, use prefix "getAbiSuiteAppDir()" */
 
+#ifdef BIDI_ENABLED
+#define AP_PREF_KEY_DefaultDirectionRtl             "DefaultDirectionRtl"       /* the deafault direction of text is rtl */
+#ifndef BIDI_RTL_DOMINANT
+#define AP_PREF_DEFAULT_DefaultDirectionRtl         "0"
+#else
+#define AP_PREF_DEFAULT_DefaultDirectionRtl         "1"
+#endif
+
+#define AP_PREF_KEY_UseUnicodeDirection             "UseUnicodeDirection"  /* should the direction of text be derived from */
+#define AP_PREF_DEFAULT_UseUnicodeDirection         "1"                            /* the unicode values ? */
+#endif /*BIDI_ENABLED*/
+
 #else /* AP_PREFS_SCHEMEIDS_H */
 #ifdef dcl
 
@@ -143,6 +155,11 @@ dcl(ToolbarLayouts)
 
 dcl(SpellDirectory)
 dcl(StringSetDirectory)
+
+#ifdef BIDI_ENABLED
+dcl(DefaultDirectionRtl)
+dcl(UseUnicodeDirection)
+#endif
 
 #endif /* dcl */
 #endif /* AP_PREFS_SCHEMEIDS_H */

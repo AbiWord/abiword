@@ -118,6 +118,48 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	// initialize prefs listener
 	pApp->getPrefs()->addListener( _prefsListener, this );
 
+#ifdef BIDI_ENABLED
+	pApp->getPrefsValueBool(AP_PREF_KEY_UseUnicodeDirection, &m_bUseUnicodeDirection);
+	pApp->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl, &m_bDefaultDirectionRtl);
+		
+	/*
+		If the default direction indicated by the preferences is different
+		than the direction with which we were compiled, we need to modify
+		the default values stored in _props[] and also the direction
+		related properties of the Normal style (dir, dom-dir,
+		and text-align)
+	*/
+
+#ifndef BIDI_RTL_DOMINANT
+	if(m_bDefaultDirectionRtl)
+	{
+		const XML_Char bidi_dir_name[] = "dir";
+		const XML_Char bidi_dir_value[] = "rtl";
+		const XML_Char bidi_domdir_name[] = "dom-dir";
+		const XML_Char bidi_align_name[] = "text-align";
+		const XML_Char bidi_align_value[] = "right";
+
+		const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
+
+		m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
+		PP_resetInitialBiDiValues((XML_Char *) "rtl");
+	}
+#else
+	if(!m_bDefaultDirectionRtl)
+	{
+		const XML_Char bidi_dir_name[] = "dir";
+		const XML_Char bidi_dir_value[] = "ltr";
+		const XML_Char bidi_domdir_name[] = "dom-dir";
+		const XML_Char bidi_align_name[] = "text-align";
+		const XML_Char bidi_align_value[] = "left";
+
+		const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
+		
+		m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
+		PP_resetInitialBiDiValues((XML_Char *) "ltr");
+	}
+#endif
+#endif
 	// initialize change cache
 	m_chg.bUndo = false;
 	m_chg.bRedo = false;
@@ -198,8 +240,8 @@ FL_DocLayout* FV_View::getLayout() const
 bool FV_View::notifyListeners(const AV_ChangeMask hint)
 {
 	/*
-		IDEA: The view caches its change state as of the last notification, 
-		to minimize noise from duplicate notifications.  
+		IDEA: The view caches its change state as of the last notification,
+		to minimize noise from duplicate notifications.
 	*/
 	UT_ASSERT(hint != AV_CHG_NONE);
 	AV_ChangeMask mask = hint;
@@ -254,7 +296,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	if (mask & AV_CHG_FMTBLOCK)
 	{
 		/*
-			The following brute-force solution works, but is atrociously 
+			The following brute-force solution works, but is atrociously
 			expensive, so we should avoid using it whenever feasible.
 		*/
 		const XML_Char ** propsBlock = NULL;
@@ -301,8 +343,8 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	if (mask & AV_CHG_FMTCHAR)
 	{
 		/*
-			The following brute-force solution works, but is atrociously 
-			expensive, so we should avoid using it whenever feasible.  
+			The following brute-force solution works, but is atrociously
+			expensive, so we should avoid using it whenever feasible.
 
 			TODO: devise special case logic for (at minimum) char motion
 		*/
@@ -350,7 +392,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 	if (mask & AV_CHG_FMTSECTION)
 	{
 		/*
-			The following brute-force solution works, but is atrociously 
+			The following brute-force solution works, but is atrociously
 			expensive, so we should avoid using it whenever feasible.
 		*/
 		const XML_Char ** propsSection = NULL;
@@ -413,8 +455,10 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		fp_Run * pRun = NULL;
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
-
-		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, NULL, &pRun);
+		UT_sint32 xCaret2, yCaret2;
+		bool bDirection;
+		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, NULL, &pRun);
+		
 		//
 		// Handle Headers/Footers This is a kludge for now
 		//
@@ -630,6 +674,9 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
     UT_sint32 xPoint;
     UT_sint32 yPoint;
     UT_sint32 iPointHeight;
+	UT_sint32 xPoint2;
+	UT_sint32 yPoint2;
+	bool bDirection;
 
     PT_DocPosition iPos;
 
@@ -644,8 +691,10 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 
     // TODO: could cache these to save a lookup if point doesn't change
     fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-    fp_Run* pRun = pBlock->findPointCoords(iPoint, m_bPointEOL,
-                                           xPoint, yPoint, iPointHeight);
+	fp_Run* pRun = pBlock->findPointCoords(iPoint, m_bPointEOL, xPoint,
+											yPoint, xPoint2, yPoint2,
+											iPointHeight, bDirection);
+
     fp_Line* pLine = pRun->getLine();
 
     // be pessimistic
@@ -1015,7 +1064,7 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 
 	_setPoint(dp, /* (dp == FV_DOCPOS_EOL) */ false);	// is this bool correct?
 	/*TF CHANGE: Why do we automatically scroll?  We should only scroll the window
-                 if the point to be displayed is not already on the screen.  If it 
+                 if the point to be displayed is not already on the screen.  If it
 				 is already on the screen then we should just leave it in place and
                  not do any scrolling.  Instead of the code below, we use the code which
   				 is already in the _ensureThatInsertionPointIsOnScreen() function.
@@ -1075,14 +1124,17 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos) const
 }
 
 UT_uint32 FV_View::getCurrentPageNumber(void)
-{ 
+{
 	UT_sint32 iPageNum = 0;
 	PT_DocPosition pos = getPoint();
 	fl_BlockLayout * pBlock = _findBlockAtPosition(pos);
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
-	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, iPointHeight);
+	UT_sint32 xPoint2;
+	UT_sint32 yPoint2;
+	bool bDirection;
+	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 	fp_Line * pLine = pRun->getLine();
 	if (pLine && pLine->getContainer() && pLine->getContainer()->getPage())
 	{
@@ -1112,7 +1164,7 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 {
 	bool bResult = true;
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	// Turn off list updates
@@ -1125,8 +1177,8 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		_deleteSelection(&AttrProp_Before);
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
-	} 
-	else 
+	}
+	else
 	{
 		_eraseInsertionPoint();
 
@@ -1207,7 +1259,7 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 	// if Type = 2 "even page" section break
 	// if Type = 3 "odd page" section break
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	UT_UCSChar c = UCS_FF;
@@ -1301,10 +1353,10 @@ void FV_View::_insertSectionBreak(void)
 
 bool FV_View::isCurrentListBlockEmpty(void)
 {
-	// 
+	//
 	// If the current block is a list and is otherwise empty return true
 	//
-	fl_BlockLayout * pBlock = getCurrentBlock(); 
+	fl_BlockLayout * pBlock = getCurrentBlock();
 	fl_BlockLayout * nBlock = pBlock->getNext();
 	bool bEmpty = true;
 	if(pBlock->isListItem() == false || (nBlock!= NULL && nBlock->isListItem()==true))
@@ -1320,14 +1372,14 @@ bool FV_View::isCurrentListBlockEmpty(void)
 	while((bEmpty == true) && (pRun != NULL))
 	{
 		FP_RUN_TYPE runtype = (FP_RUN_TYPE) pRun->getType();	
-		if((runtype == FPRUN_TAB) || 
+		if((runtype == FPRUN_TAB) ||
 			( runtype == FPRUN_FIELD)  ||
 			(runtype == FPRUN_FMTMARK))
 		{
 			if(runtype == FPRUN_FIELD)
 			{
 				ifield++;
-				if(ifield > 1) 
+				if(ifield > 1)
 				{
 					bEmpty = false;
 					break;
@@ -1349,7 +1401,7 @@ bool FV_View::isPointBeforeListLabel(void)
 	// If the current point is in a list block and the point is before the list label
 	// return true
 	//
-	fl_BlockLayout * pBlock = getCurrentBlock(); 
+	fl_BlockLayout * pBlock = getCurrentBlock();
 	bool bBefore = true;
 	if(pBlock->isListItem() == false)
 	{
@@ -1363,7 +1415,11 @@ bool FV_View::isPointBeforeListLabel(void)
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
-	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, iPointHeight);
+	UT_sint32 xPoint2;
+	UT_sint32 yPoint2;
+	bool   bDirection;
+	
+	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 	pRun = pRun->getPrev();
 	while(pRun != NULL && bBefore == true)
 	{
@@ -1386,7 +1442,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 	// Update Lists in the selected region
 	//
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	UT_Vector vBlock;
@@ -1415,7 +1471,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 			{
 				XML_Char* cType = pBlock->getListStyleString(listType);
 				pBlock->StartList(cType);
-			} 
+			}
 		}
 	}
 	m_pDoc->endUserAtomicGlob();
@@ -1580,7 +1636,7 @@ bool FV_View::setStyle(const XML_Char * style)
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	// Turn off list updates
@@ -1646,7 +1702,6 @@ bool FV_View::setStyle(const XML_Char * style)
 	// Signal piceTable is stable again
 	m_pDoc->notifyPieceTableChangeEnd();
 
-
 	if (isSelectionEmpty())
 	{
 		_fixInsertionPointCoords();
@@ -1663,7 +1718,7 @@ static const XML_Char * x_getStyle(const PP_AttrProp * pAP, bool bBlock)
 
 	pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME, sz);
 
-	// TODO: should we have an explicit default for char styles? 
+	// TODO: should we have an explicit default for char styles?
 	if (!sz && bBlock)
 		sz = "normal";
 
@@ -1679,10 +1734,11 @@ bool FV_View::getStyle(const XML_Char ** style)
 	const PP_AttrProp * pBlockAP = NULL;
 
 	/*
-		IDEA: We want to know the style, if it's constant across the 
-		entire selection.  Usually, this will be a block-level style. 
-		However, if the entire span has the same char-level style, 
+		IDEA: We want to know the style, if it's constant across the
+		entire selection.  Usually, this will be a block-level style.
+		However, if the entire span has the same char-level style,
 		we'll report that instead.  */
+	
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 	bool bSelEmpty = isSelectionEmpty();
@@ -1752,11 +1808,13 @@ bool FV_View::getStyle(const XML_Char ** style)
 		UT_sint32 xPoint;
 		UT_sint32 yPoint;
 		UT_sint32 iPointHeight;
-
+		UT_sint32 xPoint2;
+		UT_sint32 yPoint2;
+		bool bDirection;
+		
 		fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 		UT_uint32 blockPosition = pBlock->getPosition();
-		fp_Run* pRun = pBlock->findPointCoords(posStart, false,
-											   xPoint, yPoint, iPointHeight);
+		fp_Run* pRun = pBlock->findPointCoords(posStart, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 		bool bLeftSide = true;
 
 		// TODO consider adding indexAP from change record to the
@@ -1769,9 +1827,9 @@ bool FV_View::getStyle(const XML_Char ** style)
 			bLeftSide = false;
 			
 			/*
-			  Likewise, findPointCoords will return the run to the right 
-			  of the specified position, so we need to stop looking one 
-			  position to the left. 
+			  Likewise, findPointCoords will return the run to the right
+			  of the specified position, so we need to stop looking one
+			  position to the left.
 			*/
 			posEnd--;
 		}
@@ -1788,8 +1846,8 @@ bool FV_View::getStyle(const XML_Char ** style)
 		if (!bSelEmpty)
 		{
 			fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
-			fp_Run* pRunEnd = pBlockEnd->findPointCoords(posEnd, false,
-														 xPoint, yPoint, iPointHeight);
+			fp_Run* pRunEnd = pBlockEnd->findPointCoords(posEnd, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
+			
 			while (pRun && (pRun != pRunEnd))
 			{
 				const PP_AttrProp * pAP;
@@ -1842,7 +1900,7 @@ bool FV_View::setCharFormat(const XML_Char * properties[])
 {
 	bool bRet;
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	if (isSelectionEmpty())
@@ -1894,8 +1952,8 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 
 	/*
 		IDEA: We want to know character-level formatting properties, if
-		they're constant across the entire selection.  To do so, we start 
-		at the beginning of the selection, load 'em all into a vector, and 
+		they're constant across the entire selection.  To do so, we start
+		at the beginning of the selection, load 'em all into a vector, and
 		then prune any property that collides.
 	*/
 	PT_DocPosition posStart = getPoint();
@@ -1914,11 +1972,13 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
-
+	UT_sint32 xPoint2;
+	UT_sint32 yPoint2;
+	bool bDirection;
+	
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	UT_uint32 blockPosition = pBlock->getPosition();
-	fp_Run* pRun = pBlock->findPointCoords(posStart, false,
-										   xPoint, yPoint, iPointHeight);
+	fp_Run* pRun = pBlock->findPointCoords(posStart, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 	bool bLeftSide = true;
 
 	// TODO consider adding indexAP from change record to the
@@ -1931,9 +1991,9 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 		bLeftSide = false;
 
 		/*
-		  Likewise, findPointCoords will return the run to the right 
-		  of the specified position, so we need to stop looking one 
-		  position to the left. 
+		  Likewise, findPointCoords will return the run to the right
+		  of the specified position, so we need to stop looking one
+		  position to the left.
 		*/
 		posEnd--;
 	}
@@ -1950,13 +2010,16 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	v.addItem(new _fmtPair((XML_Char*)"text-position",	pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair((XML_Char*)"color",			pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair((XML_Char*)"bgcolor",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+#ifdef BIDI_ENABLED
+	v.addItem(new _fmtPair((XML_Char*)"dir",		pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+#endif
 
 	// 2. prune 'em as they vary across selection
 	if (!bSelEmpty)
 	{
 		fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
-		fp_Run* pRunEnd = pBlockEnd->findPointCoords(posEnd, false,
-													 xPoint, yPoint, iPointHeight);
+		fp_Run* pRunEnd = pBlockEnd->findPointCoords(posEnd, false, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
+		
 		while (pRun && (pRun != pRunEnd))
 		{
 			const PP_AttrProp * pAP;
@@ -2073,7 +2136,7 @@ bool FV_View::setListIndents(double indentChange, double page_size)
 	bool foundLast = false;
 	bool foundFirst = false;
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 	m_pDoc->beginUserAtomicGlob();
 
@@ -2119,7 +2182,7 @@ bool FV_View::setListIndents(double indentChange, double page_size)
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();		
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
 		props[1] = (XML_Char *) pszNewAlign;
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block); 
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
 		FREEP(pszNewAlign);	
 		//
 		// Might be able to move thisoutside the loop
@@ -2138,7 +2201,7 @@ bool FV_View::setBlockFormat(const XML_Char * properties[])
 	bool bRet;
 
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 
@@ -2202,7 +2265,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	UT_Vector va,vp,vb;
 	PL_StruxDocHandle sdh = pAuto->getNthBlock(i);
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	m_pDoc->disableListUpdates();
@@ -2317,7 +2380,7 @@ bool FV_View::cmdStopList(void)
 {
 
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	m_pDoc->beginUserAtomicGlob();
@@ -2341,8 +2404,8 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 
 	/*
 		IDEA: We want to know block-level formatting properties, if
-		they're constant across the entire selection.  To do so, we start 
-		at the beginning of the selection, load 'em all into a vector, and 
+		they're constant across the entire selection.  To do so, we start
+		at the beginning of the selection, load 'em all into a vector, and
 		then prune any property that collides.
 	*/
 	PT_DocPosition posStart = getPoint();
@@ -2464,8 +2527,8 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 
 	/*
 		IDEA: We want to know block-level formatting properties, if
-		they're constant across the entire selection.  To do so, we start 
-		at the beginning of the selection, load 'em all into a vector, and 
+		they're constant across the entire selection.  To do so, we start
+		at the beginning of the selection, load 'em all into a vector, and
 		then prune any property that collides.
 	*/
 	PT_DocPosition posStart = getPoint();
@@ -2496,6 +2559,9 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 	v.addItem(new _fmtPair((XML_Char*)"keep-with-next",			NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair((XML_Char*)"orphans",				NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair((XML_Char*)"widows",					NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+#ifdef BIDI_ENABLED
+	v.addItem(new _fmtPair((XML_Char*)"dom-dir",		NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+#endif
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())
@@ -2584,7 +2650,7 @@ void FV_View::delTo(FV_DocPos dp)
 	PT_DocPosition iPos = _getDocPos(dp);
 
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	if (iPos == getPoint())
@@ -2668,6 +2734,8 @@ bool FV_View::isTabListBehindPoint(void)
 	bool bRes;
 	bool bEOL = false;
 	UT_sint32 xPoint, yPoint, iPointHeight;
+	UT_sint32 xPoint2, yPoint2;
+	bool   bDirection;
 
 	bRes = m_pDoc->getBounds(false, posBOD);
 	UT_ASSERT(bRes);
@@ -2687,7 +2755,9 @@ bool FV_View::isTabListBehindPoint(void)
 		return false;
 	}
 
-	fp_Run* pRun = pBlock->findPointCoords(ppos, bEOL, xPoint, yPoint, iPointHeight);
+
+	fp_Run* pRun = pBlock->findPointCoords(ppos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
+	
 	if(pRun->getType() != FPRUN_TAB)
 	{
 		return false;
@@ -2729,8 +2799,10 @@ bool FV_View::isTabListAheadPoint(void)
 
 	bool bEOL = false;
 	UT_sint32 xPoint, yPoint, iPointHeight;
-
-	fp_Run* pRun = pBlock->findPointCoords(cpos, bEOL, xPoint, yPoint, iPointHeight);
+	UT_sint32 xPoint2, yPoint2;
+	bool   bDirection;
+	
+	fp_Run* pRun = pBlock->findPointCoords(cpos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 
 	// Find first run that is not an FPRUN_FMTMARK
 	while (pRun && (pRun->getType() == FPRUN_FMTMARK))
@@ -2771,8 +2843,8 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	fl_BlockLayout * curBlock = NULL;
 	fl_BlockLayout * nBlock = NULL;
 
-
-	// Signal PieceTable Change 
+	
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	if (!isSelectionEmpty())
@@ -2802,7 +2874,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		{
 			if(isTabListBehindPoint() == true)
 			{
-				curBlock = _findBlockAtPosition(getPoint()); 
+				curBlock = _findBlockAtPosition(getPoint());
 				nBlock = _findBlockAtPosition(getPoint()-2);
 				if(nBlock == curBlock)
 				{
@@ -2845,8 +2917,8 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			}
 
 			posCur = getPoint();
-			// Code to deal with change of font boundaries: 
-			if((posCur == nposCur) && (posCur > 0)) 
+			// Code to deal with change of font boundaries:
+			if((posCur == nposCur) && (posCur > 0))
 			{
 				fontFlag = true;
 				posCur--;
@@ -2885,7 +2957,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 					if(pAuto != NULL)
 					{
 					    if(listPoint + 2 <= posEOD)
-					          _setPoint(listPoint+2); 
+					          _setPoint(listPoint+2);
 					    else
 					          _setPoint(posEOD);
 					}
@@ -2935,15 +3007,17 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
 	UT_sint32 iLineHeight;
-
+	UT_sint32 xPoint2;
+	UT_sint32 yPoint2;
+	bool bDirection;
 	/*
-		This function moves the IP up or down one line, attempting to get 
-		as close as possible to the prior "sticky" x position.  The notion 
-		of "next" is strictly physical, not logical. 
+		This function moves the IP up or down one line, attempting to get
+		as close as possible to the prior "sticky" x position.  The notion
+		of "next" is strictly physical, not logical.
 
 		For example, instead of always moving from the last line of one block
-		to the first line of the next, you might wind up skipping over a 
-		bunch of blocks to wind up in the first line of the second column. 
+		to the first line of the next, you might wind up skipping over a
+		bunch of blocks to wind up in the first line of the second column.
 	*/
 	UT_sint32 xOldSticky = m_xPointSticky;
 
@@ -2951,7 +3025,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	UT_uint32 iOldPoint = getPoint();
 
 	fl_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
-	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, iPointHeight);
+	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_Container* pOldContainer = pOldLine->getContainer();
@@ -2998,7 +3072,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				bNOOP = true;
 			}
 		}
-		else 
+		else
 		{
 			// move to next page
 			fp_Page* pPage = pOldPage->getNext();
@@ -3045,7 +3119,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 				bNOOP = true;
 			}
 		}
-		else 
+		else
 		{
 			// move to prev page
 			fp_Page* pPage = pOldPage->getPrev();
@@ -3081,6 +3155,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	bool bEOL = false;
 	pPage->mapXYToPosition(xClick, yClick, iNewPoint, bBOL, bEOL);
 
+	UT_DEBUGMSG(("iNewPoint=%d, iOldPoint=%d, xClick=%d, yClick=%d\n",iNewPoint, iOldPoint, xClick, yClick));
 	UT_ASSERT(iNewPoint != iOldPoint);
 
 	UT_ASSERT(bEOL == true || bEOL == false);
@@ -3095,7 +3170,7 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		_drawInsertionPoint();
 	}
 
-	// this is the only place where we override changes to m_xPointSticky 
+	// this is the only place where we override changes to m_xPointSticky
 	m_xPointSticky = xOldSticky;
 }
 
@@ -3159,7 +3234,7 @@ void FV_View::_moveInsPtNextPrevPage(bool bNext)
 	fp_Page* pPage = (bNext ? pOldPage->getNext() : pOldPage->getPrev());
 
 	// if couldn't move, go to top of this page instead
-	if (!pPage) 
+	if (!pPage)
 		pPage = pOldPage;
 
 	_moveInsPtToPage(pPage);
@@ -3170,9 +3245,11 @@ fp_Page *FV_View::_getCurrentPage(void)
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
-
+	UT_sint32 xPoint2;
+	UT_sint32 yPoint2;
+	bool bDirection;
 	/*
-		This function moves the IP to the beginning of the previous or 
+		This function moves the IP to the beginning of the previous or
 		next page (ie not this one).
 	*/
 
@@ -3180,7 +3257,7 @@ fp_Page *FV_View::_getCurrentPage(void)
 	UT_uint32 iOldPoint = getPoint();
 
 	fl_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
-	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, iPointHeight);
+	fp_Run* pOldRun = pOldBlock->findPointCoords(getPoint(), m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_Container* pOldContainer = pOldLine->getContainer();
 	fp_Page* pOldPage = pOldContainer->getPage();
@@ -3382,7 +3459,7 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 	PT_DocPosition iOldPoint = pView->getPoint();
 
 	/*
-		NOTE: We update the selection here, so that the timer can keep 
+		NOTE: We update the selection here, so that the timer can keep
 		triggering autoscrolls even if the mouse doesn't move.
 	*/
 	pView->extSelToXY(pView->m_xLastMouse, pView->m_yLastMouse, false);
@@ -3406,14 +3483,14 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 
 		bool bOnScreen = true;
 
-		if ((xPos < 0 || xPos > pView->m_iWindowWidth) || 
+		if ((xPos < 0 || xPos > pView->m_iWindowWidth) ||
 			(yPos < 0 || yPos > pView->m_iWindowHeight))
 			bOnScreen = false;
 		
-		if (!bOnScreen) 
+		if (!bOnScreen)
 		{
-			// yep, do it manually 
- 
+			// yep, do it manually
+
 			// TODO currently we blindly send these auto scroll events without regard
 			// TODO to whether the window can scroll any further in that direction.
 			// TODO we could optimize this a bit and check the scroll range before we
@@ -3421,7 +3498,7 @@ void FV_View::_autoScroll(UT_Timer * pTimer)
 			// TODO don't have a backpointer to it.
 			// UT_DEBUGMSG(("_auto: [xp %ld][yp %ld] [w %ld][h %ld]\n",
 			//			 xPos,yPos,pView->m_iWindowWidth,pView->m_iWindowHeight));
- 
+
 			if (yPos < 0)
 			{
 				pView->_eraseInsertionPoint();	
@@ -3496,15 +3573,15 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 
 	if (bDrag)
 	{
-		// figure out whether we're still on screen 
+		// figure out whether we're still on screen
 		bool bOnScreen = true;
 
-		if ((xPos < 0 || xPos > m_iWindowWidth) || 
+		if ((xPos < 0 || xPos > m_iWindowWidth) ||
 			(yPos < 0 || yPos > m_iWindowHeight))
 			bOnScreen = false;
 		
 		// is autoscroll timer set properly?
-		if (bOnScreen) 
+		if (bOnScreen)
 		{
 			if (m_pAutoScrollTimer)
 			{
@@ -3579,15 +3656,15 @@ void FV_View::extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 
 	if (bDrag)
 	{
-		// figure out whether we're still on screen 
+		// figure out whether we're still on screen
 		bool bOnScreen = true;
 
-		if ((xPos < 0 || xPos > m_iWindowWidth) || 
+		if ((xPos < 0 || xPos > m_iWindowWidth) ||
 			(yPos < 0 || yPos > m_iWindowHeight))
 			bOnScreen = false;
 		
 		// is autoscroll timer set properly?
-		if (bOnScreen) 
+		if (bOnScreen)
 		{
 			if (m_pAutoScrollTimer)
 			{
@@ -3630,14 +3707,14 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 	if (!m_pAutoScrollTimer)
 		return;
 
-	// figure out whether we're still on screen 
+	// figure out whether we're still on screen
 	bool bOnScreen = true;
 
-	if ((xPos < 0 || xPos > m_iWindowWidth) || 
+	if ((xPos < 0 || xPos > m_iWindowWidth) ||
 		(yPos < 0 || yPos > m_iWindowHeight))
 		bOnScreen = false;
 	
-	if (!bOnScreen) 
+	if (!bOnScreen)
 	{
 		// remember where mouse is
 		m_xLastMouse = xPos;
@@ -3723,7 +3800,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 						break;
 				}
 
-			if (!pPage) 
+			if (!pPage)
 				pPage = pOldPage;
 
 			_moveInsPtToPage (pPage);
@@ -4253,9 +4330,9 @@ bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
 		// if we have a string with length, do an insert, else let it hang
 		// from the delete above
 		if (*replace)
-			result = m_pDoc->insertSpan(getPoint(), 
-											replace, 
-											UT_UCS_strlen(replace), 
+			result = m_pDoc->insertSpan(getPoint(),
+											replace,
+											UT_UCS_strlen(replace),
 											&AttrProp_Before);
 
 		_generalUpdate();
@@ -4321,9 +4398,9 @@ bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
 		// if we have a string with length, do an insert, else let it hang
 		// from the delete above
 		if (*replace)
-			result = m_pDoc->insertSpan(getPoint(), 
-											replace, 
-											UT_UCS_strlen(replace), 
+			result = m_pDoc->insertSpan(getPoint(),
+											replace,
+											UT_UCS_strlen(replace),
 											&AttrProp_Before);
 
 		_generalUpdate();
@@ -4373,7 +4450,7 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 	{
 		_deleteSelection();
 		_generalUpdate();
-	} 
+	}
 	// We have to determine the current font so we can put it back after
 	// Inserting the Symbol
 
@@ -4383,24 +4460,24 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 	currentfont = UT_getAttribute((XML_Char*)"font-family",props_in);
 	free(props_in);
 
-	if(strstr(symfont,currentfont) == NULL) 
+	if(strstr(symfont,currentfont) == NULL)
 	{
-		// Set the font 
+		// Set the font
 		const XML_Char* properties[] = { (XML_Char*)"font-family", 0, 0 };
 		properties[1] = symfont ;
 		setCharFormat(properties);
 
-		// Insert the character 
+		// Insert the character
 		cmdCharInsert(&c,1);
 
-		// Change the font back to its original value 
+		// Change the font back to its original value
 		properties[1] = currentfont;
 		setCharFormat(properties);
 		_generalUpdate();
 	}
 	else
 	{
-		// Just insert the character 
+		// Just insert the character
 
 		cmdCharInsert(&c,1);
 	}
@@ -4816,6 +4893,9 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	{
 		UT_sint32 x;
 		UT_sint32 y;
+		UT_sint32 x2;
+		UT_sint32 y2;
+		bool bDirection;
 		fl_BlockLayout* pBlock1;
 		fl_BlockLayout* pBlock2;
 
@@ -4823,8 +4903,8 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		  we don't really care about the coords.  We're calling these
 		  to get the Run pointer
 		*/
-		_findPositionCoords(iPos1, false, x, y, uheight, &pBlock1, &pRun1);
-		_findPositionCoords(iPos2, false, x, y, uheight, &pBlock2, &pRun2);
+		_findPositionCoords(iPos1, false, x, y, x2, y2, uheight, bDirection, &pBlock1, &pRun1);
+		_findPositionCoords(iPos2, false, x, y, x2, y2, uheight, bDirection, &pBlock2, &pRun2);
 	}
 
 	bool bDone = false;
@@ -4894,6 +4974,9 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 	{
 		UT_sint32 x;
 		UT_sint32 y;
+		UT_sint32 x2;
+		UT_sint32 y2;
+		bool bDirection;
 		fl_BlockLayout* pBlock1;
 		fl_BlockLayout* pBlock2;
 
@@ -4901,8 +4984,8 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 		  we don't really care about the coords.  We're calling these
 		  to get the Run pointer
 		*/
-		_findPositionCoords(iPos1, false, x, y, uheight, &pBlock1, &pRun1);
-		_findPositionCoords(iPos2, false, x, y, uheight, &pBlock2, &pRun2);
+		_findPositionCoords(iPos1, false, x, y, x2, y2, uheight, bDirection, &pBlock1, &pRun1);
+		_findPositionCoords(iPos2, false, x, y, x2, y2, uheight, bDirection, &pBlock2, &pRun2);
 	}
 
 	if (!pRun1 && !pRun2)
@@ -4913,14 +4996,14 @@ void FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 		return;
 	}
 
-	// HACK: In certain editing cases only one of these is NULL, which 
-	//       makes locating runs to clear more difficult.  For now, I'm 
-	//       playing it safe and trying to just handle these cases here. 
-	//       The real solution may be to just bail if *either* is NULL, 
-	//       but I'm not sure.  
+	// HACK: In certain editing cases only one of these is NULL, which
+	//       makes locating runs to clear more difficult.  For now, I'm
+	//       playing it safe and trying to just handle these cases here.
+	//       The real solution may be to just bail if *either* is NULL,
+	//       but I'm not sure.
 	//
-	//       If you're interested in investigating this alternative 
-	//       approach, play with the following asserts.  
+	//       If you're interested in investigating this alternative
+	//       approach, play with the following asserts.
 
 //	UT_ASSERT(pRun1 && pRun2);
 	UT_ASSERT(pRun2);
@@ -4966,17 +5049,26 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 								  bool bEOL,
 								  UT_sint32& x,
 								  UT_sint32& y,
+								  UT_sint32& x2,
+								  UT_sint32& y2,
 								  UT_uint32& height,
+								  bool& bDirection,
 								  fl_BlockLayout** ppBlock,
 								  fp_Run** ppRun)
 {
 	UT_sint32 xPoint;
 	UT_sint32 yPoint;
+	UT_sint32 xPoint2;
+	UT_sint32 yPoint2;
 	UT_sint32 iPointHeight;
+
+	PT_DocPosition posEOD;
+	bool bRes;
+
 
 	// Get the previous block in the document. _findBlockAtPosition
 	// will iterate forwards until it actually find a block if there
-	// isn't one previous to pos.  
+	// isn't one previous to pos.
 	// (Removed code duplication. Jesper, 2001.01.25)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	
@@ -5003,7 +5095,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		pos = iBlockPos;
 	}
 
-	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
+	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 
 	// NOTE prior call will fail if the block isn't currently formatted,
 	// NOTE so we won't be able to figure out more specific geometry
@@ -5017,14 +5109,25 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		getPageYOffset(pPointPage, iPageOffset);
 		yPoint += iPageOffset;
 		xPoint += fl_PAGEVIEW_MARGIN_X;
-
+#ifdef BIDI_ENABLED
+		yPoint2 += iPageOffset;
+		xPoint2 += fl_PAGEVIEW_MARGIN_X;
+#endif
 		// now, we have coords absolute, as if all pages were stacked vertically
 		xPoint -= m_xScrollOffset;
 		yPoint -= m_yScrollOffset;
+#ifdef BIDI_ENABLED
+		xPoint2 -= m_xScrollOffset;
+		yPoint2 -= m_yScrollOffset;
+#endif
 
 		// now, return the results
 		x = xPoint;
 		y = yPoint;
+#ifdef BIDI_ENABLED
+		x2 = xPoint2;
+		y2 = yPoint2;
+#endif
 		height = iPointHeight;
 	}
 
@@ -5042,7 +5145,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 void FV_View::_fixInsertionPointCoords()
 {
 	_eraseInsertionPoint();
-	_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
+	_findPositionCoords(getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_xPoint2, m_yPoint2, m_iPointHeight, m_bPointDirection, NULL, NULL);
 	_saveCurrentPoint();
 	// hang onto this for _moveInsPtNextPrevLine()
 	m_xPointSticky = m_xPoint + m_xScrollOffset - fl_PAGEVIEW_MARGIN_X;
@@ -5075,6 +5178,10 @@ void  FV_View::_saveCurrentPoint(void)
 	m_oldxPoint = m_xPoint;
 	m_oldyPoint = m_yPoint;
 	m_oldiPointHeight = m_iPointHeight;
+#ifdef BIDI_ENABLED
+	m_oldxPoint2 = m_xPoint2;
+	m_oldyPoint2 = m_yPoint2;
+#endif
 }
 
 void  FV_View::_clearOldPoint(void)
@@ -5082,6 +5189,10 @@ void  FV_View::_clearOldPoint(void)
 	m_oldxPoint = -1;
 	m_oldyPoint = -1;
 	m_oldiPointHeight = 0;
+#if BIDI_ENABLED
+	m_oldxPoint2 = -1;
+	m_oldyPoint2 = -1;
+#endif
 }
 
 void FV_View::_xorInsertionPoint()
@@ -5094,6 +5205,41 @@ void FV_View::_xorInsertionPoint()
 		m_pG->xorLine(m_xPoint-1, m_yPoint+1, m_xPoint-1, m_yPoint + m_iPointHeight+1);
 		m_pG->xorLine(m_xPoint, m_yPoint+1, m_xPoint, m_yPoint + m_iPointHeight+1);
 		m_bCursorIsOn = !m_bCursorIsOn;
+#ifdef BIDI_ENABLED
+		// #TF the caret will have a small flag at the top indicating the direction of
+		// writing
+		if(m_bPointDirection) //rtl flag
+		{
+		    m_pG->xorLine(m_xPoint-3, m_yPoint+1, m_xPoint-1, m_yPoint+1);
+		    m_pG->xorLine(m_xPoint-2, m_yPoint+2, m_xPoint-1, m_yPoint+2);
+		}
+		else
+		{
+		    m_pG->xorLine(m_xPoint+1, m_yPoint+1, m_xPoint+3, m_yPoint+1);
+		    m_pG->xorLine(m_xPoint+1, m_yPoint+2, m_xPoint+2, m_yPoint+2);
+		}
+		
+		
+		//this is the second caret on ltr-rtl boundary
+		if((m_xPoint != m_xPoint2) || (m_yPoint != m_yPoint2))
+		{
+			m_pG->xorLine(m_xPoint2-1, m_yPoint2+1, m_xPoint2-1, m_yPoint2 + m_iPointHeight);
+			m_pG->xorLine(m_xPoint2, m_yPoint2+1, m_xPoint2, m_yPoint2 + m_iPointHeight);
+ 			//this is the line that links the two carrets
+ 			m_pG->xorLine(m_xPoint, m_yPoint + m_iPointHeight, m_xPoint2, m_yPoint2 + m_iPointHeight);
+ 		
+			if(m_bPointDirection)
+			{
+				m_pG->xorLine(m_xPoint2+1, m_yPoint2+1, m_xPoint2+3, m_yPoint2+1);
+				m_pG->xorLine(m_xPoint2+1, m_yPoint2+2, m_xPoint2+2, m_yPoint2+2);
+			}
+			else
+			{
+				m_pG->xorLine(m_xPoint2-3, m_yPoint2+1, m_xPoint2-1, m_yPoint2+1);
+				m_pG->xorLine(m_xPoint2-2, m_yPoint2+2, m_xPoint2-1, m_yPoint2+2);
+			}
+		}
+#endif
 	}
 	if(_hasPointMoved() == true)
 	{
@@ -5118,14 +5264,14 @@ void FV_View::_eraseInsertionPoint()
 	if (_hasPointMoved() == true)
 	{
 		UT_DEBUGMSG(("Insertion Point has moved before erasing \n"));
-		if (m_pAutoCursorTimer) 
+		if (m_pAutoCursorTimer)
 			m_pAutoCursorTimer->stop();
 		m_bCursorIsOn = false;
 		_saveCurrentPoint();
 		return;
 	}
 
-	//	if (m_pAutoCursorTimer) 
+	//	if (m_pAutoCursorTimer)
 	//		m_pAutoCursorTimer->stop();
 
 	
@@ -5147,7 +5293,8 @@ void FV_View::_drawInsertionPoint()
 		return;
 	if (m_bCursorBlink && (m_focus==AV_FOCUS_HERE || m_focus==AV_FOCUS_MODELESS || AV_FOCUS_NEARBY))
 	{
-		if (m_pAutoCursorTimer == NULL) {
+		if (m_pAutoCursorTimer == NULL)
+		{
 			m_pAutoCursorTimer = UT_Timer::static_constructor(_autoDrawPoint, this, m_pG);
 			m_pAutoCursorTimer->set(AUTO_DRAW_POINT);
 			m_bCursorIsOn = false;
@@ -5342,8 +5489,8 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// TODO: handle variable-size pages (envelope, landscape, etc.)
 
 	/*
-	  In page view mode, so draw outside decorations first, then each 
-	  page with its decorations.  
+	  In page view mode, so draw outside decorations first, then each
+	  page with its decorations.
 	*/
 
 	UT_RGBColor clrMargin(127,127,127);		// dark gray
@@ -5668,7 +5815,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 
 	if (iPosLeft == iPosRight)
 	{
-		_drawInsertionPoint(); 
+		_drawInsertionPoint();
 		return;
 	}
 
@@ -5766,6 +5913,9 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	fl_BlockLayout* pBlock = NULL;
 	UT_sint32 x;
 	UT_sint32 y;
+	UT_sint32 x2;
+	UT_sint32 y2;
+	bool bDirection;
 	UT_uint32 uheight;
 	m_bPointEOL = false;
 
@@ -5789,22 +5939,22 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	if (bForward)
 	{
 		m_iInsPoint += countChars;
-		_findPositionCoords(m_iInsPoint-1, false, x, y, uheight, &pBlock, &pRun);
+		_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 		//		while(pRun != NULL && (pRun->isField() == true || pRun->getType() == FPRUN_FIELD && m_iInsPoint < posEOD))
 		while(pRun != NULL && pRun->isField() == true && m_iInsPoint < posEOD)
 		{
 			m_iInsPoint++;
-			_findPositionCoords(m_iInsPoint, false, x, y, uheight, &pBlock, &pRun);
+			_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 		}
 	}
 	else
 	{
 		m_iInsPoint -= countChars;
-		_findPositionCoords(m_iInsPoint, false, x, y, uheight, &pBlock, &pRun);
+		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 		while(pRun != NULL && pRun->isField() == true && m_iInsPoint > posBOD)
 		{
 			m_iInsPoint--;
-			_findPositionCoords(m_iInsPoint-1, false, x, y, uheight, &pBlock, &pRun);
+			_findPositionCoords(m_iInsPoint-1, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
 		}
 	}
 
@@ -5864,7 +6014,7 @@ void FV_View::cmdUndo(UT_uint32 count)
 	else
 		_eraseInsertionPoint();
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	// Turn off list updates
@@ -5903,7 +6053,7 @@ void FV_View::cmdRedo(UT_uint32 count)
 	else
 		_eraseInsertionPoint();
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	// Turn off list updates
@@ -5961,7 +6111,7 @@ void FV_View::cmdCut(void)
 		// clipboard does nothing if there is no selection
 		return;
 	}
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	//
@@ -6023,7 +6173,7 @@ void FV_View::cmdPaste(void)
 	
 	m_pDoc->beginUserAtomicGlob();
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	//
@@ -6058,7 +6208,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	
 	m_pDoc->beginUserAtomicGlob();
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	if (!isSelectionEmpty())
@@ -6108,7 +6258,7 @@ bool FV_View::setSectionFormat(const XML_Char * properties[])
 
 	_eraseInsertionPoint();
 
-	//	_clearIfAtFmtMark(getPoint()); TODO:	This was giving problems 
+	//	_clearIfAtFmtMark(getPoint()); TODO:	This was giving problems
 	//											caused bug 431 when changing
 	//											columns.
 	
@@ -6159,8 +6309,9 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		fp_Run * pRun = NULL;
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
-
-		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, &pBlock, &pRun);
+		UT_sint32 xCaret2, yCaret2;
+		bool bDirection;
+		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
 		fp_Container * pContainer = pRun->getLine()->getContainer();
 		fl_SectionLayout * pSection = pContainer->getSectionLayout();
@@ -6229,8 +6380,9 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		fp_Run * pRun = NULL;
 		UT_sint32 xCaret, yCaret;
 		UT_uint32 heightCaret;
-
-		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, &pBlock, &pRun);
+		UT_sint32 xCaret2, yCaret2;
+		bool bDirection;
+		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
 		UT_ASSERT(pRun);
 		UT_ASSERT(pRun->getLine());
@@ -6281,7 +6433,7 @@ UT_Error FV_View::cmdInsertField(const char* szName)
 	fl_BlockLayout* pBL = _findBlockAtPosition(getPoint());
 */
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	fd_Field * pField = NULL;
@@ -6324,7 +6476,7 @@ UT_Error FV_View::_insertGraphic(FG_Graphic* pFG, const char* szName)
 	UT_ASSERT(pFG);
 	UT_ASSERT(szName);
 
-	double fDPI = m_pG->getResolution() * 100 / m_pG->getZoomPercentage(); 
+	double fDPI = m_pG->getResolution() * 100 / m_pG->getZoomPercentage();
 	return pFG->insertIntoDocument(m_pDoc, fDPI, getPoint(), szName);
 }
 
@@ -6332,7 +6484,7 @@ UT_Error FV_View::cmdInsertGraphic(FG_Graphic* pFG, const char* pszName)
 {
 	bool bDidGlob = false;
 
-	// Signal PieceTable Change 
+	// Signal PieceTable Change
 	m_pDoc->notifyPieceTableChangeStart();
 
 	if (!isSelectionEmpty())
@@ -6427,6 +6579,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	bool bBOL = false;
 	bool bEOL = false;
 	UT_sint32 xPoint, yPoint, iPointHeight;
+	UT_sint32 xPoint2, yPoint2;
+	bool bDirection;
 
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 	if (!pPage)
@@ -6448,7 +6602,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	if (!pBlock)
 		return EV_EMC_UNKNOWN;
-	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
+	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
+	
 	if (!pRun)
 		return EV_EMC_UNKNOWN;
 
@@ -6514,10 +6669,12 @@ fp_Page* FV_View::getCurrentPage(void) const
 	UT_sint32 yPoint;
 	UT_sint32 iPointHeight;
 	UT_uint32 pos = getPoint();
+	UT_sint32 xPoint2, yPoint2;
+	bool bDirection;
 	
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	UT_ASSERT(pBlock);
-	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, iPointHeight);
+	fp_Run* pRun = pBlock->findPointCoords(pos, m_bPointEOL, xPoint, yPoint, xPoint2, yPoint2, iPointHeight, bDirection);
 
 	// NOTE prior call will fail if the block isn't currently formatted,
 	// NOTE so we won't be able to figure out more specific geometry
@@ -6604,8 +6761,8 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPO
 
 	// we currently return all requested suggestions
 	// TODO: prune lower-weighted ones??
-	if ((sg.count) && 
-		((int) ndx <= sg.count)) 
+	if ((sg.count) &&
+		((int) ndx <= sg.count))
 	{
 		UT_UCS_cloneString(&szSuggest, (UT_UCSChar *) sg.word[ndx-1]);
 	}
@@ -6737,6 +6894,106 @@ void FV_View::cmdContextAdd(void)
 
 		pView->_updateInsertionPoint();
 	}
+#ifdef BIDI_ENABLED	
+	if ( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_UseUnicodeDirection, &b) && b != pView->m_bUseUnicodeDirection)
+	{
+	/*
+		We could change this at runtime, but it may not produce the results
+		the user might expect. Therefore, we will notify the user that the
+		change will take effect next time AW is run, or, when a new doc is
+		created.
+	*/
+		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+		UT_ASSERT((pFrame));
+		
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_DirectionModeChg);
+		const char *pMsg2 = pSS->getValue(AP_STRING_ID_MSG_AfterRestartNew);
+		
+		UT_ASSERT((pMsg1 && pMsg2));
+		
+		UT_uint32 len = strlen(pMsg1) + strlen(pMsg2) + 2;
+		
+		char * szMsg = new char[len];
+		UT_ASSERT((szMsg));
+		
+		sprintf(szMsg, "%s\n%s", pMsg1, pMsg2);
+		
+		pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+		
+		delete[](szMsg);
+	
+	/*
+		pView->m_bUseUnicodeDirection = b;
+		pView->notifyListeners(AV_CHG_DIRECTIONMODE);
+	*/
+	}
+	if ( pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_DefaultDirectionRtl, &b) && b != pView->m_bDefaultDirectionRtl)
+	{
+	/*	It is possible to change this at runtime, but it may impact the
+		way the document is displayed in an unexpected way (from the user's
+		point of view). It is therefore probably better to apply this change
+		only when AW will be restarted or a new document is created and
+		notify the user about that.
+	*/
+		XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+		UT_ASSERT((pFrame));
+		
+		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+		const char *pMsg1 = pSS->getValue(AP_STRING_ID_MSG_DefaultDirectionChg);
+		const char *pMsg2 = pSS->getValue(AP_STRING_ID_MSG_AfterRestartNew);
+		
+		UT_ASSERT((pMsg1 && pMsg2));
+		
+		UT_uint32 len = strlen(pMsg1) + strlen(pMsg2) + 2;
+		
+		char * szMsg = new char[len];
+		UT_ASSERT((szMsg));
+		
+		sprintf(szMsg, "%s\n%s", pMsg1, pMsg2);
+		
+		pFrame->showMessageBox(szMsg, XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
+
+		delete[](szMsg);
+	
+	/*
+		UT_DEBUGMSG(("View: Resetting default direction to %s\n", b ?(XML_Char *) "rtl" :(XML_Char *) "ltr"));
+		
+		if(b)
+		{
+			const XML_Char bidi_dir_name[] = "dir";
+			const XML_Char bidi_dir_value[] = "rtl";
+			const XML_Char bidi_domdir_name[] = "dom-dir";
+			const XML_Char bidi_align_name[] = "text-align";
+			const XML_Char bidi_align_value[] = "right";
+			
+			const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
+			UT_DEBUGMSG(("calling setStyleProperties ... "));
+			pView->m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
+			UT_DEBUGMSG(("done.\n"));			
+		}
+		else
+		{
+			const XML_Char bidi_dir_name[] = "dir";
+			const XML_Char bidi_dir_value[] = "ltr";
+			const XML_Char bidi_domdir_name[] = "dom-dir";
+			const XML_Char bidi_align_name[] = "text-align";
+			const XML_Char bidi_align_value[] = "left";
+			
+			const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
+			UT_DEBUGMSG(("calling setStyleProperties ... "));
+			pView->m_pDoc->setStyleProperties((const XML_Char*)"normal", (const XML_Char**)bidi_props);
+			UT_DEBUGMSG(("done.\n"));			
+		}
+		
+		UT_DEBUGMSG(("calling PP_resetInitialBiDiValues ..."));
+		PP_resetInitialBiDiValues(b ?(XML_Char *) "rtl" :(XML_Char *) "ltr");
+		UT_DEBUGMSG(("done.\n"));			
+		pView->m_bDefaultDirectionRtl = b;
+		pView->_generalUpdate();
+	*/
+	}
+#endif	
 }
 
 /******************************************************
@@ -6809,7 +7066,7 @@ FV_DocCount FV_View::countWords(void)
 				
 				delim = UT_isWordDelimiter(pSpan[i], followChar);
 				
-				/* 
+				/*
 					CJK-FIXME: this can work incorrectly under CJK locales since it can
 					give 'true' for UCS with value >0xff (like quotes, etc).
 				 */
@@ -6857,7 +7114,7 @@ void FV_View::setShowPara(bool bShowPara)
 bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 {
 
-	/* 
+	/*
 		This inserts a header/footer at the end of the document,
 		and leaves the insertion point there.
 		This provides NO undo stuff.  Do it yourself.
@@ -6866,7 +7123,7 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	const XML_Char* szString = ftr ? "footer" : "header";
 
 	// TODO: This stuff shouldn't be hardcoded
-	// TODO: The fact that it is hardcoded means that only 
+	// TODO: The fact that it is hardcoded means that only
 	// TODO: one section can have footers at one time, currently
 
 	const XML_Char*	sec_attributes1[] = {
@@ -6922,8 +7179,8 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, bool ftr)
 	} 
 
 	//
-	// Now Insert the footer section. 
-	// Doing things this way will grab the previously intereted block 
+	// Now Insert the footer section.
+	// Doing things this way will grab the previously intereted block
 	// and put into the footter section.
 
 	m_pDoc->insertStrux(iPoint, PTX_Section);
@@ -6964,7 +7221,6 @@ bool FV_View::insertPageNum(const XML_Char ** props, bool ftr)
 	_eraseInsertionPoint();
 
 	UT_uint32 oldPos = getPoint();	// This ends up being redundant, but it's neccessary
-	//bool bftr = true;
 	bool bResult = insertHeaderFooter(props, ftr);
 
 	//

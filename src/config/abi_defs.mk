@@ -76,6 +76,18 @@
 #### ABI_OPT_CYGWIN_UNIX=1
 ####
 
+#### To build with the bidi-rectional support enabled add the following
+#### line back to the Makefile, add the variable to the make command line
+#### or set this variable as an environment variable. If you wish to
+#### default to RTL direction of text, do the same with the second
+#### variable
+####
+#### ABI_OPT_BIDI_ENABLED=1
+####
+#### ABI_OPT_BIDI_RTL_DOMINANT=1
+####
+
+
 ##################################################################
 ##################################################################
 ## abi_defs.mk --  Makefile definitions for building AbiSource software.
@@ -265,13 +277,15 @@ ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
 		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 endif
 
-ABI_OTH_INCS=	/other/spell
+ABI_OTH_INCS=	/other/spell \
+                /other/fribidi
 
 ifdef ABI_OPT_LIBXML2
 ABI_PEER_INCS=
 else
 ABI_PEER_INCS=	/../../expat/lib
 endif
+ABI_PEER_INCS+=/../../wv/exporter
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
 ifeq ($(OS_NAME), WIN32)
@@ -300,6 +314,22 @@ ABI_DBGDEFS=		-DNDEBUG
 ABI_OPTIONS+=Debug:Off
 endif
 
+## BIDI options
+
+ifdef ABI_OPT_BIDI_ENABLED
+ABI_BIDI_ENABLED=-DBIDI_ENABLED
+ABI_OPTIONS+=BiDi:On
+ifdef ABI_OPT_BIDI_RTL_DOMINANT
+ABI_BIDI_ENABLED+=-DBIDI_RTL_DOMINANT
+ABI_OPTIONS+=/RTL dominant/
+else
+ABI_OPTIONS+=/LTR dominant/
+endif
+else
+ABI_OPTIONS+=BiDi:Off
+endif
+
+
 ##################################################################
 ##################################################################
 
@@ -307,7 +337,7 @@ LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
 CFLAGS		= $(OPTIMIZER) $(OS_CFLAGS) $(DEFINES) $(INCLUDES) $(OS_INCLUDES) $(XCFLAGS)	\
 			$(ABI_TMDEFS) $(ABI_NAMEDEFS) $(ABI_APPLIBDIRDEF)	\
-			$(ABI_DBGDEFS) $(ABI_INCS)
+			$(ABI_DBGDEFS) $(ABI_BIDI_ENABLED) $(ABI_INCS)
 
 ##################################################################
 ##################################################################

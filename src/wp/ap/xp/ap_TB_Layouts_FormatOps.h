@@ -35,7 +35,13 @@ BeginLayout(FormatOps)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_BOLD)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_ITALIC)
 	ToolbarItem(AP_TOOLBAR_ID_FMT_UNDERLINE)
-	
+
+#ifdef BIDI_ENABLED
+	Spacer()
+	ToolbarItem(AP_TOOLBAR_ID_FMT_DIRECTION)
+	ToolbarItem(AP_TOOLBAR_ID_FMT_DOM_DIRECTION)
+#endif
+
 	Spacer()
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_LEFT)
 	ToolbarItem(AP_TOOLBAR_ID_ALIGN_CENTER)

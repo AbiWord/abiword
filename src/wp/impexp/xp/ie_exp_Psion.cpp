@@ -35,7 +35,6 @@
 //		Add support for other sections (page-level layout, headers, footers)
 //		Add support for objects, fields, format marks
 
-
 // Search for TODO for more things to do.
 
 #include "ut_string.h"

@@ -50,7 +50,10 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_BUTTON_IGNORE_EDIT,
 
 				   id_CHECK_SMART_QUOTES_ENABLE, id_LIST_DEFAULT_PAGE_SIZE,
-
+#ifdef BIDI_ENABLED
+				   id_CHECK_OTHER_USE_UNICODE_DIRECTION,
+				   id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,
+#endif
 				   id_CHECK_PREFS_AUTO_SAVE, id_COMBO_PREFS_SCHEME,
 
 				   id_CHECK_VIEW_SHOW_RULER, id_LIST_VIEW_RULER_UNITS,
@@ -61,8 +64,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_CHECK_VIEW_SHOW_STATUS_BAR,
 				   id_CHECK_VIEW_ALL, id_CHECK_VIEW_HIDDEN_TEXT, 
 				   id_CHECK_VIEW_UNPRINTABLE,
-
-				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS, 
+				   id_BUTTON_SAVE, id_BUTTON_DEFAULTS,
 				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
 			
 				   id_last } tControl;
@@ -116,6 +118,11 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(ViewAll,			bool);
 	SET_GATHER			(ViewHiddenText,	bool);
 	SET_GATHER			(ViewUnprintable,	bool);
+
+#ifdef BIDI_ENABLED
+	SET_GATHER			(OtherUseUnicodeDirection, bool);
+	SET_GATHER			(OtherDirectionRtl, bool);
+#endif
 
  	// so we can save and restore to the same page - must be able to return
   	// the current page and reset it later (i.e., don't use a handle, but a

@@ -118,6 +118,27 @@ PD_Style * PD_Style::getFollowedBy(void)
 	return m_pFollowedBy;
 }
 
+
+bool PD_Style::setProperty(const XML_Char * szName, const XML_Char * szValue)
+{
+	PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **) &pAP))
+		return false;
+	else
+		return pAP->setProperty(szName, szValue);
+}
+
+bool PD_Style::setProperties(const XML_Char ** pProperties)
+{
+	PP_AttrProp * pAP = NULL;
+	
+	if (!m_pPT->getAttrProp(m_indexAP, (const PP_AttrProp **)&pAP))
+		return false;
+	else
+		return pAP->setProperties(pProperties);
+}
+
 //////////////////////////////////////////////////////////////////
 // a sub-class to wrap the compiled-in styles
 //////////////////////////////////////////////////////////////////
@@ -131,4 +152,6 @@ PD_BuiltinStyle::PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP)
 PD_BuiltinStyle::~PD_BuiltinStyle()
 {
 }
+
+
 

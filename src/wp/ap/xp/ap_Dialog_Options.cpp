@@ -56,10 +56,10 @@ AP_Dialog_Options::tAnswer AP_Dialog_Options::getAnswer(void) const
 
 inline void Save_Pref_Bool(  XAP_PrefsScheme *pPrefsScheme, 
 						XML_Char const * key, 
-						bool var ) 
+						bool var )
 {
 	XML_Char szBuffer[2] = {0,0};
-	szBuffer[0] = ((var)==true ? '1' : '0'); 
+	szBuffer[0] = ((var)==true ? '1' : '0');
 	pPrefsScheme->setValue( key, szBuffer );
 }
 
@@ -94,7 +94,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	pPrefsScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pPrefsScheme);
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save the values to the Prefs classes
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_AutoSpellCheck, _gatherSpellCheckAsType() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_SpellCheckCaps, _gatherSpellUppercase() );
@@ -109,8 +109,12 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_FormatBarVisible, _gatherViewShowFormatBar() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ExtraBarVisible, _gatherViewShowExtraBar() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
+#ifdef BIDI_ENABLED
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
+	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_UseUnicodeDirection, _gatherOtherUseUnicodeDirection() );
+#endif
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// If we changed whether the ruler is to be visible
 	// or hidden, then update the current window:
 	// (If we didn't change anything, leave it alone)
@@ -150,21 +154,21 @@ void AP_Dialog_Options::_storeWindowData(void)
         pView->setShowPara( _gatherViewUnprintable() );
     }
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save ruler units value
 	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
 			       (XML_Char*)UT_dimensionName( _gatherViewRulerUnits()) );
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// save default paper size
 	UT_ASSERT(sizeof(XML_Char) && sizeof(char));
 	pPrefsScheme->setValue((XML_Char*)XAP_PREF_KEY_DefaultPageSize,
 			       (XML_Char*)fp_PageSize::PredefinedToName( _gatherDefaultPageSize()) );
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// allow XAP_Prefs to notify all the listeners of changes
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// TODO: change to snprintf
 	XML_Char szBuffer[40];
 	sprintf( szBuffer, "%i", _gatherNotebookPageNum() );
@@ -253,7 +257,13 @@ void AP_Dialog_Options::_populateWindowData(void)
 	// ------------ the page tab number 
 	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
 		_setNotebookPageNum (atoi(pszBuffer));
-
+#ifdef BIDI_ENABLED
+	//------------- other
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_DefaultDirectionRtl,&b))
+		_setOtherDirectionRtl (b);
+	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_UseUnicodeDirection,&b))
+		_setOtherUseUnicodeDirection (b);
+#endif
 
 	// enable/disable controls
 	_initEnableControls();
@@ -302,6 +312,12 @@ void AP_Dialog_Options::_initEnableControls()
 
 	// general
 	_controlEnable( id_BUTTON_SAVE,					false );
+#ifdef BIDI_ENABLED
+	// other
+	//_controlEnable( id_CHECK_OTHER_USE_UNICODE_DIRECTION,		false );
+	//_controlEnable( id_CHECK_OTHER_DEFAULT_DIRECTION_RTL,		false );
+#endif
+
 }
 
 void AP_Dialog_Options::_event_SetDefaults(void)

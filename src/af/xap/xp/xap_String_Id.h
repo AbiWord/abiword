@@ -71,6 +71,9 @@ dcl(DLG_UFS_StyleRegular,		"Regular")
 dcl(DLG_UFS_StyleItalic,		"Italic")
 dcl(DLG_UFS_StyleBold,			"Bold")
 dcl(DLG_UFS_StyleBoldItalic,	"Bold Italic")
+#ifdef BIDI_ENABLED
+dcl(DLG_UFS_Direction,     "Right-to-left")
+#endif
 
 /* Unix FileOpenSaveAs dialog */
 dcl(DLG_FOSA_OpenTitle,					"Open File")

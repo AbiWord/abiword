@@ -519,7 +519,7 @@ UT_sint32 UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right)
 	Returns it unchanged if it is not.
 	This function created by Pierre Sarrazin 1999-02-06
 */
-  
+
 UT_UCSChar UT_UCS_tolower(UT_UCSChar c)
 {
 	if (c < 128)
@@ -678,7 +678,7 @@ UT_UCSChar * UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src)
 	while (*s != 0)
 	  {
 #ifdef WITHOUT_MB
-	    *d++ = *s++;   
+	    *d++ = *s++;
 #else
 		if(m.mbtowc(wc,*s))*d++=wc;
 		s++;
@@ -704,7 +704,7 @@ char * UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src)
 	while (*s != 0)
 	  {
 #ifdef WITHOUT_MB
-	    *d++ = *s++;   
+	    *d++ = *s++;
 #else
 		int length;
 		if(w.wctomb(d,length,*s++))
@@ -732,14 +732,13 @@ bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 
 #ifdef WITHOUT_MB
 
-		UT_uint32 length = strlen(src) + 1;   
-		*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar)); 
+		UT_uint32 length = strlen(src) + 1;
+		*dest = (UT_UCSChar *)calloc(length,sizeof(UT_UCSChar));
 		if (!*dest)
 				return false;
 		UT_UCS_strcpy_char(*dest, src);
 
-		return true;          
-
+		return true;
 #else
 
 		UT_uint32 length = MB_LEN_MAX*strlen(src) + 1;
@@ -757,7 +756,7 @@ bool UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src)
 				if(m.mbtowc(wc,*s))*d++=wc;
 				s++;
 		}
-		*d = 0;  
+		*d = 0;
 		
 		return true;
 
@@ -1038,3 +1037,38 @@ const char* std_size_string(float f)
   };
   return string;
 };
+
+#ifdef BIDI_ENABLED
+/* copies exactly n-chars from src to dest; NB! does not check for 00 i src
+*/
+UT_UCSChar * UT_UCS_strncpy(UT_UCSChar * dest, const UT_UCSChar * src, UT_uint32 n)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+	
+	UT_UCSChar * d = dest;
+	UT_UCSChar * s = (UT_UCSChar *) src;
+
+	for (; d < (UT_UCSChar *)dest + n;)
+		*d++ = *s++;
+	*d = NULL;
+
+	return dest;
+}
+
+
+/* reverses str of len n; used by BiDi which always knows the len of string to process
+   thus we can save ourselves searching for the 00 */
+UT_UCSChar * UT_UCS_strnrev(UT_UCSChar * src, UT_uint32 n)
+{
+    UT_UCSChar t;
+    for(int i = 0; i < n/2; i++)
+    {
+        t = *(src + i);
+        *(src + i) = *(src + n - i - 1); //-1 so that we do not move the 00
+        *(src + n - i - 1) = t;
+    }
+    return src;
+}
+
+#endif

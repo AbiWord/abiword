@@ -59,7 +59,6 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	typedef enum { spacing_SINGLE = 0, spacing_ONEANDHALF, spacing_DOUBLE,
 				   spacing_ATLEAST, spacing_EXACTLY, spacing_MULTIPLE } tSpacingState;
 	typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
-	
 	typedef enum { id_MENU_ALIGNMENT = 0, id_SPIN_LEFT_INDENT,
 				   id_SPIN_RIGHT_INDENT, id_MENU_SPECIAL_INDENT,
 				   id_SPIN_SPECIAL_INDENT, id_SPIN_BEFORE_SPACING,
@@ -67,7 +66,11 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 				   id_SPIN_SPECIAL_SPACING, id_CHECK_WIDOW_ORPHAN,
 				   id_CHECK_KEEP_LINES, id_CHECK_PAGE_BREAK,
 				   id_CHECK_SUPPRESS, id_CHECK_NO_HYPHENATE,
-				   id_CHECK_KEEP_NEXT } tControl;
+				   id_CHECK_KEEP_NEXT
+#ifdef BIDI_ENABLED
+				   ,id_CHECK_DOMDIRECTION
+#endif
+				   } tControl;
 
 	typedef enum { op_INIT = 0, op_UICHANGE, op_SYNC } tOperation;
 

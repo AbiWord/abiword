@@ -91,6 +91,10 @@ enum _Ap_Toolbar_Id
 	AP_TOOLBAR_ID_SPELLCHECK,
 	AP_TOOLBAR_ID_IMG,
 
+#ifdef BIDI_ENABLED
+	AP_TOOLBAR_ID_FMT_DIRECTION,
+	AP_TOOLBAR_ID_FMT_DOM_DIRECTION,
+#endif
 	/* ... add others here ... */
 
 	AP_TOOLBAR_ID__BOGUS2__				/* must be last */

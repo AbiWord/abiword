@@ -106,6 +106,10 @@ private:
 	int			m_iSpaceCountLeft;
 	int			m_iSpaceCount;
 	int			m_iExtraWidth;
+#ifdef BIDI_ENABLED
+	UT_sint32	m_iStartPosition;
+	UT_sint32	m_iStartPositionLayoutUnits;
+#endif
 
 #ifndef NDEBUG
 	void _confirmJustification(fp_Line *pLine);

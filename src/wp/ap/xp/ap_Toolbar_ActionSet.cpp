@@ -125,6 +125,10 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_LISTS_NUMBERS,		EV_TBIT_ToggleButton,		"doNumbers",		AV_CHG_ALL,	ap_ToolbarGetState_Numbers	);
 	
 	// ... add others here ...
+#ifdef BIDI_ENABLED
+	_s(AP_TOOLBAR_ID_FMT_DIRECTION,	EV_TBIT_ToggleButton,	"toggleDirection",	AV_CHG_FMTCHAR | AV_CHG_DIRECTIONMODE,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,	EV_TBIT_ToggleButton,	"toggleDomDirection",	AV_CHG_FMTBLOCK,		ap_ToolbarGetState_BlockFmt);
+#endif
 	
 	_s(AP_TOOLBAR_ID__BOGUS2__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
 

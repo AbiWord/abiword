@@ -319,14 +319,19 @@ protected:
 											bool b,
 											UT_sint32& x,
 											UT_sint32& y,
+											UT_sint32& x2, //these are needed for BiDi split carret
+	  										UT_sint32& y2,
+
 											UT_uint32& height,
+											bool& bDirection,
 											fl_BlockLayout** ppBlock,
 											fp_Run** ppRun);
+	
 	fl_BlockLayout* 	_findBlockAtPosition(PT_DocPosition pos) const;
 
-	fp_Page*			_getPageForXY(UT_sint32 xPos, 
-									  UT_sint32 yPos, 
-									  UT_sint32& xClick, 
+	fp_Page*			_getPageForXY(UT_sint32 xPos,
+									  UT_sint32 yPos,
+									  UT_sint32& xClick,
 									  UT_sint32& yClick) const;
 
 	void				_moveToSelectionEnd(bool bForward);
@@ -341,7 +346,7 @@ protected:
 	void 				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
 	void 				_xorInsertionPoint();
-	bool				_hasPointMoved(void); 
+	bool				_hasPointMoved(void);
 	void				_saveCurrentPoint(void); 
 	void				_clearOldPoint(void); 
 	void				_drawSelection();
@@ -367,11 +372,23 @@ protected:
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;
+	//the followingare BiDi specific, but need to be in place because of the
+	//change to the signature of findPointCoords
+	UT_sint32			m_xPoint2;
+	UT_sint32			m_yPoint2;
+	UT_sint32			m_oldxPoint2;
+	UT_sint32			m_oldyPoint2;
+	bool             m_bPointDirection;
+
+#ifdef BIDI_ENABLED
+	bool				m_bUseUnicodeDirection;
+	bool				m_bDefaultDirectionRtl;
+#endif
 	UT_uint32			m_iPointHeight;
-	UT_sint32			m_oldxPoint; 
-	UT_sint32			m_oldyPoint; 
+	UT_sint32			m_oldxPoint;
+	UT_sint32			m_oldyPoint;
 	UT_uint32			m_oldiPointHeight;
-	UT_sint32			m_xPointSticky;		// used only for _moveInsPtNextPrevLine() 
+	UT_sint32			m_xPointSticky;		// used only for _moveInsPtNextPrevLine()
 
 	bool				m_bPointVisible;
 	bool				m_bPointEOL;

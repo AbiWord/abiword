@@ -99,7 +99,10 @@ BeginSet(en,US,true)
 	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Un-Indent Paragraph", tb_text_unindent_xpm,	NULL, "Decrease Paragraph Indentation")
 
      // ... add others here ...
-
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,		"Text Direction",	tb_text_direction_rtl_xpm,	NULL, "Change Direction of Text")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,		"Paragraph Direction",	tb_text_dom_direction_rtl_xpm,	NULL, "Change Dominant Direction of Paragraph")
+#endif
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 
 EndSet()

@@ -39,20 +39,24 @@ endif
 ##              version.  The Win32 crap is here 
 ##              because of command line quoting issues....
 
+ifdef ABI_BIDI_ENABLED
+BIDI_STRING=with bi-directional support
+endif
+
 ifdef ABISOURCE_LICENSED_TRADEMARKS
 
 ifeq ($(ABI_ESCAPE_QUOTES),YES)
-ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord\"\"
+ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord $(BIDI_STRING)\"\"
 else
-ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord\""
+ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord $(BIDI_STRING)\""
 endif
 
 else
 
 ifeq ($(ABI_ESCAPE_QUOTES),YES)
-ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord Personal\"\"
+ABI_NAMEDEFS=	-DABIWORD_APP_NAME=\"\"AbiWord Personal $(BIDI_STRING)\"\"
 else
-ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord Personal\""
+ABI_NAMEDEFS=	-DABIWORD_APP_NAME="\"AbiWord Personal $(BIDI_STRING)\""
 endif
 
 endif

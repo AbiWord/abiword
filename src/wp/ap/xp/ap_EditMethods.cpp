@@ -284,7 +284,10 @@ public:
 	static EV_EditMethod_Fn toggleSuper;
 	static EV_EditMethod_Fn toggleSub;
 	static EV_EditMethod_Fn togglePlain;
-
+#ifdef BIDI_ENABLED
+	static EV_EditMethod_Fn toggleDirection;
+	static EV_EditMethod_Fn toggleDomDirection;
+#endif
 	static EV_EditMethod_Fn doBullets;
 	static EV_EditMethod_Fn doNumbers;
 
@@ -637,6 +640,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// t
 	EV_EditMethod(NF(toggleBold),			0,		""),
+#ifdef BIDI_ENABLED
+	EV_EditMethod(NF(toggleDirection),		0,		""),
+	EV_EditMethod(NF(toggleDomDirection),	0,		""),
+#endif
 	EV_EditMethod(NF(toggleIndent), 0, ""),
 	EV_EditMethod(NF(toggleInsertMode),         0,  ""),
 	EV_EditMethod(NF(toggleItalic),			0,		""),
@@ -895,7 +902,7 @@ static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iL
 
 	sprintf(szMessage, p_message, szWhat, __FILE__, iLine);
 
-	pFrame->showMessageBox(szMessage, 
+	pFrame->showMessageBox(szMessage,
 							XAP_Dialog_MessageBox::b_O,
 							XAP_Dialog_MessageBox::a_OK);
 
@@ -1099,7 +1106,7 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 							  sizeof(char *));
  	const char ** szSuffixList = (const char **) calloc(filterCount + 1,
 							    sizeof(char *));
-	IEGraphicFileType * nTypeList = (IEGraphicFileType *) 
+	IEGraphicFileType * nTypeList = (IEGraphicFileType *)
 		 calloc(filterCount + 1,	sizeof(IEGraphicFileType));
 	UT_uint32 k = 0;
 
@@ -1194,7 +1201,7 @@ static XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFra
 	    String_id = AP_STRING_ID_MSG_ImportError;
 	  }
 
-	return pFrame->showMessageBox(String_id, 
+	return pFrame->showMessageBox(String_id,
 									XAP_Dialog_MessageBox::b_O,
 									XAP_Dialog_MessageBox::a_OK,
 									pNewFile);
@@ -1571,7 +1578,7 @@ static bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 		= (XAP_Dialog_WindowMore *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-	// run the dialog 
+	// run the dialog
 	pDialog->runModal(pFrame);
 
 	XAP_Frame * pSelFrame = NULL;	
@@ -1582,7 +1589,7 @@ static bool s_doMoreWindowsDlg(XAP_Frame* pFrame, XAP_Dialog_Id id)
 
 	pDialogFactory->releaseDialog(pDialog);
 
-	// now do it 
+	// now do it
 	if (pSelFrame)
 		pSelFrame->raise();
 
@@ -1873,8 +1880,8 @@ Defun(querySaveAndExit)
 		1.  XAP methods (above)
 		2.  AbiWord-specific methods (below)
 
-	Until we do the necessary architectural work, we just segregate 
-	the methods within the same file.  
+	Until we do the necessary architectural work, we just segregate
+	the methods within the same file.
 */
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -1901,7 +1908,7 @@ Defun1(fileInsertGraphic)
 	UT_Error errorCode;
 
 	errorCode = IE_ImpGraphic::constructImporter(pNewFile, iegft, &pIEG);
-	if(errorCode) 
+	if(errorCode)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
@@ -1909,7 +1916,7 @@ Defun1(fileInsertGraphic)
 	  }
 	
 	errorCode = pIEG->importGraphic(pNewFile, &pFG);
-	if(errorCode) 
+	if(errorCode)
 	  {
 		s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
 		FREEP(pNewFile);
@@ -3139,7 +3146,7 @@ Defun1(go)
 }
 
 /*****************************************************************/
-   
+
 static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
 {
    XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -3157,26 +3164,25 @@ static bool s_doSpellDlg(FV_View * pView, XAP_Dialog_Id id)
    // run the dialog (it probably should be modeless if anyone
    // gets the urge to make it safe that way)
    pDialog->runModal(pFrame);
-	        
    bool bOK = pDialog->isComplete();
 
    if (bOK)
 	   s_TellSpellDone(pFrame);
 
    pDialogFactory->releaseDialog(pDialog);
-	                
+	
    return bOK;
-}                       
-           
-           
+}
+
+
 Defun1(dlgSpell)
 {
    ABIWORD_VIEW;
    XAP_Dialog_Id id = AP_DIALOG_ID_SPELL;
 
    return s_doSpellDlg(pView,id);
-}   
-   
+}
+
 /*****************************************************************/
 
 static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
@@ -3203,7 +3209,7 @@ static bool s_doFindOrFindReplaceDlg(FV_View * pView, XAP_Dialog_Id id)
 
 		FREEP(buffer);
 	}
-	      
+	
 	// run the dialog (it should really be modeless if anyone
 	// gets the urge to make it safe that way)
         // OK I Will
@@ -3300,7 +3306,15 @@ static bool s_doFontDlg(FV_View * pView)
 			bStrikeOut = (strstr(s, "line-through") != NULL);
 		}
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut);
-
+#ifdef BIDI_ENABLED
+		bool bDirection;
+		s = UT_getAttribute("dir", props_in);
+		if (s)
+		{
+		    bDirection = (strstr(s, "rtl") != NULL);
+		}
+        	pDialog->setDirection(bDirection);
+#endif
 		free(props_in);
 	}
 
@@ -3354,6 +3368,10 @@ static bool s_doFontDlg(FV_View * pView)
 		bool bChangedOverline = pDialog->getChangedOverline(&bOverline);
 		bool bStrikeOut = false;
 		bool bChangedStrikeOut = pDialog->getChangedStrikeOut(&bStrikeOut);
+#ifdef BIDI_ENABLED
+		bool bDirection = false;
+		bool bChangedDirection = pDialog->getChangedDirection(&bDirection);
+#endif
 
 		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline)
 		{
@@ -3377,7 +3395,18 @@ static bool s_doFontDlg(FV_View * pView)
 			props_out[k++] = "text-decoration";
 			props_out[k++] = s;
 		}
-
+#ifdef BIDI_ENABLED
+		if(bChangedDirection)
+		{
+		    if (bDirection == 1)
+		        s = "rtl";
+		    else
+		        s = "ltr";
+		
+		    props_out[k++] = "dir";
+		    props_out[k++] = s;
+		}
+#endif
 		props_out[k] = 0;						// put null after last pair.
 		UT_ASSERT(k < NrElements(props_out));
 
@@ -3626,7 +3655,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 		if (!pView->getCharFormat(&props_in))
 		return false;
 	}
-	else // isBlock 
+	else // isBlock
 	{
 		if (!pView->getBlockFormat(&props_in))
 		return false;
@@ -3728,7 +3757,7 @@ static bool _toggleBlock(FV_View * pView,
 /*****************************************************************/
 /*****************************************************************/
 
-static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics, 
+static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 			       FV_View * pPrintView, const char *pDocName,
 			       UT_uint32 nCopies, bool bCollate,
 			       UT_sint32 iWidth,  UT_sint32 iHeight,
@@ -3751,8 +3780,8 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		for (j=1; (j <= nCopies); j++)
 		  for (k=nFromPage; (k <= nToPage); k++)
 		    {
-		      // NB we will need a better way to calc 
-		      // pGraphics->m_iRasterPosition when 
+		      // NB we will need a better way to calc
+		      // pGraphics->m_iRasterPosition when
 		      // iHeight is allowed to vary page to page
 		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
 		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
@@ -3765,7 +3794,7 @@ static bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		  for (j=1; (j <= nCopies); j++)
 		    {
 		      // NB we will need a better way to calc
-		      // pGraphics->m_iRasterPosition when 
+		      // pGraphics->m_iRasterPosition when
 		      // iHeight is allowed to vary page to page
 		      pGraphics->m_iRasterPosition = (k-1)*iHeight;
 		      pGraphics->startPage(pDocName, k, true, iWidth, iHeight);
@@ -3909,7 +3938,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 
 	pDialogFactory->releaseDialog(pDialog);
-				     
+				
         return true;
 }
 
@@ -4015,7 +4044,7 @@ static bool s_doBreakDlg(FV_View * pView)
 	return bOK;
 }
 
-static UT_Dimension 
+static UT_Dimension
 fp_2_dim (fp_PageSize::Unit u)
 {
   switch (u)
@@ -4040,7 +4069,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	XAP_DialogFactory * pDialogFactory
 	  = (XAP_DialogFactory *)(pFrame->getDialogFactory());
 
-	AP_Dialog_PageSetup * pDialog = 
+	AP_Dialog_PageSetup * pDialog =
 	  (AP_Dialog_PageSetup *)(pDialogFactory->requestDialog(AP_DIALOG_ID_FILE_PAGESETUP));
 
 	UT_ASSERT(pDialog);
@@ -4356,7 +4385,7 @@ static bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 	{
 	       pDialog->setListener(&symbol_Listener);
 	       pDialog->runModeless(pFrame);
-		   
+		
 	}
 	return true;
 }
@@ -4425,7 +4454,7 @@ Defun1(viewStd)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_StandardBarVisible, pFrameData->m_bShowBar[0]); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_StandardBarVisible, pFrameData->m_bShowBar[0]);
 
 	return true;
 }
@@ -4452,7 +4481,7 @@ Defun1(viewFormat)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_FormatBarVisible, pFrameData->m_bShowBar[1]); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_FormatBarVisible, pFrameData->m_bShowBar[1]);
 
 	return true;
 }
@@ -4479,7 +4508,7 @@ Defun1(viewExtra)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[2]); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[2]);
 
 	return true;
 }
@@ -4532,7 +4561,7 @@ Defun1(viewRuler)
 	UT_ASSERT(pPrefs);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
 	UT_ASSERT(pScheme);
-	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler);
 #endif
 
 	return true;
@@ -4745,7 +4774,7 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 
 Defun1(insPageNo)
 {
-        ABIWORD_VIEW; 
+        ABIWORD_VIEW;
 	return s_doInsertPageNumbers(pView);
 }
 
@@ -5124,6 +5153,34 @@ Defun1(toggleSub)
 	return _toggleSpan(pView, "text-position", "subscript", "normal");
 }
 
+#ifdef BIDI_ENABLED
+Defun1(toggleDirection)
+{
+	ABIWORD_VIEW;
+	return _toggleSpan(pView, "dir", "rtl", "ltr");
+}
+
+Defun1(toggleDomDirection)
+{
+	ABIWORD_VIEW;
+	const XML_Char * properties[] =	{ "dom-dir", NULL, 0};
+	const XML_Char drtl[] = "rtl";
+	const XML_Char dltr[] = "ltr";
+
+	if(pView->getCurrentBlock()->getDominantDirection())
+	{
+		properties[1] = (XML_Char *) &dltr;
+	}
+	else
+	{
+		properties[1] = (XML_Char *) &drtl;
+	}
+
+	pView->setBlockFormat(properties);
+	return true;
+}
+#endif
+
 Defun1(doBullets)
 {
 	ABIWORD_VIEW;
@@ -5360,7 +5417,7 @@ Defun1(cycleInputMode)
 	UT_ASSERT(pScheme);
 
 	pScheme->setValue((XML_Char*)AP_PREF_KEY_KeyBindings,
-			  (XML_Char*)szNextInputMode); 
+			  (XML_Char*)szNextInputMode);
 #endif
 
 	return bResult;

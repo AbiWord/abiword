@@ -43,12 +43,17 @@ typedef UT_uint16 AV_ChangeMask;
 #define AV_CHG_INPUTMODE	((AV_ChangeMask) 0x0800)
 #define AV_CHG_FMTSTYLE		((AV_ChangeMask) 0x1000)		// getStyle
 #define AV_CHG_INSERTMODE	((AV_ChangeMask) 0x2000)
-#define AV_CHG_ALL			((AV_ChangeMask) 0xFFFF) 
+
+#ifdef BIDI_ENABLED
+#define AV_CHG_DIRECTIONMODE ((AV_ChangeMask)0x4000)
+#endif
+
+#define AV_CHG_ALL			((AV_ChangeMask) 0xFFFF)
 
 #define AV_CHG_SAVE			((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))
 #define AV_CHG_TYPING		((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_EMPTYSEL | AV_CHG_COLUMN))
 #define AV_CHG_MOTION		((AV_ChangeMask) (AV_CHG_EMPTYSEL | AV_CHG_FMTSTYLE | AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION | AV_CHG_FMTCHAR | AV_CHG_COLUMN))
-
+#define AV_CHG_STYLE_PARA	((AV_ChangeMask)  (AV_CHG_FMTBLOCK | AV_CHG_FMTCHAR))
 /* 
 	Various UI elements (title, toolbar, etc.) need to stay in sync with 
 	the current state of an AV_View.  They can do so by registering

@@ -26,6 +26,7 @@
 #include "pt_Types.h"
 #include "fl_BlockLayout.h"
 #include "fp_Column.h"
+//#include "fmt_Types.h"
 
 class fp_Run;
 class GR_Graphics;
@@ -38,6 +39,31 @@ struct dg_DrawArgs;
 	fp_Line represents a single line.  A fp_Line is a collection of 
 	Runs.
 */
+#ifdef BIDI_ENABLED
+//these are the initial sizes of the temp buffers
+#define TEMP_LINE_BUFFER_SIZE 512
+#define RUNS_MAP_SIZE         80
+/* the following define determines whether the map used to convert logical to visual position and
+   vice versa is shared by all lines, or whether each line has map of its own. In the former case
+   only small encrease in memory requirenments is needed, but we have to recalculate the map
+   more often; in the latter case we only need to recalculate the map when a run
+   is added or deleted, but the increase in memory requirenments is significant:
+   sizeof(UT_uint32) * run_count * no_of_lines
+
+   there is a mechanism in place that makes sure that the static map gets calculated only when it
+   is really necessary and from my debugging experience this is not much more often that in the
+   case of the non-static map, so this appears to be definitely the better option;
+   PLEASE NOTE that if you change the option you will have to rebuild.
+*/
+#define USE_STATIC_MAP
+
+//#define FP_LINE_DIRECTION_USED_NONE 0X00
+//#define FP_LINE_DIRECTION_USED_LTR	0X01
+//#define FP_LINE_DIRECTION_USED_RTL  0x02
+//#define FP_LINE_DIRECTION_USED_BOTH 0x04
+
+#endif //BIDI_ENABLED
+
 
 class fp_Line
 {
@@ -133,7 +159,18 @@ public:
 	void		setNeedsRedraw(void) { m_bNeedsRedraw = true; m_pBlock->setNeedsRedraw();}
 	bool		needsRedraw(void) { return m_bNeedsRedraw; }
 	void		redrawUpdate(void);
-
+#ifdef BIDI_ENABLED
+	fp_Run *	getLastVisRun();
+	fp_Run *	getFirstVisRun();
+	void		setMapOfRunsDirty(){m_bMapDirty = true;};
+	void		addDirectionUsed(UT_uint32 dir);
+	
+	/* the following variable is needed for handling of BiDi support; static because we need
+	 * only one instance for all the instances of the class; public becuase it must be initialized
+	 * before the constructor is called so that the constructor can decide whether any allocation
+	 * is necessary or not; */
+	static UT_uint32       s_iClassInstanceCounter;	
+#endif
 protected:
 	fl_BlockLayout*	m_pBlock;
 	fp_Container*	m_pContainer;
@@ -158,6 +195,23 @@ protected:
 	fp_Line*        m_pPrev;
 
 	bool			m_bNeedsRedraw;
+#ifdef BIDI_ENABLED
+	UT_uint32       _getRunVisIndx(UT_uint32 indx);
+	UT_uint32       _getRunLogIndx(UT_uint32 indx);
+	UT_sint32       _createMapOfRuns();	
+	
+#ifdef USE_STATIC_MAP
+	static UT_sint32 * s_pMapOfRuns;
+	static UT_uint32   s_iMapOfRunsSize;
+	static fp_Line   * s_pMapOwner;
+	bool            m_bMapDirty;
+#else	
+	UT_sint32  *    m_pMapOfRuns;
+	UT_uint32       m_iMapOfRunsSize;
+#endif
+	UT_uint32		m_iRunsRTLcount;
+	UT_uint32		m_iRunsLTRcount;
+#endif //BIDI_ENABLED
 };
 
 #endif /* FP_LINE_H */

@@ -31,7 +31,9 @@
 	fp_TextRun represents a run of contiguous text sharing the same 
 	properties.  
 */
-
+#ifdef BIDI_ENABLED
+#define MAX_SPAN_LEN 250   //initial size for m_pSpanBuff, realocated if needed
+#endif
 
 class fp_TextRun : public fp_Run
 {
@@ -41,7 +43,7 @@ class fp_TextRun : public fp_Run
 
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			alwaysFits(void) const;
@@ -84,17 +86,31 @@ class fp_TextRun : public fp_Run
 	inline virtual bool	isOverline(void) const;
 	inline virtual bool	isStrikethrough(void) const;
 	virtual void			setLinethickness(UT_sint32 max_linethickness);
-	virtual UT_sint32                       getLinethickness(void);
-	virtual void                            setUnderlineXoff(UT_sint32 xoff);
-	virtual UT_sint32                       getUnderlineXoff(void);
-	virtual void                            setOverlineXoff(UT_sint32 xoff);
-	virtual UT_sint32                       getOverlineXoff(void);
-	virtual void                            setMaxUnderline(UT_sint32 xoff);
-	virtual UT_sint32                       getMaxUnderline(void);
-	virtual void                            setMinOverline(UT_sint32 xoff);
-	virtual UT_sint32                       getMinOverline(void);
+	virtual UT_sint32		getLinethickness(void);
+	virtual void			setUnderlineXoff(UT_sint32 xoff);
+	virtual UT_sint32		getUnderlineXoff(void);
+	virtual void			setOverlineXoff(UT_sint32 xoff);
+	virtual UT_sint32		getOverlineXoff(void);
+	virtual void			setMaxUnderline(UT_sint32 xoff);
+	virtual UT_sint32		getMaxUnderline(void);
+	virtual void			setMinOverline(UT_sint32 xoff);
+	virtual UT_sint32		getMinOverline(void);
 	UT_uint32				countTrailingSpaces(void) const;
     bool                 canContainPoint(void) const;
+#ifdef BIDI_ENABLED
+	UT_sint32               getStr(UT_UCSChar * str, UT_uint32 &iMax);
+	//bool                 setUnicodeDirection();
+    void					setDirection(UT_sint32 dir);
+
+	/* needed for handling BiDi text, static because we need only one buffer
+	for all the instances, public so that we could inicialised them in the cpp file outside of the
+	constructor in order that the constructor can decide whether it is creating the first instance
+	or not*/
+	static UT_UCSChar * s_pSpanBuff;
+	static UT_uint32    s_iSpanBuffSize;
+	static UT_uint32    s_iClassInstanceCount;	
+#endif
+
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif	

@@ -93,11 +93,11 @@ void AP_UnixDialog_Options::runModal(XAP_Frame * pFrame)
     // To center the dialog, we need the frame of its parent.
     XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
     UT_ASSERT(pUnixFrame);
-    
+
     // Get the GtkWindow of the parent frame
     GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
     UT_ASSERT(parentWindow);
-    
+
     // Center our new dialog in its parent and make it a transient
     // so it won't get lost underneath
     centerDialog(parentWindow, mainWindow);
@@ -168,7 +168,7 @@ void AP_UnixDialog_Options::event_Apply(void)
 
 void AP_UnixDialog_Options::event_WindowDelete(void)
 {
-    m_answer = AP_Dialog_Options::a_CANCEL;    
+    m_answer = AP_Dialog_Options::a_CANCEL;
     gtk_main_quit();
 }
 
@@ -264,6 +264,11 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *current_scheme;
 	GtkWidget *label10;
 
+#ifdef BIDI_ENABLED
+	GtkWidget *checkbuttonUseUnicodeDirection = 0;
+	GtkWidget *checkbuttonDirectionRtl = 0;
+#endif
+	
 	mainWindow = m_windowMain;
 	dialog_vbox1 = vbox;
 	gtk_widget_show (dialog_vbox1);
@@ -700,9 +705,36 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_notebook_set_tab_label (GTK_NOTEBOOK (notebook1), gtk_notebook_get_nth_page (GTK_NOTEBOOK (notebook1), 3), label10);
 
 
+//this needs to be brought into line with the new design; did not have
+//time to do this at this point
+#if 0	
+#ifdef BIDI_ENABLED
+	checkbuttonUseUnicodeDirection = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_UseUnicodeDirection));
+	gtk_widget_ref (checkbuttonUseUnicodeDirection);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonUseUnicodeDirection", checkbuttonUseUnicodeDirection,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (checkbuttonUseUnicodeDirection);
+	gtk_table_attach (GTK_TABLE (tableOther), checkbuttonUseUnicodeDirection, 0, 3, 2, 3,
+	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+	                  (GtkAttachOptions) (0), 0, 0);
+
+	checkbuttonDirectionRtl = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_DirectionRtl));
+	gtk_widget_ref (checkbuttonDirectionRtl);
+	gtk_object_set_data_full (GTK_OBJECT (windowOptions), "checkbuttonDirectionRtl", checkbuttonDirectionRtl,
+	                          (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (checkbuttonDirectionRtl);
+	gtk_table_attach (GTK_TABLE (tableOther), checkbuttonDirectionRtl, 0, 3, 3, 4,
+	                  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+	                  (GtkAttachOptions) (0), 0, 0);
+#endif
+#endif	
 	//////////////////////////////////////////////////////////////////
 
 	m_notebook = notebook1;
+#ifdef BIDI_ENABLED
+	m_checkbuttonOtherUseUnicodeDirection = checkbuttonUseUnicodeDirection;
+	m_checkbuttonOtherDirectionRtl = checkbuttonDirectionRtl;
+#endif
 
 	m_checkbuttonSpellCheckAsType	        = check_spell;
 	m_checkbuttonSpellHideErrors	        = hide_errors;
@@ -860,7 +892,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 	// create the accelerators from &'s
 	createLabelAccelerators(mainWindow);
 
-	// create user data tControl -> stored in widgets 
+	// create user data tControl -> stored in widgets
 	for ( int i = 0; i < id_last; i++ )
 	{
 		GtkWidget *w = _lookupWidget( (tControl)i );
@@ -936,6 +968,13 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	case id_LIST_DEFAULT_PAGE_SIZE:
 		return m_listDefaultPageSize;
 
+#ifdef BIDI_ENABLED
+	case id_CHECK_OTHER_USE_UNICODE_DIRECTION:
+		return m_checkbuttonOtherUseUnicodeDirection;
+
+	case id_CHECK_OTHER_DEFAULT_DIRECTION_RTL:
+		return m_checkbuttonOtherDirectionRtl;
+#endif
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// prefs
 	case id_CHECK_PREFS_AUTO_SAVE:
@@ -946,7 +985,7 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 		return m_comboPrefsScheme;
 		break;
 
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// view
 	case id_CHECK_VIEW_SHOW_RULER:
 		return m_checkbuttonViewShowRuler;
@@ -1056,6 +1095,12 @@ DEFINE_GET_SET_BOOL(SpellUppercase);
 DEFINE_GET_SET_BOOL(SpellNumbers);
 DEFINE_GET_SET_BOOL(SpellInternet);
 DEFINE_GET_SET_BOOL(SmartQuotesEnable);
+
+#ifdef BIDI_ENABLED
+DEFINE_GET_SET_BOOL(OtherUseUnicodeDirection);
+DEFINE_GET_SET_BOOL(OtherDirectionRtl);
+#endif
+
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 DEFINE_GET_SET_BOOL(ViewShowRuler);
 DEFINE_GET_SET_BOOL(ViewShowStatusBar);

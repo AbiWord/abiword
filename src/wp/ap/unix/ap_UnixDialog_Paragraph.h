@@ -124,6 +124,10 @@ public:
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
 	GtkWidget * m_buttonTabs;
+
+#ifdef BIDI_ENABLED
+	GtkWidget * m_checkbuttonDomDirection;
+#endif
 };
 
 #endif /* XAP_UNIXDIALOG_PARAGRAPH_H */

@@ -197,7 +197,7 @@ public:
 
 	char *  getFormatFromListType(List_Type iListType);
 	void remItemFromList(void);
-	virtual void listUpdate(void); 
+	virtual void listUpdate(void);
 	void resumeList( fl_BlockLayout * prevList);
 	void prependList( fl_BlockLayout * nextList);
         List_Type decodeListType(char * listformat);
@@ -205,7 +205,7 @@ public:
 	XML_Char* getListStyleString( List_Type iListType);
 	List_Type getListTypeFromStyle( const XML_Char * style);
 	fl_BlockLayout * getNextList(UT_uint32 id);
-	bool isListLabelInBlock(void); 
+	bool isListLabelInBlock(void);
 	void StartList( const XML_Char * style);
 
 	void StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID = 0, UT_uint32 level=0 );
@@ -227,7 +227,7 @@ public:
 	fl_CharWidths * getCharWidths(void);
 
 	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
-	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 
 	bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	bool	getBlockBuf(UT_GrowBuf * pgb) const;
@@ -258,13 +258,17 @@ public:
 	inline UT_uint32 getProp_Widows(void) const { return m_iWidowsProperty; }
 	inline bool getProp_KeepTogether(void) const { return m_bKeepTogether; }
 	inline bool getProp_KeepWithNext(void) const { return m_bKeepWithNext; }
+#ifdef BIDI_ENABLED
+	inline bool getDominantDirection(void) const { return m_bDomDirection; }
+	void setDominantDirection(bool bDirection);
+#endif
 
 	void checkForBeginOnForcedBreak(void);
 	void checkForEndOnForcedBreak(void);
 
 	void checkSpelling(void);
 	void debugFlashing(void);
- 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, 
+ 	bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX,
 				UT_sint32& iPosition, eTabType& iType, 
 				eTabLeader &iLeader );
  	bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
@@ -367,19 +371,19 @@ protected:
 	UT_sint32				_findSquiggle(UT_uint32 iOffset) const;
 	void					_addSquiggle(UT_uint32 iOffset, UT_uint32 iLen, bool bIsIgnored = false);
 	void					_updateSquiggle(fl_PartOfBlock* pPOB);
-	void					_insertSquiggles(UT_uint32 iOffset, 
+	void					_insertSquiggles(UT_uint32 iOffset,
 											 UT_uint32 iLength);
-	void					_breakSquiggles(UT_uint32 iOffset, 
+	void					_breakSquiggles(UT_uint32 iOffset,
 											fl_BlockLayout* pNewBL);
-	void					_deleteSquiggles(UT_uint32 iOffset, 
+	void					_deleteSquiggles(UT_uint32 iOffset,
 											 UT_uint32 iLength);
-	void					_mergeSquiggles(UT_uint32 iOffset, 
+	void					_mergeSquiggles(UT_uint32 iOffset,
 											fl_BlockLayout* pPrevBL);
-	void					_moveSquiggles(UT_uint32 iOffset, 
-										   UT_sint32 chg, 
+	void					_moveSquiggles(UT_uint32 iOffset,
+										   UT_sint32 chg,
 										   fl_BlockLayout* pBlock=NULL);
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
-	bool					_checkMultiWord(const UT_UCSChar* pBlockText, 
+	bool					_checkMultiWord(const UT_UCSChar* pBlockText,
 									 UT_uint32 iStart, 
 									 UT_uint32 eor,
 									 bool bToggleIP);
@@ -450,12 +454,15 @@ protected:
 
 	// spell check stuff
 	UT_Vector				m_vecSquiggles;
+#ifdef BIDI_ENABLED
+	bool					m_bDomDirection;
+#endif
 
 };
 
 /*
 	This class is used to represent a part of the block.  Pointers
-	to this class are the things contained in m_vecSquiggles and in 
+	to this class are the things contained in m_vecSquiggles and in
 	FL_DocLayout::m_pPendingWordForSpell
 */
 class fl_PartOfBlock

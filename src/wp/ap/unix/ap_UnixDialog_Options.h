@@ -45,7 +45,7 @@ public:
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
  					    virtual void    _set##a( t )
- 
+
  	SET_GATHER			(SpellCheckAsType,	bool );
  	SET_GATHER			(SpellHideErrors,	bool );
  	SET_GATHER			(SpellSuggest,		bool );
@@ -56,7 +56,7 @@ public:
  
  	SET_GATHER			(SmartQuotesEnable,	bool );
 	SET_GATHER			(DefaultPageSize,  fp_PageSize::Predefined);
- 
+
  	SET_GATHER			(PrefsAutoSave,		bool );
  
  	SET_GATHER			(ViewShowRuler,		bool );
@@ -75,6 +75,11 @@ public:
  	SET_GATHER			(ViewUnprintable,	bool );
   
  	SET_GATHER			(NotebookPageNum,	int );
+
+#ifdef BIDI_ENABLED
+	SET_GATHER			(OtherUseUnicodeDirection, bool);
+	SET_GATHER			(OtherDirectionRtl, bool);
+#endif
 #undef SET_GATHER
 	
  protected:
@@ -122,6 +127,11 @@ public:
     GtkWidget * m_checkbuttonViewHiddenText;
     GtkWidget * m_checkbuttonViewUnprintable;
 
+#ifdef BIDI_ENABLED
+    GtkWidget * m_checkbuttonOtherUseUnicodeDirection;
+    GtkWidget * m_checkbuttonOtherDirectionRtl;
+#endif
+	
 	GtkWidget * m_buttonDefaults;
 	GtkWidget * m_buttonApply;
 	GtkWidget * m_buttonOK;

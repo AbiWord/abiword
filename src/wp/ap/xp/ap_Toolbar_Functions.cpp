@@ -36,6 +36,7 @@
 #include "fv_View.h"
 #include "gr_Graphics.h"
 #include "fl_AutoNum.h"
+#include "ap_Prefs_SchemeIds.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -198,6 +199,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	bool bMultiple = false;
 	bool bSize = false;
 	bool bString = false;
+	
+	XAP_Prefs	*pPrefs;
+	bool 	bPref;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
@@ -257,12 +261,27 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 		val  = "subscript";
 		bMultiple = true;
 		break;
-		
+#ifdef BIDI_ENABLED
+	case AP_TOOLBAR_ID_FMT_DIRECTION:
+		prop = "dir";
+		val  = "rtl";	
+		pPrefs = pView->getApp()->getPrefs();
+		pPrefs->getPrefsValueBool(AP_PREF_KEY_UseUnicodeDirection,&bPref);
+		if(bPref)
+			s = EV_TIS_Gray;
+		break;
+#endif	
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 
+	//if should be disabled return
+	if (s == EV_TIS_Gray)
+	{
+		return s;
+	}
+	
 	if (prop && val)
 	{
 		// get current char properties from pView
@@ -432,10 +451,23 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 		prop = "line-height";
 		val = "2.0";
 		break;
+#ifdef BIDI_ENABLED
+	case AP_TOOLBAR_ID_FMT_DOM_DIRECTION:
+		prop = "dom-dir";
+		val = "rtl";
+		break;
+#endif
 
 	default:
+		UT_DEBUGMSG(("id=%d", id));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
+	}
+	
+	//if should be disabled return
+	if (s == EV_TIS_Gray)
+	{
+		return s;
 	}
 
 	if (prop && val)

@@ -36,12 +36,31 @@
   TODO do we want this list of last-resort default settings to be here?
   It seems out of place... --EWS
 */
+/*
+	We need to be able to change the BiDi relevant dafault properties at runtime
+	in response to the user changing the default direction in preferences.
+	Therefore cannot use constants for these three, since those are stored in
+	read-only segment.
+*/
+#ifdef BIDI_ENABLED
+	#ifndef BIDI_RTL_DOMINANT
+	XML_Char default_dominant_direction[]="ltr";
+	XML_Char default_direction[]="ltr";
+	XML_Char text_align[]="left\0";		//the '\0' is needed so that we can copy
+										//the word 'right' here
+	#else
+	XML_Char default_dominant_direction[]="rtl";
+	XML_Char default_direction[]="rtl";
+	XML_Char text_align[]="right";
+	#endif
+	
+#endif
 
 // KEEP THIS ALPHABETICALLY ORDERED UNDER PENALTY OF DEATH!
 
 static PP_Property _props[] =
 {
-        { "background-color", "transparent", 0},
+	{ "background-color", "transparent", 0},
 	{ "bgcolor", "ffffff", 1},
 
 	{ "color",   "000000", 1},
@@ -50,6 +69,16 @@ static PP_Property _props[] =
 	{ "columns", "1", 0},
 
 	{ "default-tab-interval",  "0.5in", 0},
+
+#ifdef BIDI_ENABLED
+	/*	these two stand for "direction" and "dominant direction"; they were
+		intentionally abreviated, because the direction property has to be
+		set basically for each word and each chunk of whitespace, inflating
+		the ABW file
+	*/
+	{ "dir",              default_direction,              1},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	{ "dom-dir",     default_dominant_direction,              0},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
+#endif
 
 	{ "field-color", "dcdcdc", 1},
 	{ "field-font",	"NULL",	1},	
@@ -85,10 +114,14 @@ static PP_Property _props[] =
 	{ "page-margin-top",		"1in",				0},
 
 	{ "section-space-after",	"0.25in",			0},
-       	{ "start-value",			"1",				1},
+   	{ "start-value",			"1",				1},
 
 	{ "tabstops", "", 0},
+#ifdef BIDI_ENABLED
+	{ "text-align", text_align,	1},
+#else
 	{ "text-align", "left",	1},
+#endif	
 	{ "text-decoration", "none", 1},
 	{ "text-indent", "0in", 0},
 	{ "text-position", "normal", 1},	
@@ -152,6 +185,32 @@ const PP_Property * PP_lookupProperty(const XML_Char * name)
 #endif
 }
 
+#ifdef BIDI_ENABLED
+//allows us to reset the default value for the direction settings;
+void PP_resetInitialBiDiValues(const XML_Char * pszValue)
+{
+	int i;
+	int count = NrElements(_props);
+
+	for (i=0; i<count; i++)
+	{
+		if ((0 == UT_stricmp(_props[i].m_pszName, (XML_Char*) "dir"))||(0 == UT_stricmp(_props[i].m_pszName, (XML_Char*) "dom-dir")))
+		{
+			UT_XML_strncpy(_props[i].m_pszInitial, 3,pszValue);
+		}
+		else if ((0 == UT_stricmp(_props[i].m_pszName, (XML_Char*) "text-align")))
+		{
+			UT_DEBUGMSG(("reseting text-align (%s)\n", pszValue));
+			if(pszValue[0] == (XML_Char)'r')
+				UT_XML_strncpy(_props[i].m_pszInitial, 5,"right");
+			else
+				UT_XML_strncpy(_props[i].m_pszInitial, 4,"left");
+			break; //since the list is alphabetical, this is always the last one
+		}
+	}
+}
+#endif
+
 static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 {
 	PD_Style * pStyle = NULL;
@@ -193,7 +252,7 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 	const PP_Property * pProp = PP_lookupProperty(pszName);
 	if (!pProp)
 	{
-		UT_DEBUGMSG(("PP_evalProperty: unknown property\n"));
+		UT_DEBUGMSG(("PP_evalProperty: unknown property \'%s\'\n",pszName));
 		return NULL;
 	}
 	
@@ -256,7 +315,7 @@ const XML_Char * PP_evalProperty(const XML_Char *  pszName,
 		}
 	}
 
-	if (pDoc->getStyle("Normal", &pStyle))
+	if (pDoc->getStyle("normal", &pStyle))
 	{
 		// next to last resort -- check for this property in the Normal style
 		if (pStyle->getProperty(pProp->getName(), szValue))

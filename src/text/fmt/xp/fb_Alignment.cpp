@@ -130,7 +130,8 @@ void fb_Alignment_right::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
 // line should be included and spaces at the end of the line 
 // should be excluded.
 
-// If last line in block then no justification is required.
+// If last line in block then no justification is required unless
+// this is a RTL dominant block, in which case justify right
 
 // Otherwise spaces at start and end of the lines should be ignored.
 
@@ -146,21 +147,54 @@ void fb_Alignment_justify::initialize(fp_Line *pLine)
 
 		pLine->distributeJustificationAmongstSpaces(m_iExtraWidth);
 
+#ifdef BIDI_ENABLED
+	    m_iStartPosition = 0;
+	    m_iStartPositionLayoutUnits = 0;
+#endif
+
 #ifndef NDEBUG	
 		_confirmJustification(pLine);
 #endif
 
 	}
+#ifdef BIDI_ENABLED
+	else if(pLine->getBlock()->getDominantDirection()) //this is RTL block, the last line behaves as if right-justified
+	{
+		//UT_DEBUGMSG(("Justified block, last line, right justified\n"));
+		UT_sint32 iWidth = pLine->calculateWidthOfLine() - pLine->calculateWidthOfTrailingSpaces();
+		/*UT_sint32*/ m_iExtraWidth = pLine->getMaxWidth() - iWidth;
+		m_iStartPosition = m_iExtraWidth;
+
+		UT_sint32 iWidthLayoutUnits = pLine->calculateWidthOfLineInLayoutUnits() - pLine->calculateWidthOfTrailingSpacesInLayoutUnits();
+		m_iStartPositionLayoutUnits = pLine->getMaxWidthInLayoutUnits() - iWidthLayoutUnits;
+	}
+	else
+	{
+		//UT_DEBUGMSG(("Justified block, last line, left justified\n"));
+	    m_iStartPosition = 0;
+	    m_iStartPositionLayoutUnits = 0;
+	}
+#endif
 }
 
 UT_sint32 fb_Alignment_justify::getStartPosition()
 {
+#ifdef BIDI_ENABLED
+	//UT_DEBUGMSG(("Alignment_justify::getStartPosition : %d\n", m_iStartPosition));
+	return m_iStartPosition;
+#else
 	return 0;
+#endif
 }
 
 UT_sint32 fb_Alignment_justify::getStartPositionInLayoutUnits()
 {
+#ifdef BIDI_ENABLED
+	//UT_DEBUGMSG(("Alignment_justify::getStartPositionInLayoutUnits : %d\n", m_iStartPositionLayoutUnits));
+	return m_iStartPositionLayoutUnits;
+#else
 	return 0;
+#endif
 }
 
 #ifndef NDEBUG
