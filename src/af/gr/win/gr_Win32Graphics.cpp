@@ -628,7 +628,7 @@ void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sin
 			penStyle = PS_SOLID;
 	}
 
-	HPEN hPen = CreatePen(penStyle, m_iLineWidth, m_clrCurrent);
+	HPEN hPen = CreatePen(penStyle, tdu (m_iLineWidth), m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
 	MoveToEx(m_hdc, x1, y1, NULL);
@@ -673,7 +673,7 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 		{
 			DeleteObject(m_hXorPen);
 		}
-		m_hXorPen = CreatePen(PS_SOLID, 1, m_clrCurrent);
+		m_hXorPen = CreatePen(PS_SOLID, tdu(m_iLineWidth), m_clrCurrent);
 		m_clrXorPen = m_clrCurrent;
 	}
 
@@ -689,8 +689,7 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 
 void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	// TODO do we really want the line width to ALWAYS be 1?
-	HPEN hPen = CreatePen(PS_SOLID, 1, m_clrCurrent);
+	HPEN hPen = CreatePen(PS_SOLID, tdu(m_iLineWidth), m_clrCurrent);
 	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
 
 	POINT * points = (POINT *)UT_calloc(nPoints, sizeof(POINT));
@@ -1312,7 +1311,7 @@ void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, HDC hdc)
 
 void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
 {
-	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(c.m_red, c.m_grn, c.m_blu));
+	HPEN hPen = CreatePen(PS_SOLID, tdu(m_iLineWidth), RGB(c.m_red, c.m_grn, c.m_blu));
 	HPEN hOldPen = (HPEN)SelectObject(m_hdc,hPen);
 
 	HBRUSH hBrush = CreateSolidBrush(RGB(c.m_red, c.m_grn, c.m_blu));
@@ -1385,7 +1384,6 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 #endif
 }
 
-
 void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) {	
 	void * oldR = NULL;
 	m_vSaveRect.setNthItem(iIndx, (void*)new UT_Rect(r),&oldR);
@@ -1393,14 +1391,14 @@ void GR_Win32Graphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx) {
 		delete (UT_Rect*)oldR;
 
 	void * oldC = NULL;
-	m_vSaveRectBuf.setNthItem(iIndx, (void*) new COLORREF[r.width * r.height], &oldC);
+	m_vSaveRectBuf.setNthItem(iIndx, (void*) new COLORREF[tdu(r.width) * tdu(r.height)], &oldC);
 	if(oldC)
 		delete (COLORREF*)oldC;
 		
 	COLORREF *p = (COLORREF *)m_vSaveRectBuf.getNthItem(iIndx);
-	for (int x = 0; x < r.width; x++) {
-		for (int y = 0; y < r.height; y++) {
-			*(p++) = GetPixel(m_hdc, r.left + x, r.top + y);
+	for (int x = 0; x < tdu(r.width); x++) {
+		for (int y = 0; y < tdu(r.height); y++) {
+			*(p++) = GetPixel(m_hdc, tdu(r.left) + x, tdu(r.top) + y);
 			}
 		}
 	}
@@ -1410,9 +1408,9 @@ void GR_Win32Graphics::restoreRectangle(UT_uint32 iIndx) {
 	COLORREF *p = (COLORREF *)m_vSaveRectBuf.getNthItem(iIndx);
 	
 	if ( r && p) {
-		for (int x = 0; x < r->width; x++) {
-			for (int y = 0; y < r->height; y++) {
-				SetPixel(m_hdc, r->left + x, r->top + y, *(p++));
+		for (int x = 0; x < tdu(r->width); x++) {
+			for (int y = 0; y < tdu(r->height); y++) {
+				SetPixel(m_hdc, tdu(r->left) + x, tdu(r->top) + y, *(p++));
 				}
 			}
 		}
