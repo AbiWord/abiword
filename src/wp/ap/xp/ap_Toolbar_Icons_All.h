@@ -118,6 +118,45 @@
 
 	// ... add new icons here (don't forget to add below the #else) ...
 
+#	include "menu_copy.xpm"
+#	include "menu_cut.xpm"
+#	include "menu_exit.xpm"
+#	include "menu_new.xpm"
+#	include "menu_open.xpm"
+#	include "menu_paste.xpm"
+#	include "menu_print.xpm"
+#	include "menu_print_preview.xpm"
+#	include "menu_redo.xpm"
+#	include "menu_save.xpm"
+#	include "menu_save_as.xpm"
+#	include "menu_undo.xpm"
+#	include "menu_insert_table.xpm"
+#	include "menu_insert_graphic.xpm"
+#	include "menu_insert_symbol.xpm"
+#	include "menu_hyperlink.xpm"
+#   include "menu_insert_bookmark.xpm"
+#	include "menu_help.xpm"
+#	include "menu_text_center.xpm"
+#	include "menu_text_justify.xpm"
+#	include "menu_text_left.xpm"
+#	include "menu_text_right.xpm"
+#	include "menu_text_bold.xpm"
+#	include "menu_text_italic.xpm"
+#	include "menu_text_strikethrough.xpm"
+#	include "menu_text_underline.xpm"
+#	include "menu_text_overline.xpm"
+#	include "menu_text_topline.xpm"
+#	include "menu_text_bottomline.xpm"
+#	include "menu_superscript.xpm"
+#	include "menu_subscript.xpm"
+#	include "menu_spellcheck.xpm"
+#	include "menu_add_row.xpm"
+#	include "menu_add_column.xpm"
+#	include "menu_delete_row.xpm"
+#	include "menu_delete_column.xpm"
+#	include "menu_merge_cells.xpm"
+#	include "menu_split_cells.xpm"
+
 #else
 
 	// Declare each toolbar icon that we are building.
@@ -203,6 +242,45 @@
 	DefineToolbarIcon(tb_merge_cells_xpm)
 	DefineToolbarIcon(tb_split_cells_xpm)
 	DefineToolbarIcon(tb_transparent_xpm)
+
+	DefineToolbarIcon(menu_copy_xpm)
+	DefineToolbarIcon(menu_cut_xpm)
+	DefineToolbarIcon(menu_exit_xpm)
+	DefineToolbarIcon(menu_new_xpm)
+ 	DefineToolbarIcon(menu_open_xpm)
+	DefineToolbarIcon(menu_paste_xpm)
+	DefineToolbarIcon(menu_print_xpm)
+	DefineToolbarIcon(menu_print_preview_xpm)
+	DefineToolbarIcon(menu_redo_xpm)
+	DefineToolbarIcon(menu_save_xpm)
+	DefineToolbarIcon(menu_save_as_xpm)
+	DefineToolbarIcon(menu_undo_xpm)
+	DefineToolbarIcon(menu_insert_table_xpm)
+	DefineToolbarIcon(menu_insert_graphic_xpm)
+	DefineToolbarIcon(menu_insert_symbol_xpm)
+	DefineToolbarIcon(menu_insert_bookmark_xpm)
+	DefineToolbarIcon(menu_hyperlink_xpm)
+	DefineToolbarIcon(menu_help_xpm)
+	DefineToolbarIcon(menu_text_center_xpm)
+	DefineToolbarIcon(menu_text_justify_xpm)
+	DefineToolbarIcon(menu_text_left_xpm)
+	DefineToolbarIcon(menu_text_right_xpm)
+	DefineToolbarIcon(menu_text_bold_xpm)
+	DefineToolbarIcon(menu_text_italic_xpm)
+	DefineToolbarIcon(menu_text_strikethrough_xpm)
+	DefineToolbarIcon(menu_text_underline_xpm)
+	DefineToolbarIcon(menu_superscript_xpm)
+	DefineToolbarIcon(menu_subscript_xpm)
+	DefineToolbarIcon(menu_text_overline_xpm)
+	DefineToolbarIcon(menu_text_topline_xpm)
+	DefineToolbarIcon(menu_text_bottomline_xpm)
+ 	DefineToolbarIcon(menu_spellcheck_xpm)
+	DefineToolbarIcon(menu_add_row_xpm)
+	DefineToolbarIcon(menu_add_column_xpm)
+	DefineToolbarIcon(menu_delete_row_xpm)
+	DefineToolbarIcon(menu_delete_column_xpm)
+	DefineToolbarIcon(menu_merge_cells_xpm)
+	DefineToolbarIcon(menu_split_cells_xpm)
 
 	// these are specific to one or more translations
 

@@ -47,63 +47,59 @@
 	This table assigns an icon to every menu entry
 */
 static const EV_Menu_Bitmap s_bitmaps[] = 
-{	  
+{
+	// File
+	{AP_MENU_ID_FILE_NEW,		"FILE_NEW_16"},                                               
+	{AP_MENU_ID_FILE_OPEN,		"FILE_OPEN_16"},                                                      
+	{AP_MENU_ID_FILE_PRINT,		"FILE_PRINT_16"}, 
+	{AP_MENU_ID_FILE_SAVE,		"FILE_SAVE_16"}, 
+	{AP_MENU_ID_FILE_SAVEAS,	"FILE_SAVEAS_16"}, 
+	{AP_MENU_ID_FILE_EXIT,		"FILE_EXIT_16"},	
+     
+  	// Edit
+	{AP_MENU_ID_EDIT_PASTE, "EDIT_PASTE_16"},				
+	{AP_MENU_ID_EDIT_CUT, "EDIT_CUT_16"},				
+	{AP_MENU_ID_EDIT_COPY, "EDIT_COPY_16"},				
+	{AP_MENU_ID_EDIT_UNDO, "EDIT_UNDO_16"},				
+	{AP_MENU_ID_EDIT_REDO, "EDIT_REDO_16"},				
+  
+  	// Insert
+	{AP_MENU_ID_INSERT_SYMBOL,	"INSERT_SYMBOL_16"},				
+	{AP_MENU_ID_INSERT_PICTURE, "IMG_16"},				
+	{AP_MENU_ID_INSERT_HYPERLINK,	"FMT_HYPERLINK_16"},	
+  	
+  	// Format
+	{AP_MENU_ID_FMT_BOLD, "FMT_BOLD_16"},
+	{AP_MENU_ID_FMT_ITALIC, "FMT_ITALIC_16"},
+	{AP_MENU_ID_FMT_UNDERLINE, "FMT_UNDERLINE_16"},
+	{AP_MENU_ID_FMT_STRIKE, "FMT_STRIKE_16"},		
+	{AP_MENU_ID_FMT_TOPLINE, "FMT_TOPLINE_16"},
+	{AP_MENU_ID_FMT_BOTTOMLINE, "FMT_BOTTOMLINE_16"},
+	{AP_MENU_ID_FMT_SUPERSCRIPT, "FMT_SUPERSCRIPT_16"},
+	{AP_MENU_ID_FMT_SUBSCRIPT, "FMT_SUBSCRIPT_16"},
+	{AP_MENU_ID_FMT_OVERLINE, "FMT_OVERLINE_16"},
+  		
+	//{AP_MENU_ID_ALIGN_LEFT, "ALIGN_LEFT_16"},
+	//{AP_MENU_ID_ALIGN_RIGHT, "ALIGN_RIGHT_16"},
+	//{AP_MENU_ID_ALIGN_CENTER, "ALIGN_CENTER_16"},
+	//{AP_MENU_ID_ALIGN_JUSTIFY, "ALIGN_JUSTIFY_16"},	
+	{AP_MENU_ID_TABLE_INSERT_TABLE, "INSERT_TABLE_16"},			
+  	//{AP_MENU_ID_VIEW_SHOWPARA, "VIEW_SHOWPARA"},			
+	{AP_MENU_ID_TOOLS_SPELL, "SPELLCHECK_16"},			
+  
+  	// Table
+	{AP_MENU_ID_TABLE_INSERT_TABLE, "INSERT_TABLE_16"},
+	{AP_MENU_ID_TABLE_MERGE_CELLS, "TB_MERGE_CELLS_16"},
+	{AP_MENU_ID_TABLE_SPLIT_CELLS, "TB_SPLIT_CELLS_16"},
+	{AP_MENU_ID_TABLE_INSERTCOLUMN, "TB_ADD_COLUMN_16"},
+	{AP_MENU_ID_TABLE_INSERTROW, "TB_ADD_ROW_16"},
+	{AP_MENU_ID_TABLE_DELETECOLUMN, "TB_DELETE_COLUMN_16"},
+	{AP_MENU_ID_TABLE_DELETEROW, "TB_DELETE_ROW_16"},
+  	
+  	// Help
+	{AP_MENU_ID_HELP_CONTENTS,      "HELP_16"},    
 
-	
-    // File
-    {AP_MENU_ID_FILE_NEW,		"FILE_NEW"},                                               
-    {AP_MENU_ID_FILE_OPEN,		"FILE_OPEN"},                                                      
-    {AP_MENU_ID_FILE_PRINT,		"FILE_PRINT"}, 
-	{AP_MENU_ID_FILE_SAVE,		"FILE_SAVE"}, 
-	{AP_MENU_ID_FILE_SAVEAS,	"FILE_SAVEAS"}, 
-	
-	// Edit
-	{AP_MENU_ID_EDIT_PASTE, "EDIT_PASTE"},				
-	{AP_MENU_ID_EDIT_CUT, "EDIT_CUT"},				
-	{AP_MENU_ID_EDIT_COPY, "EDIT_COPY"},				
-	{AP_MENU_ID_EDIT_UNDO, "EDIT_UNDO"},				
-	{AP_MENU_ID_EDIT_REDO, "EDIT_REDO"},				
-
-	// Insert
-	{AP_MENU_ID_INSERT_SYMBOL,	"INSERT_SYMBOL"},				
-	{AP_MENU_ID_INSERT_PICTURE, "IMG"},				
-	{AP_MENU_ID_INSERT_HYPERLINK,	"FMT_HYPERLINK"},	
-	
-
-	// Format
-/*
-	{AP_MENU_ID_FMT_BOLD, "FMT_BOLD"},
-	{AP_MENU_ID_FMT_ITALIC, "FMT_ITALIC"},
-	{AP_MENU_ID_FMT_UNDERLINE, "FMT_UNDERLINE"},
-	{AP_MENU_ID_FMT_STRIKE, "FMT_STRIKE"},		
-	{AP_MENU_ID_FMT_TOPLINE, "FMT_TOPLINE"},
-	{AP_MENU_ID_FMT_BOTTOMLINE, "FMT_BOTTOMLINE"},
-	{AP_MENU_ID_FMT_SUPERSCRIPT, "FMT_SUPERSCRIPT"},
-	{AP_MENU_ID_FMT_SUBSCRIPT, "FMT_SUBSCRIPT"},
-	{AP_MENU_ID_FMT_OVERLINE, "FMT_OVERLINE"},	*/	
-
-	/*{AP_MENU_ID_ALIGN_LEFT, "ALIGN_LEFT"},
-	{AP_MENU_ID_ALIGN_RIGHT, "ALIGN_RIGHT"},
-	{AP_MENU_ID_ALIGN_CENTER, "ALIGN_CENTER"},
-	{AP_MENU_ID_ALIGN_JUSTIFY, "ALIGN_JUSTIFY"},	*/
-	{AP_MENU_ID_TABLE_INSERT_TABLE, "INSERT_TABLE"},			
-	{AP_MENU_ID_TOOLS_SPELL, "SPELLCHECK"},			
-
-	// Table
-	{AP_MENU_ID_TABLE_INSERT_TABLE, "INSERT_TABLE"},
-	{AP_MENU_ID_TABLE_MERGE_CELLS, "TB_MERGE_CELLS"},
-	{AP_MENU_ID_TABLE_SPLIT_CELLS, "TB_SPLIT_CELLS"},
-	{AP_MENU_ID_TABLE_INSERTCOLUMN, "TB_ADD_COLUMN"},
-	{AP_MENU_ID_TABLE_INSERTROW, "TB_ADD_ROW"},
-	{AP_MENU_ID_TABLE_DELETECOLUMN, "TB_DELETE_COLUMN"},
-	{AP_MENU_ID_TABLE_DELETEROW, "TB_DELETE_ROW"},	
-
-	// Help
-    {AP_MENU_ID_HELP_CONTENTS,      "HELP"},    
-	
 	{0, NULL}
-
-		
 };
 
 
@@ -205,8 +201,8 @@ EV_Win32Menu::EV_Win32Menu(XAP_Win32App * pWin32App,
 		
 		if (GetObjectA(hBitmap, sizeof(BITMAP), &bitmap))
 		{
-			m_nBitmapCX = bitmap.bmWidth;
-			m_nBitmapCY = bitmap.bmHeight;
+			m_nBitmapCX = bitmap.bmWidth+2;
+			m_nBitmapCY = bitmap.bmHeight+2;
 		}
 	}						
 	
@@ -852,10 +848,10 @@ void EV_Win32Menu::onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam)
 				  		
 		HDC hdcMem = CreateCompatibleDC(lpdis->hDC);
 		SelectObject(hdcMem,(void *)hBitmap);				
-		//BitBlt(lpdis->hDC, lpdis->rcItem.left, lpdis->rcItem.top, 16, 16, /*m_nBitmapCX, m_nBitmapCY,*/	hdcMem, 0, 0, SRCCOPY );
+		BitBlt(lpdis->hDC, lpdis->rcItem.left+1, lpdis->rcItem.top+1, 16, 16, /*m_nBitmapCX, m_nBitmapCY,*/	hdcMem, 0, 0, SRCCOPY );
 
-		StretchBlt(lpdis->hDC, lpdis->rcItem.left, lpdis->rcItem.top, 20, 20, /*m_nBitmapCX, m_nBitmapCY,*/	hdcMem, 
-			0,0, m_nBitmapCX, m_nBitmapCY, SRCCOPY);
+		//StretchBlt(lpdis->hDC, lpdis->rcItem.left, lpdis->rcItem.top, 20, 20, /*m_nBitmapCX, m_nBitmapCY,*/	hdcMem, 
+		//	0,0, m_nBitmapCX, m_nBitmapCY, SRCCOPY);
 
 		DeleteDC(hdcMem);					
 				
