@@ -20,6 +20,8 @@
 #ifndef FV_VIEW_H
 #define FV_VIEW_H
 
+#include "xap_Features.h"
+
 //#include "ut_misc.h"
 #include "ut_types.h"
 
@@ -579,6 +581,10 @@ public:
 	GR_Graphics::Cursor getImageSelCursor();
 	void				setCurImageSel(UT_Rect r);
 	UT_Rect				getCurImageSel();
+#if XAP_DONTUSE_XOR
+	void				setCurImageSelCache(GR_Image* cache);
+	GR_Image* 			getCurImageSelCache();
+#endif
 	bool				isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_uint32 yPos);
 	void				startImageResizing(UT_sint32 xPos, UT_sint32 yPos);
 	void				stopImageResizing();
@@ -773,7 +779,9 @@ private:
 	UT_sint32			m_iyResizeOrigin;
 	bool				m_bIsResizingImage;
 	UT_Rect				m_curImageSel;
-
+#if XAP_DONTUSE_XOR
+	GR_Image*			m_curImageSelCache;
+#endif
 	// properties for image dragging
 	bool				m_bIsDraggingImage;
 	fp_Run *			m_pDraggedImageRun;

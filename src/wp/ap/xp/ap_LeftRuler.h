@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2004 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +21,7 @@
 #ifndef AP_LEFTRULER_H
 #define AP_LEFTRULER_H
 
+#include "xap_Features.h"
 // Class for dealing with the horizontal ruler at the top of
 // a document window.
 
@@ -226,6 +228,10 @@ private:
 	UT_sint32           m_minPageLength;
 	PT_DocPosition       m_draggingDocPos;
 	bool                m_bIsHidden;
+#if XAP_DONTUSE_XOR
+	UT_Rect				m_guideCacheRect;
+	GR_Image*			m_guideCache;
+#endif
 };
 
 #endif /* AP_LEFTRULER_H */

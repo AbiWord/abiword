@@ -179,6 +179,9 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iyResizeOrigin(0),
 		m_bIsResizingImage(false),
 		m_curImageSel(-1,-1,-1,-1),
+#if XAP_DONTUSE_XOR
+		m_curImageSelCache(NULL),
+#endif
 		m_bIsDraggingImage(false),
 		m_pDraggedImageRun(NULL),
 		m_dragImageRect(-1,-1,-1,-1),
@@ -9866,6 +9869,18 @@ UT_Rect FV_View::getCurImageSel()
 {
 	return m_curImageSel;
 }
+
+#if XAP_DONTUSE_XOR
+void FV_View::setCurImageSelCache(GR_Image* cache)
+{
+	m_curImageSelCache = cache;
+}
+
+GR_Image* FV_View::getCurImageSelCache()
+{
+	return m_curImageSelCache;
+}
+#endif
 
 bool FV_View::isDraggingImage()
 {

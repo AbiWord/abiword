@@ -40,6 +40,8 @@ void GR_Painter::drawLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 	m_pGr->drawLine (x, y, w, h);
 }
 
+#if XAP_DONTUSE_XOR
+#else
 void GR_Painter::xorLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	m_pGr->xorLine (x, y, w, h);
@@ -54,6 +56,7 @@ void GR_Painter::xorRect(const UT_Rect& r)
 {
 	m_pGr->xorRect (r);
 }
+#endif
 
 void GR_Painter::invertRect(const UT_Rect* pRect)
 {

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,6 +46,9 @@
 /*****************************************************************/
 
 AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
+#if XAP_DONTUSE_XOR
+	: m_guideCache(NULL)
+#endif
 {
 	m_pFrame = pFrame;
 	m_pView = NULL;
@@ -1755,7 +1759,6 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 void AP_LeftRuler::_xorGuide(bool bClear)
 {
 	UT_sint32 y = m_draggingCenter;
-
 	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
 	UT_ASSERT(pG);
 
@@ -1765,8 +1768,13 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 	// TODO background color is so that we can compose the proper color so
 	// TODO that we can XOR on it and be guaranteed that it will show up.
 
+#if XAP_DONTUSE_XOR
+	UT_RGBColor clrBlack(0,0,0);
+	pG->setColor(clrBlack);
+#else
 	UT_RGBColor clrWhite(255,255,255);
 	pG->setColor(clrWhite);
+#endif
 
 	UT_sint32 w = m_pView->getWindowWidth();
 	
@@ -1776,15 +1784,33 @@ void AP_LeftRuler::_xorGuide(bool bClear)
 			return;		// avoid flicker
 
 		// erase old guide
+#if XAP_DONTUSE_XOR
+		if (m_guideCache) {
+			painter.drawImage(m_guideCache, m_guideCacheRect.left, m_guideCacheRect.top);
+			DELETEP(m_guideCache);
+		}
+#else
 		painter.xorLine(0, m_yGuide, w, m_yGuide);
+#endif
 		m_bGuide = false;
 	}
 
 	if (!bClear)
 	{
 		UT_ASSERT(m_bValidMouseClick);
-		painter.xorLine(0, y, w, y);
 
+#if XAP_DONTUSE_XOR
+		m_guideCacheRect.left = 0;
+		m_guideCacheRect.top = y - pG->tlu(1);
+		m_guideCacheRect.width = w;
+		m_guideCacheRect.height = pG->tlu(3);
+		DELETEP(m_guideCache);		// make sure it is deleted. we could leak it here
+		m_guideCache = painter.genImageFromRectangle(m_guideCacheRect);
+
+		painter.drawLine(0, y, w, y);
+#else
+		painter.xorLine(0, y, w, y);
+#endif
 		// remember this for next time
 		m_yGuide = y;
 		m_bGuide = true;

@@ -1,6 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
+ * Copyright (C) 2004 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -11708,19 +11709,48 @@ Defun(resizeImage)
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 		
-		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
+#if XAP_DONTUSE_XOR
+		pG->setColor(UT_RGBColor(0, 0, 0));
+#else
 		pG->setColor(UT_RGBColor(255,255,255));
-
+#endif
 		GR_Painter painter(pG);
 		if (bIsResizing)
 		{
 			UT_DEBUGMSG(("MARCM: Clearing old line\n"));
+#ifdef XAP_DONTUSE_XOR
+			UT_Rect r2 = pView->getCurImageSel();
+			GR_Image *img = pView->getCurImageSelCache();
+			r2.left -= pG->tlu(1);
+			r2.top -= pG->tlu(1);
+			painter.drawImage(img, r2.left, r2.top);
+			pView->setCurImageSelCache(NULL);
+			DELETEP(img);
+#else
 			painter.xorRect(pView->getCurImageSel());
+#endif
 		}
 		pView->setCurImageSel(r);
+#ifdef XAP_DONTUSE_XOR
+		UT_Rect r3 = r;
+		r3.left -= pG->tlu(1);
+		r3.top -= pG->tlu(1);
+		r3.width += pG->tlu(2);
+		r3.height += pG->tlu(2);
+		pView->setCurImageSelCache(painter.genImageFromRectangle(r3));
+
+		UT_sint32 bot, right;
+		bot = r.top + r.height;
+		right =  r.left + r.width;
+		painter.drawLine(r.left, r.top, right, r.top);
+		painter.drawLine(right, r.top, right, bot);
+		painter.drawLine(right, bot, r.left, bot);
+		painter.drawLine(r.left, bot, r.left, r.top);
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+#else
 		painter.xorRect(r);
-		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
-				
+#endif				
 		UT_DEBUGMSG(("MARCM: image display size: (w:%d,h:%d) - total change (w:%d,h:%d)\n",r.width,r.height,xDiff, yDiff));
 	}
 		
@@ -11769,12 +11799,24 @@ Defun(endResizeImage)
 			newImgBounds.height = pView->getGraphics()->tlu(1);
 		
 		// clear the resizing line
-		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_DOTTED); // MARCM: setting the line style to DOTTED doesn't seem to work with GTK2
 		pG->setColor(UT_RGBColor(255,255,255));
 
 		GR_Painter painter(pG);
+#ifdef XAP_DONTUSE_XOR
+		{
+			UT_Rect r2 = pView->getCurImageSel();
+			GR_Image *img = pView->getCurImageSelCache();
+			r2.left -= pG->tlu(1);
+			r2.top -= pG->tlu(1);
+			painter.drawImage(img, r2.left, r2.top);
+			pView->setCurImageSelCache(NULL);
+			DELETEP(img);
+		}
+#else
 		painter.xorRect(pView->getCurImageSel());
-		pG->setLineProperties(pView->getGraphics()->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
+#endif
+		pG->setLineProperties(pG->tlu(1), GR_Graphics::JOIN_MITER, GR_Graphics::CAP_BUTT, GR_Graphics::LINE_SOLID);
 		
 		UT_DEBUGMSG(("MARCM: ap_EditMethods::done resizing image! new size in px (h:%d,w:%d)\n", newImgBounds.width, newImgBounds.height));
 	

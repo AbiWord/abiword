@@ -2,6 +2,8 @@
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
  * Copyright (C) 2002 Dom Lachowicz
+ * Copyright (C) 2004 Hubert Figuiere
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -55,6 +57,10 @@ UT_uint32 AP_TopRuler::s_iFixedHeight = 32;
 UT_uint32 AP_TopRuler::s_iFixedWidth = 32;
 
 AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
+#if XAP_DONTUSE_XOR
+	: m_guideCache(NULL),
+	m_otherGuideCache(NULL)
+#endif
 {
 	m_pFrame = pFrame;
 	m_pView = NULL;
@@ -1394,8 +1400,13 @@ void AP_TopRuler::_xorGuide(bool bClear)
 	// TODO background color is so that we can compose the proper color so
 	// TODO that we can XOR on it and be guaranteed that it will show up.
 
+#if XAP_DONTUSE_XOR
+	UT_RGBColor clrBlack(0,0,0);
+	pG->setColor(clrBlack);
+#else
 	UT_RGBColor clrWhite(255,255,255);
 	pG->setColor(clrWhite);
+#endif
 
 	UT_sint32 h = m_pView->getWindowHeight();
 
@@ -1407,9 +1418,22 @@ void AP_TopRuler::_xorGuide(bool bClear)
 			return;		// avoid flicker
 
 		// erase old guide
+#if XAP_DONTUSE_XOR
+		if (m_guideCache) {
+			painter.drawImage(m_guideCache, m_guideCacheRect.left, m_guideCacheRect.top);
+			DELETEP(m_guideCache);
+		}
+		if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) ) {
+			if (m_otherGuideCache) {
+				painter.drawImage(m_otherGuideCache, m_otherGuideCacheRect.left, m_otherGuideCacheRect.top);
+				DELETEP(m_otherGuideCache);
+			}
+		}
+#else
 		painter.xorLine(m_xGuide, 0, m_xGuide, h);
 		if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) )
 			painter.xorLine(m_xOtherGuide, 0, m_xOtherGuide, h);
+#endif
 		m_bGuide = false;
 	}
 
@@ -1417,10 +1441,30 @@ void AP_TopRuler::_xorGuide(bool bClear)
 	{
 		UT_ASSERT(m_bValidMouseClick);
 
+	
+#if XAP_DONTUSE_XOR
+		m_guideCacheRect.left = x - pG->tlu(1);
+		m_guideCacheRect.top = 0;
+		m_guideCacheRect.width = pG->tlu(3);
+		m_guideCacheRect.height = h;
+		DELETEP(m_guideCache);		// make sure it is deleted. we could leak it here
+		m_guideCache = painter.genImageFromRectangle(m_guideCacheRect);
+		painter.drawLine(x, 0, x, h);
+		
+		if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) ) {
+			m_otherGuideCacheRect.left = xOther - pG->tlu(1);
+			m_otherGuideCacheRect.top = 0;
+			m_otherGuideCacheRect.width = pG->tlu(3);
+			m_otherGuideCacheRect.height = h;
+			DELETEP(m_otherGuideCache);		// make sure it is deleted. we could leak it here
+			m_otherGuideCache = painter.genImageFromRectangle(m_otherGuideCacheRect);
+			painter.drawLine(xOther, 0, xOther, h);
+		}
+#else
 		painter.xorLine(x, 0, x, h);
 		if ( (m_draggingWhat == DW_COLUMNGAP) || (m_draggingWhat == DW_COLUMNGAPLEFTSIDE) )
 			painter.xorLine(xOther, 0, xOther, h);
-
+#endif
 		// remember this for next time
 		m_xGuide = x;
 		m_xOtherGuide = xOther;

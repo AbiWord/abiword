@@ -670,7 +670,8 @@ void GR_Graphics::fillRect(const UT_RGBColor& c, const UT_Rect &r)
 {
 	fillRect(c, r.left, r.top, r.width, r.height);
 }
-
+#if XAP_DONTUSE_XOR
+#else
 void GR_Graphics::xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	xorLine(x,     y,     x + w, y);
@@ -684,3 +685,4 @@ void GR_Graphics::xorRect(const UT_Rect& r)
 	xorRect(r.left, r.top, r.width, r.height);
 }
 
+#endif

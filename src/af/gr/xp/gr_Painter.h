@@ -20,6 +20,7 @@
 #ifndef GR_PAINTER_H
 #define GR_PAINTER_H
 
+#include "xap_Features.h"
 #include "gr_Graphics.h"
 
 class GR_Painter
@@ -30,9 +31,12 @@ public:
 	~GR_Painter ();
 
 	void drawLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+#if XAP_DONTUSE_XOR
+#else
 	void xorLine(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	void xorRect(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	void xorRect(const UT_Rect& r);
+#endif
 	void invertRect(const UT_Rect* pRect);
 
 	void fillRect(const UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
