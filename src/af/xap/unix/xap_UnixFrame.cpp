@@ -26,7 +26,6 @@
 #include <string.h>
 
 #include "ut_types.h"
-#include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_files.h"
 #include "ut_sleep.h"
@@ -48,6 +47,10 @@
 /*****************************************************************/
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
+
+// TODO: make into $UserPref - if true, stop shrinking windows @ toolbar width. else
+// TODO: let GTK+ decide for itself
+static const bool cap_resize = false;
 
 /****************************************************************/
 void XAP_UnixFrame::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
@@ -71,6 +74,7 @@ gint XAP_UnixFrame::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer 
 {
   return FALSE;
 }
+
 gboolean XAP_UnixFrame::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
 {
 	XAP_UnixFrame * pFrame = (XAP_UnixFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
@@ -115,7 +119,6 @@ gint XAP_UnixFrame::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 
 	EV_UnixMouse * pUnixMouse = static_cast<EV_UnixMouse *>(pUnixFrame->getMouse());
 
-	//UT_DEBUGMSG(("Ungrabbing mouse.\n"));
 	gtk_grab_remove(w);
 
 	if (pView)
@@ -192,7 +195,7 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
-	xxx_UT_DEBUGMSG(("configure width %d height %d \n",e->width,e->height));
+
 	if (pView)
 	{
 		pUnixFrame->m_iNewWidth = e->width;
@@ -202,11 +205,8 @@ gint XAP_UnixFrame::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 		UT_uint32 width,height,flags;
 
 		pApp->getGeometry(&x,&y,&width,&height,&flags);
-		GtkWindow * pWin = GTK_WINDOW(pUnixFrame->m_wTopLevelWindow);
-		gint gwidth,gheight;
-		gtk_window_get_size(pWin,&gwidth,&gheight);
-		gtk_window_resize(pWin, gwidth, gheight);
-		pApp->setGeometry(x,y,(UT_uint32) gwidth,(UT_uint32) gheight,flags);
+		pApp->setGeometry(e->x,e->y,(UT_uint32) e->width,(UT_uint32) e->height,flags);
+
 		// Dynamic Zoom Implimentation
 		if(!pUnixFrame->m_bDoZoomUpdate && (pUnixFrame->m_iZoomUpdateID == 0))
 		{
@@ -324,7 +324,6 @@ gint XAP_UnixFrame::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	rClip.top = _UL(pExposeEvent->area.y);
 	rClip.width = _UL(pExposeEvent->area.width);
 	rClip.height = _UL(pExposeEvent->area.height);
-	xxx_UT_DEBUGMSG(("gtk in Frame expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	FV_View * pView = (FV_View *) pUnixFrame->getCurrentView();
 	if(pView)
@@ -375,8 +374,6 @@ gint XAP_UnixFrame::_fe::abi_expose_repaint( gpointer p)
 //
 		pG->setExposePending(false);
 		pG->setExposedAreaAccessed(false);
-		xxx_UT_DEBUGMSG(("Painting area:  left=%d, top=%d, width=%d, height=%d\n", localCopy.left, localCopy.top, localCopy.width, localCopy.height));
-		xxx_UT_DEBUGMSG(("SEVIOR: Repaint now \n"));
 		pV->draw(&localCopy);
 	}
 //
@@ -390,8 +387,6 @@ void XAP_UnixFrame::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 {
 	XAP_UnixFrame * pUnixFrame = (XAP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
 	AV_View * pView = pUnixFrame->getCurrentView();
-
-	//UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
 
 	if (pView)
 		pView->sendVerticalScrollEvent((UT_sint32) _UL(w->value));
@@ -705,14 +700,15 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	  pApp->getGeometry ( &x, &y, &w, &h, &f ) ;
 	  
 	  // This is now done with --geometry parsing.
-	  if ( w && h )
-	  {
-		  gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), w, h);
-	  }
+	  if ( !w || !h )
+	    {
+	      w = 800; h = 600;
+	    }
+
+	  if (cap_resize)
+	    gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), w, h);
 	  else
-	  {
-		  gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), 800, 600);
-	  }
+	    gtk_widget_set_usize(m_wTopLevelWindow, w, h);
 	}
 
 	g_signal_connect(G_OBJECT(m_wTopLevelWindow), "realize",
@@ -831,7 +827,11 @@ void XAP_UnixFrame::_createTopLevelWindow(void)
 	{
 		gint abi_width = (gint)width;
 		gint abi_height = (gint)height;
-		gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), abi_width, abi_height);
+
+		if(cap_resize)
+		  gtk_window_resize(GTK_WINDOW(m_wTopLevelWindow), abi_width, abi_height);
+		else
+		  gtk_widget_set_usize(m_wTopLevelWindow, abi_width, abi_height);
 	}
 
 	// Because we're clever, we only honor this flag when we
@@ -1151,7 +1151,6 @@ bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMe
 		GtkWidget * w = gtk_grab_get_current();
 		if (w)
 		{
-			//UT_DEBUGMSG(("Ungrabbing mouse [before popup].\n"));
 			gtk_grab_remove(w);
 		}
 
@@ -1168,7 +1167,6 @@ bool XAP_UnixFrame::runModalContextMenu(AV_View * /* pView */, const char * szMe
 		x += (UT_sint32)bevent->x;
 		y += (UT_sint32)bevent->y;
 
-		UT_DEBUGMSG(("ContextMenu: %s at [%d,%d]\n",szMenuName,x,y));
 		UT_Point pt;
 		pt.x = x;
 		pt.y = y;
@@ -1206,7 +1204,6 @@ EV_Toolbar * XAP_UnixFrame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 
 void XAP_UnixFrame::queue_resize()
 {
-	xxx_UT_DEBUGMSG(("XAP_UnixFrame::queue_resize\n"));
 	gtk_widget_queue_resize(m_wTopLevelWindow);
 }
 
