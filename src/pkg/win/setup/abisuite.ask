@@ -24,9 +24,11 @@
 <datafile name="__CANONDIR__/AbiWord/strings/EsES.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/FiFI.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/FrFR.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/IdID.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/ItIT.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/NoNO.strings" relpath="AbiWord/strings" />
 <datafile name="__CANONDIR__/AbiWord/strings/PtPT.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/SvSE.strings" relpath="AbiWord/strings" />
 
 <datafile name="__CANONDIR__/AbiWord/system.profile" relpath="AbiWord" />
 
