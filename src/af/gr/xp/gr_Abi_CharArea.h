@@ -27,12 +27,12 @@
 class GR_Abi_CharArea : public GlyphArea
 {
 protected:
-  GR_Abi_CharArea(class GR_Graphics*, class GR_Font*, UT_UCS4Char);
+  GR_Abi_CharArea(class GR_Graphics*, class GR_Font*, const scaled&, UT_UCS4Char);
   virtual ~GR_Abi_CharArea();
 
 public:
-  static SmartPtr<GR_Abi_CharArea> create(GR_Graphics* g, GR_Font* font, UT_UCS4Char glyph)
-  { return new GR_Abi_CharArea(g, font, glyph); }
+  static SmartPtr<GR_Abi_CharArea> create(GR_Graphics* g, GR_Font* font, const scaled& size, UT_UCS4Char glyph)
+  { return new GR_Abi_CharArea(g, font, size, glyph); }
 
   virtual BoundingBox box(void) const;
   virtual scaled leftEdge(void) const;

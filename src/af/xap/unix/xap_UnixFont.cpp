@@ -103,6 +103,10 @@ UT_sint32 XAP_UnixFontHandle::measureUnremappedCharForCache(UT_UCSChar cChar) co
 	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 	FT_Face pFace = locker.getFace();
 
+#if 0 
+	// LUCA: why is this not needed?
+	if(m_font->isSymbol()) cChar = static_cast<UT_UCS4Char>(adobeToUnicode(cChar));
+#endif 
 	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
 	FT_Error error =
 		FT_Load_Glyph(pFace, glyph_index,
@@ -114,9 +118,11 @@ UT_sint32 XAP_UnixFontHandle::measureUnremappedCharForCache(UT_UCSChar cChar) co
 	}
 
 	width = pFace->glyph->linearHoriAdvance;
+#if 0
 	UT_DEBUGMSG((" Char %c index %d advance %d \n",cChar,glyph_index,width));
 	UT_Rect rec;
-	glyphBox(glyph_index,rec);
+	glyphBox(cChar,rec);
+#endif
 	return width;
 }
 
@@ -148,11 +154,19 @@ bool XAP_UnixFontHandle::doesGlyphExist(UT_UCS4Char g)
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 //
-bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char glyph_index,UT_Rect & rec) const
+bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
 {
 	XftFaceLocker locker(m_font->getLayoutXftFont(GR_CharWidthsCache::CACHE_FONT_SIZE));
 	FT_Face pFace = locker.getFace();
 
+	UT_UCS4Char cChar = g;
+	if(m_font->isSymbol()) cChar = static_cast<UT_UCS4Char>(adobeToUnicode(g));
+#if 0
+	// there is no isDingbat method
+	else if(m_font->m_bIsDingbat) cChar = static_cast<UT_UCS4Char>(adobeDingbatsToUnicode(g));
+#endif
+
+	FT_UInt glyph_index = FT_Get_Char_Index(pFace, cChar);
 	FT_Error error =
 		FT_Load_Glyph(pFace, glyph_index,
 					FT_LOAD_LINEAR_DESIGN |
@@ -165,7 +179,7 @@ bool  XAP_UnixFontHandle::glyphBox(UT_UCS4Char glyph_index,UT_Rect & rec) const
 	rec.width = pFace->glyph->metrics.width;
 	rec.top = pFace->glyph->metrics.horiBearingY;
 	rec.height = pFace->glyph->metrics.height;
-	UT_DEBUGMSG((" left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
+	xxx_UT_DEBUGMSG((" left %d width %d top %d height %d \n",rec.left,rec.width,rec.top,rec.height));
 	return true;
 }
 /*******************************************************************/

@@ -45,10 +45,10 @@ GR_Abi_StandardSymbolsShaper::createGlyphArea(const SmartPtr<AreaFactory>& f,
   static char fontSize[128];
   sprintf(fontSize, "%dpt", static_cast<int>(size.toFloat() + 0.5f));
 
-  GR_Font* font = m_pGraphics->findFont("symbol", 0, 0, 0, 0, fontSize);
+  GR_Font* font = m_pGraphics->findFont("symbol", "normal", 0, "normal", 0, fontSize);
   UT_ASSERT(font);
 
-  return factory->charArea(getGraphics(), font, index);
+  return factory->charArea(getGraphics(), font, size, index);
 }
 
 void

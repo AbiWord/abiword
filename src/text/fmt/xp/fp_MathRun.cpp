@@ -118,6 +118,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 		m_pMathView->loadBuffer(m_sMathML.utf8_str());
 	}
+	m_pMathView->setDefaultFontSize(20);
 	BoundingBox box = m_pMathView->getBoundingBox();
 	UT_sint32 iWidth = getAbiContext()->toAbiLayoutUnits(box.width);
 	UT_sint32 iAscent = getAbiContext()->toAbiLayoutUnits(box.height);

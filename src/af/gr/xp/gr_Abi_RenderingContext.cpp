@@ -21,7 +21,6 @@
 #include "gr_Painter.h"
 #include "gr_Abi_RenderingContext.h"
 
-
 GR_Abi_RenderingContext::GR_Abi_RenderingContext(GR_Graphics* pGr)
   : m_pGraphics(pGr)
 {
@@ -29,8 +28,7 @@ GR_Abi_RenderingContext::GR_Abi_RenderingContext(GR_Graphics* pGr)
 }
 
 GR_Abi_RenderingContext::~GR_Abi_RenderingContext()
-{
-}
+{ }
 
 void
 GR_Abi_RenderingContext::setColor(const UT_RGBColor& c)
@@ -57,10 +55,10 @@ GR_Abi_RenderingContext::fill(const UT_RGBColor& color, const scaled& x, const s
 		   toAbiLayoutUnits(box.width), toAbiLayoutUnits(box.height), toAbiLayoutUnits(box.depth)));
   GR_Painter Painter(m_pGraphics);
   Painter.fillRect(color,
-		       GR_Abi_RenderingContext::toAbiX(x),
-		       GR_Abi_RenderingContext::toAbiY(y + box.height),
-		       GR_Abi_RenderingContext::toAbiLayoutUnits(box.horizontalExtent()),
-		       GR_Abi_RenderingContext::toAbiLayoutUnits(box.verticalExtent()));
+		   GR_Abi_RenderingContext::toAbiX(x),
+		   GR_Abi_RenderingContext::toAbiY(y + box.height),
+		   GR_Abi_RenderingContext::toAbiLayoutUnits(box.horizontalExtent()),
+		   GR_Abi_RenderingContext::toAbiLayoutUnits(box.verticalExtent()));
 }
 
 void
@@ -77,8 +75,8 @@ GR_Abi_RenderingContext::drawGlyph(const scaled& x, const scaled& y, GR_Font* f,
   m_pGraphics->setFont(f);
   GR_Painter Painter(m_pGraphics);
   Painter.drawGlyph(glyph,
-			GR_Abi_RenderingContext::toAbiX(x),
-			GR_Abi_RenderingContext::toAbiY(y));
+		    GR_Abi_RenderingContext::toAbiX(x),
+		    GR_Abi_RenderingContext::toAbiY(y));
 }
 
 void
@@ -86,9 +84,11 @@ GR_Abi_RenderingContext::drawChar(const scaled& x, const scaled& y, GR_Font* f, 
 {
   m_pGraphics->setFont(f);
   GR_Painter Painter(m_pGraphics);
+  // AbiWord painter assumes that the coordinates refer to the top-left corner
+  // of the character to be drawn, so we have to shift y up by the font ascent
   Painter.drawChars(&c, 0, 1,
-			GR_Abi_RenderingContext::toAbiX(x),
-			GR_Abi_RenderingContext::toAbiY(y));
+		    GR_Abi_RenderingContext::toAbiX(x),
+		    GR_Abi_RenderingContext::toAbiY(y) - m_pGraphics->getFontAscent());
 }
 
 void
