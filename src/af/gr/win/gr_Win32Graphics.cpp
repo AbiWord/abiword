@@ -133,6 +133,8 @@ bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 		return !m_bPrint;
 	case DGP_PAPER:
 		return m_bPrint;
+    case DGP_POSTSCRIPT:
+        return false;
 	default:
 		UT_ASSERT(0);
 		return false;
