@@ -473,6 +473,8 @@ extern UT_uint32 adobeToUnicode(UT_uint32 iAdobe)
 
 extern UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe)
 {
+	
+#if 1
 	UT_uint32 low = adobeDUni[0][0];
 	UT_uint32 high = adobeDUni[202][0];
 	if(iAdobe < low)
@@ -499,6 +501,7 @@ extern UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe)
 		return iAdobe;
 	}
 	return adobeDUni[slow][1];
+#endif
 }
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
@@ -598,6 +601,17 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 													   FALLBACK_FONT_SIZE);
 	else
 		m_pFallBackFontHandle = NULL;
+}
+
+bool GR_UnixGraphics::isDingbat(void) const
+{
+	return m_bIsDingbat;
+}
+
+
+bool GR_UnixGraphics::isSymbol(void) const
+{
+	return m_bIsSymbol;
 }
 
 GR_UnixGraphics::GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App * app, bool bUseDrawable):m_iLineWidth(tlu(1))
@@ -792,15 +806,21 @@ void GR_UnixGraphics::setLineProperties ( double inWidth,
 void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_uint32 iChar = Char;
-	if(m_bIsSymbol && (iChar < 255)  && (iChar >= 32))
+	if(isSymbol() && (iChar < 255)  && (iChar >= 32))
 	{
 		iChar = adobeToUnicode(Char);
 		xxx_UT_DEBUGMSG(("DrawGlyph 1 Symbol remapped %d to %d \n",Char,iChar));
 	}
-	if(m_bIsDingbat && (iChar < 255)  && (iChar >= 32))
+	if(isDingbat() && (iChar < 255)  && (iChar >= 32))
 	{
-		iChar = adobeDingbatsToUnicode(Char);
-		xxx_UT_DEBUGMSG(("DrawGlyph 1 remapped %d to %d \n",Char,iChar));
+		FT_Face face = XftLockFace(m_pXftFontD);
+		//
+		// Only CUSTOM encoding gives non-zero indexes
+		FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
+		UT_uint32 iFTChar =  FT_Get_Char_Index(face,iChar);
+		XftUnlockFace (m_pXftFontD);
+		UT_DEBUGMSG(("DrawGlyph 1 remapped %d to my %d  FT %d \n",Char,iChar,iFTChar));
+		iChar = iFTChar;
 	}
 	
 	// FIXME ascent in wrong unit
@@ -825,12 +845,12 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_sint32 iAscent = m_pXftFontL->ascent * getResolution() / s_getDeviceResolution();
 	if (!pCharWidths)
 	{
-		if(!m_bIsSymbol && !m_bIsDingbat)
+		if(!isSymbol() && !isDingbat())
 		{
 			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) + idx, tdu(iAscent + m_iYoff)+idy,
 							const_cast<XftChar32*> (pChars + iCharOffset), iLength);
 		}
-		else if(m_bIsSymbol)
+		else if(isSymbol())
 		{
 			xxx_UT_DEBUGMSG(("Doing draw symbols length %d offset %d \n",iLength,iCharOffset));
 			UT_uint32 * uChars = new UT_uint32[iLength];
@@ -847,19 +867,24 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							const_cast<XftChar32*> (uChars), iLength);
 			delete [] uChars;
 		}
-		else if(m_bIsDingbat)
+		else if(isDingbat())
 		{
-			UT_DEBUGMSG(("Doing draw Dingbat symbols length %d offset %d \n",iLength,iCharOffset));
+			UT_DEBUGMSG(("Doing draw Dingbat length %d offset %d \n",iLength,iCharOffset));
 			UT_uint32 * uChars = new UT_uint32[iLength];
+			FT_Face face = XftLockFace(m_pXftFontD);
+		//
+		// Only CUSTOM encoding gives non-zero indexes
+			FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
 			for(UT_uint32 i = static_cast<UT_uint32>(iCharOffset); i< static_cast<UT_uint32>(iLength); i++)
 			{
 				uChars[i] = static_cast<UT_uint32>(pChars[iCharOffset + i]);
 				if((uChars[i] < 255) && (uChars[i] >= 32))
 				{
-					uChars[i] = adobeDingbatsToUnicode(uChars[i]);
+					uChars[i] = XftCharIndex(XftDrawDisplay(m_pXftDraw),m_pXftFontD,uChars[i]);
 					UT_DEBUGMSG(("drawchars: mapped Dingbat %d to %d \n",pChars[iCharOffset + i],uChars[i]));
 				}
 			}
+			XftUnlockFace (m_pXftFontD);
 			XftDrawString32(m_pXftDraw, &m_XftColor, m_pXftFontD, tdu(m_iXoff) +idx, tdu(iAscent + m_iYoff)+idy,
 							const_cast<XftChar32*> (uChars), iLength);
 			delete [] uChars;
@@ -879,15 +904,23 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		for (int i = 0; i < iLength; ++i)
 		{
 			uChar = static_cast<UT_uint32>(pChars[i + iCharOffset]);
-			if(m_bIsSymbol && uChar < 255 && uChar >=32)
+			if(isSymbol() && uChar < 255 && uChar >=32)
 			{
 				pCharSpec[i].ucs4 = static_cast<FT_UInt>(adobeToUnicode(uChar));
-				xxx_UT_DEBUGMSG(("DrawGlyph 2 Symbol remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
+				UT_DEBUGMSG(("DrawGlyph 2 Symbol remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
 			}
-			else if(m_bIsDingbat && uChar < 255 && uChar >=32)
+			else if(isDingbat() && uChar < 255 && uChar >=32)
 			{
-				pCharSpec[i].ucs4 = static_cast<FT_UInt>(adobeDingbatsToUnicode(uChar));
-				xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
+				FT_Face face = XftLockFace(m_pXftFontD);
+				//
+				// Only CUSTOM encoding gives non-zero indexes
+                FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
+				pCharSpec[i].ucs4 = FT_Get_Char_Index(face,uChar);
+				//				FT_UInt   gindex;
+				//UT_sint32 charcode = FT_Get_First_Char( face, &gindex );
+				//pCharSpec[i].ucs4 = charcode +3;
+				XftUnlockFace (m_pXftFontD);
+				UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[i].ucs4));
 
 			}
 			else
@@ -905,9 +938,21 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				xPos += pCharWidths[iCharOffset+i];
 			}
 		}
-		
-		XftDrawCharSpec (m_pXftDraw, &m_XftColor, m_pXftFontD, pCharSpec, iLength);
-
+		if(isDingbat())
+		{
+			FT_Face face = XftLockFace(m_pXftFontD);
+				//
+				// Only CUSTOM encoding gives non-zero indexes
+				//
+				// Only CUSTOM encoding gives non-zero indexes
+			FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
+			XftDrawCharSpec (m_pXftDraw, &m_XftColor, m_pXftFontD, pCharSpec, iLength);
+			XftUnlockFace (m_pXftFontD);
+		}
+		else
+		{
+			XftDrawCharSpec (m_pXftDraw, &m_XftColor, m_pXftFontD, pCharSpec, iLength);
+		}
 		if (pCharSpec != aCharSpec)
 			delete[] pCharSpec;
 	}
@@ -987,6 +1032,7 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 		}
 		if(strstr(szLCFontName,"dingbat") != NULL)
 			m_bIsDingbat = true;
+		UT_DEBUGMSG(("Unix Font name is %s dingbat %d \n",szLCFontName,isDingbat()));
 	}
 	FREEP(szLCFontName);
 	//	m_bIsSymbol = false;
@@ -1024,24 +1070,32 @@ UT_sint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	UT_UCSChar newChar;
 	double fWidth;
 
-	if(!m_bIsSymbol && !m_bIsDingbat)
+	if(!isSymbol() && !isDingbat())
 	{
 		newChar = c;
 	}
-	else if(m_bIsSymbol)
+	else if(isSymbol())
 	{
 		newChar = static_cast<UT_UCSChar>(adobeToUnicode(c));
 		xxx_UT_DEBUGMSG(("Measure width of remappedd Symbol %x \n",newChar));
 	}
 	else
 	{
-		newChar = static_cast<UT_UCSChar>(adobeDingbatsToUnicode(c));
+		FT_Face face = XftLockFace(m_pXftFontD);
+		//
+		// Only CUSTOM encoding gives non-zero indexes
+		FT_Select_Charmap(face,FT_ENCODING_ADOBE_CUSTOM);
+		newChar = FT_Get_Char_Index(face,c);
+		XftUnlockFace (m_pXftFontD);
+		//		newChar = static_cast<UT_UCSChar>(adobeDingbatsToUnicode(c));
+		UT_DEBUGMSG(("Measure width of remapped Dingbat %x \n",newChar));
 	}
 	// FIXME we should really be getting stuff fromt he font in layout units,
 	// FIXME but we're not smart enough to do that yet
 
 	fWidth = m_pFont->measureUnRemappedChar(newChar, m_pFont->getSize())
 		* ((double)getResolution() / (double)s_getDeviceResolution());
+	xxx_UT_DEBUGMSG(("width = %d \n",rint(fWidth)));
 	return static_cast<UT_uint32>(rint(fWidth));
 }
 

@@ -576,7 +576,14 @@ void IE_Exp_RTF::_rtf_chardata(const char * pbuf, UT_uint32 buflen)
 			else {
 				_rtf_nonascii_hex2(wc);
 			}
-			count += buflen - insz;
+			if(buflen - insz > 0)
+			{
+				count += buflen - insz;
+			}
+			else
+			{
+				count++;
+			}
 		}
 		else {
 			write (current, 1);

@@ -128,7 +128,8 @@ class ABI_EXPORT XAP_UnixFont
 	void					setFontManager(XAP_UnixFontManager * pFm);
 	
 	bool doesGlyphExist(UT_UCS4Char g);
-
+	bool                    isSymbol(void) const;
+	bool                    isDingbat(void) const;
 private:
 
 	XAP_UnixFont ();

@@ -172,6 +172,8 @@ class GR_UnixGraphics : public GR_Graphics
 								 UT_sint32 w, UT_sint32 h);
 	virtual void		invertRect(const UT_Rect* pRect);
 	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
+	bool                isDingbat(void) const;
+	bool                isSymbol(void) const;
 
 	virtual GR_Font*	_findFont(const char* pszFontFamily, 
 								  const char* pszFontStyle, 

@@ -222,6 +222,18 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	_deleteEncodingTable();
 }
 
+
+bool XAP_UnixFont::isDingbat(void) const
+{
+	return m_bIsDingbat;
+}
+
+
+bool XAP_UnixFont::isSymbol(void) const
+{
+	return m_bIsSymbol;
+}
+
 bool XAP_UnixFont::doesGlyphExist(UT_UCS4Char g)
 {
 	// possibly need to call:
@@ -240,15 +252,15 @@ bool XAP_UnixFont::doesGlyphExist(UT_UCS4Char g)
 		g = ig;
 		xxx_UT_DEBUGMSG(("Symbol Glyph remapped to %x \n",g));
 	}
-	if(m_bIsDingbat)
+	if(isDingbat())
 	{
 		UT_UCS4Char ig = static_cast<UT_UCS4Char>(adobeDingbatsToUnicode(g));
 		if((ig != g) && (ig != 0))
 		{
+			UT_DEBUGMSG(("Dingbat Glyph remapped to %x \n",g));
 			return true;
 		}
 		g = ig;
-		UT_DEBUGMSG(("Dingbat Glyph remapped to %x \n",g));
 	}
 	UT_return_val_if_fail (m_pXftFont, false);
 	return XftCharExists(GDK_DISPLAY(), m_pXftFont, (FcChar32)g);
@@ -273,6 +285,8 @@ bool XAP_UnixFont::openFileAs(const char *fontfile, const char *metricfile, cons
 		else
 			m_bIsSymbol = true;
 	}
+	if(strstr(szLCFontName,"dingbat") != NULL)
+		m_bIsDingbat = true;
 	if(strstr(szLCFontName,"dingbat") != NULL)
 		m_bIsDingbat = true;
 
