@@ -92,6 +92,9 @@
 #	include "tb_edit_editfooter.xpm"
 #	include "tb_edit_removeheader.xpm"
 #	include "tb_edit_removefooter.xpm"
+#       include "tb_anchor.xpm"
+#       include "tb_hyperlink.xpm"
+#       include "tb_smiley.xpm"
 
 #ifdef ABI_OPT_PERL
 #	include "tb_script_play.xpm"
@@ -162,6 +165,9 @@
 	DefineToolbarIcon(tb_text_direction_rtl_xpm)
 	DefineToolbarIcon(tb_text_dom_direction_rtl_xpm)
 #endif
+     DefineToolbarIcon(tb_smiley)
+     DefineToolbarIcon(tb_anchor)
+     DefineToolbarIcon(tb_hyperlink)
 	DefineToolbarIcon(tb_symbol_xpm)
 	DefineToolbarIcon(tb_para_0before_xpm)
 	DefineToolbarIcon(tb_para_12before_xpm)
