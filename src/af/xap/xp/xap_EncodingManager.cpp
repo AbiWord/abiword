@@ -139,27 +139,33 @@ UT_UCSChar XAP_EncodingManager::UToWindows(UT_UCSChar c)  const
 
 const char* XAP_EncodingManager::strToNative(const char* in,const char* charset) const
 {
-	
 	static char buf[500];
-	return strToNative(in,charset,buf,sizeof(buf));
+	return strToNative(in, charset, buf, sizeof(buf));
 };
 
-const char* XAP_EncodingManager::strToNative(const char* in,const char* charset,char* buf,int bufsz) const
+const char* XAP_EncodingManager::strToNative(const char* in, const char* charset, char* buf, int bufsz) const
 {
 	if (!charset || !*charset || !in || !*in || !buf)
 		return in; /*won't translate*/
-	iconv_t iconv_handle = iconv_open(getNativeEncodingName(),charset);
+
+	iconv_t iconv_handle = iconv_open(getNativeEncodingName(), charset);
+
 	if (iconv_handle == (iconv_t)-1)
 		return in;
+
 	const char* inptr = in;
 	char* outptr = buf;
-	size_t inbytes = strlen(in), outbytes = bufsz;	
-	size_t donecnt = iconv(iconv_handle,const_cast<ICONV_CONST char**>(&inptr),&inbytes,&outptr,&outbytes);
+	size_t inbytes = strlen(in);
+	size_t outbytes = bufsz;	
+	size_t donecnt = iconv(iconv_handle, const_cast<ICONV_CONST char**>(&inptr), &inbytes, &outptr, &outbytes);
 	const char* retstr = in;
-	if (donecnt!=(size_t)-1 && inbytes==0) {
+
+	if (donecnt != (size_t) -1 && inbytes == 0)
+	{
 		retstr = buf;
 		buf[bufsz - outbytes] = '\0';/*for sure*/
-	};
+	}
+
 	iconv_close(iconv_handle);
 	return retstr;
 };
@@ -936,7 +942,7 @@ void 	XAP_EncodingManager::describe()
 const char** localeinfo_combinations(const char* prefix,const char* suffix,const char* sep, bool skip_fallback)
 {
 	UT_String buf[5];
-	static const char *ptrs[7];
+	static const char *ptrs[6];
 
 	for (size_t i = 1; i < 5; i++)
 		buf[i] = prefix;
@@ -976,6 +982,7 @@ const char** localeinfo_combinations(const char* prefix,const char* suffix,const
 
 	for (size_t i = 0; i < 5; ++i)
 		ptrs[i] = buf[i].c_str();
+	ptrs[5] = 0;
 
     return ptrs;
 };

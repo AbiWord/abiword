@@ -45,6 +45,7 @@ libXap_xp_a_SOURCES=\
 	xap_FakeClipboard.cpp		\
 	xap_Frame.cpp			\
 	xap_LoadBindings.cpp		\
+	xap_Log.cpp			\
 	xap_Prefs.cpp			\
 	xap_Preview.cpp			\
 	xap_Preview_Zoom.cpp		\

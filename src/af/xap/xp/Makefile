@@ -37,10 +37,11 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dlg_PrintPreview.cpp        \
 		xap_Dlg_WindowMore.cpp		\
 		xap_Dlg_Zoom.cpp		\
-		xap_Dlg_Insert_Symbol.cpp		\
+		xap_Dlg_Insert_Symbol.cpp	\
 		xap_FakeClipboard.cpp		\
 		xap_Frame.cpp			\
 		xap_LoadBindings.cpp		\
+		xap_Log.cpp			\
 		xap_Prefs.cpp			\
 		xap_Preview.cpp			\
 		xap_Preview_Zoom.cpp		\
@@ -50,7 +51,7 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Toolbar_ControlFactory.cpp	\
 		xap_ViewListener.cpp		\
 		xav_View.cpp			\
-		xap_EncodingManager.cpp \
+		xap_EncodingManager.cpp		\
 		xap_Dlg_Language.cpp
 
 TARGETS=		$(OBJS)

@@ -148,8 +148,7 @@ void AP_Prefs::overlaySystemPrefs(void)
 	sprintf(buf,"%s/%s",szSystemDefaultPrefsDir,"system.profile");
 	const char** items = localeinfo_combinations(buf,"","-",0);
 	while(*items) {
-	    loadSystemDefaultPrefsFile(*items);
-	    ++items;
+	    loadSystemDefaultPrefsFile(*items++);
 	};
 }
 
