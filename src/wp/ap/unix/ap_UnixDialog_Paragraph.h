@@ -54,8 +54,9 @@ public:
 		// spin buttons can take "increment", "decrement", and "changed"
 		virtual void event_SpinIncrement(GtkWidget * widget);
 		virtual void event_SpinDecrement(GtkWidget * widget);
+		virtual void event_SpinFocusOut(GtkWidget * widget);
 		virtual void event_SpinChanged(GtkWidget * widget);
-
+		
 		// checks are just "toggled"
 		virtual void event_CheckToggled(GtkWidget * widget);
 	
@@ -65,6 +66,7 @@ public:
  protected:
 
 	GR_UnixGraphics	* 		m_unixGraphics;
+	UT_Bool					m_bEditChanged;
 	
 	// private construction functions
 	GtkWidget * _constructWindow(void);

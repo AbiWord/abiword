@@ -60,6 +60,7 @@ AP_UnixDialog_Paragraph::AP_UnixDialog_Paragraph(XAP_DialogFactory * pDlgFactory
 	: AP_Dialog_Paragraph(pDlgFactory,id)
 {
 	m_unixGraphics = NULL;
+	m_bEditChanged = UT_FALSE;
 }
 
 AP_UnixDialog_Paragraph::~AP_UnixDialog_Paragraph(void)
@@ -85,27 +86,22 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 							 AP_UnixDialog_Paragraph * dlg)
 { UT_ASSERT(dlg); dlg->event_WindowDelete(); }
 
-#if 0
-static gint s_spin_editable_changed(GtkWidget * /* widget */,
-									AP_UnixDialog_Paragraph * /* dlg */)
-{
-	// NOTE : we do nothing here.  We just return FALSE so
-	// NOTE : GTK won't do anything.
-	return FALSE;
-}
-#endif
-
-static gint s_spin_editable_focus_out(GtkWidget * widget,
+static gint s_spin_focus_out(GtkWidget * widget,
 									  GdkEventFocus * /* event */,
 									  AP_UnixDialog_Paragraph * dlg)
 {
-	UT_ASSERT(widget && dlg);
-	
-	dlg->event_SpinChanged(widget);
+	dlg->event_SpinFocusOut(widget);
 	
 	// do NOT let GTK do its own update (which would erase the text we just
 	// put in the entry area
 	return FALSE;
+}
+
+static gint s_spin_changed(GtkWidget * widget,
+									AP_UnixDialog_Paragraph * dlg)
+{
+	// notify the dialog that an edit has changed
+	dlg->event_SpinChanged(widget);
 }
 
 static gint s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
@@ -185,7 +181,7 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
-//	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
+	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
 
 	// Run into the GTK event loop for this window.
 	gtk_main();
@@ -235,10 +231,6 @@ void AP_UnixDialog_Paragraph::event_MenuChanged(GtkWidget * widget)
 void AP_UnixDialog_Paragraph::event_SpinIncrement(GtkWidget * widget)
 {
 	UT_ASSERT(widget);
-
-	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
-												 WIDGET_ID_TAG);
-	
 }
 
 void AP_UnixDialog_Paragraph::event_SpinDecrement(GtkWidget * widget)
@@ -246,15 +238,26 @@ void AP_UnixDialog_Paragraph::event_SpinDecrement(GtkWidget * widget)
 	UT_ASSERT(widget);
 }
 
+void AP_UnixDialog_Paragraph::event_SpinFocusOut(GtkWidget * widget)
+{
+	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
+												 WIDGET_ID_TAG);
+
+	if (m_bEditChanged)
+	{
+		_setSpinItemValue(id, (const XML_Char *)
+						  gtk_entry_get_text(GTK_ENTRY(widget)));
+		m_bEditChanged = UT_FALSE;
+	}
+}
+
 void AP_UnixDialog_Paragraph::event_SpinChanged(GtkWidget * widget)
 {
 	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
 												 WIDGET_ID_TAG);
-	
-	_setSpinItemValue(id, (const XML_Char *)
-					  gtk_entry_get_text(GTK_ENTRY(widget)));
+	m_bEditChanged = UT_TRUE;
 }
-
+	   
 void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 {
 	UT_ASSERT(widget);
@@ -1062,17 +1065,17 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	return windowParagraph;
 }
 
-#define CONNECT_SPIN_EDITABLE_SIGNAL_CHANGED(w)				\
+#define CONNECT_SPIN_SIGNAL_CHANGED(w)				\
         do {												\
 	        gtk_signal_connect(GTK_OBJECT(w), "changed",	\
-                GTK_SIGNAL_FUNC(s_spin_editable_changed),	\
+                GTK_SIGNAL_FUNC(s_spin_changed),			\
                 (gpointer) this);							\
         } while (0)
 
-#define CONNECT_SPIN_EDITABLE_SIGNAL_FOCUS_OUT(w)			\
+#define CONNECT_SPIN_SIGNAL_FOCUS_OUT(w)			\
         do {												\
 	        gtk_signal_connect(GTK_OBJECT(w), "focus_out_event",	\
-                GTK_SIGNAL_FUNC(s_spin_editable_focus_out),	\
+                GTK_SIGNAL_FUNC(s_spin_focus_out),			\
                 (gpointer) this);							\
         } while (0)
 
@@ -1103,21 +1106,19 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 
 	// we have to handle the changes in values for spin buttons
 	// to preserve units
-#if 0	
-	CONNECT_SPIN_EDITABLE_SIGNAL_CHANGED(m_spinbuttonLeft);
-	CONNECT_SPIN_EDITABLE_SIGNAL_CHANGED(m_spinbuttonRight);
-	CONNECT_SPIN_EDITABLE_SIGNAL_CHANGED(m_spinbuttonBy);
-	CONNECT_SPIN_EDITABLE_SIGNAL_CHANGED(m_spinbuttonBefore);
-	CONNECT_SPIN_EDITABLE_SIGNAL_CHANGED(m_spinbuttonAfter);	
-	CONNECT_SPIN_EDITABLE_SIGNAL_CHANGED(m_spinbuttonAt);
-#endif
+	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonLeft);
+	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonRight);
+	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonBy);
+	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonBefore);
+	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonAfter);	
+	CONNECT_SPIN_SIGNAL_CHANGED(m_spinbuttonAt);
 	
-	CONNECT_SPIN_EDITABLE_SIGNAL_FOCUS_OUT(m_spinbuttonLeft);
-	CONNECT_SPIN_EDITABLE_SIGNAL_FOCUS_OUT(m_spinbuttonRight);
-	CONNECT_SPIN_EDITABLE_SIGNAL_FOCUS_OUT(m_spinbuttonBy);
-	CONNECT_SPIN_EDITABLE_SIGNAL_FOCUS_OUT(m_spinbuttonBefore);
-	CONNECT_SPIN_EDITABLE_SIGNAL_FOCUS_OUT(m_spinbuttonAfter);	
-	CONNECT_SPIN_EDITABLE_SIGNAL_FOCUS_OUT(m_spinbuttonAt);
+	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonLeft);
+	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonRight);
+	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonBy);
+	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonBefore);
+	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAfter);	
+	CONNECT_SPIN_SIGNAL_FOCUS_OUT(m_spinbuttonAt);
 
 	// connect to option menus
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemLeft);
