@@ -375,7 +375,7 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 }
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
-  : IE_Imp (pDocument), m_iImageCount (0), m_nSections(0), m_bSetPageSize(false), m_bIsLower(false)
+  : IE_Imp (pDocument), m_iImageCount (0), m_nSections(0), m_bSetPageSize(false), m_bIsLower(false), m_bInSect(false), m_bInPara(false)
 #if 0//def BIDI_ENABLED
 	,m_pLastCharFmt(""), m_iPrevDir(-1), m_iCurrDir(-1)
 #endif	
@@ -499,6 +499,22 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 
 void IE_Imp_MsWord_97::_flush ()
 {
+  // we've got to ensure that we're inside of a section & paragraph
+
+  if (!m_bInSect)
+    {
+      // append a blank default section - assume it works
+      getDoc()->appendStrux(PTX_Section, NULL);
+      m_bInSect = true;
+    }
+
+  if(!m_bInPara)
+    {
+      // append a blank defaul paragraph - assume it works
+      getDoc()->appendStrux(PTX_Block, NULL);
+      m_bInPara = true;
+    }
+
 	if (m_pTextRun.size())
 	{
 		if (!getDoc()->appendSpan(m_pTextRun.ucs_str(), m_pTextRun.size()))
@@ -954,6 +970,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	}
 
 	// increment our section count
+	m_bInSect = true;
 	m_nSections++;
 
 	// TODO: we need to do some work on Headers/Footers
@@ -1016,6 +1033,7 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct *ps, UT_uint32 tag,
 	  {
 		m_pTextRun[m_pTextRun.size()-1] = 0;
 	  }
+	m_bInSect = false;
 	return 0;
 }
 
@@ -1197,6 +1215,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
 		return 1;
 	}
+	m_bInPara = true;
 	return 0;
 }
 
@@ -1204,6 +1223,7 @@ int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 								void *prop, int dirty)
 {
 	// nothing is needed here
+  m_bInPara = false;
 	return 0;
 }
 

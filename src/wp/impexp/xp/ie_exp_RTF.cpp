@@ -980,7 +980,11 @@ void IE_Exp_RTF::_selectStyles()
 	getDoc()->getAllUsedStyles(&vecStyles);
     for (i = 0; getDoc()->enumStyles(i, &szName, &pStyle); ++i) 
 	{
-		if (pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0)) 
+	  // DOM: hack for 2069 - we'll export all styles instead of just
+	  // user-defined styles and used styles. To fix it (and export fewer
+	  // styles in general) make this routine recursive to include
+	  // parent (basedon) styles as well...
+	  if (true /* pStyle->isUserDefined() || (vecStyles.findItem((void *) pStyle) >= 0)*/) 
 		{
 //
 // Add this style to the hash
@@ -1020,9 +1024,9 @@ UT_uint32 IE_Exp_RTF::_getStyleNumber(const PD_Style * pStyle)
  */
 UT_uint32 IE_Exp_RTF::_getStyleNumber(const XML_Char * szStyle)
 {
-    const NumberedStyle * pns = reinterpret_cast<const NumberedStyle *>(m_hashStyles.pick(szStyle));
-    UT_ASSERT(pns != NULL);
-    return pns->n;
+  NumberedStyle * pns = (NumberedStyle*)m_hashStyles.pick(szStyle);
+  UT_ASSERT(pns);
+  return pns->n;
 }
 
 /*!
