@@ -56,13 +56,13 @@ struct _imp
 static struct _imp s_impTable[] =
 {
 	DeclareImporter(IE_Imp_AbiWord_1),
-	DeclareImporter(IE_Imp_GZipAbiWord),
-	DeclareImporter(IE_Imp_RTF),
 	DeclareImporter(IE_Imp_MsWord_97),
-	DeclareImporter(IE_Imp_UTF8),
-	DeclareImporter(IE_Imp_Text),
-	DeclareImporter(IE_Imp_WML),
 	DeclareImporter(IE_Imp_XHTML),
+	DeclareImporter(IE_Imp_RTF),
+	DeclareImporter(IE_Imp_Text),
+	DeclareImporter(IE_Imp_UTF8),
+	DeclareImporter(IE_Imp_WML),
+	DeclareImporter(IE_Imp_GZipAbiWord)
 };
 
 		

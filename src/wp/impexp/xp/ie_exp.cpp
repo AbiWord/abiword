@@ -66,20 +66,20 @@ struct _xp
 static struct _xp s_expTable[] =
 {
 	DeclareExporter(IE_Exp_AbiWord_1),
-	DeclareExporter(IE_Exp_GZipAbiWord),
+	DeclareExporter(IE_Exp_DocBook),
 #ifdef DEBUG
 	DeclareExporter(IE_Exp_MsWord_97),
 	//	Don't declare until it works
 #endif
+	DeclareExporter(IE_Exp_HTML),
+	DeclareExporter(IE_Exp_LaTeX),
+	DeclareExporter(IE_Exp_PalmDoc),
 	DeclareExporter(IE_Exp_RTF),
 	DeclareExporter_sub(IE_Exp_RTF,attic),
 	DeclareExporter(IE_Exp_Text),
 	DeclareExporter(IE_Exp_UTF8),
-	DeclareExporter(IE_Exp_HTML),
-	DeclareExporter(IE_Exp_LaTeX),
-	DeclareExporter(IE_Exp_PalmDoc),
 	DeclareExporter(IE_Exp_WML),
-	DeclareExporter(IE_Exp_DocBook)
+	DeclareExporter(IE_Exp_GZipAbiWord)
 };
 
 /*****************************************************************/
