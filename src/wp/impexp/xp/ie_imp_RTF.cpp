@@ -89,7 +89,8 @@ class fl_AutoNum;
 
 static const UT_uint32 MAX_KEYWORD_LEN = 256;
 // This should probably be defined in pt_Types.h
-static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
+// this used to be 8, which way to small ...
+static const UT_uint32 PT_MAX_ATTRIBUTES = 20;
 
 
 static char g_dbgLastKeyword [256];
@@ -3765,7 +3766,18 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, bool
 	{
 	case RTF_KW_ansicpg:
 	{
-		const char *szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(static_cast<UT_uint32>(param));
+		const char *szEncoding = NULL;
+		if(param == -1)
+		{
+			// IE issues this value on copy (ctrl+c), and I could not find out from anywhere what it is
+			// supposed to mean; I will assume it means use the current system page
+			szEncoding = XAP_EncodingManager::get_instance()->getNative8BitEncodingName();
+		}
+		else
+		{
+			szEncoding = XAP_EncodingManager::get_instance()->charsetFromCodepage(static_cast<UT_uint32>(param));
+		}
+		
 		m_mbtowc.setInCharset(szEncoding);
 		
 		if(!getLoadStylesOnly()) {
@@ -6113,11 +6125,17 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		UT_String_sprintf(szLevel,"%d",m_currentRTFState.m_paraProps.m_level);
 
 		attribs[attribsCount++] = PT_LISTID_ATTRIBUTE_NAME;
+		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 		attribs[attribsCount++] = szListID.c_str();
+		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 		attribs[attribsCount++] = PT_PARENTID_ATTRIBUTE_NAME;
+		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 		attribs[attribsCount++] = szParentID.c_str();
+		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 		attribs[attribsCount++] = PT_LEVEL_ATTRIBUTE_NAME;
+		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 		attribs[attribsCount++] = szLevel.c_str();
+		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 		attribs[attribsCount] = NULL;
 	}
 
@@ -9680,7 +9698,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 //
 					BasedOn[styleCount] = static_cast<UT_sint32>(parameter);
 					attribs[attribsCount++] = PT_BASEDON_ATTRIBUTE_NAME;
+					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 					attribs[attribsCount++] = NULL;
+					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 					attribs[attribsCount]   = NULL;
 				}
 				else if(0)
@@ -9690,7 +9710,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					if (val != NULL)
 					{
 						attribs[attribsCount++] = PT_BASEDON_ATTRIBUTE_NAME;
+						UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 						attribs[attribsCount++] = val;
+						UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 						attribs[attribsCount]   = NULL;
 					}
 				}
@@ -9707,7 +9729,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 //
 					FollowedBy[styleCount] = static_cast<UT_sint32>(parameter);
 					attribs[attribsCount++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
+					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 					attribs[attribsCount++] = NULL;
+					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 					attribs[attribsCount]   = NULL;
 				}
 				else if(parameter < styleNumber)
@@ -9717,7 +9741,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					if (val != NULL)
 					{
 	               		attribs[attribsCount++] = PT_FOLLOWEDBY_ATTRIBUTE_NAME;
+						UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 						attribs[attribsCount++] = val;
+						UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 						attribs[attribsCount]   = NULL;
 					}
 				}
@@ -9757,6 +9783,9 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		default:
 			// The only thing that should be left is the style name
 
+			// clear the m_mbtowc buffer
+			m_mbtowc.initialize(true);
+			
 			while (ch != '}' && ch != ';')
 			{
 				/* 
@@ -9765,8 +9794,11 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 				   We assume it is the document charset.
 				*/
 				UT_UCS4Char wc;
-				m_mbtowc.mbtowc(wc,static_cast<UT_Byte>(ch));
-				styleName += wc;
+				if(m_mbtowc.mbtowc(wc,static_cast<UT_Byte>(ch)))
+					styleName += wc;
+				else
+					styleName += ch;
+				
                 if (!ReadCharFromFile(&ch)) {
 		            return false;
 				}
@@ -9790,13 +9822,19 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			// Use it.
 			buildAllProps(static_cast<char *>(&propBuffer[0]) ,pParas,pChars,pbParas,pbChars);
 			attribs[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
+			UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 			attribs[attribsCount++] = static_cast<const char *>(&propBuffer[0]);
+			UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 
 			attribs[attribsCount++] = PT_NAME_ATTRIBUTE_NAME;
+			UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 			attribs[attribsCount++] = m_styleTable[styleNumber];
+			UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 
 			attribs[attribsCount++] = PT_TYPE_ATTRIBUTE_NAME;
+			UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 			attribs[attribsCount++] = styleType;
+			UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 //			attribs[attribsCount] = NULL;
 //
 // OK now we clone this and save it so we can set basedon's and followedby's
@@ -9876,10 +9914,12 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					// array, otherwise there is no way we can free it !!!
 					//attribs[attribsCount++] = UT_strdup(static_cast<const char *>(m_styleTable[istyle]));
 					attribs[attribsCount++] = m_styleTable[istyle];
+					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 				}
 				else
 				{
 					attribs[attribsCount++] = szNext;
+					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 				}
 			}
 			else if( UT_strcmp(szAtt, PT_FOLLOWEDBY_ATTRIBUTE_NAME)== 0)
@@ -9892,16 +9932,19 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 					// array, otherwise there is no way we can free it !!!
 					// attribs[attribsCount++] = UT_strdup(static_cast<const char *>(m_styleTable[istyle]));
 					attribs[attribsCount++] = m_styleTable[istyle];
+					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 				}
 				else
 				{
 					attribs[attribsCount++] = szNext;
+					UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 				}
 			}
 			else
 			{
 				szAtt = pCurStyleVec->getNthItem(j++);
 				attribs[attribsCount++] = szAtt;
+				UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
 			}
 			attribs[attribsCount] = NULL;
 		}
