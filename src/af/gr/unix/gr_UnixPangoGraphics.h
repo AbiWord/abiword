@@ -36,11 +36,26 @@
 /************************************************************************/
 /************************************************************************/
 
-class ABI_EXPORT GR_UnixPangoFont : public XAP_UnixFontHandle
+class ABI_EXPORT GR_UnixPangoFont : public GR_Font
 {
   public:
-	GR_UnixPangoFont(XAP_UnixFont * font, UT_uint32 size) : XAP_UnixFontHandle(font, size), m_pf(NULL);
+	GR_UnixPangoFont(PangoFontDescription * pDesc):m_pf(NULL);
 	virtual ~GR_UnixPangoFont();
+
+	/*!
+		Measure the unremapped char to be put into the cache.
+		That means measuring it for a font size of 120
+	 */
+	virtual UT_sint32 measureUnremappedCharForCache(UT_UCS4Char cChar) const;
+	
+	/*
+	   NB: it is essential that this function is fast
+	*/
+	virtual bool doesGlyphExist(UT_UCS4Char g);
+
+	PangoFont * getPangoFont() const {return m_pf;}
+	
+  private:
 	PangoFont *m_pf;
 };
 
@@ -60,12 +75,13 @@ public:
 	static const char *    graphicsDescriptor(){return "Unix Pango";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
-	virtual void			drawChars(const UT_UCSChar* pChars,
+	virtual void		   drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
 									  UT_sint32 xoff, UT_sint32 yoff,
 									  int * pCharWidth);
                     
-	virtual GR_Font*	getDefaultFont(UT_String& fontFamily);
+	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily);
+	virtual void           setFont(GR_Font *);
 
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
@@ -93,6 +109,23 @@ public:
 
 	static PangoFontMap * getFontMap() {return m_pFontMap;}
 	static PangoContext * getContext() {return m_pContext;}
+
+	virtual UT_uint32 getFontAscent();
+	virtual UT_uint32 getFontDescent();
+	virtual UT_uint32 getFontHeight();
+
+	virtual UT_uint32 getFontAscent(GR_Font *);
+	virtual UT_uint32 getFontDescent(GR_Font *);
+	virtual UT_uint32 getFontHeight(GR_Font *);
+
+	virtual GR_Font* _findFont(const char* pszFontFamily,
+							   const char* pszFontStyle,
+							   const char* pszFontVariant,
+							   const char* pszFontWeight,
+							   const char* pszFontStretch,
+							   const char* pszFontSize);
+	
+	virtual void getCoverage(UT_NumberVector& coverage);
 	
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
