@@ -21,6 +21,8 @@
 #include <js.h>
 #endif /* ABI_OPT_JS */
 
+#include <stdio.h>	// for sprintf
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_string.h"
@@ -30,6 +32,7 @@
 #include "ap_Frame.h"
 #include "ap_EditMethods.h"
 #include "ap_Menu_ActionSet.h"
+#include "abi_ver.h"
 
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
@@ -99,11 +102,22 @@ JSInterpPtr AP_App::getInterp(void) const
 
 const char * AP_App::getApplicationTitleForTitleBar(void) const
 {
+	static char _title[512];
+
 	// return a string that the platform-specific code
 	// can copy to the title bar of a window.
 
-	// TODO fix the following...
-	return "AbiWord Personal 0.1.4";
+	/*
+		TODO the format of the string below is not necessarily
+		what we will want to use for end-user shipping builds.
+		For example, we might not want to include the build ID.
+		We should probably make this conditional based on whether
+		the build is debug or not.
+	*/
+
+	sprintf(_title, "AbiWord Personal %s (%s)", gAbi_Build_Version, gAbi_Build_ID);
+
+	return _title;
 }
 
 const char * AP_App::getApplicationName(void) const
