@@ -508,7 +508,13 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 
 %files fonts
 %defattr(-,root,root)
-%{ABIPREFIX}/AbiSuite/fonts
+%config(noreplace) %{ABIPREFIX}/AbiSuite/fonts/fonts.dir
+%config(noreplace) %{ABIPREFIX}/AbiSuite/fonts/fonts.scale
+%{ABIPREFIX}/AbiSuite/fonts/*.afm
+%{ABIPREFIX}/AbiSuite/fonts/*.pfa
+%{ABIPREFIX}/AbiSuite/fonts/*.pfb
+%{ABIPREFIX}/AbiSuite/fonts/*.e2u
+%{ABIPREFIX}/AbiSuite/fonts/*.u2g
 
 %files help-de-DE
 %defattr(-,root,root)
@@ -530,6 +536,10 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 
 
 %changelog
+* Thu Mar 28 2002 Rui M. Silva Seabra <rms@1407.org>
+- Solved bug http://bugzilla.abisource.com/show_bug.cgi?id=1938
+  fonts.dir and fonts.scale will no longer be replaced.
+
 * Mon Mar 25 2002 Rui M. Silva Seabra <rms@1407.org>
 - Removed ispell dictionaries to rpm spec too much clutter and one too many
   sad voices
