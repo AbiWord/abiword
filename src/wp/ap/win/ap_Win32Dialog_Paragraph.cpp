@@ -114,6 +114,9 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	*/
 
+	// store frame for later use
+	m_pFrame = pFrame;
+	
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);

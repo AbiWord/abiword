@@ -49,6 +49,7 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Di
 {
 	m_answer = a_OK;
 	m_paragraphPreview = NULL;
+	m_pFrame = NULL;
 	
 	// determine unit system to use in this dialog
 	const XML_Char * szRulerUnits;
@@ -582,10 +583,8 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	// free any attached preview
 	DELETEP(m_paragraphPreview);
 
-	// we have to pass it a block of text to use as the current block
-
-	// TODO : USE SOME TEXT FROM THE DOCUMENT!!!
-
+	// we have to pass it a block of text to use as the current block.
+	// we use the first 150 characters from the document's current block.
 	UT_UCSChar * tmp = NULL;
 
 	UT_UCS_cloneString_char(&tmp, "This is a test of the emergency broadcast system.  "

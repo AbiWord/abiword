@@ -99,18 +99,16 @@ static void s_option_alignment_toggle(GtkWidget * widget, GtkCList * clist)
 }
 */
 
-#if 0
 static gboolean s_spin_editable_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(widget && dlg);
 
-//	dlg->event_UpdateEntry(widget);
+	dlg->event_SpinChanged(widget);
 	
 	// do NOT let GTK do its own update (which would erase the text we just
 	// put in the entry area
 	return FALSE;
 }
-#endif
 
 #if 0
 static gboolean s_spin_indent_changed(GtkAdjustment * adjustment, AP_UnixDialog_Paragraph * dlg)
@@ -156,6 +154,8 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 
 void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 {
+	m_pFrame = pFrame;
+	
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_ASSERT(mainWindow);
@@ -206,8 +206,6 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// Run into the GTK event loop for this window.
 	gtk_main();
 
-	_storeWindowData();
-	
 	gtk_widget_destroy(mainWindow);
 }
 
@@ -377,21 +375,21 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	GtkWidget * listAlignment;
 	GtkWidget * listAlignment_menu;
 	GtkWidget * glade_menuitem;
-	GtkObject * spinbuttonLeft_adj;
+//	GtkObject * spinbuttonLeft_adj;
 	GtkWidget * spinbuttonLeft;
-	GtkObject * spinbuttonRight_adj;
+//	GtkObject * spinbuttonRight_adj;
 	GtkWidget * spinbuttonRight;
 	GtkWidget * listSpecial;
 	GtkWidget * listSpecial_menu;
-	GtkObject * spinbuttonBy_adj;
+//	GtkObject * spinbuttonBy_adj;
 	GtkWidget * spinbuttonBy;
-	GtkObject * spinbuttonBefore_adj;
+//	GtkObject * spinbuttonBefore_adj;
 	GtkWidget * spinbuttonBefore;
-	GtkObject * spinbuttonAfter_adj;
+//	GtkObject * spinbuttonAfter_adj;
 	GtkWidget * spinbuttonAfter;
 	GtkWidget * listLineSpacing;
 	GtkWidget * listLineSpacing_menu;
-	GtkObject * spinbuttonAt_adj;
+//	GtkObject * spinbuttonAt_adj;
 	GtkWidget * spinbuttonAt;
 	GtkWidget * labelAlignment;
 	GtkWidget * labelBy;
@@ -499,8 +497,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listAlignment), listAlignment_menu);
 
-	spinbuttonLeft_adj = gtk_adjustment_new (0, 0, 100, 0.1, 10, 10);
-	spinbuttonLeft = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonLeft_adj), 1, 1);
+//	spinbuttonLeft_adj = gtk_adjustment_new (0, 0, 100, 0.1, 10, 10);
+	spinbuttonLeft = gtk_spin_button_new (NULL, 1, 1);
 	gtk_widget_ref (spinbuttonLeft);
 	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "spinbuttonLeft", spinbuttonLeft,
 							  (GtkDestroyNotify) gtk_widget_unref);
@@ -510,8 +508,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_widget_set_uposition (spinbuttonLeft, 104, 56);
 	gtk_widget_set_usize (spinbuttonLeft, 88, 24);
 	
-	spinbuttonRight_adj = gtk_adjustment_new (0, 0, 100, 0.1, 10, 10);
-	spinbuttonRight = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonRight_adj), 1, 1);
+//	spinbuttonRight_adj = gtk_adjustment_new (0, 0, 100, 0.1, 10, 10);
+	spinbuttonRight = gtk_spin_button_new (NULL, 1, 1);
 	gtk_widget_ref (spinbuttonRight);
 	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "spinbuttonRight", spinbuttonRight,
 							  (GtkDestroyNotify) gtk_widget_unref);
@@ -545,8 +543,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listSpecial), listSpecial_menu);
 
-	spinbuttonBy_adj = gtk_adjustment_new (0.5, 0, 100, 0.1, 10, 10);
-	spinbuttonBy = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonBy_adj), 1, 1);
+//	spinbuttonBy_adj = gtk_adjustment_new (0.5, 0, 100, 0.1, 10, 10);
+	spinbuttonBy = gtk_spin_button_new (NULL, 1, 1);
 	gtk_widget_ref (spinbuttonBy);
 	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "spinbuttonBy", spinbuttonBy,
 							  (GtkDestroyNotify) gtk_widget_unref);
@@ -556,8 +554,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_widget_set_uposition (spinbuttonBy, 312, 80);
 	gtk_widget_set_usize (spinbuttonBy, 88, 24);
 
-	spinbuttonBefore_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
-	spinbuttonBefore = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonBefore_adj), 1, 0);
+//	spinbuttonBefore_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
+	spinbuttonBefore = gtk_spin_button_new (NULL, 1, 0);
 	gtk_widget_ref (spinbuttonBefore);
 	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "spinbuttonBefore", spinbuttonBefore,
 							  (GtkDestroyNotify) gtk_widget_unref);
@@ -567,8 +565,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_widget_set_uposition (spinbuttonBefore, 104, 128);
 	gtk_widget_set_usize (spinbuttonBefore, 88, 24);
 
-	spinbuttonAfter_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
-	spinbuttonAfter = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonAfter_adj), 1, 0);
+//	spinbuttonAfter_adj = gtk_adjustment_new (0, 0, 1500, 0.1, 10, 10);
+	spinbuttonAfter = gtk_spin_button_new (NULL, 1, 0);
 	gtk_widget_ref (spinbuttonAfter);
 	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "spinbuttonAfter", spinbuttonAfter,
 							  (GtkDestroyNotify) gtk_widget_unref);
@@ -614,8 +612,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (listLineSpacing), listLineSpacing_menu);
 
-	spinbuttonAt_adj = gtk_adjustment_new (0.5, 0, 100, 0.1, 10, 10);
-	spinbuttonAt = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonAt_adj), 1, 1);
+//	spinbuttonAt_adj = gtk_adjustment_new (0.5, 0, 100, 0.1, 10, 10);
+	spinbuttonAt = gtk_spin_button_new (NULL, 1, 1);
 	gtk_widget_ref (spinbuttonAt);
 	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "spinbuttonAt", spinbuttonAt,
 							  (GtkDestroyNotify) gtk_widget_unref);
@@ -1002,22 +1000,22 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 
 	m_listAlignment = listAlignment;
 
-	m_spinbuttonLeft_adj = spinbuttonLeft_adj;
+//	m_spinbuttonLeft_adj = spinbuttonLeft_adj;
 	m_spinbuttonLeft = spinbuttonLeft;
 	
-	m_spinbuttonRight_adj = spinbuttonRight_adj;
+//	m_spinbuttonRight_adj = spinbuttonRight_adj;
 	m_spinbuttonRight = spinbuttonRight;
 	m_listSpecial = listSpecial;
 	m_listSpecial_menu = listSpecial_menu;
-	m_spinbuttonBy_adj = spinbuttonBy_adj;
+//	m_spinbuttonBy_adj = spinbuttonBy_adj;
 	m_spinbuttonBy = spinbuttonBy;
-	m_spinbuttonBefore_adj = spinbuttonBefore_adj;
+//	m_spinbuttonBefore_adj = spinbuttonBefore_adj;
 	m_spinbuttonBefore = spinbuttonBefore;
-	m_spinbuttonAfter_adj = spinbuttonAfter_adj;
+//	m_spinbuttonAfter_adj = spinbuttonAfter_adj;
 	m_spinbuttonAfter = spinbuttonAfter;
 	m_listLineSpacing = listLineSpacing;
 	m_listLineSpacing_menu = listLineSpacing_menu;
-	m_spinbuttonAt_adj = spinbuttonAt_adj;
+//	m_spinbuttonAt_adj = spinbuttonAt_adj;
 	m_spinbuttonAt = spinbuttonAt;
 
 	m_drawingareaPreview = drawingareaPreview;
@@ -1056,12 +1054,11 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 
 	// we have to handle the changes in values for spin buttons
 	// to preserve units
-#if 0	
 	gtk_signal_connect(GTK_OBJECT(m_spinbuttonLeft),
 					   "changed",
 					   GTK_SIGNAL_FUNC(s_spin_editable_changed),
 					   (gpointer) this);
-					   
+#if 0	
 	gtk_signal_connect(GTK_OBJECT(m_spinbuttonLeft_adj),
 					   "value_changed",
 					   GTK_SIGNAL_FUNC(s_spin_indent_changed),
@@ -1124,21 +1121,39 @@ void AP_UnixDialog_Paragraph::_populateWindowData(void)
 	UT_ASSERT(m_listSpecial);
 	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
 								(gint) _getMenuItemValue(id_MENU_SPECIAL_INDENT));
-	
-	// if m_specialIndentType is "(none)" (ParagraphDialogData::indent_NONE)
-	// then the "By" spin should be disabled
 
-	if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_NONE)
-		gtk_widget_set_sensitive(GTK_WIDGET(m_spinbuttonBy), FALSE);
-	else
-		gtk_widget_set_sensitive(GTK_WIDGET(m_spinbuttonBy), TRUE);
-}
+	// spacing
+	UT_ASSERT(m_spinbuttonLeft);
+	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBefore),
+					   (const gchar *) _getSpinItemValue(id_SPIN_BEFORE_SPACING));
 
-void AP_UnixDialog_Paragraph::_storeWindowData(void)
-{
-	// store away percentage; the base class decides if it's important when
-	// the caller requests the percent
-/*	m_zoomPercent = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_spinPercent)); */
+	UT_ASSERT(m_spinbuttonRight);
+	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAfter),
+					   (const gchar *) _getSpinItemValue(id_SPIN_AFTER_SPACING));
+
+	UT_ASSERT(m_spinbuttonAt);
+	gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt),
+					   (const gchar *) _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+
+	UT_ASSERT(m_listLineSpacing);
+	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listLineSpacing),
+								(gint) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+
+	// set the check boxes
+	// TODO : handle tri-state boxes !!!
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonWidowOrphan)),
+								 (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepLines)),
+								 (_getCheckItemValue(id_CHECK_KEEP_LINES) == check_TRUE));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonPageBreak)),
+								 (_getCheckItemValue(id_CHECK_PAGE_BREAK) == check_TRUE));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonSuppress)),
+								 (_getCheckItemValue(id_CHECK_SUPPRESS) == check_TRUE));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonHyphenate)),
+								 (_getCheckItemValue(id_CHECK_NO_HYPHENATE) == check_TRUE));
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepNext)),
+								 (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE));
 }
 
 void AP_UnixDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
@@ -1149,5 +1164,82 @@ void AP_UnixDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = 
 
 	// sync the display
 
-	// TODO: see the latest version of the Win32 implementation for ideas
+	// 1.  link the "hanging indent by" combo and spinner
+	if (bAll || (changed == id_SPIN_SPECIAL_INDENT))
+	{
+		// typing in the control can change the associated combo
+		if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) == indent_FIRSTLINE)
+		{
+			gtk_option_menu_set_history(GTK_OPTION_MENU(m_listSpecial),
+										(gint) _getMenuItemValue(id_MENU_SPECIAL_INDENT));
+		}
+	}
+	if (bAll || (changed == id_MENU_SPECIAL_INDENT))
+	{
+		switch(_getMenuItemValue(id_MENU_SPECIAL_INDENT))
+		{
+		case indent_NONE:
+			// clear the spin control
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), "");
+			break;
+
+		default:
+			// set the spin control
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), _getSpinItemValue(id_SPIN_SPECIAL_INDENT));			
+			break;
+		}
+	}
+
+	// 2.  link the "line spacing at" combo and spinner
+
+	if (bAll || (changed == id_SPIN_SPECIAL_SPACING))
+	{
+		// typing in the control can change the associated combo
+		if (_getMenuItemValue(id_MENU_SPECIAL_SPACING) == spacing_MULTIPLE)
+		{
+			gtk_option_menu_set_history(GTK_OPTION_MENU(m_listLineSpacing),
+										(gint) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+		}
+	}
+	if (bAll || (changed == id_MENU_SPECIAL_SPACING))
+	{
+		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
+		{
+		case spacing_SINGLE:
+		case spacing_ONEANDHALF:
+		case spacing_DOUBLE:
+			// clear the spin control
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), "");
+			break;
+
+		default:
+			// set the spin control
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), _getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+			break;
+		}
+	}
+
+	// 3.  move results of _doSpin() back to screen
+
+	if (!bAll)
+	{
+		// spin controls only sync when spun
+		switch (changed)
+		{
+		case id_SPIN_LEFT_INDENT:
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonLeft), 	_getSpinItemValue(id_SPIN_LEFT_INDENT));
+		case id_SPIN_RIGHT_INDENT:
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonRight), 	_getSpinItemValue(id_SPIN_RIGHT_INDENT));
+		case id_SPIN_SPECIAL_INDENT:
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBy), 		_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+		case id_SPIN_BEFORE_SPACING:
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonBefore), 	_getSpinItemValue(id_SPIN_BEFORE_SPACING));
+		case id_SPIN_AFTER_SPACING:
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAfter), 	_getSpinItemValue(id_SPIN_AFTER_SPACING));
+		case id_SPIN_SPECIAL_SPACING:
+			gtk_entry_set_text(GTK_ENTRY(m_spinbuttonAt), 		_getSpinItemValue(id_SPIN_SPECIAL_SPACING));
+		default:
+			break;
+		}
+	}
 }

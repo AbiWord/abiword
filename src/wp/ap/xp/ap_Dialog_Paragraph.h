@@ -104,6 +104,8 @@ class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// store a pointer to our preview control
 	AP_Preview_Paragraph *	m_paragraphPreview;
 
+	XAP_Frame *				m_pFrame;
+
 	// which dimension system we're using as "native" for this document
 	UT_Dimension			m_dim;
 };
