@@ -853,7 +853,6 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 	}
 
  Cleanup:
-	DELETEP(pBB);
 	DELETEP(pImage);
 	DELETEP(pGr);
 	DELETEP(fnt);
