@@ -25,7 +25,7 @@
 #include "xap_Win32PreviewWidget.h"
 
 #define MAX_EBX_LENGTH 40
-#define MAX_POS 5
+#define MAX_NEWMODIFY_TOGGLE 4
 /*****************************************************************/
 
 class AP_Win32Dialog_Styles: public AP_Dialog_Styles, XAP_Win32Dialog

@@ -6086,7 +6086,7 @@ Defun1(dlgStyle)
 	UT_ASSERT(pFrame);
 	ABIWORD_VIEW;
 
-#if !defined(WIN32) || defined(DEBUG)
+#if defined(DEBUG)
 	return s_doStylesDlg(pView);
 #else
 	s_TellNotImplemented(pFrame, "Styles dialog", __LINE__);

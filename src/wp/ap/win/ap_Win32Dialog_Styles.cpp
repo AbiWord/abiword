@@ -192,7 +192,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		_DS(STYLES_NEWMODIFY_GBX_PREVIEW,		DLG_Styles_ModifyPreview);
 		_DS(STYLES_NEWMODIFY_GBX_DESC,			DLG_Styles_ModifyDescription);
 		_DS(STYLES_NEWMODIFY_BTN_REMOVE,		DLG_Styles_RemoveButton);
-		_DS(STYLES_NEWMODIFY_BTN_TOGGLEITEMS,	DLG_Styles_ModifyFormat);
+		_DS(STYLES_NEWMODIFY_BTN_TOGGLEITEMS,	DLG_Styles_ModifyParagraph);
 		_DS(STYLES_NEWMODIFY_BTN_SHORTCUT,		DLG_Styles_ModifyShortCut);
 		_DSX(STYLES_NEWMODIFY_BTN_OK,			DLG_OK);
 		_DSX(STYLES_NEWMODIFY_BTN_CANCEL,		DLG_Cancel);
@@ -387,18 +387,22 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case IDOK:
 		{	
+     		const XAP_StringSet * pSS = m_pApp->getStringSet ();
+			// Verfiy a name value for the style
+			// TODO - Verify unique name value
 			_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
                                                   m_newStyleName,
 	                                              MAX_EBX_LENGTH );
 			if( !m_newStyleName || !strlen(m_newStyleName) )
 			{
-     			const XAP_StringSet * pSS = m_pApp->getStringSet ();
 			    getFrame()->showMessageBox( pSS->getValue (AP_STRING_ID_DLG_Styles_ErrBlankName),
 											XAP_Dialog_MessageBox::b_O,
 											XAP_Dialog_MessageBox::a_OK);
 
 			    return 1;
     		}
+			// Verfiy 
+
 		}
 		m_answer = a_OK;
 		EndDialog(hWnd,0);
@@ -479,7 +483,6 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			if(m_answer == AP_Dialog_Styles::a_OK)
 			{
 				createNewStyle((XML_Char *) m_newStyleName);
-				//_populateWindowData(); // force a refresh	_populateCList();
 				_populateCList();
 			}
 			destroyAbiPreview();
@@ -551,7 +554,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEUP:
 		if(m_selectToggle == 0 ) 
 		{ 
-			m_selectToggle = MAX_POS;
+			m_selectToggle = MAX_NEWMODIFY_TOGGLE;
 		}
 		else
 		{
@@ -562,7 +565,7 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 
 	case AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEDOWN:
-		if(m_selectToggle == MAX_POS) 
+		if(m_selectToggle == MAX_NEWMODIFY_TOGGLE) 
 		{ 
 			m_selectToggle = 0;
 		}
@@ -577,20 +580,18 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		switch( m_selectToggle )
 		{
 		case 0:
-			break;
-		case 1:
 			ModifyParagraph();
 			break;
-		case 2:
+		case 1:
 			ModifyFont();
 			break;
-		case 3:
+		case 2:
 			ModifyTabs();
 			break;
-		case 4:
+		case 3:
 			ModifyLists();
 			break;
-		case 5:
+		case 4:
 			ModifyLang();
 			break;
 		}
@@ -702,25 +703,21 @@ void AP_Win32Dialog_Styles::_updateToggleButtonText()
 	{
 	case 0:
 		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFormat) );
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
 		break;
 	case 1:
 		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFont) );
 		break;
 	case 2:
 		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyFont) );
+                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTabs) );
 		break;
 	case 3:
 		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
-                                                      pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyTabs) );
-		break;
-	case 4:
-		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
                                                       pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyNumbering) );
 		break;
-	case 5:
+	case 4:
 		p_This->_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS,
                                                       pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyLanguage) );
 		break;

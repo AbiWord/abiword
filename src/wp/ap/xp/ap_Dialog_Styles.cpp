@@ -59,16 +59,17 @@ AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 
 AP_Dialog_Styles::~AP_Dialog_Styles(void)
 {
+	UT_uint32 i;
 	DELETEP(m_pParaPreview);
 	DELETEP(m_pCharPreview);
 	DELETEP(m_pAbiPreview);
-	for(UT_uint32 i=0; i<m_vecAllProps.getItemCount(); i++)
+	for(i=0; i<m_vecAllProps.getItemCount(); i++)
 	{
 		char * psz = (char *) m_vecAllProps.getNthItem(i);
 		delete [] psz;
 	}
 	m_vecAllProps.clear();
-	for(UT_uint32 i=0; i<m_vecAllAttribs.getItemCount(); i++)
+	for(i=0; i<m_vecAllAttribs.getItemCount(); i++)
 	{
 		char * psz = (char *) m_vecAllAttribs.getNthItem(i);
 		delete [] psz;
