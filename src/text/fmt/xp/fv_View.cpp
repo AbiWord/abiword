@@ -5851,6 +5851,11 @@ void  FV_View::_clearOldPoint(void)
 
 void FV_View::_xorInsertionPoint()
 {
+	if (NULL == getCurrentPage())
+		return;
+
+	UT_ASSERT(getCurrentPage()->getOwningSection());
+
 	if (m_iPointHeight > 0 )
 	{
 		fp_Page * pPage = getCurrentPage();

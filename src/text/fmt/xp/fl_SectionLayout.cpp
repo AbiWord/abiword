@@ -501,11 +501,15 @@ fp_Container* fl_DocSectionLayout::getLastContainer()
 	return m_pLastColumn;
 }
 
+/*!
+  Create new container
+  \return The newly created container
+
+  This creates a new column or row of same.
+
+*/
 fp_Container* fl_DocSectionLayout::getNewContainer(void)
 {
-	/*
-	  This is called to create a new column (or row of same).
-	*/
 	fp_Page* pPage = NULL;
 	fp_Column* pLastColumn = (fp_Column*) getLastContainer();
 	fp_Column* pAfterColumn = NULL;
@@ -524,13 +528,11 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 	}
 	else
 	{
-		/*
-		  We currently have no columns.  Time to create some.
-		  If there is a previous section, then we need to
-		  start our section right after that one.  If not, then
-		  we start our section on the first page.  If there is no
-		  first page, then we need to create one.
-		*/
+		// We currently have no columns in this section.  Time to
+		// create some.  If there is a previous section, then we need
+		// to start our section right after that one.  If not, then we
+		// start our section on the first page.  If there is no first
+		// page, then we need to create one.
 		fl_DocSectionLayout* pPrevSL = getPrevDocSection();
 		if (pPrevSL)
 		{
@@ -576,6 +578,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 
 	UT_ASSERT(pPage);
 
+	// Create row of columns
 	fp_Column* pLeaderColumn = NULL;
 	fp_Column* pTail = NULL;
 	for (UT_uint32 i=0; i<m_iNumColumns; i++)
@@ -598,12 +601,7 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 		}
 	}
 
-	fp_Column* pLastNewCol = pLeaderColumn;
-	while (pLastNewCol->getFollower())
-	{
-		pLastNewCol = pLastNewCol->getFollower();
-	}
-
+	// Append added columns to any previous columns in this section.
 	if (m_pLastColumn)
 	{
 		UT_ASSERT(m_pFirstColumn);
@@ -618,6 +616,12 @@ fp_Container* fl_DocSectionLayout::getNewContainer(void)
 		m_pFirstColumn = pLeaderColumn;
 	}
 	
+	// Find last added column and set that as the last in the section.
+	fp_Column* pLastNewCol = pLeaderColumn;
+	while (pLastNewCol->getFollower())
+	{
+		pLastNewCol = pLastNewCol->getFollower();
+	}
 	m_pLastColumn = pLastNewCol;
 	UT_ASSERT(!(m_pLastColumn->getNext()));
 
@@ -682,8 +686,6 @@ void fl_DocSectionLayout::updateLayout(void)
 	}
 	
 	breakSection();
-
-	m_pLayout->deleteEmptyColumnsAndPages();
 }
 
 void fl_DocSectionLayout::redrawUpdate(void)
@@ -700,9 +702,6 @@ void fl_DocSectionLayout::redrawUpdate(void)
 	}
 	
 	breakSection();
-
-	m_pLayout->deleteEmptyColumnsAndPages();
-	
 }
 
 bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
@@ -1331,6 +1330,8 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage)
   blocks, and lines are laid out on the pages. Doing so it refers to
   the various layout configurations such as orphan/widow controls and
   break Runs embedded in the text. 
+
+  \fixme This function should move to fb_ColumnBreaker.cpp
 */
 UT_sint32 fl_DocSectionLayout::breakSection(void)
 {
@@ -1386,13 +1387,11 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 
 				if (pOffendingLine == pFirstLineToKeep)
 				{
-					/*
-					  Wow!  The very first line in this column won't fit.
-					  
-					  Big line.  (or maybe a small column)
-					  
-					  TODO what should we do here?  For now, we force it.
-					*/
+					// Wow!  The very first line in this column won't
+					// fit.  Big line.  (or maybe a small column)
+					// TODO: what should we do here?  For now, we
+					// force it.
+
 					pLastLineToKeep = pFirstLineToKeep;
 				}
 				else

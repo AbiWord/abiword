@@ -394,7 +394,7 @@ void FL_DocLayout::deletePage(fp_Page* pPage)
 	m_vecPages.deleteNthItem(ndx);
 	delete pPage;
 		
-	// let the view know that we created a new page,
+	// let the view know that we deleted a page,
 	// so that it can update the scroll bar ranges
 	// and whatever else it needs to do.
 
@@ -1209,6 +1209,9 @@ void FL_DocLayout::_redrawUpdate(UT_Timer * pTimer)
 		
 		pSL = pSL->getNext();
 	}
+
+	pDocLayout->deleteEmptyColumnsAndPages();
+	
 
 /*
   UT_Vector* vecToCheck = &pDocLayout->m_vecUncheckedBlocks;

@@ -65,9 +65,11 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 
 fp_Page::~fp_Page()
 {
-	UT_ASSERT(m_pOwner);
-
-	m_pOwner->deleteOwnedPage(this);
+	if (m_pOwner)
+	{
+		m_pOwner->deleteOwnedPage(this);
+		m_pOwner = NULL;
+	}
 }
 
 bool fp_Page::isEmpty(void) const
@@ -361,24 +363,52 @@ void fp_Page::_reformat(void)
 	}
 }
 
+/*!
+  Remove column leader from page
+  \param pLeader Leader to remove
+
+  This will set the page of all columns in the row to NULL
+*/
 void fp_Page::removeColumnLeader(fp_Column* pLeader)
 {
 	UT_sint32 ndx = m_vecColumnLeaders.findItem(pLeader);
 	UT_ASSERT(ndx >= 0);
 
+	// Delete leader from list
 	m_vecColumnLeaders.deleteNthItem(ndx);
-		
+
+	// Deassociate this page from the old owner
+	m_pOwner->deleteOwnedPage(this);
+	m_pOwner = NULL;
+
+	// The row of columns are not on this page anymore
 	fp_Column* pTmpCol = pLeader;
 	while (pTmpCol)
 	{
 		pTmpCol->setPage(NULL);
-		
 		pTmpCol = pTmpCol->getFollower();
 	}
+
+	// Are there still any rows on this page?
+	int count = countColumnLeaders();
+	if (0 == count)
+		return;
+
+	// Update owner and reformat
+	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+	m_pOwner = pFirstColumnLeader->getDocSectionLayout();
 
 	_reformat();
 }
 
+/*!
+  Insert column leader on page
+  \param pLeader Leader to insert
+  \param pAfter The leader to insert after or NULL
+  \return True
+
+  This will set the page of all columns in the row to this page.
+*/
 bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 {
 	if (pAfter)
@@ -391,6 +421,8 @@ bool fp_Page::insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter)
 	else
 	{
 		m_vecColumnLeaders.insertItemAt(pLeader, 0);
+		m_pOwner = pLeader->getDocSectionLayout();
+		m_pOwner->addOwnedPage(this);
 	}
 
 	fp_Column* pTmpCol = pLeader;
