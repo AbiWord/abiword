@@ -1227,18 +1227,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		return;
 	}
 
-	// if they drag horizontally off the ruler, we probably want to ignore
-	// the whole thing.  but this may interact with the current scroll.
-
-	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	if ((x < xFixed) || (x > (UT_sint32)m_iWidth))
-	{
-		_ignoreEvent(UT_TRUE);
-		m_draggingWhat = DW_NOTHING;
-		return;
-	}
-
-	// mouse up was in the ruler portion of the window, we cannot ignore it.
+	// mouse up was in the ruler portion of the window, or horizontally
+	// off - we cannot ignore it.
 	// i'd like to assert that we can just use the data computed in the
 	// last mouseMotion() since the Release must be at the same spot or
 	// we'd have received another Motion before the release.  therefore,
@@ -1492,6 +1482,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	if (!m_bValidMouseClick)
 		return;
 		
+	m_bEventIgnored = UT_FALSE;
+
 	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
@@ -1517,15 +1509,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	if ((x < xFixed + m_infoCache.m_xPageViewMargin)
 		|| (x > xAbsRight))
 	{
-		if(!m_bEventIgnored)
-		{
-			_ignoreEvent(UT_FALSE);
-			m_bEventIgnored = UT_TRUE;
-		}
 		return;
 	}
-
-	m_bEventIgnored = UT_FALSE;
 
 	// mouse motion was in the ruler portion of the window, we cannot ignore it.
 
@@ -1775,12 +1760,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			if (m_dragging2Center < xFixed + m_infoCache.m_xPageViewMargin)
 			{
 				m_dragging2Center = oldDragging2Center;
-				m_draggingCenter = oldDragging2Center;
-				if(!m_bEventIgnored)
-				{
-					_ignoreEvent(UT_FALSE);
-					m_bEventIgnored = UT_TRUE;
-				}
+				m_draggingCenter = oldDraggingCenter;
 				return;
 			}
 
