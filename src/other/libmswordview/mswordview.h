@@ -427,8 +427,11 @@ RETSIGTYPE reaper(int);
 RETSIGTYPE timeingout(int );
 void signal_handle (int sig, SigHandler * handler);
 
+#if 0
 void cleanupstreams(char *analyze,char *slashtmp);
 olestream * divide_streams(char *filename,char **analyze,char **slashtmp, char *argv0);
+#endif
+
 int decode_word8(FILE *mainfd, FILE *tablefd0,FILE *tablefd1,FILE *data,int core);
 void get_table_info(FILE *tablefd,list_info *a_list_info,U32 fcSttbFnm,U32 lcbSttbFnm,U32 fcPlcfLst,U32 lcbPlcfLst,U32 fcPlfLfo,U32 lcbPlfLfo,style *sheet);
 

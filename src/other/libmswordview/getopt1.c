@@ -22,10 +22,6 @@ USA.  */
 
 #include <stdio.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "getopt.h"
 
 #if !defined (__STDC__) || !__STDC__

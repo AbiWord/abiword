@@ -388,12 +388,13 @@ void error(FILE *stream,char *fmt, ...)
 
 RETSIGTYPE reaper (int ignored)
     {
+#if 0
 #ifdef MUST_REINSTALL_SIGHANDLERS
     signal_handle (SIGCHLD, reaper);
 #endif
     while (WAITPID (-1, 0, WNOHANG) > 0)
         ;
-
+#endif
     }
 
 RETSIGTYPE timeingout(int ignored)
@@ -406,6 +407,7 @@ RETSIGTYPE timeingout(int ignored)
 #if defined (HAVE_POSIX_SIGNALS)
 void signal_handle (int sig, SigHandler * handler)
     {
+#if 0
     struct sigaction act, oact;
 
     act.sa_handler = handler;
@@ -413,9 +415,11 @@ void signal_handle (int sig, SigHandler * handler)
     sigemptyset (&act.sa_mask);
     sigemptyset (&oact.sa_mask);
     sigaction (sig, &act, &oact);
+#endif
     }
 #endif
 
+#if 0
 olestream * divide_streams(char *filename,char **analyze,char **slashtmp,  char *argv0)
 	{
 	olestream *olelist;
@@ -652,7 +656,9 @@ olestream * divide_streams(char *filename,char **analyze,char **slashtmp,  char 
 
 	return(olelist);
 	}
+#endif
 
+#if 0
 void cleanupstreams(char *analyze,char *slashtmp)
 	{
 	DIR *adir;
@@ -690,6 +696,7 @@ void cleanupstreams(char *analyze,char *slashtmp)
 	else
 		error (erroroutput, "rmdir of %s suceeded\n",slashtmp);
 	}
+#endif
 
 int setdecom(void)
 	{

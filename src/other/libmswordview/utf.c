@@ -7,7 +7,9 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
+#if 0
 #include	<unistd.h>
+#endif
 #include	<errno.h>
 #include	"plan9.h"
 #endif
@@ -25,9 +27,6 @@ enum
 	Esc	= 0xBE,		Bad	= Runeerror
 };
 
-#ifdef PLAN9
-int	errno;
-#endif
 
 enum
 {

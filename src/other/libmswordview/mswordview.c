@@ -157,7 +157,11 @@ int spewString(const char * template, ...)
 
 	/* BIG PROBLEM: bad things will happen if the buffer size is too short. */
 	va_start(args, template);
+#if 0
 	vsnprintf(outputbuffer, outputbufferlen, template, args);
+#else
+	vsprintf(outputbuffer, template, args);
+#endif
 	va_end(args);
 
 	return (* outputbufferfunc) (outputbuffer, strlen(outputbuffer), outputbufferdata);
@@ -519,19 +523,21 @@ int decodeWordFile(int argc, char ** argv, char * buf, int len, void * cbdata,
 		return(ret);
 		}
 
+#if 0
 	/*set SIGCHLD handled*/
 	signal_handle (SIGCHLD, reaper);
+#endif
 
 	currentfontsize = NORMAL;
 
-	
+#if 0	
 	if (timeout != -1)
 		{
 		signal_handle (SIGALRM, timeingout);
 		/*well abort after this number of seconds*/
 		alarm(timeout);
 		}
-
+#endif
 
 	if (tabsize == -1)
 		{
@@ -548,6 +554,7 @@ int decodeWordFile(int argc, char ** argv, char * buf, int len, void * cbdata,
 	ret = myOLEdecode(filename,&mainfd,&tablefd0,&tablefd1,&data);
 	if (ret)
 		{
+#if 0
 		fprintf(erroroutput,"Sorry main document stream couldnt be found in doc \n%s\n",filename);
 		fprintf(erroroutput,"if this *is* a word 8 file, it appears to be corrupt\n");
 		fprintf(erroroutput,"remember, mswordview cannot handle rtf,word 6 or word 7 etc\n");
@@ -562,6 +569,7 @@ int decodeWordFile(int argc, char ** argv, char * buf, int len, void * cbdata,
 				fprintf(erroroutput,"%s",fileinbuf);
 			}
 		free(buffer);
+#endif
 		ret=10;
 		if (riskbadole) 
 			ret = decode_word8(mainfd,tablefd0,tablefd1,data,core);
@@ -5965,8 +5973,10 @@ void decode_s_table(pap *apap,chp *achp,list_info *a_list_info)
 			
 		if ( (inacell == 0) && (colcount < apap->ourtap.cell_no) )
 			{
+#if 0
 			width = (apap->ourtap.cellwidth[colcount+1]-apap->ourtap.cellwidth[colcount])*100;
 			width = rint(width/apap->ourtap.tablewidth);
+#endif
 /*
 			if (notablewidth)
 				spewString("\n<td valign=\"top\" "); 

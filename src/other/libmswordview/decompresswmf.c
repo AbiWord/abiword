@@ -9,7 +9,9 @@
 #include <string.h>
 #include "mswordview.h"
 
+#if 0
 #include <unistd.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -26,7 +28,6 @@ written by thisguy@somewhere.com who doesnt want his name in the source
 theres some notes in the notes dir on compression
 */
 
-extern int errno;
 
 int decompress(FILE *inputfile,char *outputfile,U32 inlen,U32 outlen)
 	{

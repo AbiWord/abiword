@@ -14,7 +14,6 @@ extern int madeinmac;
 
 extern char failsafe[1];
 
-extern int errno;
 
 U16 idlist[NOOFIDS] = {0,0x216,0x3D4,0x542,0x6E0,0x46A,0x7A8,0x800};
 

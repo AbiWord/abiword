@@ -37,34 +37,10 @@
 #define HAVE_SYS_IOCTL_H 1
 
 /* Define if you have the <unistd.h> header file.  */
-#define HAVE_UNISTD_H 1
+#undef HAVE_UNISTD_H 
 
 /* Define if you want zlib to uncompress wmf files */
-#define SYSTEM_ZLIB 1
-
-#if defined(HAVE_SYS_WAIT_H)
-#include <sys/wait.h>
-#endif
-
-
-#if defined (ultrix) && defined (mips) && defined (_POSIX_VERSION)
-#  define WAITPID(pid, statusp, options) \
-wait3 ((union wait *)statusp, options, (struct rusage *)0)
-#else
-#  if defined (_POSIX_VERSION) || defined (HAVE_WAITPID)
-#    define WAITPID(pid, statusp, options) \
-waitpid ((pid_t)pid, statusp, options)
-#  else
-#    if defined (HAVE_WAIT3)
-#      define WAITPID(pid, statusp, options) \
-wait3 (statusp, options, (struct rusage *)0)
-#    else
-#      define WAITPID(pid, statusp, options) \
-wait3 (statusp, options, (int *)0)
-#    endif /* HAVE_WAIT3 */
-#  endif /* !_POSIX_VERSION && !HAVE_WAITPID*/
-#endif /* !(Ultrix && mips && _POSIX_VERSION) */
-
+#undef SYSTEM_ZLIB
 
 /*signal things*/
 #include <signal.h>
@@ -81,9 +57,6 @@ extern void signal_handle();   /* in c code*/
 typedef RETSIGTYPE SigHandler ();
 
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
@@ -95,8 +68,7 @@ typedef RETSIGTYPE SigHandler ();
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <limits.h>
-#include <dirent.h>
 #include <stdarg.h>
 
-#include <getopt.h>
+#include "getopt.h"
 

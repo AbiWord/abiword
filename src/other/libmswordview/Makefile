@@ -24,13 +24,21 @@ ABI_DEPTH = ../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-CFLAGS += -DHAVE_CONFIG_H  -Ioledecod -I. -DPATTERNDIR=\"file:$(ABI_DEPTH)/other/libmswordview/patterns\" -DSYMBOLFONTDIR=\"file:$(ABI_DEPTH)/libmswordview/symbolfont\" -DWINGDINGFONTDIR=\"file:$(ABI_DEPTH)/libmswordview/wingdingfont\"
+CFLAGS += -DHAVE_CONFIG_H 								\
+		-DPATTERNDIR=\"file:$(ABI_DEPTH)/other/libmswordview/patterns\"		\
+		-DSYMBOLFONTDIR=\"file:$(ABI_DEPTH)/libmswordview/symbolfont\"		\
+		-DWINGDINGFONTDIR=\"file:$(ABI_DEPTH)/libmswordview/wingdingfont\"
 
-CSRCS=	oledecod.c annotations.c blip.c blip.test.c decompresswmf.c field.c formatting.c getopt.c getopt1.c gpprl.c hyperlink.c init_chp.c laolareplace.c laolareplace.old.c list.c mswordview.c papchpsep.c piecetable.c references.c roman.c sprm.c strerror.c stylesheet.c support.c table.c utf.c 
+CSRCS=	oledecod.c annotations.c blip.c decompresswmf.c			\
+	field.c formatting.c getopt.c getopt1.c gpprl.c hyperlink.c	\
+	init_chp.c laolareplace.old.c list.c mswordview.c papchpsep.c	\
+	piecetable.c references.c roman.c sprm.c strerror.c 		\
+	stylesheet.c support.c table.c utf.c 
 
 LIBRARY_NAME=		MsWordView
 LIBRARY_VERSION=	$(ABI_VERSION)
 TARGETS=		$(LIBRARY)
+INCLUDES=		-I$(ABI_DEPTH)/../../zlib
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 
