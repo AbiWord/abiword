@@ -165,6 +165,11 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 
 UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
 {
+	/*
+		TODO we need a more systematic way to handle this, instead 
+		TODO of just randomly adding more whitespace & punctuation
+		TODO on an as-discovered basis
+	*/
 	switch (ch)
 	{
 	case ' ':
@@ -172,12 +177,19 @@ UT_Bool UT_isWordDelimiter(UT_UCSChar ch)
 	case '.':
 	case '"':
 	case '-':
-//	case '\'':
+	case '_':
+//	case '\'':	// we want quotes inside words for contractions
 	case '(':
 	case ')':
 	case '[':
 	case ']':
+	case '<':
+	case '>':
 	case '*':
+	case '/':
+	case '+':
+	case '=':
+	case '$':
 	case ';':
 	case ':':
 	case '!':

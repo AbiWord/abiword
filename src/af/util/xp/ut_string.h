@@ -46,7 +46,8 @@ char *			UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src);
 UT_Bool			UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src);
 UT_Bool			UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src);
 
-#define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) < '9'))
+#define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) <= '9'))
+#define UT_UCS_isupper(x)	(((x) >= 'A') && ((x) <= 'Z'))		// HACK: not UNICODE-safe
 
 #ifdef WIN32
 #define snprintf _snprintf

@@ -1305,7 +1305,8 @@ void fl_BlockLayout::checkSpelling(void)
 
 	// now start checking
 	UT_uint32 wordBeginning = 0, wordLength = 0;
-	UT_Bool found;
+	UT_Bool bFound;
+	UT_Bool bAllUpperCase;
 
 	while (wordBeginning < eor)
 	{
@@ -1315,25 +1316,40 @@ void fl_BlockLayout::checkSpelling(void)
 			wordBeginning++;
 		}
 
+		// ignore initial quote
+		if (pBlockText[wordBeginning] == '\'')
+			wordBeginning++;
+
 		if (wordBeginning < eor)
 		{
 			// we're at the start of a word. find end of word
-			found = UT_FALSE;
+			bFound = UT_FALSE;
+			bAllUpperCase = UT_TRUE;
 			wordLength = 0;
-			while ((!found) && ((wordBeginning + wordLength) < eor))
+			while ((!bFound) && ((wordBeginning + wordLength) < eor))
 			{
 				if ( UT_TRUE == UT_isWordDelimiter( pBlockText[wordBeginning + wordLength] ))
 				{
-					found = UT_TRUE;
+					bFound = UT_TRUE;
 				}
 				else
 				{
+					if (bAllUpperCase)
+						bAllUpperCase = UT_UCS_isupper(pBlockText[wordBeginning + wordLength]);
+
 					wordLength++;
 				}
 			}
 
+			// ignore terminal quote
+			if (pBlockText[wordBeginning + wordLength - 1] == '\'')
+				wordLength--;
+
 			// for some reason, the spell checker fails on all 1-char words & really big ones
-			if ((wordLength > 1) && (!UT_UCS_isdigit(pBlockText[wordBeginning]) && (wordLength < 100)))
+			if ((wordLength > 1) && 
+				(!bAllUpperCase) &&		// TODO: iff relevant Option is set
+				(!UT_UCS_isdigit(pBlockText[wordBeginning]) && 
+				(wordLength < 100)))
 			{
 				if (! SpellCheckNWord16( &(pBlockText[wordBeginning]), wordLength))
 				{
