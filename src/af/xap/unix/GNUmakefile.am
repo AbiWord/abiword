@@ -59,6 +59,8 @@ libXap_unix_a_SOURCES=\
 	xap_UnixPSGraphics.cpp			\
 	xap_UnixEncodingManager.cpp		\
 	xap_UnixFrame.cpp			\
-	xap_UnixGtkColorPicker.cpp
+	xap_UnixGtkColorPicker.cpp              \
+	xap_UnixTableWidget.cpp
+
 
 

@@ -55,7 +55,8 @@ CPPSRCS=		xap_UnixApp.cpp				\
 	                xap_UnixNullGraphics.cpp                \
 			xap_UnixPSGenerate.cpp			\
 			xap_UnixPSGraphics.cpp                  \
-			xap_UnixGtkColorPicker.cpp
+			xap_UnixGtkColorPicker.cpp              \
+	                xap_UnixTableWidget.cpp
 
 # only build these for non-gnome
 ifneq ($(ABI_OPT_GNOME),1)

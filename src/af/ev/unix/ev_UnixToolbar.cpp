@@ -32,10 +32,12 @@
 #include "ev_Toolbar_Labels.h"
 #include "ev_Toolbar_Control.h"
 #include "ev_EditEventMapper.h"
+#include "xap_UnixTableWidget.h"
 #include "xap_UnixToolbar_Icons.h"
 #include "ev_UnixToolbar_ViewListener.h"
 #include "xav_View.h"
 #include "xap_Prefs.h"
+#include "fv_View.h"
 #include "xap_EncodingManager.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixFontPreview.h"
@@ -111,9 +113,26 @@ public:									// we create...
 		GdkEvent * event = gtk_get_current_event();
 		wd->m_pUnixToolbar->setCurrentEvent(event);
 		if (!wd->m_blockSignal)
+		{
 			wd->m_pUnixToolbar->toolbarEvent(wd, 0, 0);
+		}
 	};
 
+	static void s_new_table(GtkWidget *table, int rows, int cols, gpointer* user_data)
+	{
+		// this is a static callback method and does not have a 'this' pointer.
+		// map the user_data into an object and dispatch the event.
+	
+		_wd * wd = (_wd *) user_data;
+		UT_ASSERT(wd);
+		GdkEvent * event = gtk_get_current_event();
+		wd->m_pUnixToolbar->setCurrentEvent(event);
+		if (!wd->m_blockSignal && (rows > 0) && (cols > 0))
+		{
+			FV_View * pView = (FV_View *) wd->m_pUnixToolbar->getFrame()->getCurrentView();
+			pView->cmdInsertTable(rows,cols,NULL);
+		}
+	}
 
 	static void s_drag_begin(GtkWidget  *widget,
 							GdkDragContext     *context)
@@ -630,12 +649,32 @@ bool EV_UnixToolbar::synthesize(void)
 													 &wPixmap);
 				UT_ASSERT(bFoundIcon);
 
-				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
-													   pLabel->getToolbarLabel(),
-													   szToolTip,(const char *)NULL,
-													   wPixmap,
-													   G_CALLBACK(_wd::s_callback),
-													   wd);
+				if(pAction->getToolbarId() != AP_TOOLBAR_ID_INSERT_TABLE)
+				{
+					wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
+														   pLabel->getToolbarLabel(),
+														   szToolTip,(const char *)NULL,
+														   wPixmap,
+														   G_CALLBACK(_wd::s_callback),
+														   wd);
+				}
+				else
+				{
+//
+// Hardwire the cool insert table widget onto the toolbar
+//
+					GtkWidget * abi_table = abi_table_new();
+					gtk_widget_show(abi_table);
+					UT_DEBUGMSG(("SEVIOR: Made insert table widget \n"));
+					g_signal_connect(abi_table, "selected",
+											 G_CALLBACK (_wd::s_new_table), (gpointer) wd);
+
+					UT_DEBUGMSG(("SEVIOR: Made connected to callback \n"));
+					abi_table_embed_on_toolbar(ABI_TABLE(abi_table), GTK_TOOLBAR(m_wToolbar));
+					gtk_widget_show_all(abi_table);
+					gtk_widget_hide(ABI_TABLE(abi_table)->label);
+					wd->m_widget = abi_table;
+				}
 				GtkWidget * wwd = wd->m_widget;
 				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",

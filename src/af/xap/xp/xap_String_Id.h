@@ -251,7 +251,11 @@ dcl(DLG_HashDownloader_DictList,			"the dictionary-list")
 dcl(DLG_HashDownloader_Dict, 				"the dictionary")
 dcl(DLG_HashDownloader_Dlg_Title, 			"New dictionary installation")
 
-
+/*
+For insert Table widget
+*/
+dcl(TB_InsertNewTable,                   "Insert New Table")
+dcl(TB_Table,                            "Table")
 
 /*
 	  Language property in different languages; alphabetical except English first.
