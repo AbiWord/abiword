@@ -63,6 +63,7 @@
 #include "ev_EditMethod.h"
 #include "gr_Graphics.h"
 #include "gr_CocoaGraphics.h"
+#include "gr_CocoaImage.h"
 #include "gr_Image.h"
 #include "ut_bytebuf.h"
 #include "ut_png.h"
@@ -674,6 +675,7 @@ void AP_CocoaApp::loadAllPlugins ()
 					  continue;
 				  }
 			  }
+#if 0
 			  if (pluginIsBundle)
 			  {
 				  if (XAP_ModuleManager::instance().loadBundle (plugin.c_str(), namelist[n]->d_name))
@@ -687,7 +689,7 @@ void AP_CocoaApp::loadAllPlugins ()
 				  free(namelist[n]);
 				  continue;
 			  }
-
+#endif
 			  if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
 			  {
 				  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));
@@ -1161,13 +1163,12 @@ rms:  I'm adding something here to get a localized splash screen
 		size.height = iSplashHeight;
 		[theWindow setContentSize:size];
 
-#ifdef DEBUG
-		NSImage *theImage;
-		NSString *theFileName = [NSString stringWithCString:buf];	// autoreleased 
-		theImage = [[NSImage alloc] initWithContentsOfFile:theFileName];
-		[[splash getImageView] setImage:theImage];
-		[theImage release];
-#endif
+		GR_CocoaImage *img = new GR_CocoaImage(NULL);
+		img->convertFromBuffer(pBB, iSplashWidth, iSplashHeight);
+		NSImage *theNSImage = img->getNSImage ();
+		[[splash getImageView] setImage:theNSImage];
+	
+
 #if 0
 		// create a drawing area
 		GtkWidget * da = createDrawingArea ();
