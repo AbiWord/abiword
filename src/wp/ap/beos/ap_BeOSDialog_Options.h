@@ -41,28 +41,29 @@ public:
 	virtual void _controlEnable( tControl id, UT_Bool value );
 
 	// we implement these so the XP dialog can set/grab our data
-#define SET_GATHER_BOOL(a) virtual UT_Bool _gather##a(void);  \
-						   virtual void    _set##a( UT_Bool )
-
-	SET_GATHER_BOOL			(SpellCheckAsType);
-	SET_GATHER_BOOL			(SpellHideErrors);
-	SET_GATHER_BOOL			(SpellSuggest);
-	SET_GATHER_BOOL			(SpellMainOnly);
-	SET_GATHER_BOOL			(SpellUppercase);
-	SET_GATHER_BOOL			(SpellNumbers);
-	SET_GATHER_BOOL			(SpellInternet);
-
-	SET_GATHER_BOOL			(PrefsAutoSave);
-
-	SET_GATHER_BOOL			(ViewShowRuler);
-		// have a units option
-	SET_GATHER_BOOL			(ViewShowToolbars);
-
-	SET_GATHER_BOOL			(ViewAll);
-	SET_GATHER_BOOL			(ViewHiddenText);
-	SET_GATHER_BOOL			(ViewUnprintable);
-
-#undef SET_GATHER_BOOL
+#define SET_GATHER(a,t) virtual t _gather##a(void);  \
+ 					    virtual void    _set##a( t )
+ 
+ 	SET_GATHER			(SpellCheckAsType,	UT_Bool );
+ 	SET_GATHER			(SpellHideErrors,	UT_Bool );
+ 	SET_GATHER			(SpellSuggest,		UT_Bool );
+ 	SET_GATHER			(SpellMainOnly,		UT_Bool );
+ 	SET_GATHER			(SpellUppercase,	UT_Bool );
+ 	SET_GATHER			(SpellNumbers,		UT_Bool );
+ 	SET_GATHER			(SpellInternet,		UT_Bool );
+ 
+ 	SET_GATHER			(PrefsAutoSave,		UT_Bool );
+ 
+ 	SET_GATHER			(ViewShowRuler,		UT_Bool );
+	SET_GATHER			(ViewRulerUnits,	UT_Dimension);		
+ 	SET_GATHER			(ViewShowToolbars,	UT_Bool );
+ 
+ 	SET_GATHER			(ViewAll,			UT_Bool );
+ 	SET_GATHER			(ViewHiddenText,	UT_Bool );
+ 	SET_GATHER			(ViewUnprintable,	UT_Bool );
+  
+ 	SET_GATHER			(NotebookPageNum,	int );
+#undef SET_GATHER
 	
  protected:
 	

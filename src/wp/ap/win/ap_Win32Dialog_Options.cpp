@@ -536,3 +536,20 @@ DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewUnprintable);
 
 #undef DEFINE_GET_SET_BOOL
 
+UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void) 
+{
+	return DIM_IN;
+}
+
+void    AP_Win32Dialog_Options::_setViewRulerUnits(UT_Dimension dim) 
+{
+}
+
+int AP_Win32Dialog_Options::_gatherNotebookPageNum(void) 
+{				
+	return 0;
+}			
+
+void    AP_Win32Dialog_Options::_setNotebookPageNum(int pn) 
+{	
+}
