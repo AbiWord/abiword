@@ -25,17 +25,23 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 CPPSRCS=		BeOSMain.cpp
 PROGRAM=		$(BINDIR)/AbiWord
 
+#TF As of R4 we don't need zlib or libpng any more
+#LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp \
+#			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libpng Abi_zlib
 LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp MsWordView AbiXAp AbiWPAp \
-			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat Abi_libpng Abi_zlib
+			AbiEv AbiUtil AbiWordVer AbiSpell Abi_expat
 
 ## TODO verify that we still need stdc++ for BeOS since we got rid of c++ iostreams
 
-ifeq ($(OS_ARCH), BePC)
-ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
-ABI_LIBS=		stdc++.r4 translation be tracker
-else				#OS_ARCH ppc or BeBox
-ABI_APPLIBS=		$(LoadOrder) 
-ABI_LIBS=	 	mslcpp be translation tracker
+ABI_APPLIBS=		$(LoadOrder)
+ABI_LIBS=		translation be tracker z png
+
+ifeq ($(OS_ARCH), x86)
+ABI_APPLIBS+=		$(LoadOrder) $(LoadOrder)
+ABI_LIBS+=		stdc++.r4
+else		#OS_ARCH ppc or BeBox
+ABI_LIBS+=	 	mslcpp
+LDFLAGS += 		-msg nodup
 endif
 
 TARGETS=		$(PROGRAM)
@@ -46,15 +52,18 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ## everything below here must *FOLLOW* abi_rules
 ##################################################################
 
-ifneq ($(OS_ARCH), BePC)
-LDFLAGS += -msg nodup
-endif
-
 # we override the $(PROGRAM) rule.
+RESOURCES=$(shell ls *.rsrc)
+define ATTACH_RESOURCE
+for i in xxxx; do echo "Adding Resource $$i"; xres -o tmprsrc.in $$i; copyres tmprsrc.in $(@); done; listres $(@); rm -f tmprsrc.in
+endef
 
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
+	@$(subst xxxx,$(RESOURCES),$(ATTACH_RESOURCE))
+		
 
 build:: $(TARGETS)
+
