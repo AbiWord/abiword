@@ -160,7 +160,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 								   PL_StruxFmtHandle * psfh)
 {
 	UT_ASSERT(m_pLayout);
-	//UT_DEBUGMSG(("fl_DocListener::populateStrux\n"));
+	UT_DEBUGMSG(("fl_DocListener::populateStrux in doclistner \n"));
 
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -212,9 +212,11 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 						UT_DEBUGMSG(("no memory for SectionLayout"));
 						return false;
 					}
-			
+					//
+					// Add the hdrFtr section to the linked list of SectionLayouts
+					//
+					m_pLayout->addHdrFtrSection(pSL);
 					pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pSL);
-
 					*psfh = (PL_StruxFmtHandle)pSL;
 					
 					m_pCurrentSL = pSL;
@@ -234,7 +236,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 						UT_DEBUGMSG(("no memory for SectionLayout"));
 						return false;
 					}
-
+					//
+					// Add the hdrFtr section to the linked list of SectionLayouts
+					//
+					m_pLayout->addHdrFtrSection(pSL);
 					pDocSL->setHdrFtr(FL_HDRFTR_FOOTER, pSL);
 
 					*psfh = (PL_StruxFmtHandle)pSL;
@@ -266,6 +271,8 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			UT_DEBUGMSG(("no memory for BlockLayout"));
 			return false;
 		}
+		UT_DEBUGMSG(("SEVIOR: appending block %x to Section %x \n",pBL,m_pCurrentSL));
+		UT_DEBUGMSG(("SEVIOR: Section Type = %d \n",m_pCurrentSL->getType()));
 
 		// BUGBUG: this is *not* thread-safe, but should work for now
 		if (m_bScreen)
@@ -280,10 +287,12 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		*psfh = (PL_StruxFmtHandle)pBL;
 		if(pBL->getLastLine()==NULL)
 		{
-			UT_DEBUGMSG(("In DocListner no LastLine in block append. Fixing this now \n"));
-			UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
 			if(pBL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pBL->getPrev() != NULL)
+			{
+				UT_DEBUGMSG(("In DocListner no LastLine in block append. Fixing this now \n"));
+				UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
 				pBL->format();
+			}
 		}
 
 	}
@@ -504,6 +513,10 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					return false;
 				}
 				//
+				// Add the hdrFtr section to the linked list of SectionLayouts
+				//
+				m_pLayout->addHdrFtrSection(pHeadSL);
+				//
 				// Set the pointers to this header/footer
 				//
 				pDocSL->setHdrFtr(FL_HDRFTR_HEADER, pHeadSL);
@@ -535,6 +548,10 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 					UT_DEBUGMSG(("no memory for SectionLayout"));
 					return false;
 				}
+				//
+				// Add the hdrFtr section to the linked list of SectionLayouts
+				//
+				m_pLayout->addHdrFtrSection(pFootSL);
 				//
 				// Set the pointers to this header/footer
 				//

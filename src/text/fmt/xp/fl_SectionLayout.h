@@ -89,6 +89,7 @@ public:
 	
 	fl_BlockLayout *	getFirstBlock(void) const;
 	fl_BlockLayout *	getLastBlock(void) const;
+	void                setLastBlock(fl_BlockLayout * pLast) { m_pLastBlock = pLast;}
 	fl_BlockLayout *	appendBlock(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP);
 	fl_BlockLayout *	insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev, PT_AttrPropIndex indexAP);
 	void				addBlock(fl_BlockLayout* pBL);
@@ -260,6 +261,8 @@ public:
 
 	virtual bool		recalculateFields(void);
 	
+	void                        localFormat(void);
+	void                        localCollapse(void);
 	virtual void				format(void);
 	virtual void				updateLayout(void);
 

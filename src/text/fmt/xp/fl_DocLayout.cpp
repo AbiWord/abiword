@@ -850,18 +850,27 @@ bool	FL_DocLayout::touchesPendingWordForSpell(fl_BlockLayout *pBlock,
 
 	return m_pPendingWordForSpell->doesTouch(iOffset, len);
 }
-
+/*!
+ * This method appends a DocSectionLayout onto the linked list of SectionLayout's
+ * and updates the m_pFirstSection and m_pLastSection member variables 
+ * accordingly.
+ * The structure of this linked list is as follows.
+ *    pDSL->pDSL->pDSL....pSDL->pHdrFtrSL->pHdrFtrSl->pHdrFtrSL->NULL
+ *     ^                   ^
+ *m_pFirstSection   m_pLastSection
+ *ie we have all the DocSections in a linked list followed by all the Header/
+ * Footer sections. This reflects the locations in the piece table where
+ * the header/footer sections are located at the end of the document.
+\param  fl_DocSectionLayout * pSL the DocSectionLayout to be appended.
+\param  fl_DocSectionLayout* pAfter the DocSectionLayout after which our new
+        DocSectionLayout is inserted.
+*/
 void FL_DocLayout::addSection(fl_DocSectionLayout* pSL)
 {
 	if (m_pLastSection)
 	{
 		UT_ASSERT(m_pFirstSection);
-		UT_ASSERT(m_pLastSection->getNext() == NULL);
-
-		pSL->setNext(NULL);
-		m_pLastSection->setNext(pSL);
-		pSL->setPrev(m_pLastSection);
-		m_pLastSection = pSL;
+		insertSectionAfter(m_pLastSection,pSL);
 	}
 	else
 	{
@@ -872,6 +881,14 @@ void FL_DocLayout::addSection(fl_DocSectionLayout* pSL)
 	}
 }
 
+/*!
+ * This method inserts a DocSectionLayout into the linked list of SectionLayout's
+ * and updates the m_pFirstSection and m_pLastSection member variables 
+ * accordingly
+\param  fl_DocSectionLayout * pNewSL the DocSectionLayout to be inserted.
+\param  fl_DocSectionLayout* pAfter the DocSectionLayout after which our new
+        DocSectionLayout is inserted.
+*/
 void FL_DocLayout::insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSectionLayout* pNewSL)
 {
 	pNewSL->setNext(pAfter->getNext());
@@ -887,6 +904,13 @@ void FL_DocLayout::insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSection
 		m_pLastSection = pNewSL;
 	}
 }
+
+/*!
+ * This method removes a DocSectionLayout from the linked list of SectionLayout's
+ * and updates the m_pFirstSection and m_pLastSection member variables 
+ * accordingly
+\param  fl_DocSectionLayout * pSL the DocSectionLayout to be removed.
+*/
 
 void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
 {
@@ -923,6 +947,62 @@ void FL_DocLayout::removeSection(fl_DocSectionLayout * pSL)
 
 	pSL->setNext(NULL);
 	pSL->setPrev(NULL);
+}
+
+/*!
+ * Include the header/footer section layouts AFTER the last DocSection in the
+ * the getNext, getPrev list. This will ensure that the headers/footers will be
+ * formatted and updated correctly.
+ \param fl_SectionLayout * pHdrFtrSL the header/footer layout to be inserted
+        into the sectionlayout linked list.
+ * The structure of this linked list is as follows.
+ *    pDSL->pDSL->pDSL....pSDL->pHdrFtrSL->pHdrFtrSl->pHdrFtrSL->NULL
+ *     ^                   ^
+ *m_pFirstSection   m_pLastSection
+ *
+ *ie we have all the DocSections in a linked list followed by all the Header/
+ * Footer sections. This reflects the locations in the piece table where
+ * the header/footer sections are located at the end of the document.
+*/ 
+void FL_DocLayout::addHdrFtrSection(fl_SectionLayout* pHdrFtrSL)
+{
+	UT_ASSERT(m_pLastSection);
+
+	fl_SectionLayout * pLSL = (fl_SectionLayout *) m_pLastSection;
+	fl_SectionLayout * pnext = pLSL->getNext();
+	if(pnext)
+	{
+		pnext->setPrev(pHdrFtrSL);
+		pLSL->setNext(pHdrFtrSL);
+		pHdrFtrSL->setPrev(pLSL);
+		pHdrFtrSL->setNext(pnext);
+	}
+	else
+	{
+		pLSL->setNext(pHdrFtrSL);
+		pHdrFtrSL->setPrev(pLSL);
+		pHdrFtrSL->setNext(pnext);
+	}
+}
+
+/*!
+ *  This method removes a header/footer layout from the section linked list.
+ \param fl_SectionLayout * pHdrFtrSL is the header/footer section to be removed
+*/
+void FL_DocLayout::removeHdrFtrSection(fl_SectionLayout * pHdrFtrSL)
+{
+	UT_ASSERT(pHdrFtrSL);
+
+	if(pHdrFtrSL->getPrev());
+	{
+		pHdrFtrSL->getPrev()->setNext(pHdrFtrSL->getNext());
+	}
+	if (pHdrFtrSL->getNext())
+	{
+		pHdrFtrSL->getNext()->setPrev(pHdrFtrSL->getPrev());
+	}
+	pHdrFtrSL->setNext(NULL);
+	pHdrFtrSL->setPrev(NULL);
 }
 
 fl_DocSectionLayout* FL_DocLayout::findSectionForHdrFtr(const char* pszHdrFtrID) const

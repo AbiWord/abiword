@@ -3863,7 +3863,11 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	pfnBindHandles(sdh,lid,sfhNew);
 
 	fl_DocSectionLayout* pOldSL = pDSL;
+//
+// Now move all the blocks following into the new section
+//
 	fl_BlockLayout* pBL = getNext();
+	UT_DEBUGMSG(("SEVIOR: Last block in prev section = %x \n",this));
 	while (pBL)
 	{
 		fl_BlockLayout* pNext = pBL->getNext();
@@ -3871,10 +3875,17 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		pBL->collapse();
 		pOldSL->removeBlock(pBL);
 		pSL->addBlock(pBL);
+		UT_DEBUGMSG(("SEVIOR: Adding block %x to new section \n",pBL));
 		pBL->m_pSectionLayout = pSL;
 		pBL->m_bNeedsReformat = true;
 		pBL = pNext;
 	}
+//
+// Terminate blocklist here. This Block is the last in this section.
+//
+	UT_DEBUGMSG(("SEVIOR: Last block is %x pointer to next is %x \n",pOldSL->getLastBlock(),getNext()));
+	setNext(NULL);
+	pOldSL->setLastBlock( this);
 
 	pOldSL->deleteEmptyColumns();
 

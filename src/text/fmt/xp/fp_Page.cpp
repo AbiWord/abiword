@@ -448,12 +448,12 @@ PT_DocPosition fp_Page::getFirstLastPos(bool bFirst) const
  * document of the corrsponding element.
  * This variation looks in the header/footer region and returns the 
  * SectionLayout shadow of the 
- /param x coordinate
- /param y coordinate
- /param bBOL
- /param bEOL
- /return pos The Document position corresponding the text at location x,y
- /return pShadow A pointer to the shadow corresponding to this header/footer
+ \param x coordinate
+ \param y coordinate
+ \param bBOL
+ \param bEOL
+ \return pos The Document position corresponding the text at location x,y
+ \return pShadow A pointer to the shadow corresponding to this header/footer
  */
 void fp_Page::mapXYToPositionClick(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, fl_HdrFtrShadow *& pShadow, bool& bBOL, bool& bEOL)
 {

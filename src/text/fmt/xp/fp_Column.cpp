@@ -581,7 +581,6 @@ void fp_Column::layout(void)
 	UT_sint32 iYLayoutUnits = 0;
 	double ScaleLayoutUnitsToScreen;
 	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
-
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
@@ -675,26 +674,36 @@ fp_HdrFtrContainer::~fp_HdrFtrContainer()
 
 void fp_HdrFtrContainer::layout(void)
 {
-	UT_sint32 iY = 0;
-
+	UT_sint32 iYLayoutUnits = 0;
+	double ScaleLayoutUnitsToScreen;
+	ScaleLayoutUnitsToScreen = (double)m_pG->getResolution() / UT_LAYOUT_UNITS;
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
+	
 	for (UT_uint32 i=0; i < iCountLines; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-		UT_sint32 iLineHeight = pLine->getHeight();
-		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
-		UT_sint32 iLineMarginAfter = pLine->getMarginAfter();
+		
+		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
+//		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
+		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
 
-		iY += iLineMarginBefore;
-		pLine->setY(iY);
-		iY += iLineHeight;
-       		iY += iLineMarginAfter;
-		if(iY >= m_iHeight)
-			break;
+//		iY += iLineMarginBefore;
+		pLine->setY((int)(ScaleLayoutUnitsToScreen * iYLayoutUnits));
+		pLine->setYInLayoutUnits(iYLayoutUnits);
+		iYLayoutUnits += iLineHeightLayoutUnits;
+		iYLayoutUnits += iLineMarginAfterLayoutUnits;
 	}
 
-	// note that the height of a HdrFtr container never changes.
-	// TODO deal with overflow of this container.  clip.
+	UT_sint32 iNewHeight = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits);
+	if (m_iHeight == iNewHeight)
+	{
+		return;
+	}
+
+	m_iHeight = iNewHeight;
+	m_iHeightLayoutUnits = iYLayoutUnits;
+	
+//	m_pPage->columnHeightChanged(this);
 }
 
 /*!
@@ -718,40 +727,34 @@ fl_HdrFtrSectionLayout* fp_HdrFtrContainer::getHdrFtrSectionLayout(void) const
 /*!
   Clear container content from screen.
 */
-
 void fp_HdrFtrContainer::clearScreen(void)
 {
-	UT_sint32 iY = 0;
 	int count = m_vecLines.getItemCount();
 	for (int i = 0; i<count; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
-		iY = iY + pLine->getHeight();
-		if(iY > m_iHeight)
-			break;
+
 		pLine->clearScreen();
 	}
 }
+
 
 
 /*!
  Draw container content
  \param pDA Draw arguments
  */
+
 void fp_HdrFtrContainer::draw(dg_DrawArgs* pDA)
 {
-	UT_sint32 iY = 0;
-	UT_sint32 count = m_vecLines.getItemCount();
-	dg_DrawArgs da = *pDA;
-	for (UT_sint32 i = 0; i<count; i++)
+	int count = m_vecLines.getItemCount();
+	for (int i = 0; i<count; i++)
 	{
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 
-//		da.xoff += pLine->getX();
-//  	da.yoff += pLine->getY();
-		iY = iY + pLine->getHeight();
-		if(iY > m_iHeight)
-			break;
+		dg_DrawArgs da = *pDA;
+		da.xoff += pLine->getX();
+		da.yoff += pLine->getY();
 		pLine->draw(&da);
 	}
 

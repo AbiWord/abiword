@@ -26,7 +26,7 @@
 #include "ut_hash.h"
 #include "pt_Types.h"
 #include "fp_PageSize.h"
-
+#include "fl_SectionLayout.h"
 
 class FV_View;
 class fl_DocListener;
@@ -133,6 +133,9 @@ public:
 	void		addSection(fl_DocSectionLayout*);
 	void		removeSection(fl_DocSectionLayout*);
 	void		insertSectionAfter(fl_DocSectionLayout* pAfter, fl_DocSectionLayout* pNewSL);
+	void		addHdrFtrSection(fl_SectionLayout* pHdrFtrSL);
+	void		removeHdrFtrSection(fl_SectionLayout* pHdrFtrSL);
+
 
 	inline		fl_DocSectionLayout* getFirstSection(void) const { return m_pFirstSection; }
 	inline		fl_DocSectionLayout* getLastSection(void) const { return m_pLastSection; }

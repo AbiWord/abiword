@@ -257,10 +257,10 @@ public:
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;
 	fl_HdrFtrShadow *   getShadow();
-	void				draw(dg_DrawArgs*);
-	void				layout(void);
-	void				clearScreen(void);
-	inline UT_sint32	        getY(void) const { return m_iY; }
+ 	void				draw(dg_DrawArgs*);
+  	void				layout(void);
+ 	void				clearScreen(void);
+//	inline UT_sint32	        getY(void) const { return m_iY; }
 	
 protected:
 
