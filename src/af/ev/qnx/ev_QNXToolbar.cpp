@@ -140,6 +140,35 @@ int but_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
 	return 0;
 }
 
+int s_colour_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
+	int					ret;
+	char				*title;
+	char				oklabel[3];
+	char				cancellabel[8];
+	PtColorSelectInfo_t cinfo;
+
+	struct _cb_data *cb_data = (struct _cb_data *)data;
+
+	memset(&cinfo, 0, sizeof(cinfo));
+	cinfo.flags = Pt_COLORSELECT_MODAL;
+	strcpy(oklabel, "OK");
+	cinfo.accept_text = oklabel;
+	strcpy(cancellabel, "Cancel");
+	cinfo.dismiss_text = cancellabel;
+
+	title = NULL;
+	PtGetResource(w, Pt_ARG_TEXT_STRING, &title, 0);
+
+	ret = PtColorSelect(w, (title) ? title : "Select a colour", &cinfo);
+	if(ret & Pt_COLORSELECT_ACCEPT) {
+		char clrstr[9];
+		sprintf(clrstr, "%02x%02x%02x", PgRedValue(cinfo.rgb), PgGreenValue(cinfo.rgb), PgBlueValue(cinfo.rgb));
+		//printf("Colour is [%s] len %d \n", clrstr, strlen(clrstr));
+		cb_data->tb->toolbarEvent(cb_data->id, (UT_UCSChar *)clrstr, strlen(clrstr));
+	} 
+	return Pt_CONTINUE;
+}
+
 
 bool EV_QNXToolbar::synthesize(void)
 {
@@ -227,15 +256,15 @@ bool EV_QNXToolbar::synthesize(void)
 			switch (pAction->getItemType())
 			{
 			case EV_TBIT_PushButton:
-				{
+			//TODO: For now these are buttons which bring up a dialog, as some point,
+            //make them be able to bring up some sort of additional selector.
+			case EV_TBIT_ColorFore:
+			case EV_TBIT_ColorBack:
 
-					//TODO: Add the tool tip (szToolTip), text label
+				{
 					image = m_pQNXToolbarIcons->getPixmapForIcon(pLabel->getIconName());
 					if (image && PhMakeGhostBitmap(image) == -1) {
-						printf("Can't make ghost bitmap \n");
-					}
-					else {
-						//printf("NO IMAGE: [%s] \n", pLabel->getIconName());
+						UT_DEBUGMSG(("Can't make ghost bitmap"));
 					}
 
 					n = 0;
@@ -260,7 +289,9 @@ bool EV_QNXToolbar::synthesize(void)
 						area.pos.x += image->size.w + 10;
 					}
 					else {
-						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "bad", 0); 
+						if(!szToolTip) {
+							PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "No Label/Icon?", 0); 
+						}
 						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
 						area.pos.x += 20 + 10;
 					}
@@ -269,7 +300,11 @@ bool EV_QNXToolbar::synthesize(void)
 						tcb->tb = this;
 						tcb->id = id;	
 						tcb->m_widget = tb;
-						PtAddCallback(tb, Pt_CB_ACTIVATE, but_activate, tcb);
+						if(pAction->getItemType() == EV_TBIT_PushButton) {
+							PtAddCallback(tb, Pt_CB_ACTIVATE, but_activate, tcb);
+						} else {
+							PtAddCallback(tb, Pt_CB_ACTIVATE, s_colour_activate, tcb);
+						}
 					}
 				}
 				break;
@@ -284,7 +319,6 @@ bool EV_QNXToolbar::synthesize(void)
 					else {
 						//printf("NO IMAGE: [%s] \n", pLabel->getIconName());
 					}
-
 
 					n = 0;
 					//printf("Add a button @ %d/%d ! \n", area.pos.x, area.pos.y);
@@ -383,34 +417,6 @@ bool EV_QNXToolbar::synthesize(void)
  			}
 			break;
 
-			case EV_TBIT_ColorFore:
-			case EV_TBIT_ColorBack:
-#if 0
-			    GtkWidget * combo;
-			    
-			    if (pAction->getItemType() == EV_TBIT_ColorFore)
-			      combo = color_combo_new (font_xpm, szToolTip, NULL, NULL);
-			    else
-			      combo = color_combo_new (bucket_xpm, szToolTip, NULL, NULL);
-
-			    if (!gnome_preferences_get_toolbar_relief_btn ())
-			      gtk_combo_box_set_arrow_relief (GTK_COMBO_BOX (combo), GTK_RELIEF_NONE);
-
-			    _wd * wd = new _wd (this, id);
-			    wd->m_widget = combo;
-			    gtk_combo_box_set_title (GTK_COMBO_BOX (combo),
-						     szToolTip);
-			    toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
-							 combo,
-							 szToolTip,
-							 (const char *)NULL);
-			    gtk_signal_connect (GTK_OBJECT (combo), "changed",
-						GTK_SIGNAL_FUNC (s_color_changed), wd);
-#endif
-				UT_DEBUGMSG(("TODO: Add the toolbar colour changer things"));
-			    break;
-				
-		
 			case EV_TBIT_StaticLabel:
 				break;
 					
