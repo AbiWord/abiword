@@ -83,6 +83,7 @@ private:
      */
 protected:
     void setParser (UT_XML * pParser) { m_pParser = pParser; }
+	void stopParser(void) {if(m_pParser) m_pParser->stop();}
 private:
     UT_XML * m_pParser;
 

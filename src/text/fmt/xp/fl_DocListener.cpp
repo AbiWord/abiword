@@ -715,7 +715,8 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 {
 	//UT_DEBUGMSG(("fl_DocListener::change\n"));
 	bool bResult = false;
-
+	AV_ChangeMask chgMask = AV_CHG_NONE;
+	
 	switch (pcr->getType())
 	{
 	case PX_ChangeRecord::PXT_GlobMarker:
@@ -787,6 +788,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 	case PX_ChangeRecord::PXT_ChangeSpan:
 	{
+		chgMask = AV_CHG_FMTCHAR;
 		const PX_ChangeRecord_SpanChange * pcrsc = static_cast<const PX_ChangeRecord_SpanChange *>(pcr);
 
 		fl_Layout * pL = (fl_Layout *)sfh;
@@ -1052,6 +1054,15 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		
 		case PTX_Block:
 		{
+			// among other things, this is the case where style
+			// definitions vere changed and we are updating the block;
+			// we need to notify view listeners for both block and
+			// char fmt changes (i.e., we want the font combo updated,
+			// etc.) This is not ideal, we should probably have some
+			// way of telling the change includes a style change
+			// Tomas, June 7, 2003
+			
+			chgMask = AV_CHG_FMTBLOCK | AV_CHG_FMTCHAR;
 			fl_SectionLayout * pCL = static_cast<fl_SectionLayout *>(pL);
 			fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			if(pCLSL->getType() == FL_SECTION_SHADOW)
@@ -1300,6 +1311,16 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 #ifndef UPDATE_LAYOUT_ON_SIGNAL
 		m_pLayout->updateLayout();
 #endif
+	}
+
+	// need to make view to notify its various listeners to update
+	if(chgMask != AV_CHG_NONE)
+	{
+		UT_return_val_if_fail(getLayout() && getLayout()->getView(),bResult);
+		// first of all, increase view tick, so that the view's
+		// property caches are invalidated ...
+		getLayout()->getView()->incTick();
+		getLayout()->getView()->notifyListeners(chgMask);
 	}
 	
 	return bResult;

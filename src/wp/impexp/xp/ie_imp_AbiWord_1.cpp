@@ -165,17 +165,20 @@ UT_Error IE_Imp_AbiWord_1_Sniffer::constructImporter (PD_Document * pDocument,
 
 IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 {
-  if ( !m_bWroteSection )
-    X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
-  if ( !m_bWroteParagraph )
-    X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
-
+	if(!getLoadStylesOnly()	)
+	{
+		if ( !m_bWroteSection )
+			X_CheckError(getDoc()->appendStrux(PTX_Section,NULL));
+		if ( !m_bWroteParagraph )
+			X_CheckError(getDoc()->appendStrux(PTX_Block,NULL));
+	}
+	
   if (m_refMap)
-	  {
-		  UT_HASH_PURGEDATA (UT_UTF8String *, m_refMap, delete);
-		  delete m_refMap;
-		  m_refMap = 0;
-	  }
+  {
+	  UT_HASH_PURGEDATA (UT_UTF8String *, m_refMap, delete);
+	  delete m_refMap;
+	  m_refMap = 0;
+  }
 }
 
 IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
@@ -291,12 +294,20 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
 
 	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
+
+	// if we are loading styles only, we do not care about anything
+	// but the two style tags and the doc tag ...
+	if(getLoadStylesOnly() &&
+	   tokenIndex != TT_STYLESECTION && tokenIndex != TT_STYLE && tokenIndex != TT_DOCUMENT)
+		return;
+
 	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
 		X_VerifyParseState(_PS_Init);
 		m_parseState = _PS_Doc;
 
+		if(!getLoadStylesOnly())
 		{
 		  X_CheckError(getDoc()->setAttrProp(atts));
 		}
@@ -448,6 +459,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(getDoc()->appendObject(PTO_Bookmark,atts));
 		return;
+		
 	case TT_HYPERLINK:
 		X_VerifyParseState(_PS_Block);
 		X_CheckError(getDoc()->appendObject(PTO_Hyperlink,atts));
@@ -672,6 +684,12 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 
    	UT_uint32 tokenIndex = _mapNameToToken (name, s_Tokens, TokenTableSize);
 
+	// if we are loading styles only, we do not care about anything
+	// but the two style tags and the doc tag ...
+	if(getLoadStylesOnly() &&
+	   tokenIndex != TT_STYLESECTION && tokenIndex != TT_STYLE && tokenIndex != TT_DOCUMENT)
+		return;
+	
 	switch (tokenIndex)
 	{
 	case TT_DOCUMENT:
@@ -808,7 +826,16 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 
 	case TT_STYLESECTION:
 		X_VerifyParseState(_PS_StyleSec);
-		m_parseState = _PS_Doc;
+		if(getLoadStylesOnly())
+		{
+			stopParser();
+			m_parseState = _PS_Doc;
+		}
+		else
+		{
+			m_parseState = _PS_Doc;
+		}
+		
 		return;
 
 	case TT_STYLE:

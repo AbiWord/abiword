@@ -443,7 +443,27 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft)
 		return errorCode;
 	}
 
+	// need to update anything that uses styles ...
+	//
+	// this is rather cumbersome, but did not see a simpler way of
+	// doing this (perhaps we should consider some way of invalidating
+	// styles: a style could carry a time stamp and each element would
+	// also carry a timestamp reflecting when its atributes were last
+	// refreshed; in this case if style stamp > element stamp, element
+	// would reformat) Tomas, June 7, 2003
+	
+	UT_Vector vStyles;
+	getAllUsedStyles(&vStyles);
+	for(UT_uint32 i = 0; i < vStyles.getItemCount();i++)
+	{
+		PD_Style * pStyle = (PD_Style*) vStyles.getNthItem(i);
+
+		if(pStyle)
+			updateDocForStyleChange(pStyle->getName(),!pStyle->isCharStyle());
+	}
+
 	return UT_OK;
+	
 }
 
 UT_Error PD_Document::newDocument(void)

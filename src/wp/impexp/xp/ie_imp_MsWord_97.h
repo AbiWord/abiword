@@ -127,6 +127,7 @@ public:
 	~IE_Imp_MsWord_97 ();
 
 	UT_Error			importFile (const char * szFilename);
+	virtual bool        supportsLoadStylesOnly() {return true;}
 
 	// wv's callbacks need access to these, so they have to be public
 	int 			_specCharProc (wvParseStruct *ps, UT_uint16 eachchar,

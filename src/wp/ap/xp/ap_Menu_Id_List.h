@@ -142,6 +142,7 @@ menuitem(FMT_STYLE)
 menuitem(FMT_TABS)
 menuitem(FMT_LANGUAGE)
 menuitem(FMT_IMAGE)
+menuitem(FMT_IMPORTSTYLES)
 
 menuitem(FMT)
 menuitem(FMT_BOLD)

@@ -948,12 +948,16 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
   wvSetDocumentHandler (&ps, docProc);
 
   // need to init doc props
-  getDoc()->setAttrProp(NULL);
+  if(!getLoadStylesOnly())
+	  getDoc()->setAttrProp(NULL);
   
   UT_DEBUGMSG(("DOM: wvText\n"));
 
   wvText(&ps);
 
+  if(getLoadStylesOnly())
+	  return UT_OK;
+  
   UT_DEBUGMSG(("DOM: about to get summary information\n"));
 
   // now get the summary information, if available
@@ -1378,6 +1382,9 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 #endif
 		// import styles
 		_handleStyleSheet(ps);
+
+		if(getLoadStylesOnly())
+			return 1;
 
 		// deal with bookmarks
 		_handleBookmarks(ps);

@@ -236,6 +236,7 @@ BeginLayout(Main,0)
      EndSubMenu()
 	    MenuItem(AP_MENU_ID_FMT_BACKGROUND)
 		MenuItem(AP_MENU_ID_FMT_STYLE)
+		MenuItem(AP_MENU_ID_FMT_IMPORTSTYLES)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TOOLS)

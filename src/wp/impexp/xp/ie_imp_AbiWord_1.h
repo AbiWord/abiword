@@ -73,6 +73,7 @@ public:
     void				endElement(const XML_Char *name);
 
     virtual UT_Error	importFile(const char * szFilename);
+	virtual bool        supportsLoadStylesOnly() {return true;}
 
 protected:
     const XML_Char *	_getDataItemName(const XML_Char ** atts);
