@@ -24,8 +24,9 @@ include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
 CPPSRCS=		pd_Document.cpp			\
 			pd_Document_TestRoutines.cpp	\
-			pd_Style.cpp		\
+			pd_Style.cpp			\
 			pf_Frag.cpp			\
+			pf_Frag_FmtMark.cpp		\
 			pf_Frag_Object.cpp		\
 			pf_Frag_Strux.cpp		\
 			pf_Frag_Strux_Block.cpp		\
@@ -42,6 +43,7 @@ CPPSRCS=		pd_Document.cpp			\
 			pt_PT_ChangeObject.cpp	\
 			pt_PT_ChangeSpan.cpp	\
 			pt_PT_ChangeStrux.cpp	\
+			pt_PT_FmtMark.cpp	\
 			pt_PT_Glob.cpp		\
 			pt_PT_DeleteObject.cpp	\
 			pt_PT_DeleteSpan.cpp	\
@@ -51,20 +53,20 @@ CPPSRCS=		pd_Document.cpp			\
 			pt_PT_InsertStrux.cpp	\
 			pt_PT_Listener.cpp	\
 			pt_PT_Styles.cpp	\
-			pt_PT_TempFmt.cpp	\
 			pt_PT_TestRoutines.cpp	\
 			pt_PT_Undo.cpp		\
 			pt_VarSet.cpp			\
 			px_ChangeHistory.cpp		\
 			px_ChangeRecord.cpp		\
-			px_CR_Glob.cpp	\
+			px_CR_FmtMark.cpp		\
+			px_CR_FmtMarkChange.cpp		\
+			px_CR_Glob.cpp			\
 			px_CR_Object.cpp		\
-			px_CR_ObjectChange.cpp	\
-			px_CR_Span.cpp	\
-			px_CR_SpanChange.cpp	\
-			px_CR_Strux.cpp	\
-			px_CR_StruxChange.cpp	\
-			px_CR_TempSpanFmt.cpp	\
+			px_CR_ObjectChange.cpp		\
+			px_CR_Span.cpp			\
+			px_CR_SpanChange.cpp		\
+			px_CR_Strux.cpp			\
+			px_CR_StruxChange.cpp		\
 			px_CR_TestRoutines.cpp
 
 LIBRARY_NAME=		AbiPTbl

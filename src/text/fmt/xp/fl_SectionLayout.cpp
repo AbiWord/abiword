@@ -42,7 +42,6 @@
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
 #include "px_CR_Glob.h"
-#include "px_CR_TempSpanFmt.h"
 #include "fv_View.h"
 
 #include "ut_debugmsg.h"
@@ -322,7 +321,34 @@ UT_Bool fl_SectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL, const
 {
 	return pBL->doclistener_changeObject(pcroc);
 }
-	
+
+UT_Bool fl_SectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+{
+	return pBL->doclistener_insertFmtMark(pcrfm);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+{
+	return pBL->doclistener_deleteFmtMark(pcrfm);
+}
+
+UT_Bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+{
+	return pBL->doclistener_changeFmtMark(pcrfmc);
+}
+
+#ifdef FMT_TEST
+void fl_SectionLayout::__dump(FILE * fp) const
+{
+	fprintf(fp,"Section: 0x%p [type %ld]\n",this,getType());
+	for (fl_BlockLayout * pBL=getFirstBlock(); (pBL); pBL=pBL->getNext())
+		pBL->__dump(fp);
+}
+#endif
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_DOC)
 {
@@ -697,6 +723,8 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	pSectionAP->getProperty("page-margin-right", pszRightMargin);
 	pSectionAP->getProperty("page-margin-bottom", pszBottomMargin);
 
+	// TODO are page margins really an all or nothing proposition ??
+	
 	if (
 		pszLeftMargin
 		&& pszTopMargin
@@ -1186,6 +1214,9 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 	return 0; // TODO return code
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 struct _PageHdrFtrShadowPair
 {
 	fp_Page*			pPage;
@@ -1529,7 +1560,55 @@ UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeObject(fl_BlockLayout* pBL,
 
 	return bResult;
 }
-	
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_insertFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_insertFmtMark(pBL, pcrfm)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_deleteFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMark * pcrfm)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_deleteFmtMark(pBL, pcrfm)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+UT_Bool fl_HdrFtrSectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+{
+	UT_Bool bResult = UT_TRUE;
+	UT_uint32 iCount = m_vecPages.getItemCount();
+	for (UT_uint32 i=0; i<iCount; i++)
+	{
+		struct _PageHdrFtrShadowPair* pPair = (struct _PageHdrFtrShadowPair*) m_vecPages.getNthItem(i);
+
+		bResult = pPair->pShadow->bl_doclistener_changeFmtMark(pBL, pcrfmc)
+			&& bResult;
+	}
+
+	return bResult;
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 fl_HdrFtrShadow::fl_HdrFtrShadow(FL_DocLayout* pLayout, fp_Page* pPage, fl_HdrFtrSectionLayout* pHdrFtrSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_SHADOW)
 {
@@ -1613,6 +1692,9 @@ UT_Bool fl_HdrFtrShadow::doclistener_changeStrux(const PX_ChangeRecord_StruxChan
 void fl_HdrFtrShadow::_lookupProperties(void)
 {
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 fl_ShadowListener::fl_ShadowListener(fl_HdrFtrSectionLayout* pHFSL, fl_HdrFtrShadow* pShadow)
 {

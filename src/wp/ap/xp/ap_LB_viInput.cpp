@@ -119,9 +119,8 @@ static struct ap_bs_Mouse s_MouseTable[] =
 	//{_CF _B3,	{ "contextField",		"",			"",		"",			"",			""				}},
 
 #if defined(PT_TEST) || defined(FMT_TEST) || defined(UT_TEST)
-//	Button-3, Left-of-Text-context
 //  { context		{ click			doubleclick		drag,		dbldrag,	release,	doublerelease	}},
-	{_CL _B3 _A,	{ "Test_Dump",	"",				"",			"",			"",			""				}},
+	{_CU _B3 _A,	{ "Test_Dump",	"",				"",			"",			"",			""				}},
 #endif
 };
 

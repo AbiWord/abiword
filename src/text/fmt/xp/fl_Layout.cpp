@@ -62,8 +62,8 @@ UT_Bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP) const
 	return m_pDoc->getAttrProp(m_apIndex,ppAP);
 }
 
-UT_Bool fl_Layout::getSpanAttrProp(UT_uint32 offset, const PP_AttrProp ** ppAP) const
+UT_Bool fl_Layout::getSpanAttrProp(UT_uint32 offset, UT_Bool bLeftSide, const PP_AttrProp ** ppAP) const
 {
-	return m_pDoc->getSpanAttrProp(m_sdh,offset,ppAP);
+	return m_pDoc->getSpanAttrProp(m_sdh,offset,bLeftSide,ppAP);
 }
 

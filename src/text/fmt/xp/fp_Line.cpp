@@ -280,7 +280,7 @@ void fp_Line::recalcHeight()
 	UT_sint32 iMaxAscent = 0;
 	UT_sint32 iMaxDescent = 0;
 
-	for (i=0; i<count; i++)
+	for (i=0; i<count; i++)	// TODO merge these two loops into one....
 	{
 		UT_sint32 iAscent;
 
@@ -451,7 +451,7 @@ void fp_Line::layout(void)
 
 	iX = 0 + iMoveOver;
 	
-	for (i=0; i<iCountRuns; i++)
+	for (i=0; i<iCountRuns; i++)		// TODO do we need to do this if iMoveOver is zero ??
 	{
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 		pRun->setX(iX);

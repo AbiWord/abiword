@@ -78,8 +78,6 @@ public:
 	void		 		getScreenOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff);
 
 	void				draw(dg_DrawArgs*);
-	void 				dump();
-
 	void				clearScreen(void);
 
 protected:

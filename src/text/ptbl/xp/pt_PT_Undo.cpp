@@ -27,6 +27,7 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_FmtMark.h"
 #include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
@@ -34,6 +35,8 @@
 #include "pf_Frag_Text.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
+#include "px_CR_FmtMark.h"
+#include "px_CR_FmtMarkChange.h"
 #include "px_CR_Object.h"
 #include "px_CR_ObjectChange.h"
 #include "px_CR_Span.h"
@@ -41,7 +44,6 @@
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
 #include "px_CR_Glob.h"
-#include "px_CR_TempSpanFmt.h"
 
 /****************************************************************/
 /****************************************************************/
@@ -54,10 +56,17 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 
 	switch (pcr->getType())
 	{
+
+	//////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////
+
 	case PX_ChangeRecord::PXT_GlobMarker:
 		DONE();
 		return UT_TRUE;
 		
+	//////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////
+
 	case PX_ChangeRecord::PXT_InsertSpan:
 		{
 			const PX_ChangeRecord_Span * pcrSpan = static_cast<const PX_ChangeRecord_Span *>(pcr);
@@ -163,6 +172,9 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 		}
 		return UT_TRUE;
 			
+	//////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////
+
 	case PX_ChangeRecord::PXT_InsertStrux:
 		{
 			const PX_ChangeRecord_Strux * pcrStrux = static_cast<const PX_ChangeRecord_Strux *>(pcr);
@@ -170,12 +182,6 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			if (!_createStrux(pcrStrux->getStruxType(),pcrStrux->getIndexAP(),&pfsNew))
 				return UT_FALSE;
 
-			if (pfsNew->getStruxType() == PTX_Block)
-			{
-				pf_Frag_Strux_Block * pfsbNew = static_cast<pf_Frag_Strux_Block *>(pfsNew);
-				pfsbNew->setPreferredSpanFmt(pcrStrux->getPreferredSpanFmt());
-			}
-			
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			UT_Bool bFoundFrag = getFragFromPosition(pcrStrux->getPosition(),&pf,&fragOffset);
@@ -245,20 +251,9 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 		}
 		return UT_TRUE;
 
-	case PX_ChangeRecord::PXT_TempSpanFmt:
-		{
-			// TempSpanFmt is it's own inverse.
-			// We don't really have anything to do here other than notify the listeners.
+	//////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////
 
-			const PX_ChangeRecord_TempSpanFmt * pcrTSF = static_cast<const PX_ChangeRecord_TempSpanFmt *>(pcr);
-			pf_Frag_Strux * pfs;
-			UT_Bool bFound = _getStruxFromPosition(pcrTSF->getPosition(),&pfs);
-			UT_ASSERT(bFound);
-			DONE();
-			m_pDocument->notifyListeners(pfs,pcr);
-		}
-		return UT_TRUE;
-	
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
 			const PX_ChangeRecord_Object * pcrObject = static_cast<const PX_ChangeRecord_Object *>(pcr);
@@ -336,6 +331,98 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 		}
 		return UT_TRUE;
 
+	///////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////
+
+	case PX_ChangeRecord::PXT_InsertFmtMark:
+		{
+			const PX_ChangeRecord_FmtMark * pcrFM = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
+			pf_Frag * pf = NULL;
+			PT_BlockOffset fragOffset = 0;
+			UT_Bool bFound = getFragFromPosition(pcrFM->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFound);
+
+			pf_Frag_Strux * pfs = NULL;
+			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+			UT_ASSERT(bFoundStrux);
+
+			if (!_insertFmtMark(pf,fragOffset,pcrFM->getIndexAP()))
+				return UT_FALSE;
+
+			DONE();
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+	 
+	case PX_ChangeRecord::PXT_DeleteFmtMark:
+		{
+			const PX_ChangeRecord_FmtMark * pcrFM = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
+			pf_Frag * pf = NULL;
+			PT_BlockOffset fragOffset = 0;
+			UT_Bool bFound = getFragFromPosition(pcrFM->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFound);
+
+			// we backup one because we have zero length and getFragFromPosition()
+			// returns the right-most thing with this document position.
+			pf = pf->getPrev();
+
+			UT_ASSERT(pf->getType() == pf_Frag::PFT_FmtMark);
+			UT_ASSERT(fragOffset == 0);
+			
+			pf_Frag_Strux * pfs = NULL;
+			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+			UT_ASSERT(bFoundStrux);
+
+			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
+			UT_ASSERT(pffm->getIndexAP() == pcrFM->getIndexAP());
+
+#ifndef PT_NOTIFY_BEFORE_DELETES
+			_deleteFmtMark(pffm,NULL,NULL);
+#endif			
+
+			DONE();
+			m_pDocument->notifyListeners(pfs,pcr);
+			
+#ifdef PT_NOTIFY_BEFORE_DELETES
+			_deleteFmtMark(pffm,NULL,NULL);
+#endif			
+		}
+		return UT_TRUE;
+
+	case PX_ChangeRecord::PXT_ChangeFmtMark:
+		{
+			// ChangeFmt is it's own inverse.
+
+			const PX_ChangeRecord_FmtMarkChange * pcrFMC = static_cast<const PX_ChangeRecord_FmtMarkChange *>(pcr);
+
+			pf_Frag * pf = NULL;
+			PT_BlockOffset fragOffset = 0;
+			UT_Bool bFound = getFragFromPosition(pcrFMC->getPosition(),&pf,&fragOffset);
+			UT_ASSERT(bFound);
+
+			// we backup one because we have zero length and getFragFromPosition()
+			// returns the right-most thing with this document position.
+			pf = pf->getPrev();
+
+			UT_ASSERT(pf->getType() == pf_Frag::PFT_FmtMark);
+			UT_ASSERT(fragOffset == 0);
+
+			pf_Frag_Strux * pfs = NULL;
+			UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+			UT_ASSERT(bFoundStrux);
+
+			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
+
+			_fmtChangeFmtMark(pffm,pcrFMC->getIndexAP(),NULL,NULL);
+
+			DONE();
+			m_pDocument->notifyListeners(pfs,pcr);
+		}
+		return UT_TRUE;
+		
+	///////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////
+
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
@@ -398,21 +485,6 @@ UT_Bool pt_PieceTable::undoCmd(void)
 
 	} while (m_history.getUndo(&pcr));
 
-	// if we undid a bunch of stuff and the next thing on the undo
-	// is a TempSpanFmt, we should tickle the view and renotify them
-	// of it -- even though we are not undoing it.  the view has logic
-	// (under the name {_is,_get,_set,_clear}PointAP()) which tries to
-	// track this value, but it may get confused or lost....
-
-	if (m_history.getUndo(&pcr) && pcr->getType()==PX_ChangeRecord::PXT_TempSpanFmt)
-	{
-		const PX_ChangeRecord_TempSpanFmt * pcrTSF = static_cast<const PX_ChangeRecord_TempSpanFmt *>(pcr);
-		pf_Frag_Strux * pfs;
-		UT_Bool bFound = _getStruxFromPosition(pcrTSF->getPosition(),&pfs);
-		UT_ASSERT(bFound);
-		m_pDocument->notifyListeners(pfs,pcr);
-	}
-	
 	return UT_TRUE;
 }
 

@@ -109,6 +109,9 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					}
 					break;
 				}
+				case FPRUN_FMTMARK:
+					break;
+					
 				case FPRUN_FIELD:
 				case FPRUN_IMAGE:
 				case FPRUN_TEXT:

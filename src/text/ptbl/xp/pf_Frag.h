@@ -39,7 +39,7 @@ class PX_ChangeRecord;
 class pf_Frag
 {
 public:
-	typedef enum _PFType { PFT_Text, PFT_Object, PFT_Strux, PFT_EndOfDoc } PFType;
+	typedef enum _PFType { PFT_Text, PFT_Object, PFT_Strux, PFT_EndOfDoc, PFT_FmtMark } PFType;
 
 	pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length);
 	virtual ~pf_Frag();

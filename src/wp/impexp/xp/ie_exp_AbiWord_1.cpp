@@ -519,6 +519,9 @@ UT_Bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 			}
 		}
 
+	case PX_ChangeRecord::PXT_InsertFmtMark:
+		return UT_TRUE;
+		
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;

@@ -20,6 +20,10 @@
 #ifndef SECTIONLAYOUT_H
 #define SECTIONLAYOUT_H
 
+#ifdef FMT_TEST
+#include <stdio.h>
+#endif
+
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
@@ -35,6 +39,8 @@ class fp_Column;
 class fp_Container;
 class PD_Document;
 class PP_AttrProp;
+class PX_ChangeRecord_FmtMark;
+class PX_ChangeRecord_FmtMarkChange;
 class PX_ChangeRecord_Object;
 class PX_ChangeRecord_ObjectChange;
 class PX_ChangeRecord_Span;
@@ -109,6 +115,14 @@ public:
 	virtual UT_Bool bl_doclistener_insertObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual UT_Bool bl_doclistener_deleteObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual UT_Bool bl_doclistener_changeObject(fl_BlockLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
+
+	virtual UT_Bool bl_doclistener_insertFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
+	virtual UT_Bool bl_doclistener_deleteFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
+	virtual UT_Bool bl_doclistener_changeFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
+
+#ifdef FMT_TEST
+	virtual void		__dump(FILE * fp) const;
+#endif
 	
 protected:
 	virtual void		_lookupProperties(void) = 0;
@@ -238,6 +252,10 @@ public:
 	virtual UT_Bool bl_doclistener_insertObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual UT_Bool bl_doclistener_deleteObject(fl_BlockLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual UT_Bool bl_doclistener_changeObject(fl_BlockLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
+
+	virtual UT_Bool bl_doclistener_insertFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
+	virtual UT_Bool bl_doclistener_deleteFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMark * pcrfm);
+	virtual UT_Bool bl_doclistener_changeFmtMark(fl_BlockLayout*, const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 	
 protected:
 	UT_sint32					_findShadow(fp_Page* pPage);

@@ -18,32 +18,45 @@
  */
 
 
-#include "ut_types.h"
-#include "px_CR_Strux.h"
+#include "pf_Frag_FmtMark.h"
+#include "pt_PieceTable.h"
 #include "px_ChangeRecord.h"
+#include "px_CR_FmtMark.h"
 
-PX_ChangeRecord_Strux::PX_ChangeRecord_Strux(PXType type,
-											 PT_DocPosition position,
-											 PT_AttrPropIndex indexAP,
-											 PTStruxType struxType)
-	: PX_ChangeRecord(type, position, indexAP)
+
+pf_Frag_FmtMark::pf_Frag_FmtMark(pt_PieceTable * pPT,
+								 PT_AttrPropIndex indexAP)
+	: pf_Frag(pPT,pf_Frag::PFT_FmtMark,0)
 {
-	m_struxType = struxType;
+	m_indexAP = indexAP;
 }
 
-PX_ChangeRecord_Strux::~PX_ChangeRecord_Strux()
+pf_Frag_FmtMark::~pf_Frag_FmtMark()
 {
 }
 
-PX_ChangeRecord * PX_ChangeRecord_Strux::reverse(void) const
+PT_AttrPropIndex pf_Frag_FmtMark::getIndexAP(void) const
 {
-	PX_ChangeRecord_Strux * pcr
-		= new PX_ChangeRecord_Strux(getRevType(),m_position,m_indexAP,m_struxType);
-	UT_ASSERT(pcr);
-	return pcr;
+	return m_indexAP;
 }
 
-PTStruxType PX_ChangeRecord_Strux::getStruxType(void) const
+void pf_Frag_FmtMark::setIndexAP(PT_AttrPropIndex indexNewAP)
 {
-	return m_struxType;
+	m_indexAP = indexNewAP;
+}
+
+UT_Bool pf_Frag_FmtMark::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
+												   PT_DocPosition dpos,
+												   PT_BlockOffset blockOffset) const
+{
+	UT_ASSERT(ppcr);
+	
+	PX_ChangeRecord * pcr
+		= new PX_ChangeRecord_FmtMark(PX_ChangeRecord::PXT_InsertFmtMark,
+									  dpos, m_indexAP, blockOffset);
+	if (!pcr)
+		return UT_FALSE;
+
+	*ppcr = pcr;
+	return UT_TRUE;
 }

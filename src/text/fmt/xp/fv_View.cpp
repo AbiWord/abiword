@@ -82,7 +82,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_iPointHeight = 0;
 	m_bPointEOL = UT_FALSE;
 	m_bSelection = UT_FALSE;
-	m_bPointAP = UT_FALSE;
+//	m_bPointAP = UT_FALSE;
 	m_pAutoScrollTimer = NULL;
 
 	// initialize change cache
@@ -761,20 +761,14 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 void FV_View::moveInsPtTo(FV_DocPos dp)
 {
 	if (!isSelectionEmpty())
-	{
 		_clearSelection();
-	}
 	else
-	{
 		_eraseInsertionPoint();
-	}
 	
 	PT_DocPosition iPos = _getDocPos(dp);
 
 	if (iPos != getPoint())
-	{
-		_clearPointAP(UT_TRUE);
-	}
+		notifyListeners(AV_CHG_FMTCHAR); // ensure that toolbar doesn't get stale...
 
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
 
@@ -790,19 +784,10 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 void FV_View::moveInsPtTo(PT_DocPosition dp)
 {
 	if (!isSelectionEmpty())
-	{
 		_clearSelection();
-	}
 	else
-	{
 		_eraseInsertionPoint();
-	}
 	
-	if (dp != getPoint())
-	{
-		_clearPointAP(UT_TRUE);
-	}
-
 	_setPoint(dp, /* (dp == FV_DOCPOS_EOL) */ UT_FALSE);  // is this bool correct?
 
 	if (!_ensureThatInsertionPointIsOnScreen())
@@ -827,13 +812,9 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 
 	PT_DocPosition iPoint = getPoint();
 	if (!_charMotion(bForward, count))
-	{
 		_setPoint(iPoint);
-	}
 	else
-	{
 		_updateInsertionPoint();
-	}
 
 	notifyListeners(AV_CHG_MOTION);
 }
@@ -888,9 +869,6 @@ void FV_View::insertSectionBreak(void)
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
-
-	// ==>: we *don't* call _clearPointAP() in this case 
-
 	// before inserting a section break, we insert a block break
 	UT_uint32 iPoint = getPoint();
 	
@@ -926,8 +904,6 @@ void FV_View::insertParagraphBreak(void)
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
-
-	// ==>: we *don't* call _clearPointAP() in this case 
 
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
@@ -991,7 +967,6 @@ UT_Bool FV_View::setStyle(const XML_Char * style)
 	else
 	{
 		// set block-level style
-		_clearPointAP(UT_TRUE);
 		_eraseInsertionPoint();
 
 		// NB: clear explicit props at both block and char levels
@@ -1108,53 +1083,29 @@ UT_Bool FV_View::getStyle(const XML_Char ** style)
 		UT_sint32 iPointHeight;
 
 		fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+		UT_uint32 blockPosition = pBlock->getPosition();
 		fp_Run* pRun = pBlock->findPointCoords(posStart, UT_FALSE,
 											   xPoint, yPoint, iPointHeight);
+		UT_Bool bLeftSide = UT_TRUE;
 
-		if (_isPointAP())
+		// TODO consider adding indexAP from change record to the
+		// TODO runs so that we can just use it here.
+
+		if (!bSelEmpty)
 		{
+			// we want the interior of the selection -- and not the
+			// format to the left of the start of the selection.
+			bLeftSide = UT_FALSE;
+			
 			/*
-				We have a temporary span format at the insertion point.  
+			  Likewise, findPointCoords will return the run to the right 
+			  of the specified position, so we need to stop looking one 
+			  position to the left. 
 			*/
-			UT_ASSERT(bSelEmpty);
-			m_pDoc->getAttrProp(_getPointAP(), &pSpanAP);
+			posEnd--;
 		}
-		else
-		{
-			if (bSelEmpty)
-			{
-				if (
-					(posStart == pBlock->getPosition())
-					&& (pRun->getLength() > 0)
-					)
-				{
-					posStart++;
-				}
-			}
-			else
-			{
-				/*
-					NOTE: getSpanAttrProp is optimized for insertions, so it 
-					essentially returns the properties on the left side of the 
-					specified position.  
-					
-					This is exactly what we want at the insertion point. 
 
-					However, to get properties for a selection, we need to 
-					start looking one position to the right.  
-				*/
-				posStart++;
-
-				/*
-					Likewise, findPointCoords will return the run to the right 
-					of the specified position, so we need to stop looking one 
-					position to the left. 
-				*/
-				posEnd--;
-			}
-
-			pBlock->getSpanAttrProp(posStart - pBlock->getPosition(),&pSpanAP);
-		}
+		pBlock->getSpanAttrProp( (posStart - blockPosition), bLeftSide, &pSpanAP);
 
 		if (pSpanAP)
 		{
@@ -1167,33 +1118,26 @@ UT_Bool FV_View::getStyle(const XML_Char ** style)
 		{
 			fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
 			fp_Run* pRunEnd = pBlockEnd->findPointCoords(posEnd, UT_FALSE,
-												   xPoint, yPoint, iPointHeight);
-		
+														 xPoint, yPoint, iPointHeight);
 			while (pRun && (pRun != pRunEnd))
 			{
 				const PP_AttrProp * pAP;
 				UT_Bool bCheck = UT_FALSE;
 
 				pRun = pRun->getNext();
-
 				if (!pRun)
 				{
 					// go to first run of next block
 					pBlock = pBlock->getNextBlockInDocument();
-
-					if (!pBlock)
-					{
-						// at EOD, so just bail
+					if (!pBlock)		// at EOD, so just bail
 						break;
-					}
-
 					pRun = pBlock->getFirstRun();
 				}
 
 				// did span format change?
 
 				pAP = NULL;
-				pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),&pAP);
+				pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),UT_TRUE,&pAP);
 				if (pAP && (pSpanAP != pAP))
 				{
 					pSpanAP = pAP;
@@ -1205,8 +1149,7 @@ UT_Bool FV_View::getStyle(const XML_Char ** style)
 					const XML_Char* sz = x_getStyle(pSpanAP, UT_TRUE);
 					UT_Bool bHere = (sz && sz[0]);
 
-					if ((bCharStyle != bHere) || 
-						(UT_stricmp(sz, szChar)))
+					if ((bCharStyle != bHere) || (UT_stricmp(sz, szChar)))
 					{
 						// doesn't match, so stop looking
 						bCharStyle = UT_FALSE;
@@ -1296,87 +1239,58 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles)
 	UT_sint32 iPointHeight;
 
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	UT_uint32 blockPosition = pBlock->getPosition();
 	fp_Run* pRun = pBlock->findPointCoords(posStart, UT_FALSE,
 										   xPoint, yPoint, iPointHeight);
+	UT_Bool bLeftSide = UT_TRUE;
 
-	if (_isPointAP())
+	// TODO consider adding indexAP from change record to the
+	// TODO runs so that we can just use it here.
+
+	if (!bSelEmpty)
 	{
+		// we want the interior of the selection -- and not the
+		// format to the left of the start of the selection.
+		bLeftSide = UT_FALSE;
+
 		/*
-			We have a temporary span format at the insertion point.  
+		  Likewise, findPointCoords will return the run to the right 
+		  of the specified position, so we need to stop looking one 
+		  position to the left. 
 		*/
-		UT_ASSERT(bSelEmpty);
-		m_pDoc->getAttrProp(_getPointAP(), &pSpanAP);
+		posEnd--;
 	}
-	else
-	{
-		if (bSelEmpty)
-		{
-			if (
-				(posStart == pBlock->getPosition())
-				&& (pRun->getLength() > 0)
-				)
-			{
-				posStart++;
-			}
-		}
-		else
-		{
-			/*
-				NOTE: getSpanAttrProp is optimized for insertions, so it 
-				essentially returns the properties on the left side of the 
-				specified position.  
-				
-				This is exactly what we want at the insertion point. 
 
-				However, to get properties for a selection, we need to 
-				start looking one position to the right.  
-			*/
-			posStart++;
-
-			/*
-				Likewise, findPointCoords will return the run to the right 
-				of the specified position, so we need to stop looking one 
-				position to the left. 
-			*/
-			posEnd--;
-		}
-
-		pBlock->getSpanAttrProp(posStart - pBlock->getPosition(),&pSpanAP);
-	}
+	pBlock->getSpanAttrProp( (posStart - blockPosition), bLeftSide, &pSpanAP);
 
 	pBlock->getAttrProp(&pBlockAP);
 
-	v.addItem(new _fmtPair("font-family",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("font-size",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("font-weight",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("font-style",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-family",    pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-size",      pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-weight",    pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("font-style",     pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair("text-decoration",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("color",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("color",          pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 
 	// 2. prune 'em as they vary across selection
 	if (!bSelEmpty)
 	{
 		fl_BlockLayout* pBlockEnd = _findBlockAtPosition(posEnd);
 		fp_Run* pRunEnd = pBlockEnd->findPointCoords(posEnd, UT_FALSE,
-											   xPoint, yPoint, iPointHeight);
-	
+													 xPoint, yPoint, iPointHeight);
 		while (pRun && (pRun != pRunEnd))
 		{
 			const PP_AttrProp * pAP;
 			UT_Bool bCheck = UT_FALSE;
 
 			pRun = pRun->getNext();
-
 			if (!pRun)
 			{
 				// go to first run of next block
 				pBlock = pBlock->getNextBlockInDocument();
 
-				if (!pBlock)
-				{
-					// at EOD, so just bail
+				if (!pBlock) 			// at EOD, so just bail
 					break;
-				}
 
 				// did block format change?
 				pBlock->getAttrProp(&pAP);
@@ -1391,16 +1305,8 @@ UT_Bool FV_View::getCharFormat(const XML_Char *** pProps, UT_Bool bExpandStyles)
 
 			// did span format change?
 
-			/*
-			  The assert below is no longer true, and the code below it does
-			  not seem to depend on it.  We routinely allow zero-length runs
-			  to appear in the block, to create legitimate places for the
-			  ins pt to be when there are forced breaks around.
-			*/
-//			UT_ASSERT((pRun->getLength()>0) || (pRun->getBlockOffset()==0));
-
 			pAP = NULL;
-			pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),&pAP);
+			pBlock->getSpanAttrProp(pRun->getBlockOffset()+pRun->getLength(),UT_TRUE,&pAP);
 			if (pSpanAP != pAP)
 			{
 				pSpanAP = pAP;
@@ -1471,7 +1377,6 @@ UT_Bool FV_View::setBlockFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
 
-	_clearPointAP(UT_TRUE);
 	_eraseInsertionPoint();
 
 	PT_DocPosition posStart = getPoint();
@@ -1532,7 +1437,7 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
 	pSection->getAttrProp(&pSectionAP);
 
-	v.addItem(new _fmtPair("columns",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
+	v.addItem(new _fmtPair("columns",   NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
 	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
 
 	// 2. prune 'em as they vary across selection
@@ -1547,12 +1452,8 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 			UT_Bool bCheck = UT_FALSE;
 
 			pSection = pSection->getNext();
-
-			if (!pSection)
-			{
-				// at EOD, so just bail
+			if (!pSection)				// at EOD, so just bail
 				break;
-			}
 
 			// did block format change?
 			pSection->getAttrProp(&pAP);
@@ -1651,14 +1552,14 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps,UT_Bool bExpandStyles)
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
 	pBlock->getAttrProp(&pBlockAP);
 
-	v.addItem(new _fmtPair("text-align",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("text-indent",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("margin-right",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("margin-bottom",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("line-height",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
-	v.addItem(new _fmtPair("tabstops",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("text-align",		  NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("text-indent",		  NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-left",		  NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-right",		  NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-top",		  NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("margin-bottom",		  NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("line-height",		  NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
+	v.addItem(new _fmtPair("tabstops",			  NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 	v.addItem(new _fmtPair("default-tab-interval",NULL,pBlockAP,pSectionAP,m_pDoc,bExpandStyles));
 
 	// 2. prune 'em as they vary across selection
@@ -1672,12 +1573,8 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps,UT_Bool bExpandStyles)
 			UT_Bool bCheck = UT_FALSE;
 
 			pBlock = pBlock->getNextBlockInDocument();
-
-			if (!pBlock)
-			{
-				// at EOD, so just bail
+			if (!pBlock)				// at EOD, so just bail
 				break;
-			}
 
 			// did block format change?
 			pBlock->getAttrProp(&pAP);
@@ -2087,18 +1984,12 @@ UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 {
 	if (!isSelectionEmpty())
-	{
 		_moveToSelectionEnd(bNext);
-	}
 	else
-	{
 		_eraseInsertionPoint();
-	}
 
 	_resetSelection();
-
 	_moveInsPtNextPrevLine(bNext);
-
 	notifyListeners(AV_CHG_MOTION);
 }
 
@@ -2126,9 +2017,7 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 
 		// top/bottom of doc - nowhere to go
 		if (iOldPoint == iNewPoint)
-		{
 			return;
-		}
 
 		_extSel(iOldPoint);
 		
@@ -2475,8 +2364,8 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 
 	// timer not needed any more, so stop it
 	m_pAutoScrollTimer->stop();
-	
 }
+
 // ---------------- start goto ---------------
 
 UT_Bool FV_View::gotoTarget(FV_JumpTarget /* type */, UT_UCSChar * /* data */)
@@ -2540,6 +2429,7 @@ UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool matchCase, UT_Bool * 
 		_drawSelection();
 	}
 
+	// TODO do we need to do a notifyListeners(AV_CHG_MOTION) ??
 	return bRes;
 }
 
@@ -2848,6 +2738,13 @@ void FV_View::_generalUpdate(void)
 	  here.  For that reason, I made the following mask into the union
 	  of all the masks I found.  I assume that this is inefficient, but
 	  functionally correct.
+
+	  TODO WRONG! WRONG! WRONG! notifyListener() must be called in
+	  TODO WRONG! WRONG! WRONG! fl_BlockLayout in response to a change
+	  TODO WRONG! WRONG! WRONG! notification and not here.  this call
+	  TODO WRONG! WRONG! WRONG! will only update the current window.
+	  TODO WRONG! WRONG! WRONG! having the notification in fl_BlockLayout
+	  TODO WRONG! WRONG! WRONG! will get each view on the document.
 	*/
 	notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR | AV_CHG_FMTBLOCK);
 }
@@ -3061,16 +2958,8 @@ void FV_View::_extSel(UT_uint32 iOldPoint)
 void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 {
 	PT_DocPosition iOldPoint = getPoint();
-
-	xxx_UT_DEBUGMSG(("extSelToPos: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
-				 iOldPoint, iNewPoint, m_iSelectionAnchor));
-	
 	if (iNewPoint == iOldPoint)
-	{
 		return;
-	}
-
-	_clearPointAP(UT_TRUE);
 
 	if (isSelectionEmpty())
 	{
@@ -3079,7 +2968,6 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 	}
 
 	_setPoint(iNewPoint);
-
 	_extSel(iOldPoint);
 	
 	if (isSelectionEmpty())
@@ -3087,6 +2975,8 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 		_resetSelection();
 		_drawInsertionPoint();
 	}
+
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
@@ -3098,16 +2988,10 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	UT_sint32 xClick, yClick;
 	fp_Page* pPage = _getPageForXY(xPos, yPos, xClick, yClick);
 
-	_clearPointAP(UT_TRUE);
-
 	if (!isSelectionEmpty())
-	{
 		_clearSelection();
-	}
 	else
-	{
 		_eraseInsertionPoint();
-	}
 	
 	PT_DocPosition pos;
 	UT_Bool bBOL, bEOL;
@@ -3904,6 +3788,7 @@ void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 	m_bPointEOL = bEOL;
 }
 
+#if 0
 UT_Bool FV_View::_isPointAP(void)
 {
 	return m_bPointAP;
@@ -3930,13 +3815,16 @@ UT_Bool FV_View::_clearPointAP(UT_Bool bNotify)
 		// notify document that insertion point format is obsolete
 		if (bNotify)
 		{
-			m_pDoc->clearTemporarySpanFmt();
+// TODO we don't need this anymore, but i wanted to remember where it was until i finished
+// TODO making the changes to remove it.
+//			m_pDoc->clearTemporarySpanFmt();
 			notifyListeners(AV_CHG_FMTCHAR); // ensure that toolbar doesn't get stale...
 		}
 	}
 
 	return UT_TRUE;
 }
+#endif /* 0 */
 
 UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
 {
@@ -3974,7 +3862,7 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 		m_iInsPoint = posBOD;
 
 		if (m_iInsPoint != posOld)
-			_clearPointAP(UT_TRUE);
+			notifyListeners(AV_CHG_MOTION);
 
 		return UT_FALSE;
 	}
@@ -3987,12 +3875,12 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 		m_iInsPoint = posEOD;
 
 		if (m_iInsPoint != posOld)
-			_clearPointAP(UT_TRUE);
+			notifyListeners(AV_CHG_MOTION);
 
 		return UT_FALSE;
 	}
 
-	_clearPointAP(UT_TRUE);
+	notifyListeners(AV_CHG_MOTION);
 	return UT_TRUE;
 }
 // -------------------------------------------------------------------------
@@ -4005,13 +3893,9 @@ UT_Bool FV_View::canDo(UT_Bool bUndo) const
 void FV_View::cmdUndo(UT_uint32 count)
 {
 	if (!isSelectionEmpty())
-	{
 		_clearSelection();
-	}
 	else
-	{
 		_eraseInsertionPoint();
-	}
 
 	m_pDoc->undoCmd(count);
 
@@ -4032,13 +3916,9 @@ void FV_View::cmdUndo(UT_uint32 count)
 void FV_View::cmdRedo(UT_uint32 count)
 {
 	if (!isSelectionEmpty())
-	{
 		_clearSelection();
-	}
 	else
-	{
 		_eraseInsertionPoint();
-	}
 
 	m_pDoc->redoCmd(count);
 
@@ -4282,13 +4162,9 @@ void FV_View::_doPaste(void)
 	// internal portion of paste operation.
 	
 	if (!isSelectionEmpty())
-	{
 		_deleteSelection();
-	}
 	else
-	{
 		_eraseInsertionPoint();
-	}
 
 	AP_Clipboard* pClip = XAP_App::getClipboard();
 	if (pClip->open())
@@ -4370,7 +4246,6 @@ void FV_View::_doPaste(void)
 
 				if ((pCur - pStart) > 0)
 				{
-					_clearPointAP(UT_TRUE); // clear tmp span fmt if we have one
 					m_pDoc->insertSpan(getPoint(), pStart, pCur - pStart);
 				}
 
@@ -4379,7 +4254,6 @@ void FV_View::_doPaste(void)
 					|| (*pCur == 10)
 					)
 				{
-					_clearPointAP(UT_TRUE); // clear tmp span fmt if we have one
 					m_pDoc->insertStrux(getPoint(), PTX_Block);
 	
 					if (*pCur == 13)
@@ -4431,7 +4305,6 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 {
 	UT_Bool bRet;
 
-	_clearPointAP(UT_TRUE);
 	_eraseInsertionPoint();
 
 	PT_DocPosition posStart = getPoint();
@@ -4440,13 +4313,9 @@ UT_Bool FV_View::setSectionFormat(const XML_Char * properties[])
 	if (!isSelectionEmpty())
 	{
 		if (m_iSelectionAnchor < posStart)
-		{
 			posStart = m_iSelectionAnchor;
-		}
 		else
-		{
 			posEnd = m_iSelectionAnchor;
-		}
 	}
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Section);
@@ -4685,11 +4554,9 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	if (!pPage)
 		return EV_EMC_UNKNOWN;
 
-	if (
-		(yClick < 0)
+	if (   (yClick < 0)
 		|| (xClick < 0)
-		|| (xClick > pPage->getWidth())
-		)
+		|| (xClick > pPage->getWidth()) )
 	{
 		return EV_EMC_UNKNOWN;
 	}
@@ -4724,6 +4591,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_FORCEDLINEBREAK:
 	case FPRUN_FORCEDCOLUMNBREAK:
 	case FPRUN_FORCEDPAGEBREAK:
+	case FPRUN_FMTMARK:
 		return EV_EMC_TEXT;
 		
 	case FPRUN_FIELD:

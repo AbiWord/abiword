@@ -30,6 +30,7 @@
 #include "pf_Fragments.h"
 #include "pt_VarSet.h"
 class pf_Frag_Object;
+class pf_Frag_FmtMark;
 class pf_Frag_Text;
 class pf_Frag_Strux;
 class pf_Frag_Strux_Block;
@@ -110,7 +111,7 @@ public:
 	
 	UT_Bool					getAttrProp(PT_AttrPropIndex indexAP,
 										const PP_AttrProp ** ppAP) const;
-	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
+	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, UT_Bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
 
 	const UT_UCSChar *		getPointer(PT_BufIndex bi) const;
@@ -133,8 +134,6 @@ public:
 													   PTStruxType pts,
 													   PL_StruxFmtHandle * psfh) const;
 
-	void					clearTemporarySpanFmt(void);
-
 	UT_Bool					getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
 												  pf_Frag ** ppf1, PT_BlockOffset * pOffset1,
 												  pf_Frag ** ppf2, PT_BlockOffset * pOffset2) const;
@@ -144,7 +143,7 @@ public:
 	// styles
 	UT_Bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	UT_Bool					enumStyles(UT_uint32 k,
-										  const char ** pszName, const PD_Style ** ppStyle) const;
+									   const char ** pszName, const PD_Style ** ppStyle) const;
 
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
@@ -154,9 +153,8 @@ public:
 protected:
 
 	UT_Bool					_tellAndMaybeAddListener(PL_Listener * pListener,
-													PL_ListenerId listenerId,
-													UT_Bool bAdd
-													);
+													 PL_ListenerId listenerId,
+													 UT_Bool bAdd);
 	
 	void					_captureActiveSpan(pf_Frag_Strux_Block * pfsBlock);
 	PT_AttrPropIndex		_chooseIndexAP(pf_Frag * pf, PT_BlockOffset fragOffset);
@@ -259,19 +257,37 @@ protected:
 													   pf_Frag ** ppfNewEnd,
 													   UT_uint32 * pfragOffsetNewEnd);
 	
-	UT_Bool					_haveTempSpanFmt(PT_DocPosition * pdpos, PT_AttrPropIndex * papi) const;
-	UT_Bool					_setTemporarySpanFmtWithNotify(PTChangeFmt ptc,
-														   PT_DocPosition dpos,
-														   const XML_Char ** attributes,
-														   const XML_Char ** properties);
-	void					_chooseBaseIndexAPForTempSpan(pf_Frag * pf, PT_BlockOffset fragOffset,
-														  PT_AttrPropIndex * papi) const;
-
 	UT_Bool					_getStruxFromFrag(pf_Frag * pfStart, pf_Frag_Strux ** ppfs) const;
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
 	UT_Bool					_loadBuiltinStyles(void);
 	UT_Bool					_createBuiltinStyle(const char * szName, const XML_Char ** attributes);
+
+	UT_Bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
+														 PT_DocPosition dpos,
+														 const XML_Char ** attributes,
+														 const XML_Char ** properties);
+	UT_Bool					_insertFmtMark(pf_Frag * pf, UT_uint32 fragOffset, PT_AttrPropIndex api);
+	UT_Bool					_insertFmtMarkAfterBlockWithNotify(pf_Frag_Strux * pfsBlock,
+															   PT_DocPosition dpos,
+															   PT_AttrPropIndex api);
+	UT_Bool					_deleteFmtMarkWithNotify(PT_DocPosition dpos, pf_Frag_FmtMark * pffm,
+													 pf_Frag_Strux * pfs,
+													 pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+	UT_Bool					_deleteFmtMark(pf_Frag_FmtMark * pffm,
+										   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+	UT_Bool					_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark * pffm,
+														PT_DocPosition dpos, 
+														const XML_Char ** attributes, const XML_Char ** properties,
+														pf_Frag_Strux * pfs,
+														pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+	UT_Bool					_fmtChangeFmtMark(pf_Frag_FmtMark * pffm,
+											  PT_AttrPropIndex indexNewAP,
+											  pf_Frag ** ppfNewEnd,
+											  UT_uint32 * pfragOffsetNewEnd);
+	UT_Bool					_computeFmtMarkForNewBlock(pf_Frag_Strux * pfsBlock,
+													   PT_AttrPropIndex * pFmtMarkAP);
+	UT_Bool					_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** ppAP) const;
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

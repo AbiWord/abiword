@@ -49,16 +49,6 @@ UT_Bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	
 	UT_ASSERT(m_pts==PTS_Editing);
 
-	PT_DocPosition dposTemp;
-	if (_haveTempSpanFmt(&dposTemp,NULL))
-	{
-		// TODO What should we do with the TempSpanFmt ??  Should
-		// TODO we use it (might be appropriate for Fields, but
-		// TODO probably bogus for Images) or should we just blindly
-		// TODO ignore it.  For now, I'm just going to clear it.
-		clearTemporarySpanFmt();
-	}
-	
 	// store the attributes and properties and get an index to them.
 	
 	PT_AttrPropIndex indexAP;

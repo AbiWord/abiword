@@ -36,11 +36,17 @@
 #include "pf_Frag_Strux.h"
 #include "pd_Style.h"
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 struct _dataItemPair
 {
 	UT_ByteBuf* pBuf;
 	void*		pToken;
 };
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 PD_Document::PD_Document()
 	: AD_Document(), m_hashDataItems(11)
@@ -65,6 +71,9 @@ PD_Document::~PD_Document()
 	// we do not purge the contents of m_vecListeners
 	// since these are not owned by us.
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 UT_Bool PD_Document::readFromFile(const char * szFilename, int ieft)
 {
@@ -209,6 +218,9 @@ UT_Bool PD_Document::save(void)
 	return UT_TRUE;
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 UT_Bool PD_Document::isDirty(void) const
 {
 	return m_pPieceTable->isDirty();
@@ -218,6 +230,9 @@ void PD_Document::_setClean(void)
 {
 	m_pPieceTable->setClean();
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 UT_Bool	PD_Document::insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
@@ -265,10 +280,8 @@ UT_Bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 	return m_pPieceTable->changeStruxFmt(ptc,dpos1,dpos2,attributes,properties,pts);
 }
 
-void PD_Document::clearTemporarySpanFmt(void)
-{
-	m_pPieceTable->clearTemporarySpanFmt();
-}
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 UT_Bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
 {
@@ -323,6 +336,9 @@ UT_Bool PD_Document::appendStyle(const XML_Char ** attributes)
 
 	return m_pPieceTable->appendStyle(attributes);
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 UT_Bool PD_Document::tellListener(PL_Listener* pListener)
 {
@@ -470,6 +486,9 @@ UT_Bool PD_Document::notifyListeners(pf_Frag_Strux * pfs,
 	return UT_TRUE;
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 UT_Bool PD_Document::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const
 {
 	return m_pPieceTable->getAttrProp(indexAP,ppAP);
@@ -505,10 +524,10 @@ PT_DocPosition PD_Document::getStruxPosition(PL_StruxDocHandle sdh) const
 	return m_pPieceTable->getStruxPosition(sdh);
 }
 
-UT_Bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
+UT_Bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, UT_Bool bLeftSide,
 									 const PP_AttrProp ** ppAP) const
 {
-	return m_pPieceTable->getSpanAttrProp(sdh,offset,ppAP);
+	return m_pPieceTable->getSpanAttrProp(sdh,offset,bLeftSide,ppAP);
 }
 
 UT_Bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
@@ -525,6 +544,9 @@ UT_Bool PD_Document::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 {
 	return m_pPieceTable->getStruxOfTypeFromPosition(listenerId,docPos,pts,psfh);
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 void PD_Document::beginUserAtomicGlob(void)
 {

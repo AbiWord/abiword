@@ -18,14 +18,14 @@
  */
 
 
-#ifndef PX_CHANGERECORD_H
-#define PX_CHANGERECORD_H
+#ifndef PX_CHANGERECORD_FMTMARKCHANGE_H
+#define PX_CHANGERECORD_FMTMARKCHANGE_H
 
 #include "ut_types.h"
-#include "pt_Types.h"
-#include "pd_Document.h"
+#include "px_ChangeRecord.h"
 
-// PX_ChangeRecord describes a change made to the document.
+// PX_ChangeRecord_FmtMarkChange describes a PXT_ChangeFmtMark
+// made to the document (a formatting change).
 // This description should be sufficient to allow undo to
 // work and sufficient to allow the formatter to do a
 // partial format and screen update (if appropriate).
@@ -36,41 +36,29 @@
 // cached to disk (for autosave and maybe multi-session
 // undo).
 //
-// PX_ChangeRecord is an abstract base class.
-// We use an enum to remember type, rather than use any of
-// the run-time stuff.
+// m_position contains the absolute document position of
+// the FmtMark at the time the change was made.
 
-class PX_ChangeRecord
+
+class PX_ChangeRecord_FmtMarkChange : public PX_ChangeRecord
 {
 public:
-	typedef enum _PXType { PXT_GlobMarker=-1,
-						   PXT_InsertSpan=0, 		PXT_DeleteSpan=1,		PXT_ChangeSpan=2,
-						   PXT_InsertStrux=3,		PXT_DeleteStrux=4,		PXT_ChangeStrux=5,
-						   PXT_InsertObject=6,		PXT_DeleteObject=7,		PXT_ChangeObject=8,
-						   PXT_InsertFmtMark=9,		PXT_DeleteFmtMark=10,	PXT_ChangeFmtMark=11
-	} PXType;
-
-	PX_ChangeRecord(PXType type,
-					PT_DocPosition position,
-					PT_AttrPropIndex indexNewAP);
-
-	virtual ~PX_ChangeRecord();
-
-	PXType					getType(void) const;
-	PT_DocPosition			getPosition(void) const;
-	PT_AttrPropIndex		getIndexAP(void) const;
+	PX_ChangeRecord_FmtMarkChange(PXType type,
+								  PT_DocPosition position,
+								  PT_AttrPropIndex indexOldAP,
+								  PT_AttrPropIndex indexNewAP,
+								  PTChangeFmt ptc,
+								  PT_BlockOffset blockOffset);
+	~PX_ChangeRecord_FmtMarkChange();
 
 	virtual PX_ChangeRecord * reverse(void) const;
-	PXType					getRevType(void) const;
-
-#ifdef PT_TEST
-	virtual void			__dump(void) const;
-#endif
+	PT_AttrPropIndex		getOldIndexAP(void) const;
+	PT_BlockOffset			getBlockOffset(void) const;
 	
 protected:
-	PXType					m_type;
-	PT_DocPosition			m_position;			/* absolute document position of the change */
-	PT_AttrPropIndex		m_indexAP;
+	PTChangeFmt				m_ptc;
+	PT_AttrPropIndex		m_indexOldAP;
+	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 };
 
-#endif /* PX_CHANGERECORD_H */
+#endif /* PX_CHANGERECORD_FMTMARKCHANGE_H */

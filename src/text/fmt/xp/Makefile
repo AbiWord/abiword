@@ -34,6 +34,7 @@ CPPSRCS=		fv_View.cpp			\
 			fp_Line.cpp			\
 			fp_Page.cpp			\
 			fp_Run.cpp			\
+			fp_FmtMarkRun.cpp		\
 			fp_TextRun.cpp
 
 LIBRARY_NAME=		AbiFmt

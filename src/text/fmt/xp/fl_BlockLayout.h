@@ -20,6 +20,10 @@
 #ifndef BLOCKLAYOUT_H
 #define BLOCKLAYOUT_H
 
+#ifdef FMT_TEST
+#include <stdio.h>
+#endif
+
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -45,6 +49,8 @@ class fp_Run;
 class GR_Graphics;
 class PD_Document;
 class PP_Property;
+class PX_ChangeRecord_FmtMark;
+class PX_ChangeRecord_FmtMarkChange;
 class PX_ChangeRecord_Object;
 class PX_ChangeRecord_ObjectChange;
 class PX_ChangeRecord_Span;
@@ -106,8 +112,6 @@ public:
 
 	void clearScreen(GR_Graphics*);
 
-	void dump();
-
 	inline UT_sint32	getTextIndent(void) const { return m_iTextIndent; }
 	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
@@ -155,6 +159,10 @@ public:
 	UT_Bool doclistener_insertObject(const PX_ChangeRecord_Object * pcro);
 	UT_Bool doclistener_deleteObject(const PX_ChangeRecord_Object * pcro);
 	UT_Bool doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc);
+
+	UT_Bool doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * pcrfm);
+	UT_Bool doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * pcrfm);
+	UT_Bool doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChange * pcrfmc);
 	
 	void					purgeLayout(void);
 	void					collapse(void);
@@ -167,8 +175,8 @@ public:
 
 	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset);
 	
-#ifndef NDEBUG
-	void					debug_dumpRunList(void);
+#ifdef FMT_TEST
+	void					__dump(FILE * fp) const;
 #endif
 	
 protected:
@@ -189,6 +197,7 @@ protected:
 	UT_Bool					_doInsertTabRun(PT_BlockOffset blockOffset);
 	UT_Bool					_doInsertImageRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	UT_Bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	UT_Bool					_deleteFmtMark(PT_BlockOffset blockOffset);
 	
 	void					_lookupProperties(void);
 	void					_removeLine(fp_Line*);
@@ -210,6 +219,8 @@ protected:
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg);
 
 	UT_uint32				_getLastChar();
+	void					_stuffAllRunsOnALine(void);
+	void					_insertFakeTextRun(void);
 
 	UT_Bool					m_bNeedsReformat;
 	UT_Bool					m_bFixCharWidths;

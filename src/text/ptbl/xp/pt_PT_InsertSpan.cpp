@@ -27,6 +27,7 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_FmtMark.h"
 #include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
@@ -83,6 +84,14 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 	case pf_Frag::PFT_Text:
 		pft = static_cast<pf_Frag_Text *>(pf);
 		break;
+
+	case pf_Frag::PFT_FmtMark:
+		// insert after the FmtMark.  This is an error here.
+		// we need to replace the FmtMark with a Text frag with
+		// the same API.  This needs to be handled at the higher
+		// level (so the glob markers can be set).
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
 	}
 
 	if (pft)
@@ -234,11 +243,6 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 
 	UT_ASSERT(m_pts==PTS_Editing);
 
-	PT_DocPosition dposTemp;
-	if (_haveTempSpanFmt(&dposTemp,NULL))
-		if (dposTemp != dpos)
-			clearTemporarySpanFmt();
-
 	// append the text data to the end of the current buffer.
 
 	PT_BufIndex bi;
@@ -251,6 +255,11 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	PT_BlockOffset fragOffset = 0;
 	UT_Bool bFound = getFragFromPosition(dpos,&pf,&fragOffset);
 	UT_ASSERT(bFound);
+
+	UT_Bool bSuccess = UT_FALSE;
+	pf_Frag_Strux * pfs = NULL;
+	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
+	UT_ASSERT(bFoundStrux);
 
 	// we just did a getFragFromPosition() which gives us the
 	// the thing *starting* at that position.  if we have a
@@ -266,29 +275,78 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	// we will see if we are on a text-text boundary and backup
 	// (and thus appending) to the previous.
 
-	if ((fragOffset == 0) && pf->getPrev() && (pf->getPrev()->getType() == pf_Frag::PFT_Text))
-	{
-		pf = pf->getPrev();
-		fragOffset = pf->getLength();
-	}
-
-	pf_Frag_Strux * pfs = NULL;
-	UT_Bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
-	UT_ASSERT(bFoundStrux);
-	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
+	UT_Bool bNeedGlob = UT_FALSE;
+	PT_AttrPropIndex indexAP = 0;
 	
-	PT_AttrPropIndex indexAP = _chooseIndexAP(pf,fragOffset);
+	if ( (fragOffset==0) && (pf->getPrev()) )
+	{
+		bNeedGlob = (pf->getPrev()->getType() == pf_Frag::PFT_FmtMark);
+		if (bNeedGlob)
+		{
+			// if we're just to the right of a _FmtMark, we want to replace
+			// it with a _Text frag with the same attr/prop (we
+			// only used the _FmtMark to remember a toggle format
+			// before we had text for it).
 
+			// NOTE: this messes up the undo coalescing.  that is, if the user
+			// NOTE: hits the BOLD button and then starts typing and then hits
+			// NOTE: UNDO, we erase all of the typing except for the first character.
+			// NOTE: the second UNDO, erases the first character and restores the
+			// NOTE: FmtMark.  (the third UNDO would clear the FmtMark.)
+			//
+			// TODO decide if we like this...
+			//
+			// TODO really it's the globbing that messes things up.  perhaps we
+			// TODO should consider as an alternative not putting these two events
+			// TODO into a glob -- do an UNDO on the FmtMark (but remember the
+			// TODO settings) and then the insert (using the remembered settings).
+			// TODO them the user would see a single UNDO to erase all of the
+			// TODO typing (and the FmtChange), subsequent input would be like
+			// TODO the surrounding text....
+			
+			pf_Frag_FmtMark * pfPrevFmtMark = static_cast<pf_Frag_FmtMark *>(pf->getPrev());
+			indexAP = pfPrevFmtMark->getIndexAP();
+			beginMultiStepGlob();
+			_deleteFmtMarkWithNotify(dpos,pfPrevFmtMark,pfs,&pf,&fragOffset);
+
+			if ( (fragOffset==0) && (pf->getPrev()) && (pf->getPrev()->getType() == pf_Frag::PFT_Text) )
+			{
+				// append to the end of the previous frag rather than prepend to the current one.
+				pf = pf->getPrev();
+				fragOffset = pf->getLength();
+			}
+		}
+		else if (pf->getPrev()->getType() == pf_Frag::PFT_Text)
+		{
+			pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pf->getPrev());
+			indexAP = pfPrevText->getIndexAP();
+
+			// append to the end of the previous frag rather than prepend to the current one.
+			pf = pf->getPrev();
+			fragOffset = pf->getLength();
+		}
+		else
+		{
+			indexAP = _chooseIndexAP(pf,fragOffset);
+		}
+	}
+	else
+	{
+		indexAP = _chooseIndexAP(pf,fragOffset);
+	}
+	
+	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
+	PX_ChangeRecord_Span * pcr = NULL;
+	
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP))
-		return UT_FALSE;
+		goto Finish;
 
 	// note: because of coalescing, pf should be considered invalid at this point.
 	
 	// create a change record, add it to the history, and notify
 	// anyone listening.
 
-	PX_ChangeRecord_Span * pcr
-		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
+	pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
 								   dpos,indexAP,bi,length,blockOffset);
 	UT_ASSERT(pcr);
 
@@ -304,7 +362,13 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		m_pDocument->notifyListeners(pfs,pcr);
 	}
 
-	return UT_TRUE;
+	bSuccess = UT_TRUE;
+	
+Finish:
+	if (bNeedGlob)
+		endMultiStepGlob();
+	
+	return bSuccess;
 }
 
 UT_Bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const
@@ -340,15 +404,13 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 {
 	// decide what indexAP to give an insertSpan inserting at the given
 	// position in the document [pf,fragOffset].
-	
-	PT_AttrPropIndex indexAP;
-
-	// if we have a TempSpanFmt active, use it.
-	
-	if (_haveTempSpanFmt(NULL,&indexAP))
-		return indexAP;
-
 	// try to get it from the current fragment.
+
+	if (pf->getType() == pf_Frag::PFT_FmtMark)
+	{
+		pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *>(pf);
+		return pffm->getIndexAP();
+	}
 	
 	if ((pf->getType() == pf_Frag::PFT_Text) && (fragOffset > 0))
 	{
@@ -377,32 +439,10 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 
 	case pf_Frag::PFT_Strux:
 		{
-			// if we immediately follow a block (paragraph), we try
-			// to use the preferredSpanFmt which was set when the
-			// paragraph was created.  this allows continuous typing
-			// (typing in a style, hitting return, and typing some more)
-			// to work as expected.  ***BUT*** it may cause inserts at
-			// the beginning of this paragraph to be *stuck* to that
-			// style.
+			// if we immediately follow a block (paragraph),
+			// (and don't have a FmtMark (tested earlier) at
+			// the beginning of the block), look to the right.
 
-			// TODO figure out how to "forget" about the preferredSpanFmt
-			// TODO and/or when to start looking at the existing text in
-			// TODO the paragraph.
-
-			pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pfPrev);
-			if (
-				(pfsPrev->getStruxType() == PTX_Block)
-				&& (pf->getType() != pf_Frag::PFT_Text)
-				)
-			{
-				pf_Frag_Strux_Block * pfsbPrev = static_cast<pf_Frag_Strux_Block *>(pfsPrev);
-				return pfsbPrev->getPreferredSpanFmt();
-			}
-
-			// if we are looking back at something else, we really don't
-			// have a choice.  as a last ditch effort, try to take
-			// a look to the right.
-				
 			if (pf->getType() == pf_Frag::PFT_Text)
 			{
 				// we take the A/P of this text fragment.
@@ -428,13 +468,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 			switch (pfo->getObjectType())
 			{
 			case PTO_Image:
-				if (pfo->getNext()->getType() == pf_Frag::PFT_Text)
-				{
-					pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pf);
-					return pft->getIndexAP();
-				}
-				else
-					return 0;
+				return _chooseIndexAP(pf->getPrev(),pf->getPrev()->getLength());
 				
 			case PTO_Field:
 				return pfo->getIndexAP();
@@ -443,6 +477,14 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 				UT_ASSERT(0);
 				return 0;
 			}
+		}
+
+	case pf_Frag::PFT_FmtMark:
+		{
+			// TODO i'm not sure this is possible
+			
+			pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *>(pfPrev);
+			return pffm->getIndexAP();
 		}
 		
 	default:

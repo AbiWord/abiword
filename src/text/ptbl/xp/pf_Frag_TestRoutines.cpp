@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "ut_test.h"
 #include "pf_Frag.h"
+#include "pf_Frag_FmtMark.h"
 #include "pf_Frag_Object.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
@@ -35,24 +36,31 @@
 
 void pf_Frag::__dump(FILE * fp) const
 {
-	fprintf(fp,"      BaseDump %p type[%d]\n",this,m_type);
+	fprintf(fp,"        %sFragment %p type[%d]\n",
+			((m_type==PFT_EndOfDoc) ? "EOD" : "Unk"),
+			this,m_type);
+}
+
+void pf_Frag_FmtMark::__dump(FILE * fp) const
+{
+	fprintf(fp,"        FmtMrkFragment %p api[%08lx]\n",this,m_indexAP);
 }
 
 void pf_Frag_Strux_Block::__dump(FILE * fp) const
 {
-	fprintf(fp,"      Block %p api[%08lx] preferredSpanAPI[%08lx]\n",
-			this,m_indexAP,m_preferredSpanAPI);
+	fprintf(fp,"      Block %p api[%08lx]\n",
+			this,m_indexAP);
 }
 
 void pf_Frag_Strux_Section::__dump(FILE * fp) const
 {
-	fprintf(fp,"      Section %p api[%08lx]\n",
+	fprintf(fp,"    Section %p api[%08lx]\n",
 			this,m_indexAP);
 }
 
 void pf_Frag_Text::__dump(FILE * fp) const
 {
-	fprintf(fp,"      TextFragment %p b[%08lx,%ld] api[%08lx]\n",
+	fprintf(fp,"        TextFragment %p b[%08lx,%ld] api[%08lx]\n",
 			this,m_bufIndex,m_length,m_indexAP);
 
 	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
@@ -88,7 +96,7 @@ void pf_Frag_Object::__dump(FILE * fp) const
 		break;
 	}
 	
-	fprintf(fp,"      Object %p t[%s] api[%08lx]\n",
+	fprintf(fp,"        Object %p t[%s] api[%08lx]\n",
 			this,sz,m_indexAP);
 }
 

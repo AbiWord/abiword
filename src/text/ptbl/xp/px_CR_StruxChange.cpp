@@ -40,6 +40,7 @@ PX_ChangeRecord_StruxChange::~PX_ChangeRecord_StruxChange()
 
 PX_ChangeRecord * PX_ChangeRecord_StruxChange::reverse(void) const
 {
+	UT_ASSERT((m_ptc >= 0) && (m_ptc <= 1));
 	PTChangeFmt ptcRev = (PTChangeFmt)( ! ((UT_Bool) m_ptc));
 	
 	PX_ChangeRecord_StruxChange * pcr

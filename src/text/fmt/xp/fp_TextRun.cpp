@@ -65,7 +65,7 @@ void fp_TextRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	
-	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_FALSE,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
 
 	// look for fonts in this DocLayout's font cache
@@ -956,3 +956,42 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	_drawSquiggle(r.top + iAscent + iGap, r.left, r.left + r.width); 
 }
 
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+#ifdef FMT_TEST
+void fp_TextRun::__dump(FILE * fp) const
+{
+	fp_Run::__dump(fp);
+
+	if (m_iLen == 0)
+		return;
+
+	fprintf(fp,"      [");
+	{
+		const UT_UCSChar* pSpan;
+		UT_uint32 lenSpan;
+		UT_Bool bContinue = UT_TRUE;
+
+		UT_uint32 koff=m_iOffsetFirst;
+		UT_uint32 klen=m_iLen;
+		
+		while (m_pBL->getSpanPtr(koff, &pSpan, &lenSpan) && (klen > 0))
+		{
+			UT_uint32 kdraw = MyMin(klen,lenSpan);
+			for (UT_uint32 k=0; k<kdraw; k++)
+			{
+				// a cheap unicode to ascii hack...
+				unsigned char c = (unsigned char)(pSpan[k] & 0x00ff);
+				fprintf(fp,"%c",c);
+			}
+
+			klen -= kdraw;
+			koff += lenSpan;
+		}
+	}
+	fprintf(fp,"]\n");
+		
+}
+#endif

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -39,6 +40,9 @@
 #include "ut_string.h"
 #include "ut_growbuf.h"
 
+// TODO can we use the indexAP provided in the change records
+// TODO to remember the attr/prop for each run rather than
+// TODO looking it up each time we call lookupProperties() -- jeff 4/19/99
 
 /*****************************************************************/
 
@@ -75,23 +79,24 @@ fp_Run::~fp_Run()
 {
 }
 
-#ifndef NDEBUG
-void	fp_Run::debug_dump(void)
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+#ifdef FMT_TEST
+void fp_Run::__dump(FILE * fp) const
 {
-	UT_DEBUGMSG(("fp_Run:  0x%p\n\tm_iType = %d\n\tm_iOffsetFirst = %d\n\tm_iLen = %d\n\tm_bDirty = %d\n\tm_iX = %d\n\tm_iY = %d\n\tm_iWidth = %d\n\tm_iHeight = %d\n\tm_pNext = 0x%p\n\tm_pPrev = 0x%p\n",
-				 this,
-				 m_iType,
-				 m_iOffsetFirst,
-				 m_iLen,
-				 m_bDirty,
-				 m_iX,
-				 m_iY,
-				 m_iWidth,
-				 m_iHeight,
-				 m_pNext,
-				 m_pPrev));
+	static const char * s_names[] = { "Text", "Image", "Tab", "LineBreak", "ColBreak", "PageBreak", "Field", "FmtMark" };
+	UT_ASSERT(NrElements(s_names)==(FPRUN__LAST__-FPRUN__FIRST__+1));
+	const char * szName = (((m_iType >= FPRUN__FIRST__) && (m_iType <= FPRUN__LAST__)) ? s_names[m_iType-1] : "Unknown");
+
+	fprintf(fp,"    Run: 0x%p T=%s Off=%d Len=%d D=%c [x %d y %d w %d h %d]\n",
+			this, szName, m_iOffsetFirst, m_iLen, ((m_bDirty) ? 'y' : 'n'),
+			m_iX, m_iY, m_iWidth, m_iHeight);
 }
 #endif
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 void	fp_Run::setX(UT_sint32 iX)
 {
@@ -257,10 +262,13 @@ const PP_AttrProp* fp_Run::getAP(void) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	
-	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_FALSE,&pSpanAP);
 
 	return pSpanAP;
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TAB)
 {
@@ -273,7 +281,7 @@ void fp_TabRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	
-	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_FALSE,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
 
 	// look for fonts in this DocLayout's font cache
@@ -384,6 +392,9 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	}
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
 {
 }
@@ -458,6 +469,9 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
 {
@@ -585,6 +599,9 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	}
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD)
 {
 	m_pFont = NULL;
@@ -639,7 +656,7 @@ UT_Bool fp_FieldRun::calculateValue(void)
 
 			UT_ASSERT(iPageNum > 0);
 
-			sprintf(szFieldValue, "%dd", iPageNum);
+			sprintf(szFieldValue, "%d", iPageNum);
 		}
 		else
 		{
@@ -706,7 +723,7 @@ void fp_FieldRun::lookupProperties(void)
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
 	
-	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
+	m_pBL->getSpanAttrProp(m_iOffsetFirst,UT_FALSE,&pSpanAP);
 	m_pBL->getAttrProp(&pBlockAP);
 
 	// look for fonts in this DocLayout's font cache
@@ -842,6 +859,9 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff, pDA->yoff - m_iAscent);
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
 {
 }
@@ -912,6 +932,9 @@ void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 }
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDPAGEBREAK)
 {

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -36,6 +37,8 @@
 #include "pt_Types.h"
 #include "gr_Graphics.h"
 #include "sp_spell.h"
+#include "px_CR_FmtMark.h"
+#include "px_CR_FmtMarkChange.h"
 #include "px_CR_Object.h"
 #include "px_CR_ObjectChange.h"
 #include "px_CR_Span.h"
@@ -50,6 +53,14 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+#define IsZeroLengthTextRun(p)		(((p)->getLength()==0) && ((p)->getType()==FPRUN_TEXT))
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fb_LineBreaker* pBreaker,
@@ -608,6 +619,39 @@ void fl_BlockLayout::checkForEndOnForcedBreak(void)
 	pNewLine->layout();
 }
 
+void fl_BlockLayout::_stuffAllRunsOnALine(void)
+{
+	fp_Line* pLine = getNewLine();
+	UT_ASSERT(pLine);
+	
+	fp_Run* pTempRun = m_pFirstRun;
+	while (pTempRun)
+	{
+		pLine->addRun(pTempRun);
+		pTempRun = pTempRun->getNext();
+	}
+}
+
+void fl_BlockLayout::_insertFakeTextRun(void)
+{
+	// construct a zero-length text run just to have something there
+	// and provide something to hook a line to.
+
+	UT_ASSERT(!m_pFirstRun);
+
+	GR_Graphics* pG = m_pLayout->getGraphics();
+	m_pFirstRun = new fp_TextRun(this, pG, 0, 0);
+	m_pFirstRun->fetchCharWidths(&m_gbCharWidths);
+
+	if (!m_pFirstLine)
+		getNewLine();
+
+	UT_ASSERT(m_pFirstLine->countRuns() == 0);
+	
+	m_pFirstLine->addRun(m_pFirstRun);
+	m_pFirstLine->layout();
+}
+
 int fl_BlockLayout::format()
 {
 	if (m_bFixCharWidths)
@@ -624,20 +668,9 @@ int fl_BlockLayout::format()
 	if (m_pFirstRun)
 	{
 		if (!m_pFirstLine)
-		{
-			// start a new line
-			fp_Line* pLine = getNewLine();
-
-			fp_Run* pTempRun = m_pFirstRun;
-			while (pTempRun)
-			{
-				pLine->addRun(pTempRun);
-				pTempRun = pTempRun->getNext();
-			}
-		}
+			_stuffAllRunsOnALine();
 
 		recalculateFields();
-//		debug_dumpRunList();
 		m_pBreaker->breakParagraph(this);
 		_removeAllEmptyLines();
 		checkForBeginOnForcedBreak();
@@ -646,21 +679,7 @@ int fl_BlockLayout::format()
 	else
 	{
 		_removeAllEmptyLines();
-		
-		// we don't ... construct just enough to keep going
-		GR_Graphics* pG = m_pLayout->getGraphics();
-		m_pFirstRun = new fp_TextRun(this, pG, 0, 0);
-		m_pFirstRun->fetchCharWidths(&m_gbCharWidths);
-
-		if (!m_pFirstLine)
-		{
-			getNewLine();
-		}
-
-		// the line just contains the empty run
-		m_pFirstLine->addRun(m_pFirstRun);
-
-		m_pFirstLine->layout();
+		_insertFakeTextRun();
 	}
 
 	m_bNeedsReformat = UT_FALSE;
@@ -690,7 +709,6 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		m_pLastLine = pLine;
 
 		pContainer = pOldLastLine->getContainer();
-
 		pContainer->insertLineAfter(pLine, pOldLastLine);
 	}
 	else
@@ -701,7 +719,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		pLine->setPrev(NULL);
 		fp_Line* pPrevLine = NULL;
 
-		if (m_pPrev)
+		if (m_pPrev && m_pPrev->getLastLine())
 		{
 			pPrevLine = m_pPrev->getLastLine();
 			pContainer = pPrevLine->getContainer();
@@ -719,8 +737,11 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 		{
 			pContainer = m_pSectionLayout->getNewContainer();
 		}
-		
-		pContainer->insertLineAfter(pLine, pPrevLine);
+
+		if (!pPrevLine)
+			pContainer->insertLine(pLine);
+		else
+			pContainer->insertLineAfter(pLine, pPrevLine);
 	}
 
 	return pLine;
@@ -958,10 +979,6 @@ fl_BlockLayout* fl_BlockLayout::getPrevBlockInDocument(void) const
 	}
 
 	return pBL;
-}
-
-void fl_BlockLayout::dump()
-{
 }
 
 /*****************************************************************/
@@ -1607,7 +1624,7 @@ UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_C
 	*/
 	
 	const PP_AttrProp * pSpanAP = NULL;
-	UT_Bool bFoundSpanAP = getSpanAttrProp(blockOffset + fl_BLOCK_STRUX_OFFSET,&pSpanAP);
+	UT_Bool bFoundSpanAP = getSpanAttrProp(blockOffset,UT_TRUE,&pSpanAP);
 	if (bFoundSpanAP && pSpanAP)
 	{
 		const XML_Char* pszDataID = NULL;
@@ -1700,7 +1717,7 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		pNewTextRun->recalcWidth();
 	}
 	
-	if (m_pFirstRun && !(m_pFirstRun->getNext()) && (m_pFirstRun->getLength() == 0))
+	if (m_pFirstRun && !(m_pFirstRun->getNext()) && IsZeroLengthTextRun(m_pFirstRun))
 	{
 		/*
 		  We special case the situation where we are inserting into
@@ -1724,9 +1741,7 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
 		UT_uint32 iRunLength = pRun->getLength();
 		
-		if (
-			((iRunBlockOffset + iRunLength) <= blockOffset)
-			)
+		if ( (iRunBlockOffset + iRunLength) <= blockOffset )
 		{
 			// nothing to do.  the insert occurred AFTER this run
 		}
@@ -1938,14 +1953,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
-		// all done, so clear any temp formatting
-		if (pView->_isPointAP())
-		{
-			UT_ASSERT(pcrs->getIndexAP()==pView->_getPointAP());
-			pView->_clearPointAP(UT_FALSE);
-		}
-			
 		pView->_setPoint(pcrs->getPosition()+len);
+		pView->notifyListeners(AV_CHG_FMTCHAR); // TODO verify that this is necessary.
 	}
 
 	_insertSquiggles(blockOffset, len);
@@ -1963,7 +1972,14 @@ void fl_BlockLayout::_assertRunListIntegrity(void)
 		UT_ASSERT(iOffset == pRun->getBlockOffset());
 
 		iOffset += pRun->getLength();
-		
+
+		// verify that we don't have two adjacent FmtMarks.
+		// if this run is a FmtMark and there is a next,
+		// verify that the next is not a FmtMark.
+		UT_ASSERT(  ((pRun->getType() == FPRUN_FMTMARK) && (pRun->getNext()))
+				  ? (pRun->getNext()->getType() != FPRUN_FMTMARK)
+				  : 1);
+				
 		pRun = pRun->getNext();
 	}
 }
@@ -1975,9 +1991,7 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 	_assertRunListIntegrity();
 #endif
 
-	/*
-	  TODO the attempts herein to do fetchCharWidths will fail.
-	*/
+	/* TODO the attempts herein to do fetchCharWidths will fail. */
 	
 	m_gbCharWidths.del(blockOffset, len);
 
@@ -1988,9 +2002,7 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 		UT_uint32 iRunLength = pRun->getLength();
 		fp_Run* pNextRun = pRun->getNext();	// remember where we're going, since this run may get axed
 		
-		if (
-			((iRunBlockOffset + iRunLength) <= blockOffset)
-			)
+		if ( (iRunBlockOffset + iRunLength) <= blockOffset )
 		{
 			// nothing to do.  the delete occurred AFTER this run
 		}
@@ -2034,16 +2046,12 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 				}
 				else
 				{
-					/*
-					  the deletion spans the entire run.
-					  time to delete it
-					*/
-
+					/* the deletion spans the entire run. time to delete it */
 					pRun->setLength(0);
 				}
 			}
 
-			if (pRun->getLength() == 0)
+			if ((pRun->getLength() == 0) && (pRun->getType() != FPRUN_FMTMARK))
 			{
 				fp_Line* pLine = pRun->getLine();
 				UT_ASSERT(pLine);
@@ -2174,7 +2182,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 
 	if ((pPrevBL->m_pFirstRun)
 		&& !(pPrevBL->m_pFirstRun->getNext())
-		&& (pPrevBL->m_pFirstRun->getLength() == 0))
+		&& (IsZeroLengthTextRun(pPrevBL->m_pFirstRun)))
 	{
 		// we have a fake run in pPrevBL.  Kill it.
 		fp_Run * pNuke = pPrevBL->m_pFirstRun;
@@ -2213,7 +2221,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 			// skip over any zero-length runs
 			pRun = m_pFirstRun;
 
-			while (pRun && pRun->getLength() == 0)
+			while (pRun && IsZeroLengthTextRun(pRun))
 			{
 				fp_Run * pNuke = pRun;
 				
@@ -2393,69 +2401,81 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	  fine, although the last run should be redrawn.
 	  
 	  All runs in the new block need their offsets fixed, and 
-	  that entire block needs to be formatted from scratch. 
+	  that entire block needs to be formatted from scratch.
+
+	  TODO is the above commentary still correct ??
 	*/
 
 	// figure out where the breakpoint is
 	PT_BlockOffset blockOffset = (pcrx->getPosition() - getPosition());
 
-	fp_Run* pFirstNewRun = NULL;
-	fp_Run* pRun = NULL;
-	
-	if (0 == blockOffset)
-	{
-		// everything goes in new block
-		pFirstNewRun = m_pFirstRun;
-	}
-	else
-	{
-		pRun = m_pFirstRun;
-		while (pRun)
-		{			
-			UT_uint32 iWhere = pRun->containsOffset(blockOffset);
-
-			if (iWhere == FP_RUN_INSIDE)
-			{
-				if (
-					(blockOffset > pRun->getBlockOffset())
-					)
-				{
-					UT_ASSERT(pRun->getType() == FPRUN_TEXT);
-				
-					// split here
-					fp_TextRun* pTextRun = (fp_TextRun*) pRun;
-				
-					pTextRun->split(blockOffset);
-				}
-				break;
-			}
-			else if (iWhere == FP_RUN_JUSTAFTER)
-			{
-				// no split needed
-				break;
-			}
-						
-			pRun = pRun->getNext();
-		}
-
-		if (pRun)
+	fp_Run * pFirstNewRun = NULL;
+	fp_Run * pLastRun = NULL;
+	for (fp_Run* pRun=m_pFirstRun; (pRun && !pFirstNewRun); pLastRun=pRun, pRun=pRun->getNext())
+	{			
+		switch (pRun->containsOffset(blockOffset))
 		{
-			pFirstNewRun = pRun->getNext();
-
-			// break run sequence
-			pRun->setNext(NULL);
-			if (pFirstNewRun)
+		case FP_RUN_INSIDE:
+			if (blockOffset > pRun->getBlockOffset())
 			{
-				pFirstNewRun->setPrev(NULL);
+				UT_ASSERT(pRun->getType() == FPRUN_TEXT);
+
+				// split here
+				fp_TextRun* pTextRun = (fp_TextRun*) pRun;
+				pTextRun->split(blockOffset);
+				pFirstNewRun = pRun->getNext();
 			}
+			else
+			{
+				pFirstNewRun = pRun;
+			}
+			break;
+			
+		case FP_RUN_JUSTAFTER:				// no split needed
+			pFirstNewRun = pRun->getNext();
+			break;
+
+		case FP_RUN_NOT:
+			break;
+
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
 		}
 	}
 
+	if (pFirstNewRun && (pFirstNewRun->getType() == FPRUN_FMTMARK))
+	{
+		// since a FmtMark has length zero, both it and the next
+		// run have the same blockOffset.  we always want to be
+		// to the right of the FmtMark, so we take the next one.
+		pFirstNewRun = pFirstNewRun->getNext();
+	}
+	
+	if (pFirstNewRun && pFirstNewRun->getPrev())
+	{
+		// break doubly-linked list of runs into two distinct lists
+
+		pFirstNewRun->getPrev()->setNext(NULL);
+		pFirstNewRun->setPrev(NULL);
+	}
+	
+	// pFirstNew can be NULL at this point.  it means that
+	// the entire set of runs in this block must remain
+	// with this block -- and the newly created block will
+	// be empty.
+	//
+	// also, note if pFirstNew == m_pFirstRun then we will
+	// be moving the entire set of runs to the newly created
+	// block -- and leave the current block empty.
+	
 	// split charwidths across the two blocks
 	UT_uint32 lenNew = m_gbCharWidths.getLength() - blockOffset;
 	if (lenNew > 0)
 	{
 		// NOTE: we do the length check on the outside for speed
+		// TODO [1] can we move info from the current to the new
+		// TODO CharWidths to keep from having to compute it in [2].
 		pNewBL->m_gbCharWidths.ins(0, m_gbCharWidths.getPointer(blockOffset), lenNew);
 		m_gbCharWidths.truncate(blockOffset);
 	}
@@ -2463,25 +2483,32 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 	// move remaining runs to new block
 	pNewBL->m_pFirstRun = pFirstNewRun;
 
-	pRun = pFirstNewRun;
-	while (pRun)
+	for (pRun=pFirstNewRun; (pRun); pRun=pRun->getNext())
 	{
 		pRun->setBlockOffset(pRun->getBlockOffset() - blockOffset);
 		pRun->setBlock(pNewBL);
+		// TODO [2] the following 2 steps seem expensive considering
+		// TODO we already knew width information before divided the
+		// TODO char widths data between the two clocks.  see [1].
 		pRun->fetchCharWidths(&pNewBL->m_gbCharWidths);
 		pRun->recalcWidth();
-						
-		pRun = pRun->getNext();
 	}
 
 	// explicitly truncate rest of this block's layout
 	truncateLayout(pFirstNewRun);
-
-	pNewBL->setNeedsReformat();
-
-	coalesceRuns();
-	
+	if (m_pFirstRun)
+		coalesceRuns();
+	else
+		_insertFakeTextRun();
 	setNeedsReformat();
+	
+	// throw all the runs onto one jumbo line in the new block
+	pNewBL->_stuffAllRunsOnALine();
+	if (pNewBL->m_pFirstRun)
+		pNewBL->coalesceRuns();
+	else
+		pNewBL->_insertFakeTextRun();
+	pNewBL->setNeedsReformat();
 	
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
@@ -2876,16 +2903,160 @@ void fl_BlockLayout::setPrev(fl_BlockLayout* pBL)
 	m_pPrev = pBL;
 }
 
-#ifndef NDEBUG
-void fl_BlockLayout::debug_dumpRunList(void)
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+#ifdef FMT_TEST
+void fl_BlockLayout::__dump(FILE * fp) const
 {
-	fp_Run* pRun = m_pFirstRun;
-	while (pRun)
+	fprintf(fp,"  Block: 0x%p [sdh 0x%p]\n",this,m_sdh);
+	for (fp_Run* pRun=m_pFirstRun; (pRun); pRun=pRun->getNext())
 	{
-		pRun->debug_dump();
-		
-		pRun = pRun->getNext();
+		pRun->__dump(fp);
 	}
 }
 #endif
 
+//////////////////////////////////////////////////////////////////
+// FmtMark-related stuff
+//////////////////////////////////////////////////////////////////
+
+UT_Bool fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * pcrfm)
+{
+	PT_BlockOffset blockOffset = pcrfm->getBlockOffset();
+
+	UT_DEBUGMSG(("Edit:InsertFmtMark [blockOffset %ld]\n",blockOffset));
+
+	fp_FmtMarkRun * pNewRun = new fp_FmtMarkRun(this,m_pLayout->getGraphics(),blockOffset);
+	UT_ASSERT(pNewRun);
+	_doInsertRun(pNewRun);
+	
+	// TODO is it necessary to force a reformat when inserting a FmtMark
+	setNeedsReformat();
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->_resetSelection();
+		pView->_setPoint(pcrfm->getPosition());
+		pView->notifyListeners(AV_CHG_FMTCHAR);
+	}
+
+	//_insertSquiggles(blockOffset, 1);
+
+	return UT_TRUE;
+}
+
+
+UT_Bool fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * pcrfm)
+{
+	PT_BlockOffset blockOffset = pcrfm->getBlockOffset();
+
+	UT_DEBUGMSG(("Edit:DeleteFmtMark: [blockOffset %ld]\n",blockOffset));
+
+	// we can't use the regular _delete() since we are of length zero
+	_deleteFmtMark(blockOffset);
+	
+	// TODO is it necessary to force a reformat when deleting a FmtMark
+	setNeedsReformat();
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->_resetSelection();
+		pView->_setPoint(pcrfm->getPosition());
+		pView->notifyListeners(AV_CHG_FMTCHAR);
+	}
+
+	//_deleteSquiggles(blockOffset, 1);
+
+	return UT_TRUE;
+}
+
+UT_Bool fl_BlockLayout::_deleteFmtMark(PT_BlockOffset blockOffset)
+{
+	// do what _delete() does but special cased for a FmtMark run
+	// (which is of length zero).
+
+#ifndef NDEBUG	
+	_assertRunListIntegrity();
+#endif
+
+	fp_Run* pRun = m_pFirstRun;
+	while (pRun)
+	{
+		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
+		UT_uint32 iRunLength = pRun->getLength();
+		fp_Run* pNextRun = pRun->getNext();	// remember where we're going, since this run may get axed
+
+		if ( (iRunBlockOffset == blockOffset) && (pRun->getType() == FPRUN_FMTMARK) )
+		{
+			fp_Line* pLine = pRun->getLine();
+			UT_ASSERT(pLine);
+
+			pLine->removeRun(pRun);
+
+			if (pRun->getNext())
+				pRun->getNext()->setPrev(pRun->getPrev());
+
+			if (pRun->getPrev())
+				pRun->getPrev()->setNext(pRun->getNext());
+
+			if (m_pFirstRun == pRun)
+				m_pFirstRun = pRun->getNext();
+
+			delete pRun;
+
+			if (!m_pFirstRun)
+				_insertFakeTextRun();
+			
+			// I don't believe that we need to keep looping at this point.
+			// We should not ever have two adjacent FmtMarks....
+			break;
+		}
+
+		pRun = pNextRun;
+	}
+
+#ifndef NDEBUG	
+	_assertRunListIntegrity();
+#endif
+
+	return UT_TRUE;
+}
+
+UT_Bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChange * pcrfmc)
+{
+	PT_BlockOffset blockOffset = pcrfmc->getBlockOffset();
+	
+	UT_DEBUGMSG(("Edit:ChangeFmtMark: [blockOffset %ld]\n",blockOffset));
+
+	fp_Run* pRun = m_pFirstRun;
+	while (pRun)
+	{
+		if (pRun->getBlockOffset() == blockOffset)
+		{
+			UT_ASSERT(pRun->getType() == FPRUN_FMTMARK);
+			//fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
+			//pFieldRun->clearScreen();
+			//pFieldRun->lookupProperties();
+			goto done;
+		}
+
+		pRun = pRun->getNext();
+	}
+
+done:
+	// TODO is it necessary to force a reformat when changing a FmtMark
+	setNeedsReformat();
+
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
+	{
+		pView->_resetSelection();
+		pView->_setPoint(pcrfmc->getPosition());
+		pView->notifyListeners(AV_CHG_FMTCHAR);
+	}
+
+	return UT_TRUE;
+}

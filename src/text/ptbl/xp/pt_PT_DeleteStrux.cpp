@@ -161,33 +161,9 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 											  pf_Frag_Strux * pfs,
 											  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-	PT_AttrPropIndex preferredSpanAPI = 0;
-	
-	// create a change record to describe the change, add
-	// it to the history, and let our listeners know about it.
-	
-	switch (pfs->getStruxType())
-	{
-	case PTX_Section:
-		// sections do not have a preferredSpanAPI
-		break;
-		
-	case PTX_Block:
-		{
-			pf_Frag_Strux_Block * pfsb = static_cast<pf_Frag_Strux_Block *>(pfs);
-			preferredSpanAPI = pfsb->getPreferredSpanFmt();
-		}
-		break;
-		
-	default:
-		UT_ASSERT(0);
-		return UT_FALSE;
-	}
-
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
-									dpos, pfs->getIndexAP(), pfs->getStruxType(),
-									preferredSpanAPI);
+									dpos, pfs->getIndexAP(), pfs->getStruxType());
 	UT_ASSERT(pcrs);
 
 #ifndef PT_NOTIFY_BEFORE_DELETES
@@ -199,12 +175,8 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 		break;
 		
 	case PTX_Block:
-		{
-			pf_Frag_Strux_Block * pfsb = static_cast<pf_Frag_Strux_Block *>(pfs);
-			UT_ASSERT(preferredSpanAPI == pfsb->getPreferredSpanFmt());
-			if (!_unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd))
-				return UT_FALSE;
-		}
+		if (!_unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd))
+			return UT_FALSE;
 		break;
 		
 	default:
@@ -226,12 +198,8 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 		break;
 		
 	case PTX_Block:
-		{
-			pf_Frag_Strux_Block * pfsb = static_cast<pf_Frag_Strux_Block *>(pfs);
-			UT_ASSERT(preferredSpanAPI == pfsb->getPreferredSpanFmt());
-			if (!_unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd))
-				return UT_FALSE;
-		}
+		if (!_unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd))
+			return UT_FALSE;
 		break;
 		
 	default:

@@ -25,6 +25,7 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_FmtMark.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
@@ -143,12 +144,42 @@ UT_Bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp *
 	return UT_TRUE;
 }
 
-UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
+UT_Bool pt_PieceTable::_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** ppAP) const
+{
+#define ReturnThis(type,pf)													\
+	do {	type * _pf_ = static_cast< type *>((pf));						\
+			const PP_AttrProp * pAP = m_varset.getAP(_pf_->getIndexAP());	\
+			*ppAP = pAP;													\
+			return (pAP != NULL);											\
+	} while (0)
+
+	switch (pf->getType())
+	{
+	case pf_Frag::PFT_FmtMark:
+		ReturnThis( pf_Frag_FmtMark, pf );
+
+	case pf_Frag::PFT_Text:
+		ReturnThis( pf_Frag_Text, pf );
+		
+	case pf_Frag::PFT_Object:
+		ReturnThis( pf_Frag_Object, pf );
+
+	case pf_Frag::PFT_Strux:
+	case pf_Frag::PFT_EndOfDoc:
+	default:
+		*ppAP = NULL;
+		return UT_FALSE;
+	}
+#undef ReturnThis
+}
+
+		  
+UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, UT_Bool bLeftSide,
 									   const PP_AttrProp ** ppAP) const
 {
 	// return the AP for the text at the given offset from the given strux.
-	// note: offset zero refers to the strux.  the first character is at
-	// note: (0 + pf->getLength()).
+	// offset zero now refers to the first character in the block, so adding
+	// fl_BLOCK_STRUX_OFFSET to the offset in the call is no longer necessary.
 	
 	UT_ASSERT(sdh);
 	UT_ASSERT(ppAP);
@@ -158,43 +189,46 @@ UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
 	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
 
-	UT_uint32 cumOffset = pfsBlock->getLength();
-	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
+	UT_uint32 cumOffset = 0;
+	UT_uint32 cumEndOffset = 0;
+	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); cumOffset=cumEndOffset, pfTemp=pfTemp->getNext())
 	{
-		if ((offset >= cumOffset) && (offset < cumOffset+pfTemp->getLength()))
+		cumEndOffset = cumOffset+pfTemp->getLength();
+
+		if (offset > cumEndOffset)		// the place we want is way past the end of pfTemp,
+			continue;					// so keep searching.
+		
+		if (offset == cumOffset)		// there's a frag boundary exactly where we want. pfTemp is to our right.
 		{
-			// requested offset is within this fragment.
+			// FmtMarks have length zero, so we have to see what side of the position the caller wants.
+			if ((pfTemp->getType()==pf_Frag::PFT_FmtMark) && (!bLeftSide))
+				continue;				// go round again and get thing to the right
 
-			// if this is inside something other than a text fragment, we puke.
-			
-			if (pfTemp->getType() == pf_Frag::PFT_Text)
-			{
-				pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
-				const PP_AttrProp * pAP = m_varset.getAP(pfText->getIndexAP());
-				if (!pAP)
-					return UT_FALSE;
-
-				*ppAP = pAP;
-				return UT_TRUE;
-			}
-			else if (pfTemp->getType() == pf_Frag::PFT_Object)
-			{
-				pf_Frag_Object * pfObject = static_cast<pf_Frag_Object *> (pfTemp);
-				const PP_AttrProp * pAP = m_varset.getAP(pfObject->getIndexAP());
-				if (!pAP)
-					return UT_FALSE;
-
-				*ppAP = pAP;
-				return UT_TRUE;
-			}
-			else
-			{
-				return UT_FALSE;
-			}
+			return _getSpanAttrPropHelper(pfTemp,ppAP);
 		}
 
-		cumOffset += pfTemp->getLength();
+		UT_ASSERT(offset > cumOffset);
+		
+		if (offset == cumEndOffset)		// there's a frag boundary exactly where we want. pfTemp is to our left.
+		{
+			if (!bLeftSide)
+				continue;				// return the next one on the next loop iteration
+			
+			// FmtMarks have length zero, so we advance to put it to our left and then decide what to do
+			if (pfTemp->getNext() && (pfTemp->getNext()->getType()==pf_Frag::PFT_FmtMark))
+				continue;				// we'll return this one on the next loop iteration
+
+			// otherwise, we want the thing that we are at the end of (ie that is to the left)
+			return _getSpanAttrPropHelper(pfTemp,ppAP);
+		}
+
+		UT_ASSERT(offset < cumEndOffset);
+
+		// the place we want is inside of a fragment, so just use it.
+		return _getSpanAttrPropHelper(pfTemp,ppAP);
 	}
+
+	*ppAP = NULL;
 	return UT_FALSE;
 }
 
@@ -211,8 +245,11 @@ UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 								  const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
 	// note: offset zero refers to the strux.  the first character is at
-	// note: (0 + pf->getLength()).
+	// note: (0 + pfsBlock->getLength()).
 
+	*ppSpan = NULL;
+	*pLength = 0;
+	
 	pf_Frag * pf = (pf_Frag *)sdh;
 	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
 	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
@@ -223,6 +260,9 @@ UT_Bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 	{
 		if (offset == cumOffset)
 		{
+			if (pfTemp->getType() == pf_Frag::PFT_FmtMark)
+				continue;
+			
 			if (pfTemp->getType() != pf_Frag::PFT_Text)
 				return UT_FALSE;
 			
@@ -264,58 +304,75 @@ UT_Bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) cons
 
 	UT_uint32 bufferOffset = pgb->getLength();
 	
-	for (pf_Frag * pfTemp=pfsBlock->getNext();
-		 (
-			 pfTemp
-			 && (
-				 pfTemp->getType()==pf_Frag::PFT_Text
-				 || pfTemp->getType()==pf_Frag::PFT_Object
-				 )
-			 );
-		 pfTemp=pfTemp->getNext())
+	pf_Frag * pfTemp = pfsBlock->getNext();
+	while (pfTemp)
 	{
-		if (pfTemp->getType() == pf_Frag::PFT_Text)
+		switch (pfTemp->getType())
 		{
-			pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pfTemp);
-			const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
-			UT_uint32 length = pft->getLength();
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		case pf_Frag::PFT_Strux:
+		case pf_Frag::PFT_EndOfDoc:
+			pfTemp = NULL;
+			break;
 
-			UT_Bool bAppended = pgb->ins(bufferOffset,pSpan,length);
-			UT_ASSERT(bAppended);
-		
-			bufferOffset += length;
-		}
-		else
-		{
-			/*
-			  Now *here* is a seriously questionable fragment
-			  of code.  :-)  We can't let getBlockBuf halt on
-			  a block when it finds an inline object.  However,
-			  we can't very well sensibly store an inline object
-			  in a UNICODE character.  So, we dump spaces in
-			  its place, to preserve the integrity of the
-			  buffer.  Obviously, those spaces aren't useful,
-			  but at least the app doesn't crash, and the rest
-			  of the text in the block is safely stored in the
-			  buffer in the proper location.
-			*/
-			UT_uint32 length = pfTemp->getLength();
-
-			UT_UCSChar* pSpaces = new UT_UCSChar[length];
-			for (UT_uint32 i=0; i<length; i++)
+		case pf_Frag::PFT_FmtMark:
+			pfTemp = pfTemp->getNext();
+			break;
+			
+		case pf_Frag::PFT_Text:
 			{
-				pSpaces[i] = UCS_SPACE;
+				pf_Frag_Text * pft = static_cast<pf_Frag_Text *>(pfTemp);
+				const UT_UCSChar * pSpan = getPointer(pft->getBufIndex());
+				UT_uint32 length = pft->getLength();
+
+				UT_Bool bAppended = pgb->ins(bufferOffset,pSpan,length);
+				UT_ASSERT(bAppended);
+				
+				bufferOffset += length;
 			}
-			UT_Bool bAppended = pgb->ins(bufferOffset, pSpaces, length);
-			delete pSpaces;
-			UT_ASSERT(bAppended);
+			pfTemp = pfTemp->getNext();
+			break;
+
+		case pf_Frag::PFT_Object:
+			{
+				/*
+				  TODO investigate this....
+				  Now *here* is a seriously questionable fragment
+				  of code.  :-)  We can't let getBlockBuf halt on
+				  a block when it finds an inline object.  However,
+				  we can't very well sensibly store an inline object
+				  in a UNICODE character.  So, we dump spaces in
+				  its place, to preserve the integrity of the
+				  buffer.  Obviously, those spaces aren't useful,
+				  but at least the app doesn't crash, and the rest
+				  of the text in the block is safely stored in the
+				  buffer in the proper location.
+				*/
+
+				UT_uint32 length = pfTemp->getLength();
+
+				// TODO investigate appending the SPACES directly to
+				// TODO the pgb.  **or** investigate the cost of this
+				// TODO malloc and what happens when it fails....
+				
+				UT_UCSChar* pSpaces = new UT_UCSChar[length];
+				for (UT_uint32 i=0; i<length; i++)
+				{
+					pSpaces[i] = UCS_SPACE;
+				}
+				UT_Bool bAppended = pgb->ins(bufferOffset, pSpaces, length);
+				delete pSpaces;
+				UT_ASSERT(bAppended);
 		
-			bufferOffset += length;
+				bufferOffset += length;
+			}
+			pfTemp = pfTemp->getNext();
+			break;
 		}
 	}
 
 	UT_ASSERT(bufferOffset == pgb->getLength());
-	
 	return UT_TRUE;
 }
 
@@ -389,6 +446,12 @@ UT_Bool pt_PieceTable::getFragFromPosition(PT_DocPosition docPos,
 			*ppf = pf;
 			if (pFragOffset)
 				*pFragOffset = docPos - sum;
+
+			// a FmtMark has length zero.  we don't want to find it
+			// in this loop -- rather we want the thing just past it.
+			
+			UT_ASSERT(pf->getType() != pf_Frag::PFT_FmtMark);
+			
 			return UT_TRUE;
 		}
 
@@ -444,6 +507,10 @@ UT_Bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPositio
 		pf = pf->getNext();
 		length = pf->getLength();
 	}
+
+	// a FmtMark has length zero.  we don't want to find it here.
+	// rather we want the thing to the right of it.
+	UT_ASSERT(pf->getType() != pf_Frag::PFT_FmtMark);
 
 	if (ppf2)
 		*ppf2 = pf;

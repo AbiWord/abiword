@@ -32,8 +32,9 @@
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
+#include "px_CR_FmtMark.h"
+#include "px_CR_FmtMarkChange.h"
 #include "px_CR_Glob.h"
-#include "px_CR_TempSpanFmt.h"
 #include "fv_View.h"
 #include "fl_DocListener.h"
 #include "fl_DocLayout.h"
@@ -322,48 +323,39 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 		goto finish_up;
 	}
 
-	case PX_ChangeRecord::PXT_TempSpanFmt:
+	case PX_ChangeRecord::PXT_InsertFmtMark:
 	{
-		const PX_ChangeRecord_TempSpanFmt * pcrTSF = static_cast<const PX_ChangeRecord_TempSpanFmt *>(pcr);
-		if (pcrTSF->getEnabled())
-		{
-			/*
-			  This is just a temporary change at the insertion 
-			  point.  It won't take effect unless something's 
-			  typed -- but it will cause the toolbars and etc.
-			  to be updated.
-			*/
+		const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
 
-			FV_View* pView = m_pLayout->m_pView;
-			if (pView)
-			{
-				UT_ASSERT(pView->isSelectionEmpty());
-				pView->_setPoint(pcrTSF->getPosition());
-				pView->_setPointAP(pcrTSF->getIndexAP());
-#if 0				
-				pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTCHAR);
-#endif				
-			}
-		}
-		else
-		{
-			// we have been asked to turn off the temporary change at the
-			// insertion point.  we need to update any toolbars.
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_insertFmtMark(pBL, pcrfm);
+		goto finish_up;
+	}
 
-			FV_View* pView = m_pLayout->m_pView;
-			if (pView)
-			{
-				UT_ASSERT(pView->isSelectionEmpty());
-				// TODO decide if we need to call "pView->_setPoint(pcrTSF->getPosition());"
-				// TODO and if so, add AV_CHG_TYPING to the following notifyListeners().
-				pView->_clearPointAP(UT_FALSE);
-#if 0				
-				pView->notifyListeners(AV_CHG_FMTCHAR);
-#endif				
-			}
-		}
+	case PX_ChangeRecord::PXT_DeleteFmtMark:
+	{
+		const PX_ChangeRecord_FmtMark * pcrfm = static_cast<const PX_ChangeRecord_FmtMark *>(pcr);
 
-		bResult = UT_TRUE;
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_deleteFmtMark(pBL, pcrfm);
+		goto finish_up;
+	}
+
+	case PX_ChangeRecord::PXT_ChangeFmtMark:
+	{
+		const PX_ChangeRecord_FmtMarkChange * pcrfmc = static_cast<const PX_ChangeRecord_FmtMarkChange *>(pcr);
+
+		fl_Layout * pL = (fl_Layout *)sfh;
+		UT_ASSERT(pL->getType() == PTX_Block);
+		fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
+		fl_SectionLayout* pBLSL = pBL->getSectionLayout();
+		bResult = pBLSL->bl_doclistener_changeFmtMark(pBL, pcrfmc);
 		goto finish_up;
 	}
 

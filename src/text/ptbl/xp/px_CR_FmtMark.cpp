@@ -19,33 +19,31 @@
 
 
 #include "ut_types.h"
-#include "pt_Types.h"
+#include "px_CR_FmtMark.h"
 #include "px_ChangeRecord.h"
-#include "px_CR_TempSpanFmt.h"
 
-PX_ChangeRecord_TempSpanFmt::PX_ChangeRecord_TempSpanFmt(PXType type,
-														 PT_DocPosition position,
-														 PT_AttrPropIndex indexNewAP,
-														 UT_Bool bEnableTempSpanFmt)
-	: PX_ChangeRecord(type, position, indexNewAP)
+PX_ChangeRecord_FmtMark::PX_ChangeRecord_FmtMark(PXType type,
+											   PT_DocPosition position,
+											   PT_AttrPropIndex indexAP,
+											   PT_BlockOffset blockOffset)
+	: PX_ChangeRecord(type, position, indexAP)
 {
-	m_bEnableTempSpanFmt = bEnableTempSpanFmt;
+	m_blockOffset = blockOffset;
 }
 
-PX_ChangeRecord_TempSpanFmt::~PX_ChangeRecord_TempSpanFmt()
+PX_ChangeRecord_FmtMark::~PX_ChangeRecord_FmtMark()
 {
 }
 
-PX_ChangeRecord * PX_ChangeRecord_TempSpanFmt::reverse(void) const
+PX_ChangeRecord * PX_ChangeRecord_FmtMark::reverse(void) const
 {
-	PX_ChangeRecord_TempSpanFmt * pcr
-		= new PX_ChangeRecord_TempSpanFmt(getRevType(),m_position,m_indexAP,!m_bEnableTempSpanFmt);
-
+	PX_ChangeRecord_FmtMark * pcr
+		= new PX_ChangeRecord_FmtMark(getRevType(),m_position,m_indexAP,m_blockOffset);
 	UT_ASSERT(pcr);
 	return pcr;
 }
 
-UT_Bool PX_ChangeRecord_TempSpanFmt::getEnabled(void) const
+PT_BlockOffset PX_ChangeRecord_FmtMark::getBlockOffset(void) const
 {
-	return m_bEnableTempSpanFmt;
+	return m_blockOffset;
 }

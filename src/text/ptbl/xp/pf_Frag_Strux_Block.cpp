@@ -31,20 +31,8 @@ pf_Frag_Strux_Block::pf_Frag_Strux_Block(pt_PieceTable * pPT,
 										 PT_AttrPropIndex indexAP)
 	: pf_Frag_Strux(pPT,PTX_Block,pf_FRAG_STRUX_BLOCK_LENGTH,indexAP)
 {
-	m_preferredSpanAPI = 0;
 }
 
 pf_Frag_Strux_Block::~pf_Frag_Strux_Block()
 {
 }
-
-void pf_Frag_Strux_Block::setPreferredSpanFmt(PT_AttrPropIndex api)
-{
-	m_preferredSpanAPI = api;
-}
-
-PT_AttrPropIndex pf_Frag_Strux_Block::getPreferredSpanFmt(void) const
-{
-	return m_preferredSpanAPI;
-}
-

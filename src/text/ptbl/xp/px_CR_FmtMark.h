@@ -18,18 +18,14 @@
  */
 
 
-#ifndef PX_CHANGERECORD_TEMPSPANFMT_H
-#define PX_CHANGERECORD_TEMPSPANFMT_H
+#ifndef PX_CHANGERECORD_FMTMARK_H
+#define PX_CHANGERECORD_FMTMARK_H
 
 #include "ut_types.h"
 #include "px_ChangeRecord.h"
 
-// PX_ChangeRecord_TempSpanFmt describes a temporary
-// span format applied to the document.  this is used
-// for toggling on a format style (like hitting the BOLD
-// button on the tool bar) without a selection and then
-// start typing.
-//
+// PX_ChangeRecord_FmtMark describes an insertFmtMark or
+// deleteFmtMark change made to the document.
 // This description should be sufficient to allow undo to
 // work and sufficient to allow the formatter to do a
 // partial format and screen update (if appropriate).
@@ -40,28 +36,23 @@
 // cached to disk (for autosave and maybe multi-session
 // undo).
 //
-// m_position contains the absolute document position of
-// the text span at the time the change was made.
-// m_bufIndex,m_length describe the actual contents
-// of the text span.
 
 
-class PX_ChangeRecord_TempSpanFmt : public PX_ChangeRecord
+class PX_ChangeRecord_FmtMark : public PX_ChangeRecord
 {
 public:
-	PX_ChangeRecord_TempSpanFmt(PXType type,
-								PT_DocPosition position,
-								PT_AttrPropIndex indexAP,
-								UT_Bool bEnableTempSpanFmt);
-
-	~PX_ChangeRecord_TempSpanFmt();
+	PX_ChangeRecord_FmtMark(PXType type,
+							PT_DocPosition position,
+							PT_AttrPropIndex indexAP,
+							PT_BlockOffset blockOffset);
+	~PX_ChangeRecord_FmtMark();
 
 	virtual PX_ChangeRecord * reverse(void) const;
-
-	UT_Bool	getEnabled(void) const;
+	
+	PT_BlockOffset			getBlockOffset(void) const;
 
 protected:
-	UT_Bool m_bEnableTempSpanFmt;
+	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of paragraph */
 };
 
-#endif /* PX_CHANGERECORD_TEMPSPANFMT_H */
+#endif /* PX_CHANGERECORD_FMTMARK_H */

@@ -27,6 +27,7 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_FmtMark.h"
 #include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
@@ -60,7 +61,7 @@ UT_Bool pt_PieceTable::_createStrux(PTStruxType pts,
 		break;
 
 	default:
-		UT_ASSERT(0);
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;
 	}
 
@@ -96,6 +97,15 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 			// TODO investigate this later.
 			UT_ASSERT(fragOffset == 0);
 			m_fragments.insertFrag(pf->getPrev(),pfsNew);
+			return;
+		}
+
+	case pf_Frag::PFT_FmtMark:
+		{
+			// insert pfsNew after pf.
+			// TODO check this.
+			UT_ASSERT(fragOffset == 0);
+			m_fragments.insertFrag(pf,pfsNew);
 			return;
 		}
 		
@@ -185,7 +195,13 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	PT_AttrPropIndex indexAP = 0;
 	if (pfsContainer->getStruxType() == pts)
+	{
+		// TODO paul, add code here to see if this strux has a "followed-by"
+		// TODO paul, property (or property in the style) and get the a/p
+		// TODO paul, from there rather than just taking the attr/prop
+		// TODO paul, of the previous strux.
 		indexAP = pfsContainer->getIndexAP();
+	}
 	
 	pf_Frag_Strux * pfsNew = NULL;
 	if (!_createStrux(pts,indexAP,&pfsNew))
@@ -195,18 +211,22 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 	_insertStrux(pf,fragOffset,pfsNew);
 
-	PT_AttrPropIndex preferredSpanFmt = 0;
+	// when inserting paragraphs, we try to remember the current
+	// span formatting active at the insertion point and add a
+	// FmtMark immediately after the block.  this way, if the
+	// user keeps typing text, the FmtMark will control it's
+	// attr/prop -- if the user warps away and/or edits elsewhere
+	// and then comes back to this point (the FmtMark may or may
+	// not still be here) new text will either use the FmtMark or
+	// look to the right.
+
+	UT_Bool bNeedGlob = UT_FALSE;
+	PT_AttrPropIndex apFmtMark = 0;
 	if (pfsNew->getStruxType() == PTX_Block)
 	{
-		// when inserting paragraphs, we try to remember the current
-		// span formatting active at the insertion point.  if the
-		// user keeps typing text (or comes back later and starts
-		// inserting text at the beginning of the paragraph), we'll
-		// try to use it rather than defaulting to plain text.
-
-		pf_Frag_Strux_Block * pfsbNew = static_cast<pf_Frag_Strux_Block *>(pfsNew);
-		_captureActiveSpan(pfsbNew);
-		preferredSpanFmt = pfsbNew->getPreferredSpanFmt();
+		bNeedGlob = _computeFmtMarkForNewBlock(pfsNew,&apFmtMark);
+		if (bNeedGlob)
+			beginMultiStepGlob();
 	}
 
 	// create a change record to describe the change, add
@@ -214,70 +234,99 @@ UT_Bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 	
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,
-									dpos,indexAP,pts,preferredSpanFmt);
+									dpos,indexAP,pts);
 	UT_ASSERT(pcrs);
 
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcrs);
 	m_pDocument->notifyListeners(pfsContainer,pfsNew,pcrs);
 
+	if (bNeedGlob)
+	{
+		_insertFmtMarkAfterBlockWithNotify(pfsNew,dpos+pfsNew->getLength(),apFmtMark);
+
+		// if we left an empty block (and stole all it's content) we should
+		// put a FmtMark in it to remember the active span fmt at the time.
+		// this lets things like hitting two consecutive CR's behave as expected.
+
+		if (pfsNew->getPrev()->getType()==pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfsPrev = static_cast<pf_Frag_Strux *>(pfsNew->getPrev());
+			if (pfsPrev->getStruxType()==PTX_Block)
+				_insertFmtMarkAfterBlockWithNotify(pfsPrev,dpos,apFmtMark);
+		}
+		
+		endMultiStepGlob();
+	}
+	
 	return UT_TRUE;
 }
 
-void pt_PieceTable::_captureActiveSpan(pf_Frag_Strux_Block * pfsBlock)
+UT_Bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * pfsBlock,
+												  PT_AttrPropIndex * pFmtMarkAP)
 {
-	// set the preferredSpanFmt field in pfsBlock based upon the
-	// current state in the document.
+	*pFmtMarkAP = 0;
 	
-	PT_AttrPropIndex api;
-	if (_haveTempSpanFmt(NULL,&api))
+	// look at the attr/prop and/or style on this block and see if we should
+	// create a FmtMark based upon it.  then look to previous blocks for
+	// information to create one.
+
+	// TODO paul, if we set a style on this block and it implies a span-level
+	// TODO paul, format, create the proper FmtMark and return TRUE.
+
+	// next we look backwards for an active FmrMark or Text span.
+
+	for (pf_Frag * pfPrev=pfsBlock->getPrev(); (pfPrev); pfPrev=pfPrev->getPrev())
 	{
-		pfsBlock->setPreferredSpanFmt(api);
-		return;
-	}
-
-	pf_Frag * pfPrev = pfsBlock->getPrev();
-	if (!pfPrev)
-		return;
-
-	switch (pfPrev->getType())
-	{
-	default:
-		return;
-
-	case pf_Frag::PFT_Text:
+		switch (pfPrev->getType())
 		{
-			pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pfPrev);
-			pfsBlock->setPreferredSpanFmt(pfPrevText->getIndexAP());
-		}
-		return;
-
-	case pf_Frag::PFT_Object:
-		{
-			// TODO this might not be the right thing to do.  Referencing
-			// TODO the span-level formatting for a Field is probably OK,
-			// TODO but referencing the span-level formatting of an Image
-			// TODO is probably bogus.
-			pf_Frag_Object * pfPrevObject = static_cast<pf_Frag_Object *>(pfPrev);
-			pfsBlock->setPreferredSpanFmt(pfPrevObject->getIndexAP());
-		}
-		return;
-
-	case pf_Frag::PFT_Strux:
-		{	
-			pf_Frag_Strux * pfPrevStrux = static_cast<pf_Frag_Strux *>(pfPrev);
-			switch (pfPrevStrux->getStruxType())
+		default:
 			{
-			default:
-				return;
-				
-			case PTX_Block:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return UT_FALSE;
+			}
+			
+		case pf_Frag::PFT_Text:
+			{
+				pf_Frag_Text * pfPrevText = static_cast<pf_Frag_Text *>(pfPrev);
+				*pFmtMarkAP = pfPrevText->getIndexAP();
+				return UT_TRUE;
+			}
+
+		case pf_Frag::PFT_Object:
+			{
+				// this might not be the right thing to do.  Referencing
+				// the span-level formatting for a Field is probably OK,
+				// but referencing the span-level formatting of an Image
+				// is probably bogus.
+				pf_Frag_Object * pfPrevObject = static_cast<pf_Frag_Object *>(pfPrev);
+				switch (pfPrevObject->getObjectType())
 				{
-					pf_Frag_Strux_Block * pfPrevStruxBlock = static_cast<pf_Frag_Strux_Block *>(pfPrevStrux);
-					pfsBlock->setPreferredSpanFmt(pfPrevStruxBlock->getPreferredSpanFmt());
+				case PTO_Field:
+					*pFmtMarkAP = pfPrevObject->getIndexAP();
+					return UT_TRUE;
+
+				default:					// keep looking back
+					break;
 				}
-				return;
+			}
+
+		case pf_Frag::PFT_Strux:
+			{	
+				// let's keep on looking back.  this is probably correct for
+				// a block, but may be questionable for sections.
+				break;
+			}
+
+		case pf_Frag::PFT_FmtMark:
+			{
+				// this one is easy.
+				pf_Frag_FmtMark * pfPrevFM = static_cast<pf_Frag_FmtMark *>(pfPrev);
+				*pFmtMarkAP = pfPrevFM->getIndexAP();
+				return UT_TRUE;
 			}
 		}
 	}
+
+	return UT_FALSE;
 }

@@ -27,6 +27,7 @@
 #include "ut_growbuf.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
+#include "pf_Frag_FmtMark.h"
 #include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "pf_Frag_Strux_Block.h"
@@ -208,14 +209,15 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 								  PT_DocPosition dpos2)
 {
 	// remove (dpos2-dpos1) characters from the document at the given position.
-	
-	UT_ASSERT(m_pts==PTS_Editing);
 
+	UT_ASSERT(m_pts==PTS_Editing);
 	UT_ASSERT(dpos2 > dpos1);
+
 	UT_uint32 length = dpos2 - dpos1;
 
-	if (_haveTempSpanFmt(NULL,NULL))
-		clearTemporarySpanFmt();
+	UT_Bool bFirstPassThru = UT_TRUE;
+
+TheBeginning:
 
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;
@@ -253,6 +255,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		// section.
 		// TODO consider just fixing up the variables that we have
 		// TODO computed so far, rather than making a recursive call.
+		UT_ASSERT(bFirstPassThru);
 		return deleteSpan(dpos1-pfsContainer->getLength(),dpos1);
 
 	case PTX_Block:
@@ -276,15 +279,74 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 	// NOTE: the undo/redo won't be properly bracketed.
 
 	UT_Bool bSimple = (pf_First == pf_End);
-	if (!bSimple)
+	if (!bSimple && bFirstPassThru)
 		beginMultiStepGlob();
+
+	pf_Frag * pfNewEnd;
+	UT_uint32 fragOffsetNewEnd;
+
+	if (bFirstPassThru)
+	{
+		// before we delete the content, we do a quick scan and delete
+		// any FmtMarks first -- this let's us avoid problems with
+		// coalescing FmtMarks only to be deleted.
+
+		UT_Bool bDeletedInlineFmtMarks = UT_FALSE;
+		
+		if ((fragOffset_First==0) && pf_First->getPrev() && (pf_First->getPrev()->getType()==pf_Frag::PFT_FmtMark))
+			pf_First = pf_First->getPrev();
+
+		pf_Frag * pfTemp = pf_First;
+		PT_BlockOffset fragOffsetTemp = fragOffset_First;
+
+		PT_DocPosition dposTemp = dpos1;
+		while (dposTemp < dpos2)
+		{
+			if (pfTemp->getType() == pf_Frag::PFT_FmtMark)
+			{
+				pf_Frag * pfNewTemp;
+				PT_BlockOffset fragOffsetNewTemp;
+				pf_Frag_Strux * pfsContainerTemp = NULL;
+				UT_Bool bFoundStrux = _getStruxFromPosition(dposTemp,&pfsContainerTemp);
+				UT_ASSERT(bFoundStrux);
+				UT_Bool bResult = _deleteFmtMarkWithNotify(dposTemp,static_cast<pf_Frag_FmtMark *>(pfTemp),
+														   pfsContainerTemp,&pfNewTemp,&fragOffsetNewTemp);
+				UT_ASSERT(bResult);
+
+				// FmtMarks have length zero, so we don't need to update dposTemp.
+				pfTemp = pfNewTemp;
+				fragOffsetTemp = fragOffsetNewTemp;
+				bDeletedInlineFmtMarks = UT_TRUE;
+			}
+			else
+			{
+				dposTemp += pfTemp->getLength() - fragOffsetTemp;
+				pfTemp = pfTemp->getNext();
+				fragOffsetTemp = 0;
+			}
+		}
+
+		if (bDeletedInlineFmtMarks)
+		{
+			// if we deleted FmtMarks, then we must consider pf_First and pf_End
+			// as invalid -- because the _deleteFmtMark...() could cause the frag
+			// list to be coalesced.  therefore, we begin over.  ***I'm going to
+			// break every good programming rule that I know here and warp back
+			// to the top rather than replicate the setup code here.  This is
+			// necessary since we've already written a beginGlob and one or more
+			// deleteFmtMark's to the history -- if we just went recursive, we
+			// might get two...
+			//
+			// TODO rewrite this routine to not do this.
+
+			bFirstPassThru = UT_FALSE;
+			goto TheBeginning;
+		}
+	}
 
 	// loop to delete the amount requested, one text fragment at a time.
 	// if we encounter any non-text fragments along the way, we delete
 	// them too.  that is, we implicitly delete Strux and Objects here.
-
-	pf_Frag * pfNewEnd;
-	UT_uint32 fragOffsetNewEnd;
 
 	while (length > 0)
 	{
@@ -328,6 +390,12 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				UT_ASSERT(bResult);
 			}
 			break;
+
+		case pf_Frag::PFT_FmtMark:
+			// we already took care of these...
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+			
 		}
 
 		// we do not change dpos1, since we are deleting stuff, but we
@@ -348,7 +416,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		fragOffset_First = fragOffsetNewEnd;
 	}
 
-	if (!bSimple)
+	if (!bSimple || !bFirstPassThru)
 		endMultiStepGlob();
 	
 	return UT_TRUE;

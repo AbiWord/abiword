@@ -32,6 +32,7 @@
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
+#include "pf_Frag_FmtMark.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Strux.h"
@@ -74,9 +75,6 @@ UT_Bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 										  indexOldAP,indexNewAP,
 										  ptc);
 	UT_ASSERT(pcr);
-
-	if (_haveTempSpanFmt(NULL,NULL))
-		clearTemporarySpanFmt();
 
 	UT_Bool bResult = _fmtChangeStrux(pfs,indexNewAP);
 	UT_ASSERT(bResult);
@@ -156,6 +154,7 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_Object:
 			case pf_Frag::PFT_Text:
+			case pf_Frag::PFT_FmtMark:
 				break;
 			}
 
@@ -239,11 +238,21 @@ UT_Bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 					UT_ASSERT(fragOffsetNewEnd == 0);
 				}
 				break;
+
+			case pf_Frag::PFT_FmtMark:
+				{
+					UT_Bool bResult
+						= _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf),
+													  dpos, NULL,NULL,
+													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+					UT_ASSERT(bResult);
+				}
+				break;
 			}
 
 			dpos += lengthThisStep;
 			
-			// since _fmtChangeSpanWithNotify(), can delete pf, mess with the
+			// since _fmtChange{Span,FmtMark,...}WithNotify(), can delete pf, mess with the
 			// fragment list, and does some aggressive coalescing of
 			// fragments, we cannot just do a pf->getNext() here.
 			// to advance to the next fragment, we use the *NewEnd variables

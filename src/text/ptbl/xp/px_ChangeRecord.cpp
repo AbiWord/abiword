@@ -66,8 +66,9 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 	switch (m_type)
 	{
 	case PX_ChangeRecord::PXT_GlobMarker:
-		return PX_ChangeRecord::PXT_GlobMarker;
+		return PX_ChangeRecord::PXT_GlobMarker;				// we are our own inverse
 		
+
 	case PX_ChangeRecord::PXT_InsertSpan:
 		return PX_ChangeRecord::PXT_DeleteSpan;
 		
@@ -77,11 +78,16 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 	case PX_ChangeRecord::PXT_ChangeSpan:
 		return PX_ChangeRecord::PXT_ChangeSpan;				// we are our own inverse
 		
+
 	case PX_ChangeRecord::PXT_InsertStrux:
 		return PX_ChangeRecord::PXT_DeleteStrux;
 
 	case PX_ChangeRecord::PXT_DeleteStrux:
 		return PX_ChangeRecord::PXT_InsertStrux;
+
+	case PX_ChangeRecord::PXT_ChangeStrux:
+		return PX_ChangeRecord::PXT_ChangeStrux;			// we are our own inverse
+
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		return PX_ChangeRecord::PXT_DeleteObject;
@@ -92,12 +98,17 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 	case PX_ChangeRecord::PXT_ChangeObject:
 		return PX_ChangeRecord::PXT_ChangeObject;			// we are our own inverse
 
-	case PX_ChangeRecord::PXT_ChangeStrux:
-		return PX_ChangeRecord::PXT_ChangeStrux;			// we are our own inverse
 
-	case PX_ChangeRecord::PXT_TempSpanFmt:
-		return PX_ChangeRecord::PXT_TempSpanFmt;			// we are our own inverse
-		
+	case PX_ChangeRecord::PXT_InsertFmtMark:
+		return PX_ChangeRecord::PXT_DeleteFmtMark;
+
+	case PX_ChangeRecord::PXT_DeleteFmtMark:
+		return PX_ChangeRecord::PXT_InsertFmtMark;
+
+	case PX_ChangeRecord::PXT_ChangeFmtMark:
+		return PX_ChangeRecord::PXT_ChangeFmtMark;			// we are our own inverse
+
+
 	default:
 		UT_ASSERT(0);
 		return PX_ChangeRecord::PXT_GlobMarker;				// bogus

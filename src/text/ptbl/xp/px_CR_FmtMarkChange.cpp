@@ -21,54 +21,46 @@
 #include "ut_types.h"
 #include "pt_Types.h"
 #include "px_ChangeRecord.h"
-#include "px_CR_ObjectChange.h"
+#include "px_CR_FmtMarkChange.h"
 
-PX_ChangeRecord_ObjectChange::PX_ChangeRecord_ObjectChange(PXType type,
-														   PT_DocPosition position,
-														   PT_AttrPropIndex indexOldAP,
-														   PT_AttrPropIndex indexNewAP,
-														   PTObjectType pto,
-														   PTChangeFmt ptc,
-														   PT_BlockOffset blockOffset)
+PX_ChangeRecord_FmtMarkChange::PX_ChangeRecord_FmtMarkChange(PXType type,
+															 PT_DocPosition position,
+															 PT_AttrPropIndex indexOldAP,
+															 PT_AttrPropIndex indexNewAP,
+															 PTChangeFmt ptc,
+															 PT_BlockOffset blockOffset)
 	: PX_ChangeRecord(type, position, indexNewAP)
 {
 	m_ptc = ptc;
 	m_indexOldAP = indexOldAP;
-	m_objectType = pto;
 	m_blockOffset = blockOffset;
 }
 
-PX_ChangeRecord_ObjectChange::~PX_ChangeRecord_ObjectChange()
+PX_ChangeRecord_FmtMarkChange::~PX_ChangeRecord_FmtMarkChange()
 {
 }
 
-PX_ChangeRecord * PX_ChangeRecord_ObjectChange::reverse(void) const
+PX_ChangeRecord * PX_ChangeRecord_FmtMarkChange::reverse(void) const
 {
 	UT_ASSERT((m_ptc >= 0) && (m_ptc <= 1));
 	PTChangeFmt ptcRev = (PTChangeFmt)( ! ((UT_Bool) m_ptc));
 	
-	PX_ChangeRecord_ObjectChange * pcr
-		= new PX_ChangeRecord_ObjectChange(getRevType(),
-										   m_position,
-										   m_indexAP,m_indexOldAP,
-										   m_objectType,
-										   ptcRev,
-										   m_blockOffset);
+	PX_ChangeRecord_FmtMarkChange * pcr
+		= new PX_ChangeRecord_FmtMarkChange(getRevType(),
+											m_position,
+											m_indexAP,m_indexOldAP,
+											ptcRev,
+											m_blockOffset);
 	UT_ASSERT(pcr);
 	return pcr;
 }
 
-PT_AttrPropIndex PX_ChangeRecord_ObjectChange::getOldIndexAP(void) const
+PT_AttrPropIndex PX_ChangeRecord_FmtMarkChange::getOldIndexAP(void) const
 {
 	return m_indexOldAP;
 }
 
-PTObjectType PX_ChangeRecord_ObjectChange::getObjectType(void) const
-{
-	return m_objectType;
-}
-
-PT_BlockOffset PX_ChangeRecord_ObjectChange::getBlockOffset(void) const
+PT_BlockOffset PX_ChangeRecord_FmtMarkChange::getBlockOffset(void) const
 {
 	return m_blockOffset;
 }

@@ -22,6 +22,10 @@
 #ifndef RUN_H
 #define RUN_H
 
+#ifdef FMT_TEST
+#include <stdio.h>
+#endif
+
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "pt_Types.h"
@@ -51,6 +55,7 @@ struct fp_RunSplitInfo
 #define FP_RUN_JUSTAFTER   	2
 #define FP_RUN_NOT         	3
 
+#define FPRUN__FIRST__					1
 #define FPRUN_TEXT						1
 #define FPRUN_IMAGE						2
 #define FPRUN_TAB						3
@@ -58,6 +63,8 @@ struct fp_RunSplitInfo
 #define FPRUN_FORCEDCOLUMNBREAK			5
 #define FPRUN_FORCEDPAGEBREAK			6
 #define FPRUN_FIELD						7
+#define FPRUN_FMTMARK					8
+#define FPRUN__LAST__					8
 
 class fp_Run
 {
@@ -98,7 +105,7 @@ public:
 	void            		clearScreen(UT_Bool bFullLineHeightRect = UT_FALSE);
 	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
 	virtual UT_Bool			canContainPoint(void) const;
-	const PP_AttrProp* 		getAP(void) const;
+	virtual const PP_AttrProp* getAP(void) const;
 	virtual void			fetchCharWidths(UT_GrowBuf * pgbCharWidths);
 	virtual	UT_Bool			recalcWidth(void);
 	
@@ -112,8 +119,8 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height) = 0;
 	virtual void			lookupProperties(void) = 0;
 
-#ifndef NDEBUG	
-	virtual void			debug_dump(void);
+#ifdef FMT_TEST
+	virtual void			__dump(FILE * fp) const;
 #endif	
 	
 protected:
@@ -235,7 +242,7 @@ protected:
 
 class fp_FieldRun : public fp_Run
 {
- public:
+public:
 	fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual void			lookupProperties(void);
@@ -257,5 +264,25 @@ protected:
 	unsigned char			m_iFieldType;
 };
 
-#endif /* RUN_H */
 
+class fp_FmtMarkRun : public fp_Run
+{
+public:
+	fp_FmtMarkRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst);
+
+	virtual void			lookupProperties(void);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_uint32 		containsOffset(UT_uint32 iOffset);
+	virtual const PP_AttrProp* getAP(void) const;
+
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
+
+};
+
+#endif /* RUN_H */

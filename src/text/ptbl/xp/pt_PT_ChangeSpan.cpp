@@ -32,6 +32,7 @@
 #include "pf_Frag_Strux_Block.h"
 #include "pf_Frag_Strux_Section.h"
 #include "pf_Frag_Text.h"
+#include "pf_Frag_FmtMark.h"
 #include "pf_Fragments.h"
 #include "px_ChangeRecord.h"
 #include "px_CR_Span.h"
@@ -306,17 +307,12 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 									 const XML_Char ** attributes,
 									 const XML_Char ** properties)
 {
+	// apply a span-level formatting change to the given region.
+	
 	UT_ASSERT(m_pts==PTS_Editing);
 
-	// apply a span-level formatting change to the given region.
-
-	if (dpos1 == dpos2)
-	{
-		// if length of change is zero, then we have a toggle format.
-		return _setTemporarySpanFmtWithNotify(ptc,dpos1,attributes,properties);
-	}
-	if (_haveTempSpanFmt(NULL,NULL))
-		clearTemporarySpanFmt();
+	if (dpos1 == dpos2) 		// if length of change is zero, then we have a toggle format.
+		return _insertFmtMarkFragWithNotify(ptc,dpos1,attributes,properties);
 	
 	UT_ASSERT(dpos1 < dpos2);
 	UT_Bool bHaveAttributes = (attributes && *attributes);
@@ -425,12 +421,29 @@ UT_Bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 				UT_ASSERT(bResult);
 			}
 			break;
+
+		case pf_Frag::PFT_FmtMark:
+			{
+				if (!pfsContainer)
+				{
+					UT_Bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
+					UT_ASSERT(bFoundStrux);
+				}
+
+				UT_Bool bResult
+					= _fmtChangeFmtMarkWithNotify(ptc,static_cast<pf_Frag_FmtMark *>(pf_First),
+												  dpos1, attributes,properties,
+												  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+				UT_ASSERT(bResult);
+			}
+			break;
+
 		}
 
 		dpos1 += lengthThisStep;
 		length -= lengthThisStep;
 		
-		// since _fmtChangeSpanWithNotify(), can delete pf_First, mess with the
+		// since _fmtChange{Span,FmtMark,...}WithNotify(), can delete pf_First, mess with the
 		// fragment list, and does some aggressive coalescing of
 		// fragments, we cannot just do a pf_First->getNext() here.
 		// to advance to the next fragment, we use the *NewEnd variables

@@ -134,9 +134,7 @@ void fp_Container::removeLine(fp_Line* pLine)
 UT_Bool fp_Container::insertLine(fp_Line* pNewLine)
 {
 	m_vecLines.insertItemAt(pNewLine, 0);
-		
 	pNewLine->setContainer(this);
-
 	pNewLine->recalcMaxWidth();
 
 	return UT_TRUE;
@@ -145,9 +143,7 @@ UT_Bool fp_Container::insertLine(fp_Line* pNewLine)
 UT_Bool fp_Container::addLine(fp_Line* pNewLine)
 {
 	m_vecLines.addItem(pNewLine);
-		
 	pNewLine->setContainer(this);
-
 	pNewLine->recalcMaxWidth();
 
 	return UT_TRUE;
@@ -155,32 +151,31 @@ UT_Bool fp_Container::addLine(fp_Line* pNewLine)
 
 UT_Bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 {
+	UT_ASSERT(pAfterLine);
+	UT_ASSERT(pNewLine);
+	
+	UT_sint32 count = m_vecLines.getItemCount();
+	UT_sint32 ndx = m_vecLines.findItem(pAfterLine);
+	UT_ASSERT( (count > 0) || (ndx == -1) );
+	
 	/*
 	  TODO this routine should not be allowing pAfterLine to be NULL.
 	  Right now, we've fixed the symptom, but we really should fix
 	  the problem.
 	*/
-	
-	UT_sint32 ndx = m_vecLines.findItem(pAfterLine);
-//	UT_ASSERT(ndx >= 0);
+	UT_ASSERT(ndx >= 0);
 
-	if (
-		(ndx == ((UT_sint32) (m_vecLines.getItemCount() - 1)))
-		)
-	{
+	if ( (ndx+1) == count )				// append after last line in vector
 		m_vecLines.addItem(pNewLine);
-	}
-	else if (ndx == -1)
-	{
-		m_vecLines.insertItemAt(pNewLine, 0);
-	}
+	else if (ndx >= 0)					// append after this item within the vector
+		m_vecLines.insertItemAt(pNewLine, ndx+1);
 	else
 	{
-		m_vecLines.insertItemAt(pNewLine, ndx+1);
+		// TODO remove this....
+		m_vecLines.insertItemAt(pNewLine, 0);
 	}
 
 	pNewLine->setContainer(this);
-
 	pNewLine->recalcMaxWidth();
 
 	return UT_TRUE;

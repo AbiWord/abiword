@@ -91,7 +91,6 @@ public:
 										  PT_DocPosition dpos2,
 										  const XML_Char ** attributes,
 										  const XML_Char ** properties);
-	// TODO: need change{Span/Strux}Style, too?  or just another attribute?  
 
 	UT_Bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts);
@@ -124,7 +123,7 @@ public:
 											const PX_ChangeRecord * pcr) const;
 
 	UT_Bool					getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp ** ppAP) const;
-	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
+	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, UT_Bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
 	const UT_UCSChar *		getPointer(PT_BufIndex bi) const; /* see warning on this function */
 	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
@@ -141,9 +140,8 @@ public:
 													   PTStruxType pts,
 													   PL_StruxFmtHandle * psfh) const;
 
-	void					clearTemporarySpanFmt(void);
-
 	// data items
+
 	UT_Bool					createDataItem(const char * szName, UT_Bool bBase64, const UT_ByteBuf * pByteBuf,
 										   void* pToken, void ** ppHandle);
 	UT_Bool					getDataItemDataByName(const char * szName,
@@ -155,6 +153,7 @@ public:
 										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, void** ppToken) const;
 	
 	// styles
+
 	UT_Bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	UT_Bool					enumStyles(UT_uint32 k,
 										  const char ** pszName, const PD_Style ** ppStyle) const;
