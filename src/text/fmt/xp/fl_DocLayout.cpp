@@ -597,7 +597,24 @@ void FL_DocLayout::updateColor()
 // Redraw the view associated with this document.
 //
 	if(pView)
+	{
+		// remember the state of the cursor.
+		bool bCursorErased = false;
+		if (pView->isCursorOn() == true)
+		{
+			pView->eraseInsertionPoint();
+			bCursorErased = true;
+		}
 		pView->updateScreen(false);
+//
+// Redraw the cursor if needed
+//
+		if (bCursorErased == true)
+		{
+			pView->drawInsertionPoint();
+		}
+	}
+
 }
 
 #define BACKGROUND_CHECK_MSECS 100

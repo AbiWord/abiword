@@ -393,10 +393,20 @@ void fl_SectionLayout::updateBackgroundColor(void)
 	while (pBL)
 	{
 		pBL->updateBackgroundColor();
-		FV_View * pView = m_pLayout->getView();
-		pView->draw();
 		pBL = pBL->getNext();
 	}
+	if(getType() != FL_SECTION_DOC)
+		return;
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(this);	
+	if(pDSL->getHeader())
+	{
+		pDSL->getHeader()->updateBackgroundColor();
+	}
+	if(pDSL->getFooter())
+	{
+		pDSL->getFooter()->updateBackgroundColor();
+	}
+
 }
 
 //////////////////////////////////////////////////////////////////
@@ -787,19 +797,18 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 	if(m_pHeaderSL)
 	{
 		m_pHeaderSL->format();
-		m_pHeaderSL->updateBackgroundColor();
 		m_pHeaderSL->redrawUpdate();
 	}
 	if(m_pFooterSL)
 	{
 		m_pFooterSL->format();
-		m_pFooterSL->updateBackgroundColor();
 		m_pFooterSL->redrawUpdate();
 	}
 
 	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
+		pView->updateScreen(false);
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTSECTION);
 	}
 
