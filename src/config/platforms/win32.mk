@@ -169,6 +169,6 @@ ABIPKGDIR	= win/setup
 ## EXPAT_PLATFORM_DEFS and PSICONV_PLATFORM_DEFS are the flags
 ## that should be passed to configure when building expat and
 ## psiconv, respectively, for this platform (if any)
-EXPAT_PLATFORM_DEFS=CC=cl.exe CONFIG_SHELL=bash.exe CFLAGS='$(OS_CFLAGS)' 
+#EXPAT_PLATFORM_DEFS=CC=cl.exe CONFIG_SHELL=sh.exe CFLAGS='$(OS_CFLAGS)' 
 
 # End of win32 defs

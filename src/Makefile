@@ -24,13 +24,11 @@ include $(ABI_ROOT)/src/config/abi_defs.mk
 
 DIRS=		config tools other af text wp 
 REQUIRECLEAN=
+REQUIREREALCLEAN=		clean_ABI_ clean_ZLIB_ clean_LIBPNG_ clean_LIBWV_ clean_LIBICONV_ clean_POPT_
+
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
-REQUIRECLEAN+=clean_EXPAT_
-endif
-REQUIREREALCLEAN=		clean_ABI_ clean_ZLIB_ clean_LIBPNG_ \
-clean_LIBWV_ clean_LIBICONV_
-ifeq ($(ABI_OPT_PEER_EXPAT),1)
-REQUIREREALCLEAN+=realclean_EXPAT_
+REQUIRECLEAN+= clean_EXPAT_
+REQUIREREALCLEAN+= realclean_EXPAT_
 endif
 
 
@@ -224,23 +222,48 @@ clean_PSICONV_:
 	fi
 
 clean_EXPAT_:
+ifeq ($(OS_NAME), WIN32)
 	@if [ -d $(ABI_ROOT)/../expat ]; then		\
-		$(MAKE) -C $(ABI_ROOT)/../expat clean;	\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
 	fi
+else
+	@if [ -d $(ABI_ROOT)/../expat ]; then		\
+		$(MAKE) -f Makefile -C $(ABI_ROOT)/../expat clean;	\
+	fi
+endif
 
 # we have to make a realclean here so the configure script reruns
 # if no makefile exists, it is already clean
 clean_LIBWV_:
+ifneq ($(OS_NAME),WIN32)
 	@if [ -d $(ABI_ROOT)/../wv -a -f $(ABI_ROOT)/../wv/Makefile ]; then		\
 		$(MAKE) -C $(ABI_ROOT)/../wv realclean;	\
 	fi	
+else
+	$(MAKE) -fMakefile.abi -C $(ABI_ROOT)/../wv realclean;
+endif
 
 # we have to make a distclean here to ensure that the configure script reruns
 # if no makefile exists, it is already clean
 clean_LIBICONV_:
+ifneq ($(OS_NAME),WIN32)
 	@if [ -d $(ABI_ROOT)/../libiconv -a -f $(ABI_ROOT)/../libiconv/Makefile ]; then	\
 		$(MAKE) -C $(ABI_ROOT)/../libiconv distclean;	\
 	fi	
+else
+	$(MAKE) -fMakefile.abi -C $(ABI_ROOT)/../libiconv clean;
+	$(RM) $(ABI_ROOT)/../libiconv/lib/config.h;
+	$(RM) $(ABI_ROOT)/../libiconv/libcharset/config.h;
+	$(RM) $(ABI_ROOT)/../libiconv/include/iconv.h;
+endif
+
+clean_POPT_:
+ifeq ($(OS_NAME),WIN32)
+	@if [ -d $(ABI_ROOT)/../popt ]; then              \
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../popt clean;     \
+		$(RM)	$(ABI_ROOT)/../popt/config.h;	\
+	fi
+endif
 
 realclean_PSICONV_:
 	@if [ -d $(ABI_ROOT)/../psiconv -a -f $(ABI_ROOT)/../psiconv/psiconv/Makefile ]; then	\
@@ -248,9 +271,17 @@ realclean_PSICONV_:
 	fi	
 
 realclean_EXPAT_:
+ifneq ($(OS_NAME),WIN32)
 	@if [ -d $(ABI_ROOT)/../expat -a -f $(ABI_ROOT)/../expat/lib/Makefile ]; then	\
 		$(MAKE) -C $(ABI_ROOT)/../expat distclean;	\
 	fi	
+else
+	@if [ -d $(ABI_ROOT)/../expat ]; then		\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../expat clean;	\
+		$(RM) $(ABI_ROOT)/../expat/config.h;	\
+		$(RM) $(ABI_ROOT)/../expat/lib/config.h;	\
+	fi
+endif
 
 clean_ABI_:
 	rm -rf $(OUTDIR) $(DIST)

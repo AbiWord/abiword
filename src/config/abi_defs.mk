@@ -601,7 +601,7 @@ endif
 ## Default = libxml2, peer = expat
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
   ifeq ($(OS_NAME),WIN32)
-    EXTRA_LIBS += $(ABI_ROOT)/../expat/lib/.libs/libexpat.lib
+    EXTRA_LIBS += $(LIBDIR)/libAbi_libexpat_s.lib
     LDFLAGS += /NODEFAULTLIB:LIBC
   else
     EXTRA_LIBS += -L$(ABI_ROOT)/../expat/lib/.libs -lexpat

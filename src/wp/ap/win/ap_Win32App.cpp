@@ -25,10 +25,8 @@
 #include <stdlib.h>
 #include <windows.h>
 #include <commctrl.h>   // includes the common control header
-#ifndef __MINGW32__
+#ifdef _MSC_VER
 #include <crtdbg.h>
-#else
-#define __try
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -58,6 +56,8 @@
 #include "xap_Toolbar_ActionSet.h"
 #include "xap_EncodingManager.h"
 #include "xap_ModuleManager.h"
+#include "ev_EditMethod.h"
+#include "xap_Module.h"
 
 #include "ap_Win32Resources.rc2"
 #include "ap_Clipboard.h"
@@ -132,102 +132,6 @@ static bool s_createDirectoryIfNecessary(const char * szDir)
 
 	UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
 	return false;
-}
-	
-//
-//
-//
-void AP_Win32App::_printUsage()
-{
-	char szTmp[1024];
-	char szMsg[1024];
-	
-	// just print to stdout, not stderr
-	sprintf(szMsg, "\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
-
-	
-#ifdef DEBUG
-	sprintf(szTmp, "  -dumpstrings Dump strings strings to file\n");
-	strcat(szMsg, szTmp);
-#endif
-
-	sprintf(szTmp, "  -version Print AbiWord version");
-	strcat(szMsg, szTmp);
-	
-	sprintf(szTmp, "\n");
-	strcat(szMsg, szTmp);
-	
-	MessageBox(NULL, szMsg, NULL, MB_OK);
-}
-
-
-//
-// Command line processing
-//
-bool AP_Win32App::parseCommandLine(void)
-{
-	// parse the command line
-	// <app> [-dumpstrings] [<documentname>]	
-	int nFirstArg = 1;
-	int k;
-	int kWindowsOpened = 0;	
-
-	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
-	{
-		if (*m_pArgs->m_argv[k] == '-')
-		{
-			if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
-			{				
-#ifdef DEBUG
-				// dump the string table in english as a template for translators.
-				// see abi/docs/AbiSource_Localization.abw for details.
-				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
-				pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
-				delete pBuiltinStringSet;
-#endif
-			}				
-			else
-			if (UT_stricmp(m_pArgs->m_argv[k],"--help") == 0)				
-			{
-				_printUsage();
-				return false;
-			}
-			else if (UT_stricmp(m_pArgs->m_argv[k],"-version") == 0)				
-			{
-				MessageBox(NULL, XAP_App::s_szBuild_Version, "Version", MB_OK|MB_ICONINFORMATION);
-				return false;
-			}
-		}
-		else
-		{
-			// [filename]						
-
-			AP_Win32Frame * pFirstFrame = new AP_Win32Frame(this);
-			pFirstFrame->initialize();
-			UT_Error error = pFirstFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
-			if (!error)
-			{
-				kWindowsOpened++;
-			}
-			else
-			{				
-				kWindowsOpened++;
-				pFirstFrame->loadDocument(NULL, IEFT_Unknown);
-				delete pFirstFrame;
-			}
-		}
-	}					
-
-	if (kWindowsOpened == 0)
-	{
-		// no documents specified or were able to be opened, open an untitled one
-
-		AP_Win32Frame * pFirstFrame = new AP_Win32Frame(this);
-		pFirstFrame->initialize();
-		pFirstFrame->loadDocument(NULL, IEFT_Unknown);
-	}
-
-	return true;
 }
 
 bool AP_Win32App::initialize(void)
@@ -874,7 +778,7 @@ ReturnTrue:
 
 /*****************************************************************/
 
-#if defined(_DEBUG) && !defined(__MINGW32__)
+#if defined(_DEBUG) && defined(_MSC_VER)
 #define  SET_CRT_DEBUG_FIELD(a) \
             _CrtSetDbgFlag((a) | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG))
 #define  CLEAR_CRT_DEBUG_FIELD(a) \
@@ -1053,11 +957,11 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// this is a static function and doesn't have a 'this' pointer.
 	MSG msg;
 
-#if !defined(__BORLANDC__) && !defined(__MINGW32__)
+#ifdef _MSC_VER
 	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
 	_CrtSetReportMode( _CRT_ASSERT, _CRTDBG_MODE_DEBUG | _CRTDBG_MODE_WNDW);
-#endif // __BORLANDC__
+#endif
 
 	// Ensure that common control DLL is loaded
 	HINSTANCE hinstCC = LoadLibrary("comctl32.dll");
@@ -1128,7 +1032,6 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	{
 		bShowSplash = bShowSplash && bSplashPref;
 	}
-	
 
 	// Step 2: Handle all non-window args.
 	// process args (calls common arg handler, which then calls platform specific)
@@ -1144,29 +1047,30 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// Step 3: Create windows as appropriate.
 	// if some args are botched, it returns false and we should
 	// continue out the door.	
-	if (!pMyWin32App->parseCommandLine())
-	{	
+	if (!pMyWin32App->parseCommandLine(Args.poptcon))
+	{
 		pMyWin32App->shutdown();	// properly shutdown the app 1st
 		delete pMyWin32App;
 		return 0;
 	}
-	
-	#if SPLASH
+
+#ifdef SPLASH
 	if (bShowSplash)
 	{
 		_showSplash(hInstance, szAppName);
 	}
-	
-#endif
-		
+#endif	
+
 }
 //
 // This block is controlled by the Structured Exception Handle
 // if any crash happens here we will recover it and save the file (cross fingers)
 //	
 
-	
+
+#ifndef __MINGW32__
 __try
+#endif	
 {		
 	
 
@@ -1333,6 +1237,102 @@ void AP_Win32App::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
  */
 bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 {
+	AP_Win32App * pMyWin32App = static_cast<AP_Win32App*>(Args->getApp());
+
+	if (Args->m_sGeometry)
+	{
+		// [--geometry <X geometry string>]
+		#if 0
+		gint x = 0;
+		gint y = 0;
+		guint width = 0;
+		guint height = 0;
+		
+		XParseGeometry(Args->m_sGeometry, &x, &y, &width, &height);
+
+		// set the xap-level geometry for future frame use
+		Args->getApp()->setGeometry(x, y, width, height, f);
+		#endif
+
+		parseAndSetGeometry(Args->m_sGeometry);
+	}
+	else
+	if (Args->m_sPrintTo) 
+	{
+		#if 0
+		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
+		{
+			UT_DEBUGMSG(("DOM: Printing file %s\n", Args->m_sFile));
+			
+			AP_Convert * conv = new AP_Convert(pMyWin32App);
+			conv->setVerbose(Args->m_iVerbose);
+			
+			PS_Graphics * pG = new PS_Graphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo), Args->m_sFile, 
+												pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
+												(Args->m_sPrintTo[0] != '|'), pMyUnixApp);
+			
+			conv->print (Args->m_sFile, pG);
+	      
+			delete pG;
+			delete conv;
+		}
+		else
+		{
+			// couldn't load document
+			printf("Error: no file to print!\n");
+		}
+
+		if (!Args->m_iShow)
+			return false;
+		#endif
+	}
+
+	if(Args->m_sPlugin)
+	{
+	//
+	// Start a plugin rather than the main abiword application.
+	//
+		const char * szName = NULL;
+		XAP_Module * pModule = NULL;
+		Args->m_sPlugin = poptGetArg(Args->poptcon);
+		bool bFound = false;
+		if(Args->m_sPlugin != NULL)
+		{
+			const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+			for (UT_uint32 i = 0; (i < pVec->size()) && !bFound; i++)
+			{
+				pModule = (XAP_Module *)pVec->getNthItem (i);
+				szName = pModule->getModuleInfo()->name;
+				if(UT_strcmp(szName,Args->m_sPlugin) == 0)
+					bFound = true;
+			}
+		}
+		if(!bFound)
+		{
+			printf("Plugin %s not found or loaded \n",Args->m_sPlugin);
+			return false;
+		}
+
+//
+// You must put the name of the ev_EditMethod in the usage field
+// of the plugin registered information.
+//
+		const char * evExecute = pModule->getModuleInfo()->usage;
+		EV_EditMethodContainer* pEMC = pMyWin32App->getEditMethodContainer();
+		const EV_EditMethod * pInvoke = pEMC->findEditMethodByName(evExecute);
+		if(!pInvoke)
+		{
+			printf("Plugin %s invoke method %s not found \n",
+				   Args->m_sPlugin,evExecute);
+			return false;
+		}
+		//
+		// Execute the plugin, then quit
+		//
+		ev_EditMethod_invoke(pInvoke, "Called From App");
+		return false;
+	}
+
 	return true;
 }
 

@@ -37,13 +37,26 @@ build::		$(REQUIRE)
 #################################################################
 
 _EXPAT_:
+#use pregenerated Makefile on Windows, else configure generated one
+ifeq ($(OS_NAME),WIN32)
+	@if [ -d $(ABI_ROOT)/../expat ]; then				\
+		echo "Found expat in peer directory";			\
+		cd $(ABI_ROOT)/../expat; 			\
+		$(ABICOPY) config.h.msvc config.h;	\
+		$(ABICOPY) lib/winconfig.h lib/config.h;	\
+		$(MAKE) -fMakefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;	\
+	else										\
+		echo "ERROR -- peer expat not found";			\
+		exit 1;								\
+	fi
+else
 	@if [ -d $(ABI_ROOT)/../expat ]; then				\
 		echo "Found expat in peer directory";			\
 		if [ ! -r $(ABI_ROOT)/../expat/Makefile ]; then 	\
 			cd $(ABI_ROOT)/../expat; 			\
 			$(EXPAT_PLATFORM_DEFS) ./configure --disable-shared --enable-static; 	\
+			$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;	\
 		fi; 							\
-		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;	\
 	elif [ -f /usr/include/expat.h -o -f /usr/local/include/expat.h ]; then 	\
 		echo "*** Found a shared library version of expat.  I'm going to use "; \
 		echo "*** that.  If it doesn't work, you should use the version "; 	\
@@ -56,6 +69,7 @@ _EXPAT_:
 		echo "minor modifications to integrate with the AbiSource build system.";	\
 		exit 1;									\
 	fi
+endif
 
 _PSICONV_:
 	@if [ -r $(ABI_ROOT)/../psiconv ]; then 			\

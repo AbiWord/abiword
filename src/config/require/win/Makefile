@@ -1,7 +1,7 @@
 #! gmake
 
 ## AbiWord
-## Copyright (C) 1998 AbiSource, Inc.
+## Copyright (C) 1998-2002 AbiSource, Inc.
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -23,16 +23,15 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
 REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _POPT_ _NSIS_ _FRIBIDI_
-ifeq ($(OS_NAME),MINGW32)
-    CCSET=
-else
-    CCSET=CC='cl.exe -nologo' CONFIG_SHELL=bash.exe bash
-endif
-REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_
+#REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_ clean_POPT_
+
 ifeq ($(ABI_OPT_CURL),1)
 REQUIRE += _PEER_LIBCURL_
 endif
+
 TARGET=		build
+
+#    CCSET=CC='cl.exe -nologo' CONFIG_SHELL=sh sh
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
@@ -50,10 +49,9 @@ _ZLIB_:
 		echo Found zlib in peer directory;				\
 		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../zlib;		\
 	else									\
-		echo zlib not found;						\
-		echo TODO provide a nicer error message;			\
-		echo TODO with instructions for obtaining it;			\
-		exit 1;								\
+		echo peer zlib not found.  You can check it out of cvs by; \
+		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout zlib; \
+		exit 1;						\
 	fi
 
 _LIBPNG_:
@@ -61,49 +59,47 @@ _LIBPNG_:
 		echo Found libpng in peer directory;				\
 		$(MAKE) -f Makefile.abi ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../libpng;	\
 	else									\
-		echo libpng not found;						\
-		echo TODO provide a nicer error message;			\
-		echo TODO with instructions for obtaining it;			\
-		exit 1;								\
+		echo peer libpng not found.  You can check it out of cvs by; \
+		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout libpng; \
+		exit 1;						\
 	fi
 
 _LIBICONV_:
 	@if [ -d $(ABI_ROOT)/../libiconv ]; then			\
 		echo Found libiconv in peer directory;			\
-		if [ ! -r $(ABI_ROOT)/../libiconv/lib/config.h ]; then	\
-			cd $(ABI_ROOT)/../libiconv; 			\
-			$(CCSET) ./configure --enable-extra-encodings; \
-		fi;						\
+		cd $(ABI_ROOT)/../libiconv; 			\
+		$(ABICOPY) lib/config.h.msvc lib/config.h;	\
+		$(ABICOPY) libcharset/config.h.msvc libcharset/config.h;	\
+		$(ABICOPY) include/iconv.h.msvc-static include/iconv.h; \
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;	\
 	else								\
-		echo libiconv not found;				\
-		echo TODO provide a nicer error message;		\
-		echo TODO with instructions for obtaining it;		\
-		exit 1;							\
+		echo peer libiconv not found.  You can check it out of cvs by; \
+		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout libiconv; \
+		exit 1;						\
 	fi
+#			$(CCSET) ./configure --enable-extra-encodings;
 
 _LIBWV_:
 	@if [ -d $(ABI_ROOT)/../wv ]; then			\
 		echo Found libwv in peer directory;		\
 		if [ ! -r $(ABI_ROOT)/../wv/config.h ]; then	\
 			cd $(ABI_ROOT)/../wv; 			\
-			$(CCSET) ./configure --with-peer-iconv=abi;	\
+			$(ABICOPY) config.h.msvc config.h;	\
 		fi;						\
-		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../wv;  	\
+		$(MAKE) -fMakefile.abi -C $(ABI_ROOT)/../wv;  	\
 	else							\
-		echo wv not found;				\
-		echo TODO provide a nicer error message;	\
-		echo TODO with instructions for obtaining it;	\
+		echo peer wv not found.  You can check it out of cvs by; \
+		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout wv; \
 		exit 1;						\
 	fi
-
+#			$(CCSET) ./configure --with-peer-iconv=abi;
 
 _POPT_:
 	@if [ -d $(ABI_ROOT)/../popt ]; then                       	\
 		echo Found popt in peer directory;                      \
 		if [ ! -r $(ABI_ROOT)/../popt/config.h ]; then          \
 			cd $(ABI_ROOT)/../popt;                         \
-			$(CCSET) ./configure --enable-static --disable-shared;   \
+			$(ABICOPY) config.h.msvc config.h;	\
 		fi;                                                     \
 		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../popt;                         \
 	else										\
@@ -111,7 +107,7 @@ _POPT_:
 		cvs -d :pserver:anoncvs:anoncvs@cvs.abisource.com:/cvsroot checkout popt; \
 		exit 1;						\
 	fi								
-
+#			$(CCSET) ./configure --enable-static --disable-shared;  
 
 _NSIS_:
 	@if [ -d $(ABI_ROOT)/../nsis ]; then			\
@@ -151,17 +147,3 @@ _FRIBIDI_:
 
 #################################################################
 
-realclean_LIBICONV_:
-	@if [ -d $(ABI_ROOT)/../libiconv ]; then			\
-		$(MAKE) -C $(ABI_ROOT)/../libiconv distclean;	\
-	fi
-
-realclean_LIBWV_:
-	@if [ -d $(ABI_ROOT)/../wv ]; then			\
-		$(MAKE) -C $(ABI_ROOT)/../wv realclean;	\
-	fi
-
-clean_POPT_:
-	@if [ -d $(ABI_ROOT)/../popt ]; then              \
-		$(MAKE) -C $(ABI_ROOT)/../popt clean;     \
-	fi

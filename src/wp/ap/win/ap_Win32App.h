@@ -73,12 +73,8 @@ public:
 	
 	bool handleModelessDialogMessage( MSG * msg );
 		
-	bool							parseCommandLine(void);
-	
-		
 protected:
 
-	void					_printUsage();   
 	bool					_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const char * szFormat,
 													 const char * szType, bool bWide);
 
