@@ -36,9 +36,9 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ## canonical layout.
 CANON_AppDir=	$(CANONDIR)/$(ABI_APPLIBDIR)
 
-## CANON_Lang is a wildcard to match language strings like "EnUS"
-## and "FiFI" (and not "CVS").
-CANON_Lang=	[A-Z][a-z][A-Z][A-Z]
+## CANON_Lang is a wildcard to match language strings like "en-US"
+## and "no-BOK" (and not "CVS").
+CANON_Lang=	[a-z][a-z]?[A-Z][A-Z]*
 
 canonical:
 	@$(subst xxxx,$(CANON_AppDir),$(VERIFY_DIRECTORY))

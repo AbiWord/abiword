@@ -14,21 +14,22 @@
 
 <datafile name="__CANONDIR__/AbiWord/readme.txt" relpath="AbiWord" readme="true" programs_shortcut="ReadMe" />
 
-<datafile name="__CANONDIR__/AbiWord/help/EnUS/help.html" relpath="AbiWord/help/EnUS" />
-<datafile name="__CANONDIR__/AbiWord/sample/EnUS/Latin1.abw" relpath="AbiWord/sample/EnUS" />
+<datafile name="__CANONDIR__/AbiWord/help/en-US/help.html" relpath="AbiWord/help/en-US" />
+<datafile name="__CANONDIR__/AbiWord/sample/en-US/Latin1.abw" relpath="AbiWord/sample/en-US" />
 
-<datafile name="__CANONDIR__/AbiWord/strings/CaES.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/DaDK.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/DeDE.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/DuNL.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/EsES.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/FiFI.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/FrFR.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/IdID.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/ItIT.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/NoNO.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/PtPT.strings" relpath="AbiWord/strings" />
-<datafile name="__CANONDIR__/AbiWord/strings/SvSE.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/ca-ES.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/da-DK.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/de-DE.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/du-NL.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/es-ES.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/fi-FI.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/fr-FR.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/id-ID.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/it-IT.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/no-BOK.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/pt-BR.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/pt-PT.strings" relpath="AbiWord/strings" />
+<datafile name="__CANONDIR__/AbiWord/strings/sv-SE.strings" relpath="AbiWord/strings" />
 
 <datafile name="__CANONDIR__/AbiWord/system.profile" relpath="AbiWord" />
 
