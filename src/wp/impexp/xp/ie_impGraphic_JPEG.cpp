@@ -51,7 +51,7 @@ static void _write_flush(png_structp png_ptr) { } // Empty Fuction.
 bool IE_ImpGraphicJPEG_Sniffer::recognizeSuffix(const char * szSuffix)
 {
     // TODO add a more complete list of suffixes
-	return ((UT_stricmp(szSuffix,".jpg") == 0) || (UT_stricmp(szSuffix,".jpeg")));
+	return ((UT_stricmp(szSuffix,".jpg") == 0) || (UT_stricmp(szSuffix,".jpeg") == 0));
 }
 
 bool IE_ImpGraphicJPEG_Sniffer::recognizeContents(const char * szBuf, UT_uint32 iNumbytes)
