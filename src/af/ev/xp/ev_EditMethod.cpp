@@ -30,6 +30,8 @@
 
 EV_EditMethodCallData::EV_EditMethodCallData(UT_sint32 iMultiplier)
 {
+	m_xPos = 0;
+	m_yPos = 0;
 	m_iMultiplier = iMultiplier;
 	m_pData = 0;
 	m_dataLength = 0;
@@ -38,6 +40,8 @@ EV_EditMethodCallData::EV_EditMethodCallData(UT_sint32 iMultiplier)
 
 EV_EditMethodCallData::EV_EditMethodCallData(UT_sint32 iMultiplier, UT_UCSChar * pData, UT_uint32 dataLength)
 {
+	m_xPos = 0;
+	m_yPos = 0;
 	m_iMultiplier = iMultiplier;
 	m_pData = pData;
 	m_dataLength = dataLength;
@@ -46,6 +50,8 @@ EV_EditMethodCallData::EV_EditMethodCallData(UT_sint32 iMultiplier, UT_UCSChar *
 
 EV_EditMethodCallData::EV_EditMethodCallData(UT_sint32 iMultiplier, const char * pChar, UT_uint32 dataLength)
 {
+	m_xPos = 0;
+	m_yPos = 0;
 	m_pData = new UT_UCSChar[dataLength];
 	if (m_pData)
 	{
