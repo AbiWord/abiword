@@ -5796,7 +5796,7 @@ void fl_BlockLayout::remItemFromList(void)
 		pView->_fixInsertionPointCoords();
 		//	pView->_generalUpdate();
 		pView->_drawInsertionPoint();
-		DELETEP(props);
+		FREEP(props);
 
 	}
 }
@@ -6600,8 +6600,8 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 	m_bListItem = true;
 	m_pDoc->listUpdate(getStruxDocHandle());
 	pView->_generalUpdate();
-	DELETEP(attribs);
-	DELETEP(props);
+	FREEP(attribs);
+	FREEP(props);
 }
 
 void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
@@ -6645,8 +6645,8 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 	m_bListItem = true;
 	m_pDoc->listUpdate(getStruxDocHandle());
 	pView->_generalUpdate();
-	DELETEP(attribs);
-	DELETEP(props);
+	FREEP(attribs);
+	FREEP(props);
 }
 
 void fl_BlockLayout::listUpdate(void)

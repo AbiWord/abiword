@@ -201,7 +201,12 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		// there are no blocks (paragraphs) between this section
 		// and the previous section.  this is not possible.
 		// TODO decide if this should assert or just fail...
+        //
+        // Actually this is OK if it's a hdrFtr that has not been 
+		// "realized" yet. Like an even hdrftr that has been defined
+        // but no even pages exist yet.
 		UT_DEBUGMSG(("No blocks between sections ??\n"));
+//		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
 		UT_ASSERT(0);
 		return false;
 
@@ -416,12 +421,21 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 	UT_Vector vecFragStrux;
 	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Strux Pos = %d \n",HdrFtrPos));
 //
-// Now find the first Non-strux frag.
+// Now find the first Non-strux frag within this hdrftr
 //
-	while((pfFrag->getType() == pf_Frag::PFT_Strux) && (pfFrag != getFragments().getLast()))
+	bool bStop = false;
+	while((pfFrag->getType() == pf_Frag::PFT_Strux) && (pfFrag != getFragments().getLast()) && !bStop)
 	{
-		vecFragStrux.addItem((void *) pfFrag);
-		pfFrag = pfFrag->getNext();
+		const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(pfFrag);
+		if(pfs != pfFragStruxHdrFtr && pfs->getStruxType() != PTX_Block)
+		{
+			bStop = true;
+		}
+		else
+		{
+			vecFragStrux.addItem((void *) pfFrag);
+			pfFrag = pfFrag->getNext();
+		}
 	}
 	PT_DocPosition TextStartPos = getFragPosition(pfFrag);
 	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Text Start Pos = %d \n",TextStartPos));
@@ -429,27 +443,30 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 // Now find the end of the text in the header/footer
 //
 	bool foundEnd = false;
-	while(!foundEnd)
+	if(!bStop)
 	{
-		foundEnd = pfFrag == getFragments().getLast();
-		if(!foundEnd && pfFrag->getType() == pf_Frag::PFT_Strux)
+		while(!foundEnd)
 		{
-			const pf_Frag_Strux * pfFragStrux = static_cast<const pf_Frag_Strux *>(pfFrag);
-			foundEnd = pfFragStrux->getStruxType() != PTX_Block;
+			foundEnd = pfFrag == getFragments().getLast();
+			if(!foundEnd && pfFrag->getType() == pf_Frag::PFT_Strux)
+			{
+				const pf_Frag_Strux * pfFragStrux = static_cast<const pf_Frag_Strux *>(pfFrag);
+				foundEnd = pfFragStrux->getStruxType() != PTX_Block;
+			}
+			if(!foundEnd)
+			{
+				pfFrag = pfFrag->getNext();
+			}
 		}
-		if(!foundEnd)
-		{
-			pfFrag = pfFrag->getNext();
-		}
-	}
-	PT_DocPosition TextEndPos = getFragPosition(pfFrag);
-	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Text End Pos = %d \n",TextEndPos));
+		PT_DocPosition TextEndPos = getFragPosition(pfFrag);
+		UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Text End Pos = %d \n",TextEndPos));
 //
 // OK delete the text
 //
-	if(TextEndPos > TextStartPos)
-	{
-		deleteSpan(TextStartPos,TextEndPos,NULL,true);
+		if(TextEndPos > TextStartPos)
+		{
+			deleteSpan(TextStartPos,TextEndPos,NULL,true);
+		}
 	}
 //
 // Now delete the struxes at the start.

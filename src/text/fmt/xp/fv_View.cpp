@@ -2281,6 +2281,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 #endif
 	for(i=0; i< vBlock.getItemCount(); i++)
 	{
+		UT_DEBUGMSG(("SEVIOR: Processing block %d \n",i));
 		fl_BlockLayout * pBlock =  (fl_BlockLayout *) vBlock.getNthItem(i);
 		PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 		if(pBlock->isListItem() == true)
@@ -4143,8 +4144,8 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_ensureThatInsertionPointIsOnScreen(false);
-	DELETEP(attribs);
-	DELETEP(props);
+	FREEP(attribs);
+	FREEP(props);
 }
 
 bool FV_View::cmdStopList(void)
@@ -5996,6 +5997,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, UT_UCSChar *data)
 
 	char * numberString = (char *) UT_calloc(UT_UCS_strlen(data) + 1, sizeof(char));
 	UT_ASSERT(numberString);
+	char * origNum = numberString;
 
 	UT_UCS_strcpy_to_char(numberString, data);
 	if (!isSelectionEmpty())
@@ -6231,7 +6233,7 @@ book_mark_not_found:
 		;
 	}
 
-	FREEP(numberString);
+	FREEP(origNum);
 
 	if (isSelectionEmpty())
 	{
