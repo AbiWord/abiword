@@ -27,3 +27,4 @@ echo ""
 ./abi-extract.pl -N nn-NO 
 ./abi-extract.pl -N ru-RU 
 ./abi-extract.pl -N bg-BG 
+./abi-extract.pl -N tr-TR
