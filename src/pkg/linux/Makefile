@@ -191,9 +191,9 @@ deb::
 	@install -m 644 deb/AbiWord_d.1 $(DEB_ROOT)/usr/share/man/man1/.
 	@ln -s AbiWord_d.1.gz $(DEB_ROOT)/usr/share/man/man1/AbiWord.1.gz
 	@ln -s AbiWord_d.1.gz $(DEB_ROOT)/usr/share/man/man1/abiword.1.gz
-	@cp deb/copyright $(DEB_ROOT)/usr/share/doc/abiword/.
-	@cp deb/changelog $(DEB_ROOT)/usr/share/doc/abiword/changelog.Debian
-	@cp $(OUTDIR)/AbiSuite/readme.txt $(DEB_ROOT)/usr/share/doc/abiword/README
+	@install -m 644 deb/copyright $(DEB_ROOT)/usr/share/doc/abiword/.
+	@install -m 644 deb/changelog $(DEB_ROOT)/usr/share/doc/abiword/changelog.Debian
+	@install -m 644 $(OUTDIR)/AbiSuite/readme.txt $(DEB_ROOT)/usr/share/doc/abiword/README
 	@cp -R $(OUTDIR)/AbiSuite/AbiWord/sample/* $(DEB_ROOT)/usr/share/doc/abiword/examples/.
 	@gzip -9 $(DEB_ROOT)/usr/share/doc/abiword/README
 	@gzip -9 $(DEB_ROOT)/usr/share/doc/abiword/changelog.Debian
@@ -205,7 +205,7 @@ deb::
 	@cp -R $(OUTDIR)/AbiSuite/AbiWord/help/* $(DEB_ROOT)/usr/share/abisuite/AbiWord/help/.
 	@ln -s ../../../lib/ispell/default.hash $(DEB_ROOT)/usr/share/abisuite/dictionary/american.hash
 #other debian stuff
-	@cp deb/menu $(DEB_ROOT)/usr/lib/menu/abiword
+	@install -m 644 deb/menu $(DEB_ROOT)/usr/lib/menu/abiword
 	@cp deb/control $(DEBIAN_ROOT)/debian/.
 	@cp deb/postinst $(DEB_ROOT)/DEBIAN/.
 	@cp deb/postrm $(DEB_ROOT)/DEBIAN/.
