@@ -175,7 +175,9 @@ public:
 	/* for use with the prefs listener top_ruler_prefs_listener */
 	UT_Dimension	getDimension() const { return m_dim; }
 	void			setDimension( UT_Dimension newdim );
-	
+	UT_sint32 m_iMinCellPos;
+	UT_sint32 m_iMaxCellPos;
+
 protected:
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
