@@ -363,14 +363,14 @@ bool pt_PieceTable::removeStyle (const XML_Char * szName)
 
 bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
-	UT_ASSERT(szName && *szName);
+	//UT_ASSERT(szName && *szName);
 
 	const void * pHashEntry = m_hashStyles.pick (szName);
 	if (!pHashEntry)
 		return false;
 
 	PD_Style * pStyle = (PD_Style *) pHashEntry;
-	UT_ASSERT(pStyle);
+	//UT_ASSERT(pStyle);
 
 	if (ppStyle)
 	{
