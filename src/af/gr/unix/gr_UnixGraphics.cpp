@@ -758,17 +758,29 @@ static GdkCapStyle mapCapStyle ( GR_Graphics::CapStyle in )
     }
 }
 
-static GdkLineStyle mapLineStyle ( GdkGC* pGC, GR_Graphics::LineStyle in )
+static GdkLineStyle mapLineStyle ( GdkGC				  * pGC, 
+								   GR_Graphics::LineStyle 	in, 
+								   gint 					iWidth )
 {
+	iWidth = iWidth == 0 ? 1 : iWidth;
 	switch ( in )
     {
 		case GR_Graphics::LINE_ON_OFF_DASH :
+			{
+				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
+				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
+			}
 			return GDK_LINE_ON_OFF_DASH ;
 		case GR_Graphics::LINE_DOUBLE_DASH :
+			{
+				gint8 dash_list[2] = { 4*iWidth, 4*iWidth };
+				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
+			}
 			return GDK_LINE_DOUBLE_DASH ;
 		case GR_Graphics::LINE_DOTTED:
 			{
-				gint8 dash_list[2] = { 1, 2 }; // MARCM: I chose a pattern of 1 pixel on, 2 pixels off for dotted lines
+				/* strange but 1/3 ratio looks dotted */
+				gint8 dash_list[2] = { iWidth, 3*iWidth };
 				gdk_gc_set_dashes(pGC, 0, dash_list, 2);
 			}
 			return GDK_LINE_ON_OFF_DASH;
@@ -797,12 +809,13 @@ void GR_UnixGraphics::setLineProperties ( double inWidth,
 										  GR_Graphics::CapStyle inCapStyle,
 										  GR_Graphics::LineStyle inLineStyle )
 {
-	gdk_gc_set_line_attributes ( m_pGC, static_cast<gint>(tduD(inWidth)),
-								 mapLineStyle ( m_pGC, inLineStyle ),
+	gint iWidth = static_cast<gint>(tduD(inWidth));
+	gdk_gc_set_line_attributes ( m_pGC, iWidth,
+								 mapLineStyle ( m_pGC, inLineStyle, iWidth ),
 								 mapCapStyle ( inCapStyle ),
 								 mapJoinStyle ( inJoinStyle ) ) ;
-	gdk_gc_set_line_attributes ( m_pXORGC, static_cast<gint>(tduD(inWidth)),
-								 mapLineStyle ( m_pGC, inLineStyle ),
+	gdk_gc_set_line_attributes ( m_pXORGC, iWidth,
+								 mapLineStyle ( m_pXORGC, inLineStyle, iWidth ), /* this was m_pGC before */
 								 mapCapStyle ( inCapStyle ),
 								 mapJoinStyle ( inJoinStyle ) ) ;
 }
