@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001-2002 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +29,26 @@
 #include "gr_CocoaGraphics.h"
 #include "gr_CocoaImage.h"
 
+class XAP_CocoaDialog_About;
+
+@interface XAP_CocoaDlg_AboutController : NSWindowController
+{
+	XAP_CocoaDialog_About *m_xap;
+    IBOutlet NSImageView *m_imageView;
+    IBOutlet NSTextView *m_licenseText;
+    IBOutlet NSButton *m_okBtn;
+    IBOutlet NSTextField *m_versionLabel;
+    IBOutlet NSTextField *m_appName;
+    IBOutlet NSButton *m_webBtn;
+}
++ (XAP_CocoaDlg_AboutController *)loadFromNib;
+- (void)windowDidLoad;
+- (void)setXAPOwner:(XAP_CocoaDialog_About *)owner;
+
+- (IBAction)okBtnAction:(id)sender;
+- (IBAction)webBtnAction:(id)sender;
+@end
+
 /*****************************************************************/
 
 class XAP_CocoaDialog_About: public XAP_Dialog_About
@@ -40,30 +60,26 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	virtual void			runModal(XAP_Frame * pFrame);
+	XAP_CocoaFrame * _getFrame () { return m_pFrame; };
 
 	// callbacks can fire these events
 
 	virtual void			event_OK(void);
 	virtual void			event_URL(void);
-	virtual void			event_WindowDelete(void);
-	virtual void			event_DrawingAreaExpose(void);
-	
- protected:
 
-	NSWindow *           _constructWindow(void);
-
-	void		      _populateWindowData(void);
-	void		      _preparePicture(void);
+private:
 #if 0	
 	GtkWidget * m_windowMain;
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonURL;
 	GtkWidget * m_drawingareaGraphic;
-#endif
 	GR_CocoaGraphics * m_gc;
 
 	GR_CocoaImage * m_pGrImageSidebar;
+#endif
 	XAP_CocoaFrame * m_pFrame;
+	XAP_CocoaDlg_AboutController * m_dlg;
 };
+
 
 #endif /* XAP_COCOADIALOG_ABOUT_H */
