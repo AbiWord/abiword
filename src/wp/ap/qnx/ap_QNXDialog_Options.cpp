@@ -685,6 +685,13 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
 	m_wCheckWhiteTransparent = PtCreateWidget(PtToggleButton, vmiscgroup, n, args);
 	PtAddCallback(m_wCheckWhiteTransparent, Pt_CB_ACTIVATE, s_allowTransparentColor, this);
 
+	/** Colour Selector Options **/	
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, 
+		TR(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ShowSplash)), 0);
+	PtWidget_t *check_splash = PtCreateWidget (PtToggleButton, vmiscgroup, n, args);
+
+
 #ifdef BIDI_ENABLED
 /*
 	n = 0;
@@ -774,6 +781,8 @@ PtWidget_t* AP_QNXDialog_Options::_constructWindow ()
     m_checkbuttonViewHiddenText		= checkbuttonViewHidden;
     m_checkbuttonViewUnprintable	= checkbuttonViewUnprintable;
 
+	m_checkbuttonShowSplash = check_splash;
+
     m_buttonSave					= buttonSave;
     m_buttonDefaults				= buttonDefaults;
     m_buttonApply					= buttonApply;
@@ -843,6 +852,8 @@ PtWidget_t *AP_QNXDialog_Options::_lookupWidget ( tControl id )
 	case id_LIST_DEFAULT_PAGE_SIZE:
 		return m_listDefaultPageSize;
 */
+	case id_SHOWSPLASH:
+		return m_checkbuttonShowSplash;
 
 	case id_CHECK_AUTO_SAVE_FILE:
 		return m_checkbuttonAutoSaveFile;
@@ -1000,6 +1011,7 @@ DEFINE_GET_SET_BOOL(ViewShowStatusBar);
 
 /* File save options related stuff */
 DEFINE_GET_SET_BOOL(AutoSaveFile);
+DEFINE_GET_SET_BOOL(ShowSplash);
 
 void AP_QNXDialog_Options::_gatherAutoSaveFileExt(UT_String &stRetVal)
 {
