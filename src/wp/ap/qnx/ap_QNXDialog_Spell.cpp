@@ -457,11 +457,11 @@ void AP_QNXDialog_Spell::_showMisspelledWord(void)
       	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, NULL, 0);
 		PtSetResources(m_entryChange, n, args);
 
-      	m_iSelectedRow = -1;
 	} else {
       	// select first on the list; signal handler should update our entry box
 		PtListSelectPos(m_clistSuggestions, 1);
 	}
+	m_iSelectedRow = -1;
 }
 
 void AP_QNXDialog_Spell::_populateWindowData(void)
