@@ -69,7 +69,11 @@ protected:
 
 	IEStatus			m_iestatus;
 	ParseState			m_parseState;
-
+	XML_Char			m_charDataSeen[4];
+	UT_uint32			m_lenCharDataSeen;
+	UT_uint32			m_lenCharDataExpected;
+	UT_Bool				m_bSeenCR;
+	
 	UT_Vector			m_vecInlineFmt;
 	UT_Stack			m_stackFmtStartIndex;
 

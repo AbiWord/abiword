@@ -247,7 +247,7 @@ void ie_Exp_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	// TODO for now, just squish it into ascii.
 	
 #define MY_BUFFER_SIZE		1024
-#define MY_HIGHWATER_MARK	6
+#define MY_HIGHWATER_MARK	20
 	char buf[MY_BUFFER_SIZE];
 	char * pBuf;
 	const UT_UCSChar * pData;
@@ -298,7 +298,21 @@ void ie_Exp_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			break;
 			
 		default:
-			*pBuf++ = (UT_Byte)*pData++;
+			if (*pData > 0x007f)
+			{
+				// convert non us-ascii into numeric entities.
+				// we could convert them into UTF-8 multi-byte
+				// sequences, but i prefer these.
+				char localBuf[20];
+				char * plocal = localBuf;
+				sprintf(localBuf,"&#x%x;",*pData++);
+				while (*plocal)
+					*pBuf++ = (UT_Byte)*plocal++;
+			}
+			else
+			{
+				*pBuf++ = (UT_Byte)*pData++;
+			}
 			break;
 		}
 	}

@@ -28,8 +28,38 @@
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
 
+#define NrElements(a)		(sizeof(a) / sizeof(a[0]))
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 #define DELETEP(p)	do { if (p) delete(p); (p)=NULL; } while (0)
+
+///////////////////////////////////////////////////////////////////
+// TODO Move this UT_ function to src/util/xp
+///////////////////////////////////////////////////////////////////
+
+UT_UCSChar UT_decodeUTF8(const XML_Char * p, UT_uint32 len)
+{
+	UT_UCSChar ucs, ucs1, ucs2, ucs3;
+	
+	switch (len)
+	{
+	case 2:
+		ucs1 = (UT_UCSChar)(p[0] & 0x1f);
+		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
+		ucs  = (ucs1 << 6) | ucs2;
+		return ucs;
+		
+	case 3:
+		ucs1 = (UT_UCSChar)(p[0] & 0x0f);
+		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
+		ucs3 = (UT_UCSChar)(p[2] & 0x3f);
+		ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
+		return ucs;
+		
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return 0;
+	}
+}
 
 /*****************************************************************
 ******************************************************************
@@ -122,6 +152,9 @@ IE_Imp_AbiWord_1::IE_Imp_AbiWord_1(PD_Document * pDocument)
 {
 	m_iestatus = IES_OK;
 	m_parseState = _PS_Init;
+	m_lenCharDataSeen = 0;
+	m_lenCharDataExpected = 0;
+	m_bSeenCR = UT_FALSE;
 
 	m_currentDataItemName = NULL;
 }
@@ -328,12 +361,14 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		return;
 
 	case TT_BLOCK:
+		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Sec;
 		X_CheckDocument(_getInlineDepth()==0);
 		return;
 		
 	case TT_INLINE:
+		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
@@ -341,14 +376,17 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		return;
 
 	case TT_IMAGE:						// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		return;
 
 	case TT_FIELD:						// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		return;
 
 	case TT_BREAK:						// not a container, so we don't pop stack
+		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		return;
 
@@ -374,6 +412,10 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 
 void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 {
+	// TODO XML_Char is defined in the xml parser
+	// TODO as a 'char' not as a 'unsigned char'.
+	// TODO does this cause any problems ??
+	
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 
 	switch (m_parseState)
@@ -386,39 +428,92 @@ void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 		
 	case _PS_Block:
 		{
-			// TODO fix this to use proper methods to convert XML_Char to UT_UCSChar
-
+			UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
 			UT_ASSERT(sizeof(XML_Char) != sizeof(UT_UCSChar));
 
-			UT_UCSChar * xx = new UT_UCSChar[len];
-			int iConverted = 0;
+			// parse UTF-8 text and convert to Unicode.
+			// also take care of some white-space issues:
+			//    [] convert CRLF to SP.
+			//    [] convert CR to SP.
+			//    [] convert LF to SP.
 
-			// This code is intended to convert a single EOL to a single space.
+			UT_Byte * ss = (UT_Byte *)s;
+			UT_UCSChar buf[1024];
+			int bufLen = 0;
 
 			for (int k=0; k<len; k++)
 			{
-				if (13 == s[k])			// CR
+				if (bufLen == NrElements(buf))		// pump it out in chunks
 				{
-					xx[iConverted++] = 32;	// space
-					if (10 == s[k+1])
+					X_CheckError(m_pDocument->appendSpan(buf,bufLen));
+					bufLen = 0;
+				}
+
+				if ((ss[k] < 0x80) && (m_lenCharDataSeen > 0))
+				{
+					// is it us-ascii and we are in a UTF-8
+					// multi-byte sequence.  puke.
+					X_CheckError(0);
+				}
+
+				if (ss[k] == 0x0d)					// CR
+				{
+					buf[bufLen++] = 0x20;			// substitute a SPACE
+					m_bSeenCR = UT_TRUE;
+					continue;
+				}
+
+				if (ss[k] == 0x0a)					// LF
+				{
+					if (!m_bSeenCR)					// if not immediately after a CR,
+						buf[bufLen++] = 0x20;		// substitute a SPACE.  otherwise, eat.
+					m_bSeenCR = UT_FALSE;
+					continue;
+				}
+				
+				m_bSeenCR = UT_FALSE;
+
+				if (ss[k] < 0x80)					// plain us-ascii part of latin-1
+				{
+					buf[bufLen++] = ss[k];			// copy as is.
+				}
+				else if ((ss[k] & 0xf0) == 0xf0)	// lead byte in 4-byte surrogate pair
+				{
+					// surrogate pairs are defined in section 3.7 of the
+					// unicode standard version 2.0 as an extension
+					// mechanism for rare characters in future extensions
+					// of the unicode standard.
+					UT_ASSERT(m_lenCharDataSeen == 0);
+					UT_ASSERT(UT_NOT_IMPLEMENTED);
+				}
+				else if ((ss[k] & 0xe0) == 0xe0)		// lead byte in 3-byte sequence
+				{
+					UT_ASSERT(m_lenCharDataSeen == 0);
+					m_lenCharDataExpected = 3;
+					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
+				}
+				else if ((ss[k] & 0xc0) == 0xc0)		// lead byte in 2-byte sequence
+				{
+					UT_ASSERT(m_lenCharDataSeen == 0);
+					m_lenCharDataExpected = 2;
+					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
+				}
+				else if ((ss[k] & 0x80) == 0x80)		// trailing byte in multi-byte sequence
+				{
+					UT_ASSERT(m_lenCharDataSeen > 0);
+					m_charDataSeen[m_lenCharDataSeen++] = ss[k];
+					if (m_lenCharDataSeen == m_lenCharDataExpected)
 					{
-						k++;			// skip the LF
+						buf[bufLen++] = UT_decodeUTF8(m_charDataSeen,m_lenCharDataSeen);
+						m_lenCharDataSeen = 0;
 					}
 				}
-				else if (10 == s[k])
-				{
-					xx[iConverted++] = 32;	// space
-				}
-				else
-				{
-					xx[iConverted++] = s[k];
-				}
 			}
-			
-			UT_Bool bResult = m_pDocument->appendSpan(xx,iConverted);
-			delete xx;
-			X_CheckError(bResult);
 
+			// flush out the last piece of a buffer
+
+			if (bufLen > 0)
+				X_CheckError(m_pDocument->appendSpan(buf,bufLen));
 			return;
 		}
 
@@ -448,6 +543,7 @@ void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 			}
 
 			return;
+#undef MyIsWhite
 		}
 	}
 }
