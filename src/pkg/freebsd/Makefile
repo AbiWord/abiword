@@ -55,7 +55,7 @@ endif
 # Native FreeBSD package
 pkg: install
 	@echo "Producing native FreeBSD PKG from PLIST in $(DIST)..."
-	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin OUTFILE=$(DIST)/PLIST \
+	@TARGET=$(prefix)/share/AbiSuite-2.0 BINDIR=$(prefix)/bin OUTFILE=$(DIST)/PLIST \
 		$(ABI_ROOT)/src/pkg/freebsd/scripts/mkplist.sh
 	@echo "Producing package to" \
 		"$(DIST)/AbiSuite-$(ABI_BUILD_VERSION).tgz"
@@ -63,7 +63,7 @@ pkg: install
 		-f $(DIST)/PLIST $(DIST)/AbiSuite-$(ABI_BUILD_VERSION).tgz
 	@echo "Cleaning up..."
 	@rm -f $(DIST)/PLIST
-	@rm -rf $(prefix)/AbiSuite
+	@rm -rf $(prefix)/share/AbiSuite-2.0
 	@rm -f $(prefix)/bin/AbiWord
 	@rm -f $(prefix)/bin/abiword
 
@@ -72,7 +72,7 @@ include $(ABI_ROOT)/src/pkg/common/unix/tgz.mk
 
 # The plain "install" common to all Unix targets
 install:
-	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
+	@TARGET=$(prefix)/share/AbiSuite-2.0 BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh
 

@@ -20,8 +20,8 @@ include $(top_srcdir)/includes.mk
 
 SRCDIR= $(top_builddir)/src
 
-indirectdir=$(bindir)
-indirect_PROGRAMS = AbiWord_d 
+abibindir = $(pkgdatadir)/AbiWord/bin
+abibin_PROGRAMS = AbiWord_d 
 
 INCLUDES=\
 	 -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \

@@ -55,7 +55,7 @@ fi
 # Make sure the libexec dir exists
 if [ -z "$LIBEXECDIR" ]
 then
-    LIBEXECDIR=${TARGET}/bin
+    LIBEXECDIR=${TARGET}/AbiWord/bin
 fi
 mkdir -p $LIBEXECDIR
 
@@ -105,8 +105,11 @@ fi
 
 cd $SCRIPTDIR
 
-echo "Making wrapper script at [$TARGET/bin/AbiWord]..."
-./makewrapper.sh AbiWord $TARGET $LIBEXECDIR
+mkdir -p $BINDIR
+
+echo "Making wrapper script at [$BINDIR/AbiWord-2.0]..."
+./makewrapper.sh $BINDIR/AbiWord-2.0 AbiWord $TARGET $LIBEXECDIR
+
 # TODO : make use of these
 # ./makewrapper.sh AbiCalc $TARGET $LIBEXECDIR
 # ./makewrapper.sh AbiFile $TARGET $LIBEXECDIR
@@ -118,12 +121,10 @@ echo "Making wrapper script at [$TARGET/bin/AbiWord]..."
 
 echo "Creating symbolic links at [$BINDIR/AbiWord] and [$BINDIR/abiword]..."
 
-mkdir -p $BINDIR
-
 # NOTE : Solaris ln doesn't seem to honor the -f (force flag), so
 # NOTE : we have to remove them first.
-rm -f $BINDIR/AbiWord ; ln -s $LIBEXECDIR/AbiWord $BINDIR/AbiWord
-rm -f $BINDIR/abiword ; ln -s $LIBEXECDIR/AbiWord $BINDIR/abiword
+
+(cd $BINDIR && rm -f abiword && ln -s AbiWord-2.0 abiword)
 
 # TODO : make use of these, etc.
 # rm -f $BINDIR/AbiCalc ; ln -s $LIBEXECDIR/AbiCalc $LINK_DIR/AbiCalc
@@ -135,8 +136,8 @@ rm -f $BINDIR/abiword ; ln -s $LIBEXECDIR/AbiWord $BINDIR/abiword
 ########################################################################
 
 echo "Installing ttfadmin script [$TARGET/bin]"
-cp -f $SCRIPTDIR/../../../../tools/scripts/unix/ttfadmin.sh $TARGET/bin/ttfadmin.sh
-chmod 755 $TARGET/bin/ttfadmin.sh
+cp -f $SCRIPTDIR/../../../../tools/scripts/unix/ttfadmin.sh $LIBEXECDIR/ttfadmin.sh
+chmod 755 $LIBEXECDIR/ttfadmin.sh
 
 
 ########################################################################

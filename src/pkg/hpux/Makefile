@@ -39,7 +39,7 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 
 # The plain "install" common to all Unix targets
 install:
-	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
+	@TARGET=$(prefix)/share/AbiSuite-2.0 BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh
 
@@ -71,7 +71,7 @@ depot: install
 	@echo "Creating package at $(DIST)/abiword-$(ABI_BUILD_VERSION).depot"
 	@mkdir -p $(DIST)
 	@( cd $(ABI_ROOT)/src/pkg/hpux/scripts/ ;                         \
-		TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin            \
+		TARGET=$(prefix)/share/AbiSuite-2.0 BINDIR=$(prefix)/bin            \
 			./hpux.abiword.mkdepot.sh                         \
 				$(ABI_BUILD_VERSION)                      \
 				$(DIST)/abiword-$(ABI_BUILD_VERSION).depot )

@@ -11,23 +11,31 @@
 #     makewrapper.sh AbiWord /usr/local/AbiSuite /usr/local/libexec/AbiSuite /tmp/package_root
 #     makewrapper.sh AbiCalc /usr/local/AbiSuite /usr/local/libexec/AbiSuite
 
-PROGRAM_NAME=$1
-INSTALL_BASE=$2
-LIBEXECDIR=$3
-DESTDIR=$4
+SCRIPT_PATH=$1
+PROGRAM_NAME=$2
+INSTALL_BASE=$3
+LIBEXECDIR=$4
+DESTDIR=$5
 
 # Did they supply any arguments?
+if [ -z "$SCRIPT_PATH" ]
+then
+    echo ""
+    echo "Error: first argument (script path/name) not specified."
+    echo ""
+    exit 1
+fi
 if [ -z "$PROGRAM_NAME" ]
 then
     echo ""
-    echo "Error: first argument (base program name) not specified."
+    echo "Error: second argument (base program name) not specified."
     echo ""
     exit 1
 fi
 if [ -z "$INSTALL_BASE" ]
 then
     echo ""
-    echo "Error: second argument (installation base directory) not specified."
+    echo "Error: third argument (installation base directory) not specified."
     echo ""
     exit 1
 fi
@@ -39,7 +47,7 @@ fi
 # Make directory path up to program we're creating
 mkdir -p ${DESTDIR}${LIBEXECDIR}
 
-cat >${DESTDIR}${LIBEXECDIR}/${PROGRAM_NAME} <<EOF
+cat >${DESTDIR}$SCRIPT_PATH <<EOF
 #!/bin/sh
 #
 # AbiSuite program wrapper script, dynamically generated
@@ -53,14 +61,14 @@ EOF
 # See bug 1739 <http://bugzilla.abisource.com/show_bug.cgi?id=1739>
 if [ `uname` = "SunOS" ]
 then
-	cat >>${DESTDIR}${LIBEXECDIR}/${PROGRAM_NAME} <<EOF
+	cat >>${DESTDIR}$SCRIPT_PATH <<EOF
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 export LD_LIBRARY_PATH
 
 EOF
 fi
 
-cat >>${DESTDIR}${LIBEXECDIR}/${PROGRAM_NAME} <<EOF
+cat >>${DESTDIR}$SCRIPT_PATH <<EOF
 # Change this if you move the AbiSuite tree.
 ABISUITE_HOME=$INSTALL_BASE
 export ABISUITE_HOME
@@ -135,6 +143,5 @@ then
 fi
 EOF
 
-chmod 755 ${DESTDIR}${LIBEXECDIR}/$PROGRAM_NAME
-
+chmod 755 ${DESTDIR}$SCRIPT_PATH
 

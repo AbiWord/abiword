@@ -35,7 +35,7 @@ esc_prefix:=$(shell echo $(prefix) | sed "s/\//\\\\\\\\\\//g")
 
 # The plain "install" common to all Unix targets
 install:
-	@TARGET=$(prefix)/AbiSuite BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
+	@TARGET=$(prefix)/share/AbiSuite-2.0 BINDIR=$(prefix)/bin SRCDIR=$(OUTDIR) \
 		SCRIPTDIR=$(ABI_ROOT)/src/pkg/common/unix/scripts \
 		$(ABI_ROOT)/src/pkg/common/unix/scripts/install.sh 
 
@@ -53,7 +53,7 @@ pkg: install
 	@sed "s/@DISABLE_JPEG@/#/g" pkg/checkinstall > $(DIST)/checkinstall
 	@echo "i pkginfo" > $(DIST)/Prototype
 	@echo "i checkinstall=./checkinstall" >> $(DIST)/Prototype
-	@(cd $(prefix); find AbiSuite $(prefix)/bin/AbiWord $(prefix)/bin/abiword -print \
+	@(cd $(prefix); find share/AbiSuite-2.0 $(prefix)/bin/AbiWord $(prefix)/bin/abiword -print \
 		| pkgproto >> $(DIST)/Prototype)
 	@(cd $(DIST); pkgmk -o -b $(prefix) -d $(DIST) -f Prototype)
 	@rm -f $(DIST)/Prototype
@@ -65,7 +65,7 @@ pkg: install
 	@gzip -9 $(DIST)/ABIword-$(ABI_BUILD_VERSION)-$(OS_ARCH)-local.pkg
 	@rm -rf $(DIST)/ABIword
 	@echo "Removing installation..."
-	@rm -rf $(prefix)/AbiSuite
+	@rm -rf $(prefix)/share/AbiSuite-2.0
 	@rm -f $(prefix)/bin/AbiWord
 	@rm -f $(prefix)/bin/abiword
 

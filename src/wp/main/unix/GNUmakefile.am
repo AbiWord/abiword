@@ -36,8 +36,8 @@ else
 ABIBINSTATIC = 
 endif
 
-indirectdir=$(bindir)
-indirect_PROGRAMS = $(ABIBINSHARED) $(ABIBINSTATIC)
+abibindir = $(pkgdatadir)/AbiWord/bin
+abibin_PROGRAMS = $(ABIBINSHARED) $(ABIBINSTATIC)
 
 INCLUDES=\
 	 -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
@@ -64,8 +64,8 @@ install-exec-local:	install-wrapper
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
 	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \
 	else \
-	  ln -sf $(DESTDIR)/$(bindir)/AbiWord $(DESTDIR)/$(bindir)/abiword; \
+	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.0 abiword); \
 	fi
 
 install-wrapper:	
-	@$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh AbiWord $(pkgdatadir) $(bindir) $(DESTDIR)
+	@$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh $(bindir)/AbiWord-2.0 AbiWord $(pkgdatadir) $(abibindir) $(DESTDIR)

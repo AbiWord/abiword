@@ -68,7 +68,7 @@ fi
 # Whether to use Darwin's @executable_path dynamic linker feature
 # 
 EPATH_WV_BUILD_FLAGS=""
-AC_ARG_WITH(epath,[  --with-epath         hardcode relative install path in libwv (MacOS X only)],[
+AC_ARG_WITH(epath,[  --without-epath      hardcode relative install path in libwv (MacOS X only)],[
 	if test "x$withval" = "xno"; then
 		abi_epath=no
 	elif test "$OS_NAME" = "Darwin"; then
@@ -77,7 +77,12 @@ AC_ARG_WITH(epath,[  --with-epath         hardcode relative install path in libw
 	else
 		AC_MSG_ERROR([* * * --with-epath is a MacOS X option * * *])
 	fi
-],[	abi_epath=no
+],[	if test "$OS_NAME" = "Darwin"; then
+		abi_epath=yes
+		EPATH_WV_BUILD_FLAGS="EPATH_DYLIB=1"
+	else
+		abi_epath=no
+	fi
 ])
 AM_CONDITIONAL(ABI_EPATH_DYLIB,[test $abi_epath = yes])
 AC_SUBST(EPATH_WV_BUILD_FLAGS)
