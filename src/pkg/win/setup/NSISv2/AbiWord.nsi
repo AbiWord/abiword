@@ -17,7 +17,9 @@
 !undef OPT_CRTL_URL
 !endif
 !ifdef OPT_CRTL_URL & OPT_CRTL_LOCAL
-!error "OPT_CRTL_URL and OPT_CRTL_LOCAL cannot both be defined"
+!warning "OPT_CRTL_URL and OPT_CRTL_LOCAL should not both be defined"
+!warning "disabling OPT_CRTL_URL and using OPT_CRTL_LOCAL"
+!undef OPT_CRTL_URL
 !endif
 
 
@@ -643,6 +645,7 @@ Function .onInit
 !endif ;NODOWNLOADS
 
 ; Disable Windows 95 specific sections
+!ifdef OPT_CRTL_WIN95ONLY
 Call GetWindowsVersion
 Pop $R0
 StrCmp $R0 '95' skipW95dl 0	; disable for all but Windows 95
@@ -653,6 +656,7 @@ StrCmp $R0 '95' skipW95dl 0	; disable for all but Windows 95
      ${SectionDisable} ${section_crtlib_local}
   !endif
 skipW95dl:
+!endif ;OPT_CRTL_WIN95ONLY
 
 FunctionEnd
 

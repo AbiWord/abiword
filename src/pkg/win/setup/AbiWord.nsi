@@ -239,13 +239,13 @@ Section "Uninstall"
 	DeleteRegKey HKCR ".awt"
 	DeleteRegKey HKCR ".zabw"
 
-	ReadRegStr $0 HKCR ".doc" "(Default)"
+	ReadRegStr $0 HKCR ".doc" ""
 	StrCmp $0 "AbiSuite.AbiWord" Del_Word_Assoc Skip_Del_Word
 	Del_Word_Assoc:
 	DeleteRegKey HKCR ".doc"
 	Skip_Del_Word:
 	
-	ReadRegStr $0 HKCR ".rtf" "(Default)"
+	ReadRegStr $0 HKCR ".rtf" ""
 	StrCmp $0 "AbiSuite.AbiWord" Del_RTF_Assoc Skip_Del_RTF
 	Del_RTF_Assoc:
 	DeleteRegKey HKCR ".rtf"
