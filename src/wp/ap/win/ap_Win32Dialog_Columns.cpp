@@ -182,3 +182,7 @@ BOOL AP_Win32Dialog_Columns::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
+BOOL AP_Win32Dialog_Columns::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	return 0;
+}

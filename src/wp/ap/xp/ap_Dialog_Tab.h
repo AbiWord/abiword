@@ -65,13 +65,10 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 
  protected:
 
-		// to enable/disable a control
+	// to enable/disable a control
 	virtual void _controlEnable( tControl id, UT_Bool value )=0;
 
-		// to be called when a control is toggled/changed
-	virtual void _enableDisableLogic( tControl id );
-
-		// disable controls appropriately
+	// disable controls appropriately
 	void _initEnableControls();
 
 	// initial population / final storage of window data
@@ -81,15 +78,20 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	// grab tab from the current text/align/leader controls
 	void buildTab( char *buffer, UT_uint32 bufferlen );
 
+	char *_getTabDimensionString(UT_uint32 tabIndex);
+	char *_getTabString(fl_TabStop *pTabInfo);
+	void _deleteTabFromTabString(fl_TabStop *pTabInfo);
+	void _doSpin( tControl id, UT_sint32 amount);
+
 	// the actual access functions
 #define SET_GATHER(a,u) virtual u _gather##a(void) = 0; \
 					 	virtual void    _set##a( u ) = 0
 	SET_GATHER			(Alignment,			eTabType);
 	SET_GATHER			(Leader,			eTabLeader);
-	SET_GATHER			(DefaultTabStop,	UT_sint32);	// at this point, in current default units
+	SET_GATHER			(DefaultTabStop,	const XML_Char*);
 
 	// to populate the whole list
-	SET_GATHER			(TabList,			const UT_Vector &);
+	virtual void _setTabList(UT_uint32 count) = 0;
 
 	// get/set the selected tab
 	// the list of n tabs are index 0..(n-1)
@@ -106,21 +108,25 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
  protected:
 	tAnswer				m_answer;
 	XAP_Frame *			m_pFrame;
+	UT_Dimension		m_dim;
 
-	const char *			m_pszTabStops;	// from rulerInfo
-	UT_Vector m_tabInfo;		// list of fl_TabStop *
-
-	fl_TabStop *m_CurrentTab;		// the tab item selected
+	char *		m_pszTabStops;	// from rulerInfo
+	UT_Vector	m_tabInfo;		// list of fl_TabStop *
 
 	// AP level handlers
 	void _event_TabChange(void);		// when the edit box changes
-	void _event_TabSelected( fl_TabStop *tabSelect);	// when a list item is selected
+	void _event_TabSelected( UT_sint32 index);	// when a list item is selected
+	void _event_AlignmentChange(void);
 
 	void _event_Set(void);				// buttons
 	void _event_Clear(void);
 	void _event_ClearAll(void);
 
 	void _event_somethingChanged();			// when anything changes - text, align, or leader
+
+
+	char buf[20];
+
 };
 
 #endif /* AP_DIALOG_PARAGRAPH_H */

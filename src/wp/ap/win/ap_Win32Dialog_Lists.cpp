@@ -121,6 +121,11 @@ BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
+BOOL AP_Win32Dialog_Lists::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	return 0;
+}
+
 void AP_Win32Dialog_Lists::destroy(void)
 {
 	_win32Dialog.destroyWindow();

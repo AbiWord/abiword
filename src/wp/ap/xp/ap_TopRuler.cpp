@@ -587,8 +587,6 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
 
 	UT_sint32 iPosition;
-	UT_uint32 iOffset;
-	eTabLeader iLeader;
 
 	if (k == tr_TABINDEX_NEW)
 	{
@@ -601,9 +599,12 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 		// look it up in the document
 		UT_ASSERT(k<pInfo->m_iTabStops);
 
+		fl_TabStop TabInfo;
 		UT_Bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
-												k, iPosition, iType, iLeader, iOffset );
+												k, &TabInfo);
 		UT_ASSERT(bRes);
+		iPosition = TabInfo.getPosition();
+		iType = TabInfo.getType();
 	}
 
 	if (pTab)
@@ -738,16 +739,13 @@ const char * AP_TopRuler::_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k
 {
 	// return pointer to static buffer -- use it quickly.
 
-	UT_sint32 iPosition;
-	UT_uint32 iOffset;
-	eTabType	iType;
-	eTabLeader  iLeader;
+	fl_TabStop TabInfo;
 
 	UT_Bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
-											k, iPosition, iType, iLeader, iOffset );
+											k, &TabInfo);
 	UT_ASSERT(bRes);
 
-	const char* pStart = &pInfo->m_pszTabStops[iOffset];
+	const char* pStart = &pInfo->m_pszTabStops[TabInfo.getOffset()];
 	const char* pEnd = pStart;
 	while (*pEnd && (*pEnd != ','))
 	{

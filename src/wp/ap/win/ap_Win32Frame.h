@@ -85,20 +85,22 @@ protected:
 
 private:
 
-	UT_Bool m_bMouseWheelTrack;
-	UT_sint32 m_startMouseWheelY, m_startScrollPosition;
+	UT_Bool						m_bMouseWheelTrack;
+	UT_sint32					m_startMouseWheelY, m_startScrollPosition;
 
-	void _startTracking(UT_sint32 x, UT_sint32 y);
-	void _endTracking(UT_sint32 x, UT_sint32 y)
-	{
-		m_bMouseWheelTrack = UT_FALSE;
-		ReleaseCapture();
-	}
-	void _track(UT_sint32 x, UT_sint32 y);
-	UT_Bool _isTracking()
-	{
-		return m_bMouseWheelTrack;
-	}
+	void						_startTracking(UT_sint32 x, UT_sint32 y);
+	void						_endTracking(UT_sint32 x, UT_sint32 y)
+								{
+									m_bMouseWheelTrack = UT_FALSE;
+									ReleaseCapture();
+								}
+	void						_track(UT_sint32 x, UT_sint32 y);
+	UT_Bool						_isTracking()
+								{
+									return m_bMouseWheelTrack;
+								}
+
+	UT_Bool						m_bMouseActivateReceived;
 };
 
 #endif /* AP_WIN32FRAME_H */

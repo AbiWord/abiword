@@ -50,6 +50,7 @@
 #	include "ap_Win32Dialog_Goto.h"
 #	include "ap_Win32Dialog_Columns.h"
 #	include "ap_Win32Dialog_Lists.h"
+#	include "ap_Win32Dialog_Tab.h"
 
 	// ... add new dialogs here ...
 
@@ -79,6 +80,7 @@
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_Win32Dialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_Win32Dialog_Columns)
 	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_Win32Dialog_Lists)
+	DeclareDialog(AP_DIALOG_ID_TAB,				AP_Win32Dialog_Tab)
 	
 	// ... also add new dialogs here ...
 

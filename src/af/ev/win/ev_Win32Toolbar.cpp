@@ -165,8 +165,17 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 					// yep, we're done 
 					SendMessage(hWnd, CB_SHOWDROPDOWN, (WPARAM) FALSE, 0);
 
-					// now that we know dropdown is gone, this should be ok
-					PostMessage(hWnd, WM_KEYDOWN, VK_RETURN, 0);
+					UT_sint32 iSelected = SendMessage(hWnd, CB_GETCURSEL, 0, 0);
+					
+					if(iSelected != -1)
+						{
+						// now that we know dropdown is gone, this should be ok
+						PostMessage(hWnd, WM_KEYDOWN, VK_RETURN, 0);
+						}
+					else
+						{
+						PostMessage(hWnd, WM_KEYDOWN, VK_ESCAPE, 0);
+						}
 					break;
 				}
 			}
@@ -218,6 +227,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboEditWndProc( HWND hWnd, UINT uMessage, W
 			SendMessage(hwndParent, uMessage, wParam, lParam);
 			break;
 		}
+
 
 		case WM_KILLFOCUS:
 		{

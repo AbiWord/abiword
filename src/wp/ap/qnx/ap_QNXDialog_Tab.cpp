@@ -401,6 +401,34 @@ void AP_QNXDialog_Tab::_setDefaultTabStop( UT_sint32 a )
 	UT_UNUSED(a);
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+UT_sint32 AP_QNXDialog_Tab::_gatherSelectTab()
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return -1;
+}
+
+void AP_QNXDialog_Tab::_setSelectTab( UT_sint32 v )
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+const char * AP_QNXDialog_Tab::_gatherTabEdit()
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return NULL;
+}
+
+void AP_QNXDialog_Tab::_setTabEdit( const char *pszStr )
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 const UT_Vector& AP_QNXDialog_Tab::_gatherTabList()
 {
 	return m_tabInfo;

@@ -55,6 +55,7 @@
 #	include "ap_UnixDialog_Field.h"
 #	include "ap_UnixDialog_Lists.h"
 #	include "ap_UnixDialog_Columns.h"
+#	include "ap_UnixDialog_Tab.h"
 
 #ifdef HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
@@ -107,6 +108,7 @@
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_UnixGnomeDialog_Field)
 	DeclareDialog(AP_DIALOG_ID_LISTS,		     AP_UnixGnomeDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixGnomeDialog_Columns)
+	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixDialog_Tab)
 
 	// ... also add new dialogs here ...
 #   else
@@ -136,6 +138,7 @@
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_UnixDialog_Field)
 	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_UnixDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_UnixDialog_Columns)
+	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixDialog_Tab)
 
 	// ... also add new dialogs here ...
 #   endif

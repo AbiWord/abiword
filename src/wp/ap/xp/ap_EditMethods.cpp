@@ -3448,7 +3448,7 @@ static UT_Bool s_doOptionsDlg(FV_View * pView)
 static UT_Bool s_doTabDlg(FV_View * pView)
 {
 
-#ifndef NDEBUG
+//#ifndef NDEBUG
 
 	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
@@ -3460,35 +3460,42 @@ static UT_Bool s_doTabDlg(FV_View * pView)
 
 	AP_Dialog_Tab * pDialog
 		= (AP_Dialog_Tab *)(pDialogFactory->requestDialog(AP_DIALOG_ID_TAB));
-	UT_ASSERT(pDialog);
-
-	// run the dialog
-	pDialog->runModal(pFrame);
-
-	// get the dialog answer
-	AP_Dialog_Tab::tAnswer answer = pDialog->getAnswer();
-
-	switch (answer)
+	
+	if(pDialog)
 	{
-	case AP_Dialog_Tab::a_OK:
-		
-		break;
-		
-	case AP_Dialog_Tab::a_CANCEL:
-		// do nothing
-		break;
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-			
-	pDialogFactory->releaseDialog(pDialog);
-	return UT_TRUE;	
-#else
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
-	s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
-	return UT_TRUE;
 
-#endif
+		// run the dialog
+		pDialog->runModal(pFrame);
+
+		// get the dialog answer
+		AP_Dialog_Tab::tAnswer answer = pDialog->getAnswer();
+
+		switch (answer)
+		{
+		case AP_Dialog_Tab::a_OK:
+			
+			break;
+			
+		case AP_Dialog_Tab::a_CANCEL:
+			// do nothing
+			break;
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+				
+		pDialogFactory->releaseDialog(pDialog);
+	}
+	else
+	{
+		s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
+	}
+	return UT_TRUE;	
+//#else
+//	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+//	s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
+//	return UT_TRUE;
+//
+//#endif
 }
 
 /*****************************************************************/

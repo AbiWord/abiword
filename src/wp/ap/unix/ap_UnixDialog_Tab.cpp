@@ -817,16 +817,10 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	UT_ASSERT(dlg); 
 	UT_ASSERT(widget && GTK_IS_LIST_ITEM(widget));
 
-	fl_TabStop *pTabInfo = (fl_TabStop *) gtk_object_get_user_data(GTK_OBJECT(widget));
-	UT_ASSERT(pTabInfo);
-	
-	//UT_DEBUGMSG(("AP_UnixDialog_Tab::s_list_select [%s]\n", pTabInfo->pszTab ));
-	
 	// get the -1, 0.. (n-1) index
 	dlg->m_iGtkListIndex = gtk_list_child_position(GTK_LIST(dlg->_lookupWidget(id_LIST_TAB)), widget);
 
-	// to make it easier, pass in the actual data and not the index
-	dlg->_event_TabSelected( pTabInfo );
+	dlg->_event_TabSelected( dlg->m_iGtkListIndex );
 }
 
 /*static*/ void AP_UnixDialog_Tab::s_list_deselect(GtkWidget * widget, gpointer data )
@@ -845,7 +839,7 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	UT_ASSERT(widget && dlg); 
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_edit_change\n"));
 
-	dlg->_event_somethingChanged();
+	dlg->_event_TabChange();
 }
 
 /*static*/ void AP_UnixDialog_Tab::s_alignment_change( GtkWidget *widget, gpointer data )
@@ -860,7 +854,7 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	dlg->m_current_alignment = (eTabType)((UT_uint32)gtk_object_get_user_data(GTK_OBJECT(widget)));
 
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_alignment_change [%c]\n", AlignmentToChar(dlg->m_current_alignment)));
-	dlg->_event_somethingChanged();
+	dlg->_event_AlignmentChange();
 }
 
 /*static*/ void AP_UnixDialog_Tab::s_leader_change( GtkWidget *widget, gpointer data )
@@ -893,21 +887,37 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 
 eTabType AP_UnixDialog_Tab::_gatherAlignment()
 {
-	// for ( UT_uint32 i = (UT_uint32)id_ALIGN_LEFT; 
-	// 	  i <= (UT_uint32)id_ALIGN_BAR;
-	// 	  i++ )
-
 	return m_current_alignment;
 }
 
 void AP_UnixDialog_Tab::_setAlignment( eTabType a )
 {
-	// NOTE - tControl id_ALIGN_LEFT .. id_ALIGN_BAR must be in the same order
-	// as the tAlignment enums.
+	tControl id = id_ALIGN_LEFT;
+	
+	
+	switch(a)
+		{
+		case FL_TAB_LEFT:
+			id = id_ALIGN_LEFT;
+			break;
 
-	// magic noted above
-	tControl id = (tControl)((UT_uint32)id_ALIGN_LEFT + (UT_uint32)a);	
-	UT_ASSERT( id >= id_ALIGN_LEFT && id <= id_ALIGN_BAR );
+		case FL_TAB_CENTER:
+			id = id_ALIGN_CENTER;
+			break;
+
+		case FL_TAB_RIGHT:
+			id = id_ALIGN_RIGHT;
+			break;
+
+		case FL_TAB_DECIMAL:
+			id = id_ALIGN_DECIMAL;
+			break;
+
+		case FL_TAB_BAR:
+			id = id_ALIGN_BAR;
+			break;
+
+		}
 
 	// time to set the alignment radiobutton widget
 	GtkWidget *w = _lookupWidget( id );
@@ -917,6 +927,8 @@ void AP_UnixDialog_Tab::_setAlignment( eTabType a )
 	m_bInSetCall = UT_TRUE;
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
 	m_bInSetCall = UT_FALSE;
+
+	m_current_alignment = a;
 
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -947,57 +959,44 @@ void AP_UnixDialog_Tab::_setLeader( eTabLeader a )
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-UT_sint32 AP_UnixDialog_Tab::_gatherDefaultTabStop()
+const XML_Char* AP_UnixDialog_Tab::_gatherDefaultTabStop()
 {
-	return 5;
+	return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_SPIN_DEFAULT_TAB_STOP ) ) );
 }
 
-void AP_UnixDialog_Tab::_setDefaultTabStop( UT_sint32 a )
+void AP_UnixDialog_Tab::_setDefaultTabStop( const XML_Char* defaultTabStop )
 {
-	UT_UNUSED(a);
+	GtkWidget *w = _lookupWidget( id_SPIN_DEFAULT_TAB_STOP );
+
+	// first, we stop the entry from sending the changed signal to our handler
+	gtk_signal_handler_block_by_data(  GTK_OBJECT(w), (gpointer) this );
+
+	// then set the text
+	gtk_entry_set_text( GTK_ENTRY(w), defaultTabStop );
+
+	// turn signals back on
+	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(w), (gpointer) this );
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-const UT_Vector& AP_UnixDialog_Tab::_gatherTabList()
-{
-	return m_tabInfo;
-}
-
-void AP_UnixDialog_Tab::_setTabList( const UT_Vector &v )
+void AP_UnixDialog_Tab::_setTabList(UT_uint32 count)
 {
 	GList *gList = NULL;
 	GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
 	UT_uint32 i;
-	fl_TabStop *pTabInfo;
 
 	// clear all the items from the list
 	gtk_list_clear_items( wList, 0, -1 );
 
-	for ( i = 0; i < v.getItemCount(); i++ )
+	for ( i = 0; i < count; i++ )
 	{
-		pTabInfo = (fl_TabStop *)v.getNthItem(i);
-
-		// this will do for the time being, but if we want 
-		//GtkWidget *li = gtk_list_item_new_with_label( pTabInfo->pszTab );
-		UT_DEBUGMSG(("%s:%d need to fix\n", __FILE__,__LINE__));
-
-		GtkWidget *li = gtk_list_item_new_with_label( 
-							UT_convertToDimensionlessString( pTabInfo->iPositionLayoutUnits,  pTabInfo->iPosition ));
-		gtk_object_set_user_data( GTK_OBJECT(li), (gpointer) pTabInfo );
+		GtkWidget *li = gtk_list_item_new_with_label( _getTabDimensionString(i));
 
 		// we want to DO stuff
 		gtk_signal_connect(GTK_OBJECT(li),
 						   "select",
 						   GTK_SIGNAL_FUNC(s_list_select),
 						   (gpointer) this);
-
-	/*
-		gtk_signal_connect(GTK_OBJECT(li),
-						   "deselect",
-						   GTK_SIGNAL_FUNC(s_list_deselect),
-						   (gpointer) this);
-	*/
-
 
 		// show this baby
 		gtk_widget_show(li);

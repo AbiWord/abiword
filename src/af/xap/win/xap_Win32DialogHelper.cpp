@@ -96,6 +96,14 @@ BOOL CALLBACK XAP_Win32DialogHelper::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		else
 			return 0;
 
+	case WM_NOTIFY:
+		pThis = (XAP_Win32DialogHelper *)GetWindowLong(hWnd,DWL_USER);
+		switch (((LPNMHDR)lParam)->code)
+		{
+			case UDN_DELTAPOS:		return pThis->m_pDialog->_onDeltaPos((NM_UPDOWN *)lParam);
+			default:				return 0;
+		}
+
 
 	default:
 		return 0;

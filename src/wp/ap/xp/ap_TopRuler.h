@@ -62,9 +62,7 @@ public:
 
 	// tab stop information
 
-	UT_Bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, 
-								UT_sint32 & iPosition, eTabType & iType, eTabLeader & iLeader, 
-								UT_uint32 & iOffset );
+	UT_Bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, fl_TabStop *pTabInfo);
 	void *					m_pVoidEnumTabStopsData;
 	UT_sint32				m_iTabStops;
 	UT_sint32				m_iDefaultTabInterval;

@@ -22,6 +22,8 @@
 #ifndef XAP_Win32DialogHelper_H
 #define XAP_Win32DialogHelper_H
 
+#include <commctrl.h>
+
 /*****************************************************************/
 
 #include "XAP_Win32Frame.h"
@@ -31,6 +33,7 @@ class XAP_Win32Dialog
 public:
 	virtual BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
 	virtual BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
+	virtual BOOL					_onDeltaPos(NM_UPDOWN * pnmud) = 0;
 };
 
 class XAP_Win32DialogHelper
@@ -80,6 +83,9 @@ public:
 						{
 							return BringWindowToTop(m_hDlg);
 						}
+
+	// Combo boxes.
+
 	void				addItemToCombo(UT_sint32 controlId, LPCSTR p_str)
 						{
 							SendDlgItemMessage(m_hDlg, controlId, CB_ADDSTRING, 0, (LPARAM)p_str);
@@ -92,6 +98,27 @@ public:
 						{
 							return SendDlgItemMessage(m_hDlg, controlId, CB_GETCURSEL, 0, 0);
 						}
+	
+	// List boxes
+
+	void				resetContent(UT_sint32 controlId)
+						{
+							SendDlgItemMessage(m_hDlg, controlId, LB_RESETCONTENT, 0, 0);
+						}
+	void				addItemToList(UT_sint32 controlId, LPCSTR p_str)
+						{
+							SendDlgItemMessage(m_hDlg, controlId, LB_ADDSTRING, 0, (LPARAM)p_str);
+						}
+	int					getListSelectedIndex(UT_sint32 controlId)
+						{
+							return SendDlgItemMessage(m_hDlg, controlId, LB_GETCURSEL, 0, 0);
+						}
+	void				selectListItem(UT_sint32 controlId, int index)
+						{
+							SendDlgItemMessage(m_hDlg, controlId, LB_SETCURSEL, index, 0);
+						}
+
+	// Controls
 	void				setControlText(UT_sint32 controlId, LPCSTR p_str)
 						{
 							SetDlgItemText(m_hDlg, controlId, p_str);
@@ -107,6 +134,10 @@ public:
 	int					isChecked(UT_sint32 controlId)
 						{
 							return IsDlgButtonChecked(m_hDlg, controlId);
+						}
+	void				getControlText(UT_sint32 controlId, LPSTR p_buffer, UT_sint32 Buffer_length)
+						{
+							GetDlgItemText(m_hDlg, controlId, p_buffer, Buffer_length);
 						}
 };
 

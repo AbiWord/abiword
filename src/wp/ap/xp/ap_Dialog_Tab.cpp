@@ -47,6 +47,7 @@ AP_Dialog_Tab::AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 
 AP_Dialog_Tab::~AP_Dialog_Tab(void)
 {
+	delete m_pszTabStops;
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
 }
 
@@ -57,12 +58,39 @@ AP_Dialog_Tab::tAnswer AP_Dialog_Tab::getAnswer(void) const
 
 void AP_Dialog_Tab::_storeWindowData(void)
 {
+	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
+
+	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+
+	const XML_Char * properties[3];
+	properties[0] = "tabstops";
+	properties[1] = m_pszTabStops;
+	properties[2] = 0;
+	UT_DEBUGMSG(("AP_Dialog_Tab: Tab Stop [%s]\n",properties[1]));
+
+	pView->setBlockFormat(properties);
+
+	properties[0] = "default-tab-interval";
+	properties[1] = _gatherDefaultTabStop();
+	properties[2] = 0;
+	UT_DEBUGMSG(("AP_Dialog_Tab: Default Tab Stop [%s]\n",properties[1]));
+
+	pView->setBlockFormat(properties);
 
 }
 
 void AP_Dialog_Tab::_populateWindowData(void)
 {
+	const XML_Char * szRulerUnits;
+	if (getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+		m_dim = UT_determineDimension(szRulerUnits);
+	else
+		m_dim = DIM_IN;
+
+	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
+
 	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+
 
 	// get the info used in the top ruler
 	AP_TopRulerInfo rulerInfo;
@@ -75,8 +103,9 @@ void AP_Dialog_Tab::_populateWindowData(void)
 				rulerInfo.m_pszTabStops 
 				));
 
-	// save the tab string location
-	m_pszTabStops = rulerInfo.m_pszTabStops;
+	// save the tab string
+	m_pszTabStops = new char[strlen(rulerInfo.m_pszTabStops) + 1];
+	strcpy(m_pszTabStops, rulerInfo.m_pszTabStops);
 
 	int iTab;
 	fl_TabStop		*pTabInfo;
@@ -89,64 +118,38 @@ void AP_Dialog_Tab::_populateWindowData(void)
 
 
 		(*rulerInfo.m_pfnEnumTabStops)( rulerInfo.m_pVoidEnumTabStopsData,
-						iTab, pTabInfo->iPosition, pTabInfo->iType, pTabInfo->iLeader, 
-						pTabInfo->iOffset );
+						iTab, pTabInfo);
 
-		// if we're NOT the last tab
-		//if ( iTab + 1 != rulerInfo.mTabStops )
-		//{
-//
-//		}
-		//	else
-		//{
-//
-		//	}
-
-
-		// parse string stuff out
-		//int i = 0;
-		//while ( rulerInfo.m_pszTabStops[pTabInfo->iOffset + i] &&  
-		//        rulerInfo.m_pszTabStops[pTabInfo->iOffset + i] != '/' &&	// remove /...
-		//        rulerInfo.m_pszTabStops[pTabInfo->iOffset + i] != ',' ) 
-		//	i++;
-
-		// allocate a copy of the buffer (NOTE - we don't use all the space)
-		//pTabInfo->pszTab = new char[i+1];	
-		//memcpy( pTabInfo->pszTab, &rulerInfo.m_pszTabStops[pTabInfo->iOffset], i );
-		//pTabInfo->pszTab[i] = '\0';
-
-		// debug msgs
-		//UT_DEBUGMSG(("position=%d str=%s\n", pTabInfo->iPosition, pTabInfo->pszTab ));
 		m_tabInfo.addItem(pTabInfo);
 	}
 	
-	_setTabList(m_tabInfo);
+	_setTabList(m_tabInfo.getItemCount());
+	_setAlignment(FL_TAB_LEFT);
+
+	const XML_Char ** propsBlock = NULL;
+	pView->getBlockFormat(&propsBlock);
+
+	_setDefaultTabStop("0");
+
+	if (propsBlock[0])
+	{
+		const XML_Char * sz;
+		
+		sz = UT_getAttribute("default-tab-interval", propsBlock);
+
+		if(sz)
+		{
+			double inches = UT_convertToInches(sz);
+
+			_setDefaultTabStop(UT_convertInchesToDimensionString(m_dim, inches));
+		}
+
+	}
 
 	// enable/disable controls
 	_initEnableControls();
 }
 
-
-void AP_Dialog_Tab::_enableDisableLogic( tControl /* id */ )
-{
-#if 0
-	switch (id)
-	{
-
-/*	- Since HIDE_ERRORS is not implemented, no need to toggle it on/off
-	case id_CHECK_SPELL_CHECK_AS_TYPE:
-		// if we 'check as we type', then enable the 'hide' option
-		_controlEnable( id_CHECK_SPELL_HIDE_ERRORS, 
-						_gatherSpellCheckAsType() );
-		break;
-*/
-
-	default:
-		// do nothing
-		break;
-	}	
-#endif
-}
 
 // The initialize the controls (i.e., disable controls not coded yet)
 void AP_Dialog_Tab::_initEnableControls()
@@ -164,50 +167,174 @@ void AP_Dialog_Tab::_initEnableControls()
 	_controlEnable( id_BUTTON_SET,			UT_FALSE );
 	_controlEnable( id_BUTTON_CLEAR,		UT_FALSE );
 
-	if ( m_tabInfo.getItemCount() > 0 )
-		_controlEnable( id_BUTTON_CLEAR_ALL,	UT_FALSE );
+	_controlEnable( id_BUTTON_CLEAR_ALL,	m_tabInfo.getItemCount() == 0 ? UT_FALSE : UT_TRUE );
 }
 
 void AP_Dialog_Tab::_event_TabChange(void)
 {
-	UT_DEBUGMSG(("AP_Dialog_Tab::_event_TabChange\n"));
+	_controlEnable(id_BUTTON_SET, UT_TRUE);
 }
 
-void AP_Dialog_Tab::_event_TabSelected( fl_TabStop *pTabInfo )
+void AP_Dialog_Tab::_event_AlignmentChange(void)
+{
+	_controlEnable(id_BUTTON_SET, UT_TRUE);
+}
+
+
+void AP_Dialog_Tab::_event_TabSelected( UT_sint32 index )
 {
 	UT_DEBUGMSG(("AP_Dialog_Tab::_event_TabSelected\n"));
 
-	m_CurrentTab = pTabInfo;
+	if(index >= 0)
+	{
+		UT_ASSERT(index < (UT_sint32)m_tabInfo.getItemCount());
 
-	// HACK - iType if 1..5 to be LEFT..BAR in the same order.  We SHOULD make
-	// an enumerated type in block layout or something, or atleast define the
-	// common set of constants.  ap_TopRuler.cpp defines all the constants
-	// again.  Here, since enum is rel 0, i'm subtracting one and doing an
-	// ugly type cast
-	_setAlignment( pTabInfo->iType );
+		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(index);
 
-	// set the edit box's text
-	//_setTabEdit( pTabInfo->pszTab );
-	
-	UT_DEBUGMSG(("%s:%d need to setTabEdit\n",__FILE__,__LINE__));
+		// HACK - iType if 1..5 to be LEFT..BAR in the same order.  We SHOULD make
+		// an enumerated type in block layout or something, or atleast define the
+		// common set of constants.  ap_TopRuler.cpp defines all the constants
+		// again.  Here, since enum is rel 0, i'm subtracting one and doing an
+		// ugly type cast
+		_setAlignment( pTabInfo->getType() );
 
-	// something changed...
-	_event_somethingChanged();
+		_setTabEdit( _getTabDimensionString(index) );
+		
+		// something changed...
+		_event_somethingChanged();
+	}
 }
 
 void AP_Dialog_Tab::_event_Set(void)
 {
-	UT_DEBUGMSG(("AP_Dialog_Tab::_event_Set\n"));
+	char buffer[20];
+
+	buildTab(buffer, 20);
+
+	int Dimension_size = 0;
+	while(buffer[Dimension_size] != 0)
+	{
+
+		if(buffer[Dimension_size] == '/')
+		{
+			Dimension_size--;
+			break;
+		}
+
+		Dimension_size++;
+	}
+
+	// do we have the tab already.
+
+	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
+	{
+		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
+		UT_ASSERT(pTabInfo);
+
+		// if we have a tab at that unit
+		if ( memcmp(buffer, _getTabString(pTabInfo), Dimension_size) == 0 )
+		{
+			// Delete the tab.
+	
+			_deleteTabFromTabString(pTabInfo);
+
+			break;
+		}
+	}
+
+	// Add tab to list.
+
+	int NewOffset = strlen(m_pszTabStops);
+	char *p_temp = new char[strlen(m_pszTabStops) + 1 + strlen(buffer) + 1];
+	strcpy(p_temp, m_pszTabStops);
+	if(m_pszTabStops[0] != 0)
+	{
+		strcat(p_temp, ",");
+	}
+	strcat(p_temp, buffer);
+	delete m_pszTabStops;
+	m_pszTabStops = p_temp;;
+
+	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
+
+	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+
+	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
+
+	_setTabList(m_tabInfo.getItemCount());
+
+	// Select the new or changed tab in the lis.
+
+	for (i = 0; i < m_tabInfo.getItemCount(); i++ )
+	{
+		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
+		UT_ASSERT(pTabInfo);
+
+		// if we have a tab at that unit
+		if ( memcmp(buffer, _getTabString(pTabInfo), Dimension_size) == 0 )
+		{
+			_setSelectTab(i);
+			_setTabEdit( _getTabDimensionString(i) );
+			break;
+		}
+	}
+
+	// something changed...
+	_event_somethingChanged();
+
 }
 
 void AP_Dialog_Tab::_event_Clear(void)
 {
 	UT_DEBUGMSG(("AP_Dialog_Tab::_event_Clear\n"));
+
+	UT_sint32 index = _gatherSelectTab();
+
+	if(index != -1)
+	{
+		UT_ASSERT(index < (UT_sint32)m_tabInfo.getItemCount());
+
+		_deleteTabFromTabString((fl_TabStop *)m_tabInfo.getNthItem(index));
+
+		UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
+
+		FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+
+		buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
+
+		_setTabList(m_tabInfo.getItemCount());
+
+		if(m_tabInfo.getItemCount() > 0)
+		{
+			_setSelectTab(0);
+			_event_TabSelected(0);
+		}
+		else
+		{
+			_setSelectTab(-1);
+		}
+
+		// something changed...
+		_event_somethingChanged();
+	}
 }
 
 void AP_Dialog_Tab::_event_ClearAll(void)
 {
 	UT_DEBUGMSG(("AP_Dialog_Tab::_event_ClearAll\n"));
+
+	UT_ASSERT(m_pFrame); // needs to be set from runModal for some of the event_'s to work
+
+	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
+
+	delete m_pszTabStops;
+	m_pszTabStops = NULL;
+	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
+
+	_clearList();
+
+	// something changed...
+	_event_somethingChanged();
 }
 
 /*static*/ unsigned char AP_Dialog_Tab::AlignmentToChar( eTabType a )
@@ -286,8 +413,24 @@ void AP_Dialog_Tab::clearList()
 
 void AP_Dialog_Tab::buildTab( char *buffer, UT_uint32 /*bufflen*/ )
 {
+	// get current value from member
+	const XML_Char* szOld = _gatherTabEdit();
+	double d = UT_convertDimensionless(szOld);
+
+	// if needed, switch unit systems and round off
+	UT_Dimension dimOld = UT_determineDimension(szOld, m_dim);
+
+	if (dimOld != m_dim)
+	{
+		double dInches = UT_convertToInches(szOld);
+		d = UT_convertInchesToDimension(dInches, m_dim); 
+	}
+
+	const XML_Char* szNew = UT_formatDimensionString(m_dim, d); 
+
 	// TODO - use snprintf
-	sprintf( buffer, "%s/%c", _gatherTabEdit(), AlignmentToChar(_gatherAlignment()));
+
+	sprintf( buffer, "%s/%c", szNew, AlignmentToChar(_gatherAlignment()));
 }
 
 void AP_Dialog_Tab::_event_somethingChanged()
@@ -301,31 +444,196 @@ void AP_Dialog_Tab::_event_somethingChanged()
 	// check to see if the current tab is in the list
 	UT_Bool bEnableClear = UT_FALSE;
 	UT_Bool bEnableSet   = UT_TRUE;		// only disabled if current selection exactly matches current ones
-	strcpy( buffer, _gatherTabEdit() );
+										// or there are no items in the list.
+
+	if(m_tabInfo.getItemCount() == 0)
+	{
+		bEnableSet = UT_FALSE;
+	}
 
 	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
 		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
 		UT_ASSERT(pTabInfo);
 
-#if 0
 		// if we have a tab at that unit
-		if ( !strcmp(buffer, pTabInfo->pszTab) )
+		if ( !strcmp(buffer, _getTabString(pTabInfo)) )
 		{
 			bEnableClear = UT_TRUE;
 
 			// if everything is the same, disable the set
-			if ( pTabInfo->iType == _gatherAlignment() &&
-			     pTabInfo->iLeader == _gatherLeader() )
+			if ( pTabInfo->getType() == _gatherAlignment() &&
+			     pTabInfo->getLeader() == _gatherLeader() )
 				bEnableSet = UT_FALSE;
 
 		}
-#endif
 	}
 
 	_controlEnable( id_BUTTON_SET, bEnableSet );
 	_controlEnable( id_BUTTON_CLEAR, bEnableClear );
 
-	// ???
-	_setSelectTab( -1 );
+	_controlEnable( id_BUTTON_CLEAR_ALL,	m_tabInfo.getItemCount() == 0 ? UT_FALSE : UT_TRUE );
+
 }
+
+char *AP_Dialog_Tab::_getTabDimensionString(UT_uint32 tabIndex)
+{
+
+	UT_ASSERT(tabIndex < m_tabInfo.getItemCount());
+
+	fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(tabIndex);
+
+	const char* pStart = &m_pszTabStops[pTabInfo->getOffset()];
+	const char* pEnd = pStart;
+	while (*pEnd && (*pEnd != '/'))
+	{
+		pEnd++;
+	}
+
+	UT_uint32 iLen = pEnd - pStart;
+	UT_ASSERT(iLen<20);
+
+	strncpy(buf, pStart, iLen);
+	buf[iLen]=0;
+
+	return buf;
+}
+
+char *AP_Dialog_Tab::_getTabString(fl_TabStop *pTabInfo)
+{
+	const char* pStart = &m_pszTabStops[pTabInfo->getOffset()];
+	const char* pEnd = pStart;
+	while (*pEnd && (*pEnd != ','))
+	{
+		pEnd++;
+	}
+
+	UT_uint32 iLen = pEnd - pStart;
+	UT_ASSERT(iLen<20);
+
+	strncpy(buf, pStart, iLen);
+	buf[iLen]=0;
+
+	return buf;
+}
+
+void AP_Dialog_Tab::_deleteTabFromTabString(fl_TabStop *pTabInfo)
+{
+	int Tab_data_size = 0;
+	int Offset = pTabInfo->getOffset();
+
+	while(m_pszTabStops[Offset + Tab_data_size] != 0)
+	{
+		if(m_pszTabStops[Offset + Tab_data_size] == ',')
+		{
+			break;
+		}
+
+		Tab_data_size++;
+	}
+
+	if(Offset > 0)
+	{
+		// include leading comma.
+		Offset--;
+		Tab_data_size++;
+	}
+
+	if(Offset == 0)
+	{
+		// include trailing comma if there is one.
+
+		if(m_pszTabStops[Offset + Tab_data_size] == ',')
+		{
+			Tab_data_size++;
+		}
+	}
+
+
+
+	memmove(m_pszTabStops + Offset, 
+				m_pszTabStops + Offset + Tab_data_size,
+				strlen(m_pszTabStops) - (Offset + Tab_data_size));
+
+	m_pszTabStops[strlen(m_pszTabStops) - Tab_data_size] = 0;
+}
+
+#define SPIN_INCR_IN	0.1
+#define SPIN_INCR_CM	0.5
+#define SPIN_INCR_MM	1.0
+#define SPIN_INCR_PI	6.0
+#define SPIN_INCR_PT	1.0
+#define SPIN_INCR_none	0.1
+
+
+void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
+{
+	UT_ASSERT(amt); // zero makes no sense
+	UT_ASSERT(id = id_SPIN_DEFAULT_TAB_STOP);
+
+	// get current value from member
+	const XML_Char* szOld = _gatherDefaultTabStop();
+	double d = UT_convertDimensionless(szOld);
+
+	// figure out which dimension and units to spin in
+	UT_Dimension dimSpin = m_dim;
+	double dSpinUnit = SPIN_INCR_PT;
+	double dMin = 0.0;
+
+	switch (dimSpin)
+	{
+	case DIM_IN:	
+		dSpinUnit = SPIN_INCR_IN;	
+		dMin = 0.1;
+		break;
+
+	case DIM_CM:	
+		dSpinUnit = SPIN_INCR_CM;	
+		dMin = 0.1;
+		break;
+
+	case DIM_MM:	
+		dSpinUnit = SPIN_INCR_MM;	
+		dMin = 1.0;
+		break;
+
+	case DIM_PI:	
+		dSpinUnit = SPIN_INCR_PI;
+		dMin = 6.0;
+		break;
+
+	case DIM_PT:	
+		dSpinUnit = SPIN_INCR_PT;	
+		dMin = 1.0;
+		break;
+	default:
+
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	// figure out spin precision, too
+	const char * szPrecision = ".1";
+	if ((dimSpin == DIM_PT) || 
+		(dimSpin == DIM_PI))
+		szPrecision = ".0";
+
+	// if needed, switch unit systems and round off
+	UT_Dimension dimOld = UT_determineDimension(szOld, dimSpin);
+
+	if (dimOld != dimSpin)
+	{
+		double dInches = UT_convertToInches(szOld);
+		d = UT_convertInchesToDimension(dInches, dimSpin); 
+	}
+
+	// value is now in desired units, so change it
+	d += (dSpinUnit * amt);
+	if (d < dMin)
+		d = dMin;
+
+	const XML_Char* szNew = UT_formatDimensionString(dimSpin, d, szPrecision); 
+
+	_setDefaultTabStop(szNew);
+}
+

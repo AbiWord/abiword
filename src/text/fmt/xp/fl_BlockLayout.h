@@ -143,6 +143,9 @@ class fl_CharWidths
 	the normal flow, in order.
 */
 
+class fl_TabStop;
+void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTabs);
+
 class fl_BlockLayout : public fl_Layout
 {
 	friend class fl_DocListener;
@@ -320,8 +323,7 @@ public:
 	fl_PartOfBlock*			getSquiggle(UT_uint32 iOffset) const;
 	void					recheckIgnoredWords();
 
-	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, 
-										   eTabType & iType, eTabLeader &iLeader, UT_uint32 & iOffset );
+	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, fl_TabStop *pTabInfo);
 	
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
@@ -471,10 +473,34 @@ public:
 protected:
 };
 
-struct fl_TabStop
+class fl_TabStop
 {
+public:
+	
 	fl_TabStop();
 	
+	UT_sint32		getPosition() { return iPosition;}
+	void			setPosition(UT_sint32 value) { iPosition = value;}
+	UT_sint32		getPositionLayoutUnits() { return iPositionLayoutUnits;}
+	void			setPositionLayoutUnits(UT_sint32 value) { iPositionLayoutUnits = value;}
+	eTabType		getType() { return iType;}
+	void			setType(eTabType type) { iType = type;}
+	eTabLeader		getLeader() { return iLeader;};
+	void			setLeader(eTabLeader leader) { iLeader = leader;}
+	UT_uint32		getOffset() { return iOffset;}
+	void			setOffset(UT_uint32 value) { iOffset = value;}
+
+	void operator = (const fl_TabStop &Other)
+	{
+		iPosition = Other.iPosition;
+		iPositionLayoutUnits = Other.iPositionLayoutUnits;
+		iType = Other.iType;
+		iLeader = Other.iLeader;
+		iOffset = Other.iOffset;
+	}
+
+protected:
+
 	UT_sint32		iPosition;
 	UT_sint32		iPositionLayoutUnits;
 	eTabType		iType;

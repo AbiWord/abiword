@@ -45,6 +45,8 @@
 #define AP_RID_DIALOG_OPT_OTHER					215		// tab-sub-dlg
 #define AP_RID_DIALOG_COLUMNS					216
 #define AP_RID_DIALOG_LIST						217
+#define AP_RID_DIALOG_TABS						218
+
 
 #include "ap_Win32Resources_DialogReplace.rc2"
 #include "ap_Win32Res_DlgBreak.rc2"
@@ -57,4 +59,5 @@
 #include "ap_Win32Res_DlgGoto.rc2"
 #include "ap_Win32Res_DlgColumns.rc2"
 #include "ap_Win32Res_DlgList.rc2"
+#include "ap_Win32Res_DlgTabs.rc2"
 #include "ap_Win32Res_Icons.rc2"

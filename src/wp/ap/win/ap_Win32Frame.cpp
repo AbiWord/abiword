@@ -37,6 +37,7 @@
 #include "ap_Win32Frame.h"
 #include "xap_Win32App.h"
 #include "ev_Win32Mouse.h"
+#include "ev_Win32Keyboard.h"
 #include "ap_Win32TopRuler.h"
 #include "ap_Win32LeftRuler.h"
 #include "ev_Win32Menu.h"
@@ -457,6 +458,7 @@ AP_Win32Frame::AP_Win32Frame(XAP_Win32App * app)
 	m_hwndDocument = NULL;
 	m_hwndStatusBar = NULL;
 	m_bMouseWheelTrack = UT_FALSE;
+	m_bMouseActivateReceived = UT_FALSE;
 }
 
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
@@ -468,6 +470,7 @@ AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f)
 	m_hwndDocument = NULL;
 	m_hwndStatusBar = NULL;
 	m_bMouseWheelTrack = UT_FALSE;
+	m_bMouseActivateReceived = UT_FALSE;
 }
 
 AP_Win32Frame::~AP_Win32Frame(void)
@@ -709,6 +712,12 @@ LRESULT CALLBACK AP_Win32Frame::_ContainerWndProc(HWND hwnd, UINT iMsg, WPARAM w
 
 	switch (iMsg)
 	{
+	case WM_SETFOCUS:
+	{
+		SetFocus(f->m_hwndDocument);
+		return 0;
+	}
+
 	case WM_SIZE:
 	{
 		const int nWidth = LOWORD(lParam);
@@ -871,7 +880,10 @@ void AP_Win32Frame::_onSize(int nWidth, int nHeight)
 	_getRulerSizes(yTopRulerHeight, xLeftRulerWidth);
 	
 	if (m_hwndTopRuler)
+	{
 		MoveWindow(m_hwndTopRuler, 0, 0, nWidth, yTopRulerHeight, TRUE);
+		InvalidateRect(m_hwndTopRuler, NULL, TRUE);
+	}
 
 	if (m_hwndLeftRuler)
 		MoveWindow(m_hwndLeftRuler, 0, yTopRulerHeight,
@@ -895,6 +907,35 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 
 	switch (iMsg)
 	{
+	case WM_MOUSEACTIVATE:
+		f->m_bMouseActivateReceived = UT_TRUE;
+		return MA_ACTIVATE;
+
+	case WM_SETFOCUS:
+		if (pView)
+		{
+			pView->focusChange(AV_FOCUS_HERE);
+			
+			if(!f->m_bMouseActivateReceived)
+			{
+				// HACK:	Capture leaving a tool bar combo.
+				// We need to get a mouse down signal.
+				// windows is not activated so send a mouse down if the mouse is pressed.
+
+				UT_DEBUGMSG(("Need to set mouse down"));
+
+//				GetKeyState
+			}
+		}
+		return 0;
+
+	case WM_KILLFOCUS:
+		if (pView)
+		{
+			pView->focusChange(AV_FOCUS_NONE);
+		}
+		return 0;
+
 	case WM_CREATE:
 		return 0;
 
@@ -908,7 +949,14 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		return 1;
 
 	case WM_LBUTTONDOWN:
+		if(GetFocus() != hwnd)
+		{
+			SetFocus(hwnd);
+			pView = f->m_pView;
+			pMouse = (EV_Win32Mouse *) f->m_pMouse;
+		}
 		pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
+		f->m_bMouseActivateReceived = UT_FALSE;
 		return 0;
 	case WM_MBUTTONDOWN:
 		f->_startTracking(LOWORD(lParam), HIWORD(lParam));
@@ -928,6 +976,23 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		pMouse->onDoubleClick(pView,hwnd,EV_EMB_BUTTON3,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
 
+	case WM_SYSKEYDOWN:
+	case WM_KEYDOWN:
+	{
+	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
+		if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
+			return 0;
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+	}
+	case WM_SYSCHAR:
+	case WM_CHAR:
+	{
+	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
+		if (pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam))
+			return 0;
+		return DefWindowProc(hwnd,iMsg,wParam,lParam);
+	}
+
 	case WM_MOUSEMOVE:
 		if (f->_isTracking())
 		{
@@ -940,6 +1005,13 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		return 0;
 
 	case WM_LBUTTONUP:
+		if(GetFocus() != hwnd)	// HACK: get focus back from tool bar combos.
+		{
+			SetFocus(hwnd);
+			pView = f->m_pView;
+			pMouse = (EV_Win32Mouse *) f->m_pMouse;
+			pMouse->onButtonDown(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
+		}
 		pMouse->onButtonUp(pView,hwnd,EV_EMB_BUTTON1,wParam,LOWORD(lParam),HIWORD(lParam));
 		return 0;
 	case WM_MBUTTONUP:

@@ -45,7 +45,7 @@ XAP_Dialog * AP_Win32Dialog_Tab::static_constructor(XAP_DialogFactory * pFactory
 
 AP_Win32Dialog_Tab::AP_Win32Dialog_Tab(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_Tab(pDlgFactory,id)
+	: AP_Dialog_Tab(pDlgFactory,id), _win32Dialog(this)
 {
 }
 
@@ -55,76 +55,270 @@ AP_Win32Dialog_Tab::~AP_Win32Dialog_Tab(void)
 
 void AP_Win32Dialog_Tab::runModal(XAP_Frame * pFrame)
 {
-	UT_ASSERT(pFrame);
+	m_pFrame = pFrame;
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
-	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+	// raise the dialog
 
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
-
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
-
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
-
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
-
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	_win32Dialog.runModal(pFrame, AP_DIALOG_ID_TAB, AP_RID_DIALOG_TABS, this);
 }
 
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
+BOOL AP_Win32Dialog_Tab::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
+	UT_ASSERT(app);
 
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	
+	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_Tab_TabTitle));
+
+	// localize controls
+	_DSX(TABS_OK_BUTTON,				DLG_OK);
+	_DSX(TABS_CANCEL_BUTTON,			DLG_Cancel);
+										
+	_DS(TABS_TAB_STOP_POSITION_LABEL,	DLG_Tab_Label_TabPosition);
+	_DS(TABS_TAB_STOPS_CLEARED_LABEL,	DLG_Tab_Label_TabToClear);
+	_DS(TABS_DEFAULT_TAB_STOPS_LABEL,	DLG_Tab_Label_DefaultTS);
+
+	_DS(TABS_ALIGNMENT_LABEL,			DLG_Tab_Label_Alignment);
+	_DS(TABS_LEFT_RADIO,				DLG_Tab_Radio_Left);
+	_DS(TABS_CENTER_RADIO,				DLG_Tab_Radio_Center);
+	_DS(TABS_RIGHT_RADIO,				DLG_Tab_Radio_Right);
+	_DS(TABS_DECIMAL_RADIO,				DLG_Tab_Radio_Decimal);
+	_DS(TABS_BAR_RADIO,					DLG_Tab_Radio_Bar);
+
+	_DS(TABS_LEADER_LABEL,				DLG_Tab_Label_Leader);
+	_DS(TABS_NONE_RADIO,				DLG_Tab_Radio_None);
+	_DS(TABS_DOTS_RADIO,				DLG_Tab_Radio_Dot);
+	_DS(TABS_DASH_RADIO,				DLG_Tab_Radio_Dash);
+	_DS(TABS_UNDERLINE_RADIO,			DLG_Tab_Radio_Underline);
+
+	_DS(TABS_SET_BUTTON,				DLG_Tab_Button_Set);
+	_DS(TABS_CLEAR_BUTTON,				DLG_Tab_Button_Clear);
+	_DS(TABS_CLEAR_ALL_BUTTON,			DLG_Tab_Button_ClearAll);
+
+	_populateWindowData();
+	return 1;							// 1 == we did not call SetFocus()
+}
+
+BOOL AP_Win32Dialog_Tab::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case AP_RID_DIALOG_TABS_OK_BUTTON:
+		m_answer = a_OK;
+		_storeWindowData();
+		EndDialog(hWnd, 1);
+		return 1;
+
+	case AP_RID_DIALOG_TABS_CANCEL_BUTTON:
+		m_answer = a_CANCEL;
+		EndDialog(hWnd, 0);
+		return 1;
+
+	case AP_RID_DIALOG_TABS_TAB_STOP_POSITION_EDIT:
+		if(wNotifyCode == EN_CHANGE)
+		{
+			_event_TabChange();
+		}
+		return 1;
+
+	case AP_RID_DIALOG_TABS_SET_BUTTON:
+		_event_Set();
+		return 1;
+
+	case AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST:
+		if(wNotifyCode == LBN_SELCHANGE)
+		{
+			UT_uint32 Index = (UT_uint32)_win32Dialog.getListSelectedIndex(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
+			_event_TabSelected(Index);
+		}
+		return 1;
+
+	case AP_RID_DIALOG_TABS_LEFT_RADIO:
+		_event_AlignmentChange();
+		return 1;
+		
+	case AP_RID_DIALOG_TABS_CENTER_RADIO:
+		_event_AlignmentChange();
+		return 1;
+		
+	case AP_RID_DIALOG_TABS_RIGHT_RADIO:
+		_event_AlignmentChange();
+		return 1;
+		
+	case AP_RID_DIALOG_TABS_DECIMAL_RADIO:
+		_event_AlignmentChange();
+		return 1;
+		
+	case AP_RID_DIALOG_TABS_BAR_RADIO:
+		_event_AlignmentChange();
+		return 1;
+
+	case AP_RID_DIALOG_TABS_CLEAR_ALL_BUTTON:
+		_event_ClearAll();
+		return 1;
+
+	case AP_RID_DIALOG_TABS_CLEAR_BUTTON:
+		_event_Clear();
+		return 1;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+
+}
+
+BOOL AP_Win32Dialog_Tab::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	// respond to WM_NOTIFY/UDN_DELTAPOS message
+	// return TRUE to prevent the change from happening
+	// return FALSE to allow it to occur
+	// we may alter the change by changing the fields in pnmud.
+
+	UT_DEBUGMSG(("onDeltaPos: [idFrom %d][iPos %d][iDelta %d]\n",
+				 pnmud->hdr.idFrom,pnmud->iPos,pnmud->iDelta));
+
+	_doSpin(id_SPIN_DEFAULT_TAB_STOP, (0 - (UT_sint32) pnmud->iDelta));
+				
+	return 1;
+}
 
 void AP_Win32Dialog_Tab::_controlEnable( tControl id, UT_Bool value )
 {
+	int WinControlID;
+
+	switch(id)
+	{
+	case id_EDIT_TAB:
+		WinControlID = AP_RID_DIALOG_TABS_TAB_STOP_POSITION_EDIT;
+		break;
+
+	case id_LIST_TAB:
+		WinControlID = AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST;
+		break;
+
+	case id_SPIN_DEFAULT_TAB_STOP:
+		WinControlID = AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_EDIT;
+		break;
+
+	case id_ALIGN_LEFT:
+		WinControlID = AP_RID_DIALOG_TABS_LEFT_RADIO;
+		break;
+		
+	case id_ALIGN_CENTER:
+		WinControlID = AP_RID_DIALOG_TABS_CENTER_RADIO;
+		break;
+		
+	case id_ALIGN_RIGHT:
+		WinControlID = AP_RID_DIALOG_TABS_RIGHT_RADIO;
+		break;
+		
+	case id_ALIGN_DECIMAL:
+		WinControlID = AP_RID_DIALOG_TABS_DECIMAL_RADIO;
+		break;
+		
+	case id_ALIGN_BAR:
+		WinControlID = AP_RID_DIALOG_TABS_BAR_RADIO;
+		break;
+
+	case id_LEADER_NONE:
+		WinControlID = AP_RID_DIALOG_TABS_NONE_RADIO;
+		break;
+		
+	case id_LEADER_DOT:
+		WinControlID = AP_RID_DIALOG_TABS_DOTS_RADIO;
+		break;
+		
+	case id_LEADER_DASH:
+		WinControlID = AP_RID_DIALOG_TABS_DASH_RADIO;
+		break;
+		
+	case id_LEADER_UNDERLINE:
+		WinControlID = AP_RID_DIALOG_TABS_UNDERLINE_RADIO;
+		break;
+
+	case id_BUTTON_SET:
+		WinControlID = AP_RID_DIALOG_TABS_SET_BUTTON;
+		break;
+		
+	case id_BUTTON_CLEAR:
+		WinControlID = AP_RID_DIALOG_TABS_CLEAR_BUTTON;
+		break;
+		
+	case id_BUTTON_CLEAR_ALL:
+		WinControlID = AP_RID_DIALOG_TABS_CLEAR_ALL_BUTTON;
+		break;
+
+	case id_BUTTON_OK:
+		WinControlID = AP_RID_DIALOG_TABS_OK_BUTTON;
+		break;
+		
+	case id_BUTTON_CANCEL:
+		WinControlID = AP_RID_DIALOG_TABS_CANCEL_BUTTON;
+		break;
+
+	default:
+		WinControlID = 0;
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	if(WinControlID)
+	{
+		_win32Dialog.enableControl(WinControlID, value);
+	}
+
 }
 
 
 eTabType AP_Win32Dialog_Tab::_gatherAlignment()
 {
-	// for ( UT_uint32 i = (UT_uint32)id_ALIGN_LEFT; 
-	// 	  i <= (UT_uint32)id_ALIGN_BAR;
-	// 	  i++ )
+	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_LEFT_RADIO))
+		return FL_TAB_LEFT;
 
-//	return m_current_alignment;
-return FL_TAB_NONE;
+	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_RIGHT_RADIO))
+		return FL_TAB_RIGHT;
+
+	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_CENTER_RADIO))
+		return FL_TAB_CENTER;
+
+	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_DECIMAL_RADIO))
+		return FL_TAB_DECIMAL;
+
+	if(_win32Dialog.isChecked(AP_RID_DIALOG_TABS_BAR_RADIO))
+		return FL_TAB_BAR;
+
+	return FL_TAB_NONE;
 
 }
 
 void AP_Win32Dialog_Tab::_setAlignment( eTabType a )
 {
-/*
-	// NOTE - tControl id_ALIGN_LEFT .. id_ALIGN_BAR must be in the same order
-	// as the tAlignment enums.
+	
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_LEFT_RADIO, a == FL_TAB_LEFT);
 
-	// magic noted above
-	tControl id = (tControl)((UT_uint32)id_ALIGN_LEFT + (UT_uint32)a);	
-	UT_ASSERT( id >= id_ALIGN_LEFT && id <= id_ALIGN_BAR );
+	
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_RIGHT_RADIO, a == FL_TAB_RIGHT);
 
-	// time to set the alignment radiobutton widget
-	GtkWidget *w = _lookupWidget( id );
-	UT_ASSERT(w && GTK_IS_RADIO_BUTTON(w));
+	
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_CENTER_RADIO, a == FL_TAB_CENTER);
 
-	// tell the change routines to ignore this message
-	m_bInSetCall = UT_TRUE;
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
-	m_bInSetCall = UT_FALSE;
-*/
+	
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_DECIMAL_RADIO, a == FL_TAB_DECIMAL);
+
+	
+	_win32Dialog.checkButton(AP_RID_DIALOG_TABS_BAR_RADIO, a == FL_TAB_BAR);
 
 }
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 eTabLeader AP_Win32Dialog_Tab::_gatherLeader()
@@ -155,119 +349,63 @@ void AP_Win32Dialog_Tab::_setLeader( eTabLeader a )
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-UT_sint32 AP_Win32Dialog_Tab::_gatherDefaultTabStop()
+const XML_Char * AP_Win32Dialog_Tab::_gatherDefaultTabStop()
 {
-	return 5;
+	_win32Dialog.getControlText(AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_EDIT, Buffer, 128);
+
+	return Buffer;
 }
 
-void AP_Win32Dialog_Tab::_setDefaultTabStop( UT_sint32 a )
+void AP_Win32Dialog_Tab::_setDefaultTabStop( const XML_Char* default_tab )
 {
-	UT_UNUSED(a);
+	_win32Dialog.setControlText(AP_RID_DIALOG_TABS_DEFAULT_TAB_STOPS_EDIT, default_tab);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-const UT_Vector& AP_Win32Dialog_Tab::_gatherTabList()
+void AP_Win32Dialog_Tab::_setTabList( UT_uint32 count )
 {
-	return m_tabInfo;
-}
-
-void AP_Win32Dialog_Tab::_setTabList( const UT_Vector &v )
-{
-/*
-	GList *gList = NULL;
-	GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
 	UT_uint32 i;
-	fl_TabStop *pTabInfo;
 
 	// clear all the items from the list
-	gtk_list_clear_items( wList, 0, -1 );
+	_win32Dialog.resetContent(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
 
-	for ( i = 0; i < v.getItemCount(); i++ )
+	for ( i = 0; i < count; i++ )
 	{
-		pTabInfo = (fl_TabStop *)v.getNthItem(i);
-
-		// this will do for the time being, but if we want 
-		//GtkWidget *li = gtk_list_item_new_with_label( pTabInfo->pszTab );
-		UT_DEBUGMSG(("%s:%d need to fix\n", __FILE__,__LINE__));
-
-		GtkWidget *li = gtk_list_item_new_with_label( 
-							UT_convertToDimensionlessString( pTabInfo->iPositionLayoutUnits,  pTabInfo->iPosition ));
-		gtk_object_set_user_data( GTK_OBJECT(li), (gpointer) pTabInfo );
-
-		// we want to DO stuff
-		gtk_signal_connect(GTK_OBJECT(li),
-						   "select",
-						   GTK_SIGNAL_FUNC(s_list_select),
-						   (gpointer) this);
-
-
-		// show this baby
-		gtk_widget_show(li);
-
-		gList = g_list_append( gList, li );
+		_win32Dialog.addItemToList(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST, _getTabDimensionString(i));
 	}
 	
-	gtk_list_insert_items( wList, gList, 0 );
-*/
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 UT_sint32 AP_Win32Dialog_Tab::_gatherSelectTab()
 {
-	return 0;
-//	return m_iGtkListIndex;
+	return _win32Dialog.getListSelectedIndex(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
 }
 
 void AP_Win32Dialog_Tab::_setSelectTab( UT_sint32 v )
 {
-/*
-	m_iGtkListIndex = v;
-
-	if ( v == -1 )	// we don't want to select anything
-	{
-		gtk_list_unselect_all(GTK_LIST(_lookupWidget(id_LIST_TAB)));
-	}
-	else
-	{
-		UT_ASSERT(UT_NOT_IMPLEMENTED);
-	}
-*/
+	_win32Dialog.selectListItem(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST, v);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 const char * AP_Win32Dialog_Tab::_gatherTabEdit()
 {
-	return NULL;
-//	return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_EDIT_TAB ) ) );
+	_win32Dialog.getControlText(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_EDIT, Buffer, 128);
+
+	return Buffer;
 }
 
 void AP_Win32Dialog_Tab::_setTabEdit( const char *pszStr )
 {
-/*
-	GtkWidget *w = _lookupWidget( id_EDIT_TAB );
-
-	// first, we stop the entry from sending the changed signal to our handler
-	gtk_signal_handler_block_by_data(  GTK_OBJECT(w), (gpointer) this );
-
-	// then set the text
-	gtk_entry_set_text( GTK_ENTRY(w), pszStr );
-
-	// turn signals back on
-	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(w), (gpointer) this );
-*/
-
+	_win32Dialog.setControlText(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_EDIT, pszStr);
 }
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void AP_Win32Dialog_Tab::_clearList()
 {
-/*
-	GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
-
-	// clear all the items from the list
-	gtk_list_clear_items( wList, 0, -1 );
-*/
+	_win32Dialog.resetContent(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
 }

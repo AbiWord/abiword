@@ -154,7 +154,7 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 
 	case DIM_CM:
 		valueScaled = (valueInInches * 2.54);
-		sprintf(bufFormat,"%%%sfcm",((szPrecision && *szPrecision) ? szPrecision : ".1"));
+		sprintf(bufFormat,"%%%sfcm",((szPrecision && *szPrecision) ? szPrecision : ".2"));
 		break;
 
 	case DIM_MM:
@@ -221,7 +221,7 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 		break;
 
 	case DIM_CM:
-		sprintf(bufFormat,"%%%sfcm",((szPrecision && *szPrecision) ? szPrecision : ".1"));
+		sprintf(bufFormat,"%%%sfcm",((szPrecision && *szPrecision) ? szPrecision : ".2"));
 		break;
 
 	case DIM_MM:

@@ -157,12 +157,12 @@ static int compare_tabs(const void* p1, const void* p2)
 	fl_TabStop** ppTab1 = (fl_TabStop**) p1;
 	fl_TabStop** ppTab2 = (fl_TabStop**) p2;
 
-	if ((*ppTab1)->iPosition < (*ppTab2)->iPosition)
+	if ((*ppTab1)->getPosition() < (*ppTab2)->getPosition())
 	{
 		return -1;
 	}
 	
-	if ((*ppTab1)->iPosition > (*ppTab2)->iPosition)
+	if ((*ppTab1)->getPosition() > (*ppTab2)->getPosition())
 	{
 		return 1;
 	}
@@ -170,6 +170,117 @@ static int compare_tabs(const void* p1, const void* p2)
 	return 0;
 }
 
+void buildTabStops(GR_Graphics * pG, const char* pszTabStops, UT_Vector &m_vecTabs)
+{
+	// no matter what, clear prior tabstops
+	UT_uint32 iCount = m_vecTabs.getItemCount();
+	UT_uint32 i;
+
+	for (i=0; i<iCount; i++)
+	{
+		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
+
+		delete pTab;
+	}
+
+	m_vecTabs.clear();
+	if (pszTabStops && pszTabStops[0])
+	{
+		eTabType	iType = FL_TAB_NONE;
+		eTabLeader	iLeader = FL_LEADER_NONE;
+		UT_sint32	iPosition = 0;
+		
+		const char* pStart = pszTabStops;
+		while (*pStart)
+		{
+			const char* pEnd = pStart;
+			while (*pEnd && (*pEnd != ','))
+			{
+				pEnd++;
+			}
+
+			const char* p1 = pStart;
+			while ((p1 < pEnd) && (*p1 != '/'))
+			{
+				p1++;
+			}
+
+			if (
+				(p1 == pEnd)
+				|| ((p1+1) == pEnd)
+				)
+			{
+				iType = FL_TAB_LEFT;
+			}
+			else
+			{
+				switch (p1[1])
+				{
+				case 'R':
+					iType = FL_TAB_RIGHT;
+					break;
+				case 'C':
+					iType = FL_TAB_CENTER;
+					break;
+				case 'D':
+					iType = FL_TAB_DECIMAL;
+					break;
+				case 'B':
+					iType = FL_TAB_BAR;
+					break;
+				case 'L':	// fall through
+				default:
+					iType = FL_TAB_LEFT;
+					UT_DEBUGMSG(("tabstop: unknown tab stop type [%c]\n", p1[1]));
+					break;
+				}
+
+				// tab leaders
+				if ( p1 +2 != pEnd && p1[2] >= '0' && p1[2] <= (((UT_sint32)__FL_LEADER_MAX)+'0') )
+					iLeader = (eTabLeader)(p1[2]-'0');
+			}
+
+			char pszPosition[32];
+			UT_uint32 iPosLen = p1 - pStart;
+		
+			UT_ASSERT(iPosLen < sizeof pszPosition);
+
+			memcpy(pszPosition, pStart, iPosLen);
+            pszPosition[iPosLen] = 0;
+
+			iPosition = pG->convertDimension(pszPosition);
+
+			UT_ASSERT(iType > 0);
+			/*
+				The following assert is probably bogus, since tabs are 
+				column-relative, rather than block-relative.  
+			*/
+//			UT_ASSERT(iPosition >= 0);
+			
+			fl_TabStop* pTabStop = new fl_TabStop();
+			pTabStop->setPosition(iPosition);
+			pTabStop->setPositionLayoutUnits(UT_convertToLayoutUnits(pszPosition));
+			pTabStop->setType(iType);
+			pTabStop->setLeader(iLeader);
+			pTabStop->setOffset(pStart - pszTabStops);
+
+			m_vecTabs.addItem(pTabStop);
+
+			pStart = pEnd;
+			if (*pStart)
+			{
+				pStart++;	// skip past delimiter
+
+				while (*pStart == UCS_SPACE)
+				{
+					pStart++;
+				}
+			}
+		}
+
+		m_vecTabs.qsort(compare_tabs);
+	}
+}
 void fl_BlockLayout::_lookupProperties(void)
 {
 	{
@@ -269,116 +380,10 @@ void fl_BlockLayout::_lookupProperties(void)
 		}
 	}
 
-	// no matter what, clear prior tabstops
-	UT_uint32 iCount = m_vecTabs.getItemCount();
-	UT_uint32 i;
-
-	for (i=0; i<iCount; i++)
-	{
-		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
-
-		delete pTab;
-	}
-	m_vecTabs.clear();
-
 	// parse any new tabstops
 	const char* pszTabStops = getProperty((XML_Char*)"tabstops");
-	if (pszTabStops && pszTabStops[0])
-	{
-		eTabType	iType = FL_TAB_NONE;
-		eTabLeader	iLeader = FL_LEADER_NONE;
-		UT_sint32	iPosition = 0;
-		
-		const char* pStart = pszTabStops;
-		while (*pStart)
-		{
-			const char* pEnd = pStart;
-			while (*pEnd && (*pEnd != ','))
-			{
-				pEnd++;
-			}
+	buildTabStops(pG, pszTabStops, m_vecTabs);
 
-			const char* p1 = pStart;
-			while ((p1 < pEnd) && (*p1 != '/'))
-			{
-				p1++;
-			}
-
-			if (
-				(p1 == pEnd)
-				|| ((p1+1) == pEnd)
-				)
-			{
-				iType = FL_TAB_LEFT;
-			}
-			else
-			{
-				switch (p1[1])
-				{
-				case 'R':
-					iType = FL_TAB_RIGHT;
-					break;
-				case 'C':
-					iType = FL_TAB_CENTER;
-					break;
-				case 'D':
-					iType = FL_TAB_DECIMAL;
-					break;
-				case 'B':
-					iType = FL_TAB_BAR;
-					break;
-				case 'L':	// fall through
-				default:
-					iType = FL_TAB_LEFT;
-					UT_DEBUGMSG(("tabstop: unknown tab stop type [%c]\n", p1[1]));
-					break;
-				}
-
-				// tab leaders
-				if ( p1 +2 != pEnd && p1[2] >= '0' && p1[2] <= (((UT_sint32)__FL_LEADER_MAX)+'0') )
-					iLeader = (eTabLeader)(p1[2]-'0');
-			}
-
-			char pszPosition[32];
-			UT_uint32 iPosLen = p1 - pStart;
-		
-			UT_ASSERT(iPosLen < sizeof pszPosition);
-
-			memcpy(pszPosition, pStart, iPosLen);
-            pszPosition[iPosLen] = 0;
-
-			iPosition = pG->convertDimension(pszPosition);
-
-			UT_ASSERT(iType > 0);
-			/*
-				The following assert is probably bogus, since tabs are 
-				column-relative, rather than block-relative.  
-			*/
-//			UT_ASSERT(iPosition >= 0);
-			
-			fl_TabStop* pTabStop = new fl_TabStop();
-			pTabStop->iPosition = iPosition;
-			pTabStop->iPositionLayoutUnits = UT_convertToLayoutUnits(pszPosition);
-			pTabStop->iType = iType;
-			pTabStop->iLeader = iLeader;
-			pTabStop->iOffset = pStart - pszTabStops;
-
-			m_vecTabs.addItem(pTabStop);
-
-			pStart = pEnd;
-			if (*pStart)
-			{
-				pStart++;	// skip past delimiter
-
-				while (*pStart == UCS_SPACE)
-				{
-					pStart++;
-				}
-			}
-		}
-
-		m_vecTabs.qsort(compare_tabs);
-	}
 
 #if 0
 	UT_DEBUGMSG(("XXXX: [default-tab-interval:%s][yields %d][resolution %d][zoom %d]\n",
@@ -3732,15 +3737,15 @@ UT_Bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_
 		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
 		UT_ASSERT(pTab);
 
-		if (pTab->iPosition > iMaxX)
+		if (pTab->getPosition() > iMaxX)
 		{
 			break;
 		}
 		
-		if (pTab->iPosition > iStartX)
+		if (pTab->getPosition() > iStartX)
 		{
-			iPosition = pTab->iPosition;
-			iType = pTab->iType;
+			iPosition = pTab->getPosition();
+			iType = pTab->getType();
 
 			return UT_TRUE;
 		}
@@ -3805,15 +3810,15 @@ UT_Bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint
 	{
 		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
 
-		if (pTab->iPositionLayoutUnits > iMaxX)
+		if (pTab->getPositionLayoutUnits() > iMaxX)
 		{
 			break;
 		}
 		
-		if (pTab->iPositionLayoutUnits > iStartX)
+		if (pTab->getPositionLayoutUnits() > iStartX)
 		{
-			iPosition = pTab->iPositionLayoutUnits;
-			iType = pTab->iType;
+			iPosition = pTab->getPositionLayoutUnits();
+			iType = pTab->getType();
 
 			return UT_TRUE;
 		}
@@ -3864,8 +3869,7 @@ UT_Bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint
 
 }
 
-UT_Bool fl_BlockLayout::s_EnumTabStops( void * myThis, UT_uint32 k, UT_sint32 & iPosition, 
-										eTabType & iType, eTabLeader &iLeader, UT_uint32 & iOffset )
+UT_Bool fl_BlockLayout::s_EnumTabStops( void * myThis, UT_uint32 k, fl_TabStop *pTabInfo)
 {
 	// a static function
 
@@ -3877,10 +3881,7 @@ UT_Bool fl_BlockLayout::s_EnumTabStops( void * myThis, UT_uint32 k, UT_sint32 & 
 
 	fl_TabStop * pTab = (fl_TabStop *)pBL->m_vecTabs.getNthItem(k);
 
-	iPosition = pTab->iPosition;
-	iType = pTab->iType;
-	iLeader = pTab->iLeader;
-	iOffset = pTab->iOffset;
+	*pTabInfo = *pTab;
 	return UT_TRUE;
 }
 

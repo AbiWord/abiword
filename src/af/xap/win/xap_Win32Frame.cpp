@@ -363,6 +363,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		if (pView)
 		{
 			pView->focusChange(AV_FOCUS_HERE);
+			SetFocus(f->m_hwndContainer);
 		}
 		return 0;
 
@@ -373,6 +374,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			pView->focusChange(AV_FOCUS_NONE);
 		}
 		return 0;
+
 	case WM_CREATE:
 		return 0;
 
@@ -421,22 +423,6 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			return 0;
 		return DefWindowProc(hwnd,iMsg,wParam,lParam);
 
-	case WM_SYSKEYDOWN:
-	case WM_KEYDOWN:
-	{
-	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
-		if (pWin32Keyboard->onKeyDown(pView,hwnd,iMsg,wParam,lParam))
-			return 0;
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-	}
-	case WM_SYSCHAR:
-	case WM_CHAR:
-	{
-	    ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(f->m_pKeyboard);
-		if (pWin32Keyboard->onChar(pView,hwnd,iMsg,wParam,lParam))
-			return 0;
-		return DefWindowProc(hwnd,iMsg,wParam,lParam);
-	}
 	case WM_NOTIFY:
 		switch (((LPNMHDR) lParam)->code) 
 		{

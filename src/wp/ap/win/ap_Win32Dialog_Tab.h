@@ -21,11 +21,12 @@
 #define AP_WIN32DIALOG_TAB_H
 
 #include "ap_Dialog_Tab.h"
+#include "xap_Win32DialogHelper.h"
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_Tab: public AP_Dialog_Tab
+class AP_Win32Dialog_Tab: public AP_Dialog_Tab, XAP_Win32Dialog
 {
 public:
 	AP_Win32Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -34,8 +35,15 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
+
+private:
+	XAP_Win32DialogHelper	_win32Dialog;
+	char Buffer[128];
+
 protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
 
 	void _controlEnable( tControl id, UT_Bool value );
 
@@ -43,11 +51,11 @@ protected:
  					    virtual void    _set##a( t )
 	SET_GATHER			(Alignment,			eTabType);
 	SET_GATHER			(Leader,			eTabLeader);
-	SET_GATHER			(DefaultTabStop,	UT_sint32);
+	SET_GATHER			(DefaultTabStop,	const XML_Char*);
 
 
 	// to populate the whole list
-	SET_GATHER			(TabList,			const UT_Vector &);
+	virtual void _setTabList(UT_uint32 count);
 
 	// get/set the selected tab
 	// the list of n tabs are index 0..(n-1)

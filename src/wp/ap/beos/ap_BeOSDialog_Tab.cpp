@@ -82,3 +82,79 @@ void AP_BeOSDialog_Tab::runModal(XAP_Frame * pFrame)
 
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
+
+eTabType AP_BeOSDialog_Tab::_gatherAlignment()
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+
+	return FL_TAB_NONE;
+
+}
+
+void AP_BeOSDialog_Tab::_setAlignment( eTabType a )
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+eTabLeader AP_BeOSDialog_Tab::_gatherLeader()
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return FL_LEADER_NONE;
+}
+
+void AP_BeOSDialog_Tab::_setLeader( eTabLeader a )
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+const XML_Char * AP_BeOSDialog_Tab::_gatherDefaultTabStop()
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return NULL;
+}
+
+void AP_BeOSDialog_Tab::_setDefaultTabStop( const XML_Char* default_tab )
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+void AP_BeOSDialog_Tab::_setTabList( UT_uint32 count )
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+UT_sint32 AP_BeOSDialog_Tab::_gatherSelectTab()
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return -1;
+}
+
+void AP_BeOSDialog_Tab::_setSelectTab( UT_sint32 v )
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+const char * AP_BeOSDialog_Tab::_gatherTabEdit()
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+	return NULL;
+}
+
+void AP_BeOSDialog_Tab::_setTabEdit( const char *pszStr )
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void AP_BeOSDialog_Tab::_clearList()
+{
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
+}
