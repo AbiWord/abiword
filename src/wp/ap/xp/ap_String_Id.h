@@ -618,7 +618,7 @@ dcl(DLG_InsertHyperlink_Msg, "Select a target bookmark from the list.")
 
 	/* Mark revisions dialog */
 dcl(DLG_MarkRevisions_Title, "Mark Revisions")
-dcl(DLG_MarkRevisions_Check1Label, "Contiue previous revision (number %d)")
+dcl(DLG_MarkRevisions_Check1Label, "Continue previous revision (number %d)")
 dcl(DLG_MarkRevisions_Check2Label, "Start a new revision")
 dcl(DLG_MarkRevisions_Comment2Label, "Comment to be associated with the revision:")
 
