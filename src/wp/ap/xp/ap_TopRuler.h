@@ -175,9 +175,6 @@ public:
 	/* for use with the prefs listener top_ruler_prefs_listener */
 	UT_Dimension	getDimension() const { return m_dim; }
 	void			setDimension( UT_Dimension newdim );
-	UT_sint32 m_iMinCellPos;
-	UT_sint32 m_iMaxCellPos;
-
 protected:
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
@@ -280,6 +277,9 @@ private:
 	char				m_aScrollDirection; // 'L' == left   'R' == right
 
 	UT_sint32			m_minColumnWidth;
+
+	UT_sint32			m_iMinCellPos;	/* cell marker left border while dragging */
+	UT_sint32			m_iMaxCellPos;  /* cell marker right border while dragging */
 
 	AP_TopRulerInfo		m_infoCache;
 	bool				m_bValidMouseClick;
