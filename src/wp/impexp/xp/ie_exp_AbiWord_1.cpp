@@ -451,6 +451,8 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
 	// is a strict subset of UTF-8. 
 
+	m_pie->write ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
+
 	if (!XAP_EncodingManager::get_instance()->cjk_locale() &&
 	    (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1)) {
 	    // use utf8 for CJK locales and latin1 locales and unicode locales
@@ -463,9 +465,6 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 
 	// We write this first so that the sniffer can detect AbiWord 
 	// documents more easily.   
-
-	// TODO: write out a DOCTYPE description after we update the DTD
-	m_pie->write ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
 
 	m_pie->write("<abiword xmlns=\"http://www.abisource.com/awml.dtd\" xmlns:awml=\"http://www.abisource.com/awml.dtd\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:fo=\"http://www.w3.org/1999/XSL/Format\" xmlns:math=\"http://www.w3.org/1998/Math/MathML\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\"");
 	m_pie->write(" version=\"");
