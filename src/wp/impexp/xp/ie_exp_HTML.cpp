@@ -581,10 +581,6 @@ private:
 	UT_NumberStack	m_utsListType;
 	UT_uint32		m_iImgCnt;
 	UT_Wctomb		m_wmctomb;
-	UT_uint32		m_footnoteNum;
-	UT_uint32		m_footnoteRNum;
-	UT_uint32		m_endnoteNum;
-	UT_uint32		m_endnoteRNum;
 
 	enum WhiteSpace
 		{
@@ -3823,10 +3819,6 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 							  // to true
 {
 	m_StyleTreeBody = m_style_tree->find ("Normal");
-	m_footnoteNum = 1;
-	m_endnoteNum = 1;
-	m_footnoteRNum = 1;
-	m_endnoteRNum = 1;
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -4146,10 +4138,12 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 	{
 		m_utf8_1 = "span";
 
+		// TODO: Fix this to play nice with the styletree and use consistent styles btwn the two
+		//       Checkout _openSpan
 		m_utf8_1 += " class=\"ABI_FIELD_";
 		m_utf8_1 += szType;
 		m_utf8_1 += "\"";
-
+		
 		// TODO: Condense/generalize this, it looks absurd.
 		// TODO: Respect the document settings for style of footnote/endnote.
 		//	      That way, we don't have to worry about that by default, they look the same.
@@ -4167,18 +4161,22 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		
 		if (UT_strcmp (szType, "footnote_anchor") == 0)
 		{
+			const XML_Char * szID = 0;
+			pAP->getAttribute ("footnote-id", szID);
+			UT_uint32 ID = atoi(szID);
+			
 			UT_UTF8String footnoteAIDString;
-			UT_UTF8String_sprintf(footnoteAIDString, " id=\"fnA%d\"", (m_footnoteNum));
+			UT_UTF8String_sprintf(footnoteAIDString, " id=\"fnA%d\"", (ID));
 			m_utf8_1 += footnoteAIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			// --- //
 			UT_UTF8String footnoteANString;
 			UT_UTF8String footnoteALString;
 			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(footnoteALString, " href=\"#fnR%d\"", (m_footnoteNum));
+			UT_UTF8String_sprintf(footnoteALString, " href=\"#fnR%d\"", (ID));
 			m_utf8_1 += footnoteALString;
 			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(footnoteANString, "[%d]", (m_footnoteNum));
+			UT_UTF8String_sprintf(footnoteANString, "[%d]", (ID));
 			m_pie->write (footnoteANString.utf8_str (), footnoteANString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
@@ -4186,18 +4184,22 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		}
 		else if (UT_strcmp (szType, "endnote_anchor") == 0)
 		{
+			const XML_Char * szID = 0;
+			pAP->getAttribute ("endnote-id", szID);
+			UT_uint32 ID = atoi(szID);
+			
 			UT_UTF8String endnoteAIDString;
-			UT_UTF8String_sprintf(endnoteAIDString, " id=\"enA%d\"", (m_endnoteNum));
+			UT_UTF8String_sprintf(endnoteAIDString, " id=\"enA%d\"", (ID));
 			m_utf8_1 += endnoteAIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			// --- //
 			UT_UTF8String endnoteANString;
 			UT_UTF8String endnoteALString;
 			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(endnoteALString, " href=\"#enR%d\"", (m_endnoteNum));
+			UT_UTF8String_sprintf(endnoteALString, " href=\"#enR%d\"", (ID));
 			m_utf8_1 += endnoteALString;
 			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(endnoteANString, "%d", (m_endnoteNum));
+			UT_UTF8String_sprintf(endnoteANString, "%d", (ID));
 			m_pie->write (endnoteANString.utf8_str (), endnoteANString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
@@ -4205,43 +4207,49 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 		}
 		else if (UT_strcmp (szType, "footnote_ref") == 0)
 		{
+			const XML_Char * szID = 0;
+			pAP->getAttribute ("footnote-id", szID);
+			UT_uint32 ID = atoi(szID);
+			
 			UT_UTF8String footnoteRIDString;
-			UT_UTF8String_sprintf(footnoteRIDString, " id=\"fnR%d\"", (m_footnoteRNum));
+			UT_UTF8String_sprintf(footnoteRIDString, " id=\"fnR%d\"", (ID));
 			m_utf8_1 += footnoteRIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			// --- //
 			UT_UTF8String footnoteRLString;
 			UT_UTF8String footnoteRNString;
 			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(footnoteRLString, " href=\"#fnA%d\"", (m_footnoteRNum));
+			UT_UTF8String_sprintf(footnoteRLString, " href=\"#fnA%d\"", (ID));
 			m_utf8_1 += footnoteRLString;
 			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(footnoteRNString, "%d", (m_footnoteRNum));
+			UT_UTF8String_sprintf(footnoteRNString, "%d", (ID));
 			m_pie->write (footnoteRNString.utf8_str (), footnoteRNString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
 			tagClose (TT_A, m_utf8_1, ws_None);
-			m_footnoteRNum++;
 		}
 		else if (UT_strcmp (szType, "endnote_ref") == 0)
 		{
+			const XML_Char * szID = 0;
+			pAP->getAttribute ("endnote-id", szID);
+			UT_uint32 ID = atoi(szID);
+			
 			UT_UTF8String endnoteRIDString;
-			UT_UTF8String_sprintf(endnoteRIDString, " id=\"enR%d\"", (m_endnoteRNum));
+			UT_UTF8String_sprintf(endnoteRIDString, " id=\"enR%d\"", (ID));
 			m_utf8_1 += endnoteRIDString;
 			tagOpen (TT_SPAN, m_utf8_1, ws_None);
 			// --- //
 			UT_UTF8String endnoteRLString;
 			UT_UTF8String endnoteRNString;
 			m_utf8_1 = "a";
-			UT_UTF8String_sprintf(endnoteRLString, " href=\"#enA%d\"", (m_endnoteRNum));
+			UT_UTF8String_sprintf(endnoteRLString, " href=\"#enA%d\"", (ID));
 			m_utf8_1 += endnoteRLString;
 			tagOpen (TT_A, m_utf8_1, ws_None);
-			UT_UTF8String_sprintf(endnoteRNString, "%d", (m_endnoteRNum));
+			UT_UTF8String_sprintf(endnoteRNString, "%d", (ID));
 			m_pie->write (endnoteRNString.utf8_str (), endnoteRNString.byteLength ());
 			textUntrusted (field->getValue ());
 			m_utf8_1 = "a";
 			tagClose (TT_A, m_utf8_1, ws_None);
-			m_endnoteRNum++;
 		}
 		else
 		{
@@ -4625,7 +4633,6 @@ bool s_HTML_Listener::endOfDocument () {
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
 		// Some combined bug fixes make tagpops no longer necessary, afaict.
-		m_footnoteNum++;
 	}
 	//
 	// Output Endnotes
@@ -4638,7 +4645,6 @@ bool s_HTML_Listener::endOfDocument () {
 		m_pDocument->tellListenerSubset(this,pDocRange);
 		m_bInAFENote = false;
 		// Some combined bug fixes make tagpops no longer necessary, afaict.
-		m_endnoteNum++;
 	}
 	return true;
 }
