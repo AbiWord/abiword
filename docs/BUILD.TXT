@@ -1,6 +1,6 @@
 
-Build Instructions -- Linux
----------------------------
+Build Instructions -- Linux, Solaris, ...
+-----------------------------------------
 
 The Linux tree should build easily assuming that you have all the tools
 properly installed.  You'll need gcc, make, and all the tools which usually
@@ -12,12 +12,19 @@ Building the tree is a pretty simple process.  We use a "diving make" system,
 where virtually every directory in the tree hierarchy has its own Makefile,
 which contains the instructions for how to build the contents of that directory.
 
-To get things started, just cd into the abi/src directory, and type 'make'.
+There are several ways to build and run AbiWord:
 
-There's a separate note on FONTS that you'll probably need to look at before
-you can run AbiWord.  Remember this is a work-in-progress.  In the rare event that
-your system does not have PNG and zlib development libraries installed, you will 
-need to do this also. 
+[1] Developer Style:  just cd into the abi directory and type 'make'
+    and then 'make install'.  This will install the AbiSuite support
+    files and create abiword and AbiWord symlinks in /usr/bin or
+    /usr/local/bin to the executable.  This is a short-cut to creating
+    a normal package and installing it.
+
+[2] End-User Style:  just cd into the abi directory and type
+    'make distribution ABI_BUILD_VERSION=x.y.z ABI_DIST_TARGET=<fmt>'
+    where <fmt> is one or more of 'tgz', 'rpm', 'deb', 'slp', 'pkg'.
+    This will create one or more archive files in abi/dist.  These
+    may then be installed in the normal manner.
 
 
 Build Instructions -- Windows NT
@@ -28,12 +35,12 @@ use the same set of Makefiles on Linux as well as NT.  You'll need to
 get the CygWin32 tool set from Cygnus before you can build.  See
 http://www.cygnus.com/misc/gnu-win32/ for information and downloads.
 The file you need should be called cdk.exe on B19 and full.exe on B20.1,
-and it's going to be around 14 megabytes.  Installing this stuff on your
-NT machine will create an environment which looks remarkably like a UNIX
-box.  You'll get a standard bash shell, GNU make, and all the standard UNIX
-utilities like sed, awk, cp, ls, mv, and so on.  This environment is
-the key which allows us to use the same set of Makefiles for both NT
-and Linux.
+and it's going to be around 14 megabytes.  [This file is on the CD.]
+Installing this stuff on your NT machine will create an environment
+which looks remarkably like a UNIX box.  You'll get a standard bash
+shell, GNU make, and all the standard UNIX utilities like sed, gawk,
+cp, ls, mv, and so on.  This environment is the key which allows us
+to use the same set of Makefiles for both NT and Linux.
 
 Just in case you're wondering, yes, it should be possible to build
 this tree with a subset of the tools.  There's 14 meg of stuff there,
@@ -48,28 +55,56 @@ need them all to be in your PATH, since the Makefiles will expect them
 to be readily available.
 
 Additionally, AbiWord uses the PNG and zlib libraries.  Both of these are 
-available from our website, and are peers of the abi tree.  Once you 
-have all this stuff downloaded, AbiWord should build just fine.  The
-main AbiWord makefile will take care of building these other libraries.
+available from our website [and included on the CD], and are peers of the
+abi tree.  Once you have all this stuff downloaded, AbiWord should build
+just fine.  The main AbiWord makefile will take care of building everything.
+
+There are 2 ways to build and run AbiWord:
+
+[1] Developer Style:  just cd to abi and type 'make'.  To run AbiWord, cd
+    to the bin directory and type 'AbiWord -lib ../AbiSuite' -- this will
+    help AbiWord find the dictionary and other support files.
+
+[2] End-User Style:  just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z'
+    This will build a setup program (abi/dist/setup.exe).  If you then run the
+    setup program it will do a normal Win32 installation and create desktop
+    icons and start menu items.
+
+
+Build Instructions -- BeOS
+--------------------------
+
+Building on BeOS is similar to the other platforms.  We rely on the
+GNU command line utilities for bash, sed, gawk, etc.  On Intel systems
+we use GCC and on PPC we use MWCC.
+
+There are 2 ways to build and run AbiWord:
+
+[1] Developer Style:  just cd to abi and type 'make'.  To run AbiWord, cd
+    to the bin directory and type 'AbiWord -lib ../AbiSuite' -- this will
+    help AbiWord find the dictionary and other support files.
+
+[2] End-User Style:  just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z'
+    This will build a distribution zip file (abi/dist/AbiSuite-x.y.z-$(arch).zip).
+    Expand this in /boot/apps.  You can then run /boot/apps/AbiSuite/bin/AbiWord.
+
+
+
+=======================================================================================
+FAQ
+=======================================================================================
 
 Where is the executable?
 ------------------------
 
-The AbiWord executable (AbiWord or AbiWord.exe) is created in
-abi/src/wp/main/{unix,win}.  A copy of it is placed in
-abi/dist/<PLATFORM>/bin.
+The AbiWord executable is created in abi/src/$(OS)_$(OS_VERSION)_$(OS_ARCH)_OBJ/bin.
+(on my machine this is abi/src/WIN32_4.0_i386_OBJ/bin/AbiWord.exe)  You may use this
+copy to run for debugging or experimentation, but you should probably go ahead and
+do an install.
 
-<PLATFORM> is a placeholder for a name that will be automatically
-generated by the make system.  This string is constructed of the
-OS name, OS version, and machine architecture.  For example, on
-my system, it is "Linux_2.0.33_i386_DBG".  (The _DBG suffix indicates
-that it is a debug build.)
 
 Where are the other generated files?
 ------------------------------------
 
-The object files (.o or .obj) are placed in a <PLATFORM> subdirectory
-under the directory containing the corresponding source file.
-
-The library files (.a, .so, or .lib) are copied to abi/dist/<PLATFORM>/lib
-to allow the loader to conviently find them.
+The object files (.o or .obj) are placed in abi/src/<platform>/obj
+The library files (.a, .so, or .lib) are also placed in this directory.
