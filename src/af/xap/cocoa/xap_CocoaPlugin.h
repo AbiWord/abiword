@@ -22,7 +22,7 @@
 #ifndef XAP_COCOAPLUGIN_H
 #define XAP_COCOAPLUGIN_H
 
-#define XAP_COCOAPLUGIN_INTERFACE 20050302 /** The current version of the CocoaPlugin API. */
+#define XAP_COCOAPLUGIN_INTERFACE 20050303 /** The current version of the CocoaPlugin API. */
 
 #import <Cocoa/Cocoa.h>
 
@@ -151,6 +151,20 @@
  *         "(This document no longer exists!)".
  */
 - (NSString *)title;
+
+/**
+ * Selects and returns the current word, if any.
+ * 
+ * \return The current word, or nil if none could be selected.
+ */
+- (NSString *)selectWord;
+
+/**
+ * Insert a text string into the document.
+ * 
+ * \param text The string to insert.
+ */
+- (void)insertText:(NSString *)text;
 
 /* Mail Merge interface
  */

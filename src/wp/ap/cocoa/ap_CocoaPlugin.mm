@@ -687,6 +687,48 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 	return [NSString stringWithUTF8String:(m_pFrame->getNonDecoratedTitle())];
 }
 
+- (NSString *)selectWord
+{
+	NSString * selection = nil;
+
+	if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
+		if (FV_View * pView = static_cast<FV_View *>(m_pFrame->getCurrentView()))
+			{
+				/* If the user is on a word, but does not have it selected, we need
+				 * to go ahead and select that word.
+				 */
+				pView->moveInsPtTo(FV_DOCPOS_EOW_MOVE);
+				pView->moveInsPtTo(FV_DOCPOS_BOW);
+
+				pView->extSelTo(FV_DOCPOS_EOW_SELECT);
+
+				if (!pView->isSelectionEmpty())
+					{
+						UT_UCS4Char * ucs4 = 0;
+						pView->getSelectionText(ucs4);
+						if (ucs4)
+							{
+								UT_UTF8String utf8(ucs4);
+								selection = [NSString stringWithUTF8String:(utf8.utf8_str())];
+							}
+					}
+			}
+	return selection;
+}
+
+- (void)insertText:(NSString *)text
+{
+	if (text)
+		if ([text length])
+			if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
+				if (FV_View * pView = static_cast<FV_View *>(m_pFrame->getCurrentView()))
+					{
+						UT_UCS4String ucs4([text UTF8String]);
+
+						pView->cmdCharInsert(ucs4.ucs4_str(), ucs4.length());
+					}
+}
+
 - (NSString *)documentMailMergeSource
 {
 	NSString * path = 0;
