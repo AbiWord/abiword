@@ -536,7 +536,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 
 	if (x >= m_iWidth)
 	{
-		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen - 1;
+		pos = m_pBL->getPosition() + m_iOffsetFirst + m_iLen;
 		return;
 	}
 
