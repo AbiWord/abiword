@@ -74,7 +74,7 @@ PP_AttrProp::~PP_AttrProp()
 
 	if(m_pProperties)
 	{
-		UT_StringPtrMap<PropertyPair*>::UT_Cursor c(m_pProperties);
+		UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
 		const PropertyPair * entry = NULL;
 		for (entry = c.first(); c.is_valid(); entry = c.next())
 		{
