@@ -936,7 +936,18 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 		}
 	}
 
-	// update the preview, too
+	// the preview needs to suck in the changed data (to cache it
+	// for subsequent draws)
+	m_paragraphPreview->setFormat((AP_Dialog_Paragraph::tAlignState) _getMenuItemValue(id_MENU_ALIGNMENT),
+								  ((changed == id_MENU_SPECIAL_INDENT) || (changed == id_SPIN_SPECIAL_INDENT)) ? _getSpinItemValue(id_SPIN_SPECIAL_INDENT) : NULL,
+								  (AP_Dialog_Paragraph::tIndentState) _getMenuItemValue(id_MENU_SPECIAL_INDENT),
+								  (changed == id_SPIN_LEFT_INDENT) ? _getSpinItemValue(id_SPIN_LEFT_INDENT) : NULL,
+								  (changed == id_SPIN_RIGHT_INDENT) ? _getSpinItemValue(id_SPIN_RIGHT_INDENT) : NULL,
+								  (changed == id_SPIN_BEFORE_SPACING) ? _getSpinItemValue(id_SPIN_BEFORE_SPACING) : NULL,
+								  (changed == id_SPIN_AFTER_SPACING) ? _getSpinItemValue(id_SPIN_AFTER_SPACING) : NULL,
+								  ((changed == id_MENU_SPECIAL_SPACING) || (changed == id_SPIN_SPECIAL_SPACING)) ? _getSpinItemValue(id_SPIN_SPECIAL_SPACING) : NULL,
+								  (AP_Dialog_Paragraph::tSpacingState) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+	
 	m_paragraphPreview->draw();
 }
 

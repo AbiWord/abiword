@@ -319,6 +319,22 @@ AP_Preview_Paragraph::~AP_Preview_Paragraph()
 	DELETEP(m_followingBlock);	
 }
 
+void AP_Preview_Paragraph::setFormat(AP_Dialog_Paragraph::tAlignState align,
+									 const XML_Char * firstLineIndent,
+									 AP_Dialog_Paragraph::tIndentState indent,
+									 const XML_Char * leftMargin,
+									 const XML_Char * rightMargin,
+									 const XML_Char * beforeSpacing,
+									 const XML_Char * afterSpacing,
+									 const XML_Char * lineSpacing,
+									 AP_Dialog_Paragraph::tSpacingState spacing)
+{
+	UT_ASSERT(m_activeBlock);
+	m_activeBlock->setFormat(align, firstLineIndent, indent, leftMargin,
+							 rightMargin, beforeSpacing, afterSpacing,
+							 lineSpacing, spacing);
+}
+
 void AP_Preview_Paragraph::draw(void)
 {
 	UT_ASSERT(m_gc);

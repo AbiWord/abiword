@@ -90,6 +90,16 @@ class AP_Preview_Paragraph : public XAP_Preview
 						 AP_Dialog_Paragraph * dlg);
 	virtual ~AP_Preview_Paragraph(void);
 
+	void setFormat(AP_Dialog_Paragraph::tAlignState align,
+				   const XML_Char * firstLineIndent,
+				   AP_Dialog_Paragraph::tIndentState indent,
+				   const XML_Char * leftMargin,
+				   const XML_Char * rightMargin,
+				   const XML_Char * beforeSpacing,
+				   const XML_Char * afterSpacing,
+				   const XML_Char * lineSpacing,
+				   AP_Dialog_Paragraph::tSpacingState spacing);
+	
 	virtual void draw(void);
 	
  protected:
