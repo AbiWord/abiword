@@ -36,9 +36,25 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-protected:
 
+	int done;
+	void eventOK();
+	void eventCancel();
+protected:
+	PtWidget_t *_constructWindow();
+   PtWidget_t * m_entryTitle ;
+  PtWidget_t * m_entrySubject ;
+  PtWidget_t * m_entryAuthor ;
+  PtWidget_t * m_entryPublisher ;
+  PtWidget_t * m_entryCoAuthor ;
+  PtWidget_t * m_entryCategory ;
+  PtWidget_t * m_entryKeywords ;
+  PtWidget_t * m_entryLanguages ;
+  PtWidget_t * m_entrySource ;
+  PtWidget_t * m_entryRelation ;
+  PtWidget_t * m_entryCoverage ;
+  PtWidget_t * m_entryRights ;
+  PtWidget_t * m_entryDescription ; 
 };
 
 #endif /* AP_QNXDIALOG_METADATA_H */
