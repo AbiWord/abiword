@@ -1109,7 +1109,6 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 	fp_Line* pCurrentLine = pFirstBlock->getFirstLine();
 		
 	fp_Column* pCurColumn = (fp_Column*) getFirstContainer();
-	UT_ASSERT(pCurColumn);
 
 	while (pCurColumn)
 	{

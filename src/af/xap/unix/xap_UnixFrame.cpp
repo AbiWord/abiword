@@ -174,7 +174,8 @@ gboolean XAP_UnixFrame::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpo
 	UT_ASSERT(pFrame);
 	gtk_object_set_data(GTK_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(TRUE));
-	pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
+	if (pFrame->getCurrentView())
+		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
 	return FALSE;
 }
 
@@ -184,7 +185,8 @@ gboolean XAP_UnixFrame::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gp
 	UT_ASSERT(pFrame);
 	gtk_object_set_data(GTK_OBJECT(w), "toplevelWindowFocus",
 						GINT_TO_POINTER(FALSE));
-	pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
+	if (pFrame->getCurrentView())
+		pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
 	return FALSE;
 }
 

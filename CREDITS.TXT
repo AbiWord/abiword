@@ -11,7 +11,7 @@ Shaw Terwilliger <sterwill@abisource.com>
 
 contributors
 ------------
-Pierre Abbat <phma@oltronics.net>				LaTeX Testing, Help translation, font work
+Pierre Abbat <phma@oltronics.net>		LaTeX Testing, Help translation, font work
 Ithamar R. Adema <ithamar@dds.nl>               BeOS fixes
 Matthew Allen <fret@ozemail.com.au>             MouseWheel fix
 Tim Allen <rita_tim@tpg.com.au>			Goto Localization, Indonesian Translation
@@ -92,10 +92,11 @@ Ed Stafford <dysan_2000@hotmail.com>            Ghost cursor fix
 Owen Stenseth <owen@pdaverticals.com>           script to output translation data
 Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
 Jim Studt <jim@federated.com>                   ARM configuration
+Peter Teichman <peter@helixcode.com>		XFree86 4.0 Fix
 Petr Tesarik <tesarik@lupa.cz>                  X11 select and Paste
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>
-Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     XHTML Importer, DocBook exporter, odd jobs
+Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     Lots of fun stuff
 John Tunison <nosinut@WIND.REM.CMU.EDU>         GNOME dialogs
 Göran Thyni <goran@kirra.net>                   libxml support
 Kevin Vajk <kvajk@ricochet.net>                 File import/export detection
