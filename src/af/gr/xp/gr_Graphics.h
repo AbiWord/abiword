@@ -84,7 +84,7 @@ class ABI_EXPORT GR_Font
 		return m_hashKey;
 	};
 	UT_uint32 getCharWidthFromCache (UT_UCSChar c);
-	virtual GR_CharWidths* GR_Font::newFontWidths(void); /*reimplement if you want to instanciate something else */
+	virtual GR_CharWidths* newFontWidths(void); /*reimplement if you want to instanciate something else */
 
   protected:
 	/*! hash key for font cache. Must be initialized in ctor */
