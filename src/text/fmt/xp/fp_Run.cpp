@@ -342,7 +342,8 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, U
 
 void fp_TabRun::setWidth(UT_sint32 iWidth)
 {
-	m_iWidth = iWidth;
+  clearScreen();
+  m_iWidth = iWidth;
 }
 
 void fp_TabRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
