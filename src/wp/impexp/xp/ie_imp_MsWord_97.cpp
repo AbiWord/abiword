@@ -865,7 +865,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	FriBidiCharType cType = fribidi_get_type((FriBidiChar)eachchar);
 	if(FRIBIDI_IS_STRONG(cType))
 		m_bPrevStrongCharRTL = FRIBIDI_IS_RTL(cType);
-	UT_DEBUGMSG(("#TF: _charProc: c 0x%x\n",eachchar));
+	xxx_UT_DEBUGMSG(("#TF: _charProc: c 0x%x\n",eachchar));
 #endif
 	return 0;
 }
@@ -1302,7 +1302,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	this->_flush ();
 
 #ifdef BIDI_ENABLED
-	UT_DEBUGMSG(("#TF: _beginPara: apap->fBidi %d\n",apap->fBidi));
+	xxx_UT_DEBUGMSG(("#TF: _beginPara: apap->fBidi %d\n",apap->fBidi));
 
 	if(apap->fBidi == 1)
 		m_bPrevStrongCharRTL = true;
@@ -1454,21 +1454,74 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		props += propBuffer;
 	}
 
-#if 0
+#ifdef DEBUG
 	// precursor to list handling
 
-	// when non-zero, list level for this paragraph
-	if ( apap->ilvl )
-	  {
-		//level=
-		sprintf(propBuffer, "%d", apap->ilvl);
-	  }
+	/*
+		the following code at the moment is merely intended to print debug messages
+		to see what information we can get from the lists and how, since the MS
+		documentation is very poor
+	*/
+	UT_DEBUGMSG(("is this a list?: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));  //ilvl is the list level
+	//level=
+	//sprintf(propBuffer, "%d", apap->ilvl);
+	LVL * myLVL;
+	LFO * myLFO;
+	LST * myLST;
+	LSTF * myLSTF;
+	LVLF * myLVLF;
+	PAPX * myPAPX;
+	CHPX * myCHPX;
 
 	if ( apap->ilfo )
-	  {
-		//listid=
-		sprintf(propBuffer, "%d", apap->ilfo);
-	  }
+	{
+		// all lists have ilfo set
+		//sprintf(propBuffer, "%d", apap->ilfo);
+
+		// for the time being we will ignore any format overrides, and will deal
+		// only with the basic information found in the LST
+		myLFO = &ps->lfo[apap->ilfo - 1];
+		UT_uint32 i = 0;
+		xxx_UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myLFO->lsid));
+		while(i < ps->noofLST && ps->lst[i++].lstf.lsid != myLFO->lsid)
+			UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
+
+		if(ps->lst[--i].lstf.lsid != myLFO->lsid)
+		{
+			UT_DEBUGMSG(("error: could not locate LST entry\n"));
+			goto list_error;
+		}
+
+		myLST = &ps->lst[i];
+		myLVL = &myLST->lvl[apap->ilvl];
+		myLVLF = &myLVL->lvlf;
+		UT_DEBUGMSG(("list: lvlf: iStartAt %d\n",myLVLF->iStartAt));
+
+		// now that we have the LVLF, let's see what else is says
+		/*
+		   OK, there are  more list numerical formats than the MS documentation list :-)
+		   so here I will put what I found out (latter we will move it to some better place
+		   enum wordListNumberFormat { WLNF_ARABIC = 0,
+									   WLNF_UPPER_ROMAN = 1,
+									   WLNF_LOWER_ROMAN = 2,
+									   WLNF_UPPER_LETTER = 3,
+									   WLNF_LOWER_LETTER = 4,
+									   WLNF_ORDINAL = 5,
+									   WLNF_BULLETS = 23  // the actual bullet shape is stored elsewhere
+									 } ;
+		*/
+		UT_DEBUGMSG(("list: lvlf: format %d\n",myLVLF->nfc)); // see the comment above for nfc values
+		UT_DEBUGMSG(("list: lvlf: number align	%d\n",myLVLF->jc));
+		/* the following members of the myLVLF struct (see wv.h) might be usefull and have
+		   the following meaning:
+
+		   jc  -- alignment of the number(0 == left, 1 == right, 2 == center)
+		   ixchFollow -- character to follow the number (0 == tab, 1 == space, 2 == nothing)
+
+		   there is of course more stuff we can get, but this is it for the moment
+		*/
+	}
+list_error:
 #endif
 
 	// remove the trailing semi-colon
@@ -1493,7 +1546,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 								void *prop, int dirty)
 {
-	UT_DEBUGMSG(("#TF: _endPara\n"));
+	xxx_UT_DEBUGMSG(("#TF: _endPara\n"));
 	// have to flush here, otherwise flushing later on will result in
 	// an empty paragraph being inserted
 	this->_flush ();
