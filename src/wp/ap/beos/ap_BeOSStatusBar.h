@@ -30,6 +30,8 @@
 
 class XAP_Frame;
 
+// I want to make this the height of a scroll bar
+// (and not have is as a #define...)
 #define STATUS_BAR_HEIGHT 20
 
 //////////////////////////////////////////////////////////////////

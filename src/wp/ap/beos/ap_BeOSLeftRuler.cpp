@@ -124,16 +124,16 @@ filter_result LeftRulerFilter::Filter(BMessage *msg, BHandler **target) {
 }                                             
 
 LeftRulerDrawView::LeftRulerDrawView(AP_BeOSLeftRuler *pRuler, AV_View *pView, 
-				   BRect frame, const char *name,
-                                   uint32 resizeMask, uint32 flags) 
+				   					 BRect frame, const char *name,
+                                     uint32 resizeMask, uint32 flags) 
 		: be_GRDrawView(pView, frame, name, resizeMask, flags) {
 	m_pAPRuler = pRuler;
-        AddFilter(new LeftRulerFilter(this));
+    AddFilter(new LeftRulerFilter(this));
 }
 
 void LeftRulerDrawView::FrameResized(float new_width, float new_height) {
-	m_pAPRuler->setHeight((int)new_height);
-        m_pAPRuler->setWidth((int)new_width);
+	m_pAPRuler->setHeight((int)new_height+1);
+    m_pAPRuler->setWidth((int)new_width+1);
 	//Then call the inherited version
 	//be_GRDrawView::FrameResized(new_width, new_height);
 	m_pAPRuler->draw(NULL);
@@ -143,7 +143,7 @@ void LeftRulerDrawView::Draw(BRect invalid) {
 //	BPicture *mypict;
 //	BeginPicture(new BPicture);
 	UT_Rect rect(invalid.left,invalid.top, 
-		     invalid.Width(), invalid.Height());
+		     invalid.Width()+1, invalid.Height()+1);
 	Window()->DisableUpdates();
 	m_pAPRuler->draw(&rect);
 	Window()->EnableUpdates();
@@ -171,8 +171,8 @@ void  AP_BeOSLeftRuler::createWidget(BRect r)
         be_Window *pBWin = (be_Window*)((XAP_BeOSFrame *)m_pFrame)->getTopLevelWindow()
 ;
         pBWin->AddChild(m_wLeftRuler);
-        setHeight(r.Height());
-        setWidth(r.Width());        
+        setHeight(r.Height()+1);
+        setWidth(r.Width()+1);        
 }
 
 void AP_BeOSLeftRuler::setView(AV_View * pView) {

@@ -468,8 +468,8 @@ ToolbarView::ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name,
 	m_pBeOSToolbar = tb;
 		
 	SetViewColor(216, 216, 216);
-	m_fOldWidth=frame.Width();
-	m_fOldHeight=frame.Height();
+	m_fOldWidth=frame.Width()+1;
+	m_fOldHeight=frame.Height()+1;
 	TBMouseFilter *filter = new TBMouseFilter(this);
 	AddFilter(filter);
 	
@@ -710,16 +710,16 @@ void ToolbarView::HighLightItem(int index, int state) {
 
 void ToolbarView::FrameResized(float width, float height) {
 	BRect r;
-	if (width > m_fOldWidth)
+	/*if (width+1 > m_fOldWidth)
 	{
-		r.left=m_fOldWidth-5;
+	*/	r.left=m_fOldWidth-5;
 		r.right=width;
 		r.top=Bounds().top;
 		r.bottom=Bounds().bottom;
 //		UT_DEBUGMSG(("Actually invalidating toolbar\n"));
 		Invalidate(r);
-	}
-	m_fOldWidth=width;
+	/*}*/
+	m_fOldWidth=width+1;
 }
 									
 void ToolbarView::MouseMoved(BPoint where, uint32 code,	const BMessage *msg) 

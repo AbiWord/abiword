@@ -18,7 +18,7 @@ void be_GRDrawView::SetView(AV_View *pView) {
 void be_GRDrawView::FrameResized(float new_width, float new_height) {
 	//We should only do this after things are stableized
 	if (m_pView) {
-		BRect r;
+		//BRect r;
 		printf("GRDRAWVIEW: Resize Redrawing \n");
 		//m_pView->setWindowSize(new_width, new_height);
 		m_pView->draw(NULL);
@@ -31,7 +31,7 @@ void be_GRDrawView::Draw(BRect updateRect) {
 		printf("GRDRAWVIEW: Draw request actually requested \n");
 		//TODO: Make the update more succinct with a rect
 		BRect r = Bounds();
-   		UT_Rect rect(r.left,r.top, r.Width(), r.Height());
+   		UT_Rect rect(r.left,r.top, r.Width()+1, r.Height()+1);
 		//m_pView->draw(&rect);
 		m_pView->draw(NULL);
 	}

@@ -51,8 +51,8 @@ StatusBarDrawView::StatusBarDrawView(AP_BeOSStatusBar *pBar, AV_View *pView,
 		: be_GRDrawView(pView, frame, name, resizeMask, flags) {
 
 	m_pAPStatusBar = pBar;
-	m_pAPStatusBar->setHeight(20); //this line is the key 
-	m_pAPStatusBar->setWidth((int)frame.IntegerWidth());
+	m_pAPStatusBar->setHeight(STATUS_BAR_HEIGHT); //this line is the key 
+	m_pAPStatusBar->setWidth((int)frame.IntegerWidth()+1);
 }
 
 void StatusBarDrawView::FrameResized(float new_width, float new_height) {
@@ -64,9 +64,9 @@ void StatusBarDrawView::FrameResized(float new_width, float new_height) {
 	if (new_width > m_fOldWidth)
 	{
 		r.left=m_fOldWidth-5;
-		r.right=new_width;
+		r.right=new_width-1;
 		r.top=Bounds().top;
-		r.bottom=Bounds().bottom;
+		r.bottom=Bounds().bottom-1;
 		UT_DEBUGMSG(("Actually invalidating StatusBar\n"));
 		Invalidate(r);
 	}

@@ -205,8 +205,8 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
     ((FV_View *) m_pView)->setShowPara(((AP_FrameData*)m_pData)->m_bShowPara);
 	
 	m_pBeDocView->Window()->Lock();
-	m_pView->setWindowSize(m_pBeDocView->Bounds().Width(),
-			       m_pBeDocView->Bounds().Height());
+	m_pView->setWindowSize(m_pBeDocView->Bounds().Width()+1,
+			       m_pBeDocView->Bounds().Height()+1);
 	m_pBeDocView->Window()->Unlock();
 	
 	m_pBeDocView->Window()->PostMessage('inme');
@@ -576,63 +576,63 @@ be_DocView *be_Window::_createDocumentWindow()
 {
 	BRect r;
 	
-        //Set up the scroll bars on the outer edges of the document area
-        r = m_winRectAvailable;
-        r.bottom -= (B_H_SCROLL_BAR_HEIGHT+1+ STATUS_BAR_HEIGHT);
-        r.left = r.right - B_V_SCROLL_BAR_WIDTH;
-        m_vScroll = new TFScrollBar(m_pBeOSFrame, r,
-                                    "VertScroll", NULL, 0, 100, B_VERTICAL);
-        AddChild(m_vScroll);
+    //Set up the scroll bars on the outer edges of the document area
+    r = m_winRectAvailable;
+    r.bottom -= (B_H_SCROLL_BAR_HEIGHT + 1 + STATUS_BAR_HEIGHT);
+    r.left = r.right - B_V_SCROLL_BAR_WIDTH;
+    m_vScroll = new TFScrollBar(m_pBeOSFrame, r,
+                                "VertScroll", NULL, 0, 100, B_VERTICAL);
+    AddChild(m_vScroll);
 
-        r = m_winRectAvailable;
-        r.top = r.bottom - (B_H_SCROLL_BAR_HEIGHT+1+ STATUS_BAR_HEIGHT);
-        r.bottom-=(1+ STATUS_BAR_HEIGHT);
-        r.right -= B_V_SCROLL_BAR_WIDTH;
-        m_hScroll = new TFScrollBar(m_pBeOSFrame, r,
-                                    "HortScroll", NULL, 0, 100, B_HORIZONTAL);
-        AddChild(m_hScroll);
-        m_pBeOSFrame->setScrollBars(m_hScroll, m_vScroll);
-        m_winRectAvailable.bottom -= (B_H_SCROLL_BAR_HEIGHT +2+ STATUS_BAR_HEIGHT);
-        m_winRectAvailable.right -= B_V_SCROLL_BAR_WIDTH +1;
+    r = m_winRectAvailable;
+    r.top = r.bottom - (B_H_SCROLL_BAR_HEIGHT + 1 + STATUS_BAR_HEIGHT);
+    r.bottom-=(1 + STATUS_BAR_HEIGHT);
+    r.right -= B_V_SCROLL_BAR_WIDTH;
+    m_hScroll = new TFScrollBar(m_pBeOSFrame, r,
+                                "HortScroll", NULL, 0, 100, B_HORIZONTAL);
+    AddChild(m_hScroll);
+    m_pBeOSFrame->setScrollBars(m_hScroll, m_vScroll);
+    m_winRectAvailable.bottom -= (B_H_SCROLL_BAR_HEIGHT + 2 + STATUS_BAR_HEIGHT);
+    m_winRectAvailable.right -= B_V_SCROLL_BAR_WIDTH +1;
 
 	//Create the Top and Left Rulers (need a width here)
 #define TOP_HEIGHT 32
 #define LEFT_WIDTH 32
 	// create the top ruler
 	r = m_winRectAvailable;
-	r.bottom = r.top + TOP_HEIGHT;
+	r.bottom = r.top + TOP_HEIGHT - 1;
 	AP_BeOSTopRuler * pBeOSTopRuler = new AP_BeOSTopRuler(m_pBeOSFrame);
 	UT_ASSERT(pBeOSTopRuler);
 	pBeOSTopRuler->createWidget(r);
 	((AP_FrameData*)m_pBeOSFrame->getFrameData())->m_pTopRuler = pBeOSTopRuler;
-	m_winRectAvailable.top = r.bottom +1;
+	m_winRectAvailable.top = r.bottom + 1;
 
 	// create the left ruler
 	r = m_winRectAvailable;
-	r.right = r.left + LEFT_WIDTH;
+	r.right = r.left + LEFT_WIDTH - 1;
 	AP_BeOSLeftRuler * pBeOSLeftRuler = new AP_BeOSLeftRuler(m_pBeOSFrame);
 	UT_ASSERT(pBeOSLeftRuler);
 	pBeOSLeftRuler->createWidget(r);
 	((AP_FrameData*)m_pBeOSFrame->getFrameData())->m_pLeftRuler = pBeOSLeftRuler;
-	m_winRectAvailable.left = r.right +1;
+	m_winRectAvailable.left = r.right + 1;
 
 	// get the width from the left ruler and stuff it into the top ruler.
 	pBeOSTopRuler->setOffsetLeftRuler(pBeOSLeftRuler->getWidth());
 
-        //Add the document view in the remaining space
-        m_pbe_DocView = new be_DocView(m_winRectAvailable, "MainDocView",
-                                       B_FOLLOW_ALL, B_WILL_DRAW);
-        //m_pbe_DocView->SetViewColor(0,120, 255);
-        //m_pbe_DocView->SetViewColor(B_TRANSPARENT_32_BIT);
-        //Add the view to both frameworks (Be and Abi)
-        AddChild(m_pbe_DocView);
-        m_pBeOSFrame->setBeDocView(m_pbe_DocView);
+    //Add the document view in the remaining space
+    m_pbe_DocView = new be_DocView(m_winRectAvailable, "MainDocView",
+                                   B_FOLLOW_ALL, B_WILL_DRAW);
+    //m_pbe_DocView->SetViewColor(0,120, 255);
+    //m_pbe_DocView->SetViewColor(B_TRANSPARENT_32_BIT);
+    //Add the view to both frameworks (Be and Abi)
+    AddChild(m_pbe_DocView);
+    m_pBeOSFrame->setBeDocView(m_pbe_DocView);
 
-        //Without this we never get any key inputs
-        m_pbe_DocView->WindowActivated(true); // So the cursor shows up.
-        m_pbe_DocView->MakeFocus(true);
-        
-        return(m_pbe_DocView);                                    
+    //Without this we never get any key inputs
+    m_pbe_DocView->WindowActivated(true); // So the cursor shows up.
+    m_pbe_DocView->MakeFocus(true);
+    
+    return(m_pbe_DocView);                                    
 }
 
 BView * be_Window::_createStatusBarWindow() 

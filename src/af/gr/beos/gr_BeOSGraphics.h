@@ -21,6 +21,7 @@
 #define GR_BEOSGRAPHICS_H
 
 #include "gr_Graphics.h"
+#include "ut_assert.h"
 #include <Be.h>
 
 //#define USE_BACKING_BITMAP 1
@@ -160,7 +161,7 @@ BPoint GR_BeOSGraphics::beosiseLineEnding(UT_sint32 x1, UT_sint32 y1,
 		}
 		else
 		{
-			assert(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 		
 	} 

@@ -374,7 +374,7 @@ void be_Window::MessageReceived(BMessage *pMsg)
 
 bool be_Window::_createWindow(const char *szMenuLayoutName,
 			   const char *szMenuLabelSetName) {
-	BRect r;
+	//BRect r;
 
 	m_winRectAvailable = Bounds();
 	//printf("Initial Available Rect: "); m_winRectAvailable.PrintToStream();
@@ -439,7 +439,7 @@ void be_DocView::FrameResized(float new_width, float new_height) {
 	//Only do this after we have resize the Graphics
 	AV_View *pView = pBWin->m_pBeOSFrame->getCurrentView();
 	if (pView) {
-		pView->setWindowSize(rect.Width(), rect.Height());
+		pView->setWindowSize(rect.Width()+1, rect.Height()+1);
 		pView->draw(); //TODO do we need this???
  		/* Methinks it can handle itself*/
 	}
@@ -461,7 +461,7 @@ void be_DocView::Draw(BRect updateRect) {
 	// passes updateRect.top and updateRect.bottom as an equal value, so how do we get around this (more)
 	// other than pre-decreasing the top value.
 	// The same thing also occurs for a vertical line..
-	
+	/*
 	updateRect.top -= 1.0f;
 	if( updateRect.top < 0.0f)
 	{
@@ -475,7 +475,7 @@ void be_DocView::Draw(BRect updateRect) {
 		updateRect.left = 0.0f;
 		updateRect.right += 1.0f;
 	}
-
+*/
 #if defined(USE_BACKING_BITMAP)
 	GR_BeOSGraphics 	*pG;
 	BBitmap 		*pBitmap;	
@@ -517,8 +517,8 @@ Things to do to speed this up, make it less flashy:
 		UT_Rect r;
 		r.top = (UT_sint32)updateRect.top;
 		r.left = (UT_sint32)updateRect.left;
-		r.width = (UT_sint32)updateRect.Width();
-		r.height = (UT_sint32)updateRect.Height();
+		r.width = (UT_sint32)updateRect.Width()+1;
+		r.height = (UT_sint32)updateRect.Height()+1;
 		pView->draw(&r);
 /*
 		if ((mypict = EndPicture())) {
