@@ -576,15 +576,12 @@ static void help_button_cb (GObject * button, XAP_Dialog * pDlg)
 static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
 {
   if (pDlg->getHelpUrl().size () > 0) {
-    UT_DEBUGMSG(("DOM: %s\n", pDlg->getHelpUrl().c_str()));
-
     GtkWidget * button = gtk_button_new_from_stock (GTK_STOCK_HELP);
 
-    // make sure button is at the far left
     gtk_box_pack_start(GTK_BOX(me->action_area),
 		       button, TRUE, FALSE, 0);
-    gtk_box_reorder_child (GTK_BOX(me->action_area), button, 0);
-
+    gtk_button_box_set_child_secondary (GTK_BUTTON_BOX(me->action_area),
+					button, TRUE);
     g_signal_connect (G_OBJECT (button), "clicked",
 		      G_CALLBACK(help_button_cb), pDlg);
     gtk_widget_show (button);
