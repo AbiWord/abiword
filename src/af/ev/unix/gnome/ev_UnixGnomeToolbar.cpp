@@ -357,16 +357,17 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 			// Append to the vector even if spacer, to sync up with refresh
 			// which expects each item in the layout to have a place in the
 			// vector.
-#if 0
-		        gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
-#else
+
 			_wd * wd = new _wd(this,id);
 			UT_ASSERT(wd);
 			m_vecToolbarWidgets.addItem(wd);
 
+#if 0
 			gtk_widget_show(m_wToolbar);
 			_addToolbar(m_wToolbar);
 			m_wToolbar = _makeToolbar();
+#else
+		        gtk_toolbar_append_space(GTK_TOOLBAR(m_wToolbar));
 #endif
 			break;
 		}
@@ -453,16 +454,22 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 
 void EV_UnixGnomeToolbar::show(void)
 {
+#if 0
 	UT_uint32 nbToolbars = m_vecToolbars.getItemCount();
 	for (UT_uint32 i = 0; i < nbToolbars; i++)
 	{
 		GtkWidget *toolbar = static_cast<GtkWidget *> (m_vecToolbars.getNthItem(i));
 		gtk_widget_show (toolbar->parent);
 	}
+#else
+	if(m_wToolbar)
+	  gtk_widget_show(m_wToolbar->parent);
+#endif
 }
 
 void EV_UnixGnomeToolbar::hide(void)
 {
+#if 0
 	UT_uint32 nbToolbars = m_vecToolbars.getItemCount();
 	for (UT_uint32 i = 0; i < nbToolbars; i++)
 	{
@@ -470,4 +477,11 @@ void EV_UnixGnomeToolbar::hide(void)
 		gtk_widget_hide (toolbar->parent);
 		gtk_widget_queue_resize (toolbar->parent->parent);
 	}
+#else
+	if(m_wToolbar)
+	  {
+	    gtk_widget_hide(m_wToolbar->parent);
+	    gtk_widget_queue_resize (m_wToolbar->parent->parent);
+	  }
+#endif
 }
