@@ -273,10 +273,11 @@ void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
 
 void AP_Dialog_FormatTable::setBackgroundColor(UT_RGBColor clr)
 {
-	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
+	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
+	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
 	
-	CLONEP(m_bgColor, s.c_str());
-	CLONEP(m_bgFillStyle, "fill");
+	CLONEP(m_bgColor, bgcol.c_str());
+	CLONEP(m_bgFillStyle, bstmp.c_str());
 	
 	addOrReplaceVecProp(m_vecProps, "bgcolor", m_bgColor);
 	addOrReplaceVecProp(m_vecProps, "bg-style", m_bgFillStyle);
