@@ -80,6 +80,8 @@ Section "Abiword.exe (required)"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Abiword" "DisplayName" "Abiword (remove only)"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Abiword" "UninstallString" '"$INSTDIR\UninstallAbiWord.exe"'
 
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\AppPaths\AbiWord" "" '"$INSTDIR\AbiWord\bin\AbiWord.exe"'
+
 	; New Uninstaller 
 	WriteUninstaller "UninstallAbiWord.exe"
 

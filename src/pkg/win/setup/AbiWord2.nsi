@@ -495,6 +495,8 @@ Section "$(TITLE_section_abi)" section_abi
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "DisplayName" "${PRODUCT} ${VERSION} (remove only)"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "UninstallString" '"$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe"'
 
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\AppPaths\AbiWord" "" '"$INSTDIR\AbiWord\bin\AbiWord.exe"'
+
 	; New Uninstaller 
 	WriteUninstaller "Uninstall${PRODUCT}${VERSION_MAJOR}.exe"
 
