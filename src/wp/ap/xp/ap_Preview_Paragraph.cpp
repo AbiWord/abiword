@@ -193,7 +193,7 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 			m_lineSpacing = 0;
 			break;
 		case AP_Dialog_Paragraph::spacing_ONEANDHALF:
-			m_lineSpacing = (UT_uint32) ((double) m_fontHeight * 0.5);
+			m_lineSpacing = (UT_uint32) ((double) m_fontHeight * (double) 0.5);
 			break;
 		case AP_Dialog_Paragraph::spacing_DOUBLE:
 			m_lineSpacing = m_fontHeight;
@@ -203,7 +203,7 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 			// TODO : unless it's less than the height of a line
 			if ((UT_uint32) (UT_convertToInches(lineSpacing) * (double) DIMENSION_INCH_SCALE_FACTOR) > m_fontHeight)
 				m_lineSpacing = (UT_uint32) (UT_convertToInches(lineSpacing)
-											 * (double) DIMENSION_INCH_SCALE_FACTOR) - m_fontHeight;
+											 * (double) DIMENSION_INCH_SCALE_FACTOR) - (double) m_fontHeight;
 			break;
 		case AP_Dialog_Paragraph::spacing_EXACTLY:
 			// TODO : is this right?  I think we just use the spacing they asked
@@ -212,7 +212,7 @@ void AP_Preview_Paragraph_Block::setFormat(AP_Dialog_Paragraph::tAlignState alig
 										 * (double) DIMENSION_INCH_SCALE_FACTOR);
 			break;
 		case AP_Dialog_Paragraph::spacing_MULTIPLE:
-			m_lineSpacing = m_fontHeight * ((UT_uint32) UT_convertDimensionless(lineSpacing) - 1);
+			m_lineSpacing = m_fontHeight * (UT_uint32) (UT_convertDimensionless(lineSpacing) - (double) 1);
 			break;
 		}
 	}
