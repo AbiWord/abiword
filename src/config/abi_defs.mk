@@ -69,6 +69,7 @@ ABI_TMDEFS=	-DABISOURCE_LICENSED_TRADEMARKS
 ABI_OPTIONS+=LicensedTrademarks:On
 else
 ABI_TMDEFS=
+ABI_OPTIONS+=LicensedTrademarks:Off
 endif
 
 ##################################################################
