@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -22,9 +24,41 @@
 #define IE_EXP_HTML_H
 
 #include "ie_exp.h"
-#include "pl_Listener.h"
+
+/* NOTE: I'm trying to keep the code similar across versions,
+ *       and therefore features are enabled/disabled here:
+ */
+
+/* Define if the base unicode char is UCS-4
+ */
+/* #undef HTML_UCS4 */
+
+/* Define if the sniffers need to pass export name to parent
+ */
+/* #undef HTML_NAMED_CONSTRUCTORS */
+
+/* Define if the [P/X]HTML export options dialog is implemented
+ */
+/* #undef HTML_DIALOG_OPTIONS */
+
+/* Define if the tables are supported
+ */
+/* #undef HTML_TABLES_SUPPORTED */
+
+/* Define if meta information is supported
+ */
+/* #undef HTML_META_SUPPORTED */
+
+/* TODO: Rather than having separate sniffers to differentiate
+ *       the exporter's behaviour, should have a dialog box
+ *       with options.
+ */
+#ifndef HTML_DIALOG_OPTIONS
+#define HTML_ENABLE_HTML4 
+/* #undef HTML_ENABLE_PHTML */
+#endif
+
 class PD_Document;
-class s_HTML_Listener;
 
 // The exporter/writer for HTML
 
@@ -33,7 +67,7 @@ class ABI_EXPORT IE_Exp_HTML_Sniffer : public IE_ExpSniffer
 	friend class IE_Exp;
 
 public:
-	IE_Exp_HTML_Sniffer () {}
+	IE_Exp_HTML_Sniffer ();
 	virtual ~IE_Exp_HTML_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);
@@ -44,12 +78,14 @@ public:
 										IE_Exp ** ppie);
 };
 
+#ifdef HTML_ENABLE_HTML4
+
 class ABI_EXPORT IE_Exp_HTML4_Sniffer : public IE_ExpSniffer
 {
 	friend class IE_Exp;
 
 public:
-	IE_Exp_HTML4_Sniffer () {}
+	IE_Exp_HTML4_Sniffer ();
 	virtual ~IE_Exp_HTML4_Sniffer () {}
 
 	virtual bool recognizeSuffix (const char * szSuffix);
@@ -60,26 +96,60 @@ public:
 										IE_Exp ** ppie);
 };
 
+#endif /* HTML_ENABLE_HTML4 */
+
+#ifdef HTML_ENABLE_PHTML
+
+class ABI_EXPORT IE_Exp_PHTML_Sniffer : public IE_ExpSniffer
+{
+	friend class IE_Exp;
+
+public:
+	IE_Exp_PHTML_Sniffer ();
+	virtual ~IE_Exp_PHTML_Sniffer () {}
+
+	virtual bool recognizeSuffix (const char * szSuffix);
+	virtual bool getDlgLabels (const char ** szDesc,
+							   const char ** szSuffixList,
+							   IEFileType * ft);
+	virtual UT_Error constructExporter (PD_Document * pDocument,
+										IE_Exp ** ppie);
+};
+
+#endif /* HTML_ENABLE_PHTML */
+
+struct IE_Exp_HTML_Options
+{
+	bool	bIs4;
+	bool	bIsAbiWebDoc;
+
+	// TODO: 1. enable/disable AWML namespace mark-up
+	//       2. save images as base-64 encoded data-URL
+	//       3. save styles to an external stylesheet
+};
+
 class ABI_EXPORT IE_Exp_HTML : public IE_Exp
 {
 public:
-	IE_Exp_HTML(PD_Document * pDocument, bool is4 = false);
-	virtual ~IE_Exp_HTML();
+	IE_Exp_HTML (PD_Document * pDocument);
+	virtual ~IE_Exp_HTML ();
 
-	static bool		RecognizeSuffix(const char * szSuffix);
-	static UT_Error 	StaticConstructor(PD_Document * pDocument,
-										  IE_Exp ** ppie);
-	static bool		GetDlgLabels(const char ** pszDesc,
-									 const char ** pszSuffixList,
-									 IEFileType * ft);
-	static bool 		SupportsFileType(IEFileType ft);
-	
+	static bool			RecognizeSuffix (const char * szSuffix);
+	static UT_Error		StaticConstructor (PD_Document * pDocument,
+										   IE_Exp ** ppie);
+	static bool			GetDlgLabels (const char ** pszDesc,
+									  const char ** pszSuffixList,
+									  IEFileType * ft);
+	static bool 		SupportsFileType (IEFileType ft);
+
+	inline void			set_HTML4 (bool enable = true) { m_exp_opt.bIs4 = enable; }
+	inline void			set_PHTML (bool enable = true) { m_exp_opt.bIsAbiWebDoc = enable; }
+
 protected:
-	virtual UT_Error	_writeDocument(void);
+	virtual UT_Error	_writeDocument ();
 
- private:	
-	s_HTML_Listener *	m_pListener;
-	bool                    m_bIs4;
+private:
+	IE_Exp_HTML_Options	m_exp_opt;
 };
 
 #endif /* IE_EXP_HTML_H */

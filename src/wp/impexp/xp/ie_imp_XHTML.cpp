@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 1998-2002 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -55,7 +55,7 @@ static UT_UTF8String s_parseCSStyle (const UT_UTF8String & style, UT_uint32 css_
 /*****************************************************************/
 /*****************************************************************/
 
-#ifdef ENABLE_PLUGINS
+#if defined(ENABLE_PLUGINS) || defined(ABI_PLUGIN_SOURCE)
 
 // completely generic code to allow this to be a plugin
 
@@ -120,6 +120,27 @@ int abi_plugin_supports_version (UT_uint32 major, UT_uint32 minor,
 
 /*****************************************************************/
 /*****************************************************************/
+
+IE_Imp_XHTML_Sniffer::IE_Imp_XHTML_Sniffer ()
+#ifdef XHTML_NAMED_CONSTRUCTORS
+	: IE_ImpSniffer("AbiXHTML::XHTML")
+#endif
+{
+  // 
+}
+
+#ifdef XHTML_NAMED_CONSTRUCTORS
+
+UT_Confidence_t IE_Imp_XHTML_Sniffer::supportsMIME (const char * szMIME)
+{
+  if (UT_strcmp (IE_FileInfo::mapAlias (szMIME), IE_MIME_XHTML) == 0)
+    {
+      return UT_CONFIDENCE_GOOD;
+    }
+  return UT_CONFIDENCE_ZILCH;
+}
+
+#endif /* XHTML_NAMED_CONSTRUCTORS */
 
 UT_Confidence_t IE_Imp_XHTML_Sniffer::recognizeContents(const char * szBuf, 
 											 UT_uint32 iNumbytes)
@@ -298,6 +319,11 @@ static struct xmlToIdMapping s_Tokens[] =
 	{ "p",			TT_P			},
 	{ "pre",		TT_PRE			},
 	{ "q",			TT_Q			},
+#ifdef XHTML_RUBY_SUPPORTED
+	{ "rp",			TT_RP			},
+	{ "rt",			TT_RT			},
+	{ "ruby",		TT_RUBY			},
+#endif
 	{ "s",			TT_S			},
 	{ "samp",		TT_SAMP			},
 	{ "span",		TT_SPAN			},
@@ -367,7 +393,11 @@ static void convertFontSize(UT_String & szDest, const char *szFrom)
     {
 		sz = 12;
     }
+#ifdef XHTML_UCS4
+	else if(UT_UCS4_isdigit(*szFrom))
+#else
 	else if(UT_UCS_isdigit(*szFrom))
+#endif
     {
 		sz = atoi(szFrom);
     }
@@ -428,7 +458,11 @@ static void convertColor(UT_String & szDest, const char *szFrom, int dfl = 0x000
     {
 		col = atoi(szFrom+1);
     }
+#ifdef XHTML_UCS4
+	else if(UT_UCS4_isdigit(*szFrom))
+#else
 	else if(UT_UCS_isdigit(*szFrom))
+#endif
     {
 		col = atoi(szFrom);
     }
@@ -993,7 +1027,6 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		    UT_XML_cloneString(sz, p_val);
 		    new_atts[1] = sz;
 			X_CheckError(getDoc()->appendObject(PTO_Hyperlink,new_atts));
-			for( i = 0; i < 2; i++) FREEP(new_atts[i]);
 		}
 		else
 		{
@@ -1030,7 +1063,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 				{
 					X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
 				}
-				for( i = 0; i < 4; i++) FREEP(bm_new_atts[i]);
+				else for (i = 0; i < 4; i++) FREEP(bm_new_atts[i]);
 
 				if (m_szBookMarkName && (m_parseState == _PS_Sec))
 				{
@@ -1047,7 +1080,7 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 					UT_XML_cloneString(sz, m_szBookMarkName);
 					bm_new_atts[3] = sz;
 					X_CheckError(getDoc()->appendObject(PTO_Bookmark,bm_new_atts));
-					for(i = 0; i < 4; i++) FREEP(bm_new_atts[i]);
+
 					FREEP(m_szBookMarkName);
 					m_szBookMarkName = NULL;
 				}
@@ -1238,6 +1271,18 @@ void IE_Imp_XHTML::startElement(const XML_Char *name, const XML_Char **atts)
 		// these tags are ignored for the time being
 		return;
 		
+	case TT_RUBY:
+	case TT_RP:
+	case TT_RT:
+	  //UT_DEBUGMSG(("B %d\n", m_parseState));
+		// For now we just want to render any text between these tags
+		// Eventually we want to render the <rt> text above the
+		// <ruby> text.  The <rp> text will not be rendered but should
+		// be retained so it can be exported.
+		X_VerifyParseState(_PS_Block);
+		X_CheckError(getDoc()->appendFmt(new_atts));
+		return;
+
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
@@ -1408,6 +1453,21 @@ void IE_Imp_XHTML::endElement(const XML_Char *name)
 		m_bWhiteSignificant = false;
 		return;
 
+	case TT_RUBY:
+	case TT_RT:
+	case TT_RP:
+		// For now we just want to render any text between these tags
+		// Eventually we want to render the <rt> text above the
+		// <ruby> text.  The <rp> text will not be rendered but should
+		// be retained so it can be exported.
+		UT_ASSERT(m_lenCharDataSeen==0);
+		//UT_DEBUGMSG(("B %d\n", m_parseState));
+		X_VerifyParseState(_PS_Block);
+		X_CheckDocument(_getInlineDepth()==0);
+		//_popInlineFmt();
+		X_CheckError(getDoc()->appendFmt(&m_vecInlineFmt));
+		return;
+
 	case TT_OTHER:
 	default:
 	  	UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
@@ -1427,7 +1487,11 @@ void IE_Imp_XHTML::charData (const XML_Char * buffer, int length)
 	 */
 	if (!m_bWhiteSignificant)
 	{
+#ifdef XHTML_UCS4
+		UT_UCS4String buf(buffer,static_cast<size_t>(length),!m_bWhiteSignificant);
+#else
 		UT_UCS2String buf(buffer,static_cast<size_t>(length),!m_bWhiteSignificant);
+#endif
 		if (buf.size () == 0) return; // probably shouldn't happen; not sure
 		if ((buf.size () == 1) && (buf[0] == UCS_SPACE)) return;
 	}
@@ -1465,7 +1529,11 @@ static void s_pass_whitespace (const char *& csstr)
 		if (u & 0x80)
 		{
 			UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+#ifdef XHTML_UCS4
+			if (UT_UCS4_isspace (ucs4))
+#else
 			if ((ucs4 & 0x7fff) || UT_UCS_isspace (static_cast<UT_UCSChar>(ucs4 & 0xffff)))
+#endif
 			{
 				while (static_cast<unsigned char>(*++csstr) & 0x80) { }
 				continue;
@@ -1490,8 +1558,14 @@ static const char * s_pass_name (const char *& csstr)
 		if (u & 0x80)
 		{
 			UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+#ifndef XHTML_UCS4
 			if ((ucs4 & 0x7fff) == 0)
+#endif
+#ifdef XHTML_UCS4
+				if (UT_UCS4_isspace (ucs4))
+#else
 				if (UT_UCS_isspace (static_cast<UT_UCSChar>(ucs4 & 0xffff)))
+#endif
 				{
 					name_end = csstr;
 					break;
@@ -1521,8 +1595,13 @@ static const char * s_pass_value (const char *& csstr)
 		if (u & 0x80)
 		{
 			UT_UTF8Stringbuf::UCS4Char ucs4 = UT_UTF8Stringbuf::charCode (csstr);
+#ifdef XHTML_UCS4
+			if (!bQuoted)
+				if (UT_UCS4_isspace (ucs4))
+#else
 			if (!bQuoted && ((ucs4 & 0x7fff) == 0))
 				if (UT_UCS_isspace (static_cast<UT_UCSChar>(ucs4 & 0xffff)))
+#endif
 				{
 					bSpace = true;
 					break;

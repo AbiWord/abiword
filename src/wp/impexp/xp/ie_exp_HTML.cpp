@@ -20,7 +20,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -29,6 +28,8 @@
 #include <ctype.h>
 #include <locale.h>
 
+#include "ut_debugmsg.h"
+#include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -42,6 +43,7 @@
 #include "xap_EncodingManager.h"
 
 #include "pt_Types.h"
+#include "pl_Listener.h"
 #include "pd_Document.h"
 #include "pd_Style.h"
 #include "pp_AttrProp.h"
@@ -58,11 +60,20 @@
 #include "ie_impexp_HTML.h"
 #include "ie_exp_HTML.h"
 
-// We terminate each line with a \r\n sequence to make IE think that
-// our XHTML is really HTML. This is a stupid IE bug. Sorry
+#ifdef HTML_TABLES_SUPPORTED
+#include "ie_Table.h"
+#endif
 
 /*****************************************************************/
 /*****************************************************************/
+
+IE_Exp_HTML_Sniffer::IE_Exp_HTML_Sniffer ()
+#ifdef HTML_NAMED_CONSTRUCTORS
+	: IE_ExpSniffer(IE_IMPEXPNAME_XHTML)
+#endif
+{
+	// 
+}
 
 bool IE_Exp_HTML_Sniffer::recognizeSuffix (const char * szSuffix)
 {
@@ -87,7 +98,17 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels (const char ** pszDesc,
 	return true;
 }
 
+#ifdef HTML_ENABLE_HTML4
+
 // HTML 4
+
+IE_Exp_HTML4_Sniffer::IE_Exp_HTML4_Sniffer ()
+#ifdef HTML_NAMED_CONSTRUCTORS
+	: IE_ExpSniffer(IE_IMPEXPNAME_HTML)
+#endif
+{
+	// 
+}
 
 bool IE_Exp_HTML4_Sniffer::recognizeSuffix (const char * szSuffix)
 {
@@ -97,7 +118,8 @@ bool IE_Exp_HTML4_Sniffer::recognizeSuffix (const char * szSuffix)
 UT_Error IE_Exp_HTML4_Sniffer::constructExporter (PD_Document * pDocument,
 												  IE_Exp ** ppie)
 {
-	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument, true);
+	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
+	if (p) p->set_HTML4 ();
 	*ppie = p;
 	return UT_OK;
 }
@@ -112,14 +134,55 @@ bool IE_Exp_HTML4_Sniffer::getDlgLabels (const char ** pszDesc,
 	return true;
 }
 
+#endif /* HTML_ENABLE_HTML4 */
+
+#ifdef HTML_ENABLE_PHTML
+
+// XHTML w/ PHP instructions for AbiWord Web Docs
+
+IE_Exp_PHTML_Sniffer::IE_Exp_PHTML_Sniffer ()
+#ifdef HTML_NAMED_CONSTRUCTORS
+	: IE_ExpSniffer(IE_IMPEXPNAME_PHTML)
+#endif
+{
+	// 
+}
+
+bool IE_Exp_PHTML_Sniffer::recognizeSuffix (const char * szSuffix)
+{
+	return (!(UT_stricmp (szSuffix, ".phtml")));
+}
+
+UT_Error IE_Exp_PHTML_Sniffer::constructExporter (PD_Document * pDocument,
+												  IE_Exp ** ppie)
+{
+	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
+	if (p) p->set_PHTML ();
+	*ppie = p;
+	return UT_OK;
+}
+
+bool IE_Exp_PHTML_Sniffer::getDlgLabels(const char ** pszDesc,
+									   const char ** pszSuffixList,
+									   IEFileType * ft)
+{
+	*pszDesc = "AbiWord Web Document (.phtml)";
+	*pszSuffixList = "*.phtml";
+	*ft = getFileType();
+	return true;
+}
+
+#endif /* HTML_ENABLE_PHTML */
+
 /*****************************************************************/
 /*****************************************************************/
 
-IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument, bool is4)
-	: IE_Exp(pDocument),
-	  m_pListener(0),
-	  m_bIs4(is4)
+IE_Exp_HTML::IE_Exp_HTML (PD_Document * pDocument)
+	: IE_Exp(pDocument)
 {
+	m_exp_opt.bIs4         = false;
+	m_exp_opt.bIsAbiWebDoc = false;
+
 	m_error = UT_OK;
 }
 
@@ -128,6 +191,7 @@ IE_Exp_HTML::~IE_Exp_HTML ()
 	// 
 }
 
+/*****************************************************************/
 /*****************************************************************/
 
 /*!	This function returns true if the given property is a valid CSS
@@ -201,7 +265,8 @@ static char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str)
 class s_HTML_Listener : public PL_Listener
 {
 public:
-	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool is4);
+	s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
+					 const IE_Exp_HTML_Options & exp_opt);
 
 	~s_HTML_Listener ();
 
@@ -228,6 +293,7 @@ public:
 private:
 	void 	_outputBegin (PT_AttrPropIndex api);
 	void 	_outputEnd ();
+	void	_outputStyles (const PP_AttrProp * pAP);
 	void	_openSection (PT_AttrPropIndex api);
 	void	_closeSection (void);
 
@@ -241,6 +307,14 @@ private:
 	void	_closeTag (void);
 	void	_closeSpan (void);
 	void	_openSpan (PT_AttrPropIndex api);
+
+#ifdef HTML_TABLES_SUPPORTED
+	void	_openTable (PT_AttrPropIndex api);
+	void	_closeTable ();
+	void	_openCell (PT_AttrPropIndex api);
+	void	_closeCell ();
+#endif
+
 	void	_outputData (const UT_UCSChar * p, UT_uint32 length);
 	bool	_inherits (const char * style, const char * from);
 	void	_storeStyles (void);
@@ -252,8 +326,14 @@ private:
 	void	_handleHyperlink (PT_AttrPropIndex api);
 	void	_handleBookmark (PT_AttrPropIndex api);
 
+#ifdef HTML_META_SUPPORTED
+	void    _handleMetaTag (const char * key, UT_UTF8String & value);
+	void    _handleMeta ();
+#endif
+
 	PD_Document *		m_pDocument;
 	IE_Exp_HTML *		m_pie;
+	bool				m_bClipBoard;
 	bool				m_bInSection;
 	bool				m_bInBlock;
 	bool				m_bInTList;
@@ -262,7 +342,10 @@ private:
 	bool				m_bNextIsSpace;
 	bool				m_bWroteText;
 	bool				m_bFirstWrite;
-	bool				m_bIs4;
+
+#ifdef HTML_TABLES_SUPPORTED
+	ie_Table		m_TableHelper;
+#endif
 
 	// Need to look up proper type, and place to stick #defines...
   
@@ -345,6 +428,11 @@ private:
 
 	UT_StringPtrMap	m_BodyStyle;
 	UT_StringPtrMap	m_BlockStyle;
+
+	/* Export Options
+	 */
+	bool			m_bIs4;
+	bool			m_bIsAbiWebDoc;
 };
 
 const char * s_HTML_Listener::bodyStyle (const char * key)
@@ -459,6 +547,11 @@ void s_HTML_Listener::tagNewIndent (UT_uint32 extra)
 	for (i = 0; i < (depth &  7); i++) m_utf8_0 += " ";
 }
 
+/* NOTE: We terminate each line with a \r\n sequence to make IE think
+ *       that our XHTML is really HTML. This is a stupid IE bug.
+ *       Sorry.
+ */
+
 void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress,
 									WhiteSpace ws)
 {
@@ -476,7 +569,7 @@ void s_HTML_Listener::tagOpenClose (const UT_UTF8String & content, bool suppress
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
@@ -493,7 +586,7 @@ void s_HTML_Listener::tagOpen (UT_uint32 tagID, const UT_UTF8String & content,
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 
 	void * vptr = reinterpret_cast<void *>(tagID);
 	m_tagStack.push (vptr);
@@ -515,7 +608,7 @@ void s_HTML_Listener::tagClose (UT_uint32 tagID, const UT_UTF8String & content,
 
 	if (ws & ws_Post) m_utf8_0 += "\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagClose (UT_uint32 tagID)
@@ -545,7 +638,7 @@ void s_HTML_Listener::tagPI (const char * target, const UT_UTF8String & content)
 	m_utf8_0 += content;
 	m_utf8_0 += "?>\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagComment (const UT_UTF8String & content)
@@ -556,7 +649,7 @@ void s_HTML_Listener::tagComment (const UT_UTF8String & content)
 	m_utf8_0 += content;
 	m_utf8_0 += " -->\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagCommentOpen ()
@@ -565,7 +658,7 @@ void s_HTML_Listener::tagCommentOpen ()
 
 	m_utf8_0 += "<!--\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::tagCommentClose ()
@@ -574,7 +667,7 @@ void s_HTML_Listener::tagCommentClose ()
 
 	m_utf8_0 += "-->\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::styleIndent ()
@@ -591,7 +684,7 @@ void s_HTML_Listener::styleOpen (const UT_UTF8String & rule)
 	m_utf8_0 += rule;
 	m_utf8_0 += " {\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 
 	m_styleIndent++;
 }
@@ -609,7 +702,7 @@ void s_HTML_Listener::styleClose ()
 
 	m_utf8_0 += "}\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & value)
@@ -621,7 +714,7 @@ void s_HTML_Listener::styleNameValue (const char * name, const UT_UTF8String & v
 	m_utf8_0 += value;
 	m_utf8_0 += ";\r\n";
 
-	m_pie->write (m_utf8_0.utf8_str ());
+	m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 void s_HTML_Listener::textTrusted (const UT_UTF8String & text)
@@ -629,7 +722,7 @@ void s_HTML_Listener::textTrusted (const UT_UTF8String & text)
 	if (text.byteLength ())
 	{
 		m_bWroteText = true;
-		m_pie->write (text.utf8_str ());
+		m_pie->write (text.utf8_str (), text.byteLength ());
 	}
 }
 
@@ -669,7 +762,7 @@ void s_HTML_Listener::textUntrusted (const char * text)
 			 */
 			ptr++;
 		}
-	if (m_utf8_0.byteLength ()) m_pie->write (m_utf8_0.utf8_str ());
+	if (m_utf8_0.byteLength ()) m_pie->write (m_utf8_0.utf8_str (), m_utf8_0.byteLength ());
 }
 
 /* intermediate methods
@@ -692,11 +785,13 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 {
 	/* print XML header
 	 */
-	if ( !m_bIs4 )
+	if (!m_bIs4)
 		{
-			m_utf8_1 = "version=\"1.0\"";
-			tagPI ("xml", m_utf8_1);
-
+			if (!m_bIsAbiWebDoc) // PHP doesn't like <?xml ?> at the start, for some reason
+				{                // ?? belongs to a different option... [TODO]
+					m_utf8_1 = "version=\"1.0\"";
+					tagPI ("xml", m_utf8_1);
+				}
 			m_utf8_1 = s_DTD_XHTML;
 			tagOpenClose (m_utf8_1, true);
 		}
@@ -746,9 +841,80 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	 */
 	m_utf8_1 = "title";
 	tagOpen (TT_TITLE, m_utf8_1);
-	textUntrusted (m_pie->getFileName ()); // TODO: is there a better title to use?
+
+#ifdef HTML_META_SUPPORTED
+	UT_UTF8String titleProp;
+
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp) && titleProp.size ())
+		textTrusted (titleProp.escapeXML ());
+	else
+		textUntrusted (m_pie->getFileName ());
+#else
+	textUntrusted (m_pie->getFileName ());
+#endif
+
 	tagClose (TT_TITLE, m_utf8_1);
 
+#ifdef HTML_META_SUPPORTED
+	/* write out our metadata properties
+	 */
+	_handleMeta ();
+#endif
+
+	if (!m_bIsAbiWebDoc) // belongs to a different option... [TODO]
+		{
+			const PP_AttrProp * pAP = 0;
+			bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+			if (bHaveProp) _outputStyles (pAP);
+		}
+
+	if (m_bIsAbiWebDoc)
+		{
+			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-header.php');\r\n ?>\r\n";
+			tagPI ("php", m_utf8_1);
+		}
+
+	/* end <head> section of HTML document
+	 */
+	m_utf8_1 = "head";
+	tagClose (TT_HEAD, m_utf8_1);
+
+	/* start <body> section of HTML document
+	 */
+	m_utf8_1 = "body";
+	tagOpen (TT_BODY, m_utf8_1);
+
+	if (m_bIsAbiWebDoc)
+		{
+			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-page-begin.php');\r\n ?>\r\n";
+			tagPI ("php", m_utf8_1);
+		}
+
+	m_bFirstWrite = false;
+}
+
+void s_HTML_Listener::_outputEnd ()
+{
+	if (m_bIsAbiWebDoc)
+		{
+			m_utf8_1 = "\r\n  include($DOCUMENT_ROOT.'/x-page-end.php');\r\n ?>\r\n";
+			tagPI ("php", m_utf8_1);
+		}
+
+	/* end <body> section of HTML document
+	 */
+	m_utf8_1 = "body";
+	tagClose (TT_BODY, m_utf8_1);
+
+	/* end <head> section of HTML document
+	 */
+	m_utf8_1 = "html";
+	tagClose (TT_HTML, m_utf8_1);
+}
+
+void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
+{
 	/* some cascading style rules
 	 */
 	const XML_Char * szName  = 0;
@@ -758,102 +924,117 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	tagOpen (TT_STYLE, m_utf8_1);
 	tagCommentOpen ();
 
-	const PP_AttrProp * pAP = 0;
-	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+	/* global page styles refer to the <body> tag
+	 */
+	PD_Style * pStyle = 0;
+	m_pDocument->getStyle ("Normal", &pStyle);
 
-	if (bHaveProp && pAP)
+	if (pAP && pStyle)
 		{
-			/* global page styles refer to the <body> tag
+			/* Add normal styles to any descendent of the body for global effect
+			 * 
+			 * (I think @ rules are supposed to precede non-@ rules)
 			 */
-			PD_Style * pStyle = 0;
-			m_pDocument->getStyle ("Normal", &pStyle);
-			
-			if(pStyle)
+			m_utf8_1 = "@media print";
+			styleOpen (m_utf8_1);
+
+			m_utf8_1 = "body";
+			styleOpen (m_utf8_1);
+
+			szValue = PP_evalProperty ("page-margin-top", 0, 0, pAP, m_pDocument, true);
+			m_utf8_1 = (const char *) szValue;
+			styleNameValue ("padding-top", m_utf8_1);
+
+			szValue = PP_evalProperty ("page-margin-bottom", 0, 0, pAP, m_pDocument, true);
+			m_utf8_1 = (const char *) szValue;
+			styleNameValue ("padding-bottom", m_utf8_1);
+
+			szValue = PP_evalProperty ("page-margin-left", 0, 0, pAP, m_pDocument, true);
+			m_utf8_1 = (const char *) szValue;
+			styleNameValue ("padding-left", m_utf8_1);
+
+			szValue = PP_evalProperty ("page-margin-right", 0, 0, pAP, m_pDocument, true);
+			m_utf8_1 = (const char *) szValue;
+			styleNameValue ("padding-right", m_utf8_1);
+
+			styleClose (); // end of: body { }
+			styleClose (); // end of: @media print { }
+
+			m_utf8_1 = "body";
+			styleOpen (m_utf8_1);
+
+			for (UT_uint16 i = 0; i < pStyle->getPropertyCount (); i++)
 				{
-					/* Add normal styles to any descendent of the body for global effect
-					 * 
-					 * (I think @ rules are supposed to precede non-@ rules)
-					 */
-					m_utf8_1 = "@media print";
-					styleOpen (m_utf8_1);
+					pStyle->getNthProperty (i, szName, szValue);
 
-					m_utf8_1 = "body";
-					styleOpen (m_utf8_1);
+					if (( szName == 0) || ( szValue == 0)) continue; // paranoid? moi?
+					if ((*szName == 0) || (*szValue == 0)) continue;
 
-					szValue = PP_evalProperty ("page-margin-top", 0, 0, pAP, m_pDocument, true);
-					m_utf8_1 = (const char *) szValue;
-					styleNameValue ("padding-top", m_utf8_1);
+					if (strstr (szName, "margin")) continue;
+					if (!is_CSS (reinterpret_cast<const char *>(szName))) continue;
 
-					szValue = PP_evalProperty ("page-margin-bottom", 0, 0, pAP, m_pDocument, true);
-					m_utf8_1 = (const char *) szValue;
-					styleNameValue ("padding-bottom", m_utf8_1);
-
-					szValue = PP_evalProperty ("page-margin-left", 0, 0, pAP, m_pDocument, true);
-					m_utf8_1 = (const char *) szValue;
-					styleNameValue ("padding-left", m_utf8_1);
-
-					szValue = PP_evalProperty ("page-margin-right", 0, 0, pAP, m_pDocument, true);
-					m_utf8_1 = (const char *) szValue;
-					styleNameValue ("padding-right", m_utf8_1);
-
-					styleClose (); // end of: body { }
-					styleClose (); // end of: @media print { }
-
-					m_utf8_1 = "body";
-					styleOpen (m_utf8_1);
-
-					for (UT_uint16 i = 0; i < pStyle->getPropertyCount (); i++)
+					if (UT_strcmp (szName, "font-family") == 0)
 						{
-							pStyle->getNthProperty (i, szName, szValue);
-
-							if (( szName == 0) || ( szValue == 0)) continue; // paranoid? moi?
-							if ((*szName == 0) || (*szValue == 0)) continue;
-
-							if (strstr (szName, "margin")) continue;
-							if (!is_CSS (reinterpret_cast<const char *>(szName))) continue;
-
-							if (UT_strcmp (szName, "font-family") == 0)
+							if ((UT_strcmp (szValue, "serif")      == 0) ||
+								(UT_strcmp (szValue, "sans-serif") == 0) ||
+								(UT_strcmp (szValue, "cursive")    == 0) ||
+								(UT_strcmp (szValue, "fantasy")    == 0) ||
+								(UT_strcmp (szValue, "monospace")  == 0))
 								{
-									if ((UT_strcmp (szValue, "serif")      == 0) ||
-										(UT_strcmp (szValue, "sans-serif") == 0) ||
-										(UT_strcmp (szValue, "cursive")    == 0) ||
-										(UT_strcmp (szValue, "fantasy")    == 0) ||
-										(UT_strcmp (szValue, "monospace")  == 0))
-										{
-											m_utf8_1 = (const char *) szValue;
-										}
-									else
-										{
-											m_utf8_1  = "'";
-											m_utf8_1 += (const char *) szValue;
-											m_utf8_1 += "'";
-										}
+									m_utf8_1 = (const char *) szValue;
 								}
-							else if (UT_strcmp (szName, "color") == 0)
+							else
 								{
-									if (IS_TRANSPARENT_COLOR (szValue)) continue;
-
-									m_utf8_1  = "#";
+									m_utf8_1  = "'";
 									m_utf8_1 += (const char *) szValue;
+									m_utf8_1 += "'";
 								}
-							else m_utf8_1 = (const char *) szValue;
-
-							/* keep a record of CSS body style
-							 */
-							bodyStyle ((const char *) szName, m_utf8_1.utf8_str ());
-
-							styleNameValue (szName, m_utf8_1);
 						}
-					szValue = PP_evalProperty ("background-color", 0, 0, pAP, m_pDocument, true);
-					if(!IS_TRANSPARENT_COLOR (szValue))
+					else if (UT_strcmp (szName, "color") == 0)
 						{
+							if (IS_TRANSPARENT_COLOR (szValue)) continue;
+
 							m_utf8_1  = "#";
 							m_utf8_1 += (const char *) szValue;
-
-							styleNameValue ("background-color", m_utf8_1);
 						}
-					styleClose (); // end of: body { }
+					else m_utf8_1 = (const char *) szValue;
+
+					/* keep a record of CSS body style
+					 */
+					bodyStyle ((const char *) szName, m_utf8_1.utf8_str ());
+
+					styleNameValue (szName, m_utf8_1);
 				}
+			szValue = PP_evalProperty ("background-color", 0, 0, pAP, m_pDocument, true);
+			if(!IS_TRANSPARENT_COLOR (szValue))
+				{
+					m_utf8_1  = "#";
+					m_utf8_1 += (const char *) szValue;
+
+					styleNameValue ("background-color", m_utf8_1);
+				}
+			styleClose (); // end of: body { }
+
+#ifdef HTML_TABLES_SUPPORTED
+			m_utf8_1 = "table";
+			styleOpen (m_utf8_1);
+
+			m_utf8_1  = "100%";
+			styleNameValue ("width", m_utf8_1);
+
+			styleClose (); // end of: table { }
+
+			m_utf8_1 = "td";
+			styleOpen (m_utf8_1);
+
+			m_utf8_1 = "left";
+			styleNameValue ("text-align", m_utf8_1);
+
+			m_utf8_1 = "top";
+			styleNameValue ("vertical-align", m_utf8_1);
+
+			styleClose (); // end of: td { }
+#endif /* HTML_TABLES_SUPPORTED */
 		}
 
 	const PD_Style * p_pds = 0;
@@ -965,31 +1146,6 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	tagCommentClose ();
 	m_utf8_1 = "style";
 	tagClose (TT_STYLE, m_utf8_1);
-
-	/* end <head> section of HTML document
-	 */
-	m_utf8_1 = "head";
-	tagClose (TT_HEAD, m_utf8_1);
-
-	/* start <body> section of HTML document
-	 */
-	m_utf8_1 = "body";
-	tagOpen (TT_BODY, m_utf8_1);
-
-	m_bFirstWrite = false;
-}
-
-void s_HTML_Listener::_outputEnd ()
-{
-	/* end <body> section of HTML document
-	 */
-	m_utf8_1 = "body";
-	tagClose (TT_BODY, m_utf8_1);
-
-	/* end <head> section of HTML document
-	 */
-	m_utf8_1 = "html";
-	tagClose (TT_HTML, m_utf8_1);
 }
 
 void s_HTML_Listener::_openSection (PT_AttrPropIndex api)
@@ -2201,6 +2357,147 @@ void s_HTML_Listener::_closeSpan ()
 	m_bInSpan = false;
 }
 
+#ifdef HTML_TABLES_SUPPORTED
+
+void s_HTML_Listener::_openTable (PT_AttrPropIndex api)
+{
+	if (m_bFirstWrite) _outputBegin (api);
+
+	if (!m_bInSection) return;
+
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp (api,&pAP);
+
+	if (!bHaveProp || (pAP == 0)) return;
+
+	UT_sint32 cellPadding = 1;
+
+	const char * prop = m_TableHelper.getTableProp ("table-line-thickness");
+
+	UT_sint32 border = (prop ? atoi (prop) : 1);
+#if 0
+	const XML_Char * pszTableColSpacing = 0;
+	const XML_Char * pszTableRowSpacing = 0;
+	const XML_Char * pszLeftOffset = 0;
+	const XML_Char * pszTopOffset = 0;
+	const XML_Char * pszRightOffset = 0;
+	const XML_Char * pszBottomOffset = 0;
+
+	pSectionAP->getProperty ("table-col-spacing",  pszTableColSpacing);
+	pSectionAP->getProperty ("table-row-spacing",  pszTableRowSpacing);
+	pSectionAP->getProperty ("cell-margin-left",   pszLeftOffset);
+	pSectionAP->getProperty ("cell-margin-top",    pszTopOffset);
+	pSectionAP->getProperty ("cell-margin-right",  pszRightOffset);
+	pSectionAP->getProperty ("cell-margin-bottom", pszBottomOffset);
+#endif
+	m_utf8_1  = "table cellpadding=\"";
+	m_utf8_1 += UT_UTF8String_sprintf ("%d\" border=\"%d", cellPadding, border);
+	m_utf8_1 += "\" rules=\"all\"";
+
+	tagOpen (TT_TABLE, m_utf8_1);
+
+	int nCols = m_TableHelper.getNumCols ();
+
+	float colWidth = 100 / (float) nCols;
+	  
+	char * old_locale = setlocale (LC_NUMERIC, "C");
+	m_utf8_1  = "colgroup width=\"";
+	m_utf8_1 += UT_UTF8String_sprintf ("%f%%\" span=\"%d", colWidth, nCols);
+	m_utf8_1 += "\"";
+	setlocale (LC_NUMERIC, old_locale);
+
+	tagOpenClose (m_utf8_1, false);
+
+	m_utf8_1 = "tbody";
+	tagOpen (TT_TBODY, m_utf8_1);
+}
+
+void s_HTML_Listener::_closeTable ()
+{
+	m_utf8_1 = "tbody";
+	tagClose (TT_TBODY, m_utf8_1);
+
+	m_utf8_1 = "table";
+	tagClose (TT_TABLE, m_utf8_1);
+}
+
+void s_HTML_Listener::_openCell (PT_AttrPropIndex api)
+{
+	if (m_bFirstWrite) _outputBegin (api); // any point to this?
+
+	if (!m_bInSection) return;
+
+	if (m_TableHelper.getNestDepth () < 1) _openTable(api);
+
+	const PP_AttrProp * pAP = NULL;
+	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
+
+	if (bHaveProp && pAP)
+		{
+			UT_sint32 rowspan = m_TableHelper.getBot ()   - m_TableHelper.getTop ();
+			UT_sint32 colspan = m_TableHelper.getRight () - m_TableHelper.getLeft ();
+
+			if (m_TableHelper.getLeft () == 0) // beginning of a new row
+				{
+					m_utf8_1 = "tr";
+					tagOpen (TT_TR, m_utf8_1);
+				}
+
+			UT_UTF8String styles;
+
+			const char * pszBgColor = m_TableHelper.getCellProp ("bgcolor");
+			if (pszBgColor)
+				{
+					unsigned char u = *pszBgColor;
+					if (isdigit ((int) u))
+						{
+							if (styles.byteLength ()) styles += "; ";
+							styles += "bgcolor:#";
+							styles += pszBgColor;
+						}
+				}
+
+			m_utf8_1 = "td";
+
+			if (styles.byteLength ())
+				{
+					m_utf8_1 += " style=\"";
+					m_utf8_1 += styles;
+					m_utf8_1 += "\"";
+				}
+
+			if (rowspan > 1)
+				{
+					m_utf8_1 += " rowspan=\"";
+					m_utf8_1 += UT_UTF8String_sprintf ("%d", rowspan);
+					m_utf8_1 += "\"";
+				}
+			if (colspan > 1)
+				{
+					m_utf8_1 += " colspan=\"";
+					m_utf8_1 += UT_UTF8String_sprintf ("%d", colspan);
+					m_utf8_1 += "\"";
+				}
+			tagOpen (TT_TD, m_utf8_1);
+		}
+}
+
+void s_HTML_Listener::_closeCell ()
+{
+	if (m_TableHelper.getNestDepth () < 1) return;
+
+	m_utf8_1 = "td";
+	tagClose (TT_TD, m_utf8_1);
+
+	if (m_TableHelper.getNumCols () == m_TableHelper.getRight ()) // logical end of a row
+		{
+			m_utf8_1 = "tr";
+			tagClose (TT_TR, m_utf8_1);
+		} 
+}
+
+#endif /* HTML_TABLES_SUPPORTED */
+
 void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 {
 	if (!m_bInBlock) return;
@@ -2208,12 +2505,12 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 	m_utf8_1 = "";
 
 	bool prev_space = false;
-	const UT_UCSChar * ucs2ptr = data;
+	const UT_UCSChar * ucs_ptr = data;
 	for (UT_uint32 i = 0; i < length; i++)
 		{
 			bool space = false;
 
-			switch (*ucs2ptr)
+			switch (*ucs_ptr)
 				{
 				case UCS_FF: // page break, convert to line break
 				case UCS_LF:
@@ -2246,16 +2543,20 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 					break;
 
 				default:
-					if ((*ucs2ptr & 0x007f) == *ucs2ptr) // ASCII
+					if ((*ucs_ptr & 0x007f) == *ucs_ptr) // ASCII
 						{
-							char c = static_cast<char>(*ucs2ptr & 0x007f);
+							char c = static_cast<char>(*ucs_ptr & 0x007f);
 
 							if (isspace ((int) ((unsigned char) c)))
 								{
 									if (prev_space)
 										m_utf8_1 += "&nbsp;";
 									else
-										m_utf8_1.append (ucs2ptr, 1);
+#ifdef HTML_UCS4
+										m_utf8_1.appendUCS4 (ucs_ptr, 1);
+#else
+										m_utf8_1.append (ucs_ptr, 1);
+#endif
 									space = true;
 								}
 							else switch (c)
@@ -2270,22 +2571,32 @@ void s_HTML_Listener::_outputData (const UT_UCSChar * data, UT_uint32 length)
 									m_utf8_1 += "&amp;";
 									break;
 								default:
-									m_utf8_1.append (ucs2ptr, 1);
+#ifdef HTML_UCS4
+									m_utf8_1.appendUCS4 (ucs_ptr, 1);
+#else
+									m_utf8_1.append (ucs_ptr, 1);
+#endif
 									break;
 								}
 						}
-					else m_utf8_1.append (ucs2ptr, 1); // !ASCII, just append... ??
+#ifdef HTML_UCS4
+					else m_utf8_1.appendUCS4 (ucs_ptr, 1); // !ASCII, just append... ??
+#else
+					else m_utf8_1.append (ucs_ptr, 1); // !ASCII, just append... ??
+#endif
 					break;
 				}
 			prev_space = space;
-			ucs2ptr++;
+			ucs_ptr++;
 		}
 	if (m_utf8_1.byteLength ()) textTrusted (m_utf8_1);
 }
 
-s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool is4) :
+s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bool bClipBoard,
+								  const IE_Exp_HTML_Options & exp_opt) :
 	m_pDocument (pDocument),
 	m_pie(pie),
+	m_bClipBoard(bClipBoard),
 	m_bInSection(false),
 	m_bInBlock(false),
 	m_bInTList(false),
@@ -2294,7 +2605,9 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_bNextIsSpace(false),
 	m_bWroteText(false),
 	m_bFirstWrite(true),
-	m_bIs4(is4),
+#ifdef HTML_TABLES_SUPPORTED
+	m_TableHelper(pDocument),
+#endif /* HTML_TABLES_SUPPORTED */
 	m_iBlockType(0),
 	m_iListDepth(0),
 	m_iImgCnt(0),
@@ -2302,7 +2615,8 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_tlistIndent(0),
 	m_tlistListID(0)
 {
-	// 
+	m_bIs4         = exp_opt.bIs4;
+	m_bIsAbiWebDoc = exp_opt.bIsAbiWebDoc;
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -2608,8 +2922,63 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 		}
 }
 
+#ifdef HTML_META_SUPPORTED
+
+void s_HTML_Listener::_handleMetaTag (const char * key, UT_UTF8String & value)
+{
+	m_utf8_1  = "meta name=\"";
+	m_utf8_1 += key;
+	m_utf8_1 += "\" content=\"";
+	m_utf8_1 += value.escapeXML ();
+	m_utf8_1 += "\"";
+
+	tagOpenClose (m_utf8_1, m_bIs4);
+}
+
+void s_HTML_Listener::_handleMeta ()
+{
+	UT_UTF8String metaProp;
+	
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE,    metaProp) && metaProp.size ())
+	    _handleMetaTag ("Title",    metaProp);
+
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR,  metaProp) && metaProp.size ())
+		_handleMetaTag ("Author",   metaProp);
+	
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size ())
+	    _handleMetaTag ("Keywords", metaProp);
+	
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT,  metaProp) && metaProp.size ())
+		_handleMetaTag ("Subject",  metaProp);
+
+#if 0
+	// now generically dump all of our data to meta stuff
+	const void * val = NULL ;
+	for ( val = cursor.first(); cursor.is_valid(); val = cursor.next () )
+	    {
+			if ( val )
+				{
+					UT_String *stringval = (UT_String*) val;
+					if(stringval->size () > 0)
+						{
+							_handleMetaTag(cursor.key().c_str(), stringval->c_str()));
+						}
+				}
+		}
+#endif
+
+}
+
+#endif /* HTML_META_SUPPORTED */
+
 bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
 {
+	if (m_bFirstWrite && m_bClipBoard)
+		{
+			_openSection (0);
+			_openTag (0, 0);
+		}
+
 	switch (pcr->getType ())
 		{
 		case PX_ChangeRecord::PXT_InsertSpan:
@@ -2643,6 +3012,7 @@ bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 				switch (pcro->getObjectType ())
 					{
 					case PTO_Image:
+						if (m_bClipBoard) break; // TODO: data-URL??
 						_handleImage (api);
 						return true;
 
@@ -2687,6 +3057,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 	switch (pcrx->getStruxType ())
 		{
+		case PTX_SectionEndnote:
 		case PTX_SectionHdrFtr:
 		case PTX_Section:
 			{
@@ -2697,10 +3068,70 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 
 		case PTX_Block:
 			{
+				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
 				_openTag (api, sdh);
 				return true;
 			}
 
+#ifdef HTML_TABLES_SUPPORTED
+		case PTX_SectionTable:
+			{
+				if (m_bFirstWrite && m_bClipBoard) _openSection (0);
+
+				m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
+				_closeSpan();
+				_closeTag();
+				_openTable(pcr->getIndexAP());
+				return true;
+			}
+
+		case PTX_SectionCell:
+			{
+				if(m_TableHelper.getNestDepth() <1)
+					{
+						m_TableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
+						_closeSpan();
+						_closeTag();
+						_openTable(pcr->getIndexAP());
+					}
+				m_TableHelper.OpenCell(pcr->getIndexAP()) ;
+				_closeSpan();
+				_closeTag();
+				_openCell(pcr->getIndexAP());
+				return true;
+			}
+
+		case PTX_EndTable:
+			{
+				_closeTag();
+				_closeTable();
+				m_TableHelper.CloseTable();
+				return true;
+			}
+
+		case PTX_EndCell:
+			{
+				_closeTag();
+				_closeCell();
+				if(m_TableHelper.getNestDepth() <1)
+					{
+						return true;
+					}
+
+				m_TableHelper.CloseCell();
+				return true;
+			}
+#endif /* HTML_TABLES_SUPPORTED */
+
+#if 0
+		case PTX_EndFrame:
+		case PTX_EndMarginnote:
+		case PTX_EndFootnote:
+		case PTX_SectionFrame:
+		case PTX_SectionMarginnote:
+		case PTX_SectionFootnote:
+		case PTX_EndEndnote:
+#endif
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
 			return false;
@@ -2738,20 +3169,29 @@ bool s_HTML_Listener::signal (UT_uint32 /* iSignal */)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Error IE_Exp_HTML::_writeDocument(void)
+UT_Error IE_Exp_HTML::_writeDocument ()
 {
-	m_pListener = new s_HTML_Listener(getDoc(),this,m_bIs4);
-	if (m_pListener == 0) return UT_IE_NOMEMORY;
+#ifdef HTML_DIALOG_OPTIONS
+	// if (!AP_Dialog_HtmlOptions::popup (m_exp_opt)) return UT_OK; // ??
+	/* where is the place to pop-up a dialog? what happens if the user cancels? */
+#endif
 
-	bool err = true;
-	if (getDocRange ())
-		err = getDoc()->tellListenerSubset (static_cast<PL_Listener *>(m_pListener),
-											getDocRange ());
-	else
-		err = getDoc()->tellListener (static_cast<PL_Listener *>(m_pListener));
+	bool bClipBoard = (getDocRange () != NULL);
 
-	DELETEP(m_pListener);
+	s_HTML_Listener * pListener = new s_HTML_Listener(getDoc(),this,bClipBoard,m_exp_opt);
+	if (pListener == 0) return UT_IE_NOMEMORY;
+
+	PL_Listener * pL = static_cast<PL_Listener *>(pListener);
+
+	bool okay = true;
+	if (bClipBoard)
+		{
+			okay = getDoc()->tellListenerSubset (pL, getDocRange ());
+		}
+	else okay = getDoc()->tellListener (pL);
+
+	DELETEP(pListener);
 	
-	if ((m_error == UT_OK) && (err == true)) return UT_OK;
+	if ((m_error == UT_OK) && (okay == true)) return UT_OK;
 	return UT_IE_COULDNOTWRITE;
 }

@@ -25,6 +25,30 @@
 #include "ie_imp_XML.h"
 #include "ut_stack.h"
 
+/* NOTE: I'm trying to keep the code similar across versions,
+ *       and therefore features are enabled/disabled here:
+ */
+
+/* Define if the base unicode char is UCS-4
+ */
+/* #undef XHTML_UCS4 */
+
+/* Define if the sniffers need to pass export name to parent
+ */
+/* #undef XHTML_NAMED_CONSTRUCTORS */
+
+/* Define if the tables are supported
+ */
+/* #undef XHTML_TABLES_SUPPORTED */
+
+/* Define if meta information is supported
+ */
+/* #undef XHTML_META_SUPPORTED */
+
+/* Define if meta information is supported
+ */
+/* #undef XHTML_RUBY_SUPPORTED */
+
 class PD_Document;
 
 // The importer/reader for XHTML 1.0
@@ -34,7 +58,7 @@ class ABI_EXPORT IE_Imp_XHTML_Sniffer : public IE_ImpSniffer
 	friend class IE_Imp;
 
 public:
-	IE_Imp_XHTML_Sniffer() {}
+	IE_Imp_XHTML_Sniffer();
 	virtual ~IE_Imp_XHTML_Sniffer() {}
 
 	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
