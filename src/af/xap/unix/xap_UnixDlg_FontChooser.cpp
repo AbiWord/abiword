@@ -526,16 +526,16 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonOK", buttonOK);
 	gtk_widget_show (buttonOK);
-	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 276, 0);
-	gtk_widget_set_usize (buttonOK, 82, 35);
+	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonOK, 279, 0);
+	gtk_widget_set_usize (buttonOK, 85, 35);	//extra height for "default" border; it's silly
 	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
 	gtk_widget_grab_default (buttonOK);
 
 	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "buttonCancel", buttonCancel);
 	gtk_widget_show (buttonCancel);
-	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 369, 6);
-	gtk_widget_set_usize (buttonCancel, 72, 24);
+	gtk_fixed_put (GTK_FIXED (fixedButtons), buttonCancel, 374, 6);
+	gtk_widget_set_usize (buttonCancel, 85, 24);
 
 	// save out to members for callback and class access
     m_fontList = listFonts;

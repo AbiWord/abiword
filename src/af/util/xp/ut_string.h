@@ -37,6 +37,9 @@ UT_Bool UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
 UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
 UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2);
 
+// this function allocates (and returns a pointer to) new memory for the new string
+UT_Bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource);
+
 UT_uint32 UT_pointerArrayLength(void ** array);
    
 // the naming convention has deviated from the above.  it's kind

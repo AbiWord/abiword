@@ -23,6 +23,18 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
+// This macro sets up stack pointers to be used with the ConvertToUnixString
+// macro.
+#define SETUP_UNIX_STRING  	XML_Char * newstr = NULL;
+
+// This macro is for use in Unix dialogs where the strings are to
+// be stripped of ampersands (Windows accelerator characters).
+#define	CONVERT_TO_UNIX_STRING(str, id, newstr)		do { \
+                                                    FREEP(newstr); \
+                                                    UT_XML_cloneNoAmpersands(newstr, pSS->getValue(id)); \
+                                                    } while (0)
+												   
+												   
 // This is a very thin message box; only use it for startup errors
 // or places where you can't use the message box class (like when
 // you don't have a frame yet).

@@ -197,6 +197,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 						  TRUE);
 
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
+	XML_Char * unixstr = NULL;	// used for conversions
 	
 	if (m_id == AP_DIALOG_ID_FIND)
 		gtk_window_set_title(GTK_WINDOW(topLevel), pSS->getValue(AP_STRING_ID_DLG_FR_FindTitle));
@@ -239,7 +240,9 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	}
 
 	// create the find label
-	findLabel = gtk_label_new(pSS->getValue(AP_STRING_ID_DLG_FR_FindLabel));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindLabel));
+	findLabel = gtk_label_new(unixstr);
+	FREEP(unixstr);
 	gtk_label_set_justify(GTK_LABEL(findLabel), GTK_JUSTIFY_RIGHT);
 	gtk_widget_set_usize(findLabel, 150, 0);
 	gtk_box_pack_end(GTK_BOX(findBox), findLabel, TRUE, TRUE, 0);
@@ -251,7 +254,9 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	gtk_widget_show (toggleBox);
 
 	// optional toggle switch for case
-	matchCaseCheck = gtk_check_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_MatchCase));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_MatchCase));	
+	matchCaseCheck = gtk_check_button_new_with_label(unixstr);
+	FREEP(unixstr);
 	gtk_box_pack_end(GTK_BOX(toggleBox), matchCaseCheck, FALSE, TRUE, 0);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(matchCaseCheck), getMatchCase());
 	gtk_widget_show(matchCaseCheck);
@@ -290,7 +295,9 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 						   GTK_SIGNAL_FUNC(ReplaceCallback),
 						   this);
 	
-		replaceLabel = gtk_label_new(pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceWithLabel));
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceWithLabel));	
+		replaceLabel = gtk_label_new(unixstr);
+		FREEP(unixstr);
 		gtk_label_set_justify(GTK_LABEL(replaceLabel), GTK_JUSTIFY_RIGHT);
 		gtk_widget_set_usize(replaceLabel, 150, 0);
 		gtk_box_pack_end(GTK_BOX(replaceBox), replaceLabel, TRUE, TRUE, 0);
@@ -307,7 +314,9 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	gtk_box_pack_start(GTK_BOX(vbox), buttonBox, FALSE, TRUE, 5);
 	gtk_widget_show(buttonBox);
 
-	findButton = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));
+	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
+	findButton = gtk_button_new_with_label(unixstr);
+	FREEP(unixstr);
 	gtk_widget_set_usize(findButton, DEFAULT_BUTTON_WIDTH, 0);
 	gtk_box_pack_start(GTK_BOX(buttonBox), findButton, FALSE, FALSE, 0);
 	gtk_widget_show(findButton);
@@ -319,7 +328,9 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 		
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		replaceButton = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceButton));
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceButton));	
+		replaceButton = gtk_button_new_with_label(unixstr);
+		FREEP(unixstr);
 		gtk_widget_set_usize(replaceButton, DEFAULT_BUTTON_WIDTH, 0);
 		gtk_box_pack_start(GTK_BOX(buttonBox), replaceButton, FALSE, FALSE, 0);
 		gtk_widget_show(replaceButton);
@@ -329,7 +340,9 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 						   GTK_SIGNAL_FUNC(ReplaceCallback),
 						   this);
 
-		replaceAllButton = gtk_button_new_with_label(pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));
+		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
+		replaceAllButton = gtk_button_new_with_label(unixstr);
+		FREEP(unixstr);
 		gtk_widget_set_usize(replaceAllButton, DEFAULT_BUTTON_WIDTH, 0);
 		gtk_box_pack_start(GTK_BOX(buttonBox), replaceAllButton, FALSE, FALSE, 0);
 		gtk_widget_show(replaceAllButton);

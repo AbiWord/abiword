@@ -93,6 +93,32 @@ UT_sint32 UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2)
 	return UT_strcmp(sz1,sz2);
 }
 
+UT_Bool UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource)
+{
+	if (szSource == NULL)
+		return UT_FALSE;
+
+	UT_uint32 length = UT_XML_strlen(szSource) + 1;
+	rszDest = (XML_Char *) calloc(length, sizeof(XML_Char));
+
+	if (!rszDest)
+		return UT_FALSE;
+
+	const XML_Char * o = szSource;
+	XML_Char * n = rszDest;
+	while (*o != 0)
+	{
+		if (*o != '&')
+		{
+			*n = *o;
+			n++;
+		}
+		o++;
+	}
+
+	return UT_TRUE;
+}
+
 UT_uint32 UT_pointerArrayLength(void ** array)
 {
 	if (! (array && *array))
