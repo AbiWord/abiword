@@ -282,7 +282,7 @@ class GR_GraphicsFactory
 								 m_iDefaultPrinter = iClassId;
 						 }
 
-	UT_uint32     getDefaultClass(bool bScreen) const {if(bScreen) return m_iDefaultScreen; else m_iDefaultPrinter;}
+	UT_uint32     getDefaultClass(bool bScreen) const {if(bScreen) return m_iDefaultScreen; else return m_iDefaultPrinter;}
 	bool          unregisterClass(UT_uint32 iClassId);
 	bool          isRegistered(UT_uint32 iClassId) const;
 	
