@@ -38,6 +38,8 @@ public:
 	virtual UT_Bool			getClipboardData(const char* format, void ** ppData, UT_uint32 * pLen);
 	virtual UT_Bool			hasFormat(const char* format);
 
+private:
+	char* lastCopy;
 };
 
 #endif /* XAP_BEOSCLIPBOARD_H */
