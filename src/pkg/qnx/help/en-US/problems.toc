@@ -1,0 +1,4 @@
+4|Problems|./problems/index.html
+5|Bugs|./problemsbugs.html
+5|FAQ|./problemsfaq.html
+5|Fonts|./problemsfonts.html
