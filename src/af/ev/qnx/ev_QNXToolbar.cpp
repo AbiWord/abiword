@@ -382,7 +382,35 @@ bool EV_QNXToolbar::synthesize(void)
 				}
  			}
 			break;
-					
+
+			case EV_TBIT_ColorFore:
+			case EV_TBIT_ColorBack:
+#if 0
+			    GtkWidget * combo;
+			    
+			    if (pAction->getItemType() == EV_TBIT_ColorFore)
+			      combo = color_combo_new (font_xpm, szToolTip, NULL, NULL);
+			    else
+			      combo = color_combo_new (bucket_xpm, szToolTip, NULL, NULL);
+
+			    if (!gnome_preferences_get_toolbar_relief_btn ())
+			      gtk_combo_box_set_arrow_relief (GTK_COMBO_BOX (combo), GTK_RELIEF_NONE);
+
+			    _wd * wd = new _wd (this, id);
+			    wd->m_widget = combo;
+			    gtk_combo_box_set_title (GTK_COMBO_BOX (combo),
+						     szToolTip);
+			    toolbar_append_with_eventbox(GTK_TOOLBAR(m_wToolbar),
+							 combo,
+							 szToolTip,
+							 (const char *)NULL);
+			    gtk_signal_connect (GTK_OBJECT (combo), "changed",
+						GTK_SIGNAL_FUNC (s_color_changed), wd);
+#endif
+				UT_DEBUGMSG(("TODO: Add the toolbar colour changer things"));
+			    break;
+				
+		
 			case EV_TBIT_StaticLabel:
 				break;
 					

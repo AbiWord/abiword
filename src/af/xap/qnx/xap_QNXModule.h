@@ -37,8 +37,8 @@ public:
    virtual bool   getErrorMsg (char ** dest) const;
 
  private:
-	char * m_szname;
 	void * m_module;
+	char * m_szname;
 };
 
 #endif /* XAP_QNXMODULE_H */

@@ -46,6 +46,7 @@ bool XAP_QNXModule::unload (void)
 		dlclose(m_module);
 	}
 	m_module = NULL;
+	return true;
 }
 
 bool XAP_QNXModule::getModuleName (char ** dest) const

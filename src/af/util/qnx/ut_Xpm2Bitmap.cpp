@@ -47,7 +47,7 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 	// first row contains: width height, number of colors, chars per pixel
 	UT_uint32 width, height, nrColors, charsPerPixel, n;
 	//printf("Scanning in the core info [%s] \n", pIconData[0]);
-	n = sscanf(pIconData[0],"%lu %lu %lu %lu",
+	n = sscanf(pIconData[0],"%u %u %u %u",
 				 &width,&height,&nrColors,&charsPerPixel);
 	//printf("Scanned w %d, h %d, #c %d, cpp %d\n", width, height, nrColors, charsPerPixel);
 	UT_ASSERT(n == 4);

@@ -127,7 +127,7 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 	FV_View * pfView = static_cast<FV_View*>(pView);
 
 	if (pView) {
-		UT_DEBUGMSG(("Resizing to %d,%d %d,%d \n",
+		UT_DEBUGMSG(("Document Area Resizing to %d,%d %d,%d (%d,%d) ",
 			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
 			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
 		pView->setWindowSize(cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 
@@ -139,10 +139,27 @@ int XAP_QNXFrame::_fe::resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info
 
 	return Pt_CONTINUE;
 }
+
+int XAP_QNXFrame::_fe::window_resize(PtWidget_t * w, void *data, PtCallbackInfo_t *info)
+{
+	PtContainerCallback_t *cbinfo = (PtContainerCallback_t *)(info->cbdata);
+
+	XAP_QNXApp * pQNXApp = (XAP_QNXApp *)data;
+
+	if (pQNXApp) {
+		UT_DEBUGMSG(("Window Resizing to %d,%d %d,%d ",
+			cbinfo->new_size.ul.x, cbinfo->new_size.ul.y,
+			cbinfo->new_size.lr.x, cbinfo->new_size.lr.y));
+		pQNXApp->setGeometry(-1, -1, 
+						   cbinfo->new_size.lr.x - cbinfo->new_size.ul.x, 
+				           cbinfo->new_size.lr.y - cbinfo->new_size.ul.y);
+	}
+
+	return Pt_CONTINUE;
+}
 		
 #if 0
-
-int XAP_QNXFrame::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/)
+int XAP_QNXFrame::_fe::delete_event(PtWidget_t * w, GdkEvent * /*event*/, gpointer /*data*/)
 {
 	XAP_QNXFrame * pQNXFrame = (XAP_QNXFrame *) gtk_object_get_user_data(GTK_OBJECT(w));
 	XAP_App * pApp = pQNXFrame->getApp();
@@ -402,6 +419,7 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	bool bResult;
 	PtArg_t args[10];
 	int 	n;
+	UT_uint32	w, h;
 	PhArea_t area;
 
 #define INIT_WIDTH 500
@@ -411,6 +429,13 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	void *data = this;
 	area.pos.x = 0; area.pos.y = 0;
 	area.size.w = INIT_WIDTH; area.size.h = INIT_HEIGHT;
+
+	//If it is available then get the default geometry
+	if(m_pQNXApp && m_pQNXApp->getGeometry(NULL, NULL, &w, &h) == true) {
+		area.size.w = w;
+		area.size.h = h;
+	} 
+
 	m_AvailableArea = area;
 
 	n = 0;
@@ -431,6 +456,7 @@ void XAP_QNXFrame::_createTopLevelWindow(void)
 	//PtAddEventHandler(m_wTopLevelWindow, Ph_EV_KEY, _fe::key_press_event, this);
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_GOT_FOCUS, _fe::focus_in_event, this);
 	PtAddCallback(m_wTopLevelWindow, Pt_CB_LOST_FOCUS, _fe::focus_out_event, this);
+	PtAddCallback(m_wTopLevelWindow, Pt_CB_RESIZE, _fe::window_resize, m_pQNXApp);
 
 	/* TODO: Menu and the Toolbars all go into the same Toolbar "group" */
 #if 0
