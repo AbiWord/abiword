@@ -204,7 +204,8 @@ protected:
 
 	// !!! the m_pLanguage member cannot be set to an arbitrary string pointer
 	// but only a pointer in the static table of the UT_Language class !!!
-	const XML_Char *			m_pLanguage;
+	const XML_Char *		m_pLanguage;
+	bool					m_bIsOverhanging;
 
 #if 0	
 #ifdef BIDI_ENABLED

@@ -82,6 +82,8 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	//m_iOldSpaceWidthBeforeJustification = JUSTIFICATION_NOT_USED;
 	m_pField = NULL;
 	m_pLanguage = NULL;
+	m_bIsOverhanging = false;
+
 #ifdef BIDI_ENABLED
 	m_iDirection = FRIBIDI_TYPE_UNSET; //we will use this as an indication that the direction property has not been yet set
 			  //normal values are -1,0,1 (neutral, ltr, rtl)
@@ -173,6 +175,10 @@ void fp_TextRun::lookupProperties(void)
 		pDoc->getStyle((const char*) pszStyle, &pStyle);
 		if(pStyle) pStyle->used(1);
 	}
+
+
+	const XML_Char *pszFontStyle = PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	m_bIsOverhanging = (pszFontStyle && !UT_strcmp(pszFontStyle, "italic"));
 
 	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
@@ -1408,7 +1414,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	UT_uint32 iBase = m_pBL->getPosition();
 
-	m_pG->setFont(m_pScreenFont);
 	if(!m_pHyperlink || !m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 		m_pG->setColor(m_colorFG);
 
@@ -1505,29 +1510,42 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	/*
 		if the text on either side of this run is in italics, there is a good
 		chance that the background covered some of the text; to fix this we
-		call _drawLastChar and _drawFirstChar for those runs.
+		call _drawLastChar and _drawFirstChar for those runs, but we will not do
+		so undiscriminately -- we need to do this only if the prev or next
+		runs are overhanging (i.e., italicized) and if we are in a screen-like
+		context (screen-like context is one in which drawing a white rectangle
+		over a piece of text results in the text being erased; apart from
+		the sreen, a Windows printer can behave like this).
 	*/
+
+	if(!m_pG->queryProperties(GR_Graphics::DGP_POSTSCRIPT))
+	{
 #ifdef BIDI_ENABLED
-	fp_Run * pNext = getNextVisual();
-	fp_Run * pPrev = getPrevVisual();
+		fp_Run * pNext = getNextVisual();
+		fp_Run * pPrev = getPrevVisual();
 #else
-	fp_Run * pNext = m_pNext && m_pNext->getLine() == m_pLine ? m_pNext : NULL;
-	fp_Run * pPrev = m_pPrev && m_pPrev->getLine() == m_pLine ? m_pPrev : NULL;
+		fp_Run * pNext = m_pNext && m_pNext->getLine() == m_pLine ? m_pNext : NULL;
+		fp_Run * pPrev = m_pPrev && m_pPrev->getLine() == m_pLine ? m_pPrev : NULL;
 #endif
 
-	if(pNext && pNext->getType() == FPRUN_TEXT)
-	{
-		fp_TextRun * pT = static_cast<fp_TextRun*>(pNext);
-		pT->_drawFirstChar(pDA->xoff + m_iWidth,yTopOfRun);
-	}
+		if(pNext && pNext->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun * pT = static_cast<fp_TextRun*>(pNext);
+			if(pT->m_bIsOverhanging)
+				pT->_drawFirstChar(pDA->xoff + m_iWidth,yTopOfRun);
+		}
 
-	if(pPrev && pPrev->getType() == FPRUN_TEXT)
-	{
-		fp_TextRun * pT = static_cast<fp_TextRun*>(pPrev);
-		pT->_drawLastChar(pDA->xoff,yTopOfRun, pgbCharWidths);
+		if(pPrev && pPrev->getType() == FPRUN_TEXT)
+		{
+			fp_TextRun * pT = static_cast<fp_TextRun*>(pPrev);
+			if(pT->m_bIsOverhanging)
+				pT->_drawLastChar(pDA->xoff,yTopOfRun, pgbCharWidths);
+		}
 	}
 
 	// now draw the whole string
+	m_pG->setFont(m_pScreenFont);
+
 #ifdef BIDI_ENABLED
 	// since we have the visual string in the draw buffer, we just call m_pGr->drawChars()
 	m_pG->drawChars(m_pSpanBuff, 0, m_iLen, pDA->xoff, yTopOfRun);	
@@ -1841,6 +1859,8 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 	if(!m_iLen)
 		return;
 
+	// have to sent font, since we were called from a run using different font	
+    m_pG->setFont(m_pScreenFont);
 #ifdef BIDI_ENABLED
 	FriBidiCharType iVisDirection = getVisDirection();
 
@@ -1870,7 +1890,9 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff)
 {
 	if(!m_iLen)
 		return;
-
+	
+	// have to sent font, since we were called from a run using different font	
+    m_pG->setFont(m_pScreenFont);
 #ifdef BIDI_ENABLED
 	if(!s_bBidiOS)
 	{
@@ -1962,6 +1984,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	else if(iVisDirection == FRIBIDI_TYPE_LTR)
 		m_pG->drawChars(m_pSpanBuff + iStart - m_iOffsetFirst, 0, iLen, xoff + iLeftWidth, yoff);
 	else
+
 
 		// if the buffer is not reversed because the OS will reverse it, then we
 		// draw from it as if it was LTR buffer, but iLeftWidth is right width
