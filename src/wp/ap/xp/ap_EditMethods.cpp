@@ -8626,12 +8626,14 @@ Defun(dlgFmtImage)
 	  }
 
 	  if (szTitle) {
-		  // TODO: SGML unescape
-		  pDialog->setTitle (szTitle);
+		  char * title = UT_XML_Decode (szTitle);
+		  pDialog->setTitle (title);
+		  FREEP(title);
 	  }
 	  if (szAlt) {
-		  // TODO: SGML unescape
-		  pDialog->setAlt (szAlt);
+		  char * alt = UT_XML_Decode (szAlt);
+		  pDialog->setAlt (alt);
+		  FREEP(alt);
 	  }
 
 	  // 72.0 is pixels/inch
@@ -8723,9 +8725,15 @@ Defun(dlgFmtImage)
 		  properties[1] = widthBuf;
 		  properties[3] = heightBuf;
 
+		  UT_UTF8String title (pDialog->getTitle());
+		  UT_UTF8String alt (pDialog->getAlt());
+
+		  title.escapeXML();
+		  alt.escapeXML();
+
 		  const XML_Char * attribs[] = {"title", NULL, "alt", NULL, 0};
-		  attribs[1] = pDialog->getTitle().utf8_str();
-		  attribs[3] = pDialog->getAlt().utf8_str();
+		  attribs[1] = title.utf8_str();
+		  attribs[3] = alt.utf8_str();
 
 		  pView->setCharFormat(properties, attribs);
 		  pView->updateScreen();
