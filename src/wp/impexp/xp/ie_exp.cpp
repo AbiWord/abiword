@@ -42,6 +42,7 @@
 #include "ie_exp_UTF8.h"
 #include "ie_exp_LaTeX.h"
 #include "ie_exp_PalmDoc.h"
+#include "ie_exp_WML.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -74,6 +75,7 @@ static struct _xp s_expTable[] =
 	DeclareExporter(IE_Exp_HTML),
 	DeclareExporter(IE_Exp_LaTeX),
 	DeclareExporter(IE_Exp_PalmDoc),
+	DeclareExporter(IE_Exp_WML),
 };
 
 /*****************************************************************/
