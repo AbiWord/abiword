@@ -44,6 +44,9 @@
 #include "xap_Toolbar_Layouts.h"
 #include "ut_rand.h"
 
+#ifdef HAVE_CURLHASH	
+#include "xap_HashDownloader.h"
+#endif
 /*****************************************************************/
 
 XAP_App * XAP_App::m_pApp = NULL;
@@ -73,6 +76,10 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	m_pMenuFactory = new XAP_Menu_Factory(this);
 	m_pToolbarFactory = new XAP_Toolbar_Factory(this);
 	clearIdTable();
+
+#ifdef HAVE_CURLHASH	
+	m_pHashDownloader = NULL;
+#endif
 }
 
 XAP_App::~XAP_App()
@@ -84,6 +91,10 @@ XAP_App::~XAP_App()
 
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
+
+#ifdef HAVE_CURLHASH	
+	DELETEP(m_pHashDownloader);
+#endif
 
 	FREEP(m_szAbiSuiteLibDir);
 	DELETEP(m_pEMC);

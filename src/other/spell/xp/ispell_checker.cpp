@@ -18,6 +18,10 @@
 #include "xap_Frame.h"
 #include "xap_Strings.h"
 
+#ifdef HAVE_CURLHASH
+#include "ap_HashDownloader.h"
+#endif
+
 /***************************************************************************/
 /* Reduced Gobals needed by ispell code.                                   */
 /***************************************************************************/
@@ -266,53 +270,6 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
   return sgvec;
 }
 
-typedef struct {
-  char * dict;
-  char * lang;
-} Ispell2Lang_t;
-
-// please keep this ordered alphabetically by country-code
-static const Ispell2Lang_t m_mapping[] = {
-  { "catala.hash",     "ca-ES" },
-  { "czech.hash",      "cs-CZ" },
-  { "dansk.hash",      "da-DK" },
-  { "swiss.hash",      "de-CH" },
-  { "deutsch.hash",    "de-DE" },
-  { "deutsch.hash",    "de-AT" },
-  { "ellhnika.hash",   "el-GR" },
-  { "british.hash",    "en-AU" },
-  { "british.hash",    "en-CA" },
-  { "british.hash",    "en-GB" },
-  { "british.hash",    "en-IE" },
-  { "british.hash",    "en-NZ" },
-  { "american.hash",   "en-US" },
-  { "british.hash",    "en-ZA" },
-  { "esperanto.hash",  "eo"    },
-  { "espanol.hash",    "es-ES" },
-  { "espanol.hash",    "es-MX" },
-  { "finnish.hash",    "fi-FI" },
-  { "francais.hash",   "fr-BE" },
-  { "francais.hash",   "fr-CA" },
-  { "francais.hash",   "fr-CH" },
-  { "francais.hash",   "fr-FR" },
-  { "hungarian.hash",  "hu-HU" },
-  { "irish.hash",      "ga-IE" },
-  { "galician.hash",   "gl-ES" },
-  { "italian.hash",    "it-IT" },
-  { "mlatin.hash",     "la-IT" },
-  { "lietuviu.hash",   "lt-LT" },
-  { "nederlands.hash", "nl-NL" },
-  { "norsk.hash",      "nb-NO" },
-  { "nynorsk.hash",    "nn-NO" },
-  { "polish.hash",     "pl-PL" },
-  { "portugues.hash",  "pt-PT" },
-  { "brazilian.hash",  "pt-BR" },
-  { "russian.hash",    "ru-RU" },
-  { "slovensko.hash",  "sl-SI" },
-  { "svenska.hash",    "sv-SE" },
-  { "ukrainian.hash",  "uk-UA" }
-};
-
 static void couldNotLoadDictionary ( const char * szLang )
 {
   XAP_Frame           * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
@@ -337,11 +294,39 @@ s_buildHashName ( const char * base, const char * dict )
   return UT_strdup (hName.c_str());  
 }
 
+
+char *
+ISpellChecker::loadGlobalDictionary ( const char *szHash )
+{
+  char *hashname = NULL;
+  hashname = s_buildHashName ( XAP_App::getApp()->getAbiSuiteLibDir(), szHash ) ;
+  if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
+  {
+    FREEP( hashname );
+    return(NULL);
+  }
+  return(hashname);
+}
+
+
+char *
+ISpellChecker::loadLocalDictionary ( const char *szHash )
+{
+  char *hashname = NULL;
+  hashname = s_buildHashName ( XAP_App::getApp()->getUserPrivateDirectory(), szHash ) ;
+  if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
+  {
+    FREEP( hashname );
+    return(NULL);
+  }
+  return(hashname);
+}
+
+
 char *
 ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 {
   char *hashname = NULL;
-  
   char * hFile = NULL ;
 
   for (UT_uint32 i = 0; i < (sizeof (m_mapping) / sizeof (m_mapping[0])); i++)
@@ -359,23 +344,20 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 #if defined(DONT_USE_GLOBALS)
   m_pISpellState = alloc_ispell_struct();
 #endif
+  
+  if (!(hashname = loadGlobalDictionary(hFile))) {
+    if (!(hashname = loadLocalDictionary(hFile))) {
+#ifdef HAVE_CURLHASH
+      AP_HashDownloader *hd = (AP_HashDownloader *)XAP_App::getApp()->getHashDownloader();
+      XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 
-  // try #1 - global directory
-  hashname = s_buildHashName ( XAP_App::getApp()->getAbiSuiteLibDir(), hFile ) ;
-  if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
-    {
-      // failed...
-      FREEP( hashname );
-
-      // try 2: user's local directory
-      hashname = s_buildHashName ( XAP_App::getApp()->getUserPrivateDirectory(), hFile ) ;
-      // failed
-      if (linit(DEREF_FIRST_ARG(m_pISpellState) const_cast<char*>(hashname)) < 0)
-	{
-	  FREEP( hashname );
-	  return NULL;
-	}
+      if (!hd || (hd->suggestDownload(pFrame, szLang) != 1)
+      	      || (!(hashname = loadGlobalDictionary(hFile))
+              && !(hashname = loadLocalDictionary(hFile))) )
+#endif
+        return NULL;
     }
+  }
 
   // one of the two above calls succeeded
   return hashname ;

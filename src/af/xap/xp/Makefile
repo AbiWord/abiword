@@ -61,6 +61,10 @@ CPPSRCS=	xad_Document.cpp		\
 		xap_Dlg_Language.cpp		\
 		xap_Dlg_Encoding.cpp
 
+ifeq ($(ABI_OPT_CURLHASH),1)
+CPPSRCS +=	xap_HashDownloader.cpp
+endif
+
 TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

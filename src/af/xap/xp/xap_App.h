@@ -49,6 +49,9 @@ class UT_String;
 class XAP_Menu_Factory;
 class XAP_Toolbar_Factory;
 
+#ifdef HAVE_CURLHASH	
+class XAP_HashDownloader;
+#endif
 /*****************************************************************
 ******************************************************************
 ** This file defines the base class for the cross-platform 
@@ -163,6 +166,9 @@ public:
 	virtual bool 							getDisplayStatus(void) const;
 	virtual bool 							setDisplayStatus(bool b);
 
+#ifdef HAVE_CURLHASH	
+	XAP_HashDownloader *			getHashDownloader(void) const { return m_pHashDownloader; };
+#endif
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
 	virtual void							_printUsage();   
@@ -183,7 +189,9 @@ protected:
 	XAP_Frame *								m_lastFocussedFrame;
 	XAP_Menu_Factory *                      m_pMenuFactory;
 	XAP_Toolbar_Factory *                   m_pToolbarFactory;
-
+#ifdef HAVE_CURLHASH	
+	XAP_HashDownloader *			m_pHashDownloader;
+#endif
 
 	static bool 							s_bShowDisplay;
 

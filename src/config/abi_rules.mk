@@ -58,6 +58,9 @@ endif
 ifneq ($(ABI_OPT_PSPELL),1)
 ABI_OPT_PSPELL=0
 endif
+ifneq ($(ABI_OPT_CURLHASH),1)
+ABI_OPT_CURLHASH=1
+endif
 
 ifdef LIBRARY_NAME
 ifeq ($(OS_NAME), WIN32)

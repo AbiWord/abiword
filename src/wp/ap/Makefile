@@ -110,6 +110,10 @@ ifeq ($(ABI_OPT_WIDGET),1)
 PLATFORM_OBJS+= $(OBJDIR)/abiwidget.$(OBJ_SUFFIX)
 endif
 
+ifeq ($(ABI_OPT_CURLHASH),1)
+PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)HashDownloader.$(OBJ_SUFFIX)
+endif
+
 OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Convert.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_New.$(OBJ_SUFFIX)		\
@@ -177,6 +181,10 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_TopRuler.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_splash.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)
+
+ifeq ($(ABI_OPT_CURLHASH),1)
+OBJS +=		$(OBJDIR)/ap_HashDownloader.$(OBJ_SUFFIX)
+endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

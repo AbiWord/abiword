@@ -247,6 +247,7 @@ ap_sb_Field_StatusMessage::ap_sb_Field_StatusMessage(AP_StatusBar * pSB)
 {
 	m_ProgressStartPoint = 0;
 	m_ProgressFlags = 0;
+	m_ProgressTimer = NULL;
 }
 
 ap_sb_Field_StatusMessage::~ap_sb_Field_StatusMessage(void)

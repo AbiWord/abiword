@@ -58,6 +58,19 @@ There are several ways to build and run AbiWord:
     If you are building from CVS, you will need to run autogen.sh in
     abiword-plugins in order to create the build system.
 
+    Build Options
+    -------------
+    
+    ABI_OPT_CURLHASH
+	Enables the dictionary downloader. When Abiword tries to spellcheck a
+	document and hits a language for wich no dictionary have been installed
+	it suggests to the user to let Abiword download the dictionary and
+	install it in the users $HOME directory.
+	At the moment this only works on Unix but it shouldn't be much more than
+	a formality to make the other platforms work. Also, since we currently
+	only have ispell hashes only those systems will work.
+	It depends on libcurl.
+
     AIX platform Notes
     ------------------
 

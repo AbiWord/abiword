@@ -663,6 +663,13 @@ EXTRA_LIBS	+=	$(GTK_LIBS)
 ABI_OPTIONS+=Gnome:Off
 endif
 
+ifeq ($(ABI_OPT_CURLHASH),1)
+LIBCURL_CFLAGS  =       $(shell curl-config --cflags)
+LIBCURL_LIBS    =       $(shell curl-config --libs)
+CFLAGS          +=      $(LIBCURL_CFLAGS) -DHAVE_CURLHASH=1
+EXTRA_LIBS      +=      $(LIBCURL_LIBS)
+endif
+
 ifeq ($(ABI_OPT_LIBXML2),1)
 XML_CFLAGS	= $(shell $(LIBXML_CONFIG) --cflags)
 XML_LIBS	= $(shell $(LIBXML_CONFIG) --libs)

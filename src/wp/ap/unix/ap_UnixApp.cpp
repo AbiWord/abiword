@@ -92,6 +92,10 @@
 #include "xap_UnixPSGraphics.h"
 #include "abiwidget.h"
 
+#ifdef HAVE_CURLHASH	
+#include "ap_UnixHashDownloader.h"
+#endif
+
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
 #define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
 #else
@@ -119,6 +123,10 @@ AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 	  m_cacheSelectionView(0),
 	  m_pFrameSelection(0)
 {
+#ifdef HAVE_CURLHASH	
+	m_pHashDownloader = (XAP_HashDownloader *)(new AP_UnixHashDownloader());
+#endif
+
 //
 // hack to link abi_widget - thanks fjf
 //

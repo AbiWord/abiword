@@ -145,6 +145,10 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Dlg_Language.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Encoding.$(OBJ_SUFFIX)
 
+ifeq ($(ABI_OPT_CURLHASH),1)
+OBJS +=		$(OBJDIR)/xap_HashDownloader.$(OBJ_SUFFIX)
+endif
+
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 

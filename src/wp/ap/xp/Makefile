@@ -89,6 +89,10 @@ CPPSRCS=	ap_Convert.cpp			\
 		ap_Toolbar_Layouts.cpp		\
 		ap_TopRuler.cpp
 
+ifeq ($(ABI_OPT_CURLHASH),1)
+CPPSRCS +=	ap_HashDownloader.cpp
+endif
+
 GENCPPSRCS=	$(OBJDIR)/ap_wp_splash.cpp	\
 		$(OBJDIR)/ap_wp_sidebar.cpp
 
