@@ -27,6 +27,9 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 
+// default GTK message box button width, in GTK screen units (pixels)
+#define DEFAULT_BUTTON_WIDTH	85
+
 /*****************************************************************/
 AP_Dialog * AP_UnixDialog_MessageBox::static_constructor(AP_DialogFactory * pFactory,
 														 AP_Dialog_Id id)
@@ -171,8 +174,13 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 							  NULL);
 
 	gtk_window_set_title (GTK_WINDOW (dialog_window), szCaption);
-	// the size of the dialog is set after we know what's
-	// going to be in it.
+
+	// don't let user shrink or expand, but auto-size to
+	// contents initially
+    gtk_window_set_policy(GTK_WINDOW(dialog_window),
+						  FALSE,
+						  FALSE,
+						  TRUE);
 
 	// Intercept key strokes
 	gtk_signal_connect(GTK_OBJECT(dialog_window),
@@ -218,6 +226,7 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 						GTK_SIGNAL_FUNC (s_ok_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
+	gtk_widget_set_usize(ok_button, DEFAULT_BUTTON_WIDTH, 0);
 	// Cancel
 	cancel_label = gtk_label_new("SHOULD NOT APPEAR");
 	cancel_accel = gtk_label_parse_uline(GTK_LABEL(cancel_label), "_Cancel");
@@ -229,6 +238,7 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 						GTK_SIGNAL_FUNC (s_cancel_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (cancel_button, GTK_CAN_DEFAULT);
+	gtk_widget_set_usize(cancel_button, DEFAULT_BUTTON_WIDTH, 0);
 	// Yes
 	yes_label = gtk_label_new("SHOULD NOT APPEAR");
 	yes_accel = gtk_label_parse_uline(GTK_LABEL(yes_label), "_Yes");
@@ -240,6 +250,7 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 						GTK_SIGNAL_FUNC (s_yes_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (yes_button, GTK_CAN_DEFAULT);
+	gtk_widget_set_usize(yes_button, DEFAULT_BUTTON_WIDTH, 0);
 	// No
 	no_label = gtk_label_new("SHOULD NOT APPEAR");
 	no_accel = gtk_label_parse_uline(GTK_LABEL(no_label), "_No");
@@ -251,13 +262,14 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 						GTK_SIGNAL_FUNC (s_no_clicked),
 						&m_answer);
 	GTK_WIDGET_SET_FLAGS (no_button, GTK_CAN_DEFAULT);
+	gtk_widget_set_usize(no_button, DEFAULT_BUTTON_WIDTH, 0);
 
 	switch (m_buttons)
 	{
 	case b_O:
 		// OK
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							ok_button, TRUE, TRUE, 0);
+							ok_button, FALSE, FALSE, 0);
 		gtk_widget_grab_default (ok_button);
 		_bindKey(ok_accel, a_OK);
 		_bindKey(GDK_Escape, a_OK);
@@ -267,14 +279,14 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 	case b_OC:
 		// OK
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							ok_button, TRUE, TRUE, 0);
+							ok_button, FALSE, FALSE, 0);
 		if (m_defaultAnswer == a_OK)
 			gtk_widget_grab_default (ok_button);
 		_bindKey(ok_accel, a_OK);
 		gtk_widget_show (ok_button);
 		// Cancel
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							cancel_button, TRUE, TRUE, 0);
+							cancel_button, FALSE, FALSE, 0);
 		if (m_defaultAnswer == a_NO)
 			gtk_widget_grab_default (cancel_button);
 		_bindKey(cancel_accel, a_CANCEL);
@@ -285,14 +297,14 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 	case b_YN:
 		// Yes
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							yes_button, TRUE, TRUE, 0);
+							yes_button, FALSE, FALSE, 0);
 		if (m_defaultAnswer == a_YES)
 			gtk_widget_grab_default (yes_button);
 		_bindKey(yes_accel, a_YES);
 		gtk_widget_show (yes_button);
 		// No
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							no_button, TRUE, TRUE, 0);
+							no_button, FALSE, FALSE, 0);
 		if (m_defaultAnswer == a_NO)
 			gtk_widget_grab_default (no_button);
 		_bindKey(no_accel, a_NO);
@@ -303,21 +315,21 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 	case b_YNC:
 		// Yes
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							yes_button, TRUE, TRUE, 0);
+							yes_button, FALSE, FALSE, 0);
 		if (m_defaultAnswer == a_YES)
 			gtk_widget_grab_default (yes_button);
 		_bindKey(yes_accel, a_YES);
 		gtk_widget_show (yes_button);
 		// No
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							no_button, TRUE, TRUE, 0);
+							no_button, FALSE, FALSE, 0);
 		if (m_defaultAnswer == a_NO)
 			gtk_widget_grab_default (no_button);
 		_bindKey(no_accel, a_NO);
 		gtk_widget_show (no_button);
 		// Cancel
 		gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog_window)->action_area),
-							cancel_button, TRUE, TRUE, 0);
+							cancel_button, FALSE, FALSE, 0);
 		if (m_defaultAnswer == a_CANCEL)
 			gtk_widget_grab_default (cancel_button);
 		gtk_widget_show (cancel_button);
@@ -331,7 +343,7 @@ void AP_UnixDialog_MessageBox::runModal(AP_Frame * pFrame)
 
 	// set the size of the dialog to size with the label inside
 	gtk_widget_size_request(dialog_window, &dialog_window->requisition);
-	gtk_widget_set_usize(dialog_window, dialog_window->requisition.width + 40, 110);
+	gtk_widget_set_usize(dialog_window, dialog_window->requisition.width + 40, 0);
 	
 	// get top level window and it's GtkWidget *
 	AP_UnixFrame * frame = static_cast<AP_UnixFrame *>(pFrame);

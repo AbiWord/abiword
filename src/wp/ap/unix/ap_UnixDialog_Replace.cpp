@@ -32,6 +32,8 @@
 #include "ap_Dialog_Replace.h"
 #include "ap_UnixDialog_Replace.h"
 
+#define DEFAULT_BUTTON_WIDTH	85
+
 #define FREEP(p)	do { if (p) free(p); (p)=NULL; } while (0)
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -183,8 +185,14 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 							 "destroy",
 							 GTK_SIGNAL_FUNC(CancelCallback),
 							 NULL);
-	
-	gtk_widget_set_usize(GTK_WIDGET(topLevel), 300, 140);
+
+	// don't let user shrink or expand, but auto-size to
+	// contents initially
+    gtk_window_set_policy(GTK_WINDOW(topLevel),
+						  FALSE,
+						  FALSE,
+						  TRUE);
+
 	gtk_window_set_title(GTK_WINDOW(topLevel), "Replace");
 	// show this at the very end
 	
@@ -287,9 +295,9 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	gtk_box_pack_start(GTK_BOX(vbox), buttonBox, FALSE, TRUE, 5);
 	gtk_widget_show(buttonBox);
 
-	findButton = gtk_button_new_with_label(" Find Next ");
-	UT_DEBUGMSG(("findEntry=%p\n",findEntry));
-	gtk_box_pack_start(GTK_BOX(buttonBox), findButton, TRUE, FALSE, 0);
+	findButton = gtk_button_new_with_label("Find Next");
+	gtk_widget_set_usize(findButton, DEFAULT_BUTTON_WIDTH, 0);
+	gtk_box_pack_start(GTK_BOX(buttonBox), findButton, FALSE, FALSE, 0);
 	gtk_widget_show(findButton);
 
 	gtk_signal_connect(GTK_OBJECT(findButton),
@@ -297,8 +305,9 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 					   GTK_SIGNAL_FUNC(FindCallback),
 					   this);
 
-	replaceButton = gtk_button_new_with_label(" Replace ");
-	gtk_box_pack_start(GTK_BOX(buttonBox), replaceButton, TRUE, FALSE, 0);
+	replaceButton = gtk_button_new_with_label("Replace");
+	gtk_widget_set_usize(replaceButton, DEFAULT_BUTTON_WIDTH, 0);
+	gtk_box_pack_start(GTK_BOX(buttonBox), replaceButton, FALSE, FALSE, 0);
 	gtk_widget_show(replaceButton);
 
 	gtk_signal_connect(GTK_OBJECT(replaceButton),
@@ -306,8 +315,9 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 					   GTK_SIGNAL_FUNC(ReplaceCallback),
 					   this);
 
-	replaceAllButton = gtk_button_new_with_label(" Replace All ");
-	gtk_box_pack_start(GTK_BOX(buttonBox), replaceAllButton, TRUE, FALSE, 0);
+	replaceAllButton = gtk_button_new_with_label("Replace All");
+	gtk_widget_set_usize(replaceAllButton, DEFAULT_BUTTON_WIDTH, 0);
+	gtk_box_pack_start(GTK_BOX(buttonBox), replaceAllButton, FALSE, FALSE, 0);
 	gtk_widget_show(replaceAllButton);
 
 	gtk_signal_connect(GTK_OBJECT(replaceButton),
@@ -315,8 +325,9 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 					   GTK_SIGNAL_FUNC(ReplaceAllCallback),
 					   this);
 	
-	cancelButton = gtk_button_new_with_label(" Cancel ");
-	gtk_box_pack_start(GTK_BOX(buttonBox), cancelButton, TRUE, FALSE, 0);
+	cancelButton = gtk_button_new_with_label("Cancel");
+	gtk_widget_set_usize(cancelButton, DEFAULT_BUTTON_WIDTH, 0);
+	gtk_box_pack_start(GTK_BOX(buttonBox), cancelButton, FALSE, FALSE, 0);
 	gtk_widget_show(cancelButton);
 
 	gtk_signal_connect_object(GTK_OBJECT(cancelButton),
