@@ -821,12 +821,12 @@ void PP_AttrProp::_clearEmptyProperties()
 				XML_Char* tmp = const_cast<XML_Char*>(p->first());
 				UT_return_if_fail (!m_bIsReadOnly);
 				FREEP(tmp);
+				m_pProperties->remove(_hc1.key(),pEntry);
 				if (p->second()) {
 					delete p->second();
 				}
 				delete p;
 
-				m_pProperties->remove(_hc1.key(),pEntry);
 			}
 		}
 	}
