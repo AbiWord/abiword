@@ -31,6 +31,32 @@
 	and namespaces, BTW.)
 */
 
+#define UT_VECTOR_CLEANUP(d, v, r) \
+	do	{	int utv_max = v.getItemCount();				\
+			for (int utv=utv_max-1; utv>=0; utv--)		\
+			{											\
+				d utv_p = (d) v.getNthItem(utv);		\
+				UT_ASSERT(utv_p);						\
+				if (utv_p)								\
+					r (utv_p);						\
+			}											\
+	} while (0)
+
+#define UT_VECTOR_SPARSECLEANUP(d, v, r) \
+	do	{	int utv_max = v.getItemCount();				\
+			for (int utv=utv_max-1; utv>=0; utv--)		\
+			{											\
+				d utv_p = (d) v.getNthItem(utv);		\
+				if (utv_p)								\
+					r (utv_p);						\
+			}											\
+	} while (0)
+
+#define UT_VECTOR_PURGEALL(d, v) UT_VECTOR_CLEANUP(d, v, delete)
+#define UT_VECTOR_FREEALL(d, v) UT_VECTOR_CLEANUP(d, v, free)
+#define UT_VECTOR_SPARSEPURGEALL(d, v) UT_VECTOR_SPARSECLEANUP(d, v, delete)
+#define UT_VECTOR_SPARSEFREEALL(d, v) UT_VECTOR_SPARSECLEANUP(d, v, free)
+
 #ifndef ABI_OPT_STL
 class UT_Vector
 {
@@ -80,41 +106,6 @@ private:
 	UT_uint32		m_iPostCutoffIncrement;
 };
 
-// NB: this macro is useful only in destructors
-#define UT_VECTOR_PURGEALL(d, v)						\
-	do	{	int utv_max = v.getItemCount();				\
-			for (int utv=utv_max-1; utv>=0; utv--)		\
-			{											\
-				d utv_p = (d) v.getNthItem(utv);		\
-				UT_ASSERT(utv_p);						\
-				if (utv_p)								\
-					delete utv_p;						\
-			}											\
-	} while (0)
-
-// NB: this macro is useful only in destructors
-#define UT_VECTOR_SPARSEPURGEALL(d, v)					\
-	do	{	int utv_max = v.getItemCount();				\
-			for (int utv=utv_max-1; utv>=0; utv--)		\
-			{											\
-				d utv_p = (d) v.getNthItem(utv);		\
-				if (utv_p)								\
-					delete utv_p;						\
-			}											\
-	} while (0)
-
-// NB: this macro is useful only in destructors
-#define UT_VECTOR_FREEALL(d, v)							\
-	do	{	int utv_max = v.getItemCount();				\
-			for (int utv=utv_max-1; utv>=0; utv--)		\
-			{											\
-				d utv_p = (d) v.getNthItem(utv);		\
-				UT_ASSERT(utv_p);						\
-				if (utv_p)								\
-					free(utv_p);						\
-			}											\
-	} while (0)
-
 #else /* ABI_OPT_STL */
 
 #include <vector>
@@ -154,41 +145,6 @@ class UT_Vector
 private:
 	vector<void *>  m_STLVec;
 };
-
-// NB: this macro is useful only in destructors
-#define UT_VECTOR_PURGEALL(d, v)						\
-	do	{	int utv_max = v.getItemCount();				\
-			for (int utv=utv_max-1; utv>=0; utv--)		\
-			{											\
-				d utv_p = (d) v.getNthItem(utv);		\
-				UT_ASSERT(utv_p);						\
-				if (utv_p)								\
-					delete utv_p;						\
-			}											\
-	} while (0)
-
-// NB: this macro is useful only in destructors
-#define UT_VECTOR_SPARSEPURGEALL(d, v)					\
-	do	{	int utv_max = v.getItemCount();				\
-			for (int utv=utv_max-1; utv>=0; utv--)		\
-			{											\
-				d utv_p = (d) v.getNthItem(utv);		\
-				if (utv_p)								\
-					delete utv_p;						\
-			}											\
-	} while (0)
-
-// NB: this macro is useful only in destructors
-#define UT_VECTOR_FREEALL(d, v)							\
-	do	{	int utv_max = v.getItemCount();				\
-			for (int utv=utv_max-1; utv>=0; utv--)		\
-			{											\
-				d utv_p = (d) v.getNthItem(utv);		\
-				UT_ASSERT(utv_p);						\
-				if (utv_p)								\
-					free(utv_p);						\
-			}											\
-	} while (0)
 
 #endif /* ABI_OPT_STL */
 
