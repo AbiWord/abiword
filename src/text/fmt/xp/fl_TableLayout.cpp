@@ -306,7 +306,7 @@ void fl_TableLayout::format(void)
 		}
 		pCell = pCell->getNext();
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Finished Formatting %x isDirty %d \n",this,isDirty()));
+	UT_DEBUGMSG(("fl_TableLayout: Finished Formatting %x isDirty %d \n",this,isDirty()));
 
 	if(isDirty() && !getDocument()->isDontImmediateLayout())
 	{
@@ -1152,6 +1152,7 @@ void fl_TableLayout::collapse(void)
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
+	setNeedsReformat();
 }
 
 bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
@@ -1931,6 +1932,7 @@ void fl_CellLayout::collapse(void)
 	}
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
+	setNeedsReformat();
 }
 
 bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)

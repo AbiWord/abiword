@@ -1717,7 +1717,7 @@ void fl_BlockLayout::format()
 	//
 	UT_sint32 iNewHeight = getHeightOfBlock();
 	if(iOldHeight != iNewHeight)
-	{
+	{	
 		getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 	}
 	return;	// TODO return code
@@ -4952,6 +4952,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	UT_ASSERT(iType != FL_SECTION_DOC || pcrx->getStruxType() == PTX_Section);
 	UT_ASSERT(iType != FL_SECTION_HDRFTR || pcrx->getStruxType() == PTX_SectionHdrFtr);
 	UT_ASSERT(iType != FL_SECTION_FOOTNOTE || pcrx->getStruxType() == PTX_SectionFootnote);
+	getDocSectionLayout()->setNeedsSectionBreak(true,NULL);
 
 //
 // Not true always. eg Undo on a delete header/footer. We should detect this
@@ -5133,7 +5134,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	//
 	// BUT!!! Don't move the immediate Footnotes or Endnotes
 	//
-	fl_ContainerLayout * pLastCL = pCL;
+	fl_ContainerLayout * pLastCL = pCL->getPrev();
 	while(pCL && ((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
 		  (pCL->getContainerType() == FL_CONTAINER_ENDNOTE)))
 	{

@@ -53,7 +53,6 @@ fp_ContainerObject::~fp_ContainerObject()
 {
 }
 
-
 /*!
  * return true is this container is of column type
  */
@@ -78,9 +77,10 @@ bool fp_ContainerObject::isColumnType(void) const
  */
 fp_Container::fp_Container(FP_ContainerType iType, fl_SectionLayout* pSectionLayout)
 	:       fp_ContainerObject(iType, pSectionLayout),
-	m_pContainer(NULL),
-	m_pNext(NULL),
-	m_pPrev(NULL)
+			m_pContainer(NULL),
+			m_pNext(NULL),
+			m_pPrev(NULL),
+			m_pMyBrokenContainer(NULL)
 {
 	m_vecContainers.clear();
 }
@@ -94,6 +94,42 @@ fp_Container::~fp_Container()
 // The containers referenced in the m_vecContainers vector are owned by their
 // respective fl_Layout classes and so are not destructed here.
 //
+}
+
+/*!
+ * This returns a pointer to a container broken across a page that
+ * contains this container. This is used (in the first instance) by the
+ * Table pagination code which breaks tables across pages. This returns
+ * the pointer to the broken table this container is within.
+ */
+fp_Container * fp_Container::getMyBrokenContainer(void) const
+{
+	return m_pMyBrokenContainer;
+}
+
+/*!
+ * Sets the pointer to the broken table which contains this container.
+ */
+void fp_Container::setMyBrokenContainer(fp_Container * pMyBroken)
+{
+	m_pMyBrokenContainer = pMyBroken;
+}
+
+/*!
+ * Recursive clears all broken containers contained by this container
+ */
+void fp_Container::clearBrokenContainers(void)
+{
+	m_pMyBrokenContainer = NULL;
+	UT_uint32 i =0;
+	for(i=0;i<countCons();i++)
+	{
+		fp_Container * pCon = static_cast<fp_Container *>(getNthCon(i));
+		if(pCon)
+		{
+			pCon->clearBrokenContainers();
+		}
+	}
 }
 
 /*!

@@ -117,6 +117,7 @@ public:
 	void                drawLines(fp_TableContainer * pBroke);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
+	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
@@ -332,6 +333,7 @@ public:
 	void                drawLines();
 	bool                containsFootnoteReference(void);
 	bool                getFootnoteContainers(UT_Vector * pvecFoots);
+	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
     virtual void        clearScreen(void);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}

@@ -787,7 +787,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 {
 	bool bDoTableBreak;
 
-    xxx_UT_DEBUGMSG(("breakTable:!!!!!!!!!!!! Offending container is table %x \n",pOffendingContainer));
+    UT_DEBUGMSG(("breakTable:!!!!!!!!!!!! Offending container is table %x \n",pOffendingContainer));
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pOffendingContainer);
 	if(!pTab->isThisBroken())
 	{
@@ -811,7 +811,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 	fp_TableContainer * pBroke = NULL;
 	UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
 	UT_sint32 iBreakAt = pTab->wantVBreakAt(iAvail-1);
-	xxx_UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
+	UT_DEBUGMSG(("breakTable column: iAvail %d actual break at %d \n",iAvail,iBreakAt));
 //
 // Look to see if the table can be broken. If iBreakAt < 0 we have to bump 
 // the whole table into the next column.

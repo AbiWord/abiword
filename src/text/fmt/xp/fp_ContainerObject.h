@@ -215,11 +215,15 @@ public:
 	virtual void        setAssignedScreenHeight(UT_sint32 iY) =0;
 	bool                getPageRelativeOffsets(UT_Rect &r) const;
 	bool                isOnScreen() const;
+	fp_Container *      getMyBrokenContainer(void) const;
+	void                setMyBrokenContainer(fp_Container * pMyBroken);
+	void                clearBrokenContainers(void);
 private:
 	fp_Container*          m_pContainer;
 	fp_ContainerObject *   m_pNext;
 	fp_ContainerObject *   m_pPrev;
 	UT_Vector              m_vecContainers;
+	fp_Container *         m_pMyBrokenContainer;
 };
 
 #endif /*  CONTAINEROBJECT_H */

@@ -139,7 +139,8 @@ UT_sint32 fp_VerticalContainer::getYoffsetFromTable(fp_Container * pT,
 													fp_Container* pCell,
 													fp_ContainerObject * pCon)
 {
-	fp_TableContainer * pTable = static_cast<fp_TableContainer *>(pT)->getFirstBrokenTable();
+	fp_TableContainer * pFirstTable = static_cast<fp_TableContainer *>(pT)->getFirstBrokenTable();
+	fp_TableContainer * pTable = pFirstTable;
 //	UT_ASSERT(pTable);
 	UT_sint32 offset = 0;
 	bool bFound = false;
@@ -236,6 +237,7 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 // move it up the correct broken table line when we come across a cell
 // 
 			pVCon = getCorrectBrokenTable(static_cast<fp_Container *>(pContainer));
+
 			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
 			{
 				UT_sint32 iTable =  getYoffsetFromTable(pCon,pPrev,pContainer);
@@ -244,6 +246,14 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 				if(pTab->isThisBroken() && pTab != pTab->getMasterTable()->getFirstBrokenTable())
 				{
 					my_yoff = my_yoff + pVCon->getY() -iycon;
+//
+// Correct for the offset of the column in continuous section breaks.
+//
+					fp_Column * pTopCol = static_cast<fp_Column *>(pTab->getMasterTable()->getFirstBrokenTable()->getColumn());
+					fp_Page * pPage = pTopCol->getPage();
+					fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
+					UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
+					my_yoff += iColOffset;
 				}
 				UT_sint32 col_xV =0;
 				UT_sint32 col_yV =0;

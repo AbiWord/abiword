@@ -198,7 +198,7 @@ void fl_ContainerLayout::add(fl_ContainerLayout* pL)
 	else
 	{
 		UT_ASSERT(!m_pFirstL);
-
+		UT_DEBUGMSG(("add: doing First = Last = NULL \n"));
 		pL->setNext(NULL);
 		pL->setPrev(NULL);
 		m_pFirstL = pL;

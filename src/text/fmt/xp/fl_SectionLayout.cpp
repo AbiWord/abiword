@@ -919,7 +919,6 @@ void fl_DocSectionLayout::updateLayout(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
 	FV_View * pView = m_pLayout->getView();
-
 	bool bShowHidden = pView && pView->getShowPara();
 	FPVisibility eHidden;
 	bool bHidden;
@@ -938,7 +937,6 @@ void fl_DocSectionLayout::updateLayout(void)
 			}
 			if (pBL->getContainerType() != FL_CONTAINER_BLOCK && !getDocument()->isDontImmediateLayout())
 			{
-				xxx_UT_DEBUGMSG(("updateDocSecLayout calling table update \n"));
 				pBL->updateLayout();
 			}
 		}
