@@ -62,17 +62,28 @@ There are several ways to build and run AbiWord:
     Compiling options (1)
     =====================
     
-    ABI_OPT_CURLHASH
-	Enables the dictionary downloader. When Abiword tries to spellcheck a
+    ABI_OPT_CURL=1
+	Enables features that require libCurl. 
+	Currently this is the file-download dialog and therefore also the dictionary
+	downloader, which uses the Download_File dialog.
+	About the dictionary downloader: When Abiword tries to spellcheck a
 	document and hits a language for wich no dictionary have been installed
 	it suggests to the user to let Abiword download the dictionary and
 	install it in the users $HOME directory.
-	At the moment this only works on Unix but it shouldn't be much more than
-	a formality to make the other platforms work. Also, since we currently
+	At the moment this works on Unix, Win32 and QNX. Also, since we currently
 	only have ispell hashes only those systems will work.
-	It depends on libcurl.
 
-     - mr.g 30/4/2002
+	ABI_OPT_THREADS=1
+	Enables use of threads.
+	Currently this is the file-download dialog (see ABI_OPT_CURL above). When
+	threads are enabled the Download_File dialog will show a simple dialog with
+	a cancel-button, giving the user a way of aborting a download. If threads
+	are not available no dialog will be shown, instead AbiWord will (except	for
+	a progressbar) simply "freeze" while the download is in progress.
+	This is a "temporary" build option that will exist until all our platforms
+	have a thread implementation.
+	
+     - gg 17/7/2002
     =================
 
     =====================
