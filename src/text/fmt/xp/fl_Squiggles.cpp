@@ -456,6 +456,34 @@ fl_Squiggles::split(UT_sint32 iOffset, fl_BlockLayout* pNewBL)
 	// When inserting block break, squiggles move in opposite direction
 	UT_sint32 chg = -(UT_sint32)iOffset;
 
+	// Check pending word - this is necessary to avoid forgetting
+	// words after an undo operation (which undos a block
+	// merge). Unfortunately it makes the word under the cursor
+	// squiggles (if badly spelled) instead of just pending - but it's
+	// hard to do anything about.
+	if (m_pOwner->getDocLayout()->isPendingWordForSpell())
+	{
+		fl_PartOfBlock *pPending, *pPOB;
+		fl_BlockLayout *pBL;
+		pPending = m_pOwner->getDocLayout()->getPendingWordForSpell();
+		pBL = m_pOwner->getDocLayout()->getPendingBlockForSpell();
+		// Copy details from pending POB - but don't actually use
+		// the object since it's owned by the code handling the
+		// pending word.
+		pPOB = new fl_PartOfBlock(pPending->getOffset(),
+								  pPending->getLength());
+		// Clear pending word
+		m_pOwner->getDocLayout()->setPendingWordForSpell(NULL, NULL);
+		// If pending word is in this block after split, adjust
+		// details of the copy
+		if (pBL == m_pOwner && pPOB->getOffset() >= iOffset)
+		{
+			pPOB->setOffset(pPOB->getOffset() + chg);
+			pBL = pNewBL;
+		}
+		pBL->checkWord(pPOB);
+	}
+
 	if (m_pOwner->getDocLayout()->dequeueBlockForBackgroundCheck(m_pOwner))
 	{
 		// This block was queuing for spell-checking. Do a check of

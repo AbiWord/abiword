@@ -7552,8 +7552,8 @@ void FV_View::_setPoint(PT_DocPosition pt, bool bEOL)
 	if(!m_pDoc->isPieceTableChanging())
 	{	
 		m_pLayout->considerPendingSmartQuoteCandidate();
-		_checkPendingWordForSpell();
 	}
+	_checkPendingWordForSpell();
 }
 
 void FV_View::setPoint(PT_DocPosition pt)
@@ -7580,27 +7580,39 @@ bool FV_View::isDontChangeInsPoint(void)
 /*!
  Spell-check pending word
  If the IP does not touch the pending word, spell-check it.
-*/
+
+ \note This function used to exit if PT was changing - but that
+       prevents proper squiggle behavior during undo, so the check has
+       been removed. This means that the pending word POB must be
+       updated to reflect the PT changes before the IP is moved.
+ */
 void
 FV_View::_checkPendingWordForSpell(void)
 {
-	if(m_pDoc->isPieceTableChanging())
-	{
-		return;
-	}
-	// deal with pending word, if any
 	if (!m_pLayout->isPendingWordForSpell()) return;
 
+	// Find block at IP
 	fl_BlockLayout* pBL = _findBlockAtPosition(m_iInsPoint);
 	if (pBL)
 	{
 		UT_uint32 iOffset = m_iInsPoint - pBL->getPosition();
 
+		// If it doesn't touch the pending word, spell-check it
 		if (!m_pLayout->touchesPendingWordForSpell(pBL, iOffset, 0))
 		{
 			// no longer there, so check it
 			if (m_pLayout->checkPendingWordForSpell())
 			{
+				// FIXME:jskov Without this updateScreen call, the
+				// just squiggled word remains deleted. It's overkill
+				// (surely we should have a requestUpdateScreen() that
+				// does so after all operations have completed), but
+				// works. Unfortunately it causes a small screen
+				// artifact when pressing undo, since some runs may be
+				// redrawn before they have their correct location
+				// recalculated. In other words, make the world a
+				// better place by adding requestUpdateScreen or
+				// similar.
 				_eraseInsertionPoint();
 				updateScreen();
 				_drawInsertionPoint();

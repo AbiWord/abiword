@@ -1121,8 +1121,12 @@ FL_DocLayout::setPendingWordForSpell(fl_BlockLayout *pBlock,
 /*!
  Spell-check pending word
  \result True if word checked, false otherwise
- If a word is pending spelling, and the PieceTable is
- not changing, spell-check the word.
+ If a word is pending, spell-check it.
+
+ \note This function used to exit if PT was changing - but that
+       prevents proper squiggle behavior during undo, so the check has
+       been removed. This means that the pending word POB must be
+       updated to reflect the PT changes before the IP is moved.
 */
 bool
 FL_DocLayout::checkPendingWordForSpell(void)
@@ -1132,9 +1136,6 @@ FL_DocLayout::checkPendingWordForSpell(void)
 	xxx_UT_DEBUGMSG(("FL_DocLayout::checkPendingWordForSpell\n"));
 
 	if (!m_pPendingBlockForSpell)
-		return bUpdate;
-
-	if(m_pDoc->isPieceTableChanging())
 		return bUpdate;
 
 	// Check pending word

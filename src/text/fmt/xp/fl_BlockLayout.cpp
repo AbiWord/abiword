@@ -3249,6 +3249,8 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 
 	setNeedsReformat();
 
+	m_pSquiggles->textInserted(blockOffset, len);
+
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
@@ -3283,8 +3285,6 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		}
 	}
 	if (sqlist != _sqlist) delete[] sqlist;
-
-	m_pSquiggles->textInserted(blockOffset, len);
 
 	_assertRunListIntegrity();
 
@@ -3453,6 +3453,8 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	
 	setNeedsReformat();
 
+	m_pSquiggles->textDeleted(blockOffset, len);
+
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
@@ -3465,8 +3467,6 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 			pView->_setPoint(pcrs->getPosition());
 		else pView->_setPoint(pView->getPoint() - len);
 	}
-
-	m_pSquiggles->textDeleted(blockOffset, len);
 
 	_assertRunListIntegrity();
 
