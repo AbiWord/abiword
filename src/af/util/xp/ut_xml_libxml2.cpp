@@ -184,7 +184,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   hdl.endElement = _endElement;
   hdl.characters = _charData;
 
-  ctxt = xmlCreateMemoryParserCtxt (buffer, (int) length);
+  ctxt = xmlCreateMemoryParserCtxt (const_cast<char *>(buffer), (int) length);
   if (ctxt == NULL)
     {
       UT_DEBUGMSG (("Unable to create libxml2 memory context!\n"));
@@ -241,7 +241,7 @@ UT_Error UT_XML::html (const char * szFilename)
 
   if (length)
     {
-      ctxt = htmlCreatePushParserCtxt (&hdl, (void *) this, buffer, (int) length, szFilename, XML_CHAR_ENCODING_NONE);
+      ctxt = xmlCreatePushParserCtxt (&hdl, (void *) this, buffer, (int) length, szFilename, XML_CHAR_ENCODING_NONE);
       if (ctxt == NULL)
 	{
 	  UT_DEBUGMSG (("Unable to create libxml2 (HTML) push-parser context!\n"));
@@ -255,7 +255,7 @@ UT_Error UT_XML::html (const char * szFilename)
       length = reader->readBytes (buffer, sizeof (buffer));
       done = (length < sizeof (buffer));
 
-      if (htmlParseChunk (ctxt, buffer, (int) length, 0))
+      if (xmlParseChunk (ctxt, buffer, (int) length, 0))
 	{
 	  UT_DEBUGMSG (("Error parsing '%s'\n",szFilename));
 	  ret = UT_IE_IMPORTERROR;
@@ -264,14 +264,14 @@ UT_Error UT_XML::html (const char * szFilename)
     }
   if (ret == UT_OK)
     if (!m_bStopped)
-      if (htmlParseChunk (ctxt, buffer, 0, 1))
+      if (xmlParseChunk (ctxt, buffer, 0, 1))
 	{
 	  UT_DEBUGMSG (("Error parsing '%s'\n",szFilename));
 	  ret = UT_IE_IMPORTERROR;
 	}
 
   ctxt->sax = NULL;
-  htmlFreeParserCtxt (ctxt);
+  xmlFreeParserCtxt (ctxt);
 
   reader->closeFile ();
 
@@ -299,7 +299,7 @@ UT_Error UT_XML::html (const char * buffer, UT_uint32 length)
 
   if (length)
     {
-      ctxt = htmlCreatePushParserCtxt (&hdl, (void *) this, buffer, (int) length, 0, XML_CHAR_ENCODING_NONE);
+      ctxt = xmlCreatePushParserCtxt (&hdl, (void *) this, buffer, (int) length, 0, XML_CHAR_ENCODING_NONE);
       if (ctxt == NULL)
 	{
 	  UT_DEBUGMSG (("Unable to create libxml2 (HTML) push-parser context!\n"));
@@ -308,14 +308,14 @@ UT_Error UT_XML::html (const char * buffer, UT_uint32 length)
       xmlSubstituteEntitiesDefault (1);
     }
   if (!m_bStopped)
-    if (htmlParseChunk (ctxt, buffer, 0, 1))
+    if (xmlParseChunk (ctxt, buffer, 0, 1))
       {
 	UT_DEBUGMSG (("Error parsing buffer\n"));
 	ret = UT_IE_IMPORTERROR;
       }
 
   ctxt->sax = NULL;
-  htmlFreeParserCtxt (ctxt);
+  xmlFreeParserCtxt (ctxt);
 
   return ret;
 }
