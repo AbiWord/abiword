@@ -124,6 +124,8 @@ void    AP_Win32Dialog_WordCount::setUpdateCounter( UT_uint32 iRate )
 
 	m_pAutoUpdateWC->stop();
 
+	m_iUpdateRate = iRate;
+
 	if(m_bAutoWC == UT_TRUE)
 		m_pAutoUpdateWC->set(m_iUpdateRate * iFactor);
 }         
