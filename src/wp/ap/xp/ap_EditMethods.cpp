@@ -2111,9 +2111,14 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 		// worry about initializing a combo box with a choice
 		// (and because they are all stuck under one CSS attribute).
 
+		UT_Bool bUnderline = UT_FALSE;
+		UT_Bool bStrikeOut = UT_FALSE;
 		const XML_Char * s = UT_getAttribute("text-decoration", props_in);
-		UT_Bool bUnderline = (strstr(s, "underline") != NULL);
-		UT_Bool bStrikeOut = (strstr(s, "line-through") != NULL);
+		if (s)
+		{
+			bUnderline = (strstr(s, "underline") != NULL);
+			bStrikeOut = (strstr(s, "line-through") != NULL);
+		}
 		pDialog->setFontDecoration(bUnderline,bStrikeOut);
 
 		free(props_in);
