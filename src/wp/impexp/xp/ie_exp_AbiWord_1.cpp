@@ -37,7 +37,7 @@
 #include "fl_AutoNum.h"
 
 // our currently used DTD
-#define ABIWORD_FILEFORMAT "fileformat=\"1.0\""
+#define ABIWORD_FILEFORMAT " fileformat=\"1.0\""
 
 /*****************************************************************/
 /*****************************************************************/
