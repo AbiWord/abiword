@@ -230,7 +230,7 @@ UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(const char * szProp)
 }
 
 
-UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(const char * szProp,UT_sint32 i)
+UT_UTF8String AP_Dialog_FormatTOC::getTOCPropVal(const char * szProp, UT_sint32 i)
 {
 	UT_UTF8String sProp = szProp;
 	UT_UTF8String sVal = UT_UTF8String_sprintf("%d",i);
@@ -242,14 +242,24 @@ void AP_Dialog_FormatTOC::setTOCProperty(const char * szProp, const char * szVal
 {
 	UT_UTF8String sProp = szProp;
 	UT_UTF8String sVal = szVal;
+	if(sVal.size() == 0)
+	{
+		return;
+	}
 	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.utf8_str(),sVal.utf8_str()));
 	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
+//	m_sTOCProps.dump();
 }
 
 void AP_Dialog_FormatTOC::setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal)
 {
+	if(sVal.size() == 0)
+	{
+		return;
+	}
 	UT_DEBUGMSG((" Prop: %s Val: %s \n",sProp.utf8_str(),sVal.utf8_str()));
 	UT_UTF8String_setProperty(m_sTOCProps,sProp,sVal);
+//	m_sTOCProps.dump();
 }
 
 void AP_Dialog_FormatTOC::setPropFromDoc(const char * szProp)
@@ -450,4 +460,5 @@ void AP_Dialog_FormatTOC::applyTOCPropsToDoc(void)
 	FV_View * pView = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	PT_DocPosition pos = pView->getSelectionAnchor()+1;
 	pView->setTOCProps(pos,m_sTOCProps.utf8_str());
+//	m_sTOCProps.dump();
 }

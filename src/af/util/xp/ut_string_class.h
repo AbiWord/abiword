@@ -187,7 +187,7 @@ public:
 	bool		empty () const;
 	void		clear () const;
 	size_t		byteLength() const;
-
+	void        dump(void) const;
 	UT_UTF8String	substr(size_t iStart, size_t nChars) const;
 
 	UT_UTF8String &	operator=(const char *          rhs);

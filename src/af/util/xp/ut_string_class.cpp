@@ -794,6 +794,28 @@ size_t UT_UTF8String::byteLength () const
 	return pimpl->byteLength ();
 }
 
+void UT_UTF8String::dump (void) const
+{
+#if DEBUG
+	char line[120];
+	UT_sint32 i =0;
+	const char * psz = utf8_str();
+	while(psz && *psz)
+	{
+		for(i=0; (i< 60) && (*psz != 0); i++)
+		{
+			line[i] = *psz;
+			psz++;
+		}
+		line[i] = 0;
+		UT_DEBUGMSG(("%s \n",line));
+		if(*psz == 0)
+		{
+			break;
+		}
+	}
+#endif
+}
 bool UT_UTF8String::empty () const
 {
 	return pimpl->empty ();
@@ -1092,6 +1114,10 @@ void UT_UTF8String_setProperty(UT_UTF8String & sPropertyString, const UT_UTF8Str
  */
 void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8String & sProp)
 {
+//
+// Warning, warning!!! lots of brutal const casts and assignments into
+// strings to handle utf8 encoding.
+//
 	UT_UTF8String sWork ( sProp );
 	sWork += ":";
 	const char * szWork = sWork.utf8_str();
@@ -1114,9 +1140,13 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 	}
 	else
 	{
-		sLeft = sPropertyString.substr(0,locLeft);
+		UT_UTF8String sTmp =  sPropertyString;
+		char * szTmp = const_cast<char *>(sTmp.utf8_str());
+		szTmp[locLeft] = 0; 
+		sLeft = szTmp;
 	}
-	locLeft = static_cast<UT_sint32>(sLeft.size());
+	char * szLeft = const_cast<char *>(sLeft.utf8_str());
+	locLeft--;
 	if(locLeft > 0)
 	{
 //
@@ -1124,8 +1154,6 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 //
 // Remove trailing ';' and ' '
 //
-		locLeft--;
-		const char * szLeft = sLeft.utf8_str();
 		while(locLeft >= 0 && (szLeft[locLeft] == ';' || szLeft[locLeft] == ' '))
 		{
 			locLeft--;
@@ -1134,7 +1162,8 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 	UT_UTF8String sNew;
 	if(locLeft > 0)
 	{
-		sNew = sLeft.substr(0,locLeft+1);
+		szLeft[locLeft+1] = 0;
+		sNew = szLeft;
 	}
 	else
 	{
@@ -1160,13 +1189,12 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 		{
 			szDelim++;
 		}
-		UT_sint32 offset = static_cast<UT_sint32>(reinterpret_cast<size_t>(szDelim) - reinterpret_cast<size_t>(szProps));
-		UT_sint32 iLen = sPropertyString.size() - offset;
+		UT_UTF8String sRight = szDelim;
 		if(sNew.size() > 0)
 		{
 			sNew += "; ";
 		}
-		sNew += sPropertyString.substr(offset,iLen);
+		sNew += sRight;
 		sPropertyString = sNew;
 	}
 }
