@@ -133,9 +133,11 @@ UT_sint32 UT_Vector::addItem(void* p)
 
 UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
 {
-	if ((ndx+1) > m_iSpace)
+	const UT_uint32 old_iSpace = m_iSpace;
+
+	if (ndx >= m_iSpace)
 	{
-		UT_sint32 err = grow(ndx+1);
+		const UT_sint32 err = grow(ndx+1);
 		if (err)
 		{
 			return err;
@@ -144,11 +146,11 @@ UT_sint32 UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
 
 	if (ppOld)
 	{
-		*ppOld = m_pEntries[ndx];
+		*ppOld = (ndx < old_iSpace) ? m_pEntries[ndx] : 0;
 	}
 	
 	m_pEntries[ndx] = pNew;
-	if ((ndx+1) > m_iCount)
+	if (ndx >= m_iCount)
 	{
 		m_iCount = ndx + 1;
 	}
