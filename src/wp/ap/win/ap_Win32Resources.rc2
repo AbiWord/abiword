@@ -54,6 +54,8 @@
 #define AP_RID_DIALOG_PAGE_SETUP_PAGE			224	// tab-sub-dialog
 #define AP_RID_DIALOG_PAGE_SETUP_MARGINS		225	// tab-sub-dialog
 #define AP_RID_DIALOG_HDRFTR					226
+#define AP_RID_DIALOG_INSERTBOOKMARK			227
+#define AP_RID_DIALOG_INSERTHYPERLINK			228
 
 #include "ap_Win32Res_DlgPageSetup.rc2"
 #include "ap_Win32Resources_DialogReplace.rc2"
@@ -74,4 +76,6 @@
 #include "ap_Win32Res_DlgStylesTop.rc2"
 #include "ap_Win32Res_DlgStylesNewModify.rc2"
 #include "ap_Win32Res_DlgHdrFtr.rc2"
+#include "ap_Win32Res_DlgInsertBookmark.rc2"
+#include "ap_Win32Res_DlgInsertHyperlink.rc2"
 

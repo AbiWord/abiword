@@ -22,6 +22,12 @@
 #ifndef XAP_Win32DialogHelper_H
 #define XAP_Win32DialogHelper_H
 
+// MSVC++ warns about using 'this' in initializer list.
+// and the DialogHelper uses 'this' typically for its contructor
+#ifdef _MSC_VER	
+#pragma warning(disable: 4355)
+#endif
+
 #include <commctrl.h>
 
 /*****************************************************************/

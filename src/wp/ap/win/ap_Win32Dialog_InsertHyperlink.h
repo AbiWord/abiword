@@ -21,11 +21,13 @@
 #define AP_WIN32DIALOG_INSERTHYPERLINK_H
 
 #include "ap_Dialog_InsertHyperlink.h"
+#include "xap_Win32DialogHelper.h"
+
 class XAP_Win32Frame;
 
 /*****************************************************************/
 
-class AP_Win32Dialog_InsertHyperlink: public AP_Dialog_InsertHyperlink
+class AP_Win32Dialog_InsertHyperlink: public AP_Dialog_InsertHyperlink, XAP_Win32Dialog
 {
 public:
 	AP_Win32Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -36,7 +38,12 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onDeltaPos(NM_UPDOWN * pnmud);
 
+private:
+	XAP_Win32DialogHelper		_win32Dialog;	
 };
 
-#endif /* AP_WIN32DIALOG_STUB_H */
+#endif /* AP_WIN32DIALOG_INSERTHYPERLINK_H */

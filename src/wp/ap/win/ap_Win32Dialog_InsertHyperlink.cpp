@@ -45,7 +45,8 @@ XAP_Dialog * AP_Win32Dialog_InsertHyperlink::static_constructor(XAP_DialogFactor
 
 AP_Win32Dialog_InsertHyperlink::AP_Win32Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_InsertHyperlink(pDlgFactory,id)
+	: AP_Dialog_InsertHyperlink(pDlgFactory,id),
+	_win32Dialog(this)
 {
 }
 
@@ -57,31 +58,90 @@ void AP_Win32Dialog_InsertHyperlink::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-/*
-	NOTE: This template can be used to create a working stub for a
-	new dialog on this platform.  To do so:
-	
-	1.  Copy this file (and its associated header file) and rename
-		them accordingly.
+	_win32Dialog.runModal( pFrame, 
+                           AP_DIALOG_ID_INSERTHYPERLINK, 
+                           AP_RID_DIALOG_INSERTHYPERLINK, 
+                           this);
 
-	2.  Do a case sensitive global replace on the words InsertHyperlink and STUB
-		in both files. 
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
-
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
-
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
-
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
+#define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
+#define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
+
+BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
+	UT_ASSERT(app);
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	// localize dialog title
+	_win32Dialog.setDialogTitle( pSS->getValue(AP_STRING_ID_DLG_InsertHyperlink_Title) );
+
+	// localize controls
+	_DSX(INSERTHYPERLINK_BTN_OK,			DLG_OK);
+	_DSX(INSERTHYPERLINK_BTN_CANCEL,		DLG_Cancel);
+
+	_DS(INSERTHYPERLINK_LBL_MSG,			DLG_InsertHyperlink_Msg);
+
+	// initial data
+	_win32Dialog.resetContent(AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK);
+
+	UT_uint32 count = getExistingBookmarksCount();
+	for( UT_uint32 i = 0; i < count; i++)
+	{
+		_win32Dialog.addItemToList( AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK,
+                                    getNthExistingBookmark( i ) );
+	}
+
+	return 1;
+}
+
+BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+	WORD wNotifyCode = HIWORD(wParam);
+	WORD wId = LOWORD(wParam);
+	HWND hWndCtrl = (HWND)lParam;
+
+	switch (wId)
+	{
+	case IDCANCEL:
+		setAnswer( a_CANCEL );
+		EndDialog(hWnd,0);
+		return 1;
+
+	case IDOK:
+		{
+			char buf[_MAX_PATH];
+			_win32Dialog.getControlText( AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK,
+                            			 buf,
+                            			 _MAX_PATH );
+			setHyperlink(buf);
+		}
+		setAnswer( a_OK );
+		EndDialog(hWnd, 0);
+		return 1;
+
+	case AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK:
+		{
+			UT_sint32 result = _win32Dialog.getListSelectedIndex( wId );
+			if( result != LB_ERR )
+			{
+				char buf[_MAX_PATH];
+				_win32Dialog.getListText( wId, result, buf );
+				_win32Dialog.setControlText(AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK, buf);
+			}
+		}
+		return 1;
+
+	default:							// we did not handle this notification
+		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
+		return 0;						// return zero to let windows take care of it.
+	}
+}
+
+BOOL AP_Win32Dialog_InsertHyperlink::_onDeltaPos(NM_UPDOWN * pnmud)
+{
+	return 0;
+}

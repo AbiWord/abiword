@@ -221,6 +221,18 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	_DS(GOTO_TEXT_NUMBER,		DLG_Goto_Label_Number);
 	_DS(GOTO_TEXT_INFO,			DLG_Goto_Label_Help);
 
+	// Initial data
+
+	UT_uint32 count = getExistingBookmarksCount();
+	for( UT_uint32 i = 0; i < count; i++)
+		SendMessage( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), 
+    	             LB_ADDSTRING, 
+        	         0, 
+            	     (LPARAM)getNthExistingBookmark(i) );
+
+	ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS), FALSE);
+	
+
 	SetFocus( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_EDIT_NUMBER) );
 
 	return 0;							// 0 == we called SetFocus()
@@ -247,6 +259,16 @@ BOOL AP_Win32Dialog_Goto::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		{
 		case LBN_SELCHANGE:
 			m_iRow = (short) SendMessage(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_WHAT), LB_GETCURSEL, 0, 0);
+			if( m_iRow == (short) AP_JUMPTARGET_BOOKMARK )
+			{
+				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_TEXT_INFO),FALSE);
+				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),TRUE);
+			}
+			else
+			{
+				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_TEXT_INFO),TRUE);
+				ShowWindow(GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),FALSE);
+			}
 			return 1;
 
 		default:
