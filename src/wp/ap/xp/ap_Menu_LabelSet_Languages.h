@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998,1999 AbiSource, Inc.
+ * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,3 +42,4 @@
 #include "ap_Menu_LabelSet_cs-CZ.h"
 #include "ap_Menu_LabelSet_sv-SE.h"
 #include "ap_Menu_LabelSet_pl-PL.h"
+#include "ap_Menu_LabelSet_pt-PT.h"
