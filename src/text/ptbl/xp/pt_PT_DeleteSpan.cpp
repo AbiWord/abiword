@@ -1502,9 +1502,10 @@ bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 
 		case pf_Frag::PFT_Object:
 		{
-			bool bResult = _deleteObject_norec(dpos1,static_cast<pf_Frag_Object *>(pf_First),
+			bool bResult = _deleteObjectWithNotify(dpos1,static_cast<pf_Frag_Object *>(pf_First),
 									fragOffset_First,lengthThisStep,
-									pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
+									pfsContainer,&pfNewEnd,&fragOffsetNewEnd,
+									false);
 			UT_return_val_if_fail (bResult, false);
 		}
 		break;

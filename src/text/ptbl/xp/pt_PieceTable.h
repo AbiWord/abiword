@@ -410,7 +410,8 @@ protected:
 													pf_Frag_Object * pfo, UT_uint32 fragOffset,
 													UT_uint32 length,
 													pf_Frag_Strux * pfs,
-													pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
+													pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd,
+                                                    bool bAddChangeRec = true);
 
 
 

@@ -43,7 +43,8 @@ bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
 											   pf_Frag_Object * pfo, UT_uint32 fragOffset,
 											   UT_uint32 length,
 											   pf_Frag_Strux * pfs,
-											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd,
+											   bool bAddChangeRec)
 {
 	// create a change record for this change and put it in the history.
 
@@ -62,41 +63,13 @@ bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
 	// actually remove the fragment from the list and delete it.
 
 	_deleteObject(pfo,ppfEnd,pfragOffsetEnd);
-	
-	m_history.addChangeRecord(pcr);
+
+	if (bAddChangeRec)
+		m_history.addChangeRecord(pcr);
 	m_pDocument->notifyListeners(pfs,pcr);
+	if (!bAddChangeRec)
+		delete pcr;
 	
-	return true;
-}
-
-
-bool pt_PieceTable::_deleteObject_norec(PT_DocPosition dpos,
-											   pf_Frag_Object * pfo, UT_uint32 fragOffset,
-											   UT_uint32 length,
-											   pf_Frag_Strux * pfs,
-											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
-{
-	// create a change record for this change and put it in the history.
-
-	UT_return_val_if_fail (pfs,false);
-	UT_return_val_if_fail (length == pfo->getLength(),false);
-	UT_return_val_if_fail (fragOffset == 0, false);
-
-	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pfo) + fragOffset;
-
-	PX_ChangeRecord_Object * pcr
-		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_DeleteObject,
-									 dpos, pfo->getIndexAP(), pfo->getObjectType(),
-									 blockOffset, pfo->getField());
-	UT_return_val_if_fail (pcr,false);
-
-	// actually remove the fragment from the list and delete it.
-
-	_deleteObject(pfo,ppfEnd,pfragOffsetEnd);
-	
-	m_pDocument->notifyListeners(pfs,pcr);
-	delete pcr;
-
 	return true;
 }
 
