@@ -413,10 +413,12 @@ void fl_TableLayout::redrawUpdate(void)
 {
 	if(getDocument()->isDontImmediateLayout())
 	{
+		xxx_UT_DEBUGMSG(("redrawupdate table don't immediately update! \n"));
 		return;
 	}
 	if(!needsRedraw())
 	{
+		xxx_UT_DEBUGMSG(("redrawupdate table no redraw needed! \n"));
 		return;
 	}
  	UT_DEBUGMSG(("Doing Redraw update in Table layout %x \n",this));
@@ -436,7 +438,7 @@ void fl_TableLayout::redrawUpdate(void)
 		pTab->drawLines();
 	}
 	m_bNeedsRedraw = false;
- 	UT_DEBUGMSG(("Finished Redraw update in Table layout %x \n",this));
+ 	xxx_UT_DEBUGMSG(("Finished Redraw update in Table layout %x \n",this));
 }
 
 bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)

@@ -1284,7 +1284,6 @@ UT_sint32 fp_CellContainer::getCellY(fp_Line * pLine) const
 void fp_CellContainer::draw(dg_DrawArgs* pDA)
 {
 	m_bDrawTop = false;
-	m_bDirty = false;
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 // draw bottom if this cell is the last of the table and fully contained on the page
 
@@ -1344,6 +1343,10 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 		{
 			bStop = true;
 		}
+	}
+	if(i == count)
+	{
+		m_bDirty = false;
 	}
 	drawLines(NULL);
 	pTab->setRedrawLines();
@@ -1422,7 +1425,6 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 	{
 		return NULL;
 	}
-	m_bDirty = false;
 	FV_View * pView = getPage()->getDocLayout()->getView();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	if(pTab == NULL)
@@ -1539,7 +1541,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
 	PP_PropertyMap::Background background = getBackground ();
-	m_bDirty = false;
 	UT_sint32 count = countCons();
 	m_bDrawLeft = false;
 	m_bDrawTop = false;
@@ -1667,6 +1668,10 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		{
 			xxx_UT_DEBUGMSG(("drawBroken: Skipping line:2  container pos  %d ytop %d ybot %d pBroke %x \n",pContainer->getY(),ytop,ybot,pBroke));
 		}
+	}
+	if(i== count)
+	{
+		m_bDirty = false;
 	}
 	drawLines(pBroke);
 	pTab->setRedrawLines();
@@ -3783,7 +3788,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 		xxx_UT_DEBUGMSG(("Starting at cell %x \n",pCell));
 		while(pCell)
 		{
-			xxx_UT_DEBUGMSG(("Look at Cell %x isdirty %d \n",this,pCell->isDirty()));
+			UT_DEBUGMSG(("Look at Cell %x isdirty %d \n",pCell,pCell->isDirty()));
 			dg_DrawArgs da = *pDA;
 			da.yoff = da.yoff - getYBreak();
 			if(bDirtyOnly)
