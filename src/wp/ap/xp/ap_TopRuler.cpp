@@ -30,6 +30,9 @@
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
 #include "fv_View.h"
+#include "ap_FrameData.h"
+#include "ap_StatusBar.h"
+#include "AP_Strings.h"
 
 // HACK: private copy of constants from fl_BlockLayout.h
 // TODO: find a better way of passing iType for tabs?
@@ -812,27 +815,52 @@ void AP_TopRuler::_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft,
 	// edge of the last column.
 
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,0);
-	UT_sint32 xAbsRight = _getFirstPixelInColumn(pInfo,pInfo->m_iNumColumns) + pInfo->u.c.m_xColumnWidth;
+	UT_sint32 xAbsRight = _getFirstPixelInColumn(pInfo, pInfo->m_iNumColumns - 1) + pInfo->u.c.m_xColumnWidth;
 
-	UT_uint32 yTop = s_iFixedHeight/4;
+	UT_uint32 yTop = s_iFixedHeight / 4;
 	UT_sint32 hs = 3;					// halfSize
 	UT_sint32 fs = hs * 2 + 1;			// fullSize
 
-	rLeft.set( xAbsLeft  -hs, yTop-fs, fs, fs);
-	rRight.set(xAbsRight -hs, yTop-fs, fs, fs);
+	rLeft.set( xAbsLeft  -hs, yTop - fs, fs, fs);
+	rRight.set(xAbsRight -hs, yTop - fs, fs, fs);
 }
 
-#if 0
 void AP_TopRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
-										AP_TopRulerInfo * /* pInfo */, UT_RGBColor & /* clr */)
+										AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr)
 {
 	UT_Rect rLeft, rRight;
 
 	_getMarginMarkerRects(pInfo,rLeft,rRight);
-	m_pG->fillRect(clr,rLeft);
-	m_pG->fillRect(clr,rRight);
+	m_pG->fillRect(GR_Graphics::CLR3D_Background, rLeft);
+
+	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+	m_pG->drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width, rLeft.top);
+	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top, rLeft.left + rLeft.width, rLeft.top + rLeft.height);
+	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
+	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+	m_pG->drawLine( rLeft.left + 1,  rLeft.top + 1, rLeft.left + rLeft.width - 2, rLeft.top + 1);
+	m_pG->drawLine( rLeft.left + 1,  rLeft.top + rLeft.height - 2, rLeft.left + 1, rLeft.top + 1);
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
+	m_pG->drawLine( rLeft.left + rLeft.width - 2,  rLeft.top + 1, rLeft.left + rLeft.width - 2, rLeft.top + rLeft.height - 2);
+	m_pG->drawLine( rLeft.left + rLeft.width - 2,  rLeft.top + rLeft.height - 2, rLeft.left + 1, rLeft.top + rLeft.height - 2);
+
+	m_pG->fillRect(GR_Graphics::CLR3D_Background, rRight);
+
+	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+	m_pG->drawLine( rRight.left,  rRight.top, rRight.left + rRight.width, rRight.top);
+	m_pG->drawLine( rRight.left + rRight.width,  rRight.top, rRight.left + rRight.width, rRight.top + rRight.height);
+	m_pG->drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
+	m_pG->drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+	m_pG->drawLine( rRight.left + 1,  rRight.top + 1, rRight.left + rRight.width - 2, rRight.top + 1);
+	m_pG->drawLine( rRight.left + 1,  rRight.top + rRight.height - 2, rRight.left + 1, rRight.top + 1);
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
+	m_pG->drawLine( rRight.left + rRight.width - 2,  rRight.top + 1, rRight.left + rRight.width - 2, rRight.top + rRight.height - 2);
+	m_pG->drawLine( rRight.left + rRight.width - 2,  rRight.top + rRight.height - 2, rRight.left + 1, rRight.top + rRight.height - 2);
+
+
 }
-#endif
 
 /*****************************************************************/
 
@@ -916,7 +944,10 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	// draw negative ticks over left margin.  
 
-	_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
+	if(pInfo->u.c.m_xaLeftMargin)
+	{
+		_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, pInfo->u.c.m_xaLeftMargin,sum);
+	}
 	sum += pInfo->u.c.m_xaLeftMargin;
 	
 	for (k=0; k<pInfo->m_iNumColumns; k++)
@@ -939,7 +970,10 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 
 	// draw ticks over the right margin
 
-	_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
+	if(pInfo->u.c.m_xaRightMargin)
+		{
+		_drawTicks(pClipRect,pInfo,tick,GR_Graphics::CLR3D_Foreground,pFont,xTickOrigin, sum, sum+pInfo->u.c.m_xaRightMargin);
+		}
 
 	// draw the various widgets for the:
 	// 
@@ -947,9 +981,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	// the current column properties {column-gap};
 	// and the current paragraph properties {left-indent, right-indent, first-left-indent}.
 
-#if 0
-	_drawMarginProperties(pClipRect,pInfo,m_clrBlack);
-#endif
+	_drawMarginProperties(pClipRect, pInfo, GR_Graphics::CLR3D_Foreground);
 	if (pInfo->m_iNumColumns > 1)
 		_drawColumnProperties(pClipRect,pInfo,0);
 	_drawParagraphProperties(pClipRect,pInfo,UT_TRUE);
@@ -1020,6 +1052,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 
 	m_bValidMouseClick = UT_FALSE;
 	m_draggingWhat = DW_NOTHING;
+	m_bEventIgnored = UT_FALSE;
 	
 	(static_cast<FV_View *>(m_pView))->getTopRulerInfo(&m_infoCache);
 
@@ -1117,13 +1150,11 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 
 	// next check page margins
 	
-#if 0
-	UT_sint32 leftMarginCenter, rightMarginCenter;
 	UT_Rect rLeftMargin, rRightMargin;
 	_getMarginMarkerRects(&m_infoCache,rLeftMargin,rRightMargin);
 	if (rLeftMargin.containsPoint(x,y))
 	{
-		//UT_DEBUGMSG(("hit left margin block\n"));
+		UT_DEBUGMSG(("hit left margin block\n"));
 		m_bValidMouseClick = UT_TRUE;
 		m_draggingWhat = DW_LEFTMARGIN;
 		m_bBeforeFirstMotion = UT_TRUE;
@@ -1137,7 +1168,6 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 		m_bBeforeFirstMotion = UT_TRUE;
 		return;
 	}
-#endif
 
 	// finally, if nothing else, try to create a new tab
 
@@ -1236,8 +1266,40 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 		return;
 		
 	case DW_LEFTMARGIN:
+		{
+			UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+			UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
+			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft, tick);
+
+			const XML_Char * properties[3];
+			properties[0] = "page-margin-left";
+			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+			properties[2] = 0;
+			UT_DEBUGMSG(("TopRuler: page-margin-left [%s]\n",properties[1]));
+
+			_xorGuide(UT_TRUE);
+			m_draggingWhat = DW_NOTHING;
+			(static_cast<FV_View *>(m_pView))->setSectionFormat(properties);
+		}
+		return;
+
 	case DW_RIGHTMARGIN:
-		m_draggingWhat = DW_NOTHING;
+		{
+			UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+			UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
+								m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+			double dxrel = _scalePixelDistanceToUnits(xAbsRight - m_draggingCenter, tick);
+
+			const XML_Char * properties[3];
+			properties[0] = "page-margin-right";
+			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+			properties[2] = 0;
+			UT_DEBUGMSG(("TopRuler: page-margin-right [%s]\n",properties[1]));
+
+			_xorGuide(UT_TRUE);
+			m_draggingWhat = DW_NOTHING;
+			(static_cast<FV_View *>(m_pView))->setSectionFormat(properties);
+		}
 		return;
 
 	case DW_COLUMNGAP:
@@ -1428,7 +1490,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 
 	if ((y < 0) || (y > (UT_sint32)m_iHeight))
 	{
-		_ignoreEvent(UT_FALSE);
+		if(!m_bEventIgnored)
+		{
+			_ignoreEvent(UT_FALSE);
+			m_bEventIgnored = UT_TRUE;
+		}
 		return;
 	}
 
@@ -1438,9 +1504,15 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	if ((x < xFixed) || (x > (UT_sint32)m_iWidth))
 	{
-		_ignoreEvent(UT_FALSE);
+		if(!m_bEventIgnored)
+		{
+			_ignoreEvent(UT_FALSE);
+			m_bEventIgnored = UT_TRUE;
+		}
 		return;
 	}
+
+	m_bEventIgnored = UT_FALSE;
 
 	// mouse motion was in the ruler portion of the window, we cannot ignore it.
 	
@@ -1453,8 +1525,122 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 		return;
 		
 	case DW_LEFTMARGIN:
-	case DW_RIGHTMARGIN:
+		{
+		UT_sint32 oldDragCenter = m_draggingCenter;
+
+		UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+		UT_sint32 xAbsLeft = xFixed + m_infoCache.m_xPageViewMargin - m_xScrollOffset;
+
+		m_draggingCenter = _snapPixelToGrid(x, tick);
+		if(m_draggingCenter < xAbsLeft)
+		{
+			// don't drag off the page.
+			m_draggingCenter = xAbsLeft;
+		}
+		if(m_draggingCenter + m_infoCache.m_xrLeftIndent + m_infoCache.m_xrFirstLineIndent < xAbsLeft)
+		{
+			// don't drag first line indent off page.
+			m_draggingCenter = xAbsLeft - m_infoCache.m_xrLeftIndent - m_infoCache.m_xrFirstLineIndent;
+		}
+		if(m_draggingCenter + m_infoCache.m_xrLeftIndent < xAbsLeft)
+		{
+			// don't drag left indent off page.
+			m_draggingCenter = xAbsLeft - m_infoCache.m_xrLeftIndent;
+		}
+		if(m_draggingCenter == oldDragCenter)
+		{
+			// Position not changing so finish here.
+
+			return;
+		}
+
+		UT_sint32 newMargin = m_draggingCenter - xAbsLeft;
+		UT_sint32 deltaLeftMargin = newMargin - m_infoCache.u.c.m_xaLeftMargin;
+		UT_sint32 newColumnWidth = m_infoCache.u.c.m_xColumnWidth - deltaLeftMargin / (UT_sint32)m_infoCache.m_iNumColumns;
+		if(m_infoCache.m_xrFirstLineIndent + m_infoCache.m_xrLeftIndent > m_infoCache.m_xrLeftIndent)
+		{
+			if(m_infoCache.m_xrFirstLineIndent + m_infoCache.m_xrLeftIndent > 0)
+			{
+				newColumnWidth -= m_infoCache.m_xrFirstLineIndent + m_infoCache.m_xrLeftIndent;
+			}
+		}
+		else if(m_infoCache.m_xrLeftIndent > 0)
+		{
+			newColumnWidth -= m_infoCache.m_xrLeftIndent;
+		}
+		if(newColumnWidth < m_minColumnWidth)
+		{
+			x -= (m_minColumnWidth - newColumnWidth) * (UT_sint32)m_infoCache.m_iNumColumns;
+
+			m_draggingCenter = _snapPixelToGrid(x, tick);
+			newMargin = m_draggingCenter - xAbsLeft;
+			deltaLeftMargin = newMargin - m_infoCache.u.c.m_xaLeftMargin;
+			
+		}
+		m_infoCache.u.c.m_xaLeftMargin += deltaLeftMargin;
+		m_infoCache.u.c.m_xColumnWidth -= deltaLeftMargin / (UT_sint32)m_infoCache.m_iNumColumns;
+
+		draw(NULL, &m_infoCache);
+		m_infoCache.u.c.m_xaLeftMargin -= deltaLeftMargin;
+		m_infoCache.u.c.m_xColumnWidth += deltaLeftMargin / (UT_sint32)m_infoCache.m_iNumColumns;
+		_xorGuide();
 		m_bBeforeFirstMotion = UT_FALSE;
+
+		// Display in margin in status bar.
+
+		double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft, tick);
+
+		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, dxrel);
+		}
+		return;
+
+	case DW_RIGHTMARGIN:
+		{
+		UT_sint32 oldDragCenter = m_draggingCenter;
+
+		UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+		UT_sint32 xAbsRight = _getFirstPixelInColumn(&m_infoCache, m_infoCache.m_iNumColumns - 1) + 
+								m_infoCache.u.c.m_xColumnWidth + m_infoCache.u.c.m_xaRightMargin;
+
+		m_draggingCenter = _snapPixelToGrid(x, tick);
+		if(m_draggingCenter > xAbsRight)
+		{
+			m_draggingCenter = xAbsRight;
+		}
+		if(m_draggingCenter == oldDragCenter)
+		{
+			// Position not changing so finish here.
+
+			return;
+		}
+
+		UT_sint32 newMargin = xAbsRight - m_draggingCenter;
+		UT_sint32 deltaRightMargin = newMargin - m_infoCache.u.c.m_xaRightMargin;
+		UT_sint32 newColumnWidth = m_infoCache.u.c.m_xColumnWidth - deltaRightMargin / (UT_sint32)m_infoCache.m_iNumColumns;
+		if(newColumnWidth < m_minColumnWidth)
+		{
+			x += (m_minColumnWidth - newColumnWidth) * (UT_sint32)m_infoCache.m_iNumColumns;
+
+			m_draggingCenter = _snapPixelToGrid(x, tick);
+			newMargin = xAbsRight - m_draggingCenter;
+			deltaRightMargin = newMargin - m_infoCache.u.c.m_xaRightMargin;
+			
+		}
+		m_infoCache.u.c.m_xaRightMargin += deltaRightMargin;
+		m_infoCache.u.c.m_xColumnWidth -= deltaRightMargin / (UT_sint32)m_infoCache.m_iNumColumns;
+
+		draw(NULL, &m_infoCache);
+		m_infoCache.u.c.m_xaRightMargin -= deltaRightMargin;
+		m_infoCache.u.c.m_xColumnWidth += deltaRightMargin / (UT_sint32)m_infoCache.m_iNumColumns;
+		_xorGuide();
+		m_bBeforeFirstMotion = UT_FALSE;
+
+		// Display in margin in status bar.
+
+		double dxrel = _scalePixelDistanceToUnits(xAbsRight - m_draggingCenter, tick);
+
+		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, dxrel);
+		}
 		return;
 
 	case DW_COLUMNGAP:
@@ -1502,13 +1688,14 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_DEBUGMSG(("Gap: [x %ld][xAbsRight %ld][xrel %ld][xgrid %ld][width %ld]\n",x,xAbsRight,xrel,xgrid,m_draggingRect.width));
 
 
-			double dgrid = _scalePixelDistanceToUnits(m_draggingRect.width,tick);
-			UT_DEBUGMSG(("SettingColumnGap: %s\n",m_pG->invertDimension(tick.dimType,dgrid)));
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(((oldDraggingRect.width > m_draggingRect.width ) ? &oldDraggingRect : &m_draggingRect),
 					 &m_infoCache);
 			_drawColumnProperties(NULL,&m_infoCache,0);
 			_xorGuide();
+
+			double dgrid = _scalePixelDistanceToUnits(m_draggingRect.width,tick);
+			_displayStatusMessage(AP_STRING_ID_ColumnGapStatus, tick, dgrid);
 			
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
@@ -1537,6 +1724,14 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 				draw(&oldDraggingRect,&m_infoCache);
 			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
 			_xorGuide();
+
+		
+			double dxrel  = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft,tick);
+
+			UT_sint32 xdelta = (m_draggingCenter-xAbsLeft) - m_infoCache.m_xrLeftIndent;
+			double dxrel2 = _scalePixelDistanceToUnits(m_infoCache.m_xrFirstLineIndent - xdelta,tick);
+
+			_displayStatusMessage(AP_STRING_ID_LeftIndentTextIndentStatus, tick, dxrel, dxrel2);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1571,6 +1766,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			}
 			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
 			_xorGuide();
+
+			double dxrel  = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft,tick);
+
+			_displayStatusMessage(AP_STRING_ID_LeftIndentStatus, tick, dxrel);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1593,6 +1792,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 				draw(&oldDraggingRect,&m_infoCache);
 			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
 			_xorGuide();
+
+			double dxrel = _scalePixelDistanceToUnits(xAbsRight - m_draggingCenter,tick);
+			_displayStatusMessage(AP_STRING_ID_RightIndentStatus, tick, dxrel);
+
+
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1619,6 +1823,10 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 			UT_DEBUGMSG(("FirstLineIndent: r [%ld %ld %ld %ld]]n",
 						 m_draggingRect.left,m_draggingRect.top,m_draggingRect.width,m_draggingRect.height));
 			_xorGuide();
+
+			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft - m_infoCache.m_xrLeftIndent, tick);
+
+			_displayStatusMessage(AP_STRING_ID_FirstLineIndentStatus, tick, dxrel);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1640,6 +1848,9 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y
 				draw(&oldDraggingRect,&m_infoCache);
 			_drawTabProperties(NULL,&m_infoCache,UT_FALSE);
 			_xorGuide();
+
+			double dxrel = _scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft,tick);
+			_displayStatusMessage(AP_STRING_ID_TabStopStatus, tick, dxrel);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1701,6 +1912,12 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 
 	_xorGuide(UT_TRUE);
 
+	// Clear messages from status bar.
+
+	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	pFrameData->m_pStatusBar->setStatusMessage("");
+
+
 	// erase the widget that we are dragging.   remember what we
 	// are dragging, clear it, and then restore it at the bottom.
 	
@@ -1724,7 +1941,7 @@ void AP_TopRuler::_ignoreEvent(UT_Bool bDone)
 	{
 	case DW_LEFTMARGIN:
 	case DW_RIGHTMARGIN:
-		UT_ASSERT(UT_TODO);
+		draw(NULL, &m_infoCache);
 		break;
 		
 	case DW_COLUMNGAP:
@@ -2050,4 +2267,30 @@ void AP_TopRuler::setDimension( UT_Dimension newdim )
 {
 	m_dim = newdim;
 	draw( (const UT_Rect *)0 );
+}
+
+void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue)
+{
+	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue);
+	char temp[100];
+	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID);
+	sprintf(temp, pzMessageFormat, pText);
+
+	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	pFrameData->m_pStatusBar->setStatusMessage(temp);
+}
+
+void AP_TopRuler::_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2)
+{
+	const XML_Char * pText = m_pG->invertDimension(tick.dimType, dValue1);
+	char buf1[100];
+	strcpy(buf1, pText);
+	pText = m_pG->invertDimension(tick.dimType, dValue2);
+
+	char temp[100];
+	const XML_Char *pzMessageFormat = m_pFrame->getApp()->getStringSet()->getValue(messageID);
+	sprintf(temp, pzMessageFormat, buf1, pText);
+
+	AP_FrameData * pFrameData = (AP_FrameData *)m_pFrame->getFrameData();
+	pFrameData->m_pStatusBar->setStatusMessage(temp);
 }

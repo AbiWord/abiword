@@ -31,7 +31,7 @@ dcl(MSG_SaveFailedExport,       "Error while attempting to save %s: could not co
 dcl(MSG_SaveFailedName,         "Error while attempting to save %s: invalid name")
 dcl(MSG_DlgNotImp,              "%s not implemented yet.\n\nIf you are a programmer, feel free to add code in %s, line %d\nand mail patches to:\n\n\tabiword-dev@abisource.com\n\nOtherwise, please be patient.")
 dcl(MSG_RevertBuffer,	        "Revert to saved copy of %s?")
-dcl(MSG_QueryExit,		"Close all windows and exit?")
+dcl(MSG_QueryExit,				"Close all windows and exit?")
 dcl(MSG_ConfirmSave,	        "Save changes to %s?")
 dcl(MSG_ImportError,	        "Error importing file %s.")
 dcl(MSG_IE_FileNotFound,        "File %s not found")
@@ -42,10 +42,18 @@ dcl(MSG_IE_UnsupportedType,     "File %s is not of a currently supported file ty
 dcl(MSG_IE_BogusDocument,       "File %s is a bogus document")
 dcl(MSG_IE_CouldNotOpen,        "Could not open file %s for writing")
 dcl(MSG_IE_CouldNotWrite,       "Could not write to file %s")
-dcl(MSG_SpellDone,		"The spelling check is complete.")
+dcl(MSG_SpellDone,				"The spelling check is complete.")
 
 // Status Bar Messages
-dcl(PageInfoField,		"Page: %d/%d")
+dcl(PageInfoField,				"Page: %d/%d")
+dcl(LeftMarginStatus,			"Left Margin [%s]")
+dcl(RightMarginStatus,			"Right Margin [%s]")
+dcl(FirstLineIndentStatus,		"First Line Indent [%s]")
+dcl(LeftIndentTextIndentStatus,	"Left Indent [%s] First Line Indent [%s]")
+dcl(ColumnGapStatus,			"Column Gap [%s]")
+dcl(LeftIndentStatus,			"Left Indent [%s]")
+dcl(RightIndentStatus,			"Right Indent [%s]")
+dcl(TabStopStatus,				"Tab Stop [%s]")
 
 /* Find and Replace strings */
 dcl(DLG_FR_FindTitle, 			"Find")

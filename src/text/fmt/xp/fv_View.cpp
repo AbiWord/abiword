@@ -1578,6 +1578,10 @@ UT_Bool FV_View::getSectionFormat(const XML_Char ***pProps)
 
 	v.addItem(new _fmtPair("columns",   NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
 	v.addItem(new _fmtPair("column-gap",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
+	v.addItem(new _fmtPair("page-margin-left",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
+	v.addItem(new _fmtPair("page-margin-top",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
+	v.addItem(new _fmtPair("page-margin-right",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
+	v.addItem(new _fmtPair("page-margin-bottom",NULL,pBlockAP,pSectionAP,m_pDoc,UT_FALSE));
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())

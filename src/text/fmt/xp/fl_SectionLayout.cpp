@@ -776,36 +776,46 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	pSectionAP->getProperty("page-margin-right", (const XML_Char *&)pszRightMargin);
 	pSectionAP->getProperty("page-margin-bottom", (const XML_Char *&)pszBottomMargin);
 
-	// TODO are page margins really an all or nothing proposition ??
-	
-	if (
-		pszLeftMargin
-		&& pszTopMargin
-		&& pszRightMargin
-		&& pszBottomMargin
-		&& pszLeftMargin[0]
-		&& pszTopMargin[0]
-		&& pszRightMargin[0]
-		&& pszBottomMargin[0]
-		)
+	if(pszLeftMargin && pszLeftMargin[0])
 	{
 		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(pszLeftMargin);
 		m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(pszLeftMargin);
-		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
-		m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(pszTopMargin);
-		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
-		m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(pszRightMargin);
-		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
-		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(pszBottomMargin);
 	}
 	else
 	{
 		m_iLeftMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
 		m_iLeftMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
+	}
+	
+	if(pszTopMargin && pszTopMargin[0])
+	{
+		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
+		m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(pszTopMargin);
+	}
+	else
+	{
 		m_iTopMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
 		m_iTopMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
+	}
+
+	if(pszRightMargin && pszRightMargin[0])
+	{
+		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
+		m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(pszRightMargin);
+	}
+	else
+	{
 		m_iRightMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
 		m_iRightMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
+	}
+
+	if(pszBottomMargin && pszBottomMargin[0])
+	{
+		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
+		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(pszBottomMargin);
+	}
+	else
+	{
 		m_iBottomMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
 		m_iBottomMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
 	}

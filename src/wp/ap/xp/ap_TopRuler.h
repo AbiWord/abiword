@@ -30,6 +30,7 @@
 #include "ap_Ruler.h"
 #include "ev_EditBits.h"
 #include "gr_Graphics.h"
+#include "XAP_strings.h"
 
 class XAP_App;
 class XAP_Frame;
@@ -173,10 +174,8 @@ protected:
 									  UT_uint32 kCol);
 
 	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
-#if 0
 	void		_drawMarginProperties(const UT_Rect * pClipRect,
-									  AP_TopRulerInfo * pInfo, UT_RGBColor &clr);
-#endif
+									  AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr);
 	void		_xorGuide(UT_Bool bClear=UT_FALSE);
 
 	void		_ignoreEvent(UT_Bool bDone);
@@ -189,6 +188,8 @@ protected:
 	void		_drawTabStop(UT_Rect & r, unsigned char iType, UT_Bool bFilled);
 	void		_drawColumnGapMarker(UT_Rect & r);
 	UT_Bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
+	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
+	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2);
 
 	// must be static so that I can pass as a functional arg - shack
 	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_AlphaHashTable *phChanges, void *data );
@@ -208,6 +209,7 @@ protected:
 
 	AP_TopRulerInfo		m_infoCache;
 	UT_Bool				m_bValidMouseClick;
+	UT_Bool				m_bEventIgnored;
 
 	typedef enum _draggingWhat { DW_NOTHING,
 								 DW_LEFTMARGIN,
