@@ -101,7 +101,7 @@ class fp_Run
 {
 public:
 	fp_Run(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, FP_RUN_TYPE iType);
-	virtual ~fp_Run() = 0;
+	virtual ~fp_Run();
 
 	// inline getter member functions
 	FP_RUN_TYPE		getType() const 				{ return m_iType; }

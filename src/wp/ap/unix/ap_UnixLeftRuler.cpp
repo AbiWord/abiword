@@ -366,7 +366,7 @@ gint AP_UnixLeftRuler::_fe::abi_expose_repaint( gpointer p)
 	UT_Rect localCopy;
 	AP_UnixLeftRuler * pR = static_cast<AP_UnixLeftRuler *>(p);
 	GR_Graphics * pG = pR->getGraphics();
-	if(pG->isDontRedraw())
+	if(pG == NULL || pG->isDontRedraw())
 	{
 //
 // Come back later

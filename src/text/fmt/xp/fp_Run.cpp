@@ -94,7 +94,14 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 		m_bDirty(true),	// a run which has just been created is not onscreen, therefore it is dirty
 		m_pField(0),
 		m_pScreenFont(0),
-		m_pLayoutFont(0)
+		m_pLayoutFont(0),
+		m_fDecorations(0),
+		m_iLineWidth(0),
+		m_iLinethickness(0),
+		m_iUnderlineXoff(0),
+		m_imaxUnderline(0),
+		m_iminOverline(0),
+		m_iOverlineXoff(0)
 {
         // set the default background color and the paper color of the 
 	    // section owning the run.
@@ -104,13 +111,11 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 #ifdef BIDI_ENABLED
 	m_iDirection = -1; //by default all runs are whitespace
 #endif
-	m_fDecorations = 0;
-	m_iLineWidth = 0;
 }
-
 
 fp_Run::~fp_Run()
 {
+  // no impl.
 }
 
 

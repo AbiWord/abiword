@@ -55,7 +55,7 @@ IE_Exp_Text::IE_Exp_Text(PD_Document * pDocument, bool bEncoded)
 	m_error = 0;
 
 	// Get encoding dialog prefs setting
-	bool bAlwaysPrompt;
+	bool bAlwaysPrompt = false;
 	m_pDocument->getApp()->getPrefsValueBool(AP_PREF_KEY_AlwaysPromptEncoding, &bAlwaysPrompt);
 
 	m_bIsEncoded = bAlwaysPrompt | bEncoded;
@@ -333,17 +333,15 @@ void Text_Listener::_genBOM(void)
  */
 void Text_Listener::_genLineBreak(void)
 {
-	UT_UCSChar wcLineBreak[3] = {0,0,0};
-	UT_UCSChar *pWC;
 	char *pMB = static_cast<char *>(m_mbLineBreak);
-	int mbLen;
+	UT_UCSChar *pWC = 0;
+	int mbLen = 0;
 
 	// TODO Old Mac should use "\r".  Mac OSX should Use U+2028 or U+2029.
 #ifdef WIN32
-	wcLineBreak[0] = '\r';
-	wcLineBreak[1] = '\n';
+	UT_UCSChar wcLineBreak[3] = {'\r', '\n', 0};
 #else
-	wcLineBreak[0] = '\n';
+	UT_UCSChar wcLineBreak[3] = {'\n', 0, 0};
 #endif
 
 	for (pWC = wcLineBreak; *pWC; ++pWC)
@@ -353,6 +351,7 @@ void Text_Listener::_genLineBreak(void)
 		else
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
+
 	m_iLineBreakLen = pMB - m_mbLineBreak;
 
 	UT_ASSERT(m_iLineBreakLen && m_iLineBreakLen < 20);
@@ -414,8 +413,11 @@ void Text_Listener::_closeBlock(void)
 	if (!m_bInBlock)
 		return;
 
-	UT_ASSERT(!m_bFirstWrite);
-	UT_ASSERT(m_iLineBreakLen);
+	if (!m_bFirstWrite)
+	  _genLineBreak ();
+
+	//UT_ASSERT(!m_bFirstWrite);
+	//UT_ASSERT(m_iLineBreakLen);
 
 	m_pie->write(static_cast<const char *>(m_mbLineBreak),m_iLineBreakLen);
 
@@ -435,6 +437,8 @@ Text_Listener::Text_Listener(PD_Document * pDocument,
 	  // when we are going to the clipboard, we should implicitly
 	  // assume that we are starting in the middle of a block.
 	  // when going to a file we should not.
+	  m_iBOMLen(0),
+	  m_iLineBreakLen(0),
 	  m_bInBlock(bToClipboard),
 	  m_bToClipboard(bToClipboard),
 	  m_bFirstWrite(true),
