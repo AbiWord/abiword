@@ -1413,7 +1413,8 @@ void fp_Line::layout(void)
 	} //for
 	
 	//now we are ready to deal with the alignment
-	pAlignment->initialize(this);
+	//we only need to do this in case of centered line, so we will move it below
+	//pAlignment->initialize(this);
 		
 	//if the line is centered we will have to shift the iX of each run
 	//since we worked on the assumption that the line starts at 0
@@ -1421,6 +1422,7 @@ void fp_Line::layout(void)
 	//the real starting position should be
 	if(eAlignment == FB_ALIGNMENT_CENTER)
 	{
+		pAlignment->initialize(this);
 		iStartX = pAlignment->getStartPosition();
 		for (UT_uint32 k = 0; k < iCountRuns; k++)
 		{
@@ -1436,7 +1438,8 @@ void fp_Line::layout(void)
 	
 	//not entirely sure about this, by now all the coordinances have
 	//changed, but it seems to work :-)
-	pAlignment->eraseLineFromRun(this, iIndxToEraseFrom);
+	//pAlignment->eraseLineFromRun(this, iIndxToEraseFrom);
+	clearScreenFromRunToEnd(iIndxToEraseFrom);
 }
 #else
 void fp_Line::layout(void)

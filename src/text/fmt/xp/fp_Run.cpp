@@ -1126,10 +1126,16 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     UT_RGBColor clrShowPara(127,127,127);
     m_pG->polygon(clrShowPara,points,NPOINTS);
 
-    if(m_iVisDirection == FRIBIDI_TYPE_LTR)
-	    m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
-	else
-	    m_pG->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+    xxx_UT_DEBUGMSG(("fp_TabRun::_drawArrow: iLeft %d, iyAxis %d, cur_linewidth %d, iMaxWidth %d\n",
+    			iLeft, iyAxis, cur_linewidth, iMaxWidth));
+
+    // only draw the rectangle if iMaxWidth - cur_linewidth * 4 > 0, otherwise
+    // we get the rect running pass the end of the line and off the screen
+    if((UT_sint32)(iMaxWidth - cur_linewidth * 4) > 0)
+	    if(m_iVisDirection == FRIBIDI_TYPE_LTR )
+		    m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+		else
+	    	m_pG->fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 
 #else
     points[0].x = iLeft + ixGap + iMaxWidth - cur_linewidth * 4;
@@ -1152,7 +1158,11 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
     UT_RGBColor clrShowPara(127,127,127);
     m_pG->polygon(clrShowPara,points,NPOINTS);
-    m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+
+    // only draw the rectangle if iMaxWidth - cur_linewidth * 4 > 0, otherwise
+    // we get the rect running pass the end of the line and off the screen
+    if((UT_sint32)(iMaxWidth - cur_linewidth * 4) > 0)
+	    m_pG->fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
 #endif
 #if 0
 	for(UT_uint32 i = 0; i< 5; i++)
