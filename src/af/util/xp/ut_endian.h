@@ -35,7 +35,7 @@
 	#endif
 #elif defined(__QNXNTO__)
 	#include <sys/platform.h>
-	#if defined(__LITTLENDIAN__)
+	#if defined(__LITTLEENDIAN__)
 		#define UT_LITTLE_ENDIAN
 	#else
 		#define UT_BIG_ENDIAN
