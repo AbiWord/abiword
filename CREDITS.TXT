@@ -125,7 +125,7 @@ Daniel Thompson <D.Thompson@gmx.net>            Page Size Option.
 Dave Thompson <thompson@pdnt.com>
 Sam Tobin-Hochstadt <sytobinh@uchicago.edu>     Lots of fun stuff
 John Tunison <nosinut@WIND.REM.CMU.EDU>         GNOME dialogs
-Göran Thyni <goran@kirra.net>                   libxml support
+Göran Thyni <goran@kirra.net>                   libxml support, some autoconf work
 Kevin Vajk <kvajk@ricochet.net>                 File import/export detection, hpux
 Martin Vermeer <martin.vermeer@fgi.fi>          Unicode Latex export
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
