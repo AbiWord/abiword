@@ -829,16 +829,12 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	//TODO: Do a PtAppInit() here with the main window being the splash screen
 	PtWidget_t *spwin;
 	spwin = PtAppInit(NULL, NULL /* Args.m_argc */, NULL /* Args.m_argv */, 0, NULL);
-	if (bShowSplash) {
-		_showSplash(spwin, 2000);
-	}
-	else {
-		PtDestroyWidget(spwin);
-	}
-	
+
 	AP_QNXApp * pMyQNXApp;
 	gQNXApp = pMyQNXApp = new AP_QNXApp(&Args, szAppName);
 
+
+	
     // Setup signal handlers, primarily for segfault
     // If we segfaulted before here, we *really* blew it
 
@@ -872,7 +868,13 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 		delete pMyQNXApp;
 		return -1;	// make this something standard?
 	}
-
+	
+	if (bShowSplash) {
+		_showSplash(spwin, 2000);
+	}
+	else {
+		PtDestroyWidget(spwin);
+	}
 	// this function takes care of all the command line args.
 	// if some args are botched, it returns false and we should
 	// continue out the door.
