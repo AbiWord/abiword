@@ -395,17 +395,7 @@ void FV_View::_deleteSelection(void)
 		m_pDoc->deleteSpan(m_iSelectionAnchor, iPoint);
 	}
 
-	_updateScreen();
-
 	_resetSelection();
-	
-	if (!_ensureThatInsertionPointIsOnScreen())
-	{
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
-	}
-
-	return;
 }
 
 UT_Bool FV_View::isSelectionEmpty()
@@ -736,7 +726,6 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 	}
 
 	UT_Bool bResult = m_pDoc->insertSpan(_getPoint(), text, count);
-
 	m_pLayout->deleteEmptyColumnsAndPages();
 		
 	_updateScreen();
@@ -805,6 +794,7 @@ UT_Bool FV_View::setCharFormat(const XML_Char * properties[])
 
 	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,NULL,properties);
 
+	m_pLayout->deleteEmptyColumnsAndPages();
 	_updateScreen();
 
 	if (isSelectionEmpty())
@@ -1269,9 +1259,13 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 		_deleteSelection();
 
 		m_pLayout->deleteEmptyColumnsAndPages();
+		_updateScreen();
 		
-		_fixInsertionPointCoords();
-		_drawInsertionPoint();
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
 	}
 	else
 	{
@@ -1499,7 +1493,22 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 	{
 		_setSelectionAnchor();
 		_charMotion(bForward, count);
-		_drawSelection();
+
+		/*
+		  It IS possible for the selection to be empty, even
+		  after extending it.  If the charMotion fails, for example,
+		  because we are at the end of a document, then the selection
+		  will end up empty once again.
+		*/
+		if (isSelectionEmpty())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+		else
+		{
+			_drawSelection();
+		}
 	}
 	else
 	{
@@ -1734,6 +1743,38 @@ UT_Bool FV_View::gotoTarget(FV_JumpTarget type, UT_UCSChar * data)
 	
 UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument)
 {
+	if (!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+
+	UT_Bool bRes = _findNext(find, bDoneEntireDocument);
+
+	if (isSelectionEmpty())
+	{
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+	}
+	else
+	{
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_drawSelection();
+		}
+	}
+
+	return bRes;
+}
+
+UT_Bool FV_View::_findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument)
+{
 	UT_ASSERT(find);
 
 	fl_BlockLayout * block = NULL;
@@ -1754,18 +1795,12 @@ UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument
 
 		if (foundAt != -1)
 		{
-			// update document cursor
-			moveInsPtTo(block->getPosition(UT_FALSE) + offset + foundAt);
-
-			// do selection
-			extSelHorizontal(UT_TRUE, UT_UCS_strlen(find));
+			_setPoint(block->getPosition(UT_FALSE) + offset + foundAt);
+			_setSelectionAnchor();
+			_charMotion(UT_TRUE, UT_UCS_strlen(find));
 
 			m_doneFind = UT_TRUE;
 			
-			// this could get ugly, and should be optimized out
-			draw();
-			draw();			
-
 			return UT_TRUE;
 		}
 
@@ -1778,7 +1813,9 @@ UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument
 	}
 
 	if (bDoneEntireDocument)
+	{
 		*bDoneEntireDocument = UT_TRUE;
+	}
 
 	// reset wrap for next time
 	m_wrappedEnd = UT_FALSE;
@@ -1913,16 +1950,42 @@ UT_Bool FV_View::findAgain(void)
 	{
 		return findNext(_m_findNextString, NULL);
 	}
+	
 	return UT_FALSE;
 }
 
 UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
 							 UT_Bool * bDoneEntireDocument)
 {
+	UT_Bool bRes = _findReplace(find, replace, bDoneEntireDocument);
+
+	_updateScreen();
 	
+	if (isSelectionEmpty())
+	{
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+	}
+	else
+	{
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_drawSelection();
+		}
+	}
+
+	return bRes;
+}
+
+UT_Bool	FV_View::_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
+							 UT_Bool * bDoneEntireDocument)
+{
 	// if we have done a find, and there is a selection, then replace what's in the
 	// selection and move on to next find (batch run, the common case)
-	if (m_doneFind == UT_TRUE && isSelectionEmpty() == UT_FALSE)
+	if ((m_doneFind == UT_TRUE) && (!isSelectionEmpty()))
 	{
 		// if we've wrapped around once, and we're doing work before we've
 		// hit the point at which we started, then we adjust the start
@@ -1933,8 +1996,17 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 
 		if (*replace)
 		{
-			// TODO : fix this for new layout changes
-			result = cmdCharInsert((UT_UCSChar *) replace, UT_UCS_strlen(replace));
+			if (!isSelectionEmpty())
+			{
+				_deleteSelection();
+			}
+			else
+			{
+				_eraseInsertionPoint();
+			}
+
+			result = m_pDoc->insertSpan(_getPoint(), replace, UT_UCS_strlen(replace));
+			m_pLayout->deleteEmptyColumnsAndPages();
 		}
 
 		// we must move the find cursor past the insertion
@@ -1942,7 +2014,7 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 		// a replace, but account for the 1 that the find advanced.
 		m_iInsPoint ++;
 
-		findNext(find, bDoneEntireDocument);
+		_findNext(find, bDoneEntireDocument);
 		return result;
 	}
 
@@ -1950,14 +2022,14 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	// but no replace
 	if (m_doneFind == UT_TRUE && isSelectionEmpty() == UT_TRUE)
 	{
-		findNext(find, bDoneEntireDocument);
+		_findNext(find, bDoneEntireDocument);
 		return UT_FALSE;
 	}
 	
 	// if we haven't done a find yet, do a find for them
 	if (m_doneFind == UT_FALSE)
 	{
-		findNext(find, bDoneEntireDocument);
+		_findNext(find, bDoneEntireDocument);
 		return UT_FALSE;
 	}
 
@@ -1973,7 +2045,7 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	UT_Bool bDoneEntireDocument = UT_FALSE;
 	
 	// prime it with a find
-	if (!findNext(find, &bDoneEntireDocument))
+	if (!_findNext(find, &bDoneEntireDocument))
 	{
 		// can't find a single thing, we're done
 		m_pDoc->endUserAtomicGlob();
@@ -1985,7 +2057,7 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	{
 		// if it returns false, it found nothing more before
 		// it hit the end of the document
-		if (!findReplace(find, replace, &bDoneEntireDocument))
+		if (!_findReplace(find, replace, &bDoneEntireDocument))
 		{
 			m_pDoc->endUserAtomicGlob();
 			return numReplaced;
@@ -1994,6 +2066,25 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	}
 
 	m_pDoc->endUserAtomicGlob();
+	
+	_updateScreen();
+	
+	if (isSelectionEmpty())
+	{
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+	}
+	else
+	{
+		if (!_ensureThatInsertionPointIsOnScreen())
+		{
+			_drawSelection();
+		}
+	}
+
 	return numReplaced;
 }
 
@@ -2924,6 +3015,8 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	m_bSelection = UT_TRUE;
 	
 	_drawSelection();
+
+	notifyListeners(AV_CHG_EMPTYSEL);
 }
 
 // -------------------------------------------------------------------------
@@ -3049,7 +3142,11 @@ void FV_View::cmdUndo(UT_uint32 count)
 
 	m_pDoc->undoCmd(count);
 
+	m_pLayout->deleteEmptyColumnsAndPages();
+	
 	_updateScreen();
+	
+	notifyListeners(AV_CHG_DIRTY);
 	
 	if (isSelectionEmpty())
 	{

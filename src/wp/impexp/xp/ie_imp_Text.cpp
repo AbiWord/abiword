@@ -31,10 +31,12 @@
 /*****************************************************************/
 /*****************************************************************/
 
-// Import US-ASCII (actually Latin-1) data from a plain
-// text file.  We allow either LF or CRLF line termination.
-// We consider adjacent lines to be in the same paragraph.
-// We consider blank lines to be paragraph break.
+/*
+  Import US-ASCII (actually Latin-1) data from a plain
+  text file.  We allow either LF or CR or CRLF line
+  termination.  Each line terminator is taken to be a
+  paragraph break.
+*/
 
 /*****************************************************************/
 /*****************************************************************/
@@ -92,65 +94,53 @@ IEStatus IE_Imp_Text::_writeHeader(FILE * fp)
 
 IEStatus IE_Imp_Text::_parseFile(FILE * fp)
 {
-	// TODO do we also want to treat a line with just whitespace as a
-	// TODO paragraph separator -- in addition to just a blank line.
-	
 	UT_GrowBuf gbBlock(1024);
-	UT_Bool bSeenLF = UT_TRUE;
+	UT_Bool bEatLF = UT_FALSE;
 	unsigned char c;
 
 	while (fread(&c, 1, sizeof(c), fp) > 0)
 	{
-		if (c == '\r')					// we just ignore CR's
-			continue;
-		
-		if (c == '\n')
+		switch (c)
 		{
-			if (bSeenLF)
+		case '\r':
+		case '\n':
+			if ((c == '\n') && bEatLF)
 			{
-				// the previous character was a LF, this LF is interpreted
-				// as a paragraph break.  output any text that we have
-				// accumulated so far and begin a new paragraph.
-
-				if (gbBlock.getLength() > 0)
-				{
-					X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
-					gbBlock.truncate(0);
-				}
-
-				X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
-
-				// keep bSeenLF true so that we handle multiple blank lines.
+				bEatLF = UT_FALSE;
+				break;
 			}
-			else
+
+			if (c == '\r')
 			{
-				// remember that we saw the LF, but don't do
-				// anything about it yet.
-
-				bSeenLF = UT_TRUE;
+				bEatLF = UT_TRUE;
 			}
-		}
-		else
-		{
+			
+			// this is interpreted
+			// as a paragraph break.  output any text that we have
+			// accumulated so far and begin a new paragraph.
+
+			if (gbBlock.getLength() > 0)
+			{
+				X_ReturnNoMemIfError(m_pDocument->appendSpan(gbBlock.getPointer(0), gbBlock.getLength()));
+				gbBlock.truncate(0);
+			}
+
+			X_ReturnNoMemIfError(m_pDocument->appendStrux(PTX_Block, NULL));
+
+			break;
+
+		default:
+			bEatLF = UT_FALSE;
+
 			// deal with plain character.
-			// if we already have one LF in the middle of the paragraph,
-			// we convert it into whitespace first.
-
-			if (bSeenLF)
-			{
-				if (gbBlock.getLength() > 0)
-				{
-					UT_UCSChar ucSpace = 0x0020;
-					X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&ucSpace,1));
-				}
-				bSeenLF = UT_FALSE;
-			}
 
 			// this cast is OK.  we have US-ASCII (actually Latin-1) character
 			// data, so we can do this.
 			
 			UT_UCSChar uc = (UT_UCSChar) c;
 			X_ReturnNoMemIfError(gbBlock.ins(gbBlock.getLength(),&uc,1));
+			
+			break;
 		}
 	} 
 

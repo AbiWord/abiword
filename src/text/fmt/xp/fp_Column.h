@@ -100,7 +100,6 @@ public:
 	void				setY(UT_sint32);
 
 protected:
-	UT_sint32				_getMarginBeforeLine(fp_Line* pLine);
 	UT_uint32 				_getBottomOfLastLine(void) const;
 	void					_setNeedsLayoutUpdate(UT_Bool);
 

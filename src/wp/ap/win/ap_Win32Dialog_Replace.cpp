@@ -284,6 +284,50 @@ BOOL AP_Win32Dialog_Replace::_onBtn_ReplaceAll(HWND hWnd)
 {
 	UT_ASSERT((m_id == AP_DIALOG_ID_REPLACE));
 
-	UT_DEBUGMSG(("TODO do ReplaceAll\n"));
+	char * pBufFromDialogFind = NULL;
+	char * pBufFromDialogReplace = NULL;
+	UT_UCSChar * pUCSFind = NULL;
+	UT_UCSChar * pUCSReplace = NULL;
+
+	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND);
+	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_EDIT_REPLACE);
+	DWORD lenFind = GetWindowTextLength(hWndEditFind);
+	DWORD lenReplace = GetWindowTextLength(hWndEditReplace);
+
+	if (!lenFind)
+		return 1;
+
+	pBufFromDialogFind = new char [lenFind + 1];
+	if (!pBufFromDialogFind)
+		goto FreeMemory;
+	GetWindowText(hWndEditFind,pBufFromDialogFind,lenFind+1);
+
+	UT_DEBUGMSG(("Find entry contents: [%s]\n",pBufFromDialogFind));
+
+	UT_UCS_cloneString_char(&pUCSFind,pBufFromDialogFind);
+	if (!pUCSFind)
+		goto FreeMemory;
+
+	pBufFromDialogReplace = new char [lenReplace + 1];
+	if (!pBufFromDialogReplace)
+		goto FreeMemory;
+	GetWindowText(hWndEditReplace,pBufFromDialogReplace,lenReplace+1);
+
+	UT_DEBUGMSG(("Replace entry contents: [%s]\n",pBufFromDialogReplace));
+
+	UT_UCS_cloneString_char(&pUCSReplace,pBufFromDialogReplace);
+	if (!pUCSReplace)
+		goto FreeMemory;
+
+	setFindString(pUCSFind);
+	setReplaceString(pUCSReplace);
+	findReplaceAll();
+
+FreeMemory:
+	DELETEP(pBufFromDialogFind);
+	DELETEP(pBufFromDialogReplace);
+	FREEP(pUCSFind);
+	FREEP(pUCSReplace);
+	
 	return 1;
 }

@@ -148,8 +148,11 @@ public:
 
 	// finds the next "find" and selects it, filling bool when done the entire document
 	UT_Bool			findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument = NULL);
+	UT_Bool			_findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument = NULL);
 	// replaces the selection of "find" with "replace" and selects the next, filling
 	// bool when done the entire document
+	UT_Bool			_findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
+								UT_Bool * bDoneEntireDocument);
 	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
 								UT_Bool * bDoneEntireDocument);
 	// replaces every occurance of "find" with "replace" without stopping for anything

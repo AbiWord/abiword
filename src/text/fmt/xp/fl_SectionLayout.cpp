@@ -307,10 +307,9 @@ fp_Column* fl_SectionLayout::getNewColumn(void)
 
 int fl_SectionLayout::format()
 {
-	UT_Bool bStillGoing = UT_TRUE;
 	fl_BlockLayout*	pBL = m_pFirstBlock;
 
-	while (pBL && bStillGoing)
+	while (pBL)
 	{
 		pBL->format();
 		pBL = pBL->getNext(UT_FALSE);

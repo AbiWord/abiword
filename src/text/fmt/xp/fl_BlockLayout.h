@@ -100,6 +100,8 @@ public:
 	void alignOneLine(fp_Line* pLine);
 	UT_uint32 getOrphansProperty(void) const;
 	UT_uint32 getWidowsProperty(void) const;
+	UT_sint32 getTopMargin(void) const;
+	UT_sint32 getBottomMargin(void) const;
 	void checkForWidowsAndOrphans(void);
 
 	void checkSpelling(void);
@@ -150,6 +152,8 @@ protected:
 
 	UT_uint32				m_iOrphansProperty;
 	UT_uint32				m_iWidowsProperty;
+	UT_sint32				m_iTopMargin;
+	UT_sint32				m_iBottomMargin;
 
 	/*
 	  The following lists are used to keep track of the spell

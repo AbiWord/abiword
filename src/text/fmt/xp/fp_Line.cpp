@@ -24,6 +24,8 @@
 #include "fl_BlockLayout.h"
 #include "fp_Run.h"
 #include "gr_DrawArgs.h"
+#include "fl_DocLayout.h"
+#include "gr_Graphics.h"
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -59,24 +61,9 @@ void fp_Line::setColumn(fp_Column* pColumn)
 	m_pColumn = pColumn;
 }
 
-fp_Column* fp_Line::getColumn() const
-{
-	return m_pColumn;
-}
-
 void fp_Line::setBlock(fl_BlockLayout* pBlock)
 {
 	m_pBlock = pBlock;
-}
-
-fl_BlockLayout* fp_Line::getBlock(void) const
-{
-	return m_pBlock;
-}
-
-UT_uint32 fp_Line::getHeight() const
-{
-	return m_iHeight;
 }
 
 UT_uint32 fp_Line::getWidth() const
@@ -97,16 +84,6 @@ void fp_Line::setNext(fp_Line* p)
 void fp_Line::setPrev(fp_Line* p)
 {
 	m_pPrev = p;
-}
-
-fp_Line* fp_Line::getNext() const
-{
-	return m_pNext;
-}
-
-fp_Line* fp_Line::getPrev() const
-{
-	return m_pPrev;
 }
 
 int fp_Line::countRuns() const
@@ -567,16 +544,6 @@ void fp_Line::align()
 	m_pBlock->alignOneLine(this);
 }
 
-UT_sint32 fp_Line::getX(void) const
-{
-	return m_iX;
-}
-
-UT_sint32 fp_Line::getY(void) const
-{
-	return m_iY;
-}
-
 UT_sint32 fp_Line::getBaseX(void) const
 {
 	return m_iBaseX;
@@ -625,3 +592,26 @@ UT_Bool fp_Line::isLastLineInBlock(void) const
 {
 	return m_pBlock->getLastLine() == this;
 }
+
+UT_sint32 fp_Line::getMarginBefore(void) const
+{
+	DG_Graphics* pG = getBlock()->getDocLayout()->getGraphics();
+	
+	if (isFirstLineInBlock() && getBlock()->getPrev(UT_FALSE))
+	{
+		fp_Line* pPrevLine = getBlock()->getPrev(UT_FALSE)->getLastLine();
+		UT_ASSERT(pPrevLine);
+		UT_ASSERT(pPrevLine->isLastLineInBlock());
+					
+		UT_sint32 iBottomMargin = pPrevLine->getBlock()->getBottomMargin();
+		
+		UT_sint32 iNextTopMargin = getBlock()->getTopMargin();
+		
+		UT_sint32 iMargin = UT_MAX(iBottomMargin, iNextTopMargin);
+
+		return iMargin;
+	}
+
+	return 0;
+}
+

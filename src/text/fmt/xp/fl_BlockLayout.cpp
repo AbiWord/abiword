@@ -94,6 +94,11 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 			m_iWidowsProperty = 1;
 		}
 	}
+
+	DG_Graphics* pG = m_pLayout->getGraphics();
+	
+	m_iTopMargin = pG->convertDimension(getProperty("margin-top"));
+	m_iBottomMargin = pG->convertDimension(getProperty("margin-bottom"));
 	
 	m_pPrev = pPrev;
 	if (m_pPrev)
@@ -140,6 +145,18 @@ void fl_BlockLayout::_fixColumns(void)
 		}
  
 		pLine = pLine->getNext();
+	}
+
+	fp_Column* pPrevCol = m_pFirstLine->getColumn()->getPrev();
+	if (pPrevCol)
+	{
+		pPrevCol->updateLayout();
+	}
+
+	fp_Column* pNextCol = m_pLastLine->getColumn()->getNext();
+	if (pNextCol)
+	{
+		pNextCol->updateLayout();
 	}
 }
 
@@ -456,6 +473,7 @@ fp_Line* fl_BlockLayout::getNewLine(UT_sint32 iHeight)
 		UT_ASSERT(pCol);
 		
 		pCol->insertLineAfter(pLine, NULL, iHeight);
+		UT_ASSERT(pLine->getColumn() == pCol);
 	}
 
 	return pLine;
@@ -496,6 +514,16 @@ UT_uint32 fl_BlockLayout::getPosition(UT_Bool bActualBlockPos) const
 UT_GrowBuf * fl_BlockLayout::getCharWidths(void)
 {
 	return &m_gbCharWidths;
+}
+
+UT_sint32 fl_BlockLayout::getTopMargin(void) const
+{
+	return m_iTopMargin;
+}
+
+UT_sint32 fl_BlockLayout::getBottomMargin(void) const
+{
+	return m_iBottomMargin;
 }
 
 UT_uint32 fl_BlockLayout::getOrphansProperty(void) const
@@ -1747,7 +1775,9 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	pPrevBL->m_pNext = m_pNext;
 							
 	if (m_pNext)
+	{
 		m_pNext->m_pPrev = pPrevBL;
+	}
 
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
@@ -1903,7 +1933,12 @@ UT_Bool fl_BlockLayout::doclistener_insertStrux(const PX_ChangeRecord_Strux * pc
 		pRun = pRun->getNext();
 	}
 
-	// we don't need a full format here, just an align.
+	/*
+	  we don't need to call the linebreaker here, just an align.
+	  and a check for widow-orphan problems.
+	*/
+
+	checkForWidowsAndOrphans();
 	align();
 	
 	_destroySpellCheckLists();
@@ -2008,8 +2043,7 @@ void fl_BlockLayout::alignOneLine(fp_Line* pLine)
 
 void fl_BlockLayout::checkForWidowsAndOrphans(void)
 {
-#if 0	
- start_over:
+start_over:
 	UT_uint32 iCountLines = 0;
 	UT_uint32 iCountColumns = 0;
 	fp_Column* pLastColSeen = NULL;
@@ -2022,6 +2056,9 @@ void fl_BlockLayout::checkForWidowsAndOrphans(void)
 		if (pLine->getColumn() != pLastColSeen)
 		{
 			iCountColumns++;
+
+			UT_ASSERT(!pLastColSeen || (pLastColSeen->getLastLine() == pLine->getPrev()));
+			
 			pLastColSeen = pLine->getColumn();
 		}
 		
@@ -2049,26 +2086,38 @@ void fl_BlockLayout::checkForWidowsAndOrphans(void)
 			pLine = m_pFirstLine;
 			UT_sint32 iHeightNeeded = 0;
 			
-			while (iCounter < getOrphansProperty())
+			while (pLine && (iCounter < getOrphansProperty()))
 			{
 				iHeightNeeded += pLine->getHeight();
 				pLine = pLine->getNext();
 				iCounter++;
 			}
 
-			fp_Column* pPrevCol = m_pFirstLine->getColumn()->getPrev();
-			if (pPrevCol->getSpaceAtBottom() >= iHeightNeeded)
-			{
-				UT_DEBUGMSG(("CWAO pushback:  column 0x%p has space=%d, whereas first %d lines of block 0x%p have height %d\n",
-							 pPrevCol,
-							 pPrevCol->getSpaceAtBottom(),
-							 getOrphansProperty(),
-							 this,
-							 iHeightNeeded));
+			fp_Column* pSecondColumn = m_pFirstLine->getColumn();
+			fp_Column* pPrevCol = pSecondColumn->getPrev();
+			UT_sint32 iSpace = pPrevCol->getSpaceAtBottom();
+			UT_sint32 iMargin = m_pFirstLine->getMarginBefore();
 
-				// TODO
+			if (iSpace >= (iHeightNeeded + iMargin))
+			{
+				fp_Line* pMoveLine = m_pFirstLine;
+				UT_uint32 iNumLinesToPushBack = getOrphansProperty();
+				if (iNumLinesToPushBack > iCountLines)
+				{
+					iNumLinesToPushBack = iCountLines;
+				}
+				
+				for (UT_uint32 i=0; i<iNumLinesToPushBack; i++)
+				{
+					pPrevCol->moveLineFromNextColumn(pMoveLine);
+					pMoveLine = pMoveLine->getNext();
+				}
+
+				pSecondColumn->updateLayout();
 			}
 		}
+		
+		// TODO should we put an else here?
 		
 		if (iCountColumns > 1)
 		{
@@ -2083,24 +2132,18 @@ void fl_BlockLayout::checkForWidowsAndOrphans(void)
 					{
 						if (iCountLinesInColumn < getOrphansProperty())
 						{
-							UT_DEBUGMSG(("CWAO orphan problem:  block=0x%p  column=0x%p  iCountLines=%d  iCountColumns=%d  iCountLinesInColumn=%d\n",
-										 this,
-										 pLastColSeen,
-										 iCountLines,
-										 iCountColumns,
-										 iCountLinesInColumn));
-
 							fp_Line* pMoveLine = pLine->getPrev();
 							for (UT_uint32 i=0; i<iCountLinesInColumn; i++)
 							{
 								UT_ASSERT(pMoveLine->getColumn() == pLastColSeen);
+								UT_ASSERT(pLastColSeen->getLastLine() == pMoveLine);
 								
 								pLastColSeen->moveLineToNextColumn(pMoveLine);
 								pMoveLine = pMoveLine->getPrev();
 							}
 
 							pLastColSeen->getNext()->updateLayout();
-							
+
 							goto start_over;
 						}
 					}
@@ -2120,13 +2163,6 @@ void fl_BlockLayout::checkForWidowsAndOrphans(void)
 			{
 				// widow problem
 				
-				UT_DEBUGMSG(("CWAO widow problem:  block=0x%p  column=0x%p  iCountLines=%d  iCountColumns=%d  iCountLinesInColumn=%d\n",
-							 this,
-							 pLastColSeen,
-							 iCountLines,
-							 iCountColumns,
-							 iCountLinesInColumn));
-
 				fp_Column* pPrevCol = pLastColSeen->getPrev();
 				UT_ASSERT(pPrevCol);
 				
@@ -2176,7 +2212,6 @@ void fl_BlockLayout::checkForWidowsAndOrphans(void)
 			}
 		}
 	}
-#endif
 }
 
 UT_uint32 fl_BlockLayout::canSlurp(fp_Line* pLine) const
@@ -2187,13 +2222,19 @@ UT_uint32 fl_BlockLayout::canSlurp(fp_Line* pLine) const
 	
 	UT_uint32 iCountLinesInBlock = 0;
 	fp_Column* pCol = pLine->getColumn();
+	fp_Line* pOrigLine = pLine;
 	while (pLine && pLine->getColumn() == pCol)
 	{
 		iCountLinesInBlock++;
 		pLine = pLine->getNext();
 	}
 
-	return 0; // TODO
+	if ((pLine == NULL)
+		&& (pOrigLine == m_pFirstLine)
+		)
+	{
+		return iCountLinesInBlock;
+	}
 	
 	if (iCountLinesInBlock > getWidowsProperty())
 	{

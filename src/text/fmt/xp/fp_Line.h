@@ -47,28 +47,31 @@ public:
 	~fp_Line();
 
 	void		setColumn(fp_Column*);
-	fp_Column* 	getColumn() const;
 
 	void				setBlock(fl_BlockLayout*);
-	fl_BlockLayout*		getBlock() const;
 
-	UT_uint32 	getHeight() const;
+	inline fp_Column* 			getColumn() const	{ return m_pColumn; }
+	inline fl_BlockLayout*		getBlock() const 	{ return m_pBlock; }
+	inline UT_uint32 			getHeight() const 	{ return m_iHeight; }
+	
+	inline UT_sint32			getX(void) const 	{ return m_iX; }
+	inline UT_sint32			getY(void) const 	{ return m_iY; }
+	
+	inline fp_Line*				getNext() const 	{ return m_pNext; }
+	inline fp_Line*    			getPrev() const 	{ return m_pPrev; }
+
 	UT_uint32 	getWidth() const;
 	UT_uint32 	getMaxWidth() const;
 	void		setMaxWidth(UT_sint32);
 
-	UT_sint32	getX(void) const;
-	UT_sint32	getY(void) const;
 	UT_sint32	getBaseX(void) const;
 
 	void		setX(UT_sint32);
 	void		setY(UT_sint32);
 	void		setBaseX(UT_sint32);
 
-	fp_Line*	getNext() const;
 	void		setNext(fp_Line*);
 	void        setPrev(fp_Line*);
-	fp_Line*    getPrev() const;
 
 	void 		addRun(fp_Run*);
 	void		splitRunInLine(fp_Run* pRun1, fp_Run* pRun2);
@@ -80,6 +83,7 @@ public:
 	UT_uint32	getNumChars() const;
  	void        runSizeChanged(fp_Run*, UT_sint32 oldWidth, UT_sint32 newWidth);
 	void		remove();
+	UT_sint32	getMarginBefore(void) const;
 
 	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
 	void		getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff);

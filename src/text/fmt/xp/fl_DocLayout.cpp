@@ -350,7 +350,7 @@ void FL_DocLayout::deleteEmptyColumnsAndPages(void)
 	}
 
 	int iCountPages = m_vecPages.getItemCount();
-	for (i=0; i<iCountPages; i++)
+	for (i=iCountPages - 1; i>=0; i--)
 	{
 		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
 
