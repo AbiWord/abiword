@@ -485,9 +485,8 @@ msgstr "&Voettekst"
 
 #. MENU_LABEL_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:246
-#, fuzzy
 msgid "&Footnote"
-msgstr "&Lettertype"
+msgstr "&Voetnoot"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h.h:248
@@ -1906,7 +1905,7 @@ msgstr "Huidige Datum"
 #. DLG_Lists_Current_Font
 #: po/tmp/ap_String_Id.h.h:802
 msgid "Current Font"
-msgstr "Huidig Lettertype"
+msgstr "Huidige lettertype"
 
 #. DLG_Lists_Current_List_Label
 #: po/tmp/ap_String_Id.h.h:804
@@ -2975,9 +2974,8 @@ msgstr "Voeg een symbool of ander speciaal karakter toe"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h.h:1232
-#, fuzzy
 msgid "Insert an Footnote"
-msgstr "Eindnoot invoegen"
+msgstr "Voetnoot invoegen"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1234
