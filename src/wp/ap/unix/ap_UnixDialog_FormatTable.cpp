@@ -404,6 +404,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindowContents(void)
 	gtk_combo_set_popdown_strings (GTK_COMBO (comboApplyTo), items);
 	gtk_widget_show(comboApplyTo);
 	gtk_container_add(GTK_CONTAINER(hboxApplyTo), comboApplyTo);
+	gtk_widget_set_sensitive(comboApplyTo, false); // disable for now, not implemented yet
 
 //
 // construct the background tab
