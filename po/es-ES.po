@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: abiword\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-07-22 05:49+0200\n"
-"PO-Revision-Date: 2003-07-23 04:17+0200\n"
+"PO-Revision-Date: 2003-07-25 10:08+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -284,7 +284,7 @@ msgstr "&Ajustar a:"
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h.h:167
 msgid "&Align"
-msgstr "&Alinear"
+msgstr "&Alineación"
 
 #. DLG_Options_Label_ViewAll
 #: po/tmp/ap_String_Id.h.h:169
@@ -360,7 +360,7 @@ msgstr "&Celdas"
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h.h:198
 msgid "&Center"
-msgstr "&Centro"
+msgstr "&Centrar"
 
 #. DLG_Spell_Change
 #: po/tmp/ap_String_Id.h.h:200
@@ -571,7 +571,7 @@ msgstr "&Importar estilos"
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:283
 msgid "&Indents and Spacing"
-msgstr "&Sangrado y espaciado"
+msgstr "&Sangría y espaciado"
 
 #. DLG_InsertButton
 #. MENU_LABEL_INSERT
@@ -624,7 +624,7 @@ msgstr "&Izquierda:"
 #. MENU_LABEL_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:306
 msgid "&Lock layout"
-msgstr "B&loquear disposición"
+msgstr "B&loquear distribución"
 
 #. MENU_LABEL_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h.h:308
@@ -739,7 +739,7 @@ msgstr "&Imagen"
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:352
 msgid "&Plugins"
-msgstr "&Accesorios"
+msgstr "Com&plementos"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:354
@@ -1557,7 +1557,7 @@ msgstr "Centro"
 #. TabToggleCenterTab
 #: po/tmp/ap_String_Id.h.h:682
 msgid "Center Tab"
-msgstr "Tabulación centrada"
+msgstr "Tabulación central"
 
 #. TOOLBAR_STATUSLINE_ALIGN_CENTER
 #. TOOLBAR_TOOLTIP_ALIGN_CENTER
@@ -1578,12 +1578,12 @@ msgstr "Centrado"
 #. DLG_Spell_ChangeTo
 #: po/tmp/ap_String_Id.h.h:691
 msgid "Change &to:"
-msgstr "cambiar &a:"
+msgstr "Cambiar &a:"
 
 #. DLG_Spell_ChangeAll
 #: po/tmp/ap_String_Id.h.h:693
 msgid "Change A&ll"
-msgstr "cambiar &todos"
+msgstr "Cambiar &todos"
 
 #. DLG_Background_Title
 #: po/tmp/ap_String_Id.h.h:695
@@ -1607,7 +1607,7 @@ msgstr ""
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h.h:701
 msgid "Change Highlight Color"
-msgstr "Cambiar color del resaltado"
+msgstr "Cambiar el color para el resaltado"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h.h:703
@@ -1633,18 +1633,18 @@ msgstr "Cambiar la tipografía del texto seleccionado"
 #. MENU_STATUSLINE_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:712
 msgid "Change the format of the selected paragraph"
-msgstr "cambiar el formato del párrafo seleccionado"
+msgstr "Cambiar el formato del párrafo seleccionado"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:715
 msgid "Change the language of the selected text"
-msgstr "cambiar el idioma del texto seleccionado"
+msgstr "Cambiar el idioma del texto seleccionado"
 
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h.h:717
 msgid "Change the number of columns"
-msgstr "cambiar el número de columnas"
+msgstr "Cambiar el número de columnas"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:719
@@ -1749,10 +1749,7 @@ msgid ""
 "below your current position."
 msgstr ""
 "Elija su objetivo en el lado izquierdo.\n"
-"Si quiere usar el botón «Ir a», tan sólo rellene la entrada del Número con "
-"el número deseado. Puede usar + y - para hacer movimientos relativos.\t Ej: "
-"si escribe «+2» y selecciona «Línea», «Ir a» se desplazará 2 líneas por "
-"debajo de su posición actual."
+"Si quiere usar el botón «Ir a», tan sólo rellene la entrada del «Número» con el número deseado. Puede usar + y - para hacer movimientos relativos. Ej: si escribe «+2» y selecciona «Línea», «Ir a» se desplazará 2 líneas por debajo de su posición actual."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h.h:763
@@ -1859,7 +1856,7 @@ msgstr "Hora de compilación"
 #. DLG_Break_Continuous
 #: po/tmp/ap_String_Id.h.h:803
 msgid "Con&tinuous"
-msgstr "Con&tinuar"
+msgstr "Con&tinuo"
 
 #. DLG_MarkRevisions_Check1Label
 #: po/tmp/ap_String_Id.h.h:805
@@ -1898,7 +1895,7 @@ msgstr "Cordialmente"
 #: po/tmp/ap_String_Id.h.h:819
 #, c-format
 msgid "Could not open file %s for writing"
-msgstr "no se pudo abrir el archivo %s para escritura"
+msgstr "No se pudo abrir el archivo %s para escritura"
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h.h:821
@@ -1953,12 +1950,12 @@ msgstr "Crea un documento nuevo"
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h.h:841
 msgid "Create a new document from a template"
-msgstr "Crear un documento nuevo usando una plantilla"
+msgstr "Crea un documento nuevo usando una plantilla"
 
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h.h:843
 msgid "Create an empty document"
-msgstr "Crear un documento vacío"
+msgstr "Crea un documento vacío"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h.h:845
@@ -2092,7 +2089,7 @@ msgstr "Tabulación decimal"
 #. TOOLBAR_TOOLTIP_UNINDENT
 #: po/tmp/ap_String_Id.h.h:899
 msgid "Decrease indent"
-msgstr "Decrementar sangrado"
+msgstr "Disminuir sangría"
 
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h.h:901
@@ -2112,7 +2109,7 @@ msgstr "Tamaño de página predeterminado"
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h.h:907
 msgid "Default tab stops:"
-msgstr "Tabuladores predeterminados:"
+msgstr "Tabulaciones predeterminadas:"
 
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h.h:909
@@ -2368,7 +2365,7 @@ msgstr "Editar la cabecera en la página actual"
 #. MENU_LABEL_AUTOTEXT_EMAIL
 #: po/tmp/ap_String_Id.h.h:1019
 msgid "Email:"
-msgstr "Correo electrónico:"
+msgstr "Correo-e:"
 
 #. MENU_LABEL_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h.h:1021
@@ -2528,7 +2525,7 @@ msgstr "Buscar el texto especificado"
 #: po/tmp/ap_String_Id.h.h:1080
 #, c-format
 msgid "First Line Indent [%s]"
-msgstr "Sangrado de primera línea [%s]"
+msgstr "Sangría de primera línea [%s]"
 
 #. DLG_Para_SpecialFirstLine
 #: po/tmp/ap_String_Id.h.h:1082
@@ -2545,10 +2542,7 @@ msgstr "Tamaño fijo de columna:"
 msgid ""
 "Following Paragraph Following Paragraph Following Paragraph Following "
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr ""
-"Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente "
-"Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente "
-"Párrafo siguiente Párrafo siguiente "
+msgstr "Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -2627,23 +2621,23 @@ msgstr "Notas a pie de página y notas finales"
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
 #: po/tmp/ap_String_Id.h.h:1122
 msgid "Force LTR direction of text"
-msgstr "Forzar dirección D-I del texto"
+msgstr "Forzar dirección I->D del texto"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_RTL
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL
 #: po/tmp/ap_String_Id.h.h:1125
 msgid "Force RTL direction of text"
-msgstr "Forzar dirección I-D del texto"
+msgstr "Forzar dirección D->I del texto"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR
 #: po/tmp/ap_String_Id.h.h:1127
 msgid "Force text LTR"
-msgstr "Forzar texto I-D"
+msgstr "Forzar texto I->D"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_RTL
 #: po/tmp/ap_String_Id.h.h:1129
 msgid "Force text RTL"
-msgstr "Forzar texto D-I"
+msgstr "Forzar texto D->I"
 
 #. DLG_Styles_ModifyFormat
 #: po/tmp/ap_String_Id.h.h:1131
@@ -2833,7 +2827,7 @@ msgstr "Ignorar"
 #. MENU_STATUSLINE_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:1205
 msgid "Ignore all occurrences of this word in the document"
-msgstr "Ignorar todas las ocurrencias de esta palabra en el documento"
+msgstr "Ignorar todas las apariciones de esta palabra en el documento"
 
 #. DLG_Options_Label_SpellIgnoredWord
 #: po/tmp/ap_String_Id.h.h:1207
@@ -2870,17 +2864,17 @@ msgstr "Contraseña incorrecta"
 #. TOOLBAR_TOOLTIP_INDENT
 #: po/tmp/ap_String_Id.h.h:1221
 msgid "Increase indent"
-msgstr "Aumentar sangrado"
+msgstr "Aumentar sangría"
 
 #. DLG_Para_LabelIndentation
 #: po/tmp/ap_String_Id.h.h:1223
 msgid "Indentation"
-msgstr "Sangrado"
+msgstr "Sangría"
 
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h.h:1225
 msgid "Initial Caps"
-msgstr "Capitales Iniciales"
+msgstr "Mayúsculas Iniciales"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h.h:1227
@@ -3014,7 +3008,7 @@ msgstr "Inserta una tabla nueva en su documento"
 #. MENU_STATUSLINE_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:1284
 msgid "Insert a page, column, or section break"
-msgstr "inserta una página, columna o salto de sección"
+msgstr "Inserta una página, columna o salto de sección"
 
 #. MENU_STATUSLINE_INSERT_PICTURE
 #: po/tmp/ap_String_Id.h.h:1286
@@ -3061,7 +3055,7 @@ msgstr "Inserta una imagen en el documento"
 #. MENU_STATUSLINE_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:1304
 msgid "Insert bookmark"
-msgstr "Inserta un marcador"
+msgstr "Insertar un marcador"
 
 #. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h.h:1306
@@ -3187,7 +3181,7 @@ msgstr "Idioma"
 #. DLG_Options_Label_LangSettings
 #: po/tmp/ap_String_Id.h.h:1358
 msgid "Language settings"
-msgstr "Preferencias del idioma"
+msgstr "Configuración del idioma"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h.h:1360
@@ -3197,7 +3191,7 @@ msgstr "Idioma(s):"
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h.h:1362
 msgid "Layout"
-msgstr "Disposición"
+msgstr "Distribución"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h.h:1364
@@ -3216,13 +3210,13 @@ msgstr "Izquierda"
 #: po/tmp/ap_String_Id.h.h:1371
 #, c-format
 msgid "Left Indent [%s]"
-msgstr "Sangrado a la izquierda [%s]"
+msgstr "Sangría a la izquierda [%s]"
 
 #. LeftIndentTextIndentStatus
 #: po/tmp/ap_String_Id.h.h:1373
 #, c-format
 msgid "Left Indent [%s] First Line Indent [%s]"
-msgstr "Sangrado a la izquierda [%s] Sangrado de primera línea [%s]"
+msgstr "Sangría a la izquierda [%s] Sangría de primera línea [%s]"
 
 #. LeftMarginStatus
 #: po/tmp/ap_String_Id.h.h:1375
@@ -3304,7 +3298,7 @@ msgstr "Lista"
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h.h:1406
 msgid "List Label"
-msgstr "Etiqueta de lista"
+msgstr "Lista de etiquetas"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h.h:1408
@@ -3345,22 +3339,22 @@ msgstr "Combinar direcciones"
 #. MENU_STATUSLINE_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:1423
 msgid "Make the selection bold (toggle)"
-msgstr "Hacer la selección en negrita (conmutar)"
+msgstr "Hacer la selección en negrita (cambiar)"
 
 #. MENU_STATUSLINE_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:1425
 msgid "Make the selection italic (toggle)"
-msgstr "Hacer la selección cursiva (conmutar)"
+msgstr "Hacer la selección cursiva (cambiar)"
 
 #. MENU_STATUSLINE_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:1427
 msgid "Make the selection subscript (toggle)"
-msgstr "Hacer la selección subíndice (conmutar)"
+msgstr "Hacer la selección subíndice (cambiar)"
 
 #. MENU_STATUSLINE_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h.h:1429
 msgid "Make the selection superscript (toggle)"
-msgstr "Hacer la selección superíndice (conmutar)"
+msgstr "Hacer la selección superíndice (cambiar)"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h.h:1431
@@ -3370,7 +3364,7 @@ msgstr "Administrar los cambios en el documento"
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:1433
 msgid "Manage plugins"
-msgstr "Administrar accesorios"
+msgstr "Administrar complementos"
 
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h.h:1435
@@ -5419,7 +5413,7 @@ msgstr "Un directorio en la ruta dada no existe."
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:31
 msgid "AbiWord Plugin Manager"
-msgstr "Administrador de accesorios de AbiWord"
+msgstr "Administrador de complementos de AbiWord"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h.h:33
@@ -5445,7 +5439,7 @@ msgstr "Acerca de %s"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:39
 msgid "Active Plugins"
-msgstr "Accesorios activos"
+msgstr "Complementos activos"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:41
@@ -5735,12 +5729,12 @@ msgstr "Corso"
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:169
 msgid "Could not activate/load plugin"
-msgstr "No se pudo activar/cargar el accesorio"
+msgstr "No se pudo activar/cargar el complemento"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h.h:171
 msgid "Could not deactivate plugin"
-msgstr "No se pudo desactivar el accesorio"
+msgstr "No se pudo desactivar el complemento"
 
 #. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h.h:173
@@ -5791,12 +5785,12 @@ msgstr "Danés"
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h.h:193
 msgid "Deactivate all plugins"
-msgstr "Desactivar todos los accesorios"
+msgstr "Desactivar todos los complementos"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:195
 msgid "Deactivate plugin"
-msgstr "Desactivar accesorio"
+msgstr "Desactivar complemento"
 
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h.h:197
@@ -5943,7 +5937,7 @@ msgstr "Archivo"
 #: po/tmp/xap_String_Id.h.h:257
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Archivo ya existente. ¿sobreescribir archivo «%s»?"
+msgstr "Archivo ya existente. ¿Sobreescribir archivo «%s»?"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:259
@@ -6222,7 +6216,7 @@ msgstr "Insertar tabla nueva"
 #. DLG_IP_Title
 #: po/tmp/xap_String_Id.h.h:375
 msgid "Insert Picture"
-msgstr "Insertar gráfico"
+msgstr "Insertar imagen"
 
 #. DLG_Insert_SymbolTitle
 #: po/tmp/xap_String_Id.h.h:377
@@ -6232,7 +6226,7 @@ msgstr "Insertar símbolo"
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:379
 msgid "Install new plugin"
-msgstr "Instalar accesorio nuevo"
+msgstr "Instalar complemento nuevo"
 
 #. LANG_IA
 #: po/tmp/xap_String_Id.h.h:381
@@ -6352,12 +6346,12 @@ msgstr "No"
 #. DLG_IP_No_Picture_Label
 #: po/tmp/xap_String_Id.h.h:433
 msgid "No Picture"
-msgstr "Sin gráfico"
+msgstr "Sin imagen"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:435
 msgid "No plugin selected"
-msgstr "No hay un accesorio seleccionado"
+msgstr "No hay un complemento seleccionado"
 
 #. STYLE_NORMAL
 #: po/tmp/xap_String_Id.h.h:437
@@ -6442,12 +6436,12 @@ msgstr "Texto plano"
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:473
 msgid "Plugin Details"
-msgstr "Detalles del accesorio"
+msgstr "Detalles del complemento"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:475
 msgid "Plugin List"
-msgstr "Lista de accesorios"
+msgstr "Lista de complementos"
 
 #. LANG_PL_PL
 #: po/tmp/xap_String_Id.h.h:477
@@ -6472,7 +6466,7 @@ msgstr "Conservar proporciones"
 #. DLG_IP_Activate_Label
 #: po/tmp/xap_String_Id.h.h:487
 msgid "Preview Picture"
-msgstr "Previsualizar gráfico"
+msgstr "Previsualizar imagen"
 
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h.h:492
@@ -6617,17 +6611,17 @@ msgstr "Esloveno"
 #. DLG_HashDownloader_DictlistDLFail
 #: po/tmp/xap_String_Id.h.h:548
 msgid "Sorry! I seem unable to download the dictionary-list."
-msgstr "Lo siento! Parece que no es posible descargar la lista de diccionarios."
+msgstr "¡Lo sentimos! Parece que no es posible descargar la lista de diccionarios."
 
 #. DLG_HashDownloader_DictDLFail
 #: po/tmp/xap_String_Id.h.h:550
 msgid "Sorry! I seem unable to download the dictionary."
-msgstr "Lo siento! Parece que no es posible descargar el diccionario."
+msgstr "¡Lo sentimos! Parece que no es posible descargar el diccionario."
 
 #. DLG_HashDownloader_DictInstallFail
 #: po/tmp/xap_String_Id.h.h:552
 msgid "Sorry! I seem unable to install the dictionary."
-msgstr "Lo siento! Parece que no es posible instalar el diccionario."
+msgstr "¡Lo sentimos! Parece que no es posible instalar el diccionario."
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h.h:554
@@ -6954,7 +6948,7 @@ msgid "the dictionary-list"
 msgstr "la lista de diccionarios"
 
 #~ msgid "Choose a Template"
-#~ msgstr "Elija un aplantilla"
+#~ msgstr "Elija una plantilla"
 
 #~ msgid "Determine glyph shapes from context"
 #~ msgstr "Determinar las formas de las letras del contexto"

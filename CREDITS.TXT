@@ -244,6 +244,7 @@ Jesús Corrius <jesus@softcatala.org>			Catalan
 Joaquín Cuenca Abela <cuenca@celium.net>		Spanish
 Javier Yáñez <javier@cibal.es>				Spanish
 Luis Miguel García <ktech@wanadoo.es>			Spanish
+Francisco Javier F. Serrador <serrador@arrakis.es>	Spanish
 Tamas Decsi <tamas@pressflex.com>			Hungarian
 Vadim Frolov <vadim@krug.uch.net>			Ukrainian (uk-UA)
 Olexij Tkatchenko <ot@parcs.de>				Ukrainian (uk-UA)
