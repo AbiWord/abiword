@@ -139,7 +139,7 @@ bool	IE_Exp_Applix::GetDlgLabels(const char ** pszDesc,
 								  const char ** pszSuffixList,
 								  IEFileType * ft)
 {
-	*pszDesc = "Applix (.aw)";
+	*pszDesc = "Applix Word (.aw)";
 	*pszSuffixList = "*.aw";
 	*ft = IEFT_APPLIX;
 	return true;
