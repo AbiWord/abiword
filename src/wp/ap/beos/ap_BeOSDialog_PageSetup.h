@@ -22,7 +22,7 @@
 
 #include "ap_Dialog_PageSetup.h"
 
-class AP_UnixDialog_PageSetup : public AP_Dialog_PageSetup
+class AP_BeOSDialog_PageSetup : public AP_Dialog_PageSetup
 {
 public:
 	AP_BeOSDialog_PageSetup (XAP_DialogFactory *pDlgFactory, XAP_Dialog_Id id);
