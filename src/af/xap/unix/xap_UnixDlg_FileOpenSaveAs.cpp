@@ -125,15 +125,13 @@ fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs
 	return FALSE;
 }
 
-static gint s_filename_select (GtkCList * w,
-			       gint row, gint col, GdkEvent * evt,
-			       gpointer ptr)
+static void file_selection_changed  (GtkTreeSelection  *selection,
+				     gpointer           ptr)
 {
   XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
 
   UT_ASSERT(dlg);
   dlg->previewPicture();
-  return FALSE;
 }
 
 bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
@@ -519,11 +517,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 											   gtk_file_selection_new(
 																	  abiLocaleToUTF8(szTitle).c_str()));
 	m_FS = pFS;
-	
-	connectFocus(GTK_WIDGET(pFS),pFrame);
-	gtk_window_set_modal (GTK_WINDOW (pFS), TRUE);
-	gtk_widget_show_all (GTK_WIDGET (pFS));
-	gtk_grab_add (GTK_WIDGET (pFS));
+
+	abiSetupModalDialog(GTK_DIALOG(pFS), pFrame, this, GTK_RESPONSE_CANCEL);
  
 	GtkWidget * filetypes_pulldown = NULL;
 	
@@ -562,10 +557,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 				       G_CALLBACK(s_preview_exposed),
 				       static_cast<gpointer>(this));
 
-		    g_signal_connect(G_OBJECT(pFS->file_list),
-				       "select-row",
-				       G_CALLBACK(s_filename_select),
-				       static_cast<gpointer>(this));
+		    g_signal_connect (gtk_tree_view_get_selection (GTK_TREE_VIEW (pFS->file_list)), "changed", G_CALLBACK (file_selection_changed), this);
+
 		  }
 
 		// pulldown label
