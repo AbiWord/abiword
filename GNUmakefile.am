@@ -67,21 +67,15 @@ install-data-local:
 	else \
 	  echo "Warning: unixfonts package not found." ;\
 	fi
-	if test -d $(top_srcdir)/../abidistfiles/dictionary ; then \
-	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/dictionary ;\
-	  for file in $(top_srcdir)/../abidistfiles/dictionary/* ; do \
-	    if test -f $$file ; then \
-	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/dictionary; \
-	    fi ; \
-	  done; \
-	else \
-	  echo "Warning: abidistfiles package not found." ;\
-	fi
-	if test -d $(top_srcdir)/../abidistfiles/icons ; then \
-	  $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/icons ;\
-	  for file in $(top_srcdir)/../abidistfiles/icons/* ; do \
-	    if test -f $$file ; then \
-	      $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/icons; \
+	if test -d $(top_srcdir)/../abidistfiles ; then \
+	  for dir in $$(cd $(top_srcdir)/../abidistfiles; echo *) ; do \
+	    if test -d $(top_srcdir)/../abidistfiles/$$dir ; then \
+	      $(mkinstalldirs) $(DESTDIR)$(pkglibdir)/$$dir ;\
+	      for file in $(top_srcdir)/../abidistfiles/$$dir/* ; do \
+	        if test -f $$file ; then \
+	          $(INSTALL_DATA) $$file $(DESTDIR)$(pkglibdir)/$$dir; \
+	        fi; \
+	      done; \
 	    fi ; \
 	  done; \
 	else \
