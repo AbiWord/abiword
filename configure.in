@@ -1,8 +1,27 @@
+dnl AbiWord
+dnl Copyright (C) 2001 Sam Tobin-Hochstadt
+dnl
+dnl This program is free software; you can redistribute it and/or
+dnl modify it under the terms of the GNU General Public License
+dnl as published by the Free Software Foundation; either version 2
+dnl of the License, or (at your option) any later version.
+dnl 
+dnl This program is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
+dnl 
+dnl You should have received a copy of the GNU General Public License
+dnl along with this program; if not, write to the Free Software
+dnl Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+dnl 02111-1307, USA.
+
 dnl Process this file with autoconf to produce a configure script.
+
 AC_INIT(src/af/ev/xp/ev_Menu.h)
 AC_CONFIG_AUX_DIR(ac-helpers)
 
-AM_INIT_AUTOMAKE(abiword,7,13)
+AM_INIT_AUTOMAKE(abiword,7,15)
 
 dnl APR [ Apache Portable Runtime ] does it this way, but I don't know
 dnl why.  I figure they probably have a good reason. 
@@ -29,7 +48,7 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AM_ACLOCAL_INCLUDE(ac-helpers)
 
-dnl It would be nice to eventually add -Werror
+dnl TODO It would be nice to eventually add -Werror
 dnl FIXME these flags are gcc-specific, and need to be fixed
 WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -pipe"
 AC_SUBST(WARNING_CFLAGS)
@@ -57,11 +76,8 @@ AC_SUBST(GNOME_LIBS)
 ICONV_INCLUDES=-I'$(top_srcdir)/../iconv'
 AC_SUBST(ICONV_INCLUDES)
 
-
-
-dnl quick hack - will detect this
-PLATFORM=unix
-AC_SUBST(PLATFORM)
+dnl Detect our platform (unix, win32, etc)
+ABI_DETECT_PLATFORM
 
 dnl ******************************
 dnl gtk+ checking
@@ -120,7 +136,7 @@ AM_CONDITIONAL(WITH_GNOME, test x$gnome = xtrue)
 AC_ARG_WITH(pspell,
     [  --with-pspell    Turn on pspell ],
      [case "${withval}" in
-       yes) PSPELL_LIBS="-lpspell -lltdl" ;
+       yes) PSPELL_LIBS="-lpspell -lpspell-modules -lltdl" ;
             pspell=true ;;
        no)  PSPELL_LIBS="" ;
 	    pspell=false ;;
