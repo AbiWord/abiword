@@ -29,6 +29,8 @@ class ap_RulerTicks
 {
 public:
 	ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim);
+    UT_sint32 snapPixelToGrid(UT_sint32 dist);
+	double scalePixelDistanceToUnits(UT_sint32 dist);
 
 	GR_Graphics *	m_pG;
 
@@ -43,7 +45,6 @@ public:
 	
 	UT_Dimension	dimType;
 	double			dBasicUnit;
-	
 };
 
 #endif /* AP_RULER_H */

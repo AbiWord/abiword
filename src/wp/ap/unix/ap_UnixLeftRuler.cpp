@@ -31,6 +31,35 @@
 
 /*****************************************************************/
 
+static void s_getWidgetRelativeMouseCoordinates(AP_UnixLeftRuler * pUnixLeftRuler,
+												gint * prx, gint * pry)
+{
+	// TODO there is what appears to be a bug in GTK where
+	// TODO mouse coordinates that we receive (motion and
+	// TODO release) when we have a grab are relative to
+	// TODO whatever window the mouse is over ***AND NOT***
+	// TODO relative to our window.  the following ***HACK***
+	// TODO is used to map the mouse coordinates relative to
+	// TODO our widget.
+
+	// root (absolute) coordinates
+	gint rx, ry;
+	GdkModifierType mask;
+	gdk_window_get_pointer((GdkWindow *) pUnixLeftRuler->getRootWindow(), &rx, &ry, &mask);
+
+	// local (ruler widget) coordinates
+	gint wx, wy;
+	pUnixLeftRuler->getWidgetPosition(&wx, &wy);
+
+	// subtract one from the other to catch all coordinates
+	// relative to the widget's 0,
+	*prx = rx - wx;
+	*pry = ry - wy;
+	return;
+}
+
+/*****************************************************************/
+
 // evil ugly hack
 static int ruler_style_changed (GtkWidget * w, GdkEventClient * event,
 								AP_UnixLeftRuler * ruler)
@@ -49,6 +78,7 @@ static int ruler_style_changed (GtkWidget * w, GdkEventClient * event,
 AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
 	: AP_LeftRuler(pFrame)
 {
+	m_rootWindow = NULL;
 	m_wLeftRuler = NULL;
 	m_pG = NULL;
 
@@ -67,7 +97,7 @@ AP_UnixLeftRuler::~AP_UnixLeftRuler(void)
 
 void AP_UnixLeftRuler::_ruler_style_changed (void)
 {
-	setView(m_pView);
+	_refreshView();
 }
 
 GtkWidget * AP_UnixLeftRuler::createWidget(void)
@@ -126,21 +156,93 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 	pG->init3dColors(get_ensured_style (ruler));
 }
 
+void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)
+{
+	UT_ASSERT(x && y);
+	
+	gdk_window_get_position(m_wLeftRuler->window, x, y);
+}
+
+GdkWindowPrivate * AP_UnixLeftRuler::getRootWindow(void)
+{
+	// TODO move this function somewhere more logical, like
+	// TODO the XAP_Frame level, since that's where the
+	// TODO root window is common to all descendants.
+	if (m_rootWindow)
+		return m_rootWindow;
+
+	m_rootWindow  = ::getRootWindow(m_wLeftRuler);
+	return m_rootWindow;
+}
+
 /*****************************************************************/
 
-gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * /* e */)
+gint AP_UnixLeftRuler::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
 	UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_press_event\n",pUnixLeftRuler));
+
+	// grab the mouse for the duration of the drag.
+	gtk_grab_add(w);
+	
+	EV_EditModifierState ems;
+	EV_EditMouseButton emb = 0;
+	
+	ems = 0;
+	
+	if (e->state & GDK_SHIFT_MASK)
+		ems |= EV_EMS_SHIFT;
+	if (e->state & GDK_CONTROL_MASK)
+		ems |= EV_EMS_CONTROL;
+	if (e->state & GDK_MOD1_MASK)
+		ems |= EV_EMS_ALT;
+
+	if (e->state & GDK_BUTTON1_MASK)
+		emb = EV_EMB_BUTTON1;
+	else if (e->state & GDK_BUTTON2_MASK)
+		emb = EV_EMB_BUTTON2;
+	else if (e->state & GDK_BUTTON3_MASK)
+		emb = EV_EMB_BUTTON3;
+
+	pUnixLeftRuler->mousePress(ems, emb, (long) e->x, (long) e->y);
+
 	return 1;
 }
 
-gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * /* e */)
+gint AP_UnixLeftRuler::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
 {
 	// a static function
 	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
 	UT_DEBUGMSG(("UnixLeftRuler: [p %p] received button_release_event\n",pUnixLeftRuler));
+	EV_EditModifierState ems;
+	EV_EditMouseButton emb = 0;
+	
+	ems = 0;
+	
+	if (e->state & GDK_SHIFT_MASK)
+		ems |= EV_EMS_SHIFT;
+	if (e->state & GDK_CONTROL_MASK)
+		ems |= EV_EMS_CONTROL;
+	if (e->state & GDK_MOD1_MASK)
+		ems |= EV_EMS_ALT;
+
+	if (e->state & GDK_BUTTON1_MASK)
+		emb = EV_EMB_BUTTON1;
+	else if (e->state & GDK_BUTTON2_MASK)
+		emb = EV_EMB_BUTTON2;
+	else if (e->state & GDK_BUTTON3_MASK)
+		emb = EV_EMB_BUTTON3;
+
+	// Map the mouse into coordinates relative to our window.
+	gint xrel, yrel;
+	s_getWidgetRelativeMouseCoordinates(pUnixLeftRuler,&xrel,&yrel);
+
+	pUnixLeftRuler->mouseRelease(ems, emb, xrel, yrel);
+
+	// release the mouse after we are done.
+	gtk_grab_remove(w);
+	
 	return 1;
 }
 	
@@ -163,11 +265,28 @@ gint AP_UnixLeftRuler::_fe::configure_event(GtkWidget* w, GdkEventConfigure * e)
 	return 1;
 }
 	
-gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* /* w */, GdkEventMotion* /* e */)
+gint AP_UnixLeftRuler::_fe::motion_notify_event(GtkWidget* w , GdkEventMotion* e)
 {
 	// a static function
-	// AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
+	AP_UnixLeftRuler * pUnixLeftRuler = (AP_UnixLeftRuler *)gtk_object_get_user_data(GTK_OBJECT(w));
 	// UT_DEBUGMSG(("UnixLeftRuler: [p %p] received motion_notify_event\n",pUnixLeftRuler));
+
+	EV_EditModifierState ems;
+	
+	ems = 0;
+	
+	if (e->state & GDK_SHIFT_MASK)
+		ems |= EV_EMS_SHIFT;
+	if (e->state & GDK_CONTROL_MASK)
+		ems |= EV_EMS_CONTROL;
+	if (e->state & GDK_MOD1_MASK)
+		ems |= EV_EMS_ALT;
+
+	// Map the mouse into coordinates relative to our window.
+	gint xrel, yrel;
+	s_getWidgetRelativeMouseCoordinates(pUnixLeftRuler,&xrel,&yrel);
+
+	pUnixLeftRuler->mouseMotion(ems, xrel, yrel);
 	return 1;
 }
 	

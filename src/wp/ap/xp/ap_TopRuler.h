@@ -194,24 +194,33 @@ protected:
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue1, double dValue2);
 
+	void        _refreshView(void);
+
 	// must be static so that I can pass as a functional arg - shack
 	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_AlphaHashTable *phChanges, void *data );
 
 	// autoscroll stuff
 	static void			_autoScroll(UT_Timer * pTimer);
-	UT_Timer *			m_pAutoScrollTimer;
-	char				m_aScrollDirection; // 'L' == left   'R' == right
 	
 	XAP_Frame *			m_pFrame;
-	AV_View *			m_pView;
-	AV_ScrollObj *		m_pScrollObj;
 	GR_Graphics *		m_pG;
-	UT_Dimension		m_dim;
-	UT_uint32			m_iHeight;		/* size of window */
-	UT_uint32			m_iWidth;		/* size of window */
 	UT_uint32			m_iLeftRulerWidth;
 	UT_sint32			m_xScrollOffset;
 	UT_sint32			m_xScrollLimit;
+
+	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
+	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */
+
+private:
+	AV_ScrollObj *		m_pScrollObj;
+	AV_View *			m_pView;
+	UT_Dimension		m_dim;
+
+	UT_uint32			m_iHeight;		/* size of window */
+	UT_uint32			m_iWidth;		/* size of window */
+
+	UT_Timer *			m_pAutoScrollTimer;
+	char				m_aScrollDirection; // 'L' == left   'R' == right
 
 	UT_sint32			m_minColumnWidth;
 
@@ -241,6 +250,7 @@ protected:
 	eTabLeader			m_draggingTabLeader;
 	UT_sint32			m_dragStart;
 	bool				m_bBeforeFirstMotion;
+	UT_sint32			m_oldX; /* Only for dragging; used to see if object has moved */
 
 	eTabType			m_iDefaultTabType;
 
@@ -248,11 +258,6 @@ protected:
 	UT_sint32			m_xGuide;	/* valid iff m_bGuide */
 	UT_sint32			m_xOtherGuide;
 	
-	UT_sint32			m_oldX; /* Only for dragging; used to see if object has moved */
-
-	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
-	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */
-
 	AV_ListenerId		m_lidTopRuler;		/* need to save the view/listenerID so we can removeListener in destructor */
 };
 

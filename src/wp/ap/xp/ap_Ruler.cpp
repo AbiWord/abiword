@@ -108,4 +108,37 @@ ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG, UT_Dimension dim)
 	}
 };
 
-	
+/*! 
+    Snap pixel value to nearest grid line
+    \param dist Raw distance value on grid
+    \param tick Ruler to which we snap
+*/
+
+UT_sint32 ap_RulerTicks::snapPixelToGrid(UT_sint32 dist)
+{
+	UT_sint32 rel = dist * tickUnitScale;
+	if (rel > 0)
+		rel = ((rel + (dragDelta/2) - 1) / dragDelta) * dragDelta / tickUnitScale;
+	else
+		rel = -(UT_sint32)((((-rel) + (dragDelta/2) - 1) / dragDelta) * dragDelta / tickUnitScale);
+
+	return rel;
+}
+
+/*! 
+    Convert pixel distance into units used by ruler
+    \param dist Raw distance value on grid
+    \param tick Ruler to which we snap
+*/
+
+double ap_RulerTicks::scalePixelDistanceToUnits(UT_sint32 dist)
+{
+	UT_sint32 rel = dist * tickUnitScale;
+	if (rel > 0)
+		rel = ((rel + (dragDelta/2) - 1) / dragDelta) * dragDelta;
+	else
+		rel = -(UT_sint32)((((-rel) + (dragDelta/2) - 1) / dragDelta) * dragDelta);
+
+	double drel = ((double)rel) / ((double)tickUnitScale);
+	return drel;
+}

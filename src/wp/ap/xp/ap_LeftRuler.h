@@ -28,12 +28,16 @@
 #include "ut_units.h"
 #include "xav_Listener.h"
 
+#include "gr_Graphics.h"
+#include "ev_EditBits.h"
+
 class XAP_App;
 class XAP_Frame;
 class XAP_Prefs;
 class UT_AlphaHashTable;
 class AV_ScrollObj;
 class GR_Graphics;
+class ap_RulerTicks;
 
 /*****************************************************************/
 /*****************************************************************/
@@ -72,6 +76,11 @@ public:
 	void				draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi);
 	void				scrollRuler(UT_sint32 yoff, UT_sint32 ylimit);
 
+	void			    mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y);
+	void                mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y);
+
+	void                mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y);
+
 	/* used with AV_Listener */
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
@@ -80,10 +89,11 @@ public:
 	static void			_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	
 	/* for use with the prefs listener top_ruler_prefs_listener */
-	UT_Dimension	getDimension() const { return m_dim; }
-	void			setDimension( UT_Dimension newdim );
+	UT_Dimension	    getDimension() const { return m_dim; }
+	void			    setDimension( UT_Dimension newdim );
 	
 protected:
+	void                _refreshView(void);
 
 //	void				_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 //									 UT_sint32 x, UT_sint32 h);
@@ -92,19 +102,57 @@ protected:
 	static void _prefsListener( XAP_App *pApp, XAP_Prefs *pPrefs, UT_AlphaHashTable *phChanges, void *data );
 	
 	XAP_Frame *			m_pFrame;
-	AV_View *			m_pView;		/* TODO make this a FV_View */
-	AV_ScrollObj *		m_pScrollObj;
 	GR_Graphics *		m_pG;
-	UT_Dimension		m_dim;
-	UT_uint32			m_iHeight;		/* size of window */
-	UT_uint32			m_iWidth;		/* size of window */
+
+	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
+	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */
+
+private:
+	UT_sint32           _snapPixelToGrid(UT_sint32 xDist, ap_RulerTicks & tick);
+	double              _scalePixelDistanceToUnits(UT_sint32 yDist, ap_RulerTicks & tick);
+	void                _ignoreEvent(bool bDone);
+
+	void                _getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop, UT_Rect &rBottom);
+	void		        _drawMarginProperties(const UT_Rect * pClipRect,
+											  AP_LeftRulerInfo * pInfo, 
+											  GR_Graphics::GR_Color3D clr);
+
+	void                _xorGuide(bool bClear=false);
+
+	AP_LeftRulerInfo	m_lfi;					/* the values we last drew with */
+
+	// scrolling objects
+	AV_ScrollObj *		m_pScrollObj;
 	UT_sint32			m_yScrollOffset;
 	UT_sint32			m_yScrollLimit;
 
-	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* width we draw stuff regardless of window width */
-
-	AP_LeftRulerInfo	m_lfi;					/* the values we last drew with */
 	AV_ListenerId		m_lidLeftRuler;
+
+	// misc info
+
+	AV_View *			m_pView;
+	UT_Dimension		m_dim;
+	UT_uint32			m_iHeight;		/* size of window */
+	UT_uint32			m_iWidth;		/* size of window */
+
+	AP_LeftRulerInfo	m_infoCache;
+
+	UT_sint32			m_oldY; /* Only for dragging; used to see if object has moved */
+
+	typedef enum _draggingWhat { DW_NOTHING,
+								 DW_TOPMARGIN,
+								 DW_BOTTOMMARGIN
+	} DraggingWhat;
+
+	DraggingWhat		m_draggingWhat;
+	UT_sint32			m_draggingCenter; /* center of primary thing being dragged */
+	bool				m_bBeforeFirstMotion;
+
+	bool				m_bGuide;	/* true ==> guide line XORed onscreen */
+	UT_sint32			m_yGuide;	/* valid iff m_bGuide */
+
+	bool				m_bValidMouseClick;
+	bool				m_bEventIgnored;
 };
 
 #endif /* AP_LEFTRULER_H */

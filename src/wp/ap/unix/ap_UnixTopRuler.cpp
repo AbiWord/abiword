@@ -100,7 +100,7 @@ AP_UnixTopRuler::~AP_UnixTopRuler(void)
 
 void AP_UnixTopRuler::_ruler_style_changed (void)
 {
-	setView(m_pView);
+	_refreshView();
 }
 
 GtkWidget * AP_UnixTopRuler::createWidget(void)

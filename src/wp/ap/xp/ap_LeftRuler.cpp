@@ -47,6 +47,11 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_iWidth = 0;
 	m_yScrollOffset = 0;
 	m_yScrollLimit = 0;
+	m_bValidMouseClick = false;
+	m_draggingWhat = DW_NOTHING;
+
+	m_bGuide = false;
+	m_yGuide = 0;
 	
 	const XML_Char * szRulerUnits;
 	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
@@ -57,7 +62,8 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	// i wanted these to be "static const x = 32;" in the
 	// class declaration, but MSVC5 can't handle it....
 	// (GCC can :-)
-	
+		
+	s_iFixedHeight = 32;
 	s_iFixedWidth = 32;
 
 	memset(&m_lfi,0,sizeof(m_lfi));
@@ -123,6 +129,11 @@ void AP_LeftRuler::setView(AV_View * pView)
 	return;
 }
 
+void AP_LeftRuler::_refreshView(void)
+{
+	setView(m_pView);
+}
+
 void AP_LeftRuler::setHeight(UT_uint32 iHeight)
 {
 	m_iHeight = iHeight;
@@ -148,6 +159,258 @@ UT_uint32 AP_LeftRuler::getWidth(void) const
 	// because m_iWidth does get used. -PL
 	//     return s_iFixedWidth;
 	return m_iWidth;
+}
+
+/*****************************************************************/
+
+void AP_LeftRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_uint32 x, UT_uint32 y)
+{
+	// get the complete state of what should be on the ruler at the
+	// time of the grab.  we assume that nothing in the document can
+	// change during our grab unless we change it.
+
+	m_bValidMouseClick = false;
+	m_draggingWhat = DW_NOTHING;
+	m_bEventIgnored = false;
+
+	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&m_infoCache);
+
+	UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
+    UT_sint32 yrel = ((UT_sint32)y) - yAbsTop;
+    ap_RulerTicks tick(m_pG,m_dim);
+    UT_sint32 ygrid = tick.snapPixelToGrid(yrel);
+    m_draggingCenter = yAbsTop + ygrid;
+
+	m_oldY = ygrid; // used to determine if delta is zero on a mouse release
+
+  	// only check page margins
+	
+  	UT_Rect rTopMargin, rBottomMargin;
+  	_getMarginMarkerRects(&m_infoCache,rTopMargin,rBottomMargin);
+ 	if (rTopMargin.containsPoint(x,y))
+ 	{
+ 		m_bValidMouseClick = true;
+ 		m_draggingWhat = DW_TOPMARGIN;
+ 		m_bBeforeFirstMotion = true;
+ 		return;
+ 	}
+
+ 	if (rBottomMargin.containsPoint(x,y))
+ 	{
+ 		m_bValidMouseClick = true;
+ 		m_draggingWhat = DW_BOTTOMMARGIN;
+ 		m_bBeforeFirstMotion = true;
+ 		return;
+ 	}
+}
+
+/*****************************************************************/
+
+void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y)
+{
+	if (!m_bValidMouseClick || m_bEventIgnored)
+	{
+		m_draggingWhat = DW_NOTHING;
+		m_bValidMouseClick = false;
+		return;
+	}
+	
+	m_bValidMouseClick = false;
+
+	// if they drag horizontally off the ruler, we ignore the whole thing.
+
+	if ((x < 0) || (x > (UT_sint32)m_iWidth))
+	{
+		_ignoreEvent(true);
+		m_draggingWhat = DW_NOTHING;
+		return;
+	}
+
+	// mouse up was in the ruler portion of the window, or horizontally
+	// off - we cannot ignore it.
+	// i'd like to assert that we can just use the data computed in the
+	// last mouseMotion() since the Release must be at the same spot or
+	// we'd have received another Motion before the release.  therefore,
+	// we use the last value of m_draggingCenter that we computed.
+
+	// also, we do not do any drawing here.  we assume that whatever change
+	// that we make to the document will cause a notify event to come back
+	// to us and cause a full draw.
+	
+    // UT_DEBUGMSG(("mouseRelease: [ems 0x%08lx][emb 0x%08lx][x %ld][y %ld]\n",ems,emb,x,y));
+
+	ap_RulerTicks tick(m_pG,m_dim);
+	UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
+	UT_sint32 ygrid = tick.snapPixelToGrid(((UT_sint32)y)-yAbsTop);
+	
+	_xorGuide (true);
+	
+	if (ygrid == m_oldY) // Not moved - clicked and released
+	{
+		m_draggingWhat = DW_NOTHING;
+		return;
+	}
+	
+	switch (m_draggingWhat)
+	{
+	case DW_NOTHING:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+		
+	case DW_TOPMARGIN:
+		{
+			double dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
+
+			const XML_Char * properties[3];
+			properties[0] = "page-margin-top";
+			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+			properties[2] = 0;
+			UT_DEBUGMSG(("LeftRuler: page-margin-top [%s]\n",properties[1]));
+
+			_xorGuide(true);
+			m_draggingWhat = DW_NOTHING;
+            FV_View *pView = static_cast<FV_View *>(m_pView);
+            pView->setSectionFormat(properties);
+		}
+		return;
+
+	case DW_BOTTOMMARGIN:
+		{
+			UT_sint32 yOrigin = m_infoCache.m_yPageStart + m_infoCache.m_yTopMargin - m_yScrollOffset;
+			UT_sint32 yEnd = yOrigin - m_infoCache.m_yTopMargin + m_infoCache.m_yPageSize;
+
+			double dxrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
+
+			const XML_Char * properties[3];
+			properties[0] = "page-margin-bottom";
+			properties[1] = m_pG->invertDimension(tick.dimType,dxrel);
+			properties[2] = 0;
+			UT_DEBUGMSG(("LeftRuler: page-margin-bottom [%s]\n",properties[1]));
+
+			_xorGuide(true);
+			m_draggingWhat = DW_NOTHING;
+            FV_View *pView = static_cast<FV_View *>(m_pView);
+            pView->setSectionFormat(properties);
+		}
+		return;
+
+	}
+}
+
+/*****************************************************************/
+
+void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
+{
+	// The X and Y that are passed to this function are x and y on the screen, not on the ruler.
+	
+	if (!m_bValidMouseClick)
+		return;
+		
+	m_bEventIgnored = false;
+
+	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
+	ap_RulerTicks tick(m_pG,m_dim);
+
+	// if they drag vertically off the ruler, we ignore the whole thing.
+
+	if ((x < 0) || (x > (UT_sint32)m_iWidth))
+	{
+		if(!m_bEventIgnored)
+		{
+			_ignoreEvent(false);
+			m_bEventIgnored = true;
+		}
+		return;
+	}
+
+	// lots of stuff omitted here; we should see about including it.
+	// it has to do with autoscroll.
+
+	// if we are this far along, the mouse motion is significant
+	// we cannot ignore it.
+		
+	switch (m_draggingWhat)
+	{
+	case DW_NOTHING:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+		
+	case DW_TOPMARGIN:
+	case DW_BOTTOMMARGIN:
+		{
+		UT_sint32 oldDragCenter = m_draggingCenter;
+
+		UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
+
+		m_draggingCenter = tick.snapPixelToGrid(y);
+
+		if(m_draggingCenter == oldDragCenter)
+		{
+			// Position not changing so finish here.
+
+			return;
+		}
+
+		draw(NULL, m_infoCache);
+		_xorGuide();
+		m_bBeforeFirstMotion = false;
+
+		// Display in margin in status bar.
+
+		double dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
+
+//  		UT_sint32 newMargin = m_draggingCenter - yAbsTop;
+//  		_displayStatusMessage(AP_STRING_ID_LeftMarginStatus, tick, dxrel);
+//  		_displayStatusMessage(AP_STRING_ID_RightMarginStatus, tick, dxrel);
+		}
+		return;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+}
+
+/*****************************************************************/
+
+void AP_LeftRuler::_ignoreEvent(bool bDone)
+{
+	// user released the mouse off of the ruler.  we need to treat
+	// this as a cancel.  so we need to put everything back the
+	// way it was on the ruler.
+
+	// clear the guide line
+
+	_xorGuide(true);
+
+	// erase the widget that we are dragging.   remember what we
+	// are dragging, clear it, and then restore it at the bottom.
+	
+	DraggingWhat dw = m_draggingWhat;
+	m_draggingWhat = DW_NOTHING;
+
+	if (!m_bBeforeFirstMotion)
+	{
+		m_bBeforeFirstMotion = true;
+	}
+
+	// redraw the widget we are dragging at its original location
+	
+	switch (dw)
+	{
+	case DW_TOPMARGIN:
+	case DW_BOTTOMMARGIN:
+		draw(NULL, m_infoCache);
+		break;
+
+	case DW_NOTHING:
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		break;
+	}
+
+	m_draggingWhat = dw;
+	return;
 }
 
 /*****************************************************************/
@@ -259,6 +522,56 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 	m_pG->scroll(0,dy);
 	m_yScrollOffset = yoff;
 	draw(prClip);
+}
+
+/*****************************************************************/
+
+void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop, UT_Rect &rBottom)
+{
+	UT_sint32 yOrigin = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
+	UT_sint32 yEnd = yOrigin - pInfo->m_yBottomMargin - pInfo->m_yTopMargin + pInfo->m_yPageSize;
+
+	UT_uint32 xLeft = s_iFixedHeight / 4;
+	UT_sint32 hs = 3;					// halfSize
+	UT_sint32 fs = hs * 2;			// fullSize
+
+	rTop.set(xLeft - fs, yOrigin  - hs, fs, fs-1);
+	rBottom.set(xLeft - fs, yEnd - hs, fs, fs);
+}
+
+void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
+										AP_LeftRulerInfo * pInfo, GR_Graphics::GR_Color3D clr)
+{
+	UT_Rect rLeft, rRight;
+
+	_getMarginMarkerRects(pInfo,rLeft,rRight);
+	
+	m_pG->fillRect(GR_Graphics::CLR3D_Background, rLeft);
+
+	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+	m_pG->drawLine( rLeft.left,  rLeft.top, rLeft.left + rLeft.width, rLeft.top);
+	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top, rLeft.left + rLeft.width, rLeft.top + rLeft.height);
+	m_pG->drawLine( rLeft.left + rLeft.width,  rLeft.top + rLeft.height, rLeft.left, rLeft.top + rLeft.height);
+	m_pG->drawLine( rLeft.left,  rLeft.top + rLeft.height, rLeft.left, rLeft.top);
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+	m_pG->drawLine( rLeft.left + 1,  rLeft.top + 1, rLeft.left + rLeft.width - 1, rLeft.top + 1);
+	m_pG->drawLine( rLeft.left + 1,  rLeft.top + rLeft.height - 2, rLeft.left + 1, rLeft.top + 1);
+	
+	m_pG->fillRect(GR_Graphics::CLR3D_Background, rRight);
+
+	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
+	m_pG->drawLine( rRight.left,  rRight.top, rRight.left + rRight.width, rRight.top);
+	m_pG->drawLine( rRight.left + rRight.width,  rRight.top, rRight.left + rRight.width, rRight.top + rRight.height);
+	m_pG->drawLine( rRight.left + rRight.width,  rRight.top + rRight.height, rRight.left, rRight.top + rRight.height);
+	m_pG->drawLine( rRight.left,  rRight.top + rRight.height, rRight.left, rRight.top);
+	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
+	m_pG->drawLine( rRight.left + 1,  rRight.top + 1, rRight.left + rRight.width - 1, rRight.top + 1);
+	m_pG->drawLine( rRight.left + 1,  rRight.top + rRight.height - 2, rRight.left + 1, rRight.top + 1);
+#if 0
+    m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
+	m_pG->drawLine( rRight.left + rRight.width - 1,  rRight.top + 1, rRight.left + rRight.width - 1, rRight.top + rRight.height - 1);
+	m_pG->drawLine( rRight.left + rRight.width - 1,  rRight.top + rRight.height - 1, rRight.left + 1, rRight.top + rRight.height - 1);
+#endif
 }
 
 /*****************************************************************/
@@ -425,11 +738,55 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 			}
 		}
 	}
+
+	// draw the various widgets for the:
+	// 
+	// current section properties {left-margin, right-margin};
+	_drawMarginProperties(pClipRect, &lfi, GR_Graphics::CLR3D_Foreground);
 	
 	if (pClipRect)
 		m_pG->setClipRect(NULL);
 
 	m_lfi = lfi;
+}
+
+/*****************************************************************/
+
+void AP_LeftRuler::_xorGuide(bool bClear)
+{
+	UT_sint32 y = m_draggingCenter;
+
+	GR_Graphics * pG = (static_cast<FV_View *>(m_pView))->getGraphics();
+	UT_ASSERT(pG);
+
+	// TODO we need to query the document window to see what the actual
+	// TODO background color is so that we can compose the proper color so
+	// TODO that we can XOR on it and be guaranteed that it will show up.
+
+	UT_RGBColor clrWhite(255,255,255);
+	pG->setColor(clrWhite);
+
+	UT_sint32 w = m_pView->getWindowWidth();
+	
+	if (m_bGuide)
+	{
+		if (!bClear && (y == m_yGuide))
+			return;		// avoid flicker
+
+		// erase old guide
+		pG->xorLine(0, m_yGuide, w, m_yGuide);
+		m_bGuide = false;
+	}
+
+	if (!bClear)
+	{
+		UT_ASSERT(m_bValidMouseClick);
+		pG->xorLine(0, y, w, y);
+
+		// remember this for next time
+		m_yGuide = y;
+		m_bGuide = true;
+	}
 }
 
 /*static*/ void AP_LeftRuler::_prefsListener( XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void *data )
