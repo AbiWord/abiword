@@ -1694,7 +1694,7 @@ void fp_Column::layout(void)
 					pLine->setY(iPrevY);
 				}
 				pPrevContainer = pLine;
-				xxx_UT_DEBUGMSG(("Layout: SameY container %d getY %d getX %d \n",i,pLine->getY(),pLine->getX()));
+				xxx_UT_DEBUGMSG(("Layout: %x SameY container %d getY %d getX %d width %d \n",pLine,i,pLine->getY(),pLine->getX(),pLine->getMaxWidth()));
 				continue;
 			}
 		}
@@ -1708,7 +1708,6 @@ void fp_Column::layout(void)
 //		UT_ASSERT(iY>=0);
 //		UT_ASSERT(iOldY < iY);
 		pContainer->setY(iY);
-		xxx_UT_DEBUGMSG(("Layout: container %d getY %d \n",i,pContainer->getY()));
 //		UT_ASSERT(iY == pContainer->getY());
 		iOldY = iY;
 		//UT_ASSERT(pContainer->getY() == iY);

@@ -27,12 +27,14 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "fp_Column.h"
+#include "fp_Line.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 #include "fp_FootnoteContainer.h"
 #include "fp_FrameContainer.h"
 #include "fl_FootnoteLayout.h"
 #include "fl_DocLayout.h"
+#include "fl_BlockLayout.h"
 #include "fp_Column.h"
 #include "fp_Run.h"
 #include "fv_View.h"
@@ -304,11 +306,46 @@ fp_Page * fp_Container::getPage(void) const
 
 void fp_Container::insertConAt(fp_ContainerObject * pCon, UT_sint32 i)
 {
+#if DEBUG
+	if(pCon->getContainerType() == FP_CONTAINER_LINE)
+	{
+		fp_Line * pLine = static_cast<fp_Line *>(pCon);
+		UT_ASSERT(pLine->getBlock() != NULL);
+		if(countCons() > 0)
+		{
+			fp_ContainerObject * pNext = 	m_vecContainers.getNthItem(i);
+			if(pNext && pNext->getContainerType() == FP_CONTAINER_LINE)
+			{
+				fl_BlockLayout * pBL = pLine->getBlock();
+				fl_BlockLayout * pNextBL = static_cast<fp_Line *>(pNext)->getBlock();
+				UT_ASSERT(pNextBL->getPosition() >= pBL->getPosition());
+			}
+		}
+	}
+#endif
 	m_vecContainers.insertItemAt(pCon,i);
 }
 
 void fp_Container::addCon(fp_ContainerObject * pCon)
 {
+#if DEBUG
+	if(pCon->getContainerType() == FP_CONTAINER_LINE)
+	{
+		fp_Line * pLine = static_cast<fp_Line *>(pCon);
+		UT_ASSERT(pLine->getBlock() != NULL);
+		UT_sint32 i = countCons();
+		if(i>0)
+		{
+			fp_ContainerObject * pPrev = 	m_vecContainers.getNthItem(i-1);
+			if(pPrev && pPrev->getContainerType() == FP_CONTAINER_LINE)
+			{
+				fl_BlockLayout * pBL = pLine->getBlock();
+				fl_BlockLayout * pPrevBL = static_cast<fp_Line *>(pPrev)->getBlock();
+				UT_ASSERT(pPrevBL->getPosition() <= pBL->getPosition());
+			}
+		}
+	}
+#endif
 	m_vecContainers.addItem(pCon);
 }
 

@@ -2111,7 +2111,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	fp_Run * pRun = pLine->getLastRun();
 	pRun = pRun->getNextRun();
 	m_pVertContainer = static_cast<fp_VerticalContainer *>(pLine->getContainer());
-	m_iLinePosInContainer = m_pVertContainer->findCon(pLine);
+	m_iLinePosInContainer = m_pVertContainer->findCon(pLine)+1;
 	if(m_iLinePosInContainer < 0)
 	{
 		m_iLinePosInContainer = 0;
@@ -2296,6 +2296,7 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		else
 		{
 			m_bSameYAsPrevious = true;
+			xxx_UT_DEBUGMSG(("Max width 1 set to %d \n",rec.width));
 			pLine->setMaxWidth(rec.width);
 		}
 	}
@@ -2420,11 +2421,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			{
 				setFirstContainer(pLine);
 				setLastContainer(pLine);
-				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
-				pLine->setContainer(m_pVertContainer);
+				pLine->setBlock(this);
+   				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
+				m_iLinePosInContainer++;
+	   			pLine->setContainer(m_pVertContainer);
+				xxx_UT_DEBUGMSG(("Max width 2 set to %d \n",projRec.width));
 				pLine->setMaxWidth(projRec.width);
 				pLine->setX(projRec.left-xoff);
-				pLine->setBlock(this);
 				pLine->setSameYAsPrevious(false);
 				pLine->setWrapped((iMaxX != projRec.width));
 				m_bSameYAsPrevious = true;
@@ -2437,13 +2440,16 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 
 				fp_VerticalContainer * pContainer = static_cast<fp_VerticalContainer *>(pOldLastLine->getContainer());
 				pLine->setWrapped((iMaxX != projRec.width));
+				pLine->setBlock(this);
 				if(pContainer)
 				{
-					pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+   					pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+					m_iLinePosInContainer = pContainer->findCon(pLine)+1;
+					pLine->setContainer(pContainer);
 				}
+				xxx_UT_DEBUGMSG(("Max width 3 set to %d \n",projRec.width));
 				pLine->setMaxWidth(projRec.width);
 				pLine->setX(projRec.left-xoff);
-				pLine->setBlock(this);
 				pLine->setSameYAsPrevious(m_bSameYAsPrevious);
 				m_bSameYAsPrevious = true;
 			}
@@ -2500,11 +2506,13 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				xxx_UT_DEBUGMSG(("Old Lastline NULL?????? \n"));
 				setFirstContainer(pLine);
 				setLastContainer(pLine);
-				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
+				pLine->setBlock(this);
+   				m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
+				m_iLinePosInContainer++;
 				pLine->setContainer(m_pVertContainer);
+				xxx_UT_DEBUGMSG(("Max width 4 set to %d \n",projRec.width));
 				pLine->setMaxWidth(projRec.width);
 				pLine->setX(projRec.left-xoff);
-				pLine->setBlock(this);
 				pLine->setSameYAsPrevious(false);
 				pLine->setWrapped((iMaxX != projRec.width));
 				m_bSameYAsPrevious = true;
@@ -2517,13 +2525,16 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 				
 				fp_VerticalContainer * pContainer = static_cast<fp_VerticalContainer *>(pOldLastLine->getContainer());
 				pLine->setWrapped((iMaxX != projRec.width));
+				pLine->setBlock(this);
 				if(pContainer)
 				{
-					pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+			   		pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+					m_iLinePosInContainer = pContainer->findCon(pLine)+1;
+					pLine->setContainer(pContainer);
 				}
+				xxx_UT_DEBUGMSG(("Max width 5 set to %d \n",projRec.width));
 				pLine->setMaxWidth(projRec.width);
 				pLine->setX(projRec.left-xoff);
-				pLine->setBlock(this);
 				pLine->setSameYAsPrevious(m_bSameYAsPrevious);
 				m_bSameYAsPrevious = true;
 			}
@@ -2531,6 +2542,7 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			pLine->setHeight(iHeight);
 			return pLine;
 		}
+		xxx_UT_DEBUGMSG(("Max width 6 set to %d \n",20));
 		pLine->setMaxWidth(20);
 		pLine->setX(projRec.left-xoff);
 		pLine->setBlock(this);
@@ -2545,14 +2557,17 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			fp_VerticalContainer * pContainer = static_cast<fp_VerticalContainer *>(pOldLastLine->getContainer());
 			if(pContainer)
 			{
-				pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+   				pContainer->insertContainerAfter(static_cast<fp_Container *>(pLine), static_cast<fp_Container *>(pOldLastLine));
+				m_iLinePosInContainer = pContainer->findCon(pLine)+1;
+				pLine->setContainer(pContainer);
 			}
 		}
 		else
 		{
 			setFirstContainer(pLine);
 			setLastContainer(pLine);
-			m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
+   			m_pVertContainer->insertConAt(pLine,m_iLinePosInContainer);
+			m_iLinePosInContainer++;
 			pLine->setContainer(m_pVertContainer);
 		}
 		m_bSameYAsPrevious = false;

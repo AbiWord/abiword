@@ -221,6 +221,65 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 					{
 						pLine->setWrapped(false);
 					}
+					else if((recLeft.width < 0) || (recRight.width <0))
+					{
+//
+// SOMETHING HAS GONE HORRIBALLY WRONG. Try to recover by collapsing the
+// content in this column and rebuilding
+//
+						UT_DEBUGMSG(("-ve width here!!!! %x left %d right %d \n",pLine,recLeft.width,recRight.width));
+						UT_VECTOR_PURGEALL(_BL *, vecBL);
+						fl_BlockLayout * pBL = pLine->getBlock();
+						fl_BlockLayout * pFirst = pBL;
+						fp_Column * pCol = static_cast<fp_Column *>(pLine->getColumn());
+						bool bLoop = true;
+						while(bLoop)
+						{
+							if(pBL && pBL->getContainerType() == FL_CONTAINER_BLOCK)
+							{
+								if(pBL->getFirstContainer() && (pBL->getFirstContainer()->getColumn() == pCol))
+								{
+									bLoop = true;
+									pFirst = pBL;
+									pBL = static_cast<fl_BlockLayout *>(pBL->getPrev());
+								}
+							}
+							else
+							{
+								bLoop = false;
+							}
+						}
+						fp_Column * pFirstCol = static_cast<fp_Column *>(pFirst->getFirstContainer()->getColumn());
+						pBL = pFirst;
+						UT_GenericVector<fl_BlockLayout *> vecCollapse;
+						bLoop = true;
+						while(bLoop)
+						{
+							if(pBL && pBL->getContainerType() == FL_CONTAINER_BLOCK)
+							{
+								if(pBL->getFirstContainer() && (pBL->getFirstContainer()->getColumn() == pCol))
+								{
+									bLoop = true;
+									vecCollapse.addItem(pBL);
+									pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
+								}
+							}
+							else
+							{
+								bLoop = false;
+							}
+						}
+						UT_sint32 k = 0;
+						for(k=0; k<static_cast<UT_sint32>(vecCollapse.getItemCount());k++)
+						{
+							pBL = vecCollapse.getNthItem(k);
+							pBL->collapse();
+							pBL->format();
+						}
+						pNextCol = pFirstCol;
+						fp_Container * pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
+						return pNewFirstCon;
+					}
 					else
 					{
 						pLine->setWrapped(true);
@@ -289,7 +348,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 //
 // Wrapped line overlaps a wrapped frame
 //
-								UT_DEBUGMSG(("Found wrapped line %x that overlaps \n",pLine));
+								xxx_UT_DEBUGMSG(("Found wrapped line %x that overlaps \n",pLine));
 								bFoundOne = true;
 							}
 							else if(pPrev && pLine->isSameYAsPrevious() && (pPrev->getY() != pLine->getY()))
@@ -309,7 +368,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								if(!overlapsWrappedFrame(recLeft) &&
 								   !overlapsWrappedFrame(recRight))
 								{
-									UT_DEBUGMSG(("Found wrapped line with extra  space %x  \n",pLine));
+									xxx_UT_DEBUGMSG(("Found wrapped line with extra  space %x  \n",pLine));
 									bFoundOne = true;
 								}
 							}
@@ -321,7 +380,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 //
 							if(overlapsWrappedFrame(pLine))
 							{
-								UT_DEBUGMSG(("Found unwrapped line %x that overlaps \n",pLine));
+								xxx_UT_DEBUGMSG(("Found unwrapped line %x that overlaps \n",pLine));
 								bFoundOne = true;
 							}
 						}
@@ -373,13 +432,12 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	{
 		return NULL;
 	}
-	pNextCol = NULL;
 	_BL * pBLine = vecBL.getNthItem(0);
 	pFirstBL = pBLine->m_pBL;
 	for(i=0; i<static_cast<UT_sint32>(vecBL.getItemCount()); i++)
 	{
 		pBLine = vecBL.getNthItem(i);
-		UT_DEBUGMSG((" Doing line %x \n",pBLine->m_pL));
+		xxx_UT_DEBUGMSG((" Doing line %x \n",pBLine->m_pL));
 #if DEBUG
 		if(m_iCountWrapPasses > 100)
 		{
@@ -390,24 +448,22 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		pBLine->m_pBL->formatWrappedFromHere(pBLine->m_pL,this);
 	}
 	UT_VECTOR_PURGEALL(_BL *, vecBL);
-	if(pNextCol == NULL)
-	{
-		pNextCol = getNthColumnLeader(0);
-	}
 	fp_Container * pNewFirstCon = NULL;
 	if(pFirstBL)
 	{
 		pNewFirstCon = pFirstBL->getFirstContainer();
+		pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
 	}
 	else
 	{
-		return pFirst;
+		return pNewFirstCon;
 	}
 	while(pNewFirstCon && pNewFirstCon->getPage() != NULL && pNewFirstCon->getPage() != this)
 	{
 		pNewFirstCon = static_cast<fp_Container *>(pNewFirstCon->getNext());
 	}
 	pNextCol = static_cast<fp_Column *>(pNewFirstCon->getColumn());
+	pNewFirstCon = static_cast<fp_Container *>(pNextCol->getNthCon(0));
 	return pNewFirstCon;
 }
 

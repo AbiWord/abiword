@@ -256,18 +256,14 @@ void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
 	if(pNext && pNext->isSameYAsPrevious())
 	{
 		recRight.width =  pNext->getX() - (getX() + getMaxWidth());
-		if(recRight.width < 0)
-		{
-			recRight.width = iMaxWidth;
-		}
 	}
 	else
 	{
 		iMaxWidth -= m_pBlock->getRightMargin();
 		recRight.width = iMaxWidth +xdiff - recRight.left;
 	}
-	UT_ASSERT(recLeft.width >= 0);
-	UT_ASSERT(recRight.width >= 0);
+//	UT_ASSERT(recLeft.width >= 0);
+//	UT_ASSERT(recRight.width >= 0);
 	delete pRec;
 }
 
@@ -417,7 +413,10 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	{
 		return;
 	}
-	setMaxWidth(pContainer->getWidth());
+	if(m_iMaxWidth  == 0 || (pContainer->getWidth() < m_iMaxWidth))
+	{
+		setMaxWidth(pContainer->getWidth());
+	}
 }
 
 UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)
