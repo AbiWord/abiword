@@ -318,7 +318,7 @@ char * UT_convert_cd(const char *str,
 
 	*outp = '\0';
 
-	const size_t nNewLen = p - str;
+	const UT_sint32 nNewLen = p - str;
 
 	if (bytes_read_arg)
 	  {
