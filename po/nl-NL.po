@@ -2936,9 +2936,8 @@ msgstr "Tabel invoegen"
 #. TOOLBAR_STATUSLINE_FMT_BOOKMARK
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
 #: po/tmp/ap_String_Id.h.h:1216
-#, fuzzy
 msgid "Insert a bookmark into the document"
-msgstr "Print alles of gedeeltes van het bestand"
+msgstr "Een bladwijzer in het document invoegen" 
 
 #. MENU_STATUSLINE_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:1218
@@ -3858,14 +3857,13 @@ msgstr "Onderdelen tabel"
 
 #. DLG_FormatFootnotes_EndPlaceEndDoc
 #: po/tmp/ap_String_Id.h.h:1581
-#, fuzzy
 msgid "Place at end of Document"
-msgstr "Document opslaan"
+msgstr "Aan het eind van het document plaatsen" 
 
 #. DLG_FormatFootnotes_EndPlaceEndSec
 #: po/tmp/ap_String_Id.h.h:1583
 msgid "Place at end of Section"
-msgstr "Aan het eind van de sectie invoegen"
+msgstr "Aan het eind van de sectie plaatsen"
 
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h.h:1585
@@ -3940,21 +3938,19 @@ msgstr "Afd&rukvoorbeeld"
 
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h.h:1616
-#, fuzzy
 msgid "Print Preview"
-msgstr "Afd&rukvoorbeeld"
+msgstr "Afdrukvoorbeeld"
 
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1618
 msgid "Print all or part of the document"
-msgstr "Print alles of gedeeltes van het bestand"
+msgstr "Print alles of een gedeelte van het document"
 
 #. TOOLBAR_STATUSLINE_FILE_PRINT
 #. TOOLBAR_TOOLTIP_FILE_PRINT
 #: po/tmp/ap_String_Id.h.h:1621
-#, fuzzy
 msgid "Print the document"
-msgstr "Document opslaan"
+msgstr "Het document afdrukken"
 
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
 #: po/tmp/ap_String_Id.h.h:1623
@@ -3964,7 +3960,7 @@ msgstr "Afdrukken met het interne PS stuurprogramma"
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h.h:1625
 msgid "Printing Document.."
-msgstr "Bezig met afdrukken document..."
+msgstr "Bezig met het afdrukken van het document..."
 
 #. MSG_PrintStatus
 #: po/tmp/ap_String_Id.h.h:1627
