@@ -2334,8 +2334,8 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 /*!
     If the input pAP contains revision attribute, this function
     returns AP in which the revision attribute has been inflated into
-    actual properties and attributes; the caller is responsible for
-    deleting both the returned AP and pRevisions
+    actual properties and attributes (the return AP lives in the PT varset,
+    so it is not to be modified, deleted, etc., but the caller)
     
     bShow indicates whether revisions are shown or hidden (view - dependent)
     iId is the id of revision to be shown (view - dependent)
