@@ -56,11 +56,14 @@ class UT_String;
   That would certainly reduce platform code a increase XP code.
    -- Hub
 */
+
+class GR_Graphics;
 class ABI_EXPORT GR_Font
 {
+	friend class GR_Graphics;
+
  public:
 	GR_Font();
-	virtual ~GR_Font();
 
 	typedef enum { FF_Unknown = 0, FF_Roman, FF_Swiss, FF_Modern,
 				   FF_Script, FF_Decorative, FF_Technical, FF_BiDi, FF_Last } FontFamilyEnum;
@@ -97,6 +100,9 @@ class ABI_EXPORT GR_Font
 	}
 	
   protected:
+
+	virtual ~GR_Font();
+
 	GR_CharWidths * _getCharWidths() const {return m_pCharWidths;}
 	/*! 
 	  hash key for font cache. Must be initialized in ctor

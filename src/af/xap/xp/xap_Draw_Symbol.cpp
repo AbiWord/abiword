@@ -45,10 +45,8 @@ XAP_Draw_Symbol::XAP_Draw_Symbol(GR_Graphics * gc)
 {
 }
 
-
 XAP_Draw_Symbol::~XAP_Draw_Symbol(void)
 {
-  	DELETEP(m_pFont);
 }
 
 void XAP_Draw_Symbol::setWindowSize( UT_uint32 width, UT_uint32 height)
@@ -68,7 +66,6 @@ void XAP_Draw_Symbol::setAreaSize( UT_uint32 width, UT_uint32 height)
 	m_drawareaHeight = m_areagc->tlu(height);
 	setFontStringarea();
 }
-
 
 void XAP_Draw_Symbol::setFontString( void )
 {
@@ -135,7 +132,6 @@ void XAP_Draw_Symbol::setFontStringarea(void)
 	setFontToGC(m_areagc, m_drawareaWidth, 32);
 }
 
-
 void XAP_Draw_Symbol::draw(void)
 {
 	UT_ASSERT(m_gc);
@@ -186,6 +182,7 @@ void XAP_Draw_Symbol::draw(void)
 		x += tmpw;
 	}
 }
+
 UT_UCSChar XAP_Draw_Symbol::calcSymbolFromCoords(UT_uint32 ix, UT_uint32 iy)
 {
 	UT_uint32 index,count;
@@ -219,7 +216,6 @@ UT_UCSChar XAP_Draw_Symbol::calcSymbol(UT_uint32 x, UT_uint32 y)
 	ix = m_gc->tlu(x) / (width / 32);
 	return calcSymbolFromCoords(ix, iy);
 }
-
 
 void XAP_Draw_Symbol::calculatePosition(UT_UCSChar c, UT_uint32 &x, UT_uint32 &y)
 {
