@@ -707,7 +707,7 @@ int ASK_Win32_Init(HINSTANCE hInstance)
 							  0,
 							  0,
 							  GRAPHIC_WIDTH,
-							  iWindowHeight - BUTTONAREA_HEIGHT,
+							  iWindowHeight,
 							  g_hwndMain,
 							  (HMENU) ID_GRAPHIC,
 							  hInstance,

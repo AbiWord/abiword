@@ -204,6 +204,8 @@ int ASK_decompressAndWriteFile(ASK_DataFile* pDataFile)
 	fwrite(pOriginalBytes, 1, pDataFile->iOriginalLength, fp);
 	fclose(fp);
 
+	free(pOriginalBytes);
+	
 	ASK_setFileAttributes(pDataFile->szInstallPath, pDataFile->iAttributes);
 	ASK_setFileModTime(pDataFile->szInstallPath, pDataFile->iModTime);
 
