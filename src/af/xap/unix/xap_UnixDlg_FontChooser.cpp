@@ -147,8 +147,7 @@ static gint s_color_wheel_clicked(GtkWidget * area,
 #endif
 
 static gint s_color_update(GtkWidget * /* widget */,
-						   GdkEvent * /* event */,
-						   XAP_UnixDialog_FontChooser * dlg)
+			   XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->fgColorChanged();
@@ -157,7 +156,6 @@ static gint s_color_update(GtkWidget * /* widget */,
 
 
 static gint s_bgcolor_update(GtkWidget * /* widget */,
-						   GdkEvent * /* event */,
 						   XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_ASSERT(dlg);
@@ -734,7 +732,6 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_widget_show (colorSelector);
 	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
 
-
 	/*Notebook page for Background Color Selector*/
 
 	GtkWidget * vboxBG = gtk_vbox_new (FALSE, 0);
@@ -782,7 +779,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 
 	// save out to members for callback and class access
-    m_fontList = listFonts;
+	m_fontList = listFonts;
 	m_styleList = listStyles;
 	m_sizeList = listSizes;
 	m_colorSelector = colorSelector;
@@ -860,14 +857,14 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	// real-time updating of the color so we can refresh our preview
 	// text
 	g_signal_connect(G_OBJECT(colorSelector),
-			 "event",
+			 "color-changed", //"event",
 			 G_CALLBACK(s_color_update),
 			 (gpointer) this);
 
 	g_signal_connect(G_OBJECT(colorBGSelector),
-					   "event",
-					   G_CALLBACK(s_bgcolor_update),
-					   (gpointer) this);
+			 "color-changed", //"event",
+			 G_CALLBACK(s_bgcolor_update),
+			 (gpointer) this);
 
 	GTK_WIDGET_SET_FLAGS(listFonts, GTK_CAN_FOCUS);
 	GTK_WIDGET_SET_FLAGS(listStyles, GTK_CAN_FOCUS);
