@@ -818,9 +818,11 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	const XML_Char * szListTag = apa.getProperty("list-tag");
 	if (szListTag && *szListTag)
 	{
+		_rtf_open_brace();
 		_rtf_keyword("*");
 		UT_uint32 id = atoi(szListTag);
 		_rtf_keyword("listtag",id);
+		_rtf_close_brace();
 	}
 
 
