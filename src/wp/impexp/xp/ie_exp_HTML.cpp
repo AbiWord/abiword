@@ -364,7 +364,7 @@ void s_HTML_Listener::_openTable(PT_AttrPropIndex api)
 	  UT_sint32 cellPadding = 1;
 	  UT_sint32 border = 1;
 
-	  char * prop = NULL ;
+	  const char * prop = NULL ;
 
 	  prop = mTableHelper.getTableProp("table-line-thickness");
 	  if(prop)
