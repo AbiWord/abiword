@@ -26,7 +26,6 @@
 #include "xap_Win32DialogFactory.h"
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Strings.h"
-#include "xap_Win32Module.h"
 
 class XAP_Win32Slurp;
 class XAP_Args;
@@ -44,7 +43,6 @@ public:
 	XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_Win32App(void);
 
-	virtual inline XAP_Module * createModule (void) {return new XAP_Win32Module();}
 	virtual bool							initialize(void);
 	virtual XAP_Frame *						newFrame(void) = 0;
 	virtual void							reallyExit(void);
@@ -65,6 +63,8 @@ public:
 	virtual HICON							getSmallIcon(void) = 0;
 	
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile) = 0;
+
+	virtual XAP_Module*						createModule();
 
 	void									enableAllTopLevelWindows(bool);
 

@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -27,8 +28,12 @@
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Win32Slurp.h"
+#include "xap_Win32Module.h"
 
-#pragma warning(disable:4355)
+#ifdef _MSC_VER
+#pragma warning(disable:4355)	// 'this' used in base member initializer list
+#endif
+
 
 /*****************************************************************/
 
@@ -324,20 +329,7 @@ void XAP_Win32App::enableAllTopLevelWindows(bool b)
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+XAP_Module* XAP_Win32App::createModule()
+{
+	return new XAP_Win32Module;
+}
