@@ -2292,9 +2292,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 	docHeight = m_pLayout->getHeight();
 
 	if (lineHeight == 0)
-	{
 		lineHeight = m_pG->tlu(HACK_LINE_HEIGHT);
-	}
 
 	UT_sint32 yoff = m_yScrollOffset;
 	UT_sint32 xoff = m_xScrollOffset;
@@ -2354,9 +2352,7 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 	}
 
 	if (yoff < 0)
-	{
 		yoff = 0;
-	}
 
 	bool bRedrawPoint = true;
 
@@ -2369,21 +2365,16 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 	}
 
 	if (xoff < 0)
-	{
 		xoff = 0;
-	}
 
 	if (bHorizontal && (xoff != m_xScrollOffset))
 	{
 		sendHorizontalScrollEvent(xoff);
 		bRedrawPoint = false;
 	}
-
+	
 	if (bRedrawPoint)
-	{
 		_fixInsertionPointCoords();
-	}
-
 
 }
 

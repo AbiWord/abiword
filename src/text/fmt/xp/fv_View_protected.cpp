@@ -1601,7 +1601,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!! Set to iYnext %d page %x \n",iYnext,pPage));
 		if(pPage == NULL)
 		{
-			return;
+			pPage = pLine->getPage ();
 		}
 		if(iYnext < 0)
 		{
@@ -1669,7 +1669,7 @@ void FV_View::_moveInsPtNextPrevScreen(bool bNext)
 		}
 		if(pPage == NULL)
 		{
-			return;
+			pPage = pLine->getPage ();
 		}
 		pPage->mapXYToPosition(x, iYnext, iNewPoint, bBOL, bEOL);
 		UT_sint32 newX,newY;
