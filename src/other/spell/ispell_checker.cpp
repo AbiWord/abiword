@@ -2,7 +2,6 @@
 #include "ut_vector.h"
 
 #include "ispell.h"
-#undef const
 #include "sp_spell.h"
 #include "iconv.h"
 
