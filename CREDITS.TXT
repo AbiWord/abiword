@@ -8,10 +8,12 @@ Paul Rohr <paul@abisource.com>
 Bob Sievers <bob@abisource.com> 			QA
 Eric Sink <eric@abisource.com>
 Shaw Terwilliger <sterwill@abisource.com>
+Hubert Figuiere <hfiguiere@teaser.fr>			Cocoa based MacOS X port.
 
 current maintainer
 -----------------------------
 Dom Lachowicz <doml@appligent.com>
+Hubert Figuiere <hfiguiere@teaser.fr>			1.0.x branch
 
 platform maintainers
 -----------------------------
