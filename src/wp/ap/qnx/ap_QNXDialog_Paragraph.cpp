@@ -271,7 +271,7 @@ void AP_QNXDialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 		// make a new QNX GC
 		//m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_drawingareaPreview, pFrame->getApp());
-		GR_QNXAllocInfo ai(mainWindow, m_drawingAreaPreview, pFrame->getApp());
+		GR_QNXAllocInfo ai(mainWindow, m_drawingareaPreview, pFrame->getApp());
 		m_qnxGraphics = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 		unsigned short w, h;

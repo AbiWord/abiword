@@ -160,7 +160,7 @@ bool AP_QNXApp::initialize(void)
 	m_pToolbarActionSet = AP_CreateToolbarActionSet();
 	UT_ASSERT(m_pToolbarActionSet);
 
-	if (! XAP_QNXApp::initialize())
+	if (! AP_App::initialize())
 		return false;
 	
 	//////////////////////////////////////////////////////////////////

@@ -58,7 +58,7 @@ bool progExists(const char* progName)
 	UT_String envpath = getenv("PATH");
 	UT_String* path;
 
-	UT_Vector * utvPath = simpleSplit(envpath, ':');
+	UT_GenericVector<UT_String *> * utvPath = simpleSplit(envpath, ':');
 	if (!utvPath)
 	  return false;
 

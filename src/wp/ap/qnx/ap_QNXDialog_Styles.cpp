@@ -380,8 +380,8 @@ void AP_QNXDialog_Styles::runModal(XAP_Frame * pFrame)
 	// make a new QNX GC for Character Preview
 	DELETEP (m_pCharPreviewGR);
 	//m_pCharPreviewGR = new GR_QNXGraphics(mainWindow, m_wCharPreviewArea, m_pApp);
-	GR_QNXAllocInfo ai(mainWindow, m_wCharPreviewArea, m_pApp);
-	m_pCharPreviewGR = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_QNXAllocInfo ai_(mainWindow, m_wCharPreviewArea, m_pApp);
+	m_pCharPreviewGR = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai_);
 
 	UT_QNXGetWidgetArea(m_wCharPreviewArea, NULL, NULL, &w, &h);
 	_createCharPreviewFromGC(m_pCharPreviewGR, w, h);
@@ -1226,8 +1226,9 @@ void  AP_QNXDialog_Styles::modifyRunModal(void)
 	UT_ASSERT(m_wModifyDrawingArea);
 
 	DELETEP (m_pAbiPreviewGR);
-	m_pAbiPreviewGR = new GR_QNXGraphics(mainWindow, m_wModifyDrawingArea, m_pApp);
-	
+	GR_QNXAllocInfo ai(mainWindow, m_wParaPreviewArea, m_pApp);
+	m_pAbiPreviewGR = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);	
+
 	UT_QNXGetWidgetArea(m_wModifyDrawingArea, NULL, NULL, &w, &h);
 	_createAbiPreviewFromGC(m_pAbiPreviewGR, w, h);
 

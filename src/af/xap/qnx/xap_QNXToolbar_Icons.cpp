@@ -29,9 +29,6 @@ AP_QNXToolbar_Icons::AP_QNXToolbar_Icons(void)
 
 AP_QNXToolbar_Icons::~AP_QNXToolbar_Icons(void)
 {
-	// TODO do we need to keep some kind of list
-	// TODO of the things we have created and
-	// TODO handed out, so that we can delete them ??
 }
 
 PhImage_t *AP_QNXToolbar_Icons::getPixmapForIcon(const char * szIconName) 
@@ -46,7 +43,7 @@ PhImage_t *AP_QNXToolbar_Icons::getPixmapForIcon(const char * szIconName)
 	
 	//printf("Looking for icon [%s] \n", szIconName);
 	bool bFound = _findIconDataByName(szIconName, &pIconData, &sizeofIconData);
-	if (!bFound)
+	if (!bFound || !pIconData || !sizeofIconData)
 		return false;
 
 	if (!UT_Xpm2Bitmap(pIconData, sizeofIconData, &outimage)) 

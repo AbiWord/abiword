@@ -71,7 +71,6 @@ XAP_QNXDialog_PluginManager::~XAP_QNXDialog_PluginManager(void)
 
 /*****************************************************************/
 /*****************************************************************/
-
 void XAP_QNXDialog_PluginManager::event_DeactivateAll ()
 {
 	deactivateAllPlugins ();
@@ -217,10 +216,10 @@ void XAP_QNXDialog_PluginManager::_refreshTab1 ()
 	// first, refresh the CList
 	PtListDeleteAllItems(m_clist);
 	
-	const UT_Vector * pVec = XAP_ModuleManager::instance().enumModules ();
+	const UT_GenericVector<XAP_Module *> * pVec = XAP_ModuleManager::instance().enumModules ();
 
 	for (UT_uint32 i = 0; i < pVec->size(); i++) {
-		pModule = (XAP_Module *)pVec->getNthItem (i);
+		pModule = pVec->getNthItem (i);
 		text [0] = pModule->getModuleInfo()->name;
 		PtListAddItems(m_clist, text, 1, 0);
 	}
@@ -303,13 +302,11 @@ static int s_load_clicked (PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 	dlg->event_Load ();
 	return Pt_CONTINUE;
 }
-
 /*****************************************************************/
 /*****************************************************************/
 
 void XAP_QNXDialog_PluginManager::runModal(XAP_Frame * pFrame)
 {
-#if 0 
 	m_pFrame = pFrame;
 
 	XAP_QNXFrameImpl * pQNXFrameImpl = (XAP_QNXFrameImpl*)pFrame->getFrameImpl();
@@ -343,9 +340,8 @@ void XAP_QNXDialog_PluginManager::runModal(XAP_Frame * pFrame)
 
 	UT_QNXBlockWidget(parentWindow, 0);
 	PtDestroyWidget(mainWindow);
-#endif
-
 }
+
 
 PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 {

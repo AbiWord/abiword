@@ -89,7 +89,7 @@ PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 	GR_QNXAllocInfo ai(((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getTopLevelWindow(),
 					   m_wLeftRuler,
 					   ((XAP_QNXFrameImpl *)m_pFrame->getFrameImpl())->getFrame()->getApp());
-	pG = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_QNXGraphics * pG = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
 	pG->init3dColors();

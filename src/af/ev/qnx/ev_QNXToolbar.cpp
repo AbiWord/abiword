@@ -403,7 +403,7 @@ bool EV_QNXToolbar::synthesize(void)
 				if (pControl && tb) {
 					pControl->populate();
 
-					const UT_Vector * v = pControl->getContents();
+					const UT_GenericVector<const char *> * v = pControl->getContents();
 					UT_ASSERT(v);
 
 					if (v) {

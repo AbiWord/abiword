@@ -175,7 +175,7 @@ void AP_QNXDialog_Replace::_updateLists() {
 	_updateList(m_comboReplace,&m_replaceList);
 }
 
-void AP_QNXDialog_Replace::_updateList(PtWidget_t *w,UT_Vector *list)
+void AP_QNXDialog_Replace::_updateList(PtWidget_t *w,UT_GenericVector<unsigned int*> *list)
 {
 	UT_uint32 i=0;
 	if(!w) return;

@@ -245,9 +245,10 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new QNX GC
 	DELETEP (m_qnxarea);
+
 	//m_qnxarea = new GR_QNXGraphics(mainWindow, m_areaCurrentSym, m_pApp);
-	GR_QNXAllocInfo ai(mainWindow, m_areaCurrentSym, m_pApp);
-	m_qnxarea = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
+	GR_QNXAllocInfo ai_(mainWindow, m_areaCurrentSym, m_pApp);
+	m_qnxarea = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai_);
 
 	// let the widget materialize
 	UT_QNXGetWidgetArea(m_areaCurrentSym, NULL, NULL, &w, &h);

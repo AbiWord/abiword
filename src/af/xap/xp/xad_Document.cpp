@@ -21,6 +21,7 @@
  */
 
 #include <stdlib.h>
+#include <cstring>
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -813,7 +814,7 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 	const char * pPath = UT_strdup(getFilename());
 	UT_return_val_if_fail(pPath, false);
 	
-	char * pDot = strrchr(pPath,'.');
+	char * pDot = (char *)strrchr(pPath,'.');
 	if(pDot)
 	{
 		*pDot = 0;

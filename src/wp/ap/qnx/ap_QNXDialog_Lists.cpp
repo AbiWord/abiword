@@ -212,7 +212,7 @@ void AP_QNXDialog_Lists::runModeless(XAP_Frame * pFrame)
 
 		// make a new QNX GC
 		//m_pPreviewWidget = new GR_QNXGraphics(m_mainWindow, m_wPreviewArea, pFrame->getApp());
-		GR_QNXAllocInfo ai(mainWindow, m_wPreviewArea, pFrame->getApp());
+		GR_QNXAllocInfo ai(m_mainWindow, m_wPreviewArea, pFrame->getApp());
 		m_pPreviewWidget = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 		unsigned short w, h;
@@ -331,7 +331,7 @@ void  AP_QNXDialog_Lists::setXPFromLocal(void)
 		UT_ASSERT(0);
 		setNewListType(NOT_A_LIST);
 	} else {
-		void *junk;
+		const void *junk;
 		junk = m_styleVector.getNthItem(*value - 1);
 		setNewListType((enum FL_ListType)((int)junk));
 	}
@@ -683,7 +683,7 @@ void AP_QNXDialog_Lists::_loadXPDataIntoLocal(void)
 
 	/* Determine which of the styles should be set */
 	for (i=0; i<m_styleVector.getItemCount(); i++) {
-		void *junk;
+		const void *junk;
 		junk = m_styleVector.getNthItem(i);
 		if ((enum FL_ListType)((int)junk) == getNewListType()) {
 			PtSetResource(m_wListStyle_menu, Pt_ARG_CBOX_SEL_ITEM, i+1, 0);

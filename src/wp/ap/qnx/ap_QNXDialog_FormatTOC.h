@@ -32,11 +32,13 @@ public:
 	AP_QNXDialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_QNXDialog_FormatTOC(void);
 	virtual void			runModeless(XAP_Frame * pFrame);
+	virtual void			destroy();
+	virtual void			activate();
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	virtual void            setTOCPropsInGUI(void);	
-    virtual void            setSensitivity(bool bSensitive);
+  virtual void            setSensitivity(bool bSensitive);
 
 protected:
 

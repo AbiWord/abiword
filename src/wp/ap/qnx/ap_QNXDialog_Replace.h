@@ -73,7 +73,7 @@ protected:
 	PtWidget_t * m_buttonCancel;
 	int 		 done;
 private:
-	void		_updateList(PtWidget_t *w,UT_Vector *list);
+	void		_updateList(PtWidget_t *w,UT_GenericVector<unsigned int*> *list);
 };
 
 #endif /* AP_QNXDIALOG_REPLACE_H */

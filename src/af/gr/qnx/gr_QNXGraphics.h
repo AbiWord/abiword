@@ -55,10 +55,13 @@ class QNXFont : public GR_Font {
 class GR_QNXAllocInfo : public GR_AllocInfo
 {
   public:
-	GR_QNXAllocInfo() = 0;
+	GR_QNXAllocInfo(PtWidget_t * win, PtWidget_t * draw, XAP_App * app) 
+	: m_win(win),m_draw(draw) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_QNX;}
-	virtual bool isPrinterGraphics() const = 0;
+	virtual bool isPrinterGraphics() const { return false; }
+	PtWidget_t *m_win,*m_draw;
+
 };
 
 class GR_QNXGraphics : public GR_Graphics
@@ -74,7 +77,7 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual GR_Capability getCapability() {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	
 	static const char *    graphicsDescriptor(void){return "QNX Default";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 	
 	virtual void		drawGlyph(UT_uint32 glyph_idx,UT_sint32 xoff,UT_sint32 yoff);
 	virtual void 		drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
@@ -208,8 +211,8 @@ private:
 	void	blitScreen();
 	void	setDamage(int x,int y,int h,int w);
 	
-	UT_Vector				m_vSaveRect;
-	UT_Vector 			m_vSaveRectBuf;
+	UT_GenericVector<UT_Rect*>				m_vSaveRect;
+	UT_GenericVector<PhImage_t *>			m_vSaveRectBuf;
 	PdOffscreenContext_t *m_pOSC;
 	PhArea_t				m_DamagedArea;
 };

@@ -149,7 +149,9 @@ void XAP_QNXDialog_About::runModal(XAP_Frame * pFrame)
 	
 
 	// attach a new graphics context
-	m_gc = new GR_QNXGraphics(mainWindow, m_drawingareaGraphic, pFrame->getApp());
+	GR_QNXAllocInfo ai(mainWindow,m_drawingareaGraphic,pFrame->getApp());
+	m_gc = (GR_QNXGraphics *)XAP_App::getApp()->newGraphics(ai);
+
 
 	UT_QNXCenterWindow(/*parentWindow | */ NULL, mainWindow);
 	UT_QNXBlockWidget(parentWindow, 1);
