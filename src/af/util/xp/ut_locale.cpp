@@ -59,7 +59,7 @@ UT_LocaleTransactor::UT_LocaleTransactor (int category, const UT_String & locale
 
 UT_LocaleTransactor::~UT_LocaleTransactor ()
 {
-  (void)explicit_setlocale (mCategory, mOldLocale.c_str ());
+  static_cast<void>(explicit_setlocale (mCategory, mOldLocale.c_str ()));
 }
 
 /********************************************/

@@ -850,7 +850,7 @@ UT_UCS2Char * UT_UCS2_strcpy_char(UT_UCS2Char * dest, const char * src)
 	UT_ASSERT(src);
 
 	UT_UCS2Char * d 		= dest;
-	unsigned char * s	= (unsigned char *) src;
+	unsigned char * s	= static_cast<unsigned char *>(src);
 
 	static UT_UCS2_mbtowc m(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
 	UT_UCS2Char wc;
@@ -878,7 +878,7 @@ char * UT_UCS2_strcpy_to_char(char * dest, const UT_UCS2Char * src)
 bool UT_UCS2_cloneString(UT_UCS2Char ** dest, const UT_UCS2Char * src)
 {
 	UT_uint32 length = UT_UCS2_strlen(src) + 1;
-	*dest = (UT_UCS2Char *)UT_calloc(length,sizeof(UT_UCS2Char));
+	*dest = static_cast<UT_UCS2Char *>(UT_calloc(length,sizeof(UT_UCS2Char)));
 	if (!*dest)
 		return false;
 	memmove(*dest,src,length*sizeof(UT_UCS2Char));
@@ -897,7 +897,7 @@ bool UT_UCS2_isupper(UT_UCS2Char c)
 	if(c < 127)
 		return isupper(c)!=0;
 
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
     if(letter && letter->type == 1)
         return true;
     return false;
@@ -908,7 +908,7 @@ bool UT_UCS2_islower(UT_UCS2Char c)
 	if(c < 127)
 		return islower(c)!=0;
 
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 0)
         return true;
     return false;
@@ -957,9 +957,9 @@ UT_UCS2Char * UT_UCS2_strncpy(UT_UCS2Char * dest, const UT_UCS2Char * src, UT_ui
 	UT_ASSERT(src);
 
 	UT_UCS2Char * d = dest;
-	UT_UCS2Char * s = (UT_UCS2Char *) src;
+	UT_UCS2Char * s = static_cast<UT_UCS2Char *>(src);
 
-	for (; d < (UT_UCS2Char *)dest + n;)
+	for (; d < static_cast<UT_UCS2Char *>(dest) + n;)
 		*d++ = *s++;
 	*d = '\0';
 
@@ -1006,7 +1006,7 @@ XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
 	memset(sBuf,0,sizeof(sBuf));
 	if (cIn < 0x0080)
 	{
-		sBuf[0] = (XML_Char)cIn;
+		sBuf[0] = static_cast<XML_Char>(cIn);
 	}
 	else if (cIn < 0x0800)
 	{
@@ -1082,7 +1082,7 @@ bool UT_UCS4_isupper(UT_UCS4Char c)
 	if(c < 127)
 		return isupper(c)!=0;
 
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
     if(letter && letter->type == 1)
         return true;
     return false;
@@ -1093,7 +1093,7 @@ bool UT_UCS4_islower(UT_UCS4Char c)
 	if(c < 127)
 		return islower(c)!=0;
 
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 0)
         return true;
     return false;
@@ -1141,9 +1141,9 @@ UT_UCS4Char * UT_UCS4_strncpy(UT_UCS4Char * dest, const UT_UCS4Char * src, UT_ui
 	UT_ASSERT(src);
 
 	UT_UCSChar * d = dest;
-	UT_UCSChar * s = (UT_UCS4Char *) src;
+	const UT_UCSChar * s = static_cast<const UT_UCS4Char *>(src);
 
-	for (; d < (UT_UCS4Char *)dest + n;)
+	for (; d < static_cast<UT_UCS4Char *>(dest) + n;)
 		*d++ = *s++;
 	*d = '\0';
 
@@ -1173,8 +1173,8 @@ UT_UCS4Char * UT_UCS4_strstr(const UT_UCS4Char * phaystack, const UT_UCS4Char * 
 	register const UT_UCS4Char *haystack, *needle;
 	register UT_UCS4Char b, c;
 
-	haystack = (const UT_UCS4Char *) phaystack;
-	needle = (const UT_UCS4Char *) pneedle;
+	haystack = static_cast<const UT_UCS4Char *>(phaystack);
+	needle = static_cast<const UT_UCS4Char *>(pneedle);
 
 	b = *needle;
 	if (b != '\0')
@@ -1247,7 +1247,7 @@ UT_UCS4Char * UT_UCS4_strstr(const UT_UCS4Char * phaystack, const UT_UCS4Char * 
         }
     }
  foundneedle:
-	return (UT_UCS4Char *) haystack;
+	return const_cast<UT_UCS4Char *>(haystack);
  ret0:
 	return 0;
 }
@@ -1303,7 +1303,7 @@ UT_UCS4Char UT_UCS4_toupper(UT_UCS4Char c)
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc! -- does not seem to work :(*/
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 1)
         return c;
     return letter->other;
@@ -1323,7 +1323,7 @@ UT_UCS4Char UT_UCS4_tolower(UT_UCS4Char c)
 	if (XAP_EncodingManager::get_instance()->single_case())
 		return c;
 	/*let's trust libc!*/
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    case_entry * letter = static_cast<case_entry *>(bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case));
     if(!letter || letter->type == 0)
         return c;
     return letter->other;
@@ -1340,8 +1340,8 @@ UT_UCS4Char * UT_UCS4_stristr(const UT_UCS4Char * phaystack, const UT_UCS4Char *
 	register const UT_UCS4Char *haystack, *needle;
 	register UT_UCS4Char b, c;
 
-	haystack = (const UT_UCS4Char *) phaystack;
-	needle = (const UT_UCS4Char *) pneedle;
+	haystack = static_cast<const UT_UCS4Char *>(phaystack);
+	needle = static_cast<const UT_UCS4Char *>(pneedle);
 
 	b = UT_UCS4_tolower(*needle);
 	if (b != '\0')
@@ -1414,7 +1414,7 @@ UT_UCS4Char * UT_UCS4_stristr(const UT_UCS4Char * phaystack, const UT_UCS4Char *
         }
     }
  foundneedle:
-	return (UT_UCS4Char *) haystack;
+	return const_cast<UT_UCS4Char *>(haystack);
  ret0:
 	return 0;
 }
@@ -1436,7 +1436,7 @@ UT_UCS4Char * UT_UCS4_strcpy(UT_UCS4Char * dest, const UT_UCS4Char * src)
 	UT_ASSERT(src);
 
 	UT_UCS4Char * d = dest;
-	UT_UCS4Char * s = (UT_UCS4Char *) src;
+	const UT_UCS4Char * s = static_cast<const UT_UCS4Char *>(src);
 
 	while (*s != 0)
 		*d++ = *s++;
@@ -1453,7 +1453,7 @@ UT_UCS4Char * UT_UCS4_strcpy_char(UT_UCS4Char * dest, const char * src)
 	UT_ASSERT(src);
 
 	UT_UCS4Char * d 		= dest;
-	unsigned char * s	= (unsigned char *) src;
+	const char * s	= static_cast<const char *>(src);
 
 	static UT_UCS4_mbtowc m(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
 	UT_UCS4Char wc;
@@ -1489,7 +1489,7 @@ char * UT_UCS4_strcpy_to_char(char * dest, const UT_UCS4Char * src)
 	UT_ASSERT(src);
 
 	char * 			d = dest;
-	UT_UCS4Char * 	s = (UT_UCS4Char *) src;
+	const UT_UCS4Char * 	s = static_cast<const UT_UCS4Char *>(src);
 
 	UT_Wctomb w(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
 
@@ -1510,7 +1510,7 @@ char * UT_UCS4_strncpy_to_char(char * dest, const UT_UCS4Char * src, int n)
 	UT_ASSERT(src);
 
 	char * 			d = dest;
-	UT_UCS4Char * 	s = (UT_UCS4Char *) src;
+	const UT_UCS4Char * 	s = static_cast<const UT_UCS4Char *>(src);
 
 	UT_Wctomb w(XAP_EncodingManager::get_instance()->getNative8BitEncodingName());
 
@@ -1529,7 +1529,7 @@ char * UT_UCS4_strncpy_to_char(char * dest, const UT_UCS4Char * src, int n)
 bool UT_UCS4_cloneString(UT_UCS4Char ** dest, const UT_UCS4Char * src)
 {
 	UT_uint32 length = UT_UCS4_strlen(src) + 1;
-	*dest = (UT_UCS4Char *)UT_calloc(length,sizeof(UT_UCS4Char));
+	*dest = static_cast<UT_UCS4Char *>(UT_calloc(length,sizeof(UT_UCS4Char)));
 	if (!*dest)
 		return false;
 	memmove(*dest,src,length*sizeof(UT_UCS4Char));
@@ -1540,7 +1540,7 @@ bool UT_UCS4_cloneString(UT_UCS4Char ** dest, const UT_UCS4Char * src)
 bool UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src)
 {
   UT_uint32 length = strlen(src) + 1;
-  *dest = (UT_UCS4Char *)UT_calloc(length,sizeof(UT_UCS4Char));
+  *dest = static_cast<UT_UCS4Char *>(UT_calloc(length,sizeof(UT_UCS4Char)));
   if (!*dest)
     return false;
   UT_UCS4_strcpy_char(*dest, src);
@@ -1556,7 +1556,7 @@ bool UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src)
 const char* std_size_string(float f)
 {
   static char string[10];
-  int i=(int)f;
+  int i=static_cast<int>(f);
   if(f-i<0.1)
 	sprintf(string, "%d", i);
   else {

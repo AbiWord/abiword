@@ -277,7 +277,7 @@ UT_Vector * UT_StringPtrMap::enumerate (void) const
 		// behavior
 		if (val)
 		{
-			pVec->addItem ((void*)val);
+			pVec->addItem (static_cast<const void*>(val));
 		}
 	}
 
@@ -298,7 +298,7 @@ UT_Vector * UT_StringPtrMap::keys (void) const
 
 	for (val = cursor.first(); cursor.is_valid(); val = cursor.next ())
 	{
-	  pVec->addItem ((void*)&cursor.key());
+	  pVec->addItem (static_cast<const void*>(&cursor.key()));
 	}
 
 	return pVec;

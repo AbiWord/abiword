@@ -43,14 +43,14 @@ double rint(double x)
 	{
 		y = x + 0.5;
 		z = floor(y);
-		n = (int) z;
+		n = static_cast<int>(z);
 		if (y == z && n % 2) --z;
 	} 
 	else 
 	{
 		y = x - 0.5;
 		z = ceil(y);
-		n = (int) z;
+		n = static_cast<int>(z);
 		if(y == z && n % 2) ++z;
 	}
 	return z;

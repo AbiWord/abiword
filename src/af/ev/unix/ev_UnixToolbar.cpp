@@ -158,7 +158,7 @@ public:									// we create...
 		
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
 		EV_Toolbar * pTBdest = static_cast<EV_Toolbar *>(wd->m_pUnixToolbar);
-		EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
+		EV_Toolbar * pTBsrc = static_cast<EV_Toolbar *>(wdSrc->m_pUnixToolbar);
 		pFrame->dragDropToIcon(wdSrc->m_id,wd->m_id,pTBsrc,pTBdest);
 	};
 
@@ -167,18 +167,18 @@ public:									// we create...
 							gint x, gint y, guint time, gpointer pTB)
 	{
 		GtkWidget * src = gtk_drag_get_source_widget(context);
-		_wd * wdSrc = (_wd *)  g_object_get_data(G_OBJECT(src),"wd_pointer");
+		_wd * wdSrc = static_cast<_wd *>(g_object_get_data(G_OBJECT(src),"wd_pointer"));
 
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wdSrc->m_pUnixToolbar->getFrame());
-		EV_Toolbar * pTBsrc = (EV_Toolbar *) wdSrc->m_pUnixToolbar;
-		EV_Toolbar * pTBdest = (EV_Toolbar *) pTB;
+		EV_Toolbar * pTBsrc = static_cast<EV_Toolbar *>(wdSrc->m_pUnixToolbar);
+		EV_Toolbar * pTBdest = static_cast<EV_Toolbar *>(pTB);
 		pFrame->dragDropToTB(wdSrc->m_id,pTBsrc,pTBdest);
 	};
 
 	static void s_drag_end(GtkWidget  *widget,
 							GdkDragContext     *context)
 	{
-		_wd * wd = (_wd *) g_object_get_data(G_OBJECT(widget),"wd_pointer");
+		_wd * wd = static_cast<_wd *>(g_object_get_data(G_OBJECT(widget),"wd_pointer"));
 
 		XAP_Frame * pFrame = static_cast<XAP_Frame *>(wd->m_pUnixToolbar->getFrame());
 		pFrame->dragEnd(wd->m_id);
@@ -192,7 +192,7 @@ public:									// we create...
 //
 // This is hardwired to popup the color picker dialog
 //	
-		_wd * wd = (_wd *) user_data;
+		_wd * wd = static_cast<_wd *>(user_data);
 		UT_ASSERT(wd);
 
 		if (!wd->m_blockSignal)
@@ -217,7 +217,7 @@ public:									// we create...
 	// a microclass for combo boxes.
 	static void s_combo_changed(GtkWidget * widget, gpointer user_data)
 	{
-		_wd * wd = (_wd *) user_data;
+		_wd * wd = static_cast<_wd *>(user_data);
 		UT_ASSERT(wd);
 
 		// only act if the widget has been shown and embedded in the toolbar
@@ -273,7 +273,7 @@ public:									// we create...
 					    wd->m_comboEntryBuffer);
 					
 					UT_ASSERT(text);					
-					wd->m_pUnixToolbar->toolbarEvent(wd, text, strlen((char*)text));
+					wd->m_pUnixToolbar->toolbarEvent(wd, text, strlen(reinterpret_cast<char*>(text)));
 				}				
 			}
 		}
@@ -282,7 +282,7 @@ public:									// we create...
 	// unblock when the menu goes away
 	static void s_combo_hide(GtkWidget * widget, gpointer user_data)
 	{
-		_wd * wd = (_wd *) user_data;
+		_wd * wd = static_cast<_wd *>(user_data);
 		UT_ASSERT(wd);
 
 		// manually force an update
@@ -303,10 +303,10 @@ public:									// we create...
 	// unblock when the menu goes away
 	static void s_combo_show(GtkWidget * widget, gpointer user_data)
 	{
-		_wd * wd = (_wd *) user_data;
+		_wd * wd = static_cast<_wd *>(user_data);
 		UT_ASSERT(wd);
 
-		GtkWidget * entry = (GtkWidget*)g_object_get_data(G_OBJECT(widget), "entry");
+		GtkWidget * entry = static_cast<GtkWidget*>(g_object_get_data(G_OBJECT(widget), "entry"));
 
 		// only act if the widget has been shown and embedded in the toolbar
 		if (wd->m_widget && entry && wd->m_id == AP_TOOLBAR_ID_FMT_FONT)
@@ -452,7 +452,7 @@ UT_sint32 EV_UnixToolbar::destroy(void)
 	bool bFound = false;
 	for( list = GTK_BOX(wVBox)->children; !bFound && list; list = list->next)
 	{
-		GtkBoxChild * child = (GtkBoxChild *) list->data;
+		GtkBoxChild * child = static_cast<GtkBoxChild *>(list->data);
 		if(child->widget == m_wHandleBox)
 		{
 			bFound = true;
@@ -623,7 +623,7 @@ bool EV_UnixToolbar::synthesize(void)
 //
 // Make the toolbar a destination for drops
 //
-	gtk_drag_dest_set(m_wToolbar,(GtkDestDefaults) GTK_DEST_DEFAULT_ALL,
+	gtk_drag_dest_set(m_wToolbar,static_cast<GtkDestDefaults>(GTK_DEST_DEFAULT_ALL),
 					  s_AbiTBTargets,1,
 					  GDK_ACTION_COPY);
 	g_signal_connect(G_OBJECT(m_wToolbar),"drag_drop",G_CALLBACK(_wd::s_drag_drop_toolbar),this);
@@ -656,10 +656,13 @@ bool EV_UnixToolbar::synthesize(void)
 			{
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 				GtkWidget * wPixmap;
-				bool bFoundIcon = getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
-													 &wTLW->style->bg[GTK_STATE_NORMAL],
-													 pLabel->getIconName(),
-													 &wPixmap);
+#if !defined(NDEBUG)
+				bool bFoundIcon =
+#endif
+					getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
+									   &wTLW->style->bg[GTK_STATE_NORMAL],
+									   pLabel->getIconName(),
+									   &wPixmap);
 				UT_ASSERT(bFoundIcon);
 
 				if(pAction->getToolbarId() != AP_TOOLBAR_ID_INSERT_TABLE)
@@ -710,10 +713,13 @@ bool EV_UnixToolbar::synthesize(void)
 				{
 					UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 					GtkWidget * wPixmap;
-					bool bFoundIcon = getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
-														 &wTLW->style->bg[GTK_STATE_NORMAL],
-														 pLabel->getIconName(),
-														 &wPixmap);
+#if !defined(NDEBUG)
+					bool bFoundIcon =
+#endif
+						getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
+										   &wTLW->style->bg[GTK_STATE_NORMAL],
+										   pLabel->getIconName(),
+										   &wPixmap);
 					UT_ASSERT(bFoundIcon);
 
 					wd->m_widget = gtk_toolbar_append_element(GTK_TOOLBAR(m_wToolbar),
@@ -837,10 +843,13 @@ bool EV_UnixToolbar::synthesize(void)
 			{
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
 				GtkWidget * wPixmap;
-				bool bFoundIcon = getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
-													 &wTLW->style->bg[GTK_STATE_NORMAL],
-													 pLabel->getIconName(),
-													 &wPixmap);
+#if !defined(NDEBUG)
+				bool bFoundIcon =
+#endif
+					getPixmapForIcon ( pAction->getToolbarId(), wTLW->window,
+									   &wTLW->style->bg[GTK_STATE_NORMAL],
+									   pLabel->getIconName(),
+									   &wPixmap);
 				UT_ASSERT(bFoundIcon);
 
 				wd->m_widget = gtk_toolbar_append_item(GTK_TOOLBAR(m_wToolbar),
@@ -929,7 +938,10 @@ bool EV_UnixToolbar::bindListenerToView(AV_View * pView)
 {
 	_releaseListener();
 	
-	m_pViewListener = new EV_UnixToolbar_ViewListener(this,pView);
+#if !defined(NDEBUG)
+	m_pViewListener =
+		new EV_UnixToolbar_ViewListener(this,pView);
+#endif
 	UT_ASSERT(m_pViewListener);
 
 	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);

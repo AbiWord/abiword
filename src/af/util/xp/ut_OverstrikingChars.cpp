@@ -101,8 +101,8 @@ char_bounds overstr_lut[]=
 
 static UT_sint32 s_compare(const void * a, const void * b)
 {
-	const UT_UCSChar  * c  = (const UT_UCSChar *)  a;
-	const char_bounds * bn = (const char_bounds *) b;
+	const UT_UCSChar  * c  = static_cast<const UT_UCSChar *>(a);
+	const char_bounds * bn = static_cast<const char_bounds *>(b);
 
 	if(*c < bn->min)
 		return -1;
@@ -116,7 +116,7 @@ static UT_sint32 s_compare(const void * a, const void * b)
 UT_uint32 UT_isOverstrikingChar(UT_UCSChar c)
 {
 	char_bounds * e;
-	if((e = (char_bounds *) bsearch(&c, overstr_lut, NrElements(overstr_lut), sizeof(char_bounds), s_compare)))
+	if((e = static_cast<char_bounds *>(bsearch(&c, overstr_lut, NrElements(overstr_lut), sizeof(char_bounds), s_compare))))
 	{
 		return e->dir;
 	}

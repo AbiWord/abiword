@@ -299,8 +299,8 @@ extern "C" {
 
 static int color_compare (const void * a, const void * b)
 {
-  const char * name = (const char *) a;
-  const colorToRGBMapping * id = (const colorToRGBMapping *) b;
+  const char * name = static_cast<const char *>(a);
+  const colorToRGBMapping * id = static_cast<const colorToRGBMapping *>(b);
 		
   return UT_stricmp (name, id->m_name);
 }
@@ -364,7 +364,7 @@ const char * UT_HashColor::setColor (unsigned char r, unsigned char g, unsigned 
 	m_colorBuffer[6] = hexval[ b       & 0x0f];
 	m_colorBuffer[7] = 0;
 
-	return (const char *) m_colorBuffer;
+	return static_cast<const char *>(m_colorBuffer);
 }
 
 const char * UT_HashColor::lookupNamedColor (const char * color_name)
@@ -375,7 +375,7 @@ const char * UT_HashColor::lookupNamedColor (const char * color_name)
 	size_t length = sizeof (s_Colors) / sizeof (s_Colors[0]);
 
 	colorToRGBMapping * id = 0;
-	id = (colorToRGBMapping *) bsearch (color_name, s_Colors, (int) length, sizeof (colorToRGBMapping), color_compare);
+	id = static_cast<colorToRGBMapping *>(bsearch (color_name, s_Colors, static_cast<int>(length), sizeof (colorToRGBMapping), color_compare));
 
 	if (id == 0) return 0;
 
@@ -413,7 +413,7 @@ const char * UT_HashColor::setHashIfValid (const char * color_hash)
 	m_colorBuffer[0] = '#';
 	m_colorBuffer[7] = 0;
 
-	return (const char *) m_colorBuffer;
+	return static_cast<const char *>(m_colorBuffer);
 }
 
 const UT_RGBColor UT_HashColor::rgb ()
@@ -424,9 +424,9 @@ const UT_RGBColor UT_HashColor::rgb ()
 
 	if (m_colorBuffer[0])
 	{
-		r = (unsigned char) (x_hexDigit (m_colorBuffer[1]) << 4) | (unsigned char) x_hexDigit (m_colorBuffer[2]);
-		g = (unsigned char) (x_hexDigit (m_colorBuffer[3]) << 4) | (unsigned char) x_hexDigit (m_colorBuffer[4]);
-		b = (unsigned char) (x_hexDigit (m_colorBuffer[5]) << 4) | (unsigned char) x_hexDigit (m_colorBuffer[6]);
+		r = static_cast<unsigned char>(x_hexDigit (m_colorBuffer[1]) << 4) | static_cast<unsigned char>(x_hexDigit (m_colorBuffer[2]));
+		g = static_cast<unsigned char>(x_hexDigit (m_colorBuffer[3]) << 4) | static_cast<unsigned char>(x_hexDigit (m_colorBuffer[4]));
+		b = static_cast<unsigned char>(x_hexDigit (m_colorBuffer[5]) << 4) | static_cast<unsigned char>(x_hexDigit (m_colorBuffer[6]));
 	}
 
 	return UT_RGBColor (r, g, b);
@@ -805,7 +805,7 @@ const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts)
 
 	while (*p)
 	{
-		if (0 == strcmp((const char*)p[0], (const char*)name))
+		if (0 == strcmp(static_cast<const char*>(p[0]), static_cast<const char*>(name)))
 			break;
 		p += 2;
 	}
@@ -822,8 +822,8 @@ UT_sint32 signedLoWord(UT_uint32 dw)
 {
 	// return low word as a signed quantity
 
-	unsigned short u16 = (unsigned short)(dw & 0xffff);
-	signed short   s16 = *(signed short *)&u16;
+	unsigned short u16 = static_cast<unsigned short>(dw & 0xffff);
+	signed short   s16 = *reinterpret_cast<signed short *>(&u16);
 	UT_sint32      s32 = s16;
 
 	return s32;
@@ -833,8 +833,8 @@ UT_sint32 signedHiWord(UT_uint32 dw)
 {
 	// return high word as a signed quantity
 
-	unsigned short u16 = (unsigned short)((dw >> 16) & 0xffff);
-	signed short   s16 = *(signed short *)&u16;
+	unsigned short u16 = static_cast<unsigned short>((dw >> 16) & 0xffff);
+	signed short   s16 = *reinterpret_cast<signed short *>(&u16);
 	UT_sint32      s32 = s16;
 
 	return s32;
@@ -955,7 +955,7 @@ UT_uint32 UT_HeadingDepth(const char * szHeadingName)
 			break;
 		}
 	}
-	i = (UT_uint32) atoi(sz.c_str());
+	i = static_cast<UT_uint32>(atoi(sz.c_str()));
 	return i;
 }
 

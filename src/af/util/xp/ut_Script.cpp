@@ -150,13 +150,13 @@ UT_ScriptIdType	UT_ScriptLibrary::typeForContents(const char * szBuf,
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = (UT_ScriptSniffer *)mSniffers->getNthItem (k);
+		UT_ScriptSniffer * s = static_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (k));
 		if (s->recognizeContents(szBuf, iNumbytes))
 		{
-			for (UT_sint32 a = 0; a < (int) nrElements; a++)
+			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
 			{
-				if (s->supportsType((UT_ScriptIdType) (a+1)))
-					return (UT_ScriptIdType) (a+1);
+				if (s->supportsType(static_cast<UT_ScriptIdType>(a+1)))
+					return static_cast<UT_ScriptIdType>(a+1);
 			}
 	  
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -186,7 +186,7 @@ UT_ScriptIdType	UT_ScriptLibrary::typeForSuffix(const char * szSuffix)
 		UT_ScriptSniffer * s = static_cast<UT_ScriptSniffer *>(mSniffers->getNthItem(k));
 		if (s->recognizeSuffix(szSuffix))
 		{
-			for (UT_sint32 a = 0; a < (int) nrElements; a++)
+			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
 			{
 				if (s->supportsType(static_cast<UT_ScriptIdType>(a+1)))
 					return static_cast<UT_ScriptIdType>(a+1);
@@ -248,7 +248,7 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
 		int iNumbytes;
 		FILE *f;
 		// we must open in binary mode for UCS-2 compatibility
-		if ( ( f = fopen( szFilename, "rb" ) ) != (FILE *)0 )
+		if ( ( f = fopen( szFilename, "rb" ) ) != static_cast<FILE *>(0) )
 		{
 			iNumbytes = fread(szBuf, 1, sizeof(szBuf), f);
 			fclose(f);
@@ -271,7 +271,7 @@ UT_Error UT_ScriptLibrary::constructScript(const char * szFilename,
   
 	for (UT_uint32 k=0; k < nrElements; k++)
     {
-		UT_ScriptSniffer * s = (UT_ScriptSniffer *)mSniffers->getNthItem (k);
+		UT_ScriptSniffer * s = static_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (k));
 		if (s->supportsType(ieft))
 			return s->constructScript(ppscript);
     }
@@ -288,7 +288,7 @@ bool UT_ScriptLibrary::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getNumScripts();
 	if (ndx < nrElements)
 	{
-		UT_ScriptSniffer * s = (UT_ScriptSniffer *) mSniffers->getNthItem (ndx);
+		UT_ScriptSniffer * s = static_cast<UT_ScriptSniffer *>(mSniffers->getNthItem (ndx));
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
 	}
 

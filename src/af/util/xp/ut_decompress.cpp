@@ -147,7 +147,7 @@ UT_untgz(const char *szFName, const char *szWantedFile, const char *szDestPath, 
 				continue; 
 			}
 
-			// tartime = (time_t)getoct(buffer.header.mtime,12);
+			// tartime = static_cast<time_t>(getoct(buffer.header.mtime,12));
 			strcpy(fname, buffer.header.name);
 			strippath(fname);
 	  
@@ -162,7 +162,7 @@ UT_untgz(const char *szFName, const char *szWantedFile, const char *szDestPath, 
 					
 					if (retBuf)
 					{
-						if (!(*retBuf = (char *)malloc(fileSize)))
+						if (!(*retBuf = static_cast<char *>(malloc(fileSize))))
 							*retBuf = NULL;
 					}
 					

@@ -206,7 +206,7 @@ static struct UT_random_data unsafe_state =
 void
 UT_srandom (UT_uint32 seed)
 {
-  (void) srandom_r__ (seed, &unsafe_state);
+  static_cast<void>(srandom_r__ (seed, &unsafe_state));
 }
 
 
@@ -229,7 +229,7 @@ setstate__ (char * arg_state)
   if (setstate_r__ (arg_state, &unsafe_state) < 0)
     ostate = NULL;
 
-  return (char *) ostate;
+  return static_cast<char *>(ostate);
 }
 #endif
 
@@ -249,7 +249,7 @@ static UT_sint32 random__ ()
 {
   UT_sint32 retval;
 
-  (void) random_r__ (&unsafe_state, &retval);
+  static_cast<void>(random_r__ (&unsafe_state, &retval));
 
   return retval;
 }
@@ -398,7 +398,7 @@ srandom_r__ (unsigned int seed, struct UT_random_data *buf)
   if (buf == NULL)
     goto fail;
   type = buf->rand_type;
-  if ((unsigned int) type >= MAX_TYPES)
+  if (static_cast<unsigned int>(type) >= MAX_TYPES)
     goto fail;
 
   state = buf->state;
@@ -431,7 +431,7 @@ srandom_r__ (unsigned int seed, struct UT_random_data *buf)
   while (--kc >= 0)
     {
       UT_sint32 discard;
-      (void) random_r__ (buf, &discard);
+      static_cast<void>(random_r__ (buf, &discard));
     }
 
  done:
@@ -486,7 +486,7 @@ initstate_r__ (unsigned int seed, char *arg_state, size_t n,
   buf->rand_type = type;
   buf->rand_sep = separation;
   buf->rand_deg = degree;
-  state = &((UT_sint32 *) arg_state)[1];	/* First location.  */
+  state = &(static_cast<UT_sint32 *>(arg_state))[1];	/* First location.  */
   /* Must set END_PTR before srandom.  */
   buf->end_ptr = &state[degree];
 
@@ -519,7 +519,7 @@ initstate_r__ (unsigned int seed, char *arg_state, size_t n,
 static int
 setstate_r__ (char *arg_state, struct UT_random_data *buf)
 {
-  UT_sint32 *new_state = 1 + (UT_sint32 *) arg_state;
+  UT_sint32 *new_state = 1 + static_cast<UT_sint32 *>(arg_state);
   int type;
   int old_type;
   UT_sint32 *old_state;
@@ -644,5 +644,5 @@ random_r__ (struct UT_random_data *buf, UT_sint32 *result)
 /* Return a random integer between 0 and RAND_MAX.  */
 UT_sint32 UT_rand ()
 {
-  return (UT_sint32) random__ ();
+  return static_cast<UT_sint32>(random__ ());
 }
