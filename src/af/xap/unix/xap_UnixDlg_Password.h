@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,40 +17,38 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_DIALOG_PASSWORD_H
-#define XAP_DIALOG_PASSWORD_H
+#ifndef XAP_UNIXDIALOG_PASSWORD_H
+#define XAP_UNIXDIALOG_PASSWORD_H
 
-#include "xap_Frame.h"
-#include "xap_Dialog.h"
-#include "xav_View.h"
+#include <gtk/gtk.h>
+#include "xap_Dlg_Password.h"
 
-#include "ut_string_class.h"
+class XAP_UnixFrame;
 
-class XAP_Frame;
+/*****************************************************************/
 
-class XAP_Dialog_Password : public XAP_Dialog_NonPersistent
+class XAP_UnixDialog_Password: public XAP_Dialog_Password
 {
 public:
-  
-  typedef enum { a_OK, a_Cancel } tAnswer;
+	XAP_UnixDialog_Password(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_UnixDialog_Password(void);
 
-	XAP_Dialog_Password(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~XAP_Dialog_Password(void);
+	virtual void			runModal(XAP_Frame * pFrame);
 
-	virtual void  runModal(XAP_Frame * pFrame) = 0;
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
-	UT_String getPassword () const { return m_passwd; }
-
-	tAnswer getAnswer () const { return m_answer; }
+	void event_Ok ();
+	void event_Cancel ();
 
  protected:
-	void setPassword (const char *);
-	void setPassword (UT_String & pass);
-	void setAnswer ( tAnswer ans ) { m_answer = ans; }
+	void _constructWindowContents (GtkWidget * container);
+	virtual GtkWidget * _constructWindow ();
+	
+	GtkWidget * mMainWindow;
 
  private:
-	UT_String m_passwd;
-	tAnswer m_answer;
+
+	GtkWidget * mTextEntry;
 };
 
-#endif /* XAP_DIALOG_STUB_H */
+#endif /* XAP_UNIXDIALOG_PASSWORD_H */

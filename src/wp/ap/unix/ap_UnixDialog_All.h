@@ -44,6 +44,7 @@
 #   include "xap_UnixDlg_PluginManager.h"
 #   include "xap_UnixDlg_ClipArt.h"
 #   include "xap_UnixDlg_Encoding.h"
+#include "xap_UnixDlg_Password.h"
 
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
@@ -124,6 +125,7 @@
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_UnixGnomeDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_UnixGnomeDialog_ClipArt)
+     DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_UnixDialog_Password)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_UnixGnomeDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_UnixGnomeDialog_Replace)
@@ -151,7 +153,7 @@
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_UnixDialog_Encoding)
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_UnixDialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_UnixDialog_FileOpenSaveAs)
-
+     DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_UnixDialog_FileOpenSaveAs)
 	// ... also add new dialogs here ...
 #   else
 	DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixDialog_MessageBox)
@@ -194,6 +196,8 @@
 	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_UnixDialog_Encoding)
         DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_UnixDialog_FileOpenSaveAs)
         DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_UnixDialog_FileOpenSaveAs)
+     DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_UnixDialog_FileOpenSaveAs)
+     DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_UnixDialog_Password)
 	// ... also add new dialogs here ...
 #   endif
 

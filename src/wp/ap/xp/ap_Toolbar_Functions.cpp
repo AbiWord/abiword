@@ -140,11 +140,13 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HdrFtr)
 	switch (id)
 	{
 	case AP_TOOLBAR_ID_EDIT_REMOVEHEADER:
-		s = ( (pView->isHeaderOnPage()) ? EV_TIS_ZERO : EV_TIS_Gray );
+		if (!pView->isHeaderOnPage()) 
+		  s = EV_TIS_Gray;
 		break;
 
 	case AP_TOOLBAR_ID_EDIT_REMOVEFOOTER:
-		s = ( (pView->isFooterOnPage()) ? EV_TIS_ZERO : EV_TIS_Gray );
+		if (!pView->isFooterOnPage()) 
+		  s = EV_TIS_Gray;
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

@@ -30,6 +30,7 @@ CPPSRCS=		xap_Win32App.cpp			\
 			xap_Win32Dlg_FontChooser.cpp		\
 			xap_Win32Dlg_Language.cpp		\
 			xap_Win32Dlg_MessageBox.cpp		\
+			xap_Win32Dlg_Password.cpp		\
 			xap_Win32Dlg_PluginManager.cpp		\
 			xap_Win32Dlg_Print.cpp			\
 			xap_Win32Dlg_PrintPreview.cpp           \

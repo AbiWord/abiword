@@ -41,6 +41,10 @@
 #include "xap_Frame.h"
 #include "ap_Strings.h"
 
+#include "ap_Dialog_Id.h"
+#include "xap_DialogFactory.h"
+#include "xap_Dlg_Password.h"
+
 #define X_CheckError(v)			do { if (!(v)) return 1; } while (0)
 
 // undef this to disable support for older images (<= Word95)
@@ -376,14 +380,34 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 
 #define ErrCleanupAndExit(code)  do {wvOLEFree (); FREEP(password); return(code);} while(0)
 
-// TODO: DOM: *actually define these*
 #define GetPassword() _getPassword ( getDoc()->getApp()->getLastFocussedFrame() )
 
 #define ErrorMessage(x) do { XAP_Frame *_pFrame = getDoc()->getApp()->getLastFocussedFrame(); _errorMessage (_pFrame, (x)); } while (0)
 
-static char * _getPassword (XAP_Frame * pFrame)
+static UT_String _getPassword (XAP_Frame * pFrame)
 {
-  return NULL;
+  UT_String password;
+  pFrame->raise ();
+
+  XAP_DialogFactory * pDialogFactory
+    = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+  XAP_Dialog_Password * pDlg = static_cast<XAP_Dialog_Password*>(pDialogFactory->requestDialog(XAP_DIALOG_ID_PASSWORD));
+  UT_ASSERT(pDlg);
+
+  pDlg->runModal (pFrame);
+
+  XAP_Dialog_Password::tAnswer ans = pDlg->getAnswer();
+  bool bOK = (ans == XAP_Dialog_Password::a_OK);
+
+  if (bOK)
+    password = pDlg->getPassword ();
+
+  UT_DEBUGMSG(("Password is %s\n", password.c_str()));
+
+  pDialogFactory->releaseDialog(pDlg);
+
+  return password;
 }
 
 static void _errorMessage (XAP_Frame * pFrame, int id)
@@ -402,11 +426,13 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	wvParseStruct ps;
 
 	int ret = wvInitParser (&ps, (char *)szFilename);
-	char * password = NULL;
+	const char * password = NULL;
 
 	if (ret & 0x8000)		/* Password protected? */
 	  {
-	    password = GetPassword();
+	    UT_String pass = GetPassword();
+	    if ( pass.size () != 0 )
+	      password = pass.c_str();
 
 	    if ((ret & 0x7fff) == WORD8)
 	      {

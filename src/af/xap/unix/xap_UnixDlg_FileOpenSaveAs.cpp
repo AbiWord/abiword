@@ -452,7 +452,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	case XAP_DIALOG_ID_FILE_SAVEAS:
 	{
 		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_SaveAsTitle);
-		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
 		bCheckWritePermission = true;
 		break;
 	}
@@ -469,6 +469,13 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel);
 		bCheckWritePermission = true;
 	    break;
+	  }
+	case XAP_DIALOG_ID_INSERT_FILE:
+	  {
+		szTitle = pSS->getValue(XAP_STRING_ID_DLG_FOSA_InsertTitle);
+		szFileTypeLabel = pSS->getValue(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel);
+		bCheckWritePermission = false;
+		break;
 	  }
 	case XAP_DIALOG_ID_PRINTTOFILE:
 	{
@@ -637,8 +644,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
 
-	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE) // only hide the buttons if we're opening a file/picture
+#if 0
+	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_INSERT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture
 	  gtk_file_selection_hide_fileop_buttons(pFS);
+#endif
 
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.

@@ -137,6 +137,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_PAGENO,	0,1,0,	"insPageNo",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_DATETIME,	0,1,0,	"insDateTime",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FIELD,		0,1,0,	"insField",			NULL,					NULL);
+	_s(AP_MENU_ID_INSERT_FILE, 0,1,0, "insFile", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,	"insSymbol",		NULL,					NULL);
 #ifdef DEBUG
 	// QUACK Un-DEBUG here to activate endnotes!

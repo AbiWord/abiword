@@ -89,6 +89,7 @@ dcl(DLG_FOSA_OpenTitle,					"Open File")
 dcl(DLG_FOSA_SaveAsTitle,				"Save File As")
 dcl(DLG_FOSA_ExportTitle, "Export File")
 dcl(DLG_FOSA_ImportTitle, "Import File")
+dcl(DLG_FOSA_InsertTitle, "Insert File")
 dcl(DLG_FOSA_PrintToFileTitle,			"Print To File")
 dcl(DLG_FOSA_FileOpenTypeLabel,			"Open file as type:")
 dcl(DLG_FOSA_FileSaveTypeLabel,			"Save file as type:")
@@ -101,6 +102,9 @@ dcl(DLG_InvalidPathname,				"Invalid pathname.")
 dcl(DLG_NoSaveFile_DirNotExist,			"A directory in the given pathname does not exist.")
 dcl(DLG_NoSaveFile_DirNotWriteable,		"The directory '%s' is write-protected.")
 dcl(DLG_OverwriteFile,					"File already exists.  Overwrite file '%s'?")
+
+     dcl(DLG_Password_Title, "Enter Password")
+     dcl(DLG_Password_Password, "Password:")
 
 /* Zoom dialog */
 dcl(DLG_Zoom_ZoomTitle,					"Zoom")

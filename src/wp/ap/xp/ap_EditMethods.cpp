@@ -302,6 +302,7 @@ public:
 	static EV_EditMethod_Fn insDateTime;
 	static EV_EditMethod_Fn insField;
 	static EV_EditMethod_Fn insSymbol;
+        static EV_EditMethod_Fn insFile;
 	static EV_EditMethod_Fn insEndnote;
 
 	static EV_EditMethod_Fn dlgSpell;
@@ -709,6 +710,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insDateTime),			0,		""),
 	EV_EditMethod(NF(insEndnote),			0,		""),
 	EV_EditMethod(NF(insField),			0,		""),
+	EV_EditMethod(NF(insFile), 0, ""),
 	EV_EditMethod(NF(insPageNo),			0,		""),
 	EV_EditMethod(NF(insSymbol),			0,		""),
 	EV_EditMethod(NF(insertAbovedotData),	_D_,	""),
@@ -1096,6 +1098,23 @@ Defun1(toolbarNew)
 // TODO we want to abstract things further and make us think about
 // TODO localization of the question strings....
 
+static void s_TellOpenFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
+{
+  XAP_String_Id String_id;
+
+  switch(errorCode)
+    {
+    default:
+      String_id = AP_STRING_ID_MSG_OpenFailed;
+      break;
+    }
+
+  pFrame->showMessageBox(String_id,
+			 XAP_Dialog_MessageBox::b_O,
+			 XAP_Dialog_MessageBox::a_OK,
+			 fileName);
+}
+
 static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error errorCode)
 {
 	XAP_String_Id String_id;
@@ -1113,16 +1132,16 @@ static void s_TellSaveFailed(XAP_Frame * pFrame, const char * fileName, UT_Error
 	  String_id = AP_STRING_ID_MSG_SaveFailed;
 
 	pFrame->showMessageBox(String_id,
-								XAP_Dialog_MessageBox::b_O,
-								XAP_Dialog_MessageBox::a_OK,
-								fileName);
+			       XAP_Dialog_MessageBox::b_O,
+			       XAP_Dialog_MessageBox::a_OK,
+			       fileName);
 }
 
 static void s_TellSpellDone(XAP_Frame * pFrame)
 {
 	pFrame->showMessageBox(AP_STRING_ID_MSG_SpellDone,
-								XAP_Dialog_MessageBox::b_O,
-								XAP_Dialog_MessageBox::a_OK);
+			       XAP_Dialog_MessageBox::b_O,
+			       XAP_Dialog_MessageBox::a_OK);
 }
 
 static void s_TellNotImplemented(XAP_Frame * pFrame, const char * szWhat, int iLine)
@@ -6051,6 +6070,61 @@ Defun1(insField)
 {
 	ABIWORD_VIEW;
 	return s_doField(pView);
+}
+
+Defun1(insFile)
+{
+  ABIWORD_VIEW;
+
+  XAP_Frame * pFrame = static_cast<XAP_Frame *>(pAV_View->getParentData());
+  UT_ASSERT(pFrame);
+  XAP_App * pApp = pFrame->getApp();
+
+  IEFileType fType = IEFT_Unknown;
+  char *pathName = NULL;
+
+  // we'll share the same graphics context, which won't matter because
+  // we only use it to get font metrics and stuff and not actually draw
+  GR_Graphics *pGraphics = pView->getGraphics();
+
+  if (s_AskForPathname (pFrame, false, XAP_DIALOG_ID_INSERT_FILE,
+			NULL, &pathName, &fType))
+    {
+      UT_DEBUGMSG(("DOM: insertFile %s\n", pathName));
+
+      PD_Document * newDoc = new PD_Document(pApp);
+      UT_Error err = newDoc->readFromFile(pathName, IEFT_Unknown);
+
+      if ( err != UT_OK )
+	{
+	  UNREFP(newDoc);
+	  s_TellOpenFailed(pFrame, pathName, err);
+	  return false;
+	}
+
+      UT_DEBUGMSG(("DOM: read from file\n"));
+
+      // create a new layout and view object for the doc
+      FL_DocLayout *pDocLayout = new FL_DocLayout(newDoc,pGraphics);
+      pDocLayout->formatAll();
+     
+      UT_DEBUGMSG(("DOM: new pDocLayout and formatted\n"));
+
+      FV_View copyView(pApp,0,pDocLayout); 
+      copyView.cmdCopy(); // copy the contents of the new document
+#if 0
+      // TODO: unselect the current selection???
+      pView->cmdUnselectSelection();
+#endif
+      pView->cmdPaste ( true ); // paste the contents into the existing document
+      UT_DEBUGMSG(("DOM: copied and pasted\n"));
+      
+      DELETEP(pDocLayout);
+      UNREFP(newDoc);
+      return true;
+    }
+
+  return false;
 }
 
 Defun1(insSymbol)

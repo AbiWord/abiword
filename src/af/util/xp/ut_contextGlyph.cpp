@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001 AbiSource, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +19,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include "ut_contextGlyph.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -499,5 +500,5 @@ UT_UCSChar UT_contextGlyph::getGlyph(const UT_UCSChar * code,
     		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
    	}
    	
-   	return;
+   	return 0;
 }

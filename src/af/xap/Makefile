@@ -39,6 +39,7 @@ PLATFORM_OBJS=	$(OBJDIR)/xap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Insert_Symbol.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/xap_$(ABI_FE)Module.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_$(ABI_FE)EncodingManager.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/xap_$(ABI_FE)Dlg_Password.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_$(ABI_FE)Frame.$(OBJ_SUFFIX) \
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Language.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/xap_$(ABI_FE)Dlg_Encoding.$(OBJ_SUFFIX)
@@ -111,6 +112,7 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_Dlg_FileOpenSaveAs.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_FontChooser.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_MessageBox.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Dlg_Password.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_PluginManager.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Print.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_Dlg_PrintPreview.$(OBJ_SUFFIX)                    \

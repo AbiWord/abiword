@@ -119,7 +119,8 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_FIELD)
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
 #ifdef DEBUG
-        // QUACK Un-DEBUG here to activate endnotes!
+        // QUACK Un-DEBUG here to activate endnotes & files!
+                MenuItem(AP_MENU_ID_INSERT_FILE)
 		MenuItem(AP_MENU_ID_INSERT_ENDNOTE)
 #endif
 

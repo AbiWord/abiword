@@ -33,6 +33,7 @@ libXap_mac_a_SOURCES=		\
 	xap_MacDlg_FontChooser.cpp	\
 	xap_MacEncodingManager.cpp	\
 	xap_MacDlg_Insert_Symbol.cpp	\
+	xap_MacDlg_Password.cpp		\
 	xap_MacFontManager.cpp	\
 	xap_MacDlg_Language.cpp	\
 	xap_MacFrame.cpp	\

@@ -170,28 +170,24 @@ void AP_Convert::setVerbose(int level)
 void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 {
   UT_DEBUGMSG(("DOM: AP_Convert::print %s\n", szFile));
-
   UT_ASSERT(pGraphics);
 
   // get the current document
-  PD_Document * pDoc = new PD_Document(getApp());
-  UT_ASSERT(pDoc);
+  PD_Document *pDoc = new PD_Document(getApp());
 
   UT_Error err = pDoc->readFromFile(szFile, IEFT_Unknown);
 
   // create a new layout and view object for the doc
-  FL_DocLayout * pDocLayout = new FL_DocLayout(pDoc,pGraphics);
-  UT_ASSERT(pDocLayout);
+  FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
   pDocLayout->formatAll();
 
-  FV_View * pPrintView = new FV_View(getApp(),0,pDocLayout);
-  UT_ASSERT(pPrintView);
+  FV_View printView(getApp(),0,pDocLayout);
 
   // get the width, height, orient
   UT_sint32 iWidth = pDocLayout->getWidth();
   UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
 
-  bool orient = pPrintView->getPageSize().isPortrait();
+  bool orient = printView.getPageSize().isPortrait();
   pGraphics->setPortrait (orient);  
 
   // setup the drawing args
@@ -202,7 +198,7 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 #ifdef ANY_UNIX
   PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
   psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-  psGr->setPageSize(pPrintView->getPageSize().getPredefinedName());
+  psGr->setPageSize(printView.getPageSize().getPredefinedName());
 #endif
 
   if(pGraphics->startPrint())
@@ -212,12 +208,11 @@ void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
 	{
 	  pGraphics->m_iRasterPosition = (k-1)*iHeight;
 	  pGraphics->startPage(szFile, k, orient, iWidth, iHeight);
-	  pPrintView->draw(k-1, &da);
+	  printView.draw(k-1, &da);
 	}
       pGraphics->endPrint();
     }
 
-  delete pDocLayout;
-  delete pPrintView;
+  DELETEP(pDocLayout);
   UNREFP(pDoc);
 }

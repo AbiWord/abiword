@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2000 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,25 +17,27 @@
  * 02111-1307, USA.
  */
 
-#include "ut_types.h"
-#include "ut_string.h"
+#ifndef XAP_BEOSDIALOG_PASSWORD_H
+#define XAP_BEOSDIALOG_PASSWORD_H
+
 #include "xap_Dlg_Password.h"
 
-XAP_Dialog_Password::XAP_Dialog_Password(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent (pDlgFactory, id), m_answer(a_OK)
-{
-}
+class XAP_BeOSFrame;
 
-XAP_Dialog_Password::~XAP_Dialog_Password ()
-{
-}
+/*****************************************************************/
 
-void XAP_Dialog_Password::setPassword (const char * pass)
+class XAP_BeOSDialog_Password: public XAP_Dialog_Password
 {
-  m_passwd = pass;
-}
+public:
+	XAP_BeOSDialog_Password(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~XAP_BeOSDialog_Password(void);
 
-void XAP_Dialog_Password::setPassword (UT_String& pass)
-{
-  m_passwd = pass;
-}
+	virtual void			runModal(XAP_Frame * pFrame);
+
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	
+protected:
+
+};
+
+#endif /* XAP_BEOSDIALOG_PASSWORD_H */
