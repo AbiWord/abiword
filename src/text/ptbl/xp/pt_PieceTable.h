@@ -427,6 +427,11 @@ protected:
 													  pf_Frag_Strux * pfs,
 													  const XML_Char ** attributes,
 													  const XML_Char ** properties);
+	bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
+													  pf_Frag_Strux * pfs,
+													  const XML_Char ** attributes,
+													  const XML_Char ** properties,
+													  bool bDoAll);
 
 	bool					_fmtChangeSpan(pf_Frag_Text * pft, UT_uint32 fragOffset, UT_uint32 length,
 										   PT_AttrPropIndex indexNewAP,

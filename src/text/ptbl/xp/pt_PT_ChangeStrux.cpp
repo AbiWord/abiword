@@ -128,7 +128,7 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 							ppRevAttrib[2] = NULL;
 							
 
-							bResult = _fmtChangeStruxWithNotify(revPtc,pfs,ppRevAttrib,NULL);
+							bResult = _fmtChangeStruxWithNotify(revPtc,pfs,ppRevAttrib,NULL,false);
 							UT_return_val_if_fail (bResult,false);
 						}
 						if (pfs == pfs_End)
@@ -219,6 +219,57 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 
 	return true;
 }
+
+/*!
+ * Don't broadcast changes to the endstruxs because will cause them to destroy
+ * the properties of the layout since they linked to the layout.
+ */
+bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
+												 pf_Frag_Strux * pfs,
+												 const XML_Char ** attributes,
+												 const XML_Char ** properties,
+											  bool bDoAll)
+{
+	PT_AttrPropIndex indexNewAP;
+	PTStruxType pts = pfs->getStruxType();
+   
+	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
+	bool bMerged;
+	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	UT_ASSERT_HARMLESS(bMerged);
+	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
+	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
+		return true;
+
+	// convert this fragStrux into a doc position.  we add the length
+	// of the strux (in doc position coords) so that when undo looks
+	// it up by position it will be to the right of the beginning of
+	// the fragment and will find us -- rather than finding the end of
+	// the previous fragment.
+
+	PT_DocPosition dpos = getFragPosition(pfs) + pfs->getLength();
+
+	PX_ChangeRecord_StruxChange * pcr
+		= new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
+										  dpos,
+										  indexOldAP,indexNewAP,pts);
+	UT_return_val_if_fail (pcr,false);
+
+	bool bResult;
+	bResult = _fmtChangeStrux(pfs,indexNewAP);
+	UT_return_val_if_fail (bResult,false);
+
+	// add record to history.  we do not attempt to coalesce these.
+	m_history.addChangeRecord(pcr);
+	if(bDoAll || ( (pts != PTX_EndTable) && (pts != PTX_EndCell)
+	   && (pts != PTX_EndFrame) && (pts != PTX_EndTOC) 
+	   && (pts != PTX_EndFootnote) && (pts != PTX_EndEndnote)))
+	{ 
+		m_pDocument->notifyListeners(pfs,pcr);
+	}
+	return true;
+}
+
 
 /*!
  * This Method implements the change strux we need to reparent lists.
@@ -368,7 +419,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					if (bDoAll || (pfs->getStruxType() == pts))
 					{
 						bool bResult;
-						bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties);
+						bResult = _fmtChangeStruxWithNotify(ptc,pfs,attributes,properties,bDoAll);
 						UT_return_val_if_fail (bResult,false);
 					}
 					if (pfs == pfs_End)
@@ -464,7 +515,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 					if (!bEndSeen && (bDoAll || (pfsContainer->getStruxType() == pts)))
 					{
 						bool bResult;
-						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps);
+						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps,false);
 						UT_return_val_if_fail (bResult,false);
 					}
 					if(!bEndSeen && isEndFootnote(static_cast<pf_Frag *>(pfsContainer)))

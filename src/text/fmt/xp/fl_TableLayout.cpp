@@ -1344,13 +1344,16 @@ void fl_TableLayout::attachCell(fl_ContainerLayout * pCell)
 		return;
 	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getLastContainer());
-	UT_ASSERT(pTab);
+	//	UT_ASSERT(pTab);
 	if(pCell->getLastContainer() == NULL)
 	{
 		setDirty();
 		return;
 	}
-	pTab->tableAttach(static_cast<fp_CellContainer *>(pCell->getLastContainer()));
+	if(pTab)
+	{
+		pTab->tableAttach(static_cast<fp_CellContainer *>(pCell->getLastContainer()));
+	}
 	setDirty();
 }
 
