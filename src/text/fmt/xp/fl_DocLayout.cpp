@@ -844,6 +844,14 @@ void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
 		pECon->setNext(NULL);
 		pDSL->setLastEndnoteContainer(pECon);
 		fp_Column * pCol = static_cast<fp_Column *>(pETmp->getContainer());
+		if(!pCol)
+		{
+			pCol = static_cast<fp_Column *>(pDSL->getLastContainer());
+			if(pCol == NULL)
+			{
+				pCol = static_cast<fp_Column *>(pDSL->getNewContainer());
+			}
+		}
 		pCol->addContainer(pECon);
 		pCol->layout();
 	}
