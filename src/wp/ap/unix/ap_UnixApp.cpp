@@ -618,7 +618,7 @@ void AP_UnixApp::loadAllPlugins ()
   pluginDir += "/AbiWord/plugins/";
   pluginList[1] = pluginDir;
 
-  for(int i = 0; i < (sizeof(pluginList)/sizeof(pluginList[0])); i++)
+  for(UT_uint32 i = 0; i < (sizeof(pluginList)/sizeof(pluginList[0])); i++)
   {
       pluginDir = pluginList[i];
 
