@@ -32,7 +32,6 @@
 #include "ap_Frame.h"
 #include "ap_EditMethods.h"
 #include "ap_Menu_ActionSet.h"
-#include "abi_ver.h"
 
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
@@ -115,7 +114,7 @@ const char * AP_App::getApplicationTitleForTitleBar(void) const
 		the build is debug or not.
 	*/
 
-	sprintf(_title, "AbiWord Personal %s (%s)", gAbi_Build_Version, gAbi_Build_ID);
+	sprintf(_title, "AbiWord Personal %s (%s)", s_szBuild_Version, s_szBuild_ID);
 
 	return _title;
 }

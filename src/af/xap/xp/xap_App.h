@@ -42,6 +42,12 @@ class EV_Menu_ActionSet;
 class AP_App
 {
 public:
+	static const char* s_szBuild_ID;
+	static const char* s_szBuild_Version;
+	static const char* s_szBuild_CompileTime;
+	static const char* s_szBuild_CompileDate;
+
+public:
 	AP_App(void);
 	virtual ~AP_App(void);
 

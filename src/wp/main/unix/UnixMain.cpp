@@ -26,8 +26,6 @@
 #include "ap_UnixApp.h"
 #include "ap_UnixFrame.h"
 
-#include "abi_ver.h"
-
 int main(int argc, char ** argv)
 {
 	/*
@@ -35,10 +33,10 @@ int main(int argc, char ** argv)
 		TODO remove them later
 	*/
 
-	printf("Build ID:\t%s\n", gAbi_Build_ID);
-	printf("Version:\t%s\n", gAbi_Build_Version);
-	printf("Compile Date:\t%s\n", gAbi_Build_CompileDate);
-	printf("Compile Time:\t%s\n", gAbi_Build_CompileTime);
+	printf("Build ID:\t%s\n", AP_App::s_szBuild_ID);
+	printf("Version:\t%s\n", AP_App::s_szBuild_Version);
+	printf("Compile Date:\t%s\n", AP_App::s_szBuild_CompileDate);
+	printf("Compile Time:\t%s\n", AP_App::s_szBuild_CompileTime);
 
 	// initialize our application.
 

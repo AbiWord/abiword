@@ -19,7 +19,7 @@
  * 02111-1307, USA.
  */
  
-#include "abi_ver.h"
+#include "ap_App.h"
 
 #ifndef ABI_BUILD_ID
 #define ABI_BUILD_ID		"unknown"
@@ -29,8 +29,8 @@
 #define ABI_BUILD_VERSION		""
 #endif /* ABI_BUILD_VERSION */
 
-const char gAbi_Build_ID[] = ABI_BUILD_ID;
-const char gAbi_Build_Version[] = ABI_BUILD_VERSION;
-const char gAbi_Build_CompileTime[] = __TIME__;
-const char gAbi_Build_CompileDate[] = __DATE__;
+const char* AP_App::s_szBuild_ID = ABI_BUILD_ID;
+const char* AP_App::s_szBuild_Version = ABI_BUILD_VERSION;
+const char* AP_App::s_szBuild_CompileTime = __TIME__;
+const char* AP_App::s_szBuild_CompileDate = __DATE__;
 
