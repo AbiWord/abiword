@@ -28,16 +28,18 @@
 #include <CoreGraphics/CoreGraphics.h>
 
 #include "ut_misc.h"
+#include "ut_string.h"
 #include "gr_Graphics.h"
 
 class MacFont : public GR_Font
 {
 public:
-	MacFont(int font, int face, int pointSize);
-private:
-	int m_font;
-	int m_face;
-	int m_pointSize;
+	MacFont(const char * font, float pointSize)
+            { m_font = UT_strdup (font); m_pointSize = pointSize; };
+        virtual ~MacFont ()
+            { if (m_font) free (m_font); };
+	char *m_font;
+	float m_pointSize;
 };
 
 class GR_MacGraphics : public GR_Graphics
@@ -113,6 +115,7 @@ protected:
 	virtual UT_uint32 _getResolution(void) const { return 72; };
 
         CGContextRef m_CGContext;
+        MacFont	*m_pMacFont;
         
         UT_RGBColor m_3Dcolors[COUNT_3D_COLORS];
 	

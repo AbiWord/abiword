@@ -41,6 +41,8 @@ GR_MacGraphics::GR_MacGraphics(CGrafPtr port, XAP_App * app)
 
     err = BeginCGSContextForPort (port, &m_CGContext );
     UT_ASSERT (err == noErr);
+    
+    m_pMacFont = NULL;
 
     UT_RGBColor c;
     c.m_red = c.m_grn = c.m_blu = 0;		//Black
@@ -59,6 +61,9 @@ GR_MacGraphics::~GR_MacGraphics ()
 {
     CGContextRelease (m_CGContext);
     m_CGContext = NULL; 
+    if (m_pMacFont) {
+        delete m_pMacFont;
+    }
 }
 
 
@@ -70,27 +75,33 @@ void GR_MacGraphics::drawChars(const UT_UCSChar* pChars,
 
 void GR_MacGraphics::setFont(GR_Font* pFont)
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
+    MacFont * macFont = dynamic_cast<MacFont *>(pFont);
+    UT_ASSERT (macFont != NULL);
+    CGContextSelectFont (m_CGContext, macFont->m_font, macFont->m_pointSize, kCGEncodingFontSpecific);
 }
 
 
 UT_uint32 GR_MacGraphics::getFontAscent()
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
-    return 0;
+    // FIXME
+    UT_ASSERT (m_pMacFont != NULL);
+    return m_pMacFont->m_pointSize;
 }
 
 
 UT_uint32 GR_MacGraphics::getFontDescent()
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
-    return 0;
+    // FIXME
+    UT_ASSERT (m_pMacFont != NULL);
+    return m_pMacFont->m_pointSize;
 }
 
 
 UT_uint32 GR_MacGraphics::getFontHeight()
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
+    // FIXME
+    UT_ASSERT (m_pMacFont != NULL);
+    return m_pMacFont->m_pointSize;
     return 0;
 }
 
@@ -122,8 +133,12 @@ GR_Font* GR_MacGraphics::findFont(
 		const char* pszFontStretch, 
 		const char* pszFontSize)
 {
-    UT_ASSERT (UT_NOT_IMPLEMENTED);
-    return NULL;
+    float		size = convertDimension(pszFontSize);
+
+//    CGContextSelectFont (m_CGContext, pszFontFamily, pszFontSize, kCGEncodingFontSpecific);
+
+    m_pMacFont = new MacFont(pszFontFamily, size);
+    return(m_pMacFont);
 }
 
 void GR_MacGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
