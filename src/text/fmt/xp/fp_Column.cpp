@@ -31,6 +31,11 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 
+/*!
+  Create container
+  \param iType Container type
+  \param pSectionLayout Section layout type used for this container
+ */
 fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
 :       m_iType(iType),
         m_pPage(0),
@@ -48,15 +53,31 @@ fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
         m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
 }
 
+/*!
+  Destruct container
+  \note The lines (fp_Line) in the container are not
+        destructed. They are owned by the logical hierarchy (i.e.,
+		fl_BlockLayout), not the physical hierarchy.
+ */
 fp_Container::~fp_Container()
 {
 }
 
+/*!
+  Set page
+  \param pPage Page container is located on
+ */
 void fp_Container::setPage(fp_Page* pPage)
 {
 	m_pPage = pPage;
 }
 
+/*!
+  Set width
+  \param iWidth Width of container
+  \todo Should force re-line-break operations on all blocks in the
+        container
+ */
 void fp_Container::setWidth(UT_sint32 iWidth)
 {
 	if (iWidth == m_iWidth)
@@ -71,12 +92,22 @@ void fp_Container::setWidth(UT_sint32 iWidth)
 //	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
+/*!
+ Set width in layout units
+ \param iWidth Width in layout units of container
+ */
 void fp_Container::setWidthInLayoutUnits(UT_sint32 iWidth)
 {
 	m_iWidthLayoutUnits = iWidth;
 
 }
 
+/*!
+ Set height
+ \param iHeight Height of container
+ \bug This function does not appear to have any use as it asserts if
+      the height of the container is ever attempted changed. 
+ */
 void fp_Container::setHeight(UT_sint32 iHeight)
 {
 	if (iHeight == m_iHeight)
@@ -90,6 +121,10 @@ void fp_Container::setHeight(UT_sint32 iHeight)
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
+/*!
+ Set maximum height
+ \param iMaxHeight Maximum height of container
+ */
 void fp_Container::setMaxHeight(UT_sint32 iMaxHeight)
 {
 	UT_ASSERT(iMaxHeight > 0);
@@ -102,6 +137,10 @@ void fp_Container::setMaxHeight(UT_sint32 iMaxHeight)
 	m_iMaxHeight = iMaxHeight;
 }
 
+/*!
+ Set maximum height in layout units
+ \param iMaxHeight Maximum height in layout units of container
+ */
 void fp_Container::setMaxHeightInLayoutUnits(UT_sint32 iMaxHeight)
 {
 	UT_ASSERT(iMaxHeight > 0);
@@ -114,12 +153,24 @@ void fp_Container::setMaxHeightInLayoutUnits(UT_sint32 iMaxHeight)
 	m_iMaxHeightLayoutUnits = iMaxHeight;
 }
 
+/*!
+  Get line's offsets relative to this container
+ \param  pLine Line
+ \retval xoff Line's X offset relative to container
+ \retval yoff Line's Y offset relative to container
+ */
 void fp_Container::getOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff)
 {
 	xoff = getX() + pLine->getX();
 	yoff = getY() + pLine->getY();
 }
 
+/*!
+  Get line's offsets relative to the screen
+ \param  pLine Line
+ \retval xoff Line's X offset relative the screen
+ \retval yoff Line's Y offset relative the screen
+ */
 void fp_Container::getScreenOffsets(fp_Line* pLine,
 							   UT_sint32& xoff, UT_sint32& yoff)
 {
@@ -132,6 +183,12 @@ void fp_Container::getScreenOffsets(fp_Line* pLine,
 	yoff = my_yoff + pLine->getY();
 }
 
+/*!
+ Remove line from container
+ \param pLine Line
+ \note The line is not destructed, as it is owned by the logical
+       hierarchy.
+ */
 void fp_Container::removeLine(fp_Line* pLine)
 {
 	UT_sint32 iCount = m_vecLines.getItemCount();
@@ -145,6 +202,10 @@ void fp_Container::removeLine(fp_Line* pLine)
 	// don't delete the line here, it's deleted elsewhere.
 }
 
+/*!
+ Insert line at the front/top of the container
+ \param pNewLine Line
+ */
 UT_Bool fp_Container::insertLine(fp_Line* pNewLine)
 {
 	m_vecLines.insertItemAt(pNewLine, 0);
@@ -154,6 +215,10 @@ UT_Bool fp_Container::insertLine(fp_Line* pNewLine)
 	return UT_TRUE;
 }
 
+/*!
+ Append line at the end/bottom of the container
+ \param pNewLine Line
+ */
 UT_Bool fp_Container::addLine(fp_Line* pNewLine)
 {
 	m_vecLines.addItem(pNewLine);
@@ -163,6 +228,15 @@ UT_Bool fp_Container::addLine(fp_Line* pNewLine)
 	return UT_TRUE;
 }
 
+/*!
+ Insert line in container after specified line
+ \param pNewLine   Line to be inserted
+ \param pAfterLine After this line
+ \todo This function has been hacked to handle the case where
+       pAfterLine is NULL. That case should not happen. Bad callers
+       should be identified and fixed, and this function should be
+       cleaned up.
+ */
 UT_Bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 {
 	UT_ASSERT(pAfterLine);
@@ -194,11 +268,18 @@ UT_Bool fp_Container::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 	return UT_TRUE;
 }
 
+/*!
+  Determine if container is empty
+ \return True if container is empty, otherwise false.
+ */
 UT_Bool fp_Container::isEmpty(void) const
 {
 	return (m_vecLines.getItemCount() == 0);
 }
 
+/*!
+  Clear container content from screen.
+*/
 void fp_Container::clearScreen(void)
 {
 	int count = m_vecLines.getItemCount();
@@ -210,6 +291,10 @@ void fp_Container::clearScreen(void)
 	}
 }
 
+/*!
+ Draw container outline
+ \param pDA Draw arguments
+ */
 void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
 {
     UT_ASSERT(pDA->pG == m_pG);
@@ -228,6 +313,10 @@ void fp_Container::_drawBoundaries(dg_DrawArgs* pDA)
     }
 }
 
+/*!
+ Draw container content
+ \param pDA Draw arguments
+ */
 void fp_Container::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecLines.getItemCount();
@@ -251,6 +340,14 @@ void fp_Container::draw(dg_DrawArgs* pDA)
 #endif	
 }
 
+/*!
+  Find document position from X and Y coordinates
+ \param  x X coordinate
+ \param  y Y coordinate
+ \retval pos Document position
+ \retval bBOL True if position is at begining of line, otherwise false
+ \retval bEOL True if position is at end of line, otherwise false
+ */
 void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 							  UT_Bool& bBOL, UT_Bool& bEOL)
 {
@@ -335,6 +432,12 @@ void fp_Container::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
+/*!
+ Compute the distance from point to the container's circumference
+ \param x X coordinate of point
+ \param y Y coordinate of point
+ \return Distance between container's circumference and point
+ */
 UT_uint32 fp_Container::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 {
 	UT_sint32 dx;
@@ -383,6 +486,13 @@ UT_uint32 fp_Container::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 	return dist;
 }
 
+/*!
+ Set X position of container
+ \param iX New X position
+
+ Before the postition of the container is changed, its content is
+ first cleared from the screen.
+ */
 void fp_Container::setX(UT_sint32 iX)
 {
 	if (iX == m_iX)
@@ -395,6 +505,13 @@ void fp_Container::setX(UT_sint32 iX)
 	m_iX = iX;
 }
 
+/*!
+ Set Y position of container
+ \param iY New Y position
+
+ Before the postition of the container is changed, its content is
+ first cleared from the screen.
+ */
 void fp_Container::setY(UT_sint32 iY)
 {
 	if (iY == m_iY)
@@ -407,6 +524,10 @@ void fp_Container::setY(UT_sint32 iY)
 	m_iY = iY;
 }
 
+/*!
+ Return first line in the container
+ \return The first line, or NULL if the container is empty
+ */
 fp_Line* fp_Container::getFirstLine(void) const
 {
 	if (m_vecLines.getItemCount() > 0)
@@ -419,6 +540,10 @@ fp_Line* fp_Container::getFirstLine(void) const
 	}
 }
 
+/*!
+ Return last line in the container
+ \return The last line, or NULL if the container is empty
+ */
 fp_Line* fp_Container::getLastLine(void) const
 {
 	UT_uint32 iCount = m_vecLines.getItemCount();
