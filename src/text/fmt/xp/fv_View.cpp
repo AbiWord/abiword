@@ -214,7 +214,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_Selection(this),
 		m_bShowRevisions(true),
 		m_eBidiOrder(FV_Order_Visual),
-		m_iFreePass(0)
+		m_iFreePass(0),
+		m_bDontNotifyListeners(false)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -1370,7 +1371,7 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 //
 // No need to update stuff if we're in preview mode
 //
-	if(isPreview())
+	if(isPreview()|| m_bDontNotifyListeners)
 		return true;
 //
 // Sevior check if we need this?
@@ -6016,7 +6017,7 @@ FV_View::findReplaceReverse(bool& bDoneEntireDocument)
 	UT_ASSERT(m_sFind && m_sReplace);
 
 	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
-	bool bRes = _findReplaceReverse(pPrefix, bDoneEntireDocument);
+	bool bRes = _findReplaceReverse(pPrefix, bDoneEntireDocument, false /* do update */);
 	FREEP(pPrefix);
 
 	updateScreen();
@@ -6049,7 +6050,7 @@ FV_View::findReplace(bool& bDoneEntireDocument)
 	UT_ASSERT(m_sFind && m_sReplace);
 
 	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
-	bool bRes = _findReplace(pPrefix, bDoneEntireDocument);
+	bool bRes = _findReplace(pPrefix, bDoneEntireDocument, false /* do update */);
 	FREEP(pPrefix);
 
 	updateScreen();
@@ -6087,6 +6088,17 @@ FV_View::findReplaceAll()
 
 	bool bDoneEntireDocument = false;
 
+	// find which part of the document is currently on screen -- we will only redraw and
+	// send messages to listerners within these part of the document
+	PT_DocPosition posVisibleStart = getDocPositionFromXY(0,0);
+	PT_DocPosition posVisibleEnd   = getDocPositionFromXY(getWindowWidth(),getWindowHeight());
+
+	// save point -- we will end where we started
+	PT_DocPosition iPoint = getPoint();
+
+	// this could take long -- show hourglass
+	setCursorWait();
+	
 	// Compute search prefix
 	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
 
@@ -6097,22 +6109,32 @@ FV_View::findReplaceAll()
 	// Keep replacing until the end of the buffer is hit
 	while (!bDoneEntireDocument)
 	{
-		_findReplace(pPrefix, bDoneEntireDocument);
+		bool bDontUpdate = getPoint() < posVisibleStart || getPoint() > posVisibleEnd;
+		if(bDontUpdate)
+		{
+			m_bDontNotifyListeners = true;
+		}
+		
+		_findReplace(pPrefix, bDoneEntireDocument, bDontUpdate);
 		iReplaced++;
 	}
 
 	m_pDoc->endUserAtomicGlob();
 
-	_generalUpdate();
+	_resetSelection();
+	setPoint(iPoint);
 
-	if (isSelectionEmpty())
+	// restore notifications if we stopped them
+	if(m_bDontNotifyListeners)
 	{
-		_updateInsertionPoint();
+		m_bDontNotifyListeners = false;
+		notifyListeners(AV_CHG_MOTION);
 	}
-	else
-	{
-		_ensureInsertionPointOnScreen();
-	}
+	
+	_updateInsertionPoint();
+	_generalUpdate();
+	draw();
+	setCursorToContext();
 
 	FREEP(pPrefix);
 	return iReplaced;

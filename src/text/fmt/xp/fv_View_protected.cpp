@@ -317,7 +317,7 @@ void FV_View::_setSelectionAnchor(void)
 	m_Selection.setSelectionAnchor(getPoint());
 }
 
-void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
+void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 {
 	// delete the current selection.
 	// NOTE: this must clear the selection.
@@ -402,15 +402,17 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 		}
 	}
 	_resetSelection();
-	_clearBetweenPositions(iLow, iHigh, true);
+
+	if(!bNoUpdate)
+		_clearBetweenPositions(iLow, iHigh, true);
 
 	bool bOldDelete = m_pDoc->isDontImmediateLayout();
-	if(bDeleteTables)
+	if(bDeleteTables || bNoUpdate)
 	{
 		m_pDoc->setDontImmediatelyLayout(true);
 	}
 	m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before, iRealDeleteCount, bDeleteTables);
-	if(bDeleteTables)
+	if(bDeleteTables || bNoUpdate)
 	{
 		m_pDoc->setDontImmediatelyLayout(bOldDelete);
 	}
@@ -2555,36 +2557,96 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 	// Have we already searched all the text in this buffer?
 	if (*pOffset >= pBuffer.getLength())
 	{
-		// Then return a fresh new block's buffer
-		newBlock = (*pBlock)->getNextBlockInDocument();
-
-		// Are we at the end of the document?
-		if (!newBlock)
+		bool bNeedNewBlock = true;
+		
+		// if pBlock was inside some kind of an embeded section, we need to make sure we
+		// have finished searching the enclosing block
+		if((*pBlock)->isEmbeddedType())
 		{
-			// Then wrap (fetch the first block in the doc)
-			PT_DocPosition startOfDoc;
-			getEditableBounds(false, startOfDoc);
+			
+			fl_ContainerLayout * pCL = (*pBlock)->myContainingLayout();
+			UT_ASSERT((pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pCL->getContainerType() == FL_CONTAINER_ENDNOTE) );
+			fl_EmbedLayout * pFL = static_cast<fl_EmbedLayout *>(pCL);
+			if(pFL->isEndFootnoteIn())
+			{
+				PL_StruxDocHandle sdhStart = pCL->getStruxDocHandle();
+				PL_StruxDocHandle sdhEnd = NULL;
+				if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+				{
+					getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
+				}
+				else
+				{
+					getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
+				}
 
-			newBlock = m_pLayout->findBlockAtPosition(startOfDoc);
+				if(sdhEnd)
+				{
+					PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
+					PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
+					UT_uint32 iSize = posEnd - posStart + 1;
+					PL_StruxFmtHandle  psfh = NULL;
+					getDocument()->getStruxOfTypeFromPosition((*pBlock)->getDocLayout()->getLID(),posStart,PTX_Block, &psfh);
+					newBlock = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
 
-			m_wrappedEnd = true;
+					PT_DocPosition iPos = _BlockOffsetToPos(*pBlock, *pOffset);
+					PT_DocPosition iEncBlockPos = newBlock->getPosition(false);
 
-			UT_ASSERT(newBlock);
+					newOffset = iPos - iEncBlockPos;
+
+					pBuffer.truncate(0);
+					
+					if (!newBlock->getBlockBuf(&pBuffer))
+					{
+						UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n",
+									 newBlock));
+						UT_ASSERT(0);
+					}
+
+					if(pBuffer.getLength() > newOffset)
+					{
+						// still stuff left in our containing block
+						bNeedNewBlock = false;
+					}
+					
+				}
+			}
 		}
 
-		// Re-assign the buffer contents for our new block
-		pBuffer.truncate(0);
-		// The offset starts at 0 for a fresh buffer
-		newOffset = 0;
-
-		if (!newBlock->getBlockBuf(&pBuffer))
+		if(bNeedNewBlock)
 		{
-			UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n",
-						 newBlock));
-			UT_ASSERT(0);
-		}
+			// Then return a fresh new block's buffer
+			newBlock = (*pBlock)->getNextBlockInDocument();
 
-		// Good to go with a full buffer for our new block
+			// Are we at the end of the document?
+			if (!newBlock)
+			{
+				// Then wrap (fetch the first block in the doc)
+				PT_DocPosition startOfDoc;
+				getEditableBounds(false, startOfDoc);
+
+				newBlock = m_pLayout->findBlockAtPosition(startOfDoc);
+
+				m_wrappedEnd = true;
+
+				UT_ASSERT(newBlock);
+			}
+
+			// Re-assign the buffer contents for our new block
+			pBuffer.truncate(0);
+
+			// The offset starts at 0 for a fresh buffer
+			newOffset = 0;
+			if (!newBlock->getBlockBuf(&pBuffer))
+			{
+				UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n",
+							 newBlock));
+				UT_ASSERT(0);
+			}
+
+			// Good to go with a full buffer for our new block
+		}
+		
 	}
 	else
 	{
@@ -2598,9 +2660,11 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 	// so, we need to size our length accordingly
 	if (m_wrappedEnd && _BlockOffsetToPos(newBlock, newOffset) + pBuffer.getLength() >= m_startPosition)
 	{
-		bufferLength = (m_startPosition - (newBlock)->getPosition(false)) - newOffset;
+		// sanity check
+		if(m_startPosition > (newBlock)->getPosition(false) + newOffset)
+			bufferLength = (m_startPosition - (newBlock)->getPosition(false)) - newOffset;
 	}
-	else
+	else if(pBuffer.getLength() > newOffset)
 	{
 		bufferLength = pBuffer.getLength() - newOffset;
 	}
@@ -2789,7 +2853,7 @@ bool FV_View::_insertField(const char* szName,
 }
  
 bool
-FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
+FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool bNoUpdate)
 {
 	UT_ASSERT(m_sFind && m_sReplace);
 
@@ -2807,7 +2871,7 @@ FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
 
 		if (!isSelectionEmpty())
 		{
-			_deleteSelection(&AttrProp_Before);
+			_deleteSelection(&AttrProp_Before, bNoUpdate);
 		}
 
 		// If we have a string with length, do an insert, else let it
@@ -2823,7 +2887,8 @@ FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
 		// Do not increase the insertion point index, since the insert
 		// span will leave us at the correct place.
 
-		_generalUpdate();
+		if(!bNoUpdate)
+			_generalUpdate();
 
 
 		// If we've wrapped around once, and we're doing work before
@@ -2860,7 +2925,7 @@ FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
  will then do a search for pFind.
 */
 bool
-FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument)
+FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool bNoUpdate)
 {
 	UT_ASSERT(m_sFind && m_sReplace);
 
@@ -2878,7 +2943,7 @@ FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument)
 
 		if (!isSelectionEmpty())
 		{
-			_deleteSelection(&AttrProp_Before);
+			_deleteSelection(&AttrProp_Before, bNoUpdate);
 		}
 
 		// If we have a string with length, do an insert, else let it
@@ -2891,7 +2956,8 @@ FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument)
 		// Do not increase the insertion point index, since the insert
 		// span will leave us at the correct place.
 
-		_generalUpdate();
+		if(!bNoUpdate)
+			_generalUpdate();
 
 		// If we've wrapped around once, and we're doing work before
 		// we've hit the point at which we started, then we adjust the

@@ -461,10 +461,12 @@ public:
 	bool			findReplaceReverse(bool& bDoneEntireDocument);
 
 	bool			_findReplaceReverse(UT_uint32* pPrefix,
-								 bool& bDoneEntireDocument);
+										bool& bDoneEntireDocument,
+										bool bNoUpdate);
 
 	bool			_findReplace(UT_uint32* pPrefix,
-								bool& bDoneEntireDocument);
+								 bool& bDoneEntireDocument,
+								 bool bNoUpdate);
 
 
 	bool			findReplace(bool& bDoneEntireDocument);
@@ -696,7 +698,7 @@ protected:
 	void				_clearSelection(void);
 	void				_resetSelection(void);
 	void				_setSelectionAnchor(void);
-	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL);
+	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL, bool bNoUpdate = false);
 	bool				_insertFormatPair(const XML_Char * szName, const XML_Char * properties[]);
 	void				_updateInsertionPoint();
 	void				_fixInsertionPointCoords();
@@ -860,6 +862,7 @@ private:
 
 	FV_BIDI_Order       m_eBidiOrder;
 	UT_uint32           m_iFreePass;
+	bool                m_bDontNotifyListeners;
 };
 
 #endif /* FV_VIEW_H */
