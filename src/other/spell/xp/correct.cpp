@@ -45,7 +45,18 @@
 
 /*
  * $Log$
+ * Revision 1.1  2003/01/24 05:52:31  hippietrail
+ * Refactored ispell code. Old ispell global variables had been put into
+ * an allocated structure, a pointer to which was passed to many functions.
+ * I have now made all such functions and variables private members of the
+ * ISpellChecker class. It was C OO, now it's C++ OO.
+ *
+ * I've fixed the makefiles and tested compilation but am unable to test
+ * operation. Please back out my changes if they cause problems which
+ * are not obvious or easy to fix.
+ *
  * Revision 1.7  2002/09/19 05:31:15  hippietrail
+ *
  * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
  * K&R function declarations removed, converted to Doxygen style comments
  * where possible.  No code has been changed (I hope).  Compiles for me but
@@ -161,34 +172,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "ispell.h"
+#include "ispell_checker.h"
 #include "msgs.h"
 
-int		casecmp P ((ispell_state_t *istate, char * a, char * b, int canonical));
-void		makepossibilities P ((ispell_state_t *istate, ichar_t * word));
-static int	insert P ((ispell_state_t *istate, ichar_t * word));
-#ifndef NO_CAPITALIZATION_SUPPORT
-static void	wrongcapital P ((ispell_state_t *istate, ichar_t * word));
-#endif /* NO_CAPITALIZATION_SUPPORT */
-static void	wrongletter P ((ispell_state_t *istate, ichar_t * word));
-static void	extraletter P ((ispell_state_t *istate, ichar_t * word));
-static void	missingletter P ((ispell_state_t *istate, ichar_t * word));
-static void	missingspace P ((ispell_state_t *istate, ichar_t * word));
-int		compoundgood P ((ispell_state_t *istate, ichar_t * word, int pfxopts));
-static void	transposedletter P ((ispell_state_t *istate, ichar_t * word));
-static int	ins_cap P ((ispell_state_t *istate, ichar_t * word, ichar_t * pattern));
-static int	save_cap P ((ispell_state_t *istate, ichar_t * word, ichar_t * pattern,
-		  ichar_t savearea[MAX_CAPS][INPUTWORDLEN + MAXAFFIXLEN]));
-int		ins_root_cap P ((ispell_state_t *istate, ichar_t * word, ichar_t * pattern,
-		  int prestrip, int preadd, int sufstrip, int sufadd,
-		  struct dent * firstdent, struct flagent * pfxent,
-		  struct flagent * sufent));
-static void	save_root_cap P ((ispell_state_t *istate, ichar_t * word, ichar_t * pattern,
-		  int prestrip, int preadd, int sufstrip, int sufadd,
-		  struct dent * firstdent, struct flagent * pfxent,
-		  struct flagent * sufent,
-		  ichar_t savearea[MAX_CAPS][INPUTWORDLEN + MAXAFFIXLEN],
-		  int * nsaved));
 /*
 extern void upcase P ((ichar_t * string));
 extern void lowcase P ((ichar_t * string));
@@ -205,43 +191,43 @@ int compoundflag = COMPOUND_CONTROLLED;
  * \return
  */
 int
-casecmp (ispell_state_t *istate, char *a, char *b, int canonical)
+ISpellChecker::casecmp (char *a, char *b, int canonical)
 {
     register ichar_t *	ap;
     register ichar_t *	bp;
     ichar_t		inta[INPUTWORDLEN + 4 * MAXAFFIXLEN + 4];
     ichar_t		intb[INPUTWORDLEN + 4 * MAXAFFIXLEN + 4];
 
-    (void) strtoichar (istate, inta, a, sizeof inta, canonical);
-    (void) strtoichar (istate, intb, b, sizeof intb, canonical);
+    (void) strtoichar (inta, a, sizeof inta, canonical);
+    (void) strtoichar (intb, b, sizeof intb, canonical);
     for (ap = inta, bp = intb;  *ap != 0;  ap++, bp++)
 	{
 		if (*ap != *bp)
 	    {
 			if (*bp == '\0')
-				return istate->hashheader.sortorder[*ap];
-			else if (mylower (istate, *ap))
+				return m_hashheader.sortorder[*ap];
+			else if (mylower (*ap))
 			{
-				if (mylower (istate, *bp)  ||  mytoupper (istate, *ap) != *bp)
-					return (int) istate->hashheader.sortorder[*ap]
-					  - (int) istate->hashheader.sortorder[*bp];
+				if (mylower (*bp)  ||  mytoupper (*ap) != *bp)
+					return (int) m_hashheader.sortorder[*ap]
+					  - (int) m_hashheader.sortorder[*bp];
 			}
 			else
 			{
-				if (myupper (istate, *bp)  ||  mytolower (istate, *ap) != *bp)
-					return (int) istate->hashheader.sortorder[*ap]
-					  - (int) istate->hashheader.sortorder[*bp];
+				if (myupper (*bp)  ||  mytolower (*ap) != *bp)
+					return (int) m_hashheader.sortorder[*ap]
+					  - (int) m_hashheader.sortorder[*bp];
 			}
 	    }
 	}
     if (*bp != '\0')
-		return -(int) istate->hashheader.sortorder[*bp];
+		return -(int) m_hashheader.sortorder[*bp];
     for (ap = inta, bp = intb;  *ap;  ap++, bp++)
 	{
 		if (*ap != *bp)
 	    {
-			return (int) istate->hashheader.sortorder[*ap]
-			  - (int) istate->hashheader.sortorder[*bp];
+			return (int) m_hashheader.sortorder[*ap]
+			  - (int) m_hashheader.sortorder[*bp];
 	    }
 	}
     return 0;
@@ -251,18 +237,18 @@ casecmp (ispell_state_t *istate, char *a, char *b, int canonical)
  * \param word
  */
 void
-makepossibilities (ispell_state_t *istate, ichar_t *word)
+ISpellChecker::makepossibilities (ichar_t *word)
 {
     register int	i;
 
     for (i = 0; i < MAXPOSSIBLE; i++)
-	istate->possibilities[i][0] = 0;
-    istate->pcount = 0;
-    istate->maxposslen = 0;
-    istate->easypossibilities = 0;
+	m_possibilities[i][0] = 0;
+    m_pcount = 0;
+    m_maxposslen = 0;
+    m_easypossibilities = 0;
 
 #ifndef NO_CAPITALIZATION_SUPPORT
-    wrongcapital (istate, word);
+    wrongcapital (word);
 #endif
 
 /* 
@@ -272,18 +258,18 @@ makepossibilities (ispell_state_t *istate, ichar_t *word)
  * thus, it was exactly backwards in the old version. -- PWP
  */
 
-    if (istate->pcount < MAXPOSSIBLE)
-		missingletter (istate, word);		/* omission */
-    if (istate->pcount < MAXPOSSIBLE)
-		transposedletter (istate, word);	/* transposition */
-    if (istate->pcount < MAXPOSSIBLE)
-		extraletter (istate, word);		/* insertion */
-    if (istate->pcount < MAXPOSSIBLE)
-		wrongletter (istate, word);		/* substitution */
+    if (m_pcount < MAXPOSSIBLE)
+		missingletter (word);		/* omission */
+    if (m_pcount < MAXPOSSIBLE)
+		transposedletter (word);	/* transposition */
+    if (m_pcount < MAXPOSSIBLE)
+		extraletter (word);		/* insertion */
+    if (m_pcount < MAXPOSSIBLE)
+		wrongletter (word);		/* substitution */
 
-    if ((istate->hashheader.compoundflag != COMPOUND_ANYTIME)  &&
-		  istate->pcount < MAXPOSSIBLE)
-		missingspace (istate, word);	/* two words */
+    if ((m_hashheader.compoundflag != COMPOUND_ANYTIME)  &&
+		  m_pcount < MAXPOSSIBLE)
+		missingspace (word);	/* two words */
 
 }
 
@@ -292,24 +278,24 @@ makepossibilities (ispell_state_t *istate, ichar_t *word)
  *
  * \return
  */
-static int
-insert (ispell_state_t *istate, ichar_t *word)
+int
+ISpellChecker::insert (ichar_t *word)
 {
     register int	i;
     register char *	realword;
 
-    realword = ichartosstr (istate, word, 0);
-    for (i = 0; i < istate->pcount; i++)
+    realword = ichartosstr (word, 0);
+    for (i = 0; i < m_pcount; i++)
 	{
-		if (strcmp (istate->possibilities[i], realword) == 0)
+		if (strcmp (m_possibilities[i], realword) == 0)
 			return (0);
 	}
 
-    (void) strcpy (istate->possibilities[istate->pcount++], realword);
+    (void) strcpy (m_possibilities[m_pcount++], realword);
     i = strlen (realword);
-    if (i > istate->maxposslen)
-		istate->maxposslen = i;
-    if (istate->pcount >= MAXPOSSIBLE)
+    if (i > m_maxposslen)
+		m_maxposslen = i;
+    if (m_pcount >= MAXPOSSIBLE)
 		return (-1);
     else
 		return (0);
@@ -319,8 +305,8 @@ insert (ispell_state_t *istate, ichar_t *word)
 /*
  * \param word
  */
-static void
-wrongcapital (ispell_state_t *istate, ichar_t *word)
+void
+ISpellChecker::wrongcapital (ichar_t *word)
 {
     ichar_t		newword[INPUTWORDLEN + MAXAFFIXLEN];
 
@@ -329,11 +315,11 @@ wrongcapital (ispell_state_t *istate, ichar_t *word)
     ** case.  If the word matches this way, "ins_cap" will recapitalize
     ** it correctly.
     */
-    if (good (istate, word, 0, 1, 0, 0))
+    if (good (word, 0, 1, 0, 0))
 	{
 		(void) icharcpy (newword, word);
-		upcase (istate, newword);
-		(void) ins_cap (istate, newword, word);
+		upcase (newword);
+		(void) ins_cap (newword, word);
 	}
 }
 #endif
@@ -341,8 +327,8 @@ wrongcapital (ispell_state_t *istate, ichar_t *word)
 /*
  * \param word
  */
-static void
-wrongletter (ispell_state_t *istate, ichar_t *word)
+void
+ISpellChecker::wrongletter (ichar_t *word)
 {
     register int	i;
     register int	j;
@@ -353,22 +339,22 @@ wrongletter (ispell_state_t *istate, ichar_t *word)
     n = icharlen (word);
     (void) icharcpy (newword, word);
 #ifndef NO_CAPITALIZATION_SUPPORT
-    upcase (istate, newword);
+    upcase (newword);
 #endif
 
     for (i = 0; i < n; i++)
 	{
 		savechar = newword[i];
-		for (j=0; j < istate->Trynum; ++j)
+		for (j=0; j < m_Trynum; ++j)
 		{
-			if (istate->Try[j] == savechar)
+			if (m_Try[j] == savechar)
 				continue;
-			else if (isboundarych (istate, istate->Try[j])  &&  (i == 0  ||  i == n - 1))
+			else if (isboundarych (m_Try[j])  &&  (i == 0  ||  i == n - 1))
 				continue;
-			newword[i] = istate->Try[j];
-			if (good (istate, newword, 0, 1, 0, 0))
+			newword[i] = m_Try[j];
+			if (good (newword, 0, 1, 0, 0))
 			{
-				if (ins_cap (istate, newword, word) < 0)
+				if (ins_cap (newword, word) < 0)
 					return;
 			}
 		}
@@ -379,8 +365,8 @@ wrongletter (ispell_state_t *istate, ichar_t *word)
 /*
  * \param word
  */
-static void
-extraletter (ispell_state_t *istate, ichar_t *word)
+void
+ISpellChecker::extraletter (ichar_t *word)
 {
     ichar_t		newword[INPUTWORDLEN + MAXAFFIXLEN];
     register ichar_t *	p;
@@ -392,9 +378,9 @@ extraletter (ispell_state_t *istate, ichar_t *word)
     (void) icharcpy (newword, word + 1);
     for (p = word, r = newword;  *p != 0;  )
 	{
-		if (good (istate, newword, 0, 1, 0, 0))
+		if (good (newword, 0, 1, 0, 0))
 		{
-			if (ins_cap (istate, newword, word) < 0)
+			if (ins_cap (newword, word) < 0)
 				return;
 		}
 		*r++ = *p++;
@@ -404,8 +390,8 @@ extraletter (ispell_state_t *istate, ichar_t *word)
 /*
  * \param word
  */
-static void
-missingletter (ispell_state_t *istate, ichar_t *word)
+void
+ISpellChecker::missingletter (ichar_t *word)
 {
     ichar_t		newword[INPUTWORDLEN + MAXAFFIXLEN + 1];
     register ichar_t *	p;
@@ -415,27 +401,27 @@ missingletter (ispell_state_t *istate, ichar_t *word)
     (void) icharcpy (newword + 1, word);
     for (p = word, r = newword;  *p != 0;  )
 	{
-		for (i = 0;  i < istate->Trynum;  i++)
+		for (i = 0;  i < m_Trynum;  i++)
 	    {
-			if (isboundarych (istate, istate->Try[i])  &&  r == newword)
+			if (isboundarych (m_Try[i])  &&  r == newword)
 				continue;
-			*r = istate->Try[i];
-			if (good (istate, newword, 0, 1, 0, 0))
+			*r = m_Try[i];
+			if (good (newword, 0, 1, 0, 0))
 			{
-				if (ins_cap (istate, newword, word) < 0)
+				if (ins_cap (newword, word) < 0)
 					return;
 			}
 	    }
 		*r++ = *p++;
 	}
-    for (i = 0;  i < istate->Trynum;  i++)
+    for (i = 0;  i < m_Trynum;  i++)
 	{
-		if (isboundarych (istate, istate->Try[i]))
+		if (isboundarych (m_Try[i]))
 			continue;
-		*r = istate->Try[i];
-		if (good (istate, newword, 0, 1, 0, 0))
+		*r = m_Try[i];
+		if (good (newword, 0, 1, 0, 0))
 		{
-			if (ins_cap (istate, newword, word) < 0)
+			if (ins_cap (newword, word) < 0)
 				return;
 		}
 	}
@@ -444,7 +430,7 @@ missingletter (ispell_state_t *istate, ichar_t *word)
 /*
  * \param word
  */
-static void missingspace (ispell_state_t *istate, ichar_t *word)
+void ISpellChecker::missingspace (ichar_t *word)
 {
     ichar_t		firsthalf[MAX_CAPS][INPUTWORDLEN + MAXAFFIXLEN];
     int			firstno;	/* Index into first */
@@ -470,7 +456,7 @@ static void missingspace (ispell_state_t *istate, ichar_t *word)
 	{
 		p[-1] = *p;
 		*p = '\0';
-		if (good (istate, newword, 0, 1, 0, 0))
+		if (good (newword, 0, 1, 0, 0))
 		{
 			/*
 			 * Save_cap must be called before good() is called on the
@@ -479,10 +465,10 @@ static void missingspace (ispell_state_t *istate, ichar_t *word)
 			 * time, but I don't think it's a significant performance
 			 * problem.
 			 */
-			nfirsthalf = save_cap (istate, newword, word, firsthalf);
-			if (good (istate, p + 1, 0, 1, 0, 0))
+			nfirsthalf = save_cap (newword, word, firsthalf);
+			if (good (p + 1, 0, 1, 0, 0))
 			{
-				nsecondhalf = save_cap (istate, p + 1, p + 1, secondhalf);
+				nsecondhalf = save_cap (p + 1, p + 1, secondhalf);
 				for (firstno = 0;  firstno < nfirsthalf;  firstno++)
 				{
 					firstp = &firsthalf[firstno][p - newword];
@@ -490,10 +476,10 @@ static void missingspace (ispell_state_t *istate, ichar_t *word)
 					{
 						*firstp = ' ';
 						(void) icharcpy (firstp + 1, secondhalf[secondno]);
-						if (insert (istate, firsthalf[firstno]) < 0)
+						if (insert (firsthalf[firstno]) < 0)
 							return;
 						*firstp = '-';
-						if (insert (istate, firsthalf[firstno]) < 0)
+						if (insert (firsthalf[firstno]) < 0)
 							return;
 					}
 				}
@@ -507,7 +493,7 @@ static void missingspace (ispell_state_t *istate, ichar_t *word)
  * \param pfxopts Options to apply to prefixes
  */
 int
-compoundgood (ispell_state_t *istate, ichar_t *word, int pfxopts)
+ISpellChecker::compoundgood (ichar_t *word, int pfxopts)
 {
     ichar_t		newword[INPUTWORDLEN + MAXAFFIXLEN];
     register ichar_t *	p;
@@ -517,7 +503,7 @@ compoundgood (ispell_state_t *istate, ichar_t *word, int pfxopts)
     /*
     ** If compoundflag is COMPOUND_NEVER, compound words are never ok.
     */
-    if (istate->hashheader.compoundflag == COMPOUND_NEVER)
+    if (m_hashheader.compoundflag == COMPOUND_NEVER)
 		return 0;
     /*
     ** Test for a possible compound word (for languages like German that
@@ -530,22 +516,22 @@ compoundgood (ispell_state_t *istate, ichar_t *word, int pfxopts)
     ** We don't do words of length less than 2 * compoundmin, since
     ** both halves must at least compoundmin letters.
     */
-    if (icharlen (word) < 2 * istate->hashheader.compoundmin)
+    if (icharlen (word) < 2 * m_hashheader.compoundmin)
 		return 0;
     (void) icharcpy (newword, word);
-    p = newword + istate->hashheader.compoundmin;
-    for (  ;  p[istate->hashheader.compoundmin - 1] != 0;  p++)
+    p = newword + m_hashheader.compoundmin;
+    for (  ;  p[m_hashheader.compoundmin - 1] != 0;  p++)
 	{
 		savech = *p;
 		*p = 0;
-		if (good (istate, newword, 0, 0, pfxopts, FF_COMPOUNDONLY))
+		if (good (newword, 0, 0, pfxopts, FF_COMPOUNDONLY))
 	    {
 			*p = savech;
-			if (good (istate, p, 0, 1, FF_COMPOUNDONLY, 0)
-			  ||  compoundgood (istate, p, FF_COMPOUNDONLY))
+			if (good (p, 0, 1, FF_COMPOUNDONLY, 0)
+			  ||  compoundgood (p, FF_COMPOUNDONLY))
 			{
-				secondcap = whatcap (istate, p);
-				switch (whatcap (istate, newword))
+				secondcap = whatcap (p);
+				switch (whatcap (newword))
 				{
 				case ANYCASE:
 				case CAPITALIZED:
@@ -565,8 +551,8 @@ compoundgood (ispell_state_t *istate, ichar_t *word, int pfxopts)
 /*
  * \param word
  */
-static void
-transposedletter (ispell_state_t *istate, ichar_t *word)
+void
+ISpellChecker::transposedletter (ichar_t *word)
 {
     ichar_t		newword[INPUTWORDLEN + MAXAFFIXLEN];
     register ichar_t *	p;
@@ -578,9 +564,9 @@ transposedletter (ispell_state_t *istate, ichar_t *word)
 		temp = *p;
 		*p = p[1];
 		p[1] = temp;
-		if (good (istate, newword, 0, 1, 0, 0))
+		if (good (newword, 0, 1, 0, 0))
 	    {
-			if (ins_cap (istate, newword, word) < 0)
+			if (ins_cap (newword, word) < 0)
 				return;
 	    }
 		temp = *p;
@@ -597,17 +583,17 @@ transposedletter (ispell_state_t *istate, ichar_t *word)
  *
  * \return
  */
-static int
-ins_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern)
+int
+ISpellChecker::ins_cap (ichar_t *word, ichar_t *pattern)
 {
     int			i;		/* Index into savearea */
     int			nsaved;		/* No. of words saved */
     ichar_t		savearea[MAX_CAPS][INPUTWORDLEN + MAXAFFIXLEN];
 
-    nsaved = save_cap (istate, word, pattern, savearea);
+    nsaved = save_cap (word, pattern, savearea);
     for (i = 0;  i < nsaved;  i++)
 	{
-		if (insert (istate, savearea[i]) < 0)
+		if (insert (savearea[i]) < 0)
 			return -1;
 	}
     return 0;
@@ -622,8 +608,8 @@ ins_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern)
  *
  * \return
  */
-static int
-save_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern, 
+int
+ISpellChecker::save_cap (ichar_t *word, ichar_t *pattern, 
 					ichar_t savearea[MAX_CAPS][INPUTWORDLEN + MAXAFFIXLEN])
 {
     int			hitno;		/* Index into hits array */
@@ -636,25 +622,25 @@ save_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
     if (*word == 0)
 		return 0;
 
-    for (hitno = istate->numhits, nsaved = 0;  --hitno >= 0  &&  nsaved < MAX_CAPS;  )
+    for (hitno = m_numhits, nsaved = 0;  --hitno >= 0  &&  nsaved < MAX_CAPS;  )
 	{
-		if (istate->hits[hitno].prefix)
+		if (m_hits[hitno].prefix)
 	    {
-			prestrip = istate->hits[hitno].prefix->stripl;
-			preadd = istate->hits[hitno].prefix->affl;
+			prestrip = m_hits[hitno].prefix->stripl;
+			preadd = m_hits[hitno].prefix->affl;
 	    }
 		else
 			prestrip = preadd = 0;
-		if (istate->hits[hitno].suffix)
+		if (m_hits[hitno].suffix)
 	    {
-			sufstrip = istate->hits[hitno].suffix->stripl;
-			sufadd = istate->hits[hitno].suffix->affl;
+			sufstrip = m_hits[hitno].suffix->stripl;
+			sufadd = m_hits[hitno].suffix->affl;
 	    }
 		else
 			sufadd = sufstrip = 0;
-		save_root_cap (istate, word, pattern, prestrip, preadd,
+		save_root_cap (word, pattern, prestrip, preadd,
 			sufstrip, sufadd,
-			istate->hits[hitno].dictent, istate->hits[hitno].prefix, istate->hits[hitno].suffix,
+			m_hits[hitno].dictent, m_hits[hitno].prefix, m_hits[hitno].suffix,
 			savearea, &nsaved);
 	}
     return nsaved;
@@ -674,7 +660,7 @@ save_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
  * \return
  */
 int
-ins_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern, 
+ISpellChecker::ins_root_cap (ichar_t *word, ichar_t *pattern, 
 				 int prestrip, int preadd, int sufstrip, int sufadd,
   				 struct dent *firstdent, struct flagent *pfxent, struct flagent *sufent)
 {
@@ -683,11 +669,11 @@ ins_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
     int			nsaved;		/* Number of words saved */
 
     nsaved = 0;
-    save_root_cap (istate, word, pattern, prestrip, preadd, sufstrip, sufadd,
+    save_root_cap (word, pattern, prestrip, preadd, sufstrip, sufadd,
       firstdent, pfxent, sufent, savearea, &nsaved);
     for (i = 0;  i < nsaved;  i++)
 	{
-		if (insert (istate, savearea[i]) < 0)
+		if (insert (savearea[i]) < 0)
 			return -1;
 	}
     return 0;
@@ -707,8 +693,8 @@ ins_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
  * \param savearea Room to save words
  * \param nsaved Number saved so far (updated)
  */
-static void
-save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern, 
+void
+ISpellChecker::save_root_cap (ichar_t *word, ichar_t *pattern, 
 						  int prestrip, int preadd, int sufstrip, int sufadd,
 						  struct dent *firstdent, struct flagent *pfxent, struct flagent *sufent, 
 						  ichar_t savearea[MAX_CAPS][INPUTWORDLEN + MAXAFFIXLEN], 
@@ -729,7 +715,7 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
     if (*nsaved >= MAX_CAPS)
 		return;
     (void) icharcpy (newword, word);
-    firstisupper = myupper (istate, pattern[0]);
+    firstisupper = myupper (pattern[0]);
 #ifdef NO_CAPITALIZATION_SUPPORT
     /*
     ** Apply the old, simple-minded capitalization rules.
@@ -759,26 +745,26 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
     dent = firstdent;
     if ((dent->flagfield & (CAPTYPEMASK | MOREVARIANTS)) == ALLCAPS)
 	{
-		upcase (istate, newword);	/* Uppercase required */
+		upcase (newword);	/* Uppercase required */
 		(void) icharcpy (savearea[*nsaved], newword);
 		(*nsaved)++;
 		return;
 	}
     for (p = pattern;  *p;  p++)
 	{
-		if (mylower (istate, *p))
+		if (mylower (*p))
 			break;
 	}
     if (*p == 0)
 	{
-		upcase (istate, newword);	/* Pattern was all caps */
+		upcase (newword);	/* Pattern was all caps */
 		(void) icharcpy (savearea[*nsaved], newword);
 		(*nsaved)++;
 		return;
 	}
     for (p = pattern + 1;  *p;  p++)
 	{
-		if (myupper (istate, *p))
+		if (myupper (*p))
 			break;
 	}
     if (*p == 0)
@@ -792,8 +778,8 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
 			if (captype (dent->flagfield) == CAPITALIZED
 			  ||  captype (dent->flagfield) == ANYCASE)
 			{
-				lowcase (istate, newword);
-				newword[0] = mytoupper (istate, newword[0]);
+				lowcase (newword);
+				newword[0] = mytoupper (newword[0]);
 				(void) icharcpy (savearea[*nsaved], newword);
 				(*nsaved)++;
 				return;
@@ -803,7 +789,7 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
 		{
 			if (captype (dent->flagfield) == ANYCASE)
 			{
-				lowcase (istate, newword);
+				lowcase (newword);
 				(void) icharcpy (savearea[*nsaved], newword);
 				(*nsaved)++;
 				return;
@@ -819,8 +805,8 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
 			{
 				if (captype (dent->flagfield) == CAPITALIZED)
 				{
-					lowcase (istate, newword);
-					newword[0] = mytoupper (istate, newword[0]);
+					lowcase (newword);
+					newword[0] = mytoupper (newword[0]);
 					(void) icharcpy (savearea[*nsaved], newword);
 					(*nsaved)++;
 					return;
@@ -830,7 +816,7 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
 			{
 				if (captype (dent->flagfield) == ANYCASE)
 				{
-					lowcase (istate, newword);
+					lowcase (newword);
 					(void) icharcpy (savearea[*nsaved], newword);
 					(*nsaved)++;
 					return;
@@ -846,7 +832,7 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
     ** capitalized all-lower samples.  Watch out for affixes.
     */
     dent = firstdent;
-    p = strtosichar (istate, dent->word, 1);
+    p = strtosichar (dent->word, 1);
     len = icharlen (p);
     if (dent->flagfield & MOREVARIANTS)
 		dent = dent->next;	/* Skip place-holder entry */
@@ -856,9 +842,9 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
 	    {
 			if (captype (dent->flagfield) != FOLLOWCASE)
 			{
-				lowcase (istate, newword);
+				lowcase (newword);
 				if (firstisupper  ||  captype (dent->flagfield) == CAPITALIZED)
-					newword[0] = mytoupper (istate, newword[0]);
+					newword[0] = mytoupper (newword[0]);
 				(void) icharcpy (savearea[*nsaved], newword);
 				(*nsaved)++;
 				if (*nsaved >= MAX_CAPS)
@@ -867,33 +853,33 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
 			else
 			{
 				/* Followcase is the tough one. */
-				p = strtosichar (istate, dent->word, 1);
+				p = strtosichar (dent->word, 1);
 				(void) memmove (
 				  (char *) (newword + preadd),
 				  (char *) (p + prestrip),
 				  (len - prestrip - sufstrip) * sizeof (ichar_t));
-				if (myupper (istate, p[prestrip]))
+				if (myupper (p[prestrip]))
 				{
 					for (i = 0;  i < preadd;  i++)
-						newword[i] = mytoupper (istate, newword[i]);
+						newword[i] = mytoupper (newword[i]);
 				}
 				else
 				{
 					for (i = 0;  i < preadd;  i++)
-						newword[i] = mytolower (istate, newword[i]);
+						newword[i] = mytolower (newword[i]);
 				}
 				limit = len + preadd + sufadd - prestrip - sufstrip;
 				i = len + preadd - prestrip - sufstrip;
 				p += len - sufstrip - 1;
-				if (myupper (istate, *p))
+				if (myupper (*p))
 				{
 					for (p = newword + i;  i < limit;  i++, p++)
-						*p = mytoupper (istate, *p);
+						*p = mytoupper (*p);
 				}
 				else
 				{
 					for (p = newword + i;  i < limit;  i++, p++)
-						*p = mytolower (istate, *p);
+						*p = mytolower (*p);
 				}
 				(void) icharcpy (savearea[*nsaved], newword);
 				(*nsaved)++;
@@ -908,4 +894,5 @@ save_root_cap (ispell_state_t *istate, ichar_t *word, ichar_t *pattern,
     return;
 #endif /* NO_CAPITALIZATION_SUPPORT */
 }
+
 

@@ -44,6 +44,16 @@
 
 /*
  * $Log$
+ * Revision 1.1  2003/01/24 05:52:36  hippietrail
+ * Refactored ispell code. Old ispell global variables had been put into
+ * an allocated structure, a pointer to which was passed to many functions.
+ * I have now made all such functions and variables private members of the
+ * ISpellChecker class. It was C OO, now it's C++ OO.
+ *
+ * I've fixed the makefiles and tested compilation but am unable to test
+ * operation. Please back out my changes if they cause problems which
+ * are not obvious or easy to fix.
+ *
  * Revision 1.6  2003/01/06 18:48:42  dom
  * ispell cleanup, start of using new 'add' save features
  *
@@ -166,31 +176,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ispell.h"
-
-/*
-void		chk_aff P ((ichar_t * word, ichar_t * ucword, int len,
-		  int ignoreflagbits, int allhits, int pfxopts, int sfxopts));
-*/
-static void	pfx_list_chk P ((ispell_state_t *istate, ichar_t * word, ichar_t * ucword,
-		  int len, int optflags, int sfxopts, struct flagptr * ind,
-		  int ignoreflagbits, int allhits));
-static void	chk_suf P ((ispell_state_t *istate, ichar_t * word, ichar_t * ucword, int len,
-		  int optflags, struct flagent * pfxent, int ignoreflagbits,
-		  int allhits));
-static void	suf_list_chk P ((ispell_state_t *istate, ichar_t * word, ichar_t * ucword, int len,
-		  struct flagptr * ind, int optflags, struct flagent * pfxent,
-		  int ignoreflagbits, int allhits));
-int		expand_pre P ((ispell_state_t *istate, char * croot, ichar_t * rootword,
-		  MASKTYPE mask[], int option, char * extra));
-static int	pr_pre_expansion P ((ispell_state_t *istate, char * croot, ichar_t * rootword,
-		  struct flagent * flent, MASKTYPE mask[], int option,
-		  char * extra));
-int		expand_suf P ((ispell_state_t *istate, char * croot, ichar_t * rootword,
-		  MASKTYPE mask[], int optflags, int option, char * extra));
-static int	pr_suf_expansion P ((ispell_state_t *istate, char * croot, ichar_t * rootword,
-		  struct flagent * flent, int option, char * extra));
-static void	forcelc P ((ispell_state_t *istate, ichar_t * dst, int len));
+#include "ispell_checker.h"
 
 /*!
  * Check possible affixes
@@ -203,28 +189,28 @@ static void	forcelc P ((ispell_state_t *istate, ichar_t * dst, int len));
  * \param pfxopts Options to apply to prefixes
  * \param sfxopts Options to apply to suffixes
  */
-void chk_aff (ispell_state_t *istate, ichar_t *word, ichar_t *ucword, 
+void ISpellChecker::chk_aff (ichar_t *word, ichar_t *ucword, 
 			  int len, int ignoreflagbits, int allhits, int pfxopts, int sfxopts)
 {
     register ichar_t *	cp;		/* Pointer to char to index on */
     struct flagptr *	ind;		/* Flag index table to test */
 
-    pfx_list_chk (istate, word, ucword, len, pfxopts, sfxopts, &istate->pflagindex[0],
+    pfx_list_chk (word, ucword, len, pfxopts, sfxopts, &m_pflagindex[0],
       ignoreflagbits, allhits);
     cp = ucword;
 	/* HACK: bail on unrecognized chars */
 	if (*cp >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
-    ind = &istate->pflagindex[*cp++];
+    ind = &m_pflagindex[*cp++];
     while (ind->numents == 0  &&  ind->pu.fp != NULL)
 	{
 		if (*cp == 0)
 			return;
 		if (ind->pu.fp[0].numents)
 		{
-			pfx_list_chk (istate, word, ucword, len, pfxopts, sfxopts, &ind->pu.fp[0],
+			pfx_list_chk (word, ucword, len, pfxopts, sfxopts, &ind->pu.fp[0],
 			  ignoreflagbits, allhits);
-			if (istate->numhits  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
+			if (m_numhits  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
 				return;
 		}
 		/* HACK: bail on unrecognized chars */
@@ -232,11 +218,11 @@ void chk_aff (ispell_state_t *istate, ichar_t *word, ichar_t *ucword,
 			return;
 		ind = &ind->pu.fp[*cp++];
 	}
-    pfx_list_chk (istate, word, ucword, len, pfxopts, sfxopts, ind, ignoreflagbits,
+    pfx_list_chk (word, ucword, len, pfxopts, sfxopts, ind, ignoreflagbits,
       allhits);
-    if (istate->numhits  &&  !allhits  &&  /* !cflag  &&*/  !ignoreflagbits)
+    if (m_numhits  &&  !allhits  &&  /* !cflag  &&*/  !ignoreflagbits)
 		return;
-    chk_suf (istate, word, ucword, len, sfxopts, (struct flagent *) NULL,
+    chk_suf (word, ucword, len, sfxopts, (struct flagent *) NULL,
       ignoreflagbits, allhits);
 }
 
@@ -252,7 +238,7 @@ void chk_aff (ispell_state_t *istate, ichar_t *word, ichar_t *ucword,
  * \param ignoreflagbits Ignore whether affix is legal
  * \param allhits Keep going after first hit
  * */
-static void pfx_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword, int len, int optflags, 
+void ISpellChecker::pfx_list_chk (ichar_t *word, ichar_t *ucword, int len, int optflags, 
 					int sfxopts, struct flagptr * ind, int ignoreflagbits, int allhits)
 {
     int			cond;		/* Condition number */
@@ -310,7 +296,7 @@ static void pfx_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
 
 				if (ignoreflagbits)
 				{
-					if ((dent = ispell_lookup (istate, tword, 1)) != NULL)
+					if ((dent = ispell_lookup (tword, 1)) != NULL)
 					{
 						cp = tword2;
 						if (flent->affl)
@@ -329,22 +315,22 @@ static void pfx_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
 						}
 					}
 				}
-				else if ((dent = ispell_lookup (istate, tword, 1)) != NULL
+				else if ((dent = ispell_lookup (tword, 1)) != NULL
 				  &&  TSTMASKBIT (dent->mask, flent->flagbit))
 				{
-					if (istate->numhits < MAX_HITS)
+					if (m_numhits < MAX_HITS)
 					{
-						istate->hits[istate->numhits].dictent = dent;
-						istate->hits[istate->numhits].prefix = flent;
-						istate->hits[istate->numhits].suffix = NULL;
-						istate->numhits++;
+						m_hits[m_numhits].dictent = dent;
+						m_hits[m_numhits].prefix = flent;
+						m_hits[m_numhits].suffix = NULL;
+						m_numhits++;
 					}
 					if (!allhits)
 					{
 #ifndef NO_CAPITALIZATION_SUPPORT
-						if (cap_ok (istate, word, &istate->hits[0], len))
+						if (cap_ok (word, &m_hits[0], len))
 							return;
-						istate->numhits = 0;
+						m_numhits = 0;
 #else /* NO_CAPITALIZATION_SUPPORT */
 						return;
 #endif /* NO_CAPITALIZATION_SUPPORT */
@@ -354,7 +340,7 @@ static void pfx_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
 				 * Handle cross-products.
 				 */
 				if (flent->flagflags & FF_CROSSPRODUCT)
-						chk_suf (istate, word, tword, tlen, sfxopts | FF_CROSSPRODUCT,
+						chk_suf (word, tword, tlen, sfxopts | FF_CROSSPRODUCT,
 					flent, ignoreflagbits, allhits);
 			}
 	    }
@@ -372,30 +358,30 @@ static void pfx_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
  * \param ignoreflagbits Ignore whether affix is legal
  * \param allhits Keep going after first hit
  */
-static void
-chk_suf (ispell_state_t *istate, ichar_t *word, ichar_t *ucword, 
+void
+ISpellChecker::chk_suf (ichar_t *word, ichar_t *ucword, 
 					int len, int optflags, struct flagent *pfxent, 
 					int ignoreflagbits, int allhits)
 {
     register ichar_t *	cp;		/* Pointer to char to index on */
     struct flagptr *	ind;		/* Flag index table to test */
 
-    suf_list_chk (istate, word, ucword, len, &istate->sflagindex[0], optflags, pfxent,
+    suf_list_chk (word, ucword, len, &m_sflagindex[0], optflags, pfxent,
       ignoreflagbits, allhits);
     cp = ucword + len - 1;
 	/* HACK: bail on unrecognized chars */
 	if (*cp >= (SET_SIZE + MAXSTRINGCHARS))
 		return;
-    ind = &istate->sflagindex[*cp];
+    ind = &m_sflagindex[*cp];
     while (ind->numents == 0  &&  ind->pu.fp != NULL)
 	{
 		if (cp == ucword)
 			return;
 		if (ind->pu.fp[0].numents)
 		{
-			suf_list_chk (istate, word, ucword, len, &ind->pu.fp[0],
+			suf_list_chk (word, ucword, len, &ind->pu.fp[0],
 			  optflags, pfxent, ignoreflagbits, allhits);
-			if (istate->numhits != 0  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
+			if (m_numhits != 0  &&  !allhits  &&  /* !cflag  && */  !ignoreflagbits)
 				return;
 		}
 		/* HACK: bail on unrecognized chars */
@@ -403,7 +389,7 @@ chk_suf (ispell_state_t *istate, ichar_t *word, ichar_t *ucword,
 			return;
 		ind = &ind->pu.fp[*--cp];
 	}
-    suf_list_chk (istate, word, ucword, len, ind, optflags, pfxent,
+    suf_list_chk (word, ucword, len, ind, optflags, pfxent,
       ignoreflagbits, allhits);
 }
     
@@ -417,7 +403,7 @@ chk_suf (ispell_state_t *istate, ichar_t *word, ichar_t *ucword,
  * \param ignoreflagbits Ignore whether affix is legal
  * \pram allhits Keep going after first hit
  */
-static void suf_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword, 
+void ISpellChecker::suf_list_chk (ichar_t *word, ichar_t *ucword, 
 						  int len, struct flagptr *ind, int optflags, 
 						  struct flagent *pfxent, int ignoreflagbits, int allhits)
 {
@@ -484,7 +470,7 @@ static void suf_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
 				 */
 				if (ignoreflagbits)
 				{
-					if ((dent = ispell_lookup (istate, tword, 1)) != NULL)
+					if ((dent = ispell_lookup (tword, 1)) != NULL)
 					{
 						cp = tword2;
 						if ((optflags & FF_CROSSPRODUCT)
@@ -518,24 +504,24 @@ static void suf_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
 						}
 					}
 				}
-				else if ((dent = ispell_lookup (istate, tword, 1)) != NULL
+				else if ((dent = ispell_lookup (tword, 1)) != NULL
 				  &&  TSTMASKBIT (dent->mask, flent->flagbit)
 				  &&  ((optflags & FF_CROSSPRODUCT) == 0
 					|| TSTMASKBIT (dent->mask, pfxent->flagbit)))
 				{
-					if (istate->numhits < MAX_HITS)
+					if (m_numhits < MAX_HITS)
 					{
-						istate->hits[istate->numhits].dictent = dent;
-						istate->hits[istate->numhits].prefix = pfxent;
-						istate->hits[istate->numhits].suffix = flent;
-						istate->numhits++;
+						m_hits[m_numhits].dictent = dent;
+						m_hits[m_numhits].prefix = pfxent;
+						m_hits[m_numhits].suffix = flent;
+						m_numhits++;
 					}
 					if (!allhits)
 					{
 #ifndef NO_CAPITALIZATION_SUPPORT
-						if (cap_ok (istate, word, &istate->hits[0], len))
+						if (cap_ok (word, &m_hits[0], len))
 							return;
-						istate->numhits = 0;
+						m_numhits = 0;
 #else /* NO_CAPITALIZATION_SUPPORT */
 						return;
 #endif /* NO_CAPITALIZATION_SUPPORT */
@@ -557,7 +543,7 @@ static void suf_list_chk (ispell_state_t *istate, ichar_t *word, ichar_t *ucword
  *
  * \return
  */
-int expand_pre (ispell_state_t *istate, char *croot, ichar_t *rootword, MASKTYPE mask[], 
+int ISpellChecker::expand_pre (char *croot, ichar_t *rootword, MASKTYPE mask[], 
 				int option, char *extra)
 {
     int				entcount;	/* No. of entries to process */
@@ -565,13 +551,13 @@ int expand_pre (ispell_state_t *istate, char *croot, ichar_t *rootword, MASKTYPE
     register struct flagent *
 				flent;		/* Current table entry */
 
-    for (flent = istate->pflaglist, entcount = istate->numpflags, explength = 0;
+    for (flent = m_pflaglist, entcount = m_numpflags, explength = 0;
       entcount > 0;
       flent++, entcount--)
 	{
 		if (TSTMASKBIT (mask, flent->flagbit))
 			explength +=
-			  pr_pre_expansion (istate, croot, rootword, flent, mask, option, extra);
+			  pr_pre_expansion (croot, rootword, flent, mask, option, extra);
 	}
     return explength;
 }
@@ -588,7 +574,7 @@ int expand_pre (ispell_state_t *istate, char *croot, ichar_t *rootword, MASKTYPE
  *
  * \return
  */
-static int pr_pre_expansion (ispell_state_t *istate,  char *croot, ichar_t *rootword, 
+int ISpellChecker::pr_pre_expansion ( char *croot, ichar_t *rootword, 
 							struct flagent *flent, MASKTYPE mask[], int option, 
 							char *extra)
 {
@@ -606,7 +592,7 @@ static int pr_pre_expansion (ispell_state_t *istate,  char *croot, ichar_t *root
     tlen += flent->affl;
     for (cond = 0, nextc = rootword;  cond < flent->numconds;  cond++)
 	{
-		if ((flent->conds[mytoupper (istate, *nextc++)] & (1 << cond)) == 0)
+		if ((flent->conds[mytoupper (*nextc++)] & (1 << cond)) == 0)
 			return 0;
 	}
     /*
@@ -628,12 +614,12 @@ static int pr_pre_expansion (ispell_state_t *istate,  char *croot, ichar_t *root
 		nextc = tword + flent->affl;
 	}
     (void) icharcpy (nextc, rootword + flent->stripl);
-    if (myupper (istate, rootword[0]))
+    if (myupper (rootword[0]))
 	{
 		/* We must distinguish followcase from capitalized and all-upper */
 		for (nextc = rootword + 1;  *nextc;  nextc++)
 		{
-			if (!myupper (istate, *nextc))
+			if (!myupper (*nextc))
 				break;
 		}
 		if (*nextc)
@@ -641,35 +627,35 @@ static int pr_pre_expansion (ispell_state_t *istate,  char *croot, ichar_t *root
 			/* It's a followcase or capitalized word.  Figure out which. */
 			for (  ;  *nextc;  nextc++)
 			{
-				if (myupper (istate, *nextc))
+				if (myupper (*nextc))
 					break;
 			}
 			if (*nextc)
 			{
 				/* It's followcase. */
-				if (!myupper (istate, tword[flent->affl]))
-					forcelc (istate, tword, flent->affl);
+				if (!myupper (tword[flent->affl]))
+					forcelc (tword, flent->affl);
 			}
 			else
 			{
 				/* It's capitalized */
-				forcelc (istate, tword + 1, tlen - 1);
+				forcelc (tword + 1, tlen - 1);
 			}
 		}
 	}
     else
 	{
 		/* Followcase or all-lower, we don't care which */
-		if (!myupper (istate, *nextc))
-			forcelc (istate, tword, flent->affl);
+		if (!myupper (*nextc))
+			forcelc (tword, flent->affl);
 	}
     if (option == 3)
 		(void) printf ("\n%s", croot);
     if (option != 4)
-		(void) printf (" %s%s", ichartosstr (istate, tword, 1), extra);
+		(void) printf (" %s%s", ichartosstr (tword, 1), extra);
     if (flent->flagflags & FF_CROSSPRODUCT)
 		return tlen
-		  + expand_suf (istate, croot, tword, mask, FF_CROSSPRODUCT, option, extra);
+		  + expand_suf (croot, tword, mask, FF_CROSSPRODUCT, option, extra);
     else
 		return tlen;
 }
@@ -686,7 +672,7 @@ static int pr_pre_expansion (ispell_state_t *istate,  char *croot, ichar_t *root
  *
  * \return
  */
-int expand_suf (ispell_state_t *istate, char *croot, ichar_t *rootword, MASKTYPE mask[], 
+int ISpellChecker::expand_suf (char *croot, ichar_t *rootword, MASKTYPE mask[], 
 				int optflags, int option, char *extra)
 {
     int				entcount;	/* No. of entries to process */
@@ -694,7 +680,7 @@ int expand_suf (ispell_state_t *istate, char *croot, ichar_t *rootword, MASKTYPE
     register struct flagent *
 				flent;		/* Current table entry */
 
-    for (flent = istate->sflaglist, entcount = istate->numsflags, explength = 0;
+    for (flent = m_sflaglist, entcount = m_numsflags, explength = 0;
       entcount > 0;
       flent++, entcount--)
 	{
@@ -703,7 +689,7 @@ int expand_suf (ispell_state_t *istate, char *croot, ichar_t *rootword, MASKTYPE
 			if ((optflags & FF_CROSSPRODUCT) == 0
 			  ||  (flent->flagflags & FF_CROSSPRODUCT))
 			explength +=
-			  pr_suf_expansion (istate, croot, rootword, flent, option, extra);
+			  pr_suf_expansion (croot, rootword, flent, option, extra);
 		}
 	}
     return explength;
@@ -720,7 +706,7 @@ int expand_suf (ispell_state_t *istate, char *croot, ichar_t *rootword, MASKTYPE
  *
  * \return
  */
-static int pr_suf_expansion (ispell_state_t *istate, char *croot, ichar_t *rootword, 
+int ISpellChecker::pr_suf_expansion (char *croot, ichar_t *rootword, 
 							struct flagent *flent, int option, char *extra)
 {
     int				cond;		/* Current condition number */
@@ -736,7 +722,7 @@ static int pr_suf_expansion (ispell_state_t *istate, char *croot, ichar_t *rootw
 		return 0;
     for (nextc = rootword + tlen;  --cond >= 0;  )
 	{
-		if ((flent->conds[mytoupper (istate, *--nextc)] & (1 << cond)) == 0)
+		if ((flent->conds[mytoupper (*--nextc)] & (1 << cond)) == 0)
 			return 0;
 	}
     /*
@@ -749,15 +735,15 @@ static int pr_suf_expansion (ispell_state_t *istate, char *croot, ichar_t *rootw
     if (flent->affl)
 	{
 		(void) icharcpy (nextc, flent->affix);
-		if (!myupper (istate, nextc[-1]))
-			forcelc (istate, nextc, flent->affl);
+		if (!myupper (nextc[-1]))
+			forcelc (nextc, flent->affl);
 	}
     else
 		*nextc = 0;
     if (option == 3)
 		(void) printf ("\n%s", croot);
     if (option != 4)
-		(void) printf (" %s%s", ichartosstr (istate, tword, 1), extra);
+		(void) printf (" %s%s", ichartosstr (tword, 1), extra);
     return tlen + flent->affl - flent->stripl;
 }
 
@@ -765,9 +751,9 @@ static int pr_suf_expansion (ispell_state_t *istate, char *croot, ichar_t *rootw
  * \param dst Destination to modify
  * \param len Length to copy
  */
-static void forcelc (ispell_state_t *istate, ichar_t *dst, int len)			/* Force to lowercase */
+void ISpellChecker::forcelc (ichar_t *dst, int len)			/* Force to lowercase */
 {
 
     for (  ;  --len >= 0;  dst++)
-		*dst = mytolower (istate, *dst);
+		*dst = mytolower (*dst);
 }

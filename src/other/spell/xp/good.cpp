@@ -43,6 +43,16 @@
 
 /*
  * $Log$
+ * Revision 1.1  2003/01/24 05:52:32  hippietrail
+ * Refactored ispell code. Old ispell global variables had been put into
+ * an allocated structure, a pointer to which was passed to many functions.
+ * I have now made all such functions and variables private members of the
+ * ISpellChecker class. It was C OO, now it's C++ OO.
+ *
+ * I've fixed the makefiles and tested compilation but am unable to test
+ * operation. Please back out my changes if they cause problems which
+ * are not obvious or easy to fix.
+ *
  * Revision 1.6  2003/01/06 18:48:38  dom
  * ispell cleanup, start of using new 'add' save features
  *
@@ -151,9 +161,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ispell.h"
+#include "ispell_checker.h"
 
-int		good P ((ispell_state_t *istate, ichar_t * word, int ignoreflagbits, int allhits,
+
+int		good P ((ichar_t * word, int ignoreflagbits, int allhits,
 			 int pfxopts, int sfxopts));
 
 #ifndef NO_CAPITALIZATION_SUPPORT
@@ -183,7 +194,7 @@ static int entryhasaffixes (struct dent *dent, struct success *hit)
  *
  * \return
  */
-int cap_ok (ispell_state_t *istate, ichar_t *word, struct success *hit, int len)
+int ISpellChecker::cap_ok (ichar_t *word, struct success *hit, int len)
 {
     register ichar_t *		dword;
     register ichar_t *		w;
@@ -196,7 +207,7 @@ int cap_ok (ispell_state_t *istate, ichar_t *word, struct success *hit, int len)
     long			thiscap;
     long			dentcap;
 
-    thiscap = whatcap (istate, word);
+    thiscap = whatcap (word);
     /*
     ** All caps is always legal, regardless of affixes.
     */
@@ -245,14 +256,14 @@ int cap_ok (ispell_state_t *istate, ichar_t *word, struct success *hit, int len)
 				** possibility of affixes.  Start with
 				** the prefix.
 				*/
-				(void) strtoichar (istate, dentword, dent->word, INPUTWORDLEN, 1);
+				(void) strtoichar (dentword, dent->word, INPUTWORDLEN, 1);
 				dword = dentword;
 				limit = word + preadd;
-				if (myupper (istate, dword[prestrip]))
+				if (myupper (dword[prestrip]))
 				{
 					for (w = word;  w < limit;  w++)
 					{
-						if (mylower (istate, *w))
+						if (mylower (*w))
 							goto doublecontinue;
 					}
 				}
@@ -260,7 +271,7 @@ int cap_ok (ispell_state_t *istate, ichar_t *word, struct success *hit, int len)
 				{
 					for (w = word;  w < limit;  w++)
 					{
-						if (myupper (istate, *w))
+						if (myupper (*w))
 							goto doublecontinue;
 					}
 				}
@@ -274,11 +285,11 @@ int cap_ok (ispell_state_t *istate, ichar_t *word, struct success *hit, int len)
 				}
 				/* Do suffix */
 				dword = limit - 1;
-				if (myupper (istate, *dword))
+				if (myupper (*dword))
 				{
 					for (  ;  *w;  w++)
 					{
-						if (mylower (istate, *w))
+						if (mylower (*w))
 							goto doublecontinue;
 					}
 				}
@@ -286,7 +297,7 @@ int cap_ok (ispell_state_t *istate, ichar_t *word, struct success *hit, int len)
 				{
 					for (  ;  *w;  w++)
 					{
-						if (myupper (istate, *w))
+						if (myupper (*w))
 							goto doublecontinue;
 					}
 				}
@@ -319,10 +330,10 @@ int cap_ok (ispell_state_t *istate, ichar_t *word, struct success *hit, int len)
  *
  * \return
  */
-int good (ispell_state_t *istate, ichar_t *w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts)
+int ISpellChecker::good (ichar_t *w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts)
 #else
 /* ARGSUSED */
-int good (ispell_state_t *istate, ichar_t *w, int ignoreflagbits, int dummy, int pfxopts, int sfxopts)
+int ISpellChecker::good (ichar_t *w, int ignoreflagbits, int dummy, int pfxopts, int sfxopts)
 #endif
 {
     ichar_t		nword[INPUTWORDLEN + MAXAFFIXLEN];
@@ -335,31 +346,35 @@ int good (ispell_state_t *istate, ichar_t *w, int ignoreflagbits, int dummy, int
     ** Make an uppercase copy of the word we are checking.
     */
     for (p = w, q = nword;  *p;  )
-		*q++ = mytoupper (istate, *p++);
+		*q++ = mytoupper (*p++);
     *q = 0;
     n = q - nword;
 
-    istate->numhits = 0;
+    m_numhits = 0;
 
-    if ((dp = ispell_lookup (istate, nword, 1)) != NULL)
+    if ((dp = ispell_lookup (nword, 1)) != NULL)
 	{
-		istate->hits[0].dictent = dp;
-		istate->hits[0].prefix = NULL;
-		istate->hits[0].suffix = NULL;
+		m_hits[0].dictent = dp;
+		m_hits[0].prefix = NULL;
+		m_hits[0].suffix = NULL;
 #ifndef NO_CAPITALIZATION_SUPPORT
-		if (allhits  ||  cap_ok (istate, w, &istate->hits[0], n))
-			istate->numhits = 1;
+		if (allhits  ||  cap_ok (w, &m_hits[0], n))
+			m_numhits = 1;
 #else
-		istate->numhits = 1;
+		m_numhits = 1;
 #endif
 	}
 
-    if (istate->numhits  &&  !allhits)
+    if (m_numhits  &&  !allhits)
 		return 1;
 
     /* try stripping off affixes */
 
-    chk_aff (istate, w, nword, n, ignoreflagbits, allhits, pfxopts, sfxopts);
+    chk_aff (w, nword, n, ignoreflagbits, allhits, pfxopts, sfxopts);
 
-    return istate->numhits;
+    return m_numhits;
 }
+
+
+
+

@@ -47,7 +47,18 @@
 
 /*
  * $Log$
+ * Revision 1.10  2003/01/24 05:52:33  hippietrail
+ * Refactored ispell code. Old ispell global variables had been put into
+ * an allocated structure, a pointer to which was passed to many functions.
+ * I have now made all such functions and variables private members of the
+ * ISpellChecker class. It was C OO, now it's C++ OO.
+ *
+ * I've fixed the makefiles and tested compilation but am unable to test
+ * operation. Please back out my changes if they cause problems which
+ * are not obvious or easy to fix.
+ *
  * Revision 1.9  2002/09/19 05:31:15  hippietrail
+ *
  * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
  * K&R function declarations removed, converted to Doxygen style comments
  * where possible.  No code has been changed (I hope).  Compiles for me but
@@ -688,110 +699,6 @@ struct hashheader
               and then use it throughout.
 */
 
-#define ONLY_ARG(var)	ispell_state_t *var
-#define FIRST_ARG(var)	ispell_state_t *var,
-#define DEREF(var, x)	var->x
-#define DEREF_FIRST_ARG(var)	var,
-
-typedef struct _ispell_state {
-	char *	BC;	/* backspace if not ^H */
-	char *	cd;	/* clear to end of display */
-	char *	cl;	/* clear display */
-	char *	cm;	/* cursor movement */
-	char *	ho;	/* home */
-	char *	nd;	/* non-destructive space */
-	char *	so;	/* standout */
-	char *	se;	/* standout end */
-	int	sg;	/* space taken by so/se */
-	char *	ti;	/* terminal initialization sequence */
-	char *	te;	/* terminal termination sequence */
-	int	li;	/* lines */
-	int	co;	/* columns */
-
-#if 0
-	int	contextsize;	/* number of lines of context to show */
-	char	contextbufs[MAXCONTEXT][BUFSIZ]; /* Context of current line */
-	int	contextoffset;	/* Offset of line start in contextbufs[0] */
-	char *	currentchar;	/* Location in contextbufs */
-#endif
-
-	char	ctoken[INPUTWORDLEN + MAXAFFIXLEN]; /* Current token as char */
-	ichar_t	itoken[INPUTWORDLEN + MAXAFFIXLEN]; /* Ctoken as ichar_t str */
-
-#if 0
-	char	termcap[2048];	/* termcap entry */
-	char	termstr[2048];	/* for string values */
-	char *	termptr;	/* pointer into termcap, used by tgetstr */
-#endif
-
-	int	numhits;	/* number of hits in dictionary lookups */
-	struct success
-			hits[MAX_HITS]; /* table of hits gotten in lookup */
-
-	char *	hashstrings;	/* Strings in hash table */
-	struct hashheader
-			hashheader;	/* Header of hash table */
-	struct dent *
-			hashtbl;	/* Main hash table, for dictionary */
-	int	hashsize;	/* Size of main hash table */
-
-	char	hashname[MAXPATHLEN]; /* Name of hash table file */
-
-	int	aflag;		/* NZ if -a or -A option specified */
-	int	cflag;		/* NZ if -c (crunch) option */
-	int	lflag;		/* NZ if -l (list) option */
-	int	incfileflag;	/* whether xgets() acts exactly like gets() */
-	int	nodictflag;	/* NZ if dictionary not needed */
-
-	int	uerasechar;	/* User's erase character, from stty */
-	int	ukillchar;	/* User's kill character */
-
-	unsigned int laststringch; /* Number of last string character */
-	int	defdupchar;	/* Default duplicate string type */
-
-	int	numpflags;		/* Number of prefix flags in table */
-	int	numsflags;		/* Number of suffix flags in table */
-	struct flagptr pflagindex[SET_SIZE + MAXSTRINGCHARS];
-						/* Fast index to pflaglist */
-	struct flagent *	pflaglist;	/* Prefix flag control list */
-	struct flagptr sflagindex[SET_SIZE + MAXSTRINGCHARS];
-						/* Fast index to sflaglist */
-	struct flagent *	sflaglist;	/* Suffix flag control list */
-
-	struct strchartype *		/* String character type collection */
-			chartypes;
-
-	FILE *	infile;			/* File being corrected */
-	FILE *	outfile;		/* Corrected copy of infile */
-
-	char *	askfilename;		/* File specified in -f option */
-
-	int	changes;		/* NZ if changes made to cur. file */
-	int	readonly;		/* NZ if current file is readonly */
-	int	quit;			/* NZ if we're done with this file */
-
-#define MAXPOSSIBLE	100	/* Max no. of possibilities to generate */
-
-	char	possibilities[MAXPOSSIBLE][INPUTWORDLEN + MAXAFFIXLEN];
-					/* Table of possible corrections */
-	int	pcount;		/* Count of possibilities generated */
-	int	maxposslen;	/* Length of longest possibility */
-	int	easypossibilities; /* Number of "easy" corrections found */
-					/* ..(defined as those using legal affixes) */
-
-	/*
-	 * The following array contains a list of characters that should be tried
-	 * in "missingletter."  Note that lowercase characters are omitted.
-	 */
-	int	Trynum;		/* Size of "Try" array */
-	ichar_t	Try[SET_SIZE + MAXSTRINGCHARS];
-
-	UT_iconv_t  translate_in; /* Selected translation from/to Unicode */
-	UT_iconv_t  translate_out;
-} ispell_state_t;
-
-
-
 /*
  * Initialized variables.  These are generated using macros so that they
  * may be consistently declared in all programs.  Numerous examples of
@@ -841,77 +748,6 @@ INIT (int math_mode, 0);
  * m -- looking for a \begin{minipage} argument.
  */
 INIT (char LaTeX_Mode, 'P');
-
-int good (FIRST_ARG(istate) ichar_t* w, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
-int compoundgood (FIRST_ARG(istate) ichar_t * word, int pfxopts);
-void chk_aff (FIRST_ARG(istate) ichar_t* word, ichar_t* ucword, int len, int ignoreflagbits, int allhits, int pfxopts, int sfxopts);
-int linit(FIRST_ARG(istate) char*);
-void lcleanup(ONLY_ARG(istate));
-struct dent * ispell_lookup (FIRST_ARG(istate) ichar_t* s, int dotree);
-int strtoichar (FIRST_ARG(istate) ichar_t* out, char* in, int outlen, int canonical);
-int ichartostr (FIRST_ARG(istate) char* out, ichar_t* in, int outlen, int canonical);
-char * ichartosstr (FIRST_ARG(istate) ichar_t* in, int canonical);
-int	findfiletype (FIRST_ARG(istate) const char * name, int searchnames, int * deformatter);
-long whatcap (FIRST_ARG(istate) ichar_t* word);
-
-/*
-** The isXXXX macros normally only check ASCII range, and don't support
-** the character sets of other languages.  These private versions handle
-** whatever character sets have been defined in the affix files.
-*/
-#ifdef lint
-extern int	myupper P ((unsigned int ch));
-extern int	mylower P ((unsigned int ch));
-extern int	myspace P ((unsigned int ch));
-extern int	iswordch P ((unsigned int ch));
-extern int	isboundarych P ((unsigned int ch));
-extern int	isstringstart P ((unsigned int ch));
-extern ichar_t	mytolower P ((unsigned int ch));
-extern ichar_t	mytoupper P ((unsigned int ch));
-#else /* lint */
-#if 0
-#define myupper(X)	(hashheader.upperchars[(X)])
-#define mylower(X)	(hashheader.lowerchars[(X)])
-#define myspace(X)	(((X) > 0)  &&  ((X) < 0x80) \
-			  &&  isspace((unsigned char) (X)))
-#define iswordch(X)	(hashheader.wordchars[(X)])
-#define isboundarych(X) (hashheader.boundarychars[(X)])
-#define isstringstart(X) (hashheader.stringstarts[(unsigned char) (X)])
-#define mytolower(X)	(hashheader.lowerconv[(X)])
-#define mytoupper(X)	(hashheader.upperconv[(X)])
-#else
-/*
-	HACK: macros replaced with function implementations 
-	so we could do a side-effect-free check for unicode
-	characters which aren't in hashheader
-*/
-char myupper(FIRST_ARG(istate) ichar_t c);
-char mylower(FIRST_ARG(istate) ichar_t c);
-int myspace(ichar_t c);
-char iswordch(FIRST_ARG(istate) ichar_t c);
-char isboundarych(FIRST_ARG(istate) ichar_t c);
-char isstringstart(FIRST_ARG(istate) ichar_t c);
-ichar_t mytolower(FIRST_ARG(istate) ichar_t c);
-ichar_t mytoupper(FIRST_ARG(istate) ichar_t c);
-#endif
-#endif /* lint */
-
-void		upcase P ((FIRST_ARG(istate) ichar_t * string));
-void		lowcase P ((FIRST_ARG(istate) ichar_t * string));
-ichar_t *    strtosichar P ((FIRST_ARG(istate) char * in, int canonical));
-
-#ifdef ICHAR_IS_CHAR
-#else
-
-int cap_ok (FIRST_ARG(istate) ichar_t* word, struct success* hit, int len);
-void makepossibilities(FIRST_ARG(istate) ichar_t* word);
-
-int hash (FIRST_ARG(istate) ichar_t* s, int hashtblsize);
-#endif
-
-
-ispell_state_t *alloc_ispell_struct();
-void free_ispell_struct(ispell_state_t *istate);
 
 #ifdef __cplusplus
 }

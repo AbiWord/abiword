@@ -38,6 +38,16 @@
 
 /*
  * $Log$
+ * Revision 1.1  2003/01/24 05:52:35  hippietrail
+ * Refactored ispell code. Old ispell global variables had been put into
+ * an allocated structure, a pointer to which was passed to many functions.
+ * I have now made all such functions and variables private members of the
+ * ISpellChecker class. It was C OO, now it's C++ OO.
+ *
+ * I've fixed the makefiles and tested compilation but am unable to test
+ * operation. Please back out my changes if they cause problems which
+ * are not obvious or easy to fix.
+ *
  * Revision 1.8  2003/01/06 18:48:40  dom
  * ispell cleanup, start of using new 'add' save features
  *
@@ -137,11 +147,10 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "ispell.h"
+#include "ispell_checker.h"
 #include "msgs.h"
 
 int		makedent P ((char * lbuf, int lbuflen, struct dent * ent));
-int		addvheader P ((ispell_state_t *istate, struct dent * ent));
 /*int		combinecaps P ((struct dent * hdr, struct dent * newent));
 #ifndef NO_CAPITALIZATION_SUPPORT
 static void	forcevheader P ((struct dent * hdrp, struct dent * oldp,
@@ -151,9 +160,6 @@ static int	combine_two_entries P ((struct dent * hdrp,
 		  struct dent * oldp, struct dent * newp));
 static int	acoversb P ((struct dent * enta, struct dent * entb));
 */
-void		upcase P ((ispell_state_t *istate, ichar_t * string));
-void		lowcase P ((ispell_state_t *istate, ichar_t * string));
-void		chupcase P ((ispell_state_t *istate, char * s));
 /*static int	issubset P ((struct dent * ent1, struct dent * ent2));
 static void	combineaffixes P ((struct dent * ent1, struct dent * ent2));*/
 
@@ -163,9 +169,6 @@ void		toutent P ((FILE * outfile, struct dent * hent,
 		  struct dent * cent));
 static void	flagout P ((FILE * outfile, int flag));
 */
-int		stringcharlen P ((ispell_state_t *istate, char * bufp, int canonical));
-ichar_t *	strtosichar P ((ispell_state_t *istate, char * in, int canonical));
-char *		printichar P ((ispell_state_t *istate, int in));
 #ifndef ICHAR_IS_CHAR
 ichar_t *	icharcpy P ((ichar_t * out, ichar_t * in));
 int		icharlen P ((ichar_t * str));
@@ -194,13 +197,13 @@ other abi documents
 ** \return
 */
 long
-whatcap (ispell_state_t *istate, ichar_t *word)
+ISpellChecker::whatcap (ichar_t *word)
 {
     register ichar_t *	p;
 
     for (p = word;  *p;  p++)
 	{
-		if (mylower (istate, *p))
+		if (mylower (*p))
 			break;
 	}
     if (*p == '\0')
@@ -209,7 +212,7 @@ whatcap (ispell_state_t *istate, ichar_t *word)
 	{
 		for (  ;  *p;  p++)
 	    {
-			if (myupper (istate, *p))
+			if (myupper (*p))
 				break;
 	    }
 		if (*p == '\0')
@@ -221,11 +224,11 @@ whatcap (ispell_state_t *istate, ichar_t *word)
 			** it's "capitalize".  If there are no capitals
 			** at all, it's ANYCASE.
 			*/
-			if (myupper (istate, word[0]))
+			if (myupper (word[0]))
 			{
 				for (p = word + 1;  *p != '\0';  p++)
 				{
-					if (myupper (istate, *p))
+					if (myupper (*p))
 						return FOLLOWCASE;
 				}
 				return CAPITALIZED;
@@ -246,7 +249,7 @@ whatcap (ispell_state_t *istate, ichar_t *word)
 **
 ** \return 0 if all was ok, -1 if allocation error.
 */
-int addvheader (ispell_state_t *istate,  struct dent *dp)
+int ISpellChecker::addvheader ( struct dent *dp)
 {
     register struct dent *	tdent; /* Copy of entry */
 
@@ -266,7 +269,7 @@ int addvheader (ispell_state_t *istate,  struct dent *dp)
     else
 	{
 		/* Followcase words need a copy of the capitalization */
-		tdent->word = malloc ((unsigned int) strlen (tdent->word) + 1);
+		tdent->word = static_cast<char *>(malloc ((unsigned int) strlen (tdent->word) + 1));
 		if (tdent->word == NULL)
 	    {
 			(void) fprintf (stderr, MAKEDENT_C_NO_WORD_SPACE, dp->word);
@@ -275,7 +278,7 @@ int addvheader (ispell_state_t *istate,  struct dent *dp)
 	    }
 		(void) strcpy (tdent->word, dp->word);
 	}
-    chupcase (istate, dp->word);
+    chupcase (dp->word);
     dp->next = tdent;
     dp->flagfield &= ~CAPTYPEMASK;
     dp->flagfield |= (ALLCAPS | MOREVARIANTS);
@@ -360,12 +363,12 @@ static int acoversb (enta, entb)
  * \param s
  */
 void
-upcase (ispell_state_t *istate, ichar_t *s)
+ISpellChecker::upcase (ichar_t *s)
 {
 
     while (*s)
 	{
-		*s = mytoupper (istate, *s);
+		*s = mytoupper (*s);
 		s++;
 	}
 }
@@ -374,12 +377,12 @@ upcase (ispell_state_t *istate, ichar_t *s)
  * \param s
  */
 void
-lowcase (ispell_state_t *istate, ichar_t *s)
+ISpellChecker::lowcase (ichar_t *s)
 {
 
     while (*s)
 	{
-		*s = mytolower (istate, *s);
+		*s = mytolower (*s);
 		s++;
 	}
 }
@@ -391,13 +394,13 @@ lowcase (ispell_state_t *istate, ichar_t *s)
  * \param s
  */
 void
-chupcase (ispell_state_t *istate, char *s)
+ISpellChecker::chupcase (char *s)
 {
     ichar_t *	is;
 
-    is = strtosichar (istate, s, 1);
-    upcase (istate, is);
-    (void) ichartostr (istate, s, is, strlen (s) + 1, 1);
+    is = strtosichar (s, 1);
+    upcase (is);
+    (void) ichartostr (s, is, strlen (s) + 1, 1);
 }
 
 /*
@@ -433,7 +436,7 @@ static void flagout (toutfile, flag)
  * \return
  */
 int
-stringcharlen (ispell_state_t *istate, char *bufp, int canonical)
+ISpellChecker::stringcharlen (char *bufp, int canonical)
 {
 #ifdef SLOWMULTIPLY
     static char *	sp[MAXSTRINGCHARS];
@@ -455,15 +458,15 @@ stringcharlen (ispell_state_t *istate, char *bufp, int canonical)
 	}
 #endif /* SLOWMULTIPLY */
     lowstringno = 0;
-    highstringno = istate->hashheader.nstrchars - 1;
-    dupwanted = canonical ? 0 : istate->defdupchar;
+    highstringno = m_hashheader.nstrchars - 1;
+    dupwanted = canonical ? 0 : m_defdupchar;
     while (lowstringno <= highstringno)
 	{
 		stringno = (lowstringno + highstringno) >> 1;
 #ifdef SLOWMULTIPLY
 		stringcur = sp[stringno];
 #else /* SLOWMULTIPLY */
-		stringcur = &istate->hashheader.stringchars[stringno][0];
+		stringcur = &m_hashheader.stringchars[stringno][0];
 #endif /* SLOWMULTIPLY */
 		bufcur = bufp;
 		while (*stringcur)
@@ -482,14 +485,14 @@ stringcharlen (ispell_state_t *istate, char *bufp, int canonical)
 	    }
 		if (*stringcur == '\0')
 	    {
-			if (istate->hashheader.dupnos[stringno] == dupwanted)
+			if (m_hashheader.dupnos[stringno] == dupwanted)
 			{
 				/* We have a match */
-				istate->laststringch = istate->hashheader.stringdups[stringno];
+				m_laststringch = m_hashheader.stringdups[stringno];
 #ifdef SLOWMULTIPLY
 				return stringcur - sp[stringno];
 #else /* SLOWMULTIPLY */
-				return stringcur - &istate->hashheader.stringchars[stringno][0];
+				return stringcur - &m_hashheader.stringchars[stringno][0];
 #endif /* SLOWMULTIPLY */
 			}
 			else
@@ -507,12 +510,12 @@ stringcharlen (ispell_state_t *istate, char *bufp, int canonical)
 		else if (*bufcur > *stringcur)
 			lowstringno = stringno + 1;
 #endif /* NO8BIT */
-		else if (dupwanted < istate->hashheader.dupnos[stringno])
+		else if (dupwanted < m_hashheader.dupnos[stringno])
 			highstringno = stringno - 1;
 		else
 			lowstringno = stringno + 1;
 	}
-    istate->laststringch = -1;
+    m_laststringch = -1;
     return 0;			/* Not a string character */
 }
 
@@ -533,7 +536,7 @@ stringcharlen (ispell_state_t *istate, char *bufp, int canonical)
 #define isstringch(ptr, canon)	(isstringstart (*(ptr)) \
 				  &&  stringcharlen ((ptr), (canon)) > 0)
 /*
-int isstringch(ispell_state_t *istate, char *ptr, int canon) {
+int isstringch(char *ptr, int canon) {
 	return (isstringstart (*(ptr)) && (len = stringcharlen ((ptr), (canon))) > 0);
 }
 */
@@ -543,22 +546,22 @@ int isstringch(ispell_state_t *istate, char *ptr, int canon) {
 				  &&  (len = stringcharlen ((ptr), (canon))) \
 				    > 0)
 /*
-int l_isstringch(ispell_state_t *istate, char *ptr, int len, int canon) {
+int l_isstringch(char *ptr, int len, int canon) {
 	return (isstringstart (*(ptr)) &&  (len = stringcharlen ((ptr), (canon))) > 0);
 }
 */
 
-#define l1_isstringch(state, ptr, len, canon)	\
+#define l1_isstringch(ptr, len, canon)	\
 				(len = 1, \
-				  isstringstart (istate, (unsigned char)(*(ptr))) \
+				  isstringstart ((unsigned char)(*(ptr))) \
 				    &&  ((len = \
-					  stringcharlen (istate, (ptr), (canon))) \
+					  stringcharlen ((ptr), (canon))) \
 					> 0 \
 				      ? 1 : (len = 1, 0)))
 /*
-int l1_isstringch(ispell_state_t *istate, char *ptr, int len, int canon) {
-	return (len = 1, isstringstart (istate, (unsigned char)(*(ptr))) &&  
-           ((len = stringcharlen (istate, (ptr), (canon))) > 0 ? 1 : (len = 1, 0)));
+int l1_isstringch(char *ptr, int len, int canon) {
+	return (len = 1, isstringstart ((unsigned char)(*(ptr))) &&  
+           ((len = stringcharlen ((ptr), (canon))) > 0 ? 1 : (len = 1, 0)));
 }
 */
 
@@ -576,15 +579,15 @@ int l1_isstringch(ispell_state_t *istate, char *ptr, int len, int canon) {
  * \return NZ if the output string overflowed.
  */
 int
-strtoichar (ispell_state_t *istate, ichar_t *out, char *in, int outlen, int canonical)
+ISpellChecker::strtoichar (ichar_t *out, char *in, int outlen, int canonical)
 {
     register int len = 1;		/* Length of next character */
 
     outlen /= sizeof (ichar_t);		/* Convert to an ichar_t count */
     for (  ;  --outlen > 0  &&  *in != '\0';  in += len)
 	{
-		if (l1_isstringch (istate, in, len , canonical))
-			*out++ = SET_SIZE + istate->laststringch;
+		if (l1_isstringch (in, len , canonical))
+			*out++ = SET_SIZE + m_laststringch;
 		else
 			*out++ = (unsigned char)( *in );
 	}
@@ -608,7 +611,7 @@ strtoichar (ispell_state_t *istate, ichar_t *out, char *in, int outlen, int cano
  * \return NZ if the output string overflowed.
  */
 int
-ichartostr (ispell_state_t *istate,  char *out, ichar_t *in, int outlen, int canonical)
+ISpellChecker::ichartostr ( char *out, ichar_t *in, int outlen, int canonical)
 {
     register int	ch;		/* Next character to store */
     register int	i;		/* Index into duplicates list */
@@ -623,17 +626,17 @@ ichartostr (ispell_state_t *istate,  char *out, ichar_t *in, int outlen, int can
 			ch -= SET_SIZE;
 			if (!canonical)
 			{
-				for (i = istate->hashheader.nstrchars;  --i >= 0;  )
+				for (i = m_hashheader.nstrchars;  --i >= 0;  )
 				{
-					if (istate->hashheader.dupnos[i] == istate->defdupchar
-					  &&  ((int) (istate->hashheader.stringdups[i])) == ch)
+					if (m_hashheader.dupnos[i] == m_defdupchar
+					  &&  ((int) (m_hashheader.stringdups[i])) == ch)
 					{
 						ch = i;
 						break;
 					}
 				}
 			}
-			scharp = istate->hashheader.stringchars[(unsigned) ch];
+			scharp = m_hashheader.stringchars[(unsigned) ch];
 			while ((*out++ = *scharp++) != '\0')
 				;
 			out--;
@@ -652,11 +655,11 @@ ichartostr (ispell_state_t *istate,  char *out, ichar_t *in, int outlen, int can
  * \return
  */
 ichar_t *
-strtosichar (ispell_state_t *istate,  char *in, int canonical)
+ISpellChecker::strtosichar ( char *in, int canonical)
 {
     static ichar_t	out[STRTOSICHAR_SIZE / sizeof (ichar_t)];
 
-    if (strtoichar (istate, out, in, sizeof out, canonical))
+    if (strtoichar (out, in, sizeof out, canonical))
 		(void) fprintf (stderr, WORD_TOO_LONG (in));
     return out;
 }
@@ -670,11 +673,11 @@ strtosichar (ispell_state_t *istate,  char *in, int canonical)
  * \return
  */
 char *
-ichartosstr (ispell_state_t *istate, ichar_t *in, int canonical)
+ISpellChecker::ichartosstr (ichar_t *in, int canonical)
 {
     static char		out[ICHARTOSSTR_SIZE];
 
-    if (ichartostr (istate, out, in, sizeof out, canonical))
+    if (ichartostr (out, in, sizeof out, canonical))
 		(void) fprintf (stderr, WORD_TOO_LONG (out));
     return out;
 }
@@ -688,7 +691,7 @@ ichartosstr (ispell_state_t *istate, ichar_t *in, int canonical)
  * \return
  */
 char *
-printichar (ispell_state_t *istate, int in)
+ISpellChecker::printichar (int in)
 {
     static char		out[MAXSTRINGCHARLEN + 1];
 
@@ -698,7 +701,7 @@ printichar (ispell_state_t *istate, int in)
 		out[1] = '\0';
 	}
     else
-		(void) strcpy (out, istate->hashheader.stringchars[(unsigned) in - SET_SIZE]);
+		(void) strcpy (out, m_hashheader.stringchars[(unsigned) in - SET_SIZE]);
     return out;
 }
 
@@ -794,7 +797,7 @@ icharncmp (ichar_t *s1, ichar_t *s2, int n)
  * \return
  */
 int
-findfiletype (ispell_state_t *istate, const char *name, int searchnames, int *deformatter)
+ISpellChecker::findfiletype (const char *name, int searchnames, int *deformatter)
 {
     char *		cp;		/* Pointer into suffix list */
     int			cplen;		/* Length of current suffix */
@@ -809,27 +812,27 @@ findfiletype (ispell_state_t *istate, const char *name, int searchnames, int *de
     len = strlen (name);
     if (searchnames)
 	{
-		for (i = 0;  i < istate->hashheader.nstrchartype;  i++)
+		for (i = 0;  i < m_hashheader.nstrchartype;  i++)
 	    {
-			if (strcmp (name, istate->chartypes[i].name) == 0)
+			if (strcmp (name, m_chartypes[i].name) == 0)
 			{
 				if (deformatter != NULL)
 					*deformatter =
-					  (strcmp (istate->chartypes[i].deformatter, "tex") == 0);
+					  (strcmp (m_chartypes[i].deformatter, "tex") == 0);
 				return i;
 			}
 	    }
 	}
-    for (i = 0;  i < istate->hashheader.nstrchartype;  i++)
+    for (i = 0;  i < m_hashheader.nstrchartype;  i++)
 	{
-		for (cp = istate->chartypes[i].suffixes;  *cp != '\0';  cp += cplen + 1)
+		for (cp = m_chartypes[i].suffixes;  *cp != '\0';  cp += cplen + 1)
 		{
 			cplen = strlen (cp);
 			if (len >= cplen  &&  strcmp (&name[len - cplen], cp) == 0)
 			{
 				if (deformatter != NULL)
 					*deformatter =
-					  (strcmp (istate->chartypes[i].deformatter, "tex") == 0);
+					  (strcmp (m_chartypes[i].deformatter, "tex") == 0);
 				return i;
 			}
 	    }
@@ -864,18 +867,18 @@ ichar_t mytoupper (ch) unsigned int ch; { return (ichar_t) ch; }
 	TODO: this is just a workaround to keep us from crashing. 
 	more sophisticated logic needed here. 
 */
-char myupper(ispell_state_t *istate, ichar_t c)
+char ISpellChecker::myupper(ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return istate->hashheader.upperchars[c];
+		return m_hashheader.upperchars[c];
 	else
 		return 0;
 }
 
-char mylower(ispell_state_t *istate, ichar_t c)
+char ISpellChecker::mylower(ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return istate->hashheader.lowerchars[c];
+		return m_hashheader.lowerchars[c];
 	else
 		return 0;
 }
@@ -885,42 +888,42 @@ int myspace(ichar_t c)
 	return ((c > 0)  &&  (c < 0x80) &&  isspace((unsigned char) c));
 }
 
-char iswordch(ispell_state_t *istate, ichar_t c)
+char ISpellChecker::iswordch(ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return istate->hashheader.wordchars[c];
+		return m_hashheader.wordchars[c];
 	else
 		return 0;
 }
 
-char isboundarych(ispell_state_t *istate, ichar_t c)
+char ISpellChecker::isboundarych(ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return istate->hashheader.boundarychars[c];
+		return m_hashheader.boundarychars[c];
 	else
 		return 0;
 }
 
-char isstringstart(ispell_state_t *istate, ichar_t c)
+char ISpellChecker::isstringstart(ichar_t c)
 {
 	if (c < (SET_SIZE))
-		return istate->hashheader.stringstarts[(unsigned char) c];
+		return m_hashheader.stringstarts[(unsigned char) c];
 	else
 		return 0;
 }
 
-ichar_t mytolower(ispell_state_t *istate, ichar_t c)
+ichar_t ISpellChecker::mytolower(ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return istate->hashheader.lowerconv[c];
+		return m_hashheader.lowerconv[c];
 	else
 		return c;
 }
 
-ichar_t mytoupper (ispell_state_t *istate, ichar_t c)
+ichar_t ISpellChecker::mytoupper (ichar_t c)
 {
 	if (c < (SET_SIZE + MAXSTRINGCHARS))
-		return istate->hashheader.upperconv[c];
+		return m_hashheader.upperconv[c];
 	else
 		return c;
 }

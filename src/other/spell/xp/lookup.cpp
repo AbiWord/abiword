@@ -42,6 +42,16 @@
 
 /*
  * $Log$
+ * Revision 1.1  2003/01/24 05:52:34  hippietrail
+ * Refactored ispell code. Old ispell global variables had been put into
+ * an allocated structure, a pointer to which was passed to many functions.
+ * I have now made all such functions and variables private members of the
+ * ISpellChecker class. It was C OO, now it's C++ OO.
+ *
+ * I've fixed the makefiles and tested compilation but am unable to test
+ * operation. Please back out my changes if they cause problems which
+ * are not obvious or easy to fix.
+ *
  * Revision 1.12  2003/01/06 18:48:39  dom
  * ispell cleanup, start of using new 'add' save features
  *
@@ -173,15 +183,13 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "ispell.h"
+#include "ispell_checker.h"
 #include "ut_iconv.h"
 #include "msgs.h"
 
 #ifdef INDEXDUMP
 static void	dumpindex P ((struct flagptr * indexp, int depth));
 #endif /* INDEXDUMP */
-static void	clearindex P ((ispell_state_t *istate, struct flagptr * indexp));
-static void     initckch P ((ispell_state_t *istate, char *));
 
 int		gnMaskBits = 64;
 
@@ -190,7 +198,7 @@ int		gnMaskBits = 64;
  *
  * \return
  */
-int linit (ispell_state_t *istate, char *hashname)
+int ISpellChecker::linit (char *hashname)
 {
 	FILE*	fpHash;
 		
@@ -207,75 +215,75 @@ int linit (ispell_state_t *istate, char *hashname)
 		return (-1);
 	}
 
-    istate->hashsize = fread ((char *) &istate->hashheader, 1, sizeof istate->hashheader, fpHash);
-    if (istate->hashsize < (int)sizeof(istate->hashheader))
+    m_hashsize = fread ((char *) &m_hashheader, 1, sizeof m_hashheader, fpHash);
+    if (m_hashsize < (int)sizeof(m_hashheader))
 	{
-		if (istate->hashsize < 0)
+		if (m_hashsize < 0)
 			(void) fprintf (stderr, LOOKUP_C_CANT_READ, hashname);
-		else if (istate->hashsize == 0)
+		else if (m_hashsize == 0)
 			(void) fprintf (stderr, LOOKUP_C_NULL_HASH, hashname);
 		else
 			(void) fprintf (stderr,
-			  LOOKUP_C_SHORT_HASH (istate->hashname, istate->hashsize,
-				(int) sizeof istate->hashheader));
+			  LOOKUP_C_SHORT_HASH (m_hashname, m_hashsize,
+				(int) sizeof m_hashheader));
 		return (-1);
 	}
-    else if (istate->hashheader.magic != MAGIC)
+    else if (m_hashheader.magic != MAGIC)
 	{
 		(void) fprintf (stderr,
 		  LOOKUP_C_BAD_MAGIC (hashname, (unsigned int) MAGIC,
-			(unsigned int) istate->hashheader.magic));
+			(unsigned int) m_hashheader.magic));
 		return (-1);
 	}
-    else if (istate->hashheader.magic2 != MAGIC)
+    else if (m_hashheader.magic2 != MAGIC)
 	{
 		(void) fprintf (stderr,
 		  LOOKUP_C_BAD_MAGIC2 (hashname, (unsigned int) MAGIC,
-			(unsigned int) istate->hashheader.magic2));
+			(unsigned int) m_hashheader.magic2));
 		return (-1);
 	}
 /*  else if (hashheader.compileoptions != COMPILEOPTIONS*/
     else if ( 1 != 1
-      ||  istate->hashheader.maxstringchars != MAXSTRINGCHARS
-      ||  istate->hashheader.maxstringcharlen != MAXSTRINGCHARLEN)
+      ||  m_hashheader.maxstringchars != MAXSTRINGCHARS
+      ||  m_hashheader.maxstringcharlen != MAXSTRINGCHARLEN)
 	{
 		(void) fprintf (stderr,
-		  LOOKUP_C_BAD_OPTIONS ((unsigned int) istate->hashheader.compileoptions,
-			istate->hashheader.maxstringchars, istate->hashheader.maxstringcharlen,
+		  LOOKUP_C_BAD_OPTIONS ((unsigned int) m_hashheader.compileoptions,
+			m_hashheader.maxstringchars, m_hashheader.maxstringcharlen,
 			(unsigned int) COMPILEOPTIONS, MAXSTRINGCHARS, MAXSTRINGCHARLEN));
 		return (-1);
 	}
 
 	{
-		istate->hashtbl =
+		m_hashtbl =
 		 (struct dent *)
-			calloc ((unsigned) istate->hashheader.tblsize, sizeof (struct dent));
-		istate->hashsize = istate->hashheader.tblsize;
-		istate->hashstrings = (char *) malloc ((unsigned) istate->hashheader.stringsize);
+			calloc ((unsigned) m_hashheader.tblsize, sizeof (struct dent));
+		m_hashsize = m_hashheader.tblsize;
+		m_hashstrings = (char *) malloc ((unsigned) m_hashheader.stringsize);
 	}
-    istate->numsflags = istate->hashheader.stblsize;
-    istate->numpflags = istate->hashheader.ptblsize;
-    istate->sflaglist = (struct flagent *)
-      malloc ((istate->numsflags + istate->numpflags) * sizeof (struct flagent));
-    if (istate->hashtbl == NULL  ||  istate->hashstrings == NULL  ||  istate->sflaglist == NULL)
+    m_numsflags = m_hashheader.stblsize;
+    m_numpflags = m_hashheader.ptblsize;
+    m_sflaglist = (struct flagent *)
+      malloc ((m_numsflags + m_numpflags) * sizeof (struct flagent));
+    if (m_hashtbl == NULL  ||  m_hashstrings == NULL  ||  m_sflaglist == NULL)
 	{
 		(void) fprintf (stderr, LOOKUP_C_NO_HASH_SPACE);
 		return (-1);
 	}
-    istate->pflaglist = istate->sflaglist + istate->numsflags;
+    m_pflaglist = m_sflaglist + m_numsflags;
 
 	{
-		if( fread ( istate->hashstrings, 1, (unsigned)istate->hashheader.stringsize, fpHash) 
-			!= ((size_t)(istate->hashheader.stringsize)) )
+		if( fread ( m_hashstrings, 1, (unsigned)m_hashheader.stringsize, fpHash) 
+			!= ((size_t)(m_hashheader.stringsize)) )
 	    {
 		    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 			(void) fprintf (stderr, "stringsize err\n" );
 	    	return (-1);
 	    }
-		if ( istate->hashheader.compileoptions & 0x04 )
+		if ( m_hashheader.compileoptions & 0x04 )
 		{
-			if(  fread ((char *) istate->hashtbl, 1, (unsigned)istate->hashheader.tblsize * sizeof(struct dent), fpHash)
-		    	!= ((size_t) (istate->hashheader.tblsize * sizeof (struct dent))))
+			if(  fread ((char *) m_hashtbl, 1, (unsigned)m_hashheader.tblsize * sizeof(struct dent), fpHash)
+		    	!= ((size_t) (m_hashheader.tblsize * sizeof (struct dent))))
 		    {
 			    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 		    	return (-1);
@@ -283,9 +291,9 @@ int linit (ispell_state_t *istate, char *hashname)
 		}
 		else
 		{
-			for( x=0; x<istate->hashheader.tblsize; x++ )
+			for( x=0; x<m_hashheader.tblsize; x++ )
 			{
-				if(  fread ( (char*)(istate->hashtbl+x), sizeof( struct dent)-sizeof( MASKTYPE ), 1, fpHash)
+				if(  fread ( (char*)(m_hashtbl+x), sizeof( struct dent)-sizeof( MASKTYPE ), 1, fpHash)
 			    	!= 1)
 			    {
 				    (void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
@@ -294,9 +302,9 @@ int linit (ispell_state_t *istate, char *hashname)
 			}	/*for*/
 		}	/*else*/
 	}
-    if (fread ((char *) istate->sflaglist, 1,
-	(unsigned) (istate->numsflags + istate->numpflags) * sizeof (struct flagent), fpHash)
-      != (istate->numsflags + istate->numpflags) * sizeof (struct flagent))
+    if (fread ((char *) m_sflaglist, 1,
+	(unsigned) (m_numsflags + m_numpflags) * sizeof (struct flagent), fpHash)
+      != (m_numsflags + m_numpflags) * sizeof (struct flagent))
 	{
 		(void) fprintf (stderr, LOOKUP_C_BAD_FORMAT);
 		return (-1);
@@ -304,27 +312,27 @@ int linit (ispell_state_t *istate, char *hashname)
     (void) fclose (fpHash);
 
 	{
-		for (i = istate->hashsize, dp = istate->hashtbl;  --i >= 0;  dp++)
+		for (i = m_hashsize, dp = m_hashtbl;  --i >= 0;  dp++)
 		{
 			if (dp->word == (char *) -1)
 				dp->word = NULL;
 			else
-				dp->word = &istate->hashstrings [ (int)(dp->word) ];
+				dp->word = &m_hashstrings [ (int)(dp->word) ];
 			if (dp->next == (struct dent *) -1)
 				dp->next = NULL;
 			else
-				dp->next = &istate->hashtbl [ (int)(dp->next) ];
+				dp->next = &m_hashtbl [ (int)(dp->next) ];
 	    }
 	}
 
-    for (i = istate->numsflags + istate->numpflags, entry = istate->sflaglist; --i >= 0; entry++)
+    for (i = m_numsflags + m_numpflags, entry = m_sflaglist; --i >= 0; entry++)
 	{
 		if (entry->stripl)
-			entry->strip = (ichar_t *) &istate->hashstrings[(int) entry->strip];
+			entry->strip = (ichar_t *) &m_hashstrings[(int) entry->strip];
 		else
 			entry->strip = NULL;
 		if (entry->affl)
-			entry->affix = (ichar_t *) &istate->hashstrings[(int) entry->affix];
+			entry->affix = (ichar_t *) &m_hashstrings[(int) entry->affix];
 		else
 			entry->affix = NULL;
 	}
@@ -333,18 +341,18 @@ int linit (ispell_state_t *istate, char *hashname)
     ** below.  Don't try to optimize it by (e.g.) moving the decrement
     ** of i into the loop condition.
     */
-    for (i = istate->numsflags, entry = istate->sflaglist;  i > 0;  i--, entry++)
+    for (i = m_numsflags, entry = m_sflaglist;  i > 0;  i--, entry++)
 	{
 		if (entry->affl == 0)
 		{
 			cp = NULL;
-			ind = &istate->sflagindex[0];
+			ind = &m_sflagindex[0];
 			viazero = 1;
 		}
 		else
 		{
 			cp = entry->affix + entry->affl - 1;
-			ind = &istate->sflagindex[*cp];
+			ind = &m_sflagindex[*cp];
 			viazero = 0;
 			while (ind->numents == 0  &&  ind->pu.fp != NULL)
 			{
@@ -378,10 +386,10 @@ int linit (ispell_state_t *istate, char *hashname)
 		{
 			/* Sneaky trick:  back up and reprocess */
 			entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
-			i = istate->numsflags - (entry - istate->sflaglist);
+			i = m_numsflags - (entry - m_sflaglist);
 			ind->pu.fp =
 			  (struct flagptr *)
-			calloc ((unsigned) (SET_SIZE + istate->hashheader.nstrchars),
+			calloc ((unsigned) (SET_SIZE + m_hashheader.nstrchars),
 			  sizeof (struct flagptr));
 			if (ind->pu.fp == NULL)
 			{
@@ -396,18 +404,18 @@ int linit (ispell_state_t *istate, char *hashname)
     ** below.  Don't try to optimize it by (e.g.) moving the decrement
     ** of i into the loop condition.
     */
-    for (i = istate->numpflags, entry = istate->pflaglist;  i > 0;  i--, entry++)
+    for (i = m_numpflags, entry = m_pflaglist;  i > 0;  i--, entry++)
 	{
 		if (entry->affl == 0)
 	    {
 			cp = NULL;
-			ind = &istate->pflagindex[0];
+			ind = &m_pflagindex[0];
 			viazero = 1;
 	    }
 		else
 		{
 			cp = entry->affix;
-			ind = &istate->pflagindex[*cp++];
+			ind = &m_pflagindex[*cp++];
 			viazero = 0;
 			while (ind->numents == 0  &&  ind->pu.fp != NULL)
 			{
@@ -441,9 +449,9 @@ int linit (ispell_state_t *istate, char *hashname)
 		{
 			/* Sneaky trick:  back up and reprocess */
 			entry = ind->pu.ent - 1; /* -1 is for entry++ in loop */
-			i = istate->numpflags - (entry - istate->pflaglist);
+			i = m_numpflags - (entry - m_pflaglist);
 			ind->pu.fp =
-			  (struct flagptr *) calloc (SET_SIZE + istate->hashheader.nstrchars,
+			  (struct flagptr *) calloc (SET_SIZE + m_hashheader.nstrchars,
 				sizeof (struct flagptr));
 			if (ind->pu.fp == NULL)
 			{
@@ -455,37 +463,37 @@ int linit (ispell_state_t *istate, char *hashname)
 	}
 #ifdef INDEXDUMP
     (void) fprintf (stderr, "Prefix index table:\n");
-    dumpindex (istate->pflagindex, 0);
+    dumpindex (m_pflagindex, 0);
     (void) fprintf (stderr, "Suffix index table:\n");
-    dumpindex (istate->sflagindex, 0);
+    dumpindex (m_sflagindex, 0);
 #endif
-    if (istate->hashheader.nstrchartype == 0)
-		istate->chartypes = NULL;
+    if (m_hashheader.nstrchartype == 0)
+		m_chartypes = NULL;
     else
 	{
-		istate->chartypes = (struct strchartype *)
-		  malloc (istate->hashheader.nstrchartype * sizeof (struct strchartype));
-		if (istate->chartypes == NULL)
+		m_chartypes = (struct strchartype *)
+		  malloc (m_hashheader.nstrchartype * sizeof (struct strchartype));
+		if (m_chartypes == NULL)
 		{
 			(void) fprintf (stderr, LOOKUP_C_NO_LANG_SPACE);
 			return (-1);
 		}
-		for (i = 0, nextchar = istate->hashheader.strtypestart;
-		  i < istate->hashheader.nstrchartype;
+		for (i = 0, nextchar = m_hashheader.strtypestart;
+		  i < m_hashheader.nstrchartype;
 		  i++)
 		{
-			istate->chartypes[i].name = &istate->hashstrings[nextchar];
-			nextchar += strlen (istate->chartypes[i].name) + 1;
-			istate->chartypes[i].deformatter = &istate->hashstrings[nextchar];
-			nextchar += strlen (istate->chartypes[i].deformatter) + 1;
-			istate->chartypes[i].suffixes = &istate->hashstrings[nextchar];
-			while (istate->hashstrings[nextchar] != '\0')
-				nextchar += strlen (&istate->hashstrings[nextchar]) + 1;
+			m_chartypes[i].name = &m_hashstrings[nextchar];
+			nextchar += strlen (m_chartypes[i].name) + 1;
+			m_chartypes[i].deformatter = &m_hashstrings[nextchar];
+			nextchar += strlen (m_chartypes[i].deformatter) + 1;
+			m_chartypes[i].suffixes = &m_hashstrings[nextchar];
+			while (m_hashstrings[nextchar] != '\0')
+				nextchar += strlen (&m_hashstrings[nextchar]) + 1;
 			nextchar++;
 		}
 	}
 
-    initckch(istate, NULL);   
+    initckch(NULL);   
        
     return (0);
 }
@@ -497,30 +505,30 @@ int linit (ispell_state_t *istate, char *hashname)
 /*!
  * \param wchars Characters in -w option, if any
  */
-static void initckch (ispell_state_t *istate, char *wchars)
+void ISpellChecker::initckch (char *wchars)
 {
 	register ichar_t    c;
 	char                num[4];
 
-	for (c = 0; c < (ichar_t) (SET_SIZE + istate->hashheader.nstrchars); ++c)
+	for (c = 0; c < (ichar_t) (SET_SIZE + m_hashheader.nstrchars); ++c)
     {
-		if (iswordch (istate, c))
+		if (iswordch (c))
 		{
-			if (!mylower (istate, c))
+			if (!mylower (c))
 			{
-				istate->Try[istate->Trynum] = c;
-				++istate->Trynum;
+				m_Try[m_Trynum] = c;
+				++m_Trynum;
 			}
 		}
-		else if (isboundarych (istate, c))
+		else if (isboundarych (c))
 		{
-			istate->Try[istate->Trynum] = c;
-			++istate->Trynum;
+			m_Try[m_Trynum] = c;
+			++m_Trynum;
 		}
 	}
 	if (wchars != NULL)
     {
-		while (istate->Trynum < SET_SIZE  &&  *wchars != '\0')
+		while (m_Trynum < SET_SIZE  &&  *wchars != '\0')
 		{
 			if (*wchars != 'n'  &&  *wchars != '\\')
 			{
@@ -568,39 +576,39 @@ static void initckch (ispell_state_t *istate, char *wchars)
 				}
 			}
 /*	    	c &= NOPARITY;*/
-			if (!istate->hashheader.wordchars[c])
+			if (!m_hashheader.wordchars[c])
 			{
-				istate->hashheader.wordchars[c] = 1;
-				istate->hashheader.sortorder[c] = istate->hashheader.sortval++;
-				istate->Try[istate->Trynum] = c;
-				++istate->Trynum;
+				m_hashheader.wordchars[c] = 1;
+				m_hashheader.sortorder[c] = m_hashheader.sortval++;
+				m_Try[m_Trynum] = c;
+				++m_Trynum;
 			}
 		}
     }
 }
 
-void lcleanup(ispell_state_t *istate)
+void ISpellChecker::lcleanup()
 {
-	clearindex (istate, istate->pflagindex);
-	clearindex (istate, istate->sflagindex);
+	clearindex (m_pflagindex);
+	clearindex (m_sflagindex);
 
-	FREEP(istate->hashtbl);
-	FREEP(istate->hashstrings);
-	FREEP(istate->sflaglist);
-	FREEP(istate->chartypes);
+	FREEP(m_hashtbl);
+	FREEP(m_hashstrings);
+	FREEP(m_sflaglist);
+	FREEP(m_chartypes);
 }
 
 /*
  * \param indexp
  */
-static void clearindex (ispell_state_t *istate, struct flagptr *indexp)
+void ISpellChecker::clearindex (struct flagptr *indexp)
 {
     register int		i;
-    for (i = 0;  i < SET_SIZE + istate->hashheader.nstrchars;  i++, indexp++)
+    for (i = 0;  i < SET_SIZE + m_hashheader.nstrchars;  i++, indexp++)
 	{
 		if (indexp->numents == 0 && indexp->pu.fp != NULL)
 		{
-		    clearindex(istate, indexp->pu.fp);
+		    clearindex(indexp->pu.fp);
 			free(indexp->pu.fp);
 		}
 	}
@@ -670,14 +678,14 @@ static void dumpindex (indexp, depth)
  *
  * \return
  */
-struct dent * ispell_lookup (ispell_state_t *istate, ichar_t *s, int dotree)
+struct dent * ISpellChecker::ispell_lookup (ichar_t *s, int dotree)
 {
     register struct dent *	dp;
     register char *		s1;
     char			schar[INPUTWORDLEN + MAXAFFIXLEN];
 
-    dp = &istate->hashtbl[hash (istate, s, istate->hashsize)];
-    if (ichartostr (istate, schar, s, sizeof schar, 1))
+    dp = &m_hashtbl[hash (s, m_hashsize)];
+    if (ichartostr (schar, s, sizeof schar, 1))
 		(void) fprintf (stderr, WORD_TOO_LONG (schar));
     for (  ;  dp != NULL;  dp = dp->next)
 	{
@@ -693,25 +701,16 @@ struct dent * ispell_lookup (ispell_state_t *istate, ichar_t *s, int dotree)
 	return NULL;
 }
 
-ispell_state_t *alloc_ispell_struct()
+void ISpellChecker::alloc_ispell_struct()
 {
-	ispell_state_t *ret;
-	ret = (ispell_state_t *)calloc(1, sizeof(ispell_state_t));
-	ret->translate_in = 
-	ret->translate_out = (UT_iconv_t)-1;
-
-	return ret;
+	m_translate_in = 
+	m_translate_out = (UT_iconv_t)-1;
 }
 
-void free_ispell_struct(ispell_state_t *istate)
+void ISpellChecker::free_ispell_struct()
 {
-	if (istate)
-	{
-		if (UT_iconv_isValid(istate->translate_in))
-			UT_iconv_close (istate->translate_in);
-		if (UT_iconv_isValid(istate->translate_out))
-			UT_iconv_close (istate->translate_out);
-	  
-		free(istate);
-	}
+	if (UT_iconv_isValid(m_translate_in))
+		UT_iconv_close (m_translate_in);
+	if (UT_iconv_isValid(m_translate_out))
+		UT_iconv_close (m_translate_out);
 }

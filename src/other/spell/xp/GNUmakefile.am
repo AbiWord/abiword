@@ -28,7 +28,7 @@ if WITH_PSPELL
 libSpell_a_SOURCES = $(COMMONSOURCES) pspell_checker.cpp
 else
 libSpell_a_SOURCES = $(COMMONSOURCES) ispell_checker.cpp \
-	good.c tgood.c lookup.c makedent.c hash.c correct.c
+	good.cpp tgood.cpp lookup.cpp makedent.cpp hash.cpp correct.cpp
 endif
 
 

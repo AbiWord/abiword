@@ -32,9 +32,8 @@ CPPSRCS= spell_manager.cpp barbarisms.cpp
 ifeq ($(ABI_OPT_PSPELL),1)
 	CPPSRCS+= pspell_checker.cpp
 else
-	CSRCS=	good.c tgood.c lookup.c makedent.c hash.c \
-correct.c 
-	CPPSRCS+= ispell_checker.cpp
+	CPPSRCS+= ispell_checker.cpp good.cpp tgood.cpp lookup.cpp makedent.cpp hash.cpp \
+correct.cpp 
 endif
 
 LIBRARY_NAME=		AbiSpell

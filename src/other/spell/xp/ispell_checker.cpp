@@ -1,4 +1,4 @@
-#include "ispell.h"
+//#include "ispell.h"
 #include "ut_iconv.h"
 
 #include "sp_spell.h"
@@ -75,15 +75,13 @@ private:
 
 /***************************************************************************/
 
-/*!
- */
-static void
-s_try_autodetect_charset(ispell_state_t *istate, const UT_String & inEncoding)
+void
+ISpellChecker::try_autodetect_charset(const UT_String & inEncoding)
 {
   if (inEncoding.size() > 0)
     {
-      istate->translate_in = UT_iconv_open(inEncoding.c_str(), UCS_INTERNAL);
-      istate->translate_out = UT_iconv_open(UCS_INTERNAL, inEncoding.c_str());
+      m_translate_in = UT_iconv_open(inEncoding.c_str(), UCS_INTERNAL);
+      m_translate_out = UT_iconv_open(UCS_INTERNAL, inEncoding.c_str());
     }
 }
 
@@ -101,7 +99,7 @@ UT_Vector & ISpellChecker::getMapping()
 /***************************************************************************/
 
 ISpellChecker::ISpellChecker()
-  : deftflag(-1), prefstringchar(-1), m_bSuccessfulInit(false), m_pISpellState(NULL)
+  : deftflag(-1), prefstringchar(-1), m_bSuccessfulInit(false)
 {
   if (mRefCnt == 0)
     {
@@ -128,19 +126,14 @@ ISpellChecker::~ISpellChecker()
       m_mapping.clear ();
     }
   
-  if (!m_pISpellState)
-    return;
+  lcleanup();
   
-  lcleanup(m_pISpellState);
-  
-  if(UT_iconv_isValid (m_pISpellState->translate_in ))
-    UT_iconv_close(m_pISpellState->translate_in);
-  m_pISpellState->translate_in = (UT_iconv_t)-1;
-  if(UT_iconv_isValid(m_pISpellState->translate_out))
-    UT_iconv_close(m_pISpellState->translate_out);
-  m_pISpellState->translate_out = (UT_iconv_t)-1;
-  
-  FREEP(m_pISpellState);
+  if(UT_iconv_isValid (m_translate_in ))
+    UT_iconv_close(m_translate_in);
+  m_translate_in = (UT_iconv_t)-1;
+  if(UT_iconv_isValid(m_translate_out))
+    UT_iconv_close(m_translate_out);
+  m_translate_out = (UT_iconv_t)-1;
 }
 
 SpellChecker::SpellCheckResult
@@ -159,7 +152,7 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
     if (m_barbarism.checkWord (word32, length))
       return SpellChecker::LOOKUP_FAILED; // is a barbarism, should be squiggled
 
-    if(!UT_iconv_isValid(m_pISpellState->translate_in))
+    if(!UT_iconv_isValid(m_translate_in))
       return SpellChecker::LOOKUP_FAILED;
     else
       {
@@ -170,13 +163,13 @@ ISpellChecker::checkWord(const UT_UCSChar *word32, size_t length)
 	
         len_in = length * sizeof(UT_UCSChar);
         len_out = sizeof( word8 ) - 1;
-        UT_iconv(m_pISpellState->translate_in, &In, &len_in, &Out, &len_out);
+        UT_iconv(m_translate_in, &In, &len_in, &Out, &len_out);
         *Out = '\0';
       }
     
-    if(!strtoichar(m_pISpellState, iWord, word8, sizeof(iWord), 0))
-      if (good(m_pISpellState, iWord, 0, 0, 1, 0) == 1 ||
-	   compoundgood(m_pISpellState, iWord, 1) == 1)
+    if(!strtoichar(iWord, word8, sizeof(iWord), 0))
+      if (good(iWord, 0, 0, 1, 0) == 1 ||
+	   compoundgood(iWord, 1) == 1)
 	retVal = SpellChecker::LOOKUP_SUCCEEDED;
       else
 	retVal = SpellChecker::LOOKUP_FAILED;
@@ -203,7 +196,7 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 	if (!word32 || length >= (INPUTWORDLEN + MAXAFFIXLEN) || length == 0)
 		return 0;
 
-	if(!UT_iconv_isValid(m_pISpellState->translate_in))
+	if(!UT_iconv_isValid(m_translate_in))
 	  return 0;
 	else
 	  {
@@ -214,12 +207,12 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 	    char *Out = word8;
 	    len_in = length * sizeof(UT_UCSChar);
 	    len_out = sizeof( word8 ) - 1;
-	    UT_iconv(m_pISpellState->translate_in, &In, &len_in, &Out, &len_out);
+	    UT_iconv(m_translate_in, &In, &len_in, &Out, &len_out);
 	    *Out = '\0';
 	  }
 
-	if(!strtoichar(m_pISpellState, iWord, word8, sizeof(iWord), 0))
-		makepossibilities(m_pISpellState, iWord);
+	if(!strtoichar(iWord, word8, sizeof(iWord), 0))
+		makepossibilities(iWord);
 	else
 	  return NULL;
 		 			
@@ -228,9 +221,9 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
  	// Add suggestions if the word is a barbarism
  	m_barbarism.suggestWord(word32, length, sgvec);    	 	
 
-	for (c = 0; c < m_pISpellState->pcount; c++)
+	for (c = 0; c < m_pcount; c++)
 	  {
-	    int l = strlen(m_pISpellState->possibilities[c]);
+	    int l = strlen(m_possibilities[c]);
 	    
 	    UT_UCS4Char *theWord = (UT_UCS4Char*)malloc(sizeof(UT_UCS4Char) * (l + 1));
 	    if (theWord == NULL)
@@ -239,13 +232,13 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 		return sgvec;
 	      }
 	    
-	    if (m_pISpellState->translate_out == (iconv_t)-1)
+	    if (m_translate_out == (iconv_t)-1)
 	      {
 		/* copy to 32bit string and null terminate */
 		register int x;
 		
 		for (x = 0; x < l; x++)
-		  theWord[x] = (unsigned char)m_pISpellState->possibilities[c][x];
+		  theWord[x] = (unsigned char)m_possibilities[c][x];
 		theWord[l] = 0;
 	      }
 	    else
@@ -253,12 +246,12 @@ ISpellChecker::suggestWord(const UT_UCSChar *word32, size_t length)
 		/* convert to 32bit string and null terminate */
 
 		size_t len_in, len_out;
-		const char *In = m_pISpellState->possibilities[c];
+		const char *In = m_possibilities[c];
 		char *Out = (char *)theWord;
 		
 		len_in = l;
 		len_out = sizeof(UT_UCS4Char) * (l+1);
-		UT_iconv(m_pISpellState->translate_out, &In, &len_in, &Out, &len_out);
+		UT_iconv(m_translate_out, &In, &len_in, &Out, &len_out);
 		*((UT_UCS4Char *)Out) = 0;
 	      }
 	    
@@ -307,7 +300,7 @@ ISpellChecker::loadGlobalDictionary ( const char *szHash )
 {
 	char *hashname = NULL;
 	hashname = s_buildHashName ( XAP_App::getApp()->getAbiSuiteLibDir(), szHash ) ;
-	if (linit(m_pISpellState, const_cast<char*>(hashname)) < 0)
+	if (linit(const_cast<char*>(hashname)) < 0)
 	{
 		FREEP( hashname );
 		return(NULL);
@@ -323,7 +316,7 @@ ISpellChecker::loadLocalDictionary ( const char *szHash )
 {
 	char *hashname = NULL;
 	hashname = s_buildHashName ( XAP_App::getApp()->getUserPrivateDirectory(), szHash ) ;
-	if (linit(m_pISpellState, const_cast<char*>(hashname)) < 0)
+	if (linit(const_cast<char*>(hashname)) < 0)
 	{
 		FREEP( hashname );
 		return(NULL);
@@ -371,7 +364,7 @@ ISpellChecker::loadDictionaryForLanguage ( const char * szLang )
 	if ( szFile.size () == 0 )
 		return false ;
 
-	m_pISpellState = alloc_ispell_struct();
+	alloc_ispell_struct();
 
 	if (!(hashname = loadGlobalDictionary(szFile.c_str())))
 	{
@@ -407,24 +400,24 @@ ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * enco
 {
   /* Get Hash encoding from XML file. This should always work!
    */
-  s_try_autodetect_charset(m_pISpellState, encoding);
+  try_autodetect_charset(encoding);
 
-  if(UT_iconv_isValid(m_pISpellState->translate_in) && UT_iconv_isValid(m_pISpellState->translate_out))
+  if(UT_iconv_isValid(m_translate_in) && UT_iconv_isValid(m_translate_out))
     return; /* success */
 
   /* Test for utf8 first */
-  prefstringchar = findfiletype(m_pISpellState, "utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
+  prefstringchar = findfiletype("utf8", 1, deftflag < 0 ? &deftflag : (int *) NULL);
   if (prefstringchar >= 0)
     {
-      m_pISpellState->translate_in = UT_iconv_open("utf-8", UCS_INTERNAL);
-      m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "utf-8");      
+      m_translate_in = UT_iconv_open("utf-8", UCS_INTERNAL);
+      m_translate_out = UT_iconv_open(UCS_INTERNAL, "utf-8");      
     }
   
-  if(UT_iconv_isValid(m_pISpellState->translate_in) && UT_iconv_isValid(m_pISpellState->translate_out))
+  if(UT_iconv_isValid(m_translate_in) && UT_iconv_isValid(m_translate_out))
     return; /* success */
 
   /* Test for "latinN" */
-  if(!UT_iconv_isValid(m_pISpellState->translate_in))
+  if(!UT_iconv_isValid(m_translate_in))
     {
       UT_String teststring;
       
@@ -432,21 +425,21 @@ ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * enco
       for(int n1 = 1; n1 <= 15; n1++)
 	{
 	  UT_String_sprintf(teststring, "latin%u", n1);
-	  prefstringchar = findfiletype(m_pISpellState, teststring.c_str(), 1, deftflag < 0 ? &deftflag : (int *) NULL);
+	  prefstringchar = findfiletype(teststring.c_str(), 1, deftflag < 0 ? &deftflag : (int *) NULL);
 	  if (prefstringchar >= 0)
 	    {
-	      m_pISpellState->translate_in = UT_iconv_open(teststring.c_str(), UCS_INTERNAL);
-	      m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, teststring.c_str());
+	      m_translate_in = UT_iconv_open(teststring.c_str(), UCS_INTERNAL);
+	      m_translate_out = UT_iconv_open(UCS_INTERNAL, teststring.c_str());
 	      break;
 	    }
 	}
     }
   
   /* If nothing found, use latin1 */
-  if(!UT_iconv_isValid(m_pISpellState->translate_in))
+  if(!UT_iconv_isValid(m_translate_in))
     {
-      m_pISpellState->translate_in = UT_iconv_open("latin1", UCS_INTERNAL);
-      m_pISpellState->translate_out = UT_iconv_open(UCS_INTERNAL, "latin1");
+      m_translate_in = UT_iconv_open("latin1", UCS_INTERNAL);
+      m_translate_out = UT_iconv_open(UCS_INTERNAL, "latin1");
     }
 }
 
@@ -501,9 +494,10 @@ ISpellChecker::requestDictionary(const char *szLang)
 	m_bSuccessfulInit = true;
 
 	if (prefstringchar < 0)
-		m_pISpellState->defdupchar = 0;
+		m_defdupchar = 0;
 	else
-		m_pISpellState->defdupchar = prefstringchar;
+		m_defdupchar = prefstringchar;
 
 	return true;
 }
+

@@ -42,7 +42,18 @@
 
 /*
  * $Log$
+ * Revision 1.1  2003/01/24 05:52:33  hippietrail
+ * Refactored ispell code. Old ispell global variables had been put into
+ * an allocated structure, a pointer to which was passed to many functions.
+ * I have now made all such functions and variables private members of the
+ * ISpellChecker class. It was C OO, now it's C++ OO.
+ *
+ * I've fixed the makefiles and tested compilation but am unable to test
+ * operation. Please back out my changes if they cause problems which
+ * are not obvious or easy to fix.
+ *
  * Revision 1.5  2002/09/19 05:31:15  hippietrail
+ *
  * More Ispell cleanup.  Conditional globals and DEREF macros are removed.
  * K&R function declarations removed, converted to Doxygen style comments
  * where possible.  No code has been changed (I hope).  Compiles for me but
@@ -97,7 +108,7 @@
  *
  */
 
-#include "ispell.h"
+#include "ispell_checker.h"
 
 /*
  * The following hash algorithm is due to Ian Dall, with slight modifications
@@ -109,14 +120,14 @@
 #ifdef NO_CAPITALIZATION_SUPPORT
 #define HASHUPPER(c)	c
 #else /* NO_CAPITALIZATION_SUPPORT */
-#define HASHUPPER(c)	mytoupper(istate, c)
+#define HASHUPPER(c)	mytoupper(c)
 #endif /* NO_CAPITALIZATION_SUPPORT */
 
 /*
  * \param s
  * \param hashtblsize
  */
-int hash (ispell_state_t *istate, ichar_t *s, int hashtblsize)
+int ISpellChecker::hash (ichar_t *s, int hashtblsize)
 {
     register long	h = 0;
     register int	i;
