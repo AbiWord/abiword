@@ -46,12 +46,14 @@
  */
 PX_ChangeRecord::PX_ChangeRecord(PXType type,
 								 PT_DocPosition position,
-								 PT_AttrPropIndex indexNewAP)
+								 PT_AttrPropIndex indexNewAP,
+								 UT_uint32 iXID):
+	m_type(type),
+	m_position(position),
+	m_indexAP(indexNewAP),
+	m_persistant(true),
+	m_iXID(iXID)
 {
-	m_type = type;
-	m_position = position;
-	m_indexAP = indexNewAP;
-	m_persistant = true;
 }
 
 /*!
@@ -105,7 +107,8 @@ PX_ChangeRecord * PX_ChangeRecord::reverse(void) const
 {
 	PX_ChangeRecord * pcr = new PX_ChangeRecord(getRevType(),
 												m_position,
-												m_indexAP);
+												m_indexAP,
+												m_iXID);
 	UT_ASSERT_HARMLESS(pcr);
 	return pcr;
 }

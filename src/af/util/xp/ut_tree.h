@@ -173,7 +173,8 @@ template <class T> class ABI_EXPORT UT_GenericTree
 	
   public:
   	class Cursor;
-
+	friend class Cursor;
+	
   	UT_GenericTree(): m_data(NULL){};
 	~UT_GenericTree() {clear();}
 
@@ -224,7 +225,7 @@ template <class T> class ABI_EXPORT UT_GenericTree
 	{
 	  public:
 		Cursor(const UT_GenericTree<T> * owner)
-			: m_d(owner)
+			: m_d(owner), m_saved_node(NULL)
 		{
 			m_node = m_d->m_data;
 			UT_ASSERT_HARMLESS( m_node );
@@ -239,6 +240,23 @@ template <class T> class ABI_EXPORT UT_GenericTree
 			return is_valid();
 		}
 
+		bool last()
+		{
+			m_node = NULL;
+			UT_sint32 iMaxLevel = m_d->getMaxNodeLevel();
+			if(iMaxLevel < 0)
+				return false;
+
+			UT_sint32 iLastNode = m_d->getNodeCountForLevel(iMaxLevel) - 1;
+
+			if(iLastNode < 0)
+				return false;
+
+			m_node = m_d->_getNthNodeForLevel(iMaxLevel, iLastNode);
+
+			return is_valid();
+		}
+		
 		bool lastValidPos()
 		{
 			m_node = m_last_valid_node;
@@ -389,6 +407,17 @@ template <class T> class ABI_EXPORT UT_GenericTree
 		}
 
 		bool isLeaf() const {return is_valid() ? m_node->isLeaf() : true;}
+
+		void save()
+		{
+			m_saved_node = m_node;
+		}
+
+		void restore()
+		{
+			UT_return_if_fail( m_saved_node );
+			m_node = m_saved_node;
+		}
 		
 	  private:
 		
@@ -405,6 +434,7 @@ template <class T> class ABI_EXPORT UT_GenericTree
 		const UT_GenericTree<T>*	m_d;
 		const Node*			        m_node;
 		const Node*                 m_last_valid_node;
+		const Node*                 m_saved_node;
 	};
 
 	friend class Cursor;

@@ -237,6 +237,19 @@ UT_uint32 AD_Document::getHistoryNthId(UT_uint32 i)const
 	return v->getId();
 }
 
+UT_uint32 AD_Document::getHistoryNthTopXID(UT_uint32 i)const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	AD_VersionData * v = (AD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getTopXID();
+}
+
 /*!
     Get time stamp for n-th record in version history
     NB: the time stamp represents the last save time
@@ -332,7 +345,7 @@ bool AD_Document::areDocumentsRelated(const AD_Document & d) const
 /*!
     Returns true if both documents are based on the same root document
     and all version records have identical UID's
-    if it returns false, the last identical version id is found in iVersion
+    on return, the last identical version id is found in iVersion
 */
 bool AD_Document::areDocumentHistoriesEqual(const AD_Document & d, UT_uint32 &iVersion) const
 {
@@ -673,7 +686,7 @@ void AD_Document::setAutoRevisioning(bool b)
 		{
 			m_iVersion++;
 		
-			AD_VersionData v(m_iVersion, t, b);
+			AD_VersionData v(m_iVersion, t, b, getTopXID());
 			addRecordToHistory(v);
 		}
 		
@@ -828,7 +841,7 @@ void AD_Document::_adjustHistoryOnSave()
 		// current time
 		time_t t = !m_bHistoryWasSaved ? m_lastOpenedTime : time(NULL);
 		
-		AD_VersionData v(m_iVersion,t,m_bAutoRevisioning);
+		AD_VersionData v(m_iVersion,t,m_bAutoRevisioning,getTopXID());
 		m_lastSavedTime = v.getTime(); // store the time of this save
 		addRecordToHistory(v);
 
@@ -1162,8 +1175,8 @@ UT_Error AD_Document::save(void)
 // AD_VersionData
 //
 // constructor for new entries
-AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev)
-	:m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
+AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev, UT_uint32 xid)
+	:m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(xid)
 {
 	// we do not create uuid's based on the main doc uuid as
 	// AD_Document::getNewUUID() does; this is because we need to be
@@ -1179,8 +1192,8 @@ AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev)
 
 
 // constructors for importers
-AD_VersionData::AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev):
-	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
+AD_VersionData::AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev, UT_uint32 iTopXID):
+	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(iTopXID)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
@@ -1189,8 +1202,8 @@ AD_VersionData::AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, b
 	UT_ASSERT(m_pUUID);
 }
 
-AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool autorev):
-	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
+AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool autorev, UT_uint32 iTopXID):
+	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev),m_iTopXID(iTopXID)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
@@ -1201,7 +1214,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, const char *uuid, time_t start, bool
 
 // copy constructor
 AD_VersionData::AD_VersionData(const AD_VersionData & v):
-	m_iId(v.m_iId), m_pUUID(NULL), m_bAutoRevision(v.m_bAutoRevision)
+	m_iId(v.m_iId), m_pUUID(NULL), m_bAutoRevision(v.m_bAutoRevision), m_iTopXID(v.m_iTopXID)
 {
 	UT_return_if_fail(v.m_pUUID);
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
@@ -1218,6 +1231,7 @@ AD_VersionData & AD_VersionData::operator = (const AD_VersionData &v)
 	m_iId       = v.m_iId;
 	*m_pUUID    = *(v.m_pUUID);
 	m_tStart    = v.m_tStart;
+	m_iTopXID   = v.m_iTopXID;
 	m_bAutoRevision = v.m_bAutoRevision;
 	return *this;
 }
@@ -1225,7 +1239,7 @@ AD_VersionData & AD_VersionData::operator = (const AD_VersionData &v)
 bool AD_VersionData::operator == (const AD_VersionData &v)
 {
 	return (m_iId == v.m_iId && m_tStart == v.m_tStart
-			&& *m_pUUID == *(v.m_pUUID) && m_bAutoRevision == v.m_bAutoRevision);
+			&& *m_pUUID == *(v.m_pUUID) && m_bAutoRevision == v.m_bAutoRevision && m_iTopXID == v.m_iTopXID);
 }
 
 AD_VersionData::~AD_VersionData()

@@ -331,6 +331,12 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		{
 			m_bLockedStyles = !(strcmp(pA, "locked"));
 		}
+
+		if(pAP->getAttribute("xid-max", pA))
+		{
+			UT_uint32 i = (UT_uint32)atoi(pA);
+			m_pPieceTable->setXIDThreshold(i);
+		}
 	}
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
@@ -487,6 +493,12 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 		if(pAP->getAttribute("styles", pA))
 		{
 			m_bLockedStyles = !(strcmp(pA, "locked"));
+		}
+
+		if(pAP->getAttribute("xid-max", pA))
+		{
+			UT_uint32 i = (UT_uint32)atoi(pA);
+			m_pPieceTable->setXIDThreshold(i);
 		}
 	}
 
@@ -2448,13 +2460,15 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 			pfsLast = pStuff->thisFrag;
 			if(pStuff->bChangeIndexAP)
 			{
-				pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,indexNormal);
+				pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,indexNormal,
+										  pfsLast->getXID());
 				notifyListeners(pStuff->lastFragStrux, pcr);
 				delete pcr;
 			}
 			else
 			{
-				pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,pStuff->indexAPFrag);
+				pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,pStuff->indexAPFrag,
+										  pfsLast->getXID());
 				notifyListeners(pStuff->lastFragStrux, pcr);
 				delete pcr;
 			}
@@ -2466,14 +2480,16 @@ bool PD_Document::removeStyle(const XML_Char * pszName)
 				pfsLast = pStuff->lastFragStrux;
 				if(pStuff->bChangeIndexAP)
 				{
-					pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,indexNormal);
+					pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,indexNormal,
+											  pfsLast->getXID());
 					notifyListeners(pStuff->lastFragStrux, pcr);
 					delete pcr;
 				}
 				else
 				{
 					PT_AttrPropIndex indexLastAP = static_cast<pf_Frag_Strux *>(pfsLast)->getIndexAP();
-					pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,indexLastAP);
+					pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pStuff->thisPos,indexLastAP,
+											  pfsLast->getXID());
 					notifyListeners(pStuff->lastFragStrux, pcr);
 					delete pcr;
 				}
@@ -3955,7 +3971,8 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				}
 				if(bUpdate)
 				{
-					PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pos,indexAP);
+					PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pos,indexAP,
+																pfs->getXID());
 					notifyListeners(pfs, pcr);
 					delete pcr;
 				}
@@ -3994,7 +4011,11 @@ bool   PD_Document::updateDocForStyleChange(const XML_Char * szStyle,
 				if(pszStyleName != NULL && strcmp(pszStyleName,szStyle)==0)
 				{
 					UT_uint32 blockoffset = (UT_uint32) (pos - posLastStrux -1);
-					PX_ChangeRecord_SpanChange * pcr = new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,pos,indexAP,indexAP, m_pPieceTable->getVarSet().getBufIndex(pft->getBufIndex(),0) ,currentFrag->getLength(),blockoffset);
+					PX_ChangeRecord_SpanChange * pcr = new PX_ChangeRecord_SpanChange(PX_ChangeRecord::PXT_ChangeSpan,
+																					  pos,indexAP,indexAP,
+																					  m_pPieceTable->getVarSet().getBufIndex(pft->getBufIndex(),0) ,
+																					  currentFrag->getLength(),
+																					  blockoffset);
 					notifyListeners(pfs, pcr);
 					delete pcr;
 				}
@@ -4016,7 +4037,7 @@ void  PD_Document::updateAllLayoutsInDoc( PL_StruxDocHandle sdh)
 	PT_AttrPropIndex indexAP = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,
-												pos,indexAP);
+												pos,indexAP,pfs->getXID());
 	notifyListeners(pfs, pcr);
 	delete pcr;
 }
@@ -4194,9 +4215,9 @@ void PD_Document::listUpdate(PL_StruxDocHandle sdh )
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 #ifndef __MRC__
-	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex);
+	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex,pfs->getXID());
 #else
-	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex,pfs->getXID());
 #endif
 	notifyListeners(pfs, pcr);
 	delete pcr;
@@ -4213,9 +4234,9 @@ void PD_Document::StopList(PL_StruxDocHandle sdh )
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 #ifndef __MRC__
-	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex);
+	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex,pfs->getXID());
 #else
-	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex,pfs->getXID());
 #endif
 	notifyListeners(pfs, pcr);
 	delete pcr;
@@ -4365,9 +4386,9 @@ void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 #ifndef __MRC__
-	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
+	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex,pfs->getXID());
 #else
-	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex);
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex,pfs->getXID());
 #endif
 	notifyListeners(pfs, pcr);
 	delete pcr;
@@ -4725,6 +4746,14 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	else
 	{
 		// have an AP and given something to add to it
+		// first, we need to take care of the top-xid attribute
+		const XML_Char * pXID = UT_getAttribute("top-xid", ppAttr);
+		if(pXID && *pXID)
+		{
+			UT_uint32 iXID = atoi(pXID);
+			m_pPieceTable->setXIDThreshold(iXID);
+		}
+		
 		bRet = VARSET.mergeAP(PTC_AddFmt, m_indexAP, ppAttr, NULL, &m_indexAP, this);
 	}
 	
@@ -6550,6 +6579,74 @@ void PD_Document::tellPTDoNotTweakPosition(bool b)
 	UT_return_if_fail( m_pPieceTable );
 	m_pPieceTable->setDoNotTweakPosition(b);
 }
+
+UT_uint32 PD_Document::getXID()
+{
+	return m_pPieceTable->getXID();
+}
+
+UT_uint32 PD_Document::getTopXID() const
+{
+	return m_pPieceTable->getTopXID();
+}
+
+void PD_Document::fixMissingXIDs()
+{
+	m_pPieceTable->fixMissingXIDs();
+}
+
+/*!
+    This function evaluates the xid value for the given frament and version level.
+
+    The XID is a document-unique identifier of the frag; when we compare documents, we are
+    interested not in document uniqueness but global uniqueness. We convert the
+    document-unique xid to a globaly unique id by combining the xid with the UUID of
+    document version: identical xid's in two documents represent identical elements if,
+    and only if, the version UUIDs for the version of the document in which the element
+    was created are identical. Therefore, as a part of the version record, we store the
+    highest xid used in the document. This way we can determine in which version of the
+    document the frag was created, based on its xid.
+
+    Frags that have xid aboved the version threshold need to be treated as frags without xid.
+*/
+UT_uint32 PD_Document::getFragXIDforVersion(const pf_Frag * pf, UT_uint32 iVersion) const
+{
+	UT_return_val_if_fail( pf, 0 );
+
+	if(iVersion >= getDocVersion())
+	{
+		// all xid's valid
+		return pf->getXID();
+	}
+	
+	const AD_VersionData * v = findHistoryRecord(iVersion);
+
+	if(!v)
+	{
+		// if there is no version record for this version, find the nearest lower version
+		for(UT_sint32 i = (UT_sint32)iVersion - 1; i > 0; --i)
+		{
+			v = findHistoryRecord(i);
+			if(v)
+				break;
+		}
+
+		if(!v)
+			return 0;
+	}
+	
+
+	UT_uint32 iXid = pf->getXID();
+
+	if(iXid <= v->getTopXID())
+		return iXid;
+
+	// this frag's xid is above the version limit, i.e., this frag was inserted in a later
+	// version of the document, and its xid cannot be used in document matching for the
+	// given version level
+	return 0;
+}
+
 
 #ifdef DEBUG
 void PD_DocumentDiff::_dump() const

@@ -760,10 +760,15 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 				bAuto = (0 != atoi(szS));
 			else
 				bAuto = false;
+
+			UT_uint32 iXID = 0;
+			szS = UT_getAttribute("top-xid",atts);
+			if(szS)
+				iXID = atoi(szS);
 			
 			szS = UT_getAttribute("uid",atts);
 
-			AD_VersionData v(iId, szS, tStarted, bAuto);
+			AD_VersionData v(iId, szS, tStarted, bAuto, iXID);
 			getDoc()->addRecordToHistory(v);
 		}
 

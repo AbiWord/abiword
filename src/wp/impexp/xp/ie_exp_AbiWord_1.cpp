@@ -110,6 +110,13 @@ IE_Exp_AbiWord_1::IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate)
 	: IE_Exp(pDocument), m_bIsTemplate(isTemplate), m_pListener(0)
 {
 	m_error = 0;
+
+	UT_ASSERT_HARMLESS( pDocument );
+
+	// depending on how this document came to be, it might contain fragments without xid;
+	// this is legitimate and desirable while the doc is loade, but once we are saving to
+	// disk, we want to assing xids to any frags that should have them and do not
+	pDocument->fixMissingXIDs();
 }
 
 IE_Exp_AbiWord_1::~IE_Exp_AbiWord_1()
@@ -169,6 +176,7 @@ protected:
 	void				_openSpan(PT_AttrPropIndex apiSpan);
 	void				_openTag(const char * szPrefix, const char * szSuffix,
 								 bool bNewLineAfter, PT_AttrPropIndex api,
+								 UT_uint32 iXID,
 								 bool bIgnoreProperties = false);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_outputXMLChar(const XML_Char * data, UT_uint32 length);
@@ -289,15 +297,16 @@ void s_AbiWord_1_Listener::_openSpan(PT_AttrPropIndex apiSpan)
 	if (!apiSpan)				// don't write tag for empty A/P
 		return;
 
-	_openTag("c","",false,apiSpan);
+	_openTag("c","",false,apiSpan,0);
 	m_bInSpan = true;
 	m_apiLastSpan = apiSpan;
 	return;
 }
 
 void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix,
-								   bool bNewLineAfter, PT_AttrPropIndex api,
-								   bool bIgnoreProperties)
+									bool bNewLineAfter, PT_AttrPropIndex api,
+									UT_uint32 iXID,
+									bool bIgnoreProperties)
 {
 #ifdef ENABLE_RESOURCE_MANAGER
 	UT_ASSERT_HARMLESS (!m_bOpenChar);
@@ -308,48 +317,60 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp (api, &pAP);
 	if (bHaveProp && pAP)
-		{
-			const XML_Char * szName = 0;
-			const XML_Char * szValue = 0;
+	{
+		const XML_Char * szName = 0;
+		const XML_Char * szValue = 0;
 
-			UT_uint32 k = 0;
-			while (pAP->getNthAttribute (k++, szName, szValue))
+		UT_uint32 k = 0;
+		while (pAP->getNthAttribute (k++, szName, szValue))
+		{
+			tag += " ";
+			tag += szName;
+			tag += "=\"";
+
+			if ((*szValue == '/') && ((strcmp (szName, "href") == 0) || (strcmp (szName, "xlink:href") == 0)))
+			{
+				XAP_ResourceManager & RM = m_pDocument->resourceManager ();
+				XAP_ExternalResource * re = dynamic_cast<XAP_ExternalResource *>(RM.resource (szValue, false));
+				if (re) tag += re->URL ();
+			}
+			else _outputXMLChar (szValue, strlen (szValue));
+
+			tag += "\"";
+		}
+
+		if(iXID != 0)
+		{
+			// insert xid attribute
+			tag += " ";
+			tag += PT_XID_ATTRIBUTE_NAME;
+			tag += "=\"";
+			UT_UTF8String s;
+			UT_UTF8String_sprintf(s, "%d\"", iXID);
+			tag += s;
+		}
+		
+		if (!bIgnoreProperties)
+		{
+			k = 0;
+			while (pAP->getNthProperty (k++, szName, szValue))
+			{
+				if (k == 1)
 				{
 					tag += " ";
-					tag += szName;
+					tag += PT_PROPS_ATTRIBUTE_NAME;
 					tag += "=\"";
-
-					if ((*szValue == '/') && ((strcmp (szName, "href") == 0) || (strcmp (szName, "xlink:href") == 0)))
-						{
-							XAP_ResourceManager & RM = m_pDocument->resourceManager ();
-							XAP_ExternalResource * re = dynamic_cast<XAP_ExternalResource *>(RM.resource (szValue, false));
-							if (re) tag += re->URL ();
-						}
-					else _outputXMLChar (szValue, strlen (szValue));
-
-					tag += "\"";
 				}
-			if (!bIgnoreProperties)
-				{
-					k = 0;
-					while (pAP->getNthProperty (k++, szName, szValue))
-						{
-							if (k == 1)
-								{
-									tag += " ";
-									tag += PT_PROPS_ATTRIBUTE_NAME;
-									tag += "=\"";
-								}
-							else tag += "; ";
+				else tag += "; ";
 
-							tag += szName;
-							tag += ":";
+				tag += szName;
+				tag += ":";
 
-							_outputXMLChar (szValue, strlen (szValue));
-						}
-					if (k > 1) tag += "\"";
-				}
+				_outputXMLChar (szValue, strlen (szValue));
+			}
+			if (k > 1) tag += "\"";
 		}
+	}
 
 	if (szSuffix)
 		if (*szSuffix == '/')
@@ -390,6 +411,16 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			m_pie->write("=\"");
 			_outputXMLChar(szValue, strlen(szValue));
 			m_pie->write("\"");
+		}
+		if(iXID != 0)
+		{
+			// insert xid attribute
+			m_pie->write(" ");
+			m_pie->write(PT_XID_ATTRIBUTE_NAME);
+			m_pie->write("=\"");
+			UT_String s;
+			UT_String_sprintf(s, "%d\"", iXID);
+			m_pie->write(s.c_str());
 		}
 		if (!bIgnoreProperties && pAP->getNthProperty(0,szName,szValue))
 		{
@@ -552,14 +583,20 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 
 	************************************************************************************/
 
-	const XML_Char *attr[3];
+	// we want to update the XID counter and the template status
+	UT_String s;
+	UT_String_sprintf(s, "%d", pDocument->getTopXID());
+	
+	const XML_Char *attr[5];
 	attr[0] = "template";
 	attr[1] = m_bIsTemplate ? "true" : "false";
-	attr[2] = NULL;
+	attr[2] = "xid-max";
+	attr[3] = s.c_str();
+	attr[4] = NULL;
 	
 	pDocument->setAttributes(attr);
 
-	_openTag("abiword", NULL, true, pDocument->getAttrPropIndex(),false);
+	_openTag("abiword", NULL, true, pDocument->getAttrPropIndex(),false,0);
 
 	// NOTE we output the following preamble in XML comments.
 	// NOTE this information is for human viewing only.
@@ -647,7 +684,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				if (image_name)
 					m_pUsedImages.insert(image_name);
 #endif
-				_openTag("image","/",false,api);
+				_openTag("image","/",false,api,pcr->getXID());
 
 				return true;
 				}
@@ -655,7 +692,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
                 {
                     _closeSpan();
                     _closeField();
-                    _openTag("field","",false,api);
+                    _openTag("field","",false,api,pcr->getXID());
                     m_pCurrentField = pcro->getField();
                     UT_ASSERT_HARMLESS(m_pCurrentField);
                     return true;
@@ -664,7 +701,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
    				{
    					_closeSpan();
    					_closeField();
-   					_openTag("bookmark", "/",false, api,true);
+   					_openTag("bookmark", "/",false, api,pcr->getXID(),true);
    					return true;
    				}
 
@@ -689,7 +726,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					if(bFound)
 					{
 						//this is the start of the hyperlink
-   						_openTag("a", "",false, api,true);
+   						_openTag("a", "",false, api,pcr->getXID(),true);
    						m_bInHyperlink = true;
    					}
    					else
@@ -715,7 +752,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 		// attributes and should not be saved
 		if(m_bOpenChar)
 			_closeTag();
-		_openTag("c","",false,pcr->getIndexAP());
+		_openTag("c","",false,pcr->getIndexAP(),0);
 		_closeTag();
 #endif
 		return true;
@@ -750,7 +787,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			_closeBlock();
 			_closeSection();
-			_openTag("section","",true,pcr->getIndexAP());
+			_openTag("section","",true,pcr->getIndexAP(),pcr->getXID());
 			m_bInSection = true;
 			return true;
 		}
@@ -760,7 +797,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_openTag("table","",true,pcr->getIndexAP());
+			_openTag("table","",true,pcr->getIndexAP(),pcr->getXID());
 			m_iInTable++;
 			return true;
 		}
@@ -770,7 +807,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_openTag("cell","",true,pcr->getIndexAP());
+			_openTag("cell","",true,pcr->getIndexAP(),pcr->getXID());
 			m_iInCell++;
 			return true;
 		}
@@ -780,7 +817,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			m_bInBlock = false;
-			_openTag("foot","",true,pcr->getIndexAP());
+			_openTag("foot","",true,pcr->getIndexAP(),pcr->getXID());
 			return true;
 		}
 	case PTX_SectionEndnote:
@@ -789,7 +826,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			m_bInBlock = false;
-			_openTag("endnote","",true,pcr->getIndexAP());
+			_openTag("endnote","",true,pcr->getIndexAP(),pcr->getXID());
 			return true;
 		}
 	case PTX_SectionTOC:
@@ -799,7 +836,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			_closeBlock();
 			m_bInBlock = false;
-			_openTag("toc","",true,pcr->getIndexAP());
+			_openTag("toc","",true,pcr->getIndexAP(),pcr->getXID());
 			return true;
 		}
 	case PTX_SectionMarginnote:
@@ -808,7 +845,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_openTag("margin","",true,pcr->getIndexAP());
+			_openTag("margin","",true,pcr->getIndexAP(),pcr->getXID());
 			return true;
 		}
 	case PTX_SectionFrame:
@@ -817,7 +854,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
-			_openTag("frame","",true,pcr->getIndexAP());
+			_openTag("frame","",true,pcr->getIndexAP(),pcr->getXID());
 			return true;
 		}
 	case PTX_EndTable:
@@ -890,7 +927,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
 			_closeHyperlink();
 			_closeBlock();
-			_openTag("p","",false,pcr->getIndexAP());
+			_openTag("p","",false,pcr->getIndexAP(),pcr->getXID());
 			m_bInBlock = true;
 			return true;
 		}
@@ -1023,7 +1060,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 		}
 
 		PT_AttrPropIndex api = pStyle->getIndexAP();
-		_openTag("s","/",true,api);
+		_openTag("s","/",true,api,0);
 	}
 
 	for (k=0; m_pDocument->enumStyles(k, &szName, &pStyle); k++)
@@ -1038,7 +1075,7 @@ void s_AbiWord_1_Listener::_handleStyles(void)
 		}
 
 		PT_AttrPropIndex api = pStyle->getIndexAP();
-		_openTag("s","/",true,api);
+		_openTag("s","/",true,api,0);
 	}
 
 	if (bWroteOpenStyleSection)
@@ -1346,6 +1383,7 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		const UT_UUID& UID  =  m_pDocument->getHistoryNthUID(k);
 		time_t tStarted     =  m_pDocument->getHistoryNthTimeStarted(k);
 		bool bAuto          =  m_pDocument->getHistoryNthAutoRevisioned(k);
+		UT_uint32 iXID      =  m_pDocument->getHistoryNthTopXID(k);
 		
 		UT_UTF8String s, hUid;
 		UID.toString(hUid);
@@ -1364,8 +1402,8 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 			bWroteOpenSection = true;
 		}
 
-		UT_UTF8String_sprintf(s, "<version id=\"%d\" started=\"%d\" uid=\"%s\" auto=\"%d\"/>\n",
-						  iVersion, tStarted, hUid.utf8_str(),bAuto);
+		UT_UTF8String_sprintf(s, "<version id=\"%d\" started=\"%d\" uid=\"%s\" auto=\"%d\" top-xid=\"%d\"/>\n",
+						  iVersion, tStarted, hUid.utf8_str(),bAuto, iXID);
 		
 		m_pie->write(s.utf8_str());
 	}

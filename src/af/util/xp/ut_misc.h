@@ -304,4 +304,7 @@ const XML_Char ** UT_setPropsToNothing(const XML_Char ** props);
 const XML_Char ** UT_setPropsToValue(const XML_Char ** props, const XML_Char * value);
 
 const XML_Char ** UT_splitPropsToArray(XML_Char * props);
+
+UT_uint64 UT_hash64(const char * p, UT_uint32 bytelen = 0);
+UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);
 #endif /* UTMISC_H */

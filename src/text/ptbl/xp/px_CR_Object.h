@@ -46,6 +46,7 @@ public:
 	PX_ChangeRecord_Object(PXType type,
 						   PT_DocPosition position,
 						   PT_AttrPropIndex indexAP,
+						   UT_uint32 iXID,
 						   PTObjectType ObjectType,
 						   PT_BlockOffset blockOffset,
                            fd_Field * field);

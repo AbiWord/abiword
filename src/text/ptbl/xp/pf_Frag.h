@@ -42,7 +42,7 @@ class fd_Field;
 class ABI_EXPORT pf_Frag
 {
 public:
-	typedef enum _PFType { PFT_Text, PFT_Object, PFT_Strux, PFT_EndOfDoc, PFT_FmtMark } PFType;
+	typedef enum _PFType { PFT_Text = 0, PFT_Object, PFT_Strux, PFT_EndOfDoc, PFT_FmtMark } PFType;
 
 	pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length);
 	virtual ~pf_Frag();
@@ -73,6 +73,12 @@ public:
 	// compare contents of two fragments, ignoring format
 	bool                    isContentEqual(const pf_Frag & f2) const;
 
+	UT_uint32               getXID() const {return m_iXID;}
+	void                    setXID(UT_uint32 xid) {m_iXID = xid;}
+
+	// I would much prefer if this was a pure vitual, but we do not have Eod frag
+	virtual bool            usesXID() const {return false;}
+	
 	// compare contents and format of two fragments
 	bool operator == (const pf_Frag & f2) const;
 	
@@ -115,6 +121,7 @@ protected:
 
 private:
 	mutable PT_DocPosition  m_docPos;
+	UT_uint32               m_iXID;
 };
 
 #endif /* PF_FRAG_H */

@@ -54,7 +54,8 @@ public:
 
 	PX_ChangeRecord(PXType type,
 					PT_DocPosition position,
-					PT_AttrPropIndex indexNewAP);
+					PT_AttrPropIndex indexNewAP,
+					UT_uint32 iXID);
 
 	virtual ~PX_ChangeRecord();
 
@@ -73,6 +74,7 @@ public:
 	virtual PX_ChangeRecord* reverse(void) const;
 	PXType					getRevType(void) const;
 
+	UT_uint32               getXID() const {return m_iXID;}
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
 	void					__dump_type(FILE * fp) const;
@@ -87,5 +89,8 @@ protected:
 	PT_AttrPropIndex		m_indexAP;
 	//! Persistance flag
 	bool					m_persistant;
+
+	// the XID attribute of the frag
+	UT_uint32               m_iXID;
 };
 #endif /* PX_CHANGERECORD_H */

@@ -29,7 +29,7 @@ PX_ChangeRecord_ObjectChange::PX_ChangeRecord_ObjectChange(PXType type,
 														   PT_AttrPropIndex indexNewAP,
 														   PTObjectType pto,
 														   PT_BlockOffset blockOffset)
-	: PX_ChangeRecord(type, position, indexNewAP)
+	: PX_ChangeRecord(type, position, indexNewAP, 0)
 {
 	m_indexOldAP = indexOldAP;
 	m_objectType = pto;

@@ -23,15 +23,16 @@
 #include "pt_PieceTable.h"
 #include "pf_Fragments.h"
 
-pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length)
+pf_Frag::pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length):
+	m_type(type),
+	m_length(length),
+	m_next(NULL),
+	m_prev(NULL),
+	m_pPieceTable(pPT),
+	m_pField(NULL),
+	m_docPos(0),
+	m_iXID(0)
 {
-	m_type = type;
-	m_length = length;
-	m_next = NULL;
-	m_prev = NULL;
-	m_pPieceTable = pPT;
-    m_pField = NULL;
-	m_docPos = 0;
 }
 
 pf_Frag::~pf_Frag()

@@ -48,6 +48,18 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const XML_Char ** attributes, p
 	pf_Frag_Strux * pfs = NULL;
 	if(!_makeStrux(pts, attributes, pfs) || !pfs)
 		return false;
+
+	if(attributes)
+	{
+		const XML_Char * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		UT_uint32 iXID = 0;
+		if(pXID && *pXID)
+		{
+			iXID = atoi(pXID);
+			pfs->setXID(iXID);
+		}
+	}
+	
 	pf_Frag * pfPrev = m_fragments.getLast();
 	bool bDoInsertFmt = false;
 	if(pfPrev != NULL && pfPrev->getType() == pf_Frag::PFT_Strux)
@@ -405,6 +417,17 @@ bool pt_PieceTable::appendObject(PTObjectType pto, const XML_Char ** attributes)
 	if(!_makeObject(pto,attributes,pfo) || !pfo)
 		return false;
 
+	if(attributes)
+	{
+		const XML_Char * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		UT_uint32 iXID = 0;
+		if(pXID && *pXID)
+		{
+			iXID = atoi(pXID);
+			pfo->setXID(iXID);
+		}
+	}
+	
 	m_fragments.appendFrag(pfo);
 	return true;
 }
@@ -429,6 +452,17 @@ bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 	if(!_makeStrux(pts, attributes, pfs) || !pfs)
 		return false;
 
+	if(attributes)
+	{
+		const XML_Char * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		UT_uint32 iXID = 0;
+		if(pXID && *pXID)
+		{
+			iXID = atoi(pXID);
+			pfs->setXID(iXID);
+		}
+	}
+	
 	m_fragments.insertFragBefore(pF, pfs);
 	if (ppfs_ret)
 		*ppfs_ret = pfs;
@@ -507,6 +541,17 @@ bool pt_PieceTable::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 	if(!_makeObject(pto,attributes,pfo) || !pfo)
 		return false;
 
+	if(attributes)
+	{
+		const XML_Char * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		UT_uint32 iXID = 0;
+		if(pXID && *pXID)
+		{
+			iXID = atoi(pXID);
+			pfo->setXID(iXID);
+		}
+	}
+	
 	m_fragments.insertFragBefore(pF, pfo);
 	return true;
 }

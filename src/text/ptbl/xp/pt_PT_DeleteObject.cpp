@@ -56,7 +56,7 @@ bool pt_PieceTable::_deleteObjectWithNotify(PT_DocPosition dpos,
 
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_DeleteObject,
-									 dpos, pfo->getIndexAP(), pfo->getObjectType(),
+									 dpos, pfo->getIndexAP(), pfo->getXID(), pfo->getObjectType(),
 									 blockOffset, pfo->getField());
 	UT_return_val_if_fail (pcr, false);
 

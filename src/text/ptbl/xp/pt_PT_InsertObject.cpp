@@ -222,7 +222,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
-									 dpos,indexAP,pto,blockOffset,
+									 dpos,indexAP, pfo->getXID(), pto,blockOffset,
                                      pfo->getField());
 	UT_return_val_if_fail (pcr,false);
 
@@ -281,7 +281,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
-									 dpos,indexAP,pto,blockOffset,
+									 dpos,indexAP,pfo->getXID(),pto,blockOffset,
                                      pfo->getField());
 	UT_return_val_if_fail (pcr,false);
 
@@ -344,6 +344,8 @@ bool pt_PieceTable::_insertObject(pf_Frag * pf,
 	if (!_createObject(pto,indexAP,&pfo))
 		return false;
 
+	pfo->setXID(getXID());
+	
 	if (fragOffset == 0)
 	{
 		// we are at the beginning of a fragment, insert the

@@ -52,6 +52,11 @@ public:
 	
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos) const;
+
+	virtual bool            usesXID() const;
+	bool                    isMatchingType(PTStruxType e) const;
+	bool                    isMatchingType(const pf_Frag * p) const;
+	
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const = 0;
 #endif

@@ -601,7 +601,12 @@ public:
 
 	virtual void   setAutoRevisioning(bool autorev);
 
+	virtual UT_uint32 getXID();
+	virtual UT_uint32 getTopXID() const;
+	void              fixMissingXIDs();
+	UT_uint32         getFragXIDforVersion(const pf_Frag * pf, UT_uint32 iVersion) const;
 
+	
 	UT_sint32     getNewHdrHeight(void) const
 	{ return m_iNewHdrHeight;}
 	UT_sint32     getNewFtrHeight(void) const

@@ -290,6 +290,12 @@ bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szValue
 		free(pOrig);
 		return true;
 	}
+	else if (0 == strcmp(szName, PT_XID_ATTRIBUTE_NAME) && *szValue)
+	{
+		// XID is a unique id for the xml element / PT frag. Its function is to facilitate
+		// comparing/merging documents and we do not want it in the AP
+		return true;
+	}
 	else								// not "PROPS" -- add to attribute list
 	{
 		if (!m_pAttributes)

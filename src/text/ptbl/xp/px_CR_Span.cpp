@@ -31,7 +31,7 @@ PX_ChangeRecord_Span::PX_ChangeRecord_Span(PXType type,
 										   UT_uint32 length,
 										   PT_BlockOffset blockOffset,
                                            fd_Field * pField)
-	: PX_ChangeRecord(type, position, indexNewAP)
+	: PX_ChangeRecord(type, position, indexNewAP, 0)
 {
 	UT_return_if_fail (length > 0);
 	

@@ -49,11 +49,11 @@ class AD_VersionData
   public:
 
 	// constructor for importers
-	AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev);
-	AD_VersionData(UT_uint32 v, const char * uuid, time_t start, bool autorev);
+	AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev, UT_uint32 xid);
+	AD_VersionData(UT_uint32 v, const char * uuid, time_t start, bool autorev, UT_uint32 xid);
 	
 	// constructor for new entries
-	AD_VersionData(UT_uint32 v, time_t start, bool autorev);
+	AD_VersionData(UT_uint32 v, time_t start, bool autorev, UT_uint32 xid);
 
 	// copy constructor
 	AD_VersionData(const AD_VersionData & v);
@@ -74,12 +74,15 @@ class AD_VersionData
 
 	bool           isAutoRevisioned()const {return m_bAutoRevision;}
 	void           setAutoRevisioned(bool autorev);
+
+	UT_uint32      getTopXID() const {return m_iTopXID;}
 	
   private:
 	UT_uint32   m_iId;
 	UT_UUID *   m_pUUID;
 	time_t      m_tStart;
 	bool        m_bAutoRevision;
+	UT_uint32   m_iTopXID;
 };
 
 enum AD_HISTORY_STATE
@@ -190,6 +193,7 @@ public:
 	UT_uint32       getHistoryNthEditTime(UT_uint32 i)const;
 	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
 	bool            getHistoryNthAutoRevisioned(UT_uint32 i)const;
+	UT_uint32       getHistoryNthTopXID(UT_uint32 i)const;
 
 	AD_HISTORY_STATE       verifyHistoryState(UT_uint32 &iVersion) const;
 	const AD_VersionData * findHistoryRecord(UT_uint32 iVersion) const;
@@ -252,9 +256,9 @@ public:
 
 	virtual bool        acceptAllRevisions() = 0;
 	
+	virtual UT_uint32   getXID() = 0;
+	virtual UT_uint32   getTopXID() const = 0;
 	
-protected:
-
  protected:	
 	virtual UT_Error	_saveAs(const char * szFilename, int ieft, const char * props = NULL) = 0;
 	virtual UT_Error	_saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL) = 0;

@@ -28,7 +28,7 @@ PX_ChangeRecord_FmtMarkChange::PX_ChangeRecord_FmtMarkChange(PXType type,
 															 PT_AttrPropIndex indexOldAP,
 															 PT_AttrPropIndex indexNewAP,
 															 PT_BlockOffset blockOffset)
-	: PX_ChangeRecord(type, position, indexNewAP)
+	: PX_ChangeRecord(type, position, indexNewAP, 0)
 {
 	m_indexOldAP = indexOldAP;
 	m_blockOffset = blockOffset;

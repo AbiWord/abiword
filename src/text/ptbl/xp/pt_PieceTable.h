@@ -318,7 +318,7 @@ public:
 	const UT_GenericStringMap<PD_Style *> & getAllStyles()const {return m_hashStyles;}
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;
-
+	
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
 	UT_uint32               getFragNumber(pf_Frag * pFrag) const {return m_fragments.getFragNumber(pFrag);}
     pt_VarSet &             getVarSet(void) {return m_varset;};
@@ -330,6 +330,11 @@ public:
 
 	void                    setDoNotTweakPosition(bool b) {m_bDoNotTweakPosition = b;}
 
+	UT_uint32               getXID();
+	UT_uint32               getTopXID() const {return m_iXID;}
+	void                    setXIDThreshold(UT_uint32 i){m_iXID = i;}
+	void                    fixMissingXIDs();
+	
 #ifdef PT_TEST
 	UT_TestStatus			__test_VerifyCoalescedFrags(FILE * fp) const;
 	void					__dump(FILE * fp) const;
@@ -573,6 +578,8 @@ protected:
 	UT_uint32               m_atomicGlobCount;
 	bool                    m_bDoingTheDo;
 	bool                    m_bDoNotTweakPosition;
+
+	UT_uint32               m_iXID;
 };
 
 #endif /* PT_PIECETABLE_H */

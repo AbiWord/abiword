@@ -1160,3 +1160,53 @@ const XML_Char ** UT_splitPropsToArray(XML_Char * pProps)
 		return pPropsArray;
 }
 
+
+#if defined(WIN32) && !defined(__GNUC__)	
+#   define MYZERO 0
+#else
+#   define MYZERO 0LL
+#endif
+
+UT_uint64 UT_hash64(const char * p, UT_uint32 bytelen)
+{
+	UT_return_val_if_fail( p, MYZERO );
+	
+	if(!bytelen)
+	{
+		bytelen = strlen(p);
+	}
+
+	UT_return_val_if_fail( bytelen, MYZERO );
+	
+	UT_uint64 h = (UT_uint64)*p;
+	
+	for (UT_uint32 i = 1; i < bytelen; ++i, ++p)
+	{
+		h = (h << 5) - h + *p;
+	}
+
+	return h;
+}
+
+UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen)
+{
+	UT_return_val_if_fail( p, 0 );
+	
+	if(!bytelen)
+	{
+		bytelen = strlen(p);
+	}
+
+	UT_return_val_if_fail( bytelen, 0 );
+
+	UT_uint32 h = (UT_uint32)*p;
+	
+	for (UT_uint32 i = 1; i < bytelen; ++i, ++p)
+	{
+		h = (h << 5) - h + *p;
+	}
+
+	return h;
+}
+
+#undef MYZERO

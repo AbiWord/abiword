@@ -407,7 +407,7 @@ bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 {
 	PX_ChangeRecord_Strux * pcrs
 		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_DeleteStrux,
-									dpos, pfs->getIndexAP(), pfs->getStruxType());
+									dpos, pfs->getIndexAP(), pfs->getXID(), pfs->getStruxType());
 	UT_return_val_if_fail (pcrs, false);
 
 	if (!_unlinkStrux(pfs,ppfEnd,pfragOffsetEnd))
