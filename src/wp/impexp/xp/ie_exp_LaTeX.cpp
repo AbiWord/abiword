@@ -555,7 +555,8 @@ void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 void s_LaTeX_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 {
 	char colors[3][3];
-	for (int i=0;i<3;++i)
+	int i;
+	for (i=0;i<3;++i)
 	{
 		strncpy (colors[i],&pszColor[2*i],2);
 		colors[i][2]=0;
@@ -1033,7 +1034,8 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 				char buf[30];
 				int len;
 				if (m_wctomb.wctomb(buf,len,(wchar_t)*pData++)) {
-				    for(int i=0;i<len;++i)
+					int i;
+				    for(i=0;i<len;++i)
 						sBuf += buf[i];
 				};
 			}
@@ -1197,7 +1199,9 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				m_pie->write("]{");
 				pAP->getAttribute("dataid", szValue);
 				szImageName = UT_strdup(szValue);
-				for (int i = strlen(szValue); szValue[i] != '_'; i--) {
+
+				int i;
+				for (i = strlen(szValue); szValue[i] != '_'; i--) {
 					szImageName[i - 1] = '\0';
 				}
 				m_pie->write(szImageName);
