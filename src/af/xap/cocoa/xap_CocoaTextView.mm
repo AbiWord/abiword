@@ -223,12 +223,14 @@
 - (NSAttributedString *)attributedSubstringFromRange:(NSRange)theRange
 {
 	UT_ASSERT_NOT_REACHED();
+	return nil;
 }
 
 
 - (unsigned int)characterIndexForPoint:(NSPoint)thePoint
 {
 	UT_ASSERT_NOT_REACHED();
+	return 0xffffffff;
 }
 
 
@@ -251,6 +253,7 @@
 - (NSRect)firstRectForCharacterRange:(NSRange)theRange
 {
 	UT_ASSERT_NOT_REACHED();
+	return NSZeroRect;
 }
 
 
