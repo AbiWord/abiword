@@ -337,8 +337,18 @@ gint AP_UnixLeftRuler::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	rClip.width = pExposeEvent->area.width;
 	rClip.height = pExposeEvent->area.height;
 	xxx_UT_DEBUGMSG(("gtk in leftruler expose painting area:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	pUnixLeftRuler->getGraphics()->doRepaint(&rClip);
-	pUnixLeftRuler->draw(&rClip);
+	GR_Graphics * pG = pUnixLeftRuler->getGraphics();
+	if(pG != NULL)
+	{
+		pUnixLeftRuler->getGraphics()->doRepaint(&rClip);
+//		pUnixLeftRuler->draw(&rClip);
+	}
+	else
+	{
+		UT_DEBUGMSG(("No graphics Context. Doing fallback. \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		pUnixLeftRuler->draw(&rClip);
+	}
 	return 0;
 }
 
