@@ -149,7 +149,7 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 fp_Run::~fp_Run()
 {
   // no impl.
-	xxx_UT_DEBUGMSG(("~fp_Run %x deleted!!! \n",this));
+	UT_DEBUGMSG(("~fp_Run %x deleted!!! \n",this));
 
 // Zero these to trap mem errors.
 #if 1

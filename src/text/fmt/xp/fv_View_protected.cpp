@@ -343,7 +343,6 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	UT_uint32 iLen = iHigh - iLow;
 	_adjustDeletePosition(iLow, iLen); // modifies both iLow and iLen
 	iHigh = iLow + iLen;
-	
 //
 // OK adjust for deletetions that cross footnote/endnote boundaries.
 //
@@ -384,6 +383,21 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 
 		pELow = getClosestEndnote(iLow);
 		iHigh = pELow->getPosition(true) + pELow->getLength() -1;
+	}
+//
+// Don't delete the block right before a TOC!
+//
+	fl_BlockLayout * pBL = _findBlockAtPosition(iLow);
+	if(pBL->getPrev() && pBL->getPrev()->getContainerType() == FL_CONTAINER_TOC)
+	{
+		if(pBL->getPosition(true) == iLow)
+		{
+			iLow++;
+		}
+	}
+	else if((pBL->getPosition() + pBL->getLength()) < iLow)
+	{
+		iLow++;
 	}
 	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
 	if(!bDeleteTables)
