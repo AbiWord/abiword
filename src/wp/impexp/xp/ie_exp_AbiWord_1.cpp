@@ -1258,7 +1258,7 @@ void s_AbiWord_1_Listener::_handleDataItems(void)
 	   	bool status = false;
 	   	bool encoded = true;
 
-		if (szMimeType && (UT_strcmp(szMimeType, "image/svg-xml") == 0 || UT_strcmp(szMimeType, "text/mathml") == 0))
+		if (szMimeType && (UT_strcmp(szMimeType, "image/svg+xml") == 0 || UT_strcmp(szMimeType, "application/mathml+xml") == 0))
 	    {
 		   bbEncoded.truncate(0);
 		   bbEncoded.append(reinterpret_cast<const UT_Byte*>("<![CDATA["), 9);

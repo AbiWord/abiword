@@ -1325,7 +1325,7 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 	else
 		{
 			// <d name="ID" mime-type="image/png" base64="yes"> ... </d>
-			// <d name="ID" mime-type="image/svg-xml | text/mathml" base64="no"> <![CDATA[ ... ]]> </d>
+			// <d name="ID" mime-type="image/svg+xml | application/mathxml+xml" base64="no"> <![CDATA[ ... ]]> </d>
 
 			const XML_Char * r_id = 0;
 			const XML_Char * r_64 = 0;
@@ -1346,9 +1346,9 @@ bool IE_Imp_AbiWord_1::_handleResource (const XML_Char ** atts, bool isResource)
 
 							if (strcmp (*attr, "image/png") == 0)
 								mt = mt_png;
-							else if (strcmp (*attr, "image/svg-xml") == 0)
+							else if (strcmp (*attr, "image/svg+xml") == 0 || strcmp (*attr, "image/svg"))
 								mt = mt_svg;
-							else if (strcmp (*attr, "text/mathml") == 0)
+							else if (strcmp (*attr, "application/mathml+xml") == 0)
 								mt = mt_mathml;
 
 							attr++;

@@ -66,10 +66,10 @@ const struct AliasMIME s_list[] = {
 	{ "application/x-vnd.AbiSource.AbiWord",	IE_MIME_AbiWord	},
 	{ "image/bmp",								IE_MIME_BMP		},
 	{ "image/svg",								IE_MIME_SVG		},
-	{ "image/svg-xml",							IE_MIME_SVG		},
+	{ "image/svg+xml",							IE_MIME_SVG		},
 	{ "text/abiword",							IE_MIME_AbiWord	},
 	{ "text/doc",								IE_MIME_MSWord	}, // or is it? [TODO: check!]
-	{ "text/mathml",							IE_MIME_MathML	}, // well, neither yet valid MIME, but...
+	{ "application/mathxml+xml",				IE_MIME_MathML	},
 	{ "text/rtf",								IE_MIME_RTF		},
 	{ "text/xml",								IE_MIME_XML		}, // but what is this?
 	{ "text/x-abiword",							IE_MIME_AbiWord	}
