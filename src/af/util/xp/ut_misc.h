@@ -207,4 +207,32 @@ class ABI_EXPORT UT_UniqueId
 
 bool UT_parseBool (const char * param, bool dfl);
 
+
+#ifdef WIN32
+/*
+   if your platform does not define timeval, turn on the following definitions
+*/
+#include <time.h>
+
+typedef signed long suseconds_t;
+
+struct timeval
+{
+	time_t           tv_sec;
+	suseconds_t      tv_usec;
+};
+#endif
+
+/*!
+    UT_gettimeofday() fills in the timeval structure with current
+    time; the platform implementation needs to be as accurate as
+    possible since this function is used in the UT_UUID class.
+ */
+void UT_gettimeofday(struct timeval *tv);
+
+typedef unsigned char UT_EthernetAddress[6];
+/*!
+    retrieve the 6-byte address of the network card; returns true on success
+*/
+bool UT_getEthernetAddress(UT_EthernetAddress &a);
 #endif /* UTMISC_H */
