@@ -31,6 +31,11 @@ class AP_Preview_Paragraph;
 
 class AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 {
+	// the preview's block classes want to use some of our protected enums
+	// below for similar alignment, etc.
+	friend class AP_Preview_Paragraph;
+	friend class AP_Preview_Paragraph_Block;	
+	
  public:
 
 	AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);

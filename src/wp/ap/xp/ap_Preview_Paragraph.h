@@ -26,6 +26,7 @@
 #include "ut_vector.h"
 
 #include "xap_Preview.h"
+#include "ap_Dialog_Paragraph.h"
 
 class GR_Font;
 
@@ -34,32 +35,59 @@ class GR_Font;
 class AP_Preview_Paragraph_Block
 {
  public:
-	AP_Preview_Paragraph_Block(UT_RGBColor & clr);
+	AP_Preview_Paragraph_Block(UT_RGBColor & clr,
+							   GR_Graphics * gc,
+							   AP_Dialog_Paragraph::tAlignState m_align,
+							   UT_uint32 fontHeight);
 	virtual ~AP_Preview_Paragraph_Block();
 
+	// sets the vectors full of words and lengths
 	void setText(const UT_UCSChar * text);
-	const UT_Vector * getWordsVector(void);
-	const UT_RGBColor & getColor(void);
-	
- protected:
 
+	void setFormat(AP_Dialog_Paragraph::tAlignState align,
+				   const XML_Char * firstLineIndent,
+				   AP_Dialog_Paragraph::tIndentState indent,
+				   const XML_Char * leftMargin,
+				   const XML_Char * rightMargin,
+				   const XML_Char * beforeSpacing,
+				   const XML_Char * afterSpacing,
+				   const XML_Char * lineSpacing,
+				   AP_Dialog_Paragraph::tSpacingState spacing);
+	
+	// absolute pixel positions (relative to respective sides)
+	// at which we'll start/stop drawing.  The firstLine element
+	// applies to the first line in a block only.  The others
+	// apply to the rest of the block.
+	UT_uint32 m_firstLineLeftStop;
+	UT_uint32 m_leftStop;
+	UT_uint32 m_rightStop;
+
+	UT_uint32 m_beforeSpacing;
+	UT_uint32 m_afterSpacing;
+	UT_uint32 m_lineSpacing;
+	
+	AP_Dialog_Paragraph::tAlignState m_align;
+	AP_Dialog_Paragraph::tIndentState m_indent;
+	AP_Dialog_Paragraph::tSpacingState m_spacing;
+
+	UT_uint32 m_fontHeight;
 	UT_RGBColor m_clr;
-
-	// when a string is set, we break it into words for
-	// easy layout
-	UT_Vector m_words;
 	
-	// margins stored in pixels, since they don't
-	// need to change depending on unit system/zoom, etc.
-	UT_uint32 m_leftMargin;
-	UT_uint32 m_rightMargin;
+	GR_Graphics * m_gc;
+	
+	// when a string is set, we break it into words for
+	// easy layout, and store the word content (UT_UCSChar *)
+	// and its measured length in pixels (UT_uint32)
+	UT_Vector m_words;
+	UT_Vector m_widths;
 };
 		
 class AP_Preview_Paragraph : public XAP_Preview
 {
  public:
 
-	AP_Preview_Paragraph(GR_Graphics * gc, const UT_UCSChar * text);
+	AP_Preview_Paragraph(GR_Graphics * gc, const UT_UCSChar * text,
+						 AP_Dialog_Paragraph * dlg);
 	virtual ~AP_Preview_Paragraph(void);
 
 	virtual void draw(void);
@@ -71,12 +99,6 @@ class AP_Preview_Paragraph : public XAP_Preview
 	UT_RGBColor * m_clrBlack;
 	UT_RGBColor * m_clrGray;
 
-	// measurements in pixels for default left and right margins
-	// (used to plot all paragraphs)
-	UT_uint32 m_defaultLeftMargin;
-	UT_uint32 m_defaultRightMargin;	
-	UT_uint32 m_defaultTopMargin;
-	
 	// we flow using this as a current position
 	UT_uint32 m_x;
 	UT_uint32 m_y;	
@@ -84,14 +106,22 @@ class AP_Preview_Paragraph : public XAP_Preview
 	virtual UT_Bool _loadDrawFont(void);
 	virtual void 	_drawPageBackground(void);
 	virtual void 	_appendBlock(AP_Preview_Paragraph_Block * block);
+	virtual UT_uint32 _appendLine(UT_Vector * words,
+								  UT_Vector * widths,
+								  UT_uint32 startWithWord,
+								  UT_uint32 left,
+								  UT_uint32 right,
+								  AP_Dialog_Paragraph::tAlignState align,
+								  UT_uint32 y);
 	
 	// mini-classes to hold some general data about these three
 	// blocks
 	AP_Preview_Paragraph_Block * m_previousBlock;
 	AP_Preview_Paragraph_Block * m_activeBlock;
 	AP_Preview_Paragraph_Block * m_followingBlock;
-		
-	GR_Font * m_pFont;
+
+	AP_Dialog_Paragraph * m_dlg;
+	GR_Font * m_font;
 	UT_uint32 m_fontHeight;
 };
 

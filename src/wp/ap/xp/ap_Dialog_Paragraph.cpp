@@ -590,7 +590,7 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 	UT_UCS_cloneString_char(&tmp, "This is a test of the emergency broadcast system.  "
 							"If a real emergency had occurred, we'd all be dead right now, not testing paragraph dialogs.");
 
-	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp);
+	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp, this);
 
 	FREEP(tmp);
 	

@@ -40,6 +40,7 @@
 
 /*****************************************************************/
 
+#define WIDGET_MENU_PARENT_ID_TAG  "parentmenu"
 #define WIDGET_MENU_VALUE_TAG	"menuvalue"
 #define WIDGET_DIALOG_TAG 		"dialog"
 #define WIDGET_ID_TAG			"id"
@@ -66,8 +67,9 @@ AP_UnixDialog_Paragraph::~AP_UnixDialog_Paragraph(void)
 }
 
 /*****************************************************************/
+/* These are static callbacks for dialog widgets                 */
+/*****************************************************************/
 
-// sample callback function
 static void s_ok_clicked(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 { UT_ASSERT(widget && dlg); dlg->event_OK(); }
 
@@ -82,8 +84,7 @@ static void s_delete_clicked(GtkWidget * /* widget */,
 							 AP_UnixDialog_Paragraph * dlg)
 { UT_ASSERT(dlg); dlg->event_WindowDelete(); }
 
-// spins and lists
-
+// TODO : FIX THIS
 static gint s_spin_editable_changed(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(widget && dlg);
@@ -95,7 +96,6 @@ static gint s_spin_editable_changed(GtkWidget * widget, AP_UnixDialog_Paragraph 
 	return FALSE;
 }
 
-// menus
 static gint s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(widget && dlg);
@@ -103,15 +103,11 @@ static gint s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_Paragraph * d
 	dlg->event_MenuChanged(widget);
 }
 
-// toggle buttons
-
 static void s_check_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(widget && dlg);
 	dlg->event_CheckToggled(widget);
 }
-
-// preview drawing area
 
 static gint s_preview_exposed(GtkWidget * /* widget */,
 							  GdkEventExpose * /* pExposeEvent */,
@@ -138,7 +134,7 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// Attach signals (after data settings, so we don't trigger
 	// updates yet)
 	_connectCallbackSignals();
-	
+
 	// To center the dialog, we need the frame of its parent.
 	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
 	UT_ASSERT(pUnixFrame);
@@ -175,13 +171,17 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 							 (UT_uint32) m_drawingareaPreview->allocation.height);
 	}
 
+	// sync all controls once to get started
+	// HACK: the first arg gets ignored
+//	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
+
 	// Run into the GTK event loop for this window.
 	gtk_main();
 
 	gtk_widget_destroy(mainWindow);
 }
 
-/****************************************/
+/*****************************************************************/
 
 void AP_UnixDialog_Paragraph::event_OK(void)
 {
@@ -207,25 +207,26 @@ void AP_UnixDialog_Paragraph::event_WindowDelete(void)
 	gtk_main_quit();
 }
 
-/****************************************/
-
 void AP_UnixDialog_Paragraph::event_MenuChanged(GtkWidget * widget)
 {
 	UT_ASSERT(widget);
 
 	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
-												 WIDGET_ID_TAG);
+												 WIDGET_MENU_PARENT_ID_TAG);
 
-	_setMenuItemValue(id, (UT_sint32) gtk_object_get_data
-					  (GTK_OBJECT(widget), WIDGET_MENU_VALUE_TAG));
+	UT_uint32 value = (UT_uint32) gtk_object_get_data(GTK_OBJECT(widget),
+													  WIDGET_MENU_VALUE_TAG);
+
+	_setMenuItemValue(id, value);
 }
-
-
-/****************************************/
 
 void AP_UnixDialog_Paragraph::event_SpinIncrement(GtkWidget * widget)
 {
 	UT_ASSERT(widget);
+
+	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
+												 WIDGET_ID_TAG);
+	
 }
 
 void AP_UnixDialog_Paragraph::event_SpinDecrement(GtkWidget * widget)
@@ -235,11 +236,12 @@ void AP_UnixDialog_Paragraph::event_SpinDecrement(GtkWidget * widget)
 
 void AP_UnixDialog_Paragraph::event_SpinChanged(GtkWidget * widget)
 {
-	UT_ASSERT(widget);
+	tControl id = (tControl) gtk_object_get_data(GTK_OBJECT(widget),
+												 WIDGET_ID_TAG);
 	
+	_setSpinItemValue(id, (const XML_Char *)
+					  gtk_entry_get_text(GTK_ENTRY(widget)));
 }
-
-/****************************************/
 
 void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 {
@@ -262,66 +264,6 @@ void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 	_setCheckItemValue(id, cs);
 }
 
-/****************************************/
-
-// generic methods for spin buttons
-#if 0
-void AP_UnixDialog_Paragraph::event_UpdateEntry(GtkWidget * /* widget */)
-{
-
-	gchar * oldtext = gtk_entry_get_text(GTK_ENTRY(widget));
-
-	XML_Char * newtext = _filterUserInput((XML_Char *) oldtext);
-
-	// we have to protect this section with a lock, so that updating
-	// the text doesn't trigger this same event
-	{
-		gtk_object_set_data(GTK_OBJECT(widget), "updatelock", (void *) TRUE);
-	
-		if ( ((gboolean) gtk_object_get_data(GTK_OBJECT(widget), "updatelock")) == FALSE)
-			gtk_entry_set_text(GTK_ENTRY(widget), (const gchar *) newtext);
-
-		gtk_object_set_data(GTK_OBJECT(widget), "updatelock", (void *) FALSE);
-	}
-}
-#endif
-
-#if 0
-void AP_UnixDialog_Paragraph::event_UnitSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj)
-{
-	UT_ASSERT(spinbutton && adj);
-	
-	const char * newvalue =
-		UT_convertToDimensionString(m_dim, (double) adj->value, ".1");
-
-	UT_ASSERT(newvalue);
-
-	GtkSpinButton * sb = GTK_SPIN_BUTTON(spinbutton);
-
-	GtkEntry * entry = & sb->entry;
-	
-	gtk_entry_set_text(entry, newvalue);
-}
-
-void AP_UnixDialog_Paragraph::event_UnitlessSpinButtonChanged(GtkWidget * spinbutton, GtkAdjustment * adj)
-{
-	UT_ASSERT(spinbutton && adj);
-	
-	const char * newvalue =
-		UT_convertToDimensionString(m_dim, (double) adj->value, ".1");
-
-	UT_ASSERT(newvalue);
-
-	GtkSpinButton * sb = GTK_SPIN_BUTTON(spinbutton);
-
-	GtkEntry * entry = & sb->entry;
-	
-	gtk_entry_set_text(entry, newvalue);
-}
-#endif
-
-/****************************************/
-
 void AP_UnixDialog_Paragraph::event_PreviewAreaExposed(void)
 {
 	if (m_paragraphPreview)
@@ -343,21 +285,15 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	GtkWidget * listAlignment;
 	GtkWidget * listAlignment_menu;
 	GtkWidget * glade_menuitem;
-//	GtkObject * spinbuttonLeft_adj;
 	GtkWidget * spinbuttonLeft;
-//	GtkObject * spinbuttonRight_adj;
 	GtkWidget * spinbuttonRight;
 	GtkWidget * listSpecial;
 	GtkWidget * listSpecial_menu;
-//	GtkObject * spinbuttonBy_adj;
 	GtkWidget * spinbuttonBy;
-//	GtkObject * spinbuttonBefore_adj;
 	GtkWidget * spinbuttonBefore;
-//	GtkObject * spinbuttonAfter_adj;
 	GtkWidget * spinbuttonAfter;
 	GtkWidget * listLineSpacing;
 	GtkWidget * listLineSpacing_menu;
-//	GtkObject * spinbuttonAt_adj;
 	GtkWidget * spinbuttonAt;
 	GtkWidget * labelAlignment;
 	GtkWidget * labelBy;
@@ -449,21 +385,25 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	listAlignment_menu = gtk_menu_new ();
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_AlignLeft));
 	/**/ m_menuitemLeft = glade_menuitem;
-	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemLeft), WIDGET_MENU_VALUE_TAG, (gpointer) align_LEFT);
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemLeft), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemLeft), WIDGET_MENU_VALUE_TAG, (gpointer) align_LEFT);	
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_AlignCentered));
 	/**/ m_menuitemCentered = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemCentered), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemCentered), WIDGET_MENU_VALUE_TAG, (gpointer) align_CENTERED);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_AlignRight));
 	/**/ m_menuitemRight = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemRight), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemRight), WIDGET_MENU_VALUE_TAG, (gpointer) align_RIGHT);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_AlignJustified));
 	/**/ m_menuitemJustified = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemJustified), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_ALIGNMENT);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemJustified), WIDGET_MENU_VALUE_TAG, (gpointer) align_JUSTIFIED);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listAlignment_menu), glade_menuitem);
@@ -503,16 +443,19 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	listSpecial_menu = gtk_menu_new ();
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_SpecialNone));
 	/**/ m_menuitemNone = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemNone), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemNone), WIDGET_MENU_VALUE_TAG, (gpointer) indent_NONE);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_SpecialFirstLine));
 	/**/ m_menuitemFirstLine = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemFirstLine), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemFirstLine), WIDGET_MENU_VALUE_TAG, (gpointer) indent_FIRSTLINE);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_SpecialHanging));
 	/**/ m_menuitemHanging = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemHanging), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemHanging), WIDGET_MENU_VALUE_TAG, (gpointer) indent_HANGING);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listSpecial_menu), glade_menuitem);
@@ -563,31 +506,37 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	listLineSpacing_menu = gtk_menu_new ();
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_SpacingSingle));
 	/**/ m_menuitemSingle = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemSingle), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemSingle), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_SINGLE);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_SpacingHalf));
 	/**/ m_menuitemOneAndHalf = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemOneAndHalf), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemOneAndHalf), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ONEANDHALF);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_SpacingDouble));
 	/**/ m_menuitemDouble = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemDouble), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemDouble), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_DOUBLE);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_SpacingAtLeast));
 	/**/ m_menuitemAtLeast = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemAtLeast), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemAtLeast), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_ATLEAST);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_SpacingExactly));
 	/**/ m_menuitemExactly = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemExactly), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemExactly), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_EXACTLY);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
 	glade_menuitem = gtk_menu_item_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Para_SpacingMultiple));
 	/**/ m_menuitemMultiple = glade_menuitem;
+	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemMultiple), WIDGET_MENU_PARENT_ID_TAG, (gpointer) id_MENU_SPECIAL_SPACING);
 	/**/ gtk_object_set_data(GTK_OBJECT(m_menuitemMultiple), WIDGET_MENU_VALUE_TAG, (gpointer) spacing_MULTIPLE);
 	gtk_widget_show (glade_menuitem);
 	gtk_menu_append (GTK_MENU (listLineSpacing_menu), glade_menuitem);
@@ -1074,13 +1023,6 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemExactly);
 	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(m_menuitemMultiple);
 	
-#if 0	
-	gtk_signal_connect(GTK_OBJECT(m_spinbuttonLeft_adj),
-					   "value_changed",
-					   GTK_SIGNAL_FUNC(s_spin_indent_changed),
-					   (gpointer) this);
-#endif
-
 	// all the checkbuttons
 	gtk_signal_connect(GTK_OBJECT(m_checkbuttonWidowOrphan), "toggled",
 					   GTK_SIGNAL_FUNC(s_check_toggled), (gpointer) this);
@@ -1173,9 +1115,8 @@ void AP_UnixDialog_Paragraph::_populateWindowData(void)
 }
 
 void AP_UnixDialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_FALSE */)
-{ 
+{
 	// let parent sync any member variables first
-
 	AP_Dialog_Paragraph::_syncControls(changed, bAll);
 
 	// sync the display
