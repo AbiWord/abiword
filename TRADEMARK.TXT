@@ -16,5 +16,14 @@ AbiSource, Inc.
 AbiSource, Inc. reserves the right to restrict the use of its
 trademarks.
 
+All of the actual source code for AbiWord is covered under the GPL.
+You may use any of the copyright material contained herein,
+in accordance with the terms of the GPL.  This permits you to
+use some or all of the AbiWord source code, for any purpose
+permitted under the terms of the GPL.
 
+However, the GPL does not grant you the right to use AbiSource's
+company trademarks.  Modified versions of AbiWord may not be
+distributed using the AbiWord name without permission from
+AbiSource, Inc.
 
