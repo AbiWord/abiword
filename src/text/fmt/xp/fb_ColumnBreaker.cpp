@@ -661,7 +661,11 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // Break it at 0 first.
 //
 			UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
+#ifdef USE_LAYOUT_UNITS
 			UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeightInLayoutUnits() , iContainerMarginAfter ));
+#else
+			UT_DEBUGMSG(("SEVIOR: iBreakLO %d iWorkingColHeight %d iMaxColHeight %d Container Height %d MArginAfter %d \n",iBreakLO,iWorkingColHeight,iMaxColHeight,pTab->getHeight() , iContainerMarginAfter ));
+#endif
 			fp_Container * pNext = (fp_Container *) pTab->getNext();
 			UT_DEBUGMSG(("SEVIOR: getNext %x \n",pNext));
 			if(pNext)
