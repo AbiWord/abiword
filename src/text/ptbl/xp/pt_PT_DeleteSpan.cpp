@@ -118,6 +118,8 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 			UT_uint32 iLen = 1;
 			PTStruxType eStruxType;
 
+			bool bHasEndStrux = false;
+
 			if(eType == pf_Frag::PFT_Text)
 			{
 				if(!getAttrProp(static_cast<pf_Frag_Text*>(pf1)->getIndexAP(),&pAP))
@@ -135,14 +137,15 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					case PTX_Block:
 						iLen = pf_FRAG_STRUX_BLOCK_LENGTH;
 						break;
-
-					case PTX_Section:
-					case PTX_SectionHdrFtr:
 					case PTX_SectionEndnote:
 					case PTX_SectionTable:
 					case PTX_SectionCell:
 					case PTX_SectionFootnote:
 					case PTX_SectionFrame:
+						bHasEndStrux = true;
+						// fall through ...
+					case PTX_Section:
+					case PTX_SectionHdrFtr:
 					case PTX_EndCell:
 					case PTX_EndTable:
 				    case PTX_EndFootnote:
@@ -193,6 +196,53 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				if(   (pRev->getType() == PP_REVISION_ADDITION)
 				   || (pRev->getType() == PP_REVISION_ADDITION_AND_FMT ))
 				{
+					// if this fragment is one of the struxes that is paired with an end-strux, we
+					// need to delete both struxes and everything in between
+					if(bHasEndStrux)
+					{
+						PT_DocPosition posEnd = dposEnd;
+						for(pf_Frag * pf = pf1->getNext(); pf != NULL; pf = pf->getNext())
+						{
+							posEnd += pf->getLength();
+							
+							if(pf_Frag::PFT_Strux != pf->getType())
+								continue;
+
+							pf_Frag_Strux * pfs = (pf_Frag_Strux*) pf;
+							PTStruxType eStrux2Type = pfs->getStruxType();
+							
+							switch(eStruxType)
+							{
+								case PTX_SectionEndnote:
+									if(eStrux2Type != PTX_EndEndnote)
+										continue;
+									break;
+								case PTX_SectionTable:
+									if(eStrux2Type != PTX_EndTable)
+										continue;
+									break;
+								case PTX_SectionCell:
+									if(eStrux2Type != PTX_EndCell)
+										continue;
+									break;
+								case PTX_SectionFootnote:
+									if(eStrux2Type != PTX_EndFootnote)
+										continue;
+									break;
+								case PTX_SectionFrame:
+									if(eStrux2Type != PTX_EndFrame)
+										continue;
+									break;
+							}
+
+							// if we got this far, we found what we are looking for and we have the
+							// correct end position
+							break;
+						}
+						
+						dposEnd = posEnd;
+					}
+					
 					if(!_realDeleteSpan(dpos1, dposEnd, p_AttrProp_Before,bDeleteTableStruxes,
 										bDontGlob))
 						return false;
