@@ -50,3 +50,8 @@ UT_Bool UT_Stack::viewTop(void ** ppVoid) const
 	*ppVoid = m_vecStack.getLastItem();
 	return UT_TRUE;
 }
+
+UT_uint32 UT_Stack::getDepth(void) const
+{
+	return m_vecStack.getItemCount();
+}

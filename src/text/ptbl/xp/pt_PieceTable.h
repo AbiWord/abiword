@@ -4,12 +4,10 @@
 
 #include "ut_types.h"
 #include "ut_growbuf.h"
+#include "pt_Types.h"
 #include "pp_TableAttrProp.h"
 #include "px_ChangeHistory.h"
 #include "pf_Fragments.h"
-
-typedef UT_uint32 pt_BufPosition;		/* offset in one of the VarSet buffers */
-typedef UT_uint32 pt_AttrPropIndex;		/* index in one of the VarSet AP Tables */
 
 
 // pt_PieceTable implements a "Piece Table" as described/suggested
@@ -83,7 +81,7 @@ protected:
 	pf_Fragments			m_fragments;
 
 	struct {
-		UT_uint32			m_indexCurrentInlineAP;
+		pt_AttrPropIndex	m_indexCurrentInlineAP;
 	} loading;							/* stuff only valid while m_pts==PTS_Loading */
 
 	PD_Document *			m_pDocument; /* back pointer to our document */

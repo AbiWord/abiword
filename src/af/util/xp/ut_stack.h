@@ -32,6 +32,7 @@ public:
 	UT_Bool			push(void * pVoid);
 	UT_Bool			pop(void ** ppVoid);
 	UT_Bool			viewTop(void ** ppVoid) const;
+	UT_uint32		getDepth(void) const;
 
 protected:
 	UT_Vector		m_vecStack;

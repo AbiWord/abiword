@@ -15,10 +15,10 @@
 class pf_Frag
 {
 public:
-	pf_Frag();
-	virtual ~pf_Frag();
-
 	typedef enum _PFType { PFT_Text, PFT_Object, PFT_Strux } PFType;
+
+	pf_Frag(PFType type);
+	virtual ~pf_Frag();
 
 	PFType					getType(void) const;
 	pf_Frag *				getNext(void) const;

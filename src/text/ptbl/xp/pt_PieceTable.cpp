@@ -31,7 +31,7 @@ pt_PieceTable::~pt_PieceTable()
 void pt_PieceTable::setPieceTableState(PTState pts)
 {
 	UT_uint32 k;
-	UT_uint32 ndx;
+	pt_AttrPropIndex ndx;
 	
 	m_pts = pts;
 

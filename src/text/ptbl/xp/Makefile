@@ -24,43 +24,49 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		pc_Column.h				\
-					pc_ColumnSet.h			\
-					pc_Column_Box.h			\
-					pc_Column_Circle.h		\
-					pd_Document.h			\
-					pp_AttrProp.h			\
-					pp_Property.h			\
-					pt_PieceTable.h			\
-					px_ChangeRecord.h		\
-					px_ChangeRecord_Fmt.h	\
-					px_ChangeRecord_Span.h	\
-					px_ChangeRecord_Strux.h	\
+EXPORT_HEADERS=		pc_Column.h			\
+			pc_ColumnSet.h			\
+			pc_Column_Box.h			\
+			pc_Column_Circle.h		\
+			pd_Document.h			\
+			pp_AttrProp.h			\
+			pp_Property.h			\
+			px_ChangeRecord.h		\
+			px_ChangeRecord_Fmt.h		\
+			px_ChangeRecord_Span.h		\
+			px_ChangeRecord_Strux.h
 
-HEADERS=			$(EXPORT_HEADERS)			\
-					pf_Frag.h					\
-					pf_Frag_Object.h			\
-					pf_Frag_Strux.h				\
-					pf_Frag_Strux_Block.h		\
-					pf_Frag_Strux_Column.h		\
-					pf_Frag_Strux_ColumnSet.h	\
-					pf_Frag_Strux_Section.h		\
-					pf_Frag_Text.h				\
-					pf_Fragments.h				\
-					pp_TableAttrProp.h			\
-					px_ChangeHistory.h
+HEADERS=		$(EXPORT_HEADERS)		\
+			pf_Frag.h			\
+			pf_Frag_Object.h		\
+			pf_Frag_Strux.h			\
+			pf_Frag_Strux_Block.h		\
+			pf_Frag_Strux_Column.h		\
+			pf_Frag_Strux_ColumnSet.h	\
+			pf_Frag_Strux_Section.h		\
+			pf_Frag_Text.h			\
+			pf_Fragments.h			\
+			pp_TableAttrProp.h		\
+			pt_PieceTable.h			\
+			pt_Types.h			\
+			px_ChangeHistory.h
 
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=			pc_ColumnSet.cpp			\
-					pc_Column_Box.cpp			\
-					pc_Column_Circle.cpp		\
-					pd_Document.cpp				\
-					pp_AttrProp.cpp				\
-					pp_Property.cpp				\
-					pp_TableAttrProp.cpp		\
-					pt_PieceTable.cpp
+CPPSRCS=		pc_ColumnSet.cpp		\
+			pc_Column_Box.cpp		\
+			pc_Column_Circle.cpp		\
+			pd_Document.cpp			\
+			pf_Frag.cpp			\
+			pf_Frag_Strux.cpp		\
+			pf_Frag_Strux_Section.cpp	\
+			pf_Frag_Text.cpp		\
+			pf_Fragments.cpp		\
+			pp_AttrProp.cpp			\
+			pp_Property.cpp			\
+			pp_TableAttrProp.cpp		\
+			pt_PieceTable.cpp
 
 INCLUDES=		-I$(DIST)/include -I.
 

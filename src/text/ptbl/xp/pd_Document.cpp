@@ -97,3 +97,81 @@ void PD_Document::dump(FILE * fp) const
 {
 }
 
+UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
+								  UT_Bool bLeftSide,
+								  UT_UCSChar * p,
+								  UT_uint32 length)
+{
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::deleteSpan(PT_DocPosition dpos,
+								  UT_uint32 length)
+{
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::insertFmt(PT_DocPosition dpos1,
+								 PT_DocPosition dpos2,
+								 const XML_Char ** attributes,
+								 const XML_Char ** properties)
+{
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::deleteFmt(PT_DocPosition dpos1,
+								 PT_DocPosition dpos2,
+								 const XML_Char ** attributes,
+								 const XML_Char ** properties)
+{
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::insertStrux(PT_DocPosition dpos,
+								   PTStruxType pts,
+								   const XML_Char ** attributes,
+								   const XML_Char ** properties)
+{
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::deleteStrux(PT_DocPosition dpos)
+{
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::appendStrux(PTStruxType pts, const XML_Char ** attributes)
+{
+	UT_ASSERT(m_pPieceTable);
+
+	// can only be used while loading the document
+
+	return m_pPieceTable->appendStrux(pts,attributes);
+}
+
+UT_Bool PD_Document::appendFmt(const XML_Char ** attributes)
+{
+	UT_ASSERT(m_pPieceTable);
+
+	// can only be used while loading the document
+
+	return m_pPieceTable->appendFmt(attributes);
+}
+
+UT_Bool PD_Document::appendFmt(const UT_Vector * pVecAttributes)
+{
+	UT_ASSERT(m_pPieceTable);
+	
+	// can only be used while loading the document
+
+	return m_pPieceTable->appendFmt(pVecAttributes);
+}
+
+UT_Bool PD_Document::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
+{
+	UT_ASSERT(m_pPieceTable);
+	
+	// can only be used while loading the document
+
+	return m_pPieceTable->appendSpan(pbuf,length);
+}

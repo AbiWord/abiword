@@ -4,6 +4,8 @@
 
 #include "ut_types.h"
 #include "pf_Frag.h"
+#include "pt_Types.h"
+#include "pd_Document.h"
 
 // pf_Frag_Strux represents structure information (such as a
 // paragraph or section) in the document.
@@ -16,7 +18,7 @@
 class pf_Frag_Strux : public pf_Frag
 {
 public:
-	pf_Frag_Strux(UT_uint32 vsIndex, pt_AttrPropIndex indexAP);
+	pf_Frag_Strux(PTStruxType struxType, UT_uint32 vsIndex, pt_AttrPropIndex indexAP);
 	virtual ~pf_Frag_Strux();
 
 	PTStruxType				getStruxType(void) const;
@@ -24,7 +26,7 @@ public:
 protected:
 	PTStruxType				m_struxType;
 	UT_uint32				m_vsIndex;	/* which VS[] we are in */
-	pt_AttrPropIndex		m_index;	/* index in VS[].m_tableAttrProp to our A/P */
+	pt_AttrPropIndex		m_indexAP;	/* index in VS[].m_tableAttrProp to our A/P */
 };
 
 #endif /* PF_FRAG_STRUX_H */

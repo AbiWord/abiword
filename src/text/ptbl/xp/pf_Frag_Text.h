@@ -3,6 +3,7 @@
 #define PF_FRAG_TEXT_H
 
 #include "ut_types.h"
+#include "pt_Types.h"
 #include "pf_Frag.h"
 
 // pf_Frag_Text represents a fragment of text in the document.

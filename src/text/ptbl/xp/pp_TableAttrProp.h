@@ -4,7 +4,9 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "pt_Types.h"
 #include "pp_AttrProp.h"
+
 
 // pp_TableAttrProp implements an unbounded table of PP_AttrProp
 // objects.  Each PP_AttrProp represents the complete Attribute/
@@ -17,16 +19,16 @@ public:
 	pp_TableAttrProp();
 	~pp_TableAttrProp();
 
-	UT_Bool					createAP(UT_uint32 * pIndex);
+	UT_Bool					createAP(pt_AttrPropIndex * pIndex);
 
 	UT_Bool					createAP(const XML_Char ** attributes,
 									 const XML_Char ** properties,
-									 UT_uint32 * pIndex);
+									 pt_AttrPropIndex * pIndex);
 
 	UT_Bool					createAP(const UT_Vector * pVector,
-									 UT_uint32 * pIndex);
+									 pt_AttrPropIndex * pIndex);
 	
-	const PP_AttrProp *		getAP(UT_uint32 index) const;
+	const PP_AttrProp *		getAP(pt_AttrPropIndex index) const;
 	
 protected:
 	UT_Vector				m_vecTable;
