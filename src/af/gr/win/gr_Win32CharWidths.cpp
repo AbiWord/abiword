@@ -68,11 +68,11 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	{
 		for (k=c0; k<=c1; k++)
 		{
-			// GetCharWidth(hdc,k,k,&w);  // This gives correct width of CP1252 char 128-159 but do we need it?
 			SIZE Size;
-			wchar_t sz1[2];
-			sz1[0] = k;
-			GetTextExtentPoint32W(hdc, sz1, 1, &Size);
+			char str[sizeof(UT_UCSChar)];
+			int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
+				(unsigned short*) &k, 1, str, sizeof(str), NULL, NULL);
+			GetTextExtentPoint32A(hdc, str, iConverted, &Size);
 			setWidth(k,Size.cx);
 		}
 	}

@@ -174,7 +174,18 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
 	UT_UCSChar currentChar = remapGlyph(Char, UT_FALSE);
-	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &currentChar, 1, NULL);
+	if(UT_IsWinNT())
+	{
+		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, &currentChar, 1, NULL);
+	}
+	else
+	{
+		char str[sizeof(UT_UCSChar)];
+		int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
+			&currentChar, 1,
+			str, sizeof(str), NULL, NULL);
+		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
+	}
 }
 
 void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
@@ -188,8 +199,19 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
 	// TODO: need remapGlyph() before the following call
-	ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, pChars + iCharOffset, iLength, NULL);
-	//TextOutW(m_hdc, xoff, yoff, pChars + iCharOffset, iLength);
+	if(UT_IsWinNT())
+	{
+		ExtTextOutW(m_hdc, xoff, yoff, 0, NULL, pChars + iCharOffset, iLength, NULL);
+	}
+	else
+	{
+		char* str = new char[iLength * sizeof(UT_UCSChar)];
+		int iConverted = WideCharToMultiByte(CP_ACP, NULL, 
+			pChars + iCharOffset, iLength, 
+			str, iLength * sizeof(UT_UCSChar), NULL, NULL);
+		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
+		delete [] str;
+	}
 }
 
 void GR_Win32Graphics::setFont(GR_Font* pFont)
