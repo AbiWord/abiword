@@ -158,6 +158,17 @@ failure:
 	return 0; // why
 }
 
+
+UT_sint32 UT_MacTimer::setAsFastAsPossible()
+{
+  // Just a placeholder until someone implements an idle-queue
+  // mechanism. See ut_unixTimer.cpp for more information.
+  m_iMilliseconds = DEFAULT_MSECS;
+	
+  if (!m_bStarted)
+    set(m_iMilliseconds);
+}
+
 void UT_MacTimer::start (void)
 {
 	// resume the delivery of events using the last period set.

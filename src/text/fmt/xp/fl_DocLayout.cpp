@@ -897,12 +897,13 @@ void FL_DocLayout::_backgroundCheck(UT_Timer * pTimer)
 		}
 	}
 
-	if (i != 0 && pDocLayout->m_bStopSpellChecking == false)
+	if (i == 0) //&& pDocLayout->m_bStopSpellChecking == false)
 	{
-		// restart timer unless it's not needed any more
-		//pDocLayout->m_pBackgroundCheckTimer->start();
+		// stop timer if it's not needed any more
+		pDocLayout->m_pBackgroundCheckTimer->stop();
 	}
 	pDocLayout->m_bImSpellCheckingNow = false;
+	return;
 }
 
 void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout *pBlock, bool bHead)
@@ -916,7 +917,8 @@ void FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 reason, fl_BlockLayout
 	{
 		m_pBackgroundCheckTimer = UT_Timer::static_constructor(_backgroundCheck, this, m_pG);
 		if (m_pBackgroundCheckTimer)
-			m_pBackgroundCheckTimer->set(BACKGROUND_CHECK_MSECS);
+			//m_pBackgroundCheckTimer->set(BACKGROUND_CHECK_MSECS);
+			m_pBackgroundCheckTimer->setAsFastAsPossible();
 	}
 	else
 	{

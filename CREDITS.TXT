@@ -87,6 +87,8 @@ Lalo Martins <lalo@webcom.com>
 Vincent McIntyre <Vince.McIntyre@atnf.CSIRO.AU> autoconf on Solaris 2.6
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Anders Melchiorsen <postmaster@and.nospam.kampsax.k-net.dk>  GTK Window Autosize
+Ben Mesman<b.mesman@snow.nl>			Speed Up Unix spell checking using 
+						gtk_idle.
 Mike Meyer <mwm@mired.org>                      ParseAFM isspace() fix
 Paolo Molaro <lupus@debian.org>                 Perl bindings
 James Montgomerie <jamie@montgomerie.net>       ANSI C patrol, libole2 integration

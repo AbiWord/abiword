@@ -31,6 +31,7 @@ public:
 	~UT_Win32Timer();
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
+	virtual UT_sint32 setAsFastAsPossible();
 	virtual void stop(void);
 	virtual void start(void);
 

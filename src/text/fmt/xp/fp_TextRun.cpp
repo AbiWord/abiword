@@ -978,7 +978,7 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 			if(bthis && pPrev->getType() == FPRUN_IMAGE)
 				leftClear = 0;
 		}
-		UT_DEBUGMSG(("SEVIOR: leftclear in textrun = %d \n",leftClear));
+		xxx_UT_DEBUGMSG(("SEVIOR: leftclear in textrun = %d \n",leftClear));
 		m_pG->fillRect(clrNormalBackground,xoff-leftClear , yoff, m_iWidth+leftClear, m_pLine->getHeight());
 	}
 
