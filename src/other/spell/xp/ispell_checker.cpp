@@ -303,11 +303,18 @@ typedef struct {
   char * lang;
 } Ispell2Lang_t;
 
-// please try to keep this ordered alphabetically
+// please try to keep this ordered alphabetically by country-code
 static const Ispell2Lang_t m_mapping[] = {
-  { "british.hash",  "en-GB" },
-  { "american.hash", "en-US" },
-  { "swedish.hash",  "sv-SE"}
+  { "german.hash",     "de-DE" },
+  { "australian.hash", "en-AU" },
+  { "canadian.hash",   "en-CA" },
+  { "british.hash",    "en-GB" },
+  { "american.hash",   "en-US" },
+  { "spanish.hash",    "es-ES" },
+  { "french.hash",     "fr-FR" },
+  { "portugal.hash",   "pt-PT" },
+  { "russian.hash",    "ru-RU" },
+  { "swedish.hash",    "sv-SE"}
 };
 
 bool
