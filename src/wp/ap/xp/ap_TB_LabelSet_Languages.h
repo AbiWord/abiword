@@ -34,6 +34,7 @@
 #include "ap_TB_LabelSet_cy-GB.h"
 #include "ap_TB_LabelSet_da-DK.h"
 #include "ap_TB_LabelSet_de-DE.h"
+#include "ap_TB_LabelSet_el-GR.h"
 #include "ap_TB_LabelSet_en-AU.h"
 #include "ap_TB_LabelSet_en-GB.h"
 #include "ap_TB_LabelSet_en-IE.h"
