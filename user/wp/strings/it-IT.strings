@@ -194,6 +194,10 @@ DLG_Options_Prompt_IgnoreResetCurrent="Vuoi cancellare la lista delle parole ign
 DLG_Options_Prompt_IgnoreResetAll="Vuoi cancellare la lista delle parole ignorate in tutti i documenti?"
 DLG_DateTime_DateTimeTitle="Data e Ora"
 DLG_DateTime_AvailableFormats="&amp;Formati disponibili:"
+DLG_Field_FieldTitle="Campo"
+DLG_Field_Types="&amp;Tipi:"
+DLG_Field_Fields="&amp;Campi:"
+
 />
 
 </AbiStrings>
