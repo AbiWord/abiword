@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2001-2002, 2004 Hubert Figuiere
@@ -34,6 +36,7 @@
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
+#include "ap_Dialog_FormatFootnotes.h"
 #include "ap_Dialog_FormatTOC.h"
 #include "ap_CocoaDialog_FormatTOC.h"
 
@@ -59,7 +62,8 @@ AP_CocoaDialog_FormatTOC::~AP_CocoaDialog_FormatTOC(void)
 
 void AP_CocoaDialog_FormatTOC::setTOCPropsInGUI(void)
 {
-	UT_ASSERT(0);
+	if (m_dlg)
+		[m_dlg sync];
 }
 
 void AP_CocoaDialog_FormatTOC::setSensitivity(bool bSensitive)
@@ -69,20 +73,26 @@ void AP_CocoaDialog_FormatTOC::setSensitivity(bool bSensitive)
 
 void AP_CocoaDialog_FormatTOC::destroy(void)
 {
-	UT_ASSERT(m_dlg);
-	[m_dlg release];
-	m_dlg = nil;
+	if (m_dlg)
+		{
+			[m_dlg release];
+			m_dlg = nil;
+		}
 	finalize();
 }
 
 void AP_CocoaDialog_FormatTOC::activate(void)
 {
-	UT_ASSERT(m_dlg);
-	[[m_dlg window] orderFront:m_dlg];	
+	if (m_dlg)
+		{
+			[[m_dlg window] orderFront:m_dlg];
+			[m_dlg sync];
+		}
 }
 
-void AP_CocoaDialog_FormatTOC::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_CocoaDialog_FormatTOC::notifyActiveFrame(XAP_Frame * pFrame)
 {
+	// 
 }
 
 void AP_CocoaDialog_FormatTOC::runModeless(XAP_Frame * pFrame)
@@ -97,28 +107,31 @@ void AP_CocoaDialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 	startUpdater();
 }
 
-void AP_CocoaDialog_FormatTOC::_createLevelItems(NSPopUpButton* popup)
-{
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
-	[popup removeAllItems];
-
-	AppendLocalizedMenuItem(popup, pSS, AP_STRING_ID_DLG_FormatTOC_Level1, 1);
-	AppendLocalizedMenuItem(popup, pSS, AP_STRING_ID_DLG_FormatTOC_Level2, 2);
-	AppendLocalizedMenuItem(popup, pSS, AP_STRING_ID_DLG_FormatTOC_Level3, 3);
-	AppendLocalizedMenuItem(popup, pSS, AP_STRING_ID_DLG_FormatTOC_Level4, 4);
-}
-
-
 void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 {
+	// 
 }
 
 @implementation AP_CocoaDialog_FormatTOC_Controller
 
 - (id)initFromNib
 {
-	self = [super initWithWindowNibName:@"ap_CocoaDialog_FormatTOC"];
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_FormatTOC"])
+		{
+			// 
+		}
 	return self;
+}
+
+- (void)dealloc
+{
+	// 
+	[super dealloc];
+}
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = static_cast<AP_CocoaDialog_FormatTOC *>(owner);
 }
 
 - (void)discardXAP
@@ -126,59 +139,208 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 	_xap = NULL; 
 }
 
-- (void)dealloc
-{
-	[super dealloc];
-}
-
-- (void)setXAPOwner:(XAP_Dialog *)owner
-{
-	_xap = dynamic_cast<AP_CocoaDialog_FormatTOC*>(owner);
-}
-
 - (void)windowDidLoad
 {
 	if (_xap) {
-		const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
-		LocalizeControl([self window], pSS, AP_STRING_ID_DLG_FormatTOC_Title);
-		LocalizeControl(_applyBtn, pSS, XAP_STRING_ID_DLG_Apply);
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+		LocalizeControl([self window],			pSS, AP_STRING_ID_DLG_FormatTOC_Title);
+
+		LocalizeControl(_applyBtn,				pSS, XAP_STRING_ID_DLG_Apply);
 
 		LocalizeControl([_tabView tabViewItemAtIndex:0], pSS, AP_STRING_ID_DLG_FormatTOC_General);
 		LocalizeControl([_tabView tabViewItemAtIndex:1], pSS, AP_STRING_ID_DLG_FormatTOC_LayoutDetails);
 		
-		LocalizeControl(_hasHeadingBtn, pSS, AP_STRING_ID_DLG_FormatTOC_HasHeading);
-		LocalizeControl(_headingTextLabel, pSS, AP_STRING_ID_DLG_FormatTOC_HeadingText);
-		LocalizeControl(_headingStyleLabel, pSS, AP_STRING_ID_DLG_FormatTOC_HeadingStyle);
-		LocalizeControl(_mainPropBox, pSS, AP_STRING_ID_DLG_FormatTOC_LevelDefs);
-		LocalizeControl(_hasLabelBtn, pSS, AP_STRING_ID_DLG_FormatTOC_HasLabel);
-		LocalizeControl(_fillStyleLabel, pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
-		LocalizeControl(_displayStyleLabel, pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
-		LocalizeControl(_labelDefBox, pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTop);
-		LocalizeControl(_startAtLabel, pSS, AP_STRING_ID_DLG_FormatTOC_StartAt);
-		LocalizeControl(_textBeforeLabel, pSS, AP_STRING_ID_DLG_FormatTOC_TextBefore);
-		LocalizeControl(_numberingTypeLabel, pSS, AP_STRING_ID_DLG_FormatTOC_NumberingType);
-		LocalizeControl(_inheritLabelBtn, pSS, AP_STRING_ID_DLG_FormatTOC_InheritLabel);
-		LocalizeControl(_tabsAndPageNumbBox, pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTabPage);
-		LocalizeControl(_tabLeadersLabel, pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
-		LocalizeControl(_pageNumberingLabel, pSS, AP_STRING_ID_DLG_FormatTOC_PageNumbering);
-		LocalizeControl(_indentLabel, pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
+		LocalizeControl(_hasHeadingBtn,			pSS, AP_STRING_ID_DLG_FormatTOC_HasHeading);
+		LocalizeControl(_headingTextLabel,		pSS, AP_STRING_ID_DLG_FormatTOC_HeadingText);
+		LocalizeControl(_headingStyleLabel,		pSS, AP_STRING_ID_DLG_FormatTOC_HeadingStyle);
+		LocalizeControl(_hasLabelBtn,			pSS, AP_STRING_ID_DLG_FormatTOC_HasLabel);
+		LocalizeControl(_fillStyleLabel,		pSS, AP_STRING_ID_DLG_FormatTOC_FillStyle);
+		LocalizeControl(_displayStyleLabel,		pSS, AP_STRING_ID_DLG_FormatTOC_DispStyle);
+		LocalizeControl(_startAtLabel,			pSS, AP_STRING_ID_DLG_FormatTOC_StartAt);
+		LocalizeControl(_textBeforeLabel,		pSS, AP_STRING_ID_DLG_FormatTOC_TextBefore);
+		LocalizeControl(_numberingTypeLabel,	pSS, AP_STRING_ID_DLG_FormatTOC_NumberingType);
+		LocalizeControl(_inheritLabelBtn,		pSS, AP_STRING_ID_DLG_FormatTOC_InheritLabel);
+		LocalizeControl(_tabLeadersLabel,		pSS, AP_STRING_ID_DLG_FormatTOC_TabLeader);
+		LocalizeControl(_pageNumberingLabel,	pSS, AP_STRING_ID_DLG_FormatTOC_PageNumbering);
+		LocalizeControl(_indentLabel,			pSS, AP_STRING_ID_DLG_FormatTOC_Indent);
+		LocalizeControl(_defineMainLabel,		pSS, AP_STRING_ID_DLG_FormatTOC_LevelDefs);
+		LocalizeControl(_labelDefinitionsLabel,	pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTop);
+		LocalizeControl(_tabsPageNoLabel,		pSS, AP_STRING_ID_DLG_FormatTOC_DetailsTabPage);
 
-//	_createLabelTypeItems();
-//	_createTABTypeItems();
-		_xap->_createLevelItems(_mainLevelPopup);
-		_xap->_createLevelItems(_layoutLevelPopup);
+		LocalizeControl(_headingStyleBtn,		pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+		LocalizeControl(_fillStyleBtn,			pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
+		LocalizeControl(_displayStyleBtn,		pSS, AP_STRING_ID_DLG_FormatTOC_ChangeStyle);
 
+		[self createLevelItems:  _mainLevelPopup];
+		[self createLevelItems:_layoutLevelPopup];
+
+		[self createNumberingItems:_numberingTypeData];
+		[self createNumberingItems:_pageNumberingData];
+
+		const UT_GenericVector<const XML_Char *> * vecTABLeaders = _xap->getVecTABLeadersLabel();
+
+		UT_sint32 nTypes = vecTABLeaders->getItemCount();
+
+		[_tabLeadersData removeAllItems];
+
+		for (UT_sint32 n = 0; n < nTypes; n++)
+			{
+				const XML_Char * tabLeader = vecTABLeaders->getNthItem(n);
+
+				[_tabLeadersData addItemWithTitle:[NSString stringWithUTF8String:((const char *) tabLeader)]];
+			}
+
+		[self sync];
 	}
+}
+
+- (void)createLevelItems:(NSPopUpButton *)popup
+{
+	if (_xap) {
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+
+		[popup removeAllItems];
+
+		AppendLocalizedMenuItem(popup, pSS, AP_STRING_ID_DLG_FormatTOC_Level1, 1);
+		AppendLocalizedMenuItem(popup, pSS, AP_STRING_ID_DLG_FormatTOC_Level2, 2);
+		AppendLocalizedMenuItem(popup, pSS, AP_STRING_ID_DLG_FormatTOC_Level3, 3);
+		AppendLocalizedMenuItem(popup, pSS, AP_STRING_ID_DLG_FormatTOC_Level4, 4);
+	}
+}
+
+- (void)createNumberingItems:(NSPopUpButton *)popup
+{
+	const UT_GenericVector<const XML_Char *> * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
+
+	UT_sint32 nTypes = vecTypeList->getItemCount();
+
+	[popup removeAllItems];
+
+	for (UT_sint32 n = 0; n < nTypes; n++)
+		{
+			const XML_Char * typeList = vecTypeList->getNthItem(n);
+
+			[popup addItemWithTitle:[NSString stringWithUTF8String:((const char *) typeList)]];
+		}
+}
+
+- (void)sync
+{
+	if (_xap) {
+		UT_UTF8String sVal;
+
+		/* Heading
+		 */
+		sVal = _xap->getTOCPropVal("toc-has-heading");
+		BOOL bHasHeading = (sVal == "1") ? YES : NO;
+		[_hasHeadingBtn setState:(bHasHeading ? NSOnState : NSOffState)];
+
+		[_headingTextData setEnabled:bHasHeading];
+		[_headingStyleBtn setEnabled:bHasHeading];
+
+		sVal = _xap->getTOCPropVal("toc-heading");
+		[ _headingTextData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+
+		sVal = _xap->getTOCPropVal("toc-heading-style");
+		[_headingStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+
+		/* Main Properties
+		 */
+		sVal = _xap->getTOCPropVal("toc-has-label", _xap->getMainLevel());
+		BOOL bHasLabel = (sVal == "1") ? YES : NO;
+		[_hasLabelBtn setState:(bHasLabel ? NSOnState : NSOffState)];
+
+		[   _fillStyleData setEnabled:bHasLabel];
+		[_displayStyleData setEnabled:bHasLabel];
+
+		sVal = _xap->getTOCPropVal("toc-source-style", _xap->getMainLevel());
+		[   _fillStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+
+		sVal = _xap->getTOCPropVal("toc-dest-style", _xap->getMainLevel());
+		[_displayStyleData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+
+		/* Label Definitions
+		 */
+		sVal = _xap->getTOCPropVal("toc-label-start", _xap->getDetailsLevel());
+		[     _startAtData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+
+		sVal = _xap->getTOCPropVal("toc-label-before", _xap->getDetailsLevel());
+		[  _textBeforeData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+
+		// TODO: numbering type
+
+		sVal = _xap->getTOCPropVal("toc-label-after", _xap->getDetailsLevel());
+		[   _textAfterData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+
+		sVal = _xap->getTOCPropVal("toc-label-inherits", _xap->getDetailsLevel());
+		BOOL bInherits = (sVal == "1") ? YES : NO;
+		[_inheritLabelBtn setState:(bInherits ? NSOnState : NSOffState)];
+
+		/* Tabs & Page Nos
+		 */
+		// TODO: Tab leader
+
+		// TODO: Page No.
+
+		sVal = _xap->getTOCPropVal("toc-indent", _xap->getDetailsLevel());
+		[      _indentData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+	}
+}
+
+- (IBAction)headingStyleAction:(id)sender
+{
+	// TODO
+}
+
+- (IBAction)fillStyleAction:(id)sender
+{
+	// TODO
+}
+
+- (IBAction)displayStyleAction:(id)sender
+{
+	// TODO
+}
+
+- (IBAction)startAtStepperAction:(id)sender
+{
+	_xap->incrementIndent(_xap->getDetailsLevel(), ([_startAtStepper intValue] > 1));
+	[_startAtStepper setIntValue:1];
+
+	UT_UTF8String sVal = _xap->getTOCPropVal("toc-label-start", _xap->getDetailsLevel());
+	[_startAtData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+}
+
+- (IBAction)startAtAction:(id)sender
+{
+	// TODO
+}
+
+- (IBAction)indentStepperAction:(id)sender
+{
+	_xap->incrementIndent(_xap->getDetailsLevel(), ([_indentStepper intValue] > 1));
+	[_indentStepper setIntValue:1];
+
+	UT_UTF8String sVal = _xap->getTOCPropVal("toc-indent", _xap->getDetailsLevel());
+	[_indentData setStringValue:[NSString stringWithUTF8String:(sVal.utf8_str())]];
+}
+
+- (IBAction)indentAction:(id)sender
+{
+	// TODO
 }
 
 - (IBAction)mainLevelAction:(id)sender
 {
 	_xap->setMainLevel([[sender selectedItem] tag]);
+	[self sync];
 }
 
 - (IBAction)detailLevelAction:(id)sender
 {
 	_xap->setDetailsLevel([[sender selectedItem] tag]);
+	[self sync];
 }
 
 
@@ -213,5 +375,10 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 	[_applyBtn setEnabled:enable];
 }
 
-@end
+- (void)windowWillClose:(NSNotification *)aNotification
+{
+	if (_xap)
+		_xap->destroy();
+}
 
+@end

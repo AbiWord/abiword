@@ -30,6 +30,8 @@ class XAP_Frame;
 
 @class EV_CocoaMenuDelegate;
 
+@class XAP_CocoaFontFamilyHelper;
+@class XAP_CocoaFontReference;
 @class XAP_CocoaPlugin;
 
 @class AP_CocoaPlugin_MenuIDRef;
@@ -97,6 +99,9 @@ enum XAP_CocoaAppMenu_Id
 
 	NSMutableDictionary *	m_FontDictionary;
 
+	NSMutableDictionary *	m_FontReferenceDictionary;
+	NSMutableDictionary *	m_FontFamilyDictionary;
+
 	NSMutableDictionary *	m_MenuIDRefDictionary;
 
 	NSMutableArray *		m_Plugins;
@@ -162,7 +167,33 @@ enum XAP_CocoaAppMenu_Id
 - (void)clearMenu:(XAP_CocoaAppMenu_Id)appMenu; // except AbiWord & Windows
 - (void)clearAllMenus;                          // except AbiWord & Windows
 
+/**
+ * Look up a font name for the corresponding font family name.
+ * 
+ * \return Returns the corresponding font family name, or nil if none found.
+ */
 - (NSString *)familyNameForFont:(NSString *)fontName;
+
+/**
+ * Look up a font name for the corresponding font family helper.
+ * 
+ * \return Returns a reference to the corresponding font family helper, or nil if none found.
+ */
+- (XAP_CocoaFontReference *)helperReferenceForFont:(NSString *)fontName;
+
+/**
+ * Look up a font family name for the corresponding font family helper.
+ * 
+ * \return Returns the corresponding font family helper, or nil if none found.
+ */
+- (XAP_CocoaFontFamilyHelper *)helperForFontFamily:(NSString *)fontFamilyName;
+
+/**
+ * Create a font family helper for an unknown font or font family name.
+ * 
+ * \return Returns the corresponding font family helper.
+ */
+- (XAP_CocoaFontFamilyHelper *)helperForUnknownFontFamily:(NSString *)fontFamilyName;
 
 - (void)appendPluginMenuItem:(NSMenuItem *)menuItem;
 - (void)removePluginMenuItem:(NSMenuItem *)menuItem;

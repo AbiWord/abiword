@@ -23,13 +23,18 @@
 #ifndef GR_COCOAGRAPHICS_H
 #define GR_COCOAGRAPHICS_H
 
+#import <Cocoa/Cocoa.h>
+
 #include "xap_CocoaApp.h"
-#include "xap_CocoaFont.h"
 #include "xap_Frame.h"
 #include "gr_Graphics.h"
 
 class UT_ByteBuf;
+
 class GR_CocoaGraphics;
+
+class XAP_CocoaFont;
+
 class StNSViewLocker;
 
 @class XAP_CocoaNSView, XAP_CocoaNSScrollView;
