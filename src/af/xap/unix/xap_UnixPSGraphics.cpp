@@ -1448,7 +1448,7 @@ void PS_Graphics::_emit_SetColor(void)
 	// used for any averaging
 	unsigned char newclr;
 
-	setlocale(LC_NUMERIC,"C");
+	char * old_locale = setlocale(LC_NUMERIC,"C");
 	switch(m_cs)
 	{
 	case GR_Graphics::GR_COLORSPACE_COLOR:
@@ -1475,7 +1475,7 @@ void PS_Graphics::_emit_SetColor(void)
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
-	setlocale(LC_NUMERIC,""); // restore original locale
+	setlocale(LC_NUMERIC,old_locale); // restore original locale
 
 	m_ps->writeBytes(buf);
 }

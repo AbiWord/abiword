@@ -2489,12 +2489,13 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 
 UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 {
-  const char * mimetype 	= UT_strdup ("image/png");
-  IE_ImpGraphic * importer	= 0;
-  FG_Graphic* pFG		= 0;
-  UT_Error error		= UT_OK;
-  UT_ByteBuf * buf		= 0;
-  UT_ByteBuf * pictData 	= new UT_ByteBuf();
+	char * old_locale = "" ;
+	const char * mimetype 	= UT_strdup ("image/png");
+	IE_ImpGraphic * importer	= 0;
+	FG_Graphic* pFG		= 0;
+	UT_Error error		= UT_OK;
+	UT_ByteBuf * buf		= 0;
+	UT_ByteBuf * pictData 	= new UT_ByteBuf();
 
   // suck the data into the ByteBuffer
 
@@ -2568,11 +2569,11 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   // This next bit of code will set up our properties based on the image attributes
   //
 
-  setlocale(LC_NUMERIC, "C");
+  old_locale = setlocale(LC_NUMERIC, "C");
   UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
-	  (double)width / (double)1440,
-	  (double)height / (double)1440);
-  setlocale(LC_NUMERIC, "");
+					(double)width / (double)1440,
+					(double)height / (double)1440);
+  setlocale(LC_NUMERIC, old_locale);
 
   UT_String_sprintf(propsName, "image%d", m_iImageCount++);
 

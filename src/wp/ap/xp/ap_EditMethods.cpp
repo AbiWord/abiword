@@ -7554,10 +7554,10 @@ Defun(dlgFmtImage)
 
 		  // TODO: set format
 		  const XML_Char * properties[] = {"width", NULL, "height", NULL, 0};
-		  setlocale(LC_NUMERIC, "C");
+		  char * old_locale = setlocale(LC_NUMERIC, "C");
 		  sprintf(widthBuf, "%fin", width);
 		  sprintf(heightBuf, "%fin", height);
-		  setlocale(LC_NUMERIC, 0);
+		  setlocale(LC_NUMERIC, old_locale);
 
 		  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", widthBuf, heightBuf));
 

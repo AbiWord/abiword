@@ -1090,16 +1090,16 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			{
 				if (!span)
 				{
-					setlocale (LC_NUMERIC, "C");
+					char * old_locale = setlocale (LC_NUMERIC, "C");
 					m_pie->write(UT_String_sprintf("<span style=\"font-size: %fpt", UT_convertToPoints(pszFontSize)));
-					setlocale (LC_NUMERIC, "");
+					setlocale (LC_NUMERIC, old_locale);
 					span = true;
 				}
 				else
 				{
-					setlocale (LC_NUMERIC, "C");
+					char * old_locale = setlocale (LC_NUMERIC, "C");
 					m_pie->write(UT_String_sprintf("; font-size: %fpt", UT_convertToPoints(pszFontSize)));
-					setlocale (LC_NUMERIC, "");
+					setlocale (LC_NUMERIC, old_locale);
 				}
 			}
 

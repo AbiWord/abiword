@@ -51,7 +51,7 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 		pt_VarSet.cpp mergeAP()
 	*/
 
-	setlocale (LC_NUMERIC, "C");
+	char * old_locale = setlocale (LC_NUMERIC, "C");
 
 	char* list_fmt = " list-style:%s; start-value:%s; margin-left:%fin; text-indent:-%fin; field-color:%s;list-delim:%s; field-font:%s; list-decimal:%s";
 	char list_fmt_tmp[1024];
@@ -132,11 +132,11 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	_s("Footnote Reference","C", "None", "Current Settings", "text-position:superscript; font-size:10pt");
 	_s("Footnote Text","P", "Normal", "Current Settings", "text-position:normal");
 #endif
-	setlocale (LC_NUMERIC, "");
+	setlocale (LC_NUMERIC, old_locale);
 	return true;
 
 Failed:
-	setlocale (LC_NUMERIC, "");
+	setlocale (LC_NUMERIC, old_locale);
 	return false;
 }
 
