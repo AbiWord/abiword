@@ -91,13 +91,13 @@ BeginSet(en,US,true)
 	ToolbarLabel(AP_TOOLBAR_ID_2COLUMN,			"2 Columns",		tb_2column_xpm,			NULL, "2 Columns")
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Columns",		tb_3column_xpm,			NULL, "3 Columns")
 
-	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",		NoIcon,			NULL, "Zoom")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Bullet Lists",		tb_lists_bullets_xpm,		NULL,		"Start/Stop Bullet Lists")
-	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Numbered Lists",		tb_lists_numbers_xpm,		NULL,		"Start/Stop Numbered Lists")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Foreground Color",	NoIcon,						NULL, "Change Foreground Color")
-	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Background Color",	NoIcon,						NULL, "Change Background Color")
-	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Indent Paragraph", tb_text_indent_xpm, 		NULL, "Increase Paragraph Indentation")
-	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Un-Indent Paragraph", tb_text_unindent_xpm,	NULL, "Decrease Paragraph Indentation")
+	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",				NoIcon,					NULL, "Zoom")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,	"Bullets",			tb_lists_bullets_xpm,	NULL, "Bullets")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,	"Numbering",		tb_lists_numbers_xpm,	NULL, "Numbering")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Font color",		NoIcon,					NULL, "Font color")
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Highlight",		NoIcon,					NULL, "Highlight")
+	ToolbarLabel(AP_TOOLBAR_ID_INDENT,			"Increase indent",	tb_text_indent_xpm, 	NULL, "Increase indent")
+	ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,		"Decrease indent",	tb_text_unindent_xpm,	NULL, "Decrease indent")
 
      // ... add others here ...
 #ifdef BIDI_ENABLED
