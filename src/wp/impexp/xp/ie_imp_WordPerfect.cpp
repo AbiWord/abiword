@@ -42,10 +42,10 @@
 
 #include "ie_imp_WordPerfect.h"
 
-#define X_CheckFileError(v) if (v==EOF) return UT_IE_IMPORTERROR;
-#define X_CheckFileReadElementError(v) if (v != 1) return UT_IE_IMPORTERROR; // makes sure that one element is read
-#define X_CheckDocumentError(v) if (!v) return UT_IE_IMPORTERROR;
-#define X_CheckWordPerfectError(v) if ((v != UT_OK)) return UT_IE_IMPORTERROR;
+#define X_CheckFileError(v) if (v==EOF) { UT_DEBUGMSG(("X_CheckFileError: %d\n", __LINE__)); return UT_IE_IMPORTERROR; }
+#define X_CheckFileReadElementError(v) if (v != 1) { UT_DEBUGMSG(("X_CheckFileReadElementError: %d\n", __LINE__)); return UT_IE_IMPORTERROR; } // makes sure that one element is read
+#define X_CheckDocumentError(v) if (!v) { UT_DEBUGMSG(("X_CheckDocumentError: %d\n", __LINE__)); return UT_IE_IMPORTERROR; }
+#define X_CheckWordPerfectError(v) if ((v != UT_OK)) { UT_DEBUGMSG(("X_CheckWordPerfectError: %d\n", __LINE__)); return UT_IE_IMPORTERROR; }
 
 WordPerfectTextAttributes::WordPerfectTextAttributes()
 {
