@@ -60,6 +60,7 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 	//    WHITE ({T1|T2|T3}WHITE)* [WHITE]
 	
 	UT_cloneString(m_szBuf,szCmdLine);
+	UT_ASSERT(m_szBuf);
 
 	int count = 10;	// start with 10 and realloc if necessary
 	int k = 0;
