@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <endian.h>
 
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
@@ -27,7 +28,16 @@
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
 
+#if 1
 #include <gdk/gdkprivate.h>
+static UT_Bool isFontUnicode(GdkFont *font)
+{
+	GdkFontPrivate *font_private = (GdkFontPrivate*) font;
+	XFontStruct *xfont = (XFontStruct *) font_private->xfont;
+	
+	return ((xfont->min_byte1 == 0) || (xfont->max_byte1 == 0));
+}
+#endif
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -123,15 +133,56 @@ static UT_Bool fallback_used;
 		}	\
 	}	
 
+// when dealing with utf-8 locale we will need to do little-endian to
+// big-endian conversion, since XDrawString16 which is used by GDK
+// interprets its input in BE fashion
+#if __BYTE_ORDER == __LITTLE_ENDIAN		
+// convert single UCS character
+// x,y are pointers to UT_UCSChar
+// we will use a temporary variable, so that x and y
+// can be the same
+#define LE2BE16(x,y)                                  \
+char * lb1;                                           \
+UT_UCSChar tucs;                                      \
+tucs = * ((UT_UCSChar *)(x)); lb1 = (char*) (&tucs);  \
+*((char*)(y)) = *(lb1+1); *(((char*)(y)+1)) = *lb1;
+
+#else
+	#define LE2BE16(x,y)
+#endif  //__BYTE_ORDER == __LITTLE_ENDIAN
+
 // HACK: I need more speed
 void GR_UnixGraphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_UCSChar Wide_char = remapGlyph(Char, UT_FALSE);
-	WCTOMB_DECLS;
-	CONVERT_TO_MBS(Wide_char);
 	GdkFont *font = XAP_EncodingManager::instance->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
 
-	gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,text,text_length);
+	if(XAP_EncodingManager::instance->isUnicodeLocale())
+	{
+		/*  if the locale is unicode (i.e., utf-8) then we do not want
+			to convert the UCS string to anything,
+			gdk_draw_text can draw 16-bit string, if the font is
+			a matrix; however, the byte ordering is interpreted as big-endian
+		*/
+		if(isFontUnicode(font))
+		{
+			LE2BE16((&Wide_char),(&Wide_char))
+			gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,(gchar*)&Wide_char,2);
+		}
+		else
+		{
+			//non-unicode font, Wide char is guaranteed to be <= 0xff
+			gchar gc = (gchar) Wide_char;
+			gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,(gchar*)&gc,1);			//UT_DEBUGMSG(("drawChar: utf-8\n"));
+		}
+	}
+	else
+	{
+	
+		WCTOMB_DECLS;
+		CONVERT_TO_MBS(Wide_char);
+		gdk_draw_text(m_pWin,font,m_pGC,xoff,yoff+font->ascent,text,text_length);
+	}
 }
 
 void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
@@ -145,13 +196,40 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	UT_sint32 x;
 	const UT_UCSChar *pC;
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
-	  {
+	{
 		UT_UCSChar actual = remapGlyph(*pC,UT_FALSE);
 		font=XAP_EncodingManager::instance->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
-		CONVERT_TO_MBS(actual);
-		gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,text,text_length);
-		x+=gdk_text_width(font, text, text_length);
-	  }	
+		if(XAP_EncodingManager::instance->isUnicodeLocale())
+		{
+			/*	if the locale is unicode (i.e., utf-8) then we do not want
+				to convert the UCS string to anything,
+				gdk_draw_text can draw 16-bit string, if the font is
+				a matrix; however the string is interpreted as big-endian
+			*/
+			if(isFontUnicode(font))
+			{
+				//unicode font
+				//UT_DEBUGMSG(("UnixGraphics::drawChars: utf-8\n"));
+				UT_UCSChar beucs;
+				LE2BE16((pC),(&beucs))
+				gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,(gchar*)&beucs,2);
+				x+=gdk_text_width(font, (gchar*)&beucs, 2);
+			}
+			else
+			{
+				//not a unicode font; actual is guaranteed to be <=0xff
+				gchar gc = (gchar) actual;
+				gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,(gchar*)&gc,1);
+				x+=gdk_text_width(font, (gchar*)&gc, 1);			
+			}
+		}
+		else
+		{
+			CONVERT_TO_MBS(actual);
+			gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,text,text_length);
+			x+=gdk_text_width(font, text, text_length);
+		}
+	}
 	flush();
 }
 
@@ -197,14 +275,43 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_pGC);
-	UT_UCSChar Wide_char = c;
-	WCTOMB_DECLS;
-	CONVERT_TO_MBS(Wide_char);
-	if (fallback_used)
-	    return 0;
-	GdkFont *font = XAP_EncodingManager::instance->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
 
-	return gdk_text_width(font, text, text_length);
+	GdkFont * font;
+	UT_UCSChar Wide_char = c;
+		
+	if(XAP_EncodingManager::instance->isUnicodeLocale())
+	{
+		font = m_pSingleByteFont;
+		
+		if(isFontUnicode(font))
+		{
+			//this is a unicode font
+			LE2BE16(&c,&Wide_char)
+			UT_uint32 c32, wc32;
+			return gdk_text_width(font, (gchar*) &Wide_char, 2);
+		}
+		else
+		{
+			//this is not a unicode font
+			if(c > 0xff) //a non unicode font contains only 256 chars
+				return 0;
+			else
+			{
+				gchar gc = (gchar) c;
+				return gdk_text_width(font, (gchar*)&gc, 1);
+			}		
+		}
+	}
+	else
+	{
+		WCTOMB_DECLS;
+		CONVERT_TO_MBS(Wide_char);
+		if (fallback_used)
+			return 0;
+		font = XAP_EncodingManager::instance->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
+
+		return gdk_text_width(font, text, text_length);
+	}
 
 }
 

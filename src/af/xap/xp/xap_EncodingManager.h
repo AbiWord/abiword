@@ -54,6 +54,9 @@ public:
 	The string should be uppercased (extra font tarballs assume this).
     */
     virtual const char* getNativeEncodingName() const;
+
+	inline virtual UT_Bool isUnicodeLocale() const {return m_bIsUnicodeLocale;}
+
     /*
 	This shouldn't return NULL. Don't free or write to returned string. 
 	Returns ISO two-letter name like "en"
@@ -253,7 +256,7 @@ protected:
 
 	const char* TexPrologue;
 	UT_uint32 WinLanguageCode,WinCharsetCode;
-	bool is_cjk_,can_break_words_; 
+	UT_Bool is_cjk_,can_break_words_,m_bIsUnicodeLocale;
 };
 
 /*

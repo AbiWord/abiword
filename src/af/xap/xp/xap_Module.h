@@ -29,10 +29,11 @@
 
 class XAP_Module {
 
-public:
+ protected:
+  // protected contstructor
+  XAP_Module ();
 
-   XAP_Module ();
-
+ public:
    // Delete (and unload) the module
    virtual ~XAP_Module (void) = 0;
 

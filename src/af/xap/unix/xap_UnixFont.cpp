@@ -1002,67 +1002,72 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	char * newxlfd = myXLFD.getXLFD();
 	char* requested_lfd = newxlfd;
 
-	if(!is_CJK_font()) {
-	  gdkfont = gdk_font_load(newxlfd);
+	if(!is_CJK_font())
+	{
+		//UT_DEBUGMSG(("Loading gdkfont [%s]\n", newxlfd));
+		gdkfont = gdk_font_load(newxlfd);
 
-           if (!gdkfont)
-           {
-                   free(newxlfd);
-                   newxlfd = myXLFD.getFallbackXLFD();
-                   requested_lfd  = newxlfd;
-                   gdkfont = gdk_font_load(newxlfd);
-           }
-       } else {
-           char* noncjkXLFD;
-           {
-              int s;
-              switch(m_style)
-               {
-                   case XAP_UnixFont::STYLE_NORMAL:
-                         s=0;
-                         break;
-                   case XAP_UnixFont::STYLE_BOLD:
-                         s=1;
-                         break;
-                   case XAP_UnixFont::STYLE_ITALIC:
-                         s=2;
-                         break;
-                   case XAP_UnixFont::STYLE_BOLD_ITALIC:
-                         s=3;
-                         break;
-                   default:
-                         s=0;
-               }
-              XAP_UnixFont *pMatchUnixFont= s_defaultNonCJKFont[s];
-             XAP_UnixFontXLFD non_cjk_lfd(pMatchUnixFont->m_xlfd);
-             non_cjk_lfd.setPixelSize(pixelsize);
-             noncjkXLFD = non_cjk_lfd.getXLFD();
-           }
-           sprintf(buf,"%s,%s",newxlfd,noncjkXLFD);
-           free(noncjkXLFD);
-           gdkfont = gdk_fontset_load(buf);
-           requested_lfd = buf;
-       }
+	 	if (!gdkfont)
+		{
+			free(newxlfd);
+			newxlfd = myXLFD.getFallbackXLFD();
+			requested_lfd  = newxlfd;
+			gdkfont = gdk_font_load(newxlfd);
+   		}
+   		
+	}
+	else
+	{
+		char* noncjkXLFD;
+  		{
+			int s;
+			switch(m_style)
+			{
+				case XAP_UnixFont::STYLE_NORMAL:
+					s=0;
+					break;
+				case XAP_UnixFont::STYLE_BOLD:
+					s=1;
+					break;
+				case XAP_UnixFont::STYLE_ITALIC:
+					s=2;
+					break;
+				case XAP_UnixFont::STYLE_BOLD_ITALIC:
+					s=3;
+					break;
+				default:
+				s=0;
+			}
+			XAP_UnixFont *pMatchUnixFont= s_defaultNonCJKFont[s];
+			XAP_UnixFontXLFD non_cjk_lfd(pMatchUnixFont->m_xlfd);
+			non_cjk_lfd.setPixelSize(pixelsize);
+			noncjkXLFD = non_cjk_lfd.getXLFD();
+		}
+		sprintf(buf,"%s,%s",newxlfd,noncjkXLFD);
+		free(noncjkXLFD);
+		gdkfont = gdk_fontset_load(buf);
+		requested_lfd = buf;
+	}
 
 	if (!gdkfont)
 	{
-               char message[1024];
-               g_snprintf(message, 1024,
-			  "AbiWord could not load the following font or fontset from the X Window System display server:\n"
-			  "[%s]\n"
-			  "\n"
-			  "This error could be the result of an incomplete AbiSuite installation,\n"
-			  "an incompatibility with your X Window System display server,\n"
-			  "or a problem communicating with a remote font server.\n"
-			  "\n"
-			  "Often this error is the result of invoking AbiWord directly instead of through\n"
-			  "its wrapper shell script.  The script dynamically adds the AbiSuite font directory\n"
-			  "to your X Window System display server font path before running the executable.\n"
-			  "\n"
-			  "Please visit http://www.abisource.com/ for more information.",
-			  requested_lfd);
-	       messageBoxOK(message);
-	       exit(1);
+		char message[1024];
+		g_snprintf(message, 1024,
+			"AbiWord could not load the following font or fontset from the X Window System display server:\n"
+			"[%s]\n"
+			"\n"
+			"This error could be the result of an incomplete AbiSuite installation,\n"
+			"an incompatibility with your X Window System display server,\n"
+			"or a problem communicating with a remote font server.\n"
+			"\n"
+			"Often this error is the result of invoking AbiWord directly instead of through\n"
+			"its wrapper shell script.  The script dynamically adds the AbiSuite font directory\n"
+			"to your X Window System display server font path before running the executable.\n"
+			"\n"
+			"Please visit http://www.abisource.com/ for more information.",
+			requested_lfd);
+		messageBoxOK(message);
+		exit(1);
 	}
 
 	free(newxlfd);

@@ -714,6 +714,12 @@ void XAP_EncodingManager::initialize()
 	const char* isocode = getLanguageISOName(), 
 		   *terrname = getLanguageISOTerritory(),
 		   *enc = getNativeEncodingName();
+	
+	if(!strcmp(enc, "UTF-8") || !strcmp(enc, "UTF8") || !strcmp(enc, "utf-8") || !strcmp(enc, "utf8"))
+		m_bIsUnicodeLocale = UT_TRUE;
+	else
+		m_bIsUnicodeLocale = UT_FALSE;
+		   		
 #define SEARCH_PARAMS  fulllocname, langandterr, isocode
 	char fulllocname[40],langandterr[40];
 	if (terrname) {
