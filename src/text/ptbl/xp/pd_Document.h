@@ -298,7 +298,8 @@ public:
 	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
 										   const pf_Frag * pfStart = NULL);
 	pf_Frag *               getLastFrag() const;
-	bool                    appendBlockIfNeeded(void);
+	bool                    checkForSuspect(void);
+	bool                    repairDoc(void);
 	bool                    removeStyle(const XML_Char * name);
 	bool					tellListener(PL_Listener * pListener);
 	bool					tellListenerSubset(PL_Listener * pListener,
@@ -694,6 +695,8 @@ private:
 	UT_sint32               m_iNewHdrHeight;
 	UT_sint32               m_iNewFtrHeight;
 	bool                    m_bMarginChangeOnly;
+	UT_GenericVector<pf_Frag *> m_vecSuspectFrags;
+
 };
 
 #endif /* PD_DOCUMENT_H */

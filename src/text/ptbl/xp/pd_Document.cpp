@@ -309,9 +309,10 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	// also initializes m_indexAP
 	m_indexAP = 0xffffffff;
 	setAttrProp(NULL);
-	
 	errorCode = pie->importFile(szFilename);
 	delete pie;
+	repairDoc();
+	
 	m_bLoading = false;
 
 	if (errorCode)
@@ -464,6 +465,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 
 	errorCode = pie->importFile(szFilename);
 	delete pie;
+	repairDoc();
 
 	if (errorCode)
 	{
@@ -1075,11 +1077,47 @@ bool PD_Document::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attribut
 }
 
 /*!
- * This method appends a block strux to the end of the piecteable if
- * there is an open strux present with no content. Really useful for
- * importers.
+ * Scan the vector of suspect frags and add blocks if they're needed.
+ * Returns true if there are no changes to the document. 
  */
-bool PD_Document::appendBlockIfNeeded(void)
+bool PD_Document::repairDoc(void)
+{
+	if(m_vecSuspectFrags.getItemCount() == 0)
+	{
+		return true;
+	}
+	bool bRepaired = false;
+	UT_uint32 i = 0;
+	for(i=0; i< m_vecSuspectFrags.getItemCount(); i++)
+	{
+		pf_Frag * pf = m_vecSuspectFrags.getNthItem(i);
+		if(pf->getType() == pf_Frag::PFT_Strux)
+		{
+			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
+			if((pfs->getStruxType() != PTX_Block) && (pfs->getStruxType() != PTX_EndFootnote) && (pfs->getStruxType() != PTX_EndEndnote) )
+			{
+				pf_Frag * pfNext = pf->getNext();
+				if(pfNext && ((pfNext->getType() ==  pf_Frag::PFT_Text) || (pfNext->getType() ==  pf_Frag::PFT_Object) || (pfNext->getType() ==  pf_Frag::PFT_FmtMark)))
+				{  
+					//
+					// Insert a block afterwards!
+					//
+					insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+					bRepaired = true;
+				}
+			}
+		}
+	}
+	return !bRepaired;
+}
+
+/*!
+ * This method is called after appendspan, appendObject, appendfmtMark and
+ * checks to see if there is an invalid strux just before. If it see one, it
+ * marks the strux as suspect for verification after the load is over.
+ * Really useful for importers.
+ */
+bool PD_Document::checkForSuspect(void)
 {
 	pf_Frag * pf = getLastFrag();
 	if(pf->getType() == pf_Frag::PFT_Strux)
@@ -1090,7 +1128,7 @@ bool PD_Document::appendBlockIfNeeded(void)
 			//
 			// Append a block!
 			//
-			appendStrux(PTX_Block,NULL);
+			m_vecSuspectFrags.addItem(pf);
 			return true;
 		}
 		
@@ -1101,7 +1139,7 @@ bool PD_Document::appendBlockIfNeeded(void)
 bool PD_Document::appendFmt(const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
-	appendBlockIfNeeded();
+	checkForSuspect();
 	// can only be used while loading the document
 	return m_pPieceTable->appendFmt(attributes);
 }
@@ -1109,7 +1147,7 @@ bool PD_Document::appendFmt(const XML_Char ** attributes)
 bool PD_Document::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
-	appendBlockIfNeeded();
+	checkForSuspect();
 
 	// can only be used while loading the document
 
@@ -1119,7 +1157,7 @@ bool PD_Document::appendFmt(const UT_GenericVector<XML_Char*> * pVecAttributes)
 bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
-	appendBlockIfNeeded();
+	checkForSuspect();
 
 	// can only be used while loading the document
 
@@ -1195,7 +1233,7 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
-	appendBlockIfNeeded();
+	checkForSuspect();
 
 	// can only be used while loading the document
 
@@ -1205,7 +1243,7 @@ bool PD_Document::appendObject(PTObjectType pto, const XML_Char ** attributes)
 bool PD_Document::appendFmtMark(void)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
-	appendBlockIfNeeded();
+	checkForSuspect();
 
 	// can only be used while loading the document
 
