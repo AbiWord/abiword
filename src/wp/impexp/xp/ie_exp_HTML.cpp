@@ -2105,11 +2105,11 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		}
 		else if (UT_stricmp (static_cast<const char *>(szValue), "Plain Text") == 0)
 		{
-			m_iBlockType = BT_PLAINTEXT;
-			tagID = TT_PRE;
+			m_iBlockType = BT_NORMAL;
+			tagID = TT_P;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "pre";
+			m_utf8_1 = "p class=\"plain_text\"";
 			bAddAWMLStyle = false;
 		}
 		else if (UT_stricmp (static_cast<const char *>(szValue), "Normal") == 0)
@@ -2190,11 +2190,11 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 		}
 		else if (tree->descends ("Plain Text"))
 		{
-			m_iBlockType = BT_PLAINTEXT;
-			tagID = TT_PRE;
+			m_iBlockType = BT_NORMAL;
+			tagID = TT_P;
 			tagPending = true;
 			bClassAsTag = true;
-			m_utf8_1 = "pre";
+			m_utf8_1 = "p class=\"plain_text\"";
 		}
 		else if (tree->descends ("Normal"))
 		{
