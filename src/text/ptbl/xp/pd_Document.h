@@ -111,6 +111,8 @@ public:
 	const UT_UCSChar *		getPointer(PT_BufIndex bi) const; /* see warning on this function */
 	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
+	UT_Bool					getSpanAPIndex(PL_StruxDocHandle sdh, UT_uint32 offset,
+										   PT_AttrPropIndex* pIndexAP);
 	UT_Bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
 
 	UT_Bool					getBounds(UT_Bool bEnd, PT_DocPosition & docPos) const;

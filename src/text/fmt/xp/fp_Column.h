@@ -75,7 +75,7 @@ public:
 	void				checkForWidowsAndOrphans(void);
 	UT_Bool				insertLineAfter(fp_Line* pNewLine, fp_Line*	pAfterLine, UT_sint32 iHeight);
 	void				removeLine(fp_Line*);
-	void				lineHeightChanged(fp_Line* pLine, DG_Graphics* pG, UT_sint32 iOldHeight, UT_sint32 iNewHeight);
+	void				lineHeightChanged(fp_Line* pLine, UT_sint32 iOldHeight, UT_sint32 iNewHeight);
 	void				updateLayout(void);
 	void 				moveLineToNextColumn(UT_uint32 iBump);
 	void				moveLineToNextColumn(fp_Line* pLine);

@@ -63,6 +63,7 @@ public:
 	~fl_BlockLayout();
 
 	int 		format();
+	UT_Bool		recalculateFields(void);
 	
 	fp_Line*	getNewLine(UT_sint32 iHeight);
 
@@ -110,7 +111,7 @@ public:
 
 	void checkSpelling(void);
 
-	UT_Bool doclistener_populateSpan(PT_BlockOffset blockOffset, UT_uint32 len);
+	UT_Bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	UT_Bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	
 	UT_Bool doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs);
@@ -131,6 +132,20 @@ public:
 	*/
 
 protected:
+
+#ifndef NDEBUG
+	void					_assertRunListIntegrity(void);
+#endif
+	
+	UT_Bool					_doInsertRun(fp_Run* pNewRun);
+	UT_Bool					_delete(PT_BlockOffset blockOffset, UT_uint32 len);
+
+	UT_Bool					_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len);
+	UT_Bool					_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset);
+	UT_Bool					_doInsertTabRun(PT_BlockOffset blockOffset);
+	UT_Bool					_doInsertImageRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	UT_Bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
+	
 	void					_lookupProperties(void);
 	void			 		_fixColumns(void);
 	void					_purgeLayout(void);

@@ -134,6 +134,44 @@ UT_Bool pt_PieceTable::getAttrProp(PT_AttrPropIndex indexAP, const PP_AttrProp *
 	return UT_TRUE;
 }
 
+UT_Bool	pt_PieceTable::getSpanAPIndex(PL_StruxDocHandle sdh, UT_uint32 offset,
+									  PT_AttrPropIndex* pIndexAP)
+{
+	// return the AP for the text at the given offset from the given strux.
+	// note: offset zero refers to the strux.  the first character is at
+	// note: (0 + pf->getLength()).
+	
+	UT_ASSERT(sdh);
+	UT_ASSERT(pIndexAP);
+
+	pf_Frag * pf = (pf_Frag *)sdh;
+	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
+	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
+	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
+
+	UT_uint32 cumOffset = pfsBlock->getLength();
+	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
+	{
+		if ((offset >= cumOffset) && (offset < cumOffset+pfTemp->getLength()))
+		{
+			// requested offset is within this fragment.
+
+			// if this is inside something other than a text fragment, we puke.
+			
+			if (pfTemp->getType() != pf_Frag::PFT_Text)
+				return UT_FALSE;
+
+			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
+			*pIndexAP = pfText->getIndexAP();
+
+			return UT_TRUE;
+		}
+
+		cumOffset += pfTemp->getLength();
+	}
+	return UT_FALSE;
+}
+
 UT_Bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 									   const PP_AttrProp ** ppAP) const
 {

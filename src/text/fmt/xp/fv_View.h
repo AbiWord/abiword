@@ -110,7 +110,7 @@ public:
 	UT_Bool setCharFormat(const XML_Char * properties[]);
 	UT_Bool getCharFormat(const XML_Char *** properties);
 
-	void insertParagraphBreak();
+	void insertParagraphBreak(void);
 
 // ----------------------
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);

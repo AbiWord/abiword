@@ -34,17 +34,6 @@ class DG_Font;
 class PD_Document;
 struct dg_DrawArgs;
 
-/*
-	Note that fp_Run encapsulates all text measurement issues, as well as
-	any intercharacter spacing problems such as kerning, ligatures, justification,
-	and so on.  We could probably even bury hyphenation in here without affecting the
-	line breaker algorithm itself.
-*/
-
-/*
-	TODO so do we need right-to-left runs?
-*/
-
 struct fp_RunSplitInfo
 {
 	UT_sint32 iLeftWidth;
@@ -52,109 +41,126 @@ struct fp_RunSplitInfo
 	UT_sint32 iOffset;
 };
 
-#define BREAK_AUTO		0
-#define BREAK_AVOID		1
-#define BREAK_ALWAYS	2
+#define BREAK_AUTO			0
+#define BREAK_AVOID			1
+#define BREAK_ALWAYS		2
 
-#define FP_RUN_INSIDE      1
-#define FP_RUN_JUSTAFTER   2
-#define FP_RUN_NOT         3
+#define FP_RUN_INSIDE      	1
+#define FP_RUN_JUSTAFTER   	2
+#define FP_RUN_NOT         	3
+
+#define FPRUN_TEXT						1
+#define FPRUN_IMAGE						2
+#define FPRUN_TAB						3
+#define FPRUN_FORCEDLINEBREAK			4
+#define FPRUN_FORCEDCOLUMNBREAK			5
+#define FPRUN_FORCEDPAGEBREAK			6
+#define FPRUN_FIELD						7
 
 class fp_Run
 {
- public:
-	fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+public:
+	fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, unsigned char iType);
 
-	void					setLine(fp_Line*, void*);
-	fp_Line*				getLine() const;
-	void*                   getLineData();
+	inline	unsigned char	getType(void) const 			{ return m_iType; }
 
-	fl_BlockLayout*			getBlock() const;
+	inline fp_Line*			getLine(void) const 			{ return m_pLine; }
+	inline fl_BlockLayout*	getBlock(void) const 			{ return m_pBL; }
+	inline UT_sint32		getX(void) const 				{ return m_iX; }
+	inline UT_sint32		getY(void) const 				{ return m_iY; }
+	inline UT_uint32		getHeight(void) const     		{ return m_iHeight; }
+	inline UT_uint32		getWidth(void) const     		{ return m_iWidth; }
+	inline fp_Run* 			getNext(void) const     		{ return m_pNext; }
+	inline fp_Run*			getPrev(void) const     		{ return m_pPrev; }
+	inline UT_uint32		getBlockOffset(void) const     	{ return m_iOffsetFirst; }
+	inline UT_uint32		getLength(void) const     		{ return m_iLen; }
+	inline DG_Graphics*     getGraphics(void) const     	{ return m_pG; }
+	inline UT_uint32		getAscent(void) const 			{ return m_iAscent; }
+	inline UT_uint32		getDescent(void) const 			{ return m_iDescent; }
+	
+	void					setLine(fp_Line*);
 	void					setBlock(fl_BlockLayout *);
-	DG_Graphics*            getGraphics() const;
-	UT_uint32				getHeight() const;
-	UT_uint32				getWidth() const;
-	UT_uint32				getAscent();
-	UT_uint32				getDescent();
-	UT_uint32				getLength() const;
-	UT_uint32				getBlockOffset() const;
+	void					setX(UT_sint32);
+	void					setY(UT_sint32);
 	void					setBlockOffset(UT_uint32);
-	void					lookupProperties(void);
-
+	void					setLength(UT_uint32);
+	
 	void					setNext(fp_Run*);
 	void					setPrev(fp_Run*);
-	fp_Run* 				getNext() const;
-	fp_Run*					getPrev() const;
-
-	UT_Bool					canSplit() const;
-	UT_Bool					canBreakAfter() const;
-	UT_Bool					canBreakBefore() const;
 	UT_Bool					isFirstRunOnLine(void) const;
 	UT_Bool					isLastRunOnLine(void) const;
 	UT_Bool					isOnlyRunOnLine(void) const;
-	UT_Bool					getLineBreakBefore() const; 
-	UT_Bool					getLineBreakAfter() const;
-	int						split(fp_RunSplitInfo&);
-	UT_Bool					split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
-	UT_Bool					findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
-
-	void 					calcWidths(UT_GrowBuf * pgbCharWidths);
-	void            		expandWidthTo(UT_uint32);
-
-	void					mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
-	void					getOffsets(UT_uint32& xoff, UT_uint32& yoff);
-	UT_uint32 				containsOffset(UT_uint32 iOffset);
-	void 					findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
-
-	UT_Bool 				ins(UT_uint32 iOffset, UT_uint32 iCount, PT_AttrPropIndex indexAP);
-	UT_Bool 				del(UT_uint32 iOffset, UT_uint32 iCount);
 
 	void					draw(dg_DrawArgs*);
-	void					dumpRun(void) const;
-	void					drawSquiggle(UT_uint32, UT_uint32);
-
-	UT_sint32				getX() const;
-	UT_sint32				getY() const;
-	void					setX(UT_sint32);
-	void					setY(UT_sint32);
-
-	void                    clearScreen(void);
+	void            		clearScreen(void);
+	UT_uint32 				containsOffset(UT_uint32 iOffset);
+	
+	virtual void			_draw(dg_DrawArgs*) = 0;
+	virtual void       		_clearScreen(void) = 0;
+	virtual UT_Bool			canBreakAfter(void) const = 0;
+	virtual UT_Bool			canBreakBefore(void) const = 0;
+	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE) = 0;
+	virtual int				split(fp_RunSplitInfo&) = 0;
+	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE) = 0;
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL) = 0;
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height) = 0;
+	virtual void			lookupProperties(void) = 0;
+	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths) = 0;
 	
 protected:
+	unsigned char			m_iType;
+	fp_Line*				m_pLine;
+	fl_BlockLayout*         m_pBL;
+	fp_Run*					m_pNext;
+	fp_Run*					m_pPrev;
+	UT_sint32				m_iX;
+	UT_sint32				m_iY;
+	UT_sint32				m_iHeight;
+	UT_sint32				m_iWidth;
+	UT_uint32				m_iOffsetFirst;
+	UT_uint32				m_iLen;
+	UT_uint32				m_iAscent;
+	UT_uint32				m_iDescent;
+	DG_Graphics*            m_pG;
+	UT_Bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
+};
+
+class fp_TextRun : public fp_Run
+{
+ public:
+	fp_TextRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+
+	virtual void			lookupProperties(void);
+	virtual int				split(fp_RunSplitInfo&);
+	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
+	
+	void					drawSquiggle(UT_uint32, UT_uint32);
+	
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(void);
+	
 	void					_drawDecors(UT_sint32, UT_sint32);
 	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right);
 	void 					_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 										 const UT_GrowBuf * pgbCharWidths);
-	UT_uint32				_sumPartWidth(UT_uint32 iStart, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths);
 	void					_drawPart(UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths);
 	void					_drawPartWithBackground(UT_RGBColor& clr, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 									  const UT_GrowBuf * pgbCharWidths);
 	void 					_calcWidths(UT_GrowBuf * pgbCharWidths);
 
-	fp_Line*				m_pLine;
-	void*					m_pLineData;
-	fp_Run*					m_pPrev;
-	fp_Run*					m_pNext;
-	UT_uint32				m_iOffsetFirst;
-	UT_uint32				m_iLen;
-	UT_sint32				m_iWidth;
-	UT_sint32				m_iHeight;
-	UT_sint32				m_iX;
-	UT_sint32				m_iY;
-	UT_uint32				m_iAscent;
-	UT_uint32				m_iDescent;
-	UT_uint32				m_iExtraWidth;
-	UT_Bool					m_bCanSplit;
-	UT_Bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
-	int						m_iLineBreakAfter;
-	int						m_iLineBreakBefore;
-
 	enum
 	{
-		TEXT_DECOR_UNDERLINE = 0x01,
-		TEXT_DECOR_OVERLINE = 0x02,
-		TEXT_DECOR_LINETHROUGH = 0x04
+		TEXT_DECOR_UNDERLINE = 		0x01,
+		TEXT_DECOR_OVERLINE = 		0x02,
+		TEXT_DECOR_LINETHROUGH = 	0x04
 	};
 	unsigned char			m_fDecorations;
 
@@ -166,10 +172,99 @@ protected:
 	  retrieved from multiple fonts.
 	  TODO fix this issue
 	*/
-	DG_Font*			m_pFont;
-	UT_RGBColor			m_colorFG;
-	fl_BlockLayout*                 m_pBL;
-	DG_Graphics*                    m_pG;
+	DG_Font*				m_pFont;
+	UT_RGBColor				m_colorFG;
+};
+
+class fp_TabRun : public fp_Run
+{
+ public:
+	fp_TabRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+
+	virtual void			lookupProperties(void);
+	virtual int				split(fp_RunSplitInfo&);
+	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
+	
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(void);
+};
+
+class fp_ForcedLineBreakRun : public fp_Run
+{
+ public:
+	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+
+	virtual void			lookupProperties(void);
+	virtual int				split(fp_RunSplitInfo&);
+	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
+	
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(void);
+};
+
+class fp_ImageRun : public fp_Run
+{
+ public:
+	fp_ImageRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+
+	virtual void			lookupProperties(void);
+	virtual int				split(fp_RunSplitInfo&);
+	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
+	
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(void);
+};
+
+#define FPFIELD_MAX_LENGTH	63
+
+#define FPFIELD_TIME		1
+
+class fp_FieldRun : public fp_Run
+{
+ public:
+	fp_FieldRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+
+	virtual void			lookupProperties(void);
+	virtual int				split(fp_RunSplitInfo&);
+	virtual UT_Bool			split(UT_uint32 splitOffset, UT_Bool bInsertBlock=UT_FALSE);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, UT_uint32& height);
+	virtual UT_Bool			canBreakAfter(void) const;
+	virtual UT_Bool			canBreakBefore(void) const;
+	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_Bool			calcWidths(UT_GrowBuf * pgbCharWidths);
+
+	UT_Bool					calculateValue(void);
+	
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(void);
+
+	DG_Font*				m_pFont;
+	UT_RGBColor				m_colorFG;
+	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
+	unsigned char			m_iFieldType;
 };
 
 #endif /* RUN_H */

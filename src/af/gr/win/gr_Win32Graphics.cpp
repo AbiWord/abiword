@@ -85,9 +85,9 @@ UT_Bool Win32Graphics::queryProperties(DG_Graphics::Properties gp) const
 	switch (gp)
 	{
 	case DGP_SCREEN:
-		return UT_TRUE;
+		return !m_bPrint;
 	case DGP_PAPER:
-		return UT_FALSE;
+		return m_bPrint;
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;

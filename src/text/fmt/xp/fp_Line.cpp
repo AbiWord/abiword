@@ -138,8 +138,10 @@ UT_Bool fp_Line::removeRun(fp_Run* pRun)
 			UT_ASSERT(((signed)m_iWidth) >= iAdjust);
 			m_iWidth -= iAdjust;
 
-			pRun->setLine(NULL, NULL);
+			pRun->setLine(NULL);
 
+			_recalcHeight();
+			
 			return UT_TRUE;
 		}
 	}
@@ -147,9 +149,39 @@ UT_Bool fp_Line::removeRun(fp_Run* pRun)
 	return UT_FALSE;
 }
 
+void fp_Line::insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore)
+{
+	UT_ASSERT(pNewRun);
+	UT_ASSERT(pBefore);
+
+	pNewRun->setLine(this);
+	pNewRun->setX(pBefore->getX());
+	
+	UT_sint32 iNewRunWidth = pNewRun->getWidth();
+
+	UT_sint32 ndx = m_vecRuns.findItem(pBefore);
+	UT_ASSERT(ndx >= 0);
+
+	m_vecRuns.insertItemAt(pNewRun, ndx);
+
+	UT_sint32 iCountRuns = m_vecRuns.getItemCount();
+	for (UT_sint32 i=ndx+1; i<iCountRuns; i++)
+	{
+		fp_Run* pRun3 = (fp_Run*) m_vecRuns.getNthItem(i);
+		UT_ASSERT(pRun3);
+		UT_ASSERT((i > (ndx+1)) || (pRun3 == pBefore));
+
+		pRun3->setX(pRun3->getX() + iNewRunWidth);
+	}
+
+	m_iWidth += iNewRunWidth;
+	
+	_recalcHeight();
+}
+
 void fp_Line::insertRun(fp_Run* pRun)
 {
-	pRun->setLine(this, NULL);
+	pRun->setLine(this);
 
 	m_vecRuns.insertItemAt(pRun, 0);
 
@@ -177,7 +209,7 @@ void fp_Line::insertRun(fp_Run* pRun)
 
 void fp_Line::addRun(fp_Run* pRun)
 {
-	pRun->setLine(this, NULL);
+	pRun->setLine(this);
 	pRun->setX(m_iWidth);
 
 	m_vecRuns.addItem(pRun);
@@ -191,7 +223,7 @@ void fp_Line::splitRunInLine(fp_Run* pRun1, fp_Run* pRun2)
 {
 	// insert run2 after run1 in the current line.
 	
-	pRun2->setLine(this, NULL);
+	pRun2->setLine(this);
 	pRun2->setX(pRun1->getX() + pRun1->getWidth());
 
 	UT_sint32 count = m_vecRuns.getItemCount();
@@ -340,7 +372,7 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
-void fp_Line::getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff)
+void fp_Line::getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
@@ -351,9 +383,12 @@ void fp_Line::getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff
 	yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
 }
 
-void fp_Line::getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff,
-							   UT_sint32& yoff, UT_sint32& width,
-							   UT_sint32& height, UT_Bool bLineHeight)
+void fp_Line::getScreenOffsets(fp_Run* pRun,
+							   UT_sint32& xoff,
+							   UT_sint32& yoff,
+							   UT_sint32& width,
+							   UT_sint32& height,
+							   UT_Bool bLineHeight)
 {
 	UT_sint32 my_xoff;
 	UT_sint32 my_yoff;
@@ -363,9 +398,13 @@ void fp_Line::getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff,
 	xoff = my_xoff + pRun->getX();
 
 	if (bLineHeight)
+	{
 		yoff = my_yoff;
+	}
 	else
+	{
 		yoff = my_yoff + pRun->getY() + m_iAscent - pRun->getAscent();
+	}
 
 	width = m_iWidth;
 	height = m_iHeight;
@@ -408,46 +447,13 @@ void fp_Line::_recalcHeight()
 	{
 		// We need to let our column know that we changed height.
 
-		DG_Graphics* pG = getFirstRun()->getGraphics();
-		
-		m_pColumn->lineHeightChanged(this, pG, iOldHeight, m_iHeight);
+		m_pColumn->lineHeightChanged(this, iOldHeight, m_iHeight);
 	}
 }
 
 UT_sint32 fp_Line::getAscent(void) const
 {
 	return m_iAscent;
-}
-
-void fp_Line::expandWidthTo(UT_sint32 iNewWidth)
-{
-	UT_sint32 iPrevWidth = m_iWidth;
-	UT_ASSERT(iNewWidth > iPrevWidth);
-
-	UT_sint32 iMoreWidth = iNewWidth - iPrevWidth;
-
-	int count = m_vecRuns.getItemCount();
-	UT_sint32 i;
-	
-	for (i=0; i<count; i++)
-	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-
-		UT_sint32 iCurSpanWidth = pRun->getWidth();
-		UT_sint32 iNewSpanWidth = 
-			iCurSpanWidth 
-			+ ((UT_sint32) ((iCurSpanWidth / ((double) iPrevWidth)) * iMoreWidth));
-		pRun->expandWidthTo(iNewSpanWidth);
-	}
-
-	m_iWidth = 0;
-	for (i=0; i<count; i++)
-	{
-		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
-		pRun->setX(m_iWidth);
-
-		m_iWidth += pRun->getWidth();
-	}
 }
 
 void fp_Line::shrink(UT_sint32 width)
@@ -631,5 +637,26 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 	}
 
 	return 0;
+}
+
+UT_Bool fp_Line::recalculateFields(void)
+{
+	UT_Bool bResult = UT_FALSE;
+	
+	UT_uint32 iNumRuns = m_vecRuns.getItemCount();
+	for (UT_uint32 i = 0; i < iNumRuns; i++)
+	{
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+
+		if (pRun->getType() == FPRUN_FIELD)
+		{
+			fp_FieldRun* pFieldRun = (fp_FieldRun*) pRun;
+			UT_Bool bSizeChanged = pFieldRun->calculateValue();
+
+			bResult = bResult || bSizeChanged;
+		}
+	}
+
+	return bResult;
 }
 

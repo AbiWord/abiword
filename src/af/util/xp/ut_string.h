@@ -37,6 +37,7 @@ UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
 
 // the naming convention has deviated from the above.  it's kind
 // of a mutant libc/C++ naming convention.  
+UT_sint32 		UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right);
 UT_UCSChar * 	UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
 UT_uint32 		UT_UCS_strlen(const UT_UCSChar * string);
 UT_UCSChar * 	UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src);

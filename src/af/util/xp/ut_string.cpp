@@ -212,6 +212,41 @@ UT_UCSChar * UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pnee
 	return 0;
 }
 
+UT_sint32 UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right)
+{
+	UT_ASSERT(left);
+	UT_ASSERT(right);
+	
+	while (*left && *right)
+	{
+		if (*left < *right)
+		{
+			return -1;
+		}
+
+		if (*left > *right)
+		{
+			return 1;
+		}
+
+		left++;
+		right++;
+	}
+
+	if (*left)
+	{
+		return -1;
+	}
+	else if (*right)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 UT_uint32 UT_UCS_strlen(const UT_UCSChar * string)
 {
 	UT_uint32 i;

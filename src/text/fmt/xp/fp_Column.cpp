@@ -679,7 +679,7 @@ UT_uint32	fp_Column::distanceFromPoint(UT_sint32 x, UT_sint32 y)
 	return dist;
 }
 
-void fp_Column::lineHeightChanged(fp_Line* pLine, DG_Graphics* pG, UT_sint32 iOldHeight, UT_sint32 iNewHeight)
+void fp_Column::lineHeightChanged(fp_Line* pLine, UT_sint32 iOldHeight, UT_sint32 iNewHeight)
 {
 	m_bNeedsLayout = UT_TRUE;
 }

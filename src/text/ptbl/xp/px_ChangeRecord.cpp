@@ -83,6 +83,15 @@ PX_ChangeRecord::PXType PX_ChangeRecord::getRevType(void) const
 	case PX_ChangeRecord::PXT_DeleteStrux:
 		return PX_ChangeRecord::PXT_InsertStrux;
 
+	case PX_ChangeRecord::PXT_InsertObject:
+		return PX_ChangeRecord::PXT_DeleteObject;
+
+	case PX_ChangeRecord::PXT_DeleteObject:
+		return PX_ChangeRecord::PXT_InsertObject;
+
+	case PX_ChangeRecord::PXT_ChangeObject:
+		return PX_ChangeRecord::PXT_ChangeObject;			// we are our own inverse
+
 	case PX_ChangeRecord::PXT_ChangeStrux:
 		return PX_ChangeRecord::PXT_ChangeStrux;			// we are our own inverse
 

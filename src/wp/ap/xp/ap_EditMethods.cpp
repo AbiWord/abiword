@@ -1357,8 +1357,11 @@ Defun(insertData)
 	return UT_TRUE;
 }
 
-Defun0(insertTab)
+Defun1(insertTab)
 {
+	ABIWORD_VIEW;
+	UT_UCSChar c = 0x0009;
+	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
 
@@ -1374,8 +1377,11 @@ Defun1(insertParagraphBreak)
 	return UT_TRUE;
 }
 
-Defun0(insertLineBreak)
+Defun1(insertLineBreak)
 {
+	ABIWORD_VIEW;
+	UT_UCSChar c = 0x000a;
+	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
 
@@ -1392,16 +1398,16 @@ Defun0(insertColumnBreak)
 Defun1(insertSpace)
 {
 	ABIWORD_VIEW;
-	UT_UCSChar sp = 0x0020;
-	pView->cmdCharInsert(&sp,1);
+	UT_UCSChar c = 0x0020;
+	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
 
 Defun1(insertNBSpace)
 {
 	ABIWORD_VIEW;
-	UT_UCSChar sp = 0x00a0;				// decimal 160 is NBS
-	pView->cmdCharInsert(&sp,1);
+	UT_UCSChar c = 0x00a0;				// decimal 160 is NBS
+	pView->cmdCharInsert(&c,1);
 	return UT_TRUE;
 }
 
@@ -2348,6 +2354,8 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 	if (bOK)
 	{
 		DG_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+		UT_ASSERT(pGraphics->queryProperties(DG_Graphics::DGP_PAPER));
+		
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
 		pDocLayout->formatAll();
 		FV_View * pPrintView = new FV_View(pFrame,pDocLayout);

@@ -740,7 +740,7 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 	return bResult;
 }
 
-void FV_View::insertParagraphBreak()
+void FV_View::insertParagraphBreak(void)
 {
 	if (!isSelectionEmpty())
 	{
@@ -2518,7 +2518,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 
 		fp_Line* pLine = pCurRun->getLine();
 
-		pLine->getScreenOffsets(pCurRun, pCurRun->getLineData(), xoff, yoff, width, height, UT_TRUE);
+		pLine->getScreenOffsets(pCurRun, xoff, yoff, width, height, UT_TRUE);
 
 		dg_DrawArgs da;
 			
@@ -3324,6 +3324,8 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	m_pDoc->redoCmd(count);
 
+	m_pLayout->deleteEmptyColumnsAndPages();
+	
 	_updateScreen();
 	
 	if (isSelectionEmpty())

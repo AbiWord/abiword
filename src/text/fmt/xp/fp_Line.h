@@ -75,6 +75,7 @@ public:
 
 	void 		addRun(fp_Run*);
 	void		splitRunInLine(fp_Run* pRun1, fp_Run* pRun2);
+	void		insertRunBefore(fp_Run* pNewRun, fp_Run* pBefore);
 	void        insertRun(fp_Run*);
     UT_Bool     removeRun(fp_Run*);
 	int 		countRuns() const;
@@ -87,19 +88,19 @@ public:
 	UT_sint32	getMarginAfter(void) const;
 
 	void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL);
-	void		getOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff);
-	void		getScreenOffsets(fp_Run* pRun, void* p, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height, UT_Bool bLineHeight=UT_FALSE);
+	void		getOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff);
+	void		getScreenOffsets(fp_Run* pRun, UT_sint32& xoff, UT_sint32& yoff, UT_sint32& width, UT_sint32& height, UT_Bool bLineHeight=UT_FALSE);
 #if UNUSED
 	void		getAbsoluteCoords(UT_sint32& x, UT_sint32& y);
 #endif
 
 	void        shrink(UT_sint32);
-	void 		expandWidthTo(UT_sint32 iNewWidth);
 	void		clearScreen();
 	void		draw(dg_DrawArgs*);
 	void        draw(DG_Graphics*);
 	void		align();
 	UT_sint32	getAscent(void) const;
+	UT_Bool		recalculateFields(void);
 	
 	UT_Bool		isEmpty(void) const;
 

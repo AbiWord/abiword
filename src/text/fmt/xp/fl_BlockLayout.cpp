@@ -383,7 +383,8 @@ int fl_BlockLayout::format()
 				pTempRun = pTempRun->getNext();
 			}
 		}
-		
+
+		recalculateFields();
 		m_pBreaker->breakParagraph(this);
 
 #if 0		
@@ -410,7 +411,7 @@ int fl_BlockLayout::format()
 		
 		// we don't ... construct just enough to keep going
 		DG_Graphics* pG = m_pLayout->getGraphics();
-		m_pFirstRun = new fp_Run(this, pG, 0, 0);
+		m_pFirstRun = new fp_TextRun(this, pG, 0, 0);
 		m_pFirstRun->calcWidths(&m_gbCharWidths);
 
 		if (!m_pFirstLine)
@@ -1209,49 +1210,249 @@ void fl_BlockLayout::checkSpelling(void)
 /*****************************************************************/
 /*****************************************************************/
 
-
-
-
-UT_Bool fl_BlockLayout::doclistener_populateSpan(PT_BlockOffset blockOffset, UT_uint32 len)
+UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
-	fp_Run * pRun = m_pFirstRun;
-	fp_Run * pLastRun = NULL;
-	UT_uint32 offset = 0;
+	PT_BufIndex bi = pcrs->getBufIndex();
+	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
 
+	/*
+	  walk through the characters provided and find any
+	  control characters.  Then, each control character gets
+	  handled specially.  Normal characters get grouped into
+	  runs as usual.
+	*/
+	UT_uint32 	iNormalBase = 0;
+	UT_Bool		bNormal = UT_FALSE;
+	for (UT_uint32 i=0; i<len; i++)
+	{
+		switch (pChars[i])
+		{
+		case 10:	// newline
+		case 9:		// tab
+			if (bNormal)
+			{
+				_doInsertTextSpan(iNormalBase + blockOffset, i - iNormalBase);
+				bNormal = UT_FALSE;
+			}
+
+			/*
+			  Now, depending upon the kind of control char we found,
+			  we add a control run which corresponds to it.
+			*/
+			switch (pChars[i])
+			{
+			case 10:
+				_doInsertForcedLineBreakRun(i + blockOffset);
+				break;
+				
+			case 9:
+				_doInsertTabRun(i + blockOffset);
+				break;
+				
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
+			}
+			break;
+			
+		default:
+			if (!bNormal)
+			{
+				bNormal = UT_TRUE;
+				iNormalBase = i;
+			}
+			break;
+		}
+	}
+
+	UT_ASSERT(i == len);
+
+	if (bNormal && (iNormalBase < i))
+	{
+		_doInsertTextSpan(iNormalBase + blockOffset, i - iNormalBase);
+	}
+
+	return UT_TRUE;
+}
+
+UT_Bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
+{
+	fp_Run* pNewRun = new fp_ForcedLineBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
+UT_Bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
+{
+	fp_Run* pNewRun = new fp_TabRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
+UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+{
+	fp_ImageRun* pNewRun = new fp_ImageRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
+UT_Bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
+{
+	fp_FieldRun* pNewRun = new fp_FieldRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
+UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
+{
+	PT_BlockOffset blockOffset = pNewRun->getBlockOffset();
+	UT_uint32 len = pNewRun->getLength();
+	
+#ifndef NDEBUG	
+	_assertRunListIntegrity();
+#endif
+	
+	if (m_pFirstRun && !(m_pFirstRun->getNext()) && (m_pFirstRun->getLength() == 0))
+	{
+		/*
+		  We special case the situation where we are inserting into
+		  a block which has nothing but the fake run.
+		*/
+
+		m_pFirstRun->getLine()->removeRun(m_pFirstRun);
+		delete m_pFirstRun;
+		m_pFirstRun = NULL;
+
+		m_pFirstRun = pNewRun;
+		m_pLastLine->addRun(pNewRun);
+
+		return UT_TRUE;
+	}
+	
+	UT_Bool bInserted = UT_FALSE;
+	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
 	{
-		pLastRun = pRun;
-		offset += pRun->getLength();
+		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
+		UT_uint32 iRunLength = pRun->getLength();
+		
+		if (
+			((iRunBlockOffset + iRunLength) <= blockOffset)
+			)
+		{
+			// nothing to do.  the insert occurred AFTER this run
+		}
+		else if (iRunBlockOffset > blockOffset)
+		{
+			UT_ASSERT(bInserted);
+			
+			// the insert is occuring BEFORE this run, so we just move the run offset
+			pRun->setBlockOffset(iRunBlockOffset + len);
+		}
+		else if (iRunBlockOffset == blockOffset)
+		{
+			UT_ASSERT(!bInserted);
+
+			bInserted = UT_TRUE;
+			
+			// the insert is right before this run.
+			pRun->setBlockOffset(iRunBlockOffset + len);
+
+			pNewRun->setPrev(pRun->getPrev());
+			pNewRun->setNext(pRun);
+			if (pRun->getPrev())
+			{
+				pRun->getPrev()->setNext(pNewRun);
+			}
+
+			pRun->setPrev(pNewRun);
+
+			if (m_pFirstRun == pRun)
+			{
+				m_pFirstRun = pNewRun;
+			}
+
+			pNewRun->lookupProperties();
+			pNewRun->calcWidths(&m_gbCharWidths);
+			pRun->calcWidths(&m_gbCharWidths);
+
+			pRun->getLine()->insertRunBefore(pNewRun, pRun);
+		}
+		else
+		{
+			UT_ASSERT(!bInserted);
+			
+			UT_ASSERT(FP_RUN_INSIDE == pRun->containsOffset(blockOffset));
+			UT_ASSERT(pRun->getType() == FPRUN_TEXT);	// only textual runs can be split anyway
+
+			/*
+			  We're pretty tricky.  :-)  This call is going to split
+			  the run.  The result is that the next time through the loop,
+			  the case above will hit, and the new run will be inserted
+			  right between the two halves of the split.
+			*/
+			pRun->split(blockOffset);
+			UT_ASSERT(pRun->getNext());
+			UT_ASSERT(pRun->getNext()->getBlockOffset() == blockOffset);
+					
+			// pick up new formatting for this run
+			pRun->lookupProperties();
+			pRun->calcWidths(&m_gbCharWidths);
+		}
+		
 		pRun = pRun->getNext();
 	}
 
-	UT_ASSERT(offset==blockOffset);
-
-	fp_Run * pNewRun = new fp_Run(this, m_pLayout->getGraphics(), offset, len);
-	if (!pNewRun)
+	if (!bInserted)
 	{
-		UT_DEBUGMSG(("Could not allocate run\n"));
-		return UT_FALSE;
-	}
+		fp_Run * pRun = m_pFirstRun;
+		fp_Run * pLastRun = NULL;
+		UT_uint32 offset = 0;
+		while (pRun)
+		{
+			pLastRun = pRun;
+			offset += pRun->getLength();
+			pRun = pRun->getNext();
+		}
+
+		UT_ASSERT(offset==blockOffset);
+
+		m_gbCharWidths.ins(offset, len);
+		pNewRun->calcWidths(&m_gbCharWidths);
 			
-	m_gbCharWidths.ins(offset, len);
-	pNewRun->calcWidths(&m_gbCharWidths);
-			
-	if (pLastRun)
-	{
-		pLastRun->setNext(pNewRun);
-		pNewRun->setPrev(pLastRun);
+		if (pLastRun)
+		{
+			pLastRun->setNext(pNewRun);
+			pNewRun->setPrev(pLastRun);
+		}
+		else
+		{
+			m_pFirstRun = pNewRun;
+		}
+
+		if (m_pLastLine)
+		{
+			m_pLastLine->addRun(pNewRun);
+		}
 	}
-	else
-	{
-		m_pFirstRun = pNewRun;
-	}
 
-	UT_DEBUGMSG(("to block %p, invalidating adding offset %d, length %d\n", this, blockOffset,len));
-
-	_addPartNotSpellChecked(blockOffset, len);
-
+#ifndef NDEBUG	
+	_assertRunListIntegrity();
+#endif
+	
 	return UT_TRUE;
+}
+
+UT_Bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
+{
+	fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), blockOffset, len);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
 }
 
 UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
@@ -1262,89 +1463,82 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	UT_uint32 len = pcrs->getLength();
 	UT_ASSERT(len>0);
 
-	FV_View* pView = m_pLayout->getView();
+	PT_BufIndex bi = pcrs->getBufIndex();
+	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
 
 	m_gbCharWidths.ins(blockOffset, len);
 
-	AV_ChangeMask mask = AV_CHG_TYPING;
+	AV_ChangeMask mask = AV_CHG_TYPING + AV_CHG_FMTCHAR;
 	
-	fp_Run* pRun = m_pFirstRun;
-
 	/*
-	  Having fixed the char widths array, we need to update 
-	  all the run offsets.  We call each run individually to 
-	  update its offsets.  It returns true if its size changed, 
-	  thus requiring us to remeasure it.
+	  walk through the characters provided and find any
+	  control characters.  Then, each control character gets
+	  handled specially.  Normal characters get grouped into
+	  runs as usual.
 	*/
-
-	while (pRun)
-	{					
-		if (pRun->ins(blockOffset, len, pcrs->getIndexAP()))
+	UT_uint32 	iNormalBase = 0;
+	UT_Bool		bNormal = UT_FALSE;
+	for (UT_uint32 i=0; i<len; i++)
+	{
+		switch (pChars[i])
 		{
-			if (pcrs->isDifferentFmt() & (PT_Diff_Left|PT_Diff_Right))
+		case 10:	// newline
+		case 9:		// tab
+			if (bNormal)
 			{
-				// TODO break up this section to do a left- and right-split
-				// TODO seperately.
-				/*
-				  The format changed too, so this needs to 
-				  wind up in its own run.
-				  
-				  Since the pRun->ins() already widened it, 
-				  we just need to split it up.
-									
-				  Note that split() calls calcWidths for us.
-				*/
-
-				mask |= AV_CHG_FMTCHAR;
-
-				UT_Bool bRight = UT_FALSE;
-
-				if (blockOffset+len < pRun->getBlockOffset()+pRun->getLength())
-				{
-					// first split off the right part
-					bRight = UT_TRUE;
-					pRun->split(blockOffset+len);
-				}
-
-				if (blockOffset > pRun->getBlockOffset())
-				{
-					// split off the left part
-					pRun->split(blockOffset);
-
-					// skip over the left part
-					pRun = pRun->getNext();
-				}
-
-				// pick up new formatting for this run
-				pRun->clearScreen();
-				pRun->lookupProperties();
-				pRun->calcWidths(&m_gbCharWidths);
-
-				// skip over the right part
-				if (bRight)
-					pRun = pRun->getNext();
-
-				// all done, so clear any temp formatting
-				if (pView && pView->_isPointAP())
-				{
-					UT_ASSERT(pcrs->getIndexAP()==pView->_getPointAP());
-					pView->_clearPointAP(UT_FALSE);
-				}
+				_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
+				bNormal = UT_FALSE;
 			}
-			else
+
+			/*
+			  Now, depending upon the kind of control char we found,
+			  we add a control run which corresponds to it.
+			*/
+			switch (pChars[i])
 			{
-				pRun->clearScreen();
-				pRun->calcWidths(&m_gbCharWidths);
+			case 10:
+				_doInsertForcedLineBreakRun(blockOffset + i);
+				break;
+				
+			case 9:
+				_doInsertTabRun(blockOffset + i);
+				break;
+				
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
 			}
+			break;
+			
+		default:
+			if (!bNormal)
+			{
+				bNormal = UT_TRUE;
+				iNormalBase = i;
+			}
+			break;
 		}
-		
-		pRun = pRun->getNext();
 	}
 
+	UT_ASSERT(i == len);
+
+	if (bNormal && (iNormalBase < i))
+	{
+		_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
+	}
+	
 	format();
 
+	FV_View* pView = m_pLayout->getView();
 	if (pView)
 	{
+		// all done, so clear any temp formatting
+		if (pView->_isPointAP())
+		{
+			UT_ASSERT(pcrs->getIndexAP()==pView->_getPointAP());
+			pView->_clearPointAP(UT_FALSE);
+		}
+			
 		pView->_setPoint(pcrs->getPosition()+len);
 	}
 
@@ -1364,8 +1558,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		if (pPOB->iOffset > blockOffset)
 		{
 			/* 
-				text insertion comes before this non-spell checked region, 
-				so update the non-spell check region.
+			   text insertion comes before this non-spell checked region, 
+			   so update the non-spell check region.
 			*/
 			pPOB->iOffset += len;
 		}
@@ -1378,8 +1572,8 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 		if (pPOB->iOffset > blockOffset)
 		{
 			/* 
-				text insertion comes before this spell checked/unknown word region, 
-				so update this region.
+			   text insertion comes before this spell checked/unknown word region, 
+			   so update this region.
 			*/
 			pPOB->iOffset += len;
 		}
@@ -1393,8 +1587,128 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	_addPartNotSpellChecked(blockOffset, len);
 
 	UT_DEBUGMSG(("insertSpan spell finished, invalid regions = %d, bad words=%d",
-							m_lstNotSpellChecked.size(),
-							m_lstSpelledWrong.size()));
+				 m_lstNotSpellChecked.size(),
+				 m_lstSpelledWrong.size()));
+	return UT_TRUE;
+}
+
+#ifndef NDEBUG
+void fl_BlockLayout::_assertRunListIntegrity(void)
+{
+	fp_Run* pRun = m_pFirstRun;
+	UT_uint32 iOffset = 0;
+	while (pRun)
+	{
+		UT_ASSERT(iOffset == pRun->getBlockOffset());
+
+		iOffset += pRun->getLength();
+		
+		pRun = pRun->getNext();
+	}
+}
+#endif /* !NDEBUG */
+
+UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
+{
+#ifndef NDEBUG	
+	_assertRunListIntegrity();
+#endif
+	
+	fp_Run* pRun = m_pFirstRun;
+	while (pRun)
+	{
+		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
+		UT_uint32 iRunLength = pRun->getLength();
+		fp_Run* pNextRun = pRun->getNext();	// remember where we're going, since this run may get axed
+		
+		if (
+			((iRunBlockOffset + iRunLength) <= blockOffset)
+			)
+		{
+			// nothing to do.  the delete occurred AFTER this run
+		}
+		else if (iRunBlockOffset >= (blockOffset + len))
+		{
+			// the delete occurred entirely before this run.
+
+			pRun->setBlockOffset(iRunBlockOffset - len);
+		}
+		else
+		{
+			if (blockOffset >= iRunBlockOffset)
+			{
+				if ((blockOffset + len) < (iRunBlockOffset + iRunLength))
+				{
+					// the deleted section is entirely within this run
+					pRun->setLength(iRunLength - len);
+					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
+					pRun->calcWidths(&m_gbCharWidths);
+				}
+				else
+				{
+					int iDeleted = iRunBlockOffset + iRunLength - blockOffset;
+					UT_ASSERT(iDeleted > 0);
+
+					pRun->setLength(iRunLength - iDeleted);
+					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
+					pRun->calcWidths(&m_gbCharWidths);
+				}
+			}
+			else
+			{
+				if ((blockOffset + len) < (iRunBlockOffset + iRunLength))
+				{
+					int iDeleted = blockOffset + len - iRunBlockOffset;
+					UT_ASSERT(iDeleted > 0);
+					pRun->setBlockOffset(iRunBlockOffset - (len - iDeleted));
+					pRun->setLength(iRunLength - iDeleted);
+					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
+					pRun->calcWidths(&m_gbCharWidths);
+				}
+				else
+				{
+					/*
+					  the deletion spans the entire run.
+					  time to delete it
+					*/
+
+					pRun->setLength(0);
+				}
+			}
+
+			if (pRun->getLength() == 0)
+			{
+				fp_Line* pLine = pRun->getLine();
+				UT_ASSERT(pLine);
+
+				pLine->removeRun(pRun);
+
+				if (pRun->getNext())
+				{
+					pRun->getNext()->setPrev(pRun->getPrev());
+				}
+
+				if (pRun->getPrev())
+				{
+					pRun->getPrev()->setNext(pRun->getNext());
+				}
+
+				if (m_pFirstRun == pRun)
+				{
+					m_pFirstRun = pRun->getNext();
+				}
+
+				delete pRun;
+			}
+		}
+
+		pRun = pNextRun;
+	}
+
+#ifndef NDEBUG	
+	_assertRunListIntegrity();
+#endif
+
 	return UT_TRUE;
 }
 
@@ -1405,58 +1719,11 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 	PT_BlockOffset blockOffset = (pcrs->getPosition() - getPosition());
 	UT_uint32 len = pcrs->getLength();
 	UT_ASSERT(len>0);
-#if 0
-	PT_BlockOffset beginning;
-	UT_uint32 end;
-#endif 
 
 	m_gbCharWidths.del(blockOffset, len);
+
+	_delete(blockOffset, len);
 	
-	fp_Run* pRun = m_pFirstRun;
-	/*
-	  Having fixed the char widths array, we need to update 
-	  all the run offsets.  We call each run individually to 
-	  update its offsets.  It returns true if its size changed, 
-	  thus requiring us to remeasure it.
-	*/
-	while (pRun)
-	{					
-		if (pRun->del(blockOffset, len))
-			pRun->calcWidths(&m_gbCharWidths);
-
-		if (pRun->getLength() == 0)
-		{
-			// remove empty runs from their line
-			fp_Line* pLine = pRun->getLine();
-			UT_ASSERT(pLine);
-
-			pLine->removeRun(pRun);
-			
-			fp_Run* pNuke = pRun;
-			fp_Run* pPrev = pNuke->getPrev();
-			
-			// sneak in our iterator here  :-)
-			pRun = pNuke->getNext();
-			
-			// detach from run sequence
-			if (pRun)
-				pRun->setPrev(pPrev);
-
-			if (pPrev)
-				pPrev->setNext(pRun);
-
-			if (m_pFirstRun == pNuke)
-				m_pFirstRun = pRun;
-							
-			// delete it
-			delete pNuke;
-		}
-		else
-		{
-			pRun = pRun->getNext();
-		}
-	}
-
 	format();
 
 	FV_View* pView = m_pLayout->getView();
@@ -1996,8 +2263,9 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 			{
 				iLen = pPOB->iOffset + pPOB->iLength - iStart;
 			}
-		
-			pRun->drawSquiggle(iStart, iLen);
+
+			UT_ASSERT(pRun->getType() == FPRUN_TEXT);
+			(static_cast<fp_TextRun*>(pRun))->drawSquiggle(iStart, iLen);
 		}
 		
 		pPOB = (fl_PartOfBlock *) m_lstSpelledWrong.next();
@@ -2028,10 +2296,7 @@ void fl_BlockLayout::alignOneLine(fp_Line* pLine)
 			break;
 		case FL_ALIGN_BLOCK_JUSTIFY:
 			pLine->setX(pLine->getBaseX());
-			/*
-			  TODO the following line is commented out because it doesn't work.  yet.
-			*/
-			// pLine->expandWidthTo(pSliver->iWidth);
+			// TODO force the line to the larger width
 			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2256,12 +2521,12 @@ UT_Bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 	{
 	case PTO_Image:
 		UT_DEBUGMSG(("Populate:InsertObject:Image:\n"));
-		// TODO ... deal with image object ...
+		_doInsertImageRun(blockOffset, pcro);
 		return UT_TRUE;
 		
 	case PTO_Field:
 		UT_DEBUGMSG(("Populate:InsertObject:Field:\n"));
-		// TODO ... deal with field object ...
+		_doInsertFieldRun(blockOffset, pcro);
 		return UT_TRUE;
 				
 	default:
@@ -2275,15 +2540,20 @@ UT_Bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * 
 	switch (pcro->getObjectType())
 	{
 	case PTO_Image:
+	{
 		UT_DEBUGMSG(("Edit:InsertObject:Image:\n"));
-		// TODO ... deal with image object ...
+		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
+		_doInsertImageRun(blockOffset, pcro);
 		return UT_TRUE;
+	}
 		
 	case PTO_Field:
+	{
 		UT_DEBUGMSG(("Edit:InsertObject:Field:\n"));
-		// TODO ... deal with field object ...
+		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
+		_doInsertFieldRun(blockOffset, pcro);
 		return UT_TRUE;
-				
+	}		
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
@@ -2295,15 +2565,24 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 	switch (pcro->getObjectType())
 	{
 	case PTO_Image:
+	{
 		UT_DEBUGMSG(("Edit:DeleteObject:Image:\n"));
-		// TODO ... deal with image object ...
-		return UT_TRUE;
+
+		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
+		_delete(blockOffset, 1);
 		
-	case PTO_Field:
-		UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
-		// TODO ... deal with field object ...
 		return UT_TRUE;
-				
+	}
+	
+	case PTO_Field:
+	{
+		UT_DEBUGMSG(("Edit:DeleteObject:Field:\n"));
+
+		PT_BlockOffset blockOffset = (pcro->getPosition() - getPosition());
+		_delete(blockOffset, 1);
+		
+		return UT_TRUE;
+	}		
 	default:
 		UT_ASSERT(0);
 		return UT_FALSE;
@@ -2330,4 +2609,23 @@ UT_Bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectCha
 	}
 }
 
+UT_Bool fl_BlockLayout::recalculateFields(void)
+{
+	UT_Bool bResult = UT_FALSE;
+	fp_Run* pRun = m_pFirstRun;
+	while (pRun)
+	{
+		if (pRun->getType() == FPRUN_FIELD)
+		{
+			fp_FieldRun* pFieldRun = (fp_FieldRun*) pRun;
 
+			UT_Bool bSizeChanged = pFieldRun->calculateValue();
+
+			bResult = bResult || bSizeChanged;
+		}
+		
+		pRun = pRun->getNext();
+	}
+
+	return bResult;
+}

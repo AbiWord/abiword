@@ -73,7 +73,7 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			PT_BlockOffset blockOffset = (pcr->getPosition() - pBL->getPosition());
 			UT_uint32 len = pcrs->getLength();
-			return pBL->doclistener_populateSpan(blockOffset, len);
+			return pBL->doclistener_populateSpan(pcrs, blockOffset, len);
 		}
 
 	case PX_ChangeRecord::PXT_InsertObject:

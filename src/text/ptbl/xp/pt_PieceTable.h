@@ -108,6 +108,8 @@ public:
 										const PP_AttrProp ** ppAP) const;
 	UT_Bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset,
 											const PP_AttrProp ** ppAP) const;
+	UT_Bool					getSpanAPIndex(PL_StruxDocHandle sdh, UT_uint32 offset,
+										   PT_AttrPropIndex* pIndexAP);
 
 	const UT_UCSChar *		getPointer(PT_BufIndex bi) const;
 	UT_Bool					getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
