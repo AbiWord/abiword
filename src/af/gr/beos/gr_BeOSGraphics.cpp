@@ -45,6 +45,7 @@ GR_BEOSGraphics::GR_BEOSGraphics(BView *docview) {
 	m_pShadowView = NULL;
 	m_pShadowBitmap = NULL;
 	m_pBeOSFont = NULL;
+	m_pFontGUI = NULL;
 	m_pFrontView = docview;
 	if (!m_pFrontView)
 		return;
@@ -67,6 +68,19 @@ GR_BEOSGraphics::GR_BEOSGraphics(BView *docview) {
 #else
 	m_pShadowView = m_pFrontView;
 #endif
+
+	rgb_color c;
+	c.alpha = 255;
+	c.red = c.blue = c.green = 0;		//Black
+        m_3dColors[CLR3D_Foreground] = c;
+	c.red = c.blue = c.green = 255;		//White
+        m_3dColors[CLR3D_Background] = c;
+	c.red = c.blue = c.green = 120;		//Dark Grey
+        m_3dColors[CLR3D_BevelUp] = c;
+	c.red = c.blue = c.green = 240;		//Light Grey
+        m_3dColors[CLR3D_BevelDown] = c;
+	c.red = c.blue = c.green = 240;		//Light Grey
+        m_3dColors[CLR3D_Highlight] = c;
 }		
 
 GR_BEOSGraphics::~GR_BEOSGraphics() {
@@ -79,6 +93,7 @@ GR_BEOSGraphics::~GR_BEOSGraphics() {
 	delete m_pShadowBitmap;
 	delete m_pShadowView;
 #endif
+	DELETEP(m_pFontGUI);
 }
 
 void GR_BEOSGraphics::ResizeBitmap(BRect r) {
@@ -166,8 +181,8 @@ void GR_BEOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 }
 
 BFont *findClosestFont(const char* pszFontFamily, 
-		 			 	const char* pszFontStyle, 
-						const char* pszFontWeight) {
+		 	const char* pszFontStyle, 
+			const char* pszFontWeight) {
 
 	BFont 	*aFont = new BFont();
 	font_family family;
@@ -290,7 +305,10 @@ void GR_BEOSGraphics::setFont(GR_Font* pFont)
 	
 	m_pBeOSFont = tmpFont;
 	m_pShadowView->Window()->Lock();
-	m_pShadowView->SetFont(m_pBeOSFont->get_font());
+	if (m_pBeOSFont)
+		m_pShadowView->SetFont(m_pBeOSFont->get_font());
+	else
+		printf("HEY! NO FONT INFORMATION AVAILABLE!\n");
 	m_pShadowView->Window()->Unlock();
 }
 
@@ -654,31 +672,29 @@ GR_Graphics::Cursor GR_BEOSGraphics::getCursor(void) const
 
 void GR_BEOSGraphics::setColor3D(GR_Color3D c)
 {
-/*
-        UT_ASSERT(c < COUNT_3D_COLORS);
-        _setColor(m_3dColors[c]);
-*/
+	if (!m_pShadowView) {
+		printf("NO Shadow View %s %d\n", __FILE__, __LINE__);
+		return;
+	}
+	printf("Set color 3D %d \n", c);	
+	m_pShadowView->Window()->Lock();
+	m_pShadowView->SetHighColor(m_3dColors[c]);
+	m_pShadowView->Window()->Unlock();
+	printf("Finished setting color 3D \n");
 }
-
-/*
-void GR_BEOSGraphics::init3dColors(GtkStyle * pStyle)
-{
-        m_3dColors[CLR3D_Foreground] = pStyle->fg[GTK_STATE_NORMAL];
-        m_3dColors[CLR3D_Background] = pStyle->bg[GTK_STATE_NORMAL];
-        m_3dColors[CLR3D_BevelUp] = pStyle->light[GTK_STATE_NORMAL];
-        m_3dColors[CLR3D_BevelDown] = pStyle->dark[GTK_STATE_NORMAL];
-        m_3dColors[CLR3D_Highlight] = pStyle->bg[GTK_STATE_PRELIGHT];
-}        
-*/
 
 void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32
  w, UT_sint32 h)
 {
-/*
-        UT_ASSERT(c < COUNT_3D_COLORS);
-        gdk_gc_set_foreground(m_pGC, &m_3dColors[c]);
-        gdk_draw_rectangle(m_pWin, m_pGC, 1, x, y, w, h);
-*/
+	printf("GR:FillRect 3D %d!\n", c);
+	m_pShadowView->Window()->Lock();
+	rgb_color old_colour = m_pShadowView->HighColor();
+	m_pShadowView->SetHighColor(m_3dColors[c]);
+	m_pShadowView->FillRect(BRect(x, y, x+w, y+h));
+	m_pShadowView->SetHighColor(old_colour);
+	m_pShadowView->Window()->Unlock();
+
+	UPDATE_VIEW
 }
 
 void GR_BEOSGraphics::fillRect(GR_Color3D c, UT_Rect &r)
