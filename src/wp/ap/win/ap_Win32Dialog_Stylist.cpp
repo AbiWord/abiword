@@ -32,6 +32,7 @@
 #include "ap_Dialog_Stylist.h"
 #include "ap_Win32Dialog_Stylist.h"
 #include "xap_Win32DialogHelper.h"
+#include "ap_Win32App.h"
 #include "ap_Win32Resources.rc2"
 
 #if defined(STRICT)
@@ -308,6 +309,8 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 
 	UT_sint32 row, col;
 	UT_UTF8String sTmp("");
+	UT_String str;		   		 
+
 	//int iter = 0; // Unique key for each item in the treeview
 	for(row= 0; row < pStyleTree->getNumRows(); row++)
 	{
@@ -317,11 +320,13 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 			break;
 		}
 
+		str = AP_Win32App::s_fromUTF8ToWinLocale (sTmp.utf8_str());
+
 		xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
 
 		// Insert the item into the treeview
-		tvi.pszText = (LPTSTR)sTmp.utf8_str();
-		tvi.cchTextMax = sTmp.length() + 1;
+		tvi.pszText = (LPTSTR)str.c_str();
+		tvi.cchTextMax = str.length() + 1;
 		tvi.lParam = row;
 		if (pStyleTree->getNumCols(row) > 0)
 			tvi.cChildren = 1;
@@ -345,9 +350,12 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 					break;
 				}
 				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));
+
+				str = AP_Win32App::s_fromUTF8ToWinLocale (sTmp.utf8_str());
+
 				// Insert the item into the treeview
-				tvi.pszText = (LPTSTR)sTmp.utf8_str();
-				tvi.cchTextMax = sTmp.length() + 1;
+				tvi.pszText = (LPTSTR)str.c_str();
+				tvi.cchTextMax = str.length() + 1;
 				tvi.cChildren = 0;
 				tvi.lParam = col;
 
