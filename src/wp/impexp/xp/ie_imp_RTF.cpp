@@ -1293,9 +1293,10 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 	m_newSectionFlagged = true;
 	
 	m_szFileDirName = UT_strdup (szFilename);
+#if 0
 	char * tmp = UT_basename (m_szFileDirName);
 	*tmp = 0;
-
+#endif
 	FILE *fp = fopen(szFilename, "r");
 	if (!fp)
 	{
