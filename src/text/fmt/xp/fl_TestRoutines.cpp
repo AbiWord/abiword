@@ -59,10 +59,14 @@ void __dump_fmt(void)
 /*!
   Dump AbiWord backend's internal pt structures
   \see __dump
+
+  \note This dumps the last created document. This will differ from
+        the document pointed to by the layout in some situations
+        (during import, for instance).  
 */
 void __dump_pt(void)
 {
-	FL_DocLayout::m_pDocLayout->getDocument()->__dump(stdout);
+	FL_DocLayout::m_pDocLayout->getDocument()->m_pDoc->__dump(stdout);
 }
 
 /*!

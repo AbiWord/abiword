@@ -225,6 +225,8 @@ public:
 	void					__dump(FILE * fp) const;
 	pt_PieceTable *			getPieceTable(void) const
 		{ return m_pPieceTable; }
+	//! Pointer to last instatiated PD_Document. Used for debugging.
+	static PD_Document*		m_pDoc;
 #endif
 	
 protected:

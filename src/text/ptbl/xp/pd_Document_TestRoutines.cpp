@@ -38,4 +38,6 @@ void PD_Document::__dump(FILE * fp) const
 				 UT_TestStatus_GetMessage(status)));
 }
 
+PD_Document* PD_Document::m_pDoc = NULL;
+
 #endif /* PT_TEST */

@@ -75,6 +75,10 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_bAllowInsertPointChange(true)
 {
 	m_pApp = pApp;
+
+#ifdef PT_TEST
+	m_pDoc = this;
+#endif
 }
 
 PD_Document::~PD_Document()
