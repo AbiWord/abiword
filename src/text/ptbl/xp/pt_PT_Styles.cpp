@@ -43,10 +43,10 @@
 
 UT_Bool pt_PieceTable::_loadBuiltinStyles(void)
 {
-	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:10pt; text-align:left; line-height:1.0");
-	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");
-	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:12pt; font-weight:bold; font-style:italic; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");
-	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:12pt; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");
+	_s("Normal",	"P", "",       "Normal", "font-family:Times New Roman; font-size:12pt; text-align:left; line-height:1.0");
+	_s("Heading 1",	"P", "Normal", "Normal", "font-family:Arial; font-size:16pt; font-weight:bold; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");
+	_s("Heading 2",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; font-weight:bold; font-style:italic; margin-top:12pt; margin-bottom:3pt; keep-with-next:1");
+	_s("Heading 3",	"P", "Normal", "Normal", "font-family:Arial; font-size:14pt; margin-top:14pt; margin-bottom:3pt; keep-with-next:1");
 	_s("Plain Text","P", "Normal", "Plain Text", "font-family:Courier New");
 	_s("Block Text","P", "Normal", "Block Text", "margin-left:1in; margin-right:1in; margin-bottom:6pt");
 
