@@ -506,12 +506,12 @@ XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
 	}
 #endif
 	delete m_pFont;
-	DELETEP(m_fontFamily);
-	DELETEP(m_fontStyle);
-	DELETEP(m_fontVariant);
-	DELETEP(m_fontWeight);
-	DELETEP(m_fontStretch);
-	DELETEP(m_fontSize);
+	FREEP(m_fontFamily);
+	FREEP(m_fontStyle);
+	FREEP(m_fontVariant);
+	FREEP(m_fontWeight);
+	FREEP(m_fontStretch);
+	FREEP(m_fontSize);
 }
 
 /*!
@@ -734,10 +734,3 @@ void XAP_Preview_FontPreview::clearScreen(void)
 	// clear the whole drawing area, except for the border
 	m_gc->fillRect(m_clrBackground, 0 + m_gc->tlu(1), 0 + m_gc->tlu(1), iWidth - m_gc->tlu(2), iHeight - m_gc->tlu(2));
 }
-
-
-
-
-
-
-
