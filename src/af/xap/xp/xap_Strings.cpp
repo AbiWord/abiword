@@ -135,17 +135,6 @@ void XAP_DiskStringSet::setFallbackStringSet(XAP_StringSet * pFallback)
 
 UT_Bool XAP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 {
-	UT_uint32 kLimit = m_vecStringsXAP.getItemCount();
-	UT_uint32 k;
-
-	// TODO we need to fix the vector class so that i can assign
-	// TODO directly to a cell without having to worry about it
-	// TODO being long enough first.
-	
-	for (k=kLimit; (k <= id); k++)
-		if (m_vecStringsXAP.addItem(0) != 0)
-			return UT_FALSE;
-
 	XML_Char * szDup = NULL;
 	if (szString && *szString)
 		if (!UT_XML_cloneString(szDup,szString))

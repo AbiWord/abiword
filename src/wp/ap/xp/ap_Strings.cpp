@@ -171,17 +171,6 @@ UT_Bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 {
 	if (id < AP_STRING_ID__FIRST__)
 		return XAP_DiskStringSet::setValue(id,szString);
-	
-	UT_uint32 kLimit = m_vecStringsAP.getItemCount();
-	UT_uint32 k;
-
-	// TODO we need to fix the vector class so that i can assign
-	// TODO directly to a cell without having to worry about it
-	// TODO being long enough first.
-	
-	for (k=kLimit; (k <= (id-AP_STRING_ID__FIRST__)); k++)
-		if (m_vecStringsAP.addItem(0) != 0)
-			return UT_FALSE;
 
 	XML_Char * szDup = NULL;
 	if (szString && *szString)
