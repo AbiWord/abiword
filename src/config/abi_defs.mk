@@ -87,7 +87,8 @@ ABI_OTH_INCS=	/other/expat/xmltok			\
 
 ###ABI_DIST_INCS=	-I$(ABI_DEPTH)/../dist/$(OBJDIR)/include
 
-ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_CALC_INCS) $(ABI_WP_INCS) $(ABI_OTH_INCS)
+# ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_CALC_INCS) $(ABI_WP_INCS) $(ABI_OTH_INCS)
+ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_WP_INCS) $(ABI_OTH_INCS)
 ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
 
 ##################################################################
