@@ -218,6 +218,8 @@ void AP_UnixDialog_Spell::_constructWindowContents(GtkWidget *box)
 
     m_textWord = gtk_text_view_new ();
     gtk_widget_ref (m_textWord);
+    gtk_text_view_set_editable (GTK_TEXT_VIEW(m_textWord), FALSE);
+    gtk_text_view_set_cursor_visable (GTK_TEXT_VIEW(m_textWord), FALSE);
     gtk_container_add (GTK_CONTAINER (scroll2), m_textWord);
     gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(m_textWord), GTK_WRAP_WORD);
     gtk_widget_set_usize (m_textWord, 350, 80);
