@@ -102,6 +102,13 @@ PLATFORM_FLAGS		+= $(SPARC_ARCH_FLAGS)
 OS_ENDIAN		= BigEndian32
 endif
 
+# Endian for M68K from Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
+ifeq ($(OS_ARCH), m68k)
+PLATFORM_FLAGS		+= $(M68K_ARCH_FLAGS)
+OS_ENDIAN		= BigEndian32
+endif
+
+
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 

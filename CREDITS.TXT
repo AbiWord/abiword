@@ -22,6 +22,7 @@ Heath D. Carr <heath@abisource.com>
 Philippe Defert <Philippe.Defert@cern.ch>       AIX, HPUX, IRIX64, OSF1
 Ryan Dooley <ryan@coe.missouri.edu>             started IRIX port
 Albert Fluegel <albert.fluegel@hl.siemens.de>   Solaris
+Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>	m68k Endian Patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
 Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog
 Matt Kimball <robozapp@xmission.com>            layout fixes
