@@ -1542,15 +1542,8 @@ bool IE_Imp_RTF::HandleField()
 		if (!bUseResult) 
 		{
 			bool ok;
-			const XML_Char* propsArray[3];
-			propsArray [0] = "type";
-			propsArray [1] = xmlField;
-			propsArray [2] = NULL;
-
-			// TODO get text props to apply them to the field
-			ok = FlushStoredChars ();
+			ok = _appendField (xmlField);
 			UT_ASSERT (ok);
-			m_pDocument->appendObject (PTO_Field, propsArray);
 		}
 		// we own xmlField, so we delete it after use.
 		FREEP (xmlField);
@@ -1879,6 +1872,18 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			m_currentRTFState.m_sectionProps.m_numCols = (UT_uint32)param;
 			return true;
+		}
+		else if (strcmp((char*)pKeyword, "chdate") == 0)
+		{
+			return _appendField ("date");
+		}
+		else if (strcmp((char*)pKeyword, "chtime") == 0)
+		{
+			return _appendField ("time");
+		}
+		else if (strcmp((char*)pKeyword, "chpgn") == 0)
+		{
+			return _appendField ("page_number");
 		}
 		break;
 
@@ -3890,8 +3895,8 @@ bool IE_Imp_RTF::HandleSuperscript(bool state)
 bool IE_Imp_RTF::HandleSuperscriptPosition(UT_uint32 pos)
 {
 	bool ok;
-	ok = HandleBoolCharacterProp(true, &m_currentRTFState.m_charProps.m_superscript);
-	if (ok) 
+	ok = HandleBoolCharacterProp((pos != 0) ? true : false, &m_currentRTFState.m_charProps.m_superscript);
+	if (ok)
 	{
 		ok = HandleFloatCharacterProp (pos*0.5, &m_currentRTFState.m_charProps.m_superscript_pos);
 	}
@@ -3907,8 +3912,8 @@ bool IE_Imp_RTF::HandleSubscript(bool state)
 bool IE_Imp_RTF::HandleSubscriptPosition(UT_uint32 pos)
 {
 	bool ok;
-	ok = HandleBoolCharacterProp(true, &m_currentRTFState.m_charProps.m_subscript);
-	if (ok) 
+	ok = HandleBoolCharacterProp((pos != 0) ? true : false, &m_currentRTFState.m_charProps.m_subscript);
+	if (ok)
 	{
 		ok = HandleFloatCharacterProp (pos*0.5, &m_currentRTFState.m_charProps.m_subscript_pos);
 	}
@@ -4109,6 +4114,26 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		_parseFile (NULL);
 		m_parsingHdrFtr = false;
 	}
+}
+
+/*!
+  Appends a field to the document.
+  \param xmlField the field type value
+  \return true if OK
+ */
+bool IE_Imp_RTF::_appendField (const XML_Char *xmlField)
+{
+	bool ok;
+	const XML_Char* propsArray[3];
+	propsArray [0] = "type";
+	propsArray [1] = xmlField;
+	propsArray [2] = NULL;
+	
+	// TODO get text props to apply them to the field
+	ok = FlushStoredChars ();
+	UT_ASSERT (ok);
+	m_pDocument->appendObject (PTO_Field, propsArray);
+	return ok;
 }
 
 //////////////////////////////////////////////////////////////////

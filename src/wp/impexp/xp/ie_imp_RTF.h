@@ -417,6 +417,7 @@ private:
 	bool                m_parsingHdrFtr;
 
 	void _appendHdrFtr ();
+	bool _appendField (const XML_Char *xmlField);
 	XML_Char *_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField);
 };
 
