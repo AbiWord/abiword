@@ -65,14 +65,14 @@ bool AP_Win32Prefs::loadBuiltinPrefs(void)
 		UT_ASSERT(pApp);
 				
 		/* Do we have a string set for this locale?*/
-		if (!pApp->doesStringSetExists(szLocaleInfo))
+		if (!pApp->doesStringSetExist(szLocaleInfo))
 		{
 			const char* pFallBackLocale = UT_getWin32FallBackStringSetLocale(szLocaleInfo);
 
 			if (pFallBackLocale)
 			{				
 				/* If there is no stringset, try the fallback locale*/
-				if (pApp->doesStringSetExists(pFallBackLocale))
+				if (pApp->doesStringSetExist(pFallBackLocale))
 				{
 					m_builtinScheme->setValue( AP_PREF_KEY_StringSet, pFallBackLocale);	
 					bFallBackLocale = true;

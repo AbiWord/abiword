@@ -71,7 +71,7 @@ public:
 
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile);
 	UT_Vector*								getInstalledUILanguages(void);
-	bool									doesStringSetExists(const char* pLocale);
+	bool									doesStringSetExist(const char* pLocale);
 
 	/*
 		Currently we need single byte strings to work with 

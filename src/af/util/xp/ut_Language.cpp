@@ -38,7 +38,7 @@
 
 static lang_entry s_Table[] = 
 {
-	//the property value, the localised translation, the numerical id
+	//language code, localised language name, numerical id, text direction
 	{"-none-",		NULL, XAP_STRING_ID_LANG_0,     UTLANG_LTR},
 	{"am-ET",		NULL, XAP_STRING_ID_LANG_AM_ET, UTLANG_LTR},
 	{"af-ZA",		NULL, XAP_STRING_ID_LANG_AF_ZA, UTLANG_LTR},
@@ -127,26 +127,62 @@ static lang_entry s_Table[] =
 	{"zh-TW",		NULL, XAP_STRING_ID_LANG_ZH_TW, UTLANG_VERTICAL},	// TODO also UTLANG_LTR
 };
 
+/*!
+ Compare function used by qsort()
+
+ \param a left side of comparison
+ \param b right side of comparison
+ \return negative, 0, or positive
+
+ Special "no proofing" language will always be sorted to the
+  top of the list
+ */
 static int s_compareQ(const void * a, const void *b)
 {
 	const lang_entry * A = static_cast<const lang_entry *>(a);
 	const lang_entry * B = static_cast<const lang_entry *>(b);
-	return UT_strcmp(A->prop, B->prop);
+	
+	if (B->m_nID == XAP_STRING_ID_LANG_0)
+		return 1;
+	else if (A->m_nID == XAP_STRING_ID_LANG_0)
+		return -1;
+
+	return UT_strcoll(A->m_szLangName, B->m_szLangName);
 }
 
+/*!
+ Compare function used by bsearch()
+
+ \param l localized language name
+ \param e language table entry
+ \return negative, 0, or positive
+
+ Special "no proofing" language will always be sorted to the
+  top of the list
+ */
 static int s_compareB(const void * l, const void *e)
 {
 	const XML_Char * L   = static_cast<const XML_Char *>(l);
 	const lang_entry * E = static_cast<const lang_entry *>(e);
-	return UT_strcmp(L, E->prop);
+
+	if (E->m_nID == XAP_STRING_ID_LANG_0)
+		return 1;
+	else if (L == s_Table[0].m_szLangName)
+		return -1;
+	else if (strcmp(L, s_Table[0].m_szLangName) == 0)
+		return -1;
+
+	return UT_strcoll(L, E->m_szLangName);
 }
+
 
 bool UT_Language::s_Init = true;
 
 
-// the constructor looks up the translations for the property and sorts out the table
-// alphabetically by the property
-
+/*!
+ The constructor looks up the translations for the language code and sorts the table
+  alphabetically by the language name
+ */
 UT_Language::UT_Language()
 {
 	if(s_Init) //only do this once
@@ -155,10 +191,10 @@ UT_Language::UT_Language()
 
 		for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 		{
-			s_Table[i].lang = const_cast<XML_Char *>(pSS->getValue(s_Table[i].id));
+			s_Table[i].m_szLangName = const_cast<XML_Char *>(pSS->getValue(s_Table[i].m_nID));
 		}
 
-		qsort(s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareQ);
+		qsort(&s_Table[0], NrElements(s_Table), sizeof(lang_entry), s_compareQ);
 		s_Init = false;
 	}
 }
@@ -168,59 +204,56 @@ UT_uint32 UT_Language::getCount()
 	return (NrElements(s_Table));
 }
 
-const XML_Char * UT_Language::getNthProperty(UT_uint32 n)
+const XML_Char * UT_Language::getNthLangCode(UT_uint32 n)
 {
-	return (s_Table[n].prop);
+	return (s_Table[n].m_szLangCode);
 }
 
-const XML_Char * UT_Language::getNthLanguage(UT_uint32 n)
+const XML_Char * UT_Language::getNthLangName(UT_uint32 n)
 {
-	return (s_Table[n].lang);
+	return (s_Table[n].m_szLangName);
 }
 
 const UT_uint32 UT_Language::getNthId(UT_uint32 n)
 {
-	return (s_Table[n].id);
+	return (s_Table[n].m_nID);
 }
 
-const XML_Char * UT_Language::getPropertyFromLanguage(const XML_Char * lang)
+const XML_Char * UT_Language::getCodeFromName(const XML_Char * szName)
 {
 	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 	{
-		if(!UT_strcmp(lang, s_Table[i].lang))
-			return s_Table[i].prop;
+		if(!UT_strcmp(szName, s_Table[i].m_szLangName))
+			return s_Table[i].m_szLangCode;
 	}
 
 	UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
-				 "language to the tables\n", lang));
-	UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+				 "language to the tables\n", szName));
 	return NULL;
 }
 
-UT_uint32 UT_Language::getIndxFromProperty(const XML_Char * prop)
+UT_uint32 UT_Language::getIndxFromCode(const XML_Char * szCode)
 {
 	for(UT_uint32 i = 0; i < NrElements(s_Table); i++)
 	{
-		if(!UT_strcmp(prop, s_Table[i].prop))
+		if(!UT_strcmp(szCode, s_Table[i].m_szLangCode))
 			return i;
 	}
 
 	UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
-				 "language to the tables\n", prop));
-	UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+				 "language to the tables\n", szCode));
 	return 0;
 }
 
-UT_uint32 UT_Language::getIdFromProperty(const XML_Char * prop)
+UT_uint32 UT_Language::getIdFromCode(const XML_Char * szCode)
 {
-	lang_entry * e = static_cast<lang_entry *>(bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
+	lang_entry * e = static_cast<lang_entry *>(bsearch(szCode, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
 	if(e)
-		return e->id;
+		return e->m_nID;
 	else
 	{
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
-					 "language to the tables\n", prop));
-		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+					 "language to the tables\n", szCode));
 		return 0;
 	}
 	
@@ -233,30 +266,28 @@ UT_uint32 UT_Language::getIdFromProperty(const XML_Char * prop)
 // possible to compare the language property by simply comparing the
 // pointers, rather than having to use strcmp()
 
-const XML_Char *  UT_Language::getPropertyFromProperty(const XML_Char * prop)
+const XML_Char * UT_Language::getCodeFromCode(const XML_Char * szName)
 {
-	lang_entry * e = static_cast<lang_entry *>(bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
+	lang_entry * e = static_cast<lang_entry *>(bsearch(szName, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
 	if(e)
-		return e->prop;
+		return e->m_szLangName;
 	else
 	{
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
-					 "language to the tables\n", prop));
-		//UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+					 "language to the tables\n", szName));
 		return 0;
 	}
 }
 
-UT_LANGUAGE_ORDER UT_Language::getOrderFromProperty(const XML_Char * prop)
+UT_LANGUAGE_DIR UT_Language::getDirFromCode(const XML_Char * szCode)
 {
-	lang_entry * e = static_cast<lang_entry *>(bsearch(prop, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
+	lang_entry * e = static_cast<lang_entry *>(bsearch(szCode, s_Table, NrElements(s_Table), sizeof(lang_entry), s_compareB));
 	if(e)
-		return e->order;
+		return e->m_eDir;
 	else
 	{
 		UT_DEBUGMSG(("UT_Language: unknown language [%s]; if this message appears, add the "
-					 "language to the tables\n", prop));
-		UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+					 "language to the tables\n", szCode));
 		return UTLANG_LTR;
 	}
 }

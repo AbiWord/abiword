@@ -618,7 +618,7 @@ static LetterData s_table[] =
 //	{0x06d2, 0x06d2, 0x06d2, 0xFBAF, 0xFBAE},
 //	{0x06d3, 0x06d3, 0x06d3, 0xFBB1, 0xFBB0},
 // 	0x06d4 -- full stop, no shaping
-//  {0x06d5, 0xFE, 0xFE, 0xFE, 0xFE},
+// 	{0x06d5, 0xFE, 0xFE, 0xFE, 0xFE},
 // 	{0x06e5, 0xFE, 0xFE, 0xFE, 0xFE},
 // 	{0x06e6, 0xFE, 0xFE, 0xFE, 0xFE},
 // 	0x06f0 - 0x06f9 -- alternative digits, no shaping 0xFE, 0xFE, 0xFE, 0xFE},
@@ -1031,10 +1031,10 @@ UT_contextGlyph::UT_contextGlyph()
 		// init the smart quote tables with the poiters to language
 		// codes in UT_Laguage
 		UT_Language lang;
-		s_pEN_US = lang.getPropertyFromProperty("en-US");
+		s_pEN_US = lang.getCodeFromCode("en-US");
 		for(UT_uint32 i = 0; i < NrElements(s_smart_quotes); i++)
 		{
-			s_smart_quotes[i].pLang = lang.getPropertyFromProperty(s_smart_quotes[i].pLang);
+			s_smart_quotes[i].pLang = lang.getCodeFromCode(s_smart_quotes[i].pLang);
 		}
 
 		XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_SmartQuotesEnable),

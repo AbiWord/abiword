@@ -1348,7 +1348,7 @@ Defun1(toolbarNew)
  * to see the document as soon as possible and updates the size of the scroll
  * bars as the document is loaded.
  */
-static bool      s_bFirstDrawDone = false;
+static bool s_bFirstDrawDone = false;
 static UT_sint32 s_iLastYScrollOffset = -1;
 static UT_sint32 s_iLastXScrollOffset = -1;
 static bool      s_bFreshDraw = false;
@@ -1409,16 +1409,16 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 						xxx_UT_DEBUGMSG(("Incr. loader: primary draw\n"));
 					}
 					else if(s_bFreshDraw)
-					{
-						pView->updateScreen(true);
+				{
+					pView->updateScreen(true);
 						s_bFreshDraw = false;
 						xxx_UT_DEBUGMSG(("Incr. loader: secondary draw\n"));
 					}
 					else
 					{
 						xxx_UT_DEBUGMSG(("Incr. loader: draw not needed\n"));
-					}
 				}
+			}
 			
 			}
 
@@ -4385,7 +4385,7 @@ Defun(insertClosingParenthesis)
 		{
 			const XML_Char * s = UT_getAttribute("lang", props_in);
 			UT_Language l;
-			UT_LANGUAGE_ORDER order = l.getOrderFromProperty(s);
+			UT_LANGUAGE_DIR order = l.getDirFromCode(s);
 			FREEP(props_in);
 
 			if(order == UTLANG_RTL)
@@ -4448,7 +4448,7 @@ Defun(insertOpeningParenthesis)
 		{
 			const XML_Char * s = UT_getAttribute("lang", props_in);
 			UT_Language l;
-			UT_LANGUAGE_ORDER order = l.getOrderFromProperty(s);
+			UT_LANGUAGE_DIR order = l.getDirFromCode(s);
 			FREEP(props_in);
 
 			if(order == UTLANG_RTL)

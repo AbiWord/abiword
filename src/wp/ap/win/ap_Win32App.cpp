@@ -164,7 +164,7 @@ bool AP_Win32App::initialize(void)
 
 	if (! XAP_Win32App::initialize())
 		return false;
-	
+
 	
 	// let various window types register themselves
 
@@ -1379,19 +1379,19 @@ UT_Vector*	AP_Win32App::getInstalledUILanguages(void)
 		return pVec;
 			
 	for (UT_uint32 i=0; i< lang.getCount(); i++)
-	{		
-		if (doesStringSetExists((const char*)lang.getNthProperty(i)))		
-			pVec->addItem(strdup((char*)lang.getNthProperty(i)));				
-		
+	{
+		const char *p = (const char*)lang.getNthLangCode(i);
+		if (doesStringSetExist(p))
+			pVec->addItem(strdup((char*)p));				
 	}	
 
 	return pVec;
 }
 
 /*
-	Does a stringSet exists in disk
+	Does a stringSet exist on disk?
 */
-bool	AP_Win32App::doesStringSetExists(const char* pLocale)
+bool	AP_Win32App::doesStringSetExist(const char* pLocale)
 {
 	FILE* in;
 	const char * szDirectory = NULL;	

@@ -26,96 +26,46 @@
 #include "ut_debugmsg.h"
 #include "ut_Language.h"
 #include "xap_Dlg_Language.h"
-#include "xap_Strings.h"
-
 
 /*****************************************************************/
-
-static int s_compareQ(const void * a, const void * b)
-{
-	const XML_Char ** A = (const XML_Char **)(a);
-	const XML_Char ** B = (const XML_Char **)(b);
-
-	return UT_strcoll(*A,*B);
-}
 
 XAP_Dialog_Language::XAP_Dialog_Language(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoglanguage")
 {
-	m_answer		= a_CANCEL;
-	m_pLanguage		= NULL;
-	m_pLangProperty		= NULL;
-	m_bChangedLanguage	= false;
+	m_answer		   = a_CANCEL;
+	m_pLanguage		   = NULL;
+	m_pLangProperty	   = NULL;
+	m_bChangedLanguage = false;
 	m_pLangTable = new UT_Language;
+
 	UT_ASSERT(m_pLangTable);
-	UT_uint32 i;
-	
 	m_iLangCount = m_pLangTable->getCount();
 	m_ppLanguages = new const XML_Char * [m_iLangCount];
 	m_ppLanguagesCode = new const XML_Char * [m_iLangCount];
-	
-	// find languages that needn't be sorted (where id = XAP_STRING_ID_LANG_0)
-	UT_uint32 dontsort = 0;
-	for(i=0; i<m_iLangCount; i++)
-	{
-		if (m_pLangTable->getNthId(i)==XAP_STRING_ID_LANG_0)
-		{
-			dontsort++;
-		}
-	}
-	UT_DEBUGMSG(("FODDEX: dontsort = %d\n", dontsort));
-	
-	// copy - at first - only the languages that need to be sorted into a temporary language array
-	const XML_Char ** ppTempLang = new const XML_Char * [m_iLangCount-dontsort];
-	UT_uint32 j = 0;
-	for(i = 0; i < m_iLangCount; i++)
-	{
-		if (m_pLangTable->getNthId(i)!=XAP_STRING_ID_LANG_0) {
-			ppTempLang[j] = m_pLangTable->getNthLanguage(i);
-			j++;
-		}
-	}
-	// sort the temporary array
-	qsort(ppTempLang, m_iLangCount-dontsort, sizeof(XML_Char *), s_compareQ);
 
-	// copy all languages that needn't be sorted to the final array first
-	j = 0;
-	for(i=0; i<m_iLangCount; i++) 
+	for(UT_uint32 i = 0; i < m_iLangCount; i++)
 	{
-		if (m_pLangTable->getNthId(i)==XAP_STRING_ID_LANG_0)
-		{
-			m_ppLanguages[j] = m_pLangTable->getNthLanguage(i);
-			j++;
-		}		
+		m_ppLanguages[i] = m_pLangTable->getNthLangName(i);
+		m_ppLanguagesCode[i] = m_pLangTable->getNthLangCode(i);
 	}
-	// now use 'j' as a base index to add the sorted items from the temporary language array
-	for(i=0; i<m_iLangCount-dontsort; i++)
-	{
-		m_ppLanguages[j] = ppTempLang[i];
-		j++;
-	}
-	// dispose of temporary array
-	delete [] ppTempLang;
-	
-	// Assign its language code to every language once is sorted
+
+	// Assign each language its code
 	for(UT_uint32 nLang = 0; nLang < m_iLangCount; nLang++)
-	{	
-		for(i = 0; i < m_iLangCount; i++)
+	{
+		for(UT_uint32 i = 0; i < m_iLangCount; i++)
 		{
-			if (strcmp (m_ppLanguages[nLang], m_pLangTable->getNthLanguage(i))==0)
+			if (strcmp (m_ppLanguages[nLang], m_pLangTable->getNthLangName(i))==0)
 			{
-				m_ppLanguagesCode[nLang] = m_pLangTable->getNthProperty(i);
+				m_ppLanguagesCode[nLang] = m_pLangTable->getNthLangCode(i);
 				break;
-			}						
+			}
 		}
-	}		
+	}
 
 	// TODO: move spell-checking into XAP land and make this dialog
 	// TODO: more like the MSWord one (i.e. add):
 	// [] do not check spelling or grammar
 	m_bSpellCheck = true;
-	
-	
 }
 
 XAP_Dialog_Language::~XAP_Dialog_Language(void)
@@ -123,7 +73,7 @@ XAP_Dialog_Language::~XAP_Dialog_Language(void)
 	if(m_pLangTable)
 		delete m_pLangTable;
 	if(m_ppLanguages)
-		delete [] m_ppLanguages;		
+		delete [] m_ppLanguages;
 	if(m_ppLanguagesCode)
 		delete [] m_ppLanguagesCode;
 }
@@ -134,10 +84,10 @@ XAP_Dialog_Language::~XAP_Dialog_Language(void)
 void XAP_Dialog_Language::setLanguageProperty(const XML_Char * pLangProp)
 {
 	UT_ASSERT(m_pLangTable);
-	UT_uint32 indx	= m_pLangTable->getIndxFromProperty(
+	UT_uint32 indx = m_pLangTable->getIndxFromCode(
 		pLangProp ? pLangProp :"-none-");
-	m_pLanguage		= m_pLangTable->getNthLanguage(indx);
-	m_pLangProperty	= m_pLangTable->getNthProperty(indx);
+	m_pLanguage	    = m_pLangTable->getNthLangName(indx);
+	m_pLangProperty = m_pLangTable->getNthLangCode(indx);
 }
 
 // in this case we do not need to worry about the lifespan of pLang
@@ -145,8 +95,8 @@ void XAP_Dialog_Language::setLanguageProperty(const XML_Char * pLangProp)
 void XAP_Dialog_Language::_setLanguage(const XML_Char * pLang)
 {
 	UT_ASSERT(m_pLangTable);
-	m_pLanguage		= pLang;
-	m_pLangProperty	= m_pLangTable->getPropertyFromLanguage(pLang);
+	m_pLanguage	    = pLang;
+	m_pLangProperty = m_pLangTable->getCodeFromName(pLang);
 }
 
 
@@ -164,25 +114,27 @@ bool XAP_Dialog_Language::getChangedLangProperty(const XML_Char ** pszLangProp) 
 
 /*
 	Creates a vector with a list of support languages for spell checking
-	
+
 	You must to free the allocated memory
 */
 UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 {
-	SpellChecker * checker = SpellManager::instance().getInstance();	
+	SpellChecker * checker = SpellManager::instance().getInstance();
 	UT_Vector& vec= checker->getMapping();
 	DictionaryMapping * mapping;
 	UT_Vector* vecRslt = new UT_Vector();
-			
-	const UT_uint32 nItems = vec.getItemCount();	
-		
+
+	const UT_uint32 nItems = vec.getItemCount();
+
 	for (UT_uint32 iItem = nItems; iItem; --iItem)
 	{
-		mapping  = static_cast<DictionaryMapping*>(vec.getNthItem(iItem - 1));
-				
+		mapping = static_cast<DictionaryMapping*>(vec.getNthItem(iItem - 1));
+
 		if (checker->doesDictionaryExist(mapping->lang.c_str()))
-			vecRslt->addItem( strdup(mapping->lang.c_str()));	
+			vecRslt->addItem( strdup(mapping->lang.c_str()));
 	}
-	
+
 	return vecRslt;
 }
+
+

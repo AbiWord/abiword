@@ -275,7 +275,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const XML_Char * pszLanguage = PP_evalProperty("lang",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 
 	const XML_Char * pszOldLanguage = m_pLanguage;
-	m_pLanguage = lls.getPropertyFromProperty(pszLanguage);
+	m_pLanguage = lls.getCodeFromCode(pszLanguage);
 	if(pszOldLanguage && m_pLanguage != pszOldLanguage)
 	{
 

@@ -135,7 +135,7 @@ void  XAP_Win32Dialog_Language::_fillTreeview(HWND hTV)
 		tvi.iImage = 0;    
 		tvi.iSelectedImage = tvi.iImage;
 			
-		//Loop all the languages that we have a spell checker for them
+		//Loop over all the languages for which we have a spell checker
 		for (UT_uint32 iItem = nItems; iItem; --iItem)
 		{
 			const char* pText  = (const char*) pVec->getNthItem(iItem - 1);							
@@ -167,9 +167,7 @@ BOOL CALLBACK XAP_Win32Dialog_Language::s_treeProc(HWND hWnd,UINT msg,WPARAM wPa
 {		
 	XAP_Win32Dialog_Language *pThis;
 	
-	/*
-		The user has double click on an tree item (a language name)
-	*/
+	// The user has double clicked on a tree item (a language name)
 	if (msg==WM_LBUTTONDBLCLK)
 	{
 		pThis = (XAP_Win32Dialog_Language *)GetWindowLong(hWnd,GWL_USERDATA);

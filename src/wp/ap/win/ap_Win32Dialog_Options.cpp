@@ -494,7 +494,7 @@ void AP_Win32Dialog_Options::_gatherDocLanguage(UT_String &stRetVal)
 	if (nIndex!=CB_ERR)
 	{
 		int nID = SendMessage(hCtrlDocLang,  CB_GETITEMDATA , nIndex,0);
-		pLang =  (const char*)lang.getNthProperty(nID);		
+		pLang =  (const char*)lang.getNthLangCode(nID);		
 		stRetVal = pLang;
 	}				
 }
@@ -503,9 +503,9 @@ void AP_Win32Dialog_Options::_gatherDocLanguage(UT_String &stRetVal)
 	Sets the default document language
 */
 void AP_Win32Dialog_Options::_setDocLanguage(const UT_String &stExt)
-{	
+{
 	UT_Language	lang;
-	int id = lang.getIndxFromProperty(stExt.c_str());
+	int id = lang.getIndxFromCode(stExt.c_str());
 	HWND hCtrlDocLang	= GetDlgItem((HWND)getPage(PG_LANG), AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG);	
 
 	int nCount = SendMessage(hCtrlDocLang, CB_GETCOUNT, 0, 0);		
@@ -532,14 +532,15 @@ void AP_Win32Dialog_Options::_gatherUILanguage(UT_String &stRetVal)
 	if (nIndex!=CB_ERR)
 	{
 		int nID = SendMessage(hCtrlDocLang,  CB_GETITEMDATA , nIndex,0);
-		pLang =  (const char*)lang.getNthProperty(nID);		
+		pLang =  (const char*)lang.getNthLangCode(nID);		
 		stRetVal = pLang;
 	}				
 }
+
 void AP_Win32Dialog_Options::_setUILanguage(const UT_String &stExt)
 {
 	UT_Language	lang;
-	int id = lang.getIndxFromProperty(stExt.c_str());
+	int id = lang.getIndxFromCode(stExt.c_str());
 	HWND hCtrlDocLang	= GetDlgItem((HWND)getPage(PG_LANG), AP_RID_DIALOG_OPTIONS_COMBO_UILANG);	
 
 	int nCount = SendMessage(hCtrlDocLang, CB_GETCOUNT, 0, 0);		
@@ -899,8 +900,8 @@ void AP_Win32Dialog_Options_Lang::_onInitDialog()
 			{
 				pLangCode = (const char *) m_pVecUILangs->getNthItem(i);
 				
-				int id = lang.getIndxFromProperty(pLangCode);
-				pLang =  	lang.getNthLanguage(id);
+				int id = lang.getIndxFromCode(pLangCode);
+				pLang  = lang.getNthLangName(id);
 				
 				nIndex = SendMessage(hCtrlUILang, CB_ADDSTRING, 0, (LPARAM)pLang);
 				SendMessage(hCtrlUILang, CB_SETITEMDATA, nIndex, id);
@@ -919,7 +920,7 @@ void AP_Win32Dialog_Options_Lang::_onInitDialog()
 		
 		for (UT_uint32 i=0; i < lang.getCount(); i++)
 		{					
-			pLang =  	lang.getNthLanguage(i);					
+			pLang  = lang.getNthLangName(i);
 			nIndex = SendMessage(hCtrlDOCLang, CB_ADDSTRING, 0, (LPARAM)pLang);
 			SendMessage(hCtrlDOCLang, CB_SETITEMDATA, nIndex, i);
 		}				
