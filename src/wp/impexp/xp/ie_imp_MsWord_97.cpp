@@ -202,67 +202,133 @@ s_mapPageIdToString (UT_uint16 id)
   Surprise, surprise, there are more list numerical formats than the 5 the
   MS documentation states happens to mention, so here I will put what I found 
   out (latter we will move it to some better place)
-  
-  enum wordListNumberFormat { WLNF_EUROPEAN_ARABIC = 0,
-  WLNF_UPPER_ROMAN = 1,
-  WLNF_LOWER_ROMAN = 2,
-  WLNF_UPPER_LETTER = 3,
-  WLNF_LOWER_LETTER = 4,
-  WLNF_ORDINAL = 5,
-  WLNF_BULLETS = 23,  // the actual bullet shape is stored elsewhere
-  WLNF_HEBREW_NUMBERS = 45,
-  WLNF_ARABIC_ARABIC = ???
-  } ;
 */
+typedef enum
+{
+  WLNF_INVALID         = -1,
+  WLNF_EUROPEAN_ARABIC = 0,
+  WLNF_UPPER_ROMAN     = 1,
+  WLNF_LOWER_ROMAN     = 2,
+  WLNF_UPPER_LETTER    = 3,
+  WLNF_LOWER_LETTER    = 4,
+  WLNF_ORDINAL         = 5,
+  WLNF_BULLETS         = 23,
+  WLNF_HEBREW_NUMBERS  = 45  
+} MSWordListIdType;
+
+/*!
+ * Map msword list enums back to abi's
+ */
 static const char *
-s_mapDocToAbiListId (UT_uint16 id)
+s_mapDocToAbiListId (MSWordListIdType id)
 {
   switch (id)
     {
-    case 1: // upper roman
+    case WLNF_UPPER_ROMAN: // upper roman
       return "4";
 
-    case 2: // lower roman
+    case WLNF_LOWER_ROMAN: // lower roman
       return "3";
 
-    case 3: // upper letter
+    case WLNF_UPPER_LETTER: // upper letter
       return "2";
 
-    case 4: // lower letter
+    case WLNF_LOWER_LETTER: // lower letter
       return "1";
 
-    case 23: // bullet list
+    case WLNF_BULLETS: // bullet list
       return "5";
 
+    case WLNF_ORDINAL: // ordinal
     default:
-    case 5: // ordinal
       return "0";
     }
 }
 
+/*!
+ * Map msword list enum back to an abiword list delimiter tag
+ */
 static const char *
-s_mapDocToAbiListStyle (UT_uint16 id)
+s_mapDocToAbiListDelim (MSWordListIdType id)
 {
   switch (id)
     {
-    case 1: // upper roman
+    case WLNF_UPPER_ROMAN: // upper roman
+      return "%L";
+
+    case WLNF_LOWER_ROMAN: // lower roman
+      return "%L";
+
+    case WLNF_UPPER_LETTER: // upper letter
+      return "%L)";
+
+    case WLNF_LOWER_LETTER: // lower letter
+      return "%L)";
+
+    case WLNF_BULLETS: // bullet list
+      return "%L";
+
+    case WLNF_ORDINAL: // ordinal
+    default:
+      return "%L.";
+    }
+}
+
+/*!
+ * Map msword list enums back to abi's list styles
+ */
+static const char *
+s_mapDocToAbiListStyle (MSWordListIdType id)
+{
+  switch (id)
+    {
+    case WLNF_UPPER_ROMAN: // upper roman
       return "Upper Roman List";
 
-    case 2: // lower roman
+    case WLNF_LOWER_ROMAN: // lower roman
       return "Lower Roman List";
 
-    case 3: // upper letter
+    case WLNF_UPPER_LETTER: // upper letter
       return "Upper Case List";
 
-    case 4: // lower letter
+    case WLNF_LOWER_LETTER: // lower letter
       return "Lower Case List";
 
-    case 23: // bullet list
+    case WLNF_BULLETS: // bullet list
       return "Bullet List";
 
+    case WLNF_ORDINAL: // ordinal
     default:
-    case 5: // ordinal
       return "Numbered List";
+    }
+}
+
+/*!
+ * Map msword list enums back to abi's field font for that given style
+ */
+static const char *
+s_fieldFontForListStyle (MSWordListIdType id)
+{
+  switch (id)
+    {
+    case WLNF_UPPER_ROMAN: // upper roman
+      return "NULL";
+
+    case WLNF_LOWER_ROMAN: // lower roman
+      return "NULL";
+
+    case WLNF_UPPER_LETTER: // upper letter
+      return "Times New Roman";
+
+    case WLNF_LOWER_LETTER: // lower letter
+      return "Times New Roman";
+
+    case WLNF_BULLETS: // bullet list
+      return "Symbol";
+
+    case WLNF_ORDINAL: // ordinal
+    default:
+      return "Times New Roman";
     }
 }
 
@@ -1534,252 +1600,268 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 
 	if ( apap->ilfo )
 	{
-		// all lists have ilfo set
-		UT_DEBUGMSG(("list: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));  //ilvl is the list level
-		LVL * myLVL = NULL;
-		LFO * myLFO = NULL;
-		LST * myLST = NULL;
-		LSTF * myLSTF = NULL;
-		LVLF * myLVLF = NULL;
-		LFOLVL * myLFOLVL = NULL;
-
-		UT_sint32 myStartAt = -1;
-		U8 * mygPAPX = NULL;
-		U8 * mygCHPX = NULL;
-		XCHAR * myNumberStr = NULL;
-		UT_sint32 myNumberStr_count = 0;
-		UT_uint32 mygPAPX_count = 0, mygCHPX_count = 0;
-
-		PAPX myPAPX;
-		CHPX myCHPX;
-
-		// first, get the LFO, and then find the lfovl for this paragraph
-		myLFO = &ps->lfo[apap->ilfo - 1];
-
-		UT_uint32 i = 0, j = 0, k = 0;
-		while(i < apap->ilfo - 1 && i < ps->nolfo)
+	  // all lists have ilfo set
+	  UT_DEBUGMSG(("list: ilvl %d, ilfo %d\n",apap->ilvl,apap->ilfo));  //ilvl is the list level
+	  LVL * myLVL = NULL;
+	  LFO * myLFO = NULL;
+	  LST * myLST = NULL;
+	  LSTF * myLSTF = NULL;
+	  LVLF * myLVLF = NULL;
+	  LFOLVL * myLFOLVL = NULL;
+	  
+	  UT_sint32 myStartAt = -1;
+	  U8 * mygPAPX = NULL;
+	  U8 * mygCHPX = NULL;
+	  XCHAR * myNumberStr = NULL;
+	  UT_sint32 myNumberStr_count = 0;
+	  UT_uint32 mygPAPX_count = 0, mygCHPX_count = 0;
+	  
+	  PAPX myPAPX;
+	  CHPX myCHPX;
+	  
+	  // first, get the LFO, and then find the lfovl for this paragraph
+	  myLFO = &ps->lfo[apap->ilfo - 1];
+	  
+	  UT_uint32 i = 0, j = 0, k = 0;
+	  while(i < apap->ilfo - 1 && i < ps->nolfo)
+	    {
+	      j += ps->lfo[i].clfolvl;
+	      i++;
+	    }
+	  
+	  // remember how many overrides are there for this record
+	  k = ps->lfo[i].clfolvl;
+	  
+	  // if there are any overrides, then see if one of them applies to this level
+	  if(k)
+	    {
+	      i = 0;
+	      while(i < k && ps->lfolvl[j].ilvl != apap->ilvl)
 		{
-			j += ps->lfo[i].clfolvl;
-			i++;
+		  j++;
+		  i++;
 		}
-
-		// remember how many overrides are there for this record
-		k = ps->lfo[i].clfolvl;
-
-		// if there are any overrides, then see if one of them applies to this level
-		if(k)
+	      
+	      if(ps->lfolvl[--j].ilvl != apap->ilvl)
 		{
-			i = 0;
-			while(i < k && ps->lfolvl[j].ilvl != apap->ilvl)
-			{
-				j++;
-				i++;
-			}
-
-			if(ps->lfolvl[--j].ilvl != apap->ilvl)
-			{
-				UT_DEBUGMSG(("list: no LFOLVL found for this level (1)\n"));
-				myLFOLVL = NULL;
-			}
-			else
-			{
-				myLFOLVL = &ps->lfolvl[j];
-				UT_DEBUGMSG(("list: lfovl: iStartAt %d, fStartAt", myLFOLVL->iStartAt,myLFOLVL->fStartAt,myLFOLVL->fFormatting));
-				if(!myLFOLVL->fFormatting && myLFOLVL->fStartAt)
-				myStartAt = myLFOLVL->iStartAt;
-			}
+		  UT_DEBUGMSG(("list: no LFOLVL found for this level (1)\n"));
+		  myLFOLVL = NULL;
 		}
-		else
+	      else
 		{
-			UT_DEBUGMSG(("list: no LFOLVL found for this level (2)\n"));
-			myLFOLVL = NULL;
+		  myLFOLVL = &ps->lfolvl[j];
+		  UT_DEBUGMSG(("list: lfovl: iStartAt %d, fStartAt", myLFOLVL->iStartAt,myLFOLVL->fStartAt,myLFOLVL->fFormatting));
+		  if(!myLFOLVL->fFormatting && myLFOLVL->fStartAt)
+		    myStartAt = myLFOLVL->iStartAt;
 		}
-
-		// now that we might have the LFOLVL, let's see if we should use the LVL from the LFO
-		bool bNeedLST_LVL = (!myLFOLVL || !myLFOLVL->fStartAt || !myLFOLVL->fFormatting);
-		bool bLST_LVL_format = true;
-		if(myLFOLVL)
+	    }
+	  else
+	    {
+	      UT_DEBUGMSG(("list: no LFOLVL found for this level (2)\n"));
+	      myLFOLVL = NULL;
+	    }
+	  
+	  // now that we might have the LFOLVL, let's see if we should use the LVL from the LFO
+	  bool bNeedLST_LVL = (!myLFOLVL || !myLFOLVL->fStartAt || !myLFOLVL->fFormatting);
+	  bool bLST_LVL_format = true;
+	  if(myLFOLVL)
+	    {
+	      // this branch has not been debugged, as I have not been able to create a
+	      // Word document that would use the LFO LVL
+	      UT_DEBUGMSG(("list: using the LVL from LFO\n"));
+	      myListId = myLFOLVL->iStartAt;
+	      i = 0;
+	      xxx_UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
+	      while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
 		{
-			// this branch has not been debugged, as I have not been able to create a
-			// Word document that would use the LFO LVL
-			UT_DEBUGMSG(("list: using the LVL from LFO\n"));
-			myListId = myLFOLVL->iStartAt;
-			i = 0;
-			xxx_UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
-			while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
-			{
-				i++;
-				UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
-			}
-
-			if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
-			{
-				UT_DEBUGMSG(("error: could not locate LST entry\n"));
-				goto list_error;
-			}
-
-			myLST = &ps->lst[i];
-			myLVL = &myLST->lvl[apap->ilvl];
-
-			// now we should have the LVL
-			UT_ASSERT(myLVL);
-
-			myLVLF = &myLVL->lvlf;
-			UT_ASSERT(myLVLF);
-
-			myStartAt = myLFOLVL->fStartAt ? myLVLF->iStartAt : -1;
-
-			mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
-			mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;
-
-			// not sure about this, the CHPX applies to the number, so it might be
-			// that we should take this if the fStartAt is set -- the docs are not clear
-			mygCHPX = myLFOLVL->fFormatting ? myLVL->grpprlChpx : NULL;
-			mygCHPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlChpx : 0;
-
-			myNumberStr = myLFOLVL->fStartAt ? myLVL->numbertext + 1 : NULL;
-			myNumberStr_count = myLFOLVL->fStartAt ? *(myLVL->numbertext) : 0;
-
-			if(myLFOLVL->fFormatting)
-				bLST_LVL_format = false;
-
+		  i++;
+		  UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
 		}
-
-		if(bNeedLST_LVL)
+	      
+	      if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
 		{
-			LVL * prevLVL = myLVL;
-			LVLF * prevLVLF = myLVLF;
-			myListId = myLFO->lsid;
-			UT_DEBUGMSG(("list: using the LVL from LST\n"));
-			i = 0;
-			UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
-			while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
-			{
-				i++;
-				xxx_UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
-			}
-
-			if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
-			{
-				UT_DEBUGMSG(("error: could not locate LST entry\n"));
-				goto list_error;
-			}
-
-			myLST = &ps->lst[i];
-			myLVL = &myLST->lvl[apap->ilvl];
-
-			// now we should have the correct LVL
-			UT_ASSERT(myLVL);
-
-			myLVLF = &myLVL->lvlf;
-			UT_ASSERT(myLVLF);
-
-			// retrieve any stuff we need from here (i.e., only what we did not get from the LFO LVL)
-			myStartAt = myStartAt == -1 ? myLVLF->iStartAt : myStartAt;
-
-			mygPAPX_count = !mygPAPX ? myLVLF->cbGrpprlPapx : mygPAPX_count;
-			mygPAPX = !mygPAPX ? myLVL->grpprlPapx : mygPAPX;
-
-			mygCHPX_count = !mygCHPX ? myLVLF->cbGrpprlChpx : mygCHPX_count;
-			mygCHPX = !mygCHPX ? myLVL->grpprlChpx : mygCHPX;
-
-			myNumberStr_count = !myNumberStr ? *(myLVL->numbertext) : myNumberStr_count;
-			myNumberStr = !myNumberStr ? (myLVL->numbertext + 1) : myNumberStr;
-
-
-			// if there was a valid LFO LVL record that pertained to formatting
-			// then we will set the myLVL and myLVLF variables back to this record
-			// so that it can be used
-			if(!bLST_LVL_format && prevLVL && prevLVLF)
-			{
-				myLVL = prevLVL;
-				myLVLF = prevLVLF;
-			}
+		  UT_DEBUGMSG(("error: could not locate LST entry\n"));
+		  goto list_error;
 		}
+	      
+	      myLST = &ps->lst[i];
+	      myLVL = &myLST->lvl[apap->ilvl];
+	      
+	      // now we should have the LVL
+	      UT_ASSERT(myLVL);
+	      
+	      myLVLF = &myLVL->lvlf;
+	      UT_ASSERT(myLVLF);
+	      
+	      myStartAt = myLFOLVL->fStartAt ? myLVLF->iStartAt : -1;
+	      
+	      mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
+	      mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;
+	      
+	      // not sure about this, the CHPX applies to the number, so it might be
+	      // that we should take this if the fStartAt is set -- the docs are not clear
+	      mygCHPX = myLFOLVL->fFormatting ? myLVL->grpprlChpx : NULL;
+	      mygCHPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlChpx : 0;
+	      
+	      myNumberStr = myLFOLVL->fStartAt ? myLVL->numbertext + 1 : NULL;
+	      myNumberStr_count = myLFOLVL->fStartAt ? *(myLVL->numbertext) : 0;
+	      
+	      if(myLFOLVL->fFormatting)
+		bLST_LVL_format = false;
+	      
+	    }
+	  
+	  if(bNeedLST_LVL)
+	    {
+	      LVL * prevLVL = myLVL;
+	      LVLF * prevLVLF = myLVLF;
+	      myListId = myLFO->lsid;
+	      UT_DEBUGMSG(("list: using the LVL from LST\n"));
+	      i = 0;
+	      UT_DEBUGMSG(("list: number of LSTs %d, my lsid %d\n", ps->noofLST,myListId));
+	      while(i < ps->noofLST && ps->lst[i].lstf.lsid != myListId)
+		{
+		  i++;
+		  xxx_UT_DEBUGMSG(("list: lsid in LST %d\n", ps->lst[i-1].lstf.lsid));
+		}
+	      
+	      if(i == ps->noofLST || ps->lst[i].lstf.lsid != myListId)
+		{
+		  UT_DEBUGMSG(("error: could not locate LST entry\n"));
+		  goto list_error;
+		}
+	      
+	      myLST = &ps->lst[i];
+	      myLVL = &myLST->lvl[apap->ilvl];
+	      
+	      // now we should have the correct LVL
+	      UT_ASSERT(myLVL);
+	      
+	      myLVLF = &myLVL->lvlf;
+	      UT_ASSERT(myLVLF);
+	      
+	      // retrieve any stuff we need from here (i.e., only what we did not get from the LFO LVL)
+	      myStartAt = myStartAt == -1 ? myLVLF->iStartAt : myStartAt;
+	      
+	      mygPAPX_count = !mygPAPX ? myLVLF->cbGrpprlPapx : mygPAPX_count;
+	      mygPAPX = !mygPAPX ? myLVL->grpprlPapx : mygPAPX;
+	      
+	      mygCHPX_count = !mygCHPX ? myLVLF->cbGrpprlChpx : mygCHPX_count;
+	      mygCHPX = !mygCHPX ? myLVL->grpprlChpx : mygCHPX;
+	      
+	      myNumberStr_count = !myNumberStr ? *(myLVL->numbertext) : myNumberStr_count;
+	      myNumberStr = !myNumberStr ? (myLVL->numbertext + 1) : myNumberStr;
+	      
+	      
+	      // if there was a valid LFO LVL record that pertained to formatting
+	      // then we will set the myLVL and myLVLF variables back to this record
+	      // so that it can be used
+	      if(!bLST_LVL_format && prevLVL && prevLVLF)
+		{
+		  myLVL = prevLVL;
+		  myLVLF = prevLVLF;
+		}
+	    }
 
-		UT_DEBUGMSG(("list: number text len %d, papx len %d, chpx len%d\n",myNumberStr_count,mygPAPX_count,mygCHPX_count));
-		myPAPX.cb = mygPAPX_count;
-		myPAPX.grpprl = mygPAPX;
-		myPAPX.istd = 4095; // no style
+	  UT_DEBUGMSG(("list: number text len %d, papx len %d, chpx len%d\n",myNumberStr_count,mygPAPX_count,mygCHPX_count));
+	  myPAPX.cb = mygPAPX_count;
+	  myPAPX.grpprl = mygPAPX;
+	  myPAPX.istd = 4095; // no style
+	  
+	  myCHPX.cbGrpprl = mygCHPX_count;
+	  myCHPX.grpprl = mygCHPX;
+	  myCHPX.istd = 4095; // no style
+	  
+	  /*
+	    IMPORTANT now we have the list formatting sutff retrieved; it is found in several
+	    different places:
+	    apap->ilvl - the level of this list (0-8)
+	    
+	    myStartAt	- the value at which the numbering for this listshould start
+	    (i.e., the number of the first item on the list)
+	    
+	    myListId	- the id of this list, we need this to know to which list this
+	    paragraph belongs
+	    
+	    PAPX		- the formatting information that needs to be added to the format
+	    of this list
+	    
+	    CHPX		- the formatting of the list number
+	    
+	    myNumberStr - the actual number string to display (XCHAR *); we probably need
+	    this to work out the number separator, since there does not seem
+	    to be any reference to this anywhere
+	    
+	    myNumberStr_count - length of the number string
+	    
+	    myLVLF->nfc - number format (see the enum below)
+	    
+	    myLVLF->jc  - number alignment [0: lft, 1: rght, 2: cntr]
+	    
+	    myLVLF->ixchFollow - what character stands between the number and the para
+	    [0:= tab, 1: spc, 2: none]
+	    
+	  */
+	  UT_DEBUGMSG(("list: id %d \n",myListId));
+	  UT_DEBUGMSG(("list: iStartAt %d\n", myStartAt));
+	  UT_DEBUGMSG(("list: lvlf: format %d\n",myLVLF->nfc)); // see the comment above for nfc values
+	  UT_DEBUGMSG(("list: lvlf: number align %d [0: lft, 1: rght, 2: cntr]\n",myLVLF->jc));
+	  UT_DEBUGMSG(("list: lvlf: ixchFollow %d [0:= tab, 1: spc, 2: none]\n",myLVLF->ixchFollow));
+	  
+	  // If a given list id has already been defined, appending a new list with
+	  // same values will have a harmless effect
+	  
+	  // id, parentid, type, start value, list-delim, NULL
+	  const XML_Char * list_atts[11];
+	  
+	  // list id number
+	  list_atts[0] = "id";
+	  sprintf(propBuffer, "%d", myListId);
+	  UT_String szListId ( propBuffer );
+	  list_atts[1] = szListId.c_str();
+	  
+	  // parent id
+	  list_atts[2] = "parentid";
+	  list_atts[3] = "0";
+	  
+	  // list type
+	  list_atts[4] = "type";
+	  list_atts[5] = s_mapDocToAbiListId ((MSWordListIdType)myLVLF->nfc);
+	  
+	  // start value
+	  list_atts[6] = "start-value";
+	  sprintf(propBuffer, "%d", myStartAt);
+	  UT_String szStartValue ( propBuffer );
+	  list_atts[7] = szStartValue.c_str();
+	  
+	  // list delimiter
+	  list_atts[8] = "list-delim";
+	  list_atts[9] = s_mapDocToAbiListDelim ((MSWordListIdType)myLVLF->nfc);
+	  
+	  // NULL
+	  list_atts[10] = 0;
+	  
+	  getDoc()->appendList(list_atts);
+	  UT_DEBUGMSG(("DOM: appended a list\n"));
+	  
+	  // TODO: merge in list properties and such here with the variable 'props', 
+	  // such as list-style, field-font, ...
+	  
+	  // start-value
+	  props += "start-value:";
+	  props += szStartValue;
+	  props += ";";
 
-		myCHPX.cbGrpprl = mygCHPX_count;
-		myCHPX.grpprl = mygCHPX;
-		myCHPX.istd = 4095; // no style
-
-		/*
-		   IMPORTANT now we have the list formatting sutff retrieved; it is found in several
-		   different places:
-					 apap->ilvl - the level of this list (0-8)
-
-					 myStartAt	- the value at which the numbering for this listshould start
-								  (i.e., the number of the first item on the list)
-
-					 myListId	- the id of this list, we need this to know to which list this
-								  paragraph belongs
-
-					 PAPX		- the formatting information that needs to be added to the format
-								  of this list
-
-					 CHPX		- the formatting of the list number
-
-					 myNumberStr - the actual number string to display (XCHAR *); we probably need
-								   this to work out the number separator, since there does not seem
-								   to be any reference to this anywhere
-
-					 myNumberStr_count - length of the number string
-
-					 myLVLF->nfc - number format (see the enum below)
-
-					 myLVLF->jc  - number alignment [0: lft, 1: rght, 2: cntr]
-
-					 myLVLF->ixchFollow - what character stands between the number and the para
-										  [0:= tab, 1: spc, 2: none]
-
-		*/
-		UT_DEBUGMSG(("list: id %d \n",myListId));
-		UT_DEBUGMSG(("list: iStartAt %d\n", myStartAt));
-		UT_DEBUGMSG(("list: lvlf: format %d\n",myLVLF->nfc)); // see the comment above for nfc values
-		UT_DEBUGMSG(("list: lvlf: number align %d [0: lft, 1: rght, 2: cntr]\n",myLVLF->jc));
-		UT_DEBUGMSG(("list: lvlf: ixchFollow %d [0:= tab, 1: spc, 2: none]\n",myLVLF->ixchFollow));
-
-	// If a given list id has already been defined, appending a new list with
-	// same values will have a harmless effect
-
-	// id, parentid, type, start value, list-delim, NULL
-	const XML_Char * list_atts[11];
-
-	// list id number
-	list_atts[0] = "id";
-	sprintf(propBuffer, "%d", myListId);
-	UT_String szListId ( propBuffer );
-	list_atts[1] = szListId.c_str();
-
-	// parent id
-	list_atts[2] = "parentid";
-	list_atts[3] = "0";
-
-	// list type
-	list_atts[4] = "type";
-	list_atts[5] = s_mapDocToAbiListId (myLVLF->nfc);
-
-	// start value
-	list_atts[6] = "start-value";
-	sprintf(propBuffer, "%d", myStartAt);
-	UT_String szStartValue ( propBuffer );
-	list_atts[7] = szStartValue.c_str();
-
-	// list delimiter
-	list_atts[8] = "list-delim";
-	list_atts[9] = "%L";
-
-	// NULL
-	list_atts[10] = 0;
-
-	getDoc()->appendList(list_atts);
-	UT_DEBUGMSG(("DOM: appended a list\n"));
-	}
-	// TODO: merge in list properties and such here with the variable 'props', 
-	// such as list-style, field-font, ...
+	  // list style
+	  props += "list-style:";
+	  props += s_mapDocToAbiListStyle ((MSWordListIdType)myLVLF->nfc);
+	  props += ";";
+	  
+	  // field-font
+	  props += "field-font:";
+	  props += s_fieldFontForListStyle ((MSWordListIdType)myLVLF->nfc);
+	  props += ";";
+	} // end of list-related code
 
 list_error:
 
@@ -1797,7 +1879,7 @@ list_error:
 
 	// level, or 0 for default, normal level
 	propsArray[2] = "level";
-	if (myListId)
+	if (myListId > 0)
 	  {
 	    sprintf(propBuffer, "%d", apap->ilvl+1);
 	  }
@@ -1831,7 +1913,7 @@ list_error:
 		return 1;
 	}
 
-	if (myListId)
+	if (myListId > 0)
 	  {
 	    // TODO: honor more props
 	    const XML_Char *list_field_fmt[3];
@@ -1840,7 +1922,7 @@ list_error:
 	    list_field_fmt[2] = 0;
 	    getDoc()->appendObject(PTO_Field, (const XML_Char**)list_field_fmt);
 
-	    // append a tab
+	    // append a tab. should probably just be a space...
 	    UT_UCSChar tab = UCS_TAB;
 	    getDoc()->appendSpan(&tab, 1);
 	  }
