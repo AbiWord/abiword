@@ -77,6 +77,7 @@
 #include "ap_Dialog_MetaData.h"
 #include "ap_Dialog_MarkRevisions.h"
 #include "ap_Dialog_ListRevisions.h"
+#include "ap_Dialog_MergeCells.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -269,6 +270,8 @@ public:
 	static EV_EditMethod_Fn insertCedillaData;
 	static EV_EditMethod_Fn insertOgonekData;
 
+	static EV_EditMethod_Fn mergeCells;
+
 	static EV_EditMethod_Fn replaceChar;
 
 	// TODO add functions for all of the standard menu commands.
@@ -292,7 +295,7 @@ public:
 	static EV_EditMethod_Fn fileInsertGraphic;
 	static EV_EditMethod_Fn insertClipart;
 	static EV_EditMethod_Fn fileSaveAsWeb;
-  static EV_EditMethod_Fn fileSaveTemplate;
+    static EV_EditMethod_Fn fileSaveTemplate;
 	static EV_EditMethod_Fn filePreviewWeb;
 	static EV_EditMethod_Fn openTemplate;
 
@@ -822,6 +825,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(lockGUI), 		0,	""),
 
 	// m
+	EV_EditMethod(NF(mergeCells),			0,		""),
 	EV_EditMethod(NF(middleSpace),			0,		""),
 
 	// n
@@ -4306,6 +4310,46 @@ Defun1(insertRowsAfter)
 	return true;
 }
 
+/*********************************************************************************/
+
+static bool s_doMergeCellsDlg(FV_View * pView)
+{
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_MergeCells * pDialog
+		= (AP_Dialog_MergeCells *)(pDialogFactory->requestDialog(AP_DIALOG_ID_MERGE_CELLS));
+	UT_ASSERT(pDialog);
+	if (!pDialog)
+		return false;
+
+	if(pDialog->isRunning() == true)
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		pDialog->runModeless(pFrame);
+	}
+	return true;
+}
+
+
+Defun1(mergeCells)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	s_doMergeCellsDlg(pView);
+	return true;
+}
+
+/***********************************************************************************/
 
 Defun1(deleteCell)
 {

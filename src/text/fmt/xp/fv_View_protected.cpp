@@ -281,63 +281,158 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 
 }
 
-
 /*!
- * Return the left,right,top and bottom attach points of the cell containing
- * the position cellPos
- */
-bool FV_View::_getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
-							 UT_sint32 * pTop, UT_sint32 * pBot)
+ * Do the merge between cells.
+ * If bBefore is true the contents of source will be prepended into destination otherwise
+ * will e appended to the end
+ */ 
+bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore)
 {
-	PL_StruxDocHandle cellSDH;
-	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
+//
+// get coordinates of source and destination cells
+//
+	UT_sint32 sLeft,sRight,sTop,sBot;
+	UT_sint32 dLeft,dRight,dTop,dBot;
+	UT_sint32 fLeft,fRight,fTop,fBot;
+	getCellParams(posSource,&sLeft,&sRight,&sTop,&sBot);
+	getCellParams(posDestination,&dLeft,&dRight,&dTop,&dBot);
+//
+	fLeft = UT_MIN(sLeft,dLeft);
+	fRight = UT_MAX(sRight,dRight);
+	fTop = UT_MIN(sTop,dTop);
+	fBot = UT_MAX(sBot,dBot);
+
+	PD_DocumentRange dr_source;
+	PL_StruxDocHandle sourceSDH,endSourceSDH,destinationSDH,endDestSDH;
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(posSource,PTX_SectionCell,&sourceSDH);
 	if(!bres)
 	{
 		return false;
 	}
-	const char * pszLeft;
-	const char * pszRight;
-	const char * pszTop;
-	const char * pszBot;
-	m_pDoc->getPropertyFromSDH(cellSDH,"left-attach",&pszLeft);
-	if(pszLeft && *pszLeft)
-	{
-		*pLeft = atoi(pszLeft);
-	}
-	else
+	bres = m_pDoc->getNextStruxOfType(sourceSDH,PTX_EndCell,&endSourceSDH);
+	PT_DocPosition posEndCell = m_pDoc->getStruxPosition(endSourceSDH)-1;
+	posSource = m_pDoc->getStruxPosition(sourceSDH)+1;
+	bres = m_pDoc->getStruxOfTypeFromPosition(posDestination,PTX_SectionCell,&destinationSDH);
+	if(!bres)
 	{
 		return false;
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&pszRight);
-	if(pszRight && *pszRight)
+	bres = m_pDoc->getNextStruxOfType(destinationSDH,PTX_EndCell,&endDestSDH);
+	PT_DocPosition posEndDestCell = m_pDoc->getStruxPosition(endSourceSDH)-1;
+	if(!bBefore)
 	{
-		*pRight = atoi(pszRight);
+		posDestination = posEndDestCell;
 	}
-	else
+	if(posEndCell > posSource)
 	{
-		return false;
+//
+// OK got the doc range for the source. Set it and copy it.
+//
+		dr_source.set(m_pDoc,posSource,posEndCell);
+//
+// Copy to and from clipboard to populate the destination cell
+//
+		UT_DEBUGMSG(("SEVIOR: Copy to clipboard merging cells \n"));
+		m_pApp->copyToClipboard(&dr_source);
+		PD_DocumentRange dr_dest(m_pDoc,posDestination,posDestination);
+		UT_DEBUGMSG(("SEVIOR: Pasting from clipboard merging cells \n"));
+		m_pApp->pasteFromClipboard(&dr_dest,true,true);
 	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"top-attach",&pszTop);
-	if(pszTop && *pszTop)
-	{
-		*pTop = atoi(pszTop);
-	}
-	else
-	{
-		return false;
-	}
-	m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&pszBot);
-	if(pszBot && *pszBot)
-	{
-		*pBot = atoi(pszBot);
-	}
-	else
-	{
-		return false;
-	}
+//
+// Now delete the source cell
+//
+	_deleteCellAt(posSource,sTop,sLeft);
+//
+// Expand the destination cell into the source cell
+//
+	_changeCellTo(posDestination,dTop,dLeft,fLeft,fRight,fTop,fBot);
+//
+// We're done!
+//
 	return true;
 }
 
+/*!
+ * This method is used to change a parameter of the table to trigger a table
+ * rebuild. It also restores all the nice needed for single step undo's
+ */
+bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
+{
+	const char * pszTable[3] = {NULL,NULL,NULL};
+	pszTable[0] = "table-line-type";
+	UT_String sLineType;
+	UT_String_sprintf(sLineType,"%d",iLineType);
+	pszTable[1] = sLineType.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+//
+// OK finish everything off with the various parameters which allow the formatter to
+// be updated.
+//
+	m_pDoc->endUserAtomicGlob();
+	m_pDoc->setDontImmediatelyLayout(false);
+	_generalUpdate();
+
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	return true;
+}
+
+/*!
+ *  Change the parameters of the table.
+ * Return the line type of the table. We'll restore this later.
+ */
+ UT_sint32 FV_View::_changeCellParams(PT_DocPosition posTable, PL_StruxDocHandle tableSDH)
+{
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+
+	// Turn off list updates
+
+	m_pDoc->disableListUpdates();
+	m_pDoc->beginUserAtomicGlob();
+	if (!isSelectionEmpty())
+	{
+		m_pDoc->beginUserAtomicGlob();
+		PP_AttrProp AttrProp_Before;
+		_deleteSelection(&AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
+	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
+	m_pDoc->setDontImmediatelyLayout(true);
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with a bogus line-type property. We'll restore it later.
+//
+	const char * pszTable[3] = {NULL,NULL,NULL};
+	pszTable[0] = "table-line-type";
+	const char * szLineType = NULL;
+	UT_String sLineType;
+	UT_sint32 iLineType;
+	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
+	if(szLineType == NULL || *szLineType == NULL)
+	{
+		iLineType = 0;
+	}
+	else
+	{
+		iLineType = atoi(szLineType);
+		iLineType -= 1;
+	}
+	UT_String_sprintf(sLineType,"%d",iLineType);
+	pszTable[1] = sLineType.c_str();
+	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	return iLineType;
+}
 
 /*!
  * This method deletes the cell at (row,col) in the table specified by posTable
@@ -356,7 +451,7 @@ bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 co
 		return false;
 	}
 	bres = m_pDoc->getNextStruxOfType(cellSDH,PTX_EndCell,&endCellSDH);
-	PT_DocPosition posEndCell = m_pDoc->getStruxPosition(endCellSDH);
+	PT_DocPosition posEndCell = m_pDoc->getStruxPosition(endCellSDH) +1;
 	if(posEndCell == 0)
 	{
 		return false;
@@ -388,7 +483,7 @@ bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 co
 bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
 						  UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
 {
-	PT_DocPosition posCell = findCellPosAt(posTable,rowold,colold);
+	PT_DocPosition posCell = findCellPosAt(posTable,rowold,colold) + 1;
 	if(posCell == 0)
 	{
 		return false;

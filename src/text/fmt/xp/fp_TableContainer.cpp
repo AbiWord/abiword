@@ -1201,7 +1201,16 @@ void fp_CellContainer::setLineMarkers(void)
 	{
 		m_iTopY -= pTab->getNthRow(getTopAttach())->spacing/2;
 	}
-    if(getBottomAttach() < pTab->getNumRows())
+	if(getTopAttach() > 0)
+	{
+		UT_sint32 cLeft = 0;
+		for(cLeft = getLeftAttach(); cLeft < getRightAttach(); cLeft++)
+		{
+			fp_CellContainer * pCell = pTab->getCellAtRowColumn(getTopAttach() -1,cLeft);
+			pCell->m_iBotY = m_iTopY;
+		}
+	}
+	if(getBottomAttach() < pTab->getNumRows())
 	{
 		m_iBotY = pTab->getYOfRow(getBottomAttach());
 		m_iBotY += pTab->getNthRow(getBottomAttach())->spacing/2;
@@ -1217,6 +1226,7 @@ void fp_CellContainer::setLineMarkers(void)
 		m_iBotY -= (UT_sint32) (2.0 * SCALE_TO_SCREEN * ((double) pTab->getBorderWidth()));
 		m_iBotY +=  pTab->getNthRow(pTab->getNumRows()-1)->spacing/2;
 	}
+	
 	xxx_UT_DEBUGMSG(("SEVIOR getX %d left %d right %d top %d bot %d \n",getX(),m_iLeft,m_iRight,m_iTopY,m_iBotY));
 
 }

@@ -90,15 +90,17 @@ static bool findIconDataByName(const char * szName, const char *** pIconData, UT
 
 	UT_uint32 kLimit = NrElements(s_itTable);
 	UT_uint32 k;
-
+	UT_DEBUGMSG(("SEVIOR: Looking for %s \n",szName));
 	for (k=0; k < kLimit; k++)
+	{
+		UT_DEBUGMSG(("SEVIOR: examining %s \n",s_itTable[k].m_name));
 		if (UT_stricmp(szName,s_itTable[k].m_name) == 0)
 		{
 			*pIconData = s_itTable[k].m_staticVariable;
 			*pSizeofData = s_itTable[k].m_sizeofVariable;
 			return true;
 		}
-
+	}
 	return false;
 }
 
@@ -108,8 +110,11 @@ static bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIco
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
 	bool bFound = findIconDataByName(szIconName, &pIconData, &sizeofIconData);
 	if (!bFound)
+	{
+		UT_DEBUGMSG(("Could not find icon %s \n",szIconName));
 		return false;
-	//	UT_DEBUGMSG(("SEVIOR: found icon name %s \n",szIconName));
+	}
+	UT_DEBUGMSG(("SEVIOR: found icon name %s \n",szIconName));
 	GdkBitmap * mask;
 	GdkColormap * colormap =  gtk_widget_get_colormap (button);
 	GdkPixmap * pixmap
@@ -122,7 +127,7 @@ static bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIco
 	if (!wpixmap)
 		return false;
 	gtk_widget_show(wpixmap);
-	//	UT_DEBUGMSG(("SEVIOR: Adding pixmap to button now \n"));
+	UT_DEBUGMSG(("SEVIOR: Adding pixmap to button now \n"));
 	gtk_container_add (GTK_CONTAINER (button), wpixmap);
 	return true;
 }

@@ -447,10 +447,21 @@ public:
 	bool				isInTable(PT_DocPosition pos);
 	PT_DocPosition      findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col);
 	bool                _deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
+	bool                _restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineWidth);
+	UT_sint32           _changeCellParams(PT_DocPosition posTable,PL_StruxDocHandle tableSDH );
 	bool                deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
 	bool                cmdDeleteCell(PT_DocPosition pos);
 	bool                cmdDeleteCol(PT_DocPosition pos);
 	bool                cmdDeleteRow(PT_DocPosition pos);
+	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
+	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
+	bool                cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination);
+	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
+	bool	            setTableFormat(const XML_Char * properties[]);
+	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
+									   UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);
+	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, 
+									   const XML_Char * pPropsArray[]);
 	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld, 
 									  UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
 									  UT_sint32 top, UT_sint32 bot);
@@ -463,17 +474,6 @@ public:
 	bool                _insertCellBefore(PT_DocPosition posTable, UT_sint32 row, 
 										  UT_sint32 col, UT_sint32 left, UT_sint32 right,
 										  UT_sint32 top, UT_sint32 bot);
-	bool                _getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
-									   UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot);
-	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
-	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
-	bool                cmdMergeCells(PT_DocPosition posTable, UT_sint32 row1, UT_sint32 col1,
-								   UT_sint32 row2, UT_sint32 col2);
-	bool	            setTableFormat(const XML_Char * properties[]);
-	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, 
-									   const XML_Char * pPropsArray[]);
-
-	
 	void				_generalUpdate(void);
 	
 	UT_RGBColor			getColorShowPara(void) const { return m_colorShowPara; }

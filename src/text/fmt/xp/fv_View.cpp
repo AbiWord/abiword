@@ -5194,6 +5194,62 @@ void FV_View::getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr)
 }
 
 
+/*!
+ * Return the left,right,top and bottom attach points of the cell containing
+ * the position cellPos
+ */
+bool FV_View::getCellParams(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
+							 UT_sint32 * pTop, UT_sint32 * pBot)
+{
+	PL_StruxDocHandle cellSDH;
+	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
+	if(!bres)
+	{
+		return false;
+	}
+	const char * pszLeft;
+	const char * pszRight;
+	const char * pszTop;
+	const char * pszBot;
+	m_pDoc->getPropertyFromSDH(cellSDH,"left-attach",&pszLeft);
+	if(pszLeft && *pszLeft)
+	{
+		*pLeft = atoi(pszLeft);
+	}
+	else
+	{
+		return false;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"right-attach",&pszRight);
+	if(pszRight && *pszRight)
+	{
+		*pRight = atoi(pszRight);
+	}
+	else
+	{
+		return false;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"top-attach",&pszTop);
+	if(pszTop && *pszTop)
+	{
+		*pTop = atoi(pszTop);
+	}
+	else
+	{
+		return false;
+	}
+	m_pDoc->getPropertyFromSDH(cellSDH,"bot-attach",&pszBot);
+	if(pszBot && *pszBot)
+	{
+		*pBot = atoi(pszBot);
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
+
 bool FV_View::setTableFormat(const XML_Char * properties[])
 {
 	bool bRet;

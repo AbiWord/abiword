@@ -370,6 +370,14 @@ dcl(DLG_Tab_Button_ClearAll,			"Clear &All")
 dcl(DLG_DateTime_DateTimeTitle, 		"Date and Time")
 dcl(DLG_DateTime_AvailableFormats,		"&Available formats:")
 
+dcl(DLG_MergeCellsTitle,	    	     "Merge Cells")
+dcl(DLG_MergeCells_Frame,	    	     "Merge Cells")
+dcl(DLG_MergeCells_Left,	    	     "Merge Left")
+dcl(DLG_MergeCells_Right,	    	     "Merge Right")
+dcl(DLG_MergeCells_Above,	    	     "Merge Above")
+dcl(DLG_MergeCells_Below,	    	     "Merge Below")
+
+
 dcl(DLG_Field_FieldTitle,				"Field")
 dcl(DLG_Field_Types,					"&Types:")
 dcl(DLG_Field_Fields,					"&Fields:")

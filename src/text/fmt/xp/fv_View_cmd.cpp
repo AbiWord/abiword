@@ -143,6 +143,357 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 }
 
 /*!
+ * Merge the cells located at posSource with posDestination by copying the data from 
+ * source to destination. Then deleting source and expanding destination into it's location
+ * in the table.
+ */
+bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestination)
+{
+	UT_sint32 sLeft,sRight,sTop,sBot;
+	UT_sint32 dLeft,dRight,dTop,dBot;
+	UT_sint32 Left,Right,Top,Bot; // need these for working variables.
+	getCellParams(posSource,&sLeft,&sRight,&sTop,&sBot);
+	getCellParams(posDestination,&dLeft,&dRight,&dTop,&dBot);
+
+	PT_DocPosition posTable,posWork;
+	PL_StruxDocHandle tableSDH;
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posSource,PTX_SectionTable,&tableSDH);
+	UT_return_val_if_fail(bRes, false);
+	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+
+//
+// Now find the number of rows and columns inthis table. This is easiest to
+// get from the table container
+//
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(posSource);
+	fp_Run * pRun;
+	UT_sint32 xPoint,yPoint,xPoint2,yPoint2,iPointHeight;
+	bool bDirection;
+	pRun = pBL->findPointCoords(posSource, false, xPoint,
+							    yPoint, xPoint2, yPoint2,
+							    iPointHeight, bDirection);
+
+	UT_return_val_if_fail(pRun, false);
+
+	fp_Line * pLine = pRun->getLine();
+	UT_return_val_if_fail(pLine, false);
+
+	fp_Container * pCon = pLine->getContainer();
+	UT_return_val_if_fail(pCon, false);
+
+	fp_TableContainer * pTab = (fp_TableContainer *) pCon->getContainer();
+	UT_return_val_if_fail(pTab, false);
+
+	UT_sint32 numRows = pTab->getNumRows();
+	UT_sint32 numCols = pTab->getNumCols();
+	bool bChanged = false;
+	UT_sint32 iLineType = 0;
+
+//
+// Got all we need, now set things up to do the merge nicely
+//
+//
+// OK that's done, now do the merge
+//
+// Have to worry about merging cell spanning multiple rows and columns. We do this
+// by matching the  the widths and heights of the source and destination cells.	
+//
+	if((sLeft == dLeft) && (sTop == dTop))
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+
+	if(sLeft == dLeft)
+	{
+//
+// Merge vertically
+//
+//  might have  d |  |  |  |
+//                ----------
+//             s  |        |
+// To solve this merge all top cells horizontally then merge this combined set vertically
+//
+// First check that top row ends at bottom row boundary. We reject attempts to merge cells
+// like this
+//            d  |  |  |    |
+//               ------------
+//            s  |        |
+		if(sRight >= dRight)
+		{
+			if(sRight < numCols -1)
+			{
+				posWork = findCellPosAt(posTable,dTop,sRight) +1;
+				getCellParams(posWork,&Left,&Right,&Top,&Bot);
+				if(Left != sRight)
+				{
+					// 
+					// Right column of src cell doesn't match the row above it. Bail out.
+					//
+					// fixme: Put in a dialog to explain this to the user
+					//
+					return false;
+				}
+			}
+			//
+			// OK now merge all the cells in the destination cell together.
+			//
+			Left = dRight;
+			while(Left < sRight)
+			{
+				posWork = findCellPosAt(posTable,dTop,Left) +1;
+				getCellParams(posWork,&Left,&Right,&Top,&Bot);
+//
+// Do the merge without all the undo/update trimings
+// append onto destination
+				if(!bChanged)
+				{
+					iLineType = _changeCellParams(posTable, tableSDH);
+				}
+				bChanged = true;
+				_MergeCells(posDestination,posWork,false);
+				Left = Right;
+			}
+//
+// Now merge the merged destination into the source
+//
+			if(!bChanged)
+			{
+				iLineType = _changeCellParams(posTable, tableSDH);
+			}
+			bChanged = true;
+			_MergeCells(posDestination,posSource,true);
+		}
+		else
+		{
+//
+// Here we have this scenario:
+//
+//             d |          |
+//               ------------
+//            s  |  |  |    |
+//
+// ie destination is narrower than the source
+//
+//			check that the source column lines up with the destination column.
+//
+			if(dRight < numCols -1)
+			{
+				posWork = findCellPosAt(posTable,sTop,dRight) +1;
+				getCellParams(posWork,&Left,&Right,&Top,&Bot);
+				if(Left != dRight)
+				{
+					// 
+					// Right column of src cell doesn't match the row above it. Bail out.
+					// fixme: Put in a dialog to explain this to the user
+					//
+					return false;
+				}
+			}
+			//
+			// OK now merge all the cells in the src cell together.
+			//
+			Left = sRight;
+			while(Left < dRight)
+			{
+				posWork = findCellPosAt(posTable,sTop,Left) +1;
+				getCellParams(posWork,&Left,&Right,&Top,&Bot);
+//
+// Do the merge without all the undo/update trimings
+//
+				if(!bChanged)
+				{
+					iLineType = _changeCellParams(posTable, tableSDH);
+				}
+				bChanged = true;
+				_MergeCells(posSource,posWork,false);
+				Left = Right;
+			}
+//
+// Now merge the merged destination into the source
+//
+			if(!bChanged)
+			{
+				iLineType = _changeCellParams(posTable, tableSDH);
+			}
+			bChanged = true;
+			_MergeCells(posDestination,posSource,true);
+		}
+	}
+	else if(sTop == dTop)
+	{
+//
+// Merge horizontally
+//
+//  might have  rows spanning several columns
+//      d    s
+//     ---------
+//     |   |   |
+//     |   -----
+//     |   |   |
+//     |   -----
+//     |   |   |
+//     ---------
+// To solve this merge all cells vertically then merge this combined set horizontally
+//
+// First check that left column ends at right column boundary. 
+// We reject attempts to merge cells that don't have this condition.
+// ie this:
+//      d    s
+//     ---------
+//     |   |   |
+//     |   -----
+//     |   |   |
+//     |   -----
+//     |   |   |
+//     |   -----
+//     |---|   |
+//     |   -----
+//
+		if(dBot >= sBot)
+		{
+			if(dBot < numRows -1)
+			{
+				posWork = findCellPosAt(posTable,dBot,sLeft) +1;
+				getCellParams(posWork,&Left,&Right,&Top,&Bot);
+				if(Top != dBot)
+				{
+					// 
+					// Bot col of src cell doesn't match the column before. Bail out.
+					//
+					// fixme: Put in a dialog to explain this to the user
+					//
+					return false;
+				}
+			}
+			//
+			// OK now merge all the cells right of the src cell together.
+			//
+			Bot	 = sBot;
+			Top = sBot;
+			while(Top < dBot)
+			{
+				posWork = findCellPosAt(posTable,Top,sLeft) +1;
+				getCellParams(posWork,&Left,&Right,&Top,&Bot);
+//
+// Do the merge without all the undo/update trimings
+//
+				if(!bChanged)
+				{
+					iLineType = _changeCellParams(posTable, tableSDH);
+				}
+				bChanged = true;
+				_MergeCells(posSource,posWork,false);
+				Top = Bot;
+			}
+//
+// Now merge the merged destination into the source
+//
+			if(!bChanged)
+			{
+				iLineType = _changeCellParams(posTable, tableSDH);
+			}
+			bChanged = true;
+			_MergeCells(posDestination,posSource,true);
+		}
+		else
+		{
+//
+// Here we have this scenario:
+//
+//
+//  might have  rows spanning several columns
+//      d    s
+//     ---------
+//     |   |   |
+//     -----   |
+//     |   |   |
+//     -----   |
+//     |   |   |
+//     ---------
+// To solve this merge all cells vertically then merge this combined set horizontally
+//
+// First check that left column ends at right column boundary. 
+// We reject attempts to merge cells that don't have this condition.
+// ie this:
+//      d    s
+//     ---------
+//     |   |   |
+//     ----|   |
+//     |   |   |
+//     ----|   |
+//     |   |   |
+//     |   |   |
+//     |---|   |
+//     |   -----
+//
+
+			if(sBot < numRows -1)
+			{
+				posWork = findCellPosAt(posTable,sBot,dLeft) +1;
+				getCellParams(posWork,&Left,&Right,&Top,&Bot);
+				if(Top != sBot)
+				{
+					// 
+					// Right column of src cell doesn't match the row above it. Bail out.
+					//
+					// fixme: Put in a dialog to explain this to the user
+					//
+					return false;
+				}
+			}
+			//
+			// OK now merge all the cells above the src cell together.
+			//
+			Top = dBot;
+			while(Top < sBot)
+			{
+				posWork = findCellPosAt(posTable,Top,dLeft) + 1;
+				getCellParams(posWork,&Left,&Right,&Top,&Bot);
+//
+// Do the merge without all the undo/update trimings
+//
+				if(!bChanged)
+				{
+					iLineType = _changeCellParams(posTable, tableSDH);
+				}
+				bChanged = true;
+				_MergeCells(posDestination,posWork,false);
+				Top = Bot;
+			}
+//
+// Now merge the source into the merged destination
+//
+			if(!bChanged)
+			{
+				iLineType = _changeCellParams(posTable, tableSDH);
+			}
+			bChanged = true;
+			_MergeCells(posDestination,posSource,true);
+		}
+	}
+	else
+	{
+//
+// Neight left or top align of the cells to be merged.
+// bali out
+
+		return false;
+	}
+//
+// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+// with the restored line-type property it has before.
+//
+	iLineType += 1;
+	_restoreCellParams(posTable,iLineType);
+	posDestination = findCellPosAt(posTable,dTop,dLeft) +2;
+	setPoint(posDestination);
+//	_charMotion(true,1);
+	_ensureThatInsertionPointIsOnScreen();
+	return true;
+}
+
+/*!
  * Insert a column containing the position posCol, insert the column before the
  * current column.
  */
@@ -151,7 +502,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell,posPrevCell;
 	UT_sint32 iLeft,iRight,iTop,iBot;
-	_getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
+	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
 
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
 	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
@@ -239,7 +590,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		posCell = findCellPosAt(posTable,i,iLeft);
 		bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
 		UT_sint32 Left,Right,Top,Bot;
-		_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+		getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
 		UT_DEBUGMSG(("SEVIOR: Before Insert column left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
 		const XML_Char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 		UT_String sRowTop = "top-attach";
@@ -313,7 +664,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 				for(j=iLeft; (j>= 0) && !bBBefore; j--)
 				{
 					posCell = findCellPosAt(posCol,i,j);
-					_getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
+					getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
 					if(jTop == i)
 					{ 
 						bBBefore = true;
@@ -345,7 +696,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 					for(j=iLeft+1; (j< numCols) && !bAfter; j++)
 					{
 						posCell = findCellPosAt(posCol,i,j);
-						_getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
+						getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
 						if(jTop == i)
 						{
 							bAfter = true;
@@ -382,7 +733,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 				for(j=iLeft+1; (j< numCols) && !bAfter; j++)
 				{
 					posCell = findCellPosAt(posCol,i,j);
-					_getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
+					getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
 					if(jTop == i)
 					{
 						bAfter = true;
@@ -408,7 +759,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 					for(j=iLeft; (j>= 0) && !bBBefore; j--)
 					{
 						posCell = findCellPosAt(posCol,i,j);
-						_getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
+						getCellParams(posCell+1,&jLeft,&jRight,&jTop,&jBot);
 						if(jTop == i)
 						{ 
 							bBBefore = true;
@@ -467,7 +818,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 			bEnd = true;
 		}
 		posCell =  m_pDoc->getStruxPosition(cellSDH);
-		_getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
 //
 // OK after inserting there will be two struxes with the same left-attach. We want to fix up 
 // the second of these.
@@ -479,7 +830,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		{
 			bRes = m_pDoc->getPrevStruxOfType(cellSDH,PTX_SectionCell,&prevCellSDH);
 			posPrevCell =  m_pDoc->getStruxPosition(prevCellSDH);
-			_getCellParams(posPrevCell+1, &iPrevLeft, &iPrevRight,&iPrevTop,&iPrevBot);
+			getCellParams(posPrevCell+1, &iPrevLeft, &iPrevRight,&iPrevTop,&iPrevBot);
 			if(iPrevLeft == iCurLeft)
 			{
 				bChange = true;
@@ -558,7 +909,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell;
 	UT_sint32 iLeft,iRight,iTop,iBot;
-	_getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
+	getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
 	
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionCell,&cellSDH);
 	bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionTable,&tableSDH);
@@ -655,7 +1006,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 		{
 			posCell = findCellPosAt(posTable,iTop,i);
 			bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
-			_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+			getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
 			UT_DEBUGMSG(("Sevior: Cell position left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
 			if(Top < prevTop)
 			{
@@ -675,7 +1026,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 			posCell = findCellPosAt(posTable,iTop,i);
 			bRes = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
 			UT_sint32 Left,Right,Top,Bot;
-			_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+			getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
 			UT_DEBUGMSG(("Sevior: Cell position left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
 			if(Bot > prevBot)
 			{
@@ -775,7 +1126,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 			bEnd = true;
 		}
 		posCell =  m_pDoc->getStruxPosition(cellSDH);
-		_getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
 		iCurTop++;
 		iCurBot++;
 		UT_DEBUGMSG(("SEVIOR: changing cell to left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
@@ -834,7 +1185,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell;
 	UT_sint32 iLeft,iRight,iTop,iBot;
-	_getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
+	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
 
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionCell,&cellSDH);
 	bRes = m_pDoc->getStruxOfTypeFromPosition(posCol,PTX_SectionTable,&tableSDH);
@@ -919,7 +1270,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	{
 		PT_DocPosition posCell = findCellPosAt(posTable,i,iLeft);
 		UT_sint32 Left,Right,Top,Bot;
-		_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+		getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
 		UT_DEBUGMSG(("SEVIOR: Before delete left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
 		if((Right - Left) == 1)
 		{
@@ -955,7 +1306,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 			break;
 		}
 		posCell =  m_pDoc->getStruxPosition(cellSDH);
-		_getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
 		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
 		bool bChange = false;
 		iNewLeft = iCurLeft;
@@ -1033,7 +1384,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
 	PT_DocPosition posTable,posCell;
 	UT_sint32 iLeft,iRight,iTop,iBot;
-	_getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
+	getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
 
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionCell,&cellSDH);
 	bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionTable,&tableSDH);
@@ -1117,7 +1468,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	{
 		PT_DocPosition posCell = findCellPosAt(posTable,i,iLeft);
 		UT_sint32 Left,Right,Top,Bot;
-		_getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
+		getCellParams(posCell+1,&Left,&Right,&Top,&Bot);
 		UT_DEBUGMSG(("SEVIOR: Before delete left %d right %d top %d bot %d \n",Left,Right,Top,Bot));
 		if((Bot - Top) == 1)
 		{
@@ -1153,7 +1504,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 			break;
 		}
 		posCell =  m_pDoc->getStruxPosition(cellSDH);
-		_getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
+		getCellParams(posCell+1, &iCurLeft, &iCurRight,&iCurTop,&iCurBot);
 		UT_DEBUGMSG(("SEVIOR: Looking at cell left %d right %d top %d bot %d \n",iCurLeft,iCurRight,iCurTop,iCurBot));
 		bool bChange = false;
 		iNewTop = iCurTop;
