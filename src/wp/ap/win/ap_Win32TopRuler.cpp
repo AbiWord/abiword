@@ -20,6 +20,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include "ut_types.h"
+#include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ap_Win32TopRuler.h"
@@ -154,21 +155,21 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 		return 0;
 		
 	case WM_MOUSEMOVE:
-		pRuler->mouseMotion(s_GetEMS(wParam),LOWORD(lParam),HIWORD(lParam));
+		pRuler->mouseMotion(s_GetEMS(wParam),signedLoWord(lParam),signedHiWord(lParam));
 		return 0;
 
 	case WM_LBUTTONUP:
-		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON1,LOWORD(lParam),HIWORD(lParam));
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON1,signedLoWord(lParam),signedHiWord(lParam));
 		ReleaseCapture();
 		return 0;
 
 	case WM_MBUTTONUP:
-		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON2,LOWORD(lParam),HIWORD(lParam));
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON2,signedLoWord(lParam),signedHiWord(lParam));
 		ReleaseCapture();
 		return 0;
 		
 	case WM_RBUTTONUP:
-		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON3,LOWORD(lParam),HIWORD(lParam));
+		pRuler->mouseRelease(s_GetEMS(wParam),EV_EMB_BUTTON3,signedLoWord(lParam),signedHiWord(lParam));
 		ReleaseCapture();
 		return 0;
 

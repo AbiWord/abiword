@@ -43,9 +43,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
+	if (pszState)
+		*pszState = NULL;
+	
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
-	switch(id)
+	switch (id)
 	{
 	case AP_TOOLBAR_ID_EDIT_UNDO:
 		if (!pView->canDo(UT_TRUE))
@@ -70,9 +73,12 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
+	if (pszState)
+		*pszState = NULL;
+
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
-	switch(id)
+	switch (id)
 	{
 	case AP_TOOLBAR_ID_EDIT_CUT:
 	case AP_TOOLBAR_ID_EDIT_COPY:
@@ -93,10 +99,13 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Clipboard)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
+	if (pszState)
+		*pszState = NULL;
+
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 	AP_Clipboard* pClip = XAP_App::getClipboard();
 
-	switch(id)
+	switch (id)
 	{
 	case AP_TOOLBAR_ID_EDIT_PASTE:
 		// TODO handle UNICODE text pasting
@@ -130,7 +139,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Style)
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
-	switch(id)
+	switch (id)
 	{
 	case AP_TOOLBAR_ID_FMT_STYLE:
 		{
@@ -171,7 +180,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	const XML_Char * prop = NULL;
 	const XML_Char * val  = NULL;
 
-	switch(id)
+	switch (id)
 	{
 	case AP_TOOLBAR_ID_FMT_FONT:
 		prop = "font-family";
@@ -266,6 +275,9 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
+	if (pszState)
+		*pszState = NULL;
+
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
 
 	const XML_Char * prop = "";
@@ -321,6 +333,10 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 {
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
+
+	if (pszState)
+		*pszState = NULL;
+
 	UT_Bool bPoints = UT_FALSE;
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
@@ -328,7 +344,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 	const XML_Char * prop = "text-align";
 	const XML_Char * val  = NULL;
 
-	switch(id)
+	switch (id)
 	{
 	case AP_TOOLBAR_ID_ALIGN_LEFT:
 		val  = "left";
@@ -413,6 +429,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 {
+	UT_UNUSED(id);
+	
 	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 

@@ -940,7 +940,6 @@ void AP_TopRuler::_xorGuide(UT_Bool bClear)
 {
 	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
 	UT_sint32 x = m_draggingCenter - xFixed;
-	UT_ASSERT(x>=0);
 
 	// when dragging the column gap, we draw lines on both
 	// sides of the gap.
@@ -1147,7 +1146,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 
 /*****************************************************************/
 
-void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_uint32 x, UT_uint32 y)
+void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButton /* emb */, UT_sint32 x, UT_sint32 y)
 {
 	if (!m_bValidMouseClick)
 		return;
@@ -1156,7 +1155,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
-	if ((y < 0) || (y > m_iHeight))
+	if ((y < 0) || (y > (UT_sint32)m_iHeight))
 	{
 		_ignoreEvent(UT_TRUE);
 		m_draggingWhat = DW_NOTHING;
@@ -1166,8 +1165,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 	// if they drag horizontally off the ruler, we probably want to ignore
 	// the whole thing.  but this may interact with the current scroll.
 
-	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	if ((x < xFixed) || (x > m_iWidth))
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	if ((x < xFixed) || (x > (UT_sint32)m_iWidth))
 	{
 		_ignoreEvent(UT_TRUE);
 		m_draggingWhat = DW_NOTHING;
@@ -1385,7 +1384,7 @@ void AP_TopRuler::_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, UT_Bool bDele
 
 /*****************************************************************/
 
-void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y)
+void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
 {
 	if (!m_bValidMouseClick)
 		return;
@@ -1394,7 +1393,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 
 	// if they drag vertically off the ruler, we ignore the whole thing.
 
-	if ((y < 0) || (y > m_iHeight))
+	if ((y < 0) || (y > (UT_sint32)m_iHeight))
 	{
 		_ignoreEvent(UT_FALSE);
 		return;
@@ -1403,8 +1402,8 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 	// if they drag horizontally off the ruler, we probably want to ignore
 	// the whole thing.  but this may interact with the current scroll.
 
-	UT_uint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
-	if ((x < xFixed) || (x > m_iWidth))
+	UT_sint32 xFixed = (UT_sint32)MyMax(m_iLeftRulerWidth,s_iFixedWidth);
+	if ((x < xFixed) || (x > (UT_sint32)m_iWidth))
 	{
 		_ignoreEvent(UT_FALSE);
 		return;

@@ -170,6 +170,8 @@ void UT_parseColor(const char *p, UT_RGBColor& c)
 
 const char * UT_pathSuffix(const char * path)
 {
+	// TODO This needs to be moved to platform code.
+	
 	if (!path)
 		return NULL;
 
@@ -271,4 +273,28 @@ const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts)
 		return p[1];
 	else
 		return NULL;
+}
+
+//////////////////////////////////////////////////////////////////
+
+UT_sint32 signedLoWord(UT_uint32 dw)
+{
+	// return low word as a signed quantity
+
+	unsigned short u16 = (unsigned short)(dw & 0xffff);
+	signed short   s16 = *(signed short *)&u16;
+	UT_sint32      s32 = s16;
+
+	return s32;
+}
+
+UT_sint32 signedHiWord(UT_uint32 dw)
+{
+	// return high word as a signed quantity
+
+	unsigned short u16 = (unsigned short)((dw >> 16) & 0xffff);
+	signed short   s16 = *(signed short *)&u16;
+	UT_sint32      s32 = s16;
+
+	return s32;
 }

@@ -94,10 +94,12 @@ typedef		UT_sint32			UT_ErrorCode;
 
 #define FREEP(p)		do { if (p) free((void *)p); (p)=NULL; } while (0)
 #define DELETEP(p)		do { if (p) delete(p); (p)=NULL; } while (0)
-#define CLONEP(p,q)	do { FREEP(p); if (q && *q) UT_cloneString(p,q); } while (0)
+#define CLONEP(p,q)		do { FREEP(p); if (q && *q) UT_cloneString(p,q); } while (0)
 
 #define NrElements(a)	((sizeof(a)/sizeof(a[0])))
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
 #define MyMin(a,b)		(((a)<(b)) ? (a) : (b))
+
+#define UT_UNUSED(v)	do { (v)=(v); } while (0)
 
 #endif /* UT_TYPES_H */

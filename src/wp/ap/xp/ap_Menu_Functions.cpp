@@ -34,6 +34,7 @@
 #include "xav_View.h"
 #include "fv_View.h"
 
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
 /*****************************************************************/
 /*****************************************************************/
@@ -178,6 +179,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Bars)
 {
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
 	EV_Menu_ItemState s = EV_MIS_ZERO;
 
 	switch(id)
@@ -199,9 +203,6 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Bars)
 
 /****************************************************************/
 /****************************************************************/
-
-#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
-
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 {

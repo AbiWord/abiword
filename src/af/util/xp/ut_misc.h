@@ -78,4 +78,7 @@ const char * UT_pathSuffix(const char * path);
 UT_Bool UT_isWordDelimiter(UT_UCSChar);
 const XML_Char* UT_getAttribute(const XML_Char* name, const XML_Char** atts);
 
+UT_sint32 signedHiWord(UT_uint32 dw);
+UT_sint32 signedLoWord(UT_uint32 dw);
+
 #endif /* UTMISC_H */

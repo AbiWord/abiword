@@ -326,7 +326,8 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 
 	ap_RulerTicks tick(m_pG,m_dim);
 
-	UT_uint32 k, iFontHeight;
+	UT_uint32 iFontHeight;
+	UT_sint32 k;
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 
@@ -338,7 +339,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 	}
 
 	// first draw the top margin
-	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < lfi.m_yTopMargin); k++)
+	for (k=1; ((UT_sint32)(k*tick.tickUnit/tick.tickUnitScale) < lfi.m_yTopMargin); k++)
 	{
 		y = yOrigin + lfi.m_yTopMargin - k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
 		if (y >= 0)
