@@ -3272,6 +3272,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	bool bDirection;
 	UT_uint32 uheight;
 	m_bPointEOL = false;
+	bool bOldFootnote = m_bInFootnote;
 
 	/*
 	  we don't really care about the coords.  We're calling these
@@ -3321,7 +3322,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 			}
 		}
 #endif
-	}
+    }
 	else
 	{
 		_setPoint(m_iInsPoint - countChars);
@@ -3416,8 +3417,73 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	{
 		_setPoint(iRunEnd - 1);
 	}
+	if(bForward)
+	{
+		if(!bOldFootnote)
+		{
+			bool bSweep = false;
+			while(isInFootnote() && m_iInsPoint <= posEOD)
+			{ 
+				bSweep = true;
+				m_iInsPoint++;
+			}
+			if(bSweep && (m_iInsPoint <= posEOD))
+			{
+				_setPoint(m_iInsPoint);
+			}
+			else if(m_iInsPoint > posEOD)
+			{
+				_setPoint(posOld);
+			}
+		}
+	    else
+		{
+			bool bSweep = false;
+			while(!isInFootnote())
+			{
+				m_iInsPoint--;
+				bSweep = true;
+			}
+			if(bSweep)
+			{
+				_setPoint(m_iInsPoint);
+			}
+		}
 
-
+	}
+	else
+	{
+		if(!bOldFootnote)
+		{
+			bool bSweep = false;
+			while(isInFootnote() && m_iInsPoint >= posBOD)
+			{ 
+				bSweep = true;
+				m_iInsPoint--;
+			}
+			if(bSweep && (m_iInsPoint >= posBOD))
+			{
+				_setPoint(m_iInsPoint);
+			}
+			else if(m_iInsPoint > posEOD)
+			{
+				_setPoint(posOld);
+			}
+		}
+	    else
+		{
+			bool bSweep = false;
+			while(!isInFootnote())
+			{
+				m_iInsPoint++;
+				bSweep = true;
+			}
+			if(bSweep)
+			{
+				_setPoint(m_iInsPoint);
+			}
+		}
+	}
 	if ((UT_sint32) m_iInsPoint < (UT_sint32) posBOD)
 	{
 		_setPoint(posBOD);

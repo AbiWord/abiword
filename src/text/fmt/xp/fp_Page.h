@@ -98,6 +98,7 @@ public:
 	bool				isEmpty(void) const;
 
 	// Header/Footer functions.
+	void 				footnoteHeightChanged(void);
 	void                removeHdrFtr(HdrFtrType hfType);
 	fp_ShadowContainer* getHdrFtrP(HdrFtrType hfType) const;
 	fp_ShadowContainer*	getHdrFtrContainer(fl_HdrFtrSectionLayout*);
@@ -110,7 +111,8 @@ public:
 	bool				insertFootnoteContainer(fp_FootnoteContainer * pFC, 
 												fp_FootnoteContainer * pAfter);
 	void				removeFootnoteContainer(fp_FootnoteContainer * pFC);
-
+	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC);
+	void                clearScreenFootnotes(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif

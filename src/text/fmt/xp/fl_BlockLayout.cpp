@@ -2079,6 +2079,10 @@ fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 		{
 			pNext = pNext->getFirstLayout();
 		}
+		else if(pNext->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		{
+			pNext = pNext->getNext();
+		}
 		else
 		{
 			pNext = NULL;
@@ -2086,20 +2090,24 @@ fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 	}
 
 	// keep going (check next section)
-	fl_SectionLayout* pSL = (fl_SectionLayout *) m_pSectionLayout->getNext();
+	fl_ContainerLayout * pCL = m_pSectionLayout->getNext();
 	fl_BlockLayout* pBL = NULL;
-
-	if (pSL)
+	if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
 	{
+		pBL = (fl_BlockLayout *) pCL;
+	}
+	else if(pCL)
+	{
+		fl_SectionLayout* pSL = (fl_SectionLayout *) pCL;
 		pBL = (fl_BlockLayout *) pSL->getFirstLayout();
 		UT_ASSERT(pBL);
 	}
-
 	return pBL;
 }
 
 fl_BlockLayout* fl_BlockLayout::getPrevBlockInDocument(void) const
 {
+// FIXME: Handle other container types like get next block in doc
 	if (getPrev())
 		return (fl_BlockLayout *) getPrev();
 

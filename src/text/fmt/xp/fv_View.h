@@ -360,7 +360,7 @@ public:
 //
 	bool	insertFootnote();
 	bool	insertFootnoteSection(const XML_Char * enpid);
-
+	bool    isInFootnote(void);
 // ----------------------
 
 	bool		gotoTarget(AP_JumpTarget type, UT_UCSChar * data);
@@ -731,6 +731,7 @@ private:
 	EV_EditMouseContext m_prevMouseContext;
 	AP_TopRuler *       m_pTopRuler;
 	AP_LeftRuler *      m_pLeftRuler;
+	bool                m_bInFootnote;
 };
 
 #endif /* FV_VIEW_H */

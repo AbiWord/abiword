@@ -28,12 +28,12 @@
 #include "fp_Line.h"
 #include "fv_View.h"
 #include "fl_SectionLayout.h"
-#include "fl_TableLayout.h"
 #include "gr_DrawArgs.h"
 #include "ut_vector.h"
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "fl_FootnoteLayout.h"
 
 #define SCALE_TO_SCREEN (double)getGraphics()->getResolution() / UT_LAYOUT_UNITS
 
@@ -71,18 +71,35 @@ void fp_FootnoteContainer::setPage(fp_Page * pPage)
 
 void fp_FootnoteContainer::clearScreen(void)
 {
-// only clear the embeded containers if no background is set: the background clearing will also these containers
-// FIXME: should work, but doesn't??
-//	if (m_iBgStyle == FS_OFF)
-//	{
-		fp_Container * pCon = NULL;
-		UT_sint32 i = 0;
-		for(i=0; i< (UT_sint32) countCons(); i++)
-		{
-			pCon = (fp_Container *) getNthCon(i);
-			pCon->clearScreen();
-		}
-//  }
+
+	UT_sint32 pos = getPage()->findFootnoteContainer(this);
+	if(pos == 0)
+	{
+		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		UT_RGBColor * pBGColor = pDSL->getPaperColor();
+		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
+		UT_sint32 iRightMargin = pDSL->getRightMargin();
+		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 xoff,yoff;
+		getPage()->getScreenOffsets(this,xoff,yoff);
+		UT_sint32 xoffStart = xoff  + diff;
+		UT_sint32 xoffEnd = xoff + getPage()->getWidth() - iLeftMargin -iRightMargin - diff;
+		getGraphics()->setColor(*pBGColor);
+		UT_sint32 iLineThick = pDSL->getFootnoteLineThickness();
+		getGraphics()->setLineWidth(iLineThick);
+		UT_sint32 yline = yoff;
+		yline = yline - iLineThick - 4; // FIXME This should not be a magic numer!
+		UT_DEBUGMSG(("fp_TableContainer: clearScreen (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
+		getGraphics()->fillRect(*pBGColor,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
+	}
+
+	fp_Container * pCon = NULL;
+	UT_sint32 i = 0;
+	for(i=0; i< (UT_sint32) countCons(); i++)
+	{
+		pCon = (fp_Container *) getNthCon(i);
+		pCon->clearScreen();
+	}
 }
 	
 void fp_FootnoteContainer::setContainer(fp_Container * pContainer)
@@ -99,26 +116,44 @@ void fp_FootnoteContainer::setContainer(fp_Container * pContainer)
 	fp_Container::setContainer(pContainer);
 }
 
+fl_DocSectionLayout * fp_FootnoteContainer::getDocSectionLayout(void)
+{
+	fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) getSectionLayout();
+	fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pFL->myContainingLayout();
+	UT_ASSERT(pDSL && (pDSL->getContainerType() == FL_CONTAINER_DOCSECTION));
+	return pDSL;
+}
+
 /*!
  Draw container content
  \param pDA Draw arguments
  */
 void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 {
-	const UT_Rect * pClipRect = pDA->pG->getClipRect();
-	UT_sint32 ytop,ybot;
-	UT_sint32 imax = (UT_sint32)(((UT_uint32)(1<<31)) - 1);
-	if(pClipRect)
+	UT_sint32 pos = getPage()->findFootnoteContainer(this);
+	UT_DEBUGMSG(("fp_Footnote:draw: pos %d \n",pos));
+	if(pos == 0)
 	{
-		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
-		ytop = pClipRect->top;
-        ybot += ytop + 1;
-		xxx_UT_DEBUGMSG(("Footnote: clip top %d clip bot %d \n",ytop,ybot));
-	}
-	else
-	{
-		ytop = 0;
-		ybot = imax;
+		UT_RGBColor black(0,0,0);
+		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
+		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
+		UT_sint32 iRightMargin = pDSL->getRightMargin();
+		UT_sint32 diff = getPage()->getWidth()/10;
+		UT_sint32 xoffStart = pDA->xoff + diff;
+		UT_sint32 xoffEnd = pDA->xoff + getPage()->getWidth() -iLeftMargin - iRightMargin - diff;
+		UT_sint32 yline = pDA->yoff;
+		pDA->pG->setColor(black);
+		pDA->pG->setLineProperties(1.0,
+									 GR_Graphics::JOIN_MITER,
+									 GR_Graphics::CAP_BUTT,
+									 GR_Graphics::LINE_SOLID);
+
+		UT_sint32 iLineThick = pDSL->getFootnoteLineThickness();
+		iLineThick = UT_MAX(1,iLineThick);
+		pDA->pG->setLineWidth(iLineThick);
+		yline = yline - iLineThick - 3; // FIXME This should not be a magic numer!
+		UT_DEBUGMSG(("Drawline form (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
+		pDA->pG->drawLine(xoffStart, yline, xoffEnd, yline);
 	}
 	xxx_UT_DEBUGMSG(("Footnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
 
@@ -131,19 +166,9 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 	for (UT_uint32 i = 0; i<count; i++)
 	{
 		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
-		UT_sint32 ydiff = 0;
 		da.xoff = pDA->xoff + pContainer->getX();
 		da.yoff = pDA->yoff + pContainer->getY();
-		ydiff = da.yoff + pContainer->getHeight();
-		UT_sint32 sumHeight = pContainer->getHeight() + (ybot-ytop);
-		UT_sint32 totDiff = 0;
-		if(da.yoff < ytop)
-			totDiff = ybot - da.yoff;
-		else
-			totDiff = ydiff - ytop;
-
-		if ((totDiff < sumHeight) || (pClipRect == NULL))
-			pContainer->draw(&da);
+		pContainer->draw(&da);
 	}
     _drawBoundaries(pDA);
 }
@@ -267,5 +292,5 @@ void fp_FootnoteContainer::layout(void)
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	setHeightLayoutUnits(iYLayoutUnits);
 #endif
-
+	getPage()->footnoteHeightChanged();
 }

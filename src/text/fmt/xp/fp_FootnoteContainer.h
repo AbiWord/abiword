@@ -36,6 +36,7 @@
 #include "gr_Graphics.h"
 
 class fl_TableLayout;
+class fl_DocSectionLayout;
 
 class ABI_EXPORT fp_FootnoteContainer : public fp_VerticalContainer
 {
@@ -52,6 +53,8 @@ public:
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	virtual fp_Page *   getPage(void) { return m_pPage;}
 	void                setPage(fp_Page * pPage);
+	fl_DocSectionLayout * getDocSectionLayout(void);
+
 private:
 	fp_Page * m_pPage;
 };

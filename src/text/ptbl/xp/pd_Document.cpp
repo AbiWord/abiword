@@ -1183,6 +1183,14 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		{
 			szStrux = "End Cell";
 		}
+		else if(pfs->getStruxType() == PTX_SectionFootnote)
+		{
+			szStrux = "Footnote";
+		}
+		else if(pfs->getStruxType() == PTX_EndFootnote)
+		{
+			szStrux = "End Footnote";
+		}
 		else
 		{
 			szStrux = "Other Strux";
@@ -1196,7 +1204,10 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		getPropertyFromSDH(sdhTemp,"right-attach",&szRight);
 		getPropertyFromSDH(sdhTemp,"top-attach",&szTop);
 		getPropertyFromSDH(sdhTemp,"bot-attach",&szBot);
-		UT_DEBUGMSG(("left-attach %s right-attach %s top-attach %s bot-attach %s \n",szLeft,szRight,szTop,szBot));
+		if(szLeft != NULL)
+		{
+			UT_DEBUGMSG(("left-attach %s right-attach %s top-attach %s bot-attach %s \n",szLeft,szRight,szTop,szBot));
+		}
 		pf = pf->getNext();
 		while(pf && pf->getType() != pf_Frag::PFT_Strux)
 		{

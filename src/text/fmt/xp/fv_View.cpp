@@ -170,7 +170,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bDragTableLine(false),
 		m_prevMouseContext(EV_EMC_UNKNOWN),
 		m_pTopRuler(NULL),
-		m_pLeftRuler(NULL)
+		m_pLeftRuler(NULL),
+		m_bInFootnote(false)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -5478,11 +5479,21 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 // Clear the rest of the info
 //
 	memset(pInfo,0,sizeof(*pInfo));
-	if (pSection->getType() == FL_SECTION_DOC)
+	if (pSection->getType() == FL_SECTION_DOC || pSection->getContainerType() == FL_SECTION_FOOTNOTE)
 	{
-		fp_Column* pColumn = (fp_Column*) pContainer;
-		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
-
+		fp_Column* pColumn = NULL;
+		fl_DocSectionLayout* pDSL = NULL;
+		
+		if(pSection->getType() == FL_SECTION_DOC)
+		{
+			pColumn = (fp_Column*) pContainer;
+			pDSL = (fl_DocSectionLayout*) pSection;
+		}
+		else
+		{
+			pDSL= pContainer->getPage()->getOwningSection();
+			pColumn = pContainer->getPage()->getNthColumnLeader(0);
+		}
 		UT_uint32 nCol=0;
 		fp_Column * pNthColumn=pColumn->getLeader();
 		while (pNthColumn && (pNthColumn != pColumn))
@@ -5497,6 +5508,13 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->u.c.m_xaRightMargin = pDSL->getRightMargin();
 		pInfo->u.c.m_xColumnGap = pDSL->getColumnGap();
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
+		if(pSection->getContainerType() == FL_SECTION_FOOTNOTE)
+		{
+			pInfo->m_iCurrentColumn = 1;
+			pInfo->m_iNumColumns = 1;
+			pInfo->u.c.m_xColumnGap = 0;
+			pInfo->u.c.m_xColumnWidth = pContainer->getWidth();
+		}
 		pInfo->m_mode = AP_TopRulerInfo::TRI_MODE_COLUMNS;
 
 		pInfo->m_xrPoint = xCaret - pContainer->getX();
@@ -5719,14 +5737,22 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_yBottomMargin = 0;
 			return;
 		}
-
+		fl_SectionLayout * pSection = NULL;
+		fl_DocSectionLayout * pDSL = NULL;
 		fp_Container * pContainer = pRun->getLine()->getContainer();
-		fp_Column * pColumn = (fp_Column *) pRun->getLine()->getColumn();
-
+		bool isFootnote = false;
+		if(pContainer->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		{
+			pSection = pContainer->getPage()->getOwningSection();
+			pDSL = (fl_DocSectionLayout *) pSection;
+			isFootnote = true;
+		}
+		else
+		{
+			pSection = pContainer->getPage()->getOwningSection();
+			pDSL = (fl_DocSectionLayout*) pSection;
+		}
 		pInfo->m_yPoint = yCaret - pContainer->getY();
-
-		fl_SectionLayout * pSection = pColumn->getSectionLayout();
-		fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
 //
 // Clear out the old table info
 //
@@ -5742,10 +5768,9 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 			pInfo->m_vecTableRowInfo =NULL;
 		}
 
-		if (pContainer->getContainerType() == FP_CONTAINER_COLUMN && !isHdrFtrEdit())
+		if ((isFootnote || pContainer->getContainerType() == FP_CONTAINER_COLUMN) && !isHdrFtrEdit())
 		{
-			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
-			fp_Page * pPage = pColumn->getPage();
+			fp_Page * pPage = pContainer->getPage();
 
 			UT_sint32 yoff = 0;
 			getPageYOffset(pPage, yoff);
@@ -7394,6 +7419,21 @@ bool FV_View::insertHeaderFooter(const XML_Char ** props, HdrFtrType hfType, fl_
 	return true;
 }
 
+bool FV_View::isInFootnote(void)
+{
+	fl_BlockLayout * pBlock = _findGetCurrentBlock();
+	fl_ContainerLayout *pCL = pBlock->myContainingLayout();
+	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+	{
+		m_bInFootnote = true;
+	}
+	else
+	{
+		m_bInFootnote = false;
+	}
+	return m_bInFootnote;
+}
+
 bool FV_View::insertFootnote()
 {
 	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
@@ -7662,6 +7702,10 @@ bool FV_View::insertFootnote()
 
 	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
+//
+// Lets have a peek at the doc structure, shall we?
+//
+	m_pDoc->miniDump(pBL->getStruxDocHandle(),8);
 	return true;
 }
 
