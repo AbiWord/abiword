@@ -68,7 +68,7 @@
 
 #include <fribidi/fribidi.h>
 
-#define BIDI_DEBUG
+//#define BIDI_DEBUG
 //
 // Forward decls. to wv's callbacks
 //
