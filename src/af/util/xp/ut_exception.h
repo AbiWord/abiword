@@ -44,8 +44,8 @@
 // -DAL-
 //
 
-#if defined(_MSC_VER) && !(_MSC_VER > 1100)		// MSVC 5 and lower
-#define ABI_DOESNT_SUPPORT_THROWS = 1
+#if defined(_MSC_VER) 
+	#define ABI_DOESNT_SUPPORT_THROWS = 1
 #endif
 
 /*
