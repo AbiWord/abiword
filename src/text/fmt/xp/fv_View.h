@@ -709,7 +709,7 @@ protected:
 	// localize handling of insertion point logic
 	void				_setPoint(PT_DocPosition pt, bool bEOL = false);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
-	bool				_charMotion(bool bForward,UT_uint32 countChars);
+	bool				_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotContainPoint = true);
 	void				_doPaste(bool bUseClipboard, bool bHonorFormatting = true);
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 

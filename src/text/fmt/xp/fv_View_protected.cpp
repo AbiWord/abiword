@@ -4178,7 +4178,7 @@ UT_uint32 FV_View::_getDataCount(UT_uint32 pt1, UT_uint32 pt2)
 }
 
 
-bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
+bool FV_View::_charMotion(bool bForward,UT_uint32 countChars, bool bSkipCannotContainPoint)
 {
 	// advance(backup) the current insertion point by count characters.
 	// return false if we ran into an end (or had an error).
@@ -4240,10 +4240,13 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		// x,y test is at all desirable here; any idea why it is here?
 		// Tomas, Jan 16, 2003.
 
+		// Testing the coords is definitely wrong; combining characters often do not advance x,y,
+		// but need to be treated as a valid document position. See bug 6987. Tomas, July 27, 2004
+
 		bool bExtra = false;
-		while(m_iInsPoint <= posEOD && (pRun == NULL || ((x == xold) && (y == yold) &&
+		while(m_iInsPoint <= posEOD && (pRun == NULL /*|| ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old) &&
-														 (bDirection == bDirectionOld))))
+														 (bDirection == bDirectionOld))*/))
 		{
 			UT_DEBUGMSG(("fv_View_protected: (2) pRun = %x pos %d\n",pRun,m_iInsPoint));
 			_setPoint(m_iInsPoint+1);
@@ -4255,6 +4258,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		{
 			_setPoint(m_iInsPoint-1);
 		}
+
+		
 #if 0
 		while(pRun != NULL &&  pRun->isField() && m_iInsPoint <= posEOD)
 		{
@@ -4272,12 +4277,14 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 //
 // Scan past any strux boundaries (like table controls
 //
+		// when moving backwards, we need to also skip over the EndOfFootnote struxes
 		while(getPoint() > posBOD && !isPointLegal())
 		{
 			_setPoint(m_iInsPoint - 1);
 			UT_DEBUGMSG(("Backward scan past illegal point pos %d \n",m_iInsPoint));
 		}
 		_findPositionCoords(m_iInsPoint, false, x, y, x2,y2,uheight, bDirection, &pBlock, &pRun);
+
 //
 // If we come to a table boundary we have doc positions with no blocks.
 // _findPositionCoords signals this by returning pRun == NULL
@@ -4287,10 +4294,14 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		// boundaries. However, I am not sure whether the whole of the
 		// x,y test is at all desirable here; any idea why it is here?
 		// Tomas, Jan 16, 2003.
+
+		// Testing the coords is definitely wrong; combining characters often do not advance x,y,
+		// but need to be treated as a valid document position. See bug 6987. Tomas, July 27, 2004
+
 		bool bExtra = false;
-		while( m_iInsPoint >= posBOD && (pRun == NULL || ((x == xold) && (y == yold) &&
+		while( m_iInsPoint >= posBOD && (pRun == NULL /*|| ((x == xold) && (y == yold) &&
 														 (x2 == x2old) && (y2 == y2old) &&
-														  (bDirection == bDirectionOld))))
+														 (bDirection == bDirectionOld))*/))
 		{
 			xxx_UT_DEBUGMSG(("_charMotion: Looking at point m_iInsPoint %d \n",m_iInsPoint));
 			_setPoint(m_iInsPoint-1);
@@ -4301,6 +4312,8 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		{
 			_setPoint(m_iInsPoint-1);
 		}
+
+		
 #if 0
 // Needed for piecetable fields - we don't have these in 1.0
 
@@ -4353,14 +4366,17 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 
 		// get the next run that can contain insertion point
 		pRun = pRun->getNextRun();
-		while(pRun && (!pRun->canContainPoint() || pRun->getLength() == 0))
+		UT_uint32 iLength = 0;
+		while(pRun && ((bSkipCannotContainPoint && !pRun->canContainPoint()) || pRun->getLength() == 0))
 		{
 			UT_DEBUGMSG(("_charMotion: Sweep forward through runs %d \n",pRun->getLength()));
+			iLength += pRun->getLength();
 			pRun = pRun->getNextRun();
 		}
+
 		if(pRun)
 		{
-			_setPoint(1 + pBlock->getPosition(false) + pRun->getBlockOffset());
+			_setPoint(m_iInsPoint + iLength);
 		}
 		else
 		{
@@ -4370,6 +4386,37 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 // a table.
 
 		}
+	}
+	// these two branches ensure that insertion point is not moved just after a run that is not
+	// suppossed to take point
+	else if(bSkipCannotContainPoint && bForward && m_iInsPoint == iRunStart && pRun->getLength()>0)
+	{
+		// moving forward, with insertion point ending between two runs;
+		// we need to check that the previous run was not one that cannot take point, in which case
+		// we need to advance the point by one (otherwise it will appear just after the non-point
+		// run
+		// this case happens, for example, when the user has a hyperlink at the start of line and
+		// presses HOME, RIGHT. The HOME key takes her before the hyperlink, the right, however,
+		// should skip over they hyperlink run
+		
+		pRun = pRun->getPrevRun();
+		if(pRun && !pRun->canContainPoint())
+			_setPoint(m_iInsPoint + 1);
+	}
+	else if(bSkipCannotContainPoint && !bForward && m_iInsPoint == iRunStart)
+	{
+		// moving backwards, with insertion point ending between two runs; we need to scroll
+		// through any adjucent runs on the left that cannot contain point
+		pRun = pRun->getPrevRun();
+		UT_uint32 iLength = 0;
+		while(pRun && !pRun->canContainPoint())
+		{
+			iLength += pRun->getLength();
+			pRun = pRun->getPrevRun();
+		}
+
+		// do this unconditionally; if !pRun, we are at the start of the block
+		_setPoint(m_iInsPoint - iLength);
 	}
 
 	// this is much simpler, since the findPointCoords will return the
