@@ -6384,6 +6384,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_FMTMARK:
 	case FPRUN_BOOKMARK:
 	case FPRUN_HYPERLINK:
+	case FPRUN_DIRECTIONMARKER:
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (10): %d\n", pRun->getType()));
 		m_prevMouseContext = EV_EMC_TEXT;
 		return EV_EMC_TEXT;
@@ -6621,6 +6622,7 @@ EV_EditMouseContext FV_View::getInsertionPointContext(UT_sint32 * pxPos, UT_sint
 	case FPRUN_FMTMARK:
 	case FPRUN_BOOKMARK:
 	case FPRUN_HYPERLINK:
+	case FPRUN_DIRECTIONMARKER:
 		return EV_EMC_TEXT;
 
 	case FPRUN_FIELD:
