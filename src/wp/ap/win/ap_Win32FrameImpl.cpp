@@ -1284,6 +1284,18 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 				int nHeight = HIWORD(lParam);
 
 				pView->setWindowSize(nWidth, nHeight);
+				
+				// when resizing, set the rulers to their new height/width
+				if ((f->getAPFrameData()->m_pTopRuler) && (f->getAPFrameData()->m_pLeftRuler))
+				{
+					f->getAPFrameData()->m_pTopRuler->setWidth(nWidth + pView->getGraphics()->tdu(f->getAPFrameData()->m_pLeftRuler->getWidth()));
+					f->getAPFrameData()->m_pLeftRuler->setHeight(nHeight + pView->getGraphics()->tdu(f->getAPFrameData()->m_pTopRuler->getHeight()));
+				} else {
+					if (f->getAPFrameData()->m_pTopRuler)
+						f->getAPFrameData()->m_pTopRuler->setWidth(nWidth);
+					if (f->getAPFrameData()->m_pLeftRuler)
+						f->getAPFrameData()->m_pLeftRuler->setHeight(nHeight);
+				}
 
 				// may need to scroll to keep everything in sync.
 				// the following is necessary to make sure that the
