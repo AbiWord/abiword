@@ -221,14 +221,14 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelNumCols), 0, 0.5);
 
-	spinRangeCols = (GtkAdjustment *) gtk_adjustment_new(5, 1, 9999, 1, 1, 0);
+	spinRangeCols = (GtkAdjustment *) gtk_adjustment_new(5, 1, 9999, 1, 5, 0);
 	spinNumCols = gtk_spin_button_new (spinRangeCols, 1, 0);
-	g_object_set_data (G_OBJECT (windowInsertTable), "spinNumRows", spinRangeCols);
+	g_object_set_data (G_OBJECT (windowInsertTable), "spinNumCols", spinNumCols);
 	gtk_widget_show (spinNumCols);
 	gtk_table_attach (GTK_TABLE (tableInsert), spinNumCols, 1, 2, 1, 2,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumCols)*/"Number of rows:");
+	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumRows)*/"Number of rows:");
 	labelNumRows = gtk_label_new (unixstr);
 	FREEP(unixstr);
 	g_object_set_data (G_OBJECT (windowInsertTable), "labelNumRows", labelNumRows);
@@ -237,7 +237,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 	gtk_misc_set_alignment (GTK_MISC (labelNumRows), 0, 0.5);
 	
-	spinRangeRows = (GtkAdjustment *) gtk_adjustment_new(2, 1, 9999, 1, 1, 0);
+	spinRangeRows = (GtkAdjustment *) gtk_adjustment_new(2, 1, 9999, 1, 5, 0);
 	spinNumRows = gtk_spin_button_new (spinRangeRows, 1, 0);
 	g_object_set_data (G_OBJECT (windowInsertTable), "spinNumRows", spinNumRows);
 	gtk_widget_show (spinNumRows);
