@@ -194,7 +194,7 @@ UT_sint32 FL_DocLayout::getHeight()
 		FV_View * pView = getView();
 		if(pView)
 		{
-			iHeight += pView->getPageViewSep();
+			iHeight += pView->getPageViewSep() * (count - 1);
 			iHeight += pView->getPageViewTopMargin();
 		}
 		else
