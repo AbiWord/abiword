@@ -149,7 +149,7 @@ IEFileType IE_Imp::fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes)
 	{
 		IE_ImpSniffer * s = (IE_ImpSniffer *)m_sniffers.getNthItem (k);
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
-		if ((IEFT_Unknown == best) || (confidence >= best_confidence))
+		if ((confidence > 0) && ((IEFT_Unknown == best) || (confidence >= best_confidence)))
 		{
 		  best_confidence = confidence;
 		  for (UT_sint32 a = 0; a < (int) nrElements; a++)
@@ -198,7 +198,7 @@ IEFileType IE_Imp::fileTypeForSuffix(const char * szSuffix)
 		IE_ImpSniffer * s = static_cast<IE_ImpSniffer *>(m_sniffers.getNthItem(k));
 
 		UT_Confidence_t confidence = s->recognizeSuffix(szSuffix);
-		if ((IEFT_Unknown == best) || (confidence >= best_confidence))
+		if ((confidence > 0) && ((IEFT_Unknown == best) || (confidence >= best_confidence)))
 		  {
 		        best_confidence = confidence;
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)

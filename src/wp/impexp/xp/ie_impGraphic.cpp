@@ -79,7 +79,7 @@ void IE_ImpGraphic::unregisterAllImporters ()
 
 IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 {
-	if (!szSuffix)
+	if (!szSuffix || !strlen(szSuffix))
 		return IEGFT_Unknown;
 	
 	// we have to construct the loop this way because a
@@ -94,7 +94,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForSuffix(const char * szSuffix)
 	{
 		IE_ImpGraphicSniffer * s = static_cast<IE_ImpGraphicSniffer *>(s_impGraphicTable.getNthItem(k));
 		UT_Confidence_t confidence = s->recognizeSuffix(szSuffix);
-		if ((IEGFT_Unknown == best) || (confidence >= best_confidence))
+		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
 		        best_confidence = confidence;
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
@@ -129,7 +129,7 @@ IEGraphicFileType IE_ImpGraphic::fileTypeForContents(const char * szBuf, UT_uint
 	{
 		IE_ImpGraphicSniffer * s = (IE_ImpGraphicSniffer *)s_impGraphicTable.getNthItem (k);
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
-		if ((IEGFT_Unknown == best) || (confidence >= best_confidence))
+		if ((confidence > 0) && ((IEGFT_Unknown == best) || (confidence >= best_confidence)))
 		{
 		        best_confidence = confidence;
 			for (UT_sint32 a = 0; a < (int) nrElements; a++)
