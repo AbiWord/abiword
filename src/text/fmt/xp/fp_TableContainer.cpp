@@ -2109,7 +2109,8 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_iRowHeight(0),
 	  m_iLastWantedVBreak(-1),
 	  m_pFirstBrokenCell(NULL),
-	  m_pLastBrokenCell(NULL)
+	  m_pLastBrokenCell(NULL),
+	  m_bRecursiveClear(false)
 {
 }
 
@@ -3406,7 +3407,28 @@ void  fp_TableContainer::_size_request_pass1(void)
 
 void  fp_TableContainer::clearScreen(void)
 {
-	if(isThisBroken())
+	//
+	// If table is nested, do a clear screen on the topmost cell that 
+	// contains it
+	// This should be fixed later.
+	fp_Container *pUp = getContainer();
+	bool bIsNested = (pUp && (pUp->getContainerType() == FP_CONTAINER_CELL));
+	if(bIsNested && !m_bRecursiveClear)
+	{
+		fp_Container * pPrev = pUp;
+		while(pUp && pUp->getContainer() && (pUp->getContainer()->getContainerType() !=  FP_CONTAINER_COLUMN))
+		{
+			pPrev = pUp;
+			pUp = pUp->getContainer();
+		}
+		if(pPrev && pPrev->getContainerType() == FP_CONTAINER_CELL)
+		{
+			m_bRecursiveClear = true;
+			static_cast<fp_CellContainer *>(pPrev)->clearScreen();
+		}
+	}
+	m_bRecursiveClear = false;
+	if(isThisBroken()  && !bIsNested)
 	{
 		return;
 	}
