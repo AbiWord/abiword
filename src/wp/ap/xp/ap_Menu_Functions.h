@@ -31,6 +31,9 @@
 
 #include "ev_Menu_Actions.h"
 
-Defun_EV_GetMenuItemState_Fn(ap_GetState_Save);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_FontEffect);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Align);
 
 #endif /* AP_MENU_FUNCTIONS_H */

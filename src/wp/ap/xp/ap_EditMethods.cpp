@@ -17,7 +17,16 @@
  * Boston, MA 02111-1307, USA.
  */ 
 
-
+#undef DLGHACK		// HINT: don't even bother turning this on :-)
+#ifdef DLGHACK		// see bottom of file for an apology
+#ifdef WIN32
+#include <windows.h>
+#include "ut_debugmsg.h"
+#include "pd_Document.h"
+#include "fl_DocLayout.h"
+#include "gr_Win32Graphics.h"
+#endif
+#endif /* DLGHACK */
 
 #include "ev_EditMethod.h"
 #include "fv_View.h"
@@ -158,7 +167,7 @@ public:
 
 	static EV_EditMethod_Fn toggleBold;
 	static EV_EditMethod_Fn toggleItalic;
-	static EV_EditMethod_Fn toggleUnderline;
+	static EV_EditMethod_Fn toggleUline;
 	static EV_EditMethod_Fn toggleStrike;
 
 	static EV_EditMethod_Fn alignLeft;
@@ -295,7 +304,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 		EV_EditMethod(NF(toggleBold),			0,		""),
 		EV_EditMethod(NF(toggleItalic),			0,		""),
-		EV_EditMethod(NF(toggleUnderline),		0,		""),
+		EV_EditMethod(NF(toggleUline),			0,		""),
 		EV_EditMethod(NF(toggleStrike),			0,		""),
 
 		EV_EditMethod(NF(alignLeft),			0,		""),
@@ -940,24 +949,26 @@ Defun(querySaveAndExit)
 	return UT_TRUE;
 }
 
+// HACK: for now, map toggle* onto insFmt*
+// TODO: implement toggle semantics directly
 Defun(toggleBold)
 {
-	return UT_TRUE;
+	return EX(insFmtBold);
 }
 
 Defun(toggleItalic)
 {
-	return UT_TRUE;
+	return EX(insFmtItalic);
 }
 
-Defun(toggleUnderline)
+Defun(toggleUline)
 {
-	return UT_TRUE;
+	return EX(insFmtUline);
 }
 
 Defun(toggleStrike)
 {
-	return UT_TRUE;
+	return EX(insFmtStrike);
 }
 
 Defun(alignLeft)
@@ -994,4 +1005,315 @@ Defun(Test_Dump)
 	return UT_TRUE;
 }
 
+/*****************************************************************/
+/*****************************************************************/
 
+#ifdef DLGHACK
+
+/*
+	Having these platform-specific IFDEFs here is a gruesome HACK.
+	The only excuse is that it makes things easier while we figure 
+	out a better scheme for calling platform-specific dialogs from 
+	XP code.
+*/
+
+/*****************************************************************/
+/*****************************************************************/
+
+#ifdef WIN32
+
+#if FRAGMENT
+{
+		case RES_MENU_ITEM_NEW:
+			_newFile(hwnd, pG);
+
+			return 0;
+
+		case RES_MENU_ITEM_OPEN:
+			_showFile(_promptFile(hwnd, UT_FALSE), hwnd, pG);
+
+			return 0;
+
+#if 0 // TODO: bind save/saveas to exporters when ready
+		case RES_MENU_ITEM_SAVE:
+			{
+				char * pFileName = pDocLayout->getDocument()->getFilename();
+
+				if (pFileName)
+				{
+					RW_DocWriter dw(pDocLayout->getDocument());
+					dw.writeFile(pFileName);
+					return 0;
+				}
+				// fall through
+			}
+
+		case RES_MENU_ITEM_SAVEAS:
+			{
+				char * pNewFile = _promptFile(hwnd, UT_TRUE);
+
+				if (pNewFile)
+				{
+					RW_DocWriter dw(pDocLayout->getDocument());
+					dw.writeFile(pNewFile);
+				}
+				return 0;
+			}
+#endif
+			
+		case RES_MENU_ITEM_PRINT:
+			_printDoc(hwnd);
+			break;
+		}
+}
+#endif /* FRAGMENT */
+
+char * _promptFile(HWND hwnd, UT_Bool bSaveAs)
+{
+	OPENFILENAME ofn;       // common dialog box structure
+	char szFile[260];       // buffer for filename
+
+	szFile[0] = 0;
+
+	// Initialize OPENFILENAME
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = hwnd;
+	ofn.lpstrFile = szFile;
+	ofn.nMaxFile = sizeof(szFile);
+	ofn.lpstrFilter = "All\0*.*\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST;
+
+	// display the appropriate dialog box. 
+	if (bSaveAs)
+	{
+		if (GetSaveFileName(&ofn)==TRUE) 
+			return strdup(szFile);
+	}
+	else
+	{
+		ofn.Flags |= OFN_FILEMUSTEXIST;
+
+		if (GetOpenFileName(&ofn)==TRUE) 
+			return strdup(szFile);
+	}
+
+	DWORD err = CommDlgExtendedError();
+	UT_DEBUGMSG(("Didn't get a file: reason=0x%x\n", err));
+	UT_ASSERT(!err);
+
+	return NULL;
+}
+
+UT_Bool _showFile(char *fileName, HWND hwnd, DG_Graphics *pG)
+{
+	if (!fileName)
+		return UT_FALSE;
+
+	PD_Document * doc = new PD_Document();
+
+	if (!doc->readFromFile(fileName))
+	{
+		// HACK: for now, keep going
+		UT_DEBUGMSG(("_showFile -- falling back to new file\n"));
+		doc->newDocument();
+	}
+
+	if (fileName)
+		free(fileName);
+
+//	return _showDoc(hwnd, pG);
+	return UT_FALSE;
+} 
+
+UT_Bool _newFile(HWND hwnd, DG_Graphics *pG)
+{
+	PD_Document * doc = new PD_Document();
+	doc->newDocument();
+
+//	return _showDoc(hwnd, pG);
+	return UT_FALSE;
+} 
+
+UT_Bool _printDoc(HWND hwnd)
+{
+	PRINTDLG pd;
+	DOCINFO di;
+
+	memset(&pd, 0, sizeof(PRINTDLG));
+	pd.lStructSize = sizeof(PRINTDLG);
+	pd.hwndOwner = hwnd;
+	pd.Flags = PD_RETURNDC | PD_NOSELECTION | PD_PAGENUMS;
+
+	if(!PrintDlg(&pd))
+		return UT_FALSE;
+
+	PD_Document * doc;	// HACK to fake out compiler. otherwise useless
+
+	const char* pname = doc->getFilename();
+
+	di.cbSize = sizeof(DOCINFO);
+	di.lpszDocName = pname;
+	di.lpszOutput = NULL;
+	Win32Graphics* ppG = new Win32Graphics(pd.hDC, &di);
+
+	FL_DocLayout* pDL = new FL_DocLayout(doc, ppG);
+	pDL->formatAll();
+			
+	UT_uint32 iHeight = pDL->getHeight();
+	FV_View* pV = new FV_View(pDL);
+
+	dg_DrawArgs da;
+	da.pG = NULL;
+	da.width = pDL->getWidth();
+	da.height = pDL->getHeight();
+
+	ppG->startPrint();
+	
+//TODO allow page ranges
+	int nPages = pDL->countPages();
+	for(int i = 0; i < nPages; i++)
+	{
+		ppG->startPage(doc->getFilename(), i, TRUE, da.width,da.height);
+		pV->draw(i, &da);
+	}
+	ppG->endPrint();
+
+	// clean up
+	delete ppG;
+	// these next 2 cause some asserts...do I need to do these?
+	//	delete pDL;
+	//	delete pV;
+	DeleteDC(pd.hDC);
+	// free any memory allocated by StartDoc
+	if(pd.hDevMode != NULL)
+		GlobalFree(pd.hDevMode);
+	if(pd.hDevNames != NULL)
+		GlobalFree(pd.hDevNames);
+
+return UT_TRUE;
+}
+
+#endif /* WIN32 */
+
+
+/*****************************************************************/
+/*****************************************************************/
+
+#ifdef UNIX
+
+#if FRAGMENT
+{
+	case MENU_FILE_EXIT:
+		exit(0);
+		break;
+		
+	case MENU_FILE_NEW:
+		doc = new PD_Document();
+		doc->newDocument();
+		showDoc();
+		break;
+		
+	case MENU_FILE_OPEN:
+		fileDialogOp = which;
+		openNewDoc();
+		break;
+
+#if 0 // TODO: bind save/saveas to exporters when ready
+	case MENU_FILE_SAVE:
+		if (!pFileName)
+			break;
+		
+		saveFile(pFileName);
+		break;
+
+	case MENU_FILE_SAVEAS:
+		fileDialogOp = which;
+		openNewDoc();
+		break;
+#endif
+}
+#endif /* FRAGMENT */
+
+void fileSelection(GtkWidget* pDlg, GtkFileSelection *pFS)
+{
+	char *fileName;
+	fileName = gtk_file_selection_get_filename(GTK_FILE_SELECTION(pFS));
+	
+	if (fileDialogOp == MENU_FILE_OPEN)
+	{
+		pFileName = new char[strlen(fileName) + 1];
+		strcpy(pFileName, fileName);
+		openFile(pFileName);
+	}
+	else
+	{	
+		saveFile(fileName);
+	}
+
+	gtk_widget_destroy (GTK_WIDGET(pFS));
+}
+
+void openNewDoc(void)
+{
+	GtkWidget* pFileDlg;
+	
+	if (fileDialogOp == MENU_FILE_SAVE)
+		pFileDlg = gtk_file_selection_new("Open file");
+	else
+		pFileDlg = gtk_file_selection_new("Save file");
+
+	gtk_widget_show(pFileDlg);
+
+	gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION(pFileDlg));
+
+	gtk_signal_connect(GTK_OBJECT(pFileDlg), "destroy",
+					   GTK_SIGNAL_FUNC(gtk_widget_destroyed),
+					   &pFileDlg);
+
+	gtk_signal_connect(GTK_OBJECT(GTK_FILE_SELECTION (pFileDlg)->ok_button),
+					   "clicked", GTK_SIGNAL_FUNC(fileSelection),
+					   pFileDlg);
+	
+	gtk_signal_connect_object(GTK_OBJECT(GTK_FILE_SELECTION(pFileDlg)->cancel_button),
+							  "clicked", GTK_SIGNAL_FUNC(gtk_widget_destroy),
+							  GTK_OBJECT (pFileDlg));
+}	
+
+void saveFile(char* fileName)
+{
+#if 0 // TODO: bind save/saveas to exporters when ready
+	RW_DocWriter dw(pLayout->getDocument());
+	dw.writeFile(fileName);
+#endif
+}
+
+void openFile(char* fileName)
+{
+	doc = new PD_Document();
+
+	if (!doc)
+		return;
+
+	if (!doc->readFromFile(fileName))
+	{
+		// HACK: for now, keep going
+		UT_DEBUGMSG(("_showFile -- falling back to new file\n"));
+		doc->newDocument();
+	}
+  
+	pFileName = fileName;
+
+	showDoc();
+}
+
+#endif /* UNIX */
+
+/*****************************************************************/
+/*****************************************************************/
+
+#endif /* DLGHACK */

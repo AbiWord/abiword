@@ -51,8 +51,42 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE,				1,0,0,	NULL,				NULL,				NULL);
 	_s(AP_MENU_ID_FILE_NEW,			0,0,0,	"fileNew",			NULL,				NULL);
 	_s(AP_MENU_ID_FILE_OPEN,		0,1,0,	"fileOpen",			NULL,				NULL);
-	_s(AP_MENU_ID_FILE_SAVE,		0,0,0,	"fileSave",			ap_GetState_Save,	NULL);
+	_s(AP_MENU_ID_FILE_SAVE,		0,0,0,	"fileSave",			NULL,				NULL);
 	_s(AP_MENU_ID_FILE_SAVEAS,		0,1,0,	"fileSaveAs",		NULL,				NULL);
+	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_FILE_PRINT,		0,0,0,	"print",			NULL,				NULL);
+	_s(AP_MENU_ID_FILE_EXIT,		0,1,0,	NULL,				NULL,				NULL);
+
+	_s(AP_MENU_ID_EDIT,				1,0,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_EDIT_UNDO,		0,0,0,	"undo",				ap_GetState_Changes,	NULL);
+	_s(AP_MENU_ID_EDIT_REDO,		0,0,0,	"redo",				ap_GetState_Changes,	NULL);
+	_s(AP_MENU_ID_EDIT_CUT,			0,0,0,	"cut",				ap_GetState_Selection,	NULL);
+	_s(AP_MENU_ID_EDIT_COPY,		0,0,0,	"copy",				ap_GetState_Selection,	NULL);
+	_s(AP_MENU_ID_EDIT_PASTE,		0,0,0,	"paste",			NULL,				NULL);
+	_s(AP_MENU_ID_EDIT_CLEAR,		0,0,0,	"delRight",			ap_GetState_Selection,	NULL);
+	_s(AP_MENU_ID_EDIT_SELECTALL,	0,0,0,	"selectAll",		NULL,				NULL);
+	_s(AP_MENU_ID_EDIT_FIND,		0,1,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_EDIT_REPLACE,		0,1,0,	NULL,				NULL,				NULL);
+
+	_s(AP_MENU_ID_FORMAT,			1,0,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_FMT_FONT,			0,1,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_FMT_TABS,			0,1,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_FMT_BOLD,			0,0,1,	"toggleBold",		ap_GetState_FontEffect,	NULL);
+	_s(AP_MENU_ID_FMT_ITALIC,		0,0,1,	"toggleItalic",		ap_GetState_FontEffect,	NULL);
+	_s(AP_MENU_ID_FMT_UNDERLINE,	0,0,1,	"toggleUline",		ap_GetState_FontEffect,	NULL);
+	_s(AP_MENU_ID_FMT_STRIKE,		0,0,1,	"toggleStrike",		ap_GetState_FontEffect,	NULL);
+
+	_s(AP_MENU_ID_ALIGN,			1,0,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_ALIGN_LEFT,		0,0,1,	"alignLeft",		ap_GetState_Align,	NULL);
+	_s(AP_MENU_ID_ALIGN_CENTER,		0,0,1,	"alignCenter",		ap_GetState_Align,	NULL);
+	_s(AP_MENU_ID_ALIGN_RIGHT,		0,0,1,	"alignRight",		ap_GetState_Align,	NULL);
+	_s(AP_MENU_ID_ALIGN_JUSTIFY,	0,0,1,	"alignJustify",		ap_GetState_Align,	NULL);
+
+	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_HELP_READSRC,		0,0,0,	NULL,				NULL,				NULL);
+	_s(AP_MENU_ID_HELP_FIXBUGS,		0,0,0,	NULL,				NULL,				NULL);
 
 	// ... add others here ...
 	
