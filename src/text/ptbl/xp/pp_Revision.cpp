@@ -41,7 +41,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 			p = strtok(NULL, ";");
 
 			// if we have no p, that means the property is being removed ...
-			char * v = p ? p : "";
+			const char * v = p ? p : "";
 			
 			if(n)
 			{
@@ -78,7 +78,7 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * p
 		{
 			char * n = p;
 			p = strtok(NULL, ";");
-			char * v = p ? p : "";
+			const char * v = p ? p : "";
 			
 			if(n)
 			{
