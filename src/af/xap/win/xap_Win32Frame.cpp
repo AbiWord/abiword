@@ -658,14 +658,11 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 					XAP_App * pApp = f->getApp();
 					UT_ASSERT(pApp);
 					
-					XAP_Frame * pNewFrame;
-					// TODO Check if the current document is empty.
-					// TODO How do I do that?
-					if (0)
-					{
-						pNewFrame = f;
-					}
-					else
+					XAP_Frame * pNewFrame = 0;
+
+					// Check if the current document is empty.
+					if (f->isDirty() || f->getFilename() ||
+                        (f->getViewNumber() > 0))
 					{
 						pNewFrame = pApp->newFrame();
 						if (pNewFrame == NULL)
@@ -674,8 +671,11 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 							return 0;
 						}
 					}
-					
-					
+					else
+					{
+						pNewFrame = f;
+					}
+
 					UT_Error error = pNewFrame->loadDocument(bufsize, IEFT_Unknown);
 					if (error != UT_OK)
 					{
