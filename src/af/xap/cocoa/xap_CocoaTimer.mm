@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
 
 #import "xap_CocoaTimer.h"
 
