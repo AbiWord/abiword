@@ -135,6 +135,7 @@ protected:
 	UT_Bool				m_bInBlock;
 	UT_Bool				m_bInSpan;
 	const PP_AttrProp*	m_pAP_Span;
+	UT_Bool             m_bMultiCols;
 
 	// Need to look up proper type, and place to stick #defines...
 
@@ -148,8 +149,13 @@ void s_LaTeX_Listener::_closeSection(void)
 	{
 		return;
 	}
-	
-	m_pie->write("%% End of section\n");
+
+	if (m_bMultiCols)
+	{
+		m_pie->write("\\end{multicols}\n");
+		m_bMultiCols = UT_FALSE;
+	}
+
 	m_bInSection = UT_FALSE;
 	return;
 }
@@ -234,9 +240,9 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		{
 			m_iBlockType = BT_NORMAL;
 		}
-
+		
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
-
+		
 		if (
 			m_iBlockType == BT_NORMAL && (pAP->getProperty("text-align", szValue))
 			)
@@ -250,13 +256,33 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 	{
 		m_iBlockType = BT_NORMAL;
 	}
-
+	
 	m_bInBlock = UT_TRUE;
 }
 
-void s_LaTeX_Listener::_openSection(PT_AttrPropIndex /* api*/)
+void s_LaTeX_Listener::_openSection(PT_AttrPropIndex api)
 {
-	m_pie->write("%% New AbiWord Section\n");
+	const PP_AttrProp* pAP = NULL;
+
+	m_bMultiCols = UT_FALSE;
+
+	if (m_pDocument->getAttrProp(api, &pAP) && pAP)
+	{
+		const XML_Char* pszNbCols = NULL;
+		pAP->getProperty("columns", pszNbCols);
+
+		if (pszNbCols != NULL)
+			printf ("%s\n", pszNbCols);
+
+		if (pszNbCols != NULL && ((0 == UT_stricmp(pszNbCols, "2"))
+								  || (0 == UT_stricmp(pszNbCols, "3"))))
+		{
+			m_pie->write("\\begin{multicols}{");
+			m_pie->write(pszNbCols);
+			m_pie->write("}\n");
+			m_bMultiCols = UT_TRUE;
+		}
+	}
 }
 
 void s_LaTeX_Listener::_convertColor(char* szDest, const char* pszColor)
@@ -343,9 +369,7 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 			m_pie->write("\\textit{");
 		}
 		
-		if (
-			(pAP->getProperty("text-decoration", szValue))
-			)
+		if (pAP->getProperty("text-decoration", szValue))
 		{
 			const XML_Char* pszDecor = szValue;
 
@@ -365,55 +389,11 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 					m_pie->write("\\underline{");
 				}
 
-				q = strtok(NULL, " ");
-			}
-
-			free(p);
-		}
-
-		if (pAP->getProperty("text-decoration", szValue))
-		{
-			const XML_Char* pszDecor = szValue;
-			
-			XML_Char* p;
-			if (!UT_cloneString((char *&)p, pszDecor))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			XML_Char*	q = strtok(p, " ");
-
-			while (q)
-				{
 				if (0 == UT_stricmp(q, "overline"))
 				{
 					m_pie->write("$\\overline{\\textrm{");
 				}
 
-				q = strtok(NULL, " ");
-			}
-
-			free(p);
-		}
-
-		if (
-			(pAP->getProperty("text-decoration", szValue))
-			)
-		{
-			const XML_Char* pszDecor = szValue;
-			
-			XML_Char* p;
-			if (!UT_cloneString((char *&)p, pszDecor))
-			{
-				// TODO outofmem
-			}
-			
-			UT_ASSERT(p || !pszDecor);
-			XML_Char*	q = strtok(p, " ");
-
-			while (q)
-			{
 				if (0 == UT_stricmp(q, "line-through"))
 				{
 					m_pie->write("");	// TODO
@@ -429,11 +409,11 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			if (!UT_stricmp("superscript", szValue))
 			{
-				m_pie->write("$^{\\rm{}"); // TODO
+				m_pie->write("$^{\\rm{}"); // TODO: Finish it
 			}
 			else if (!UT_stricmp("subscript", szValue))
 			{
-				m_pie->write("$_{\\rm{}"); // TODO
+				m_pie->write("$_{\\rm{}"); // TODO: Finish it
 			}
 		}
 		
@@ -442,17 +422,11 @@ void s_LaTeX_Listener::_openSpan(PT_AttrPropIndex api)
 
 		if (pAP->getProperty("font-size", szValue))
 		{
-			const XML_Char* pszFontSize = NULL;
-		    pAP->getProperty("font-size", pszFontSize);
-
-			if (pszFontSize)
-			{
-				m_pie->write("{\\");
-				char szSize[16];
-				_convertFontSize(szSize, pszFontSize);
-				m_pie->write(szSize);
-				m_pie->write("{}");
-			}
+			m_pie->write("{\\");
+			char szSize[16];
+			_convertFontSize(szSize, szValue);
+			m_pie->write(szSize);
+			m_pie->write("{}");
 		}
 		
 		if (pAP->getProperty("font-family", szValue))
@@ -475,9 +449,9 @@ void s_LaTeX_Listener::_closeSpan(void)
 		const XML_Char * szValue;
 		
 		if (
-			(pAP->getProperty("color", szValue))
-		    || (pAP->getProperty("font-size", szValue))
-		    || (pAP->getProperty("font-family", szValue))
+//			(pAP->getProperty("color", szValue)) ||    // TODO
+		    (pAP->getProperty("font-size", szValue))
+//		    || (pAP->getProperty("font-family", szValue))  // TODO
 			)
 		{
 			m_pie->write("}");
@@ -684,6 +658,23 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			*pBuf++ = '\\';
 			pData++;
 			break;
+
+		case UCS_VTAB:					// VTAB -- representing a Forced-Column-Break -- TODO
+			pData++;
+			break;
+			
+		case UCS_FF:					// FF -- representing a Forced-Page-Break
+			*pBuf++ = '\\';
+			*pBuf++ = 'n';
+			*pBuf++ = 'e';
+			*pBuf++ = 'w';
+			*pBuf++ = 'p';
+			*pBuf++ = 'a';
+			*pBuf++ = 'g';
+			*pBuf++ = 'e';
+			pData++;
+			break;
+			
 			
 		default:
 			if (*pData < 256)
@@ -758,6 +749,7 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument,
 	
 	m_pie->write("\\documentclass[12pt]{article}\n");
 	m_pie->write("\\usepackage[T1]{fontenc}\n");
+	m_pie->write("\\usepackage{multicol}\t% TODO: I don't need this package if the document is a single column one.\n");
 	m_pie->write("\n");
 	m_pie->write("\\begin{document}\n");
 	m_pie->write("\n");
