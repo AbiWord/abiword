@@ -127,7 +127,9 @@ void fp_Container::setMyBrokenContainer(fp_Container * pMyBroken)
  */
 void fp_Container::clearBrokenContainers(void)
 {
-	m_pMyBrokenContainer = NULL;
+        if(m_pMyBrokenContainer)  // avoid unnecessarily dirtying of memory pages
+	        m_pMyBrokenContainer = NULL;
+
 	UT_uint32 i =0;
 	for(i=0;i<countCons();i++)
 	{
