@@ -265,23 +265,19 @@ on_motion_notify_event (GtkWidget *window, GdkEventMotion *ev, gpointer user_dat
 	
 	pixels_to_cells((size_t) ev->x, (size_t) ev->y, &selected_cols, &selected_rows);
 
-	if (selected_cols != table->selected_cols || selected_rows != table->selected_rows)
+	if ((selected_cols != table->selected_cols) || (selected_rows != table->selected_rows))
 	{
 		GdkRectangle update_rect;
 		
 		/* grow or shrink the table widget as necessary */
-		if (selected_rows == table->total_rows)
-			++table->total_rows;
-		else if (selected_rows < table->selected_rows)
-			--table->total_rows;
-
-		if (selected_cols == table->total_cols)
-			++table->total_cols;
-		else if (selected_cols < table->selected_cols)
-			--table->total_cols;
-
 		table->selected_cols = selected_cols;
 		table->selected_rows = selected_rows;
+
+		if(table->selected_rows <= 0 || table->selected_cols <= 0)
+			table->selected_rows = table->selected_cols = 0;
+
+		table->total_rows = table->selected_rows + 1;
+		table->total_cols = table->selected_cols + 1;
 
 		abi_table_resize(table);
 		
@@ -363,6 +359,8 @@ on_leave_event (GtkWidget *area,
 
 		table->selected_rows = 0;
 		table->selected_cols = 0;
+		table->total_rows = table->selected_rows + 1;
+		table->total_cols = table->selected_cols + 1;
 
 		abi_table_resize(table);
 		
@@ -445,8 +443,8 @@ gboolean
 on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
 	AbiTable* table = (AbiTable*) user_data;
-	gboolean change = TRUE;
 	GdkRectangle update_rect;
+	gboolean grew = FALSE;
 
 	DBG;
 	
@@ -454,18 +452,22 @@ on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 	{
 	case GDK_Up:
 	case GDK_KP_Up:
-		--table->selected_rows;
+		if (table->selected_rows > 0)
+			--table->selected_rows;
 		break;
 	case GDK_Down:
 	case GDK_KP_Down:
+		grew = TRUE;
 		++table->selected_rows;
 		break;
 	case GDK_Left:
 	case GDK_KP_Left:
-		--table->selected_cols;
+		if (table->selected_cols > 0)
+			--table->selected_cols;
 		break;
 	case GDK_Right:
 	case GDK_KP_Right:
+		grew = TRUE;
 		++table->selected_cols;
 		break;
 	case GDK_Escape:
@@ -481,14 +483,12 @@ on_key_event(GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 		return TRUE;
 	}
 
-	if (!change)
-		return TRUE;
-	
-	if (table->selected_rows == table->total_rows)
-		++table->total_rows;
-	if (table->selected_cols == table->total_cols)
-		++table->total_cols;
-	
+	if(table->selected_rows == 0 || table->selected_cols == 0)
+		table->selected_rows = table->selected_cols = (grew ? 1 : 0) ;
+
+	table->total_rows = table->selected_rows + 1;
+	table->total_cols = table->selected_cols + 1;	
+
 	abi_table_resize(table);
 	
 	update_rect.x = 0;
