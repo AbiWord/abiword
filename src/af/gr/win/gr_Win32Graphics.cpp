@@ -1666,7 +1666,7 @@ UT_sint32 GR_Win32Font::measureUnremappedCharForCache(UT_UCSChar cChar) const
 // rec.top = distance from the origin to the top of the glyph
 // rec.height = total height of the glyph
 
-bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec)
+bool GR_Win32Font::glyphBox(UT_UCS4Char g, UT_Rect & rec) const
 {
   // FIXME: Write the code for this!
   UT_ASSERT(0);
