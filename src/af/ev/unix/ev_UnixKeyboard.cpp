@@ -1,22 +1,22 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
@@ -73,7 +73,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	EV_EditBits state = 0;
 	EV_EditEventMapperResult result;
 	EV_EditMethod * pEM;
-	
+
 	if (e->state & GDK_SHIFT_MASK)
 		state |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)
@@ -82,7 +82,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 		state |= EV_EMS_ALT;
 
 	//UT_DEBUGMSG(("KeyPressEvent: keyval=%x state=%x\n",e->keyval,state));
-	
+
 	if (s_isVirtualKeyCode(e->keyval))
 	{
 		EV_EditBits nvk = s_mapVirtualKeyCodeToNVK(e->keyval);
@@ -102,7 +102,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 				// progress, we should let the system handle it
 				// (this lets things like ALT-F4 work).
 				return false;
-				
+
 			case EV_EEMR_BOGUS_CONT:
 				// If it is a bogus key but in the middle of a sequence,
 				// we should silently eat it (this is to prevent things
@@ -110,16 +110,16 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 				// to kill us, fine, but they shouldn't be in the middle
 				// of a sequence).
 				return true;
-				
+
 			case EV_EEMR_COMPLETE:
 				UT_ASSERT(pEM);
 				//UT_DEBUGMSG(("invokeKeyboardMethod (1)\n"));
 				invokeKeyboardMethod(pView,pEM,0,0); // no char data to offer
 				return true;
-				
+
 			case EV_EEMR_INCOMPLETE:
 				return true;
-				
+
 			default:
 				UT_ASSERT(0);
 				return true;
@@ -143,7 +143,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			// progress, we should let the system handle it
 			// (this lets things like ALT-F4 work).
 			return false;
-			
+
 		case EV_EEMR_BOGUS_CONT:
 			// If it is a bogus key but in the middle of a sequence,
 			// we should silently eat it (this is to prevent things
@@ -151,7 +151,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			// to kill us, fine, but they shouldn't be in the middle
 			// of a sequence).
 			return true;
-			
+
 		case EV_EEMR_COMPLETE:
 		  {
 			UT_ASSERT(pEM);
@@ -164,14 +164,14 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			/*
 				if gdk fails to translate, then we will try to do this
 				ourselves by calling kesym2ucs
-				
+
 				if the current locale is utf-8, we will also use keysym2ucs
 			*/
-			
+
 			if(XAP_EncodingManager::get_instance()->isUnicodeLocale() || mLength == 0)
 			{
 				UT_sint32 u = keysym2ucs(e->keyval);
-				
+
 				if(u == -1 || u > 0xFFFF) //conversion failed, or more than 16 bit requied
 				{
 					mLength = 0;
@@ -182,13 +182,13 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 					ucs = new UT_UCSChar[1];
 					ucs[0] = u;
 				}
-				
+
 				uLength = mLength;
 				//UT_DEBUGMSG(("#TF: keyval=%x, ucs=%x\n", ucs[0]));
 			}
 			else
 			{
-				UT_Mbtowc m;
+				UT_UCS4_mbtowc m;
 				ucs=new UT_UCSChar[mLength];
 				for(int i=0;i<mLength;++i)
 			  	{
@@ -196,18 +196,18 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 					if(m.mbtowc(wc,mbs[i]))
 					  ucs[uLength++]=wc;
 					//UT_DEBUGMSG(("ucs[i] 0x%04x, ",ucs[i]));
-			  	}					
+			  	}
 			  	//UT_DEBUGMSG((" uLength %d\n",uLength));
 			 }
 			//UT_DEBUGMSG(("invokeKeyboardMethod (2)\n"));
 			invokeKeyboardMethod(pView,pEM,ucs,uLength); // no char data to offer
 			delete[] ucs;
  			return true;
-	
+
 		  }
 		case EV_EEMR_INCOMPLETE:
 			return true;
-			
+
 		default:
 			UT_ASSERT(0);
 			return true;
@@ -282,7 +282,7 @@ static EV_EditBits s_Table_NVK_0xff[] =
 	EV_NVK__IGNORE__,    // GDK_Print 0xFF61
 	EV_NVK__IGNORE__,    // GDK_Execute 0xFF62
 	EV_NVK_INSERT,       // GDK_Insert 0xFF63
-	0, 
+	0,
 	EV_NVK__IGNORE__,    // GDK_Undo 0xFF65
 	EV_NVK__IGNORE__,    // GDK_Redo 0xFF66
 	EV_NVK__IGNORE__,    // GDK_Menu 0xFF67
@@ -314,7 +314,7 @@ static EV_EditBits s_Table_NVK_0xff[] =
 	EV_NVK_HOME,         // GDK_KP_Begin 0xFF9D
 	EV_NVK_INSERT,       // GDK_KP_Insert 0xFF9E
 	EV_NVK_DELETE,       // GDK_KP_Delete 0xFF9F
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0,                   // GDK_KP_Multiply 0xFFAA
 	0,                   // GDK_KP_Add 0xFFAB
 	0,                   // GDK_KP_Separator 0xFFAC
@@ -442,14 +442,14 @@ static bool s_isVirtualKeyCode(gint keyval)
 // Causes immediate on keypress segfault??
 	if (keyval >= GDK_KP_Space && keyval <= GDK_KP_9 && keyval != GDK_KP_Enter) // number pad keys
 		return false;
-	
+
 	if (keyval > 0xFF00)				// see the above table
 		return true;
 	if (keyval > 0xFE00)				// see the above table
 		return true;
 
 	UT_ASSERT(keyval <= 0xFD00);		// we don't what to do with 3270 keys
-	
+
 	if (keyval == 0x0020)				// special handling for ASCII-Space
 		return true;
 
@@ -468,12 +468,12 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval)
 
 	if (keyval > 0x0000FFFF)
 		return EV_NVK__IGNORE__;
-	
+
 	if (keyval > 0xFF00)
 		return s_Table_NVK_0xff[keyval - 0xFF00];
 	if (keyval > 0xFE00)
 		return s_Table_NVK_0xfe[keyval - 0xFE00];
-	
+
 	if (keyval == 0x0020)
 		return EV_NVK_SPACE;
 
@@ -495,7 +495,7 @@ static GdkModifierType s_getAltMask(void)
 	//////////////////////////////////////////////////////////////////
 	// find out what modifier mask XL_Alt_{L,R} are bound to.
 	//////////////////////////////////////////////////////////////////
-	
+
 	int alt_mask = 0;
 
 	Display * display = GDK_DISPLAY();
@@ -508,7 +508,7 @@ static GdkModifierType s_getAltMask(void)
 	int k,m;
 	int mAltL=-1;
 	int mAltR=-1;
-	
+
 	for (m=0; m<8; m++)
 	{
 		for (k=0; k<mkpm; k++)
@@ -529,7 +529,7 @@ static GdkModifierType s_getAltMask(void)
 	case 1:								// Alt_L is mapped to (Caps)LOCK ??
 	case 2:								// Alt_L is mapped to CONTROL ??
 		break;							// ... ignore this key.
-		
+
 	case 3: alt_mask |= GDK_MOD1_MASK; break;
 	case 4: alt_mask |= GDK_MOD2_MASK; break;
 	case 5: alt_mask |= GDK_MOD3_MASK; break;
@@ -545,7 +545,7 @@ static GdkModifierType s_getAltMask(void)
 	case 1:								// Alt_R is mapped to (Caps)LOCK ??
 	case 2:								// Alt_R is mapped to CONTROL ??
 		break;							// ... ignore this key.
-		
+
 	case 3: alt_mask |= GDK_MOD1_MASK; break;
 	case 4: alt_mask |= GDK_MOD2_MASK; break;
 	case 5: alt_mask |= GDK_MOD3_MASK; break;
@@ -557,7 +557,7 @@ static GdkModifierType s_getAltMask(void)
 
 	if (!alt_mask)						// if nothing set, fall back to MOD1
 		alt_mask = GDK_MOD1_MASK;
-	
+
 	//UT_DEBUGMSG(("Keycodes for alt [l 0x%x][r 0x%x] using modifiers [%d %d] yields [0x%x]\n",kcAltL,kcAltR,mAltL-2,mAltR-2,alt_mask));
 
 	return (GdkModifierType)alt_mask;

@@ -70,9 +70,9 @@ EV_Toolbar_Label::EV_Toolbar_Label(XAP_Toolbar_Id id,
 		  XAP_EncodingManager::get_instance()->getNativeSystemEncodingName() :
 		  XAP_EncodingManager::get_instance()->getNativeEncodingName();
 
-		UT_Mbtowc mbtowc_conv(encoding);
+		UT_UCS4_mbtowc mbtowc_conv(encoding);
 		UT_Wctomb wctomb_conv(encoding);
-		wchar_t wc;
+		UT_UCS4Char wc;
 
 		char letter_buf[20];
 		int length;

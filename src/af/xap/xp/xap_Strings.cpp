@@ -412,9 +412,9 @@ bool XAP_DiskStringSet::loadStringsFromDisk(const char * szFilename)
         UT_uint32 iOldLen = 0;
         FriBidiChar *fbdStr = 0, *fbdStr2 = 0;
 
-		UT_Mbtowc mbtowc_conv;
+		UT_UCS4_mbtowc mbtowc_conv;
 		UT_Wctomb wctomb_conv;
-		wchar_t wc;
+		UT_UCS4Char wc;
 
 		char letter_buf[20];
 		int length;

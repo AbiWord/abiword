@@ -1,19 +1,19 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -22,15 +22,15 @@
 
 #if 0
 /*
-    old version using wcrtomb. Implementation used on *BSD systems is plain 
-    wrong since it seems to always assume utf8 as mbs. It seems it won't work 
-    for non-utf8 locales (e.g. CJK native encodings and non-latin1 singlebyte 
+    old version using wcrtomb. Implementation used on *BSD systems is plain
+    wrong since it seems to always assume utf8 as mbs. It seems it won't work
+    for non-utf8 locales (e.g. CJK native encodings and non-latin1 singlebyte
     encodings. - hvv@hippo.ru
 */
 
 void UT_Wctomb::initialize()
 {
-  memset (&m_state, '\0', sizeof (m_state)); 
+  memset (&m_state, '\0', sizeof (m_state));
 }
 
 UT_Wctomb::UT_Wctomb()
@@ -48,7 +48,7 @@ enum
   T4      = 0xF0,
   T5      = 0xF8,
   T6      = 0xFC,
-  
+
   Bit1    = 7,
   Bitx    = 6,
   Bit2    = 5,
@@ -56,7 +56,7 @@ enum
   Bit4    = 3,
   Bit5    = 2,
   Bit6    = 2,
-  
+
   Mask1   = (1<<Bit1)-1,
   Maskx   = (1<<Bitx)-1,
   Mask2   = (1<<Bit2)-1,
@@ -64,26 +64,26 @@ enum
   Mask4   = (1<<Bit4)-1,
   Mask5   = (1<<Bit5)-1,
   Mask6   = (1<<Bit6)-1,
-  
+
   Wchar1  = (1UL<<Bit1)-1,
   Wchar2  = (1UL<<(Bit2+Bitx))-1,
   Wchar3  = (1UL<<(Bit3+2*Bitx))-1,
   Wchar4  = (1UL<<(Bit4+3*Bitx))-1,
   Wchar5  = (1UL<<(Bit5+4*Bitx))-1
-  
+
 #ifndef EILSEQ
   , /* we hate ansi c's comma rules */
   EILSEQ  = 123
 #endif /* PLAN9 */
 };
-	
+
 #endif
 
 #if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__) || defined(__FreeBSD__) || defined (TARGET_OS_MAC)
 #include <stdlib.h>
 
 //We have to do this since wctomb clashes with the class name
-int my_wctomb( char* s, wchar_t wchar, int *state ) {
+int my_wctomb( char* s, UT_UCS4Char wchar, int *state ) {
 #if (! defined(__OpenBSD__)) && (! defined(__FreeBSD__))
 	return wctomb(s, wchar);
 #else
@@ -138,7 +138,7 @@ int my_wctomb( char* s, wchar_t wchar, int *state ) {
 
 #endif
 
-int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
+int UT_Wctomb::wctomb(char * pC,int &length,UT_UCS4Char wc)
 {
 #if defined(__QNXNTO__) || defined(__BEOS__) || defined(__OpenBSD__) || defined(__FreeBSD__)|| defined (TARGET_OS_MAC)
   size_t len=my_wctomb(pC,wc, &m_state);
@@ -161,13 +161,13 @@ void UT_Wctomb::initialize()
 void UT_Wctomb::setOutCharset(const char* charset)
 {
     UT_iconv_close(cd);
-    cd = UT_iconv_open(charset,"UCS-2");
+    cd = UT_iconv_open(charset,"UCS-4");
     //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
 };
 
 UT_Wctomb::UT_Wctomb(const char* to_charset)
 {
-    cd = UT_iconv_open(to_charset,"UCS-2");
+    cd = UT_iconv_open(to_charset,"UCS-4");
     //UT_ASSERT(cd!=(iconv_t)-1); //it's better to return "?" instead of crashing
 };
 
@@ -191,7 +191,7 @@ UT_Wctomb::~UT_Wctomb()
 	    UT_iconv_close(cd);
 };
 
-int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
+int UT_Wctomb::wctomb(char * pC,int &length,UT_UCS4Char wc)
 {
     char buf[sizeof(short)];
     char* obuf = pC;
@@ -211,7 +211,7 @@ int UT_Wctomb::wctomb(char * pC,int &length,wchar_t wc)
     return 1;
 };
 
-void UT_Wctomb::wctomb_or_fallback(char * pC,int &length,wchar_t wc)
+void UT_Wctomb::wctomb_or_fallback(char * pC,int &length,UT_UCS4Char wc)
 {
     if (!wctomb(pC,length,wc)) {
 	pC[0]='?';

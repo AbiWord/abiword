@@ -4,14 +4,14 @@
 #include <limits.h>
 #include "ut_types.h"
 
-#if 0 
+#if 0
 /*
-    old version using wcrtomb. Implementation used on *BSD systems is plain 
-    wrong since it seems to always assume utf8 as mbs. It seems it won't work 
-    for non-utf8 locales (e.g. CJK native encodings and non-latin1 singlebyte 
+    old version using wcrtomb. Implementation used on *BSD systems is plain
+    wrong since it seems to always assume utf8 as mbs. It seems it won't work
+    for non-utf8 locales (e.g. CJK native encodings and non-latin1 singlebyte
     encodings. - hvv@hippo.ru
 */
-    
+
 
 #if (! defined(__OpenBSD__)) && (! defined(__FreeBSD__))
 #include <wchar.h>
@@ -23,8 +23,8 @@ typedef int mbstate_t;
 #endif
 
 #if  defined(__OpenBSD__) || defined (__FreeBSD__)
-typedef unsigned long wchar_t;
-size_t wcrtomb(char *,wchar_t,mbstate_t *);
+typedef unsigned long UT_UCS4Char;
+size_t wcrtomb(char *,UT_UCS4Char,mbstate_t *);
 #endif
 
 class ABI_EXPORT UT_Wctomb
@@ -32,7 +32,7 @@ class ABI_EXPORT UT_Wctomb
 public:
   void initialize();
   UT_Wctomb();
-  int wctomb(char * pC,int &length,wchar_t wc);
+  int wctomb(char * pC,int &length,UT_UCS4Char wc);
  private:
   mbstate_t m_state;
 };
@@ -46,11 +46,11 @@ public:
   void initialize();
   UT_Wctomb();
   UT_Wctomb(const char* to_charset);
-  UT_Wctomb(const UT_Wctomb& v);  
-  ~UT_Wctomb();  
-  int wctomb(char * pC,int &length,wchar_t wc);
-  void wctomb_or_fallback(char * pC,int &length,wchar_t wc);  
-  
+  UT_Wctomb(const UT_Wctomb& v);
+  ~UT_Wctomb();
+  int wctomb(char * pC,int &length,UT_UCS4Char wc);
+  void wctomb_or_fallback(char * pC,int &length,UT_UCS4Char wc);
+
   void setOutCharset(const char* charset);
  private:
   UT_iconv_t cd;

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -87,7 +87,7 @@ bool ImportStream::getChar(UT_UCSChar &ucs)
  */
 bool ImportStream::getRawChar(UT_UCSChar &ucs)
 {
-	wchar_t wc = 0;
+	UT_UCS4Char wc = 0;
 	unsigned char b;
 
 	if (m_bEOF)
@@ -198,7 +198,7 @@ Inserter::Inserter(PD_Document * pDocument, PT_DocPosition dPos) :
 bool Inserter::insertBlock()
 {
 	bool bRes;
-	
+
 	if (m_bClipboard)
 	{
 		bRes = m_pDocument->insertStrux(m_dPos, PTX_Block);
@@ -227,7 +227,7 @@ bool Inserter::insertBlock()
 bool Inserter::insertSpan(UT_GrowBuf &b)
 {
 	bool bRes;
-	
+
 	if (m_bClipboard)
 	{
 		bRes = m_pDocument->insertSpan(m_dPos, (UT_UCS4Char*)b.getPointer(0), b.getLength());
@@ -272,7 +272,7 @@ bool IE_Imp_Text_Sniffer::_recognizeUTF8(const char * szBuf,
 	while (p < reinterpret_cast<const unsigned char *>(szBuf + iNumbytes))
 	{
 		UT_sint32 iLen;
-		
+
 		if ((*p & 0x80) == 0)				// ASCII
 		{
 			++p;
@@ -297,13 +297,13 @@ bool IE_Imp_Text_Sniffer::_recognizeUTF8(const char * szBuf,
 			iLen = 3;
 		else if ((*p & 0xe0) == 0xc0)			// lead byte in 2-byte sequence
 			iLen = 2;
-		else	
+		else
 		{
 			// the above code covers all cases - if we reach here the logic is wrong
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
-	
+
 		while (--iLen)
 		{
 			++p;
@@ -319,7 +319,7 @@ bool IE_Imp_Text_Sniffer::_recognizeUTF8(const char * szBuf,
 		bSuccess = true;
 		++p;
 	}
-	
+
 	return bSuccess;
 }
 
@@ -334,7 +334,7 @@ IE_Imp_Text_Sniffer::UCS2_Endian IE_Imp_Text_Sniffer::_recognizeUCS2(const char 
 																	 bool bDeep)
 {
 	UCS2_Endian eResult = UE_NotUCS;
-	
+
 	if (iNumbytes >= 2)
 	{
 		const unsigned char *p = reinterpret_cast<const unsigned char *>(szBuf);
@@ -484,7 +484,7 @@ bool IE_Imp_EncodedText_Sniffer::getDlgLabels(const char ** pszDesc,
 /*
   Import data from a plain text file
  \param szFilename Name of file to import
-  
+
  Each line terminator is taken to be a paragraph break
 */
 UT_Error IE_Imp_Text::importFile(const char * szFilename)
@@ -496,7 +496,7 @@ UT_Error IE_Imp_Text::importFile(const char * szFilename)
 		UT_DEBUGMSG(("Could not open file %s\n",szFilename));
 		return UT_IE_FILENOTFOUND;
 	}
-	
+
 	ImportStream *pStream = 0;
 	UT_Error error;
 
@@ -531,7 +531,7 @@ Cleanup:
   Construct text importer
  \param pDocument Document to import text into
  \param bEncoded True if we should show encoding dialog
-  
+
  Uses current document's encoding if it is set
 */
 IE_Imp_Text::IE_Imp_Text(PD_Document * pDocument, bool bEncoded)
@@ -593,7 +593,7 @@ UT_Error IE_Imp_Text::_recognizeEncoding(const char *szBuf, UT_uint32 iNumbytes)
 		IE_Imp_Text_Sniffer::UCS2_Endian eUcs2 = IE_Imp_Text_Sniffer::UE_NotUCS;
 
 		eUcs2 = IE_Imp_Text_Sniffer::_recognizeUCS2(szBuf, iNumbytes, true);
-		
+
 		if (eUcs2 == IE_Imp_Text_Sniffer::UE_BigEnd)
 			_setEncoding(XAP_EncodingManager::get_instance()->getUCS2BEName());
 		else if (eUcs2 == IE_Imp_Text_Sniffer::UE_LittleEnd)
@@ -714,7 +714,7 @@ bool IE_Imp_Text::_doEncodingDialog(const char *szEncoding)
 	pDialog->runModal(pFrame);
 
 	// extract what they did
-	
+
 	bool bOK = (pDialog->getAnswer() == XAP_Dialog_Encoding::a_OK);
 
 	if (bOK)

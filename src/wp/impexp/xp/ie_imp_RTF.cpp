@@ -1618,7 +1618,7 @@ bool IE_Imp_RTF::ParseChar(UT_UCSChar ch,bool no_convert)
 			{
 				if (no_convert==0 && ch<=0xff)
 				{
-					wchar_t wc;
+					UT_UCS4Char wc;
 					// TODO Doesn't handle multibyte encodings (CJK)
 					if (m_mbtowc.mbtowc(wc,(UT_Byte)ch))
 						return AddChar(wc);
