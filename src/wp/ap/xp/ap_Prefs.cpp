@@ -121,11 +121,12 @@ UT_Bool AP_Prefs::loadBuiltinPrefs(void)
 	{
 		XML_Char *xp = UT_decodeXMLstring(_t[k].m_szValue);
 		UT_DEBUGMSG(("DEFAULT %s |%s|%s|\n", _t[k].m_szKey, _t[k].m_szValue, xp));
-		if (!pScheme->setValue(_t[k].m_szKey, xp))
-		  {
-		    FREEP(xp);
-		    goto Failed;
-		  }
+		UT_Bool bOK = pScheme->setValue(_t[k].m_szKey, xp);
+		FREEP(xp);
+		if (!bOK)
+		{
+			goto Failed;
+		}
 	}
 
 	addScheme(pScheme);					// set the builtin scheme in the base class
