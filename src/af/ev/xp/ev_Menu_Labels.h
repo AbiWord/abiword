@@ -37,7 +37,7 @@
 *****************************************************************/
 
 // TODO decide if we should make all labels Unicode
-// TODO decide if we really need tooltop for menu bar
+// TODO decide if we really need tooltip for menu bar
 
 class EV_Menu_Label
 {

@@ -36,11 +36,11 @@ class EV_Menu
 public:
 	EV_Menu(EV_EditMethodContainer * pEMC);
 	UT_Bool invokeMenuMethod(FV_View * pView,
-								 EV_EditMethod * pEM,
-								 UT_uint32 iPrefixCount,
-								 UT_UCSChar * pData,
-								 UT_uint32 dataLength);
-	
+							 EV_EditMethod * pEM,
+							 UT_uint32 iPrefixCount,
+							 UT_UCSChar * pData,
+							 UT_uint32 dataLength);
+
 protected:
 	EV_EditMethodContainer *	m_pEMC;
 };

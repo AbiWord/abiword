@@ -79,10 +79,6 @@ ALL_TRASH		= $(TARGETS) $(OBJS) $(OBJDIR) LOGS TAGS $(GARBAGE) \
 			  $(NOSUCHFILE) \
 			  so_locations
 
-# we used to echo this for each directory we did ("cd unix; make libs", for
-# example.  Why not just tell them the make command we're really doing?
-#
-#			echo "cd $$d; $(MAKE) $@";		\
 
 ifdef DIRS
 LOOP_OVER_DIRS		=					\
@@ -103,6 +99,7 @@ endif
 all:: build
 
 build::
+	@echo Building with [$(ABI_OPTIONS)].
 	+$(LOOP_OVER_DIRS)
 
 clean::
@@ -117,13 +114,13 @@ realclean clobber_all::
 	rm -rf $(wildcard *.OBJ *.OBJD) dist $(ALL_TRASH)
 	+$(LOOP_OVER_DIRS)
 
-$(PROGRAM): $(OBJS)
-	@$(MAKE_OBJDIR)
-ifeq ($(OS_NAME),WIN32)
-	@$(CC) -nologo $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
-else
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS)
-endif
+####$(PROGRAM): $(OBJS)
+####	@$(MAKE_OBJDIR)
+####ifeq ($(OS_NAME),WIN32)
+####	@$(CC) -nologo $(OBJS) -Fe$@ -link $(LDFLAGS) $(OS_LIBS) $(EXTRA_LIBS)
+####else
+####	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS)
+####endif
 
 $(LIBRARY): $(OBJS)
 	@$(MAKE_OBJDIR)

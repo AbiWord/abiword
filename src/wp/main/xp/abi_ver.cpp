@@ -29,8 +29,13 @@
 #define ABI_BUILD_VERSION		""
 #endif /* ABI_BUILD_VERSION */
 
+#ifndef ABI_BUILD_OPTIONS
+#define ABI_BUILD_OPTIONS		""
+#endif /* ABI_BUILD_OPTIONS */
+
 const char* AP_App::s_szBuild_ID = ABI_BUILD_ID;
 const char* AP_App::s_szBuild_Version = ABI_BUILD_VERSION;
+const char* AP_App::s_szBuild_Options = ABI_BUILD_OPTIONS;
 const char* AP_App::s_szBuild_CompileTime = __TIME__;
 const char* AP_App::s_szBuild_CompileDate = __DATE__;
 

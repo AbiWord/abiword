@@ -40,12 +40,20 @@ LIB_SUFFIX = lib
 DLL_SUFFIX = dll
 
 # Compiler flags (do we really need -GT?)
-OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -GT
-OPTIMIZER 	= -Od -Z7
-DEFINES 	= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC -DWIN32 -D_X86_
+# TODO go thru the compiler manual and see which ones we really need
+# TODO and should be using.  especially w/r/t debug vs. production.
 
-# note that we only build debug.  TODO
-DBG_OR_NOT = DBG
+ifdef ABI_OPT_DEBUG
+OPTIMIZER 	= -Od -Z7
+DEFINES 	= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC
+OBJ_DIR_SFX	= DBG
+else
+OPTIMIZER	= -Od -Z7
+DEFINES		= -DDEBUG -D_DEBUG -UNDEBUG -D_CRTDBG_MAP_ALLOC
+OBJ_DIR_SFX	= OBJ
+endif
+
+OS_CFLAGS 	= -W3 -nologo -GF -Gy -MDd -GT -DWIN32 -D_X86_
 
 # Shared library flags
 DLLFLAGS 	= -DEBUG -DEBUGTYPE:CV -OUT:"$@"

@@ -29,6 +29,8 @@
 // If your platform doesn't have a way to do accelerators or uses a different
 // character, remove or change the '&' in your menu constructor code.
 
+// TODO decide if we want menu items to have ToolTips ??
+
 BeginSet(EnUS)
 
 	MenuLabel(AP_MENU_ID__BOGUS1__,			NULL,NULL,NULL)

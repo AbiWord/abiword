@@ -36,11 +36,16 @@ DLL_SUFFIX	= so
 AR		= ar cr $@
 
 # Compiler flags
+# TODO evaluate the full set of compiler options.
+ifdef ABI_OPT_DEBUG
 OPTIMIZER	= -g
 DEFINES		= -DDEBUG -UNDEBUG
-
-# note that we only build debug.  TODO
-DBG_OR_NOT = DBG
+OBJ_DIR_SFX	= DBG
+else
+OPTIMIZER	=
+DEFINES		=
+OBJ_DIR_SFX	= OBJ
+endif
 
 # Includes
 OS_INCLUDES		=

@@ -18,6 +18,8 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
+ABI_OPT_DEBUG=1		// TODO remove this later
+
 ##################################################################
 ##################################################################
 ## abi_defs.mk --  Makefile definitions for building AbiSource software.
@@ -86,22 +88,32 @@ ABI_INCS=	$(addprefix -I, $(addprefix $(ABI_DEPTH),$(ABI_ALL_INCS)))
 ##################################################################
 ##################################################################
 
+## ABI_OPTIONS is a list of all the conditionally included options
+##             suitable for echoing during the build process or
+##             including in an AboutBox.
+
+ABI_ENABLED_OPTIONS=
+
 ## conditionally include support for JavaScript
 
 ifdef ABI_OPT_JS
 ABI_JSLIBS=		js
 ABI_JSDEFS=		-DABI_OPT_JS
+ABI_OPTIONS+=JavaScript:On
 else
 ABI_JSLIBS=
 ABI_JSDEFS=
+ABI_OPTIONS+=JavaScript:Off
 endif
 
-## enable some additional debugging and test code
+## conditionally enable some additional debugging and test code
 
 ifdef ABI_OPT_DEBUG
 ABI_DBGDEFS=		-DUT_DEBUG -DPT_TEST
+ABI_OPTIONS+=Debug:On
 else
 ABI_DBGDEFS=
+ABI_OPTIONS+=Debug:Off
 endif
 
 ##################################################################
@@ -159,7 +171,7 @@ define VERIFY_DIRECTORY
 if test ! -d xxxx; then rm -rf xxxx; $(INSTALL) -d xxxx; fi
 endef
 
-OBJDIR = $(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(DBG_OR_NOT)
+OBJDIR = $(OS_NAME)_$(OS_RELEASE)_$(OS_ARCH)_$(OBJ_DIR_SFX)
 
 # Figure out where the binary code lives.
 BUILD		= $(OBJDIR)

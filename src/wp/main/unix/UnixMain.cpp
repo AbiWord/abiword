@@ -35,6 +35,7 @@ int main(int argc, char ** argv)
 
 	printf("Build ID:\t%s\n", AP_App::s_szBuild_ID);
 	printf("Version:\t%s\n", AP_App::s_szBuild_Version);
+	printf("Build Options: \t%s\n", AP_App::s_szBuild_Options);
 	printf("Compile Date:\t%s\n", AP_App::s_szBuild_CompileDate);
 	printf("Compile Time:\t%s\n", AP_App::s_szBuild_CompileTime);
 
