@@ -515,7 +515,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
 	PT_DocPosition posEnd = pView->getSelectionAnchor();
 	fl_BlockLayout * pBL1 = pView->getBlockAtPosition(posStart);
 	fl_BlockLayout * pBL2 = pView->getBlockAtPosition(posEnd);
-	if((pBL1 != NULL) && (pBL1 != pBL2))
+	if((pBL1 == NULL) || (pBL2 == NULL)) // make sure we get valid blocks from selection beginning and end
+	{
+		s = EV_MIS_Gray;
+		return s;
+	}
+	if(pBL1 != pBL2) // don't allow Insert Hyperlink if selection spans multiple blocks
 	{
 	    s = EV_MIS_Gray ;
 		return s;
