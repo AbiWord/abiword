@@ -106,6 +106,7 @@ private:
 	int 	   _endComment (wvParseStruct *ps, UT_uint32 tag,
 						 void *props, int dirty);
 	XML_Char * _getBookmarkName(wvParseStruct * ps, UT_uint32 pos);
+	bool	   _insertBookmarkIfAppropriate();
 	bool	   _insertBookmark(bookmark * bm);
 	UT_Error   _handleImage (Blip *, long width, long height);
 	bool	   _handleCommandField (char *command);
@@ -123,6 +124,12 @@ private:
 	bool				m_bSetPageSize;
 	UT_UCSChar m_command [FLD_SIZE];
 	UT_UCSChar m_argument [FLD_SIZE];
+	UT_UCSChar *m_fieldWhich;
+	UT_sint32	m_fieldI;
+	UT_sint32	m_fieldDepth;
+	UT_sint32	m_fieldRet;
+	char *		m_fieldC;
+	//char *	  m_fieldA;
 	bool	   m_bIsLower;
 
 	bool m_bInSect;

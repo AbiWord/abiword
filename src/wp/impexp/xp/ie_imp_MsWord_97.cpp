@@ -399,6 +399,12 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_iImageCount (0),
 	m_nSections(0),
 	m_bSetPageSize(false),
+	m_fieldWhich(NULL),
+	m_fieldI(0),
+	m_fieldDepth(0),
+	m_fieldRet(0),
+	m_fieldC(NULL),
+	//m_fieldA(NULL),
 	m_bIsLower(false),
 	m_bInSect(false),
 	m_bInPara(false),
@@ -766,7 +772,7 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 	return error;
 }
 
-int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
+bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate()
 {
 	//now search for position m_iDocPosition in our bookmark list;
 	bookmark * bm = (bookmark*) bsearch((const void *) &m_iDocPosition, m_pBookmarks, m_iBookmarksCount, sizeof(bookmark),
@@ -782,12 +788,12 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	   while(bm->pos == m_iDocPosition)
 		  error |= _insertBookmark(bm++);
 	}
+	return error;
+}
 
-#ifdef DEBUG
-	if(error)
-		UT_DEBUGMSG(("IE_Imp_MsWord_97::_charProc: error inserting bookmark at pos %d\n",m_iDocPosition));
-#endif
-	m_iDocPosition++;
+int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
+{
+	_insertBookmarkIfAppropriate();
 
 	// convert incoming character to unicode
 	if (chartype)
@@ -806,6 +812,7 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 		break;
 
 	case 13: // end of paragraph
+		m_iDocPosition++;
 		return 0;
 
 	case 14: // column break
@@ -832,12 +839,15 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 
 	}
 
-	// TODO: i'm not sure if this is needed any more
+	// i'm not sure if this is needed any more
+	// yes, it is, for instance hyperlinks need it
 	if (ps->fieldstate)
 	{
 		xxx_UT_DEBUGMSG(("DOM: fieldstate\n"));
 		if(this->_fieldProc (ps, eachchar, chartype, lid))
+		{
 			return 0;
+		}
 	}
 
 	// take care of any oddities in Microsoft's character encoding
@@ -848,6 +858,8 @@ int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U
 	// Append the character to our character buffer
 	//
 	this->_appendChar ((UT_UCSChar) eachchar);
+	m_iDocPosition++;
+
 #ifdef BIDI_ENABLED
 	FriBidiCharType cType = fribidi_get_type((FriBidiChar)eachchar);
 	if(FRIBIDI_IS_STRONG(cType))
@@ -1656,13 +1668,13 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 		}			   
 	}
 
-	// there are times when we should use the third, Other font, 
+	// there are times when we should use the third, Other font,
 	// and the logic to know when somehow depends on the
 	// character sets or encoding types? it's in the docs.
-	
+
 	UT_ASSERT(fname != NULL);
 	xxx_UT_DEBUGMSG(("font-family = %s\n", fname));
-		
+
 	props += "font-family:";
 
 	if(fname)
@@ -1672,7 +1684,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	FREEP(fname);
 
 	xxx_UT_DEBUGMSG(("DOM: character properties are: '%s'\n", props.c_str()));
-	
+
 	propsArray[0] = (XML_Char *)"props";
 	propsArray[1] = (XML_Char *)props.c_str();
 	propsArray[2] = 0;
@@ -1695,87 +1707,86 @@ int IE_Imp_MsWord_97::_endChar (wvParseStruct *ps, UT_uint32 tag,
 /****************************************************************************/
 /****************************************************************************/
 
-int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar, 
+int IE_Imp_MsWord_97::_fieldProc (wvParseStruct *ps, U16 eachchar,
 								  U8 chartype, U16 lid)
 {
-	xxx_UT_DEBUGMSG(("DOM: fieldProc: %c %x\n", (char)eachchar, 
+	xxx_UT_DEBUGMSG(("DOM: fieldProc: %c %x\n", (char)eachchar,
 					 (int)eachchar));
 
 	//
 	// The majority of this code has just been ripped out of wv/field.c
 	//
 
-	static U16 *which = 0;
-	static int i = 0, depth = 0;
-	char *a = 0;
-	static char *c = 0;
-	static int ret = 0;
-	
 	if (eachchar == 0x13) // beginning of a field
 	{
-		a = 0;
-		ret = 1;
-		if (depth == 0)
+		//m_fieldA = 0;
+		m_fieldRet = 1;
+		if (m_fieldDepth == 0)
 		{
-			which = m_command;
+			m_fieldWhich = m_command;
 			m_command[0] = 0;
 			m_argument[0] = 0;
-			i = 0;
+			m_fieldI = 0;
 		}
-		depth++;
+		m_fieldDepth++;
 	}
 	else if (eachchar == 0x14) // field trigger
 	{
-		if (depth == 1)
+		if (m_fieldDepth == 1)
 		{
-			m_command[i] = 0;
-			c = wvWideStrToMB (m_command);
-			if (this->_handleCommandField(c))
-				ret = 1;
+			m_command[m_fieldI] = 0;
+			m_iDocPosition += UT_UCS_strlen(m_command) + 1; // +1 for the 0x14
+			m_fieldC = wvWideStrToMB (m_command);
+			if (this->_handleCommandField(m_fieldC))
+				m_fieldRet = 1;
 			else
-				ret = 0;
-			
-			xxx_UT_DEBUGMSG(("DOM: Field: command %s, ret is %d\n", 
-							 wvWideStrToMB(command), ret));
-			wvFree(c);
-			which = m_argument;
-			i = 0;
+				m_fieldRet = 0;
+
+			xxx_UT_DEBUGMSG(("DOM: Field: command %s, ret is %d\n",
+							 wvWideStrToMB(command), m_fieldRet));
+			wvFree(m_fieldC);
+			m_fieldWhich = m_argument;
+			m_fieldI = 0;
 		}
 	}
-	
-	if (i >= FLD_SIZE)
+
+	if (m_fieldI >= FLD_SIZE)
 	{
 		UT_DEBUGMSG(("DOM: Something completely absurd in the fields implementation!\n"));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 1;
 	}
 
-	if (!which) {
+	if (!m_fieldWhich) {
 		UT_DEBUGMSG(("DOM: _fieldProc - 'which' is null\n"));
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 1;
 	}
-	
+
 	if (chartype)
-		which[i] = wvHandleCodePage(eachchar, lid);
+		m_fieldWhich[m_fieldI] = wvHandleCodePage(eachchar, lid);
 	else
-		which[i] = eachchar;
-	
-	i++;
-	
+		m_fieldWhich[m_fieldI] = eachchar;
+
+	m_fieldI++;
+
 	if (eachchar == 0x15) // end of field marker
 	{
-		depth--;
-		if (depth == 0)
+		m_fieldDepth--;
+		if (m_fieldDepth == 0)
 		{
-			which[i] = 0;
-			a = wvWideStrToMB (m_argument);
-			c = wvWideStrToMB (m_command);
-			_handleFieldEnd (c);
-			wvFree (c);
+			m_fieldWhich[m_fieldI] = 0;
+			//I do not think we should convert this -- this is the field value
+			//displayed in the document; in most cases we do not need it, as we
+			//calulate it ourselves, but for instance for hyperlinks this is the
+			//the text to which the link is tied
+			//m_fieldA = wvWideStrToMB (m_argument);
+			m_fieldC = wvWideStrToMB (m_command);
+			_handleFieldEnd (m_fieldC);
+			wvFree (m_fieldC);
 		}
 	}
-	return ret;
+	return m_fieldRet;
 }
 
 bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
@@ -1793,11 +1804,25 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command)
 	  {
 	tokenIndex = s_mapNameToField (token);
 	switch (tokenIndex)
+	{
+		case F_HYPERLINK:
 		{
-		case FC_HYPERLINK:
-		token = strtok (NULL, "\"\" "); 	
-		getDoc()->appendObject(PTO_Hyperlink,NULL);
-		break;
+			token = strtok (NULL, "\"\" ");
+			UT_ASSERT(m_argument[0] == 0x14 && m_argument[m_fieldI - 1] == 0x15);
+			m_argument[m_fieldI - 1] = 0;
+			UT_UCSChar * a = m_argument + 1;
+			while(*a)
+			{
+				this->_appendChar(*a++);
+				m_iDocPosition++;
+				_insertBookmarkIfAppropriate();
+			}
+			this->_flush();
+			getDoc()->appendObject(PTO_Hyperlink,NULL);
+			// increase doc position for the 0x15
+			m_iDocPosition++;
+			break;
+		}
 		default:
 		break;
 		}
@@ -1809,14 +1834,16 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 {
 	Doc_Field_t tokenIndex = F_OTHER;
 	char *token = NULL;
-	
+
 	xxx_UT_DEBUGMSG(("DOM: handleCommandField '%s'\n", command));
-	
-	const XML_Char* atts[3];
+
+	const XML_Char* atts[5];
 	atts[0] = "type";
 	atts[1] = 0;
 	atts[2] = 0;
-	
+	atts[3] = 0;
+	atts[4] = 0;
+
 	if (*command != 0x13)
 	{
 		UT_DEBUGMSG(("DOM: field did not begin with 0x13\n"));
@@ -1827,7 +1854,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 	while ((token = strtok(NULL, "\t, ")))
 	{
 		tokenIndex = s_mapNameToField (token);
-		
+
 		switch (tokenIndex)
 		{
 		case F_EDITTIME:
@@ -1839,7 +1866,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		case F_DATE:
 			atts[1] = "date";
 			break;
-			
+
 		case F_PAGE:
 			atts[1] = "page_number";
 			break;
@@ -1851,13 +1878,23 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		case F_NUMPAGES:
 			atts[1] = "page_count";
 			break;
-	
+
 		case F_NUMWORDS:
 			atts[1] = "word_count";
 			break;
 
-		case F_FILENAME: 
+		case F_FILENAME:
 			atts[1] = "file_name";
+			break;
+
+		case F_PAGEREF:
+			token = strtok (NULL, "\"\" ");
+			atts[1] = "page_ref";
+			atts[2] = "param";
+			if(token)
+				atts[3] = (const XML_Char *) token;
+			else
+				atts[3] = "no_bookmark_given";
 			break;
 
 		case F_HYPERLINK:
@@ -1880,6 +1917,7 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		  }
 		new_atts[1] = href.c_str();
 		new_atts[2] = 0;
+		this->_flush();
 		getDoc()->appendObject(PTO_Hyperlink, new_atts);
 		return true;
 		  }
@@ -1889,12 +1927,13 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 			continue;
 		}
 
+		this->_flush();
 		if (!getDoc()->appendObject (PTO_Field, (const XML_Char**)atts))
 		{
 			UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1]));
 		}
 	}
-	
+
 	return true;
 }
 
@@ -1904,9 +1943,9 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
   IE_ImpGraphic * importer	= 0;
   FG_Graphic* pFG			= 0;
   UT_Error error			= UT_OK;
-  UT_ByteBuf * buf			= 0;  
+  UT_ByteBuf * buf			= 0;
   UT_ByteBuf * pictData 	= new UT_ByteBuf();
-  
+
   // suck the data into the ByteBuffer
 
   int data = 0;
