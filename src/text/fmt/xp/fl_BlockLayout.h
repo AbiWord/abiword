@@ -111,7 +111,7 @@ class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 
 public:
 	fl_BlockLayout(PL_StruxDocHandle sdh,
-				   fl_BlockLayout*, fl_SectionLayout*,
+				   fl_ContainerLayout* pPrev, fl_SectionLayout*,
 				   PT_AttrPropIndex indexAP, bool bIsHdrFtr = false);
 	~fl_BlockLayout();
 

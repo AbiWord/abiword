@@ -154,7 +154,7 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 //////////////////////////////////////////////////////////////////
 
 fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
-							   fl_BlockLayout* pPrev,
+							   fl_ContainerLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout,
 							   PT_AttrPropIndex indexAP, bool bIsHdrFtr)
 	: fl_ContainerLayout(pSectionLayout,sdh,indexAP,PTX_Block,FL_CONTAINER_BLOCK),

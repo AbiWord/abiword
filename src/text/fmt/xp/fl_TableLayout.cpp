@@ -626,7 +626,8 @@ bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pLBlock,
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
 	fl_ContainerLayout * pNewCL = NULL;
-	pNewCL = insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_BLOCK);
+	fl_ContainerLayout * pMyCL = myContainingLayout();
+	pNewCL = pMyCL->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_BLOCK);
 	fl_BlockLayout * pBlock = static_cast<fl_BlockLayout *>(pNewCL);
 //
 // Set the sectionlayout of this table to that of the block since it is that scope

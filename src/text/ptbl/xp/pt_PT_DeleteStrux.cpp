@@ -615,37 +615,38 @@ void pt_PieceTable::_deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdr
 // Now find the end of the text in the header/footer
 //
 	bool foundEnd = false;
-	if(!bStop)
+	while(!foundEnd)
 	{
-		while(!foundEnd)
+		foundEnd = pfFrag == getFragments().getLast();
+		if(!foundEnd && pfFrag->getType() == pf_Frag::PFT_Strux)
 		{
-			foundEnd = pfFrag == getFragments().getLast();
-			if(!foundEnd && pfFrag->getType() == pf_Frag::PFT_Strux)
-			{
-				const pf_Frag_Strux * pfFragStrux = static_cast<const pf_Frag_Strux *>(pfFrag);
-				foundEnd = pfFragStrux->getStruxType() != PTX_Block;
-			}
-			if(!foundEnd)
-			{
-				pfFrag = pfFrag->getNext();
-			}
+			const pf_Frag_Strux * pfFragStrux = static_cast<const pf_Frag_Strux *>(pfFrag);
+			foundEnd = ((pfFragStrux->getStruxType() != PTX_Block) &&
+						(pfFragStrux->getStruxType() != PTX_SectionTable) &&
+						(pfFragStrux->getStruxType() != PTX_SectionCell) &&
+						(pfFragStrux->getStruxType() != PTX_EndTable) &&
+						(pfFragStrux->getStruxType() != PTX_EndCell));
 		}
-		PT_DocPosition TextEndPos = 0;
-		TextEndPos = getFragPosition(pfFrag);
-		if(pfFrag == getFragments().getLast())
+		if(!foundEnd)
 		{
-			TextEndPos = getFragPosition(pfFrag->getPrev()) + pfFrag->getPrev()->getLength();
+			pfFrag = pfFrag->getNext();
 		}
-		UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Text End Pos = %d \n",TextEndPos));
+	}
+	PT_DocPosition TextEndPos = 0;
+	TextEndPos = getFragPosition(pfFrag);
+	if(pfFrag == getFragments().getLast())
+	{
+		TextEndPos = getFragPosition(pfFrag->getPrev()) + pfFrag->getPrev()->getLength();
+	}
+	UT_DEBUGMSG(("SEVIOR: Deleting hdrftr Text End Pos = %d \n",TextEndPos));
 //
 // OK delete the text
 //
-		if(TextEndPos > TextStartPos)
-		{
-			UT_uint32 iRealDeleteCount;
-			deleteSpan(TextStartPos,TextEndPos,NULL,iRealDeleteCount,true);
-			// TODO -- is this right with revisions ???
-		}
+	if(TextEndPos > TextStartPos)
+	{
+		UT_uint32 iRealDeleteCount;
+		deleteSpan(TextStartPos,TextEndPos,NULL,iRealDeleteCount,true);
+		// TODO -- is this right with revisions ???
 	}
 //
 // Now delete the struxes at the start.

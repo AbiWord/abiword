@@ -76,6 +76,7 @@ class fl_BlockLayout;
 
 class ABI_EXPORT fl_ContainerLayout : public fl_Layout
 {
+	friend class fl_BlockLayout;
 public:
 	fl_ContainerLayout(fl_ContainerLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, PTStruxType iStrux,fl_ContainerType iType);
 	virtual ~fl_ContainerLayout();
