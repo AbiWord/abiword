@@ -1020,7 +1020,6 @@ PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, pSS->getValueUTF8(AP_STRING_ID_DLG_Styl
 
 void  AP_QNXDialog_Styles::_constructFormatList(PtWidget_t * FormatMenu)
 {
-	PtWidget_t *FormatMenu_menu;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	const char *item;

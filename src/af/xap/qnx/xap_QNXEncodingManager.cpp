@@ -55,16 +55,10 @@ const char* XAP_QNXEncodingManager::getLanguageISOTerritory() const
 
 void  XAP_QNXEncodingManager::initialize()
 {
-	char szLocaleInfo[64];
-	static char szCodepage[64];
-	static char szSystemCodepage[64];
-	static char szLanguage[64];
-	static char szTerritory[64];
-	bool bNorwaySpecialCase = false;
 	char *ABLANG;
 	char *val;
 	char *lang;
-	Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName = "iso-8859-1";
+	Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName = "UTF-8";
 	LanguageISOName = "en";
 	LanguageISOTerritory = "US";
 

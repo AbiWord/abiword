@@ -73,22 +73,6 @@ static int s_update_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *i
 	return Pt_CONTINUE;
 }
 
-static int s_autocheck_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_WordCount * dlg = (AP_QNXDialog_WordCount *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_Checkbox();
-	return Pt_CONTINUE;
-}
-
-static int s_updateRate_changed(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
-{
-	AP_QNXDialog_WordCount * dlg = (AP_QNXDialog_WordCount *)data;
-	UT_ASSERT(widget && dlg);
-	dlg->event_Spin();
-	return Pt_CONTINUE;
-}
-
 static int s_delete_clicked(PtWidget_t * widget, void *data, PtCallbackInfo_t *info)
 {
 	AP_QNXDialog_WordCount * dlg = (AP_QNXDialog_WordCount *)data;

@@ -41,13 +41,6 @@
 
 #include "ut_qnxHelper.h"
 
-#ifdef ABISOURCE_LICENSED_TRADEMARKS
-#include "abiword_48_tm.xpm"
-#else
-#include "abiword_48.xpm"
-#endif
-
-
 #if !defined(Pt_ARG_SCROLLBAR_POSITION)
 #define Pt_ARG_SCROLLBAR_POSITION Pt_ARG_SCROLL_POSITION
 #endif

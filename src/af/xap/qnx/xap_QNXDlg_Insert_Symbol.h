@@ -22,10 +22,6 @@
 
 #include "xap_Dlg_Insert_Symbol.h"
 
-static UT_uint32 xap_QNXDlg_Insert_Symbol_first = 0;
-static UT_UCSChar m_CurrentSymbol;
-static UT_UCSChar m_PreviousSymbol;
-
 #define DEFAULT_QNX_SYMBOL_FONT "Symbol"
 
 class XAP_QNXFrame;

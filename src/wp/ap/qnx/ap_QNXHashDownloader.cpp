@@ -123,9 +123,8 @@ AP_QNXHashDownloader::wantedPackageType(XAP_Frame *pFrame)
 UT_sint32 
 AP_QNXHashDownloader::platformInstallPackage(XAP_Frame *pFrame, const char *szFName, const char *szLName, XAP_HashDownloader::tPkgType pkgType)
 {
-	char buff[512], tmpDir[512];
+	char buff[512];
 	UT_sint32 ret;
-        char *name = NULL, *hname;
 	UT_String pName;
 	
 	if (pkgType == pkgType_RPM) {

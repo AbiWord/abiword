@@ -171,16 +171,6 @@ bool EV_QNXMenu::menuEvent(XAP_Menu_Id id)
 	return true;
 }
 
-static const char * _ev_FakeName(const char * sz, UT_uint32 k)
-{
-	// construct a temporary string
-
-	static char buf[128];
-	UT_ASSERT(strlen(sz)<120);
-	sprintf(buf,"%s%d",sz,k);
-	return buf;
-}
-
 static char _ev_convert(char * bufResult,
 			const char * szString)
 {

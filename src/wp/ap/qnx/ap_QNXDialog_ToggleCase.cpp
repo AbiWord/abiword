@@ -131,7 +131,7 @@ void AP_QNXDialog_ToggleCase::runModal(XAP_Frame * pFrame)
 }
 
 static ToggleCase *find_entry(ToggleCase match) {
-	int i;
+	unsigned int i;
 	for(i=0; i< sizeof(toggle_entries) / sizeof(*toggle_entries); i++) {
 		if(toggle_entries[i] == match) {
 			return &toggle_entries[i];

@@ -251,7 +251,8 @@ szFileTypeLabel = pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel).c_
 		}
 	}
 	char *tmp=file_filter;
-while(tmp=strchr(tmp,';')) tmp[0]=',';
+while((tmp=strchr(tmp,';'))) 
+	tmp[0]=',';
 		
 	ret = PtFileSelection(parent,											/* Parent */
 						  NULL,												/* Position */

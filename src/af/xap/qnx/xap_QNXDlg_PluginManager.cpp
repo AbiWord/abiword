@@ -303,15 +303,6 @@ static int s_load_clicked (PtWidget_t *w, void *data, PtCallbackInfo_t *info)
 	return Pt_CONTINUE;
 }
 
-static int s_clist_selected (PtWidget_t *w, void *data, PtCallbackInfo_t *info)
-{
-	XAP_QNXDialog_PluginManager * dlg = (XAP_QNXDialog_PluginManager *)data;
-	UT_ASSERT (dlg);
-
-	dlg->event_Select1 ();
-	return Pt_CONTINUE;
-}
-
 /*****************************************************************/
 /*****************************************************************/
 
@@ -359,11 +350,9 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 	PtWidget_t *windowPlugins;
 	
 	PtWidget_t *clistPlugins;
-	PtWidget_t *lblActivePlugins;
 	PtWidget_t *btnDeactivate;
 	PtWidget_t *btnDeactivateAll;
 	PtWidget_t *btnInstall;
-	PtWidget_t *lblPluginList;
 	PtWidget_t *lblName;
 	PtWidget_t *lblDesc;
 	PtWidget_t *lblAuthor;
@@ -372,7 +361,6 @@ PtWidget_t * XAP_QNXDialog_PluginManager::_constructWindow ()
 	PtWidget_t *entryAuthor;
 	PtWidget_t *entryVersion;
 	PtWidget_t *textDescription;
-	PtWidget_t *lblPluginDetails;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 

@@ -63,7 +63,7 @@ double percent;
 	if(getProgress() == -1)
 	 	return;
 percent = ((double)(getProgress()))/((double)(getFileSize()))*100;
-value = percent;
+value = (long)percent;
 PtSetResource(m_progressBar,Pt_ARG_GAUGE_VALUE,value,0);
 }
 
