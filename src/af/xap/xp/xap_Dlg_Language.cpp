@@ -71,7 +71,8 @@ XAP_Dialog_Language::~XAP_Dialog_Language(void)
 void XAP_Dialog_Language::setLanguageProperty(const XML_Char * pLangProp)
 {
 	UT_ASSERT(m_pLangTable);
-	UT_uint32 indx	= m_pLangTable->getIndxFromProperty(pLangProp);
+	UT_uint32 indx	= m_pLangTable->getIndxFromProperty(
+		pLangProp ? pLangProp :"-none-");
 	m_pLanguage		= m_pLangTable->getNthLanguage(indx);
 	m_pLangProperty	= m_pLangTable->getNthProperty(indx);
 }

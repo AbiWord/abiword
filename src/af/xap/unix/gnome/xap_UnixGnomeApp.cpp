@@ -51,7 +51,9 @@ XAP_UnixGnomeApp::~XAP_UnixGnomeApp(void)
 
 bool XAP_UnixGnomeApp::initialize(void)
 {
+#ifndef ABI_OPT_WIDGET
 	gnome_init(m_szAppName, "0.0", m_pArgs->m_argc, m_pArgs->m_argv);
+#endif
 
 	// let the base class of XAP_UnixApp do it's thing.
 	

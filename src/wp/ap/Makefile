@@ -94,6 +94,10 @@ PLATFORM_OBJS+=	$(OBJDIR)/ap_$(ABI_FE)$(ABI_GNOME_PREFIX)App.$(OBJ_SUFFIX)			\
 endif
 endif
 
+ifdef ABI_OPT_WIDGET
+PLATFORM_OBJS+= $(OBJDIR)/abiwidget.$(OBJ_SUFFIX)
+endif
+
 OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Convert.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_New.$(OBJ_SUFFIX)		\
@@ -109,8 +113,8 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_Paragraph.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Replace.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Spell.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ap_Dialog_Styles.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ap_Dialog_Columns.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_Dialog_Styles.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_Dialog_Columns.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Background.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_ToggleCase.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Tab.$(OBJ_SUFFIX)		\
@@ -158,7 +162,6 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_TopRuler.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_splash.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)
-
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

@@ -398,6 +398,7 @@ bool AP_UnixFrame::initialize(void)
 								   AP_PREF_KEY_ToolbarLabelSet, AP_PREF_DEFAULT_ToolbarLabelSet))
 		return false;
 
+#ifndef ABI_OPT_WIDGET
 	_createTopLevelWindow();
 	// needs to be shown so that the following functions work
 	// TODO: get rid of cursed flicker caused by initially
@@ -406,6 +407,7 @@ bool AP_UnixFrame::initialize(void)
 	gtk_widget_show(m_wTopLevelWindow);
 	_showOrHideToolbars();
 	_showOrHideStatusbar();
+#endif
 
 	return true;
 }

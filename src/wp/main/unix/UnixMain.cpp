@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#ifndef ABI_OPT_WIDGET
+
 #include "ap_UnixApp.h"
 #include <unistd.h>
 
@@ -29,3 +31,5 @@ int main(int argc, char ** argv)
 	}
 	return AP_UnixApp::main(ABIWORD_APP_NAME, argc, argv);
 }
+
+#endif

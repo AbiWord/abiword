@@ -61,6 +61,10 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)TopRuler.cpp		\
 			ap_$(ABI_FE)ViewListener.cpp
 
+ifdef ABI_OPT_WIDGET
+CPPSRCS += abiwidget.cpp
+endif
+
 TARGETS=		$(OBJS)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

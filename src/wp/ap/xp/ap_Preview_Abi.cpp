@@ -70,8 +70,15 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 // Get the width of the current doc so we can scale the graphics context
 // zoom
 //
+
+#ifndef ABI_OPT_WIDGET
 	double curWidth = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Width(fp_PageSize::inch);
 	double curHeight = static_cast<PD_Document *>(pFrame->getCurrentDoc())->m_docPageSize.Height(fp_PageSize::inch);
+#else
+	// DOM: evil hack
+	double curWidth = 8.5;
+	double curHeight = 11.0;
+#endif
 
 	m_pApp = pFrame->getApp();
 //
