@@ -2465,12 +2465,31 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcr
 				delete pNuke;
 			}
 
+#if 0		      
+			//BUG: Code from Mike that crashes hard
+
 			UT_ASSERT(pRun);
 
 			m_pFirstRun = pRun;
 
 			// then link what's left
 			m_pFirstRun->insertIntoRunListAfterThis(*pLastRun);
+
+
+#else
+			//BUG: Quick and Dirty Replacement Code
+
+			m_pFirstRun = pRun;
+
+			//then link what's left
+			pLastRun->setNext(m_pFirstRun);
+
+			if(m_pFirstRun)
+			{
+				m_pFirstRun->setPrev(pLastRun);
+			}
+#endif
+			
 		}
 		else
 		{
