@@ -56,6 +56,16 @@ AP_QNXDialog_Download_File::~AP_QNXDialog_Download_File(void)
 {
 }
 
+void AP_QNXDialog_Download_File::_updateProgress(XAP_Frame *pFrame)
+{
+long value;
+double percent;
+	if(getProgress() == -1)
+	 	return;
+percent = ((double)(getProgress()))/((double)(getFileSize()))*100;
+value = percent;
+PtSetResource(m_progressBar,Pt_ARG_GAUGE_VALUE,value,0);
+}
 
 void AP_QNXDialog_Download_File::_runModal(XAP_Frame * pFrame)
 {
@@ -132,9 +142,12 @@ PtWidget_t * AP_QNXDialog_Download_File::_constructWindow(void)
 	mainwindow=PtCreateWidget(PtWindow,0,n,args);
 
 	n=0;
-	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,2,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_ROWS_COLS,3,0);
 	PtSetArg(&args[n++],Pt_ARG_GROUP_ORIENTATION,Pt_GROUP_VERTICAL,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_SPACING_Y,10,0);
+	PtSetArg(&args[n++],Pt_ARG_GROUP_FLAGS,Pt_TRUE,Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
 	group = PtCreateWidget(PtGroup,mainwindow,n,args);
+
 
 	n=0;
 
@@ -143,6 +156,11 @@ PtWidget_t * AP_QNXDialog_Download_File::_constructWindow(void)
 	PtSetArg(&args[n++],Pt_ARG_RESIZE_FLAGS,Pt_RESIZE_XY_AS_REQUIRED,Pt_RESIZE_XY_AS_REQUIRED);
 	PtCreateWidget(PtLabel,group,n,args);
 
+	n=0;
+	PtSetArg(&args[n++],Pt_ARG_GAUGE_VALUE_PREFIX,"%",0);
+	PtSetArg(&args[n++],Pt_ARG_ANCHOR_FLAGS,Pt_TRUE,Pt_LEFT_ANCHORED_LEFT|Pt_RIGHT_ANCHORED_RIGHT);
+	PtSetArg(&args[n++],Pt_ARG_HEIGHT,20,0);
+	m_progressBar = PtCreateWidget(PtProgress,group,n,args);
 	n=0;
 
 	PtSetArg(&args[n++],Pt_ARG_TEXT_STRING,pSS->getValue(XAP_STRING_ID_DLG_Cancel),0);
