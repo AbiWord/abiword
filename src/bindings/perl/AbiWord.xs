@@ -247,7 +247,8 @@ getSelectionText(pView)
 	CODE:
 		if (!pView->isSelectionEmpty())
 		{
-			UT_UCSChar* text = pView->getSelectionText();
+			UT_UCSChar* text;
+			pView->getSelectionText(text);
 			UT_uint32 size = UT_UCS4_strlen(text);
 			RETVAL = (char*) malloc(size);
 			UT_UCS4_strcpy_to_char(RETVAL, text);
