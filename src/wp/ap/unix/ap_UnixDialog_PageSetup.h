@@ -41,6 +41,9 @@ public:
 	virtual void event_PageUnitsChanged ();
 	virtual void event_MarginUnitsChanged ();
 
+	void doWidthEntry(void);
+	void doHeightEntry(void);
+
  protected:
 	// construction functions
 	virtual GtkWidget * _constructWindow (void);
@@ -70,7 +73,20 @@ public:
 	GtkWidget * m_spinMarginHeader;
 	GtkWidget * m_spinMarginFooter;
 
+	guint m_iEntryPageWidthID;
+	guint m_iEntryPageHeightID;
+	guint m_iOptionPageSizeListID;
+	guint m_iOptionPageUnitsListID;
+
     XAP_Frame * m_pFrame;
+
+	void _setWidth(const char * buf);
+	void _setHeight(const char * buf);
+
+	// The parent field behaves unpredictably, so we declare our own.
+	fp_PageSize m_PageSize;
+
+	void _updatePageSizeList();
 };
 
 #endif // AP_UnixDialog_PageSetup_H

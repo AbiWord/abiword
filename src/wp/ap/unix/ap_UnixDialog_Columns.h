@@ -185,12 +185,12 @@ protected:
 	guint m_threeHandlerID;
 	guint m_spinHandlerID;
 	UT_sint32 m_iSpaceAfter;	
-	UT_sint32 m_iSpaceAfterID;
+	guint m_iSpaceAfterID;
 	GtkWidget * m_wSpaceAfterSpin;
 	GtkWidget * m_wSpaceAfterEntry;
 	GtkObject * m_oSpaceAfter_adj;
 	UT_sint32 m_iMaxColumnHeight;	
-	UT_sint32 m_iMaxColumnHeightID;
+	guint m_iMaxColumnHeightID;
 	GtkWidget * m_wMaxColumnHeightSpin;
 	GtkWidget * m_wMaxColumnHeightEntry;
 	GtkObject * m_oSpinSize_adj;

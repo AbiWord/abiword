@@ -5412,11 +5412,20 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	// Need this for the conversion methods
 	//
 	fp_PageSize::Predefined orig_def,final_def;
+	double orig_wid = -1, orig_ht = -1, final_wid = -1, final_ht = -1;
+	fp_PageSize::Unit orig_ut, final_ut;
 	fp_PageSize pSize(pDoc->m_docPageSize.getPredefinedName());
 	orig_def = pSize.NameToPredefined(pSize.getPredefinedName());
 	//
 	// Set first page of the dialog properties.
 	//
+	if (orig_def == fp_PageSize::Custom)
+	{
+		orig_ut = pDoc->m_docPageSize.getUnit();
+		orig_ht = pDoc->m_docPageSize.Width(orig_ut);
+		orig_wid = pDoc->m_docPageSize.Height(orig_ut); 
+		pSize.Set(orig_ht, orig_wid, orig_ut);
+	}
 	pDialog->setPageSize(pSize);
 	AP_Dialog_PageSetup::Orientation orig_ori,final_ori;
 	orig_ori =	AP_Dialog_PageSetup::PORTRAIT;
@@ -5539,13 +5548,28 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	final_ori = pDialog->getPageOrientation();
 	final_unit = pDialog->getPageUnits();
 	final_scale = pDialog->getPageScale()/100.0;
-	if((final_def != orig_def) || (final_ori != orig_ori) || (final_unit != orig_unit) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) )
+
+	if (final_def == fp_PageSize::Custom)
+	{
+		final_ut = pDialog->getPageSize().getUnit();
+		final_wid = pDialog->getPageSize().Width(final_ut);
+		final_ht = pDialog->getPageSize().Height(final_ut); 
+	}
+
+	if((final_def != orig_def) || (final_ori != orig_ori) || (final_unit != orig_unit) || ((final_scale-orig_scale) > 0.001) || ((final_scale-orig_scale) < -0.001) || (orig_ht != final_ht) || (orig_wid != final_wid) || (orig_ut != final_ut) )
 	{
 	  //
 	  // Set the new Page Stuff
 	  //
-		pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
-		pDoc->m_docPageSize.Set(final_unit);
+ 		pDoc->m_docPageSize.Set(pSize.PredefinedToName(final_def));
+ 		pDoc->m_docPageSize.Set(final_unit);
+		if (final_def == fp_PageSize::Custom)
+		{
+			pDoc->m_docPageSize.Set(final_wid,
+									final_ht,
+									final_ut);
+		}
+
 		bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
 		if( p == true)
 		{ 

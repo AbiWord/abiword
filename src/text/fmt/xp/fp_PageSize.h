@@ -77,6 +77,9 @@ public:
 	double Width(Unit u) const;
 	double Height(Unit u) const;
 
+	/* These accessor methods should be used with the 
+	 * predefined page sizes to set proper initial margins. */
+	/* I don't think this is done at present. */
 	double MarginLeft(Unit u) const;
 	double MarginRight(Unit u) const;
 	double MarginTop(Unit u) const;

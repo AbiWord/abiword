@@ -248,7 +248,6 @@ void fp_PageSize::Set(double w, double h, Unit u)
 void fp_PageSize::Set(const char *name, Unit u)
 {
 	UT_ASSERT(u >= _first_predefined_unit_ && u <= _last_predefined_unit_dont_use_);
-	UT_DEBUGMSG(("fp_PageSize::Set(\"%s\")\n", (char*) name));
 
 	Set(NameToPredefined(name), u);
 }
