@@ -398,8 +398,11 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 static const PP_Revision s_hidden(0, PP_REVISION_DELETION, (XML_Char*)0, (XML_Char*)0);
 static const PP_Revision s_visible(0, PP_REVISION_ADDITION, (XML_Char*)0, (XML_Char*)0);
 
-const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32 id) const
+const PP_Revision *  PP_RevisionAttr::getGreatestLesserOrEqualRevision(UT_uint32 id)
 {
+	if(id == 0)
+		return getLastRevision();
+
 	const PP_Revision *r = NULL; // this will be the revision we are looking for
 	UT_uint32 r_id = 0;
 
@@ -487,7 +490,7 @@ const PP_Revision * PP_RevisionAttr::getLastRevision()
 /*! given revision level id, this function returns true if given
     segment of text is to be visible, false if it is to be hidden
 */
-bool PP_RevisionAttr::isVisible(UT_uint32 id) const
+bool PP_RevisionAttr::isVisible(UT_uint32 id)
 {
 	PP_RevisionType eType = getGreatestLesserOrEqualRevision(id)->getType();
 
@@ -655,6 +658,25 @@ void PP_RevisionAttr::removeRevisionIdTypeless(UT_uint32 iId)
 	}
 }
 
+/*! removes pRev unconditionally from the attribute
+*/
+void PP_RevisionAttr::removeRevision(const PP_Revision * pRev)
+{
+	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		PP_Revision * r = (PP_Revision *)m_vRev.getNthItem(i);
+
+		if(r == pRev)
+		{
+			m_vRev.deleteNthItem(i);
+			m_bDirty = true;
+			m_pLastRevision = NULL;
+			return;
+		}
+	}
+}
+
+
 /*! removes all IDs from the attribute whose value is lesser or
     equal the given id
 */
@@ -770,7 +792,7 @@ bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
     property pName, the value of which will be stored in pValue; see
     notes on PP_Revision::hasProperty(...)
 */
-bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue) const
+bool PP_RevisionAttr::hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue)
 {
 	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId);
 	return r->getProperty(pName, pValue);
@@ -788,7 +810,7 @@ bool PP_RevisionAttr::hasProperty(const XML_Char * pName, const XML_Char * &pVal
 
 /*! returns the type of cumulative revision up to iId represented by this attribute
  */
-PP_RevisionType PP_RevisionAttr::getType(UT_uint32 iId) const
+PP_RevisionType PP_RevisionAttr::getType(UT_uint32 iId)
 {
 	const PP_Revision * r = getGreatestLesserOrEqualRevision(iId);
 	return r->getType();

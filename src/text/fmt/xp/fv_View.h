@@ -34,6 +34,7 @@
 #include "ap_Dialog_Goto.h"
 #include "fl_AutoLists.h"
 #include "fl_SectionLayout.h"
+#include "pp_Revision.h"
 
 // number of milliseconds between cursor blinks
 const int AUTO_DRAW_POINT = 600;
@@ -523,6 +524,12 @@ protected:
 	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);
 	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
 											 PT_DocPosition &posEnd);
+
+	void                _acceptRejectRevision(bool bReject,
+											  PT_DocPosition iStart,
+											  PT_DocPosition iEnd,
+											  const PP_RevisionAttr * pRevAttr);
+
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;
 	UT_sint32			m_yPoint;

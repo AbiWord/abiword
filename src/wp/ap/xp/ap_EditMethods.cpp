@@ -836,8 +836,8 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(removeHeader), 		0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
 	EV_EditMethod(NF(replaceChar),			_D_,""),
-	EV_EditMethod(NF(revisionAccept),		0,  ""),
-	EV_EditMethod(NF(revisionReject),		0,  ""),
+	EV_EditMethod(NF(revisionAccept),		0,""),
+	EV_EditMethod(NF(revisionReject),		0,""),
 	EV_EditMethod(NF(rotateCase),			0,	""),
 
 	// s

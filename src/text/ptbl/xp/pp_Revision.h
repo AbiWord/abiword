@@ -111,8 +111,9 @@ class PP_RevisionAttr
 	void                  removeRevisionIdWithType(UT_uint32 iId, PP_RevisionType eType);
 	void                  removeRevisionIdTypeless(UT_uint32 iId);
 	void                  removeAllLesserOrEqualIds(UT_uint32 id);
+	void                  removeRevision(const PP_Revision * pRev);
 
-	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id) const;
+	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id);
 	const PP_Revision *   getLastRevision();
 
 	/*! please not that the following are convenience functions; if
@@ -120,14 +121,14 @@ class PP_RevisionAttr
 	    getGreatestLesserOrEqualRevision() or getLastRevision() and
 	    querie the returned PP_Revision object.
     */
-	bool                  isVisible(UT_uint32 id) const;
+	bool                  isVisible(UT_uint32 id);
 	bool                  isVisible();
-	bool                  hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue) const;
+	bool                  hasProperty(UT_uint32 iId, const XML_Char * pName, const XML_Char * &pValue);
 	bool                  hasProperty(const XML_Char * pName, const XML_Char * &pValue);
-	PP_RevisionType       getType(UT_uint32 iId) const;
+	PP_RevisionType       getType(UT_uint32 iId);
 	PP_RevisionType       getType();
 #if 0
-	const UT_Vector *     getProps(UT_uint32 iId) const;
+	const UT_Vector *     getProps(UT_uint32 iId);
 	const UT_Vector *     getProps();
 #endif
 	const XML_Char *      getXMLstring();

@@ -12339,44 +12339,210 @@ void FV_View::cmdAcceptRejectRevision(bool bReject, UT_sint32 xPos, UT_sint32 yP
 	fl_BlockLayout * pBlock = NULL;
 	fp_Run *pRun = NULL;
 
-	// !!! not finished
+	// Signal PieceTable Change
+	_saveAndNotifyPieceTableChange();
+	//m_pDoc->beginUserAtomicGlob();
+
 	if(isSelectionEmpty())
 	{
-		warpInsPtToXY(xPos, yPos,true);
+		if(xPos || yPos) // if given 0,0 use current position
+		{
+			warpInsPtToXY(xPos, yPos,true);
+		}
 
 		pBlock = getCurrentBlock();
 		PT_DocPosition iRelPos = getPoint() - pBlock->getPosition(false);
 
 		pRun = pBlock->getFirstRun();
-		while (pRun && pRun->getNext() && pRun->getBlockOffset()+ pRun->getLength() < iRelPos)
+		while (pRun && pRun->getNext() && pRun->getBlockOffset()+ pRun->getLength() <= iRelPos)
 			pRun= pRun->getNext();
 
 		UT_ASSERT(pRun);
-		fp_Run * pOrigRun = pRun;
+		//fp_Run * pOrigRun = pRun;
 
+		const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
+		iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
+		iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
+
+		_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
+
+#if 0
 		// now we have the run we clicked on, next we need to work back
 		// through the runs to find where the revision starts
+		// this does not work -- the PT gets out of sync with the
+		// layout; we can only do one run at at time
 		while(pRun && pRun->containsRevisions())
 		{
-			//do any necessary processing to accept/reject the revision
+			// do any necessary processing to accept/reject the
+		// revision
+			const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
+			iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
+			iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
+
+			_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
+
 			pRun = pRun->getPrev();
 		}
 
-		UT_ASSERT( pRun );
-
-		iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
-
-		pRun = pOrigRun;
+		// we have already processed the original run, so lets start
+		// with the one after it
+		pRun = pOrigRun->getNext();
 
 		while(pRun && pRun->containsRevisions())
 		{
 			// do any necessary processing to accept/reject the revision
+			const PP_RevisionAttr * pRevAttr = pRun->getRevisions();
+			iStart = pBlock->getPosition(false) + pRun->getBlockOffset();
+			iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
+
+			_acceptRejectRevision(bReject,iStart,iEnd,pRevAttr);
+
 			pRun = pRun->getNext();
 		}
+#endif
+	}
+	else
+	{
+		// selection
+		iStart = UT_MIN(getPoint(),m_iSelectionAnchor);
+		iEnd   = UT_MAX(getPoint(),m_iSelectionAnchor);
 
-		iEnd = pBlock->getPosition(false) + pRun->getBlockOffset() + pRun->getLength();
 
 	}
+
+	// Signal PieceTable Changes have finished
+	//m_pDoc->endUserAtomicGlob();
+	_generalUpdate();
+	_restorePieceTableState();
 }
 
+/*! will process the revision and apply fmt changes/deletes as appropriate;
+    NB: this function DOES NOT notify piecetable changes, it is the
+    responsibility of the caller to ensure that undo is properly bracketed
+*/
+void FV_View::_acceptRejectRevision(bool bReject, PT_DocPosition iStart, PT_DocPosition iEnd, const PP_RevisionAttr *pRevA)
+{
+	PP_RevisionAttr * pRevAttr = const_cast<PP_RevisionAttr*>(pRevA);
 
+	const XML_Char * ppAttr[3];
+	const XML_Char rev[] = "revision";
+	ppAttr[0] = rev;
+	ppAttr[1] = NULL;
+	ppAttr[2] = NULL;
+
+	const XML_Char ** ppProps, ** ppAttr2;
+	UT_uint32 i;
+
+	const PP_Revision * pRev = pRevAttr->getGreatestLesserOrEqualRevision(m_iViewRevision);
+
+	if(bReject)
+	{
+		switch(pRev->getType())
+		{
+			case PP_REVISION_ADDITION:
+			case PP_REVISION_ADDITION_AND_FMT:
+				// delete this fragment
+				m_pDoc->deleteSpan(iStart,iEnd,NULL);
+				break;
+
+			case PP_REVISION_DELETION:
+			case PP_REVISION_FMT_CHANGE:
+				// remove the revision attribute
+				m_pDoc->changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+				break;
+
+			default:
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		}
+	}
+	else
+	{
+		switch(pRev->getType())
+		{
+			case PP_REVISION_ADDITION:
+				// simply remove the revision attribute
+				m_pDoc->changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+				break;
+
+			case PP_REVISION_DELETION:
+				// delete this fragment
+				m_pDoc->deleteSpan(iStart,iEnd,NULL);
+				break;
+
+			case PP_REVISION_ADDITION_AND_FMT:
+				// overlay the formatting and remove the revision attribute
+				m_pDoc->changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+
+			case PP_REVISION_FMT_CHANGE:
+				// overlay the formatting and remove this revision
+				// from the revision attribute
+				ppProps = new const XML_Char *[2* pRev->getPropertyCount() + 1];
+				ppAttr2 = new const XML_Char *[2* pRev->getAttributeCount() + 3];
+
+				for(i = 0; i < pRev->getPropertyCount(); i++)
+				{
+					pRev->getNthProperty(i, ppProps[2*i],ppProps[2*i + 1]);
+				}
+
+				ppProps[2*i] = NULL;
+
+				for(i = 0; i < pRev->getAttributeCount(); i++)
+				{
+					pRev->getNthAttribute(i, ppAttr2[2*i],ppAttr2[2*i + 1]);
+				}
+
+				if(pRev->getType() == PP_REVISION_ADDITION_AND_FMT)
+				{
+					ppAttr2[2*i] = NULL;
+				}
+				else
+				{
+					// need to set a new revision attribute
+					// first remove current revision from pRevAttr
+					pRevAttr->removeRevision(pRev);
+					delete pRev;
+
+					ppAttr2[2*i] = rev;
+					ppAttr2[2*i + 1] = pRevAttr->getXMLstring();
+					ppAttr2[2*i + 2] = NULL;
+
+					if(*ppAttr2[2*i + 1] == 0)
+					{
+						// no revision attribute left, which means we
+						// have to remove it by separate call to changeSpanFmt
+
+						// if this is the only attribute, we just set
+						// the whole thing to NULL
+						if(i == 0)
+						{
+							delete ppAttr2;
+							ppAttr2 = NULL;
+						}
+						else
+						{
+							// OK, there are some other attributes
+							// left, so we set the rev name to NULL
+							// and remove the formatting by a separate
+							// call to changeSpanFmt
+							ppAttr2[2*i] = NULL;
+						}
+
+						// now we use the ppAttr set to remove the
+						// revision attribute
+						m_pDoc->changeSpanFmt(PTC_RemoveFmt,iStart,iEnd,ppAttr,NULL);
+					}
+				}
+
+
+				m_pDoc->changeSpanFmt(PTC_AddFmt,iStart,iEnd,ppAttr2,ppProps);
+
+				delete ppProps;
+				delete ppAttr2;
+
+				break;
+
+			default:
+				UT_ASSERT( UT_SHOULD_NOT_HAPPEN );
+		}
+	}
+}

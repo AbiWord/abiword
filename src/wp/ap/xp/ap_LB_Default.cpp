@@ -111,7 +111,8 @@ ap_bs_Mouse MouseTable[] =
 	{_CR _B1,	{ "selectLine",		"selectBlock",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 
 //  button-1, hyperlink context
-	{_CH _B1,	{ "warpInsPtToXY",	"hyperlinkJump",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
+	{_CH _B1,	{ "warpInsPtToXY",	"hyperlinkJump",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"	}},
+	{_CV _B1,	{ "warpInsPtToXY",	"selectWord",	"dragToXY",	"dragToXYword",	"endDrag",	"endDrag"		}},
 
 //	Button-1, Image-context
 //  { context	{ click				doubleclick		drag,		dbldrag,	release,		doublerelease	}},

@@ -239,6 +239,11 @@ public:
 	fp_Run *				getPrevVisual();
 
 	bool                    containsRevisions(){return (m_pRevisions != NULL);}
+	// would prefer to make the return value const, but the
+	// getLastRevision() and related functions use internal cache so
+	// they could not be called
+	PP_RevisionAttr *       getRevisions() const {return m_pRevisions;}
+
 
 
 #ifdef FMT_TEST
