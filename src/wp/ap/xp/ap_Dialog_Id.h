@@ -45,7 +45,10 @@ typedef enum _AP_Dialog_Id
 	AP_DIALOG_ID_COLUMNS,				/* Columns Dialog */
 	AP_DIALOG_ID_PAGE_NUMBERS, /* Page Numbers/ Header Footer Dialog */
 	AP_DIALOG_ID_STYLES,       /* define/edit/delete styles */
-
+	AP_DIALOG_ID_AUTOTEXT,   /* insert some autotext */
+	AP_DIALOG_ID_TOGGLECASE, /* change the case of a run of text */
+	AP_DIALOG_ID_BACKGROUND, /* change the doc's bg color */
+	
 	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */
