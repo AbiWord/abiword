@@ -1937,6 +1937,27 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				}
 			}
 		}
+		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN_ABOVE_TEXT)
+		{
+			fp_FrameContainer * pFrameCon = getNthFrameContainer(i);
+			//
+			// The frame container may not yet be created.
+			// 
+			if(pFrameCon)
+			{
+				fp_Line * pLine = static_cast<fp_Line *>(getLastContainer());
+				fp_Container * pCol = pLine->getColumn();
+				UT_return_val_if_fail(pCol,false);
+				fp_Page * pPage = pLine->getPage();
+				UT_return_val_if_fail(pPage,false);
+				pFrameCon->setX(pFrame->getFrameXColpos()+pCol->getX());
+				pFrameCon->setY(pFrame->getFrameYColpos()+pCol->getY());
+				if(pPage->findFrameContainer(pFrameCon) < 0)
+				{
+					pPage->insertFrameContainer(pFrameCon);
+				}
+			}
+		}
 		else
 		{
 			UT_DEBUGMSG(("Not implemented Yet \n"));
@@ -2124,6 +2145,10 @@ void fl_BlockLayout::format()
 				}
 				pRun->recalcWidth();
 				xxx_UT_DEBUGMSG(("Run %x has width %d \n",pRun,pRun->getWidth()));
+			}
+			if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+			{
+				pRun->lookupProperties();
 			}
 			pRun = pRun->getNextRun();
 		}
@@ -4340,6 +4365,19 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	return true;
 }
 
+/*!
+ * This method will append the text in the block to the UTF8 string supplied
+ */
+void fl_BlockLayout::appendUTF8String(UT_UTF8String & sText)
+{
+	UT_GrowBuf buf;
+	appendTextToBuf(buf);
+	const UT_UCS4Char * pBuff = reinterpret_cast<const UT_UCS4Char *>(buf.getPointer(0));
+	if((buf.getLength() > 0) && (pBuff != NULL))
+	{
+		sText.appendUCS4(pBuff,buf.getLength());
+	}
+}
 
 /*!
  * This method extracts all the text from the current block and appends it

@@ -56,11 +56,6 @@ XAP_UnixClipboard::~XAP_UnixClipboard()
 {
 	clearData(true,true);
 	g_free(m_Targets);
-
-#if 0
-	g_object_unref (G_OBJECT (m_clip));
-	g_object_unref (G_OBJECT (m_primary));
-#endif
 }
 
 //////////////////////////////////////////////////////////////////
@@ -281,27 +276,27 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 	UT_GenericVector<GdkAtom> atoms ;
 	for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
 		atoms.addItem(gdk_atom_intern(formatList[atomCounter],FALSE));
-  
+	
 	int len = atoms.size () ;
 	
-	for(int i = 0; i < len; i++)
+	for(int i = 0; i < len && !rval; i++)
     {
 		GdkAtom atom = atoms.getNthItem(i);
 		GtkSelectionData * selection = gtk_clipboard_wait_for_contents (clipboard, atom);
 		
-      if(selection)
-	  {
-		  if (selection->data && (selection->length > 0))
-		  {
-			  m_databuf.truncate(0);
-			  m_databuf.append(static_cast<UT_Byte *>(selection->data), static_cast<UT_uint32>(selection->length));
-			  *pLen = selection->length;
-			  *ppData = (void *)(m_databuf.getPointer(0));
-			  *pszFormatFound = formatList[i];
-			  rval = true;
-		  }
-	    gtk_selection_data_free(selection);
-	  }
+		if(selection)
+		{
+			if (selection->data && (selection->length > 0))
+			{
+				m_databuf.truncate(0);
+				m_databuf.append(static_cast<UT_Byte *>(selection->data), static_cast<UT_uint32>(selection->length));
+				*pLen = selection->length;
+				*ppData = (void *)(m_databuf.getPointer(0));
+				*pszFormatFound = formatList[i];
+				rval = true;
+			}
+			gtk_selection_data_free(selection);
+		}
     }
 	
 	return rval;

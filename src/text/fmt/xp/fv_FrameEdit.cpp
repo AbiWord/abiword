@@ -798,23 +798,23 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 //
 // Now insert a text box
 //
-		UT_sint32 origX = x;
-		UT_sint32 origY = y;
+		UT_sint32 iCursorOff = getGraphics()->tlu(8);
+		UT_sint32 origX = x + iCursorOff;
+		UT_sint32 origY = y + iCursorOff;
 		UT_sint32 iSize = getGraphics()->tlu(32);
-		x = x - iSize + getGraphics()->tlu(4) ;
-		y = y - iSize + getGraphics()->tlu(4);
-		m_recCurFrame.left = x;
-		m_recCurFrame.top = y;
+		m_recCurFrame.left = origX - iSize;;
+		m_recCurFrame.top = origY - iSize;;
 		m_recCurFrame.width = iSize;
 		m_recCurFrame.height = iSize;
 		m_iFrameEditMode = FV_FrameEdit_RESIZE_INSERT;
 		getDoc()->beginUserAtomicGlob();
-		mouseRelease(x,y);
+//		mouseRelease(x,y);
+		mouseRelease(origX,origY);
 		m_iFrameEditMode = FV_FrameEdit_RESIZE_EXISTING;
-		m_iLastX = origX;
-		m_iLastY = origY;
-		m_iInitialDragX = x;
-		m_iInitialDragY = y;
+		m_iLastX = x;
+		m_iLastY = y;
+		m_iInitialDragX = m_recCurFrame.left;
+		m_iInitialDragY = m_recCurFrame.top;
 		m_iDraggingWhat = FV_FrameEdit_DragBotRightCorner;
 		m_bFirstDragDone = false;
 		m_bInitialClick = true;
@@ -827,6 +827,8 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 										UT_String & sYpos,
 										UT_String & sWidth,
 										UT_String & sHeight,
+										UT_String & sColXpos,
+										UT_String & sColYpos,
 								   PT_DocPosition & posAtXY)
 {
 //
@@ -853,7 +855,25 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 			return false;
 		}
 //
-// Find the screen coords of this line, then work out the offset to the (x,y)
+// Need this for offset to column
+//
+		fp_Container * pCol = pLine->getColumn();
+//
+// Find the screen coords of pCol and substrct then from x,y
+//
+		UT_sint32 iColx = 0;
+		UT_sint32 iColy = 0;
+		fp_Page * pPage = pCol->getPage();
+		pPage->getScreenOffsets(pCol,iColx,iColy);
+		iColx = x - iColx;
+		iColy = y - iColy;
+		double xPos = static_cast<double>(iColx)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		double yPos = static_cast<double>(iColy)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		sColXpos = UT_formatDimensionedValue(xPos,"in", NULL);
+		sColYpos = UT_formatDimensionedValue(yPos,"in", NULL);
+
+//
+// Find the screen coords of pLine, then work out the offset to the (x,y)
 // point. After that workout the offset to the first line of the block.
 //
 //
@@ -873,7 +893,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		UT_DEBUGMSG(("Closest Line yLineoff %d \n",yLineOff));
 
 // OK correct for page offsets
-		fp_Page * pPage = pVCon->getPage();
+		pPage = pVCon->getPage();
 		if(pPage == NULL)
 		{
 			return false;
@@ -890,8 +910,8 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 // corner of the frame. We now have these in layout units. Convert to inches
 // now
 //
-		double xPos = static_cast<double>(xLineOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		double yPos = static_cast<double>(yLineOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		xPos = static_cast<double>(xLineOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
+		yPos = static_cast<double>(yLineOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		sXpos = UT_formatDimensionedValue(xPos,"in", NULL);
 		sYpos = UT_formatDimensionedValue(yPos,"in", NULL);
 		double dWidth = static_cast<double>(m_recCurFrame.width)/static_cast<double>(UT_LAYOUT_RESOLUTION);
@@ -931,16 +951,20 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 		UT_String sXpos("");
 		UT_String sYpos("");
+		UT_String sColXpos("");
+		UT_String sColYpos("");
 		UT_String sWidth("");
 		UT_String sHeight("");
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,posAtXY);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,posAtXY);
 		pf_Frag_Strux * pfFrame = NULL;
-		const XML_Char * props[14] = {"frame-type","textbox",
-									 "position-to","block-above-text",
+		const XML_Char * props[18] = {"frame-type","textbox",
+									 "position-to","column-above-text",
 									 "xpos",sXpos.c_str(),
 									 "ypos",sYpos.c_str(),
 									 "frame-width",sWidth.c_str(),
 									  "frame-height",sHeight.c_str(),
+									  "frame-col-xpos",sColXpos.c_str(),
+									  "frame-col-ypos",sColYpos.c_str(),
 									  NULL,NULL};
 //
 // This should place the the frame strux immediately after the block containing
@@ -1059,7 +1083,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		sProp = "position-to";
 		if(!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
 		{
-			sVal = "block-above-text";
+			sVal = "column-above-text";
 		}
 		else
 		{
@@ -1238,13 +1262,21 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sYpos("");
 		UT_String sWidth("");
 		UT_String sHeight("");
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,posAtXY);
-		
+		UT_String sColXpos("");
+		UT_String sColYpos("");
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,posAtXY);
 		sProp = "xpos";
 		sVal = sXpos;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 		sProp = "ypos";
 		sVal = sYpos;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+
+		sProp = "frame-col-xpos";
+		sVal = sColXpos;
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		sProp = "frame-col-ypos";
+		sVal = sColYpos;
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 
 		sProp = "frame-width";

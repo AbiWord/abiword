@@ -592,7 +592,7 @@ endif
 ## XML Parser
 ## Default = libxml2, peer = expat
 ifeq ($(ABI_OPT_PEER_EXPAT),1)
-  ABI_LIBS += expat
+  ABI_LIBS += Abi_libexpat
   CFLAGS += -DHAVE_EXPAT
   ABI_OPTIONS+=XML:expat
 else

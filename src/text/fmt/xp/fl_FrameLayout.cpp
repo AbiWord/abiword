@@ -584,6 +584,8 @@ void fl_FrameLayout::_lookupProperties(void)
 	const XML_Char *pszPositionTo = NULL;
 	const XML_Char *pszXpos = NULL;
 	const XML_Char *pszYpos = NULL;
+	const XML_Char *pszColXpos = NULL;
+	const XML_Char *pszColYpos = NULL;
 	const XML_Char *pszWidth = NULL;
 	const XML_Char *pszHeight = NULL;
 	const XML_Char *pszXpad = NULL;
@@ -622,6 +624,10 @@ void fl_FrameLayout::_lookupProperties(void)
 	{
 		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT;
 	}
+	else if(strcmp(pszPositionTo,"column-above-text") == 0)
+	{
+		m_iFramePositionTo = FL_FRAME_POSITIONED_TO_COLUMN_ABOVE_TEXT;
+	}
 	else 
 	{
 		UT_DEBUGMSG(("Unknown Position to %s \n",pszPositionTo));
@@ -651,6 +657,29 @@ void fl_FrameLayout::_lookupProperties(void)
 		m_iYpos = UT_convertToLogicalUnits(pszYpos);
 	}
 	UT_DEBUGMSG(("ypos for frame is %s \n",pszYpos));
+
+// ColXpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-col-xpos",pszColXpos))
+	{
+		m_iXColumn = UT_convertToLogicalUnits("0.0in");
+	}
+	else
+	{
+		m_iXColumn = UT_convertToLogicalUnits(pszColXpos);
+	}
+	UT_DEBUGMSG(("ColXpos for frame is %s \n",pszColXpos));
+// colYpos
+
+	if(!pSectionAP || !pSectionAP->getProperty("frame-col-ypos",pszColYpos))
+	{
+		m_iYColumn = UT_convertToLogicalUnits("0.0in");
+	}
+	else
+	{
+		m_iYColumn = UT_convertToLogicalUnits(pszColYpos);
+	}
+	UT_DEBUGMSG(("ColYpos for frame is %s units %d \n",pszColYpos,m_iYColumn));
 
 // Width
 

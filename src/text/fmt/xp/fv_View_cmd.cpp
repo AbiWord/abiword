@@ -3277,6 +3277,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 //
 // Code to select a paragraph break on selectLine if on first line of a Block.
 //
+	bool bRedraw = false;
 	if((dpBeg == FV_DOCPOS_BOL) || (dpBeg == FV_DOCPOS_BOP) || (dpBeg == FV_DOCPOS_BOD))
 	{
 		fl_BlockLayout * pBlock =  _findBlockAtPosition(iPosLeft);
@@ -3289,10 +3290,16 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 			if(pLine == static_cast<fp_Line *>(pBlock->getFirstContainer()))
 			{
 				iPosLeft = pBlock->getPosition() -1;
+				bRedraw = true; // Need to trick a global redraw in 
+				                // header/footer
 			}
 		}
 	}
 	cmdSelect (iPosLeft, iPosRight);
+	if(bRedraw && isHdrFtrEdit())
+	{
+		cmdSelect (iPosLeft+1, iPosRight);
+	}
 }
 
 void FV_View::cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos)
@@ -3606,7 +3613,6 @@ void FV_View::cmdPaste(bool bHonorFormatting)
 
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-
 }
 
 void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
@@ -3639,6 +3645,7 @@ void FV_View::cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos)
 	_ensureInsertionPointOnScreen();
 
 	m_pDoc->endUserAtomicGlob();
+	notifyListeners(AV_CHG_ALL);
 }
 
 UT_Error FV_View::cmdDeleteBookmark(const char* szName)
@@ -3940,8 +3947,8 @@ UT_Error FV_View::cmdInsertTOC(void)
 // Point is here after insert TOC-------------------------|
 //
 	fl_BlockLayout * pBL = getCurrentBlock();
-	PT_DocPosition pos = pBL->getPosition(true) -1;
-	if(pBL->getNext() == NULL)
+	PT_DocPosition pos = pBL->getPosition(true);
+	if((pBL->getNext() == NULL) || (pBL->getPrev() == NULL))
 	{
 		insertParagraphBreak();
 		pBL = getCurrentBlock();

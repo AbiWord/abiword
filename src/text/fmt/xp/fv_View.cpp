@@ -2485,10 +2485,12 @@ void FV_View::insertParagraphBreak(void)
 
 
 	m_pDoc->endUserAtomicGlob();
-	m_pDoc->notifyPieceTableChangeEnd();
+
+	// Signal piceTable is stable again
+	_restorePieceTableState();
+
 	// Signal piceTable is stable again
 	// Signal PieceTable Changes have finished
-	m_iPieceTableState = 0;
 
 	_generalUpdate();
 	// restore updates and clean up dirty lists
@@ -2496,6 +2498,7 @@ void FV_View::insertParagraphBreak(void)
 	m_pDoc->updateDirtyLists();
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	m_pLayout->considerPendingSmartQuoteCandidate();
 }
 
@@ -2628,7 +2631,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	PT_DocPosition curPos=0;
 	PT_DocPosition posNewStart = posStart;
 	PT_DocPosition posNewEnd = posEnd;
-	if(bisListStyle)
+	if(bisListStyle && !bCharStyle)
 	{
 //
 // Stop the Lists contained in the current selection.
@@ -2671,10 +2674,9 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 			}
 		}
 	}
-	else
+	else if(!bCharStyle)
 	{
 		UT_uint32 i;
-
 		for(i=0; i< vBlock.getItemCount(); i++)
 		{
 			pBL = vBlock.getNthItem(i);
@@ -7109,7 +7111,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->u.c.m_xColumnWidth = pColumn->getWidth();
 		if(pSection->getContainerType() == FL_CONTAINER_FOOTNOTE)
 		{
-			pInfo->m_iCurrentColumn = 1;
+			pInfo->m_iCurrentColumn = 0;
 			pInfo->m_iNumColumns = 1;
 			pInfo->u.c.m_xColumnGap = 0;
 			pInfo->u.c.m_xColumnWidth = pContainer->getWidth();
@@ -10409,6 +10411,26 @@ bool FV_View::isOverImageResizeBox(GR_Graphics::Cursor &cur, UT_uint32 xPos, UT_
 		return true;
 	}
 	
+	return false;
+}
+
+/*!
+  Check that an image is currently selected
+  
+  \return true if an image is selected otherwise false.
+  \todo eventually make it faster by not fetching the image data ID.
+ */
+bool FV_View::isImageSelected(void)
+{
+	const char * dataId;
+	PT_DocPosition pos = getSelectedImage(&dataId);
+
+	if (pos == 0) {
+		return false;
+	}
+	else { 
+		return true;
+	}
 	return false;
 }
 

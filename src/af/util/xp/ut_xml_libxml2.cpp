@@ -117,7 +117,12 @@ static void _fatalErrorSAXFunc(void *ctx,
   UT_DEBUGMSG((" fatal SAX function error here \n"));
 
   UT_DEBUGMSG(("%s", errorMessage.c_str()));
+  xmlParserCtxt * pCtx = reinterpret_cast<xmlParserCtxt *>(ctx);
+  UT_XML * pXML = static_cast<UT_XML *>(pCtx->userData);
+  UT_DEBUGMSG((" userData pointer is %x \n",pXML));
   UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+  pXML->stop();
+
 }
 
 #ifdef __MRC__
@@ -188,12 +193,10 @@ UT_Error UT_XML::parse (const char * szFilename)
 			if (xmlParseChunk (ctxt, buffer, static_cast<int>(length), 0))
 			{
 				UT_DEBUGMSG (("Error parsing '%s' (Line: %d, Column: %d)\n", szFilename, getLineNumber(ctxt), getColumnNumber(ctxt)));
-//				ret = UT_IE_IMPORTERROR;
-//				m_bStopped = false; 
-//				break;
+				ret = UT_IE_IMPORTERROR;
+				break;
 			}
 		}
-		m_bStopped = true; 
 		if (ret == UT_OK)
 			if (!m_bStopped)
 			{

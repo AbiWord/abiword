@@ -88,13 +88,15 @@ ifdef ABI_OPT_PROF
 endif
 
 ifeq ($(ABI_OPT_OPTIMIZE),1)
-OPTIMIZER	+= -O3
+#	No need to make more trouble for ourselves than necessary
+OPTIMIZER	+= -O2
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
 ABI_OPTIONS	+= Optimize:On
 ABI_OPT_DEBUG	= 0
     ifeq ($(ABI_OPT_EXCLUSIVE_OPT),1)
     OPTIMIZER := $(OPTIMIZER) -march=$(OS_REALARCH)
     else
+#	As soon as 3.4+ is current and not candidate, gotta use mtune
     OPTIMIZER := $(OPTIMIZER) -mcpu=$(OS_REALARCH)
     endif
 else
@@ -102,7 +104,8 @@ else
     OPTIMIZER	+= -Os -fno-default-inline -fno-inline
     else
     ifndef CXXFLAGS
-    OPTIMIZER	+= -O2
+#	No need to make more trouble for ourselves than necessary
+    OPTIMIZER	+= 
     endif
     endif
 endif
@@ -174,12 +177,13 @@ ABI_OTH_INCS+=	/../../wv/glib-wv
 
 # zlib
 ABI_ZLIB_ROOT = $(ABI_ROOT)/../libs/zlib
+OS_LIBS += -L$(ABI_ZLIB_ROOT)/lib
 ABI_ZLIB_INC = $(ABI_ZLIB_ROOT)/include
-ABI_ZLIB_LIB = $(ABI_ZLIB_ROOT)/lib/zdll
-ABI_LIBS += $(ABI_ZLIB_LIB)
+ABI_ZLIB_LIB = -lzdll
+ABI_LIBS += zdll 
 
 # so <fribidi.h> works
-CXXFLAGS += -I$(ABI_ROOT)/../fribidi	
+OS_INCLUDES += -I$(ABI_ROOT)/../fribidi	
 
 # Compiler flags
 # requires the commctrl.dll from ie4.0 or greater

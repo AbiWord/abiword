@@ -108,6 +108,10 @@ public:
 		{ return m_iXpos;}
 	UT_sint32                getFrameYpos(void) const
 		{ return m_iYpos;}
+	UT_sint32                getFrameXColpos(void) const
+		{ return m_iXColumn;}
+	UT_sint32                getFrameYColpos(void) const
+		{ return m_iYColumn;}
 
 	void                setFrameWidth(UT_sint32 iW) { m_iWidth = iW;}
 	void                setFrameHeight(UT_sint32 iH) { m_iHeight = iH;}
@@ -143,6 +147,9 @@ private:
 
 	UT_sint32               m_iXpad;
 	UT_sint32               m_iYpad;
+
+	UT_sint32               m_iXColumn;
+	UT_sint32               m_iYColumn;
 };
 
 #endif /* FRAMELAYOUT_H */

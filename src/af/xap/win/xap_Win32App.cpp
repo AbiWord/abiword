@@ -108,7 +108,12 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 		
 		// try to load Uniscribe; if we succeed we will make USP
 		// graphics the default
+
+#if ABI_OPT_DISABLE_USP
+		HINSTANCE hUniscribe = NULL;
+#else
 		HINSTANCE hUniscribe = LoadLibrary("usp10.dll");
+#endif
 
 		if(hUniscribe)
 		{

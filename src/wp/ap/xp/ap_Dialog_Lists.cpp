@@ -414,6 +414,7 @@ void AP_Dialog_Lists::Apply(void)
 					{
 						pBlock->resumeList(rBlock);
 						pBlock->getDocument()->enableListUpdates();
+						pBlock->getDocument()->updateDirtyLists();
 					}
 				}
 			}
@@ -433,6 +434,8 @@ void AP_Dialog_Lists::Apply(void)
 			}
 		}
 		clearDirty();
+		getView()->updateScreen(true);
+		getView()->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 		return;
 	}
 /*!
@@ -452,6 +455,8 @@ void AP_Dialog_Lists::Apply(void)
 			}
 		}
 	}
+	getView()->updateScreen(true);
+	getView()->notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 	clearDirty();
 }
 

@@ -350,9 +350,14 @@ class ABI_EXPORT GR_Graphics
 	
 	virtual void      setFont(GR_Font* pFont) = 0;
     virtual void      clearFont(void) = 0;
+
+//
+// These are all in device units!!
+//
 	virtual UT_uint32 getFontAscent() = 0;
 	virtual UT_uint32 getFontDescent() = 0;
 	virtual UT_uint32 getFontHeight() = 0;
+
 	void              invalidateCache(void);
 
 	virtual UT_uint32 measureString(const UT_UCSChar*s,

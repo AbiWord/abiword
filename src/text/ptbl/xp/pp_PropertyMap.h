@@ -71,6 +71,8 @@ public:
 		abi_footer_first,
 		abi_footer_last,
 		abi_format,
+		abi_frame_column_xpos,
+		abi_frame_column_ypos,
 		abi_frame_height,
 		abi_frame_width,
 		abi_frame_position_to,

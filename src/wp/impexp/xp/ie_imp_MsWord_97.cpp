@@ -103,13 +103,13 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 1:  return "Heading 1";
 		case 2:  return "Heading 2";
 		case 3:  return "Heading 3";
-		case 4:  return NULL /*"Heading 4"*/;
+		case 4:  return "Heading 4";
 		case 5:  return NULL /*"Heading 5"*/;
 		case 6:  return NULL /*"Heading 6"*/;
 		case 7:  return NULL /*"Heading 7"*/;
 		case 8:  return NULL /*"Heading 8"*/;
 		case 9:  return NULL /*"Heading 9"*/;
-		case 10: return NULL /*"Index 1"*/;
+		case 10: return NULL /*"Index 1"*/;  /* Really a dup of 92? */
 		case 11: return NULL /*"Index 2"*/;
 		case 12: return NULL /*"Index 3"*/;
 		case 13: return NULL /*"Index 4"*/;
@@ -118,11 +118,11 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 16: return NULL /*"Index 7"*/;
 		case 17: return NULL /*"Index 8"*/;
 		case 18: return NULL /*"Index 9"*/;
-		case 19: return NULL /*"TOC 1"*/;
-		case 20: return NULL /*"TOC 2"*/;
-		case 21: return NULL /*"TOC 3"*/;
-		case 22: return NULL /*"TOC 4"*/;
-		case 23: return NULL /*"TOC 5"*/;
+		case 19: return NULL /*"Contents 1"*/; /* Handled by insertTOC? */
+		case 20: return NULL /*"Contents 2"*/; /* Handled by insertTOC? */
+		case 21: return NULL /*"Contents 3"*/; /* Handled by insertTOC? */
+		case 22: return NULL /*"Contents 4"*/; /* Handled by insertTOC? */
+		case 23: return NULL /*"TOC 5"*/; /* See Contents above for these five as well */
 		case 24: return NULL /*"TOC 6"*/;
 		case 25: return NULL /*"TOC 7"*/;
 		case 26: return NULL /*"TOC 8"*/;
@@ -146,7 +146,7 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 44: return NULL /*"Index of Authorities"*/;
 		case 45: return NULL /*"Macro Text"*/;
 		case 46: return NULL /*"TOA Heading"*/;
-		case 47: return NULL /*"List"*/;
+		case 47: return NULL /*"List"*/;   //WARNING: beginPara appears to handle arbitrary lists via _mapDocToAbiList*
 		case 48: return "Bulleted List";
 		case 49: return "Numbered List";
 		case 50: return NULL /*"List 2"*/;
@@ -189,9 +189,9 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 		case 87: return NULL /*"Strong"*/;
 		case 88: return NULL /*"Emphasis"*/;
 		case 89: return NULL /*"Document Map"*/;
-		case 90: return "Plain Text";
+		case 90: return "Plain Text"; /* Really a dup of 109? */
 		case 91: return NULL /*"Email Signature"*/;
-	    case 92: return NULL /*"Index 1"*/;
+	    case 92: return NULL /*"Index 1"*/;  /* Really a dup of 10? */
 	    case 93: return NULL /*"List Bullet"*/;
 		case 94: return NULL /*"Normal (Web)"*/;
 		case 95: return NULL /*"HTML Acronym"*/;
@@ -208,10 +208,10 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
     	case 106: return NULL /*"Comment Subject"*/;
 		case 107: return NULL /*"No List"*/;
     	case 108: return NULL /*"Index Heading"*/;
-	    case 109: return NULL /*"Plain Text"*/;
+	    case 109: return "Plain Text";  /* Really a dup of 90? */
 	    case 110: return NULL /*"Hyperlink"*/;
 	    case 111: return NULL /*"FollowedHyperlink"*/;
-    	case 112: return NULL /*"EnumList"*/;
+    	case 112: return "Numbered List"; /* Was EnumList, really a dup of 49? Closer than nothing anyway*/
     	case 115: return NULL /*"Balloon Text"*/;
 
 		case 153: return NULL /*"Table of Authorities"*/;
@@ -219,6 +219,11 @@ static const XML_Char * s_translateStyleId(UT_uint32 id)
 
 		default:
 			UT_DEBUGMSG(("Unknown style Id [%d]; Please submit this document with a bug report!\n", id));
+			// Would be nice if we had a UT_USERMSG or something to put up a prompt (with a
+			// don't display again option) with the message in normal mode, OutputMsg or silent
+			// in commandline or docserver mode, etc.  Because it is the users, not the
+			// developers who will have such alien documents.  -MG
+		
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return NULL;
 	}
@@ -3346,6 +3351,10 @@ bool IE_Imp_MsWord_97::_isTOCsupported(field *f)
 /*!
    returns true if the TOC has been handled, false if the TOC type is unsupported
 */
+
+/* Does this handle the contents styles indirectly via inserting the TOC as new and
+	letting the default/initial pt code handle it like new rather than actually importing it? */
+
 bool IE_Imp_MsWord_97::_insertTOC(field *f)
 {
 	UT_return_val_if_fail(f,false);
@@ -6237,4 +6246,3 @@ bool IE_Imp_MsWord_97::_ignorePosition(UT_uint32 iDocPos)
 	
 	return false;
 }
-

@@ -40,7 +40,7 @@ bool _UT_OutputMessage_Divert (const char * debug_filename)
 
 void _UT_OutputMessage(const char *s, ...)
 {
-	char sBuf[1024];
+	char sBuf[20*1024];
 	va_list marker;
 
 	va_start(marker, s);
