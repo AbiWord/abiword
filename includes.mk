@@ -139,6 +139,9 @@ ABI_OBJECTS=xp/*.o @PLATFORM@/*.o
 SUFFIXES=.mm
 .mm.o:
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) $<
+# Added for automake (at least version 1.5) - Frodo Looijaard (frodol@dds.nl)
+.mm.lo:
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(AM_OBJCFLAGS) $(OBJCFLAGS) $<
 
 # MacOS X resource compiling
 # TODO add autoconf macros to detect Rez, ResMerger and other stuff. 
