@@ -4347,7 +4347,10 @@ void fl_BlockLayout::appendUTF8String(UT_UTF8String & sText)
 	UT_GrowBuf buf;
 	appendTextToBuf(buf);
 	const UT_UCS4Char * pBuff = reinterpret_cast<const UT_UCS4Char *>(buf.getPointer(0));
-	sText.appendUCS4(pBuff,buf.getLength());
+	if((buf.getLength() > 0) && (pBuff != NULL))
+	{
+		sText.appendUCS4(pBuff,buf.getLength());
+	}
 }
 
 /*!

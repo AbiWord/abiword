@@ -793,10 +793,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_UTF8String & sStyl
 
 			// now get rid of the old TOC block (this locates the shaddow to be removed by shd, so
 			// it works whether passed the shaddow block or the main doc block)
-			UT_UTF8String sText;
-			sText.clear();
-			pPrevBL->appendUTF8String(sText);
-			UT_DEBUGMSG(("Dlete Block containing.. \n %s \n",sText.utf8_str())); 
+
 			_removeBlockInVec(pPrevBL, true);
 			pPrevBL = NULL;
 
