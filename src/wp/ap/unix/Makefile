@@ -80,7 +80,7 @@ endif
 
 TARGETS=		$(OBJS)
 
-INCLUDES+= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv
+INCLUDES+= -I$(ABI_ROOT)/../wv -I$(ABI_ROOT)/../wv/exporter -I$(ABI_ROOT)/../wv/libole2 -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../psiconv -DABIWORD_PLUGINDIR="\"$(prefix)/lib/AbiWord-2.0/plugins/\""
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

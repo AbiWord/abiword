@@ -674,8 +674,7 @@ void AP_UnixApp::loadAllPlugins ()
   UT_String pluginDir;
 
   // the global plugin directory
-  pluginDir = getAbiSuiteAppDir();
-  pluginDir += "/plugins/";
+  pluginDir = ABIWORD_PLUGINDIR;
   pluginList[0] = pluginDir;
 
   // the user-local plugin directory
