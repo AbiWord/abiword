@@ -1776,9 +1776,11 @@ UT_sint32 isPNG(const char * szFileName)
   FILE * fp = fopen(szFileName, "r");
   char str[10] = "";
   char str2[10] = "\211PNG";
-  fgets(str, 4, fp);
+  char str3[10] = "<89>PNG";
+  fgets(str, 6, fp);
   fclose(fp);
-  return (strncmp(str, str2, 4));
+  UT_DEBUGMSG(("header: %s\n", str));
+  return (!(strncmp(str, str2, 4)) || !(strncmp(str, str3, 6)));
 }
 
 // This function is no longer needed
@@ -1816,8 +1818,9 @@ Defun1(fileInsertGraphic)
 	// here we see that it is really a png file - this will have to be modified 
 	// as we add support for new graphics types
 
-	UT_sint32 tmpVar = isPNG(pNewFile);
-	if(!(tmpVar == 0))
+	UT_Bool tmpVar = isPNG(pNewFile);
+	
+	if(!tmpVar)
 	  {
 	    errorCode = UT_IE_FAKETYPE;
 	    s_CouldNotLoadFileMessage(pFrame, pNewFile, errorCode);
