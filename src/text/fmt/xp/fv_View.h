@@ -175,7 +175,7 @@ public:
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft);
 	virtual UT_Error		cmdSaveAs(const char * szFilename, int ieft, bool cpy);
 
-	UT_Error        cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols);
+	UT_Error        cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML_Char * pPropsArray[]);
 	UT_Error		cmdInsertField(const char* szName, const XML_Char ** extra_attrs = NULL, const XML_Char ** extra_props = NULL);
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);

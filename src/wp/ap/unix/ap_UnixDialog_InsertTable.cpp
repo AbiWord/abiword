@@ -77,18 +77,6 @@ static void s_cancel_clicked(GtkWidget * widget, AP_UnixDialog_InsertTable * dlg
 	dlg->event_Cancel();
 }
 
-static void s_row_spin(GtkWidget * widget, AP_UnixDialog_InsertTable * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_SpinRows();
-}
-
-static void s_col_spin(GtkWidget * widget, AP_UnixDialog_InsertTable * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_SpinCols();
-}
-
 static void s_delete_clicked(GtkWidget * /* widget */,
 							 gpointer /* data */,
 							 AP_UnixDialog_InsertTable * dlg)
@@ -130,6 +118,9 @@ void AP_UnixDialog_InsertTable::runModal(XAP_Frame * pFrame)
 	// Run into the GTK event loop for this window.
 	gtk_main();
 
+	// Store the window settings
+	_storeWindowData();
+
 	if(mainWindow && GTK_IS_WIDGET(mainWindow))
 	  gtk_widget_destroy(mainWindow);
 }
@@ -147,16 +138,6 @@ void AP_UnixDialog_InsertTable::event_Cancel(void)
 	gtk_main_quit();
 }
 
-void AP_UnixDialog_InsertTable::event_SpinRows(void)
-{
-	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowspin));
-}
-
-void AP_UnixDialog_InsertTable::event_SpinCols(void)
-{
-	m_numCols = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColspin));
-}
-
 void AP_UnixDialog_InsertTable::event_WindowDelete(void)
 {
 	m_answer = AP_Dialog_InsertTable::a_CANCEL;	
@@ -168,6 +149,47 @@ void AP_UnixDialog_InsertTable::event_WindowDelete(void)
 GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 {
 	GtkWidget * windowInsertTable;
+	GtkWidget * hbuttonboxInsertTable;
+	GtkWidget * buttonOK;
+	GtkWidget * buttonCancel;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	windowInsertTable = gtk_window_new (GTK_WINDOW_DIALOG);
+	gtk_window_set_title (GTK_WINDOW (windowInsertTable), "Insert Table"/*pSS->getValue(AP_STRING_ID_DLG_InsertTable)*/);
+	gtk_window_set_policy (GTK_WINDOW (windowInsertTable), FALSE, FALSE, FALSE);
+	
+	gtk_container_add (GTK_CONTAINER (windowInsertTable), _constructWindowContents());
+
+	hbuttonboxInsertTable = gtk_hbutton_box_new ();
+	gtk_widget_show (hbuttonboxInsertTable);
+	gtk_box_pack_start (GTK_BOX (m_wContents), hbuttonboxInsertTable, FALSE, FALSE, 4);
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxInsertTable), GTK_BUTTONBOX_END);
+	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxInsertTable), 10);
+	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonboxInsertTable), 85, 24);
+	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonboxInsertTable), 0, 0);
+
+	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
+	gtk_widget_show (buttonOK);
+	gtk_container_add (GTK_CONTAINER (hbuttonboxInsertTable), buttonOK);
+
+	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+	gtk_widget_show (buttonCancel);
+	gtk_container_add (GTK_CONTAINER (hbuttonboxInsertTable), buttonCancel);
+
+	// Update member variables with the important widgets that
+	// might need to be queried or altered later.
+
+	m_windowMain = windowInsertTable;
+	m_buttonOK = buttonOK;
+	m_buttonCancel = buttonCancel;
+
+	_connectSignals();
+
+	return windowInsertTable;
+}
+
+GtkWidget * AP_UnixDialog_InsertTable::_constructWindowContents(void)
+{
 	GtkWidget * vboxMain;
 	GtkWidget * tableInsert;
 	GtkWidget * labelInsert;
@@ -177,34 +199,29 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	GtkWidget * labelNumCols;
 	GtkWidget * spinNumCols;
 	GtkAdjustment * spinRangeCols;
-	GtkWidget * hseparator;
-	GtkWidget * hbuttonboxInsertTable;
-	GtkWidget * buttonOK;
-	GtkWidget * buttonCancel;
-
+	GtkWidget * hseparator1;
+	GtkWidget * labelAutoFit;
+	GSList * tableInsert_group = NULL;
+	GtkWidget * radiobuttonAutoColSize;
+	GtkWidget * radiobuttonFixedColSize;
+	GtkWidget * spinColWidth;
+	GtkAdjustment * spinRangeColWidth;
+	GtkWidget * labelUnits;
+	GtkWidget * hseparator2;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
-
-	windowInsertTable = gtk_window_new (GTK_WINDOW_DIALOG);
-	g_object_set_data (G_OBJECT (windowInsertTable), "windowInsertTable", windowInsertTable);
-	gtk_window_set_title (GTK_WINDOW (windowInsertTable), "Insert Table"/*pSS->getValue(AP_STRING_ID_DLG_InsertTable)*/);
-	gtk_window_set_policy (GTK_WINDOW (windowInsertTable), FALSE, FALSE, FALSE);
 	
 	vboxMain = gtk_vbox_new (FALSE, 0);
-	g_object_set_data (G_OBJECT (windowInsertTable), "vboxMain", vboxMain);
 	gtk_widget_show (vboxMain);
-	gtk_container_add (GTK_CONTAINER (windowInsertTable), vboxMain);
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);
 
-	tableInsert = gtk_table_new (4, 2, FALSE);
-	g_object_set_data (G_OBJECT (windowInsertTable), "tableInsert", tableInsert);
+	tableInsert = gtk_table_new (7, 3, FALSE);
 	gtk_widget_show (tableInsert);
 	gtk_box_pack_start (GTK_BOX (vboxMain), tableInsert, FALSE, FALSE, 0);
 
 	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_TableSize)*/"Table size");
 	labelInsert = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	g_object_set_data (G_OBJECT (windowInsertTable), "labelInsert", labelInsert);
 	gtk_widget_show (labelInsert);
 	gtk_table_attach (GTK_TABLE (tableInsert), labelInsert, 0, 1, 0, 1,
 					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
@@ -215,7 +232,6 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumCols)*/"Number of columns:");
 	labelNumCols = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	g_object_set_data (G_OBJECT (windowInsertTable), "labelNumCols", labelNumCols);
 	gtk_widget_show (labelNumCols);
 	gtk_table_attach (GTK_TABLE (tableInsert), labelNumCols, 0, 1, 1, 2,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -231,7 +247,6 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_NumRows)*/"Number of rows:");
 	labelNumRows = gtk_label_new (unixstr);
 	FREEP(unixstr);
-	g_object_set_data (G_OBJECT (windowInsertTable), "labelNumRows", labelNumRows);
 	gtk_widget_show (labelNumRows);
 	gtk_table_attach (GTK_TABLE (tableInsert), labelNumRows, 0, 1, 2, 3,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
@@ -239,85 +254,124 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	
 	spinRangeRows = (GtkAdjustment *) gtk_adjustment_new(2, 1, 9999, 1, 5, 0);
 	spinNumRows = gtk_spin_button_new (spinRangeRows, 1, 0);
-	g_object_set_data (G_OBJECT (windowInsertTable), "spinNumRows", spinNumRows);
 	gtk_widget_show (spinNumRows);
 	gtk_table_attach (GTK_TABLE (tableInsert), spinNumRows, 1, 2, 2, 3,
 					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	hseparator = gtk_hseparator_new ();
-	g_object_set_data (G_OBJECT (windowInsertTable), "hseparator", hseparator);
-	gtk_widget_show (hseparator);
-	gtk_table_attach (GTK_TABLE (tableInsert), hseparator, 0, 2, 3, 4,
+	hseparator1 = gtk_hseparator_new ();
+	gtk_widget_show (hseparator1);
+	gtk_table_attach (GTK_TABLE (tableInsert), hseparator1, 0, 3, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
 
-	hbuttonboxInsertTable = gtk_hbutton_box_new ();
-	g_object_set_data (G_OBJECT (windowInsertTable), "hbuttonboxInsertTable", hbuttonboxInsertTable);
-	gtk_widget_show (hbuttonboxInsertTable);
-	gtk_box_pack_start (GTK_BOX (vboxMain), hbuttonboxInsertTable, FALSE, FALSE, 4);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonboxInsertTable), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonboxInsertTable), 10);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonboxInsertTable), 85, 24);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonboxInsertTable), 0, 0);
+	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_AutoFit)*/"AutoFit behavior");
+	labelAutoFit = gtk_label_new (unixstr);
+	FREEP(unixstr);
+	gtk_widget_show (labelAutoFit);
+	gtk_table_attach (GTK_TABLE (tableInsert), labelAutoFit, 0, 1, 4, 5,
+					  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
+	gtk_widget_set_usize (labelAutoFit, 17, -1);
+	gtk_label_set_justify (GTK_LABEL (labelAutoFit), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment (GTK_MISC (labelAutoFit), 0, 0.5);
 
-	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
-	g_object_set_data (G_OBJECT (windowInsertTable), "buttonOK", buttonOK);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxInsertTable), buttonOK);
+	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_AutoColSize)*/"Automatic column size");
+	radiobuttonAutoColSize = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
+	FREEP(unixstr);
+	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonAutoColSize));
+	g_object_set_data (G_OBJECT (radiobuttonAutoColSize), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_AUTOSIZE));
+	gtk_widget_show (radiobuttonAutoColSize);
+	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonAutoColSize, 0, 1, 5, 6,
+					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
+	
+	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_FixedColSize)*/"Fixed column size:");
+	radiobuttonFixedColSize = gtk_radio_button_new_with_label (tableInsert_group, unixstr);
+	FREEP(unixstr);
+	tableInsert_group = gtk_radio_button_group (GTK_RADIO_BUTTON (radiobuttonFixedColSize));
+	g_object_set_data (G_OBJECT (radiobuttonFixedColSize), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_FIXEDSIZE));
+	gtk_widget_show (radiobuttonFixedColSize);
+	gtk_table_attach (GTK_TABLE (tableInsert), radiobuttonFixedColSize, 0, 1, 6, 7,
+					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	g_object_set_data (G_OBJECT (windowInsertTable), "buttonCancel", buttonCancel);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonboxInsertTable), buttonCancel);
+	spinRangeColWidth = (GtkAdjustment *) gtk_adjustment_new(0.7, 0.1, 9999.0, 0.1, 1.0, 0.0);
+	spinColWidth = gtk_spin_button_new (spinRangeColWidth, 0.1, 1);
+	gtk_widget_show (spinColWidth);
+	gtk_table_attach (GTK_TABLE (tableInsert), spinColWidth, 1, 2, 6, 7,
+					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
 
-	// the control buttons
-	g_signal_connect(G_OBJECT(buttonOK),
+	UT_XML_cloneNoAmpersands(unixstr, /*pSS->getValue(AP_STRING_ID_DLG_InsertTable_Units)*/"inch");
+	labelUnits = gtk_label_new (unixstr);
+	FREEP(unixstr);
+	gtk_widget_show (labelUnits);
+	gtk_table_attach (GTK_TABLE (tableInsert), labelUnits, 2, 3, 6, 7,
+					  (GtkAttachOptions) GTK_FILL, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 0);
+	gtk_misc_set_alignment (GTK_MISC (labelNumCols), 0, 0.5);
+
+	hseparator2 = gtk_hseparator_new ();
+	gtk_widget_show (hseparator2);
+	gtk_table_attach (GTK_TABLE (tableInsert), hseparator2, 0, 3, 7, 8,
+					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
+
+	m_pRowSpin = spinNumRows;
+	m_pColSpin = spinNumCols;
+	m_pColWidthSpin = spinColWidth;
+	
+	m_radioGroup = tableInsert_group;
+
+	m_wContents = vboxMain;
+	
+	return m_wContents;
+}
+
+void AP_UnixDialog_InsertTable::_connectSignals(void)
+{
+	g_signal_connect(G_OBJECT(m_buttonOK),
 					   "clicked",
 					   G_CALLBACK(s_ok_clicked),
 					   (gpointer) this);
 	
-	g_signal_connect(G_OBJECT(buttonCancel),
+	g_signal_connect(G_OBJECT(m_buttonCancel),
 					   "clicked",
 					   G_CALLBACK(s_cancel_clicked),
 					   (gpointer) this);
 
-
-	// the spin controls
-	g_signal_connect (G_OBJECT (spinRangeRows), "value_changed",
-						G_CALLBACK (s_row_spin),
-						(gpointer) this);
-
-	g_signal_connect (G_OBJECT (spinRangeCols), "value_changed",
-						G_CALLBACK (s_col_spin),
-						(gpointer) this);
-
-	// the catch-alls
-	
-	g_signal_connect(G_OBJECT(windowInsertTable),
+	g_signal_connect(G_OBJECT(m_windowMain),
 			   "delete_event",
 			   G_CALLBACK(s_delete_clicked),
 			   (gpointer) this);
 
-	g_signal_connect_after(G_OBJECT(windowInsertTable),
+	g_signal_connect_after(G_OBJECT(m_windowMain),
 							 "destroy",
 							 NULL,
 							 NULL);
-
-	// Update member variables with the important widgets that
-	// might need to be queried or altered later.
-
-	m_windowMain = windowInsertTable;
-	m_buttonOK = buttonOK;
-	m_buttonCancel = buttonCancel;
-
-	m_pRowspin = spinNumRows;
-	m_pColspin = spinNumCols;
-
-	return windowInsertTable;
 }
 
 void AP_UnixDialog_InsertTable::_populateWindowData(void)
 {
-	// Set the members to the initial values off the spinedits
-	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowspin));
-	m_numCols = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColspin));
+	// We're (still) a stateless dialog, so there are 
+	// no member variables to setyet
 }
+
+void AP_UnixDialog_InsertTable::_storeWindowData(void)
+{
+	m_columnType = _getActiveRadioItem();
+	m_numRows = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pRowSpin));
+	m_numCols = (UT_uint32) gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_pColSpin));
+	m_columnWidth = (float) gtk_spin_button_get_value_as_float(GTK_SPIN_BUTTON(m_pColWidthSpin));
+}
+
+AP_Dialog_InsertTable::columnType AP_UnixDialog_InsertTable::_getActiveRadioItem(void)
+{
+	UT_ASSERT(m_radioGroup);
+	for (GSList * item = m_radioGroup ; item ; item = item->next)
+	{
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(item->data)))
+		{
+			return (AP_Dialog_InsertTable::columnType)
+				GPOINTER_TO_INT(g_object_get_data(G_OBJECT(item->data), WIDGET_ID_TAG_KEY));
+		}
+	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return AP_Dialog_InsertTable::b_AUTOSIZE;
+}
+

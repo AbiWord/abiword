@@ -7906,9 +7906,24 @@ static bool s_doInsertTableDlg(FV_View * pView)
 //
 	if (bOK)
 	{
-		UT_DEBUGMSG(("Inserting table with %d columns and %d rows\n", pDialog->getNumCols(), pDialog->getNumRows()));
-		// FIXME: add the table stux here
-		pView->cmdInsertTable(pDialog->getNumRows(),pDialog->getNumCols());
+		if (pDialog->getColumnType() == AP_Dialog_InsertTable::b_FIXEDSIZE)
+		{
+			UT_String tmp;
+			UT_String propBuffer;
+			for (UT_uint32 i = 0; i<pDialog->getNumCols(); i++)
+			{
+				UT_String_sprintf(tmp, "%fin/", pDialog->getColumnWidth());
+				propBuffer += tmp;
+			}
+			const XML_Char * propsArray[3];
+	        	propsArray[0] = "table-column-props";
+			propsArray[1] = propBuffer.c_str();
+			propsArray[2] = NULL;
+			pView->cmdInsertTable(pDialog->getNumRows(),pDialog->getNumCols(),propsArray);
+		} else
+		{
+			pView->cmdInsertTable(pDialog->getNumRows(),pDialog->getNumCols(),NULL);
+		}
 	}
 
 	pDialogFactory->releaseDialog(pDialog);

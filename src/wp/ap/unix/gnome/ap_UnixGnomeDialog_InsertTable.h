@@ -36,7 +36,6 @@ public:
 
 protected:
 
-	// private construction functions
 	GtkWidget * _constructWindow(void);
 };
 

@@ -146,7 +146,7 @@ void FV_View::cmdCharMotion(bool bForward, UT_uint32 count)
 /*!
  * Insert a table of the  number of rows and columns given.
  */
-UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols)
+UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const XML_Char * pPropsArray[])
 {
 	UT_Error tmp_var;
 //
@@ -183,7 +183,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols)
 // middle of the broken text.
 //
 	setPoint(pointBreak);
-	tmp_var = m_pDoc->insertStrux(getPoint(),PTX_SectionTable);
+	tmp_var = m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray);
 	UT_DEBUGMSG(("SEVIOR: 2  cur point %d \n",getPoint())); 
 //
 // stuff for cell insertion.

@@ -37,27 +37,30 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
 	// callbacks can fire these events
-
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_SpinRows(void);
-	virtual void			event_SpinCols(void);
 	virtual void			event_WindowDelete(void);
 	
 protected:
-
-	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
-	void		_populateWindowData(void);
-	void 		_storeWindowData(void);
+	
+	virtual GtkWidget *		_constructWindow(void);
+	virtual GtkWidget *		_constructWindowContents(void);
+	void					_populateWindowData(void);
+	void					_storeWindowData(void);
+	void					_connectSignals(void);
+	AP_Dialog_InsertTable::columnType AP_UnixDialog_InsertTable::_getActiveRadioItem(void);
 	
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
+	GtkWidget * m_wContents;
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
 
-	GtkWidget * m_pRowspin;
-	GtkWidget * m_pColspin;
+	GtkWidget * m_pRowSpin;
+	GtkWidget * m_pColSpin;
+	GtkWidget * m_pColWidthSpin;
+
+	GSList    * m_radioGroup;
 };
 
 #endif /* AP_UNIXDIALOG_INSERTTABLE_H */

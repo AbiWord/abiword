@@ -36,15 +36,20 @@ public:
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
-
-	AP_Dialog_InsertTable::tAnswer	getAnswer(void) const;
-	UT_uint32						getNumRows(void);
-	UT_uint32						getNumCols(void);
+	typedef enum { b_AUTOSIZE = 0, b_FIXEDSIZE } columnType;
+	
+	AP_Dialog_InsertTable::tAnswer		getAnswer(void) const;
+	AP_Dialog_InsertTable::columnType	getColumnType(void) const;
+	UT_uint32							getNumRows(void);
+	UT_uint32							getNumCols(void);
+	float					getColumnWidth(void);
 protected:
 	
-	AP_Dialog_InsertTable::tAnswer	m_answer;
-	UT_uint32						m_numRows;
-	UT_uint32						m_numCols;
+	AP_Dialog_InsertTable::tAnswer		m_answer;
+	AP_Dialog_InsertTable::columnType	m_columnType;
+	UT_uint32							m_numRows;
+	UT_uint32							m_numCols;
+	float					m_columnWidth;
 };
 
 #endif /* AP_DIALOG_INSERTTABLE_H */

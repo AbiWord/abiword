@@ -45,6 +45,11 @@ AP_Dialog_InsertTable::tAnswer AP_Dialog_InsertTable::getAnswer(void) const
 	return m_answer;
 }
 
+AP_Dialog_InsertTable::columnType AP_Dialog_InsertTable::getColumnType(void) const
+{
+	return m_columnType;
+}
+
 UT_uint32 AP_Dialog_InsertTable::getNumRows(void)
 {
 	return m_numRows;
@@ -53,4 +58,9 @@ UT_uint32 AP_Dialog_InsertTable::getNumRows(void)
 UT_uint32 AP_Dialog_InsertTable::getNumCols(void)
 {
 	return m_numCols;
+}
+
+float AP_Dialog_InsertTable::getColumnWidth(void)
+{
+	return m_columnWidth;
 }
