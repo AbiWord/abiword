@@ -36,10 +36,10 @@ AP_UnixToolbar_Icons::~AP_UnixToolbar_Icons(void)
 bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * background,
 											   const char * szIconName, GtkWidget ** pwPixmap)
 {
-	UT_ASSERT(window);
-	UT_ASSERT(background);
-	UT_ASSERT(szIconName && *szIconName);
-	UT_ASSERT(pwPixmap);
+	UT_return_val_if_fail(window, false);
+	UT_return_val_if_fail(background, false);
+	UT_return_val_if_fail(szIconName && *szIconName, false);
+	UT_return_val_if_fail(pwPixmap, false);
 	
 	const char ** pIconData = NULL, **used_pIconData = NULL;
 	UT_uint32 sizeofIconData = 0;		// number of cells in the array
@@ -91,8 +91,11 @@ bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * backg
 	GtkWidget * wpixmap = gtk_pixmap_new(pixmap,mask);
 	if (!wpixmap)
 		return false;
+
+	GdkPixmap * gdkpixmap = GTK_PIXMAP(wpixmap)->pixmap;
+	GdkBitmap * gdkbitmap = GTK_PIXMAP(wpixmap)->mask;
 	
-	*pwPixmap = wpixmap;
+	*pwPixmap = gtk_image_new_from_pixmap ( gdkpixmap, gdkbitmap ) ;
 	return true;
 }
 
