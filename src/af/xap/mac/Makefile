@@ -34,6 +34,7 @@ CPPSRCS=		xap_MacApp.cpp			\
 			xap_MacDlg_WindowMore.cpp	\
 			xap_MacDlg_Zoom.cpp	\
 			xap_MacFrame.cpp			\
+			xap_MacModule.cpp			\
 			xap_MacTlbr_Icons.cpp
 
 REZSRCS=		xap_MacDlg_MessageBox.r		\
