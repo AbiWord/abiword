@@ -6431,15 +6431,14 @@ void FV_View::getLeftRulerInfo(PT_DocPosition pos, AP_LeftRulerInfo * pInfo)
 
 			if(pHF->getHFType() == FL_HDRFTR_FOOTER)
 			{
-				pInfo->m_yTopMargin = pPage->getHeight() + pDSL->getFooterMargin() - pDSL->getBottomMargin();
-			UT_ASSERT(pInfo->m_yTopMargin>= 0);
-				pInfo->m_yBottomMargin = 0;
+				pInfo->m_yTopMargin = pPage->getHeight() - pDSL->getBottomMargin();
+				UT_ASSERT(pInfo->m_yTopMargin>= 0);
+				pInfo->m_yBottomMargin = pDSL->getFooterMargin();
 			}
 			else
 			{
 				pInfo->m_yTopMargin = pDSL->getHeaderMargin();
-			UT_ASSERT(pInfo->m_yTopMargin>= 0);
-
+				UT_ASSERT(pInfo->m_yTopMargin>= 0);
 				pInfo->m_yBottomMargin = pPage->getHeight() - pDSL->getTopMargin();
 			}
 

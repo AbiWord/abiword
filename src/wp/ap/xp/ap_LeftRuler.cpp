@@ -1109,8 +1109,8 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
  
 void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop, UT_Rect &rBottom)
 {
-	UT_sint32 yOrigin = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
-	UT_sint32 yEnd = yOrigin - pInfo->m_yBottomMargin - pInfo->m_yTopMargin + pInfo->m_yPageSize;
+	UT_sint32 yStart = pInfo->m_yPageStart + pInfo->m_yTopMargin - m_yScrollOffset;
+	UT_sint32 yEnd = pInfo->m_yPageStart + pInfo->m_yPageSize - pInfo->m_yBottomMargin - m_yScrollOffset;
 	FV_View * pView = static_cast<FV_View *>(m_pView);
 	if(pView == NULL)
 	{
@@ -1121,7 +1121,7 @@ void AP_LeftRuler::_getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop
 	UT_sint32 hs = pG->tlu(3);	// halfSize
 	UT_sint32 fs = hs * 2;			// fullSize
 
-	rTop.set(xLeft - fs, yOrigin  - hs, fs, fs- pG->tlu(1));
+	rTop.set(xLeft - fs, yStart  - hs, fs, fs- pG->tlu(1));
 	rBottom.set(xLeft - fs, yEnd - hs, fs, fs);
 }
 
