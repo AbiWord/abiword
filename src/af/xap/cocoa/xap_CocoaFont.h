@@ -35,17 +35,6 @@
 class XAP_CocoaFont : public GR_Font
 {
  public:
-	typedef enum
-	{
-		STYLE_NORMAL = 0,
-		STYLE_BOLD,
-		STYLE_ITALIC,
-		STYLE_BOLD_ITALIC,
-		STYLE_OUTLINE,
-		STYLE_BOLD_OUTLINE,
-		STYLE_LAST	// this must be last
-	} style;
-
 	XAP_CocoaFont();
 	XAP_CocoaFont(NSFont *font);
 	XAP_CocoaFont(const XAP_CocoaFont & copy);

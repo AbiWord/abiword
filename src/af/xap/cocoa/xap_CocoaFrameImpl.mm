@@ -34,6 +34,7 @@
 #import "ev_CocoaMenuPopup.h"
 #import "ev_CocoaToolbar.h"
 #import "ev_Toolbar.h"
+#import "gr_CocoaGraphics.h"
 #import "xap_App.h"
 #import "xap_CocoaApp.h"
 #import "xap_CocoaFrameImpl.h"
@@ -674,6 +675,21 @@ bool XAP_CocoaFrameImpl::_openURL(const char * szURL)
 	
 	return true;
 }
+
+UT_RGBColor XAP_CocoaFrameImpl::getColorSelBackground () const
+{
+	return XAP_FrameImpl::getColorSelBackground();
+#if 0
+	/* this code is disabled as the NSColor returned is not RGB compatible. */
+	static UT_RGBColor * c = NULL;
+	if (c == NULL) {
+		c = new UT_RGBColor();
+		GR_CocoaGraphics::_utNSColorToRGBColor ([NSColor selectedTextBackgroundColor], *c);
+	}
+	return *c;
+#endif
+}
+
 
 bool XAP_CocoaFrameImpl::_updateTitle()
 {

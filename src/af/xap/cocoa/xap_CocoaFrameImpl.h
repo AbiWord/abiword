@@ -121,6 +121,8 @@ protected:
 	virtual	void				_createDocView(GR_Graphics* &pG) = 0; /* Cocoa specific */
 
 	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
+
+	virtual UT_RGBColor 		getColorSelBackground () const;
 private:
 	AP_CocoaDialogFactory		m_dialogFactory;
 	XAP_CocoaApp *				m_pCocoaApp;
