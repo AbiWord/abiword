@@ -22,6 +22,10 @@
 //
 #include <stdlib.h>				// size_t
 #include <string.h>				// strcmp
+#include <locale.h>
+#include <ctype.h>
+#include <stdarg.h>
+
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_stringbuf.h"
@@ -165,10 +169,173 @@ void UT_String::swap(UT_String& rhs)
 	rhs.pimpl = p;
 }
 
-
 //////////////////////////////////////////////////////////////////
 // End of class members, start of free functions
 //////////////////////////////////////////////////////////////////
+
+static UT_uint32
+UT_printf_string_upper_bound (const char* format,
+			      va_list      args)
+{
+  UT_uint32 len = 1;
+
+  while (*format)
+    {
+      bool long_int = false;
+      bool extra_long = false;
+      char c;
+
+      c = *format++;
+
+      if (c == '%')
+	{
+	  bool done = false;
+
+	  while (*format && !done)
+	    {
+	      switch (*format++)
+		{
+		  char *string_arg;
+
+		case '*':
+		  len += va_arg (args, int);
+		  break;
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		  /* add specified format length, since it might exceed the
+		   * size we assume it to have.
+		   */
+		  format -= 1;
+		  len += strtol (format, (char**) &format, 10);
+		  break;
+		case 'h':
+		  /* ignore short int flag, since all args have at least the
+		   * same size as an int
+		   */
+		  break;
+		case 'l':
+		  if (long_int)
+		    extra_long = true; /* linux specific */
+		  else
+		    long_int = true;
+		  break;
+		case 'q':
+		case 'L':
+		  long_int = true;
+		  extra_long = true;
+		  break;
+		case 's':
+		  string_arg = va_arg (args, char *);
+		  if (string_arg)
+		    len += strlen (string_arg);
+		  else
+		    {
+		      /* add enough padding to hold "(null)" identifier */
+		      len += 16;
+		    }
+		  done = true;
+		  break;
+		case 'd':
+		case 'i':
+		case 'o':
+		case 'u':
+		case 'x':
+		case 'X':
+		    {
+		      if (long_int)
+			(void) va_arg (args, long);
+		      else
+			(void) va_arg (args, int);
+		    }
+		  len += extra_long ? 64 : 32;
+		  done = true;
+		  break;
+		case 'D':
+		case 'O':
+		case 'U':
+		  (void) va_arg (args, long);
+		  len += 32;
+		  done = true;
+		  break;
+		case 'e':
+		case 'E':
+		case 'f':
+		case 'g':
+		    (void) va_arg (args, double);
+		  len += extra_long ? 64 : 32;
+		  done = true;
+		  break;
+		case 'c':
+		  (void) va_arg (args, int);
+		  len += 1;
+		  done = true;
+		  break;
+		case 'p':
+		case 'n':
+		  (void) va_arg (args, void*);
+		  len += 32;
+		  done = true;
+		  break;
+		case '%':
+		  len += 1;
+		  done = true;
+		  break;
+		default:
+		  /* ignore unknow/invalid flags */
+		  break;
+		}
+	    }
+	}
+      else
+	len += 1;
+    }
+
+  return len;
+}
+
+#ifdef WIN32
+#define VA_COPY(ap1, ap2)	  (*(ap1) = *(ap2))
+#else
+#define VA_COPY(ap1, ap2)	  ((ap1) = (ap2))
+#endif
+
+void UT_String_vprintf (UT_String & inStr, const char *format,
+			va_list      args1)
+{
+  char *buffer;
+  va_list args2;
+
+  VA_COPY (args2, args1);
+
+  buffer = new char [ UT_printf_string_upper_bound (format, args1) ];
+  vsprintf (buffer, format, args2);
+  va_end (args2);
+
+  inStr = buffer;
+
+  delete [] buffer;
+}
+
+void UT_String_vprintf (UT_String & inStr, const UT_String & format,
+			va_list      args1)
+{
+  UT_String_vprintf ( inStr, format.c_str(), args1 ) ;
+}
+
+void UT_String_sprintf(UT_String & inStr, const char * inFormat, ...)
+{
+  va_list args;
+  va_start (args, inFormat);
+  UT_String_vprintf (inStr, inFormat, args);
+  va_end (args);
+}
 
 //////////////////////////////////////////////////////////////////
 // Helpers

@@ -27,6 +27,7 @@
 //
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include "ut_string.h"
 #include "ut_types.h"
 
@@ -83,6 +84,12 @@ ABI_EXPORT UT_uint32 hashcode(const UT_String& string);
 ABI_EXPORT bool operator<(const UT_String& s1, const UT_String& s2);
 
 ABI_EXPORT UT_String operator+(const UT_String& s1, const UT_String& s2);
+
+ABI_EXPORT void UT_String_sprintf(UT_String & inStr, const char * inFormat, ...);
+ABI_EXPORT void UT_String_vprintf (UT_String & inStr, const char *format,
+				   va_list      args1);
+ABI_EXPORT void UT_String_vprintf (UT_String & inStr, const UT_String & format,
+				   va_list      args1);
 
 /***************************************************************************/
 
