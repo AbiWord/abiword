@@ -70,7 +70,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 		return UT_FALSE;
 	}
 
-	Win32Graphics * pG = NULL;
+	GR_Win32Graphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
 	AV_View * pView = NULL;
 	AV_ScrollObj * pScrollObj = NULL;
@@ -83,9 +83,7 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 	UT_uint32 nrToolbars, k;
 	HWND hwnd = m_hwndDocument;
 
-	// TODO fix prefix on class Win32Graphics
-
-	pG = new Win32Graphics(GetDC(hwnd), hwnd);
+	pG = new GR_Win32Graphics(GetDC(hwnd), hwnd);
 	ENSUREP(pG);
 	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);

@@ -28,7 +28,7 @@
 #include "pt_Types.h"
 
 class fp_Run;
-class DG_Graphics;
+class GR_Graphics;
 class fl_BlockLayout;
 class fp_Column;
 
@@ -90,7 +90,7 @@ public:
 
 	void		clearScreen(void);
 	void		draw(dg_DrawArgs*);
-	void        draw(DG_Graphics*);
+	void        draw(GR_Graphics*);
 	void		align(void);
 	void		layout(void);
 	UT_Bool		recalculateFields(void);

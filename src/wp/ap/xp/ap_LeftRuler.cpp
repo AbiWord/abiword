@@ -268,7 +268,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 
 	m_pG->setColor(clrBlack);
 
-	DG_Font * pFont = m_pG->getGUIFont();
+	GR_Font * pFont = m_pG->getGUIFont();
 	if (pFont)
 	{
 		m_pG->setFont(pFont);

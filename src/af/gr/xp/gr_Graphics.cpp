@@ -26,12 +26,12 @@
 #include "ut_string.h"
 #include "ut_units.h"
 
-DG_Graphics::~DG_Graphics()
+GR_Graphics::~GR_Graphics()
 {
 	// need this so children can clean up
 }
 
-UT_sint32 DG_Graphics::convertDimension(const char * s) const
+UT_sint32 GR_Graphics::convertDimension(const char * s) const
 {
 	double dInches = UT_convertToInches(s);
 	double dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
@@ -39,7 +39,7 @@ UT_sint32 DG_Graphics::convertDimension(const char * s) const
 	return (UT_sint32) (dInches * dResolution);
 }
 
-UT_Bool DG_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
+UT_Bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 									 UT_uint32 iWidthAvail,
 									 UT_sint32 * piLeft, UT_uint32 * piWidth) const
 {

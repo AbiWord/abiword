@@ -29,8 +29,8 @@
 class UT_GrowBuf;
 class fl_BlockLayout;
 class fp_Line;
-class DG_Graphics;
-class DG_Font;
+class GR_Graphics;
+class GR_Font;
 class PD_Document;
 struct dg_DrawArgs;
 
@@ -60,7 +60,7 @@ struct fp_RunSplitInfo
 class fp_Run
 {
 public:
-	fp_Run(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, unsigned char iType);
+	fp_Run(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, unsigned char iType);
 
 	inline	unsigned char	getType(void) const 			{ return m_iType; }
 
@@ -74,7 +74,7 @@ public:
 	inline fp_Run*			getPrev(void) const     		{ return m_pPrev; }
 	inline UT_uint32		getBlockOffset(void) const     	{ return m_iOffsetFirst; }
 	inline UT_uint32		getLength(void) const     		{ return m_iLen; }
-	inline DG_Graphics*     getGraphics(void) const     	{ return m_pG; }
+	inline GR_Graphics*     getGraphics(void) const     	{ return m_pG; }
 	inline UT_uint32		getAscent(void) const 			{ return m_iAscent; }
 	inline UT_uint32		getDescent(void) const 			{ return m_iDescent; }
 	
@@ -121,14 +121,14 @@ protected:
 	UT_uint32				m_iLen;
 	UT_uint32				m_iAscent;
 	UT_uint32				m_iDescent;
-	DG_Graphics*            m_pG;
+	GR_Graphics*            m_pG;
 	UT_Bool					m_bDirty;		// run erased @ old coords, needs to be redrawn
 };
 
 class fp_TextRun : public fp_Run
 {
  public:
-	fp_TextRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
 	virtual void			lookupProperties(void);
 	virtual int				split(fp_RunSplitInfo&);
@@ -172,14 +172,14 @@ protected:
 	  retrieved from multiple fonts.
 	  TODO fix this issue
 	*/
-	DG_Font*				m_pFont;
+	GR_Font*				m_pFont;
 	UT_RGBColor				m_colorFG;
 };
 
 class fp_TabRun : public fp_Run
 {
  public:
-	fp_TabRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
 	virtual void			lookupProperties(void);
 	virtual int				split(fp_RunSplitInfo&);
@@ -201,7 +201,7 @@ protected:
 class fp_ForcedLineBreakRun : public fp_Run
 {
  public:
-	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
 	virtual void			lookupProperties(void);
 	virtual int				split(fp_RunSplitInfo&);
@@ -221,7 +221,7 @@ protected:
 class fp_ForcedColumnBreakRun : public fp_Run
 {
  public:
-	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
 	virtual void			lookupProperties(void);
 	virtual int				split(fp_RunSplitInfo&);
@@ -241,7 +241,7 @@ protected:
 class fp_ForcedPageBreakRun : public fp_Run
 {
  public:
-	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
 	virtual void			lookupProperties(void);
 	virtual int				split(fp_RunSplitInfo&);
@@ -261,7 +261,7 @@ protected:
 class fp_ImageRun : public fp_Run
 {
  public:
-	fp_ImageRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
 	virtual void			lookupProperties(void);
 	virtual int				split(fp_RunSplitInfo&);
@@ -285,7 +285,7 @@ protected:
 class fp_FieldRun : public fp_Run
 {
  public:
-	fp_FieldRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
 
 	virtual void			lookupProperties(void);
 	virtual int				split(fp_RunSplitInfo&);
@@ -303,7 +303,7 @@ protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(void);
 
-	DG_Font*				m_pFont;
+	GR_Font*				m_pFont;
 	UT_RGBColor				m_colorFG;
 	UT_UCSChar				m_sFieldValue[FPFIELD_MAX_LENGTH];
 	unsigned char			m_iFieldType;

@@ -23,7 +23,7 @@
 #include "gr_Graphics.h"
 #include "ap_Ruler.h"
 
-ap_RulerTicks::ap_RulerTicks(DG_Graphics * pG)
+ap_RulerTicks::ap_RulerTicks(GR_Graphics * pG)
 {
 	m_pG = pG;
 	

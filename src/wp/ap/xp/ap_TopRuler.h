@@ -30,7 +30,7 @@
 
 class XAP_Frame;
 class AV_ScrollObj;
-class DG_Graphics;
+class GR_Graphics;
 
 /*****************************************************************/
 /*****************************************************************/
@@ -110,16 +110,16 @@ protected:
 	void				_draw(void);
 	void				_drawBar(AP_TopRulerInfo &info, UT_RGBColor &clr, UT_sint32 x, UT_sint32 w);
 	void				_drawTickMark(AP_TopRulerInfo &info, ap_RulerTicks &tick,
-									  UT_RGBColor &clr, DG_Font * pFont,
+									  UT_RGBColor &clr, GR_Font * pFont,
 									  UT_sint32 k, UT_sint32 xTick);
 	void				_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
-								   UT_RGBColor &clr, DG_Font * pFont,
+								   UT_RGBColor &clr, GR_Font * pFont,
 								   UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo);
 	
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
 	AV_ScrollObj *		m_pScrollObj;
-	DG_Graphics *		m_pG;
+	GR_Graphics *		m_pG;
 	UT_uint32			m_iHeight;		/* size of window */
 	UT_uint32			m_iWidth;		/* size of window */
 	UT_uint32			m_iLeftRulerWidth;

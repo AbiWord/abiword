@@ -21,7 +21,7 @@
 #define AP_DIALOG_PRINT_H
 
 #include "xap_Dialog.h"
-class DG_Graphics;
+class GR_Graphics;
 
 /*****************************************************************/
 
@@ -53,8 +53,8 @@ public:
 	UT_uint32						getNrCopies(void) const;
 	UT_Bool							getCollate(void) const;
 
-	virtual DG_Graphics *			getPrinterGraphicsContext(void) = 0;
-	virtual void					releasePrinterGraphicsContext(DG_Graphics * pGraphics) = 0;
+	virtual GR_Graphics *			getPrinterGraphicsContext(void) = 0;
+	virtual void					releasePrinterGraphicsContext(GR_Graphics * pGraphics) = 0;
 	
 protected:
 	UT_Bool							_getPrintToFilePathname(XAP_Frame * pFrame,

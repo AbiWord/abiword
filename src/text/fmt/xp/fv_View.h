@@ -37,7 +37,7 @@ class fl_BlockLayout;
 class fp_Page;
 class fp_Run;
 class PD_Document;
-class DG_Graphics;
+class GR_Graphics;
 class UT_Timer;
 
 typedef enum _FVDocPos
@@ -246,7 +246,7 @@ protected:
 	
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
-	DG_Graphics*		m_pG;
+	GR_Graphics*		m_pG;
 
 	PT_DocPosition		m_iSelectionAnchor;
 	UT_Bool				m_bSelection;

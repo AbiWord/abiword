@@ -32,8 +32,8 @@ public:
 	virtual ~AP_Win32Dialog_Print(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
-	virtual DG_Graphics *	getPrinterGraphicsContext(void);
-	virtual void			releasePrinterGraphicsContext(DG_Graphics *);
+	virtual GR_Graphics *	getPrinterGraphicsContext(void);
+	virtual void			releasePrinterGraphicsContext(GR_Graphics *);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
 

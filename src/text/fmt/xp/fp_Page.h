@@ -31,7 +31,7 @@ class FL_DocLayout;
 class fp_Column;
 class fl_SectionLayout;
 class FV_View;
-class DG_Graphics;
+class GR_Graphics;
 struct dg_DrawArgs;
 
 // ----------------------------------------------------------------

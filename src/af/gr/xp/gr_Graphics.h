@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-// TODO change the name of all dg_ and DG_ classes to gr_ and GR_
-
 #ifndef GR_GRAPHICS_H
 #define GR_GRAPHICS_H
 
@@ -28,28 +26,28 @@
 class UT_RGBColor;
 
 /*
-	DG_Font is a reference to a font.  As it happens, everything about fonts
+	GR_Font is a reference to a font.  As it happens, everything about fonts
 	is platform-specific, so the class contains nothing.  All of its behavior
 	and functionality is contained within its subclasses, each of which provides
 	the implementation for some specific font technology.
 */
-class DG_Font
+class GR_Font
 {
 };
 
 /*
-	DG_Graphics is a portable interface to a simple 2-d graphics layer.  It is not
+	GR_Graphics is a portable interface to a simple 2-d graphics layer.  It is not
 	an attempt at a general purpose portability layer.  Rather, it contains only
 	functions which are needed.
 */
-class DG_Graphics
+class GR_Graphics
 {
 public:
-	virtual ~DG_Graphics();
+	virtual ~GR_Graphics();
 
 	virtual void drawChars(const UT_UCSChar* pChars, 
 		int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff) = 0;
-	virtual void setFont(DG_Font* pFont) = 0;
+	virtual void setFont(GR_Font* pFont) = 0;
 
 	virtual UT_uint32 getFontAscent() = 0;
 	virtual UT_uint32 getFontDescent() = 0;
@@ -59,8 +57,8 @@ public:
 	
 	virtual UT_uint32 getResolution() const = 0;
 	virtual void setColor(UT_RGBColor& clr) = 0;
-	virtual DG_Font* getGUIFont() = 0;
-	virtual DG_Font* findFont(
+	virtual GR_Font* getGUIFont() = 0;
+	virtual GR_Font* findFont(
 		const char* pszFontFamily, 
 		const char* pszFontStyle, 
 		const char* pszFontVariant, 
@@ -97,7 +95,7 @@ public:
 	
 	typedef enum { DGP_SCREEN, DGP_PAPER } Properties;
 	
-	virtual UT_Bool queryProperties(DG_Graphics::Properties gp) const = 0;
+	virtual UT_Bool queryProperties(GR_Graphics::Properties gp) const = 0;
 
 	/* the following are only used for printing */
 	

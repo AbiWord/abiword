@@ -17,20 +17,18 @@
  * 02111-1307, USA.
  */
 
-// TODO change the name of all dg_ and DG_ classes to gr_ and GR_
-
 #ifndef GR_DRAWARGS_H
 #define GR_DRAWARGS_H
 
 #include "ut_types.h"
 
-class DG_Graphics;
+class GR_Graphics;
 
 struct dg_DrawArgs
 {
 	dg_DrawArgs();
 	
-	DG_Graphics*	pG;
+	GR_Graphics*	pG;
 	UT_sint32		xoff;
 	UT_sint32		yoff;
 	UT_Bool			bDirtyRunsOnly;

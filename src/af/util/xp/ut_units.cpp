@@ -19,7 +19,7 @@
  
 
 
-// TODO change this file to not reference DG_Graphics.
+// TODO change this file to not reference GR_Graphics.
 
 #include <string.h>
 #include <stdlib.h>
@@ -146,7 +146,7 @@ UT_sint32 UT_paperUnits(const char * sz)
 	return (UT_sint32)(dInches * dResolution);
 }
 
-UT_sint32 UT_docUnitsFromPaperUnits(DG_Graphics * pG, UT_sint32 iPaperUnits)
+UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits)
 {
 	// convert number in paper units (see above) into
 	// "document" units in the given graphics context.

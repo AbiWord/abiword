@@ -47,7 +47,7 @@ static UT_Bool __isWinNT(void)
 }
 
 
-void Win32Graphics::_constructorCommonCode(HDC hdc)
+void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 {
 	UT_ASSERT(hdc);
 
@@ -62,25 +62,25 @@ void Win32Graphics::_constructorCommonCode(HDC hdc)
 	memset(m_aCharWidths, 0, 256*sizeof(int));
 }
 
-Win32Graphics::Win32Graphics(HDC hdc, HWND hwnd)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd)
 {
 	_constructorCommonCode(hdc);
 	m_hwnd = hwnd;
 }
 
-Win32Graphics::Win32Graphics(HDC hdc, const DOCINFO * pDocInfo)
+GR_Win32Graphics::GR_Win32Graphics(HDC hdc, const DOCINFO * pDocInfo)
 {
 	_constructorCommonCode(hdc);
 	m_bPrint = UT_TRUE;
 	m_pDocInfo = pDocInfo;
 }
 
-Win32Graphics::~Win32Graphics()
+GR_Win32Graphics::~GR_Win32Graphics()
 {
 	DELETEP(m_pFontGUI);
 }
 
-UT_Bool Win32Graphics::queryProperties(DG_Graphics::Properties gp) const
+UT_Bool GR_Win32Graphics::queryProperties(GR_Graphics::Properties gp) const
 {
 	switch (gp)
 	{
@@ -94,25 +94,25 @@ UT_Bool Win32Graphics::queryProperties(DG_Graphics::Properties gp) const
 	}
 }
 
-Win32Font::Win32Font(HFONT hFont)
+GR_Win32Font::GR_Win32Font(HFONT hFont)
 {
 	m_hFont = hFont;
 }
 
-DG_Font* Win32Graphics::getGUIFont(void)
+GR_Font* GR_Win32Graphics::getGUIFont(void)
 {
 	if (!m_pFontGUI)
 	{
 		// lazily grab this (once)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
-		m_pFontGUI = new Win32Font(f);
+		m_pFontGUI = new GR_Win32Font(f);
 		UT_ASSERT(m_pFontGUI);
 	}
 
 	return m_pFontGUI;
 }
 
-DG_Font* Win32Graphics::findFont(
+GR_Font* GR_Win32Graphics::findFont(
 		const char* pszFontFamily, 
 		const char* pszFontStyle, 
 		const char* pszFontVariant, 
@@ -175,10 +175,10 @@ DG_Font* Win32Graphics::findFont(
 
 	HFONT hFont = CreateFontIndirect(&lf);
 	UT_ASSERT(hFont);	// TODO perhaps this should not be an assert.  Can the call fail without a coding error?
-	return new Win32Font(hFont);
+	return new GR_Win32Font(hFont);
 }
 
-void Win32Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff)
+void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset, int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_ASSERT(pChars);
 
@@ -190,16 +190,16 @@ void Win32Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset, int iLe
 	//TextOutW(m_hdc, xoff, yoff, pChars + iCharOffset, iLength);
 }
 
-void Win32Graphics::setFont(DG_Font* pFont)
+void GR_Win32Graphics::setFont(GR_Font* pFont)
 {
 	UT_ASSERT(pFont);	// TODO should we allow pFont == NULL?
 
-	if (m_pFont == (static_cast<Win32Font*> (pFont)))
+	if (m_pFont == (static_cast<GR_Win32Font*> (pFont)))
 	{
 		return;
 	};
 	
-	m_pFont = static_cast<Win32Font*> (pFont);
+	m_pFont = static_cast<GR_Win32Font*> (pFont);
 	SelectObject(m_hdc, m_pFont->getHFONT());
 
 #if 0
@@ -225,12 +225,12 @@ void Win32Graphics::setFont(DG_Font* pFont)
 	}
 }
 
-HFONT Win32Font::getHFONT()
+HFONT GR_Win32Font::getHFONT()
 {
 	return m_hFont;
 }
 
-UT_uint32 Win32Graphics::getFontHeight()
+UT_uint32 GR_Win32Graphics::getFontHeight()
 {
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_hdc);
@@ -242,7 +242,7 @@ UT_uint32 Win32Graphics::getFontHeight()
 	return tm.tmHeight;
 }
 
-UT_uint32 Win32Graphics::getFontAscent()
+UT_uint32 GR_Win32Graphics::getFontAscent()
 {
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_hdc);
@@ -255,7 +255,7 @@ UT_uint32 Win32Graphics::getFontAscent()
 	return tm.tmAscent;
 }
 
-UT_uint32 Win32Graphics::getFontDescent()
+UT_uint32 GR_Win32Graphics::getFontDescent()
 {
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(m_hdc);
@@ -268,7 +268,7 @@ UT_uint32 Win32Graphics::getFontDescent()
 }
 
 #if 0
-UT_uint32 Win32Graphics::measureWidth(UT_UCSChar* s, int num)
+UT_uint32 GR_Win32Graphics::measureWidth(UT_UCSChar* s, int num)
 {
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(s);
@@ -302,7 +302,7 @@ UT_uint32 Win32Graphics::measureWidth(UT_UCSChar* s, int num)
 }
 #endif
 
-UT_uint32 Win32Graphics::measureString(const UT_UCSChar* s, int iOffset, int num, unsigned short* pWidths)
+UT_uint32 GR_Win32Graphics::measureString(const UT_UCSChar* s, int iOffset, int num, unsigned short* pWidths)
 {
 	UT_ASSERT(m_pFont);
 	UT_ASSERT(s);
@@ -320,20 +320,20 @@ UT_uint32 Win32Graphics::measureString(const UT_UCSChar* s, int iOffset, int num
 	return iCharWidth;
 }
 
-UT_uint32 Win32Graphics::getResolution() const
+UT_uint32 GR_Win32Graphics::getResolution() const
 {
 	int result = GetDeviceCaps(m_hdc, LOGPIXELSY); // NOTE: assumes square pixels
 
 	return result;
 }
 
-void Win32Graphics::setColor(UT_RGBColor& clr)
+void GR_Win32Graphics::setColor(UT_RGBColor& clr)
 {
 	SetTextColor(m_hdc, RGB(clr.m_red, clr.m_grn, clr.m_blu));
 	m_clr = clr;
 }
 
-void Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+void GR_Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
 	// TODO do we really want the line width to ALWAYS be 1?
 	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
@@ -346,7 +346,7 @@ void Win32Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32
 	DeleteObject(hPen);
 }
 
-void Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
 	// TODO do we really want the line width to ALWAYS be 1?
 	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
@@ -361,7 +361,7 @@ void Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 
 	(void) SetROP2(m_hdc, iROP);
 }
 
-void Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
 	// TODO do we really want the line width to ALWAYS be 1?
 	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(m_clr.m_red, m_clr.m_grn, m_clr.m_blu));
@@ -383,7 +383,7 @@ void Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 	FREEP(points);
 }
 
-void Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
+void GR_Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
 	HBRUSH hBrush = CreateSolidBrush(RGB(c.m_red, c.m_grn, c.m_blu));
 
@@ -397,7 +397,7 @@ void Win32Graphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y, UT_sint32
 	DeleteObject(hBrush);
 }
 
-UT_Bool Win32Graphics::startPrint(void)
+UT_Bool GR_Win32Graphics::startPrint(void)
 {
 	UT_ASSERT(m_bPrint);
 	UT_ASSERT(!m_bStartPrint);
@@ -406,7 +406,7 @@ UT_Bool Win32Graphics::startPrint(void)
 	return m_bStartPrint;
 }
 
-UT_Bool Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
+UT_Bool GR_Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 								 UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight)
 {
 	if (m_bStartPage)
@@ -416,7 +416,7 @@ UT_Bool Win32Graphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 	return (StartPage(m_hdc) > 0);
 }
 
-UT_Bool Win32Graphics::endPrint(void)
+UT_Bool GR_Win32Graphics::endPrint(void)
 {
 	if (m_bStartPage)
 		EndPage(m_hdc);
@@ -433,7 +433,7 @@ UT_Bool Win32Graphics::endPrint(void)
  ** dx & dy are the change in x/y from the current scrolled position
  ** negative values indcate left/up movement, positive right/down movement
  **/
-void Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
+void GR_Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
 	RECT rInvalid;
 	
@@ -442,7 +442,7 @@ void Win32Graphics::scroll(UT_sint32 dx, UT_sint32 dy)
 //	FillRect(m_hdc, &rInvalid, hBrush);
 }
 
-void Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
+void GR_Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						   UT_sint32 x_src, UT_sint32 y_src,
 						   UT_sint32 width, UT_sint32 height)
 {
@@ -455,7 +455,7 @@ void Win32Graphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 				   &r, NULL, NULL, NULL, SW_ERASE);
 }
 
-void Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
+void GR_Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint32 height)
 {
 //	UT_ASSERT((x + width) < 800);
 	
@@ -469,7 +469,7 @@ void Win32Graphics::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 width, UT_sint
 	FillRect(m_hdc, &r, hBrush);
 }
 
-void Win32Graphics::invertRect(const UT_Rect* pRect)
+void GR_Win32Graphics::invertRect(const UT_Rect* pRect)
 {
 	RECT r;
 	
@@ -481,7 +481,7 @@ void Win32Graphics::invertRect(const UT_Rect* pRect)
 	InvertRect(m_hdc, &r);
 }
 
-void Win32Graphics::setClipRect(const UT_Rect* pRect)
+void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 {
 	int res;
 

@@ -75,7 +75,7 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	m_pLayout = pLayout;
 	m_pDoc = pLayout->getDocument();
 	m_pG = m_pLayout->getGraphics();
-//	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+//	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 	
 	m_iPointHeight = 0;
 	m_bPointEOL = UT_FALSE;
@@ -351,7 +351,7 @@ UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		else
 			mask ^= AV_CHG_COLUMN;
 	}
-
+	
 	// base class does the rest
 	return AV_View::notifyListeners(mask);
 }

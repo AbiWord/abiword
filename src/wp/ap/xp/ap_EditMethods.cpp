@@ -2116,7 +2116,7 @@ static UT_Bool s_doFontDlg(FV_View * pView)
 		= (AP_Dialog_FontChooser *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-	// stuff the DG_Graphics into the dialog so that it
+	// stuff the GR_Graphics into the dialog so that it
 	// can query the system for font info relative to our
 	// context.
 
@@ -2397,8 +2397,8 @@ static UT_Bool s_doPrint(FV_View * pView, UT_Bool bTryToSuppressDialog)
 
 	if (bOK)
 	{
-		DG_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
-		UT_ASSERT(pGraphics->queryProperties(DG_Graphics::DGP_PAPER));
+		GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
+		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 		
 		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
 		pDocLayout->formatAll();

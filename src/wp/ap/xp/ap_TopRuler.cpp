@@ -261,7 +261,7 @@ void AP_TopRuler::_drawBar(AP_TopRulerInfo &info, UT_RGBColor &clr, UT_sint32 x,
 }
 
 void AP_TopRuler::_drawTickMark(AP_TopRulerInfo &info, ap_RulerTicks &tick,
-								UT_RGBColor &clr, DG_Font * pFont,
+								UT_RGBColor &clr, GR_Font * pFont,
 								UT_sint32 k, UT_sint32 xTick)
 {
 	UT_uint32 yTop = s_iFixedHeight/4;
@@ -302,7 +302,7 @@ void AP_TopRuler::_drawTickMark(AP_TopRulerInfo &info, ap_RulerTicks &tick,
 }
 		
 void AP_TopRuler::_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
-							 UT_RGBColor &clr, DG_Font * pFont,
+							 UT_RGBColor &clr, GR_Font * pFont,
 							 UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo)
 {
 	// draw tick marks over the ruler bar.
@@ -410,7 +410,7 @@ void AP_TopRuler::_draw(void)
 	// now draw tick marks on the bar, using the selected system of units.
 
 	ap_RulerTicks tick(m_pG);
-	DG_Font * pFont = m_pG->getGUIFont();
+	GR_Font * pFont = m_pG->getGUIFont();
 
 	// find the origin for the tick marks.  this is the left-edge of the
 	// column that we are in.  everything to the left of this x-value will

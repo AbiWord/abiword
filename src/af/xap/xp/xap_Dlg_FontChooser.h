@@ -23,7 +23,7 @@
 #include "ut_types.h"
 #include "xmlparse.h"
 #include "xap_Dialog.h"
-class DG_Graphics;
+class GR_Graphics;
 
 /*****************************************************************/
 
@@ -37,7 +37,7 @@ public:
 
 	typedef enum { a_OK, a_CANCEL, a_YES, a_NO }	tAnswer;
 
-	void							setGraphicsContext(DG_Graphics * pGraphics);
+	void							setGraphicsContext(GR_Graphics * pGraphics);
 	void							setFontFamily(const XML_Char * pFontFamily);
 	void							setFontSize(const XML_Char * pFontSize);
 	void							setFontWeight(const XML_Char * pFontWeight);
@@ -64,7 +64,7 @@ public:
 protected:
 	AP_Dialog_FontChooser::tAnswer	m_answer;
 
-	DG_Graphics *					m_pGraphics;			/* input */
+	GR_Graphics *					m_pGraphics;			/* input */
 	XML_Char *						m_pFontFamily;			/* input/output */
 	XML_Char *						m_pFontSize;			/* input/output */
 	XML_Char *						m_pFontWeight;			/* input/output */

@@ -46,7 +46,7 @@
 */
 
 fp_Run::fp_Run(fl_BlockLayout* pBL,
-					   DG_Graphics* pG,
+					   GR_Graphics* pG,
 					   UT_uint32 iOffsetFirst,
 					   UT_uint32 iLen,
 					   unsigned char iType)
@@ -167,7 +167,7 @@ void fp_Run::clearScreen(void)
 		return;
 	}
 	
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	_clearScreen();
 	
@@ -206,7 +206,7 @@ UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
 	}
 }
 
-fp_TextRun::fp_TextRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT)
+fp_TextRun::fp_TextRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT)
 {
 	m_pFont = NULL;
 	m_fDecorations = 0;
@@ -645,7 +645,7 @@ void fp_TextRun::_calcWidths(UT_GrowBuf * pgbCharWidths)
 void fp_TextRun::_clearScreen(void)
 {
 	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
 	
@@ -739,7 +739,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 void fp_TextRun::_drawPartWithBackground(UT_RGBColor& clr, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iPos1, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths)
 {
-	if (m_pG->queryProperties(DG_Graphics::DGP_SCREEN))
+	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_Rect r;
 
@@ -862,7 +862,7 @@ void fp_TextRun::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 {
-	if (!(m_pG->queryProperties(DG_Graphics::DGP_SCREEN)))
+	if (!(m_pG->queryProperties(GR_Graphics::DGP_SCREEN)))
 	{
 		return;
 	}
@@ -925,7 +925,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 #endif
 }
 
-fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TAB)
+fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TAB)
 {
 	if (bLookupProperties)
 	{
@@ -944,7 +944,7 @@ void fp_TabRun::lookupProperties(void)
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	DG_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
 
 	m_pG->setFont(pFont);
 	m_iAscent = m_pG->getFontAscent();	
@@ -1025,7 +1025,7 @@ void fp_TabRun::setWidth(UT_sint32 iWidth)
 void fp_TabRun::_clearScreen(void)
 {
 	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 
 	UT_sint32 xoff = 0, yoff = 0;
 	
@@ -1061,7 +1061,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	}
 }
 
-fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
+fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
 {
 	if (bLookupProperties)
 	{
@@ -1131,7 +1131,7 @@ void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_
 void fp_ForcedLineBreakRun::_clearScreen(void)
 {
 	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
@@ -1139,7 +1139,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 }
 
-fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
+fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
 {
 	if (bLookupProperties)
 	{
@@ -1219,7 +1219,7 @@ void fp_ImageRun::_clearScreen(void)
 {
 	UT_ASSERT(!m_bDirty);
 	
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0;
 	
 	// need to clear full height of line, in case we had a selection
@@ -1240,7 +1240,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 	m_pG->fillRect(clr, xoff, yoff, m_iWidth, m_iHeight);
 }
 
-fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD)
+fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD)
 {
 	m_pFont = NULL;
 
@@ -1385,7 +1385,7 @@ void fp_FieldRun::_clearScreen(void)
 {
 	UT_ASSERT(!m_bDirty);
 	
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 	UT_sint32 xoff = 0, yoff = 0;
 	
 	// need to clear full height of line, in case we had a selection
@@ -1398,7 +1398,7 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 
-	if (m_pG->queryProperties(DG_Graphics::DGP_SCREEN))
+	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_uint32 iRunBase = m_pBL->getPosition() + m_iOffsetFirst;
 		UT_ASSERT(pDA->iSelPos1 <= pDA->iSelPos2);
@@ -1437,7 +1437,7 @@ void fp_FieldRun::_draw(dg_DrawArgs* pDA)
 	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff, pDA->yoff - m_iAscent);
 }
 
-fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
+fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
 {
 	if (bLookupProperties)
 	{
@@ -1507,7 +1507,7 @@ void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, U
 void fp_ForcedColumnBreakRun::_clearScreen(void)
 {
 	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
@@ -1515,7 +1515,7 @@ void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 }
 
-fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDPAGEBREAK)
+fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDPAGEBREAK)
 {
 	if (bLookupProperties)
 	{
@@ -1585,7 +1585,7 @@ void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_
 void fp_ForcedPageBreakRun::_clearScreen(void)
 {
 	UT_ASSERT(!m_bDirty);
-	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
 }
 
 void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)

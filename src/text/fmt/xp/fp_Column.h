@@ -31,7 +31,7 @@ class fl_SectionLayout;
 class fp_Line;
 class fp_Page;
 class PP_AttrProp;
-class DG_Graphics;
+class GR_Graphics;
 struct dg_DrawArgs;
 struct fp_Sliver;
 
@@ -126,7 +126,7 @@ protected:
 	
 	fl_SectionLayout*		m_pSectionLayout;
 
-	DG_Graphics*			m_pG;
+	GR_Graphics*			m_pG;
 };
 
 #endif /* COLUMN_H */

@@ -37,8 +37,8 @@ class fl_BlockLayout;
 class fp_Page;
 class PD_Document;
 class PP_AttrProp;
-class DG_Graphics;
-class DG_Font;
+class GR_Graphics;
+class GR_Font;
 class UT_Timer;
 
 
@@ -51,7 +51,7 @@ class UT_Timer;
 // ----------------------------------------------------------------
 /*
 	FL_DocLayout is a formatted representation of a specific PD_Document, 
-	formatted for a specific DG_Graphics context.  
+	formatted for a specific GR_Graphics context.  
 
 	A FL_DocLayout encapsulates two related hierarchies of objects.  
 
@@ -79,18 +79,18 @@ class FL_DocLayout
 	friend class fl_DocListener;
 
 public:
-	FL_DocLayout(PD_Document* doc, DG_Graphics* pG);
+	FL_DocLayout(PD_Document* doc, GR_Graphics* pG);
 	~FL_DocLayout();
 
 	void setView(FV_View*);
 	FV_View * getView(void) const;
 
-	DG_Graphics*	getGraphics();
+	GR_Graphics*	getGraphics();
 	PD_Document*	getDocument() const;
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
 
-	DG_Font*		findFont(const PP_AttrProp * pSpanAP,
+	GR_Font*		findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP);
 	
@@ -115,7 +115,7 @@ public:
 #endif
 	
 protected:
-	DG_Graphics*		m_pG;
+	GR_Graphics*		m_pG;
 	PD_Document*		m_pDoc;
 	FV_View*			m_pView;
 	fl_DocListener*		m_pDocListener;

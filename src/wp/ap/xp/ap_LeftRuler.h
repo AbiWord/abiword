@@ -29,7 +29,7 @@
 
 class XAP_Frame;
 class AV_ScrollObj;
-class DG_Graphics;
+class GR_Graphics;
 
 /*****************************************************************/
 
@@ -59,7 +59,7 @@ protected:
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;
 	AV_ScrollObj *		m_pScrollObj;
-	DG_Graphics *		m_pG;
+	GR_Graphics *		m_pG;
 	UT_uint32			m_iHeight;		/* size of window */
 	UT_uint32			m_iWidth;		/* size of window */
 	UT_uint32			m_iPageViewTopMargin;

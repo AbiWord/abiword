@@ -28,9 +28,9 @@
 class ap_RulerTicks
 {
 public:
-	ap_RulerTicks(DG_Graphics * pG);
+	ap_RulerTicks(GR_Graphics * pG);
 
-	DG_Graphics *	m_pG;
+	GR_Graphics *	m_pG;
 	
 	UT_uint32		tickUnit;
 	UT_uint32		tickUnitScale;

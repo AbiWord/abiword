@@ -61,7 +61,7 @@ AP_Dialog_FontChooser::~AP_Dialog_FontChooser(void)
 	FREEP(m_pColor);
 }
 
-void AP_Dialog_FontChooser::setGraphicsContext(DG_Graphics * pGraphics)
+void AP_Dialog_FontChooser::setGraphicsContext(GR_Graphics * pGraphics)
 {
 	m_pGraphics = pGraphics;
 }

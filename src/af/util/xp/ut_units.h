@@ -23,7 +23,7 @@
 #define UT_UNITS_H
 
 #include "ut_types.h"
-class DG_Graphics;
+class GR_Graphics;
 
 UT_BEGIN_EXTERN_C
 
@@ -32,7 +32,7 @@ UT_BEGIN_EXTERN_C
 double UT_convertToInches(const char* s);
 double UT_convertToPoints(const char* s);
 UT_sint32 UT_paperUnits(const char * sz);
-UT_sint32 UT_docUnitsFromPaperUnits(DG_Graphics * pG, UT_sint32 iPaperUnits);
+UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
 
 UT_END_EXTERN_C
 

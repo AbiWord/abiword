@@ -346,7 +346,7 @@ void fp_Line::clearScreen(void)
 	}
 }
 
-void fp_Line::draw(DG_Graphics* pG)
+void fp_Line::draw(GR_Graphics* pG)
 {
 	UT_ASSERT(m_iWidth <= m_iMaxWidth);
 	

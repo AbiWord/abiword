@@ -59,7 +59,7 @@ AP_Win32Dialog_Print::~AP_Win32Dialog_Print(void)
 	}
 }
 
-DG_Graphics * AP_Win32Dialog_Print::getPrinterGraphicsContext(void)
+GR_Graphics * AP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 {
 	UT_ASSERT(m_answer == a_OK);
 
@@ -68,13 +68,13 @@ DG_Graphics * AP_Win32Dialog_Print::getPrinterGraphicsContext(void)
 	m_DocInfo.lpszDocName = m_szDocumentPathname;
 	m_DocInfo.lpszOutput = ((m_bDoPrintToFile) ? m_szPrintToFilePathname : NULL);
 	
-	Win32Graphics * pGraphics = new Win32Graphics(m_pPersistPrintDlg->hDC,&m_DocInfo);
+	GR_Win32Graphics * pGraphics = new GR_Win32Graphics(m_pPersistPrintDlg->hDC,&m_DocInfo);
 	return pGraphics;
 }
 
-void AP_Win32Dialog_Print::releasePrinterGraphicsContext(DG_Graphics * pGraphics)
+void AP_Win32Dialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
-	Win32Graphics * pWin32Graphics = (Win32Graphics *)pGraphics;
+	GR_Win32Graphics * pWin32Graphics = (GR_Win32Graphics *)pGraphics;
 	if (pGraphics)
 		delete pGraphics;
 

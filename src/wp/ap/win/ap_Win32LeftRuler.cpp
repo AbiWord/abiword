@@ -57,7 +57,7 @@ void AP_Win32LeftRuler::setView(AV_View * pView)
 	AP_LeftRuler::setView(pView);
 
 	DELETEP(m_pG);
-	m_pG = new Win32Graphics(GetDC(m_hwndLeftRuler), m_hwndLeftRuler);
+	m_pG = new GR_Win32Graphics(GetDC(m_hwndLeftRuler), m_hwndLeftRuler);
 	UT_ASSERT(m_pG);
 }
 

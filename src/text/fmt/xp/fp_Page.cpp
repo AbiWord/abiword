@@ -45,7 +45,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
 	m_pLayout = pLayout;
 	m_pView = pView;
 	
-	DG_Graphics * pG = pLayout->getGraphics();
+	GR_Graphics * pG = pLayout->getGraphics();
 	UT_ASSERT(pG);
 
 	m_iWidth = UT_docUnitsFromPaperUnits(pG,iWidth);

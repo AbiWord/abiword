@@ -131,7 +131,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		}
 	}
 
-	DG_Graphics* pG = m_pLayout->getGraphics();
+	GR_Graphics* pG = m_pLayout->getGraphics();
 	
 	m_iTopMargin = pG->convertDimension(getProperty("margin-top"));
 	m_iBottomMargin = pG->convertDimension(getProperty("margin-bottom"));
@@ -304,7 +304,7 @@ void fl_BlockLayout::_fixColumns(void)
 	}
 }
 
-void fl_BlockLayout::clearScreen(DG_Graphics* pG)
+void fl_BlockLayout::clearScreen(GR_Graphics* pG)
 {
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
@@ -478,7 +478,7 @@ int fl_BlockLayout::format()
 		_removeAllEmptyLines();
 		
 		// we don't ... construct just enough to keep going
-		DG_Graphics* pG = m_pLayout->getGraphics();
+		GR_Graphics* pG = m_pLayout->getGraphics();
 		m_pFirstRun = new fp_TextRun(this, pG, 0, 0);
 		m_pFirstRun->calcWidths(&m_gbCharWidths);
 

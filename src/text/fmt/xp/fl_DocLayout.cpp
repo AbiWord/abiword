@@ -42,7 +42,7 @@
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 #define FREEP(p)	do { if (p) free(p); } while (0)
 
-FL_DocLayout::FL_DocLayout(PD_Document* doc, DG_Graphics* pG) : m_hashFontCache(19)
+FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG) : m_hashFontCache(19)
 {
 	m_pDoc = doc;
 	m_pG = pG;
@@ -70,7 +70,7 @@ FL_DocLayout::~FL_DocLayout()
 	UT_VECTOR_PURGEALL(fp_Page *, m_vecPages);
 	UT_VECTOR_PURGEALL(fl_SectionLayout *, m_vecSectionLayouts);
 
-	UT_HASH_PURGEDATA(DG_Font *, m_hashFontCache);
+	UT_HASH_PURGEDATA(GR_Font *, m_hashFontCache);
 }
 
 void FL_DocLayout::setView(FV_View* pView)
@@ -97,7 +97,7 @@ PD_Document* FL_DocLayout::getDocument() const
 	return m_pDoc;
 }
 
-DG_Graphics* FL_DocLayout::getGraphics()
+GR_Graphics* FL_DocLayout::getGraphics()
 {
 	return m_pG;
 }
@@ -114,7 +114,7 @@ UT_sint32 FL_DocLayout::getHeight()
 		iHeight += p->getHeight();
 	}
 
-	if (m_pG->queryProperties(DG_Graphics::DGP_SCREEN))
+	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// add page view dimensions 
 		iHeight += fl_PAGEVIEW_PAGE_SEP * (count - 1);
@@ -138,7 +138,7 @@ UT_sint32 FL_DocLayout::getWidth()
 			iWidth = p->getWidth();
 	}
 
-	if (m_pG->queryProperties(DG_Graphics::DGP_SCREEN))
+	if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		// add page view dimensions 
 		iWidth += fl_PAGEVIEW_MARGIN_Y * 2;
@@ -147,11 +147,11 @@ UT_sint32 FL_DocLayout::getWidth()
 	return iWidth;
 }
 
-DG_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
+GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 								const PP_AttrProp * pBlockAP,
 								const PP_AttrProp * pSectionAP)
 {
-	DG_Font* pFont;
+	GR_Font* pFont;
 
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP);
 	const char* pszStyle	= PP_evalProperty("font-style",pSpanAP,pBlockAP,pSectionAP);
@@ -180,7 +180,7 @@ DG_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	}
 	else
 	{
-		pFont = (DG_Font*) pEntry->pData;
+		pFont = (GR_Font*) pEntry->pData;
 	}
 
 	return pFont;

@@ -44,7 +44,7 @@ class fl_SectionLayout;
 class fb_LineBreaker;
 class fp_Line;
 class fp_Run;
-class DG_Graphics;
+class GR_Graphics;
 class PD_Document;
 class PP_Property;
 class PX_ChangeRecord_Object;
@@ -93,7 +93,7 @@ public:
 
 	UT_Bool truncateLayout(fp_Run* pTruncRun);
 
-	void clearScreen(DG_Graphics*);
+	void clearScreen(GR_Graphics*);
 
 	void dump();
 

@@ -21,7 +21,7 @@
 #ifndef AP_FRAMEDATA_H
 #define AP_FRAMEDATA_H
 
-class DG_Graphics;
+class GR_Graphics;
 class FL_DocLayout;
 class AP_TopRuler;
 class AP_LeftRuler;
@@ -35,7 +35,7 @@ public:
 	~AP_FrameData(void);
 
 	FL_DocLayout *		m_pDocLayout;
-	DG_Graphics *		m_pG;
+	GR_Graphics *		m_pG;
 	AP_TopRuler *		m_pTopRuler;
 	AP_LeftRuler *		m_pLeftRuler;
 };
