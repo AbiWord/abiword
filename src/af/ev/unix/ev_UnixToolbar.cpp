@@ -281,7 +281,7 @@ UT_Bool EV_UnixToolbar::synthesize(void)
 						}
 					}
 				}
-
+ 
 				// Give a final show
 				gtk_widget_show(comboBox);
 
