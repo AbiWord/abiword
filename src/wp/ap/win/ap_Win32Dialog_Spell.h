@@ -55,7 +55,7 @@ protected:
 
 	BOOL					m_bChangingSelection;
 
-    UT_sint32               m_iSentenceStart;
+    UT_sint32               m_iWordOffsetInSentence;
 };
 
 #endif /* AP_WIN32DIALOG_SPELL_H */
