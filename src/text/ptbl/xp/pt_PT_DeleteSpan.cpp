@@ -139,8 +139,8 @@ UT_Bool pt_PieceTable::_deleteSpanWithNotify(PT_DocPosition dpos,
 	PX_ChangeRecord_Span * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
 								   dpos,
-								   m_indexAPTemporarySpanFmt,pft->getIndexAP(),
-								   m_bHaveTemporarySpanFmt,UT_FALSE,
+								   pft->getIndexAP(),pft->getIndexAP(),
+								   UT_FALSE,UT_FALSE,
 								   m_varset.getBufIndex(pft->getBufIndex(),fragOffset),
 								   length,isDifferentFmt);
 	UT_ASSERT(pcr);
