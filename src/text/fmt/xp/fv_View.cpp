@@ -3933,7 +3933,12 @@ void FV_View::warpInsPtNextPrevPage(bool bNext)
 		_eraseInsertionPoint();
 
 	_resetSelection();
-	_clearIfAtFmtMark(getPoint());
+	
+	if ( getPoint() != _getDocPos(FV_DOCPOS_BOL)) 
+	{
+		xxx_UT_DEBUGMSG(("Not at the beginning of a line. Removing FmtMark. \n"));
+		_clearIfAtFmtMark(getPoint());
+	}
 	_moveInsPtNextPrevPage(bNext);
 	notifyListeners(AV_CHG_MOTION);
 }
@@ -3946,7 +3951,12 @@ void FV_View::warpInsPtNextPrevLine(bool bNext)
 		_eraseInsertionPoint();
 
 	_resetSelection();
-	_clearIfAtFmtMark(getPoint());
+	
+	if ( getPoint() != _getDocPos(FV_DOCPOS_BOL)) 
+	{
+		xxx_UT_DEBUGMSG(("Not at the beginning of a line. Removing FmtMark. \n"));
+		_clearIfAtFmtMark(getPoint());
+	}
 	_moveInsPtNextPrevLine(bNext);
 	notifyListeners(AV_CHG_MOTION);
 }
