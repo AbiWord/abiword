@@ -104,7 +104,7 @@ UT_sint32  GR_Abi_MathManager::_makeMathView(void)
      pMathView->setMathMLNamespaceContext(
 				     MathMLNamespaceContext::create(pMathView, 
                                      m_pMathGraphicDevice));
-     return static_cast<UT_sint32>(m_vecMathView.getItemCount());
+     return static_cast<UT_sint32>(m_vecMathView.getItemCount()-1);
 }
 
 void GR_Abi_MathManager::_loadMathML(UT_sint32 uid, UT_UTF8String & sMathBuf)
@@ -133,7 +133,7 @@ UT_sint32 GR_Abi_MathManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api)
   }
   UT_sint32 iNew = _makeMathView();
   m_vecIndexes.addItem(api);
-  UT_ASSERT(static_cast<UT_sint32>(m_vecIndexes.getItemCount()) == iNew);
+  UT_ASSERT(static_cast<UT_sint32>(m_vecIndexes.getItemCount()) == (iNew+1));
   return iNew;
 }
 
