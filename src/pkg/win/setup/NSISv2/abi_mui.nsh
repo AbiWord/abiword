@@ -34,6 +34,7 @@
     !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
     ;Custom help
+    ${IfExists} "plugins\helpbutton.dll"
     Function CustomHelpFuncComponentsPage
       InitPluginsDir               ; insure directory exists and $PLUGINDIR initialized to its location
       SetOutPath $PLUGINSDIR       ; set directory to one that ensures file removed after install
@@ -45,6 +46,7 @@
       HelpButton::end
       ;MessageBox MB_OK "Cleanup HelpButton"
     FunctionEnd
+    ${IfExistsEnd}
 
 
   ; include the Modern UI support
@@ -56,7 +58,9 @@
     ; including the license of AbiWord  (license could be localized, but we lack translations)
     !insertmacro MUI_PAGE_LICENSE $(LicenseTXT)
     ; allow user to select what parts to install
-    !define MUI_PAGE_CUSTOMFUNCTION_PRE customHelpFuncComponentsPage
+    ${IfExists} "plugins\helpbutton.dll"
+      !define MUI_PAGE_CUSTOMFUNCTION_PRE customHelpFuncComponentsPage
+    ${IfExistsEnd}
     !insertmacro MUI_PAGE_COMPONENTS
     ; and where to install to
     !insertmacro MUI_PAGE_DIRECTORY
