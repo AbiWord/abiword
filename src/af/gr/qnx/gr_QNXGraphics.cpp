@@ -265,6 +265,8 @@ uint16_t mychr = c;
 if(!m_pFont || !(font = m_pFont->getFont())) {
 	return 0;
 	}
+//somthing is really phucked if you try to use 128 here..
+if(mychr == 128) return GR_CW_UNKNOWN;
 
 return _UL(PfWideTextWidthBytes(font,&mychr,2));
 }
@@ -536,17 +538,18 @@ void GR_QNXGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 
 void GR_QNXGraphics::getCoverage(UT_Vector &coverage)
 {
-FontQueryInfo *info;
+FontQueryInfo info;
 const char *font;
 if(!m_pFont || !(font = m_pFont->getFont())) {
 return;
 }
 coverage.clear();
 
-PfQueryFontInfo(font,info);
-coverage.push_back((void*)info->lochar);
-coverage.push_back((void*)(info->lochar - info->hichar));
+PfQueryFontInfo(font,&info);
+coverage.push_back((void*)info.lochar);
+coverage.push_back((void*)(info.hichar - info.lochar));
 }
+
 void GR_QNXGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	m_iLineWidth = _UD(iLineWidth);
@@ -1071,7 +1074,7 @@ bool GR_QNXGraphics::endPrint(void) {
 		PpSuspendJob(m_pPrintContext);
 		PpEndJob(m_pPrintContext);
 		PtDamageWidget(m_pWin);
-		PtFlush();
+		PgFlush();
 	}
 	return true;
 }
