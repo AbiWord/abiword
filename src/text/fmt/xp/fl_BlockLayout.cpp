@@ -2333,7 +2333,7 @@ bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 					theWord[ldex - (wordLength - newLength)] = currentChar;
 				}
 
-			   	if (SpellCheckWord(theWord, newLength) &&
+			   	if (!SpellCheckWord(theWord, newLength) &&
 					!pApp->isWordInDict(theWord, newLength))
 				{
 					bool bIsIgnored = pDoc->isIgnore(theWord, newLength);
@@ -2432,7 +2432,7 @@ bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		    theWord[ldex - (wordLength - newLength)] = currentChar;
 		  }
 
-		if (SpellCheckWord(theWord, newLength) &&
+		if (!SpellCheckWord(theWord, newLength) &&
 			!pApp->isWordInDict(theWord, newLength))
 		{
 			// squiggle it
