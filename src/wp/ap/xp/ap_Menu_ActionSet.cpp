@@ -159,7 +159,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_LANGUAGE,			0,1,0,0,	"dlgLanguage",	/*ap_GetState_Selection*/NULL,					NULL);
 	_s(AP_MENU_ID_FMT_FONT,			0,1,0,0,	"dlgFont",	ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,0,	"dlgParagraph",		ap_GetState_StylesLocked,	NULL);
-	_s(AP_MENU_ID_FMT_BULLETS,		0,1,0,0,	"dlgBullets",	ap_GetState_StylesLocked,	NULL);
+	_s(AP_MENU_ID_FMT_BULLETS,		0,1,0,0,	"dlgBullets",	ap_GetState_Lists,	NULL);
 	_s(AP_MENU_ID_FMT_DOCUMENT, 0,1,0,0, "pageSetup", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BORDERS,		0,1,0,0,	"dlgBorders",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,0,	"dlgColumns",		ap_GetState_ColumnsActive,					NULL);
