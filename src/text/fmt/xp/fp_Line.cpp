@@ -2620,7 +2620,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 		{
 			fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-			m_iClearToPos = (UT_sint32)iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN;
+			m_iClearToPos = (UT_sint32)(iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN);
 //			m_iClearLeftOffset =  pCell->getCellX(this) - pCell->getLeftPos() - 1;
 			m_iClearLeftOffset =  0;
 		}
@@ -2644,7 +2644,7 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 		else if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 		{
 			fp_CellContainer * pCell = (fp_CellContainer *) getContainer();
-			m_iClearToPos = (UT_sint32)iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN;
+			m_iClearToPos = (UT_sint32)(iMaxWidth + pCell->getRightPad() * SCALE_TO_SCREEN);
 //			m_iClearLeftOffset =  pCell->getCellX(this) - pCell->getLeftPos() - 1;
 			m_iClearLeftOffset =  0;
 		}
