@@ -31,6 +31,20 @@ static int x_hexDigit(char c)
 	return 0;
 }
 
+UT_RGBColor::UT_RGBColor()
+{
+	m_red = 0;
+	m_grn = 0;
+	m_blu = 0;
+}
+
+UT_RGBColor::UT_RGBColor(unsigned char red, unsigned char grn, unsigned char blu)
+{
+	m_red = red;
+	m_grn = grn;
+	m_blu = blu;
+}
+
 // TODO shouldn't we have a #000000 syntax like CSS?
 void UT_parseColor(const char *p, UT_RGBColor& c)
 {

@@ -11,6 +11,9 @@ class UT_Rect;
 class UT_RGBColor
 {
 public:
+	UT_RGBColor();
+	UT_RGBColor(unsigned char, unsigned char, unsigned char);
+	
 	unsigned char m_red;
 	unsigned char m_grn;
 	unsigned char m_blu;
