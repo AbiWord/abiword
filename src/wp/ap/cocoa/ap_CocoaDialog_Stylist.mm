@@ -286,7 +286,7 @@ void  AP_CocoaDialog_Stylist::_fillTree(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
-		currentChild = [[StyleNode alloc] initWithValue:sTmp.utf8_str() row:row andCol:0];
+		currentChild = [[[StyleNode alloc] initWithValue:sTmp.utf8_str() row:row andCol:0] autorelease];
 		if(pStyleTree->getNumCols(row) > 0)
 		{
 			UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
@@ -299,7 +299,7 @@ void  AP_CocoaDialog_Stylist::_fillTree(void)
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				[currentChild addChild:[[StyleNode alloc] initWithValue:sTmp.utf8_str() row:row andCol:col]];
+				[currentChild addChild:[[[StyleNode alloc] initWithValue:sTmp.utf8_str() row:row andCol:col] autorelease]];
 				UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));
 			}
 		}

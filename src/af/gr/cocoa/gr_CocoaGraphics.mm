@@ -173,6 +173,8 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 
 GR_CocoaGraphics::~GR_CocoaGraphics()
 {
+	DELETEP(m_pFontGUI);
+
 	_destroyFonts ();
 
 	UT_VECTOR_RELEASE(m_cacheArray);
