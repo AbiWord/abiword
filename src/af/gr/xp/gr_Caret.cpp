@@ -23,13 +23,10 @@
 
 #include "gr_Caret.h"
 #include "gr_Graphics.h"
-#include "ut_sleep.h"
-
-#include "ut_debugmsg.h"
 #include "ut_assert.h"
 
-#define CURSOR_BLINK_TIME 600 /* milliseconds */
-#define CURSOR_DELAY_TIME 10
+static const UT_uint32 CURSOR_BLINK_TIME = 600; /* milliseconds */
+static const UT_uint32 CURSOR_DELAY_TIME = 10;
 
 // Description of m_enabler:
 // The problem is that a complicated draw operation will be somewhat
@@ -76,8 +73,6 @@ GR_Caret::~GR_Caret()
 
 	DELETEP(m_worker);
 	DELETEP(m_enabler);
-
-	xxx_UT_DEBUGMSG(("DOM: deleting caret %p\n", this));
 }
 
 void GR_Caret::s_work(UT_Worker * _w)
@@ -95,9 +90,7 @@ void GR_Caret::s_enable(UT_Worker * _w)
 
 	c->m_worker->stop();
 	if (!c->m_bCursorIsOn)
-	{
 		c->_blink(true);
-	}
 	else
 	{
 		c->_blink(true);
@@ -108,8 +101,8 @@ void GR_Caret::s_enable(UT_Worker * _w)
 }
 
 void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
-			 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
-			 bool bPointDirection, UT_RGBColor * pClr)
+						 UT_sint32 x2, UT_sint32 y2, UT_uint32 h2,
+						 bool bPointDirection, UT_RGBColor * pClr)
 {
 	// if visible, then hide while we change positions.
 	_erase();
@@ -133,14 +126,6 @@ void GR_Caret::setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
 		m_bCaret2OnScreen = false;
 	else
 		m_bCaret2OnScreen = true;
-
-	// now show the caret, if it's enabled, and restart the timer.
-	// if we don't do this, the caret is invisible during caret motion.
-	// For some reason, we seem to do OK now for that.  I don't get it.
-	//if (m_nDisableCount == 0)
-	//{
-	//	m_worker->stop(); m_worker->start();
-	//}
 }
 
 void GR_Caret::enable()
@@ -148,11 +133,9 @@ void GR_Caret::enable()
 	if (m_bRecursiveDraw)
 		return;
 
+	// If the caret is already enabled, just return
 	if (m_nDisableCount == 0)
-	{
-		// If the caret is already enabled, just return
 		return;
-	}
 
 	--m_nDisableCount;
 	// Check to see if we still have pending disables.
