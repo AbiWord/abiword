@@ -55,11 +55,24 @@ struct footnote
 	UT_uint32  pid;
 };
 
+typedef enum
+	{
+		HF_HeaderFirst = 0,
+		HF_FooterFirst,
+		HF_HeaderOdd,
+		HF_FooterOdd,
+		HF_HeaderEven,
+		HF_FooterEven,
+		HF_Unsupported
+	}_headerTypes;
+
+
 struct header
 {
-	UT_uint32 type;
-	UT_uint32 pos;
-	UT_uint32 len;
+	_headerTypes type;
+	UT_uint32    pos;
+	UT_uint32    len;
+	UT_uint32    pid;
 };
 
 
@@ -172,8 +185,6 @@ private:
 	bool		_appendFmt(const XML_Char ** attributes);
 	void        _handleHeaders(const wvParseStruct *ps);
 	bool        _handleHeadersText(UT_uint32 iPos);
-	bool        _findNextHeaderSection();
-	bool        _findNextFooterSection();
 	
 	UT_UCS4String		m_pTextRun;
 	UT_uint32			m_iImageCount;
@@ -233,12 +244,18 @@ private:
 	bool        m_bInENotes;
 	pf_Frag *   m_pNotesEndSection;
 	header *    m_pHeaders;
-	UT_uint32   m_iHeadersSize;
 	UT_uint32   m_iHeadersCount;
 	UT_uint32   m_iHeadersStart;
 	UT_uint32   m_iHeadersEnd;
+	UT_uint32   m_iCurrentHeader;
 	bool        m_bInHeaders;
-	UT_uint32   m_iNextHeader;
+	UT_uint32   m_iCurrentSectId;
+	UT_uint32   m_iAnnotationsStart;
+	UT_uint32   m_iAnnotationsEnd;
+	UT_uint32   m_iMacrosStart;
+	UT_uint32   m_iMacrosEnd;
+	UT_uint32   m_iTextStart;
+	UT_uint32   m_iTextEnd;
 };
 
 #endif /* IE_IMP_MSWORD_H */

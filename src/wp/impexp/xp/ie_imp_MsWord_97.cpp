@@ -616,12 +616,18 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bInENotes(false),
 	m_pNotesEndSection(NULL),
 	m_pHeaders(NULL),
-	m_iHeadersSize(0),
 	m_iHeadersCount(0),
 	m_iHeadersStart(0xffffffff),
 	m_iHeadersEnd(0xffffffff),
+	m_iCurrentHeader(0),
 	m_bInHeaders(false),
-	m_iNextHeader(0)
+	m_iCurrentSectId(0),
+	m_iAnnotationsStart(0xffffffff),
+	m_iAnnotationsEnd(0xffffffff),
+	m_iMacrosStart(0xffffffff),
+	m_iMacrosEnd(0xffffffff),
+	m_iTextStart(0xffffffff),
+	m_iTextEnd(0xffffffff)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1187,11 +1193,17 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		// (We are interested in the offset of this in the document,
 		// not in the data stream; therefore, we do not add
 		// ps->fib.fcMin for the simple doc
-		m_iFootnotesStart = ps->fib.ccpText;
+		m_iTextStart      = 0;
+		m_iTextEnd        = ps->fib.ccpText;
+		m_iFootnotesStart = m_iTextEnd;
 		m_iFootnotesEnd   = m_iFootnotesStart + ps->fib.ccpFtn;
 		m_iHeadersStart   = m_iFootnotesEnd;
 		m_iHeadersEnd     = m_iHeadersStart + ps->fib.ccpHdr;
-		m_iEndnotesStart  = m_iHeadersEnd + ps->fib.ccpMcr + ps->fib.ccpAtn;
+		m_iMacrosStart    = m_iHeadersEnd;
+		m_iMacrosEnd      = m_iMacrosStart + ps->fib.ccpMcr;
+		m_iAnnotationsStart = m_iMacrosEnd;
+		m_iAnnotationsEnd = m_iAnnotationsStart + ps->fib.ccpAtn;
+		m_iEndnotesStart  = m_iAnnotationsEnd;
 		m_iEndnotesEnd    = m_iEndnotesStart + ps->fib.ccpEdn;
 		
 		// now retrieve the note info ...
@@ -1275,9 +1287,11 @@ bool IE_Imp_MsWord_97::_insertBookmarkIfAppropriate(UT_uint32 iDocPosition)
 
 int IE_Imp_MsWord_97::_charProc (wvParseStruct *ps, U16 eachchar, U8 chartype, U16 lid)
 {
+	if(!_handleHeadersText(ps->currentcp))
+		return 0;
 	if(!_handleNotesText(ps->currentcp))
 		return 0;
-	
+
 	_insertBookmarkIfAppropriate(ps->currentcp);
 
 	if(_insertNoteIfAppropriate(ps->currentcp,eachchar))
@@ -1357,9 +1371,12 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	PICF picf;
 #endif
 
+	if(!_handleHeadersText(ps->currentcp))
+		return 0;
+
 	if(!_handleNotesText(ps->currentcp))
 		return 0;
-	
+
 	_insertBookmarkIfAppropriate(ps->currentcp);
 	
 	if(_insertNoteIfAppropriate(ps->currentcp,0))
@@ -1560,12 +1577,14 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 {
 	SEP * asep = static_cast <SEP *>(prop);
 
-	const XML_Char * propsArray[3];
+	const XML_Char * propsArray[15];  
 	UT_String propBuffer;
 	UT_String props;
 
 	// flush any character runs
 	this->_flush ();
+
+	m_iCurrentSectId++;
 
 	// page-margin-left
 	UT_String_sprintf(propBuffer,
@@ -1654,7 +1673,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	props += propBuffer;
 
 	//
-	// TODO: headers/footers, section breaks
+	// TODO: section breaks
 	//
 //
 // Sevior: Only do this ONCE!!! Abiword can only handle one page size.
@@ -1699,9 +1718,65 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 
 	xxx_UT_DEBUGMSG (("DOM:SEVIOR the section properties are: '%s'\n", props.c_str()));
 
+	
 	propsArray[0] = static_cast<const XML_Char *>("props");
 	propsArray[1] = static_cast<const XML_Char *>(props.c_str());
-	propsArray[2] = 0;
+
+	UT_uint32 iOff = 2;
+	
+	// headers/footers
+	UT_String id[6];
+	UT_uint32 iId = 0;
+
+	// see _handleHeaders() on the contents of the m_pHeaders array,
+	// it will make this maths clear (m_iCurrentSectId is 1-based indx)
+	if ((m_iCurrentSectId - 1)*6 + 6 < m_iHeadersCount)
+	{
+		// there are headers defined for this section
+		UT_uint32 i = 6 + (m_iCurrentSectId - 1)*6;
+		UT_uint32 j = i + 6;
+		
+
+		for( ; i < j && i < m_iHeadersCount; i++)
+		{
+			// skip any unsupported or 0-length headers
+			if(m_pHeaders[i].type == HF_Unsupported || m_pHeaders[i].len <= 2)
+			{
+				continue;
+			}
+			
+			switch(m_pHeaders[i].type)
+			{
+				case HF_HeaderEven:
+					propsArray[iOff++] = "header-even";
+					break;
+				case HF_FooterEven:
+					propsArray[iOff++] = "footer-even";
+					break;
+				case HF_HeaderOdd:
+					propsArray[iOff++] = "header";
+					break;
+				case HF_FooterOdd:
+					propsArray[iOff++] = "footer";
+					break;
+				case HF_HeaderFirst:
+					propsArray[iOff++] = "header-first";
+					break;
+				case HF_FooterFirst:
+					propsArray[iOff++] = "footer-first";
+					break;
+				default:
+					UT_ASSERT(UT_NOT_REACHED);
+			}
+
+			UT_String_sprintf(id[iId],"%d",m_pHeaders[i].pid);
+			propsArray[iOff++] = id[iId++].c_str();
+		}
+	}
+	
+	propsArray[iOff++] = 0;
+	UT_ASSERT(iOff <= sizeof(propsArray));
+	
 
 	if (!_appendStrux(PTX_Section, static_cast<const XML_Char **>(&propsArray[0])))
 	{
@@ -1764,12 +1839,18 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct *ps, UT_uint32 tag,
 	return 0;
 }
 
-int IE_Imp_MsWord_97::_endSect (wvParseStruct *ps, UT_uint32 tag,
-								void *prop, int dirty)
+// this function is called from _handleHeadersText() with meaningless
+// parameters; if you want to make use of any of the parameters here,
+// make sure it will work with NULLs, etc.
+int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ ,
+								void * /* prop */, int /* dirty */ )
 {
 	// if we're at the end of a section, we need to check for a section mark
 	// at the end of our character stream and remove it (to prevent page breaks
 	// between sections)
+
+	// this does not work -- if we are at the end of a section we have
+	// already flushed the buffer in _endPara()
 	if (m_pTextRun.size() &&
 		m_pTextRun[m_pTextRun.size()-1] == UCS_FF)
 	  {
@@ -1784,6 +1865,59 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 				  void *prop, int dirty)
 {
 	PAP *apap = static_cast <PAP *>(prop);
+
+	// the header/footnote/endnote sections are special; because the
+	// parser treats them as a continuation of the document, we end up
+	// here before we get chance to handle the change from main doc to
+	// these sections -- we want the paragraph properties assembled
+	// for future use, but we do not want the strux actually inserted
+	bool bDoNotInsertStrux = (ps->currentcp == m_iFootnotesStart ||
+							  ps->currentcp == m_iEndnotesStart  ||
+							  ps->currentcp == m_iHeadersStart);
+
+	// the end of endnotes/fnotes/headers and all other subsections in
+	// the main stream always contains a paragraph marker; we do not
+	// want it to insert strux on those
+	if((ps->currentcp == m_iTextEnd - 1 && m_iTextEnd > m_iTextStart)                ||
+	   (ps->currentcp == m_iTextEnd - 2 && m_iTextEnd > m_iTextStart)                ||
+	   (ps->currentcp == m_iFootnotesEnd - 1 && m_iFootnotesEnd > m_iFootnotesStart) ||
+	   (ps->currentcp == m_iEndnotesEnd - 1  && m_iEndnotesEnd > m_iEndnotesStart)   ||
+	   (ps->currentcp == m_iHeadersEnd - 1 && m_iHeadersEnd > m_iHeadersStart)       ||
+	   (ps->currentcp == m_iAnnotationsEnd - 1 && m_iAnnotationsEnd > m_iAnnotationsStart) ||
+	   (ps->currentcp == m_iMacrosStart - 1 && m_iMacrosEnd > m_iMacrosStart))
+	{
+		bDoNotInsertStrux  = true;
+	}
+	
+
+	// at the end of each f/enote is a superflous paragraph marker
+	// which we do not want imported
+	if(m_bInFNotes && m_iNextFNote < m_iFootnotesCount && m_pFootnotes &&
+	   m_pFootnotes[m_iNextFNote].txt_pos + m_pFootnotes[m_iNextFNote].txt_len - 1 >= ps->currentcp)
+	{
+		bDoNotInsertStrux = true;
+	}
+	
+	if(m_bInENotes && m_iNextENote < m_iEndnotesCount && m_pEndnotes &&
+	   m_pEndnotes[m_iNextENote].txt_pos + m_pEndnotes[m_iNextENote].txt_len - 1 >= ps->currentcp)
+	{
+		bDoNotInsertStrux = true;
+	}
+	 
+	// the header section requires even more special care; since we
+	// need to insert the HdrFtr strux for each header before we can
+	// insert the block, we do not want a strux inserted at the start
+	// position of a header; furthermore, each header ends with a
+	// superfluous paragraph marker
+	if(m_bInHeaders &&
+	   ((m_iCurrentHeader < m_iHeadersCount && m_pHeaders &&
+	   (m_pHeaders[m_iCurrentHeader].pos == ps->currentcp ||
+		m_pHeaders[m_iCurrentHeader].pos + m_pHeaders[m_iCurrentHeader].len - 1 >= ps->currentcp))
+		|| m_iCurrentHeader == m_iHeadersCount))
+	{
+		//start a new header section
+		bDoNotInsertStrux = true;
+	}
 
 	{
 	  if (apap->fInTable) {
@@ -1840,9 +1974,16 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  }
 	}
 
-	// first, flush any character data in any open runs
-	this->_flush ();
 
+	// first, flush any character data in any open runs
+	// only flush if we are really inserting the strux (so that we can
+	// remove any superfluous characters at ends of secitons,
+	// e.g. page breaks)
+	if(!bDoNotInsertStrux)
+	{
+		this->_flush ();
+	}
+	
 	if (apap->fTtp)
 	  {
 	    m_bInPara = true;
@@ -1872,8 +2013,11 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		UT_UCSChar ucs = UCS_FF;
 		_appendSpan(&ucs,1);
 	}
-	
+
+	m_charProps.clear();
+	m_charStyle.clear();
 	m_paraProps.clear();
+	m_paraStyle.clear();
 	_generateParaProps(m_paraProps, apap, ps);
 	
 	//props, level, listid, parentid, style, NULL
@@ -2128,7 +2272,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// NULL
 	propsArray[i] = 0;
 
-	if (!m_bInSect)
+	if (!m_bInSect && !bDoNotInsertStrux)
 	{
 		// check for should-be-impossible case
 		UT_ASSERT_NOT_REACHED();
@@ -2136,13 +2280,18 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		m_bInSect = true ;
 	}
 
-	if (!_appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0])))
+	if(!bDoNotInsertStrux)
 	{
-		UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
-		return 1;
+		xxx_UT_DEBUGMSG(("_beginPara: pos %d [text ends %d]\n", ps->currentcp, m_iFootnotesStart));
+		
+		if (!_appendStrux(PTX_Block, static_cast<const XML_Char **>(&propsArray[0])))
+		{
+			UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
+			return 1;
+		}
 	}
-
-	if (myListId > 0)
+	
+	if (myListId > 0 && !bDoNotInsertStrux)
 	  {
 		// TODO: honor more props
 		const XML_Char *list_field_fmt[3];
@@ -2175,16 +2324,78 @@ int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 	xxx_UT_DEBUGMSG(("#DOM: _endPara\n"));
 	// have to flush here, otherwise flushing later on will result in
 	// an empty paragraph being inserted
+
 	this->_flush ();
 	m_bInPara = false;
+	
 	return 0;
 }
 
 int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 								  void *prop, int dirty)
 {
+	// the header/footnote/endnote sections are special; because the
+	// parser treats them as a continuation of the document, we end up
+	// here before we get chance to handle the change from main doc to
+	// these sections -- we want the char properties assembled
+	// for future use, but we do not want them actually appended
+	bool bDoNotAppendFmt = (ps->currentcp == m_iFootnotesStart ||
+							  ps->currentcp == m_iEndnotesStart  ||
+							  ps->currentcp == m_iHeadersStart);
+
+	// the end of endnotes/fnotes/headers and all other subsections in
+	// the main stream always contains a paragraph marker; we do not
+	// want it to append fmt on those
+	if((ps->currentcp == m_iTextEnd - 1 && m_iTextEnd > m_iTextStart)                ||
+	   (ps->currentcp == m_iTextEnd - 2 && m_iTextEnd > m_iTextStart)                ||
+	   (ps->currentcp == m_iFootnotesEnd - 1 && m_iFootnotesEnd > m_iFootnotesStart) ||
+	   (ps->currentcp == m_iEndnotesEnd - 1  && m_iEndnotesEnd > m_iEndnotesStart)   ||
+	   (ps->currentcp == m_iHeadersEnd - 1 && m_iHeadersEnd > m_iHeadersStart)       ||
+	   (ps->currentcp == m_iAnnotationsEnd - 1 && m_iAnnotationsEnd > m_iAnnotationsStart) ||
+	   (ps->currentcp == m_iMacrosStart - 1 && m_iMacrosEnd > m_iMacrosStart))
+	{
+		bDoNotAppendFmt  = true;
+	}
+	
+
+	// at the end of each f/enote is a superflous paragraph marker
+	// which we do not want imported
+	if(m_bInFNotes && m_iNextFNote < m_iFootnotesCount && m_pFootnotes &&
+	   m_pFootnotes[m_iNextFNote].txt_pos + m_pFootnotes[m_iNextFNote].txt_len - 1 >= ps->currentcp)
+	{
+		bDoNotAppendFmt = true;
+	}
+	
+	if(m_bInENotes && m_iNextENote < m_iEndnotesCount && m_pEndnotes &&
+	   m_pEndnotes[m_iNextENote].txt_pos + m_pEndnotes[m_iNextENote].txt_len - 1 >= ps->currentcp)
+	{
+		bDoNotAppendFmt = true;
+	}
+	 
+	// the header section requires even more special care; since we
+	// need to insert the HdrFtr strux for each header before we can
+	// insert the block, we do not want a strux and fmt inserted at the start
+	// position of a header; furthermore, each header ends with a
+	// superfluous paragraph marker
+	if(m_bInHeaders &&
+	   ((m_iCurrentHeader < m_iHeadersCount && m_pHeaders &&
+	   (m_pHeaders[m_iCurrentHeader].pos == ps->currentcp ||
+		m_pHeaders[m_iCurrentHeader].pos + m_pHeaders[m_iCurrentHeader].len - 1 >= ps->currentcp))
+	   || m_iCurrentHeader == m_iHeadersCount))
+	{
+		//start a new header section
+		bDoNotAppendFmt = true;
+	}
+
 	// flush any data in our character runs
-	this->_flush ();
+	// if we are not really appending, then do not flush, so that we
+	// are not prevented from removing superflous page breaks at the
+	// end of section
+	if(!bDoNotAppendFmt)
+	{
+		this->_flush ();
+	}
+	
 
 	CHP *achp = static_cast <CHP *>(prop);
 
@@ -2192,6 +2403,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	UT_uint32 propsOffset = 0;
 
 	m_charProps.clear();
+	m_charStyle.clear();
 
 	memset (propsArray, 0, sizeof(propsArray));
 
@@ -2241,25 +2453,29 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	}
 
 	// woah - major error here
-	if(!m_bInSect)
+	if(!m_bInSect && !bDoNotAppendFmt)
 	{
 		UT_ASSERT_NOT_REACHED();
 		_appendStrux(PTX_Section, NULL);
 		m_bInSect = true ;
 	}
 
-	if(!m_bInPara)
+	if(!m_bInPara && !bDoNotAppendFmt)
 	{
 		UT_ASSERT_NOT_REACHED();
 		_appendStrux(PTX_Block, NULL);
 		m_bInPara = true ;
 	}
 
-	if (!_appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
+	if(!bDoNotAppendFmt)
 	{
-		UT_DEBUGMSG(("DOM: error appending character formatting\n"));
-		return 1;
+		if (!_appendFmt(static_cast<const XML_Char **>(&propsArray[0])))
+		{
+			UT_DEBUGMSG(("DOM: error appending character formatting\n"));
+			return 1;
+		}
 	}
+	
 	return 0;
 }
 
@@ -3473,11 +3689,11 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 		{
 			getDoc()->appendStyle(attribs);
 		}
-	}
 
-	FREEP(s);
-	FREEP(b);
-	FREEP(f);
+		FREEP(s); s = NULL;
+		FREEP(b); b = NULL;
+		FREEP(f); f = NULL;
+	}
 }
 
 int IE_Imp_MsWord_97::_handleBookmarks(const wvParseStruct *ps)
@@ -3992,11 +4208,14 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		{
 			UT_DEBUGMSG(("In footnote territory: pos %d\n", iDocPosition));
 			m_bInFNotes = true;
-
+			m_bInHeaders = false;
+			
 			// we will reuse the m_iNextFNote variable, noting it
 			// refers to the CURRENT footnote
 			m_iNextFNote = 0;
 			_findNextFNoteSection();
+			_endSect(NULL,0,NULL,0);
+			m_bInSect = true;
 		}
 
 		// the current footnote will end at pos
@@ -4041,6 +4260,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			attribsB[3] = m_paraStyle.c_str();
 
 			_appendStrux(PTX_Block,attribsB);
+			m_bInPara = true;
 
 			if(m_pFootnotes[m_iNextFNote].type)
 			{
@@ -4068,8 +4288,11 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		{
 			UT_DEBUGMSG(("In endnote territory: pos %d\n", iDocPosition));
 			m_bInENotes = true;
+			m_bInHeaders = false;
 			m_iNextENote = 0;
 			_findNextENoteSection();
+			_endSect(NULL,0,NULL,0);
+			m_bInSect = true;
 		}
 
 		if(iDocPosition == m_pEndnotes[m_iNextENote].txt_pos +
@@ -4112,6 +4335,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			attribsB[3] = m_paraStyle.c_str();
 			
 			_appendStrux(PTX_Block,attribsB);
+			m_bInPara = true;
 
 			if(m_pEndnotes[m_iNextENote].type)
 			{
@@ -4197,7 +4421,7 @@ bool IE_Imp_MsWord_97::_findNextENoteSection()
 
 bool IE_Imp_MsWord_97::_shouldUseInsert() const
 {
-	return (m_bInFNotes || m_bInENotes);
+	return ((m_bInFNotes || m_bInENotes) && !m_bInHeaders);
 }
 
 bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const XML_Char ** attributes)
@@ -4247,13 +4471,11 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 		m_pHeaders = NULL;
 	}
 
-	m_iHeadersSize = 0;
 	m_iHeadersCount = 0;
-	
 	UT_uint32 *pPLCF_txt = NULL;
 
 	/*
-	   The header/footer PLCF is organised as follows:
+	   The header/footer PLCF in Word 97+ is organised as follows:
 
 	   indx         |  function
 	   -------------------------------------------------------------------------------
@@ -4273,9 +4495,15 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 	   i+9          |  footer odd  pages
 	   i+10         |  header first page
 	   i+11         |  footer first page
+	   -------------------------------------------------------------------------------
+       according to the docs now should come the foot/endnote
+	   separators but they do not -- those setting appear to be
+	   document wide only ...
+	   -------------------------------------------------------------------------------
 	   i+12 - i+17  |  as the document wide footnote/endnote separators above
-	    
-	            
+
+	   NB: the record for the last section in the document may be
+	       incomplete, i.e., for n sections  m_iHeadersCount <= 6 + 12*n.
 	*/
 
 	bool bHeaderError = false;
@@ -4284,14 +4512,13 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 	{
 		/* the docs are ambiguous, at one place saying the PLCF
 		   contains n+2 entries, another n+1; I think the former is correct*/
-		m_iHeadersSize = ps->fib.lcbPlcfhdd/4 - 2;
-		m_pHeaders = new header[m_iHeadersSize];
+		m_iHeadersCount = ps->fib.lcbPlcfhdd/4 - 2;
+		m_pHeaders = new header[m_iHeadersCount];
 		UT_return_if_fail(m_pHeaders);
 		
 		// this is really quite straight forward; we retrieve the PLCF
-		// chunks that describe head PLCF is a sequence of n+2
-		// positions (UT_uint32) of the footnote text in its data
-		// stream
+		// which is a sequence of n+2 positions (UT_uint32) of the
+		// header text in its data stream
 		if(wvGetPLCF((void **) &pPLCF_txt, ps->fib.fcPlcfhdd, ps->fib.lcbPlcfhdd, ps->tablefd))
 		{
 			bHeaderError = true;
@@ -4300,22 +4527,47 @@ void IE_Imp_MsWord_97::_handleHeaders(const wvParseStruct *ps)
 		if(!bHeaderError)
 		{
 			UT_return_if_fail(pPLCF_txt);
-			for(i = 0, m_iHeadersCount = 0; i < m_iHeadersSize; i++)
+			for(i = 0; i < m_iHeadersCount; i++)
 			{
-				// logic need to skip unsupported formats
-				if(1)
+				m_pHeaders[i].pos = pPLCF_txt[i] + m_iHeadersStart;
+				m_pHeaders[i].len = pPLCF_txt[i+1] - pPLCF_txt[i];
+				m_pHeaders[i].pid = i+1;
+				
+				if(i < 6)
 				{
-					m_pHeaders[m_iHeadersCount].pos = pPLCF_txt[i];
-					m_pHeaders[m_iHeadersCount].len = pPLCF_txt[i+1] - pPLCF_txt[i];
-					m_pHeaders[m_iHeadersCount].type = 0;
-
-					UT_DEBUGMSG(("Header no. %d, pos %d, len %d\n",
-								 m_iHeadersCount,
-								 m_pHeaders[m_iHeadersCount].pos,
-								 m_pHeaders[m_iHeadersCount].len));
-
-					m_iHeadersCount++;
+					// document wide footnote/endnote separators
+					m_pHeaders[i].type = HF_Unsupported;
 				}
+				else
+				{
+					switch((i-6)%6)
+					{
+						case 0:
+							m_pHeaders[i].type = HF_HeaderEven;
+							break;
+						case 1:
+							m_pHeaders[i].type = HF_HeaderOdd;
+							break;
+						case 2:
+							m_pHeaders[i].type = HF_FooterEven;
+							break;
+						case 3:
+							m_pHeaders[i].type = HF_FooterOdd;
+							break;
+						case 4:
+							m_pHeaders[i].type = HF_HeaderFirst;
+							break;
+						case 5:
+							m_pHeaders[i].type = HF_FooterFirst;
+							break;
+
+						default:
+							m_pHeaders[i].type = HF_Unsupported;
+					}
+				}
+				
+				UT_DEBUGMSG(("Header no. %d, pos %d, len %d\n",
+							 i,m_pHeaders[i].pos,m_pHeaders[i].len));
 			}
 
 			wvFree(pPLCF_txt);
@@ -4349,63 +4601,144 @@ bool IE_Imp_MsWord_97::_handleHeadersText(UT_uint32 iDocPosition)
 		{
 			UT_DEBUGMSG(("In headers territory: pos %d\n", iDocPosition));
 			m_bInHeaders = true;
+			m_bInENotes = false;
+			m_bInFNotes = false;
 
-			// we will reuse the m_iNextHeader variable, noting it
-			// refers to the CURRENT header
-			m_iNextHeader = 0;
-			_findNextHeaderSection();
+			m_iCurrentHeader = 0;
+
+			// we need to close of any open section
+			if(m_bInSect)
+			{
+				_endSect(NULL,0,NULL,0);
+			}
+			
+			// some headers can be 0-length, skip them ... (0-length:  len <=2)
+			while(m_pHeaders[m_iCurrentHeader].len <= 2 && m_iCurrentHeader < m_iHeadersCount)
+			{
+				m_iCurrentHeader++;
+			}
 		}
 
-		// the current header will end at pos
-		// h.pos + h.len, 
-		if(iDocPosition == m_pHeaders[m_iNextHeader].pos +
-		                   m_pHeaders[m_iNextHeader].len)
-		{
-			m_iNextHeader++;
 
-			// ??? after the last footnote there is an extra paragraph
-			// marker that is still a part of the footnote section --
+		if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos +
+		                   m_pHeaders[m_iCurrentHeader].len)
+		{
+			// new header, time to move on ...
+			m_iCurrentHeader++;
+
+			// some headers can be 0-length, skip them ... (0-length:  len <=2)
+			while(m_pHeaders[m_iCurrentHeader].len <= 2 && m_iCurrentHeader < m_iHeadersCount)
+			{
+				m_iCurrentHeader++;
+			}
+
+			// after the last header there is an extra paragraph
+			// marker that is still a part of the header section --
 			// we do not want that marker imported
-			if(m_iNextHeader < m_iHeadersCount)
-				_findNextHeaderSection();
-			else
+			if(m_iCurrentHeader ==  m_iHeadersCount)
 			{
 				UT_DEBUGMSG(("End of header marker at pos %d\n", iDocPosition));
 				return false;
 			}
+
+			// do not return, processing needs to continue ...
+		}
+		
+		if(iDocPosition == m_pHeaders[m_iCurrentHeader].pos)
+		{
+			// need to insert our header/footer section, preserving
+			// any existing formatting ...
+			if(m_pHeaders[m_iCurrentHeader].type != HF_Unsupported &&
+			   m_pHeaders[m_iCurrentHeader].len > 2)
+			{
+				UT_uint32 iOff = 0;
+				const XML_Char * attribsB[] = {NULL, NULL,
+											   NULL, NULL,
+											   NULL};
+
+				if(m_paraProps.size())
+				{
+					attribsB[iOff++] = "props";
+					attribsB[iOff++] = m_paraProps.c_str();
+				}
+
+				if(m_paraStyle.size())
+				{
+					attribsB[iOff++] = "style";
+					attribsB[iOff++] = m_paraStyle.c_str();
+				}
+				
+				const XML_Char * attribsC[] = {NULL, NULL,
+											   NULL, NULL,
+											   NULL};
+				iOff = 0;
+				if(m_charProps.size())
+				{
+					attribsC[iOff++] = "props";
+					attribsC[iOff++] = m_charProps.c_str();
+				}
+
+				if(m_charStyle.size())
+				{
+					attribsC[iOff++] = "style";
+					attribsC[iOff++] = m_charStyle.c_str();
+				}
+
+				const XML_Char * attribsS[] = {"type", NULL,
+											   "id",   NULL,
+											   NULL};
+
+				UT_String id;
+				UT_String_sprintf(id,"%d",m_pHeaders[m_iCurrentHeader].pid);
+				attribsS[3] = id.c_str();
+				
+				switch(m_pHeaders[m_iCurrentHeader].type)
+				{
+					case HF_HeaderEven:
+						attribsS[1] = "header-even";
+						break;
+					case HF_FooterEven:
+						attribsS[1] = "footer-even";
+						break;
+					case HF_HeaderOdd:
+						attribsS[1] = "header";
+						break;
+					case HF_FooterOdd:
+						attribsS[1] = "footer";
+						break;
+					case HF_HeaderFirst:
+						attribsS[1] = "header-first";
+						break;
+					case HF_FooterFirst:
+						attribsS[1] = "footer-first";
+						break;
+					default:
+						UT_ASSERT(UT_NOT_REACHED);
+				}
+
+				_appendStrux(PTX_SectionHdrFtr, attribsS);
+				m_bInSect = true;
+				
+				_appendStrux(PTX_Block, attribsB);
+				m_bInPara = true;
+				
+				_appendFmt(attribsC);
+
+				return true;
+			}
+			else
+			{
+				// just gobble the character ...
+				return false;
+			}
+			
 		}
 
-		//_appendStrux(PTX_Block,attribsB);
+		// if we got this far, we are somwhere inside the header, just
+		// process the character in a normal way
+		return (m_pHeaders[m_iCurrentHeader].type != HF_Unsupported);
 	}
 
 	return true;
 }
 
-bool IE_Imp_MsWord_97::_findNextHeaderSection()
-{
-	if(!m_iNextHeader)
-	{
-		// move to the start of the doc first
-		m_pNotesEndSection = NULL;
-	}
-
-	if(m_pNotesEndSection)
-	{
-		// move to the next fragment
-		m_pNotesEndSection = m_pNotesEndSection->getNext();
-		UT_return_val_if_fail(m_pNotesEndSection, false);
-	}
-	
-
-	m_pNotesEndSection = getDoc()->findFragOfType(pf_Frag::PFT_Strux,
-												  (UT_sint32)PTX_EndFootnote,
-												  m_pNotesEndSection);
-
-	if(!m_pNotesEndSection)
-	{
-		UT_DEBUGMSG(("Error: footnote section not found!!!\n"));
-		return false;
-	}
-
-	return true;
-}
