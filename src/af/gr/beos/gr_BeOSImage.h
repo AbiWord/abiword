@@ -22,19 +22,10 @@
 
 #include "gr_Image.h"
 
-struct Fatmap
-{
-	int width;
-	int height;
-
-	// Always 24-bit pixel data
-	unsigned char * data;
-};
-
 class GR_BeOSImage : public GR_Image
 {
 public:
-	GR_BeOSImage(Fatmap * image, const char* pszName);
+	GR_BeOSImage(BBitmap *bitmap, const char* pszName);
 	~GR_BeOSImage();
 
 	virtual UT_sint32	getDisplayWidth(void) const;
@@ -42,11 +33,11 @@ public:
 	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const;
 	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 
-	Fatmap *			getData(void) const { return m_image; }
+	BBitmap *		getData(void) const { return m_image; }
 	
 protected:
 
-	Fatmap * m_image;
+	BBitmap *m_image;
 };
 
 #endif /* GR_BEOSIMAGE_H */

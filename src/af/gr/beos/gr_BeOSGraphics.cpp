@@ -22,23 +22,31 @@
 #include <stdio.h>
 
 #include "gr_BeOSGraphics.h"
+#include "gr_BeOSImage.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_misc.h"
 #include "ut_string.h"
 
+/*
+ OPTIMIZATIONS:
+ -Make BView callbacks for the scroll code that would
+replay a previously recorded BPicture.
+ -Get rid of all the sync calls 
+*/
+
 #define DPRINTF(x) 	
 #if defined(USE_BACKING_BITMAP)
-#define UPDATE_VIEW			m_pFrontView->Window()->Lock();				\
-							m_pFrontView->DrawBitmap(m_pShadowBitmap);	\
-							m_pFrontView->Sync();						\
-							m_pFrontView->Window()->Unlock();
+#define UPDATE_VIEW			m_pFrontView->Window()->Lock();	\
+					m_pFrontView->DrawBitmap(m_pShadowBitmap);	\
+					m_pFrontView->Sync();\
+					m_pFrontView->Window()->Unlock();
 #else
 //Do a flush instead of a sync
-#define UPDATE_VIEW			m_pShadowView->Window()->Lock();			\
-							m_pShadowView->Sync();						\
-							m_pShadowView->Window()->Unlock();
+#define UPDATE_VIEW			m_pShadowView->Window()->Lock();\
+					m_pShadowView->Sync();		\
+					m_pShadowView->Window()->Unlock();
 #endif
 
 GR_BEOSGraphics::GR_BEOSGraphics(BView *docview) {
@@ -421,39 +429,20 @@ void GR_BEOSGraphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 
 void GR_BEOSGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
-	printf("GR: Set Line Width \n");
+	DPRINTF(printf("GR: Set Line Width %d \n", iLineWidth));
 	//m_iLineWidth = iLineWidth;
 	m_pShadowView->Window()->Lock();
 	m_pShadowView->SetPenSize(iLineWidth);
 	m_pShadowView->Window()->Unlock();
 
-	UPDATE_VIEW
+	//UPDATE_VIEW
 }
 
 void GR_BEOSGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
 {
-	UT_ASSERT(0);
-	printf("GR: Poly Line \n");	
-/*
-	GdkPoint * points = (GdkPoint *)calloc(nPoints, sizeof(GdkPoint));
-	UT_ASSERT(points);
-
-	for (UT_uint32 i = 0; i < nPoints; i++)
-	{
-		points[i].x = pts[i].x;
-		// It seems that Windows draws each pixel along the the Y axis
-		// one pixel beyond where GDK draws it (even though both coordinate
-		// systems start at 0,0 (?)).  Subtracting one clears this up so
-		// that the poly line is in the correct place relative to where
-		// the rest of UNIXGraphics:: does things (drawing text, clearing
-		// areas, etc.).
-		points[i].y = pts[i].y - 1;	
-	}
-
-	gdk_draw_lines(m_pWin, m_pGC, points, nPoints);
-
-	FREEP(points);
-*/
+	DPRINTF(printf("GR: Poly Line \n"));
+	for (UT_uint32 k=1; k<nPoints; k++)
+		drawLine(pts[k-1].x,pts[k-1].y, pts[k].x,pts[k].y); 
 }
 
 
@@ -507,45 +496,72 @@ void GR_BEOSGraphics::fillRect(UT_RGBColor& c, UT_sint32 x, UT_sint32 y,
 
 void GR_BEOSGraphics::setClipRect(const UT_Rect* pRect)
 {
-	/*
-	printf("GR: Set Clip Rect: %d-%d -> %d-%d\n", 
-			pRect->left, pRect->top, 
-			pRect->left+pRect->width,
-			pRect->top+pRect->height);
-	*/
+	BRegion region;
+	BRegion *r = NULL;
+	if (pRect) {
+		DPRINTF(printf("GR: Set Clip Rect: %d-%d -> %d-%d\n", 
+				pRect->left, pRect->top, 
+				pRect->left+pRect->width,
+				pRect->top+pRect->height));
+		region.Set(BRect(pRect->left, pRect->top, 
+				 pRect->left+pRect->width,
+				pRect->top+pRect->height));
+		r = &region;
+	}	
+	m_pShadowView->Window()->Lock();
+	m_pShadowView->ConstrainClippingRegion(r);
+	m_pShadowView->Window()->Unlock();
 }
 
 void GR_BEOSGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
-	printf("GR: Scroll dx %d dy %d\n", dx, dy);
+
+	DPRINTF(printf("GR: Scroll dx %d dy %d\n", dx, dy));
+
+#if defined(METHOD_PRE_R4)
+	//This is slow and crappy method, but it works
+	//when you don't have a CopyBits function
+	BRegion region;
 	m_pShadowView->Window()->Lock();
+
 	//If we are moving down, right offset positive
-/*
 	BRect r = m_pShadowView->Bounds();
 	(dy < 0) ? (r.top -= dy) : (r.bottom -= dy);
 	(dx < 0) ? (r.left -= dx) : (r.right -= dx);
 	printf("Invalidating "); r.PrintToStream();
+	region.Set(BRect(pRect->left, pRect->top, 
+			 pRect->left+pRect->width,
+			pRect->top+pRect->height));
+	m_pShadowView->ConstrainClippingRegion(&region);
 	m_pShadowView->Invalidate(r);
-*/
-	m_pShadowView->Invalidate();
 	m_pShadowView->Window()->Unlock();
+#endif
+
+	//This method lets the app server draw for us
+	m_pShadowView->Window()->Lock();
+	BRect src, dest;
+	dest = src = m_pShadowView->Bounds();
+	dest.OffsetBy(-1*dx, -1*dy);
+	//printf("Scroll SRC "); src.PrintToStream();
+	//printf("Scroll DST "); dest.PrintToStream();
+	m_pShadowView->CopyBits(src, dest);
+	m_pShadowView->Window()->Unlock();
+
 }
 
 void GR_BEOSGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
-						  UT_sint32 x_src, UT_sint32 y_src,
-						  UT_sint32 width, UT_sint32 height)
+			  UT_sint32 x_src, UT_sint32 y_src,
+			  UT_sint32 width, UT_sint32 height)
 {
 	printf("GR: Move Area\n");
-/*
-	gdk_window_copy_area(m_pWin, m_pGC, x_dest, y_dest,
-						 m_pWin, x_src, y_src, width, height);
-*/
+	UT_ASSERT(0);
 }
 
 void GR_BEOSGraphics::clearArea(UT_sint32 x, UT_sint32 y,
 			     UT_sint32 width, UT_sint32 height)
 {
-	printf("GR: Clear Area %d-%d -> %d-%d\n", x, y, x+width, y+height);
+	DPRINTF(printf("GR: Clear Area %d-%d -> %d-%d\n", 
+					x, y, x+width, y+height));
 	m_pShadowView->Window()->Lock();
 	rgb_color old_colour = m_pShadowView->HighColor();
 	m_pShadowView->SetHighColor(m_pShadowView->ViewColor());
@@ -562,8 +578,11 @@ UT_Bool GR_BEOSGraphics::startPrint(void)
 	return UT_FALSE;
 }
 
-UT_Bool GR_BEOSGraphics::startPage(const char * /*szPageLabel*/, UT_uint32 /*pageNumber*/,
-								UT_Bool /*bPortrait*/, UT_uint32 /*iWidth*/, UT_uint32 /*iHeight*/)
+UT_Bool GR_BEOSGraphics::startPage(const char * /*szPageLabel*/, 
+				   UT_uint32 /*pageNumber*/,
+				   UT_Bool /*bPortrait*/, 
+				   UT_uint32 /*iWidth*/, 
+				   UT_uint32 /*iHeight*/)
 {
 	UT_ASSERT(0);
 	return UT_FALSE;
@@ -575,40 +594,33 @@ UT_Bool GR_BEOSGraphics::endPrint(void)
 	return UT_FALSE;
 }
 
-GR_Image* GR_BEOSGraphics::createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
+GR_Image* GR_BEOSGraphics::createNewImage(const char* pszName, 
+					  const UT_ByteBuf* pBBPNG, 
+					  UT_sint32 iDisplayWidth, 
+					  UT_sint32 iDisplayHeight)
 {
-/*	GR_UnixImage* pImg = new GR_UnixImage(NULL, pszName);
-
+	DPRINTF(printf("GR: Create new image %s \n", pszName));
+	GR_BeOSImage* pImg = new GR_BeOSImage(NULL, pszName);
 	pImg->convertFromPNG(pBBPNG, iDisplayWidth, iDisplayHeight);
-
 	return pImg;
-*/
-	return(NULL);
 }
 
 void GR_BEOSGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
 {
-/*
 	UT_ASSERT(pImg);
 	
-	GR_UnixImage * pUnixImage = static_cast<GR_UnixImage *>(pImg);
+	GR_BeOSImage * pBeOSImage = static_cast<GR_BeOSImage *>(pImg);
+	BBitmap* image = pBeOSImage->getData();
+	if (!image)
+		return;
+	//UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
+	//UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
 
-	Fatmap * image = pUnixImage->getData();
+	m_pShadowView->Window()->Lock();
+	m_pShadowView->DrawBitmap(image, BPoint(xDest, yDest)); 
+	m_pShadowView->Window()->Unlock();
 
-	UT_sint32 iImageWidth = pUnixImage->getDisplayWidth();
-	UT_sint32 iImageHeight = pUnixImage->getDisplayHeight();
-
-	gdk_draw_rgb_image(m_pWin,
-					   m_pGC,
-					   xDest,
-					   yDest,
-					   iImageWidth,
-					   iImageHeight,
-					   GDK_RGB_DITHER_NORMAL,
-					   image->data,
-					   image->width * 3); // This parameter is the total bytes across one row,
-	                                      // which is pixels * 3 (we use 3 bytes per pixel).
-*/
+	UPDATE_VIEW
 }
 
 void GR_BEOSGraphics::flush(void)

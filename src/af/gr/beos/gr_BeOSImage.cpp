@@ -24,20 +24,23 @@
 #include "ut_assert.h"
 #include "ut_bytebuf.h"
 
-GR_BeOSImage::GR_BeOSImage(Fatmap * image, const char* szName)
+#include <Bitmap.h>
+#include <TranslationUtils.h>
+#include <DataIO.h>
+
+GR_BeOSImage::GR_BeOSImage(BBitmap * image, const char* szName)
 {
 	m_image = image;
 	
-	if (szName)
-	{
+	if (szName) {
 		strcpy(m_szName, szName);
 	}
-	else
-	{
+	else {
 		strcpy(m_szName, "BeOSImage");
 	}
 }
 
+/**** Start PNG Utility Functions ****/
 struct _bb
 {
 	const UT_ByteBuf* pBB;
@@ -63,40 +66,33 @@ static void _png_write(png_structp png_ptr, png_bytep data, png_size_t length)
 static void _png_flush(png_structp png_ptr)
 {
 }
+/**** End PNG Utility Functions ****/
 
-GR_BeOSImage::~GR_BeOSImage()
-{
-	if (m_image)
-	{
-		if (m_image->data)
-		{
-			free(m_image->data);
-			m_image->data = NULL;
-		}
-
+GR_BeOSImage::~GR_BeOSImage() {
+	if (m_image) {
 		delete m_image;
 		m_image = NULL;
 	}
 }
 
-UT_sint32	GR_BeOSImage::getDisplayWidth(void) const
-{
-	return m_image->width;
+UT_sint32 GR_BeOSImage::getDisplayWidth(void) const {
+	return (m_image) ? m_image->Bounds().Width() : 0;
 }
 
-UT_sint32	GR_BeOSImage::getDisplayHeight(void) const
-{
-	return m_image->height;
+UT_sint32 GR_BeOSImage::getDisplayHeight(void) const {
+	return (m_image) ? m_image->Bounds().Height() : 0;
 }
 
-UT_Bool		GR_BeOSImage::convertToPNG(UT_ByteBuf** ppBB) const
-{
+UT_Bool	GR_BeOSImage::convertToPNG(UT_ByteBuf** ppBB) const {
 	/*
 	  The purpose of this routine is to convert our internal 24-bit
 	  Fatmap into a PNG image, storing it in a ByteBuf and returning it
 	  to the caller.
 	*/
 
+	return(UT_FALSE);
+
+#if 0
 	// Create our bytebuf
 	UT_ByteBuf* pBB = new UT_ByteBuf();
 
@@ -122,8 +118,8 @@ UT_Bool		GR_BeOSImage::convertToPNG(UT_ByteBuf** ppBB) const
 	// We want libpng to write to our ByteBuf, not stdio
 	png_set_write_fn(png_ptr, (void *)pBB, _png_write, _png_flush);
 
-	UT_uint32 iWidth = m_image->width;
-	UT_uint32 iHeight = m_image->height;
+	UT_uint32 iWidth = m_image->Bounds().Width();
+	UT_uint32 iHeight = m_image->Bounds().Height();
 
 	png_set_IHDR(png_ptr,
 				 info_ptr,
@@ -193,10 +189,23 @@ UT_Bool		GR_BeOSImage::convertToPNG(UT_ByteBuf** ppBB) const
 	*ppBB = pBB;
 
 	return UT_TRUE;
+#endif
 }
 
 UT_Bool	GR_BeOSImage::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
+	BBitmap 	*image;
+	BMemoryIO	memio(pBB->getPointer(0), pBB->getLength());
+
+	printf("IMAGE: Convert from PNG \n");
+
+	//Use the translation library callouts
+	if ((image = BTranslationUtils::GetBitmap(&memio)) == NULL)
+		return(UT_FALSE);
+	m_image = image;
+	return(UT_TRUE);
+
+#if 0
 	png_structp png_ptr;
 	png_infop info_ptr;
 	png_uint_32 width, height;
@@ -402,5 +411,6 @@ UT_Bool	GR_BeOSImage::convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWi
 	m_image = pFM;
 		
 	return UT_TRUE;
+#endif
 }
 
