@@ -28,29 +28,35 @@ XAP_QNXEncodingManager::XAP_QNXEncodingManager()
 XAP_QNXEncodingManager::~XAP_QNXEncodingManager() {}
 
 static const char * NativeEncodingName;
-static const char * NativeSystemEncodingName;
 static const char * Native8BitEncodingName;
 static const char * NativeUnicodeEncodingName;
 static const char * LanguageISOName;
 static const char * LanguageISOTerritory;
 
 const char* XAP_QNXEncodingManager::getNativeEncodingName() const
-{     return NativeEncodingName; };
-
-const char* XAP_QNXEncodingManager::getNativeSystemEncodingName() const
-{     return NativeSystemEncodingName; };
+{
+     return NativeEncodingName; 
+}
 
 const char* XAP_QNXEncodingManager::getNative8BitEncodingName() const
-{     return Native8BitEncodingName; };
+{
+     return Native8BitEncodingName; 
+}
 
 const char* XAP_QNXEncodingManager::getNativeUnicodeEncodingName() const
-{     return NativeUnicodeEncodingName; };
+{
+     return NativeUnicodeEncodingName; 
+}
 
 const char* XAP_QNXEncodingManager::getLanguageISOName() const
-{ 	return LanguageISOName; };
+{
+ 	return LanguageISOName; 
+}
 
 const char* XAP_QNXEncodingManager::getLanguageISOTerritory() const
-{ 	return LanguageISOTerritory; };
+{
+ 	return LanguageISOTerritory; 
+}
 
 
 void  XAP_QNXEncodingManager::initialize()
@@ -58,7 +64,7 @@ void  XAP_QNXEncodingManager::initialize()
 	char *ABLANG;
 	char *val;
 	char *lang;
-	Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName = "UTF-8";
+	Native8BitEncodingName = NativeEncodingName = "UTF-8";
 	LanguageISOName = "en";
 	LanguageISOTerritory = "US";
 

@@ -23,6 +23,7 @@
 // Class for dealing with the status bar at the bottom of
 // the frame window.
 
+#include <Pt.h>
 #include "ut_types.h"
 #include "ap_StatusBar.h"
 #include "gr_QNXGraphics.h"
@@ -38,29 +39,13 @@ public:
 	virtual ~AP_QNXStatusBar(void);
 
 	virtual void		setView(AV_View * pView);
-	PtWidget_t *		createWidget(void);
+	PtWidget_t *			createWidget(void);
 
-	virtual void 		show();
-	virtual void 		hide();
-	virtual int	 		getHeight();
+	virtual void		show(void);
+	virtual void		hide(void);
 
 protected:
-	PtWidget_t *		m_wStatusBar;
-	PtWidget_t *		m_wStatusBarGroup;
-
-	class _fe
-	{
-	public:
-//		static int button_press_event(GtkWidget * w, GdkEventButton * e);
-//		static int button_release_event(GtkWidget * w, GdkEventButton * e);
-//		static int motion_notify_event(GtkWidget* w, GdkEventMotion* e);
-//		static int key_press_event(GtkWidget* w, GdkEventKey* e);
-//		static int delete_event(GtkWidget * w, GdkEvent * /*event*/, gpointer /*data*/);
-		static int resize(PtWidget_t* w, void *data,  PtCallbackInfo_t *info);
-		static int expose(PtWidget_t * w, PhTile_t *damage);
-//		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
-	};
-
+	PtWidget_t *			m_wStatusBar;
 };
 
 #endif /* AP_QNXSTATUSBAR_H */

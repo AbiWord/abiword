@@ -261,7 +261,8 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	}
 
 	if(PtWidgetIsRealized(m_wStatusBar) != 0) {
-		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+//XXX: New statusbar code...
+//		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 	}
 
 	PtContainerGiveFocus(m_dArea, NULL);
@@ -962,18 +963,14 @@ void AP_QNXFrame::toggleRuler(bool bRulerOn)
 
 
 void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
-	int height;
     AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
     UT_ASSERT(pFrameData);
 
-	height = _UD(pFrameData->m_pStatusBar->getHeight());
     if (bStatusBarOn) {
-		_reflowLayout(-height, 0, 0, 0);
         pFrameData->m_pStatusBar->show();
     }
     else {
         pFrameData->m_pStatusBar->hide();
-		_reflowLayout(height, 0, 0, 0);
     }
 
 }
