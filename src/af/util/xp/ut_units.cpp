@@ -36,6 +36,10 @@
 #include "ut_debugmsg.h"
 #include "gr_Graphics.h"
 
+// the CSS 1 spec recommends 90 but abi assumes 100. 
+// let's stay internally consistent
+static const UT_uint32 DPI_PER_PIXEL = 100 ;
+
 const char * UT_dimensionName(UT_Dimension dim)
 {
 	switch (dim)
@@ -124,6 +128,7 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	case DIM_MM:    valueScaled = (inches * 25.4);  break;
 	case DIM_PI:	valueScaled = (inches * 6);		break;
 	case DIM_PT:	valueScaled = (inches * 72);	break;
+	case DIM_PX:    valueScaled = (inches * DPI_PER_PIXEL); break;
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;
@@ -184,6 +189,10 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 		break;
 
 	case DIM_PX:
+	  valueScaled = (valueInInches * DPI_PER_PIXEL);
+	  sprintf(bufFormat,"%%%sfpx",((szPrecision && *szPrecision) ? szPrecision : ".0"));
+	  break;
+
  	case DIM_none:
 		valueScaled = valueInInches;
 		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
@@ -248,6 +257,9 @@ const char * UT_formatDimensionString(UT_Dimension dim, double value, const char
 		break;
 
 	case DIM_PX:
+	  sprintf(bufFormat,"%%%sfpx",((szPrecision && *szPrecision) ? szPrecision : ".0"));
+		break;
+
  	case DIM_none:
 		sprintf(bufFormat,"%%%sf",((szPrecision && *szPrecision) ? szPrecision : ""));
 		break;
@@ -350,6 +362,7 @@ double UT_convertDimToInches (double f, UT_Dimension dim)
     case DIM_PT: result = f / 72;   break;
     case DIM_CM: result = f / 2.54; break;
     case DIM_MM: result = f / 25.4; break;
+    case DIM_PX: result = f / DPI_PER_PIXEL; break;
     default:
       UT_DEBUGMSG(("Unknown dimension type: %d", dim));
       UT_ASSERT(0);
@@ -385,6 +398,7 @@ double UT_convertToPoints(const char* s)
 	      case DIM_IN: result = f * 72;        break;
 	      case DIM_CM: result = f * 72 / 2.54; break;
 	      case DIM_MM: result = f * 72 / 25.4; break;
+	      case DIM_PX: result = f * 72 / DPI_PER_PIXEL; break;
 	      default:
 		UT_DEBUGMSG(("Unknown dimension type: %s", p));
 		UT_ASSERT(0);

@@ -1840,14 +1840,14 @@ bool s_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 					  {
 					    if(szWidth)
 					      {
-						UT_String_sprintf(buf, "%d", (int) UT_convertToPoints(szWidth));
+						UT_String_sprintf(buf, "%d", (int) UT_convertToDimension(szWidth, DIM_PX));
 						m_pie->write (" width=\"");
 						m_pie->write (buf);
 						m_pie->write ("\" ");
 					      }
 					    if(szHeight)
 					      {
-						UT_String_sprintf(buf, "%d", (int) UT_convertToPoints(szHeight));
+						UT_String_sprintf(buf, "%d", (int) UT_convertToDimension(szHeight, DIM_PX));
 						m_pie->write (" height=\"");
 						m_pie->write (buf);
 						m_pie->write ("\" ");
