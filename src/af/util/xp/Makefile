@@ -44,11 +44,16 @@ CPPSRCS=	ut_alphahash.cpp	\
 
 TARGETS=		$(OBJS)
 
-ifeq ($(OS_NAME),WIN32)
+ifeq ($(OS_NAME),WIN32)  
 INCLUDES = -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../zlib
-else
-INCLUDES =
 endif
+
+ifeq ($(OS_NAME),procnto)  
+INCLUDES = -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../zlib
+endif
+
+#This can't really hurt anything
+#INCLUDES += -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../zlib
 
 # If you add another operating system that does require
 # libpng, add lines like this to the "ifeq" group above.

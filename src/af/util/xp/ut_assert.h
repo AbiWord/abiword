@@ -66,7 +66,7 @@
 #		include "ut_qnxAssert.h"
 #		define UT_ASSERT(expr)			\
 				((void) ((expr) ||	\
-				(UT_BeOSAssertMsg(#expr,\
+				(UT_QNXAssertMsg(#expr,\
 				 __FILE__, __LINE__),	\
 				 0)))
 #	endif
