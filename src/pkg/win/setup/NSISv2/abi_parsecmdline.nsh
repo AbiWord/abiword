@@ -11,10 +11,15 @@
 
 ; /S
 ; Silent install, mostly a NSIS handled switch.
-; When nonzero, the installer should assume the installer is being
-; ran in an unattended mode and not force any user interaction.
-; See also /RESPONSEFILE
-Var v_silent
+; Use IfSilent and /SD option to MessageBox
+; See also /RESPONSEFILE and /D=install Directory
+
+; /D=install Directory
+; Indicates the default Directory displayed/used for
+; installation.  Should be last option on command line
+; as all text after equal (=) is treated as directory
+; name, including any spaces.  Do not put in quotes.
+; Note: /D is processed fully by NSIS so we never see it.
 
 ; /RESPONSEFILE=filename
 ; Indicates responses to use (instead of defaults) for various
@@ -70,7 +75,8 @@ Var v_opt_enable_win95only
   StrCpy $R0 "\
   Support options are $\r$\n  \
   /S silent install $\r$\n  \
-  /RESPONSEFILE=filename indicates choices to use instead of defaults (TODO) $\r$\n	\
+  /D=path sets default install dir, MUST be last option, No quotes, supports spaces $\r$\n  \
+  /RESPONSEFILE=filename indicates choices to use instead of defaults (TODO) $\r$\n  \
   /M or /MODIFYINSTALL invokes installer in modify mode$\r$\n        \
         ( change components installed for current installation of AbiWord$\r$\n  \
   /OPT_ENABLE_MODIFY add modify entry to add/remove in control panel$\r$\n  \
@@ -95,8 +101,8 @@ Var v_opt_enable_win95only
   ${Select} ${cmdarg}
     ${Case2} "/HELP" "/?"
       ${DoHelpCmd}
-    ${Case} "/S"
-      StrCpy $v_silent "1"
+    ${Case2} "/S" "/D"
+      ; Dummy case, these options are handled by NSIS internally but not always removed
     ${Case2} "/RESPONSEFILE" "/R"
       StrCpy $v_responsefile "${optval}"
     ${Case2} "/MODIFYINSTALL" "/M"
@@ -228,7 +234,6 @@ Var v_opt_enable_win95only
     StrCpy $v_opt_enable_win95only "0"
   !endif
 
-  StrCpy $v_silent "0"
   StrCpy $v_responsefile ""
 
   ; now cycle through all the cmd line options and set the values
