@@ -457,7 +457,7 @@ bool XAP_Win32FrameImpl::_openURL(const char * szURL)
 	}
 	
 	/* */
-	for (int i=0; i<sURL.length();i++)	
+	for (unsigned int i=0; i<sURL.length();i++)	
 		if (sURL[i]=='\\')	sURL[i]='/';		
 	
 
@@ -557,9 +557,7 @@ UT_RGBColor XAP_Win32FrameImpl::getColorSelForeground () const
 #define MAXAPPNAME 256
 bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 {
-	WNDCLASSEXW wndclass;
-	WCHAR strAppName[MAXAPPNAME];
-	_snwprintf(strAppName, MAXAPPNAME, L"%S", app->getApplicationName());
+	WNDCLASSEX wndclass;
 
 	// register class for the frame window
 	wndclass.cbSize			= sizeof(wndclass);
@@ -572,10 +570,10 @@ bool XAP_Win32FrameImpl::_RegisterClass(XAP_Win32App * app)
 	wndclass.hCursor			= LoadCursor(NULL, IDC_ARROW);
 	wndclass.hbrBackground		= (HBRUSH)(COLOR_BTNFACE+1);
 	wndclass.lpszMenuName		= NULL;
-	wndclass.lpszClassName		= strAppName;
+	wndclass.lpszClassName		= app->getApplicationName();
 	wndclass.hIconSm			= app->getSmallIcon();
 
-	ATOM a = RegisterClassExW(&wndclass);
+	ATOM a = RegisterClassEx(&wndclass);
 	UT_return_val_if_fail(a, false);
 
 	return true;
