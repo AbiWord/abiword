@@ -8,8 +8,6 @@
 ; Perform one time steps done at installer startup, e.g. get installer language, 
 ; check internet connection/OS/etc and enable/disable options as appropriate
 Function .onInit
-MessageBox MB_OK "TESTING: .onInit"
-
   ; Load default values and parse command line
   ${ProcessCmdLineArgs}
 

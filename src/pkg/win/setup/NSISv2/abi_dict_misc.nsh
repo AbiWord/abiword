@@ -163,7 +163,7 @@ FunctionEnd
 
 ; used to define a section containing an optional dictionary for downloading/installation
 !macro SectionDict DICT_NAME DICT_LANG DICT_LOCALE DICT_ARCH DICT_SIZE
-Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}' section_dl_opt_dict_${DICT_LANG}_${DICT_LOCALE}
+Section '${DICT_LANG}-${DICT_LOCALE}  $(dict_${DICT_NAME})' section_dl_opt_dict_${DICT_LANG}_${DICT_LOCALE}
 !ifdef NODOWNLOADS
 	SectionIn 2	${DLSECT}	; Full [and Full with downloads] only
 	SetOutPath $TEMP
@@ -173,7 +173,7 @@ Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}' section_dl_opt_dict_${DICT_L
 	AddSize ${DICT_SIZE}
 !endif
 
-	DetailPrint "Installing dictionary for: '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}'"
+	DetailPrint "Installing dictionary for: '${DICT_LANG}-${DICT_LOCALE}  $(dict_${DICT_NAME})'"
 
 	StrCpy $R0 ${DICT_LANG}
 	StrCpy $R1 ${DICT_LOCALE}
