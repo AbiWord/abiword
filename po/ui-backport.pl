@@ -74,6 +74,13 @@ while (<IN>) {
     if (m@^#:\s(.*)/xap[^/.]+\.h@) { $kind =  1; next; } 
     if (m@^#:\s(.*)/ap[^/.]+\.h@)  { $kind =  2; next; }
     if (m@^msgstr\s\"(.*)\"@)      { $str  = $1; $cont=1; next; }
+
+	if ($cont == "1") {
+	    {
+		if ($kind == 1) { push @xap_strings, "$tag=\"$str\""; $cont=0; next; }
+		if ($kind == 2) { push @ap_strings,  "$tag=\"$str\""; $cont=0; next; }
+	    }
+}
     
 }
 
