@@ -210,7 +210,7 @@ void fp_Column::layout(void)
 
 UT_Bool fp_Column::insertLineAfter(fp_Line*	pNewLine, fp_Line*	pAfterLine)
 {
-	UT_uint32 ndx = m_vecLines.findItem(pAfterLine);
+	UT_sint32 ndx = m_vecLines.findItem(pAfterLine);
 	UT_ASSERT(ndx >= 0);
 
 	if (ndx == (m_vecLines.getItemCount() - 1))
