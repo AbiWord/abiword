@@ -1027,6 +1027,10 @@ void fl_BlockLayout::_deleteSquiggles(UT_uint32 iOffset, UT_uint32 iLength, fl_B
 #if 0
 	UT_sint32 chg = -(UT_sint32)iLength;
 
+	// when deleting block break, squiggles move in opposite direction
+	if (pBlock)
+		chg = -chg;
+
 	// first deal with pending word, if any
 	if (m_pLayout->isPendingWord())
 	{
@@ -1176,7 +1180,6 @@ void fl_BlockLayout::_moveSquiggles(UT_uint32 iOffset, UT_sint32 chg, fl_BlockLa
 			if (pNewBlock)
 			{
 				UT_ASSERT(pNewBlock != this);
-				UT_ASSERT(chg < 0);
 					
 				// move squiggle to another block
 				pNewBlock->m_vecSquiggles.addItem(pPOB);
@@ -2207,7 +2210,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 	UT_ASSERT(pSL);
 	pSL->removeBlock(this);
 
-#if 0
+#if 1
 	// move all squiggles to previous block
 	_deleteSquiggles(0, offset, pPrevBL);
 	// TODO: instead, merge squiggles from the two blocks
