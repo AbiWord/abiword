@@ -86,6 +86,7 @@ tt {  color: #000099}
 					<LI><A HREF="#2.12">Now that StarOffice is going to be GPLed, how does that affect you?</A>
 					<LI><A HREF="#2.13">Is it possible to import KWord documents?</A>
 					<LI><A HREF="#2.14">Is it possible to compile AbiWord on Windows?</A>
+			                <LI><A href="#2.15">Unix Font Warning</A></LI>
 				</UL>
 				<LI><A HREF="#3"><B>Remarks</B></A>
 				<UL>
@@ -257,6 +258,13 @@ tt {  color: #000099}
 			like to help with AbiWord for Windows development, compiling on Windows is possible. You must have Microsoft Visual
 			C++ 5.0 or greater and the Cygwin Tools. For detailed instructions see the <A HREF="http://www.abisource.com/~tom/winbuildhowto.html">Building
 			AbiWord on Windows HOWTO</A>. Be sure to follow the instructions carefully.</P>
+			<p><b><a name="2.15">Unix Font Warning</a></b><br>
+			For AbiWord to function properly, it needs to add its font folder to the X collection of font folders. If your X setup is such that the 
+			responsibility for the fonts is entirely shifted on a dedicated font server (i.e., RedHat setup),  AbiWord will not be able to do
+			this automatically, and a warning will be displayed during start up. To get around the problem, you have to manually (and permanently)
+			add the AbiWord font folder to the font server's configuration, please see your distribution's documentation. Once you do, you can 
+			turn the warning off by clearing the <b>Show Unix Font Warning</b> check box on the <i>Preferences Schemes</i> tab of the <i>Preferences</i>
+			dialog.
 			<P>
 <HR ALIGN="CENTER">
 
