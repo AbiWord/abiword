@@ -3982,6 +3982,10 @@ void FV_View::_fixInsertionPointCoords()
 			m_prevMouseContext = EV_EMC_MISSPELLEDTEXT;
 		}
 	}
+	if(pBlock)
+	{
+		m_pLayout->setPendingBlockForGrammar(pBlock);
+	}
 }
 
 void FV_View::_draw(UT_sint32 x, UT_sint32 y,

@@ -245,6 +245,11 @@ public:
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons &= ~reason;}
 	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uDocBackgroundCheckReasons & reason) ? true : false);}
 	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uDocBackgroundCheckReasons);}
+	fl_BlockLayout *        getPendingBlockForGrammar(void)
+	  {
+	    return m_PendingBlockForGrammar;
+	  }
+	void        setPendingBlockForGrammar(fl_BlockLayout * pBL);
 
 	// These are used as bit flags in a UT_uint32.  The enum is here just
 	// to get the namespace protection.
@@ -347,6 +352,7 @@ private:
 	bool                m_bSpellCheckInProgress;
 	UT_GenericVector<GR_EmbedManager *> m_vecEmbedManager;
 	bool                m_bAutoGrammarCheck;
+	fl_BlockLayout  *   m_PendingBlockForGrammar;
 };
 
 #endif /* DOCLAYOUT_H */

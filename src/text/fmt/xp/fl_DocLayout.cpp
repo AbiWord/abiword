@@ -73,39 +73,56 @@ const char * s_FootnoteTypeDesc[] = {
 };
 
 FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
+  : m_pG(pG),
+    m_pDoc(doc),
+    m_pView(NULL),
+    m_lid((PL_ListenerId)-1),
+    m_pFirstSection(NULL),
+    m_pLastSection(NULL),
+    m_pPendingBlockForSpell(NULL),
+    m_pPendingWordForSpell(NULL),
+    m_bSpellCheckCaps(true),
+    m_bSpellCheckNumbers(true),
+    m_bSpellCheckInternet(true),
+    m_bAutoSpellCheck(true),
+    m_uDocBackgroundCheckReasons(0),
+    m_bStopSpellChecking(false),
+    m_bImSpellCheckingNow(false),
+    m_pPendingBlockForSmartQuote(NULL),
+    m_uOffsetForSmartQuote(0),
+    m_pBackgroundCheckTimer(NULL),
+    m_pPrefs(NULL),
+    m_pRedrawUpdateTimer(NULL),
+    m_iSkipUpdates(0),
+    m_bDeletingLayout(false),
+    m_bisLayoutFilling(false),
+    m_iRedrawCount(0),
+    m_FootnoteType(FOOTNOTE_TYPE_NUMERIC),
+    m_iFootnoteVal(1),
+    m_bRestartFootSection(false),
+    m_bRestartFootPage(false),
+    m_iEndnoteVal(1),
+    m_EndnoteType(FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS),
+    m_bRestartEndSection(false),
+    m_bPlaceAtDocEnd(false),
+    m_bPlaceAtSecEnd(true),
+    m_iGraphicTick(0), 
+    m_iDocSize(0),
+    m_iFilled(0),
+    m_bSpellCheckInProgress(false),
+    m_bAutoGrammarCheck(false),
+    m_PendingBlockForGrammar(NULL)
 {
-	m_pDoc = doc;
-	m_pG = pG;
-	m_pView = NULL;
-
-	m_pBackgroundCheckTimer = NULL;
-	m_pPendingBlockForSpell = NULL;
-	m_pPendingWordForSpell = NULL;
-	m_pPendingBlockForSmartQuote = NULL;
-	m_uOffsetForSmartQuote = 0;
-	m_pFirstSection = NULL;
-	m_pLastSection = NULL;
-	m_bSpellCheckCaps = true;
-	m_bSpellCheckNumbers = true;
-	m_bSpellCheckInternet = true;
-	m_bAutoSpellCheck = true;
-	m_pPrefs = NULL;
-	m_bStopSpellChecking = false;
-	m_bImSpellCheckingNow = false;
-	m_uDocBackgroundCheckReasons = 0;
-	m_iSkipUpdates = 0;
-	m_bDeletingLayout = false;
-	setLayoutIsFilling(false);
-	m_lid = (PL_ListenerId)-1;
-	m_iGraphicTick = 0;
+#ifdef FMT_TEST
+        m_pDocLayout = this;
+#endif
+        setLayoutIsFilling(false),
 	m_pRedrawUpdateTimer = UT_Timer::static_constructor(_redrawUpdate, this, m_pG);
 	if (m_pRedrawUpdateTimer)
 	{
 		m_pRedrawUpdateTimer->set(REDRAW_UPDATE_MSECS);
 		m_pRedrawUpdateTimer->start();
 	}
-	m_iFilled = 0;
-	m_bSpellCheckInProgress	= false;
 	
 	// TODO the following (both the new() and the addListener() cause
 	// TODO malloc's to occur.  we are currently inside a constructor
@@ -116,23 +133,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_pDoc->disableListUpdates();
 
 	strncpy(m_szCurrentTransparentColor,static_cast<const char *>(XAP_PREF_DEFAULT_ColorForTransparent),9);
-
-#ifdef FMT_TEST
-	m_pDocLayout = this;
-#endif
-	m_iRedrawCount = 0;
 	m_vecFootnotes.clear();
 	m_vecEndnotes.clear();
-	m_FootnoteType = FOOTNOTE_TYPE_NUMERIC;
-	m_iFootnoteVal = 1;
-	m_bRestartFootSection = false;
-	m_bRestartFootPage = false;
-	m_iEndnoteVal = 1;
-	m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
-    m_bRestartEndSection = false;
-	m_bPlaceAtDocEnd = false;
-	m_bPlaceAtSecEnd = true;
-	m_bAutoGrammarCheck = false;
 
 }
 
@@ -2498,6 +2500,7 @@ void FL_DocLayout::dequeueAll(void)
 	{
 		m_vecUncheckedBlocks.deleteNthItem(i);	
 	}
+	m_PendingBlockForGrammar = NULL;
 	m_bStopSpellChecking = true;
 	if(m_pBackgroundCheckTimer)
 	{
@@ -2508,6 +2511,21 @@ void FL_DocLayout::dequeueAll(void)
 			// TODO shouldn't we have a little sleep here?
 		}
 	}
+}
+
+/*!
+ * Set the next block to be grammar checked. It won't actually get checked
+ * until the insertPoint leaves this block.
+ */
+void FL_DocLayout::setPendingBlockForGrammar(fl_BlockLayout * pBL)
+{
+  if(!m_bAutoGrammarCheck)
+    return;
+  if((m_PendingBlockForGrammar != NULL) && (m_PendingBlockForGrammar != pBL))
+    {
+      queueBlockForBackgroundCheck(bgcrGrammar,m_PendingBlockForGrammar);
+    }
+  m_PendingBlockForGrammar = pBL;
 }
 
 /*!
@@ -2530,7 +2548,10 @@ FL_DocLayout::dequeueBlockForBackgroundCheck(fl_BlockLayout *pBlock)
 		m_vecUncheckedBlocks.deleteNthItem(i);
 		bRes = true;
 	}
-
+	if(pBlock == m_PendingBlockForGrammar)
+	  {
+	    m_PendingBlockForGrammar = NULL;
+	  }
 	// When queue is empty, kill timer
 	if (m_vecUncheckedBlocks.getItemCount() == 0)
 	{

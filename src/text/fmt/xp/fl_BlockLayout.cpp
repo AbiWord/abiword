@@ -5421,7 +5421,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 
 	m_pSpellSquiggles->textInserted(blockOffset, len);
 	m_pGrammarSquiggles->textInserted(blockOffset, len);
-
+	m_pLayout->setPendingBlockForGrammar(this);
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
@@ -5862,6 +5862,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 
 	m_pSpellSquiggles->textDeleted(blockOffset, len);
 	m_pGrammarSquiggles->textDeleted(blockOffset, len);
+	m_pLayout->setPendingBlockForGrammar(this);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
@@ -6698,6 +6699,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	// Split squiggles between this and the new block
 	m_pSpellSquiggles->split(blockOffset, pNewBL);
 	m_pGrammarSquiggles->split(blockOffset, pNewBL);
+	m_pLayout->setPendingBlockForGrammar(pNewBL);
 
 	FV_View* pView = getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
