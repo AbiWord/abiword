@@ -61,7 +61,14 @@ XAP_Dictionary::~XAP_Dictionary()
 
 	FREEP(m_szFilename);
 
-  	UT_HASH_PURGEDATA(UT_UCSChar *, (&m_hashWords), free);
+  	//UT_HASH_PURGEDATA(UT_UCSChar *, (&m_hashWords), free);
+	UT_StringPtrMap::UT_Cursor _hc1(&m_hashWords);
+	for ( UT_UCSChar * _hval1 = (UT_UCSChar *) _hc1.first(); _hc1.is_valid(); _hval1 = (UT_UCSChar *) _hc1.next() )
+	{ 
+		if (_hval1)
+			free (_hval1);
+	}
+	
 }
 
 const char * XAP_Dictionary::getShortName(void) const
@@ -364,9 +371,9 @@ bool XAP_Dictionary::addWord(const UT_UCSChar * pWord, UT_uint32 len)
 	FREEP(ucs_dup);
 
 #endif
-	m_hashWords.insert(key2, 
-			   (void *) copy);
-
+	if(!m_hashWords.insert(key2,(void *) copy))
+		FREEP(copy);
+	
 	FREEP(key);
 	FREEP(key2);
 

@@ -37,8 +37,8 @@ public:
 	~UT_StringPtrMap();
 
 	// insertion/addition
-	void insert(const char* key, const void* value);
-	void insert(const UT_String & key, const void* value);
+	bool insert(const char* key, const void* value);
+	bool insert(const UT_String & key, const void* value);
 
 	void set (const char* key, const void* val);
 	void set (const UT_String & key, const void* val);
@@ -156,7 +156,7 @@ private:
 
 
 #define UT_HASH_PURGEDATA(type, hash, reaper)		\
-	do { UT_StringPtrMap::UT_Cursor _hc1(hash);		\
+do { UT_StringPtrMap::UT_Cursor _hc1(hash);		\
         for ( type _hval1 = (type) _hc1.first(); _hc1.is_valid(); _hval1 = (type) _hc1.next() ) { \
 	   if (_hval1)									\
 		 reaper (_hval1);							\

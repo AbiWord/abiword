@@ -206,12 +206,6 @@ public:
 	void		changeDirectionUsed(FriBidiCharType oldDir, FriBidiCharType newDir, bool bRefreshMap = true);
 
 
-	
-	/* the following variable is needed for handling of BiDi support; static because we need
-	 * only one instance for all the instances of the class; public becuase it must be initialized
-	 * before the constructor is called so that the constructor can decide whether any allocation
-	 * is necessary or not; */
-	static UT_uint32       s_iClassInstanceCounter;	
 #endif
 
 #ifdef FMT_TEST
@@ -263,6 +257,10 @@ void		_splitRunsAtSpaces(void);
 
 	bool			m_bNeedsRedraw;
 	//bool			m_bRedoLayout;
+	static UT_sint32 * s_pOldXs;
+	static UT_uint32   s_iOldXsSize;
+	static UT_uint32   s_iClassInstanceCounter;	
+	
 #ifdef BIDI_ENABLED
 	UT_uint32       _getRunVisIndx(UT_uint32 indx);
 	UT_uint32       _getRunLogIndx(UT_uint32 indx);

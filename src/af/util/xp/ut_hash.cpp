@@ -202,13 +202,13 @@ bool UT_StringPtrMap::contains(const UT_String& k, const void* v) const
 /*!
  * Insert this key/value pair into the map
  */
-void UT_StringPtrMap::insert(const char* key, const void* value)
+bool UT_StringPtrMap::insert(const char* key, const void* value)
 {
   UT_String aKey(key);
-  insert (aKey, value);
+  return insert (aKey, value);
 }
 
-void UT_StringPtrMap::insert(const UT_String& key, const void* value)
+bool UT_StringPtrMap::insert(const UT_String& key, const void* value)
 {
 	size_t		slot = 0;
 	bool		key_found = false;
@@ -216,6 +216,10 @@ void UT_StringPtrMap::insert(const UT_String& key, const void* value)
 
 	hash_slot* sl = find_slot(key, SM_INSERT, slot, key_found, 
 				  hashval, 0, 0, 0, 0);
+
+	if(key_found)
+		return false;
+	
 	sl->insert(value, key, hashval);
 	++n_keys;
 	
@@ -240,6 +244,7 @@ void UT_StringPtrMap::insert(const UT_String& key, const void* value)
 	UT_DEBUGMSG(("DOM: %d (%s, %p, %d)\n", b, key.c_str(), v, v==value));
 
 #endif
+	return true;
 }
 
 /*!

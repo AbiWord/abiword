@@ -205,6 +205,7 @@ XAP_Menu_Factory::~XAP_Menu_Factory()
     UT_VECTOR_PURGEALL(_vectt *,m_vecTT);
 	DELETEP(m_pEnglishLabelSet);
 	DELETEP(m_pBSS);
+	DELETEP(m_pLabelSet);
 }
 
 XAP_Menu_Id XAP_Menu_Factory::getNewID(void)

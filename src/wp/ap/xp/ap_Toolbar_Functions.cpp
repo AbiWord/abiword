@@ -276,6 +276,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 		prop = "margin-left";
 		sz = UT_getAttribute(prop, props_in);	    
 		margin_left = UT_convertToInches(sz);
+		FREEP(props_in);
 	}
 
 	{
@@ -283,6 +284,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 		prop = "margin-right";
 		sz = UT_getAttribute(prop, props_in);	    
 		margin_right = UT_convertToInches(sz);
+		FREEP(props_in);
 	}
 	
 	{
@@ -290,6 +292,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 		pView->getSectionFormat(&props_in);
 		sz = UT_getAttribute(prop, props_in);
 		page_margin_left = UT_convertToInches(sz);
+		FREEP(props_in);
 	}
 	
 	{
@@ -297,6 +300,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Indents)
 		pView->getSectionFormat(&props_in);
 		sz = UT_getAttribute(prop, props_in);
 		page_margin_right = UT_convertToInches(sz);
+		FREEP(props_in);
 	}
 
 #ifdef BIDI_ENABLED

@@ -462,6 +462,11 @@ const PP_PropertyType * PP_evalPropertyType(const XML_Char *  pszName,
 	return pProp->getInitialType(Type);
 }
 
+PP_Property::~PP_Property()
+{
+	FREEP(m_pProperty);
+}
+
 
 const PP_PropertyType *	PP_Property::getInitialType(tProperty_type Type) const
 {

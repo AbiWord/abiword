@@ -133,7 +133,8 @@ public:
 	XML_Char *			m_pszInitial;
 	bool				m_bInherit;
 	PP_PropertyType *	m_pProperty;
-
+	~PP_Property();
+	
 	inline const XML_Char *	getName() const {return m_pszName;}
 	inline const XML_Char *	getInitial() const {return m_pszInitial;}
 	const PP_PropertyType *	getInitialType(tProperty_type Type) const;

@@ -42,7 +42,6 @@
 #ifdef BIDI_ENABLED
 	#ifdef USE_STATIC_MAP
 	//initialize the static members of the class
-	UT_uint32	fp_Line::s_iClassInstanceCounter = 0;
 	UT_uint32  * fp_Line::s_pPseudoString = 0;
 	UT_uint16  * fp_Line::s_pMapOfRunsL2V = 0;
 	UT_uint16  * fp_Line::s_pMapOfRunsV2L = 0;
@@ -55,6 +54,13 @@
 	#define s_pMapOfRuns m_pMapOfRuns
 	#endif
 #endif
+
+#define STATIC_BUFFER_INCREMENT 30
+#define STATIC_BUFFER_INITIAL 5 * STATIC_BUFFER_INCREMENT
+
+UT_sint32 * fp_Line::s_pOldXs = NULL;
+UT_uint32   fp_Line::s_iOldXsSize = 0;
+UT_uint32	fp_Line::s_iClassInstanceCounter = 0;
 
 fp_Line::fp_Line()
 {
@@ -80,6 +86,15 @@ fp_Line::fp_Line()
 	m_pPrev = NULL;
 	m_bNeedsRedraw = false;
 	//m_bRedoLayout = true;
+
+	if(!s_iClassInstanceCounter)
+	{
+		s_pOldXs = new UT_sint32[STATIC_BUFFER_INITIAL];
+		UT_ASSERT(s_pOldXs);
+		s_iOldXsSize = STATIC_BUFFER_INITIAL;
+	}
+	
+
 #ifdef BIDI_ENABLED
 	m_iRunsRTLcount = 0;
 	m_iRunsLTRcount = 0;
@@ -94,10 +109,8 @@ fp_Line::fp_Line()
 		s_pEmbeddingLevels =  new UT_Byte[RUNS_MAP_SIZE];
 		s_iMapOfRunsSize = RUNS_MAP_SIZE;
 	}
-	++s_iClassInstanceCounter; // this tells us how many instances of Line are out there
-							   //we use this to decide whether the above should be
-							   //deleted by the destructor
-	#else
+
+    #else
 	m_pMapOfRunsL2V = new UT_uint16[RUNS_MAP_SIZE];
 	m_pMapOfRunsV2L = new UT_uint16[RUNS_MAP_SIZE];
 	m_pPseudoString    = new UT_uint32[RUNS_MAP_SIZE];
@@ -108,13 +121,23 @@ fp_Line::fp_Line()
 	UT_ASSERT(s_pMapOfRunsL2V && s_pMapOfRunsV2L && s_pPseudoString && s_pEmbeddingLevels);
 #endif
 	m_bNeedsRedraw = false;
+	++s_iClassInstanceCounter; // this tells us how many instances of Line are out there
+							   //we use this to decide whether the above should be
+							   //deleted by the destructor
 }
 
 fp_Line::~fp_Line()
 {
+	--s_iClassInstanceCounter;
+	if(!s_iClassInstanceCounter)
+	{
+		delete [] s_pOldXs;
+		s_pOldXs = NULL;
+		s_iOldXsSize = 0;
+	}
+	
 #ifdef BIDI_ENABLED
 	#ifdef USE_STATIC_MAP
-	--s_iClassInstanceCounter;
 	if(!s_iClassInstanceCounter) //this is the last/only instance of the class Line
 	{
 		delete[] s_pMapOfRunsL2V;
@@ -1491,15 +1514,11 @@ void fp_Line::layout(void)
 #ifdef DEBUG
 	const UT_uint32 iDefinesLine = __LINE__;
 #endif
-	#define STATIC_BUFFER_INCREMENT 30
-	#define STATIC_BUFFER_INITIAL 5 * STATIC_BUFFER_INCREMENT
-	static UT_sint32 *pOldXs = new UT_sint32[STATIC_BUFFER_INITIAL];
-	static UT_sint32 iOldXsSize = STATIC_BUFFER_INITIAL;
 
 #ifdef DEBUG
 	UT_uint32 iRealocCount = 0;
 #endif	
-	while(iOldXsSize < iCountRuns + 1)
+	while((UT_sint32)s_iOldXsSize < iCountRuns + 1)
 	{
 		// always make sure there is one space available past the last run
 		// we will set that to 0 and it will help us to handle the justified
@@ -1512,9 +1531,9 @@ void fp_Line::layout(void)
 					 // "		(line %d in %s)\n",
 					 // iOldXsSize, iOldXsSize+STATIC_BUFFER_INCREMENT, iDefinesLine + 2, __FILE__));
 
-		delete[] pOldXs;
-		iOldXsSize += STATIC_BUFFER_INCREMENT;
-		pOldXs = new UT_sint32[iOldXsSize];
+		delete[] s_pOldXs;
+		s_iOldXsSize += STATIC_BUFFER_INCREMENT;
+		s_pOldXs = new UT_sint32[s_iOldXsSize];
 #ifdef DEBUG
 		iRealocCount++;
 		if(iRealocCount > 1)
@@ -1525,7 +1544,7 @@ void fp_Line::layout(void)
 #endif
 	}
 
-	UT_ASSERT(pOldXs);
+	UT_ASSERT(s_pOldXs);
 	
 	UT_sint32 iStartX				  = 0;
 	UT_sint32 iStartXLayoutUnits	  = 0;
@@ -1707,7 +1726,7 @@ void fp_Line::layout(void)
 		// also, decide whether erasure is needed
 		if(eWorkingDirection == WORK_FORWARD)
 		{
-			pOldXs[iIndx] = pRun->getX();
+			s_pOldXs[iIndx] = pRun->getX();
 			pRun->setX(iX,FP_CLEARSCREEN_NEVER);
 		}
 		xxx_UT_DEBUGMSG(("fp_Line::layout: iX %d, iXL %d, ii %d, iCountRuns %d\n"
@@ -1729,13 +1748,13 @@ void fp_Line::layout(void)
 		// and decide if line needs erasing
 		if(eWorkingDirection == WORK_BACKWARD)
 		{
-			pOldXs[iIndx] = pRun->getX();
+			s_pOldXs[iIndx] = pRun->getX();
 			pRun->setX(iX,FP_CLEARSCREEN_NEVER);
 		}
 	} //for
 	
 	// this is to simplify handling justified alignment -- see below
-	pOldXs[ii] = 0;
+	s_pOldXs[ii] = 0;
 	
 	
 	///////////////////////////////////////////////////////////////////
@@ -1773,7 +1792,7 @@ void fp_Line::layout(void)
 					UT_ASSERT(pRun);
 					
 					//eClearScreen = iStartX == pOldXs[k] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
-					if(!bLineErased && iStartX != pOldXs[k])
+					if(!bLineErased && iStartX != s_pOldXs[k])
 					{
 						bLineErased = true;
 						iIndxToEraseFrom = k;
@@ -1804,7 +1823,7 @@ void fp_Line::layout(void)
 					{
 						iStartX -= pRun->getWidth();
 						//eClearScreen = iStartX == pOldXs[iK] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
-						if(!bLineErased && iStartX != pOldXs[iK])
+						if(!bLineErased && iStartX != s_pOldXs[iK])
 						{
 							bLineErased = true;
 							iIndxToEraseFrom = iK;
@@ -1816,7 +1835,7 @@ void fp_Line::layout(void)
 #endif
 					{
 						//eClearScreen = iStartX == pOldXs[iK] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
-						if(!bLineErased && iStartX != pOldXs[iK])
+						if(!bLineErased && iStartX != s_pOldXs[iK])
 						{
 							bLineErased = true;
 							iIndxToEraseFrom = iK;
@@ -1845,7 +1864,7 @@ void fp_Line::layout(void)
 				
 					UT_sint32 iCurX = pRun->getX();
 					//eClearScreen = iCurX + iStartX == pOldXs[k] ? FP_CLEARSCREEN_NEVER : FP_CLEARSCREEN_FORCE;
-					if(!bLineErased && iCurX + iStartX != pOldXs[k])
+					if(!bLineErased && iCurX + iStartX != s_pOldXs[k])
 					{
 						bLineErased = true;
 						iIndxToEraseFrom = k;
