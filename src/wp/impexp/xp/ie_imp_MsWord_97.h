@@ -73,13 +73,12 @@ struct header
 	UT_uint32    pos;
 	UT_uint32    len;
 	UT_uint32    pid;
-#if 0
+
 	struct _d 
 	{
 		UT_Vector hdr;
 		UT_Vector frag;
 	}d;
-#endif
 };
 
 
@@ -189,6 +188,9 @@ private:
 	bool        _appendStrux(PTStruxType pts, const XML_Char ** attributes);
 	bool        _appendObject(PTObjectType pto, const XML_Char ** attributes);
 	bool        _appendSpan(const UT_UCSChar * p, UT_uint32 length);
+	bool        _appendStruxHdrFtr(PTStruxType pts, const XML_Char ** attributes);
+	bool        _appendObjectHdrFtr(PTObjectType pto, const XML_Char ** attributes);
+	bool        _appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length);
 	bool		_appendFmt(const XML_Char ** attributes);
 	void        _handleHeaders(const wvParseStruct *ps);
 	bool        _handleHeadersText(UT_uint32 iPos);
@@ -264,6 +266,7 @@ private:
 	UT_uint32   m_iTextStart;
 	UT_uint32   m_iTextEnd;
 	bool        m_bPageBreakPending;
+	UT_NumberVector m_vListIdMap;
 };
 
 #endif /* IE_IMP_MSWORD_H */
