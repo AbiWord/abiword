@@ -194,9 +194,6 @@ time_t AD_Document::getHistoryNthTimeStarted(UT_uint32 i)const
 
 /*!
     Get get cumulative edit time for n-th record in version history
-    NB: this time is cumulative from the creation of document not from
-    the start of given version record. To calculate the latter
-    substract n-1st value from nth value.
 */
 UT_uint32 AD_Document::getHistoryNthEditTime(UT_uint32 i)const
 {
