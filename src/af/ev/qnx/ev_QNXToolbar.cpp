@@ -183,31 +183,22 @@ static int s_button_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) 
 }
 
 static int s_colour_activate(PtWidget_t *w, void *data, PtCallbackInfo_t *info) {
-	int					ret;
-	char				*title;
-	char				oklabel[3];
-	char				cancellabel[8];
-	PtColorSelectInfo_t cinfo;
 
 	struct _cb_data *cb_data = (struct _cb_data *)data;
+	XAP_Toolbar_Id id = cb_data->id;
+	XAP_QNXApp * pQNXApp = cb_data->tb->getApp();
+	const EV_EditMethodContainer * pEMC = pQNXApp->getEditMethodContainer();
+	UT_ASSERT(pEMC);
+	EV_EditMethod * pEM = NULL;
 
-	memset(&cinfo, 0, sizeof(cinfo));
-	cinfo.flags = Pt_COLORSELECT_MODAL;
-	strcpy(oklabel, "OK");
-	cinfo.accept_text = oklabel;
-	strcpy(cancellabel, "Cancel");
-	cinfo.dismiss_text = cancellabel;
+	AV_View * pView = cb_data->tb->getFrame()->getCurrentView();
 
-	title = NULL;
-	PtGetResource(w, Pt_ARG_TEXT_STRING, &title, 0);
+	if(id ==  AP_TOOLBAR_ID_COLOR_FORE)
+		pEM = pEMC->findEditMethodByName("dlgColorPickerFore");
+	else
+    pEM = pEMC->findEditMethodByName("dlgColorPickerBack");
+	cb_data->tb->invokeToolbarMethod(pView,pEM,NULL,0);
 
-	ret = PtColorSelect(w, (title) ? title : "Select a colour", &cinfo);
-	if(ret & Pt_COLORSELECT_ACCEPT) {
-		char clrstr[9];
-		sprintf(clrstr, "%02x%02x%02x", PgRedValue(cinfo.rgb), PgGreenValue(cinfo.rgb), PgBlueValue(cinfo.rgb));
-		//printf("Colour is [%s] len %d \n", clrstr, strlen(clrstr));
-		cb_data->tb->toolbarEvent(cb_data->id, clrstr, strlen(clrstr));
-	} 
 	return Pt_CONTINUE;
 }
 
