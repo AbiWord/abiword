@@ -116,11 +116,9 @@ typedef	UT_sint32		UT_Error;
 */
 
 /* When objects (fields, etc) must be represented in unicode, use the
-   letter A. Alternatively use some other (better suited) unicode but
-   change UT_isWordDelimiter to not consider it a word delimiter.
-   See bug 223.
-*/
-#define UCS_OBJECT		((UT_UCSChar)0x0041)
+   BELL code and let UT_isWordDelimiter recognize it as a word
+   character. See bug 223.  */
+#define UCS_OBJECT		((UT_UCSChar)0x0007)
 
 #define UCS_TAB			((UT_UCSChar)0x0009)
 #define UCS_LF			((UT_UCSChar)0x000a)
