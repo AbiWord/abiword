@@ -30,16 +30,16 @@
 // TODO should we pass it to the ev_keyboard base class on the
 // TODO constructor ??
 
-class FV_View;
+class AV_View;
 
 class ev_Win32Keyboard : public EV_Keyboard
 {
 public:
 	ev_Win32Keyboard(EV_EditEventMapper * pEEM);
 
-	UT_Bool onKeyDown(FV_View * pView,
+	UT_Bool onKeyDown(AV_View * pView,
 					  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
-	UT_Bool onChar(FV_View * pView,
+	UT_Bool onChar(AV_View * pView,
 				   HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData);
 	
 protected:

@@ -26,13 +26,13 @@
 #include "ut_types.h"
 class EV_EditEventMapper;
 class EV_EditMethod;
-class FV_View;
+class AV_View;
 
 class EV_Mouse
 {
 public:
 	EV_Mouse(EV_EditEventMapper * pEEM);
-	UT_Bool invokeMouseMethod(FV_View * pView,
+	UT_Bool invokeMouseMethod(AV_View * pView,
 							  EV_EditMethod * pEM,
 							  UT_uint32 iPrefixCount,
 							  UT_uint32 xPos,

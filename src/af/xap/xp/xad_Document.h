@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,25 +17,33 @@
  * 02111-1307, USA.
  */
 
-#ifndef EV_UNIXTOOLBAR_VIEWLISTENER_H
-#define EV_UNIXTOOLBAR_VIEWLISTENER_H
 
-#include "av_Listener.h"
-class EV_UnixToolbar;
-class AV_View;
+#ifndef AD_DOCUMENT_H
+#define AD_DOCUMENT_H
 
+// TODO should the filename be UT_UCSChar rather than char ?
 
-class EV_UnixToolbar_ViewListener : public AV_Listener
+#include "ut_types.h"
+
+class AD_Document
 {
 public:
-	EV_UnixToolbar_ViewListener(EV_UnixToolbar * pUnixToolbar,
-								AV_View * pView);
-	
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	AD_Document();
+	virtual ~AD_Document();
 
+	const char *			getFilename(void) const;
+
+	virtual UT_Bool			readFromFile(const char * szFilename) = 0;
+	virtual UT_Bool			newDocument(void) = 0;
+	virtual UT_Bool			isDirty(void) const = 0;
+
+	virtual UT_Bool			canDo(UT_Bool bUndo) const = 0;
+	virtual UT_Bool			undoCmd(UT_uint32 repeatCount) = 0;
+	virtual UT_Bool			redoCmd(UT_uint32 repeatCount) = 0;
+	
 protected:
-	EV_UnixToolbar *	m_pUnixToolbar;
-	AV_View *			m_pView;
+	const char *			m_szFilename;
 };
 
-#endif /* EV_UNIXTOOLBAR_VIEWLISTENER_H */
+
+#endif /* AD_DOCUMENT_H */

@@ -132,7 +132,7 @@ EV_UnixMenu::~EV_UnixMenu(void)
 	UT_VECTOR_PURGEALL(_wd,m_vecMenuWidgets);
 }
 
-UT_Bool EV_UnixMenu::refreshMenu(FV_View * pView)
+UT_Bool EV_UnixMenu::refreshMenu(AV_View * pView)
 {
 	return _refreshMenu(pView);
 }
@@ -449,7 +449,7 @@ void EV_UnixMenu::_append_Separator(char * bufMenuPathname, AP_Menu_Id id)
 	p->item_type = "<Separator>";
 }
 
-UT_Bool EV_UnixMenu::_refreshMenu(FV_View * pView)
+UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView)
 {
 	// update the status of stateful items on menu bar.
 

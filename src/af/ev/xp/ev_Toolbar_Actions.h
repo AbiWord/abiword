@@ -35,9 +35,9 @@
 
 #include "ut_types.h"
 #include "ap_Toolbar_Id.h"
-#include "fv_Listener.h"
+#include "av_Listener.h"
 class AP_App;
-class FV_View;
+class AV_View;
 class EV_Toolbar_Label;
 
 /*****************************************************************/
@@ -51,9 +51,9 @@ typedef enum _ev_Toolbar_ItemState			/* values may be ORed */
 	
 } EV_Toolbar_ItemState;
 
-typedef EV_Toolbar_ItemState ( EV_GetToolbarItemState_Fn )(FV_View * pView, AP_Toolbar_Id id, const char ** pszState);
-typedef EV_Toolbar_ItemState (*EV_GetToolbarItemState_pFn)(FV_View * pView, AP_Toolbar_Id id, const char ** pszState);
-#define Defun_EV_GetToolbarItemState_Fn(fn) EV_Toolbar_ItemState fn(FV_View * pView, AP_Toolbar_Id id, const char ** pszState)
+typedef EV_Toolbar_ItemState ( EV_GetToolbarItemState_Fn )(AV_View * pAV_View, AP_Toolbar_Id id, const char ** pszState);
+typedef EV_Toolbar_ItemState (*EV_GetToolbarItemState_pFn)(AV_View * pAV_View, AP_Toolbar_Id id, const char ** pszState);
+#define Defun_EV_GetToolbarItemState_Fn(fn) EV_Toolbar_ItemState fn(AV_View * pAV_View, AP_Toolbar_Id id, const char ** pszState)
 
 #define EV_TIS_ShouldBeGray(tis)		(((tis) & EV_TIS_Gray)!=0)
 #define EV_TIS_ShouldBeToggled(tis)		(((tis) & EV_TIS_Toggled)!=0)
@@ -82,22 +82,22 @@ public:
 	EV_Toolbar_Action(AP_Toolbar_Id id,
 					  EV_Toolbar_ItemType type,
 					  const char * szMethodName,
-					  FV_ChangeMask maskOfInterest,
+					  AV_ChangeMask maskOfInterest,
 					  EV_GetToolbarItemState_pFn pfnGetState);
 	~EV_Toolbar_Action(void);
 
 	AP_Toolbar_Id					getToolbarId(void) const;
 	EV_Toolbar_ItemType				getItemType(void) const;
 	const char *					getMethodName(void) const;
-	FV_ChangeMask					getChangeMaskOfInterest(void) const;
-	EV_Toolbar_ItemState			getToolbarItemState(FV_View * pView, const char ** pszState) const;
+	AV_ChangeMask					getChangeMaskOfInterest(void) const;
+	EV_Toolbar_ItemState			getToolbarItemState(AV_View * pView, const char ** pszState) const;
 	
 protected:
 	AP_Toolbar_Id					m_id;
 	EV_Toolbar_ItemType				m_type;
 	char *							m_szMethodName;		/* name of method to invoke */
 
-	FV_ChangeMask					m_maskOfInterest;
+	AV_ChangeMask					m_maskOfInterest;
 	EV_GetToolbarItemState_pFn		m_pfnGetState;
 };
 
@@ -112,7 +112,7 @@ public:
 	UT_Bool				setAction(AP_Toolbar_Id id,
 								  EV_Toolbar_ItemType type,
 								  const char * szMethodName,
-								  FV_ChangeMask maskOfInterest,
+								  AV_ChangeMask maskOfInterest,
 								  EV_GetToolbarItemState_pFn pfnGetState);
 	EV_Toolbar_Action *	getAction(AP_Toolbar_Id id) const;
 

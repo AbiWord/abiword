@@ -36,7 +36,7 @@
 EV_Toolbar_Action::EV_Toolbar_Action(AP_Toolbar_Id id,
 									 EV_Toolbar_ItemType type,
 									 const char * szMethodName,
-									 FV_ChangeMask maskOfInterest,
+									 AV_ChangeMask maskOfInterest,
 									 EV_GetToolbarItemState_pFn pfnGetState)
 {
 	m_id = id;
@@ -66,12 +66,12 @@ const char * EV_Toolbar_Action::getMethodName(void) const
 	return m_szMethodName;
 }
 
-FV_ChangeMask EV_Toolbar_Action::getChangeMaskOfInterest(void) const
+AV_ChangeMask EV_Toolbar_Action::getChangeMaskOfInterest(void) const
 {
 	return m_maskOfInterest;
 }
 
-EV_Toolbar_ItemState EV_Toolbar_Action::getToolbarItemState(FV_View * pView, const char ** pszState) const
+EV_Toolbar_ItemState EV_Toolbar_Action::getToolbarItemState(AV_View * pView, const char ** pszState) const
 {
 	if (m_pfnGetState)
 		return m_pfnGetState(pView,m_id,pszState);
@@ -105,7 +105,7 @@ EV_Toolbar_ActionSet::~EV_Toolbar_ActionSet(void)
 UT_Bool EV_Toolbar_ActionSet::setAction(AP_Toolbar_Id id,
 										EV_Toolbar_ItemType type,
 										const char * szMethodName,
-										FV_ChangeMask maskOfInterest,
+										AV_ChangeMask maskOfInterest,
 										EV_GetToolbarItemState_pFn pfnGetState)
 {
 	if ((id < m_first) || (id > m_last))

@@ -31,7 +31,7 @@ class EV_EditMethodContainer;
 class EV_EditMethod;
 class EV_Toolbar_Layout;
 class EV_Toolbar_LabelSet;
-class FV_View;
+class AV_View;
 
 class EV_Toolbar
 {
@@ -44,7 +44,7 @@ public:
 	const EV_Toolbar_Layout * getToolbarLayout(void) const;
 	const EV_Toolbar_LabelSet * getToolbarLabelSet(void) const;
 
-	UT_Bool invokeToolbarMethod(FV_View * pView,
+	UT_Bool invokeToolbarMethod(AV_View * pView,
 								EV_EditMethod * pEM,
 								UT_uint32 iPrefixCount,
 								UT_UCSChar * pData,

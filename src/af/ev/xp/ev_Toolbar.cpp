@@ -71,7 +71,7 @@ const EV_Toolbar_LabelSet * EV_Toolbar::getToolbarLabelSet(void) const
 	return m_pToolbarLabelSet;
 }
 
-UT_Bool EV_Toolbar::invokeToolbarMethod(FV_View * pView,
+UT_Bool EV_Toolbar::invokeToolbarMethod(AV_View * pView,
 										EV_EditMethod * pEM,
 										UT_uint32 iPrefixCount,
 										UT_UCSChar * pData,

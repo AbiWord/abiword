@@ -23,19 +23,19 @@
 
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "fv_Listener.h"	// for FV_ListenerID
+#include "av_Listener.h"	// for AV_ListenerID
 
 class AP_App;
 class ap_ViewListener;
 class DG_Graphics;
-class FV_View;
+class AV_View;
 class FL_DocLayout;
-class PD_Document;
+class AD_Document;
 class EV_EditBindingMap;
 class EV_EditEventMapper;
 class EV_Menu_Layout;
 class EV_Menu_LabelSet;
-class FV_ScrollObj;
+class AV_ScrollObj;
 
 /*****************************************************************
 ******************************************************************
@@ -64,7 +64,7 @@ public:
 
 	const EV_EditEventMapper *	getEditEventMapper(void) const;
 	AP_App *					getApp(void) const;
-	FV_View *					getCurrentView(void) const;
+	AV_View *					getCurrentView(void) const;
 	const char *				getFilename(void) const;
 	const char *				getTitle(int len) const;
 
@@ -76,12 +76,12 @@ public:
 	
 protected:
 	AP_App *					m_app;			/* handle to application-specific data */
-	PD_Document *				m_pDoc;			/* to our in-memory representation of a document */
+	AD_Document *				m_pDoc;			/* to our in-memory representation of a document */
 	FL_DocLayout *				m_pDocLayout;	
-	FV_View *					m_pView;		/* to our view on the document */
+	AV_View *					m_pView;		/* to our view on the document */
 	ap_ViewListener *			m_pViewListener;
-	FV_ListenerId				m_lid;
-	FV_ScrollObj *				m_pScrollObj;	/* to our scroll handler */
+	AV_ListenerId				m_lid;
+	AV_ScrollObj *				m_pScrollObj;	/* to our scroll handler */
 	DG_Graphics *				m_pG;
 	EV_EditBindingMap *			m_pEBM;			/* the key/mouse bindings for this frame */
 	EV_EditEventMapper *		m_pEEM;			/* the event state-machine for this frame */

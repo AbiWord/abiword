@@ -36,23 +36,25 @@ PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)		\
 		$(ABI_NATIVE)/$(OBJDIR)/ap_$(ABI_FE)Toolbar_Icons.$(OBJ_SUFFIX)
 
-OBJS=		$(PLATFORM_OBJS)					\
-		xp/$(OBJDIR)/ap_App.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_Args.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)			\
-		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)		\
+OBJS=		$(PLATFORM_OBJS)								\
+		xp/$(OBJDIR)/ad_Document.$(OBJ_SUFFIX)				\
+		xp/$(OBJDIR)/ap_App.$(OBJ_SUFFIX)					\
+		xp/$(OBJDIR)/ap_Args.$(OBJ_SUFFIX)					\
+		xp/$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)					\
+		xp/$(OBJDIR)/ap_LoadBindings.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_LoadBindings_Default.$(OBJ_SUFFIX)	\
 		xp/$(OBJDIR)/ap_Menu_ActionSet.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Menu_Functions.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Menu_LabelSet.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/ap_Menu_Layouts.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Toolbar_ActionSet.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Toolbar_Functions.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX)		\
+		xp/$(OBJDIR)/ap_Toolbar_Icons.$(OBJ_SUFFIX)			\
 		xp/$(OBJDIR)/ap_Toolbar_LabelSet.$(OBJ_SUFFIX)		\
 		xp/$(OBJDIR)/ap_Toolbar_Layouts.$(OBJ_SUFFIX)		\
-		xp/$(OBJDIR)/ap_ViewListener.$(OBJ_SUFFIX)
+		xp/$(OBJDIR)/ap_ViewListener.$(OBJ_SUFFIX)			\
+		xp/$(OBJDIR)/av_View.$(OBJ_SUFFIX)
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

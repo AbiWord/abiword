@@ -38,7 +38,7 @@ EV_Keyboard::EV_Keyboard(EV_EditEventMapper * pEEM)
 	m_pEEM = pEEM;
 }
 
-UT_Bool EV_Keyboard::invokeKeyboardMethod(FV_View * pView,
+UT_Bool EV_Keyboard::invokeKeyboardMethod(AV_View * pView,
 										  EV_EditMethod * pEM,
 										  UT_uint32 iPrefixCount,
 										  UT_UCSChar * pData,

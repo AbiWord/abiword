@@ -32,6 +32,10 @@
 #include "ev_Win32Menu.h"
 #include "ev_Win32Toolbar.h"
 #include "ev_EditMethod.h"
+#include "av_View.h"
+#include "ad_Document.h"
+// TODO: the previous headers can go to src/ap
+// TODO: the following headers are specific to src/wp/ap
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
@@ -363,10 +367,10 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 
 	Win32Graphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
-	FV_View * pView = NULL;
-	FV_ScrollObj * pScrollObj = NULL;
+	AV_View * pView = NULL;
+	AV_ScrollObj * pScrollObj = NULL;
 	ap_ViewListener * pViewListener = NULL;
-	PD_Document * pOldDoc = NULL;
+	AD_Document * pOldDoc = NULL;
 
 	UT_uint32 iWindowHeight, iHeight;
 	UT_uint32 nrToolbars, k;
@@ -376,20 +380,20 @@ UT_Bool AP_Win32Frame::_showDocument(void)
 
 	pG = new Win32Graphics(GetDC(hwnd), hwnd);
 	ENSUREP(pG);
-	pDocLayout = new FL_DocLayout(m_pDoc, pG);
+	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
   
 	pDocLayout->formatAll();
 	
 	pView = new FV_View(this,pDocLayout);
 	ENSUREP(pView);
-	pScrollObj = new FV_ScrollObj(this,_scrollFunc);
+	pScrollObj = new AV_ScrollObj(this,_scrollFunc);
 	ENSUREP(pScrollObj);
 	pViewListener = new ap_ViewListener(this);
 	ENSUREP(pViewListener);
 
-	FV_ListenerId lid;
-	if (!pView->addListener(static_cast<FV_Listener *>(pViewListener),&lid))
+	AV_ListenerId lid;
+	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
 		goto Cleanup;
 
 	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
@@ -538,7 +542,7 @@ UT_Bool AP_Win32Frame::updateTitle()
 LRESULT CALLBACK AP_Win32Frame::_WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	AP_Win32Frame * f = GWL(hwnd);
-	FV_View * pView = NULL;
+	AV_View * pView = NULL;
 
 	if (f)
 	{
@@ -708,7 +712,7 @@ LRESULT CALLBACK AP_Win32Frame::_ChildWndProc(HWND hwnd, UINT iMsg, WPARAM wPara
 	PAINTSTRUCT ps ;
 
 	AP_Win32Frame * f = GWL(hwnd);
-	FV_View * pView = NULL;
+	AV_View * pView = NULL;
 	EV_Win32Mouse * pMouse = NULL;
 
 	if (f)

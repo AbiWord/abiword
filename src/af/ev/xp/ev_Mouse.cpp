@@ -27,7 +27,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ev_Mouse.h"
-#include "fv_View.h"
+#include "av_View.h"
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
@@ -39,7 +39,7 @@ EV_Mouse::EV_Mouse(EV_EditEventMapper * pEEM)
 	m_pEEM = pEEM;
 }
 
-UT_Bool EV_Mouse::invokeMouseMethod(FV_View * pView,
+UT_Bool EV_Mouse::invokeMouseMethod(AV_View * pView,
 									EV_EditMethod * pEM,
 									UT_uint32 iPrefixCount,
 									UT_uint32 xPos,

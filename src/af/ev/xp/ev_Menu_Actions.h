@@ -41,7 +41,7 @@
 #include "ut_types.h"
 #include "ap_Menu_Id.h"
 class AP_App;
-class FV_View;
+class AV_View;
 class EV_Menu_Label;
 
 // TODO consider removing bHoldsSubMenu bit from this file.
@@ -56,11 +56,11 @@ typedef enum _ev_Menu_ItemState			/* values may be ORed */
 
 } EV_Menu_ItemState;
 
-typedef EV_Menu_ItemState ( EV_GetMenuItemState_Fn )(FV_View * pView, AP_Menu_Id id);
-typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(FV_View * pView, AP_Menu_Id id);
-#define Defun_EV_GetMenuItemState_Fn(fn) EV_Menu_ItemState fn(FV_View * pView, AP_Menu_Id id)
+typedef EV_Menu_ItemState ( EV_GetMenuItemState_Fn )(AV_View * pView, AP_Menu_Id id);
+typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(AV_View * pView, AP_Menu_Id id);
+#define Defun_EV_GetMenuItemState_Fn(fn) EV_Menu_ItemState fn(AV_View * pAV_View, AP_Menu_Id id)
 
-// TODO decide if ...GetMenuItemComputedLabel... should take an AP_App or an FV_View.
+// TODO decide if ...GetMenuItemComputedLabel... should take an AP_App or an AV_View.
 // TODO for most-recently-used-file-list and window-history, we probably just need
 // TODO the ap.  but for view-specific things (like toggles where we change the menu
 // TODO item name rather than doing a checkmark), we need the view.
@@ -88,7 +88,7 @@ public:
 	const char *					getDynamicLabel(AP_App * pApp, const EV_Menu_Label * pLabel) const;
 	const char *					getMethodName(void) const;
 	UT_Bool							hasGetStateFunction(void) const;
-	EV_Menu_ItemState				getMenuItemState(FV_View * pView) const;
+	EV_Menu_ItemState				getMenuItemState(AV_View * pView) const;
 	UT_Bool							raisesDialog(void) const;
 	UT_Bool							isCheckable(void) const;
 	

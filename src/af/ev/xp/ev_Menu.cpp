@@ -72,7 +72,7 @@ const EV_Menu_LabelSet * EV_Menu::getMenuLabelSet(void) const
 	return m_pMenuLabelSet;
 }
 
-UT_Bool EV_Menu::invokeMenuMethod(FV_View * pView,
+UT_Bool EV_Menu::invokeMenuMethod(AV_View * pView,
 								  EV_EditMethod * pEM,
 								  UT_uint32 iPrefixCount,
 								  UT_UCSChar * pData,

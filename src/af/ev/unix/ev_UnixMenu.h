@@ -24,7 +24,7 @@
 #include "ut_vector.h"
 #include "ev_Menu.h"
 #include "ap_Menu_Id.h"
-class FV_View;
+class AV_View;
 class AP_UnixApp;
 class AP_UnixFrame;
 
@@ -40,7 +40,7 @@ public:
 
 	UT_Bool				synthesize(void);
 	UT_Bool				menuEvent(AP_Menu_Id id);
-	UT_Bool				refreshMenu(FV_View * pView);
+	UT_Bool				refreshMenu(AV_View * pView);
 
 	AP_UnixFrame * 		getFrame(void);
 	
@@ -56,7 +56,7 @@ protected:
 	void				_append_Separator(char * bufMenuPathname,
 										  AP_Menu_Id id);
 
-	UT_Bool				_refreshMenu(FV_View * pView);
+	UT_Bool				_refreshMenu(AV_View * pView);
 	const char *		_getItemPath(AP_Menu_Id id) const;
 	UT_Bool				_isItemPresent(AP_Menu_Id id) const;
 

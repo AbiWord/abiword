@@ -26,7 +26,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 
-class FV_View;
+class AV_View;
 
 /*****************************************************************
 ******************************************************************
@@ -91,8 +91,8 @@ public:
 	UT_sint32			m_yPos;
 };
 
-typedef UT_Bool (*EV_EditMethod_pFn)(FV_View * pView, EV_EditMethodCallData * pCallData);
-typedef UT_Bool ( EV_EditMethod_Fn) (FV_View * pView, EV_EditMethodCallData * pCallData);
+typedef UT_Bool (*EV_EditMethod_pFn)(AV_View * pView, EV_EditMethodCallData * pCallData);
+typedef UT_Bool ( EV_EditMethod_Fn) (AV_View * pView, EV_EditMethodCallData * pCallData);
 
 /*****************************************************************/
 /*****************************************************************/

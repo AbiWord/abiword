@@ -25,7 +25,7 @@
 #include "ut_vector.h"
 #include "ap_Toolbar_Id.h"
 #include "ev_Toolbar.h"
-#include "fv_Listener.h"
+#include "av_Listener.h"
 class AP_UnixApp;
 class AP_UnixFrame;
 class AP_UnixToolbar_Icons;
@@ -43,8 +43,8 @@ public:
 
 	UT_Bool toolbarEvent(AP_Toolbar_Id id);
 	UT_Bool synthesize(void);
-	UT_Bool bindListenerToView(FV_View * pView);
-	UT_Bool refreshToolbar(FV_View * pView, FV_ChangeMask mask);
+	UT_Bool bindListenerToView(AV_View * pView);
+	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 
 protected:
 	void							_releaseListener(void);
@@ -52,7 +52,7 @@ protected:
 	AP_UnixApp *					m_pUnixApp;
 	AP_UnixFrame *					m_pUnixFrame;
 	EV_UnixToolbar_ViewListener *	m_pViewListener;
-	FV_ListenerId					m_lid;	/* view listener id */
+	AV_ListenerId					m_lid;	/* view listener id */
 
 	GtkWidget *						m_wToolbar;
 	GtkWidget * 					m_wHandleBox;

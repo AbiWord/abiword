@@ -30,7 +30,7 @@
 #include "ev_EditEventMapper.h"
 #include "ap_UnixToolbar_Icons.h"
 #include "ev_UnixToolbar_ViewListener.h"
-#include "fv_View.h"
+#include "av_View.h"
 
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
@@ -264,22 +264,22 @@ void EV_UnixToolbar::_releaseListener(void)
 	m_lid = 0;
 }
 	
-UT_Bool EV_UnixToolbar::bindListenerToView(FV_View * pView)
+UT_Bool EV_UnixToolbar::bindListenerToView(AV_View * pView)
 {
 	_releaseListener();
 	
 	m_pViewListener = new EV_UnixToolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-	UT_Bool bResult = pView->addListener(static_cast<FV_Listener *>(m_pViewListener),&m_lid);
+	UT_Bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 
-	refreshToolbar(pView, FV_CHG_ALL);
+	refreshToolbar(pView, AV_CHG_ALL);
 
 	return UT_TRUE;
 }
 
-UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
+UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 {
 	// make the toolbar reflect the current state of the document
 	// at the current insertion point or selection.
@@ -297,7 +297,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(FV_View * pView, FV_ChangeMask mask)
 		EV_Toolbar_Action * pAction = pToolbarActionSet->getAction(id);
 		UT_ASSERT(pAction);
 
-		FV_ChangeMask maskOfInterest = pAction->getChangeMaskOfInterest();
+		AV_ChangeMask maskOfInterest = pAction->getChangeMaskOfInterest();
 		if ((maskOfInterest & mask) == 0)					// if this item doesn't care about
 			continue;										// changes of this type, skip it...
 

@@ -25,13 +25,13 @@
 #include "ev_Win32Toolbar.h"
 
 EV_Win32Toolbar_ViewListener::EV_Win32Toolbar_ViewListener(EV_Win32Toolbar * pWin32Toolbar,
-														 FV_View * pView)
+														 AV_View * pView)
 {
 	m_pWin32Toolbar = pWin32Toolbar;
 	m_pView = pView;
 }
 
-UT_Bool EV_Win32Toolbar_ViewListener::notify(FV_View * pView, const FV_ChangeMask mask)
+UT_Bool EV_Win32Toolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView == m_pView);
 	

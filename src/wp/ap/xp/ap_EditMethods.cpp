@@ -33,6 +33,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ev_EditMethod.h"
+#include "av_View.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
@@ -154,21 +155,6 @@ public:
 
 	static EV_EditMethod_Fn insertSpace;
 	static EV_EditMethod_Fn insertNBSpace;
-
-	static EV_EditMethod_Fn insFmtFaceTimes; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtFaceCourier; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtFaceArial; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtSize08; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtSize10; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtSize12; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtSize14; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtSize16; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtSize24; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtSize36; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtColorBlack; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtColorRed; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtColorGreen; // TODO we need a better way of doing this
-	static EV_EditMethod_Fn insFmtColorBlue; // TODO we need a better way of doing this
 
 	// TODO add functions for all of the standard menu commands.
 	// TODO here are a few that i started.
@@ -315,21 +301,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(insertSpace),			_M_,	""),
 	EV_EditMethod(NF(insertNBSpace),		_M_,	""),
 
-	EV_EditMethod(NF(insFmtFaceTimes),		_M_,	""),
-	EV_EditMethod(NF(insFmtFaceCourier),	_M_,	""),
-	EV_EditMethod(NF(insFmtFaceArial),		_M_,	""),
-	EV_EditMethod(NF(insFmtSize08),			_M_,	""),
-	EV_EditMethod(NF(insFmtSize10),			_M_,	""),
-	EV_EditMethod(NF(insFmtSize12),			_M_,	""),
-	EV_EditMethod(NF(insFmtSize14),			_M_,	""),
-	EV_EditMethod(NF(insFmtSize16),			_M_,	""),
-	EV_EditMethod(NF(insFmtSize24),			_M_,	""),
-	EV_EditMethod(NF(insFmtSize36),			_M_,	""),
-	EV_EditMethod(NF(insFmtColorBlack),		_M_,	""),
-	EV_EditMethod(NF(insFmtColorRed),		_M_,	""),
-	EV_EditMethod(NF(insFmtColorGreen),		_M_,	""),
-	EV_EditMethod(NF(insFmtColorBlue),		_M_,	""),
-
 	EV_EditMethod(NF(fileNew),				_M_,	""),
 	EV_EditMethod(NF(fileOpen),				_M_,	""),
 	EV_EditMethod(NF(fileSave),				_M_,	""),
@@ -403,534 +374,85 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 /*****************************************************************/
 
 #define F(fn)		ap_EditMethods::fn
-#define Defun(fn)	UT_Bool F(fn)(FV_View*   pView,   EV_EditMethodCallData *   pCallData  )
-#define Defun0(fn)	UT_Bool F(fn)(FV_View* /*pView*/, EV_EditMethodCallData * /*pCallData*/)
-#define Defun1(fn)	UT_Bool F(fn)(FV_View*   pView,   EV_EditMethodCallData * /*pCallData*/)
-#define EX(fn)		F(fn)(pView, pCallData)
+#define Defun(fn)	UT_Bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData *   pCallData  )
+#define Defun0(fn)	UT_Bool F(fn)(AV_View* /*pAV_View*/, EV_EditMethodCallData * /*pCallData*/)
+#define Defun1(fn)	UT_Bool F(fn)(AV_View*   pAV_View,   EV_EditMethodCallData * /*pCallData*/)
+#define EX(fn)		F(fn)(pAV_View, pCallData)
 
 
 Defun1(scrollPageDown)
 {
-	pView->cmdScroll(DG_SCROLLCMD_PAGEDOWN);
+	pAV_View->cmdScroll(AV_SCROLLCMD_PAGEDOWN);
 
 	return UT_TRUE;
 }
 
 Defun1(scrollPageUp)
 {
-	pView->cmdScroll(DG_SCROLLCMD_PAGEUP);
+	pAV_View->cmdScroll(AV_SCROLLCMD_PAGEUP);
 
 	return UT_TRUE;
 }
 
 Defun1(scrollPageLeft)
 {
-	pView->cmdScroll(DG_SCROLLCMD_PAGELEFT);
+	pAV_View->cmdScroll(AV_SCROLLCMD_PAGELEFT);
 
 	return UT_TRUE;
 }
 
 Defun1(scrollPageRight)
 {
-	pView->cmdScroll(DG_SCROLLCMD_PAGERIGHT);
+	pAV_View->cmdScroll(AV_SCROLLCMD_PAGERIGHT);
 
 	return UT_TRUE;
 }
 
 Defun1(scrollLineDown)
 {
-	pView->cmdScroll(DG_SCROLLCMD_LINEDOWN);
+	pAV_View->cmdScroll(AV_SCROLLCMD_LINEDOWN);
 
 	return UT_TRUE;
 }
 
 Defun1(scrollLineUp)
 {
-	pView->cmdScroll(DG_SCROLLCMD_LINEUP);
+	pAV_View->cmdScroll(AV_SCROLLCMD_LINEUP);
 
 	return UT_TRUE;
 }
 
 Defun1(scrollLineLeft)
 {
-	pView->cmdScroll(DG_SCROLLCMD_LINELEFT);
+	pAV_View->cmdScroll(AV_SCROLLCMD_LINELEFT);
 
 	return UT_TRUE;
 }
 
 Defun1(scrollLineRight)
 {
-	pView->cmdScroll(DG_SCROLLCMD_LINERIGHT);
+	pAV_View->cmdScroll(AV_SCROLLCMD_LINERIGHT);
 
 	return UT_TRUE;
 }
 
 Defun1(scrollToTop)
 {
-	pView->cmdScroll(DG_SCROLLCMD_TOTOP);
+	pAV_View->cmdScroll(AV_SCROLLCMD_TOTOP);
 
 	return UT_TRUE;
 }
 
 Defun1(scrollToBottom)
 {
-	pView->cmdScroll(DG_SCROLLCMD_TOBOTTOM);
+	pAV_View->cmdScroll(AV_SCROLLCMD_TOBOTTOM);
 
-	return UT_TRUE;
-}
-
-Defun(singleClick)
-{
-	UT_Bool bRes = UT_TRUE;
-
-	// NOTE: context-free binding mechanism ==> we need this extra layer
-	if (pView->isLeftMargin(pCallData->m_xPos, pCallData->m_yPos))
-		bRes = EX(selectLine);
-	else
-		bRes = EX(warpInsPtToXY);
-
-	return bRes;
-}
-
-Defun(doubleClick)
-{
-	UT_Bool bRes = UT_TRUE;
-
-	// NOTE: context-free binding mechanism ==> we need this extra layer
-	if (pView->isLeftMargin(pCallData->m_xPos, pCallData->m_yPos))
-		bRes = EX(selectBlock);
-	else
-		bRes = EX(selectWord);
-
-	return bRes;
-}
-
-Defun(warpInsPtToXY)
-{
-	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos);
-
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtLeft)
-{
-	pView->cmdCharMotion(UT_FALSE,1);
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtRight)
-{
-	pView->cmdCharMotion(UT_TRUE,1);
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtBOL)
-{
-	pView->moveInsPtTo(FV_DOCPOS_BOL);
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtEOL)
-{
-	pView->moveInsPtTo(FV_DOCPOS_EOL);
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtBOW)
-{
-	pView->moveInsPtTo(FV_DOCPOS_BOW);
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtEOW)
-{
-	pView->moveInsPtTo(FV_DOCPOS_EOW);
-	return UT_TRUE;
-}
-
-Defun0(warpInsPtBOS)
-{
-	return UT_TRUE;
-}
-
-Defun0(warpInsPtEOS)
-{
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtBOB)
-{
-	pView->moveInsPtTo(FV_DOCPOS_BOB);
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtEOB)
-{
-	pView->moveInsPtTo(FV_DOCPOS_EOB);
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtBOD)
-{
-	pView->moveInsPtTo(FV_DOCPOS_BOD);
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtEOD)
-{
-	pView->moveInsPtTo(FV_DOCPOS_EOD);
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtPrevLine)
-{
-	pView->warpInsPtNextPrevLine(UT_FALSE);
-
-	return UT_TRUE;
-}
-
-Defun1(warpInsPtNextLine)
-{
-	pView->warpInsPtNextPrevLine(UT_TRUE);
-
-	return UT_TRUE;
-}
-
-Defun(extSelToXY)
-{
-	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos);
-	return UT_TRUE;
-}
-Defun1(extSelLeft)
-{
-	pView->extSelHorizontal(UT_FALSE,1);
-	return UT_TRUE;
-}
-
-Defun1(extSelRight)
-{
-	pView->extSelHorizontal(UT_TRUE,1);
-	return UT_TRUE;
-}
-
-Defun1(extSelBOL)
-{
-	pView->extSelTo(FV_DOCPOS_BOL);
-	return UT_TRUE;
-}
-
-Defun1(extSelEOL)
-{
-	pView->extSelTo(FV_DOCPOS_EOL);
-	return UT_TRUE;
-}
-
-Defun1(extSelBOW)
-{
-	pView->extSelTo(FV_DOCPOS_BOW);
-	return UT_TRUE;
-}
-
-Defun1(extSelEOW)
-{
-	pView->extSelTo(FV_DOCPOS_EOW);
-	return UT_TRUE;
-}
-
-Defun0(extSelBOS)
-{
-	return UT_TRUE;
-}
-
-Defun0(extSelEOS)
-{
-	return UT_TRUE;
-}
-
-Defun1(extSelBOB)
-{
-	pView->extSelTo(FV_DOCPOS_BOB);
-	return UT_TRUE;
-}
-
-Defun1(extSelEOB)
-{
-	pView->extSelTo(FV_DOCPOS_EOB);
-	return UT_TRUE;
-}
-
-Defun1(extSelBOD)
-{
-	pView->extSelTo(FV_DOCPOS_BOD);
-	return UT_TRUE;
-}
-
-Defun1(extSelEOD)
-{
-	pView->extSelTo(FV_DOCPOS_EOD);
-	return UT_TRUE;
-}
-
-Defun1(extSelPrevLine)
-{
-	pView->extSelNextPrevLine(UT_FALSE);
-
-	return UT_TRUE;
-}
-
-Defun1(extSelNextLine)
-{
-	pView->extSelNextPrevLine(UT_TRUE);
-
-	return UT_TRUE;
-}
-
-Defun0(extSelPageDown)
-{
-	return UT_TRUE;
-}
-
-Defun0(extSelPageUp)
-{
-	return UT_TRUE;
-}
-
-Defun1(selectAll)
-{
-	pView->moveInsPtTo(FV_DOCPOS_BOD);
-	pView->extSelTo(FV_DOCPOS_EOD);
-	return UT_TRUE;
-}
-
-Defun(selectWord)
-{
-	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOW, FV_DOCPOS_EOW);
-	return UT_TRUE;
-}
-
-Defun(selectLine)
-{
-	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOL, FV_DOCPOS_EOL);
-	return UT_TRUE;
-}
-
-Defun(selectBlock)
-{
-	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
-	return UT_TRUE;
-}
-
-Defun1(delLeft)
-{
-	pView->cmdCharDelete(UT_FALSE,1);
-	return UT_TRUE;
-}
-
-Defun1(delRight)
-{
-	pView->cmdCharDelete(UT_TRUE,1);
-	return UT_TRUE;
-}
-
-Defun1(delBOL)
-{
-	pView->delTo(FV_DOCPOS_BOL);
-	return UT_TRUE;
-}
-
-Defun1(delEOL)
-{
-	pView->delTo(FV_DOCPOS_EOL);
-	return UT_TRUE;
-}
-
-Defun1(delBOW)
-{
-	pView->delTo(FV_DOCPOS_BOW);
-	return UT_TRUE;
-}
-
-Defun1(delEOW)
-{
-	pView->delTo(FV_DOCPOS_EOW);
-	return UT_TRUE;
-}
-
-Defun0(delBOS)
-{
-	return UT_TRUE;
-}
-
-Defun0(delEOS)
-{
-	return UT_TRUE;
-}
-
-Defun1(delBOB)
-{
-	pView->delTo(FV_DOCPOS_BOB);
-	return UT_TRUE;
-}
-
-Defun1(delEOB)
-{
-	pView->delTo(FV_DOCPOS_EOB);
-	return UT_TRUE;
-}
-
-Defun1(delBOD)
-{
-	pView->delTo(FV_DOCPOS_BOD);
-	return UT_TRUE;
-}
-
-Defun1(delEOD)
-{
-	pView->delTo(FV_DOCPOS_EOD);
-	return UT_TRUE;
-}
-
-Defun(insertData)
-{
-	pView->cmdCharInsert(pCallData->m_pData,pCallData->m_dataLength);
-	return UT_TRUE;
-}
-
-Defun0(insertTab)
-{
-	return UT_TRUE;
-}
-
-Defun0(insertSoftBreak)
-{
-	return UT_TRUE;
-}
-
-Defun1(insertParagraphBreak)
-{
-	pView->insertParagraphBreak();
-
-	return UT_TRUE;
-}
-
-Defun0(insertLineBreak)
-{
-	return UT_TRUE;
-}
-
-Defun0(insertPageBreak)
-{
-	return UT_TRUE;
-}
-
-Defun0(insertColumnBreak)
-{
-	return UT_TRUE;
-}
-
-Defun1(insertSpace)
-{
-	UT_UCSChar sp = 0x0020;
-	pView->cmdCharInsert(&sp,1);
-	return UT_TRUE;
-}
-
-Defun1(insertNBSpace)
-{
-	UT_UCSChar sp = 0x00a0;				// decimal 160 is NBS
-	pView->cmdCharInsert(&sp,1);
-	return UT_TRUE;
-}
-
-Defun1(insFmtFaceTimes)
-{
-	const XML_Char * properties[] =	{ "font-family", "Times New Roman", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtFaceCourier)
-{
-	const XML_Char * properties[] =	{ "font-family", "Courier New", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtFaceArial)
-{
-	const XML_Char * properties[] =	{ "font-family", "Arial", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtSize08)
-{
-	const XML_Char * properties[] =	{ "font-size", "8pt", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtSize10)
-{
-	const XML_Char * properties[] =	{ "font-size", "10pt", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtSize12)
-{
-	const XML_Char * properties[] =	{ "font-size", "12pt", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtSize14)
-{
-	const XML_Char * properties[] =	{ "font-size", "14pt", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtSize16)
-{
-	const XML_Char * properties[] =	{ "font-size", "16pt", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtSize24)
-{
-	const XML_Char * properties[] =	{ "font-size", "24pt", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtSize36)
-{
-	const XML_Char * properties[] =	{ "font-size", "36pt", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-
-Defun1(insFmtColorBlack)
-{
-	const XML_Char * properties[] =	{ "color", "000000", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtColorRed)
-{
-	const XML_Char * properties[] =	{ "color", "ff0000", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtColorGreen)
-{
-	const XML_Char * properties[] =	{ "color", "00ff00", 0};
-	pView->setCharFormat(properties);
-	return UT_TRUE;
-}
-Defun1(insFmtColorBlue)
-{
-	const XML_Char * properties[] =	{ "color", "0000ff", 0};
-	pView->setCharFormat(properties);
 	return UT_TRUE;
 }
 
 Defun1(fileNew)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -950,7 +472,7 @@ Defun1(fileNew)
 
 Defun1(fileOpen)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	UT_Bool bRes = UT_TRUE;
 
@@ -1026,14 +548,14 @@ Defun1(fileOpen)
 
 Defun(fileSave)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
 	// can only save without prompting if filename already known
 	if (!pFrame->getFilename())
 		return EX(fileSaveAs);
 
-	pView->cmdSave();
+	pAV_View->cmdSave();
 
 	if (pFrame->getViewNumber() > 0)
 	{
@@ -1048,7 +570,7 @@ Defun(fileSave)
 
 Defun1(fileSaveAs)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
 #ifdef DLGHACK
@@ -1060,7 +582,7 @@ Defun1(fileSaveAs)
 	if (pNewFile)
 	{
 		UT_DEBUGMSG(("fileSaveAs: saving as [%s]\n",pNewFile));
-		pView->cmdSaveAs(pNewFile);
+		pAV_View->cmdSaveAs(pNewFile);
 		free(pNewFile);
 
 		if (pFrame->getViewNumber() > 0)
@@ -1075,69 +597,29 @@ Defun1(fileSaveAs)
 	return UT_TRUE;
 }
 
-Defun1(print)
-{
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
-	UT_ASSERT(pFrame);
-#ifdef DLGHACK
-	_printDoc(pFrame, pView);
-#endif /* DLGHACK */
-	return UT_TRUE;
-}
-
 Defun1(undo)
 {
-	pView->cmdUndo(1);
+	pAV_View->cmdUndo(1);
 	return UT_TRUE;
 }
 
 Defun1(redo)
 {
-	pView->cmdRedo(1);
-	return UT_TRUE;
-}
-
-Defun0(cut)
-{
-	return UT_TRUE;
-}
-
-Defun0(copy)
-{
-	return UT_TRUE;
-}
-
-Defun0(paste)
-{
-	return UT_TRUE;
-}
-
-Defun0(find)
-{
-	return UT_TRUE;
-}
-
-Defun0(go)
-{
-	return UT_TRUE;
-}
-
-Defun0(replace)
-{
+	pAV_View->cmdRedo(1);
 	return UT_TRUE;
 }
 
 Defun1(newWindow)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 
 	return (pFrame->cloneFrame() ? UT_TRUE : UT_FALSE);
 }
 
-static UT_Bool _activateWindow(FV_View* pView, UT_uint32 ndx)
+static UT_Bool _activateWindow(AV_View* pAV_View, UT_uint32 ndx)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1155,39 +637,39 @@ static UT_Bool _activateWindow(FV_View* pView, UT_uint32 ndx)
 
 Defun1(activateWindow_1)
 {
-	return _activateWindow(pView, 1);
+	return _activateWindow(pAV_View, 1);
 }
 Defun1(activateWindow_2)
 {
-	return _activateWindow(pView, 2);
+	return _activateWindow(pAV_View, 2);
 }
 Defun1(activateWindow_3)
 {
-	return _activateWindow(pView, 3);
+	return _activateWindow(pAV_View, 3);
 }
 Defun1(activateWindow_4)
 {
-	return _activateWindow(pView, 4);
+	return _activateWindow(pAV_View, 4);
 }
 Defun1(activateWindow_5)
 {
-	return _activateWindow(pView, 5);
+	return _activateWindow(pAV_View, 5);
 }
 Defun1(activateWindow_6)
 {
-	return _activateWindow(pView, 6);
+	return _activateWindow(pAV_View, 6);
 }
 Defun1(activateWindow_7)
 {
-	return _activateWindow(pView, 7);
+	return _activateWindow(pAV_View, 7);
 }
 Defun1(activateWindow_8)
 {
-	return _activateWindow(pView, 8);
+	return _activateWindow(pAV_View, 8);
 }
 Defun1(activateWindow_9)
 {
-	return _activateWindow(pView, 9);
+	return _activateWindow(pAV_View, 9);
 }
 Defun0(moreWindowsDlg)
 {
@@ -1196,7 +678,7 @@ Defun0(moreWindowsDlg)
 
 Defun1(cycleWindows)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1219,7 +701,7 @@ Defun1(cycleWindows)
 
 Defun1(cycleWindowsBck)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1255,7 +737,7 @@ static void _reallyExit(void)
 
 Defun(closeWindow)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1304,7 +786,7 @@ Defun(closeWindow)
 
 Defun(querySaveAndExit)
 {
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
 	UT_ASSERT(pFrame);
 	AP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
@@ -1330,8 +812,8 @@ Defun(querySaveAndExit)
 	{
 		AP_Frame * f = pApp->getFrame(ndx - 1);
 		UT_ASSERT(f);
-		pView = f->getCurrentView();
-		UT_ASSERT(pView);
+		pAV_View = f->getCurrentView();
+		UT_ASSERT(pAV_View);
 
 		bRet = EX(closeWindow);
 
@@ -1347,8 +829,449 @@ Defun(querySaveAndExit)
 	return bRet;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+
+
+Defun(singleClick)
+{
+	ABIWORD_VIEW;
+	UT_Bool bRes = UT_TRUE;
+
+	// NOTE: context-free binding mechanism ==> we need this extra layer
+	if (pView->isLeftMargin(pCallData->m_xPos, pCallData->m_yPos))
+		bRes = EX(selectLine);
+	else
+		bRes = EX(warpInsPtToXY);
+
+	return bRes;
+}
+
+Defun(doubleClick)
+{
+	ABIWORD_VIEW;
+	UT_Bool bRes = UT_TRUE;
+
+	// NOTE: context-free binding mechanism ==> we need this extra layer
+	if (pView->isLeftMargin(pCallData->m_xPos, pCallData->m_yPos))
+		bRes = EX(selectBlock);
+	else
+		bRes = EX(selectWord);
+
+	return bRes;
+}
+
+Defun(warpInsPtToXY)
+{
+	ABIWORD_VIEW;
+	pView->warpInsPtToXY(pCallData->m_xPos, pCallData->m_yPos);
+
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtLeft)
+{
+	ABIWORD_VIEW;
+	pView->cmdCharMotion(UT_FALSE,1);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtRight)
+{
+	ABIWORD_VIEW;
+	pView->cmdCharMotion(UT_TRUE,1);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtBOL)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_BOL);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtEOL)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_EOL);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtBOW)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_BOW);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtEOW)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_EOW);
+	return UT_TRUE;
+}
+
+Defun0(warpInsPtBOS)
+{
+	return UT_TRUE;
+}
+
+Defun0(warpInsPtEOS)
+{
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtBOB)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_BOB);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtEOB)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_EOB);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtBOD)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_BOD);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtEOD)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_EOD);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtPrevLine)
+{
+	ABIWORD_VIEW;
+	pView->warpInsPtNextPrevLine(UT_FALSE);
+	return UT_TRUE;
+}
+
+Defun1(warpInsPtNextLine)
+{
+	ABIWORD_VIEW;
+	pView->warpInsPtNextPrevLine(UT_TRUE);
+	return UT_TRUE;
+}
+
+Defun(extSelToXY)
+{
+	ABIWORD_VIEW;
+	pView->extSelToXY(pCallData->m_xPos, pCallData->m_yPos);
+	return UT_TRUE;
+}
+Defun1(extSelLeft)
+{
+	ABIWORD_VIEW;
+	pView->extSelHorizontal(UT_FALSE,1);
+	return UT_TRUE;
+}
+
+Defun1(extSelRight)
+{
+	ABIWORD_VIEW;
+	pView->extSelHorizontal(UT_TRUE,1);
+	return UT_TRUE;
+}
+
+Defun1(extSelBOL)
+{
+	ABIWORD_VIEW;
+	pView->extSelTo(FV_DOCPOS_BOL);
+	return UT_TRUE;
+}
+
+Defun1(extSelEOL)
+{
+	ABIWORD_VIEW;
+	pView->extSelTo(FV_DOCPOS_EOL);
+	return UT_TRUE;
+}
+
+Defun1(extSelBOW)
+{
+	ABIWORD_VIEW;
+	pView->extSelTo(FV_DOCPOS_BOW);
+	return UT_TRUE;
+}
+
+Defun1(extSelEOW)
+{
+	ABIWORD_VIEW;
+	pView->extSelTo(FV_DOCPOS_EOW);
+	return UT_TRUE;
+}
+
+Defun0(extSelBOS)
+{
+	return UT_TRUE;
+}
+
+Defun0(extSelEOS)
+{
+	return UT_TRUE;
+}
+
+Defun1(extSelBOB)
+{
+	ABIWORD_VIEW;
+	pView->extSelTo(FV_DOCPOS_BOB);
+	return UT_TRUE;
+}
+
+Defun1(extSelEOB)
+{
+	ABIWORD_VIEW;
+	pView->extSelTo(FV_DOCPOS_EOB);
+	return UT_TRUE;
+}
+
+Defun1(extSelBOD)
+{
+	ABIWORD_VIEW;
+	pView->extSelTo(FV_DOCPOS_BOD);
+	return UT_TRUE;
+}
+
+Defun1(extSelEOD)
+{
+	ABIWORD_VIEW;
+	pView->extSelTo(FV_DOCPOS_EOD);
+	return UT_TRUE;
+}
+
+Defun1(extSelPrevLine)
+{
+	ABIWORD_VIEW;
+	pView->extSelNextPrevLine(UT_FALSE);
+	return UT_TRUE;
+}
+
+Defun1(extSelNextLine)
+{
+	ABIWORD_VIEW;
+	pView->extSelNextPrevLine(UT_TRUE);
+	return UT_TRUE;
+}
+
+Defun0(extSelPageDown)
+{
+	return UT_TRUE;
+}
+
+Defun0(extSelPageUp)
+{
+	return UT_TRUE;
+}
+
+Defun1(selectAll)
+{
+	ABIWORD_VIEW;
+	pView->moveInsPtTo(FV_DOCPOS_BOD);
+	pView->extSelTo(FV_DOCPOS_EOD);
+	return UT_TRUE;
+}
+
+Defun(selectWord)
+{
+	ABIWORD_VIEW;
+	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOW, FV_DOCPOS_EOW);
+	return UT_TRUE;
+}
+
+Defun(selectLine)
+{
+	ABIWORD_VIEW;
+	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOL, FV_DOCPOS_EOL);
+	return UT_TRUE;
+}
+
+Defun(selectBlock)
+{
+	ABIWORD_VIEW;
+	pView->cmdSelect(pCallData->m_xPos, pCallData->m_yPos, FV_DOCPOS_BOB, FV_DOCPOS_EOB);
+	return UT_TRUE;
+}
+
+Defun1(delLeft)
+{
+	ABIWORD_VIEW;
+	pView->cmdCharDelete(UT_FALSE,1);
+	return UT_TRUE;
+}
+
+Defun1(delRight)
+{
+	ABIWORD_VIEW;
+	pView->cmdCharDelete(UT_TRUE,1);
+	return UT_TRUE;
+}
+
+Defun1(delBOL)
+{
+	ABIWORD_VIEW;
+	pView->delTo(FV_DOCPOS_BOL);
+	return UT_TRUE;
+}
+
+Defun1(delEOL)
+{
+	ABIWORD_VIEW;
+	pView->delTo(FV_DOCPOS_EOL);
+	return UT_TRUE;
+}
+
+Defun1(delBOW)
+{
+	ABIWORD_VIEW;
+	pView->delTo(FV_DOCPOS_BOW);
+	return UT_TRUE;
+}
+
+Defun1(delEOW)
+{
+	ABIWORD_VIEW;
+	pView->delTo(FV_DOCPOS_EOW);
+	return UT_TRUE;
+}
+
+Defun0(delBOS)
+{
+	return UT_TRUE;
+}
+
+Defun0(delEOS)
+{
+	return UT_TRUE;
+}
+
+Defun1(delBOB)
+{
+	ABIWORD_VIEW;
+	pView->delTo(FV_DOCPOS_BOB);
+	return UT_TRUE;
+}
+
+Defun1(delEOB)
+{
+	ABIWORD_VIEW;
+	pView->delTo(FV_DOCPOS_EOB);
+	return UT_TRUE;
+}
+
+Defun1(delBOD)
+{
+	ABIWORD_VIEW;
+	pView->delTo(FV_DOCPOS_BOD);
+	return UT_TRUE;
+}
+
+Defun1(delEOD)
+{
+	ABIWORD_VIEW;
+	pView->delTo(FV_DOCPOS_EOD);
+	return UT_TRUE;
+}
+
+Defun(insertData)
+{
+	ABIWORD_VIEW;
+	pView->cmdCharInsert(pCallData->m_pData,pCallData->m_dataLength);
+	return UT_TRUE;
+}
+
+Defun0(insertTab)
+{
+	return UT_TRUE;
+}
+
+Defun0(insertSoftBreak)
+{
+	return UT_TRUE;
+}
+
+Defun1(insertParagraphBreak)
+{
+	ABIWORD_VIEW;
+	pView->insertParagraphBreak();
+	return UT_TRUE;
+}
+
+Defun0(insertLineBreak)
+{
+	return UT_TRUE;
+}
+
+Defun0(insertPageBreak)
+{
+	return UT_TRUE;
+}
+
+Defun0(insertColumnBreak)
+{
+	return UT_TRUE;
+}
+
+Defun1(insertSpace)
+{
+	ABIWORD_VIEW;
+	UT_UCSChar sp = 0x0020;
+	pView->cmdCharInsert(&sp,1);
+	return UT_TRUE;
+}
+
+Defun1(insertNBSpace)
+{
+	ABIWORD_VIEW;
+	UT_UCSChar sp = 0x00a0;				// decimal 160 is NBS
+	pView->cmdCharInsert(&sp,1);
+	return UT_TRUE;
+}
+
+Defun0(cut)
+{
+	return UT_TRUE;
+}
+
+Defun0(copy)
+{
+	return UT_TRUE;
+}
+
+Defun0(paste)
+{
+	return UT_TRUE;
+}
+
+Defun0(find)
+{
+	return UT_TRUE;
+}
+
+Defun0(go)
+{
+	return UT_TRUE;
+}
+
+Defun0(replace)
+{
+	return UT_TRUE;
+}
+
 Defun1(dlgFont)
 {
+	ABIWORD_VIEW;
 	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
 	UT_ASSERT(pFrame);
 
@@ -1441,23 +1364,38 @@ static UT_Bool _toggleSpan(FV_View * pView, const XML_Char * prop, const XML_Cha
 	return UT_TRUE;
 }
 
+Defun1(print)
+{
+	ABIWORD_VIEW;
+	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+#ifdef DLGHACK
+	_printDoc(pFrame, pView);
+#endif /* DLGHACK */
+	return UT_TRUE;
+}
+
 Defun1(toggleBold)
 {
+	ABIWORD_VIEW;
 	return _toggleSpan(pView, "font-weight", "bold", "normal");
 }
 
 Defun1(toggleItalic)
 {
+	ABIWORD_VIEW;
 	return _toggleSpan(pView, "font-style", "italic", "normal");
 }
 
 Defun1(toggleUline)
 {
+	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "underline", "none", UT_TRUE);
 }
 
 Defun1(toggleStrike)
 {
+	ABIWORD_VIEW;
 	return _toggleSpan(pView, "text-decoration", "line-through", "none", UT_TRUE);
 }
 
@@ -1470,6 +1408,7 @@ Defun0(togglePlain)
 
 Defun1(alignLeft)
 {
+	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "left", 0};
 	pView->setBlockFormat(properties);
 	return UT_TRUE;
@@ -1477,6 +1416,7 @@ Defun1(alignLeft)
 
 Defun1(alignCenter)
 {
+	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "center", 0};
 	pView->setBlockFormat(properties);
 	return UT_TRUE;
@@ -1484,6 +1424,7 @@ Defun1(alignCenter)
 
 Defun1(alignRight)
 {
+	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "right", 0};
 	pView->setBlockFormat(properties);
 	return UT_TRUE;
@@ -1491,6 +1432,7 @@ Defun1(alignRight)
 
 Defun1(alignJustify)
 {
+	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "text-align", "justify", 0};
 	pView->setBlockFormat(properties);
 	return UT_TRUE;
@@ -1498,6 +1440,7 @@ Defun1(alignJustify)
 
 Defun1(singleSpace)
 {
+	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "line-height", "1.0", 0};
 	pView->setBlockFormat(properties);
 	return UT_TRUE;
@@ -1505,6 +1448,7 @@ Defun1(singleSpace)
 
 Defun1(middleSpace)
 {
+	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "line-height", "1.5", 0};
 	pView->setBlockFormat(properties);
 	return UT_TRUE;
@@ -1512,6 +1456,7 @@ Defun1(middleSpace)
 
 Defun1(doubleSpace)
 {
+	ABIWORD_VIEW;
 	const XML_Char * properties[] =	{ "line-height", "2.0", 0};
 	pView->setBlockFormat(properties);
 	return UT_TRUE;
@@ -1519,6 +1464,7 @@ Defun1(doubleSpace)
 
 Defun1(Test_Dump)
 {
+	ABIWORD_VIEW;
 	pView->Test_Dump();
 	return UT_TRUE;
 }

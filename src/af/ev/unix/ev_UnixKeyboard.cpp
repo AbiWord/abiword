@@ -26,7 +26,7 @@
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
 #include "ev_EditMethod.h"
-#include "fv_View.h"
+#include "av_View.h"
 #include "ev_NamedVirtualKey.h"
 #include "ev_UnixKeyboard.h"
 
@@ -39,7 +39,7 @@ ev_UnixKeyboard::ev_UnixKeyboard(EV_EditEventMapper* pEEM) : EV_Keyboard(pEEM)
 	m_pEEM = pEEM;
 }
 
-UT_Bool ev_UnixKeyboard::keyPressEvent(FV_View* pView,
+UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,
 									   GdkEventKey* e)
 {
 	EV_EditBits state = 0;

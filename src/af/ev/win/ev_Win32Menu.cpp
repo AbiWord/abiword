@@ -78,7 +78,7 @@ EV_Win32Menu::~EV_Win32Menu(void)
 {
 }
 
-UT_Bool EV_Win32Menu::onCommand(FV_View * pView,
+UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
 								HWND hWnd, WPARAM wParam)
 {
 	// map the windows WM_COMMAND command-id into one of our AP_Menu_Id.
@@ -240,7 +240,7 @@ UT_Bool EV_Win32Menu::synthesize(void)
 	return UT_TRUE;
 }
 
-UT_Bool EV_Win32Menu::onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar)
+UT_Bool EV_Win32Menu::onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar)
 {
 	// deal with WM_INITMENU.
 

@@ -28,11 +28,15 @@
 #include "ev_UnixMouse.h"
 #include "ev_UnixMenu.h"
 #include "ev_UnixToolbar.h"
+#include "ev_EditMethod.h"
+#include "av_View.h"
+#include "ad_Document.h"
+// TODO: the previous headers can go to src/ap
+// TODO: the following headers are specific to src/wp/ap
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "pd_Document.h"
 #include "gr_UnixGraphics.h"
-#include "ev_EditMethod.h"
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -46,7 +50,7 @@ public:
 	static gint button_press_event(GtkWidget * w, GdkEventButton * e)
 	{
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-		FV_View * pView = pUnixFrame->getCurrentView();
+		AV_View * pView = pUnixFrame->getCurrentView();
 		EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 		
 		if (pView)
@@ -57,7 +61,7 @@ public:
 	static gint configure_event(GtkWidget* w, GdkEventConfigure *e)
 	{
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-		FV_View * pView = pUnixFrame->getCurrentView();
+		AV_View * pView = pUnixFrame->getCurrentView();
 
 		GdkColor clr;
 		clr.red = 255 << 8;
@@ -79,7 +83,7 @@ public:
 	static gint motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	{
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-		FV_View * pView = pUnixFrame->getCurrentView();
+		AV_View * pView = pUnixFrame->getCurrentView();
 		EV_UnixMouse * pUnixMouse = pUnixFrame->getUnixMouse();
 
 		if (pView)
@@ -96,7 +100,7 @@ public:
 	static gint key_press_event(GtkWidget* w, GdkEventKey* e)
 	{
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-		FV_View * pView = pUnixFrame->getCurrentView();
+		AV_View * pView = pUnixFrame->getCurrentView();
 		ev_UnixKeyboard * pUnixKeyboard = pUnixFrame->getUnixKeyboard();
 		
 		if (pView)
@@ -145,7 +149,7 @@ public:
 		rClip.height = pExposeEvent->area.height;
 		
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-		FV_View * pView = pUnixFrame->getCurrentView();
+		AV_View * pView = pUnixFrame->getCurrentView();
 		if (pView)
 		{
 			pView->draw(&rClip);
@@ -156,7 +160,7 @@ public:
 	static void vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	{
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-		FV_View * pView = pUnixFrame->getCurrentView();
+		AV_View * pView = pUnixFrame->getCurrentView();
 
 		if (pView)
 		{
@@ -167,7 +171,7 @@ public:
 	static void hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
 	{
 		AP_UnixFrame * pUnixFrame = (AP_UnixFrame *)gtk_object_get_user_data(GTK_OBJECT(w));
-		FV_View * pView = pUnixFrame->getCurrentView();
+		AV_View * pView = pUnixFrame->getCurrentView();
 
 		if (pView)
 		{
@@ -466,10 +470,10 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 {
 	UNIXGraphics * pG = NULL;
 	FL_DocLayout * pDocLayout = NULL;
-	FV_View * pView = NULL;
-	FV_ScrollObj * pScrollObj = NULL;
+	AV_View * pView = NULL;
+	AV_ScrollObj * pScrollObj = NULL;
 	ap_ViewListener * pViewListener = NULL;
-	PD_Document * pOldDoc = NULL;
+	AD_Document * pOldDoc = NULL;
 
 	int height, pageLen;
 	UT_uint32 nrToolbars;
@@ -478,20 +482,20 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	
 	pG = new UNIXGraphics(m_dArea->window);
 	ENSUREP(pG);
-	pDocLayout = new FL_DocLayout(m_pDoc, pG);
+	pDocLayout = new FL_DocLayout(static_cast<PD_Document *>(m_pDoc), pG);
 	ENSUREP(pDocLayout);
   
 	pDocLayout->formatAll();
 
 	pView = new FV_View(this, pDocLayout);
 	ENSUREP(pView);
-	pScrollObj = new FV_ScrollObj(this,_scrollFunc);
+	pScrollObj = new AV_ScrollObj(this,_scrollFunc);
 	ENSUREP(pScrollObj);
 	pViewListener = new ap_ViewListener(this);
 	ENSUREP(pViewListener);
 
-	FV_ListenerId lid;
-	if (!pView->addListener(static_cast<FV_Listener *>(pViewListener),&lid))
+	AV_ListenerId lid;
+	if (!pView->addListener(static_cast<AV_Listener *>(pViewListener),&lid))
 		goto Cleanup;
 
 	nrToolbars = m_vecToolbarLayoutNames.getItemCount();

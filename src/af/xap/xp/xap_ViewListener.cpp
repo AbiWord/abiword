@@ -27,8 +27,8 @@
 #include "ut_assert.h"
 #include "ap_Frame.h"
 #include "ap_ViewListener.h"
-#include "fv_Listener.h"
-#include "fv_View.h"
+#include "av_Listener.h"
+#include "av_View.h"
 
 
 ap_ViewListener::ap_ViewListener(AP_Frame* pFrame)
@@ -40,12 +40,12 @@ ap_ViewListener::~ap_ViewListener()
 {
 }
 
-UT_Bool ap_ViewListener::notify(FV_View * pView, const FV_ChangeMask mask)
+UT_Bool ap_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView);
 	UT_ASSERT(pView==m_pFrame->getCurrentView());
 
-	if ((mask & FV_CHG_DIRTY) || (mask & FV_CHG_FILENAME))
+	if ((mask & AV_CHG_DIRTY) || (mask & AV_CHG_FILENAME))
 	{
 		// NOTE: could pass mask here to make updateTitle more efficient
 		m_pFrame->updateTitle();

@@ -29,11 +29,100 @@
 #include "ev_Menu_Labels.h"
 #include "ap_App.h"
 #include "ap_Frame.h"
+#include "av_View.h"
 #include "fv_View.h"
+
+
+/*****************************************************************/
+/*****************************************************************/
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
+{
+	UT_ASSERT(pAV_View);
+
+	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
+	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
+	
+	UT_uint32 index = (id - AP_MENU_ID_WINDOW_1);
+
+	EV_Menu_ItemState s = EV_MIS_ZERO;
+	
+	AP_Frame * pFrame = (AP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+	AP_App * pApp = pFrame->getApp();
+	UT_ASSERT(pApp);
+
+	if (pFrame == pApp->getFrame(index))
+		s = EV_MIS_Toggled;
+
+	return s;
+}
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
+{
+	// Compute the menu label for _window_1 thru _window_9 on the menu.
+	// We return a pointer to a static string (which will be overwritten
+	// on the next call).
+	
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+
+	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
+	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
+	
+	UT_uint32 index = (id - AP_MENU_ID_WINDOW_1);
+
+	// use the applications window list and compute a menu label
+	// for the window with the computed index.  use the static
+	// menu label as as format string.
+
+	if (index < pApp->getFrameCount())
+	{
+		const char * szFormat = pLabel->getMenuLabel();
+		static char buf[128];
+
+		AP_Frame * pFrame = pApp->getFrame(index);
+		UT_ASSERT(pFrame);
+
+		const char * szTitle = pFrame->getTitle(128 - strlen(szFormat));
+
+		sprintf(buf,szFormat,szTitle);	
+		return buf;
+	}
+	
+	// for the other slots, return a null string to tell
+	// the menu code to remove this item from the menu.
+
+	return NULL;
+}
+
+Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
+{
+	// Compute the menu label for the _window_more ("More Windows...") item.
+	
+	UT_ASSERT(pApp);
+	UT_ASSERT(pLabel);
+	UT_ASSERT(id == AP_MENU_ID_WINDOW_MORE);
+	
+	// if we have more than 9 windows in our window list,
+	// we return the static menu label.  if not, we return
+	// null string to tell the menu code to remove this
+	// item from the menu.
+	if (8 < pApp->getFrameCount())
+		return pLabel->getMenuLabel();
+
+	return NULL;
+}
+
+/****************************************************************/
+/****************************************************************/
+
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 {
+	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
@@ -60,6 +149,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 {
+	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
@@ -82,6 +172,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Selection)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 {
+	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 	UT_Bool bMultiple = UT_FALSE;
 
@@ -152,6 +243,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 {
+	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
 	EV_Menu_ItemState s = EV_MIS_ZERO;
@@ -199,82 +291,4 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 	}
 
 	return s;
-}
-
-Defun_EV_GetMenuItemState_Fn(ap_GetState_Window)
-{
-	UT_ASSERT(pView);
-
-	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
-	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
-	
-	UT_uint32 index = (id - AP_MENU_ID_WINDOW_1);
-
-	EV_Menu_ItemState s = EV_MIS_ZERO;
-	
-	AP_Frame * pFrame = (AP_Frame *) pView->getParentData();
-	UT_ASSERT(pFrame);
-	AP_App * pApp = pFrame->getApp();
-	UT_ASSERT(pApp);
-
-	if (pFrame == pApp->getFrame(index))
-		s = EV_MIS_Toggled;
-
-	return s;
-}
-
-Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
-{
-	// Compute the menu label for _window_1 thru _window_9 on the menu.
-	// We return a pointer to a static string (which will be overwritten
-	// on the next call).
-	
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
-
-	UT_ASSERT(id >= AP_MENU_ID_WINDOW_1);
-	UT_ASSERT(id <= AP_MENU_ID_WINDOW_9);
-	
-	UT_uint32 index = (id - AP_MENU_ID_WINDOW_1);
-
-	// use the applications window list and compute a menu label
-	// for the window with the computed index.  use the static
-	// menu label as as format string.
-
-	if (index < pApp->getFrameCount())
-	{
-		const char * szFormat = pLabel->getMenuLabel();
-		static char buf[128];
-
-		AP_Frame * pFrame = pApp->getFrame(index);
-		UT_ASSERT(pFrame);
-
-		const char * szTitle = pFrame->getTitle(128 - strlen(szFormat));
-
-		sprintf(buf,szFormat,szTitle);	
-		return buf;
-	}
-	
-	// for the other slots, return a null string to tell
-	// the menu code to remove this item from the menu.
-
-	return NULL;
-}
-
-Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
-{
-	// Compute the menu label for the _window_more ("More Windows...") item.
-	
-	UT_ASSERT(pApp);
-	UT_ASSERT(pLabel);
-	UT_ASSERT(id == AP_MENU_ID_WINDOW_MORE);
-	
-	// if we have more than 9 windows in our window list,
-	// we return the static menu label.  if not, we return
-	// null string to tell the menu code to remove this
-	// item from the menu.
-	if (8 < pApp->getFrameCount())
-		return pLabel->getMenuLabel();
-
-	return NULL;
 }

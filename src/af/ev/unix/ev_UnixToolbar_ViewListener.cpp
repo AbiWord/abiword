@@ -24,13 +24,13 @@
 #include "ev_UnixToolbar.h"
 
 EV_UnixToolbar_ViewListener::EV_UnixToolbar_ViewListener(EV_UnixToolbar * pUnixToolbar,
-														 FV_View * pView)
+														 AV_View * pView)
 {
 	m_pUnixToolbar = pUnixToolbar;
 	m_pView = pView;
 }
 
-UT_Bool EV_UnixToolbar_ViewListener::notify(FV_View * pView, const FV_ChangeMask mask)
+UT_Bool EV_UnixToolbar_ViewListener::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	UT_ASSERT(pView == m_pView);
 	

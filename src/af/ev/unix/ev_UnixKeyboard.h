@@ -26,7 +26,7 @@
 #include "ev_Keyboard.h"
 #include "ev_EditBits.h"
 
-class FV_View;
+class AV_View;
 
 
 class ev_UnixKeyboard : public EV_Keyboard
@@ -34,7 +34,7 @@ class ev_UnixKeyboard : public EV_Keyboard
 public:
 	ev_UnixKeyboard(EV_EditEventMapper * pEEM);
 
-	UT_Bool keyPressEvent(FV_View * pView, GdkEventKey* e);
+	UT_Bool keyPressEvent(AV_View * pView, GdkEventKey* e);
 };
 
 #endif // EV_UNIXKEYBOARD_H

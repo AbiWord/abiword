@@ -20,22 +20,22 @@
 #ifndef EV_WIN32TOOLBAR_VIEWLISTENER_H
 #define EV_WIN32TOOLBAR_VIEWLISTENER_H
 
-#include "fv_Listener.h"
+#include "av_Listener.h"
 class EV_Win32Toolbar;
-class FV_View;
+class AV_View;
 
 
-class EV_Win32Toolbar_ViewListener : public FV_Listener
+class EV_Win32Toolbar_ViewListener : public AV_Listener
 {
 public:
 	EV_Win32Toolbar_ViewListener(EV_Win32Toolbar * pWin32Toolbar,
-								FV_View * pView);
+								AV_View * pView);
 	
-	virtual UT_Bool		notify(FV_View * pView, const FV_ChangeMask mask);
+	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
 	EV_Win32Toolbar *	m_pWin32Toolbar;
-	FV_View *			m_pView;
+	AV_View *			m_pView;
 };
 
 #endif /* EV_WIN32TOOLBAR_VIEWLISTENER_H */

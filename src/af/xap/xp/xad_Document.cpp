@@ -1,4 +1,4 @@
-/* AbiSource Program Utilities
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,25 +17,21 @@
  * 02111-1307, USA.
  */
 
-#ifndef EV_UNIXTOOLBAR_VIEWLISTENER_H
-#define EV_UNIXTOOLBAR_VIEWLISTENER_H
 
-#include "av_Listener.h"
-class EV_UnixToolbar;
-class AV_View;
+#include "ad_Document.h"
 
-
-class EV_UnixToolbar_ViewListener : public AV_Listener
+AD_Document::AD_Document()
 {
-public:
-	EV_UnixToolbar_ViewListener(EV_UnixToolbar * pUnixToolbar,
-								AV_View * pView);
-	
-	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
+	m_szFilename = NULL;
+}
 
-protected:
-	EV_UnixToolbar *	m_pUnixToolbar;
-	AV_View *			m_pView;
-};
+AD_Document::~AD_Document()
+{
+	// NOTE: let subclass clean up m_szFilename, so it matches the alloc mechanism
+}
 
-#endif /* EV_UNIXTOOLBAR_VIEWLISTENER_H */
+const char * AD_Document::getFilename(void) const
+{
+	return m_szFilename;
+}
+

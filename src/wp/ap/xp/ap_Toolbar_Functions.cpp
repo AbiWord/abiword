@@ -32,8 +32,13 @@
 #include "fv_View.h"
 
 
+#define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
+
+/****************************************************************/
+
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 {
+	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
@@ -60,6 +65,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Changes)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 {
+	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;
@@ -82,6 +88,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Selection)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 {
+	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 	UT_Bool bMultiple = UT_FALSE;
 
@@ -152,6 +159,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 {
+	ABIWORD_VIEW;
 	UT_ASSERT(pView);
 
 	EV_Toolbar_ItemState s = EV_TIS_ZERO;

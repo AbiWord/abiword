@@ -81,7 +81,7 @@ UT_Bool EV_Menu_Action::hasGetStateFunction(void) const
 	return (m_pfnGetState != NULL);
 }
 
-EV_Menu_ItemState EV_Menu_Action::getMenuItemState(FV_View * pView) const
+EV_Menu_ItemState EV_Menu_Action::getMenuItemState(AV_View * pView) const
 {
 	if (m_pfnGetState)
 		return m_pfnGetState(pView,m_id);

@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "pd_Document.h"
+#include "ad_Document.h"
 #include "pt_PieceTable.h"
 #include "pl_Listener.h"
 #include "ie_imp.h"
@@ -34,8 +35,8 @@
 #include "pf_Frag_Strux.h"
 
 PD_Document::PD_Document()
+	: AD_Document()
 {
-	m_szFilename = NULL;
 	m_pPieceTable = NULL;
 }
 
@@ -46,7 +47,7 @@ PD_Document::~PD_Document()
 	if (m_pPieceTable)
 		delete m_pPieceTable;
 	// we do not purge the contents of m_vecListeners
-	// since these are now owned by us.
+	// since these are not owned by us.
 }
 
 UT_Bool PD_Document::readFromFile(const char * szFilename)
@@ -193,11 +194,6 @@ UT_Bool PD_Document::save(IEFileType ieft)
 
 	_setClean();
 	return UT_TRUE;
-}
-
-const char * PD_Document::getFilename(void) const
-{
-	return m_szFilename;
 }
 
 UT_Bool PD_Document::isDirty(void) const

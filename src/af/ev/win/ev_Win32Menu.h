@@ -24,7 +24,7 @@
 #include "ut_types.h"
 #include "ev_Menu.h"
 #include "ap_Menu_Id.h"
-class FV_View;
+class AV_View;
 class AP_Win32App;
 class AP_Win32Frame;
 
@@ -39,8 +39,8 @@ public:
 	~EV_Win32Menu(void);
 
 	UT_Bool				synthesize(void);
-	UT_Bool				onCommand(FV_View * pView, HWND hWnd, WPARAM wParam);
-	UT_Bool				onInitMenu(FV_View * pView, HWND hWnd, HMENU hMenuBar);
+	UT_Bool				onCommand(AV_View * pView, HWND hWnd, WPARAM wParam);
+	UT_Bool				onInitMenu(AV_View * pView, HWND hWnd, HMENU hMenuBar);
 
 	inline AP_Menu_Id	MenuIdFromWmCommand(UINT cmd)		{ return (AP_Menu_Id)(cmd - WM_USER); };
 	inline UINT			WmCommandFromMenuId(AP_Menu_Id id)	{ return (id + WM_USER); };

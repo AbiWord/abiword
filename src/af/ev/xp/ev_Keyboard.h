@@ -27,13 +27,13 @@
 
 class EV_EditEventMapper;
 class EV_EditMethod;
-class FV_View;
+class AV_View;
 
 class EV_Keyboard
 {
 public:
 	EV_Keyboard(EV_EditEventMapper * pEEM);
-	UT_Bool invokeKeyboardMethod(FV_View * pView,
+	UT_Bool invokeKeyboardMethod(AV_View * pView,
 								 EV_EditMethod * pEM,
 								 UT_uint32 iPrefixCount,
 								 UT_UCSChar * pData,

@@ -19,6 +19,7 @@
  
 
 #include <string.h>
+#include <stdio.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -36,8 +37,9 @@
 #include "ap_Menu_Layouts.h"
 #include "ap_Menu_LabelSet.h"
 #include "gr_Graphics.h"
-#include "fv_View.h"
+#include "av_View.h"
 #include "fl_DocLayout.h"
+#include "ad_Document.h"
 #include "pd_Document.h"
 
 
@@ -168,7 +170,7 @@ AP_App * AP_Frame::getApp(void) const
 	return m_app;
 }
 
-FV_View * AP_Frame::getCurrentView(void) const
+AV_View * AP_Frame::getCurrentView(void) const
 {
 	// TODO i called this ...Current... in anticipation of having
 	// TODO more than one view (think splitter windows) in this
@@ -200,13 +202,13 @@ UT_uint32 AP_Frame::getViewNumber(void) const
 const char * AP_Frame::getViewKey(void) const
 {
 	/*
-		We want a string key which uniquely identifies a PD_Document instance, 
+		We want a string key which uniquely identifies a AD_Document instance, 
 		so that we can match up top-level views on the same document.  
 		
 		We can't use the filename, since it might not exist (untitled43) and
 		is likely to change when the document is saved.
 
-		So, we just use the PD_Document pointer.  :-)
+		So, we just use the AD_Document pointer.  :-)
 	*/
 	static char buf[9];
 
@@ -233,7 +235,11 @@ UT_Bool AP_Frame::loadDocument(const char * szFilename)
 	// load a document into the current frame.
 	// if no filename, create a new document.
 
-	PD_Document * pNewDoc = new PD_Document();
+#if PAUL
+	AD_Document * pNewDoc = new AD_Document();
+#else
+	AD_Document * pNewDoc = new PD_Document();
+#endif
 	UT_ASSERT(pNewDoc);
 	
 	if (!szFilename || !*szFilename)

@@ -24,7 +24,7 @@
 #include "ap_Toolbar_ActionSet.h"
 #include "ap_Toolbar_Id.h"
 #include "ap_Toolbar_Functions.h"
-#include "fv_Listener.h"
+#include "av_Listener.h"
 
 /*****************************************************************/
 
@@ -69,28 +69,28 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	
 	_s(AP_TOOLBAR_ID__BOGUS1__,		EV_TBIT_BOGUS,			NULL,			0,					NULL);
 
-	_s(AP_TOOLBAR_ID_FILE_NEW,		EV_TBIT_PushButton,		"fileNew",		FV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FILE_OPEN,		EV_TBIT_PushButton,		"fileOpen",		FV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FILE_SAVE,		EV_TBIT_PushButton,		"fileSave",		FV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs",	FV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"print",		FV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_NEW,		EV_TBIT_PushButton,		"fileNew",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_OPEN,		EV_TBIT_PushButton,		"fileOpen",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_SAVE,		EV_TBIT_PushButton,		"fileSave",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs",	AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"print",		AV_CHG_NONE,		NULL);
 
-	_s(AP_TOOLBAR_ID_EDIT_UNDO,		EV_TBIT_PushButton,		"undo",			FV_CHG_DO,			ap_ToolbarGetState_Changes);
-	_s(AP_TOOLBAR_ID_EDIT_REDO,		EV_TBIT_PushButton,		"redo",			FV_CHG_DO,			ap_ToolbarGetState_Changes);
-	_s(AP_TOOLBAR_ID_EDIT_CUT,		EV_TBIT_PushButton,		"cut",			FV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
-	_s(AP_TOOLBAR_ID_EDIT_COPY,		EV_TBIT_PushButton,		"copy",			FV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
-	_s(AP_TOOLBAR_ID_EDIT_PASTE,	EV_TBIT_PushButton,		"paste",		FV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_EDIT_UNDO,		EV_TBIT_PushButton,		"undo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);
+	_s(AP_TOOLBAR_ID_EDIT_REDO,		EV_TBIT_PushButton,		"redo",			AV_CHG_DO,			ap_ToolbarGetState_Changes);
+	_s(AP_TOOLBAR_ID_EDIT_CUT,		EV_TBIT_PushButton,		"cut",			AV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
+	_s(AP_TOOLBAR_ID_EDIT_COPY,		EV_TBIT_PushButton,		"copy",			AV_CHG_EMPTYSEL,	ap_ToolbarGetState_Selection);
+	_s(AP_TOOLBAR_ID_EDIT_PASTE,	EV_TBIT_PushButton,		"paste",		AV_CHG_NONE,		NULL);
 
-	_s(AP_TOOLBAR_ID_FMT_FONT,		EV_TBIT_PushButton,		"dlgFont",		FV_CHG_NONE,		NULL);
-	_s(AP_TOOLBAR_ID_FMT_BOLD,		EV_TBIT_ToggleButton,	"toggleBold",	FV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_ITALIC,	EV_TBIT_ToggleButton,	"toggleItalic",	FV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_UNDERLINE,	EV_TBIT_ToggleButton,	"toggleUline",	FV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
-	_s(AP_TOOLBAR_ID_FMT_STRIKE,	EV_TBIT_ToggleButton,	"toggleStrike",	FV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_FONT,		EV_TBIT_PushButton,		"dlgFont",		AV_CHG_NONE,		NULL);
+	_s(AP_TOOLBAR_ID_FMT_BOLD,		EV_TBIT_ToggleButton,	"toggleBold",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_ITALIC,	EV_TBIT_ToggleButton,	"toggleItalic",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_UNDERLINE,	EV_TBIT_ToggleButton,	"toggleUline",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
+	_s(AP_TOOLBAR_ID_FMT_STRIKE,	EV_TBIT_ToggleButton,	"toggleStrike",	AV_CHG_FMTCHAR,		ap_ToolbarGetState_CharFmt);
 
-	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_ToggleButton,	"alignLeft",	FV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_ALIGN_CENTER,	EV_TBIT_ToggleButton,	"alignCenter",	FV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_ALIGN_RIGHT,	EV_TBIT_ToggleButton,	"alignRight",	FV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
-	_s(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	EV_TBIT_ToggleButton,	"alignJustify",	FV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_LEFT,	EV_TBIT_ToggleButton,	"alignLeft",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_CENTER,	EV_TBIT_ToggleButton,	"alignCenter",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_RIGHT,	EV_TBIT_ToggleButton,	"alignRight",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
+	_s(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	EV_TBIT_ToggleButton,	"alignJustify",	AV_CHG_FMTBLOCK,	ap_ToolbarGetState_BlockFmt);
 
 	// ... add others here ...
 	

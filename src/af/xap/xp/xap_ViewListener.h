@@ -23,23 +23,23 @@
 #define AP_VIEWLISTENER_H
 
 #include "ut_types.h"
-#include "fv_Listener.h"
+#include "av_Listener.h"
 
 class AP_Frame;
-class FV_View;
+class AV_View;
 
 /*
-	The ap_ViewListener class handles UI change notifications from an FV_View
+	The ap_ViewListener class handles UI change notifications from an AV_View
 	to its associated AP_Frame.  
 */
 
-class ap_ViewListener : public FV_Listener
+class ap_ViewListener : public AV_Listener
 {
 public:
 	ap_ViewListener(AP_Frame* pFrame);
 	virtual ~ap_ViewListener();
 
-	virtual UT_Bool		notify(FV_View * pView, const FV_ChangeMask mask);
+	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
 	AP_Frame*		m_pFrame;

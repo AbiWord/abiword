@@ -31,7 +31,7 @@ class EV_EditMethodContainer;
 class EV_EditMethod;
 class EV_Menu_Layout;
 class EV_Menu_LabelSet;
-class FV_View;
+class AV_View;
 
 class EV_Menu
 {
@@ -41,7 +41,7 @@ public:
 			const char * szMenuLanguageName);
 	~EV_Menu(void);
 
-	UT_Bool invokeMenuMethod(FV_View * pView,
+	UT_Bool invokeMenuMethod(AV_View * pView,
 							 EV_EditMethod * pEM,
 							 UT_uint32 iPrefixCount,
 							 UT_UCSChar * pData,

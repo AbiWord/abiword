@@ -26,6 +26,7 @@
 #include "ut_misc.h"
 #include "ut_string.h"
 
+#include "av_View.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
@@ -64,17 +65,13 @@ public:
 
 
 FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
+	: AV_View(pParentData)
 {
-	m_pParentData = pParentData;
 	m_pLayout = pLayout;
 	m_pDoc = pLayout->getDocument();
 	m_pG = m_pLayout->getGraphics();
 //	UT_ASSERT(m_pG->queryProperties(DG_Graphics::DGP_SCREEN));
 	
-	m_xScrollOffset = 0;
-	m_yScrollOffset = 0;
-	m_iWindowHeight = 0;
-	m_iWindowWidth = 0;
 	m_iPointHeight = 0;
 	m_bPointEOL = UT_FALSE;
 	m_bSelection = UT_FALSE;
@@ -102,68 +99,28 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsBlock);
 }
 	
-void* FV_View::getParentData() const
-{
-	return m_pParentData;
-}
-
 FL_DocLayout* FV_View::getLayout() const
 {
 	return m_pLayout;
 }
 
-UT_Bool FV_View::addListener(FV_Listener * pListener, 
-							 FV_ListenerId * pListenerId)
-{
-	UT_uint32 kLimit = m_vecListeners.getItemCount();
-	UT_uint32 k;
-
-	// see if we can recycle a cell in the vector.
-	
-	for (k=0; k<kLimit; k++)
-		if (m_vecListeners.getNthItem(k) == 0)
-		{
-			(void)m_vecListeners.setNthItem(k,pListener,NULL);
-			goto ClaimThisK;
-		}
-
-	// otherwise, extend the vector for it.
-	
-	if (m_vecListeners.addItem(pListener,&k) != 0)
-	{
-		return UT_FALSE;				// could not add item to vector
-	}
-
-  ClaimThisK:
-
-	// give our vector index back to the caller as a "Listener Id".
-	
-	*pListenerId = k;
-	return UT_TRUE;
-}
-
-UT_Bool FV_View::removeListener(FV_ListenerId listenerId)
-{
-	return (m_vecListeners.setNthItem(listenerId,NULL,NULL) == 0);
-}
-
-UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
+UT_Bool FV_View::notifyListeners(const AV_ChangeMask hint)
 {
 	/*
 		IDEA: The view caches its change state as of the last notification, 
 		to minimize noise from duplicate notifications.  
 	*/
-	UT_ASSERT(hint != FV_CHG_NONE);
-	FV_ChangeMask mask = hint;
+	UT_ASSERT(hint != AV_CHG_NONE);
+	AV_ChangeMask mask = hint;
 	
-	if (mask & FV_CHG_DO)
+	if (mask & AV_CHG_DO)
 	{
 		UT_Bool bUndo = canDo(UT_TRUE);
 		UT_Bool bRedo = canDo(UT_FALSE);
 
 		if ((m_chg.bUndo == bUndo) && (m_chg.bRedo == bRedo))
 		{
-			mask ^= FV_CHG_DO;
+			mask ^= AV_CHG_DO;
 		}
 		else
 		{
@@ -174,7 +131,7 @@ UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
 		}
 	}
 	
-	if (mask & FV_CHG_DIRTY)
+	if (mask & AV_CHG_DIRTY)
 	{
 		UT_Bool bDirty = m_pDoc->isDirty();
 
@@ -184,26 +141,26 @@ UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
 		}
 		else
 		{
-			mask ^= FV_CHG_DIRTY;
+			mask ^= AV_CHG_DIRTY;
 		}
 	}
 
-	if (mask & FV_CHG_EMPTYSEL)
+	if (mask & AV_CHG_EMPTYSEL)
 	{
 		UT_Bool bSel = !isSelectionEmpty();
 
 		if (m_chg.bSelection != bSel)
 			m_chg.bSelection = bSel;
 		else
-			mask ^= FV_CHG_EMPTYSEL;
+			mask ^= AV_CHG_EMPTYSEL;
 	}
 
-	if (mask & FV_CHG_FILENAME)
+	if (mask & AV_CHG_FILENAME)
 	{
 		// NOTE: we don't attempt to filter this
 	}
 
-	if (mask & FV_CHG_FMTBLOCK)
+	if (mask & AV_CHG_FMTBLOCK)
 	{
 		/*
 			The following brute-force solution works, but is atrociously 
@@ -246,11 +203,11 @@ UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
 		else
 		{
 			FREEP(propsBlock);
-			mask ^= FV_CHG_FMTBLOCK;
+			mask ^= AV_CHG_FMTBLOCK;
 		}
 	}
 
-	if (mask & FV_CHG_FMTCHAR)
+	if (mask & AV_CHG_FMTCHAR)
 	{
 		/*
 			The following brute-force solution works, but is atrociously 
@@ -295,34 +252,12 @@ UT_Bool FV_View::notifyListeners(const FV_ChangeMask hint)
 		else
 		{
 			FREEP(propsChar);
-			mask ^= FV_CHG_FMTCHAR;
+			mask ^= AV_CHG_FMTCHAR;
 		}
 	}
 		
-	// make sure there's something left
-
-	if (mask == FV_CHG_NONE)
-	{
-		return UT_FALSE;
-	}
-	
-	// notify listeners of a change.
-		
-	FV_ListenerId lid;
-	FV_ListenerId lidCount = m_vecListeners.getItemCount();
-
-	// for each listener in our vector, we send a notification.
-	// we step over null listners (for listeners which have been
-	// removed (views that went away)).
-	
-	for (lid=0; lid<lidCount; lid++)
-	{
-		FV_Listener * pListener = (FV_Listener *)m_vecListeners.getNthItem(lid);
-		if (pListener)
-			pListener->notify(this,mask);
-	}
-
-	return UT_TRUE;
+	// base class does the rest
+	return AV_View::notifyListeners(mask);
 }
 
 void FV_View::_swapSelectionOrientation(void)
@@ -726,7 +661,7 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 		_updateInsertionPoint();
 	}
 
-	notifyListeners(FV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos)
@@ -1285,7 +1220,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		_drawInsertionPoint();
 	}
 
-	notifyListeners(FV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
@@ -1294,12 +1229,12 @@ UT_Bool FV_View::_ensureThatInsertionPointIsOnScreen(void)
 
 	if (m_yPoint < 0)
 	{
-		cmdScroll(DG_SCROLLCMD_LINEUP, (UT_uint32) (-(m_yPoint)));
+		cmdScroll(AV_SCROLLCMD_LINEUP, (UT_uint32) (-(m_yPoint)));
 		return UT_TRUE;
 	}
 	else if (((UT_uint32) (m_yPoint + m_iPointHeight)) >= ((UT_uint32) m_iWindowHeight))
 	{
-		cmdScroll(DG_SCROLLCMD_LINEDOWN, (UT_uint32)(m_yPoint + m_iPointHeight - m_iWindowHeight));
+		cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32)(m_yPoint + m_iPointHeight - m_iWindowHeight));
 		return UT_TRUE;
 	}
 
@@ -1321,7 +1256,10 @@ void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 
 	_moveInsPtNextPrevLine(bNext);
 
-	notifyListeners(FV_CHG_MOTION);
+	_fixInsertionPointCoords();
+	_drawInsertionPoint();
+
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::extSelNextPrevLine(UT_Bool bNext)
@@ -1359,7 +1297,7 @@ void FV_View::extSelNextPrevLine(UT_Bool bNext)
 		}
 	}
 
-	notifyListeners(FV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
@@ -1397,7 +1335,7 @@ void FV_View::extSelHorizontal(UT_Bool bForward, UT_uint32 count)
 		}
 	}
 
-	notifyListeners(FV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::extSelTo(FV_DocPos dp)
@@ -1406,7 +1344,7 @@ void FV_View::extSelTo(FV_DocPos dp)
 
 	_extSelToPos(iPos);
 
-	notifyListeners(FV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
@@ -1441,7 +1379,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 
 	_extSelToPos(iNewPoint);
 	
-	notifyListeners(FV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
@@ -1602,7 +1540,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	_fixInsertionPointCoords();
 	_drawInsertionPoint();
 
-	notifyListeners(FV_CHG_MOTION);
+	notifyListeners(AV_CHG_MOTION);
 }
 
 void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
@@ -1897,12 +1835,6 @@ void FV_View::setYScrollOffset(UT_sint32 v)
     }
 }
 
-void FV_View::setWindowSize(UT_sint32 width, UT_sint32 height)
-{
-	m_iWindowWidth = width;
-	m_iWindowHeight = height;
-}
-
 void FV_View::draw(int page, dg_DrawArgs* da)
 {
 	da->pG = m_pG;
@@ -2072,7 +2004,7 @@ void FV_View::Test_Dump(void)
 	x++;
 }
 
-void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
+void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 {
 	UT_sint32 lineHeight = iPos;
 	UT_sint32 docWidth = 0, docHeight = 0;
@@ -2089,36 +2021,36 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	
 	UT_sint32 yoff = m_yScrollOffset, xoff = m_xScrollOffset;
 	
-	switch(iScrollCmd)
+	switch(cmd)
 	{
-	case DG_SCROLLCMD_PAGEDOWN:
+	case AV_SCROLLCMD_PAGEDOWN:
 		yoff += m_iWindowHeight - 20;
 		break;
-	case DG_SCROLLCMD_PAGEUP:
+	case AV_SCROLLCMD_PAGEUP:
 		yoff -= m_iWindowHeight - 20;
 		break;
-	case DG_SCROLLCMD_PAGELEFT:
+	case AV_SCROLLCMD_PAGELEFT:
 		xoff -= m_iWindowWidth;
 		break;
-	case DG_SCROLLCMD_PAGERIGHT:
+	case AV_SCROLLCMD_PAGERIGHT:
 		xoff += m_iWindowWidth;
 		break;
-	case DG_SCROLLCMD_LINEDOWN:
+	case AV_SCROLLCMD_LINEDOWN:
 		yoff += lineHeight;
 		break;
-	case DG_SCROLLCMD_LINEUP:
+	case AV_SCROLLCMD_LINEUP:
 		yoff -= lineHeight;
 		break;
-	case DG_SCROLLCMD_LINELEFT:
+	case AV_SCROLLCMD_LINELEFT:
 		xoff -= lineHeight;
 		break;
-	case DG_SCROLLCMD_LINERIGHT:
+	case AV_SCROLLCMD_LINERIGHT:
 		xoff += lineHeight;
 		break;
-	case DG_SCROLLCMD_TOTOP:
+	case AV_SCROLLCMD_TOTOP:
 		yoff = 0;
 		break;
-	case DG_SCROLLCMD_TOBOTTOM:
+	case AV_SCROLLCMD_TOBOTTOM:
 		fp_Page* pPage = m_pLayout->getFirstPage();
 		UT_sint32 iDocHeight = 0;
 		while (pPage)
@@ -2154,39 +2086,6 @@ void FV_View::cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos)
 	}
 				
 	sendScrollEvent(xoff, yoff);
-}
-
-void FV_View::addScrollListener(FV_ScrollObj* pObj)
-{
-	m_scrollListeners.addItem((void *)pObj);
-}
-
-void FV_View::removeScrollListener(FV_ScrollObj* pObj)
-{
-	UT_sint32 count = m_scrollListeners.getItemCount();
-
-	for (UT_sint32 i = 0; i < count; i++)
-	{
-		FV_ScrollObj* obj = (FV_ScrollObj*) m_scrollListeners.getNthItem(i);
-
-		if (obj == pObj)
-		{
-			m_scrollListeners.deleteNthItem(i);
-			break;
-		}
-	}
-}
-
-void FV_View::sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff)
-{
-	UT_sint32 count = m_scrollListeners.getItemCount();
-
-	for (UT_sint32 i = 0; i < count; i++)
-	{
-		FV_ScrollObj* pObj = (FV_ScrollObj*) m_scrollListeners.getNthItem(i);
-
-		pObj->m_pfn(pObj->m_pData, xoff, yoff);
-	}
 }
 
 UT_Bool FV_View::isLeftMargin(UT_sint32 xPos, UT_sint32 yPos)
@@ -2383,13 +2282,13 @@ void FV_View::cmdRedo(UT_uint32 count)
 void FV_View::cmdSave(void)
 {
 	m_pDoc->save(IEFT_AbiWord_1);
-	notifyListeners(FV_CHG_SAVE);
+	notifyListeners(AV_CHG_SAVE);
 }
 
 void FV_View::cmdSaveAs(const char * szFilename)
 {
 	m_pDoc->saveAs(szFilename, IEFT_AbiWord_1);
-	notifyListeners(FV_CHG_SAVE);
+	notifyListeners(AV_CHG_SAVE);
 }
 
 UT_Bool FV_View::pasteBlock(UT_UCSChar * text, UT_uint32 count)

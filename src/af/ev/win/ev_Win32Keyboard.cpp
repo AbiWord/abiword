@@ -167,7 +167,7 @@ ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 /*****************************************************************/
 /*****************************************************************/
 
-UT_Bool ev_Win32Keyboard::onKeyDown(FV_View * pView,
+UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 									HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
 	// process the keydown message.
@@ -302,7 +302,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(FV_View * pView,
 	}
 }
 
-UT_Bool ev_Win32Keyboard::onChar(FV_View * pView,
+UT_Bool ev_Win32Keyboard::onChar(AV_View * pView,
 								 HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData)
 {
 	// process the char message.  since we have taken care of everything

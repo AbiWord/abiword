@@ -25,7 +25,8 @@
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
-#include "fv_Listener.h"
+#include "av_View.h"
+#include "av_Listener.h"
 #include "pt_Types.h"
 #include "gr_DrawArgs.h"
 
@@ -37,21 +38,6 @@ class fp_Run;
 class PD_Document;
 class DG_Graphics;
 
-enum
-{
-	DG_SCROLLCMD_PAGEUP,
-	DG_SCROLLCMD_PAGEDOWN,
-	DG_SCROLLCMD_LINEUP,
-	DG_SCROLLCMD_LINEDOWN,
-	DG_SCROLLCMD_PAGERIGHT,
-	DG_SCROLLCMD_PAGELEFT,
-	DG_SCROLLCMD_LINERIGHT,
-	DG_SCROLLCMD_LINELEFT,
-	DG_SCROLLCMD_TOTOP,
-	DG_SCROLLCMD_TOBOTTOM,
-	DG_SCROLLCMD_TOPOSITION
-};
-
 typedef enum _FVDocPos
 {
 	FV_DOCPOS_BOB, FV_DOCPOS_EOB,	// block
@@ -60,15 +46,6 @@ typedef enum _FVDocPos
 	FV_DOCPOS_BOS, FV_DOCPOS_EOS,	// sentence
 	FV_DOCPOS_BOW, FV_DOCPOS_EOW	// word
 } FV_DocPos;
-
-class FV_ScrollObj
-{
- public:
-	FV_ScrollObj(void * pData, void (*pfn)(void *,UT_sint32,UT_sint32)) { m_pData=pData; m_pfn=pfn; };
-	
-	void* m_pData;
-	void (*m_pfn)(void *, UT_sint32, UT_sint32);
-};
 
 struct fv_ChangeState
 {
@@ -80,7 +57,7 @@ struct fv_ChangeState
 	const XML_Char **	propsBlock;
 };
 
-class FV_View
+class FV_View : public AV_View
 {
 	friend class fl_DocListener;
 
@@ -88,13 +65,23 @@ public:
 	FV_View(void*, FL_DocLayout*);
 	~FV_View();
 
-	void* getParentData() const;
+	virtual void	setXScrollOffset(UT_sint32);
+	virtual void	setYScrollOffset(UT_sint32);
+	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0);
+
+	virtual void	draw(const UT_Rect* pRect=(UT_Rect*) NULL);
+
+	virtual UT_Bool	notifyListeners(const AV_ChangeMask hint);
+
+	virtual UT_Bool	canDo(UT_Bool bUndo) const;
+	virtual void	cmdUndo(UT_uint32 count);
+	virtual void	cmdRedo(UT_uint32 count);
+	virtual void	cmdSave(void);
+	virtual void	cmdSaveAs(const char * szFilename);
+
+// ----------------------
 	FL_DocLayout* getLayout() const;
 
-	void setXScrollOffset(UT_sint32);
-	void setYScrollOffset(UT_sint32);
-	void setWindowSize(UT_sint32, UT_sint32);
-	void draw(const UT_Rect* pRect=(UT_Rect*) NULL);
 	void draw(int page, dg_DrawArgs* da);
 	void draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, UT_Bool bClip=UT_FALSE);
 
@@ -110,15 +97,6 @@ public:
 	UT_Bool getCharFormat(const XML_Char *** properties);
 
 	void insertParagraphBreak();
-
-	void cmdScroll(UT_sint32 iScrollCmd, UT_uint32 iPos = 0);
-	void addScrollListener(FV_ScrollObj*);
-	void removeScrollListener(FV_ScrollObj*);
-	void sendScrollEvent(UT_sint32 xoff, UT_sint32 yoff);
-
-	UT_Bool			addListener(FV_Listener * pListener, FV_ListenerId * pListenerId);
-	UT_Bool			removeListener(FV_ListenerId listenerId);
-	UT_Bool			notifyListeners(const FV_ChangeMask hint);
 
 // ----------------------
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
@@ -139,12 +117,6 @@ public:
 	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos);
 	void			extSelTo(FV_DocPos dp);
 	void			extSelNextPrevLine(UT_Bool bNext);
-
-	UT_Bool			canDo(UT_Bool bUndo) const;
-	void			cmdUndo(UT_uint32 count);
-	void			cmdRedo(UT_uint32 count);
-	void			cmdSave(void);
-	void			cmdSaveAs(const char * szFilename);
 	
 	void			Test_Dump(void);	/* TODO remove this */
 // ----------------------
@@ -200,20 +172,13 @@ protected:
 	UT_Bool				m_bPointAP;
 	PT_AttrPropIndex	m_apPoint;
 	
-	void*				m_pParentData;
 	FL_DocLayout*		m_pLayout;
 	PD_Document*		m_pDoc;
 	DG_Graphics*		m_pG;
-	UT_sint32			m_xScrollOffset;
-	UT_sint32			m_yScrollOffset;
-	UT_sint32			m_iWindowHeight;
-	UT_sint32			m_iWindowWidth;
 
 	PT_DocPosition		m_iSelectionAnchor;
 	UT_Bool				m_bSelection;
-	UT_Vector           m_scrollListeners;
 
-	UT_Vector			m_vecListeners;
 	fv_ChangeState		m_chg;
 };
 

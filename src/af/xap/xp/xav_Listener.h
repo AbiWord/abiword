@@ -18,33 +18,33 @@
  */
 
 
-#ifndef FV_LISTENER_H
-#define FV_LISTENER_H
+#ifndef AV_LISTENER_H
+#define AV_LISTENER_H
 
 #include "ut_types.h"
 
-class FV_View;
+class AV_View;
 
-typedef UT_uint32 FV_ListenerId;
+typedef UT_uint32 AV_ListenerId;
 
-typedef UT_Byte FV_ChangeMask;
-#define FV_CHG_NONE			((FV_ChangeMask) 0x00) 
-#define FV_CHG_DO			((FV_ChangeMask) 0x01)		// canDo
-#define FV_CHG_DIRTY		((FV_ChangeMask) 0x02)		// isDirty 
-#define FV_CHG_EMPTYSEL		((FV_ChangeMask) 0x04)		// isSelectionEmpty 
-#define FV_CHG_FILENAME		((FV_ChangeMask) 0x08)		// getFilename
-#define FV_CHG_FMTBLOCK		((FV_ChangeMask) 0x10)		// getBlockFormat
-#define FV_CHG_FMTCHAR		((FV_ChangeMask) 0x20)		// getCharFormat
-#define FV_CHG_ALL			((FV_ChangeMask) 0xFF) 
+typedef UT_Byte AV_ChangeMask;
+#define AV_CHG_NONE			((AV_ChangeMask) 0x00) 
+#define AV_CHG_DO			((AV_ChangeMask) 0x01)		// canDo
+#define AV_CHG_DIRTY		((AV_ChangeMask) 0x02)		// isDirty 
+#define AV_CHG_EMPTYSEL		((AV_ChangeMask) 0x04)		// isSelectionEmpty 
+#define AV_CHG_FILENAME		((AV_ChangeMask) 0x08)		// getFilename
+#define AV_CHG_FMTBLOCK		((AV_ChangeMask) 0x10)		// getBlockFormat
+#define AV_CHG_FMTCHAR		((AV_ChangeMask) 0x20)		// getCharFormat
+#define AV_CHG_ALL			((AV_ChangeMask) 0xFF) 
 
-#define FV_CHG_SAVE			((FV_ChangeMask) (FV_CHG_DO | FV_CHG_DIRTY | FV_CHG_FILENAME))
-#define FV_CHG_TYPING		((FV_ChangeMask) (FV_CHG_DO | FV_CHG_DIRTY | FV_CHG_EMPTYSEL))
-#define FV_CHG_MOTION		((FV_ChangeMask) (FV_CHG_EMPTYSEL | FV_CHG_FMTBLOCK | FV_CHG_FMTCHAR))
+#define AV_CHG_SAVE			((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))
+#define AV_CHG_TYPING		((AV_ChangeMask) (AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_EMPTYSEL))
+#define AV_CHG_MOTION		((AV_ChangeMask) (AV_CHG_EMPTYSEL | AV_CHG_FMTBLOCK | AV_CHG_FMTCHAR))
 
 /* 
 	Various UI elements (title, toolbar, etc.) need to stay in sync with 
-	the current state of an FV_View.  They can do so by registering
-	an FV_Listener with the FV_View in order to be notified of the existence 
+	the current state of an AV_View.  They can do so by registering
+	an AV_Listener with the AV_View in order to be notified of the existence 
 	of certain changes to the document as they occur.  
 
 	Note that these notifications do *not* pass any document state, they 
@@ -55,11 +55,10 @@ typedef UT_Byte FV_ChangeMask;
 	later to refer to it.
 */
 
-class FV_Listener
+class AV_Listener
 {
 public:
-	virtual UT_Bool		notify(FV_View * pView, const FV_ChangeMask mask) = 0;
+	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
 };
-
 	
-#endif /* FV_LISTENER_H */
+#endif /* AV_LISTENER_H */

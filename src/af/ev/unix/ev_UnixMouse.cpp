@@ -34,7 +34,7 @@ EV_UnixMouse::EV_UnixMouse(EV_EditEventMapper * pEEM) : EV_Mouse(pEEM)
 
 }
 
-void EV_UnixMouse::mouseClick(FV_View* pView, GdkEventButton* e)
+void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState state = 0;
@@ -98,7 +98,7 @@ void EV_UnixMouse::mouseClick(FV_View* pView, GdkEventButton* e)
 	}
 }
 
-void EV_UnixMouse::mouseMotion(FV_View* pView, GdkEventMotion *e)
+void EV_UnixMouse::mouseMotion(AV_View* pView, GdkEventMotion *e)
 {
 	EV_EditMethod * pEM;
 	EV_EditModifierState ems;

@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include "ut_types.h"
 #include "ut_vector.h"
+#include "ad_Document.h"
 #include "xmlparse.h"
 #include "pt_Types.h"
 #include "pl_Listener.h"
@@ -45,25 +46,26 @@ class PX_ChangeRecord;
 //////////////////////////////////////////////////////////////////
 // PD_Document is the representation for a document.
 
-class PD_Document
+class PD_Document : public AD_Document
 {
 public:
 	PD_Document();
 	~PD_Document();
 
-	UT_Bool					readFromFile(const char * szFilename);
+	virtual UT_Bool			readFromFile(const char * szFilename);
+	virtual UT_Bool			newDocument(void);
+	virtual UT_Bool			isDirty(void) const;
+
+	virtual UT_Bool			canDo(UT_Bool bUndo) const;
+	virtual UT_Bool			undoCmd(UT_uint32 repeatCount);
+	virtual UT_Bool			redoCmd(UT_uint32 repeatCount);
+
+// ----------------------
 	UT_Bool					saveAs(const char * szFilename, IEFileType ieft);
 	UT_Bool					save(IEFileType ieft);
-	UT_Bool					newDocument(void);
-	const char *			getFilename(void) const;
-	UT_Bool					isDirty(void) const;
 
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
-
-	UT_Bool					canDo(UT_Bool bUndo) const;
-	UT_Bool					undoCmd(UT_uint32 repeatCount);
-	UT_Bool					redoCmd(UT_uint32 repeatCount);
 	
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   UT_UCSChar * p,
@@ -129,7 +131,6 @@ public:
 protected:
 	void					_setClean(void);
 
-	const char *			m_szFilename;
 	pt_PieceTable *			m_pPieceTable;
 	UT_Vector				m_vecListeners;
 };

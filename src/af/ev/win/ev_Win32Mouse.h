@@ -33,7 +33,7 @@
 // TODO may be global.  (ev_<platform>Mouse could be global
 // TODO i suppose.)
 
-class FV_View;
+class AV_View;
 
 
 class EV_Win32Mouse : public EV_Mouse
@@ -43,10 +43,10 @@ public:
 
 	void reset(void);
 
-	void onButtonDown(FV_View * pView, HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
-	void onButtonUp  (FV_View * pView, HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
-	void onButtonMove(FV_View * pView, HWND hWnd, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
-	void onDoubleClick(FV_View * pView, HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
+	void onButtonDown(AV_View * pView, HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
+	void onButtonUp  (AV_View * pView, HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
+	void onButtonMove(AV_View * pView, HWND hWnd, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
+	void onDoubleClick(AV_View * pView, HWND hWnd, EV_EditMouseButton emb, WPARAM fwKeys, WPARAM xPos, WPARAM yPos);
 
 protected:
 	UT_uint32			m_iCaptureCount;

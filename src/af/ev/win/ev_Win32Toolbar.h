@@ -27,7 +27,7 @@
 #include "ap_Menu_Id.h"
 #include "ap_Toolbar_Id.h"
 #include "ev_Toolbar.h"
-#include "fv_Listener.h"
+#include "av_Listener.h"
 
 class AP_Win32App;
 class AP_Win32Frame;
@@ -46,8 +46,8 @@ public:
 
 	UT_Bool toolbarEvent(AP_Toolbar_Id id);
 	UT_Bool synthesize(void);
-	UT_Bool bindListenerToView(FV_View * pView);
-	UT_Bool refreshToolbar(FV_View * pView, FV_ChangeMask mask);
+	UT_Bool bindListenerToView(AV_View * pView);
+	UT_Bool refreshToolbar(AV_View * pView, AV_ChangeMask mask);
 	UT_Bool getToolTip(LPARAM lParam);
 
 	HWND getWindow(void) const;
@@ -65,7 +65,7 @@ protected:
 	AP_Win32App *					m_pWin32App;
 	AP_Win32Frame *					m_pWin32Frame;
 	EV_Win32Toolbar_ViewListener *	m_pViewListener;
-	FV_ListenerId					m_lid;	/* view listener id */
+	AV_ListenerId					m_lid;	/* view listener id */
 
 	HWND							m_hwnd;
 	AP_Win32Toolbar_Icons *			m_pWin32ToolbarIcons;
