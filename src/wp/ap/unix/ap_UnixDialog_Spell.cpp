@@ -113,7 +113,8 @@ void AP_UnixDialog_Spell::runModal(XAP_Frame * pFrame)
       
       _storeWindowData();
       
-      //gtk_widget_destroy(mainWindow);
+      if(mainWindow && GTK_IS_WIDGET(mainWindow))
+	gtk_widget_destroy(mainWindow);
    }
    
    // TODO: all done message?
