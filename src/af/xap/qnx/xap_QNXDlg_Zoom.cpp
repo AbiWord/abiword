@@ -596,20 +596,5 @@ void XAP_QNXDialog_Zoom::_populateWindowData(void)
 
 void XAP_QNXDialog_Zoom::_storeWindowData(void)
 {
-#if 0
-	for (GSList * item = m_radioGroup; item ; item = item->next)
-	{
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(item->data)))
-		{
-			m_zoomType = (XAP_Frame::tZoomType)
-				GPOINTER_TO_INT(g_object_get_data(G_OBJECT(item->data), WIDGET_ID_TAG_KEY));
-			break;
-		}
-	}
-
-	// store away percentage; the base class decides if it's important when
-	// the caller requests the percent
-	m_zoomPercent = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(m_spinPercent));
-#endif
 }
 

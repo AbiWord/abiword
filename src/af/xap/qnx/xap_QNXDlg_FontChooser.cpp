@@ -81,277 +81,91 @@ void XAP_QNXDialog_FontChooser::runModal(XAP_Frame * pFrame)
 	PtWidget_t *parentWindow =	pQNXFrameImpl->getTopLevelWindow();	
 	UT_ASSERT(parentWindow);
 
+	UT_uint32	flags=0;
+	UT_uint32 size;
+	char fontname[MAX_FONT_TAG];
+
+	if(!UT_stricmp(getVal("font-weight"),"bold"))
+		flags |= PF_STYLE_BOLD;
+	if(!UT_stricmp(getVal("font-style"),"italic"))
+		flags |= PF_STYLE_ITALIC;	
+	size = (UT_uint32)UT_convertToPoints(getVal("font-size"));
+		
+
+	PfGenerateFontName(getVal("font-family"),flags,size,fontname);
+
 	newfont = (char *)PtFontSelection(parentWindow,	/* Parent */
 							  		  NULL, 		/* Position (centered) */
 							  				/* Title */
 pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle).c_str(),
-							  		  "helv10",		/* Initial font */
-							  		  -1,			/* Symbol to select fonts by */							
+							  		  fontname,		/* Initial font */
+							  		  PHFONT_ALL_SYMBOLS,			/* Symbol to select fonts by */							
 							  		  PHFONT_SCALABLE, /* Which type of fonts */
-							  		  NULL); 	/* Sample string */
+							  		  PREVIEW_ENTRY_DEFAULT_STRING); 	/* Sample string */
 
 	if (newfont) {
-		FontQueryInfo finfo;
-		char *s, *p, c;
+		FontID *fontid=PfDecomposeStemToID(newfont);
 
-		//NOTE: I could use PfQueryFont for all this information
-		PfQueryFontInfo(newfont, &finfo);
+		setFontFamily(PfFontDescription(fontid)); m_bChangedFontFamily = true;
 
-		//Split name[size][style] into pieces
-		s = p = newfont;
-		while (*p && (*p < '0' || *p > '9')) { p++; }
-		c = *p; *p = '\0';
-		s = finfo.desc;
-		printf("Set family to %s \n", s);
-		setFontFamily(s); m_bChangedFontFamily = true;
-
-		s = p; *p = c;
-		while (*p && (*p >= 0 && *p <= '9')) { p++; }
-		c = *p; *p = '\0';
-		//This is mental having to put the pt on the end
-		char tempsize[20]; sprintf(tempsize, "%spt", s);
+		char tempsize[20]; sprintf(tempsize, "%dpt", PfFontSize(fontid));
 		setFontSize(tempsize); m_bChangedFontSize = true;
 
 		setFontWeight("normal"); m_bChangedFontWeight = true;
 		setFontStyle("normal"); m_bChangedFontStyle = true;
-		while (*p) {
-			switch (*p) {
-			case 'b':
+
+		switch (PfFontFlags(fontid)) {
+			case PF_STYLE_BOLD|PF_STYLE_ITALIC:
+				setFontWeight("bold");
+				setFontStyle("italic");
+				break;
+			case PF_STYLE_BOLD:
 				setFontWeight("bold");
 				break;
-			case 'i':
+			case PF_STYLE_ITALIC:
 				setFontStyle("italic");
 				break;
 			default:
 				break;
-			}
 		}
 		
 		m_answer = XAP_Dialog_FontChooser::a_OK;
-		//free(newfont);
+		PfFreeFont(fontid);
+		free(newfont);
 	}
 	else {
 		m_answer = XAP_Dialog_FontChooser::a_CANCEL;
 	}
-
-	m_pQNXFrame = NULL;
 }
 	
-#if 0
-bool XAP_QNXDialog_FontChooser::getFont(XAP_QNXFont ** font)
-{
-	UT_ASSERT(font);
-	
-	gchar * fontText[2] = {NULL, NULL};
-	XAP_QNXFont::style styleNumber;
-
-	GList * selectedRow = NULL;
-	int rowNumber = 0;
-
-	selectedRow = GTK_CLIST(m_fontList)->selection;
-	if (selectedRow)
-	{
-		rowNumber = GPOINTER_TO_INT(selectedRow->data);
-		gtk_clist_get_text(GTK_CLIST(m_fontList), rowNumber, 0, fontText);
-		UT_ASSERT(fontText && fontText[0]);
-	}
-	else
-	{
-		return false;
-	}
-		
-	selectedRow = GTK_CLIST(m_styleList)->selection;
-	if (selectedRow)
-	{
-		int style = GPOINTER_TO_INT(selectedRow->data);
-
-		switch(style)
-		{
-		case LIST_STYLE_NORMAL:
-			styleNumber = XAP_QNXFont::STYLE_NORMAL;
-			break;
-		case LIST_STYLE_BOLD:
-			styleNumber = XAP_QNXFont::STYLE_BOLD;
-			break;
-		case LIST_STYLE_ITALIC:
-			styleNumber = XAP_QNXFont::STYLE_ITALIC;
-			break;
-		case LIST_STYLE_BOLD_ITALIC:
-			styleNumber = XAP_QNXFont::STYLE_BOLD_ITALIC;
-			break;
-		default:
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return false;
-		}
-	}
-	else
-	{
-		return false;
-	}
-	
-	const XAP_QNXFont * tempQNXFont = m_fontManager->getFont((const char *) fontText[0], styleNumber);
-
-	if (tempQNXFont)
-	{
-		// we got a font, set the variables and return success
-		*font = (XAP_QNXFont *) tempQNXFont;
-		return true;
-	}
-
-	return false;
-}
-#endif
-
 bool XAP_QNXDialog_FontChooser::getDecoration(bool * strikeout,
 												 bool * underline)
 {
-#if 0
-	UT_ASSERT(strikeout && underline);
-
-	*strikeout = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkStrikeOut));
-	*underline = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkUnderline));
-
-#endif
 	return true;
 }
 
 bool XAP_QNXDialog_FontChooser::getSize(UT_uint32 * pointsize)
 {
-#if 0
-	UT_ASSERT(pointsize);
-
-	GList * selectedRow = NULL;
-	gchar * sizeText[2] = {NULL, NULL};
-	int rowNumber = 0;
-	
-	selectedRow = GTK_CLIST(m_sizeList)->selection;
-	if (selectedRow)
-	{
-		rowNumber = GPOINTER_TO_INT(selectedRow->data);
-		gtk_clist_get_text(GTK_CLIST(m_sizeList), rowNumber, 0, sizeText);
-		UT_ASSERT(sizeText && sizeText[0]);
-
-		*pointsize = (UT_uint32) atol(sizeText[0]);
-		return true;
-	}
-
-#endif
 	return false;
 }
 
 bool XAP_QNXDialog_FontChooser::getEntryString(char ** string)
 {
-#if 0
-	UT_ASSERT(string);
-
-	// Maybe this will be editable in the future, if one wants to
-	// hook up a mini formatter to the entry area.  Probably not.
-
-	*string = PREVIEW_ENTRY_DEFAULT_STRING;
-
-#endif
 	return true;
 }
 
 bool XAP_QNXDialog_FontChooser::getForegroundColor(UT_RGBColor * color)
 {
-#if 0
-	UT_ASSERT(color);
-	
-	gdouble currentColor[3] = { 0, 0, 0 };
-
-	enum
-	{
-		RED = 0,
-		GREEN,
-		BLUE
-	};
-	
-	gtk_color_selection_get_color(GTK_COLOR_SELECTION(m_colorSelector), currentColor);
-
-	color->m_red = (unsigned char) (currentColor[RED]   * (gdouble) 255);
-	color->m_grn = (unsigned char) (currentColor[GREEN] * (gdouble) 255);
-	color->m_blu = (unsigned char) (currentColor[BLUE]  * (gdouble) 255);
-
-	return true;
-#endif
 	return false;
 }
 
 bool XAP_QNXDialog_FontChooser::getBackgroundColor(UT_RGBColor * color)
 {
-#if 0
-	// this just returns white now, it should later query the document
-	// in the frame which launched this dialog
-	
-	UT_ASSERT(color);
-	
-	color->m_red = 255;
-	color->m_grn = 255;
-	color->m_blu = 255;
-
-	return true;
-#endif
 	return false;
 }
 
 
 void XAP_QNXDialog_FontChooser::updatePreview(void)
 {
-#if 0
-	// if we don't have anything yet, just ignore this request
-	if (!m_gc)
-		return;
-	
-//	bool strikeout = false;
-//	bool underline = false;
-
-	XAP_QNXFont * font = NULL;
-	if (!getFont(&font))
-		return;
-
-	UT_uint32 pointsize = 0;
-	if (!getSize(&pointsize))
-		return;
-
-	UT_uint32 pixelsize = (UT_uint32) ((double) pointsize / (double) 72 * (double) m_gc->getResolution());
-
-	UT_ASSERT(pixelsize > 0);
-	
-	// Do some trickery to convert point sizes (as listed in the list box)
-	// to real pixel sizes for this GC.  The layout engine does this
-	// automatically because it's just that good.
-	XAP_QNXFontHandle * entry = new XAP_QNXFontHandle(font, pixelsize);
-
-	if (entry)
-	{
-		// set the new font
-		m_gc->setFont(entry);
-
-		// if we've set a font, this variable is true
-		m_doneFirstFont = true;
-
-		// now do the switch
-		DELETEP(m_lastFont);
-		m_lastFont = entry;
-	}
-	else
-	{
-		// we didn't get the font we requested, which is really weird
-		// since this dialog can only let the user pick fonts the
-		// font manager says it KNOWS it has.
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	}
-		
-
-	// do the foreground (text) color
-	UT_RGBColor fgcolor;
-	if (!getForegroundColor(&fgcolor))
-		return;
-	m_gc->setColor(fgcolor);
-
-	s_drawing_area_expose(m_preview, NULL);
-	
-#endif
 }
 

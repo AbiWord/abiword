@@ -399,12 +399,6 @@ PtSetArg(&args[n++], Pt_ARG_WINDOW_TITLE, _(XAP,DLG_PLUGIN_MANAGER_TITLE) , 0);
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 150, 0);
 	clistPlugins = PtCreateWidget(PtList, hgroup, n, args);
-	//lblActivePlugins = gtk_label_new (pSS->getValue (XAP_STRING_ID_DLG_PLUGIN_MANAGER_ACTIVE));
-/*
-	g_signal_connect (G_OBJECT(clistPlugins), "select_row",
-						G_CALLBACK(s_clist_selected),
-						(gpointer)this);
-*/
 	
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0);
