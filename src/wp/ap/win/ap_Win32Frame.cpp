@@ -279,7 +279,13 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 	{
 		UNREFP(pOldDoc);
 	}
-	REPLACEP(m_pView, pView);
+
+	{
+		const AV_Focus prevFocus = m_pView ? m_pView->getFocus() : AV_FOCUS_NONE;
+		REPLACEP(m_pView, pView);
+		m_pView->setFocus(prevFocus);
+	}
+
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
 	m_lid = lid;
