@@ -4157,18 +4157,10 @@ void s_HTML_Listener::_handleField (const PX_ChangeRecord_Object * pcro,
 
 	if (UT_strcmp (szType, "list_label") != 0)
 	{
-		// TODO: Condense/generalize this, it looks absurd.
-		// TODO: Respect the document settings for style of footnote/endnote.
-		//	      That way, we don't have to worry about that by default, they look the same.
-		// TODO: Hook anchors into styletree
-		// TODO: Close the block upon encountering a sectionfootnote (needed for endnote too?)
-		//	      such to stop the embeddedness bugs.
 		// TODO: Text styles?  (maybe not)
-		// TODO: Do something with sections?
 		// TODO: Line before footnotes?  Or use the table as in embedded target idea?
+			// See also: abi bug 7612
 		// TODO: Optional:
-		// TODO: Float header, footers? (Not that this has anything to do with this code)
-		// TODO: Print media header/footer (Ditto)
 		// TODO: Embedded target for footnote linking (frame adjusts on the footnotes when ref clicked).
 		
 		m_utf8_1 = "span";
@@ -4566,11 +4558,11 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 			}
 #endif /* HTML_TABLES_SUPPORTED */
 		
-	/* Note that one could very well print this in order on a second pass, but
-		we don't do that, yet anyway. */
 		case PTX_SectionFootnote:
 		case PTX_SectionEndnote:
 			{
+				// We should use strux-specific position markers, as this sets a precarious
+				// precedent for nested struxes.
 				m_iEmbedStartPos = pcrx->getPosition() + 1;
 				m_bIgnoreTillEnd = true;
 				return true;
@@ -4589,12 +4581,13 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 				}
 				m_bIgnoreTillEnd = false;
 				return true;
-				
 			}
 #if 0
 		case PTX_EndFrame:
+			// _handleFrame checks the properties and applies them to a new span or cell or something
 		case PTX_EndMarginnote:
 		case PTX_SectionFrame:
+			// Record the position for a docrange later.
 		case PTX_SectionMarginnote:
 #endif
 			// because headers and footers live at the end of AW
@@ -4614,9 +4607,7 @@ bool s_HTML_Listener::populateStrux (PL_StruxDocHandle sdh,
 		case PTX_SectionHdrFtr:
 //			m_bIgnoreTillEnd = true;
 			return true;
-			// NB: IgnoreTillEnd DOES NOT WORK!!! Must leave unhandled or other pieces
-			// that we would be able to handle get left out.  Not sure how this code is
-			// supposed to work, but it doesn't. -mg
+			// Possibly use m_bIgnoreTillNextSection?
 		default:
 			UT_DEBUGMSG(("WARNING: ie_exp_HTML.cpp: unhandled strux type!\n"));
 			return false;
