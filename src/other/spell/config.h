@@ -61,7 +61,15 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  1998/12/28 23:11:30  eric
+ * modified spell code and integration to build on Windows.
+ * This is still a hack.
+ *
+ * Actually, it doesn't yet WORK on Windows.  It just builds.
+ * SpellCheckInit is failing for some reason.
+ *
  * Revision 1.2  1998/12/28 22:16:22  eric
+ *
  * These changes begin to incorporate the spell checker into AbiWord.  Most
  * of this is a hack.
  *
@@ -143,62 +151,14 @@
 #undef USG		/* Define this in local.h for System V machines */
 #endif /* USG */
 
+#if 0
 #include <sys/param.h>
 #include <sys/types.h>
+#endif
+
 #ifndef USG
 #include <sys/dir.h>
 #endif /* USG */
-
-/*
-** Things that normally go in a Makefile.  Define these just like you
-** might in the Makefile, except you should use #define instead of
-** make's assignment syntax.  Everything must be double-quoted, and
-** (unlike make) you can't use any sort of $-syntax to pick up the
-** values of other definitions.
-*/
-#ifndef CC
-#define CC	"cc"
-#endif /* CC */
-#ifndef EMACS
-#define EMACS	"emacs"
-#endif /* EMACS */
-#ifndef LINT
-#define LINT	"lint"
-#endif /* LINT */
-#ifndef CFLAGS
-#define CFLAGS	"-O"
-#endif /* CFLAGS */
-#ifndef LINTFLAGS
-#define LINTFLAGS ""
-#endif /* LINTFLAGS */
-#ifndef YACC
-#define YACC	"yacc"
-#endif /* YACC */
-
-/*
-** Libraries that may need to be added to the cc line to get ispell to
-** link.  Normally, this should be null.
-*/
-#ifndef LIBES
-#define LIBES	""
-#endif
-
-/*
-** TERMLIB - where to get the termcap library.  Should be -ltermcap or
-** -lcurses on most systems.
-*/
-#ifndef TERMLIB
-#define TERMLIB	"-ltermcap"
-#endif
-
-/*
-** REGLIB - where to get the regular-expression routines, if
-** REGEX_LOOKUP is defined.  Should be -lPW on USG systems, null on
-** BSD systems.
-*/
-#ifndef REGLIB
-#define REGLIB	""
-#endif
 
 /*
 ** Where to install various components of ispell.  BINDIR contains

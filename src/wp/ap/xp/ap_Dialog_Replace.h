@@ -20,7 +20,7 @@
 #ifndef AP_DIALOG_FILE_H
 #define AP_DIALOG_FILE_H
 
-#include "ap_Dialog.h"
+#include "xap_Dialog.h"
 
 /*****************************************************************
 ** This is the base-class for the Replace 

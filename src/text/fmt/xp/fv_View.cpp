@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -2459,15 +2460,16 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 		}
 		szWord[iLen] = 0;
 
-		printf("Selected word:  %s is ", szWord);
+		UT_Bool bGood = SpellCheckWord(szWord);
 
-		if (SpellCheckWord(szWord))
+		UT_DEBUGMSG(("Selected word:  %s is ", szWord));
+		if (bGood)
 		{
-			printf("GOOD\n");
+			UT_DEBUGMSG(("GOOD\n"));
 		}
 		else
 		{
-			printf("BAD\n");
+			UT_DEBUGMSG(("BAD\n"));
 		}
 	}
 }

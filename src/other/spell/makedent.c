@@ -43,11 +43,18 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
- * Revision 1.1  1998/12/28 18:04:43  davet
- * Spell checker code stripped from ispell.  At this point, there are
- * two external routines...  the Init routine, and a check-a-word routine
- * which returns a boolean value, and takes a 16 bit char string.
- * The code resembles the ispell code as much as possible still.
+ * Revision 1.2  1998/12/28 23:11:30  eric
+ * modified spell code and integration to build on Windows.
+ * This is still a hack.
+ *
+ * Actually, it doesn't yet WORK on Windows.  It just builds.
+ * SpellCheckInit is failing for some reason.
+ *
+ * modified spell code and integration to build on Windows.
+ * This is still a hack.
+ *
+ * Actually, it doesn't yet WORK on Windows.  It just builds.
+ * SpellCheckInit is failing for some reason.
  *
  * Revision 1.1  1998/12/28 18:04:43  davet
  * Spell checker code stripped from ispell.  At this point, there are
@@ -70,7 +77,6 @@ static char Rcs_Id[] =
  * Correctly identify the deformatter when changing file types
 #include "config.h"
  *
-#include "proto.h"
  */
 
 #include <stdlib.h>

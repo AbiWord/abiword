@@ -49,7 +49,21 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.3  1998/12/28 23:11:30  eric
+ * modified spell code and integration to build on Windows.
+ * This is still a hack.
+ *
+ * Actually, it doesn't yet WORK on Windows.  It just builds.
+ * SpellCheckInit is failing for some reason.
+ *
+ * modified spell code and integration to build on Windows.
+ * This is still a hack.
+ *
+ * Actually, it doesn't yet WORK on Windows.  It just builds.
+ * SpellCheckInit is failing for some reason.
+ *
  * Revision 1.2  1998/12/28 22:16:22  eric
+ *
  * These changes begin to incorporate the spell checker into AbiWord.  Most
  * of this is a hack.
  *
@@ -69,12 +83,6 @@ static char Rcs_Id[] =
  * Caveats:
  * 1.  This will break the Windows build.  I'm going to work on fixing it
  * 	now.
- * 2.  This only works if your dictionary is in /usr/lib/ispell/american.hash.
- * 	The dictionary location is currently hard-coded.  This will be
- * 	fixed as well.
- *
- * Anyway, such as it is, it works.
- *
  * 2.  This only works if your dictionary is in /usr/lib/ispell/american.hash.
  * 	The dictionary location is currently hard-coded.  This will be
  * 	fixed as well.
@@ -105,7 +113,6 @@ static char Rcs_Id[] =
  *
 #include "config.h"
  */
-#include "proto.h"
 
 #include <ctype.h>
 #include <stdlib.h>

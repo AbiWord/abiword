@@ -48,18 +48,20 @@ void *mymalloc (unsigned int size)
     return (void *) malloc (size);
 }
 
-
+int g_bSuccessfulInit = 0;
 
 int SpellCheckInit(char *hashname)
 {
 	if (linit(hashname) < 0)
 	{
-		printf("Couldn't load the hash table (dictionary)\n");
-		exit(0);
+		// TODO gripe -- could not load the dictionary
+		
+		return 0;
 	}
 
+	g_bSuccessfulInit = 1;
+	
 	return 1;
-
 }
 
 
@@ -83,6 +85,11 @@ int SpellCheckWord16(unsigned short  *word16)
 {
 	int retVal;
 
+	if (!g_bSuccessfulInit)
+	{
+		return 1;
+	}
+	
 	if (!word16) 
 		return 0;
 
@@ -100,6 +107,11 @@ int SpellCheckWord(char *word)
 	int wordLength;
 	int retVal;
 
+	if (!g_bSuccessfulInit)
+	{
+		return 1;
+	}
+	
 	if (!word)
 		return 0;
 

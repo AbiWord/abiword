@@ -19,9 +19,24 @@
 
 #include <windows.h>
 #include "xap_Win32App.h"
+#include "sp_spell.h"
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
                     PSTR szCmdLine, int iCmdShow)
 {
+	/*
+	  The following call initializes the spell checker.
+	  It does NOT belong here.  However, right now, it's
+	  not clear where it does belong.
+	  HACK TODO fix this
+
+	  Furthermore, it currently initializes the dictionary
+	  to a hard-coded path -- the dictionary must be in the
+	  same directory as the one you started the app in.
+	  TODO fix this
+	*/
+
+	SpellCheckInit("c:/american.hash");
+	
 	return AP_Win32App::WinMain("AbiWord", hInstance, hPrevInstance, szCmdLine, iCmdShow);
 }

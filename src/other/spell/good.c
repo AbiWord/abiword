@@ -48,7 +48,15 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.3  1998/12/28 23:11:30  eric
+ * modified spell code and integration to build on Windows.
+ * This is still a hack.
+ *
+ * Actually, it doesn't yet WORK on Windows.  It just builds.
+ * SpellCheckInit is failing for some reason.
+ *
  * Revision 1.2  1998/12/28 22:16:22  eric
+ *
  * These changes begin to incorporate the spell checker into AbiWord.  Most
  * of this is a hack.
  *
@@ -102,7 +110,6 @@ static char Rcs_Id[] =
 #include <ctype.h>
 #include "config.h"
 #include "ispell.h"
-#include "proto.h"
 
 int		good P ((ichar_t * word, int ignoreflagbits, int allhits,
 		  int pfxopts, int sfxopts));

@@ -47,7 +47,18 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.3  1998/12/28 23:11:30  eric
+ * modified spell code and integration to build on Windows.
+ * This is still a hack.
+ *
+ * Actually, it doesn't yet WORK on Windows.  It just builds.
+ * SpellCheckInit is failing for some reason.
+ *
+ * Actually, it doesn't yet WORK on Windows.  It just builds.
+ * SpellCheckInit is failing for some reason.
+ *
  * Revision 1.2  1998/12/28 22:16:22  eric
+ *
  * These changes begin to incorporate the spell checker into AbiWord.  Most
  * of this is a hack.
  *
@@ -73,9 +84,6 @@ static char Rcs_Id[] =
  *
  * Anyway, such as it is, it works.
  *
- *
- * Anyway, such as it is, it works.
- *
  * Revision 1.1  1998/12/28 18:04:43  davet
  * Spell checker code stripped from ispell.  At this point, there are
  * two external routines...  the Init routine, and a check-a-word routine
@@ -89,7 +97,6 @@ static char Rcs_Id[] =
  * Get rid of all old RCS log lines in preparation for the 3.1 release.
 #include "config.h"
 #include <stdlib.h>
-#include "proto.h"
 #include <string.h>
 
 #include "ispell.h"
