@@ -152,12 +152,10 @@ static void MatchCaseCallback(GtkWidget * checkbutton,
 {
 	UT_ASSERT(checkbutton);
 	UT_ASSERT(repDialog);
-/*
-	UT_DEBUGMSG(("Match case is %d.\n",
-				 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkbutton))));
-	
-	repDialog->m_matchCase = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(checkbutton));
-*/
+
+	UT_DEBUGMSG(("Match case is %d.\n", GTK_TOGGLE_BUTTON(checkbutton)->active));
+
+	repDialog->setMatchCase(GTK_TOGGLE_BUTTON(checkbutton)->active);
 }
 
 static void CancelCallback(GtkWidget * object, GtkWidget * data)
@@ -262,7 +260,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	// optional toggle switch for case
 	matchCaseCheck = gtk_check_button_new_with_label("Match Case");
 	gtk_box_pack_end(GTK_BOX(toggleBox), matchCaseCheck, FALSE, TRUE, 0);
-	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(matchCaseCheck), m_matchCase);
+	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(matchCaseCheck), getMatchCase());
 	gtk_widget_show(matchCaseCheck);
 
 	// catch the toggled

@@ -40,10 +40,6 @@ public:
 	GtkWidget *				matchCaseCheck;
     GtkWidget *				replaceEntry;
 
-	// provides a way for a GTK callback to set the case
-	// attribute
-	UT_Bool					m_matchCase;
-
  protected:
 	
 };
