@@ -875,7 +875,7 @@ GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 			glFonts = g_list_prepend(glFonts, nextfont);
 		}
 	}
-	DELETEP(list);
+	DELETEPV(list);
 	m_glFonts =  g_list_reverse(glFonts);
 	return m_glFonts;
 }

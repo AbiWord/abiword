@@ -83,7 +83,7 @@ bool AP_UnixToolbar_FontCombo::populate(void)
 		if (!stringTable.findEntry(list[i]->getName()))
 			stringTable.addEntry(list[i]->getName(), list[i]->getName(), (void *) list[i]->getName());
 	}
-	DELETEP(list);
+	DELETEPV(list);
 
 	// We can populate the family list with what's in our hash table
 	int totalStringsInHash = stringTable.getEntryCount();

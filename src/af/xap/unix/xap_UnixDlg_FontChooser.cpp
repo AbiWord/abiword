@@ -1034,7 +1034,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			fontHash.addEntry((char *) fonts[i]->getName(),
 							  (char *) fonts[i]->getName(), NULL);
 	}
-	DELETEP(fonts);
+	DELETEPV(fonts);
 
 	// fetch them out
 	UT_HashEntry * entry;

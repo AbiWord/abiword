@@ -579,7 +579,7 @@ GList *XAP_UnixDialog_Insert_Symbol::_getGlistFonts (void)
 	}
 
 	m_Insert_Symbol_no_fonts = j;
-	DELETEP(list);
+	DELETEPV(list);
 
 	return g_list_reverse(glFonts);
 }

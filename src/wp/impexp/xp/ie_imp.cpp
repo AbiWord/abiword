@@ -166,11 +166,7 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 	// no filter will support IEFT_Unknown, so we try to detect
 	// from the contents of the file or the filename suffix
 	// the importer to use and assign that back to ieft.
-	// Give precedence to the file suffix.
-	if (ieft == IEFT_Unknown)
-	{
-		ieft = IE_Imp::fileTypeForSuffix(UT_pathSuffix(szFilename));
-	}
+	// Give precedence to the file contents
 	if (ieft == IEFT_Unknown)
 	{
 		char szBuf[4096];  // 4096 ought to be enough
@@ -183,6 +179,10 @@ UT_Error IE_Imp::constructImporter(PD_Document * pDocument,
 			fclose(f);
 			ieft = IE_Imp::fileTypeForContents(szBuf, iNumbytes);
 		}
+	}
+	if (ieft == IEFT_Unknown)
+	{
+		ieft = IE_Imp::fileTypeForSuffix(UT_pathSuffix(szFilename));
 	}
 	if (ieft == IEFT_Unknown)
 	{

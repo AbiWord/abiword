@@ -613,8 +613,8 @@ UT_Error IE_Exp_HRText::_writeDocument(void)
 		return UT_IE_NOMEMORY;
 	if (!m_pDocument->tellListener(static_cast<PL_Listener *>(m_pListener)))
 		return UT_ERROR;
-	delete m_pListener;
 
+	delete m_pListener;
 	m_pListener = NULL;
 	
 	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
