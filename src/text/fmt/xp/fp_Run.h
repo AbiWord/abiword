@@ -150,7 +150,20 @@ public:
 	virtual UT_Bool			doesContainNonBlankData(void) const { return UT_TRUE; }	// Things like text whould return false if it is all spaces.
 	virtual UT_Bool			isSuperscript(void) const { return UT_FALSE; }
 	virtual UT_Bool			isSubscript(void) const { return UT_FALSE; }
-
+	virtual UT_Bool                         isUnderline(void) const { return UT_FALSE; };
+	virtual UT_Bool                         isOverline(void) const { return UT_FALSE; };
+	virtual UT_Bool                         isStrikethrough(void) const { return UT_FALSE; };
+	virtual void                            setLinethickness(UT_sint32 max_linethickness) { return; };
+	virtual UT_sint32                       getLinethickness(void) {return 0; } ;
+	virtual void                            setUnderlineXoff(UT_sint32 xoff) { return; };
+	virtual UT_sint32                       getUnderlineXoff(void) { return 0; } ;
+	virtual void                            setOverlineXoff(UT_sint32 xoff){ return ;};
+	virtual UT_sint32                       getOverlineXoff(void) {return 0; };
+	virtual void                            setMaxUnderline(UT_sint32 xoff){ return; };
+	virtual UT_sint32                       getMaxUnderline(void) {return 0; };
+	virtual void                            setMinOverline(UT_sint32 xoff) {return; };
+	virtual UT_sint32                       getMinOverline(void) { return 0; };
+	
 #ifdef FMT_TEST
 	virtual void			__dump(FILE * fp) const;
 #endif	
@@ -369,3 +382,9 @@ protected:
 };
 
 #endif /* FP_RUN_H */
+
+
+
+
+
+

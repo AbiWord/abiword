@@ -951,37 +951,170 @@ void fp_TextRun::_drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 	  Upon entry to this function, yoff is the TOP of the run,
 	  NOT the baseline.
 	*/
-	
-	/*
-	  TODO I *think* this line width should be proportional
-	  to the size of the font.
-	*/
+
+     /*
+	Here is the code to work out the position and thickness of under
+        and overlines for a run of text. This is neccessary because an
+underline or overline could shift position depending on the text size -
+particularly for subscripts and superscripts. We can't work out where to put 
+the lines until the end of the lined span. This info is saved in the fp_TextRun
+class. If a underline or overline is pending (because the next run continues
+ the underline or overline), mark the next run as dirty to make sure it is
+drawn.
+     */
+
+  if( (m_fDecorations & (TEXT_DECOR_UNDERLINE | TEXT_DECOR_OVERLINE | 
+			TEXT_DECOR_LINETHROUGH)) == 0) return;
         UT_sint32 old_LineWidth = m_iLineWidth;
-	m_iLineWidth = 1 + (UT_MAX(10,getAscent()) - 10)/8;
+        UT_sint32 cur_linewidth = 1+ (UT_MAX(10,m_iAscent)-10)/8;
+	UT_sint32 iDrop = 0;
+        fp_Run* P_Run = getPrev();
+        fp_Run* N_Run = getNext();
+        UT_Bool b_Underline = isUnderline();
+        UT_Bool b_Overline = isOverline();
+	UT_Bool b_Strikethrough = isStrikethrough();
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan;
+	UT_Bool b_Firstrun = (P_Run == NULL) || (m_pLine->getFirstRun()== this);
+	UT_Bool b_Lastrun = (N_Run == NULL) || (m_pLine->getLastRun()== this);
 
+	/*
+	  If the previous run is NULL or if this is the first run of a line, 
+we are on the first run of the line so set the linethickness, start of the line span and the overline and underline positions from the current measurements.
+	*/
+        if(P_Run == NULL || b_Firstrun )
+	{
+	        setLinethickness(cur_linewidth);
+		if(b_Underline)
+		{
+		     iDrop = yoff + m_iAscent + m_iDescent/3;
+		     setUnderlineXoff( xoff);
+		     setMaxUnderline(iDrop);
+		}
+		if(b_Overline)
+		{
+		     iDrop = yoff + 1 + (UT_MAX(10,m_iAscent) - 10)/8;
+		     setOverlineXoff( xoff);
+		     setMinOverline(iDrop);
+		}
+	}
+	/*
+	  Otherwise look to see if the previous run had an underline or 
+overline. If it does, merge the information with the present information. Take
+the Maximum of the underline offsets and the minimum of the overline offsets.
+Always take the maximum of the linewidths. If there is no previous underline
+or overline set the underline and overline locations with the current data.
+	*/
+	else
+	{
+	  if (!P_Run->isUnderline() && !P_Run->isOverline() && 
+	      !P_Run->isStrikethrough())
+	      {
+	             setLinethickness(cur_linewidth);
+	      }
+	      else
+	      {
+		     setLinethickness(UT_MAX(P_Run->getLinethickness(),cur_linewidth));
+	      }
+ 	      if (b_Underline)
+	      {
+		     iDrop = yoff + m_iAscent + m_iDescent/3;
+		     if(!P_Run->isUnderline())
+		     {
+		           setUnderlineXoff( xoff);
+		           setMaxUnderline(iDrop);
+		     }
+		     else
+		     {
+		           setUnderlineXoff( P_Run->getUnderlineXoff());
+                           setMaxUnderline(UT_MAX( P_Run->getMaxUnderline(), iDrop));
+		     }
+		}
+ 	      if (b_Overline)
+	      {
+		     iDrop = yoff + 1 + (UT_MAX(10,m_iAscent) - 10)/8;
+		     if(!P_Run->isOverline())
+		     {
+		           setOverlineXoff( xoff);
+		           setMinOverline(iDrop);
+		     }
+		     else
+		     {
+		           setOverlineXoff( P_Run->getOverlineXoff());
+                           setMinOverline(UT_MIN( P_Run->getMinOverline(), iDrop));
+		     }
+		}
+	}
+	m_iLineWidth = getLinethickness();
 	m_pG->setLineWidth(m_iLineWidth);
-	
-	if (m_fDecorations & TEXT_DECOR_UNDERLINE)
+	/*
+	  If the next run returns NULL or if we are on the last run
+ we've reached the of the line of text so the overlines and underlines must 
+be drawn.
+	*/
+	if(N_Run == NULL  || b_Lastrun)
 	{
-		UT_sint32 iDrop = (m_pLine->getDescent() / 3);
-		m_pG->drawLine(xoff, yoff + iDrop + m_iAscent, xoff+getWidth(), yoff + iDrop + m_iAscent);
+ 	        if ( b_Underline)
+		{
+		     iDrop = UT_MAX( getMaxUnderline(), iDrop);
+		     UT_sint32 totx = getUnderlineXoff();
+		     m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+		}
+		if ( b_Overline)
+		{
+		     iDrop = UT_MIN( getMinOverline(), iDrop);
+		     UT_sint32 totx = getOverlineXoff();
+		     m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+		}
 	}
-	if (m_fDecorations & TEXT_DECOR_OVERLINE)
+	/* 
+	   Otherwise look to see if the next run has an underline or overline
+if not, draw the line, if does mark the next run as dirty to make sure it
+is drawn later.
+	*/
+	else
 	{
-	        UT_sint32 y2 = yoff +  (UT_MAX(10,getAscent()) - 10)/8;
-		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
+ 	        if ( b_Underline )
+		{
+		     if(!N_Run->isUnderline())
+		     {
+		          iDrop = UT_MAX( getMaxUnderline(), iDrop);
+		          UT_sint32 totx = getUnderlineXoff();
+		          m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+		     }
+		     else
+		     {
+		          N_Run->markAsDirty();
+		     }
+		}
+ 	        if ( b_Overline )
+		{
+		     if(!N_Run->isOverline())
+		     {
+		          iDrop = UT_MIN( getMinOverline(), iDrop);
+		          UT_sint32 totx = getOverlineXoff();
+		          m_pG->drawLine(totx, iDrop, xoff+getWidth(), iDrop);
+		     }
+		     else
+		     {
+		          N_Run->markAsDirty();
+		     }
+		}
 	}
-
-	if (m_fDecorations & TEXT_DECOR_LINETHROUGH)
+	/*
+	  We always want strikethrough to go right through the middle of the
+text so we can keep the original code.
+	*/
+	if ( b_Strikethrough)
 	{
-		UT_sint32 y2 = yoff + getAscent() * 2 / 3;
-		m_pG->drawLine(xoff, y2, xoff+getWidth(), y2);
+		iDrop = yoff + getAscent() * 2 / 3;
+		m_pG->drawLine(xoff, iDrop, xoff+getWidth(), iDrop);
 	}
-
+	/* 
+	   Restore the previous line width.
+	*/ 
 	m_iLineWidth = old_LineWidth;
 	m_pG->setLineWidth(m_iLineWidth);
-
-
 }
 
 void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
@@ -1034,7 +1167,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 		// I think this is safe, although it begs the question, why did we get called if iLen is zero?  TODO
 		return;
 	}
-	
+
 	UT_sint32 xoff = 0, yoff = 0;
 	UT_sint32 iAscent = m_pLine->getAscent();
 	UT_sint32 iDescent = m_pLine->getDescent();
@@ -1211,6 +1344,71 @@ UT_Bool fp_TextRun::isSuperscript(void) const
 UT_Bool fp_TextRun::isSubscript(void) const
 {
 	return (m_fPosition == TEXT_POSITION_SUBSCRIPT);
+}
+
+UT_Bool fp_TextRun::isUnderline(void) const
+{
+         return ((m_fDecorations & TEXT_DECOR_UNDERLINE) !=  0);
+}
+
+UT_Bool fp_TextRun::isOverline(void) const
+{
+         return ((m_fDecorations & TEXT_DECOR_OVERLINE) !=  0);
+}
+
+UT_Bool fp_TextRun::isStrikethrough(void) const
+{
+         return ((m_fDecorations & TEXT_DECOR_LINETHROUGH) !=  0);
+}
+
+void fp_TextRun::setLinethickness(UT_sint32 max_linethickness)
+{
+         m_iLinethickness = max_linethickness;
+}
+
+void fp_TextRun::setUnderlineXoff(UT_sint32 xoff)
+{
+         m_iUnderlineXoff = xoff;
+}
+
+UT_sint32 fp_TextRun::getUnderlineXoff(void)
+{
+         return m_iUnderlineXoff;
+}
+
+void fp_TextRun::setOverlineXoff(UT_sint32 xoff)
+{
+         m_iOverlineXoff = xoff;
+}
+
+UT_sint32 fp_TextRun::getOverlineXoff(void)
+{
+         return m_iOverlineXoff;
+}
+
+void fp_TextRun::setMaxUnderline(UT_sint32 maxh)
+{
+         m_imaxUnderline = maxh;
+}
+
+UT_sint32 fp_TextRun::getMaxUnderline(void)
+{
+         return m_imaxUnderline;
+}
+
+void fp_TextRun::setMinOverline(UT_sint32 minh)
+{
+         m_iminOverline = minh;
+}
+
+UT_sint32 fp_TextRun::getMinOverline(void)
+{
+         return m_iminOverline;
+}
+
+UT_sint32 fp_TextRun::getLinethickness( void)
+{
+         return m_iLinethickness;
 }
 
 UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const

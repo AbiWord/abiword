@@ -51,7 +51,7 @@ Bruce Pearson <BruceP@wn.com.au>                full justification
 Andy Richardson <andy@promethium.chem.ucl.ac.uk>    PostScript image handling
 Duncan Rose <d.rose@salford.ac.uk>
 Pierre Sarrazin <ps@cam.org>            
-Martin Sevior <msevior@kosal0.triumf.ca>        Symbol dialog, Overline
+Martin Sevior <msevior@physics.unimelb.edu.au>        Symbol dialog, Overline
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
 Alexey Sinutin <megabyte@salesexplosion.com>    Insert Date/Time dialog

@@ -76,6 +76,19 @@ class fp_TextRun : public fp_Run
 	virtual UT_Bool			doesContainNonBlankData(void) const;
 	virtual UT_Bool				isSuperscript(void) const;
 	virtual UT_Bool				isSubscript(void) const;
+	virtual UT_Bool                         isUnderline(void) const;
+	virtual UT_Bool                         isOverline(void) const;
+	virtual UT_Bool                         isStrikethrough(void) const;
+	virtual void                            setLinethickness(UT_sint32 max_linethickness);
+	virtual UT_sint32                       getLinethickness(void);
+	virtual void                            setUnderlineXoff(UT_sint32 xoff);
+	virtual UT_sint32                       getUnderlineXoff(void);
+	virtual void                            setOverlineXoff(UT_sint32 xoff);
+	virtual UT_sint32                       getOverlineXoff(void);
+	virtual void                            setMaxUnderline(UT_sint32 xoff);
+	virtual UT_sint32                       getMaxUnderline(void);
+	virtual void                            setMinOverline(UT_sint32 xoff);
+	virtual UT_sint32                       getMinOverline(void);
 	UT_uint32				countTrailingSpaces(void) const;
 
 #ifdef FMT_TEST
@@ -145,7 +158,21 @@ protected:
 		JUSTIFICATION_NOT_USED = -1
 	};
 	UT_sint32				m_iSpaceWidthBeforeJustification;
+        UT_sint32                               m_iLinethickness;
+        UT_sint32                               m_iUnderlineXoff;
+        UT_sint32                               m_imaxUnderline;
+        UT_sint32                               m_iminOverline;
+        UT_sint32                               m_iOverlineXoff;
 
 };
 
 #endif /* FP_TEXTRUN_H */
+
+
+
+
+
+
+
+
+
