@@ -201,8 +201,8 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 static void s_poptInit(AP_Args *Args)
 {
 	// go to the Args options array and kill starting with --version.
-	for (int i = 0; Args.options[i].longName != NULL; i++)
-		if (!strcmp(Args.options[i].longName, "version"))
+	for (int i = 0; Args->options[i].longName != NULL; i++)
+		if (!strcmp(Args->options[i].longName, "version"))
 		{
 			Args->options[i].longName = NULL; Args->options[i].shortName = 0;
 			Args->options[i].argInfo = 0; Args->options[i].arg = NULL;
