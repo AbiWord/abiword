@@ -660,6 +660,17 @@ UT_String ie_imp_cell::getPropVal(const UT_String & psProp)
 	return UT_String_getPropVal(m_sCellProps, psProp);
 }
 
+/*!
+ * Copy the relevant contents of one cell to another. Useful for rows of
+ * of cells with properties identical to the previous row.
+ */
+void ie_imp_cell::copyCell(ie_imp_cell * pCell)
+{
+	m_iCellX = pCell->m_iCellX;
+	m_bMergeAbove = pCell->m_bMergeAbove;
+	m_bMergeRight = pCell->m_bMergeRight;
+	m_sCellProps = pCell->m_sCellProps;
+}
 
 /*!
  * Return the value of a property of this cell. This should be deleted when you've finished with it.
@@ -711,15 +722,125 @@ void ie_imp_table::OpenCell(void)
 }
 
 /*!
- * Start a new row.
+ * Returns a vector of pointers to cells on the requested row.
+ * pVec should be empty initially.
  */
-void ie_imp_table::NewRow(void)
+bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec)
 {
+	UT_sint32 i = 0;
+	ie_imp_cell * pCell = NULL;
+	bool bFound = false;
+	UT_sint32 iFound = 0;
+	for(i=0; !bFound && (i < (UT_sint32) m_vecCells.getItemCount()); i++)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		if(pCell->getRow() == row)
+		{
+			bFound = true;
+			iFound = i;
+		}
+	}
+	if(!bFound)
+	{
+		return bFound;
+	}
+	bool bEnd = false;
+	for(i=iFound; !bEnd && (i<(UT_sint32) m_vecCells.getItemCount()); i++)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		if(pCell->getRow() != row)
+		{
+			bEnd = true;
+		}
+		else
+		{
+			pVec->addItem((void *) pCell);
+			UT_DEBUGMSG(("SEVIOR: Adding cell %d with cellx %d to row vec \n",i-iFound,pCell->getCellX()));
+		}
+	}
+	return true;
+}
+
+
+/*!
+ * Start a new row. 
+\returns This returns -1 on error.
+\returns 0 on Normal.
+\returns +1 if the row should be the first row of a new Table. 
+(This is decided is the number cellx valus inthe row don't match.)
+  */
+UT_sint32 ie_imp_table::NewRow(void)
+{
+	UT_DEBUGMSG(("Doing NewRow in ie_imp_table rowcounter %d \n",m_iRowCounter));
+	if(m_iRowCounter > 0)
+	{
+		ie_imp_cell * pCell = getNthCellOnRow(0);
+		ie_imp_cell * pPrevCell = NULL;
+		UT_Vector vecPrev;
+		UT_Vector vecCur;
+		vecPrev.clear();
+		vecCur.clear();
+		getVecOfCellsOnRow(m_iRowCounter-1, &vecPrev);
+		getVecOfCellsOnRow(m_iRowCounter, &vecCur);
+		UT_sint32 szPrevRow = (UT_sint32) vecPrev.getItemCount();
+		UT_sint32 szCurRow = (UT_sint32) vecCur.getItemCount();
+//
+// Look if this row is just a copy of the previous. We decide this if there
+// are no values of cellX set.
+//
+		UT_sint32 i =0;
+		for(i=0; i < szCurRow; i++)
+		{
+			pCell = (ie_imp_cell *) vecCur.getNthItem(i);
+			if(pCell->getCellX() == -1)
+			{
+				if(i >= szPrevRow)
+				{
+					UT_ASSERT(0);
+					return -1;
+				}
+				pPrevCell = (ie_imp_cell *) vecPrev.getNthItem(i);
+				pCell->copyCell(pPrevCell);
+			}
+		}
+//
+// Now look for numbers of matching cellx between rows. If the new row has a
+// wholely different cellx structure we start a new table.
+//
+		UT_sint32 iMatch = 0;
+		for(i=0; i < szCurRow; i++)
+		{
+			pCell = (ie_imp_cell *) vecCur.getNthItem(i);
+			UT_sint32 curX = pCell->getCellX();
+			bool bMatch = false;
+			UT_sint32 j = 0;
+			for(j=0; !bMatch && (j < (UT_sint32) m_vecCellX.getItemCount()); j++)
+			{
+				UT_sint32 prevX = (UT_sint32) m_vecCellX.getNthItem(j);
+				bMatch =  (prevX == curX);
+			}
+			if(bMatch)
+			{
+				iMatch++;
+			}
+		}
+		UT_DEBUGMSG(("SEVIOR: iMatch = %d \n",iMatch));
+		if(iMatch == 0)
+		{
+			return +1;
+		}
+		if(iMatch != szCurRow )
+		{
+			return +1;
+		}
+	}
 	m_pCurImpCell = NULL;
 	m_iRowCounter++;
 	m_iPosOnRow = 0;
 	m_iCellXOnRow = 0;
 	m_bNewRow = true;
+	_buildCellXVector();
+	return true;
 }
 
 /*!
@@ -819,7 +940,6 @@ void ie_imp_table::writeTablePropsInDoc(void)
 		}
 		double dLeftPos = UT_convertToInches(sLeftPos.c_str());
 		double dColSpace = UT_convertToInches(sColSpace.c_str());
-		_buildCellXVector();
 		UT_sint32 iPrev = 0;
 //
 // Now build the table-col-width string.
@@ -974,14 +1094,12 @@ void ie_imp_table::_buildCellXVector(void)
  */
 UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 {
-	_buildCellXVector();
 	UT_sint32 cellx = pImpCell->getCellX();
 	UT_sint32 i =0;
 	bool bFound = false;
 	for(i=0; !bFound && (i< (UT_sint32) m_vecCellX.getItemCount()); i++)
 	{
 		UT_sint32 icellx = (UT_sint32) m_vecCellX.getNthItem(i);
-		UT_DEBUGMSG(("SEVIOR: Look at item %d found cellx %d \n",i,icellx));
 		if(icellx == cellx)
 		{
 			bFound = true;
@@ -989,7 +1107,7 @@ UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 	}
 	if(bFound)
 	{
-		UT_DEBUGMSG(("SEVIOR: looking for cellx %d found at %d \n",cellx,i));
+		xxx_UT_DEBUGMSG(("SEVIOR: looking for cellx %d found at %d \n",cellx,i));
 		return i+1;
 	}
 	return -1;
@@ -1177,6 +1295,66 @@ void ie_imp_table::_removeAllStruxes(void)
 }
 
 /*!
+ * Remove all the cells in row identified by row from the table vector of
+ * cells. Do not delete the cell classes, they will be usde later.
+ */ 
+bool ie_imp_table::removeRow(UT_sint32 row)
+{
+	UT_sint32 i=0;
+	UT_sint32 iFound =0;
+	bool bFound = false;
+	ie_imp_cell * pCell = NULL;
+	for(i=0; !bFound &&  (i< (UT_sint32) m_vecCells.getItemCount()); i++)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		bFound = (pCell->getRow() == row);
+		iFound = i;
+	}
+	if(!bFound)
+	{
+		return false;
+	}
+	i = iFound;
+	while(pCell != NULL && i < (UT_sint32) m_vecCells.getItemCount())
+	{
+		UT_DEBUGMSG(("SEVIOR: Removing cell %x from row %d \n",pCell,row));
+		m_vecCells.deleteNthItem(i);
+		if(i<(UT_sint32) m_vecCells.getItemCount())
+		{
+			pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+			if(pCell->getRow() != row)
+			{
+				pCell = NULL;
+			}
+		}
+	}
+	return true;
+}
+
+/*!
+ * Append the row of cells given by the vector pVecRowOfCells to the current
+ * table, adjusting hte table pointer and row in the cell classes
+ */
+void ie_imp_table::appendRow(UT_Vector * pVecRowOfCells)
+{
+	UT_sint32 iNew =0;
+	if(m_iRowCounter > 0)
+	{
+		m_iRowCounter++;
+		iNew = m_iRowCounter;
+	}
+	UT_sint32 i =0;
+	ie_imp_cell * pCell = NULL;
+	for(i=0; i <(UT_sint32) pVecRowOfCells->getItemCount(); i++)
+	{
+		pCell = (ie_imp_cell *) pVecRowOfCells->getNthItem(i);
+		pCell->setImpTable(this);
+		pCell->setRow(iNew);
+		m_vecCells.addItem((void *) pCell);
+	}
+}
+
+/*!
  * This method scans the vector of cell looking for the nth cell on the current row
  * Return null if cell is not present.
 */
@@ -1187,7 +1365,7 @@ ie_imp_cell * ie_imp_table::getNthCellOnRow(UT_sint32 iCell)
 	UT_sint32 iCellOnRow =0;
 	UT_sint32 i=0;
 	bool bFound = false;
-	for(i=0; !bFound &&  (i< m_vecCells.getItemCount()); i++)
+	for(i=0; !bFound &&  (i< (UT_sint32) m_vecCells.getItemCount()); i++)
 	{
 		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
 		if(pCell->getRow() == m_iRowCounter)
@@ -1280,4 +1458,53 @@ ie_imp_table *  ie_imp_table_control::getTable(void)
 	ie_imp_table * pT = NULL;
 	m_sLastTable.viewTop((void **) &pT);
 	return pT;
+}
+
+bool ie_imp_table_control::NewRow(void)
+{
+	UT_sint32 val = getTable()->NewRow();
+	if(val == 0)
+	{
+		return true;
+	}
+	if(val == -1)
+	{
+		return false;
+	}
+//
+// If we're here the row of cells has totally different cellx structure
+// to the previous. So slice off this row, close the table and open a new 
+// table with this row as the first row.
+//
+	UT_Vector vecRow;
+	vecRow.clear();
+	UT_sint32 row = getTable()->getRow();
+	bool bres = true;
+	bres = getTable()->getVecOfCellsOnRow(row, &vecRow);
+	if(!bres)
+	{
+		return bres;
+	}
+//
+// Got last row, now remove it.
+//
+	getTable()->removeRow(row);
+//
+// Close the old table.
+//
+	ie_imp_cell * pCell = (ie_imp_cell *) vecRow.getNthItem(0);
+	PL_StruxDocHandle sdhCell = pCell->getCellSDH();
+	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_EndTable,NULL);
+	CloseTable();
+//
+// Now create a new table with the old last row and the first new row.
+//
+	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_Block,NULL);
+	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_SectionTable,NULL);
+	OpenTable();
+	getTable()->appendRow(&vecRow);
+	getTable()->NewRow();
+	PL_StruxDocHandle sdh = m_pDoc->getLastStruxOfType(PTX_SectionTable);
+	getTable()->setTableSDH(sdh);
+	return true;
 }

@@ -1324,6 +1324,7 @@ IE_Imp_RTF::~IE_Imp_RTF()
 	UT_VECTOR_PURGEALL(RTFHdrFtr *, m_hdrFtrTable);
 	UT_VECTOR_PURGEALL(RTF_msword97_list *, m_vecWord97Lists);
 	UT_VECTOR_PURGEALL(RTF_msword97_listOverride *, m_vecWord97ListOverride);
+	UT_DEBUGMSG(("SEVIOR:DOing last close \n"));
 	while(getTable() && getTable()->wasTableUsed())
 	{
 		CloseTable();
@@ -1567,7 +1568,7 @@ void IE_Imp_RTF::HandleRow(void)
 {
 	UT_DEBUGMSG(("SEVIOR: Handle Row now \n"));
 	getTable()->removeExtraneousCells();
-	getTable()->NewRow();
+	m_TableControl.NewRow();
 }
 		
 
@@ -1702,18 +1703,17 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		ok = ApplySectionAttributes();
 		m_newSectionFlagged = false;
 	}
-	if(forceInsertPara)
-	{
-		UT_DEBUGMSG(("SEVIOR: Forced para inserted \n"));
-	} 
 	if (ok  &&  m_newParaFlagged  &&  (forceInsertPara  ||  (m_gbBlock.getLength() > 0)) )
 	{
+		bool bSave = m_newParaFlagged;
+		m_newParaFlagged = false;
 		ok = ApplyParagraphAttributes();
 		if(m_gbBlock.getLength() == 0)
 		{
 //
 // This forces empty lines to have the same height as the previous line
 //
+			m_newParaFlagged = bSave;
 			if(m_pImportFile != NULL)
 			{
 				getDoc()->appendFmtMark();
@@ -4361,21 +4361,22 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 {
 	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
-	m_bParaWrittenForSection = true;
 
 //
 // Look to see if the nesting level of our tables has changed.
 //
 	if(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
 	{
-		UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-		while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+		if(m_bParaWrittenForSection)
 		{
-			UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
-			OpenTable();
+			UT_DEBUGMSG(("At Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
+			while(m_currentRTFState.m_paraProps.m_tableLevel > m_TableControl.getNestDepth())
+			{
+				UT_DEBUGMSG(("SEVIOR: Doing pard OpenTable \n"));
+				OpenTable();
+			}
+			UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 		}
-		UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
-
 	}
 	else if(m_currentRTFState.m_paraProps.m_tableLevel < m_TableControl.getNestDepth())
 	{
@@ -4386,6 +4387,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		UT_DEBUGMSG(("After Apply Paragraph m_tableLevel %d nestDepth %d \n",m_currentRTFState.m_paraProps.m_tableLevel,m_TableControl.getNestDepth()));
 	}
+	m_bParaWrittenForSection = true;
 
 
 	UT_String propBuffer;
@@ -4841,7 +4843,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		else
 		{
-			UT_DEBUGMSG(("SEVIOR: Apply Para's append strux \n"));
+			xxx_UT_DEBUGMSG(("SEVIOR: Apply Para's append strux \n"));
 			bool ok = getDoc()->appendStrux(PTX_Block, attribs);
 			return ok;
 		}

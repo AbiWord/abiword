@@ -131,7 +131,9 @@ class ABI_EXPORT ie_imp_cell
 	bool             isMergedAbove(void) const {return m_bMergeAbove;}
 	bool             isMergedRight(void) const {return m_bMergeRight;}
 	bool             isFirstVerticalMerged(void) const {return m_bFirstVertical;}
- 
+	void             copyCell(ie_imp_cell * pCell);
+	void             setImpTable(ie_imp_table * pTable) { m_pImpTable = pTable;}
+	void             setRow(UT_sint32 row) { m_iRow = row;}
  private:
 	PD_Document *         m_pDoc;
 	UT_sint32             m_iCellX;
@@ -156,7 +158,7 @@ class ABI_EXPORT ie_imp_table
 	ie_imp_table(PD_Document * pDoc);
 	virtual ~ie_imp_table(void);
 	void                OpenCell(void);
-	void                NewRow(void);
+	UT_sint32           NewRow(void);
 	void                setCellRowNthCell(UT_sint32 row, UT_sint32 col);
 	ie_imp_cell *       getNthCellOnRow(UT_sint32 iCell);
 	void                setCellX(UT_sint32 cellx);
@@ -189,6 +191,9 @@ class ABI_EXPORT ie_imp_table
 	UT_sint32           getCellXOnRow(void) { return m_iCellXOnRow;}
 	void                incPosOnRow(void) { m_iPosOnRow++;}
 	void                incCellXOnRow(void) { m_iCellXOnRow++;}
+	bool                getVecOfCellsOnRow(UT_sint32 row, UT_Vector * pVec);
+	bool                removeRow(UT_sint32 row);
+	void                appendRow(UT_Vector * pVecRowOfCells);
  private:
 	void                _buildCellXVector(void);
 	void                _removeAllStruxes(void);
@@ -217,6 +222,7 @@ public:
 	void                CloseTable(void);
 	void                CloseCell(void);
 	ie_imp_table *      getTable(void);
+	bool                NewRow(void);
 private:
 	UT_Stack            m_sLastTable;
 	PD_Document *       m_pDoc;
