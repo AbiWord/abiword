@@ -52,7 +52,7 @@ public:
 	static void       autoUpdate(UT_Worker * pTimer);
 	void              updateDialog(void);
 	UT_UTF8String     getNewStyle(UT_UTF8String & sProp);
-	void              setPropFromDoc(const char * szProp);
+	bool              setPropFromDoc(const char * szProp);
 	void              setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & sVal);
 	void              setTOCProperty(const char * szProp, const char * szVal);
 	void              fillTOCPropsFromDoc(void);

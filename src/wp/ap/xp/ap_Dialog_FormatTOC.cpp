@@ -262,22 +262,32 @@ void AP_Dialog_FormatTOC::setTOCProperty(UT_UTF8String & sProp, UT_UTF8String & 
 //	m_sTOCProps.dump();
 }
 
-void AP_Dialog_FormatTOC::setPropFromDoc(const char * szProp)
+/*!
+Retrieves a property value from the document, and stores it in the dialog property list.
+@param szProp The property name to retrieve
+@return true if the property value was retrieved from the document, false if 
+        the property value was retrieved from default property values list or could
+		not be retrieved at all.
+*/
+bool AP_Dialog_FormatTOC::setPropFromDoc(const char * szProp)
 {
-	UT_return_if_fail (m_pAP);
+	UT_return_val_if_fail (m_pAP, false);
+	bool bRes = true;
 	const char * szVal = NULL;
 	m_pAP->getProperty(szProp,szVal);
 	if(szVal == NULL)
 	{
+		bRes = false;
 		const PP_Property * pProp = PP_lookupProperty(szProp);
 		if(pProp == NULL)
 		{
 			UT_ASSERT_HARMLESS(0);
-			return;
+			return bRes;
 		}
 		szVal = pProp->m_pszInitial;
 	}
 	setTOCProperty(szProp,szVal);
+	return bRes;
 }
 
 /*!
@@ -400,7 +410,14 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 	setPropFromDoc("toc-has-label3");
 	setPropFromDoc("toc-has-label4");
 
-	setPropFromDoc("toc-heading");
+	bool bRes = setPropFromDoc("toc-heading");
+	if (!bRes)
+	{
+		UT_UTF8String pszTOCHeading;
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
+		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, pszTOCHeading);
+		setTOCProperty("toc-heading", pszTOCHeading.utf8_str());
+	}
 	setPropFromDoc("toc-heading-style");
 	setPropFromDoc("toc-id");
 
