@@ -50,7 +50,19 @@ protected:
 	struct
 	{
 		// add various fields here to persist between uses of the dialog....
-		
+		UT_uint32	nFromPage;
+		UT_uint32	nToPage;
+		UT_uint32	nMinPage;
+		UT_uint32	nMaxPage;
+		UT_uint32	nCopies;
+		UT_Bool		bDoPageRange;
+		UT_Bool		bDoPrintSelection;
+		UT_Bool		bDoPrintToFile;
+		UT_Bool		bDoCollate;
+		UT_Bool		bEnablePrintToFile;
+		UT_Bool		bEnableSelection;
+		UT_Bool		bEnablePageRange;
+
 	} m_persistPrintDlg;
 	
 };
