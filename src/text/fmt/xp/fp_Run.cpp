@@ -509,7 +509,7 @@ void fp_Run::expandWidthTo(UT_uint32 iNewWidth)
 #endif
 }
 
-void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bEOL)
 {
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
@@ -517,7 +517,7 @@ void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_B
 	if  (x <= 0)
 	{
 		pos = m_pBL->getPosition() + m_iOffsetFirst;
-		bRight = UT_TRUE;
+		bEOL = UT_FALSE;
 		return;
 	}
 	
@@ -533,7 +533,7 @@ void fp_Run::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_B
 			}
 
 			// NOTE: this allows inserted text to be coalesced in the PT
-			bRight = UT_FALSE;
+			bEOL = UT_TRUE;
 			
 			pos = m_pBL->getPosition() + i;
 			return;

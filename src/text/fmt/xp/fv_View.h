@@ -130,12 +130,11 @@ protected:
 	void				_xorSelection();
 	void				_swapSelectionOrientation(void);
 
-	// HACK: localize handling of insertion point logic
+	// localize handling of insertion point logic
 	UT_uint32			_getPoint(void);
-	void				_setPoint(UT_uint32 pt);
+	void				_setPoint(UT_uint32 pt, UT_Bool bEOL = UT_FALSE);
 	UT_uint32			_getDataCount(UT_uint32 pt1, UT_uint32 pt2);
 	UT_Bool				_charMotion(UT_Bool bForward,UT_uint32 countChars);
-
 	UT_Bool				_isPointAP(void);
 	PT_AttrPropIndex	_getPointAP(void);
 	void				_setPointAP(PT_AttrPropIndex indexAP);
@@ -147,7 +146,7 @@ protected:
 	UT_uint32			m_iPointHeight;
 	
 	UT_Bool				m_bPointVisible;
-	UT_Bool				m_bInsPointRight;
+	UT_Bool				m_bPointEOL;
 
 	UT_Bool				m_bPointAP;
 	PT_AttrPropIndex	m_apPoint;

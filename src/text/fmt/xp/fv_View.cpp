@@ -55,6 +55,7 @@ FV_View::FV_View(FL_DocLayout* pLayout)
 	m_iWindowWidth = 0;
 	m_iPointHeight = 0;
 	m_bPointVisible = UT_FALSE;
+	m_bPointEOL = UT_FALSE;
 	m_bSelectionVisible = UT_FALSE;
 	m_iSelectionAnchor = 0;
 	m_bSelection = UT_FALSE;
@@ -220,6 +221,7 @@ void FV_View::moveInsPtToBOD()
 	}
 
 	_setPoint(posCur);
+	_updateInsertionPoint();
 }
 
 void FV_View::moveInsPtToBOL()
@@ -235,7 +237,7 @@ void FV_View::moveInsPtToBOL()
 	
 	PT_DocPosition iPoint = _getPoint();
 	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-	fp_Run* pRun = pBlock->findPointCoords(_getPoint(), UT_TRUE,
+	fp_Run* pRun = pBlock->findPointCoords(_getPoint(), m_bPointEOL,
 										   xPoint, yPoint, iPointHeight);
 	fp_Line* pLine = pRun->getLine();
 
@@ -244,7 +246,6 @@ void FV_View::moveInsPtToBOL()
 	PT_DocPosition iPos = pFirstRun->getBlockOffset() + pBlock->getPosition();
 	
 	_setPoint(iPos);
-	m_bInsPointRight = UT_TRUE;
 	_updateInsertionPoint();
 }
 
@@ -261,16 +262,15 @@ void FV_View::moveInsPtToEOL()
 	
 	PT_DocPosition iPoint = _getPoint();
 	fl_BlockLayout* pBlock = _findBlockAtPosition(iPoint);
-	fp_Run* pRun = pBlock->findPointCoords(_getPoint(), UT_TRUE,
+	fp_Run* pRun = pBlock->findPointCoords(_getPoint(), m_bPointEOL,
 										   xPoint, yPoint, iPointHeight);
 	fp_Line* pLine = pRun->getLine();
 
 	fp_Run* pLastRun = pLine->getLastRun();
 
-	PT_DocPosition iPos = pLastRun->getBlockOffset() + pLastRun->getLength() -	1 + pBlock->getPosition();
+	PT_DocPosition iPos = pLastRun->getBlockOffset() + pLastRun->getLength() + pBlock->getPosition();
 
-	_setPoint(iPos);
-	m_bInsPointRight = UT_FALSE;
+	_setPoint(iPos, UT_TRUE);
 	_updateInsertionPoint();
 }
 
@@ -288,7 +288,6 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 	}
 	else
 	{
-		m_bInsPointRight = !bForward;
 		_updateInsertionPoint();
 	}
 }
@@ -322,13 +321,15 @@ void FV_View::insertParagraphBreak()
 	{
 		_deleteSelection();
 	}
+	else
+	{
+		_eraseInsertionPoint();
+	}
 
 	// insert a new paragraph with the same attributes/properties
 	// as the previous (or none if the first paragraph in the section).
 
 	m_pDoc->insertStrux(_getPoint(), PTX_Block);
-
-	m_bInsPointRight = UT_TRUE;
 
 	m_pLayout->reformat();
 	
@@ -370,8 +371,6 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 			_charMotion(bForward,count);
 		}
 
-		m_bInsPointRight = bForward;
-
 		m_pDoc->deleteSpan(_getPoint(), _getPoint()+count);
 	}
 
@@ -388,7 +387,7 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 	UT_uint32 iOldPoint = _getPoint();
 
 	fl_BlockLayout* pOldBlock = _findBlockAtPosition(iOldPoint);
-	fp_Run* pOldRun = pOldBlock->findPointCoords(_getPoint(), UT_TRUE, xPoint, yPoint, iPointHeight);
+	fp_Run* pOldRun = pOldBlock->findPointCoords(_getPoint(), m_bPointEOL, xPoint, yPoint, iPointHeight);
 	fp_Line* pOldLine = pOldRun->getLine();
 
 	fp_Line* pDestLine;
@@ -424,13 +423,13 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 		PT_DocPosition iFirstPosOnNewLine = pFirstRunOnNewLine->getBlockOffset() + pNewBlock->getPosition();
 		if (bNext)
 		{
-			UT_ASSERT(iFirstPosOnNewLine > iOldPoint);
+			UT_ASSERT((iFirstPosOnNewLine > iOldPoint) || (m_bPointEOL && (iFirstPosOnNewLine == iOldPoint)));
 		}
 		else
 		{
 			UT_ASSERT(iFirstPosOnNewLine < iOldPoint);
 		}
-		_setPoint(iFirstPosOnNewLine);
+
 		UT_uint32 iNumCharsOnNewLine = pDestLine->getNumChars();
 		if (iNumChars >= (UT_sint32)iNumCharsOnNewLine)
 		{
@@ -464,14 +463,14 @@ void FV_View::_moveInsPtNextPrevLine(UT_Bool bNext)
 
 void FV_View::warpInsPtNextPrevLine(UT_Bool bNext)
 {
-		if (!_isSelectionEmpty())
-		{
-			_moveToSelectionEnd(bNext);
-		}
+	if (!_isSelectionEmpty())
+	{
+		_moveToSelectionEnd(bNext);
+	}
 
-		_moveInsPtNextPrevLine(bNext);
+	_moveInsPtNextPrevLine(bNext);
 
-		_updateInsertionPoint();
+	_updateInsertionPoint();
 }
 
 void FV_View::extSelNextPrevLine(UT_Bool bNext)
@@ -573,8 +572,8 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos)
 	PT_DocPosition iOldPoint = _getPoint();
 
 	PT_DocPosition iNewPoint;
-	UT_Bool bRight;
-	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bRight);
+	UT_Bool bEOL;
+	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, iNewPoint, bEOL);
 
 	UT_DEBUGMSG(("extToXY: iOldPoint=%d  iNewPoint=%d  iSelectionAnchor=%d\n",
 				 iOldPoint, iNewPoint, m_iSelectionAnchor));
@@ -716,13 +715,11 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos)
 	}
 	
 	PT_DocPosition pos;
-	UT_Bool bRight;
+	UT_Bool bEOL;
 	
-	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, pos, bRight);
+	pPage->mapXYToPosition(xPos + m_xScrollOffset, yClick, pos, bEOL);
 	
-	_setPoint(pos);
-	m_bInsPointRight = bRight;
-
+	_setPoint(pos, bEOL);
 	_updateInsertionPoint();
 }
 
@@ -790,7 +787,7 @@ void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		  we don't really care about the coords.  We're calling these
 		  to get the Run pointer
 		*/
-		_findPositionCoords(iPos1, UT_TRUE, x, y, height, &pBlock1, &pRun1);
+		_findPositionCoords(iPos1, UT_FALSE, x, y, height, &pBlock1, &pRun1);
 		_findPositionCoords(iPos2, UT_FALSE, x, y, height, &pBlock2, &pRun2);
 	}
 
@@ -845,7 +842,7 @@ void FV_View::invertBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 }
 
 void FV_View::_findPositionCoords(PT_DocPosition pos,
-										UT_Bool bRight,
+										UT_Bool bEOL,
 										UT_uint32& x,
 										UT_uint32& y,
 										UT_uint32& height,
@@ -858,7 +855,7 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 	UT_ASSERT(pBlock);
-	fp_Run* pRun = pBlock->findPointCoords(pos, bRight, xPoint, yPoint, iPointHeight);
+	fp_Run* pRun = pBlock->findPointCoords(pos, bEOL, xPoint, yPoint, iPointHeight);
 
 	// we now have coords relative to the page containing the ins pt
 	fp_Page* pPointPage = pRun->getLine()->getBlockSlice()->getColumn()->getSectionSlice()->getPage();
@@ -905,7 +902,7 @@ void FV_View::_updateInsertionPoint()
 	
 	_eraseInsertionPoint();
 
-	_findPositionCoords(_getPoint(), m_bInsPointRight, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
+	_findPositionCoords(_getPoint(), m_bPointEOL, m_xPoint, m_yPoint, m_iPointHeight, NULL, NULL);
 	
 	_xorInsertionPoint();
 }
@@ -1216,9 +1213,10 @@ void FV_View::cmdSelectWord(UT_sint32 xPos, UT_sint32 yPos)
 {
 	warpInsPtToXY(xPos, yPos);
 
-	_eraseInsertionPoint();
-	
+	UT_ASSERT((UT_TODO));	
 #ifdef BUFFER	// cmdSelectWord
+	_eraseInsertionPoint();
+
 	PT_DocPosition iPoint = _getPoint();
 	
 	UT_UCSChar ch;
@@ -1320,9 +1318,10 @@ PT_DocPosition FV_View::_getPoint(void)
 	return m_iInsPoint;
 }
 
-void FV_View::_setPoint(PT_DocPosition pt)
+void FV_View::_setPoint(PT_DocPosition pt, UT_Bool bEOL)
 {
 	m_iInsPoint = pt;
+	m_bPointEOL = bEOL;
 }
 
 UT_Bool FV_View::_isPointAP(void)
@@ -1368,6 +1367,7 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	// return UT_FALSE if we ran into an end (or had an error).
 
 	_clearPointAP(UT_TRUE);
+	m_bPointEOL = UT_FALSE;
 	
 	if (bForward)
 		m_iInsPoint += countChars;

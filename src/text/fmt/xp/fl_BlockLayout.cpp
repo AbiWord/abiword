@@ -621,7 +621,7 @@ UT_Bool fl_BlockLayout::getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan,
 	return m_pDoc->getSpanPtr(m_sdh, offset, ppSpan, pLength);
 }
 
-fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bRight, UT_uint32& x, UT_uint32& y, UT_uint32& height)
+fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bEOL, UT_uint32& x, UT_uint32& y, UT_uint32& height)
 {
 	// find the run which has this position inside it.
 	UT_ASSERT(iPos >= getPosition());
@@ -636,10 +636,19 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos, UT_Bool bRight, UT_
 			pRun->findPointCoords(iRelOffset, x, y, height);
 			return pRun;
 		}
-		else if (!bRight && (FP_RUN_JUSTAFTER == iWhere))
+		else if (bEOL && (FP_RUN_JUSTAFTER == iWhere))
 		{
-			pRun->findPointCoords(iRelOffset, x, y, height);
-			return pRun;
+			fp_Run* pNext = pRun->getNext();
+			fp_Line* pNextLine = NULL;
+
+			if (pNext)
+				pNextLine = pNext->getLine();
+
+			if (pNextLine != pRun->getLine())
+			{
+				pRun->findPointCoords(iRelOffset, x, y, height);
+				return pRun;
+			}
 		}
 		
 		pRun = pRun->getNext();

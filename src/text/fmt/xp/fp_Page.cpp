@@ -187,7 +187,7 @@ UT_Bool fp_Page::requestSpace(fl_SectionLayout*, fp_SectionSlice** ppsi)
 	}
 }
 
-void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bEOL)
 {
 	int count = m_vecSliceInfos.getItemCount();
 	fp_SectionSlice* p;
@@ -204,7 +204,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 		{
 			if (((y - (UT_sint32)pci->yoff) > 0) && ((y - (UT_sint32)pci->yoff) < (UT_sint32)p->getHeight()))
 			{
-				p->mapXYToPosition(x - pci->xoff, y - pci->yoff, pos, bRight);
+				p->mapXYToPosition(x - pci->xoff, y - pci->yoff, pos, bEOL);
 				return;
 			}
 		}
@@ -225,7 +225,7 @@ void fp_Page::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 	}
 
 	UT_ASSERT(pMinDist);
-	pMinDist->pSlice->mapXYToPosition(x - pMinDist->xoff, y - pMinDist->yoff, pos, bRight);
+	pMinDist->pSlice->mapXYToPosition(x - pMinDist->xoff, y - pMinDist->yoff, pos, bEOL);
 }
 
 void fp_Page::setView(FV_View* pView)

@@ -569,7 +569,7 @@ UT_Bool fp_BoxColumn::containsPoint(UT_sint32 x, UT_sint32 y)
 	return UT_TRUE;
 }
 
-void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bEOL)
 {
 	fp_BlockSliceInfo* pListNode = m_pFirstSlice;
 	UT_uint32 iMinDist = 0xffffffff;
@@ -588,7 +588,7 @@ void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, U
 			{
 				if (((y - (UT_sint32)pListNode->yoff) >= iY) && ((y - (UT_sint32)pListNode->yoff) < (iY + (UT_sint32)pSliver->iHeight)))
 				{
-					pListNode->pSlice->mapXYToPosition(x, y - pListNode->yoff, pos, bRight);
+					pListNode->pSlice->mapXYToPosition(x, y - pListNode->yoff, pos, bEOL);
 					return;
 				}
 			}
@@ -615,7 +615,7 @@ void fp_Column::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, U
 
 	UT_ASSERT(pMinDist);
 
-	pMinDist->pSlice->mapXYToPosition(x, y - pMinDist->yoff, pos, bRight);
+	pMinDist->pSlice->mapXYToPosition(x, y - pMinDist->yoff, pos, bEOL);
 	return;
 }
 

@@ -100,7 +100,7 @@ public:
 	virtual UT_Bool 	containsPoint(UT_sint32 x, UT_sint32 y) = 0;
 	virtual UT_uint32 	distanceFromPoint(UT_sint32 x, UT_sint32 y) = 0;
 
-	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bRight);
+	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bEOL);
 	void				getOffsets(fp_BlockSlice*, void*, UT_sint32&, UT_sint32&);
 	void				getScreenOffsets(fp_BlockSlice*, void*, UT_sint32&, UT_sint32&, UT_sint32&, UT_sint32&);
 

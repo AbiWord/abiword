@@ -373,7 +373,7 @@ UT_uint32 fp_BlockSlice::requestLineSpace(UT_uint32 iHeightNeeded)
 	}
 }
 
-void fp_BlockSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_BlockSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bEOL)
 {
 	int count = m_vecLineInfos.getItemCount();
 	for (int i = 0; i<count; i++)
@@ -385,7 +385,7 @@ void fp_BlockSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& po
 		{
 			if (((y - pLI->yoff) >= 0) && ((y - pLI->yoff) < (UT_sint32)(pLI->pLine->getHeight())))
 			{
-				pLI->pLine->mapXYToPosition(x - pLI->xoff, y - pLI->yoff, pos, bRight);
+				pLI->pLine->mapXYToPosition(x - pLI->xoff, y - pLI->yoff, pos, bEOL);
 				return;
 			}
 		}
@@ -393,13 +393,13 @@ void fp_BlockSlice::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& po
 		// TODO it might be better to move these special cases outside the loop
 		if ((i == 0) && (y < pLI->yoff))
 		{
-			pLI->pLine->mapXYToPosition(x - pLI->xoff, y - pLI->yoff, pos, bRight);
+			pLI->pLine->mapXYToPosition(x - pLI->xoff, y - pLI->yoff, pos, bEOL);
 			return;
 		}
 		
 		if ((i == (count-1)) && (y >= (pLI->yoff + (UT_sint32)pLI->pLine->getHeight())))
 		{
-			pLI->pLine->mapXYToPosition(x - pLI->xoff, y - pLI->yoff, pos, bRight);
+			pLI->pLine->mapXYToPosition(x - pLI->xoff, y - pLI->yoff, pos, bEOL);
 			return;
 		}
 	}

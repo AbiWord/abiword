@@ -304,7 +304,7 @@ void fp_Line::remove()
 	m_pBlockSlice->removeLine(this, m_pBlockSliceData);
 }
 
-void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bRight)
+void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_Bool& bEOL)
 {
 	if (x < 0)
 	{
@@ -328,7 +328,8 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, UT_
 			// when hit testing runs within a line, we ignore the Y coord
 //			if (((y2) >= 0) && ((y2) < (pRI->pRun->getHeight())))
 			{
-				pRI->pRun->mapXYToPosition(x - pRI->xoff, y2, pos, bRight);
+				pRI->pRun->mapXYToPosition(x - pRI->xoff, y2, pos, bEOL);
+
 				return;
 			}
 		}
