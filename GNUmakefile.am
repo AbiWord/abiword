@@ -55,6 +55,12 @@ realrealclean: realclean
                $(top_srcdir)/install-sh $(top_srcdir)/missing \
                $(top_srcdir)/mkinstalldirs $(top_srcdir)/INSTALL
 
+if BIGENDIAN
+dictionary = $(top_srcdir)/../abidistfiles/dictionary/BigEndian32.american.hash
+else
+dictionary = $(top_srcdir)/../abidistfiles/dictionary/LittleEndian32.american.hash
+endif
+
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
 	@if test -d $(top_srcdir)/../unixfonts/fonts ; then \
@@ -71,11 +77,7 @@ install-data-local:
           for dir in `cd $(top_srcdir)/../abidistfiles; find . -type d ! -name CVS` ; do \
             $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/$$dir ;\
             if test "$$dir" = "./dictionary"; then \
-              if test -z "$(WORDS_BIGENDIAN)"; then \
-                $(INSTALL_DATA) $(top_srcdir)/../abidistfiles/dictionary/LittleEndian32.american.hash $(DESTDIR)$(pkgdatadir)/$$dir/american.hash; \
-              else \
-                $(INSTALL_DATA) $(top_srcdir)/../abidistfiles/dictionary/BigEndian32.american.hash $(DESTDIR)$(pkgdatadir)/$$dir/american.hash; \
-              fi; \
+              $(INSTALL_DATA) $(dictionary) $(DESTDIR)$(pkgdatadir)/$$dir/american.hash; \
             else \
               for file in $(top_srcdir)/../abidistfiles/$$dir/* ; do \
                 if test -f $$file ; then \

@@ -357,7 +357,7 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
 AC_C_BIGENDIAN
-AC_SUBST(WORDS_BIGENDIAN)
+AM_CONDITIONAL(BIGENDIAN,[ test "x$ac_cv_c_bigendian" = "xyes" ])
 
 dnl Currently, we need all of the following, but in the future we
 dnl might not.  
