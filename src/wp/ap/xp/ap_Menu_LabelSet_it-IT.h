@@ -49,6 +49,11 @@ BeginSet(it,IT,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FILE_SAVEAS,		"Sa&lva con nome", 	"Salva il documento sotto un altro nome")
 	MenuLabel(AP_MENU_ID_FILE_PAGESETUP,	"&Imposta pagina",	"Cambia le opzioni di stampa")
 	MenuLabel(AP_MENU_ID_FILE_PRINT,		"Stam&pa",			"Stampa tutto o parte del documento")
+
+#ifdef HAVE_GNOME
+     MenuLabel(AP_MENU_ID_FILE_PRINT_PREVIEW, "Antep&rima di stampa", "Mostra l'anteprima di stampa prima di stampare")
+#endif
+
 	MenuLabel(AP_MENU_ID_FILE_RECENT_1,		"&1 %s",			"Apre questo documento")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_2,		"&2 %s",			"Apre questo documento")
 	MenuLabel(AP_MENU_ID_FILE_RECENT_3,		"&3 %s",			"Apre questo documento")
@@ -151,7 +156,6 @@ BeginSet(it,IT,UT_TRUE)
         MenuLabel(AP_MENU_ID_SPELL_IGNOREALL,   "&Ignora Tutto",          "Ignora sempre questa parola nel documento")
         MenuLabel(AP_MENU_ID_SPELL_ADD,                 "&Aggiungi",                         "Aggiungi questa parola ad vocabolario personale")
 										       
-
 	// ... add others here ...
 
 	MenuLabel(AP_MENU_ID__BOGUS2__,			NULL,				NULL)

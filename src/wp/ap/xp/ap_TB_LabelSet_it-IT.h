@@ -55,12 +55,13 @@ BeginSet(it,IT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Salva", 		tb_save_xpm,	NULL, "Salva il documento")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Salva con nome", 	tb_save_as_xpm,	NULL, "Salva il documento con un altro nome")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Stampa",		tb_print_xpm,	NULL, "Stampa il documento")
-
+        ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,  "Anteprima di stampa", tb_print_preview_xpm, NULL, "Mostra l'anteprima di stampa prima di stampare")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Annulla",		tb_undo_xpm,	NULL, "Annulla la modifica")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Ripristina",	tb_redo_xpm,	NULL, "Ripristina la modifica")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_CUT,		"Taglia",		tb_cut_xpm,		NULL, "Taglia")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Copia",		tb_copy_xpm,	NULL, "Copia")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Incolla",		tb_paste_xpm,	NULL, "Incolla")
+        ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK, "Controllo ortografico", tb_spellcheck_xpm, NULL, "Controlla l'ortografia del documento")
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stile",		NoIcon,			NULL, "Stile")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Carattere",	NoIcon,			NULL, "Carattere")
@@ -94,7 +95,11 @@ BeginSet(it,IT,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Zoom",			NoIcon,			NULL, "Zoom")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Liste",		tb_lists_xpm,		NULL,		"Liste ed elenchi puntati")
 	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Liste numerate",		tb_lists_numbers_xpm,		NULL,		"Inizia/Termina liste numerate")
-	
+	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Colore",	NoIcon,			NULL, "Cambia il colore")	
+        ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Colore dell sfondo",	NoIcon,			NULL, "Cambia il colore dello sfondo")
+        ToolbarLabel(AP_TOOLBAR_ID_INDENT, "Aumenta il rientro", tb_text_indent_xpm, NULL, "Aumenta la distanza del rientro dal margine")
+        ToolbarLabel(AP_TOOLBAR_ID_UNINDENT, "Diminuisci il rientro", tb_text_unindent_xpm, NULL, "Diminuisci la distanza del rientro dal margine")
+
 	// ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
