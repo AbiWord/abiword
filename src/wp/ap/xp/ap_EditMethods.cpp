@@ -5795,6 +5795,11 @@ static bool s_doZoomDlg(FV_View * pView)
 		pFrame->setZoomPercentage(newZoom);
 		s_StartStopLoadingCursor(false, pFrame);
 	}
+	else
+	  {
+	    // force toolbar combo refresh
+	    pFrame->setZoomPercentage(pFrame->getZoomPercentage());
+	  }
 
 	pDialogFactory->releaseDialog(pDialog);
 
@@ -6815,8 +6820,14 @@ Defun(zoom)
 		pFrame->setZoomType(XAP_Frame::z_WHOLEPAGE);
 		iZoom = pView->calculateZoomPercentForWholePage();
 	}
+	else if(strcmp(p_zoom, pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent)) == 0)
+	  {
+	    // invoke the zoom dialog instead for some custom value
+	    return EX(dlgZoom);
+	  }
 	else
 	{
+	  // we've gotten back a number - turn it into a zoom percentage
 		pFrame->setZoomType(XAP_Frame::z_PERCENT);
 		iZoom = atoi(p_zoom);
 	}
@@ -6827,7 +6838,7 @@ Defun(zoom)
 	pFrame->setZoomPercentage(iZoom);
 	s_StartStopLoadingCursor(false, pFrame);
 //
-// Make damm sure the cursor is ON!!
+// Make damn sure the cursor is ON!!
 //
 	FV_View * pAbiView = (FV_View *) pFrame->getCurrentView();
 	pAbiView->focusChange(AV_FOCUS_HERE);

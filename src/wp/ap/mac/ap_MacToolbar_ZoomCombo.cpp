@@ -61,6 +61,8 @@ bool AP_MacToolbar_ZoomCombo::populate(void)
 	m_vecContents.addItem((void *) "50%");
 	m_vecContents.addItem((void *) "25%");
 
+	m_vecContents.addItem((void *)pSS->getValue(XAP_STRING_ID_TB_Zoom_Percent));
+
 	return true;
 }
 

@@ -699,10 +699,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 	EV_Toolbar_ItemState s = EV_TIS_UseString;
 
 	static char buf[10];
+	UT_uint32 iZoom = 0 ;
 
-	UT_uint32 iZoom = pView->getGraphics()->getZoomPercentage();
-	
-	sprintf(buf, "%d%%", iZoom);
 	switch(pFrame->getZoomType())
 	{
 	// special cases
@@ -711,9 +709,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 		break;
 	case XAP_Frame::z_WHOLEPAGE:
 		sprintf(buf, "%s", pSS->getValue(XAP_STRING_ID_TB_Zoom_WholePage));
-		break;	
+		break;
 	default:
-		;
+	  iZoom = pView->getGraphics()->getZoomPercentage();	
+	  sprintf(buf, "%d%%", iZoom);
+	  break;
 	}
 
 	*pszState = buf;
