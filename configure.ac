@@ -111,14 +111,7 @@ AC_ARG_ENABLE(debug,[  --enable-debug    Turn on debugging],[
 ])
 AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
 
-AC_ARG_ENABLE(gnome,
-    [  --enable-gnome    Turn on gnome ],
-     [case "${enableval}" in
-       yes) gnome=true ;;
-       no)  gnome=false ;;
-       *) AC_MSG_ERROR(bad value ${enableval} for --enable-gnome) ;;
-     esac],[gnome=false])
-AM_CONDITIONAL(WITH_GNOME, test "x$gnome" = "xtrue")
+ABI_GNOME_QUICK
 
 AC_ARG_WITH(pspell,
     [  --with-pspell    Turn on pspell ],
@@ -245,56 +238,6 @@ case "$script" in
 	    SCRIPT_LIBS=""
 	    ;;
 esac
-
-if test "$PLATFORM" = unix -a "$gnome" = true ; then
-	AC_MSG_CHECKING(for gnome-libs >= 1.2.0)
-	if gnome-config --modversion gnome 2> /dev/null | grep gnome-libs >/dev/null 2>&1; then 
-	    dnl We need the "%d" in order not to get e-notation on hpux.
-	    vers=`gnome-config --modversion gnome | sed s,gnome-libs-,, | awk 'BEGIN { FS = "."; } { printf "%d", ($1 * 1000 + $2) * 1000 + $3;}'`
-	    if test "$vers" -ge 1002000; then
-	        AC_MSG_RESULT(found)
-	    else
-	    	AC_MSG_RESULT(You need at least gnome-libs 1.2.0: disabling gnome)
-          	gnome=false
-	    fi
-	else
-	    AC_MSG_RESULT(not found: disabling gnome)
-            gnome=false
-        fi
-	AM_CONDITIONAL(WITH_GNOME, test "x$gnome" = "xtrue")
-fi
-
-if test "$PLATFORM" = unix -a "$gnome" = true ; then
-	dnl What is the minimum gal library we can use?
-	AC_MSG_CHECKING(for gal >= 0.5)
-	if gnome-config --modversion gal 2> /dev/null | grep gal > /dev/null 2>&1; then 
-	    dnl We need the "%d" in order not to get e-notation on hpux.
-	    vers=`gnome-config --modversion gal | sed s,gal-,, | awk 'BEGIN { FS = "."; } { printf "%d", $1 * 1000 + $2;}'`
-	    if test "$vers" -ge 5; then
-	        AC_MSG_RESULT(found)
-	    else
-	    	AC_MSG_RESULT(You need at least gal 0.5: disabling gnome)
-            	gnome=false
-	    fi
-	else
-		AC_MSG_RESULT(not found: disabling gnome)
-        	gnome=false
-        fi
-	AM_CONDITIONAL(WITH_GNOME, test "x$gnome" = "xtrue")
-fi
-
-if test "$PLATFORM" = unix -a "$gnome" = true ; then
-	GNOME_CFLAGS="`gnome-config --cflags bonobox gnomeui print vfs gdk_pixbuf` -DHAVE_GNOME"
-	dnl This is the old line
-	#GNOME_LIBS="-lgnomeui -lgnomeprint -lgal -lart_lgpl -lgdk_imlib -lgnome -lgnomesupport -lxml -lunicode -lglade-gnome -lglade -lgnomecanvaspixbuf -lgdk_pixbuf -ltiff -ljpeg"
-	GNOME_LIBS="`gnome-config --libs bonobox gal print vfs gdk_pixbuf`"
-else
-	GNOME_CFLAGS=""
-	GNOME_LIBS=""
-fi
-AC_SUBST(GNOME_CFLAGS)
-AC_SUBST(GNOME_LIBS)
-	
 
 if test "$PLATFORM" = "unix"; then
 	if test "$gnome" = "true"; then
