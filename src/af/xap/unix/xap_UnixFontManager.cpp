@@ -75,9 +75,15 @@ static int s_xerror_handler(Display *dsp, XErrorEvent *e)
 #if 1			
 			if(bShowWarning)
 			{
-				const XML_Char * msg = pApp->getStringSet()->getValue(XAP_STRING_ID_MSG_ShowUnixFontWarning);
-				UT_ASSERT(msg);
-				messageBoxOK(msg);
+				if(pApp->getDisplayStatus())
+				{
+					const XML_Char * msg = pApp->getStringSet()->getValue(XAP_STRING_ID_MSG_ShowUnixFontWarning);
+					UT_ASSERT(msg);
+					messageBoxOK(msg);
+				}
+       			else
+       				fprintf(stderr, "AbiWord WARNING: unable to modify font path\n");
+				
 			}
 			
 			
@@ -295,17 +301,22 @@ bool XAP_UnixFontManager::scavengeFonts(void)
 				UT_DEBUGMSG(("found non-directory entry in existing fontpath [%s]\n", *oldFontPath_ptr));
 				if(bShowWarning)			
 				{
+					if(pApp->getDisplayStatus())
+					{
 #if 1
-					const XML_Char * msg = pApp->getStringSet()->getValue(XAP_STRING_ID_MSG_ShowUnixFontWarning);
-					UT_ASSERT(msg);
-					messageBoxOK(msg);
+						const XML_Char * msg = pApp->getStringSet()->getValue(XAP_STRING_ID_MSG_ShowUnixFontWarning);
+						UT_ASSERT(msg);
+						messageBoxOK(msg);
 
 #else					
-					messageBoxOK("WARNING: Your current font path contains non-directory entries.\n"
-						"AbiWord will not attempt to modify this path. You should see \"Unix Font Warning\"\n"
-						"in the FAQ section of AbiWord help for further information and instructions on how to\n"
-                        "turn this warning off");
+						messageBoxOK("WARNING: Your current font path contains non-directory entries.\n"
+							"AbiWord will not attempt to modify this path. You should see \"Unix Font Warning\"\n"
+							"in the FAQ section of AbiWord help for further information and instructions on how to\n"
+                        	"turn this warning off");
 #endif
+       				}
+       				else
+       					fprintf(stderr, "AbiWord WARNING: unable to modify font path\n");
 				}
     			
     			FREEP(temp_str);

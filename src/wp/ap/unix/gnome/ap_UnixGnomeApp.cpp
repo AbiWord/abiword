@@ -175,6 +175,8 @@ int AP_UnixGnomeApp::main(const char * szAppName, int argc, char ** argv)
 	gtk_set_locale();
 	gtk_init(&Args.m_argc,&Args.m_argv);
 
+   pMyUnixApp->setDisplayStatus(bShowApp);
+
 	UT_DEBUGMSG((" Initializing gnome-VFS \n"));
 	if (! gnome_vfs_init ())
 	{

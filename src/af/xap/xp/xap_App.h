@@ -151,6 +151,9 @@ public:
 	bool                                    areToolbarsCustomizable(void) const 
 		                                             { return m_bAllowCustomizing;}
     void                                    setToolbarsCustomizable(bool b);
+    
+	virtual bool 							getDisplayStatus(void) const;
+	virtual bool 							setDisplayStatus(bool b);
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
@@ -172,6 +175,9 @@ protected:
 	XAP_Frame *								m_lastFocussedFrame;
 	XAP_Menu_Factory *                      m_pMenuFactory;
 	XAP_Toolbar_Factory *                   m_pToolbarFactory;
+
+
+	static bool 							s_bShowDisplay;
 
 	struct modeless_pair 
 	{ 

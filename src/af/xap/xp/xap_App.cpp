@@ -47,6 +47,7 @@
 /*****************************************************************/
 
 XAP_App * XAP_App::m_pApp = NULL;
+bool XAP_App::s_bShowDisplay = true;
 
 XAP_App * XAP_App::getApp() {return m_pApp;}
 
@@ -753,6 +754,18 @@ void XAP_App::_printUsage()
 	printf("  -nosplash         do not show splash screen\n");
 
 	printf("\n");
+}
+
+
+bool XAP_App::setDisplayStatus(bool b)
+{
+    s_bShowDisplay = b;
+    return true;
+}
+
+bool XAP_App::getDisplayStatus(void) const
+{
+	return s_bShowDisplay;
 }
 
 
