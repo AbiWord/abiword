@@ -432,8 +432,8 @@ ISpellChecker::setDictionaryEncoding  ( const char * hashname, const char * enco
   prefstringchar = findfiletype("utf8", 1, deftflag < 0 ? &deftflag : static_cast<int *>(NULL));
   if (prefstringchar >= 0)
     {
-      m_translate_in = UT_iconv_open("utf-8", UCS_INTERNAL);
-      m_translate_out = UT_iconv_open(UCS_INTERNAL, "utf-8");      
+      m_translate_in = UT_iconv_open("UTF-8", UCS_INTERNAL);
+      m_translate_out = UT_iconv_open(UCS_INTERNAL, "UTF-8");      
     }
   
   if(UT_iconv_isValid(m_translate_in) && UT_iconv_isValid(m_translate_out))

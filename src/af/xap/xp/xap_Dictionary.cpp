@@ -35,10 +35,10 @@
 
 /*
 	Dictionary is an alphabetic list of words, one per line.  
-	Import/export as a plain text file formatted in UTF8.
+	Import/export as a plain text file formatted in UTF-8.
 	We allow either LF or CR or CRLF line termination.
 
-	(This code shamelessly cribbed from the impexp for UTF8.)
+	(This code shamelessly cribbed from the impexp for UTF-8.)
 */
 
 /*****************************************************************/
@@ -154,7 +154,7 @@ bool XAP_Dictionary::load(void)
 
 static void _smashUTF8(UT_GrowBuf * pgb)
 {
-	// smash any utf8 sequences into a single ucs char
+	// smash any UTF-8 sequences into a single UCS char
 
 	// since we change the GrowBuf in-place, we
 	// recompute the length and buffer pointer
@@ -249,8 +249,8 @@ bool XAP_Dictionary::_parseUTF8(void)
 			bEatLF = false;
 
 			// deal with plain character.  to simplify parsing logic,
-			// we just stuff all text chars (latin-1 and utf8 escape
-			// sequences) into the GrowBuf and will smash the utf8
+			// we just stuff all text chars (latin-1 and UTF-8 escape
+			// sequences) into the GrowBuf and will smash the UTF-8
 			// sequences into unicode in a moment.
 
 			if (c > 0x7f)

@@ -57,11 +57,11 @@ static void couldNotLoadDictionary ( const char * szLang )
 }
 
 /*!
- * Convert an UTF32 string to an UTF8 string
+ * Convert a UTF-32 string to a UTF-8 string
  *
- * \param word32 The zero-terminated input string in UTF32 format
+ * \param word32 The zero-terminated input string in UTF-32 format
  * \param length The lengh of the input string
- * \return A zero-terminated UTF8 string
+ * \return A zero-terminated UTF-8 string
  */
 static unsigned char*
 utf32_to_utf8(const UT_UCS4Char * word32, int length)
@@ -72,7 +72,7 @@ utf32_to_utf8(const UT_UCS4Char * word32, int length)
 	/* Note that length is in shorts, so we have to double it here */
 	result = reinterpret_cast<unsigned char*>(
 		UT_convert (reinterpret_cast<const char *>(word32), length*4, UCS_INTERNAL,
-			"utf-8", NULL, &len_out));
+			"UTF-8", NULL, &len_out));
 
 	/* We assume that UT_convert creates a buffer big enough for this: */
 	if(len_out > 0)
@@ -83,9 +83,9 @@ utf32_to_utf8(const UT_UCS4Char * word32, int length)
 }
 
 /*!
- * Convert an UTF8 string to an UTF32 string
+ * Convert a UTF-8 string to a UTF-32 string
  *
- * \param word8 The zero-terminated input string in UTF8 format
+ * \param word8 The zero-terminated input string in UTF-8 format
  * \param length The lengh of the input string
  * \return A zero-terminated UTF16 string
  */

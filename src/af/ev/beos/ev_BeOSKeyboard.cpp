@@ -252,14 +252,14 @@ BMessage: what = _KYD (0x5f4b5944, or 1598773572)
 
 /*
  If the key is something special then it gets mapped to one
- of these key codes ... if it isn't a "special" key code, the
+ of these key codes ... if it isn't a "special" key code, then
  we return 0 to indicate that we should attempt to get
  a regular key code out of the mapping with s_getKeyCode().
  Otherwise we return with some sort of value ...
 */
 EV_EditBits s_mapVirtualKeyCodeToNVK(int keyval, int modifiers, 
 									 int charval, const char *bytes) {
-	//Multibyte UTF8 character stream
+	//Multibyte UTF-8 character stream
 	if (strlen(bytes) > 1) {
 		return(0);
 	}

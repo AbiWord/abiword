@@ -200,7 +200,7 @@ bool	Barbarisms::suggestWord(const UT_UCSChar *word32, size_t length,	UT_Vector*
 /*
 	Called by the parser. We build the barbarism list here
 	
-	Barbarism (the index of the map) is stored in UTF8 because the map index 
+	Barbarism (the index of the map) is stored in UTF-8 because the map index 
 	and the suggestions in UT_UCSChar
 	
 */

@@ -1010,7 +1010,9 @@ void XAP_EncodingManager::initialize()
 	else
 		UT_DEBUGMSG(("This iconv does not support UCS-4LE!\n"));
 
-	if(!strcmp(enc, "UTF-8") || !strcmp(enc, "UTF8") || !strcmp(enc, "utf-8") || !strcmp(enc, "utf8"))
+	if(!UT_stricmp(enc, "UTF-8") || !UT_stricmp(enc, "UTF8")
+		|| !UT_stricmp(enc, "UTF-16") || !UT_stricmp(enc, "UTF16")
+		|| !UT_stricmp(enc, "UCS-2") || !UT_stricmp(enc, "UCS2"))
 		m_bIsUnicodeLocale = true;
 	else
 		m_bIsUnicodeLocale = false;

@@ -326,7 +326,7 @@ g_i18n_get_language_list (const gchar *category_name)
     {
 #if 0
 		// we want a fresh reading of the LANG variable every time so we can
-		// work out the 8bit encoding under utf-8 locale
+		// work out the non-Unicode encoding under UTF-8 locale
 		list= static_cast<GList *>(g_hash_table_lookup (category_table, const_cast<const gpointer>(category_name)));
 #else
 		xxx_UT_DEBUGMSG(("recreating hash table\n"));
@@ -529,7 +529,7 @@ void  XAP_UnixEncodingManager::initialize()
 				}
 			Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName;
 
-			// need to get non-unicode encoding if encoding is utf-8
+			// need to get non-unicode encoding if encoding is UTF-8
 			if(!UT_stricmp(NativeEncodingName, "UTF-8"))
 				{
 					// we want to get the encoding that would be used for the given

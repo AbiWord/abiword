@@ -2679,7 +2679,7 @@ void fp_TextRun::shape()
 
 		} // for(;;)
 
-		// now convert the whole span into utf8
+		// now convert the whole span into UTF-8
 		UT_UTF8String wholeStringUtf8 (pWholeString, getLength());
 
 		// let Pango to analyse the string

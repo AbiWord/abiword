@@ -152,7 +152,7 @@ ABI_EXPORT void UT_String_setProperty(UT_String & sPropertyString, const UT_Stri
 ////////////////////////////////////////////////////////////////////////
 
 //!
-//	UT_UTF8String, a simple wrapper for zero terminated 'UTF8' strings.
+//	UT_UTF8String, a simple wrapper for zero terminated 'UTF-8' strings.
 //
 
 class ABI_EXPORT UT_UTF8String

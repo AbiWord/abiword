@@ -1198,11 +1198,11 @@ bool XAP_Prefs::savePrefsFile(void)
 				}
 				if (need_print == true)
 				{
-					// szValue is UTF8.  Convert to Unicode and then
+					// szValue is UTF-8.  Convert to Unicode and then
 					// do XML-encoding of XML-special characters and
 					// non-ASCII characters.  The printed value
 					// strings will get XML parsing and conversion to
-					// UTF8 the next time the application reads the
+					// UTF-8 the next time the application reads the
 					// prefs file.
 					UT_GrowBuf gb;
 					UT_decodeUTF8string(szValue, UT_XML_strlen(szValue), &gb);
@@ -1251,11 +1251,11 @@ bool XAP_Prefs::savePrefsFile(void)
 
 			for (j=0;(p->getNthValue(j, &szKey, &szValue)) ; j++)
 			{
-					// szValue is UTF8.  Convert to Unicode and then
+					// szValue is UTF-8.  Convert to Unicode and then
 					// do XML-encoding of XML-special characters and
 					// non-ASCII characters.  The printed value
 					// strings will get XML parsing and conversion to
-					// UTF8 the next time the application reads the
+					// UTF-8 the next time the application reads the
 					// prefs file.
 					UT_GrowBuf gb;
 					UT_decodeUTF8string(szValue, UT_XML_strlen(szValue), &gb);

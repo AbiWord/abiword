@@ -861,7 +861,7 @@ UT_UTF8String UT_UTF8String_sprintf(const char * inFormat, ...)
   UT_String_vprintf (str, inFormat, args);
   va_end (args);
 
-  // create&return a validated utf8 string based on the input
+  // create & return a validated UTF-8 string based on the input
   return UT_UTF8String(str.c_str());
 }
 
@@ -874,7 +874,7 @@ UT_UTF8String & UT_UTF8String_sprintf(UT_UTF8String & inStr, const char * inForm
   UT_String_vprintf (str, inFormat, args);
   va_end (args);
 
-  // create a validated utf8 string based on the input
+  // create a validated UTF-8 string based on the input
   inStr = str.c_str();
   return inStr;
 }

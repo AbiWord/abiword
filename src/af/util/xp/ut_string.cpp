@@ -62,7 +62,7 @@ bool UT_isUrl ( const char * szName )
 
 /*
  * This is cut & pasted from glib 1.3 (c) RedHat
- * We need this for to convert UTF32 to UTF8
+ * We need this to convert UTF-32 to UTF-8
  */
 int
 unichar_to_utf8 (int c, unsigned char *outbuf)
@@ -998,7 +998,7 @@ UT_UCS2Char * UT_UCS2_strnrev(UT_UCS2Char * src, UT_uint32 n)
 #if 1 // i didn't get a chance to test this -- jeff
 XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
 {
-	// convert the given unicode character into a UTF8 sequence
+	// convert the given unicode character into a UTF-8 sequence
 	// return pointer to static buffer.
 
 	static XML_Char sBuf[10];
@@ -1476,7 +1476,7 @@ UT_UCS4Char * UT_UCS4_strcpy_utf8_char(UT_UCS4Char * dest, const char * src)
 	UT_ASSERT(dest);
 	UT_ASSERT(src);
 
-	UT_UCS4String ucs4str(src); // constructs a string from utf8 by default
+	UT_UCS4String ucs4str(src); // constructs a string from UTF-8 by default
 	dest = UT_UCS4_strcpy(dest, ucs4str.ucs4_str());
 
 	return dest;

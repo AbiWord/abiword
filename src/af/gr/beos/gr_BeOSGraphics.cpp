@@ -490,7 +490,7 @@ UT_uint32 GR_BeOSGraphics::getFontHeight(GR_Font *font)
 
 UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
-	//We need to convert the string from UCS2 to UTF8 before
+	//We need to convert the string from UCS-X to UTF-8 before
 	//we use the BeOS string operations on it.
 	char buffer[10];
 
@@ -513,7 +513,7 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 		m_pShadowView->SetFont(&viewFont);
 		
-		//Hope this works on UTF8 characters buffers
+		//Hope this works on UTF-8 characters buffers
 		viewFont.GetEscapements(buffer,1,&tempdelta,escapementArray);
 		fontsize=viewFont.Size();
 

@@ -782,7 +782,7 @@ GtkWidget* abiAddButton(GtkDialog * me, const gchar * btn_id,
 	UT_return_val_if_fail(me, NULL);
 	UT_return_val_if_fail(btn_id, NULL);
 
-	// todo: possibly make me locale sensitive->utf8
+	// todo: possibly make me locale sensitive -> UTF-8
 
 	GtkWidget * wid = gtk_dialog_add_button(me, btn_id, response_id);
 	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
@@ -801,7 +801,7 @@ void abiDestroyWidget(GtkWidget * me)
 }
 
 /*!
- * Convert the incoming string which is in the user's locale to utf8
+ * Convert the incoming string which is in the user's locale to UTF-8
  */
 UT_String abiLocaleToUTF8(const UT_String & inStr)
 {
@@ -820,7 +820,7 @@ UT_String abiLocaleToUTF8(const UT_String & inStr)
 }
 
 /*!
- * Convert the incoming string which is in the user's locale to utf8
+ * Convert the incoming string which is in the user's locale to UTF-8
  */
 UT_String abiLocaleToUTF8(const char * str)
 {

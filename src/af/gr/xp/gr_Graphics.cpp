@@ -280,7 +280,7 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 
 	// * Linear searching is done looking for the actual character, so the
 	// implementation is assuming that the RemapGlyphsTable is not too big.
-	// Also, because null-terminated UTF8 and Unicode strings are all over
+	// Also, because null-terminated UTF-8 and Unicode strings are all over
 	// the place, you can remap a null character nor remap to a null
 	// character.  In office productivity apps, this probably won't be a
 	// problem.

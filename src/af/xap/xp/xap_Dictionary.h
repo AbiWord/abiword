@@ -35,7 +35,7 @@
 /*
 	A simple custom dictionary class, which allows the user to add words 
 	which aren't in the standard dictionary.  The contents are stored as
-	UTF8 plaintext, with one word per line. 
+	UTF-8 plaintext, with one word per line. 
 */
 class ABI_EXPORT XAP_Dictionary
 {

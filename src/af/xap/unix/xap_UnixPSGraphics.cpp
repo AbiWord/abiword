@@ -572,7 +572,7 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			else
 				_drawCharsNonCJK(pS,0,pE-pS,xS,yoff);
 #else
-			// in the Xft code I always use the UTF8 variant (that basically works)
+			// in the Xft code I always use the UTF-8 variant (that basically works)
 			_drawCharsUTF8(pS, 0, pE - pS, xS, yoff);
 #endif
 		}

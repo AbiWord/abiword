@@ -278,9 +278,9 @@ UT_Confidence_t IE_Imp_Text_Sniffer::recognizeContents(const char * szBuf,
 													   UT_uint32 iNumbytes)
 {
   if (_recognizeUTF8 (szBuf, iNumbytes))
-	  return UT_CONFIDENCE_PERFECT - 1; // it's utf8, but might not be plaintext
+	  return UT_CONFIDENCE_PERFECT - 1; // it's UTF-8, but might not be plaintext
   else if (UE_NotUCS != _recognizeUCS2(szBuf, iNumbytes, false))
-	  return UT_CONFIDENCE_PERFECT - 1; // it's utf8, but might not be plaintext
+	  return UT_CONFIDENCE_PERFECT - 1; // it's UTF-8, but might not be plaintext
   return UT_CONFIDENCE_POOR; // anything can be a text document - we'll unfairly weight this down
 }
 

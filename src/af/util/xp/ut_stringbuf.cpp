@@ -753,7 +753,7 @@ bool UT_UTF8Stringbuf::UTF8Iterator::sync ()
 	size_t utf8_length = m_strbuf->byteLength ();
 
 	/* note that this doesn't guarantee that m_utfptr points to the
-	 * start of utf8 char sequence
+	 * start of UTF-8 char sequence
 	 */
 	if (static_cast<unsigned>(m_utfptr- m_utfbuf) > utf8_length)
 	{

@@ -1006,7 +1006,7 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont16Bit(void)
 	{
 		if (!fontInitted)
 		{
-			// people runing utf-8 locale will probably have the
+			// people runing UTF-8 locale will probably have the
 			// MS Arial ttf font ...
 			m_f.setName("Default");
 			m_f.setStyle(XAP_UnixFont::STYLE_NORMAL);

@@ -613,7 +613,7 @@ void GR_UnixGraphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 
 	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 	{
-		/*  if the locale is unicode (i.e., utf-8) then we do not want
+		/*  if the locale is unicode (i.e., UTF-8) then we do not want
 			to convert the UCS string to anything,
 			gdk_draw_text can draw 16-bit string, if the font is
 			a matrix; however, the byte ordering is interpreted as big-endian
@@ -727,8 +727,10 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 	// to be able to handle overstriking characters, we have to remember the width
 	// of the previous character printed
-	// NB: overstriking characters are only supported under UTF-8, since on 8-bit locales
-	// these are typically handled by combination glyphs
+	// NB: overstriking characters are only supported under UTF-8, since on non-Unicode
+	// locales these are typically handled by pre-composed glyphs
+	// TODO i18n Note that Windows Vietnamese encoding does indeed depend on
+	// TODO i18n overstriking characters in non-Unicode locales!
 
 	static UT_sint32 prevWidth = 0;
 	UT_sint32 curX;
@@ -783,7 +785,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 		if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 		{
-			/*	if the locale is unicode (i.e., utf-8) then we do not want
+			/*	if the locale is unicode (i.e., UTF-8) then we do not want
 				to convert the UCS string to anything,
 				gdk_draw_text can draw 16-bit string, if the font is
 				a matrix; however the string is interpreted as big-endian
@@ -791,7 +793,7 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			if(isFontUnicode(font))
 			{
 				//unicode font
-				//UT_DEBUGMSG(("UnixGraphics::drawChars: utf-8\n"));
+				//UT_DEBUGMSG(("UnixGraphics::drawChars: UTF-8\n"));
 				UT_UCSChar beucs;
 				LE2BE16((pC),(&beucs))  //declared in ut_endian.h
 

@@ -42,7 +42,7 @@ AP_QNXClipboard::AP_QNXClipboard(AP_QNXApp * pApp)
 	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT);
 	AddFmt(AP_CLIPBOARD_STRING);		// alias for TEXTPLAIN_8BIT
 
-	// TODO deal with multi-byte text (either unicode or utf8 or whatever)
+	// TODO deal with multi-byte text (either unicode or UTF-8 or whatever)
 	// TODO add something like the following.  you should be able to test
 	// TODO against xemacs.
 	// TODO

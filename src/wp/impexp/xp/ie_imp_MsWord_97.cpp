@@ -863,7 +863,7 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(wvParseStruct * ps, UT_uint32 pos)
 	XML_Char *str;
 	UT_iconv_t ic_handle;
 	// word bookmarks can be at most 30 characters, so make a reasonable buffer
-	// for the utf-8 version
+	// for the UTF-8 version
 	char buff[200];
 	char *buff_ptr = &buff[0];
 	const char *in_ptr;
@@ -876,8 +876,8 @@ XML_Char * IE_Imp_MsWord_97::_getBookmarkName(wvParseStruct * ps, UT_uint32 pos)
 	}
 	else
 	{
-		// use utf-8
-		ic_handle = UT_iconv_open("utf-8", "UCS-2LE");
+		// use UTF-8
+		ic_handle = UT_iconv_open("UTF-8", "UCS-2LE");
 	}
 
 	if(ps->Sttbfbkmk.extendedflag == 0xFFFF)
