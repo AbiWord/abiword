@@ -90,7 +90,7 @@ void fp_FmtMarkRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPo
 	bEOL = UT_FALSE;
 }
 
-void fp_FmtMarkRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height)
+void fp_FmtMarkRun::findPointCoords(UT_uint32 /*iOffset*/, UT_sint32& x, UT_sint32& y, UT_sint32& height)
 {
 	UT_sint32 xoff;
 	UT_sint32 yoff;
@@ -119,7 +119,7 @@ void fp_FmtMarkRun::_clearScreen(UT_Bool /* bFullLineHeightRect */)
 #endif
 }
 
-void fp_FmtMarkRun::_draw(dg_DrawArgs* pDA)
+void fp_FmtMarkRun::_draw(dg_DrawArgs* /*pDA*/)
 {
 #if 0
 #ifdef DEBUG

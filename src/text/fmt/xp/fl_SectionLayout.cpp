@@ -399,7 +399,7 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 	}
 }
 
-void fl_DocSectionLayout::setHdrFtr(UT_uint32 iType, fl_HdrFtrSectionLayout* pHFSL)
+void fl_DocSectionLayout::setHdrFtr(UT_uint32 /*iType*/, fl_HdrFtrSectionLayout* pHFSL)
 {
 	// TODO use the type
 	
@@ -1757,7 +1757,7 @@ UT_Bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 			}
 			PT_BlockOffset blockOffset = pcrs->getBlockOffset();
 			UT_uint32 len = pcrs->getLength();
-			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
+//			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
 			bResult = m_pCurrentBL->doclistener_populateSpan(pcrs, blockOffset, len);
 			goto finish_up;
 		}
@@ -1773,7 +1773,7 @@ UT_Bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 			}
 			PT_BlockOffset blockOffset = pcro->getBlockOffset();
 
-			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
+//			fl_SectionLayout* pBLSL = m_pCurrentBL->getSectionLayout();
 			bResult = m_pCurrentBL->doclistener_populateObject(blockOffset,pcro);
 			goto finish_up;
 		}
@@ -1875,28 +1875,28 @@ UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 	return UT_TRUE;
 }
 
-UT_Bool fl_ShadowListener::change(PL_StruxFmtHandle sfh,
-								  const PX_ChangeRecord * pcr)
+UT_Bool fl_ShadowListener::change(PL_StruxFmtHandle /*sfh*/,
+								  const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
 	return UT_FALSE;
 }
 
-UT_Bool fl_ShadowListener::insertStrux(PL_StruxFmtHandle sfh,
-									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
-									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
-															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew))
+UT_Bool fl_ShadowListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+									   const PX_ChangeRecord * /*pcr*/,
+									   PL_StruxDocHandle /*sdh*/,
+									   PL_ListenerId /*lid*/,
+									   void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+															   PL_ListenerId lid,
+															   PL_StruxFmtHandle sfhNew))
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
 	return UT_FALSE;
 }
 
-UT_Bool fl_ShadowListener::signal(UT_uint32 iSignal)
+UT_Bool fl_ShadowListener::signal(UT_uint32 /*iSignal*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 

@@ -212,7 +212,7 @@ IEStatus IE_Imp_RTF::importFile(const char * szFilename)
 }
 
 
-IEStatus IE_Imp_RTF::_writeHeader(FILE * fp)
+IEStatus IE_Imp_RTF::_writeHeader(FILE * /*fp*/)
 {
 	if (!m_pDocument->appendStrux(PTX_Section, NULL))
 		return IES_NoMemory;

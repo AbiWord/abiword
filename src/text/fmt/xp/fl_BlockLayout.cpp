@@ -1727,7 +1727,7 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			UT_ASSERT(pTextRun->getNext());
 			UT_ASSERT(pTextRun->getNext()->getType() == FPRUN_TEXT);
 			
-			fp_TextRun* pOtherHalfOfSplitRun = (fp_TextRun*) pTextRun->getNext();
+//			fp_TextRun* pOtherHalfOfSplitRun = (fp_TextRun*) pTextRun->getNext();
 			
 //			pTextRun->recalcWidth();
 
@@ -3013,7 +3013,7 @@ UT_Bool fl_BlockLayout::_deleteFmtMark(PT_BlockOffset blockOffset)
 	while (pRun)
 	{
 		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
-		UT_uint32 iRunLength = pRun->getLength();
+//		UT_uint32 iRunLength = pRun->getLength();
 		fp_Run* pNextRun = pRun->getNext();	// remember where we're going, since this run may get axed
 
 		if ( (iRunBlockOffset == blockOffset) && (pRun->getType() == FPRUN_FMTMARK) )

@@ -753,7 +753,7 @@ void GR_UnixGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 // in platform code.
 //////////////////////////////////////////////////////////////////
 
-void GR_Font::s_getGenericFontProperties(const char * szFontName,
+void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
 										 UT_Bool * pbTrueType)

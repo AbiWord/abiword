@@ -43,7 +43,7 @@ void pf_Frag::__dump(FILE * fp) const
 
 void pf_Frag_FmtMark::__dump(FILE * fp) const
 {
-	fprintf(fp,"        FmtMrkFragment %p api[%08lx]\n",this,m_indexAP);
+	fprintf(fp,"        FmtMrkFragment %p api[%08lx]\n",this,(long unsigned int)m_indexAP);
 }
 
 void pf_Frag_Strux_Block::__dump(FILE * fp) const

@@ -945,7 +945,7 @@ void fp_TextRun::__dump(FILE * fp) const
 	{
 		const UT_UCSChar* pSpan;
 		UT_uint32 lenSpan;
-		UT_Bool bContinue = UT_TRUE;
+//		UT_Bool bContinue = UT_TRUE;
 
 		UT_uint32 koff=m_iOffsetFirst;
 		UT_uint32 klen=m_iLen;

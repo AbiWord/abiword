@@ -57,7 +57,7 @@ UT_TestStatus pt_PieceTable::__test_VerifyCoalescedFrags(FILE * fp) const
 										  pft2->getBufIndex())))
 			{
 				fprintf(fp,"__test_VerifyCoalescedFrags: uncoalesced frags found: p1[%p] len[%ld] p2[%p]\n",
-						pft1,pft1->getLength(),pft2);
+						pft1,(long)pft1->getLength(),pft2);
 				pft1->__dump(fp);
 				pft2->__dump(fp);
 				status = UT_Test_Fail;
