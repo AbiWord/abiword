@@ -73,54 +73,6 @@
 #include "ispell_def.h"
 #endif
 
-//////////////////////////////////////////////////////////////////////
-// Two Useful List arrays
-/////////////////////////////////////////////////////////////////////
-//
-// SEVIOR: FIXME these definitions are included here as well as in
-// src/wp/impexp/xp/ie_imp_RTF.cpp
-//
-// We need to find a way to include these definitions in
-// src/text/fmt/xp/fl_AutoLists.h without raising a whole
-// see of "unused variable" warnings.
-//
-// C/C++ gods please advise
-
-static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST,
-										XML_LOWERCASE_LIST,
-										XML_UPPERCASE_LIST,
-										XML_LOWERROMAN_LIST,
-										XML_UPPERROMAN_LIST,
-										XML_BULLETED_LIST,
-										XML_DASHED_LIST,
-										XML_SQUARE_LIST,
-										XML_TRIANGLE_LIST,
-										XML_DIAMOND_LIST,
-										XML_STAR_LIST,
-										XML_IMPLIES_LIST,
-										XML_TICK_LIST,
-										XML_BOX_LIST,
-										XML_HAND_LIST,
-										XML_HEART_LIST };
-
-static const char	  * fmt_Lists[] = { fmt_NUMBERED_LIST,
-										fmt_LOWERCASE_LIST,
-										fmt_UPPERCASE_LIST,
-										fmt_UPPERROMAN_LIST,
-										fmt_LOWERROMAN_LIST,
-										fmt_BULLETED_LIST,
-										fmt_DASHED_LIST };
-
-
-//////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////
-
-
-//////////////////////////////////////////////////////////////////////////
-// End List definitions
-//////////////////////////////////////////////////////////////////////////
-
-
 bool 
 fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 								UT_uint32 len, UT_uint32 blockPos)
@@ -928,6 +880,7 @@ void fl_BlockLayout::coalesceRuns(void)
 	_assertRunListIntegrity();
 
 #if 1
+	UT_DEBUGMSG(("fl_BlockLayout::coalesceRuns\n"));
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
@@ -1399,6 +1352,9 @@ fl_BlockLayout::format(fp_Line * pLineToStartAt)
 		// Reformat paragraph
 		m_pBreaker->breakParagraph(this, pLineToStartAt);
 		_removeAllEmptyLines();
+#ifdef BIDI_ENABLED
+		coalesceRuns();
+#endif
 	}
 	else
 	{
@@ -5363,7 +5319,10 @@ XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
 	if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
 		style = (XML_Char *) NULL;
 	else
-		style = const_cast<XML_Char *>(xml_Lists[nlisttype]);
+	{
+		fl_AutoLists al;
+		style = const_cast<XML_Char *>(al.getXmlList(nlisttype));
+	}
 	return style;
 }
 
@@ -5371,10 +5330,11 @@ List_Type fl_BlockLayout::getListTypeFromStyle( const XML_Char* style)
 {
 	List_Type lType = NOT_A_LIST;
 	UT_uint32 j;
-	UT_uint32 size_xml_lists = sizeof(xml_Lists)/sizeof(xml_Lists[0]);
+	fl_AutoLists al;
+	UT_uint32 size_xml_lists = al.getXmlListsSize();
 	for(j=0; j < size_xml_lists; j++)
 	{
-		if( UT_XML_strcmp(style,xml_Lists[j])==0)
+		if( UT_XML_strcmp(style,al.getXmlList(j))==0)
 			break;
 	}
 	if(j < size_xml_lists)
@@ -5389,7 +5349,8 @@ char *	fl_BlockLayout::getFormatFromListType( List_Type iListType)
 	char * format = NULL;
 	if(nlisttype < 0 || nlisttype >= (UT_uint32) NOT_A_LIST)
 		return format;
-	format = const_cast<char *>(fmt_Lists[nlisttype]);
+	fl_AutoLists al;
+	format = const_cast<char *>(al.getFmtList(nlisttype));
 	return format;
 }
 
@@ -5397,10 +5358,11 @@ List_Type fl_BlockLayout::decodeListType(char * listformat)
 {
 	List_Type iType = NOT_A_LIST;
 	UT_uint32 j;
-	UT_uint32 size_fmt_lists = sizeof(fmt_Lists)/sizeof(fmt_Lists[0]);
+	fl_AutoLists al;
+	UT_uint32 size_fmt_lists = al.getFmtListsSize();
 	for(j=0; j < size_fmt_lists; j++)
 	{
-		if( strstr(listformat,fmt_Lists[j])!=NULL)
+		if( strstr(listformat,al.getFmtList(j))!=NULL)
 			break;
 	}
 	if(j < size_fmt_lists)

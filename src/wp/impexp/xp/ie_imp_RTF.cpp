@@ -50,7 +50,7 @@
 #include "ut_rand.h"
 #include "pd_Style.h"
 #include "fv_View.h"
-
+#include "fl_AutoLists.h"
 #include "wv.h" // for wvLIDToLangConverter
 
 class fl_AutoNum;
@@ -81,38 +81,6 @@ class fl_AutoNum;
 static const UT_uint32 MAX_KEYWORD_LEN = 256;
 // This should probably be defined in pt_Types.h
 static const UT_uint32 PT_MAX_ATTRIBUTES = 8;
-
-//////////////////////////////////////////////////////////////////////
-// Two Useful List arrays
-/////////////////////////////////////////////////////////////////////
-//
-// SEVIOR: FIXME these definitions are included here as well as in
-// src/text/fmt/xp/fl_BlockLayout.cpp
-//
-//
-// We need to find a way to include these definitions in 
-// src/text/fmt/xp/fl_AutoLists.h without raising a whole
-// see of "unused variable" warnings.
-//
-// C/C++ gods please advise
-//
-
-static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST, //0
-			   XML_LOWERCASE_LIST, //1
-			   XML_UPPERCASE_LIST, //2
-			   XML_LOWERROMAN_LIST, //3
-			   XML_UPPERROMAN_LIST, //4
-			   XML_BULLETED_LIST, //5
-			   XML_DASHED_LIST, //6
-			   XML_SQUARE_LIST, //7
-			   XML_TRIANGLE_LIST, //8
-			   XML_DIAMOND_LIST, //9
-			   XML_STAR_LIST, //10
-			   XML_IMPLIES_LIST, //11
-			   XML_TICK_LIST, //12
-			   XML_BOX_LIST, //13
-			   XML_HAND_LIST, //14
-			   XML_HEART_LIST };//15
 
 
 //////////////////////////////////////////////////////////////////
@@ -285,8 +253,14 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
     case 23:
         abiListType = BULLETED_LIST;
 		break;
+#ifdef BIDI_ENABLED
+	case 45:
+		abiListType = HEBREW_LIST;
+#endif
 	}
-    *szListStyle = xml_Lists[abiListType];
+	
+	fl_AutoLists al;
+    *szListStyle = al.getXmlList(abiListType);
 //
 // Field Font
 //	
@@ -4181,10 +4155,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 			*/
 			{
 				List_Type lType = NOT_A_LIST;
-				UT_uint32 size_xml_lists = sizeof(xml_Lists)/sizeof(xml_Lists[0]);
+				fl_AutoLists al;
+				UT_uint32 size_xml_lists = al.getXmlListsSize();
 				for(j=0; j< size_xml_lists; j++)
 				{
-					if( UT_XML_strcmp(szStyle,xml_Lists[j]) ==0)
+					if( UT_XML_strcmp(szStyle,al.getXmlList(j)) ==0)
 					{
 						break;
 					}

@@ -337,7 +337,7 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 	place += m_iStartValue;
  
 	//	if (depth == 0 )
-	if( m_List_Type < BULLETED_LIST)
+	if(IS_NUMBERED_LIST_TYPE(m_List_Type))
 	{
 		psz = UT_XML_strlen(leftDelim);
 		for (i = 0; i < psz; i++)
@@ -393,6 +393,14 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		}
 		break;
 #ifdef BIDI_ENABLED
+	case ARABICNUMBERED_LIST:
+		sprintf(p,"%i",place);
+		psz = UT_XML_strlen( p);
+		for(i=0; i<psz; i++)
+		{
+			labelStr[(*insPoint)++] =  (CONV_TO_UCS p[i]) + 0x0660 - (CONV_TO_UCS '0');
+		}
+		break;
 	case HEBREW_LIST:
 		dec2hebrew(labelStr,insPoint,place);
 		break;

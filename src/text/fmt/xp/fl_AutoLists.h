@@ -17,6 +17,7 @@
  * 02111-1307, USA.
  */
 #include "ut_types.h"
+#include "ut_xml.h"
 #ifndef FL_AUTOLISTS_H
 #define FL_AUTOLISTS_H
 
@@ -25,30 +26,50 @@
 ///////////////////////////////////////////////////////////////////////
 typedef enum 
 {
-	NUMBERED_LIST,
-	LOWERCASE_LIST,
-	UPPERCASE_LIST,
-	LOWERROMAN_LIST,
-	UPPERROMAN_LIST,
+	NUMBERED_LIST = 0,
+	LOWERCASE_LIST = 1,
+	UPPERCASE_LIST = 2,
+	LOWERROMAN_LIST = 3,
+	UPPERROMAN_LIST = 4,
+	// any new numbered lists should be added below OTHER_NUMBERED_LISTS
+	BULLETED_LIST = 5,
+	DASHED_LIST = 6,
+	SQUARE_LIST = 7,
+	TRIANGLE_LIST = 8,
+	DIAMOND_LIST = 9,
+	STAR_LIST = 10,
+	IMPLIES_LIST = 11,
+	TICK_LIST = 12,
+	BOX_LIST = 13,
+	HAND_LIST = 14,
+	HEART_LIST = 15,
+	// add new bulleted lists here, and increase LAST_BULLETED_LIST accordingly
+	// any new numbered lists should be added below OTHER_NUMBERED_LISTS
+
+	//could not just add the extra numbered lists above the bulletted one, since that would break compatibility
+	LAST_BULLETED_LIST = 16,
+	OTHER_NUMBERED_LISTS = 0x7f,
 #ifdef BIDI_ENABLED
-	HEBREW_LIST,
+	ARABICNUMBERED_LIST = 0x80,
+	HEBREW_LIST = 0x81,
 #endif
-	BULLETED_LIST,
-	DASHED_LIST,
-	SQUARE_LIST,
-	TRIANGLE_LIST,
-	DIAMOND_LIST,
-	STAR_LIST,
-	IMPLIES_LIST,
-	TICK_LIST,
-	BOX_LIST,
-	HAND_LIST,
-	HEART_LIST,
-	NOT_A_LIST
+	NOT_A_LIST = 0xff
 } List_Type;
 
-#define IS_NUMBERED_LIST_TYPE(x) ((x) >= NUMBERED_LIST && (x) < BULLETED_LIST)
-#define IS_BULLETED_LIST_TYPE(x) ((x) >= BULLETED_LIST && (x) < NOT_A_LIST)
+
+class fl_AutoLists
+{
+	public:
+		UT_uint32 getXmlListsSize();
+		UT_uint32 getFmtListsSize();
+		
+		const XML_Char * getXmlList(UT_uint32 i);
+		const char *     getFmtList(UT_uint32 i);
+};
+
+#define IS_NUMBERED_LIST_TYPE(x) (((x) >= NUMBERED_LIST && (x) < BULLETED_LIST) || ((x) > OTHER_NUMBERED_LISTS && (x) < NOT_A_LIST))
+#define IS_BULLETED_LIST_TYPE(x) ((x) >= BULLETED_LIST && (x) < OTHER_NUMBERED_LISTS)
+
 #define IS_NONE_LIST_TYPE(x) ((x) == NOT_A_LIST)
 
 #define  XML_NUMBERED_LIST (( const XML_Char *) "Numbered List")
@@ -57,6 +78,7 @@ typedef enum
 #define  XML_LOWERROMAN_LIST ((const XML_Char *) "Lower Roman List")
 #define  XML_UPPERROMAN_LIST ((const XML_Char *) "Upper Roman List")
 #define  XML_HEBREW_LIST ((const XML_Char *) "Hebrew List")
+#define  XML_ARABICNUM_LIST ((const XML_Char *) "Arabic List")
 #define  XML_BULLETED_LIST ((const XML_Char *) "Bullet List")
 #define  XML_DASHED_LIST ((const XML_Char *) "Dashed List")
 #define  XML_SQUARE_LIST ((const XML_Char *) "Square List")
@@ -89,6 +111,8 @@ typedef enum
 #define  fmt_UPPERROMAN_LIST  ((const char *)"%*%R")
 #define  fmt_BULLETED_LIST ((const char *)"%b")
 #define  fmt_DASHED_LIST ((const char *)"%c")
+#define  fmt_HEBREW_LIST ((const char *)"%*%h")
+#define  fmt_ARABICNUM_LIST ((const char *)"%*%i")
 
 
 #endif

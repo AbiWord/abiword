@@ -630,7 +630,8 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 		AP_STRING_ID_DLG_Lists_Lower_Roman_List,
 		AP_STRING_ID_DLG_Lists_Upper_Roman_List
 #ifdef BIDI_ENABLED
-		,AP_STRING_ID_DLG_Lists_Hebrew_List
+		,AP_STRING_ID_DLG_Lists_Arabic_List,
+		AP_STRING_ID_DLG_Lists_Hebrew_List
 #endif
 	};
 
@@ -899,7 +900,7 @@ void AP_Win32Dialog_Lists::_getDisplayedData(UT_sint32 controlId)
 List_Type AP_Win32Dialog_Lists::_getListTypeFromCombos() const
 {
 	const int iType  = _getTypeComboCurSel();
-	const int iStyle = _getStyleComboCurSel();
+	int iStyle = _getStyleComboCurSel();
 
 	if (iType == 0	/* List Type "None" selected	*/ ||
 		iType < 0	/* no selection at all ???		*/ ||
@@ -912,6 +913,9 @@ List_Type AP_Win32Dialog_Lists::_getListTypeFromCombos() const
 	{
 		return (List_Type)(iStyle + BULLETED_LIST);
 	}
+
+	if(iStyle >= BULLETED_LIST)
+		iStyle += (OTHER_NUMBERED_LISTS - BULLETED_LIST + 1);
 
 	// Numbered List, but just to make really REALLY sure, we assert it
 	UT_ASSERT(IS_NUMBERED_LIST_TYPE(iStyle));
@@ -933,6 +937,8 @@ void AP_Win32Dialog_Lists::_setListType(List_Type type)
 	{
 		iType = 2;
 		iStyle = type;
+		if(iStyle > BULLETED_LIST)
+			iStyle -= (OTHER_NUMBERED_LISTS + 1 - BULLETED_LIST);
 	}
 	else
 	{

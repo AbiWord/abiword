@@ -1521,6 +1521,11 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 	case UPPERCASE_LIST:
 		Param = 3;
 		break;
+#ifdef BIDI_ENABLED
+	case HEBREW_LIST:
+		Param = 45;
+		break;
+#endif
 	case LOWERCASE_LIST:
 		Param = 4;
 		break;

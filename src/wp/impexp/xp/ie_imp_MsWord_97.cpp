@@ -239,6 +239,10 @@ s_mapDocToAbiListId (MSWordListIdType id)
 	case WLNF_BULLETS: // bullet list
 	  return "5";
 
+#ifdef BIDI_ENABLED
+	case WLNF_HEBREW_NUMBERS:
+	  return "129";
+#endif
 	case WLNF_ORDINAL: // ordinal
 	default:
 	  return "0";
@@ -254,10 +258,10 @@ s_mapDocToAbiListDelim (MSWordListIdType id)
   switch (id)
 	{
 	case WLNF_UPPER_ROMAN: // upper roman
-	  return "%L";
+	  return "%L.";
 
 	case WLNF_LOWER_ROMAN: // lower roman
-	  return "%L";
+	  return "%L.";
 
 	case WLNF_UPPER_LETTER: // upper letter
 	  return "%L)";
@@ -269,6 +273,9 @@ s_mapDocToAbiListDelim (MSWordListIdType id)
 	  return "%L";
 
 	case WLNF_ORDINAL: // ordinal
+#ifdef BIDI_ENABLED
+	case WLNF_HEBREW_NUMBERS:
+#endif
 	default:
 	  return "%L.";
 	}
@@ -1771,6 +1778,9 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	  myCHPX.cbGrpprl = mygCHPX_count;
 	  myCHPX.grpprl = mygCHPX;
 	  myCHPX.istd = 4095; // no style
+
+	  // a hack -- see the note on myListId below
+	  myListId += myLVLF->nfc;
 	  
 	  /*
 		IMPORTANT now we have the list formatting sutff retrieved; it is found in several
@@ -1781,7 +1791,12 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		(i.e., the number of the first item on the list)
 		
 		myListId	- the id of this list, we need this to know to which list this
-		paragraph belongs
+		paragraph belongs; unfortunately, there seem to be some cases where separate
+		lists *share* the same id, for instance when two lists, of different formatting,
+		are separated by only empty paragraphs. As a hack, I have added the format number
+		to the list id, so gaining different id for different formattings (it is not foolproof,
+		for if id1 + format1 == id2 + format2 then we get two lists joined, but the probability
+		of that should be small).
 		
 		PAPX		- the formatting information that needs to be added to the format
 		of this list

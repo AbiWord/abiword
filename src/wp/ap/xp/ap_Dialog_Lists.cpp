@@ -230,7 +230,7 @@ void AP_Dialog_Lists::Apply(void)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "Symbol");
 	}
-	else if(m_NewListType > DASHED_LIST)
+	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 	}
@@ -484,7 +484,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
 	}
-	else if(m_NewListType > DASHED_LIST)
+	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 	}
@@ -539,7 +539,7 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, (const XML_Char *) "NULL");
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
 	}
-	else if(m_NewListType > DASHED_LIST)
+	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
 		UT_XML_strncpy( (XML_Char *) m_pszFont, 80, _getDingbatsFontName());
 		UT_XML_strncpy( (XML_Char *) m_pszDelim, 80, (const XML_Char *) "%L");
