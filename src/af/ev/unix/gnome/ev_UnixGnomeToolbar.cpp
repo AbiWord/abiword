@@ -46,6 +46,8 @@ extern "C" {
 #include <gal/widgets/widget-pixmap-combo.h>
 }
 
+static GdkColor * black = g_new0 (GdkColor, 1);
+
 /*
  * Pixmaps for the color combos
  */
@@ -231,6 +233,8 @@ EV_UnixGnomeToolbar::EV_UnixGnomeToolbar(XAP_UnixGnomeApp * pUnixApp, XAP_UnixGn
 					 szToolbarLabelSetName),
 			   nbToolbarsInBand(0)
 {
+  if (!black)
+    gdk_color_black (gdk_rgb_get_cmap (), black);
 }
 
 EV_UnixGnomeToolbar::~EV_UnixGnomeToolbar(void)
@@ -434,8 +438,8 @@ UT_Bool EV_UnixGnomeToolbar::synthesize(void)
 			  {
 			    GtkWidget * combo;
 			    
-			    if (pAction->getItemType() == EV_TBIT_ColorFore)
-			      combo = color_combo_new (font_xpm, szToolTip, NULL, NULL);
+			    if (pAction->getItemType() == EV_TBIT_ColorFore)			      
+				combo = color_combo_new (font_xpm, szToolTip, black, NULL);
 			    else
 			      combo = color_combo_new (bucket_xpm, szToolTip, NULL, NULL);
 
