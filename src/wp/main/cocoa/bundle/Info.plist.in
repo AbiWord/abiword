@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
-<plist version="0.9">
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
+		<dict>
+			<key>CFBudnleTypeOSTypes</key>
+			<array>
+				<string>W6BN</string>
+				<string>WDBN</string>
+			</array>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>doc</string>
+				<string>DOC</string>
+				<string>dot</string>
+				<string>DOT</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>DOCDocument.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Microsoft Word Document</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
@@ -70,5 +90,9 @@
 	<string>AbiW</string>
 	<key>CFBundleVersion</key>
 	<string>@VERSION@</string>
+        <key>NSMainNibFile</key>
+        <string>MainMenu</string>
+        <key>NSPrincipalClass</key>
+        <string>NSApplication</string>
 </dict>
 </plist>
