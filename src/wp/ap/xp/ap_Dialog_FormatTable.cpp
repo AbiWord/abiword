@@ -329,76 +329,91 @@ void AP_Dialog_FormatTable::ShowErrorBox(UT_String & sFile, UT_Error errorCode)
  */
 void AP_Dialog_FormatTable::setAllSensitivities(void)
 {
-    FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	setSensitivity(pView->isInTable());
+	XAP_Frame *frame = m_pApp->getLastFocussedFrame();
+	if (frame) {
+		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
+		setSensitivity(pView->isInTable());
+	}
+	else {
+		setSensitivity(false);
+	}
 }
 
 void AP_Dialog_FormatTable::setCurCellProps(void)
 {
-	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+	XAP_Frame *frame = m_pApp->getLastFocussedFrame();
+	if (frame) {
+		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
 
-	if (m_bSettingsChanged || 
-		m_iOldPos == pView->getPoint()) // comparing the actual cell pos would be even better; but who cares :)
-		return;
-	
-	m_iOldPos = pView->getPoint();
+		if (m_bSettingsChanged || 
+			m_iOldPos == pView->getPoint()) // comparing the actual cell pos would be even better; but who cares :)
+			return;
+		
+		m_iOldPos = pView->getPoint();
 
-	XML_Char * bgColor = NULL;
-	if (pView->getCellBGColor (bgColor))
-	{
-		m_vecProps.addOrReplaceProp("background-color", bgColor);
-	}
-	else
-	{
-		m_vecProps.removeProp("background-color");
-	}
-	if(pView->isImageAtStrux(m_iOldPos,PTX_SectionCell))
-	{
-		if(pView->isInTable())
+		XML_Char * bgColor = NULL;
+		if (pView->getCellBGColor (bgColor))
 		{
-			fl_BlockLayout * pBL = pView->getCurrentBlock();
-			fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pBL->myContainingLayout());
-			if(pCell->getContainerType() != FL_CONTAINER_CELL)
+			m_vecProps.addOrReplaceProp("background-color", bgColor);
+		}
+		else
+		{
+			m_vecProps.removeProp("background-color");
+		}
+		if(pView->isImageAtStrux(m_iOldPos,PTX_SectionCell))
+		{
+			if(pView->isInTable())
 			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				DELETEP(m_pGraphic);
-				DELETEP(m_pImage);
-				m_sImagePath.clear();
-			}
-			else
-			{
-				FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pCell);
-				if(pFG)
+				fl_BlockLayout * pBL = pView->getCurrentBlock();
+				fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pBL->myContainingLayout());
+				if(pCell->getContainerType() != FL_CONTAINER_CELL)
 				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					DELETEP(m_pGraphic);
 					DELETEP(m_pImage);
 					m_sImagePath.clear();
-					m_pGraphic = pFG;
-					m_sImagePath = pFG->getDataId();
-					GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
-					if(m_pGraphic->getType() == FGT_Raster)
+				}
+				else
+				{
+					FG_Graphic * pFG = FG_GraphicRaster::createFromStrux(pCell);
+					if(pFG)
 					{
-						UT_sint32 iImageWidth;
-						UT_sint32 iImageHeight;
-						UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
-						UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
-						m_pImage = static_cast<GR_Image *>(
-							pG->createNewImage( m_sImagePath.c_str(),
-												pBB,
-												iImageWidth,
-												iImageHeight,
-												GR_Image::GRT_Raster));
-					}
-					else
-					{
-						m_pImage = static_cast<GR_Image *>(
-							pG->createNewImage( m_sImagePath.c_str(),
-												static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
-												m_pFormatTablePreview->getWindowWidth()-2,
-												m_pFormatTablePreview->getWindowHeight()-2,
-												GR_Image::GRT_Vector));
+						DELETEP(m_pGraphic);
+						DELETEP(m_pImage);
+						m_sImagePath.clear();
+						m_pGraphic = pFG;
+						m_sImagePath = pFG->getDataId();
+						GR_Graphics * pG = m_pFormatTablePreview->getGraphics();
+						if(m_pGraphic->getType() == FGT_Raster)
+						{
+							UT_sint32 iImageWidth;
+							UT_sint32 iImageHeight;
+							UT_ByteBuf * pBB = static_cast<FG_GraphicRaster *>(pFG)->getRaster_PNG();
+							UT_PNG_getDimensions(pBB, iImageWidth, iImageHeight);
+							m_pImage = static_cast<GR_Image *>(
+								pG->createNewImage( m_sImagePath.c_str(),
+													pBB,
+													iImageWidth,
+													iImageHeight,
+													GR_Image::GRT_Raster));
+						}
+						else
+						{
+							m_pImage = static_cast<GR_Image *>(
+								pG->createNewImage( m_sImagePath.c_str(),
+													static_cast<FG_GraphicVector *>(pFG)->getVector_SVG(),
+													m_pFormatTablePreview->getWindowWidth()-2,
+													m_pFormatTablePreview->getWindowHeight()-2,
+													GR_Image::GRT_Vector));
+						}
 					}
 				}
+			}
+			else
+			{
+				DELETEP(m_pGraphic);
+				DELETEP(m_pImage);
+				m_sImagePath.clear();
 			}
 		}
 		else
@@ -407,20 +422,13 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 			DELETEP(m_pImage);
 			m_sImagePath.clear();
 		}
-	}
-	else
-	{
-		DELETEP(m_pGraphic);
-		DELETEP(m_pImage);
-		m_sImagePath.clear();
-	}
 
-	UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
-    m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
-	
-	// draw the preview with the changed properties
-	if(m_pFormatTablePreview)
-		m_pFormatTablePreview->draw();
+		UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
+		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
+		// draw the preview with the changed properties
+		if(m_pFormatTablePreview)
+			m_pFormatTablePreview->draw();
+	}
 }
 
 void AP_Dialog_FormatTable::setApplyFormatTo(FormatTable applyTo)
