@@ -5007,6 +5007,77 @@ void FV_View::extSelNextPrevLine(bool bNext)
 	notifyListeners(AV_CHG_MOTION);
 }
 
+// TODO preferably we should implement a new function for the simple
+// page Up/Down that actually moves the insertion point (currently
+// the PgUp and PgDown keys are bound to scrolling the window, but
+// they do not move the insertion point, which is a real nuisance)
+// once we fix that, we can use it in the function bellow to get
+// a consistent behaviour
+// 
+// the number 100 is heuristic, it is to get the end of the selection
+// on screen, but it does not work well with large gaps in the text
+// and on page boundaries
+#define TOP_OF_PAGE_OFFSET 100
+
+void FV_View::extSelNextPrevPage(bool bNext)
+{
+	// Figure out which page we clicked on.
+	// Pass the click down to that page.
+	UT_sint32 xClick, yClick;
+	fp_Page* pPage;
+
+	PT_DocPosition iNewPoint;
+	bool bBOL = false;
+	bool bEOL = false;
+	fl_HdrFtrShadow * pShadow = NULL;
+
+	if (isSelectionEmpty())
+	{
+		_eraseInsertionPoint();
+		_setSelectionAnchor();
+		_clearIfAtFmtMark(getPoint());
+		cmdScroll(bNext ? AV_SCROLLCMD_PAGEDOWN : AV_SCROLLCMD_PAGEUP);
+		pPage = _getPageForXY(0, TOP_OF_PAGE_OFFSET, xClick, yClick);
+		pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+		
+		_setPoint(iNewPoint);
+		
+		if (isSelectionEmpty())
+		{
+			_fixInsertionPointCoords();
+			_drawInsertionPoint();
+		}
+		else
+		{
+			_drawSelection();
+		}
+	}
+	else
+	{
+		PT_DocPosition iOldPoint = getPoint();
+
+		cmdScroll(bNext ? AV_SCROLLCMD_PAGEDOWN : AV_SCROLLCMD_PAGEUP);
+		pPage = _getPageForXY(0, TOP_OF_PAGE_OFFSET, xClick, yClick);
+		pPage->mapXYToPositionClick(xClick, yClick, iNewPoint,pShadow, bBOL, bEOL);
+		
+		_setPoint(iNewPoint);
+
+		// top/bottom of doc - nowhere to go
+		if (iOldPoint == iNewPoint)
+			return;
+
+		_extSel(iOldPoint);
+		
+		if (isSelectionEmpty())
+		{
+			_resetSelection();
+			_drawInsertionPoint();
+		}
+	}
+
+	notifyListeners(AV_CHG_MOTION);
+}
+
 void FV_View::extSelHorizontal(bool bForward, UT_uint32 count)
 {
 	if (isSelectionEmpty())

@@ -3310,13 +3310,17 @@ Defun1(extSelNextLine)
 	return true;
 }
 
-Defun0(extSelPageDown)
+Defun1(extSelPageDown)
 {
+	ABIWORD_VIEW;
+	pView->extSelNextPrevPage(true);
 	return true;
 }
 
-Defun0(extSelPageUp)
+Defun1(extSelPageUp)
 {
+	ABIWORD_VIEW;
+	pView->extSelNextPrevPage(false);
 	return true;
 }
 

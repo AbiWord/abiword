@@ -294,6 +294,7 @@ public:
 	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelTo(FV_DocPos dp);
 	void			extSelNextPrevLine(bool bNext);
+	void            extSelNextPrevPage(bool bNext);
 	void			endDrag(UT_sint32 xPos, UT_sint32 yPos);
 
 	void			updateScreen(bool bDirtyRunsOnly=true);
