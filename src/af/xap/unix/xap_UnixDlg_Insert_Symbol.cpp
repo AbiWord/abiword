@@ -149,10 +149,8 @@ void XAP_UnixDialog_Insert_Symbol::runModal(XAP_Frame * pFrame)
 
 void XAP_UnixDialog_Insert_Symbol::activate(void)
 {
-        UT_sint32 sid =(UT_sint32)  getDialogId();
-        GtkWidget * pWidget = (GtkWidget *) m_pApp->getModelessWidget(sid);
-        UT_ASSERT(pWidget);
-        gdk_window_raise(pWidget->window);
+        UT_ASSERT(m_windowMain);
+        gdk_window_raise(m_windowMain->window);
 }
 
 
@@ -255,7 +253,8 @@ void XAP_UnixDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 void XAP_UnixDialog_Insert_Symbol::event_OK(void)
 {
         m_Inserted_Symbol = m_CurrentSymbol;
-	_onInsertButton();
+        setActiveFrame(getActiveFrame());
+       	_onInsertButton();
 }
 
 void XAP_UnixDialog_Insert_Symbol::event_Cancel(void)
@@ -270,11 +269,10 @@ void XAP_UnixDialog_Insert_Symbol::event_Cancel(void)
 			if(m_fontlist[i] != NULL)
 				g_free (m_fontlist[i]);
 		}
-
 		m_Insert_Symbol_no_fonts = 0;
-
 		modeless_cleanup();
 		gtk_widget_destroy(m_windowMain);
+		m_windowMain= NULL;
 	}
 }
 
@@ -385,7 +383,7 @@ void XAP_UnixDialog_Insert_Symbol::destroy(void)
 	// Just nuke this dialog
        
 	gtk_widget_destroy(m_windowMain);
-
+        m_windowMain = NULL;
 }
 
 void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
@@ -397,8 +395,7 @@ void XAP_UnixDialog_Insert_Symbol::event_WindowDelete(void)
 		g_free(m_fontlist[i]);
         modeless_cleanup();
         gtk_widget_destroy(m_windowMain);
-
-
+        m_windowMain = NULL;
 }
 
 

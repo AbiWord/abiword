@@ -569,11 +569,24 @@ void * XAP_App::getModelessWidget( UT_sint32 id)
 	return m_IdTable[i].pwidget;
 }
 
+UT_Bool XAP_App::isModelessRunning(UT_sint32 id)
+{
+  // returns UT_TRUE if the modeless dialog given by id is running
 
+        UT_sint32 i;
+        for(i=0; i <= NUM_MODELESSID && m_IdTable[i].id != id; i++) ;
+        if( i> NUM_MODELESSID)
+	{
+	     return UT_FALSE;
+	}
+        UT_ASSERT( m_IdTable[i].id == id );
+        return UT_TRUE;
+}
+        
 XAP_Dialog_Modeless * XAP_App::getModelessDialog( UT_sint32 i)
 {
 
-  // Retrieve pDialog from the table based on i
+  // Retrieve pDialog from the table based on its location in the table
 
 	return m_IdTable[i].pDialog;
 }

@@ -134,6 +134,7 @@ public:
 	virtual void				notifyCloseFrame(XAP_Frame *pFrame) = 0;
 	virtual void				destroy(void)=0;
 	virtual void				activate(void)=0;
+        XAP_Frame *                             getActiveFrame();
 	void						modeless_cleanup(void);
 	UT_Bool						isRunning(void);
 
@@ -144,3 +145,10 @@ protected:
 };
 
 #endif /* XAP_DIALOG_H */
+
+
+
+
+
+
+

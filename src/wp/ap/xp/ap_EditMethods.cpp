@@ -3847,7 +3847,7 @@ static UT_Bool s_InsertSymbolDlg(FV_View * pView, XAP_Dialog_Id id  )
 		= (XAP_Dialog_Insert_Symbol *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 	
-	symbol_Listener.setView(pView);
+	//	symbol_Listener.setView(pView);
 	
 	if(pDialog->isRunning() == UT_TRUE)
 	{
