@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-// Hungarian translations provided by Tamas Decsi <tamas@pressflex.com>
+// Hungarian translations provided by Tamas Decsi <tamas.decsi@techie.com>
 
 /*****************************************************************
 ******************************************************************
@@ -69,15 +69,12 @@ BeginSet(hu,HU,UT_TRUE)
 	MenuLabel(AP_MENU_ID_EDIT_FIND,			"Kere&s",			"A megadott szöveg keresése")
 	MenuLabel(AP_MENU_ID_EDIT_REPLACE,		"Cs&erél",			"A megadott szöveg cseréje más szövegre")
 	MenuLabel(AP_MENU_ID_EDIT_GOTO,			"U&grás",			"A kurzor áthelyezése egy megadott helyre")
-	MenuLabel(AP_MENU_ID_TOOLS,		"&Eszközök",		NULL)
-	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Helyesírás",		"A dokumentum helyesírásának ellenõrzése")
-	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,		"&Szavak száma",		"A dokumentum szavainak megszámlálása")
-	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Beállítások",			"Beállítások szerkesztése")
 	
 	MenuLabel(AP_MENU_ID_VIEW,				"&Nézet",			NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TOOLBARS,		"&Eszköztárak",		NULL)
 	MenuLabel(AP_MENU_ID_VIEW_TB_STD,		"&Szabvány",		"A szabvány eszköztár megjelenítése vagy elrejtése")
 	MenuLabel(AP_MENU_ID_VIEW_TB_FORMAT,	"&Formázás",		"A formázás eszköztár megjelenítése vagy elrejtése")
+	MenuLabel(AP_MENU_ID_VIEW_TB_EXTRA,		"E&xtra",			"Az extra eszköztár megjelenítése vagy elrejtése")
 	MenuLabel(AP_MENU_ID_VIEW_RULER,		"&Vonalzó",			"A vonalzók megjelenítése vagy elrejtése")
 	MenuLabel(AP_MENU_ID_VIEW_STATUSBAR,	"Állapot&sor",		"Az állapotsor megjelenítése vagy elrejtése")
 	MenuLabel(AP_MENU_ID_VIEW_SHOWPARA,		"Bekezdésjelek",	"A nem nyomtatott karakterek megjelenítése")
@@ -108,6 +105,11 @@ BeginSet(hu,HU,UT_TRUE)
 	MenuLabel(AP_MENU_ID_FMT_SUPERSCRIPT,	"Felsõ index",		"A kijelölt rész felsõ indexszé tétele (megfordítás)")
 	MenuLabel(AP_MENU_ID_FMT_SUBSCRIPT,		"Alsó index",		"A kijelölt rész alsó indexszé tétele (megfordítás)")
 
+	MenuLabel(AP_MENU_ID_TOOLS,		"&Eszközök",		NULL)
+	MenuLabel(AP_MENU_ID_TOOLS_SPELL,		"&Helyesírás",		"A dokumentum helyesírásának ellenõrzése")
+	MenuLabel(AP_MENU_ID_TOOLS_WORDCOUNT,		"&Szavak száma",		"A dokumentum szavainak megszámlálása")
+	MenuLabel(AP_MENU_ID_TOOLS_OPTIONS,		"&Beállítások",			"Beállítások szerkesztése")
+
 	MenuLabel(AP_MENU_ID_ALIGN,				"&Igazítás",			NULL)
 	MenuLabel(AP_MENU_ID_ALIGN_LEFT,		"&Balra",			"A bekezdés igazítása balra")
 	MenuLabel(AP_MENU_ID_ALIGN_CENTER,		"&Középre",			"A bekezdés igazítása középre")
@@ -128,7 +130,12 @@ BeginSet(hu,HU,UT_TRUE)
 	MenuLabel(AP_MENU_ID_WINDOW_MORE,		"&További ablakok",	"Az ablakok teljes listája")
 
 	MenuLabel(AP_MENU_ID_HELP,				"Sú&gó",			NULL)
+	MenuLabel(AP_MENU_ID_HELP_CONTENTS,		"Súgó &Tartalom",	"Súgó tartalmának megjelenítése")
+	MenuLabel(AP_MENU_ID_HELP_INDEX,		"Súgó Tartalomjegyzék",		"Súgó tartalomjegyzékének megjelenítése")
+	MenuLabel(AP_MENU_ID_HELP_CHECKVER,		"&Verziószám",	"A program verziószámának megjelenítése")
+	MenuLabel(AP_MENU_ID_HELP_SEARCH,		"Súgó &Keresése",	"Súgó keresése...")
 	MenuLabel(AP_MENU_ID_HELP_ABOUT,		"%s &Névjegy",		"Program információk, verziószám és copyright megjelenítése")
+	MenuLabel(AP_MENU_ID_HELP_ABOUTOS,		"A &Szabad Forráskódról",	"Információ a szabad forráskódról")
 
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_1,	"%s",				"Cserélje erre a javaslatra")
 	MenuLabel(AP_MENU_ID_SPELL_SUGGEST_2,	"%s",				"Cserélje erre a javaslatra")

@@ -17,7 +17,7 @@
  * 02111-1307, USA.
  */
 
-// Hungarian translations provided by Tamas Decsi <tamas@pressflex.com>
+// Hungarian translations provided by Tamas Decsi <tamas.decsi@techie.com>
 
 /*****************************************************************
 ******************************************************************
@@ -72,14 +72,15 @@ BeginSet(hu,HU,UT_TRUE)
 
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Felsõ index",	tb_text_superscript_xpm,	NULL, "Felsõ index")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Alsó index",	tb_text_subscript_xpm,		NULL, "Alsó index")
+	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Szimbólum",	tb_symbol_xpm,		NULL, "Szimbólum beillesztése")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Balra",		tb_text_align_left_xpm,		NULL, "Balra igazítás")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_CENTER,	"Középre",	tb_text_center_xpm,	NULL, "Középre igazítás")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_RIGHT,		"Jobbra",	tb_text_align_right_xpm,	NULL, "Jobbra igazítás")
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_JUSTIFY,	"Sorkiegyenlítés",	tb_text_justify_xpm,	NULL, "A bekezdés sorkiegyenlítése")
 
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"None before",		tb_para_0before_xpm,	NULL, "Space before: None")
-	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pt before",		tb_para_12before_xpm,	NULL, "Space before: 12 pt")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_0BEFORE,	"Nincs elõtte",		tb_para_0before_xpm,	NULL, "Nincs elõtte hely")
+	ToolbarLabel(AP_TOOLBAR_ID_PARA_12BEFORE,	"12 pont elõtte",		tb_para_12before_xpm,	NULL, "12 pont hely van elõtte")
 
 	ToolbarLabel(AP_TOOLBAR_ID_SINGLE_SPACE,	"Szimpla sorköz",	tb_line_single_space_xpm,	NULL, "Szimpla sorköz")
 	ToolbarLabel(AP_TOOLBAR_ID_MIDDLE_SPACE,	"1,5 sor",		tb_line_middle_space_xpm,	NULL, "1,5 sor")
@@ -90,6 +91,8 @@ BeginSet(hu,HU,UT_TRUE)
 	ToolbarLabel(AP_TOOLBAR_ID_3COLUMN,			"3 Hasáb",		tb_3column_xpm,			NULL, "3 Hasáb")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ZOOM,			"Nagyítás",		NoIcon,			NULL, "Nagyítás")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,		"Felsorolások",		tb_lists_bullets_xpm,		NULL,		"Felsorolások kezdése/lezárása")
+	ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,		"Sorszámozott Listák",		tb_lists_numbers_xpm,		NULL,		"Sorszámozott Listák kezdése/lezárása")
 	
 	// ... add others here ...
 
