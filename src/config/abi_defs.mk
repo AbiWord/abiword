@@ -90,7 +90,17 @@ bogusincdir:
 	@echo variables in your environment:
 	@echo    WXLIBDIR - directory where the wx.lib library is
 	@echo    WXINCDIR - directory for wxwin include files
-	@echo set BUILDWXWIN=NO to not build the wxWin version
+	@echo
+	@echo an example for bash:
+	@echo export WXLIBDIR=c:/wxwin/lib
+	@echo export WXINCDIR=c:/wxwin/include
+	@echo
+	@echo for csh/tsch:
+	@echo setenv WXLIBDIR c:/wxwin/lib
+	@echo setenv WXINCDIR c:/wxwin/include
+	@echo set BUILDWXWIN=something to build the wxWindows version
+	@echo
+	@echo unset the BUILDWXWIN variable in your environment to not build with wxWin
 endif
 ifeq ($(WXLIBDIR),)
 boguslibdir:
@@ -98,7 +108,16 @@ boguslibdir:
 	@echo variables in your environment:
 	@echo    WXLIBDIR - directory where the wx.lib library is
 	@echo    WXINCDIR - directory for wxwin include files
-	@echo set BUILDWXWIN=NO to not build the wxWin version
+	@echo
+	@echo an example for bash:
+	@echo export WXLIBDIR=c:/wxwin/lib
+	@echo export WXINCDIR=c:/wxwin/include
+	@echo
+	@echo for csh/tsch:
+	@echo setenv WXLIBDIR c:/wxwin/lib
+	@echo setenv WXINCDIR c:/wxwin/include
+	@echo
+	@echo unset the BUILDWXWIN variable in your environment to not build with wxWin
 endif
 EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_APPLIBS)))	\
 		$(addprefix $(DIST)/lib/lib,$(addsuffix $(MOD_VERSION)_s.lib,$(ABI_OTHLIBS)))	\
@@ -121,7 +140,16 @@ bogusincdir:
 	@echo variables in your environment:
 	@echo    WXLIBDIR - directory where the wx library is
 	@echo    WXINCDIR - directory for wxwin include files
-	@echo set BUILDWXWIN=NO to not build the wxWin version
+	@echo
+	@echo an example for bash:
+	@echo export WXLIBDIR=/usr/src/wxGTK/lib/Linux
+	@echo export WXINCDIR=/usr/src/wxGTK/include
+	@echo
+	@echo for csh/tsch:
+	@echo setenv WXLIBDIR /usr/src/wxGTK/lib/Linux
+	@echo setenv WXINCDIR /usr/src/wxGTK/include
+	@echo
+	@echo unset the BUILDWXWIN variable in your environment to not build with wxWin
 endif
 ifeq ($(WXLIBDIR),)
 boguslibdir:
@@ -129,7 +157,16 @@ boguslibdir:
 	@echo variables in your environment:
 	@echo    WXLIBDIR - directory where the wx library is
 	@echo    WXINCDIR - directory for wxwin include files
-	@echo set BUILDWXWIN=NO to not build the wxWin version
+	@echo
+	@echo an example for bash:
+	@echo export WXLIBDIR=/usr/src/wxGTK/lib/Linux
+	@echo export WXINCDIR=/usr/src/wxGTK/include
+	@echo
+	@echo for csh/tsch:
+	@echo setenv WXLIBDIR /usr/src/wxGTK/lib/Linux
+	@echo setenv WXINCDIR /usr/src/wxGTK/include
+	@echo
+	@echo unset the BUILDWXWIN variable in your environment to not build with wxWin
 endif
 EXTRA_LIBS=	-L$(DIST)/lib 						\
 		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS))) \
