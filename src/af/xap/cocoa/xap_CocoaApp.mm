@@ -74,6 +74,14 @@ XAP_CocoaApp::~XAP_CocoaApp()
 	DELETEP(m_fontManager);
 }
 
+/*!
+	Returns the GUI string encoding.
+ */
+const char * XAP_CocoaApp::getDefaultEncoding ()
+{
+	return "UTF-8";
+}
+
 bool XAP_CocoaApp::initialize()
 {
 	if (!g_thread_supported ()) {

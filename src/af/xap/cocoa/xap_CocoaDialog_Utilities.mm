@@ -31,10 +31,10 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 
 	if ([control isKindOfClass:[NSButton class]] 
 	     || [control isKindOfClass:[NSBox class]]) {
-		[control setTitle:[NSString stringWithCString:buf]];
+		[control setTitle:[NSString stringWithUTF8String:buf]];
 	}
 	else if ([control isKindOfClass:[NSTabViewItem class]]) {
-		[control setLabel:[NSString stringWithCString:buf]];
+		[control setLabel:[NSString stringWithUTF8String:buf]];
 	}
 //	else 
 
