@@ -108,7 +108,7 @@ static PP_Property _props[] =
 	{ "margin-right", "0in", false},
 	{ "margin-top",	"0in", false}, // zero to be consistent with other WPs
 
-	{ "orphans", "2", false},
+	{ "orphans", "1", false},
 
 	{ "page-margin-bottom",		"1in",				false},
 	{ "page-margin-footer",         "0in",                          false},
