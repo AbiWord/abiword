@@ -234,8 +234,8 @@ BeginLayout(Main,0)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_WEB)
-	    MenuItem(AP_MENU_ID_FILE_SAVEASWEB)
-	    MenuItem(AP_MENU_ID_FILE_WEBPREVIEW)
+	    MenuItem(AP_MENU_ID_WEB_SAVEASWEB)
+	    MenuItem(AP_MENU_ID_WEB_WEBPREVIEW)
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_HELP)

@@ -178,8 +178,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_WINDOW_MORE,		0,1,0,	"dlgMoreWindows",	NULL,					ap_GetLabel_WindowMore);
 	
 	_s(AP_MENU_ID_WEB, 1,0,0, NULL, NULL, NULL); 
-	_s(AP_MENU_ID_FILE_SAVEASWEB, 0,1,0, "fileSaveAsWeb", NULL, NULL);
-	_s(AP_MENU_ID_FILE_WEBPREVIEW, 0,1,0, "filePreviewWeb", NULL, NULL);
+	_s(AP_MENU_ID_WEB_SAVEASWEB, 0,1,0, "fileSaveAsWeb", NULL, NULL);
+	_s(AP_MENU_ID_WEB_WEBPREVIEW, 0,1,0, "filePreviewWeb", NULL, NULL);
 
 	_s(AP_MENU_ID_HELP,				1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_HELP_CONTENTS,		0,0,0,	"helpContents",			NULL,					ap_GetLabel_Contents);
