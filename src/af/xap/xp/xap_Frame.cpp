@@ -595,6 +595,22 @@ UT_Error XAP_Frame::backup()
 	return error;
 }
 
+void XAP_Frame::updateZoom(void)
+{
+   switch( getZoomType() )
+   {
+   case z_PAGEWIDTH:
+       setZoomPercentage( m_pView->calculateZoomPercentForPageWidth() );
+       break;
+   case z_WHOLEPAGE:
+       setZoomPercentage( m_pView->calculateZoomPercentForWholePage() );
+       break;
+   default:
+       ;
+   }
+}
+
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 

@@ -127,8 +127,7 @@ public:
 	virtual UT_uint32			getZoomPercentage(void);
 	void						setZoomType(XAP_Frame::tZoomType z_Type){ m_zoomType = z_Type; } 
 	XAP_Frame::tZoomType		getZoomType(void) { return m_zoomType; }
-
-
+   void                        updateZoom(void);
 
 	virtual void				setStatusMessage(const char * szMsg) = 0;
 
