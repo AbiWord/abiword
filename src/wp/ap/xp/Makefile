@@ -25,7 +25,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 ## TODO: decide if all of these need to be exported.
 ## TODO: move the ones which dont to the HEADERS definition
 
-EXPORT_HEADERS=		ap_Ap.h				\
+EXPORT_HEADERS=		ap_App.h				\
 			ap_EditMethods.h		\
 			ap_Frame.h			\
 			ap_LoadBindings.h		\
@@ -47,7 +47,7 @@ HEADERS=		$(EXPORT_HEADERS)		\
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=		ap_Ap.cpp			\
+CPPSRCS=		ap_App.cpp			\
 			ap_EditMethods.cpp		\
 			ap_Frame.cpp			\
 			ap_LoadBindings.cpp		\

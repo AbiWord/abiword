@@ -25,7 +25,7 @@ include $(ABI_DEPTH)/config/abi_defs.mk
 ## TODO: decide if all of these need to be exported.
 ## TODO: move the ones which dont to the HEADERS definition
 
-EXPORT_HEADERS=		ap_UnixAp.h			\
+EXPORT_HEADERS=		ap_UnixApp.h			\
 			ap_UnixFrame.h
 
 HEADERS=		$(EXPORT_HEADERS)
@@ -33,7 +33,7 @@ HEADERS=		$(EXPORT_HEADERS)
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=		ap_UnixAp.cpp			\
+CPPSRCS=		ap_UnixApp.cpp			\
 			ap_UnixFrame.cpp
 
 
