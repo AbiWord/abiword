@@ -1,10 +1,17 @@
-/*! \page ptbl_overview PieceTable
+/*! 
+
+\mainpage
+
+\section Introduction
+
+One of the major bits of AbiWord word processing code is the Piece Table
+
+\section PieceTable
 
 \todo Add more class names / links to sources.
 
-<h1>1. PieceTable</h1>
 
-<h2>1.1. Introduction</h2>
+\subsection Introduction
 
 <p>A pt_PieceTable is the data structure used to represent the
 document.  It presents an interface to access the document content as
@@ -12,7 +19,7 @@ a sequence of (Unicode) characters.  It includes an interface to
 access document structure and formatting information.  It provides
 efficient editing operations, complete undo, and crash recovery.</p>
 
-<h2>1.2. Class Overview</h2>
+\subsection Class Overview
 
 <p>The PieceTable consists of the following classs:
 
@@ -97,7 +104,7 @@ ChangeRecords are not removed from the vector until the
 removed from the vector, it is deleted.
 </ol>
 
-<h2>1.3. Operations</h2>
+\subsection Operations
 
 <ol>
 <li>Insert(<i>position</i>,<i>bAfter</i>,<i>c</i>) -- To
@@ -221,7 +228,7 @@ could be used to replay the editing operations and
 reconstruct the modified document.
 </ol>
 
-<h2>1.4. Observations</h2>
+\subsection Observations
 
 <ol>
 <li>The content of the original file are never modified.
@@ -249,7 +256,7 @@ doing the operation that was undone.
 should be identical or equivalent.</ul>
 </ol>
 
-<h2>1.5. Problems or Issues</h2>
+\subsection Problems or Issues
 
 <ol>
 <li>TextPieces represent spans of text that are
@@ -295,7 +302,7 @@ which span multiple pieces can be represented operation to
 the user.
 </ol>
 
-<h2>1.6. Code</h2>
+\subsection Code
 
 <pre>
 class PT_PieceTable
