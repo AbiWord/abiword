@@ -134,8 +134,8 @@ public:
 	
 	virtual bool queryProperties(GR_Graphics::Properties gp) const = 0;
 	virtual UT_sint32 getScreenResolution(void) {return 100;} //subclasses to overide
-	static  UT_uint32 s_getScreenResolution() {return s_iScreenResolution;}
-	virtual UT_sint32 getPaperResolution(void) {return 7200;} // sebclasses to override
+	static  UT_uint32 s_getScreenResolution();
+	virtual UT_sint32 getPaperResolution(void) {return 7200;} // subclasses to override
 	/* the following 3 are only used for printing */
 	
 	virtual bool startPrint(void) = 0;
