@@ -17,8 +17,6 @@
  * 02111-1307, USA.
  */
 
-#define GTK_ENABLE_BROKEN
-
 #include <stdlib.h>
 #include <time.h>
 
@@ -106,8 +104,13 @@ void AP_UnixDialog_MetaData::eventOK ()
   GRAB_ENTRY_TEXT(Coverage);
   GRAB_ENTRY_TEXT(Rights);
 
-  char * editable_txt = gtk_editable_get_chars (GTK_EDITABLE(m_textDescription),
-						0, -1);
+  GtkTextIter start, end;
+
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_textDescription));
+  gtk_text_buffer_get_iter_at_offset ( buffer, &start, 0 );
+  gtk_text_buffer_get_iter_at_offset ( buffer, &end, -1 );
+
+  char * editable_txt = gtk_text_buffer_get_text ( buffer, &start, &end, FALSE );
 
   if (editable_txt && strlen(editable_txt)) {
     setDescription ( editable_txt ) ;
@@ -310,10 +313,9 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
                     (GtkAttachOptions) (GTK_FILL), 0, 0);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_ALWAYS);
 
-  description_txt = gtk_text_new (NULL, NULL);
+  description_txt = gtk_text_view_new ();
   gtk_widget_show (description_txt);
   gtk_container_add (GTK_CONTAINER (scrolledwindow1), description_txt);
-  gtk_editable_set_editable (GTK_EDITABLE(description_txt), TRUE);
 
   category_entry = gtk_entry_new ();
   gtk_widget_show (category_entry);
@@ -438,6 +440,8 @@ void AP_UnixDialog_MetaData::_constructWindowContents ( GtkWidget * dialog_vbox1
   gint unused_pos = 0 ;
   prop = getDescription () ;
   if ( prop.size () )
-    gtk_editable_insert_text(GTK_EDITABLE(m_textDescription), prop.c_str(),
-					  prop.size(), &unused_pos);
+    {
+      GtkTextBuffer * buffer = gtk_text_view_get_buffer ( GTK_TEXT_VIEW(description_txt) ) ;
+      gtk_text_buffer_set_text ( buffer, prop.c_str(), -1 ) ;
+    }
 }
