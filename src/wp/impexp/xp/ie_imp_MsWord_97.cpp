@@ -847,7 +847,9 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bSymbolFont(false),
 	m_dim(DIM_IN),
 	m_iLeft(0),
-	m_iRight(0)
+	m_iRight(0),
+	m_iTextBoxesStart(0xffffffff),
+	m_iTextBoxesEnd(0xffffffff)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1465,6 +1467,11 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		if(m_iEndnotesEnd == 0xffffffff)
 			m_iEndnotesEnd = m_iEndnotesStart;
 		
+		m_iTextBoxesStart = m_iEndnotesEnd;
+		m_iTextBoxesEnd = m_iTextBoxesStart + ps->fib.ccpTxbx;
+		if(m_iTextBoxesEnd == 0xffffffff)
+			m_iTextBoxesEnd = m_iTextBoxesStart;
+
 		// now retrieve the note info ...
 		_handleNotes(ps);
 		_handleHeaders(ps);

@@ -115,7 +115,7 @@ GR_XPRenderInfo::~GR_XPRenderInfo()
 
 		s_pOwner = NULL;
 	}
-
+	UT_DEBUGMSG(("Deleting GR_XPRenderInfo %x \n",this));
     delete [] m_pChars;
 	delete [] m_pWidths;
 }

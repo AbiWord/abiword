@@ -124,7 +124,7 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 		bDontClear = true;
 	}
-	UT_DEBUGMSG(("Lookup props in text run \n"));
+	xxx_UT_DEBUGMSG(("Lookup props in text run \n"));
 	fd_Field * fd = NULL;
 	static_cast<fl_Layout *>(getBlock())->getField(getBlockOffset(),fd);
 	_setField(fd);
@@ -2704,14 +2704,18 @@ void fp_TextRun::updateOnDelete(UT_uint32 offset, UT_uint32 iLenToDelete)
 		m_pRenderInfo->m_iVisDir = getVisDirection();
 		m_pRenderInfo->m_eState = _getRefreshDrawBuffer();
 		m_pRenderInfo->m_pText = &text;
+		if(m_pRenderInfo->cut(offset,iLenToDelete))
+		{
+			// mark draw buffer dirty ...
+			orDrawBufferDirty(GRSR_Unknown);
+		}
 	}
-	
-
-	if(!m_pRenderInfo || !m_pRenderInfo->cut(offset,iLenToDelete))
+	if(!m_pRenderInfo)
 	{
 		// mark draw buffer dirty ...
 		orDrawBufferDirty(GRSR_Unknown);
 	}
+
 
  set_length:
 	// now set length without marking width and draw buffer dirty

@@ -289,6 +289,8 @@ private:
 	UT_Dimension m_dim;
 	UT_sint32    m_iLeft;
 	UT_sint32    m_iRight;
+	UT_uint32    m_iTextBoxesStart;
+	UT_uint32    m_iTextBoxesEnd;
 };
 
 #endif /* IE_IMP_MSWORD_H */
