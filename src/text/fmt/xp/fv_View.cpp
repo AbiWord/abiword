@@ -1044,10 +1044,18 @@ void FV_View::moveInsPtTo(PT_DocPosition dp)
 		_clearIfAtFmtMark(getPoint());
 
 	_setPoint(dp, /* (dp == FV_DOCPOS_EOL) */ UT_FALSE);	// is this bool correct?
+	/*TF CHANGE: Why do we automatically scroll?  We should only scroll the window
+                 if the point to be displayed is not already on the screen.  If it 
+				 is already on the screen then we should just leave it in place and
+                 not do any scrolling.  Instead of the code below, we use the code which
+  				 is already in the _ensureThatInsertionPointIsOnScreen() function.
 	_fixInsertionPointCoords();
 	cmdScroll(AV_SCROLLCMD_LINEDOWN, (UT_uint32) (m_yPoint + m_iPointHeight/2 - m_iWindowHeight/2));
 	cmdScroll(AV_SCROLLCMD_LINERIGHT, (UT_uint32) (m_xPoint - m_iWindowWidth/2));
 	notifyListeners(AV_CHG_MOTION);
+	*/
+	_ensureThatInsertionPointIsOnScreen();
+	
 }
 
 
