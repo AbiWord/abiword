@@ -399,6 +399,7 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 						if ((pRun->m_iOffsetFirst >= blockOffset) && 
 							(pRun->m_iOffsetFirst < blockOffset + len))
 						{
+							pRun->clearScreen();
 							pRun->lookupProperties();
 							pRun->calcWidths(&pBL->m_gbCharWidths);
 						}
@@ -408,6 +409,9 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 
 					pBL->format();
 					pBL->draw(m_pLayout->getGraphics());
+
+					// in case anything else moved
+					m_pLayout->reformat();
 				}
 				return UT_TRUE;
 					
