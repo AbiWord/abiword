@@ -114,7 +114,9 @@ if test $abi_builtin_plugins = yes; then
 		_abi_plugin_lib=AbiGypsython
 		;;
 		ots)
-		_abi_plugin_lib=AbiOTS
+			_abi_plugin_lib=AbiOTS
+			PKG_CHECK_MODULES(_abi_ots,libots-1 >= 0.2.0)
+			PLUGIN_LIBS="$PLUGIN_LIBS $_abi_ots_LIBS"
 		;;
 		referee)
 		_abi_plugin_lib=AbiReferee
