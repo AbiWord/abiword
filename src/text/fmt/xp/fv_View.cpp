@@ -829,20 +829,20 @@ fl_BlockLayout* FV_View::_findBlockAtPosition(PT_DocPosition pos)
 
 UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 {
-	m_pDoc->beginUserAtomicGlob();
+	UT_Bool bResult;
 
 	if (!isSelectionEmpty())
 	{
+		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
+		bResult = m_pDoc->insertSpan(getPoint(), text, count);
+		m_pDoc->endUserAtomicGlob();
 	}
 	else
 	{
 		_eraseInsertionPoint();
+		bResult = m_pDoc->insertSpan(getPoint(), text, count);
 	}
-
-	UT_Bool bResult = m_pDoc->insertSpan(getPoint(), text, count);
-
-	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
 	
@@ -857,10 +857,12 @@ UT_Bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count)
 
 void FV_View::insertSectionBreak(void)
 {
-	m_pDoc->beginUserAtomicGlob();
-
+	UT_Bool bDidGlob = UT_FALSE;
+	
 	if (!isSelectionEmpty())
 	{
+		bDidGlob = UT_TRUE;
+		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
 	}
 	else
@@ -879,7 +881,8 @@ void FV_View::insertSectionBreak(void)
 	m_pDoc->insertStrux(iPoint, PTX_Block);
 	m_pDoc->insertStrux(iPoint, PTX_Section);
 
-	m_pDoc->endUserAtomicGlob();
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();
 	
@@ -892,10 +895,12 @@ void FV_View::insertSectionBreak(void)
 
 void FV_View::insertParagraphBreak(void)
 {
-	m_pDoc->beginUserAtomicGlob();
+	UT_Bool bDidGlob = UT_FALSE;
 
 	if (!isSelectionEmpty())
 	{
+		bDidGlob = UT_TRUE;
+		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
 	}
 	else
@@ -910,7 +915,8 @@ void FV_View::insertParagraphBreak(void)
 
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
 
-	m_pDoc->endUserAtomicGlob();
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
 	
 	_generalUpdate();
 	
@@ -4253,10 +4259,12 @@ UT_Bool FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 
 
 UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 {
-	m_pDoc->beginUserAtomicGlob();
+	UT_Bool bDidGlob = UT_FALSE;
 
 	if (!isSelectionEmpty())
 	{
+		bDidGlob = UT_TRUE;
+		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
 	}
 	else
@@ -4289,7 +4297,8 @@ UT_Bool FV_View::cmdInsertPNGImage(UT_ByteBuf* pBB, const char* pszName)
 	else
 		DELETEP(pBB);
 
-	m_pDoc->endUserAtomicGlob();
+	if (bDidGlob)
+		m_pDoc->endUserAtomicGlob();
 	
 	_generalUpdate();
 	
