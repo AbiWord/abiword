@@ -44,11 +44,11 @@ public:
     virtual GR_Image *  createImageSegment(GR_Graphics * pG, const UT_Rect & rec);
     virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
 
+	void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
+
 private:
 	GdkPixbuf * m_image;
     GR_Image::GRType m_ImageType;
-
-	void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
 };
 
 #endif /* GR_UNIXGNOMEIMAGE_H */

@@ -423,10 +423,6 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	GR_UnixImage * pImage = static_cast<GR_UnixImage *>(pImg);
 	GdkPixbuf * image = pImage->getData ();
 	UT_return_if_fail (image);
-
-	gnome_print_gsave (m_gpc);
-	gnome_print_translate (m_gpc, xDest, yDest - iDestHeight);
-	gnome_print_scale (m_gpc, static_cast<float>(iDestWidth), static_cast<float>(iDestHeight));
 	
 	gint width, height, rowstride;
 	const guchar * pixels;
@@ -435,6 +431,13 @@ void XAP_UnixGnomePrintGraphics::_drawAnyImage (GR_Image* pImg,
 	height    = gdk_pixbuf_get_height (image);
 	rowstride = gdk_pixbuf_get_rowstride (image);
 	pixels    = gdk_pixbuf_get_pixels (image);
+
+	gnome_print_gsave (m_gpc);
+	gnome_print_translate (m_gpc, xDest, yDest - iDestHeight);
+
+	float scale_x = width * static_cast<float>(iDestWidth)/width;
+	float scale_y = height * static_cast<float>(iDestHeight)/height;
+	gnome_print_scale (m_gpc, scale_x, scale_y);
 
 	/* Not sure about the grayimage part, but the other 2 are correct */
 	if (!rgb)
