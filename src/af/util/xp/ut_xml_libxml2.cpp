@@ -177,33 +177,12 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
   xmlSAXHandler hdl;
   xmlParserCtxtPtr ctxt;
 
-  hdl.internalSubset = NULL;
-  hdl.isStandalone = NULL;
-  hdl.hasInternalSubset = NULL;
-  hdl.hasExternalSubset = NULL;
-  hdl.resolveEntity = NULL;
+  memset(&hdl, 0, sizeof(hdl));
+
   hdl.getEntity = _getEntity;
-  hdl.entityDecl = NULL;
-  hdl.notationDecl = NULL;
-  hdl.attributeDecl = NULL;
-  hdl.elementDecl = NULL;
-  hdl.unparsedEntityDecl = NULL;
-  hdl.setDocumentLocator = NULL;
-  hdl.startDocument = NULL;
-  hdl.endDocument = NULL;
   hdl.startElement = _startElement;
   hdl.endElement = _endElement;
-  hdl.reference = NULL;
   hdl.characters = _charData;
-  hdl.ignorableWhitespace = NULL;
-  hdl.processingInstruction = NULL;
-  hdl.comment = NULL;
-  hdl.warning = NULL;
-  hdl.error = NULL;
-  hdl.fatalError = NULL;
-  hdl.getParameterEntity = NULL;
-  hdl.cdataBlock = NULL;
-  hdl.externalSubset = NULL;
 
   ctxt = xmlCreateMemoryParserCtxt (buffer, (int) length);
   if (ctxt == NULL)
@@ -247,36 +226,15 @@ UT_Error UT_XML::html (const char * szFilename)
 
   m_bStopped = false;
 
-  htmlSAXHandler hdl;
-  htmlParserCtxtPtr ctxt;
+  xmlSAXHandler hdl;
+  xmlParserCtxtPtr ctxt;
 
-  hdl.internalSubset = NULL;
-  hdl.isStandalone = NULL;
-  hdl.hasInternalSubset = NULL;
-  hdl.hasExternalSubset = NULL;
-  hdl.resolveEntity = NULL;
-  hdl.getEntity = _getEntity;
-  hdl.entityDecl = NULL;
-  hdl.notationDecl = NULL;
-  hdl.attributeDecl = NULL;
-  hdl.elementDecl = NULL;
-  hdl.unparsedEntityDecl = NULL;
-  hdl.setDocumentLocator = NULL;
-  hdl.startDocument = NULL;
-  hdl.endDocument = NULL;
+  memset(hdl, 0, sizeof(hdl));
+
+  hdl.getEntity    = _getEntity;
   hdl.startElement = _startElement;
-  hdl.endElement = _endElement;
-  hdl.reference = NULL;
-  hdl.characters = _charData;
-  hdl.ignorableWhitespace = NULL;
-  hdl.processingInstruction = NULL;
-  hdl.comment = NULL;
-  hdl.warning = NULL;
-  hdl.error = NULL;
-  hdl.fatalError = NULL;
-  hdl.getParameterEntity = NULL;
-  hdl.cdataBlock = NULL;
-  hdl.externalSubset = NULL;
+  hdl.endElement   = _endElement;
+  hdl.characters   = _charData;
 
   size_t length = reader->readBytes (buffer, sizeof (buffer));
   int done = (length < sizeof (buffer));
@@ -329,36 +287,15 @@ UT_Error UT_XML::html (const char * buffer, UT_uint32 length)
 
   m_bStopped = false;
 
-  htmlSAXHandler hdl;
-  htmlParserCtxtPtr ctxt;
+  xmlSAXHandler hdl;
+  xmlParserCtxtPtr ctxt;
 
-  hdl.internalSubset = NULL;
-  hdl.isStandalone = NULL;
-  hdl.hasInternalSubset = NULL;
-  hdl.hasExternalSubset = NULL;
-  hdl.resolveEntity = NULL;
+  memset (&hdl, 0, sizeof(hdl));
+
   hdl.getEntity = _getEntity;
-  hdl.entityDecl = NULL;
-  hdl.notationDecl = NULL;
-  hdl.attributeDecl = NULL;
-  hdl.elementDecl = NULL;
-  hdl.unparsedEntityDecl = NULL;
-  hdl.setDocumentLocator = NULL;
-  hdl.startDocument = NULL;
-  hdl.endDocument = NULL;
   hdl.startElement = _startElement;
   hdl.endElement = _endElement;
-  hdl.reference = NULL;
   hdl.characters = _charData;
-  hdl.ignorableWhitespace = NULL;
-  hdl.processingInstruction = NULL;
-  hdl.comment = NULL;
-  hdl.warning = NULL;
-  hdl.error = NULL;
-  hdl.fatalError = NULL;
-  hdl.getParameterEntity = NULL;
-  hdl.cdataBlock = NULL;
-  hdl.externalSubset = NULL;
 
   if (length)
     {
