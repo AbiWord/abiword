@@ -283,13 +283,18 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 	// force rebar to resize itself
 	// TODO for some reason, we give REBAR the height of the FRAME
 	// TODO and let it decide how much it actually needs....
-	MoveWindow(m_hwndRebar, 0, 0, iWidth, iHeight, TRUE);
+	if( m_hwndRebar != NULL )
+	{
+		MoveWindow(m_hwndRebar, 0, 0, iWidth, iHeight, TRUE);
 
-	GetClientRect(m_hwndRebar, &r);
-	m_iBarHeight = r.bottom - r.top + 6;
+		GetClientRect(m_hwndRebar, &r);
+		m_iBarHeight = r.bottom - r.top + 6;
 
-	UT_ASSERT(iHeight > m_iBarHeight);
-	iHeight -= m_iBarHeight;
+		UT_ASSERT(iHeight > m_iBarHeight);
+		iHeight -= m_iBarHeight;
+	}
+	else
+		m_iBarHeight = 0;
 
 	m_hwndContainer = _createDocumentWindow(m_hwndFrame, 0, m_iBarHeight, iWidth, iHeight);
 
@@ -448,9 +453,9 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 
 	case WM_NOTIFY:
 		switch (((LPNMHDR) lParam)->code) 
-		{ 
-        case TTN_NEEDTEXT:             
-			{             
+		{
+		case TTN_NEEDTEXT:
+			{
 				UT_uint32 nrToolbars, k;
 				nrToolbars = f->m_vecWin32Toolbars.getItemCount();
 				for (k=0; k < nrToolbars; k++)
@@ -482,8 +487,64 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 			}
 			break;
 
+		case NM_CUSTOMDRAW:
+			{
+				LPNMTBCUSTOMDRAW  pTBcd = (LPNMTBCUSTOMDRAW)lParam;
+				UT_uint32 nrToolbars, k;
+				nrToolbars = f->m_vecWin32Toolbars.getItemCount();
+				for (k=0; k < nrToolbars; k++)
+				{
+					EV_Win32Toolbar * t = (EV_Win32Toolbar *)f->m_vecWin32Toolbars.getNthItem(k);
+					if( pTBcd->nmcd.hdr.hwndFrom == t->getWindow() )
+					{
+						if( pTBcd->nmcd.dwDrawStage == CDDS_PREPAINT )
+						{
+							return CDRF_NOTIFYPOSTPAINT;
+						}
+						if( pTBcd->nmcd.dwDrawStage == CDDS_POSTPAINT )
+						{
+							RECT  rc;
+							HBRUSH	hBr = NULL;
+
+							rc.top = pTBcd->nmcd.rc.top;
+							rc.bottom = pTBcd->nmcd.rc.bottom;
+							if( pTBcd->clrBtnFace != 0 )
+								hBr = CreateSolidBrush( pTBcd->clrBtnFace );
+							else
+								hBr = GetSysColorBrush( COLOR_3DFACE );
+
+							HWND  hWndChild = FindWindowEx( pTBcd->nmcd.hdr.hwndFrom, NULL, NULL, NULL );
+							while( hWndChild != NULL )
+							{
+								RECT   rcChild;
+								POINT  pt;
+								GetWindowRect( hWndChild, &rcChild );
+								pt.x = rcChild.left;
+								pt.y = rcChild.top;
+								ScreenToClient( pTBcd->nmcd.hdr.hwndFrom, &pt );
+								rc.left = pt.x;
+								pt.x = rcChild.right;
+								pt.y = rcChild.bottom;
+								ScreenToClient( pTBcd->nmcd.hdr.hwndFrom, &pt );
+								rc.right = pt.x;
+								FillRect( pTBcd->nmcd.hdc, &rc, hBr );
+								hWndChild = FindWindowEx( pTBcd->nmcd.hdr.hwndFrom, hWndChild, NULL, NULL );
+							}
+
+							if( hBr != NULL )
+							{
+								DeleteObject( hBr );
+								hBr = NULL;
+							}
+						}
+						break;
+					}
+				}
+			}
+			break;
+
 		// Process other notifications here
-        default:
+		default:
 			break;
 		} 
 		break;
@@ -493,7 +554,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		int nWidth = LOWORD(lParam);
 		int nHeight = HIWORD(lParam);
 
-		if (nWidth != (int) f->m_iSizeWidth)
+		if (nWidth != (int) f->m_iSizeWidth && f->m_hwndRebar != NULL)
 		{
 			MoveWindow(f->m_hwndRebar, 0, 0, nWidth, f->m_iBarHeight, TRUE); 
 		}

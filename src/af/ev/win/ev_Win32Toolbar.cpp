@@ -326,7 +326,7 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 				| WS_CLIPCHILDREN | WS_CLIPSIBLINGS 
 				| TBSTYLE_TOOLTIPS | TBSTYLE_FLAT
 				| ( bText && !bIcons ? TBSTYLE_LIST : 0 )
-				/* | TBSTYLE_CUSTOMERASE */
+				| TBSTYLE_CUSTOMERASE
 				| CCS_NOPARENTALIGN | CCS_NODIVIDER
 				| CCS_NORESIZE
 				,						// window style
