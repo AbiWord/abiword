@@ -1307,8 +1307,14 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     // HACK : soon as possible.
 
     gtk_set_locale();
-    gtk_init(&Args.m_argc,&Args.m_argv);
-    
+    gboolean have_display = gtk_init_check(&Args.m_argc,(char ***)&Args.m_argv);
+ 
+    if (!have_display && Args.getShowApp()) {
+      // this is just like an abort() but with a useful error messsage
+      gtk_init (&Args.m_argc,(char ***)&Args.m_argv);
+    }
+ 
+
     AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
 
     pMyUnixApp->setDisplayStatus(bShowApp);
