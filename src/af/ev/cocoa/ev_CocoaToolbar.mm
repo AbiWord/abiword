@@ -54,6 +54,46 @@
 	_xap = owner;
 }
 
+- (void)setColor:(XAP_Toolbar_Id)tlbrid
+{
+	float red;
+	float green;
+	float blue;
+	float alpha;
+
+	NSColor * color = [[NSColorPanel sharedColorPanel] color];
+
+	[color getRed:&red green:&green blue:&blue alpha:&alpha]; // TODO: is color necessarily RGBA? if not, could be a problem...
+
+	int r = static_cast<int>(lrintf(red   * 255));	r = (r < 0) ? 0 : r;	r = (r > 255) ? 255 : r;
+	int g = static_cast<int>(lrintf(green * 255));	g = (g < 0) ? 0 : g;	g = (g > 255) ? 255 : g;
+	int b = static_cast<int>(lrintf(blue  * 255));	b = (b < 0) ? 0 : b;	b = (b > 255) ? 255 : b;
+
+	UT_HashColor hash;
+
+	const char * color_string = hash.setColor(static_cast<unsigned char>(r),
+											  static_cast<unsigned char>(g),
+											  static_cast<unsigned char>(b));
+	if (color_string)
+		{
+			UT_UCS4String color_data(color_string);
+
+			const UT_UCS4Char * pData = color_data.ucs4_str();
+			UT_uint32 dataLength = static_cast<UT_uint32>(color_data.length());
+
+			_xap->toolbarEvent(tlbrid, pData, dataLength);
+		}
+}
+
+- (IBAction)aColor_FG:(id)sender
+{
+	[self setColor:AP_TOOLBAR_ID_COLOR_FORE];
+}
+
+- (IBAction)aColor_BG:(id)sender
+{
+	[self setColor:AP_TOOLBAR_ID_COLOR_BACK];
+}
 
 - (id)toolbarSelected:(id)sender
 {
@@ -69,19 +109,45 @@
 			pFrame->raise();
 	}
 	else if ([sender isKindOfClass:[NSButton class]]) {
-		const UT_UCSChar * pData = NULL;
-		UT_uint32 dataLength = 0;
-		
 		XAP_Toolbar_Id tlbrID = [sender tag];
+
 		switch (tlbrID) {
 		case AP_TOOLBAR_ID_COLOR_FORE:
 		case AP_TOOLBAR_ID_COLOR_BACK:
-			
+			{
+				NSColorPanel * colorPanel = [NSColorPanel sharedColorPanel];
+
+				// ?? [NSColorPanel setPickerMask:(NSColorPanelRGBModeMask|NSColorPanelWheelModeMask|NSColorPanelGrayModeMask)];
+
+				[colorPanel setAction:0];
+				[colorPanel setTarget:0];
+
+				if (tlbrID == AP_TOOLBAR_ID_COLOR_FORE)
+					{
+						// [colorPanel setTitle:@"Foreground Color"]; // TODO: Localize
+						// [colorPanel setColor:[oColor_FG color]];
+						[colorPanel setAction:@selector(aColor_FG:)];
+					}
+				else
+					{
+						// [colorPanel setTitle:@"Background Color"]; // TODO: Localize
+						// [colorPanel setColor:[oColor_BG color]];
+						[colorPanel setAction:@selector(aColor_BG:)];
+					}
+				[colorPanel orderFront:self];
+				[colorPanel setTarget:self];
+			}
 			break;
+
 		default:
+			{
+				const UT_UCSChar * pData = NULL;
+				UT_uint32 dataLength = 0;
+		
+				_xap->toolbarEvent(tlbrID, pData, dataLength);
+			}
 			break;
 		}
-		_xap->toolbarEvent (tlbrID, pData, dataLength);
 	}
 	else if ([sender isKindOfClass:[NSComboBox class]]) {
 		XAP_Toolbar_Id tlbrID = [sender tag];
