@@ -1382,7 +1382,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	// we always encode as UTF-8
 	m_pie->write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 #endif
-	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
+	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
 
 	m_pie->write("<!-- ================================================================================  -->\n");
 	m_pie->write("<!-- This HTML file was created by AbiWord.                                            -->\n");
