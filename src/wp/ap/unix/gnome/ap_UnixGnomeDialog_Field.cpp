@@ -37,11 +37,6 @@
 #include "ap_Dialog_Field.h"
 #include "ap_UnixGnomeDialog_Field.h"
 
-
-/*****************************************************************/
-
-#define	LIST_ITEM_INDEX_KEY "index"
-
 /*****************************************************************/
 
 XAP_Dialog * AP_UnixGnomeDialog_Field::static_constructor(XAP_DialogFactory * pFactory,
