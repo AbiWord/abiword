@@ -2539,8 +2539,16 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 
 	char* title = (char *) doc->getFilename();	// TODO get a real title
 
+	// get the filename with no path
+	char* lastslash = strrchr(title, '/');
+	lastslash++;
+	char *filename;
+	filename = (char *) malloc( (strlen(lastslash) + 4) * sizeof(char *) );
+	strcpy(filename, lastslash);
+	strcat(filename, ".ps");
+	
 	// create a new graphics 
-	PS_Graphics* ppG = new PS_Graphics("junk.ps", title, "AbiWord");
+	PS_Graphics* ppG = new PS_Graphics(filename, title, "AbiWord");
 	UT_ASSERT(ppG);
 
 	// Create a new layout using the printer's graphics and format it
@@ -2567,6 +2575,7 @@ UT_Bool _printDoc(AP_Frame * pFrame, FV_View * pView)
 	}
 	ppG->endPrint();
 
+	free(filename);
 	return UT_TRUE;
 }
 
