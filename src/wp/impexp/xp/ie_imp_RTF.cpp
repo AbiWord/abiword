@@ -198,12 +198,9 @@ UT_Bool IE_Imp_RTF::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".rtf") == 0);
 }
 
-IEStatus IE_Imp_RTF::StaticConstructor(const char * szSuffix,
-										PD_Document * pDocument,
-										IE_Imp ** ppie)
+IEStatus IE_Imp_RTF::StaticConstructor(PD_Document * pDocument,
+									   IE_Imp ** ppie)
 {
-	UT_ASSERT(RecognizeSuffix(szSuffix));
-	
 	IE_Imp_RTF * p = new IE_Imp_RTF(pDocument);
 	*ppie = p;
 	return IES_OK;
@@ -217,6 +214,10 @@ UT_Bool IE_Imp_RTF::GetDlgLabels(const char ** pszDesc,
 	return UT_TRUE;
 }
 
+UT_Bool IE_Imp_RTF::SupportsFileType(IEFileType ft)
+{
+	return (IEFT_RTF == ft);
+}
 
 // flush any remaining text in the previous para and flag
 // a new para to be started.  Don't actually start a new

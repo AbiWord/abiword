@@ -37,14 +37,14 @@ struct _xp
 {
 	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
 
-	IEStatus		(*fpStaticConstructor)(const char * szSuffix,
-										   PD_Document * pDocument,
+	IEStatus		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Exp ** ppie);
 	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
 									  const char ** szSuffixList);
+	UT_Bool			(*fpSupportsFileType)(IEFileType ft);
 };
 
-#define DeclareExporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels }
+#define DeclareExporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels, n::SupportsFileType }
 
 static struct _xp s_expTable[] =
 {
@@ -148,7 +148,7 @@ IEStatus IE_Exp::constructExporter(PD_Document * pDocument,
 	{
 		struct _xp * s = &s_expTable[k];
 		if (s->fpRecognizeSuffix(pExt))
-			return s->fpStaticConstructor(pExt,pDocument,ppie);
+			return s->fpStaticConstructor(pDocument,ppie);
 	}
 
 	return IES_UnknownType;

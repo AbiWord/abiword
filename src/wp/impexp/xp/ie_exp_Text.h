@@ -39,12 +39,12 @@ public:
 	void				write(const char * sz, UT_uint32 length);
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
-	static IEStatus		StaticConstructor(const char * szSuffix,
-										  PD_Document * pDocument,
+	static IEStatus		StaticConstructor(PD_Document * pDocument,
 										  IE_Exp ** ppie);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList);
-
+	static UT_Bool 		SupportsFileType(IEFileType ft);
+	
 protected:
 	IEStatus			_writeDocument(void);
 	

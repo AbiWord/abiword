@@ -58,12 +58,9 @@ UT_Bool IE_Exp_HTML::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".html") == 0);
 }
 
-IEStatus IE_Exp_HTML::StaticConstructor(const char * szSuffix,
-											 PD_Document * pDocument,
-											 IE_Exp ** ppie)
+IEStatus IE_Exp_HTML::StaticConstructor(PD_Document * pDocument,
+										IE_Exp ** ppie)
 {
-	UT_ASSERT(RecognizeSuffix(szSuffix));
-	
 	IE_Exp_HTML * p = new IE_Exp_HTML(pDocument);
 	*ppie = p;
 	return IES_OK;
@@ -75,6 +72,11 @@ UT_Bool	IE_Exp_HTML::GetDlgLabels(const char ** pszDesc,
 	*pszDesc = "HTML (.html)";
 	*pszSuffixList = "*.html";
 	return UT_TRUE;
+}
+
+UT_Bool IE_Exp_HTML::SupportsFileType(IEFileType ft)
+{
+	return (IEFT_HTML == ft);
 }
 
 /*****************************************************************/

@@ -23,6 +23,7 @@
 
 #include "ut_types.h"
 #include "ie_types.h"
+
 class PD_Document;
 
 // IE_Imp defines the abstract base class for file importers.
@@ -38,12 +39,13 @@ public:
 	
 	static IEStatus		constructImporter(PD_Document * pDocument,
 										  const char * szFilename,
+										  IEFileType ieft,
 										  IE_Imp ** ppie);
 	static UT_Bool		enumerateDlgLabels(UT_uint32 ndx,
 										   const char ** pszDesc,
 										   const char ** pszSuffixList);
 
-public:
+ public:
 	IE_Imp(PD_Document * pDocument);
 	virtual ~IE_Imp();
 	virtual IEStatus	importFile(const char * szFilename) = 0;

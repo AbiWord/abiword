@@ -55,12 +55,9 @@ UT_Bool IE_Exp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".abw") == 0);
 }
 
-IEStatus IE_Exp_AbiWord_1::StaticConstructor(const char * szSuffix,
-											 PD_Document * pDocument,
+IEStatus IE_Exp_AbiWord_1::StaticConstructor(PD_Document * pDocument,
 											 IE_Exp ** ppie)
 {
-	UT_ASSERT(RecognizeSuffix(szSuffix));
-	
 	IE_Exp_AbiWord_1 * p = new IE_Exp_AbiWord_1(pDocument);
 	*ppie = p;
 	return IES_OK;
@@ -72,6 +69,11 @@ UT_Bool	IE_Exp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 	*pszDesc = "AbiWord (.abw)";
 	*pszSuffixList = "*.abw";
 	return UT_TRUE;
+}
+
+UT_Bool IE_Exp_AbiWord_1::SupportsFileType(IEFileType ft)
+{
+	return (IEFT_AbiWord_1 == ft);
 }
 
 /*****************************************************************/

@@ -26,6 +26,7 @@
 
 #include "ut_types.h"
 #include "ie_types.h"
+
 class PD_Document;
 
 // IE_Exp defines the base class for file exporters.

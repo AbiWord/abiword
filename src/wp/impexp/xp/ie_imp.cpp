@@ -28,6 +28,7 @@
 #include "ie_imp_MsWord_97.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
+// #include "ie_types.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -35,14 +36,14 @@
 struct _imp
 {
 	UT_Bool			(*fpRecognizeSuffix)(const char * szSuffix);
-	IEStatus		(*fpStaticConstructor)(const char * szSuffix,
-										   PD_Document * pDocument,
+	IEStatus		(*fpStaticConstructor)(PD_Document * pDocument,
 										   IE_Imp ** ppie);
 	UT_Bool			(*fpGetDlgLabels)(const char ** szDesc,
 									  const char ** szSuffixList);
+	UT_Bool			(*fpSupportsFileType)(IEFileType ft);
 };
 
-#define DeclareImporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels }
+#define DeclareImporter(n)	{ n::RecognizeSuffix, n::StaticConstructor, n::GetDlgLabels, n::SupportsFileType }
 
 static struct _imp s_impTable[] =
 {
@@ -70,6 +71,7 @@ IE_Imp::~IE_Imp()
 
 IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 								   const char * szFilename,
+								   IEFileType ieft,
 								   IE_Imp ** ppie)
 {
 	// construct an importer of the right type.
@@ -79,15 +81,35 @@ IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 	UT_ASSERT(pDocument);
 	UT_ASSERT(szFilename && *szFilename);
 	UT_ASSERT(ppie);
-	
-	const char * pExt = strrchr(szFilename,'.');
 
+	// if a file type is specified, use that importer
+	if (ieft != IEFT_Unknown)
+	{
+		for (UT_uint32 k=0; (k < NrElements(s_impTable)); k++)
+		{
+			struct _imp * s = &s_impTable[k];
+			if (s->fpSupportsFileType(ieft))
+				return s->fpStaticConstructor(pDocument,ppie);
+		}
+	}
+
+	// if we got here, the user wants auto-detect
+	
+	/*
+	  This might be somewhat broken if one has filenames with
+	  multiple periods in it, or if one has specified the
+	  directories "." or ".." in the filename, etc.
+	  
+	  Suffix matching is just pretty broken.
+	*/
+	const char * pExt = strrchr(szFilename,'.');
+	
 	if (!pExt)
 	{
 		// no suffix -- what to do ??
 		// assume it is our format and try to read it.
 		// if that fails, just give up.
-
+		
 		*ppie = new IE_Imp_AbiWord_1(pDocument);
 		return ((*ppie) ? IES_OK : IES_NoMemory);
 	}
@@ -96,7 +118,7 @@ IEStatus IE_Imp::constructImporter(PD_Document * pDocument,
 	{
 		struct _imp * s = &s_impTable[k];
 		if (s->fpRecognizeSuffix(pExt))
-			return s->fpStaticConstructor(pExt,pDocument,ppie);
+			return s->fpStaticConstructor(pDocument,ppie);
 	}
 	
 	return IES_UnknownType;

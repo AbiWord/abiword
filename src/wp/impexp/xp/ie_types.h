@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #ifndef IE_TYPES_H
 #define IE_TYPES_H
 
@@ -30,8 +29,19 @@ typedef enum _IEStatus { IES_OK,
 						 IES_CouldNotOpenForWriting,
 						 IES_CouldNotWriteToFile } IEStatus;
 
-typedef enum _IEFileType {	IEFT_Unknown,
-							IEFT_AbiWord_1 } IEFileType;
+/*
+  NOTE:  File filters can support one or MORE of the following
+  NOTE:  file types.  However, each of these file types can be
+  NOTE:  handled by only ONE filter.  So, the number of file types
+  NOTE:  supported by all the filters combined should be equal
+  NOTE:  to (or less than) the number below.
+*/
+typedef enum _IEFileType { IEFT_Unknown,
+						   IEFT_AbiWord_1,
+						   IEFT_MsWord_97,
+						   IEFT_HTML,						   
+						   IEFT_RTF,
+						   IEFT_Text } IEFileType;
 
 
 #endif /* IE_TYPES_H */

@@ -53,12 +53,9 @@ UT_Bool IE_Exp_Text::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".txt") == 0);
 }
 
-IEStatus IE_Exp_Text::StaticConstructor(const char * szSuffix,
-											 PD_Document * pDocument,
-											 IE_Exp ** ppie)
+IEStatus IE_Exp_Text::StaticConstructor(PD_Document * pDocument,
+										IE_Exp ** ppie)
 {
-	UT_ASSERT(RecognizeSuffix(szSuffix));
-	
 	IE_Exp_Text * p = new IE_Exp_Text(pDocument);
 	*ppie = p;
 	return IES_OK;
@@ -70,6 +67,12 @@ UT_Bool	IE_Exp_Text::GetDlgLabels(const char ** pszDesc,
 	*pszDesc = "Text (.txt)";
 	*pszSuffixList = "*.txt";
 	return UT_TRUE;
+}
+
+
+UT_Bool IE_Exp_Text::SupportsFileType(IEFileType ft)
+{
+	return (IEFT_Text == ft);
 }
 
 /*****************************************************************/

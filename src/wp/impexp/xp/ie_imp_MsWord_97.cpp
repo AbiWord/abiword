@@ -211,12 +211,9 @@ UT_Bool IE_Imp_MsWord_97::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".doc") == 0);
 }
 
-IEStatus IE_Imp_MsWord_97::StaticConstructor(const char * szSuffix,
-										PD_Document * pDocument,
-										IE_Imp ** ppie)
+IEStatus IE_Imp_MsWord_97::StaticConstructor(PD_Document * pDocument,
+											 IE_Imp ** ppie)
 {
-	UT_ASSERT(RecognizeSuffix(szSuffix));
-	
 	IE_Imp_MsWord_97 * p = new IE_Imp_MsWord_97(pDocument);
 	*ppie = p;
 	return IES_OK;
@@ -228,6 +225,11 @@ UT_Bool	IE_Imp_MsWord_97::GetDlgLabels(const char ** pszDesc,
 	*pszDesc = "Word 97 (.doc)";
 	*pszSuffixList = "*.doc";
 	return UT_TRUE;
+}
+
+UT_Bool IE_Imp_MsWord_97::SupportsFileType(IEFileType ft)
+{
+	return (IEFT_MsWord_97 == ft);
 }
 
 /*****************************************************************/

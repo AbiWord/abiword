@@ -79,7 +79,7 @@ UT_Bool PD_Document::readFromFile(const char * szFilename)
 	IE_Imp * pie = NULL;
 	IEStatus ies;
 
-	ies = IE_Imp::constructImporter(this,szFilename,&pie);
+	ies = IE_Imp::constructImporter(this,szFilename,IEFT_Unknown,&pie);
 	if (ies != IES_OK)
 	{
 		UT_DEBUGMSG(("PD_Document::readFromFile -- could not construct importer\n"));

@@ -25,6 +25,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ie_imp_AbiWord_1.h"
+#include "ie_types.h"
 #include "pd_Document.h"
 #include "ut_bytebuf.h"
 
@@ -163,12 +164,9 @@ UT_Bool IE_Imp_AbiWord_1::RecognizeSuffix(const char * szSuffix)
 	return (UT_stricmp(szSuffix,".abw") == 0);
 }
 
-IEStatus IE_Imp_AbiWord_1::StaticConstructor(const char * szSuffix,
-										PD_Document * pDocument,
-										IE_Imp ** ppie)
+IEStatus IE_Imp_AbiWord_1::StaticConstructor(PD_Document * pDocument,
+											 IE_Imp ** ppie)
 {
-	UT_ASSERT(RecognizeSuffix(szSuffix));
-	
 	IE_Imp_AbiWord_1 * p = new IE_Imp_AbiWord_1(pDocument);
 	*ppie = p;
 	return IES_OK;
@@ -180,6 +178,11 @@ UT_Bool	IE_Imp_AbiWord_1::GetDlgLabels(const char ** pszDesc,
 	*pszDesc = "AbiWord (.abw)";
 	*pszSuffixList = "*.abw";
 	return UT_TRUE;
+}
+
+UT_Bool IE_Imp_AbiWord_1::SupportsFileType(IEFileType ft)
+{
+	return (IEFT_AbiWord_1 == ft);
 }
 
 /*****************************************************************/
