@@ -20,6 +20,7 @@
 
 ##############################################################################
 ## MacOSX platform defines (grafted from FreeBSD)
+## Modified for MacOS X by Hubert Figuiere <hfiguiere@teaser.fr>
 ##############################################################################
 
 ##################################################################
@@ -65,13 +66,12 @@ OS_INCLUDES	= -I$(ABI_ROOT)/../libiconv/include \
 		-I/usr/local/include \
 		-I/System/Library/Frameworks/Carbon.framework/Headers \
 		-I/System/Library/Frameworks/CarbonCore.framework/Headers \
-		-I/System/Library/Frameworks/QD.framework/Headers \
 		-I/System/Library/Frameworks/HIToolbox.framework/Headers \
 		-I/System/Library/Frameworks/AE.framework/Headers
 G++INCLUDES		= -I$(ABI_ROOT)/../libiconv/include -I/usr/include/g++
 
 # Compiler flags
-PLATFORM_FLAGS		= -fpascal-strings -DCARBON_ON_MACH_O=1 -DXP_MAC_TARGET_CARBON -DNO_SYS_ERRLIST $(OS_INCLUDES)
+PLATFORM_FLAGS		= -fpascal-strings -DCARBON_ON_MACH_O=1 -DXP_MAC_TARGET_MACOSX -DXP_MAC_TARGET_CARBON -DXP_MAC_TARGET_QUARTZ -DNO_SYS_ERRLIST $(OS_INCLUDES)
 #PORT_FLAGS		= -D_POSIX_SOURCE -D_BSD_SOURCE -DHAVE_STRERROR -D_XOPEN_SOURCE -D__USE_XOPEN_EXTENDED
 OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
@@ -86,6 +86,7 @@ PLATFORM_FLAGS		+= $(PPC_ARCH_FLAGS)
 OS_ENDIAN		= BigEndian32
 endif
 
+LDFLAGS			= -framework Carbon
 # Shared library flags
 #MKSHLIB		= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
