@@ -46,6 +46,8 @@
 
 ABI_PLUGIN_DECLARE("T602")
 
+IE_Imp_T602_Sniffer * m_sniffer = 0;
+
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi)
 {
