@@ -1152,8 +1152,8 @@ void GR_QNXGraphics::restoreRectangle(UT_uint32 iIndx)
       
       DRAW_START
 	
-	pos.x=r->left;
-        pos.y=r->top;
+	pos.x=tdu(r->left);
+        pos.y=tdu(r->top);
       
 	PgDrawPhImage(&pos,pImg,0);
       DRAW_END
