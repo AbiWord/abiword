@@ -391,7 +391,10 @@ fl_Squiggles::clear(fl_PartOfBlock* pPOB)
 	xxx_UT_DEBUGMSG(("fl_Squiggles::clear(%p)\n", pPOB));
 
 	FV_View* pView = m_pOwner->getDocLayout()->getView();
-
+	if(pView->getDocument()->isPieceTableChanging())
+	{
+		return;
+	}
 	PT_DocPosition pos1 = m_pOwner->getPosition() + pPOB->getOffset();
 	PT_DocPosition pos2 = pos1 + pPOB->getLength();
 	PT_DocPosition posEOD = 0;

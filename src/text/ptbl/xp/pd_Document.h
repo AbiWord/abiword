@@ -361,7 +361,7 @@ public:
 	// Footnote functions
 	bool                    isFootnoteAtPos(PT_DocPosition pos);
 	bool                    isEndFootnoteAtPos(PT_DocPosition pos);
-
+	UT_sint32               getEmbeddedOffset(PL_StruxDocHandle sdh,PT_DocPosition posOff, PL_StruxDocHandle & sdhEmbedded);
 // Table functions
 
 	PL_StruxDocHandle       getEndTableStruxFromTableSDH(PL_StruxDocHandle tableSDH);

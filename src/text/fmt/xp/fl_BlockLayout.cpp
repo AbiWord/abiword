@@ -792,7 +792,7 @@ fl_BlockLayout::~fl_BlockLayout()
 	m_pLayout->notifyBlockIsBeingDeleted(this);
 	m_pDoc = NULL;
 	m_pLayout = NULL;
-	xxx_UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
+	UT_DEBUGMSG(("~fl_BlockLayout: Deleting block %x \n",this));
 }
 
 /*!
@@ -809,6 +809,51 @@ bool fl_BlockLayout::isEmbeddedType(void)
 	return false;
 }
 
+/*!
+ * This method returns the offset of the next embedded strux within the
+ * the block. (Like a footnote or endnote)
+ * It returns -1 if none is found.
+ * Also returns the id of the embedded strux.
+ */ 
+UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout *& pEmbedCL)
+{
+	UT_sint32 iEmbed = -1;
+	PT_DocPosition posOff = static_cast<PT_DocPosition>(offset);
+	PL_StruxDocHandle sdhEmbed;
+	pEmbedCL = NULL;
+	iEmbed = m_pDoc->getEmbeddedOffset(getStruxDocHandle(), posOff, sdhEmbed);
+	if( iEmbed < 0)
+	{
+		return iEmbed;
+	}
+	PL_StruxFmtHandle sfhEmbed = NULL;
+	bool bFound = false;
+	UT_sint32 i = 0;
+	while(!bFound)
+	{
+		sfhEmbed = m_pDoc->getNthFmtHandle(sdhEmbed,i);
+		if(	sfhEmbed == NULL)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			break;
+		}
+		pEmbedCL = reinterpret_cast<fl_ContainerLayout *>(const_cast<void *>(sfhEmbed));
+		if(pEmbedCL->getDocSectionLayout() == getDocSectionLayout())
+		{
+			bFound = true;
+		}
+		else
+		{
+			i++;
+		}
+	}
+	if(bFound)
+	{
+		return iEmbed;
+	}
+	pEmbedCL = NULL;
+	return -1;
+}
 /*! 
  * This method scans through the list of runs from the first position listed
  * and updates the offsets. This is used following an operation on an embedded
@@ -4692,22 +4737,20 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// the document) this will be empty - but the EOP Run needs to be
 	// deleted.
 
-	fl_BlockLayout* pPrevBL = static_cast<fl_BlockLayout *>(getPrev());
 	fp_Line* pLastLine = NULL;
-	if(pPrevBL && pPrevBL->getContainerType() != FL_CONTAINER_BLOCK)
+	fl_BlockLayout * pPrevBL = static_cast<fl_BlockLayout *>(getPrev());
+	while(pPrevBL && pPrevBL->getContainerType() != FL_CONTAINER_BLOCK)
 	{
 //
-// Attach to the block before the table, because the table is being deleted.
+// Attach to the block before the other container type , 
+// because this block has to get merged with it
 //
-		if(pPrevBL->getContainerType() == FL_CONTAINER_TABLE)
-		{
-			pPrevBL = static_cast<fl_BlockLayout *>(pPrevBL->getPrev());
-		}
-		else
-		{
-			pPrevBL = NULL;
-		}
+		pPrevBL = static_cast<fl_BlockLayout *>(pPrevBL->getPrev());
 	}
+	//
+	// Deal with embedded containers if any in this block.
+	//
+	shuffleEmbeddedIfNeeded(pPrevBL, 0);
 	if (pPrevBL)
 	{
 		// Find the EOP Run.
@@ -4817,7 +4860,6 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 	// Get rid of everything else about the block
 	purgeLayout();
-
 	// Unlink this block
 	if (pPrevBL)
 	{
@@ -5039,6 +5081,13 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 
 	// figure out where the breakpoint is
 	PT_BlockOffset blockOffset = (pcrx->getPosition() - getPosition());
+	//
+	// OK Now we have to deal with any embedded containerlayout associated with
+    // this block.
+	// If they are before the insert point they must be moved to be immediately
+	// after this block (and hence before the new block)
+	//
+	shuffleEmbeddedIfNeeded(this,blockOffset);
 
 	fp_Run* pFirstNewRun = NULL;
 	fp_Run* pLastRun = NULL;
@@ -5183,8 +5232,94 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
 	_assertRunListIntegrity();
-	UT_DEBUGMSG(("Prev Block = %x Next block = %x \n",pNewBL->getPrev(),pNewBL->getNext()));
+	UT_DEBUGMSG(("Prev Block = %x type %d Next block = %x type %d \n",pNewBL->getPrev(),pNewBL->getContainerType(),pNewBL->getNext(),pNewBL->getContainerType()));
 	return true;
+}
+
+/*!
+ * This method shuffles any emebedded containers in the block to be placed 
+ * after the supplied block.
+ *
+ * If they are before the insert point they must be moved to be immediately
+ * after this block (and hence before the new block)
+ */
+void fl_BlockLayout::shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 blockOffset)
+{
+	if(pBlock == NULL)
+	{
+		return;
+	}
+	UT_sint32 iEmbed = 0;
+	bool bStop = false;
+	fl_ContainerLayout * pEmbedCL = NULL;
+	while(!bStop)
+	{
+		iEmbed = pBlock->getEmbeddedOffset(iEmbed, pEmbedCL);
+		if(iEmbed < 0)
+		{
+			bStop = true;
+			break;
+		}
+		if(pEmbedCL == NULL)
+		{
+			bStop = true;
+			break;
+		}
+		if((blockOffset > 0) && (iEmbed > static_cast<UT_sint32>(blockOffset)))
+		{
+			bStop = true;
+			break;
+		}
+		//
+		// Move pEmbedCL to be just after this block.
+		//
+		// Outer pointers
+		//
+		fl_ContainerLayout * pBLNext = pBlock->getNext();
+		if(pEmbedCL->getPrev() && (pEmbedCL->getPrev() != pBlock))
+			{
+				pEmbedCL->getPrev()->setNext(pEmbedCL->getNext());
+			}
+		if(pEmbedCL->getNext() && pBLNext != pEmbedCL)
+			{
+				pEmbedCL->getNext()->setPrev(pEmbedCL->getPrev());
+			}
+		//
+		// New pointers for EmbedCL
+		pEmbedCL->setPrev(static_cast<fl_ContainerLayout *>(pBlock));
+		if(pBLNext != pEmbedCL)
+			{
+				pEmbedCL->setNext(pBlock->getNext());
+			}
+		//
+		// New pointer here
+		if(pBlock->getNext() && (pBlock->getNext() != pEmbedCL))
+			{
+				pBlock->getNext()->setPrev(pEmbedCL);
+			}
+		pBlock->setNext(pEmbedCL);
+		//
+		// Now add in the length of the container
+		//
+		PL_StruxDocHandle sdhStart = pEmbedCL->getStruxDocHandle();
+		PL_StruxDocHandle sdhEnd = NULL;
+		if(pEmbedCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
+		{
+			getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
+		}
+		else
+		{
+			getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote, &sdhEnd);
+		}
+		
+		UT_return_if_fail(sdhEnd != NULL);
+		PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
+		PT_DocPosition posEnd = getDocument()->getStruxPosition(sdhEnd);
+		UT_uint32 iSize = posEnd - posStart + 1;
+		iEmbed += iSize;
+		getDocSectionLayout()->setNeedsSectionBreak(true,NULL);
+
+	}
 }
 
 bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
@@ -7479,6 +7614,10 @@ void fl_BlockLayout::transferListFlags(void)
 		UT_uint32 nId = getNext()->getAutoNum()->getID();
 		UT_uint32 cId=0, pId=0;
 		fl_BlockLayout * pPrev = getPreviousList();
+		if(pPrev && pPrev->getAutoNum() == NULL)
+		{
+			return;
+		}
 		if(pPrev != NULL)
 			pId = pPrev->getAutoNum()->getID();
 		if(isListItem())

@@ -3474,7 +3474,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	{
 		if(getSectionLayout() && !getSectionLayout()->needsRedraw())
 		{
-			UT_DEBUGMSG(("TablecONTAINER leave draw section does not want redraw \n"));
+			xxx_UT_DEBUGMSG(("TablecONTAINER leave draw section does not want redraw \n"));
 //			return;
 		}
 	}
@@ -3762,7 +3762,7 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getMasterTable()->getNthCon(0));
-	UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
+	xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
 	fp_TableContainer *pMaster = getMasterTable();
 	UT_sint32 iCountCells = 0;
 	UT_Rect * pClipRect = const_cast<UT_Rect *>(pDA->pG->getClipRect());
@@ -3854,7 +3854,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 			}
 		}
 	}
-	UT_DEBUGMSG(("_brokenDraw: Draw %d cells \n",iCountCells));
+	xxx_UT_DEBUGMSG(("_brokenDraw: Draw %d cells \n",iCountCells));
     _drawBrokenBoundaries(pDA);
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	pTL->clearNeedsRedraw();

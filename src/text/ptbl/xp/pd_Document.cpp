@@ -1248,6 +1248,48 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const XML_Char * pszHdrFtr,
 }
 
 /*!
+ * This method returns the offset to a an embedded strux 
+ * And a pointer to the embedded strux found.
+ * If no emebedded strux is found in the block we return -1 ans NULL
+ */ 
+UT_sint32 PD_Document::getEmbeddedOffset(PL_StruxDocHandle sdh, PT_DocPosition posoff, PL_StruxDocHandle & sdhEmbedded)
+{
+	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	UT_ASSERT(pfs->getStruxType() == PTX_Block);
+	const pf_Frag * pf = static_cast<const pf_Frag *>(pfs);
+	pf = pf->getNext();
+	PT_DocPosition pos = m_pPieceTable->getStruxPosition(sdh) + posoff;
+	while(pf && m_pPieceTable->getFragPosition(pf) + pf->getLength() <= pos)
+	{
+		pf = pf->getNext();
+	}
+	if(pf == NULL)
+	{
+		sdhEmbedded = NULL;
+		return -1;
+	}
+	while(pf && pf->getType() != pf_Frag::PFT_Strux)
+	{
+		pf = pf ->getNext();
+	}
+	if(pf == NULL)
+	{
+		sdhEmbedded = NULL;
+		return -1;
+	}
+	if(!m_pPieceTable->isFootnote(const_cast<pf_Frag *>(pf)))
+    {
+		sdhEmbedded = NULL;
+		return -1;
+	}
+	const pf_Frag_Strux * pfsNew = static_cast<const pf_Frag_Strux *>(pf);
+	pos  = m_pPieceTable->getFragPosition(pf);
+	UT_sint32 diff = static_cast<UT_sint32>(pos) - static_cast<UT_sint32>(m_pPieceTable->getFragPosition(static_cast<pf_Frag *>(const_cast<pf_Frag_Strux *>(pfs))));
+	sdhEmbedded = static_cast<PL_StruxDocHandle>(pfsNew);
+	return diff;
+}
+
+/*!
  * This method returns true if there is a Footnote strux at exactly this 
  * position.
  */

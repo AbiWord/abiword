@@ -178,9 +178,11 @@ public:
 	const PP_PropertyType * getPropertyType(const XML_Char * szName, tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 
-	bool isEmbeddedType(void);
-	void updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize);
-	void updateEnclosingBlockIfNeeded(void);
+	bool            isEmbeddedType(void);
+	void            updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmebbedSize);
+	void            updateEnclosingBlockIfNeeded(void);
+	UT_sint32       getEmbeddedOffset(UT_sint32 startOffset, fl_ContainerLayout *& pEmbedCL);
+	void            shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 blockOffset);
 	UT_sint32       getHeightOfBlock(void);
 	fl_BlockLayout* getNextBlockInDocument(void) const;
 	fl_BlockLayout* getPrevBlockInDocument(void) const;
