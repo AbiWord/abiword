@@ -48,6 +48,7 @@ OBJS=	$(PLATFORM_OBJS)	\
         $(OBJDIR)/ie_exp_RTF_listenerGetProps.$(OBJ_SUFFIX)         \
         $(OBJDIR)/ie_exp_RTF_listenerWriteDoc.$(OBJ_SUFFIX)         \
         $(OBJDIR)/ie_imp.$(OBJ_SUFFIX)                              \
+        $(OBJDIR)/ie_imp_XHTML.$(OBJ_SUFFIX)                        \
         $(OBJDIR)/ie_imp_XML.$(OBJ_SUFFIX)                          \
         $(OBJDIR)/ie_imp_AbiWord_1.$(OBJ_SUFFIX)                    \
         $(OBJDIR)/ie_imp_GZipAbiWord.$(OBJ_SUFFIX)                  \

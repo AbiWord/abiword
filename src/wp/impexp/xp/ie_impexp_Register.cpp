@@ -33,6 +33,7 @@
 #include "ie_imp_MsWord_97.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
+#include "ie_imp_XHTML.h"
 #include "ie_imp_GraphicAsDocument.h"
 
 /* graphics */
@@ -65,6 +66,7 @@ void IE_ImpExp_RegisterXP ()
 	IE_Imp::registerImporter(new IE_Imp_RTF_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_Text_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_EncodedText_Sniffer ());
+	IE_Imp::registerImporter(new IE_Imp_XHTML_Sniffer ());
 	IE_Imp::registerImporter(new IE_Imp_GZipAbiWord_Sniffer ());
 	
 	IE_Exp::registerExporter(new IE_Exp_AbiWord_1_Sniffer ());
