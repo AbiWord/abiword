@@ -21,6 +21,7 @@
 #include "string.h"
 
 #include "ie_exp_PalmDoc.h"
+#include "ut_path.h"
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
@@ -149,7 +150,7 @@ bool IE_Exp_PalmDoc::_openFile(const char * szFilename)
 
         UT_DEBUGMSG(("Creating PDF header....\n"));
         _zero_fill( m_header.name, sizeof(m_header.name) );
-        strncpy( m_header.name, szFilename, sizeof(m_header.name) - 1 );
+        strncpy( m_header.name, UT_basename ( szFilename ), sizeof(m_header.name) - 1 );
         if ( strlen( szFilename ) > sizeof(m_header.name) - 1 )
             strncpy( m_header.name + sizeof(m_header.name) - 4, "...", 3 );
         m_header.attributes		= 0;
