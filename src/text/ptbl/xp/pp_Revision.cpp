@@ -221,6 +221,44 @@ void PP_Revision::_refreshString()
 	m_bDirty = false;
 }
 
+bool PP_Revision::operator == (const PP_Revision &op2) const
+{
+	// this is quite involved, but we will start with the simple
+	// non-equality cases
+
+	if(getId() != op2.getId())
+		return false;
+
+	if(getType() != op2.getType())
+		return false;
+
+
+	// OK, so we have the same type and id, do we have the same props ???
+	UT_uint32 iCount1 = m_vProps.getItemCount();
+	UT_uint32 iCount2 = op2.m_vProps.getItemCount();
+
+	if(iCount1 != iCount2)
+		return false;
+
+	// now the lengthy comparison
+	for(UT_uint32 i = 0; i < iCount1; i += 2)
+	{
+		const XML_Char * n1 = (const XML_Char *) m_vProps.getNthItem(i);
+		const XML_Char * v1 = (const XML_Char *) m_vProps.getNthItem(i+1);
+
+		for(UT_uint32 j = 0; j < iCount2; j += 2)
+		{
+			const XML_Char * n2 = (const XML_Char *) op2.m_vProps.getNthItem(j);
+			const XML_Char * v2 = (const XML_Char *) op2.m_vProps.getNthItem(j+1);
+
+			if(!UT_strcmp(n1,n2) && UT_strcmp(v1,v2))
+				return false;
+		}
+	}
+
+	return true;
+}
+
 
 /************************************************************
  ************************************************************/
@@ -283,10 +321,12 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 	// strtok since strtok is also used in the PP_Revision class and
 	// it screws us up, so we have to start always with explicit
 	// string
-	char * next_s = s + strlen(t) + 1; // 1 for the token separator
+	char * next_s = s;
 
 	while(t)
 	{
+		next_s = next_s + strlen(t) + 1; // 1 for the token separator
+
 		if(*t == '!')
 		{
 			eType = PP_REVISION_FMT_CHANGE;
@@ -346,10 +386,7 @@ void PP_RevisionAttr::_init(const XML_Char *r)
 		m_vRev.addItem((void*)pRevision);
 
 		if(next_s < end_s)
-		{
 			t = strtok(next_s,",");
-			next_s = next_s + strlen(t) + 1; // 1 for the token separator
-		}
 		else
 			t = NULL;
 	}
@@ -705,5 +742,22 @@ bool PP_RevisionAttr::isFragmentSuperfluous() const
 	}
 	else
 		return false;
+}
+
+bool PP_RevisionAttr::operator == (const PP_RevisionAttr &op2) const
+{
+	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		const PP_Revision * r1 = (const PP_Revision *) m_vRev.getNthItem(i);
+
+		for(UT_uint32 j = 0; j < op2.m_vRev.getItemCount(); j++)
+		{
+			const PP_Revision * r2 = (const PP_Revision *) op2.m_vRev.getNthItem(j);
+
+			if(!(*r1 == *r2))
+				return false;
+		}
+	}
+	return true;
 }
 

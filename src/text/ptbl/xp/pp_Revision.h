@@ -50,6 +50,8 @@ class PP_Revision
 	void             mergeProps(const XML_Char * pProps);
 	void             mergeProps(const XML_Char ** pProps);
 
+	bool operator == (const PP_Revision &op2) const;
+
   private:
 	void             _clear();
 	void             _refreshString();
@@ -108,6 +110,7 @@ class PP_RevisionAttr
 
 	const XML_Char *      getXMLstring();
 
+	bool operator == (const PP_RevisionAttr &op2) const;
 
   private:
 	void _init(const XML_Char *r);
