@@ -28,7 +28,7 @@ CPPSRCS=	gr_$(ABI_FE)Graphics.cpp	\
 #TF Change to
 #CPPSRCS= $(wildcard *.cpp)
 
-INCLUDES=	
+ABI_INCS += -I$(ABI_DEPTH)/../../libpng -I$(ABI_DEPTH)/../../zlib
 
 TARGETS=		$(OBJS)
 
