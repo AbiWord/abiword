@@ -102,10 +102,10 @@ IEStatus IE_Imp_MsWord_97::importFile(const char * szFilename)
 		else
 		{
 			// HACK: this cast is bogus
-			UT_UCSChar * uc = (UT_UCSChar *) &c;
+			UT_UCSChar uc = (UT_UCSChar) c;
 
 			gbBlock.ins(offset, 1);
-			gbBlock.overwrite(offset, uc, 1);
+			gbBlock.overwrite(offset, &uc, 1);
 			offset++;
 		}
 
