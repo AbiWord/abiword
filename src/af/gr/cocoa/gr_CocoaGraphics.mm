@@ -756,6 +756,11 @@ void GR_CocoaGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 
 void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 {
+	if (!dx && !dy) return;
+
+	GR_Caret * pC = getCaret ();
+	if (pC) pC->disable ();
+
 	UT_sint32 oldDY = tdu(getPrevYOffset());
 	UT_sint32 oldDX = tdu(getPrevXOffset());
 	UT_sint32 newY = getPrevYOffset() + dy;
@@ -764,7 +769,119 @@ void GR_CocoaGraphics::scroll(UT_sint32 dx, UT_sint32 dy)
 	UT_sint32 ddy = -(tdu(newY) - oldDY);
 	setPrevYOffset(newY);
 	setPrevXOffset(newX);
-	[m_pWin scrollRect:[m_pWin bounds] by:NSMakeSize(ddx,ddy)];
+
+	NSRect bounds = [m_pWin bounds];
+	NSSize offset = NSMakeSize(ddx,ddy);
+	[m_pWin scrollRect:bounds by:offset];
+// printf ("scroll: dx=%ld dy=%ld [off-x=%f off-y=%f]\n", dx, dy, offset.width, offset.height); fflush (stdout);
+	/*  Because of the way we convert from local to display units for scrolling and back again for expose events,
+	 *  there can be a sizeable discrepancy (in local units) between the scroll that was requested and the
+	 *  reported exposed area. I am therefore marking an extra 1-pixel border around the exposed display area.
+	 */
+	if (offset.width > 0)
+	{
+		if (offset.width < bounds.size.width)
+		{
+			if (offset.height > 0)
+			{
+				if (offset.height < bounds.size.height)
+				{
+					NSRect tmp;
+					tmp.origin.x    = -1.0 + bounds.origin.x + offset.width;
+					tmp.origin.y    = -1.0 + bounds.origin.y;
+					tmp.size.width  =  2.0 + bounds.size.width - offset.width;
+					tmp.size.height =  2.0 + offset.height;
+					[m_pWin setNeedsDisplayInRect:tmp];
+
+					bounds.size.width = offset.width;
+				}
+			}
+			else if (offset.height < 0)
+			{
+				if ((-offset.height) < bounds.size.height)
+				{
+					NSRect tmp;
+					tmp.origin.x    = -1.0 + bounds.origin.x + offset.width;
+					tmp.origin.y    = -1.0 + bounds.origin.y + bounds.size.height + offset.height;
+					tmp.size.width  =  2.0 + bounds.size.width - offset.width;
+					tmp.size.height =  2.0 - offset.height;
+					[m_pWin setNeedsDisplayInRect:tmp];
+
+					bounds.size.width = offset.width;
+				}
+			}
+			else
+			{
+				bounds.size.width = offset.width;
+			}
+		}
+	}
+	else if (offset.width < 0)
+	{
+		if ((-offset.width) < bounds.size.width)
+		{
+			if (offset.height > 0)
+			{
+				if (offset.height < bounds.size.height)
+				{
+					NSRect tmp;
+					tmp.origin.x    = -1.0 + bounds.origin.x;
+					tmp.origin.y    = -1.0 + bounds.origin.y;
+					tmp.size.width  =  2.0 + bounds.size.width - offset.width;
+					tmp.size.height =  2.0 + offset.height;
+					[m_pWin setNeedsDisplayInRect:tmp];
+
+					bounds.origin.x += bounds.size.width + offset.width;
+					bounds.size.width = -offset.width;
+				}
+			}
+			else if (offset.height < 0)
+			{
+				if ((-offset.height) < bounds.size.height)
+				{
+					NSRect tmp;
+					tmp.origin.x    = -1.0 + bounds.origin.x;
+					tmp.origin.y    = -1.0 + bounds.origin.y + bounds.size.height + offset.height;
+					tmp.size.width  =  2.0 + bounds.size.width + offset.width;
+					tmp.size.height =  2.0 - offset.height;
+					[m_pWin setNeedsDisplayInRect:tmp];
+
+					bounds.origin.x += bounds.size.width + offset.width;
+					bounds.size.width = -offset.width;
+				}
+			}
+			else
+			{
+				bounds.origin.x += bounds.size.width + offset.width;
+				bounds.size.width = -offset.width;
+			}
+		}
+	}
+	else
+	{
+		if (offset.height > 0)
+		{
+			if (offset.height < bounds.size.height)
+			{
+				bounds.size.height = offset.height;
+			}
+		}
+		else if (offset.height < 0)
+		{
+			if ((-offset.height) < bounds.size.height)
+			{
+				bounds.origin.y += bounds.size.height + offset.height;
+				bounds.size.height = -offset.height;
+			}
+		}
+	}
+	bounds.origin.x    += -1.0;
+	bounds.origin.y    += -1.0;
+	bounds.size.width  +=  2.0;
+	bounds.size.height +=  2.0;
+	[m_pWin setNeedsDisplayInRect:bounds];
+
+	if (pC) pC->enable ();
 }
 
 void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
@@ -862,7 +979,10 @@ void GR_CocoaGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 
 void GR_CocoaGraphics::flush(void)
 {
-	[m_pWin setNeedsDisplay:YES];
+	// As far as I can tell, only the cursor calls this, and we really don't want to mark the whole view
+	// for re-display just because the cursor needs an update.
+	// [m_pWin setNeedsDisplay:YES];
+	[m_pWin displayIfNeeded];
 }
 
 void GR_CocoaGraphics::setColorSpace(GR_Graphics::ColorSpace /* c */)
@@ -1050,7 +1170,9 @@ bool GR_CocoaGraphics::_callUpdateCallback(NSRect * aRect)
 
 void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 {
+// printf ("- (void)drawRect:(NSRect)aRect[x=%f y=%f w=%f h=%f]\n", aRect.origin.x, aRect.origin.y, aRect.size.width, aRect.size.height);
 		if ([v inLiveResize]) {
+// printf ("- (void)drawRect:[v inLiveResize]\n");
 			xxx_UT_DEBUGMSG (("Is resizing\n"));
 
 			::CGContextSaveGState(m_CGContext);
@@ -1061,10 +1183,11 @@ void GR_CocoaGraphics::_updateRect(NSView * v, NSRect aRect)
 //			}
 			::CGContextRestoreGState(m_CGContext);
 		}
-/*		else {
+		else {
+// printf ("- (void)drawRect:_callUpdateCallback(&aRect);\n");
 			_callUpdateCallback(&aRect);
 		}
-		else {
+/*		else {
 			m_CGContext = CG_CONTEXT__;
 		}*/
 		UT_DEBUGMSG (("- (void)drawRect:(NSRect)aRect: calling callback !\n"));
