@@ -45,7 +45,7 @@ ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_APPLIBDEP=		$(LoadOrder)
 
 # libdl flags go into the process later
-ABI_LIBS=		png z
+ABI_LIBS=		png z iconv
 
 # include both dynamic and static binaries
 TARGETS=		$(PROGRAM) $(PROGRAM_S)
@@ -66,7 +66,7 @@ $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
 ifeq ($(UNIX_CAN_BUILD_DYNAMIC),1)
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
-	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/usr/local/lib  $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
 else
 	@echo "Not linking dynamic $(PROGRAM)"
 	@echo "    UNIX_CAN_BUILD_DYNAMIC not defined for this platform."
