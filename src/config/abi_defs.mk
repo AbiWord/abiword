@@ -28,7 +28,7 @@
 #### NOTE: the Makefiles use 'ifdef' rather than 'ifeq' so setting
 #### NOTE: this to **any** value will enable it.
 ####
-#### ABI_OPT_DEBUG=1
+ABI_OPT_DEBUG=1
 ####
 
 #### To get a GNOME build:  add the following line back to the
@@ -289,6 +289,11 @@ ifdef ABI_OPT_GNOME
 ABI_XAP_INCS+=	/af/xap/$(ABI_NATIVE)/$(ABI_GNOME_DIR)	\
 		/af/ev/$(ABI_NATIVE)/$(ABI_GNOME_DIR)
 endif
+
+# consider adding some UNIX native includes because MacOS X is really hybrid.
+ifeq ($(OS_NAME), MACOSX)
+ABI_XAP_INCS+= /af/util/unix
+endif 
 
 ABI_OTH_INCS=	/other/spell \
                 /other/fribidi

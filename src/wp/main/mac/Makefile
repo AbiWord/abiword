@@ -27,7 +27,18 @@ ABI_ROOT:=$(shell pwd)/../../../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
 CPPSRCS=		MacMain.cpp
-PROGRAM=		$(BINDIR)/AbiWord.app/Content/MacOS/AbiWord
+
+ifeq ($(ABI_OPT_DEBUG), 1)
+PROGRAM_BUNDLE=		$(BINDIR)/AbiWord.debug/Content
+else
+PROGRAM_BUNDLE=		$(BINDIR)/AbiWord.app/Content
+endif
+
+PROGRAM_BUNDLE_BIN=$(PROGRAM_BUNDLE)/MacOS
+PROGRAM_BUNDLE_RES=$(PROGRAM_BUNDLE)/Resources
+
+PROGRAM_RES=$(PROGRAM_BUNDLE_RES)/AbiWord.rsrc
+PROGRAM=$(PROGRAM_BUNDLE_BIN)/AbiWord
 
 LoadOrder=              AbiGr AbiFmt AbiPTbl AbiImpExp AbiXAp AbiWPAp \
 			AbiEv AbiUtil AbiWordVer AbiSpell Abi_libwv Abi_libiconv
@@ -48,15 +59,22 @@ include $(ABI_ROOT)/src/config/abi_rules.mk
 ##################################################################
 
 # we override the $(PROGRAM) rule.
-RESOURCES=$(shell ls *.rsrc)
+RESOURCES=$(shell ls $(OBJDIR)/*.rsrc)
 
-$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP) $(RESOURCES)
+$(PROGRAM_RES): $(RESOURCES)
+	@$(MAKE_OBJDIR)
+	@echo Creating $(PROGRAM_RES)....
+	@$(RESMERGER) -srcIs DF -dstIs DF $(RESOURCES) -o $@
+	@cp bundle/PkgInfo $(PROGRAM_BUNDLE)
+	@cp bundle/Info.plist $(PROGRAM_BUNDLE)
+	@cp bundle/AbiWord.icns $(PROGRAM_BUNDLE_RES)
+	@cp bundle/abiword_48.tif $(PROGRAM_BUNDLE_RES)
+        
+
+$(PROGRAM): $(OBJS) $(EXTRA_LIBDEP) $(PROGRAM_RES) 
 	@$(MAKE_OBJDIR)
 	@echo Linking $(PROGRAM)....
 	$(CCC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS) 
-# add resource handling for MacOS
-#	@xres -o $@ $(RESOURCES)
-#	@listres $@
 
 build:: $(TARGETS)
 

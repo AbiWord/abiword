@@ -82,6 +82,15 @@ RCOBJS		= $(addprefix $(OBJDIR)/,$(RCSRCS:.rc=.res))
 OBJS		+= $(RCOBJS)
 endif
 
+# 
+# MacOS (X) resource file
+#
+ifeq ($(OS_NAME), MACOSX)
+REZOBJS		= $(addprefix $(OBJDIR)/,$(REZSRCS:.r=.rsrc))
+OBJS		+= $(REZOBJS)
+endif
+
+
 #
 # Trash which can be deleted
 #
@@ -176,6 +185,13 @@ $(RCOBJS): $(RCSRCS)
 	@$(RC) /fo$(shell echo $(RCOBJS) | $(TRANSFORM_TO_DOS_PATH) )	\
 		$(ABI_INCS) $(ABI_TMDEFS) $(RCSRCS)
 	@echo $(RCOBJS) finished
+endif
+
+ifeq ($(OS_NAME), MACOSX)
+$(OBJDIR)/%.rsrc: %.r
+	@$(MAKE_OBJDIR)
+	@$(REZ) -o $@ $(ABI_MAC_REZ_OPTS) $<
+	@echo $(REZOBJS) finished
 endif
 
 ###############################################################################

@@ -43,6 +43,8 @@ PPC_ARCH_FLAGS		=
 CC		= cc
 CCC		= CC
 RANLIB		= ranlib
+REZ		= /Developer/Tools/Rez
+RESMERGER	= /Developer/Tools/ResMerger
 
 # Suffixes
 OBJ_SUFFIX	= o
@@ -94,6 +96,12 @@ MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
 ABI_NATIVE	= mac
 ABI_FE		= Mac
+
+# Rez flags
+ABI_MAC_REZ_INCS= -i /System/Library/Frameworks/HIToolbox.framework/Headers \
+    -i /System/Library/Frameworks/CarbonCore.framework/Headers \
+    -i $(ABI_ROOT)/src/af/xap/mac
+ABI_MAC_REZ_OPTS= $(ABI_MAC_REZ_INCS) -d REZ_CARBON -F Carbon -F HIToolbox -useDF
 
 ##################################################################
 ## ABIPKGDIR defines the directory containing the Makefile to use to
