@@ -408,7 +408,7 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// documents more easily.   
 
 	// TODO: write out a DOCTYPE description after we update the DTD
-	m_pie->write ("<!DOCTYPE abw PUBLIC \"-//W3C//DTD ABW 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
+	m_pie->write ("<!DOCTYPE abw PUBLIC PUBLIC \"-//ABISOURCE//DTD ABW 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
 
 	m_pie->write("<abiword");
 	m_pie->write(" version=\"");

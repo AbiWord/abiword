@@ -342,9 +342,16 @@ void s_HTML_Listener::_closeTag(void)
 	{
 		if(!m_bWroteText)
 		{
-			m_pie->write("<br />\r\n");
+		  if (!m_bIs4)
+		    {
+		      m_pie->write("<br />\r\n");
+		    }
+		  else
+		    {
+		      m_pie->write("<br>\r\n");
+		    }
+		  m_pie->write("</p>\r\n");
 		}
-		m_pie->write("</p>\r\n");
 	}
 
 	else if(m_iBlockType == BT_HEADING1)
@@ -1301,7 +1308,14 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		  break;
 
 		case UCS_LF:			// LF -- representing a Forced-Line-Break
+		  if (!m_bIs4)
+		    {
 			sBuf += "<br />";
+		    }
+		  else
+		    {
+		      sBuf += "<br>";
+		    }
 			pData++;
 			break;
 
@@ -1457,7 +1471,14 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	m_pie->write("<head>\r\n");
 
 	// we always encode as UTF-8
-	m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\r\n");
+	if ( !m_bIs4 )
+	  {
+	    m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\r\n");
+	  }
+	else
+	  {
+	    m_pie->write("<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" >\r\n");
+	  }
 
 	m_pie->write("<title>");
 	m_pie->write(m_pie->getFileName());
