@@ -223,9 +223,6 @@ static void s_internal_init ()
  */
 const char * ucs2Internal ()
 {
-	if (s_ucs2_internal == 0) s_internal_init ();
-	return s_ucs2_internal;
-
 #if defined(WIN32)
   // we special-case the win32 build, otherwise spelling and other stuff
   // just doesn't work
@@ -238,7 +235,9 @@ const char * ucs2Internal ()
   return "UCS2";
 #else
   // general case, found by hub and dom
-  // put the stuff at the top of the function here...
+	if (s_ucs2_internal == 0) 
+		s_internal_init ();
+	return s_ucs2_internal;
 #endif
 }
 
@@ -247,9 +246,6 @@ const char * ucs2Internal ()
  */
 const char * ucs4Internal ()
 {
-	if (s_ucs4_internal == 0) s_internal_init ();
-	return s_ucs4_internal;
-
 #if defined(WIN32)
   // we special-case the win32 build, otherwise spelling and other stuff
   // just doesn't work
@@ -262,7 +258,9 @@ const char * ucs4Internal ()
   return "UCS4";
 #else
   // general case, found by hub and dom
-  // put the stuff at the top of the function here...
+	if (s_ucs4_internal == 0) 
+		s_internal_init ();
+	return s_ucs4_internal;
 #endif
 }
 
