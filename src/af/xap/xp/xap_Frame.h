@@ -119,9 +119,11 @@ public:
 	void                        nullUpdate () const { m_pFrameImpl->_nullUpdate(); }
 	XAP_App *					getApp() const;
 	AV_View *		       		getCurrentView() const;
+	AV_View *		       		getCurrentRcView() const;
 	AD_Document *				getCurrentDoc() const;
 	void                        setView(AV_View * pView) {m_pView = pView;}
 	void                        setDoc(AD_Document * pDoc) {m_pDoc = pDoc;}
+	void                        setRcView(AV_View * pRcView) {m_pRcView = pRcView;}
 	const char *				getFilename() const;
 	const char *				getTitle(int len) const;
 	const char *				getNonDecoratedTitle() const;
@@ -157,6 +159,7 @@ public:
 	virtual void                toggleLeftRuler(bool /*bRulerOn*/) = 0;
 	virtual void				toggleBar(UT_uint32 /* iBarNb */, bool /* bBarOn */) { }
 	virtual void				toggleStatusBar(bool /* bStatusBarOn */) { }
+	virtual void				toggleRevealCodes(bool /* bRevealCodesOn */) { }
 	virtual bool				getBarVisibility(UT_uint32 iBarNb) { return true; }
 
    	EV_Mouse *					getMouse() { return m_pFrameImpl->m_pMouse; }
@@ -231,6 +234,7 @@ protected:
 	AV_View *					m_pView;		/* to our view on the document */
 	ap_ViewListener *			m_pViewListener;
 	AV_ListenerId				m_lid;
+	AV_View *					m_pRcView;		/* to our reveal codes view on the document */
 	AV_ScrollObj *				m_pScrollObj;	/* to our scroll handler */
 	UT_uint32					m_nView;
 	int							m_iUntitled;
@@ -274,12 +278,3 @@ private:
 };
 
 #endif /* XAP_Frame_H */
-
-
-
-
-
-
-
-
-

@@ -8,6 +8,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixDialogHelper.h"
 #include "ap_UnixStatusBar.h"
+#include "ap_UnixRevealCodes.h"
 #include "gr_UnixGraphics.h"
 #include "ut_debugmsg.h"
 
@@ -20,14 +21,17 @@
 AP_UnixFrameImpl::AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame, XAP_UnixApp *pUnixApp) :
 	XAP_UnixFrameImpl(static_cast<XAP_Frame *>(pUnixFrame), static_cast<AP_App *>(pUnixApp)),
 	m_dArea(NULL),
+	m_dRcArea(NULL),
 	m_pVadj(NULL),
 	m_pHadj(NULL),
 	m_hScroll(NULL),
 	m_vScroll(NULL),
 	m_topRuler(NULL),
 	m_leftRuler(NULL),
-	m_table(NULL),
+	m_outertable(NULL),
 	m_innertable(NULL),
+	m_rctable(NULL),
+	m_vpaned(NULL),
 	m_wSunkenBox(NULL)
 {
 	UT_DEBUGMSG(("Created AP_UnixFrameImpl %x \n",this));
@@ -119,6 +123,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 {
 	XAP_Frame* pFrame = getFrame();
 	bool bShowRulers = static_cast<AP_FrameData*>(pFrame->getFrameData())->m_bShowRuler;
+	bool bRevealCodes = static_cast<AP_FrameData*>(pFrame->getFrameData())->m_bRevealCodes;
 
 	// create the rulers
 	AP_UnixTopRuler * pUnixTopRuler = NULL;
@@ -151,8 +156,18 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 		m_leftRuler = NULL;
 	}
 
+	// create the reveal codes area
+	AP_UnixRevealCodes* pUnixRevealCodes = NULL;
+	
+	if (bRevealCodes)
+	{
+		pUnixRevealCodes = new AP_UnixRevealCodes(pFrame);
+		UT_ASSERT(pUnixRevealCodes);
+	}
+	
 	static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pTopRuler = pUnixTopRuler;
 	static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pLeftRuler = pUnixLeftRuler;
+	static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pRevealCodes = pUnixRevealCodes;
 
 	// set up for scroll bars.
 	m_pHadj = reinterpret_cast<GtkAdjustment *>(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
@@ -173,7 +188,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	GTK_WIDGET_UNSET_FLAGS(m_hScroll, GTK_CAN_FOCUS);
 	GTK_WIDGET_UNSET_FLAGS(m_vScroll, GTK_CAN_FOCUS);
 
-	// create a drawing area in the for our document window.
+	// create a drawing area for our document window.
 	m_dArea = createDrawingArea ();
 	g_object_set_data(G_OBJECT(m_dArea), "user_data", this);
 	UT_DEBUGMSG(("!!! drawing area m_dArea created! %x for %x \n",m_dArea,this));
@@ -187,7 +202,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 						    GDK_KEY_RELEASE_MASK |
 						    GDK_ENTER_NOTIFY_MASK |
 						    GDK_LEAVE_NOTIFY_MASK));
-	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
+
 	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::expose), NULL);
   
@@ -210,28 +225,28 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	g_signal_connect(G_OBJECT(m_dArea), "enter_notify_event", G_CALLBACK(focus_in_event), this);
 	g_signal_connect(G_OBJECT(m_dArea), "leave_notify_event", G_CALLBACK(focus_out_event), this);
 
-	// create a table for scroll bars, rulers, and drawing area
-
-	m_table = gtk_table_new(1, 1, FALSE); //was 1,1
-	g_object_set_data(G_OBJECT(m_table),"user_data", this);
-
-	// NOTE:  in order to display w/ and w/o rulers, gtk needs two tables to
-	// work with.  The 2 2x2 tables, (i)nner and (o)uter divide up the 3x3
-	// table as follows.  The inner table is at the 1,1 table.
+	// For the normal document area, in order to display w/ and w/o rulers, gtk 
+	// needs two tables to work with.  The 2 2x2 tables, (i)nner and (o)uter 
+	// divide up the 3x3 table as follows.  The inner table is at the 1,1 table:
 	//	+-----+---+
 	//	| i i | o |
 	//	| i i |   |
 	//	+-----+---+
 	//	|  o  | o |
 	//	+-----+---+
-		
+
+	// create a table for scroll bars, rulers, and drawing area
+	m_outertable = gtk_table_new(2, 2, FALSE);
+	g_object_set_data(G_OBJECT(m_outertable),"user_data", this);
+
+
 	// scroll bars
-	gtk_table_attach(GTK_TABLE(m_table), m_hScroll, 0, 1, 1, 2,
+	gtk_table_attach(GTK_TABLE(m_outertable), m_hScroll, 0, 1, 1, 2,
 					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
 					 0, 0);
 
-	gtk_table_attach(GTK_TABLE(m_table), m_vScroll, 1, 2, 0, 1,
+	gtk_table_attach(GTK_TABLE(m_outertable), m_vScroll, 1, 2, 0, 1,
 					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
 					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					 0, 0);
@@ -239,7 +254,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 
 	// arrange the widgets within our inner table.
 	m_innertable = gtk_table_new(2,2,FALSE);
-	gtk_table_attach( GTK_TABLE(m_table), m_innertable, 0, 1, 0, 1,
+	gtk_table_attach( GTK_TABLE(m_outertable), m_innertable, 0, 1, 0, 1,
 						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 						 0, 0); 
@@ -264,22 +279,60 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	}
 	else	// no rulers
 	{
-		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   1, 2, 1, 2,
+		gtk_table_attach(GTK_TABLE(m_innertable), m_dArea,   0, 2, 0, 2,
 						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 						 0, 0); 
 	}
 
-	// create a 3d box and put the table in it, so that we
-	// get a sunken in look.
+	if (bRevealCodes)
+	{
+		m_dRcArea = pUnixRevealCodes->createWidget();
+		
+		// Additionally, we'll need to split this up in an upper and lower part. The
+		// upper part will contain the rulers, normal document area and some
+		// scrollbars as described above. The lower part will be 1 single 2x2 table,
+		// and will contain the (r)eveal codes area and some (s)crollbars.
+		// The upper and lower part will be placed into ???
+		// The final resulting table will look like this:
+		//	+-----+---+
+		//	| i i | o |
+		//	| i i |   |  upper part (m_outertable)
+		//	+-----+---+
+		//	|  o  | o |
+		//	+-----+---+     ---
+		//	| r r | s |
+		//	| r r |   |  lower part (m_rctable)
+		//	+-----+---+
+		//	|  s  | s |
+		//	+-----+---+	
+		
+		m_rctable = pUnixRevealCodes->createContainer();
+		
+		// FIXME: add the scrollbars - MARCM
+	
+		gtk_table_attach(GTK_TABLE(m_rctable), m_dRcArea,   0, 2, 0, 2,
+							 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+							 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
+							 0, 0); 
+	}
+
+	// now create a vpaned widget to add the upper and lower part in
+	m_vpaned = gtk_vpaned_new();
+	gtk_paned_pack1(GTK_PANED(m_vpaned), m_outertable, TRUE, TRUE);
+	if (bRevealCodes)
+		gtk_paned_pack2(GTK_PANED(m_vpaned), m_rctable, FALSE, TRUE);
+	
+	// create a 3d box so that we get a sunken in look.
 	m_wSunkenBox = gtk_frame_new(NULL);
 	gtk_frame_set_shadow_type(GTK_FRAME(m_wSunkenBox), GTK_SHADOW_IN);
-	gtk_container_add(GTK_CONTAINER(m_wSunkenBox), m_table);
+	gtk_container_add(GTK_CONTAINER(m_wSunkenBox), m_vpaned);
 
 	// (scrollbars are shown, only if needed, by _setScrollRange)
 	gtk_widget_show(m_dArea);
 	gtk_widget_show(m_innertable);
-	gtk_widget_show(m_table);
+	gtk_widget_show(m_outertable);
+	gtk_widget_show(m_vpaned);
 
 	return m_wSunkenBox;
 }

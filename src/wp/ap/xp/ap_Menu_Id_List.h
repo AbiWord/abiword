@@ -101,6 +101,7 @@ menuitem(VIEW_DEFAULT_TB_LAYOUT)
 menuitem(VIEW_RULER)
 menuitem(VIEW_STATUSBAR)
 menuitem(VIEW_SHOWPARA)
+menuitem(VIEW_REVEALCODES)
 menuitem(VIEW_LOCKSTYLES)
 menuitem(VIEW_HEADFOOT) // This has been removed.
 
@@ -353,5 +354,3 @@ menuitem(AUTOTEXT_EMAIL_5)
 menuitem(AUTOTEXT_EMAIL_6)
 
 /**** Add Menu Items here ****/
-
-

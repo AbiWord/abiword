@@ -76,23 +76,15 @@ void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
 }
 
 /*!
-    ppAP [out] -- the requested AP
-    
-    pRevisions [in] -- revisions attribute; can be set to NULL, in
-                       which case an instance will be created; the
-                       caller is responsible for deleting
-
-    bShowRevisions -- indicates if in the current view revisions are
-                      to be shown
-
-    iRevisionId -- the id of revision which is shown in the current view
-    
-    bHiddenRevision [out] indicates if the element associated with
-                          ppAP is hidden or visible
-
-    bDelete [out] -- if set, the caller must delete ppAP when done
-                     with it.
-    
+Gets the attributes and properties belong to this layout class.
+\param ppAP The requested AP [out]
+\param pRevisions Revisions attribute; can be set to NULL, in which case an 
+       instance will be created; the caller is responsible for deleting it [in]
+\param bShowRevisions Indicates if in the current view revisions are to be shown
+\param iRevisionId The ID of revision which is shown in the current view
+\param bHiddenRevision Indicates if the element associated with ppAP is 
+       hidden or visible [out]
+\return true if successful, false otherwise    
 */
 bool fl_Layout::getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr *& pRevisions,
 							bool bShowRevisions, UT_uint32 iRevisionId, bool &bHiddenRevision) const

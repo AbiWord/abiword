@@ -421,6 +421,8 @@ AC_CONFIG_FILES([GNUmakefile
  src/text/fmt/xp/GNUmakefile
  src/text/ptbl/GNUmakefile
  src/text/ptbl/xp/GNUmakefile
+ src/text/rc/GNUmakefile
+ src/text/rc/xp/GNUmakefile
  src/wp/GNUmakefile
  src/wp/ap/GNUmakefile
  src/wp/ap/xp/GNUmakefile

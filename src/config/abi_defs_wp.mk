@@ -20,6 +20,7 @@
 
 ABI_AP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
 		/text/fmt/xp				\
+		/text/rc/xp				\
 		/wp/impexp/xp				\
 		/text/ptbl/xp	/wp/ap/xp/ToolbarIcons
 

@@ -65,6 +65,7 @@ OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/fribidi/xp'
 OTHER_INCLUDES+=-I'$(top_srcdir)/src/other/ttftool/unix'
 TEXT_INCLUDES=-I'$(top_srcdir)/src/text/ptbl/xp'
 TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/fmt/xp'
+TEXT_INCLUDES+=-I'$(top_srcdir)/src/text/rc/xp'
 
 TOOLS_INCLUDES=-I'$(top_srcdir)/src/tools/cdump/xp'
 
@@ -121,6 +122,7 @@ ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/other/ttftool/unix/libTtfTool.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
+ABI_LIBS+=$(top_builddir)/src/text/rc/xp/libRc.a
 else 
 ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/libImpExp.a
@@ -131,6 +133,7 @@ ABI_LIBS+=$(top_builddir)/src/af/ev/libEv.a
 ABI_LIBS+=$(top_builddir)/src/other/spell/xp/libSpell.a
 ABI_LIBS+=$(top_builddir)/src/text/fmt/xp/libFmt.a
 ABI_LIBS+=$(top_builddir)/src/text/ptbl/xp/libPtbl.a
+ABI_LIBS+=$(top_builddir)/src/text/rc/xp/libRc.a
 endif
 # we don't assume that WITH_GNOME => unix, on the off chance that
 # someday it won't

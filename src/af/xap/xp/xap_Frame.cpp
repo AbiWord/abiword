@@ -66,6 +66,7 @@ XAP_Frame::XAP_Frame(XAP_FrameImpl *pFrameImpl, XAP_App * pApp)
 	  m_pView(0),
 	  m_pViewListener(0),
 	  m_lid(static_cast<AV_ListenerId>(-1)),
+	  m_pRcView(0),
 	  m_pScrollObj(0),
 	  m_nView(0),
 	  m_iUntitled(0),
@@ -154,6 +155,8 @@ XAP_Frame::~XAP_Frame(void)
 
 	DELETEP(m_pViewListener);
 	DELETEP(m_pView);
+
+	DELETEP(m_pRcView);
 
 	UNREFP(m_pDoc);
 
@@ -520,6 +523,14 @@ AV_View * XAP_Frame::getCurrentView(void) const
 	return m_pView;
 }
 	
+AV_View * XAP_Frame::getCurrentRcView(void) const
+{
+	// TODO this should probably be merges with getCurrentView somehow
+	// TODO however, totally clueless now how to do it. Maybe later - MARM
+	
+	return m_pRcView;
+}
+
 AD_Document * XAP_Frame::getCurrentDoc(void) const
 {
 	return m_pDoc;
@@ -1058,4 +1069,3 @@ void XAP_Frame::setFrameMode(XAP_FrameMode iFrameMode)
 {
 	m_pFrameImpl->m_iFrameMode = iFrameMode;
 }
-

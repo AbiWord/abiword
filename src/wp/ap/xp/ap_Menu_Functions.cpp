@@ -1004,6 +1004,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 		else
 		  s = EV_MIS_ZERO;
 		break;
+	case AP_MENU_ID_VIEW_REVEALCODES:
+	        if ( pFrameData->m_bRevealCodes )
+		  s = EV_MIS_Toggled;
+		else
+		  s = EV_MIS_ZERO;
+		break;
 	case AP_MENU_ID_VIEW_LOCKSTYLES:
 		if ( pView->getDocument()->areStylesLocked() )
 			s = EV_MIS_ZERO;

@@ -90,6 +90,7 @@ CPPSRCS=	ap_Args.cpp			\
 		ap_Prefs.cpp			\
 		ap_Preview_Paragraph.cpp	\
 		ap_Preview_Abi.cpp		\
+		ap_RevealCodes.cpp			\
 		ap_Ruler.cpp			\
 		ap_StatusBar.cpp		\
 		ap_Strings.cpp			\
@@ -133,4 +134,3 @@ $(OBJDIR)/ap_wp_sidebar.cpp: sidebar.png $(BINDIR)/cdump$(EXE_SUFFIX)
 	$(BINDIR)/cdump$(EXE_SUFFIX) ./sidebar.png g_pngSidebar > $(OBJDIR)/ap_wp_sidebar.cpp
 
 endif
-

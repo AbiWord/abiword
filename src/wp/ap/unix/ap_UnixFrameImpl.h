@@ -40,6 +40,8 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	virtual UT_RGBColor getColorSelBackground () const;
 	virtual UT_RGBColor getColorSelForeground () const;
 
+ 	GtkWidget* getRcArea() { return m_dRcArea; } // TODO: this shouldn't be needed, some way or another - MARCM
+	
  protected:
 	friend class AP_UnixFrame;
 	void _showOrHideStatusbar(void);
@@ -56,14 +58,17 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	void _setScrollRange(apufi_ScrollType scrollType, int iValue, gfloat fUpperLimit, gfloat fSize);
 
 	GtkWidget * m_dArea;
+	GtkWidget * m_dRcArea;
 	GtkAdjustment *	m_pVadj;
 	GtkAdjustment *	m_pHadj;
 	GtkWidget * m_hScroll;
 	GtkWidget * m_vScroll;
 	GtkWidget * m_topRuler;
 	GtkWidget * m_leftRuler;
-	GtkWidget * m_table;
+	GtkWidget * m_outertable;
 	GtkWidget * m_innertable;
+	GtkWidget * m_rctable;
+	GtkWidget * m_vpaned;
 	GtkWidget * m_wSunkenBox;
 };
 #endif

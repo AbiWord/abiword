@@ -61,7 +61,7 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 	  need_im_reset = true;
 	}
 	void resetIMContext ();
-
+	
 private:
 	void _setGeometry ();
 
@@ -107,10 +107,11 @@ protected:
 	virtual void _queue_resize();
 	void _rebuildMenus(void);
 	void _rebuildToolbar(UT_uint32 ibar);
-	GtkWidget * _getSunkenBox(void) {return m_wSunkenBox;}
+	GtkWidget * _getSunkenBox(void) { return m_wSunkenBox; }
 
 	virtual void _setFullScreen(bool changeToFullScreen);
-
+	
+public:
 	class _fe
         {
 	friend class XAP_Frame;
@@ -131,7 +132,7 @@ protected:
 		static void destroy (GtkWidget * /*widget*/, gpointer /*data*/);
 		static gboolean focus_in_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
 		static gboolean focus_out_event(GtkWidget *w,GdkEvent *event,gpointer user_data);
-
+	
 		static void realize(GtkWidget * widget, GdkEvent */* e*/,gpointer /*data*/);
 		static void unrealize(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
 		static void sizeAllocate(GtkWidget * widget, GdkEvent */* e */,gpointer /* data */);
@@ -158,6 +159,3 @@ protected:
 	AP_UnixDialogFactory		        m_dialogFactory;
 };
 #endif /* XAP_UNIXFRAME_H */
-
-
-

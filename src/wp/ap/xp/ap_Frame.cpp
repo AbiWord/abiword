@@ -29,9 +29,12 @@
 #include "xap_Scrollbar_ViewListener.h"
 #include "ap_TopRuler.h"
 #include "ap_LeftRuler.h"
+#include "ap_RevealCodes.h"
 #include "ap_StatusBar.h"
 #include "xap_Dlg_Zoom.h"
 #include "fl_DocLayout.h"
+#include "rl_DocListener.h" // TODO remove me - MARCM
+
 
 /*****************************************************************/
 
@@ -479,7 +482,7 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 	ap_Scrollbar_ViewListener * pScrollbarViewListener = NULL;
 	AV_ListenerId lid;
 	AV_ListenerId lidScrollbarViewListener;
-
+		
 	xxx_UT_DEBUGMSG(("_showDocument: Initial m_pView %x \n",m_pView));
 
 	if(iZoom < XAP_DLG_ZOOM_MINIMUM_ZOOM) 
@@ -523,9 +526,20 @@ UT_Error AP_Frame::_showDocument(UT_uint32 iZoom)
 
 	setXScrollRange();
 	setYScrollRange();
-
+	
 	m_pView->draw();
-
+	
+	/*
+	Fill the structures needed for the reveal codes functionality.
+	Members m_pRcView and m_pData->m_pRcDocLayout will be initialized
+	by m_pRevealCodes->initialize().
+	*/
+	if (static_cast<AP_FrameData*>(m_pData)->m_bRevealCodes)
+	{
+		UT_ASSERT(static_cast<AP_FrameData*>(m_pData)->m_pRevealCodes);
+		static_cast<AP_FrameData*>(m_pData)->m_pRevealCodes->initialize();
+	}
+	
 	if ( static_cast<AP_FrameData*>(m_pData)->m_bShowRuler  ) 
 	{
 		if ( static_cast<AP_FrameData*>(m_pData)->m_pTopRuler )
@@ -653,7 +667,7 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	REPLACEP(m_pView, pView);
 	if(getApp()->getViewSelection() == m_pView)
 		getApp()->setViewSelection(NULL);
-
+	
 	REPLACEP(m_pScrollObj, pScrollObj);
 	REPLACEP(m_pViewListener, pViewListener);
 	m_lid = lid;
@@ -690,7 +704,7 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 		pApp->rememberFrame(this);
 	}
 
-	pDocLayout->fillLayouts();      
+	pDocLayout->fillLayouts();
 
 	// can only hold selection/point if the two views are for the same doc !!!
 	if(bSameDocument)

@@ -132,6 +132,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_VIEW_STATUSBAR,	0,0,1,0,	"viewStatus",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_LOCKSTYLES,	0,0,1,0,	"viewLockStyles",   ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_SHOWPARA,	0,0,1,0,	"viewPara",			ap_GetState_View,		NULL);
+	_s(AP_MENU_ID_VIEW_REVEALCODES,	0,0,1,0,	"viewRevealCodes",		ap_GetState_View,		NULL);
 	_s(AP_MENU_ID_VIEW_FULLSCREEN, 0,0,1,0, "viewFullScreen", ap_GetState_View, NULL);
 	_s(AP_MENU_ID_VIEW_ZOOM_MENU, 1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_VIEW_ZOOM,		0,1,0,0,	"dlgZoom",			NULL,					NULL);

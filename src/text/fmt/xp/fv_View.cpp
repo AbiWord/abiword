@@ -10746,5 +10746,3 @@ void fv_PropCache::clearProps(void)
 	m_iNumProps = 0;
 	xxx_UT_DEBUGMSG(("clearing props numProps %d \n",m_iNumProps));
 }
-
-

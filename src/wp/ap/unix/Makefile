@@ -71,6 +71,7 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)LeftRuler.cpp		\
 			ap_$(ABI_FE)Prefs.cpp			\
 			ap_$(ABI_FE)StatusBar.cpp		\
+			ap_$(ABI_FE)RevealCodes.cpp		\
 			ap_$(ABI_FE)Toolbar_StyleCombo.cpp	\
 			ap_$(ABI_FE)Toolbar_FontCombo.cpp	\
 			ap_$(ABI_FE)Toolbar_SizeCombo.cpp	\

@@ -286,6 +286,7 @@ ABI_XAP_INCS=	/config						\
                 /wp/ap/$(ABI_NATIVE) \
                 /text/ptbl/xp \
                 /text/fmt/xp \
+                /text/rc/xp \
                 /wp/impexp/xp \
                 /wp/ap/xp/ToolbarIcons	/other/ttftool/$(ABI_NATIVE)
 

@@ -52,7 +52,8 @@ public:
 	virtual void                            toggleLeftRuler(bool bRulerOn);
 	virtual void				toggleBar(UT_uint32 iBarNb, bool bBarOn);
 	virtual void				toggleStatusBar(bool bStatusBarOn);
-	
+	virtual void				toggleRevealCodes(bool bRevealCodesOn);
+
 protected:
 	friend class AP_UnixFrameImpl;
 
@@ -73,4 +74,3 @@ protected:
 };
 
 #endif /* AP_UNIXFRAME_H */
-

@@ -31,11 +31,13 @@
 AP_FrameData::AP_FrameData(XAP_App * pApp)
 {
 	m_pDocLayout = NULL;
+	m_pRcDocLayout = NULL;
 	m_pRootView = NULL;
 	m_pG = NULL;
 	m_pTopRuler = NULL;
 	m_pLeftRuler = NULL;
 	m_pStatusBar = NULL;
+	m_pRevealCodes = NULL;
 
 	m_pViewMode = VIEW_PRINT;
 
@@ -44,7 +46,8 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 	m_bShowBar[1] = true;
 	m_bShowBar[2] = true;
 	m_bShowBar[3] = true;
-        m_bShowPara = true;
+	m_bShowPara = true;
+	m_bRevealCodes = false;
 	m_bInsertMode = true;
 	m_bShowStatusBar = true;
 	m_bIsFullScreen = false;
@@ -93,8 +96,10 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 AP_FrameData::~AP_FrameData()
 {
 	DELETEP(m_pDocLayout);
+	DELETEP(m_pRcDocLayout);
 	DELETEP(m_pG);
 	DELETEP(m_pTopRuler);
 	DELETEP(m_pLeftRuler);
 	DELETEP(m_pStatusBar);
+	DELETEP(m_pRevealCodes);
 }

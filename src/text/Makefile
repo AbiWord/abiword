@@ -21,7 +21,7 @@
 ABI_ROOT:=$(shell pwd)/../..
 include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 
-DIRS=		ptbl fmt
+DIRS=		ptbl fmt rc
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

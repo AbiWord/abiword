@@ -23,12 +23,14 @@
 
 #include "ut_types.h"
 #include "fv_View.h"
+#include "rl_DocLayout.h"
 
 class GR_Graphics;
 class FL_DocLayout;
 class AP_TopRuler;
 class AP_LeftRuler;
 class AP_StatusBar;
+class AP_RevealCodes;
 class XAP_App;
 class EV_Toolbar;
 
@@ -46,6 +48,7 @@ public:
 	~AP_FrameData(void);
 
 	FL_DocLayout *		m_pDocLayout;
+	rl_DocLayout *		m_pRcDocLayout;
 	AV_View*            m_pRootView; // set for cloned frames ... must not be freed !!!
 	GR_Graphics *		m_pG;
 
@@ -54,11 +57,13 @@ public:
 	bool				m_bShowBar[4]; // TODO: 4 = NB_OF_TOOLBARS...
 	bool				m_bShowStatusBar;
 	bool             m_bShowPara;
+	bool				m_bRevealCodes;
 	bool             m_bIsFullScreen;
 	AP_TopRuler *		m_pTopRuler;
 	AP_LeftRuler *		m_pLeftRuler;
 	EV_Toolbar *		m_pToolbar[4]; // TODO: 4 = NB_OF_TOOLBARS...
 	AP_StatusBar *		m_pStatusBar;
+	AP_RevealCodes *	m_pRevealCodes;
 	ViewMode                m_pViewMode;
 };
 

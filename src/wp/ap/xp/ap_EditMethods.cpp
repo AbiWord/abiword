@@ -411,6 +411,7 @@ public:
 	static EV_EditMethod_Fn viewRuler;
 	static EV_EditMethod_Fn viewStatus;
 	static EV_EditMethod_Fn viewPara;
+	static EV_EditMethod_Fn viewRevealCodes;
 	static EV_EditMethod_Fn viewLockStyles;
 	static EV_EditMethod_Fn viewHeadFoot;
 	static EV_EditMethod_Fn zoom;
@@ -1185,6 +1186,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viewNormalLayout), 0, ""),
 	EV_EditMethod(NF(viewPara), 		0,		""),
 	EV_EditMethod(NF(viewPrintLayout), 0, ""),
+	EV_EditMethod(NF(viewRevealCodes), 		0,		""),
 	EV_EditMethod(NF(viewRuler),			0,		""),
 	EV_EditMethod(NF(viewStatus),			0,		""),
 	EV_EditMethod(NF(viewStd),			0,		""),
@@ -8712,7 +8714,7 @@ Defun1(viewPara)
 	UT_return_val_if_fail(pFrame, false);
 
 	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
-UT_return_val_if_fail(pFrameData, false);
+	UT_return_val_if_fail(pFrameData, false);
 	pFrameData->m_bShowPara = !pFrameData->m_bShowPara;
 
 	ABIWORD_VIEW;
@@ -8724,10 +8726,27 @@ UT_return_val_if_fail(pFrameData, false);
 	XAP_Prefs * pPrefs = pApp->getPrefs();
 	UT_return_val_if_fail(pPrefs, false);
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(true);
-UT_return_val_if_fail(pScheme, false);
+	UT_return_val_if_fail(pScheme, false);
 	pScheme->setValueBool(AP_PREF_KEY_ParaVisible, pFrameData->m_bShowPara);
 	pView->notifyListeners(AV_CHG_ALL);
 
+	return true;
+}
+
+Defun1(viewRevealCodes)
+{
+	CHECK_FRAME;
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	UT_return_val_if_fail(pFrame, false);
+	
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(pFrame->getFrameData());
+	UT_return_val_if_fail(pFrameData, false);	
+	
+	pFrameData->m_bRevealCodes = !pFrameData->m_bRevealCodes;
+
+	// actually do the dirty work
+	pFrame->toggleRevealCodes(pFrameData->m_bRevealCodes);
+	
 	return true;
 }
 

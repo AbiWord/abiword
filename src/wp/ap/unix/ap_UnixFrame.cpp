@@ -40,6 +40,7 @@
 #include "ap_UnixLeftRuler.h"
 #include "xap_UnixFontManager.h"
 #include "ap_UnixStatusBar.h"
+#include "ap_UnixRevealCodes.h"
 #include "ap_UnixViewListener.h"
 #include "xap_UnixDialogHelper.h"
 #if 1
@@ -451,6 +452,66 @@ void AP_UnixFrame::toggleStatusBar(bool bStatusBarOn)
 		pFrameData->m_pStatusBar->show();
 	else	// turning status bar off
 		pFrameData->m_pStatusBar->hide();
+}
+
+void AP_UnixFrame::toggleRevealCodes(bool bRevealCodesOn)
+{
+	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+	
+	if (bRevealCodesOn)
+	{
+//
+// if there is a reveal codes area then delete that first (should not happen AFAICT). - MARCM
+//		
+		if(pFrameData->m_pRevealCodes)
+		{
+			if (pFrameImpl->m_dRcArea && GTK_IS_OBJECT(pFrameImpl->m_dRcArea))
+			{
+				gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_dRcArea) );
+			}		
+			if (pFrameImpl->m_rctable && GTK_IS_OBJECT(pFrameImpl->m_rctable))
+			{
+				gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_rctable) );
+			}
+			DELETEP(pFrameData->m_pRevealCodes);
+			
+			DELETEP(pFrameData->m_pRcDocLayout);
+			DELETEP(m_pRcView);
+		}
+		
+		AP_UnixRevealCodes * pUnixRevealCodes = new AP_UnixRevealCodes(this);
+		UT_ASSERT(pUnixRevealCodes);
+		pFrameData->m_pRevealCodes = pUnixRevealCodes;		
+		pFrameImpl->m_dRcArea = pUnixRevealCodes->createWidget();
+		pFrameImpl->m_rctable = pUnixRevealCodes->createContainer();	
+		
+		gtk_table_attach(GTK_TABLE(pFrameImpl->m_rctable), 
+				 pFrameImpl->m_dRcArea, 0, 2, 0, 2, /* FIXME: take scrollbars into account! */
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
+				 0,0);
+		
+		gtk_paned_pack2(GTK_PANED(pFrameImpl->m_vpaned), pFrameImpl->m_rctable, FALSE, TRUE);
+		
+		/* fill the reveal codes structures and display them */
+		pFrameData->m_pRevealCodes->initialize();
+	}
+	else
+	{
+		if (pFrameImpl->m_dRcArea && GTK_IS_OBJECT(pFrameImpl->m_dRcArea))
+		{
+			gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_dRcArea) );
+		}		
+		if (pFrameImpl->m_rctable && GTK_IS_OBJECT(pFrameImpl->m_rctable))
+		{
+			gtk_object_destroy(GTK_OBJECT(pFrameImpl->m_rctable) );
+		}	
+	    DELETEP(pFrameData->m_pRevealCodes);
+		
+		DELETEP(pFrameData->m_pRcDocLayout);
+		DELETEP(m_pRcView);		
+	}
 }
 
 bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)

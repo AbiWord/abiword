@@ -107,6 +107,7 @@ BeginLayout(Main,0)
 		Separator()
 		MenuItem(AP_MENU_ID_VIEW_LOCKSTYLES)
 		MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
+		MenuItem(AP_MENU_ID_VIEW_REVEALCODES)
 		Separator()
 		MenuItem(AP_MENU_ID_VIEW_FULLSCREEN)
 

@@ -445,6 +445,8 @@ const XML_Char ** PP_AttrProp::getProperties () const
 
 	const XML_Char ** pList = m_pProperties->list();
 
+	printf(">>> properties->list() pointer: %x\n", pList);
+	
 	// where the values should be, we actually have pointers to PropertyPair;
 	for(UT_uint32 i = 1; i < iPropsCount * 2; i += 2)
 	{
@@ -1246,6 +1248,3 @@ bool PP_AttrProp::explodeStyle(PD_Document * pDoc, bool bOverwrite)
 
 	return true;
 }
-
-
-	
