@@ -182,6 +182,23 @@ public:
 	fl_FootnoteLayout * findFootnoteLayout(UT_uint32 footpid);
 	FootnoteType        getFootnoteType(void) const;
 	void                getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType);
+	UT_sint32           getInitialFootVal(void) const
+		{ return m_iFootnoteVal;}
+	bool                getRestartFootOnSection(void) const
+		{ return m_bRestartFootSection;}
+	bool                getRestartFootOnPage(void) const
+		{ return m_bRestartFootPage;}
+	UT_sint32           getInitialEndVal(void) const
+		{ return m_iEndnoteVal;}
+	bool                getRestartEndOnSection(void) const
+		{ return m_bRestartEndSection;}
+	bool                getPlaceEndAtDocEnd(void) const
+		{ return m_bPlaceAtDocEnd;}
+	bool                getPlaceEndAtSecEnd(void) const
+		{ return m_bPlaceAtSecEnd;}
+	FootnoteType        getEndnoteType(void) const
+		{ return m_EndnoteType; }
+	
 // --------------------------------------------------------------------
 	bool		getAutoSpellCheck(void) const { return (hasBackgroundCheckReason(bgcrSpelling)); }
 	bool		getSpellCheckCaps(void) const { return m_bSpellCheckCaps; }
@@ -274,6 +291,14 @@ private:
 	UT_uint32           m_iRedrawCount;
 	UT_Vector           m_vecFootnotes;
 	FootnoteType        m_FootnoteType;
+	UT_sint32           m_iFootnoteVal;
+	bool                m_bRestartFootSection;
+	bool                m_bRestartFootPage;
+	UT_sint32           m_iEndnoteVal;
+	FootnoteType        m_EndnoteType; 
+	bool                m_bRestartEndSection;
+	bool                m_bPlaceAtDocEnd;
+	bool                m_bPlaceAtSecEnd;
 };
 
 #endif /* DOCLAYOUT_H */

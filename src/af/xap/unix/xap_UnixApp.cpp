@@ -91,7 +91,7 @@ XAP_UnixApp::~XAP_UnixApp()
 	DELETEP(m_pUnixToolbarIcons);
 
 #ifndef WITH_PANGO
-	DELETEP(m_fontManager);
+	delete m_fontManager;
 #endif	
 }
 

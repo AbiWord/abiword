@@ -826,6 +826,7 @@ bool fl_BlockLayout::isEmbeddedType(void)
  */
 void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbeddedSize)
 {
+	UT_DEBUGMSG(("In update Offsets \n"));
 	fp_Run * pRun = getFirstRun();
 	PT_DocPosition posInBlock = getPosition();
 	while(pRun && (posInBlock + pRun->getBlockOffset() < posEmbedded))
@@ -899,6 +900,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 			{
 				m_gbCharWidths.ins(pRun->getBlockOffset(),&valz,1);
 			}
+			xxx_UT_DEBUGMSG(("updateOffsets: inserted %d zeros in charwidths \n",iDiff));
 		}
 //
 // Now shift all the offsets in the runs.
@@ -908,7 +910,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 		{
 			UT_uint32 iNew = pRun->getBlockOffset() + iDiff;
 			UT_ASSERT(iNew >= 0);
-			xxx_UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
+			UT_DEBUGMSG(("Run %x Old offset %d New Offset %d \n",pRun,pRun->getBlockOffset(),iNew));
 			pRun->setBlockOffset((UT_uint32) iNew);
 			pRun = pRun->getNext();
 		}

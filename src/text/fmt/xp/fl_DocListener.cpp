@@ -372,6 +372,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE);
 		*psfh = (PL_StruxFmtHandle) pCL;
 		m_pCurrentSL = (fl_SectionLayout *) m_pCurrentSL->myContainingLayout();
+		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pCL;
+		pFL->setFootnoteEndIn();
+		fl_BlockLayout * pBL = (fl_BlockLayout *) pFL->getFirstLayout();
+		pBL->updateEnclosingBlockIfNeeded();
 		UT_ASSERT(m_pCurrentSL);
 		break;
 	}
@@ -1659,7 +1663,12 @@ bool fl_DocListener::signal(UT_uint32 iSignal)
 	case PD_SIGNAL_REFORMAT_LAYOUT:
 		m_pLayout->formatAll();
 		break;
-		
+	case PD_SIGNAL_DOCPROPS_CHANGED_REBUILD:
+		m_pLayout->updatePropsRebuild();
+		break;
+	case PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD:
+		m_pLayout->updatePropsNoRebuild();
+		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;

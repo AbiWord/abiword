@@ -33,7 +33,7 @@
 
 class XAP_Frame;
 
-class AP_Dialog_FormatFootnotes : public XAP_Dialog_NonPersistent
+ABI_EXPORT class AP_Dialog_FormatFootnotes : public XAP_Dialog_NonPersistent
 {
 public:
 	AP_Dialog_FormatFootnotes(XAP_DialogFactory * pDlgFactory,
@@ -49,7 +49,7 @@ public:
 	void                setFrame(XAP_Frame * pFrame);
 	void                setFootnoteVal(UT_sint32 iVal);
 	UT_sint32           getFootnoteVal(void);
-	void                getFootnoteValString(void);
+	void                getFootnoteValString(UT_String & sVal);
 	void                setFootnoteType(FootnoteType iFootType);
 	FootnoteType        getFootnoteType(void);
 	void                setRestartFootnoteOnSection(bool bVal);
@@ -59,7 +59,7 @@ public:
 
 	void                setEndnoteVal(UT_sint32 iVal);
 	UT_sint32           getEndnoteVal(void);
-	void                getEndnoteValString(void);
+	void                getEndnoteValString(UT_String & sVal);
 	void                setEndnoteType(FootnoteType iFootType);
 	FootnoteType        getEndnoteType(void);
 	void                setRestartEndnoteOnSection(bool bVal);
@@ -71,7 +71,9 @@ public:
 	void                setPlaceAtSecEnd(bool bVal);
 	bool                getPlaceAtSecEnd(void);
 
+	void                recalcTextValues(void);
 	void                updateDocWithValues(void);
+	void                setInitialValues(void);
 private:
 	tAnswer         m_answer;
 	FL_DocLayout *  m_pDocLayout;
@@ -87,7 +89,6 @@ private:
 	UT_String       m_sEndnoteVal;
 	FootnoteType    m_iEndnoteType; 
 	bool            m_bRestartEndSection;
-	bool            m_bRestartEndPage;
 	bool            m_bPlaceAtDocEnd;
 	bool            m_bPlaceAtSecEnd;
 };

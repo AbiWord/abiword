@@ -41,6 +41,7 @@
 #include "xav_Listener.h"
 #include "xap_App.h"
 #include "ap_Prefs.h"
+#include "fp_ContainerObject.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -97,6 +98,15 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 	m_iRedrawCount = 0;
 	m_vecFootnotes.clear();
 	m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	m_iFootnoteVal = 1;
+	m_bRestartFootSection = false;
+	m_bRestartFootPage = false;
+	m_iEndnoteVal = 1;
+	m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+    m_bRestartEndSection = false;
+	m_bPlaceAtDocEnd = true;
+	m_bPlaceAtSecEnd = false;
+
 }
 
 FL_DocLayout::~FL_DocLayout()
@@ -168,10 +178,9 @@ FL_DocLayout::~FL_DocLayout()
 void FL_DocLayout::_lookupProperties(void)
 {
 	const XML_Char * pszFootnoteType = NULL;
-#if 0
 	const PP_AttrProp* pDocAP = getDocument()->getAttrProp();
+	UT_ASSERT(pDocAP);
 	pDocAP->getProperty("document-footnote-type", (const XML_Char *&)pszFootnoteType);
-#endif
 	if (pszFootnoteType == NULL)
 	{
 		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
@@ -239,6 +248,183 @@ void FL_DocLayout::_lookupProperties(void)
 	else
 	{
 		m_FootnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+
+	const XML_Char * pszEndnoteType = NULL;
+	pDocAP->getProperty("document-endnote-type", (const XML_Char *&)pszEndnoteType);
+	if (pszEndnoteType == NULL)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(pszEndnoteType[0] == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"numeric") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"numeric-square-brackets") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"numeric-paren") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_PAREN;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"numeric-open-paren") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_UPPER;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper-paren") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_UPPER_PAREN;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper-paren-open") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_UPPER_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_LOWER;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower-paren") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_LOWER_PAREN;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower-paren-open") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_LOWER_OPEN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower-roman") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_LOWER_ROMAN;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"lower-roman-paren") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper-roman") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_UPPER_ROMAN;
+	}
+	else if(UT_XML_strcmp(pszEndnoteType,"upper-roman-paren") == 0)
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_UPPER_ROMAN_PAREN;
+	}
+	else
+	{
+		m_EndnoteType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
+	}
+
+	const XML_Char * pszTmp = NULL;
+	pDocAP->getProperty("document-footnote-initial", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		m_iFootnoteVal =  atoi(pszTmp);
+	}
+	else
+	{
+		m_iFootnoteVal = 1;
+	}
+
+	pDocAP->getProperty("document-footnote-restart-section", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			m_bRestartFootSection = true;
+		}
+		else
+		{
+			m_bRestartFootSection = false;
+		}
+	}
+	else
+	{
+		m_bRestartFootSection = false;
+	}
+
+	pDocAP->getProperty("document-footnote-restart-page", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			m_bRestartFootPage = true;
+		}
+		else
+		{
+			m_bRestartFootPage = false;
+		}
+	}
+	else
+	{
+		m_bRestartFootPage = false;
+	}
+
+	pDocAP->getProperty("document-endnote-initial", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		m_iEndnoteVal =  atoi(pszTmp);
+	}
+	else
+	{
+		m_iEndnoteVal = 1;
+	}
+
+	pDocAP->getProperty("document-endnote-restart-section", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			m_bRestartEndSection = true;
+		}
+		else
+		{
+			m_bRestartEndSection = false;
+		}
+	}
+	else
+	{
+		m_bRestartEndSection = false;
+	}
+
+	pDocAP->getProperty("document-endnote-place-endsection", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			m_bPlaceAtDocEnd = true;
+		}
+		else
+		{
+			m_bPlaceAtDocEnd = false;
+		}
+	}
+	else
+	{
+		m_bPlaceAtDocEnd = false;
+	}
+
+	pDocAP->getProperty("document-endnote-place-enddoc", (const XML_Char *&)pszTmp);
+	if(pszTmp && pszTmp[0])
+	{
+		if(UT_XML_strcmp(pszTmp,"1") == 0)
+		{
+			m_bPlaceAtSecEnd = true;
+		}
+		else
+		{
+			m_bPlaceAtSecEnd = false;
+		}
+	}
+	else
+	{
+		m_bPlaceAtSecEnd = false;
 	}
 
 }
@@ -396,22 +582,22 @@ void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, Fo
 		UT_String_sprintf (sVal,"%d)", iVal);
 		break;
 	case FOOTNOTE_TYPE_LOWER:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,97));
+		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,96));
 		break;
 	case FOOTNOTE_TYPE_LOWER_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,97));
+		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,96));
 		break;
 	case FOOTNOTE_TYPE_LOWER_OPEN_PAREN:
-		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,97));
+		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,96));
 		break;
 	case FOOTNOTE_TYPE_UPPER:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,65));
+		UT_String_sprintf (sVal,"%s",autoCalc.dec2ascii(iVal,64));
 		break;
 	case FOOTNOTE_TYPE_UPPER_PAREN:
-		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,65));
+		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2ascii(iVal,64));
 		break;
 	case FOOTNOTE_TYPE_UPPER_OPEN_PAREN:
-		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,65));
+		UT_String_sprintf (sVal,"%s)",autoCalc.dec2ascii(iVal,64));
 		break;
 	case FOOTNOTE_TYPE_LOWER_ROMAN:
 		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,true));
@@ -423,7 +609,7 @@ void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, Fo
 		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,false));
 		break;
 	case FOOTNOTE_TYPE_UPPER_ROMAN_PAREN:
-		UT_String_sprintf (sVal,"%s",autoCalc.dec2roman(iVal,false));
+		UT_String_sprintf (sVal,"(%s)",autoCalc.dec2roman(iVal,false));
 		break;
 	default:
 		UT_String_sprintf (sVal,"%d", iVal);
@@ -501,7 +687,7 @@ fl_FootnoteLayout * FL_DocLayout::findFootnoteLayout(UT_uint32 footpid)
 UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 {
 	UT_sint32 i =0;
-	UT_sint32 pos = 1;
+	UT_sint32 pos = m_iFootnoteVal;
 	fl_FootnoteLayout * pTarget = findFootnoteLayout(footpid);
  	fl_FootnoteLayout * pFL = NULL;
 	if(pTarget== NULL)
@@ -509,12 +695,42 @@ UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
 		return 0;
 	}
 	PT_DocPosition posTarget = pTarget->getDocPosition();
+	fl_DocSectionLayout * pDocSecTarget = pTarget->getDocSectionLayout();
+	fp_Container * pCon = pTarget->getFirstContainer();
+	fp_Page * pPageTarget = NULL;
+	if(pCon)
+	{
+		pPageTarget = pCon->getPage();
+	}
 	for(i=0; i<(UT_sint32) m_vecFootnotes.getItemCount(); i++)
 	{
 		pFL = getNthFootnote(i);
-		if(pFL->getDocPosition() < posTarget)
+		if(!m_bRestartFootSection && !m_bRestartFootPage)
 		{
-			pos++;
+			if(pFL->getDocPosition() < posTarget)
+			{
+				pos++;
+			}
+		}
+		else if(m_bRestartFootSection)
+		{
+			if((pDocSecTarget == pFL->getDocSectionLayout()) && (pFL->getDocPosition() < posTarget))
+			{
+				pos++;
+			}
+		}
+		else if(m_bRestartFootPage)
+		{
+			pCon = pFL->getFirstContainer();
+			fp_Page * pPage = NULL;
+			if(pCon)
+			{
+				pPage = pCon->getPage();
+			}
+			if((pPage == pPageTarget) && (pFL->getDocPosition() < posTarget))
+			{
+				pos++;
+			} 
 		}
 	}
 	return pos;

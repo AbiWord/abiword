@@ -57,7 +57,9 @@ class fl_AutoNum;
 enum
 {
 	PD_SIGNAL_UPDATE_LAYOUT,
-	PD_SIGNAL_REFORMAT_LAYOUT
+	PD_SIGNAL_REFORMAT_LAYOUT,
+	PD_SIGNAL_DOCPROPS_CHANGED_REBUILD,
+	PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD
 };
 
 /////////////////////////////////////////////////////////

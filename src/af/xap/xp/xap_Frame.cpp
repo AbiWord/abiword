@@ -141,6 +141,9 @@ XAP_Frame::~XAP_Frame(void)
 	if (m_pView)
 		m_pView->removeListener(m_lid);
 
+
+	DELETEP(m_pFrameImpl);
+
 	DELETEP(m_pViewListener);
 	DELETEP(m_pView);
 
@@ -165,8 +168,6 @@ XAP_Frame::~XAP_Frame(void)
 			UT_DEBUGMSG(("Timer [%d] not found\n", m_iIdAutoSaveTimer));
 		}
 	}
-
-	DELETEP(m_pFrameImpl);
 }
 
 /*****************************************************************/

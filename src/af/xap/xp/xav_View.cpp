@@ -42,6 +42,7 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 
 AV_View::~AV_View()
 {
+	UT_DEBUGMSG(("Deleting view %x \n",this));
 }
 
 void* AV_View::getParentData() const

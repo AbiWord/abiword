@@ -128,7 +128,7 @@ static void s_menu_item_activate(GtkWidget * widget, AP_UnixDialog_FormatFootnot
 static void s_FootInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
 	UT_ASSERT(widget && dlg);
-
+	UT_DEBUGMSG(("Initial Footnote Val changed \n")); 
 	dlg->event_FootInitialValueChange();
 }
 
@@ -136,6 +136,7 @@ static void s_FootInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dl
 static void s_Apply(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
 	UT_ASSERT(widget && dlg);
+	UT_DEBUGMSG(("Apply clicked \n")); 
 
 	dlg->event_Apply();
 }
@@ -144,18 +145,22 @@ static void s_Apply(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 static void s_EndInitial(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
 	UT_ASSERT(widget && dlg);
+	UT_DEBUGMSG(("Initial Endnote Val changed \n")); 
 
 	dlg->event_EndInitialValueChange();
 }
 
 static void s_FootRestartPage(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
+	UT_DEBUGMSG(("Restart Footnotes on each page \n")); 
+
 	dlg->event_FootRestartPage();
 }
 
 
 static void s_FootRestartSection(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
+	UT_DEBUGMSG(("Restart Footnotes on each Section \n")); 
 	dlg->event_FootRestartSection();
 
 }
@@ -163,16 +168,20 @@ static void s_FootRestartSection(GtkWidget * widget, AP_UnixDialog_FormatFootnot
 
 static void s_EndPlaceEndSection(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
+	UT_DEBUGMSG(("Place endnotes at end of Section \n")); 
+
 	dlg->event_EndPlaceEndSection();
 }
 
 static void s_EndPlaceEndDoc(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {
+	UT_DEBUGMSG(("Place endnotes at end of Document \n")); 
 	dlg->event_EndPlaceEndDoc();
 }
 
 static void s_EndRestartSection(GtkWidget * widget, AP_UnixDialog_FormatFootnotes * dlg)
 {	
+	UT_DEBUGMSG(("Restart Endnotes at each section \n")); 
 	dlg->event_EndRestartSection();
 
 }
@@ -185,9 +194,12 @@ static void s_EndRestartSection(GtkWidget * widget, AP_UnixDialog_FormatFootnote
 void AP_UnixDialog_FormatFootnotes::runModal(XAP_Frame * pFrame)
 {
 	UT_return_if_fail(pFrame);
+	setFrame(pFrame);
+	setInitialValues();
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_return_if_fail(mainWindow);
+	refreshVals();
 
 
 	switch(abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this,
@@ -206,30 +218,61 @@ void AP_UnixDialog_FormatFootnotes::event_Apply(void)
 {
 
 // Apply the current settings to the document
+	updateDocWithValues();
 }
 
 void AP_UnixDialog_FormatFootnotes::event_FootInitialValueChange(void)
 {
-
+	UT_sint32 val = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wFootnoteSpin));
+	UT_DEBUGMSG(("SEVIOR: spin Height %d old value = %d \n",val,getFootnoteVal()));
+	if (val == getFootnoteVal())
+		return;
+	setFootnoteVal(val);
+	refreshVals();
 }
 
 
 void AP_UnixDialog_FormatFootnotes::event_EndInitialValueChange(void)
 {
-
+	UT_sint32 val = gtk_spin_button_get_value_as_int( GTK_SPIN_BUTTON(m_wEndnoteSpin));
+	if (val == getEndnoteVal())
+		return;
+	setEndnoteVal(val);
+	refreshVals();
 }
 
 
 
 void AP_UnixDialog_FormatFootnotes::event_FootRestartPage(void)
 {
-
+	gboolean bRestart = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wFootnotesRestartOnPage));
+	if(bRestart == TRUE)
+	{
+		setRestartFootnoteOnPage(true);
+		setRestartFootnoteOnSection(false);
+	}
+	else
+	{
+		setRestartFootnoteOnPage(false);
+	}
+	refreshVals();
 }
 
 
 
 void AP_UnixDialog_FormatFootnotes::event_FootRestartSection(void)
 {
+	gboolean bRestart = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wFootnotesRestartOnSection));
+	if(bRestart == TRUE)
+	{
+		setRestartFootnoteOnPage(false);
+		setRestartFootnoteOnSection(true);
+	}
+	else
+	{
+		setRestartFootnoteOnSection(false);
+	}
+	refreshVals();
 
 }
 
@@ -237,19 +280,50 @@ void AP_UnixDialog_FormatFootnotes::event_FootRestartSection(void)
 
 void AP_UnixDialog_FormatFootnotes::event_EndPlaceEndSection(void)
 {
+	gboolean bRestart = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfSec));
+	if(bRestart == TRUE)
+	{
+		setPlaceAtSecEnd(true);
+		setPlaceAtDocEnd(false);
+	}
+	else
+	{
+		setPlaceAtSecEnd(false);
+		setPlaceAtDocEnd(true);
+	}
+	refreshVals();
 
 }
 
 
 void AP_UnixDialog_FormatFootnotes::event_EndPlaceEndDoc(void)
 {
-
+	gboolean bRestart = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfDoc));
+	if(bRestart == TRUE)
+	{
+		setPlaceAtSecEnd(false);
+		setPlaceAtDocEnd(true);
+	}
+	else
+	{
+		setPlaceAtSecEnd(true);
+		setPlaceAtDocEnd(false);
+	}
+	refreshVals();
 }
 
 
 void AP_UnixDialog_FormatFootnotes::event_EndRestartSection(void)
 {
-
+	gboolean bRestart = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wEndnotesRestartOnSection));
+	if(bRestart == TRUE)
+	{
+		setRestartEndnoteOnSection(true);
+	}
+	else
+	{
+		setRestartEndnoteOnSection(false);
+	}
 }
 
 void AP_UnixDialog_FormatFootnotes::event_MenuChange(GtkWidget * widget)
@@ -257,6 +331,7 @@ void AP_UnixDialog_FormatFootnotes::event_MenuChange(GtkWidget * widget)
 	UT_ASSERT(m_windowMain);
 	UT_ASSERT(widget);
 	bool bIsFootnote = true;
+	UT_DEBUGMSG(("event Menu Change \n"));
 	FootnoteType iType = FOOTNOTE_TYPE_NUMERIC_SQUARE_BRACKETS;
 	if (widget == m_wEnd123)
 	{
@@ -376,11 +451,11 @@ void AP_UnixDialog_FormatFootnotes::event_MenuChange(GtkWidget * widget)
 	{
 		iType = FOOTNOTE_TYPE_LOWER_ROMAN_PAREN;
 	}
-	else if (widget ==  m_wEndRomanUpper)
+	else if (widget ==  m_wFootRomanUpper)
 	{
 		iType = FOOTNOTE_TYPE_UPPER_ROMAN;
 	}
-	else if (widget == m_wEndRomanUpperParen )
+	else if (widget == m_wFootRomanUpperParen )
 	{
 		iType =FOOTNOTE_TYPE_UPPER_ROMAN ;
 	}
@@ -406,7 +481,46 @@ void AP_UnixDialog_FormatFootnotes::event_MenuChange(GtkWidget * widget)
 */
 void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
 {
+	UT_String sVal;
+	getFootnoteValString(sVal);
+	gtk_label_set_text(GTK_LABEL(m_wFootnotesInitialValText) , sVal.c_str());
+	getEndnoteValString(sVal);
+	gtk_label_set_text(GTK_LABEL(m_wEndnotesInitialValText) , sVal.c_str());
+	g_signal_handler_block(G_OBJECT(m_wFootnotesRestartOnSection),
+						   m_FootRestartSectionID);
+	g_signal_handler_block(G_OBJECT(m_wFootnotesRestartOnPage),
+						   m_FootRestartPageID);
+	g_signal_handler_block(G_OBJECT(m_wEndnotesRestartOnSection),
+						   m_EndRestartSectionID);
+	g_signal_handler_block(G_OBJECT(m_wEndnotesPlaceEndOfDoc),
+						   m_EndPlaceEndofDocID);
+	g_signal_handler_block(G_OBJECT(m_wEndnotesPlaceEndOfSec),
+						   m_EndPlaceEndofSectionID);
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wFootnotesRestartOnSection), (gboolean) getRestartFootnoteOnSection());
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wFootnotesRestartOnPage), (gboolean) getRestartFootnoteOnPage());
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesRestartOnSection), (gboolean) getRestartEndnoteOnSection());
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfDoc), (gboolean) getPlaceAtDocEnd());
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesPlaceEndOfSec), (gboolean) getPlaceAtSecEnd());
+	
+
+	g_signal_handler_unblock(G_OBJECT(m_wEndnotesPlaceEndOfSec),
+						   m_EndPlaceEndofSectionID);
+	g_signal_handler_unblock(G_OBJECT(m_wEndnotesPlaceEndOfDoc),
+						   m_EndPlaceEndofDocID);
+	g_signal_handler_unblock(G_OBJECT(m_wFootnotesRestartOnSection),
+						   m_FootRestartSectionID);
+	g_signal_handler_unblock(G_OBJECT(m_wFootnotesRestartOnPage),
+						   m_FootRestartPageID);
+	g_signal_handler_unblock(G_OBJECT(m_wEndnotesRestartOnSection),
+						   m_EndRestartSectionID);
+
 }
+
 void AP_UnixDialog_FormatFootnotes::event_Cancel(void)
 {
 	setAnswer(AP_Dialog_FormatFootnotes::a_CANCEL);
@@ -420,13 +534,8 @@ void AP_UnixDialog_FormatFootnotes::event_Delete(void)
 
 void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * container )
 {
-#if 0
-  GtkWidget *label1;
+
   const XAP_StringSet * pSS = m_pApp->getStringSet();
-  label1 = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Msg).c_str());
-  gtk_widget_show (label1);
-  gtk_box_pack_start (GTK_BOX (container), label1, TRUE, FALSE, 3);
-#endif
 
   GtkWidget * NoteBook = gtk_notebook_new ();
   gtk_widget_show (NoteBook);
@@ -440,7 +549,7 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_widget_show (hbox1);
   gtk_box_pack_start (GTK_BOX (vbox1), hbox1, TRUE, TRUE, 0);
 
-  GtkWidget * Footnote_Style_Label = gtk_label_new ("Footnote Style");
+  GtkWidget * Footnote_Style_Label = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootStyle).c_str());
   gtk_widget_show (Footnote_Style_Label);
   gtk_box_pack_start (GTK_BOX (hbox1), Footnote_Style_Label, TRUE, FALSE, 0);
 
@@ -527,13 +636,13 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_widget_show (hbox2);
   gtk_box_pack_start (GTK_BOX (vbox1), hbox2, TRUE, TRUE, 0);
 
-  GtkWidget * Restart_On_Section = gtk_check_button_new_with_label ("Restart on each Section");
+  GtkWidget * Restart_On_Section = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec).c_str());
   gtk_widget_show (Restart_On_Section);
   gtk_box_pack_start (GTK_BOX (hbox2), Restart_On_Section, FALSE, FALSE, 0);
 
   m_wFootnotesRestartOnSection = Restart_On_Section;
 
-  GtkWidget * Restart_On_Page = gtk_check_button_new_with_label ("Restart on each Page");
+  GtkWidget * Restart_On_Page = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage).c_str());
   gtk_widget_show (Restart_On_Page);
   gtk_box_pack_start (GTK_BOX (hbox2), Restart_On_Page, FALSE, FALSE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (Restart_On_Page), 2);
@@ -544,7 +653,7 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_widget_show (hbox3);
   gtk_box_pack_start (GTK_BOX (vbox1), hbox3, TRUE, TRUE, 0);
 
-  GtkWidget * Initial_Val_lab = gtk_label_new ("Initial footnote value");
+  GtkWidget * Initial_Val_lab = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootInitialVal).c_str());
   gtk_widget_show (Initial_Val_lab);
   gtk_box_pack_start (GTK_BOX (hbox3), Initial_Val_lab, TRUE, FALSE, 0);
   gtk_misc_set_padding (GTK_MISC (Initial_Val_lab), 9, 0);
@@ -560,12 +669,13 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
 
   GtkWidget * Initial_Value_Footnote = gtk_label_new ("1");
   gtk_widget_show (Initial_Value_Footnote);
+  gtk_label_set_justify(GTK_LABEL(Initial_Value_Footnote),GTK_JUSTIFY_RIGHT);
   gtk_box_pack_end (GTK_BOX (hbox3), Initial_Value_Footnote, FALSE, FALSE, 25);
   gtk_widget_set_usize (Initial_Value_Footnote, 90, -2);
 
   m_wFootnotesInitialValText = Initial_Value_Footnote;
 
-  GtkWidget * Footnotes_tab = gtk_label_new ("Format Footnotes");
+  GtkWidget * Footnotes_tab = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootStyle).c_str());
   gtk_widget_show (Footnotes_tab);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (NoteBook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (NoteBook), 0), Footnotes_tab);
 
@@ -577,7 +687,7 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_widget_show (hbox4);
   gtk_box_pack_start (GTK_BOX (vbox2), hbox4, TRUE, TRUE, 0);
 
-  GtkWidget * Endnote_Style = gtk_label_new ("Endnote Style");
+  GtkWidget * Endnote_Style = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndStyle).c_str());
   gtk_widget_show (Endnote_Style);
   gtk_box_pack_start (GTK_BOX (hbox4), Endnote_Style, TRUE, FALSE, 0);
 
@@ -666,12 +776,12 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_widget_show (hbox5);
   gtk_box_pack_start (GTK_BOX (vbox2), hbox5, TRUE, TRUE, 0);
 
-  GtkWidget * Place_at_end_of_Section = gtk_check_button_new_with_label ("Place at end of Section");
+  GtkWidget * Place_at_end_of_Section = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec).c_str());
   gtk_widget_show (Place_at_end_of_Section);
   gtk_box_pack_start (GTK_BOX (hbox5), Place_at_end_of_Section, FALSE, FALSE, 0);
   m_wEndnotesPlaceEndOfSec = Place_at_end_of_Section;
 
-  GtkWidget * Place_At_End_of_doc = gtk_check_button_new_with_label ("Place at end of Document");
+  GtkWidget * Place_At_End_of_doc = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc).c_str());
   gtk_widget_show (Place_At_End_of_doc);
   gtk_box_pack_start (GTK_BOX (hbox5), Place_At_End_of_doc, FALSE, FALSE, 0);
   gtk_container_set_border_width (GTK_CONTAINER (Place_At_End_of_doc), 2);
@@ -683,19 +793,20 @@ void  AP_UnixDialog_FormatFootnotes::_constructWindowContents(GtkWidget * contai
   gtk_widget_show (hbox6);
   gtk_box_pack_start (GTK_BOX (vbox2), hbox6, TRUE, TRUE, 0);
 
-  GtkWidget * Restart_on_Section = gtk_check_button_new_with_label ("Restart on each Section");
+  GtkWidget * Restart_on_Section = gtk_check_button_new_with_label (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndRestartSec).c_str());
   gtk_widget_show (Restart_on_Section);
   gtk_box_pack_start (GTK_BOX (hbox6), Restart_on_Section, FALSE, FALSE, 0);
 
   m_wEndnotesRestartOnSection = Restart_on_Section;
 
-  GtkWidget * Initial_Endnote_lab = gtk_label_new ("Initial Endnote value");
+  GtkWidget * Initial_Endnote_lab = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndInitialVal).c_str());
   gtk_widget_show (Initial_Endnote_lab);
+  gtk_label_set_justify(GTK_LABEL(Initial_Endnote_lab),GTK_JUSTIFY_RIGHT);
   gtk_box_pack_start (GTK_BOX (hbox6), Initial_Endnote_lab, FALSE, FALSE, 0);
   gtk_misc_set_padding (GTK_MISC (Initial_Endnote_lab), 9, 0);
 
 
-  GtkWidget * Endnotes_tab = gtk_label_new ("Format Endnotes");
+  GtkWidget * Endnotes_tab = gtk_label_new (pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndTab).c_str());
   gtk_widget_show (Endnotes_tab);
   gtk_notebook_set_tab_label (GTK_NOTEBOOK (NoteBook), gtk_notebook_get_nth_page (GTK_NOTEBOOK (NoteBook), 1), Endnotes_tab);
 
@@ -738,8 +849,15 @@ GtkWidget*  AP_UnixDialog_FormatFootnotes::_constructWindow(void)
   _constructWindowContents ( vbox2 );
 
   abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CANCEL);
-  GtkWidget * buttonApply = abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_APPLY, BUTTON_OK);
-  m_wButtonApply = buttonApply;
+
+// Apply button does not destoy widget. Do it this way.
+
+  m_wButtonApply =  gtk_button_new_from_stock(GTK_STOCK_APPLY);
+  gtk_widget_show(m_wButtonApply);
+  gtk_box_pack_end (GTK_BOX (GTK_DIALOG(m_windowMain)->action_area),
+                    m_wButtonApply,
+                    FALSE, TRUE, 0);
+  _connectSignals();
   return m_windowMain;
 }
 
@@ -762,23 +880,23 @@ void AP_UnixDialog_FormatFootnotes::_connectSignals(void)
 											  G_CALLBACK(s_EndInitial),
 											  (gpointer) this);
 	m_FootRestartPageID = g_signal_connect(G_OBJECT(m_wFootnotesRestartOnPage ),
-										   "changed",
+										   "clicked",
 										   G_CALLBACK(s_FootRestartPage),
 										   (gpointer) this);
 	m_FootRestartSectionID = g_signal_connect(G_OBJECT(m_wFootnotesRestartOnSection ),
-										   "changed",
+										   "clicked",
 										   G_CALLBACK(s_FootRestartSection),
 										   (gpointer) this);
 	m_EndPlaceEndofSectionID = g_signal_connect(G_OBJECT(m_wEndnotesPlaceEndOfSec ),
-											  "changed",
+											  "clicked",
 											  G_CALLBACK(s_EndPlaceEndSection),
 											  (gpointer) this);
 	m_EndPlaceEndofDocID = g_signal_connect(G_OBJECT(m_wEndnotesPlaceEndOfDoc ),
-										  "changed",
+										  "clicked",
 										  G_CALLBACK(s_EndPlaceEndDoc),
 										  (gpointer) this);
 	m_EndRestartSectionID = g_signal_connect(G_OBJECT(m_wEndnotesRestartOnSection ),
-										  "changed",
+										  "clicked",
 										  G_CALLBACK(s_EndRestartSection),
 										  (gpointer) this);
 

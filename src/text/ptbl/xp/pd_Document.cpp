@@ -275,7 +275,6 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	UT_Error errorCode;
 
 	IEFileType savedAsType;
-
 	errorCode = IE_Imp::constructImporter(this, szFilename, (IEFileType) ieft, &pie, &savedAsType);
 	if (errorCode)
 	{
@@ -285,6 +284,7 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 	}
 	m_bLoading = true;
 	m_pPieceTable->setPieceTableState(PTS_Loading);
+	m_indexAP =  99999999;
 	errorCode = pie->importFile(szFilename);
 	delete pie;
 	m_bLoading = false;
@@ -294,6 +294,15 @@ UT_Error PD_Document::importFile(const char * szFilename, int ieft,
 		UT_DEBUGMSG(("PD_Document::importFile -- could not import file\n"));
 		DELETEP(m_pPieceTable);
 		return errorCode;
+	}
+	if(m_indexAP ==  99999999)
+	{
+		// set standard document properties, such as dtd, lang,
+		// dom-dir, etc. (some of the code that used to be here is
+		// now in the setAttrProp() function, since it is shared
+		// both by new documents and documents being loaded from disk
+		// this also initializes m_indexAP
+		setAttrProp(NULL);
 	}
 
 	m_pPieceTable->setPieceTableState(PTS_Editing);
@@ -339,7 +348,7 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 	}
 
 	_syncFileTypes(false);
-
+	m_indexAP = 99999999;
 	m_pPieceTable->setPieceTableState(PTS_Loading);
 	errorCode = pie->importFile(szFilename);
 	delete pie;
@@ -356,7 +365,15 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft)
 		UT_DEBUGMSG(("PD_Document::readFromFile -- no memory\n"));
 		return UT_IE_NOMEMORY;
 	}
-
+	if(m_indexAP ==  99999999)
+	{
+		// set standard document properties, such as dtd, lang,
+		// dom-dir, etc. (some of the code that used to be here is
+		// now in the setAttrProp() function, since it is shared
+		// both by new documents and documents being loaded from disk
+		// this also initializes m_indexAP
+		setAttrProp(NULL);
+	}
 	m_pPieceTable->setPieceTableState(PTS_Editing);
 	updateFields();
 	_setClean();							// mark the document as not-dirty
@@ -3331,6 +3348,7 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	}
 
 	bool bRet = VARSET.storeAP(ppAttr, &m_indexAP);
+	UT_DEBUGMSG(( "pd_Document::setAttrProp: document %x storeAP res %d indexAP %d %s \n", this,bRet,m_indexAP));
 
 	if(!bRet)
 		return false;

@@ -26,7 +26,7 @@ class XAP_UnixFrame;
 
 /*****************************************************************/
 
-class AP_UnixDialog_FormatFootnotes: public AP_Dialog_FormatFootnotes
+ABI_EXPORT class AP_UnixDialog_FormatFootnotes: public AP_Dialog_FormatFootnotes
 {
 public:
 	AP_UnixDialog_FormatFootnotes(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -77,6 +77,16 @@ private:
 	GtkWidget *   m_wEndnoteSpin;
 	GtkObject *   m_oEndnoteSpinAdj;
 
+	guint         m_FootnoteSpinHanderID;
+	guint         m_EndnoteSpinHanderID;
+	guint         m_FootRestartPageID;
+	guint         m_FootRestartSectionID;
+	guint    	  m_EndPlaceEndofSectionID;
+	guint         m_EndPlaceEndofDocID;
+	guint    	  m_EndRestartSectionID;
+	guint         m_FootStyleID;
+	guint         m_EndStyleID;
+
 	GtkWidget *   m_wEnd123;
 	GtkWidget *   m_wEnd123Brack;
 	GtkWidget *   m_wEnd123Paren;
@@ -108,16 +118,6 @@ private:
 	GtkWidget *   m_wFootRomanUpper;
 	GtkWidget *   m_wFootRomanUpperParen;
 
-
-	guint         m_FootnoteSpinHanderID;
-	guint         m_EndnoteSpinHanderID;
-	guint         m_FootRestartPageID;
-	guint         m_FootRestartSectionID;
-	guint    	  m_EndPlaceEndofSectionID;
-	guint         m_EndPlaceEndofDocID;
-	guint    	  m_EndRestartSectionID;
-	guint         m_FootStyleID;
-	guint         m_EndStyleID;
 };
 
 #endif /* AP_UNIXDIALOG_FORMATFOOTNOTES_H */

@@ -70,6 +70,8 @@ public:
 		{return m_iFootnotePID;}
 	bool                     isEndFootnoteIn(void) const
 		{return m_bHasEndFootnote;}
+	void                     setFootnoteEndIn(void)
+		{ m_bHasEndFootnote = true;}
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
 protected:

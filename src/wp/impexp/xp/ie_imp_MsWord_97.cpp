@@ -927,7 +927,12 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 	case DOCBEGIN:
 
 		// test the bidi nature of this document
-		m_bBidiDocument = wvIsBidiDocument(ps);
+//		m_bBidiDocument = wvIsBidiDocument(ps);
+//
+// FIXME TOMAS! I had to comment this out to build abiword. I did cvs update in
+// wv but this is still not defined. Sorry. Martin
+//
+		m_bBidiDocument = false;
 		UT_DEBUGMSG(("IE_Imp_MsWord_97::_docProc: complex %d, bidi %d\n",ps->fib.fComplex,m_bBidiDocument));
 		UT_uint32 i,j;
 

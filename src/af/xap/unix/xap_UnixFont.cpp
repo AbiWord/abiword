@@ -222,6 +222,7 @@ XAP_UnixFont::XAP_UnixFont(const XAP_UnixFont & copy)
 
 XAP_UnixFont::~XAP_UnixFont(void)
 {
+	xxx_UT_DEBUGMSG(("deleting font %x \n",this));
 	FREEP(m_name);
 	FREEP(m_fontfile);
 	FREEP(m_metricfile);
