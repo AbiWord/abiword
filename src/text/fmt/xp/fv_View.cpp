@@ -7512,15 +7512,47 @@ UT_UCSChar * FV_View::getContextSuggest(UT_uint32 ndx)
 }
 
 // NB: returns a UCS string that the caller needs to FREEP
-UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPOB, UT_uint32 ndx)
+UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, 
+										fl_PartOfBlock* pPOB, UT_uint32 ndx)
 {
+	// mega caching - are these assumptions valid?
+	UT_UCSChar * szSuggest = NULL;
+
+	static fl_BlockLayout * pLastBL = 0;
+	static fl_PartOfBlock * pLastPOB = 0;
+	static UT_Vector * pSuggestionCache = 0;
+
+	if (pBL == pLastBL && pLastPOB == pPOB)
+	{
+		if ((pSuggestionCache->getItemCount()) &&
+			( ndx <= pSuggestionCache->getItemCount()))
+		{
+			UT_UCS_cloneString(&szSuggest, 
+							   (UT_UCSChar *) pSuggestionCache->getNthItem(ndx-1));
+		}
+		return szSuggest;
+	}
+
+	if (pSuggestionCache) // got here, so we need to invalidate the cache
+	{
+		// clean up
+		for (UT_uint32 i = 0; i < pSuggestionCache->getItemCount(); i++)
+		{
+			UT_UCSChar * sug = (UT_UCSChar *)pSuggestionCache->getNthItem(i);
+			FREEP(sug);
+		}
+
+		pLastBL = 0;
+		pLastPOB = 0;
+		DELETEP(pSuggestionCache);
+	}
+
 	// grab a copy of the word
 	UT_GrowBuf pgb(1024);
 	bool bRes = pBL->getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
 	const UT_UCSChar * pWord = pgb.getPointer(pPOB->iOffset);
-	UT_UCSChar * szSuggest = NULL;
 
 	// lookup suggestions
 	UT_Vector * sg;
@@ -7578,15 +7610,10 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL, fl_PartOfBlock* pPO
 		UT_UCS_cloneString(&szSuggest, (UT_UCSChar *) sg->getNthItem(ndx-1));
 	}
 
-	// clean up
-	for (UT_uint32 i = 0; i < sg->getItemCount(); i++)
-	{
-		UT_UCSChar * sug = (UT_UCSChar *)sg->getNthItem(i);
-		if(sug)
-			free(sug);
-	}
+	pSuggestionCache = sg;
+	pLastBL = pBL;
+	pLastPOB = pPOB;
 
-	DELETEP(sg);
 	return szSuggest;
 }
 
