@@ -41,7 +41,8 @@ OBJS=		$(PLATFORM_OBJS)					\
 		$(OBJDIR)/gr_Transform.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_Caret.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/gr_Image.$(OBJ_SUFFIX)			\
-		$(OBJDIR)/gr_VectorImage.$(OBJ_SUFFIX)
+		$(OBJDIR)/gr_VectorImage.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/gr_Painter.$(OBJ_SUFFIX)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk
 

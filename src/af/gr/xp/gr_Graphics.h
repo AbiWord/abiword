@@ -52,12 +52,13 @@ class UT_String;
 */
 
 class GR_Graphics;
+class GR_Painter;
+
 class ABI_EXPORT GR_Font
 {
 	friend class GR_Graphics;
 
  public:
-	GR_Font();
 
 	typedef enum { FF_Unknown = 0, FF_Roman, FF_Swiss, FF_Modern,
 				   FF_Script, FF_Decorative, FF_Technical, FF_BiDi, FF_Last } FontFamilyEnum;
@@ -92,10 +93,10 @@ class ABI_EXPORT GR_Font
 		GR_Font * pThis = static_cast<GR_Font*>(instance);
 		return pThis->doesGlyphExist(g);
 	}
-	
-	
-	
+
   protected:
+
+	GR_Font();
 
 	virtual ~GR_Font();
 
@@ -105,13 +106,13 @@ class ABI_EXPORT GR_Font
 	 otherwise override hashKey() method 
 	*/
 	mutable UT_String		m_hashKey;
+
   private:
 
 	static UT_uint32 s_iAllocCount;
 	UT_uint32        m_iAllocNo;
 	mutable GR_CharWidths*	m_pCharWidths;
 };
-
 
 /*
   GR_Graphics is a portable interface to a simple 2-d graphics layer.  It is not
@@ -124,8 +125,9 @@ class ABI_EXPORT GR_Font
 class ABI_EXPORT GR_Graphics
 {
 	friend class GR_Caret;
+	friend class GR_Painter;
+
  public:
-	GR_Graphics();
 	virtual ~GR_Graphics();
 
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;
@@ -382,6 +384,7 @@ class ABI_EXPORT GR_Graphics
 			UT_ASSERT(!m_pCaret);
 			m_pCaret = new GR_Caret(this);
 		}
+
 	GR_Caret *        getCaret() { return m_pCaret; }
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 	virtual void	  saveRectangle(UT_Rect & r, UT_uint32 iIndx) = 0;
@@ -398,6 +401,12 @@ class ABI_EXPORT GR_Graphics
 	void              setPrevXOffset(UT_sint32 x) { m_iPrevXOffset = x;}
 
  protected:
+	GR_Graphics();
+
+	// todo: make these pure virtual
+	virtual void _beginPaint () {}
+	virtual void _endPaint () {}
+
 	UT_sint32         _tduX(UT_sint32 layoutUnits) const;
 	UT_sint32         _tduY(UT_sint32 layoutUnits) const;
 	UT_sint32         _tduR(UT_sint32 layoutUnits) const;
@@ -417,7 +426,11 @@ class ABI_EXPORT GR_Graphics
 							  UT_ASSERT( UT_NOT_IMPLEMENTED );
 							  return false;
 						  }
-	
+
+	// only called by GR_Painter
+	void beginPaint ();
+	void endPaint ();
+
  public:
 	// TODO -- this should not be public, create access methods !!!
 	//
@@ -440,6 +453,7 @@ class ABI_EXPORT GR_Graphics
 	static UT_uint32 m_uTick;
 
 	const UT_Rect *  m_pRect;
+
  private:
 	GR_Caret *		 m_pCaret;
     bool             _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
@@ -460,12 +474,11 @@ class ABI_EXPORT GR_Graphics
 	GR_Transform     m_Transform;
 
 	UT_StringPtrMap	 m_hashFontCache;
+
+	UT_uint32 m_paintCount;
 };
 
 void xorRect(GR_Graphics* pG, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 void xorRect(GR_Graphics* pG, const UT_Rect& r);
-#ifdef DEBUG
-void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c);
-#endif
 
 #endif /* GR_GRAPHICS_H */

@@ -119,7 +119,8 @@ GR_Graphics::GR_Graphics()
 	  m_bDoMerge(false),
 	  m_iPrevYOffset(0),
 	  m_iPrevXOffset(0),
-	  m_hashFontCache(19)
+	  m_hashFontCache(19),
+	  m_paintCount(0)
 {
 }
 
@@ -168,11 +169,23 @@ void GR_Graphics::_destroyFonts ()
 	m_hashFontCache.clear ();
 }
 
+void GR_Graphics::beginPaint ()
+{
+	m_paintCount++;
+
+	_beginPaint ();
+}
+
+void GR_Graphics::endPaint ()
+{
+	_endPaint ();
+
+	m_paintCount--;
+}
+
 UT_sint32 GR_Graphics::tdu(UT_sint32 layoutUnits) const
 {
 	double d = ((double)layoutUnits * static_cast<double>(getDeviceResolution())) * static_cast<double>(getZoomPercentage()) / (100. * static_cast<double>(getResolution()));
-	// don't know if we need this line or not -PL
-//	if (d > 0) d += .5; else d -= .5;
 	return (UT_sint32)d;
 }
 
@@ -186,7 +199,6 @@ UT_sint32 GR_Graphics::_tduX(UT_sint32 layoutUnits) const
 	return tdu(layoutUnits+getPrevXOffset()) - tdu(getPrevXOffset());
 }
 
-
 /*!
  * This method converts to device units while taking account of the Y-scroll
  * offset. This will always give the exact same logical location on the screen
@@ -196,7 +208,6 @@ UT_sint32 GR_Graphics::_tduY(UT_sint32 layoutUnits) const
 {
 	return tdu(layoutUnits+getPrevYOffset()) - tdu(getPrevYOffset());
 }
-
 
 /*!
  * This method converts rectangle widths and heights to device units while 
@@ -541,7 +552,6 @@ void  GR_Graphics::setDontRedraw(bool bDontRedraw)
 	m_bDontRedraw = bDontRedraw;
 }
 
-
 /*
  * Hand shaking fail safe variable sto make sure we don'tr repaint till
  * we're absolueltely ready.
@@ -550,6 +560,7 @@ bool GR_Graphics::isDontRedraw(void)
 {
 	return m_bDontRedraw;
 }
+
 /*!
  * Alternate method to tell the doRepaint to merge the next expose so that
  * expands of exposed area due to scrolls can be merged without doing a
@@ -670,10 +681,4 @@ void xorRect(GR_Graphics* pG, const UT_Rect& r)
 {
 	xorRect(pG, r.left, r.top, r.width, r.height);
 }
-
-#ifdef DEBUG // XXX
-void flash(GR_Graphics* pG, const UT_Rect& r, const UT_RGBColor& c)
-{
-}
-#endif
 
