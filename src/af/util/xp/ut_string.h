@@ -38,11 +38,11 @@ UT_sint32 UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
 
 #ifdef WIN32
 #define snprintf _snprintf
-#endif /* WIN32 */
 
 #define _(String) (String)
 #define N_(String) (String)
 
+#endif /* WIN32 */
 UT_END_EXTERN_C
 
 #endif /* UT_STRING_H */
