@@ -22,7 +22,7 @@
 
 // TODO move these declarations into platform directories.
 
-#ifdef WIN32
+#if (defined (WIN32) || defined (_WIN32) || defined (_WIN64))
 // The 'cool' win32 assert, at least with VC6, corrups memory (probably calling sprintf on
 // a static buffer without checking bounds), so we implement our own assert dialog, which
 // is even cooler. TF
@@ -48,11 +48,26 @@ extern int UT_Win32ThrowAssert(const char * pCondition, const char * pFile, int 
 // be able to get all the predefined macros by running 'cpp -dM' but it would not work on
 // my cygwin
 #  if defined(__GNUC__) && (defined(_X86) || defined(__i386) || defined(i386))
-//   Inline assembly for GCC on x86
+     // Inline assembly for GCC on x86
 #    define UT_DEBUG_BREAK asm("int 3");
+#  elif defined(__GNUC__) && (defined(__ia64) || defined(ia64))
+#    error "This branch has not been tested."
+     // On Itanium we use the intrinsic function __break(); defined in ia64intrin.h
+     // I am not sure whether we need to tell the compiler this one is intrinsic (MSVC
+     // uses a #pragma for this
+     void __break(int);
+#    define UT_DEBUG_BREAK __break(0x80016);
 #  elif defined(_MSC_VER) && defined(_M_IX86)
-//   inline assmebly for MSVC on x86
+     // inline assmebly for MSVC on x86
 #    define UT_DEBUG_BREAK _asm {int 3}
+#  elif defined(_MSC_VER) && (defined(_M_IA64) || defined(_M_AMD64))
+#    error "This branch has not been tested."
+     // On Itanium we use the intrinsic function __break();
+     // I assume this will also work for AMD64, but I am not 100% sure
+     void __break(int);
+     // this forces __break() to be generated as inline code (see MSDN)
+#    pragma intrinsic (__break) 
+#    define UT_DEBUG_BREAK __break(0x80016);
 #  endif
 
 # ifndef UT_DEBUG_BREAK
