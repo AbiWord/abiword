@@ -32,7 +32,6 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_WordCount.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Field.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Goto.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ap_$(ABI_FE)Dialog_Insert_DateTime.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Lists.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Options.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_PageNumbers.$(OBJ_SUFFIX)  \
@@ -53,11 +52,13 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 ifeq ($(ABI_FE), Mac)
 PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)Dlg_Replace.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dlg_Break.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dlg_Insert_DateTime.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Tlbr_SizeCombo.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Tlbr_FontCombo.$(OBJ_SUFFIX)
 else
 PLATFORM_OBJS += $(OBJDIR)/ap_$(ABI_FE)Dialog_Replace.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Break.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_Insert_DateTime.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Toolbar_SizeCombo.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Toolbar_FontCombo.$(OBJ_SUFFIX)
 endif
