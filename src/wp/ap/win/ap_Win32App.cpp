@@ -1560,22 +1560,34 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 	else
 	if (Args->m_sPrintTo) 
 	{
-		#if 0
 		if ((Args->m_sFile = poptGetArg (Args->poptcon)) != NULL)
 		{
 			UT_DEBUGMSG(("DOM: Printing file %s\n", Args->m_sFile));
+			AP_Convert conv ;
+
+			if (Args->m_sMerge)
+				conv.setMergeSource (Args->m_sMerge);
+
+			if (Args->m_impProps)
+				conv.setImpProps (Args->m_impProps);
+			if (Args->m_expProps)
+				conv.setExpProps (Args->m_expProps);
 			
-			AP_Convert * conv = new AP_Convert(pMyWin32App);
-			conv->setVerbose(Args->m_iVerbose);
+			UT_String s = "AbiWord: ";
+			s+= Args->m_sFile;
 			
-			PS_Graphics * pG = new PS_Graphics ((Args->m_sPrintTo[0] == '|' ? Args->m_sPrintTo+1 : Args->m_sPrintTo), Args->m_sFile, 
-												pMyUnixApp->getApplicationName(), pMyUnixApp->getFontManager(),
-												(Args->m_sPrintTo[0] != '|'), pMyUnixApp);
+			GR_Graphics * pG = GR_Win32Graphics::getPrinterGraphics(Args->m_sPrintTo, s.c_str());
+			if(!pG)
+			{
+				// do not assert here, if the graphics creation failed, the static
+				// constructor has asserted already somewhere more relevant
+				return false;
+			}
 			
-			conv->print (Args->m_sFile, pG);
+			conv.setVerbose(Args->m_iVerbose);
+			conv.print (Args->m_sFile, pG);
 	      
 			delete pG;
-			delete conv;
 		}
 		else
 		{
@@ -1583,9 +1595,7 @@ bool AP_Win32App::doWindowlessArgs(const AP_Args *Args)
 			printf("Error: no file to print!\n");
 		}
 
-		if (!Args->m_iShow)
-			return false;
-		#endif
+		return false;
 	}
 
 	if(Args->m_sPlugin)

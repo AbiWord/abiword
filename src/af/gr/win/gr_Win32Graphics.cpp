@@ -24,6 +24,7 @@
 #define NOIME
 #define NOMCX
 #include <windows.h>
+#include <winspool.h>
 
 #include "gr_Win32Graphics.h"
 #include "gr_Win32Image.h"
@@ -2088,5 +2089,89 @@ GR_Graphics * GR_Win32Graphics::graphicsAllocator(GR_AllocInfo &info)
 #else
 	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,NULL);
 #endif
+}
+
+#define _test_and_cleanup(x)                    \
+if(!(x))                                        \
+{                                               \
+    UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN ); \
+	goto cleanup;                               \
+}
+
+GR_Graphics * GR_Win32Graphics::getPrinterGraphics(const char * pPrinterName,
+												   const char * pDocName)
+{
+	UT_return_val_if_fail( pDocName, NULL );
+	GR_Win32Graphics *pGr = NULL;
+	HGLOBAL hDM = NULL;
+	HANDLE hPrinter = NULL;
+	LONG iBuffSize = 0;
+	HDC hPDC = NULL;
+	DOCINFO * pDI = NULL;
+	PDEVMODE pDM = NULL;
+	
+	bool bFreePN = false;
+
+	// we will use '-' as a shortcut for default printer (the --print command has to have
+	// a parameter)
+	char * pPN = UT_strcmp("-", pPrinterName) == 0 ? NULL : (char *) pPrinterName;
+	
+	if(!pPN)
+	{
+		pPN = UT_GetDefaultPrinterName();
+		bFreePN = true;
+	}
+
+	_test_and_cleanup(pPN);
+
+	hPDC = CreateDC(NULL, pPN, NULL, NULL);
+
+	_test_and_cleanup(hPDC);
+	
+	_test_and_cleanup( OpenPrinter(pPN, &hPrinter, NULL));
+		
+	// first, get the size of the buffer needed for the document mode
+	iBuffSize = DocumentProperties(NULL, hPrinter,	pPN, NULL, NULL, 0);
+	_test_and_cleanup( iBuffSize );
+
+	// must be global movable memory
+	hDM = GlobalAlloc(GHND, iBuffSize);
+	pDM = (PDEVMODE)GlobalLock(hDM);
+	_test_and_cleanup(hDM && 0<DocumentProperties(NULL, hPrinter, pPN, pDM, NULL, DM_OUT_BUFFER));
+	GlobalUnlock(hDM);
+
+	// we have all we need to fill in the doc info structure ...
+	pDI = (DOCINFO*) UT_calloc(1, sizeof(DOCINFO));
+	_test_and_cleanup(pDI);
+
+	memset(pDI, 0, sizeof(DOCINFO));
+	
+	pDI->cbSize = sizeof(DOCINFO);
+	pDI->lpszDocName = pDocName;
+	pDI->lpszOutput  = NULL; // for now we do not support printing into file from cmd line
+	pDI->lpszDatatype = NULL;
+	pDI->fwType = 0;
+	
+	{
+		GR_Win32AllocInfo ai(hPDC, pDI, XAP_App::getApp(), hDM);
+	
+		pGr = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+		UT_ASSERT_HARMLESS(pGr);
+	}
+	
+ cleanup:
+	if(bFreePN)
+		free(pPN);
+
+	if(hDM && !pGr)
+		GlobalFree(hDM);
+
+	if(pDI && !pGr)
+		free(pDI);
+	
+	if(hPrinter)
+		ClosePrinter(hPrinter);
+	
+	return pGr;
 }
 

@@ -177,6 +177,9 @@ public:
 	
 	static const char *    graphicsDescriptor(){return "Win32 Default";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
+
+	static  GR_Graphics *   getPrinterGraphics(const char * pPrinterName,
+											   const char * pDocName);
 	
 	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
