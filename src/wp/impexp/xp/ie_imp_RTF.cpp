@@ -1118,7 +1118,7 @@ RTFProps_ParaProps::RTFProps_ParaProps(void)
 	m_iOverride = 0;
 	m_iOverrideLevel = 0;
 	m_styleNumber = -1;
-	m_dom_dir = FRIBIDI_TYPE_UNSET;
+	m_RTL = false;
 	m_tableLevel = 1; // Has to be 1 because the RTF spec has itap defaulting 
 	                  // to this value
 }
@@ -1192,7 +1192,7 @@ RTFProps_ParaProps& RTFProps_ParaProps::operator=(const RTFProps_ParaProps& othe
 		m_styleNumber = other.m_styleNumber;
 	}
 
-	m_dom_dir = other.m_dom_dir;
+	m_RTL = other.m_RTL;
 	m_tableLevel = other.m_tableLevel;
 	return *this;
 }
@@ -1281,7 +1281,7 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_bCellBlank(true),
 	m_bEndTableOpen(false),
 	m_iHyperlinkOpen(0),
-	m_bBidiDocument(true),
+	m_bBidiDocument(false),
 	m_pPasteBuffer(NULL),
 	m_lenPasteBuffer(0),
 	m_pCurrentCharInPasteBuffer(NULL),
@@ -1840,10 +1840,10 @@ UT_Error IE_Imp_RTF::_parseFile(FILE* fp)
 	m_currentFtrFirstID = 0;
 	m_currentHdrLastID = 0;
 	m_currentFtrLastID = 0;
-
+#if 0
 	if(m_pImportFile && UT_OK != _isBidiDocument())
 		return UT_ERROR;
-	
+#endif
 	return _parseText();
 }
 
@@ -3808,7 +3808,9 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ltrpar") == 0)
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: ltrpar\n"));
-			m_currentRTFState.m_paraProps.m_dom_dir = FRIBIDI_TYPE_LTR;
+			m_currentRTFState.m_paraProps.m_RTL = false;
+			//reset doc bidi attribute
+			m_bBidiDocument = false;
 			return true;
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "ltrsect") == 0)
@@ -3821,6 +3823,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: ltrch\n"));
 			m_currentRTFState.m_charProps.m_RTL = false;
+			m_bBidiDocument = m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL;
 			return true;
 		}
 		break;
@@ -4024,7 +4027,9 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "rtlpar") == 0)
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: rtlpar\n"));
-			m_currentRTFState.m_paraProps.m_dom_dir = FRIBIDI_TYPE_RTL;
+			m_currentRTFState.m_paraProps.m_RTL = true;
+			// reset the doc bidi attribute
+			m_bBidiDocument = false;
 			return true;
 		}
 		else if (strcmp(reinterpret_cast<char*>(pKeyword), "rtlsect") == 0)
@@ -4037,6 +4042,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: rtlch\n"));
 			m_currentRTFState.m_charProps.m_RTL = true;
+			m_bBidiDocument = 	m_currentRTFState.m_charProps.m_RTL ^ m_currentRTFState.m_paraProps.m_RTL;
 			return true;
 		}
 		else if(strcmp(reinterpret_cast<char*>(pKeyword), "row") == 0)
@@ -5267,15 +5273,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	UT_String_sprintf(tempBuffer, "margin-bottom:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_spaceAfter)/1440));
 	propBuffer += tempBuffer;
 
-
-	if(m_currentRTFState.m_paraProps.m_dom_dir != FRIBIDI_TYPE_UNSET)
-	{
-		propBuffer += "dom-dir:";
-		if(m_currentRTFState.m_paraProps.m_dom_dir == FRIBIDI_TYPE_RTL)
-			propBuffer += "rtl; ";
-		else
-			propBuffer += "ltr; ";
-	}
+	propBuffer += "dom-dir:";
+	if(m_currentRTFState.m_paraProps.m_RTL)
+		propBuffer += "rtl; ";
+	else
+		propBuffer += "ltr; ";
 
 	//
 	// Filled from List deefinition

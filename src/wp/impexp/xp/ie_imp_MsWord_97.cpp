@@ -528,6 +528,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bInSect(false),
 	m_bInPara(false),
 	m_bLTRCharContext(true),
+	m_bLTRParaContext(true),
 	m_iOverrideIssued(FRIBIDI_TYPE_UNSET),
 	m_bBidiDocument(false),
 	m_iDocPosition(0),
@@ -856,10 +857,12 @@ void IE_Imp_MsWord_97::_flush ()
 		  propsArray[3] = NULL;
 		  propsArray[4] = NULL;
 
+		  UT_uint32 iEmptyAttrib = 2;
+
 		  if(m_charRevs.size())
 		  {
-			  propsArray[2] = &rev[0];
-			  propsArray[3] = m_charRevs.c_str();
+			  propsArray[iEmptyAttrib++] = &rev[0];
+			  propsArray[iEmptyAttrib++] = m_charRevs.c_str();
 		  }
 		  
 		  const UT_UCS4Char * p;
@@ -1089,7 +1092,7 @@ int IE_Imp_MsWord_97::_docProc (wvParseStruct * ps, UT_uint32 tag)
 		// for now we will assume that all documents are bidi
 		// documents (Tomas, Apr 12, 2003)
 		
-		m_bBidiDocument = true;
+		m_bBidiDocument = false;
 #endif
 		UT_uint32 i,j;
 
@@ -1811,9 +1814,13 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 	// DOM TODO: i think that this is right
 	if (apap->fBidi == 1) {
 		props += "dom-dir:rtl;";
+		m_bLTRParaContext = false;
 	} else {
 		props += "dom-dir:ltr;";
+		m_bLTRParaContext = true;
 	}
+
+	m_bBidiDocument = false;
 
 	// paragraph alignment/justification
 	switch(apap->jc)
@@ -2366,7 +2373,17 @@ list_error:
 		propsArray[i++] = "parentid";
 		propsArray[i++] = szParentId.c_str();
 	}
-
+#if 0
+	// handle style
+	// TODO from wv we get the style props expanded and applied to the
+	// characters in the paragraph (i.e., part of the CHP structure);
+	// we need to be able to tell to wv not to do this expansion
+	if(apap->stylename[0])
+	{
+		propsArray[i++] = "style";
+		propsArray[i++] = apap->stylename;
+	}
+#endif
 	// NULL
 	propsArray[i] = 0;
 
@@ -2425,9 +2442,13 @@ int IE_Imp_MsWord_97::_endPara (wvParseStruct *ps, UT_uint32 tag,
 int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 								  void *prop, int dirty)
 {
+	// flush any data in our character runs
+	this->_flush ();
+
 	CHP *achp = static_cast <CHP *>(prop);
 
-	const XML_Char * propsArray[5];
+	const XML_Char * propsArray[7];
+	UT_uint32 propsOffset = 0;
 	UT_String propBuffer;
 
 	m_charProps.clear();
@@ -2439,9 +2460,6 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	  m_bIsLower = true;
 	else
 	  m_bIsLower = false;
-
-	// flush any data in our character runs
-	this->_flush ();
 
 	// set language based the lid - TODO: do we want to handle -none- differently?
 	m_charProps += "lang:";
@@ -2494,6 +2512,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	else
 		m_bLTRCharContext = false;
 
+	m_bBidiDocument = m_bLTRCharContext ^ m_bLTRParaContext;
 
 
 	// bold text
@@ -2600,8 +2619,8 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	xxx_UT_DEBUGMSG(("DOM: character properties are: '%s'\n", props.c_str()));
 
-	propsArray[0] = static_cast<const XML_Char *>("props");
-	propsArray[1] = static_cast<const XML_Char *>(m_charProps.c_str());
+	propsArray[propsOffset++] = static_cast<const XML_Char *>("props");
+	propsArray[propsOffset++] = static_cast<const XML_Char *>(m_charProps.c_str());
 
 	if(!m_bEncounteredRevision && (achp->fRMark || achp->fRMarkDel))
 	{
@@ -2613,19 +2632,25 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 
 	if (achp->fRMark)
 	{
-	    propsArray[2] = static_cast<XML_Char *>("revision");
+	    propsArray[propsOffset++] = static_cast<XML_Char *>("revision");
 		m_charRevs = "1";
-	    propsArray[3] = m_charRevs.c_str();
+	    propsArray[propsOffset++] = m_charRevs.c_str();
 	}
 	else if (achp->fRMarkDel)
 	{
-	    propsArray[2] = static_cast<XML_Char *>("revision");
+	    propsArray[propsOffset++] = static_cast<XML_Char *>("revision");
 		m_charRevs = "-1";
-	    propsArray[3] = m_charRevs.c_str();
+	    propsArray[propsOffset++] = m_charRevs.c_str();
 	}
 	else
 		m_charRevs.clear();
-
+#if 0
+	if(achp->stylename[0])
+	{
+	    propsArray[propsOffset++] = static_cast<XML_Char *>("style");
+	    propsArray[propsOffset++] = static_cast<XML_Char *>(achp->stylename);
+	}
+#endif
 	// woah - major error here
 	if(!m_bInSect)
 	{

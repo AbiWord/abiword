@@ -204,7 +204,7 @@ struct ABI_EXPORT RTFProps_ParaProps
 	UT_uint32       m_iOverrideLevel;     // 0's index to the level
 	_rtfListTable   m_rtfListTable;
 	UT_sint32  m_styleNumber ; //index into the style table
-	FriBidiCharType m_dom_dir;
+	bool            m_RTL;
 	UT_sint32       m_tableLevel; //nesting level of the paragram in a table.
 };
 

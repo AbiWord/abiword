@@ -152,6 +152,7 @@ private:
 	bool m_bInSect;
 	bool m_bInPara;
 	bool m_bLTRCharContext;
+	bool m_bLTRParaContext;
 	FriBidiCharType  m_iOverrideIssued;
 	bool m_bBidiDocument;
 	UT_uint32 m_iDocPosition;
