@@ -297,21 +297,11 @@ esac
 
 if test "$PLATFORM" = "unix"; then
 	if test "$gnome" = "true"; then
-		if test "$xft" = "true"; then
-			PLATFORM_CFLAGS="$XFT_CFLAGS $GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"
-			PLATFORM_LIBS=
-		else
-			PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"			
-			PLATFORM_LIBS=
-		fi
+		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS -DSUPPORTS_UT_IDLE=1"
+		PLATFORM_LIBS="$GNOME_LIBS $GMODULE_LIBS"
 	else
-		if test "$xft" = "true"; then
-			PLATFORM_CFLAGS="$XFT_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"
-			PLATFORM_LIBS=
-		else
-			PLATFORM_CFLAGS="$GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"			
-			PLATFORM_LIBS=
-		fi
+		PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS -DSUPPORTS_UT_IDLE=1"
+		PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS"
 	fi
 fi
 dnl AUTOCONF SUCKS
@@ -497,7 +487,6 @@ AC_OUTPUT(
  src/wp/main/mac/GNUmakefile
  src/wp/main/qnx/GNUmakefile
  src/wp/main/unix/GNUmakefile
- src/wp/main/unix/gnome/GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile

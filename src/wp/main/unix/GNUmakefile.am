@@ -20,52 +20,25 @@ include $(top_srcdir)/includes.mk
 
 CLEANFILES = abi_ver.cpp
 
-if WITH_GNOME
-SUBDIRS=gnome
-else
+bin_PROGRAMS = AbiWord-2.0
 
-if ABI_BUILD_SHARED
-ABIBINSHARED = AbiWord_d
-else
-ABIBINSHARED = 
-endif
-
-if ABI_BUILD_STATIC
-ABIBINSTATIC = AbiWord_s
-else
-ABIBINSTATIC = 
-endif
-
-libexec_PROGRAMS = $(ABIBINSHARED) $(ABIBINSTATIC)
-
-INCLUDES=\
-	 -DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
+INCLUDES = \
+	-DABIWORD_APP_NAME="\"$(ABIWORD_APP_NAME)\"" \
 	-DABISUITE_HOME="\"$(pkgdatadir)\"" \
-	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) \
-	$(TEXT_INCLUDES) @GMODULE_CFLAGS@ @GTK_CFLAGS@ 
-
-AbiWord_s_LDFLAGS = -static
-
-AbiWord_d_SOURCES = abi_ver.cpp UnixMain.cpp
-AbiWord_s_SOURCES = abi_ver.cpp UnixMain.cpp
+	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES)
 
 REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
-AbiWord_d_LDADD = $(REPEAT_LIBS) @GTK_LIBS@ @GMODULE_LIBS@ $(OTHER_LIBS) 
-AbiWord_s_LDADD = $(REPEAT_LIBS) @GTK_LIBS@ @GMODULE_LIBS@ $(OTHER_LIBS) 
+AbiWord_2_0_LDADD = $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS) 
+
+AbiWord_2_0_SOURCES = abi_ver.cpp UnixMain.cpp
 
 abi_ver.cpp:
 	cp $(srcdir)/../xp/abi_ver.cpp .
 
-endif
-
-# Install the wrapper
-install-exec-local:	install-wrapper
+install-exec-local:	
 	@if test -f $(DESTDIR)/$(bindir)/abiword; then \
 	  echo "$(DESTDIR)/$(bindir)/abiword is a regular file - I'm not going to create a link."; \
 	else \
 	  (cd $(DESTDIR)/$(bindir) && ln -sf AbiWord-2.0 abiword); \
 	fi
-
-install-wrapper:	
-	@$(top_srcdir)/src/pkg/common/unix/scripts/makewrapper.sh $(bindir)/AbiWord-2.0 AbiWord $(pkgdatadir) $(libexecdir) $(DESTDIR)

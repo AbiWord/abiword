@@ -1,6 +1,6 @@
 # start: abi/ac-helpers/abi-gnome.m4
 # 
-# Copyright (C) 2002 AbiSource, Inc
+# Copyright (C) 2002-2003 AbiSource, Inc
 # 
 # This file is free software; you may copy and/or distribute it with
 # or without modifications, as long as this notice is preserved.
@@ -23,76 +23,42 @@ AC_DEFUN([ABI_GNOME_QUICK], [
 
 dnl Quick&Easy GNOME Detection
 
+gnome=false
+
 GNOME_CFLAGS=""
 GNOME_LIBS=""
 
 AC_ARG_ENABLE(gnome,[  --enable-gnome    Turn on gnome ],[
-	case "${enableval}" in
-	 yes)	if test "$PLATFORM" = unix; then
-			gnome=true
-		else
+	if test "x$enableval" = "xyes"; then
+		if test "$PLATFORM" != unix; then
 			AC_MSG_ERROR([sorry: --enable-gnome supported only on UNIX platforms])
-			gnome=false
 		fi
-		;;
-	  no)	gnome=false ;;
-	   *)	AC_MSG_ERROR(bad value ${enableval} for --enable-gnome) ;;
-	esac
-],[	gnome=false
+		gnome=true
+	fi
 ])
 
 if test "$gnome" = true ; then
-	AC_MSG_CHECKING(for gnome-libs >= 2.0.0)
-	if pkg-config --modversion libgnome-2.0 2> /dev/null; then 
-	    dnl We need the "%d" in order not to get e-notation on hpux.
-	    vers=`pkg-config --modversion libgnome-2.0 | awk 'BEGIN { FS = "."; } { printf "%d", ([$]1 * 1000 + [$]2) * 1000 + [$]3;}'`
-	    if test "$vers" -ge 2000000; then
-	        AC_MSG_RESULT(found)
-	    else
-	       AC_MSG_RESULT(You need at least gnome-libs 2.0.0: disabling gnome)
-               gnome=false
-	    fi
-	else
-	    AC_MSG_RESULT(not found: disabling gnome)
-            gnome=false
-        fi
-fi
+	NAUTILUS_CFLAGS=""
+	NAUTILUS_LIBS=""
 
-if test "$gnome" = true ; then
-	gnomelibs="libbonobo-2.0 libgnomeui-2.0 gal-2.0 libgnomeprint-2.2 libgnomeprintui-2.2"
-	gnomeliberrors=`pkg-config --cflags $gnomelibs 2>&1 | grep "Unknown library"`
-	if test "x$gnomeliberrors" != "x"; then
-		AC_MSG_ERROR([One or more gnome libraries not found; require: $gnomelibs])
+	PKG_CHECK_MODULES(GNOME,[
+		libbonobo-2.0 >= 2.0
+		libgnomeui-2.0 >= 2.0
+		gal-2.0 >= 1.99
+		libgnomeprint-2.2 >= 2.2.1
+		libgnomeprintui-2.2 >= 2.2.1
+	])
+	PKG_CHECK_MODULES(NAUTILUS,[
+		libnautilus >= 2.0
+	],[	gnome_nautilus=yes
+	],[	gnome_nautilus=no
+	])
+	if test "x$gnome_nautilus" = "xyes"; then
+		NAUTILUS_CFLAGS="$NAUTILUS_CFLAGS -DHAVE_NAUTILUS=1"
 	fi
-fi
 
-if test "$gnome" = true ; then
-	dnl What is the minimum gal library we can use?
-	AC_MSG_CHECKING(for gal2 >= 0.0.5)
-	if pkg-config --modversion gal-2.0; then 
-	    dnl We need the "%d" in order not to get e-notation on hpux.
-	    vers=`pkg-config --modversion gal-2.0 | awk 'BEGIN { FS = ".0."; } { printf "%d", [$]1 * 1000 + [$]2;}'`
-	    if test "$vers" -ge 5; then
-	        AC_MSG_RESULT(found)
-	    else
-	       AC_MSG_RESULT(You need at least gal 0.5: disabling gnome)
-               gnome=false
-	    fi
-	else
-	    AC_MSG_RESULT(not found: disabling gnome)
-            gnome=false
-        fi
-fi
-
-if test "$gnome" = true ; then
-	GNOME_CFLAGS="`pkg-config --cflags $gnomelibs` -DHAVE_GNOME=1"
-	GNOME_LIBS="`pkg-config --libs $gnomelibs`"
-
-	AC_PATH_PROG(NAUTILUS_CONFIG,nautilus-config, ,[$PATH])
-	if test "x$NAUTILUS_CONFIG" != "x"; then
-		GNOME_CFLAGS="`$NAUTILUS_CONFIG --cflags` $GNOME_CFLAGS"
-		GNOME_LIBS="`$NAUTILUS_CONFIG --libs` $GNOME_LIBS"
-	fi
+	GNOME_CFLAGS="$NAUTILUS_CFLAGS $GNOME_CFLAGS -DHAVE_GNOME=1"
+	GNOME_LIBS="$NAUTILUS_LIBS $GNOME_LIBS"
 fi
 
 AC_SUBST(GNOME_CFLAGS)

@@ -267,11 +267,11 @@ esac
 
 if test "$PLATFORM" = "unix"; then
 	if test "$gnome" = "true"; then
-		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"
-		PLATFORM_LIBS=
+		PLATFORM_CFLAGS="$GNOME_CFLAGS $GMODULE_CFLAGS -DSUPPORTS_UT_IDLE=1"
+		PLATFORM_LIBS="$GNOME_LIBS $GMODULE_LIBS"
 	else
-		PLATFORM_CFLAGS="$GMODULE_CFLAGS $GTK_CFLAGS -DSUPPORTS_UT_IDLE=1"
-		PLATFORM_LIBS=
+		PLATFORM_CFLAGS="$GTK_CFLAGS $GMODULE_CFLAGS -DSUPPORTS_UT_IDLE=1"
+		PLATFORM_LIBS="$GTK_LIBS $GMODULE_LIBS"
 	fi
 fi
 dnl AUTOCONF SUCKS
@@ -441,7 +441,6 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/main/cocoa/AbiWord.app/Contents/Resources/English.lproj/GNUmakefile
  src/wp/main/mac/GNUmakefile
  src/wp/main/unix/GNUmakefile
- src/wp/main/unix/gnome/GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile
