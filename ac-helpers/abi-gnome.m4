@@ -85,8 +85,14 @@ if test "$gnome" = true ; then
 fi
 
 if test "$gnome" = true ; then
-	GNOME_CFLAGS="`gnome-config --cflags $gnomelibs` `nautilus-config --cflags` -DHAVE_GNOME=1"
-	GNOME_LIBS="`gnome-config --libs $gnomelibs` `nautilus-config --libs`"
+	GNOME_CFLAGS="`gnome-config --cflags $gnomelibs` -DHAVE_GNOME=1"
+	GNOME_LIBS="`gnome-config --libs $gnomelibs`"
+
+	AC_PATH_PROG(NAUTILUS_CONFIG,nautilus-config, ,[$PATH])
+	if test "x$NAUTILUS_CONFIG" != "x"; then
+		GNOME_CFLAGS="`$NAUTILUS_CONFIG --cflags` $GNOME_CFLAGS"
+		GNOME_LIBS="`$NAUTILUS_CONFIG --libs` $GNOME_LIBS"
+	fi
 fi
 
 AC_SUBST(GNOME_CFLAGS)
