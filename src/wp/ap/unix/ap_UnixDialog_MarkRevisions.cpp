@@ -88,7 +88,7 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
   GtkWidget *dialog_action_area1;
 
   dialog1 = abiDialogNew ( "mark revisions", TRUE, pSS->getValueUTF8(AP_STRING_ID_DLG_MarkRevisions_Title).c_str());
-  gtk_window_set_default_size ( GTK_WINDOW(dialog1), 250, 250 ) ;
+  gtk_window_set_default_size ( GTK_WINDOW(dialog1), 250, 150 ) ;
 
   dialog_vbox1 = GTK_DIALOG (dialog1)->vbox;
   gtk_widget_show (dialog_vbox1);
@@ -122,16 +122,17 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
 
    if(getRadio1Label() != NULL)
      {
-       radiobutton1 = gtk_radio_button_new_with_label (vbox1_group, getRadio1Label());
+	if(isRev())
+	{
+	radiobutton1 = gtk_radio_button_new_with_label (vbox1_group, getRadio1Label());
        vbox1_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobutton1));
        gtk_widget_show (radiobutton1);
        gtk_box_pack_start (GTK_BOX (vbox1), radiobutton1, FALSE, FALSE, 0);
-       
        lbl1 = gtk_label_new(getComment1());
        gtk_widget_show (lbl1);
        gtk_box_pack_start (GTK_BOX (vbox1), lbl1, FALSE, FALSE, 0);
-       
-       radiobutton2 = gtk_radio_button_new_with_label (vbox1_group, getRadio2Label());
+       }
+	radiobutton2 = gtk_radio_button_new_with_label (vbox1_group, getRadio2Label());
        vbox1_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobutton2));
        gtk_widget_show (radiobutton2);
        gtk_box_pack_start (GTK_BOX (vbox1), radiobutton2, FALSE, FALSE, 0);

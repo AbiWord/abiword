@@ -72,9 +72,6 @@ char * AP_Dialog_MarkRevisions::getRadio1Label()
 {
 	_initRevision();
 
-	// if m_pRev == NULL, there are no revisions in this document
-	if(!m_pRev)
-		return NULL;
 
 	UT_return_val_if_fail(m_pSS,NULL);
 	const char * pLabel = m_pSS->getValue(AP_STRING_ID_DLG_MarkRevisions_Check1Label);
@@ -82,6 +79,9 @@ char * AP_Dialog_MarkRevisions::getRadio1Label()
 	UT_return_val_if_fail(pLabel,NULL);
 	char * pBuff = (char*)UT_calloc(strlen(pLabel) + 35, sizeof(char));
 
+	if(!m_pRev)
+		return pBuff;
+	
 	sprintf(pBuff, pLabel, m_pRev->getId());
 
 	return pBuff;
@@ -161,6 +161,13 @@ void AP_Dialog_MarkRevisions::setComment2(const char * pszComment)
 AP_Dialog_MarkRevisions::tAnswer AP_Dialog_MarkRevisions::getAnswer(void) const
 {
   return m_answer;
+}
+
+bool AP_Dialog_MarkRevisions::isRev(void)
+{
+   if(!m_pRev)
+	return false;
+   return true;
 }
 
 void AP_Dialog_MarkRevisions::addRevision()
