@@ -85,38 +85,22 @@ bool AP_App::openCmdLineFiles(poptContext poptcon)
 	return true;
 }
 
-/*! Processes all the command line options and puts them in AP_Args.
- * Leaves the files to open in the poptContext for ::openCmdLineFiles
- * to handle.
+/*! Prepares for popt to be callable by setting up Args->options.
+ * Needs to be in AP_App so that platform code can subclass (eg GNOME).
  */
 void AP_App::initPopt (AP_Args * Args)
 {
-	int nextopt, v, i;
+	UT_uint32 i;
 
 	for (i = 0; Args->const_opts[i].longName != NULL; i++)
 		;
 
-	v = i;
-
 	struct poptOption * opts = (struct poptOption *)
-		UT_calloc(v+1, sizeof(struct poptOption));
-	for (int j = 0; j < v; j++)
+		UT_calloc(i+1, sizeof(struct poptOption));
+	for (UT_uint32 j = 0; j < i; j++)
 		opts[j] = Args->const_opts[j];
 
 	Args->options = opts;
-	Args->poptcon = poptGetContext("AbiWord", 
-				       Args->XArgs->m_argc, Args->XArgs->m_argv, 
-				       Args->options, 0);
-
-    while ((nextopt = poptGetNextOpt (Args->poptcon)) > 0 &&
-		   nextopt != POPT_ERROR_BADOPT)
-        /* do nothing */ ;
-
-    if (nextopt != -1) 
-	{
-		errorMsgBadArg(Args, nextopt);
-        exit (1);
-    }
 }
 
 void AP_App::errorMsgBadArg (AP_Args *, int)

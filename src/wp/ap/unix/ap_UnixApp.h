@@ -96,6 +96,7 @@ public:
 	virtual void errorMsgBadArg(AP_Args * Args, int nextopt);
 	virtual void errorMsgBadFile(XAP_Frame * pFrame, const char * file, 
 								 UT_Error error);
+	virtual void initPopt (AP_Args *);
 	virtual bool doWindowlessArgs (const AP_Args *);
 	virtual XAP_Frame * newFrame(AP_App *);
 

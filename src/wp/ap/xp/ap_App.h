@@ -67,7 +67,7 @@ class AP_App : public XAP_App_BaseClass
 
 	/* Command line stuff. */
 
-	/* Initialize popt (different for GNOME); others needn't subclass. */
+	/* Set up ::options array. */
 	virtual void initPopt (AP_Args *);
 
 	/* Print an error message.  eg printf on UNIX, MessageBox on Windows. */

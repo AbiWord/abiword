@@ -1175,7 +1175,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     // This is a static function.
     
     // initialize our application.
-    
 	XAP_Args XArgs = XAP_Args(argc,argv);
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyUnixApp);
@@ -1191,10 +1190,16 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     if (have_display) {
 #ifndef HAVE_GNOME
       gtk_init (&XArgs.m_argc,(char ***)&XArgs.m_argv);
+	  Args.parsePoptOpts();
 #else
-	  gnome_init ("AbiWord", ABI_BUILD_VERSION, XArgs.m_argc, const_cast<char **>(XArgs.m_argv));
+	  GnomeProgram * program = gnome_program_init ("AbiWord", ABI_BUILD_VERSION, LIBGNOMEUI_MODULE, XArgs.m_argc, const_cast<char **>(XArgs.m_argv), GNOME_PARAM_POPT_TABLE, AP_Args::options, GNOME_PARAM_NONE);
+
+	  g_object_get (G_OBJECT (program),
+					GNOME_PARAM_POPT_CONTEXT, &Args.poptcon,
+					NULL);
       gnome_vfs_init ();
 	  bonobo_init (&XArgs.m_argc, XArgs.m_argv);
+	  // GNOME handles 'parsePoptOpts'.  Isn't it grand?
 #endif
     }
 
@@ -1228,7 +1233,12 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
 	  }
 #endif
 
-    // do we show the app&splash?
+    // Step 2: Handle all non-window args.
+    
+    if (!Args.doWindowlessArgs())
+      return false;
+
+    // do we show the splash?
     bool bShowSplash = Args.getShowSplash();
 
     const XAP_Prefs * pPrefs = pMyUnixApp->getPrefs();
@@ -1242,12 +1252,7 @@ int AP_UnixApp::main(const char * szAppName, int argc, const char ** argv)
     
     if (bShowSplash)
       _showSplash(1500);
-    
-    // Step 2: Handle all non-window args.
-    
-    if (!Args.doWindowlessArgs())
-      return false;
-    
+
     // Setup signal handlers, primarily for segfault
     // If we segfaulted before here, we *really* blew it
     
@@ -1314,6 +1319,35 @@ void AP_UnixApp::errorMsgBadFile(XAP_Frame * pFrame, const char * file,
 				 UT_Error error)
 {
   s_CouldNotLoadFileMessage (pFrame, file, error);
+}
+
+/*! Prepares for popt to be callable by setting up Args->options.
+ * For GNOME, only copies args up to 'version'.
+ */
+void AP_UnixApp::initPopt (AP_Args * Args)
+{
+#ifdef HAVE_GNOME
+	UT_uint32 v, i;
+
+	// stop at --version.
+	for (i = 0; Args->const_opts[i].longName != NULL; i++)
+		if (!strcmp(Args->const_opts[i].longName, "version"))
+		{ 
+			v = i; break; 
+		}
+
+	if (v == -1)
+		v = i;
+
+	struct poptOption * opts = (struct poptOption *)
+		UT_calloc(v+1, sizeof(struct poptOption));
+	for (UT_uint32 j = 0; j < v; j++)
+		opts[j] = Args->const_opts[j];
+
+	Args->options = opts;
+#else
+	AP_App::initPopt(Args);
+#endif
 }
 
 /*!

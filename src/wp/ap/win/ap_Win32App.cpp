@@ -1019,10 +1019,9 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	pMyWin32App = new AP_Win32App(hInstance, &XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyWin32App);
 
+	pMyWin32App->parsePoptOpts();
 	pMyWin32App->initialize();
   
- 			
-	bShowApp    = Args.getShowApp();
 	bShowSplash = Args.getShowSplash();
 
 	// Consider the user saved preferences for the Splash Screen

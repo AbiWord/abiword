@@ -1017,7 +1017,8 @@ int AP_CocoaApp::main(const char * szAppName, int argc, const char ** argv)
     XAP_Args XArgs = XAP_Args(argc,argv);
 	AP_CocoaApp * pMyCocoaApp = new AP_CocoaApp(&XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs, szAppName, pMyCocoaApp);
-    
+	pMyCocoaApp->parsePoptOpts();    
+
 	// Step 1: Initialize Cocoa and create the APP.
     // if the initialize fails, we don't have icons, fonts, etc.
     if (!pMyCocoaApp->initialize())

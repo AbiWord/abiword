@@ -548,6 +548,7 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 
 	AP_QNXApp * pMyQNXApp = new AP_QNXApp(&XArgs, szAppName);
 	AP_Args Args = AP_Args(&XArgs,szAppName,pMyQNXApp);
+	pMyQNXApp->parsePoptOpts();
 
 	// if the initialize fails, we don't have icons, fonts, etc.
 	if (!pMyQNXApp->initialize())
@@ -567,8 +568,6 @@ int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 	
  // do we show the app&splash?
  bool bShowSplash = Args.getShowSplash();
- bool bShowApp = Args.getShowApp();
- pMyQNXApp->setDisplayStatus(bShowApp);
 
  const XAP_Prefs * pPrefs = pMyQNXApp->getPrefs();
  UT_ASSERT(pPrefs);

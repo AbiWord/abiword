@@ -38,9 +38,12 @@ public:
 	XAP_Args *XArgs;
 	poptContext poptcon;
 
+	/* Parse options. */
+	void parsePoptOpts ();
+
 	bool getShowSplash() const { return m_bShowSplash; }
 	AP_App* getApp() const { return m_pApp; }
-	bool doWindowlessArgs() const;
+	bool doWindowlessArgs();
 
 	// Would be nice if this could be non-static.
 	const static struct poptOption const_opts[];

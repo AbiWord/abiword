@@ -60,8 +60,40 @@ AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 	: XArgs (pArgs), m_bShowSplash(true), m_pApp(pApp)
 {
 	pApp->initPopt (this);
+}
 
-	// Let's do --version right away, since we only read static data.
+AP_Args::~AP_Args()
+{
+	poptFreeContext(poptcon);
+	FREEP(options);
+}
+
+/*****************************************************************/
+
+/*! Processes all the command line options and puts them in AP_Args.
+ * Leaves the files to open in the poptContext for ::openCmdLineFiles
+ * to handle.
+ *
+ * Note that GNOME does this for us!
+ */
+void AP_Args::parsePoptOpts ()
+{
+	int nextopt;
+
+	poptcon = poptGetContext("AbiWord", 
+				       XArgs->m_argc, XArgs->m_argv, 
+				       options, 0);
+
+    while ((nextopt = poptGetNextOpt (poptcon)) > 0 &&
+		   nextopt != POPT_ERROR_BADOPT)
+        /* do nothing */ ;
+
+    if (nextopt != -1) 
+	{
+		m_pApp->errorMsgBadArg(this, nextopt);
+        exit (1);
+    }
+
  	if (m_iVersion)
  	{		
  		printf("%s\n", XAP_App::s_szBuild_Version);
@@ -76,26 +108,13 @@ AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 		poptPrintHelp(poptcon, stdout, 0);
 		exit(0);
 	}
-
-	if (m_sTo || m_iToPNG || m_sPrintTo || m_iNosplash || m_sPlugin)
-	{
-	    m_bShowSplash = false;
-	}
 }
-
-AP_Args::~AP_Args()
-{
-	poptFreeContext(poptcon);
-	FREEP(options);
-}
-
-/*****************************************************************/
 
 /*!
  * Handles arguments which require an XAP_App but no windows.
  * It has a callback to getApp()::doWindowlessArgs().
  */
-bool AP_Args::doWindowlessArgs() const
+bool AP_Args::doWindowlessArgs()
 {
 #ifdef DEBUG
 	if (m_iDumpstrings)
@@ -144,6 +163,11 @@ bool AP_Args::doWindowlessArgs() const
 
 	if (!m_pApp->doWindowlessArgs(this))
 		return false;
+
+	if (m_sTo || m_iToPNG || m_sPrintTo || m_iNosplash || m_sPlugin)
+	{
+	    m_bShowSplash = false;
+	}
 
 	return true;
 }
