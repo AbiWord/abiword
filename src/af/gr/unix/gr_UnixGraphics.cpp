@@ -87,8 +87,13 @@ GR_UNIXGraphics::GR_UNIXGraphics(GdkWindow * win, AP_UnixFontManager * fontManag
 	// I only want to set CAP_NOT_LAST, but the call takes all
 	// arguments (and doesn't have a default value).  Set the
 	// line attributes to not draw the last pixel.
-	gdk_gc_set_line_attributes(m_pGC,   1,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
-	gdk_gc_set_line_attributes(m_pXORGC,1,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+
+	// We force the line width to be zero because the CAP_NOT_LAST
+	// stuff does not seem to work correctly when the width is set
+	// to one.
+	
+	gdk_gc_set_line_attributes(m_pGC,   0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
+	gdk_gc_set_line_attributes(m_pXORGC,0,GDK_LINE_SOLID,GDK_CAP_NOT_LAST,GDK_JOIN_MITER);
 
 	// Set GraphicsExposes so that XCopyArea() causes an expose on
 	// obscured regions rather than just tiling in the default background.

@@ -131,7 +131,6 @@ protected:
 									 UT_Rect * prLeftIndent, UT_Rect * prRightIndent, UT_Rect * prFirstLineIndent);
 	void	_drawParagraphProperties(const UT_Rect * pClipRect,
 									 AP_TopRulerInfo * pInfo,
-									 UT_RGBColor &clrDark, UT_RGBColor &clrLight,
 									 UT_Bool bDrawAll = UT_TRUE);
 
 	UT_sint32	_getColumnMarkerXCenter(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
@@ -152,6 +151,9 @@ protected:
 	void		_drawHollowRect(UT_RGBColor &clrDark, UT_RGBColor &clrLight, UT_Rect &r);
 	UT_sint32	_snapPixelToGrid(UT_sint32 xDist, ap_RulerTicks & tick);
 	void		_drawSculptedRect(UT_Rect &r);
+	void		_drawLeftIndentMarker(UT_Rect & r, UT_Bool bFilled);
+	void		_drawRightIndentMarker(UT_Rect & r, UT_Bool bFilled);
+	void		_drawFirstLineIndentMarker(UT_Rect & r, UT_Bool bFilled);
 		
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;

@@ -430,20 +430,19 @@ void AP_TopRuler::_getParagraphMarkerRects(AP_TopRulerInfo * pInfo,
 	UT_uint32 yTop = s_iFixedHeight/4;
 	UT_uint32 yBar = s_iFixedHeight/2;
 	UT_uint32 yBottom = yTop + yBar;
-	UT_sint32 hs = 3;					// halfSize
+	UT_sint32 hs = 5;					// halfSize
 	UT_sint32 fs = hs * 2 + 1;			// fullSize
 
 	if (prLeftIndent)
-		prLeftIndent->set(leftCenter - hs, yBottom, fs, fs);
+		prLeftIndent->set(leftCenter - hs, yBottom - 9, fs, 15);
 	if (prFirstLineIndent)
-		prFirstLineIndent->set(firstLineCenter - hs, yBottom-fs, fs, fs);
+		prFirstLineIndent->set(firstLineCenter - hs, yTop - 3, fs, 9);
 	if (prRightIndent)
-		prRightIndent->set(rightCenter - hs, yBottom, fs, fs);
+		prRightIndent->set(rightCenter - hs, yBottom - 9, fs, 9);
 }
 
 void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 										   AP_TopRulerInfo * pInfo,
-										   UT_RGBColor &clrDark, UT_RGBColor &clrLight,
 										   UT_Bool bDrawAll)
 {
 	UT_sint32 leftCenter, rightCenter, firstLineCenter;
@@ -456,35 +455,35 @@ void AP_TopRuler::_drawParagraphProperties(const UT_Rect * pClipRect,
 
 	if (m_draggingWhat == DW_LEFTINDENT)
 	{
-		_drawHollowRect(clrDark,clrLight, rLeftIndent);
-		_drawSculptedRect(m_draggingRect);
+		_drawLeftIndentMarker(rLeftIndent, UT_FALSE); // draw hollow version at old location
+		_drawLeftIndentMarker(m_draggingRect, UT_TRUE);	// draw sculpted version at mouse
 	}
 	else if (bDrawAll)
 	{
 		if (!pClipRect || rLeftIndent.intersectsRect(pClipRect))
-			_drawSculptedRect(rLeftIndent);
+			_drawLeftIndentMarker(rLeftIndent, UT_TRUE); // draw sculpted version at current location
 	}
 
 	if (m_draggingWhat == DW_RIGHTINDENT)
 	{
-		_drawHollowRect(clrDark,clrLight, rRightIndent);
-		_drawSculptedRect(m_draggingRect);
+		_drawRightIndentMarker(rRightIndent, UT_FALSE);
+		_drawRightIndentMarker(m_draggingRect, UT_TRUE);
 	}
 	else if (bDrawAll)
 	{
 		if (!pClipRect || rRightIndent.intersectsRect(pClipRect))
-			_drawSculptedRect(rRightIndent);
+			_drawRightIndentMarker(rRightIndent, UT_TRUE);
 	}
 	
 	if (m_draggingWhat == DW_FIRSTLINEINDENT)
 	{
-		_drawHollowRect(clrDark,clrLight, rFirstLineIndent);
-		_drawSculptedRect(m_draggingRect);
+		_drawFirstLineIndentMarker(rFirstLineIndent, UT_FALSE);
+		_drawFirstLineIndentMarker(m_draggingRect, UT_TRUE);
 	}
 	else if (bDrawAll)
 	{
 		if (!pClipRect || rFirstLineIndent.intersectsRect(pClipRect))
-			_drawSculptedRect(rFirstLineIndent);
+			_drawFirstLineIndentMarker(rFirstLineIndent, UT_TRUE);
 	}
 }
 
@@ -678,7 +677,7 @@ void AP_TopRuler::_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo)
 	_drawMarginProperties(pClipRect,pInfo,clrBlack);
 	if (pInfo->m_iNumColumns > 1)
 		_drawColumnProperties(pClipRect,pInfo,clrBlack,clrWhite,0);
-	_drawParagraphProperties(pClipRect,pInfo,clrBlack,clrWhite,UT_TRUE);
+	_drawParagraphProperties(pClipRect,pInfo,UT_TRUE);
 	
 	return;
 }
@@ -978,7 +977,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			_getParagraphMarkerRects(&m_infoCache,m_draggingCenter,0,0,&m_draggingRect,NULL,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(NULL,&m_infoCache,clrBlack,clrWhite,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -999,7 +998,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			_getParagraphMarkerRects(&m_infoCache,0,m_draggingCenter,0,NULL,&m_draggingRect,NULL);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(NULL,&m_infoCache,clrBlack,clrWhite,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
 		}
 		m_bBeforeFirstMotion = UT_FALSE;
 		return;
@@ -1022,7 +1021,7 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y
 			_getParagraphMarkerRects(&m_infoCache,0,0,m_draggingCenter,NULL,NULL,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
 				draw(&oldDraggingRect,&m_infoCache);
-			_drawParagraphProperties(NULL,&m_infoCache,clrBlack,clrWhite,UT_FALSE);
+			_drawParagraphProperties(NULL,&m_infoCache,UT_FALSE);
 			UT_DEBUGMSG(("FirstLineIndent: r [%ld %ld %ld %ld]]n",
 						 m_draggingRect.left,m_draggingRect.top,m_draggingRect.width,m_draggingRect.height));
 		}
@@ -1106,7 +1105,7 @@ void AP_TopRuler::_ignoreEvent(UT_RGBColor &clrBlack, UT_RGBColor &clrWhite)
 	case DW_LEFTINDENT:
 	case DW_RIGHTINDENT:
 	case DW_FIRSTLINEINDENT:
-		_drawParagraphProperties(NULL,&m_infoCache,clrBlack,clrWhite,UT_TRUE);
+		_drawParagraphProperties(NULL,&m_infoCache,UT_TRUE);
 		break;
 
 	case DW_NOTHING:
@@ -1150,3 +1149,164 @@ void AP_TopRuler::_drawSculptedRect(UT_Rect &r)
 	m_pG->drawLine(r.left+r.width-2, r.top+r.height-2, r.left+r.width-2, r.top+1);
 }
 
+void AP_TopRuler::_drawLeftIndentMarker(UT_Rect & rect, UT_Bool bFilled)
+{
+	UT_RGBColor clrLiteGray(192,192,192);
+	UT_RGBColor clrDarkGray(127,127,127);
+	UT_RGBColor clrBlack(0,0,0);
+	UT_RGBColor clrWhite(255,255,255);
+
+	UT_RGBColor & clrBorder = clrBlack;
+	UT_RGBColor & clr3d = clrWhite;
+	
+	UT_sint32 l = rect.left;
+	UT_sint32 t = rect.top;
+
+	if (bFilled)
+	{
+		clrBorder = clrBlack;
+		clr3d = clrWhite;
+	}
+	else
+	{
+		clrBorder = clrDarkGray;
+		clr3d = clrLiteGray;
+	}
+
+	// fill in the body
+	
+	m_pG->setColor(clrLiteGray);
+	m_pG->drawLine( l+1,   t+13, l+10, t+13);
+	m_pG->drawLine( l+2,   t+12, l+10, t+12);
+	m_pG->drawLine( l+2,   t+11, l+10, t+11);
+	m_pG->drawLine( l+2,   t+10, l+10, t+10);
+	m_pG->drawLine( l+9,   t+9,  l+10, t+9 );
+	m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
+	m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
+	m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
+	m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
+	m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
+	m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
+
+	// draw 3d highlights
+	
+	m_pG->setColor(clr3d);
+	m_pG->drawLine( l+5,   t+1,  l,    t+6 );
+	m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
+	m_pG->drawLine( l+1,   t+9,  l+9,  t+9 );
+	m_pG->drawLine( l+1,   t+9,  l+1,  t+13);
+
+	// draw border
+	
+	m_pG->setColor(clrBorder);
+	m_pG->drawLine(	l+5,   t,    l+11, t+6 );
+	m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
+	m_pG->drawLine(	l,     t+5,  l,    t+15);
+	m_pG->drawLine(	l+10,  t+5,  l+10, t+15);
+	m_pG->drawLine(	l,     t+14, l+11, t+14);
+	m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+
+}
+
+void AP_TopRuler::_drawRightIndentMarker(UT_Rect & rect, UT_Bool bFilled)
+{
+	UT_RGBColor clrLiteGray(192,192,192);
+	UT_RGBColor clrDarkGray(127,127,127);
+	UT_RGBColor clrBlack(0,0,0);
+	UT_RGBColor clrWhite(255,255,255);
+
+	UT_RGBColor & clrBorder = clrBlack;
+	UT_RGBColor & clr3d = clrWhite;
+	
+	UT_sint32 l = rect.left;
+	UT_sint32 t = rect.top;
+
+	if (bFilled)
+	{
+		clrBorder = clrBlack;
+		clr3d = clrWhite;
+	}
+	else
+	{
+		clrBorder = clrDarkGray;
+		clr3d = clrLiteGray;
+	}
+
+	// fill in the body
+	
+	m_pG->setColor(clrLiteGray);
+	m_pG->drawLine( l+1,   t+7,  l+10, t+7 );
+	m_pG->drawLine( l+2,   t+6,  l+10, t+6 );
+	m_pG->drawLine( l+2,   t+5,  l+10, t+5 );
+	m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
+	m_pG->drawLine( l+4,   t+3,  l+8, t+3 );
+	m_pG->drawLine( l+5,   t+2,  l+7, t+2 );
+
+	// draw 3d highlights
+	
+	m_pG->setColor(clr3d);
+	m_pG->drawLine( l+5,   t+1,  l,    t+6 );
+	m_pG->drawLine( l+1,   t+5,  l+1,  t+7 );
+
+	// draw border
+	
+	m_pG->setColor(clrBorder);
+	m_pG->drawLine(	l+5,   t,    l+11, t+6 );
+	m_pG->drawLine(	l+5,   t,    l- 1, t+6 );
+	m_pG->drawLine(	l,     t+5,  l,    t+9 );
+	m_pG->drawLine(	l+10,  t+5,  l+10, t+9 );
+	m_pG->drawLine(	l,     t+8,  l+11, t+8 );
+
+}
+
+void AP_TopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, UT_Bool bFilled)
+{
+	UT_RGBColor clrLiteGray(192,192,192);
+	UT_RGBColor clrDarkGray(127,127,127);
+	UT_RGBColor clrBlack(0,0,0);
+	UT_RGBColor clrWhite(255,255,255);
+
+	UT_RGBColor & clrBorder = clrBlack;
+	UT_RGBColor & clr3d = clrWhite;
+	
+	UT_sint32 l = rect.left;
+	UT_sint32 t = rect.top;
+
+	if (bFilled)
+	{
+		clrBorder = clrBlack;
+		clr3d = clrWhite;
+	}
+	else
+	{
+		clrBorder = clrDarkGray;
+		clr3d = clrLiteGray;
+	}
+
+	// fill in the body
+	
+	m_pG->setColor(clrLiteGray);
+	m_pG->drawLine( l+9,   t+1,  l+10, t+1 );
+	m_pG->drawLine( l+2,   t+2,  l+10, t+2 );
+	m_pG->drawLine( l+2,   t+3,  l+10, t+3 );
+	m_pG->drawLine( l+3,   t+4,  l+9,  t+4 );
+	m_pG->drawLine( l+4,   t+5,  l+8,  t+5 );
+	m_pG->drawLine( l+5,   t+6,  l+7,  t+6 );
+
+	// draw 3d highlights
+	
+	m_pG->setColor(clr3d);
+	m_pG->drawLine( l+1,   t+1,  l+9,  t+1 );
+	m_pG->drawLine( l+1,   t+2,  l+1,  t+4 );
+	m_pG->drawLine( l+1,   t+3,  l+6,  t+8 );
+
+	// draw border
+	
+	m_pG->setColor(clrBorder);
+	m_pG->drawLine(	l+10,  t+3,  l+4,  t+9 );
+	m_pG->drawLine(	l,     t+3,  l+6,  t+9 );
+	m_pG->drawLine(	l,     t,    l,    t+4 );
+	m_pG->drawLine(	l+10,  t,    l+10, t+4 );
+	m_pG->drawLine(	l,     t,    l+11, t   );
+
+}
