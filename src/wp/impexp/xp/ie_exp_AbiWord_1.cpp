@@ -451,8 +451,6 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	// any encoding, XML assumes we're using UTF-8.  Note that US-ASCII 
 	// is a strict subset of UTF-8. 
 
-	m_pie->write ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
-
 	if (!XAP_EncodingManager::get_instance()->cjk_locale() &&
 	    (XAP_EncodingManager::get_instance()->try_nativeToU(0xa1) != 0xa1)) {
 	    // use utf8 for CJK locales and latin1 locales and unicode locales
@@ -462,6 +460,8 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	} else {
 	    m_pie->write("<?xml version=\"1.0\"?>\n");
 	}
+
+	m_pie->write ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
 
 	// We write this first so that the sniffer can detect AbiWord 
 	// documents more easily.   

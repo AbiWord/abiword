@@ -111,6 +111,18 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 	return FALSE;
 }
 
+static gint
+fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
+{
+	if (event->keyval == GDK_Escape) {
+		gtk_signal_emit_stop_by_name (GTK_OBJECT (widget), "key_press_event");
+		s_cancel_clicked ( widget, answer ) ;
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 static gint s_filename_select (GtkCList * w,
 			       gint row, gint col, GdkEvent * evt,
 			       gpointer ptr)
@@ -505,7 +517,10 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_FS = pFS;
 	
 	connectFocus(GTK_WIDGET(pFS),pFrame);
-
+	gtk_window_set_modal (GTK_WINDOW (pFS), TRUE);
+	gtk_widget_show_all (GTK_WIDGET (pFS));
+	gtk_grab_add (GTK_WIDGET (pFS));
+ 
 	GtkWidget * filetypes_pulldown = NULL;
 	
 	/*
@@ -646,15 +661,16 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 							 GTK_SIGNAL_FUNC(s_delete_clicked),
 							 &m_answer);
 
+	gtk_signal_connect (GTK_OBJECT (pFS),
+			    "key_press_event",
+			    GTK_SIGNAL_FUNC(fsel_key_event), &m_answer);
 	gtk_signal_connect(GTK_OBJECT(pFS->ok_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_ok_clicked), &m_answer);
 	gtk_signal_connect(GTK_OBJECT(pFS->cancel_button), "clicked",
 					   GTK_SIGNAL_FUNC(s_cancel_clicked), &m_answer);
 
-#if 0
-	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_INSERT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture
+	if (m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_EXPORT || m_id == XAP_DIALOG_ID_INSERT_FILE) // only hide the buttons if we're opening a file/picture
 	  gtk_file_selection_hide_fileop_buttons(pFS);
-#endif
 
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
@@ -718,8 +734,9 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(frame);
 	GtkWidget * parent = frame->getTopLevelWindow();
 	UT_ASSERT(parent);
+
 	// center it
-    centerDialog(parent, GTK_WIDGET(pFS));
+	centerDialog(parent, GTK_WIDGET(pFS));
 	
 	gtk_widget_show(GTK_WIDGET(pFS));
 	gtk_grab_add(GTK_WIDGET(pFS));
