@@ -241,7 +241,7 @@ UT_UCS2Char UT_UCS2Stringbuf::UTF8_to_UCS2 (const char *& buffer, size_t & lengt
 				okay = false;
 				break;
 			}
-			ucs2 = ucs2 << 6 | static_cast<UT_UCS2Char>(c & 0x37);
+			ucs2 = ucs2 << 6 | static_cast<UT_UCS2Char>(c & 0x3f);
 		}
 		if (okay) break;
 	}
@@ -996,7 +996,7 @@ UT_UCS4Char UT_UCS4Stringbuf::UTF8_to_UCS4 (const char *& buffer, size_t & lengt
 				okay = false;
 				break;
 			}
-			ucs4 = ucs4 << 6 | static_cast<UT_UCS4Char>(c & 0x37);
+			ucs4 = ucs4 << 6 | static_cast<UT_UCS4Char>(c & 0x3f);
 		}
 		if (okay) break;
 	}
