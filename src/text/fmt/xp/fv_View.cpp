@@ -5656,9 +5656,8 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 					pLInfo->m_pCell = pCur;
 					pLInfo->m_iTopCellPos = pCur->getStartY();
 					pLInfo->m_iBotCellPos = pCur->getStopY();
-					pLInfo->m_iTopSpacing = (pCur->getY() - pCur->getStartY() );
-					pLInfo->m_iBotSpacing = ( pCur->getRightPos() - pCur->getX() 
-												- pCur->getWidth());
+					pLInfo->m_iTopSpacing = pCur->getY() - pCur->getStartY();
+					pLInfo->m_iBotSpacing = pCur->getStopY() - (pCur->getY() + pCur->getHeight());
 					pInfo->m_vecTableRowInfo->addItem((void *) pLInfo);
 					i = pCur->getBottomAttach();
 				}
