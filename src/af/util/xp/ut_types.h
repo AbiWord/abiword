@@ -67,7 +67,7 @@ typedef signed int		UT_sint32;
 #define ABI_CALL extern "C"
 #define ABI_FAR_CALL ABI_CALL ABI_PLUGIN_EXPORT
 
-
+#define _abi_callonce /* only call me once! */
 
 /*
 	TODO we currently use plain old C 'int' all over the place.
