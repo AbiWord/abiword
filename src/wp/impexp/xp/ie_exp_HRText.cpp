@@ -149,6 +149,7 @@ bool IE_Exp_HRText_Sniffer::getDlgLabels(const char ** pszDesc,
 IE_Exp_HRText::IE_Exp_HRText(PD_Document * pDocument)
 	: IE_Exp(pDocument), m_pListener(0)
 {
+  m_error = UT_OK;
 }
 
 IE_Exp_HRText::~IE_Exp_HRText()
