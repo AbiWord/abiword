@@ -40,21 +40,23 @@ pFactory , XAP_Dialog_Id id);
 
 	void event_OK(void);
 	void event_Cancel(void);
-	void event_WindowDelete(void);
 	void types_changed(gint row);
 	void setTypesList(void);
 	void setFieldsList(void);
 
 protected:
+
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
+	
 	virtual GtkWidget *		_constructWindow(void);
 	GtkWidget *				_constructWindowContents (void);
 	void					_populateCatogries(void);
-	void					_connectSignals (void);
 
 	GtkWidget * m_windowMain;
-
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
 
 	GtkWidget * m_listTypes;
 	GtkWidget * m_listFields;
