@@ -38,55 +38,38 @@ class AP_CocoaDialog_Options;
     IBOutlet NSButton *m_applyBtn;
     IBOutlet NSButton *m_cancelBtn;
     IBOutlet NSButton *m_defaultsBtn;
-    IBOutlet NSButton *m_layoutAllowScreenColorsBtn;
-    IBOutlet NSButton *m_layoutChooseScreenBtn;
+    IBOutlet NSTextField *m_chooseScreenColorLabel;
+	IBOutlet NSColorWell* m_screenColor;
     IBOutlet NSButton *m_layoutCursorBlinkBtn;
     IBOutlet NSButton *m_layoutCustomToolbarBtn;
     IBOutlet NSButton *m_layoutEnableSmartQuotesBtn;
-    IBOutlet NSButton *m_layoutHiddenTextBtn;
-    IBOutlet NSButton *m_layoutInvisbleMarksBtn;
-    IBOutlet NSButton *m_layoutRulerBtn;
-    IBOutlet NSBox *m_layoutShowHideBox;
-    IBOutlet NSButton *m_layoutStatusBarBtn;
+    IBOutlet NSBox *m_layoutUIBox;
     IBOutlet NSTextField *m_layoutUnitsLabel;
     IBOutlet NSPopUpButton *m_layoutUnitsPopup;
-    IBOutlet NSButton *m_layoutViewAllBtn;
-    IBOutlet NSBox *m_layoutViewBox;
     IBOutlet NSButton *m_okBtn;
     IBOutlet NSBox *m_prefsAutoSaveBox;
     IBOutlet NSButton *m_prefsAutoSaveCurrentBtn;
     IBOutlet NSTextField *m_prefsAutoSaveMinField;
 	IBOutlet NSStepper *m_prefsAutoSaveMinStepper;
-    IBOutlet NSButton *m_prefsAutoSavePrefsBtn;
     IBOutlet NSBox *m_prefsBidiBox;
-    IBOutlet NSComboBox *m_prefsCurrentSetCombo;
-    IBOutlet NSTextField *m_prefsCurrentSetLabel;
     IBOutlet NSButton *m_prefsDefaultToRTLBtn;
     IBOutlet NSButton *m_prefsLoadAllPluginsBtn;
     IBOutlet NSTextField *m_prefsMinutesLabel;
-    IBOutlet NSBox *m_prefsMiscBox;
+    IBOutlet NSBox *m_generalAppStartupBox;
     IBOutlet NSButton *m_prefsOtherHebrwContextGlyphBtn;
-    IBOutlet NSBox *m_prefsPrefsBox;
     IBOutlet NSButton *m_prefsShowSplashBtn;
     IBOutlet NSTextField *m_prefsWithExtField;
     IBOutlet NSTextField *m_prefsWithExtLabel;
-    IBOutlet NSButton *m_spellAlwaysSuggBtn;
     IBOutlet NSButton *m_spellCheckAsTypeBtn;
     IBOutlet NSBox *m_spellGeneralBox;
-    IBOutlet NSButton *m_spellHideErrBtn;
+    IBOutlet NSButton *m_spellHighlightMisspellBtn;
     IBOutlet NSBox *m_spellIgnoreBox;
-    IBOutlet NSButton *m_spellIgnoreFileAddrBtn;
     IBOutlet NSButton *m_spellIgnoreUppercaseBtn;
     IBOutlet NSButton *m_spellIgnoreWordsWithNumBtn;
-    IBOutlet NSButton *m_spellSuggFromMainDictBtn;
+	IBOutlet NSBox *m_spellDictBox;
+    IBOutlet NSButton *m_spellAlwaysSuggestBtn;
+    IBOutlet NSButton *m_spellMainDictSuggOnlyBtn;	
     IBOutlet NSTabView *m_tab;
-    IBOutlet NSBox *m_tlbBtnStylBox;
-    IBOutlet NSMatrix *m_tlbBtnStylGroup;
-    IBOutlet NSMatrix *m_tlbShowHideGroup;
-    IBOutlet NSBox *m_tlbTlbBox;
-    IBOutlet NSTableView *m_tlbTlbList;
-    IBOutlet NSButton *m_tlbViewTooltipBtn;
-    IBOutlet NSBox *m_tlbVisibleBox;
 	
 	AP_CocoaDialog_Options * m_xap;
 	XAP_StringListDataSource* m_tlbTlbListDataSource;
@@ -95,7 +78,7 @@ class AP_CocoaDialog_Options;
 - (oneway void)dealloc;
 - (void)windowDidLoad;
 - (void)setXAPOwner:(AP_CocoaDialog_Options *)owner;
-- (NSView *)_lookupWidget:(AP_Dialog_Options::tControl)controlId;
+- (id)_lookupWidget:(AP_Dialog_Options::tControl)controlId;
 - (IBAction)applyAction:(id)sender;
 - (IBAction)cancelAction:(id)sender;
 - (IBAction)chooseScreenAction:(id)sender;
@@ -104,6 +87,7 @@ class AP_CocoaDialog_Options;
 - (IBAction)okAction:(id)sender;
 - (IBAction)autoSaveStepperAction:(id)sender;
 - (IBAction)autoSaveFieldAction:(id)sender;
+- (IBAction)_defaultControlAction:(id)sender;
 @end
 
 /*****************************************************************/
@@ -144,7 +128,7 @@ public:
  	SET_GATHER			(SpellMainOnly,		bool );
  	SET_GATHER			(SpellUppercase,	bool );
  	SET_GATHER			(SpellNumbers,		bool );
- 	SET_GATHER			(SpellInternet,		bool );
+ //	SET_GATHER			(SpellInternet,		bool );
 
  	SET_GATHER			(ShowSplash,	bool);
 
@@ -153,9 +137,6 @@ public:
  	SET_GATHER			(PrefsAutoSave,		bool );
 
  	SET_GATHER			(ViewShowRuler,		bool );
-
-	virtual bool _gatherViewShowToolbar(UT_uint32 t);
-	virtual void _setViewShowToolbar(UT_uint32 row, bool b);
 
  	SET_GATHER			(ViewShowStatusBar,	bool );
 

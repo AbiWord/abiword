@@ -113,7 +113,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_RulerVisible, _gatherViewShowRuler() );
 	
 // Not implemented for UNIX. No need for it.
-#if !defined (XP_UNIX_TARGET_GTK)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		Save_Pref_Bool( pPrefsScheme, m_pApp->getToolbarFactory()->prefKeyForToolbar(i), _gatherViewShowToolbar(i));
 	}
@@ -171,7 +171,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	}
 
 
-#if !defined (XP_UNIX_TARGET_GTK)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		if (_gatherViewShowToolbar(i) != pFrameData->m_bShowBar[i])
 		{
@@ -474,7 +474,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 
-#if !defined (XP_UNIX_TARGET_GTK)
+#if !defined(XP_UNIX_TARGET_GTK) && !defined(XP_TARGET_COCOA)
 	for (i = 0; i < m_pApp->getToolbarFactory()->countToolbars(); i++) {
 		if (pPrefs->getPrefsValueBool((XML_Char*)m_pApp->getToolbarFactory()->prefKeyForToolbar(i),&b)) {
 			_setViewShowToolbar (i, b);
