@@ -39,42 +39,42 @@ build::		$(REQUIRE)
 #################################################################
 
 _EXPAT_:
-	@if [ -d $(ABI_ROOT)/../expat ]; then						\
-		echo "Found expat in peer directory";					\
-		if [ ! -r $(ABI_ROOT)/../expat/config.h ]; then \
-			cd $(ABI_ROOT)/../expat; \
-			./configure --disable-shared --enable-static; \
-		fi; \
-		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;			\
-	elif [ -e /usr/include/expat.h -o -e /usr/local/include/expat.h ]; then \
+	@if [ -d $(ABI_ROOT)/../expat ]; then				\
+		echo "Found expat in peer directory";			\
+		if [ ! -r $(ABI_ROOT)/../expat/Makefile ]; then 	\
+			cd $(ABI_ROOT)/../expat; 			\
+			./configure --disable-shared --enable-static; 	\
+		fi; 							\
+		$(MAKE) ABI_ROOT=$(ABI_ROOT) -C $(ABI_ROOT)/../expat;	\
+	elif [ -e /usr/include/expat.h -o -e /usr/local/include/expat.h ]; then 	\
 		echo "*** Found a shared library version of expat.  I'm going to use "; \
-		echo "*** that.  If it doesn't work, you should use the version "; \
-		echo "*** distributed with AbiWord."; \
-		echo ; \
+		echo "*** that.  If it doesn't work, you should use the version "; 	\
+		echo "*** distributed with AbiWord."; 					\
+		echo ; 									\
 	else										\
-		echo "ERROR -- expat not found";						\
+		echo "ERROR -- expat not found";					\
 		echo "You need to get expat from the AbiSource downloads site";		\
-		echo "It is identical to expat from expat.sourceforge.net, except for";		\
+		echo "It is identical to expat from expat.sourceforge.net, except for";	\
 		echo "minor modifications to integrate with the AbiSource build system.";	\
 		exit 1;									\
 	fi
 
 _PSICONV_:
-	@if [ -r $(ABI_ROOT)/../psiconv ]; then \
-		echo "Found psiconv in peer directory"; \
-		if [ ! -r $(ABI_ROOT)/../psiconv/config.h ]; then \
-			cd $(ABI_ROOT)/../psiconv; \
-			./configure --disable-shared --enable-static; \
-		fi; \
-		$(MAKE) -f Makefile -C $(ABI_ROOT)/../psiconv; \
-	elif [ -d /usr/include/psiconv -o -d /usr/local/include/psiconv ]; then \
-		echo "*** Found an install of psiconv. I'm going to use it; if it is too old,"; \
-		echo "*** you will have to upgrade it or get the version distributed with AbiWord."; \
-		echo "*** You can find psiconv at http://huizen.dds.nl/~frodol/psiconv/"; \
-		echo ; \
-	else \
-		echo "Psiconv not found. Get the version distributed with AbiWord and unpack it" ;\
-		echo "in a peer directory; or get it from http://huizen.dds.nl/~frodol/psiconv and" ;\
-		echo "install it separately." ;\
-		exit 1;\
+	@if [ -r $(ABI_ROOT)/../psiconv ]; then 			\
+		echo "Found psiconv in peer directory"; 		\
+		if [ ! -r $(ABI_ROOT)/../psiconv/Makefile ]; then 	\
+			cd $(ABI_ROOT)/../psiconv; 			\
+			./configure --disable-shared --enable-static; 	\
+		fi; 							\
+		$(MAKE) -f Makefile -C $(ABI_ROOT)/../psiconv; 		\
+	elif [ -d /usr/include/psiconv -o -d /usr/local/include/psiconv ]; then 			\
+		echo "*** Found an install of psiconv. I'm going to use it; if it is too old,"; 	\
+		echo "*** you will have to upgrade it or get the version distributed with AbiWord."; 	\
+		echo "*** You can find psiconv at http://huizen.dds.nl/~frodol/psiconv/"; 		\
+		echo ; 											\
+	else 												\
+		echo "Psiconv not found. Get the version distributed with AbiWord and unpack it" ;	\
+		echo "in a peer directory; or get it from http://huizen.dds.nl/~frodol/psiconv and" ;	\
+		echo "install it separately." ;								\
+		exit 1;											\
 	fi
