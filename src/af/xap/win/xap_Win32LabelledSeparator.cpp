@@ -48,16 +48,8 @@
 static const char s_LabelledSeparatorWndClassName[] = "AbiLabelledSeparator";
 /*!
   Window procedure function of the control base class.
-  note: VC6 is ok with WNDPROC, but VC5 wants FARPROC
  */
-static
-#ifdef STRICT 
- WNDPROC 
-#else 
- FARPROC 
-#endif 
-  s_pfnWndProc;
-
+static WNDPROC s_pfnWndProc;
 
 /*****************************************************************/
 
@@ -149,7 +141,11 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 		break;
 	}
 
-	return CallWindowProc(s_pfnWndProc, hwnd, iMsg, wParam, lParam);   	
+	return CallWindowProc(
+#if defined(_MSC_VER) && (_MSC_VER <= 1100)  /* VC5==1100, VC6==1200 */
+		(FARPROC) /* MSVC5 seems to want FARPROC here, else its a WNDPROC */
+#endif
+		s_pfnWndProc, hwnd, iMsg, wParam, lParam);   	
 }
 
 /*!
