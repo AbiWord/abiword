@@ -7205,33 +7205,7 @@ FV_View::countWords(void)
 		}
 
 		// Get next block
-		fl_ContainerLayout* pNextBlock = pBL->getNext();
-		while(pNextBlock && (pNextBlock->getContainerType() != FL_CONTAINER_BLOCK))
-		{
-			pNextBlock = pNextBlock->getFirstLayout();
-		}
-		if (NULL == pNextBlock)
-		{
-			// If NULL, go to next section
-			fl_SectionLayout* pSL = static_cast<fl_SectionLayout *>(pBL->getSectionLayout()->getNext());
-			if (pSL && pSL->getContainerType() != FL_CONTAINER_TABLE)
-			{
-				pNextBlock = static_cast<fl_ContainerLayout *>(pSL->getFirstLayout());
-				while(pNextBlock && (pNextBlock->getContainerType() != FL_CONTAINER_BLOCK))
-				{
-					pNextBlock = pNextBlock->getNext();
-				}
-			}
-			else if(pSL== NULL && (pBL->getSectionLayout()->getContainerType() == FL_CONTAINER_CELL))
-			{
-				pSL = static_cast<fl_SectionLayout *>(pBL->getSectionLayout()->myContainingLayout());
-				pNextBlock = pSL->getNext();
-				while(pNextBlock && (pNextBlock->getContainerType() != FL_CONTAINER_BLOCK))
-				{
-					pNextBlock = pNextBlock->getNext();
-				}
-			}
-		}
+		fl_ContainerLayout* pNextBlock = pBL->getNextBlockInDocument();
 		pBL = static_cast<fl_BlockLayout *>(pNextBlock);
 		pLine = NULL;
 		pRun = NULL;

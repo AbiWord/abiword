@@ -2412,6 +2412,7 @@ fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 	fl_ContainerLayout * pNext = getNext();
 	fl_ContainerLayout * pOld = NULL;
 	UT_uint32 depth = 0;
+	next_is_null :
 	if(pNext == NULL)
 	{
 		while((pNext == NULL) && ((pOld != NULL) || (depth == 0)))
@@ -2455,10 +2456,18 @@ fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 		else if(pNext->getContainerType() == FL_CONTAINER_FOOTNOTE)
 		{
 			pNext = pNext->getNext();
+			if(pNext == NULL)
+			{
+				goto next_is_null;
+			}
 		}
 		else if(pNext->getContainerType() == FL_CONTAINER_ENDNOTE)
 		{
 			pNext = pNext->getNext();
+			if(pNext == NULL)
+			{
+				goto next_is_null;
+			}
 		}
 		else
 		{
@@ -2467,7 +2476,7 @@ fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 		}
 		if(pNext == NULL)
 		{
-			pNext = pOld->myContainingLayout()->getNext();
+				goto next_is_null;
 		}
 	}
 	return NULL;
