@@ -45,6 +45,19 @@ ABI_EXPORT int  unichar_to_utf8 (int c, unsigned char *outbuf);
 ///////////////////////////////////////////////////////////////////////////////
 // Replacements for common non-ANSI functions
 
+ABI_EXPORT char *  UT_F(const char * szSource);
+
+ABI_EXPORT UT_uint32  UT_pointerArrayLength(void ** array);
+
+////////////////////////////////////////////////////////////////////////
+//
+//  8-bit string (char)
+//
+//  String is built of 8-bit units (bytes)
+//  Encoding could be any single-byte or multi-byte encoding
+//
+////////////////////////////////////////////////////////////////////////
+
 ABI_EXPORT char *  UT_strdup(const char * szSource);
 
 // Below are case-insensitive strcmp-like functions prototypes.  The functions
@@ -62,6 +75,23 @@ ABI_EXPORT UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen);
 ABI_EXPORT bool  UT_cloneString(char *& rszDest, const char * szSource);
 ABI_EXPORT bool  UT_replaceString(char *& rszDest, const char * szSource);
 
+ABI_EXPORT char *  UT_upperString(char * string);
+ABI_EXPORT char *  UT_lowerString(char * string);
+
+ABI_EXPORT char *  UT_catPathname(const char * szPath, const char * szFile);
+ABI_EXPORT char *  UT_tmpnam(char *);
+ABI_EXPORT void    UT_unlink(const char *);
+
+ABI_EXPORT bool UT_isUrl ( const char * sz );
+
+////////////////////////////////////////////////////////////////////////
+//
+//  XML string (XML_Char)
+//
+//  String is built of 8-bit units (bytes)
+//
+////////////////////////////////////////////////////////////////////////
+
 ABI_EXPORT UT_uint32  UT_XML_strlen(const XML_Char * sz);
 ABI_EXPORT bool  UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
 ABI_EXPORT bool  UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource);
@@ -76,14 +106,60 @@ ABI_EXPORT bool  UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * 
 // This function uses a static buffer to do the translation
 ABI_EXPORT XML_Char *  UT_XML_transNoAmpersands(const XML_Char * szSource);
 
-ABI_EXPORT UT_uint32  UT_pointerArrayLength(void ** array);
+ABI_EXPORT UT_UCSChar  UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
+ABI_EXPORT void  UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
+ABI_EXPORT XML_Char *  UT_encodeUTF8char(UT_UCSChar cIn);
+
+/* ABI_EXPORT XML_Char *  UT_decodeXMLstring(XML_Char *pcIn);
+ * This has moved to ut_xml.cpp as UT_XML::decode ()
+ */
+
+ABI_EXPORT bool  UT_isSmartQuotableCharacter(UT_UCSChar c);
+ABI_EXPORT bool  UT_isSmartQuotedCharacter(UT_UCSChar c);
+
+////////////////////////////////////////////////////////////////////////
+//
+//  UCS-2 string (UT_UCS2Char)
+//
+//  String is built of 16-bit units (words)
+//
+//  TODO: Is this really UCS-2 or UTF-16?
+//  TODO:  meaning, does it support surrogates or is it intended to
+//  TODO:  support them at any time in the future?
+//  TODO: Correctly, UCS-2 does not support surrogates and UTF-16 does.
+//  TODO: BUT Microsoft calls their native Unicode encoding UCS-2
+//  TODO:  while it supports surrogates and is thus really UTF-16.
+//  TODO: Surrogates are Unicode characters with codepoints above
+//  TODO:  65535 which cannot therefore fit into a 2-byte word.
+//  TODO: This means that TRUE UCS-2 is a single-word encoding and
+//  TODO:  UTF-16 is a multi-word encoding.
+//
+//  NOTE: We shouldn't actually need 16-bit strings anymore since
+//  NOTE:  AbiWord is now fully converted to using 32-bit Unicode
+//  NOTE:  internally. The only possible needs for this is for
+//  NOTE:  Windows GUI, filesystem and API functions where applicable;
+//  NOTE:  and perhaps some file formats or external libraries
+//
+////////////////////////////////////////////////////////////////////////
+
+#ifdef ENABLE_UCS2_STRINGS
+
+#define UT_UCS2_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
+
+/*these are unicode-safe*/
+ABI_EXPORT bool  UT_UCS2_isupper(UT_UCS2Char c);
+ABI_EXPORT bool  UT_UCS2_islower(UT_UCS2Char c);
+ABI_EXPORT bool  UT_UCS2_isalpha(UT_UCS2Char c);
+ABI_EXPORT bool	 UT_UCS2_isSentenceSeparator(UT_UCS2Char c);
+#define UT_UCS2_isalnum(x)	(UT_UCS2_isalpha(x) || UT_UCS2_isdigit(x)) // HACK: not UNICODE-safe
+ABI_EXPORT bool UT_UCS2_isspace(UT_UCS2Char c);
+#define UT_UCS2_ispunct(x)   ((!UT_UCS2_isspace(x)  &&  !UT_UCS2_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
 
 // the naming convention has deviated from the above.  it's kind
 // of a mutant libc/C++ naming convention.
-ABI_EXPORT UT_sint32 		 UT_UCS2_strcmp(const UT_UCS2Char* left, const UT_UCS2Char* right);
 ABI_EXPORT UT_UCS2Char * 	 UT_UCS2_strstr(const UT_UCS2Char * phaystack, const UT_UCS2Char * pneedle);
+ABI_EXPORT UT_sint32 		 UT_UCS2_strcmp(const UT_UCS2Char* left, const UT_UCS2Char* right);
 ABI_EXPORT UT_UCS2Char * 	 UT_UCS2_stristr(const UT_UCS2Char * phaystack, const UT_UCS2Char * pneedle);
-ABI_EXPORT UT_uint32 		 UT_UCS2_strlen(const UT_UCS2Char * string);
 ABI_EXPORT UT_UCS2Char * 	 UT_UCS2_strcpy(UT_UCS2Char * dest, const UT_UCS2Char * src);
 ABI_EXPORT UT_UCS2Char * 	 UT_UCS2_strcpy_char(UT_UCS2Char * dest, const char * src);
 ABI_EXPORT char *			 UT_UCS2_strcpy_to_char(char * dest, const UT_UCS2Char * src);
@@ -95,6 +171,37 @@ ABI_EXPORT UT_UCS2Char *     UT_UCS2_strnrev(UT_UCS2Char * dest, UT_uint32 n);
 ABI_EXPORT UT_UCS2Char		 UT_UCS2_tolower(UT_UCS2Char c);
 ABI_EXPORT UT_UCS2Char       UT_UCS2_toupper(UT_UCS2Char c);
 
+#endif
+
+// Don't ifdef this one out since MSWord importer uses it
+
+ABI_EXPORT UT_uint32 		 UT_UCS2_strlen(const UT_UCS2Char * string);
+
+////////////////////////////////////////////////////////////////////////
+//
+//  UCS-4 string (UT_UCS4Char)
+//
+//  String is built of 32-bit units (longs)
+//
+//  NOTE: Ambiguity between UCS-2 and UTF-16 above makes no difference
+//  NOTE:  in the case of UCS-4 and UTF-32 since they really are
+//  NOTE:  identical
+//
+////////////////////////////////////////////////////////////////////////
+
+/*these are unicode-safe*/
+ABI_EXPORT bool  UT_UCS4_isupper(UT_UCS4Char c);
+ABI_EXPORT bool  UT_UCS4_islower(UT_UCS4Char c);
+ABI_EXPORT bool  UT_UCS4_isalpha(UT_UCS4Char c);
+ABI_EXPORT bool	 UT_UCS4_isSentenceSeparator(UT_UCS4Char c);
+#define UT_UCS4_isalnum(x)	(UT_UCS4_isalpha(x) || UT_UCS4_isdigit(x)) // HACK: not UNICODE-safe
+ABI_EXPORT bool UT_UCS4_isspace(UT_UCS4Char c);
+#define UT_UCS4_ispunct(x)   ((!UT_UCS4_isspace(x)  &&  !UT_UCS4_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
+
+#define UT_UCS4_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
+
+// the naming convention has deviated from the above.  it's kind
+// of a mutant libc/C++ naming convention.
 ABI_EXPORT UT_sint32 		 UT_UCS4_strcmp(const UT_UCS4Char* left, const UT_UCS4Char* right);
 ABI_EXPORT UT_UCS4Char * 	 UT_UCS4_strstr(const UT_UCS4Char * phaystack, const UT_UCS4Char * pneedle);
 ABI_EXPORT UT_UCS4Char * 	 UT_UCS4_stristr(const UT_UCS4Char * phaystack, const UT_UCS4Char * pneedle);
@@ -110,47 +217,6 @@ ABI_EXPORT UT_UCS4Char *     UT_UCS4_strnrev(UT_UCS4Char * dest, UT_uint32 n);
 
 ABI_EXPORT UT_UCS4Char		 UT_UCS4_tolower(UT_UCS4Char c);
 ABI_EXPORT UT_UCS4Char       UT_UCS4_toupper(UT_UCS4Char c);
-
-ABI_EXPORT char *  UT_upperString(char * string);
-ABI_EXPORT char *  UT_lowerString(char * string);
-
-ABI_EXPORT char *  UT_catPathname(const char * szPath, const char * szFile);
-ABI_EXPORT char *  UT_tmpnam(char *);
-ABI_EXPORT void    UT_unlink(const char *);
-
-ABI_EXPORT UT_UCSChar  UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
-ABI_EXPORT void  UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
-ABI_EXPORT XML_Char *  UT_encodeUTF8char(UT_UCSChar cIn);
-
-ABI_EXPORT bool UT_isUrl ( const char * sz );
-
-/* ABI_EXPORT XML_Char *  UT_decodeXMLstring(XML_Char *pcIn);
- * This has moved to ut_xml.cpp as UT_XML::decode ()
- */
-
-ABI_EXPORT bool  UT_isSmartQuotableCharacter(UT_UCSChar c);
-ABI_EXPORT bool  UT_isSmartQuotedCharacter(UT_UCSChar c);
-
-#define UT_UCS4_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
-#define UT_UCS2_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
-
-/*these are unicode-safe*/
-ABI_EXPORT bool  UT_UCS2_isupper(UT_UCS2Char c);
-ABI_EXPORT bool  UT_UCS2_islower(UT_UCS2Char c);
-ABI_EXPORT bool  UT_UCS2_isalpha(UT_UCS2Char c);
-ABI_EXPORT bool	 UT_UCS2_isSentenceSeparator(UT_UCS2Char c);
-#define UT_UCS2_isalnum(x)	(UT_UCS2_isalpha(x) || UT_UCS2_isdigit(x)) // HACK: not UNICODE-safe
-ABI_EXPORT bool UT_UCS2_isspace(UT_UCS2Char c);
-#define UT_UCS2_ispunct(x)   ((!UT_UCS2_isspace(x)  &&  !UT_UCS2_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
-
-/*these are unicode-safe*/
-ABI_EXPORT bool  UT_UCS4_isupper(UT_UCS4Char c);
-ABI_EXPORT bool  UT_UCS4_islower(UT_UCS4Char c);
-ABI_EXPORT bool  UT_UCS4_isalpha(UT_UCS4Char c);
-ABI_EXPORT bool	 UT_UCS4_isSentenceSeparator(UT_UCS4Char c);
-#define UT_UCS4_isalnum(x)	(UT_UCS4_isalpha(x) || UT_UCS4_isdigit(x)) // HACK: not UNICODE-safe
-ABI_EXPORT bool UT_UCS4_isspace(UT_UCS4Char c);
-#define UT_UCS4_ispunct(x)   ((!UT_UCS4_isspace(x)  &&  !UT_UCS4_isalnum(x)  &&  (x)>' '))  // HACK: not UNICODE safe
 
 
 #ifdef WIN32

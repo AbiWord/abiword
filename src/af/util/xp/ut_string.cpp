@@ -115,6 +115,27 @@ unichar_to_utf8 (int c, unsigned char *outbuf)
   return len;
 }
 
+UT_uint32 UT_pointerArrayLength(void ** array)
+{
+	if (! (array && *array))
+		return 0;
+
+	UT_uint32 i = 0;
+	while (array[i])
+		i++;
+
+	return i;
+}
+
+////////////////////////////////////////////////////////////////////////
+//
+//  8-bit string (char)
+//
+//  String is built of 8-bit units (bytes)
+//  Encoding could be any single-byte or multi-byte encoding
+//
+////////////////////////////////////////////////////////////////////////
+
 //////////////////////////////////////////////////////////////////
 // char * UT_catPathname(const char * szPath, const char * szFile);
 // is defined in platform-specific code.
@@ -208,6 +229,38 @@ bool UT_replaceString(char *& rszDest, const char * szSource)
 
 	return UT_cloneString(rszDest,szSource);
 }
+
+// convert each character in a string to ASCII uppercase
+char * UT_upperString(char * string)
+{
+	if (!string)
+		return 0;
+
+	for (char * ch = string; *ch != 0; ch++)
+		*ch = toupper(*ch);
+
+	return string;
+}
+
+// convert each character in a string to ASCII lowercase
+char * UT_lowerString(char * string)
+{
+	if (!string)
+		return 0;
+
+	for (char * ch = string; *ch != 0; ch++)
+		*ch = tolower(*ch);
+
+	return string;
+}
+
+////////////////////////////////////////////////////////////////////////
+//
+//  XML string (XML_Char)
+//
+//  String is built of 8-bit units (bytes)
+//
+////////////////////////////////////////////////////////////////////////
 
 UT_uint32 UT_XML_strlen(const XML_Char * sz)
 {
@@ -368,16 +421,84 @@ UT_uint32 UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szS
 	return i;
 }
 
-UT_uint32 UT_pointerArrayLength(void ** array)
+UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len)
 {
-	if (! (array && *array))
+	UT_UCSChar ucs, ucs1, ucs2, ucs3;
+
+	switch (len)
+	{
+	case 2:
+		ucs1 = (UT_UCSChar)(p[0] & 0x1f);
+		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
+		ucs  = (ucs1 << 6) | ucs2;
+		return ucs;
+
+	case 3:
+		ucs1 = (UT_UCSChar)(p[0] & 0x0f);
+		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
+		ucs3 = (UT_UCSChar)(p[2] & 0x3f);
+		ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
+		return ucs;
+
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return 0;
+	}
+}
 
-	UT_uint32 i = 0;
-	while (array[i])
-		i++;
+void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * pResult)
+{
+	// decode the given string [ p[0]...p[len] ] and append to the given growbuf.
 
-	return i;
+	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
+	UT_Byte * p = (UT_Byte *)pString;	// XML_Char is signed...
+
+	int bytesInSequence = 0;
+	int bytesExpectedInSequence = 0;
+	XML_Char buf[5];
+
+	for (UT_uint32 k=0; k<len; k++)
+	{
+		if (p[k] < 0x80)						// plain us-ascii part of latin-1
+		{
+			UT_ASSERT(bytesInSequence == 0);
+			UT_UCSChar c = p[k];
+			pResult->append((UT_GrowBufElement *)&c,1);
+		}
+		else if ((p[k] & 0xf0) == 0xf0)			// lead byte in 4-byte surrogate pair
+		{
+			// surrogate pairs are defined in section 3.7 of the
+			// unicode standard version 2.0 as an extension
+			// mechanism for rare characters in future extensions
+			// of the unicode standard.
+			UT_ASSERT(bytesInSequence == 0);
+			UT_ASSERT(UT_NOT_IMPLEMENTED);
+		}
+		else if ((p[k] & 0xe0) == 0xe0)			// lead byte in 3-byte sequence
+		{
+			UT_ASSERT(bytesInSequence == 0);
+			bytesExpectedInSequence = 3;
+			buf[bytesInSequence++] = p[k];
+		}
+		else if ((p[k] & 0xc0) == 0xc0)			// lead byte in 2-byte sequence
+		{
+			UT_ASSERT(bytesInSequence == 0);
+			bytesExpectedInSequence = 2;
+			buf[bytesInSequence++] = p[k];
+		}
+		else if ((p[k] & 0x80) == 0x80)			// trailing byte in multi-byte sequence
+		{
+			UT_ASSERT(bytesInSequence > 0);
+			buf[bytesInSequence++] = p[k];
+			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
+			{
+				UT_UCSChar c = UT_decodeUTF8char(buf,bytesInSequence);
+				pResult->append((UT_GrowBufElement *)&c,1);
+				bytesInSequence = 0;
+				bytesExpectedInSequence = 0;
+			}
+		}
+	}
 }
 
 /*
@@ -404,6 +525,48 @@ UT_uint32 UT_pointerArrayLength(void ** array)
    License along with the GNU C Library; see the file COPYING.LIB.  If not,
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
+
+////////////////////////////////////////////////////////////////////////
+//
+//  UCS-2 string (UT_UCS2Char)
+//
+//  String is built of 16-bit units (words)
+//
+//  TODO: Is this really UCS-2 or UTF-16?
+//  TODO:  meaning, does it support surrogates or is it intended to
+//  TODO:  support them at any time in the future?
+//  TODO: Correctly, UCS-2 does not support surrogates and UTF-16 does.
+//  TODO: BUT Microsoft calls their native Unicode encoding UCS-2
+//  TODO:  while it supports surrogates and is thus really UTF-16.
+//  TODO: Surrogates are Unicode characters with codepoints above
+//  TODO:  65535 which cannot therefore fit into a 2-byte word.
+//  TODO: This means that TRUE UCS-2 is a single-word encoding and
+//  TODO:  UTF-16 is a multi-word encoding.
+//
+//  NOTE: We shouldn't actually need 16-bit strings anymore since
+//  NOTE:  AbiWord is now fully converted to using 32-bit Unicode
+//  NOTE:  internally. The only possible needs for this is for
+//  NOTE:  Windows GUI, filesystem and API functions where applicable;
+//  NOTE:  and perhaps some file formats or external libraries
+//
+////////////////////////////////////////////////////////////////////////
+
+// Don't ifdef out strlen since it's used by the MSWord importer...
+
+// TODO is this really UCS-2 or UTF-16?
+// TODO and are we using strlen for the number of 16-bit words
+// TODO or the number of characters?
+// TODO Because UTF-16 characters are sometimes expressed as 2 words
+
+UT_uint32 UT_UCS2_strlen(const UT_UCS2Char * string)
+{
+	UT_uint32 i;
+
+	for(i = 0; *string != 0; string++, i++)
+		;
+
+	return i;
+}
 
 #ifdef ENABLE_UCS2_STRINGS
 /*
@@ -666,16 +829,6 @@ UT_UCS2Char * UT_UCS2_stristr(const UT_UCS2Char * phaystack, const UT_UCS2Char *
 }
 /****************************************************************************/
 
-UT_uint32 UT_UCS2_strlen(const UT_UCS2Char * string)
-{
-	UT_uint32 i;
-
-	for(i = 0; *string != 0; string++, i++)
-		;
-
-	return i;
-}
-
 UT_UCS2Char * UT_UCS2_strcpy(UT_UCS2Char * dest, const UT_UCS2Char * src)
 {
 	UT_ASSERT(dest);
@@ -739,114 +892,106 @@ bool UT_UCS2_cloneString_char(UT_UCS2Char ** dest, const char * src)
   return false;
 }
 
+bool UT_UCS2_isupper(UT_UCS2Char c)
+{
+	if(c < 127)
+		return isupper(c)!=0;
+
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(letter && letter->type == 1)
+        return true;
+    return false;
+};
+
+bool UT_UCS2_islower(UT_UCS2Char c)
+{
+	if(c < 127)
+		return islower(c)!=0;
+
+    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
+    if(!letter || letter->type == 0)
+        return true;
+    return false;
+};
+
+bool UT_UCS2_isspace(UT_UCS2Char c)
+{
+	// the whitespace table is small, so use linear search
+	for (UT_uint32 i = 0; i < NrElements(whitespace_table); i++)
+	{
+		if(whitespace_table[i].high < c)
+			continue;
+		if(whitespace_table[i].low <= c)
+			return true;
+		// if we got here, then low > c
+		return false;
+	}
+	return false;
+};
+
+bool UT_UCS2_isalpha(UT_UCS2Char c)
+{
+    FriBidiCharType type = fribidi_get_type(c);
+    return (FRIBIDI_IS_LETTER(type) != 0);
+};
+
+bool UT_UCS2_isSentenceSeparator(UT_UCS2Char c)
+{
+	switch(c)
+	{
+		case '.':
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+/* copies exactly n-chars from src to dest; NB! does not check for 00 i src
+*/
+UT_UCS2Char * UT_UCS2_strncpy(UT_UCS2Char * dest, const UT_UCS2Char * src, UT_uint32 n)
+{
+	UT_ASSERT(dest);
+	UT_ASSERT(src);
+
+	UT_UCS2Char * d = dest;
+	UT_UCS2Char * s = (UT_UCS2Char *) src;
+
+	for (; d < (UT_UCS2Char *)dest + n;)
+		*d++ = *s++;
+	*d = '\0';
+
+	return dest;
+}
+
+
+/* reverses str of len n; used by BiDi which always knows the len of string to process
+   thus we can save ourselves searching for the 00 */
+UT_UCS2Char * UT_UCS2_strnrev(UT_UCS2Char * src, UT_uint32 n)
+{
+    UT_UCS2Char t;
+    UT_uint32 i;
+
+    for(i = 0; i < n/2; i++)
+    {
+        t = *(src + i);
+        *(src + i) = *(src + n - i - 1); //-1 so that we do not move the 00
+        *(src + n - i - 1) = t;
+    }
+    return src;
+}
+
 #endif
 
-// convert each character in a string to ASCII uppercase
-char * UT_upperString(char * string)
-{
-	if (!string)
-		return 0;
 
-	for (char * ch = string; *ch != 0; ch++)
-		*ch = toupper(*ch);
-
-	return string;
-}
-
-// convert each character in a string to ASCII lowercase
-char * UT_lowerString(char * string)
-{
-	if (!string)
-		return 0;
-
-	for (char * ch = string; *ch != 0; ch++)
-		*ch = tolower(*ch);
-
-	return string;
-}
-
-///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-
-UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len)
-{
-	UT_UCSChar ucs, ucs1, ucs2, ucs3;
-
-	switch (len)
-	{
-	case 2:
-		ucs1 = (UT_UCSChar)(p[0] & 0x1f);
-		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
-		ucs  = (ucs1 << 6) | ucs2;
-		return ucs;
-
-	case 3:
-		ucs1 = (UT_UCSChar)(p[0] & 0x0f);
-		ucs2 = (UT_UCSChar)(p[1] & 0x3f);
-		ucs3 = (UT_UCSChar)(p[2] & 0x3f);
-		ucs  = (ucs1 << 12) | (ucs2 << 6) | ucs3;
-		return ucs;
-
-	default:
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return 0;
-	}
-}
-
-void UT_decodeUTF8string(const XML_Char * pString, UT_uint32 len, UT_GrowBuf * pResult)
-{
-	// decode the given string [ p[0]...p[len] ] and append to the given growbuf.
-
-	UT_ASSERT(sizeof(XML_Char) == sizeof(UT_Byte));
-	UT_Byte * p = (UT_Byte *)pString;	// XML_Char is signed...
-
-	int bytesInSequence = 0;
-	int bytesExpectedInSequence = 0;
-	XML_Char buf[5];
-
-	for (UT_uint32 k=0; k<len; k++)
-	{
-		if (p[k] < 0x80)						// plain us-ascii part of latin-1
-		{
-			UT_ASSERT(bytesInSequence == 0);
-			UT_UCSChar c = p[k];
-			pResult->append((UT_GrowBufElement *)&c,1);
-		}
-		else if ((p[k] & 0xf0) == 0xf0)			// lead byte in 4-byte surrogate pair
-		{
-			// surrogate pairs are defined in section 3.7 of the
-			// unicode standard version 2.0 as an extension
-			// mechanism for rare characters in future extensions
-			// of the unicode standard.
-			UT_ASSERT(bytesInSequence == 0);
-			UT_ASSERT(UT_NOT_IMPLEMENTED);
-		}
-		else if ((p[k] & 0xe0) == 0xe0)			// lead byte in 3-byte sequence
-		{
-			UT_ASSERT(bytesInSequence == 0);
-			bytesExpectedInSequence = 3;
-			buf[bytesInSequence++] = p[k];
-		}
-		else if ((p[k] & 0xc0) == 0xc0)			// lead byte in 2-byte sequence
-		{
-			UT_ASSERT(bytesInSequence == 0);
-			bytesExpectedInSequence = 2;
-			buf[bytesInSequence++] = p[k];
-		}
-		else if ((p[k] & 0x80) == 0x80)			// trailing byte in multi-byte sequence
-		{
-			UT_ASSERT(bytesInSequence > 0);
-			buf[bytesInSequence++] = p[k];
-			if (bytesInSequence == bytesExpectedInSequence)		// final byte in multi-byte sequence
-			{
-				UT_UCSChar c = UT_decodeUTF8char(buf,bytesInSequence);
-				pResult->append((UT_GrowBufElement *)&c,1);
-				bytesInSequence = 0;
-				bytesExpectedInSequence = 0;
-			}
-		}
-	}
-}
+////////////////////////////////////////////////////////////////////////
+//
+//  UCS string (UT_UCSChar)
+//
+//  String is built of units based on UT_UCSChar, which used to be
+//   UT_UCS2Char and is now UT_UCS4Char
+//
+////////////////////////////////////////////////////////////////////////
 
 #if 1 // i didn't get a chance to test this -- jeff
 XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
@@ -918,65 +1063,17 @@ bool UT_isSmartQuotedCharacter(UT_UCSChar c)
 	return (result);
 }
 
-#ifdef ENABLE_UCS2_STRINGS
-
-bool UT_UCS2_isupper(UT_UCS2Char c)
-{
-	if(c < 127)
-		return isupper(c)!=0;
-
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
-    if(letter && letter->type == 1)
-        return true;
-    return false;
-};
-
-bool UT_UCS2_islower(UT_UCS2Char c)
-{
-	if(c < 127)
-		return islower(c)!=0;
-
-    case_entry * letter = (case_entry *)bsearch(&c, &case_table, NrElements(case_table),sizeof(case_entry),s_cmp_case);
-    if(!letter || letter->type == 0)
-        return true;
-    return false;
-};
-
-bool UT_UCS2_isspace(UT_UCS2Char c)
-{
-	// the whitespace table is small, so use linear search
-	for (UT_uint32 i = 0; i < NrElements(whitespace_table); i++)
-	{
-		if(whitespace_table[i].high < c)
-			continue;
-		if(whitespace_table[i].low <= c)
-			return true;
-		// if we got here, then low > c
-		return false;
-	}
-	return false;
-};
-
-bool UT_UCS2_isalpha(UT_UCS2Char c)
-{
-    FriBidiCharType type = fribidi_get_type(c);
-    return (FRIBIDI_IS_LETTER(type) != 0);
-};
-
-bool UT_UCS2_isSentenceSeparator(UT_UCS2Char c)
-{
-	switch(c)
-	{
-		case '.':
-			return true;
-
-		default:
-			return false;
-	}
-}
-
-#endif
-
+////////////////////////////////////////////////////////////////////////
+//
+//  UCS-4 string
+//
+//  String is built of 32-bit units (longs)
+//
+//  NOTE: Ambiguity between UCS-2 and UTF-16 above makes no difference
+//  NOTE:  in the case of UCS-4 and UTF-32 since they really are
+//  NOTE:  identical
+//
+////////////////////////////////////////////////////////////////////////
 
 bool UT_UCS4_isupper(UT_UCS4Char c)
 {
@@ -1032,59 +1129,6 @@ bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
 			return false;
 	}
 }
-
-
-/*
- this one prints floating point value but using dot as fractional serparator
- independent of the current locale's settings.
-*/
-const char* std_size_string(float f)
-{
-  static char string[10];
-  int i=(int)f;
-  if(f-i<0.1)
-	sprintf(string, "%d", i);
-  else {
-          int fr = int(10*(f-i));
-	sprintf(string,"%d.%d", i,fr);
-  };
-  return string;
-};
-
-/* copies exactly n-chars from src to dest; NB! does not check for 00 i src
-*/
-UT_UCS2Char * UT_UCS2_strncpy(UT_UCS2Char * dest, const UT_UCS2Char * src, UT_uint32 n)
-{
-	UT_ASSERT(dest);
-	UT_ASSERT(src);
-
-	UT_UCS2Char * d = dest;
-	UT_UCS2Char * s = (UT_UCS2Char *) src;
-
-	for (; d < (UT_UCS2Char *)dest + n;)
-		*d++ = *s++;
-	*d = '\0';
-
-	return dest;
-}
-
-
-/* reverses str of len n; used by BiDi which always knows the len of string to process
-   thus we can save ourselves searching for the 00 */
-UT_UCS2Char * UT_UCS2_strnrev(UT_UCS2Char * src, UT_uint32 n)
-{
-    UT_UCS2Char t;
-    UT_uint32 i;
-
-    for(i = 0; i < n/2; i++)
-    {
-        t = *(src + i);
-        *(src + i) = *(src + n - i - 1); //-1 so that we do not move the 00
-        *(src + n - i - 1) = t;
-    }
-    return src;
-}
-
 /* copies exactly n-chars from src to dest; NB! does not check for 00 i src
 */
 UT_UCS4Char * UT_UCS4_strncpy(UT_UCS4Char * dest, const UT_UCS4Char * src, UT_uint32 n)
@@ -1477,3 +1521,22 @@ bool UT_UCS4_cloneString_char(UT_UCS4Char ** dest, const char * src)
   
   return true;
 }
+
+
+/*
+ this one prints floating point value but using dot as fractional separator
+ independent of the current locale's settings.
+*/
+const char* std_size_string(float f)
+{
+  static char string[10];
+  int i=(int)f;
+  if(f-i<0.1)
+	sprintf(string, "%d", i);
+  else {
+          int fr = int(10*(f-i));
+	sprintf(string,"%d.%d", i,fr);
+  };
+  return string;
+};
+
