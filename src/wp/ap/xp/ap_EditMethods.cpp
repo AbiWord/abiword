@@ -3354,25 +3354,25 @@ Defun(insertCaronData)
 	switch (pCallData->m_pData[0])
 	{
 	// Latin-2 characters
-	case 0x4c:		caronChar=0x01a5;	break;	// Lcaron
-	case 0x53:		caronChar=0x01a9;	break;	// Scaron
-	case 0x54:		caronChar=0x01ab;	break;	// Tcaron
-	case 0x5a:		caronChar=0x01ae;	break;	// Zcaron
-	case 0x43:		caronChar=0x01c8;	break;	// Ccaron
-	case 0x45:		caronChar=0x01cc;	break;	// Ecaron
-	case 0x44:		caronChar=0x01cf;	break;	// Dcaron
-	case 0x4e:		caronChar=0x01d2;	break;	// Ncaron
-	case 0x52:		caronChar=0x01d8;	break;	// Rcaron
+	case 0x4c:		caronChar=0x013d;	break;	// Lcaron
+	case 0x53:		caronChar=0x0160;	break;	// Scaron
+	case 0x54:		caronChar=0x0164;	break;	// Tcaron
+	case 0x5a:		caronChar=0x017d;	break;	// Zcaron
+	case 0x43:		caronChar=0x010c;	break;	// Ccaron
+	case 0x45:		caronChar=0x011a;	break;	// Ecaron
+	case 0x44:		caronChar=0x010e;	break;	// Dcaron
+	case 0x4e:		caronChar=0x0147;	break;	// Ncaron
+	case 0x52:		caronChar=0x0158;	break;	// Rcaron
 
-	case 0x6c:		caronChar=0x01b5;	break;	// lcaron
-	case 0x73:		caronChar=0x01b9;	break;	// scaron
-	case 0x74:		caronChar=0x01bb;	break;	// tcaron
-	case 0x7a:		caronChar=0x01be;	break;	// zcaron
-	case 0x63:		caronChar=0x01e8;	break;	// ccaron
-	case 0x65:		caronChar=0x01ec;	break;	// ecaron
-	case 0x64:		caronChar=0x01ef;	break;	// dcaron
-	case 0x6e:		caronChar=0x01f2;	break;	// ncaron
-	case 0x72:		caronChar=0x01f8;	break;	// rcaron
+	case 0x6c:		caronChar=0x013e;	break;	// lcaron
+	case 0x73:		caronChar=0x0161;	break;	// scaron
+	case 0x74:		caronChar=0x0165;	break;	// tcaron
+	case 0x7a:		caronChar=0x017e;	break;	// zcaron
+	case 0x63:		caronChar=0x010d;	break;	// ccaron
+	case 0x65:		caronChar=0x011b;	break;	// ecaron
+	case 0x64:		caronChar=0x010f;	break;	// dcaron
+	case 0x6e:		caronChar=0x0148;	break;	// ncaron
+	case 0x72:		caronChar=0x0159;	break;	// rcaron
 
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
