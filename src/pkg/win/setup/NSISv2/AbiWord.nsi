@@ -70,6 +70,8 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
 ; Useful inclusions
 !include Sections.nsh
+!include "abi_util_ifexists.nsh"
+
 
 ; Support 'Modern' UI and multiple languages
 !include "abi_mui.nsh"
@@ -150,22 +152,6 @@ InstType "Full plus Downloads"		;Section 5
 !define lngCreateShortCut "!insertmacro lngCreateShortCut"
 
 
-!macro IfExists file
-!system 'echo !define file_\>temp.nsh'
-!system 'if exist "${file}" echo exists >> temp.nsh'
-!system 'echo # >> temp.nsh'
-!include temp.nsh
-!system 'del temp.nsh'
-!ifndef file_exists
-!undef "file_#"
-!endif
-!ifdef file_exists
-!undef file_exists
-!macroend
-
-!define IfExists "!insertmacro IfExists"
-!define IfExistsEnd "!endif"
-
 ; *********************************************************************
 
 
@@ -201,9 +187,6 @@ Section "" ; invisible section that must also be installed, sets installer infor
 	; TODO: determine if we should be using HKCU instead of HKLM for some of these
 	; or see if user has permission and ask them...
 
-	; Write the language used during installation into the registry for uninstall to use
-	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Installer Language" "$LANGUAGE"
-
 	; Write the installation path into the registry
 	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_Dir" "$INSTDIR"
 
@@ -212,13 +195,7 @@ Section "" ; invisible section that must also be installed, sets installer infor
 	WriteRegStr HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Version" "${VERSION}"
 
 	; Write the uninstall keys for Windows
-	; N.B. This needs to include a version number or unique identifier.  
-	; More than one version of Abiword but only one Control Panel.  
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "DisplayName" "${PRODUCT} ${VERSION} (remove only)"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}" "UninstallString" '"$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe"'
-
-	; New Uninstaller
-	WriteUninstaller "Uninstall${PRODUCT}${VERSION_MAJOR}.exe"
+	!include "abi_util_reg_uninst.nsh"
 
 SectionEnd
 
@@ -253,6 +230,10 @@ Section "$(TITLE_section_abi_req)" section_abi_req
 		${lngCreateSMGroup}  "$STARTMENU_FOLDER"
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
 		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
+
+		; add entry for (English) Help entry, if help documents installed
+		!insertmacro SectionFlagIsSet section_help SF_SELECTED 0 +2
+		${lngCreateShortCut} "$SMPROGRAMS" "$STARTMENU_FOLDER" "$(SHORTCUT_NAME_HELP)" "$INSTDIR\AbiWord\help\en-US\index.html" "" "" 0
 	!insertmacro MUI_STARTMENU_WRITE_END
 
 SectionEnd
@@ -343,7 +324,11 @@ Section "Uninstall"
 	RMDir /r "$INSTDIR"
 
 	; remove registry keys
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}${VERSION_MAJOR}"
+
+	; removes all the uninstaller info we added
+	DeleteRegKey HKLM ${UninstallerKeyName}
+
+	; removes all the stuff we store concerning this major revision of AbiWord
 	DeleteRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}
 
 	; remove file assoications (only removes if still registered with ${appType}, tries to restore prior one

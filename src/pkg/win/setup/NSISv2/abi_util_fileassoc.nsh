@@ -42,7 +42,7 @@ FunctionEnd
   ReadRegStr $0 HKCR "${extension}" ""                     ; read current value
   StrCmp $0 "" "${skipBackupLbl}"                          ; nothing, then skip storing old value
     StrCmp $0 "${appType}" "${skipBackupLbl}"              ; only store if old is different than current
-      WriteRegStr HKCR "${extension}" "prior_value" $0   ; actually store the old association
+      WriteRegStr HKCR "${extension}" "prior_value" "$0"   ; actually store the old association
 
   "${skipBackupLbl}:"
     ; Write File Associations
@@ -95,10 +95,9 @@ FunctionEnd
 			StrCmp "$1" "" DeleteFA.${extension}   ; only if it is still valid (has something defined)
 			WriteRegStr HKCR "${extension}" "" $0             ; actually restore prior association
 			DeleteRegValue HKCR "${extension}" "prior_value"  ; and remove stored value
-		DeleteFA.${extension}:                       ; else delete file association key
-			; actually remove file assoications
-			DeleteRegKey HKCR "${extension}"
 			Goto Skip_Del_File_Assoc.${extension}
+		DeleteFA.${extension}:                       ; else delete file association key
+			DeleteRegKey HKCR "${extension}"       ; actually remove file assoications
 
 	Skip_Del_File_Assoc.${extension}:
 	pop $1

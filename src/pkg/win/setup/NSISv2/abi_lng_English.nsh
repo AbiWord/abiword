@@ -46,7 +46,7 @@ ${LSTR} DESC_section_abi_req          "Required.  Installs the basic support fil
 ${LSTR} DESC_ssection_shortcuts       "Installs shortcuts in various places to allow starting AbiWord through additional locations."
 ${LSTR} DESC_ssection_shortcuts_cu    "Installs shortcuts for the currently logged on user."
 ${LSTR} DESC_ssection_shortcuts_au    "Installs shortcuts for all users (or current user on systems without multiple users)."
-${LSTR} DESC_ssection_fa_shellupdate  "Adds entries to the Windows registry to allow the shell (Explorer) to associate various file formats (documents) with AbiWord, so AbiWord will be used to open them."
+${LSTR} DESC_ssection_fa_shellupdate  "Adds entries to the registry to allow the Explorer shell to use AbiWord to open various document formats."
 ${LSTR} DESC_section_fa_abw           "Specifies that AbiWord should be used to open documents in its native format.  (Recommened)"
 ${LSTR} DESC_section_fa_awt           "Specifies that AbiWord should be used to open templates in its native format.  (Recommened)"
 ${LSTR} DESC_section_fa_zabw          "Specifies that AbiWord should be used to open compressed documents in its native format.  (Recommened)"
