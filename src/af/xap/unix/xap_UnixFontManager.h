@@ -51,7 +51,7 @@ public:
 	bool					scavengeFonts(void);
 
 	UT_Vector *			    getAllFonts(void);
-	XAP_UnixFont *			getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman) const;
+	XAP_UnixFont *			getDefaultFont(GR_Font::FontFamilyEnum f = GR_Font::FF_Roman);
 
 	XAP_UnixFont *			getFont(const char * fontname,
 									XAP_UnixFont::style s);
@@ -100,6 +100,7 @@ private:
 	static FcFontSet*		m_pFontSet;
 	static FcConfig*		m_pConfig;
 #endif
+	XAP_UnixFont*           m_pDefaultFont;
 };
 
 #endif /* XAP_UNIXFONTMANAGER_H */

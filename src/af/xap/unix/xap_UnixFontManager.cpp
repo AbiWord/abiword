@@ -141,6 +141,7 @@ XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
 												 , m_pExtraXFontPath(0),
 												 m_iExtraXFontPathCount(0)
 #endif
+												 , m_pDefaultFont(NULL)
 {
 #ifdef USE_XFT
 	m_pFontSet = FcConfigGetFonts(FcConfigGetCurrent(), FcSetSystem);
@@ -158,6 +159,7 @@ XAP_UnixFontManager::~XAP_UnixFontManager(void)
 	UT_VECTOR_FREEALL(char *, m_searchPaths);
 
 	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
+	FREEP(m_pDefaultFont);
 
 	// remove all the font from our cache
 	UT_DEBUGMSG(("MARCM: Removing %d fonts from cache\n", m_vecFontCache.getItemCount() / 2));
@@ -925,7 +927,7 @@ XAP_UnixFont* XAP_UnixFontManager::findNearestFont(const char* pszFontFamily,
 
 #else
 
-XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f) const
+XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f)
 {
 	// TODO: This function ignores font family
 	// this function always assumes
@@ -935,22 +937,18 @@ XAP_UnixFont * XAP_UnixFontManager::getDefaultFont(GR_Font::FontFamilyEnum f) co
 	// X11R6 I can think of)
 	xxx_UT_DEBUGMSG(("XAP_UnixFontManager::getDefaultFont\n"));
 
-	static bool fontInitted = false ;
-	static XAP_UnixFont m_f((XAP_UnixFontManager *)this);
-
-	if ( !fontInitted )
+	if (m_pDefaultFont == NULL)
 	{
+		m_pDefaultFont = new XAP_UnixFont((XAP_UnixFontManager *)this);
 	    // do some manual behind-the-back construction
-	    m_f.setName("Default");
-	    m_f.setStyle(XAP_UnixFont::STYLE_NORMAL);
+	    m_pDefaultFont->setName("Default");
+	    m_pDefaultFont->setStyle(XAP_UnixFont::STYLE_NORMAL);
 
 		// m_f.setXLFD(searchFont("Helvetica-10").c_str());
-	    m_f.setXLFD("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
-
-	    fontInitted = true ;
+	    m_pDefaultFont->setXLFD("-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*");
 	}
 
-	return &m_f;
+	return m_pDefaultFont;
 }
 
 XAP_UnixFont * XAP_UnixFontManager::getDefaultFont16Bit(void)
