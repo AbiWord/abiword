@@ -1,0 +1,200 @@
+Changes between 1.0.0 and 1.0.1
+
+* Documentation improvements [Matthias Clasen]
+* Use new API in FreeType 2.0.9 to greatly speed up coverage
+  calculation for Xft and FT2 backends.
+* Some fixes for reading of OpenType tables.
+* Add -D_REENTRANT to compilation when necessary. [Sven Neumann]
+* Try and enable ClearType for Win32 backend. [Tor Lillqvist]
+* Fixes for Korean glyphs in the basic-x shaper [Changwoo Ryu]
+* Improvements for computation of average char/digit width [Sven Neumann]
+* Bug and error reporting fixes 
+  [Arnaud Charlet, Erewan Chenede, Mikael Hallendal, Stefan Israelsson, 
+   Alex Larsson, Soeren Sandmann, Dan Winship]
+
+============================================================
+
+Changes between 1.0.0 rc2 and 1.0.0
+
+* Updated README files.
+* Minor build fixes [Tor Lillqvist, Jacob Berkman]
+
+Changes between 1.0.0 rc1 and 1.0.0 rc2
+
+* Fix missing weight names when parsing font names [Arnaud Charlet]
+* Build fixes [Martin Gansser, Manish Singh]
+
+Changes between 0.26 and 1.0.0 rc1
+
+* Try to build libraries with only shared library dependencies
+  on Xft to deal with transition to Xft2.
+* Efficiency improvements for Xft backend
+* Bug, build and portability fixes
+
+Contributors: Jacob Berkman, Abel Cheung, David L. Cooper II, 
+  Miroslaw Dobrzanski-Neumann, , Dov Grobgeld, Alex Larsson, Tor Lillqvist, 
+  Sven Neumann, Gediminas Paulauskas, Manish Singh, Raymond Wan, 
+  Richard Warren.
+
+Changes between 0.25 and 0.26
+
+* Fixes for AIX compilation [Miroslaw Dobrzanski-Neumann]
+* Fix zero-width characters being displayed [Sven Neumann]
+* Add some padding to class structures [Owen Taylor]
+
+Changes between 0.24 and 0.25
+
+* Win32 fixes [Tor Lillqvist, Hans Breuer]
+* Cleanup of <ctype.h> [Darin Adler]
+* Bug and build fixes [Anders Carlsson, Sven Neumann, Havoc Pennington,
+  Morten Welinder]
+
+Changes between 0.23 and 0.24
+
+* Win32 backend improvements [Tor Lillqvist]
+* Doc improvements [Havoc Pennington, Dennis Bjorklund]
+* Fix problem where "foo\n" was treated as one paragraph by pango-layout,
+  not two. [Arjan J. Molenaar, Owen Taylor]
+* Add glyph caching to FT2 backend [Alex Larsson]
+* Try to make configure checks for Qt-based example more robust [Owen]
+* New example program for FT2 backend [Dov Grobgeld]
+* Arabic shaper for FT2 backend [Andreas Bogk, Sven Neumann]
+* Bug fixes
+
+Other contributors: Mikael Hermansson, Darin Adler, Hidetoshi Tajima, Zack Rusin, 
+  Jacob Berkman, Jason Tackaberry, Evan Martin, Matthias Clasen
+
+Changes between 0.22 and 0.23
+
+* Documentation improvements [Matthias Clasen]
+* Win32 fixes [Hans Breuer]
+* Improve search for XftConfig [Manish Singh]
+* Fixes for crashes in Hangul shaper [Owen Taylor]
+* Improvements to Arabic shapers for X and Xft [Roozbeh Pournader]
+* Add jisx0212, jisx0201, Big5 support to basic shaper [HideToshi Tajima]
+* Many bug fixes
+
+Other contributors: Darin Adler, Dennis Dementiev, Sebastian Klemke, 
+  Alex Larsson, Sven Neumann, Joshua Pritikin, Padraig O'Briain, 
+  Kristian Rietveld, Sebastian Wilhelmi
+
+Changes between 0.21 and 0.22
+
+* Documentation improvements [Matthias Clasen]
+* Win32 fixes [Tor Lillqvist, Hans Breuer]
+* Improve line-breaking algorithm to not be O(n^2) [Alex Larsson]
+* API addition to render to Xrender drawable
+* Restructure so that "font sets" are handled by the core 
+  for all backends [Alex]
+* Use the Xft font configuration scheme for the FT2 backend as well [Alex]
+
+Other Contributors: Darin Alder, Sven Neumann, Raymond Wan
+
+Changes between 0.20 and 0.21
+
+* Documentation improvements. [Matthias Clasen, Sven Neumann]
+* pango_break() now reports n + 1 attributes for n characters, not n. [Havoc Pennington]
+* Win32 fixes, including support for configure.in on Win32. [Tor Lillqvist]
+* Bug fixes [Tony Graham, Eric Lemings, Manish Singh, Sven Neumann, Matt Wilson, 
+             Frank Belew]
+
+Changes between 0.19 and 0.20
+
+* Change PangoFontDescription to save values for unset fields
+* Fix for compilation with FreeType 2.0.4 [Havoc Pennington]
+* Add PANGO_TYPE_FONT_METRICS [James Henstridge]
+* Win32 fixes and updates [Hans Breuer
+* PangoLayout bug fixes [Alex Larsson, Padraig O'Briain]
+* Misc fixes and cleanups.
+
+Other contributors: Matthias Clasen, Tony Graham, Mario Motta, Sven Neumann
+
+Changes between 0.18 and 0.19
+
+* Change font listing API to be more extensible. Instead of
+  using family names and 
+* Make PangoMetrics and PangoFontDescription opaque heap-allocated
+  structures to allow extension going forward.
+* Allow for PangoFontDescription structures with unspecified
+  style/variant/stretch/weight.
+* Add PANGO_ENABLE_BACKEND and PANGO_ENABLE_ENGINE #defines to
+  protect parts of the API where we don't want to guarantee
+  source binary compatibility for 1.x.
+* Bug fixes.
+
+Changes between 0.17 and 0.18
+
+* Add PangoLanguage type for language tags, use consistently.
+* Add support for different font orderings for different lanuages to
+  basic shaper.
+* Win32 fixes [Alex,Hans]
+* Add pango_context_get_metrics() to get metrics for a font description
+* Add GTypes for various types [James]
+* Lots of warning fixes [Darin]
+* Fix to PangoLayout for lines with only tabs on them [Matthias]
+* Improve compositing of glyphs for pangoft2 backend [Sven]
+* Export pango_color_parse().
+* Adapt to changes in GLib.
+* Build and bug fixes.
+
+Changes between 0.16 and 0.17
+
+* Build/bug fixes
+* Cursor motion is now by graphemes (logical editing units) rather than 
+  by characters
+* Optionally support jumping cursor instead of split cursor
+
+Changes between 0.15 and 0.16
+
+* Ability to make newlines in a PangoLayout display as regular characters
+  (useful for, e.g., having an entry widget with embedded newlines.)
+* Build fixes
+* Bug fixes
+
+Changes between 0.14 and 0.15
+
+* New version of Tamil shaper from Vikram Subramanian
+* Update mini-fribidi to correspond to the latest FriBidi CVS
+* Win32 fixes
+* More documentation
+* Various minor bug and build fixes. 
+
+
+Changes between 0.13 and 0.14
+
+* Win32 improvements [Tor]
+* Much better boundary resolution using algorithms from the Unicode
+  standard [Havoc]
+* Initial support for anti-aliased TrueType and OpenType fonts
+  using the Xft and Xrender libraries from XFree86 4. [Owen]
+* Fix the FreeType support on Unix so it can be used for the frame-buffer 
+  port of GTK+. [Alex]
+* Fix up module building [Alex]
+* Add average-character-width font metric [Havoc]
+* Bug fixes
+
+
+Changes between 0.12 and 0.13
+
+* Win32 Support [Tor]
+* Per-display caching of font coverage on the root window  [Owen]
+* Handling of embedded non-characters in PangoLayout [Elliot]
+* Mapping table fixes and improvements [KUSANO Takayuki, Robert, Owen]
+* Adjustable tab handling in PangoLayout [Havoc]
+* Add relative font-scaling attribute [Havoc]
+* Add function to convert XML/GMarkup description to a PangoAttrList [Havoc]
+* New version of Arabic shaper [Karl]
+* Enhanced Indic support with ligature tables from the font and
+  many more languages [Robert]
+* Include FriBidi core that provides the features that Pango needs and
+  can be used instead of separately installed fribidi. [Owen]
+* Add PangoLayoutIterator that abstracts the geometry operations for
+  iterating over the lines/items/clusters/chars in a layout [Havoc]
+* Bug fixes, and more bug fixes
+
+
+What is new in GScript 0.1:
+
+* Initial release
+
+

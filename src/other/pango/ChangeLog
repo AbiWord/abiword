@@ -1,0 +1,178 @@
+Wed Mar 27 19:30:35 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* Released 1.0.1
+
+	* NEWS: Updates.
+
+	* configure.in: Version 1.0.1, interface, binary age 1.
+
+Tue Mar 26 18:22:07 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-*.c modules/basic/basic-common.h: Move
+	ZERO_WIDTH_CHAR() macro into a common header file, add
+	ZERO WIDTH-NO BREAK SPACE (U+FEFF)
+
+	* modules/basic/Makefile.am (EXTRA_DIST): Add basic-common.h.
+
+2002-03-26  Alex Larsson  <alexl@redhat.com>
+
+	* pango/pangoft2-fontmap.c (pango_ft2_font_map_load_font):
+	Free pattern after using it.
+
+2002-03-26  Sven Neumann  <sven@gimp.org>
+
+	* pango/pangoft2-private.h
+	* pango/pangoft2.c (pango_ft2_font_get_metrics): calculate 
+	average_char_width and average_digit_width by measuring sample layouts
+	and cache font metrics per language just like PangoX does, #53425.
+
+	* pango/pangoxft-font.c
+	* pango/pangoxft-private.h: the same approach for average_char_width
+	and average_digit_width as in PangoFT2, #53425.
+
+Mon Mar 25 15:53:17 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules.c (read_modules): Remove warning about
+	opening modules file... in some cases (included modules)
+	it isn't needed, and the warning about no modules that
+	was added recently should let people know what is going
+	on. (#73834, Arnaud Charlet)
+
+Mon Mar 25 15:46:54 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-*.c: Convert U+00A0 (NON BREAK SPACE)
+	to U+0020 (SPACE). (#73279, Mikael Hallendal)
+
+	* modules/basic/basic-xft.c (basic_engine_shape): Remove
+	some dead code.
+
+Mon Mar 25 15:31:17 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangowin32.c (pango_win32_font_get_metrics): Set
+	the right font when computing the average digit width.
+
+Mon Mar 25 14:52:29 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pangox.c (pango_x_font_get_metrics): Rewrite
+	average_digit_width computation to go through the same 
+	shaping hack as the average_char_width code.
+	(Part of #53425)
+
+	* pango/pangox.c (pango_x_font_describe): Implement
+	except for results of pango_x_font_load().
+
+	* pango/pangox.c (pango_x_load_font): Document as
+	"don't use".
+
+	* pango/pangox.[ch] (pango_x_load_font): Add missing const.
+
+2002-03-25  Sven Neumann  <sven@gimp.org>
+
+	* pango/fonts.c (pango_font_description_from_string): this function
+	may never return NULL, so we shouldn't say so in the comment.
+
+Wed Mar 20 18:40:34 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/modules.c (build_map): Add an informative
+	warning if no modules at all were found. (#74982,
+	suggestion from Dan Winship.)
+
+Wed Mar 20 15:22:54 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Error out if no backends found. (#74880)
+
+Wed Mar 20 15:14:15 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-markup.c (text_handler): Dummy-initialize
+	gsize variable to 0, not -1. (#73899, Erwann Chenede)
+
+Wed Mar 20 14:57:48 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/basic-x.c  modules/basic/tables-{big,small}.i: 
+	When loading an iconv converter fails, recover gracefully
+	and warn rather than aborting. (#73861, report about problems
+	on IRIX from Soeren Sandmann)
+
+2002-03-18  Changwoo Ryu  <cwryu@debian.org>
+
+	* modules/basic/tables-big.i: Enabled ksc5601 fonts for the Hangul
+	compatibility jamos, the CJK unified ideographs, and the CJK
+	compatibility ideographs areas.
+
+2002-03-17  Tor Lillqvist  <tml@iki.fi>
+
+	* pango/pangowin32-private.h: Add pango_win32_os_version_info
+	variable, an OSVERSIONINFO struct.
+
+	* pango/pangowin32.c: Initialise it.
+
+	* pango/pangowin32.h: Set _WIN32_WINNT to 0x0501 before including
+	<windows.h> to get the ClearType-related macros defined (if recent
+	enough headers are used).
+
+	* pango/pangowin32-fontcache.c (pango_win32_font_cache_load): Set
+	desired font quality to CLEARTYPE_QUALITY if on XP (or later), and
+	the system settings ask for ClearType.
+
+2002-03-16  Sven Neumann  <sven@gimp.org>
+
+	* configure.in (GLIB_CFLAGS): use CFLAGS from gthread-2.0 to assure
+	pango behaves correctly in a threaded environment.
+
+Fri Mar 15 12:25:26 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* modules/basic/tables-big.i: Prefer ksc5601 fonts to
+	unicode fonts for "ko" locales.
+
+Fri Mar 15 01:35:56 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxgsub.c pango/opentype/ftxopen.c
+	pango/opentype/ftxopenf.h: In Load_ChainContextSubst2,
+	handle the case where an empty class definition
+	is represented by an offset of 0.
+
+	* pango/opentype/ftxgpos.c: Same for Load_ChainContextPos2.
+
+	* pango/opentype/{ftxopen.c,ftxgpos.c,ftxgsub.c,ftgdef.c}:
+	Fix pervasive bug where on cleanups on failure of loading
+	an array element, all array elements were freed, not
+	just the ones that had been succesfully loaded.
+
+Thu Mar 14 23:05:18 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/opentype/ftxopen.c: Uncomment GPOS parts.
+
+	* pango/opentype/disasm.c: Start adding some GPOS
+	dumping.
+
+Thu Mar 14 20:28:59 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* configure.in: Check for FT_Get_First_Char from
+	FreeType-2.0.9.
+
+	* pango/pangoft2.c pango/pangoxft-font.c: Use
+	FT_Get_First_Char/Get_Next_Char to accelerate coverage calculation.
+
+Thu Mar 14 20:02:58 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* examples/Makefile.am (EXTRA_DIST): Remove moc_view-qt.cc. (#74725)
+
+Wed Mar 13 10:31:07 2002  Owen Taylor  <otaylor@redhat.com>
+
+	* pango/pango-coverage.c (pango_coverage_max): Fix typo
+	when computing maximums of sub-byte fields. (Stefan Israelsson,
+	#74518)
+
+2002-03-12  Matthias Clasen  <maclas@gmx.de>
+
+	* pango/pangowin32-fontcache.c, pango/pangox-fontcache.c: Minor doc edits.
+
+	* docs/tmpl/win32-fonts.sgml: Document PangoWin32FontCache.
+
+	* docs/tmpl/x-fonts.sgml: Document PangoXFontCache.
+
+	* docs/tmpl/glyphs.sgml: Document PangoGlyphInfo.
+
+	* docs/tmpl/opentype.sgml: Document PangoOTInfo, PangoOTTag,
+	PangoOTTableType.
+
