@@ -246,12 +246,19 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 
 	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
 	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
-
+	bool bDeleteTables = !isInTable(iLow) && !isInTable(iHigh);
 	_eraseSelection();
 	_resetSelection();
-
-	m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before);
-
+	bool bOldDelete = m_pDoc->isDontImmediateLayout();
+	if(bDeleteTables)
+	{
+		m_pDoc->setDontImmediatelyLayout(true);
+	}
+	m_pDoc->deleteSpan(iLow, iHigh, p_AttrProp_Before,bDeleteTables);
+	if(bDeleteTables)
+	{
+		m_pDoc->setDontImmediatelyLayout(bOldDelete);
+	}
 //
 // Can't leave list-tab on a line
 //

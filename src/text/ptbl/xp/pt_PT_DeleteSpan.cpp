@@ -52,148 +52,11 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 							   PP_AttrProp *p_AttrProp_Before, 
 							   bool bDontGlob)
 {
-	if(m_pDocument->isMarkRevisions())
-	{
-		const XML_Char name[] = "revision";
-		const XML_Char * pRevision = NULL;
-
-		// first retrive the starting and ending fragments
-		pf_Frag * pf1, * pf2;
-		PT_BlockOffset Offset1, Offset2;
-
-		if(!getFragsFromPositions(dpos1,dpos2, &pf1, &Offset1, &pf2, &Offset2))
-			return false;
-
-		// now we have to traverse the fragments and change their
-		// formatting
-
-		pf_Frag * pTemp;
-		pf_Frag * pEnd = pf2->getNext();
-		pf_Frag * pNext;
-
-
-		for(pTemp = pf1; pTemp != pEnd; pTemp = pNext)
-		{
-			// we cannot ask for the next in the for statement,
-			// because we might have deleted that fragment by then
-			pNext = pTemp->getNext();
-
-			// get attributes for this fragement
-			const PP_AttrProp * pAP;
-			pf_Frag::PFType eType = pTemp->getType();
-			UT_uint32 iLen;
-			PTStruxType eStruxType;
-
-			if(eType == pf_Frag::PFT_Text)
-			{
-				if(!getAttrProp(((pf_Frag_Text*)pTemp)->getIndexAP(),&pAP))
-					return false;
-			}
-			else if(eType == pf_Frag::PFT_Strux)
-			{
-				if(!getAttrProp(((pf_Frag_Strux*)pTemp)->getIndexAP(),&pAP))
-					return false;
-
-				eStruxType = ((pf_Frag_Strux*)pTemp)->getStruxType();
-
-				switch (eStruxType)
-				{
-					case PTX_Block:
-						iLen = pf_FRAG_STRUX_BLOCK_LENGTH;
-						break;
-
-					case PTX_Section:
-					case PTX_SectionHdrFtr:
-					case PTX_SectionEndnote:
-					case PTX_SectionTable:
-					case PTX_SectionCell:
-					case PTX_EndTable:
-					case PTX_EndCell:
-						iLen = pf_FRAG_STRUX_SECTION_LENGTH;
-						break;
-
-					default:
-						UT_ASSERT(UT_NOT_IMPLEMENTED);
-						iLen = 1;
-						break;
-				}
-
-			}
-			else if(eType == pf_Frag::PFT_Object)
-			{
-				if(!getAttrProp(((pf_Frag_Object*)pTemp)->getIndexAP(),&pAP))
-					return false;
-			}
-			else
-			{
-				// something that does not carry AP
-				continue;
-			}
-
-			if(!pAP->getAttribute(name, pRevision))
-				pRevision = NULL;
-
-			PP_RevisionAttr Revisions(pRevision);
-
-			// now we need to see if revision with this id is already
-			// present, and if it is, whether it might not be addition
-			UT_uint32 iId = m_pDocument->getRevisionId();
-			const PP_Revision * pRev = Revisions.getGreatestLesserOrEqualRevision(iId);
-
-			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
-
-			if(pRev && iId == pRev->getId())
-			{
-				// OK, we already have a revision with this id here,
-				// which means that the editor made a change earlier
-				// (insertion or format change) but now wants this deleted
-				//
-				// so if the previous revision is an addition, we just
-				// remove this fragment as if this was regular delete
-				if(   (pRev->getType() == PP_REVISION_ADDITION)
-				   || (pRev->getType() == PP_REVISION_ADDITION_AND_FMT ))
-				{
-					if(!_realDeleteSpan(dpos1, dposEnd, p_AttrProp_Before,true, bDontGlob))
-						return false;
-
-					dpos1 = dposEnd;
-					continue;
-				}
-			}
-
-			Revisions.addRevision(iId,PP_REVISION_DELETION,NULL,NULL);
-			const XML_Char * ppRevAttrib[3];
-			ppRevAttrib[0] = name;
-			ppRevAttrib[1] = Revisions.getXMLstring();
-			ppRevAttrib[2] = NULL;
-
-			switch (eType)
-			{
-				case pf_Frag::PFT_Text:
-					if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
-						return false;
-					break;
-
-				case pf_Frag::PFT_Strux:
-					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1 + iLen, dpos1 + 2*iLen, ppRevAttrib,NULL,eStruxType))
-						return false;
-					break;
-#if 0
-				case pf_Frag::PFT_Object:
-					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
-						return false;
-					break;
-#endif
-				default:;
-			}
-
-			dpos1 = dposEnd;
-		}
-
-		return true;
-	}
-	else
-		return _realDeleteSpan(dpos1, dpos2, p_AttrProp_Before, true, bDontGlob);
+	return deleteSpan(dpos1,
+					  dpos2,
+					  p_AttrProp_Before, 
+					  true,
+					  bDontGlob);
 }
 
 /****************************************************************/
@@ -202,7 +65,20 @@ bool pt_PieceTable::deleteSpanWithTable(PT_DocPosition dpos1,
 							   PP_AttrProp *p_AttrProp_Before, 
 							   bool bDeleteTableStruxes)
 {
-	bool bDontGlob = false;
+	return deleteSpan(dpos1,
+					  dpos2,
+					  p_AttrProp_Before, 
+					  bDeleteTableStruxes,
+					  false);
+}
+
+/****************************************************************/
+bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
+							   PT_DocPosition dpos2,
+							   PP_AttrProp *p_AttrProp_Before, 
+							   bool bDeleteTableStruxes,
+							   bool bDontGlob)
+{
 	if(m_pDocument->isMarkRevisions())
 	{
 		const XML_Char name[] = "revision";
@@ -798,7 +674,7 @@ bool pt_PieceTable::_StruxIsNotTable(pf_Frag_Strux * pfs)
 
 bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
-									   bool bDeleteTableStruxes)
+									   UT_Stack * stDelayStruxDelete)
 {
 	pf_Frag * pfNewEnd;
 	UT_uint32 fragOffsetNewEnd;
@@ -835,12 +711,14 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 		case pf_Frag::PFT_Strux:
 		{
 //
-// OK this code is leave the cell/table sctructures in place unless we defiantely want to delete
+// OK this code is leave the cell/table sctructures in place unless we 
+// defiantely want to delete
 // them.
 // 
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf_First);
 			bool bResult = true;
-			if(bDeleteTableStruxes || _StruxIsNotTable(pfs))
+			UT_DEBUGMSG(("SEVIOR: looking at strux type %d to delete \n",pfs->getStruxType()));
+			if(_StruxIsNotTable(pfs))
 			{
 				if(bPrevWasCell && pfs->getStruxType()== PTX_Block)
 				{
@@ -848,16 +726,19 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 					pfNewEnd = pfs->getNext();
 					fragOffsetNewEnd = 0;
 					pfsContainer = pfs;
+					dpos1 = dpos1 +  lengthInFrag;
+					stDelayStruxDelete->push(pfs);
 				}
 				else
 				{
 					bResult = _deleteStruxWithNotify(dpos1,pfs,
 												  &pfNewEnd,&fragOffsetNewEnd);
+					bPrevWasCell = false;
 				}
 			}
 			else
 			{
-				if(pfs->getStruxType() == PTX_SectionCell)
+				if((pfs->getStruxType() == PTX_SectionCell) || (pfs->getStruxType() == PTX_EndTable))
 				{
 					bPrevWasCell = true;
 				}
@@ -867,6 +748,8 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition dpos1,
 				}
 				pfNewEnd = pfs->getNext();
 				fragOffsetNewEnd = 0;
+				dpos1 = dpos1 +  lengthInFrag; 
+				stDelayStruxDelete->push(pfs);
 			}
 			UT_ASSERT(bResult);
 			// we do not update pfsContainer because we just deleted pfs.
@@ -1593,7 +1476,7 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		//  If the delete is sure to be within a fragment, we don't
 		//  need to worry about much of the bookkeeping of a complex
 		//  delete.
-		bSuccess = _deleteComplexSpan(dpos1, dpos2,bDeleteTableStruxes);
+		bSuccess = _deleteComplexSpan(dpos1, dpos2, &stDelayStruxDelete);
 	}
 	else
 	{
@@ -1602,20 +1485,31 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 		//  first, and then the actual spans.
 		_changePointWithNotify(old_dpos2);
 
+		UT_sint32 oldDepth = stDelayStruxDelete.getDepth();
 		bSuccess = _deleteFormatting(dpos1, dpos2);
 		if (bSuccess)
-			bSuccess = _deleteComplexSpan(dpos1, dpos2,bDeleteTableStruxes);
-
+			bSuccess = _deleteComplexSpan(dpos1, dpos2, &stDelayStruxDelete);
+		
+		bool prevDepthReached = false;
+		PT_DocPosition finalPos = dpos1;
+		if(bDeleteTableStruxes)
+		{
+			dpos1 = dpos1 + 1;
+		}
 		while (bSuccess && stDelayStruxDelete.getDepth() > 0)
 		{
 			pf_Frag_Strux * pfs;
+			if(stDelayStruxDelete.getDepth() <= oldDepth)
+			{
+				prevDepthReached = true;
+			}
 			stDelayStruxDelete.pop((void **)&pfs);
-			_deleteFormatting(dpos1 - pfs->getLength(), dpos1);
 
  			pf_Frag *pf;
 			PT_DocPosition dp;
-			if(bDeleteTableStruxes || _StruxIsNotTable(pfs))
+			if(bDeleteTableStruxes || prevDepthReached )
 			{
+				_deleteFormatting(dpos1 - pfs->getLength(), dpos1);
 				bSuccess = _deleteStruxWithNotify(dpos1 - pfs->getLength(), pfs,
 											  &pf, &dp);
 			}
@@ -1624,10 +1518,11 @@ bool pt_PieceTable::_realDeleteSpan(PT_DocPosition dpos1,
 				bSuccess = true;
 				pf = pfs->getNext();
 				dp = 0;
+				dpos1 = dpos1 + pfs->getLength();
 			}
 		}
 
-		_changePointWithNotify(dpos1);
+		_changePointWithNotify(finalPos);
 	}
 
 	// Have we deleted all the text in a paragraph.

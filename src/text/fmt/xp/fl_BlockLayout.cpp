@@ -1947,9 +1947,25 @@ fp_Line* fl_BlockLayout::findNextLineInDocument(fp_Line* pLine)
 
 fl_BlockLayout* fl_BlockLayout::getNextBlockInDocument(void) const
 {
-	if (getNext())
+	fl_ContainerLayout * pNext = getNext();
+	while(pNext)
 	{
-		return (fl_BlockLayout *) getNext();
+		if(pNext->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			return (fl_BlockLayout *) pNext;
+		}
+		else if(pNext->getContainerType() == FL_CONTAINER_TABLE)
+		{
+			pNext = pNext->getFirstLayout();
+		}
+		else if(pNext->getContainerType() == FL_CONTAINER_CELL)
+		{
+			pNext = pNext->getFirstLayout();
+		}
+		else
+		{
+			pNext = NULL;
+		}
 	}
 
 	// keep going (check next section)
@@ -3672,17 +3688,31 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 	fl_BlockLayout* pPrevBL = (fl_BlockLayout *) getPrev();
 	fp_Line* pLastLine = NULL;
-
+	if(pPrevBL && pPrevBL->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+//
+// Attach to the block before the table, because the table is being deleted.
+//
+		if(pPrevBL->getContainerType() == FL_CONTAINER_TABLE)
+		{
+			pPrevBL = (fl_BlockLayout *) pPrevBL->getPrev();
+		}
+		else
+		{
+			pPrevBL = NULL;
+		}
+	}
 	if (pPrevBL)
 	{
 		// Find the EOP Run.
 		pLastLine = (fp_Line *) pPrevBL->getLastContainer();
-		fp_Run* pPrevRun = NULL;
 		fp_Run* pNukeRun = pPrevBL->m_pFirstRun;
-		for (; pNukeRun->getNext(); pNukeRun = pNukeRun->getNext())
+		fp_Run * pPrevRun = pPrevBL->m_pFirstRun;
+		while(pNukeRun->getNext() != NULL)
 		{
 			pPrevRun = pNukeRun;
 			UT_ASSERT(FPRUN_ENDOFPARAGRAPH != pPrevRun->getType());
+			pNukeRun  = pPrevRun->getNext();
 		}
 		UT_ASSERT(FPRUN_ENDOFPARAGRAPH == pNukeRun->getType());
 
@@ -3692,7 +3722,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		pLine->removeRun(pNukeRun);
 
 		// Unlink and delete it
-		if (pPrevRun)
+		if (pPrevRun && (pPrevRun != pNukeRun))
 		{
 			pPrevRun->setNext(NULL);
 		}
@@ -3789,7 +3819,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 		getNext()->setPrev(pPrevBL);
 	}
 
-	fl_SectionLayout* pSL = m_pSectionLayout;
+	fl_SectionLayout* pSL = (fl_SectionLayout *) myContainingLayout();
 	UT_ASSERT(pSL);
 	pSL->remove(this);
 
@@ -3944,7 +3974,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	if(ppView)
 		ppView->eraseInsertionPoint();
 
-	fl_SectionLayout* pSL = m_pSectionLayout;
+	fl_SectionLayout* pSL = (fl_SectionLayout *) myContainingLayout();
 	UT_ASSERT(pSL);
 	fl_BlockLayout* pNewBL = (fl_BlockLayout *) pSL->insert(sdh, this, pcrx->getIndexAP(),FL_CONTAINER_BLOCK);
 	if(isHdrFtr())

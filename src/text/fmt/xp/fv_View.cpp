@@ -3677,7 +3677,7 @@ bool FV_View::getBlockFormat(const XML_Char *** pProps,bool bExpandStyles)
 		p[1] = f->m_val;
 		p += 2;
 	}
-
+	*p = NULL;
 	UT_VECTOR_PURGEALL(_fmtPair *,v);
 
 	*pProps = props;
@@ -7595,9 +7595,49 @@ bool FV_View::isInTable()
 	pRun = pBL->findPointCoords(pos, false, xPoint,
 							    yPoint, xPoint2, yPoint2,
 							    iPointHeight, bDirection);
-	
+
+	if(!pRun)
+	{
+		return false;
+	}
 	fp_Line * pLine = pRun->getLine();
+	if(!pLine)
+	{
+		return false;
+	}
 	fp_Container * pCon = pLine->getContainer();
+	if(!pCon)
+	{
+		return false;
+	}
+	return pCon->getContainerType() == FP_CONTAINER_CELL;
+}
+
+bool FV_View::isInTable( PT_DocPosition pos)
+{
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
+	bool bDirection;
+
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	fp_Run * pRun;
 	
+	pRun = pBL->findPointCoords(pos, false, xPoint,
+							    yPoint, xPoint2, yPoint2,
+							    iPointHeight, bDirection);
+
+	if(!pRun)
+	{
+		return false;
+	}
+	fp_Line * pLine = pRun->getLine();
+	if(!pLine)
+	{
+		return false;
+	}
+	fp_Container * pCon = pLine->getContainer();
+	if(!pCon)
+	{
+		return false;
+	}
 	return pCon->getContainerType() == FP_CONTAINER_CELL;
 }

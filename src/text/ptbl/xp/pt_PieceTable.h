@@ -154,6 +154,13 @@ public:
 									   bool bDontGlob=false);
 
 
+	bool					deleteSpan(PT_DocPosition dpos1,
+									   PT_DocPosition dpos2,
+									   PP_AttrProp *p_AttrProp_Before,
+									   bool bDeleteTableStruxes,
+									   bool bDontGlob);
+
+
 	bool					deleteSpanWithTable(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before,
@@ -356,7 +363,7 @@ protected:
 
 	bool					_deleteComplexSpan(PT_DocPosition dpos1,
 											   PT_DocPosition dpos2,
-											   bool bDeleteTableStruxes);
+											   UT_Stack *stDelayStruxDelete);
 
 
 	bool					_deleteComplexSpan_norec(PT_DocPosition dpos1,

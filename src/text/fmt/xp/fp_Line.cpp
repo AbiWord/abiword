@@ -281,8 +281,8 @@ bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 	// need to tell the previous run to redraw, in case this run contained
 	// overstriking characters
 	fp_Run* pPrevRun  = pRun->getPrev();
-	if(pPrevRun)
-		pPrevRun->clearScreen();
+//	if(pPrevRun)
+//		pPrevRun->clearScreen();
 
 	if (bTellTheRunAboutIt)
 	{

@@ -2444,7 +2444,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 			const XML_Char * props[5] = {NULL,NULL,NULL,NULL,NULL};
 			props[0] = "table-column-props";
 			props[1] = sColWidths.c_str();
-
+ 
 			if(m_draggingCell == 0)
 			{
 				UT_sint32 leftCol =  m_draggingCenter - xAbsLeft;

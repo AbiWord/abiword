@@ -448,6 +448,7 @@ public:
 
 	/* Table related functions */
 	bool				isInTable();
+	bool				isInTable(PT_DocPosition pos);
 	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
