@@ -2112,7 +2112,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	bool bRes = getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	const UT_UCSChar* pBlockText = pgb.getPointer(0);
+	const UT_UCSChar* pBlockText = (UT_UCSChar*)pgb.getPointer(0);
 	if (pBlockText == NULL)
 	{
 		return;
@@ -2262,7 +2262,7 @@ fl_BlockLayout::checkSpelling(void)
 	UT_GrowBuf pgb(1024);
 	bool bRes = getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
-	const UT_UCSChar* pBlockText = pgb.getPointer(0);
+	const UT_UCSChar* pBlockText = (UT_UCSChar*)pgb.getPointer(0);
 	UT_uint32 eor = pgb.getLength();
 	bUpdateScreen |= _checkMultiWord(pBlockText, 0, eor, true);
 
@@ -2408,7 +2408,7 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 			break;
 
 		// Ignore words where first character is a digit
-		if (UT_UCS_isdigit(pWord[0]))
+		if (UT_UCS4_isdigit(pWord[0]))
 			break;
 
 		// Check that there are no CJK letters
@@ -2439,10 +2439,10 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 			// is upper-case (don't bother checking after the first
 			// lower-case letter has been found).
 			if (bAllUpperCase)
-				bAllUpperCase &= UT_UCS_isupper(currentChar);
+				bAllUpperCase &= UT_UCS4_isupper(currentChar);
 
 			// Look for digits
-			bHasNumeric |= UT_UCS_isdigit(currentChar);
+			bHasNumeric |= UT_UCS4_isdigit(currentChar);
 
 			szTheWord[iNewLength++] = currentChar;
 		}
@@ -2507,7 +2507,7 @@ fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 	bool bRes = getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
 
-	const UT_UCSChar* pBlockText = pgb.getPointer(0);
+	const UT_UCSChar* pBlockText = (UT_UCSChar*)pgb.getPointer(0);
 	if (!pBlockText)
 		return false;
 
@@ -5582,7 +5582,7 @@ fl_BlockLayout::recheckIgnoredWords(void)
 	UT_GrowBuf pgb(1024);
 	bool bRes = getBlockBuf(&pgb);
 	UT_ASSERT(bRes);
-	const UT_UCSChar* pBlockText = pgb.getPointer(0);
+	const UT_UCSChar* pBlockText = (UT_UCSChar*)pgb.getPointer(0);
 
 	bool bUpdate = m_pSquiggles->recheckIgnoredWords(pBlockText);
 

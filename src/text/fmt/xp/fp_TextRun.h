@@ -42,6 +42,9 @@
 #define SMART_RUN_MERGING
 #endif
 
+#ifdef WITH_PANGO
+#include <pango-1.0/pango/pango.h>
+#endif
 #endif // BIDI_ENABLED
 
 class ABI_EXPORT fp_TextRun : public fp_Run
@@ -66,7 +69,11 @@ public:
 
 	virtual bool			hasLayoutProperties(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
+#ifndef WITH_PANGO
 	virtual bool			recalcWidth(void);
+#else
+	virtual bool            shape(void);
+#endif
 	virtual bool			canContainPoint(void) const;
 	bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
@@ -80,7 +87,9 @@ public:
 	{
 		Calculate_full_width = -1
 	};
+#ifndef WITH_PANGO
 	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength = Calculate_full_width)
+#endif
 #ifndef BIDI_ENABLED
 // the BIDI version of simpleRecalcWidth can modify m_pSpanBuff
 // this is ugly but necessary
@@ -109,7 +118,6 @@ public:
 
 #ifdef BIDI_ENABLED
 	UT_sint32				getStr(UT_UCSChar * str, UT_uint32 &iMax);
-	//bool				   setUnicodeDirection();
 	void					setDirection(FriBidiCharType dir, FriBidiCharType override);
 	static bool 			getUseContextGlyphs(){return s_bUseContextGlyphs;};
 	// the usability of the following function is *very* limited, see the note in cpp file
@@ -125,8 +133,12 @@ public:
 	   for all the instances, public so that we could inicialised them in the cpp file outside of the
 	   constructor in order that the constructor can decide whether it is creating the first instance
 	   or not*/
+#ifdef WITH_PANGO
+	PangoGlyphString *  m_pGlyphString;
+#else
 	UT_UCSChar *		m_pSpanBuff;
 	UT_uint32			m_iSpanBuffSize;
+#endif
 	static UT_uint32	s_iClassInstanceCount;
 	FriBidiCharType 	m_iDirOverride;
 	static bool 		s_bUseContextGlyphs;
@@ -146,8 +158,9 @@ private:
 										 UT_uint32 offset,
 										 UT_UCSChar *prev,
 										 UT_UCSChar *next) const;
-	//fp_Run *			_getOldNext()const{return m_pOldNext;};
+#ifndef WITH_PANGO
 	void				_refreshDrawBuffer();
+#endif
 #endif
 private:
 	bool				_addupCharWidths(void);
@@ -160,7 +173,7 @@ public:
 #endif	
 	
 protected:
-	void					_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths);
+	void					_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths);
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 

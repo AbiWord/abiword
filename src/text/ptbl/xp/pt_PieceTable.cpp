@@ -329,7 +329,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
             UT_uint32 length = pft->getLength();
             
             bool bAppended;
-            bAppended = pgb->ins(bufferOffset,pSpan,length);
+            bAppended = pgb->ins(bufferOffset,(UT_GrowBufElement*)pSpan,length);
             UT_ASSERT(bAppended);
             
             bufferOffset += length;
@@ -372,7 +372,7 @@ bool pt_PieceTable::getBlockBuf(PL_StruxDocHandle sdh,
                 pSpaces[i] = UCS_ABI_OBJECT;
             }
             bool bAppended;
-            bAppended = pgb->ins(bufferOffset, pSpaces, length);
+            bAppended = pgb->ins(bufferOffset, (UT_GrowBufElement*)pSpaces, length);
             delete[] pSpaces;
             UT_ASSERT(bAppended);
 		

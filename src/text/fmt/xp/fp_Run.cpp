@@ -664,6 +664,7 @@ const PP_AttrProp* fp_Run::getAP(void) const
 
 void fp_Run::drawDecors(UT_sint32 xoff, UT_sint32 yoff)
 {
+	
 	/*
 	  Upon entry to this function, yoff is the TOP of the run,
 	  NOT the baseline.
@@ -693,15 +694,29 @@ drawn.
 //
 	cur_linewidth = UT_MAX(1,cur_linewidth/2);
 	UT_sint32 iDrop = 0;
+
+#ifdef BIDI_ENABLED
+	// need to do this in the visual space
+	fp_Run* P_Run = getPrevVisual();
+	fp_Run* N_Run = getNextVisual();
+#else
 	fp_Run* P_Run = getPrev();
 	fp_Run* N_Run = getNext();
+#endif
+	
 	const bool b_Underline = isUnderline();
 	const bool b_Overline = isOverline();
 	const bool b_Strikethrough = isStrikethrough();
 	const bool b_Topline = isTopline();
 	const bool b_Bottomline = isBottomline();
+#ifdef BIDI_ENABLED
+	// again, need to do this in visual space
+	const bool b_Firstrun = (P_Run == NULL) || (getLine()->getFirstVisRun()== this);
+	const bool b_Lastrun = (N_Run == NULL) || (getLine()->getLastVisRun()== this);
+#else
 	const bool b_Firstrun = (P_Run == NULL) || (getLine()->getFirstRun()== this);
 	const bool b_Lastrun = (N_Run == NULL) || (getLine()->getLastRun()== this);
+#endif
 
 	/*
 	  If the previous run is NULL or if this is the first run of a line,
@@ -980,7 +995,7 @@ void fp_Run::_drawTextLine(UT_sint32 xoff,UT_sint32 yoff,UT_uint32 iWidth,UT_uin
     GR_Font *pFont = m_pG->getGUIFont();
     m_pG->setFont(pFont);
 
-    UT_uint32 iTextLen = UT_UCS_strlen(pText);
+    UT_uint32 iTextLen = UT_UCS4_strlen(pText);
     UT_uint32 iTextWidth = m_pG->measureString(pText,0,iTextLen,NULL);
     UT_uint32 iTextHeight = m_pG->getFontHeight(pFont);
 
@@ -1392,7 +1407,7 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	if (m_leader != FL_LEADER_NONE)
 	{
 		UT_UCSChar tmp[151];
-        	unsigned short wid[151];
+		UT_GrowBufElement wid[151];
 		int i, cumWidth;
 
 		tmp[0] = 150;
@@ -1494,7 +1509,7 @@ void fp_ForcedLineBreakRun::lookupProperties(void)
 	{
 	  //UT_UCSChar pEOP[] = { UCS_LINESEP, 0 }; - see bug 1279
 	  UT_UCSChar pEOP[] = { '^', 'l', 0 };
-	  UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+	  UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
 
 		fp_Run* pPropRun = _findPrevPropertyRun();
 		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
@@ -1645,7 +1660,7 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
   
   //UT_UCSChar pEOP[] = { UCS_LINESEP, 0 };
   UT_UCSChar pEOP[] = { '^', 'l', 0 };
-  UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+  UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
   UT_sint32 iAscent;
   
   fp_Run* pPropRun = _findPrevPropertyRun();
@@ -2124,7 +2139,7 @@ void fp_EndOfParagraphRun::lookupProperties(void)
 	{
 		// Find width of Pilcrow
 		UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
-		UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+		UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
 
 		fp_Run* pPropRun = _findPrevPropertyRun();
 		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
@@ -2296,7 +2311,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	UT_RGBColor clrShowPara(127,127,127);
 
 	UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
-	UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+	UT_uint32 iTextLen = UT_UCS4_strlen(pEOP);
 	UT_sint32 iAscent;
 
 	fp_Run* pPropRun = _findPrevPropertyRun();
@@ -2691,10 +2706,10 @@ fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffset
 
 bool fp_FieldRun::recalcWidth()
 {
-	unsigned short aCharWidths[FPFIELD_MAX_LENGTH];
+	UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 	lookupProperties();
 	m_pG->setFont(m_pFont);
-	UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
+	UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 	xxx_UT_DEBUGMSG(("fp_FieldRun::recalcWidth: old width %d, new width %d\n", m_iWidth, iNewWidth));
 	if (iNewWidth != m_iWidth)
 	{
@@ -2711,7 +2726,7 @@ bool fp_FieldRun::recalcWidth()
 		m_iWidth = iNewWidth;
 
 		m_pG->setFont(m_pFontLayout);
-		m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
+		m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 
 		return true;
 	}
@@ -2721,7 +2736,7 @@ bool fp_FieldRun::recalcWidth()
 
 bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 {
-	if (0 != UT_UCS_strcmp(p_new_value, m_sFieldValue))
+	if (0 != UT_UCS4_strcmp(p_new_value, m_sFieldValue))
 	{
 		xxx_UT_DEBUGMSG(("fp_FieldRun::_setValue: setting new value\n"));
 		clearScreen();
@@ -2736,7 +2751,7 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 		}
 #ifdef BIDI_ENABLED
 		m_bRefreshDrawBuffer = true;
-		UT_uint32 iLen = UT_UCS_strlen(p_new_value);
+		UT_uint32 iLen = UT_UCS4_strlen(p_new_value);
 		iLen = UT_MIN(iLen,FPFIELD_MAX_LENGTH);
 
 		if(iLen > 1 && !XAP_App::getApp()->theOSHasBidiSupport())
@@ -2785,20 +2800,20 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 		else
 #endif
 		{
-			UT_UCS_strcpy(m_sFieldValue, p_new_value);
+			UT_UCS4_strcpy(m_sFieldValue, p_new_value);
 		}
 		
 		{
-			unsigned short aCharWidths[FPFIELD_MAX_LENGTH];
+			UT_GrowBufElement aCharWidths[FPFIELD_MAX_LENGTH];
 			lookupProperties();
 			m_pG->setFont(m_pFont);
-			UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
+			UT_sint32 iNewWidth = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 			if (iNewWidth != m_iWidth)
 			{
 				m_iWidth = iNewWidth;
 				markWidthDirty();
 				m_pG->setFont(m_pFontLayout);
-				m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
+				m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), aCharWidths);
 				return true;
 			}
 
@@ -3170,7 +3185,7 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	m_pG->setFont(m_pFont);
 	m_pG->setColor(m_colorFG);
 	
-	m_pG->drawChars(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), pDA->xoff,iYdraw);
+	m_pG->drawChars(m_sFieldValue, 0, UT_UCS4_strlen(m_sFieldValue), pDA->xoff,iYdraw);
 //
 // Draw underline/overline/strikethough
 //	
@@ -3213,7 +3228,7 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue.c_str());
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3244,7 +3259,7 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3275,7 +3290,7 @@ bool fp_FieldLineCountRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3307,7 +3322,7 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3338,7 +3353,7 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3362,7 +3377,7 @@ bool fp_FieldMMDDYYRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3386,7 +3401,7 @@ bool fp_FieldDDMMYYRun::calculateValue(void)
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3410,7 +3425,7 @@ bool fp_FieldMonthDayYearRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3433,7 +3448,7 @@ bool fp_FieldMthDayYearRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3456,7 +3471,7 @@ bool fp_FieldDefaultDateRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3479,7 +3494,7 @@ bool fp_FieldDefaultDateNoTimeRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3502,7 +3517,7 @@ bool fp_FieldWkdayRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) UT_strdup(szFieldValue));
 	
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3525,7 +3540,7 @@ bool fp_FieldDOYRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3548,7 +3563,7 @@ bool fp_FieldMilTimeRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3571,7 +3586,7 @@ bool fp_FieldAMPMRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3592,7 +3607,7 @@ bool fp_FieldTimeEpochRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3615,7 +3630,7 @@ bool fp_FieldTimeZoneRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3629,7 +3644,7 @@ bool fp_FieldBuildIdRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 	
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_ID);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_ID);
 	if (m_pField)
 		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_ID);
 	return _setValue(sz_ucs_FieldValue);
@@ -3644,7 +3659,7 @@ bool fp_FieldBuildVersionRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 	
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Version);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Version);
 	if (m_pField)
 		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Version);
 	return _setValue(sz_ucs_FieldValue);
@@ -3659,7 +3674,7 @@ bool fp_FieldBuildOptionsRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 	
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Options);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Options);
 	if (m_pField)
 		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Options);
 	return _setValue(sz_ucs_FieldValue);
@@ -3674,7 +3689,7 @@ bool fp_FieldBuildTargetRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 	
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Target);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_Target);
 	if (m_pField)
 		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_Target);
 	return _setValue(sz_ucs_FieldValue);
@@ -3689,7 +3704,7 @@ bool fp_FieldBuildCompileDateRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 	
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileDate);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileDate);
 	if (m_pField)
 		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileDate);
 	return _setValue(sz_ucs_FieldValue);
@@ -3704,7 +3719,7 @@ bool fp_FieldBuildCompileTimeRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 	
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileTime);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, XAP_App::s_szBuild_CompileTime);
 	if (m_pField)
 		m_pField->setValue((XML_Char*) XAP_App::s_szBuild_CompileTime);
 	return _setValue(sz_ucs_FieldValue);
@@ -3786,7 +3801,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	if (pEndSL == NULL)
 	{
 		UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
-		UT_UCS_strcpy_char(sz_ucs_FieldValue, "?");
+		UT_UCS4_strcpy_char(sz_ucs_FieldValue, "?");
 		return _setValue(sz_ucs_FieldValue);
 	}
 	UT_ASSERT(pEndSL->getType() == FL_SECTION_ENDNOTE);
@@ -3805,7 +3820,7 @@ bool fp_FieldEndnoteRefRun::calculateValue(void)
 	// How do we superscript the endnote?
 	snprintf(szFieldValue, FPFIELD_MAX_LENGTH, "[%d]", endnoteNo);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3863,7 +3878,7 @@ bool fp_FieldEndnoteAnchorRun::calculateValue(void)
 
 	snprintf(szFieldValue, FPFIELD_MAX_LENGTH, "[%d] ", endnoteNo);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3886,7 +3901,7 @@ bool fp_FieldTimeRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3909,7 +3924,7 @@ bool fp_FieldDateRun::calculateValue(void)
 	if (m_pField)
 		m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -3938,7 +3953,7 @@ bool fp_FieldFileNameRun::calculateValue(void)
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -4022,7 +4037,7 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -4130,7 +4145,7 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -4164,7 +4179,7 @@ bool fp_FieldPageCountRun::calculateValue(void)
 	if (m_pField)
 	  m_pField->setValue((XML_Char*) szFieldValue);
 
-	UT_UCS_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -4278,7 +4293,7 @@ void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
     UT_sint32 iLineWidth  = m_pLine->getMaxWidth();
 
     UT_UCSChar *pColumnBreak;
-    UT_UCS_cloneString_char(&pColumnBreak,"Column Break");
+    UT_UCS4_cloneString_char(&pColumnBreak,"Column Break");
 	_drawTextLine(pDA->xoff,pDA->yoff+m_pLine->getAscent(),iLineWidth,m_pLine->getHeight(),pColumnBreak);
     FREEP(pColumnBreak);
 }
@@ -4396,7 +4411,7 @@ void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
     UT_sint32 iLineWidth  = m_pLine->getMaxWidth();
 
     UT_UCSChar *pPageBreak;
-    UT_UCS_cloneString_char(&pPageBreak,"Page Break");
+    UT_UCS4_cloneString_char(&pPageBreak,"Page Break");
 
 	_drawTextLine(pDA->xoff,pDA->yoff+m_pLine->getAscent(),iLineWidth,m_pLine->getHeight(),pPageBreak);
     FREEP(pPageBreak);

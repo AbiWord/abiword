@@ -1366,7 +1366,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 // this will make it easire to undo temporarily (we need to do this though)
 						// find what char represents a decimal point
 						lconv *loc = localeconv();
-						if ( ! UT_UCS_cloneString_char(&pDecimalStr, loc->decimal_point) )
+						if ( ! UT_UCS4_cloneString_char(&pDecimalStr, loc->decimal_point) )
 						{
 							// Out of memory. Now what?
 						}

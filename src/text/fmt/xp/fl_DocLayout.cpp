@@ -1912,9 +1912,9 @@ static enum sqThingAt whatKindOfChar(UT_UCSChar thing)
 	case UCS_TAB:	// tab
 		return sqBREAK;
 	}
-	if (UT_UCS_isalpha(thing)) return sqALPHA;
-	if (UT_UCS_ispunct(thing)) return sqOTHERPUNCT;
-	if (UT_UCS_isspace(thing)) return sqWHITE;
+	if (UT_UCS4_isalpha(thing)) return sqALPHA;
+	if (UT_UCS4_ispunct(thing)) return sqOTHERPUNCT;
+	if (UT_UCS4_isspace(thing)) return sqWHITE;
 
 	return sqBREAK;  // supposed to be a character, but...!
 }

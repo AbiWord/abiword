@@ -113,10 +113,13 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 			s_pPrefsTimer->set(PREFS_REFRESH_MSCS);
 	}
 
-
+#ifndef WITH_PANGO
 	m_pSpanBuff = new UT_UCSChar[m_iLen + 1];
 	m_iSpanBuffSize = m_iLen;
 	UT_ASSERT(m_pSpanBuff);
+#else
+	m_pGlyphString = pango_glyph_string_new();
+#endif
 
 	if(!s_iClassInstanceCount)
 	{
@@ -136,8 +139,12 @@ fp_TextRun::~fp_TextRun()
 	{
 		DELETEP(s_pPrefsTimer);
 	}
-	
+
+#ifndef WITH_PANGO		
 	delete[] m_pSpanBuff;
+#else
+	pango_glyph_string_free();
+#endif
 #endif
 }
 
@@ -504,7 +511,7 @@ bool fp_TextRun::alwaysFits(void) const
 bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
-	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iLeftWidth = 0;
 	UT_sint32 iRightWidth = m_iWidthLayoutUnits;
@@ -664,7 +671,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/,
 	}
 
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
-	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	// catch the case of a click directly on the left half of the first character in the run
 	if (x < (pCharWidths[m_iOffsetFirst] / 2))
@@ -733,7 +740,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_ASSERT(m_pLine);
 	m_pLine->getOffsets(this, xoff, yoff);
 	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
-	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	const UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_uint32 offset = UT_MIN(iOffset, m_iOffsetFirst + m_iLen);
 	
@@ -939,13 +946,13 @@ void fp_TextRun::mergeWithNext(void)
 		UT_ASSERT(pSB);
 		if(bReverse)
 		{
-			UT_UCS_strncpy(pSB, pNext->m_pSpanBuff, pNext->m_iLen);
-			UT_UCS_strncpy(pSB + pNext->m_iLen,m_pSpanBuff, m_iLen);
+			UT_UCS4_strncpy(pSB, pNext->m_pSpanBuff, pNext->m_iLen);
+			UT_UCS4_strncpy(pSB + pNext->m_iLen,m_pSpanBuff, m_iLen);
 		}
 		else
 		{
-			UT_UCS_strncpy(pSB,m_pSpanBuff, m_iLen);
-			UT_UCS_strncpy(pSB + m_iLen, pNext->m_pSpanBuff, pNext->m_iLen);
+			UT_UCS4_strncpy(pSB,m_pSpanBuff, m_iLen);
+			UT_UCS4_strncpy(pSB + m_iLen, pNext->m_pSpanBuff, pNext->m_iLen);
 		}
 
 		*(pSB + m_iLen + pNext->m_iLen) = 0;
@@ -960,12 +967,12 @@ void fp_TextRun::mergeWithNext(void)
 			// can only shift the text directly in the existing buffer if
 			// m_iLen <= pNext->m_iLen
 			UT_ASSERT(m_iLen <= pNext->m_iLen);
-			UT_UCS_strncpy(m_pSpanBuff + pNext->m_iLen, m_pSpanBuff, m_iLen);
-			UT_UCS_strncpy(m_pSpanBuff, pNext->m_pSpanBuff, pNext->m_iLen);
+			UT_UCS4_strncpy(m_pSpanBuff + pNext->m_iLen, m_pSpanBuff, m_iLen);
+			UT_UCS4_strncpy(m_pSpanBuff, pNext->m_pSpanBuff, pNext->m_iLen);
 		}
 		else
 		{
-			UT_UCS_strncpy(m_pSpanBuff + m_iLen, pNext->m_pSpanBuff, pNext->m_iLen);
+			UT_UCS4_strncpy(m_pSpanBuff + m_iLen, pNext->m_pSpanBuff, pNext->m_iLen);
 		}
 		*(m_pSpanBuff + m_iLen + pNext->m_iLen) = 0;
 	}
@@ -1072,13 +1079,13 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL)
 	)
 	{
-		UT_UCS_strncpy(pSB, m_pSpanBuff + pNew->m_iLen, m_iLen);
-		UT_UCS_strncpy(pNew->m_pSpanBuff, m_pSpanBuff, pNew->m_iLen);
+		UT_UCS4_strncpy(pSB, m_pSpanBuff + pNew->m_iLen, m_iLen);
+		UT_UCS4_strncpy(pNew->m_pSpanBuff, m_pSpanBuff, pNew->m_iLen);
 	}
 	else
 	{
-		UT_UCS_strncpy(pSB, m_pSpanBuff, m_iLen);
-		UT_UCS_strncpy(pNew->m_pSpanBuff, m_pSpanBuff + m_iLen, pNew->m_iLen);
+		UT_UCS4_strncpy(pSB, m_pSpanBuff, m_iLen);
+		UT_UCS4_strncpy(pNew->m_pSpanBuff, m_pSpanBuff + m_iLen, pNew->m_iLen);
 	}
 
 	pSB[m_iLen] = 0;
@@ -1127,7 +1134,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	return true;
 }
 
-void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths)
+void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths)
 {
 	UT_ASSERT(pCharWidths);
 	UT_ASSERT(pFont);
@@ -1173,7 +1180,7 @@ void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 		// if we are using context glyphs we will do nothing, since this
 		// will be done by recalcWidth()
 #endif	
-		UT_uint16* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
+		UT_GrowBufElement* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
 		_fetchCharWidths(m_pScreenFont, pCharWidths);
 
 		pCharWidths = pgbCharWidths->getCharWidthsLayoutUnits()->getPointer(0);
@@ -1222,7 +1229,7 @@ const
 			break;
 	}
 
-	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iWidth = 0;
 
@@ -1240,7 +1247,7 @@ const
 		{
 			if(s_bUseContextGlyphs)
 			{
-				m_pG->measureString(m_pSpanBuff + i, 0, 1, (UT_uint16*)pCharWidths + m_iOffsetFirst + i);
+				m_pG->measureString(m_pSpanBuff + i, 0, 1, (UT_GrowBufElement*)pCharWidths + m_iOffsetFirst + i);
 			}
 			iWidth += pCharWidths[i + m_iOffsetFirst];
 		}
@@ -1346,8 +1353,8 @@ bool fp_TextRun::recalcWidth(void)
 		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
 		UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
 
-		UT_uint16* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
-		UT_uint16* pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0);
+		UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
+		UT_GrowBufElement* pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0);
 		xxx_UT_DEBUGMSG(("fp_TextRun::recalcWidth: pCharWidthsDisplay 0x%x, pCharWidthsLayout 0x%x\n",pCharWidthsDisplay, pCharWidthsLayout));
 
 		m_iWidth = 0;
@@ -1375,11 +1382,11 @@ bool fp_TextRun::recalcWidth(void)
 			if(s_bUseContextGlyphs)
 			{
 				m_pG->setFont(m_pLayoutFont);
-				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsLayout + k);
+				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsLayout + k);
 
 #if 1
 				m_pG->setFont(m_pScreenFont);
-				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsDisplay + k);
+				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_GrowBufElement*)pCharWidthsDisplay + k);
 				
 #else
 				// this produces much superior width than using measureString; unfortunately
@@ -1435,8 +1442,8 @@ bool fp_TextRun::_addupCharWidths(void)
 	UT_GrowBuf *pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
 	UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
 
-	UT_uint16* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
-	UT_uint16* pCharWidthsLayout  = pgbCharWidthsLayout->getPointer(0);
+	UT_GrowBufElement* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0);
+	UT_GrowBufElement* pCharWidthsLayout  = pgbCharWidthsLayout->getPointer(0);
 	xxx_UT_DEBUGMSG(("fp_TextRun::_addupCharWidths: pCharWidthsDisplay 0x%x, pCharWidthsLayout 0x%x\n",pCharWidthsDisplay, pCharWidthsLayout));
 
 	UT_sint32 iWidth = 0;
@@ -1732,6 +1739,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 #endif
 
 	drawDecors(pDA->xoff, yTopOfRun);
+	
 	if(pView->getShowPara())
 	{
 		_drawInvisibles(pDA->xoff, yTopOfRun);
@@ -1799,7 +1807,7 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	}
 
 	//Should this be an error condition? I treat it as a zero length run, but other might not	
-	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
+	const UT_GrowBufElement * pCharWidths = pgbCharWidths->getPointer(0);
 
 #ifdef BIDI_ENABLED
 	pRect->left = 0;//#TF need 0 because of BiDi, need to calculate the width of the non-selected
@@ -1951,7 +1959,7 @@ void fp_TextRun::_refreshDrawBuffer()
 		UT_uint32 offset = 0;
 		UT_uint32 len = m_iLen;
 		bool bContinue = true;
-		
+
 		UT_contextGlyph cg;
 	
 		if(m_iLen > m_iSpanBuffSize) //the buffer too small, reallocate
@@ -1998,7 +2006,7 @@ void fp_TextRun::_refreshDrawBuffer()
 				}
 				else //do not use context glyphs
 				{
-					UT_UCS_strncpy(m_pSpanBuff + offset, pSpan, iTrueLen);
+					UT_UCS4_strncpy(m_pSpanBuff + offset, pSpan, iTrueLen);
 				}
 			}
 			else
@@ -2024,11 +2032,100 @@ void fp_TextRun::_refreshDrawBuffer()
 		// override set to LTR, to preempty to OS reversal of such text
 		if((!s_bBidiOS && iVisDir == FRIBIDI_TYPE_RTL)
 		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL))
-			UT_UCS_strnrev(m_pSpanBuff, m_iLen);
-			
+			UT_UCS4_strnrev(m_pSpanBuff, m_iLen);
 	} //if(m_bRefreshDrawBuffer)	
 }
 #endif
+
+#ifdef WITH_PANGO
+void fp_TextRun::shape()
+{
+	if(m_bRefreshDrawBuffer)
+	{
+		m_bRefreshDrawBuffer = false;
+		FriBidiCharType iVisDir = getVisDirection();
+
+		const UT_UCSChar* pSpan = NULL;
+		UT_uint32 lenSpan = 0;
+		UT_uint32 offset = 0;
+		UT_uint32 len = m_iLen;
+		bool bContinue = true;
+
+		UT_UCSChar * pWholeSpan = new UT_UCSChar [m_iLen];
+		UT_ASSERT(pWholeSpan);
+		
+		UT_UCSChar * pWholeSpanPtr = pWholeSpan;
+		
+		for(;;) // retrive the span and do any necessary processing
+		{
+			bContinue = m_pBL->getSpanPtr(offset + m_iOffsetFirst, &pSpan, &lenSpan);
+			
+			//this sometimes happens with fields ...
+			if(!bContinue)
+				break;
+				
+			UT_uint32 iTrueLen = (lenSpan > len) ? len : lenSpan;
+		 	UT_UCS4_strncpy(pWholeSpanPtr, iTrueLen);
+		
+			if(iTrueLen == len)
+			{
+				break;
+			}
+
+			offset += iTrueLen;
+			len -= iTrueLen;
+
+		} // for(;;)
+		
+		// now convert the whole span into utf8
+		UT_UTF8String wholeStringUtf8 (pWholeString, m_iLen);
+		
+		// let Panog to analyse the string
+		GList * pAnalysis = pango_itemize(  pContext,
+											wholeStringUtf8.utf8_str(),
+											0,
+											wholeStringUtf8.byteLength(),
+											NULL, // PangoAttrList, not sure about this
+											NULL											
+		);
+		
+		// now do the shaping
+		pango_shape(wholeStringUtf8.utf8_str(),
+					wholeStringUtf8.byteLength(),
+					pAnalysis,
+					m_pGlyphsString);
+
+		// next we need to refresh our character widths
+
+		m_bRecalcWidth = false;
+
+		UT_GrowBuf * pgbCharWidthsDisplay = m_pBL->getCharWidths()->getCharWidths();
+		UT_GrowBuf *pgbCharWidthsLayout  = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+
+		UT_sint32* pCharWidthsDisplay = pgbCharWidthsDisplay->getPointer(0) + m_iOffsetFirst;
+		UT_sint32* pCharWidthsLayout = pgbCharWidthsLayout->getPointer(0) + m_iOffsetFirst;
+
+		m_iWidth = 0;
+		m_iWidthLayoutUnits = 0;
+
+		// the display width are easy ...
+		pango_glyph_string_get_logical_widths(m_pGlyphString,
+											  wholeStringUtf8.utf8_str(),
+											  wholeStringUtf8.byteLength(),
+											  ?,
+											  pCharWidthsDisplay);
+
+		for(UT_uint32 i = 0; i < m_iLen; i++)
+			m_iWidth += *pCharWidthsDisplay[i];
+		
+		// not sure about the layout width yet, but I think we will not need those
+		// at all, just the overall width
+		
+	} //if(m_bRefreshDrawBuffer)	
+}
+#endif
+
+
 /*
 	xoff is the right edge of this run !!!
 */
@@ -2125,7 +2222,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 	UT_ASSERT(iStart + iLen <= m_iOffsetFirst + m_iLen);
 
 	UT_uint32 iLeftWidth = 0;
-	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
+	const UT_GrowBufElement * pCharWidths = pgbCharWidths->getPointer(0);
 	UT_ASSERT(pCharWidths);
 	if (!pCharWidths) {
 		UT_DEBUGMSG(("TODO: Investigate why pCharWidths is NULL?"));
@@ -2209,7 +2306,7 @@ void fp_TextRun::_drawPart(UT_sint32 xoff,
 void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
-	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 	const UT_UCSChar* pSpan = NULL;
 	UT_uint32 lenSpan = 0;
 	UT_uint32 len = m_iLen;
@@ -2539,7 +2636,7 @@ inline bool fp_TextRun::isSubscript(void) const
 UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
-	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iTrailingDistance = 0;
 
@@ -2568,7 +2665,7 @@ UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 UT_sint32 fp_TextRun::findTrailingSpaceDistanceInLayoutUnits(void) const
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
-	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iTrailingDistance = 0;
 
@@ -2600,7 +2697,7 @@ void fp_TextRun::resetJustification()
     && m_iSpaceWidthBeforeJustification != JUSTIFICATION_FAKE)
 	{
 		UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
-		UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+		UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
 
@@ -2626,7 +2723,7 @@ void fp_TextRun::resetJustification()
 void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
-	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+	UT_GrowBufElement* pCharWidths = pgbCharWidths->getPointer(0);
 
 	if(!iAmount || !iSpacesInRun)
 	{
@@ -2776,14 +2873,14 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 			if (len <= lenSpan) 	//copy the entire len to pStr and return 0
 			{
 				UT_ASSERT(len>0);
-						UT_UCS_strncpy(pStrPos, pSpan, len);
+						UT_UCS4_strncpy(pStrPos, pSpan, len);
 						pStr[len] = 0;						  //make sure the string is 00-terminated
 						iMax = m_iLen;
 						return(false);
 			}
 			else  //copy what we have got and move on to the next span
 			{
-				UT_UCS_strncpy(pStrPos, pSpan, lenSpan);
+				UT_UCS4_strncpy(pStrPos, pSpan, lenSpan);
 				offset += lenSpan;
 				len -= lenSpan;
 				pStrPos += lenSpan;

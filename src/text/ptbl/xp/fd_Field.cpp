@@ -95,9 +95,9 @@ bool fd_Field::update(void)
        if (m_iFieldType == FD_Test)
        {
               UT_UCSChar testUCSFieldText[256];
-	      UT_UCS_strcpy_char(testUCSFieldText,
+	      UT_UCS4_strcpy_char(testUCSFieldText,
 				 testChars);
-	      UT_uint32 len = UT_UCS_strlen(testUCSFieldText);
+	      UT_uint32 len = UT_UCS4_strlen(testUCSFieldText);
 	      PT_DocPosition dPos = m_pPieceTable->getFragPosition(&m_fragObject)
 		+ m_fragObject.getLength();
 	      // delete old span first
@@ -108,7 +108,7 @@ bool fd_Field::update(void)
 	      returnValue =  m_pPieceTable->insertSpan_norec
 		(dPos,
 		 testUCSFieldText,
-		 UT_UCS_strlen(testUCSFieldText),
+		 UT_UCS4_strlen(testUCSFieldText),
 		 this);
 	      _throwChangeRec(dPos);
 	      dPos = m_pPieceTable->getFragPosition(&m_fragObject)
@@ -128,9 +128,9 @@ bool fd_Field::update(void)
               UT_UCSChar testUCSFieldText[1024];
               //UT_UCSChar * curpos;
 	      char lineno[20];
-	      UT_UCS_strcpy_char(testUCSFieldText,
+	      UT_UCS4_strcpy_char(testUCSFieldText,
 				 testChars);
-	      UT_uint32 len = UT_UCS_strlen(testUCSFieldText);
+	      UT_uint32 len = UT_UCS4_strlen(testUCSFieldText);
 
 	      //
 	      // Construct a multi-line field using line-breaks
@@ -139,9 +139,9 @@ bool fd_Field::update(void)
 	      for(i=1; i<=5; i++)
 	      {
 		      sprintf(lineno," line number %d ",i);
-		      UT_UCS_strcpy_char( &testUCSFieldText[len],
+		      UT_UCS4_strcpy_char( &testUCSFieldText[len],
 				 lineno);
-		      len =  UT_UCS_strlen(testUCSFieldText);
+		      len =  UT_UCS4_strlen(testUCSFieldText);
 		      testUCSFieldText[len++] = UCS_LF;
 	      }
 	      testUCSFieldText[len++] = 0;
@@ -155,7 +155,7 @@ bool fd_Field::update(void)
 	      returnValue =  m_pPieceTable->insertSpan_norec
 		(dPos,
 		 testUCSFieldText,
-		 UT_UCS_strlen(testUCSFieldText),
+		 UT_UCS4_strlen(testUCSFieldText),
 		 this);
 	      _throwChangeRec(dPos);
 	      dPos = m_pPieceTable->getFragPosition(&m_fragObject)
