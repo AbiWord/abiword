@@ -2938,10 +2938,25 @@ bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	UT_return_val_if_fail (pfs, false);
 	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
+	UT_sint32 iNest = 0;
 	for (const pf_Frag * pf=pfs; (pf); pf=pf->getNext())
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
 			const pf_Frag_Strux * pfsTemp = static_cast<const pf_Frag_Strux *>(pf);
+			if((pfsTemp->getStruxType() == PTX_SectionTable) && (pts != PTX_SectionTable))
+			{
+				iNest++;
+				continue;
+			}
+			if((iNest > 0) && (pfsTemp->getStruxType() == PTX_EndTable))
+			{
+				iNest--;
+				continue;
+			}
+			if(iNest > 0)
+			{
+				continue;
+			}
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
 				*nextsdh = pfsTemp;
