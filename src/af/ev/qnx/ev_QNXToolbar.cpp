@@ -184,6 +184,7 @@ bool EV_QNXToolbar::synthesize(void)
 	PtArg_t args[10];
 	struct _cb_data *tcb;		//Toolbar item call back
 	PtWidget_t  *tb;			//Toolbar item
+	PtWidget_t  *tbgroup;		//Toolbar item group
 	PhImage_t   *image;			
 	int 		n = 0;
 
@@ -208,9 +209,18 @@ bool EV_QNXToolbar::synthesize(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_FLAGS, 0, Pt_TOOLBAR_FOLLOW_FOCUS);
-	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_LAYOUT_FLAGS, Pt_TOOLBAR_FROM_LINE_START, Pt_TOOLBAR_FROM_LINE_START);
+	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_LAYOUT_FLAGS, 
+						Pt_TOOLBAR_FROM_LINE_START, 
+						Pt_TOOLBAR_FROM_LINE_START);
+	PtSetArg(&args[n++], Pt_ARG_TOOLBAR_FLAGS, 
+						Pt_TOOLBAR_ITEM_SEPARATORS, 
+						Pt_TOOLBAR_ITEM_SEPARATORS );
 	m_wToolbar = PtCreateWidget(PtToolbar, m_wToolbarGroup, n, args);
 	UT_ASSERT(m_wToolbar);
+
+	//To get a nice seperator, we put similar items in a group together
+	n = 0;
+	tbgroup = PtCreateWidget(PtGroup, m_wToolbar, n, args);
 	
 	m_vecToolbarWidgets.clear();
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
@@ -270,14 +280,11 @@ bool EV_QNXToolbar::synthesize(void)
 						//Ph_RELEASE_IMAGE | Ph_RELEASE_PALETTE | ...
 						//PtSetArg(&args[n++], Pt_ARG_ARM_DATA, image, sizeof(*image)); 
 						PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, image, sizeof(*image)); 
-						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
 					}
-					else {
-						if(!szToolTip) {
-							PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "No Label/Icon?", 0); 
-						}
-						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
+					else if(!szToolTip) {
+						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "No Label/Icon?", 0); 
 					}
+					tb = PtCreateWidget(PtButton, tbgroup, n, args);
 					if (tb) {
 						tcb = (struct _cb_data *)malloc(sizeof(*tcb));
 						tcb->tb = this;
@@ -326,13 +333,11 @@ bool EV_QNXToolbar::synthesize(void)
 						//Ph_RELEASE_IMAGE | Ph_RELEASE_PALETTE | ...
 						//PtSetArg(&args[n], Pt_ARG_ARM_DATA, image, sizeof(*image)); n++;
 						PtSetArg(&args[n++], Pt_ARG_LABEL_DATA, image, sizeof(*image)); 
-						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
 					}
 					else {
-						//printf("Text button \n");
 						PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "pbut", 0); 
-						tb = PtCreateWidget(PtButton, m_wToolbar, n, args);
 					}
+					tb = PtCreateWidget(PtButton, tbgroup, n, args);
 					if (tb) {
 						tcb = (struct _cb_data *)malloc(sizeof(*tcb));
 						tcb->tb = this;
@@ -369,7 +374,7 @@ bool EV_QNXToolbar::synthesize(void)
 						/*Pt_LIST_NON_SELECT |*/ 0, 
 						/*Pt_LIST_NON_SELECT |*/ Pt_LIST_SCROLLBAR_GETS_FOCUS);
 				PtSetArg(&args[n++], Pt_ARG_TEXT_FLAGS, 0, Pt_EDITABLE);
-				tb = PtCreateWidget(PtComboBox, m_wToolbar, n, args);
+				tb = PtCreateWidget(PtComboBox, tbgroup, n, args);
 
 				// populate it
 				if (pControl && tb) {
@@ -414,14 +419,7 @@ bool EV_QNXToolbar::synthesize(void)
 		case EV_TLF_Spacer:
 		{
 			n = 0;
-#if defined(FULL_TOOLBAR_USAGE)
-			tb = m_wToolbar = PtCreateWidget(PtToolbar, m_wToolbarGroup, n, args);
-#else
-			PtSetArg(&args[n++], Pt_ARG_SEP_FLAGS, Pt_SEP_VERTICAL, Pt_SEP_ORIENTATION);
-			PtSetArg(&args[n++], Pt_ARG_SEP_TYPE, Pt_ETCHED_IN, 0);
-			tb = PtCreateWidget(PtSeparator, m_wToolbar, n, args);
-#endif
-
+			tb = tbgroup = PtCreateWidget(PtGroup, m_wToolbar, n, args);
 			if (tb) {
 				tcb = (struct _cb_data *)malloc(sizeof(*tcb));
 				tcb->tb = this;
