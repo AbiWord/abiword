@@ -38,7 +38,44 @@ public:
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 	
 protected:
+	/*** Start inherited ***/
 
+	virtual void _controlEnable( tControl id, UT_Bool value );
+
+	// we implement these so the XP dialog can set/grab our data
+#define SET_GATHER(a,t) virtual t _gather##a(void);  \
+ 					    virtual void    _set##a( t )
+	SET_GATHER			(Alignment,			eTabType);
+	SET_GATHER			(Leader,			eTabLeader);
+	SET_GATHER			(DefaultTabStop,	UT_sint32);
+
+	// to populate the whole list
+	SET_GATHER			(TabList,			const UT_Vector &);
+
+	// get/set the selected tab
+	// the list of n tabs are index 0..(n-1)
+	// -1 deselects everything
+	SET_GATHER			(SelectTab,			UT_sint32);
+
+	// a pointer to the text in the edit box, MUST BE FREEd on get
+	SET_GATHER			(TabEdit,			const char *);
+#undef SET_GATHER
+
+	virtual void			_clearList();
+
+	/*** End inherited ***/
+	PtWidget_t *			_lookupWidget ( tControl id );
+	PtWidget_t *			_constructWindow(void);
+    void 					event_OK(void);
+    void 					event_Cancel(void);
+    void 					event_Apply(void);
+    void 					event_WindowDelete(void);
+
+	UT_Vector 				m_Widgets;
+	eTabType				m_current_alignment;
+	eTabLeader				m_current_leader;
+	PtWidget_t				*m_mainWindow;
+	int 					done;
 };
 
 #endif /* AP_QNXDIALOG_TAB_H */
