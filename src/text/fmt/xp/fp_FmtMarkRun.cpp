@@ -111,11 +111,6 @@ bool fp_FmtMarkRun::letPointPass(void) const
 	return false;
 }
 
-bool	fp_FmtMarkRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
-{
-	return false;
-}
-
 void fp_FmtMarkRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	pos = m_pBL->getPosition() + m_iOffsetFirst;

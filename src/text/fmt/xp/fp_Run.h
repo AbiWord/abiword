@@ -165,7 +165,7 @@ public:
 	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return false; }
 	virtual bool			alwaysFits(void) const { return false; }
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false) = 0;
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }	
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const { return 0; }	
 	virtual bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
@@ -252,7 +252,6 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	void					setWidth(UT_sint32);
 	
 protected:
@@ -275,7 +274,6 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -293,7 +291,6 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -311,7 +308,6 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -329,7 +325,6 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
@@ -347,7 +342,6 @@ public:
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
 	virtual bool			isForcedBreak(void) const { return true; }
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
@@ -365,7 +359,6 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(bool bFullLineHeightRect);
@@ -389,7 +382,6 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	
 protected:
 	virtual void			_draw(dg_DrawArgs*);
@@ -458,7 +450,6 @@ public:
 	virtual fp_FieldsEnum	getFieldType(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 
 	virtual bool			isSuperscript(void) const;
 	virtual bool			isSubscript(void) const;
@@ -776,7 +767,6 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
-	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual const PP_AttrProp* getAP(void) const;
 	virtual bool			isSuperscript(void) const { return false; }
 	virtual bool			isSubscript(void)  const { return false; }

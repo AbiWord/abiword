@@ -94,7 +94,6 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					// This is the first run which will start past the
 					// end of the line
 
-					UT_ASSERT(pPreviousRun);
 					UT_sint32 iTrailingSpace = 0;
 
 					fp_Run * pArun = (pPreviousRun ? pPreviousRun : pCurrentRun);

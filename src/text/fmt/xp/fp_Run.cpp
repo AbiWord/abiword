@@ -112,6 +112,23 @@ fp_Run::~fp_Run()
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+/*
+ Determine best split point in Run
+ \param iMaxLeftWidth Width to split at
+ \retval si Split information (left width, right width, and position)
+ \param bForce Force a split at first opportunity (max width)
+ \return True if split point was found in this Run, otherwise false.
+
+ This implementation simply returns false, forcing line breaker to
+ look for a split point in previous Runs.
+*/
+bool fp_Run::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */,
+												   fp_RunSplitInfo& /* si */,
+												   bool /* bForce */)
+{
+	return false;
+}
+
 bool fp_Run::hasLayoutProperties(void) const
 {
 	return false;
@@ -469,11 +486,6 @@ bool fp_TabRun::letPointPass(void) const
 	return true;
 }
 
-bool	fp_TabRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
-{
-	return false;
-}
-
 void fp_TabRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	// If X is left of the middle, return offset to the left,
@@ -686,13 +698,6 @@ bool fp_ForcedLineBreakRun::letPointPass(void) const
 	return false;
 }
 
-bool	fp_ForcedLineBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	
-	return false;
-}
-
 void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
@@ -778,11 +783,6 @@ bool fp_FieldStartRun::letPointPass(void) const
 	return true;
 }
 
-bool	fp_FieldStartRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
-{
-	return false;
-}
-
 void fp_FieldStartRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -836,11 +836,6 @@ bool fp_FieldEndRun::canBreakBefore(void) const
 bool fp_FieldEndRun::letPointPass(void) const
 {
 	return true;
-}
-
-bool	fp_FieldEndRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
-{
-	return false;
 }
 
 void fp_FieldEndRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
@@ -909,13 +904,6 @@ bool fp_EndOfParagraphRun::canBreakBefore(void) const
 
 bool fp_EndOfParagraphRun::letPointPass(void) const
 {
-	return false;
-}
-
-bool	fp_EndOfParagraphRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	
 	return false;
 }
 
@@ -1090,11 +1078,6 @@ bool fp_ImageRun::canBreakBefore(void) const
 }
 
 bool fp_ImageRun::letPointPass(void) const
-{
-	return false;
-}
-
-bool	fp_ImageRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
 {
 	return false;
 }
@@ -1415,12 +1398,6 @@ bool fp_FieldRun::canBreakBefore(void) const
 bool fp_FieldRun::letPointPass(void) const
 {
 	return true;
-}
-
-bool        fp_FieldRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /*
-																		   iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
-{
-	return false;
 }
 
 bool fp_FieldRun::isSuperscript(void) const
@@ -2214,13 +2191,6 @@ bool fp_ForcedColumnBreakRun::letPointPass(void) const
 	return false;
 }
 
-bool	fp_ForcedColumnBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
-{
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	
-	return false;
-}
-
 void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
@@ -2316,11 +2286,6 @@ bool fp_ForcedPageBreakRun::canBreakBefore(void) const
 }
 
 bool fp_ForcedPageBreakRun::letPointPass(void) const
-{
-	return false;
-}
-
-bool	fp_ForcedPageBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
 {
 	return false;
 }

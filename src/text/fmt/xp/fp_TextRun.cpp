@@ -356,6 +356,13 @@ bool fp_TextRun::alwaysFits(void) const
 	return true;
 }
 
+/*
+ Determine best split point in Run
+ \param iMaxLeftWidth Width to split at
+ \retval si Split information (left width, right width, and position)
+ \param bForce Force a split at first opportunity (max width)
+ \return True if split point was found in this Run, otherwise false.
+*/
 bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce)
 {
 	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
