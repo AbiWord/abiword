@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  *
@@ -131,6 +133,7 @@ protected:
     bool			m_currentDataItemEncoded;
 
     FILE *			m_fp;
+	const char *	m_szFileName;
 
     UT_String		m_currentMetaDataName;
 	UT_uint32       m_currentRevisionId;

@@ -102,6 +102,8 @@ int IE_Imp_XML::_mapNameToToken (const char * name,
 
 UT_Error IE_Imp_XML::importFile(const char * szFilename)
 {
+	m_szFileName = szFilename;
+
 	UT_XML parser;
 	parser.setListener (this);
 	if (m_pReader) parser.setReader (m_pReader);
@@ -120,6 +122,8 @@ UT_Error IE_Imp_XML::importFile(const char * szFilename)
 	}
 	m_error = UT_OK;
 Cleanup:
+	m_szFileName = 0;
+
 	return m_error;
 }
 
