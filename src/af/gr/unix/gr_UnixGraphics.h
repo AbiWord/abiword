@@ -94,7 +94,9 @@ class GR_UnixGraphics : public GR_Graphics
 								 UT_sint32 x, UT_sint32 y,
 								 UT_sint32 w, UT_sint32 h);
 	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
-  
+	
+	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
+	
  protected:
 	virtual UT_uint32 	_getResolution(void) const;
 	void				_setColor(GdkColor & c);

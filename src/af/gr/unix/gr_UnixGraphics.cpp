@@ -748,6 +748,42 @@ void GR_UnixGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
+void GR_UnixGraphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
+{
+	// save away the current color, and restore it after we draw the polygon
+	GdkGCValues gcValues;
+	GdkColor oColor;
+
+	memset(&oColor, 0, sizeof(GdkColor));
+  
+	gdk_gc_get_values(m_pGC, &gcValues);
+
+	oColor.pixel = gcValues.foreground.pixel;
+
+	// get the new color
+	GdkColor nColor;
+
+	nColor.red = c.m_red << 8;
+	nColor.blue = c.m_blu << 8;
+	nColor.green = c.m_grn << 8;
+
+	gdk_color_alloc(m_pColormap, &nColor);
+  
+	gdk_gc_set_foreground(m_pGC, &nColor);
+
+	GdkPoint* points = new GdkPoint[nPoints];
+    UT_ASSERT(points);
+
+    for (UT_uint32 i = 0;i < nPoints;i++){
+        points[i].x = pts[i].x;
+        points[i].y = pts[i].y;
+    }
+	gdk_draw_polygon(m_pWin, m_pGC, 1, points, nPoints);
+	delete[] points;
+
+	gdk_gc_set_foreground(m_pGC, &oColor);
+}
+
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented
 // in platform code.

@@ -789,7 +789,7 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
     HBRUSH hBrush = CreateSolidBrush(RGB(c.m_red,c.m_grn,c.m_blu));
     HBRUSH hOldBrush = (HBRUSH)SelectObject(m_hdc,hBrush);
 
-    POINT * points = (POINT *)calloc(nPoints, sizeof(POINT));
+    POINT * points = new POINT[nPoints];
     UT_ASSERT(points);
 
     for (UT_uint32 i = 0;i < nPoints;i++){
@@ -805,5 +805,5 @@ void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
     (void) SelectObject(m_hdc,hOldBrush);
     DeleteObject(hBrush);
 
-    FREEP(points);
+    delete[] points;
 }
