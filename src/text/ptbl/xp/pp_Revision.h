@@ -44,7 +44,9 @@ class PP_Revision
 	void             removeAllLesserOrEqualIds(UT_uint32 id);
 
 	UT_sint32        getGreatestLesserOrEqualRevision(UT_uint32 id) const;
+	UT_sint32        getLastRevision() const;
 	bool             isVisible(UT_uint32 id) const;
+	bool             isVisible() const;
 	bool             isFragmentSuperfluous() const;
 
 	const XML_Char * getXMLstring();

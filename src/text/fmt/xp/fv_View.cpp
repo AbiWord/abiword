@@ -66,6 +66,7 @@
 
 #include "xap_EncodingManager.h"
 
+#include "pp_Revision.h"
 #if 1
 // todo: work around to remove the INPUTWORDLEN restriction for pspell
 #include "ispell_def.h"
@@ -1892,6 +1893,26 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
+
+//#define REVISION_TEST
+#ifdef REVISION_TEST
+		if(isMarkRevisions())
+		{
+			// need to set the revision attribute to current id
+			const XML_Char * pRevision;
+			AttrProp_Before.getAttribute("revision", pRevision);
+
+			PP_Revision Revision(pRevision);
+			Revision.addRevisionId(m_pDoc->getRevisionId());
+
+			AttrProp_Before.setAttribute("revision", Revision.getXMLstring());
+		}
+		else
+		{
+			AttrProp_Before.setAttribute("revision", NULL);
+		}
+#endif
+
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
 		m_pDoc->endUserAtomicGlob();
 	}
@@ -1949,7 +1970,34 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 		}
 		if (doInsert == true)
 		{
+#ifdef REVISION_TEST
+			PP_AttrProp *AttrProp_Before;
+			const fl_BlockLayout * pBL = getCurrentBlock();
+
+			// not entirely sure whether we can get away witht he
+			// const_cast here, we might have to make a copy ... #TF
+			pBL->getSpanAttrProp(getPoint(),false,const_cast<const PP_AttrProp **>(&AttrProp_Before));
+
+			if(isMarkRevisions())
+			{
+				// need to set the revision attribute to current id
+				const XML_Char * pRevision;
+				AttrProp_Before->getAttribute("revision", pRevision);
+
+				PP_Revision Revision(pRevision);
+				Revision.addRevisionId(m_pDoc->getRevisionId());
+
+				AttrProp_Before->setAttribute("revision", Revision.getXMLstring());
+			}
+			else
+			{
+				AttrProp_Before->setAttribute("revision", NULL);
+			}
+
+			bResult = m_pDoc->insertSpan(getPoint(), text, count, AttrProp_Before);
+#else
 			bResult = m_pDoc->insertSpan(getPoint(), text, count);
+#endif
 			if(!bResult)
 			{
 				const fl_BlockLayout * pBL = getCurrentBlock();

@@ -341,6 +341,9 @@ public:
 
 	bool                    isMarkRevisions() const{ return m_bMarkRevisions;}
 	void                    toggleMarkRevisions(){m_bMarkRevisions = m_bMarkRevisions ? false : true;}
+	UT_uint32               getRevisionId() const{ return m_iRevisionID;}
+
+
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 	pt_PieceTable *			getPieceTable(void) const
@@ -391,7 +394,7 @@ private:
 	bool                    m_bLockedStyles;
 	UT_StringPtrMap         m_metaDataMap;
 	bool                    m_bMarkRevisions;
-
+	UT_uint32               m_iRevisionID;
 };
 
 #endif /* PD_DOCUMENT_H */

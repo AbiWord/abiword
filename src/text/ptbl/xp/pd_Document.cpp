@@ -88,7 +88,9 @@ PD_Document::PD_Document(XAP_App *pApp)
     m_bLoading(false),
     m_bForcedDirty(false),
     m_bLockedStyles(false),        // same as lockStyles(false)
-	m_bMarkRevisions(false)
+    m_bMarkRevisions(false),
+    m_iRevisionID(1)               // TODO set this based on highest
+                                   // revision in the doc
 {
 	m_pApp = pApp;
 

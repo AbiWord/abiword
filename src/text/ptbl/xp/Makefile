@@ -7,15 +7,15 @@
 ## modify it under the terms of the GNU General Public License
 ## as published by the Free Software Foundation; either version 2
 ## of the License, or (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 ## 02111-1307, USA.
 
 ABI_ROOT:=$(shell pwd)/../../../..
@@ -38,6 +38,7 @@ CPPSRCS=		pd_Document.cpp			\
 			pp_AttrProp.cpp			\
 			pp_Property.cpp			\
 			pp_TableAttrProp.cpp		\
+			pp_Revision.cpp			\
 			pt_PieceTable.cpp		\
 			pt_PT_Append.cpp	\
 			pt_PT_ChangeObject.cpp	\
@@ -71,7 +72,7 @@ CPPSRCS=		pd_Document.cpp			\
 			px_CH_TestRoutines.cpp          \
 			fd_Field.cpp			\
 			po_Bookmark.cpp
-			
+
 
 LIBRARY_NAME=		AbiPTbl
 LIBRARY_VERSION=	$(ABI_VERSION)

@@ -108,12 +108,38 @@ UT_sint32 PP_Revision::getGreatestLesserOrEqualRevision(UT_uint32 id) const
 		return r;
 }
 
+/*! finds the highest revision number in this attribute
+ */
+UT_sint32 PP_Revision::getLastRevision() const
+{
+	UT_sint32 r = 0;
+
+	for(UT_uint32 i = 0; i < m_vRev.getItemCount(); i++)
+	{
+		UT_sint32 t = (UT_sint32)m_vRev.getNthItem(i);
+		if(abs(t) > abs(r))
+			r = t;
+	}
+
+	return r;
+}
+
+
 /*! given revision level id, this function returns true if given
     segment of text is to be visible, false if it is to be hidden
 */
 bool PP_Revision::isVisible(UT_uint32 id) const
 {
 	return (getGreatestLesserOrEqualRevision(id) >= 0);
+}
+
+/*! returns true if the text should be visible according to the last
+    revision
+*/
+
+bool PP_Revision::isVisible() const
+{
+	return (getLastRevision() >= 0);
 }
 
 /*! adds id to the revision vector handling the special cases where id
