@@ -26,7 +26,7 @@ CSRCS= ttf2t42.c ps.c parse.c util.c encodings.c
 
 build:: $(TARGETS)
 
-OBJS=			$(OBJDIR)/ttf242.$(OBJ_SUFFIX) \
+OBJS=			$(OBJDIR)/ttf2t42.$(OBJ_SUFFIX) \
 			$(OBJDIR)/ps.$(OBJ_SUFFIX) \
 			$(OBJDIR)/parse.$(OBJ_SUFFIX) \
 			$(OBJDIR)/util.$(OBJ_SUFFIX) \
