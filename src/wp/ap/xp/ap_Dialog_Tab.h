@@ -88,6 +88,7 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	// grab tab from the current text/align/leader controls
 	bool buildTab( UT_String & buffer );
 
+	UT_Dimension _getDimension () { return m_dim; }
 	char *_getTabDimensionString(UT_uint32 tabIndex);
 	char *_getTabString(fl_TabStop *pTabInfo);
 	void _deleteTabFromTabString(fl_TabStop *pTabInfo);
@@ -130,6 +131,7 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	void _event_AlignmentChange(void);
 
 	void _event_Set(void);				// buttons
+	void _event_Update(void);
 	void _event_Clear(void);
 	void _event_ClearAll(void);
 

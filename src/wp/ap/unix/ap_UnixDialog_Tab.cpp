@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2005 Robert Staudinger <robsta@stereolyzer.net>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,9 +17,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
-
-// for gtkclist, gtkcombo->gtklist, signal handler blocking
-#undef GTK_DISABLE_DEPRECATED
 
 #include "ut_types.h"
 #include "ut_string.h"
@@ -45,811 +43,789 @@
 
 #include "ap_UnixDialog_Tab.h"
 
-/*****************************************************************/
 
-#define WIDGET_MENU_OPTION_PTR		"menuoptionptr"
-#define WIDGET_MENU_VALUE_TAG		"value"
 
-/*****************************************************************/
+//! Column indices for list-store
+enum {
+	COLUMN_TAB = 0,
+	NUM_COLUMNS
+};
 
-XAP_Dialog * AP_UnixDialog_Tab::static_constructor(XAP_DialogFactory * pFactory,
-                                                         XAP_Dialog_Id id)
+
+
+//! Event dispatcher for default tab width
+static void
+AP_UnixDialog_Tab__onDefaultTabChanged (GtkSpinButton *widget,
+										gpointer	   data) 
 {
-    AP_UnixDialog_Tab * p = new AP_UnixDialog_Tab(pFactory,id);
+	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+	dlg->onDefaultTabChanged (gtk_spin_button_get_value (GTK_SPIN_BUTTON (widget)));
+}
+
+//! Event dispatcher for default tab width
+static gboolean
+AP_UnixDialog_Tab__onDefaultTabFocusOut (GtkWidget 	   *widget,
+										 GdkEventFocus *event,
+										 gpointer 		data)
+{	
+	if (event->type == GDK_FOCUS_CHANGE) {
+		AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+		dlg->onDefaultTabFocusOut ();
+	}
+
+	return FALSE;
+}
+
+//! Event dispatcher for tab list. 
+static void
+AP_UnixDialog_Tab__onTabSelected (GtkTreeSelection *selection,
+								  gpointer 			data) 
+{
+	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+	dlg->onTabSelected ();
+}
+
+//! Event dispatcher for position spinner.
+static void
+AP_UnixDialog_Tab__onPositionChanged (GtkSpinButton *widget,
+									  gpointer		 data) 
+{
+	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+	dlg->onPositionChanged (gtk_spin_button_get_value (GTK_SPIN_BUTTON (widget)));
+}
+
+//! Event dispatcher for position spinner.
+static gboolean
+AP_UnixDialog_Tab__onPositionFocusOut (GtkWidget 	 *widget,
+									   GdkEventFocus *event,
+									   gpointer 	  data)
+{
+	UT_DEBUGMSG (("onPositionFocusOut() '%d' \n", event->type));
+	
+	if (event->type == GDK_FOCUS_CHANGE) {
+		AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+		dlg->onPositionFocusOut ();
+	}
+
+	return FALSE;
+}
+
+//! Event dispatcher for alignment popup-menu.
+static void
+AP_UnixDialog_Tab__onAlignmentChanged (GtkComboBox *widget,
+									   gpointer 	data) 
+{
+	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+	dlg->onAlignmentChanged ();
+}
+
+//! Event dispatcher for leader popup-menu.
+static void
+AP_UnixDialog_Tab__onLeaderChanged (GtkComboBox *widget,
+									   gpointer  data) 
+{
+	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+	dlg->onLeaderChanged ();
+}
+
+//! Event dispatcher for button "Add".
+static void
+AP_UnixDialog_Tab__onAddTab (GtkButton *widget,
+							 gpointer	data) 
+{
+	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+	dlg->onAddTab ();
+}
+
+//! Event dispatcher for button "Delete".
+static void
+AP_UnixDialog_Tab__onDeleteTab (GtkButton *widget,
+								gpointer   data) 
+{
+	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+	dlg->onDeleteTab ();
+}
+
+//! Callback for closing window via window manager.
+static gboolean
+AP_UnixDialog_Tab__onCloseWindow (GtkWidget *widget,
+								  GdkEvent  *event,
+								  gpointer   data)
+{
+	AP_UnixDialog_Tab *dlg = static_cast<AP_UnixDialog_Tab*>(data);
+	gtk_dialog_response (GTK_DIALOG (dlg->getWindow ()), GTK_RESPONSE_CLOSE);
+	return TRUE;
+}
+
+
+
+//! Abi style static ctor
+XAP_Dialog * 
+AP_UnixDialog_Tab::static_constructor (XAP_DialogFactory *pDlgFactory,
+									   XAP_Dialog_Id 	  id)
+{
+    AP_UnixDialog_Tab * p = new AP_UnixDialog_Tab (pDlgFactory, id);
     return p;
 }
 
-AP_UnixDialog_Tab::AP_UnixDialog_Tab(XAP_DialogFactory * pDlgFactory,
-                                                 XAP_Dialog_Id id)
-    : AP_Dialog_Tab(pDlgFactory,id)
+//! Ctor.
+AP_UnixDialog_Tab::AP_UnixDialog_Tab (XAP_DialogFactory *pDlgFactory,
+									  XAP_Dialog_Id 	 id)
+  : AP_Dialog_Tab  (pDlgFactory, id),
+	m_pXML		   (NULL), 
+	m_wDialog	   (NULL),
+	m_sbDefaultTab (NULL),
+	m_lvTabs	   (NULL),
+	m_btDelete	   (NULL),
+	m_sbPosition   (NULL),
+	m_cobAlignment (NULL),
+	m_cobLeader	   (NULL)
 {
-	m_current_alignment = FL_TAB_LEFT;
-	m_current_leader	= FL_LEADER_NONE;
-	m_bInSetCall		= false;
-
 }
 
-AP_UnixDialog_Tab::~AP_UnixDialog_Tab(void)
+//! Dtor.
+AP_UnixDialog_Tab::~AP_UnixDialog_Tab (void)
 {
+	gint i;
 
+	for (i = 0; i < __FL_TAB_MAX; i++) {
+		if (m_AlignmentMapping[i] != NULL)
+			g_free (m_AlignmentMapping[i]);
+			m_AlignmentMapping[i] = NULL;
+	}
+
+	for (i = 0; i < __FL_LEADER_MAX; i++) {
+		if (m_LeaderMapping[i] != NULL)
+			g_free (m_LeaderMapping[i]);
+			m_LeaderMapping[i] = NULL;
+	}
 }
 
-/*****************************************************************/
 
-void AP_UnixDialog_Tab::runModal(XAP_Frame * pFrame)
+
+//! Abi style run method.
+void AP_UnixDialog_Tab::runModal (XAP_Frame *pFrame)
 {
     // Build the window's widgets and arrange them
-    GtkWidget * mainWindow = _constructWindow();
-    UT_return_if_fail(mainWindow);
+    m_wDialog = _constructWindow ();
+    UT_return_if_fail (m_wDialog);
 
     // save for use with event
     m_pFrame = pFrame;
 
-    _populateWindowData();
-
     // Populate the window's data items
+    _populateWindowData ();
 
-    switch ( abiRunModalDialog(GTK_DIALOG(mainWindow), pFrame, this, BUTTON_CANCEL, false) )
-      {
-      case BUTTON_OK:
-	event_OK () ; break ;
-      default:
-	event_Cancel(); break ;
-      }
+    abiRunModalDialog (GTK_DIALOG (m_wDialog), pFrame, this, GTK_RESPONSE_CLOSE, false);
 
-    abiDestroyWidget(mainWindow);
+	// TODO save state of expander
+
+	// GtkWidget *wDialog = m_wDialog;
+	// m_wDialog = NULL;
+    // gtk_widget_destroy (wDialog);
+    gtk_widget_destroy (m_wDialog);
+	m_wDialog = NULL;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// unix specific handlers 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void AP_UnixDialog_Tab::event_OK(void)
+//! Load dialog from glade.
+GtkWidget * 
+AP_UnixDialog_Tab::_constructWindow ()
 {
-    m_answer = AP_Dialog_Tab::a_OK;
-    _storeWindowData();
-}
+    // get the path where our glade file is located
+    XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(m_pApp);
+    UT_String glade_path (pApp->getAbiSuiteAppGladeDir ());
+    glade_path += "/ap_UnixDialog_Tab.glade";
 
-void AP_UnixDialog_Tab::event_Cancel(void)
-{
-    m_answer = AP_Dialog_Tab::a_CANCEL;
-}
+    // load the dialog from the glade file
+    m_pXML = abiDialogNewFromXML (glade_path.c_str ());
+	UT_return_val_if_fail (m_pXML != NULL, NULL);
 
-/*****************************************************************/
-#define CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(w)				\
-        do {												\
-	        g_signal_connect(G_OBJECT(w), "activate",	\
-                G_CALLBACK(s_menu_item_activate),		\
-                reinterpret_cast<gpointer>(this));							\
-        } while (0)
+    GtkWidget *wDialog = glade_xml_get_widget (m_pXML, "ap_UnixDialog_Tab");
 
-GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
-{
-	
-	GtkWidget *windowTabs;
-	GtkAccelGroup *accel_group;
 
-	accel_group = gtk_accel_group_new ();
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
+	// localise	
 	UT_UTF8String s;
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_TabTitle,s);
-	windowTabs = abiDialogNew("tab dialog", TRUE, s.utf8_str());
-	g_object_set_data (G_OBJECT (windowTabs), "windowTabs", windowTabs);
-
-	_constructWindowContents(windowTabs);
-
-	// create the accelerators from &'s
-	createLabelAccelerators(windowTabs);
-
-	gtk_window_add_accel_group (GTK_WINDOW (windowTabs), accel_group);
-
-	return windowTabs;
-}
-
-void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
-{
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
-
-	buttonCancel = abiAddStockButton(GTK_DIALOG(windowTabs), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-	buttonOK = abiAddStockButton(GTK_DIALOG(windowTabs), GTK_STOCK_OK, BUTTON_OK);
-
-	m_buttonOK = buttonOK;
-	m_buttonCancel = buttonCancel;
-}
-
-void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
-{
-   //////////////////////////////////////////////////////////////////////
-	// BEGIN: glade stuff
-
-	GtkWidget *table13;
-	GtkWidget *hbuttonbox4;
-	GtkWidget *buttonSet;
-	GtkWidget *buttonClear;
-	GtkWidget *buttonClearAll;
-	GtkWidget *hbuttonbox3;
-	GtkWidget *hbox10;
-	GtkWidget *label8;
-	GtkWidget *hbox11;
-	GtkWidget *vbox4;
-	GtkWidget *hbox15;
-	GtkWidget *label13;
-	GtkWidget *entryTabEntry;
-	GtkWidget *hbox16;
-	GtkWidget *label14;
-	GtkWidget *frame3;
-	GtkWidget *listTabs;
-	GtkWidget *table14;
-	GtkWidget *hbox13;
-	GtkWidget *label10;
-	GtkWidget *hseparator6;
-	GtkWidget *hbox14;
-	GtkWidget *label11;
-	GtkWidget *hseparator7;
-	GSList *group_align_group = NULL;
-	GtkWidget *radiobuttonDecimal;
-	GtkWidget *radiobuttonLeft;
-	GtkWidget *radiobuttonCenter;
-	GtkWidget *radiobuttonRight;
-	GtkWidget *radiobuttonBar;
-	GSList *group_leader_group = NULL;
-	GtkWidget *radiobuttonLeaderDash;
-	GtkWidget *radiobuttonLeaderDot;
-	GtkWidget *radiobuttonLeaderNone;
-	GtkWidget *radiobuttonLeaderUnderline;
-	GtkWidget *hbox12;
-	GtkWidget *label9;
-	GtkObject *spinbuttonTabstop_adj;
-	GtkWidget *spinbuttonTabstop;
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
-	table13 = gtk_table_new (5, 1, FALSE);
-	gtk_widget_show (table13);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(windowTabs)->vbox), table13);
-
-	hbuttonbox4 = gtk_hbutton_box_new ();
-	gtk_widget_show (hbuttonbox4);
-	gtk_table_attach (GTK_TABLE (table13), hbuttonbox4, 0, 1, 2, 3,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 6, 6);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox4), GTK_BUTTONBOX_END);
-#if 0
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox4), 9);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox4), 0, 0);
-#endif
-
-	UT_UTF8String s;
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Button_Set,s);
-	buttonSet = gtk_button_new_with_label(s.utf8_str());
-	gtk_widget_show (buttonSet);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonSet);
-	GTK_WIDGET_SET_FLAGS (buttonSet, GTK_CAN_DEFAULT);
-
-	buttonClear = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
-	gtk_widget_show (buttonClear);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClear);
-	GTK_WIDGET_SET_FLAGS (buttonClear, GTK_CAN_DEFAULT);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Button_ClearAll,s);
-	buttonClearAll = gtk_button_new_with_label(s.utf8_str());
-	gtk_widget_show (buttonClearAll);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox4), buttonClearAll);
-	GTK_WIDGET_SET_FLAGS (buttonClearAll, GTK_CAN_DEFAULT);
-
-	hbuttonbox3 = gtk_hbutton_box_new ();
-	m_GnomeButtons = hbuttonbox3;
-	gtk_widget_show (hbuttonbox3);
-	gtk_table_attach (GTK_TABLE (table13), hbuttonbox3, 0, 1, 4, 5,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox3), GTK_BUTTONBOX_END);
-#if 0
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox3), 5);
-	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox3), 0, 0);
-#endif
-
-	//
-	// Construct the buttons to be gnomified
-	//
-        m_wTable = table13;
-	_constructGnomeButtons(windowTabs);
-
-
-	hbox10 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox10);
-	gtk_table_attach (GTK_TABLE (table13), hbox10, 0, 1, 1, 2,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_FILL), 0, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_TabToClear,s);
-	label8 = gtk_label_new (s.utf8_str());
-	gtk_widget_show (label8);
-	gtk_box_pack_start (GTK_BOX (hbox10), label8, FALSE, FALSE, 0);
-	gtk_label_set_justify (GTK_LABEL (label8), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_padding (GTK_MISC (label8), 10, 0);
-
-	hbox11 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox11);
-	gtk_table_attach (GTK_TABLE (table13), hbox11, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	vbox4 = gtk_vbox_new (FALSE, 0);
-	gtk_widget_show (vbox4);
-	gtk_box_pack_start (GTK_BOX (hbox11), vbox4, TRUE, TRUE, 5);
-
-	hbox15 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox15);
-	gtk_box_pack_start (GTK_BOX (vbox4), hbox15, FALSE, FALSE, 5);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_TabPosition,s);
-	label13 = gtk_label_new (s.utf8_str());
-	gtk_widget_show (label13);
-	gtk_box_pack_start (GTK_BOX (hbox15), label13, FALSE, TRUE, 0);
-	gtk_label_set_justify (GTK_LABEL (label13), GTK_JUSTIFY_LEFT);
-
-	entryTabEntry = gtk_entry_new ();
-	gtk_widget_show (entryTabEntry);
-	gtk_box_pack_start (GTK_BOX (vbox4), entryTabEntry, FALSE, FALSE, 1);
-
-	hbox16 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox16);
-	gtk_box_pack_start (GTK_BOX (vbox4), hbox16, TRUE, TRUE, 1);
-
-	label14 = gtk_label_new ("     ");
-	gtk_widget_show (label14);
-	gtk_box_pack_start (GTK_BOX (hbox16), label14, FALSE, TRUE, 0);
-
-	frame3 = gtk_frame_new (NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(frame3), GTK_SHADOW_NONE);
-	gtk_widget_show (frame3);
-	gtk_box_pack_start (GTK_BOX (hbox16), frame3, TRUE, TRUE, 0);
-
-	listTabs = gtk_list_new ();
-	gtk_widget_show (listTabs);
-	gtk_container_add (GTK_CONTAINER (frame3), listTabs);
-
-	table14 = gtk_table_new (8, 2, FALSE);
-	gtk_widget_show (table14);
-	gtk_box_pack_start (GTK_BOX (hbox11), table14, TRUE, TRUE, 0);
-
-	hbox13 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox13);
-	gtk_table_attach (GTK_TABLE (table14), hbox13, 0, 2, 1, 2,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_Alignment,s);
-	label10 = gtk_label_new (s.utf8_str());
-	gtk_widget_show (label10);
-	gtk_box_pack_start (GTK_BOX (hbox13), label10, FALSE, FALSE, 0);
-	gtk_misc_set_padding (GTK_MISC (label10), 5, 0);
-
-	hseparator6 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator6);
-	gtk_box_pack_start (GTK_BOX (hbox13), hseparator6, TRUE, TRUE, 0);
-
-	hbox14 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox14);
-	gtk_table_attach (GTK_TABLE (table14), hbox14, 0, 2, 5, 6,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_Leader,s);
-	label11 = gtk_label_new (s.utf8_str());
-	gtk_widget_show (label11);
-	gtk_box_pack_start (GTK_BOX (hbox14), label11, FALSE, FALSE, 0);
-	gtk_misc_set_padding (GTK_MISC (label11), 5, 0);
-
-	hseparator7 = gtk_hseparator_new ();
-	gtk_widget_show (hseparator7);
-	gtk_box_pack_start (GTK_BOX (hbox14), hseparator7, TRUE, TRUE, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Decimal,s);
-	radiobuttonDecimal = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
-	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonDecimal));
-	gtk_widget_show (radiobuttonDecimal);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonDecimal, 1, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Left,s);
-	radiobuttonLeft = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
-	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeft));
-	gtk_widget_show (radiobuttonLeft);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeft, 0, 1, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radiobuttonLeft), TRUE);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Center,s);
-	radiobuttonCenter = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
-	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonCenter));
-	gtk_widget_show (radiobuttonCenter);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonCenter, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Right,s);
-	radiobuttonRight = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
-	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonRight));
-	gtk_widget_show (radiobuttonRight);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonRight, 0, 1, 4, 5,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Bar,s);
-	radiobuttonBar = gtk_radio_button_new_with_label (group_align_group,s.utf8_str());
-	group_align_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonBar));
-	gtk_widget_show (radiobuttonBar);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonBar, 1, 2, 3, 4,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Dash,s);
-	radiobuttonLeaderDash = gtk_radio_button_new_with_label (group_leader_group,s.utf8_str());
+    const XAP_StringSet *pSS = m_pApp->getStringSet ();
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_TabTitle, s);
+    gtk_window_set_title (GTK_WINDOW (wDialog), s.utf8_str());	
 	
-	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderDash));
-	gtk_widget_show (radiobuttonLeaderDash);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDash, 1, 2, 6, 7,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Dot,s);
-	radiobuttonLeaderDot = gtk_radio_button_new_with_label (group_leader_group,s.utf8_str());
-	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderDot));
-	gtk_widget_show (radiobuttonLeaderDot);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderDot, 0, 1, 7, 8,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_None,s);
-	radiobuttonLeaderNone = gtk_radio_button_new_with_label (group_leader_group,s.utf8_str());
-	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderNone));
-	gtk_widget_show (radiobuttonLeaderNone);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderNone, 0, 1, 6, 7,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 10, 0);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radiobuttonLeaderNone), TRUE);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Radio_Underline,s);
-	radiobuttonLeaderUnderline = gtk_radio_button_new_with_label (group_leader_group,s.utf8_str());
-	group_leader_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (radiobuttonLeaderUnderline));
-	gtk_widget_show (radiobuttonLeaderUnderline);
-	gtk_table_attach (GTK_TABLE (table14), radiobuttonLeaderUnderline, 1, 2, 7, 8,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 0);
-
-	hbox12 = gtk_hbox_new (FALSE, 0);
-	gtk_widget_show (hbox12);
-	gtk_table_attach (GTK_TABLE (table14), hbox12, 0, 2, 0, 1,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 5, 5);
-
-	pSS->getValueUTF8( AP_STRING_ID_DLG_Tab_Label_DefaultTS,s);
-	label9 = gtk_label_new (s.utf8_str());
-	gtk_widget_show (label9);
-	gtk_box_pack_start (GTK_BOX (hbox12), label9, FALSE, FALSE, 1);
-
-	spinbuttonTabstop_adj = gtk_adjustment_new (1, -1000, 1000, 3, 3, 10);
-        spinbuttonTabstop = gtk_entry_new();
-	gtk_widget_show (spinbuttonTabstop);
-	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop, TRUE, TRUE, 0);
-	gtk_editable_set_editable(GTK_EDITABLE( spinbuttonTabstop),FALSE);
-	GtkWidget * spinbuttonTabstop_dum = gtk_spin_button_new (GTK_ADJUSTMENT (spinbuttonTabstop_adj), 1, 0);
-	gtk_entry_set_visibility(GTK_ENTRY(spinbuttonTabstop_dum), false);
-	gtk_widget_show (spinbuttonTabstop_dum);
-	gtk_widget_set_size_request(spinbuttonTabstop_dum,0,0);
-	gtk_box_pack_start (GTK_BOX (hbox12), spinbuttonTabstop_dum, FALSE,FALSE, 0);
+	localizeLabelMarkup (glade_xml_get_widget (m_pXML, "lbDefaultTab"), pSS, AP_STRING_ID_DLG_Tab_Label_DefaultTS);
+	localizeLabelMarkup (glade_xml_get_widget (m_pXML, "lbUserTabs"), pSS, AP_STRING_ID_DLG_Tab_Label_Existing);
+	localizeLabelMarkup (glade_xml_get_widget (m_pXML, "lbPosition"), pSS, AP_STRING_ID_DLG_Tab_Label_Position);
+	localizeLabelMarkup (glade_xml_get_widget (m_pXML, "lbAlignment"), pSS, AP_STRING_ID_DLG_Tab_Label_Alignment);
+	localizeLabelMarkup (glade_xml_get_widget (m_pXML, "lbLeader"), pSS, AP_STRING_ID_DLG_Tab_Label_Leader);
 
 
-    //////////////////////////////////////////////////////////////////////
-	// END: glade stuff
+	// initialise
 
-    g_signal_connect(G_OBJECT(buttonSet),
-                       "clicked",
-                       G_CALLBACK(s_set_clicked),
-                       reinterpret_cast<gpointer>(this));
+	m_sbDefaultTab = glade_xml_get_widget (m_pXML, "sbDefaultTab");
+	gtk_spin_button_set_digits (GTK_SPIN_BUTTON (m_sbDefaultTab), UT_getDimensionPrecisicion (m_dim));
+ 	// FIXME set max that fits on page gtk_spin_button_set_range (GTK_SPIN_BUTTON (m_sbDefaultTab),	0, ...);
 
-    g_signal_connect(G_OBJECT(buttonClear),
-                       "clicked",
-                       G_CALLBACK(s_clear_clicked),
-                       reinterpret_cast<gpointer>(this));
+	m_btDelete = glade_xml_get_widget (m_pXML, "btDelete");
 
-    g_signal_connect(G_OBJECT(buttonClearAll),
-                       "clicked",
-                       G_CALLBACK(s_clear_all_clicked),
-                       reinterpret_cast<gpointer>(this));
+	m_sbPosition = glade_xml_get_widget (m_pXML, "sbPosition");
+	gtk_spin_button_set_digits (GTK_SPIN_BUTTON (m_sbPosition), UT_getDimensionPrecisicion (m_dim));
+ 	// FIXME set max that fits on page gtk_spin_button_set_range (GTK_SPIN_BUTTON (m_sbPosition),	0, ...);
 
-    g_signal_connect(G_OBJECT(entryTabEntry),
-                       "changed",
-                       G_CALLBACK(s_edit_change),
-                       reinterpret_cast<gpointer>(this));
+	GtkWidget *tblNew = glade_xml_get_widget (m_pXML, "tblNew");
 
-    g_signal_connect(spinbuttonTabstop_adj,
-                       "value_changed",
-                       G_CALLBACK(s_spin_default_changed),
-                       reinterpret_cast<gpointer>(this));
-
-    // Update member variables with the important widgets that
-    // might need to be queried or altered later.
+	m_cobAlignment = gtk_combo_box_new_text ();
+	gtk_widget_show (m_cobAlignment);
+	gtk_table_attach (GTK_TABLE (tblNew), m_cobAlignment, 
+					  1, 2, 1, 2,
+					  (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), GTK_EXPAND, 
+					  0, 0);
 
 
-        m_iDefaultSpin =  static_cast<UT_sint32>(GTK_ADJUSTMENT(spinbuttonTabstop_adj)->value);
-        m_oDefaultSpin_adj = spinbuttonTabstop_adj;
-	m_Widgets.setNthItem( id_EDIT_TAB,				entryTabEntry,		NULL);
-	m_Widgets.setNthItem( id_LIST_TAB,				listTabs,			NULL);
-	m_Widgets.setNthItem( id_SPIN_DEFAULT_TAB_STOP,	spinbuttonTabstop,	NULL);
+	XML_Char *trans = NULL;
 
-	m_Widgets.setNthItem( id_ALIGN_LEFT,			radiobuttonLeft,	NULL);
-	m_Widgets.setNthItem( id_ALIGN_CENTER,			radiobuttonCenter,	NULL);
-	m_Widgets.setNthItem( id_ALIGN_RIGHT,			radiobuttonRight,	NULL);
-	m_Widgets.setNthItem( id_ALIGN_DECIMAL,			radiobuttonDecimal,	NULL);
-	m_Widgets.setNthItem( id_ALIGN_BAR,				radiobuttonBar,		NULL);
+	// placeholder so we stick to the enum's ordering
+	// does not show up in UI
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_NoAlign, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	m_AlignmentMapping[FL_TAB_NONE] = trans;
 
-	m_Widgets.setNthItem( id_LEADER_NONE,			radiobuttonLeaderNone,		NULL);
-	m_Widgets.setNthItem( id_LEADER_DOT,			radiobuttonLeaderDot,		NULL);
-	m_Widgets.setNthItem( id_LEADER_DASH,			radiobuttonLeaderDash,		NULL);
-	m_Widgets.setNthItem( id_LEADER_UNDERLINE,		radiobuttonLeaderUnderline,	NULL);
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Left, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	m_AlignmentMapping[FL_TAB_LEFT] = trans;
 
-	m_Widgets.setNthItem( id_BUTTON_SET,			buttonSet,					NULL);
-	m_Widgets.setNthItem( id_BUTTON_CLEAR,			buttonClear,				NULL);
-	m_Widgets.setNthItem( id_BUTTON_CLEAR_ALL,		buttonClearAll,				NULL);
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Center, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	m_AlignmentMapping[FL_TAB_CENTER] = trans;
 
-	m_Widgets.setNthItem( id_BUTTON_OK,			m_buttonOK,					NULL);
-	m_Widgets.setNthItem( id_BUTTON_CANCEL,			m_buttonCancel,				NULL);
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Right, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	m_AlignmentMapping[FL_TAB_RIGHT] = trans;
 
-	// some lists of signals to set
-	tControl id;
-	for ( id = id_ALIGN_LEFT; id <= id_ALIGN_BAR; id = (tControl)(static_cast<UT_uint32>(id) + 1))
-	{
-		GtkWidget *w = _lookupWidget(id);
-		g_signal_connect(G_OBJECT(w),
-						   "toggled",
-						   G_CALLBACK(s_alignment_change),
-						   static_cast<gpointer>(this));
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Decimal, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	m_AlignmentMapping[FL_TAB_DECIMAL] = trans;
 
-		// set the "userdata" to be the tALignment
-		g_object_set_data( G_OBJECT(w), "user_data",
-								  reinterpret_cast<gpointer>(static_cast<UT_uint32>(id) - static_cast<UT_uint32>(id_ALIGN_LEFT) + static_cast<UT_uint32>(FL_TAB_LEFT)));
-	}
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Bar, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobAlignment), trans);
+	m_AlignmentMapping[FL_TAB_BAR] = trans;
 
-	for ( id = id_LEADER_NONE; id <= id_LEADER_UNDERLINE; id = (tControl)(static_cast<UT_uint32>(id) + 1))
-	{
-		GtkWidget *w = _lookupWidget(id);
-		g_signal_connect(G_OBJECT(w),
-						   "toggled",
-						   G_CALLBACK(s_leader_change),
-						   static_cast<gpointer>(this));
 
-		// set the "userdata" to be the tALignment
-		g_object_set_data( G_OBJECT(w), "user_data",
-								  reinterpret_cast<gpointer>(static_cast<UT_uint32>(id) - static_cast<UT_uint32>(id_LEADER_NONE) + static_cast<UT_uint32>(FL_LEADER_NONE)));
-	}
+	m_cobLeader = gtk_combo_box_new_text ();
+	gtk_widget_show (m_cobLeader);
+	gtk_table_attach (GTK_TABLE (tblNew), m_cobLeader, 
+					  1, 2, 2, 3,
+					  (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), GTK_EXPAND, 
+					  0, 0);
 
-	// create user data tControl -> stored in widgets 
-	for ( int i = 0; i < id_last; i++ )
-	{
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_None, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobLeader), trans);
+	m_LeaderMapping[FL_LEADER_NONE] = trans;
 
-		GtkWidget *w = _lookupWidget( static_cast<tControl>(i) );
-		UT_ASSERT( w && GTK_IS_WIDGET(w) );
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Dot, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobLeader), trans);
+	m_LeaderMapping[FL_LEADER_DOT] = trans;
 
-		/* check to see if there is any data already stored there (note, will
-		 * not work if 0's is stored in multiple places  */
-		UT_ASSERT( g_object_get_data(G_OBJECT(w), "tControl" ) == NULL);
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Dash, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobLeader), trans);
+	m_LeaderMapping[FL_LEADER_HYPHEN] = trans;
 
-		g_object_set_data( G_OBJECT(w), "tControl", reinterpret_cast<gpointer>(i) );
-	}
+	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Underline, s);
+	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	gtk_combo_box_append_text (GTK_COMBO_BOX (m_cobLeader), trans);
+	m_LeaderMapping[FL_LEADER_UNDERLINE] = trans;
+	
+
+	// liststore and -view
+	m_lvTabs = glade_xml_get_widget (m_pXML, "lvTabs");
+	GtkListStore *store = gtk_list_store_new (NUM_COLUMNS, G_TYPE_STRING);
+	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvTabs), GTK_TREE_MODEL (store));
+	g_object_unref (G_OBJECT (store));
+
+	// column
+	GtkCellRenderer *renderer = NULL;
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_lvTabs),
+												-1, "Name", renderer,
+												"text", COLUMN_TAB,
+												NULL);
+	GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_lvTabs), 0);
+	gtk_tree_view_column_set_sort_column_id (column, COLUMN_TAB);
+
+	// FIXME not implemented dialog before move to glade
+	m_LeaderMapping[FL_LEADER_THICKLINE] = NULL;
+	m_LeaderMapping[FL_LEADER_EQUALSIGN] = NULL;
+
+	_connectSignals (m_pXML);
+
+	return wDialog;
 }
 
-GtkWidget *AP_UnixDialog_Tab::_lookupWidget ( tControl id )
+//! Connect callbacks.
+void
+AP_UnixDialog_Tab::_connectSignals (GladeXML *pXML)
 {
-	UT_return_val_if_fail(m_Widgets.getItemCount() > static_cast<UT_uint32>(id), NULL);
+    m_hSigDefaultTabChanged = g_signal_connect (m_sbDefaultTab, 
+					  "value-changed", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onDefaultTabChanged), 
+					  (gpointer)this);
+	
+	g_signal_connect (m_sbDefaultTab, 
+					  "focus-out-event", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onDefaultTabFocusOut), 
+					  (gpointer)this);
+	
 
-	GtkWidget *w = m_Widgets.getNthItem(static_cast<UT_uint32>(id));
-	UT_ASSERT(w && GTK_IS_WIDGET(w));
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW (m_lvTabs));
+    g_signal_connect (selection, 
+					  "changed", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onTabSelected), 
+					  (gpointer)this);
 
-	return w;
+
+    m_hSigPositionChanged = g_signal_connect (m_sbPosition, 
+					  "value-changed", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onPositionChanged), 
+					  (gpointer)this);
+
+	g_signal_connect (m_sbPosition, 
+					  "focus-out-event", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onPositionFocusOut), 
+					  (gpointer)this);
+
+
+    m_hSigAlignmentChanged = g_signal_connect (m_cobAlignment, 
+					  "changed", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onAlignmentChanged), 
+					  (gpointer)this);
+	
+    m_hSigLeaderChanged = g_signal_connect (m_cobLeader, 
+					  "changed", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onLeaderChanged), 
+					  (gpointer)this);	
+
+    g_signal_connect (glade_xml_get_widget (pXML, "btAdd"), 
+					  "clicked", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onAddTab), 
+					  (gpointer)this);
+
+    g_signal_connect (m_btDelete, 
+					  "clicked", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onDeleteTab), 
+					  (gpointer)this);
+
+    g_signal_connect (glade_xml_get_widget (pXML, "ap_UnixDialog_Tab"), 
+					  "delete-event", 
+					  G_CALLBACK (AP_UnixDialog_Tab__onCloseWindow), 
+					  (gpointer)this);
 }
 
-void AP_UnixDialog_Tab::_controlEnable( tControl id, bool value )
-{
-	GtkWidget *w = _lookupWidget(id);
-	UT_return_if_fail( w && GTK_IS_WIDGET(w) );
-	gtk_widget_set_sensitive( w, value );
-}
-
-
-void AP_UnixDialog_Tab::_spinChanged(void)
-{
-        UT_sint32 i =  static_cast<UT_sint32>(GTK_ADJUSTMENT(m_oDefaultSpin_adj)->value);
-	UT_sint32 amt = i - m_iDefaultSpin;
-	if(amt < 0)
-	      amt = -1;
-	else if(amt > 0)
-	      amt = 1;
-	_doSpin(id_SPIN_DEFAULT_TAB_STOP, amt);
-	m_iDefaultSpin = i;
-}
-
-
-/*****************************************************************/
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// WP level events
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
- 
-/*static*/ void AP_UnixDialog_Tab::s_spin_default_changed(GtkWidget * widget, gpointer data )
+/*!
+* Auto-apply changed tab width.
+* \param value width.
+*/
+void 
+AP_UnixDialog_Tab::onDefaultTabChanged (double value)
 { 
-	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
-	dlg->_spinChanged();
+	UT_Dimension dim = _getDimension ();
+	const gchar *text = UT_formatDimensionString (dim, value);
+	gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text);
+
+    _storeWindowData ();
 }
 
-
-/*static*/ void AP_UnixDialog_Tab::s_set_clicked(GtkWidget * widget, gpointer data )
-{ 
-	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
-	UT_return_if_fail(widget && dlg); 
-	dlg->_event_Set();	
-}
-
-/*static*/ void AP_UnixDialog_Tab::s_clear_clicked(GtkWidget * widget, gpointer data )
-{ 
-	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
-	UT_return_if_fail(widget && dlg); 
-	dlg->_event_Clear(); 
-}
-
-/*static*/ void AP_UnixDialog_Tab::s_clear_all_clicked(GtkWidget * widget, gpointer data )
-{ 
-	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
-	UT_return_if_fail(widget && dlg); 
-	dlg->_event_ClearAll(); 
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// Listbox stuff
-
-// TODO - This should be moved to XAP code, but the methods in which GTK and
-// windows handles selection/deselection differ so much, it's easier just to
-// code up the hooks directly.
-
-/*static*/ void AP_UnixDialog_Tab::s_list_select(GtkWidget * widget, gpointer data )
+//! Validate tab width, apply if ok.
+void 
+AP_UnixDialog_Tab::onDefaultTabFocusOut ()
 {
-	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
-	UT_return_if_fail(dlg); 
-	UT_return_if_fail(widget && GTK_IS_LIST_ITEM(widget));
-
-	// get the -1, 0.. (n-1) index
-	dlg->m_iGtkListIndex = gtk_list_child_position(GTK_LIST(dlg->_lookupWidget(id_LIST_TAB)), widget);
-
-	dlg->_event_TabSelected( dlg->m_iGtkListIndex );
-}
-
-/*static*/ void AP_UnixDialog_Tab::s_list_deselect(GtkWidget * widget, gpointer data )
-{
-	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
-	UT_return_if_fail(widget && dlg); 
-	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_list_deselect\n"));
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// edit box stuff
-
-/*static*/ void AP_UnixDialog_Tab::s_edit_change(GtkWidget * widget, gpointer data )
-{
-	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
-	UT_return_if_fail(widget && dlg); 
-	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_edit_change\n"));
-
-	dlg->_event_TabChange();
-}
-
-/*static*/ void AP_UnixDialog_Tab::s_alignment_change( GtkWidget *widget, gpointer data )
-{
-	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
-	UT_return_if_fail(widget && dlg); 
-
-	// we're only interested in "i'm not toggled"
-	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
-		return;
-
-	dlg->m_current_alignment = static_cast<eTabType>(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), "user_data")));
-
-	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_alignment_change [%c]\n", AlignmentToChar(dlg->m_current_alignment)));
-	dlg->_event_AlignmentChange();
-}
-
-/*static*/ void AP_UnixDialog_Tab::s_leader_change( GtkWidget *widget, gpointer data )
-{
-	AP_UnixDialog_Tab * dlg = static_cast<AP_UnixDialog_Tab *>(data);
-	UT_return_if_fail(widget && dlg); 
-	
-	// we're only interested in "i'm not toggled"
-	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
-		return;
-	
-	dlg->m_current_leader = static_cast<eTabLeader>(GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget), "user_data")));
-	
-	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_leader_change\n"));
-	dlg->_event_somethingChanged();
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-eTabType AP_UnixDialog_Tab::_gatherAlignment()
-{
-	return m_current_alignment;
-}
-
-void AP_UnixDialog_Tab::_setAlignment( eTabType a )
-{
-	tControl id = id_ALIGN_LEFT;
-	
-	
-	switch(a)
-		{
-		case FL_TAB_LEFT:
-			id = id_ALIGN_LEFT;
-			break;
-
-		case FL_TAB_CENTER:
-			id = id_ALIGN_CENTER;
-			break;
-
-		case FL_TAB_RIGHT:
-			id = id_ALIGN_RIGHT;
-			break;
-
-		case FL_TAB_DECIMAL:
-			id = id_ALIGN_DECIMAL;
-			break;
-
-		case FL_TAB_BAR:
-			id = id_ALIGN_BAR;
-			break;
-
-			// FL_TAB_NONE, __FL_TAB_MAX
-		default:
-		  return;
+	const gchar *text = gtk_entry_get_text (GTK_ENTRY (m_sbDefaultTab));
+	if (UT_isValidDimensionString (text)) {
+		// set
+		float pos;
+		sscanf (text, "%f", &pos);
+		UT_Dimension dim = UT_determineDimension(text, _getDimension ());
+		UT_DEBUGMSG (("onDefaultTabFocusOut() %d/%d (%s/%f)\n", dim, _getDimension (), text, pos));
+		if (dim != _getDimension ()) {
+			pos = UT_convertDimensions(pos, dim, _getDimension ());
 		}
-	// time to set the alignment radiobutton widget
-	GtkWidget *w = _lookupWidget( id); 
-	UT_return_if_fail(w && GTK_IS_RADIO_BUTTON(w));
 
-	// tell the change routines to ignore this message
-	m_bInSetCall = true;
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
-	m_bInSetCall = false;
+		const gchar *text = UT_formatDimensionString (dim, pos);
+		UT_DEBUGMSG (("onDefaultTabFocusOut() '%s'\n", text));
 
-	m_current_alignment = a;
+		g_signal_handler_block (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbDefaultTab), pos);
+		gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text);
+		g_signal_handler_unblock (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
 
-}
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-eTabLeader AP_UnixDialog_Tab::_gatherLeader()
-{
-	return m_current_leader;
-}
-
-void AP_UnixDialog_Tab::_setLeader( eTabLeader a )
-{
-	// NOTE - tControl id_LEADER_NONE .. id_ALIGN_BAR must be in the same order
-	// as the tAlignment enums.
-
-	// magic noted above
-	tControl id = (tControl)(static_cast<UT_uint32>(id_LEADER_NONE) + static_cast<UT_uint32>(a));	
-	UT_return_if_fail( id >= id_LEADER_NONE && id <= id_LEADER_UNDERLINE );
-
-	// time to set the alignment radiobutton widget
-	GtkWidget *w = _lookupWidget( id );
-	UT_return_if_fail(w && GTK_IS_RADIO_BUTTON(w));
-
-	// tell the change routines to ignore this message
-
-	m_bInSetCall = true;
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(w), TRUE );
-	m_bInSetCall = false;
-
-	m_current_leader = a;
-}
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-const XML_Char* AP_UnixDialog_Tab::_gatherDefaultTabStop()
-{
-        return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_SPIN_DEFAULT_TAB_STOP ) ) );
-}
-
-void AP_UnixDialog_Tab::_setDefaultTabStop( const XML_Char* defaultTabStop )
-{
-	GtkWidget *w = _lookupWidget( id_SPIN_DEFAULT_TAB_STOP );
-
-	// then set the text
-
-	gtk_entry_set_text( GTK_ENTRY(w), defaultTabStop );
-}
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-void AP_UnixDialog_Tab::_setTabList(UT_uint32 count)
-{
-	GList *gList = NULL;
-	GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
-	UT_uint32 i;
-
-	// clear all the items from the list
-	gtk_list_clear_items( wList, 0, -1 );
-
-	for ( i = 0; i < count; i++ )
-	{
-		GtkWidget *li = gtk_list_item_new_with_label( _getTabDimensionString(i));
-
-		// we want to DO stuff
-		g_signal_connect(G_OBJECT(li),
-						   "select",
-						   G_CALLBACK(s_list_select),
-						   static_cast<gpointer>(this));
-
-		// show this baby
-		gtk_widget_show(li);
-
-		gList = g_list_append( gList, li );
+	    _storeWindowData ();
 	}
+	else {
+		// reset
+		UT_Dimension dim = _getDimension ();
+		gdouble value = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbDefaultTab));
+		const gchar *text = UT_formatDimensionString (dim, value);
+
+		g_signal_handler_block (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
+		gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), text);
+		g_signal_handler_unblock (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
+	}
+}
+
+//! Add tab and apply to paragraph.
+void 
+AP_UnixDialog_Tab::onAddTab ()
+{ 
+	// HACK
+	// a new tab stop is by default at position 1 whatever the ruler unit is
+	guint pos = 1;
+	UT_UTF8String text = UT_UTF8String_sprintf ("%d%s", pos, UT_dimensionName (_getDimension ()));
+	//text += UT_dimensionName (_getDimension ());
+	UT_DEBUGMSG (("onAddTab() '%s'\n", text.utf8_str ()));
+
+	// set defaults
+
+	g_signal_handler_block (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPosition), pos);
+	gtk_entry_set_text (GTK_ENTRY (m_sbPosition), text.utf8_str ());
+	g_signal_handler_unblock (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
 	
-	gtk_list_insert_items( wList, gList, 0 );
+	g_signal_handler_block (G_OBJECT (m_cobAlignment), m_hSigAlignmentChanged);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (m_cobAlignment), 0);
+	g_signal_handler_unblock (G_OBJECT (m_cobAlignment), m_hSigAlignmentChanged);
+
+	g_signal_handler_block (G_OBJECT (m_cobLeader), m_hSigLeaderChanged);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (m_cobLeader), 0);
+	g_signal_handler_unblock (G_OBJECT (m_cobLeader), m_hSigLeaderChanged);
+
+	_event_Set ();	
+    _storeWindowData ();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-UT_sint32 AP_UnixDialog_Tab::_gatherSelectTab()
-{
-	return m_iGtkListIndex;
+//! Delete tab and apply to paragraph.
+void 
+AP_UnixDialog_Tab::onDeleteTab ()
+{ 
+	_event_Clear (); 
+    _storeWindowData ();
 }
 
-void AP_UnixDialog_Tab::_setSelectTab( UT_sint32 v )
+//! Dispatch tab selection to xp land.
+void 
+AP_UnixDialog_Tab::onTabSelected ()
 {
-	m_iGtkListIndex = v;
-
-	if ( v == -1 )	// we don't want to select anything
-	{
-		gtk_list_unselect_all(GTK_LIST(_lookupWidget(id_LIST_TAB)));
+	gint ndx = _getSelectedIndex ();
+	if (ndx > -1) {
+		_event_TabSelected (ndx);
 	}
-	else
-	{
-		GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
-		gtk_list_select_item( wList, m_iGtkListIndex);
+}
+
+/*!
+* Apply changed position of a tab.
+* \param value new position.
+*/
+void 
+AP_UnixDialog_Tab::onPositionChanged (double value)
+{
+	UT_Dimension dim = _getDimension ();
+	const gchar *text = UT_formatDimensionString (dim, value);
+	gtk_entry_set_text (GTK_ENTRY (m_sbPosition), text);
+
+	_event_TabChange ();
+	_event_Update ();
+}
+
+//! Validate tab position, apply if ok.
+void 
+AP_UnixDialog_Tab::onPositionFocusOut ()
+{
+	const gchar *text = gtk_entry_get_text (GTK_ENTRY (m_sbPosition));
+	if (UT_isValidDimensionString (text)) {
+		// set
+		float pos;
+		sscanf (text, "%f", &pos);
+		UT_Dimension dim = UT_determineDimension(text, _getDimension ());
+		if (dim != _getDimension ()) {
+			pos = UT_convertDimensions(pos, dim, _getDimension ());
+		}
+
+		const gchar *text = UT_formatDimensionString (dim, pos);
+		UT_DEBUGMSG (("onPositionFocusOut() '%s'\n", text));
+
+		g_signal_handler_block (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPosition), pos);
+		gtk_entry_set_text (GTK_ENTRY (m_sbPosition), text);
+		g_signal_handler_unblock (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
+
+		_event_Update ();
+	}
+	else {
+		// reset
+		UT_Dimension dim = _getDimension ();
+		gdouble value = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbPosition));
+		const gchar *text = UT_formatDimensionString (dim, value);
+
+		g_signal_handler_block (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
+		gtk_entry_set_text (GTK_ENTRY (m_sbPosition), text);
+		g_signal_handler_unblock (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
 	}
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-const char * AP_UnixDialog_Tab::_gatherTabEdit()
+//! Dispatch event to xp-land and auto-apply.
+void 
+AP_UnixDialog_Tab::onAlignmentChanged ()
 {
-	return gtk_entry_get_text( GTK_ENTRY( _lookupWidget( id_EDIT_TAB ) ) );
+	_event_AlignmentChange ();
+	_event_Update ();
 }
 
-void AP_UnixDialog_Tab::_setTabEdit( const char *pszStr )
+//! Dispatch event to xp-land and auto-apply.
+void 
+AP_UnixDialog_Tab::onLeaderChanged ()
 {
-	GtkWidget *w = _lookupWidget( id_EDIT_TAB );
-
-	// first, we stop the entry from sending the changed signal to our handler
-	gtk_signal_handler_block_by_data(  GTK_OBJECT(w), static_cast<gpointer>(this) );
-
-	// then set the text
-	gtk_entry_set_text( GTK_ENTRY(w), pszStr );
-
-	// turn signals back on
-	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(w), static_cast<gpointer>(this) );
+	_event_somethingChanged ();
+	_event_Update ();
 }
 
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void AP_UnixDialog_Tab::_clearList()
-{
-	GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
 
-	// clear all the items from the list
-	gtk_list_clear_items( wList, 0, -1 );
+/*!
+* Get index of selected tab in list.
+* \return -1 if no selection
+*/
+UT_sint32
+AP_UnixDialog_Tab::_getSelectedIndex ()
+{
+	GtkTreeIter iter;
+	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvTabs));
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvTabs));
+	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
+
+	if (haveSelected) {
+		gchar *path_str = gtk_tree_model_get_string_from_iter (model, &iter);
+		UT_DEBUGMSG (("%s\n", path_str));
+		guint ndx = atoi (path_str);
+		g_free (path_str);
+		return ndx;
+	}
+	return -1;
+}
+
+//! Get alignment of selected tab.
+eTabType 
+AP_UnixDialog_Tab::_gatherAlignment ()
+{
+	const gchar *text =  gtk_combo_box_get_active_text (GTK_COMBO_BOX (m_cobAlignment));
+	for (guint i = 0; i < __FL_TAB_MAX; i++) {
+		if (UT_strcmp (text, m_AlignmentMapping[i]) == 0)
+			return (eTabType)i;
+	}
+	return FL_TAB_NONE;
+}
+
+//! Set alignment of selected tab.
+void 
+AP_UnixDialog_Tab::_setAlignment (eTabType a)
+{
+	UT_DEBUGMSG (("ROB: _setAlignment() \n"));
+	UT_return_if_fail (a < __FL_TAB_MAX);
+
+	// FL_TAB_NONE == 0 ... not in the UI
+	if (a > 0)
+		a = (eTabType)((int)a - 1);
+
+	g_signal_handler_block (G_OBJECT (m_cobAlignment), m_hSigAlignmentChanged);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (m_cobAlignment), a);
+	g_signal_handler_unblock (G_OBJECT (m_cobAlignment), m_hSigAlignmentChanged);
+}
+
+//! Get leader of selected tab.
+eTabLeader 
+AP_UnixDialog_Tab::_gatherLeader ()
+{
+	const gchar *text =  gtk_combo_box_get_active_text (GTK_COMBO_BOX (m_cobLeader));
+	for (guint i = 0; i < __FL_LEADER_MAX; i++) {
+		
+		if (m_LeaderMapping[i] == NULL)
+			break;
+
+		UT_DEBUGMSG (("ROB: %d='%s' (%s)\n", i, m_LeaderMapping[i], text));
+		if (UT_strcmp (text, m_LeaderMapping[i]) == 0) 
+			return (eTabLeader)i;
+	}
+	return FL_LEADER_NONE;
+}
+
+//! Set leader of selected tab.
+void 
+AP_UnixDialog_Tab::_setLeader (eTabLeader l)
+{
+	UT_DEBUGMSG (("ROB: _setLeader() \n"));
+	UT_return_if_fail (l < __FL_LEADER_MAX);
+
+	g_signal_handler_block (G_OBJECT (m_cobLeader), m_hSigLeaderChanged);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (m_cobLeader), l);
+	g_signal_handler_unblock (G_OBJECT (m_cobLeader), m_hSigLeaderChanged);
+}
+
+//! Get default tab stop.
+const XML_Char * 
+AP_UnixDialog_Tab::_gatherDefaultTabStop ()
+{
+	return gtk_entry_get_text (GTK_ENTRY (m_sbDefaultTab));
+}
+
+//! Set default tab stop.
+void 
+AP_UnixDialog_Tab::_setDefaultTabStop (const XML_Char *defaultTabStop)
+{
+	UT_DEBUGMSG (("ROB: _setDefaultTabStop '%s'\n", defaultTabStop));
+
+	float pos;
+	sscanf (defaultTabStop, "%f", &pos);
+
+	g_signal_handler_block (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbDefaultTab), pos);
+	gtk_entry_set_text (GTK_ENTRY (m_sbDefaultTab), defaultTabStop);
+	g_signal_handler_unblock (G_OBJECT (m_sbDefaultTab), m_hSigDefaultTabChanged);
+}
+
+//! Update list of tabs.
+void 
+AP_UnixDialog_Tab::_setTabList (UT_uint32 count)
+{
+	GtkListStore *store = GTK_LIST_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvTabs)));
+	gtk_list_store_clear (store);
+
+	GtkTreeIter iter;
+	for (guint i = 0; i < count; i++) {
+
+		gtk_list_store_append (store, &iter);
+		gtk_list_store_set (store, &iter, 
+							COLUMN_TAB, _getTabDimensionString(i),  
+							-1);
+	}
+}
+
+//! Query currently selected tab index from xp class.
+UT_sint32 
+AP_UnixDialog_Tab::_gatherSelectTab ()
+{
+	return _getSelectedIndex ();
+}
+
+//! Set selected tab stop by index.
+void 
+AP_UnixDialog_Tab::_setSelectTab (UT_sint32 v)
+{
+	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_lvTabs));
+	if (v > -1) {
+		GtkTreePath *path = gtk_tree_path_new_from_indices (v, -1);
+		gtk_tree_selection_select_path (selection, path);
+		gtk_tree_path_free (path);
+	}
+	else {
+		 gtk_tree_selection_unselect_all (selection);
+	}
+}
+
+//! Get selected tab stop position.
+const char * 
+AP_UnixDialog_Tab::_gatherTabEdit ()
+{
+	return gtk_entry_get_text (GTK_ENTRY (m_sbPosition));
+}
+
+//! Set selected tab stop position.
+void 
+AP_UnixDialog_Tab::_setTabEdit (const char *pszStr)
+{
+	UT_DEBUGMSG (("ROB: _setTabEdit '%s'\n", pszStr));
+
+	float pos;
+	sscanf (pszStr, "%f", &pos);
+
+	g_signal_handler_block (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPosition), pos);
+	gtk_entry_set_text (GTK_ENTRY (m_sbPosition), pszStr);
+	g_signal_handler_unblock (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
+}
+
+//! Clear list of tab stops.
+void 
+AP_UnixDialog_Tab::_clearList ()
+{
+	GtkListStore *store = GTK_LIST_STORE (gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvTabs)));
+	gtk_list_store_clear (store);
+}
+
+/*!
+* Query a widget by its XP-ID.
+* Do not trust this implementation because the unix-dialog is quite different from the others
+* (popup menus instead of radio buttons, no clear all ...).
+*/
+GtkWidget *
+AP_UnixDialog_Tab::_lookupWidget (tControl id)
+{
+	UT_return_val_if_fail (id < id_last, NULL);
+
+	switch (id) {
+
+		case id_EDIT_TAB:
+			return m_sbPosition;
+		case id_LIST_TAB:
+			return m_lvTabs;
+		case id_SPIN_DEFAULT_TAB_STOP:
+			return m_sbDefaultTab;
+
+		case id_ALIGN_LEFT:
+		case id_ALIGN_CENTER:
+		case id_ALIGN_RIGHT:
+		case id_ALIGN_DECIMAL:
+		case id_ALIGN_BAR:
+			// no reason to do anything particular with them
+			// so we return the whole menu
+			return m_cobAlignment;
+
+		case id_LEADER_NONE:
+		case id_LEADER_DOT:
+		case id_LEADER_DASH:
+		case id_LEADER_UNDERLINE:
+			// no reason to do anything particular with them
+			// so we return the whole menu
+			return m_cobLeader;
+
+		case id_BUTTON_SET:
+			return glade_xml_get_widget (m_pXML, "btAdd");
+		case id_BUTTON_CLEAR:
+		case id_BUTTON_CLEAR_ALL:
+			return glade_xml_get_widget (m_pXML, "btDelete");
+		case id_BUTTON_OK:
+		case id_BUTTON_CANCEL:
+			return glade_xml_get_widget (m_pXML, "btClose");
+		
+		default:
+			return NULL;
+	}
+}
+
+//! Set widget state by id.
+void 
+AP_UnixDialog_Tab::_controlEnable (tControl id, 
+								   bool value)
+{
+	GtkWidget *w = _lookupWidget (id);
+	UT_return_if_fail (w && GTK_IS_WIDGET (w));
+
+	gtk_widget_set_sensitive (w, value);
+	
+	// HACK
+	// en/dis able tab modification buttons with delete button
+	// if we can delete we can also modify
+	if (id == id_BUTTON_CLEAR) {
+		gtk_widget_set_sensitive (glade_xml_get_widget (m_pXML, "tblNew"), value);
+	}
 }

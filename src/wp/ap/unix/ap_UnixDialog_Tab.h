@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2005 Robert Staudinger <robsta@stereolyzer.net>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,21 +21,37 @@
 #ifndef AP_UNIXDIALOG_TAB_H
 #define AP_UNIXDIALOG_TAB_H
 
+#include <gtk/gtk.h>
+
 #include "ut_types.h"
 #include "ap_Dialog_Tab.h"
 
 class XAP_UnixFrame;
 
-/*****************************************************************/
 class AP_UnixDialog_Tab: public AP_Dialog_Tab
 {
 public:
-	AP_UnixDialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	virtual ~AP_UnixDialog_Tab(void);
+	AP_UnixDialog_Tab		   (XAP_DialogFactory *pDlgFactory, 
+								XAP_Dialog_Id 	   id);
+	virtual ~AP_UnixDialog_Tab (void);
 
-	virtual void			runModal(XAP_Frame * pFrame);
+	static XAP_Dialog *		static_constructor (XAP_DialogFactory *pDlgFactory, 
+												XAP_Dialog_Id 	   id);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	virtual void			runModal		   (XAP_Frame *pFrame);
+
+	// Event-Handler
+	void onDefaultTabChanged  (double value);
+	void onDefaultTabFocusOut (void);
+	void onTabSelected 		  (void);
+	void onPositionChanged 	  (double value);
+	void onPositionFocusOut	  (void);
+	void onAlignmentChanged   (void);
+	void onLeaderChanged 	  (void);
+	void onAddTab 			  (void);
+	void onDeleteTab 		  (void);
+
+	GtkWidget *getWindow (void) { return m_wDialog; }
 
  protected:
 
@@ -63,55 +80,31 @@ public:
 
 	// clear all the items from the tab list - only gui side
 	virtual void _clearList();
-
- protected:
 	
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
-	virtual void _constructWindowContents(GtkWidget * windowTabs);
-	virtual void _constructGnomeButtons(GtkWidget * windowTabs);
-
-	// pointers to widgets we need to query/set
-	// there are a ton of them in this dialog
-
-	UT_GenericVector<GtkWidget*> m_Widgets;
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-	// unix specific
-	eTabType	m_current_alignment;
-	eTabLeader	m_current_leader;
-	GtkWidget * m_GnomeButtons;
-	GtkWidget * m_buttonOK;
-	GtkWidget * m_buttonCancel;
-	GtkWidget * m_wTable;
-	UT_sint32 m_iDefaultSpin;
-	GtkObject *  m_oDefaultSpin_adj;
-	bool	   m_bInSetCall;		// a flag set to tell the change routines to ignore this message
-	UT_sint32  m_iGtkListIndex;		// the -1, 0.. (N-1) index for the N tabs
-
-protected:
-	// Unix call back handlers
-	static void s_set_clicked		( GtkWidget *, gpointer );
-	static void s_clear_clicked		( GtkWidget *, gpointer );
-	static void s_clear_all_clicked		( GtkWidget *, gpointer );
-
-	static void s_list_select		( GtkWidget *, gpointer );
-	static void s_list_deselect		( GtkWidget *, gpointer );
-
-	static void s_edit_change		( GtkWidget *, gpointer );
-	static void s_spin_default_changed	( GtkWidget *, gpointer );
-	static void s_alignment_change		( GtkWidget *, gpointer );
-	static void s_leader_change 		( GtkWidget *, gpointer );
-
-	enum
-	  {
-	    BUTTON_OK,
-	    BUTTON_CANCEL
-	  } ResponseId ;
 	
-	// callbacks can fire these events
-    void event_OK(void);
-    void event_Cancel(void);
+private: 
+
+	void 	   _connectSignals 	 (GladeXML *pXML);
+	UT_sint32  _getSelectedIndex (void);
+
+	GladeXML  *m_pXML; 
+	GtkWidget *m_wDialog;
+	GtkWidget *m_sbDefaultTab;
+	GtkWidget *m_lvTabs;
+	GtkWidget *m_btDelete;
+	GtkWidget *m_sbPosition;
+	GtkWidget *m_cobAlignment;
+	GtkWidget *m_cobLeader;
+
+	gchar *m_AlignmentMapping[__FL_TAB_MAX];
+	gchar *m_LeaderMapping[__FL_LEADER_MAX];
+
+	guint m_hSigDefaultTabChanged;
+	guint m_hSigPositionChanged;
+	guint m_hSigAlignmentChanged;
+	guint m_hSigLeaderChanged;
 };
 
 #endif /* AP_UNIXDIALOG_TAB_H */

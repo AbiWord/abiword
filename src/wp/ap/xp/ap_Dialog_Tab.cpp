@@ -39,6 +39,8 @@
 #include "ap_Strings.h"
 #include "ap_TopRuler.h"		// for AP_TopRulerInfo
 
+
+
 AP_Dialog_Tab::AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogtabs"),
 	  m_answer(a_OK), 
@@ -197,7 +199,7 @@ void AP_Dialog_Tab::_event_TabSelected( UT_sint32 index )
 		_setLeader( pTabInfo->getLeader() );
 
 		_setTabEdit( _getTabDimensionString(index) );
-		
+
 		// something changed...
 		_event_somethingChanged();
 	}
@@ -290,6 +292,103 @@ void AP_Dialog_Tab::_event_Set(void)
 	// something changed...
 	_event_somethingChanged();
 
+}
+
+/*!
+* Update the currently selected tab's properties.
+* Ripped off from _event_Set(). This method does auto-apply.
+*/
+void AP_Dialog_Tab::_event_Update(void)
+{
+	fl_TabStop *pTabInfo = NULL;
+
+	// check the validity of the input
+	UT_String buffer;
+	bool res = buildTab(buffer);
+	if (!res)
+	{
+		// TODO: add a message box here to inform our user - MARCM
+		return;
+	}
+
+
+	// delete tab
+	UT_uint32 ndx = _gatherSelectTab();
+	pTabInfo = m_tabInfo.getNthItem(ndx);
+	_deleteTabFromTabString(pTabInfo);
+	m_tabInfo.deleteNthItem(ndx);
+
+
+	// re-add
+	const char *cbuffer = buffer.c_str();
+	int Dimension_size = 0;
+	while(cbuffer[Dimension_size] != 0)
+	{
+
+		if(cbuffer[Dimension_size] == '/')
+		{
+			Dimension_size--;
+			break;
+		}
+
+		Dimension_size++;
+	}
+
+	// do we have the tab already.
+	for (UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
+	{
+		pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
+		UT_return_if_fail (pTabInfo);
+
+		// if we have a tab at that unit
+		if ( memcmp(cbuffer, _getTabString(pTabInfo), Dimension_size) == 0 )
+		{
+			// Delete the tab.
+			_deleteTabFromTabString(pTabInfo);
+			break;
+		}
+	}
+
+	// Add tab to list.
+	int NewOffset = strlen(m_pszTabStops);
+	char *p_temp = new char[NewOffset + 1 + strlen(cbuffer) + 1];
+	strcpy(p_temp, m_pszTabStops);
+	if(m_pszTabStops[0] != 0)
+	{
+		strcat(p_temp, ",");
+	}
+	strcat(p_temp, cbuffer);
+	delete [] m_pszTabStops;
+	m_pszTabStops = p_temp;
+
+	UT_return_if_fail (m_pFrame); // needs to be set from runModal for some of the event_'s to work
+
+	FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
+	UT_return_if_fail(pView);
+	
+	buildTabStops(pView->getGraphics(), m_pszTabStops, m_tabInfo);
+
+	_setTabList(m_tabInfo.getItemCount());
+
+	// Select the new or changed tab in the list.
+
+	for (UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
+	{
+		fl_TabStop *pTabInfo = m_tabInfo.getNthItem(i);
+		UT_return_if_fail (pTabInfo);
+
+		// if we have a tab at that unit
+		if ( memcmp(cbuffer, _getTabString(pTabInfo), Dimension_size) == 0 )
+		{
+			_setSelectTab(i);
+			_setTabEdit( _getTabDimensionString(i) );
+			break;
+		}
+	}
+
+	// something changed...
+	_event_somethingChanged();
+	_storeWindowData ();
 }
 
 void AP_Dialog_Tab::_event_Clear(void)
@@ -577,6 +676,8 @@ void AP_Dialog_Tab::_deleteTabFromTabString(fl_TabStop *pTabInfo)
 
 void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 {
+	UT_DEBUGMSG (("ROB: _doSpin %d, %d\n", id, amt));
+
   //	UT_ASSERT(amt); // zero makes no sense
 	UT_return_if_fail (id == id_SPIN_DEFAULT_TAB_STOP);
 	if(amt == 0 )
@@ -653,6 +754,8 @@ void AP_Dialog_Tab::_doSpin(tControl id, UT_sint32 amt)
 //      limit and make sure the settings are correct.
 void AP_Dialog_Tab::_doSpinValue(tControl id, double value)
 {
+	UT_DEBUGMSG (("ROB: _doSpinValue %d, %f\n", id, value));
+
   //	UT_ASSERT(amt); // zero makes no sense
 	UT_return_if_fail (id == id_SPIN_DEFAULT_TAB_STOP);
 
