@@ -204,7 +204,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_SUPERSCRIPT,		0,0,1,0,	"toggleSuper",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_SUBSCRIPT,		0,0,1,0,	"toggleSub",	ap_GetState_CharFmt,	NULL);
 	_s(AP_MENU_ID_FMT_TOGGLECASE,           0,1,0,0,  "dlgToggleCase", ap_GetState_SomethingSelected, NULL);
-	_s(AP_MENU_ID_FMT_FRAME,           0,1,0,0,  "dlgFormatFrame", NULL, NULL);
+	_s(AP_MENU_ID_FMT_FRAME,           0,1,0,0,  "dlgFormatFrame", ap_GetState_InFrame, NULL);
 
 	_s(AP_MENU_ID_FMT_DIRECTION,  1,0,0,0, NULL, NULL, NULL);
 	_s(AP_MENU_ID_FMT_DIRECTION_DD_RTL,0,0,1,0, "toggleDomDirection", ap_GetState_BlockFmt, NULL);
