@@ -1037,6 +1037,7 @@ bool fp_Page::TopBotMarginChanged(void)
 	{
 		m_pFooter->clearScreen();
 		m_pFooter->setMaxHeight(iBotM - m_pOwner->getFooterMargin());
+		m_pFooter->setY(getHeight() - iBotM);
 		m_pFooter->layout();
 	}
 	breakPage();
