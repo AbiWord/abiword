@@ -55,6 +55,7 @@ BeginSet(no,BOK,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVE,		"Lagre",                tb_save_xpm,                    NULL, "Lagre dokumentet")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_SAVEAS,		"Lagre som",            tb_save_as_xpm,                 NULL, "Lagre dokumentet med et nytt navn")
 	ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT,		"Skriv ut",             tb_print_xpm,                   NULL, "Skriv ut dokumentet")
+        ToolbarLabel(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW,  "Forhåndsvisning",      tb_print_preview_xpm,           NULL, "Viser dokumentet slik det på utskriften")
 
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_UNDO,		"Angre",                tb_undo_xpm,                    NULL, "Angre")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_REDO,		"Gjenta",               tb_redo_xpm,                    NULL, "Gjenta")
@@ -62,7 +63,9 @@ BeginSet(no,BOK,true)
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_COPY,		"Kopier",               tb_copy_xpm,                    NULL, "Kopier")
 	ToolbarLabel(AP_TOOLBAR_ID_EDIT_PASTE,		"Lim inn",              tb_paste_xpm,                   NULL, "Lim inn")
 
-	ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",                 NoIcon,                         NULL, "Stil")
+        ToolbarLabel(AP_TOOLBAR_ID_SPELLCHECK,          "Stavekontroll",        tb_spellcheck_xpm,              NULL, "Stavekontrollerer dokumentet")
+
+        ToolbarLabel(AP_TOOLBAR_ID_FMT_STYLE,		"Stil",                 NoIcon,                         NULL, "Stil")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_FONT,		"Skrift",               NoIcon,                         NULL, "Skrift")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SIZE,		"Skriftstørrelse",      NoIcon,                         NULL, "Skriftstørrelse")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_BOLD,		"Fet",                  tb_text_bold_F_xpm,             NULL, "Fet")
@@ -70,9 +73,11 @@ BeginSet(no,BOK,true)
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_UNDERLINE,	"Understreket",         tb_text_underline_xpm,          NULL, "Understreket")
         ToolbarLabel(AP_TOOLBAR_ID_FMT_OVERLINE,	"Overstreket",          tb_text_overline_xpm,           NULL, "Overstreket")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_STRIKE,		"Gjennomstreket",       tb_text_strikeout_xpm,	        NULL, "Gjennomstreket")
-
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUPERSCRIPT,	"Hevet",                tb_text_superscript_xpm,	NULL, "Hevet")
 	ToolbarLabel(AP_TOOLBAR_ID_FMT_SUBSCRIPT,	"Senket",               tb_text_subscript_xpm,		NULL, "Senket")
+
+   	ToolbarLabel(AP_TOOLBAR_ID_IMG,                 "Sett inn bilde",       tb_insert_graphic_xpm,          NULL, "Sett inn et bilde i dokumentet")
+
 	ToolbarLabel(AP_TOOLBAR_ID_INSERT_SYMBOL,	"Symbol",               tb_symbol_xpm,		        NULL, "Sett inn symbol")
 
 	ToolbarLabel(AP_TOOLBAR_ID_ALIGN_LEFT,		"Venstre",              tb_text_align_left_xpm,	        NULL, "Venstrestilt")
@@ -95,7 +100,18 @@ BeginSet(no,BOK,true)
         ToolbarLabel(AP_TOOLBAR_ID_LISTS_BULLETS,       "Punktlister",          tb_lists_bullets_xpm,		NULL, "Start/stopp punktliste")
         ToolbarLabel(AP_TOOLBAR_ID_LISTS_NUMBERS,       "Nummererte lister",    tb_lists_numbers_xpm,		NULL, "Start/stopp nummerert liste")
 
-	// ... add others here ...
+   	ToolbarLabel(AP_TOOLBAR_ID_COLOR_FORE,		"Forgrunnsfarge",	NoIcon,			        NULL, "Endre forgrunnsfarge")
+        ToolbarLabel(AP_TOOLBAR_ID_COLOR_BACK,		"Bakgrunnsfarge",	NoIcon,			        NULL, "Endre bakgrunnsfarge")
+   
+        ToolbarLabel(AP_TOOLBAR_ID_INDENT,               "Øk innrykk",          tb_text_indent_xpm,             NULL, "Øker avsnittsinnrykk")
+        ToolbarLabel(AP_TOOLBAR_ID_UNINDENT,             "Reduser innrykk",     tb_text_unindent_xpm,           NULL, "Reduserer avsnittsinnrykk")
+
+#ifdef BIDI_ENABLED
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DIRECTION,         "Tekstretning",	tb_text_direction_rtl_xpm,	NULL, "Endre retning på tekst")
+	ToolbarLabel(AP_TOOLBAR_ID_FMT_DOM_DIRECTION,     "Avsnittretning",	tb_text_dom_direction_rtl_xpm,	NULL, "Endre dominant retning på avsnitt")
+#endif
+
+   // ... add others here ...
 
 	ToolbarLabel(AP_TOOLBAR_ID__BOGUS2__,		NULL,		NoIcon,			NULL,NULL)
 

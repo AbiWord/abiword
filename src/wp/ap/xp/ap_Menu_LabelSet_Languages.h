@@ -40,7 +40,7 @@
 #include "ap_Menu_LabelSet_id-ID.h"
 #include "ap_Menu_LabelSet_it-IT.h"
 #include "ap_Menu_LabelSet_lt-LT.h"
-#include "ap_Menu_LabelSet_no-BOK.h"
+#include "ap_Menu_LabelSet_nb-NO.h"
 #include "ap_Menu_LabelSet_nn-NO.h"
 #include "ap_Menu_LabelSet_cs-CZ.h"
 #include "ap_Menu_LabelSet_sv-SE.h"
