@@ -968,7 +968,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresent)
     else if(pView->getInsertionPointContext(NULL,NULL) != EV_EMC_REVISION)
         return EV_MIS_Gray;
 
-        return EV_MIS_ZERO;
+	return EV_MIS_ZERO;
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext)
@@ -991,6 +991,22 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
 		return EV_MIS_ZERO;
 
     return EV_MIS_Gray;
+}
+
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_InFootnote)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(!pView->isInFootnote())
+	{
+		return EV_MIS_ZERO;
+	}
+	else
+	{
+		return EV_MIS_Gray;
+	}
 }
 
 // HACK TO ALWAYS DISABLE A MENU ITEM... DELETE ME
