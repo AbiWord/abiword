@@ -32,6 +32,45 @@ public:
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
 
+	virtual void event_OK (void);
+	virtual void event_Cancel (void);
+	virtual void event_WindowDelete (void);
+
+	virtual void event_PageSizeChanged ();
+	virtual void event_PageUnitsChanged ();
+	virtual void event_MarginUnitsChanged ();
+
+ protected:
+	// construction functions
+	virtual PtWidget_t * _constructWindow (void);
+
+	// pointers to all the action items
+	PtWidget_t * m_window;
+	PtWidget_t * m_buttonOK;
+	PtWidget_t * m_buttonCancel;
+
+ private:
+	// pointers to widgets that we may need to query
+	PtWidget_t * m_optionPageSize;
+	PtWidget_t * m_entryPageWidth;
+	PtWidget_t * m_entryPageHeight;
+	PtWidget_t * m_optionPageUnits;
+	PtWidget_t * m_radioPagePortrait;
+	PtWidget_t * m_radioPageLandscape;
+	PtWidget_t * m_spinPageScale;
+
+	PtWidget_t * m_optionMarginUnits;
+	PtWidget_t * m_spinMarginTop;
+	PtWidget_t * m_spinMarginBottom;
+	PtWidget_t * m_spinMarginLeft;
+	PtWidget_t * m_spinMarginRight;
+	PtWidget_t * m_spinMarginHeader;
+	PtWidget_t * m_spinMarginFooter;
+
+	UT_Vector    m_vecunits;
+	UT_Vector	 m_vecsize;
+
+	int done;
 };
 
-#endif
+#endif // AP_QNXDialog_PageSetup_H

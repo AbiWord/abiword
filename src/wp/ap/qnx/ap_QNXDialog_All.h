@@ -47,6 +47,7 @@
 #	include "ap_QNXDialog_Break.h"
 #	include "ap_QNXDialog_Goto.h"
 #	include "ap_QNXDialog_PageNumbers.h"
+#	include "ap_QNXDialog_PageSetup.h"
 #	include "ap_QNXDialog_Paragraph.h"
 #	include "ap_QNXDialog_Options.h"
 #	include "ap_QNXDialog_Spell.h"
@@ -88,6 +89,7 @@
 	DeclareDialog(AP_DIALOG_ID_FIELD,			AP_QNXDialog_Field)
 	DeclareDialog(AP_DIALOG_ID_LISTS,			AP_QNXDialog_Lists)
 	DeclareDialog(AP_DIALOG_ID_COLUMNS,			AP_QNXDialog_Columns)
+	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,	AP_QNXDialog_PageSetup)
 
 	// ... also add new dialogs here ...
 
