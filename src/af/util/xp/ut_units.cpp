@@ -36,14 +36,6 @@
 #include "ut_debugmsg.h"
 #include "gr_Graphics.h"
 
-#if 0
-// WRONG !!! -- the resolution depends on the system, and has to be
-// obtained from the Graphics class at runtime !!!
-// the CSS 1 spec recommends 90 but abi assumes 100. 
-// let's stay internally consistent
-static const double DPI_PER_PIXEL = 100.0 ;
-#endif
-
 const char * UT_dimensionName(UT_Dimension dim)
 {
 	switch (dim)
@@ -78,47 +70,50 @@ const char * UT_dimensionName(UT_Dimension dim)
 	}
 }
 
+// TODO: should we change this to UT_stricmp for robustness?
 #define STR_COMPARE UT_strcmp
 
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback)
 {
-	const char *p = sz;
-	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
-	{
-		p++;
-	}
+  char * p = NULL ;
+  
+  char * old_locale = setlocale(LC_NUMERIC, "C");
+  strtod(sz, &p);
+  setlocale(LC_NUMERIC, old_locale);
 
-	// p should now point to the unit
-	if (*p)
-	{
-		if (STR_COMPARE(p,"in") == 0)
-			return DIM_IN;
+  // p should now point to the unit
+  if (p && *p)
+    {
+		// chomp spaces
+		while(isspace(*p))
+			p++;
+		
+      if (STR_COMPARE(p,"in") == 0 || STR_COMPARE(p, "inch") == 0)
+	return DIM_IN;
+      
+      if (STR_COMPARE(p,"cm") == 0)
+	return DIM_CM;
+      
+      if (STR_COMPARE(p,"mm") == 0)
+	return DIM_MM;
+      
+      if (STR_COMPARE(p,"pi") == 0)
+	return DIM_PI;
+      
+      if (STR_COMPARE(p,"pt") == 0)
+	return DIM_PT;
+      
+      if (STR_COMPARE(p,"px") == 0)
+	return DIM_PX;
+      
+      if (STR_COMPARE(p,"%") == 0)
+	return DIM_PERCENT;
 
-		if (STR_COMPARE(p,"inch") == 0)
-			return DIM_IN;
-
-		if (STR_COMPARE(p,"cm") == 0)
-			return DIM_CM;
-
-	   	if (STR_COMPARE(p,"mm") == 0)
-			return DIM_MM;
-
-		if (STR_COMPARE(p,"pi") == 0)
-			return DIM_PI;
-
-		if (STR_COMPARE(p,"pt") == 0)
-			return DIM_PT;
-
-	   	if (STR_COMPARE(p,"px") == 0)
-			return DIM_PX;
-
-	   	if (STR_COMPARE(p,"%") == 0)
-			return DIM_PERCENT;
-		UT_DEBUGMSG(("ut_units - unknown unit presented %s \n",p));
-//		UT_ASSERT(UT_TODO);
-	}
-
-	return fallback;
+      UT_DEBUGMSG(("ut_units - unknown unit presented %s \n",p));
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    }
+  
+  return fallback;
 }
 
 double UT_convertInchesToDimension(double inches, UT_Dimension dim)
@@ -132,11 +127,7 @@ double UT_convertInchesToDimension(double inches, UT_Dimension dim)
 	case DIM_MM:    valueScaled = (inches * 25.4);  break;
 	case DIM_PI:	valueScaled = (inches * 6.0);		break;
 	case DIM_PT:	valueScaled = (inches * 72.0);	break;
-#if 0
-	case DIM_PX:    valueScaled = (inches * DPI_PER_PIXEL); break;
-#else	
 	case DIM_PX:    valueScaled = (inches * GR_Graphics::s_getScreenResolution()); break;
-#endif		
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 		break;
@@ -197,7 +188,7 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 		break;
 
 	case DIM_PX:
-		valueScaled = (valueInInches * GR_Graphics::s_getScreenResolution()/*DPI_PER_PIXEL*/);
+		valueScaled = (valueInInches * GR_Graphics::s_getScreenResolution());
 	  sprintf(bufFormat,"%%%sfpx",((szPrecision && *szPrecision) ? szPrecision : ".0"));
 	  break;
 
@@ -219,7 +210,6 @@ const char * UT_convertInchesToDimensionString(UT_Dimension dim, double valueInI
 	}
 	char * old_locale = setlocale(LC_NUMERIC,"C");
 	sprintf(buf,bufFormat,valueScaled);
-	//UT_DEBUGMSG(("ConvertToDimensionString: [%g] --> [%s]\n",valueScaled,buf));
 	setlocale(LC_NUMERIC, old_locale); // restore original locale
 	
 	return buf;
@@ -339,22 +329,11 @@ double UT_convertToInches(const char* s)
 
 	double f = UT_convertDimensionless(s);
 	
-	if (f == 0)
-	    return 0;
-	
-	const char *p = s;
-	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.') || isspace(*p)))
-	{
-		p++;
-	}
+	if (f == 0.)
+	    return 0.;
 
-	// p should now point to the unit
-	UT_ASSERT(*p);
-	if(*p)
-	  {
-	    UT_Dimension dim = UT_determineDimension(p, (UT_Dimension)-1);
-	    result = UT_convertDimToInches (f, dim);
-	  }
+	UT_Dimension dim = UT_determineDimension(s, (UT_Dimension)-1);
+	result = UT_convertDimToInches (f, dim);
 
 	return result;
 }
@@ -369,10 +348,10 @@ double UT_convertDimToInches (double f, UT_Dimension dim)
     case DIM_PT: result = f / 72;   break;
     case DIM_CM: result = f / 2.54; break;
     case DIM_MM: result = f / 25.4; break;
-		case DIM_PX: result = f / GR_Graphics::s_getScreenResolution()/*DPI_PER_PIXEL*/; break;
+    case DIM_PX: result = f / GR_Graphics::s_getScreenResolution(); break;
     default:
       UT_DEBUGMSG(("Unknown dimension type: %d", dim));
-      UT_ASSERT(0);
+      UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
       result = f;
     }
   return result;
@@ -380,38 +359,27 @@ double UT_convertDimToInches (double f, UT_Dimension dim)
 
 double UT_convertToPoints(const char* s)
 {
-	double result = 0;
+	double result = 0.;
 
 	if (!s || !*s)
-		return 0;
+		return 0.;
 
 	double f = UT_convertDimensionless(s);
-	const char *p = s;
-	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.') || isspace(*p)))
-	{
-		p++;
-	}
+	UT_Dimension dim = UT_determineDimension(s, (UT_Dimension)-1);
 
-	// p should now point to the unit
-	UT_ASSERT(*p);
-	if (*p)
-	{
-	    UT_Dimension dim = UT_determineDimension(p, (UT_Dimension)-1);
-
-	    switch(dim)
-	      {
-	      case DIM_PT: result = f;             break;
-	      case DIM_PI: result = f * 12;        break; // ie, 72 / 6
-	      case DIM_IN: result = f * 72;        break;
-	      case DIM_CM: result = f * 72 / 2.54; break;
-	      case DIM_MM: result = f * 72 / 25.4; break;
-			  case DIM_PX: result = f * 72 / GR_Graphics::s_getScreenResolution()/*DPI_PER_PIXEL*/; break;
-	      default:
-		UT_DEBUGMSG(("Unknown dimension type: %s", p));
-		UT_ASSERT(0);
-		result = f;
-	      }
-	}
+	switch(dim)
+	  {
+	  case DIM_PT: result = f;             break;
+	  case DIM_PI: result = f * 12;        break; // ie, 72 / 6
+	  case DIM_IN: result = f * 72;        break;
+	  case DIM_CM: result = f * 72 / 2.54; break;
+	  case DIM_MM: result = f * 72 / 25.4; break;
+	  case DIM_PX: result = f * 72 / GR_Graphics::s_getScreenResolution(); break;
+	  default:
+	    UT_DEBUGMSG(("Unknown dimension type for: %s", s));
+	    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	    result = f;
+	  }
 
 	return result;
 }
@@ -443,7 +411,6 @@ double UT_convertDimensionless(const char * sz)
 	double f = atof(sz);
 	setlocale(LC_NUMERIC,old_locale);
 
-	//UT_DEBUGMSG(("ConvertDimensionless: [%s] --> [%f]\n", sz, f));
 	return f;
 }
 
@@ -461,7 +428,6 @@ const char * UT_convertToDimensionlessString(double value, const char * szPrecis
 	
 	char * old_locale = setlocale(LC_NUMERIC,"C");
 	sprintf(buf,bufFormat,value);
-	//UT_DEBUGMSG(("ConvertToDimensionlessString: [%g] --> [%s]\n",value,buf));
 	setlocale(LC_NUMERIC,old_locale); // restore original locale
 	
 	return buf;
@@ -475,14 +441,13 @@ bool UT_hasDimensionComponent(const char * sz)
 	if (!sz)
 		return false;
 	
-	const char *p = sz;
-	while ((*p) && (isdigit(*p) || (*p == '-') || (*p == '.')))
-	{
-		p++;
-	}
-
-	// if we landed on non-NULL, unit component
-	if(*p)
+	char *p = NULL;
+	char * old_locale = setlocale(LC_NUMERIC, "C");
+	strtod(sz, &p);
+	setlocale(LC_NUMERIC, old_locale);
+  
+  	// if we landed on non-NULL, unit component
+	if(p && *p)
 		return true;
 	else
 		return false;
