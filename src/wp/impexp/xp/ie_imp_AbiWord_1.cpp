@@ -209,7 +209,7 @@ static UT_uint32 s_mapNameToToken(const XML_Char * name)
 
 void IE_Imp_AbiWord_1::_startElement(const XML_Char *name, const XML_Char **atts)
 {
-	UT_DEBUGMSG(("startElement: %s\n", name));
+	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
 
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	
@@ -314,7 +314,7 @@ void IE_Imp_AbiWord_1::_charData(const XML_Char *s, int len)
 	
 	if (!X_TestParseState(_PS_Block))
 	{
-		UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));
+		xxx_UT_DEBUGMSG(("charData DISCARDED [length %d]\n",len));
 		return;
 	}
 	
