@@ -279,30 +279,51 @@ bool AD_Document::areDocumentsRelated(const AD_Document & d) const
 /*!
     Returns true if both documents are based on the same root document
     and all version records have identical UID's
+    if it returns false, the last identical version id is found in iVersion
 */
-bool AD_Document::areDocumentHistoriesEqual(const AD_Document & d) const
+bool AD_Document::areDocumentHistoriesEqual(const AD_Document & d, UT_uint32 &iVersion) const
 {
+	iVersion = 0;
+	
 	if((!m_pUUID && d.getDocUUID()) || (m_pUUID && !d.getDocUUID()))
 		return false;
 
 	if(!(*m_pUUID == *(d.getDocUUID())))
 		return false;
 
-	UT_uint32 iHCount = getHistoryCount();
-	if(iHCount != d.getHistoryCount())
-		return false;
-
-	for(UT_uint32 i = 0; i < iHCount; ++i)
+	UT_uint32 iCount = UT_MIN(getHistoryCount(), d.getHistoryCount());
+	UT_uint32 iMaxCount = UT_MAX(getHistoryCount(), d.getHistoryCount());
+	
+	for(UT_uint32 i = 0; i < iCount; ++i)
 	{
 		AD_VersionData * v1 = (AD_VersionData*)m_vHistory.getNthItem(i);
 		AD_VersionData * v2 = (AD_VersionData*)d.m_vHistory.getNthItem(i);
 	
 		if(!(*v1 == *v2))
 			return false;
+
+		iVersion = v1->getId();
 	}
+
+	if(iMaxCount != iCount)
+		return false;
 	
 	return true;		
 }
+
+const AD_VersionData * AD_Document::findHistoryRecord(UT_uint32 iVersion) const
+{
+	for(UT_uint32 i = 0; i < getHistoryCount(); ++i)
+	{
+		const AD_VersionData * v = (const AD_VersionData*)m_vHistory.getNthItem(i);
+
+		if(v->getId() == iVersion)
+			return v;
+	}
+
+	return NULL;
+}
+
 
 /*!
     Set UID for the present document

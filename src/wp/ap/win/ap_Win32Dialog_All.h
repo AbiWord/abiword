@@ -46,6 +46,7 @@
 #	include "xap_Win32Dlg_HTMLOptions.h"
 #   include "xap_Win32Dlg_ListDocuments.h"
 #   include "xap_Win32Dlg_History.h"
+#   include "xap_Win32Dlg_DocComparison.h"
 
 #	include "ap_Win32Dialog_Replace.h"
 #	include "ap_Win32Dialog_Break.h"
@@ -109,6 +110,7 @@
 	DeclareDialog(XAP_DIALOG_ID_MERGEDOCUMENTS, XAP_Win32Dialog_ListDocuments)		
 	DeclareDialog(XAP_DIALOG_ID_COMPAREDOCUMENTS,XAP_Win32Dialog_ListDocuments)		
 	DeclareDialog(XAP_DIALOG_ID_HISTORY,        XAP_Win32Dialog_History)		
+	DeclareDialog(XAP_DIALOG_ID_DOCCOMPARISON,  XAP_Win32Dialog_DocComparison)		
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)

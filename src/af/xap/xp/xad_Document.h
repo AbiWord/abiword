@@ -172,10 +172,16 @@ public:
 	UT_uint32       getHistoryNthEditTime(UT_uint32 i)const;
 	const UT_UUID&  getHistoryNthUID(UT_uint32 i)const;
 	bool            getHistoryNthAutoRevisioned(UT_uint32 i)const;
+
+	const AD_VersionData * findHistoryRecord(UT_uint32 iVersion) const;
 		
 	bool            areDocumentsRelated (const AD_Document &d) const;
-	bool            areDocumentHistoriesEqual(const AD_Document &d) const;
+	bool            areDocumentHistoriesEqual(const AD_Document &d, UT_uint32 &iVer) const;
 
+	virtual bool    areDocumentContentsEqual(const AD_Document &d, UT_uint32 &pos) const = 0;
+	virtual bool    areDocumentFormatsEqual(const AD_Document &d, UT_uint32 &pos) const = 0;
+	virtual bool    areDocumentStylesheetsEqual(const AD_Document &d) const = 0;
+	
 	void            setDocUUID(const char * u);
 	const char *    getDocUUIDString()const;
 	const UT_UUID * getDocUUID()const {return m_pUUID;};

@@ -110,6 +110,7 @@
 #include "xap_Dlg_Image.h"
 #include "xap_Dlg_ListDocuments.h"
 #include "xap_Dlg_History.h"
+#include "xap_Dlg_DocComparison.h"
 
 #include "ie_imp.h"
 #include "ie_impGraphic.h"
@@ -11689,7 +11690,7 @@ Defun1(revisionCompareDocuments)
 	UT_return_val_if_fail(pFrame,false);
 
 	PD_Document * pDoc2 = s_doListDocuments(pFrame, true, XAP_DIALOG_ID_COMPAREDOCUMENTS);
-
+	UT_uint32 pos1, pos2, iVer;
 	if(pDoc2)
 	{
 		UT_DEBUGMSG(("COMPARE DOCUMENTS:\n   related:     %d\n"
@@ -11699,11 +11700,25 @@ Defun1(revisionCompareDocuments)
 					                     "   format:      %d\n",
 					 pDoc->areDocumentsRelated(*pDoc2),
 					 pDoc->areDocumentStylesheetsEqual(*pDoc2),
-					 pDoc->areDocumentHistoriesEqual(*pDoc2),
-					 pDoc->areDocumentContentsEqual(*pDoc2),
-					 pDoc->areDocumentFormatsEqual(*pDoc2)));
+					 pDoc->areDocumentHistoriesEqual(*pDoc2, iVer),
+					 pDoc->areDocumentContentsEqual(*pDoc2, pos1),
+					 pDoc->areDocumentFormatsEqual(*pDoc2, pos2)));
 
-		pDoc->diffIntoRevisions(*pDoc2);
+		// pDoc->diffIntoRevisions(*pDoc2);
+
+		pFrame->raise();
+
+		XAP_DialogFactory * pDialogFactory
+			= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
+
+		XAP_Dialog_DocComparison * pDialog
+			= static_cast<XAP_Dialog_DocComparison *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_DOCCOMPARISON));
+	
+		UT_return_val_if_fail(pDialog, NULL);
+
+		pDialog->calculate(pDoc, pDoc2);
+		pDialog->runModal(pFrame);
+		pDialogFactory->releaseDialog(pDialog);
 	}
 	return true;
 }

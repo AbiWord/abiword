@@ -160,6 +160,9 @@
 #define XAP_PREF_KEY_DirMarkerAfterClosingParenthesis "DirMarkerAfterClosingParenthesis"
 #define XAP_PREF_DEFAULT_DirMarkerAfterClosingParenthesis "0"
 
+#define XAP_PREF_KEY_NoMACinUUID "NoMACinUUID"
+#define XAP_PREF_DEFAULT_NoMACinUUID "0"
+
 
 #else /* XAP_PREFS_SCHEMEID_H */
 #ifdef dcl
@@ -205,5 +208,6 @@ dcl(DefaultSaveDirectory)
 dcl(HTMLExportOptions)
 dcl(ChangeLanguageWithKeyboard)
 dcl(DirMarkerAfterClosingParenthesis)
+dcl(NoMACinUUID)
 #endif /* dcl */
 #endif /* XAP_PREFS_SCHEMEID_H */

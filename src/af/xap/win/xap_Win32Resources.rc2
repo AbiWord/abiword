@@ -40,6 +40,7 @@
 #define XAP_RID_DIALOG_HTMLOPTIONS					112
 #define XAP_RID_DIALOG_LIST_DOCUMENTS				113
 #define XAP_RID_DIALOG_HISTORY       				114
+#define XAP_RID_DIALOG_DOCCOMPARISON   				115
 
 
 #include "xap_Win32Res_DlgWindowMore.rc2"
@@ -55,5 +56,6 @@
 #include "xap_Win32Res_DlgHTMLOptions.rc2"
 #include "xap_Win32Res_DlgListDocuments.rc2"
 #include "xap_Win32Res_DlgHistory.rc2"
+#include "xap_Win32Res_DlgDocComparison.rc2"
 
 #include "xap_Win32Res_Cursors.rc2"

@@ -54,7 +54,8 @@ CPPSRCS=		xap_Win32App.cpp			\
 			xap_Win32LabelledSeparator.cpp \
 			xap_Win32Dlg_HTMLOptions.cpp \
 			xap_Win32Dlg_ListDocuments.cpp \
-			xap_Win32Dlg_History.cpp
+			xap_Win32Dlg_History.cpp \
+			xap_Win32Dlg_DocComparison.cpp
 
 
 TARGETS=		$(OBJS)

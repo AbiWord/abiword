@@ -1,0 +1,99 @@
+// AbiWord
+// Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
+
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+// 02111-1307, USA.
+//////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////
+// THIS FILE IS INCLUDED BY .cpp AND .rc FILES.
+//
+// *** RC.exe IS BRAIN-DAMAGED.  GIVING THIS FILE AN .rc2
+// *** EXTENSION MAKES #INCLUDING THIS FILE FROM Win32Main.rc
+// *** WORK -- IF THE SUFFIX IS .h ONLY THE #DEFINES WORK, THE
+// *** DIALOGS DO NOT GET COMPILED.
+//
+//////////////////////////////////////////////////////////////////
+
+#define XAP_RID_DIALOG_DOCCOMPARISON_FRAME1           1001
+#define XAP_RID_DIALOG_DOCCOMPARISON_FRAME2           1002
+
+// header labels start at 1100
+// must be consequtive
+#define XAP_RID_DIALOG_DOCCOMPARISON_PATH1            1101
+#define XAP_RID_DIALOG_DOCCOMPARISON_PATH2            1102
+
+// result labels start at 1200
+// must be consequtive 
+#define XAP_RID_DIALOG_DOCCOMPARISON_LABEL_RELATIONSHIP 1201
+#define XAP_RID_DIALOG_DOCCOMPARISON_LABEL_CONTENT      1202
+#define XAP_RID_DIALOG_DOCCOMPARISON_LABEL_FMT          1203
+#define XAP_RID_DIALOG_DOCCOMPARISON_LABEL_STYLE        1204
+
+// result controls start at 1300
+// must be consequtive and match corresponding labels in sequence
+#define XAP_RID_DIALOG_DOCCOMPARISON_RELATIONSHIP     1301
+#define XAP_RID_DIALOG_DOCCOMPARISON_CONTENT          1302
+#define XAP_RID_DIALOG_DOCCOMPARISON_FMT          	  1303
+#define XAP_RID_DIALOG_DOCCOMPARISON_STYLE        	  1304
+
+// buttons
+#define XAP_RID_DIALOG_DOCCOMPARISON_BTN_OK  	        IDOK
+#define XAP_RID_DIALOG_DOCCOMPARISON_BTN_CANCEL	    IDCANCEL
+
+#ifdef RC_INVOKED
+// NOTE -- these placeholder strings get overridden at runtime
+// NOTE -- they're just here to make sizing easier
+
+XAP_RID_DIALOG_DOCCOMPARISON DIALOG DISCARDABLE  0, 0, 302, 110
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,245,12,50,14
+
+    GROUPBOX        "Documents compared",XAP_RID_DIALOG_DOCCOMPARISON_FRAME1,7,7,232,34
+
+	LTEXT			"Document Name", XAP_RID_DIALOG_DOCCOMPARISON_PATH1,
+					12,16,225,10, SS_CENTERIMAGE
+
+	LTEXT			"Document Name", XAP_RID_DIALOG_DOCCOMPARISON_PATH2,
+					12,26,225,10, SS_CENTERIMAGE
+
+    GROUPBOX        "Results",XAP_RID_DIALOG_DOCCOMPARISON_FRAME2,7,50,232,54
+
+	LTEXT			"Relationship:", XAP_RID_DIALOG_DOCCOMPARISON_LABEL_RELATIONSHIP,
+					12,57,60,10, SS_CENTERIMAGE
+	LTEXT			"relationship", XAP_RID_DIALOG_DOCCOMPARISON_RELATIONSHIP,
+					65,57,160,10, SS_CENTERIMAGE
+
+	LTEXT			"Content:", XAP_RID_DIALOG_DOCCOMPARISON_LABEL_CONTENT,
+					12,67,60,10, SS_CENTERIMAGE
+	LTEXT			"content", XAP_RID_DIALOG_DOCCOMPARISON_CONTENT,
+					65,67,160,10, SS_CENTERIMAGE
+
+	LTEXT			"Format:", XAP_RID_DIALOG_DOCCOMPARISON_LABEL_FMT,
+					12,77,60,10, SS_CENTERIMAGE
+	LTEXT			"format", XAP_RID_DIALOG_DOCCOMPARISON_FMT,
+					65,77,160,10, SS_CENTERIMAGE
+
+	LTEXT			"Styles:", XAP_RID_DIALOG_DOCCOMPARISON_LABEL_STYLE,
+					12,87,60,10, SS_CENTERIMAGE
+	LTEXT			"styles", XAP_RID_DIALOG_DOCCOMPARISON_STYLE,
+					65,87,160,10, SS_CENTERIMAGE
+
+END
+#endif /* RC_INVOKED */

@@ -75,5 +75,6 @@ libXap_xp_a_SOURCES=\
 	$(RESOURCE_MANAGER_OBJ)		\
 	xap_EncodingManager.cpp \
 	xap_Dlg_ListDocuments.cpp \
-	xap_Dlg_History.cpp
+	xap_Dlg_History.cpp \
+	xap_Dlg_DocComparison.cpp
 

@@ -499,9 +499,9 @@ public:
 	bool      setMinUID(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.setMinId(t,i);}
 	bool      isIdUnique(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.isIdUnique(t,i);}
 
-	bool      areDocumentContentsEqual(const PD_Document &d) const;
-	bool      areDocumentFormatsEqual(const PD_Document &d) const;
-	bool      areDocumentStylesheetsEqual(const PD_Document &d) const;
+	virtual bool  areDocumentContentsEqual(const AD_Document &d, UT_uint32 &pos) const;
+	virtual bool  areDocumentFormatsEqual(const AD_Document &d, UT_uint32 &pos) const;
+	virtual bool  areDocumentStylesheetsEqual(const AD_Document &d) const;
 
 	bool      findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &iOffset2,
 										   const PD_Document &d) const;

@@ -4221,8 +4221,9 @@ void PD_Document::forceDirty()
 /*!
     Returns true if the stylesheets of both documents are identical
 */
-bool PD_Document::areDocumentStylesheetsEqual(const PD_Document &d) const
+bool PD_Document::areDocumentStylesheetsEqual(const AD_Document &D) const
 {
+	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
 
 	const UT_StringPtrMap & hS1 = m_pPieceTable->getAllStyles();
@@ -4740,9 +4741,12 @@ bool PD_Document::findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &i
 
 /*!
     Returns true if the contents of the two documents are identical
+    if the function returns false, pos contains the document position
+    at which first difference was encountered
 */
-bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
+bool PD_Document::areDocumentContentsEqual(const AD_Document &D, UT_uint32 &pos) const
 {
+	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
 
 	if(m_pPieceTable->getFragments().areFragsDirty())
@@ -4767,7 +4771,11 @@ bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
 	end2 = pf->getPos() + pf->getLength();
 
 	if(end1 != end2)
+	{
+		pos = UT_MIN(end1, end2);
 		return false;
+	}
+	
 	
 	//  scroll through the documents comparing contents
 	PD_DocIterator t1(*this);
@@ -4778,11 +4786,29 @@ bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
 		const pf_Frag * pf1 = t1.getFrag();
 		const pf_Frag * pf2 = t2.getFrag();
 
-		if(!pf1 || !pf2)
+		if(!pf1)
+		{
+			if(pf2)
+				pos = pf2->getPos();
+			else
+				pos = 0;
+			
 			return false;
+		}
+
+		if(!pf2)
+		{
+			pos = pf1->getPos();
+			return false;
+		}
+		
 
 		if(pf1->getType() != pf2->getType())
+		{
+			pos = pf1->getPos();
 			return false;
+		}
+		
 
 		UT_uint32 iFOffset1 = t1.getPosition() - pf1->getPos();
 		UT_uint32 iFOffset2 = t2.getPosition() - pf2->getPos();
@@ -4796,11 +4822,19 @@ bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
 			// these two frags overlap exactly, so we can just use the
 			// pf_Frag::isContentEqual() on them
 			if(!(pf1->isContentEqual(*pf2)))
+			{
+				// TODO -- this is not position of the difference, but
+				// of the start of the fragment (there difference
+				// could be inside)
+				pos = pf1->getPos();
 				return false;
+			}
+			
 		}
 		else if(pf1->getType() != pf_Frag::PFT_Text)
 		{
 			// partially overlapping frags and not text
+			pos = pf1->getPos();
 			return false;
 		}
 		else
@@ -4810,7 +4844,11 @@ bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
 			for(UT_uint32 i = 0; i < iLen; ++i)
 			{
 				if(t1.getChar() != t2.getChar())
+				{
+					pos = t1.getPosition() + i;
 					return false;
+				}
+				
 
 				++t1;
 				++t2;
@@ -4825,10 +4863,17 @@ bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
 		t2 += iLen;
 	}
 
-	if(   (t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
-		  || (t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK))
+	if((t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK))
 	{
-		// documents are of different length ... 
+		// documents are of different length ...
+		pos = t1.getPosition();
+		return false;
+	}
+
+	if((t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK))
+	{
+		// documents are of different length ...
+		pos = t2.getPosition();
 		return false;
 	}
 
@@ -4836,13 +4881,18 @@ bool PD_Document::areDocumentContentsEqual(const PD_Document &d) const
 }
 
 /*!
-    Compare the format of the this document to another document
+    Compare the format of the this document to another document;
+    returns true if document formats are identical
+    
+    If the function returns false, pos contains the document position
+    at which first difference was encountered
 
     NB: If the document contents are known not to be equal, it makes no
     sense to call this function.
 */
-bool PD_Document::areDocumentFormatsEqual(const PD_Document &d) const
+bool PD_Document::areDocumentFormatsEqual(const AD_Document &D, UT_uint32 &pos) const
 {
+	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
 
 	if(m_pPieceTable->getFragments().areFragsDirty())
@@ -4888,6 +4938,7 @@ bool PD_Document::areDocumentFormatsEqual(const PD_Document &d) const
 		{
 			if(!pAP1->isEquivalent(pAP2))
 			{
+				pos = t1.getPosition();
 				return false;
 			}
 			else
@@ -4901,10 +4952,17 @@ bool PD_Document::areDocumentFormatsEqual(const PD_Document &d) const
 		t2 += iLen;
 	}
 
-	if(   (t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK)
-		  || (t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK))
+	if((t1.getStatus() == UTIter_OK && t2.getStatus() != UTIter_OK))
 	{
 		// documents are of different length ...
+		pos = t1.getPosition();
+		return false;
+	}
+
+	if((t1.getStatus() != UTIter_OK && t2.getStatus() == UTIter_OK))
+	{
+		// documents are of different length ...
+		pos = t2.getPosition();
 		return false;
 	}
 
