@@ -132,7 +132,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_uint32 ndx)
 UT_sint32 UT_Vector::addItem(void* p, UT_uint32 * pIndex)
 {
 	int err = addItem(p);
-	if (!err)
+	if (!err && pIndex)
 		*pIndex = m_iCount-1;
 	return err;
 }
@@ -160,6 +160,16 @@ void* UT_Vector::getNthItem(UT_uint32 n) const
 	UT_ASSERT(n<m_iCount);
 
 	return m_pEntries[n];
+}
+
+UT_Bool UT_Vector::setNthItem(UT_uint32 ndx, void * pNew, void ** ppOld)
+{
+	if (ndx >= m_iCount)
+		return UT_FALSE;
+	if (ppOld)
+		*ppOld = m_pEntries[ndx];
+	m_pEntries[ndx] = pNew;
+	return UT_TRUE;
 }
 
 void* UT_Vector::getLastItem() const
