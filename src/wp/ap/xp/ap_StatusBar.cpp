@@ -117,7 +117,7 @@ void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 		UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar(); 
 		UT_uint32 newPageCount = pView->getLayout()->countPages();
 
-		if (newPageCount != m_nrPages)
+		if (newPageCount != m_nrPages || m_pageNr != currentPage)
 		{
 			bNeedNewString = true;
 			m_nrPages = newPageCount;
