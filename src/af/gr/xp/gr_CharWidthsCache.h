@@ -31,15 +31,14 @@ class GR_CharWidthsCache
 public:
 	
 	/*!
-		Get the singleton instance for the class. Instanciate it if needed.
+		Get the singleton instance for the class. Instantiate it if needed.
 	 */
 	static GR_CharWidthsCache* getCharWidthCache()
 	{
-		_instanciate();
+		_instantiate();
 		return s_pInstance;
 	}
 	
-
 	enum {
 		CACHE_FONT_SIZE = 120
 	};
@@ -58,7 +57,7 @@ private:
 	/*!
 		Instanciate the singleton instance.
 	 */
-	static void _instanciate(void);
+	static void _instantiate(void);
 	
 	/*!
 		The singleton instance.

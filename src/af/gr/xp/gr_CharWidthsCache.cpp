@@ -26,26 +26,22 @@
 #include "gr_Graphics.h"
 #include "gr_CharWidths.h"
 
-GR_CharWidthsCache* GR_CharWidthsCache::s_pInstance;
-
+GR_CharWidthsCache* GR_CharWidthsCache::s_pInstance = NULL;
  
-void GR_CharWidthsCache::_instanciate(void)
+void GR_CharWidthsCache::_instantiate(void)
 {
-	if (!s_pInstance) {
+	if (!s_pInstance)
 		s_pInstance = new GR_CharWidthsCache;
-	}
 }
-
 
 GR_CharWidthsCache::GR_CharWidthsCache()
 	: m_pFontHash (new UT_StringPtrMap())
 {
 }
 
-
 GR_CharWidthsCache::~GR_CharWidthsCache()
 {
-	UT_HASH_PURGEDATA(GR_CharWidths*, m_pFontHash, DELETEP);
+	UT_HASH_PURGEDATA(GR_CharWidths*, m_pFontHash, delete);
 	DELETEP(m_pFontHash);
 }
 
@@ -60,20 +56,19 @@ bool GR_CharWidthsCache::addFont (const GR_Font* pFont)
 	return added;
 }
 
-
 GR_CharWidths*	GR_CharWidthsCache::getWidthsForFont(const GR_Font* pFont)
 {
 	GR_CharWidths* pCharWidths;
 
 	UT_ASSERT(m_pFontHash);
-	pCharWidths = static_cast<GR_CharWidths*>(m_pFontHash->pick(pFont->hashKey()));
+	pCharWidths = (GR_CharWidths*)(m_pFontHash->pick(pFont->hashKey()));
 	if (!pCharWidths) {
 		addFont(pFont);
 		UT_DEBUGMSG(("added font to cache.\n"));
-		pCharWidths = static_cast<GR_CharWidths*>(m_pFontHash->pick(pFont->hashKey()));
+		pCharWidths = (GR_CharWidths*)(m_pFontHash->pick(pFont->hashKey()));
 		UT_ASSERT(pCharWidths);
 	}
 	return pCharWidths;
-};
+}
 
 
