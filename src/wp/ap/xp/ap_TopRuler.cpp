@@ -360,7 +360,7 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 	else if (pFont)
 	{
 		// draw the number
-
+		m_pG->setColor(clr);
 		m_pG->setFont(pFont);
 		UT_uint32 iFontHeight = m_pG->getFontHeight();
 		UT_uint32 n = k / tick.tickLabel * tick.tickScale;
