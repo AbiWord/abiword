@@ -179,7 +179,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowBreak), "vboxMain", vboxMain);
 	gtk_widget_show (vboxMain);
 	gtk_container_add (GTK_CONTAINER (windowBreak), vboxMain);
-	gtk_container_border_width (GTK_CONTAINER (vboxMain), 10);
+	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);
 
 	tableInsert = gtk_table_new (7, 2, FALSE);
 	gtk_object_set_data (GTK_OBJECT (windowBreak), "tableInsert", tableInsert);

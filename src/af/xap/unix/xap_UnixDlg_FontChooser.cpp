@@ -346,7 +346,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::create_windowFontSelection(void)
 	gtk_widget_show (notebookMain);
 	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, FALSE, FALSE, 0);
 	gtk_widget_set_usize (notebookMain, 418, 247);
-	gtk_container_border_width (GTK_CONTAINER (notebookMain), 8);
+	gtk_container_set_border_width (GTK_CONTAINER (notebookMain), 8);
 
 	fixedFont = gtk_fixed_new ();
 	gtk_object_set_data (GTK_OBJECT (windowFontSelection), "fixedFont", fixedFont);

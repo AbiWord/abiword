@@ -86,7 +86,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	gtk_object_set_data (GTK_OBJECT (dialog), "About AbiWord", dialog);
 	gtk_window_set_title (GTK_WINDOW (dialog), buf);
 	gtk_window_set_policy (GTK_WINDOW (dialog), TRUE, TRUE, FALSE);
-	gtk_container_border_width(GTK_CONTAINER(dialog), 5);
+	gtk_container_set_border_width(GTK_CONTAINER(dialog), 5);
     gtk_window_set_policy(GTK_WINDOW(dialog), FALSE, FALSE, TRUE);
 
 	gtk_widget_realize(dialog);
@@ -152,7 +152,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	dialog_action_area1 = GTK_DIALOG (dialog)->action_area;
 	gtk_object_set_data (GTK_OBJECT (dialog), "dialog_action_area1", dialog_action_area1);
 	gtk_widget_show (dialog_action_area1);
-	gtk_container_border_width (GTK_CONTAINER (dialog_action_area1), 10);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
 	
 	okButton = gtk_button_new_with_label ("OK");
 	gtk_object_set_data (GTK_OBJECT (dialog), "okButton", okButton);

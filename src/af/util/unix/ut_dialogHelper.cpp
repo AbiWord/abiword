@@ -181,7 +181,7 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 	{
 		UT_DEBUGMSG(("Dialog [%p] at coordiantes [%d, %d] is in non-viewable area; "
 					 "centering on desktop instead.\n", child, newx, newy));
-		gtk_window_position(GTK_WINDOW(child), GTK_WIN_POS_CENTER);
+		gtk_window_set_position(GTK_WINDOW(child), GTK_WIN_POS_CENTER);
 	}
 	else
 		gtk_widget_set_uposition(child, newx, newy);

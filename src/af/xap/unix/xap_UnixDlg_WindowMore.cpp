@@ -250,7 +250,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	gtk_widget_show (clistWindows);
 	gtk_box_pack_start (GTK_BOX (vboxMain), clistWindows, TRUE, TRUE, 0);
 	gtk_widget_set_usize (clistWindows, 350, 210);
-	gtk_container_border_width (GTK_CONTAINER (clistWindows), 10);
+	gtk_container_set_border_width (GTK_CONTAINER (clistWindows), 10);
 	gtk_clist_set_column_width (GTK_CLIST (clistWindows), 0, 80);
 	gtk_clist_column_titles_hide (GTK_CLIST (clistWindows));
 

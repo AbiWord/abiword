@@ -293,7 +293,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowReplace), "vboxReplace", vboxReplace);
 	gtk_widget_show (vboxReplace);
 	gtk_container_add (GTK_CONTAINER (windowReplace), vboxReplace);
-	gtk_container_border_width (GTK_CONTAINER (vboxReplace), 10);
+	gtk_container_set_border_width (GTK_CONTAINER (vboxReplace), 10);
 
 	// table up top
 	tableReplace = gtk_table_new (3, 2, FALSE);

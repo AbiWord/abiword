@@ -260,7 +260,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "vboxZoom", vboxZoom);
 	gtk_widget_show (vboxZoom);
 	gtk_container_add (GTK_CONTAINER (windowZoom), vboxZoom);
-	gtk_container_border_width (GTK_CONTAINER (vboxZoom), 10);
+	gtk_container_set_border_width (GTK_CONTAINER (vboxZoom), 10);
 
 	hboxFrames = gtk_hbox_new (FALSE, 10);
 	gtk_object_set_data (GTK_OBJECT (windowZoom), "hboxFrames", hboxFrames);
