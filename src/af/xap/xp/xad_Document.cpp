@@ -504,9 +504,9 @@ void AD_Document::setDocUUID(const char * s)
 const char * AD_Document::getDocUUIDString() const
 {
 	UT_return_val_if_fail(m_pUUID, NULL);
-	static UT_String s;
+	static UT_UTF8String s;
 	m_pUUID->toString(s);
-	return s.c_str();
+	return s.utf8_str();
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -1162,7 +1162,7 @@ AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev)
 
 
 // constructors for importers
-AD_VersionData::AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start, bool autorev):
+AD_VersionData::AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev):
 	m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
 {
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();

@@ -49,7 +49,7 @@ class AD_VersionData
   public:
 
 	// constructor for importers
-	AD_VersionData(UT_uint32 v, UT_String &uuid, time_t start, bool autorev);
+	AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev);
 	AD_VersionData(UT_uint32 v, const char * uuid, time_t start, bool autorev);
 	
 	// constructor for new entries

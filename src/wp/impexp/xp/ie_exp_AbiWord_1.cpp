@@ -1346,27 +1346,27 @@ void s_AbiWord_1_Listener::_handleHistory(void)
 		time_t tStarted     =  m_pDocument->getHistoryNthTimeStarted(k);
 		bool bAuto          =  m_pDocument->getHistoryNthAutoRevisioned(k);
 		
-		UT_String s, hUid;
+		UT_UTF8String s, hUid;
 		UID.toString(hUid);
 		
 		
 		if (!bWroteOpenSection)
 		{
-			UT_String_sprintf(s, "<history version=\"%d\" edit-time=\"%d\" last-saved=\"%d\" "
+			UT_UTF8String_sprintf(s, "<history version=\"%d\" edit-time=\"%d\" last-saved=\"%d\" "
 							     "uid=\"%s\">\n",
 							  m_pDocument->getDocVersion(),
 							  m_pDocument->getEditTime(),
 							  m_pDocument->getLastSavedTime(),
 							  m_pDocument->getDocUUIDString());
 			
-			m_pie->write(s.c_str());
+			m_pie->write(s.utf8_str());
 			bWroteOpenSection = true;
 		}
 
-		UT_String_sprintf(s, "<version id=\"%d\" started=\"%d\" uid=\"%s\" auto=\"%d\"/>\n",
-						  iVersion, tStarted, hUid.c_str(),bAuto);
+		UT_UTF8String_sprintf(s, "<version id=\"%d\" started=\"%d\" uid=\"%s\" auto=\"%d\"/>\n",
+						  iVersion, tStarted, hUid.utf8_str(),bAuto);
 		
-		m_pie->write(s.c_str());
+		m_pie->write(s.utf8_str());
 	}
 
 	if (bWroteOpenSection)

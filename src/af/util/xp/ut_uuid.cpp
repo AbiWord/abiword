@@ -60,9 +60,9 @@ UT_UUID::UT_UUID ()
     The following two constructors instantiate the class from
     existing UUIDs for further processing
 */
-UT_UUID::UT_UUID(const UT_String &s)
+UT_UUID::UT_UUID(const UT_UTF8String &s)
 {
-	m_bIsValid = _parse(s.c_str(), m_uuid);
+	m_bIsValid = _parse(s.utf8_str(), m_uuid);
 
 	// if the UUID was not valid, we will generate a new one
 	if(!m_bIsValid)
@@ -138,9 +138,9 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
 /*!
     convert internal UUID struct to a string
 */
-bool UT_UUID::_toString(const uuid &uu, UT_String & s) const
+bool UT_UUID::_toString(const uuid &uu, UT_UTF8String & s) const
 {
-    UT_String_sprintf(s,"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+    UT_UTF8String_sprintf(s,"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
         uu.time_low, uu.time_mid, uu.time_high_and_version,
         uu.clock_seq >> 8, uu.clock_seq & 0xFF,
         uu.node[0], uu.node[1], uu.node[2],
@@ -152,7 +152,7 @@ bool UT_UUID::_toString(const uuid &uu, UT_String & s) const
 /*!
     convert internal state to string
 */
-bool UT_UUID::toString(UT_String & s) const
+bool UT_UUID::toString(UT_UTF8String & s) const
 {
 	UT_return_val_if_fail(m_bIsValid, false);
 	return _toString(m_uuid, s);
@@ -161,9 +161,9 @@ bool UT_UUID::toString(UT_String & s) const
 /*!
     Set internal state to the given value represented by string
 */
-bool UT_UUID::setUUID(const UT_String &s)
+bool UT_UUID::setUUID(const UT_UTF8String &s)
 {
-	if(_parse(s.c_str(), m_uuid))
+	if(_parse(s.utf8_str(), m_uuid))
 	{
 		m_bIsValid = true;
 		return true;
@@ -195,7 +195,7 @@ bool UT_UUID::makeUUID()
 /*!
     generate new UUID into provided string
 */
-bool UT_UUID::makeUUID(UT_String & s)
+bool UT_UUID::makeUUID(UT_UTF8String & s)
 {
 	struct uuid uuid;
 	bool bRet = _makeUUID(uuid);
