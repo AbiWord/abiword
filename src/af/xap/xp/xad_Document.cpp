@@ -22,6 +22,7 @@
 #include "ut_debugmsg.h"
 #include "xad_Document.h"
 #include "ut_string.h"
+#include "ut_alphahash.h"
 
 AD_Document::AD_Document()
 {

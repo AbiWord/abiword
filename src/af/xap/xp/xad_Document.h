@@ -24,7 +24,10 @@
 // TODO should the filename be UT_UCSChar rather than char ?
 
 #include "ut_types.h"
-#include "ut_alphahash.h"
+
+// fwd. decl.
+class UT_AlphaHashTable;
+
 
 class AD_Document
 {
