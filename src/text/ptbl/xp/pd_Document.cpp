@@ -105,12 +105,15 @@ PD_Document::PD_Document(XAP_App *pApp)
 	  m_iLastDirMarker(0),
 	  m_pVDBl(NULL),
 	  m_pVDRun(NULL),
-	  m_iVDLastPos(0xffffffff)
+	  m_iVDLastPos(0xffffffff),
+	  m_iVersion(0),
+	  m_bWasSaved(false),
+	  m_iEditTime(0)
 {
 	m_pApp = pApp;
 	
 	XAP_App::getApp()->getPrefs()->getPrefsValueBool(AP_PREF_KEY_LockStyles,&m_bLockedStyles);
-	
+
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
@@ -127,6 +130,7 @@ PD_Document::~PD_Document()
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
 	UT_VECTOR_PURGEALL(PD_Revision*, m_vRevisions);
+	UT_VECTOR_PURGEALL(PD_VersionData*, m_vHistory);
 	// remove the meta data
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_metaDataMap, delete) ;
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
@@ -470,19 +474,6 @@ UT_Error PD_Document::readFromFile(const char * szFilename, int ieft,
 	if(pAP)
 	{
 		const XML_Char * pA = NULL;
-		UT_uint32 iOn;
-		
-		if(pAP->getAttribute("revisions-mark", pA))
-		{
-			iOn = atoi(pA);
-			m_bMarkRevisions = (iOn != 0);
-		}
-
-		if(pAP->getAttribute("revisions-show", pA))
-		{
-			iOn = atoi(pA);
-			m_bShowRevisions = (iOn != 0);
-		}
 
 		if(pAP->getAttribute("styles", pA))
 		{
@@ -601,6 +592,9 @@ UT_Error PD_Document::newDocument(void)
 			m_pPieceTable->setPieceTableState(PTS_Editing);
 	}
 
+	setDocVersion(0);
+	setEditTime(0);
+	
 	// mark the document as not-dirty
 	_setClean();
 
@@ -638,6 +632,10 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 		_syncFileTypes(true);
 	}
 
+	// order of these calls matters
+	_adjustHistoryOnSave();
+	_adjustEditTimeOnSave();
+	
 	errorCode = pie->writeFile(szFilename);
 	delete pie;
 
@@ -658,9 +656,6 @@ UT_Error PD_Document::saveAs(const char * szFilename, int ieft, bool cpy,
 	    m_szFilename = szFilenameCopy;
 	    _setClean(); // only mark as clean if we're saving under a new name
 	}
-
-	// record this as the last time the document was saved
-	m_lastSavedTime = time(NULL);
 
 	//if (strstr(szFilename, "normal.awt") == NULL)
 	XAP_App::getApp()->getPrefs()->addRecent(szFilename);
@@ -686,6 +681,9 @@ UT_Error PD_Document::save(void)
 
 	_syncFileTypes(true);
 
+	_adjustHistoryOnSave();
+	_adjustEditTimeOnSave();
+	
 	errorCode = pie->writeFile(m_szFilename);
 	delete pie;
 
@@ -3722,43 +3720,45 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 			return false;
 
 		// now set standard attributes
-		const XML_Char * attr[21];
-		attr[20] = NULL;
+		UT_uint32 i = 0;
+		const UT_uint32 iSize = 21;
+		const XML_Char * attr[iSize];
 
-		attr[0] = "xmlns";
-		attr[1] = "http://www.abisource.com/awml.dtd";
+		attr[i++] = "xmlns";
+		attr[i++] = "http://www.abisource.com/awml.dtd";
 
-		attr[2] = "xml:space";
-		attr[3] = "preserve";
+		attr[i++] = "xml:space";
+		attr[i++] = "preserve";
 
-		attr[4] = "xmlns:awml";
-		attr[5] = "http://www.abisource.com/awml.dtd";
+		attr[i++] = "xmlns:awml";
+		attr[i++] = "http://www.abisource.com/awml.dtd";
 
-		attr[6] = "xmlns:xlink";
-		attr[7] = "http://www.w3.org/1999/xlink";
+		attr[i++] = "xmlns:xlink";
+		attr[i++] = "http://www.w3.org/1999/xlink";
 
-		attr[8] = "xmlns:svg";
-		attr[9] = "http://www.w3.org/2000/svg";
+		attr[i++] = "xmlns:svg";
+		attr[i++] = "http://www.w3.org/2000/svg";
 
-		attr[10] = "xmlns:fo";
-		attr[11] = "http://www.w3.org/1999/XSL/Format";
+		attr[i++] = "xmlns:fo";
+		attr[i++] = "http://www.w3.org/1999/XSL/Format";
 
-		attr[12] = "xmlns:math";
-		attr[13] = "http://www.w3.org/1998/Math/MathML";
+		attr[i++] = "xmlns:math";
+		attr[i++] = "http://www.w3.org/1998/Math/MathML";
 
-		attr[14] = "xmlns:dc";
-		attr[15] = "http://purl.org/dc/elements/1.1/";
+		attr[i++] = "xmlns:dc";
+		attr[i++] = "http://purl.org/dc/elements/1.1/";
 
-		attr[16] = "fileformat";
-		attr[17] = ABIWORD_FILEFORMAT_VERSION;
+		attr[i++] = "fileformat";
+		attr[i++] = ABIWORD_FILEFORMAT_VERSION;
 
 		if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
 		{
-			attr[18] = "version";
-			attr[19] = XAP_App::s_szBuild_Version;
+			attr[i++] = "version";
+			attr[i++] = XAP_App::s_szBuild_Version;
 		}
-		else
-			attr[18] = NULL;
+
+		attr[i] = NULL;
+		UT_return_val_if_fail(i < iSize, false);
 
 		bRet =  setAttributes(attr);
 
@@ -4232,3 +4232,94 @@ void PD_Document::forceDirty()
 	signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_NO_REBUILD);	
 }
 
+UT_uint32 PD_Document::getEditTime()const
+{
+	return m_iEditTime + getTimeSinceSave();
+}
+
+void PD_Document::setEditTime(UT_uint32 t)
+{
+	m_iEditTime = t;
+}
+
+void PD_Document::setDocVersion(UT_uint32 i)
+{
+	m_iVersion = i;
+}
+
+void PD_Document::_adjustEditTimeOnSave()
+{
+	// record this as the last time the document was saved + adjust
+	// the cumulative edit time
+	m_iEditTime = getEditTime();
+	m_lastSavedTime = time(NULL);
+}
+
+void PD_Document::_adjustHistoryOnSave()
+{
+	// record this as the last time the document was saved + adjust
+	// the cumulative edit time
+	if(!m_bWasSaved)
+	{
+		m_bWasSaved = true;
+		m_iVersion++;
+		PD_VersionData v(m_iVersion, m_lastSavedTime, getEditTime());
+		addRecordToHistory(v);
+	}
+	else
+	{
+		UT_return_if_fail(m_vHistory.getItemCount() > 0);
+
+		// change the edit time of the last entry
+		PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(m_vHistory.getItemCount()-1);
+
+		UT_return_if_fail(v);
+		v->setEditTime(getEditTime());
+	}
+}
+
+void PD_Document::addRecordToHistory(const PD_VersionData &vd)
+{
+	PD_VersionData * v = new PD_VersionData(vd);
+	UT_return_if_fail(v);
+	m_vHistory.addItem((void*)v);
+}
+
+UT_uint32 PD_Document::getHistoryNthId(UT_uint32 i)const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getId();
+}
+
+time_t PD_Document::getHistoryNthTime(UT_uint32 i)const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getTime();
+}
+
+UT_uint32 PD_Document::getHistoryNthEditTime(UT_uint32 i)const
+{
+	if(!m_vHistory.getItemCount())
+		return 0;
+
+	PD_VersionData * v = (PD_VersionData*)m_vHistory.getNthItem(i);
+
+	if(!v)
+		return 0;
+
+	return v->getEditTime();
+}

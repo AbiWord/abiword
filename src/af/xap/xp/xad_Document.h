@@ -74,7 +74,8 @@ public:
 	 * Returns the # of seconds since the last save of this file 
 	 */
 	UT_uint32       getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
-   
+	time_t          getLastSavedTime() const {return m_lastSavedTime;}
+	
 	void					setEncodingName(const char * szEncodingName);
 	const char *			getEncodingName() const;
 	bool					isPieceTableChanging(void);

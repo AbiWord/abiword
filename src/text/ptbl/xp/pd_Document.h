@@ -165,6 +165,38 @@ class PD_Revision
 	time_t        m_tStart;
 };
 
+// a helper class for history tracking
+class PD_VersionData
+{
+  public:
+	PD_VersionData(UT_uint32 v, time_t t, UT_uint32 e)
+		:m_iId(v),m_tTime(t), m_iEditTime(e){};
+	
+	PD_VersionData(const PD_VersionData & v)
+		:m_iId(v.m_iId),m_tTime(v.m_tTime),m_iEditTime(v.m_iEditTime){};
+	
+	PD_VersionData & operator = (const PD_VersionData &v)
+	{
+		m_iId       = v.m_iId;
+		m_tTime     = v.m_tTime;
+		m_iEditTime = v.m_iEditTime;
+		
+		return *this;
+	}
+
+	UT_uint32   getId()const{return m_iId;}
+	time_t      getTime()const {return m_tTime;}
+	UT_uint32   getEditTime()const {return m_iEditTime;}
+	
+	void        setId(UT_uint32 i) {m_iId = i;}
+	void        setTime(time_t t) {m_tTime = t;}
+	void        setEditTime(UT_uint32 t) {m_iEditTime = t;}
+	
+  private:
+	UT_uint32   m_iId;
+	time_t      m_tTime;
+	UT_uint32   m_iEditTime;
+};
 
 
 /*!
@@ -520,10 +552,24 @@ public:
 	UT_uint32 getUID(UT_UniqueId::idType t) {return m_UID.getUID(t);}
 	bool      setMinUID(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.setMinId(t,i);}
 	bool      isIdUnique(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.isIdUnique(t,i);}
+
+	UT_uint32 getEditTime()const;
+	void      setEditTime(UT_uint32 t);
+	
+	void      setDocVersion(UT_uint32 i);
+	UT_uint32 getDocVersion() const {return m_iVersion;}
+
+	void      addRecordToHistory(const PD_VersionData & v);
+	UT_uint32 getHistoryCount()const {return m_vHistory.getItemCount();}
+	UT_uint32 getHistoryNthId(UT_uint32 i)const;
+	time_t    getHistoryNthTime(UT_uint32 i)const;
+	UT_uint32 getHistoryNthEditTime(UT_uint32 i)const;
 	
 protected:
 	~PD_Document();
 
+	void                    _adjustEditTimeOnSave();
+	void                    _adjustHistoryOnSave();
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
 	bool					_syncFileTypes(bool bReadSaveWriteOpen);
@@ -580,6 +626,12 @@ private:
 	fp_Run *                m_pVDRun;
 	PT_DocPosition          m_iVDLastPos;
 	UT_UniqueId             m_UID;
+
+	// these are for tracking versioning
+	UT_uint32               m_iVersion;
+	bool                    m_bWasSaved;
+	UT_uint32               m_iEditTime;
+	UT_Vector               m_vHistory;
 };
 
 #endif /* PD_DOCUMENT_H */

@@ -122,7 +122,9 @@ protected:
 			       _PS_MetaData,
 				   _PS_Meta,
 				   _PS_RevisionSec,
-				   _PS_Revision
+				   _PS_Revision,
+				   _PS_HistorySec,
+				   _PS_Version
     } ParseState;
 
  protected:

@@ -231,6 +231,8 @@ UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 #define TT_REVISION        29 //<r>
 #define TT_RESOURCE        30 // <resource>
 #define TT_ENDNOTE         31 //<endnote>
+#define TT_HISTORYSECTION  32 //<history>
+#define TT_VERSION         33 //<version>
 
 /*
   TODO remove tag synonyms.  We're currently accepted
@@ -265,6 +267,7 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"field",		TT_FIELD		},
 	{	"foot",		    TT_FOOTNOTE	    },
 	{	"frame",		TT_FRAME	    },
+	{   "history",      TT_HISTORYSECTION},
 	{	"i",			TT_IMAGE		},
 	{	"ignoredwords",	TT_IGNOREDWORDS	},
 	{	"image",		TT_IMAGE		},
@@ -283,7 +286,9 @@ static struct xmlToIdMapping s_Tokens[] =
 	{	"s",			TT_STYLE		},
 	{	"section",		TT_SECTION		},
 	{	"styles",		TT_STYLESECTION	},
-	{	"table",		TT_TABLE		}
+	{	"table",		TT_TABLE		},
+	{   "version",      TT_VERSION      }
+	
 };
 
 #define TokenTableSize	((sizeof(s_Tokens)/sizeof(s_Tokens[0])))
@@ -617,7 +622,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		}
 		return;
 	}
-			
+
 	case TT_REVISION:
 	{
 		X_VerifyParseState(_PS_RevisionSec);
@@ -637,7 +642,59 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		return;
 	}
 
-   case TT_LISTSECTION:
+	case TT_HISTORYSECTION:
+	{
+				
+		X_VerifyParseState(_PS_Doc);
+		m_parseState = _PS_HistorySec;
+
+		// parse the attributes ...
+		const XML_Char * szS = UT_getAttribute("version",atts);
+		UT_uint32 i;
+		if(szS)
+		{
+			i = atoi(szS);
+			getDoc()->setDocVersion(i);			
+		}
+
+		szS = UT_getAttribute("edit-time",atts);
+		if(szS)
+		{
+			i = atoi(szS);
+			getDoc()->setEditTime(i);
+		}
+		
+		return;
+	}
+	
+	case TT_VERSION:
+	{
+		X_VerifyParseState(_PS_HistorySec);
+		m_parseState = _PS_Version;
+
+		const XML_Char * szS = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
+		if(szS)
+		{
+			UT_uint32 iId = atoi(szS);
+			time_t tTime = 0;
+			UT_uint32 iEditTime = 0;
+			
+			szS = UT_getAttribute("time",atts);
+			if(szS)
+				tTime = (time_t)atoi(szS);
+
+			szS = UT_getAttribute("edit-time",atts);
+			if(szS)
+				iEditTime = atoi(szS);
+
+			PD_VersionData v(iId, tTime, iEditTime);
+			getDoc()->addRecordToHistory(v);
+		}
+
+		return;
+	}
+
+		case TT_LISTSECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_ListSec;
 		// As per styles, we don't need to notify the piece table.
@@ -885,6 +942,16 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 		UT_ASSERT(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Style);
 		m_parseState = _PS_StyleSec;
+		return;
+
+	case TT_HISTORYSECTION:
+		X_VerifyParseState(_PS_HistorySec);
+		m_parseState = _PS_Doc;
+		return;
+		
+	case TT_VERSION:
+		X_VerifyParseState(_PS_Version);
+		m_parseState = _PS_HistorySec;
 		return;
 
 	case TT_REVISIONSECTION:
