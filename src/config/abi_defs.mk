@@ -604,7 +604,11 @@ ifeq ($(ABI_OPT_PEER_EXPAT),1)
     EXTRA_LIBS += $(LIBDIR)/libAbi_libexpat_s.lib
     LDFLAGS += /NODEFAULTLIB:LIBC
   else
+  ifeq ($(OS_NAME),MINGW32)
+    EXTRA_LIBS += $(LIBDIR)/libAbi_libexpat.a
+  else
     EXTRA_LIBS += -L$(ABI_ROOT)/../expat/lib/.libs -lexpat
+  endif
   endif
   CFLAGS += -DHAVE_EXPAT
   ABI_OPTIONS+=XML:expat
