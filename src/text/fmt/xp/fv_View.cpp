@@ -258,8 +258,10 @@ FV_View::~FV_View()
 	FREEP(m_chg.propsSection);
 }
 
-// first character of selection gets capitalized.
-// TODO: make me respect sentence boundaries
+
+#if 0
+// the code is not directly in the case function, as passing the 
+// arguments is too awkward
 static void _toggleSentence (const UT_UCSChar * src, 
 				 UT_UCSChar * dest, UT_uint32 len, const UT_UCSChar * prev)
 {
@@ -282,6 +284,7 @@ static void _toggleSentence (const UT_UCSChar * src,
 			dest[i] = src[i];
 	}
 }
+#endif
 
 static void _toggleFirstCapital(const UT_UCSChar * src,
 				 UT_UCSChar * dest, UT_uint32 len, const UT_UCSChar * prev)
@@ -578,12 +581,73 @@ void FV_View::toggleCase (ToggleCase c)
 						break;
 						
 					case CASE_SENTENCE:
+#if 0
 						if(offset < 2)
 							prev = NULL;
 						else
 							prev = buffer.getPointer(offset - 2);
 						_toggleSentence (pTemp, pTemp, iLen, prev);
-						break;
+#endif
+                   {
+					   UT_uint32 iOffset = offset;
+					   UT_UCSChar * text = buffer.getPointer(0);
+					   UT_uint32 i = 1;
+
+					   // examine what preceedes this chunk of text
+					   if(iOffset)
+						   iOffset--;
+
+					   while(iOffset && UT_UCS_isspace(text[iOffset]))
+					   {
+						   iOffset--;
+					   }
+
+					   bool bStartOfSentence = !iOffset;
+
+					   if(iOffset)
+					   {
+						   bStartOfSentence = UT_UCS_isSentenceSeparator(text[iOffset]) && UT_UCS_isalpha(text[iOffset-1]);
+					   }
+
+					   if(bStartOfSentence)
+					   {
+						   i = 0;
+						   while( i < iLen && UT_UCS_isspace(pTemp[i]))
+							   i++;
+						   
+						   if(i < iLen)
+						   {
+							   pTemp[i] = UT_UCS_toupper (pTemp[i]);
+							   i++;
+						   }
+					   }
+
+					   for(; i < iLen; i++)
+					   {
+						   UT_ASSERT(i > 0);
+						   while(i < iLen && !UT_UCS_isSentenceSeparator(pTemp[i]))
+							   i++;
+
+						   // now i is either out of bounds, or points to the separator
+						   // if it points to the separator, check that the character before it
+						   // is a letter if not, start all over again
+						   if(i < iLen && !UT_UCS_isalpha(pTemp[i-1]))
+							   continue;
+							   
+						   // move past the separator
+						   i++;
+
+						   if(i < iLen)
+						   {
+							   while( i < iLen && UT_UCS_isspace(pTemp[i]))
+								   i++;
+
+							   if(i < iLen)
+								   pTemp[i] = UT_UCS_toupper(pTemp[i]);
+						   }
+					   }
+				   }
+				   break;
 	
 					case CASE_LOWER:
 						_toggleLower (pTemp, pTemp, iLen);
