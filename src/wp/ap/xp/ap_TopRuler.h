@@ -97,7 +97,7 @@ public:
 	UT_uint32		getHeight(void) const;
 	void			setWidth(UT_uint32 iWidth);
 	UT_uint32		getWidth(void) const;
-	void			draw(const UT_Rect * pClipRect);
+	void			draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo = NULL);
 	void			scrollRuler(UT_sint32 xoff, UT_sint32 xlimit);
 
 	void			mouseMotion(EV_EditModifierState ems, UT_uint32 x, UT_uint32 y);
@@ -112,36 +112,37 @@ public:
 	static void		_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 ylimit);
 	
 protected:
-	void	_draw(void);
-	void	_drawBar(AP_TopRulerInfo &info, UT_RGBColor &clr, UT_sint32 x, UT_sint32 w);
-	void	_drawTickMark(AP_TopRulerInfo &info, ap_RulerTicks &tick,
+	void	_draw(AP_TopRulerInfo * pUseInfo);
+	void	_drawBar(AP_TopRulerInfo * pInfo, UT_RGBColor &clr, UT_sint32 x, UT_sint32 w);
+	void	_drawTickMark(AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
 						  UT_RGBColor &clr, GR_Font * pFont,
 						  UT_sint32 k, UT_sint32 xTick);
-	void	_drawTicks(AP_TopRulerInfo &info, ap_RulerTicks &tick,
+	void	_drawTicks(AP_TopRulerInfo * pInfo, ap_RulerTicks &tick,
 					   UT_RGBColor &clr, GR_Font * pFont,
 					   UT_sint32 xOrigin, UT_sint32 xFrom, UT_sint32 xTo);
 
-	void	_getParagraphMarkerXCenters(AP_TopRulerInfo &info,
+	void	_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 										UT_sint32 * pLeft, UT_sint32 * pRight, UT_sint32 * pFirstLine);
-	void	_getParagraphMarkerRects(AP_TopRulerInfo &info,
+	void	_getParagraphMarkerRects(AP_TopRulerInfo * pInfo,
 									 UT_sint32 leftCenter, UT_sint32 rightCenter, UT_sint32 firstLineCenter,
 									 UT_Rect * prLeftIndent, UT_Rect * prRightIndent, UT_Rect * prFirstLineIndent);
-	void	_drawParagraphProperties(AP_TopRulerInfo &info,
-									 UT_RGBColor &clrDark, UT_RGBColor &clrLight);
+	void	_drawParagraphProperties(AP_TopRulerInfo * pInfo,
+									 UT_RGBColor &clrDark, UT_RGBColor &clrLight,
+									 UT_Bool bDrawAll = UT_TRUE);
 
-	UT_sint32	_getColumnMarkerXCenter(AP_TopRulerInfo &info, UT_uint32 kCol);
-	void		_getColumnMarkerRect(AP_TopRulerInfo &info, UT_uint32 kCol, UT_sint32 xCenter,
+	UT_sint32	_getColumnMarkerXCenter(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
+	void		_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol, UT_sint32 xCenter,
 									 UT_Rect * prCol);
-	void		_drawColumnProperties(AP_TopRulerInfo &info,
+	void		_drawColumnProperties(AP_TopRulerInfo * pInfo,
 									  UT_RGBColor &clrDark, UT_RGBColor &clrLight,
 									  UT_uint32 kCol);
 
-	void		_getMarginMarkerRects(AP_TopRulerInfo &info, UT_Rect &rLeft, UT_Rect &rRight);
-	void		_drawMarginProperties(AP_TopRulerInfo &info, UT_RGBColor &clr);
+	void		_getMarginMarkerRects(AP_TopRulerInfo * pInfo, UT_Rect &rLeft, UT_Rect &rRight);
+	void		_drawMarginProperties(AP_TopRulerInfo * pInfo, UT_RGBColor &clr);
 
 	void		_ignoreEvent(void);
 	double		_scalePixelDistanceToUnits(UT_sint32 xColRel, ap_RulerTicks & tick);
-	UT_sint32	_getFirstPixelInColumn(AP_TopRulerInfo &info, UT_uint32 kCol);
+	UT_sint32	_getFirstPixelInColumn(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	void		_drawHollowRect(UT_RGBColor &clrDark, UT_RGBColor &clrLight, UT_Rect &r);
 	UT_sint32	_snapPixelToGrid(UT_sint32 xDist, ap_RulerTicks & tick);
 	void		_drawSculptedRect(UT_Rect &r);
