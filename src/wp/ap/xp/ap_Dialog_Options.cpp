@@ -123,6 +123,7 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 void AP_Dialog_Options::_enableDisableLogic( tControl id )
 {
+#if 0
 	switch (id)
 	{
 
@@ -138,6 +139,7 @@ void AP_Dialog_Options::_enableDisableLogic( tControl id )
 		// do nothing
 		break;
 	}	
+#endif
 }
 
 // The initialize the controls (i.e., disable controls not coded yet)
@@ -162,8 +164,8 @@ void AP_Dialog_Options::_initEnableControls()
 
 void AP_Dialog_Options::_event_SetDefaults(void)
 {
-	XAP_Prefs	*pPrefs;
-	XML_Char	*old_name;
+	XAP_Prefs		*pPrefs;
+	const XML_Char	*old_name;
 
 	pPrefs = m_pApp->getPrefs();
 	UT_ASSERT(pPrefs);
