@@ -35,6 +35,7 @@
 #include <Menus.h>
 #include <Devices.h>
 #include <Events.h>
+#include <Appearance.h>
 #ifdef XP_MAC_TARGET_MACOSX
 # include <AEInteraction.h>
 #endif
@@ -156,6 +157,7 @@ UT_uint32 XAP_MacApp::_getExeDir(char* /*pDirBuf*/, UT_uint32 /*iBufLen*/)
 
 void XAP_MacApp::InitializeMacToolbox ()
 {
+	OSStatus err;
 	if (m_NotInitialized) {
 		// This is REALLY the first thing to do
 		// Even before any other Initialization. Note that this this is MacOS dependant
@@ -180,6 +182,7 @@ void XAP_MacApp::InitializeMacToolbox ()
 	#if XP_MAC_TARGET_CARBON
 		::MoreMasterPointers (4);
 	#endif
+		err = ::RegisterAppearanceClient ();
 		m_NotInitialized = false;
 	}
 }
@@ -190,13 +193,21 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 	WindowPtr	targetWin;
 	short		winLocation;
 	XAP_MacFrame *frame = NULL;
+	long	menuSelection;
 	
 	switch (theEvent.what) {
 	case keyDown:
+		menuSelection = ::MenuEvent (&theEvent);
+		if (HiWord (menuSelection != 0)) {
+			HandleMenus (menuSelection);
+		}
+		else {
+			// TODO handle key events
+		}
 		break;
 	case mouseDown:
 		winLocation = ::FindWindow(theEvent.where, &targetWin);
-#ifdef XP_MAC_TARGET_CARBON
+#if defined(XP_MAC_TARGET_CARBON) && XP_MAC_TARGET_CARBON
 		if (::GetWindowKind(targetWin) == XAP_MACFRAME_WINDOW_KIND) {
 			frame = (XAP_MacFrame*)GetWRefCon(targetWin);
 #else
@@ -229,9 +240,14 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 #else
 			&qd.screenBits.bounds
 #endif
-			);	/* handle multiple screens */
+			);	/* TODO handle multiple screens */
 			break;
 		case inGrow:
+			long newSize = ::GrowWindow (targetWin, theEvent.where, &qd.screenBits.bounds);
+			::SizeWindow (targetWin, LoWord (newSize), HiWord (newSize), true);
+			if (frame != NULL) {
+				frame->_macGrow ();
+			}
 			break;
 		case inGoAway:
 			if (::TrackGoAway (targetWin, theEvent.where)) {
@@ -239,6 +255,9 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 					frame->close ();
 				}
 			}
+			break;
+		case inProxyIcon:
+			// TODO handle proxy icons
 			break;
 		case inZoomIn:
 		case inZoomOut:
@@ -248,6 +267,20 @@ void XAP_MacApp::DispatchEvent (const EventRecord & theEvent)
 				}
 			}			
 			break;
+		}
+		break;
+	case updateEvt:
+		targetWin = *((WindowPtr*) &theEvent.message);
+	#if defined(XP_MAC_TARGET_CARBON) && XP_MAC_TARGET_CARBON
+		if (::GetWindowKind(targetWin) == XAP_MACFRAME_WINDOW_KIND) {
+			frame = (XAP_MacFrame*)GetWRefCon(targetWin);
+	#else
+		if (((WindowRecord *)targetWin)->windowKind == XAP_MACFRAME_WINDOW_KIND) {
+			frame = (XAP_MacFrame*)((WindowRecord *)targetWin)->refCon;
+	#endif
+		}
+		if (frame != NULL) {
+			frame->_macUpdate ();
 		}
 		break;
 	case kHighLevelEvent:
