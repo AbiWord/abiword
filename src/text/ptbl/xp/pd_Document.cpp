@@ -1360,7 +1360,7 @@ bool PD_Document:: setPageSizeFromFile(const XML_Char ** attributes)
 		return false;
 	if(!szOrientation)
 		return false;
-	m_docPageSize.Set(szPageSize);
+	m_docPageSize.Set((const char *)szPageSize);
 	if(UT_XML_stricmp(szOrientation,"portrait")==0)
 	{
 		m_docPageSize.setPortrait();
