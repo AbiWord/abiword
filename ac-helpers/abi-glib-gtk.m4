@@ -1,34 +1,51 @@
 # test for glib2
 AC_DEFUN([ABI_GLIB2],[
-	PKG_CHECK_MODULES(GLIB,glib-2.0 >= 2.0,[
-		dnl do we need to set these?
-		abi_glib2=yes
-	],[	abi_glib2=no
-	])
-	if test $abi_glib2 = no; then
-		AC_MSG_ERROR([$GLIB_PKG_ERRORS])
-	fi
 
-	PKG_CHECK_MODULES(GMODULE,gmodule-2.0 >= 2.0,[
-		dnl do we need to set these?
-		abi_gmodule2=yes
-	],[	abi_gmodule2=no
-	])
-	if test $abi_gmodule2 = no; then
-		AC_MSG_ERROR([$GMODULE_PKG_ERRORS])
-	fi
+	dnl pkg.m4 often missing from aclocal's search path :-(
+	dnl 
+	ifdef(PKG_CHECK_MODULES,[
+		PKG_CHECK_MODULES(GLIB,glib-2.0 >= 2.0,[
+			dnl do we need to set these?
+			abi_glib2=yes
+		],[	abi_glib2=no
+		])
+		if test $abi_glib2 = no; then
+			AC_MSG_ERROR([$GLIB_PKG_ERRORS])
+		fi
 
-	PKG_CHECK_MODULES(GTHREAD,gthread-2.0,[
-		dnl do we need to set these?
-		abi_gthread2=yes
-	],[	abi_gthread2=no
+		PKG_CHECK_MODULES(GMODULE,gmodule-2.0 >= 2.0,[
+			dnl do we need to set these?
+			abi_gmodule2=yes
+		],[	abi_gmodule2=no
+		])
+		if test $abi_gmodule2 = no; then
+			AC_MSG_ERROR([$GMODULE_PKG_ERRORS])
+		fi
+
+		PKG_CHECK_MODULES(GTHREAD,gthread-2.0,[
+			dnl do we need to set these?
+			abi_gthread2=yes
+		],[	abi_gthread2=no
+		])
+		if test $abi_gthread2 = no; then
+			AC_MSG_ERROR([$GTHREAD_PKG_ERRORS])
+		else
+			THREAD_CFLAGS="-DHAVE_THREADS=1 $GTHREAD_CFLAGS"
+	    	THREAD_LIBS=$GTHREAD_LIBS
+		fi
+	],[	echo ""
+		echo "error: PKG_CHECK_MODULES isn't defined"
+		echo ""
+		echo "   Either pkg.m4 wasn't in aclocal's search path or pkgconfig"
+		echo "   (or pkgconfig-devel?) isn't installed."
+		echo ""
+		echo "   If pkg-config is installed in <prefix> then re-run autogen.sh:"
+		echo ""
+		echo "       ACLOCAL_FLAGS=\"-I <prefix>/share/aclocal\" ./autogen.sh"
+		echo ""
+		exit
 	])
-	if test $abi_gthread2 = no; then
-		AC_MSG_ERROR([$GTHREAD_PKG_ERRORS])
-	else
-		THREAD_CFLAGS="-DHAVE_THREADS=1 $GTHREAD_CFLAGS"
-    	THREAD_LIBS=$GTHREAD_LIBS
-	fi
+
 	AC_SUBST(THREAD_CFLAGS)
 	AC_SUBST(THREAD_LIBS)
 
@@ -39,13 +56,19 @@ AC_DEFUN([ABI_GLIB2],[
 AC_DEFUN([ABI_GTK2],[
 	ABI_GLIB2
 
-	PKG_CHECK_MODULES(GTK,gtk+-2.0 >= 2.0,[
-		abi_gtk2=yes
-	],[	abi_gtk2=no
+	dnl pkg.m4 often missing from aclocal's search path :-(
+	dnl 
+	ifdef(PKG_CHECK_MODULES,[
+		PKG_CHECK_MODULES(GTK,gtk+-2.0 >= 2.0,[
+			abi_gtk2=yes
+		],[	abi_gtk2=no
+		])
+		if test $abi_gtk2 = no; then
+			AC_MSG_ERROR([$GTK_PKG_ERRORS])
+		fi
+	],[	echo "error: PKG_CHECK_MODULES isn't defined"
+		exit
 	])
-	if test $abi_gtk2 = no; then
-		AC_MSG_ERROR([$GTK_PKG_ERRORS])
-	fi
 ])
 
 # Check for optional glib
