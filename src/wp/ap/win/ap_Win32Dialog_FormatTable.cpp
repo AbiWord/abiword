@@ -355,7 +355,9 @@ void AP_Win32Dialog_FormatTable::event_previewExposed(void)
 
 void AP_Win32Dialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
 {
-	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
+	m_backgButton.setColour(RGB(clr.m_red,clr.m_grn,clr.m_blu));
+	/* force redraw */
+	InvalidateRect(GetDlgItem(m_hwndDlg, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), NULL, FALSE);
 }
 
 void AP_Win32Dialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
