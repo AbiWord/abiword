@@ -48,7 +48,7 @@ public:
 	XAP_Frame *			getFrame(void) const;
 	GR_Graphics *		getGraphics(void) const;
 	virtual void		setView(AV_View * pView);
-	void				draw(const UT_Rect * pClipRect);
+	void				draw(void);
 	UT_uint32			getWidth(void) const;
 	UT_uint32			getHeight(void) const;
 	void				setWidth(UT_uint32 iWidth);
@@ -61,7 +61,7 @@ public:
 	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);
 
 protected:
-	void				_draw(const UT_Rect * pClipRect);
+	void				_draw(void);
 
 	XAP_Frame *			m_pFrame;
 	AV_View *			m_pView;

@@ -43,7 +43,7 @@ public:
 	void				setLeftOrigin(UT_uint32 left);
 
 	virtual UT_uint32	getDesiredWidth(void) = 0;
-	virtual void		draw(const UT_Rect * pClipRect) = 0;
+	virtual void		draw(void) = 0;
 	virtual void		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
 	
 protected:
@@ -97,13 +97,13 @@ void ap_sb_Field::_draw3D(void)
 {
 	GR_Graphics * pG = m_pSB->getGraphics();
 	
-	pG->fillRect(m_clrBackground,m_rect3d.left+1,m_rect3d.top+1,
-				 m_rect3d.width-2,m_rect3d.height-2);
+	pG->fillRect(m_clrBackground,m_rect3d.left,m_rect3d.top,
+				 m_rect3d.width,m_rect3d.height);
 
-	UT_uint32 l = m_rect3d.left;
-	UT_uint32 r = l + m_rect3d.width;
-	UT_uint32 t = m_rect3d.top;
-	UT_uint32 b = t + m_rect3d.height;
+	UT_uint32 l = m_rect3d.left -1;
+	UT_uint32 r = l + m_rect3d.width +2;
+	UT_uint32 t = m_rect3d.top -1;
+	UT_uint32 b = t + m_rect3d.height +2;
 	
 	pG->setColor(m_clrDarkGray);
 	pG->drawLine(l,t, l,b);
@@ -124,7 +124,7 @@ public:
 	virtual ~ap_sb_Field_PageInfo(void);
 
 	virtual UT_uint32	getDesiredWidth(void);
-	virtual void		draw(const UT_Rect * pClipRect);
+	virtual void		draw(void);
 	virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
 
 private:
@@ -173,7 +173,7 @@ UT_uint32 ap_sb_Field_PageInfo::getDesiredWidth(void)
 	return m_iDesiredWidth;
 }
 
-void ap_sb_Field_PageInfo::draw(const UT_Rect * /*pClipRect*/)
+void ap_sb_Field_PageInfo::draw(void)
 {
 	_draw3D();
 
@@ -187,7 +187,9 @@ void ap_sb_Field_PageInfo::draw(const UT_Rect * /*pClipRect*/)
 
 		pG->setColor(m_clrBlack);
 	
+		pG->setClipRect(&m_rect3d);
 		pG->drawChars(m_bufUCS,0,m_lenBufUCS,x,y);
+		pG->setClipRect(NULL);
 	}
 }
 
@@ -227,7 +229,7 @@ void ap_sb_Field_PageInfo::notify(AV_View * /*pavView*/, const AV_ChangeMask mas
 		m_lenBufUCS = strlen(buf);
 		UT_UCS_strcpy_char(m_bufUCS,buf);
 
-		draw(NULL);
+		draw();
 	}
 }
 
@@ -241,7 +243,7 @@ public:
 	virtual ~ap_sb_Field_StatusMessage(void);
 
 	virtual UT_uint32	getDesiredWidth(void);
-	virtual void		draw(const UT_Rect * pClipRect);
+	virtual void		draw(void);
 	virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
 };
 
@@ -259,7 +261,7 @@ UT_uint32 ap_sb_Field_StatusMessage::getDesiredWidth(void)
 	return 300;							// TODO define this somewhere
 }
 
-void ap_sb_Field_StatusMessage::draw(const UT_Rect * /*pClipRect*/)
+void ap_sb_Field_StatusMessage::draw(void)
 {
 	_draw3D();
 
@@ -276,7 +278,9 @@ void ap_sb_Field_StatusMessage::draw(const UT_Rect * /*pClipRect*/)
 
 		pG->setColor(m_clrBlack);
 	
+		pG->setClipRect(&m_rect3d);
 		pG->drawChars(szMsg,0,len,x,y);
+		pG->setClipRect(NULL);
 	}
 }
 
@@ -295,7 +299,7 @@ public:
 	virtual ~ap_sb_Field_InputMode(void);
 
 	virtual UT_uint32	getDesiredWidth(void);
-	virtual void		draw(const UT_Rect * pClipRect);
+	virtual void		draw(void);
 	virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
 
 private:
@@ -338,7 +342,7 @@ UT_uint32 ap_sb_Field_InputMode::getDesiredWidth(void)
 	return m_iDesiredWidth;
 }
 
-void ap_sb_Field_InputMode::draw(const UT_Rect * /*pClipRect*/)
+void ap_sb_Field_InputMode::draw(void)
 {
 	_draw3D();
 
@@ -351,8 +355,10 @@ void ap_sb_Field_InputMode::draw(const UT_Rect * /*pClipRect*/)
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
 
 		pG->setColor(m_clrBlack);
-	
+
+		pG->setClipRect(&m_rect3d);
 		pG->drawChars(m_bufUCS,0,m_lenBufUCS,x,y);
+		pG->setClipRect(NULL);
 	}
 }
 
@@ -364,7 +370,7 @@ void ap_sb_Field_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask ma
 		m_lenBufUCS = strlen(szInputMode);
 		UT_UCS_strcpy_char(m_bufUCS,szInputMode);
 
-		draw(NULL);
+		draw();
 	}
 }
 
@@ -511,27 +517,21 @@ UT_Bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 	return UT_TRUE;
 }
 
-void AP_StatusBar::draw(const UT_Rect * pClipRect)
+void AP_StatusBar::draw(void)
 {
 	if (!m_pG)
 		return;
 	
-	if (pClipRect)
-		m_pG->setClipRect(pClipRect);
-
 	// draw the background
 
 	m_pG->fillRect(m_clrBackground,0,0,m_iWidth,m_iHeight);
 
 	// draw the foreground
 	
-	_draw(pClipRect);
-	
-	if (pClipRect)
-		m_pG->setClipRect(NULL);
+	_draw();
 }
 
-void AP_StatusBar::_draw(const UT_Rect * pClipRect)
+void AP_StatusBar::_draw(void)
 {
 	UT_uint32 kLimit = m_vecFields.getItemCount();
 	UT_uint32 k;
@@ -539,7 +539,7 @@ void AP_StatusBar::_draw(const UT_Rect * pClipRect)
 	for (k=0; k<kLimit; k++)
 	{
 		ap_sb_Field * pf = (ap_sb_Field *)m_vecFields.getNthItem(k);
-		pf->draw(pClipRect);
+		pf->draw();
 	}
 }
 
@@ -554,7 +554,7 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS)
 	}
 	
 	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
-	pf->draw(NULL);
+	pf->draw();
 }
 
 void AP_StatusBar::setStatusMessage(const char * pBuf)

@@ -150,10 +150,7 @@ LRESULT CALLBACK AP_Win32StatusBar::_StatusBarWndProc(HWND hwnd, UINT iMsg, WPAR
 		{
 			PAINTSTRUCT ps;
 			HDC hdc = BeginPaint(hwnd, &ps);
-			UT_Rect r(ps.rcPaint.left,ps.rcPaint.top,
-					  ps.rcPaint.right-ps.rcPaint.left,
-					  ps.rcPaint.bottom-ps.rcPaint.top);
-			pStatusBar->draw(&r);
+			pStatusBar->draw();
 			EndPaint(hwnd,&ps);
 			return 0;
 		}

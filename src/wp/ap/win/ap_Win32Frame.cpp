@@ -257,7 +257,7 @@ UT_Bool AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-	((AP_FrameData*)m_pData)->m_pStatusBar->draw(NULL);
+	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
 
 	return UT_TRUE;
 

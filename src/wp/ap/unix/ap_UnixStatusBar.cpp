@@ -127,13 +127,7 @@ gint AP_UnixStatusBar::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 	if (!pUnixStatusBar)
 		return 0;
 
-	UT_Rect rClip;
-	rClip.left = pExposeEvent->area.x;
-	rClip.top = pExposeEvent->area.y;
-	rClip.width = pExposeEvent->area.width;
-	rClip.height = pExposeEvent->area.height;
-
-	pUnixStatusBar->draw(&rClip);
+	pUnixStatusBar->draw();
 	return 0;
 }
 
