@@ -5761,12 +5761,12 @@ bool FV_View::setCellFormat(const XML_Char * properties[], FormatTable applyTo)
 			_restorePieceTableState();
 			return false;		
 		}
-		UT_DEBUGMSG(("MARCM: Current cell is at (%d,%d)\n", cell->getTopAttach(), cell->getLeftAttach());
+		UT_DEBUGMSG(("MARCM: Current cell is at (%d,%d)\n", cell->getTopAttach(), cell->getLeftAttach()));
 		
 		// get the number of rows and columns in the current table
 		UT_sint32 numRows;
 		UT_sint32 numCols;
-		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols));
+		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, &numRows, &numCols);
 		if(!bRet)
 		{
 			// Allow table updates
