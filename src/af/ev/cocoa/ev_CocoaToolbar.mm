@@ -57,8 +57,19 @@
 	UT_DEBUGMSG (("@EV_CocoaToolbarTarget (id)toolbarSelected:(id)sender\n"));
 	
 	if ([sender isKindOfClass:[NSButton class]]) {
+		const UT_UCSChar * pData = NULL;
+		UT_uint32 dataLength = 0;
+		
 		XAP_Toolbar_Id tlbrID = [sender tag];
-		_xap->toolbarEvent (tlbrID, NULL, 0);
+		switch (tlbrID) {
+		case AP_TOOLBAR_ID_COLOR_FORE:
+		case AP_TOOLBAR_ID_COLOR_BACK:
+			
+			break;
+		default:
+			break;
+		}
+		_xap->toolbarEvent (tlbrID, pData, dataLength);
 	}
 	else  if ([sender isKindOfClass:[NSComboBox class]]){
 		XAP_Toolbar_Id tlbrID = [sender tag];
@@ -270,8 +281,6 @@ bool EV_CocoaToolbar::synthesize(void)
 	// revert the coordinate as they are upside down in NSView
 	viewBounds.origin.y = viewHeight - ([[toolbarParent subviews] count] + 1) * viewBounds.size.height;
 	m_wToolbar = [[NSView alloc] initWithFrame:viewBounds];
-//	[toolbarParent addSubview:m_wToolbar];
-//	[m_wToolbar release];
 	[m_wToolbar setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
 	////////////////////////////////////////////////////////////////
 	// get toolbar button appearance from the preferences
@@ -438,7 +447,6 @@ bool EV_CocoaToolbar::synthesize(void)
 			[box setBoxType:NSBoxSeparator];
 			[m_wToolbar addSubview:box];
 			[box release];
-			xxx_UT_DEBUGMSG (("TODO: Implement spacer.\n"));
 			break;
 		}
 
@@ -568,7 +576,12 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 						}
 						else {
 							UT_DEBUGMSG(("%s:%d fontSize not found.... !!!! FIXME", __FILE__, __LINE__));
-							value = [[NSString alloc] initWithUTF8String:szState];							
+							if (szState) {
+								value = [[NSString alloc] initWithUTF8String:szState];
+							}
+							else {
+								value = [[NSString alloc] initWithUTF8String:""];
+							}
 						}
 					}
 					else {
@@ -580,7 +593,13 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 						}
 					}
 					if (value) {
-						[item selectItemWithObjectValue:value];
+						int idx = [item indexOfItemWithObjectValue:value];
+						if (idx >= 0) {
+							[item selectItemWithObjectValue:value];
+						}
+						else {
+							[item setStringValue:value];
+						}
 						[value release];
 					}
 				}
@@ -624,19 +643,11 @@ AP_CocoaFrame * EV_CocoaToolbar::getFrame(void)
 
 void EV_CocoaToolbar::show(void)
 {
-/*	if ([m_wToolbar superview] == nil) {
-		[m_superView addSubview:m_wToolbar];
-	} */
 	EV_Toolbar::show();
 }
 
 void EV_CocoaToolbar::hide(void)
 {
-/*	if ([m_wToolbar superview] != nil) {
-		m_superView = [m_wToolbar superview];
-		UT_ASSERT (m_superView);
-		[m_wToolbar removeFromSuperview];
-	} */
 	EV_Toolbar::hide();
 }
 
@@ -677,8 +688,15 @@ bool EV_CocoaToolbar::repopulateStyles(void)
 	{
 		char * sz = (char *)v->getNthItem(m);
 		NSString * str = [[NSString alloc] initWithUTF8String:sz];
-		[item addItemWithObjectValue:str];
-		[str release];
+		UT_ASSERT(str);
+		if (str) {
+			/* make sure the object is not nil or this raises an exception */
+			[item addItemWithObjectValue:str];
+			[str release];
+		}
+		else {
+			NSLog(@"Discarded style name in combox box: '%s'", sz);
+		}
 	}
 	delete pStyleC;
 //

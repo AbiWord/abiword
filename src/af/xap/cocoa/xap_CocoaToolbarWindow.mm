@@ -46,6 +46,8 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 	UT_ASSERT (myWindow);
 	[myWindow setHidesOnDeactivate:YES];
 	[myWindow setReleasedWhenClosed:NO];
+	[myWindow setExcludedFromWindowsMenu:YES];
+	[myWindow setCanHide:YES];
 	
 	XAP_CocoaToolbarWindow * tlbr = [[XAP_CocoaToolbarWindow alloc] initWithWindow:myWindow];
 
@@ -54,7 +56,7 @@ static XAP_CocoaToolbarWindow * pSharedToolbar = nil;
 
 + (XAP_CocoaToolbarWindow *)sharedToolbar
 {
-	if (pSharedToolbar == NULL) {
+	if (pSharedToolbar == nil) {
 		/* no toolbar created. create one and show it */
 		pSharedToolbar = [XAP_CocoaToolbarWindow create];
 		[pSharedToolbar showWindow:pSharedToolbar];
