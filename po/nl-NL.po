@@ -1892,9 +1892,8 @@ msgstr "Dubbel"
 
 #. DLG_DlFile_Title
 #: po/tmp/ap_String_Id.h.h:703
-#, fuzzy
 msgid "Downloading file..."
-msgstr "Download mislukt!\n"
+msgstr "Bezig met downloaden van bestand..."
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:705
@@ -4977,7 +4976,7 @@ msgstr "Hongaars"
 #: po/tmp/xap_String_Id.h.h:273
 #, fuzzy, c-format
 msgid "I could not find a dictionary for %s.\n"
-msgstr "Kan het woordenboek niet laden voor de %s taal"
+msgstr "Het woordenboek voor %s kan niet gevonden worden.\n"
 
 #. DLG_HashDownloader_DictNotAvailable
 #: po/tmp/xap_String_Id.h.h:275
@@ -5158,7 +5157,7 @@ msgstr "Naam"
 #. DLG_HashDownloader_Dlg_Title
 #: po/tmp/xap_String_Id.h.h:347
 msgid "New dictionary installation"
-msgstr "Nieuw woordenboek installatie"
+msgstr "Nieuw woordenboek installeren"
 
 #. DLG_QNXMB_No
 #: po/tmp/xap_String_Id.h.h:349
