@@ -1585,8 +1585,8 @@ void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)
 			pFL->markAllRunsDirty();
 		}
 		_reformat();
-		return true;
+		return;
 	}
-	return false;
+	return;
 }
 
