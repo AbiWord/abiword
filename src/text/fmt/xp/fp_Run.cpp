@@ -171,7 +171,7 @@ fp_Run::_inheritProperties(void)
 	fp_Run* pRun = _findPrevPropertyRun();
 	if (pRun)
 	{
-		//UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run\n"));
+		xxx_UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run\n"));
 		m_iAscent = pRun->getAscent();
 		m_iDescent = pRun->getDescent();
 		m_iHeight = pRun->getHeight();
@@ -891,7 +891,11 @@ void fp_TabRun::lookupProperties(void)
 	    m_iHeightLayoutUnits = m_pG->getFontHeight(pFont);
 	}
 #ifdef BIDI_ENABLED
-	m_iDirection = FRIBIDI_TYPE_WS;
+	if(m_iDirection != FRIBIDI_TYPE_WS)
+	{
+		m_iDirection = FRIBIDI_TYPE_WS;
+		//setDirectionProperty(FRIBIDI_TYPE_WS);
+	}
 #endif
 //
 // Lookup Decoration properties for this run
@@ -1172,6 +1176,7 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
 
 void fp_TabRun::_draw(dg_DrawArgs* pDA)
 {
+	UT_DEBUGMSG(("fp_TabRun::_draw (0x%x)\n",this));
 	UT_ASSERT(pDA->pG == m_pG);
 
 	UT_RGBColor clrSelBackground(192, 192, 192);
@@ -2196,17 +2201,18 @@ void fp_FieldRun::lookupProperties(void)
 	if (!pszType) return;
 
 #ifdef BIDI_ENABLED
-	//#TF need to retrieve the direction of this run
-	//PD_Document * pDoc = m_pBL->getDocument();
+/*  ###TF	
 	const XML_Char * pszDirection = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
 	if(!UT_stricmp(pszDirection, "rtl"))
 	{
-		m_iDirection = FRIBIDI_TYPE_R;
+		m_iDirection = FRIBIDI_TYPE_RTL;
 	}
 	else
 	{
-		m_iDirection = FRIBIDI_TYPE_L;
+		m_iDirection = FRIBIDI_TYPE_LTR;
 	}
+*/
+	m_iDirection = FRIBIDI_TYPE_ON;
 #endif
 
 	int i;
@@ -3626,7 +3632,7 @@ void fp_Run::setVisDirection(FriBidiCharType iDir)
 {
 	m_iVisDirection = iDir;
 }
-
+/*
 void fp_Run::setDirectionProperty(FriBidiCharType dir)
 {
 	const XML_Char * prop[] = {NULL, NULL, 0};
@@ -3655,7 +3661,7 @@ void fp_Run::setDirectionProperty(FriBidiCharType dir)
 	
 	UT_uint32 offset = m_pBL->getPosition() + m_iOffsetFirst;
 	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + m_iLen,NULL,prop);
-	//UT_DEBUGMSG(("Run::setDirectionProperty: offset=%d, len=%d\n", offset,m_iLen));
+	UT_DEBUGMSG(("fp_Run::setDirectionProperty: offset=%d, len=%d, dir=\"%s\"\n", offset,m_iLen,prop[1]));
 }
-
+*/
 #endif //BIDI_ENABLED

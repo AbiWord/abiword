@@ -1190,7 +1190,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	the span should have rtl placement on a line, but it will ignore this 
 	value when printing the actual span.
 */
-		if(!span && (pAP->getProperty("dir-override", szValue) || pAP->getProperty("dir", szValue)))
+		if(!span && (pAP->getProperty("dir-override", szValue) /*|| pAP->getProperty("dir", szValue)###TF*/))
 		{
 			if(*szValue == 'r' || *szValue == 'l')
 			{
@@ -1206,7 +1206,7 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			m_pie->write("\"");
 #ifdef BIDI_ENABLED
-			if (!bDir && (pAP->getProperty("dir-override", szValue) || pAP->getProperty("dir", szValue)))
+			if (!bDir && (pAP->getProperty("dir-override", szValue) /*|| pAP->getProperty("dir", szValue)###TF*/))
 			{
 				if(*szValue == 'r' || *szValue == 'l')
 				{

@@ -835,7 +835,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	UT_sint32 my_xoff = 0, my_yoff = 0;
 	
 	m_pContainer->getScreenOffsets(this, my_xoff, my_yoff);
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
+	UT_DEBUGMSG(("SEVIOR: Drawing line in line pG, my_yoff=%d \n",my_yoff));
 	if(((my_yoff < -32000) || (my_yoff > 32000)) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 //
@@ -883,7 +883,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 {
 	int count = m_vecRuns.getItemCount();
 	
-	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
+	UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA \n"));
 
 	pDA->yoff += m_iAscent;
 
@@ -1085,7 +1085,8 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 			iXLayoutUnits -= pRun->getWidthInLayoutUnits();
 			iX -= pRun->getWidth();
 		}
-	
+		xxx_UT_DEBUGMSG(("fp_Line::calculateWidthOfRun (non-tab [0x%x, type %d, dir %d]): width %d\n",
+					pRun,pRun->getType(),pRun->getDirection(),pRun->getWidth()));
 		return;
 	}
 		
@@ -1552,6 +1553,7 @@ void fp_Line::layout(void)
 
 
 	// now we work our way through the runs on this line
+	xxx_UT_DEBUGMSG(("fp_Line::layout ------------------- \n"));
  	for (UT_uint32 ii=0; ii<iCountRuns; ++ii)
 	{
 		//work out the real index based on working direction
@@ -1579,7 +1581,8 @@ void fp_Line::layout(void)
 			}
 			pRun->setX(iX);
 		}
-
+		xxx_UT_DEBUGMSG(("fp_Line::layout: iX %d, iXL %d, ii %d, iCountRuns %d\n",
+					iX, iXLayoutUnits, ii, iCountRuns));
 		_calculateWidthOfRun(iX,
 							 iXLayoutUnits,
 							 pRun,
@@ -2985,6 +2988,11 @@ UT_sint32 fp_Line::_createMapOfRuns()
 
 UT_uint32 fp_Line::_getRunLogIndx(UT_uint32 indx)
 {
+#ifdef DEBUG
+	UT_uint32 iCount = m_vecRuns.getItemCount();
+	if(iCount <= indx)
+		UT_DEBUGMSG(("fp_Line::_getRunLogIndx: indx %d, iCount %d\n", indx,iCount));
+#endif	
 	UT_ASSERT((m_vecRuns.getItemCount() > indx));
 
 	if(!m_iRunsRTLcount)

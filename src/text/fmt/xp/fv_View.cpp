@@ -150,13 +150,13 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 #ifndef BIDI_RTL_DOMINANT
 	if(m_bDefaultDirectionRtl)
 	{
-		const XML_Char bidi_dir_name[] = "dir";
+		//const XML_Char bidi_dir_name[] = "dir"; ###TF
 		const XML_Char bidi_dir_value[] = "rtl";
 		const XML_Char bidi_domdir_name[] = "dom-dir";
 		const XML_Char bidi_align_name[] = "text-align";
 		const XML_Char bidi_align_value[] = "right";
 
-		const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
+		const XML_Char * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 
 		m_pDoc->addStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
 		PP_resetInitialBiDiValues("rtl");
@@ -164,13 +164,13 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 #else
 	if(!m_bDefaultDirectionRtl)
 	{
-		const XML_Char bidi_dir_name[] = "dir";
+		//const XML_Char bidi_dir_name[] = "dir";  ###TF
 		const XML_Char bidi_dir_value[] = "ltr";
 		const XML_Char bidi_domdir_name[] = "dom-dir";
 		const XML_Char bidi_align_name[] = "text-align";
 		const XML_Char bidi_align_value[] = "left";
 
-		const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
+		const XML_Char * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
 		
 		m_pDoc->addStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
 		PP_resetInitialBiDiValues("ltr");
@@ -2122,7 +2122,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		_eraseSelection();
         UT_DEBUGMSG(("Applying Character style: start %d, end %d\n", posStart, posEnd));
 		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL);
-#ifdef BIDI_ENABLED
+#if 0//def BIDI_ENABLED
 		/*	
 			we need to restore the direction of each run
 			to do so we will make use of the fact that the previous operation
@@ -2175,7 +2175,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 
 		// NB: clear explicit props at both block and char levels
 		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
-#ifdef BIDI_ENABLED
+#if 0//def BIDI_ENABLED
 		/*	
 			we need to restore the direction of each run
 			to do so we will used the direction information chached
@@ -2726,9 +2726,9 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 	if(f->m_val != NULL)
 		v.addItem( (void *) f);
 #ifdef BIDI_ENABLED
-	f = new _fmtPair("dir",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
-	if(f->m_val != NULL)
-		v.addItem( (void *) f);
+	// ###TF f = new _fmtPair("dir",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
+	//if(f->m_val != NULL)
+	//	v.addItem( (void *) f);
 	f = new _fmtPair("dir-override",pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 	if(f->m_val != NULL)
 		v.addItem( (void *) f);
@@ -8380,42 +8380,6 @@ void FV_View::cmdContextAdd(void)
 
 		delete[](szMsg);
 	
-		/*
-		  UT_DEBUGMSG(("View: Resetting default direction to %s\n", b ?"rtl" :"ltr"));
-		
-		  if(b)
-		  {
-		  const XML_Char bidi_dir_name[] = "dir";
-		  const XML_Char bidi_dir_value[] = "rtl";
-		  const XML_Char bidi_domdir_name[] = "dom-dir";
-		  const XML_Char bidi_align_name[] = "text-align";
-		  const XML_Char bidi_align_value[] = "right";
-			
-		  const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
-		  UT_DEBUGMSG(("calling addStyleProperties ... "));
-		  pView->m_pDoc->addStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
-		  UT_DEBUGMSG(("done.\n"));			
-		  }
-		  else
-		  {
-		  const XML_Char bidi_dir_name[] = "dir";
-		  const XML_Char bidi_dir_value[] = "ltr";
-		  const XML_Char bidi_domdir_name[] = "dom-dir";
-		  const XML_Char bidi_align_name[] = "text-align";
-		  const XML_Char bidi_align_value[] = "left";
-			
-		  const XML_Char * bidi_props[7]= {bidi_dir_name, bidi_dir_value, bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
-		  UT_DEBUGMSG(("calling addtStyleProperties ... "));
-		  pView->m_pDoc->addStyleProperties((const XML_Char*)"Normal", (const XML_Char**)bidi_props);
-		  UT_DEBUGMSG(("done.\n"));			
-		  }
-		
-		  UT_DEBUGMSG(("calling PP_resetInitialBiDiValues ..."));
-		  PP_resetInitialBiDiValues(b ?"rtl" :"ltr");
-		  UT_DEBUGMSG(("done.\n"));			
-		  pView->m_bDefaultDirectionRtl = b;
-		  pView->_generalUpdate();
-		*/
 	}
 #endif	
 }

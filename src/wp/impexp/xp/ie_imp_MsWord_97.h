@@ -111,7 +111,7 @@ private:
 	UT_UCSChar m_command [FLD_SIZE];
 	UT_UCSChar m_argument [FLD_SIZE];
 	bool       m_bIsLower;
-#ifdef BIDI_ENABLED
+#if 0//def BIDI_ENABLED
 	UT_String			m_pLastCharFmt;
 	UT_sint32			m_iPrevDir;
 	UT_sint32			m_iCurrDir;

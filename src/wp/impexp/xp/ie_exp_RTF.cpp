@@ -804,7 +804,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 
 #ifdef BIDI_ENABLED
 
-	const XML_Char * szDir = apa.getProperty("dir");
+	//###TF const XML_Char * szDir = apa.getProperty("dir");
 	const XML_Char * szDirOvrr = apa.getProperty("dir-override");
 	
 	bool bProceed = true;
@@ -821,14 +821,14 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			bProceed  = false;
 		}
 	}
-	
+	/*
 	if (bProceed || szDir)
 	{
 		if (!UT_strcmp (szDir, "ltr"))
 			_rtf_keyword ("ltrch");
 		else if (!UT_strcmp (szDir, "rtl"))
 			_rtf_keyword ("rtlch");
-	}
+	}  */
 
 #endif
 	const XML_Char * szListTag = apa.getProperty("list-tag");

@@ -804,9 +804,6 @@ RTFProps_bCharProps::RTFProps_bCharProps(void):
 	bm_hasBgColour(false),
 	bm_bgcolourNumber(false),
 	bm_listTag(false)
-#ifdef BIDI_ENABLED
-	,bm_dir(false)
-#endif	
 {
 }
 
@@ -1060,10 +1057,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_styleNumber = -1;
 	m_listTag = 0;
 	m_szLang = 0;
-#ifdef BIDI_ENABLED
-	m_dir = FRIBIDI_TYPE_UNSET;
-#endif	
-}; 
+};
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
 {
@@ -2828,12 +2822,6 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			return true;
 		}
 #ifdef BIDI_ENABLED
-		else if (strcmp((char*)pKeyword, "ltrch") == 0)
-		{
-			xxx_UT_DEBUGMSG(("rtf imp.: ltrch\n"));
-			m_currentRTFState.m_charProps.m_dir = FRIBIDI_TYPE_LTR;
-			return true;
-		}
 		else if (strcmp((char*)pKeyword, "ltrpar") == 0)
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: ltrpar\n"));
@@ -2950,12 +2938,6 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			return true;
 		}
 #ifdef BIDI_ENABLED
-		else if (strcmp((char*)pKeyword, "rtlch") == 0)
-		{
-			xxx_UT_DEBUGMSG(("rtf imp.: rtlch\n"));
-			m_currentRTFState.m_charProps.m_dir = FRIBIDI_TYPE_RTL;
-			return true;
-		}
 		else if (strcmp((char*)pKeyword, "rtlpar") == 0)
 		{
 			xxx_UT_DEBUGMSG(("rtf imp.: rtlpar\n"));
@@ -3348,16 +3330,6 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 			strcat(propBuffer, m_currentRTFState.m_charProps.m_szLang);
 		}
 
-#ifdef BIDI_ENABLED
-	if(m_currentRTFState.m_charProps.m_dir != FRIBIDI_TYPE_UNSET)
-	{
-		strcat(propBuffer, "; dir:");
-		if(m_currentRTFState.m_charProps.m_dir == FRIBIDI_TYPE_RTL)
-			strcat(propBuffer, "rtl");
-		else
-			strcat(propBuffer, "ltr");
-	}
-#endif
 
 #if 0
 	strcat(propBuffer, ";");

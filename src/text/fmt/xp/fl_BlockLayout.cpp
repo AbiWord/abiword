@@ -2815,9 +2815,44 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	FV_View* pView = m_pLayout->getView();
 	if(pView)
 		pView->eraseInsertionPoint();
+		
+#ifdef BIDI_ENABLED
+	PT_BlockOffset curOffset = blockOffset;
+	const UT_UCSChar* pSpan;
+	UT_uint32 lenSpan = 0;
+	
+	while(len > curOffset - blockOffset)
+	{
+		FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
+		getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+	
+		iType = fribidi_get_type((FriBidiChar)pSpan[0]);
+	
+		UT_uint32 trueLen = MIN(lenSpan,len);
+		UT_uint32 i = 1;
+		
+		for(i = 1; i < trueLen; i++)
+		{
+			iPrevType = iType;
+			iType = fribidi_get_type((FriBidiChar)pSpan[i]);
+			if(iType != iPrevType)
+				break;
+		}
+	
+		fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), curOffset, i);
+		UT_ASSERT(pNewRun);
+		curOffset += i;
+		
+		if(!_doInsertRun(pNewRun))
+			return false;
+
+	}
+	
+	return true;
+	
+#else
 	fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), blockOffset, len);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
-
 	if (_doInsertRun(pNewRun))
 	{
 #if 0
@@ -2852,14 +2887,17 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 #endif
 
 #ifdef BIDI_ENABLED
-		pNewRun->setDirection(FRIBIDI_TYPE_UNSET);      //#TF need the the previous run to be set before we can do this
+		//###TF pNewRun->setDirection(FRIBIDI_TYPE_UNSET);      //#TF need the the previous run to be set before we can do this
 #endif
+
 		return true;
 	}
 	else
 	{
 		return false;
 	}
+#endif
+
 }
 
 bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)

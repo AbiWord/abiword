@@ -240,24 +240,23 @@ void fp_TextRun::lookupProperties(void)
 	delete lls;
 
 #ifdef BIDI_ENABLED
-
-	const XML_Char * pszDirection; /* = PP_evalProperty("dir",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
-	//UT_DEBUGMSG(( "pszDirection = %s\n", pszDirection ));
-	//UT_ASSERT((m_pLine));  */
-	
+	//###TF
 	FriBidiCharType prevDir = m_iDirection;
 	
-	//if(m_iDirection == FRIBIDI_TYPE_UNSET)
-	//	setDirection(FRIBIDI_TYPE_UNSET);
+	if(m_iDirection == FRIBIDI_TYPE_UNSET)
+		setDirection(FRIBIDI_TYPE_UNSET);
 
-	//UT_DEBUGMSG(("TextRun: lookupProperties, m_iDirection=%d (%s)\n", m_iDirection, pszDirection));
-    pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
+	//UT_DEBUGMSG(("TextRun (0x%x): lookupProperties, m_iDirection=%d\n", this,m_iDirection));
+    const XML_Char *pszDirection = PP_evalProperty("dir-override",pSpanAP,pBlockAP,pSectionAP, pDoc, true);
     if(!UT_stricmp(pszDirection, "rtl"))
     	m_iDirOverride = FRIBIDI_TYPE_RTL;
     else if(!UT_stricmp(pszDirection, "ltr"))
     	m_iDirOverride = FRIBIDI_TYPE_LTR;
     else
-    	m_iDirOverride = FRIBIDI_TYPE_UNSET;
+    {
+       	m_iDirOverride = FRIBIDI_TYPE_UNSET;
+       	setDirection(FRIBIDI_TYPE_UNSET);
+    }
 
     if(m_iDirOverride != FRIBIDI_TYPE_UNSET)
     	m_iDirection = m_iDirOverride;
@@ -266,7 +265,7 @@ void fp_TextRun::lookupProperties(void)
    	{
     	m_pLine->changeDirectionUsed(prevDir, m_iDirection, true);
     }
-	    //UT_DEBUGMSG(("TextRun::lookupProperties: m_iDirection=%d, m_iDirOverride=%d\n", m_iDirection, m_iDirOverride));
+	UT_DEBUGMSG(("TextRun::lookupProperties: m_iDirection=%d, m_iDirOverride=%d\n", m_iDirection, m_iDirOverride));
 #endif
 }
 
@@ -605,9 +604,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_sint32 iDirection = getVisDirection();
 	UT_sint32 iNextDir = iDirection == FRIBIDI_TYPE_RTL ? FRIBIDI_TYPE_LTR : FRIBIDI_TYPE_RTL; //if this is last run we will anticipate the next to have *different* direction
 	fp_Run * pRun = 0;   //will use 0 as indicator that there is no need to deal with the second caret
-#ifdef UT_DEBUG	
-	UT_uint32 rtype;
-#endif
+	
 	if(offset == (m_iOffsetFirst + m_iLen)) //this is the end of the run
 	{
 	    pRun = getNext();
@@ -621,9 +618,6 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	        // run instead of the marker
 	        if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
 	        	yoff2 = yoff;
-#ifdef UT_DEBUG	
-	        rtype = pRun->getType();
-#endif	
 	    }
 	}
 
@@ -647,13 +641,46 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	    y2 = yoff;
 	}
 	bDirection = (iDirection != FRIBIDI_TYPE_LTR);
+#if 0 //def DEBUG
+	char rtl[] =  "RTL";
+	char ltr[] =  "LTR";
+	char other[]= "other";
+	char *d, *n;
+	
+	switch(iDirection)
+	{
+		case FRIBIDI_TYPE_LTR:
+			d = ltr;
+			break;
+		case FRIBIDI_TYPE_RTL:
+			d = rtl;
+			break;
+		default:
+			d = other;
+	}
+	
+	switch(iNextDir)
+	{
+		case FRIBIDI_TYPE_LTR:
+			n = ltr;
+			break;
+		case FRIBIDI_TYPE_RTL:
+			n = rtl;
+			break;
+		default:
+			n = other;
+	}
+	
+	xxx_UT_DEBUGMSG(("fp_TextRun::findPointCoords: (0x%x) x,y,x2,y2=[%d, %d, %d, %d]\n"
+				 "       xoff %d, xoff2 %d, xdiff %d, m_iWidth %d\n"
+				 "       iDirection %s, iNextDir %s, pRun 0x%x\n",
+				 this, x, y, x2, y2, xoff, xoff2, xdiff, m_iWidth, d, n,pRun));
+#endif
 #else	    // ! BIDI_ENABLED
 	x = xoff;
 #endif
 	y = yoff;
 	height = m_iHeight;
-	xxx_UT_DEBUGMSG(("fintPointCoords: TextRun x,y,x2,y2=[%d, %d, %d, %d]\n", x,y,x2,y2));	
-
 }
 
 bool fp_TextRun::canMergeWithNext(void)
@@ -1377,14 +1404,31 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
     FV_View* ppView = m_pBL->getDocLayout()->getView();
     if(ppView) UT_ASSERT(ppView && ppView->isCursorOn()==false);
 #endif
-
+    //UT_DEBUGMSG(("---------\n"));
     if(findCharacter(0, UCS_SPACE) > 0){
         while(bContinue){
             bContinue = m_pBL->getSpanPtr(offset,&pSpan,&lenSpan);
             //if(!bContinue)
             //	break; //no span found
-            UT_ASSERT(lenSpan > 0);
-
+#ifdef DEBUG
+			if(lenSpan <= 0)
+			{
+				const UT_UCSChar* mypSpan = NULL;
+				unsigned char buff[500];
+				UT_uint32 mylenSpan = 0;
+				m_pBL->getSpanPtr(m_iOffsetFirst,&mypSpan,&mylenSpan);
+				for(UT_uint32 i; i < mylenSpan; i++)
+					buff[i] = (unsigned char) mypSpan[i];
+				
+	            UT_DEBUGMSG(("fp_TextRun::_drawInvisibleSpaces (0x%x):\n"
+	            			 "       m_iOffsetFirst %d, m_iLen %d\n"
+	            			 "       mylenSpan %d, span: %s\n"
+	            			 "       lenSpan %d, len %d, offset %d\n",
+	            			 this,m_iOffsetFirst,m_iLen,mylenSpan,buff,lenSpan, len, offset));
+			
+			}
+#endif
+            //UT_ASSERT(lenSpan > 0);
 
             if(lenSpan > len){
                 lenSpan = len;
@@ -1903,11 +1947,6 @@ UT_sint32 fp_TextRun::getStr(UT_UCSChar * pStr, UT_uint32 &iMax)
 	return false;
 }
 
-/*
-	If it receives -1,0, or 1, it will set direction to this value.
-	If it receives -2, it will workout the value either using Unicode
-	if in Unicode mode, or it will just return.
-*/
 
 void fp_TextRun::setDirection(FriBidiCharType dir)
 {
@@ -1936,9 +1975,9 @@ void fp_TextRun::setDirection(FriBidiCharType dir)
 		m_iDirection = dir;
 	}
 	
-	xxx_UT_DEBUGMSG(("fp_TextRun::setDirection: %d (passed %d, override %d, prev. %d)\n", m_iDirection, dir, m_iDirOverride, prevDir));
+	UT_DEBUGMSG(("fp_TextRun (0x%x)::setDirection: %d (passed %d, override %d, prev. %d)\n", this, m_iDirection, dir, m_iDirOverride, prevDir));
 	
-	setDirectionProperty(m_iDirection);
+	//setDirectionProperty(m_iDirection);
 	
 	/*
 		if this run belongs to a line we have to notify the line that

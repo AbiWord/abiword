@@ -84,7 +84,7 @@ static PP_Property _props[] =
 		set basically for each word and each chunk of whitespace, inflating
 		the ABW file
 	*/
-	{ "dir", default_direction, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
+	//###TF{ "dir", default_direction, true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
 	{ "dir-override", "off", true, NULL},  //the direction of the present text, prossible values ltr, rtl,ntrl	
 	{ "dom-dir", default_dominant_direction, true, NULL},  //added by #TF, dominant direction of writing in a paragraph, can be either ltr or rtl (i.e., left-to-right, right-to-left)
 #endif
@@ -191,8 +191,8 @@ void PP_resetInitialBiDiValues(const XML_Char * pszValue)
 
 	for (i=0; i<count; i++)
 	{
-		if ((0 == UT_stricmp(_props[i].m_pszName, "dir"))
-		  ||(0 == UT_stricmp(_props[i].m_pszName, "dom-dir"))
+		if (/*(0 == UT_stricmp(_props[i].m_pszName, "dir"))
+		  ||*/(0 == UT_stricmp(_props[i].m_pszName, "dom-dir"))
 		  /*||(0 == UT_stricmp(_props[i].m_pszName, "column-order"))*/)
 		  //this last one is not necessary since dom-dir and column-order
 		  //share the same physical string

@@ -91,11 +91,7 @@ public:
 	UT_sint32  m_styleNumber ; //index into the style table
 	UT_uint32  m_listTag; // tag for lists to hang off
 	const char * m_szLang;
-#ifdef BIDI_ENABLED
-	FriBidiCharType m_dir;     // direction of text
-#endif
-	
-};                  
+};
 
 class ABI_EXPORT RTFProps_bCharProps
 {
@@ -122,9 +118,6 @@ public:
 	bool bm_hasBgColour; // if false, ignore colour number
 	bool bm_bgcolourNumber; // index into colour table
 	bool bm_listTag; // tag for lists to hanfg off
-#ifdef BIDI_ENABLED
-	bool bm_dir;     // direction of text
-#endif
 };
 
 struct ABI_EXPORT _rtfListTable

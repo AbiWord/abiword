@@ -365,7 +365,7 @@ IE_Imp_MsWord_97::~IE_Imp_MsWord_97()
 
 IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
   : IE_Imp (pDocument), m_iImageCount (0), m_nSections(0), m_bSetPageSize(false), m_bIsLower(false)
-#ifdef BIDI_ENABLED
+#if 0//def BIDI_ENABLED
 	,m_pLastCharFmt(""), m_iPrevDir(-1), m_iCurrDir(-1)
 #endif	
 {
@@ -481,7 +481,7 @@ void IE_Imp_MsWord_97::_flush ()
 
 void IE_Imp_MsWord_97::_appendChar (UT_UCSChar ch)
 {
-#ifdef BIDI_ENABLED
+#if 0//def BIDI_ENABLED
 	XML_Char * propsArray[3];
 	UT_String props;
 	m_iCurrDir = fribidi_get_type((FriBidiCharType) ch);
@@ -1341,7 +1341,7 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 tag,
 	propsArray[1] = (XML_Char *)props.c_str();
 	propsArray[2] = 0;
 
-#ifdef BIDI_ENABLED
+#if 0 //def BIDI_ENABLED
 	m_pLastCharFmt = props;
 	m_pLastCharFmt += ";";
 #endif

@@ -4231,17 +4231,6 @@ static bool s_doFontDlg(FV_View * pView)
 			bBottomLine = (strstr(s, "bottomline") != NULL);
 		}
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopLine,bBottomLine);
-/*
-#ifdef BIDI_ENABLED
-		bool bDirection;
-		s = UT_getAttribute("dir", props_in);
-		if (s)
-		{
-		    bDirection = (strstr(s, "rtl") != NULL);
-		}
-        	pDialog->setDirection(bDirection);
-#endif
-*/
 		free(props_in);
 	}
 
@@ -4305,12 +4294,6 @@ static bool s_doFontDlg(FV_View * pView)
 		bool bChangedTopline = pDialog->getChangedTopline(&bTopline);
 		bool bBottomline = false;
 		bool bChangedBottomline = pDialog->getChangedBottomline(&bBottomline);
-/*
-#ifdef BIDI_ENABLED
-		bool bDirection = false;
-		bool bChangedDirection = pDialog->getChangedDirection(&bDirection);
-#endif
-*/
 		UT_String decors;
 		static XML_Char sstr[50];
 		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline || bChangedTopline || bChangedBottomline)
@@ -4332,20 +4315,6 @@ static bool s_doFontDlg(FV_View * pView)
 			props_out[k++] = "text-decoration";
 			props_out[k++] = (const XML_Char *) sstr;
 		}
-/*
-#ifdef BIDI_ENABLED
-		if(bChangedDirection)
-		{
-		    if (bDirection == 1)
-		        s = "rtl";
-		    else
-		        s = "ltr";
-		
-		    props_out[k++] = "dir";
-		    props_out[k++] = s;
-		}
-#endif
-*/
 		props_out[k] = 0;						// put null after last pair.
 		UT_ASSERT(k < NrElements(props_out));
 		for(UT_uint32 i = 0; i<k; i= i+2 )
@@ -6214,10 +6183,10 @@ static bool s_doColumnsDlg(FV_View * pView)
 		}
 	}
 
-#ifdef BIDI_ENABLED
+#ifdef BIDI_ENABLED /* column-order */
 	UT_uint32 iOrder = 0;
 	if (props_in && props_in[0])
-		sz = UT_getAttribute("column-order", props_in);
+		sz = UT_getAttribute("dom-dir", props_in);
 	if (sz)
 		iOrder = strcmp(sz, "ltr") ? 1 : 0;
 		
@@ -6262,17 +6231,25 @@ static bool s_doColumnsDlg(FV_View * pView)
 		bSpaceAfter = bSpaceAfter || pDialog->isSpaceAfterChanged();
 #ifdef BIDI_ENABLED
 		char buf3[4];
+		char buf4[6];
 		if(pDialog->getColumnOrder())
+		{
 			strcpy(buf3, "rtl");
+			strcpy(buf4, "right");
+		}
 		else
+		{
 			strcpy(buf3, "ltr");
-#ifndef __MRC__
-		const XML_Char * properties[] =	{ "columns", buf, "column-line", buf2, "column-order", buf3, 0};
+			strcpy(buf4, "left");
+		}
+#ifndef __MRC__         /* column-order */
+		const XML_Char * properties[] =	{ "columns", buf, "column-line", buf2, "dom-dir", buf3, "text-align", buf4, 0};
 #else
-		const XML_Char * properties[] =	{ "columns", NULL, "column-line", NULL, "column-order", NULL, 0};
+		const XML_Char * properties[] =	{ "columns", NULL, "column-line", NULL, "dom-dir", NULL, "text-align", NULL, 0};
 		properties [1] = buf;
 		properties [3] = buf2;
 		properties [5] = buf3;
+		properties [7] = buf4;
 #endif
 
 #else //not BIDI
