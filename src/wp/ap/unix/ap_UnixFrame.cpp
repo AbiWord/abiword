@@ -726,7 +726,7 @@ UT_Bool AP_UnixFrame::_replaceDocument(AD_Document * pDoc)
 
 void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
 {
-	UT_DEBUGMSG(("AP_UnixFrame::toggleRuler %d", bRulerOn));	
+	UT_DEBUGMSG(("AP_UnixFrame::toggleRuler %d\n", bRulerOn));	
 
 	AP_FrameData *pFrameData = (AP_FrameData *)getFrameData();
 	UT_ASSERT(pFrameData);
@@ -762,13 +762,8 @@ void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
 						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
 						 0,0);
 
-		// must remove area before re-attaching
-		//gtk_widget_unparent(GTK_WIDGET(m_dArea));
-
-		//gtk_table_attach(GTK_TABLE(m_table), m_dArea,   1, 2, 1, 2,
-		//				 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-		//				 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-		//			 0, 0); 
+		pUnixTopRuler->setView(m_pView);
+		pUnixLeftRuler->setView(m_pView);
 
 	}
 	else	// turning rulers off
@@ -779,12 +774,6 @@ void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
 
 		m_topRuler = NULL;
 		m_leftRuler = NULL;
-
-		// tell the area to fill everything
-		//gtk_table_attach(GTK_TABLE(m_table), m_dArea,   0, 2, 0, 2,
-		//				 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-		//				 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-		//			 0, 0); 
 	}
 	
 	((AP_FrameData*)m_pData)->m_pTopRuler = pUnixTopRuler;
