@@ -1339,6 +1339,9 @@ bool fp_TextRun::recalcWidth(void)
 			|| (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && m_iDirection == FRIBIDI_TYPE_RTL);
 
 		UT_sint32 j,k;
+#if 0
+		UT_uint32 iResolution = m_pBL->getDocLayout()->getGraphics()->getResolution();
+#endif
 
 		for (UT_uint32 i = 0; i < m_iLen; i++)
 		{
@@ -1354,9 +1357,25 @@ bool fp_TextRun::recalcWidth(void)
 				m_pG->setFont(m_pLayoutFont);
 				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsLayout + k);
 
+#if 1
 				m_pG->setFont(m_pScreenFont);
 				m_pG->measureString(m_pSpanBuff + j, 0, 1, (UT_uint16*)pCharWidthsDisplay + k);
+				
+#else
+				// this produces much superior width than using measureString; unfortunately
+				// when drawing actual run, we get a better carret location, but out of sync
+				// with the text Windows draws on screen.
+				UT_uint32 iCharWidth, iRem;
 
+				iCharWidth = *(pCharWidthsLayout + k);
+				iCharWidth *= iResolution;
+				iRem = iCharWidth % UT_LAYOUT_UNITS;
+				iCharWidth /= UT_LAYOUT_UNITS;
+				if(iRem >= UT_LAYOUT_UNITS/2)
+					iCharWidth++;
+
+				*(pCharWidthsDisplay + k) = iCharWidth;
+#endif
 			}
 				m_iWidth += pCharWidthsDisplay[k];
 				m_iWidthLayoutUnits += pCharWidthsLayout[k];
