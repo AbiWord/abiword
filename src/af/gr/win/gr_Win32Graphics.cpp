@@ -236,9 +236,9 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 	// we need to get the size in logpixels for the current DC, which
 	// simply means to divide points by 72 and multiply by device Y resolution
 	UT_sint32 iHeight = (UT_sint32)UT_convertToPoints(pszFontSize);
-	float fScale = (float)(((float)getZoomPercentage()) / (float)100);			
+	float fScale = static_cast<float>(static_cast<float>(getZoomPercentage()) /static_cast<float>(100.0));			
 	lf.lfHeight = (-MulDiv(/*UT_LOG_UNITS*/iHeight, GetDeviceCaps(m_hdc, LOGPIXELSY), 72));		
-	lf.lfHeight = static_cast<LONG>(lf.lfHeight* fScale);	
+	lf.lfHeight = static_cast<LONG>(static_cast<float>(lf.lfHeight)* fScale);	
 
 	// TODO note that we don't support all those other ways of expressing weight.
 	if (0 == UT_stricmp(pszFontWeight, "bold"))
@@ -1453,7 +1453,7 @@ bool GR_Win32Graphics::_setTransform(const GR_Transform & tr)
 	if(UT_IsWinNT())
 	{
 		XFORM xForm;
-		float fScale = (float)((tlu(1) * getZoomPercentage()) / 100);
+		float fScale = static_cast<float>(static_cast<float>(tlu(1)) * static_cast<float>(getZoomPercentage()) / 100.0);
 	
 		xForm.eM11 = (float)(tr.getM11() * fScale);
 		xForm.eM12 = (float)tr.getM12();
