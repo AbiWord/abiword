@@ -2,8 +2,10 @@
 
 XAP_EncodingManager *XAP_EncodingManager::get_instance()
 {
-	if (_instance == 0)
+	if (_instance == 0) {
 		_instance = new XAP_EncodingManager();
+		_instance->initialize();
+	}
 
 	return _instance;
 }
