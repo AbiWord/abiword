@@ -464,7 +464,7 @@ const PP_PropertyType * PP_evalPropertyType(const XML_Char *  pszName,
 
 PP_Property::~PP_Property()
 {
-	FREEP(m_pProperty);
+	delete m_pProperty;
 }
 
 

@@ -128,7 +128,7 @@ m_iExtraXFontPathCount(0)
 
 XAP_UnixFontManager::~XAP_UnixFontManager(void)
 {
-	UT_VECTOR_PURGEALL(char *, m_searchPaths);
+	UT_VECTOR_FREEALL(char *, m_searchPaths);
 
 	UT_HASH_PURGEDATA(XAP_UnixFont *, &m_fontHash, delete);
 

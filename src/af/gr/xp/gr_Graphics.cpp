@@ -82,8 +82,8 @@ GR_Graphics::~GR_Graphics()
 
 	if(m_instanceCount == 0)
 	{
-		delete m_pRemapGlyphsTableSrc;
-		delete m_pRemapGlyphsTableDst;
+		delete[] m_pRemapGlyphsTableSrc;
+		delete[] m_pRemapGlyphsTableDst;
 	}
 
 }
@@ -226,10 +226,11 @@ UT_UCSChar GR_Graphics::remapGlyph(const UT_UCSChar actual_, bool noMatterWhat)
 		UT_uint32 doublelength;
 		doublelength = gb.getLength();
 		m_iRemapGlyphsTableLen = doublelength / 2;
-		delete m_pRemapGlyphsTableSrc;
-		delete m_pRemapGlyphsTableDst;
-		m_pRemapGlyphsTableSrc = 0;
-		m_pRemapGlyphsTableDst = 0;
+
+		// free these resources
+		DELETEPV(m_pRemapGlyphsTableSrc);
+		DELETEPV(m_pRemapGlyphsTableDst);
+
 		if (m_iRemapGlyphsTableLen)
 		{
 			m_pRemapGlyphsTableSrc = new UT_UCSChar[m_iRemapGlyphsTableLen];
