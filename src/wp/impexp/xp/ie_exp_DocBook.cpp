@@ -33,8 +33,10 @@
 #include "px_CR_Object.h"
 #include "px_CR_Span.h"
 #include "px_CR_Strux.h"
+#include "xap_App.h"
 #include "xap_EncodingManager.h"
 
+#include "ut_path.h"
 #include "ut_string_class.h"
 /*****************************************************************/
 /*****************************************************************/
@@ -192,6 +194,7 @@ protected:
 	void				_convertFontSize(char* szDest, const char* pszFontSize);
 	void				_convertColor(char* szDest, const char* pszColor);
 	
+private:
 	PD_Document *		        m_pDocument;
 	IE_Exp_DocBook *		m_pie;
 	bool				m_bInSection;
@@ -202,8 +205,10 @@ protected:
 	// Need to look up proper type, and place to stick #defines...
 
 	UT_uint16		m_iBlockType;	// BT_*
-        bool                 m_bWasSpace;
+    bool                 m_bWasSpace;
 
+	UT_Vector		m_utvDataIDs;	// list of data ids for image enumeration
+	char *          _stripSuffix(const char* from, char delimiter);
 };
 
 void s_DocBook_Listener::_closeSection(void)
@@ -606,13 +611,42 @@ bool s_DocBook_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 	case PX_ChangeRecord::PXT_InsertObject:
 		{
-#if 0			
 			const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *> (pcr);
+			const XML_Char* szValue;
 			PT_AttrPropIndex api = pcr->getIndexAP();
+			UT_String buf;
+
+			const PP_AttrProp * pAP = NULL;
+			bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+
 			switch (pcro->getObjectType())
 			{
 			case PTO_Image:
-				// TODO we *could* insert the images and create separate GIF files.
+				// Lifted from HTML exporter.
+
+				if(bHaveProp && pAP && pAP->getAttribute("dataid", szValue))
+				{
+					char* dataid = strdup((char*) szValue);
+
+					m_utvDataIDs.push_back(dataid);
+
+					char * temp = _stripSuffix(UT_basename(szValue), '_');
+					char * fstripped = _stripSuffix(temp, '.');
+					FREEP(temp);
+					UT_String_sprintf(buf, "%s.png", fstripped);
+					FREEP(fstripped);
+					
+					m_pie->write("<figure>\n<title>");
+					m_pie->write(buf);
+					m_pie->write("</title>\n<mediaobject><imageobject>");
+                    m_pie->write("<imagedata fileref=\"");
+					m_pie->write(UT_basename(m_pie->getFileName()));
+					m_pie->write("_data/");
+					m_pie->write(buf);
+					m_pie->write("\" format = \"png\"></imageobject>");
+                    m_pie->write("</mediaobject></figure>");
+					
+				}
 				return true;
 
 			case PTO_Field:
@@ -628,9 +662,7 @@ bool s_DocBook_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 				UT_ASSERT(0);
 				return false;
 			}
-#else
-			return true;
-#endif
+			return false;
 		}
 
 	case PX_ChangeRecord::PXT_InsertFmtMark:
@@ -778,14 +810,90 @@ UT_Error IE_Exp_DocBook::_writeDocument(void)
 /*****************************************************************/
 /*****************************************************************/
 
-void s_DocBook_Listener::_handleDataItems(void)
+/*!
+   removes the suffix from a string by searching backwards for the specified 
+   character delimiter. If the delimiter is not found, a copy of the original 
+   string is returned
+   
+   eg. _stripSuffix("/home/user/file.png, '.') returns "/home/user/file" 
+       _stripSuffix("/home/user/foo_bar, '_') returns /home/user/foo 
+       _stripSuffix("/home/user/file.png, '_') returns /home/user/file.png"
+   TODO: put this in UT_String somehow, it came from ie_exp_HTML.
+*/
+char *s_DocBook_Listener::_stripSuffix(const char* from, char delimiter)
 {
+    char * fremove_s = (char *)malloc(strlen(from)+1);
+    strcpy(fremove_s, from);   
+
+    char * p = fremove_s + strlen(fremove_s);
+    while ((p >= fremove_s) && (*p != delimiter))
+        p--;
+	
+    if (p >= fremove_s)
+	*p = '\0';
+    
+    return fremove_s;
 }
 
-
-
-
-
-
-
-
+void s_DocBook_Listener::_handleDataItems(void)
+{
+	// Lifted from HTML listener
+ 	const char * szName;
+	const char * szMimeType;
+	const UT_ByteBuf * pByteBuf;
+	
+	for (UT_uint32 k=0; (m_pDocument->enumDataItems(k,NULL,&szName,&pByteBuf,(void**)&szMimeType)); k++)
+	{
+		UT_sint32 loc = -1;
+		for (UT_uint32 i = 0; i < m_utvDataIDs.getItemCount(); i++)
+		{
+			if(UT_strcmp((char*) m_utvDataIDs[i], szName) == 0)
+			{
+				loc = i;
+				break;
+			}
+		}
+		
+		if(loc > -1)
+		{
+			FILE *fp;
+			UT_String fname; // EVIL EVIL bad hardcoded buffer size
+			
+			UT_String_sprintf(fname, "%s_data", m_pie->getFileName());
+			int result = m_pDocument->getApp()->makeDirectory(fname.c_str(), 0750);
+			
+			if (!UT_strcmp(szMimeType, "image/svg-xml"))
+				UT_String_sprintf(fname, "%s/%s_%d.svg", fname.c_str(), szName, loc);
+			if (!UT_strcmp(szMimeType, "text/mathml"))
+				UT_String_sprintf(fname, "%s/%s_%d.mathml", fname.c_str(), szName, loc);
+			else // PNG Image
+			{  
+				char * temp = _stripSuffix(UT_basename(szName), '_');
+				char * fstripped = _stripSuffix(temp, '.');
+				FREEP(temp);
+				UT_String_sprintf(fname, "%s/%s.png", fname.c_str(), fstripped);
+				FREEP(fstripped);
+			}
+			
+			if (!UT_isRegularFile(fname.c_str()))
+			{
+			    fp = fopen (fname.c_str(), "wb+");
+			
+			    if(!fp)
+				    continue;
+			
+			    int cnt = 0, len = pByteBuf->getLength();
+			
+			    while (cnt < len)
+			    {
+				    cnt += fwrite (pByteBuf->getPointer(cnt), 
+							     sizeof(UT_Byte), len-cnt, fp);
+			    }
+			
+			    fclose(fp);
+			}
+		}
+	}
+	
+	return;
+}
