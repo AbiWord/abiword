@@ -186,7 +186,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_ALIGN_JUSTIFY,	0,0,1,	"alignJustify",		ap_GetState_BlockFmt,	NULL);
 
 	_s(AP_MENU_ID_TOOLS,			1,0,0,	NULL,				NULL,					NULL);
-	_s(AP_MENU_ID_TOOLS_SPELLING,	        1,0,0,	NULL,				NULL,					NULL);
+	_s(AP_MENU_ID_TOOLS_SPELLING,	        1,0,0,	NULL,				ap_GetState_Spelling,					NULL);
 	_s(AP_MENU_ID_TOOLS_SPELL,	        0,1,0,	"dlgSpell",		NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_SPELLPREFS, 0,1,0, "dlgSpellPrefs", NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_AUTOSPELL,          0,0,1,  "toggleAutoSpell",      ap_GetState_Prefs, NULL);

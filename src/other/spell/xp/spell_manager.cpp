@@ -57,7 +57,7 @@ typedef ISpellChecker SpellCheckerClass;
  * and destroying instances of the ISpellChecker class
  */
 /* private */ SpellManager::SpellManager ()
-	: m_map (NBUCKETS), m_lastDict(0)
+  : m_map (NBUCKETS), m_lastDict(0), m_nLoadedDicts(0)
 {
 	m_missingHashs += "-none-";
 }
@@ -117,6 +117,7 @@ SpellManager::requestDictionary (const char * szLang)
     {      
 		m_map.insert (szLang, (void *)checker);
 		m_lastDict = checker;
+		m_nLoadedDicts++;
 		return checker;
     }
 	else

@@ -76,7 +76,9 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_FILE_SAVEAS,	EV_TBIT_PushButton,		"fileSaveAs",	AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_FILE_PRINT,	EV_TBIT_PushButton,		"printTB",		AV_CHG_NONE,		NULL);
 	_s(AP_TOOLBAR_ID_FILE_PRINT_PREVIEW, EV_TBIT_PushButton,	"printPreview", AV_CHG_NONE,	NULL);
-	_s(AP_TOOLBAR_ID_SPELLCHECK,	EV_TBIT_PushButton,		"dlgSpell",		AV_CHG_NONE,		NULL);
+
+	// AV_CHG_ALL doesn't seem right here. TODO!
+	_s(AP_TOOLBAR_ID_SPELLCHECK,	EV_TBIT_PushButton,		"dlgSpell",		AV_CHG_ALL,		ap_ToolbarGetState_Spelling);
 	_s(AP_TOOLBAR_ID_IMG,			EV_TBIT_PushButton,		"fileInsertGraphic", AV_CHG_NONE,	NULL);
 	_s(AP_TOOLBAR_ID_HELP,			EV_TBIT_PushButton,		"helpContents",	AV_CHG_NONE,		NULL);
 	// This changes as a document property only, is there a less frequent action than AV_CHG_FRAMEDATA?

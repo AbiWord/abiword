@@ -68,13 +68,18 @@ public:
 	virtual SpellChecker * requestDictionary (const char * szLang);
 	virtual SpellChecker * lastDictionary (void) const;
 
+	UT_uint32 numLoadedDicts () const { return m_nLoadedDicts; }
+
 private:
 	SpellManager ();
+	SpellManager ( const SpellManager & other ) ;
+	SpellManager & operator= ( const SpellManager & other ) ;
 
 private:
 	UT_StringPtrMap m_map;
 	UT_String m_missingHashs;
 	SpellChecker *  m_lastDict;
+	UT_uint32 m_nLoadedDicts;
 };
 
 #endif /* SPELL_MANAGER_H */

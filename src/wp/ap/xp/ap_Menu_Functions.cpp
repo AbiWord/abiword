@@ -39,6 +39,7 @@
 #include "ap_Prefs.h"
 #include "pd_Document.h"
 #include "ut_Script.h"
+#include "spell_manager.h"
 
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -388,6 +389,16 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 
 /*****************************************************************/
 /*****************************************************************/
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling)
+{
+  EV_Menu_ItemState s = EV_MIS_ZERO ;
+
+ if ( SpellManager::instance ().numLoadedDicts() == 0 )
+   s = EV_MIS_Gray;
+
+ return s;
+}
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected)
 {
