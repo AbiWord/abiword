@@ -231,8 +231,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 	
 	// OK
-	ok_label = gtk_label_new("");
-	ok_accel = gtk_label_parse_uline(GTK_LABEL(ok_label), (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_OK));
+	ok_label = gtk_label_new("SHOULD NOT APPEAR");
+	ok_accel = gtk_label_parse_uline(GTK_LABEL(ok_label), pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_widget_show(ok_label);
 	ok_button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(ok_button), ok_label);
@@ -243,8 +243,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	GTK_WIDGET_SET_FLAGS (ok_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_usize(ok_button, DEFAULT_BUTTON_WIDTH, 0);
 	// Cancel
-	cancel_label = gtk_label_new("");
-	cancel_accel = gtk_label_parse_uline(GTK_LABEL(cancel_label), (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_Cancel));
+	cancel_label = gtk_label_new("SHOULD NOT APPEAR");
+	cancel_accel = gtk_label_parse_uline(GTK_LABEL(cancel_label), pSS->getValue(XAP_STRING_ID_DLG_Cancel));
 	gtk_widget_show(cancel_label);
 	cancel_button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(cancel_button), cancel_label);
@@ -255,8 +255,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	GTK_WIDGET_SET_FLAGS (cancel_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_usize(cancel_button, DEFAULT_BUTTON_WIDTH, 0);
 	// Yes
-	yes_label = gtk_label_new("");
-	yes_accel = gtk_label_parse_uline(GTK_LABEL(yes_label), (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UnixMB_Yes));
+	yes_label = gtk_label_new("SHOULD NOT APPEAR");
+	yes_accel = gtk_label_parse_uline(GTK_LABEL(yes_label), pSS->getValue(XAP_STRING_ID_DLG_UnixMB_Yes));
 	gtk_widget_show(yes_label);
 	yes_button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(yes_button), yes_label);
@@ -267,8 +267,8 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	GTK_WIDGET_SET_FLAGS (yes_button, GTK_CAN_DEFAULT);
 	gtk_widget_set_usize(yes_button, DEFAULT_BUTTON_WIDTH, 0);
 	// No
-	no_label = gtk_label_new("");
-	no_accel = gtk_label_parse_uline(GTK_LABEL(no_label), (const gchar*)pSS->getValue(XAP_STRING_ID_DLG_UnixMB_No));
+	no_label = gtk_label_new("SHOULD NOT APPEAR");
+	no_accel = gtk_label_parse_uline(GTK_LABEL(no_label), pSS->getValue(XAP_STRING_ID_DLG_UnixMB_No));
 	gtk_widget_show(no_label);
 	no_button = gtk_button_new();
 	gtk_container_add(GTK_CONTAINER(no_button), no_label);

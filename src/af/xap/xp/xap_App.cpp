@@ -465,16 +465,6 @@ XAP_Prefs * XAP_App::getPrefs(void) const
 	return m_prefs;
 }
 
-#ifdef HAVE_LIBXML2
-bool XAP_App::getPrefsValue(const char * szKey, const XML_Char ** pszValue) const
-{
-	if (!m_prefs)
-		return false;
-
-	return m_prefs->getPrefsValue((XML_Char*) (szKey), pszValue);
-}
-#endif
-
 bool XAP_App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
 	if (!m_prefs)
@@ -482,16 +472,6 @@ bool XAP_App::getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) 
 
 	return m_prefs->getPrefsValue(szKey,pszValue);
 }
-
-#ifdef HAVE_LIBXML2
-bool XAP_App::getPrefsValueBool(const char * szKey, bool * pbValue) const
-{
-	if (!m_prefs)
-		return false;
-
-	return m_prefs->getPrefsValueBool((XML_Char*) (szKey), pbValue);
-}
-#endif
 
 bool XAP_App::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 {

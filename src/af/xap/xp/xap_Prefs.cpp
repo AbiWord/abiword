@@ -516,29 +516,35 @@ bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const
 ******************************************************************
 *****************************************************************/
 
+#ifdef HAVE_LIBXML2
+#define XML_Char xmlChar // HACK
+#endif
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
-	pPrefs->_startElement(name,atts);
+	pPrefs->_startElement((const char*)name,(const char**)atts);
 }
 
 static void endElement(void *userData, const XML_Char *name)
 {
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
-	pPrefs->_endElement(name);
+	pPrefs->_endElement((const char*)name);
 }
 
 static void charData(void* userData, const XML_Char *s, int len)
 {
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
-	pPrefs->_charData(s,len);
+	pPrefs->_charData((const char*)s,len);
 }
 
 static void startElement_SystemDefaultFile(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
-	pPrefs->_startElement_SystemDefaultFile(name,atts);
+	pPrefs->_startElement_SystemDefaultFile((const char*)name,(const char**)atts);
 }
+#ifdef HAVE_LIBXML2
+#undef XML_Char
+#endif
 
 static int n_compare (const char *name, const xmlToIdMapping *id)
 {

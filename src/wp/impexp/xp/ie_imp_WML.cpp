@@ -163,7 +163,7 @@ void IE_Imp_WML::_startElement(const XML_Char *name,
 	// xml parser keeps running until buffer consumed
 	X_EatIfAlreadyError();
 	
-	UT_uint32 tokenIndex = mapNameToToken ((const char*)name, s_Tokens, TokenTableSize);
+	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
 
 	switch (tokenIndex)
 	{
@@ -287,7 +287,7 @@ void IE_Imp_WML::_endElement(const XML_Char *name)
         // xml parser keeps running until buffer consumed
 	X_EatIfAlreadyError();
 	
-   	UT_uint32 tokenIndex = mapNameToToken ((const char *)name, s_Tokens, TokenTableSize);
+   	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
 
 	switch (tokenIndex)
 	{

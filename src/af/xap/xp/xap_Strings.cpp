@@ -20,9 +20,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef HAVE_LIBXML2
-#include <glib.h>
-#endif
 #include <string.h>
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -465,23 +462,21 @@ void XAP_DiskStringSet::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c)
       if (strcmp("text", (char*) cur->name) == 0)
 	{
 	  xmlChar* s = cur->content; // xmlNodeListGetString(dok, cur, 1);
-	  _charData(s, strlen((char*) s));
+	  _charData((const char*)s, strlen((char*) s));
 	}
       else
 	{
-	  xmlChar *prop = NULL;
 	  const xmlChar* props[3] = { NULL, NULL, NULL };
 	  if (cur->properties)
 	    {
 	      props[0] = cur->properties->name;
 	      props[1] = cur->properties->children->content;
 	    }
-	  _startElement(cur->name, props);
-	  if (prop) g_free(prop);
+	  _startElement((const char*)cur->name, (const char**)props);
 	}
       _scannode(dok, cur->children, c + 1);
       if (strcmp("text", (char*) cur->name) != 0)
-	_endElement(cur->name);
+	_endElement((const char*)cur->name);
       cur = cur->next;
     }
 }

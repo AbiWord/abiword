@@ -36,51 +36,47 @@
   // to represent the <ol> and <ul> list types
   // <ol> has an id of 1 and <ul> is given the list id of 2
 
-#define XC (const XML_Char *)
-
   static const XML_Char *ol_atts[] =
   {
-    XC"id", XC"1",
-    XC"parentid", XC"0",
-    XC"type", XC"0",
-    XC"start-value", XC"1",
-    XC"list-delim", XC"%L.",
-    XC"list-decimal", XC".",
-    XC NULL, XC NULL
+    "id", "1",
+    "parentid", "0",
+    "type", "0",
+    "start-value", "1",
+    "list-delim", "%L.",
+    "list-decimal", ".",
+    NULL, NULL
   };
 
   static const XML_Char *ol_p_atts[] = 
   {
-    XC"level", XC"1",
-    XC"listid", XC"1",
-    XC"parentid", XC"0",
-    XC"style", XC"Numbered List",
-    XC"props", XC"color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:1; text-decoration:none; text-indent:-0.4000in; text-position:normal",
-    XC NULL, XC NULL
+    "level", "1",
+    "listid", "1",
+    "parentid", "0",
+    "style", "Numbered List",
+    "props", "color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:1; text-decoration:none; text-indent:-0.4000in; text-position:normal",
+    NULL, NULL
   };
 
   static const XML_Char *ul_atts[] =
   {
-    XC"id", XC"2",
-    XC"parentid", XC"0",
-    XC"type", XC"5",
-    XC"start-value", XC"0",
-    XC"list-delim", XC"%L",
-    XC"list-decimal", XC"NULL",
-    XC NULL, XC NULL
+    "id", "2",
+    "parentid", "0",
+    "type", "5",
+    "start-value", "0",
+    "list-delim", "%L",
+    "list-decimal", "NULL",
+    NULL, NULL
   };
 
   static const XML_Char *ul_p_atts[] =
   {
-    XC"level", XC"1",
-    XC"listid", XC"2",
-    XC"parentid", XC"0",
-    XC"style", XC"Bullet List",
-    XC"props", XC"color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:0; text-decoration:none; text-indent:-0.4000in; text-position:normal",
-    XC NULL, XC NULL
+    "level", "1",
+    "listid", "2",
+    "parentid", "0",
+    "style", "Bullet List",
+    "props", "color:000000; font-family:Times New Roman; font-size:12pt; font-style:normal; font-weight:normal; margin-left:0.4000in; start-value:0; text-decoration:none; text-indent:-0.4000in; text-position:normal",
+    NULL, NULL
   };
-
-#undef XC
 
 IE_Imp_XHTML::IE_Imp_XHTML(PD_Document * pDocument)
   : IE_Imp_XML(pDocument, false), m_listType(L_NONE)
@@ -458,7 +454,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  new_atts[i] = NULL;
 #undef NEW_ATTR_SZ
 
-	UT_uint32 tokenIndex = mapNameToToken ((const char *)name, s_Tokens, TokenTableSize);
+	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
 
 	switch (tokenIndex)
 	{
@@ -503,7 +499,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
 		sz = NULL;
-		UT_XML_cloneString(sz, (const XML_Char*)"font-style:italic");
+		UT_XML_cloneString(sz, "font-style:italic");
 		new_atts[1]=sz;
 		X_CheckError(m_pDocument->appendFmt(new_atts));
 		return;
@@ -518,7 +514,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
 		sz = NULL;
-		UT_XML_cloneString(sz, (const XML_Char*)"font-weight:bold");
+		UT_XML_cloneString(sz, "font-weight:bold");
 		new_atts[1]=sz;
 		X_CheckError(m_pDocument->appendFmt(new_atts));
 		return;
@@ -529,7 +525,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 		new_atts[0]=sz;
 		sz = NULL;
-		UT_XML_cloneString(sz, (const XML_Char*)"text-decoration:underline");
+		UT_XML_cloneString(sz, "text-decoration:underline");
 		new_atts[1]=sz;
 		X_CheckError(m_pDocument->appendFmt(new_atts));
 		return;
@@ -542,9 +538,9 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  new_atts[0]=sz;
 	  sz = NULL;
 	  if(s_Tokens[tokenIndex].m_type==TT_SUP)    
-	    UT_XML_cloneString(sz, (const XML_Char*)"text-position:superscript");
+	    UT_XML_cloneString(sz, "text-position:superscript");
 	  else
-	    UT_XML_cloneString(sz, (const XML_Char*)"text-position:subscript");
+	    UT_XML_cloneString(sz, "text-position:subscript");
 	  new_atts[1]=sz;
 	  X_CheckError(m_pDocument->appendFmt(new_atts));
 	  return;
@@ -556,7 +552,7 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	  UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
 	  new_atts[0]=sz;
 	  sz = NULL;
-	  UT_XML_cloneString(sz, (const XML_Char*)"text-decoration:line-through");
+	  UT_XML_cloneString(sz, "text-decoration:line-through");
 	  new_atts[1]=sz;
 	  X_CheckError(m_pDocument->appendFmt(new_atts));
 	  return;
@@ -569,15 +565,15 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 	    XML_Char output[128];
 
 	    p_val = _getXMLPropValue((const XML_Char *)"color", atts);
-	    convertFontColor(color, (const char*)p_val);
+	    convertFontColor(color, p_val);
 
 	    p_val = _getXMLPropValue((const XML_Char *)"size", atts);
-	    convertFontSize(size, (const char*)p_val);
+	    convertFontSize(size, p_val);
 
 	    p_val = _getXMLPropValue((const XML_Char *)"face", atts);
-	    convertFontFace(face, (const char*)p_val);
+	    convertFontFace(face, p_val);
 
-	    sprintf((char*)output, "color:%s; font-family:%s; size:%spt", color, face, size);
+	    sprintf(output, "color:%s; font-family:%s; size:%spt", color, face, size);
 	    UT_DEBUGMSG(("Font properties: %s\n", output));
 
 	    UT_XML_cloneString(sz, PT_PROPS_ATTRIBUTE_NAME);
@@ -606,10 +602,10 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		  {
 		    sz = NULL;
 		    
-		    if(!UT_XML_strcmp(p_val, (const XML_Char*)"right"))
-		      UT_XML_cloneString(sz, (const XML_Char*)"text-align:right");
-		    else if(!UT_XML_strcmp(p_val, (const XML_Char*)"center"))
-		      UT_XML_cloneString(sz, (const XML_Char*)"text-align:center");
+		    if(!UT_XML_strcmp(p_val, "right"))
+		      UT_XML_cloneString(sz, "text-align:right");
+		    else if(!UT_XML_strcmp(p_val, "center"))
+		      UT_XML_cloneString(sz, "text-align:center");
 		    
 		    if(sz != NULL)
 		      {
@@ -626,20 +622,20 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		sz = NULL;
 
 		if(s_Tokens[tokenIndex].m_type == TT_H1)
-		  UT_XML_cloneString(sz, (const XML_Char*)"Heading 1");
+		  UT_XML_cloneString(sz, "Heading 1");
 		else if(s_Tokens[tokenIndex].m_type ==TT_H2)
-		  UT_XML_cloneString(sz, (const XML_Char*)"Heading 2");
+		  UT_XML_cloneString(sz, "Heading 2");
 		else if(s_Tokens[tokenIndex].m_type == TT_H3)
-		  UT_XML_cloneString(sz, (const XML_Char*)"Heading 3");
+		  UT_XML_cloneString(sz, "Heading 3");
 		else
-		  UT_XML_cloneString(sz, (const XML_Char*)"Block Text");
+		  UT_XML_cloneString(sz, "Block Text");
 
 		new_atts[1]=sz;
 		X_CheckError(m_pDocument->appendFmt(new_atts));
 		return;
 	  }
 
-	case TT_OL:
+	case TT_OL:	  
 	  m_listType = L_OL; return;
 	  break;
 
@@ -666,16 +662,16 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		}
 
 	      // append a field
-	      UT_XML_cloneString(sz, (const XML_Char*)"type");
+	      UT_XML_cloneString(sz, "type");
 	      new_atts[0] = sz;
-	      UT_XML_cloneString(sz, (const XML_Char*)"list_label");
+	      UT_XML_cloneString(sz, "list_label");
 	      new_atts[1] = sz;
 	      X_CheckError(m_pDocument->appendObject(PTO_Field, new_atts));
 
 	      // append the character run
-	      UT_XML_cloneString(sz, (const XML_Char*)"type");
+	      UT_XML_cloneString(sz, "type");
 	      new_atts[0] = sz;
-	      UT_XML_cloneString(sz, (const XML_Char*)"list_label");
+	      UT_XML_cloneString(sz, "list_label");
 	      new_atts[1] = sz;
 	      X_CheckError(m_pDocument->appendFmt(new_atts));
 
@@ -705,10 +701,10 @@ void IE_Imp_XHTML::_startElement(const XML_Char *name, const XML_Char **atts)
 		  {
 		    sz = NULL;
 
-		    if(!UT_XML_strcmp(p_val, (const XML_Char*)"right"))
-		      UT_XML_cloneString(sz, (const XML_Char*)"text-align:right");
-		    else if(!UT_XML_strcmp(p_val, (const XML_Char*)"center"))
-		      UT_XML_cloneString(sz, (const XML_Char*)"text-align:center");
+		    if(!UT_XML_strcmp(p_val, "right"))
+		      UT_XML_cloneString(sz, "text-align:right");
+		    else if(!UT_XML_strcmp(p_val, "center"))
+		      UT_XML_cloneString(sz, "text-align:center");
 		    
 		    if(sz != NULL)
 		      {
@@ -774,7 +770,7 @@ void IE_Imp_XHTML::_endElement(const XML_Char *name)
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 
 	
-	UT_uint32 tokenIndex = mapNameToToken ((const char*)name, s_Tokens, TokenTableSize);
+	UT_uint32 tokenIndex = mapNameToToken (name, s_Tokens, TokenTableSize);
 	//if(!UT_strcmp(name == "html")) UT_DEBUGMSG(("tokenindex : %d\n", tokenIndex));
 	switch (tokenIndex)
 	{

@@ -81,23 +81,29 @@ int mapNameToToken (const char * name, struct xmlToIdMapping * idlist, int len)
 ******************************************************************
 *****************************************************************/
 
+#ifdef HAVE_LIBXML2
+#define XML_Char xmlChar // HACK
+#endif
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
-	pDocReader->_startElement(name, atts);
+	pDocReader->_startElement((const char*)name, (const char**)atts);
 }
 
 static void endElement(void *userData, const XML_Char *name)
 {
 	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
-	pDocReader->_endElement(name);
+	pDocReader->_endElement((const char*)name);
 }
 
 static void charData(void* userData, const XML_Char *s, int len)
 {
 	IE_Imp_XML* pDocReader = (IE_Imp_XML*) userData;
-	pDocReader->_charData(s, len);
+	pDocReader->_charData((const char*)s, len);
 }
+#ifdef HAVE_LIBXML2
+#undef XML_Char
+#endif
 
 /*****************************************************************/
 /*****************************************************************/

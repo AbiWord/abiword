@@ -1263,14 +1263,6 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 	return pLine;
 }
 
-// TODO: What I want to test is XML_Char != char
-#ifdef HAVE_LIBXML2
-const char*	fl_BlockLayout::getProperty(const char * pszName, bool bExpandStyles) const
-{
-	return getProperty((const XML_Char *) (pszName), bExpandStyles);
-}
-#endif
-
 const char*	fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;

@@ -169,10 +169,6 @@ public:
 	fp_Line*	getNewLine(void);
 	FV_View *       getView(void);
 
-// TODO: What I want to test is XML_Char != char
-#ifdef HAVE_LIBXML2
-	const char*	getProperty(const char * pszName, bool bExpandStyles = true) const;
-#endif
 	const char*	getProperty(const XML_Char * pszName, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 

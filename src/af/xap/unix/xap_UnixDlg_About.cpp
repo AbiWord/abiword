@@ -183,7 +183,7 @@ GtkWidget * XAP_UnixDialog_About::_constructButtonOK(void)
 	GtkWidget *buttonOK;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	buttonOK = gtk_button_new_with_label ((const gchar*)pSS->getValue(XAP_STRING_ID_DLG_OK));
+	buttonOK = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_OK));
 	gtk_widget_show (buttonOK);
 	gtk_widget_set_usize (buttonOK, 85, 24);
 

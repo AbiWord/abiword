@@ -442,7 +442,7 @@ bool XAP_Frame::updateTitle()
 		UT_ASSERT(m_iUntitled);
 		const XAP_StringSet * pSS = m_app->getStringSet();
 		
-		sprintf(m_szTitle, (const char*)pSS->getValue(XAP_STRING_ID_UntitledDocument), m_iUntitled);
+		sprintf(m_szTitle, pSS->getValue(XAP_STRING_ID_UntitledDocument), m_iUntitled);
 	}
 
 	strcpy(m_szNonDecoratedTitle, m_szTitle);
@@ -577,8 +577,8 @@ UT_Error XAP_Frame::backup()
 	if (!oldName || !(*oldName))
 	{
 		const XAP_StringSet * pSS = m_app->getStringSet();
-		oldName = (char *) malloc(strlen((const char*)pSS->getValue(XAP_STRING_ID_UntitledDocument)) + strlen(ext) + 1);
-		sprintf(oldName, (const char*)pSS->getValue(XAP_STRING_ID_UntitledDocument), m_iUntitled);
+		oldName = (char *) malloc(strlen(pSS->getValue(XAP_STRING_ID_UntitledDocument)) + strlen(ext) + 1);
+		sprintf(oldName, pSS->getValue(XAP_STRING_ID_UntitledDocument), m_iUntitled);
 		UT_ASSERT(oldName);
 	}
 	backupName = (char *) malloc(strlen(oldName) + strlen(ext) + 1);

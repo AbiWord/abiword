@@ -39,67 +39,64 @@
 
 // KEEP THIS ALPHABETICALLY ORDERED UNDER PENALTY OF DEATH!
 
-#define XC (XML_Char *)
-
 static PP_Property _props[] =
 {
-	{ XC"background-color",XC"transparent", 0},
-	{ XC"bgcolor",		XC"ffffff", 1},
+        { "background-color", "transparent", 0},
+	{ "bgcolor", "ffffff", 1},
 
-	{ XC"color",		XC"000000", 1},
-	{ XC"column-gap",	XC"0.25in", 0},
-	{ XC"column-line",	XC"off",	0},
-	{ XC"columns",		XC"1", 0},
+	{ "color",   "000000", 1},
+	{ "column-gap",	"0.25in", 0},
+	{ "column-line", "off",	0},
+	{ "columns", "1", 0},
 
-	{ XC"default-tab-interval",XC"0.5in", 0},
+	{ "default-tab-interval",  "0.5in", 0},
 
-	{ XC"field-color",	XC"dcdcdc", 1},
-	{ XC"field-font",	XC"NULL",	1},	
-	{ XC"font-family",	XC"Times New Roman", 1},	// TODO this is Win32-specific.  must fix!
-	{ XC"font-size",	XC"12pt",	1},	// MS word defaults to 10pt, but it just seems too small
-	{ XC"font-stretch",	XC"normal", 1},
-	{ XC"font-style",	XC"normal", 1},
-	{ XC"font-variant",	XC"normal", 1},
-	{ XC"font-weight",	XC"normal", 1},
-	{ XC"format",		XC"%*%d.", 1},
+	{ "field-color", "dcdcdc", 1},
+	{ "field-font",	"NULL",	1},	
+	{ "font-family", "Times New Roman", 1},	// TODO this is Win32-specific.  must fix!
+	{ "font-size",	"12pt",	1},	// MS word defaults to 10pt, but it just seems too small
+	{ "font-stretch", "normal", 1},
+	{ "font-style",	"normal", 1},
+	{ "font-variant", "normal", 1},
+	{ "font-weight", "normal", 1},
+	{ "format","%*%d.", 1},
 
-	{ XC"height",		XC"",	0},
+	{ "height", "",	0},
 
-	{ XC"keep-together",XC"", 0},
-	{ XC"keep-with-next",XC"",	0},
+	{ "keep-together", "", 0},
+	{ "keep-with-next", "",	0},
 
-	{ XC"line-height",	XC"1.0", 0},
-	{ XC"list-decimal",	XC".", 1},
-	{ XC"list-delim",	XC"%L", 1},
+	{ "line-height", "1.0", 0},
+	{ "list-decimal", ".", 1},
+	{ "list-delim", "%L", 1},
 
-	{ XC"margin-bottom",XC"0in", 0},
-	{ XC"margin-left",	XC"0in",	0},
-	{ XC"margin-right",	XC"0in", 0},
-	{ XC"margin-top",	XC"0in", 0}, // zero to be consistent with other WPs
+	{ "margin-bottom", "0in", 0},
+	{ "margin-left", "0in",	0},
+	{ "margin-right", "0in", 0},
+	{ "margin-top",	"0in", 0}, // zero to be consistent with other WPs
 
-	{ XC"orphans",		XC"2", 0},
+	{ "orphans", "2", 0},
 
-	{ XC"page-margin-bottom",	XC"1in",				0},
-	{ XC"page-margin-footer",	XC"0in",				0},
-	{ XC"page-margin-header",	XC"0in",				0},
-	{ XC"page-margin-left",		XC"1in",				0},
-	{ XC"page-margin-right",	XC"1in",				0},
-	{ XC"page-margin-top",		XC"1in",				0},
+	{ "page-margin-bottom",		"1in",				0},
+	{ "page-margin-footer",         "0in",                          0},
+	{ "page-margin-header",         "0in",                          0},
+	{ "page-margin-left",		"1in",				0},
+	{ "page-margin-right",		"1in",				0},
+	{ "page-margin-top",		"1in",				0},
 
-	{ XC"section-space-after",	XC"0.25in",				0},
-	{ XC"start-value",			XC"1",					1},
+	{ "section-space-after",	"0.25in",			0},
+       	{ "start-value",			"1",				1},
 
-	{ XC"tabstops",				XC"",					0},
-	{ XC"text-align", 			XC"left",				1},
-	{ XC"text-decoration",		XC"none",				1},
-	{ XC"text-indent",			XC"0in",				0},
-	{ XC"text-position",		XC"normal",				1},	
+	{ "tabstops", "", 0},
+	{ "text-align", "left",	1},
+	{ "text-decoration", "none", 1},
+	{ "text-indent", "0in", 0},
+	{ "text-position", "normal", 1},	
 	
-	{ XC"widows",				XC"2",					0},
-	{ XC"width",				XC"",					0},
-};
+	{ "widows", "2", 0},
+	{ "width", "", 0},
 
-#undef XC
+};
 
 static int s_compare (const void * a, const void * b)
 {
@@ -109,7 +106,7 @@ static int s_compare (const void * a, const void * b)
   name = (const char *)a;
   prop = (const PP_Property *)b;
 
-  return UT_strcmp (name, (const char *)prop->getName());
+  return UT_strcmp (name, prop->getName());
 }
 
 /*****************************************************************/

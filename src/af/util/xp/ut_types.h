@@ -42,7 +42,7 @@
 
 #ifdef HAVE_LIBXML2
 #include <libxml/tree.h>
-#define XML_Char xmlChar
+typedef char XML_Char;
 #endif
 
 typedef unsigned char		UT_Byte;

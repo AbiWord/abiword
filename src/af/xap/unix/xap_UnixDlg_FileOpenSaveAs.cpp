@@ -427,7 +427,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: let GTK take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
 	
-	GtkFileSelection *pFS = (GtkFileSelection *)gtk_file_selection_new((const gchar*)szTitle);
+	GtkFileSelection *pFS = (GtkFileSelection *)gtk_file_selection_new(szTitle);
 
 	connectFocus(GTK_WIDGET(pFS),pFrame);
 
@@ -450,7 +450,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		gtk_widget_show(pulldown_hbox);
 
 		// pulldown label
-		GtkWidget * filetypes_label = gtk_label_new((const gchar*)szFileTypeLabel);
+		GtkWidget * filetypes_label = gtk_label_new(szFileTypeLabel);
 		gtk_label_set_justify(GTK_LABEL(filetypes_label), GTK_JUSTIFY_RIGHT);
 		gtk_misc_set_alignment(GTK_MISC(filetypes_label), 1.0, 0.5);
 		gtk_widget_show(filetypes_label);

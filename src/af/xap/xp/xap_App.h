@@ -97,10 +97,6 @@ public:
 	bool							isWordInDict(const UT_UCSChar * pWord, UT_uint32 len) const;
 
 	XAP_Prefs *						getPrefs(void) const;
-#ifdef HAVE_LIBXML2
-	bool							getPrefsValue(const char * szKey, const XML_Char ** pszValue) const;
-	bool							getPrefsValueBool(const char * szKey, bool * pbValue) const;
-#endif
 	bool							getPrefsValue(const XML_Char * szKey, const XML_Char ** pszValue) const;
 	bool							getPrefsValueBool(const XML_Char * szKey, bool * pbValue) const;
 
