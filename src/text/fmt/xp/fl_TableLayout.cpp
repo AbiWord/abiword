@@ -534,6 +534,15 @@ bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	{
 		UT_ASSERT(getNext()->getPrev() == this);
 	}
+	//
+	// Look to see if we're in a HfrFtr section
+	//
+	fl_ContainerLayout * pMyCL = myContainingLayout();
+	if(pMyCL && pMyCL->getContainerType() == FL_CONTAINER_HDRFTR)
+	{
+		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
+		pHFSL->bl_doclistener_changeStrux(this,pcrxc);
+	}
 	return true;
 }
 
@@ -1816,6 +1825,15 @@ bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * 
 //	pTL->collapse();
 	_updateCell();
 //	pTL->updateTable(); // may not need this
+	//
+	// Look to see if we're in a HfrFtr section
+	//
+	fl_ContainerLayout * pMyCL = myContainingLayout();
+	if(pMyCL && pMyCL->getContainerType() == FL_CONTAINER_HDRFTR)
+	{
+		fl_HdrFtrSectionLayout * pHFSL = static_cast<fl_HdrFtrSectionLayout *>(pMyCL);
+		pHFSL->bl_doclistener_changeStrux(this,pcrxc);
+	}
 	return true;
 }
 

@@ -6875,12 +6875,12 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
 		xxx_UT_DEBUGMSG(("ap_TopRuler: xrPoint %d LeftIndent %d RightIndent %d Firs %d \n",pInfo->m_xrPoint,pInfo->m_xrLeftIndent,pInfo->m_xrRightIndent,	pInfo->m_xrFirstLineIndent));
 	}
-	else if(isHdrFtrEdit())
+	else if(isHdrFtrEdit() && (pSection->getContainerType() != FL_CONTAINER_CELL))
 	{
 		fp_Column* pColumn = static_cast<fp_Column*>(pContainer);
 		fl_DocSectionLayout* pDSL = static_cast<fl_DocSectionLayout*>(pSection);
 		pDSL = m_pEditShadow->getHdrFtrSectionLayout()->getDocSectionLayout();
-
+			
 		pInfo->m_iCurrentColumn = 0;
 		pInfo->m_iNumColumns = 1;
 
@@ -6894,7 +6894,6 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_xrLeftIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-left"));
 		pInfo->m_xrRightIndent = UT_convertToLogicalUnits(pBlock->getProperty("margin-right"));
 		pInfo->m_xrFirstLineIndent = UT_convertToLogicalUnits(pBlock->getProperty("text-indent"));
-
 	}
 	else if(pSection->getContainerType() == FL_CONTAINER_CELL)
 	{

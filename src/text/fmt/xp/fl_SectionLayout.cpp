@@ -3770,15 +3770,28 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_changeStrux(fl_ContainerLayout* pBL,
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
 		if(pShadowBL)
 		{
-			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeStrux(pcrxc)
+			if(pShadowBL->getContainerType() == FL_CONTAINER_BLOCK)
+			{
+				bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_changeStrux(pcrxc)
+					&& bResult;
+			}
+			else if(pShadowBL->getContainerType() == FL_CONTAINER_TABLE)
+			{
+				bResult = static_cast<fl_TableLayout *>(pShadowBL)->doclistener_changeStrux(pcrxc)
 				&& bResult;
+			}
+			else if(pShadowBL->getContainerType() == FL_CONTAINER_CELL)
+			{
+				bResult = static_cast<fl_CellLayout *>(pShadowBL)->doclistener_changeStrux(pcrxc)
+				&& bResult;
+			}
 		}
 	}
 	// Update the overall block too.
 
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);
-	if(pBL)
+	if(pBL && (pBL->getContainerType() == FL_CONTAINER_BLOCK))
 	{
 		bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_changeStrux(pcrxc)
 			&& bResult;
