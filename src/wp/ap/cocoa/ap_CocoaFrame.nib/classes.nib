@@ -14,6 +14,7 @@
             OUTLETS = {
                 m_aboutMenu = NSMenuItem; 
                 m_preferenceMenu = NSMenuItem; 
+                m_quitMenu = NSMenuItem; 
                 mainView = NSScrollView; 
                 menuBar = NSMenu; 
                 statusBar = XAP_CocoaNSView; 
