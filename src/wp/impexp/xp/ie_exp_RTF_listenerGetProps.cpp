@@ -40,7 +40,7 @@ void s_RTF_ListenerGetProps::_closeSection(void)
 		return;
 	
 	m_bInSection = UT_FALSE;
-	m_apiThisSection = NULL;
+	m_apiThisSection = 0;
 
 	return;
 }
@@ -51,7 +51,7 @@ void s_RTF_ListenerGetProps::_closeBlock(void)
 		return;
 
 	m_bInBlock = UT_FALSE;
-	m_apiThisBlock = NULL;
+	m_apiThisBlock = 0;
 	
 	return;
 }
@@ -116,8 +116,8 @@ s_RTF_ListenerGetProps::s_RTF_ListenerGetProps(PD_Document * pDocument,
 	m_bInBlock = UT_FALSE;
 	m_bInSpan = UT_FALSE;
 	m_apiLastSpan = 0;
-	m_apiThisSection = NULL;
-	m_apiThisBlock = NULL;
+	m_apiThisSection = 0;
+	m_apiThisBlock = 0;
 }
 
 s_RTF_ListenerGetProps::~s_RTF_ListenerGetProps()

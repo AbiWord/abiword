@@ -67,7 +67,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			fp_Run* pOffendingRun = NULL;
 			
 			fp_Run* pCurrentRun = m_pFirstRunToKeep;
-			fp_Run* pPreviousRun;
+			fp_Run* pPreviousRun = NULL;
 
 			while (UT_TRUE)
 			{
@@ -211,7 +211,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 						{
 							fp_Run *pScanRun;
 							int iScanWidth = 0;
-							UT_uint32   len, runLen;
+							UT_uint32   len = 0, runLen = 0;
 
 							UT_UCSChar const *pSpanPtr, *pCh;
 							UT_UCSChar *pDecimalStr;

@@ -308,7 +308,7 @@ GR_Font * GR_UnixGraphics::findFont(const char* pszFontFamily,
 	UT_ASSERT(pszFontSize);
 	
 	// convert styles to XAP_UnixFont:: formats
-	XAP_UnixFont::style s;
+	XAP_UnixFont::style s = XAP_UnixFont::STYLE_NORMAL;
 
 	// this is kind of sloppy
 	if (!UT_stricmp(pszFontStyle, "normal") &&

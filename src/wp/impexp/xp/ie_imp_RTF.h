@@ -241,9 +241,10 @@ private:
 private:
 	UT_GrowBuf m_gbBlock;
 
+	int m_groupCount;
 	UT_Bool m_newParaFlagged;
 	UT_Bool m_newSectionFlagged;
-	int m_groupCount;
+
 	int m_cbBin;
 
 	UT_Stack m_stateStack;

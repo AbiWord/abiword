@@ -329,7 +329,7 @@ const char * EV_EditBindingMap::getShortcutFor(const EV_EditMethod * pEM) const
 
 	// lookup the keyboard shortcut bound to pEM, if any
 
-	EV_EditModifierState ems;
+	EV_EditModifierState ems = 0;
 	EV_EditBinding * pEB;
 	UT_uint32 i, j;
 

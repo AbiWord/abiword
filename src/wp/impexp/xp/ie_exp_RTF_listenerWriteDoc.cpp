@@ -42,13 +42,13 @@
 
 void s_RTF_ListenerWriteDoc::_closeSection(void)
 {
-	m_apiThisSection = NULL;
+	m_apiThisSection = 0;
 	return;
 }
 
 void s_RTF_ListenerWriteDoc::_closeBlock(void)
 {
-	m_apiThisBlock = NULL;
+	m_apiThisBlock = 0;
 	return;
 }
 
@@ -246,8 +246,8 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 	m_pie = pie;
 	m_bInSpan = UT_FALSE;
 	m_apiLastSpan = 0;
-	m_apiThisSection = NULL;
-	m_apiThisBlock = NULL;
+	m_apiThisSection = 0;
+	m_apiThisBlock = 0;
 
 	m_bToClipboard = bToClipboard;
 	// when we are going to the clipboard, we should implicitly

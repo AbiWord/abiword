@@ -340,8 +340,8 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
 
 	ap_RulerTicks tick(m_pG,m_dim);
 
-	UT_uint32 iFontHeight;
-	UT_sint32 k;
+	UT_uint32 iFontHeight = 0;
+	UT_sint32 k = 0;
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 

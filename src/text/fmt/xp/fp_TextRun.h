@@ -61,7 +61,7 @@ class fp_TextRun : public fp_Run
 	enum
 	{
 		Width_type_display,
-		Width_type_layout_units,
+		Width_type_layout_units
 	};
 	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType = Width_type_display) const;
 

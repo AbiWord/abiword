@@ -123,7 +123,7 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 		sz = UT_getAttribute("text-align", pProps);
 		if (sz)
 		{
-			tAlignState t;
+			tAlignState t = align_LEFT;
 
 			if (UT_XML_strcmp(sz, "center") == 0)
 				t = align_CENTERED;
@@ -244,7 +244,7 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 			UT_Bool bNoOrphans = UT_FALSE;
 			UT_Bool bNoWidows = UT_FALSE;
 
-			double orphans, widows;
+			double orphans = 0, widows = 0;
 			
 			sz = UT_getAttribute("orphans", pProps);
 			if (sz)
