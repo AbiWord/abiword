@@ -95,7 +95,9 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM wParam, LPA
                                     getNthExistingBookmark( i ) );
 	}
 
-	return 1;
+	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK));
+	
+	return 0; // 0 because we called set focus
 }
 
 BOOL AP_Win32Dialog_InsertHyperlink::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
