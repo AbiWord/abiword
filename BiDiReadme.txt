@@ -6,16 +6,7 @@ fixes of the BiDi features should be directed.
 Enabling BiDi during build
 --------------------------
 use the normal procedure for building AW, but set 
-ABI_OPT_BIDI_ENABLED=1 on the make command line. Alternatively,
-you can just do 
-
-make bidi
-
-or
-
-make bidi_dbg
-
-(the latter for a debug version).
+ABI_OPT_BIDI_ENABLED=1 on the make command line.
 
 If you want the default direction to be hardwired to RTL, you can 
 further set ABI_OPT_BIDI_RTL_DOMINANT=1. It is also possible to
