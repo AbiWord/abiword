@@ -391,6 +391,7 @@ fl_DocSectionLayout::~fl_DocSectionLayout()
 		pCol = pNext;
 	}
 	DELETEP(m_pPageImage);
+	DELETEP(m_pDocImage);
 }
 
 void fl_DocSectionLayout::setFirstEndnoteContainer(fp_EndnoteContainer * pECon)
@@ -1347,8 +1348,9 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	}
 
 	const XML_Char * pszDataID = NULL;
-	pSectionAP->getAttribute("strux-image-dataid", (const XML_Char *&)pszDataID);
+	pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const XML_Char *&)pszDataID);
 	DELETEP(m_pPageImage);
+	DELETEP(m_pDocImage);
 	if(pszDataID && *pszDataID)
 	{
 		m_pPageImage = FG_Graphic::createFromStrux(this);
@@ -1394,8 +1396,8 @@ void fl_DocSectionLayout::setPaperColor(void)
 		XAP_Prefs * pPrefs = pApp->getPrefs();
 		const XML_Char * pszTransparentColor = NULL;
 		pPrefs->getPrefsValue(static_cast<const XML_Char *>(XAP_PREF_KEY_ColorForTransparent),&pszTransparentColor);
-		m_sPaperColor = pszTransparentColor;
-		m_sScreenColor.clear();
+		m_sPaperColor.clear();
+		m_sScreenColor = pszTransparentColor;
 	}
 	else
 	{
@@ -1738,13 +1740,13 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 		}
 		pPage->getFillType()->setDocImage(&m_pDocImage);
 	}
-	else if(m_sScreenColor.size() > 0)
-	{
-		pPage->getFillType()->setColor(m_sScreenColor.c_str());
-	}
 	else if(m_sPaperColor.size() > 0)
 	{
-		pPage->getFillType()->setTransColor(m_sPaperColor.c_str());
+		pPage->getFillType()->setColor(m_sPaperColor.c_str());
+	}
+	else if(m_sScreenColor.size() > 0)
+	{
+		pPage->getFillType()->setTransColor(m_sScreenColor.c_str());
 		pPage->getFillType()->markTransparentForPrint();
 	}		
 

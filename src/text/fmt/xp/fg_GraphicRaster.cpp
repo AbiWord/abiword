@@ -78,7 +78,7 @@ FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_Layout* pFL)
 	bool bFoundSpanAP = pFL->getAttrProp(&pFG->m_pSpanAP);
 	if (bFoundSpanAP && pFG->m_pSpanAP)
 	{
-		bool bFoundDataID = pFG->m_pSpanAP->getAttribute("strux-image-dataid", pFG->m_pszDataID);
+		bool bFoundDataID = pFG->m_pSpanAP->getAttribute(PT_STRUX_IMAGE_DATAID, pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
 			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), const_cast<const UT_ByteBuf **>(&pFG->m_pbbPNG), NULL, NULL);
@@ -327,14 +327,14 @@ UT_Error FG_GraphicRaster::insertAtStrux(PD_Document* pDoc,
 
 #ifndef __MRC__
 	const XML_Char*	attributes[] = {
-		"strux-image-dataid", szName,
+		PT_STRUX_IMAGE_DATAID, szName,
 		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
 	   	NULL, NULL
 	};
 #else
 	// MrCPP does not like the above
 	const XML_Char * attributes[] = {
-		"strux-image-dataid", NULL,
+	   PT_STRUX_IMAGE_DATAID, NULL,
 		PT_PROPS_ATTRIBUTE_NAME, NULL,
 	   	NULL, NULL
 	};

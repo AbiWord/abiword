@@ -134,7 +134,7 @@ typedef const void * PL_StruxFmtHandle;
 #define PT_FOOTERLAST_ATTRIBUTE_NAME	(static_cast<const XML_Char *>("footer-last"))
 #define PT_REVISION_ATTRIBUTE_NAME      (static_cast<const XML_Char *>("revision"))
 #define PT_ID_ATTRIBUTE_NAME            (static_cast<const XML_Char *>("id"))
-
+#define PT_STRUX_IMAGE_DATAID           (static_cast<const XML_Char *>("strux-image-dataid"))
 
 #endif /* PT_TYPES_H */
 
