@@ -105,6 +105,7 @@ ifdef ABI_OPT_PROF
     endif
     ifeq ($(ABI_OPT_PROF),3)  # The same warning as above applies here.  Anyway, I encountered some minor but significant glitches with the function instrumentation on c++.  People with gcc 3.1 and earlier may want to avoid this one.  Thus, it is not merged in with level 2.
     OPTIMIZER   	= -pg -g -finstrument-functions -fprofile-arcs -ftest-coverage
+	           		  # Partially deprecated in newer gcc3
     OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)PRF_
     ABI_OPT_OPTIMIZE= 1
     ABI_OPT_DEBUG	= 0
@@ -241,6 +242,7 @@ GTK_CONFIG	= pkg-config gtk+-2.0 gthread-2.0
 GNOME_CONFIG    = pkg-config libgnome-2.0 bonobo-activation-2.0 libgnomeprint-2.0 gal-2.0 libbonobo-2.0
 LIBXML_CONFIG	= xml2-config
 XFT_CONFIG	= xft-config
+LIBGLADE_CONFIG = pkg-config libglade-2.0
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)

@@ -31,9 +31,13 @@ OS_CFLAGS		= -fvtable-thunks  # required for compiling ole dragndrop
 
 # mingw doesn't like -ansi in compiling wv
 ABI_OPT_PACIFY_COMPILER=1
+# *** We do not support ancient mingw versions of the gcc2 kind ***
 
 # Now we include some really common stuff.
 include $(ABI_ROOT)/src/config/platforms/nix-common.mk
+# I highly suggest that here we redefine the compiler, archiver.
+# Just need to find a consistent solution, possibly of conditionals,
+# that works across mingw installations that have a high internal variance.
 
 # Define tools - resource compiler
 RC		= windres
