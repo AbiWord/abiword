@@ -541,7 +541,7 @@ msgstr "&Kop- en Voettekst"
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h.h:267
 msgid "&Header:"
-msgstr "&Koptekst"
+msgstr "&Koptekst:"
 
 #. DLG_PageSetup_Height
 #: po/tmp/ap_String_Id.h.h:269
@@ -572,7 +572,7 @@ msgstr "&Negeren"
 #. MENU_LABEL_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:279
 msgid "&Ignore All"
-msgstr "&Negeer alles"
+msgstr "&Alles negeren"
 
 #. MENU_LABEL_FMT_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h.h:281
@@ -595,12 +595,12 @@ msgstr "&Invoegen"
 #: po/tmp/ap_String_Id.h.h:289
 #, fuzzy
 msgid "&Insert File"
-msgstr "Bestand &invoegen"
+msgstr "&Bestand"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:291
 msgid "&Italic"
-msgstr "&Schuingedrukt"
+msgstr "&Cursief"
 
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:293
@@ -998,7 +998,7 @@ msgstr "&Weduwe/Wees controle"
 #. DLG_PageSetup_Width
 #: po/tmp/ap_String_Id.h.h:446
 msgid "&Width:"
-msgstr "&Breedte"
+msgstr "&Breedte:"
 
 #. MENU_LABEL_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h.h:448
@@ -2481,7 +2481,7 @@ msgstr "Opmaak mogelijkheden aanzetten"
 #. DLG_Options_Label_CheckEnableSmoothScrolling
 #: po/tmp/ap_String_Id.h.h:1025
 msgid "Enable Smooth Scrolling"
-msgstr "Soepel scrollen gebruiken"
+msgstr "Soepel scrollen"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:1027
@@ -6720,9 +6720,8 @@ msgstr "P&ercentage:"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:467
-#, fuzzy
 msgid "Page Width"
-msgstr "&Pagina breedte"
+msgstr "Breedte"
 
 #. DLG_UP_PageRanges
 #: po/tmp/xap_String_Id.h.h:469
@@ -6745,7 +6744,7 @@ msgstr "Platte tekst"
 #: po/tmp/xap_String_Id.h.h:475
 #, fuzzy
 msgid "Plugin Details:"
-msgstr "Plugin details"
+msgstr "Plugin details:"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:477
@@ -6776,12 +6775,12 @@ msgstr "Verhoudingen behouden:"
 #. DLG_IP_Activate_Label
 #: po/tmp/xap_String_Id.h.h:489
 msgid "Preview Picture"
-msgstr "Afbeelding Voorbeeld"
+msgstr "Afbeelding voorbeeld"
 
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h.h:494
 msgid "Print To File"
-msgstr "Print Naar Bestand"
+msgstr "Print naar bestand"
 
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h.h:496
@@ -7187,7 +7186,7 @@ msgstr "West Europees, Windows Code Pagina 1252"
 #: po/tmp/xap_String_Id.h.h:678
 #, fuzzy
 msgid "Whole Page"
-msgstr "&Hele pagina"
+msgstr "Hele pagina"
 
 #. DLG_Image_Width
 #: po/tmp/xap_String_Id.h.h:680
@@ -7407,7 +7406,7 @@ msgstr "de woordenboeken lijst"
 #~ "d minuten verloren gaan."
 
 #~ msgid "Raise this window"
-#~ msgstr "Open dit venster"
+#~ msgstr "Dit venster naar voren halen"
 
 #~ msgid "Strikeout"
 #~ msgstr "Doorhalen"
