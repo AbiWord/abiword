@@ -134,7 +134,10 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 
 	if (!pLabel)
 	{
-		UT_DEBUGMSG(("WARNING: %s translation for menu id [%d] not found.\n", m_stLanguage.c_str(), id));
+		if (id != 0)
+		{
+			UT_DEBUGMSG(("WARNING: %s translation for menu id [%d] not found.\n", m_stLanguage.c_str(), id));
+		}
 		// NOTE: only translators should see the following strings
 		// NOTE: do *not* translate them
 		pLabel = new EV_Menu_Label(id, "TODO", "untranslated menu item");
@@ -150,7 +153,6 @@ EV_Menu_Label * EV_Menu_LabelSet::getLabel(XAP_Menu_Id id) const
 
 bool EV_Menu_LabelSet::addLabel(EV_Menu_Label *pLabel)
 {
-	UT_DEBUGMSG(("JCA: EV_Menu_LabelSet::addLabel\n"));
 	UT_ASSERT(pLabel);
 	XAP_Menu_Id size_table = m_labelTable.size();
 
