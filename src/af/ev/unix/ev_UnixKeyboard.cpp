@@ -192,7 +192,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 				ucs=new UT_UCSChar[mLength];
 				for(int i=0;i<mLength;++i)
 			  	{
-					wchar_t wc;
+					UT_UCS4Char wc;
 					if(m.mbtowc(wc,mbs[i]))
 					  ucs[uLength++]=wc;
 					//UT_DEBUGMSG(("ucs[i] 0x%04x, ",ucs[i]));
