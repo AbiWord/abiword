@@ -73,13 +73,13 @@ echo "Installing program binaries to [$TARGET/bin]..."
 ########################################################################
 # Install menu for GNOME and other window managers
 ########################################################################
-echo "Installing menu hook at [/usr/lib/menu/abiword]..."
+echo "Installing menu hook at [/usr/lib/menu/abisuite]..."
 # add other program hooks here for AbiCalc, etc.
 
 mkdir -p /usr/lib/menu
 
-echo '?package(abiword):needs=X11 section=Apps/Editors title="AbiWord" command="/usr/bin/X11/AbiWord"' > \
-    /usr/lib/menu/abiword
+echo '?package(abisuite):needs=X11 section=Apps/Editors title="AbiWord" command="/usr/bin/X11/AbiWord"' > \
+    /usr/lib/menu/abisuite
 
 
 ########################################################################
