@@ -2860,16 +2860,15 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
  overall effect is rather erratic. I do not see, though, a good way of
  fixing this, particularly concering short blocks.
 */
-void
-fl_BlockLayout::checkSpelling(void)
+bool fl_BlockLayout::checkSpelling(void)
 {
 
 	xxx_UT_DEBUGMSG(("fl_BlockLayout::checkSpelling: this 0x%08x isOnScreen(): %d\n", this,static_cast<UT_uint32>(isOnScreen())));
 	// Don't spell check non-formatted blocks!
 	if(m_pFirstRun == NULL)
-		return;
+		return false;
 	if(m_pFirstRun->getLine() == NULL)
-		return;
+		return false;
 
 	// only update screen if this block is on it
 	bool bIsOnScreen = isOnScreen();
@@ -2901,8 +2900,10 @@ fl_BlockLayout::checkSpelling(void)
 	// Finally update screen
 	if (bIsOnScreen && bUpdateScreen && pView)
 	{
+		markAllRunsDirty();
 		pView->updateScreen();
 	}
+	return true;
 }
 
 /*!
@@ -2957,7 +2958,15 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 
 		if (pPOB)
 		{
-			bScreenUpdated |= _doCheckWord(pPOB, pWord, true, bToggleIP);
+			bool bwrong = false;
+			bwrong = _doCheckWord(pPOB, pWord, true, bToggleIP);
+#if 0
+			if(bwrong)
+			{
+				UT_DEBUGMSG(("Found misspelt word in block %x \n",this));
+			}
+#endif
+			bScreenUpdated |= bwrong;
 		}
 	}
 
