@@ -87,8 +87,8 @@ BEGIN
     PUSHBUTTON      "&Close",AP_RID_DIALOG_LIST_BTN_CLOSE,275,242,50,14
     COMBOBOX        AP_RID_DIALOG_LIST_COMBO_TYPE,83,7,64,46,
                     CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Type:",AP_RID_DIALOG_LIST_STATIC_TYPE,7,7,19,8
-    LTEXT           "Style:",AP_RID_DIALOG_LIST_STATIC_STYLE,7,30,18,8
+    LTEXT           "Type:",AP_RID_DIALOG_LIST_STATIC_TYPE,7,7,68,8
+    LTEXT           "Style:",AP_RID_DIALOG_LIST_STATIC_STYLE,7,30,68,8
     COMBOBOX        AP_RID_DIALOG_LIST_COMBO_STYLE,83,29,72,110,
                     CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Set Default Values",AP_RID_DIALOG_LIST_BUTTON_DEFAULT,7,54,
@@ -110,18 +110,18 @@ BEGIN
     CONTROL         "Spin1",AP_RID_DIALOG_LIST_SPIN_LEVEL,"msctls_updown32",
                     UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
                     UDS_ARROWKEYS,122,129,10,14
-    LTEXT           "Preview:",AP_RID_DIALOG_LIST_STATIC_PREVIEW,171,7,28,8
+    LTEXT           "Preview:",AP_RID_DIALOG_LIST_STATIC_PREVIEW,171,7,154,8
     CONTROL         "",AP_RID_DIALOG_LIST_FRAME_PREVIEW,"Static",
                     SS_BLACKFRAME,171,18,154,195,WS_EX_CLIENTEDGE
     CONTROL         "Start New List",AP_RID_DIALOG_LIST_RADIO_START_NEW_LIST,
                     "Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,7,
-                    222,60,10
+                    222,76,10
     CONTROL         "Apply to Current List",
                     AP_RID_DIALOG_LIST_RADIO_APPLY_TO_CURRENT_LIST,"Button",
-                    BS_AUTORADIOBUTTON,87,222,79,10
+                    BS_AUTORADIOBUTTON,87,222,100,10
     CONTROL         "Resume Previous List",
                     AP_RID_DIALOG_LIST_RADIO_RESUME_PREV_LIST,"Button",
-                    BS_AUTORADIOBUTTON,186,222,84,10
+                    BS_AUTORADIOBUTTON,196,222,124,10
     PUSHBUTTON      "&Font...",
                     AP_RID_DIALOG_LIST_BTN_FONT,
                     83,112,50,14
