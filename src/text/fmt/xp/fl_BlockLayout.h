@@ -128,6 +128,7 @@ public:
 	void checkSpelling(void);
 	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
 	inline getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
+	inline getTabsCount(void) const { return m_vecTabs.getItemCount(); }
 
 	UT_Bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
 	UT_Bool doclistener_populateObject(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
@@ -162,7 +163,7 @@ public:
 
 	void					checkWord(fl_PartOfBlock* pPOB);
 
-	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType);
+	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset);
 	
 #ifndef NDEBUG
 	void					debug_dumpRunList(void);
@@ -269,6 +270,8 @@ protected:
 #define FL_TAB_LEFT				1
 #define FL_TAB_RIGHT			2
 #define FL_TAB_CENTER			3
+#define FL_TAB_DECIMAL			4
+#define FL_TAB_BAR				5
 
 struct fl_TabStop
 {
@@ -276,6 +279,7 @@ struct fl_TabStop
 	
 	UT_sint32		iPosition;
 	unsigned char	iType;
+	UT_uint32		iOffset;
 };
 
 #endif /* BLOCKLAYOUT_H */

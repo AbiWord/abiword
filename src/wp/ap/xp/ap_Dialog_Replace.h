@@ -24,7 +24,6 @@
 #include "xap_Dialog.h"
 #include "fv_View.h"
 #include "xav_View.h"
-#include "fl_BlockLayout.h"
 #include "pt_Types.h"
 
 class AP_Dialog_Replace : public AP_Dialog_FramePersistent

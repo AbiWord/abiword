@@ -51,13 +51,16 @@ public:
 	UT_sint32				m_xrLeftIndent;
 	UT_sint32				m_xrFirstLineIndent;
 	UT_sint32				m_xrRightIndent;
+	UT_sint32				m_xrTabStop;
 
 	// tab stop information
 
-	UT_Bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType);
+	UT_Bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset);
 	void *					m_pVoidEnumTabStopsData;
+	UT_uint32				m_iTabStops;
 	UT_sint32				m_iDefaultTabInterval;
-	
+	const char *			m_pszTabStops;
+
 	// current column number and the number of columns
 	
 	UT_uint32				m_iCurrentColumn;
@@ -139,6 +142,12 @@ protected:
 									 AP_TopRulerInfo * pInfo,
 									 UT_Bool bDrawAll = UT_TRUE);
 
+	void	_getTabStopXAnchor(AP_TopRulerInfo * pInfo, UT_uint32 k, UT_sint32 * pTab, unsigned char & iType);
+	void	_getTabStopRect(AP_TopRulerInfo * pInfo, UT_sint32 anchor, UT_Rect * pRect);
+	void	_drawTabProperties(const UT_Rect * pClipRect,
+							   AP_TopRulerInfo * pInfo,
+							   UT_Bool bDrawAll = UT_TRUE);
+
 	UT_sint32	_getColumnMarkerXRightEnd(AP_TopRulerInfo * pInfo, UT_uint32 kCol);
 	void		_getColumnMarkerRect(AP_TopRulerInfo * pInfo, UT_uint32 kCol, UT_sint32 xCenter,
 									 UT_Rect * prCol);
@@ -159,6 +168,7 @@ protected:
 	void		_drawLeftIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawRightIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawFirstLineIndentMarker(UT_Rect & r, UT_Bool bFilled);
+	void		_drawTabStop(UT_Rect & r, unsigned char iType, UT_Bool bFilled);
 	void		_drawColumnGapMarker(UT_Rect & r);
 	UT_Bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
 		
@@ -192,6 +202,7 @@ protected:
 	UT_Rect				m_draggingRect;	/* rectangle of primary thing being dragged */
 	UT_sint32			m_dragging2Center; /* center of drag-along */
 	UT_Rect				m_dragging2Rect; /* rect of drag-along */
+	UT_uint32			m_draggingTab;	/* index of tab being dragged */
 	UT_Bool				m_bBeforeFirstMotion;
 	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */

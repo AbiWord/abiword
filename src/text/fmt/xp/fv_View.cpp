@@ -1326,6 +1326,8 @@ UT_Bool FV_View::getBlockFormat(const XML_Char *** pProps)
 	v.addItem(new _fmtPair("margin-top",NULL,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("margin-bottom",NULL,pBlockAP,pSectionAP));
 	v.addItem(new _fmtPair("line-height",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("tabstops",NULL,pBlockAP,pSectionAP));
+	v.addItem(new _fmtPair("default-tab-interval",NULL,pBlockAP,pSectionAP));
 
 	// 2. prune 'em as they vary across selection
 	if (!isSelectionEmpty())
@@ -4092,7 +4094,9 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 		pInfo->m_pfnEnumTabStops = pBlock->s_EnumTabStops;
 		pInfo->m_pVoidEnumTabStopsData = (void *)pBlock;
+		pInfo->m_iTabStops = pBlock->getTabsCount();
 		pInfo->m_iDefaultTabInterval = pBlock->getDefaultTabInterval();
+		pInfo->m_pszTabStops = pBlock->getProperty("tabstops");
 
 		pInfo->m_iCurrentColumn = nCol;
 		pInfo->m_iNumColumns = pSection->getNumColumns();

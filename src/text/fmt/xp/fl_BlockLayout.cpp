@@ -233,6 +233,12 @@ void fl_BlockLayout::_lookupProperties(void)
 				case 'C':
 					iType = FL_TAB_CENTER;
 					break;
+				case 'D':
+					iType = FL_TAB_DECIMAL;
+					break;
+				case 'B':
+					iType = FL_TAB_BAR;
+					break;
 				default:
 					iType = FL_TAB_LEFT;
 					break;
@@ -258,13 +264,16 @@ void fl_BlockLayout::_lookupProperties(void)
 			fl_TabStop* pTabStop = new fl_TabStop();
 			pTabStop->iPosition = iPosition;
 			pTabStop->iType = iType;
+			pTabStop->iOffset = pStart - pszTabStops;
 
 			m_vecTabs.addItem(pTabStop);
 
 			pStart = pEnd;
 			if (*pStart)
 			{
-				while (*pStart == 32)
+				pStart++;	// skip past delimiter
+
+				while (*pStart == UCS_SPACE)
 				{
 					pStart++;
 				}
@@ -2783,7 +2792,7 @@ UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_s
 	return UT_FALSE;
 }
 
-UT_Bool fl_BlockLayout::s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType)
+UT_Bool fl_BlockLayout::s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset)
 {
 	// a static function
 
@@ -2796,6 +2805,7 @@ UT_Bool fl_BlockLayout::s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & i
 
 	iPosition = pTab->iPosition;
 	iType = pTab->iType;
+	iOffset = pTab->iOffset;
 	return UT_TRUE;
 }
 
