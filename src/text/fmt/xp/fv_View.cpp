@@ -948,10 +948,23 @@ void FV_View::cmdCharMotion(UT_Bool bForward, UT_uint32 count)
 
 	PT_DocPosition iPoint = getPoint();
 	if (!_charMotion(bForward, count))
-		_setPoint(iPoint);
+	{
+	 	_setPoint(iPoint);
+	}
 	else
+	{
+		PT_DocPosition iPoint1 = getPoint();
+		if ( iPoint1 == iPoint )
+		  {
+		    if(!_charMotion(bForward, count))   
+		      {
+			_setPoint(iPoint);
+			notifyListeners(AV_CHG_MOTION);
+			return;
+		      }
+		  }
 		_updateInsertionPoint();
-
+	}
 	notifyListeners(AV_CHG_MOTION);
 }
 
