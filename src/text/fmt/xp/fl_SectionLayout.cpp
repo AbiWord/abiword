@@ -157,6 +157,8 @@ void fl_SectionLayout::addBlock(fl_BlockLayout* pBL)
 		m_pFirstBlock = pBL;
 		m_pLastBlock = m_pFirstBlock;
 	}
+
+	pBL->setSectionLayout(this);
 }
 
 fl_BlockLayout * fl_SectionLayout::insertBlock(PL_StruxDocHandle sdh, fl_BlockLayout * pPrev, PT_AttrPropIndex indexAP)
@@ -220,6 +222,7 @@ void fl_SectionLayout::removeBlock(fl_BlockLayout * pBL)
 
 	pBL->setNext(NULL);
 	pBL->setPrev(NULL);
+	pBL->setSectionLayout(NULL);
 }
 
 fb_LineBreaker * fl_SectionLayout::_getLineBreaker(void)
@@ -340,7 +343,7 @@ UT_Bool fl_SectionLayout::bl_doclistener_changeFmtMark(fl_BlockLayout* pBL, cons
 #ifdef FMT_TEST
 void fl_SectionLayout::__dump(FILE * fp) const
 {
-	fprintf(fp,"Section: 0x%p [type %ld]\n",this,getType());
+	fprintf(fp,"Section: 0x%p [type %d]\n",this,getType());
 	for (fl_BlockLayout * pBL=getFirstBlock(); (pBL); pBL=pBL->getNext())
 		pBL->__dump(fp);
 }

@@ -121,6 +121,8 @@ public:
 	inline FL_DocLayout* 		getDocLayout(void) const { return m_pLayout; }
 	inline fl_SectionLayout* 	getSectionLayout(void) { return m_pSectionLayout; }
 
+	void setSectionLayout(fl_SectionLayout* pSectionLayout);
+
 	void getLineSpacing(double& dSpacing, UT_Bool& bExact) const;
 
 	inline UT_uint32 getProp_Orphans(void) const { return m_iOrphansProperty; }

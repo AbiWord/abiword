@@ -2903,6 +2903,23 @@ void fl_BlockLayout::setPrev(fl_BlockLayout* pBL)
 	m_pPrev = pBL;
 }
 
+void fl_BlockLayout::setSectionLayout(fl_SectionLayout* pSectionLayout)
+{
+	//  If we are setting the new section layout, this block
+	//  shouldn't already have a section.  If we are clearing
+	//  it, then it should already have a section.
+	if (pSectionLayout == NULL)
+	{
+		UT_ASSERT(m_pSectionLayout != NULL);
+	}
+	else
+	{
+		UT_ASSERT(m_pSectionLayout == NULL);
+	}
+
+	m_pSectionLayout = pSectionLayout;
+}
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
