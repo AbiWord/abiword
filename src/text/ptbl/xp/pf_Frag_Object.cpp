@@ -70,11 +70,11 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
         }
 	else if (0 == UT_strcmp(pszType, "file_name"))
 	  {
-	    fieldType == fd_Field::FD_FileName;
+	    fieldType = fd_Field::FD_FileName;
 	  }
 	else if (0 == UT_strcmp(pszType, "date"))
 	  {
-	    fieldType == fd_Field::FD_Date;
+	    fieldType = fd_Field::FD_Date;
 	  }
         else
         { 
