@@ -21,6 +21,10 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
+#ifdef ABI_OPT_JS
+#include <js.h>
+#endif /* ABI_OPT_JS */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -287,6 +291,22 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 
 	{
 		int i;
+
+		for (i=1; i<argc; i++)
+		{
+			if (0 == strcmp(argv[i], "-script"))
+			{
+				i++;
+				
+#ifdef ABI_OPT_JS
+				js_eval_file(pMyUnixApp->getInterp(), argv[i]);
+#endif /* ABI_OPT_JS */
+			}
+			else
+			{
+				break;
+			}
+		}
 
 		// try to load the document named on the command line,
 		// if that fails, create an new, untitled document window.

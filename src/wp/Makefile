@@ -23,7 +23,7 @@ include $(ABI_DEPTH)/config/abi_defs_wp.mk
 
 ## Note: main must be last
 
-DIRS=		ap ptbl impexp fmt main
+DIRS=		ap impexp main
 
 include $(ABI_DEPTH)/config/abi_rules.mk
 

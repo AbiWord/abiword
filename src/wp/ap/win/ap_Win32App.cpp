@@ -27,6 +27,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifdef ABI_OPT_JS
+#include <js.h>
+#endif /* ABI_OPT_JS */
+
 #include <stdio.h>
 #include <string.h>
 
@@ -311,6 +315,29 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 		// Yuck!  strtok is a horrible way to do this
 		char*	p = strdup(szCmdLine);
 		char*	q = strtok(p, " ");
+
+		/*
+		  Yuck!  This command-line parsing loop is horrible.
+		  It's a barely-functional hack which allows us to pass
+		  a script using -script on the command line.  Replace
+		  this ugliness.
+		*/
+		while (q)
+		{
+			if (0 == strcmp(q, "-script"))
+			{
+				q = strtok(NULL, " ");
+#ifdef ABI_OPT_JS			
+				js_eval_file(pMyWin32App->getInterp(), q);
+#endif /* ABI_OPT_JS */
+				
+				q = strtok(NULL, " ");
+			}
+			else
+			{
+				break;
+			}
+		}
 
 		if (!pFirstWin32Frame->loadDocument(q, IEFT_Unknown))
 		{
