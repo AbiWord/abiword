@@ -9667,6 +9667,8 @@ Defun1(insertSumRows)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	const XML_Char * atts[3]={"param","",NULL};
+	pView->cmdInsertField("sum_rows",atts,NULL);
 	return true;
 }
 
@@ -9674,6 +9676,8 @@ Defun1(insertSumCols)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
+	const XML_Char * atts[3]={"param","",NULL};
+	pView->cmdInsertField("sum_cols",atts,NULL);
 	return true;
 }
 

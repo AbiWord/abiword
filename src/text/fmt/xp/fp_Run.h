@@ -1040,7 +1040,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_LINE_COUNT;};
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_WORD_COUNT;};
 };
 
 
@@ -1054,7 +1054,7 @@ public:
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
-	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_LINE_COUNT;};
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_WORD_COUNT;};
 };
 
 // count of the #para in the document
