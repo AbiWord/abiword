@@ -1117,7 +1117,7 @@ UT_UCS2Char * UT_UCS2_strncpy(UT_UCS2Char * dest, const UT_UCS2Char * src, UT_ui
 
 	for (; d < (UT_UCS2Char *)dest + n;)
 		*d++ = *s++;
-	*d = NULL;
+	*d = '\0';
 
 	return dest;
 }
@@ -1151,7 +1151,7 @@ UT_UCS4Char * UT_UCS4_strncpy(UT_UCS4Char * dest, const UT_UCS4Char * src, UT_ui
 
 	for (; d < (UT_UCS4Char *)dest + n;)
 		*d++ = *s++;
-	*d = NULL;
+	*d = '\0';
 
 	return dest;
 }

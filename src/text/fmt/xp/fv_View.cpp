@@ -1964,7 +1964,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 	UT_uint32 depth = 0;
 	if (bCharStyle)
 	{
-		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
+		_clearIfAtFmtMark(getPoint());	// TODO is this correct ?
 		_eraseSelection();
 		UT_DEBUGMSG(("Applying Character style: start %d, end %d\n", posStart, posEnd));
 		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL);
@@ -1975,7 +1975,7 @@ bool FV_View::setStyleAtPos(const XML_Char * style, PT_DocPosition posStart1, PT
 		// set block-level style
 		UT_DEBUGMSG(("Applying Block style: start %d, end %d\n", posStart, posEnd));
 
-		_clearIfAtFmtMark(getPoint());	// TODO is this correct ??
+		_clearIfAtFmtMark(getPoint());	// TODO is this correct ?
 		UT_DEBUGMSG(("Applying Paragraph style: start %d, end %d\n", posStart, posEnd));
 
 		// PLAM this is the only place that PTC_AddStyle is used.
@@ -5534,7 +5534,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 	}
 	else
 	{
-		// other yet to be written contexts (frames??)
+		// other yet to be written contexts (frames?)
 	}
 
 	return;

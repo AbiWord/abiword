@@ -423,7 +423,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 	UT_String sLineType;
 	UT_sint32 iLineType;
 	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == NULL)
+	if(szLineType == NULL || *szLineType == '\0')
 	{
 		iLineType = 0;
 	}

@@ -1726,7 +1726,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 tag,
 		  myLVLF = &myLVL->lvlf;
 		  UT_ASSERT(myLVLF);
 
-		  myStartAt = myLFOLVL->fStartAt ? myLVLF->iStartAt : -1;
+		  myStartAt = myLFOLVL->fStartAt ? (signed) myLVLF->iStartAt : -1;
 		  
 		  mygPAPX = myLFOLVL->fFormatting ? myLVL->grpprlPapx : NULL;
 		  mygPAPX_count = myLFOLVL->fFormatting ? myLVLF->cbGrpprlPapx : 0;

@@ -562,7 +562,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	UT_String sLineType;
 	UT_sint32 iLineType;
 	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == NULL)
+	if(szLineType == NULL || *szLineType == '\0')
 	{
 		iLineType = 0;
 	}
@@ -968,7 +968,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	UT_String sLineType;
 	UT_sint32 iLineType;
 	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == NULL)
+	if(szLineType == NULL || *szLineType == '\0')
 	{
 		iLineType = 0;
 	}
@@ -1236,7 +1236,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	UT_String sLineType;
 	UT_sint32 iLineType;
 	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == NULL)
+	if(szLineType == NULL || *szLineType == '\0')
 	{
 		iLineType = 0;
 	}
@@ -1430,7 +1430,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	UT_String sLineType;
 	UT_sint32 iLineType;
 	m_pDoc->getPropertyFromSDH(tableSDH,pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == NULL)
+	if(szLineType == NULL || *szLineType == '\0')
 	{
 		iLineType = 0;
 	}

@@ -6,6 +6,7 @@
 #include "types.h"
 #include "proto.h"
 #include "externs.h"
+#include "malloc.h"
 
 struct TableDirectoryEntry
 *readDirectory(int fd, struct OffsetTable *ot)

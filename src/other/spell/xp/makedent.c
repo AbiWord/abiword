@@ -1,8 +1,3 @@
-#ifndef lint
-static char Rcs_Id[] =
-	"$Id$";
-#endif
-
 /*
  * Copyright 1988, 1989, 1992, 1993, Geoff Kuenning, Granada Hills, CA
  * All rights reserved.
@@ -43,6 +38,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.4  2002/09/13 17:20:13  mpritchett
+ * Fix more warnings for Linux build
+ *
  * Revision 1.3  2002/03/22 14:31:57  dom
  * fix mg's compile problem
  *

@@ -578,8 +578,8 @@ void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 
 			UT_DEBUGMSG(("ARRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR\n"));
 			
-			// What??!!  That means that if we don't use an unicode locale,
-			// we can not print accented characters!  Why??
+			// What? !!  That means that if we don't use an unicode locale,
+			// we can not print accented characters!  Why?
 #ifndef USE_XFT
 			if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 				_drawCharsUTF8(pS,0,pE-pS,xS,yoff);
@@ -1456,7 +1456,7 @@ void PS_Graphics::_emit_IncludeResource(void)
     }
 	else
 	{
-		// when not embeding fonts, we have to issue %%IncludeResource statement
+		// when not embeding fonts, we have to issue %IncludeResource statement
 		bool bFontKeyword = true;
 		const char* pFResource[2] = {"font", NULL};
 		for (k=0; k<kLimit; k++)

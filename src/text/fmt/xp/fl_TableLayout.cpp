@@ -1014,13 +1014,13 @@ fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_At
 	  m_iTopOffset(0),
 	  m_dTopOffsetUserUnits(0.0),
 	  m_iBottomOffset(0),
+	  m_dBottomOffsetUserUnits(0.0),
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 	  m_iLeftOffsetLayoutUnits(0),
 	  m_iRightOffsetLayoutUnits(0),
 	  m_iTopOffsetLayoutUnits(0),
 	  m_iBottomOffsetLayoutUnits(0),
 #endif
-	  m_dBottomOffsetUserUnits(0.0),
 	  m_iLeftAttach(0),
 	  m_iRightAttach(1),
 	  m_iTopAttach(0),

@@ -1,8 +1,3 @@
-#ifndef lint
-static char Rcs_Id[] =
-    "$Id$";
-#endif
-
 /*
  * correct.c - Routines to manage the higher-level aspects of spell-checking
  *
@@ -50,6 +45,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.5  2002/09/13 17:20:12  mpritchett
+ * Fix more warnings for Linux build
+ *
  * Revision 1.4  2002/03/06 08:27:16  fjfranklin
  * o Only activate compound handling when the hash file says so (Per Larsson)
  *
@@ -150,7 +148,6 @@ static char Rcs_Id[] =
 #include "ispell.h"
 #include "msgs.h"
 
-static int	posscmp P ((FIRST_ARG(istate) char * a, char * b));
 int		casecmp P ((FIRST_ARG(istate) char * a, char * b, int canonical));
 void		makepossibilities P ((FIRST_ARG(istate) ichar_t * word));
 static int	insert P ((FIRST_ARG(istate) ichar_t * word));
@@ -183,16 +180,6 @@ extern ichar_t * strtosichar P ((char * in, int canonical));
 
 int compoundflag = COMPOUND_CONTROLLED;
 */
-
-static int posscmp (FIRST_ARG(istate) char *a, char *b)
-#if 0
-    char *		a;
-    char *		b;
-#endif
-    {
-
-    return casecmp (DEREF_FIRST_ARG(istate) a, b, 0);
-    }
 
 int casecmp (FIRST_ARG(istate) char *a, char *b, int canonical)
 #if 0

@@ -1,8 +1,3 @@
-#ifndef lint
-static char Rcs_Id[] =
-    "$Id$";
-#endif
-
 /*
  * lookup.c - see if a word appears in the dictionary
  *
@@ -47,6 +42,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.9  2002/09/13 17:20:13  mpritchett
+ * Fix more warnings for Linux build
+ *
  * Revision 1.8  2002/05/03 09:49:43  fjfranklin
  * o hash downloader update (Gabriel Gerhardsson)
  * - Comment out the "Can't open <dictionary>" printf.

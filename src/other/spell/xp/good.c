@@ -1,8 +1,3 @@
-#ifndef lint
-static char Rcs_Id[] =
-    "$Id$";
-#endif
-
 /*
  * good.c - see if a word or its root word
  * is in the dictionary.
@@ -48,6 +43,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.3  2002/09/13 17:20:12  mpritchett
+ * Fix more warnings for Linux build
+ *
  * Revision 1.2  2001/05/12 16:05:42  thomasf
  * Big pseudo changes to ispell to make it pass around a structure rather
  * than rely on all sorts of gloabals willy nilly here and there.  Also

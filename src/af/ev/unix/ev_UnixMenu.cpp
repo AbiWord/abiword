@@ -389,6 +389,7 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	return true;
 }
 
+#if 0
 static const char * _ev_FakeName(const char * sz, UT_uint32 k)
 {
 	// construct a temporary string
@@ -398,6 +399,7 @@ static const char * _ev_FakeName(const char * sz, UT_uint32 k)
 	sprintf(buf,"%s%d",sz,k);
 	return buf;
 }
+#endif
 	
 static char _ev_get_underlined_char(const char * szString)
 {

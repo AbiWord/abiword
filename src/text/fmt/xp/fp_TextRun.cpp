@@ -2718,7 +2718,7 @@ void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 	UT_uint32 iy = yoff + getAscent() * 2 / 3;
 
 	UT_sint32 i = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? 0 : iLen - 1);
-	UT_sint32 iStop = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? iLen : -1);
+	UT_sint32 iStop = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? (signed) iLen : -1);
 	UT_sint32 iInc = ((getVisDirection() == FRIBIDI_TYPE_LTR) ? 1 : -1);
 
 	for (; i != iStop; i += iInc)

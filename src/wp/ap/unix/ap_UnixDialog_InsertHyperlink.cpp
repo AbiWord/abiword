@@ -36,7 +36,6 @@
 #include "ap_Dialog_Id.h"
 #include "ap_Dialog_InsertHyperlink.h"
 #include "ap_UnixDialog_InsertHyperlink.h"
-#include "ap_UnixDialog_All.h"
 
 /*****************************************************************/
 

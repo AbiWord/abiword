@@ -533,10 +533,11 @@ void s_AbiWord_1_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length
 				}
 			}
 			else if (*pData < 0x20)         // Silently eat these characters.
-				*pData++;
+				pData++;
 			else
 			{
-				sBuf += (char)*pData++;
+				sBuf += (char)*pData; 
+                pData++;
 			}
 			break;
 		}
