@@ -112,6 +112,10 @@ build::
 	@echo Building with [$(ABI_OPTIONS)].
 	+$(LOOP_OVER_DIRS)
 
+tidy::
+	rm -rf $(OBJS)
+	+$(LOOP_OVER_DIRS)
+
 ifdef HELPER_PROGRAM
 $(HELPER_PROGRAM): $(OBJS)
 	@$(MAKE_OBJDIR)
