@@ -209,7 +209,6 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
 									   XAP_Dialog_Id 	 id)
 	: AP_Dialog_Goto   (pDlgFactory, id), 
 	  m_wDialog 	   (NULL),
-	  m_lbGoto		   (NULL),
 	  m_lbPage		   (NULL),
 	  m_lbLine		   (NULL),
 	  m_lbBookmarks    (NULL),
@@ -219,7 +218,8 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
 	  m_btJump		   (NULL),
 	  m_btPrev		   (NULL),
 	  m_btNext		   (NULL),
-	  m_btClose 	   (NULL)
+	  m_btClose 	   (NULL), 
+	  m_JumpTarget	   (AP_JUMPTARGET_BOOKMARK)
 {
 }
 
@@ -326,12 +326,18 @@ AP_UnixDialog_Goto::onPrevClicked ()
 	switch (m_JumpTarget) {
 		case AP_JUMPTARGET_PAGE:
 			num = (UT_uint32)gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbPage));
-			num--;
+			if (num == 1)
+				num = m_DocCount.page;
+			else
+				num--;
 			gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), num);
 			break;
 		case AP_JUMPTARGET_LINE:
 			num = (UT_uint32)gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbLine));
-			num--;
+			if (num == 1)
+				num = m_DocCount.line;
+			else
+				num--;
 			gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), num);
 			break;
 		case AP_JUMPTARGET_BOOKMARK:
@@ -416,7 +422,6 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * pFrame)
 		return;
 
 	m_wDialog = glade_xml_get_widget(xml, "ap_UnixDialog_Goto");
-	m_lbGoto = glade_xml_get_widget(xml, "lbGoto");
 	m_lbPage = glade_xml_get_widget(xml, "lbPage");
 	m_lbLine = glade_xml_get_widget(xml, "lbLine");
 	m_lbPage = glade_xml_get_widget(xml, "lbPage");
@@ -431,10 +436,8 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * pFrame)
 
 
 	// localise	
-	const XAP_StringSet * pSS = m_pApp->getStringSet ();
-	localizeLabelMarkup(m_lbGoto, pSS, AP_STRING_ID_DLG_Goto_Label_What);
-	localizeLabelMarkup(m_lbGoto, pSS, AP_STRING_ID_DLG_Goto_Label_What);
-	/* FIXME jump targets localised in xp land */
+	// const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	/* FIXME jump targets localised in xp land, make sure they work for non ascii characters */
 	XML_Char **targets = getJumpTargets ();
 	XML_Char *text = NULL;
 	if ((text = targets[AP_JUMPTARGET_PAGE]) != NULL)
@@ -593,7 +596,8 @@ AP_UnixDialog_Goto::_selectPrevBookmark ()
 	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
 	if (haveSelected) {
 		GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
-		gboolean havePrev = gtk_tree_path_prev (path);
+		gtk_tree_path_prev (path);
+		gboolean havePrev = gtk_tree_model_get_iter (model, &iter, path);
 		if (havePrev) {
 			gtk_tree_selection_select_path (selection, path);
 			gtk_tree_path_free (path);

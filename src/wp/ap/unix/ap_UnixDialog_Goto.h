@@ -75,7 +75,6 @@ private:
 	gchar *_getSelectedBookmarkLabel (void);	
 	
 	GtkWidget *m_wDialog;
-	GtkWidget *m_lbGoto;
 	GtkWidget *m_lbPage;
 	GtkWidget *m_lbLine;
 	GtkWidget *m_lbBookmarks;
