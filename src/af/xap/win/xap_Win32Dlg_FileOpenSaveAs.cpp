@@ -18,7 +18,10 @@
  */
 
 #include <windows.h>
+#include "ut_debugmsg.h"
+#include "ut_string.h"
 #include "ut_assert.h"
+#include "xap_Dialog_Id.h"
 #include "ap_Win32Dialog_FileOpenSaveAs.h"
 #include "ap_Win32App.h"
 #include "ap_Win32Frame.h"
@@ -51,9 +54,11 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	HWND hwnd = m_pWin32Frame->getTopLevelWindow();
 
 	char szFile[1030];      // buffer for filename
+	char szDir[1030];		// buffer for directory
 	OPENFILENAME ofn;       // common dialog box structure
 
 	ZeroMemory(szFile,sizeof(szFile));
+	ZeroMemory(szDir,sizeof(szDir));
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 
 	// TODO decide what our suffix list should be....
@@ -67,7 +72,7 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
 	ofn.lpstrInitialDir = NULL;
-	ofn.Flags = OFN_PATHMUSTEXIST;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR | OFN_HIDEREADONLY;
 			   
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
@@ -86,15 +91,19 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 			// the dialog there (but without a filename).
 
 			// use directory(m_szPersistPathname)
-			// TODO figure out if we have to trim filename
-			// TODO off this pathname.
-			ofn.lpstrInitialDir = m_szPersistPathname;
+			strcpy(szDir,m_szPersistPathname);
+			char * pLastSlash = strrchr(szDir, '\\');
+			if (pLastSlash)
+				pLastSlash[1] = 0;
+			ofn.lpstrInitialDir = szDir;
 		}
 		else
 		{
 			// no initial pathname given and we don't have
 			// a pathname from a previous use, so just let
 			// it come up in the current working directory.
+			// since we set OFN_NOCHANGEDIR we don't have to
+			// to worry about where this is.
 		}
 	}
 	else
@@ -103,28 +112,27 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 		// in the frame that we were invoked on).  if the caller
 		// wanted us to suggest a name, use the initial
 		// pathname as is.  if not, use the directory portion of
-		// it.
+		// it.  either way, we need to cut the pathname into two
+		// parts -- directory and file -- for the common dlg.
 
+		strcpy(szDir,m_szInitialPathname);
+		char * pLastSlash = strrchr(szDir, '\\');
+		if (pLastSlash)
+			pLastSlash[1] = 0;
+		ofn.lpstrInitialDir = szDir;
+		
 		if (m_bSuggestName)
 		{
-			// use m_szInitialPathname
-			// TODO figure out if we have to cut this
-			// TODO pathname into 2 parts.
-			ofn.lpstrInitialDir = m_szInitialPathname;
-			strcpy(szFile, m_szInitialPathname);
-		}
-		else
-		{
-			// use directory(m_szInitialPathname)
-			// TODO figure out if we have to trim filename
-			// TODO off this pathname.
-			ofn.lpstrInitialDir = m_szInitialPathname;
+			if (*pLastSlash)
+				strcpy(szFile, m_szInitialPathname + (pLastSlash-szDir+1));
+			else
+				strcpy(szFile, m_szInitialPathname);
 		}
 	}
 		
 	// display the appropriate dialog box.
 
-	Bool bDialogResult;
+	BOOL bDialogResult;
 	
 	switch (m_id)
 	{
@@ -135,6 +143,7 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 		break;
 
 	case XAP_DIALOG_ID_FILE_SAVEAS:
+		ofn.Flags |= OFN_OVERWRITEPROMPT;
 		bDialogResult = GetSaveFileName(&ofn);
 		break;
 
@@ -146,7 +155,7 @@ void AP_Win32Dialog_FileOpenSaveAs::runModal(AP_Frame * pFrame)
 	// TODO how do cancels get reported...
 	// TODO verify that current-working-directory is not changed...
 	
-	if (bDialogResult == TRUE)
+	if (bDialogResult != FALSE)
 	{
 		UT_cloneString(m_szFinalPathname,szFile);
 		m_answer = a_OK;
