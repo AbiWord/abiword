@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -42,7 +41,17 @@ AP_Preview_Paragraph::~AP_Preview_Paragraph()
 void AP_Preview_Paragraph::draw(void)
 {
 	UT_ASSERT(m_gc);
-	
-	// TODO : draw some really pretty paragraph mockups 
-	m_gc->clearArea(0, 0, getWindowWidth(), getWindowHeight());
+
+	UT_RGBColor white(255,255,255);
+	UT_RGBColor black(0,0,0);
+
+	// clear area
+	m_gc->fillRect(white, 0, 0, getWindowWidth(), getWindowHeight());
+
+	// draw a black one pixel border
+	m_gc->setColor(black);
+	m_gc->drawLine(0, 0, getWindowWidth(), 0);
+	m_gc->drawLine(getWindowWidth() - 1, 0, getWindowWidth() - 1, getWindowHeight());
+	m_gc->drawLine(getWindowWidth() - 1, getWindowHeight() - 1, 0, getWindowHeight() - 1);
+	m_gc->drawLine(0, getWindowHeight() - 1, 0, 0);
 }

@@ -48,7 +48,7 @@ public:
 	UT_Bool	setString(UT_UCSChar * string);
 
     // where all the zoom-specific drawing happens
-	void				draw(void);
+	void	draw(void);
 	
 protected:
 

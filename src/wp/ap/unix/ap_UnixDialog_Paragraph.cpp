@@ -301,11 +301,11 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	GtkWidget * labelLineSpacing;
 	GtkWidget * labelAt;
 	GtkWidget * labelPreview;
-//	GtkWidget * drawingarea3;
+
+	GtkWidget * framePreview;
 	GtkWidget * drawingareaPreview;
+
 	GtkWidget * hseparator4;
-	GtkWidget * framePreview1;
-//	GtkWidget * drawingareaPreview1;
 	GtkWidget * hseparator1;
 	GtkWidget * labelBefore;
 	GtkWidget * labelIndents;
@@ -319,8 +319,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	GtkWidget * checkbuttonPageBreak;
 	GtkWidget * checkbuttonSupress;
 	GtkWidget * checkbuttonHyphenate;
-	GtkWidget * framePreview2;
-//	GtkWidget * drawingareaPreview2;
 	GtkWidget * hseparator6;
 	GtkWidget * checkbuttonKeepNext;
 	GtkWidget * labelBreaks;
@@ -631,15 +629,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_label_set_justify (GTK_LABEL (labelPreview), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelPreview), 0, 0.5);
 
-	drawingareaPreview = gtk_drawing_area_new ();
-	gtk_widget_ref (drawingareaPreview);
-	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "drawingareaPreview", drawingareaPreview,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (drawingareaPreview);
-	gtk_fixed_put (GTK_FIXED (fixedSpacing), drawingareaPreview, 0, 0);
-	gtk_widget_set_uposition (drawingareaPreview, 0, 0);
-	gtk_widget_set_usize (drawingareaPreview, 0, 0);
-
 	hseparator4 = gtk_hseparator_new ();
 	gtk_widget_ref (hseparator4);
 	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "hseparator4", hseparator4,
@@ -648,26 +637,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_fixed_put (GTK_FIXED (fixedSpacing), hseparator4, 64, 176);
 	gtk_widget_set_uposition (hseparator4, 64, 176);
 	gtk_widget_set_usize (hseparator4, 344, 24);
-
-	framePreview1 = gtk_frame_new (NULL);
-	gtk_widget_ref (framePreview1);
-	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "framePreview1", framePreview1,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (framePreview1);
-	gtk_fixed_put (GTK_FIXED (fixedSpacing), framePreview1, 16, 200);
-	gtk_widget_set_uposition (framePreview1, 16, 200);
-	gtk_widget_set_usize (framePreview1, 384, 96);
-	gtk_container_set_border_width (GTK_CONTAINER (framePreview1), 2);
-	gtk_frame_set_shadow_type (GTK_FRAME (framePreview1), GTK_SHADOW_IN);
-
-#if 0
-	drawingareaPreview1 = gtk_drawing_area_new ();
-	gtk_widget_ref (drawingareaPreview1);
-	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "drawingareaPreview1", drawingareaPreview1,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (drawingareaPreview1);
-	gtk_container_add (GTK_CONTAINER (framePreview1), drawingareaPreview1);
-#endif
 
 	hseparator1 = gtk_hseparator_new ();
 	gtk_widget_ref (hseparator1);
@@ -788,26 +757,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_widget_set_uposition (checkbuttonHyphenate, 16, 120);
 	gtk_widget_set_usize (checkbuttonHyphenate, 192, 24);
 
-	framePreview2 = gtk_frame_new (NULL);
-	gtk_widget_ref (framePreview2);
-	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "framePreview2", framePreview2,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (framePreview2);
-	gtk_fixed_put (GTK_FIXED (fixedBreaks), framePreview2, 16, 200);
-	gtk_widget_set_uposition (framePreview2, 16, 200);
-	gtk_widget_set_usize (framePreview2, 384, 96);
-	gtk_container_set_border_width (GTK_CONTAINER (framePreview2), 2);
-	gtk_frame_set_shadow_type (GTK_FRAME (framePreview2), GTK_SHADOW_IN);
-
-#if 0
-	drawingareaPreview2 = gtk_drawing_area_new ();
-	gtk_widget_ref (drawingareaPreview2);
-	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "drawingareaPreview2", drawingareaPreview2,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (drawingareaPreview2);
-	gtk_container_add (GTK_CONTAINER (framePreview2), drawingareaPreview2);
-#endif
-
 	hseparator6 = gtk_hseparator_new ();
 	gtk_widget_ref (hseparator6);
 	gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "hseparator6", hseparator6,
@@ -890,6 +839,29 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	gtk_widget_show (buttonCancel);
 	gtk_container_add (GTK_CONTAINER (hbuttonboxRight), buttonCancel);
 	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
+
+	// Our preview area hovers in a frame.  The frame and preview widgets are
+	// drawn over the tab widgets by putting them on the fixed position widget
+	// after the others.
+	{
+		framePreview = gtk_frame_new (NULL);
+		gtk_widget_ref (framePreview);
+		gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "framePreview", framePreview,
+								  (GtkDestroyNotify) gtk_widget_unref);
+		gtk_widget_show (framePreview);
+		gtk_fixed_put (GTK_FIXED (fixedMain), framePreview, 26, 238);
+		gtk_widget_set_uposition (framePreview, 26, 238);
+		gtk_widget_set_usize (framePreview, 384, 96);
+		gtk_container_set_border_width (GTK_CONTAINER (framePreview), 2);
+		gtk_frame_set_shadow_type (GTK_FRAME (framePreview), GTK_SHADOW_NONE);
+
+		drawingareaPreview = gtk_drawing_area_new ();
+		gtk_widget_ref (drawingareaPreview);
+		gtk_object_set_data_full (GTK_OBJECT (windowParagraph), "drawingareaPreview", drawingareaPreview,
+								  (GtkDestroyNotify) gtk_widget_unref);
+		gtk_widget_show (drawingareaPreview);
+		gtk_container_add (GTK_CONTAINER (framePreview), drawingareaPreview);
+	}
 
 	//////////////////////////////////////////////////////////////////////
 	
