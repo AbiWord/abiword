@@ -48,6 +48,9 @@
 #	include "xap_CocoaDlg_Password.h"
 #	include "xap_CocoaDlg_Image.h"
 #   include "xap_CocoaDlg_HTMLOptions.h"
+#   include "xap_CocoaDlg_ListDocuments.h"
+#   include "xap_CocoaDlg_DocComparison.h"
+#   include "xap_CocoaDlg_History.h"
 
 #	include "ap_CocoaDialog_Replace.h"
 #	include "ap_CocoaDialog_Break.h"
@@ -100,8 +103,20 @@
 	DeclareDialog(XAP_DIALOG_ID_INSERT_SYMBOL,  XAP_CocoaDialog_Insert_Symbol)
 	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_CocoaDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,	XAP_CocoaDialog_HTMLOptions)
-
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_CocoaDialog_About)
+	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_CocoaDialog_PluginManager)
+//PORT	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_CocoaDialog_ClipArt)
+	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_CocoaDialog_Encoding)
+	DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_CocoaDialog_FileOpenSaveAs)
+	DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_CocoaDialog_Password)
+	DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_CocoaDialog_Image)
+	DeclareDialog(XAP_DIALOG_ID_LISTDOCUMENTS,  XAP_CocoaDialog_ListDocuments)
+	DeclareDialog(XAP_DIALOG_ID_COMPAREDOCUMENTS,XAP_CocoaDialog_ListDocuments)
+	DeclareDialog(XAP_DIALOG_ID_MERGEDOCUMENTS, XAP_CocoaDialog_ListDocuments)
+	DeclareDialog(XAP_DIALOG_ID_HISTORY,		XAP_CocoaDialog_History)
+	DeclareDialog(XAP_DIALOG_ID_DOCCOMPARISON,		XAP_CocoaDialog_DocComparison)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_CocoaDialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_CocoaDialog_Replace)
@@ -123,16 +138,9 @@
 	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,  AP_CocoaDialog_PageSetup)
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,      AP_CocoaDialog_ToggleCase)
 	DeclareDialog(AP_DIALOG_ID_FILE_NEW,        AP_CocoaDialog_New)
-	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_CocoaDialog_PluginManager)
-//PORT	DeclareDialog(XAP_DIALOG_ID_CLIPART,        XAP_CocoaDialog_ClipArt)
-	DeclareDialog(XAP_DIALOG_ID_ENCODING,       XAP_CocoaDialog_Encoding)
-	DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT, XAP_CocoaDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT, XAP_CocoaDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE, XAP_CocoaDialog_FileOpenSaveAs)
-	DeclareDialog(XAP_DIALOG_ID_PASSWORD, XAP_CocoaDialog_Password)
+
 	DeclareDialog(AP_DIALOG_ID_INSERTBOOKMARK,	AP_CocoaDialog_InsertBookmark)
 	DeclareDialog(AP_DIALOG_ID_INSERTHYPERLINK,	AP_CocoaDialog_InsertHyperlink)
-	DeclareDialog(XAP_DIALOG_ID_IMAGE, XAP_CocoaDialog_Image)
 	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_CocoaDialog_MetaData)
  	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_CocoaDialog_MarkRevisions)
 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_CocoaDialog_ListRevisions)
