@@ -108,7 +108,7 @@ protected:
 		axCtnNone,
 		axCtnText,
 		axCtnField,
-		axCtnGlossary,
+		axCtnGlossary
 	} Applix_content_t;
 	
 	// context in the file
