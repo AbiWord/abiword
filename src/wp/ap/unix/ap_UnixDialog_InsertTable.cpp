@@ -115,6 +115,9 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	m_pColSpin = glade_xml_get_widget(xml, "sbNumCols");
 	m_pRowSpin = glade_xml_get_widget(xml, "sbNumRows");
 	m_pColWidthSpin = glade_xml_get_widget(xml, "sbColSize");
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColSpin), getNumCols());
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pRowSpin), getNumRows());
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColWidthSpin), getColumnWidth());
 	
 	// set the dialog title
 	abiDialogSetTitle(window, pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_TableTitle).utf8_str());
