@@ -2419,6 +2419,7 @@ void FV_View::cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocP
 	PT_DocPosition iPosLeft = _getDocPos(dpBeg, false);
 	PT_DocPosition iPosRight = _getDocPos(dpEnd, false);
 
+	if(iPosLeft == iPosRight) return;
 //
 // Code to select a paragraph break on selectLine if on first line of a Block.
 //
