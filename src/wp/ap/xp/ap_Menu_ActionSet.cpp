@@ -135,11 +135,9 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	_s(AP_MENU_ID_INSERT,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_BREAK,		0,1,0,	"insBreak",			NULL,					NULL);
-#ifdef DEBUG
 	_s(AP_MENU_ID_INSERT_BOOKMARK,  0,1,0,	"insertBookmark",	NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_HYPERLINK, 0,1,0,	"insertHyperlink",	NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_DELETE_HYPERLINK, 0,0,0,	"deleteHyperlink",	NULL,			NULL);
-#endif	
 	_s(AP_MENU_ID_INSERT_PAGENO,	0,1,0,	"insPageNo",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_DATETIME,	0,1,0,	"insDateTime",		NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FIELD,		0,1,0,	"insField",			NULL,					NULL);
@@ -190,9 +188,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_WORDCOUNT,		0,1,0,	"dlgWordCount",			NULL,					NULL);
 	_s(AP_MENU_ID_TOOLS_PLUGINS, 0,1,0, "dlgPlugins", NULL, NULL);
 	_s(AP_MENU_ID_TOOLS_OPTIONS,		0,1,0,	"dlgOptions",		NULL,					NULL);
-#ifdef ABI_OPT_PERL
 	_s(AP_MENU_ID_TOOLS_SCRIPTS,	1,0,0,	"scriptPlay",		NULL, NULL);
-#endif
 
 	_s(AP_MENU_ID_WINDOW,			1,0,0,	NULL,				NULL,					NULL);
 	_s(AP_MENU_ID_WINDOW_NEW,		0,0,0,	"newWindow",		NULL,					NULL);
