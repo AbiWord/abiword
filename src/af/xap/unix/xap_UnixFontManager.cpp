@@ -150,30 +150,27 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 	{
 		// TODO this is not big enough for a really big list of fonts!
 		char message[10240];
-		g_snprintf(message, 10240, "Found no font index files ('fonts.dir') in any directories in font path:\n\n");
+		g_snprintf(message, 10240, "AbiWord could not find any local font files in its font path.  Often this error is the\n"
+				   "result of invoking AbiWord directly instead of through its wrapper\n"
+				   "shell script.  The script sets the environment variable $ABISUITE_HOME which\n"
+				   "should point to the directory where AbiSuite components reside.\n"
+				   "\n"
+				   "The current font path contains the following directories:\n\n");
 		{
 			UT_uint32 dircount = m_searchPaths.getItemCount();
 			for (i = 0; i < dircount; i++)
 			{
 				UT_ASSERT(m_searchPaths.getNthItem(i));
-				strcat(message, "    ");
+				strcat(message, "    [");
 				strcat(message, (const char *) m_searchPaths.getNthItem(i));
-				strcat(message, "\n");
+				strcat(message, "]\n");
 			}
 		}
 		char message2[11264];
 		g_snprintf(message2, 11264,
 				   "%s"
 				   "\n"
-				   "Do the directories in this list contain valid font index files\n"
-				   "('fonts.dir') and the actual font files ('*.pfa', '*.afm') files they declare?\n"
-				   "\n"
-				   "If you have retrieved a recent Unix font package, installing it using the\n"
-				   "default destination location and adding a font path entry to your X display\n"
-				   "server should produce a working setup.\n"
-				   "\n"
-				   "Please read the file 'README' included in the Unix font distribution releases\n"
-				   "for instructions on installing these fonts.",
+				   "Please visit http://www.abisource.com/ for more information.",
 				   message);
 		messageBoxOK(message2);
 		return UT_FALSE;
@@ -183,14 +180,10 @@ UT_Bool XAP_UnixFontManager::scavengeFonts(void)
 	{
 		// we have no fonts, just quit
 		char message[1024];
-		g_snprintf(message, 1024, "Found no actual font data files ('*.pfa', '*.afm') in\n"
+		g_snprintf(message, 1024, "AbiWord found no actual font data files ('*.pfa', '*.afm') in\n"
 				   "the font path even though I found [%d] font index files ('fonts.dir').\n"
 				   "\n"
-				   "It is possible that the AbiSuite Unix fonts were not completely and successfully\n"
-				   "installed.\n"
-				   "\n"
-				   "Please read the file 'README' included in the Unix font distribution releases\n"
-				   "for instructions on installing these fonts.",
+				   "Please visit http://www.abisource.com/ for more information.",
 				   totaldirs);
 		messageBoxOK(message);
 		return UT_FALSE;

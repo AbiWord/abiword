@@ -393,13 +393,18 @@ GdkFont * XAP_UnixFont::getGdkFont(UT_uint32 pixelsize)
 	{
 		char message[1024];
 		g_snprintf(message, 1024,
-				   "Could not load X font:\n\n"
-				   "%s\n\n"
-				   "This could mean that the X display server font path has not been set\n"
-				   "to reflect the addition of the AbiSuite font set.\n"
+				   "AbiWord could not load the following font from the X Window System display server:\n"
+				   "[%s]\n"
 				   "\n"
-				   "Please read the file 'README' included in the Unix font distribution releases\n"
-				   "for instructions on installing these fonts.",
+				   "This error could be the result of an incomplete AbiSuite installation,\n"
+				   "an incompatibility with your X Window System display server,\n"
+				   "or a problem communicating with a remote font server.\n"
+				   "\n"
+				   "Often this error is the result of invoking AbiWord directly instead of through\n"
+				   "its wrapper shell script.  The script dynamically adds the AbiSuite font directory\n"
+				   "to your X Window System display server font path before running the executable.\n"
+				   "\n"
+				   "Please visit http://www.abisource.com/ for more information.",
 				   newxlfd);
 		messageBoxOK(message);
 		exit(1);

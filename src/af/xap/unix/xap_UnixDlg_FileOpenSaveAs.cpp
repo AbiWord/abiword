@@ -249,7 +249,10 @@ UT_Bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 			// we have an existing file, ask to overwrite
 
 			if (_askOverwrite_YesNo(pFrame, szFinalPathname))
+			{
+				UT_cloneString(m_szFinalPathnameCandidate, szFinalPathname);
 				goto ReturnTrue;
+			}
 
 			goto ContinueLoop;
 		}
