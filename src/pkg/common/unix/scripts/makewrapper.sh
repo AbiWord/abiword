@@ -71,7 +71,7 @@ ABISUITE_LIBEXEC=$LIBEXECDIR
 # Change this if you move your fonts.
 ABISUITE_FONT_HOME=\$ABISUITE_HOME/fonts
 
-locale-specific dirs could be added to it.
+# locale-specific dirs could be added to it.
 ABISUITE_FONT_PATH=\$ABISUITE_FONT_HOME
 
 #now try to guess locale
