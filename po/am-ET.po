@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 1.0.1\n"
 "POT-Creation-Date: 2002-05-09 00:12-0400\n"
-"PO-Revision-Date: 2002-06-26 18:22+EST\n"
+"PO-Revision-Date: 2002-10-04 08:44+EDT\n"
 "Last-Translator: Ge'ez Frontier Foundation <locales@geez.org>\n"
 "Language-Team: Amharic <locales@geez.org>\n"
 "MIME-Version: 1.0\n"
@@ -160,7 +160,7 @@ msgstr ""
 #. DLG_Options_Label_ViewAll
 #: po/tmp/ap_String_Id.h.h:53
 msgid "&All"
-msgstr "&ኹሉንም"
+msgstr "&ሁሉንም"
 
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h.h:55
@@ -190,7 +190,7 @@ msgstr "የሚገኙ &ፎርማቶች፦"
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h.h:65
 msgid "&Before:"
-msgstr ""
+msgstr "&ቀድሞ፦"
 
 #. MENU_LABEL_FMT_BOLD
 #: po/tmp/ap_String_Id.h.h:67
@@ -220,7 +220,7 @@ msgstr ""
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h.h:77
 msgid "&Clip Art"
-msgstr ""
+msgstr "&ምስል ወደ ሰነዶት ይጨምሩ"
 
 #. MENU_LABEL_FILE_CLOSE
 #: po/tmp/ap_String_Id.h.h:79
@@ -245,17 +245,17 @@ msgstr "&ቅጂ"
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h.h:87
 msgid "&Current Preferences Scheme"
-msgstr ""
+msgstr "&አሁን ያሉት የምርጫዎች እቅድ"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:89
 msgid "&Delete hyperlink"
-msgstr ""
+msgstr "ሃይፐርሊንኩን ሰርዝ"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:91
 msgid "&Dictionary..."
-msgstr ""
+msgstr "&መዝገበ ቃላት..."
 
 #. MENU_LABEL_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h.h:93
@@ -265,7 +265,7 @@ msgstr "&ሰነድ"
 #. DLG_Para_PushNoHyphenate
 #: po/tmp/ap_String_Id.h.h:95
 msgid "&Don't hyphenate"
-msgstr ""
+msgstr "በአግድም ሰረዝ ቃላት አታያይዙ"
 
 #. MENU_LABEL_EDIT
 #: po/tmp/ap_String_Id.h.h:97
@@ -280,27 +280,27 @@ msgstr ""
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:101
 msgid "&Endnote"
-msgstr ""
+msgstr "መግለጫ"
 
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h.h:103
 msgid "&Even page"
-msgstr ""
+msgstr "ባለ &ሙሉ ቁጥር ገጾች"
 
 #. MENU_LABEL_VIEW_TB_EXTRA
 #: po/tmp/ap_String_Id.h.h:105
 msgid "&Extra"
-msgstr ""
+msgstr "&ትርፍ"
 
 #. MENU_LABEL_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:107
 msgid "&Field"
-msgstr ""
+msgstr "&መጻፊያ ሳጥን"
 
 #. DLG_Field_Fields
 #: po/tmp/ap_String_Id.h.h:109
 msgid "&Fields:"
-msgstr ""
+msgstr "መጻፊያ &ሳጥናት"
 
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h.h:111
@@ -335,7 +335,7 @@ msgstr ""
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h.h:123
 msgid "&From File"
-msgstr ""
+msgstr "&ከፋይል"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h.h:125
@@ -365,37 +365,37 @@ msgstr "&መረጃ"
 #. DLG_Options_Label_ViewHiddenText
 #: po/tmp/ap_String_Id.h.h:135
 msgid "&Hidden Text"
-msgstr ""
+msgstr "&ድብቅ ጽሑፍ"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:137
 msgid "&Hyperlink"
-msgstr ""
+msgstr "&ማያያዣ ቁልፎች"
 
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h.h:139
 msgid "&Ignore"
-msgstr ""
+msgstr "&ተዉት"
 
 #. MENU_LABEL_SPELL_IGNOREALL
 #: po/tmp/ap_String_Id.h.h:141
 msgid "&Ignore All"
-msgstr ""
+msgstr "ሁሉንም &ተዉት"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h.h:143
 msgid "&Indents and Spacing"
-msgstr ""
+msgstr "&አንቀጾች እና ክፍተት ቦታ"
 
 #. MENU_LABEL_INSERT
 #: po/tmp/ap_String_Id.h.h:145 po/tmp/xap_String_Id.h.h:17
 msgid "&Insert"
-msgstr ""
+msgstr "አስገባ"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:147
 msgid "&Insert File"
-msgstr ""
+msgstr "ፋይል አስገባ"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h.h:149
@@ -405,12 +405,12 @@ msgstr "አይታሊክ ማድረጊያ"
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h.h:151
 msgid "&Justify"
-msgstr ""
+msgstr "&አስተካክል"
 
 #. DLG_Para_PushKeepLinesTogether
 #: po/tmp/ap_String_Id.h.h:153
 msgid "&Keep lines together"
-msgstr ""
+msgstr "መስመሮቹን አንድ ላይ &ጠብቅ"
 
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h.h:155
@@ -430,32 +430,32 @@ msgstr "ግራ"
 #. DLG_PageSetup_Left
 #: po/tmp/ap_String_Id.h.h:161
 msgid "&Left:"
-msgstr "ግራ"
+msgstr "ግራ፦"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h.h:163
 msgid "&Margin"
-msgstr "ጠርዝ"
+msgstr "&ጠርዝ"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h.h:165
 msgid "&Match case"
-msgstr ""
+msgstr "የፊደሎቱን መጠን &አመሳስል"
 
 #. MENU_LABEL_WINDOW_MORE
 #: po/tmp/ap_String_Id.h.h:167
 msgid "&More Windows"
-msgstr ""
+msgstr "&ተጨማሪ መስኮቶች"
 
 #. DLG_Goto_Label_Name
 #: po/tmp/ap_String_Id.h.h:169
 msgid "&Name:"
-msgstr "ስም"
+msgstr "&ስም፦"
 
 #. MENU_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h.h:171
 msgid "&New"
-msgstr "አዲስ"
+msgstr "&አዲስ"
 
 #. MENU_LABEL_WINDOW_NEW
 #: po/tmp/ap_String_Id.h.h:173
@@ -470,17 +470,17 @@ msgstr "የሚቀጥለው ገጽ"
 #. MENU_LABEL_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h.h:177
 msgid "&Normal Layout"
-msgstr ""
+msgstr "የ&ተለመደ አቀራረብ"
 
 #. DLG_Goto_Label_Number
 #: po/tmp/ap_String_Id.h.h:179
 msgid "&Number:"
-msgstr ""
+msgstr "&ቍጥር፦"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h.h:181
 msgid "&Odd page"
-msgstr ""
+msgstr "ባለ &ጐዶሎ ቁጥር ገጽ"
 
 #. MENU_LABEL_FILE_OPEN
 #: po/tmp/ap_String_Id.h.h:183
@@ -490,17 +490,17 @@ msgstr "ክፈት"
 #. MENU_LABEL_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h.h:185
 msgid "&Overline"
-msgstr ""
+msgstr "የ&ላይ መስመር"
 
 #. DLG_Break_PageBreak
 #: po/tmp/ap_String_Id.h.h:187
 msgid "&Page break"
-msgstr ""
+msgstr "የገጽ &ማቋረጫ"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h.h:189
 msgid "&Paragraph"
-msgstr ""
+msgstr "&ምዕራፍ "
 
 #. MENU_LABEL_EDIT_PASTE
 #: po/tmp/ap_String_Id.h.h:191
@@ -510,7 +510,7 @@ msgstr "ለጥፍ"
 #. MENU_LABEL_INSERT_PICTURE
 #: po/tmp/ap_String_Id.h.h:193
 msgid "&Picture"
-msgstr ""
+msgstr "&ሥዕል"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h.h:195
@@ -530,7 +530,7 @@ msgstr "&አትም"
 #. MENU_LABEL_VIEW_PRINT
 #: po/tmp/ap_String_Id.h.h:201
 msgid "&Print Layout"
-msgstr ""
+msgstr "የቀረበውን &አትም"
 
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h.h:203
@@ -560,7 +560,7 @@ msgstr "&ቀኝ፦"
 #. DLG_Options_Label_ViewRuler
 #: po/tmp/ap_String_Id.h.h:213
 msgid "&Ruler"
-msgstr ""
+msgstr "&ማስመሪያ"
 
 #. MENU_LABEL_FILE_SAVE
 #: po/tmp/ap_String_Id.h.h:215
@@ -570,12 +570,12 @@ msgstr "&አስቀምጥ"
 #. MENU_LABEL_FILE_SAVEIMAGE
 #: po/tmp/ap_String_Id.h.h:217
 msgid "&Save Image As"
-msgstr ""
+msgstr "ገጽታን በ... ስም አስቀምጥ"
 
 #. MENU_LABEL_HELP_SEARCH
 #: po/tmp/ap_String_Id.h.h:219
 msgid "&Search for Help"
-msgstr ""
+msgstr "&መረጃውን አስስ"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h.h:221
@@ -585,17 +585,17 @@ msgstr "&ስታቱስ ባር አሳይ"
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h.h:223
 msgid "&Special:"
-msgstr ""
+msgstr "&የተለየ፦"
 
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h.h:225
 msgid "&Spelling"
-msgstr ""
+msgstr "&የቃላት አፃፃፍ"
 
 #. MENU_LABEL_VIEW_TB_STD
 #: po/tmp/ap_String_Id.h.h:227
 msgid "&Standard"
-msgstr ""
+msgstr "&መደበኛ"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h.h:229
@@ -605,12 +605,12 @@ msgstr "&ስታተስ ባር"
 #. MENU_LABEL_FMT_SUBSCRIPT
 #: po/tmp/ap_String_Id.h.h:231
 msgid "&Subscript"
-msgstr ""
+msgstr "&ወደታች ዝቅ ብሎ የተጻፈ ፊደል"
 
 #. DLG_Para_PushSuppressLineNumbers
 #: po/tmp/ap_String_Id.h.h:233
 msgid "&Suppress line numbers"
-msgstr ""
+msgstr "የመስመር ቁጥሮችን &ይጫኑ"
 
 #. MENU_LABEL_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:235
@@ -640,12 +640,12 @@ msgstr "&ወደ ላይ፦"
 #. DLG_Field_Types
 #: po/tmp/ap_String_Id.h.h:245
 msgid "&Types:"
-msgstr ""
+msgstr "&ዓይነታት፦"
 
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h.h:247
 msgid "&Underline"
-msgstr ""
+msgstr "የ&ስር መስመር"
 
 #. MENU_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h.h:249
@@ -665,7 +665,7 @@ msgstr "&ተመልከት"
 #. MENU_LABEL_VIEW_WEB
 #: po/tmp/ap_String_Id.h.h:255
 msgid "&Web Layout"
-msgstr ""
+msgstr "የ&ዌብ አቀራረብ"
 
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h.h:257
@@ -687,7 +687,7 @@ msgstr "&መስኮት"
 msgid "&Word Count"
 msgstr "የ&ቃላት ቆጠራ"
 
-#. MENU_LABEL_VIEW_ZOOM
+#. MENU_LABEL_VIEW_ZOOM_MENU
 #: po/tmp/ap_String_Id.h.h:265
 msgid "&Zoom"
 msgstr "&ቅርበትና ርቀት"
@@ -720,7 +720,7 @@ msgstr ""
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h.h:277
 msgid "AM/PM"
-msgstr ""
+msgstr "AM/PM"
 
 #. AUTOTEXT_ATTN_2
 #: po/tmp/ap_String_Id.h.h:279
@@ -748,17 +748,17 @@ msgstr ""
 #. MENU_LABEL_HELP_ABOUT_GNU
 #: po/tmp/ap_String_Id.h.h:287
 msgid "About &GNU Free Software"
-msgstr ""
+msgstr "ስለ የ&GNU ነጻ ሶፍትዌር"
 
 #. MENU_LABEL_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:289
 msgid "About &Open Source"
-msgstr ""
+msgstr "ስለ &Open Source"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:291
 msgid "About G&NOME Office"
-msgstr ""
+msgstr "ስለ G&NOME Office"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h.h:293
@@ -813,7 +813,7 @@ msgstr ""
 #. DLG_Styles_LBL_All
 #: po/tmp/ap_String_Id.h.h:313 po/tmp/xap_String_Id.h.h:43
 msgid "All"
-msgstr "ኹሉንም"
+msgstr "ሁሉንም"
 
 #. DLG_Options_Label_CheckAllowCustomToolbars
 #: po/tmp/ap_String_Id.h.h:315
@@ -828,7 +828,7 @@ msgstr ""
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h.h:319
 msgid "Application"
-msgstr ""
+msgstr "ፕሮግራሙ"
 
 #. DLG_Options_Btn_Apply
 #: po/tmp/ap_String_Id.h.h:321 po/tmp/xap_String_Id.h.h:51
@@ -843,7 +843,7 @@ msgstr ""
 #. DLG_Lists_Arabic_List
 #: po/tmp/ap_String_Id.h.h:325
 msgid "Arabic List"
-msgstr ""
+msgstr "ዐርቢኛ ዝርዝር"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h.h:327
@@ -1162,7 +1162,7 @@ msgstr "ፊደል"
 #. FIELD_Numbers_CharCount
 #: po/tmp/ap_String_Id.h.h:451
 msgid "Character Count"
-msgstr ""
+msgstr "የፊደል ቆጠራ"
 
 #. FIELD_Numbers_NbspCount
 #: po/tmp/ap_String_Id.h.h:453
@@ -1562,17 +1562,17 @@ msgstr ""
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h.h:607
 msgid "Display Credits"
-msgstr ""
+msgstr "ተሳታፊዎቹ አሰይ"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h.h:609
 msgid "Display Help Contents"
-msgstr ""
+msgstr "የመረጃ ይዞታዎች አሳይ"
 
 #. MENU_STATUSLINE_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:611
 msgid "Display Help Index"
-msgstr ""
+msgstr "የመረጃ ማውጫ አሳይ"
 
 #. MENU_STATUSLINE_HELP_ABOUTOS
 #: po/tmp/ap_String_Id.h.h:613
@@ -1607,7 +1607,7 @@ msgstr ""
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h.h:625
 msgid "Double"
-msgstr ""
+msgstr "ድርብ"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h.h:627
@@ -1642,7 +1642,7 @@ msgstr ""
 #. MENU_LABEL_AUTOTEXT_EMAIL
 #: po/tmp/ap_String_Id.h.h:639
 msgid "Email:"
-msgstr ""
+msgstr "ኢሜይል፦"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h.h:641
@@ -1706,7 +1706,7 @@ msgstr ""
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h.h:663
 msgid "F&ormat"
-msgstr ""
+msgstr "&ፎርማት"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:665
@@ -1721,7 +1721,7 @@ msgstr ""
 #. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h.h:669
 msgid "Field"
-msgstr ""
+msgstr "መጻፊያ ሳጥን"
 
 #. MSG_IE_UnsupportedType
 #: po/tmp/ap_String_Id.h.h:671
@@ -1814,7 +1814,7 @@ msgstr ""
 #. DLG_Styles_ModifyFormat
 #: po/tmp/ap_String_Id.h.h:703
 msgid "Format"
-msgstr ""
+msgstr "ፎርማት"
 
 #. MENU_LABEL_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:705
@@ -1829,12 +1829,12 @@ msgstr ""
 #. DLG_Options_Label_ViewFormatTB
 #: po/tmp/ap_String_Id.h.h:709
 msgid "Format Toolbar"
-msgstr ""
+msgstr "የፎርማቱ ቱልባር"
 
 #. DLG_Lists_Format
 #: po/tmp/ap_String_Id.h.h:711
 msgid "Format:"
-msgstr ""
+msgstr "ፎርማት፦"
 
 #. AUTOTEXT_EMAIL_2
 #: po/tmp/ap_String_Id.h.h:713
@@ -1919,7 +1919,7 @@ msgstr "የመረጃ ይዞታዎች"
 #. MENU_LABEL_HELP_INDEX
 #: po/tmp/ap_String_Id.h.h:743
 msgid "Help &Index"
-msgstr ""
+msgstr "የመረጃ  &ማውጫ"
 
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h.h:745
@@ -1934,7 +1934,7 @@ msgstr ""
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h.h:749
 msgid "I&gnore All"
-msgstr ""
+msgstr "ሁሉንም &ተዉት"
 
 #. InsertModeFieldINS
 #: po/tmp/ap_String_Id.h.h:751
@@ -1944,12 +1944,12 @@ msgstr "አስገባ"
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h.h:753
 msgid "Icons"
-msgstr ""
+msgstr " ምልክቶቸ"
 
 #. DLG_Options_Label_Ignore
 #: po/tmp/ap_String_Id.h.h:755
 msgid "Ignore"
-msgstr ""
+msgstr "ተዉት"
 
 #. DLG_Options_Label_SpellInternet
 #: po/tmp/ap_String_Id.h.h:757
@@ -2004,7 +2004,7 @@ msgstr ""
 #. DLG_Break_Insert
 #: po/tmp/ap_String_Id.h.h:777 po/tmp/xap_String_Id.h.h:277
 msgid "Insert"
-msgstr ""
+msgstr "አስገባ"
 
 #. DLG_InsertBookmark_Title
 #: po/tmp/ap_String_Id.h.h:779
@@ -2019,7 +2019,7 @@ msgstr ""
 #. DLG_InsertHyperlink_Title
 #: po/tmp/ap_String_Id.h.h:783
 msgid "Insert Hyperlink"
-msgstr ""
+msgstr "ማያያዣ ቁልፎች አስገባ"
 
 #. MENU_STATUSLINE_INSERT_FIELD
 #: po/tmp/ap_String_Id.h.h:785
@@ -2034,7 +2034,7 @@ msgstr ""
 #. MENU_STATUSLINE_INSERT_PICTURE
 #: po/tmp/ap_String_Id.h.h:789
 msgid "Insert a picture"
-msgstr ""
+msgstr "ሥዕል አስገባ"
 
 #. MENU_STATUSLINE_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:791
@@ -2069,7 +2069,7 @@ msgstr ""
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:803
 msgid "Insert hyperlink"
-msgstr ""
+msgstr "ማያያዣ ቁልፎች አስገባ"
 
 #. MENU_STATUSLINE_INSERT_FILE
 #: po/tmp/ap_String_Id.h.h:805
@@ -2403,7 +2403,7 @@ msgstr ""
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h.h:933
 msgid "Number of Columns"
-msgstr ""
+msgstr "የዐምድ ብዛት"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h.h:935
@@ -2504,7 +2504,7 @@ msgstr ""
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h.h:973
 msgid "P&lugins"
-msgstr ""
+msgstr "ተጨማሪ ፕሮግራሞች (&ፕላግኢኖች)"
 
 #. AUTOTEXT_MAIL_3
 #: po/tmp/ap_String_Id.h.h:975
@@ -2524,17 +2524,17 @@ msgstr ""
 #. MENU_LABEL_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:981
 msgid "Page N&umbers"
-msgstr ""
+msgstr "የገጽ &ቍጥሮች"
 
 #. FIELD_Numbers_PageNumber
 #: po/tmp/ap_String_Id.h.h:983
 msgid "Page Number"
-msgstr ""
+msgstr "የገጽ ቍጥር"
 
 #. DLG_PageNumbers_Title
 #: po/tmp/ap_String_Id.h.h:985
 msgid "Page Numbers"
-msgstr ""
+msgstr "የገጽ ቍጥሮች"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h.h:987
@@ -2544,12 +2544,12 @@ msgstr ""
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h.h:989
 msgid "Page Set&up"
-msgstr ""
+msgstr "የገጽ &ቅንጅት"
 
 #. DLG_PageSetup_Title
 #: po/tmp/ap_String_Id.h.h:991
 msgid "Page Setup"
-msgstr ""
+msgstr "የገጽ ቅንጅት"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h.h:993
@@ -2580,22 +2580,22 @@ msgstr "ወረቀት..."
 #. DLG_Para_ParaTitle
 #: po/tmp/ap_String_Id.h.h:1003
 msgid "Paragraph"
-msgstr ""
+msgstr "ምዕራፍ"
 
 #. FIELD_Numbers_ParaCount
 #: po/tmp/ap_String_Id.h.h:1005
 msgid "Paragraph Count"
-msgstr ""
+msgstr "የምዕራፍ ቆጠራ"
 
 #. DLG_Styles_ParaPrev
 #: po/tmp/ap_String_Id.h.h:1007
 msgid "Paragraph Preview"
-msgstr ""
+msgstr "የምዕራፍ  ቅድመ ዕይታ"
 
 #. DLG_WordCount_Paragraphs
 #: po/tmp/ap_String_Id.h.h:1009
 msgid "Paragraphs"
-msgstr ""
+msgstr "ምዕራፋት"
 
 #. WORD_PassRequired
 #: po/tmp/ap_String_Id.h.h:1011
@@ -2605,7 +2605,7 @@ msgstr ""
 #. DLG_Goto_Target_Picture
 #: po/tmp/ap_String_Id.h.h:1013
 msgid "Picture"
-msgstr ""
+msgstr "ሥዕል"
 
 #. FIELD_Type_PieceTable
 #: po/tmp/ap_String_Id.h.h:1015
@@ -2620,7 +2620,7 @@ msgstr ""
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h.h:1019
 msgid "Pre&view web page"
-msgstr ""
+msgstr "የድረ-ገጹ ቅድመ ዕይታ"
 
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h.h:1021
@@ -2778,7 +2778,7 @@ msgstr "ተካ"
 #. DLG_FR_ReplaceAllButton
 #: po/tmp/ap_String_Id.h.h:1081
 msgid "Replace &All"
-msgstr "ኹሉንም &ተካ"
+msgstr "ሁሉንም &ተካ"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h.h:1083
@@ -2906,7 +2906,7 @@ msgstr "በ...ስም &አስቀምጥ"
 #. MENU_LABEL_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h.h:1131
 msgid "Save as &web"
-msgstr ""
+msgstr "በድረ-ገጽ &አስቀምጥ"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h.h:1133
@@ -2997,7 +2997,7 @@ msgstr ""
 #. MENU_LABEL_FMT_LANGUAGE
 #: po/tmp/ap_String_Id.h.h:1167
 msgid "Set &Language"
-msgstr ""
+msgstr "ቋንውዋን ይምረጡ"
 
 #. DLG_Lists_SetDefault
 #: po/tmp/ap_String_Id.h.h:1169
@@ -3007,7 +3007,7 @@ msgstr ""
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h.h:1171
 msgid "Set preferences"
-msgstr ""
+msgstr "ምርጫዎችን ይምረጡ"
 
 #. MENU_STATUSLINE_FMT_TABS
 #: po/tmp/ap_String_Id.h.h:1173
@@ -3042,7 +3042,7 @@ msgstr "አሳይ"
 #. MENU_LABEL_VIEW_RULER
 #: po/tmp/ap_String_Id.h.h:1185
 msgid "Show &Ruler"
-msgstr ""
+msgstr "ማስመሪያውን አሳይ"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h.h:1187
@@ -3087,7 +3087,7 @@ msgstr ""
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h.h:1203
 msgid "Show..."
-msgstr ""
+msgstr "አሳይ..."
 
 #. AUTOTEXT_CLOSING_8
 #: po/tmp/ap_String_Id.h.h:1205
@@ -3097,7 +3097,7 @@ msgstr ""
 #. DLG_Para_SpacingSingle
 #: po/tmp/ap_String_Id.h.h:1207
 msgid "Single"
-msgstr ""
+msgstr " ነጠላ"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h.h:1209
@@ -3112,7 +3112,7 @@ msgstr ""
 #. DLG_Options_TabLabel_Spelling
 #: po/tmp/ap_String_Id.h.h:1213
 msgid "Spelling"
-msgstr ""
+msgstr "የቃላት አፃፃፍ"
 
 #. MENU_LABEL_TOOLS_SPELLPREFS
 #: po/tmp/ap_String_Id.h.h:1215
@@ -3242,7 +3242,7 @@ msgstr ""
 #. MENU_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1265
 msgid "Sy&mbol"
-msgstr ""
+msgstr "ምልክት"
 
 #. TabStopStatus
 #: po/tmp/ap_String_Id.h.h:1267
@@ -3478,12 +3478,12 @@ msgstr "ተመልከት"
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:1355
 msgid "View the document in full screen mode"
-msgstr ""
+msgstr "ሰነዱን በሙሉ መስኮት አሳይ"
 
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:1357
 msgid "View tooltips"
-msgstr ""
+msgstr "የመስሪያውን ፍንጭ አሳይ"
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:1359
@@ -3493,7 +3493,7 @@ msgstr "ተመልከት..."
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h.h:1361
 msgid "Visible"
-msgstr ""
+msgstr "የሚታይ"
 
 #. MSG_HyperlinkNoBookmark
 #: po/tmp/ap_String_Id.h.h:1363
@@ -3566,69 +3566,69 @@ msgstr ""
 #: po/tmp/ap_String_Id.h.h:1389
 #, c-format
 msgid "Zoom to &100%"
-msgstr ""
+msgstr "በ&100% አጉላ"
 
 #. MENU_LABEL_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:1391
 #, c-format
 msgid "Zoom to &200%"
-msgstr ""
+msgstr "በ&200% አጉላ"
 
 #. MENU_LABEL_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:1393
 #, c-format
 msgid "Zoom to &50%"
-msgstr ""
+msgstr "በ&50% አጉላ"
 
 #. MENU_LABEL_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:1395
 #, c-format
 msgid "Zoom to &75%"
-msgstr ""
+msgstr "በ&75% አጉላ"
 
 #. MENU_LABEL_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:1397
 msgid "Zoom to &Page Width"
-msgstr ""
+msgstr "በገጹ ስፋት &ልክ አጉላ"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:1399
 msgid "Zoom to &Whole Page"
-msgstr ""
+msgstr "ወደ በገጹ &ሙሉ አጉላ"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h.h:1401
 #, c-format
 msgid "Zoom to 100%"
-msgstr ""
+msgstr "በ100% አጉላ"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h.h:1403
 #, c-format
 msgid "Zoom to 200%"
-msgstr ""
+msgstr "በ200% አጉላ"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h.h:1405
 #, c-format
 msgid "Zoom to 50%"
-msgstr ""
+msgstr "በ50% አጉላ"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h.h:1407
 #, c-format
 msgid "Zoom to 75%"
-msgstr ""
+msgstr "በ75% አጉላ"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
 #: po/tmp/ap_String_Id.h.h:1409
 msgid "Zoom to page width"
-msgstr ""
+msgstr "በገጹ ስፋት ልክ አጉላ"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
 #: po/tmp/ap_String_Id.h.h:1411
 msgid "Zoom to whole page"
-msgstr ""
+msgstr "ወደ በገጹ ሙሉ አጉላ"
 
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h.h:1413
@@ -3643,7 +3643,7 @@ msgstr "ቀን/ወር/ዓመት"
 #. DLG_ToggleCase_LowerCase
 #: po/tmp/ap_String_Id.h.h:1417
 msgid "lowercase"
-msgstr ""
+msgstr "አነስ ያለ የአጻጻፍ ዓይነት"
 
 #. DLG_Options_Label_Minutes
 #: po/tmp/ap_String_Id.h.h:1419
@@ -3695,12 +3695,12 @@ msgstr "&75%"
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:19
 msgid "&Page width"
-msgstr ""
+msgstr " የ&ገጽ ስፋ"
 
 #. DLG_Zoom_WholePage
 #: po/tmp/xap_String_Id.h.h:21
 msgid "&Whole page"
-msgstr ""
+msgstr " &ሁሉንም ሰነድ"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h.h:23
@@ -3715,7 +3715,7 @@ msgstr ""
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h.h:27
 msgid "AbiWord Plugin Manager"
-msgstr ""
+msgstr "የአቢወርድ የተጨማሪ ፕሮግራም አስተዳደር"
 
 #. MSG_ShowUnixFontWarning
 #: po/tmp/xap_String_Id.h.h:29
@@ -3725,7 +3725,7 @@ msgstr ""
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h.h:31
 msgid "AbiWord: Print Preview"
-msgstr ""
+msgstr "አቢወርድ፦ የህትመት ቅድመ ዕይታ"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h.h:33
@@ -3736,7 +3736,7 @@ msgstr "ስለ %s"
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h.h:35
 msgid "Activate Window"
-msgstr ""
+msgstr "መስኮቱን አሰራ"
 
 #. DLG_MW_Activate
 #: po/tmp/xap_String_Id.h.h:37
@@ -3746,7 +3746,7 @@ msgstr "አስጀምር፦"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h.h:39
 msgid "Active Plugins"
-msgstr ""
+msgstr "ተጨማሪ ፕሮግራሙን አሰራ"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h.h:41
@@ -3756,22 +3756,22 @@ msgstr "አፍሪቃንስኛ"
 #. DLG_FOSA_ALL
 #: po/tmp/xap_String_Id.h.h:45
 msgid "All (*.*)"
-msgstr "ኹሉንም (*.*)"
+msgstr "ሁሉንም (*.*)"
 
 #. DLG_FOSA_ALLDOCS
 #: po/tmp/xap_String_Id.h.h:47
 msgid "All Documents"
-msgstr ""
+msgstr "ሁሉም ሰነዶች"
 
 #. DLG_FOSA_ALLIMAGES
 #: po/tmp/xap_String_Id.h.h:49
 msgid "All Image Files"
-msgstr ""
+msgstr "ሁሉም የገጽታ ፋይሎች"
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h.h:53
 msgid "Arabic (Egypt)"
-msgstr "ዐርቢኛ (Egypt)"
+msgstr "ዐርቢኛ (የግብጽ)"
 
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h.h:55
@@ -3816,7 +3816,7 @@ msgstr "ደራሲ ዎች"
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h.h:71
 msgid "Automatically Detected"
-msgstr ""
+msgstr "አውቶማቲካሊ ተፈልጎ የተገኘ"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h.h:73
@@ -3851,12 +3851,12 @@ msgstr ""
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h.h:85
 msgid "Bold Italic"
-msgstr ""
+msgstr "ደምቆ የሚታይ እና ዘመም ያለ አጻጻፍ"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h.h:89
 msgid "Building Document.."
-msgstr ""
+msgstr "የሰነድ ግንባታ..."
 
 #. LANG_BG_BG
 #: po/tmp/xap_String_Id.h.h:91
@@ -3951,7 +3951,7 @@ msgstr "ቻይንኛ ባሕላዊው፤ Windows Code Page 950"
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h.h:127
 msgid "Clip Art"
-msgstr ""
+msgstr "ምስል ወደ ሰነዶት ይጨምሩ"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h.h:129
@@ -3961,7 +3961,7 @@ msgstr "ዝጋ"
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h.h:131
 msgid "Collate"
-msgstr ""
+msgstr "ጽሑፎችን በቅደም ተከተል አስቀምጥ"
 
 #. DLG_UP_Color
 #: po/tmp/xap_String_Id.h.h:133
@@ -3976,23 +3976,23 @@ msgstr "ቀለም፦"
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h.h:137
 msgid "Copies: "
-msgstr ""
+msgstr "ቅጂዎች፦"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h.h:139
 msgid "Could not activate/load plugin"
-msgstr ""
+msgstr "ተጨማሪውን ማሰራት/መጫን አልተቻለም"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h.h:141
 msgid "Could not deactivate plugin"
-msgstr ""
+msgstr "ተጨማሪውን ፕሮግራም ማዘግየት አልተቻለም"
 
 #. DICTIONARY_CANTLOAD
 #: po/tmp/xap_String_Id.h.h:143
 #, c-format
 msgid "Could not load the dictionary for the %s language"
-msgstr ""
+msgstr "ለ%s ቋንቋ መዝገበ ቃላት መጫን አልተቻለም"
 
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h.h:145
@@ -4037,12 +4037,12 @@ msgstr ""
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h.h:161
 msgid "Deactivate plugin"
-msgstr ""
+msgstr "ተጨማሪ ፕሮግራሙን አዘግይ"
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h.h:167
 msgid "Do you want to remove this icon from the toolbar?"
-msgstr ""
+msgstr "ከቱልባሩ ላይ ይህንን ቁልፍ ማውጣት ይፈልጋሉ?"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h.h:169
@@ -4062,12 +4062,12 @@ msgstr ""
 #. DLG_UENC_EncTitle
 #: po/tmp/xap_String_Id.h.h:175
 msgid "Encoding"
-msgstr ""
+msgstr "የሆሄያት ኮድ"
 
 #. DLG_UFS_EncodingLabel
 #: po/tmp/xap_String_Id.h.h:177
 msgid "Encoding:"
-msgstr ""
+msgstr "የሆሄያት ኮድ፦"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h.h:179
@@ -4107,7 +4107,7 @@ msgstr "እንግሊዘኛ (US)"
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h.h:193
 msgid "Enter Password"
-msgstr ""
+msgstr "ሚስጢራዊ ቃል አስገቡ"
 
 #. LANG_EO
 #: po/tmp/xap_String_Id.h.h:195
@@ -4122,7 +4122,7 @@ msgstr ""
 #. LANG_FA_IR
 #: po/tmp/xap_String_Id.h.h:199
 msgid "Farsi"
-msgstr ""
+msgstr "ፋርሲ"
 
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h.h:201
@@ -4133,7 +4133,7 @@ msgstr "ፋይል"
 #: po/tmp/xap_String_Id.h.h:203
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr ""
+msgstr "ፋይሉ አሁንም አለ። '%s' ፋይልን በላዩ ላይ ይጻፍ?"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h.h:205
@@ -4143,12 +4143,12 @@ msgstr "ፊኒሽ"
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h.h:207
 msgid "Flemish (Belgium)"
-msgstr ""
+msgstr "ፈረንሳይኛ (Belgium)"
 
 #. LANG_FR_BE
 #: po/tmp/xap_String_Id.h.h:213
 msgid "French (Belgium)"
-msgstr ""
+msgstr "ፈረንሳይኛ (Belgium)"
 
 #. LANG_FR_CA
 #: po/tmp/xap_String_Id.h.h:215
@@ -4178,17 +4178,17 @@ msgstr "ጋሊሺኛ"
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h.h:225
 msgid "Georgian"
-msgstr ""
+msgstr "ጊዮርጊያን"
 
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h.h:227
 msgid "Georgian, Academy"
-msgstr ""
+msgstr "ጊዮርጊያን፤Academy"
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h.h:229
 msgid "Georgian, PS"
-msgstr ""
+msgstr "ጊዮርጊያን፤ PS"
 
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h.h:231
@@ -4203,7 +4203,7 @@ msgstr "ጀርመን (Germany)"
 #. LANG_DE_CH
 #: po/tmp/xap_String_Id.h.h:235
 msgid "German (Switzerland)"
-msgstr ""
+msgstr "ጀርመን (Switzerland)"
 
 #. DLG_UP_Grayscale
 #: po/tmp/xap_String_Id.h.h:237
@@ -4253,17 +4253,17 @@ msgstr "ዕብራስጥ፤ Windows Code Page 1255"
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h.h:255
 msgid "Height:"
-msgstr ""
+msgstr "እርዝማኔ፦"
 
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h.h:257
 msgid "Height: "
-msgstr ""
+msgstr "እርዝማኔ፦"
 
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h.h:259
 msgid "HighLight Color"
-msgstr ""
+msgstr "የማጉያ ቀለም"
 
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h.h:261
@@ -4288,17 +4288,17 @@ msgstr ""
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h.h:269
 msgid "Image Properties"
-msgstr ""
+msgstr "የገጽታው አካሎች"
 
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h.h:271
 msgid "Import File"
-msgstr ""
+msgstr "ፋይል ከውጭ አስገባ"
 
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h.h:273
 msgid "Importing Document.."
-msgstr ""
+msgstr "ሰነድ ከውጭ በማስገባት ላይ..."
 
 #. LANG_ID_ID
 #: po/tmp/xap_String_Id.h.h:275
@@ -4308,22 +4308,22 @@ msgstr "እንዶኒሲኛ"
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h.h:279
 msgid "Insert File"
-msgstr ""
+msgstr "ፋይል አስገባ"
 
 #. DLG_IP_Title
 #: po/tmp/xap_String_Id.h.h:281
 msgid "Insert Picture"
-msgstr ""
+msgstr "ሥዕል ኣስገባ"
 
 #. DLG_Insert_SymbolTitle
 #: po/tmp/xap_String_Id.h.h:283
 msgid "Insert Symbol"
-msgstr ""
+msgstr "ምልክት አስገባ"
 
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h.h:285
 msgid "Install new plugin"
-msgstr ""
+msgstr "አዲስ ተጨማሪ ፕሮግራም አስገባ"
 
 #. LANG_IA
 #: po/tmp/xap_String_Id.h.h:287
@@ -4333,7 +4333,7 @@ msgstr "ኢንቴርቋንቋ"
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h.h:289
 msgid "Invalid pathname."
-msgstr ""
+msgstr "የማይሰራ የመተላለፊያ ስም።"
 
 #. LANG_GA_IE
 #: po/tmp/xap_String_Id.h.h:291
@@ -4433,12 +4433,12 @@ msgstr "አይደለም"
 #. DLG_IP_No_Picture_Label
 #: po/tmp/xap_String_Id.h.h:331
 msgid "No Picture"
-msgstr ""
+msgstr "ያለ ሥዕል"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h.h:333
 msgid "No plugin selected"
-msgstr ""
+msgstr "ምንም ተጨማሪ ፕሮግራም አልተመረጠም"
 
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h.h:335
@@ -4463,22 +4463,22 @@ msgstr "ፋይል ክፈት"
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h.h:343
 msgid "Open file as type:"
-msgstr ""
+msgstr "ፋይሉን በ...ዓይነት ክፈት፦"
 
 #. DLG_UFS_OverlineCheck
 #: po/tmp/xap_String_Id.h.h:345
 msgid "Overline"
-msgstr ""
+msgstr "የላይ መስመር"
 
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:347
 msgid "P&ercent:"
-msgstr ""
+msgstr "&መቶኛ"
 
 #. DLG_UP_PageRanges
 #: po/tmp/xap_String_Id.h.h:351
 msgid "Page ranges:"
-msgstr ""
+msgstr "የገጽ ብዛት፦"
 
 #. DLG_Password_Password
 #: po/tmp/xap_String_Id.h.h:353
@@ -4488,17 +4488,17 @@ msgstr "ሚስጢራዊ ቃል፦"
 #. TB_Zoom_Percent
 #: po/tmp/xap_String_Id.h.h:355
 msgid "Percent"
-msgstr ""
+msgstr "መቶኛ"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h.h:357
 msgid "Plugin Details"
-msgstr ""
+msgstr "የተጨማሪው ፕሮግራም ዝርዝሮች"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h.h:359
 msgid "Plugin List"
-msgstr ""
+msgstr "የተጨማሪው ፕሮግራም ዝርዝር"
 
 #. LANG_PL_PL
 #: po/tmp/xap_String_Id.h.h:361
@@ -4508,12 +4508,12 @@ msgstr "ፖሊሽ"
 #. LANG_PT_BR
 #: po/tmp/xap_String_Id.h.h:363
 msgid "Portuguese (Brazil)"
-msgstr ""
+msgstr "ፖርቱጋልኛ (የብራዚል)"
 
 #. LANG_PT_PT
 #: po/tmp/xap_String_Id.h.h:365
 msgid "Portuguese (Portugal)"
-msgstr ""
+msgstr "ፖርቱጋልኛ (የፖርቱጋል)"
 
 #. DLG_Image_Aspect
 #: po/tmp/xap_String_Id.h.h:367
@@ -4523,7 +4523,7 @@ msgstr ""
 #. DLG_IP_Activate_Label
 #: po/tmp/xap_String_Id.h.h:371
 msgid "Preview Picture"
-msgstr ""
+msgstr "የሥዕሉ ቅድመ ዕይታ"
 
 #. DLG_UP_PrintButton
 #: po/tmp/xap_String_Id.h.h:373
@@ -4533,22 +4533,22 @@ msgstr "አትም"
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h.h:375
 msgid "Print To File"
-msgstr ""
+msgstr "ፋይሉን አትም"
 
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h.h:377
 msgid "Print file as type:"
-msgstr ""
+msgstr "ፋይሉን በ....ዓይነት አትም፦"
 
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h.h:379
 msgid "Print in: "
-msgstr ""
+msgstr "በ...ውስጥ አትም፦"
 
 #. DLG_UP_PrintTo
 #: po/tmp/xap_String_Id.h.h:381
 msgid "Print to: "
-msgstr ""
+msgstr "ለ...አትም፦"
 
 #. DLG_UP_Printer
 #: po/tmp/xap_String_Id.h.h:383
@@ -4558,12 +4558,12 @@ msgstr "ማተሚያ"
 #. DLG_UP_PrinterCommand
 #: po/tmp/xap_String_Id.h.h:385
 msgid "Printer command: "
-msgstr ""
+msgstr "የማተሚያው ትዕዛዝ፦"
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h.h:387
 msgid "Regular"
-msgstr ""
+msgstr "የተለመደ"
 
 #. DLG_UFS_Direction
 #: po/tmp/xap_String_Id.h.h:389
@@ -4588,47 +4588,47 @@ msgstr "ራሽኛ (ሩሺያ)"
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h.h:397
 msgid "Sample"
-msgstr ""
+msgstr "ናሙና"
 
 #. DLG_FOSA_SaveAsTitle
 #: po/tmp/xap_String_Id.h.h:399
 msgid "Save File As"
-msgstr ""
+msgstr "ፋይሉን በ... ስም አስቀምጥ"
 
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h.h:401
 msgid "Save file as type:"
-msgstr ""
+msgstr "ፋይሉን በ...ዓይነት አስቀምጥ፦"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h.h:403
 msgid "Script:"
-msgstr ""
+msgstr "ጽሑፍ፦"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h.h:405
 msgid "Select Encoding:"
-msgstr ""
+msgstr "የሆሄያት ኮድ ምረጡ፦"
 
 #. DLG_ULANG_LangLabel
 #: po/tmp/xap_String_Id.h.h:407
 msgid "Select Language:"
-msgstr ""
+msgstr "ቋንቋ ምረጡ፦"
 
 #. DLG_UP_Selection
 #: po/tmp/xap_String_Id.h.h:409
 msgid "Selection"
-msgstr ""
+msgstr "ምርጫ"
 
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h.h:411
 msgid "Set no Highlight Color"
-msgstr ""
+msgstr "ጎልቶ ማሳያ ቀለም አታድርጉ"
 
 #. DLG_Options_Label_UnixFontWarning
 #: po/tmp/xap_String_Id.h.h:413
 msgid "Show font warning at start up"
-msgstr ""
+msgstr "ጅምሩ ላይ የፊደል ቅርጽ ማስጠንቀቂያ አሳይ"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h.h:415
@@ -4648,22 +4648,22 @@ msgstr "ስሎቪኛ"
 #. DLG_UFS_SmallCapsCheck
 #: po/tmp/xap_String_Id.h.h:421
 msgid "Small Caps"
-msgstr ""
+msgstr "በትንሹ የተጻፉ ትልቁ የእንግሊዘኛ ፊደላት"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h.h:423
 msgid "Spanish (Mexico)"
-msgstr "ስፓኒሽ (ሜክሲኮ)"
+msgstr "ስፓኒሽ (የሜክሲኮ)"
 
 #. LANG_ES_ES
 #: po/tmp/xap_String_Id.h.h:425
 msgid "Spanish (Spain)"
-msgstr "ስፓኒሽ (እስፔን)"
+msgstr "ስፓኒሽ (የእስፔን)"
 
 #. DLG_UFS_StrikeoutCheck
 #: po/tmp/xap_String_Id.h.h:427
 msgid "Strikeout"
-msgstr ""
+msgstr "ሰርዝ"
 
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h.h:431
@@ -4699,17 +4699,17 @@ msgstr "ታይኛ, Windows Code Page 874"
 #: po/tmp/xap_String_Id.h.h:443
 #, c-format
 msgid "The directory '%s' is write-protected."
-msgstr ""
+msgstr "የ'%s' ማውጫ እንዳይፃፍበት ተጠብቋል"
 
 #. MSG_UnixFontSizeWarning
 #: po/tmp/xap_String_Id.h.h:445
 msgid "The operating system was unable to allocate a font of the\n"
-msgstr ""
+msgstr "የመጠቀሚያው ዘዴ የ  የፊደል ቅርጽ ማመልከት አልቻለም\n"
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h.h:447
 msgid "The print command string is not valid."
-msgstr ""
+msgstr "የሕትመቱ የትእዛዝ ሐረግ አይሰራም"
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h.h:451
@@ -4729,7 +4729,7 @@ msgstr "ቱርክኛ, Macintosh"
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h.h:457
 msgid "Turkish, Windows Code Page 1254"
-msgstr ""
+msgstr "ቱርክኛ፤ Windows Code Page 1254"
 
 #. ENC_WEST_ASCII
 #: po/tmp/xap_String_Id.h.h:459
@@ -4754,7 +4754,7 @@ msgstr "ዩክረኒኛ, Macintosh"
 #. DLG_UFS_UnderlineCheck
 #: po/tmp/xap_String_Id.h.h:467
 msgid "Underline"
-msgstr ""
+msgstr "የስር መስመር"
 
 #. ENC_UNIC_UCS2
 #: po/tmp/xap_String_Id.h.h:469
@@ -4865,27 +4865,27 @@ msgstr "ወልሽ"
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h.h:513
 msgid "Western European, HP"
-msgstr ""
+msgstr "ምዕራብ አውሮፓዊ፤ HP"
 
 #. ENC_WEST_ISO
 #: po/tmp/xap_String_Id.h.h:515
 msgid "Western European, ISO-8859-1"
-msgstr ""
+msgstr "ምዕራብ አውሮፓዊ፤ ISO-8859-1"
 
 #. ENC_WEST_MAC
 #: po/tmp/xap_String_Id.h.h:517
 msgid "Western European, Macintosh"
-msgstr ""
+msgstr "ምዕራብ አውሮፓዊ፤ Macintosh"
 
 #. ENC_WEST_NXT
 #: po/tmp/xap_String_Id.h.h:519
 msgid "Western European, NeXT"
-msgstr ""
+msgstr "ምዕራብ አውሮፓዊ፤ NeXT"
 
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h.h:521
 msgid "Western European, Windows Code Page 1252"
-msgstr ""
+msgstr "ምዕራብ አውሮፓዊ፤ Windows Code Page 1252"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h.h:523
@@ -4915,7 +4915,7 @@ msgstr "ቅርበትና ርቀት"
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h.h:533
 msgid "Zoom to"
-msgstr ""
+msgstr "በ... አጉላ"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h.h:535
@@ -4945,7 +4945,7 @@ msgstr "ሚሊ ሜትር"
 #. DLG_Unit_pico
 #: po/tmp/xap_String_Id.h.h:545
 msgid "pica"
-msgstr ""
+msgstr "ፒካ"
 
 #. DLG_Unit_points
 #: po/tmp/xap_String_Id.h.h:547
