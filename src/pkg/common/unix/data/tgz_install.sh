@@ -72,10 +72,7 @@ do
     read INSTALL_BASE
 
     # did they use tildes for home dirs?
-    if [ ! -z "`echo $INSTALL_BASE | grep '~'`" ]
-    then
-	LINK_DIR=`echo $INSTALL_BASE | sed "s:~:$HOME:"`
-    fi
+	LINK_DIR=`echo -n $INSTALL_BASE`
 
     # did they just hit enter?
     if [ -z "$INSTALL_BASE" ]
@@ -284,10 +281,7 @@ do
     read LINK_DIR
 
     # did they use tildes for home dirs?
-    if [ ! -z "`echo $LINK_DIR | grep '~'`" ]
-    then
-	LINK_DIR=`echo $LINK_DIR | sed "s:~:$HOME:"`
-    fi
+	LINK_DIR=`echo -n $LINK_DIR`
 
     # did they just hit enter?
     if [ -z "$LINK_DIR" ]
