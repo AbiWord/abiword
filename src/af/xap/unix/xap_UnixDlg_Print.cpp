@@ -255,7 +255,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 			gtk_widget_show (label);
 
 			buttonPrint = gtk_radio_button_new_with_label (NULL, "Printer");
-			gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonPrint), TRUE);
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonPrint), TRUE);
 			gtk_box_pack_start (GTK_BOX (hbox), buttonPrint, FALSE, TRUE, 0);
 			gtk_widget_show (buttonPrint);
 
@@ -408,8 +408,8 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		}
 
 		// Turn some widgets on or off based on settings
-		gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonPrint), !m_persistPrintDlg.bDoPrintToFile);
-		gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonFile), m_persistPrintDlg.bDoPrintToFile);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonPrint), !m_persistPrintDlg.bDoPrintToFile);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonFile), m_persistPrintDlg.bDoPrintToFile);
 		gtk_widget_set_sensitive(buttonFile, m_persistPrintDlg.bEnablePrintToFile);
 
 		gtk_widget_set_sensitive(entryPrint, GTK_TOGGLE_BUTTON(buttonPrint)->active);
@@ -419,11 +419,11 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		gtk_widget_set_sensitive(buttonSelection, m_persistPrintDlg.bEnableSelection);
 
 		if (m_persistPrintDlg.bDoPageRange)
-			gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonRange), TRUE);
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonRange), TRUE);
 		else if (m_persistPrintDlg.bDoPrintSelection)
-			gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonSelection), TRUE);
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonSelection), TRUE);
 		else
-			gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonAll), TRUE);
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonAll), TRUE);
 
 
 		char str[30];
@@ -432,7 +432,7 @@ void AP_UnixDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 		sprintf(str, "%ld", m_persistPrintDlg.nToPage);
 		gtk_entry_set_text (GTK_ENTRY (entryTo), str);
 
-		gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (buttonCollate), m_persistPrintDlg.bDoCollate);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (buttonCollate), m_persistPrintDlg.bDoCollate);
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON(spinCopies), m_persistPrintDlg.nCopies);
 
 

@@ -196,8 +196,8 @@ UT_Bool EV_UnixToolbar::toolbarEvent(_wd * wd,
 			// Block the signal, throw the button back up/down
 			bool wasBlocked = wd->m_blockSignal;
 			wd->m_blockSignal = true;
-			gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(wd->m_widget),
-										!GTK_TOGGLE_BUTTON(wd->m_widget)->active);
+			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wd->m_widget),
+										 !GTK_TOGGLE_BUTTON(wd->m_widget)->active);
 			//gtk_toggle_button_toggled(item);
 			wd->m_blockSignal = wasBlocked;
 
@@ -546,7 +546,7 @@ UT_Bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					// Block the signal, throw the toggle event
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
-					gtk_toggle_button_set_state(item, bToggled);
+					gtk_toggle_button_set_active(item, bToggled);
 					//gtk_toggle_button_toggled(item);
 					wd->m_blockSignal = wasBlocked;
 						

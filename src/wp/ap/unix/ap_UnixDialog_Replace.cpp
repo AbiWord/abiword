@@ -264,7 +264,7 @@ void AP_UnixDialog_Replace::runModal(XAP_Frame * pFrame)
 	// optional toggle switch for case
 	matchCaseCheck = gtk_check_button_new_with_label("Match Case");
 	gtk_box_pack_end(GTK_BOX(toggleBox), matchCaseCheck, FALSE, TRUE, 0);
-	gtk_toggle_button_set_state(GTK_TOGGLE_BUTTON(matchCaseCheck), getMatchCase());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(matchCaseCheck), getMatchCase());
 	gtk_widget_show(matchCaseCheck);
 
 	// catch the toggled
