@@ -498,6 +498,20 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 
 		UT_sint32 w = m_pG->measureString(span, 0, len, charWidths) * 100 / m_pG->getZoomPercentage();
 
+//                UT_sint32 yDU = s_iFixedHeight/4 + 
+//                        (s_iFixedHeight/2 - s_iFixedHeight*m_pG->getZoomPercentage()/(4*100))/2;
+
+		// The following code works perfectly on UNIX
+                UT_sint32 yDU = 2*s_iFixedHeight/3;
+		UT_sint32 yLU = m_pG->tlu(yDU);
+		yLU = yLU - iFontHeight;
+		xxx_UT_DEBUGMSG(("s_iFixedHeight %d yDU %d yLU %d \n",s_iFixedHeight,yDU,yLU));
+		//
+		// FIXME HACK for Windows! There is something wrong with
+		// here. Thi sis Tomas's code which works for Windows
+		// but not Unix
+		//
+#ifdef WIN32
 // the call to drawChars will scale y and x by the zoom factor 
 // -- in reality the y is
 // constant because the height of the whole ruler bar is a constant and 
@@ -505,13 +519,12 @@ void AP_TopRuler::_drawTickMark(const UT_Rect * pClipRect,
 // w is a constant because the font does not scale              
 // working the offset in device units and converting it to layout units only at
 // the end significantly reduces the rounding errors            
-//                UT_sint32 yDU = s_iFixedHeight/4 + 
-//                        (s_iFixedHeight/2 - s_iFixedHeight*m_pG->getZoomPercentage()/(4*100))/2;
-                UT_sint32 yDU = 2*s_iFixedHeight/3;
-		UT_sint32 yLU = m_pG->tlu(yDU);
-		yLU = yLU - iFontHeight;
-		xxx_UT_DEBUGMSG(("s_iFixedHeight %d yDU %d yLU %d \n",s_iFixedHeight,yDU,yLU));
-                painter.drawChars(span, 0, len, xTick - w/2, yLU);	
+		iFontHeight = m_pG->getFontHeight();
+                yDU = s_iFixedHeight/4 +
+                        (s_iFixedHeight/2 - iFontHeight*m_pG->getDeviceResolution()/m_pG->getResolution())/2;
+                yLU = m_pG->tlu(yDU);                                 
+#endif
+               painter.drawChars(span, 0, len, xTick - w/2, yLU);	
 	}
 }
 
