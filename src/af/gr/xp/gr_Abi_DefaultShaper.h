@@ -43,7 +43,17 @@ public:
   class GR_Graphics* getGraphics(void) const { return m_pGraphics; }
 
 protected:
-  AreaRef shapeChar(const class MathFormattingContext&, UT_UCS4Char) const;
+  struct AbiTextProperties
+  {
+    MathVariant variant;
+    const char* family;
+    const char* style;
+    const char* weight;
+  };
+
+  static const AbiTextProperties& getTextProperties(MathVariant = NORMAL_VARIANT);
+
+  AreaRef shapeChar(MathVariant, const class MathFormattingContext&, UT_UCS4Char) const;
 
   class GR_Graphics* m_pGraphics;
 };
