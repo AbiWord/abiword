@@ -40,7 +40,6 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_Replace.cpp		\
 			ap_$(ABI_FE)Dialog_Spell.cpp		\
 			ap_$(ABI_FE)Dialog_Styles.cpp		\
-			ap_$(ABI_FE)Dialog_Stub.cpp		\
 			ap_$(ABI_FE)Dialog_WordCount.cpp	\
 			ap_$(ABI_FE)Dialog_Columns.cpp		\
 			ap_$(ABI_FE)Dialog_Tab.cpp		\
@@ -65,7 +64,8 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)Dialog_HdrFtr.cpp	\
 			ap_$(ABI_FE)Dialog_MergeCells.cpp	\
 			ap_$(ABI_FE)Dialog_FormatTable.cpp \
-			ap_$(ABI_FE)ViewListener.cpp		
+			ap_$(ABI_FE)ViewListener.cpp	\
+			ap_$(ABI_FE)StatusBar.cpp	
 
 ifeq ($(ABI_OPT_CURL),1)
 CPPSRCS +=		ap_$(ABI_FE)HashDownloader.cpp		\
