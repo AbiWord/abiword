@@ -508,12 +508,6 @@ private:
 	void	_openSection (PT_AttrPropIndex api);
 	void	_closeSection (void);
 
-	/* these next two use m_utf8_0
-	 */
-	void	_recordCSStyle (const char * ClassName);
-	void	_appendInheritanceLine (const char * ClassName, UT_UTF8String & utf8str,
-									bool record_css = false);
-
 	void	_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh);
 	void	_closeTag (void);
 	void	_closeSpan (void);
@@ -640,14 +634,6 @@ private:
 	void			listPop ();
 	void			listPopToDepth (UT_uint16 depth);
 
-	const char *	bodyStyle (const char * key);
-	const char *	bodyStyle (const char * key, const char * value);
-	void			bodyStyleClear ();
-
-	const char *	blockStyle (const char * key);
-	const char *	blockStyle (const char * key, const char * value);
-	void			blockStyleClear ();
-
 	bool			compareStyle (const char * key, const char * value);
 	void            _fillColWidthsVector();
 	void            _setCellWidthInches(void);
@@ -658,6 +644,10 @@ private:
 
 	UT_UTF8String	m_utf8_span;     // span tag-string cache
 	UT_UTF8String	m_utf8_style;    // current block style
+
+	const s_StyleTree *		m_StyleTreeInline; // current  inline  style tree, if any
+	const s_StyleTree *		m_StyleTreeBlock;  // current  block   style tree, if any
+	const s_StyleTree *		m_StyleTreeBody;   // document default style tree, if any
 
 	const PP_AttrProp * m_pAPStyles;
 
@@ -673,8 +663,6 @@ private:
 	UT_uint32		m_tlistListID;
 	List_Type		m_tlistType;
 
-	UT_StringPtrMap	m_BodyStyle;
-	UT_StringPtrMap	m_BlockStyle;
 	UT_StringPtrMap	m_SavedURLs;
 
 	s_StyleTree		m_style_tree;
@@ -691,84 +679,6 @@ private:
 /*****************************************************************/
 /*****************************************************************/
 
-const char * s_HTML_Listener::bodyStyle (const char * key)
-{
-	if ( key == 0) return 0;
-	if (*key == 0) return 0;
-
-	const void * vptr = m_BodyStyle.pick (key);
-	return reinterpret_cast<const char *>(vptr);
-}
-
-const char * s_HTML_Listener::bodyStyle (const char * key, const char * value)
-{
-	if ( key == 0) return 0;
-	if (*key == 0) return 0;
-
-	const void * vptr = m_BodyStyle.pick (key);
-	if (vptr)
-		{
-			m_BodyStyle.remove (key, 0);
-			free (const_cast<void *>(vptr));
-		}
-	if (value == 0) return 0;
-
-	char * new_value = UT_strdup (value);
-	if (new_value == 0) return 0; // ??
-
-	if (!m_BodyStyle.insert (key, new_value))
-		{
-			free (new_value);
-			new_value = 0;
-		}
-	return new_value;
-}
-
-void s_HTML_Listener::bodyStyleClear ()
-{
-	UT_HASH_PURGEDATA (char *, &m_BodyStyle,  free);
-	m_BodyStyle.clear ();
-}
-
-const char * s_HTML_Listener::blockStyle (const char * key)
-{
-	if ( key == 0) return 0;
-	if (*key == 0) return 0;
-
-	const void * vptr = m_BlockStyle.pick (key);
-	return reinterpret_cast<const char *>(vptr);
-}
-
-const char * s_HTML_Listener::blockStyle (const char * key, const char * value)
-{
-	if ( key == 0) return 0;
-	if (*key == 0) return 0;
-
-	const void * vptr = m_BlockStyle.pick (key);
-	if (vptr)
-		{
-			m_BlockStyle.remove (key, 0);
-			free (const_cast<void *>(vptr));
-		}
-	if (value == 0) return 0;
-
-	char * new_value = UT_strdup (value);
-	if (new_value == 0) return 0; // ??
-
-	if (!m_BlockStyle.insert (key, new_value))
-		{
-			free (new_value);
-			new_value = 0;
-		}
-	return new_value;
-}
-
-void s_HTML_Listener::blockStyleClear ()
-{
-	UT_HASH_PURGEDATA (char *, &m_BlockStyle, free);
-	m_BlockStyle.clear ();
-}
-
 bool s_HTML_Listener::compareStyle (const char * key, const char * value)
 {
 	/* require both key & value to be non-empty strings
@@ -776,20 +686,20 @@ bool s_HTML_Listener::compareStyle (const char * key, const char * value)
 	if (( key == 0) || ( value == 0)) return false;
 	if ((*key == 0) || (*value == 0)) return false;
 
-	bool match = true;
+	UT_UTF8String css_name(key);
 
-	const char * css_value = blockStyle (key);
-	if (css_value == 0)
-		{
-			css_value = bodyStyle (key);
-			if (css_value == 0)
-				{
-					match = false;
-				}
-		}
-	if (match) match = (UT_strcmp (css_value, value) == 0);
+	const UT_UTF8String * css_value = 0;
 
-	return match;
+	if (m_StyleTreeInline)
+		css_value = const_cast<s_StyleTree *>(m_StyleTreeInline)->lookup (css_name);
+	if (m_StyleTreeBlock && !css_value)
+		css_value = const_cast<s_StyleTree *>(m_StyleTreeBlock)->lookup (css_name);
+	if (m_StyleTreeBody  && !css_value)
+		css_value = const_cast<s_StyleTree *>(m_StyleTreeBody)->lookup (css_name);
+
+	if (!css_value) return false;
+
+	return (*css_value == value);
 }
 
 void s_HTML_Listener::tagRaw (UT_UTF8String & content)
@@ -1582,10 +1492,6 @@ void s_HTML_Listener::_outputStyles (const PP_AttrProp * pAP)
 						}
 					else m_utf8_1 = static_cast<const char *>(szValue);
 
-					/* keep a record of CSS body style
-					 */
-					bodyStyle (static_cast<const char *>(szName), m_utf8_1.utf8_str ());
-
 					styleNameValue (szName, m_utf8_1);
 				}
 			szValue = PP_evalProperty ("background-color", 0, 0, pAP, m_pDocument, true);
@@ -1653,6 +1559,7 @@ void s_HTML_Listener::_buildStyleTree ()
 					m_style_tree.add (szStyleName, m_pDocument);
 				}
 		}
+	m_StyleTreeBody = m_style_tree.find ("Normal");
 }
 
 /*!
@@ -1750,97 +1657,6 @@ bool s_HTML_Listener::_inherits (const char * style, const char * from)
 					}
 			}
 	return bret;
-}
-
-void s_HTML_Listener::_recordCSStyle (const char * ClassName)
-{
-	if ( ClassName == 0) return;
-	if (*ClassName == 0) return;
-
-	PD_Style * pStyle = 0;
-
-	m_pDocument->getStyle (ClassName, &pStyle);
-	if (pStyle == 0) return;
-
-	const XML_Char * szName  = 0;
-	const XML_Char * szValue = 0;
-
-	for (UT_uint16 i = 0; i < pStyle->getPropertyCount (); i++)
-		{
-			pStyle->getNthProperty (i, szName, szValue);
-
-			if (( szName == 0) || ( szValue == 0)) continue; // paranoid? moi?
-			if ((*szName == 0) || (*szValue == 0)) continue;
-
-			if (strstr (szName, "margin")) continue;
-			if (!is_CSS (reinterpret_cast<const char *>(szName))) continue;
-
-			if (UT_strcmp (szName, "font-family") == 0)
-				{
-					if ((UT_strcmp (szValue, "serif")      == 0) ||
-						(UT_strcmp (szValue, "sans-serif") == 0) ||
-						(UT_strcmp (szValue, "cursive")    == 0) ||
-						(UT_strcmp (szValue, "fantasy")    == 0) ||
-						(UT_strcmp (szValue, "monospace")  == 0))
-						{
-							m_utf8_0 = static_cast<const char *>(szValue);
-						}
-					else
-						{
-							m_utf8_0  = "'";
-							m_utf8_0 += static_cast<const char *>(szValue);
-							m_utf8_0 += "'";
-						}
-				}
-			else if (UT_strcmp (szName, "color") == 0)
-				{
-					if (IS_TRANSPARENT_COLOR (szValue)) continue;
-
-					m_utf8_0  = "#";
-					m_utf8_0 += static_cast<const char *>(szValue);
-				}
-			else m_utf8_0 = static_cast<const char *>(szValue);
-
-			/* keep a record of CSS body style
-			 */
-			blockStyle (static_cast<const char *>(szName), m_utf8_0.utf8_str ());
-		}
-}
-
-void s_HTML_Listener::_appendInheritanceLine (const char * ClassName, UT_UTF8String & utf8str,
-											  bool record_css)
-{
-	PD_Style * pStyle = 0;
-
-	if (m_pDocument->getStyle (ClassName, &pStyle))
-		if (pStyle)
-			{
-				PD_Style * pBasedOn = pStyle->getBasedOn ();
-				if (pBasedOn)
-					{
-						/* The name of the style is stored in the PT_NAME_ATTRIBUTE_NAME
-						 * attribute within the style
-						 */
-						const XML_Char * szName = 0;
-						pBasedOn->getAttribute (PT_NAME_ATTRIBUTE_NAME, szName);
-
-						if (szName)
-							{
-#ifdef HTML_MULTIPLE_CLASS_INHERITANCE
-								_appendInheritanceLine (static_cast<const char *>(szName), utf8str, record_css);
-								utf8str += " ";
-#else
-								/* need to recurse for style recording, but discard extra classes
-								 */
-								_appendInheritanceLine (static_cast<const char *>(szName), m_utf8_0, record_css);
-#endif
-							}
-					}
-			}
-	if (record_css) _recordCSStyle (ClassName);
-
-	s_removeWhiteSpace (ClassName, m_utf8_0); // careful!!
-	utf8str += m_utf8_0;
 }
 
 fl_AutoNum * s_HTML_Listener::tlistLookup (UT_uint32 listid)
@@ -2124,9 +1940,6 @@ void s_HTML_Listener::listPush (UT_uint16 type, const char * ClassName)
 			tagID = TT_OL;
 			m_utf8_1 = "ol";
 		}
-	m_utf8_1 += " class=\"";
-	_appendInheritanceLine (ClassName, m_utf8_1, true);
-	m_utf8_1 += "\"";
 	tagOpen (tagID, m_utf8_1);
 
 	void * vptr = reinterpret_cast<void *>(static_cast<UT_uint32>(type));
@@ -2174,7 +1987,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 
 	if (!m_bInSection) return;
 
-	blockStyleClear ();
+	m_StyleTreeInline = 0;
+	m_StyleTreeBlock  = 0;
 
 	if (m_bInBlock)
 		{
@@ -2244,6 +2058,8 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 
 	m_utf8_style = szValue;
 
+	m_StyleTreeBlock = m_style_tree.find (szValue);
+
 	if (!zero_listID)
 		{
 			/* Desired list type (numbered / bullet)
@@ -2297,6 +2113,14 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			tagPending = true;
 
 			m_utf8_1 = "li";
+
+			if (m_StyleTreeBlock)
+				if (m_StyleTreeBlock->class_list().byteLength ())
+					{
+						m_utf8_1 += " class=\"";
+						m_utf8_1 += m_StyleTreeBlock->class_list ();
+						m_utf8_1 += "\"";
+					}
 #else
 			const XML_Char * szP_MarginLeft = 0;
 			pAP->getProperty ("margin-left", szP_MarginLeft);
@@ -2321,7 +2145,7 @@ void s_HTML_Listener::_openTag (PT_AttrPropIndex api, PL_StruxDocHandle sdh)
 			if (m_bInTList) tlistPop ();
 			listPopToDepth (0);
 
-			const s_StyleTree * tree = m_style_tree.find (szValue);
+			const s_StyleTree * tree = m_StyleTreeBlock;
 
 			bool bAddAWMLStyle = false;
 			if (get_Allow_AWML () && !get_HTML4 ()) bAddAWMLStyle = true;
@@ -2668,6 +2492,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 
 	if (!m_bInBlock) return;
 
+	m_StyleTreeInline = 0;
+
 	const PP_AttrProp * pAP = 0;
 	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 	
@@ -2687,6 +2513,8 @@ void s_HTML_Listener::_openSpan (PT_AttrPropIndex api)
 	const s_StyleTree * tree = 0;
 	if (have_style)
 		tree = m_style_tree.find (szA_Style);
+
+	m_StyleTreeInline = tree;
 
 	const XML_Char * szP_FontWeight = 0;
 	const XML_Char * szP_FontStyle = 0;
@@ -3595,6 +3423,9 @@ s_HTML_Listener::s_HTML_Listener (PD_Document * pDocument, IE_Exp_HTML * pie, bo
 	m_iBlockType(0),
 	m_iListDepth(0),
 	m_iImgCnt(0),
+	m_StyleTreeInline(0),
+	m_StyleTreeBlock(0),
+	m_StyleTreeBody(0),
 	m_pAPStyles(0),
 	m_styleIndent(0),
 	m_fdCSS(0),
@@ -3620,8 +3451,6 @@ s_HTML_Listener::~s_HTML_Listener()
 
 	_outputEnd ();
 
-	bodyStyleClear ();
-	blockStyleClear ();
 	UT_VECTOR_PURGEALL(double *,m_vecDWidths);
 }
 
@@ -4496,7 +4325,7 @@ void s_StyleTree::print (s_HTML_Listener * listener) const
 			else
 				{
 					if (m_style_name == "Normal")
-						selector = "p, h1, h2, h3";
+						selector = "p, h1, h2, h3, li";
 					else if (m_style_name == "Heading 1")
 						selector = "h1";
 					else if (m_style_name == "Heading 2")
