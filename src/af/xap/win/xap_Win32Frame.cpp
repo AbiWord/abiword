@@ -20,9 +20,11 @@
 #include <windows.h>
 #include <commctrl.h>
 #include <stdio.h>
+#include <limits.h>
 #include "zmouse.h"
 
 #include "ut_types.h"
+#include "ut_string_class.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_ViewListener.h"
@@ -36,38 +38,31 @@
 #include "xav_View.h"
 #include "xad_Document.h"
 
-#pragma warning(disable:4355)
+#ifdef _MSC_VER
+#pragma warning(disable: 4355)	// 'this' used in base member initializer list
+#endif
 
 /*****************************************************************/
 
-#define GWL(hwnd)		(XAP_Win32Frame*)GetWindowLong((hwnd), GWL_USERDATA)
-#define SWL(hwnd, f)	(XAP_Win32Frame*)SetWindowLong((hwnd), GWL_USERDATA,(LONG)(f))
-
-#define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
-
-/*****************************************************************/
-
-bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
+bool XAP_Win32Frame::RegisterClass(XAP_Win32App* app)
 {
-	// NB: can't access 'this' members from a static member function
-	WNDCLASSEX  wndclass;
-	ATOM a;
+	WNDCLASSEX wndclass;
 
 	// register class for the frame window
-	wndclass.cbSize        = sizeof(wndclass);
-	wndclass.style         = CS_DBLCLKS;
-	wndclass.lpfnWndProc   = XAP_Win32Frame::_FrameWndProc;
-	wndclass.cbClsExtra    = 0;
-	wndclass.cbWndExtra    = 0;
-	wndclass.hInstance     = app->getInstance();
-	wndclass.hIcon         = app->getIcon();
-	wndclass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	wndclass.hbrBackground = (HBRUSH)(COLOR_BTNFACE+1);
-	wndclass.lpszMenuName  = NULL;
-	wndclass.lpszClassName = app->getApplicationName();
-	wndclass.hIconSm       = app->getSmallIcon();
+	wndclass.cbSize			= sizeof(wndclass);
+	wndclass.style			= CS_DBLCLKS;
+	wndclass.lpfnWndProc	= XAP_Win32Frame::_FrameWndProc;
+	wndclass.cbClsExtra		= 0;
+	wndclass.cbWndExtra		= 0;
+	wndclass.hInstance		= app->getInstance();
+	wndclass.hIcon			= app->getIcon();
+	wndclass.hCursor		= LoadCursor(NULL, IDC_ARROW);
+	wndclass.hbrBackground	= (HBRUSH)(COLOR_BTNFACE+1);
+	wndclass.lpszMenuName	= NULL;
+	wndclass.lpszClassName	= app->getApplicationName();
+	wndclass.hIconSm		= app->getSmallIcon();
 
-	a = RegisterClassEx(&wndclass);
+	ATOM a = RegisterClassEx(&wndclass);
 	UT_ASSERT(a);
 
 	return true;
@@ -76,20 +71,20 @@ bool XAP_Win32Frame::RegisterClass(XAP_Win32App * app)
 /*****************************************************************/
 
 XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
-:       XAP_Frame(app),
-        m_pWin32App(app),
-        m_pWin32Menu(0),
-        m_pWin32Popup(0),
-        m_iBarHeight(0),
-        m_iStatusBarHeight(0),
-        m_hwndFrame(0),
-        m_hwndRebar(0),
-        m_hwndContainer(0),
-        m_hwndStatusBar(0),
-        m_dialogFactory(this, app),
-        m_mouseWheelMessage(0),
-        m_iSizeWidth(0),
-        m_iSizeHeight(0)
+:	XAP_Frame(app),
+	m_pWin32App(app),
+	m_pWin32Menu(0),
+	m_pWin32Popup(0),
+	m_iBarHeight(0),
+	m_iStatusBarHeight(0),
+	m_hwndFrame(0),
+	m_hwndRebar(0),
+	m_hwndContainer(0),
+	m_hwndStatusBar(0),
+	m_dialogFactory(this, app),
+	m_mouseWheelMessage(0),
+	m_iSizeWidth(0),
+	m_iSizeHeight(0)
 {
 }
 
@@ -98,20 +93,20 @@ XAP_Win32Frame::XAP_Win32Frame(XAP_Win32App * app)
 // TODO dialog data ??
 
 XAP_Win32Frame::XAP_Win32Frame(XAP_Win32Frame * f)
-:       XAP_Frame(f),
-        m_pWin32App(f->m_pWin32App),
-        m_pWin32Menu(0),
-        m_pWin32Popup(0),
-        m_iBarHeight(0),
-        m_iStatusBarHeight(0),
-        m_hwndFrame(0),
-        m_hwndRebar(0),
-        m_hwndContainer(0),
-        m_hwndStatusBar(0),
-        m_dialogFactory(this, f->m_pWin32App),
-        m_mouseWheelMessage(0),
-        m_iSizeWidth(0),
-        m_iSizeHeight(0)
+:	XAP_Frame(f),
+	m_pWin32App(f->m_pWin32App),
+	m_pWin32Menu(0),
+	m_pWin32Popup(0),
+	m_iBarHeight(0),
+	m_iStatusBarHeight(0),
+	m_hwndFrame(0),
+	m_hwndRebar(0),
+	m_hwndContainer(0),
+	m_hwndStatusBar(0),
+	m_dialogFactory(this, f->m_pWin32App),
+	m_mouseWheelMessage(0),
+	m_iSizeWidth(0),
+	m_iSizeHeight(0)
 {
 }
 
@@ -123,21 +118,31 @@ XAP_Win32Frame::~XAP_Win32Frame(void)
 	DELETEP(m_pWin32Popup);
 }
 
-bool XAP_Win32Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue,
-								   const char * szMenuLayoutKey, const char * szMenuLayoutDefaultValue,
-								   const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
-								   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
-								   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue)
+bool XAP_Win32Frame::initialize(const char* szKeyBindingsKey,
+								const char* szKeyBindingsDefaultValue,
+								const char* szMenuLayoutKey,
+								const char* szMenuLayoutDefaultValue,
+								const char* szMenuLabelSetKey,
+								const char* szMenuLabelSetDefaultValue,
+								const char* szToolbarLayoutsKey,
+								const char* szToolbarLayoutsDefaultValue,
+								const char* szToolbarLabelSetKey,
+								const char* szToolbarLabelSetDefaultValue)
 {
 	bool bResult;
 
 	// invoke our base class first.
 	
-	bResult = XAP_Frame::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue,
-									szMenuLayoutKey, szMenuLayoutDefaultValue,
-									szMenuLabelSetKey, szMenuLabelSetDefaultValue,
-									szToolbarLayoutsKey, szToolbarLayoutsDefaultValue,
-									szToolbarLabelSetKey, szToolbarLabelSetDefaultValue);
+	bResult = XAP_Frame::initialize(szKeyBindingsKey,
+									szKeyBindingsDefaultValue,
+									szMenuLayoutKey,
+									szMenuLayoutDefaultValue,
+									szMenuLabelSetKey,
+									szMenuLabelSetDefaultValue,
+									szToolbarLayoutsKey,
+									szToolbarLayoutsDefaultValue,
+									szToolbarLabelSetKey,
+									szToolbarLabelSetDefaultValue);
 	UT_ASSERT(bResult);
 
 	// get a handle to our keyboard binding mechanism
@@ -204,7 +209,9 @@ void XAP_Win32Frame::_createTopLevelWindow(void)
 							   CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
 							   NULL, NULL, m_pWin32App->getInstance(), NULL);
 	UT_ASSERT(m_hwndFrame);
-	SWL(m_hwndFrame, this);					// bind this frame to its window
+
+	// bind this frame to its window
+	SetWindowLong(m_hwndFrame, GWL_USERDATA,(LONG)this);
 
 	m_mouseWheelMessage = RegisterWindowMessage(MSH_MOUSEWHEEL);
 
@@ -324,25 +331,18 @@ bool XAP_Win32Frame::updateTitle()
 		return false;
 	}
 
-	char buf[256];
-	buf[0] = 0;
-
-	const char * szAppName = m_pWin32App->getApplicationTitleForTitleBar();
-
-	int len = 256 - strlen(szAppName) - 4;
+	UT_String sTmp = getTitle(INT_MAX);
+	sTmp += " - ";
+	sTmp += m_pWin32App->getApplicationTitleForTitleBar();
 	
-	const char * szTitle = getTitle(len);
-
-	sprintf(buf, "%s - %s", szTitle, szAppName);
-	
-	SetWindowText(m_hwndFrame, buf);
+	SetWindowText(m_hwndFrame, sTmp.c_str());
 
 	return true;
 }
 
 LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	XAP_Win32Frame * f = GWL(hwnd);
+	XAP_Win32Frame * f = (XAP_Win32Frame*)GetWindowLong(hwnd, GWL_USERDATA);
 
 	if (!f)
 	{
@@ -481,7 +481,7 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 							RECT  rc;
 							HBRUSH	hBr = NULL;
 
-							rc.top = pNMcd->rc.top;
+							rc.top    = pNMcd->rc.top;
 							rc.bottom = pNMcd->rc.bottom;
 							hBr = GetSysColorBrush( COLOR_3DFACE );
 
@@ -544,8 +544,8 @@ LRESULT CALLBACK XAP_Win32Frame::_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wPar
 		f->m_iSizeWidth = nWidth;
 		f->m_iSizeHeight = nHeight;
 
-       // If Dynamic Zoom recalculate zoom setting
-       f->updateZoom();
+		// If Dynamic Zoom recalculate zoom setting
+		f->updateZoom();
 
 		return 0;
 	}
@@ -651,12 +651,11 @@ bool XAP_Win32Frame::runModalContextMenu(AV_View * pView, const char * szMenuNam
 	return bResult;
 }
 
-EV_Toolbar * XAP_Win32Frame::_newToolbar(XAP_App *app, XAP_Frame *frame,
-					const char *szLayout,
-					const char *szLanguage)
+EV_Toolbar * XAP_Win32Frame::_newToolbar(XAP_App*		app,
+										 XAP_Frame*		frame,
+										 const char*	szLayout,
+										 const char*	szLanguage)
 {
-    RECT r;
-	UT_uint32 iHeight;
 	EV_Win32Toolbar *result = new EV_Win32Toolbar(static_cast<XAP_Win32App *>(app), 
 												  static_cast<XAP_Win32Frame *>(frame), 
 												  szLayout, szLanguage);
@@ -664,8 +663,9 @@ EV_Toolbar * XAP_Win32Frame::_newToolbar(XAP_App *app, XAP_Frame *frame,
 	// TODO: put 'em all in a rebar instead
 	HWND hwndBar = result->getWindow();
 	
-	GetClientRect(hwndBar, &r);
-	iHeight = r.bottom - r.top;
+	RECT rcClient;
+	GetClientRect(hwndBar, &rcClient);
+	const UT_uint32 iHeight = rcClient.bottom - rcClient.top;
 	
 	m_iBarHeight += iHeight;
 
