@@ -935,6 +935,21 @@ fp_TabRun::fp_TabRun(fl_BlockLayout* pBL, DG_Graphics* pG, UT_uint32 iOffsetFirs
 
 void fp_TabRun::lookupProperties(void)
 {
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
+	
+	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
+	m_pBL->getAttrProp(&pBlockAP);
+
+	// look for fonts in this DocLayout's font cache
+	FL_DocLayout * pLayout = m_pBL->getDocLayout();
+	DG_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+
+	m_pG->setFont(pFont);
+	m_iAscent = m_pG->getFontAscent();	
+	m_iDescent = m_pG->getFontDescent();
+	m_iHeight = m_pG->getFontHeight();
 }
 
 UT_Bool fp_TabRun::canBreakAfter(void) const
@@ -997,8 +1012,9 @@ void fp_TabRun::findPointCoords(UT_uint32 iOffset, UT_uint32& x, UT_uint32& y, U
 		
 		x = xoff + getWidth();
 	}
-	y = yoff - m_pLine->getAscent();
-	height = m_pLine->getHeight();
+	
+	y = yoff;
+	height = m_iHeight;
 }
 
 void fp_TabRun::setWidth(UT_sint32 iWidth)
