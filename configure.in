@@ -67,6 +67,7 @@ dnl Define here ABI_FE, ABI_BE, PLATFORM_CFLAGS, PLATFORM_LIBS
 with_unix=false
 with_macosx=false
 with_cocoa=false
+with_qnx=false
 if test "$PLATFORM" = "unix"; then
 	ABI_FE="Unix"
 	ABI_BE="$ABI_FE"
@@ -85,12 +86,16 @@ elif test "$PLATFORM" = "cocoa" ; then
 	OBJCXX="c++"
 	OBJCXXFLAGS=""
 	OBJCXXDEPMODE="depmode=gcc3"
+elif test "$PLATFORM" = "qnx" ; then
+	ABI_FE="QNX"
+	ABI_THREAD
 else
 	ABI_THREAD
 fi
 AM_CONDITIONAL(WITH_UNIX,$with_unix)
 AM_CONDITIONAL(WITH_MACOSX,$with_macosx)
 AM_CONDITIONAL(WITH_COCOA,$with_cocoa)
+AM_CONDITIONAL(WITH_QNX,$with_qnx)
 AC_SUBST(OBJCXX)
 AC_SUBST(OBJCXXFLAGS)
 AC_SUBST(OBJCXXDEPMODE)
