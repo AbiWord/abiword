@@ -13,7 +13,7 @@
 
 <awml>
 <section>
-<p><c PROPS="font-size:18pt; font-weight:bold">It is my intention to keep this document in sync with the current state of the code.  Thus, this document does not yet describe the full feature set planned for version 1.0.  This document is current with vesion 0.5.0 of the code.</c></p>
+<p><c PROPS="font-size:18pt; font-weight:bold">It is my intention to keep this document in sync with the current state of the code.  Thus, this document does not yet describe the full feature set planned for version 1.0.  This document is current with version 0.5.0 of the code.</c></p>
 <p></p>
 <p><c PROPS="font-family:courier; font-size:11pt">$Id$</c></p>
 <p></p>
@@ -51,8 +51,8 @@
 <p PROPS="text-align:left"></p>
 <p PROPS="text-align:left"><c PROPS="font-family:Times New Roman; font-size:14pt; font-style:normal; font-weight:normal">The following are section-level properties and may appear in the value of the PROPS attribute of the &lt;section&gt; tag:</c></p>
 <p PROPS="text-align:left"></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	columns: integer-number-of-columns ;</c></p>
-<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	column-gap: dimenioned-distance ;</c></p>
+<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	columns: </c><c PROPS="font-family:Courier New; font-size:14pt; font-style:italic; font-weight:normal">integer-number-of-columns</c><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal"> ;</c></p>
+<p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	column-gap: </c><c PROPS="font-family:Courier New; font-size:14pt; font-style:italic; font-weight:normal">dimensioned-distance</c><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal"> ;</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	section-space-after: ...;</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	page-margin-top: ...;</c></p>
 <p PROPS="text-align:left"><c PROPS="font-family:Courier New; font-size:14pt; font-style:normal; font-weight:normal">	page-margin-left: ...;</c></p>
