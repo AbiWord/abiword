@@ -35,6 +35,7 @@ public:
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 
 	AP_Dialog_Field(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	virtual ~AP_Dialog_Field();
 	AP_Dialog_Field::tAnswer	getAnswer(void) const;
 	const char *GetFieldFormat(void) const;
 	const XML_Char * getParameter(void) const {return m_pParameter;};
