@@ -5955,6 +5955,12 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 //
 // Now fix up the previous block. Calling this format fixes bug 2702
 //
+		fp_Run * pPrevBLRun =pPrevBL->getFirstRun();
+		while(pPrevBLRun)
+		{
+			pPrevBLRun->lookupProperties();
+			pPrevBLRun = pPrevBLRun->getNextRun();
+		}
 		pPrevBL->format();
 
 		// This call will dequeue the block from background checking

@@ -4422,6 +4422,7 @@ bool FV_View::getSectionFormat(const XML_Char ***pProps)
 
 	// 1. assemble complete set at insertion point
 	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	UT_return_val_if_fail(pBlock,false);
 	fl_SectionLayout* pSection = pBlock->getSectionLayout();
 	pSection->getAP(pSectionAP);
 
