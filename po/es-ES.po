@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es-ES\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-07-06 01:36+0200\n"
-"PO-Revision-Date: 2003-07-06 01:58+0200\n"
+"POT-Creation-Date: 2003-07-07 20:23+0200\n"
+"PO-Revision-Date: 2003-07-07 20:26+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -786,7 +786,7 @@ msgstr "&Reiniciar"
 #. MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:370
 msgid "&Reset to default layout"
-msgstr ""
+msgstr "&Reestablecer a la disposición predeterminada"
 
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h.h:372
@@ -4164,7 +4164,7 @@ msgstr ""
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h.h:1771
 msgid "Reset the current toolbar layout to its defaults"
-msgstr ""
+msgstr "Restablece la disposición de la barra a sus valores predeterminados"
 
 #. MENU_LABEL_FMT_IMAGE
 #: po/tmp/ap_String_Id.h.h:1773
@@ -4184,7 +4184,7 @@ msgstr "Respetuosamente suyo,"
 #. AUTOTEXT_CLOSING_7
 #: po/tmp/ap_String_Id.h.h:1779
 msgid "Respectfully,"
-msgstr "Respetuosamente"
+msgstr "Respetuosamente,"
 
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h.h:1781
