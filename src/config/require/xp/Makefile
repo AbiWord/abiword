@@ -41,7 +41,7 @@ build::		$(REQUIRE)
 _EXPAT_:
 	@if [ -d $(ABI_ROOT)/../expat ]; then						\
 		echo "Found expat in peer directory";					\
-		if [ ! -r $(ABI_ROOT)/../expat/config.hin ]; then \
+		if [ ! -r $(ABI_ROOT)/../expat/config.h ]; then \
 			cd $(ABI_ROOT)/../expat; \
 			./configure --disable-shared --enable-static; \
 		fi; \
