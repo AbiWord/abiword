@@ -298,7 +298,6 @@ void AP_UnixDialog_Spell::_showMisspelledWord(void)
    FREEP(mbword);
    FREEP(p);
 
-   // TODO: set highlight color m_highlight
    GtkTextTag * txt_tag = gtk_text_buffer_create_tag(buffer, NULL, "foreground-gdk", &m_highlight, NULL); 
    gtk_text_buffer_get_end_iter(buffer, &iter);
    gtk_text_buffer_insert_with_tags(buffer, &iter, word, -1, txt_tag, NULL);
