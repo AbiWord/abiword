@@ -53,6 +53,7 @@ Nigel Stepp <stepp@mithril.res.cmu.edu>         VI keybindings
 Sam Tobin-Hochstadt <sytobinh@uchicago.edu>	File I/O error handling, misc fixes
 Gary Thomas <gdt@linuxppc.org>                  LinuxPPC
 Dave Thompson <thompson@pdnt.com>           
+Kevin Vajk <kvajk@ricochet.net>			File import/export detection
 Robert G. Werner <rwerner@lx1.microbsys.com>    VI keybindings
 John Wood <jyonw@asu.edu>                       NetBSD
 Alan Young <ayoung@teleport.com>                Alpha/NT
