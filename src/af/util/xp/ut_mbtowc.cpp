@@ -251,6 +251,8 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
       initialize();
       return 0;
     }
+// BH - 04122000 added ifdef to get BeOS (and AIX) to hopefully compile
+#if defined(__BeOS__) || defined(__AIX__)
     m_buf[m_bufLen-1]=mb;
     const char* inptr = m_buf;
     unsigned char outbuf[2];
@@ -271,6 +273,7 @@ int UT_Mbtowc::mbtowc(wchar_t &wc,char mb)
 	    return 0;
 	};
     };
+#endif
 };
 
 #endif /* big if 0 */
