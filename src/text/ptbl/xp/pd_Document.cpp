@@ -219,10 +219,17 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 	*/
 
 	UT_String user_template_base (XAP_App::getApp()->getUserPrivateDirectory());
+#if defined(WIN32)
+	user_template_base += UT_String_sprintf("\\templates\\%s", base.c_str());
+#else
 	user_template_base += UT_String_sprintf("/templates/%s", base.c_str());
-
+#endif
 	UT_String global_template_base (XAP_App::getApp()->getAbiSuiteLibDir());
+#if defined(WIN32)
+	global_template_base += UT_String_sprintf("\\templates\\%s", base.c_str());
+#else
 	global_template_base += UT_String_sprintf("/templates/%s", base.c_str());
+#endif
 
 	template_list[0] = user_template_base; // always try to load user's normal.awt first
 	template_list[1] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.utf8_str(), terr.utf8_str());

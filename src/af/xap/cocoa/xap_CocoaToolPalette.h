@@ -33,6 +33,8 @@
 
 class XAP_Frame;
 
+class FV_View;
+
 @class XAP_CocoaToolPalette;
 
 struct XAP_CocoaPaletteRef
@@ -80,21 +82,48 @@ private:
 - (void)sync;
 @end
 
+@interface XAP_PaletteProperties_DataSource : NSObject
+{
+	NSOutlineView *		m_OutlineView;
+	NSMutableArray *	m_PropertyLevels;
+}
+- (id)initWithOutlineView:(NSOutlineView *)outlineView;
+- (void)dealloc;
+
+- (void)syncWithView:(FV_View *)pView;
+
+/* NSOutlineViewDataSource
+ */
+- (int)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item;
+- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item;
+- (id)outlineView:(NSOutlineView *)outlineView child:(int)index ofItem:(id)item;
+- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item;
+
+/* NSOutlineView delegate method
+ */
+- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item;
+- (void)outlineView:(NSOutlineView *)outlineView willDisplayOutlineCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item;
+@end
+
 @interface XAP_CocoaToolPalette : NSWindowController
 {
-	struct XAP_CocoaToolRef *	m_ToolChest;
+	struct XAP_CocoaToolRef *			m_ToolChest;
 
-	XAP_CocoaPaletteView *		m_PaletteView;
+	XAP_CocoaPaletteView *				m_PaletteView;
 
-	IBOutlet NSButton *oTitle_Extra;
-	IBOutlet NSButton *oTitle_Format;
+	XAP_PaletteProperties_DataSource *	m_Properties_DataSource;
+
 	IBOutlet NSButton *oTitle_Standard;
+	IBOutlet NSButton *oTitle_Format;
 	IBOutlet NSButton *oTitle_Table;
+	IBOutlet NSButton *oTitle_Extra;
+	IBOutlet NSButton *oTitle_Properties;
 
-	IBOutlet NSBox *oBox_Extra;
-	IBOutlet NSBox *oBox_Format;
 	IBOutlet NSBox *oBox_Standard;
+	IBOutlet NSBox *oBox_Format;
 	IBOutlet NSBox *oBox_Table;
+	IBOutlet NSBox *oBox_Extra;
+	IBOutlet NSBox *oBox_Properties;
 
 	IBOutlet NSPopUpButton *oDocumentStyle;
 	IBOutlet NSPopUpButton *oFontName;
@@ -104,6 +133,11 @@ private:
 
 	IBOutlet NSColorWell *oColor_BG;
 	IBOutlet NSColorWell *oColor_FG;
+
+	IBOutlet NSButton *oSwitch_BG;
+	IBOutlet NSButton *oSwitch_FG;
+
+	IBOutlet NSOutlineView *oProperties;
 
 	IBOutlet NSPanel *oPanel;
 
@@ -144,6 +178,8 @@ private:
 
 - (IBAction)aColor_FG:(id)sender;
 - (IBAction)aColor_BG:(id)sender;
+- (IBAction)aSwitch_FG:(id)sender;
+- (IBAction)aSwitch_BG:(id)sender;
 - (IBAction)aDocumentStyle:(id)sender;
 - (IBAction)aFontName:(id)sender;
 - (IBAction)aFontSize:(id)sender;

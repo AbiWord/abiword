@@ -228,8 +228,11 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 			NSEnumerator *iter2 = [files objectEnumerator];
 			NSString* obj2;
 			while (obj2 = [iter2 nextObject]) {
-				[_dataSource addString:obj2];
-				[m_templates addObject:[NSString stringWithFormat:@"%@%@", obj, obj2]];
+				NSRange range = [obj2 rangeOfString:@".awt" options:NSLiteralSearch];
+				if (range.location != NSNotFound) {
+					[_dataSource addString:obj2];
+					[m_templates addObject:[NSString stringWithFormat:@"%@%@", obj, obj2]];
+				}
 			}
 		}
 	}

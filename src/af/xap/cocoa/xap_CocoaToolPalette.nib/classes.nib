@@ -8,6 +8,8 @@
                 aDocumentStyle = id; 
                 aFontName = id; 
                 aFontSize = id; 
+                "aSwitch_BG" = id; 
+                "aSwitch_FG" = id; 
                 "aTB_click" = id; 
                 "aTitle_click" = id; 
                 aZoom = id; 
@@ -17,6 +19,7 @@
             OUTLETS = {
                 "oBox_Extra" = NSBox; 
                 "oBox_Format" = NSBox; 
+                "oBox_Properties" = NSBox; 
                 "oBox_Standard" = NSBox; 
                 "oBox_Table" = NSBox; 
                 "oColor_BG" = NSColorWell; 
@@ -25,6 +28,9 @@
                 oFontName = NSPopUpButton; 
                 oFontSize = NSComboBox; 
                 oPanel = NSPanel; 
+                oProperties = NSOutlineView; 
+                "oSwitch_BG" = NSButton; 
+                "oSwitch_FG" = NSButton; 
                 "oTB_1column" = NSButton; 
                 "oTB_2column" = NSButton; 
                 "oTB_3column" = NSButton; 
@@ -106,6 +112,7 @@
                 "oTB_view_showpara" = NSButton; 
                 "oTitle_Extra" = NSButton; 
                 "oTitle_Format" = NSButton; 
+                "oTitle_Properties" = NSButton; 
                 "oTitle_Standard" = NSButton; 
                 "oTitle_Table" = NSButton; 
                 oZoom = NSComboBox; 

@@ -3925,6 +3925,202 @@ bool FV_View::getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** 
 	return true;
 }
 
+/* Get complete(?) set of properties for current position, or for the start of current
+ * selection.
+ */
+bool FV_View::getAllAttrProp(const PP_AttrProp *& pSpanAP, const PP_AttrProp *& pBlockAP, const PP_AttrProp *& pSectionAP, const PP_AttrProp *& pDocAP) const
+{
+	pDocAP     = m_pDoc->getAttrProp();
+	pSectionAP = 0;
+	pBlockAP   = 0;
+	pSpanAP    = 0;
+
+	if(getLayout()->getFirstSection() == NULL)
+	{
+		UT_DEBUGMSG(("FV_View::getAllAttrProp: no first section!\n"));
+		return false;
+	}
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd   = posStart;
+
+	if (!isSelectionEmpty())
+	{
+		if (m_Selection.getSelectionAnchor() < posStart)
+			posStart = m_Selection.getSelectionAnchor();
+		else
+			posEnd   = m_Selection.getSelectionAnchor();
+	}
+	if (posStart < 2)
+		posStart = 2;
+
+	if (fl_BlockLayout * pBlock = getBlockAtPosition(posStart))
+	{
+		bool bLeftSide = true; // looking to the left of the cursor, I think... does this work with bidi? [TODO: ??]
+
+		pBlock->getAP(pBlockAP);
+
+		if (fl_DocSectionLayout * pSection = pBlock->getDocSectionLayout())
+			pSection->getAP(pSectionAP);
+
+		pBlock->getSpanAP(posStart - pBlock->getPosition(), bLeftSide, pSpanAP);
+	}
+	else
+	{
+		UT_DEBUGMSG(("WARNING: FV_View::getAllAttrProp: No block at start of selection!\n"));
+	}
+	return true;
+}
+
+/* Find out whether a property has been defined explicitly for a given span, or for spans
+ * within the current selection, rather than just in the document style or as a default;
+ * either way, get the resultant value - and, if a selection, say whether spans differ
+ * in value or explicitness.
+ * 
+ * NOTES:
+ * 1. If a property is specified explicitly at block level, then we consider it to be
+ *    explicit also at span level.
+ * 2. In the case of a mixed selection, it returns szValue and bExplicitlyDefined for the
+ *    start of the selection.
+ * 
+ * [Question: How does, e.g., paragraph background color export to other formats?]
+ */
+bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, bool & bMixedSelection) const
+{
+	UT_return_val_if_fail(szProperty,false);
+
+	bMixedSelection = false;
+
+	if (isSelectionEmpty())
+		return queryCharFormat(szProperty, szValue, bExplicitlyDefined, getPoint());
+
+	PT_DocPosition posStart = getPoint();
+	PT_DocPosition posEnd   = posStart;
+
+	if (m_Selection.getSelectionAnchor() < posStart)
+		posStart = m_Selection.getSelectionAnchor();
+	else
+		posEnd   = m_Selection.getSelectionAnchor();
+
+	if (posStart < 2)
+		posStart = 2;
+
+	PT_DocPosition position = posStart;
+
+	bool okay  = true;
+	bool first = true;
+
+	bool bLeftSide = true; // looking to the left of the cursor, I think... does this work with bidi? [TODO: ??]
+
+	bool bExplicitlyDefined_current;
+
+	UT_UTF8String szValue_current;
+
+	const PP_AttrProp *      pSpanAP = 0;
+	const PP_AttrProp * prev_pSpanAP = 0;
+
+	while (position < posEnd)
+	{
+		fl_BlockLayout * pBlock = getBlockAtPosition(position);
+		if (!pBlock)
+		{
+			UT_DEBUGMSG(("FV_View::queryCharFormat(bool): no block at position!\n"));
+			okay = false;
+			break;
+		}
+		pBlock->getSpanAP(position - pBlock->getPosition(), bLeftSide, pSpanAP);
+
+		if (first || (pSpanAP != prev_pSpanAP))
+		{
+			okay = queryCharFormat(szProperty, szValue_current, bExplicitlyDefined_current, position);
+			if (!okay)
+				break;
+
+			if (first)
+			{
+				bExplicitlyDefined = bExplicitlyDefined_current;
+				szValue = szValue_current;
+			}
+			else if (!bMixedSelection)
+			{
+				if ((bExplicitlyDefined_current != bExplicitlyDefined) || (szValue_current != szValue))
+					bMixedSelection = true;
+			}
+			first = false;
+			prev_pSpanAP = pSpanAP;
+		}
+		++position; // ??
+	}
+	return okay;
+}
+
+bool FV_View::queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, PT_DocPosition position) const
+{
+	UT_return_val_if_fail(szProperty,false);
+
+	fl_BlockLayout * pBlock = getBlockAtPosition(position);
+	if (!pBlock)
+	{
+		UT_DEBUGMSG(("FV_View::queryCharFormat(PT_DocPosition): no block at position!\n"));
+		return false;
+	}
+
+	bool bLeftSide = true; // looking to the left of the cursor, I think... does this work with bidi? [TODO: ??]
+
+	const PP_AttrProp * pSectionAP = 0;
+	const PP_AttrProp * pBlockAP   = 0;
+	const PP_AttrProp * pSpanAP    = 0;
+
+	pBlock->getAP(pBlockAP);
+
+	if (fl_DocSectionLayout * pSection = pBlock->getDocSectionLayout())
+		pSection->getAP(pSectionAP);
+
+	pBlock->getSpanAP(position - pBlock->getPosition(), bLeftSide, pSpanAP);
+
+	bExplicitlyDefined = false;
+
+	const XML_Char * szPropValue = 0;
+
+	if (pSpanAP)
+	{
+		if (pSpanAP->getProperty(szProperty, szPropValue))
+		{
+			UT_DEBUGMSG(("Property \"%s\" defined at span level as \"%s\"\n",szProperty,szPropValue));
+			szValue = szPropValue;
+			bExplicitlyDefined = true;
+		}
+	}
+	if (pBlockAP && !bExplicitlyDefined)
+	{
+		if (pBlockAP->getProperty(szProperty, szPropValue))
+		{
+			UT_DEBUGMSG(("Property \"%s\" defined at block level as \"%s\"\n",szProperty,szPropValue));
+			szValue = szPropValue;
+			bExplicitlyDefined = true;
+		}
+	}
+
+	bool okay = true;
+
+	if (!bExplicitlyDefined)
+	{
+		if (szPropValue = PP_evalProperty(szProperty, pSpanAP, pBlockAP, pSectionAP, m_pDoc, true))
+		{
+			UT_DEBUGMSG(("Property \"%s\" defined at style/document level as \"%s\"\n",szProperty,szPropValue));
+			szValue = szPropValue;
+		}
+		else
+		{
+			/* PP_evalProperty returns NULL only if something is very wrong...
+			 */
+			szValue = "";
+			okay = false;
+		}
+	}
+	return okay;
+}
+
 bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles)
 {
 	return getCharFormat(pProps,bExpandStyles,0);

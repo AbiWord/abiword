@@ -71,6 +71,7 @@ struct dg_DrawArgs;
 
 class UT_Worker;
 class UT_Timer;
+class UT_UTF8String;
 
 class AP_TopRulerInfo;
 class AP_LeftRulerInfo;
@@ -280,6 +281,14 @@ public:
 	void	allowChangeInsPoint(void);
 
 	bool    getAttributes(const PP_AttrProp ** ppSpanAP, const PP_AttrProp ** ppBlockAP = NULL, PT_DocPosition posStart = 0);
+
+	/* Experimental, for the moment; use with caution. - fjf, 24th Oct. '04
+	 */
+	// - begin
+	bool    getAllAttrProp(const PP_AttrProp *& pSpanAP, const PP_AttrProp *& pBlockAP, const PP_AttrProp *& pSectionAP, const PP_AttrProp *& pDocAP) const;
+	bool	queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, bool & bMixedSelection) const;
+	bool	queryCharFormat(const XML_Char * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, PT_DocPosition position) const;
+	// - end
 
 	bool	setCharFormat(const XML_Char * properties[], const XML_Char * attribs[] = NULL);
 	bool	resetCharFormat(bool bAll);

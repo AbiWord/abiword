@@ -42,6 +42,9 @@
 #include "ev_Toolbar_Control.h"
 
 #include "pd_Document.h"
+#include "pd_Style.h"
+
+#include "pp_AttrProp.h"
 
 #include "fv_View.h"
 
@@ -334,6 +337,363 @@ enum _XAP_CocoaTool_Id
 
 @end
 
+@interface XAP_PaletteProperties_Level : NSObject
+{
+	BOOL				m_IsLevel;
+
+	NSString *			m_Name;
+	NSString *			m_Value;
+
+	NSMutableArray *	m_Properties;
+}
+- (id)initWithAP:(const PP_AttrProp *)pAP levelName:(NSString *)name;
+- (id)initWithStyle:(PD_Style *)style levelName:(NSString *)name;
+- (id)initWithPropertyName:(NSString *)name propertyValue:(NSString *)value;
+- (void)dealloc;
+
+- (int)numberOfChildrenOfItem;
+- (BOOL)isItemExpandable;
+- (id)child:(int)index;
+- (id)objectValueForTableColumn:(NSTableColumn *)tableColumn;
+@end
+
+@implementation XAP_PaletteProperties_Level
+
+- (id)initWithAP:(const PP_AttrProp *)pAP levelName:(NSString *)name
+{
+	if (self = [super init])
+		{
+			m_IsLevel = YES;
+
+			m_Name  = name;
+			m_Value = @"";
+
+			[m_Name  retain];
+			[m_Value retain];
+
+			m_Properties = 0;
+
+			if (int count = static_cast<int>(pAP->getPropertyCount()))
+				if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)])
+					for (int i = 0; i < count; i++)
+						{
+							const XML_Char * szName  = 0;
+							const XML_Char * szValue = 0;
+
+							if (pAP->getNthProperty(i, szName, szValue))
+								{
+									NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
+									NSString * value = [NSString stringWithUTF8String:((const char *) szValue)];
+
+									XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
+									if (property)
+										{
+											[m_Properties addObject:property];
+											[property release];
+										}
+								}
+						}
+		}
+	return self;
+}
+
+- (id)initWithStyle:(PD_Style *)style levelName:(NSString *)name
+{
+	if (self = [super init])
+		{
+			m_IsLevel = YES;
+
+			m_Name  = name;
+			m_Value = @"";
+
+			[m_Name  retain];
+			[m_Value retain];
+
+			m_Properties = 0;
+
+			if (int count = static_cast<int>(style->getPropertyCount()))
+				if (m_Properties = [[NSMutableArray alloc] initWithCapacity:((unsigned) count)])
+					for (int i = 0; i < count; i++)
+						{
+							const XML_Char * szName  = 0;
+							const XML_Char * szValue = 0;
+
+							if (style->getNthProperty(i, szName, szValue))
+								{
+									NSString * name  = [NSString stringWithUTF8String:((const char *) szName )];
+									NSString * value = [NSString stringWithUTF8String:((const char *) szValue)];
+
+									XAP_PaletteProperties_Level * property = [[XAP_PaletteProperties_Level alloc] initWithPropertyName:name propertyValue:value];
+									if (property)
+										{
+											[m_Properties addObject:property];
+											[property release];
+										}
+								}
+						}
+		}
+	return self;
+}
+
+- (id)initWithPropertyName:(NSString *)name propertyValue:(NSString *)value
+{
+	if (self = [super init])
+		{
+			m_IsLevel = NO;
+
+			m_Name  = name;
+			m_Value = value;
+
+			[m_Name  retain];
+			[m_Value retain];
+
+			m_Properties = 0;
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	if (m_Name)
+		{
+			[m_Name  release];
+			m_Name = 0;
+		}
+	if (m_Value)
+		{
+			[m_Value release];
+			m_Value = 0;
+		}
+	if (m_Properties)
+		{
+			[m_Properties release];
+			m_Properties = 0;
+		}
+	[super dealloc];
+}
+
+- (int)numberOfChildrenOfItem
+{
+	if (m_IsLevel && m_Properties)
+		{
+			return [m_Properties count];
+		}
+	return 0;
+}
+
+- (BOOL)isItemExpandable
+{
+	if (m_IsLevel)
+		{
+			return YES;
+		}
+	return NO;
+}
+
+- (id)child:(int)index
+{
+	if (m_IsLevel /* && m_Properties */)
+		{
+			return [m_Properties objectAtIndex:((unsigned) index)];
+		}
+	return 0; // ??
+}
+
+- (id)objectValueForTableColumn:(NSTableColumn *)tableColumn
+{
+	NSTableHeaderCell * headerCell = [tableColumn headerCell];
+
+	if ([[headerCell stringValue] isEqualToString:@"Value"])
+		{
+			return m_Value;
+		}
+	return m_Name;
+}
+
+@end
+
+static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
+{
+	PD_Style * pStyle = 0;
+
+	const XML_Char * szValue = 0;
+
+// This is where the style/name split gets really hairy. This index AP MIGHT be
+// from a style definition in which case the name of the style is PT_NAME_ATTRIBUTE_NAME
+// or it might be from the document in which case the attribute is
+// PT_STYLE_ATTRIBUTE_NAME. - MES.
+
+	if (pAttrProp->getAttribute(PT_NAME_ATTRIBUTE_NAME, szValue))
+		{
+			UT_return_val_if_fail (szValue && szValue[0], 0);
+			if (pDoc)
+				pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
+
+			// NOTE: we silently fail if style is referenced, but not defined
+		}
+    else if(pAttrProp->getAttribute(PT_STYLE_ATTRIBUTE_NAME, szValue))
+		{
+			UT_return_val_if_fail (szValue && szValue[0], 0);
+			if (pDoc)
+				pDoc->getStyle(reinterpret_cast<const char*>(szValue), &pStyle);
+
+			// NOTE: we silently fail if style is referenced, but not defined
+		}
+	return pStyle;
+}
+
+@implementation XAP_PaletteProperties_DataSource
+
+- (id)initWithOutlineView:(NSOutlineView *)outlineView
+{
+	if (self = [super init])
+		{
+			m_OutlineView = outlineView;
+
+			m_PropertyLevels = [[NSMutableArray alloc] initWithCapacity:6];
+			if (!m_PropertyLevels)
+				{
+					[super dealloc];
+					self = 0;
+				}
+		}
+	return self;
+}
+
+- (void)dealloc
+{
+	[m_OutlineView setDelegate:nil];
+	[m_OutlineView setDataSource:nil];
+
+	if (m_PropertyLevels)
+		{
+			[m_PropertyLevels release];
+			m_PropertyLevels = 0;
+		}
+	[super dealloc];
+}
+
+- (void)syncWithView:(FV_View *)pView
+{
+	if (m_PropertyLevels)
+		{
+			[m_PropertyLevels removeAllObjects];
+		}
+	if (pView)
+		{
+			const PP_AttrProp * pSpanAP    = 0;
+			const PP_AttrProp * pBlockAP   = 0;
+			const PP_AttrProp * pSectionAP = 0;
+			const PP_AttrProp * pDocAP     = 0;
+
+			if (pView->getAllAttrProp(pSpanAP, pBlockAP, pSectionAP, pDocAP))
+				{
+					if (pSpanAP)
+						{
+							if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pSpanAP levelName:@"Span"])
+								{
+									[m_PropertyLevels addObject:pPPLevel];
+									[pPPLevel release];
+								}
+							if (PD_Style * style = _getStyle(pSpanAP, pView->getDocument()))
+								{
+									NSString * name = [NSString stringWithUTF8String:(style->getName())];
+									if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithStyle:style levelName:name])
+										{
+											[m_PropertyLevels addObject:pPPLevel];
+											[pPPLevel release];
+										}
+								}
+						}
+
+					if (pBlockAP)
+						{
+							if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pBlockAP levelName:@"Block"])
+								{
+									[m_PropertyLevels addObject:pPPLevel];
+									[pPPLevel release];
+								}
+							if (PD_Style * style = _getStyle(pBlockAP, pView->getDocument()))
+								{
+									NSString * name = [NSString stringWithUTF8String:(style->getName())];
+									if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithStyle:style levelName:name])
+										{
+											[m_PropertyLevels addObject:pPPLevel];
+											[pPPLevel release];
+										}
+								}
+						}
+
+					if (pSectionAP)
+						if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pSectionAP levelName:@"Section"])
+							{
+								[m_PropertyLevels addObject:pPPLevel];
+								[pPPLevel release];
+							}
+
+					if (pDocAP)
+						if (XAP_PaletteProperties_Level * pPPLevel = [[XAP_PaletteProperties_Level alloc] initWithAP:pDocAP levelName:@"Document"])
+							{
+								[m_PropertyLevels addObject:pPPLevel];
+								[pPPLevel release];
+							}
+				}
+		}
+	[m_OutlineView reloadData];
+}
+
+- (int)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
+{
+	if (item)
+		{
+			XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
+			return [pPPLevel numberOfChildrenOfItem];
+		}
+	return (int) [m_PropertyLevels count];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
+{
+	if (item)
+		{
+			XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
+			return [pPPLevel isItemExpandable];
+		}
+	return YES; // ??
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView child:(int)index ofItem:(id)item
+{
+	if (item)
+		{
+			XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
+			return [pPPLevel child:index];
+		}
+	return [m_PropertyLevels objectAtIndex:((unsigned) index)];
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+{
+	if (item)
+		{
+			XAP_PaletteProperties_Level * pPPLevel = (XAP_PaletteProperties_Level *) item;
+			return [pPPLevel objectValueForTableColumn:tableColumn];
+		}
+	return @"??"; // ??
+ }
+
+- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+	[cell setFont:[NSFont systemFontOfSize:10.0f]];
+}
+
+- (void)outlineView:(NSOutlineView *)outlineView willDisplayOutlineCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+	[cell setFont:[NSFont systemFontOfSize:10.0f]];
+}
+
+@end
+
 static XAP_CocoaToolPalette * s_instance = 0;
 
 @implementation XAP_CocoaToolPalette
@@ -357,12 +717,14 @@ static XAP_CocoaToolPalette * s_instance = 0;
 {
 	if (self = [super initWithWindowNibName:@"xap_CocoaToolPalette"])
 		{
+			m_ToolChest = 0;
+			m_PaletteView = 0;
+			m_Properties_DataSource = 0;
+
 			m_pMenuActionSet = 0;
 			m_pToolbarActionSet = 0;
 			m_pEditMethodContainer = 0;
 			m_pFontFamilies = 0;
-			m_ToolChest = 0;
-			m_PaletteView = 0;
 			m_Listener = 0;
 
 			m_pCocoaApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
@@ -393,7 +755,7 @@ static XAP_CocoaToolPalette * s_instance = 0;
 								{
 									NSString * pFontFamily = [pAvailableFontFamilies objectAtIndex:ff];
 
-									const char * szFF = [pFontFamily UTF8String];
+									/* const char * szFF = [pFontFamily UTF8String]; */
 
 									if (true /* (*szFF != '.') && (*szFF != '#') */) // cf. Bug 6638
 										{
@@ -469,6 +831,11 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 - (void)dealloc
 {
+	if (m_Properties_DataSource)
+		{
+			[m_Properties_DataSource release];
+			m_Properties_DataSource = 0;
+		}
 	if (m_PaletteView)
 		if (![m_PaletteView superview])
 			{
@@ -517,6 +884,12 @@ static XAP_CocoaToolPalette * s_instance = 0;
 			palette.Name  = @"Extra";
 			palette.Title = oTitle_Extra;
 			palette.Box   = oBox_Extra;
+			[m_PaletteView addPalette:&palette];
+
+			[oTitle_Properties setTag:0];
+			palette.Name  = @"Properties";
+			palette.Title = oTitle_Properties;
+			palette.Box   = oBox_Properties;
 			[m_PaletteView addPalette:&palette];
 
 			NSRect content = [m_PaletteView frame];
@@ -583,6 +956,13 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 	[oFontName removeAllItems];
 	[oFontName addItemsWithTitles:m_pFontFamilies];
+
+	if (m_Properties_DataSource = [[XAP_PaletteProperties_DataSource alloc] initWithOutlineView:oProperties])
+		{
+			[oProperties setIndentationPerLevel:10.0f];
+			[oProperties setDataSource:m_Properties_DataSource];
+			[oProperties setDelegate:m_Properties_DataSource];
+		}
 
 	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
 
@@ -660,6 +1040,14 @@ static XAP_CocoaToolPalette * s_instance = 0;
 - (IBAction)aColor_BG:(id)sender
 {
 	[self setColor:AP_TOOLBAR_ID_COLOR_BACK];
+}
+
+- (IBAction)aSwitch_FG:(id)sender
+{
+}
+
+- (IBAction)aSwitch_BG:(id)sender
+{
 }
 
 - (IBAction)aTitle_click:(id)sender
@@ -1302,103 +1690,84 @@ static XAP_CocoaToolPalette * s_instance = 0;
 
 	/* Color buttons
 	 */
-	[oColor_FG setEnabled:NO]; // TODO: color wells also?
-	[oColor_BG setEnabled:NO];
-
 	if (m_pViewCurrent)
 		{
 			FV_View * pFView = static_cast<FV_View *>(m_pViewCurrent);
 
-			const XML_Char ** properties = 0;
+			bool bMixedSelection;
+			bool bExplicitlyDefined;
 
-			if (pFView->getCharFormat(&properties, true))
-				if (properties)
-					{
-						const XML_Char * fg_color = 0;
-						const XML_Char * bg_color = 0;
+			UT_UTF8String szColorValue;
 
-						const XML_Char ** prop = properties;
-						while (*prop)
-							{
-								if (strcmp (*prop, "color") == 0)
-									{
-										++prop;
-										fg_color = *prop;
-										++prop;
-										continue;
-									}
-								if (strcmp (*prop, "bgcolor") == 0)
-									{
-										++prop;
-										bg_color = *prop;
-										++prop;
-										continue;
-									}
-								++prop;
-								++prop;
-							}
-						if (fg_color)
-							{
-								UT_HashColor hash;
+			if (pFView->queryCharFormat("color", szColorValue, bExplicitlyDefined, bMixedSelection))
+				{
+					[oSwitch_FG setState:(bExplicitlyDefined ? NSOnState : NSOffState)];
 
-								bool bValid = (hash.setColor(fg_color) != 0);
-								if (!bValid)
-									 bValid = (hash.setHashIfValid(fg_color) != 0);
+					UT_HashColor hash;
 
-								if (bValid)
-									{
-										UT_RGBColor rgb = hash.rgb();
+					bool bValid = (hash.setColor(szColorValue.utf8_str()) != 0);
+					if (!bValid)
+						bValid = (hash.setHashIfValid(szColorValue.utf8_str()) != 0);
 
-										float r = static_cast<float>(rgb.m_red) / 255;
-										float g = static_cast<float>(rgb.m_grn) / 255;
-										float b = static_cast<float>(rgb.m_blu) / 255;
-										float a = 1;
+					if (bValid)
+						{
+							UT_RGBColor rgb = hash.rgb();
 
-										[oColor_FG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
-									}
-								else
-									{
-										UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: fg=\"%s\"?\n", fg_color));
-									}
-							}
-						if (bg_color)
-							{
-								if (strcmp (bg_color, "transparent") == 0)
-									{
-										float r = 1;
-										float g = 1;
-										float b = 1;
-										float a = 0;
+							float r = static_cast<float>(rgb.m_red) / 255;
+							float g = static_cast<float>(rgb.m_grn) / 255;
+							float b = static_cast<float>(rgb.m_blu) / 255;
+							float a = 1;
 
-										[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
-									}
-								else
-									{
-										UT_HashColor hash;
+							[oColor_FG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+						}
+					else
+						{
+							UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: fg=\"%s\"?\n", szColorValue.utf8_str()));
+						}
+				}
+			if (pFView->queryCharFormat("bgcolor", szColorValue, bExplicitlyDefined, bMixedSelection))
+				{
+					[oSwitch_BG setState:(bExplicitlyDefined ? NSOnState : NSOffState)];
 
-										bool bValid = (hash.setColor(bg_color) != 0);
-										if (!bValid)
-											 bValid = (hash.setHashIfValid(bg_color) != 0);
+					if (strcmp (szColorValue.utf8_str(), "transparent") == 0)
+						{
+							float r = 1;
+							float g = 1;
+							float b = 1;
+							float a = 0;
 
-										if (bValid)
-											{
-												UT_RGBColor rgb = hash.rgb();
+							[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+						}
+					else
+						{
+							UT_HashColor hash;
 
-												float r = static_cast<float>(rgb.m_red) / 255;
-												float g = static_cast<float>(rgb.m_grn) / 255;
-												float b = static_cast<float>(rgb.m_blu) / 255;
-												float a = 1;
+							bool bValid = (hash.setColor(szColorValue.utf8_str()) != 0);
+							if (!bValid)
+								bValid = (hash.setHashIfValid(szColorValue.utf8_str()) != 0);
 
-												[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
-											}
-										else
-											{
-												UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: bg=\"%s\"?\n", bg_color));
-											}
-									}
-							}
+							if (bValid)
+								{
+									UT_RGBColor rgb = hash.rgb();
+
+									float r = static_cast<float>(rgb.m_red) / 255;
+									float g = static_cast<float>(rgb.m_grn) / 255;
+									float b = static_cast<float>(rgb.m_blu) / 255;
+									float a = 1;
+
+									[oColor_BG setColor:[NSColor colorWithDeviceRed:r green:g blue:b alpha:a]];
+								}
+							else
+								{
+									UT_DEBUGMSG(("XAP_CocoaToolPalette -sync: bg=\"%s\"?\n", szColorValue.utf8_str()));
+								}
+						}
 				}
 		}
+
+	/* Properties OutlineView
+	 */
+	[m_Properties_DataSource syncWithView:(static_cast<FV_View *>(m_pViewCurrent))];
 }
 
 - (void)setCurrentView:(AV_View *)view inFrame:(XAP_Frame *)frame
