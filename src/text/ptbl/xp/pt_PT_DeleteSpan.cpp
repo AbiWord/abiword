@@ -99,19 +99,17 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		// Tomas, Oct 28, 2003
 
 		bool bRet = false;
-		for(PT_DocPosition curPos = dpos1; curPos < dpos2; )
+		while(dpos1 < dpos2)
 		{
 			// first retrive the starting and ending fragments
 			pf_Frag * pf1, * pf2;
 			PT_BlockOffset Offset1, Offset2;
 
-			if(!getFragsFromPositions(curPos,dpos2, &pf1, &Offset1, &pf2, &Offset2))
+			if(!getFragsFromPositions(dpos1,dpos2, &pf1, &Offset1, &pf2, &Offset2))
 				return bRet;
 			else
 				bRet = true;
 
-			curPos += pf1->getLength();
-							
 			// get attributes for this fragement
 			const PP_AttrProp * pAP;
 			pf_Frag::PFType eType = pf1->getType();
@@ -259,9 +257,17 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 										bDontGlob))
 						return false;
 
-					iRealDeleteCount += dposEnd - dpos1;
+					UT_uint32 iDeleteThisStep = dposEnd - dpos1;
+					
+					iRealDeleteCount += iDeleteThisStep;
 
-					dpos1 = dposEnd;
+					// because we removed stuff, the position dpos1 remains the same and dpos2 needs
+					// to be adjusted
+					if(dpos2 > iDeleteThisStep)
+						dpos2 -= iDeleteThisStep;
+					else
+						dpos2 = 0;
+					
 					continue;
 				}
 			}
