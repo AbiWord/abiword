@@ -77,4 +77,16 @@ protected:
 			}											\
 	} while (0)
 
+// NB: this macro is useful only in destructors
+#define UT_VECTOR_FREEALL(d, v)							\
+	do	{	int utv_max = v.getItemCount();				\
+			for (int utv=utv_max-1; utv>=0; utv--)		\
+			{											\
+				d utv_p = (d) v.getNthItem(utv);		\
+				UT_ASSERT(utv_p);						\
+				if (utv_p)								\
+					free(utv_p);						\
+			}											\
+	} while (0)
+
 #endif /* UTVECTOR_H */

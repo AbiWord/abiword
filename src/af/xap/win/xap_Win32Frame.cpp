@@ -135,18 +135,36 @@ UT_Bool XAP_Win32Frame::initialize(void)
 	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
 	
-	m_pWin32Keyboard = new ev_Win32Keyboard(m_pEEM);
+	EV_EditEventMapper * pEEM = getEditEventMapper();
+	UT_ASSERT(pEEM);
+
+	m_pWin32Keyboard = new ev_Win32Keyboard(pEEM);
 	UT_ASSERT(m_pWin32Keyboard);
 	
-	m_pWin32Mouse = new EV_Win32Mouse(m_pEEM);
+	m_pWin32Mouse = new EV_Win32Mouse(pEEM);
 	UT_ASSERT(m_pWin32Mouse);
-
-	// ... add other stuff here...
 
 	// TODO: Jeff, I'm currently showing in WinMain, to honor iCmdShow.
 	// should we pass that via argv, to do it here for all frames?
 
 	return UT_TRUE;
+}
+
+UT_sint32 XAP_UnixFrame::setInputMode(const char * szName)
+{
+	UT_sint32 result = XAP_Frame::setInputMode(szName);
+	if (result == 1)
+	{
+		// if it actually changed we need to update keyboard and mouse
+
+		EV_EditEventMapper * pEEM = getEditEventMapper();
+		UT_ASSERT(pEEM);
+
+		m_pWin32Keyboard->setEditEventMap(pEEM);
+		m_pWin32Mouse->setEditEventMap(pEEM);
+	}
+
+	return result;
 }
 
 HWND XAP_Win32Frame::getTopLevelWindow(void) const

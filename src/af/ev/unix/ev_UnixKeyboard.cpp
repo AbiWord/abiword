@@ -34,9 +34,9 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(gint keyval);
 static UT_Bool s_isVirtualKeyCode(gint keyval);
 
 
-ev_UnixKeyboard::ev_UnixKeyboard(EV_EditEventMapper* pEEM) : EV_Keyboard(pEEM)
+ev_UnixKeyboard::ev_UnixKeyboard(EV_EditEventMapper* pEEM)
+	: EV_Keyboard(pEEM)
 {
-	m_pEEM = pEEM;
 }
 
 UT_Bool ev_UnixKeyboard::keyPressEvent(AV_View* pView,

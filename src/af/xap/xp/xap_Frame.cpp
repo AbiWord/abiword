@@ -55,7 +55,6 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	m_pView = NULL;
 	m_pViewListener = NULL;
 	m_pScrollObj = NULL;
-	m_pEEM = NULL;
 	m_szMenuLayoutName = NULL;
 	m_szMenuLabelSetName = NULL;
 	m_szToolbarLabelSetName = NULL;
@@ -63,7 +62,7 @@ XAP_Frame::XAP_Frame(XAP_App * app)
 	m_iUntitled = 0;
 	m_nView = 0;
 	m_pScrollbarViewListener = NULL;
-	
+	m_pInputModes = NULL;
 	m_app->rememberFrame(this);
 	memset(m_szTitle,0,sizeof(m_szTitle));
 	memset(m_szNonDecoratedTitle,0,sizeof(m_szNonDecoratedTitle));
@@ -81,13 +80,13 @@ XAP_Frame::XAP_Frame(XAP_Frame * f)
 	m_pView = NULL;
 	m_pViewListener = NULL;
 	m_pScrollObj = NULL;
-	m_pEEM = NULL;
 	m_szMenuLayoutName = NULL;
 	m_szMenuLabelSetName = NULL;
 	m_szToolbarLabelSetName = NULL;
 	m_szToolbarAppearance = NULL;
 	m_nView = 0;
 	m_pScrollbarViewListener = NULL;
+	m_pInputModes = NULL;
 	
 	m_app->rememberFrame(this, f);
 	memset(m_szTitle,0,sizeof(m_szTitle));
@@ -108,7 +107,7 @@ XAP_Frame::~XAP_Frame(void)
 		DELETEP(m_pDoc);
 
 	DELETEP(m_pScrollObj);
-	DELETEP(m_pEEM);
+	DELETEP(m_pInputModes);
 
 	DELETEP(m_pScrollbarViewListener);
 
@@ -149,9 +148,16 @@ UT_Bool XAP_Frame::initialize(void)
 		pBindingMap = m_app->getBindingMap(XAP_PREF_DEFAULT_KeyBindings);
 	UT_ASSERT(pBindingMap);
 
-	m_pEEM = new EV_EditEventMapper(pBindingMap);
-	UT_ASSERT(m_pEEM);
-
+	if (!m_pInputModes)
+	{
+		m_pInputModes = new XAP_InputModes();
+		UT_ASSERT(m_pInputModes);
+	}
+	UT_Bool bResult = m_pInputModes->createInputMode(szBindings,pBindingMap);
+	UT_ASSERT(bResult);
+	UT_Bool bResult2 = m_pInputModes->setCurrentMap(szBindings);
+	UT_ASSERT(bResult2);
+	
 	//////////////////////////////////////////////////////////////////
 	// select which menu bar we should use
 	//////////////////////////////////////////////////////////////////
@@ -232,11 +238,38 @@ UT_Bool XAP_Frame::initialize(void)
 	return UT_TRUE;
 }
 
-const EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
+EV_EditEventMapper * XAP_Frame::getEditEventMapper(void) const
 {
-	return m_pEEM;
+	UT_ASSERT(m_pInputModes);
+	return m_pInputModes->getCurrentMap();
 }
 
+UT_sint32 XAP_Frame::setInputMode(const char * szName)
+{
+	UT_ASSERT(m_pInputModes);
+	const char * szCurrentName = m_pInputModes->getCurrentMapName();
+	if (UT_stricmp(szName,szCurrentName) == 0)
+		return -1;					// already set, no change required
+
+	EV_EditEventMapper * p = m_pInputModes->getMapByName(szName);
+	if (!p)
+	{
+		// map not previously loaded -- we need to install it first
+
+		EV_EditBindingMap * pBindingMap = m_app->getBindingMap(szName);
+		UT_ASSERT(pBindingMap);
+		UT_Bool bResult = m_pInputModes->createInputMode(szName,pBindingMap);
+		UT_ASSERT(bResult);
+	}
+	
+	// note: derrived classes will need to update keyboard
+	// note: and mouse after we return.
+
+	UT_DEBUGMSG(("Setting InputMode to [%s] for the current window.\n",szName));
+	
+	return (m_pInputModes->setCurrentMap(szName));
+}
+	
 XAP_App * XAP_Frame::getApp(void) const
 {
 	return m_app;
@@ -364,3 +397,79 @@ UT_uint32 XAP_Frame::getZoomPercentage(void)
 	return 100;	// default implementation
 }
 
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+XAP_InputModes::XAP_InputModes(void)
+{
+	m_indexCurrentEventMap = 0;
+}
+
+XAP_InputModes::~XAP_InputModes(void)
+{
+	UT_sint32 kLimit = m_vecEventMaps.getItemCount();
+	UT_sint32 jLimit = m_vecNames.getItemCount();
+	UT_ASSERT(kLimit == jLimit);
+
+	UT_VECTOR_PURGEALL(EV_EditEventMapper *, m_vecEventMaps);
+	UT_VECTOR_FREEALL(char *, m_vecNames);
+}
+
+UT_Bool XAP_InputModes::createInputMode(const char * szName,
+										EV_EditBindingMap * pBindingMap)
+{
+	UT_ASSERT(szName && *szName);
+	UT_ASSERT(pBindingMap);
+	
+	char * szDup = NULL;
+	EV_EditEventMapper * pEEM = NULL;
+
+	UT_cloneString(szDup,szName);
+	UT_ASSERT(szDup);
+	
+	pEEM = new EV_EditEventMapper(pBindingMap);
+	UT_ASSERT(pEEM);
+
+	UT_Bool b1 = (m_vecEventMaps.addItem(pEEM) == 0);
+	UT_Bool b2 = (m_vecNames.addItem(szDup) == 0);
+	UT_ASSERT(b1 && b2);
+
+	return UT_TRUE;
+}
+
+UT_Bool XAP_InputModes::setCurrentMap(const char * szName)
+{
+	UT_uint32 kLimit = m_vecNames.getItemCount();
+	UT_uint32 k;
+
+	for (k=0; k<kLimit; k++)
+		if (UT_stricmp(szName,(const char *)m_vecNames.getNthItem(k)) == 0)
+		{
+			m_indexCurrentEventMap = k;
+			return UT_TRUE;
+		}
+
+	return UT_FALSE;
+}
+
+EV_EditEventMapper * XAP_InputModes::getCurrentMap(void) const
+{
+	return (EV_EditEventMapper *)m_vecEventMaps.getNthItem(m_indexCurrentEventMap);
+}
+
+const char * XAP_InputModes::getCurrentMapName(void) const
+{
+	return (const char *)m_vecNames.getNthItem(m_indexCurrentEventMap);
+}
+
+EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
+{
+	UT_uint32 kLimit = m_vecNames.getItemCount();
+	UT_uint32 k;
+
+	for (k=0; k<kLimit; k++)
+		if (UT_stricmp(szName,(const char *)m_vecNames.getNthItem(k)) == 0)
+			return (EV_EditEventMapper *)m_vecEventMaps.getNthItem(k);
+
+	return NULL;
+}

@@ -272,6 +272,9 @@ public:
 	static EV_EditMethod_Fn closeWindow;
 	static EV_EditMethod_Fn querySaveAndExit;
 
+	static EV_EditMethod_Fn setEditVI;
+	static EV_EditMethod_Fn setInputVI;
+
 	static EV_EditMethod_Fn noop;
 
 	// Test routines
@@ -485,6 +488,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(cycleWindowsBck),		0,	""),
 	EV_EditMethod(NF(closeWindow),			0,	""),
 	EV_EditMethod(NF(querySaveAndExit),		0,	""),
+
+	EV_EditMethod(NF(setEditVI),			0,	""),
+	EV_EditMethod(NF(setInputVI),			0,	""),
 
 	EV_EditMethod(NF(noop),					0,	""),
 
@@ -3392,3 +3398,27 @@ Defun1(Test_Dump)
 	return UT_TRUE;
 }
 #endif
+
+Defun1(setEditVI)
+{
+	// enter "VI Edit Mode" (only valid when VI keys are loaded)
+	
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	//UT_Bool bResult = (pFrame->setInputMode("viEdit") != 0);
+	UT_Bool bResult = (pFrame->setInputMode("default") != 0);
+	return bResult;
+}
+
+Defun1(setInputVI)
+{
+	// enter "VI Input Mode" (only valid when VI keys are loaded)
+	
+	XAP_Frame * pFrame = (XAP_Frame *) pAV_View->getParentData();
+	UT_ASSERT(pFrame);
+
+	//UT_Bool bResult = (pFrame->setInputMode("viInput") != 0);
+	UT_Bool bResult = (pFrame->setInputMode("emacs") != 0);
+	return bResult;
+}

@@ -20,7 +20,7 @@
 
 // ********************************************************************************
 // ********************************************************************************
-// *** THIS FILE DEFINES THE DEFAULT KEYBOARD AND MOUSE BINDINGS FOR AbiWord 1. ***
+// *** THIS FILE DEFINES Emacs KEYBOARD AND MOUSE BINDINGS FOR AbiWord 1.       ***
 // *** To define bindings for other emulations, clone this file and change the  ***
 // *** various settings.  See ap_LoadBindings.cpp for more information.         ***
 // ********************************************************************************
@@ -202,9 +202,10 @@ static struct ap_bs_NVK s_NVKTable[] =
 						  "",					"",					"",				""					}},
 //	{EV_NVK_F11,		{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
-//	{EV_NVK_F12,		{ "",					"",					"",				"",
-//						  "",					"",					"",				""					}},
-
+#if 1 // FOR TESTING INPUT MODE SWITCHING -- TODO REMOVE THIS
+	{EV_NVK_F12,		{ "setEditVI",			"",					"",				"",
+						  "",					"",					"",				""					}},
+#endif
 // 	{EV_NVK_F13,		{
 // 	{EV_NVK_F14,		{
 // 	{EV_NVK_F15,		{
@@ -265,6 +266,8 @@ static struct ap_bs_NVK_Prefix s_NVKTable_P[] =
 ** and others) since we don't map keystrokes into them.
 ******************************************************************
 *****************************************************************/
+
+#define PREFIX_KEY	""
 
 static struct ap_bs_Char s_CharTable[] =
 {
@@ -356,7 +359,7 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x75, /* u      */ { "insertData",			"",					"",				""					}},
 	{0x76, /* v      */ { "insertData",			"scrollPageDown",	"scrollPageUp",	""					}},
 	{0x77, /* w      */ { "insertData",			"cut",				"",				""					}},
-	{0x78, /* x      */ { "insertData",			"",					"",				""					}},
+	{0x78, /* x      */ { "insertData",			"",					PREFIX_KEY,		""					}},
 	{0x79, /* y      */ { "insertData",			"paste",			"",				""					}},
 	{0x7a, /* z      */ { "insertData",			"",					"",				""					}},
 	{0x7b, /* {      */ { "insertData",			"",					"",				""					}},
@@ -484,8 +487,9 @@ static struct ap_bs_Char s_CharTable[] =
 
 static struct ap_bs_Char_Prefix s_CharPrefixTable[] =
 {
+//  Warning: case is significant here Ctrl-x and Ctrl-X are different :-)	
 //	{char, /* desc   */ { none,					_C,					_A,				_A_C				}},
-	{0x78, /* X      */ { "",					"emacsctrlx",		"",				""					}},
+	{0x78, /* x      */ { "",					"emacsctrlx",		"",				""					}},
 };
 
 /*****************************************************************

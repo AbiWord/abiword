@@ -54,6 +54,7 @@ public:
 	virtual UT_Bool				raise(void);
 	virtual UT_Bool				show(void);
 	virtual UT_Bool				updateTitle(void);
+	virtual UT_sint32			setInputMode(const char * szName);
 
 	GtkWidget *					getTopLevelWindow(void) const;
 	GtkWidget *					getVBoxWidget(void) const;

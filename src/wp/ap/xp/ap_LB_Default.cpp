@@ -202,9 +202,10 @@ static struct ap_bs_NVK s_NVKTable[] =
 						  "",					"",					"",				""					}},
 //	{EV_NVK_F11,		{ "",					"",					"",				"",
 //						  "",					"",					"",				""					}},
-//	{EV_NVK_F12,		{ "",					"",					"",				"",
-//						  "",					"",					"",				""					}},
-
+#if 1 // FOR TESTING INPUT MODE SWITCHING -- TODO REMOVE THIS
+	{EV_NVK_F12,		{ "setInputVI",			"",					"",				"",
+						  "",					"",					"",				""					}},
+#endif
 // 	{EV_NVK_F13,		{
 // 	{EV_NVK_F14,		{
 // 	{EV_NVK_F15,		{

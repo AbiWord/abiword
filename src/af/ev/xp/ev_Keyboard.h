@@ -37,7 +37,8 @@ public:
 								 EV_EditMethod * pEM,
 								 UT_UCSChar * pData,
 								 UT_uint32 dataLength);
-	
+	void setEditEventMap(EV_EditEventMapper * pEEM);
+
 protected:
 	EV_EditEventMapper *	m_pEEM;
 };

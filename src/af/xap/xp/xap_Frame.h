@@ -33,6 +33,7 @@ class AD_Document;
 class EV_EditEventMapper;
 class EV_Menu_Layout;
 class EV_Menu_LabelSet;
+class EV_EditBindingMap;
 class AV_ScrollObj;
 class AP_FrameData;
 class ap_Scrollbar_ViewListener;
@@ -47,6 +48,28 @@ class ap_Scrollbar_ViewListener;
 ******************************************************************
 *****************************************************************/
 
+class XAP_InputModes
+{
+public:
+	XAP_InputModes(void);
+	~XAP_InputModes(void);
+
+	UT_Bool							createInputMode(const char * szName,
+													EV_EditBindingMap * pBindingMap);
+	UT_Bool							setCurrentMap(const char * szName);
+	EV_EditEventMapper *			getCurrentMap(void) const;
+	const char * 					getCurrentMapName(void) const;
+	EV_EditEventMapper *			getMapByName(const char * szName) const;
+
+protected:
+	UT_Vector						m_vecEventMaps; /* EV_EditEventMapper * */
+	UT_Vector						m_vecNames;		/* const char * */
+	
+	UT_uint32						m_indexCurrentEventMap;
+};
+
+//////////////////////////////////////////////////////////////////
+	
 class XAP_Frame
 {
 public:
@@ -61,8 +84,9 @@ public:
 	virtual UT_Bool				raise(void)=0;
 	virtual UT_Bool				show(void)=0;
 	virtual UT_Bool				updateTitle(void);
+	virtual UT_sint32			setInputMode(const char * szName);
 
-	const EV_EditEventMapper *	getEditEventMapper(void) const;
+	EV_EditEventMapper *		getEditEventMapper(void) const;
 	XAP_App *					getApp(void) const;
 	AV_View *					getCurrentView(void) const;
 	const char *				getFilename(void) const;
@@ -94,7 +118,6 @@ protected:
 	ap_ViewListener *			m_pViewListener;
 	AV_ListenerId				m_lid;
 	AV_ScrollObj *				m_pScrollObj;	/* to our scroll handler */
-	EV_EditEventMapper *		m_pEEM;			/* the event state-machine for this frame */
 	const char *				m_szMenuLayoutName;
 	const char *				m_szMenuLabelSetName;		/* language for menus */
 	UT_Vector					m_vecToolbarLayoutNames;
@@ -108,6 +131,8 @@ protected:
 	
 	AP_FrameData *				m_pData;		/* app-specific frame data */
 
+	XAP_InputModes *			m_pInputModes;
+	
 	static int					_getNextUntitledNumber(void);
 	
 private:

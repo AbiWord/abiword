@@ -34,8 +34,12 @@
 
 EV_Mouse::EV_Mouse(EV_EditEventMapper * pEEM)
 {
-	UT_ASSERT(pEEM);
+	setEditEventMap(pEEM);
+}
 
+void EV_Mouse::setEditEventMap(EV_EditEventMapper * pEEM)
+{
+	UT_ASSERT(pEEM);
 	m_pEEM = pEEM;
 }
 

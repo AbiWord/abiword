@@ -33,8 +33,12 @@
 
 EV_Keyboard::EV_Keyboard(EV_EditEventMapper * pEEM)
 {
-	UT_ASSERT(pEEM);
+	setEditEventMap(pEEM);
+}
 
+void EV_Keyboard::setEditEventMap(EV_EditEventMapper * pEEM)
+{
+	UT_ASSERT(pEEM);
 	m_pEEM = pEEM;
 }
 

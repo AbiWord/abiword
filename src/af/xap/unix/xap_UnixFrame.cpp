@@ -244,16 +244,35 @@ UT_Bool XAP_UnixFrame::initialize(void)
 
 	// get a handle to our keyboard binding mechanism
 	// and to our mouse binding mechanism.
-	
-	m_pUnixKeyboard = new ev_UnixKeyboard(m_pEEM);
+
+	EV_EditEventMapper * pEEM = getEditEventMapper();
+	UT_ASSERT(pEEM);
+
+	m_pUnixKeyboard = new ev_UnixKeyboard(pEEM);
 	UT_ASSERT(m_pUnixKeyboard);
 	
-	m_pUnixMouse = new EV_UnixMouse(m_pEEM);
+	m_pUnixMouse = new EV_UnixMouse(pEEM);
 	UT_ASSERT(m_pUnixMouse);
 
 	return UT_TRUE;
 }
 
+UT_sint32 XAP_UnixFrame::setInputMode(const char * szName)
+{
+	UT_sint32 result = XAP_Frame::setInputMode(szName);
+	if (result == 1)
+	{
+		// if it actually changed we need to update keyboard and mouse
+
+		EV_EditEventMapper * pEEM = getEditEventMapper();
+		UT_ASSERT(pEEM);
+
+		m_pUnixKeyboard->setEditEventMap(pEEM);
+		m_pUnixMouse->setEditEventMap(pEEM);
+	}
+
+	return result;
+}
 
 GtkWidget * XAP_UnixFrame::getTopLevelWindow(void) const
 {

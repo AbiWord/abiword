@@ -36,6 +36,7 @@ public:
 							  EV_EditMethod * pEM,
 							  UT_sint32 xPos,
 							  UT_sint32 yPos);
+	void setEditEventMap(EV_EditEventMapper * pEEM);
 
 protected:
 	EV_EditEventMapper *	m_pEEM;

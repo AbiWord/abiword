@@ -30,7 +30,8 @@
 #include "ev_EditEventMapper.h"
 #include "xav_View.h"
 
-EV_UnixMouse::EV_UnixMouse(EV_EditEventMapper * pEEM) : EV_Mouse(pEEM)
+EV_UnixMouse::EV_UnixMouse(EV_EditEventMapper * pEEM)
+	: EV_Mouse(pEEM)
 {
 	m_clickState = 0;					// no click
 	m_contextState = 0;
