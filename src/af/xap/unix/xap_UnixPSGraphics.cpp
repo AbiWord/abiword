@@ -39,6 +39,10 @@
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"
 
+#ifdef BIDI_ENABLED
+#include "ut_OverstrikingChars.h"
+#endif
+
 // the resolution that we report to the application (pixels per inch).
 #define PS_RESOLUTION		7200
 
@@ -118,7 +122,7 @@ UT_uint32 PS_Graphics::getFontAscent()
   UT_ASSERT(m_pCurrentFont);
   PSFont *pEnglishFont;
   PSFont *pChineseFont;
-  explodePSFonts(pEnglishFont,pChineseFont);
+  _explodePSFonts(pEnglishFont,pChineseFont);
   UT_ASSERT(pEnglishFont && pChineseFont);
   int e,c;
   GlobalFontInfo * gfi = pEnglishFont->getMetricsData()->gfi;
@@ -137,7 +141,7 @@ UT_uint32 PS_Graphics::getFontDescent()
   UT_ASSERT(m_pCurrentFont);
   PSFont *pEnglishFont;
   PSFont *pChineseFont;
-  explodePSFonts(pEnglishFont,pChineseFont);  
+  _explodePSFonts(pEnglishFont,pChineseFont);
   UT_ASSERT(pEnglishFont && pChineseFont);
   int e,c;
   GlobalFontInfo * gfi = pEnglishFont->getMetricsData()->gfi;
@@ -164,7 +168,7 @@ UT_uint32 PS_Graphics::measureUnRemappedChar(const UT_UCSChar c)
  	UT_ASSERT(m_pCurrentFont);
 	PSFont *pEnglishFont;
 	PSFont *pChineseFont;
-	explodePSFonts(pEnglishFont,pChineseFont);  
+	_explodePSFonts(pEnglishFont,pChineseFont);
 	
 	if (XAP_EncodingManager::instance->is_cjk_letter(c))
 	    return _scale(pChineseFont->getUnixFont()->get_CJK_Width());
@@ -322,67 +326,78 @@ GR_Font* PS_Graphics::findFont(const char* pszFontFamily,
 
 #define OUR_LINE_LIMIT		70			/* DSC3.0 limits to 256 */
 
-void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset, 
+void PS_Graphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 							int iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
-  PSFont *pEnglishFont;
-  PSFont *pChineseFont;
-  explodePSFonts(pEnglishFont,pChineseFont);  
-  UT_ASSERT(pEnglishFont && pChineseFont);
+	PSFont *pEnglishFont;
+	PSFont *pChineseFont;
+	_explodePSFonts(pEnglishFont,pChineseFont);
+	UT_ASSERT(pEnglishFont && pChineseFont);
 
-  const UT_UCSChar *pS;
-  const UT_UCSChar *pE=pChars+iCharOffset;
-  const UT_UCSChar *pEnd=pChars+iCharOffset+iLength;
-  UT_sint32 xS;
-  do
+	const UT_UCSChar *pS;
+	const UT_UCSChar *pE=pChars+iCharOffset;
+	const UT_UCSChar *pEnd=pChars+iCharOffset+iLength;
+	UT_sint32 xS;
+	do
 	{
-	  for(pS=pE,xS=xoff; pE<pEnd && XAP_EncodingManager::instance->is_cjk_letter(*pE); ++pE)
-	          xoff+=_scale(pChineseFont->getUnixFont()->get_CJK_Width());
-	  if(pE>pS)
+		for(pS=pE,xS=xoff; pE<pEnd && XAP_EncodingManager::instance->is_cjk_letter(*pE); ++pE)
+			xoff+=_scale(pChineseFont->getUnixFont()->get_CJK_Width());
+		if(pE>pS)
 		{
-		  _emit_SetFont(pChineseFont);
-		  drawCharsCJK(pS,0,pE-pS,xS,yoff);
+			_emit_SetFont(pChineseFont);
+			_drawCharsCJK(pS,0,pE-pS,xS,yoff);
 		}
-	  for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::instance->is_cjk_letter(*pE); ++pE)
-	          xoff += _scale(pEnglishFont->getCharWidth(remapGlyph(*pE,/**pS > 0xff*/0)));
-	  if(pE>pS)
+#ifdef BIDI_ENABLED
+		bool font_emitted = false;
+		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::instance->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) == UT_NOT_OVERSTRIKING); ++pE)
+#else
+		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::instance->is_cjk_letter(*pE); ++pE)
+#endif
+		xoff += _scale(pEnglishFont->getCharWidth(remapGlyph(*pE,/**pS > 0xff*/0)));
+		if(pE>pS)
 		{
-		  _emit_SetFont(pEnglishFont);
-		  drawCharsCJK(pS,0,pE-pS,xS,yoff);
+			_emit_SetFont(pEnglishFont);
+#ifdef BIDI_ENABLED
+			font_emitted = true;
+#endif
+			if(XAP_EncodingManager::instance->isUnicodeLocale())
+				_drawCharsUTF8(pS,0,pE-pS,xS,yoff);
+			else
+				_drawCharsNonCJK(pS,0,pE-pS,xS,yoff);
 		}
+#ifdef BIDI_ENABLED
+		for(pS=pE,xS=xoff; pE<pEnd && !XAP_EncodingManager::instance->is_cjk_letter(*pE) && (isOverstrikingChar(*pE) != UT_NOT_OVERSTRIKING); ++pE)
+			;
+		if(pE>pS)
+		{
+			if(!font_emitted)
+				_emit_SetFont(pEnglishFont);
+			_drawCharsOverstriking(pS,0,pE-pS,xS,yoff);
+		}
+#endif
 	}
-  while(pE<pEnd);
+  	while(pE<pEnd);
 }
-							 
-static UT_Wctomb* pWctomb = NULL;
 
-void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset, 
-							 int iLength, UT_sint32 xoff, UT_sint32 yoff)
+#ifdef BIDI_ENABLED
+void PS_Graphics::_drawCharsOverstriking(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
+							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
 {
-	if (!pWctomb)
-	    pWctomb = new UT_Wctomb;
-	else
-	    pWctomb->initialize();
-	
 	const encoding_pair*  enc = 0;
 	UT_AdobeEncoding* ae = 0;
 	
 	UT_ASSERT(m_pCurrentFont);
 
-	if (XAP_EncodingManager::instance->isUnicodeLocale())
+	enc = m_pCurrentFont->getUnixFont()->loadEncodingFile();
+	if(enc)
 	{
-		enc = m_pCurrentFont->getUnixFont()->loadEncodingFile();
-		if(enc)
-		{
-			ae = new UT_AdobeEncoding(enc, m_pCurrentFont->getUnixFont()->getEncodingTableSize());
-		}
-		else
-		{
-			UT_DEBUGMSG(("UnixPS_Graphics: no encoding available!\n"));
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		}
+		ae = new UT_AdobeEncoding(enc, m_pCurrentFont->getUnixFont()->getEncodingTableSize());
 	}
-
+	else
+	{
+		UT_DEBUGMSG(("UnixPS_Graphics: no encoding available!\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
 	
 	// The GR classes are expected to take yoff as the upper-left of
 	// each glyph.  PostScript interprets the yoff as the baseline,
@@ -397,6 +412,124 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 	const UT_UCSChar * pS = pChars+iCharOffset;
 	const UT_UCSChar * pEnd = pS+iLength;
 	UT_UCSChar currentChar;
+
+	//when printing 8-bit chars we enclose them in brackets, but 16-bit
+	//chars must be printed by name without brackets
+	
+	bool open_bracket = false;
+	bool using_names = false;
+	
+	for(; pS < pEnd; pS++)
+	{
+		if (pD-buf > OUR_LINE_LIMIT)
+		{
+			*pD++ = '\\';
+			*pD++ = '\n';
+			*pD++ = 0;
+			m_ps->writeBytes(buf);
+			pD = buf;
+		}
+
+		currentChar = remapGlyph(*pS, false);
+		if(currentChar > 255)
+		{
+			if(open_bracket)
+			{
+				open_bracket = false;
+				sprintf((char *) pD,") %d %d MS\n",xoff,yoff);
+				m_ps->writeBytes(buf);
+				pD = buf;
+			}
+			else if(!using_names)
+			{
+				sprintf((char *) pD," %d %d MV ",xoff,yoff);
+				pD = buf + strlen(buf);
+				using_names = true;
+			}
+				
+			const char * glyph = ae->ucsToAdobe(currentChar);
+			// ' /glyph GS '
+			if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
+			{
+				*pD++ = '\\';
+				*pD++ = '\n';
+				*pD++ = 0;
+				m_ps->writeBytes(buf);
+				pD = buf;
+			}
+				
+			*pD++ = ' ';
+			*pD++ = '/';
+			strcpy(pD, (const char*)glyph);
+			pD += strlen(glyph);
+			strcpy(pD, " GS ");
+			pD += 4;
+		}
+		else    // currentChar < 255
+		{
+			if(!open_bracket)
+			{
+				*pD++ = '(';
+				open_bracket = true;
+				using_names = false;
+			}
+			
+		    switch (currentChar)
+		    {
+				case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
+				case UCS_TAB:	*pD++ = '\\';	*pD++ = 't';	break;
+				case UCS_LF:	*pD++ = '\\';	*pD++ = 'n';	break;
+				case UCS_FF:	*pD++ = '\\';	*pD++ = 'f';	break;
+				case UCS_CR:	*pD++ = '\\';	*pD++ = 'r';	break;
+				case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
+				case '(':		*pD++ = '\\';	*pD++ = '(';	break;
+				case ')':		*pD++ = '\\';	*pD++ = ')';	break;
+				default:		*pD++ = (char)currentChar; 	break;
+	    	}
+		}
+	}
+	if(open_bracket)
+	{
+		*pD++ = ')';
+		sprintf((char *) pD," %d %d MS\n",xoff,yoff);
+	}
+	else
+	{
+		*pD++ = '\n';
+		*pD++ = 0;
+	}
+			
+	m_ps->writeBytes(buf);
+	if(ae)
+		delete ae;
+	
+}
+#endif
+							 
+static UT_Wctomb* pWctomb = NULL;
+
+void PS_Graphics::_drawCharsCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
+							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
+{
+	if (!pWctomb)
+	    pWctomb = new UT_Wctomb;
+	else
+	    pWctomb->initialize();
+	
+	UT_ASSERT(m_pCurrentFont);
+
+	// The GR classes are expected to take yoff as the upper-left of
+	// each glyph.  PostScript interprets the yoff as the baseline,
+	// which doesn't match this expectation.  Adding the ascent of the
+	// font will bring it back to the correct position.
+	yoff += getFontAscent();
+
+	// unsigned buffer holds Latin-1 data to character code 255
+	char buf[OUR_LINE_LIMIT*2];
+	char * pD = buf;
+
+	const UT_UCSChar * pS = pChars+iCharOffset;
+	const UT_UCSChar * pEnd = pS+iLength;
 	char _bytes[30];
 	int _bytes_len;
 
@@ -416,110 +549,101 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 			pD = buf;
 		}
 
-		// TODO deal with Unicode issues.
-		if (XAP_EncodingManager::instance->isUnicodeLocale())
+		if(!open_bracket)
 		{
-			currentChar = remapGlyph(*pS, false);
-			if(currentChar > 255)
+			*pD++ = '(';
+			open_bracket = true;
+			using_names = false;
+		}
+		pWctomb->wctomb_or_fallback(_bytes,_bytes_len,*pS);
+		if (pD+_bytes_len-buf > OUR_LINE_LIMIT)
+		{
+		    *pD++ = '\\';
+		    *pD++ = '\n';
+		    *pD++ = 0;
+		    m_ps->writeBytes(buf);
+		    pD = buf;
+		}
+		for(int i = 0; i < _bytes_len; ++i)
+		{
+			char c = _bytes[i];
+			switch (c)
 			{
-				if(open_bracket)
-				{
-					open_bracket = false;
-					sprintf((char *) pD,") %d %d MS\n",xoff,yoff);
-					m_ps->writeBytes(buf);
-					pD = buf;
-				}
-				else if(!using_names)
-				{
-					sprintf((char *) pD," %d %d MV ",xoff,yoff);
-					pD = buf + strlen(buf);
-					using_names = true;
-				}
-
-				
-				const char * glyph = ae->ucsToAdobe(currentChar);
-				// ' /glyph GS '
-				if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
-				{
-					*pD++ = '\\';
-					*pD++ = '\n';
-					*pD++ = 0;
-					m_ps->writeBytes(buf);
-					pD = buf;
-				}
-				
-				
-				*pD++ = ' ';
-				*pD++ = '/';
-				strcpy(pD, (const char*)glyph);
-				pD += strlen(glyph);
-				strcpy(pD, " GS ");
-				pD += 4;
-			}
-			else
-			{
-				if(!open_bracket)
-				{
-					*pD++ = '(';
-					open_bracket = true;
-					using_names = false;
-				}
-				
-			    switch (currentChar)
-			    {
-					case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
-					case UCS_TAB:	*pD++ = '\\';	*pD++ = 't';	break;
-					case UCS_LF:	*pD++ = '\\';	*pD++ = 'n';	break;
-					case UCS_FF:	*pD++ = '\\';	*pD++ = 'f';	break;
-					case UCS_CR:	*pD++ = '\\';	*pD++ = 'r';	break;
-					case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
-					case '(':		*pD++ = '\\';	*pD++ = '(';	break;
-					case ')':		*pD++ = '\\';	*pD++ = ')';	break;
-					default:		*pD++ = (char)currentChar; 	break;
-		    	}
+				case '\\': *pD++ = '\\'; *pD++ = '\\'; break;
+				case '(' : *pD++ = '\\'; *pD++ = '(';  break;
+				case ')' : *pD++ = '\\'; *pD++ = ')';  break;
+				default:   *pD++ = (char)c;     break;
 			}
 		}
-		else if (XAP_EncodingManager::instance->is_cjk_letter(*pS))
-		{		
-			if(!open_bracket)
-			{
-				*pD++ = '(';
-				open_bracket = true;
-				using_names = false;
-			}
-			pWctomb->wctomb_or_fallback(_bytes,_bytes_len,*pS);
-			if (pD+_bytes_len-buf > OUR_LINE_LIMIT)
-			{
-			    *pD++ = '\\';
-			    *pD++ = '\n';
-			    *pD++ = 0;
-			    m_ps->writeBytes(buf);
-			    pD = buf;
-			}
-                       for(int i = 0; i < _bytes_len; ++i) {
-                           char c = _bytes[i];
-                           switch (c)
-                           {
-                               case '\\': *pD++ = '\\'; *pD++ = '\\'; break;
-                               case '(' : *pD++ = '\\'; *pD++ = '(';  break;
-                               case ')' : *pD++ = '\\'; *pD++ = ')';  break;
-                               default:   *pD++ = (char)c;     break;
-                           }
-                       }
-
-		} else 	{
+		pS++;
+	}
+	if(open_bracket)
+	{
+		*pD++ = ')';
+		sprintf((char *) pD," %d %d MS\n",xoff,yoff);
+	}
+	else
+	{
+		*pD++ = '\n';
+		*pD++ = 0;
+	}
 			
-			if(!open_bracket)
-			{
-				*pD++ = '(';
-				open_bracket = true;
-				using_names = false;
-			}
-		
-		    currentChar = remapGlyph(*pS, *pS >= 256 ? true : false);
-		    currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
-		    switch (currentChar)
-		    {
+	m_ps->writeBytes(buf);
+}
+
+void PS_Graphics::_drawCharsNonCJK(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
+							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
+{
+	if (!pWctomb)
+	    pWctomb = new UT_Wctomb;
+	else
+	    pWctomb->initialize();
+	
+	UT_ASSERT(m_pCurrentFont);
+
+	
+	// The GR classes are expected to take yoff as the upper-left of
+	// each glyph.  PostScript interprets the yoff as the baseline,
+	// which doesn't match this expectation.  Adding the ascent of the
+	// font will bring it back to the correct position.
+	yoff += getFontAscent();
+
+	// unsigned buffer holds Latin-1 data to character code 255
+	char buf[OUR_LINE_LIMIT*2];
+	char * pD = buf;
+
+	const UT_UCSChar * pS = pChars+iCharOffset;
+	const UT_UCSChar * pEnd = pS+iLength;
+	UT_UCSChar currentChar;
+
+	//when printing 8-bit chars we enclose them in brackets, but 16-bit
+	//chars must be printed by name without brackets
+	
+	bool open_bracket = false;
+	bool using_names = false;
+	while (pS<pEnd)
+	{
+		if (pD-buf > OUR_LINE_LIMIT)
+		{
+			*pD++ = '\\';
+			*pD++ = '\n';
+			*pD++ = 0;
+			m_ps->writeBytes(buf);
+			pD = buf;
+		}
+
+		// TODO deal with Unicode issues.
+		if(!open_bracket)
+		{
+			*pD++ = '(';
+			open_bracket = true;
+			using_names = false;
+		}
+	
+	    currentChar = remapGlyph(*pS, *pS >= 256 ? true : false);
+	    currentChar = currentChar <= 0xff ? currentChar : XAP_EncodingManager::instance->UToNative(currentChar);
+	    switch (currentChar)
+	    {
 			case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
 			case UCS_TAB:	*pD++ = '\\';	*pD++ = 't';	break;
 			case UCS_LF:	*pD++ = '\\';	*pD++ = 'n';	break;
@@ -529,7 +653,128 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 			case '(':		*pD++ = '\\';	*pD++ = '(';	break;
 			case ')':		*pD++ = '\\';	*pD++ = ')';	break;
 			default:		*pD++ = (char)currentChar; 	break;
-		    }
+	    }
+		pS++;
+	}
+	if(open_bracket)
+	{
+		*pD++ = ')';
+		sprintf((char *) pD," %d %d MS\n",xoff,yoff);
+	}
+	else
+	{
+		*pD++ = '\n';
+		*pD++ = 0;
+	}
+			
+	m_ps->writeBytes(buf);
+}
+
+void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset,
+							 UT_uint32 iLength, UT_sint32 xoff, UT_sint32 yoff)
+{
+	const encoding_pair*  enc = 0;
+	UT_AdobeEncoding* ae = 0;
+	
+	UT_ASSERT(m_pCurrentFont);
+
+	enc = m_pCurrentFont->getUnixFont()->loadEncodingFile();
+	if(enc)
+	{
+		ae = new UT_AdobeEncoding(enc, m_pCurrentFont->getUnixFont()->getEncodingTableSize());
+	}
+	else
+	{
+		UT_DEBUGMSG(("UnixPS_Graphics: no encoding available!\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+	
+	// The GR classes are expected to take yoff as the upper-left of
+	// each glyph.  PostScript interprets the yoff as the baseline,
+	// which doesn't match this expectation.  Adding the ascent of the
+	// font will bring it back to the correct position.
+	yoff += getFontAscent();
+
+	// unsigned buffer holds Latin-1 data to character code 255
+	char buf[OUR_LINE_LIMIT*2];
+	char * pD = buf;
+
+	const UT_UCSChar * pS = pChars+iCharOffset;
+	const UT_UCSChar * pEnd = pS+iLength;
+	UT_UCSChar currentChar;
+
+	//when printing 8-bit chars we enclose them in brackets, but 16-bit
+	//chars must be printed by name without brackets
+	
+	bool open_bracket = false;
+	bool using_names = false;
+	while (pS<pEnd)
+	{
+		if (pD-buf > OUR_LINE_LIMIT)
+		{
+			*pD++ = '\\';
+			*pD++ = '\n';
+			*pD++ = 0;
+			m_ps->writeBytes(buf);
+			pD = buf;
+		}
+
+		currentChar = remapGlyph(*pS, false);
+		if(currentChar > 255)
+		{
+			if(open_bracket)
+			{
+				open_bracket = false;
+				sprintf((char *) pD,") %d %d MS\n",xoff,yoff);
+				m_ps->writeBytes(buf);
+				pD = buf;
+			}
+			else if(!using_names)
+			{
+				sprintf((char *) pD," %d %d MV ",xoff,yoff);
+				pD = buf + strlen(buf);
+				using_names = true;
+			}
+				
+			const char * glyph = ae->ucsToAdobe(currentChar);
+			// ' /glyph GS '
+			if(pD - buf + strlen(glyph) + 6 > OUR_LINE_LIMIT)
+			{
+				*pD++ = '\\';
+				*pD++ = '\n';
+				*pD++ = 0;
+				m_ps->writeBytes(buf);
+				pD = buf;
+			}
+				
+			*pD++ = ' ';
+			*pD++ = '/';
+			strcpy(pD, (const char*)glyph);
+			pD += strlen(glyph);
+			strcpy(pD, " GS ");
+			pD += 4;
+		}
+		else
+		{
+			if(!open_bracket)
+			{
+				*pD++ = '(';
+				open_bracket = true;
+				using_names = false;
+			}
+			
+		    switch (currentChar)
+		    {
+				case 0x08:		*pD++ = '\\';	*pD++ = 'b';	break;
+				case UCS_TAB:	*pD++ = '\\';	*pD++ = 't';	break;
+				case UCS_LF:	*pD++ = '\\';	*pD++ = 'n';	break;
+				case UCS_FF:	*pD++ = '\\';	*pD++ = 'f';	break;
+				case UCS_CR:	*pD++ = '\\';	*pD++ = 'r';	break;
+				case '\\':		*pD++ = '\\';	*pD++ = '\\';	break;
+				case '(':		*pD++ = '\\';	*pD++ = '(';	break;
+				case ')':		*pD++ = '\\';	*pD++ = ')';	break;
+				default:		*pD++ = (char)currentChar; 	break;
+	    	}
 		}
 		pS++;
 	}
@@ -548,6 +793,7 @@ void PS_Graphics::drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset,
 	if(ae)
 		delete ae;
 }
+
 
 void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
 {
@@ -1272,7 +1518,7 @@ void PS_Graphics::fillRect(GR_Color3D /*c*/, UT_Rect & /*r*/)
 }
 
 
-PSFont *PS_Graphics::findMatchPSFontCJK(PSFont * pFont)
+PSFont *PS_Graphics::_findMatchPSFontCJK(PSFont * pFont)
 {
   if (!XAP_EncodingManager::instance->cjk_locale())
 	return pFont;
@@ -1323,17 +1569,17 @@ void PS_Graphics::_emit_SetFont(PSFont *pFont)
 };
 
 
-void PS_Graphics::explodePSFonts(PSFont*& pEnglishFont,PSFont*& pChineseFont)
+void PS_Graphics::_explodePSFonts(PSFont*& pEnglishFont,PSFont*& pChineseFont)
 {
   if(m_pCurrentFont->getUnixFont()->is_CJK_font())
 	{
 	  pChineseFont=m_pCurrentFont;
-	  pEnglishFont=findMatchPSFontCJK(pChineseFont);
+	  pEnglishFont=_findMatchPSFontCJK(pChineseFont);
 	}
   else
 	{
 	  pEnglishFont=m_pCurrentFont;
-	  pChineseFont=findMatchPSFontCJK(pEnglishFont);
+	  pChineseFont=_findMatchPSFontCJK(pEnglishFont);
 	}
 }
 

@@ -89,17 +89,17 @@ UT_sint32 isUCharRTL(UT_UCSChar c)
              case FRIBIDI_TYPE_LTR:
              case FRIBIDI_TYPE_WL:
              case FRIBIDI_TYPE_EN:
-                 UT_DEBUGMSG(("returning %d\n", 0));
+                 //UT_DEBUGMSG(("returning %d\n", 0));
                  return (0);
 
              case FRIBIDI_TYPE_RTL:
                   FRIBIDI_TYPE_WR:
                   FRIBIDI_TYPE_AN:
-                 UT_DEBUGMSG(("returning %d\n", 1));
+                 //UT_DEBUGMSG(("returning %d\n", 1));
                  return (1);
 
              default:
-                 UT_DEBUGMSG(("returning %d\n", -1));
+                 //UT_DEBUGMSG(("returning %d\n", -1));
                  return (-1);
          }
       }

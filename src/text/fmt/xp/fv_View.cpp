@@ -3089,7 +3089,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 				{
 					m_pDoc->StopList(sdh);
 					PT_DocPosition listPoint,posEOD;
-					bool bRes = getEditableBounds(true, posEOD);
+					//bool bRes = getEditableBounds(true, posEOD);
 					listPoint = getPoint();
 					fl_AutoNum * pAuto = nBlock->getAutoNum();
 					if(pAuto != NULL)
@@ -5267,8 +5267,9 @@ void FV_View::_findPositionCoords(PT_DocPosition pos,
 		// Do the assert. Want to know from debug builds when this happens.
 		UT_ASSERT(pBlock);
 
-		x = 0;
-		y = 0;
+		x = x2 = 0;
+		y = y2 = 0;
+		
 		height = 0;
 		*ppBlock = 0;
 		return;
@@ -5412,10 +5413,10 @@ void FV_View::_xorInsertionPoint()
 		
 		
 			//this is the second caret on ltr-rtl boundary
-			m_pG->xorLine(m_xPoint2-1, m_yPoint2+1, m_xPoint2-1, m_yPoint2 + m_iPointHeight);
-			m_pG->xorLine(m_xPoint2, m_yPoint2+1, m_xPoint2, m_yPoint2 + m_iPointHeight);
+			m_pG->xorLine(m_xPoint2-1, m_yPoint2+1, m_xPoint2-1, m_yPoint2 + m_iPointHeight + 1);
+			m_pG->xorLine(m_xPoint2, m_yPoint2+1, m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
  			//this is the line that links the two carrets
- 			m_pG->xorLine(m_xPoint, m_yPoint + m_iPointHeight, m_xPoint2, m_yPoint2 + m_iPointHeight);
+ 			m_pG->xorLine(m_xPoint, m_yPoint + m_iPointHeight + 1, m_xPoint2, m_yPoint2 + m_iPointHeight + 1);
  		
 			if(m_bPointDirection)
 			{
@@ -6574,7 +6575,7 @@ void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
 		UT_uint32 heightCaret;
 		UT_sint32 xCaret2, yCaret2;
 		bool bDirection;
-		PT_DocPosition pos = getPoint();
+		//PT_DocPosition pos = getPoint();
 		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
 		UT_ASSERT(pRun);

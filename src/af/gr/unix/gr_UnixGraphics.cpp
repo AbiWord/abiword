@@ -46,6 +46,7 @@ static bool isFontUnicode(GdkFont *font)
 #include "ut_dialogHelper.h"
 #include "ut_wctomb.h"
 #include "xap_EncodingManager.h"
+#include "ut_OverstrikingChars.h"
 
 GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App * app)
 {
@@ -177,11 +178,23 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	WCTOMB_DECLS;
 	GdkFont *font;
 	UT_sint32 x;
+
+#ifdef BIDI_ENABLED	
+	// to be able to handle overstriking characters, we have to remember the width
+	// of the previous character printed
+	// NB: overstriking characters are only supported under UTF-8, since on 8-bit locales
+	// these are typically handled by combination glyphs
+
+	static UT_sint32 prevWidth = 0;
+	UT_sint32 curX;
+	UT_sint32 curWidth;
+#endif
 	const UT_UCSChar *pC;
   	for(pC=pChars+iCharOffset, x=xoff; pC<pChars+iCharOffset+iLength; ++pC)
 	{
 		UT_UCSChar actual = remapGlyph(*pC,false);
 		font=XAP_EncodingManager::instance->is_cjk_letter(actual)? m_pMultiByteFont: m_pSingleByteFont;
+		
 		if(XAP_EncodingManager::instance->isUnicodeLocale())
 		{
 			/*	if the locale is unicode (i.e., utf-8) then we do not want
@@ -195,15 +208,60 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 				//UT_DEBUGMSG(("UnixGraphics::drawChars: utf-8\n"));
 				UT_UCSChar beucs;
 				LE2BE16((pC),(&beucs))  //declared in ut_endian.h
+#ifdef BIDI_ENABLED
+				switch(isOverstrikingChar(*pC))
+				{
+				case UT_NOT_OVERSTRIKING:
+					curWidth = gdk_text_width(font, (gchar*)&beucs, 2);
+					curX = x;
+					break;
+				case UT_OVERSTRIKING_RTL:
+					curWidth = 0;
+					curX = x;
+					break;
+				case UT_OVERSTRIKING_LTR:
+					curWidth =  prevWidth;
+					curX = x - prevWidth;
+					break;
+				}
+			
+				gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&beucs,2);
+				x+=curWidth;
+				prevWidth = curWidth;
+#else
 				gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,(gchar*)&beucs,2);
-				x+=gdk_text_width(font, (gchar*)&beucs, 2);
+                x+=gdk_text_width(font, (gchar*)&beucs, 2);
+#endif
 			}
 			else
 			{
-				//not a unicode font; actual is guaranteed to be <=0xff
+				// not a unicode font; actual is guaranteed to be <=0xff
+				// (this happens typically when drawing the interface)
 				gchar gc = (gchar) actual;
+#ifdef BIDI_ENABLED				
+				switch(isOverstrikingChar(*pC))
+				{
+				case UT_NOT_OVERSTRIKING:
+					curWidth = gdk_text_width(font, (gchar*)&gc, 1);
+					curX = x;
+					break;
+				case UT_OVERSTRIKING_RTL:
+					curWidth = 0;
+					curX = x;
+					break;
+				case UT_OVERSTRIKING_LTR:
+					curWidth =  prevWidth;
+					curX = x - prevWidth;
+					break;
+				}
+				
+				gdk_draw_text(m_pWin,font,m_pGC,curX,yoff+font->ascent,(gchar*)&gc,1);
+				x += curWidth;
+				prevWidth = curWidth;
+#else
 				gdk_draw_text(m_pWin,font,m_pGC,x,yoff+font->ascent,(gchar*)&gc,1);
-				x+=gdk_text_width(font, (gchar*)&gc, 1);			
+                x += gdk_text_width(font, (gchar*)&gc, 1);
+#endif
 			}
 		}
 		else

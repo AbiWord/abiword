@@ -31,6 +31,9 @@
 #include "ut_growbuf.h"
 #include "ut_debugmsg.h"
 
+#ifdef BIDI_ENABLED
+#include "ut_OverstrikingChars.h"
+#endif
 // static class member initializations
 bool GR_Graphics::m_bRemapGlyphsMasterSwitch = true;
 bool GR_Graphics::m_bRemapGlyphsNoMatterWhat = false;
@@ -99,8 +102,18 @@ UT_uint32 GR_Graphics::measureString(const UT_UCSChar* s, int iOffset,
 	for (int i = 0; i < num; i++)
     {
 		UT_UCSChar currentChar = remapGlyph(s[i + iOffset], false);
+#ifdef BIDI_ENABLED
+		if(isOverstrikingChar(currentChar) == UT_NOT_OVERSTRIKING)
+		{
+			charWidth = measureUnRemappedChar(currentChar);
+			stringWidth += charWidth;
+		}
+		else
+			charWidth = 0;
+#else
 		charWidth = measureUnRemappedChar(currentChar);
 		stringWidth += charWidth;
+#endif
 		if (pWidths) pWidths[i] = charWidth;
     }
 	return stringWidth;

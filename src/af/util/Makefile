@@ -93,7 +93,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/ut_vector.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_pair.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ut_wctomb.$(OBJ_SUFFIX)       \
-		$(OBJDIR)/ut_AdobeEncoding.$(OBJ_SUFFIX)
+		$(OBJDIR)/ut_AdobeEncoding.$(OBJ_SUFFIX) \
+		$(OBJDIR)/ut_OverstrikingChars.$(OBJ_SUFFIX)
 		
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

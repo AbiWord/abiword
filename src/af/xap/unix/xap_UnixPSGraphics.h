@@ -124,6 +124,36 @@ protected:
 	void 			_emit_SetColor(void);
 	virtual UT_uint32 _getResolution(void) const;
 
+	PSFont 			*_findMatchPSFontCJK(PSFont * pFont);
+	void 			_drawCharsCJK(	const UT_UCSChar*	pChars,
+									UT_uint32			iCharOffset,
+								 	UT_uint32			iLength,
+								 	UT_sint32 			xoff,
+								 	UT_sint32 			yoff);
+	
+	void 			_drawCharsNonCJK(const UT_UCSChar*	pChars,
+									UT_uint32			iCharOffset,
+								 	UT_uint32			iLength,
+								 	UT_sint32 			xoff,
+								 	UT_sint32 			yoff);
+	
+	void 			_drawCharsUTF8(const UT_UCSChar*	pChars,
+									UT_uint32			iCharOffset,
+								 	UT_uint32			iLength,
+								 	UT_sint32 			xoff,
+								 	UT_sint32 			yoff);
+								 	
+#ifdef BIDI_ENABLED
+	void 			_drawCharsOverstriking(const UT_UCSChar*	pChars,
+									UT_uint32			iCharOffset,
+								 	UT_uint32			iLength,
+								 	UT_sint32 			xoff,
+								 	UT_sint32 			yoff);
+
+#endif
+
+	void 			_explodePSFonts(PSFont*& non_cjk_font,PSFont*& cjk_font);
+	
 	UT_Vector		m_vecFontList;
 	PSFont *		m_pCurrentFont;
 	UT_RGBColor		m_currentColor;
@@ -144,10 +174,6 @@ protected:
 	
 	XAP_UnixFontManager *	m_fm;
 
-	PSFont *findMatchPSFontCJK(PSFont * pFont);
-	void drawCharsCJK(const UT_UCSChar* pChars, int iCharOffset, 
-								 int iLength, UT_sint32 xoff, UT_sint32 yoff);
-	void explodePSFonts(PSFont*& non_cjk_font,PSFont*& cjk_font);
 };
 
 #endif /* XAP_UNIXPSGRAPHICS_H */

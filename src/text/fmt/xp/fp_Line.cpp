@@ -135,6 +135,13 @@ void fp_Line::setContainer(fp_Container* pContainer)
 
 bool fp_Line::removeRun(fp_Run* pRun, bool bTellTheRunAboutIt)
 {
+#ifdef BIDI_ENABLED
+	// need to tell the previous run to redraw, in case this run contained
+	// overstriking characters
+	fp_Run* pPrevRun  = pRun->getPrev();
+	if(pPrevRun)
+		pPrevRun->clearScreen();
+#endif	
 	if (bTellTheRunAboutIt)
 	{
 		pRun->setLine(NULL);
@@ -1614,7 +1621,7 @@ UT_sint32 fp_Line::_createMapOfRuns()
         	//UT_DEBUGMSG(("pre-map0 %d, %d, %d, %d, %d, %d\n", s_pMapOfRuns[0], s_pMapOfRuns[1], s_pMapOfRuns[2], s_pMapOfRuns[3], s_pMapOfRuns[4], s_pMapOfRuns[5]));
 
         	UT_uint32 j;
-        	for (UT_uint32 i=1; i < count; i++)
+        	for (i=1; i < count; i++)
         	{
             	if(s_pMapOfRuns[i] == -1) //directionally neutral, i.e., whitespace
 				{

@@ -1387,7 +1387,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// find the run which has this offset inside it.
 	PT_DocPosition dPos = getPosition();
 	//UT_DEBUGMSG(("BlockLayout::FindPointCoords: iPos=%d, dPos=%d\n", iPos, dPos));
-	UT_ASSERT(iPos >= dPos);
+	//UT_ASSERT(iPos >= dPos);
 	const UT_uint32 iRelOffset = iPos - dPos;
 
 	// By default, the Run just before the one we find is the one we

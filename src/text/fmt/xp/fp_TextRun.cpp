@@ -39,6 +39,7 @@
 
 #include "xap_EncodingManager.h"
 
+#include "ut_OverstrikingChars.h"
 #ifdef BIDI_ENABLED
 //#define CAPS_TEST
 #include "AbiFriBiDi.h"
@@ -514,13 +515,13 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_uint32 offset = UT_MIN(iOffset, m_iOffsetFirst + m_iLen);
-
+	
 	for (UT_uint32 i=m_iOffsetFirst; i<offset; i++)
 	{
 #ifdef BIDI_ENABLED
-		xdiff += pCharWidths[i];
+			xdiff += pCharWidths[i];
 #else
-		xoff += pCharWidths[i];
+			xoff += pCharWidths[i];
 #endif
 	}
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
@@ -546,6 +547,11 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	    {
 	        iNextDir = pRun->getVisDirection();
 	        pRun->getLine()->getOffsets(pRun, xoff2, yoff2);
+	        // if the next run is the end of paragraph marker,
+	        // we need to derive yoff2 from the offset of this
+	        // run instead of the marker
+	        if(pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+	        	yoff2 = yoff;
 #ifdef UT_DEBUG	
 	        rtype = pRun->getType();
 #endif	
@@ -819,7 +825,6 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType, UT_sint32 iLength)
 			{
 				lenSpan = len;
 			}
-		
 			for (UT_uint32 i=0; i<lenSpan; i++)
 			{
 				iWidth += pCharWidths[i + offset];
@@ -1487,7 +1492,7 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 	m_bSquiggled = true;
 	
 	UT_sint32 nPoints = (right - left + 3)/2;
-	UT_ASSERT(nPoints > 1);
+	UT_ASSERT(nPoints >= 1); //can be 1 for overstriking chars
 
 	/*
 		NB: This array gets recopied inside the polyLine implementation
@@ -2031,6 +2036,7 @@ void fp_TextRun::setDirection(UT_sint32 dir)
 		{
 			UT_UCSChar firstChar;
 			getCharacter(0, firstChar);
+
 			switch (isUCharRTL(firstChar))
 			{
 	    		case 1:

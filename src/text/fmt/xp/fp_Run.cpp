@@ -144,6 +144,7 @@ fp_Run::_inheritProperties(void)
 
 	if (pRun)
 	{
+		//UT_DEBUGMSG(("fp_Run::_inheritProperties: from prev run\n"));
 		m_iAscent = pRun->getAscent();
 		m_iDescent = pRun->getDescent();
 		m_iHeight = pRun->getHeight();
@@ -154,7 +155,7 @@ fp_Run::_inheritProperties(void)
 	else
 	{
 		// look for fonts in this DocLayout's font cache
-
+		UT_DEBUGMSG(("fp_Run::_inheritProperties: from current font\n"));
 		const PP_AttrProp * pSpanAP = NULL;
 		const PP_AttrProp * pBlockAP = NULL;
 		const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
@@ -889,6 +890,7 @@ fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL,
 
 void fp_EndOfParagraphRun::lookupProperties(void)
 {
+	//UT_DEBUGMSG(("fp_EndOfParagraphRun::lookupProperties\n"));
 	_inheritProperties();
 	m_iWidth = 1;
 }
