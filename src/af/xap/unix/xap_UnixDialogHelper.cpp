@@ -43,6 +43,7 @@
 #endif
 
 /*****************************************************************/
+/*****************************************************************/
 
 static gboolean focus_in_event(GtkWidget *widget,GdkEvent */*event*/,gpointer /*user_data*/)
 {
@@ -152,6 +153,9 @@ static gboolean focus_in_event_ModelessOther(GtkWidget *widget,GdkEvent */*event
       return FALSE;
 }
 
+/*****************************************************************/
+/*****************************************************************/
+
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame)
 {
       g_object_set_data(G_OBJECT(widget), "frame",
@@ -203,22 +207,6 @@ bool isTransientWindow(GtkWindow *window,GtkWindow *parent)
 		}
 	}
   return false;
-}
-
-gint s_key_pressed(GtkWidget * /* widget */, GdkEventKey * e)
-{
-	UT_ASSERT(e);
-
-	guint key = e->keyval;
-
-	// TODO this is hard coded, maybe fix it
-	if (key == 'k' ||
-		key == GDK_Escape)
-	{
-		gtk_main_quit();
-	}
-
-	return TRUE;
 }
 
 gint searchCList(GtkCList * clist, char * compareText)
@@ -867,12 +855,12 @@ void messageBoxOK(const char * message)
 	GtkWidget * msg = gtk_message_dialog_new ( NULL,
 											   GTK_DIALOG_MODAL,
 											   GTK_MESSAGE_INFO,
-											   GTK_BUTTTONS_OK,
+											   GTK_BUTTONS_OK,
 											   message ) ;
 
 	gtk_window_set_title(GTK_WINDOW(msg), "AbiWord");
 	gtk_widget_show ( msg ) ;
-	gtk_dialog_run ( msg ) ;
+	gtk_dialog_run ( GTK_DIALOG(msg) ) ;
 	gtk_widget_destroy ( msg ) ;
 }
 
