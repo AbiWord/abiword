@@ -1482,7 +1482,7 @@ void fp_TabRun::_clearScreen(bool /* bFullLineHeightRect */)
 
 	// need to clear full height of line, in case we had a selection
 	getLine()->getScreenOffsets(this, xoff, yoff);
-	Fill(getGraphics(),xoff+getX(), yoff, getWidth(), getLine()->getHeight());
+	Fill(getGraphics(),xoff, yoff, getWidth(), getLine()->getHeight());
 }
 
 void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_uint32 iHeight)
