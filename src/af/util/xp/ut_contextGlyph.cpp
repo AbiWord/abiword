@@ -1027,7 +1027,7 @@ UT_contextGlyph::UT_contextGlyph()
 					 s_noLigature.getItemCount(), s_noLigature2.getItemCount(),
 					 s_noShaping.getItemCount()));
 		
-		// init the smart quote tables with the poiters to language
+		// init the smart quote tables with the pointers to language
 		// codes in UT_Laguage
 		UT_Language lang;
 		s_pEN_US = lang.getCodeFromCode("en-US");
