@@ -147,8 +147,11 @@ dcl(DLG_NoSaveFile_DirNotExist, 		"A directory in the given pathname does not ex
 dcl(DLG_NoSaveFile_DirNotWriteable, 	"The directory '%s' is write-protected.")
 dcl(DLG_OverwriteFile,					"File already exists.  Overwrite file '%s'?")
 
-dcl(DLG_Password_Title, "Enter Password")
-dcl(DLG_Password_Password, "Password:")
+/* Password dialog */
+dcl(DLG_Password_Title,					"Enter Password")
+dcl(DLG_Password_Password,				"Password:")
+dcl(DLG_Password_Password_No_Colon,			"Password")
+dcl(DLG_Password_Authenticate,				"&Authenticate")
 
 /* Zoom dialog */
 dcl(DLG_Zoom_ZoomTitle, 				"Zoom")

@@ -249,7 +249,7 @@ void XAP_UnixDialog_PluginManager::_refresh ()
 		selectFirstEntry(m_list);
 	}
 	
-	if (rowNumber != -1)
+	if (rowNumber != -1 && XAP_ModuleManager::instance().enumModules()->size() > 0)
 		pModule = static_cast<XAP_Module *>(XAP_ModuleManager::instance().enumModules()->getNthItem(rowNumber));
 	else
 		pModule = 0;
