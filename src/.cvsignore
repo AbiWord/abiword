@@ -4,3 +4,5 @@ GNUmakefile
 *_OBJ
 *_DBG
 *_GNOME
+*_Debug
+*_Release
