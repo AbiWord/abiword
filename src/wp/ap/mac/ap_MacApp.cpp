@@ -71,14 +71,10 @@ UT_Bool AP_MacApp::initialize(void)
 	{
 		const char * szISpellDirectory = NULL;
 		const char * szSpellCheckWordList = NULL;
-		if ((getPrefsValue(AP_PREF_KEY_MacISpellDirectory,&szISpellDirectory)) && (szISpellDirectory) && (*szISpellDirectory))
-			;
-		else
-			szISpellDirectory = AP_PREF_DEFAULT_MacISpellDirectory;
-		if ((getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList)) && (szSpellCheckWordList) && (*szSpellCheckWordList))
-			;
-		else
-			szSpellCheckWordList = AP_PREF_DEFAULT_SpellCheckWordList;
+		getPrefsValue(AP_PREF_KEY_MacISpellDirectory,&szISpellDirectory);
+		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
+		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList);
+		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
 		
 		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
 		UT_ASSERT(szPathname);

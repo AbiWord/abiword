@@ -184,10 +184,8 @@ UT_Bool XAP_UnixApp::_loadFonts(void)
 
 	char * szTemp = NULL;
 	const char * szPrefFontPath = NULL;
-	if ((getPrefsValue(XAP_PREF_KEY_UnixFontPath,&szPrefFontPath)) && (szPrefFontPath) && (*szPrefFontPath))
-		;
-	else
-		szPrefFontPath = XAP_PREF_DEFAULT_UnixFontPath;
+	getPrefsValue(XAP_PREF_KEY_UnixFontPath,&szPrefFontPath);
+	UT_ASSERT((szPrefFontPath) && (*szPrefFontPath));
 
 	if (*szPrefFontPath != '/')			// if relative path in prefs, prepend library directory.
 	{

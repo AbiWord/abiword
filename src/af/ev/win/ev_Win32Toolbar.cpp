@@ -281,10 +281,8 @@ UT_Bool EV_Win32Toolbar::synthesize(void)
 	UT_Bool bIcons = UT_TRUE;
 	UT_Bool bText = UT_FALSE;
 	const XML_Char * szValue = NULL;
-	if (m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue) && (szValue) && (*szValue))
-		;
-	else
-		szValue = XAP_PREF_DEFAULT_ToolbarAppearance;
+	m_pWin32App->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
+	UT_ASSERT((szValue) && (*szValue));
 
 	if (UT_XML_stricmp(szValue,"icon") == 0)
 	{

@@ -230,10 +230,8 @@ UT_Bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyB
 	//////////////////////////////////////////////////////////////////
 
 	const char * szToolbarAppearance = NULL;
-	if ((pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szToolbarAppearance)) && (szToolbarAppearance) && (*szToolbarAppearance))
-		;
-	else
-		szToolbarAppearance = XAP_PREF_DEFAULT_ToolbarAppearance;
+	pApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szToolbarAppearance);
+	UT_ASSERT((szToolbarAppearance) && (*szToolbarAppearance));
 	UT_cloneString((char *&)m_szToolbarAppearance,szToolbarAppearance);
 	
 	//////////////////////////////////////////////////////////////////

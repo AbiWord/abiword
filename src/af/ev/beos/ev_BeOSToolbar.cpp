@@ -85,17 +85,16 @@ UT_Bool EV_BeOSToolbar::synthesize(void) {
 	// Allow the user to control if we show text or icons or both ...
 #if 0
 	const XML_Char * szValue = NULL;
-        if (!(m_pBeOSApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue) 
-					&& (szValue) && (*szValue)))
-                szValue = XAP_PREF_DEFAULT_ToolbarAppearance;
+	m_pBeOSApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
+	UT_ASSERT((szValue) && (*szValue));
 
-        GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
-        if (UT_XML_stricmp(szValue,"icon")==0)
-                style = GTK_TOOLBAR_ICONS;
-        else if (UT_XML_stricmp(szValue,"text")==0)
-                style = GTK_TOOLBAR_TEXT;
-        else if (UT_XML_stricmp(szValue,"both")==0)
-                style = GTK_TOOLBAR_BOTH;         
+	GtkToolbarStyle style = GTK_TOOLBAR_ICONS;
+	if (UT_XML_stricmp(szValue,"icon")==0)
+		style = GTK_TOOLBAR_ICONS;
+	else if (UT_XML_stricmp(szValue,"text")==0)
+		style = GTK_TOOLBAR_TEXT;
+	else if (UT_XML_stricmp(szValue,"both")==0)
+		style = GTK_TOOLBAR_BOTH;         
 #endif
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
