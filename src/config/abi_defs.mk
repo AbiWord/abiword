@@ -539,3 +539,11 @@ ABI_OPTIONS+=Pspell:On
 else
 ABI_OPTIONS+=Pspell:Off
 endif
+
+# conditionally enable stl-based implementations of our
+# UT_XXX classes. We may need to link against certain
+# libraries, but we don't on linux. Add these as necessary.
+ifdef ABI_OPT_STL
+CFLAGS += -DABI_OPT_STL
+ABI_OPTIONS+=STL:On
+endif

@@ -23,8 +23,6 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 
-#define ABI_OPT_STL 0
-
 // TODO change the 'int' types to 'UT_[su]int32' whichever is appropriate.
 
 // ----------------------------------------------------------------
@@ -35,7 +33,7 @@
 	and namespaces, BTW.)
 */
 
-#if (!ABI_OPT_STL)
+#ifndef ABI_OPT_STL
 class UT_Vector
 {
 public:

@@ -27,7 +27,7 @@
 #include "ut_vector.h"
 #include "ut_assert.h"
 
-#if (!ABI_OPT_STL)
+#ifndef ABI_OPT_STL
 
 UT_Vector::UT_Vector()
 {
