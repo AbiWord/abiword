@@ -5,11 +5,11 @@
 <!-- You should not edit this file by hand.                                 -->
 <!-- =====================================================================  -->
 
-<!--         Build_ID          = dilbert.abisource.com-jeff -->
+<!--         Build_ID          = KLEE- -->
 <!--         Build_Options     = JavaScript:Off Debug:On -->
-<!--         Build_Target      = Linux_2.0.36_i386_DBG -->
-<!--         Build_CompileTime = 09:03:01 -->
-<!--         Build_CompileDate = Mar  8 1999 -->
+<!--         Build_Target      = WIN32_4.0_i386_DBG -->
+<!--         Build_CompileTime = 11:38:04 -->
+<!--         Build_CompileDate = Mar 11 1999 -->
 
 <awml>
 <section>
@@ -17,12 +17,11 @@
 <p PROPS="text-align:right"></p>
 <p>Date:		February 26, 1999						<i dataid="D:\abi\images\a.png_1" PROPS="height:0.97in; width:1.00in"/></p>
 <p>To: 		Scott Boesch</p>
-<p>From: 		Abi, AbiSource Marketing </p>
+<p>From: 	Abi, AbiSource Marketing </p>
 <p>Subject:	Linux World T-Shirts</p>
 <p></p>
 <p>Dear Scott:</p>
 <p></p>
-<p>z</p>
 <p>I feel it is extremely important for me to look good at the show, especially considering all of the people I hope to meet there.  Most likely, I will be included in some press shots, and I don't want everyone to think I am not fashionable.  I know most of the hackers present will not care about such things, but not everyone there will have hacked a makefile before.  Besides, I may run into Tux or The GIMP, and you know how well Tux is always dressed.  </p>
 <p></p>
 <p>On another note, I was disappointed to hear that we could not afford T-shirts for my immediate family members.  After limiting my request to siblings only, and excluding aunts and uncles, the number of shirts would not been much more than a run of 1,000.  Still, I understand the constraints placed on an Open Source organization in its start up phase.  I will do my utmost to help promote AbiWord so that the next T-shirt run can include at least a few of my cousins on my mother's side.  </p>
