@@ -445,7 +445,7 @@ int fl_BlockLayout::minor_reformat()
 	  A delete could mean that there are empty lines
 	  in the block.  If so, we need to remove them.
 	*/
-	while (m_pLastLine->isEmpty())
+	while (m_pLastLine && (m_pLastLine->isEmpty()))
 	{
 		fp_Line* pLine = m_pLastLine;
 		
