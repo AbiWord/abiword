@@ -899,10 +899,16 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					bool wasBlocked = wd->m_blockSignal;
 					wd->m_blockSignal = true;
 					if (szState) {
-						gtk_entry_set_text(GTK_ENTRY(item->entry), 
-						    wd->m_id==AP_TOOLBAR_ID_FMT_SIZE ?
-						    XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState) 
-						    : szState);
+					  if ( wd->m_id==AP_TOOLBAR_ID_FMT_SIZE )
+					    {
+					      const char * fsz = XAP_EncodingManager::fontsizes_mapping.lookupBySource(szState);
+					      if ( fsz )
+						gtk_entry_set_text(GTK_ENTRY(item->entry), fsz);
+					      else
+						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
+					    }
+					  else
+					    gtk_entry_set_text(GTK_ENTRY(item->entry), szState);
 					} 
 					else {
 						gtk_entry_set_text(GTK_ENTRY(item->entry), "");
