@@ -43,7 +43,7 @@ OS_NAME		:= $(shell uname -s)
 OS_RELEASE	:= $(shell uname -r)
 OS_ARCH		:= $(shell uname -m)
 
-DISTBASE = $(ABI_DEPTH)/dist
+DISTBASE = $(ABI_DEPTH)/../dist
 
 LINK_DLL	= $(LINK) $(OS_DLLFLAGS) $(DLLFLAGS)
 
