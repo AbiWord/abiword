@@ -40,6 +40,7 @@
 
 
 #define DELETEP(p)		do { if (p) delete p; } while (0)
+#define FREEP(p)		do { if (p) free(p); } while (0)
 #define NrElements(a)	((sizeof(a) / sizeof(a[0])))
 
 /*****************************************************************/
@@ -236,8 +237,58 @@ static const char * _ev_FakeName(const char * sz, UT_uint32 k)
 	return buf;
 }
 
+/*
+  This function is quirky because GTK (up to 1.2.0) is.  When
+  creating accelerators for menu items, one calls
+  "guint gtk_label_parse_uline(string)", which looks for underscores
+  in the string, and makes each character after an underscore
+  underlined, throws out the underscore, and returns the character
+  the FIRST underscore precedes.  I think it should quit at the
+  first underscore, since it can only return one char, but it
+  doesn't.
+
+  It does know that underscores can be escaped by preceding them
+  with another underscore.  This function skips the first underscore,
+  but then pads out all the others, so that feeding it to the
+  gtk_label_parse_uline() will do the "right" thing.
+
+  You get to free the string this returns.
+*/
+
+static char * _ev_skip_first_underscore_pad_rest(const char * szString)
+{
+	UT_ASSERT(szString);
+
+	// create a GString to operate on, using insert operations
+	GString * string = g_string_new(szString);
+
+	gint underscoreCount = 0;
+	for (gint a = 0; a < string->len; a++)
+	{
+		if (string->str[a] == '_')
+		{
+			if (underscoreCount > 0)
+			{
+				// insert character and increment index (a)
+				g_string_insert_c(string, a, '_');
+				a++;
+			}
+			underscoreCount++;
+		}
+	}
+
+	char * newstring = NULL;
+	UT_cloneString(newstring, string->str);
+
+	// go ahead and free segment; we have a copy
+	g_string_free(string, TRUE);
+
+	return newstring;
+}
+	
 static char _ev_get_underlined_char(const char * szString)
 {
+
 	UT_ASSERT(szString);
 	
 	// return the char right after the underline
@@ -341,8 +392,13 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				GtkWidget * label;
 
 				label = gtk_accel_label_new("SHOULD NOT APPEAR");
-				guint keyCode = gtk_label_parse_uline(GTK_LABEL(label), buf);
 
+				// get a newly padded underscore version
+				char * padString = _ev_skip_first_underscore_pad_rest(buf);
+				UT_ASSERT(padString);
+				guint keyCode = gtk_label_parse_uline(GTK_LABEL(label), padString);
+				FREEP(padString);
+				
 				// either path above filled out the label pointer, so pack it
 				// in the hbox
 				gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
@@ -491,7 +547,12 @@ UT_Bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				else
 				{
 					label = gtk_accel_label_new("SHOULD NOT APPEAR");
-					gtk_label_parse_uline(GTK_LABEL(label), buf);
+
+					// get a newly padded underscore version
+					char * padString = _ev_skip_first_underscore_pad_rest(buf);
+					UT_ASSERT(padString);
+					guint keyCode = gtk_label_parse_uline(GTK_LABEL(label), padString);
+					FREEP(padString);
 
 					if ((keyCode != GDK_VoidSymbol))
 					{
@@ -701,8 +762,13 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 						// create a label
 						GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
 						UT_ASSERT(label);
-						// trigger the underscore conversion in the menu labels
-						gtk_label_parse_uline(label, labelbuf);
+
+						// get a newly padded underscore version
+						char * padString = _ev_skip_first_underscore_pad_rest(labelbuf);
+						UT_ASSERT(padString);
+						gtk_label_parse_uline(GTK_LABEL(label), padString);
+						FREEP(padString);
+
 						// create the item with the underscored label
 						GtkWidget * w = gtk_menu_item_new();
 						UT_ASSERT(w);
@@ -834,8 +900,12 @@ UT_Bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					// create a label
 					GtkLabel * label = GTK_LABEL(gtk_accel_label_new("SHOULD NOT APPEAR"));
 					UT_ASSERT(label);
-					// trigger the underscore conversion in the menu labels
-					guint keyCode = gtk_label_parse_uline(label, labelbuf);
+
+					// get a newly padded underscore version
+					char * padString = _ev_skip_first_underscore_pad_rest(labelbuf);
+					UT_ASSERT(padString);
+					guint keyCode = gtk_label_parse_uline(label, padString);
+					FREEP(padString);
 
 					// show and add the label to our menu item
 					gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
