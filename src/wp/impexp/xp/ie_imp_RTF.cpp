@@ -4195,6 +4195,10 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		ParseChar('-');	// TODO - make these optional and nonbreaking
 		return true;
 		break;
+	case '\r':	// see bug 2174 ( Cocoa RTF)
+	case '\n':
+		return StartNewPara();
+		break;
 	}
 
 	xxx_UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
@@ -6161,6 +6165,7 @@ bool IE_Imp_RTF::ReadFontTable()
 
 	if (ch == '\\')
 	{
+		SkipBackChar(ch);
 		// one entry in the font table
 		// TODO - Test one item font tables!
 		if (!ReadOneFontFromTable())
