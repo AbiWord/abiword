@@ -6634,6 +6634,8 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		     UT_uint32 nToPage, UT_uint32 nFromPage)
 {
 	UT_uint32 j,k;
+//	ViewMode prevViewMode = pPrintView->getViewMode();
+//	pPrintView->setViewMode(VIEW_PRINT);
 
 	//
 	// Lock out operations on this document
@@ -6653,7 +6655,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 
 	  dg_DrawArgs da;
 	  memset(&da, 0, sizeof(da));
-	  da.pG = NULL;
+	  da.pG = pGraphics;
 	  
 	  XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame ();
 
@@ -6703,6 +6705,7 @@ bool s_actuallyPrint(PD_Document *doc,  GR_Graphics *pGraphics,
 		  pFrame->setStatusMessage (""); // reset/0 out status bar
 	}
 	s_pLoadingDoc = NULL;
+//	pPrintView->setViewMode(prevViewMode);
 	return true;
 }
 
@@ -6751,9 +6754,6 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 // Turn on Wait cursor
 //
 		pView->setCursorWait();
-		s_pLoadingFrame = pFrame;
-		s_pLoadingDoc = static_cast<AD_Document *>(doc);
-
 		const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 		UT_String msg (pSS->getValue(AP_STRING_ID_MSG_PrintingDoc));
 
@@ -6772,11 +6772,6 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 
 		UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
-		FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-		FV_View * pPrintView = new FV_View(pFrame->getApp(),0,pDocLayout);
-		pPrintView->getLayout()->fillLayouts();
-		pPrintView->getLayout()->formatAll();
-
 		UT_uint32 nFromPage, nToPage;
 		static_cast<void>(pDialog->getDoPrintRange(&nFromPage,&nToPage));
 
@@ -6794,12 +6789,8 @@ static bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDire
 		UT_sint32 iHeight = pLayout->getHeight() / pLayout->countPages();
 
 		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
-
-		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
+		s_actuallyPrint(doc, pGraphics, pView, pDocName, nCopies, bCollate,
 				iWidth,  iHeight, nToPage, nFromPage);
-
-		delete pDocLayout;
-		delete pPrintView;
 
 		pDialog->releasePrinterGraphicsContext(pGraphics);
 
@@ -6837,8 +6828,6 @@ static bool s_doPrintPreview(FV_View * pView)
 
     // Turn on Wait cursor
 	pView->setCursorWait();
-	s_pLoadingFrame = pFrame;
-	s_pLoadingDoc = static_cast<AD_Document *>(doc);
 
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getNonDecoratedTitle());
@@ -6851,10 +6840,6 @@ static bool s_doPrintPreview(FV_View * pView)
 	GR_Graphics * pGraphics = pDialog->getPrinterGraphicsContext();
 	UT_ASSERT(pGraphics->queryProperties(GR_Graphics::DGP_PAPER));
 
-	FL_DocLayout * pDocLayout = new FL_DocLayout(doc,pGraphics);
-	FV_View * pPrintView = new FV_View(pFrame->getApp(),pFrame,pDocLayout);
-	pPrintView->getLayout()->fillLayouts();
-	pPrintView->getLayout()->formatAll();
 
 	UT_uint32 nFromPage = 1, nToPage = pLayout->countPages(), nCopies = 1;
 	bool bCollate  = false;
@@ -6866,11 +6851,8 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
 
-	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
+	s_actuallyPrint(doc, pGraphics, pView, pDocName, nCopies, bCollate,
 					iWidth,  iHeight, nToPage, nFromPage);
-
-	delete pDocLayout;
-	delete pPrintView;
 
 	pDialog->releasePrinterGraphicsContext(pGraphics);
 
@@ -6878,7 +6860,6 @@ static bool s_doPrintPreview(FV_View * pView)
 
     // Turn off wait cursor
 	pView->clearCursorWait();
-	s_pLoadingFrame = NULL;
 
 	return true;
 }

@@ -3040,7 +3040,7 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
  		CellLine * pCellLine = static_cast<CellLine *>(vecTables.getNthItem(i));
 		if(!pCellLine->m_pCell->isInNestedTable())
 		{
-			pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable); 	
+			pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics()); 	
 			pCellLine->m_pCell->drawLinesAdjacent();
 		} 	
 	}

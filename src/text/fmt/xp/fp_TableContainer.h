@@ -115,7 +115,7 @@ public:
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
 	void		        clearScreen(bool bNoRecursive);
-	void                drawLines(fp_TableContainer * pBroke);
+	void                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
 	fp_TableContainer * getBrokenTable(fp_Line * pLine);
@@ -237,8 +237,8 @@ private:
 		
 	void                _clear(fp_TableContainer * pBroke);
 	void				_drawLine(const PP_PropertyMap::Line & style,
-								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot);
-	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec);
+								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot,GR_Graphics * pG);
+	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec, GR_Graphics * pG);
 		
 //
 // These variables describe where the cell is attached to the table.

@@ -420,7 +420,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 		{
 			dg_DrawArgs da = *pDA;
 			da.xoff += pCol->getX();
-			da.yoff += pCol->getY();
+			da.yoff += pCol->getY(pDA->pG);
 			pCol->draw(&da);
 
 			fp_Column *pNextCol = pCol->getFollower();
@@ -440,7 +440,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	}
 
 	// draw the page's headers and footers
-    if(m_pView->getViewMode() == VIEW_PRINT)
+    if(m_pView->getViewMode() == VIEW_PRINT  || pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		if (m_pHeader)
 		{
@@ -465,6 +465,12 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 	{
 		fp_FootnoteContainer* pFC = static_cast<fp_FootnoteContainer*>(m_vecFootnotes.getNthItem(i));
 		dg_DrawArgs da = *pDA;
+		if(m_pView && (m_pView->getViewMode() != VIEW_PRINT) && !pDA->pG->queryProperties(GR_Graphics::DGP_PAPER))
+		{
+			fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
+			fl_DocSectionLayout* pFirstSectionLayout = (pFirstColumnLeader->getDocSectionLayout());
+			da.yoff -= pFirstSectionLayout->getTopMargin();
+		}
 		da.xoff += pFC->getX();
 		da.yoff += pFC->getY();
 		pFC->draw(&da);
@@ -790,7 +796,7 @@ void fp_Page::_reformatColumns(void)
 			UT_ASSERT(pTmpCol->getContainerType() == FP_CONTAINER_COLUMN);
 			pTmpCol->setX(iX);
 			pTmpCol->setY(iY);
-			pTmpCol->setMaxHeight(getHeight() - iBottomMargin - iY);
+			pTmpCol->setMaxHeight(getHeight() - iBottomMargin - iY - iFootnoteHeight);
 			pTmpCol->setWidth(iColWidth);
 
 			if(pSL->getColumnOrder())

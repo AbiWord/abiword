@@ -231,7 +231,7 @@ fp_Column * fp_CellContainer::getColumn(fp_Line * pLine)
 	return pCol;
 }
 
-void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec)
+void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec, GR_Graphics * pG)
 {
 	fl_TableLayout * pTab = static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout());
 	UT_ASSERT(pTab->getContainerType() == FL_CONTAINER_TABLE);
@@ -331,10 +331,19 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 //
 // Now correct for printing
 //
-	if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 		UT_sint32 xdiff,ydiff;
 		pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
+		pPage = getPage();
+		if(pPage)
+		{
+			if(pPage->getDocLayout()->getView()->getViewMode() != VIEW_PRINT)
+			{
+				ydiff -= static_cast<fl_DocSectionLayout *>(getSectionLayout()->getDocSectionLayout())->getTopMargin();
+			}
+		}
+
 		iTop -= ydiff;
 		iBot -= ydiff;
 	}
@@ -348,7 +357,7 @@ bool fp_CellContainer::doesIntersectClip(fp_TableContainer * pBroke, UT_Rect * r
 {
 	fp_Page * pPage = NULL;
 	UT_Rect CellRect;
-	_getBrokenRect(pBroke, pPage, CellRect);
+	_getBrokenRect(pBroke, pPage, CellRect,getGraphics());
 	return CellRect.intersectsRect(rClip);
 }
 
@@ -575,7 +584,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	}
 	UT_Rect bRec;
 	fp_Page * pPage = NULL;
-	_getBrokenRect(pBroke, pPage, bRec);
+	_getBrokenRect(pBroke, pPage, bRec,getGraphics());
 	if((bRec.top + bRec.height) < 0)
 	{
 		return;
@@ -599,32 +608,32 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 			{
 				lineLeft.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 				lineLeft.m_color = page_color;
-				_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height);
+				_drawLine (lineLeft, bRec.left, bRec.top, bRec.left,  bRec.top + bRec.height,getGraphics());
 			}
 			if (lineTop.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{	
 				lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 				lineTop.m_color = page_color;
-				_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top); 
+				_drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
 				if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
 				{
 					UT_sint32 col_x,col_y;
 					fp_Column * pCol = static_cast<fp_Column *>(pBroke->getColumn());
 					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-					_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y);
+					_drawLine (lineTop, bRec.left, col_y, bRec.left + bRec.width,  col_y,getGraphics());
 				}
 			}
 			if (lineRight.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{	
 				lineRight.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 				lineRight.m_color = page_color;
-				_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height); 
+				_drawLine (lineRight, bRec.left + bRec.width, bRec.top, bRec.left + bRec.width, bRec.top + bRec.height,getGraphics()); 
 			}
 			if (lineBottom.m_t_linestyle != PP_PropertyMap::linestyle_none)
 			{	
 				lineBottom.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 				lineBottom.m_color = page_color;
-				_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height);
+				_drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
 				xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
 				if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
 				{
@@ -633,7 +642,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 					pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
 					UT_sint32 bot = col_y + pCol->getHeight();
 					xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
-					_drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot);
+					_drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
 				}
 
 			}
@@ -727,12 +736,11 @@ void fp_CellContainer::setContainer(fp_Container * pContainer)
 /* just a little helper function
  */
 void fp_CellContainer::_drawLine (const PP_PropertyMap::Line & style,
-								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot)
+								  UT_sint32 left, UT_sint32 top, UT_sint32 right, UT_sint32 bot,GR_Graphics * pGr)
 {
-	GR_Graphics * pGr = getGraphics ();
 
 	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none &&
-		!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+		!pGr->queryProperties(GR_Graphics::DGP_SCREEN))
 		return; // do not draw the dotted line when printing	
 	
 	GR_Graphics::JoinStyle js = GR_Graphics::JOIN_MITER;
@@ -908,7 +916,7 @@ bool fp_CellContainer::isInNestedTable(void)
 /*!
  * Draw background and lines around a cell in a broken table.
  */
-void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
+void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG)
 {
 	UT_ASSERT(getPage());
 	if(getPage() == NULL)
@@ -956,7 +964,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 	}
 	pPage->getScreenOffsets(pCol, col_x,col_y);
 	bool bDoClear = true;
-	if(pPage->getDocLayout()->getView() && pPage->getDocLayout()->getView()->getGraphics()->queryProperties(GR_Graphics::DGP_PAPER))
+	if(pPage->getDocLayout()->getView() && pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
 //
 // Now correct for printing
@@ -965,6 +973,11 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 		UT_sint32 xdiff,ydiff;
 		pPage->getDocLayout()->getView()->getPageScreenOffsets(pPage, xdiff, ydiff);
 		col_y = col_y - ydiff;
+		col_x = col_x - xdiff;
+		if(pPage->getDocLayout()->getView()->getViewMode() != VIEW_PRINT)
+		{
+			col_y += static_cast<fl_DocSectionLayout *>(getSectionLayout()->getDocSectionLayout())->getTopMargin();
+		}
 	}
 	if(pBroke->getMasterTable() && !bNested)
 	{
@@ -1067,36 +1080,36 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke)
 			if(bDoClear)
 			{
 				clineLeft.m_color = white;
-				_drawLine (clineLeft, iLeft, iTop, iLeft,  iBot);
+				_drawLine (clineLeft, iLeft, iTop, iLeft,  iBot,pG);
 			}
-			_drawLine(lineLeft, iLeft, iTop, iLeft, iBot);
+			_drawLine(lineLeft, iLeft, iTop, iLeft, iBot,pG);
 		}
 		if(m_bDrawTop || bDrawTop)
 		{
 			if(bDoClear)
 			{
 				clineTop.m_color = white;
-				_drawLine(clineTop, iLeft, iTop, iRight, iTop);
+				_drawLine(clineTop, iLeft, iTop, iRight, iTop,pG);
 			}
-			_drawLine(lineTop, iLeft, iTop, iRight, iTop);
+			_drawLine(lineTop, iLeft, iTop, iRight, iTop,pG);
 		}
 		if(m_bDrawRight)
 		{
 			if(bDoClear)
 			{
 				clineRight.m_color = white;
-				_drawLine(clineRight, iRight, iTop, iRight, iBot);
+				_drawLine(clineRight, iRight, iTop, iRight, iBot,pG);
 			}
-			_drawLine(lineRight, iRight, iTop, iRight, iBot);
+			_drawLine(lineRight, iRight, iTop, iRight, iBot,pG);
 		}
 		if(m_bDrawBot || bDrawBot)
 		{
 			if(bDoClear)
 			{
 				clineBottom.m_color = white;
-				_drawLine(clineBottom, iLeft, iBot, iRight, iBot);
+				_drawLine(clineBottom, iLeft, iBot, iRight, iBot,pG);
 			}
-			_drawLine(lineBottom, iLeft, iBot, iRight, iBot);
+			_drawLine(lineBottom, iLeft, iBot, iRight, iBot,pG);
 		}
 	}
 }
@@ -1127,13 +1140,13 @@ void fp_CellContainer::drawLinesAdjacent(void)
 	fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
 	while(pBroke)
 	{
-		drawLines(pBroke);
+		drawLines(pBroke,getGraphics());
 		if(bDoRight)
 		{
 			fp_CellContainer * pCell = pTab->getCellAtRowColumn(row,col_right);
 			if(pCell)
 			{
-				pCell->drawLines(pBroke);
+				pCell->drawLines(pBroke,getGraphics());
 			}
 		}
 		if(bDoLeft)
@@ -1141,7 +1154,7 @@ void fp_CellContainer::drawLinesAdjacent(void)
 			fp_CellContainer * pCell = pTab->getCellAtRowColumn(row,col_left);
 			if(pCell)
 			{
-				pCell->drawLines(pBroke);
+				pCell->drawLines(pBroke,getGraphics());
 			}
 		}
 		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
@@ -1156,7 +1169,6 @@ void fp_CellContainer::drawLinesAdjacent(void)
  */
 void fp_CellContainer::_drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer * pBroke)
 {
-	UT_ASSERT(pDA->pG == getGraphics());
 	UT_ASSERT(getPage());
 	if(getPage() == NULL)
 	{
@@ -1305,6 +1317,7 @@ UT_sint32 fp_CellContainer::getCellY(fp_Line * pLine) const
 void fp_CellContainer::draw(dg_DrawArgs* pDA)
 {
 	m_bDrawTop = false;
+	GR_Graphics * pG = pDA->pG;
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 // draw bottom if this cell is the last of the table and fully contained on the page
 
@@ -1369,7 +1382,7 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	{
 		m_bDirty = false;
 	}
-	drawLines(NULL);
+	drawLines(NULL,pG);
 	pTab->setRedrawLines();
     _drawBoundaries(pDA,NULL);
 }
@@ -1424,7 +1437,7 @@ void fp_CellContainer::draw(fp_Line * pLine)
 	//
 	UT_Rect bRec;
 	fp_Page * pLinePage;
-	_getBrokenRect(pBroke, pLinePage, bRec);
+	_getBrokenRect(pBroke, pLinePage, bRec,getGraphics());
 	dg_DrawArgs da;
 	da.xoff = bRec.left -getX();
 	da.yoff = bRec.top -getY();
@@ -1475,7 +1488,7 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * pLine)
 			//
 			UT_Rect bRec;
 			fp_Page * pLinePage;
-			_getBrokenRect(pBroke, pLinePage, bRec);
+			_getBrokenRect(pBroke, pLinePage, bRec,getGraphics());
 			dg_DrawArgs da;
 			da.xoff = bRec.left -getX();
 			if(getY() < pBroke->getYBreak())
@@ -1562,6 +1575,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
 	PP_PropertyMap::Background background = getBackground ();
+	GR_Graphics * pG = pDA->pG;
 	UT_sint32 count = countCons();
 	m_bDrawLeft = false;
 	m_bDrawTop = false;
@@ -1590,9 +1604,9 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<29)) - 1);
 	if(pClipRect)
 	{
-		ybot = UT_MAX(getGraphics()->tlu(pClipRect->height),_getMaxContainerHeight());
+		ybot = UT_MAX(pG->tlu(pClipRect->height),_getMaxContainerHeight());
 		ytop = pClipRect->top;
-		ybot = ybot + ytop + getGraphics()->tlu(1);
+		ybot = ybot + ytop + pG->tlu(1);
 	}
 	else
 	{
@@ -1608,18 +1622,18 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 // Now draw the cell background.
 //
 
-	if ((m_bIsSelected == false) && (m_bBgDirty || !pDA->bDirtyRunsOnly))
+	if (((m_bIsSelected == false) || (!pG->queryProperties(GR_Graphics::DGP_SCREEN))) && (m_bBgDirty || !pDA->bDirtyRunsOnly))
 	{
 		fp_Page * pPage;
 		UT_Rect bRec;
-		_getBrokenRect(pBroke, pPage, bRec);
+		_getBrokenRect(pBroke, pPage, bRec,pG);
 		switch (background.m_t_background)
 		{
 			default:
 			case PP_PropertyMap::background_none:
 				break;
 			case PP_PropertyMap::background_solid:
-				getGraphics()->fillRect(background.m_color,bRec.left,bRec.top,bRec.width,bRec.height);
+				pG->fillRect(background.m_color,bRec.left,bRec.top,bRec.width,bRec.height);
 				break;
 		}	
 		m_bBgDirty = false;
@@ -1627,15 +1641,15 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	//
 	// This cell is selected, fill it with colour
 	//
-	else if(m_bIsSelected)
+	else if(m_bIsSelected && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		UT_Rect bRec;
 		fp_Page * pPage;
-		_getBrokenRect(pBroke, pPage, bRec);
+		_getBrokenRect(pBroke, pPage, bRec,pG);
 		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
 			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
 		FV_View * pView = getPage()->getDocLayout()->getView();
-		getGraphics()->fillRect(pView->getColorSelBackground(),bRec.left,bRec.top,bRec.width,bRec.height);
+		pG->fillRect(pView->getColorSelBackground(),bRec.left,bRec.top,bRec.width,bRec.height);
 	}
 
 //
@@ -1694,7 +1708,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	{
 		m_bDirty = false;
 	}
-	drawLines(pBroke);
+	drawLines(pBroke,pG);
 	pTab->setRedrawLines();
     _drawBoundaries(pDA,pBroke);
 }
@@ -2205,13 +2219,13 @@ void fp_TableContainer::drawLines(void)
 		{
 			while(pBroke)
 			{
-				pCell->drawLines(pBroke);
+				pCell->drawLines(pBroke,getGraphics());
 				pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
 			}
 		}
 		else
 		{
-			pCell->drawLines(NULL);
+			pCell->drawLines(NULL,getGraphics());
 		}
 		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
@@ -3372,7 +3386,6 @@ void  fp_TableContainer::_size_request_init(void)
 
 void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
 {
-    UT_ASSERT(pDA->pG == getGraphics());
 	UT_ASSERT(getPage());
 	if(getPage() == NULL)
 	{
@@ -3898,8 +3911,12 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 
 void fp_TableContainer::_drawBrokenBoundaries(dg_DrawArgs* pDA)
 {
-    UT_ASSERT(pDA->pG == getGraphics());
+
 	UT_ASSERT(getPage());
+	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		return;
+	}
 	if(getPage() == NULL)
 	{
 		return;

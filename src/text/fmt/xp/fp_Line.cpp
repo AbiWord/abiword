@@ -1201,6 +1201,7 @@ void fp_Line::draw(GR_Graphics* pG)
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
+	UT_DEBUGMSG(("Draw line at Y %d \n",da.yoff));
 
 	for (int i=0; i < count; i++)
 	{
@@ -1239,7 +1240,6 @@ void fp_Line::draw(GR_Graphics* pG)
 		}
 
 		da.yoff += pRun->getY();
-
 		// shortcircuit drawing if we're not included in the dirty region
 		UT_Rect runRect(da.xoff, da.yoff, pRun->getWidth(), pRun->getHeight());
 #ifdef DEBUG
@@ -1279,7 +1279,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("SEVIOR: Drawing line in line pDA, width %d \n",getWidth()));
 	FV_View* pView = getBlock()->getDocLayout()->getView();
 	bool bShowHidden = pView->getShowPara();
-
+	bShowHidden = bShowHidden && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN);
 	pDA->yoff += m_iAscent;
 	const UT_Rect* pRect = pDA->pG->getClipRect();
 

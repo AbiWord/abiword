@@ -5580,7 +5580,7 @@ void FV_View::draw(int page, dg_DrawArgs* da)
 		return;
 	}
 
-	da->pG = m_pG;
+	UT_ASSERT(da->pG);
 	fp_Page* pPage = m_pLayout->getNthPage(page);
 	if (pPage)
 	{

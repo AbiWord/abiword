@@ -160,11 +160,13 @@ protected:
 	void					_drawLastChar(UT_sint32 xoff,
 										  UT_sint32 yoff,
 										  const UT_GrowBuf * pgbCharWidths,
-										  bool bSelection);
+										  bool bSelection,
+										  GR_Graphics * pG);
 	
 	void					_drawFirstChar(UT_sint32 xoff,
 										   UT_sint32 yoff,
-										   bool bSelection);
+										   bool bSelection,
+										   GR_Graphics * pG);
 
 	UT_sint32               _getPrevContSpace(UT_sint32 i,
 											  UT_sint32 offset,

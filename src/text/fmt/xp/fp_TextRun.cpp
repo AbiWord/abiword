@@ -1499,13 +1499,13 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	  Upon entry to this function, pDA->yoff is the BASELINE of this run, NOT
 	  the top.
 	*/
-
+	GR_Graphics * pG = pDA->pG;
 	_refreshDrawBuffer();
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n",
 					 this, m_iVisDirection, _getDirection()));
 	
-	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - getGraphics()->tlu(1); // Hack to remove
-	UT_sint32 yTopOfSel = yTopOfRun + getGraphics()->tlu(1); // final character dirt
+	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - pG->tlu(1); // Hack to remove
+	UT_sint32 yTopOfSel = yTopOfRun + pG->tlu(1); // final character dirt
 
 	/*
 	  TODO We should add more possibilities for text placement here.
@@ -1521,8 +1521,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	{
 		yTopOfRun += getDescent() /* * 3/2 */;
 	}
-
-	UT_ASSERT(pDA->pG == getGraphics());
 
 
 	////////////////////////////////////////////////////////////////////
@@ -1554,9 +1552,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	}
 
 	// draw the page background if we are in the screen context, and the page color is set (ie. non-transparent).
-	if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) &&
+	if (pG->queryProperties(GR_Graphics::DGP_SCREEN) &&
 		!clrPageBackground.isTransparent ())
-		getGraphics()->fillRect(clrPageBackground,
+		pG->fillRect(clrPageBackground,
 					pDA->xoff,
 					yTopOfSel + getAscent() - getLine()->getAscent(),
 					getWidth(),
@@ -1564,7 +1562,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	
 	// draw the highlighting of this run, if any
 	if (!clrNormalBackground.isTransparent ())
-		getGraphics()->fillRect(clrNormalBackground,
+		pG->fillRect(clrNormalBackground,
 					pDA->xoff,
 					yTopOfSel + getAscent() - getLine()->getAscent(),
 					getWidth(),
@@ -1600,7 +1598,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2 && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
+	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2 && pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
 		if (iSel1 <= iRunBase)
 		{
@@ -1706,7 +1704,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		the sreen, a Windows printer can behave like this).
 	*/
 
-	if(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && getGraphics()->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
+	if(pG->queryProperties(GR_Graphics::DGP_SCREEN) && pG->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
 	{
 		fp_Run * pNext = getNextVisual();
 		fp_Run * pPrev = getPrevVisual();
@@ -1714,7 +1712,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(pNext && pNext->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun * pT = static_cast<fp_TextRun*>(pNext);
-			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-getGraphics()->tlu(1);
+			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-pG->tlu(1);
  			if (pT->m_fPosition == TEXT_POSITION_SUPERSCRIPT)
  			{
  				ytemp -= pT->getAscent() * 1/2;
@@ -1727,7 +1725,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			if(pT->m_bIsOverhanging)
 			{
 				bool bSel = (iSel1 != iSel2) && ((iRunBase + getLength()) < iSel1);
-				pT->_drawFirstChar(pDA->xoff + getWidth(),ytemp,bSel);
+				pT->_drawFirstChar(pDA->xoff + getWidth(),ytemp,bSel,pG);
 			}
 
 		}
@@ -1735,7 +1733,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(pPrev && pPrev->getType() == FPRUN_TEXT)
 		{
 			fp_TextRun * pT = static_cast<fp_TextRun*>(pPrev);
-			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-getGraphics()->tlu(1);
+			UT_sint32 ytemp = pDA->yoff+(pT->getY()-getY())-pT->getAscent()-pG->tlu(1);
  			if (pT->m_fPosition == TEXT_POSITION_SUPERSCRIPT)
  			{
  				ytemp -= pT->getAscent() * 1/2;
@@ -1748,13 +1746,13 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
  			if(pT->m_bIsOverhanging)
 			{
 				bool bSel = (iSel1 != iSel2) && (iRunBase > iSel1);
-				pT->_drawLastChar(pDA->xoff,ytemp, pgbCharWidths, bSel);
+				pT->_drawLastChar(pDA->xoff,ytemp, pgbCharWidths, bSel,pG);
 			}
 		}
 	}
 
 	// now draw the string
-	getGraphics()->setFont(_getFont());
+	pG->setFont(_getFont());
 
 	// if there is a selection, we will need to draw the text in
 	// segments due to different colour of the foreground
@@ -1771,10 +1769,10 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	{
 		if(bSegmentSelected[iSegment])
 		{
-			getGraphics()->setColor(_getView()->getColorSelForeground());
+			pG->setColor(_getView()->getColorSelForeground());
 		}
 		else
-			getGraphics()->setColor(getFGColor());
+			pG->setColor(getFGColor());
 
 		UT_uint32 iMyOffset = iVisDir == FRIBIDI_TYPE_RTL ?
 			iLen-iSegmentOffset[iSegment+1]  :
@@ -1783,7 +1781,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		if(iVisDir == FRIBIDI_TYPE_RTL)
 			iX -= iSegmentWidth[iSegment];
 
-		getGraphics()->drawChars(s_pCharBuff,
+		pG->drawChars(s_pCharBuff,
 						   iMyOffset,
 						   iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment],
 						   iX,
@@ -1793,7 +1791,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			iX += iSegmentWidth[iSegment];
 	}
 
-	drawDecors(pDA->xoff, yTopOfRun);
+	drawDecors(pDA->xoff, yTopOfRun,pG);
 
 	if(pView->getShowPara())
 	{
@@ -2165,20 +2163,20 @@ void fp_TextRun::shape()
 /*
 	xoff is the right edge of this run !!!
 */
-void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf * pgbCharWidths, bool bSelection)
+void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf * pgbCharWidths, bool bSelection,GR_Graphics * pG)
 {
 	if(!getLength())
 		return;
 
 	// have to set font (and colour!), since we were called from a run using different font
-	getGraphics()->setFont(_getFont());
+	pG->setFont(_getFont());
 
 	if(bSelection)
 	{
-		getGraphics()->setColor(_getView()->getColorSelForeground());
+		pG->setColor(_getView()->getColorSelForeground());
 	}
 	else
-		getGraphics()->setColor(getFGColor());
+		pG->setColor(getFGColor());
 
 	FriBidiCharType iVisDirection = getVisDirection();
 
@@ -2186,39 +2184,39 @@ void fp_TextRun::_drawLastChar(UT_sint32 xoff, UT_sint32 yoff,const UT_GrowBuf *
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char
 		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
-		getGraphics()->drawChars(m_pSpanBuff, getLength() - 1, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
+		pG->drawChars(m_pSpanBuff, getLength() - 1, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
 	}
 	else
 	{
 		UT_uint32 iPos = iVisDirection == FRIBIDI_TYPE_LTR ? getLength() - 1 : 0;
-		getGraphics()->drawChars(m_pSpanBuff, iPos, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
+		pG->drawChars(m_pSpanBuff, iPos, 1, xoff - *(pgbCharWidths->getPointer(getBlockOffset() + iPos)), yoff);
 	}
 }
 
-void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff, bool bSelection)
+void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff, bool bSelection, GR_Graphics * pG)
 {
 	if(!getLength())
 		return;
 
 	// have to sent font (and colour!), since we were called from a run using different font
-	getGraphics()->setFont(_getFont());
+	pG->setFont(_getFont());
 
 	if(bSelection)
 	{
-		getGraphics()->setColor(_getView()->getColorSelForeground());
+		pG->setColor(_getView()->getColorSelForeground());
 	}
 	else
-		getGraphics()->setColor(getFGColor());
+		pG->setColor(getFGColor());
 
 	if(!s_bBidiOS)
 	{
 		// m_pSpanBuff is in visual order, so we just draw the last char
-		getGraphics()->drawChars(m_pSpanBuff, 0, 1, xoff, yoff);
+		pG->drawChars(m_pSpanBuff, 0, 1, xoff, yoff);
 	}
 	else
 	{
 		UT_uint32 iPos = getVisDirection() == FRIBIDI_TYPE_RTL ? getLength() - 1 : 0;
-		getGraphics()->drawChars(m_pSpanBuff, iPos, 1, xoff, yoff);
+		pG->drawChars(m_pSpanBuff, iPos, 1, xoff, yoff);
 	}
 }
 

@@ -74,6 +74,7 @@ public:
 	void        _setX( UT_sint32 iX) { m_iX = iX;}
 
 	virtual UT_sint32	getY(void) const;
+	UT_sint32	        getY(GR_Graphics * pG) const;
 
 	void        _setY( UT_sint32 iY) { m_iY = iY;}
 	/*!
@@ -246,6 +247,7 @@ public:
  	virtual void		draw(dg_DrawArgs*);
  	virtual void		draw(GR_Graphics*) {};
   	virtual void		layout(void);
+	void                layout(bool bForce);
  	virtual void		clearScreen(void);
 	void                clearHdrFtrBoundaries(void);
 	void				setPage(fp_Page* pPage) {m_pPage = pPage ;}

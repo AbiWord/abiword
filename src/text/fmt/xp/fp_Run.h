@@ -212,7 +212,7 @@ public:
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection) = 0;
 	void			        lookupProperties(void);
 	virtual bool			doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
-	void                    drawDecors(UT_sint32 xoff, UT_sint32 yoff);
+	void                    drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG);
 	virtual bool			isSuperscript(void) const { return false; }
 	virtual bool			isSubscript(void) const { return false; }
     bool			        isUnderline(void) const ;
@@ -642,7 +642,7 @@ public:
 	const char *            getDataId(void) const;
 	virtual bool 			hasLayoutProperties(void) const;
 	virtual GR_Image * 				getImage();
-	void                     regenerateImage(void);
+	void                     regenerateImage(GR_Graphics * pG);
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,

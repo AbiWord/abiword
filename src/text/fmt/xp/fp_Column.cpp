@@ -126,6 +126,34 @@ UT_sint32 fp_VerticalContainer::getY(void) const
 {
 	if(getSectionLayout()->getDocLayout()->getView()  && (getSectionLayout()->getDocLayout()->getView()->getViewMode() != VIEW_PRINT))
 	{
+		fl_SectionLayout * pSL = getSectionLayout();
+		fl_DocSectionLayout * pDSL = NULL;
+		if(static_cast<fl_ContainerLayout *>(pSL)->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			pDSL = static_cast<fl_DocSectionLayout *>(pSL);
+		}
+		else
+		{
+			pDSL =  static_cast<fl_DocSectionLayout *>(pSL->getDocSectionLayout());
+		}
+//		if((pSL->getContainerType() == FL_CONTAINER_DOCSECTION) || (pSL->getContainerType() == FL_CONTAINER_FOOTNOTE))
+		if(pSL->getContainerType() == FL_CONTAINER_DOCSECTION)
+		{
+			return m_iY - pDSL->getTopMargin();
+		}
+		return m_iY;
+	}
+	return m_iY;
+}
+/*!
+  Get container's Y position. This version checks for a mismatch between view
+ mode and if we're printing.
+  \return Y position
+*/
+UT_sint32 fp_VerticalContainer::getY(GR_Graphics * pG) const
+{
+	if(getSectionLayout()->getDocLayout()->getView()  && (getSectionLayout()->getDocLayout()->getView()->getViewMode() != VIEW_PRINT) && pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
 		return m_iY - static_cast<fl_DocSectionLayout *>(getSectionLayout())->getTopMargin();
 	}
 	return m_iY;
@@ -523,7 +551,10 @@ void fp_VerticalContainer::clearScreen(void)
  */
 void fp_VerticalContainer::_drawBoundaries(dg_DrawArgs* pDA)
 {
-    UT_ASSERT(pDA->pG == getGraphics());
+    if(pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		return;
+	}
 	UT_ASSERT(getPage());
 	UT_ASSERT(getPage()->getDocLayout()->getView());
 	if(getPage() == NULL)
@@ -994,7 +1025,10 @@ fp_Column::~fp_Column()
 */
 void fp_Column::_drawBoundaries(dg_DrawArgs* pDA)
 {
-    UT_ASSERT(pDA->pG == getGraphics());
+	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		return;
+	}
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
     {
         getGraphics()->setColor(getPage()->getDocLayout()->getView()->getColorShowPara());
@@ -1193,7 +1227,13 @@ fp_ShadowContainer::~fp_ShadowContainer()
 {
 }
 
+
 void fp_ShadowContainer::layout(void)
+{
+	layout(false);
+}
+
+void fp_ShadowContainer::layout(bool bForceLayout)
 {
 	UT_sint32 iY = 5;
 	UT_uint32 iCountContainers = countCons();
@@ -1202,6 +1242,10 @@ void fp_ShadowContainer::layout(void)
 	if(pView)
 	{
 	    doLayout =	pView->getViewMode() == VIEW_PRINT;
+	}
+	if(bForceLayout)
+	{
+		doLayout = true;
 	}
 	for (UT_uint32 i=0; i < iCountContainers; i++)
 	{
@@ -1301,11 +1345,16 @@ void fp_ShadowContainer::clearScreen(void)
 void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 {
 	FV_View * pView = getPage()->getDocLayout()->getView();
-	if(pView->getViewMode() !=  VIEW_PRINT)
+	if((pView->getViewMode() !=  VIEW_PRINT) && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN) )
 	{
 		UT_DEBUGMSG(("SEVIOR: Attempting to draw Header/Footer in Normal Mode \n"));
 		return;
 	}
+	if((pView->getViewMode() !=  VIEW_PRINT) && pDA->pG->queryProperties(GR_Graphics::DGP_PAPER) )
+	{
+		layout(true);
+	}
+
 	UT_sint32 count = countCons();
 	UT_sint32 iY= 0;
 	for (UT_sint32 i = 0; i<count; i++)
@@ -1331,7 +1380,7 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 			break;
 		pContainer->draw(&da);
 	}
-    if(pView && pView->isHdrFtrEdit() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getEditShadow() == getShadow())
+    if(pView && pView->isHdrFtrEdit() && pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN) && pView->getEditShadow() == getShadow())
 	{
 		_drawHdrFtrBoundaries(pDA);
 	}
@@ -1340,6 +1389,10 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
         clearHdrFtrBoundaries();
 		_drawBoundaries(pDA);
 	}
+	if((pView->getViewMode() !=  VIEW_PRINT) && pDA->pG->queryProperties(GR_Graphics::DGP_PAPER) )
+	{
+		layout(false);
+	}
 }
 
 /*!
@@ -1347,7 +1400,10 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
  */
 void fp_ShadowContainer::_drawHdrFtrBoundaries(dg_DrawArgs * pDA)
 {
-    UT_ASSERT(pDA->pG == getGraphics());
+	if(pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
+		return;
+	}
 	FV_View * pView = getPage()->getDocLayout()->getView();
 	if(pView->getViewMode() !=  VIEW_PRINT)
 	{
