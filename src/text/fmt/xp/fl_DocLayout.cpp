@@ -541,40 +541,6 @@ void FL_DocLayout::updateLayout()
 	deleteEmptyColumnsAndPages();
 }
 
-#ifdef FMT_TEST
-FL_DocLayout* FL_DocLayout::m_pDocLayout = NULL;
-
-void __dump(void)
-{
-	FL_DocLayout::m_pDocLayout->__dump(stdout);
-}
-
-void __dumpv(void)
-{
-	FL_DocLayout::m_pDocLayout->__dump(stdout);
-	FL_DocLayout::m_pDocLayout->getDocument()->__dump(stdout);
-}
-
-void FL_DocLayout::__dump(FILE * fp) const
-{
-	int count = m_vecPages.getItemCount();
-
-	fprintf(fp,"FL_DocLayout::__dump(0x%p) contains %d pages.\n", (void*)this, m_vecPages.getItemCount());
-
-	for (int i=0; i<count; i++)
-	{
-		fp_Page* p = (fp_Page*) m_vecPages.getNthItem(i);
-		p->__dump(fp);
-	}
-
-	fprintf(fp,"FL_DocLayout::__dump(0x%p) sections:\n",(void*)this);
-	for (fl_SectionLayout * psl=getFirstSection(); (psl); psl=psl->getNext())
-	{
-		psl->__dump(fp);
-	}
-}
-#endif
-
 #define BACKGROUND_CHECK_MSECS 100
 
 void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)

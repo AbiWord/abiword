@@ -32,13 +32,15 @@ CPPSRCS=		fv_View.cpp			\
 			fl_Layout.cpp			\
 			fl_SectionLayout.cpp		\
 			fl_AutoNum.cpp			\
+			fl_TestRoutines.cpp		\
 			fp_Column.cpp			\
 			fp_Line.cpp			\
 			fp_Page.cpp			\
-			fp_PageSize.cpp		\
+			fp_PageSize.cpp			\
 			fp_Run.cpp			\
 			fp_FmtMarkRun.cpp		\
 			fp_TextRun.cpp			\
+			fp_TestRoutines.cpp		\
 			fg_Graphic.cpp			\
 			fg_GraphicRaster.cpp		\
 			fg_GraphicVector.cpp		\

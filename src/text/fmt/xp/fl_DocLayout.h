@@ -71,13 +71,15 @@ public:
 	inline fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
 	inline fl_PartOfBlock* getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };
 	
-	// The smart quote stuff works by listening for insertions (typing and paste) and motion.
-	// It needs one character of type-ahead before working the algorithm, so a single
-	// quote character going by is remembered as "pending".  After the type-ahead (or
-	// motion) occurs, the pending quote is considered for promotion.  For an insertion
-	// of multiple characters (which probably just means a paste), all smart quote consideration
-	// can be done immediately except for a quote occuring in the very last character
-	// of the stuff being inserted.
+	// The smart quote stuff works by listening for insertions (typing
+	// and paste) and motion.  It needs one character of type-ahead
+	// before working the algorithm, so a single quote character going
+	// by is remembered as "pending".  After the type-ahead (or
+	// motion) occurs, the pending quote is considered for promotion.
+	// For an insertion of multiple characters (which probably just
+	// means a paste), all smart quote consideration can be done
+	// immediately except for a quote occuring in the very last
+	// character of the stuff being inserted.
 	inline fl_BlockLayout* getPendingBlockForSmartQuote(void) const { return m_pPendingBlockForSmartQuote; };
 	inline UT_uint32 getOffsetForSmartQuote(void) const { return m_uOffsetForSmartQuote; };
 	void setPendingSmartQuote(fl_BlockLayout *block, UT_uint32 offset);
@@ -169,6 +171,7 @@ public:
 	inline void		addList(fl_AutoNum * pAutoNum);
 	
 #ifdef FMT_TEST
+	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
 	static		FL_DocLayout* m_pDocLayout;
 
 	void		__dump(FILE * fp) const;

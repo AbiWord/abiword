@@ -245,13 +245,6 @@ UT_Bool fp_Page::needsRedraw(void) const
 	return m_bNeedsRedraw;
 }
 
-#ifdef FMT_TEST
-void fp_Page::__dump(FILE * fp) const
-{
-	fprintf(fp,"\tPage: 0x%p\n",(void*)this);
-}
-#endif
-
 UT_uint32 fp_Page::countColumnLeaders(void) const
 {
 	return m_vecColumnLeaders.getItemCount();
