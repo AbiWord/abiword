@@ -358,6 +358,7 @@ void AP_Win32Dialog_Tab::_setDefaultTabStop( const XML_Char* default_tab )
 
 void AP_Win32Dialog_Tab::_setTabList( UT_uint32 count )
 {
+	return;
 	UT_uint32 i;
 
 	// clear all the items from the list
@@ -380,6 +381,7 @@ UT_sint32 AP_Win32Dialog_Tab::_gatherSelectTab()
 
 void AP_Win32Dialog_Tab::_setSelectTab( UT_sint32 v )
 {
+	return;
 	_win32Dialog.selectListItem(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST, v);
 }
 
@@ -401,5 +403,6 @@ void AP_Win32Dialog_Tab::_setTabEdit( const char *pszStr )
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void AP_Win32Dialog_Tab::_clearList()
 {
+	return;
 	_win32Dialog.resetContent(AP_RID_DIALOG_TABS_TAB_STOP_POSITION_LIST);
 }

@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "xap_Types.h"
 #include "ev_Menu.h"
+#include "ut_misc.h"
 
 class AV_View;
 class XAP_Win32App;
@@ -34,11 +35,10 @@ class XAP_Frame;
 
 typedef struct
 {
-	XAP_Menu_Id 	id;			// Menu ID
-	int 			nRsc;
-	HBITMAP			hBitmap;	// Bitmap
-	
+	XAP_Menu_Id 	id;					// Menu ID
+	char			szName[255];		// BitmapName	
 } EV_Menu_Bitmap;	
+
 
 class EV_Win32Menu : public EV_Menu
 {
@@ -61,14 +61,33 @@ public:
 	XAP_Menu_Id			MenuIdFromWmCommand(UINT cmd)		{ return (XAP_Menu_Id)(cmd - WM_USER); }
 	UINT				WmCommandFromMenuId(XAP_Menu_Id id)	{ return (id + WM_USER); }
 
-	virtual bool		_doAddMenuItem(UT_uint32 id) { UT_ASSERT(UT_TODO); return false;/* TODO */ }
+	virtual bool		_doAddMenuItem(UT_uint32 id) { UT_ASSERT(UT_TODO); return false;/* TODO */ }		
+	void				onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
+	void				onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
+	LPARAM				onMenuChar(HWND hwnd, WPARAM wParam, LPARAM lParam);	
 
 protected:
+
+	bool						_isAMenuBar(XAP_Menu_Id	id,HMENU hMenu);
+	HBITMAP	static				_loadBitmap(XAP_Menu_Id id, int x, int y, UT_RGBColor color);	
+
 	XAP_Win32App *				m_pWin32App;
 	const EV_EditEventMapper *	m_pEEM;
 	EV_Menu_Bitmap*				m_pArMenuBitmaps;
 	HMENU						m_myMenu;
+	UINT						m_nBitmapCX, m_nBitmapCY;
+	HFONT						m_hFont;		
+	UT_Vector					m_vecItems;
+
 };
+
+
+typedef struct
+{
+	XAP_Menu_Id 	id;					// Menu ID
+	char			szText[256];		// Text	
+	EV_Win32Menu*	pMenu;			
+} EV_Menu_Item;	
 
 /*****************************************************************/
 

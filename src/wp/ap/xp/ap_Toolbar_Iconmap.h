@@ -103,7 +103,18 @@ toolbariconmap(FT_LINETOP, tb_LineTop_xpm)
 toolbariconmap(FT_LINERIGHT, tb_LineRight_xpm)
 toolbariconmap(FT_LINELEFT, tb_LineLeft_xpm)
 
+// Table
+toolbariconmap(TB_ADD_ROW, tb_add_row_xpm)
+toolbariconmap(TB_ADD_COLUMN, tb_add_column_xpm)
+toolbariconmap(TB_DELETE_ROW, tb_delete_row_xpm)
+toolbariconmap(TB_DELETE_COLUMN, tb_delete_column_xpm)
+toolbariconmap(TB_MERGE_CELLS, tb_merge_cells_xpm)
+toolbariconmap(TB_SPLIT_CELLS, tb_split_cells_xpm)
+	
 
+// Others
+
+toolbariconmap(OPTIONSDLG, tb_LineLeft_xpm)
 
 // Add new default icons here		
 toolbariconmap(_BOGUS2__,NoIcon)
