@@ -45,6 +45,7 @@ class AP_UnixDialog_Lists: public AP_Dialog_Lists
 
 	void					customChanged(void);
 	void					applyClicked(void);
+	void closeClicked(void);
 	void					styleChanged( gint style);
 	void					previewExposed(void);
 

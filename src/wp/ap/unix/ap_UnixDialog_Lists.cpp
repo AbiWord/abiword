@@ -130,8 +130,7 @@ static void s_applyClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
 
 static void s_closeClicked (GtkWidget * widget, AP_UnixDialog_Lists * me)
 {
-  abiDestroyWidget(widget);
-  //me->destroy();
+	me->closeClicked();
 }
 
 static void s_deleteClicked (GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
@@ -139,14 +138,12 @@ static void s_deleteClicked (GtkWidget * widget, gpointer /* data */, AP_UnixDia
 	me->destroy();
 }
 
-
 static gboolean s_preview_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
 {
 	UT_ASSERT(widget && me);
 	me->previewExposed();
 	return FALSE;
 }
-
 
 static gboolean s_window_exposed(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
 {
@@ -165,6 +162,11 @@ static gboolean s_update (void)
 		Current_Dialog->updateDialog();
 	}
 	return TRUE;
+}
+
+void AP_UnixDialog_Lists::closeClicked(void)
+{
+	abiDestroyWidget(m_wMainWindow); // emit the correct signals
 }
 
 void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
@@ -1151,7 +1153,7 @@ static void s_delete_clicked(GtkWidget * widget,
 			     gpointer,
 			     gpointer * dlg)
 {
-	abiDestroyWidget(widget);
+	abiDestroyWidget(widget); // will emit the proper signals for us
 }
 
 void AP_UnixDialog_Lists::_connectSignals(void)
