@@ -115,4 +115,4 @@ ABI_FE		= Unix
 
 ABIPKGDIR	= freebsd
 
-# End of linux defs
+# End of freebsd defs

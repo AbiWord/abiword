@@ -81,8 +81,7 @@ OS_ENDIAN		= BigEndian32
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
 # Which links can this platform create.  Define one or
-# both of these options. (what can IRIX do?  someone
-# with an SGI set the right one and mail a patch)
+# both of these options.
 UNIX_CAN_BUILD_DYNAMIC=1
 UNIX_CAN_BUILD_STATIC=1
 
@@ -92,6 +91,13 @@ STATIC_FLAGS		= -static
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix
+
+##################################################################
+## ABIPKGDIR defines the directory containing the Makefile to use to
+## build a set of distribution archives (.deb, .rpm, .tgz, .exe, etc)
+## This is relative to $(ABI_ROOT)/src/pkg
+
+ABIPKGDIR       = irix 
 
 # End of irix defs
 
