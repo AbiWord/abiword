@@ -535,4 +535,7 @@ endif
 ## Need ltdl for dynamic loading/linking on Solaris
 ifdef ABI_OPT_PSPELL
 EXTRA_LIBS      += -lpspell -lltdl
+ABI_OPTIONS+=Pspell:On
+else
+ABI_OPTIONS+=Pspell:Off
 endif

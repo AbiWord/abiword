@@ -47,6 +47,7 @@
 #	include "ap_UnixDialog_Replace.h"
 #	include "ap_UnixDialog_Break.h"
 #	include "ap_UnixDialog_Goto.h"
+#       include "ap_UnixDialog_PageNumbers.h"
 #	include "ap_UnixDialog_Paragraph.h"
 #	include "ap_UnixDialog_Options.h"
 #	include "ap_UnixDialog_Spell.h"
@@ -72,6 +73,7 @@
 #	include "ap_UnixGnomeDialog_Goto.h"
 #       include "ap_UnixGnomeDialog_Insert_DateTime.h"
 #	include "ap_UnixGnomeDialog_Paragraph.h"
+#       include "ap_UnixGnomeDialog_PageNumbers.h"
 #	include "ap_UnixGnomeDialog_Options.h"
 #	include "ap_UnixGnomeDialog_WordCount.h"
 #	include "ap_UnixGnomeDialog_Field.h"
@@ -106,6 +108,7 @@
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixGnomeDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixGnomeDialog_Spell)
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixGnomeDialog_Tab)
+        DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,                 AP_UnixGnomeDialog_PageNumbers)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixGnomeDialog_Paragraph)
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixGnomeDialog_Options)
 	DeclareDialog(AP_DIALOG_ID_INSERT_DATETIME,	AP_UnixGnomeDialog_Insert_DateTime)
@@ -135,6 +138,7 @@
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_UnixDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_UnixDialog_Break)
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_UnixDialog_Spell)
+        DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,                 AP_UnixDialog_PageNumbers)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_UnixDialog_Paragraph)	
 	DeclareDialog(AP_DIALOG_ID_OPTIONS,			AP_UnixDialog_Options)	
 	DeclareDialog(AP_DIALOG_ID_TAB,				AP_UnixDialog_Tab)

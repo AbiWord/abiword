@@ -203,7 +203,8 @@ public:
 	void insertSectionBreak( BreakSectionType type);
 	void insertSectionBreak(void);
 	void insertSymbol(UT_UCSChar c, XML_Char * symfont);
-// ----------------------
+	UT_Bool	insertHeaderFooter(const XML_Char ** props, UT_Bool ftr);
+	// ----------------------
 	UT_Bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos);
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdCharMotion(UT_Bool bForward, UT_uint32 count);
@@ -360,10 +361,6 @@ protected:
 	void				_clearIfAtFmtMark(PT_DocPosition dpos);
 
 	void				_checkPendingWordForSpell(void);
-
-
-	UT_Bool				_insertHeaderFooter(const XML_Char ** props, UT_Bool ftr);
-
 
 	PT_DocPosition		m_iInsPoint;
 	UT_sint32			m_xPoint;

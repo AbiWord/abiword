@@ -32,6 +32,7 @@ CPPSRCS=	ap_Convert.cpp			\
 		ap_Dialog_Insert_DateTime.cpp	\
 		ap_Dialog_Lists.cpp             \
 		ap_Dialog_Options.cpp		\
+		ap_Dialog_PageNumbers.cpp       \
 		ap_Dialog_Paragraph.cpp		\
 		ap_Dialog_Replace.cpp		\
 		ap_Dialog_Spell.cpp		\

@@ -6617,7 +6617,7 @@ void FV_View::setShowPara(UT_Bool bShowPara)
     }
 };
 
-UT_Bool FV_View::_insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
+UT_Bool FV_View::insertHeaderFooter(const XML_Char ** props, UT_Bool ftr)
 {
 
 	/* 
@@ -6728,8 +6728,8 @@ UT_Bool FV_View::insertPageNum(const XML_Char ** props, UT_Bool ftr)
 	_eraseInsertionPoint();
 
 	UT_uint32 oldPos = getPoint();  // This ends up being redundant, but it's neccessary
-	UT_Bool bftr = UT_TRUE;
-	UT_Bool bResult = _insertHeaderFooter(props, bftr);
+	//UT_Bool bftr = UT_TRUE;
+	UT_Bool bResult = insertHeaderFooter(props, ftr);
 
 	//
 	// after this call the insertion point is at the position where stuff

@@ -36,37 +36,15 @@ extern const char * xap_encoding_manager_get_language_iso_name(void);
 /**********************************************************************/
 static PspellManager *spell_manager = NULL;
 
-/* defined in ut_string.[cpp,h] */
-extern int unichar_to_utf8 (int c, unsigned char *outbuf);
-
 /*
  * Pspell's author tells me that we probably don't need these
  * Two methods because Pspell can detect and handle utf16
  * Character strings, so long as they're *double null terminated*
+ * These are defined in ut_string.[cpp,h]
  */
-static void utf16_to_utf8(const unsigned short *word16, unsigned char * word8,
-			  int length)
-{
-  unsigned char *pC = word8;
-  unsigned short *pS = (unsigned short*)word16;
-  int i;
-
-  for (i = 0; i < length; i++, pS++)
-    pC += unichar_to_utf8(*pS, pC);
-  *pC++ = 0;
-}
-
-static void utf8_to_utf16(const char *word8, unsigned short *word16, 
-			 int length)
-{
-  unsigned short *p;
-  int i;
-
-  /* this should work since UTF8 is a subset of UTF16 */
-  for(i = 0, p = word16; i < length; i++)
-    *p++ = (unsigned short)*word8++;
-  *p = 0;
-}
+typedef unsigned short U16;
+extern char * UT_UCS_strcpy_to_char (char * dest, const U16 * src);
+extern U16  * UT_UCS_strcpy_char (U16 * dest, const char * src);
 
 /*
  * Should return 1 on success, 0 on failure
@@ -120,7 +98,7 @@ int SpellCheckNWord16(const unsigned short *word16, int length)
   if(word16 == NULL || length == 0)
       return 0;
 
-  utf16_to_utf8(word16, word8, length);
+  UT_UCS_strcpy_to_char ((char*)word8, word16);
   return pspell_manager_check(spell_manager, (char*)word8);
 }
 
@@ -144,7 +122,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16,
       return 0;
     }
 
-  utf16_to_utf8(word16, word8, length);
+  UT_UCS_strcpy_to_char ((char*)word8, word16);
   word_list   = pspell_manager_suggest(spell_manager, (char*)word8);
   suggestions = pspell_word_list_elements(word_list);
   count       = pspell_word_list_size(word_list);
@@ -156,7 +134,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16,
     }
 
   sg->score = (short *)malloc(sizeof(short) * count);
-  sg->word = (unsigned short**)malloc(sizeof(unsigned short**) * count);
+  sg->word = (U16**)malloc(sizeof(U16**) * count);
   if (sg->score == NULL || sg->word == NULL) 
     {
       sg->count = 0;
@@ -167,7 +145,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16,
     {
       int len = strlen(new_word);
 
-      sg->word[i] = (unsigned short*)malloc(sizeof(unsigned short) * len + 2);
+      sg->word[i] = (U16*)malloc(sizeof(U16) * len + 2);
       if (sg->word[i] == NULL) 
         {
 	  /* out of memory, but return what was copied so far */
@@ -175,7 +153,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16,
 	  return i;
         }
       
-      utf8_to_utf16(new_word, sg->word[i], len);
+      UT_UCS_strcpy_char (sg->word[i], new_word);
       sg->score[i] = 1000;
       i++;
     }

@@ -321,6 +321,12 @@ dcl(DLG_Lists_Apply_Current,                "Apply to Current List")
 dcl(DLG_Lists_Start_Sub,                "Start Sublist")
 dcl(DLG_Lists_Resume,                "Resume Previous List")
 
-
-
-
+dcl(DLG_PageNumbers_Title,           "Page Numbers")
+dcl(DLG_PageNumbers_Left,            "Left")
+dcl(DLG_PageNumbers_Right,           "Right")
+dcl(DLG_PageNumbers_Center,          "Center")
+dcl(DLG_PageNumbers_Header,          "Header")
+dcl(DLG_PageNumbers_Footer,          "Footer")
+dcl(DLG_PageNumbers_Preview,         "Preview")
+dcl(DLG_PageNumbers_Alignment,       "Alignment")
+dcl(DLG_PageNumbers_Position,        "Position")

@@ -48,6 +48,7 @@
 #include "ap_Dialog_Goto.h"
 #include "ap_Dialog_Break.h"
 #include "ap_Dialog_Paragraph.h"
+#include "ap_Dialog_PageNumbers.h"
 #include "ap_Dialog_Lists.h"
 #include "ap_Dialog_Options.h"
 #include "ap_Dialog_Spell.h"
@@ -4292,13 +4293,58 @@ Defun1(insBreak)
 	return s_doBreakDlg(pView);
 }
 
-Defun1(insPageNo)
+static UT_Bool s_doInsertPageNumbers(FV_View * pView)
 {
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+        const XML_Char * right_attributes [] = {
+	  "text-align", "right", NULL, NULL
+	};
+	
+	const XML_Char * left_attributes [] = {
+	  "text-align", "left", NULL, NULL
+	};
+	
+	const XML_Char * center_attributes [] = {
+	  "text-align", "center", NULL, NULL
+	};
+
+	const XML_Char ** atts = NULL;
+
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_ASSERT(pFrame);
 
-	s_TellNotImplemented(pFrame, "Insert page numbers dialog", __LINE__);
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_PageNumbers * pDialog
+		= (AP_Dialog_PageNumbers *)(pDialogFactory->requestDialog(AP_DIALOG_ID_PAGE_NUMBERS));
+	UT_ASSERT(pDialog);
+
+	pDialog->runModal(pFrame);
+
+	if (pDialog->getAnswer() == AP_Dialog_PageNumbers::a_OK)
+	{
+	  switch (pDialog->getAlignment())
+	    {
+	    case AP_Dialog_PageNumbers::id_RALIGN : atts = right_attributes; break;
+	    case AP_Dialog_PageNumbers::id_LALIGN : atts = left_attributes; break;
+	    case AP_Dialog_PageNumbers::id_CALIGN : atts = center_attributes; break;
+	    default: UT_ASSERT(UT_SHOULD_NOT_HAPPEN); break;
+	    }
+
+	  pView->insertPageNum(atts, pDialog->isFooter());
+	}
+
+	pDialogFactory->releaseDialog(pDialog);
+
 	return UT_TRUE;
+}
+
+Defun1(insPageNo)
+{
+        ABIWORD_VIEW; 
+	return s_doInsertPageNumbers(pView);
 }
 
 static UT_Bool s_doField(FV_View * pView)
