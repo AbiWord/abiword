@@ -102,7 +102,7 @@ BeginSet(pt,PT,true)
     MenuLabel(AP_MENU_ID_INSERT_FIELD,		"&Campo",		"Inserir um campo calculado")
     MenuLabel(AP_MENU_ID_INSERT_SYMBOL,		"&Símbolo",		"Inserir caracteres especiais")
     MenuLabel(AP_MENU_ID_INSERT_PICTURE,	"&Imagem",		"Inserir uma imagem")
-    MenuLabel(AP_MENU_ID_INSERT_CLIPART,	"&Clip Art",		"Inserir gráficos de clip art")
+    MenuLabel(AP_MENU_ID_INSERT_CLIPART,	"&Portfolio",		"Inserir gráficos do portfolio")
     MenuLabel(AP_MENU_ID_INSERT_GRAPHIC,	"Do &Ficheiro",		"Inserir uma imagem a partir de um ficheiro")
 
     MenuLabel(AP_MENU_ID_FORMAT,		"F&ormatar",		NULL)
