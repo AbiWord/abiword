@@ -6163,7 +6163,20 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 //
 // This is for our own extensions to RTF.
 //
-	if( bAbiList )
+	if(bUseInsertNotAppend())
+	{
+		//
+		// don't paste lists into hdrftr's
+		//
+		XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+		FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
+		if(pView && pView->isHdrFtrEdit())
+		{
+			bAbiList = false;
+			bWord97List = false;
+		}
+	}
+	if( bAbiList)
 	{
 	  //
 	  // First off assemble the list attributes
