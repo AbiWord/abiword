@@ -30,6 +30,7 @@
 #include "ie_imp_MsWord_97.h"
 #include "ie_imp_RTF.h"
 #include "ie_imp_Text.h"
+#include "ie_imp_UTF8.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -53,6 +54,7 @@ static struct _imp s_impTable[] =
 	DeclareImporter(IE_Imp_Text),
 	DeclareImporter(IE_Imp_RTF),
 	DeclareImporter(IE_Imp_MsWord_97),
+	DeclareImporter(IE_Imp_UTF8),
 };
 
 		

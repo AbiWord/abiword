@@ -18,20 +18,20 @@
  */
 
 
-#ifndef IE_IMP_TEXT_H
-#define IE_IMP_TEXT_H
+#ifndef IE_IMP_UTF8_H
+#define IE_IMP_UTF8_H
 
 #include <stdio.h>
 #include "ie_imp.h"
 class PD_Document;
 
-// The importer/reader for Plain Text Files.
+// The importer/reader for Plain Text Files in UTF8.
 
-class IE_Imp_Text : public IE_Imp
+class IE_Imp_UTF8 : public IE_Imp
 {
 public:
-	IE_Imp_Text(PD_Document * pDocument);
-	~IE_Imp_Text();
+	IE_Imp_UTF8(PD_Document * pDocument);
+	~IE_Imp_UTF8();
 
 	virtual IEStatus	importFile(const char * szFilename);
 	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
@@ -50,4 +50,4 @@ protected:
 	IEStatus			_writeHeader(FILE * fp);
 };
 
-#endif /* IE_IMP_TEXT_H */
+#endif /* IE_IMP_UTF8_H */

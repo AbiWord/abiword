@@ -42,6 +42,7 @@ typedef enum _IEFileType { IEFT_Unknown,
 						   IEFT_HTML,						   
 						   IEFT_RTF,
 						   IEFT_Text,
+						   IEFT_UTF8,
 						   IEFT_LAST_BOGUS } IEFileType;
 
 typedef enum _IEGraphicFileType { IEGFT_Unknown,

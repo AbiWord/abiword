@@ -18,36 +18,34 @@
  */
 
 
-#ifndef IE_IMP_TEXT_H
-#define IE_IMP_TEXT_H
+#ifndef IE_EXP_UTF8_H
+#define IE_EXP_UTF8_H
 
-#include <stdio.h>
-#include "ie_imp.h"
+#include "ie_exp.h"
+#include "pl_Listener.h"
 class PD_Document;
+class s_UTF8_Listener;
 
-// The importer/reader for Plain Text Files.
+// The exporter/writer for Plain Text Files in UTF8.
 
-class IE_Imp_Text : public IE_Imp
+class IE_Exp_UTF8 : public IE_Exp
 {
 public:
-	IE_Imp_Text(PD_Document * pDocument);
-	~IE_Imp_Text();
-
-	virtual IEStatus	importFile(const char * szFilename);
-	virtual void		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										unsigned char * pData, UT_uint32 lenData);
+	IE_Exp_UTF8(PD_Document * pDocument);
+	virtual ~IE_Exp_UTF8();
 
 	static UT_Bool		RecognizeSuffix(const char * szSuffix);
 	static IEStatus		StaticConstructor(PD_Document * pDocument,
-										  IE_Imp ** ppie);
+										  IE_Exp ** ppie);
 	static UT_Bool		GetDlgLabels(const char ** pszDesc,
 									 const char ** pszSuffixList,
 									 IEFileType * ft);
 	static UT_Bool 		SupportsFileType(IEFileType ft);
 	
 protected:
-	IEStatus			_parseFile(FILE * fp);
-	IEStatus			_writeHeader(FILE * fp);
+	virtual IEStatus	_writeDocument(void);
+	
+	s_UTF8_Listener *	m_pListener;
 };
 
-#endif /* IE_IMP_TEXT_H */
+#endif /* IE_EXP_UTF8_H */
