@@ -21,7 +21,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/*
+  I'm not sure if this is a bug in FreeBSD 3.1, or the way we're
+  using stat.h, but FreeBSD 3.1's sys/stat.h does NOT include
+  sys/types.h, which leads to a whole bunch of undefined types.
+
+  Older versions of FreeBSD (2.2.5-RELEASE) also do not include
+  sys/types.h inside sys/stat.h, but seem to find the types anyway.
+
+  Linux's sys/stat.h explicitly includes sys/types.h
+*/
+#ifdef FREEBSD
+#include <sys/types.h>
+#endif
+
 #include <sys/stat.h>
+
 #include <unistd.h>
 #include "ut_string.h"
 #include "ut_assert.h"
