@@ -30,7 +30,6 @@ EXPORT_HEADERS=		pd_Document.h			\
 			pp_Property.h			\
 			pt_Types.h			\
 			px_ChangeRecord.h		\
-			px_ChangeRecord_Fmt.h		\
 			px_ChangeRecord_Span.h		\
 			px_ChangeRecord_SpanChange.h	\
 			px_ChangeRecord_Strux.h		\
