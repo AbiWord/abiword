@@ -366,7 +366,7 @@ void AP_UnixFrame::_createTopLevelWindow(void)
 
 		m_vecUnixToolbars.addItem(pUnixToolbar);
 	}
-	
+
 	// TODO deal with other window decorations after the
 	// TODO menu and before the drawing area.
 
@@ -503,6 +503,10 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 		
 		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecUnixToolbars.getNthItem(k);
 		pUnixToolbar->bindListenerToView(pView);
+
+		// force a refresh of the toolbar by masking everything
+		FV_ChangeMask mask = 255;
+		pUnixToolbar->refreshToolbar(pView, mask);
 	}
 	
 	// switch to new view, cleaning up previous settings
