@@ -124,6 +124,7 @@ dcl(DLG_IP_Activate_Label,				"Preview Picture")
 dcl(DLG_IP_No_Picture_Label,			"No Picture")
 dcl(DLG_IP_Height_Label,				"Height: ")
 dcl(DLG_IP_Width_Label,					"Width:  ")
+dcl(DLG_IP_Button_Label,				"Insert")
 
 
 

@@ -214,7 +214,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		ofn.Flags |= OFN_EXPLORER;
 		ofn.Flags |= OFN_ENABLETEMPLATE;
 		ofn.Flags |= OFN_ENABLEHOOK;
-		bDialogResult = GetSaveFileName(&ofn);
+		bDialogResult = GetOpenFileName(&ofn);
 		break;
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -497,6 +497,10 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_initPreviewDlg(HWND hDlg)
 	SetDlgItemText( hDlg,
 					XAP_RID_DIALOG_INSERT_PICTURE_TEXT_WIDTH,
 					pSS->getValue(XAP_STRING_ID_DLG_IP_Width_Label) );
+
+	SetDlgItemText( hFOSADlg,
+					IDOK,
+					pSS->getValue(XAP_STRING_ID_DLG_IP_Button_Label) );
 
 	return true;
 
