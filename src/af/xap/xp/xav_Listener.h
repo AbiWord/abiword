@@ -48,8 +48,8 @@ typedef enum _AV_ListenerType
 } AV_ListenerType;
 
 // TODO how did we fill this mask so fast?
-// TODO next it'll need to become a 32-bit mask
-typedef UT_uint16 AV_ChangeMask;
+// TODO next it'll need to become a 32-bit mask. YEP done! MES 2/10/2004
+typedef UT_uint32 AV_ChangeMask;
 #define AV_CHG_NONE			(static_cast<AV_ChangeMask>(0x0000))
 #define AV_CHG_DO			(static_cast<AV_ChangeMask>(0x0001))		// canDo
 #define AV_CHG_DIRTY		(static_cast<AV_ChangeMask>(0x0002))		// isDirty
@@ -68,7 +68,9 @@ typedef UT_uint16 AV_ChangeMask;
 #define AV_CHG_HDRFTR   	(static_cast<AV_ChangeMask>(0x4000))
 #define AV_CHG_DIRECTIONMODE (static_cast<AV_ChangeMask>(0x4000))
 #define AV_CHG_FRAMEDATA	(static_cast<AV_ChangeMask>(0x8000))		// frame-level preferences (pFrameData)
-#define AV_CHG_ALL			(static_cast<AV_ChangeMask>(0xFFFF))
+#define AV_CHG_KEYPRESSED	(static_cast<AV_ChangeMask>(0x10000))		// A key was pressed
+#define AV_CHG_BLOCKCHECK	(static_cast<AV_ChangeMask>(0x20000))		// Checking a block in background
+#define AV_CHG_ALL			(static_cast<AV_ChangeMask>(0xFFFFFFFF))
 
 #define AV_CHG_SAVE			(static_cast<AV_ChangeMask>(AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))
 #define AV_CHG_TYPING		(static_cast<AV_ChangeMask>(AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_EMPTYSEL | AV_CHG_COLUMN))
