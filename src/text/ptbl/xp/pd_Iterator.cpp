@@ -43,7 +43,7 @@
     \param dpos - document position we want to start from
 */
 PD_DocIterator::PD_DocIterator(const PD_Document &doc, PT_DocPosition dpos)
-	: m_pt(*doc.getPieceTable()), m_pos(dpos), m_frag(NULL), m_status(UTIter_OK)
+	: m_pt(*doc.getPieceTable()), m_pos(dpos), m_max_pos(0xffffffff), m_frag(NULL), m_status(UTIter_OK)
 {
 	// find the frag at requested postion
 	_findFrag();
@@ -57,6 +57,7 @@ UT_TextIterator * PD_DocIterator::makeCopy()
 	t->m_pos = m_pos;
 	t->m_frag = m_frag;
 	t->m_status = m_status;
+	t->m_max_pos = m_max_pos;
 
 	return t;
 }
@@ -66,6 +67,12 @@ UT_TextIterator * PD_DocIterator::makeCopy()
  */
 bool PD_DocIterator::_findFrag()
 {
+	if(m_pos > m_max_pos)
+	{
+		m_status = UTIter_OutOfBounds;
+		return false;
+	}
+	
 	// need to make sure fragments are clean before we can use their
 	// doc positions
 	if(m_pt.getFragments().areFragsDirty())

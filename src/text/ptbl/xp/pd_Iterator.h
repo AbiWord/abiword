@@ -59,6 +59,8 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 	virtual UT_uint32 getPosition() const {return m_pos;}
 	virtual void setPosition(UT_uint32 pos);
 
+	virtual void setUpperLimit(UT_uint32 maxpos) {m_max_pos = maxpos;}
+		
 	virtual UTIterStatus getStatus() const {return m_status;}
 
 	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true);
@@ -88,6 +90,7 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 
 	pt_PieceTable & m_pt;
 	PT_DocPosition  m_pos;
+	PT_DocPosition  m_max_pos;
 	
 	const pf_Frag * m_frag;
 
@@ -114,6 +117,8 @@ class ABI_EXPORT PD_StruxIterator : public UT_TextIterator
 	virtual UT_uint32 getPosition() const {return m_offset;}
 	virtual void setPosition(UT_uint32 pos);
 
+	virtual void setUpperLimit(UT_uint32 maxpos) {m_max_offset = maxpos;}
+	
 	virtual UTIterStatus getStatus() const {return m_status;}
 
 	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true);
