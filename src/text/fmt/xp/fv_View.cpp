@@ -1779,13 +1779,11 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 	if (!isSelectionEmpty())
 	{
-		// This part used to be wrapped in a user atomic glob, but
-		// that caused some unfortunate behavior: the first letter
-		// entered of a word replacing a selection would undo
-		// separately from the other letters. See bug #397.
+	        m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
 		_deleteSelection(&AttrProp_Before);
 		bResult = m_pDoc->insertSpan(getPoint(), text, count, &AttrProp_Before);
+		m_pDoc->endUserAtomicGlob();
 	}
 	else
 	{
