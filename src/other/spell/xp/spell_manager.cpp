@@ -78,7 +78,7 @@ SpellManager::~SpellManager ()
 	UT_uint32 i =0;
 	for(i=0; i < m_vecKeys.getItemCount();i++)
 	{
-		const char * psz = (const char *) m_vecKeys.getNthItem(i);
+		char * psz = (char *) m_vecKeys.getNthItem(i);
 		delete [] psz;
 		delete ((SpellCheckerClass *) m_vecDics.getNthItem(i));
 	}
