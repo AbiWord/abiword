@@ -195,6 +195,11 @@ SectionEnd
 	${IfExists} "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
 		Delete "$INSTDIR\${PRODUCT}\bin\libAbiWord.dll"
 	${IfExistsEnd}
+
+	; delete the BIN subdirectory
+	RMDir "$INSTDIR\${PRODUCT}\bin"
+	IfFileExists "$INSTDIR\${PRODUCT}\bin" 0 +2
+	DetailPrint "Unable to remove $INSTDIR\${PRODUCT}\bin directory."
 !macroend
 
 
@@ -292,6 +297,9 @@ SectionEnd
 
 	; remove always (for interoperability) installed plugins 
 	Delete "$INSTDIR\${PRODUCT}\plugins\libAbi_IEG_Win32Native.dll"
+	${DeleteDirIfEmpty} "$INSTDIR\${PRODUCT}\plugins"
+	IfFileExists "$INSTDIR\${PRODUCT}\plugins" 0 +2
+	DetailPrint "Unable to remove plugin directory, please use plugin uninstaller or manually delete."
 !macroend
 
 SubSectionEnd ; core
@@ -438,11 +446,18 @@ Section "Uninstall"
 	; removes all optional components
 	!insertmacro SectionList "RemoveSection"
 
+	; remove the uninstaller
+      Delete "$INSTDIR\${REG_UNINSTALL_FNAME}"
+
 	; attempt to remove actual product directory
 	${DeleteDirIfEmpty} "$INSTDIR\AbiWord"
+	IfFileExists "$INSTDIR\AbiWord" 0 +2
+	DetailPrint "Unable to remove $INSTDIR\AbiWord"
 
 	; attempt to remove install directory
 	${DeleteDirIfEmpty} "$INSTDIR"
+	IfFileExists "$INSTDIR" 0 +2
+	DetailPrint "Unable to remove $INSTDIR"
 
 SectionEnd
 
