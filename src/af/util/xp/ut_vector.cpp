@@ -97,7 +97,7 @@ UT_sint32 UT_Vector::insertItemAt(void* p, UT_sint32 ndx)
 	}
 
 	// bump the elements -> thataway up to the ndxth position
-	for (int i = m_iCount + 1; i > ndx; i--)
+	for (int i = m_iCount; i > ndx; i--)
 	{
 		m_pEntries[i] = m_pEntries[i - 1];
 	}
