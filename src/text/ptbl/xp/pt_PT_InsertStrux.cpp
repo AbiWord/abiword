@@ -77,6 +77,9 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 				break;
 		}
 
+		dpos += iLen; // we want to change the format of the new
+					  // strux, not the old one
+
 		return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,NULL,pts);
 	}
 

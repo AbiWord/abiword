@@ -125,31 +125,33 @@ public:
 	virtual ~fp_Run();
 
 	// inline getter member functions
-	FP_RUN_TYPE		getType() const 				{ return m_iType; }
-	fp_Line*		getLine() const 				{ return m_pLine; }
-	fl_BlockLayout*	getBlock() const 				{ return m_pBL; }
-	UT_sint32		getX() const 					{ return m_iX; }
-	UT_sint32		getY() const 					{ return m_iY; }
+	FP_RUN_TYPE		        getType() const 				{ return m_iType; }
+	fp_Line*		        getLine() const 				{ return m_pLine; }
+	fl_BlockLayout*	        getBlock() const 				{ return m_pBL; }
+	UT_sint32		        getX() const 					{ return m_iX; }
+	UT_sint32		        getY() const 					{ return m_iY; }
 
-	UT_sint32		getHeight() const				{ return m_iHeight; }
-	UT_sint32		getWidth() const				{ return m_iWidth; }
-	UT_uint32		getAscent() const				{ return m_iAscent; }
-	UT_uint32		getDescent() const 				{ return m_iDescent; }
+	UT_sint32		        getHeight() const				{ return m_iHeight; }
+	UT_sint32		        getWidth() const		        { return m_iWidth; }
+	UT_uint32		        getAscent() const				{ return m_iAscent; }
+	UT_uint32		        getDescent() const 				{ return m_iDescent; }
+	virtual UT_uint32       getDrawingWidth() const         { return m_iWidth; }
+
 #ifndef WITH_PANGO
-	UT_sint32		getHeightInLayoutUnits() const	{ return m_iHeightLayoutUnits; }
-	UT_sint32		getWidthInLayoutUnits() const	{ return m_iWidthLayoutUnits; }
-	UT_uint32		getAscentInLayoutUnits() const	{ return m_iAscentLayoutUnits; }
-	UT_uint32		getDescentInLayoutUnits() const	{ return m_iDescentLayoutUnits; }
+	UT_sint32		        getHeightInLayoutUnits() const	{ return m_iHeightLayoutUnits; }
+	UT_sint32		        getWidthInLayoutUnits() const	{ return m_iWidthLayoutUnits; }
+	UT_uint32		        getAscentInLayoutUnits() const	{ return m_iAscentLayoutUnits; }
+	UT_uint32		        getDescentInLayoutUnits() const	{ return m_iDescentLayoutUnits; }
 #endif
 
-	fp_Run* 		getNext() const					{ return m_pNext; }
-	fp_Run*			getPrev() const					{ return m_pPrev; }
-	UT_uint32		getBlockOffset() const			{ return m_iOffsetFirst; }
-	UT_uint32		getLength() const				{ return m_iLen; }
-	GR_Graphics*	getGraphics() const				{ return m_pG; }
-	fp_HyperlinkRun * getHyperlink() const 			{ return m_pHyperlink;}
+	fp_Run* 		        getNext() const					{ return m_pNext; }
+	fp_Run*			        getPrev() const					{ return m_pPrev; }
+	UT_uint32		        getBlockOffset() const			{ return m_iOffsetFirst; }
+	UT_uint32		        getLength() const				{ return m_iLen; }
+	GR_Graphics*	        getGraphics() const				{ return m_pG; }
+	fp_HyperlinkRun *       getHyperlink() const 			{ return m_pHyperlink;}
 
-	void            getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
+	void                    getSpanAP(const PP_AttrProp * &pSpanAP, bool &bDeleteAfter);
 
 	void					insertIntoRunListBeforeThis(fp_Run& newRun);
 	void					insertIntoRunListAfterThis(fp_Run& newRun);
@@ -449,6 +451,8 @@ public:
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			letPointPass(void) const;
+	virtual UT_uint32       getDrawingWidth() const { return m_iDrawWidth;}
+
 //
 // Tomas this breaks line breaking....
 //	virtual bool			doesContainNonBlankData(void) const { return false; }	// Things like text whould return false if it is all spaces.

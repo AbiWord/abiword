@@ -726,6 +726,8 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 
 		m_pG->setColor(getFGColor());
 
+		UT_uint32 iWidth = getDrawingWidth();
+
 		if(r_type == PP_REVISION_ADDITION)
 		{
 			// draw double underline
@@ -734,18 +736,18 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 									GR_Graphics::CAP_BUTT,
 									GR_Graphics::LINE_SOLID);
 
-			m_pG->drawLine(pDA->xoff, pDA->yoff + 2, pDA->xoff + m_iWidth, pDA->yoff + 2);
-			m_pG->drawLine(pDA->xoff, pDA->yoff + 4, pDA->xoff + m_iWidth, pDA->yoff + 4);
+			m_pG->drawLine(pDA->xoff, pDA->yoff + 2, pDA->xoff + iWidth, pDA->yoff + 2);
+			m_pG->drawLine(pDA->xoff, pDA->yoff + 4, pDA->xoff + iWidth, pDA->yoff + 4);
 		}
 		else if(r_type == PP_REVISION_FMT_CHANGE)
 		{
-			// draw a thik line underneath
-			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff + 2, m_iWidth, 2);
+			// draw a thick line underneath
+			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff + 2, iWidth, 2);
 		}
 		else
 		{
 			// draw a strike-through line
-			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, m_iWidth, 2);
+			m_pG->fillRect(fgColor,pDA->xoff, pDA->yoff - m_iHeight/3, iWidth, 2);
 		}
 
 	}
@@ -2490,7 +2492,9 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 	if (pView->getShowPara())
 	{
 		// Draw pilcrow
-		m_pG->setColor(clrShowPara);
+		// use the hard-coded colour only if not revised
+		if(!m_pRevisions)
+			m_pG->setColor(clrShowPara);
         m_pG->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
 	}
 }

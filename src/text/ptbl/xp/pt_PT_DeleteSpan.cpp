@@ -73,27 +73,85 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 		{
 			// get attributes for this fragement
 			const PP_AttrProp * pAP;
-			if(_getSpanAttrPropHelper(pTemp, &pAP))
+			pf_Frag::PFType eType = pTemp->getType();
+			UT_uint32 iLen;
+			PTStruxType eStruxType;
+
+			if(eType == pf_Frag::PFT_Text)
 			{
-				if(!pAP->getAttribute(name, pRevision))
-					pRevision = NULL;
-
-				PP_RevisionAttr Revisions(pRevision);
-				Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_DELETION,NULL,NULL);
-				const XML_Char * ppRevAttrib[3];
-				ppRevAttrib[0] = name;
-				ppRevAttrib[1] = Revisions.getXMLstring();
-				ppRevAttrib[2] = NULL;
-
-				PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
-
-				if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
+				if(!getAttrProp(((pf_Frag_Text*)pTemp)->getIndexAP(),&pAP))
+					return false;
+			}
+			else if(eType == pf_Frag::PFT_Strux)
+			{
+				if(!getAttrProp(((pf_Frag_Strux*)pTemp)->getIndexAP(),&pAP))
 					return false;
 
-				dpos1 = dposEnd;
+				eStruxType = ((pf_Frag_Strux*)pTemp)->getStruxType();
+
+				switch (eStruxType)
+				{
+					case PTX_Block:
+						iLen = pf_FRAG_STRUX_BLOCK_LENGTH;
+						break;
+
+					case PTX_Section:
+					case PTX_SectionHdrFtr:
+					case PTX_SectionEndnote:
+						iLen = pf_FRAG_STRUX_SECTION_LENGTH;
+						break;
+
+					default:
+						UT_ASSERT(UT_NOT_IMPLEMENTED);
+						iLen = 1;
+						break;
+				}
+
+			}
+			else if(eType == pf_Frag::PFT_Object)
+			{
+				if(!getAttrProp(((pf_Frag_Object*)pTemp)->getIndexAP(),&pAP))
+					return false;
 			}
 			else
-				return false;
+			{
+				// something that does not carry AP
+				continue;
+			}
+
+			if(!pAP->getAttribute(name, pRevision))
+				pRevision = NULL;
+
+			PP_RevisionAttr Revisions(pRevision);
+			Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_DELETION,NULL,NULL);
+			const XML_Char * ppRevAttrib[3];
+			ppRevAttrib[0] = name;
+			ppRevAttrib[1] = Revisions.getXMLstring();
+			ppRevAttrib[2] = NULL;
+
+			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pTemp->getLength());
+
+			switch (eType)
+			{
+				case pf_Frag::PFT_Text:
+					if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
+						return false;
+					break;
+
+				case pf_Frag::PFT_Strux:
+					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1 + iLen, dpos1 + 2*iLen, ppRevAttrib,NULL,eStruxType))
+						return false;
+					break;
+#if 0
+				case pf_Frag::PFT_Object:
+					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL))
+						return false;
+					break;
+#endif
+				default:;
+			}
+
+			dpos1 = dposEnd;
 		}
 
 		return true;

@@ -167,9 +167,9 @@ fp_Line::~fp_Line()
 /*!
  * Return the gap between columns.
  */
-UT_sint32  fp_Line::getColumnGap(void)	
-{ 
-	return ((fp_Column *)getColumn())->getColumnGap(); 
+UT_sint32  fp_Line::getColumnGap(void)
+{
+	return ((fp_Column *)getColumn())->getColumnGap();
 }
 
 /*!
@@ -177,7 +177,7 @@ UT_sint32  fp_Line::getColumnGap(void)
  */
 bool fp_Line::isFirstLineInBlock(void) const
 {
-	return (m_pBlock->getFirstContainer() == (fp_Container *) this); 
+	return (m_pBlock->getFirstContainer() == (fp_Container *) this);
 }
 
 /*!
@@ -185,7 +185,7 @@ bool fp_Line::isFirstLineInBlock(void) const
  */
 bool fp_Line::isLastLineInBlock(void) const
 {
-	return (m_pBlock->getLastContainer() == (fp_Container *) this); 
+	return (m_pBlock->getLastContainer() == (fp_Container *) this);
 }
 
 void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
@@ -707,7 +707,9 @@ void fp_Line::clearScreen(void)
 			// assigned a height. Call it robustness, if you want.
 
 			UT_sint32 height = getHeight();
-			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset, height);
+			// I have added the +1 to clear dirt after squiggles and
+			// revision underlines
+			pRun->getGraphics()->fillRect(*pClr,xoffLine - m_iClearLeftOffset, yoffLine + 1, m_iClearToPos + m_iClearLeftOffset, height + 1);
 //
 // Sevior: I added this for robustness.
 //
