@@ -23,7 +23,8 @@
 #include "ut_types.h"
 #include "xap_Frame.h"
 #include "fv_View.h"
-#include "fl_DocLayout.h"
+
+class FL_DocLayout;
 
 class ABI_EXPORT AP_Frame : public XAP_Frame
 {

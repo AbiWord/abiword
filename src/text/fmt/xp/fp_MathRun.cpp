@@ -31,6 +31,13 @@
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
 #include "gr_DrawArgs.h"
+#include "gr_Abi_MathGraphicDevice.h"
+#include "gr_Abi_RenderingContext.h"
+
+#include <MathView/BoundingBox.hh>
+#include <MathView/MathMLNamespaceContext.hh>
+#include <MathView/NamespaceContext.hh>
+#include <MathView/MathMLElement.hh>
 
 fp_MathRun::fp_MathRun(fl_BlockLayout* pBL, 
 					   UT_uint32 iOffsetFirst)	: 
@@ -45,6 +52,9 @@ fp_MathRun::fp_MathRun(fl_BlockLayout* pBL,
 	m_pszDataID(NULL),
 	m_sMathML("")
 {
+	m_pMathView = libxml2_MathView::create();
+	m_pMathView->setMathMLNamespaceContext(
+		MathMLNamespaceContext::create(m_pMathView,getMathDevice()));
 	UT_DEBUGMSG(("fp_MathRun Created! \n"));
 	lookupProperties(getGraphics());
 }
@@ -53,6 +63,15 @@ fp_MathRun::~fp_MathRun(void)
 {
 }
 
+SmartPtr<GR_Abi_MathGraphicDevice> fp_MathRun::getMathDevice(void)
+{
+	return getBlock()->getDocLayout()->getMathGraphicDevice();
+}
+
+GR_Abi_RenderingContext *  fp_MathRun::getAbiContext(void)
+{
+	return getBlock()->getDocLayout()->getAbiContext();
+}
 
 void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 									const PP_AttrProp * /*pBlockAP*/,
@@ -76,6 +95,17 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_return_if_fail(bFoundDataID);
 	UT_return_if_fail(m_pszDataID);
 	UT_DEBUGMSG(("MATH ML string is... \n %s \n",m_sMathML.utf8_str()));
+
+// Load this into MathView
+
+	m_pMathView->loadBuffer(m_sMathML.utf8_str());
+
+	BoundingBox box = m_pMathView->getBoundingBox();
+	UT_sint32 iWidth = getAbiContext()->toAbiLayoutUnits(box.width);
+	UT_sint32 iAscent = getAbiContext()->toAbiLayoutUnits(box.height);
+	UT_sint32 iDescent = getAbiContext()->toAbiLayoutUnits(box.depth);
+
+	UT_DEBUGMSG(("Width = %d Ascent = %d Descent = %d \n",iWidth,iAscent,iDescent)); 
 	const XML_Char * szWidth = NULL;
 	m_pSpanAP->getProperty("width", szWidth);
 	if(szWidth == NULL)
@@ -126,8 +156,9 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	m_iImageWidth = getWidth();
 	m_iImageHeight = getHeight();
 
-	_setAscent(getHeight());
-	_setDescent(0);
+	_setAscent(iAscent);
+	_setDescent(iDescent);
+	_setWidth(iWidth);
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
 

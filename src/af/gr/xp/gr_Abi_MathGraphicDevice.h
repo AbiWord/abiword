@@ -21,6 +21,7 @@
 #define __gr_Abi_MathGraphicDevice_h__
 
 #include <MathView/MathGraphicDevice.hh>
+#include <MathView/ShaperManager.hh>
 
 class GR_Abi_MathGraphicDevice : public MathGraphicDevice
 {

@@ -20,12 +20,16 @@
  * 02111-1307, USA.
  */
 
-
-
 #ifndef FP_MATHRUN_H
 #define FP_MATHRUN_H
 
 #include "fp_Run.h"
+#include <MathView/libxml2_MathView.hh>
+#include <MathView/SmartPtr.hh>
+
+class GR_Abi_MathGraphicDevice;
+class GR_Abi_RenderingContext;
+
 class fl_BlockLayout;
 
 class ABI_EXPORT fp_MathRun : public fp_Run
@@ -41,6 +45,9 @@ public:
 	virtual bool			isSuperscript(void) const ;
 	virtual bool			isSubscript(void)  const;
 	virtual bool 			hasLayoutProperties(void) const;
+
+	SmartPtr<GR_Abi_MathGraphicDevice> getMathDevice(void);
+	GR_Abi_RenderingContext *  getAbiContext(void);
 	const char *            getDataID(void) const;
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -61,6 +68,7 @@ protected:
 	UT_uint32               m_iGraphicTick;
 	const XML_Char *        m_pszDataID;
 	UT_UTF8String           m_sMathML;
+	SmartPtr<libxml2_MathView>      m_pMathView;
 };
 
 #endif /* FP_MATHRUN_H */

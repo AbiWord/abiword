@@ -31,6 +31,7 @@
 #include "ap_LeftRuler.h"
 #include "ap_StatusBar.h"
 #include "xap_Dlg_Zoom.h"
+#include "fl_DocLayout.h"
 
 /*****************************************************************/
 

@@ -34,11 +34,11 @@
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "xap_UnixDialogHelper.h"
+#include "fl_DocLayout.h"
 #include <glib-object.h>
 #include "ap_UnixApp.h"
 #include "ut_sleep.h"
 #include "fv_View.h"
-#include "fl_DocLayout.h"
 
 /**************************************************************************/
 /**************************************************************************/
@@ -396,9 +396,8 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		FL_DocLayout * pLayout = pView->getLayout();
 		if(pView->getPoint() > 0)
 		{
-			pLayout->updateLayout();
+			pLayout->updateLayout();  
 			iPageCount = pLayout->countPages();
-
 			if(!s_bFirstDrawDone && iPageCount > 1)
 			{
 				pView->draw();
