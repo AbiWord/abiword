@@ -710,12 +710,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Changes)
 			s = EV_MIS_Gray;
 	  break;
 
-	case AP_MENU_ID_INSERT_INSERTHEADER:
+	case AP_MENU_ID_INSERT_HEADER:
 		if (pView->isHeaderOnPage())
 			s = EV_MIS_Gray;
 	  break;
 
-	case AP_MENU_ID_INSERT_INSERTFOOTER:
+	case AP_MENU_ID_INSERT_FOOTER:
 		if (pView->isFooterOnPage())
 			s = EV_MIS_Gray;
 	  break;
