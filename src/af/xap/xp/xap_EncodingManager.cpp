@@ -28,6 +28,7 @@
 
 
 static 	iconv_t iconv_handle_N2U = NULL, iconv_handle_U2N = NULL,
+	iconv_handle_U2Latin1 = NULL,
 	iconv_handle_U2Win = NULL ,iconv_handle_Win2U = NULL;
 
 XAP_EncodingManager*	XAP_EncodingManager::instance = NULL;
@@ -45,6 +46,9 @@ XAP_EncodingManager::~XAP_EncodingManager()
 
   if(VALID_ICONV_HANDLE(iconv_handle_U2N))
     iconv_close(iconv_handle_U2N);
+
+  if(VALID_ICONV_HANDLE(iconv_handle_U2Latin1))
+    iconv_close(iconv_handle_U2Latin1);
 
   if(VALID_ICONV_HANDLE(iconv_handle_U2Win))
     iconv_close(iconv_handle_U2Win);
@@ -202,6 +206,7 @@ static void init_values(const XAP_EncodingManager* that)
 {
 	iconv_handle_N2U = iconv_open("UCS-2",that->getNativeEncodingName());
 	iconv_handle_U2N = iconv_open(that->getNativeEncodingName(),"UCS-2");
+	iconv_handle_U2Latin1 = iconv_open("ISO-8859-1","UCS-2");
 	
 	char* winencname = wvLIDToCodePageConverter(that->getWinLanguageCode());
 	iconv_handle_Win2U = iconv_open("UCS-2",winencname);
@@ -270,6 +275,11 @@ UT_UCSChar XAP_EncodingManager::try_nativeToU(UT_UCSChar c) const
 UT_UCSChar XAP_EncodingManager::try_UToNative(UT_UCSChar c)  const
 {
 	return try_UToC(c,iconv_handle_U2N);
+};
+
+UT_UCSChar XAP_EncodingManager::try_UToLatin1(UT_UCSChar c)  const
+{
+	return try_UToC(c,iconv_handle_U2Latin1);
 };
 
 UT_UCSChar XAP_EncodingManager::try_WindowsToU(UT_UCSChar c) const 

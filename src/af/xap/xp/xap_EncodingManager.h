@@ -97,6 +97,7 @@ public:
 	encoding can't be used for this character.
     */
     virtual UT_UCSChar try_UToNative(UT_UCSChar c)  const;
+    virtual UT_UCSChar try_UToLatin1(UT_UCSChar c)  const;
 
     /*these are used for reading/writing of doc and rtf files. */
     virtual UT_UCSChar try_WindowsToU(UT_UCSChar c) const;
