@@ -63,7 +63,7 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 	m_hInstance(hInstance),
 	m_dialogFactory(this)
 {
-	UT_ASSERT(hInstance);
+	UT_return_if_fail(hInstance);
 
 	_setAbiSuiteLibDir();
 	_setBidiOS();
@@ -91,7 +91,7 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 
 	// register graphics allocator
 	GR_GraphicsFactory * pGF = getGraphicsFactory();
-	UT_ASSERT( pGF );
+	UT_ASSERT_HARMLESS( pGF );
 
 	if(pGF)
 	{
@@ -100,8 +100,12 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 										   GR_Win32Graphics::s_getClassId());
 
 		// we are in deep trouble if this did not succeed
-		UT_ASSERT( bSuccess );
+		UT_return_if_fail( bSuccess );
 
+		// this is our fall back ...
+		pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), true);
+		pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), false);
+		
 		// try to load Uniscribe; if we succeed we will make USP
 		// graphics the default
 		HINSTANCE hUniscribe = LoadLibrary("usp10.dll");
@@ -113,35 +117,21 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 										  GR_Win32USPGraphics::graphicsDescriptor,
 										  GR_Win32USPGraphics::s_getClassId());
 
-			UT_ASSERT( bSuccess );
-#if 0 // turned off until the class is functional ...
-			pGF->registerAsDefault(GR_Win32USPGraphics::s_getClassId(), true);
-			pGF->registerAsDefault(GR_Win32USPGraphics::s_getClassId(), false);
-#else
-			pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), true);
-			pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), false);
-#endif
+			UT_ASSERT_HARMLESS( bSuccess );
+			if(bSuccess)
+			{
+				pGF->registerAsDefault(GR_Win32USPGraphics::s_getClassId(), true);
+				pGF->registerAsDefault(GR_Win32USPGraphics::s_getClassId(), false);
 			
-			// now free the library (GR_Win32USPGraphics will load it
-			// on its own behalf
+				// now free the library (GR_Win32USPGraphics will load it
+				// on its own behalf
 			
-			FreeLibrary(hUniscribe);
-#if 0 //def DEBUG
-			// create a dummy instance of the USP graphics to print
-			// various debug info ...
-			GR_Win32AllocInfo ai;
-			ai.m_hdc = GetDC(NULL);
-
-			GR_Graphics * pG = pGF->newGraphics(GRID_WIN32_UNISCRIBE, ai);
-			UT_ASSERT( pG );
-			delete pG;
-#endif
+				FreeLibrary(hUniscribe);
+			}
 		}
 		else
 		{
 			UT_DEBUGMSG(("XAP_Win32App: could not load Uniscribe library"));
-			pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), true);
-			pGF->registerAsDefault(GR_Win32Graphics::s_getClassId(), false);
 		}
 	}
 }
