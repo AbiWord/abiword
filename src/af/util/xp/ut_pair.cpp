@@ -1,7 +1,7 @@
 #include"ut_pair.h"
 #include <stdlib.h>
 #include "ut_string.h"
-
+#include <string.h>
 
 UT_Pair::UT_Pair()
 {
