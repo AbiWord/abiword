@@ -54,7 +54,7 @@ Hubert Figuiere <hfiguiere@teaser.fr>			RTF import/export work, MacOS (X) mainta
 Albert Fluegel <albert.fluegel@hl.siemens.de>	Solaris
 Ben Fowler <bpfowler@hotmail.com>				MacOS 8/9 work
 Anthony Fok <anthony@thizlinux.com>             Translation fixes for zh-CN and zh-TW
-F J Franklin <F.J.Franklin@sheffield.ac.uk> 	SVG work.
+Francis J Franklin <fjf@alinameridon.com> 	SVG work, XML work, HTML plugin, build system stuff, XDarwin maintainer.
 Stephane Fritsch <sfritsch@noos.fr> 			BeOS
 Tomas Frydrych <tomas@frydrych.uklinux.net> 	ttf, utf8 locale, bidi
 David Given <dg@tao-group.com>					Human Readable Text Export

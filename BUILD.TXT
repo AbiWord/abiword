@@ -41,6 +41,20 @@ There are several ways to build and run AbiWord:
     want. It is best to use an abosulte path to an existing directory (<dir>)
     outside of any of the AbiWord modules, e.g. OUT=/tmp
 
+    AbiWord Plugin RPMs
+    -------------------
+
+    Plugins sometimes have awkward dependencies so not all of them are built
+    by default by 'make distribution [OPTIONS]'. If you wish to change which
+    plugins are built, then you will need to edit the RPM spec *template*:
+
+    abi/src/pkg/linux/rpm/abiword.spec-template
+
+    lines 13- have plugin build option settings ('0' or '1').
+
+    If you are building from CVS, you will need to run autogen.sh in
+    abiword-plugins in order to create the build system.
+
 Build Instructions -- Windows NT
 --------------------------------
 
