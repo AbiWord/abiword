@@ -27,6 +27,7 @@
 #endif
 #endif /* DLGHACK */
 
+#include <string.h>
 #include "ev_EditMethod.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
@@ -1212,8 +1213,6 @@ char * _promptFile(AP_Frame * pFrame, UT_Bool bSaveAs)
 	UT_Bool accepted = FALSE;
 	char * fileName = NULL;
 	
-	g_return_if_fail (wb != NULL);
-
 	pFS = (GtkFileSelection *)gtk_file_selection_new(bSaveAs ? "Save file" : "Open File");
 
 	/* Connect the signals for Ok and Cancel */
