@@ -136,7 +136,13 @@ UT_sint32 GR_Image::getLayoutHeight(void) const
 
 GR_Image::GRType GR_Image::getType() const
 { 
-  return GRT_Unknown;
+//
+// While this is technically the right thing to do it screws up printing on Windows and Gnome
+//
+//  return GRT_Unknown;
+//
+// FIXME: Subclasses should ensure this works.
+	return GRT_Raster;
 }
 
 bool GR_Image::render(GR_Graphics *pGR, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) const 

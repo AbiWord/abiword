@@ -40,12 +40,34 @@ GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName, bool isPrintResolution)
     setName ( "UnixGnomeImage" );
   }
   m_bPrintResolution = isPrintResolution;
+  m_ImageType = GR_Image::GRT_Raster;
+}
+
+
+GR_UnixGnomeImage::GR_UnixGnomeImage(const char* szName, GR_Image::GRType imageType, bool isPrintResolution) 
+  : m_image(NULL)
+{
+  if (szName)
+  {
+    setName ( szName );
+  }
+  else
+  {
+    setName ( "UnixGnomeImage" );
+  }
+  m_bPrintResolution = isPrintResolution;
+  m_ImageType = imageType;
 }
 
 GR_UnixGnomeImage::~GR_UnixGnomeImage()
 {
 	UT_ASSERT(m_image);
 	gdk_pixbuf_unref (m_image);
+}
+
+GR_Image::GRType GR_UnixGnomeImage::getType(void) const
+{
+	return  m_ImageType;
 }
 
 UT_sint32	GR_UnixGnomeImage::getDisplayWidth(void) const

@@ -728,6 +728,7 @@ void XAP_UnixGnomePrintGraphics::drawAnyImage (GR_Image* pImg,
 	UT_sint32 iDestWidth  = pImg->getDisplayWidth();
 	UT_sint32 iDestHeight = pImg->getDisplayHeight();
 
+	UT_DEBUGMSG(("SEVIOR: Draw any image iDestWidth %d iDestHeight %d \n",iDestWidth,iDestHeight));
 	GR_UnixGnomeImage * pImage = static_cast<GR_UnixGnomeImage *>(pImg);
 	GdkPixbuf * image = pImage->getData();
 	UT_ASSERT(image);
@@ -748,11 +749,15 @@ void XAP_UnixGnomePrintGraphics::drawAnyImage (GR_Image* pImg,
 void XAP_UnixGnomePrintGraphics::drawImage(GR_Image* pImg, UT_sint32 xDest, 
 										   UT_sint32 yDest)
 {
-   	if (pImg->getType() != GR_Image::GRT_Raster) {
-	   pImg->render(this, xDest, yDest);
-	   return;
+	UT_DEBUGMSG(("SEVIOR: drawing image in gnome-print image type = %d \n", pImg->getType()));
+   	if (pImg->getType() != GR_Image::GRT_Raster) 
+	{
+		UT_DEBUGMSG(("SEVIOR: Rendering non-raster image in gnome-print \n"));
+	    pImg->render(this, xDest, yDest);
+	    return;
 	}
 
+	UT_DEBUGMSG(("SEVIOR: drawing raster image in gnome-print \n"));
    	switch(m_cs)
      	{
        	case GR_Graphics::GR_COLORSPACE_COLOR:
@@ -778,7 +783,7 @@ GR_Image* XAP_UnixGnomePrintGraphics::createNewImage(const char* pszName,
 	GR_Image* pImg = NULL;
 
    	if (iType == GR_Image::GRT_Raster)
-     		pImg = new GR_UnixGnomeImage(pszName,true);
+     		pImg = new GR_UnixGnomeImage(pszName,iType,true);
    	else if (iType == GR_Image::GRT_Vector)
      		pImg = new GR_VectorImage(pszName);
    
