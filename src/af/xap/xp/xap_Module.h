@@ -28,6 +28,9 @@
 
 #include "ut_types.h"
 
+// TODO: make this turn into extern/_declspec(dllexport) depending on platform
+#define ABI_FAR
+
 // we want to have C linkage for both 
 // this and for all of our required functions
 extern "C" {

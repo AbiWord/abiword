@@ -678,3 +678,8 @@ endif
 ifdef ABI_OPT_WIDGET
 CFLAGS += -DABI_OPT_WIDGET
 endif
+
+ifeq ($(ABI_OPT_PLUGINS),1)
+CFLAGS += -DENABLE_PLUGINS
+ABI_OPTIONS+=Plugins:On
+endif
