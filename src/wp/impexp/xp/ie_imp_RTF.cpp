@@ -1293,10 +1293,11 @@ UT_Error IE_Imp_RTF::importFile(const char * szFilename)
 	m_newSectionFlagged = true;
 	
 	m_szFileDirName = UT_strdup (szFilename);
-#if 0
+	// UT_basename returns a point INSIDE the passed string.
+	// the trick is to truncate the string by setting the char pointed 
+	// by tmp to NULL. This IS useful code. (2 LOC)
 	char * tmp = UT_basename (m_szFileDirName);
 	*tmp = 0;
-#endif
 	FILE *fp = fopen(szFilename, "r");
 	if (!fp)
 	{
