@@ -57,6 +57,7 @@ public:
 	void clear();
 	
 	UT_Vector* enumerate() const;
+	UT_Vector* keys() const;
 	
 	// these are synonyms - for getting the # keys
 	inline size_t cardinality() const { return n_keys; }
@@ -85,7 +86,7 @@ public:
 			{ return m_d->_next(*this); }
 		inline const void*  prev()
 			{ return m_d->_prev(*this); }
-		inline bool	more()
+		inline bool	is_valid()
 			{ return (m_index != -1); }
 		
 	private:
@@ -156,7 +157,7 @@ private:
 
 #define UT_HASH_PURGEDATA(type, hash, reaper)		\
 	do { UT_StringPtrMap::UT_Cursor _hc1(hash);		\
-        for ( type _hval1 = (type) _hc1.first(); _hc1.more(); _hval1 = (type) _hc1.next() ) { \
+        for ( type _hval1 = (type) _hc1.first(); _hc1.is_valid(); _hval1 = (type) _hc1.next() ) { \
 	   if (_hval1)									\
 		 reaper (_hval1);							\
 	} } while (0);

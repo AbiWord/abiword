@@ -1260,7 +1260,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	UT_uint32 i;
 
 	for (i = 0, pHashEntry = c.first();
-	     c.more() && i < k; i++, pHashEntry = c.next())
+	     c.is_valid() && i < k; i++, pHashEntry = c.next())
 	  {
 	    // noop
 	  }
@@ -1295,11 +1295,11 @@ void PD_Document::_destroyDataItemData(void)
 		return;
 
 	UT_StringPtrMap::UT_Cursor c(&m_hashDataItems);
-	const void *val = c.first();
+	const void *val = NULL;
 
-	while (true && val)
-	{
-		UT_DEBUGMSG(("DOM: deleting\n"));
+	for (val = c.first(); c.is_valid(); val = c.next())
+	  {
+		xxx_UT_DEBUGMSG(("DOM: destroying data item\n"));
 		struct _dataItemPair* pPair = (struct _dataItemPair*) val;
 		UT_ASSERT(pPair);
 		UT_String key = c.key();
@@ -1307,10 +1307,6 @@ void PD_Document::_destroyDataItemData(void)
 		delete pPair->pBuf;
 		FREEP(pPair->pToken);
 		delete pPair;
-
-		if (!c.more())
-			break;
-		val = c.next();
 	}
 }
 

@@ -50,7 +50,7 @@ PP_AttrProp::~PP_AttrProp()
 		while (true) {
 			FREEP(s);
 
-			if (!c1.more())
+			if (!c1.is_valid())
 				break;
 
 			s = (XML_Char *)c1.next();
@@ -64,8 +64,9 @@ PP_AttrProp::~PP_AttrProp()
 	if(m_pProperties)
 	{
 		UT_StringPtrMap::UT_Cursor c(m_pProperties);
-		UT_Pair * entry = (UT_Pair*)c.first();
-		while (true)
+		UT_Pair * entry = NULL;
+		for (entry = (UT_Pair*)c.first(); c.is_valid(); 
+		     entry = (UT_Pair*)c.next())
 		{
 			if(entry)
 			{
@@ -76,10 +77,6 @@ PP_AttrProp::~PP_AttrProp()
 
 				delete entry;
 			}
-
-			if (!c.more())
-				break;
-			entry = (UT_Pair*)c.next();
 		}
 
 		delete m_pProperties;
@@ -302,23 +299,20 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_C
 
 	int i = 0;
 	UT_StringPtrMap::UT_Cursor c(m_pAttributes);
-	const void * val = c.first();
+	const void * val = NULL;
 
-	while (true)
+	for (val = c.first(); c.is_valid(), i < ndx; val = c.next(), i++)
 	{
-		if (i == ndx)
-		{
-			szName = (XML_Char*) c.key().c_str();
-			szValue = (XML_Char*) val;
-			break;
-		}
-		i++;
-		if (!c.more())
-			return false;
-		val = c.next();
+	  // noop
 	}
 
-	return true;
+	if (i == ndx)
+	  {
+	    szName = (XML_Char*) c.key().c_str();
+	    szValue = (XML_Char*) val;
+	    return true;
+	  }
+	return false;
 }
 
 bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
@@ -331,23 +325,20 @@ bool	PP_AttrProp::getNthProperty(int ndx, const XML_Char *& szName, const XML_Ch
  
  	int i = 0;
  	UT_StringPtrMap::UT_Cursor c(m_pProperties);
- 	const void * val = c.first();
- 
- 	while (true)
+ 	const void * val = NULL;
+
+	for (val = c.first(); c.is_valid(), i < ndx; val = c.next(), i++)
  	{
- 		if (i == ndx)
- 		{
- 			szName = (XML_Char*) c.key().c_str();
- 			szValue = (XML_Char*) ((UT_Pair*)val)->first();
- 			break;
- 		}
- 		i++;
-		if (!c.more())
-			return false;
- 		val = c.next();
+	  // noop
  	}
  
-  	return true;
+	if ( i == ndx )
+ 		{
+		  szName = (XML_Char*) c.key().c_str();
+		  szValue = (XML_Char*) ((UT_Pair*)val)->first();
+		  return true;
+ 		}
+	return false;
 }
 
 bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szValue) const
@@ -552,7 +543,7 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	
 			v1 = ca1.next();
 			v2 = ca2.next();
-		} while (ca1.more());
+		} while (ca1.is_valid());
 	}
 
 	if (countMyProps > 0)
@@ -579,7 +570,7 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	
 			v1 = cp1.next();
 			v2 = cp2.next();
-		} while (cp1.more());
+		} while (cp1.is_valid());
 	
 	#ifdef PT_TEST
 		s_Matches++;
@@ -752,6 +743,7 @@ void PP_AttrProp::_computeCheckSum(void)
 	UT_StringPtrMap::UT_Cursor c2(m_pProperties);
 
 	const void *val = c1.first();
+
 	while (val != NULL)
 	{
 		s1 = (XML_Char *)c1.key().c_str();
@@ -760,7 +752,7 @@ void PP_AttrProp::_computeCheckSum(void)
 		m_checkSum += UT_XML_strlen(s1);
 		m_checkSum += UT_XML_strlen(s2);
 
-		if (!c1.more())
+		if (!c1.is_valid())
 			break;
 		val = c1.next();
 	}
@@ -775,7 +767,7 @@ void PP_AttrProp::_computeCheckSum(void)
 		m_checkSum += UT_XML_strlen(s1);
 		m_checkSum += UT_XML_strlen(s2);
 
-		if (!c2.more())
+		if (!c2.is_valid())
 			break;
 		val = c2.next();
 	}

@@ -27,9 +27,6 @@
 
 // fwd. decls.
 static  UT_uint32 _Recommended_hash_size(UT_uint32	size);
-static  UT_uint32 _Recommended_hash_size(UT_uint32	numslots,
-										 UT_uint32	slotsize,
-										 UT_uint32	max_tablesize);
 
 // Here we declare a couple of classes internal to the hashtable's impl
 
@@ -154,7 +151,7 @@ UT_StringPtrMap::~UT_StringPtrMap()
  */
 const void* UT_StringPtrMap::pick(const char* k) const
 {
-  UT_String aKey = k;
+  UT_String aKey(k);
   return pick (aKey);
 }
 
@@ -176,7 +173,7 @@ const void* UT_StringPtrMap::pick(const UT_String & k) const
  */
 bool UT_StringPtrMap::contains(const char* k, const void* v) const
 {
-  UT_String aKey = k;
+  UT_String aKey(k);
   return contains (aKey, v);
 }
 
@@ -184,11 +181,12 @@ bool UT_StringPtrMap::contains(const UT_String& k, const void* v) const
 {
 	hash_slot * sl = 0;
 	bool key_found = false;
-	bool v_found = false;
-	size_t slot = 0;
+	bool v_found   = false;
+	size_t slot    = 0;
 	size_t hashval = 0;
 
-#if 0
+#if 1
+	// DOM: TODO: make this call work
 	sl = find_slot (k, SM_LOOKUP, slot, key_found,
 			hashval, v, &v_found, 0, 0);
 	return v_found;
@@ -206,7 +204,7 @@ bool UT_StringPtrMap::contains(const UT_String& k, const void* v) const
  */
 void UT_StringPtrMap::insert(const char* key, const void* value)
 {
-  UT_String aKey = key;
+  UT_String aKey(key);
   insert (aKey, value);
 }
 
@@ -250,7 +248,7 @@ void UT_StringPtrMap::insert(const UT_String& key, const void* value)
  */
 void UT_StringPtrMap::set(const char* key, const void* value)
 {
-	UT_String aKey = key;
+	UT_String aKey(key);
 	set (aKey, value);
 }
 
@@ -284,14 +282,9 @@ UT_Vector * UT_StringPtrMap::enumerate (void) const
 
 	UT_Cursor cursor(this);
 
-	const void* val = cursor.first();
+	const void* val = NULL;
 
-	// TMN: Dom, have a look at this. I think it should be
-	// for (const void* val = cursor.first(); cursor.more; cursor.next())
-	// 
-	// I also think "more()" should be renamed, can't come to think of a good
-	// name though.
-	while (true)
+	for (val = cursor.first(); cursor.is_valid(); val = cursor.next ())
 	{
 		// we don't allow nulls since so much of our code depends on this
 		// behavior
@@ -301,20 +294,38 @@ UT_Vector * UT_StringPtrMap::enumerate (void) const
 			pVec->addItem ((void*)val);
 		}
 #endif
-		if (!cursor.more())
-			break;
-		val = cursor.next();
 	}
 
 	return pVec;
 }
 
 /*!
+ * Return a UT_Vector of pointers to our UT_String keys in the Hashtable
+ * You must FREEP the UT_Vector* but not the keys
+ */
+UT_Vector * UT_StringPtrMap::keys (void) const
+{
+	UT_Vector * pVec = new UT_Vector (size());
+
+	UT_Cursor cursor(this);
+
+	const void* val = NULL;
+
+	for (val = cursor.first(); cursor.is_valid(); val = cursor.next ())
+	{
+	  pVec->addItem ((void*)&cursor.key());
+	}
+
+	return pVec;
+}
+
+
+/*!
  * Remove the item referenced by \key in the map
  */
 void UT_StringPtrMap::remove(const char* key, const void*)
 {
-	UT_String aKey = key;
+	UT_String aKey(key);
 	remove (aKey, 0);
 }
 
@@ -434,7 +445,11 @@ UT_StringPtrMap::find_slot(const UT_String& k,
 			
 			if (v)
 			{
-				*v_found = (sl->value() == v);
+			  if (v_found)
+			    *v_found = (sl->value() == v);
+			} else {
+			  if (v_found)
+			    *v_found = true; // return true if the key was found and value was null
 			}
 
 			xxx_UT_DEBUGMSG(("DOM: found something #1\n"));
@@ -778,39 +793,5 @@ static UT_uint32 _Recommended_hash_size(UT_uint32 size)	// Verifies reasonably
 	if (lo >= _Hash_n_magic_numbers) 
 		return (UT_uint32)-1;
 	
-	return _Hash_magic_numbers[lo];
-}
-
-static UT_uint32 _Recommended_hash_size(UT_uint32 numslots, 
-					UT_uint32 slotsize, 
-					UT_uint32 max_tablesize)
-{
-	UT_uint32 lo = 0;
-	UT_uint32 hi = _Hash_n_magic_numbers - 1;
-	while (hi > lo)
-	{
-		UT_uint32 mid = (hi + lo) / 2;
-		UT_uint32 s = _Hash_magic_numbers[mid];
-		if (numslots > s)
-		{
-			lo = mid + 1;
-		}
-		else if (numslots <= s)
-		{
-			hi = mid - 1;
-		}
-		else
-		{
-			return s;
-		}
-	}
-	while (_Hash_magic_numbers[lo] * slotsize > max_tablesize)
-	{
-		--lo;
-	}
-	if (lo >= _Hash_n_magic_numbers)
-	{
-		return (UT_uint32)-1;
-	}
 	return _Hash_magic_numbers[lo];
 }

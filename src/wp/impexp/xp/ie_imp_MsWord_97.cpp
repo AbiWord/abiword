@@ -364,12 +364,17 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 /****************************************************************************/
 /****************************************************************************/
 
-#define ErrCleanupAndExit(code)  do {wvOLEFree (); return (code);} while(0)
+#define ErrCleanupAndExit(code)  do {wvOLEFree (); return (code); FREEP(password);} while(0)
 
 // TODO: DOM: *actually define these*
-#define GetPassword() NULL
+#define GetPassword() _getPassword ( m_pDocument->getApp()->getLastFocussedFrame() )
 
 #define ErrorMessage(x) do { XAP_Frame *_pFrame = m_pDocument->getApp()->getLastFocussedFrame(); _errorMessage (_pFrame, (x)); } while (0)
+
+static char * _getPassword (XAP_Frame * pFrame)
+{
+  return NULL;
+}
 
 static void _errorMessage (XAP_Frame * pFrame, int id)
 {
@@ -387,13 +392,10 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 	wvParseStruct ps;
 
 	int ret = wvInitParser (&ps, (char *)szFilename);
+	char * password = NULL;
 
 	if (ret & 0x8000)		/* Password protected? */
 	  {
-	    char * password = NULL;
-
-	    // TODO: obtain password from user, error message boxes
-
 	    password = GetPassword();
 
 	    if ((ret & 0x7fff) == WORD8)
@@ -432,6 +434,8 @@ UT_Error IE_Imp_MsWord_97::importFile(const char * szFilename)
 		      }
 		  }
 	      }
+
+	    FREEP(password);
 	  }
 
 	if (ret)

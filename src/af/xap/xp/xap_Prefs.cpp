@@ -172,7 +172,7 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 	UT_uint32 i;
 
 	for ( i = 0, v = c.first(); 
-	      c.more() && i < k; v = c.next(), i++ )
+	      c.is_valid() && i < k; v = c.next(), i++ )
 	{
 	  // noop
 	}

@@ -263,7 +263,7 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	const void * val = NULL;
 	UT_uint32 i = 0;
 
-	for (i = 0, val = c.first(); (i < k) && c.more(); i++, val = c.next())
+	for (i = 0, val = c.first(); (i < k) && c.is_valid(); i++, val = c.next())
 	  {
 	    // noop
 	  }
