@@ -557,7 +557,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 	{
 		if (*pArgs->m_argv[k] == '-')
 		{
-			if (UT_stricmp(pArgs->m_argv[k],"-to") == 0)
+			if (UT_stricmp(pArgs->m_argv[k],"-to") == 0 || UT_stricmp(pArgs->m_argv[k],"-help") == 0)
 			{
 				bShowSplash = false;
 				break;
@@ -754,7 +754,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	// quick & dirty check to make sure we didn't do a command-line conversion
    for (k=nFirstArg; (k<Args.m_argc); k++) {
 		if (*Args.m_argv[k] == '-') {
-			if (UT_stricmp(Args.m_argv[k],"-to") == 0) {
+			if (UT_stricmp(Args.m_argv[k],"-to") == 0 || UT_stricmp(Args.m_argv[k],"-help") == 0) {
  				bShowApp = false;
 			}
 		}
@@ -810,7 +810,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 	int kWindowsOpened = 0;
 	char *to = NULL;
 	int verbose = 1;
-	bool show = false;
+	bool show = false, bHelp = false;
 	
 	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{
@@ -860,6 +860,28 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 						after --verbose */
 					verbose = atoi (m_pArgs->m_argv[k]);
 				}
+			}
+			else if ( (UT_stricmp (m_pArgs->m_argv[k], "-help") == 0) && (!bHelp) )
+			{
+				char *pszMessage = (char*)malloc( 500 );
+
+				strcpy( pszMessage, "Usage: AbiWord.exe [option]... [file]...\n\n" );
+				strcat( pszMessage, "-to\nThe target format of the file\n\n" );
+				strcat( pszMessage, "-verbose\nThe verbosity level (0, 1, 2)\n\n" );
+				strcat( pszMessage, "-show\nIf you really want to start the GUI (even if you use the -to or -help options)\n\n" );
+#ifdef DEBUG
+				strcat( pszMessage, "-dumpstrings\nDump strings strings to file\n\n" );
+#endif
+				strcat( pszMessage, "-geometry <geom>\nSet initial frame geometry [UNIMPLEMENTED]\n\n" );
+				strcat( pszMessage, "-lib <dir>\nUse dir for application components\n\n" );
+				strcat( pszMessage, "-nosplash\nDo not show splash screen\n\n" );
+				
+				MessageBox(NULL,
+					pszMessage, "Command Line Options", MB_OK);
+
+				free( pszMessage );
+
+				bHelp = true;
 			}
 			else
 			{
@@ -914,7 +936,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 	}
 					
 	// command-line conversion may not open any windows at all
-	if (to && !show)
+	if ((bHelp || to) && !show)
 		return;
 
 	if (kWindowsOpened == 0)
