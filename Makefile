@@ -71,7 +71,7 @@ canonical:
 ## This creates $(DIST)/<platform_specific_installation_packages>
 
 distribution: compile canonical
-	$(MAKE) ABI_ROOT=$(ABI_ROOT) -C src distribution
+	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src distribution
 
 ##################################################################
 ## Targets to clean up the mess that we make

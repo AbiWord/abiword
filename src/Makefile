@@ -123,7 +123,7 @@ distribution:
 else
 distribution:
 	@echo Building distribution packages for $(ABIPKGDIR)...
-	@$(MAKE) ABI_ROOT=$(ABI_ROOT) -C pkg/$(ABIPKGDIR) distribution
+	@$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C pkg/$(ABIPKGDIR) distribution
 endif
 
 else
