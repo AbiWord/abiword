@@ -493,7 +493,6 @@ public:
 	static EV_EditMethod_Fn viCmd_O;
 	static EV_EditMethod_Fn viCmd_P;
 	static EV_EditMethod_Fn viCmd_a;
-	static EV_EditMethod_Fn viCmd_o;
 	static EV_EditMethod_Fn viCmd_c24;
 	static EV_EditMethod_Fn viCmd_c28;
 	static EV_EditMethod_Fn viCmd_c29;
@@ -511,6 +510,7 @@ public:
 	static EV_EditMethod_Fn viCmd_db;
 	static EV_EditMethod_Fn viCmd_dd;
 	static EV_EditMethod_Fn viCmd_dw;
+	static EV_EditMethod_Fn viCmd_o;
 	static EV_EditMethod_Fn viCmd_y24;
 	static EV_EditMethod_Fn viCmd_y28;
 	static EV_EditMethod_Fn viCmd_y29;
@@ -999,7 +999,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viCmd_O),		0,	""),
 	EV_EditMethod(NF(viCmd_P),		0,	""),
 	EV_EditMethod(NF(viCmd_a),		0,	""),
-	EV_EditMethod(NF(viCmd_o),		0,	""),
 	EV_EditMethod(NF(viCmd_c24),	0,	""),
 	EV_EditMethod(NF(viCmd_c28),	0,	""),
 	EV_EditMethod(NF(viCmd_c29),	0,	""),
@@ -1017,6 +1016,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(viCmd_db), 	0,	""),
 	EV_EditMethod(NF(viCmd_dd), 	0,	""),
 	EV_EditMethod(NF(viCmd_dw), 	0,	""),
+	EV_EditMethod(NF(viCmd_o),		0,	""),
 	EV_EditMethod(NF(viCmd_y24),	0,	""),
 	EV_EditMethod(NF(viCmd_y28),	0,	""),
 	EV_EditMethod(NF(viCmd_y29),	0,	""),
