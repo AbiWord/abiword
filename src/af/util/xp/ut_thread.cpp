@@ -17,26 +17,37 @@
  * 02111-1307, USA.
  */
 
-// defined in platform-specific code
-#include "ut_mutex.h"
-#include "ut_mutexImpl.h"
+#include "ut_thread.h"
+#include "ut_threadImpl.h"
 
-UT_Mutex::UT_Mutex()
-  : m_pimpl(new UT_MutexImpl)
+UT_Thread::UT_Thread ( UT_Thread::Priority pri )
+  : mPri ( pri ), mbStarted ( false )
 {
+  mPimpl = new UT_ThreadImpl ( this ) ; 
 }
 
-UT_Mutex::~UT_Mutex()
+UT_Thread::~UT_Thread ()
 {
-  delete m_pimpl;
+  if ( mPimpl )
+    delete mPimpl ;
 }
 
-void UT_Mutex::lock ()
+void UT_Thread::setPriority ( UT_Thread::Priority pri )
 {
-  m_pimpl->lock ();
+  mPri = pri;
+
+  if ( mbStarted )
+    mPimpl->setPriority ( pri ) ;
 }
 
-void UT_Mutex::unlock ()
+void UT_Thread::yield ()
 {
-  m_pimpl->unlock ();
+  UT_ThreadImpl::yield () ;
+}
+
+void UT_Thread::start ()
+{
+  UT_ASSERT(!mbStarted);
+  mbStarted = true ;
+  mPimpl->start () ;
 }

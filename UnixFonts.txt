@@ -1,1 +1,1 @@
-This file is now obsolete; see AddingFontsOnUnix.abw in the doc subdirectory.
+This file is now obsolete; see AbiWord_and_Unix_Fonts.zabw in the doc subdirectory.

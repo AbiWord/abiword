@@ -2425,19 +2425,17 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 
   // suck the data into the ByteBuffer
 
-  int data = 0;
-
   MSWord_ImageType imgType = s_determineImageType ( b );
+
+  wvStream *pwv;
 
   if ( imgType == MSWord_RasterImage )
 	{
-	  while (EOF != (data = getc(b->blip.bitmap.m_pvBits->stream.file_stream)))
-		pictData->append((UT_Byte*)&data, 1);
+	  pwv = b->blip.bitmap.m_pvBits;
 	}
   else if ( imgType == MSWord_VectorImage )
 	{
-	  while (EOF != (data = getc(b->blip.metafile.m_pvBits->stream.file_stream)))
-		pictData->append((UT_Byte*)&data, 1);
+	  pwv = b->blip.metafile.m_pvBits;
 	}
   else
 	{
@@ -2446,6 +2444,13 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 	  FREEP(mimetype);
 	  return UT_ERROR;
 	}
+
+  size_t size = wvStream_size (pwv);
+  char *data = new char[size];
+  wvStream_rewind(pwv);
+  wvStream_read(data,size,sizeof(char),pwv);
+  pictData->append((UT_Byte*)data, size);
+  delete [] data;
 
   if(!pictData->getPointer(0))
 	  error =  UT_ERROR;
