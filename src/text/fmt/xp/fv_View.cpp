@@ -3976,12 +3976,6 @@ UT_UCSChar * FV_View::getSelectionText(void)
 // this function has not been debugged
 UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2)
 {
-#if 1
-	UT_DEBUGMSG(("DOM: getTextBetweenPos not fully debugged\n"));
-	UT_return_val_if_fail(UT_TODO, NULL);
-
-#else
-
 	UT_ASSERT(pos2 > pos1);
 
 	UT_GrowBuf buffer;
@@ -3994,7 +3988,7 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	// get the current block the insertion point is in
 	fl_BlockLayout * pBlock = m_pLayout->findBlockAtPosition(curPos);
 
-	UT_UCSChar * bufferRet = new UT_UCSChar[iLength];
+	UT_UCSChar * bufferRet = new UT_UCSChar[iLength+1];
 
 	UT_ASSERT(bufferRet);
 	if(!bufferRet)
@@ -4020,8 +4014,8 @@ UT_UCSChar * FV_View::getTextBetweenPos(PT_DocPosition pos1, PT_DocPosition pos2
 	}
 
 	UT_ASSERT(curPos == pos2);
+	*buff_ptr = 0;
 	return bufferRet;
-#endif
 }
 
 bool FV_View::isTabListBehindPoint(void)
