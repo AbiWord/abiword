@@ -148,6 +148,12 @@ AM_CONDITIONAL(WITH_CURL, test x$abi_curlhash = xtrue)
 
 ABI_SPELL
 
+dnl BiDi (Bi-Directional) is required now
+dnl 
+BIDI_CFLAGS="-DBIDI_ENABLED"
+bidi=true
+AM_CONDITIONAL(BIDI_ENABLED, test "x$bidi" = "xtrue")
+
 AC_ARG_ENABLE(profile,
     [  --enable-profile    Turn on profile ],
      [case "${enableval}" in
@@ -163,17 +169,6 @@ AC_ARG_ENABLE(extra-optimization,
        no)  OPTIMIZE_CFLAGS="-O2" ;; 
        *) AC_MSG_ERROR(bad value ${enableval} for --enable-extra-optimization) ;;
      esac],[OPTIMIZE_CFLAGS=""])
-
-AC_ARG_ENABLE(bidi,
-    [  --enable-bidi    Turn on bidirectional support ],
-     [case "${enableval}" in
-       yes) bidi=true;
-		BIDI_CFLAGS="-DBIDI_ENABLED" ;;
-       no)  bidi=false;
-		BIDI_CFLAGS="" ;; 
-       *) AC_MSG_ERROR(bad value ${enableval} for --enable-bidi) ;;
-     esac],[BIDI_CFLAGS=""])
-AM_CONDITIONAL(BIDI_ENABLED, test "x$bidi" = "xtrue")
 
 # by default, configure in the abi directory runs the same configure command
 # in the peer directories (wv, expat, etc...).  this provides a way to

@@ -140,6 +140,12 @@ AM_CONDITIONAL(WITH_CURL, test x$abi_curlhash = xtrue)
 
 ABI_SPELL
 
+dnl BiDi (Bi-Directional) is required now
+dnl 
+BIDI_CFLAGS="-DBIDI_ENABLED"
+bidi=true
+AM_CONDITIONAL(BIDI_ENABLED, test "x$bidi" = "xtrue")
+
 AC_ARG_ENABLE(profile,
     [  --enable-profile    Turn on profile ],
      [case "${enableval}" in
