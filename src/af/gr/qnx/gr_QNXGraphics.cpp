@@ -174,8 +174,42 @@ void GR_QNXGraphics::setLineProperties ( double inWidthPixels,
 					  GR_Graphics::CapStyle inCapStyle,
 					  GR_Graphics::LineStyle inLineStyle )
 {
-//XXX: ???
+int capstyle,joinstyle;
+switch(inJoinStyle)
+{
+	case JOIN_MITER:
+		joinstyle = Pg_MITER_JOIN;
+		break;
+	case JOIN_ROUND:
+		joinstyle = Pg_ROUND_JOIN;
+		break;
+	case JOIN_BEVEL:
+		joinstyle = Pg_BEVEL_JOIN;
+		break;
+}
+switch (inCapStyle)
+{
+	case CAP_BUTT:
+		capstyle=Pg_BUTT_CAP;
+		break;
+	case CAP_ROUND:
+		capstyle=Pg_ROUND_CAP;
+		break;
+	case CAP_PROJECTING:
+		capstyle=Pg_SQUARE_CAP;
+		break;
+}
 
+if(inLineStyle == LINE_SOLID)
+	PgSetStrokeDash(NULL,0,0x10000);
+if(inLineStyle == LINE_ON_OFF_DASH)
+	PgSetStrokeDash((const unsigned char *)"\10\4",2,0x10000); //Not 110% if this is same as in GTK.
+if(inLineStyle == LINE_DOUBLE_DASH)
+	PgSetStrokeDash((const unsigned char *)"\10\4",2,0x10000);  //Same as gtk?
+
+PgSetStrokeWidth(inWidthPixels);
+PgSetStrokeCap(capstyle);
+PgSetStrokeJoin(joinstyle);
 }
 
 UT_uint32 GR_QNXGraphics::_getResolution(void) const
