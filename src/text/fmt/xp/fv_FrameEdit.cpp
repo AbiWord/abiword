@@ -1096,7 +1096,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sHeight("");
 		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,posAtXY);
 		pf_Frag_Strux * pfFrame = NULL;
-		const XML_Char * props[20] = {"frame-type","textbox",
+		const XML_Char * props[22] = {"frame-type","textbox",
 									  "wrap-mode","wrapped-both",
 									 "position-to","column-above-text",
 									 "xpos",sXpos.c_str(),
@@ -1105,6 +1105,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 									  "frame-height",sHeight.c_str(),
 									  "frame-col-xpos",sColXpos.c_str(),
 									  "frame-col-ypos",sColYpos.c_str(),
+									  "background-color", "ffffff",
 									  NULL,NULL};
 //
 // This should place the the frame strux immediately after the block containing
