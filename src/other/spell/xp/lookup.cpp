@@ -42,6 +42,9 @@
 
 /*
  * $Log$
+ * Revision 1.6  2003/08/26 13:43:42  uwog
+ * and even more :-P
+ *
  * Revision 1.5  2003/08/26 13:24:06  uwog
  * beautify my previous patch
  *
@@ -601,17 +604,6 @@ void ISpellChecker::initckch (char *wchars)
 			}
 		}
     }
-}
-
-void ISpellChecker::lcleanup()
-{
-	clearindex (m_pflagindex);
-	clearindex (m_sflagindex);
-
-	FREEP(m_hashtbl);
-	FREEP(m_hashstrings);
-	FREEP(m_sflaglist);
-	FREEP(m_chartypes);
 }
 
 /*

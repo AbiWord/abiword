@@ -150,8 +150,17 @@ ISpellChecker::~ISpellChecker()
 	}
 
 	if (m_bSuccessfulInit)
-		lcleanup(); // only cleanup our mess if we were successfully initialized
+	{
+		// only cleanup our mess if we were successfully initialized
+		clearindex (m_pflagindex);
+		clearindex (m_sflagindex);		
+	}
 
+	FREEP(m_hashtbl);
+	FREEP(m_hashstrings);
+	FREEP(m_sflaglist);
+	FREEP(m_chartypes);	
+	
 	if (UT_iconv_isValid (m_translate_in ))
 		UT_iconv_close(m_translate_in);
 	m_translate_in = UT_ICONV_INVALID;
