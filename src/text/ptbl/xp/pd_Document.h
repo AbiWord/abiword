@@ -61,23 +61,26 @@ enum
 // the dublin core element set: 
 // SPEC:   http://dublincore.org/documents/dces/
 // DC/RDF: http://dublincore.org/documents/dcmes-xml/
-#define PD_META_KEY_TITLE        "title"
-#define PD_META_KEY_CREATOR      "creator"
-#define PD_META_KEY_SUBJECT      "subject"
-#define PD_META_KEY_DESCRIPTION  "description"
-#define PD_META_KEY_PUBLISHER    "publisher"
-#define PD_META_KEY_CONTRIBUTOR  "contributor"
-#define PD_META_KEY_DATE         "date"
-#define PD_META_KEY_TYPE         "type"
-#define PD_META_KEY_FORMAT       "format" /* always mime:application/abiword */
-#define PD_META_KEY_SOURCE       "source"
-#define PD_META_KEY_LANGUAGE     "language"
-#define PD_META_KEY_RELATION     "relation"
-#define PD_META_KEY_COVERAGE     "coverage"
-#define PD_META_KEY_RIGHTS       "rights"
+
+// abiword tags are prefixed in the "abiword." namespace
+// dublin core tags are prefixed in the "dc." namespace
+#define PD_META_KEY_TITLE        "dc.title"
+#define PD_META_KEY_CREATOR      "dc.creator"
+#define PD_META_KEY_SUBJECT      "dc.subject"
+#define PD_META_KEY_DESCRIPTION  "dc.description"
+#define PD_META_KEY_PUBLISHER    "dc.publisher"
+#define PD_META_KEY_CONTRIBUTOR  "dc.contributor"
+#define PD_META_KEY_DATE         "dc.date"
+#define PD_META_KEY_TYPE         "dc.type"
+#define PD_META_KEY_FORMAT       "dc.format" /* always mime:application/abiword */
+#define PD_META_KEY_SOURCE       "dc.source"
+#define PD_META_KEY_LANGUAGE     "dc.language"
+#define PD_META_KEY_RELATION     "dc.relation"
+#define PD_META_KEY_COVERAGE     "dc.coverage"
+#define PD_META_KEY_RIGHTS       "dc.rights"
 
 // abiword extensions to the dublin core element set
-#define PD_META_KEY_KEYWORDS     "keywords"
+#define PD_META_KEY_KEYWORDS     "abiword.keywords"
 
 /*!
  PD_Document is the representation for a document.
