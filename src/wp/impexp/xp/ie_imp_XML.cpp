@@ -378,6 +378,9 @@ void IE_Imp_XML::_charData(const XML_Char *s, int len)
 		
 		// flush out the buffer
 		
+		if (buf.size() == 0 )
+		  return;
+
 		switch (m_parseState)
 		  {
 		  case _PS_Block:
