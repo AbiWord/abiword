@@ -1,0 +1,297 @@
+AbiWord Build Instructions
+Unix:
+Prerequisites:
+
+AbiWord is a C++ application. Its build system is based on the GNU automake tool. To compile and build AbiWord, you will need:
+
+	A reasonably working C and C++ compiler (GNU's gcc and g++ come to mind, though others should work as well)
+	GNU's make (called gmake sometimes)1
+	A Bourne compatible shell, such as sh, bash, zsh, ksh, csh...
+
+AbiWord-2.0's Unix GUI is GTK+-2.0 based, which means that AbiWord on Unix does its drawing using the excellent GTK+ and GDK graphical tools. Therefore you will need GTK+-2.0 and its prerequisites installed, and their ancillary development packages. A list of the required packages and the packages themselves can be found at http://www.gtk.org. Alternately, your OS provider might have pre-built packages for you, or they might be available from some trusted third party (collectively referred to as a "distribution") . We always recommend going with the tools your distribution provides, but you are in no means required to do so.
+
+AbiWord also requires zlib. Zlib is usually installed on every machine under the sun, even those sold by Sun(tm). But, if for some reason you don't have it or you just want to get it anyway, http://www.gzip.org/zlib/ is the place for you. See also: "configure --with-zlib"
+
+AbiWord also requires libpng. Like zlib, libpng is installed on most machines already. However, you may get the latest and greatest libpng here: http://www.libpng.org/pub/png/ See also: "configure --with-libpng"
+
+AbiWord also requires a working iconv implementation. Note, that thing that ships on your Solaris 8, HP/UX, or AIX box isn't considered "working." AbiWord requires GNU libiconv >= 1.8 to be installed. Most every Linux box and some BSD boxen should be in the clear here, as the standard C library ships with an equivalent version of this package. If you're not on Linux or BSD, get libiconv here: http://www.gnu.org/software/libiconv/ See also: "configure --with-libiconv"
+
+AbiWord also requires the Fribidi library version 0.10.4 or higher, which is available at http://fribidi.sourceforge.net. See also: "configure --with-fribidi"
+
+AbiWord also requires an XML parser in order to work. Don't be too worried about what that means - your system probably already has a working one installed. If you're in doubt, you can go grab expat (http://expat.sourceforge.net) or (preferrably) libxml2 (http://xmlsoft.org/) or 'cvs co expat'. See also: "configure --with-expat" and "configure --with-libxml2"
+
+AbiWord also requires a little library called POPT to parse through command line arguments. POPT is probably installed on your Linux box, but if not, or if you are on most BSD or many  Solaris or something else entirely that doesn't have it, you can get it here (http://developer.gnome.org/arch/misc/popt.html) or 'cvs co popt'. See also: "configure --with-popt"
+
+AbiWord can optionally take advantage of the Aspell/Pspell spell checkers. Get them at http://aspell.net if you're so inclined. A lot of newer distributions ship aspell/pspell. Don't worry if you don't get this, AbiWord will fall back to using its builtin ispell spell checker. Dictionaries for our ispell checker can be found at http://www.abisource.com/download/abispell.phtml  See also: "configure --with-pspell"
+
+AbiWord can also take advantage of the Xft2/FontConfig X11 font rendering extensions if it is installed. Your copy of AbiWord will look so pretty that you'll be the envy of all of your friends, peers, and coworkers. Please Please Please go get this. http://www.fontconfig.org See also: "configure --enable-xft"
+
+AbiWord can be scripted (controlled and added onto via extensions) via a PERL interface if you so wish. PERL is available from http://www.perl.org/ See also: "configure --enable-scripting"
+
+AbiWord can make use of CURL - a neat little file downloading tool. It can automatically install things like dictionaries using CURL if you want it to. If you're using pspell, you don't want CURL. If not, you may want to grab it: http://curl.haxx.se/ See also: "configure --with-curl"
+
+Getting the source:
+
+Well, if you're here, you've probably downloaded the latest and greatest AbiWord sources. If not, you can always get the latest AbiWord source and binary packages from http://www.sourceforge.net/projects/abiword
+If you're more of the CVS type, you can find CVS instructions for checking out AbiWord here: http://www.abisource.com/developers/download.phtml
+
+If you have the big-bad source tarball, you can skip to the next section. If you're getting the source from CVS and are on Unix, here's what you need to cvs checkout:
+
+	abi (Absolutely vital)
+	abidistfiles (needed if you plan to make install)
+	wv (if you don't have it, you can also get it at http://wvware.sf.net, See also: configure --with-sys-wv)
+	abiword-plugins (optional, for extra importer/exporters, nifty tools, and other toys)
+if you don't have these already:
+	libjpeg (optional but recommended)
+	popt (if you don't have it)
+	libpng (not optional but on most systems already)
+	zlib (not optional but on most systems already)
+	expat (either this or libxml2 is required, both can be found elsewhere)
+	libiconv (if you have a missing or broken implementation)
+	psiconv (if you want to build the psion importer plugin)
+and if you don't have FontConfig/Xft2 installed, you'll need
+	unixfonts
+
+Configuring what you want built:
+
+Because AbiWord uses the automake/autoconf build tools, you might already be familiar with this step and some of its more-common behaviors, quirks, and options.
+
+If you enter the 'abi' directory, you'll find a little (big) shell script there named "configure." This program will help you determine what features get built into AbiWord. If you're in a rush, uninterested, or clueless, you might just try "./configure && make && make install" which is also known as the "standard unix build practice." If you do this, more power to you. If you're interested in what you can play with, however, read on.
+
+Common build options:
+	--prefix=/some/path will let you put AbiWord in a particular directory. /usr, /usr/local, and /oss are common values
+	--disable-shared will disable building a dynamically loaded version of AbiWord. This means that AbiWord will be statically-linked to libgtk2.so, libglib2.so, ...
+	--enable-static will build a statically linked version of AbiWord. This means that your resulting binary will be huge, and have all of its dependencies (gtk2, glib) included in it.  Beware that many operating environments don't include the static versions of most of abi's dependencies, which is required to statically link.
+	--enable-xft will make AbiWord use way pretty fonts, and make your eyes bleed less. See the above notes about Xft2/FontConfig
+	--enable-debug will include useful messages and special symbols if you're a developer. If you're an ordinary user, steer clear of this option. It won't suit your palette.  It definately increases the size of your resulting binary.
+	--enable-scripting will enable you to script AbiWord using PERL. This is a cool feature if you have PERL installed, so I recommend trying it out.
+	--with-XXX where "XXX" is the name of some resource/library. Options for these include "yes", "no", and a path to XXX's installation directory. So one could do:
+	./configure --with-pspell=no [don't use pspell]
+	./configure --with-pspell=yes [use pspell, let configure try to find where it is installed]
+	./configure --with-pspell=/path/to/pspell [use pspell, but use the pspell found under that path] 	
+
+As always, ./configure --help will help shed some more light on these, and show you some more options that I'm intentionally excluding here. In most cases, configure will do what you want. It will find all of the dependencies and create a nice build environment for the AbiWord project. Running configure without any arguments is probably a good thing to do on most Linux and BSD systems. Solaris, HP/UX, and AIX people will probably have to pass a few of the "--with" options to configure in order to get a working AbiWord.
+
+After running configure (assuming that configure worked and didn't spout any nasty messages at you), type 'make' and go grab a cup of coffee. AbiWord can build in about 8 minutes on a P4 1800. Your build times might vary depending on your configuration options, how good your machine is, what load your machine is under, ... as usually, multi-processor machines can use the jobserver (-j) mode.
+
+When the 'make' part of this process is finished, you will want to install AbiWord. You can achieve this through typing 'make install' - this part might require you to be superuser (root), depending on your permissions and where you chose as your prefix (the default, /usr/local, usually requires superuser permission). You can do this through typing 'su' or 'sudo'. Please consult your manual pages or local system(s) administrator if you have questions.
+
+
+
+1Some incarnations of 'make', even though they are not GNU's, understand (or have an option to understand) GNU's syntax.  This will work fine, if it either can be told to use GNUmakefile (as the makefile input), or (if it looks for Makefile) from wherever you've run configure do:
+for d in `find -name GNUmakefile | tr -d "GNUmakefile"`; do mv -f $d/GNUmakefile $d/Makefile; done
+This will change all files in that directory and its subdirectories named GNUmakefile to Makefile, overwriting any files named Makefile that are in the way.  If you do this in abi/, and later want to try the diving make (secondary) build system, you must re-extract the Makefiles or first move them to a safe place.
+
+Windows:
+
+Prerequisites:
+
+	MSYS and MinGW free GNU build tools
+or	
+	Microsoft Visual C++ 5.0 or greater and cygwin unix shell layer
+
+MSYS and MinGW provide a Windows port of popular GNU building tools and compilers.  MinGW provides the compiler, headers, and libraries to build Window binaries.  Information about it and how to download it can be found at http://www.mingw.org.  MSYS was developed   to provide MinGW an operating shell compliant with various GNU building scripts.  Information on MSYS can be found at http://www.mingw.org/msys.shtml.
+
+For builders/developers with Microsoft Visual C++ (MSVC) compilers, there are two alternatives to build AbiWord;  command line with cygwin tools(actively maintained and will work) or the Microsoft Developer Project files(unmaintained and might not work).
+
+Building via MSVC command line using cygwin tools is the traditional method for building AbiWord and is used for the release builds.  You can find information abut the cygwin tools at http://www.cygwin.com.  Only a small subset of the cygwin tools are necessary for build AbiWord.  They are: bash, sed, uname,
+
+The second method is to try the MSVC6 project files that have been generated.  These project files are not actively maintained, and are only available for MSVC 6.0 and greater.  We are looking for volunteers to keep them in sync with development.  See "Getting the sources" section below to use CVS to download the latest versions of these project files.
+
+Getting the source:
+
+There are two methods for getting the AbiWord source code; source tar.gz files and CVS.
+
+The source tar.gz files are packaged for building AbiWord.  You can find the latest version of the tar.gz on http://sourceforge.net/projects/abiword/.  The will be typically labeled abiword-<version>.tar.gz.  Once download you can use WinZip or command line tools from MSYS or cygwin to unpackage the file and install the abiword sources locally to your hard disk.  The command line to unpackage the file from MSYS or cygwin is "tar xvfz abiword-*.tar.gz"
+
+Concurrent Versions Systems (CVS) is used by the developers to maintain the source files of the project.  Information on CVS can be located at there web site http://www.cvshome.org/.  An excellent Window GUI for CVS is WinCVS and can be located at http://www.wincvs.org/, with links to other great CVS tools.
+
+For AbiWord, the CVSROOT environment variable should be:
+ :pserver:anoncvs@cvs.abisource.com:/cvsroot
+
+The password for the anoncvs user is anoncvs.   
+
+From the command line version of CVS, a user would 
+cd c:\existing_dir_for_cvs_download
+set CVSROOT=:pserver:anoncvs@cvs.abisource.com:/cvsroot
+set HOME=c:\existing_dir_for_.cvspass_file
+set HOMEDRIVE=c:\
+set HOMEPATH=\existing_dir_for_.cvspass_file
+cvs login
+cvs checkout <modules listed below>
+	
+CVS modules required to check out are:
+	abi
+	abidistfiles
+	expat
+	fribidi
+	libiconv
+	libpng
+	nsis
+	popt
+	wv
+	zlib
+optionally the following module may be checked out if attempting to use MSVC project files:
+	MSVC6
+optionally the following module may be checked out to enable JPEG images:
+	libjpeg
+
+Building AbiWord:
+
+If using the MSYS/MinGW build system, start MSYS.  
+
+If using MSVC with the cygwin system, start a command/cmd shell.  Run VCVARS32.BAT which sets appropriate environment variables pointing paths, includes, libs that come with MSVC.  You will find this batch function typically in the bin directory under VC98.  Once these environment variables are set, from the same shell, launch cygwin.  Typically this is done via a cygwin.bat batch file located where you installed cygwin.
+
+Change directory to the location of where you download/installed the abi
+cd /path/to/abi
+AbiWord uses a diving makefile build system.  Begin the build process by typing 
+make
+This will build the AbiWord application and any associated tools and libraries.  The binary will be located in a subdirectory src/WIN32_etc.../bin or src/MINGW32_etc.../bin  To build and installable executable, issue the following command
+make distribution
+A setup_abiword.exe will be built and located in a dist subdirectory.
+
+Several build options are available and are detailed in the BUILD.txt file.  They are used by during the build by replacing the make command above with:
+make option1 option2
+
+The following are common for the Windows build:
+
+ABI_BUILD_VERSION=x.y.z  	Set the version number for the build
+ABI_OPT_DEBUG=1  		Builds a debug version of AbiWord
+ABI_OPT_PERL=1			Enables Perl scripting
+ABI_OPT_LIBJPEG=1		Enables you to view JPEG images
+ABI_OPT_CURL=1			Enables automatic dictionary downloading
+
+If attempting to use the MSVC6 project files, follow the instructions in the README.TXT file.  
+
+QNX:
+
+Prerequisites: 
+(See also: Windows and Unix requirements for more information)
+	abi
+	abidistfiles
+	wv
+
+You also need to have libpng,libiconv, libfribidi and libxml2. All except libfribidi are availible from the QNX 3rd party CD. FriBiDi can be downloaded from http://www.qnxzone.com/~travis/packages/fribidi_x86-0.10.4-x86-public.qpr
+
+Building on QNX is similar to the other unix like platforms.  We rely on the command line utilities for bash, sed, gawk, etc.  
+
+There are 2 ways to build and run AbiWord:
+
+	Developer Style:  just cd to abi and type 'make'.  To run AbiWord, cd to the bin directory and type 'AbiWord -lib ../AbiSuite' -- this will help AbiWord find the dictionary and other support files.
+	End-User Style:  just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z' This will build a QNX 'Repository in a File'(src/pkg/qnx/abiword-x.y.z.qpr). Install this with 'pkg-installer -u abiword-x.y.z.qpr'.
+
+BeOS
+
+Prerequisites:
+(See QNX requirements)
+
+Building on BeOS is similar to the other platforms.  We rely on the GNU command line utilities for bash, sed, gawk, etc.  On Intel systems we use GCC and on PPC we use MWCC.
+
+There are 2 ways to build and run AbiWord:
+
+	Developer Style:  just cd to abi and type 'make'.  To run AbiWord, cd to the bin directory and type 'AbiWord -lib ../AbiSuite' -- this will help AbiWord find the dictionary and other support files.
+	End-User Style:  just cd to abi and type 'make distribution ABI_BUILD_VERSION=x.y.z' This will build a distribution zip file (abi/dist/AbiSuite-x.y.z-$(arch).zip). Expand this in /boot/apps.  You can then run /boot/apps/AbiSuite/bin/AbiWord.
+
+MacOS X
+
+Prerequisites:
+(See Unix prerequisites)
+
+There are three ways to build AbiWord for MacOS X:
+
+	The 1st native port, which uses the Cocoa API to provide a delicious Aqua interface. No Mac enthusiast should put up with anything less.
+	The 2nd native port, which uses the Carbon API.
+	The UNIX build. Although this lacks the silky, sexy finish of the native port, it has the undeniable advantage that it works. If your  X server is set up rootless then the burden of interface is light.s
+
+Whichever you're building, or trying to, here are a few guidelines:
+
+	There are two options to build Abiword - with make, or with configure then make. Use the latter. The former is no longer the recommended process for MacOS X (none of the developers use it with MacOS X, so you'd be on your own).
+
+	If building from CVS:	
+
+MacOS X ships with autoconf (2.13). You will also need automake.
+
+* * * WARNING * * *
+
+Don't use automake-1.5, cos it don't work. Any of the automake-1.4 releases, or automake-1.5d and up, should be fine.
+
+	It's probably safe to ignore this next bit of advice, but come back to it if you experience mysterious problems...
+
+Learn to be very paranoid about /bin/sh. Paranoia can be healthy. darwin ships with a /bin/sh which is zsh, which behaves like sh 99.99% of the time - it is, of course, the other 0.01% that causes problems.
+
+I strongly recommend that you install bash. Rumour has it that even Apple wants to use bash. The compile options are a little intimidating, I know, but I never do it the same way twice and I've never had any problems. Put your faith in GNU...
+
+Once you've got bash installed, in for example /oss/bin/bash, add the following lines to your .bashrc:
+
+	export SHELL=/oss/bin/bash
+	export CONFIG_SHELL=/oss/bin/bash
+
+(replacing /oss/bin/bash with whatever path you've used) and start bash.
+
+    When running build scripts like autogen.sh or configure, use bash explicitly:
+
+	[ENVIRONMENT] /oss/bin/bash autogen.sh
+	[ENVIRONMENT] /oss/bin/bash configure [OPTIONS]
+
+Note to experts: if the configure script has been created with autoconf >= 2.50, it may be worth adding SHELL=/oss/bin/bash to [ENVIRONMENT], e.g.:
+
+	/oss/bin/bash configure SHELL=/oss/bin/bash ...
+
+If you think you know better than Apple (which, let's face it, in this instance you probably do) you can save yourself all of this stuff and bother by replacing /bin/sh with bash - just don't expect any sympathy from me if Software Update complains about it.
+
+	Next, and no one said this was going to be easy, there are a fewlibraries you will need to install before you start on AbiWord.
+
+If you prefer, you can get them precompiled, either via fink or GNU-Darwin or MacOSX-forked.net or one of their cousins. (There's a new one every day.) If you're only interested in AbiWord, then fjf's Crazy Wormhole collection may be better: http://www.crazy-wormhole.com/
+
+WARNING: Use Crazy Wormhole *only* if you plan to make a bundle.
+
+Most recent releases of libraries are darwin-friendly, though there are exceptions. Adding -no-cpp-precomp to CPPFLAGS solves a few problems here and there.
+
+You require libpng and libiconv, and it's best to get the latest releases. An optional extra is libjpeg. For the XDarwin build you require gettext, glib and gtk+ as well.
+
+You will also need either expat or libxml2. (I think there's a version of expat burrowed deep inside the MacOS X frameworks, but I don't know how to use it.) expat gets distributed with AbiWord, but I [fjf] prefer libxml2 because it has HTML support (even if AbiWord can't quite use it yet). libxml2 is released frequently; make sure to get a recent release.
+
+	libpng		http://www.libpng.org/pub/png/libpng.html
+	libiconv	ftp://ftp.gnu.org/pub/gnu/libiconv/
+	gettext		ftp://ftp.gnu.org/pub/gnu/gettext/
+	glib & gtk+	http://www.gtk.org/
+	expat		http://sourceforge.net/projects/expat
+	libxml2	ftp://ftp.gnome.org/pub/GNOME/stable/sources/libxml/
+
+Building AbiWord
+
+If you are building from CVS, you must first run autogen.sh:
+
+	./autogen.sh
+
+or, if you are taking my paranoid advice from (c) above:
+
+	/oss/bin/bash autogen.sh
+
+Then, or otherwise, run configure. To build for Cocoa & Aqua:
+
+	./configure --prefix=/Users/me/wherever
+
+or '/oss/bin/bash configure etc.'. To build for Carbon & Aqua:
+
+	./configure --disable-Cocoa --prefix=/Users/me/wherever
+
+or '/oss/bin/bash configure etc.'. To build for XDarwin:
+
+	./configure --disable-Cocoa --disable-Carbon --prefix=/Users/me/wherever
+
+and similarly. Depending on where you installed the various libraries, you will probably need to add these to the search paths:
+
+	./configure CPPFLAGS="-I/Users/me/wherever/include" LDFLAGS="-L/Users/me/wherever/lib"
+
+and so on and so forth. It looks horribly messy, but it's not so bad once you get to know it. Kinda like mature cheddar. Or mature whisky, if you prefer. [Stop being silly. - Ed.]
+
+Finally, or almost so, and you thought we'd never get there, type
+	make
+
+(or 'make SHELL=/oss/bin/bash'), sit back with a wedge and a dram, and contemplate with pleasure the owning of a Mac.
+
+On successful completion of the make process (it has been known), finish with:
+	make install
+
+If you're building for XDarwin, and you don't want to build a bundle, then you're done. Enjoy!
