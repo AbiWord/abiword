@@ -49,15 +49,16 @@ CPPSRCS=	ut_alphahash.cpp	\
 TARGETS=		$(OBJS)
 
 ifeq ($(OS_NAME),WIN32)  
-INCLUDES = -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../zlib  -I$(ABI_XX_ROOT)/../libiconv/include
+INCLUDES = -I$(ABI_XX_ROOT)/../libpng -I$(ABI_XX_ROOT)/../zlib
+-I$(ABI_XX_ROOT)/../libiconv/include -I$(ABI_XX_ROOT)/../expat/lib
 endif
 
 ifeq ($(ABI_NATIVE), qnx)
-INCLUDES = -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../zlib
+INCLUDES = -I$(ABI_ROOT)/../libpng -I$(ABI_ROOT)/../zlib -I$(ABI_ROOT)/../expat/lib
 endif
 
 ifeq ($(ABI_NATIVE), beos)
-INCLUDES = -I$(ABI_ROOT)/../libiconv/include
+INCLUDES = -I$(ABI_ROOT)/../libiconv/include -I$(ABI_ROOT)/../expat/lib
 endif
 
 #This can't really hurt anything
@@ -69,4 +70,6 @@ endif
 include $(ABI_ROOT)/src/config/abi_rules.mk
 
 build:: $(TARGETS)
+
+
 
