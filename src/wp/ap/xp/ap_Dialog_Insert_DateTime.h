@@ -46,6 +46,8 @@ HH:mm:ss
 
 #define CURRENT_DATE_TIME_SIZE 256
 
+#if 0
+#error TF CHANGE: The # key is not POSIX/ANSI
 static const char *InsertDateTimeFmts[] = {
     "%#m/%#d/%y",
 	"%A, %B %d, %Y",
@@ -66,6 +68,28 @@ static const char *InsertDateTimeFmts[] = {
 	"%H:%M:%S",
 	NULL
 };
+#else
+static const char *InsertDateTimeFmts[] = {
+    "%m/%d/%y",
+	"%A, %B %d, %Y",
+	"%B %d, %Y",
+	"%m/%d/%Y",
+	"%Y-%m-%d",
+	"%d-%b-%y",
+    "%m.%d.%y",
+	"%b. %d, %y",
+	"%d %B, %Y",
+	"%B, %Y",
+	"%b-%y",
+	"%m/%d/%y %I:%M %p",
+    "%m/%d/%y %I:%M:%S %p",
+	"%I:%M %p",
+	"%I:%M:%S %p",
+	"%H:%M",
+	"%H:%M:%S",
+	NULL
+};
+#endif
 
 class XAP_Frame;
 
