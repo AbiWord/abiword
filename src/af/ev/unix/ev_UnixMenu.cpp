@@ -620,7 +620,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 			
 			if (szLabelName && *szLabelName)
 			{
-				w = s_createNormalMenuEntry(id, pAction->isCheckable(), szLabelName, szMnemonicName);
+				w = s_createNormalMenuEntry(id, pAction->isCheckable(), pAction->isRadio(), szLabelName, szMnemonicName);
 				// find parent menu item
 				GtkWidget * wParent;
 				bResult = stack.viewTop(reinterpret_cast<void **>(&wParent));
@@ -892,7 +892,8 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 					nPositionInThisMenu++;
 
 					// create the item with the underscored label
-					GtkWidget * w = s_createNormalMenuEntry(id, bCheck, szLabelName, szMnemonicName);
+					GtkWidget * w = s_createNormalMenuEntry(id, pAction->isCheckable () && bCheck, 
+															pAction->isRadio () && bCheck, szLabelName, szMnemonicName);
 					UT_ASSERT(w);
 
 					// find parent menu item
@@ -1218,7 +1219,7 @@ bool EV_UnixMenuPopup::refreshMenu(AV_View * pView)
 	return true;
 }
 
-GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable, const char *szLabelName, const char *szMnemonicName)
+GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable, const bool isRadio, const char *szLabelName, const char *szMnemonicName)
 {
 	// create the item with the underscored label
 	GtkWidget * w;
@@ -1226,7 +1227,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 	// convert label into underscored version
 	_ev_convert(buf, szLabelName);
 
-	if ( !isCheckable )
+	if ( !isCheckable && !isRadio )
 	  {
 		  const char * stock_item = s_getStockPixmapFromId(id);
 		  if (stock_item != NULL)
@@ -1244,10 +1245,14 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int id, const bool isCheckable,
 			    w = gtk_menu_item_new_with_mnemonic(buf);
 		    }
 	  }
-	else
+	else if ( isCheckable )
 	  {
 		  w = gtk_check_menu_item_new_with_mnemonic(buf);
 	  }	
+	else if ( isRadio )
+		{
+			w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
+		}
 	
 	if (szMnemonicName && *szMnemonicName)
 	  {

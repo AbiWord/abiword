@@ -35,6 +35,7 @@ EV_Menu_Action::EV_Menu_Action(XAP_Menu_Id id,
 							   bool bHoldsSubMenu,
 							   bool bRaisesDialog,
 							   bool bCheckable,
+							   bool bRadio,
 							   const char * szMethodName,
 							   EV_GetMenuItemState_pFn pfnGetState,
 							   EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
@@ -43,6 +44,7 @@ EV_Menu_Action::EV_Menu_Action(XAP_Menu_Id id,
 	  m_bHoldsSubMenu(bHoldsSubMenu),
 	  m_bRaisesDialog(bRaisesDialog),
 	  m_bCheckable(bCheckable),
+	  m_bRadio(bRadio),
 	  m_pfnGetState(pfnGetState),
 	  m_pfnGetLabel(pfnGetLabel),
 	  m_stScriptName(stScriptName)
@@ -103,6 +105,11 @@ bool EV_Menu_Action::isCheckable() const
 	return m_bCheckable;
 }
 
+bool EV_Menu_Action::isRadio() const
+{
+	return m_bRadio;
+}
+
 /*****************************************************************/
 /*****************************************************************/
 
@@ -135,6 +142,7 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 								  bool bHoldsSubMenu,
 								  bool bRaisesDialog,
 								  bool bCheckable,
+								  bool bRadio,
 								  const char * szMethodName,
 								  EV_GetMenuItemState_pFn pfnGetState,
 								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
@@ -146,7 +154,7 @@ bool EV_Menu_ActionSet::setAction(XAP_Menu_Id id,
 		return false;
 
 	UT_uint32 index = (id - m_first);
-	EV_Menu_Action *pAction = new EV_Menu_Action(id, bHoldsSubMenu, bRaisesDialog, bCheckable,
+	EV_Menu_Action *pAction = new EV_Menu_Action(id, bHoldsSubMenu, bRaisesDialog, bCheckable, bRadio,
 												 szMethodName, pfnGetState, pfnGetLabel, stScriptName);
 	UT_uint32 error = m_actionTable.setNthItem(index, pAction, &tmp);
 

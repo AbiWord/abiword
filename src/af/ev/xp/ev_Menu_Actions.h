@@ -86,6 +86,7 @@ public:
 				   bool bHoldsSubMenu,
 				   bool bRaisesDialog,
 				   bool bCheckable,
+				   bool bRadio,
 				   const char* szMethodName,
 				   EV_GetMenuItemState_pFn pfnGetState,
 				   EV_GetMenuItemComputedLabel_pFn pfnGetLabel,
@@ -102,12 +103,14 @@ public:
 	EV_Menu_ItemState				getMenuItemState(AV_View * pView) const;
 	bool							raisesDialog() const;
 	bool							isCheckable() const;
+	bool                            isRadio () const;
 	
 private:
 	XAP_Menu_Id						m_id;
 	bool							m_bHoldsSubMenu;	/* is a PullRight */
 	bool							m_bRaisesDialog;	/* does it raise a dialog */
 	bool							m_bCheckable;		/* is it checkable */
+	bool							m_bRadio;		    /* is it radio */
 	char *							m_szMethodName;		/* name of method to invoke */
 	EV_GetMenuItemState_pFn			m_pfnGetState;		/* to get state on an activate */
 	EV_GetMenuItemComputedLabel_pFn m_pfnGetLabel;		/* to get computed label (for things like window-list) */
@@ -126,6 +129,7 @@ public:
 								  bool bHoldsSubMenu,
 								  bool bRaisesDialog,
 								  bool bCheckable,
+								  bool bRadio,
 								  const char * szMethodName,
 								  EV_GetMenuItemState_pFn pfnGetState,
 								  EV_GetMenuItemComputedLabel_pFn pfnGetLabel,

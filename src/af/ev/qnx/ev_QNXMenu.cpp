@@ -347,7 +347,7 @@ bool EV_QNXMenu::synthesizeMenu(PtWidget_t * wMenuRoot)
 					PtSetArg(&args[n++], Pt_ARG_ACCEL_TEXT, szMnemonicName, 0); 
 				}
 
-				if (pAction->isCheckable()) {
+				if (pAction->isCheckable() || pAction->isRadio()) {
 					PtSetArg(&args[n++], Pt_ARG_FLAGS,
 							Pt_MENU_BUTTON | Pt_AUTOHIGHLIGHT | Pt_SET, 
 							Pt_MENU_BUTTON | Pt_AUTOHIGHLIGHT | Pt_SET);

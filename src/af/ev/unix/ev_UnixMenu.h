@@ -64,7 +64,7 @@ protected: // FIXME! These variables should be private.
 private:	
         void _convertStringToAccel(const char *s, guint &accel_key, GdkModifierType &ac_mods);   
         const char * s_getStockPixmapFromId (int id);
-        GtkWidget * s_createNormalMenuEntry(const XAP_Menu_Id id, const bool isCheckable, const char *szLabelName, const char *szMnemonicName);
+        GtkWidget * s_createNormalMenuEntry(const XAP_Menu_Id id, const bool isCheckable,const bool isRadio, const char *szLabelName, const char *szMnemonicName);
 	UT_Vector           m_vecCallbacks;
 };
 

@@ -87,7 +87,7 @@ filter_result MenuFilter::Filter(BMessage *message, BHandler **target) {
 #if 0
 	if(m_pBeOSFrame->getCurrentView() && pAction->hasGetStateFunction())
 	{
-		if(pAction->isCheckable())
+		if(pAction->isCheckable() || pAction->isRadio())
 		{
 		
 			EV_Menu_ItemState mis = pAction->getMenuItemState(m_pBeOSFrame->getCurrentView());
