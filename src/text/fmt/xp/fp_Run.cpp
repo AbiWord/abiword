@@ -140,7 +140,7 @@ void FP_Run::lookupProperties(void)
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP), m_colorFG);
 
-	const XML_Char *pszDecor = PP_evalProperty("font-stretch",pSpanAP,pBlockAP,pSectionAP);
+	const XML_Char *pszDecor = PP_evalProperty("text-decoration",pSpanAP,pBlockAP,pSectionAP);
 
 	/*
 	  TODO -- m_fDecorations supports multiple simultanous decors.  Unfortunately,
@@ -636,12 +636,16 @@ void FP_Run::draw(dg_DrawArgs* pDA)
 void FP_Run::_getPartRect(UT_Rect* pRect, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iStart, UT_uint32 iLen,
 						  const UT_GrowBuf * pgbCharWidths)
 {
-	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
-
 	pRect->left = xoff;
 	pRect->top = yoff - m_iAscent;
 	pRect->height = m_iHeight;
 	pRect->width = 0;
+
+	// that's enough for zero-length run
+	if (m_iLen == 0)
+		return;
+
+	const UT_uint16 * pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_uint32 i;
 	if (iStart > m_iOffsetFirst)
