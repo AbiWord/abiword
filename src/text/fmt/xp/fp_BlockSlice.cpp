@@ -676,6 +676,8 @@ void fp_BlockSlice::lineHeightChanged(fp_Line* pLine, void* p, DG_Graphics* pG, 
 				  be doing too many erases.
 				*/
 				pLI2->pLine->clearScreen();
+
+				// TODO consider setting m_bDirty here and NOT doing a complete reformat
 			}
 		}
 

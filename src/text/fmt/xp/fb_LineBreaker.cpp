@@ -282,8 +282,17 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 						// snarf it up if we can break after it
 						if (iSpaceLeft >= iWidthLooking)
 						{
-							if (!pRunLooking->getNext() ||
-								pRunLooking->canBreakAfter())
+							/*
+							  We snarf it up if it's the last run in the block,
+							  OR if we can break after it,
+							  OR if it's the only run on the line.
+
+							  TODO should we also snarf it if there are NO runs on the current line?
+							*/
+							if (!pRunLooking->getNext()
+								|| pRunLooking->canBreakAfter()
+								|| (pRunLooking->isOnlyRunOnLine())
+								)
 							{
 								pNextLine->clearScreen();
 								
@@ -395,14 +404,74 @@ int fb_SimpleLineBreaker::reLayoutParagraph(fl_BlockLayout* pBlock)
 							pRealNextLine->m_bDirty = UT_TRUE;
 							pLine->m_bDirty = UT_FALSE;
 							pNextLine->m_bDirty = UT_TRUE;
+							
 							break;
 						}
 						else
 						{
-							pLine->align();
-							pLine->draw(pCurRun->getGraphics());
+							/*
+							  The run doesn't fit, nor can it be cleanly broken in such
+							  a way that it will fit.
+
+							  Before we give up, we need to check another case
+
+							  -  If the last run on the current line was forced, then we need
+							  to check the first run on the next line to try and force it.
+							*/
+							if (
+								(pRunLooking->isFirstRunOnLine())
+								&& (!(pLine->getLastRun()->canBreakAfter()))
+								&& (pRunLooking->findMaxLeftFitSplitPoint(iSpaceLeft - (iWidthLooking - pRunLooking->getWidth()), si, UT_TRUE))
+								)
+							{
+								pNextLine->clearScreen();
 							
-							pLine->m_bDirty = UT_FALSE;
+								pNextLine->removeRun(pRunLooking);
+							
+								pRunLooking->split(si);
+							
+								fp_Run* pOtherRun = pRunLooking->getNext();
+								UT_ASSERT(pOtherRun);
+							
+								fp_Run* pTmp = pCurRun;
+								while (pTmp != pRunLooking)
+								{
+									pNextLine->removeRun(pTmp);
+									iSpaceLeft -= pTmp->getWidth();
+									pLine->addRun(pTmp);
+									pTmp = pTmp->getNext();
+								}
+
+								pLine->addRun(pRunLooking);
+							
+								pLine->align();
+								pLine->draw(pCurRun->getGraphics());
+							
+								pRealNextLine->insertRun(pOtherRun, UT_TRUE,
+														 UT_TRUE);
+							
+								if (pRealNextLine != pNextLine)
+								{
+									pRealNextLine->align();
+									pRealNextLine->draw(pOtherRun->getGraphics());
+								}
+							
+								pNextLine->align();
+								pNextLine->draw(pOtherRun->getGraphics());
+
+								pRealNextLine->m_bDirty = UT_TRUE;
+								pLine->m_bDirty = UT_FALSE;
+								pNextLine->m_bDirty = UT_TRUE;
+							
+								break;
+							}
+							else
+							{
+								pLine->align();
+								pLine->draw(pCurRun->getGraphics());
+							
+								pLine->m_bDirty = UT_FALSE;
+							}
 						}
 					}
 					

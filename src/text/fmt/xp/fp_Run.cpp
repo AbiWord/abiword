@@ -192,6 +192,29 @@ UT_Bool fp_Run::canSplit() const
 	return m_bCanSplit;
 }
 
+UT_Bool fp_Run::isLastRunOnLine(void) const
+{
+	return (m_pLine->getLastRun() == this);
+}
+
+UT_Bool fp_Run::isFirstRunOnLine(void) const
+{
+	return (m_pLine->getFirstRun() == this);
+}
+
+UT_Bool fp_Run::isOnlyRunOnLine(void) const
+{
+	if (m_pLine->countRuns() == 1)
+	{
+		UT_ASSERT(isFirstRunOnLine());
+		UT_ASSERT(isLastRunOnLine());
+
+		return UT_TRUE;
+	}
+
+	return UT_FALSE;
+}
+
 UT_Bool fp_Run::canBreakAfter() const
 {
 	const UT_UCSChar* pSpan;

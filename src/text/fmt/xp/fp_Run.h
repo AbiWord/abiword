@@ -89,6 +89,9 @@ class fp_Run
 	UT_Bool					canSplit() const;
 	UT_Bool					canBreakAfter() const;
 	UT_Bool					canBreakBefore() const;
+	UT_Bool					isFirstRunOnLine(void) const;
+	UT_Bool					isLastRunOnLine(void) const;
+	UT_Bool					isOnlyRunOnLine(void) const;
 	UT_Bool					getLineBreakBefore() const; 
 	UT_Bool					getLineBreakAfter() const;
 	int						split(fp_RunSplitInfo&);

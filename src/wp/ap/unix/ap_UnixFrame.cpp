@@ -146,7 +146,15 @@ UT_Bool AP_UnixFrame::_showDocument(void)
 	setYScrollRange();
 	updateTitle();
 
-#if 0
+#if 1
+	/*
+	  UPDATE:  this code is back, but I'm leaving these comments as
+	  an audit trail.  See bug 99.  This only happens when loading
+	  a document into an empty window -- the case where a frame gets
+	  reused.  TODO consider putting an expose into ap_EditMethods.cpp
+	  instead of a draw() here.
+	*/
+	
 	/*
 	  I've removed this once again.  (Eric)  I replaced it with a call
 	  to draw() which is now in the configure event handler in the GTK
