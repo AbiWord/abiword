@@ -201,7 +201,19 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 
 	if (m_pView != NULL)
 	{
+		// we cannot just set the insertion position to that of the previous
+		// view, since the new document could be shorter or completely
+		// different from the previous one (see bug 2615)
+		// Instead we have to test that the original position is within
+		// the editable bounds, and if not, we will set the point
+		// to the end of the document (i.e., if reloading an earlier
+		// version of the same document we try to get the point as near
+		// the users editing position as possible
 		point = ((FV_View *) m_pView)->getPoint();
+		PT_DocPosition posEOD;
+		static_cast<FV_View *>(pView)->getEditableBounds(true, posEOD, false);
+		if(point > posEOD)
+			point = posEOD;
 	}
 
 	// The "AV_ScrollObj pScrollObj" receives
@@ -1553,6 +1565,8 @@ void AP_Win32Frame::toggleStatusBar(bool bStatusBarOn)
 	{
 		pFrameData->m_pStatusBar->hide();
 	}
+
+	UpdateWindow(m_hwndContainer);	
 }
 
 void AP_Win32Frame::_showOrHideToolbars(void)
