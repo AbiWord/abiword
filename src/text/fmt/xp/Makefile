@@ -67,6 +67,7 @@ CPPSRCS=		fv_View.cpp			\
 			fv_FrameEdit.cpp \
 			fv_VisualDragText.cpp \
 			fv_Selection.cpp \
+			fv_InlineImage.cpp \
 			fp_MathRun.cpp \
 
 LIBRARY_NAME=		AbiFmt

@@ -40,6 +40,7 @@
 #include "fv_FrameEdit.h"
 #include "fv_VisualDragText.h"
 #include "fv_Selection.h"
+#include "fv_InlineImage.h"
 
 #define AUTO_SCROLL_MSECS	100
 
@@ -146,6 +147,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class GR_Caret;
 	friend class FV_FrameEdit;
 	friend class FV_VisualDragText;
+	friend class FV_VisualInlineImage;
 	friend class FV_Selection;
 	friend class CellLine;
 
@@ -371,6 +373,16 @@ public:
 	void            dragVisualText(UT_sint32 x, UT_sint32 y);
 	void            pasteVisualText(UT_sint32 x, UT_sint32 y);
 	void            btn0VisualDrag(UT_sint32 x, UT_sint32 y);
+
+//---------
+//Visual Inline Image Drag stuff
+//
+	void            btn0InlineImage(UT_sint32 x, UT_sint32 y);
+	void            btn1InlineImage(UT_sint32 x, UT_sint32 y);
+	void            btn1CopyImage(UT_sint32 x, UT_sint32 y);
+	void            dragInlineImage(UT_sint32 x, UT_sint32 y);
+	void            releaseInlineImage(UT_sint32 x, UT_sint32 y);
+
 // -------
 // Frame stuff
 //
@@ -902,6 +914,7 @@ private:
 	bool                m_bDontNotifyListeners;
 	UT_ByteBuf *        m_pLocalBuf;
 	UT_sint32           m_iGrabCell;
+	FV_VisualInlineImage  m_InlineImage;
 };
 
 #endif /* FV_VIEW_H */

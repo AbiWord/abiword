@@ -67,6 +67,7 @@ libFmt_a_SOURCES= \
 	fb_ColumnBreaker.cpp		\
 	fv_FrameEdit.cpp		\
 	fv_VisualDragText.cpp \
+	fv_InlineImage.cpp \
 	fv_Selection.cpp \
 	fp_MathRun.cpp
 

@@ -332,8 +332,12 @@ public:
 	static EV_EditMethod_Fn dragVisualText;
 	static EV_EditMethod_Fn pasteVisualText;
 	static EV_EditMethod_Fn btn0VisualText;
-	
- 
+
+	static EV_EditMethod_Fn btn1InlineImage;
+	static EV_EditMethod_Fn btn0InlineImage;
+	static EV_EditMethod_Fn dragInlineImage;
+	static EV_EditMethod_Fn releaseInlineImage;
+
 	static EV_EditMethod_Fn btn1Frame;
 	static EV_EditMethod_Fn btn0Frame;
 	static EV_EditMethod_Fn dragFrame;
@@ -736,8 +740,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(beginHDrag), 0, ""),
 	EV_EditMethod(NF(beginVDrag), 0, ""),
 	EV_EditMethod(NF(btn0Frame), 0, ""),
+	EV_EditMethod(NF(btn0InlineImage), 0, ""),
 	EV_EditMethod(NF(btn0VisualText), 0, ""),
 	EV_EditMethod(NF(btn1Frame), 0, ""),
+	EV_EditMethod(NF(btn1InlineImage), 0, ""),
 
 	// c
 	EV_EditMethod(NF(clearSetCols), 0, ""),
@@ -827,6 +833,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dragFrame), 			0,	""),
 	EV_EditMethod(NF(dragHline), 			0,	""),
 	EV_EditMethod(NF(dragImage),			0,	""),
+	EV_EditMethod(NF(dragInlineImage),		0,	""),
 	EV_EditMethod(NF(dragSelectionBegin), 0, ""),
 	EV_EditMethod(NF(dragSelectionEnd), 0, ""),
 	EV_EditMethod(NF(dragToXY), 			0,	""),
@@ -1047,6 +1054,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	// r
 	EV_EditMethod(NF(redo), 				0,	""),
 	EV_EditMethod(NF(releaseFrame), 		0,	""),
+	EV_EditMethod(NF(releaseInlineImage), 		0,	""),
 	EV_EditMethod(NF(removeFooter), 		0,	""),
 	EV_EditMethod(NF(removeHeader), 		0,	""),
 	EV_EditMethod(NF(replace),				0,	""),
@@ -13376,6 +13384,95 @@ Defun(dropImage)
 		pView->stopImageDrag(pCallData->m_xPos, pCallData->m_yPos);
 	}
 	
+	return true;
+}
+
+
+Defun(btn0InlineImage)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	xxx_UT_DEBUGMSG(("Hover on Frame \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->btn0Frame(x,y);
+	return true;
+}
+
+
+Defun(btn1InlineImage)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Click on InlineImage \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	pView->btn1InlineImage(x,y);
+	return true;
+}
+
+static bool sReleaseInlineImage = false;
+
+static void sActualDragInlineImage(AV_View *  pAV_View, EV_EditMethodCallData * pCallData)
+{
+	ABIWORD_VIEW;
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	if(sReleaseInlineImage)
+	{
+		sReleaseInlineImage = false;
+		pView->releaseInlineImage(x,y);
+	}
+	pView->dragInlineImage(x,y);
+
+}
+
+Defun(dragInlineImage)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	xxx_UT_DEBUGMSG(("Drag Frame \n"));
+//
+// Do this operation in an idle loop so when can reject queued events
+//
+//
+// This code sets things up to handle the warp right in an idle loop.
+//
+	int inMode = UT_WorkerFactory::IDLE | UT_WorkerFactory::TIMER;
+	UT_WorkerFactory::ConstructMode outMode = UT_WorkerFactory::NONE;
+	GR_Graphics * pG = pView->getGraphics();
+	EV_EditMethodCallData * pNewData = new  EV_EditMethodCallData(pCallData->m_pData,pCallData->m_dataLength);
+	pNewData->m_xPos = pCallData->m_xPos;
+	pNewData->m_yPos = pCallData->m_yPos;
+	_Freq * pFreq = new _Freq(pView,pNewData,sActualDragInlineImage);
+	s_pFrequentRepeat = UT_WorkerFactory::static_constructor (_sFrequentRepeat,pFreq, inMode, outMode, pG);
+
+	UT_ASSERT(s_pFrequentRepeat);
+	UT_ASSERT(outMode != UT_WorkerFactory::NONE);
+
+	// If the worker is working on a timer instead of in the idle
+	// time, set the frequency of the checks.
+	if ( UT_WorkerFactory::TIMER == outMode )
+	{
+		// this is really a timer, so it's safe to static_cast it
+		static_cast<UT_Timer*>(s_pFrequentRepeat)->set(1);
+	}
+	s_pFrequentRepeat->start();
+	return true;
+}
+
+
+Defun(releaseInlineImage)
+{
+	sReleaseInlineImage = true;
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Release Inline Image \n"));
+	UT_sint32 y = pCallData->m_yPos;
+	UT_sint32 x = pCallData->m_xPos;
+	sReleaseInlineImage = false;
+	pView->releaseInlineImage(x,y);
 	return true;
 }
 

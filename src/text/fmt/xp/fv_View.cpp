@@ -221,7 +221,8 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_iFreePass(0),
 		m_bDontNotifyListeners(false),
 		m_pLocalBuf(NULL),
-		m_iGrabCell(0)
+		m_iGrabCell(0),
+		m_InlineImage(this)
 {
 	m_colorRevisions[0] = UT_RGBColor(171,4,254);
 	m_colorRevisions[1] = UT_RGBColor(171,20,119);
@@ -643,6 +644,67 @@ void FV_View::copyTextToClipboard(const UT_UCS4String sIncoming, bool useClipboa
 	DELETEP(pCopyLinkView);
 	DELETEP(pDocLayout);
 }
+
+
+
+/*!
+ * Logic for determining what state the Image and cursor should be in.
+ */
+void FV_View::btn0InlineImage(UT_sint32 x, UT_sint32 y)
+{
+	xxx_UT_DEBUGMSG(("btn0 called InlineImage mode %d \n",m_InlineImage.getFrameEditMode()));
+	if(!m_InlineImage.isActive())
+	{
+		getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+		return;
+	}
+	else
+	{
+		m_FrameEdit.setDragType(x,y,false);
+		setCursorToContext();
+	}
+}
+
+/*!
+ * Deal with a left -mouse click on a inline-image. It might be the 
+ * start of a drag or a resize.
+ */
+void FV_View::btn1InlineImage(UT_sint32 x, UT_sint32 y)
+{
+	m_InlineImage.mouseLeftPress(x,y);
+}
+
+
+/*!
+ * Complete the drag which either finishes the drag of the image or
+ * completes the resize of the image.
+ */
+void FV_View::releaseInlineImage(UT_sint32 x, UT_sint32 y)
+{
+	m_InlineImage.mouseRelease(x,y);
+}
+
+
+
+/*!
+ * Drag on an image. Either drag the whole image or do a resize.
+ */
+void FV_View::dragInlineImage(UT_sint32 x, UT_sint32 y)
+{
+	m_InlineImage.mouseDrag(x,y);
+}
+
+
+/*!
+ * Make a copy of the inline image. This gets called with cntrl-left mouse
+ * click.
+ */
+void FV_View::btn1CopyImage(UT_sint32 x, UT_sint32 y)
+{
+	m_InlineImage.mouseCopy(x,y);
+}
+
+
 
 FV_FrameEdit * FV_View::getFrameEdit(void)
 {
