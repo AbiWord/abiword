@@ -351,7 +351,8 @@ void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y
 	// TODO and strikes.
 	m_bNeedStroked = UT_TRUE;
 
-	// TODO set the line width to m_iLineWidth
+	// emit a change in line width
+	_emit_SetLineWidth();
 	
 	char buf[OUR_LINE_LIMIT*2];
 //	UT_sint32 nA = getFontAscent();
@@ -692,7 +693,14 @@ void PS_Graphics::_emit_FontMacros(void)
 void PS_Graphics::_emit_SetFont(void)
 {
 	char buf[1024];
-	sprintf(buf,"F%d\n", m_pCurrentFont->getIndex());
+	g_snprintf(buf, 1024, "F%d\n", m_pCurrentFont->getIndex());
+	m_ps->writeBytes(buf);
+}
+
+void PS_Graphics::_emit_SetLineWidth(void)
+{
+	char buf[1024];
+	g_snprintf(buf, 1024, "%d setlinewidth\n", m_iLineWidth);
 	m_ps->writeBytes(buf);
 }
 

@@ -115,6 +115,7 @@ protected:
 	void			_emit_PrologMacros(void);
 	void			_emit_FontMacros(void);
 	void			_emit_SetFont(void);
+	void			_emit_SetLineWidth(void);
 	void 			_emit_SetColor(void);
 	virtual UT_uint32 _getResolution(void) const;
 
