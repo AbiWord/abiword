@@ -277,7 +277,7 @@ void AP_UnixDialog_HdrFtr::_constructWindowContents (GtkWidget * parent)
 	GtkWidget *hbox1;
 	GtkWidget *ReStartButton;
 	GtkWidget *restartLabel;
-	GObject *spinbutton1_adj;
+	GtkObject *spinbutton1_adj;
 	GtkWidget *spinbutton1;
 
 

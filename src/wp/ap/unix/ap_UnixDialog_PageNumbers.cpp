@@ -71,13 +71,13 @@ static gint s_preview_exposed(GtkWidget * w,
 
 static void s_position_changed (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
 {
-  int pos = GPOINTER_TO_INT (gtk_object_get_user_data(G_OBJECT (w)));
+  int pos = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
   dlg->event_HdrFtrChanged((AP_Dialog_PageNumbers::tControl)pos);
 }
 
 static void s_alignment_changed (GtkWidget * w, AP_UnixDialog_PageNumbers *dlg)
 {
-  int align = GPOINTER_TO_INT (gtk_object_get_user_data(G_OBJECT (w)));
+  int align = GPOINTER_TO_INT (gtk_object_get_user_data(GTK_OBJECT (w)));
   dlg->event_AlignChanged ((AP_Dialog_PageNumbers::tAlign)align);
 }
 

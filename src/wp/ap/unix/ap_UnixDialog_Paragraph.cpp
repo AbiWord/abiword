@@ -314,7 +314,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	XML_Char * unixstr = NULL;
 
 
-	windowParagraph = gtk_window_new (GTK_WINDOW_DIALOG);
+	windowParagraph = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	g_object_set_data (G_OBJECT (windowParagraph), "windowParagraph", windowParagraph);
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_Para_ParaTitle));
 	gtk_window_set_title (GTK_WINDOW (windowParagraph), unixstr);

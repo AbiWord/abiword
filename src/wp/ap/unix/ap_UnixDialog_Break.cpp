@@ -171,7 +171,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowBreak = gtk_window_new (GTK_WINDOW_DIALOG);
+	windowBreak = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	g_object_set_data (G_OBJECT (windowBreak), "windowBreak", windowBreak);
 	gtk_window_set_title (GTK_WINDOW (windowBreak), pSS->getValue(AP_STRING_ID_DLG_Break_BreakTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowBreak), FALSE, FALSE, FALSE);

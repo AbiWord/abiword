@@ -284,7 +284,7 @@ GtkWidget * AP_UnixDialog_Replace::_constructWindow(void)
 	XML_Char * unixstr = NULL;	// used for conversions
 
 
-	windowReplace = gtk_window_new(GTK_WINDOW_DIALOG);
+	windowReplace = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW (windowReplace),  m_WindowName);

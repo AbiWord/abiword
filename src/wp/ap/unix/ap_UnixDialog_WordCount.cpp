@@ -293,7 +293,7 @@ GtkWidget * AP_UnixDialog_WordCount::_constructWindow(void)
 	GtkWidget * separator;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	m_windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
+	m_windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
 	gtk_container_set_border_width(GTK_CONTAINER (m_windowMain), 20);
         ConstructWindowName();

@@ -20,6 +20,8 @@
 
 // TODO: still getting some artifacts when doing highligh/replacements
 
+#define GTK_ENABLE_BROKEN
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -561,7 +563,7 @@ void AP_UnixDialog_Spell::event_SuggestionSelected(gint row, gint column)
 
 void AP_UnixDialog_Spell::event_ReplacementChanged()
 {
-   gchar * modtext = gtk_entry_get_text(GTK_ENTRY(m_entryChange));
+   const gchar * modtext = gtk_entry_get_text(GTK_ENTRY(m_entryChange));
    UT_ASSERT(modtext);
    
    gchar * suggest = NULL;

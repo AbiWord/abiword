@@ -284,7 +284,7 @@ void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
 	GtkWidget *radiobuttonLeaderUnderline;
 	GtkWidget *hbox12;
 	GtkWidget *label9;
-	GObject *spinbuttonTabstop_adj;
+	GtkObject *spinbuttonTabstop_adj;
 	GtkWidget *spinbuttonTabstop;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
@@ -1074,13 +1074,13 @@ void AP_UnixDialog_Tab::_setTabEdit( const char *pszStr )
 	GtkWidget *w = _lookupWidget( id_EDIT_TAB );
 
 	// first, we stop the entry from sending the changed signal to our handler
-	g_signal_handler_block_by_data(  G_OBJECT(w), (gpointer) this );
+	gtk_signal_handler_block_by_data(  GTK_OBJECT(w), (gpointer) this );
 
 	// then set the text
 	gtk_entry_set_text( GTK_ENTRY(w), pszStr );
 
 	// turn signals back on
-	g_signal_handler_unblock_by_data(  G_OBJECT(w), (gpointer) this );
+	gtk_signal_handler_unblock_by_data(  GTK_OBJECT(w), (gpointer) this );
 }
 
 

@@ -458,7 +458,7 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	//	XML_Char * unixstr = NULL;	// used for conversions
 
-	windowColumns = gtk_window_new (GTK_WINDOW_DIALOG);
+	windowColumns = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (windowColumns), pSS->getValue(AP_STRING_ID_DLG_Column_ColumnTitle));
 	gtk_window_set_policy (GTK_WINDOW (windowColumns), FALSE, FALSE, FALSE);
 
@@ -679,7 +679,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(SpinLabelAfter);
 	gtk_box_pack_start(GTK_BOX(hboxSpinAfter),SpinLabelAfter,FALSE,FALSE,0);
 
-	GObject * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
+	GtkObject * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
 	GtkWidget * SpinAfter = gtk_entry_new();
 	gtk_widget_show (SpinAfter);
 	gtk_box_pack_start (GTK_BOX (hboxSpinAfter), SpinAfter, TRUE, TRUE, 0);
@@ -702,7 +702,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_widget_show(SpinLabelColumnSize);
 	gtk_box_pack_start(GTK_BOX(hboxSpinSize),SpinLabelColumnSize,FALSE,FALSE,0);
 
-	GObject * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+	GtkObject * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
 	GtkWidget * SpinSize = gtk_entry_new();
 	gtk_widget_show (SpinSize);
 	gtk_box_pack_start (GTK_BOX (hboxSpinSize), SpinSize, TRUE, TRUE, 0);

@@ -94,7 +94,7 @@ create_spinentry (float v)
   val = g_strdup_printf (FMT_STRING, v);
   gtk_entry_set_text (GTK_ENTRY (e), val);
   gtk_entry_set_editable (GTK_ENTRY (e), TRUE);
-  gtk_widget_set_usize (e, gdk_string_measure (e->style->font, val) + 15, 0);
+  gtk_widget_set_usize (e, gdk_string_measure (e->style->private_font, val) + 15, 0);
   g_free (val);
 
   return e;
@@ -577,13 +577,13 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   GtkWidget *table1;
   GtkWidget *label5;
   GtkWidget *label6;
-  GObject *spinPageScale_adj;
+  GtkObject *spinPageScale_adj;
   GtkWidget *spinPageScale;
   GtkWidget *labelPage;
   GtkWidget *tableMargin;
-  GObject *spinMarginBottom_adj;
+  GtkObject *spinMarginBottom_adj;
   GtkWidget *spinMarginBottom;
-  GObject *spinMarginFooter_adj;
+  GtkObject *spinMarginFooter_adj;
   GtkWidget *spinMarginFooter;
   GtkWidget *labelMarginUnits;
   GtkWidget *labelTop;
@@ -591,17 +591,17 @@ void AP_UnixDialog_PageSetup::_constructWindowContents (GtkWidget *container)
   GtkWidget *labelFooter;
   GtkWidget *labelBottom;
   GtkWidget *customPreview;
-  GObject *spinMarginTop_adj;
+  GtkObject *spinMarginTop_adj;
   GtkWidget *spinMarginTop;
-  GObject *spinMarginHeader_adj;
+  GtkObject *spinMarginHeader_adj;
   GtkWidget *spinMarginHeader;
   GtkWidget *vbox3;
   GtkWidget *labelRight;
-  GObject *spinMarginRight_adj;
+  GtkObject *spinMarginRight_adj;
   GtkWidget *spinMarginRight;
   GtkWidget *vbox2;
   GtkWidget *labelLeft;
-  GObject *spinMarginLeft_adj;
+  GtkObject *spinMarginLeft_adj;
   GtkWidget *spinMarginLeft;
   GtkWidget *optionMarginUnits;
   GtkWidget *optionMarginUnits_menu;

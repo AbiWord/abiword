@@ -95,7 +95,7 @@ void AP_UnixDialog_Goto::s_goto (const char *number, AP_UnixDialog_Goto * me)
 
 void AP_UnixDialog_Goto::s_gotoClicked (GtkWidget * widget, AP_UnixDialog_Goto * me)
 {
-	char *number = gtk_entry_get_text (GTK_ENTRY (me->m_wEntry));
+	const char *number = gtk_entry_get_text (GTK_ENTRY (me->m_wEntry));
 	if (number && *number)
 			s_goto ((const char *) number, me);
 }
@@ -130,7 +130,7 @@ void AP_UnixDialog_Goto::s_targetChanged (GtkWidget *clist, gint row, gint colum
 
 void AP_UnixDialog_Goto::s_dataChanged (GtkWidget *widget, AP_UnixDialog_Goto * me)
 {
-	gchar *text = gtk_entry_get_text (GTK_ENTRY (widget));
+	const gchar *text = gtk_entry_get_text (GTK_ENTRY (widget));
 
 	if (text[0] == '\0')
 	{

@@ -280,7 +280,7 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
     GtkWidget* contents;
     GtkWidget* buttonBox;
     
-    m_windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
+    m_windowMain = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	m_buttonOK = gtk_button_new_with_label(pSS->getValue(XAP_STRING_ID_DLG_OK));
 	m_buttonCancel = gtk_button_new_with_label(pSS->getValue(XAP_STRING_ID_DLG_Cancel));
     

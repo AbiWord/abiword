@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#define GTK_ENABLE_BROKEN
+
 #include <stdlib.h>
 #include <time.h>
 
@@ -105,7 +107,7 @@ void AP_UnixDialog_MetaData::eventOK ()
   setAnswer ( AP_Dialog_MetaData::a_OK ) ;
 
   // TODO: gather data
-  char * txt = NULL ;
+  const char * txt = NULL ;
 
   GRAB_ENTRY_TEXT(Title);
   GRAB_ENTRY_TEXT(Subject);
@@ -120,12 +122,12 @@ void AP_UnixDialog_MetaData::eventOK ()
   GRAB_ENTRY_TEXT(Coverage);
   GRAB_ENTRY_TEXT(Rights);
 
-  txt = gtk_editable_get_chars (GTK_EDITABLE(m_textDescription),
-				0, -1);
+  char * editable_txt = gtk_editable_get_chars (GTK_EDITABLE(m_textDescription),
+						0, -1);
 
-  if (txt && strlen(txt)) {
-    setDescription ( txt ) ;
-    g_free(txt);
+  if (editable_txt && strlen(editable_txt)) {
+    setDescription ( editable_txt ) ;
+    g_free(editable_txt);
   }
 
   gtk_main_quit();
@@ -149,7 +151,6 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
   main_dlg = gtk_dialog_new ();
   gtk_container_set_border_width (GTK_CONTAINER (main_dlg), 3);
   gtk_window_set_title (GTK_WINDOW (main_dlg), pSS->getValue(AP_STRING_ID_DLG_MetaData_Title));
-  GTK_WINDOW (main_dlg)->type = GTK_WINDOW_DIALOG;
   gtk_window_set_position (GTK_WINDOW (main_dlg), GTK_WIN_POS_CENTER);
   gtk_window_set_modal (GTK_WINDOW (main_dlg), TRUE);
   gtk_window_set_policy (GTK_WINDOW (main_dlg), FALSE, FALSE, FALSE);
