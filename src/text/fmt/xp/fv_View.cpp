@@ -2104,7 +2104,7 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 //
 // Do the list elements processing
 //
-	if(bisListStyle)
+	if(bisListStyle && (strstr(style,"Numbered Heading") == NULL))
 	{
 		UT_uint32 i;
 		for(i=0; i< vBlock.getItemCount(); i++)
@@ -2120,6 +2120,47 @@ bool FV_View::setStyle(const XML_Char * style, bool bDontGeneralUpdate)
 				pBL->resumeList(pBL->getPrev());
 		}
 		m_pDoc->endUserAtomicGlob();
+	}
+//
+// Code to handle Numbered Heading styles...
+//
+	else if(strstr(style,"Numbered Heading") != NULL)
+	{
+		fl_BlockLayout*  currBlock = _findBlockAtPosition(getPoint());
+		PT_DocPosition pos = currBlock->getPosition(true) -1;
+		if(pos < 2 )
+			pos = 2;
+		PL_StruxDocHandle curSdh = currBlock->getStruxDocHandle();
+		PL_StruxDocHandle sdh = m_pDoc->findPreviousStyleStrux(style, pos);
+		if(sdh == NULL || (sdh == curSdh))
+		{
+			currBlock->StartList(style);
+		}
+		else
+		{
+			PL_StruxFmtHandle sfh = NULL;
+			UT_uint32 i;
+			bool bFound = false;
+			fl_BlockLayout * pBlock = NULL;
+			for(i=0; !bFound ; i++)
+			{
+				sfh = m_pDoc->getNthFmtHandle(sdh, i);
+				if(sfh != NULL)
+				{
+					pBlock = (fl_BlockLayout *) sfh;
+					if(pBlock->getDocLayout() == m_pLayout)
+					{
+						bFound = true;
+					}
+				}
+				else
+				{
+					bFound = true;
+				}
+			}
+			UT_ASSERT(sfh);
+			currBlock->resumeList(pBlock);
+		}
 	}
 	if(!bDontGeneralUpdate)
 	{
