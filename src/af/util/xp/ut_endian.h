@@ -48,6 +48,13 @@
         #elif defined(_LITTLE_ENDIAN)
                 #define UT_LITTLE_ENDIAN
         #endif
+#elif defined(__NetBSD__)
+	#include <machine/endian.h>
+	#if BYTE_ORDER == LITTLE_ENDIAN         
+		#define UT_LITTLE_ENDIAN
+	#elif BYTE_ORDER == BIG_ENDIAN
+		#define UT_BIG_ENDIAN
+	#endif
 #else /* this is for Linux */
 	#include <endian.h>
 	#if __BYTE_ORDER == __LITTLE_ENDIAN		

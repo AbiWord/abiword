@@ -63,6 +63,8 @@ if test "$PLATFORM" = "mac"; then
 	WARNING_CFLAGS=""
 elif test "$OS_NAME" = "FreeBSD"; then
 	WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
+elif test "$OS_NAME" = "NetBSD"; then
+	WARNING_CFLAGS="-Wall -pedantic -ansi -D_BSD_SOURCE -pipe"
 else
 	WARNING_CFLAGS="-Wall -pedantic -ansi -D_POSIX_SOURCE -D_BSD_SOURCE -pipe"
 fi
