@@ -88,7 +88,8 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 		// and not just normal widgets
 		GtkWidget *pStatusBarElement = NULL;
 		
-		if (AP_StatusBarField_TextInfo *pf_TextInfo = dynamic_cast<AP_StatusBarField_TextInfo*>(pf)) {
+		if (true){ //AP_StatusBarField_TextInfo *pf_TextInfo = dynamic_cast<AP_StatusBarField_TextInfo*>(pf))
+		  AP_StatusBarField_TextInfo *pf_TextInfo = static_cast<AP_StatusBarField_TextInfo*>(pf);
 			pStatusBarElement = gtk_frame_new(NULL);
 			gtk_frame_set_shadow_type(GTK_FRAME(pStatusBarElement), GTK_SHADOW_IN);
 			
