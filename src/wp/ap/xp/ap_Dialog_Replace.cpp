@@ -80,6 +80,7 @@ void AP_Dialog_Replace::useStart(void)
 		UT_UCS_cloneString(&m_replaceString, persist_replaceString);
 
 	m_matchCase = persist_matchCase;
+
 }
 
 void AP_Dialog_Replace::useEnd(void)
@@ -91,7 +92,6 @@ void AP_Dialog_Replace::useEnd(void)
 	// Let the view know it doens't need to maintain it's
 	// "find" or "replace" session-oriented counters
 	UT_ASSERT(m_pView);
-	m_pView->findReset();
 	
 	// persistent dialogs don't destroy this data
 	if (m_didSomething)
@@ -129,10 +129,8 @@ UT_Bool AP_Dialog_Replace::setView(AV_View * view)
 	
 	m_pView = static_cast<FV_View *>(view);
 
-	// must resize doc positions so we're within bounds
-	// for the whole find
-	m_pView->findReset();
-
+	m_pView->findSetStartAtInsPoint();
+	
 	return UT_TRUE;
 }
 
@@ -215,7 +213,7 @@ UT_Bool AP_Dialog_Replace::findNext()
 	m_pView->findSetNextString(m_findString);
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findNext(m_findString, UT_TRUE, NULL, &bDoneEntireDocument);
+	UT_Bool result = m_pView->findNext(m_findString, &bDoneEntireDocument);
 
 	if (bDoneEntireDocument == UT_TRUE)
 		_messageFinishedFind();
@@ -239,7 +237,7 @@ UT_Bool AP_Dialog_Replace::findReplace()
 	m_pView->findSetNextString(m_findString);
 	
 	// call view to do the work
-	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString, NULL, &bDoneEntireDocument);
+	UT_Bool result = m_pView->findReplace(m_findString, m_replaceString, &bDoneEntireDocument);
 
 	if (bDoneEntireDocument == UT_TRUE)
 		_messageFinishedFind();
@@ -263,7 +261,7 @@ UT_Bool AP_Dialog_Replace::findReplaceAll()
 	m_pView->findSetNextString(m_findString);
 	
 	// call view to do the work
-	UT_uint32 numReplaced = m_pView->findReplaceAll(m_findString, m_replaceString, NULL, &bDoneEntireDocument);
+	UT_uint32 numReplaced = m_pView->findReplaceAll(m_findString, m_replaceString);
 
 	if (bDoneEntireDocument == UT_TRUE)
 		_messageFinishedReplace(numReplaced);

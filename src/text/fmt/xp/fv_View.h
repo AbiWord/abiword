@@ -132,24 +132,27 @@ public:
 
 // ----------------------
 
-	// goto
+	// goto -- this is really not implemented
 	UT_Bool 		gotoTarget(FV_JumpTarget type, UT_UCSChar * data);
 
 // ----------------------
+
+	// find and replace
 	
-	// find and replace 
-	void 			findReset();
-	
-	UT_Bool			findSetExtents(PT_DocPosition start, PT_DocPosition end);
-	
+	// aid the edit method for the simple non-dialog findAgain()
 	UT_Bool 		findSetNextString(UT_UCSChar * string);
-	UT_Bool			findNext(const UT_UCSChar * string, UT_Bool bSelect,
-							 UT_Bool * bWrappedEnd = NULL, UT_Bool * bDoneEntireDocument = NULL);
 	UT_Bool			findAgain(void);
+
+	void 			findSetStartAtInsPoint(void);
+
+	// finds the next "find" and selects it, filling bool when done the entire document
+	UT_Bool			findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument = NULL);
+	// replaces the selection of "find" with "replace" and selects the next, filling
+	// bool when done the entire document
 	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
-								UT_Bool * bWrappedEnd, UT_Bool * bDoneEntireDocument);
-	UT_uint32		findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
-								   UT_Bool * bWrappedEnd = NULL, UT_Bool * bDoneEntireDocument = NULL);
+								UT_Bool * bDoneEntireDocument);
+	// replaces every occurance of "find" with "replace" without stopping for anything
+	UT_uint32		findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace);
 		
 // ----------------------
 
@@ -237,24 +240,20 @@ protected:
 	fv_ChangeState		m_chg;
 
 	// find and replace stuff
-	PT_DocPosition		m_iFindPosStart;
-	PT_DocPosition		m_iFindPosEnd;
+
+	UT_Bool				m_wrappedEnd;
+	PT_DocPosition		m_startPosition;
+
+	UT_Bool				m_doneFind;
 	
-	PT_DocPosition		m_iFindCur;
-
-	PT_DocPosition		m_iFindBufferOffset;
-
-	UT_Bool				m_bDoneFind;
+	PT_DocPosition 		_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset);
 	
 	fl_BlockLayout * 	_findGetCurrentBlock(void);
-	fl_BlockLayout * 	_findGetNextBlock(UT_Bool * wrapped);
+	PT_DocPosition	 	_findGetCurrentOffset(void);	
+	UT_UCSChar * 		_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
 
 	UT_UCSChar * 		_m_findNextString;
 
-	UT_Bool 			m_bWrappedEndBuffer;
-	PT_DocPosition 		m_cycleBeganAtBlock;
-	PT_DocPosition 		m_cycleBeganAtOffset;
-	
 	// search routines (these return values will fall short of an
 	// extremely large document - fix them)
 	UT_sint32 			_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UCSChar * needle);

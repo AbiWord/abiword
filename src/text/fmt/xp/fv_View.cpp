@@ -100,7 +100,8 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 
 	_m_findNextString = NULL;
 
-	findReset();
+	m_wrappedEnd = UT_FALSE;
+	m_startPosition = 0;
 }
 
 FV_View::~FV_View()
@@ -1713,73 +1714,167 @@ UT_Bool FV_View::gotoTarget(FV_JumpTarget type, UT_UCSChar * data)
 }
 
 // ---------------- start find and replace ---------------
-
-void FV_View::findReset()
+	
+UT_Bool FV_View::findNext(const UT_UCSChar * find, UT_Bool * bDoneEntireDocument)
 {
-	UT_Bool bRes;
+	UT_ASSERT(find);
+
+	fl_BlockLayout * block = NULL;
+	PT_DocPosition   offset = 0;
 	
-	// set start to beginning of document
-	bRes = m_pDoc->getBounds(UT_FALSE, m_iFindPosStart);
-	UT_ASSERT(bRes);
+	block = _findGetCurrentBlock();
+	offset = _findGetCurrentOffset();
 
-	// set end to end of document
-	bRes = m_pDoc->getBounds(UT_TRUE, m_iFindPosEnd);
-	UT_ASSERT(bRes);
-
-	// Find the block at the current point
-	m_iFindCur = m_iInsPoint;
-
-	// we start the find at n characters into the current block
-	fl_BlockLayout * block = _findGetCurrentBlock();
-
-	// there might not be a block
-	if (block)
-	{
-        // Now reset the search to the beginning of the block, plus...
-		m_iFindCur = block->getPosition(UT_FALSE);
-
-		// ... plus the offset here (casting here loses high end data).
-		m_iFindBufferOffset = ((long) m_iInsPoint - (long) block->getPosition(UT_FALSE));
-	}
-	else
-	{
-		m_iFindCur = m_iFindPosStart;
-	}
-
-	m_bWrappedEndBuffer = UT_FALSE;
-	m_cycleBeganAtBlock = 0;
-	m_cycleBeganAtOffset = 0;
+	UT_UCSChar * buffer = NULL;
 	
-	m_bDoneFind = UT_FALSE;
+	while ((buffer = _findGetNextBlockBuffer(&block, &offset)))
+	{
+		// magic number; range of UT_sint32 falls short of extremely large docs
+		UT_sint32 foundAt = -1;
+		
+		foundAt = _findBlockSearchDumb(buffer, find);
+
+		if (foundAt != -1)
+		{
+			// update document cursor
+			moveInsPtTo(block->getPosition(UT_FALSE) + offset + foundAt);
+
+			// do selection
+			extSelHorizontal(UT_TRUE, UT_UCS_strlen(find));
+
+			m_doneFind = UT_TRUE;
+			
+			// this could get ugly, and should be optimized out
+			draw();
+			draw();			
+
+			return UT_TRUE;
+		}
+
+		// didn't find anything, so set the offset to the end
+		// of the current area
+		offset += UT_UCS_strlen(buffer);
+	}
+
+	if (bDoneEntireDocument)
+		*bDoneEntireDocument = UT_TRUE;
+
+	// reset wrap for next time
+	m_wrappedEnd = UT_FALSE;
+	
+	return UT_FALSE;
 }
 
-/*
-  Call this to set the start and end positions of your document.
-  The way the search works, it may not actually constrain itself
-  to the space between the positions (hey, it might), but it will
-  search only the blocks that contain these points and in between.
-*/
-
-UT_Bool FV_View::findSetExtents(PT_DocPosition start, PT_DocPosition end)
+void FV_View::findSetStartAtInsPoint(void)
 {
-	PT_DocPosition BOD, EOD;
+	m_startPosition = m_iInsPoint;
+	m_wrappedEnd = UT_FALSE;
+	m_doneFind = UT_FALSE;
+}
 
-	UT_Bool bRes;
-	
-	bRes = m_pDoc->getBounds(UT_FALSE, BOD);
-	UT_ASSERT(bRes);
-	
-	bRes = m_pDoc->getBounds(UT_TRUE, EOD);
-	UT_ASSERT(bRes);
+PT_DocPosition FV_View::_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset)
+{
+	UT_ASSERT(block);
+	return block->getPosition(UT_FALSE) + offset;
+}
 
-	if (start >= BOD && start <= EOD && end >= BOD && end <= EOD)
+UT_UCSChar * FV_View::_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition * offset)
+{
+	UT_ASSERT(m_pLayout);
+	UT_ASSERT(m_startPosition);
+	
+	UT_ASSERT(block);
+	UT_ASSERT(*block);
+
+	UT_ASSERT(offset);
+	
+	fl_BlockLayout * newBlock = NULL;
+	PT_DocPosition newOffset = 0;
+
+	UT_uint32 bufferLength = 0;
+	
+	UT_GrowBuf buffer;
+
+	// check early for completion, from where we left off last, and bail
+	// if we are now at or past the start position
+	if (m_wrappedEnd && _BlockOffsetToPos(*block, *offset) >= m_startPosition)
 	{
-		m_iFindPosStart = start;
-		m_iFindPosEnd = end;
-		return UT_TRUE;
+		// we're done
+		return NULL;
+	}
+
+	if (!(*block)->getBlockBuf(&buffer))
+	{
+		UT_DEBUGMSG(("Block %p has no associated buffer.\n", *block));
+		UT_ASSERT(0);
+	}
+	
+	// have we already searched all the text in this buffer?
+	if (*offset >= buffer.getLength())
+	{
+		// then return a fresh new block's buffer
+		newBlock = (*block)->getNext(UT_TRUE);
+
+		// are we at the end of the document?
+		if (!newBlock)
+		{
+			// then wrap (fetch the first block in the doc)
+			PT_DocPosition startOfDoc;
+			m_pDoc->getBounds(UT_FALSE, startOfDoc);
+			
+			newBlock = m_pLayout->findBlockAtPosition(startOfDoc);
+
+			m_wrappedEnd = UT_TRUE;
+			
+			UT_ASSERT(newBlock);
+		}
+
+		// re-assign the buffer contents for our new block
+		buffer.truncate(0);
+		// the offset starts at 0 for a fresh buffer
+		newOffset = 0;
+		
+		if (!newBlock->getBlockBuf(&buffer))
+		{
+			UT_DEBUGMSG(("Block %p (a ->next block) has no buffer.\n", newBlock));
+			UT_ASSERT(0);
+		}
+
+		// good to go with a full buffer for our new block
+	}
+	else	// we have some left to go in this buffer
+	{
+		// buffer is still valid, just copy pointers
+		newBlock = *block;
+		newOffset = *offset;
+	}
+
+	// are we going to run into the start position in this buffer?
+	// if so, we need to size our length accordingly
+	if (m_wrappedEnd && _BlockOffsetToPos(newBlock, newOffset) + buffer.getLength() >= m_startPosition)
+	{
+		bufferLength = (m_startPosition - (newBlock)->getPosition(UT_FALSE)) - newOffset;
 	}
 	else
-		return UT_FALSE;
+	{
+		bufferLength = buffer.getLength() - newOffset;
+	}
+	
+	// clone a buffer (this could get really slow on large buffers!)
+	UT_UCSChar * bufferSegment = NULL;
+
+	// remember, the caller gets to free this memory
+	bufferSegment = (UT_UCSChar *) calloc(bufferLength + 1,
+										  sizeof(UT_UCSChar));
+
+	memmove(bufferSegment, buffer.getPointer(newOffset),
+			(bufferLength) * sizeof(UT_UCSChar));
+
+	// before we bail, hold up our block stuff for next round
+	*block = newBlock;
+	*offset = newOffset;
+		
+	return bufferSegment;
 }
 
 UT_Bool FV_View::findSetNextString(UT_UCSChar * string)
@@ -1791,249 +1886,57 @@ UT_Bool FV_View::findSetNextString(UT_UCSChar * string)
 	return UT_UCS_cloneString(&_m_findNextString, string);
 }
 
-/*
-  This needs to be far more readable, starting with tossing the
-  goto call and reworking the loop to flow better.
-
-  It's a mess, but so is Find UI logic.  
-*/
-
-UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * bWrappedEnd, UT_Bool * bDoneEntireDocument)
-{
-	UT_ASSERT(string);
-
-	if (UT_UCS_strlen(string) <= 0)
-		return UT_TRUE;
-	
-	UT_GrowBuf buffer;
-	fl_BlockLayout * block;
-
-	// magic number, -1 means we didn't find in the block,
-	// since 0 is a valid position
-	UT_sint32 foundAt = -1;
-
-	// get the block we're sittin in now
-	block = _findGetCurrentBlock();
-
-    // search it
-	while (block)
-	{
-		// this was in the while() test, but we need to set the "done everything"
-		// boolean and return for this case
-		if (m_bWrappedEndBuffer)
-		{
-			if ((block->getPosition(UT_FALSE) > m_cycleBeganAtBlock)
-				||
-				((block->getPosition(UT_FALSE) == m_cycleBeganAtBlock) &&
-				(m_iFindBufferOffset >= m_cycleBeganAtOffset)) )
-			{
-				if (bDoneEntireDocument)
-					*bDoneEntireDocument = UT_TRUE;
-				// restart the wrapper so we can do another pass
-				m_bWrappedEndBuffer = UT_FALSE;
-				return UT_FALSE;
-			}
-		}
-	
-		// If we didn't act, do the test for the next round
-		if (!m_cycleBeganAtBlock)
-		{
-			m_cycleBeganAtBlock = block->getPosition(UT_FALSE);
-			m_cycleBeganAtOffset = m_iFindBufferOffset;
-		}
-		
-		UT_DEBUGMSG(("Got a block at cursor position [%d].\n", m_iFindCur));
-
-		// read its buffer and look for substring via dumb search
-		if (block->getBlockBuf(&buffer))
-		{
-			// TODO: non-case-sensitive searches
-
-			foundAt = -1;
-		   
-			// search starting at last place you stopped, but not if you've exhausted
-			// this buffer, then move to next
-			if (m_iFindBufferOffset < buffer.getLength())
-			{
-				// This could slow us down on big blocks, but since the buffer's
-				// insides are not null terminated, we have to make a copy of the
-				// buffer segment we're searching.  If we're looking to optimize
-				// this search, start here with the duplicate buffer.
-				UT_UCSChar * bufferSegment = NULL;
-				
-				bufferSegment = (UT_UCSChar *) calloc((buffer.getLength() - m_iFindBufferOffset) + 1,
-													  sizeof(UT_UCSChar));
-
-				memmove(bufferSegment, buffer.getPointer(m_iFindBufferOffset),
-						(buffer.getLength() - m_iFindBufferOffset) * sizeof(UT_UCSChar));
-
-				// do a dumb search (TODO: add case for regexp?)
-				foundAt = _findBlockSearchDumb(bufferSegment, string);
-
-				FREEP(bufferSegment);
-
-			}
-			else
-				// this has gotta go
-				goto FetchNextBlock;
-
-			// make sure the search was sane
-			UT_ASSERT((UT_sint32) buffer.getLength() >= foundAt);
-			
-			if (foundAt >= 0)
-			{
-				// increment by the offset within the buffer block at which the substring was found
-				m_iFindBufferOffset += foundAt;
-				
-				UT_DEBUGMSG(("Found substring [%d] chars into buffer.\n", m_iFindBufferOffset));
-
-				PT_DocPosition newPoint = m_iFindBufferOffset + m_iFindCur;
-
-				UT_DEBUGMSG(("Moving cursor to document position [%d], offset in buffer [%d] characters.\n",
-							 newPoint, newPoint - m_iFindCur));
-
-				// update document cursor
-				moveInsPtTo(newPoint);
-
-				if (bSelect)
-				{
-					UT_DEBUGMSG(("Extending selection [%d] characters.\n", UT_UCS_strlen(string)));
-					extSelHorizontal(UT_TRUE, UT_UCS_strlen(string));
-				}
-						
-				// this could get ugly, and should be optimized out
-				draw();
-
-				// Here's where Word does performs some tricks with
-				// the cursor.  If we're doing a "Find", then we
-				// increment the counter by 1 position.  But if we're
-				// doing a Replace, then we increment by the length
-				// of the text we just inserted.  Since we don't
-				// know that length here, the caller must do it.  This
-				// is kinda ugly.
-				m_iFindBufferOffset++;
-
-				// wipe the old buffer, since we're done with it
-				buffer.truncate(0);
-
-				// we also have done something, so set the boolean
-				m_bDoneFind = UT_TRUE;
-				
-				return UT_TRUE;
-			}
-			else
-			{
-			FetchNextBlock:				
-				block = _findGetNextBlock(&m_bWrappedEndBuffer);
-
-				// copy to pointer var for outisde use
-				if (bWrappedEnd)
-					*bWrappedEnd = m_bWrappedEndBuffer;
-				
-				if (!block)
-				{
-					UT_DEBUGMSG(("The Find mechanism lost a block in its DocLayout.  This means something\n"
-								 "really weird happened.  Perhaps the document offsets and cursors were\n"
-								 "set outside the real extents of the document.\n"));
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				}
-
-				// set a new cursor to seek from
-				m_iFindCur = block->getPosition(UT_FALSE);
-
-				// when we get a new block, we start the internal offset over
-				m_iFindBufferOffset = 0;
-				
-				// wipe the old buffer, since we fetch new contents into it
-				// for the next block
-				buffer.truncate(0);
-			}
-		}
-
-		// don't need to remove contents of buffer, since
-		// they were never written
-	}
-
-	return UT_FALSE;
-}
-
-/*
-  Call this function with no arguments to work off the view's
-  find string member.  If the find string is empty or null,
-  this function returns UT_FALSE, else it does the find and
-  returns UT_TRUE.
-*/
-
 UT_Bool FV_View::findAgain(void)
 {
 	if (_m_findNextString && *_m_findNextString)
 	{
-		// must resize doc positions so we're within bounds
-		// for the whole find
-		findReset();
-/*
-		// Find the block at the current point
-		m_iFindCur = m_iInsPoint;
-		
-		// we start the find at n characters into the current block
-		fl_BlockLayout * block = _findGetCurrentBlock();
-		UT_ASSERT(block);
-
-		// Now reset the search to the beginning of the block, plus...
-		m_iFindCur = block->getPosition(UT_FALSE);
-
-		// ... plus the offset here (casting here loses high end data).
-		m_iFindBufferOffset = ((long) m_iInsPoint - (long) block->getPosition(UT_FALSE));
-*/		
-		return findNext(_m_findNextString, UT_TRUE, NULL);
+		return findNext(_m_findNextString, NULL);
 	}
 	return UT_FALSE;
 }
 
-/*
-  Returns UT_TRUE if it actually did a replace, UT_FALSE if it did nothing, or
-  simply did a search to mimic the behavior of popular find/replace dialogs.
-*/
-
 UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace,
-							 UT_Bool * bWrappedEnd, UT_Bool * bDoneEntireDocument)
+							 UT_Bool * bDoneEntireDocument)
 {
 	
 	// if we have done a find, and there is a selection, then replace what's in the
 	// selection and move on to next find (batch run, the common case)
-	if (m_bDoneFind == UT_TRUE && isSelectionEmpty() == UT_FALSE)
+	if (m_doneFind == UT_TRUE && isSelectionEmpty() == UT_FALSE)
 	{
-		// adjust end of region by length of replacement difference so we
-		// won't search off a newly changed end of block
-		m_iFindPosEnd += ((long) UT_UCS_strlen(replace) - (long) UT_UCS_strlen(find));
+		// if we've wrapped around once, and we're doing work before we've
+		// hit the point at which we started, then we adjust the start
+		// position so that we stop at the right spot.
+		m_startPosition += ((long) UT_UCS_strlen(replace) - (long) UT_UCS_strlen(find));
 
-		// we return the result of the replacement (the insert), not the
-		// subsequent move
-		UT_Bool result = UT_TRUE;	// by default we didn't have to insert
-		if (*replace)	// only insert if string isn't empty
+		UT_Bool result = UT_TRUE;
+
+		if (*replace)
+		{
+			// TODO : fix this for new layout changes
 			result = cmdCharInsert((UT_UCSChar *) replace, UT_UCS_strlen(replace));
+		}
 
 		// we must move the find cursor past the insertion
 		// we just did, so that we don't get caught in a loop while doing
 		// a replace, but account for the 1 that the find advanced.
-		m_iFindBufferOffset += (UT_UCS_strlen(replace) - 1);
+		m_iInsPoint ++;
 
-		findNext(find, UT_TRUE, bWrappedEnd, bDoneEntireDocument);
+		findNext(find, bDoneEntireDocument);
 		return result;
 	}
 
 	// if we have done a find, but there is no selection, do a find for them
 	// but no replace
-	if (m_bDoneFind == UT_TRUE && isSelectionEmpty() == UT_TRUE)
+	if (m_doneFind == UT_TRUE && isSelectionEmpty() == UT_TRUE)
 	{
-		findNext(find, UT_TRUE, bWrappedEnd, bDoneEntireDocument);
+		findNext(find, bDoneEntireDocument);
 		return UT_FALSE;
 	}
 	
 	// if we haven't done a find yet, do a find for them
-	if (m_bDoneFind == UT_FALSE)
+	if (m_doneFind == UT_FALSE)
 	{
-		findNext(find, UT_TRUE, bWrappedEnd, bDoneEntireDocument);
+		findNext(find, bDoneEntireDocument);
 		return UT_FALSE;
 	}
 
@@ -2041,28 +1944,15 @@ UT_Bool	FV_View::findReplace(const UT_UCSChar * find, const UT_UCSChar * replace
 	return UT_FALSE;
 }
 
-/*
-  This function replaces all occurances of the word throughout
-  the entire document, not stopping to prompt the user at the end
-  off the search region (it does an automatic wrap-around and
-  raises a dialog when you've done the entire document).
-
-  This is what Microsoft Word does, whereas Word Perfect 7
-  does all it can until the end of the document, then just stops.
-  Clicking "Replace All" again finishes the rest of the document.
-
-  It also does globbing of the edits so that they can be undone with
-  a single keystroke.
-*/
-
-UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace,
-								  UT_Bool * bWrappedEnd, UT_Bool * bDoneEntireDocument)
+UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace)
 {
 	UT_uint32 numReplaced = 0;
 	m_pDoc->beginUserAtomicGlob();
-		
+
+	UT_Bool bDoneEntireDocument = UT_FALSE;
+	
 	// prime it with a find
-	if (!findNext(find, UT_TRUE, NULL, bDoneEntireDocument))
+	if (!findNext(find, &bDoneEntireDocument))
 	{
 		// can't find a single thing, we're done
 		m_pDoc->endUserAtomicGlob();
@@ -2070,11 +1960,11 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 	}
 	
 	// while we've still got buffer
-	while (*bDoneEntireDocument == UT_FALSE)
+	while (bDoneEntireDocument == UT_FALSE)
 	{
 		// if it returns false, it found nothing more before
 		// it hit the end of the document
-		if (!findReplace(find, replace, NULL, bDoneEntireDocument))
+		if (!findReplace(find, replace, &bDoneEntireDocument))
 		{
 			m_pDoc->endUserAtomicGlob();
 			return numReplaced;
@@ -2088,62 +1978,12 @@ UT_uint32 FV_View::findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * re
 
 fl_BlockLayout * FV_View::_findGetCurrentBlock(void)
 {
-	return m_pLayout->findBlockAtPosition(m_iFindCur);
+	return m_pLayout->findBlockAtPosition(m_iInsPoint);
 }
 
-/*
-  Call this repeatedly to return the next block in the layout.  It will
-  spill across sections by default, and will return wrap to the first
-  block when it hits the end of the search region.  It will return a pointer
-  to a block unless the cursor is somewhere strange, then it returns NULL.
-  If a pointer for a wrapped flag is passed in, it will be set UT_TRUE
-  if the search was wrapped (so the caller could fire a "you got wrapped"
-  dialog if desired.
-
-  This function never advances the cursor.  The caller should be
-  doing that after it gets the new block, if desired.  
-*/
-
-fl_BlockLayout * FV_View::_findGetNextBlock(UT_Bool * bWrappedEnd)
+PT_DocPosition FV_View::_findGetCurrentOffset(void)
 {
-	UT_ASSERT(m_pLayout);
-
-	fl_BlockLayout * block;
-	UT_GrowBuf buffer;
-	
-	if ( (block = m_pLayout->findBlockAtPosition(m_iFindCur)) )
-	{
-		block->getBlockBuf(&buffer);
-		
-		// check to see if the block we fetched is the last
-		// block before the End marker
-		if (block->getPosition(UT_FALSE) <= m_iFindPosEnd &&
-			(buffer.getLength() + block->getPosition(UT_FALSE)) >= m_iFindPosEnd)
-		{
-			// set the flag 
-			if (bWrappedEnd)
-				*bWrappedEnd = UT_TRUE;
-			// point to beginning and return that block
-			return m_pLayout->findBlockAtPosition(m_iFindPosStart);
-		}
-
-		// UT_TRUE to spill across sections
-		fl_BlockLayout * nextBlock = block->getNext(UT_TRUE);
-
-		// do the simple operation, return next block
-		if (nextBlock)
-			return nextBlock;
-		else
-		{
-			// if the block changes underneath us, then
-			// our counter may be off, so we ignore it if
-			// we don't get a good block
-			UT_DEBUGMSG(("Could not get next block of [%p].\n", block));
-		}
-	}
-
-	// no blocks at the cursor!
-	return NULL;
+	return (m_iInsPoint - _findGetCurrentBlock()->getPosition(UT_FALSE));
 }
 
 /*
