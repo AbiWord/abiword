@@ -1603,6 +1603,18 @@ fp_Container* fl_BlockLayout::getNewContainerLocal(void)
 	return (fp_Container *) pLine;
 }
 
+void fl_BlockLayout::setNeedsReformat(void)
+{
+	m_bNeedsReformat = true;
+	getSectionLayout()->setNeedsReformat();
+}
+
+void fl_BlockLayout::setNeedsRedraw(void)
+{
+	m_bNeedsRedraw = true;
+	getSectionLayout()->setNeedsRedraw();
+}
+
 const char* fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
@@ -3873,6 +3885,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 // Now fix up the previous block. Calling this format fixes bug 2702
 //
 		pPrevBL->format();
+		pPrevBL->setNeedsReformat();
 		// This call will dequeue the block from background checking
 		// if necessary
 		m_pSquiggles->join(offset, pPrevBL);
@@ -3898,6 +3911,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	}
 
 	_assertRunListIntegrity();
+
 
 	delete this;			// FIXME: whoa!  this construct is VERY dangerous.
 
@@ -5352,7 +5366,7 @@ fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark* pcrfm)
 	}
 
 	_assertRunListIntegrity();
-
+	setNeedsReformat();
 	return true;
 }
 
