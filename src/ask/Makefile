@@ -24,7 +24,7 @@ include $(ABI_ROOT)/src/config/abi_defs_wp.mk
 # TODO currently AbiSetup only runs on Windows
 
 ifeq ($(ABI_NATIVE),win)
-DIRS=		lib gendata askrm
+# DIRS=		lib gendata askrm
 endif
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

@@ -22,7 +22,7 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
-REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_
+REQUIRE=	_ZLIB_ _LIBPNG_ _LIBICONV_ _LIBWV_ _NSIS_
 REQUIREREALCLEAN=	realclean_LIBICONV_ realclean_LIBWV_
 TARGET=		build
 
@@ -87,6 +87,32 @@ _LIBWV_:
 		echo TODO provide a nicer error message;	\
 		echo TODO with instructions for obtaining it;	\
 		exit 1;						\
+	fi
+
+_LIBICONV_:
+	@if [ -d $(ABI_ROOT)/../libiconv ]; then			\
+		echo Found libiconv in peer directory;			\
+		if [ ! -r $(ABI_ROOT)/../libiconv/lib/config.h ]; then	\
+			cd $(ABI_ROOT)/../libiconv; 			\
+			CC=cl.exe CONFIG_SHELL=bash.exe bash ./configure; \
+		fi;						\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../libiconv;	\
+	else								\
+		echo libiconv not found;				\
+		echo TODO provide a nicer error message;		\
+		echo TODO with instructions for obtaining it;		\
+		exit 1;							\
+	fi
+
+_NSIS_:
+	@if [ -d $(ABI_ROOT)/../nsis ]; then			\
+		echo Found nsis in peer directory;		\
+		$(MAKE) -f Makefile.abi -C $(ABI_ROOT)/../nsis;		\
+	else									\
+		echo nsis not found;						\
+		echo TODO provide a nicer error message;			\
+		echo TODO with instructions for obtaining it;			\
+		exit 1;								\
 	fi
 
 #################################################################
