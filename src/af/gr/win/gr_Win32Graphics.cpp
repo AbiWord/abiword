@@ -268,7 +268,7 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 
 void GR_Win32Graphics::drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT(UT_NOT_YET_IMPLEMENTED);
 }
 
 void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
@@ -479,7 +479,7 @@ UT_uint32 GR_Win32Graphics::getFontDescent()
 
 void GR_Win32Graphics::getCoverage(UT_Vector& coverage)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT(UT_NOT_YET_IMPLEMENTED);
 }
 
 UT_uint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
