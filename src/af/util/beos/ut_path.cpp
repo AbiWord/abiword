@@ -78,8 +78,8 @@ time_t UT_mTime(const char* path)
     
     if (stat(path, &buf) != -1)
     {
-		return((time_t)-1);
+        return(buf.st_mtime);
     }
     
-    return(buf.st_mtime);
+    return((time_t)-1);
 }
