@@ -77,7 +77,7 @@ fi
 
 case "$OS_NAME" in 
 	WIN32) PLATFORM="win" ;;
-	Linux|AIX|*BSD|IRIX*|HP|OSF1) PLATFORM="unix" ;;
+	Linux|AIX|*BSD|IRIX*|HP|OSF1|SunOS) PLATFORM="unix" ;;
 	QNX|procnto) PLATFORM="qnx" ;;
 	MACOSX) PLATFORM="mac" ;;
 	BeOS) PLATFORM="beos" ;;

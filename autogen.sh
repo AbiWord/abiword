@@ -23,7 +23,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-if ! test -d `aclocal --print-ac-dir`; then
+if test ! -d `aclocal --print-ac-dir`; then
   echo "Bad aclocal (automake) installation"
   exit 1
 fi

@@ -83,7 +83,7 @@ if test "$abi_found_parser" = "expat"; then
 	)))
 	if test "$abi_found_expatincs" = "yes"; then
 		AC_DEFINE(HAVE_EXPAT, 1, [Define if you have expat])
-		if ! test "$abi_expat_new"; then
+		if test ! "$abi_expat_new"; then
 			AC_DEFINE(HAVE_OLD_EXPAT, 1, [Define if you have the jclark expat])
 		fi
 		if test "$abi_expat_incs"; then
