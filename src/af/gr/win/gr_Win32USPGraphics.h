@@ -113,6 +113,9 @@ public:
 	static tScriptCPtoX         ScriptCPtoX;
 	static tScriptXtoCP         ScriptXtoCP;
 	static tScriptBreak         ScriptBreak;
+	static tScriptIsComplex     ScriptIsComplex;
+	static tScriptRecordDigitSubstitution ScriptRecordDigitSubstitution;
+	
   public:
 	// these need to be public so we can free various things ...
 	static tScriptFreeCache   ScriptFreeCache;

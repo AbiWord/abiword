@@ -34,6 +34,14 @@
 // included with newer versions of MSVC (not 6.0) in that case we will
 // have to undefine the above for those versions of MSVC
 
+// these are guesses -- if the proper header is included with msvc 7
+// we should check these
+#define SIC_ASCIIDIGIT 0x00000001 
+#define SIC_COMPLEX    0x00000002
+#define SIC_NEUTRAL    0x00000004
+
+#define SCRIPT_DIGITSUBSTITUTE_NONE 0
+
 typedef struct tagGOFFSET {
   LONG  du;
   LONG  dv;

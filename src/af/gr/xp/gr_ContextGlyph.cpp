@@ -1257,7 +1257,7 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 											  const XML_Char   * pLang,
 											  FriBidiCharType    iDirection,
 											  bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
-											  void * fparam) const
+											  const void * fparam) const
 {
 	UT_return_val_if_fail(text.getStatus() == UTIter_OK, GRSR_Error);
 	UT_return_val_if_fail(dest, GRSR_Error);
@@ -1367,7 +1367,7 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 			xxx_UT_DEBUGMSG(("GR_ContextGlyph::render: lig.(%d), glyph 0x%x\n",bIsSecond,glyph));
 
 
-			bool bGlyphAvailable = (isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam));
+			bool bGlyphAvailable = (isGlyphAvailable == NULL || isGlyphAvailable(glyph, (void*)fparam));
 			
 			if(!bGlyphAvailable)
 			{
@@ -1399,7 +1399,7 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 						i++;
 					}
 				}
-				else if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
+				else if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, (void*)fparam))
 				{
 					// we have the original glyph, so we will use it
 					*dst_ptr++ = glyph;
@@ -1443,7 +1443,7 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 			else
 				glyph = current;
 
-			if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
+			if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, (void*)fparam))
 				*dst_ptr++ = glyph;
 			else
 			{
@@ -1451,7 +1451,7 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 							 glyph));
 				
 				UT_UCS4Char t = _remapGlyph(glyph);
-				if(isGlyphAvailable != NULL && isGlyphAvailable(t, fparam))
+				if(isGlyphAvailable != NULL && isGlyphAvailable(t, (void*)fparam))
 				{
 					*dst_ptr++ = t;
 				}
@@ -1492,11 +1492,11 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
 
-		if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
+		if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, (void*)fparam))
 		{
 			*dst_ptr++ = glyph;
 		}
-		else if(isGlyphAvailable(current, fparam))
+		else if(isGlyphAvailable(current, (void*)fparam))
 		{
 			UT_DEBUGMSG(("GR_ContextGlyph::render [3a] glyph 0x%x not present in font\n",
 						 glyph));
@@ -1511,7 +1511,7 @@ GRShapingResult GR_ContextGlyph::renderString(UT_TextIterator & text,
 						 current));
 
 			UT_UCS4Char t = _remapGlyph(glyph);
-			if(isGlyphAvailable != NULL && isGlyphAvailable(t, fparam))
+			if(isGlyphAvailable != NULL && isGlyphAvailable(t, (void*)fparam))
 				*dst_ptr++ = t;
 			else
 			{
@@ -1548,7 +1548,7 @@ GRShapingResult GR_ContextGlyph::copyString(UT_TextIterator & text,
 											const XML_Char * /*pLang*/,
 											FriBidiCharType iDirection,
 											bool (*isGlyphAvailable)(UT_UCS4Char g, void * param),
-											void * fparam) const
+											const void * fparam) const
 {
 	UT_return_val_if_fail(dest, GRSR_Error);
 
@@ -1566,14 +1566,14 @@ GRShapingResult GR_ContextGlyph::copyString(UT_TextIterator & text,
 		else
 			glyph = current;
 
-		if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, fparam))
+		if(isGlyphAvailable == NULL || isGlyphAvailable(glyph, (void*)fparam))
 			*dst_ptr++ = glyph;
 		else
 		{
 			UT_DEBUGMSG(("GR_ContextGlyph::copy [1] glyph 0x%x not present in font\n", glyph));
 				
 			UT_UCS4Char t = _remapGlyph(glyph);
-			if(isGlyphAvailable != NULL && isGlyphAvailable(t, fparam))
+			if(isGlyphAvailable != NULL && isGlyphAvailable(t, (void*)fparam))
 			{
 				*dst_ptr++ = t;
 			}

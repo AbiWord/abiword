@@ -74,7 +74,7 @@ class GR_Item
 {
   public:
 	virtual ~GR_Item(){};
-	virtual GR_ScriptType getType() = 0;
+	virtual GR_ScriptType getType() const = 0;
 	virtual GR_Item * makeCopy() = 0; // make a copy of this item
 	virtual GRRI_Type getClassId() const = 0;
 
@@ -90,7 +90,7 @@ class GR_XPItem : public GR_Item
   public:
 	virtual ~GR_XPItem(){};
 	
-	virtual GR_ScriptType getType() {return m_eType;}
+	virtual GR_ScriptType getType() const {return m_eType;}
 	virtual GR_Item * makeCopy() {return new GR_XPItem(m_eType);}
 	virtual GRRI_Type getClassId() const {return GRRI_XP;}
 
@@ -129,7 +129,9 @@ class GR_Itemization
 		m_bShowControlChars(false)
 	{};
 	
-	virtual ~GR_Itemization() {clear();}
+	virtual ~GR_Itemization() {clear();} // do not delete the actual
+										 // items, they get passed on
+										 // to the runs
 
 	UT_uint32     getItemCount() const {return m_vOffsets.getItemCount();}
 	UT_uint32     getNthOffset(UT_uint32 i) const {return m_vOffsets.getNthItem(i);}
@@ -235,13 +237,13 @@ class GR_RenderInfo
 	UT_sint32           m_xoff;
 	UT_sint32           m_yoff;
 
-	GR_Graphics *       m_pGraphics;
-	GR_Font     *       m_pFont;
+	const GR_Graphics * m_pGraphics;
+	const GR_Font     * m_pFont;
 
 	UT_uint32           m_iJustificationPoints;
 	UT_sint32           m_iJustificationAmount;
 	bool                m_bLastOnLine;
-	GR_Item *           m_pItem;
+	const GR_Item *     m_pItem;
 	
 
  private:
@@ -330,11 +332,11 @@ class GR_ShapingInfo
 	FriBidiCharType     m_iVisDir;
 	GRShapingResult     m_eShapingRequired;
 
-	GR_Font *           m_pFont;
+	const GR_Font *     m_pFont;
 
 	UT_uint32           m_iJustifyBy;
 
-	GR_Item *           m_pItem;
+	const GR_Item *     m_pItem;
 };
 
 

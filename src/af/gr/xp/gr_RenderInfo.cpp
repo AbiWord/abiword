@@ -110,6 +110,7 @@ GR_XPRenderInfo::~GR_XPRenderInfo()
 	{
 		delete [] s_pCharBuff;    s_pCharBuff = NULL;
 		delete [] s_pWidthBuff;   s_pWidthBuff = NULL;
+		delete [] s_pAdvances;    s_pAdvances = NULL;
 	}
 
     delete [] m_pChars;

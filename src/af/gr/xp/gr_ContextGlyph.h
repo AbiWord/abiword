@@ -124,7 +124,7 @@ public:
 								 const XML_Char  * pLang,
 								 FriBidiCharType   iDirection,
 								 bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
-								 void * custom_param = NULL) const;
+								 const void * custom_param = NULL) const;
 	
 	GRShapingResult copyString(UT_TextIterator & text,
 							   UT_UCSChar      * dest,
@@ -132,7 +132,7 @@ public:
 							   const XML_Char  * pLang,
 							   FriBidiCharType   iDirection,
 							   bool (*isGlyphAvailable)(UT_UCS4Char g, void * custom) = NULL,
-							   void * custom_param = NULL) const;
+							   const void * custom_param = NULL) const;
 	
 	const LetterData * smartQuote(UT_UCS4Char      c,
 								  const XML_Char * pLang) const;

@@ -22,7 +22,8 @@
 #include <fribidi.h>
 #include "gr_Win32USPGraphics.h"
 #include "ut_debugmsg.h"
-
+#include "xap_App.h"
+#include "xap_Prefs.h"
 
 HINSTANCE GR_Win32USPGraphics::s_hUniscribe = NULL;
 UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
@@ -40,7 +41,8 @@ tScriptJustify       GR_Win32USPGraphics::ScriptJustify       = NULL;
 tScriptCPtoX         GR_Win32USPGraphics::ScriptCPtoX         = NULL;
 tScriptXtoCP         GR_Win32USPGraphics::ScriptXtoCP         = NULL;
 tScriptBreak         GR_Win32USPGraphics::ScriptBreak         = NULL;
-
+tScriptIsComplex     GR_Win32USPGraphics::ScriptIsComplex     = NULL;
+tScriptRecordDigitSubstitution GR_Win32USPGraphics::ScriptRecordDigitSubstitution = NULL;
 enum usp_error
 {
 	uspe_unknown  = 0x00000000,
@@ -68,7 +70,7 @@ class GR_Win32USPItem: public GR_Item
   public:
 	virtual ~GR_Win32USPItem(){};
 	
-	virtual GR_ScriptType getType() {return (GR_ScriptType) m_si.a.eScript;}
+	virtual GR_ScriptType getType() const {return (GR_ScriptType) m_si.a.eScript;}
 	virtual GR_Item *     makeCopy() {return new GR_Win32USPItem(m_si);} // make a copy of this item
 	virtual GRRI_Type     getClassId() const {return GRRI_WIN32_UNISCRIBE;}
 	
@@ -79,7 +81,6 @@ class GR_Win32USPItem: public GR_Item
 
 	SCRIPT_ITEM m_si;
 };
-
 
 class GR_Win32USPRenderInfo : public GR_RenderInfo
 {
@@ -95,14 +96,31 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 		m_iCharCount(0),
 		m_pGoffsets(NULL),
 	    m_pAdvances(NULL),
-	    m_pJustify(NULL)
-	{};
+		m_pJustify(NULL),
+		m_iZoom(100)
+	{
+		s_iInstanceCount++;
+		if(s_iInstanceCount == 1)
+		{
+			s_pAdvances = new int [200];
+			UT_ASSERT(s_pAdvances);
+			s_iAdvancesSize = 200;
+		}
+		
+	};
 	
 	virtual ~GR_Win32USPRenderInfo()
 	    {
 			delete [] m_pIndices;  delete [] m_pVisAttr;
 			delete [] m_pClust;    delete [] m_pGoffsets;
 			delete [] m_pAdvances; delete [] m_pJustify;
+
+			s_iInstanceCount--;
+			if(!s_iInstanceCount)
+			{
+				delete [] s_pAdvances; s_pAdvances = NULL;
+				s_iAdvancesSize = 0;
+			}
 		}
 
 	virtual GRRI_Type getType() const {return GRRI_WIN32_UNISCRIBE;}
@@ -126,7 +144,16 @@ class GR_Win32USPRenderInfo : public GR_RenderInfo
 	int *            m_pAdvances;
 	int *            m_pJustify;
 	ABC              m_ABC;
+	UT_uint32        m_iZoom;
+
+	static int *     s_pAdvances;
+	static UT_uint32 s_iInstanceCount;
+	static UT_uint32 s_iAdvancesSize;
 };
+
+int *     GR_Win32USPRenderInfo::s_pAdvances      = NULL;
+UT_uint32 GR_Win32USPRenderInfo::s_iInstanceCount = 0;
+UT_uint32 GR_Win32USPRenderInfo::s_iAdvancesSize  = 0;
 
 
 GR_Win32USPGraphics::GR_Win32USPGraphics(HDC hdc, HWND hwnd, XAP_App * pApp)
@@ -178,7 +205,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 			return false;
 		}
 		
-#ifdef DEBUG
+#if 1 //def DEBUG
 		char FileName[250];
 		if(GetModuleFileName(s_hUniscribe,&FileName[0],250))
 		{
@@ -205,6 +232,13 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 							
 						UT_DEBUGMSG(("GR_Win32USPGraphics: Uniscribe version %d.%d.%d.%d\n",
 									 iV1, iV2, iV3, iV4));
+						if(XAP_App::getApp()->getPrefs())
+						{
+							UT_String s;
+							UT_String_sprintf(s, "usp10.dll version %d.%d.%d.%d", iV1, iV2, iV3, iV4);
+							XAP_App::getApp()->getPrefs()->log("gr_Win32USPGraphics", s.c_str()); 
+						}
+						
 					}
 				}
 				free(pBuff);
@@ -225,6 +259,8 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 		loadUSPFunction(ScriptCPtoX);
 		loadUSPFunction(ScriptXtoCP);
 		loadUSPFunction(ScriptBreak);
+		loadUSPFunction(ScriptIsComplex);
+		loadUSPFunction(ScriptRecordDigitSubstitution);
 	}
 	else // we are not the first instance, USP should be loaded
 	{
@@ -558,6 +594,32 @@ bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	RI->m_pItem = si.m_pItem;
 	RI->m_pFont = si.m_pFont;
 	RI->m_iCharCount = si.m_iLength;
+
+	// once we implement the GR_Win32USPRenderInfo::append(), etc., we
+	// should enable this; until then we need to treat everything as
+	// complex and have it refreshed on merges, etc.
+#if 0
+	// work out shaping result
+	DWORD dFlags = SIC_COMPLEX;
+
+	if(si.m_iVisDir == FRIBIDI_TYPE_RTL)
+		dFlags |= SIC_NEUTRAL;
+
+	SCRIPT_DIGITSUBSTITUTE sds;
+	if(S_OK == ScriptRecordDigitSubstitution(LOCALE_USER_DEFAULT, &sds))
+	{
+		if(sds.DigitSubstitute != SCRIPT_DIGITSUBSTITUTE_NONE)
+			dFlags |= SIC_ASCIIDIGIT;
+	}
+
+	HRESULT hShape = ScriptIsComplex(pInChars, si.m_iLength, dFlags);
+	if(hShape == S_OK)
+		RI->m_eShapingResult = GRSR_ContextSensitiveAndLigatures;
+	else
+		RI->m_eShapingResult = GRSR_None;
+#else
+	RI->m_eShapingResult = GRSR_ContextSensitiveAndLigatures;
+#endif
 	
 	if(bDeleteChars)
 	{
@@ -571,9 +633,10 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE, 0);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
-
+	//UT_uint32 iZoom = getZoomPercentage();
+	
 	if(ri.m_iOffset == 0 && ri.m_iLength == RI.m_iCharCount)
-		return tlu(RI.m_ABC.abcA + RI.m_ABC.abcB + RI.m_ABC.abcC);
+		return (RI.m_ABC.abcA + RI.m_ABC.abcB + RI.m_ABC.abcC);
 
 	UT_return_val_if_fail(ri.m_iOffset + ri.m_iLength <= RI.m_iCharCount, 0);
 	
@@ -589,12 +652,20 @@ UT_sint32 GR_Win32USPGraphics::getTextWidth(const GR_RenderInfo & ri) const
 			iWidth += RI.m_pAdvances[j];
 	}
 
-	return tlu(iWidth);
+	return iWidth;
 }
 
 void GR_Win32USPGraphics::prepareToRenderChars(GR_RenderInfo & ri)
 {
-	// we do not need to do anything
+	// since we internally store widths in layout units, we need to
+	// scale them down to device
+	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
+	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &)ri;
+	
+	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
+	{
+		RI.s_pAdvances[i] = tdu(RI.m_pAdvances[i]);
+	}
 }
 
 void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
@@ -614,7 +685,7 @@ void GR_Win32USPGraphics::renderChars(GR_RenderInfo & ri)
 								 & pItem->m_si.a,
 								 NULL, 0, /*reserved*/
 								 RI.m_pIndices, RI.m_iIndicesCount,
-								 RI.m_pAdvances, RI.m_pJustify,
+								 RI.s_pAdvances, RI.m_pJustify,
 								 RI.m_pGoffsets);
 	UT_ASSERT( !hRes );
 }
@@ -633,9 +704,35 @@ void GR_Win32USPGraphics::measureRenderedCharWidths(GR_RenderInfo & ri)
 	if(!RI.m_pGoffsets)
 		RI.m_pGoffsets = new GOFFSET[RI.m_iIndicesSize];
 
+	UT_uint32 iZoom = getZoomPercentage();
+	if(iZoom != RI.m_iZoom)
+	{
+		// the zoom factor has changed; make sure we invalidate the cache
+		if(*(pFont->getScriptCache()) != NULL)
+		{
+			ScriptFreeCache(pFont->getScriptCache());
+			*(pFont->getScriptCache()) = NULL;
+		}
+		
+	}
+	
+
 	HRESULT hRes = ScriptPlace(m_hdc, pFont->getScriptCache(), RI.m_pIndices, RI.m_iIndicesCount,
 							   RI.m_pVisAttr, & pItem->m_si.a, RI.m_pAdvances, RI.m_pGoffsets, & RI.m_ABC);
 
+	// remember the zoom at which we calculated this ...
+	RI.m_iZoom = iZoom;
+
+	// now convert the whole lot to layout units
+	for(UT_uint32 i = 0; i < RI.m_iIndicesCount; ++i)
+	{
+		RI.m_pAdvances[i] = tlu(RI.m_pAdvances[i]);
+	}
+
+	RI.m_ABC.abcA = tlu(RI.m_ABC.abcA);
+	RI.m_ABC.abcB = tlu(RI.m_ABC.abcB);
+	RI.m_ABC.abcC = tlu(RI.m_ABC.abcC);
+	
 	UT_ASSERT( !hRes );
 }
 
@@ -702,6 +799,8 @@ UT_uint32 GR_Win32USPGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 
 	GR_Win32USPItem * pItem = (GR_Win32USPItem *)RI.m_pItem;
 	UT_return_val_if_fail(pItem, 0);
 
+	x = tdu(x);
+	
 	int iPos;
 	int iTrail;
 	HRESULT hRes = ScriptXtoCP(x, RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr, RI.m_pAdvances,
@@ -719,15 +818,19 @@ void GR_Win32USPGraphics::positionToXY(const GR_RenderInfo & ri,
 	UT_return_if_fail(ri.getType() == GRRI_WIN32_UNISCRIBE);
 	GR_Win32USPRenderInfo & RI = (GR_Win32USPRenderInfo &) ri;
 	GR_Win32USPItem * pItem = (GR_Win32USPItem *)RI.m_pItem;
+	//UT_uint32 iZoom = getZoomPercentage();
+	
 	if(!pItem)
 		return;
 
+	bool bTrailing = true;
 	HRESULT hRes = ScriptCPtoX(RI.m_iOffset,
-							   false, /* fTrailing*/
+							   bTrailing, /* fTrailing*/
 							   RI.m_iLength, RI.m_iIndicesCount, RI.m_pClust, RI.m_pVisAttr,
 							   RI.m_pAdvances, & pItem->m_si.a, &x);
 
 	UT_ASSERT( !hRes );
+	x = x;
 	x2 = x;
 }
 

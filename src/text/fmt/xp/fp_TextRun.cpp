@@ -820,7 +820,10 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 		y = y2 = yoff;
 		height = getHeight();
 		bDirection = (getVisDirection() != FRIBIDI_TYPE_LTR);
+		m_pRenderInfo->m_iOffset = iOffset - getBlockOffset() - 1;
 		getGraphics()->positionToXY(*m_pRenderInfo, x, y, x2, y2, height, bDirection);
+		x += xoff;
+		x2 += xoff;
 	}
 }
 
