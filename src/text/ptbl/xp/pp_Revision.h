@@ -38,18 +38,27 @@ typedef enum {
 class PP_Revision
 {
   public:
-	PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char * props);
+	PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char *  props);
+	PP_Revision(UT_uint32 Id, PP_RevisionType eType, const XML_Char ** props);
 	~PP_Revision();
 
 	UT_uint32        getId()    const {return m_iID;}
 	PP_RevisionType  getType()  const {return m_eType;}
-	const XML_Char * getProps() const {return m_pProps;}
+	const XML_Char * getPropsString();
+	const UT_Vector* getPropsVector() const {return (const UT_Vector*)& m_vProps;}
+
 	void             mergeProps(const XML_Char * pProps);
+	void             mergeProps(const XML_Char ** pProps);
 
   private:
-	UT_uint32       m_iID;
-	PP_RevisionType m_eType;
-	XML_Char *      m_pProps;
+	void             _clear();
+	void             _refreshString();
+
+	UT_uint32        m_iID;
+	PP_RevisionType  m_eType;
+	UT_Vector        m_vProps;
+	UT_String        m_sXMLstring;
+	bool             m_bDirty;
 };
 
 
@@ -97,7 +106,7 @@ class PP_RevisionAttr
 	bool                  isVisible() const;
 	bool                  isFragmentSuperfluous() const;
 
-	const XML_Char * getXMLstring();
+	const XML_Char *      getXMLstring();
 
 
   private:
