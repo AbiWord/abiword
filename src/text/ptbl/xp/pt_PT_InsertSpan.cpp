@@ -187,10 +187,21 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 
 				pft->changeLength(fragLen+length);
 
-				// TODO see if we are now contiguous with the next one and try
-				// TODO to coalesce them (this will happen on after a delete
-				// TODO char followed by undo).
+				// see if this (enlarged) fragment is now contiguous with the
+				// one that follows (this can happen after a delete-char followed
+				// by undo).  if so, we coalesce them.
 
+				if (pft->getNext() && (pft->getNext()->getType() == pf_Frag::PFT_Text))
+				{
+					pf_Frag_Text * pftNext = static_cast<pf_Frag_Text *>(pft->getNext());
+					if (   (pft->getIndexAP() == pftNext->getIndexAP())
+						&& m_varset.isContiguous(pft->getBufIndex(),pft->getLength(),pftNext->getBufIndex()))
+					{
+						pft->changeLength(pft->getLength()+pftNext->getLength());
+						m_fragments.unlinkFrag(pftNext);
+					}
+				}
+				
 				return UT_TRUE;
 			}
 		}
@@ -208,9 +219,20 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 
 				pft->adjustOffsetLength(bi,length+fragLen);
 
-				// TODO see if we are now contiguous with the next one and try
-				// TODO to coalesce them (this will happen on after a delete
-				// TODO char followed by undo).
+				// see if this (enlarged) fragment is now contiguous with the
+				// one that preceeds us (this can happen after a delete-char followed
+				// by undo).  if so, we coalesce them.
+
+				if (pft->getPrev() && (pft->getPrev()->getType() == pf_Frag::PFT_Text))
+				{
+					pf_Frag_Text * pftPrev = static_cast<pf_Frag_Text *>(pft->getPrev());
+					if (   (pft->getIndexAP() == pftPrev->getIndexAP())
+						&& m_varset.isContiguous(pftPrev->getBufIndex(),pftPrev->getLength(),pft->getBufIndex()))
+					{
+						pftPrev->changeLength(pftPrev->getLength()+pft->getLength());
+						m_fragments.unlinkFrag(pft);
+					}
+				}
 			
 				return UT_TRUE;
 			}
@@ -336,6 +358,8 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP))
 		return UT_FALSE;
 
+	// note: because of coalescing, pf should be considered invalid at this point.
+	
 	// create a change record, add it to the history, and notify
 	// anyone listening.
 
