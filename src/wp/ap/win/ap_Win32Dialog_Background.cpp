@@ -57,31 +57,33 @@ void AP_Win32Dialog_Background::runModal(XAP_Frame * pFrame)
 {
 	UT_ASSERT(pFrame);
 
-/*
-	NOTE: This template can be used to create a working stub for a 
-	new dialog on this platform.  To do so:
-	
-	1.  Copy this file (and its associated header file) and rename 
-		them accordingly. 
+	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
+	UT_RGBColor rgbColor = getColor();
 
-	2.  Do a case sensitive global replace on the words Stub and STUB
-		in both files. 
+	CHOOSECOLOR cc;                 // common dialog box structure 
+	static COLORREF acrCustClr[16]; // array of custom colors 
+	DWORD rgbCurrent;				// initial color selection
 
-	3.  Add stubs for any required methods expected by the XP class. 
-		If the build fails because you didn't do this step properly,
-		you've just broken the donut rule.  
+	rgbCurrent = RGB( rgbColor.m_red, rgbColor.m_grn, rgbColor.m_blu );
 
-	4.	Replace this useless comment with specific instructions to 
-		whoever's porting your dialog so they know what to do.
-		Skipping this step may not cost you any donuts, but it's 
-		rude.  
+	// Initialize CHOOSECOLOR 
+	ZeroMemory(&cc, sizeof(CHOOSECOLOR));
+	cc.lStructSize = sizeof(CHOOSECOLOR);
+	cc.hwndOwner = pWin32Frame->getTopLevelWindow();
+	cc.lpCustColors = (LPDWORD) acrCustClr;
+	cc.rgbResult = rgbCurrent;
+	cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+ 
+	if( ChooseColor(&cc) )
+	{
+		rgbCurrent = cc.rgbResult;
 
-	This file should *only* be used for stubbing out platforms which 
-	you don't know how to implement.  When implementing a new dialog 
-	for your platform, you're probably better off starting with code
-	from another working dialog.  
-*/	
+		UT_setColor( rgbColor, GetRValue(rgbCurrent), GetGValue(rgbCurrent), GetBValue(rgbCurrent) );
+		setColor( rgbColor );
 
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
+		setAnswer( a_OK );
+	}
+	else
+		setAnswer( a_CANCEL );
 }
 

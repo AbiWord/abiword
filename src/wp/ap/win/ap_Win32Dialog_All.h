@@ -56,6 +56,7 @@
 #	include "ap_Win32Dialog_PageNumbers.h"
 #	include "ap_Win32Dialog_PageSetup.h"
 #	include "ap_Win32Dialog_ToggleCase.h"
+#	include "ap_Win32Dialog_Background.h"
 
 	// ... add new dialogs here ...
 
@@ -91,6 +92,7 @@
 	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,	AP_Win32Dialog_PageNumbers)
 	DeclareDialog(AP_DIALOG_ID_FILE_PAGESETUP,	AP_Win32Dialog_PageSetup)
 	DeclareDialog(AP_DIALOG_ID_TOGGLECASE,		AP_Win32Dialog_ToggleCase)
+	DeclareDialog(AP_DIALOG_ID_BACKGROUND,		AP_Win32Dialog_Background)
 
 	// ... also add new dialogs here ...
 
