@@ -143,12 +143,12 @@ static Letter s_table[] =
 #define HEBREW_END 5
 	// Arabic
 	{0x0621, 0x0621, 0x0621, 0x0621, 0x0621, 0xFE80},
-	{0x0622, 0x0622, 0x0622, 0x0622, 0xFE82, 0xFE81},
-	{0x0623, 0x0623, 0x0623, 0x0623, 0xFE84, 0xFE83},
+	{0x0622, 0x0622, 0x0622, 0xFE82, 0xFE82, 0xFE81},
+	{0x0623, 0x0623, 0x0623, 0xFE84, 0xFE84, 0xFE83},
 	{0x0624, 0x0624, 0x0624, 0x0624, 0xFE86, 0xFE85},
-	{0x0625, 0x0625, 0x0625, 0x0625, 0xFE88, 0xFE87},
+	{0x0625, 0x0625, 0x0625, 0xFE88, 0xFE88, 0xFE87},
 	{0x0626, 0x0626, 0xFE8B, 0xFE8C, 0xFE8A, 0xFE89},
-	{0x0627, 0x0627, 0x0627, 0x0627, 0xFE8E, 0xFE8D},
+	{0x0627, 0x0627, 0x0627, 0xFE8E, 0xFE8E, 0xFE8D},
 	{0x0628, 0x0628, 0xFE91, 0xFE92, 0xFE90, 0xFE8F},
 	{0x0629, 0x0629, 0x0629, 0x0629, 0xFE94, 0xFE93},
 	{0x062a, 0x062a, 0xFE97, 0xFE98, 0xFE96, 0xFE95},
@@ -316,6 +316,45 @@ static Letter s_table[] =
 	{0x06fe, 0x06fe, 0xFE, 0xFE, 0xFE, 0xFE},
 	*/
 };
+
+static UCSRange s_nonjoining_with_next[] =
+{
+	// Arabic
+	{0x0622, 0x0625},
+	{0x0627, 0x0627},
+	{0x062f, 0x0632},
+	{0x0648, 0x0648}
+};
+
+static bool s_notJoiningWithNext(UT_UCS4Char c, UT_UCS4Char f, UT_UCS4Char p)
+{
+	for(UT_uint32 i = 0; i < NrElements(s_nonjoining_with_next); i++)
+	{
+		if(c >= s_nonjoining_with_next[i].low && c <= s_nonjoining_with_next[i].high)
+			return true;
+	}
+
+	return UT_isWordDelimiter(c,f,p);
+}
+
+
+
+static UCSRange s_nonjoining_with_prev[] =
+{
+	// Arabic
+	{0x0621, 0x0621}
+};
+
+static bool s_notJoiningWithPrev(UT_UCS4Char c, UT_UCS4Char f, UT_UCS4Char p)
+{
+	for(UT_uint32 i = 0; i < NrElements(s_nonjoining_with_prev); i++)
+	{
+		if(c >= s_nonjoining_with_prev[i].low && c <= s_nonjoining_with_prev[i].high)
+			return true;
+	}
+
+	return UT_isWordDelimiter(c,f,p);
+}
 
 static UCSRange s_ignore[] =
 {
@@ -561,7 +600,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 
 	if((!next || !*next) && prev && *prev)
 	{
-		bPrevWD = UT_isWordDelimiter(*prev, *code, *(prev+1));
+		bPrevWD = s_notJoiningWithNext(*prev, *code, *(prev+1));
 		if(bPrevWD)
 			return GC_ISOLATE;
 		else
@@ -584,7 +623,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 
 	if((!prev || !*prev) && *myNext)
 	{
-		bNextWD = UT_isWordDelimiter(*myNext, myNextNext, UCS_UNKPUNK);
+		bNextWD = s_notJoiningWithPrev(*myNext, myNextNext, UCS_UNKPUNK);
 		if(bNextWD)
 			return GC_ISOLATE;
 		else
@@ -593,7 +632,7 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 
 	if(*prev && !*myNext)
 	{
-		bPrevWD = UT_isWordDelimiter(*prev, *code, *(prev+1));
+		bPrevWD = s_notJoiningWithNext(*prev, *code, *(prev+1));
 		if(bPrevWD)
 			return GC_ISOLATE;
 		else
@@ -601,8 +640,8 @@ inline GlyphContext UT_contextGlyph::_evalGlyphContext(const UT_UCSChar* code, c
 
 	}
 	xxx_UT_DEBUGMSG(("UT_contextGlyph::_evalGlyphContext: code 0x%x, prev 0x%x, myNext 0x%x, myNextNext 0x%x\n",*code,*prev, *myNext,myNextNext));
-	bPrevWD = UT_isWordDelimiter(*prev, *code, *(prev+1));
-	bNextWD = UT_isWordDelimiter(*myNext, myNextNext,UCS_UNKPUNK);
+	bPrevWD = s_notJoiningWithNext(*prev, *code, *(prev+1));
+	bNextWD = s_notJoiningWithPrev(*myNext, myNextNext,UCS_UNKPUNK);
 
 	// if both are not , then medial form is needed
 	if(!bPrevWD && !bNextWD)
