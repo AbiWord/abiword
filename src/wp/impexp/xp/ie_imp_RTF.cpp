@@ -5735,6 +5735,8 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 	{
 	        return id;
 	}
+	//
+	// Now look to see if the 
 	///
 	/// Now look to see if the ID has been remapped.
 	///
@@ -5747,7 +5749,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 			{
 				mappedID =  getAbiList(i)->mapped_id;
 			}
-			else
+			else if(!m_bStruxInserted)
 			    ///
 			    /// Do the remapping!
 			    ///
@@ -5756,6 +5758,20 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 				UT_uint32 nLists = getDoc()->getListsCount();
 				UT_uint32 highestLevel = 0;
 				PL_StruxDocHandle sdh;
+//
+// Get the List Type
+//
+				FL_ListType myType = NOT_A_LIST;
+				fl_AutoLists al;
+				UT_uint32 size_xml_lists = al.getXmlListsSize();
+				for(j=0; j < size_xml_lists; j++)
+				{
+					if( UT_XML_strcmp(m_currentRTFState.m_paraProps.m_pszStyle,al.getXmlList(j))==0)
+						break;
+				}
+				if(j < size_xml_lists)
+					myType = static_cast<FL_ListType>(j);
+
 				getDoc()->getStruxOfTypeFromPosition(m_dposPaste, PTX_Block,&sdh);
 				for(j=0; j< nLists; j++)
 				{
@@ -5765,19 +5781,26 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 						if(highestLevel < pAuto->getLevel())
 						{
 							highestLevel = pAuto->getLevel();
-							pMapAuto = pAuto;
+							FL_ListType thisType = pAuto->getType();
+							if(thisType == myType)
+							{
+								pMapAuto = pAuto;
+							}
 						}
 					}
 				}
 				if(pMapAuto == NULL )
-					//mappedID = UT_rand();
+				{
 					mappedID = getDoc()->getUID(UT_UniqueId::List);
+				}
 				else if( getAbiList(i)->level <= pMapAuto->getLevel() && pMapAuto->getID() != 0)
+				{
 					mappedID = pMapAuto->getID();
+				}
 				else
-					//mappedID = UT_rand();
+				{
 					mappedID = getDoc()->getUID(UT_UniqueId::List);
-				
+				}
 				getAbiList(i)->hasBeenMapped = true;
 				getAbiList(i)->mapped_id = mappedID;
 				if(highestLevel > 0)
