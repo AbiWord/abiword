@@ -55,7 +55,11 @@ NSIS_OPT += //DMINGW32=1
 endif
 
 ifneq ($(wildcard $(ABI_ROOT)/../abiword-plugins/wp/impexp/graphics/bmp),)
+ifeq ($(OS_NAME),MINGW32)
 NSIS_OPT += //DHAVEBMP=1
+else
+NSIS_OPT += /DHAVEBMP=1
+endif
 endif
 
 $(PROGRAM): $(BINDIR)/makensis$(EXE_SUFFIX)
