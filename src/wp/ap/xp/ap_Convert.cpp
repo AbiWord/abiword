@@ -39,10 +39,10 @@
 // needed for convertToPNG
 #include "ie_impGraphic.h"
 #include "ut_bytebuf.h"
-
-// needed for unix printing
+#include "ie_mailmerge.h"
 
 #ifdef XP_UNIX_TARGET_GTK
+// needed for unix printing
 #include "xap_UnixPSGraphics.h"
 #endif
 
@@ -132,9 +132,9 @@ void AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixO
     {
       // found an extension. use that instead, else just use AbiWord native format
       if(strlen(tmp) > 1)
-	ieft = IE_Exp::fileTypeForSuffix(tmp);
+		  ieft = IE_Exp::fileTypeForSuffix(tmp);
       else
-	ieft = IE_Exp::fileTypeForSuffix(".abw");
+		  ieft = IE_Exp::fileTypeForSuffix(".abw");
       file = szTargetSuffixOrFilename;
     }
   else
@@ -148,7 +148,7 @@ void AP_Convert::convertTo(const char * szFilename, const char * szTargetSuffixO
       
       tmp = strrchr(fileDup, '.');
       if (tmp != NULL)
-	*tmp = '\0';
+		  *tmp = '\0';
 
       file = fileDup;
       file += ext;
@@ -163,37 +163,6 @@ void AP_Convert::setVerbose(int level)
 {
 	if ((level >= 0) && (level <= 2))
 		m_iVerbose = level;
-}
-
-void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
-{
-  UT_return_if_fail(pGraphics);
-
-  // get the current document
-  PD_Document *pDoc = new PD_Document(XAP_App::getApp());
-  pDoc->readFromFile(szFile, IEFT_Unknown);
-
-  // create a new layout and view object for the doc
-  FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
-  FV_View printView(XAP_App::getApp(),0,pDocLayout);
-  pDocLayout->setView (&printView);
-  pDocLayout->fillLayouts();
-  pDocLayout->formatAll();
-
-#ifdef XP_UNIX_TARGET_GTK
-  PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
-  psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
-  psGr->setPageSize(printView.getPageSize().getPredefinedName());
-#endif
-
-  s_actuallyPrint (pDoc, pGraphics, 
-		   &printView, szFile, 
-		   1, true, 
-		   pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
-		   1, pDocLayout->countPages());
-
-  DELETEP(pDocLayout);
-  UNREFP(pDoc);
 }
 
 void AP_Convert::convertToPNG ( const char * szSourceFileName )
@@ -242,4 +211,155 @@ void AP_Convert::convertToPNG ( const char * szSourceFileName )
 	DELETEP (dest);
 
 	printf ("Conversion to PNG failed\n");
+}
+
+#if 0
+
+class Save_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
+{
+public:
+	
+	explicit Save_MailMerge_Listener (const UT_UTF8String & szIn,
+									  const UT_UTF8String & szOut)
+		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (0),
+		  m_szFile(szOut), m_count(0)
+		{
+			m_doc = new PD_Document(XAP_App::getApp());
+			UT_return_if_fail(m_doc);
+
+			if (UT_OK != m_doc->readFromFile(szIn.utf8_str(), IEFT_Unknown)){
+				UNREFP(m_doc);
+				m_doc = 0;
+			}
+		}
+
+	virtual ~Save_MailMerge_Listener ()
+		{
+			if (m_doc){
+				UNREFP(m_doc);
+			}
+		}
+		
+	virtual PD_Document* getMergeDocument () const
+		{
+			return m_doc;
+		}
+	
+	virtual bool fireUpdate () 
+		{
+			if (!m_doc)
+				return false;
+
+			UT_UTF8String out_file (UT_UTF8String_sprintf("%s-%d",
+														  m_szFile.utf8_str(),
+														  ++m_count));
+
+			IEFileType ieft = IE_Exp::fileTypeForSuffix(".abw");
+			
+			char *tmp = NULL;
+			
+			if(NULL != (tmp = strrchr(const_cast<char *>(m_szFile.utf8_str()), '.')))
+			{
+				// found an extension. use that instead, else just use AbiWord native format
+				if(strlen(tmp) > 1)
+					ieft = IE_Exp::fileTypeForSuffix(tmp);
+			}
+
+			m_doc->saveAs (out_file.utf8_str(), ieft);
+
+			return true;
+		}
+	
+private:
+	PD_Document *m_doc;
+	UT_UTF8String m_szFile;
+	UT_uint32 m_count;
+};
+
+class Print_MailMerge_Listener : public IE_MailMerge::IE_MailMerge_Listener
+{
+public:
+
+	explicit Print_MailMerge_Listener (PD_Document * pd,
+									   const UT_UTF8String & szFile)
+		: IE_MailMerge::IE_MailMerge_Listener (), m_doc (pd),
+		  m_szFile(szFile)
+		{
+
+		}
+
+	virtual ~Print_MailMerge_Listener ()
+		{
+		}
+		
+	virtual PD_Document* getMergeDocument () const
+		{
+			return m_doc;
+		}
+	
+	virtual bool fireUpdate () 
+		{
+			// TODO: factory class to get graphics
+			GR_Graphics *pGraphics = 0;
+
+			FL_DocLayout *pDocLayout = new FL_DocLayout(m_doc,pGraphics);
+			FV_View printView(XAP_App::getApp(),0,pDocLayout);
+			pDocLayout->setView (&printView);
+			pDocLayout->fillLayouts();
+			pDocLayout->formatAll();
+			
+#ifdef XP_UNIX_TARGET_GTK
+			PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
+			psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+			psGr->setPageSize(printView.getPageSize().getPredefinedName());
+#endif
+			
+			s_actuallyPrint (m_doc, pGraphics, 
+							 &printView, m_szFile.utf8_str(), 
+							 1, true, 
+							 pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+							 1, pDocLayout->countPages());
+			
+			DELETEP(pDocLayout);
+			
+			// sure, we'll process more data if it exists
+			return true;
+		}
+	
+private:
+	PD_Document *m_doc;
+	UT_UTF8String m_szFile;
+};
+
+#endif
+
+void AP_Convert::print(const char * szFile, GR_Graphics * pGraphics)
+{
+  UT_return_if_fail(pGraphics);
+
+  // get the current document
+  PD_Document *pDoc = new PD_Document(XAP_App::getApp());
+  pDoc->readFromFile(szFile, IEFT_Unknown);
+
+  // create a new layout and view object for the doc
+  FL_DocLayout *pDocLayout = new FL_DocLayout(pDoc,pGraphics);
+  FV_View printView(XAP_App::getApp(),0,pDocLayout);
+  pDocLayout->setView (&printView);
+  pDocLayout->fillLayouts();
+  pDocLayout->formatAll();
+
+#ifdef XP_UNIX_TARGET_GTK
+  PS_Graphics *psGr = static_cast<PS_Graphics*>(pGraphics);
+  psGr->setColorSpace(GR_Graphics::GR_COLORSPACE_COLOR);
+  psGr->setPageSize(printView.getPageSize().getPredefinedName());
+#endif
+
+  s_actuallyPrint (pDoc, pGraphics, 
+				   &printView, szFile, 
+				   1, true, 
+				   pDocLayout->getWidth(), pDocLayout->getHeight() / pDocLayout->countPages(), 
+				   1, pDocLayout->countPages());
+  
+  DELETEP(pDocLayout);
+  UNREFP(pDoc);
 }
