@@ -49,19 +49,19 @@ void pf_Frag_FmtMark::__dump(FILE * fp) const
 void pf_Frag_Strux_Block::__dump(FILE * fp) const
 {
 	fprintf(fp,"      Block %p api[%08lx]\n",
-			this,m_indexAP);
+			this,(long)m_indexAP);
 }
 
 void pf_Frag_Strux_Section::__dump(FILE * fp) const
 {
 	fprintf(fp,"    Section %p api[%08lx]\n",
-			this,m_indexAP);
+			this,(long)m_indexAP);
 }
 
 void pf_Frag_Text::__dump(FILE * fp) const
 {
 	fprintf(fp,"        TextFragment %p b[%08lx,%ld] api[%08lx]\n",
-			this,m_bufIndex,m_length,m_indexAP);
+			this,(long)m_bufIndex,(long)m_length,(long)m_indexAP);
 
 	const UT_UCSChar * ptr = m_pPieceTable->getPointer(m_bufIndex);
 	char c;
@@ -97,7 +97,7 @@ void pf_Frag_Object::__dump(FILE * fp) const
 	}
 	
 	fprintf(fp,"        Object %p t[%s] api[%08lx]\n",
-			this,sz,m_indexAP);
+			this,sz,(long)m_indexAP);
 }
 
 #endif /* PT_TEST */

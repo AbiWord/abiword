@@ -48,7 +48,11 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.5  2000/02/09 22:35:25  sterwill
+ * Clean up some warnings
+ *
  * Revision 1.4  1998/12/29 14:55:32  eric
+ *
  * I've doctored the ispell code pretty extensively here.  It is now
  * warning-free on Win32.  It also *works* on Win32 now, since I
  * replaced all the I/O calls with ANSI standard ones.
@@ -129,7 +133,9 @@ static int	entryhasaffixes P ((struct dent * dent, struct success * hit));
 void		flagpr P ((ichar_t * word, int preflag, int prestrip,
 		  int preadd, int sufflag, int sufadd));
 
+#if 0 /* DELETE_ME */
 static ichar_t *	orig_word;
+#endif /* DELETE_ME */
 
 #ifndef NO_CAPITALIZATION_SUPPORT
 int good (w, ignoreflagbits, allhits, pfxopts, sfxopts)
@@ -152,7 +158,7 @@ int good (w, ignoreflagbits, dummy, pfxopts, sfxopts)
     ichar_t		nword[INPUTWORDLEN + MAXAFFIXLEN];
     register ichar_t *	p;
     register ichar_t *	q;
-    register		n;
+    register int	n;
     register struct dent * dp;
 
     /*

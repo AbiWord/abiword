@@ -156,7 +156,7 @@ int SpellCheckNWord16(const unsigned short *word16, int length)
     else
     {
         /* convert to 8bit string and null terminate */
-        int len_in, len_out;
+        unsigned int len_in, len_out;
         const char *In = (const char *)word16;
         char *Out = word8;
 
@@ -201,7 +201,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
     else
     {
         /* convert to 8bit string and null terminate */
-        int len_in, len_out;
+        unsigned int len_in, len_out;
         const char *In = (const char *)word16;
         char *Out = word8;
 
@@ -250,7 +250,7 @@ int SpellCheckSuggestNWord16(const unsigned short *word16, int length, sp_sugges
         else
         {
             /* convert to 16bit string and null terminate */
-            int len_in, len_out;
+            unsigned int len_in, len_out;
             const char *In = possibilities[c];
             char *Out = (char *)sg->word[c];
 
