@@ -1,3 +1,4 @@
 dist
 configure
 config.h.in
+GNUmakefile.in
