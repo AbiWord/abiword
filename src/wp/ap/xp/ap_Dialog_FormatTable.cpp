@@ -194,8 +194,11 @@ void AP_Dialog_FormatTable::applyChanges()
 	if (m_vecProps.getItemCount() == 0)
 		return;
 	
+// 	 Looking for a fix under win32
+#ifndef WIN32
+
     FV_View * pView = (FV_View *) m_pApp->getLastFocussedFrame()->getCurrentView();
-	const XML_Char * propsArray[m_vecProps.getItemCount()+1];
+	const XML_Char * propsArray = XML_Char [m_vecProps.getItemCount()+1];
 	propsArray[m_vecProps.getItemCount()] = NULL;
 	
 	UT_sint32 i = m_vecProps.getItemCount();
@@ -207,6 +210,8 @@ void AP_Dialog_FormatTable::applyChanges()
 	}
 
 	pView->setCellFormat(propsArray);
+	
+#endif
 }
 
 void AP_Dialog_FormatTable::finalize(void)
