@@ -20,14 +20,40 @@ psiconv:
 libpng:
 	make -C $(libpng_peerdir)
 
+# Hack: don't allow distclean; it will delete Makefile, which is not what
+# we want at all.
+# We need to hook up to distclean-generic in this way to be in time to
+# stop the process.
+# late, especially in parallel builds
+distclean-generic: distclean-stop
+distclean-stop:
+	@echo "Please use \`make realclean' or \`make realrealclean' instead"
+	@exit 1
+
+clean-local:
+	for i in . $(expat_peerdir)  $(wv_peerdir) $(psiconv_peerdir) \
+                 $(libpng_peerdir); do \
+	  if test $$i != . ; then \
+	    make -C $$i clean || true; \
+	  fi; \
+	done
+
 realclean: clean
+	for i in . $(expat_peerdir)  $(wv_peerdir) $(psiconv_peerdir) \
+                 $(libpng_peerdir); do \
+	  if test $$i != . ; then \
+	    make -C $$i distclean || true; \
+	  fi; \
+	done
 	@rm -f config.* stamp-h stamp-h[0-9]*
 	@find ./ -name .deps | xargs rm -rf
 	@find ./ -name GNUmakefile | xargs rm -f
 
 realrealclean: realclean
-	@find ./ -name GNUmakefile.in | xargs rm -f
-	@rm -f aclocal.m4 configure install-sh missing mkinstalldirs INSTALL
+	@find $(top_srcdir) -name GNUmakefile.in | xargs rm -f
+	@rm -f $(top_srcdir)/aclocal.m4 $(top_srcdir)/configure \
+               $(top_srcdir)/install-sh $(top_srcdir)/missing \
+               $(top_srcdir)/mkinstalldirs $(top_srcdir)/INSTALL
 
 # Install the datafiles. This is quick-and-dirty.
 install-data-local:
