@@ -94,7 +94,9 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	{
 	case GNOME_PRINT_DIALOG_RESPONSE_PREVIEW: 
 		m_bIsPreview = true;
+		break;
 	case GNOME_PRINT_DIALOG_RESPONSE_PRINT: 
+		m_bIsPreview = false;
 		break;
 	default:
 		abiDestroyWidget (gpd); 
@@ -118,8 +120,7 @@ void XAP_UnixGnomeDialog_Print::_raisePrintDialog(XAP_Frame * pFrame)
 	    m_nLastPage				= MAX(first, end);
 	  }
 
-	// or (smartly?) let gnome-print handle it
-	// will this work with our printing structure?
+	// (smartly?) let gnome-print handle these
 	m_bCollate = false;
 	m_nCopies  = 1;
 
