@@ -10332,8 +10332,8 @@ FV_View::countWords(void)
 	// document
 	if (isSelectionEmpty())
 	{
-		getEditableBounds(false, low);
-		getEditableBounds(true, high);
+		m_pDoc->getBounds(false, low); // Need the whole document otherwise we just 
+		m_pDoc->getBounds(true, high); // word in the header/footer while editting there
 	}
 	else
 	{
@@ -10356,7 +10356,12 @@ FV_View::countWords(void)
 	UT_sint32 iStartOffset = 0, iLineOffset = 0, iCount = 0;
 	fp_Line* pLine = pBL->getFirstLine();
 	fp_Run* pRun = pLine->getFirstRun();
-	fp_Page* pPage = pLine->getContainer()->getPage();
+	fp_Container * pColumn = pLine->getContainer();
+	if(pColumn == NULL)
+	{
+		return (wCount);
+	}
+	fp_Page* pPage = pColumn->getPage();
 	wCount.page = 1;
 	if (low > pBL->getPosition())
 	{

@@ -2622,6 +2622,7 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 
 	char *instr;
 	char *newBuf;
+	UT_String Instr;
 	UT_uint32  len;
 	isXML = false;
 	
@@ -2638,11 +2639,15 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 	newBuf =  (char *)malloc (sizeof (char) * (len + 1));
 	memcpy (newBuf, pBuf, len);
 	newBuf [len] = 0;
-	instr = strtok (newBuf, " \\{}");
+	Instr = newBuf;
+	instr = const_cast<char *>(Instr.c_str());
+	instr = strtok (instr, " \\{}"); // This writes a NULL into Instr somewhere
+	                                 // I assume this is OK since the char storage
+	                                 // Within the class is contiguous.
 	if (instr == NULL) 
 	{
 		free (newBuf);
-		FREEP (xmlField);
+		free (xmlField);
 		return NULL;
 	}
 	
@@ -2708,13 +2713,82 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 			isXML = (xmlField != NULL);
 		}
 		break;
+	case 'S':
+		if (strcmp (instr, "SAVEDATE") == 0)
+		{ 
+			xmlField = UT_strdup ("date_dfl");
+			UT_ASSERT (xmlField);
+			isXML = (xmlField != NULL);
+		}
+		break;
 	case 'T':
 		if (strcmp (instr, "TIME") == 0)
 		{ 
-			// TODO handle parameters
-			xmlField = UT_strdup ("time");
-			UT_ASSERT (xmlField);
-			isXML = (xmlField != NULL);
+			// Some Parameters from MS Word 2000 output
+
+			if(strstr(newBuf,"dddd, MMMM dd, yyyy") != NULL)
+			{
+				xmlField = UT_strdup("date");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
+			else if( strstr(newBuf,"m/d/yy") != NULL)
+			{
+				xmlField = UT_strdup("date_ddmmyy");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
+			else if( strstr(newBuf,"MMMM d, yyyy") != NULL)
+			{
+				xmlField = UT_strdup("date_mdy");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
+			else if( strstr(newBuf,"MMM d, yy") != NULL)
+			{
+				xmlField = UT_strdup("date_mthdy");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
+			else if( strstr(newBuf,"MMM d, yy") != NULL)
+			{
+				xmlField = UT_strdup("date_mthdy");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
+			else if( strstr(newBuf,"MM-d-yy") != NULL)
+			{
+				xmlField = UT_strdup("date_ntdfl");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
+			else if( strstr(newBuf,"HH:mm:ss") != NULL)
+			{
+				xmlField = UT_strdup("time_miltime");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
+			else if( strstr(newBuf,"h:mm:ss am/pm") != NULL)
+			{
+				xmlField = UT_strdup("time_ampm");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
+//
+// Make this the second last one since it's not unique
+//
+			else if( strstr(newBuf,"dddd") != NULL)
+			{
+				xmlField = UT_strdup("date_wkday");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
+			else
+			{
+				xmlField = UT_strdup ("time");
+				UT_ASSERT (xmlField);
+				isXML = (xmlField != NULL);
+			}
 		}
 		break;
 	case 'd':
@@ -2788,7 +2862,6 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 		UT_DEBUGMSG (("RTF: unhandled fieldinstr %s\n", instr));
 		break;
 	}
-
 	free (newBuf);
 	return xmlField;
 }
@@ -3490,6 +3563,23 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						else if (strcmp((char*)keyword_star, "bkmkend") == 0)
 						{
 							return HandleBookmark (RBT_END);
+						}
+//
+// Decode our own field extensions
+//
+						else if (strstr((char*)keyword_star, "abifieldD") != NULL)
+						{
+							char * pszField = strstr((char *)keyword_star,"D");
+							pszField++;
+							char * pszAbiField = UT_strdup(pszField);
+							char * pszD = strstr(pszAbiField,"D");
+							if(pszD)
+							{
+								*pszD = '_';
+								UT_DEBUGMSG(("Appending Abi field %s \n",pszAbiField));
+								return _appendField(pszAbiField);
+							}
+							FREEP(pszAbiField);
 						}
 					}
 				}

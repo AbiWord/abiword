@@ -523,9 +523,8 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 {
              m_pie->_rtf_open_brace();
 			 m_pie->_rtf_keyword("*");
-			 m_pie->_rtf_keyword("abifield-page_ref"); // abiword extension for now.
+			 m_pie->_rtf_keyword("abifieldDpageDref"); // abiword extension for now.
              m_pie->_rtf_close_brace();
-			 UT_DEBUGMSG(("SEVIOR: Page ref field here \n"));
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"page_count") == 0)
@@ -537,7 +536,6 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
-			 UT_DEBUGMSG(("SEVIOR: Page count field here \n"));
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"date") == 0)
@@ -545,7 +543,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" TIME \\@ MMMM d, yyyy ");
+			 m_pie->write(" ""dddd, MMMM dd, yyyy"" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -554,9 +552,9 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 else if(UT_XML_strcmp(pszType,"date_mmddyy") == 0)
 		 {
 			 _writeFieldPreamble(pSpanAP);
-			 m_pie->write("TIME  \\");
-			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" dddd, MMMM dd, yyyy");
+			 m_pie->write("DATE  \\");
+			 m_pie->_rtf_keyword("*");
+			 m_pie->write(" MERGEFORMAT ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -567,7 +565,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" dddd, MMMM dd, yyyy");
+			 m_pie->write(" ""m/d/yy"" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -578,7 +576,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" MMM dd, yyy");
+			 m_pie->write(" ""MMMM d, yyyy"" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -589,7 +587,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" MMMM dd, yy");
+			 m_pie->write(" ""MMM d, yy"" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -597,10 +595,24 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_dfl") == 0)
 		 {
+			 _writeFieldPreamble(pSpanAP);
+			 m_pie->write("SAVEDATE  \\");
+			 m_pie->_rtf_keyword("*");
+			 m_pie->write(" MERGEFORMAT ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_ntdfl") == 0)
 		 {
+			 _writeFieldPreamble(pSpanAP);
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("@");
+			 m_pie->write(" ""MM-d-yy"" ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_wkday") == 0)
@@ -608,7 +620,7 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 			 _writeFieldPreamble(pSpanAP);
 			 m_pie->write("TIME  \\");
 			 m_pie->_rtf_keyword("@");
-			 m_pie->write(" dddd");
+			 m_pie->write(" ""dddd"" ");
              m_pie->_rtf_close_brace();
              m_pie->_rtf_close_brace();
 			 _writeFieldTrailer();
@@ -616,22 +628,48 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"date_doy") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDdateDdoy"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"time_miltime") == 0)
 		 {
+			 _writeFieldPreamble(pSpanAP);
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("@");
+			 m_pie->write(" ""HH:mm:ss"" ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"time_ampm") == 0)
 		 {
+			 _writeFieldPreamble(pSpanAP);
+			 m_pie->write("TIME  \\");
+			 m_pie->_rtf_keyword("@");
+			 m_pie->write(" ""h:mm:ss am/pm"" ");
+             m_pie->_rtf_close_brace();
+             m_pie->_rtf_close_brace();
+			 _writeFieldTrailer();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"time_zone") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDtimeDzone"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"time_epoch") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDtimeDepoch"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"word_count") == 0)
@@ -658,42 +696,85 @@ void	 s_RTF_ListenerWriteDoc::_openTag(const char * szPrefix, const char * szSuf
 		 }
 		 else if(UT_XML_strcmp(pszType,"line_count") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDlineDcount"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"para_count") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDparaDcount"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
+			 UT_DEBUGMSG(("SEVIOR: paragraph count field here \n"));
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"nbsp_count") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDnbspDcount"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"file_name") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDfileDname"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
+			 UT_DEBUGMSG(("SEVIOR: File Name field here \n"));
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_ver") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDappDver"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_id") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDappDid"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
+			 UT_DEBUGMSG(("SEVIOR: Application ID field here \n"));
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_options") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDappDoptions"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_target") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDappDtarget"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_compiledate") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDappDcompiledate"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else if(UT_XML_strcmp(pszType,"app_compiletime") == 0)
 		 {
+             m_pie->_rtf_open_brace();
+			 m_pie->_rtf_keyword("*");
+			 m_pie->_rtf_keyword("abifieldDappDcompiletime"); // abiword extension for now.
+             m_pie->_rtf_close_brace();
 			 return;
 		 }
 		 else 

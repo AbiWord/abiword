@@ -136,7 +136,7 @@ public:
 	
 	inline	bool		isEmpty(void) const				{ return ((m_vecRuns.getItemCount()) == 0); }
 	inline	int 		countRuns(void) const			{ return m_vecRuns.getItemCount(); }
-	inline	fp_Run*     getFirstRun(void) const			{ return ((fp_Run*) m_vecRuns.getFirstItem()); }
+	inline	fp_Run*     getFirstRun(void) const			{ if(countRuns() > 0)  return ((fp_Run*) m_vecRuns.getFirstItem()); else return NULL; }
 	fp_Run*     getLastRun(void) const ;
 	fp_Run*     getLastTextRun(void) const ;
 	
