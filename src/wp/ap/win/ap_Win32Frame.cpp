@@ -240,23 +240,7 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 		goto Cleanup;
 	}
 
-	{
-		const UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
-		for (UT_uint32 k = 0; k < nrToolbars; ++k)
-		{
-			// TODO Toolbars are a frame-level item, but a view-listener is
-			// TODO a view-level item.  I've bound the toolbar-view-listeners
-			// TODO to the current view within this frame and have code in the
-			// TODO toolbar to allow the view-listener to be rebound to a different
-			// TODO view.  in the future, when we have support for multiple views
-			// TODO in the frame (think splitter windows), we will need to have
-			// TODO a loop like this to help change the focus when the current
-			// TODO view changes.
 
-			EV_Win32Toolbar* pWin32Toolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(k);
-			pWin32Toolbar->bindListenerToView(pView);
-		}
-	}
 
 	/****************************************************************
 	*****************************************************************
@@ -340,6 +324,24 @@ UT_Error AP_Win32Frame::_showDocument(UT_uint32 iZoom)
 		}
 		((FV_View *)m_pView)->notifyListeners(AV_CHG_ALL);
 	}	
+
+	{
+		const UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+		for (UT_uint32 k = 0; k < nrToolbars; ++k)
+		{
+			// TODO Toolbars are a frame-level item, but a view-listener is
+			// TODO a view-level item.  I've bound the toolbar-view-listeners
+			// TODO to the current view within this frame and have code in the
+			// TODO toolbar to allow the view-listener to be rebound to a different
+			// TODO view.  in the future, when we have support for multiple views
+			// TODO in the frame (think splitter windows), we will need to have
+			// TODO a loop like this to help change the focus when the current
+			// TODO view changes.
+
+			EV_Win32Toolbar* pWin32Toolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(k);
+			pWin32Toolbar->bindListenerToView(pView);
+		}
+	}
 
 	// we cannot do this before we fill the layout, because if we are
 	// running in default RTL mode, the X scroll needs to be able to
