@@ -10,22 +10,43 @@
 
 <!-- British (and Irish) English Localisation provided by Alan Horkan <Alan.Horkan@maths.tcd.ie> -->
 <!-- en-GB is mostly the same as en-US, and en-IE does not conflict with en-GB to the best of my knowledge  -->  
+<!-- Updated by Andrew Dunbar <hippietrail@yahoo.com> -->
+
+<!-- Please keep strings in the same order as in (x)ap_String_Id.h -->
 
 <AbiStrings app="AbiWord" ver="1.0" language="en-GB">
 
 <Strings	class="XAP"
+DLG_UFS_TransparencyCheck="Set no Highlight Colour"
 DLG_UFS_ColorTab="   Colour   "
+DLG_UFS_BGColorTab="Highlight Colour"
+DLG_UFS_ColorLabel="Colour:"
 DLG_UP_Grayscale="Greyscale"
 DLG_UP_Color="Colour"
 />
 
 <Strings	class="AP"
-MSG_IE_BogusDocument="File %s is an invalid document"
+TabToggleCenterTab="Centre Tab"
+DLG_InsertTable_AutoFit="AutoFit behaviour"
 DLG_Para_AlignCentered="Centred"
 DLG_Para_PreviewSampleFallback="This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialogue."
+DLG_Options_Label_CheckWhiteForTransparent="Allow screen colours other than white"
+DLG_Options_Label_ChooseForTransparent="Choose Screen Colour"
+DLG_Options_Label_ColorChooserLabel="Choose Screen Colour for AbiWord"
 DLG_Tab_Radio_Center="Centre"
+DLG_FormatTable_Border_Color="Border colour:"
+DLG_FormatTable_Background_Color="Background colour:"
 FIELD_DateTime_MilTime="24 Hour Time"
+FIELD_DateTime_Custom="Customisable date/time"
+DLG_Lists_Customize="Customised List"
 DLG_PageNumbers_Center="Centre"
+DLG_Background_Title="Change Background Colour"
+DLG_Background_ClearClr="Clear Background Colour"
+DLG_Background_TitleFore="Change Text Colour"
+DLG_Background_TitleHighlight="Change Highlight Colour"
+DLG_Background_ClearHighlight="Clear Highlight Colour"
+AUTOTEXT_SALUTATION_1="Dear Mum and Dad,"
+MSG_IE_BogusDocument="File %s is an invalid document"
 
 MENU_LABEL__BOGUS1__=" "
 MENU_LABEL_FILE="&amp;File"
@@ -115,10 +136,9 @@ MENU_LABEL_TOOLS_OPTIONS="&amp;Preferences"
 MENU_LABEL_TOOLS_LANGUAGE="La&amp;nguage"
 MENU_LABEL_ALIGN="&amp;Align"
 MENU_LABEL_ALIGN_LEFT="&amp;Left"
-MENU_LABEL_ALIGN_CENTER="&amp;Center"
+MENU_LABEL_ALIGN_CENTER="&amp;Centre"
 MENU_LABEL_ALIGN_RIGHT="&amp;Right"
 MENU_LABEL_ALIGN_JUSTIFY="&amp;Justify"
-MENU_LABEL_WEB="We&amp;b"
 MENU_LABEL_WEB_SAVEASWEB="Save as &amp;web"
 MENU_LABEL_WEB_WEBPREVIEW="Pre&amp;view web page"
 MENU_LABEL_WINDOW="&amp;Window"
@@ -252,7 +272,6 @@ MENU_STATUSLINE_ALIGN_LEFT="Left-justify the paragraph"
 MENU_STATUSLINE_ALIGN_CENTER="Center-align the paragraph"
 MENU_STATUSLINE_ALIGN_RIGHT="Right-justify the paragraph"
 MENU_STATUSLINE_ALIGN_JUSTIFY="Justify the paragraph"
-MENU_STATUSLINE_WEB=" "
 MENU_STATUSLINE_WEB_SAVEASWEB="Save the document as a web page"
 MENU_STATUSLINE_WEB_WEBPREVIEW="Preview the document as a web page"
 MENU_STATUSLINE_WINDOW=" "
