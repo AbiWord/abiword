@@ -25,7 +25,7 @@
 #include <stdlib.h>
 #if 0
 #ifdef HAVE_GNOME
-#include <glib.h>
+#include /**/ <glib.h>
 #endif
 #endif
 
@@ -43,7 +43,7 @@
 #endif
 
 #ifdef HAVE_LIBXML2
-#include <libxml/tree.h>
+#include /**/ <libxml/tree.h>
 typedef char XML_Char;
 #endif
 

@@ -23,7 +23,8 @@
 #define UTXML_H
 
 #ifdef HAVE_LIBXML2
-#include <libxml/parser.h>
+// Please keep the "/**/" to stop MSVC dependency generator complaining.
+#include /**/ <libxml/parser.h>
 #else
 #include "expat.h"
 #endif

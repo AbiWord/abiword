@@ -29,7 +29,7 @@
 #	include <assert.h>
 #	define UT_ASSERT assert
 #else
-// TMN: But the Microsoft variant is not thread-safe, and to add to
+// TMN: But the default Microsoft version is not thread-safe, and to add to
 // the "coolness" factor, and usability, the following is way cooler.
 #	include <stdlib.h>
 #	include <crtdbg.h>
@@ -49,7 +49,8 @@
 		// We treat asserts as logic flaws, which are sometimes
 		// recoverable, but that should be noted.
 #		include <assert.h>
-#		include "ut_BeOSAssert.h"
+// Please keep the "/**/" to stop MSVC dependency generator complaining.
+#		include /**/ "ut_BeOSAssert.h"
 #		define UT_ASSERT(expr)			\
 				((void) ((expr) ||	\
 				(UT_BeOSAssertMsg(#expr,\
@@ -70,7 +71,8 @@
 		// We treat asserts as logic flaws, which are sometimes
 		// recoverable, but that should be noted.
 #		include <assert.h>
-#		include "ut_qnxAssert.h"
+// Please keep the "/**/" to stop MSVC dependency generator complaining.
+#		include /**/ "ut_qnxAssert.h"
 #		define UT_ASSERT(expr)			\
 				((void) ((expr) ||	\
 				(UT_QNXAssertMsg(#expr,\
@@ -95,7 +97,8 @@
               // expect MacBug or a crash if MacBug is not here.
 
 #             include <assert.h>
-#             include "ut_MacAssert.h"
+// Please keep the "/**/" to stop MSVC dependency generator complaining.
+#             include /**/ "ut_MacAssert.h"
 #             define UT_ASSERT(expr)                  \
                       ((void) ((expr) ||      \
                       (UT_MacAssertMsg(#expr,\
@@ -122,7 +125,8 @@
 		// recoverable, but that should be noted.
 
 #		include <assert.h>
-#		include "ut_unixAssert.h"
+// Please keep the "/**/" to stop MSVC dependency generator complaining.
+#		include /**/ "ut_unixAssert.h"
 #		define UT_ASSERT(expr)								\
 			((void) ((expr) ||								\
 				(UT_UnixAssertMsg(#expr,					\

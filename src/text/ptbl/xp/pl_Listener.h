@@ -28,7 +28,8 @@ class PX_ChangeRecord;
 #ifdef __sgi
 // <sys/signal.h> may #define signal, leaving PL_Listener::signal() pure
 // virtual if subclasses don't include the same header files.
-#include <sys/signal.h>
+// Please keep the "/**/" to stop MSVC dependency generator complaining.
+#include /**/ <sys/signal.h>
 #endif
 
 // PL_Listener -- A layout registers a listener with the
