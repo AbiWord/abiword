@@ -1228,7 +1228,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 										origPos1--;
 									}
 									
-									bFoundStrux2 = _getStruxFromPosition(posComrade,&pfsContainer2);
+									bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
 									UT_return_val_if_fail (bFoundStrux2, false);
 
 									bResult2 =
@@ -1265,7 +1265,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 									m_pDocument->removeBookmark(pB1->getName());
 
 									posComrade = getFragPosition(pOb);
-									bool bFoundStrux2 = _getStruxFromPosition(posComrade,&pfsContainer2);
+									bool bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
 									UT_return_val_if_fail (bFoundStrux2, false);
 
 									bResult2 =
@@ -1328,7 +1328,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 								if(pOb->getObjectType() == PTO_Hyperlink)
 								{
 									posComrade = getFragPosition(pOb);
-									bFoundStrux2 = _getStruxFromPosition(posComrade,&pfsContainer2);
+									bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
 									UT_return_val_if_fail (bFoundStrux2, false);
 
 									bResult2 =
@@ -1368,7 +1368,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 								if(pOb->getObjectType() == PTO_Hyperlink)
 								{
 									posComrade = getFragPosition(pOb);
-									bFoundStrux2 = _getStruxFromPosition(posComrade,&pfsContainer2);
+									bFoundStrux2 = _getStruxFromFragSkip(pOb,&pfsContainer2);
 									UT_return_val_if_fail (bFoundStrux2, false);
 					                // delete the original start marker
 									bResult
