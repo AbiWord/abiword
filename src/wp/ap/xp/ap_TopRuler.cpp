@@ -1098,7 +1098,8 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 			case FL_TAB_LEFT:		m_iDefaultTabType = FL_TAB_CENTER;	break;
 			case FL_TAB_CENTER:		m_iDefaultTabType = FL_TAB_RIGHT;	break;
 			case FL_TAB_RIGHT:		m_iDefaultTabType = FL_TAB_DECIMAL;	break;
-			case FL_TAB_DECIMAL:	m_iDefaultTabType = FL_TAB_LEFT;	break;
+			case FL_TAB_DECIMAL:	m_iDefaultTabType = FL_TAB_BAR;	break;
+			case FL_TAB_BAR:		m_iDefaultTabType = FL_TAB_LEFT;	break;
 			default:	UT_DEBUGMSG(("Should not happen, tab type %d\n", m_iDefaultTabType));
 		}
 		_drawTabToggle(NULL, true);
