@@ -54,7 +54,7 @@ IE_Exp_HTML::~IE_Exp_HTML()
 
 UT_Bool IE_Exp_HTML::RecognizeSuffix(const char * szSuffix)
 {
-	return (UT_stricmp(szSuffix,".html") == 0);
+	return ((UT_stricmp(szSuffix,".html") == 0) || (UT_stricmp(szSuffix,".htm") == 0));
 }
 
 UT_Error IE_Exp_HTML::StaticConstructor(PD_Document * pDocument,
@@ -149,7 +149,7 @@ void s_HTML_Listener::_closeSection(void)
 		return;
 	}
 	
-	m_pie->write("</DIV>\n");
+	m_pie->write("</div>\n");
 	m_bInSection = UT_FALSE;
 	return;
 }
@@ -161,10 +161,10 @@ void s_HTML_Listener::_closeBlock(void)
 		return;
 	}
 
-	if(m_iBlockType == BT_NORMAL)
-		m_pie->write("</p>\n");
+	//	if(m_iBlockType == BT_NORMAL)
+	//	m_pie->write("</p>\n");
 
-        else if(m_iBlockType == BT_HEADING1)
+        if(m_iBlockType == BT_HEADING1)
 		m_pie->write("</h1>\n");
 
         else if(m_iBlockType == BT_HEADING2)
@@ -182,7 +182,7 @@ void s_HTML_Listener::_closeBlock(void)
         // Add "catchall" for now
 
 	else
-		m_pie->write("</p>\n");
+	  m_pie->write("<br />\n");
 
 	m_bInBlock = UT_FALSE;
 	return;
@@ -197,6 +197,7 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 	
 	const PP_AttrProp * pAP = NULL;
 	UT_Bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	UT_Bool wasWritten = UT_FALSE;
 	
 	if (bHaveProp && pAP)
 	{
@@ -250,8 +251,8 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 				// <p style="<anything else!>"> ...
 
-				m_iBlockType = BT_NORMAL;
-				m_pie->write("<p");
+			  //	        m_iBlockType = BT_NORMAL;
+			  //    	m_pie->write("<p");
 			}	
 		}
 		else 
@@ -259,8 +260,8 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 			// <p> with no style attribute ...
 
-			m_iBlockType = BT_NORMAL;
-			m_pie->write("<p");
+		  //m_iBlockType = BT_NORMAL;
+		  //m_pie->write("<p");
 		}
 
 		/* Assumption: never get property set with h1-h3, block text, plain text. Probably true. */
@@ -279,18 +280,18 @@ void s_HTML_Listener::_openParagraph(PT_AttrPropIndex api)
 
 		// <p> with no style attribute, and no properties either
 
-		m_iBlockType = BT_NORMAL;
-		m_pie->write("<p");
+	  //m_iBlockType = BT_NORMAL;
+	  //m_pie->write("<p");
 	}
-
-	m_pie->write(">");
+	if (wasWritten)
+	  m_pie->write(">");
 
 	m_bInBlock = UT_TRUE;
 }
 
 void s_HTML_Listener::_openSection(PT_AttrPropIndex /* api*/)
 {
-	m_pie->write("<DIV>\n");
+	m_pie->write("<div>\n");
 }
 
 void s_HTML_Listener::_convertColor(char* szDest, const char* pszColor)
@@ -666,9 +667,10 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			break;
 
 		case UCS_LF:					// LF -- representing a Forced-Line-Break
-			*pBuf++ = '<';				// these get mapped to <br/>
+			*pBuf++ = '<';				// these get mapped to <br />
 			*pBuf++ = 'b';
 			*pBuf++ = 'r';
+			*pBuf++ = ' ';
 			*pBuf++ = '/';
 			*pBuf++ = '>';
 			pData++;
@@ -754,6 +756,11 @@ s_HTML_Listener::s_HTML_Listener(PD_Document * pDocument,
 	m_pie->write("\n");
 	
 	m_pie->write("<html>\n");
+	m_pie->write("<head>\n");
+	m_pie->write("<title>AbiWord Document</title>\n");
+	m_pie->write("</head>\n");
+	m_pie->write("<body>\n");
+
 }
 
 s_HTML_Listener::~s_HTML_Listener()
@@ -763,6 +770,7 @@ s_HTML_Listener::~s_HTML_Listener()
 	_closeSection();
 	_handleDataItems();
 	
+	m_pie->write("</body>\n");
 	m_pie->write("</html>\n");
 }
 
