@@ -2640,13 +2640,62 @@ bool fp_FieldRun::_setValue(UT_UCSChar *p_new_value)
 	if (0 != UT_UCS_strcmp(p_new_value, m_sFieldValue))
 	{
 		xxx_UT_DEBUGMSG(("fp_FieldRun::_setValue: setting new value\n"));
-#ifdef BIDI_ENABLED
-		m_bRefreshDrawBuffer = true;
-#endif		
 		clearScreen();
 
-		UT_UCS_strcpy(m_sFieldValue, p_new_value);
+#ifdef BIDI_ENABLED
+		m_bRefreshDrawBuffer = true;
+		UT_uint32 iLen = UT_UCS_strlen(p_new_value);
+		iLen = UT_MIN(iLen,FPFIELD_MAX_LENGTH);
 
+		if(iLen > 1)
+		{
+			FriBidiChar * fVisStr = new FriBidiChar[iLen];
+			FriBidiChar * fLogStr = new FriBidiChar[iLen];
+			UT_ASSERT(fVisStr && fLogStr);
+		
+			for(UT_uint32 i = 0; i < iLen; i++)
+				fLogStr[i] = p_new_value[i];
+			
+			FriBidiCharType prevType/*, nextType*/, myType;
+#if 0		
+			if(getNext())
+				nextType = getNext()->getVisDirection();
+			else
+				nextType = m_pBL->getDominantDirection();
+#endif
+
+			if(getPrev())
+				prevType = getPrev()->getVisDirection();
+			else
+				prevType = m_pBL->getDominantDirection();
+
+			myType = prevType;
+			
+			fribidi_log2vis(/* input */
+		     fLogStr,
+		     iLen,
+		     &myType,
+		     /* output */
+		     fVisStr,
+		     NULL,
+		     NULL,
+		     NULL
+		     );
+		
+			for(UT_uint32 j = 0; j < iLen; j++)
+				m_sFieldValue[j] = (UT_UCSChar)fVisStr[j];
+		
+			m_sFieldValue[iLen] = 0;
+			
+			delete [] fLogStr;
+			delete [] fVisStr;
+		}
+		else
+#endif
+		{
+			UT_UCS_strcpy(m_sFieldValue, p_new_value);
+		}
+		
 		{
 			unsigned short aCharWidths[FPFIELD_MAX_LENGTH];
 			lookupProperties();
