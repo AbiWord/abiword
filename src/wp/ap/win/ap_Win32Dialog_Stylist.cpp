@@ -85,3 +85,16 @@ void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
+void  AP_Win32Dialog_Stylist::destroy(void)
+{
+}
+
+void  AP_Win32Dialog_Stylist::activate(void)
+{
+}
+
+
+void AP_Win32Dialog_Stylist::notifyActiveFrame(XAP_Frame * pFrame)
+{
+	UT_return_if_fail(pFrame);
+}

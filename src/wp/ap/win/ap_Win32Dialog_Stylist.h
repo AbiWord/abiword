@@ -34,6 +34,9 @@ public:
 	virtual void			runModeless(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	virtual void            activate(void);
+	virtual void            destroy(void);
+	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 	
 protected:
 
