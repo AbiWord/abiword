@@ -34,6 +34,8 @@ REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
 AbiWord_d_LDADD = $(REPEAT_LIBS) $(PEER_LIBS) @GTK_LIBS@ @GMODULE_LIBS@ $(OTHER_LIBS) @GNOME_LIBS@
 
+abi_ver.cpp:
+	cp $(srcdir)/../xp/abi_ver.cpp .
 
 
 
