@@ -234,14 +234,16 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before)
 	UT_ASSERT(!isSelectionEmpty());
 
 	PT_DocPosition iPoint = getPoint();
-	UT_ASSERT(iPoint != m_iSelectionAnchor);
+	
 
 	UT_uint32 iSelAnchor = m_iSelectionAnchor;
 	if(iSelAnchor < 2)
 	{
 		iSelAnchor = 2;
 	}
-
+	
+	UT_ASSERT(iPoint != iSelAnchor);
+	
 	UT_uint32 iLow = UT_MIN(iPoint,iSelAnchor);
 	UT_uint32 iHigh = UT_MAX(iPoint,iSelAnchor);
 
