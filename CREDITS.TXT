@@ -182,6 +182,7 @@ Gediminas Paulauskas <menesis@03bar.ktu.lt>     Lithuanian
 John Profic <profic@linux.ru.net>               Russian
 Eutanazy Sercxemulo <szperacz@free.net.pl>      Polish
 Rui M. Silva Seabra <rms@greymalkin.yi.org>     Portugese
+Martin Lacko <lacko@host.sk>                    Slovak
 Christian Terboven <cterboven@gmx.net>          German
 Owen Thomas <owen@llanilar.freeserve.co.uk>     Welsh
 Andraz Tori                                     Slovenian (sl-SI)
