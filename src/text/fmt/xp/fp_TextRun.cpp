@@ -977,6 +977,17 @@ void fp_TextRun::mergeWithNext(void)
 		_setDirection(pNext->_getDirection());
 		getLine()->addDirectionUsed(_getDirection());
 	}
+	else if(FRIBIDI_IS_WEAK(_getDirection()) && FRIBIDI_IS_WEAK(pNext->_getDirection()))
+	{
+		// numbers will take precedence
+		if(FRIBIDI_IS_NUMBER(pNext->_getDirection()))
+		{
+			_setDirection(pNext->_getDirection());
+			// no need to inform the line, since the visual direction
+			// is not going to change
+		}
+	}
+			
 
 	delete pNext;
 }
