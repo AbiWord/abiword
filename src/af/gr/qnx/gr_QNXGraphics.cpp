@@ -177,7 +177,7 @@ UT_uint32 GR_QNXGraphics::_getResolution(void) const
 	/*
 	return 96;
 	*/
-	return 72;
+	return 96;
 }
 
 void GR_QNXGraphics::flush(void)
@@ -996,7 +996,7 @@ bool GR_QNXGraphics::startPage(const char * szPageLabel, UT_uint32 pageNumber,
 #if 0
 		PhDim_t 	size;
 
-#define DPI_LEVEL 72
+#define DPI_LEVEL 92 
 		/* Adjust for non-printable margins? */
 		size.w = ((iWidth) * DPI_LEVEL) / 1000;
 		size.h = ((iHeight) * DPI_LEVEL) / 1000;
@@ -1019,9 +1019,11 @@ bool GR_QNXGraphics::endPrint(void) {
 	UT_ASSERT(m_pPrintContext);
 
 	if (m_pPrintContext) {
+		PpSuspendJob(m_pPrintContext);
 		PpEndJob(m_pPrintContext);
+		PtDamageWidget(m_pWin);		
+		PtFlush();	
 	}
-
 	return true;
 }
 

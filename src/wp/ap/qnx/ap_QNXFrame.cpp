@@ -886,6 +886,11 @@ PtWidget_t * AP_QNXFrame::_createStatusBarWindow(void)
 
 void AP_QNXFrame::setStatusMessage(const char * szMsg)
 {
+PhDrawContext_t *context=PhDCGetCurrent();
+//XXX: A bit of a hack, checking if the current context is a print context, if so, ignore.
+//This is because this function is called to update the toolbar while printing.
+	if(context->type & 0x1) 
+		return; 
 	if(PtWidgetIsRealized(m_wStatusBar) != 0) {
 		((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
 	}
