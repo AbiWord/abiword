@@ -643,7 +643,7 @@ void    AP_BeOSDialog_Options::_setViewRulerUnits(UT_Dimension dim)
 fp_PageSize::Predefined AP_BeOSDialog_Options::_gatherDefaultPageSize(void)
 {
 	// FIXME: replace this with *real* gui code
-	return defaultPaperSize;
+	return defaultPageSize;
 }
 
 void	AP_BeOSDialog_Options::_setDefaultPageSize(fp_PageSize::Predefined pre)
