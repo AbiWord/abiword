@@ -74,9 +74,9 @@ public:
 	SET_GATHER			(OtherDirectionRtl,	bool );
 #endif  
 
-	// JCA: TODO
-	SET_GATHER			(AutoSaveFile,		bool);
-	SET_GATHER			(AutoSaveFileExt,	char *);
+// TODO
+//	SET_GATHER			(AutoSaveFile,		bool);
+//	SET_GATHER			(AutoSaveFileExt,	char *);
 
  	SET_GATHER			(NotebookPageNum,	int );
 #undef SET_GATHER

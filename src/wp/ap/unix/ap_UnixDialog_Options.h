@@ -80,8 +80,11 @@ public:
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
 
+#if 0 // TODO: JCA
 	SET_GATHER			(AutoSaveFile, bool);
 	SET_GATHER			(AutoSaveFileExt, char *);
+#endif
+
 #undef SET_GATHER
 	
  protected:

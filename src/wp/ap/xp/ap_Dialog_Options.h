@@ -125,9 +125,11 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(OtherDirectionRtl, bool);
 #endif
 
+#if 0 // TODO: JCA
 	SET_GATHER			(AutoSaveFile,		bool);
 	SET_GATHER			(AutoSaveFileExt,	char *);
-
+#endif
+	
  	// so we can save and restore to the same page - must be able to return
   	// the current page and reset it later (i.e., don't use a handle, but a
   	// page index)

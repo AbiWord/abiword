@@ -1139,8 +1139,10 @@ DEFINE_GET_SET_BOOL(SmartQuotesEnable);
 DEFINE_GET_SET_BOOL(OtherDirectionRtl);
 #endif
 
+#if 0 // TODO: JCA
 DEFINE_GET_SET_BOOL(AutoSaveFile);
 DEFINE_GET_SET_TEXT(AutoSaveFileExt);
+#endif
 
 DEFINE_GET_SET_BOOL(PrefsAutoSave);
 DEFINE_GET_SET_BOOL(ViewShowRuler);
