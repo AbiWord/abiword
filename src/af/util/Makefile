@@ -35,6 +35,12 @@ PLATFORM_OBJS=	$(OBJDIR)/ut_unixAssert.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)
 endif
 
+ifeq ($(ABI_NATIVE), mac)
+PLATFORM_OBJS= $(OBJDIR)/ut_MacString.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_MacFiles.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ut_MacTimer.$(OBJ_SUFFIX)
+endif
+
 ifeq ($(ABI_NATIVE), win)
 PLATFORM_OBJS=	$(OBJDIR)/ut_debugmsg.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ut_$(ABI_FE)OS.$(OBJ_SUFFIX)		\
