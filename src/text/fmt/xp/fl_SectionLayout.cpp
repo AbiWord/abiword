@@ -142,15 +142,15 @@ void fl_SectionLayout::deleteEmptyColumns(void)
 					pLastInGroup->getNext()->setPrev(pCol->getPrev());
 				}
 
-				fp_Column* pCol2 = pCol;
+				fp_Column* pCol3 = pCol;
 				pCol = pLastInGroup->getNext();
-				while (pCol2)
+				while (pCol3)
 				{
-					fp_Column* pNext = pCol2->getFollower();
+					fp_Column* pNext = pCol3->getFollower();
 
-					delete pCol2;
+					delete pCol3;
 
-					pCol2 = pNext;
+					pCol3 = pNext;
 				}
 			}
 			else

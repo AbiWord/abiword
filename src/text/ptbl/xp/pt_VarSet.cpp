@@ -60,7 +60,7 @@ void pt_VarSet::setPieceTableState(PTState pts)
 		m_currentVarSet = 1;
 }
 
-UT_Bool pt_VarSet::appendBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi)
+UT_Bool pt_VarSet::appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi)
 {
 	UT_uint32 bufOffset = m_buffer[m_currentVarSet].getLength();
 	if (m_buffer[m_currentVarSet].ins(bufOffset,pBuf,length))

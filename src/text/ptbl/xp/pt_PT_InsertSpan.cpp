@@ -313,7 +313,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 }
 
 UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
-								  UT_UCSChar * p,
+								  const UT_UCSChar * p,
 								  UT_uint32 length)
 {
 	// insert character data into the document at the given position.

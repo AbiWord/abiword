@@ -787,22 +787,19 @@ void fp_Run::clearScreen(void)
 
 void fp_Run::_drawPartWithBackground(UT_RGBColor& clr, UT_sint32 xoff, UT_sint32 yoff, UT_uint32 iPos1, UT_uint32 iLen, const UT_GrowBuf* pgbCharWidths)
 {
-	UT_Rect r;
+	if (m_pG->queryProperties(DG_Graphics::DGP_SCREEN))
+	{
+		UT_Rect r;
 
-	_getPartRect(&r, xoff, yoff + m_iAscent, iPos1, iLen, pgbCharWidths);
-	r.height = m_pLine->getHeight();
-	r.top -= m_pLine->getAscent();
+		_getPartRect(&r, xoff, yoff + m_iAscent, iPos1, iLen, pgbCharWidths);
+		r.height = m_pLine->getHeight();
+		r.top -= m_pLine->getAscent();
 	
-	m_pG->fillRect(clr, r.left, r.top, r.width, r.height);
+		m_pG->fillRect(clr, r.left, r.top, r.width, r.height);
+	}
 
 	_drawPart(xoff, yoff, iPos1, iLen, pgbCharWidths);
 }
-
-/*
-  TODO we should NOT be drawing things with backgrounds when printing.
-  Selections on paper do not apply, nor is it necessary to erase the
-  background before drawing text when rendering to paper.
-*/
 
 void fp_Run::draw(dg_DrawArgs* pDA)
 {
@@ -1117,6 +1114,11 @@ UT_Bool fp_Run::del(UT_uint32 iOffset, UT_uint32 iCount)
 
 void fp_Run::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right)
 {
+	if (!(m_pG->queryProperties(DG_Graphics::DGP_SCREEN)))
+	{
+		return;
+	}
+	
 	UT_sint32 nPoints = (right - left + 3)/2;
 	UT_ASSERT(nPoints > 1);
 

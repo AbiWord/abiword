@@ -34,7 +34,7 @@ public:
 	~pt_VarSet();
 	
 	void					setPieceTableState(PTState pts);
-	UT_Bool					appendBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
+	UT_Bool					appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
 	UT_Bool					storeAP(const XML_Char ** attributes, PT_AttrPropIndex * papi);
 	UT_Bool					storeAP(const UT_Vector * pVecAttributes, PT_AttrPropIndex * papi);
 	const UT_UCSChar *		getPointer(PT_BufIndex bi) const;

@@ -192,7 +192,7 @@ void PD_Document::_setClean(void)
 }
 
 UT_Bool PD_Document::insertSpan(PT_DocPosition dpos,
-								  UT_UCSChar * p,
+								  const UT_UCSChar * p,
 								  UT_uint32 length)
 {
 	return m_pPieceTable->insertSpan(dpos,p,length);

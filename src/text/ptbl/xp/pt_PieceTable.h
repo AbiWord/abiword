@@ -64,7 +64,7 @@ public:
 	UT_Bool					redoCmd(void);
 
 	UT_Bool					insertSpan(PT_DocPosition dpos,
-									   UT_UCSChar * p,
+									   const UT_UCSChar * p,
 									   UT_uint32 length);
 
 	UT_Bool					deleteSpan(PT_DocPosition dpos1,

@@ -172,7 +172,8 @@ void fp_Page::_reformat(void)
 	UT_uint32 iY = m_iTop;
 	
 	int count = countColumnLeaders();
-	for (int i=0; i<count; i++)
+	int i;
+	for (i=0; i<count; i++)
 	{
 		fp_Column* pLeader = getNthColumnLeader(i);
 		fl_SectionLayout* pSL = pLeader->getSectionLayout();
