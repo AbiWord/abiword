@@ -485,7 +485,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
+  else if(pView->isInTable(pView->getSelectionAnchor())) // isintable includes first
+  {
+    s = EV_MIS_Gray;
+  }
   else if(pView->isInFrame(pView->getPoint()))
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInFrame(pView->getSelectionAnchor()))
   {
     s = EV_MIS_Gray;
   }
@@ -493,7 +501,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_TOCOK)
   {
     s = EV_MIS_Gray;
   }
+  else if(pView->isInFootnote(pView->getSelectionAnchor()))
+  {
+    s = EV_MIS_Gray;
+  }
   else if(pView->isInEndnote())
+  {
+    s = EV_MIS_Gray;
+  }
+  else if(pView->isInEndnote(pView->getSelectionAnchor()))
   {
     s = EV_MIS_Gray;
   }
@@ -1446,7 +1462,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 	{
 		return EV_MIS_Gray;
 	}
+	if(pView->isInFootnote(pView->getSelectionAnchor()))
+	{
+		return EV_MIS_Gray;
+	}
 	if(pView->isInEndnote())
+	{
+		return EV_MIS_Gray;
+	}
+	if(pView->isInEndnote(pView->getSelectionAnchor()))
 	{
 		return EV_MIS_Gray;
 	}
@@ -1454,7 +1478,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 	{
 		return EV_MIS_Gray;
 	}
+	else if(pView->isInFrame(pView->getSelectionAnchor()))
+	{
+		return EV_MIS_Gray;
+	}
 	else if(pView->isInTable())
+	{
+		return EV_MIS_Gray;
+	}
+	else if(pView->isInTable(pView->getSelectionAnchor()))
 	{
 		return EV_MIS_Gray;
 	}
