@@ -534,6 +534,10 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 
 	xxx_UT_DEBUGMSG(("DOM: drawChars (x: %d) (y: %d)\n", xoff, yoff));
 
+	// push a graphics state & save it. then set the font
+	gnome_print_gsave ( m_gpc ) ;
+	gnome_print_setfont (m_gpc, m_pCurrentFont);
+
 	gnome_print_moveto(m_gpc, _scale_x_dir(xoff), _scale_y_dir(yoff));
 
 	pEnd = pChars + iCharOffset + iLength;
@@ -566,6 +570,9 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			}
 			gnome_print_show_sized (m_gpc, (gchar *) buf, pD - buf);
 	}
+
+	// pop the graphics state
+	gnome_print_grestore ( m_gpc ) ;
 }
 
 void XAP_UnixGnomePrintGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
@@ -619,17 +626,9 @@ void XAP_UnixGnomePrintGraphics::setFont(GR_Font* pFont)
 
 	m_pCurrentFont = _allocGnomeFont(psFont);
 
-#if 0
-	XAP_UnixFont *uf          = static_cast<PSFont*>(pFont)->getUnixFont();
-	UT_DEBUGMSG(("Dom: setting font:\n"
-				 "\tsize returned: %f (requested %f)\n"
-				 "\tname returned: %s (requested %s)\n", 
-				 gnome_font_get_size(m_pCurrentFont),
-				 (double)static_cast<PSFont*>(pFont)->getSize() * _scale_factor_get(), 
-				 gnome_font_get_name(m_pCurrentFont), uf->getName()));
-#endif
-
-	gnome_print_setfont (m_gpc, m_pCurrentFont);
+	// we delay gnome_print_setfont until we draw characters. this fixes
+	// a bug with regard to font sizes < 10 pts in gnome-print version
+	// <= 0.35 at the cost of a slightly larger PS output file
 }
 
 bool XAP_UnixGnomePrintGraphics::queryProperties(GR_Graphics::Properties gp) const
