@@ -1314,7 +1314,8 @@ void fl_BlockLayout::checkSpelling(void)
 	}
 
 	FV_View* pView = m_pLayout->getView();
-	pView->_updateScreen(UT_TRUE);
+	if (pView)
+		pView->_updateScreen(UT_TRUE);
 }
 
 /*****************************************************************/
