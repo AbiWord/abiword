@@ -487,6 +487,10 @@ void GR_UnixGraphics::setLineProperties ( double inWidthPixels,
 								 mapLineStyle ( inLineStyle ),
 								 mapCapStyle ( inCapStyle ),
 								 mapJoinStyle ( inJoinStyle ) ) ;
+	gdk_gc_set_line_attributes ( m_pXORGC, (gint)inWidthPixels,
+								 mapLineStyle ( inLineStyle ),
+								 mapCapStyle ( inCapStyle ),
+								 mapJoinStyle ( inJoinStyle ) ) ;
 }
 
 #if (!defined(WITH_PANGO) || !defined(USE_XFT))
