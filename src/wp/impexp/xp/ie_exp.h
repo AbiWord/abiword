@@ -99,7 +99,7 @@ public:
 	IE_Exp(PD_Document * pDocument);
 	virtual ~IE_Exp();
 
-	virtual UT_Error	writeFile(const char * szFilename);
+	UT_Error		writeFile(const char * szFilename);
 	virtual UT_Error	copyToBuffer(PD_DocumentRange * pDocRange, UT_ByteBuf * pBuf);
 	virtual void		write(const char * sz);
 	virtual void		write(const char * sz, UT_uint32 length);

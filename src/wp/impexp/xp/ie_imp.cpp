@@ -35,12 +35,20 @@
 static const UT_uint32 importer_size_guess = 20;
 static UT_Vector m_sniffers (importer_size_guess);
 
+#include "ie_imp_XML.h"
+IE_Imp_XML * abi_ie_imp_xml_instance = 0;
+
 /*****************************************************************/
 /*****************************************************************/
 
 IE_Imp::IE_Imp(PD_Document * pDocument)
 	: m_pDocument(pDocument)
 {
+  if (abi_ie_imp_xml_instance)
+    {
+      delete abi_ie_imp_xml_instance;
+      abi_ie_imp_xml_instance = new IE_Imp_XML(pDocument,false);
+    }
 }
 
 IE_Imp::~IE_Imp()

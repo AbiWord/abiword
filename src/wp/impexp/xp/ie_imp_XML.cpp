@@ -145,6 +145,22 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 /*****************************************************************/
 /*****************************************************************/
 
+void IE_Imp_XML::startElement (const XML_Char * /*name*/, const XML_Char ** /*atts*/)
+{
+	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
+	m_error = UT_IE_UNSUPTYPE;
+	UT_DEBUGMSG(("you must override virtual method IE_Imp_XML::startElement\n"));
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
+void IE_Imp_XML::endElement (const XML_Char * /*name*/)
+{
+	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
+	m_error = UT_IE_UNSUPTYPE;
+	UT_DEBUGMSG(("you must override virtual method IE_Imp_XML::endElement\n"));
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+}
+
 void IE_Imp_XML::charData(const XML_Char *s, int len)
 {
 	// TODO XML_Char is defined in the xml parser

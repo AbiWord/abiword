@@ -26,7 +26,6 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
-#include "ut_map.h"
 #include "ev_EditMethod.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Toolbar_Actions.h"
@@ -48,6 +47,9 @@
 #ifdef HAVE_CURL
 #include "xap_HashDownloader.h"
 #endif
+
+#include "ut_map.h"
+UT_Map * abi_ut_map_instance = 0;
 
 /*****************************************************************/
 
@@ -84,10 +86,13 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	m_pHashDownloader = NULL;
 #endif
 
-	// hack to force the linker to link in UT_Map functions; thanks to fjf
-	if (this == 0)
-		delete (new UT_Map);
-
+	/* hack to force the linker to link in UT_Map functions
+	 */
+	if (abi_ut_map_instance)
+	  {
+	    delete abi_ut_map_instance;
+	    abi_ut_map_instance = new UT_Map;
+	  }
 }
 
 XAP_App::~XAP_App()

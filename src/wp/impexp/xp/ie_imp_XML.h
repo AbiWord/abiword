@@ -57,11 +57,11 @@ public:
 
     /* (Partial) Implementation of UT_XML::Listener
      *
-     * You (i.e., non-abstract child classes) *must* override these next two methods:
-     *
-     * virtual void startElement (const XML_Char * name, const XML_Char ** atts) = 0;
-     * virtual void endElement (const XML_Char * name) = 0;
-     *
+     * You *must* override these next two methods:
+     */
+    virtual void startElement (const XML_Char * name, const XML_Char ** atts);
+    virtual void endElement (const XML_Char * name);
+    /*
      * but you get this one for free:
      */
     virtual void charData (const XML_Char * buffer, int length);
