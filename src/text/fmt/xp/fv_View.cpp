@@ -2327,7 +2327,7 @@ void FV_View::processSelectedBlocks(List_Type listType)
 			{
 				pBlock->resumeList(pPrev);
 			}			
-			else if(pBlock->isListItem()== NULL)
+			else if(!pBlock->isListItem())
 			{
 				XML_Char* cType = pBlock->getListStyleString(listType);
 				pBlock->StartList(cType);
