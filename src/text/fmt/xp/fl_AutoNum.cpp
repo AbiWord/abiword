@@ -137,8 +137,8 @@ void fl_AutoNum::fixHierarchy(PD_Document * pDoc)
 
 fl_AutoNum::~fl_AutoNum()
 {
-	if (m_pParent && m_pParent->isEmpty())
-		DELETEP(m_pParent);
+//	if (m_pParent && m_pParent->isEmpty())
+//		DELETEP(m_pParent);
 }
 
 static PD_Document * pCurDoc;
