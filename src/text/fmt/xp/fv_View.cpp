@@ -3397,8 +3397,13 @@ bool FV_View::getCharFormat(const XML_Char *** pProps, bool bExpandStyles, PT_Do
 	}
 	if(pBlock == NULL)
 	{
-		static const char * pszTmp[2] = {NULL,NULL};
-		*pProps = pszTmp;
+		// We want to return NULL here, because that makes it clear to the caller that the props are
+		// not valid; in any case to return sometimes a dynamically allocated array and sometimes a
+		// statically allocated one is not a good idea
+		// 
+		// static const char * pszTmp[2] = {NULL,NULL};
+		
+		*pProps = NULL;
 		return false;
 	}
 	UT_uint32 blockPosition = pBlock->getPosition();
@@ -6781,7 +6786,8 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 	bool bDirection;
 	_findPositionCoords(pos, m_bPointEOL, xCaret, yCaret, xCaret2, yCaret2, heightCaret, bDirection, &pBlock, &pRun);
 
-	UT_return_if_fail(pRun);
+	//UT_return_if_fail(pRun);
+	if(!pRun) return;
 
 	fp_Line * pLine = pRun->getLine();
 	UT_return_if_fail(pLine);
@@ -8732,7 +8738,8 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 bool FV_View::isHeaderOnPage(void)
 {
 	fp_Page * pPage = getCurrentPage();
-	UT_return_val_if_fail(pPage, false);
+	//UT_return_val_if_fail(pPage, false);
+	if(!pPage) return false;
 	return (pPage->getHdrFtrP(FL_HDRFTR_HEADER) != NULL);
 }
 
@@ -8743,7 +8750,8 @@ bool FV_View::isHeaderOnPage(void)
 bool FV_View::isFooterOnPage(void)
 {
 	fp_Page * pPage = getCurrentPage();
-	UT_return_val_if_fail(pPage, false);
+	//UT_return_val_if_fail(pPage, false);
+	if(!pPage) return false;
 	return (pPage->getHdrFtrP(FL_HDRFTR_FOOTER) != NULL);
 }
 
