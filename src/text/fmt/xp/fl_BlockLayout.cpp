@@ -2706,6 +2706,7 @@ fl_BlockLayout::_checkMultiWord(UT_sint32 iStart,
 		}
 	}
 
+	DELETEP(pWordIterator);
 	return bScreenUpdated;
 }
 

@@ -135,11 +135,14 @@ XAP_Frame::~XAP_Frame(void)
     }
 
 	// only delete the things that we created...
+    // I do not like this; we should be deleting all our members,
+    // since they are no-one else's bussines (Tomas, Jan 30, 2003)
 
 	if (m_pView)
 		m_pView->removeListener(m_lid);
 
 	DELETEP(m_pViewListener);
+	DELETEP(m_pView);
 
 	UNREFP(m_pDoc);
 
@@ -735,6 +738,9 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 	UT_ASSERT(pDialog);
 
 	pDialog->setMessage(szNewMessage);
+
+	// XAP_MessageBox makes a copy of the message, so free it
+	FREEP(szNewMessage);
 
 	pDialog->setButtons(buttons);
 	pDialog->setDefaultAnswer(default_answer);
