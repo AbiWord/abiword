@@ -330,6 +330,14 @@ void IE_Exp_RTF::_rtf_keyword(const char * szKey, UT_sint32 d)
 	m_bLastWasKeyword = true;
 }
 
+void IE_Exp_RTF::_rtf_keyword(const char * szKey, const char * val)
+{
+  write("\\");
+  write(szKey);
+  write(val);
+  m_bLastWasKeyword = true;
+}
+
 void IE_Exp_RTF::_rtf_keyword_hex2(const char * szKey, UT_sint32 d)
 {
 	write("\\");
@@ -786,10 +794,13 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword("sub");
 	}
 
-#if 0
+	// export the language of the run of text
 	const XML_Char * szLang = apa.getProperty("lang");
-	// TODO: convert lang to numerical code
-#endif
+	if ( szLang )
+	  {
+	    UT_DEBUGMSG(("DOM: lang,lid = %s,%d\n", szLang, wvLangToLIDConverter(szLang)));
+	    _rtf_keyword("lang", wvLangToLIDConverter(szLang)); 
+	  }
 
 #ifdef BIDI_ENABLED
 

@@ -85,6 +85,7 @@ public:
 	UT_uint32    m_bgcolourNumber; // index into colour table
 	UT_sint32  m_styleNumber ; //index into the style table
 	UT_uint32  m_listTag; // tag for lists to hang off
+	const char * m_szLang;
 };                  
 
 class RTFProps_bCharProps

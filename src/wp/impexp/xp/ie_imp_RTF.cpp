@@ -49,6 +49,8 @@
 #include "xap_App.h"
 #include "fv_View.h"
 
+#include "wv.h" // for wvLIDToLangConverter
+
 class fl_AutoNum;
 
 /*!
@@ -931,6 +933,7 @@ RTFProps_CharProps::RTFProps_CharProps(void)
 	m_bgcolourNumber = 0;
 	m_styleNumber = -1;
 	m_listTag = 0;
+	m_szLang = 0;
 }; 
 
 RTFProps_CharProps::~RTFProps_CharProps(void)
@@ -2667,8 +2670,9 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 		}	
 		else if (strcmp((char*)pKeyword, "lang") == 0)
 		{
-			// TODO Mark language for spell checking
-			UT_DEBUGMSG (("RTF: unhandled keyword %s\n", pKeyword));
+			UT_DEBUGMSG(("DOM: lang code (0x%x, %s)\n", param, wvLIDToLangConverter(param)));
+			// mark language for spell checking
+			m_currentRTFState.m_charProps.m_szLang = wvLIDToLangConverter(param);
 			return true;
 		}
 		else if (strcmp((char*)pKeyword, "listtext") == 0)
@@ -3155,9 +3159,19 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	if(m_currentRTFState.m_charProps.m_listTag != 0)
 	{
 // List Tag to hang lists off
-		sprintf(tempBuffer, " list-tag:%d; ",m_currentRTFState.m_charProps.m_listTag);
+		sprintf(tempBuffer, "; list-tag:%d",m_currentRTFState.m_charProps.m_listTag);
 		strcat(propBuffer, tempBuffer);
 	}
+
+	if(m_currentRTFState.m_charProps.m_szLang != 0)
+		{
+			strcat(propBuffer, "; lang:");
+			strcat(propBuffer, m_currentRTFState.m_charProps.m_szLang);
+		}
+
+#if 0
+	strcat(propBuffer, ";");
+#endif
 
 	const XML_Char* propsArray[3];
 	propsArray[0] = pProps;
@@ -5864,7 +5878,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
 	RTFProps_bCharProps *  pbChars = new	RTFProps_bCharProps();
 	static char  propBuffer[1024];
-	propBuffer[0] = NULL;
+	propBuffer[0] = 0;
 
 	const XML_Char* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
@@ -6032,7 +6046,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			pChars = new	RTFProps_CharProps();
 			pbParas =  new RTFProps_bParaProps();
 			pbChars = new	RTFProps_bCharProps();
-			propBuffer[0] = NULL;
+			propBuffer[0] = 0;
 		}
 	}
 //
