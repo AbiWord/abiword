@@ -322,7 +322,8 @@ BOOL AP_Win32Dialog_WordCount::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPara
 		return 1;
 
 	case AP_RID_DIALOG_WORDCOUNT_BTN_UPDATE:
-		notifyActiveFrame(pFrame);
+		setCountFromActiveFrame();
+		_updateWindowData();
 		return 1;
 
 	case AP_RID_DIALOG_WORDCOUNT_CHK_AUTOUPDATE:
