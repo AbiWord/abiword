@@ -217,7 +217,10 @@ protected:
 	bool                                    m_bBonoboRunning;
 private:
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
-	void operator=(const XAP_App&);	
+	void operator=(const XAP_App&);
+#ifdef DEBUG
+	void _fundamentalAsserts() const;
+#endif
 };
 
 #endif /* XAP_APP_H */

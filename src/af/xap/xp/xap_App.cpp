@@ -72,6 +72,10 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_bDebugBool(false),
 	  m_bBonoboRunning(false)
 {
+#ifdef DEBUG
+	_fundamentalAsserts(); // see the comments in the function itself
+#endif
+	
 	UT_ASSERT(szAppName && *szAppName);
 	m_pApp = this;
 
@@ -815,3 +819,24 @@ void XAP_App::parseAndSetGeometry(const char *string)
 		setGeometry(nx, ny, nw, nh, nflags);
 	}
 } 
+
+#ifdef DEBUG
+/*!
+    This function contains some of the most fundamental assumptions
+    about the compiler without which the code will not work; this is
+    for the benefit of future ports, etc.
+    Tomas, May 15, 2003
+
+    If you get assert in this function, then you have a real problem
+    -- the code will not work without substantial adjustments.
+*/
+void XAP_App::_fundamentalAsserts() const
+{
+	// our UT_Vector class is frequently used to store integers
+	// directly inside of a void *
+	UT_ASSERT(sizeof(void*) >= sizeof(UT_uint32));
+
+	// we frequently assume that XML_Char * is only one byte in size
+	UT_ASSERT(sizeof(XML_Char) == sizeof(char));
+}
+#endif
