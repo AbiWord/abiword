@@ -41,6 +41,8 @@
 #include "ap_Preview_Paragraph.h"
 #include "xad_Document.h"
 #include "gr_Painter.h"
+#include "pf_Frag_Strux_Block.h"
+
 
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 :	XAP_Dialog_Modeless(pDlgFactory, id, "interface/dialoglists"),
@@ -96,6 +98,7 @@ AP_Dialog_Lists::~AP_Dialog_Lists(void)
 	for(UT_uint32 i=0; i<4; i++)
 	{
 		DELETEP(m_pFakeLayout[i]);
+		DELETEP(static_cast<const pf_Frag_Strux_Block *>(m_pFakeSdh[i]));
 	}
 	// What do we do about the fakeAutoNum in the Document pDoc?
 	// Maybe we need another constrcutor
@@ -637,7 +640,8 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 	for(i=0; i<4; i++)
 	{
 		DELETEP(m_pFakeLayout[i]);
-		m_pFakeSdh[i] = (PL_StruxDocHandle) fakeApp++;
+		m_pFakeSdh[i] = static_cast<PL_StruxDocHandle>(new pf_Frag_Strux_Block(NULL,0));
+		static_cast<const pf_Frag *>(m_pFakeSdh[i])->setPos(i);
 		m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , (PL_StruxDocHandle) m_pFakeSdh[i] );
 	}
 	//
