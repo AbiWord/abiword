@@ -21,6 +21,7 @@
 ** Only one of these is created by the application.
 *****************************************************************/
 
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commctrl.h>   // includes the common control header
 #include <crtdbg.h>
@@ -901,8 +902,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 			}
 			else
 			{
-				AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(this);
-				pFirstWin32Frame->initialize();
+				AP_Win32Frame* pFirstWin32Frame = (AP_Win32Frame*)newFrame();
 
 				UT_Error error = pFirstWin32Frame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown);
 				if (!error)
@@ -910,8 +910,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 					kWindowsOpened++;
 
 					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
-					ShowWindow(hwnd, iCmdShow);
-					UpdateWindow(hwnd);
+					pFirstWin32Frame->show();
 				}
 				else
 				{
@@ -943,8 +942,7 @@ void AP_Win32App::ParseCommandLine(int iCmdShow)
 	{
 		// no documents specified or were able to be opened, open an untitled one
 
-		AP_Win32Frame * pFirstWin32Frame = new AP_Win32Frame(this);
-		pFirstWin32Frame->initialize();
+		AP_Win32Frame* pFirstWin32Frame = (AP_Win32Frame*)newFrame();
 
 		pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
 
