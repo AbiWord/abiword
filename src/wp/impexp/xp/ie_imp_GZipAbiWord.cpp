@@ -26,7 +26,7 @@
 
 UT_Bool IE_Imp_GZipAbiWord::_openFile(const char * szFilename) 
 {
-    m_gzfp = gzopen(szFilename, "r");
+    m_gzfp = gzopen(szFilename, "rb");
     return (m_gzfp != NULL);
 }
 
