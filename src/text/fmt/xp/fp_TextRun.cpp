@@ -1133,6 +1133,8 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 
 	// runs can be split even before any shaping has been done on the, in which case we do not have
 	// the redering info yet; in such cases we only have m_pItem
+	bool bSplitSucceeded = true;
+	
 	if(m_pRenderInfo)
 	{
 		m_pRenderInfo->m_pGraphics = getGraphics();
@@ -1145,6 +1147,7 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 			// we need to mark both runs for shaping
 			_setRefreshDrawBuffer(GRSR_Unknown);
 			pNew->_setRefreshDrawBuffer(GRSR_Unknown);
+			bSplitSucceeded = false;
 		}
 		
 
@@ -1174,8 +1177,18 @@ bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	// we will use the _addupCharWidths() function here instead of recalcWidth(), since when
 	// a run is split the info in the block's char-width array is not affected, so we do not
 	//have to recalculate these
-	_addupCharWidths();
-	pNew->_addupCharWidths();
+
+	if(bSplitSucceeded)
+	{
+		_addupCharWidths();
+		pNew->_addupCharWidths();
+	}
+	else
+	{
+		recalcWidth();
+		pNew->recalcWidth();
+	}
+	
 
 
 	//bool bDomDirection = getBlock()->getDominantDirection();
