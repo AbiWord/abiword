@@ -256,6 +256,9 @@ public:
 	static PD_Document*		m_pDoc;
 #endif
 	
+	inline bool areStylesLocked () const { return m_bLockedStyles; }
+	inline void lockStyles(bool b) { m_bLockedStyles = b; }
+
 protected:
 	~PD_Document();
 
@@ -282,6 +285,7 @@ private:
 	bool                    m_bLoading;
 	bool m_bForcedDirty;
 	UT_Vector				m_vBookmarkNames;
+	bool m_bLockedStyles;
 };
 
 #endif /* PD_DOCUMENT_H */

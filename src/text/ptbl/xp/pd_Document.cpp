@@ -83,7 +83,8 @@ PD_Document::PD_Document(XAP_App *pApp)
 	m_bAllowInsertPointChange(true),
 	m_bRedrawHappenning(false),
   m_bLoading(false),
-  m_bForcedDirty(false)
+  m_bForcedDirty(false),
+  m_bLockedStyles(false)
 {
 	m_pApp = pApp;
 

@@ -438,6 +438,15 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 		m_pie->write (" template=\"true\"");
 	}
 
+	if(pDocument->areStylesLocked())
+	  {
+	    m_pie->write(" styles=\"locked\"");
+	  }
+	else
+	  {
+	    m_pie->write(" styles=\"unlocked\"");
+	  }
+
 	m_pie->write(">\n");
 
 	// TODO add a file-format name/value pair to this tag.
