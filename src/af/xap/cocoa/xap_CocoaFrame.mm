@@ -56,12 +56,21 @@
 	m_pFrame = frame;
 	m_pGR = NULL;
 	self = [super initWithFrame:windowFrame];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+					selector:@selector(hasBeenResized:)
+					name:NSViewBoundsDidChangeNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+					selector:@selector(hasBeenResized:)
+					name:NSViewFrameDidChangeNotification object:nil];
+
 	return self;
 }
 
 - (void)dealloc
 {
 	[_eventDelegate release];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[super dealloc];
 }
 
 - (BOOL)acceptsFirstResponder
@@ -159,9 +168,30 @@
 - (void)setEventDelegate:(NSObject <XAP_MouseEventDelegate>*)delegate
 {
 	[_eventDelegate release];
-	[delegate retain];
 	_eventDelegate = delegate;
+	[delegate retain];
 }
+
+- (void)hasBeenResized:(NSNotification*)notif
+{
+	if (m_pGR) {
+		NSRect rect = [self bounds];
+		if (!NSEqualRects(m_previousFrame, rect)) {
+			AV_View * pView = m_pFrame->getCurrentView();
+			m_previousFrame = rect;
+			if (pView && !pView->isLayoutFilling()) {
+				pView->setWindowSize(rect.size.width, rect.size.height);
+				m_pGR->_callUpdateCallback(&rect);
+//				m_pFrame->quickZoom(); // was update zoom
+			}
+		}
+		else {
+			UT_DEBUGMSG(("hasBeenResized: same size\n"));
+		}
+	}
+}
+
+
 
 - (NSObject <XAP_MouseEventDelegate>*)eventDelegate
 {

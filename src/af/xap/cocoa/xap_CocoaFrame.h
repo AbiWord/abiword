@@ -60,6 +60,7 @@ class FV_View;
 	NSCursor		*_cursor;
 	XAP_Frame 		*m_pFrame;
 	GR_CocoaGraphics	*m_pGR;
+	NSRect			m_previousFrame;
 	NSObject<XAP_MouseEventDelegate>	*_eventDelegate;
 }
 //- (id)initWith:(XAP_CocoaFrame *)frame;

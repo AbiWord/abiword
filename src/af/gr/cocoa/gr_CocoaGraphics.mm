@@ -804,9 +804,9 @@ void GR_CocoaGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  UT_sint32 width, UT_sint32 height)
 {
-	float dx, dy;
-	dx = tduD(x_src - x_dest);
-	dy = tduD(y_src - y_dest);
+	UT_sint32 dx, dy;
+	dx = tdu(x_src - x_dest);
+	dy = tdu(y_src - y_dest);
 	
 	[m_pWin scrollRect:NSMakeRect(tduD(x_src), tduD(y_src), tduD(width), tduD(height)) 
 				by:NSMakeSize(-dx,dy)];

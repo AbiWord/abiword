@@ -280,7 +280,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 		pView->sendVerticalScrollEvent(m_VCurrentScroll);
 	}
 	else {
-		pView->sendHorizontalScrollEvent(-m_HCurrentScroll);	
+		pView->sendHorizontalScrollEvent(m_HCurrentScroll);	
 	}
 }
 
