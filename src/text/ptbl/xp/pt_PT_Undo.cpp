@@ -197,29 +197,6 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 	case PX_ChangeRecord::PXT_DeleteStrux:
 		{
 			const PX_ChangeRecord_Strux * pcrStrux = static_cast<const PX_ChangeRecord_Strux *>(pcr);
-			UT_Bool (pt_PieceTable::* pmUnlink)(pf_Frag_Strux * pfs,
-												pf_Frag ** ppfEnd,
-												UT_uint32 * pfragOffsetEnd);
-			pmUnlink = NULL;
-
-			switch (pcrStrux->getStruxType())
-			{
-			case PTX_Block:
-				pmUnlink = &pt_PieceTable::_unlinkStrux_Block;
-				break;
-
-			case PTX_Section:
-				pmUnlink = &pt_PieceTable::_unlinkStrux_Section;
-				break;
-				
-			default:
-				// TODO handle the other types of strux
-				UT_ASSERT(0);
-				return UT_FALSE;
-			}
-
-			UT_ASSERT(pmUnlink);
-			
 			pf_Frag * pf = NULL;
 			PT_BlockOffset fragOffset = 0;
 			UT_Bool bFoundFrag = getFragFromPosition(pcrStrux->getPosition(),&pf,&fragOffset);
@@ -227,7 +204,8 @@ UT_Bool pt_PieceTable::_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo)
 			UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
 
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
-			UT_Bool bResult = (this->*pmUnlink)(pfs,NULL,NULL);
+			UT_ASSERT(pcrStrux->getStruxType() == pfs->getStruxType());
+			UT_Bool bResult = _unlinkStrux(pfs,NULL,NULL);
 			m_pDocument->notifyListeners(pfs,pcr);
 			UT_ASSERT(bResult);
 			DONE();

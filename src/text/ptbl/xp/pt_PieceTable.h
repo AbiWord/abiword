@@ -195,6 +195,8 @@ protected:
 														pf_Frag_Strux ** ppfs) const;
 	UT_Bool					_doTheDo(const PX_ChangeRecord * pcr, UT_Bool bUndo);
 	UT_Bool					_struxHasContent(pf_Frag_Strux * pfs) const;
+	UT_Bool					_unlinkStrux(pf_Frag_Strux * pfs,
+											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	UT_Bool					_unlinkStrux_Block(pf_Frag_Strux * pfs,
 											   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	UT_Bool					_unlinkStrux_Section(pf_Frag_Strux * pfs,

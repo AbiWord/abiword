@@ -39,6 +39,22 @@
 
 /****************************************************************/
 /****************************************************************/
+UT_Bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
+									pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
+{
+	switch (pfs->getStruxType())	
+	{
+	case PTX_Section:
+		return _unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd);
+		
+	case PTX_Block:
+		return _unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd);
+		
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return UT_FALSE;
+	}
+}
 
 UT_Bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 										  pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
@@ -166,22 +182,8 @@ UT_Bool pt_PieceTable::_deleteStruxWithNotify(PT_DocPosition dpos,
 									dpos, pfs->getIndexAP(), pfs->getStruxType());
 	UT_ASSERT(pcrs);
 
-	switch (pfs->getStruxType())
-	{
-	case PTX_Section:
-		if (!_unlinkStrux_Section(pfs,ppfEnd,pfragOffsetEnd))
-			return UT_FALSE;
-		break;
-		
-	case PTX_Block:
-		if (!_unlinkStrux_Block(pfs,ppfEnd,pfragOffsetEnd))
-			return UT_FALSE;
-		break;
-		
-	default:
-		UT_ASSERT(0);
+	if (!_unlinkStrux(pfs,ppfEnd,pfragOffsetEnd))
 		return UT_FALSE;
-	}
 	
 	// add record to history.  we do not attempt to coalesce these.
 	m_history.addChangeRecord(pcrs);
