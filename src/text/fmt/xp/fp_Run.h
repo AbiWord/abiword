@@ -61,13 +61,6 @@ enum FP_RUN_BREAK_TYPE
 	BREAK_ALWAYS		= 2
 };
 
-// TODO 
-enum FP_RUN_RELATIVE_POINT_POSITION
-{
-	FP_RUN_INSIDE      	= 1,
-	FP_RUN_NOT         	= 2
-};
-
 enum FP_RUN_TYPE
 {
 	FPRUN__FIRST__					= 1,
@@ -81,7 +74,8 @@ enum FP_RUN_TYPE
 	FPRUN_FMTMARK					= 8,
 	FPRUN_FIELDSTARTRUN				= 9,
 	FPRUN_FIELDENDRUN				= 10,
-	FPRUN__LAST__					= 11
+	FPRUN_ENDOFPARAGRAPH            = 11,
+	FPRUN__LAST__					= 12
 };
 
 /*
@@ -134,6 +128,8 @@ public:
 	fd_Field*				getField(void) { return m_pField;}
 	bool					isField(void) { return (bool) (m_pField != NULL) ;}
 	void					unlinkFromRunList();
+
+	virtual bool			hasLayoutProperties(void) const;
 	
 	void					setLine(fp_Line*);
 	void					setBlock(fl_BlockLayout *);
@@ -210,6 +206,9 @@ public:
 #endif	
 	
 protected:
+	void					_inheritProperties(void);
+	fp_Run*					_findPrevPropertyRun(void) const;
+
 	FP_RUN_TYPE				m_iType;
 	fp_Line*				m_pLine;
 	fl_BlockLayout*			m_pBL;
@@ -269,7 +268,6 @@ class fp_ForcedLineBreakRun : public fp_Run
  public:
 	fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
@@ -288,7 +286,6 @@ class fp_FieldStartRun : public fp_Run
  public:
 	fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
@@ -307,7 +304,6 @@ class fp_FieldEndRun : public fp_Run
  public:
 	fp_FieldEndRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
@@ -326,7 +322,6 @@ class fp_ForcedColumnBreakRun : public fp_Run
  public:
 	fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
@@ -345,7 +340,6 @@ class fp_ForcedPageBreakRun : public fp_Run
  public:
 	fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
-	virtual bool			canContainPoint(void) const;
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
@@ -359,6 +353,29 @@ protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 };
+
+class fp_EndOfParagraphRun : public fp_Run
+{
+ public:
+	fp_EndOfParagraphRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual void			lookupProperties(void);
+	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
+	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual bool			canBreakAfter(void) const;
+	virtual bool			canBreakBefore(void) const;
+	virtual bool			letPointPass(void) const;
+	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
+protected:
+	virtual void			_draw(dg_DrawArgs*);
+	virtual void       		_clearScreen(bool bFullLineHeightRect);
+
+private:
+	UT_uint32				m_iXoffText;
+	UT_uint32				m_iYoffText;
+
+};
+
 
 class fp_ImageRun : public fp_Run
 {

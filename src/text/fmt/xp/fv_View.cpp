@@ -712,14 +712,17 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
     
     case FV_DOCPOS_EOL:
     {
+		// Ignore forced breaks and EOP when finding EOL.
         fp_Run* pLastRun = pLine->getLastRun();
-        
-        while (!pLastRun->isFirstRunOnLine() && pLastRun->isForcedBreak())
+        while (!pLastRun->isFirstRunOnLine() 
+			   && (pLastRun->isForcedBreak()
+				   || (FPRUN_ENDOFPARAGRAPH == pLastRun->getType())))
         {
             pLastRun = pLastRun->getPrev();
         }
         
-        if(pLastRun->isForcedBreak())
+        if (pLastRun->isForcedBreak()
+			|| (FPRUN_ENDOFPARAGRAPH == pLastRun->getType()))
         {
             iPos = pBlock->getPosition() + pLastRun->getBlockOffset();
         }
@@ -6671,6 +6674,7 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	case FPRUN_FORCEDCOLUMNBREAK:
 	case FPRUN_FORCEDPAGEBREAK:
 	case FPRUN_FMTMARK:
+	case FPRUN_ENDOFPARAGRAPH:
 		return EV_EMC_TEXT;
 		
 	case FPRUN_FIELD:
@@ -7157,7 +7161,7 @@ void FV_View::setShowPara(bool bShowPara)
 
 /*!
 
-   This method is a replacement for getBounds which returns the beggining 
+   This method is a replacement for getBounds which returns the beginning 
    and end points of the document. It keeps the insertion point out of the 
    header/footer region of the document by not counting the size of the 
    header/footer region in the document length.

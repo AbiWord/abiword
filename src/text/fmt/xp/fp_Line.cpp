@@ -56,9 +56,13 @@ fp_Line::fp_Line()
 	m_iMaxWidth = 0;
 	m_iMaxWidthLayoutUnits = 0;
 	m_iWidth = 0;
+	m_iWidthLayoutUnits = 0;
 	m_iHeight = 0;
+	m_iHeightLayoutUnits = 0;
 	m_iX = 0;
+	m_iXLayoutUnits = 0;
 	m_iY = 0;
+	m_iYLayoutUnits = 0;
 	m_pContainer = NULL;
 	m_pBlock = NULL;
 
@@ -240,23 +244,25 @@ void fp_Line::addRun(fp_Run* pNewRun)
 #ifdef BIDI_ENABLED
 	switch(pNewRun->getDirection())
 	{
-		case 0:
-			m_iRunsLTRcount++;
-			break;
+	case 0:
+		m_iRunsLTRcount++;
+		break;
 					
-		case 1:
-			m_iRunsRTLcount++;
-			break;
+	case 1:
+		m_iRunsRTLcount++;
+		break;
 					
-		default:; 	//either -1 for whitespace, or 2 for 'not set'
-					//the latter only happens in Unicode mode and is
-					//rectified by subsequent call to setDirection
+	default:
+		//either -1 for whitespace, or 2 for 'not set'
+		//the latter only happens in Unicode mode and is
+		//rectified by subsequent call to setDirection
+		break;
 	}
-	#ifndef USE_STATIC_MAP		
-	_createMapOfRuns(); //#TF update the map
-	#else
+# ifndef USE_STATIC_MAP		
+	_createMapOfRuns();			//#TF update the map
+# else
 	m_bMapDirty = true;
-	#endif	
+# endif	
 #endif
 	setNeedsRedraw();
 }
@@ -366,28 +372,17 @@ void fp_Line::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos, boo
 			}
 			else if (((x - pRun2->getX()) == 0) && (pRun2->getWidth() == 0))
 			{
-				// zero-length run
-				{
-#if 0
-					// this only happens in an empty line, right?
-					/*
-						NOPE.  Runs with no width can actually happen now,
-						due to a variety of changes, including the
-						introduction of forced breaks.
-					*/
-					
-					UT_ASSERT(m_iWidth==0);
-					UT_ASSERT(i==0);
-					UT_ASSERT(count==1);
-#endif
+				// Zero-length run. This should only happen with
+				// FmtMrk Runs.
+				
+				UT_ASSERT(FPRUN_FMTMARK == pRun2->getType());
 
-					pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
+				pRun2->mapXYToPosition(x - pRun2->getX(), y2, pos, bBOL, bEOL);
 
-					UT_ASSERT(bEOL == true || bEOL == false);
-					UT_ASSERT(bBOL == true || bBOL == false);
+				UT_ASSERT(bEOL == true || bEOL == false);
+				UT_ASSERT(bBOL == true || bBOL == false);
 
-					return;
-				}
+				return;
 			}
 
 			if (!pClosestRun)
@@ -556,9 +551,14 @@ void fp_Line::recalcHeight()
 	{
 		clearScreen();
 
+#if 0 
+		// FIXME:jskov We now get lines with height 0. Why is that a
+		// problem (i.e., why the assert?)
+		UT_ASSERT(iNewHeightLayoutUnits);
+#endif
+
 		m_iHeight = iNewHeight;
 		m_iHeightLayoutUnits = iNewHeightLayoutUnits;
-		UT_ASSERT(m_iHeightLayoutUnits);
 		m_iAscent = iNewAscent;
 		m_iDescent = iNewDescent;
 	}

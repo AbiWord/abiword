@@ -54,6 +54,7 @@ class fp_TextRun : public fp_Run
 	
 	bool					split(UT_uint32 iSplitOffset);
 
+	virtual bool			hasLayoutProperties(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	virtual bool			recalcWidth(void);
 
@@ -97,6 +98,10 @@ class fp_TextRun : public fp_Run
 	virtual UT_sint32		getMinOverline(void);
 	UT_uint32				countTrailingSpaces(void) const;
     bool                 canContainPoint(void) const;
+	GR_Font*				getFont(void) const
+		{ return m_pFont; }
+	UT_RGBColor				getFGColor(void) const
+		{ return m_colorFG; }
 #ifdef BIDI_ENABLED
 	UT_sint32               getStr(UT_UCSChar * str, UT_uint32 &iMax);
 	//bool                 setUnicodeDirection();

@@ -151,7 +151,9 @@ class fl_BlockLayout : public fl_Layout
 	friend void FL_DocLayout::_toggleAutoSpell(bool bSpell);
 
 public:
-	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, fl_BlockLayout*, fl_SectionLayout*, PT_AttrPropIndex indexAP);
+	fl_BlockLayout(PL_StruxDocHandle sdh, fb_LineBreaker*, 
+				   fl_BlockLayout*, fl_SectionLayout*, 
+				   PT_AttrPropIndex indexAP);
 	~fl_BlockLayout();
 
 	typedef enum _eSpacingPolicy
@@ -232,8 +234,6 @@ public:
 	bool getSpanPtr(UT_uint32 offset, const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const;
 	bool	getBlockBuf(UT_GrowBuf * pgb) const;
 
-	bool truncateLayout(fp_Run* pTruncRun);
-
 	void clearScreen(GR_Graphics*);
 
 	inline UT_sint32	getTextIndent(void) const { return m_iTextIndent; }
@@ -262,9 +262,6 @@ public:
 	inline bool getDominantDirection(void) const { return m_bDomDirection; }
 	void setDominantDirection(bool bDirection);
 #endif
-
-	void checkForBeginOnForcedBreak(void);
-	void checkForEndOnForcedBreak(void);
 
 	void checkSpelling(void);
 	void debugFlashing(void);
@@ -340,12 +337,15 @@ public:
 #ifdef FMT_TEST
 	void					__dump(FILE * fp) const;
 #endif
-	
+
 protected:
 
+	bool					_truncateLayout(fp_Run* pTruncRun);
+
 #ifndef NDEBUG
-	void					_assertRunListIntegrity(void);
+	void					_assertRunListIntegrityImpl(void);
 #endif
+	inline void				_assertRunListIntegrity(void);
 	
 	void 					_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerge);
 	
@@ -390,9 +390,9 @@ protected:
 
 	UT_uint32				_getLastChar();
 	void					_stuffAllRunsOnALine(void);
-	void					_insertFakeTextRun(void);
+	void					_insertEndOfParagraphRun(void);
+	void					_purgeEndOfParagraphRun(void);
 	void					_breakLineAfterRun(fp_Run* /*pRun*/);
-	bool					_validateBlockForPoint(void);
 
 	static void				_prefsListener(XAP_App * /*pApp*/, XAP_Prefs *pPrefs, UT_AlphaHashTable * /*phChanges*/, void * data);
 

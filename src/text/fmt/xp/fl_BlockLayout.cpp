@@ -65,12 +65,6 @@
 
 #include "xap_EncodingManager.h"
 
-inline bool IsZeroLengthTextRun(const fp_Run* p)
-{
-	return p->getLength() == 0 && p->getType() == FPRUN_TEXT;
-}
-
-
 //////////////////////////////////////////////////////////////////////
 // Two Useful List arrays
 /////////////////////////////////////////////////////////////////////
@@ -174,6 +168,8 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 	}
 
 	_lookupProperties();
+
+	_insertEndOfParagraphRun();
 }
 
 fl_TabStop::fl_TabStop()
@@ -666,6 +662,8 @@ void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerg
 	UT_ASSERT(pFirstRunToMerge->getType() == FPRUN_TEXT);
 	UT_ASSERT(pLastRunToMerge->getType() == FPRUN_TEXT);
 
+	_assertRunListIntegrity();
+
 	fp_TextRun* pFirst = (fp_TextRun*) pFirstRunToMerge;
 
 	bool bDone = false;
@@ -678,10 +676,14 @@ void fl_BlockLayout::_mergeRuns(fp_Run* pFirstRunToMerge, fp_Run* pLastRunToMerg
 
 		pFirst->mergeWithNext();
 	}
+
+	_assertRunListIntegrity();
 }
 
 void fl_BlockLayout::coalesceRuns(void)
 {
+	_assertRunListIntegrity();
+
 #if 1
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
@@ -752,6 +754,8 @@ void fl_BlockLayout::coalesceRuns(void)
 		_mergeRuns(pFirstRunInChain, pLastRun);
 	}
 #endif	
+
+	_assertRunListIntegrity();
 }
 
 void fl_BlockLayout::collapse(void)
@@ -851,9 +855,20 @@ void fl_BlockLayout::_removeAllEmptyLines(void)
 	}
 }
 
-bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
+/*!
+  Truncate layout from the specified Run
+  \param pTruncRun First Run to be truncated
+  \return True
+
+  This will remove all Runs starting from pTruncRun to the last Run on
+  the block from their lines (and delete them from the display).
+
+  \note The Run list may be inconsistent when this function is
+        called, so no assertion.
+  */
+bool fl_BlockLayout::_truncateLayout(fp_Run* pTruncRun)
 {
-	// special case, nothing to do
+	// Special case, nothing to do
 	if (!pTruncRun)
 	{
 		return true;
@@ -864,17 +879,15 @@ bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 		m_pFirstRun = NULL;
 	}
 
-	fp_Run* pRun;
-	
-	// remove runs from screen
-	pRun = pTruncRun;
+	// Remove runs from screen
+	fp_Run* pRun = pTruncRun;
 	while (pRun)
 	{
 		pRun->clearScreen();
 		pRun = pRun->getNext();
 	}
 
-	// remove runs from lines
+	// Remove runs from lines
 	pRun = pTruncRun;
 	while (pRun)
 	{
@@ -887,75 +900,17 @@ bool fl_BlockLayout::truncateLayout(fp_Run* pTruncRun)
 	}
 
 	_removeAllEmptyLines();
-	
+
 	return true;
 }
 
-void fl_BlockLayout::checkForBeginOnForcedBreak(void)
-{
-	fp_Line* pFirstLine = getFirstLine();
-	UT_ASSERT(pFirstLine);
-
-	fp_Run* pFirstRun = pFirstLine->getLastRun();
-	UT_ASSERT(pFirstRun);
-
-	if (pFirstRun->canContainPoint())
-	{
-		return;
-	}
-	
-	/*
-	  We add a zero-length text run on the first line, before the break.
-	*/
-
-	GR_Graphics* pG = m_pLayout->getGraphics();
-	UT_ASSERT(pG);
-
-	fp_TextRun* pNewRun = new fp_TextRun(this, pG, m_pFirstRun->getBlockOffset(), 0);
-	// TODO: Check for out-of-memory. Only assert for now
-	UT_ASSERT(pNewRun);
-
-	m_pFirstRun->insertIntoRunListBeforeThis(*pNewRun);
-	pFirstLine->insertRun(pNewRun);
-	m_pFirstRun = pNewRun;
-
-	pFirstLine->layout();
-}
-
-void fl_BlockLayout::checkForEndOnForcedBreak(void)
-{
-	fp_Line* pLastLine = getLastLine();
-	UT_ASSERT(pLastLine);
-	
-	fp_Run* pLastRun = pLastLine->getLastRun();
-	UT_ASSERT(pLastRun);
-
-	if (pLastRun->canContainPoint())
-	{
-		return;
-	}
-
-	/*
-	  We add a zero-length text run on a line by itself.
-	*/
-
-	GR_Graphics* pG = m_pLayout->getGraphics();
-	fp_TextRun* pNewRun = new fp_TextRun(this, pG, pLastRun->getBlockOffset() + pLastRun->getLength(), 0);
-
-	pLastRun->insertIntoRunListAfterThis(*pNewRun);
-
-	fp_Line* pNewLine = getNewLine();
-	UT_ASSERT(pNewLine);
-	UT_ASSERT(pNewLine == m_pLastLine);
-
-	// the line just contains the empty run
-	pNewLine->addRun(pNewRun);
-
-	pNewLine->layout();
-}
-
+/*!
+  Move all Runs in the block onto a new line.
+  This is only called during block creation when there are no existing
+  lines in the block.  */
 void fl_BlockLayout::_stuffAllRunsOnALine(void)
 {
+	UT_ASSERT(m_pFirstLine == NULL);
 	fp_Line* pLine = getNewLine();
 	UT_ASSERT(pLine);
 	
@@ -967,72 +922,119 @@ void fl_BlockLayout::_stuffAllRunsOnALine(void)
 	}
 }
 
-void fl_BlockLayout::_insertFakeTextRun(void)
-{
-	// construct a zero-length text run just to have something there
-	// and provide something to hook a line to.
+/*!
+  Add end-of-paragraph Run to block
 
+  This function adds the EOP Run to the block.  The presence of the
+  EOP is an invariant (except for when merging / splitting blocks) and
+  ensures that the cursor can always be placed on the last line of a
+  block.  If there are multiple lines, the first N-1 lines will have a
+  forced break of some kind which can also hold the cursor.
+*/
+void
+fl_BlockLayout::_insertEndOfParagraphRun(void)
+{
 	UT_ASSERT(!m_pFirstRun);
 
-        FV_View* ppView = m_pLayout->getView();
-        if(ppView)
-	        ppView->eraseInsertionPoint();
+#if 0 // FIXME: Surely should also insert it again!?
+	FV_View* ppView = m_pLayout->getView();
+	if (ppView)
+	{
+		ppView->eraseInsertionPoint();
+	}
+#endif
 
 	GR_Graphics* pG = m_pLayout->getGraphics();
-	m_pFirstRun = new fp_TextRun(this, pG, 0, 0);
+	fp_EndOfParagraphRun* pEOPRun = new fp_EndOfParagraphRun(this, pG, 0, 0);
+	m_pFirstRun = pEOPRun;
 	m_pFirstRun->fetchCharWidths(&m_gbCharWidths);
-	if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+
+	m_bNeedsRedraw = true;
+
+	// FIXME:jskov Why don't the header/footer need the line?
+	if (getSectionLayout() 
+		&& (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
 	{
 	        return;
 	}
 
 	if (!m_pFirstLine)
+	{
 		getNewLine();
+	}
 
 	UT_ASSERT(m_pFirstLine->countRuns() == 0);
 	
 	m_pFirstLine->addRun(m_pFirstRun);
+
 	m_pFirstLine->layout();
+
+	// Run list should be valid now.
+	_assertRunListIntegrity();
 }
 
-// Split the line the Run resides on, ensuring that the resulting two lines
-// are both valid in the sense of being able to contain the point.
-void fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
+/*!
+  Remove end-of-paragraph Run from block
+
+  This function does the opposite of the _insertEndOfParagraphRun
+  function.
+
+  \note It should <b>only</b> be called by functions that do really
+        low-level handling of blocks and only on newly created blocks.
+*/
+void
+fl_BlockLayout::_purgeEndOfParagraphRun(void)
 {
+	UT_ASSERT(m_pFirstRun && 
+			  FPRUN_ENDOFPARAGRAPH == m_pFirstRun->getType());
+	UT_ASSERT(m_pFirstLine && m_pFirstLine->countRuns() == 1);
+
+	// Run list should be valid when called (but not at exit!)
+	_assertRunListIntegrity();
+
+	m_pFirstLine->removeRun(m_pFirstRun);
+	delete m_pFirstRun;
+	m_pFirstRun = NULL;
+
+	m_pFirstLine->remove();
+	delete m_pFirstLine;
+	m_pFirstLine = NULL;
+	m_pLastLine = NULL;
+}
+
+/*!
+  Split the line the Run resides on
+  \param pRun The Run to split the line after
+
+  There is never added any Runs as it happened in the past to ensure
+  that both lines can hold the point. This is because the caller
+  always does that now.
+*/
+void
+fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
+{
+	_assertRunListIntegrity();
+
 	// When loading a document, there may not have been created
 	// lines yet. Get a first one created and hope for the best...
 	// Sevior: Ah here is one source of the multi-level list bug we
 	// need a last line from the previous block before we call this.
-	if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
+	if (getPrev() != NULL && getPrev()->getLastLine() == NULL)
 	{
 		UT_DEBUGMSG(("In _breakLineAfterRun no LastLine \n"));
-		UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
+		UT_DEBUGMSG(("getPrev = %d this = %d \n", getPrev(), this));
 		//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
+
+	// Add a line for the Run if necessary
 	if (!m_pFirstLine)
 		_stuffAllRunsOnALine();
-
-	// First make sure the old line can contain the point
-	fp_Line* pLine = pRun->getLine();
-	// (This is a sloppy check - may have to loop between the two Runs
-	//  and check that at least one Run can contain the point.)
-	if (pLine->getFirstRun() == pRun)
-	{
-		// Add a new zero-length Run at the start of the old
-		// line.
-		GR_Graphics* pG = m_pLayout->getGraphics();
-		fp_TextRun* pNewRun = new fp_TextRun(this, pG, pRun->getBlockOffset(), 0);
-		pRun->insertIntoRunListBeforeThis(*pNewRun);
-		pLine->insertRun(pNewRun);
-		// Update FirstRun if necessary
-		if (pLine->isFirstLineInBlock())
-		    m_pFirstRun = pNewRun;
-	}
 
 	// Create the new line
 	fp_Line* pNewLine = new fp_Line();
 	UT_ASSERT(pNewLine);
 	// Insert it after the current line
+	fp_Line* pLine = pRun->getLine();
 	pNewLine->setPrev(pLine);
 	pNewLine->setNext(pLine->getNext());
 	pLine->setNext(pNewLine);
@@ -1045,129 +1047,106 @@ void fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	pLine->getContainer()->insertLineAfter(pNewLine, pLine);
 
 	// Now add Runs following pRun on the same line to the new
-	// line. Keep track of whether any Runs that can contain Point
-	// are added.
-	bool bCanContaintPoint = false;
+	// line.
 	fp_Run* pCurrentRun = pRun->getNext();
 	while (pCurrentRun && pCurrentRun->getLine() == pLine)
 	{
 		pLine->removeRun(pCurrentRun, true);
 		pNewLine->addRun(pCurrentRun);
-		if (pCurrentRun->canContainPoint())
-			bCanContaintPoint = true;
 		pCurrentRun = pCurrentRun->getNext();
 	}
 	
-	if (!bCanContaintPoint)
-	{
-		// No Runs that can contain Point were added to the
-		// new line. Add a new zero-length Run at the start of
-		// the new line.
-		GR_Graphics* pG = m_pLayout->getGraphics();
-		fp_TextRun* pNewRun = new fp_TextRun(this, pG, pRun->getBlockOffset() + pRun->getLength(), 0);
-		pRun->insertIntoRunListAfterThis(*pNewRun);
-		pNewLine->insertRun(pNewRun);
-	}
-
 	// Update the layout information in the lines.
 	pLine->layout();
 	pNewLine->layout();
+
+	_assertRunListIntegrity();
 }
 
-bool fl_BlockLayout::_validateBlockForPoint(void)
+/*!
+  Format paragraph
+  \return 0
+  Formatting a paragraph means splitting the content into lines which
+  will fit in the container.  */
+int
+fl_BlockLayout::format()
 {
-	// check that all lines in the block have at least one run
-	// which can contain the insertion point.
+	_assertRunListIntegrity();
 
-	fp_Line* pLine = getFirstLine();
-	while (pLine)
+	// Remember state of cursor
+	m_bCursorErased = false;
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
 	{
-		bool bCanContainPoint = false;
-		
-		fp_Run* pRun = pLine->getFirstRun();
-		while (pRun)
+		if (pView->isCursorOn() == true)
 		{
-			if (pRun->canContainPoint())
-			{
-				bCanContainPoint = true;
-				break;
-			}
-			pRun = pRun->getNext();
-		}
-
-		if (!bCanContainPoint)
-		    return false;
-
-		pLine = pLine->getNext();
-	}
-
-	return true;
-}
-
-
-int fl_BlockLayout::format()
-{
-        m_bCursorErased = false;
-        FV_View* pView = m_pLayout->getView();
-        if(pView)
-	{
-		if(pView->isCursorOn()== true)
-		{
-		        pView->eraseInsertionPoint();
+			pView->eraseInsertionPoint();
 			m_bCursorErased = true;
 		}
 	}
 	_lookupProperties();
+
 	if (m_pFirstRun)
 	{
+		// Recalculate widths of Runs if necessary.
 		if (m_bFixCharWidths)
 		{
 			fp_Run* pRun = m_pFirstRun;
 			while (pRun)
 			{
 				pRun->recalcWidth();
-				
 				pRun = pRun->getNext();
 			}
 		}
 
+		// Create the first line if necessary.
 		if (!m_pFirstLine)
 			_stuffAllRunsOnALine();
 
 		recalculateFields();
+
+		// Reformat paragraph
 		m_pBreaker->breakParagraph(this);
 		_removeAllEmptyLines();
-		checkForBeginOnForcedBreak();
-		checkForEndOnForcedBreak();
 	}
 	else
 	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		// No paragraph content. Just insert the EOP Run.
 		_removeAllEmptyLines();
-		_insertFakeTextRun();
+		_insertEndOfParagraphRun();
 	}
-	if(m_pAutoNum && isListLabelInBlock() == true && m_bListLabelCreated == false)
+
+	if ((m_pAutoNum && isListLabelInBlock() == true)
+		&& (m_bListLabelCreated == false))
 	{
-	        m_bListLabelCreated =true;
+		m_bListLabelCreated =true;
 	}
+
+	// Paragraph has been reformatted.
 	m_bNeedsReformat = false;
-	if(m_bCursorErased == true)
+
+	// Redraw cursor if necessary
+	if (m_bCursorErased == true)
 	{
-	        pView->drawInsertionPoint();
+		pView->drawInsertionPoint();
 		m_bCursorErased = false;
 	}
+
+	_assertRunListIntegrity();
 
 	return 0;	// TODO return code
 }
 
 void fl_BlockLayout::redrawUpdate()
 {
-        m_bCursorErased = false;
-        FV_View* pView = m_pLayout->getView();
-        if(pView)
+	m_bCursorErased = false;
+	FV_View* pView = m_pLayout->getView();
+	if (pView)
 	{
-		if(pView->isCursorOn()== true)
+		if (pView->isCursorOn()== true)
 		{
-		        pView->eraseInsertionPoint();
+			pView->eraseInsertionPoint();
 			m_bCursorErased = true;
 		}
 	}
@@ -1176,7 +1155,7 @@ void fl_BlockLayout::redrawUpdate()
 	fp_Line* pLine = m_pFirstLine;
 	while (pLine)
 	{
-		if(pLine->needsRedraw())
+		if (pLine->needsRedraw())
 		{
 			pLine->redrawUpdate();
 		}
@@ -1190,18 +1169,18 @@ void fl_BlockLayout::redrawUpdate()
 
 	if(m_bCursorErased == true)
 	{
-	        pView->drawInsertionPoint();
+		pView->drawInsertionPoint();
 		m_bCursorErased = false;
 	}
 }
 
 fp_Line* fl_BlockLayout::getNewLine(void)
 {
-        if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
-	  {
+	if (getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+	{
 	    UT_ASSERT(0);
 	    return NULL;
-	  }
+	}
 	fp_Line* pLine = new fp_Line();
 	// TODO: Handle out-of-memory
 	UT_ASSERT(pLine);
@@ -1321,16 +1300,29 @@ bool	fl_BlockLayout::getBlockBuf(UT_GrowBuf * pgb) const
 	return m_pDoc->getBlockBuf(m_sdh, pgb);
 }
 
-fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
-										bool bEOL,
-										UT_sint32& x, UT_sint32& y,
-										UT_sint32& x2,
-										UT_sint32& y2,
-										UT_sint32& height,
-										bool& bDirection)
-{
-	// Compute insertion point coordinates and size
 
+/*!
+  Compute insertion point (carret) coordinates and size
+  \param iPos Document position of cursor
+  \param bEOL Set if EOL position is wanted
+  \retval x X position (LTR)
+  \retval y Y position (LTR)
+  \retval x2 X position (RTL)
+  \retval y2 Y position (RTL)
+  \retval height Height of carret
+  \retval bDirection Editing direction (true = LTR, false = RTL)
+  \return The Run containing (or next to) the carret, or NULL if the block
+          has no formatting information.
+  \fixme bDirection should be an enum type
+*/
+fp_Run*
+fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
+								bool bEOL,
+								UT_sint32& x,  UT_sint32& y,
+								UT_sint32& x2, UT_sint32& y2,
+								UT_sint32& height,
+								bool& bDirection)
+{
 	if (!m_pFirstLine || !m_pFirstRun)
 	{
 		// when we have no formatting information, can't find anything
@@ -1431,38 +1423,48 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	{
 	    if (bCoordOfPrevRun && pRun->letPointPass())
 	    {
-		// This looks a little weird. What it does is first
-		// try to go one Run back only, if allowed.
-		// If that fails, use the original Run.
-		pPrevRun = pRun->getPrev();
-		if (!pPrevRun
-		    || !pPrevRun->letPointPass()
-		    || !pPrevRun->canContainPoint())
-		    pPrevRun = pRun;
+			// This looks a little weird. What it does is first try to
+			// go one Run back only, if allowed.  If that fails, use
+			// the original Run.
+			pPrevRun = pRun->getPrev();
+			if (!pPrevRun
+				|| !pPrevRun->letPointPass()
+				|| !pPrevRun->canContainPoint())
+			{
+				pPrevRun = pRun;
+			}
+			else
+			{
+				// If the code gets one Run back, keep going back
+				// until finding a Run that is valid for point
+				// coordinate calculations.
+				while (pPrevRun &&
+					   !pPrevRun->letPointPass()
+					   || !pPrevRun->canContainPoint())
+				{
+					pPrevRun = pPrevRun->getPrev();
+				}
+
+				// If this fails, go with the original Run.
+				if (!pPrevRun)
+				{
+					pPrevRun = pRun;
+				}
+			}
+
+
+			// One final check: only allow the point to move to a
+			// different line if bEOL.
+			if (!bEOL && pRun->getLine() != pPrevRun->getLine())
+			{
+				pPrevRun = pRun;
+			}
+
+			pPrevRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+	    }
 		else
 		{
-		    // If the code gets one Run back, keep going back
-		    // until finding a Run that is valid for point
-		    // coordinate calculations.
-		    while (pPrevRun &&
-			   !pPrevRun->letPointPass()
-			   || !pPrevRun->canContainPoint())
-			pPrevRun = pPrevRun->getPrev();
-
-		    // If this fails, go with the original Run.
-		    if (!pPrevRun)
-			pPrevRun = pRun;
-		}
-
-
-		// One final check: only allow the point to move to a
-		// different line if bEOL.
-		if (!bEOL && pRun->getLine() != pPrevRun->getLine())
-		    pPrevRun = pRun;
-
-		pPrevRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
-	    } else {
-		pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+			pRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
 	    }
 
 	    return pRun;
@@ -1504,7 +1506,9 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// requested offset is actually that of i.
 	//
 	while (pPrevRun && !pPrevRun->canContainPoint())
+	{
 	    pPrevRun = pPrevRun->getPrev();
+	}
 
 	// If we went past the head of the list, it means that the
 	// originally found Run is the only one on this display line.
@@ -1528,7 +1532,7 @@ fp_Run* fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// Always return position _and_ Run of the previous line. Old
 	// implementation returned pRun, but this will cause the
 	// cursor to wander if End is pressed multiple times.
-		pPrevRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
+	pPrevRun->findPointCoords(iRelOffset, x, y, x2, y2, height, bDirection);
 	return pPrevRun;
 }
 
@@ -2329,6 +2333,8 @@ bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 
 bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len)
 {
+	_assertRunListIntegrity();
+
         FV_View* pView = m_pLayout->getView();
         if(pView)
 	        pView->eraseInsertionPoint();
@@ -2420,6 +2426,8 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	{
 		_doInsertTextSpan(iNormalBase + blockOffset, i - iNormalBase);
 	}
+
+	_assertRunListIntegrity();
 
 	return true;
 }
@@ -2705,9 +2713,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	PT_BlockOffset blockOffset = pNewRun->getBlockOffset();
 	UT_uint32 len = pNewRun->getLength();
 	
-#ifndef NDEBUG	
-       	_assertRunListIntegrity();
-#endif
+	_assertRunListIntegrity();
 
 
 	FV_View* ppView = m_pLayout->getView();
@@ -2721,27 +2727,6 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		
 		pNewTextRun->fetchCharWidths(&m_gbCharWidths);
 		pNewTextRun->recalcWidth();
-	}
-	
-	if (m_pFirstRun && !(m_pFirstRun->getNext()) && IsZeroLengthTextRun(m_pFirstRun))
-	{
-		/*
-		  We special case the situation where we are inserting into
-		  a block which has nothing but the fake run.
-		*/
-		// Handle special case for headers/footers where a line may not be
-		// defined
-		fp_Line * pLine = m_pFirstRun->getLine();
-		if(pLine)
-			pLine->removeRun(m_pFirstRun);
-		delete m_pFirstRun;
-		m_pFirstRun = NULL;
-
-		m_pFirstRun = pNewRun;
-		if(m_pLastLine)
-			m_pLastLine->addRun(pNewRun);
-
-		return true;
 	}
 	
 	bool bInserted = false;
@@ -2855,15 +2840,15 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		}
 	}
 
-#ifndef NDEBUG	
-       	_assertRunListIntegrity();
-#endif
+	_assertRunListIntegrity();
 	
 	return true;
 }
 
 bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 {
+	_assertRunListIntegrity();
+
 	UT_ASSERT(pcrs->getType()==PX_ChangeRecord::PXT_InsertSpan);
 	//UT_ASSERT(pcrs->getPosition() >= getPosition());		/* valid assert, but very expensive */
 	
@@ -2969,8 +2954,6 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 
 	setNeedsReformat();
 
-	UT_ASSERT(_validateBlockForPoint());
-
 	FV_View* pView = m_pLayout->getView();
 	if (pView && pView->isActive())
 	{
@@ -3008,37 +2991,63 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	if (m_pLayout->getAutoSpellCheck())
 		_insertSquiggles(blockOffset, len);
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
 #ifndef NDEBUG
-void fl_BlockLayout::_assertRunListIntegrity(void)
+/*!
+  Assert integrity of the Run list
+  Assert the following properties:
+   - Offsets are correct
+   - No adjacent FmtMark Runs
+   - Only FmtMark Runs have length zero
+   - List ends in an EOP Run
+*/
+void
+fl_BlockLayout::_assertRunListIntegrityImpl(void)
 {
 	fp_Run* pRun = m_pFirstRun;
 	UT_uint32 iOffset = 0;
 	while (pRun)
 	{
-		UT_ASSERT(iOffset == pRun->getBlockOffset());
+		// Verify that offset of this block is correct.
+		UT_ASSERT( iOffset == pRun->getBlockOffset() );
 
 		iOffset += pRun->getLength();
 
-		// verify that we don't have two adjacent FmtMarks.
-		// if this run is a FmtMark and there is a next,
-		// verify that the next is not a FmtMark.
-		UT_ASSERT(  ((pRun->getType() == FPRUN_FMTMARK) && (pRun->getNext()))
-				  ? (pRun->getNext()->getType() != FPRUN_FMTMARK)
-				  : 1);
-				
+		// Verify that we don't have two adjacent FmtMarks.
+		UT_ASSERT( ((pRun->getType() != FPRUN_FMTMARK) 
+					|| !pRun->getNext()
+					|| (pRun->getNext()->getType() != FPRUN_FMTMARK)) );
+
+		// Verify that the Run has a non-zero length (or is a FmtMark)
+		UT_ASSERT( (FPRUN_FMTMARK == pRun->getType())
+				   || (pRun->getLength() > 0) );
+
+		// Verify that if there is no next Run, this Run is the EOP Run.
+		// Or we're in the middle of loading a document.
+		UT_ASSERT( pRun->getNext() 
+				   || (FPRUN_ENDOFPARAGRAPH == pRun->getType()) );
+
 		pRun = pRun->getNext();
 	}
 }
 #endif /* !NDEBUG */
 
+inline void
+fl_BlockLayout::_assertRunListIntegrity(void)
+{
+#ifndef NDEBUG
+	_assertRunListIntegrityImpl();
+#endif
+}
+
+
 bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 {
-#ifndef NDEBUG	
 	_assertRunListIntegrity();
-#endif
 
 	/* TODO the attempts herein to do fetchCharWidths will fail. */
 	
@@ -3102,24 +3111,25 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 
 			if ((pRun->getLength() == 0) && (pRun->getType() != FPRUN_FMTMARK))
 			{
-				// delete this run
+				// Remove Run from line
 				fp_Line* pLine = pRun->getLine();
 				UT_ASSERT(pLine);
-
 				pLine->removeRun(pRun, true);
 
+				// Unlink Run and delete it
 				if (m_pFirstRun == pRun)
 				{
 					m_pFirstRun = pRun->getNext();
 				}
-
 				pRun->unlinkFromRunList();
-
 				delete pRun;
 
 				if (!m_pFirstRun)
 				{
-					_insertFakeTextRun();
+					// When deleting content in a block, the EOP Run
+					// should always remain.
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					_insertEndOfParagraphRun();
 				}
 			}
 		}
@@ -3127,15 +3137,15 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 		pRun = pNextRun;
 	}
 
-#ifndef NDEBUG	
 	_assertRunListIntegrity();
-#endif
 
 	return true;
 }
 
 bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 {
+	_assertRunListIntegrity();
+
 	UT_ASSERT(pcrs->getType()==PX_ChangeRecord::PXT_DeleteSpan);
 			
 	PT_BlockOffset blockOffset = pcrs->getBlockOffset();
@@ -3162,6 +3172,8 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	if (m_pLayout->getAutoSpellCheck())
 		_deleteSquiggles(blockOffset, len);
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
@@ -3176,6 +3188,8 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 */
 bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * pcrsc)
 {
+	_assertRunListIntegrity();
+
 	UT_ASSERT(pcrsc->getType()==PX_ChangeRecord::PXT_ChangeSpan);
 		
 	PT_BlockOffset blockOffset = pcrsc->getBlockOffset();
@@ -3256,87 +3270,101 @@ bool fl_BlockLayout::doclistener_changeSpan(const PX_ChangeRecord_SpanChange * p
 
 	setNeedsReformat();
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
+/*!
+  Delete strux Run
+  \param pcrx Change record for the operation
+  \return true if succeeded, false if not
+  This function will merge the content of this strux to the previous
+  strux. 
+*/
 bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 {
+	_assertRunListIntegrity();
+
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
-	//
 	// First see if the block in a list. If so remove it!
-	//
 	if(m_pAutoNum != NULL)
 	{
-	        if( m_pAutoNum->isItem(getStruxDocHandle()) == true)
+		if( m_pAutoNum->isItem(getStruxDocHandle()) == true)
 		{
-		  //
-		  // This nifty method handles all the details
-		  //
-		        m_pAutoNum->removeItem(getStruxDocHandle());
-
-		}
-	}
-	fl_BlockLayout*	pPrevBL = m_pPrev;
-	if (!pPrevBL)
-	{
-		if (m_pFirstRun && IsZeroLengthTextRun(m_pFirstRun))
-		{
-			// we have a fake run.  Kill it.
-			fp_Run * pNuke = m_pFirstRun;
-
-			// detach from their line
-			fp_Line* pLine = pNuke->getLine();
-			UT_ASSERT(pLine);
-										
-			pLine->removeRun(pNuke);
-			delete pNuke;
-		
-			m_pFirstRun = NULL;
-		}
-
-		//  The only case where we can get away with deleting the first block
-		//  of a section is when it actually has no content.
-		UT_ASSERT(!m_pFirstRun);
-		if (m_pFirstRun)
-		{
-			UT_DEBUGMSG(("no prior BlockLayout\n"));
-			return false;
+			// This nifty method handles all the details
+			m_pAutoNum->removeItem(getStruxDocHandle());
 		}
 	}
 
-	// erase the old version
+	// Erase the old version
 	clearScreen(m_pLayout->getGraphics());
 
-	if (pPrevBL && (pPrevBL->m_pFirstRun)
-		&& !(pPrevBL->m_pFirstRun->getNext())
-		&& (IsZeroLengthTextRun(pPrevBL->m_pFirstRun)))
-	{
-		// we have a fake run in pPrevBL.  Kill it.
-		fp_Run * pNuke = pPrevBL->m_pFirstRun;
+	// If there is a previous strux, we merge the Runs from this strux
+	// into it - including the EOP Run, so delete that in the previous
+	// strux.
+	// If there is no previous strux (this being the first strux in
+	// the document) this will be empty - but the EOP Run needs to be
+	// deleted.
 
-		// detach from their line
-		fp_Line* pLine = pNuke->getLine();
+	fl_BlockLayout*	pPrevBL = m_pPrev;
+	if (pPrevBL)
+	{
+		// Find the EOP Run.
+		fp_Run* pPrevRun = NULL;
+		fp_Run* pNukeRun = pPrevBL->m_pFirstRun;
+		for (; pNukeRun->getNext(); pNukeRun = pNukeRun->getNext())
+		{
+			pPrevRun = pNukeRun;
+			UT_ASSERT(FPRUN_ENDOFPARAGRAPH != pPrevRun->getType());
+		}
+		UT_ASSERT(FPRUN_ENDOFPARAGRAPH == pNukeRun->getType());
+
+		// Detach from the line
+		fp_Line* pLine = pNukeRun->getLine();
 		UT_ASSERT(pLine);
-										
-		pLine->removeRun(pNuke);
-		delete pNuke;
-		
-		pPrevBL->m_pFirstRun = NULL;
+		pLine->removeRun(pNukeRun);
+
+		// Unlink and delete it
+		if (pPrevRun)
+		{
+			pPrevRun->setNext(NULL);
+		}
+		else
+		{
+			pPrevBL->m_pFirstRun = NULL;
+		}
+		delete pNukeRun;
+	}
+	else
+	{
+		// Delete end-of-paragraph Run in this strux
+		UT_ASSERT(m_pFirstRun 
+				  && (FPRUN_ENDOFPARAGRAPH == m_pFirstRun->getType()));
+
+		fp_Run* pNukeRun = m_pFirstRun;
+
+		// Detach from the line
+		fp_Line* pLine = pNukeRun->getLine();
+		UT_ASSERT(pLine);
+		pLine->removeRun(pNukeRun);
+
+		// Unlink and delete it
+		m_pFirstRun = NULL;
+		delete pNukeRun;
+
 	}
 
-	/*
-	  The idea here is to append the runs of the deleted block,
-	  if any, at the end of the previous block.
-	*/
+	// The idea here is to append the runs of the deleted block, if
+	// any, at the end of the previous block.
 	UT_uint32 offset = 0;
 	if (m_pFirstRun)
 	{
-		// figure out where the merge point is
+		// Figure out where the merge point is
 		fp_Run * pRun = pPrevBL->m_pFirstRun;
 		fp_Run * pLastRun = NULL;
-
 		while (pRun)
 		{
 			pLastRun = pRun;
@@ -3344,76 +3372,37 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			pRun = pRun->getNext();
 		}
 
-		// link them together
+		// Link them together
 		if (pLastRun)
 		{
-			// skip over any zero-length runs
-			pRun = m_pFirstRun;
-
-			while (pRun && IsZeroLengthTextRun(pRun))
-			{
-				fp_Run * pNuke = pRun;
-				
-				pRun = pNuke->getNext();
-
-				// detach from their line
-				fp_Line* pLine = pNuke->getLine();
-				UT_ASSERT(pLine);
-										
-				pLine->removeRun(pNuke);
-										
-				delete pNuke;
-			}
-
-#if 0		
-			//BUG: Code from Mike that crashes hard
-
-			UT_ASSERT(pRun);
-
-			m_pFirstRun = pRun;
-
-			// then link what's left
-			m_pFirstRun->insertIntoRunListAfterThis(*pLastRun);
-
-
-#else
-			//BUG: Quick and Dirty Replacement Code
-
-			m_pFirstRun = pRun;
-
-			//then link what's left
 			pLastRun->setNext(m_pFirstRun);
-
 			if(m_pFirstRun)
 			{
 				m_pFirstRun->setPrev(pLastRun);
 			}
-#endif
-			
 		}
 		else
 		{
 			pPrevBL->m_pFirstRun = m_pFirstRun;
 		}
 
-		// merge charwidths
+		// Merge charwidths
 		UT_uint32 lenNew = m_gbCharWidths.getLength();
 
 		pPrevBL->m_gbCharWidths.ins(offset, m_gbCharWidths, 0, lenNew);
 
 		fp_Line* pLastLine = pPrevBL->getLastLine();
 		
-		// tell all the new runs where they live
+		// Tell all the new runs where they live
 		pRun = m_pFirstRun;
 		while (pRun)
 		{
 			pRun->setBlockOffset(pRun->getBlockOffset() + offset);
 			pRun->setBlock(pPrevBL);
 			
-			// detach from their line
+			// Detach from their line
 			fp_Line* pLine = pRun->getLine();
 			UT_ASSERT(pLine);
-			
 			pLine->removeRun(pRun);
 
 			pLastLine->addRun(pRun);
@@ -3421,18 +3410,18 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			pRun = pRun->getNext();
 		}
 
-		// runs are no longer attached to this block
+		// Runs are no longer attached to this block
 		m_pFirstRun = NULL;
 	}
 
-	// get rid of everything else about the block
+	// Get rid of everything else about the block
 	purgeLayout();
 
+	// Unlink this block
 	if (pPrevBL)
 	{
 		pPrevBL->m_pNext = m_pNext;
 	}
-							
 	if (m_pNext)
 	{
 		m_pNext->m_pPrev = pPrevBL;
@@ -3444,30 +3433,38 @@ bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 	if (pPrevBL)
 	{	
-		// move all squiggles to previous block
+		// Move all squiggles to previous block
 		_mergeSquiggles(offset, pPrevBL);
 
-		// update the display
+		// Update the display
 //		pPrevBL->_lookupProperties();	// TODO: this may be needed
 		pPrevBL->setNeedsReformat();
 	}
 
-	// in case we've never checked this one
+	// In case we've never checked this one
 	m_pLayout->dequeueBlockForBackgroundCheck(this);
 
 	FV_View* pView = pSL->getDocLayout()->getView();
 	if (pView && pView->isActive())
+	{
 		pView->_setPoint(pcrx->getPosition());
+	}
 	else if(pView && pView->getPoint() > pcrx->getPosition())
+	{
 		pView->_setPoint(pView->getPoint() - 1);
+	}
 
-	delete this;			// TODO whoa!  this construct is VERY dangerous.
-	
+	_assertRunListIntegrity();
+
+	delete this;			// FIXME: whoa!  this construct is VERY dangerous.
+
 	return true;
 }
 
 bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
+	_assertRunListIntegrity();
+
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
 	FV_View* ppView = m_pLayout->getView();
@@ -3523,6 +3520,8 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	setNeedsReformat();
 	m_bCursorErased = false;
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
@@ -3537,7 +3536,6 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)this;
 	pfnBindHandles(sdh,lid,sfhNew);
 
-	_insertFakeTextRun();
 	setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
@@ -3545,9 +3543,11 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 		pView->_setPoint(pcrx->getPosition());
 	else if (pView) pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET);
 
+	// Run list should be valid now.
+	_assertRunListIntegrity();
+
 	return true;
 }
-
 bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 												PL_StruxDocHandle sdh,
 												PL_ListenerId lid,
@@ -3555,6 +3555,8 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 																		PL_ListenerId lid,
 																		PL_StruxFmtHandle sfhNew))
 {
+	_assertRunListIntegrity();
+
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
 	UT_ASSERT(pcrx->getStruxType()==PTX_Block);
 
@@ -3570,6 +3572,10 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		UT_DEBUGMSG(("no memory for BlockLayout\n"));
 		return false;
 	}
+	// The newly returned block will contain a line and EOP. Delete those
+	// since the code below expects an empty block
+	pNewBL->_purgeEndOfParagraphRun();
+
 	if(ppView)
 		ppView->eraseInsertionPoint();
 
@@ -3601,7 +3607,8 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	fp_Run* pFirstNewRun = NULL;
 	fp_Run* pLastRun = NULL;
 	fp_Run* pRun;
-	for (pRun=m_pFirstRun; (pRun && !pFirstNewRun); pLastRun=pRun, pRun=pRun->getNext())
+	for (pRun=m_pFirstRun; (pRun && !pFirstNewRun); 
+		 pLastRun=pRun, pRun=pRun->getNext())
 	{
 		// We have passed the point. Why didn't previous Run claim to
 		// hold the offset? Make the best of it in non-debug
@@ -3648,22 +3655,25 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pFirstNewRun = pFirstNewRun->getNext();
 	}
 
+	pLastRun = NULL;
 	if (pFirstNewRun && pFirstNewRun->getPrev())
 	{
-		// break doubly-linked list of runs into two distinct lists
+		// Break doubly-linked list of runs into two distinct lists.
+		// But remember the last Run in this block.
 
+		pLastRun = pFirstNewRun->getPrev();
 		pFirstNewRun->getPrev()->setNext(NULL);
 		pFirstNewRun->setPrev(NULL);
 	}
 
-	// pFirstNew can be NULL at this point.  It means that the entire
-	// set of runs in this block must remain with this block -- and
-	// the newly created block will be empty.
+	// pFirstNewRun can be NULL at this point.  It means that the
+	// entire set of runs in this block must remain with this block --
+	// and the newly created block will be empty.
 	//
-	// Also, note if pFirstNew == m_pFirstRun then we will be moving
+	// Also, note if pFirstNewRun == m_pFirstRun then we will be moving
 	// the entire set of runs to the newly created block -- and leave
 	// the current block empty.
-	
+
 	// Split charwidths across the two blocks
 	UT_uint32 lenNew = m_gbCharWidths.getLength() - blockOffset;
 	if (lenNew > 0)
@@ -3678,6 +3688,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	// Move remaining runs to new block
 	pNewBL->m_pFirstRun = pFirstNewRun;
 
+	// And update their positions
 	for (pRun=pFirstNewRun; (pRun); pRun=pRun->getNext())
 	{
 		pRun->setBlockOffset(pRun->getBlockOffset() - blockOffset);
@@ -3690,12 +3701,25 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	}
 
 	// Explicitly truncate rest of this block's layout
-	truncateLayout(pFirstNewRun);
-	if (m_pFirstRun)
-		coalesceRuns();
-	else
-		_insertFakeTextRun();
+	_truncateLayout(pFirstNewRun);
 
+	// Now make sure this block still has an EOP Run.
+	if (m_pFirstRun) {
+		UT_ASSERT(pLastRun);
+		// Create a new end-of-paragraph run and add it to the block.
+		fp_EndOfParagraphRun* pNewRun = 
+			new fp_EndOfParagraphRun(this, m_pLayout->getGraphics(), 0, 0);
+		pLastRun->setNext(pNewRun);
+		pNewRun->setPrev(pLastRun);
+		pNewRun->setBlockOffset(pLastRun->getBlockOffset() 
+								+ pLastRun->getLength());
+		pLastRun->getLine()->addRun(pNewRun);
+		coalesceRuns();
+	}
+	else
+	{
+		_insertEndOfParagraphRun();
+	}
 	setNeedsReformat();
 
 	// Throw all the runs onto one jumbo line in the new block
@@ -3703,7 +3727,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	if (pNewBL->m_pFirstRun)
 		pNewBL->coalesceRuns();
 	else
-		pNewBL->_insertFakeTextRun();
+		pNewBL->_insertEndOfParagraphRun();
 	pNewBL->setNeedsReformat();
 
 	FV_View* pView = m_pLayout->getView();
@@ -3730,6 +3754,8 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		m_pLayout->queueBlockForBackgroundCheck(reason, pNewBL);
 	}
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
@@ -3740,6 +3766,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 																		  PL_ListenerId lid,
 																		  PL_StruxFmtHandle sfhNew))
 {
+	_assertRunListIntegrity();
+
 	// Insert a section at the location given in the change record.
 	// Everything from this point forward (to the next section) needs
 	// to be re-parented to this new section.  We also need to verify
@@ -3798,6 +3826,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 		pView->_setPoint(pView->getPoint() + fl_BLOCK_STRUX_OFFSET + fl_BLOCK_STRUX_OFFSET);
 	}
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
@@ -3854,6 +3884,8 @@ void fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 												   const PX_ChangeRecord_Object * pcro)
 {
+	_assertRunListIntegrity();
+
 	switch (pcro->getObjectType())
 	{
 	case PTO_Image:
@@ -3878,10 +3910,14 @@ bool fl_BlockLayout::doclistener_populateObject(PT_BlockOffset blockOffset,
 		UT_ASSERT(0);
 		return false;
 	}
+
+	_assertRunListIntegrity();
 }
 
 bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcro)
 {
+	_assertRunListIntegrity();
+
 	PT_BlockOffset blockOffset = 0;
 
 	switch (pcro->getObjectType())
@@ -3924,11 +3960,15 @@ bool fl_BlockLayout::doclistener_insertObject(const PX_ChangeRecord_Object * pcr
 	if (m_pLayout->getAutoSpellCheck())
 		_insertSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
 bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcro)
 {
+	_assertRunListIntegrity();
+
 	PT_BlockOffset blockOffset = 0;
 
         FV_View* ppView = m_pLayout->getView();
@@ -3976,11 +4016,15 @@ bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * pcr
 	if (m_pLayout->getAutoSpellCheck())
 		_deleteSquiggles(blockOffset, 1);	// TODO: are objects always one wide?
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
 bool fl_BlockLayout::doclistener_changeObject(const PX_ChangeRecord_ObjectChange * pcroc)
 {
+
+	_assertRunListIntegrity();
 
 	FV_View* pView = m_pLayout->getView();
 	switch (pcroc->getObjectType())
@@ -4031,11 +4075,15 @@ done:
 		pView->_drawInsertionPoint();
 	}
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
 bool fl_BlockLayout::recalculateFields(void)
 {
+	_assertRunListIntegrity();
+
 	bool bResult = false;
 	fp_Run* pRun = m_pFirstRun;
  	while (pRun)
@@ -4054,6 +4102,9 @@ bool fl_BlockLayout::recalculateFields(void)
 		//}
 		pRun = pRun->getNext();
 	}
+
+	_assertRunListIntegrity();
+
 	return bResult;
 }
 
@@ -4254,6 +4305,8 @@ void fl_BlockLayout::setSectionLayout(fl_SectionLayout* pSectionLayout)
 
 bool fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * pcrfm)
 {
+	_assertRunListIntegrity();
+
 	PT_BlockOffset blockOffset = pcrfm->getBlockOffset();
 
 	UT_DEBUGMSG(("Edit:InsertFmtMark [blockOffset %ld]\n",blockOffset));
@@ -4279,12 +4332,16 @@ bool fl_BlockLayout::doclistener_insertFmtMark(const PX_ChangeRecord_FmtMark * p
 //	_insertSquiggles(blockOffset, 1);
 #endif
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
 
 bool fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * pcrfm)
 {
+	_assertRunListIntegrity();
+
 	PT_BlockOffset blockOffset = pcrfm->getBlockOffset();
 
 	UT_DEBUGMSG(("Edit:DeleteFmtMark: [blockOffset %ld]\n",blockOffset));
@@ -4307,49 +4364,60 @@ bool fl_BlockLayout::doclistener_deleteFmtMark(const PX_ChangeRecord_FmtMark * p
 //	_deleteSquiggles(blockOffset, 1);
 #endif
 
+	_assertRunListIntegrity();
+
 	return true;
 }
 
-bool fl_BlockLayout::_deleteFmtMark(PT_BlockOffset blockOffset)
+/*!
+  Delete FmtMarkRun
+  \param blockOffset Offset of Run to delete
+  \return True
+
+  Deleting a FmtMarkRun is a special version of _delete() since a
+  FmtMarkRun has a length of zero.
+
+  \fixme FmtMarkRun should not have a length of zero - jskov
+*/
+bool
+fl_BlockLayout::_deleteFmtMark(PT_BlockOffset blockOffset)
 {
-	// do what _delete() does but special cased for a FmtMark run
-	// (which is of length zero).
-
-#ifndef NDEBUG	
-	_assertRunListIntegrity();
-#endif
-
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
 	{
 		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
 
-// sterwill -- is this call to getLength() needed?  iRunLength is not
-//             used in this function.
+		// Remember where we're going, since this run may get axed
+		fp_Run* pNextRun = pRun->getNext();
 
-//		UT_uint32 iRunLength = pRun->getLength();
-
-		fp_Run* pNextRun = pRun->getNext();	// remember where we're going, since this run may get axed
-
-		if ( (iRunBlockOffset == blockOffset) && (pRun->getType() == FPRUN_FMTMARK) )
+		if ( (iRunBlockOffset == blockOffset)
+			 && (pRun->getType() == FPRUN_FMTMARK) )
 		{
 			fp_Line* pLine = pRun->getLine();
 			UT_ASSERT(pLine);
 
-			// Sevior Interesting bug here!!!
+			// Remove Run from line
 			if(pLine)
-			        pLine->removeRun(pRun);
+			{
+				pLine->removeRun(pRun);
+			}
 
+			// Unlink and delete it
 			if (m_pFirstRun == pRun)
+			{
 				m_pFirstRun = pRun->getNext();
-
+			}
 			pRun->unlinkFromRunList();
-
 			delete pRun;
 
 			if (!m_pFirstRun)
-				_insertFakeTextRun();
-			
+			{
+				// By the time we get to deleting anything from a block,
+				// it should already have the necessary EOP in place.
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				_insertEndOfParagraphRun();
+			}
+
 			// I don't believe that we need to keep looping at this point.
 			// We should not ever have two adjacent FmtMarks....
 			UT_ASSERT(!pNextRun || pNextRun->getType() != FPRUN_FMTMARK);
@@ -4360,15 +4428,13 @@ bool fl_BlockLayout::_deleteFmtMark(PT_BlockOffset blockOffset)
 		pRun = pNextRun;
 	}
 
-#ifndef NDEBUG	
-	_assertRunListIntegrity();
-#endif
-
 	return true;
 }
 
 bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChange * pcrfmc)
 {
+	_assertRunListIntegrity();
+
 	PT_BlockOffset blockOffset = pcrfmc->getBlockOffset();
 	
 	UT_DEBUGMSG(("Edit:ChangeFmtMark: [blockOffset %ld]\n",blockOffset));
@@ -4398,6 +4464,8 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 		pView->_setPoint(pcrfmc->getPosition());
 		pView->notifyListeners(AV_CHG_FMTCHAR);
 	}
+
+	_assertRunListIntegrity();
 
 	return true;
 }

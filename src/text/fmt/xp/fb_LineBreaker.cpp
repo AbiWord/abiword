@@ -142,13 +142,11 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					m_pLastRunToKeep = pCurrentRun;
 					goto done_with_run_loop;
 				}
-				/*
 				case FPRUN_ENDOFPARAGRAPH:
 				{
 					m_pLastRunToKeep = pCurrentRun;
 					goto done_with_run_loop;
 				}
-				*/
 				case FPRUN_TAB:
 				{
 					// Find the position of this tab and its type.  If

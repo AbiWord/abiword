@@ -105,6 +105,12 @@ fp_TextRun::~fp_TextRun()
 #endif
 }
 
+bool fp_TextRun::hasLayoutProperties(void) const
+{
+	return true;
+}
+
+
 void fp_TextRun::lookupProperties(void)
 {
 	clearScreen();

@@ -48,7 +48,7 @@ void fp_Run::__dump(FILE * fp) const
 	static const char * s_names[] = { "Text", "Image", "Tab", 
 									  "LineBreak", "ColBreak", "PageBreak",
 									  "Field", "FmtMark", "FieldStart",
-									  "FieldEnd" };
+									  "FieldEnd", "EOP" };
 	UT_ASSERT(NrElements(s_names)==(FPRUN__LAST__-FPRUN__FIRST__));
 	const char * szName = 
 		(((m_iType >= FPRUN__FIRST__) && (m_iType <= FPRUN__LAST__)) 
@@ -72,10 +72,8 @@ void fp_TextRun::__dump(FILE * fp) const
 {
 	fp_Run::__dump(fp);
 
-	if (m_iLen == 0)
-		return;
-
 	fprintf(fp,"      [");
+	if (m_iLen != 0)
 	{
 		const UT_UCSChar* pSpan = NULL;
 		UT_uint32 lenSpan = 0;

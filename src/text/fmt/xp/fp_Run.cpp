@@ -23,6 +23,7 @@
 #include <time.h>
 
 #include "fp_Run.h"
+#include "fp_TextRun.h"
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
@@ -110,6 +111,73 @@ fp_Run::~fp_Run()
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+bool fp_Run::hasLayoutProperties(void) const
+{
+	return false;
+}
+
+/*!
+  Find previous Run in block which holds property information
+  \return Run with property information or NULL
+*/
+fp_Run*
+fp_Run::_findPrevPropertyRun(void) const
+{
+	fp_Run* pRun = getPrev();
+	while (pRun && !pRun->hasLayoutProperties())
+	    pRun = pRun->getPrev();
+
+	return pRun;
+}
+
+/*!
+  Inherit attribute properties from previous Run
+
+  This is used by Runs for which it does not make sense to have
+  properties, such as forced line breaks end EOP Runs.
+*/
+void
+fp_Run::_inheritProperties(void)
+{
+	fp_Run* pRun = _findPrevPropertyRun();
+
+	if (pRun)
+	{
+		m_iAscent = pRun->getAscent();
+		m_iDescent = pRun->getDescent();
+		m_iHeight = pRun->getHeight();
+		m_iAscentLayoutUnits = pRun->getAscentInLayoutUnits();
+		m_iDescentLayoutUnits = pRun->getDescentInLayoutUnits();
+		m_iHeightLayoutUnits = pRun->getHeightInLayoutUnits();
+	}
+	else
+	{
+		// look for fonts in this DocLayout's font cache
+
+		const PP_AttrProp * pSpanAP = NULL;
+		const PP_AttrProp * pBlockAP = NULL;
+		const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
+	
+		m_pBL->getSpanAttrProp(m_iOffsetFirst,true,&pSpanAP);
+		m_pBL->getAttrProp(&pBlockAP);
+
+		FL_DocLayout * pLayout = m_pBL->getDocLayout();
+		GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+
+		m_pG->setFont(pFont);
+		m_iAscent = m_pG->getFontAscent();	
+		m_iDescent = m_pG->getFontDescent();
+		m_iHeight = m_pG->getFontHeight();
+
+		pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
+
+		m_pG->setFont(pFont);
+		m_iAscentLayoutUnits = m_pG->getFontAscent();	
+		m_iDescentLayoutUnits = m_pG->getFontDescent();
+		m_iHeightLayoutUnits = m_pG->getFontHeight();
+	}
+}
 
 void fp_Run::insertIntoRunListBeforeThis(fp_Run& newRun)
 {
@@ -594,18 +662,15 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 
 fp_ForcedLineBreakRun::fp_ForcedLineBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDLINEBREAK)
 {
-        lookupProperties();
+	lookupProperties();
 }
 
 void fp_ForcedLineBreakRun::lookupProperties(void)
 {
-        m_pBL->getField(m_iOffsetFirst,m_pField);
+	m_pBL->getField(m_iOffsetFirst,m_pField);
 
-}
-
-bool fp_ForcedLineBreakRun::canContainPoint(void) const
-{
-	return false;
+	_inheritProperties();
+	m_iWidth = 16;
 }
 
 bool fp_ForcedLineBreakRun::canBreakAfter(void) const
@@ -636,8 +701,6 @@ bool	fp_ForcedLineBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* i
 
 void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	
 	pos = m_pBL->getPosition() + m_iOffsetFirst;
 	bBOL = false;
 	bEOL = false;
@@ -645,7 +708,38 @@ void fp_ForcedLineBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 
 void fp_ForcedLineBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
+
+	UT_sint32 xoff, yoff;
+
+	fp_Run* pPropRun = _findPrevPropertyRun();
+
+	if (pPropRun)
+	{
+		height = pPropRun->getHeight();
+	}
+	else
+	{
+		height = m_iHeight;
+	}
+
+	m_pLine->getOffsets(this, xoff, yoff);
+	x = xoff;
+	y = yoff;
+
+	if (iOffset == m_iOffsetFirst+1)
+	{
+	    FV_View* pView = m_pBL->getDocLayout()->getView();
+	    if (pView->getShowPara())
+		{
+			x += m_iWidth;
+	    }
+	}
+
+#ifdef BIDI_ENABLED
+	x2 = x;
+	y2 = y;
+#endif
 }
 
 void fp_ForcedLineBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
@@ -665,18 +759,13 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 
 fp_FieldStartRun::fp_FieldStartRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELDSTARTRUN)
 {
-        lookupProperties();
+	lookupProperties();
 }
 
 void fp_FieldStartRun::lookupProperties(void)
 {
-        m_pBL->getField(m_iOffsetFirst,m_pField);
+	m_pBL->getField(m_iOffsetFirst,m_pField);
 	m_iWidth = 0;
-}
-
-bool fp_FieldStartRun::canContainPoint(void) const
-{
-	return false;
 }
 
 bool fp_FieldStartRun::canBreakAfter(void) const
@@ -739,11 +828,6 @@ void fp_FieldEndRun::lookupProperties(void)
 	m_iWidth = 0;
 }
 
-bool fp_FieldEndRun::canContainPoint(void) const
-{
-	return false;
-}
-
 bool fp_FieldEndRun::canBreakAfter(void) const
 {
 	return true;
@@ -792,6 +876,156 @@ void fp_FieldEndRun::_draw(dg_DrawArgs* pDA)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+fp_EndOfParagraphRun::fp_EndOfParagraphRun(fl_BlockLayout* pBL, 
+								 GR_Graphics* pG, UT_uint32 iOffsetFirst, 
+								 UT_uint32 iLen)
+	: fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_ENDOFPARAGRAPH)
+{
+	
+	m_iLen = 1;
+	m_bDirty = true;
+	lookupProperties();
+}
+
+void fp_EndOfParagraphRun::lookupProperties(void)
+{
+	_inheritProperties();
+	m_iWidth = 1;
+}
+
+bool fp_EndOfParagraphRun::canBreakAfter(void) const
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
+	return false;
+}
+
+bool fp_EndOfParagraphRun::canBreakBefore(void) const
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
+	return false;
+}
+
+bool fp_EndOfParagraphRun::letPointPass(void) const
+{
+	return false;
+}
+
+bool	fp_EndOfParagraphRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, bool /* bForce */)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	
+	return false;
+}
+
+void fp_EndOfParagraphRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, PT_DocPosition& pos, bool& bBOL, bool& bEOL)
+{
+	pos = m_pBL->getPosition() + m_iOffsetFirst;
+	bBOL = false;
+	bEOL = true;
+}
+
+void fp_EndOfParagraphRun::findPointCoords(UT_uint32 iOffset, 
+										   UT_sint32& x, UT_sint32& y, 
+										   UT_sint32& x2, UT_sint32& y2,
+										   UT_sint32& height,
+										   bool& bDirection)
+{
+	// FIXME:jskov Find out why we are sometimes asked to find pos at
+	// right of pilcrow. Should never ever happen... But does.
+	// fjsdkjfklsd<forced-column-break>sdfsdsd move cursor back
+//	UT_ASSERT(m_iOffsetFirst == iOffset);
+
+	UT_sint32 xoff, yoff;
+
+	fp_Run* pPropRun = _findPrevPropertyRun();
+
+	height = m_iHeight;
+	m_pLine->getOffsets(this, xoff, yoff);
+	x = xoff;
+	y = yoff;
+
+	if (pPropRun)
+	{
+		height = pPropRun->getHeight();
+		// If property Run is on the same line, get y location from
+		// it (to reflect proper ascent).
+		if (pPropRun->getLine() == m_pLine)
+		{
+			m_pLine->getOffsets(pPropRun, xoff, yoff);
+			y = yoff;
+		}
+	}
+
+#ifdef BIDI_ENABLED
+	x2 = x;
+	y2 = y;
+#endif
+}
+
+void fp_EndOfParagraphRun::_clearScreen(bool /* bFullLineHeightRect */)
+{
+	UT_ASSERT(!m_bDirty);
+	UT_ASSERT(m_pG->queryProperties(GR_Graphics::DGP_SCREEN));
+
+	FV_View* pView = m_pBL->getDocLayout()->getView();
+	if (pView->getShowPara())
+	{
+		m_pG->fillRect(m_colorBG, m_iXoffText, m_iYoffText, 
+					   m_iWidth, m_iHeight);
+	}
+}
+
+/*!
+  Draw end-of-paragraph Run graphical representation
+  \param pDA Draw arguments
+  Draws the pilcrow character (reverse P) in show paragraphs mode.
+  \fixme Make it use the same typeface as preceding text.
+*/
+void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
+{
+	UT_ASSERT(pDA->pG == m_pG);
+
+	FV_View* pView = m_pBL->getDocLayout()->getView();
+	if (pView->getShowPara())
+	{
+		UT_UCSChar pEOP[] = { UCS_PILCROW, 0 };
+		UT_uint32 iTextLen = UT_UCS_strlen(pEOP);
+		UT_RGBColor colorFG;
+		UT_sint32 iAscent;
+
+		fp_Run* pPropRun = _findPrevPropertyRun();
+		if (pPropRun && (FPRUN_TEXT == pPropRun->getType()))
+		{
+			fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pPropRun);
+			m_pG->setFont(pTextRun->getFont());
+			iAscent = pTextRun->getAscent();
+			colorFG = pTextRun->getFGColor();
+		}
+		else
+		{
+			m_pG->setFont(m_pG->getGUIFont());
+			iAscent = m_iAscent;
+			UT_setColor(colorFG, 0, 0, 0);
+		}
+
+		m_iWidth  = m_pG->measureString(pEOP, 0, iTextLen, NULL);
+		m_iHeight = m_pG->getFontHeight();
+		m_iXoffText = pDA->xoff;
+		m_iYoffText = pDA->yoff - iAscent;
+
+        m_pG->fillRect(m_colorBG, m_iXoffText, m_iYoffText, 
+					   m_iWidth, m_iHeight);
+		m_pG->setColor(colorFG);
+        m_pG->drawChars(pEOP, 0, iTextLen, m_iXoffText, m_iYoffText);
+	}
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
+
 fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
 {
 #if 0	// put this back later
@@ -813,7 +1047,7 @@ fp_ImageRun::~fp_ImageRun()
 
 void fp_ImageRun::lookupProperties(void)
 {
-        m_pBL->getField(m_iOffsetFirst,m_pField);
+	m_pBL->getField(m_iOffsetFirst,m_pField);
 	if (m_pImage)
 	{
 		m_iWidth = m_pImage->getDisplayWidth();
@@ -1841,7 +2075,13 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 			}
 		}
 
+#if 0
+		// FIXME:jskov Cannot assert here since the field might get
+        // updated while the page is still being populated (and thus not in 
+		// the doc's page list).  Surely the field should not get updated
+        // until the page is fully populated?
 		UT_ASSERT(iPageNum > 0);
+#endif
 
 		sprintf(szFieldValue, "%d", iPageNum);
 	}
@@ -1891,18 +2131,15 @@ bool fp_FieldPageCountRun::calculateValue(void)
 
 fp_ForcedColumnBreakRun::fp_ForcedColumnBreakRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FORCEDCOLUMNBREAK)
 {
+	lookupProperties();
 }
 
 void fp_ForcedColumnBreakRun::lookupProperties(void)
 {
+	m_pBL->getField(m_iOffsetFirst,m_pField);
 
-        m_pBL->getField(m_iOffsetFirst,m_pField);
-
-}
-
-bool fp_ForcedColumnBreakRun::canContainPoint(void) const
-{
-	return false;
+	_inheritProperties();
+	m_iWidth = 1;
 }
 
 bool fp_ForcedColumnBreakRun::canBreakAfter(void) const
@@ -1940,7 +2177,29 @@ void fp_ForcedColumnBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/
 
 void fp_ForcedColumnBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
+
+	UT_sint32 xoff, yoff;
+
+	fp_Run* pPropRun = _findPrevPropertyRun();
+
+	if (pPropRun)
+	{
+		height = pPropRun->getHeight();
+	}
+	else
+	{
+	    height = m_iHeight;
+	}
+
+	m_pLine->getOffsets(this, xoff, yoff);
+	x = xoff;
+	y = yoff;
+
+#ifdef BIDI_ENABLED
+	x2 = x;
+	y2 = y;
+#endif
 }
 
 void fp_ForcedColumnBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
@@ -1986,12 +2245,10 @@ fp_ForcedPageBreakRun::fp_ForcedPageBreakRun(fl_BlockLayout* pBL, GR_Graphics* p
 
 void fp_ForcedPageBreakRun::lookupProperties(void)
 {
-        m_pBL->getField(m_iOffsetFirst,m_pField);
-}
+	m_pBL->getField(m_iOffsetFirst,m_pField);
 
-bool fp_ForcedPageBreakRun::canContainPoint(void) const
-{
-	return false;
+	_inheritProperties();
+	m_iWidth = 1;
 }
 
 bool fp_ForcedPageBreakRun::canBreakAfter(void) const
@@ -2023,7 +2280,38 @@ void fp_ForcedPageBreakRun::mapXYToPosition(UT_sint32 /* x */, UT_sint32 /*y*/, 
 
 void fp_ForcedPageBreakRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection)
 {
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	UT_ASSERT(m_iOffsetFirst == iOffset || m_iOffsetFirst+1 == iOffset);
+
+	UT_sint32 xoff, yoff;
+
+	fp_Run* pPropRun = _findPrevPropertyRun();
+
+	if (pPropRun)
+	{
+		height = pPropRun->getHeight();
+	}
+	else
+	{
+		height = m_iHeight;
+	}
+
+	m_pLine->getOffsets(this, xoff, yoff);
+	x = xoff;
+	y = yoff;
+
+	if (iOffset == m_iOffsetFirst+1)
+	{
+	    FV_View* pView = m_pBL->getDocLayout()->getView();
+	    if (pView->getShowPara())
+		{
+			x += m_iWidth;
+	    }
+	}
+
+#ifdef BIDI_ENABLED
+	x2 = x;
+	y2 = y;
+#endif
 }
 
 void fp_ForcedPageBreakRun::_clearScreen(bool /* bFullLineHeightRect */)
