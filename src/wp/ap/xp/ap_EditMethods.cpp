@@ -1106,7 +1106,7 @@ EV_EditMethodContainer * AP_GetEditMethods(void)
 
 // forward declaration
 static bool _helpOpenURL(AV_View* pAV_View, const char* helpURL);
-
+static bool _openURL(AV_View* pAV_View, const char* url);
 
 static UT_Timer * s_pToUpdateCursor = NULL;
 static XAP_Frame * s_pLoadingFrame = NULL;
