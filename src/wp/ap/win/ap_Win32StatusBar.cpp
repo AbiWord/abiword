@@ -235,12 +235,18 @@ HWND AP_Win32StatusBar::createWindow(HWND hwndFrame,
 void AP_Win32StatusBar::show()
 {
 	ShowWindow(m_hwndStatusBar, SW_SHOW);
-	m_pFrame->queue_resize();
+
+	// Defer the screen repaint if we're leaving fullscreen mode
+	if (!static_cast<AP_FrameData *>(m_pFrame->getFrameData())->m_bIsFullScreen)
+		m_pFrame->queue_resize();
 }
 
 void AP_Win32StatusBar::hide()
 {
 	ShowWindow(m_hwndStatusBar, SW_HIDE);
-	m_pFrame->queue_resize();
+
+	// Defer the screen repaint if we're entering fullscreen mode
+	if (!static_cast<AP_FrameData *>(m_pFrame->getFrameData())->m_bIsFullScreen)
+		m_pFrame->queue_resize();
 }
 

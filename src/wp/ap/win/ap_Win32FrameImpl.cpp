@@ -266,7 +266,9 @@ void AP_Win32FrameImpl::_toggleBar(UT_uint32 iBarNb, bool bBarOn)
 	}
 
 	// Tell frame to recalculate layout (screen refresh)
-	this->getFrame()->queue_resize();
+	// Defer the screen repaint if we're in fullscreen mode
+	if (!static_cast<AP_FrameData *>(getFrame()->getFrameData())->m_bIsFullScreen)
+		getFrame()->queue_resize();
 }
 
 void AP_Win32FrameImpl::_bindToolbars(AV_View *pView)
