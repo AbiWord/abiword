@@ -192,6 +192,7 @@ Karl Trygve Kalleberg <karltk@prosalg.no>		Norwegian (Bokmål)
 Linus G Larsson <linus@centrumntr.se>			Swedish
 Per Larsson <tucker@algonet.se> 				Swedish
 Jordi Mas <jmas@softcatala.org> 				Catalan
+Marc Maurer <j.m.maurer@student.utwente.nl>	Dutch
 Zbynek Miksa <xmiksa@informatics.muni.cz>		Czech
 Gediminas Paulauskas <menesis@03bar.ktu.lt> 	Lithuanian
 John Profic <profic@linux.ru.net>				Russian
@@ -204,7 +205,6 @@ Christian Terboven <cterboven@gmx.net>			German
 Owen Thomas <owen@llanilar.freeserve.co.uk> 	Welsh
 Rhoslyn Prys <rhoslyn.prys@ntlworld.com>	Welsh
 Andraz Tori 									Slovenian (sl-SI)
-J. Marc Maurer <j.m.maurer@student.utwente.nl>	Dutch
 Alper <shullgum@yahoo.com>			Turkish
 Nikos Niktaris <niktarin@yahoo.com>		Greek
 Damon Allen Davison <allolex@users.sourceforge.net>	German
