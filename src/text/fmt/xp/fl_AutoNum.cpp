@@ -679,7 +679,7 @@ char *  fl_AutoNum::dec2roman(UT_sint32 value, UT_Bool lower) const
 		}
 	}
 
-	return strdup(roman);
+	return UT_strdup(roman);
 }
 
 char * fl_AutoNum::dec2ascii(UT_sint32 value, UT_uint32 offset) const
@@ -698,7 +698,7 @@ char * fl_AutoNum::dec2ascii(UT_sint32 value, UT_uint32 offset) const
 	}
 	ascii[i] = '\0';
 	
-	return strdup(ascii);
+	return UT_strdup(ascii);
 }
 
 const char ** fl_AutoNum::getAttributes(void) const
