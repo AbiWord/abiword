@@ -104,6 +104,7 @@ protected:
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* width we draw stuff regardless of window width */
 
 	AP_LeftRulerInfo	m_lfi;					/* the values we last drew with */
+	AV_ListenerId		m_lidLeftRuler;
 };
 
 #endif /* AP_LEFTRULER_H */

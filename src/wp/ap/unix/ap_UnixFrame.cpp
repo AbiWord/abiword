@@ -776,6 +776,9 @@ void AP_UnixFrame::toggleRuler(UT_Bool bRulerOn)
 		gtk_object_destroy( GTK_OBJECT(m_topRuler) );
 		gtk_object_destroy( GTK_OBJECT(m_leftRuler) );
 
+		DELETEP(((AP_FrameData*)m_pData)->m_pTopRuler);
+		DELETEP(((AP_FrameData*)m_pData)->m_pLeftRuler);
+
 		m_topRuler = NULL;
 		m_leftRuler = NULL;
 	}

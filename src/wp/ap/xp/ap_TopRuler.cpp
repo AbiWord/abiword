@@ -88,6 +88,17 @@ AP_TopRuler::AP_TopRuler(XAP_Frame * pFrame)
 
 AP_TopRuler::~AP_TopRuler(void)
 {
+	// don't receive anymore scroll messages
+	m_pView->removeScrollListener(m_pScrollObj);
+
+	// no more view messages
+	m_pView->removeListener(m_lidTopRuler);
+	
+	// no more prefs 
+	m_pFrame->getApp()->getPrefs()->removeListener( AP_TopRuler::_prefsListener, (void *)this );
+
+	//UT_DEBUGMSG(("AP_TopRuler::~AP_TopRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
+
 	DELETEP(m_pScrollObj);
 }
 
@@ -127,8 +138,7 @@ void AP_TopRuler::setView(AV_View * pView)
 	// us update the display as we move from block to block and
 	// from column to column.
 
-	AV_ListenerId lidTopRuler;
-	m_pView->addListener(static_cast<AV_Listener *>(this),&lidTopRuler);
+	m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidTopRuler);
 
 	return;
 }
@@ -2013,6 +2023,8 @@ void AP_TopRuler::_drawColumnGapMarker(UT_Rect & rect)
 {
 	AP_TopRuler *pTopRuler = (AP_TopRuler *)data;
 	UT_ASSERT( data && pPrefs );
+
+	//UT_DEBUGMSG(("AP_TopRuler::_prefsListener (this=%p)\n", data));
 
 	const XML_Char *pszBuffer;
 	pPrefs->getPrefsValue( AP_PREF_KEY_RulerUnits, &pszBuffer );

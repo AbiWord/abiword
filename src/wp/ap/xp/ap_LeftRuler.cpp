@@ -68,6 +68,17 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 
 AP_LeftRuler::~AP_LeftRuler(void)
 {
+	// don't receive anymore scroll messages
+	m_pView->removeScrollListener(m_pScrollObj);
+
+	// no more view messages
+	m_pView->removeListener(m_lidLeftRuler);
+	
+	// no more prefs 
+	m_pFrame->getApp()->getPrefs()->removeListener( AP_LeftRuler::_prefsListener, (void *)this );
+
+	//UT_DEBUGMSG(("AP_LeftRuler::~AP_LeftRuler (this=%p scroll=%p)\n", this, m_pScrollObj));
+
 	DELETEP(m_pScrollObj);
 }
 
@@ -107,8 +118,7 @@ void AP_LeftRuler::setView(AV_View * pView)
 	// us update the display as we move from block to block and
 	// from column to column.
 
-	AV_ListenerId lidLeftRuler;
-	m_pView->addListener(static_cast<AV_Listener *>(this),&lidLeftRuler);
+	m_pView->addListener(static_cast<AV_Listener *>(this),&m_lidLeftRuler);
 
 	return;
 }
