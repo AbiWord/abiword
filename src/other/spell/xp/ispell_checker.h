@@ -23,7 +23,6 @@ private:
 	void operator=(const ISpellChecker&);	// no impl
 
 	/*this is used for converting form unsigned short to UCS-2*/
-	unsigned short  ucs2[INPUTWORDLEN + MAXAFFIXLEN];
 
 	int deftflag;              /* NZ for TeX mode by default */
 	int prefstringchar;        /* Preferred string character type */

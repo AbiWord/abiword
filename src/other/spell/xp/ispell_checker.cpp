@@ -63,6 +63,8 @@ extern "C" {
 extern int XAP_EncodingManager__swap_utos, XAP_EncodingManager__swap_stou;
 }
 
+#if 0
+// DON'T USE !!!!
 /*this one fills ucs2 with values that iconv will treat as UCS-2. */
 static void toucs2(const unsigned short *word16, int length, unsigned short *out)
 {
@@ -94,6 +96,7 @@ static void fromucs2(unsigned short *word16, int length, unsigned short *ucs2)
 	}
 	out[i]= 0;
 }
+#endif
 
 static void try_autodetect_charset(FIRST_ARG(istate) char* hashname)
 {
@@ -182,17 +185,16 @@ ISpellChecker::checkWord(const UT_UCSChar *word16, size_t length)
             *p++ = (unsigned char)*word16++;
         *p = '\0';
     }
-    else
-    {
+	else
+	{
         /* convert to 8bit string and null terminate */
 		/* TF CHANGE: Use the right types 
         unsigned int len_in, len_out; 
 		*/
-	size_t len_in, len_out;
-        const char *In = (const char *)ucs2;
+		size_t len_in, len_out;
+        const char *In = (const char *)word16;
         char *Out = word8;
 
-	toucs2(word16,length, ucs2);
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
         iconv(DEREF(m_pISpellState, translate_in), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
@@ -242,9 +244,8 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
         unsigned int len_in, len_out; 
 		*/
         size_t len_in, len_out; 
-        const char *In = (const char *)ucs2;
+        const char *In = (const char *)word16;
         char *Out = word8;
-		toucs2(word16,length, ucs2);	
         len_in = length * 2;
         len_out = sizeof( word8 ) - 1;
         iconv(DEREF(m_pISpellState, translate_in), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);
@@ -284,13 +285,12 @@ ISpellChecker::suggestWord(const UT_UCSChar *word16, size_t length)
 			*/
 			size_t len_in, len_out; 
             const char *In = DEREF(m_pISpellState, possibilities[c]);
-            char *Out = (char *)ucs2;
+            char *Out = (char *)theWord;
 
             len_in = l;
             len_out = sizeof(unsigned short) * l;
             iconv(DEREF(m_pISpellState, translate_out), const_cast<ICONV_CONST char **>(&In), &len_in, &Out, &len_out);	    
             *((unsigned short *)Out) = 0;
-			fromucs2(theWord, (unsigned short*)Out-ucs2, ucs2);
         }
 
 		sgvec->addItem((void *)theWord);
