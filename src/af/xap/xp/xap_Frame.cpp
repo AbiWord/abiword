@@ -345,9 +345,18 @@ const char * XAP_Frame::getViewKey(void) const
 
 const char * XAP_Frame::getTitle(int len) const
 {
-	// TODO: chop down to fit desired size?
-	UT_ASSERT((int)strlen(m_szTitle) < len);
-	return m_szTitle;
+	// Returns the pathname being edited (with view and dirty bit
+	// '*' adornments), if all that fits. If it doesn't fit,
+	// returns the tail of the string that does fit. Would be
+	// better to chop it at a pathname separator boundary.
+	if ((int)strlen(m_szTitle) <= len)
+	{
+		return m_szTitle;
+	}
+	else
+	{
+		return m_szTitle + (strlen(m_szTitle)-len);
+	}
 }
 
 const char * XAP_Frame::getTempNameFromTitle(void) const
@@ -374,8 +383,32 @@ UT_Bool XAP_Frame::updateTitle()
 
 	if (szName && *szName)
 	{
-		UT_ASSERT(strlen(szName) < 245); // TODO need #define for this number
-		strcpy(m_szTitle, szName); 
+		// Note: The previous version of this code blew up
+		// when assertions were turned on and more than 244
+		// characters were to be copied. I now copy only
+		// the last 244 characters in that case. I do not know
+		// where "244" comes from - the buffer being copied into
+		// is currently 512 bytes. However, even 244 characters
+		// is way too long for a title bar, so no reason to
+		// increase the size to fit more snugly into the buffer.
+		// Here's that previous assertion:
+		// UT_ASSERT(strlen(szName) < 245); // TODO need #define for this number
+
+		// Check that the buffer (with generous room for
+		// later decorations) is big enough.
+		UT_ASSERT(sizeof(m_szTitle) > 245 + 30); 
+
+		if (strlen(szName) <= 244)
+		{
+			strcpy(m_szTitle, szName); 
+		}
+		else 
+		{
+			// copy the tail of the pathname, the useful part.
+			// would be a bit more useful to break it at a	
+			// pathname component separator.
+			strcpy(m_szTitle, szName + (strlen(szName) - 244));
+		}
 	}
 	else
 	{
