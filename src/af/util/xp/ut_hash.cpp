@@ -574,7 +574,8 @@ const UT_String& UT_StringPtrMap::_key(UT_Cursor& c) const
 	}
 	// should never happen
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return UT_String ();
+	static UT_String bad;
+	return bad;
 }
 
 const void* UT_StringPtrMap::_next(UT_Cursor& c) const

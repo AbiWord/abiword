@@ -508,7 +508,7 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 	int i, pageindex;
 	gchar *str;
 	gchar *newlbl;
-	gchar accelch;
+	guint accelch;
 	gpointer accel_group;
 	GtkWidget *w, *accel_tie;
  
@@ -619,11 +619,10 @@ static void fix_label_callback( GtkWidget *widget, gpointer _data )
 		}
 
 		/* underline the words */
-		accelch = 0;
 		accelch = gtk_label_parse_uline(GTK_LABEL(widget), newlbl);
 
 		/* added an accelerator if need be */
-		if ( accelch != -1 && data->accel_ctrl && data->accel_group ) {
+		if ( accelch != GDK_VoidSymbol && data->accel_ctrl && data->accel_group ) {
 			  gtk_widget_add_accelerator (data->accel_ctrl, data->accel_sig, data->accel_group,
 										  accelch, GDK_CONTROL_MASK,
 										  GTK_ACCEL_VISIBLE);

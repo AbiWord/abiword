@@ -257,7 +257,6 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID)
 		posEnd =  getDoc()->getStruxPosition(nextSDH);
 	}
 	posStart++;
-	//posEnd;
 	PD_DocumentRange * pExportHdrFtr = new PD_DocumentRange(getDoc(),posStart,posEnd);
 //
 // Got everything. Now write out an openning brace and HdrFtr type.
