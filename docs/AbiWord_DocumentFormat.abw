@@ -156,5 +156,11 @@
 <p PROPS="text-align:left">[3] CSS2</p>
 <p PROPS="text-align:left">[4] The AbiWord source. (See <c PROPS="font-family:courier; font-weight:normal">http://www.abisource.com/lxr/</c> for a fully cross-referenced view of the AbiWord source code.)</p>
 <p PROPS="text-align:left"></p>
+<p PROPS="text-align:left"><c PROPS="font-weight:bold">5.  TODO</c></p>
+<p PROPS="text-align:left"></p>
+<p PROPS="text-align:left">[]	Discuss white-space handling within content and around tags.</p>
+<p PROPS="text-align:left"></p>
+<p PROPS="text-align:left">[]	Discuss mapping of CR, LF, VT, HT, FF into various tags and vice versa.</p>
+<p PROPS="text-align:left"></p>
 </section>
 </awml>
