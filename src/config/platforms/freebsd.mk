@@ -32,7 +32,6 @@ OS_CFLAGS		=
 ABI_REQUIRE_PEER_ICONV = 1
 include $(ABI_ROOT)/src/config/platforms/nix-common.mk
 
-OS_ARCH		:= $(shell uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ -e s/arm.*/arm/ -e s/sa110/arm/ | sed "s/\//-/")
 OS_ENDIAN	= LittleEndian32
 
 
@@ -49,9 +48,6 @@ OS_CFLAGS		= $(DSO_CFLAGS) $(PLATFORM_FLAGS) $(PORT_FLAGS)
 
 GLIB_CONFIG		= glib12-config
 GTK_CONFIG		= gtk12-config
-
-# Shared library flags
-MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
 # ELF versions of FreeBSD no longer need an explicit link to libdl.
 # This move to ELF happened around the 3.0 releases.  It's possible
