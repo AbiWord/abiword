@@ -166,10 +166,6 @@ void FV_View::focusChange(AV_Focus focus)
 			_fixInsertionPointCoords();
 			_drawInsertionPoint();
 		}
-		else
-		{
-			_drawSelection();
-		}
 		m_pApp->rememberFocussedFrame( m_pParentData);
 		break;
 	case AV_FOCUS_NEARBY:
@@ -178,10 +174,6 @@ void FV_View::focusChange(AV_Focus focus)
 			_fixInsertionPointCoords();
 			_drawInsertionPoint();
 		}
-		else
-		{
-			_drawSelection();
-		}
 		break;
 	case AV_FOCUS_MODELESS:
 		if (isSelectionEmpty())
@@ -189,40 +181,12 @@ void FV_View::focusChange(AV_Focus focus)
 			_fixInsertionPointCoords();
 			_drawInsertionPoint();
 		}
-		else
-		{
-			_drawSelection();
-		}
 		break;
 	case AV_FOCUS_NONE:
 		if (isSelectionEmpty())
 		{
 			_eraseInsertionPoint();
 			_saveCurrentPoint();
-		}
-		else
-		{
-			if (!m_bSelection)
-			{
-				_resetSelection();
-				break;
-			}
-
-			UT_uint32 iPos1, iPos2;
-
-			if (m_iSelectionAnchor < getPoint())
-			{
-				iPos1 = m_iSelectionAnchor;
-				iPos2 = getPoint();
-			}
-			else
-			{
-				iPos1 = getPoint();
-				iPos2 = m_iSelectionAnchor;
-			}
-
-			_clearBetweenPositions(iPos1, iPos2, UT_TRUE);
-			_drawBetweenPositions(iPos1, iPos2);
 		}
 	}
 }
