@@ -7123,6 +7123,11 @@ void FV_View::cmdUndo(UT_uint32 count)
 	//
 	_charMotion(true, 0);
 
+//
+// Do a complete update coz who knows what happened in the undo!
+//
+	notifyListeners(AV_CHG_ALL);
+
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
@@ -7152,14 +7157,32 @@ void FV_View::cmdRedo(UT_uint32 count)
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
+    // Remember the current position, We might need it later.
+    rememberCurrentPosition();
 
 	m_pDoc->redoCmd(count);
+	allowChangeInsPoint();
+
+// Look to see if we need the saved insertion point after the undo
+    if(needSavedPosition())
+	{
+//
+// We do, so restore insertion point to that value.
+//
+		_setPoint(getSavedPosition());
+		clearSavedPosition();
+	}
 
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
 	_generalUpdate();
+
+//
+// Do a complete update coz who knows what happened in the undo!
+//
+	notifyListeners(AV_CHG_ALL);
 
 	// Signal PieceTable Changes have finished
 	m_pDoc->notifyPieceTableChangeEnd();
@@ -8443,11 +8466,6 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 //
 	PT_DocPosition posBOT = pHdrFtr->getFirstBlock()->getPosition(false);
 //
-// Also need the location of the owning section for this header.
-//
-	fl_DocSectionLayout * pDSL = pHdrFtr->getDocSectionLayout();
-//	PT_DocPosition posDSL = pDSL->getFirstBlock()->getPosition();
-//
 // Ok Now we've got a document range to delete that covers exactly this header.
 // Do the Deed!
 //
@@ -8456,7 +8474,8 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
 //
 // First delete all text in header.
 //
-	m_pDoc->deleteSpan(posBOT,posEOS,NULL);
+	if(posEOS > posBOT)
+		m_pDoc->deleteSpan(posBOT,posEOS,NULL);
 //
 // Now delete the header strux.
 //
@@ -8465,12 +8484,12 @@ void FV_View::cmdRemoveHdrFtr( bool isHeader)
     // screen update now!
 
 	_setScreenUpdateOnGeneralUpdate(true);
-	_generalUpdate();
 //
-// After erasing the cursor, Restore to the point before all this mess started.
+// After erarsing the cursor, Restore to the point before all this mess started.
 //
 	_eraseInsertionPoint();
 	_setPoint(curPoint);
+	_generalUpdate();
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();

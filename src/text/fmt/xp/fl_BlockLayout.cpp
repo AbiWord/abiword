@@ -765,7 +765,6 @@ fl_BlockLayout::~fl_BlockLayout()
 {
 	_purgeSquiggles();
 	purgeLayout();
-
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 
 	DELETEP(m_pAlignment);
@@ -4268,9 +4267,15 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	setNext(NULL);
 	pOldSL->setLastBlock( this);
 
-	if(pOldSL->getType() == FL_SECTION_DOC)
+	if(pSL->getType() == FL_SECTION_DOC)
 	{
 		((fl_DocSectionLayout * )pOldSL)->deleteEmptyColumns();
+		fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pSL);
+		while(pDSL != NULL)
+		{
+			pDSL->updateDocSection();
+			pDSL = pDSL->getNextDocSection();
+		}
 	}
 //
 // In the case of Header/Footer sections we must now format this stuff to create

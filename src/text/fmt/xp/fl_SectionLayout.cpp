@@ -720,86 +720,33 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 {
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
 
-	PT_AttrPropIndex indexAP = pcrxc->getIndexAP();
-	const PP_AttrProp* pAP = NULL;
-			
-	bool bres = (m_pDoc->getAttrProp(indexAP, &pAP) && pAP);
-	UT_ASSERT(bres);
-	
-	const XML_Char* pszSectionType = NULL;
-	pAP->getAttribute("type", pszSectionType);
 
 	setAttrPropIndex(pcrxc->getIndexAP());
+	updateDocSection();
+	return true;
+}
+
+void fl_DocSectionLayout::updateDocSection(void)
+{
+
+	const PP_AttrProp* pAP = NULL;
+	bool bres = m_pDoc->getAttrProp(m_apIndex, &pAP);
+	UT_ASSERT(bres);
+	
+
+	const XML_Char* pszSectionType = NULL;
+	pAP->getAttribute("type", pszSectionType);
 
 	_lookupProperties();
 
 	// clear all the columns
-	fp_Column* pCol = m_pFirstColumn;
-	while (pCol)
-	{
-		pCol->clearScreen();
-
-		pCol = pCol->getNext();
-	}
-	//
-	// Clear the header/footers too
-	//
-	if(m_pHeaderSL)
-		m_pHeaderSL->clearScreen();
-	if(m_pFooterSL)
-		m_pFooterSL->clearScreen();
-	//
-	// Collapse the header/footers now
-	//
-  	if(m_pHeaderSL)
-		m_pHeaderSL->collapse();
-  	if(m_pFooterSL)
-		m_pFooterSL->collapse();
-
-	// remove all the columns from their pages
-	pCol = m_pFirstColumn;
-	while (pCol)
-	{
-		if (pCol->getLeader() == pCol)
-		{
-			pCol->getPage()->removeColumnLeader(pCol);
-		}
-
-		pCol = pCol->getNext();
-	}
-
-
-	m_pFirstColumn = NULL;
-	m_pLastColumn = NULL;
-
-	// get rid of all the layout information for every block
-	fl_BlockLayout*	pBL = m_pFirstBlock;
-	while (pBL)
-	{
-		pBL->collapse();
-
-		pBL = pBL->getNext();
-	}
-
-	// delete all our columns
-	pCol = m_pFirstColumn;
-	while (pCol)
-	{
-		fp_Column* pNext = pCol->getNext();
-
-		delete pCol;
-
-		pCol = pNext;
-	}
-	m_pFirstColumn = NULL;
-	m_pLastColumn = NULL;
 
 	/*
 	  TODO to more closely mirror the architecture we're using for BlockLayout, this code
 	  should probably just set a flag, indicating the need to reformat this section.  Then,
 	  when it's time to update everything, we'll actually do the format.
 	*/
-
+	collapseDocSection();
 	format();
 	redrawUpdate();
 	updateBackgroundColor();
@@ -827,7 +774,7 @@ bool fl_DocSectionLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxCha
 		pView->notifyListeners(AV_CHG_TYPING | AV_CHG_FMTSECTION);
 	}
 
-	return false;
+	return;
 }
 
 void fl_DocSectionLayout::_lookupProperties(void)
@@ -1183,20 +1130,8 @@ fl_DocSectionLayout* fl_DocSectionLayout::getPrevDocSection(void) const
 	return pSL;
 }
 
-bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
+void fl_DocSectionLayout::collapseDocSection(void)
 {
-	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
-	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
-
-	fl_DocSectionLayout* pPrevSL = getPrevDocSection();
-	if (!pPrevSL)
-	{
-		// TODO shouldn't this just assert?
-		UT_DEBUGMSG(("no prior SectionLayout"));
-		return false;
-	}
-	
-	// clear all the columns
 	fp_Column* pCol = m_pFirstColumn;
 	while (pCol)
 	{
@@ -1204,6 +1139,20 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 
 		pCol = pCol->getNext();
 	}
+	//
+	// Clear the header/footers too
+	//
+	if(m_pHeaderSL)
+		m_pHeaderSL->clearScreen();
+	if(m_pFooterSL)
+		m_pFooterSL->clearScreen();
+	//
+	// Collapse the header/footers now
+	//
+  	if(m_pHeaderSL)
+		m_pHeaderSL->collapse();
+  	if(m_pFooterSL)
+		m_pFooterSL->collapse();
 
 	// remove all the columns from their pages
 	pCol = m_pFirstColumn;
@@ -1222,7 +1171,6 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	while (pBL)
 	{
 		pBL->collapse();
-
 		pBL = pBL->getNext();
 	}
 
@@ -1231,37 +1179,63 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 	while (pCol)
 	{
 		fp_Column* pNext = pCol->getNext();
-
 		delete pCol;
-
 		pCol = pNext;
 	}
-
 	m_pFirstColumn = NULL;
 	m_pLastColumn = NULL;
+}
 
-	while (m_pFirstBlock)
+bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
+{
+	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
+	UT_ASSERT(pcrx->getStruxType()==PTX_Section);
+
+	fl_DocSectionLayout* pPrevSL = getPrevDocSection();
+	if (!pPrevSL)
 	{
-		pBL = m_pFirstBlock;
-		removeBlock(pBL);
-		pPrevSL->addBlock(pBL);
+		// TODO shouldn't this just assert?
+		UT_DEBUGMSG(("no prior SectionLayout"));
+		return false;
 	}
-	
-	pPrevSL->m_pNext = m_pNext;
-							
-	if (m_pNext)
-	{
-		m_pNext->setPrev(pPrevSL);
-	}
+
+	// clear all the columns
+	collapseDocSection();
 
 	if(m_pHeaderSL)
 	{
 		DELETEP(m_pHeaderSL);
+		m_pHeaderSL = NULL;
 	}
 	if(m_pFooterSL)
 	{
 		DELETEP(m_pFooterSL);
+		m_pFooterSL = NULL;
 	}
+
+//
+// Collapse the subsequent sections too. These will be reformatted in a few lines.
+//
+	fl_DocSectionLayout * pDSL = getNextDocSection();
+	while(pDSL != NULL)
+	{
+		pDSL->collapseDocSection();
+		pDSL = pDSL->getNextDocSection();
+	}
+//
+// OK set the links and move all blocks in this section into the previous section.
+//
+	fl_BlockLayout * pBCur = getFirstBlock();
+	fl_BlockLayout * pBPrev = pPrevSL->getLastBlock();
+	pBCur->setPrev(pBPrev);
+	pBPrev->setNext(pBCur);
+	while(pBCur != NULL)
+	{
+		pBCur->setSectionLayout(pPrevSL);
+		pBCur = pBCur->getNext();
+	}
+	m_pFirstBlock = NULL;
+	m_pLastBlock = NULL;
 
 	m_pLayout->removeSection(this);
 
@@ -1272,7 +1246,15 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 //  	{
 //  		pView->_setPoint(pcrx->getPosition());
 //  	}
-
+//
+// Update the following sections.
+//
+    pDSL = getNextDocSection();
+	while(pDSL != NULL)
+	{
+		pDSL->updateDocSection();
+		pDSL = pDSL->getNextDocSection();
+	}
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 	
 	return true;
@@ -1388,7 +1370,8 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 				continue;
 			}
 		}
-
+		bool bBreakOnColumnBreak = false;
+		bool bBreakOnPageBreak = false;
 		while (pCurLine)
 		{
 			UT_sint32 iLineHeight = pCurLine->getHeightInLayoutUnits();
@@ -1546,13 +1529,17 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 					)
 				{
 					pLastLineToKeep = pCurLine;
+					bBreakOnColumnBreak = pCurLine->containsForcedColumnBreak();
+					bBreakOnPageBreak = pCurLine->containsForcedPageBreak();
 					break;
 				}
 			}
 
 			pCurLine = pCurLine->getNextLineInSection();
-		}
-
+		} 
+//
+// End of big while loop here. After this we've found LastLineToKeep
+//
 		if (pLastLineToKeep)
 		{
 			pCurrentLine = pLastLineToKeep->getNextLineInSection();
@@ -1561,7 +1548,9 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 		{
 			pCurrentLine = NULL;
 		}
-		
+//
+// OK fill our column with content between pFirstLineToKeep and pLastLineToKeep
+//		
 		pCurLine = pFirstLineToKeep;
 		while (pCurLine)
 		{

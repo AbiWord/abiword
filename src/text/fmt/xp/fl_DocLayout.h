@@ -108,7 +108,7 @@ public:
 							 UT_sint32 iUseLayoutResolution,
 							 bool isField
 		);
-	
+	void        changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL);
 	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner);
 	fp_Page*	getFirstPage();
 	fp_Page*	getLastPage();

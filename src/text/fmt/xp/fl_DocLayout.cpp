@@ -343,6 +343,17 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	return pFont;
 }
 
+void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL)
+{
+	pDSL->doclistener_changeStrux(pcrx);
+	while(pDSL->getNextDocSection() != NULL)
+	{
+		pDSL = pDSL->getNextDocSection();
+		pDSL->updateDocSection();
+	}
+}
+
+
 UT_uint32 FL_DocLayout::countPages()
 {
 	return m_vecPages.getItemCount();

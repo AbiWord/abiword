@@ -62,6 +62,18 @@ AP_Dialog_Styles::~AP_Dialog_Styles(void)
 	DELETEP(m_pParaPreview);
 	DELETEP(m_pCharPreview);
 	DELETEP(m_pAbiPreview);
+	for(UT_uint32 i=0; i<m_vecAllProps.getItemCount(); i++)
+	{
+		char * psz = (char *) m_vecAllProps.getNthItem(i);
+		delete [] psz;
+	}
+	m_vecAllProps.clear();
+	for(UT_uint32 i=0; i<m_vecAllAttribs.getItemCount(); i++)
+	{
+		char * psz = (char *) m_vecAllAttribs.getNthItem(i);
+		delete [] psz;
+	}
+	m_vecAllAttribs.clear();
 }
 
 AP_Dialog_Styles::tAnswer AP_Dialog_Styles::getAnswer(void) const
@@ -80,26 +92,34 @@ void AP_Dialog_Styles::addOrReplaceVecProp(const XML_Char * pszProp,
 												 const XML_Char * pszVal)
 {
 	UT_sint32 iCount = m_vecAllProps.getItemCount();
-	const char * pszV = NULL;
 	if(iCount <= 0)
 	{
-		m_vecAllProps.addItem((void *) pszProp);
-		m_vecAllProps.addItem((void *) pszVal);
+		char * pSP = UT_strdup(pszProp);
+		char * pSV = UT_strdup(pszVal);
+		m_vecAllProps.addItem((void *) pSP);
+		m_vecAllProps.addItem((void *) pSV);
 		return;
 	}
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = (const XML_Char *) m_vecAllProps.getNthItem(i);
+		const XML_Char * pszV = (const XML_Char *) m_vecAllProps.getNthItem(i);
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
 	if(i < iCount)
-		m_vecAllProps.setNthItem(i+1, (void *) pszVal, NULL);
+	{
+		char * pSV = (char *) m_vecAllProps.getNthItem(i+1);
+		delete [] pSV;
+		pSV = UT_strdup(pszVal);
+		m_vecAllProps.setNthItem(i+1, (void *) pSV, NULL);
+	}
 	else
 	{
-		m_vecAllProps.addItem((void *) pszProp);
-		m_vecAllProps.addItem((void *) pszVal);
+		char * pSP = UT_strdup(pszProp);
+		char * pSV = UT_strdup(pszVal);
+		m_vecAllProps.addItem((void *) pSP);
+		m_vecAllProps.addItem((void *) pSV);
 	}
 	return;
 }
@@ -128,6 +148,10 @@ void AP_Dialog_Styles::removeVecProp(const XML_Char * pszProp)
 	}
 	if(i < iCount)
 	{
+		char * pSP = (char *) m_vecAllProps.getNthItem(i);
+		char * pSV = (char *) m_vecAllProps.getNthItem(i+1);
+		delete [] pSP;
+		delete [] pSV;
 		m_vecAllProps.deleteNthItem(i+1);
 		m_vecAllProps.deleteNthItem(i);
 	}
@@ -145,26 +169,34 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 												 const XML_Char * pszVal)
 {
 	UT_sint32 iCount = m_vecAllAttribs.getItemCount();
-	const char * pszV = NULL;
 	if(iCount <= 0)
 	{
-		m_vecAllAttribs.addItem((void *) pszProp);
-		m_vecAllAttribs.addItem((void *) pszVal);
+		char * pSP = UT_strdup(pszProp);
+		char * pSV = UT_strdup(pszVal);
+		m_vecAllAttribs.addItem((void *) pSP);
+		m_vecAllAttribs.addItem((void *) pSV);
 		return;
 	}
 	UT_sint32 i = 0;
 	for(i=0; i < iCount ; i += 2)
 	{
-		pszV = (const XML_Char *) m_vecAllAttribs.getNthItem(i);
+		const XML_Char * pszV = (const XML_Char *) m_vecAllAttribs.getNthItem(i);
 		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
 			break;
 	}
 	if(i < iCount)
-		m_vecAllAttribs.setNthItem(i+1, (void *) pszVal, NULL);
+	{
+		char * pSV = (char *) m_vecAllAttribs.getNthItem(i+1);
+		delete [] pSV;
+		pSV = UT_strdup(pszVal);
+		m_vecAllAttribs.setNthItem(i+1, (void *) pSV, NULL);
+	}
 	else
 	{
-		m_vecAllAttribs.addItem((void *) pszProp);
-		m_vecAllAttribs.addItem((void *) pszVal);
+		char * pSP = UT_strdup(pszProp);
+		char * pSV = UT_strdup(pszVal);
+		m_vecAllAttribs.addItem((void *) pSP);
+		m_vecAllAttribs.addItem((void *) pSV);
 	}
 	return;
 }

@@ -179,6 +179,8 @@ public:
 	
 	virtual void		format(void);
 	virtual void		updateLayout(void);
+	void                updateDocSection(void);
+	void                collapseDocSection(void);
 	UT_sint32			breakSection(void);
 
 	virtual void		redrawUpdate(void);

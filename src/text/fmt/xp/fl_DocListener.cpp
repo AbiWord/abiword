@@ -745,7 +745,13 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				bResult = true;
 				goto finish_up;
 			}
-
+			if(pSL->getType() == FL_SECTION_DOC)
+			{
+				fl_DocSectionLayout * pDSL = (fl_DocSectionLayout *) pSL;
+				m_pLayout->changeDocSections(pcrxc,pDSL);
+				bResult = true;
+				goto finish_up;
+			}
  			bResult = pSL->doclistener_changeStrux(pcrxc);
 			goto finish_up;
 		}
