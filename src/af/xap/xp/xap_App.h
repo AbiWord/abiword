@@ -140,6 +140,7 @@ public:
 	virtual	bool							getGeometry(UT_sint32 *x, UT_sint32 *y, 
 														UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 	virtual void 							parseAndSetGeometry(const char *string);
+	virtual UT_sint32						makeDirectory(const char * szPath, const UT_sint32 mode ) = 0;
 
 
 #ifdef ABI_OPT_PERL

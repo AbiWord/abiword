@@ -214,6 +214,101 @@ char * UT_convert(const char*	str,
 	  {
 	    auto_iconv converter(from_codeset, to_codeset);
 	    cd = converter.getHandle();
+
+	    if (len < 0)
+	      {
+		len = strlen(str);
+	      }
+
+	    const char* p = str;
+	    size_t inbytes_remaining = len;
+
+	    /* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
+	    /* + 1 for nul in case len == 1 */
+	    size_t outbuf_size = ((len + 3) & ~3) + 15;
+	    size_t outbytes_remaining = outbuf_size - 1; /* -1 for nul */
+
+	    char* pDest = (char*)malloc(outbuf_size);
+	    char* outp = pDest;
+
+	    bool have_error = false;
+	    bool bAgain = true;
+
+	    while (bAgain)
+	      {
+		size_t err = UT_iconv(cd,
+				      &p,
+				      &inbytes_remaining,
+				      &outp, &outbytes_remaining);
+
+		if (err == (size_t) -1)
+		  {
+		    switch (errno)
+		      {
+		      case EINVAL:
+				    /* Incomplete text, do not report an error */
+			bAgain = false;
+			break;
+		      case E2BIG:
+			{
+			  size_t used = outp - pDest;
+
+			  /* glibc's iconv can return E2BIG even if there is space
+			   * remaining if an internal buffer is exhausted. The
+			   * folllowing is a heuristic to catch this. The 16 is
+			   * pretty arbitrary.
+			   */
+			  if (used + 16 > outbuf_size)
+			    {
+			      outbuf_size = outbuf_size  + 15;
+			      pDest = (char*)realloc(pDest, outbuf_size);
+
+			      outp = pDest + used;
+			      outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
+			    }
+
+			  bAgain = true;
+			  break;
+			}
+		      default:
+			have_error = true;
+			bAgain = false;
+			break;
+		      }
+		  } 
+		else 
+		  {
+		    bAgain = false;
+		  }
+	      }
+
+	    *outp = '\0';
+
+	    const size_t nNewLen = p - str;
+
+	    if (bytes_read_arg)
+	      {
+		bytes_read = nNewLen;
+	      }
+	    else
+	      {
+		if (nNewLen != len) 
+		  {
+		    have_error = true;
+		  }
+	      }
+
+	    bytes_written = outp - pDest;	/* Doesn't include '\0' */
+
+	    if (have_error && pDest)
+	      {
+		free(pDest);
+	      }
+
+	    if (have_error)
+	      return NULL;
+
+	    return pDest;
 	  }
 	UT_CATCH(UT_CATCH_ANY)
 	  {
@@ -222,100 +317,5 @@ char * UT_convert(const char*	str,
 	    return NULL;
 	  }
 	UT_END_CATCH
-
-	if (len < 0)
-	  {
-	    len = strlen(str);
-	  }
-	    
-	const char* p = str;
-	size_t inbytes_remaining = len;
-	
-	/* Due to a GLIBC bug, round outbuf_size up to a multiple of 4 */
-	/* + 1 for nul in case len == 1 */
-	size_t outbuf_size = ((len + 3) & ~3) + 15;
-	size_t outbytes_remaining = outbuf_size - 1; /* -1 for nul */
-	
-	char* pDest = (char*)malloc(outbuf_size);
-	char* outp = pDest;
-	
-	bool have_error = false;
-	bool bAgain = true;
-	
-	while (bAgain)
-	  {
-	    size_t err = UT_iconv(cd,
-				  &p,
-				  &inbytes_remaining,
-				  &outp, &outbytes_remaining);
-	    
-	    if (err == (size_t) -1)
-	      {
-		switch (errno)
-		  {
-		  case EINVAL:
-				/* Incomplete text, do not report an error */
-		    bAgain = false;
-		    break;
-		  case E2BIG:
-		    {
-		      size_t used = outp - pDest;
-		      
-		      /* glibc's iconv can return E2BIG even if there is space
-		       * remaining if an internal buffer is exhausted. The
-		       * folllowing is a heuristic to catch this. The 16 is
-		       * pretty arbitrary.
-		       */
-		      if (used + 16 > outbuf_size)
-			{
-			  outbuf_size = outbuf_size  + 15;
-			  pDest = (char*)realloc(pDest, outbuf_size);
-			  
-			  outp = pDest + used;
-			  outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
-			}
-		      
-		      bAgain = true;
-		      break;
-		    }
-		  default:
-		    have_error = true;
-		    bAgain = false;
-		    break;
-		  }
-	      } 
-	    else 
-	      {
-		bAgain = false;
-	      }
-	  }
-	
-	*outp = '\0';
-	
-	const size_t nNewLen = p - str;
-	
-	if (bytes_read_arg)
-	  {
-	    bytes_read = nNewLen;
-	  }
-	else
-	  {
-	    if (nNewLen != len) 
-	      {
-		have_error = true;
-	      }
-	  }
-	
-	bytes_written = outp - pDest;	/* Doesn't include '\0' */
-	
-	if (have_error && pDest)
-	  {
-	    free(pDest);
-	  }
-	
-	if (have_error)
-	  return NULL;
-	
-	return pDest;
 }
 

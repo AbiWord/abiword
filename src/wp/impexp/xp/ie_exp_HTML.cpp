@@ -21,7 +21,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -1965,7 +1964,7 @@ void s_HTML_Listener::_handleDataItems(void)
 			char fname [1024]; // EVIL EVIL bad hardcoded buffer size
 			
 			sprintf(fname, "%s_d", m_pie->getFileName());
-			int result = mkdir(fname, 0750);
+			int result = m_pDocument->getApp()->makeDirectory(fname, 0750);
 			
 			if (!UT_strcmp(szMimeType, "image/svg-xml"))
 				sprintf(fname, "%s/%d.svg", fname, loc);
