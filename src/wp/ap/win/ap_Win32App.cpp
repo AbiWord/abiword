@@ -1200,7 +1200,7 @@ int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
 	bool bShowApp = true;
 	bool bShowSplash = true;
 	bool bSplashPref = true;
-	BOOL bInitialized; 
+	BOOL bInitialized = FALSE; 
 	
 	// this is a static function and doesn't have a 'this' pointer.
 	MSG msg;
