@@ -17,9 +17,13 @@
  * 02111-1307, USA.
  */
 
+#include <string.h>
+#include <stdio.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_string.h"
 #include "ap_LeftRuler.h"
 #include "xav_View.h"
 #include "gr_Graphics.h"
@@ -223,22 +227,22 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 		// clip rects don't know anything about this distinction.
 
 		y = yScrolledOrigin;
-		h = docTopMarginHeight;
+		h = docTopMarginHeight - 1;
 		m_pG->fillRect(clrDarkGray,xLeft,y,xBar,h);
 	}
 
-	yScrolledOrigin += docTopMarginHeight;
+	yScrolledOrigin += docTopMarginHeight + 1;
 	if ((yScrolledOrigin + docWithinMarginHeight) > 0)
 	{
 		// area within the page margins is on-screen.
 		// draw a main white bar over the area.
 
 		y = yScrolledOrigin;
-		h = docWithinMarginHeight;
+		h = docWithinMarginHeight - 1;
 		m_pG->fillRect(clrWhite,xLeft,y,xBar,h);
 	}
 
-	yScrolledOrigin += docWithinMarginHeight;
+	yScrolledOrigin += docWithinMarginHeight + 1;
 	if ((yScrolledOrigin + docBottomMarginHeight) > 0)
 	{
 		// bottom margin of paper is on-screen.
@@ -246,32 +250,130 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 		// did at the top.
 
 		y = yScrolledOrigin;
-		h = docBottomMarginHeight;
+		h = docBottomMarginHeight - 1;
 		m_pG->fillRect(clrDarkGray,xLeft,y,xBar,h);
 	}
 
-#if 0
-	// now draw tick marks on the bar, using the select
-	// system of units.
-	//
-	// For english, we draw long ticks on the inches and
-	// short ticks on the half inches.  (we use 5.0in rather
-	// then 0.5in to avoid round-off problems.)
-	//
-	// TODO for now we assume English units.
+	// now draw tick marks on the bar, using the selected system of units.
+	// (we use big dimensions to avoid round-off problems.)
 
-	m_pG->setColor(clrBlack);
-	UT_uint32 halfUnit = m_pG->convertDimension("5.0in");
-	for (UT_uint32 k=0; (k*halfUnit/10 <= pageWidth); k++)
+	UT_uint32 tickUnit, tickLong, tickLabel, tickScale;
+
+	if (1)
 	{
-		x = xFixed + xOrigin + k*halfUnit/10 - m_xScrollOffset;
-		if (x >= xFixed)
-		{
-			UT_uint32 y = ((k % 2) ? yBar/2 : yBar);
-			m_pG->drawLine(x,yTop,x,yTop+y);
-		}
+		// For english, we draw numbers on the inches, long ticks 
+		// on the half inches and short ticks on the eighth inches.  
+		tickUnit = m_pG->convertDimension("12.5in");
+		tickLong = 4;
+		tickLabel = 8;
+		tickScale = 1;
+	}
+#if 0
+	// TODO for now we assume English units.  
+	// TODO these other scale factors have been tested, they just need a UI.  
+	{
+		// cm
+		tickUnit = m_pG->convertDimension("25cm");
+		tickLong = 2;
+		tickLabel = 4;
+		tickScale = 1;
+	}
+	{
+		// picas
+		tickUnit = m_pG->convertDimension("100pi");
+		tickLong = 6;
+		tickLabel = 6;
+		tickScale = 6;
+	}
+	{
+		// points
+		tickUnit = m_pG->convertDimension("600pt");
+		tickLong = 6;
+		tickLabel = 6;
+		tickScale = 36;
 	}
 #endif
+
+	UT_uint32 k, iFontHeight;
+
+	m_pG->setColor(clrBlack);
+
+	DG_Font * pFont = m_pG->getGUIFont();
+	if (pFont)
+	{
+		m_pG->setFont(pFont);
+		iFontHeight = m_pG->getFontHeight();
+	}
+
+	// first draw the top margin
+	for (k=1; (k*tickUnit/100 < docTopMarginHeight); k++)
+	{
+		y = yOrigin + docTopMarginHeight - k*tickUnit/100 - m_yScrollOffset;
+		if (y >= 0)
+		{
+			if (k % tickLabel)
+			{
+				// draw the ticks
+				UT_uint32 w = ((k % tickLong) ? 2 : 6);
+				UT_uint32 x = xLeft + (xBar-w)/2;
+				m_pG->drawLine(x,y,x+w,y);
+			}
+			else if (pFont)
+			{
+				// draw the number
+				UT_uint32 n = k / tickLabel * tickScale;
+
+				char buf[6];
+				UT_UCSChar span[6];
+				UT_uint16 charWidths[6];
+				UT_ASSERT(n < 10000);
+
+				sprintf(buf, "%ld", n);
+				UT_UCS_strcpy_char(span, buf);
+				UT_uint32 len = strlen(buf);
+
+				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths);
+				UT_uint32 x = xLeft + (xBar-w)/2;
+
+				m_pG->drawChars(span, 0, len, x, y - iFontHeight/2);
+			}
+		}
+	}
+	
+	// then draw everything below
+	for (k=1; (k*tickUnit/100 < (pageHeight - docTopMarginHeight)); k++)
+	{
+		y = yOrigin + docTopMarginHeight + k*tickUnit/100 - m_yScrollOffset;
+		if (y >= 0)
+		{
+			if (k % tickLabel)
+			{
+				// draw the ticks
+				UT_uint32 w = ((k % tickLong) ? 2 : 6);
+				UT_uint32 x = xLeft + (xBar-w)/2;
+				m_pG->drawLine(x,y,x+w,y);
+			}
+			else if (pFont)
+			{
+				// draw the number
+				UT_uint32 n = k / tickLabel * tickScale;
+
+				char buf[6];
+				UT_UCSChar span[6];
+				UT_uint16 charWidths[6];
+				UT_ASSERT(n < 10000);
+
+				sprintf(buf, "%ld", n);
+				UT_UCS_strcpy_char(span, buf);
+				UT_uint32 len = strlen(buf);
+
+				UT_uint32 w = m_pG->measureString(span, 0, len, charWidths);
+				UT_uint32 x = xLeft + (xBar-w)/2;
+
+				m_pG->drawChars(span, 0, len, x, y - iFontHeight/2);
+			}
+		}
+	}
 	
 	if (pClipRect)
 		m_pG->setClipRect(NULL);
