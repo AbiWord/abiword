@@ -49,9 +49,11 @@
     UT_GenericTree allows access to its data in a tree-like fashion: iterating over
     branches, or siblings, or accessing individual nodes. The idea is to convert data in
     format \n
-
-        <a><b/><c><d/></c></a> \n
-
+	 
+	 \verbatim
+        <a><b/><c><d/></c></a>
+	 \endverbatim
+	 
     to
 
 	 \htmlonly <pre>
@@ -81,8 +83,8 @@
     no API to insert/delete nodes after the tree's initial construction.
 
     
-    buildTree() method
-    ------------------
+    buildTree() method \n
+    ------------------ \n
     
     The buildTree() method requires a callback function and a void pointer; the void
     pointer is passed back to the callback function (e.g., if the call back function is a
@@ -103,8 +105,8 @@
    	passed into tree.
 
 
-    Node functions
-    --------------
+    Node functions \n
+    -------------- \n
 	
 	UT_sint32 getMaxNodeLevel() const;
 	    This function returns the highest node level in the tree, that is, the distance
@@ -125,8 +127,8 @@
 	    if(iLevel1 == iLevel2 && n1 < n2) => dpos1 < dpos2
 
     
-    Cursor class
-    ---------------
+    Cursor class \n
+    --------------- \n
 	The cursor class makes it possible to iterate over the tree in structured way using
     the relationships between the indivial nodes; they return true on success.
 
