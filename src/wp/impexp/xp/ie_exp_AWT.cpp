@@ -29,7 +29,7 @@
 
 #include "xap_Module.h"
 
-ABI_PLUGIN_REGISTER("AWT")
+ABI_PLUGIN_DECLARE("AWT")
 
 // we use a reference-counted sniffer
 static IE_Exp_AWT_Sniffer * m_sniffer = 0;
