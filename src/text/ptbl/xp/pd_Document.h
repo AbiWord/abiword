@@ -38,6 +38,7 @@
 #include "ie_FileInfo.h"
 #include "fp_PageSize.h"
 #include "ut_string_class.h"
+#include "ut_misc.h"
 #include <fribidi/fribidi.h>
 
 class UT_ByteBuf;
@@ -466,6 +467,10 @@ public:
 		return m_mailMergeLink;
 	}
 	void invalidateCache(void);
+
+	UT_uint32 getUID(UT_UniqueId::idType t) {return m_UID.getUID(t);}
+	bool      setMinUID(UT_UniqueId::idType t, UT_uint32 i) {return m_UID.setMinId(t,i);}
+	
 protected:
 	~PD_Document();
 
@@ -526,6 +531,7 @@ private:
 	const fl_BlockLayout *  m_pVDBl;
 	fp_Run *                m_pVDRun;
 	PT_DocPosition          m_iVDLastPos;
+	UT_UniqueId             m_UID;
 };
 
 #endif /* PD_DOCUMENT_H */
