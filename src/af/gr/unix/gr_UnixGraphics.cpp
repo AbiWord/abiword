@@ -476,6 +476,25 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 	// but it's currently faster to shortcut
 	// than to call explodeGdkFonts
 	// TODO: turn this off when our text runs get a bit smarter
+
+	// this probably is not safe. It was observed in the win32 build that
+	// identity of font pointer does not imply identity of font, i.e.,
+	// code like this
+	// 
+	//   f1 = new GR_Font();
+	//   delete f1;
+	//   f2 = new GR_Font(); /* different font altogether */
+	//
+	//   can result in f1 == f2 and since the allocation and
+	//   deallocation of fonts happens outside of the graphics class,
+	//   the chached m_pFont could well be pointing to
+	//   a different font than intended (or something completely
+	//   different. I am not sure whether this is or is not the case
+	//   on Unix, really depends on where the font pointer comes from,
+	//   so I will not meddle with this, but it needs to be
+	//   investigated by someone who knows better -- Tomas
+	
+	
 	if(m_pFont && (pUFont->getUnixFont() == m_pFont->getUnixFont()) &&
 	   (pUFont->getSize() == m_pFont->getSize()))
 		return;
