@@ -143,17 +143,17 @@ void ZoomWin::SetDlg(XAP_BeOSDialog_Zoom *dlg) {
 	m_DlgZoom=dlg;
 	BView *preview=(BView*)FindView("previewview");
 	m_CustomText=(BTextControl *)FindView("custxt");
-//	We need to tie up the caller thread for a while ...
 	Show();
 	//Create our preview window graphics
 	m_BeOSGraphics=new GR_BeOSGraphics(preview);
-	preview->Window()->Lock();
-	dlg->_createPreviewFromGC(m_BeOSGraphics,preview->Frame().Width(),preview->Frame().Height());
-	this->PostMessage(new BMessage('100p'));
-	BRadioButton *ohbutton=(BRadioButton *)FindView("OneHundred");
-	ohbutton->SetValue(B_CONTROL_ON);
-
-	preview->Window()->Unlock();
+	if (preview->Window()->Lock())
+	{
+		dlg->_createPreviewFromGC(m_BeOSGraphics,preview->Frame().Width(),preview->Frame().Height());
+		this->PostMessage(new BMessage('100p'));
+		BRadioButton *ohbutton=(BRadioButton *)FindView("OneHundred");
+		ohbutton->SetValue(B_CONTROL_ON);
+		preview->Window()->Unlock();
+	}
 	while (spin) { snooze(1000); }
 	Hide();
 }
@@ -171,7 +171,7 @@ void ZoomWin::Quit() {
 	UT_ASSERT(m_DlgZoom);
 	m_DlgZoom->setAnswer(AP_Dialog_Zoom::a_CANCEL);
 #endif
-printf("In ZoomWin::Quit()\n");	spin = 0;
+spin = 0;
 BWindow::Quit();
 
 }
@@ -233,20 +233,21 @@ void XAP_BeOSDialog_Zoom::runModal(XAP_Frame * pFrame)
                 newwin = new ZoomWin(&msg);
 		newwin->SetDlg(this);
 		//Take the information here ...
-		newwin->Lock();
-		newwin->GetAnswer(m_zoomType,m_zoomPercent);
-		if (m_zoomPercent != 0)
+		if (newwin->Lock())
 		{
-			 printf("Okaying, m_zoomType=%d, m_zoomPercent=%d\n",m_zoomType,m_zoomPercent);
-		 	m_answer=XAP_Dialog_Zoom::a_OK;
+			newwin->GetAnswer(m_zoomType,m_zoomPercent);
+			if (m_zoomPercent != 0)
+			{
+				 UT_DEBUGMSG(("Okaying, m_zoomType=%d, m_zoomPercent=%d\n",m_zoomType,m_zoomPercent));
+			 	m_answer=XAP_Dialog_Zoom::a_OK;
+			}
+			else
+			{
+				UT_DEBUGMSG(("Cancelling, m_zoomType=%d, m_zoomPercent=%d\n",m_zoomType,m_zoomPercent));
+				m_answer=XAP_Dialog_Zoom::a_CANCEL;
+			}
+			newwin->Unlock();
 		}
-		else
-		{
-			printf("Cancelling, m_zoomType=%d, m_zoomPercent=%d\n",m_zoomType,m_zoomPercent);
-			m_answer=XAP_Dialog_Zoom::a_CANCEL;
-		}
-		newwin->Unlock();
-		//newwin->Window()->Lock();
 		newwin->Close();
 		
 		
