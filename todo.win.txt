@@ -1,0 +1,1230 @@
+./af/ev/win/ev_Win32Menu.cpp-116-}
+./af/ev/win/ev_Win32Menu.cpp-117-
+./af/ev/win/ev_Win32Menu.cpp-118-UT_Bool EV_Win32Menu::onCommand(AV_View * pView,
+./af/ev/win/ev_Win32Menu.cpp-119-								HWND hWnd, WPARAM wParam)
+./af/ev/win/ev_Win32Menu.cpp-120-{
+./af/ev/win/ev_Win32Menu.cpp:121:	// TODO do we need the hWnd parameter....
+./af/ev/win/ev_Win32Menu.cpp-122-
+./af/ev/win/ev_Win32Menu.cpp-123-	// map the windows WM_COMMAND command-id into one of our XAP_Menu_Id.
+./af/ev/win/ev_Win32Menu.cpp-124-	// we don't need to range check it, getAction() will puke if it's
+./af/ev/win/ev_Win32Menu.cpp-125-	// out of range.
+./af/ev/win/ev_Win32Menu.cpp-126-	
+./af/ev/win/ev_Win32Menu.cpp-205-				UINT flags = MF_STRING | MF_ENABLED | MF_UNCHECKED;
+./af/ev/win/ev_Win32Menu.cpp-206-				UINT u = WmCommandFromMenuId(id);
+./af/ev/win/ev_Win32Menu.cpp-207-
+./af/ev/win/ev_Win32Menu.cpp-208-				if (pLayoutItem->getMenuLayoutFlags() == EV_MLF_BeginSubMenu)
+./af/ev/win/ev_Win32Menu.cpp-209-				{
+./af/ev/win/ev_Win32Menu.cpp:210:					HMENU sub = CreateMenu();	// TODO NOTE: Leaking handle!
+./af/ev/win/ev_Win32Menu.cpp-211-					UT_ASSERT(sub);
+./af/ev/win/ev_Win32Menu.cpp-212-
+./af/ev/win/ev_Win32Menu.cpp-213-					flags |= MF_POPUP;
+./af/ev/win/ev_Win32Menu.cpp-214-					stack.push(sub);
+./af/ev/win/ev_Win32Menu.cpp-215-					u = (UINT) sub;
+./af/ev/win/ev_Win32Menu.cpp-468-	}
+./af/ev/win/ev_Win32Menu.cpp-469-
+./af/ev/win/ev_Win32Menu.cpp-470-	if (nFlags & (MF_SYSMENU))
+./af/ev/win/ev_Win32Menu.cpp-471-	{
+./af/ev/win/ev_Win32Menu.cpp-472-		//UT_DEBUGMSG(("SysMenu [%x]\n",nItemID));
+./af/ev/win/ev_Win32Menu.cpp:473:		// TODO do we want to bother with the system menu ??
+./af/ev/win/ev_Win32Menu.cpp-474-		pFrame->setStatusMessage(NULL);
+./af/ev/win/ev_Win32Menu.cpp-475-		return 1;
+./af/ev/win/ev_Win32Menu.cpp-476-	}
+./af/ev/win/ev_Win32Menu.cpp-477-	
+./af/ev/win/ev_Win32Menu.cpp-478-	XAP_Menu_Id id = MenuIdFromWmCommand(nItemID);
+./af/ev/win/ev_Win32Menu.cpp-484-		return 1;
+./af/ev/win/ev_Win32Menu.cpp-485-	}
+./af/ev/win/ev_Win32Menu.cpp-486-
+./af/ev/win/ev_Win32Menu.cpp-487-	const char * szMsg = pLabel->getMenuStatusMessage();
+./af/ev/win/ev_Win32Menu.cpp-488-	if (!szMsg || !*szMsg)
+./af/ev/win/ev_Win32Menu.cpp:489:		szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
+./af/ev/win/ev_Win32Menu.cpp-490-	
+./af/ev/win/ev_Win32Menu.cpp-491-	//UT_DEBUGMSG(("SetMessage [%s]\n",szMsg));
+./af/ev/win/ev_Win32Menu.cpp-492-	pFrame->setStatusMessage(szMsg);
+./af/ev/win/ev_Win32Menu.cpp-493-	return 1;
+./af/ev/win/ev_Win32Menu.cpp-494-}
+./af/ev/win/ev_Win32Menu.cpp-504-{
+./af/ev/win/ev_Win32Menu.cpp-505-}
+./af/ev/win/ev_Win32Menu.cpp-506-
+./af/ev/win/ev_Win32Menu.cpp-507-EV_Win32MenuBar::~EV_Win32MenuBar(void)
+./af/ev/win/ev_Win32Menu.cpp-508-{
+./af/ev/win/ev_Win32Menu.cpp:509:	// TODO should we destroy m_myMenu if set ??
+./af/ev/win/ev_Win32Menu.cpp-510-}
+./af/ev/win/ev_Win32Menu.cpp-511-
+./af/ev/win/ev_Win32Menu.cpp-512-UT_Bool EV_Win32MenuBar::synthesizeMenuBar(XAP_Frame * pFrame)
+./af/ev/win/ev_Win32Menu.cpp-513-{
+./af/ev/win/ev_Win32Menu.cpp-514-	m_myMenu = CreateMenu();
+./af/ev/win/ev_Win32Mouse.cpp-84-	case EV_EEMR_INCOMPLETE:
+./af/ev/win/ev_Win32Mouse.cpp-85-		// I'm not sure this makes any sense, but we allow it.
+./af/ev/win/ev_Win32Mouse.cpp-86-		return;
+./af/ev/win/ev_Win32Mouse.cpp-87-	case EV_EEMR_BOGUS_START:
+./af/ev/win/ev_Win32Mouse.cpp-88-	case EV_EEMR_BOGUS_CONT:
+./af/ev/win/ev_Win32Mouse.cpp:89:		// TODO What to do ?? Should we beep at them or just be quiet ??
+./af/ev/win/ev_Win32Mouse.cpp-90-		return;
+./af/ev/win/ev_Win32Mouse.cpp-91-	default:
+./af/ev/win/ev_Win32Mouse.cpp-92-		UT_ASSERT(0);
+./af/ev/win/ev_Win32Mouse.cpp-93-		return;
+./af/ev/win/ev_Win32Mouse.cpp-94-	}
+./af/ev/win/ev_Win32Mouse.cpp-151-	case EV_EEMR_INCOMPLETE:
+./af/ev/win/ev_Win32Mouse.cpp-152-		// I'm not sure this makes any sense, but we allow it.
+./af/ev/win/ev_Win32Mouse.cpp-153-		return;
+./af/ev/win/ev_Win32Mouse.cpp-154-	case EV_EEMR_BOGUS_START:
+./af/ev/win/ev_Win32Mouse.cpp-155-	case EV_EEMR_BOGUS_CONT:
+./af/ev/win/ev_Win32Mouse.cpp:156:		// TODO What to do ?? Should we beep at them or just be quiet ??
+./af/ev/win/ev_Win32Mouse.cpp-157-		return;
+./af/ev/win/ev_Win32Mouse.cpp-158-	default:
+./af/ev/win/ev_Win32Mouse.cpp-159-		UT_ASSERT(0);
+./af/ev/win/ev_Win32Mouse.cpp-160-		return;
+./af/ev/win/ev_Win32Mouse.cpp-161-	}
+./af/ev/win/ev_Win32Mouse.cpp-205-	case EV_EEMR_INCOMPLETE:
+./af/ev/win/ev_Win32Mouse.cpp-206-		// I'm not sure this makes any sense, but we allow it.
+./af/ev/win/ev_Win32Mouse.cpp-207-		return;
+./af/ev/win/ev_Win32Mouse.cpp-208-	case EV_EEMR_BOGUS_START:
+./af/ev/win/ev_Win32Mouse.cpp-209-	case EV_EEMR_BOGUS_CONT:
+./af/ev/win/ev_Win32Mouse.cpp:210:		// TODO What to do ?? Should we beep at them or just be quiet ??
+./af/ev/win/ev_Win32Mouse.cpp-211-		return;
+./af/ev/win/ev_Win32Mouse.cpp-212-	default:
+./af/ev/win/ev_Win32Mouse.cpp-213-		UT_ASSERT(0);
+./af/ev/win/ev_Win32Mouse.cpp-214-		return;
+./af/ev/win/ev_Win32Mouse.cpp-215-	}
+./af/ev/win/ev_Win32Mouse.cpp-253-	case EV_EEMR_INCOMPLETE:
+./af/ev/win/ev_Win32Mouse.cpp-254-		// I'm not sure this makes any sense, but we allow it.
+./af/ev/win/ev_Win32Mouse.cpp-255-		return;
+./af/ev/win/ev_Win32Mouse.cpp-256-	case EV_EEMR_BOGUS_START:
+./af/ev/win/ev_Win32Mouse.cpp-257-	case EV_EEMR_BOGUS_CONT:
+./af/ev/win/ev_Win32Mouse.cpp:258:		// TODO What to do ?? Should we beep at them or just be quiet ??
+./af/ev/win/ev_Win32Mouse.cpp-259-		return;
+./af/ev/win/ev_Win32Mouse.cpp-260-	default:
+./af/ev/win/ev_Win32Mouse.cpp-261-		UT_ASSERT(0);
+./af/ev/win/ev_Win32Mouse.cpp-262-		return;
+./af/ev/win/ev_Win32Mouse.cpp-263-	}
+./af/ev/win/ev_Win32Toolbar.cpp-135-
+./af/ev/win/ev_Win32Toolbar.cpp-136-		if (EV_TIS_ShouldBeToggled(tis))
+./af/ev/win/ev_Win32Toolbar.cpp-137-		{
+./af/ev/win/ev_Win32Toolbar.cpp-138-			// if this assert fires, you got a click while the button is down
+./af/ev/win/ev_Win32Toolbar.cpp-139-			// if your widget set won't let you prevent this, handle it here
+./af/ev/win/ev_Win32Toolbar.cpp:140:			UT_ASSERT(UT_TODO);
+./af/ev/win/ev_Win32Toolbar.cpp-141-			
+./af/ev/win/ev_Win32Toolbar.cpp-142-			// can safely ignore this event
+./af/ev/win/ev_Win32Toolbar.cpp-143-			return UT_TRUE;
+./af/ev/win/ev_Win32Toolbar.cpp-144-		}
+./af/ev/win/ev_Win32Toolbar.cpp-145-	}
+./af/ev/win/ev_Win32Toolbar.cpp-180-		case WM_MOUSEMOVE:
+./af/ev/win/ev_Win32Toolbar.cpp-181-		case WM_LBUTTONDOWN:
+./af/ev/win/ev_Win32Toolbar.cpp-182-		case WM_LBUTTONUP:
+./af/ev/win/ev_Win32Toolbar.cpp-183-		{
+./af/ev/win/ev_Win32Toolbar.cpp-184-			// relay mouse messages from the combo box to get tool tips to work
+./af/ev/win/ev_Win32Toolbar.cpp:185:			// TODO: similar relay needed from edit control, too??
+./af/ev/win/ev_Win32Toolbar.cpp-186-			// ALT:  tell tooltip control to subclass for these events
+./af/ev/win/ev_Win32Toolbar.cpp-187-			MSG msg;
+./af/ev/win/ev_Win32Toolbar.cpp-188-			HWND hWndTT;
+./af/ev/win/ev_Win32Toolbar.cpp-189-			msg.lParam = lParam;
+./af/ev/win/ev_Win32Toolbar.cpp-190-			msg.wParam = wParam;
+./af/ev/win/ev_Win32Toolbar.cpp-267-		case WM_MOUSEMOVE:
+./af/ev/win/ev_Win32Toolbar.cpp-268-		case WM_LBUTTONDOWN:
+./af/ev/win/ev_Win32Toolbar.cpp-269-		case WM_LBUTTONUP:
+./af/ev/win/ev_Win32Toolbar.cpp-270-		{
+./af/ev/win/ev_Win32Toolbar.cpp-271-			// forward these to parent (ie, the combo)
+./af/ev/win/ev_Win32Toolbar.cpp:272:			// TODO: figure out why tooltips still don't work over the edit
+./af/ev/win/ev_Win32Toolbar.cpp-273-			// HYP:  may need to tweak coord system for wParam/lParam
+./af/ev/win/ev_Win32Toolbar.cpp-274-			HWND hwndParent = GetParent(hWnd);
+./af/ev/win/ev_Win32Toolbar.cpp-275-			SendMessage(hwndParent, uMessage, wParam, lParam);
+./af/ev/win/ev_Win32Toolbar.cpp-276-			break;
+./af/ev/win/ev_Win32Toolbar.cpp-277-		}
+./af/ev/win/ev_Win32Toolbar.cpp-278-
+./af/ev/win/ev_Win32Toolbar.cpp-279-
+./af/ev/win/ev_Win32Toolbar.cpp-280-		case WM_KILLFOCUS:
+./af/ev/win/ev_Win32Toolbar.cpp-281-		{
+./af/ev/win/ev_Win32Toolbar.cpp-282-			// for now, we fire an event any time we lose focus
+./af/ev/win/ev_Win32Toolbar.cpp:283:			// TODO: confirm that this gives the desired behavior
+./af/ev/win/ev_Win32Toolbar.cpp-284-			EV_Win32Toolbar * t = (EV_Win32Toolbar *) GetWindowLong(hWnd, GWL_USERDATA);
+./af/ev/win/ev_Win32Toolbar.cpp-285-			UT_ASSERT(t);
+./af/ev/win/ev_Win32Toolbar.cpp-286-
+./af/ev/win/ev_Win32Toolbar.cpp-287-			HWND hwndParent = GetParent(hWnd);
+./af/ev/win/ev_Win32Toolbar.cpp-288-			UINT u = GetDlgCtrlID(hwndParent);
+./af/ev/win/ev_Win32Toolbar.cpp-428-		SendMessage(m_hwnd, TB_SETBITMAPSIZE, 0, (LPARAM) MAKELONG(0,0));
+./af/ev/win/ev_Win32Toolbar.cpp-429-
+./af/ev/win/ev_Win32Toolbar.cpp-430-	DWORD dwColor = GetSysColor(COLOR_BTNFACE);
+./af/ev/win/ev_Win32Toolbar.cpp-431-	UT_RGBColor backgroundColor(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
+./af/ev/win/ev_Win32Toolbar.cpp-432-
+./af/ev/win/ev_Win32Toolbar.cpp:433:	// TODO: is there any advantage to building up all the TBBUTTONs at once
+./af/ev/win/ev_Win32Toolbar.cpp-434-	//		 and then adding them en masse, instead of one at a time? 
+./af/ev/win/ev_Win32Toolbar.cpp-435-	UINT last_id=0;
+./af/ev/win/ev_Win32Toolbar.cpp-436-	UT_Bool bControls = UT_FALSE;
+./af/ev/win/ev_Win32Toolbar.cpp-437-
+./af/ev/win/ev_Win32Toolbar.cpp-438-	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
+./af/ev/win/ev_Win32Toolbar.cpp-571-							TOOLINFO ti;
+./af/ev/win/ev_Win32Toolbar.cpp-572-
+./af/ev/win/ev_Win32Toolbar.cpp-573-							ti.cbSize = sizeof(ti);
+./af/ev/win/ev_Win32Toolbar.cpp-574-							ti.uFlags = TTF_IDISHWND | TTF_CENTERTIP;
+./af/ev/win/ev_Win32Toolbar.cpp-575-							ti.lpszText = (char *) szToolTip;
+./af/ev/win/ev_Win32Toolbar.cpp:576:							ti.hwnd = m_hwnd;		// TODO: should this be the frame?
+./af/ev/win/ev_Win32Toolbar.cpp-577-							ti.uId = (UINT)hwndCombo;
+./af/ev/win/ev_Win32Toolbar.cpp-578-							// Set up tooltips for the combo box.
+./af/ev/win/ev_Win32Toolbar.cpp-579-							SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM)(LPTOOLINFO)&ti);
+./af/ev/win/ev_Win32Toolbar.cpp-580-						}
+./af/ev/win/ev_Win32Toolbar.cpp-581-						
+./af/ev/win/ev_Win32Toolbar.cpp-588-					break;
+./af/ev/win/ev_Win32Toolbar.cpp-589-					
+./af/ev/win/ev_Win32Toolbar.cpp-590-				case EV_TBIT_EditText:
+./af/ev/win/ev_Win32Toolbar.cpp-591-				case EV_TBIT_DropDown:
+./af/ev/win/ev_Win32Toolbar.cpp-592-				case EV_TBIT_StaticLabel:
+./af/ev/win/ev_Win32Toolbar.cpp:593:					// TODO do these...
+./af/ev/win/ev_Win32Toolbar.cpp-594-					break;
+./af/ev/win/ev_Win32Toolbar.cpp-595-					
+./af/ev/win/ev_Win32Toolbar.cpp-596-				case EV_TBIT_Spacer:
+./af/ev/win/ev_Win32Toolbar.cpp-597-				case EV_TBIT_BOGUS:
+./af/ev/win/ev_Win32Toolbar.cpp-598-				default:
+./af/ev/win/ev_Win32Toolbar.cpp-600-					break;
+./af/ev/win/ev_Win32Toolbar.cpp-601-				}
+./af/ev/win/ev_Win32Toolbar.cpp-602-
+./af/ev/win/ev_Win32Toolbar.cpp-603-				if (bButton)
+./af/ev/win/ev_Win32Toolbar.cpp-604-				{
+./af/ev/win/ev_Win32Toolbar.cpp:605:					// TODO figure out who destroys hBitmap...
+./af/ev/win/ev_Win32Toolbar.cpp-606-					//
+./af/ev/win/ev_Win32Toolbar.cpp-607-					// TMN: 20 Nov 2000 - Tests display that we must hang on to the
+./af/ev/win/ev_Win32Toolbar.cpp-608-					// bitmap handle for this to work.
+./af/ev/win/ev_Win32Toolbar.cpp-609-					// Had we been allowed to use C++ I'd say
+./af/ev/win/ev_Win32Toolbar.cpp-610-					//		std::map<std::string, HBITMAP> icons;
+./af/ev/win/ev_Win32Toolbar.cpp-611-					// but currently I don't know how to handle this in a clean way.
+./af/ev/win/ev_Win32Toolbar.cpp-612-					// Would UT_Array help?
+./af/ev/win/ev_Win32Toolbar.cpp-613-
+./af/ev/win/ev_Win32Toolbar.cpp:614:					// TODO add code to create these once per application
+./af/ev/win/ev_Win32Toolbar.cpp:615:					// TODO and reference them in each toolbar instance
+./af/ev/win/ev_Win32Toolbar.cpp:616:					// TODO rather than create them once for each window....
+./af/ev/win/ev_Win32Toolbar.cpp-617-
+./af/ev/win/ev_Win32Toolbar.cpp-618-					if (bIcons)
+./af/ev/win/ev_Win32Toolbar.cpp-619-					{
+./af/ev/win/ev_Win32Toolbar.cpp-620-						HBITMAP hBitmap;
+./af/ev/win/ev_Win32Toolbar.cpp-621-						const UT_Bool bFoundIcon =
+./af/ev/win/ev_Win32Toolbar.cpp-704-					break;
+./af/ev/win/ev_Win32Toolbar.cpp-705-
+./af/ev/win/ev_Win32Toolbar.cpp-706-				case EV_TBIT_EditText:
+./af/ev/win/ev_Win32Toolbar.cpp-707-				case EV_TBIT_DropDown:
+./af/ev/win/ev_Win32Toolbar.cpp-708-				case EV_TBIT_StaticLabel:
+./af/ev/win/ev_Win32Toolbar.cpp:709:					// TODO do these...
+./af/ev/win/ev_Win32Toolbar.cpp-710-					break;
+./af/ev/win/ev_Win32Toolbar.cpp-711-					
+./af/ev/win/ev_Win32Toolbar.cpp-712-				default:
+./af/ev/win/ev_Win32Toolbar.cpp-713-					break;
+./af/ev/win/ev_Win32Toolbar.cpp-714-			}
+./af/ev/win/ev_Win32Toolbar.cpp-887-			break;
+./af/ev/win/ev_Win32Toolbar.cpp-888-
+./af/ev/win/ev_Win32Toolbar.cpp-889-		case EV_TBIT_EditText:
+./af/ev/win/ev_Win32Toolbar.cpp-890-		case EV_TBIT_DropDown:
+./af/ev/win/ev_Win32Toolbar.cpp-891-		case EV_TBIT_StaticLabel:
+./af/ev/win/ev_Win32Toolbar.cpp:892:			// TODO do these later...
+./af/ev/win/ev_Win32Toolbar.cpp-893-			break;
+./af/ev/win/ev_Win32Toolbar.cpp-894-			
+./af/ev/win/ev_Win32Toolbar.cpp-895-		case EV_TBIT_Spacer:
+./af/ev/win/ev_Win32Toolbar.cpp-896-		case EV_TBIT_BOGUS:
+./af/ev/win/ev_Win32Toolbar.cpp-897-		default:
+./af/gr/win/gr_Win32Graphics.cpp-123-									const char* pszFontSize)
+./af/gr/win/gr_Win32Graphics.cpp-124-{
+./af/gr/win/gr_Win32Graphics.cpp-125-	LOGFONT lf = { 0 };
+./af/gr/win/gr_Win32Graphics.cpp-126-
+./af/gr/win/gr_Win32Graphics.cpp-127-	/*
+./af/gr/win/gr_Win32Graphics.cpp:128:		TODO we need to fill out the LOGFONT object such that
+./af/gr/win/gr_Win32Graphics.cpp-129-		we'll get the closest possible matching font.  For
+./af/gr/win/gr_Win32Graphics.cpp-130-		now, we're hard-coding a hack.
+./af/gr/win/gr_Win32Graphics.cpp-131-	*/
+./af/gr/win/gr_Win32Graphics.cpp-132-
+./af/gr/win/gr_Win32Graphics.cpp-133-	UT_sint32 iHeight = convertDimension(pszFontSize);
+./af/gr/win/gr_Win32Graphics.cpp-134-	lf.lfHeight = -(iHeight);
+./af/gr/win/gr_Win32Graphics.cpp-135-
+./af/gr/win/gr_Win32Graphics.cpp:136:	// TODO note that we don't support all those other ways of expressing weight.
+./af/gr/win/gr_Win32Graphics.cpp-137-	if (0 == UT_stricmp(pszFontWeight, "bold"))
+./af/gr/win/gr_Win32Graphics.cpp-138-	{
+./af/gr/win/gr_Win32Graphics.cpp-139-		lf.lfWeight = 700;
+./af/gr/win/gr_Win32Graphics.cpp-140-	}
+./af/gr/win/gr_Win32Graphics.cpp-141-
+./af/gr/win/gr_Win32Graphics.cpp:142:	// TODO -- remove this block entirely, since oblique is no longer a valid style
+./af/gr/win/gr_Win32Graphics.cpp-143-	// We squash oblique into italic
+./af/gr/win/gr_Win32Graphics.cpp-144-	if (0 == UT_stricmp(pszFontStyle, "italic") || 0 == UT_stricmp(pszFontStyle, "oblique"))
+./af/gr/win/gr_Win32Graphics.cpp-145-	{
+./af/gr/win/gr_Win32Graphics.cpp-146-		lf.lfItalic = TRUE;
+./af/gr/win/gr_Win32Graphics.cpp-147-	}
+./af/gr/win/gr_Win32Graphics.cpp-148-
+./af/gr/win/gr_Win32Graphics.cpp:149:	// TODO note that we currently think pszFontFamily is a single name, not a list!
+./af/gr/win/gr_Win32Graphics.cpp:150:	// TODO why don't these generic family names work?!?
+./af/gr/win/gr_Win32Graphics.cpp-151-	if (0 == UT_stricmp(pszFontFamily, "serif"))
+./af/gr/win/gr_Win32Graphics.cpp-152-	{
+./af/gr/win/gr_Win32Graphics.cpp-153-		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_ROMAN;
+./af/gr/win/gr_Win32Graphics.cpp-154-	}
+./af/gr/win/gr_Win32Graphics.cpp-155-	else if (0 == UT_stricmp(pszFontFamily, "sans-serif"))
+./af/gr/win/gr_Win32Graphics.cpp-203-void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
+./af/gr/win/gr_Win32Graphics.cpp-204-{
+./af/gr/win/gr_Win32Graphics.cpp-205-	HFONT hFont = m_pFont->getHFONT();
+./af/gr/win/gr_Win32Graphics.cpp-206-	SelectObject(m_hdc, hFont);
+./af/gr/win/gr_Win32Graphics.cpp-207-	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
+./af/gr/win/gr_Win32Graphics.cpp:208:	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
+./af/gr/win/gr_Win32Graphics.cpp-209-
+./af/gr/win/gr_Win32Graphics.cpp-210-	UT_UCSChar currentChar = remapGlyph(Char, UT_FALSE);
+./af/gr/win/gr_Win32Graphics.cpp-211-
+./af/gr/win/gr_Win32Graphics.cpp-212-	// Windows NT and Windows 95 support the Unicode Font file. 
+./af/gr/win/gr_Win32Graphics.cpp-213-	// All of the Unicode glyphs can be rendered if the glyph is found in
+./af/gr/win/gr_Win32Graphics.cpp-242-	UT_ASSERT(pChars);
+./af/gr/win/gr_Win32Graphics.cpp-243-
+./af/gr/win/gr_Win32Graphics.cpp-244-	HFONT hFont = m_pFont->getHFONT();
+./af/gr/win/gr_Win32Graphics.cpp-245-	SelectObject(m_hdc, hFont);
+./af/gr/win/gr_Win32Graphics.cpp-246-	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
+./af/gr/win/gr_Win32Graphics.cpp:247:	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
+./af/gr/win/gr_Win32Graphics.cpp-248-
+./af/gr/win/gr_Win32Graphics.cpp-249-	UT_UCSChar* currentChars = new UT_UCSChar[iLength];
+./af/gr/win/gr_Win32Graphics.cpp-250-	for (int i = 0; i < iLength; ++i)
+./af/gr/win/gr_Win32Graphics.cpp-251-	{
+./af/gr/win/gr_Win32Graphics.cpp-252-		currentChars[i] = remapGlyph(pChars[iCharOffset + i], UT_FALSE);
+./af/gr/win/gr_Win32Graphics.cpp-281-	delete [] currentChars;
+./af/gr/win/gr_Win32Graphics.cpp-282-}
+./af/gr/win/gr_Win32Graphics.cpp-283-
+./af/gr/win/gr_Win32Graphics.cpp-284-void GR_Win32Graphics::setFont(GR_Font* pFont)
+./af/gr/win/gr_Win32Graphics.cpp-285-{
+./af/gr/win/gr_Win32Graphics.cpp:286:	UT_ASSERT(pFont);	// TODO should we allow pFont == NULL?
+./af/gr/win/gr_Win32Graphics.cpp-287-
+./af/gr/win/gr_Win32Graphics.cpp-288-	if (m_pFont == (static_cast<GR_Win32Font*> (pFont)))
+./af/gr/win/gr_Win32Graphics.cpp-289-		return;
+./af/gr/win/gr_Win32Graphics.cpp-290-
+./af/gr/win/gr_Win32Graphics.cpp-291-	m_pFont = static_cast<GR_Win32Font*> (pFont);
+./af/gr/win/gr_Win32Graphics.cpp-375-	(void) SetROP2(m_hdc, iROP);
+./af/gr/win/gr_Win32Graphics.cpp-376-}
+./af/gr/win/gr_Win32Graphics.cpp-377-
+./af/gr/win/gr_Win32Graphics.cpp-378-void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+./af/gr/win/gr_Win32Graphics.cpp-379-{
+./af/gr/win/gr_Win32Graphics.cpp:380:	// TODO do we really want the line width to ALWAYS be 1?
+./af/gr/win/gr_Win32Graphics.cpp-381-	HPEN hPen = CreatePen(PS_SOLID, 1, m_clrCurrent);
+./af/gr/win/gr_Win32Graphics.cpp-382-	HPEN hOldPen = (HPEN) SelectObject(m_hdc, hPen);
+./af/gr/win/gr_Win32Graphics.cpp-383-
+./af/gr/win/gr_Win32Graphics.cpp-384-	POINT * points = (POINT *)calloc(nPoints, sizeof(POINT));
+./af/gr/win/gr_Win32Graphics.cpp-385-	UT_ASSERT(points);
+./af/gr/win/gr_Win32Graphics.cpp-601-	return m_hwnd;
+./af/gr/win/gr_Win32Graphics.cpp-602-}
+./af/gr/win/gr_Win32Graphics.cpp-603-
+./af/gr/win/gr_Win32Graphics.cpp-604-void GR_Win32Graphics::setColorSpace(GR_Graphics::ColorSpace c)
+./af/gr/win/gr_Win32Graphics.cpp-605-{
+./af/gr/win/gr_Win32Graphics.cpp:606:	// TODO:  maybe? 
+./af/gr/win/gr_Win32Graphics.cpp-607-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+./af/gr/win/gr_Win32Graphics.cpp-608-}
+./af/gr/win/gr_Win32Graphics.cpp-609-
+./af/gr/win/gr_Win32Graphics.cpp-610-GR_Graphics::ColorSpace GR_Win32Graphics::getColorSpace(void) const
+./af/gr/win/gr_Win32Graphics.cpp-611-{
+./af/gr/win/gr_Win32Graphics.cpp-642-	case GR_CURSOR_IBEAM:
+./af/gr/win/gr_Win32Graphics.cpp-643-		cursor_name = IDC_IBEAM;
+./af/gr/win/gr_Win32Graphics.cpp-644-		break;
+./af/gr/win/gr_Win32Graphics.cpp-645-
+./af/gr/win/gr_Win32Graphics.cpp-646-	case GR_CURSOR_RIGHTARROW:
+./af/gr/win/gr_Win32Graphics.cpp:647:		cursor_name = IDC_ARROW;		// TODO change this
+./af/gr/win/gr_Win32Graphics.cpp-648-		break;
+./af/gr/win/gr_Win32Graphics.cpp-649-		
+./af/gr/win/gr_Win32Graphics.cpp-650-	case GR_CURSOR_IMAGE:
+./af/gr/win/gr_Win32Graphics.cpp-651-		cursor_name = IDC_SIZEALL;
+./af/gr/win/gr_Win32Graphics.cpp-652-		break;
+./af/gr/win/gr_Win32Graphics.cpp-727-	// we borrow some code from GR_Win32Graphics::findFont()
+./af/gr/win/gr_Win32Graphics.cpp-728-
+./af/gr/win/gr_Win32Graphics.cpp-729-	LOGFONT lf = { 0 };
+./af/gr/win/gr_Win32Graphics.cpp-730-	TEXTMETRIC tm = { 0 };
+./af/gr/win/gr_Win32Graphics.cpp-731-
+./af/gr/win/gr_Win32Graphics.cpp:732:	// TODO i'm not sure why we special case these, but the other
+./af/gr/win/gr_Win32Graphics.cpp:733:	// TODO code did, so i'm going to here.
+./af/gr/win/gr_Win32Graphics.cpp-734-	
+./af/gr/win/gr_Win32Graphics.cpp-735-	if (UT_stricmp(szFontName, "serif") == 0)
+./af/gr/win/gr_Win32Graphics.cpp-736-		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_ROMAN;
+./af/gr/win/gr_Win32Graphics.cpp-737-	else if (UT_stricmp(szFontName, "sans-serif") == 0)
+./af/gr/win/gr_Win32Graphics.cpp-738-		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_SWISS;
+./af/gr/win/gr_Win32Graphics.cpp-868-		return;
+./af/gr/win/gr_Win32Graphics.cpp-869-
+./af/gr/win/gr_Win32Graphics.cpp-870-	// invalidate cached info when we change hdc's.
+./af/gr/win/gr_Win32Graphics.cpp-871-	// this is probably unnecessary except when
+./af/gr/win/gr_Win32Graphics.cpp-872-	// sharing a font with screen and printer.
+./af/gr/win/gr_Win32Graphics.cpp:873:	// TODO consider changing our invalidate test
+./af/gr/win/gr_Win32Graphics.cpp:874:	// TODO to not invalidate if old and new are
+./af/gr/win/gr_Win32Graphics.cpp:875:	// TODO both on screen.
+./af/gr/win/gr_Win32Graphics.cpp-876-	
+./af/gr/win/gr_Win32Graphics.cpp-877-	m_oldHDC = hdc;
+./af/gr/win/gr_Win32Graphics.cpp-878-
+./af/gr/win/gr_Win32Graphics.cpp-879-	m_cw.zeroWidths();
+./af/gr/win/gr_Win32Graphics.cpp-880-
+./af/gr/win/gr_Win32Image.cpp-293-	UT_uint32 iSizeOfColorData = m_pDIB->bmiHeader.biClrUsed * sizeof(RGBQUAD);
+./af/gr/win/gr_Win32Image.cpp-294-	RGBQUAD* pColors = (RGBQUAD*) (((unsigned char*) m_pDIB) + m_pDIB->bmiHeader.biSize);
+./af/gr/win/gr_Win32Image.cpp-295-	UT_Byte* pBits = ((unsigned char*) m_pDIB) + m_pDIB->bmiHeader.biSize + iSizeOfColorData;
+./af/gr/win/gr_Win32Image.cpp-296-	
+./af/gr/win/gr_Win32Image.cpp-297-	UT_Byte* pData = (UT_Byte*) malloc(iWidth * iHeight * 3);
+./af/gr/win/gr_Win32Image.cpp:298:	UT_ASSERT(pData); // TODO outofmem
+./af/gr/win/gr_Win32Image.cpp-299-		
+./af/gr/win/gr_Win32Image.cpp-300-	UT_uint32 	iRow;
+./af/gr/win/gr_Win32Image.cpp-301-	UT_uint32 	iCol;
+./af/gr/win/gr_Win32Image.cpp-302-	UT_Byte* 	pRow;
+./af/gr/win/gr_Win32Image.cpp-303-	UT_uint32 	iBytesInRow;
+./af/gr/win/gr_Win32Image.cpp-423-		break;
+./af/gr/win/gr_Win32Image.cpp-424-	}
+./af/gr/win/gr_Win32Image.cpp-425-
+./af/gr/win/gr_Win32Image.cpp-426-	default:
+./af/gr/win/gr_Win32Image.cpp-427-		// there are DIB formats we do not support.
+./af/gr/win/gr_Win32Image.cpp:428:		UT_ASSERT(UT_TODO);
+./af/gr/win/gr_Win32Image.cpp-429-		break;
+./af/gr/win/gr_Win32Image.cpp-430-	}
+./af/gr/win/gr_Win32Image.cpp-431-
+./af/gr/win/gr_Win32Image.cpp-432-	/*
+./af/gr/win/gr_Win32Image.cpp-433-	  Now that we have converted the image to a normalized 24-bit
+./af/util/win/ut_Xpm2Bmp.cpp-133-			pRGB[k].rgbBlue		= pBackgroundColor->m_blu;
+./af/util/win/ut_Xpm2Bmp.cpp-134-			pRGB[k].rgbReserved	= 0;
+./af/util/win/ut_Xpm2Bmp.cpp-135-		}
+./af/util/win/ut_Xpm2Bmp.cpp-136-		else
+./af/util/win/ut_Xpm2Bmp.cpp-137-		{
+./af/util/win/ut_Xpm2Bmp.cpp:138:			// TODO fix this to also handle #ffffeeeedddd type color references
+./af/util/win/ut_Xpm2Bmp.cpp-139-			
+./af/util/win/ut_Xpm2Bmp.cpp-140-			UT_ASSERT((bufColorValue[0] == '#') && strlen(bufColorValue)==7);
+./af/util/win/ut_Xpm2Bmp.cpp-141-			UT_parseColor(bufColorValue, color);
+./af/util/win/ut_Xpm2Bmp.cpp-142-			pRGB[k].rgbRed		= color.m_red;
+./af/util/win/ut_Xpm2Bmp.cpp-143-			pRGB[k].rgbGreen	= color.m_grn;
+./af/util/win/ut_debugmsg.cpp-24-#include <stdio.h>
+./af/util/win/ut_debugmsg.cpp-25-#include <stdarg.h>
+./af/util/win/ut_debugmsg.cpp-26-
+./af/util/win/ut_debugmsg.cpp-27-#include "ut_debugmsg.h"
+./af/util/win/ut_debugmsg.cpp-28-
+./af/util/win/ut_debugmsg.cpp:29:// TODO aaaaagh!  This is Win32-specific
+./af/util/win/ut_debugmsg.cpp-30-
+./af/util/win/ut_debugmsg.cpp-31-void _UT_OutputMessage(char *s, ...)
+./af/util/win/ut_debugmsg.cpp-32-{
+./af/util/win/ut_debugmsg.cpp-33-	char sBuf[1024];
+./af/util/win/ut_debugmsg.cpp-34-	va_list marker;
+./af/xap/win/xap_Win32App.cpp-64-	m_pSlurp = new XAP_Win32Slurp(this);
+./af/xap/win/xap_Win32App.cpp-65-	m_pSlurp->connectSlurper();
+./af/xap/win/xap_Win32App.cpp-66-	char bufExePathname[4096];
+./af/xap/win/xap_Win32App.cpp-67-	GetModuleFileName(NULL,bufExePathname,NrElements(bufExePathname));
+./af/xap/win/xap_Win32App.cpp-68-
+./af/xap/win/xap_Win32App.cpp:69:	// TODO these are Application-Specific values.  Move them out of here.
+./af/xap/win/xap_Win32App.cpp-70-	m_pSlurp->stuffRegistry(".abw",getApplicationName(),bufExePathname,"application/abiword");
+./af/xap/win/xap_Win32App.cpp-71-	m_pSlurp->stuffRegistry(".zabw",getApplicationName(),bufExePathname,"application/abiword-compressed");
+./af/xap/win/xap_Win32App.cpp-72-	
+./af/xap/win/xap_Win32App.cpp-73-	return UT_TRUE;
+./af/xap/win/xap_Win32App.cpp-74-}
+./af/xap/win/xap_Win32App.cpp-261-		int n = v.getItemCount();
+./af/xap/win/xap_Win32App.cpp-262-		if (   (n > 2)
+./af/xap/win/xap_Win32App.cpp-263-			&& (UT_stricmp((const char *)v.getNthItem(n-1),"bin")==0)
+./af/xap/win/xap_Win32App.cpp-264-			&& (UT_stricmp((const char *)v.getNthItem(n-3),"AbiSuite")==0))
+./af/xap/win/xap_Win32App.cpp-265-		{
+./af/xap/win/xap_Win32App.cpp:266:			strcat(buf,"\\..\\..");		// TODO trim the string rather than use ..'s
+./af/xap/win/xap_Win32App.cpp-267-			XAP_App::_setAbiSuiteLibDir(buf);
+./af/xap/win/xap_Win32App.cpp-268-			return;
+./af/xap/win/xap_Win32App.cpp-269-		}
+./af/xap/win/xap_Win32App.cpp-270-
+./af/xap/win/xap_Win32App.cpp-271-		if (   (n > 1)
+./af/xap/win/xap_Win32App.cpp-272-			&& (UT_stricmp((const char *)v.getNthItem(n-1),"bin")==0))
+./af/xap/win/xap_Win32App.cpp-273-		{
+./af/xap/win/xap_Win32App.cpp:274:			strcat(buf,"\\..\\AbiSuite"); // TODO trim the string rather than use ..'s
+./af/xap/win/xap_Win32App.cpp-275-			XAP_App::_setAbiSuiteLibDir(buf);
+./af/xap/win/xap_Win32App.cpp-276-			return;
+./af/xap/win/xap_Win32App.cpp-277-		}
+./af/xap/win/xap_Win32App.cpp-278-
+./af/xap/win/xap_Win32App.cpp-279-		// [win32 only] if none of this works, just leave it the exe directory.
+./af/xap/win/xap_Win32Clipboard.cpp-82-	memcpy(p, pData, iNumBytes);
+./af/xap/win/xap_Win32Clipboard.cpp-83-	GlobalUnlock(hData);
+./af/xap/win/xap_Win32Clipboard.cpp-84-
+./af/xap/win/xap_Win32Clipboard.cpp-85-	return (SetClipboardData(iFormat, hData) != NULL);
+./af/xap/win/xap_Win32Clipboard.cpp-86-
+./af/xap/win/xap_Win32Clipboard.cpp:87:	// TODO if SetClipboardData() fails, do we need to GlobalFree(hData) ??
+./af/xap/win/xap_Win32Clipboard.cpp-88-}
+./af/xap/win/xap_Win32Clipboard.cpp-89-
+./af/xap/win/xap_Win32Clipboard.cpp-90-HANDLE XAP_Win32Clipboard::getHandleInFormat(const char * format)
+./af/xap/win/xap_Win32Clipboard.cpp-91-{
+./af/xap/win/xap_Win32Clipboard.cpp-92-	UINT iFormat = _convertFormatString(format);
+./af/xap/win/xap_Win32Dlg_About.cpp-111-	wndclassAbout.lpszClassName = "AbiSource_About";
+./af/xap/win/xap_Win32Dlg_About.cpp-112-	wndclassAbout.hIconSm       = pWin32App->getSmallIcon();
+./af/xap/win/xap_Win32Dlg_About.cpp-113-	
+./af/xap/win/xap_Win32Dlg_About.cpp-114-	if (!RegisterClassEx(&wndclassAbout))
+./af/xap/win/xap_Win32Dlg_About.cpp-115-	{
+./af/xap/win/xap_Win32Dlg_About.cpp:116:		// TODO failure
+./af/xap/win/xap_Win32Dlg_About.cpp-117-
+./af/xap/win/xap_Win32Dlg_About.cpp-118-		return;
+./af/xap/win/xap_Win32Dlg_About.cpp-119-	}
+./af/xap/win/xap_Win32Dlg_About.cpp-120-
+./af/xap/win/xap_Win32Dlg_About.cpp-121-	int 		iScreenWidth;
+./af/xap/win/xap_Win32Dlg_About.cpp-155-	GetClientRect(hwndAbout, &r);
+./af/xap/win/xap_Win32Dlg_About.cpp-156-	iWidth = r.right;
+./af/xap/win/xap_Win32Dlg_About.cpp-157-	iHeight = r.bottom;
+./af/xap/win/xap_Win32Dlg_About.cpp-158-		
+./af/xap/win/xap_Win32Dlg_About.cpp-159-	HWND hwndOK = CreateWindow("BUTTON",
+./af/xap/win/xap_Win32Dlg_About.cpp:160:							   "OK",		// TODO isn't this in the strings file?
+./af/xap/win/xap_Win32Dlg_About.cpp-161-							   WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+./af/xap/win/xap_Win32Dlg_About.cpp-162-							   iWidth - BUTTON_WIDTH - BUTTON_GAP,
+./af/xap/win/xap_Win32Dlg_About.cpp-163-							   iHeight - BUTTON_HEIGHT - BUTTON_GAP,
+./af/xap/win/xap_Win32Dlg_About.cpp-164-							   BUTTON_WIDTH,
+./af/xap/win/xap_Win32Dlg_About.cpp-165-							   BUTTON_HEIGHT,
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-219-	default:
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-220-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-221-		break;
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-222-	}
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-223-
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp:224:	// TODO how do cancels get reported...
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp:225:	// TODO verify that current-working-directory is not changed...
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-226-	
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-227-	if (bDialogResult != FALSE)
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-228-	{
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-229-		UT_uint32 end = UT_pointerArrayLength((void **) m_szSuffixes);
+./af/xap/win/xap_Win32Dlg_FileOpenSaveAs.cpp-230-
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-97-
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-98-	if (m_pFontWeight && *m_pFontWeight)
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-99-	{
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-100-		if (UT_stricmp(m_pFontWeight,"bold") == 0)
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-101-			lf.lfWeight = 700;
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp:102:		// TODO do we need any others here...
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-103-	}
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-104-	else
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-105-		cf.Flags |= CF_NOSTYLESEL;
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-106-
+./af/xap/win/xap_Win32Dlg_FontChooser.cpp-107-	if (m_pFontStyle && *m_pFontStyle)
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-115-		// load each frame name into the list
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-116-		for (UT_uint32 i=0; i<m_pApp->getFrameCount(); i++)
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-117-		{
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-118-			XAP_Frame * f = m_pApp->getFrame(i);
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-119-			UT_ASSERT(f);
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp:120:			const char * s = f->getTitle(128);	// TODO: chop this down more? 
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-121-
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-122-            SendMessage(hwndList, LB_ADDSTRING, 0, (LPARAM) s); 
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-123-            SendMessage(hwndList, LB_SETITEMDATA, i, (LPARAM) i);  
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-124-        } 
+./af/xap/win/xap_Win32Dlg_WindowMore.cpp-125-
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-187-	_updatePreviewZoomPercent(getZoomPercent());
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-188-
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-189-	return 1;							// 1 == we did not call SetFocus()
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-190-}
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-191-
+./af/xap/win/xap_Win32Dlg_Zoom.cpp:192:// TODO: move this to UTIL/WIN
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-193-static int _getRBOffset(HWND hWnd, int nIDFirstButton, int nIDLastButton)
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-194-{
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-195-	UT_ASSERT(hWnd && IsWindow(hWnd));
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-196-	UT_ASSERT(nIDFirstButton < nIDLastButton);
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-197-
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-231-		return 1;
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-232-
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-233-	case XAP_RID_DIALOG_ZOOM_RADIO_WIDTH:
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-234-		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-235-		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+./af/xap/win/xap_Win32Dlg_Zoom.cpp:236:		// TODO figure out call to XP code...
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-237-		return 1;
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-238-
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-239-	case XAP_RID_DIALOG_ZOOM_RADIO_WHOLE:
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-240-		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-241-		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+./af/xap/win/xap_Win32Dlg_Zoom.cpp:242:		// TODO figure out call to XP code...
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-243-		return 1;
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-244-
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-245-	case XAP_RID_DIALOG_ZOOM_RADIO_PCT:
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-246-		m_bEditPctEnabled = (IsDlgButtonChecked(hWnd,XAP_RID_DIALOG_ZOOM_RADIO_PCT)==BST_CHECKED);
+./af/xap/win/xap_Win32Dlg_Zoom.cpp-247-		EnableWindow(GetDlgItem(hWnd,XAP_RID_DIALOG_ZOOM_EDIT_PCT),m_bEditPctEnabled);
+./af/xap/win/xap_Win32Frame.cpp-91-        m_iSizeWidth(0),
+./af/xap/win/xap_Win32Frame.cpp-92-        m_iSizeHeight(0)
+./af/xap/win/xap_Win32Frame.cpp-93-{
+./af/xap/win/xap_Win32Frame.cpp-94-}
+./af/xap/win/xap_Win32Frame.cpp-95-
+./af/xap/win/xap_Win32Frame.cpp:96:// TODO when cloning a new frame from an existing one
+./af/xap/win/xap_Win32Frame.cpp:97:// TODO should we also clone any frame-persistent
+./af/xap/win/xap_Win32Frame.cpp:98:// TODO dialog data ??
+./af/xap/win/xap_Win32Frame.cpp-99-
+./af/xap/win/xap_Win32Frame.cpp-100-XAP_Win32Frame::XAP_Win32Frame(XAP_Win32Frame * f)
+./af/xap/win/xap_Win32Frame.cpp-101-:       XAP_Frame(f),
+./af/xap/win/xap_Win32Frame.cpp-102-        m_pWin32App(f->m_pWin32App),
+./af/xap/win/xap_Win32Frame.cpp-103-        m_pWin32Menu(0),
+./af/xap/win/xap_Win32Frame.cpp-150-	UT_ASSERT(m_pKeyboard);
+./af/xap/win/xap_Win32Frame.cpp-151-	
+./af/xap/win/xap_Win32Frame.cpp-152-	m_pMouse = new EV_Win32Mouse(pEEM);
+./af/xap/win/xap_Win32Frame.cpp-153-	UT_ASSERT(m_pMouse);
+./af/xap/win/xap_Win32Frame.cpp-154-
+./af/xap/win/xap_Win32Frame.cpp:155:	// TODO: Jeff, I'm currently showing in WinMain, to honor iCmdShow.
+./af/xap/win/xap_Win32Frame.cpp-156-	// should we pass that via argv, to do it here for all frames?
+./af/xap/win/xap_Win32Frame.cpp-157-
+./af/xap/win/xap_Win32Frame.cpp-158-	return UT_TRUE;
+./af/xap/win/xap_Win32Frame.cpp-159-}
+./af/xap/win/xap_Win32Frame.cpp-160-
+./af/xap/win/xap_Win32Frame.cpp-194-{
+./af/xap/win/xap_Win32Frame.cpp-195-	RECT r;
+./af/xap/win/xap_Win32Frame.cpp-196-	UT_uint32 iHeight, iWidth;
+./af/xap/win/xap_Win32Frame.cpp-197-
+./af/xap/win/xap_Win32Frame.cpp-198-	// create a top-level window for us.
+./af/xap/win/xap_Win32Frame.cpp:199:	// TODO get the default window size from preferences or something.
+./af/xap/win/xap_Win32Frame.cpp-200-
+./af/xap/win/xap_Win32Frame.cpp-201-	m_hwndFrame = CreateWindow(m_pWin32App->getApplicationName(),
+./af/xap/win/xap_Win32Frame.cpp-202-							   m_pWin32App->getApplicationTitleForTitleBar(),
+./af/xap/win/xap_Win32Frame.cpp-203-							   WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
+./af/xap/win/xap_Win32Frame.cpp-204-							   CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+./af/xap/win/xap_Win32Frame.cpp-246-
+./af/xap/win/xap_Win32Frame.cpp-247-	m_iSizeWidth = iWidth;
+./af/xap/win/xap_Win32Frame.cpp-248-	m_iSizeHeight = iHeight;
+./af/xap/win/xap_Win32Frame.cpp-249-	
+./af/xap/win/xap_Win32Frame.cpp-250-	// force rebar to resize itself
+./af/xap/win/xap_Win32Frame.cpp:251:	// TODO for some reason, we give REBAR the height of the FRAME
+./af/xap/win/xap_Win32Frame.cpp:252:	// TODO and let it decide how much it actually needs....
+./af/xap/win/xap_Win32Frame.cpp-253-	if( m_hwndRebar != NULL )
+./af/xap/win/xap_Win32Frame.cpp-254-	{
+./af/xap/win/xap_Win32Frame.cpp-255-		MoveWindow(m_hwndRebar, 0, 0, iWidth, iHeight, TRUE);
+./af/xap/win/xap_Win32Frame.cpp-256-
+./af/xap/win/xap_Win32Frame.cpp-257-		GetClientRect(m_hwndRebar, &r);
+./af/xap/win/xap_Win32Frame.cpp-308-	// NOTE: may need to fallback to WinExec for old NSCP versions
+./af/xap/win/xap_Win32Frame.cpp-309-
+./af/xap/win/xap_Win32Frame.cpp-310-	HWND hwnd = getTopLevelWindow();
+./af/xap/win/xap_Win32Frame.cpp-311-	int res = (int) ShellExecute(hwnd, "open", szURL, NULL, NULL, SW_SHOWNORMAL);
+./af/xap/win/xap_Win32Frame.cpp-312-
+./af/xap/win/xap_Win32Frame.cpp:313:	// TODO: more specific error messages ??
+./af/xap/win/xap_Win32Frame.cpp-314-	UT_ASSERT(res>32);
+./af/xap/win/xap_Win32Frame.cpp-315-
+./af/xap/win/xap_Win32Frame.cpp-316-	return (res>32);
+./af/xap/win/xap_Win32Frame.cpp-317-}
+./af/xap/win/xap_Win32Frame.cpp-318-
+./af/xap/win/xap_Win32Frame.cpp-659-	UT_uint32 iHeight;
+./af/xap/win/xap_Win32Frame.cpp-660-	EV_Win32Toolbar *result = new EV_Win32Toolbar(static_cast<XAP_Win32App *>(app), 
+./af/xap/win/xap_Win32Frame.cpp-661-												  static_cast<XAP_Win32Frame *>(frame), 
+./af/xap/win/xap_Win32Frame.cpp-662-												  szLayout, szLanguage);
+./af/xap/win/xap_Win32Frame.cpp-663-	// for now, position each one manually
+./af/xap/win/xap_Win32Frame.cpp:664:	// TODO: put 'em all in a rebar instead
+./af/xap/win/xap_Win32Frame.cpp-665-	HWND hwndBar = result->getWindow();
+./af/xap/win/xap_Win32Frame.cpp-666-	
+./af/xap/win/xap_Win32Frame.cpp-667-	GetClientRect(hwndBar, &r);
+./af/xap/win/xap_Win32Frame.cpp-668-	iHeight = r.bottom - r.top;
+./af/xap/win/xap_Win32Frame.cpp-669-	
+./af/xap/win/xap_Win32Slurp.cpp-276-{
+./af/xap/win/xap_Win32Slurp.cpp-277-	// load the system registry if there's no info
+./af/xap/win/xap_Win32Slurp.cpp-278-	// for us already present for the given suffix.
+./af/xap/win/xap_Win32Slurp.cpp-279-	// we assume that the string contains the dot.
+./af/xap/win/xap_Win32Slurp.cpp-280-	//
+./af/xap/win/xap_Win32Slurp.cpp:281:	// TODO consider raising a dialog asking if they
+./af/xap/win/xap_Win32Slurp.cpp:282:	// TODO want us to override any existing settings
+./af/xap/win/xap_Win32Slurp.cpp:283:	// TODO if they currently don't point to us.  like
+./af/xap/win/xap_Win32Slurp.cpp:284:	// TODO MSFT and NSCP currently (politely) fight
+./af/xap/win/xap_Win32Slurp.cpp:285:	// TODO for the .html suffix....
+./af/xap/win/xap_Win32Slurp.cpp-286-	//
+./af/xap/win/xap_Win32Slurp.cpp-287-	// we construct the following pattern in the registry:
+./af/xap/win/xap_Win32Slurp.cpp-288-	//
+./af/xap/win/xap_Win32Slurp.cpp-289-	// HKEY_CLASSES_ROOT\<suffix> = <foo>
+./af/xap/win/xap_Win32Slurp.cpp-290-	// HKEY_CLASSES_ROOT\<suffix>\Content Type = <content_type>
+./af/xap/win/xap_Win32Slurp.cpp-631-	return;
+./af/xap/win/xap_Win32Slurp.cpp-632-}
+./af/xap/win/xap_Win32Slurp.cpp-633-
+./af/xap/win/xap_Win32Slurp.cpp-634-UT_Bool XAP_Win32Slurp::_askForStealFromAnotherApplication(void) const
+./af/xap/win/xap_Win32Slurp.cpp-635-{
+./af/xap/win/xap_Win32Slurp.cpp:636:	// TODO install a real dialog that asks the user and
+./af/xap/win/xap_Win32Slurp.cpp:637:	// TODO allows us to set preference value for never
+./af/xap/win/xap_Win32Slurp.cpp:638:	// TODO asking again or always steal or whatever...
+./af/xap/win/xap_Win32Slurp.cpp-639-
+./af/xap/win/xap_Win32Slurp.cpp-640-	UT_DEBUGMSG(("Registry: Suffix not ours.\n"));
+./af/xap/win/xap_Win32Slurp.cpp-641-	UT_Bool bResult = UT_FALSE;
+./af/xap/win/xap_Win32Slurp.cpp-642-
+./af/xap/win/xap_Win32Slurp.cpp-643-#ifdef DEBUG	
+./af/xap/win/xap_Win32Slurp.cpp-647-	return bResult;
+./af/xap/win/xap_Win32Slurp.cpp-648-}
+./af/xap/win/xap_Win32Slurp.cpp-649-
+./af/xap/win/xap_Win32Slurp.cpp-650-UT_Bool XAP_Win32Slurp::_askForStealMimeFromAnotherApplication(void) const
+./af/xap/win/xap_Win32Slurp.cpp-651-{
+./af/xap/win/xap_Win32Slurp.cpp:652:	// TODO install a real dialog that asks the user and
+./af/xap/win/xap_Win32Slurp.cpp:653:	// TODO allows us to set preference value for never
+./af/xap/win/xap_Win32Slurp.cpp:654:	// TODO asking again or always steal or whatever...
+./af/xap/win/xap_Win32Slurp.cpp-655-	
+./af/xap/win/xap_Win32Slurp.cpp-656-	UT_DEBUGMSG(("Registry: MIME type not ours.\n"));
+./af/xap/win/xap_Win32Slurp.cpp-657-	UT_Bool bResult = UT_FALSE;
+./af/xap/win/xap_Win32Slurp.cpp-658-
+./af/xap/win/xap_Win32Slurp.cpp-659-#ifdef DEBUG	
+./af/xap/win/xap_Win32Slurp.cpp-663-	return bResult;
+./af/xap/win/xap_Win32Slurp.cpp-664-}
+./af/xap/win/xap_Win32Slurp.cpp-665-
+./af/xap/win/xap_Win32Slurp.cpp-666-UT_Bool XAP_Win32Slurp::_askForUpdateExePathname(void) const
+./af/xap/win/xap_Win32Slurp.cpp-667-{
+./af/xap/win/xap_Win32Slurp.cpp:668:	// TODO install a real dialog that asks the user if
+./af/xap/win/xap_Win32Slurp.cpp:669:	// TODO we want to change the pathname of the exe in
+./af/xap/win/xap_Win32Slurp.cpp:670:	// TODO the association and to set preference values
+./af/xap/win/xap_Win32Slurp.cpp:671:	// TODO to never asking again or always set it or
+./af/xap/win/xap_Win32Slurp.cpp:672:	// TODO whatever...
+./af/xap/win/xap_Win32Slurp.cpp-673-
+./af/xap/win/xap_Win32Slurp.cpp-674-	UT_DEBUGMSG(("Registry: Need to update EXE pathname...\n"));
+./af/xap/win/xap_Win32Slurp.cpp-675-	UT_Bool bResult = UT_FALSE;
+./af/xap/win/xap_Win32Slurp.cpp-676-
+./af/xap/win/xap_Win32Slurp.cpp-677-	return bResult;
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-27-{
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-28-}
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-29-
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-30-AP_Win32Toolbar_Icons::~AP_Win32Toolbar_Icons(void)
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-31-{
+./af/xap/win/xap_Win32Toolbar_Icons.cpp:32:	// TODO do we need to keep some kind of list
+./af/xap/win/xap_Win32Toolbar_Icons.cpp:33:	// TODO of the things we have created and
+./af/xap/win/xap_Win32Toolbar_Icons.cpp:34:	// TODO handed out, so that we can delete them ??
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-35-}
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-36-
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-37-UT_Bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND hwnd,
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-38-												UT_uint32 maxWidth,
+./af/xap/win/xap_Win32Toolbar_Icons.cpp-39-												UT_uint32 maxHeight,
+./hello/ap/win/ap_Win32App.cpp-88-	
+./hello/ap/win/ap_Win32App.cpp-89-	m_prefs = new AP_Win32Prefs(this);
+./hello/ap/win/ap_Win32App.cpp-90-	m_prefs->loadBuiltinPrefs();
+./hello/ap/win/ap_Win32App.cpp-91-	m_prefs->loadPrefsFile();
+./hello/ap/win/ap_Win32App.cpp-92-
+./hello/ap/win/ap_Win32App.cpp:93:	// TODO overlay command line arguments onto preferences...
+./hello/ap/win/ap_Win32App.cpp-94-		   
+./hello/ap/win/ap_Win32App.cpp-95-	// now that preferences are established, let the xap init
+./hello/ap/win/ap_Win32App.cpp-96-		   
+./hello/ap/win/ap_Win32App.cpp-97-	m_pEMC = AP_GetEditMethods();
+./hello/ap/win/ap_Win32App.cpp-98-	UT_ASSERT(m_pEMC);
+./hello/ap/win/ap_Win32App.cpp-115-	{
+./hello/ap/win/ap_Win32App.cpp-116-		UT_DEBUGMSG(("couldn't register class\n"));
+./hello/ap/win/ap_Win32App.cpp-117-		return UT_FALSE;
+./hello/ap/win/ap_Win32App.cpp-118-	}
+./hello/ap/win/ap_Win32App.cpp-119-
+./hello/ap/win/ap_Win32App.cpp:120:	// TODO  - load in strings
+./hello/ap/win/ap_Win32App.cpp-121-
+./hello/ap/win/ap_Win32App.cpp-122-	return UT_TRUE;
+./hello/ap/win/ap_Win32App.cpp-123-}
+./hello/ap/win/ap_Win32App.cpp-124-
+./hello/ap/win/ap_Win32App.cpp-125-XAP_Frame * AP_Win32App::newFrame(void)
+./hello/ap/win/ap_Win32App.cpp-164-{
+./hello/ap/win/ap_Win32App.cpp-165-	// this is a static function and doesn't have a 'this' pointer.
+./hello/ap/win/ap_Win32App.cpp-166-	HWND hwnd;
+./hello/ap/win/ap_Win32App.cpp-167-	MSG msg;
+./hello/ap/win/ap_Win32App.cpp-168-
+./hello/ap/win/ap_Win32App.cpp:169:	// TODO the following two variables are a temporary hack.
+./hello/ap/win/ap_Win32App.cpp:170:	// TODO we need to convert szCmdLine into argc/argv format.
+./hello/ap/win/ap_Win32App.cpp-171-	int argc = 0;
+./hello/ap/win/ap_Win32App.cpp-172-	char ** argv = NULL;
+./hello/ap/win/ap_Win32App.cpp-173-
+./hello/ap/win/ap_Win32App.cpp-174-	_CrtSetReportMode( _CRT_WARN, _CRTDBG_MODE_DEBUG );
+./hello/ap/win/ap_Win32App.cpp-175-	_CrtSetReportMode( _CRT_ERROR, _CRTDBG_MODE_DEBUG );
+./hello/main/win/Win32Main.cpp-21-#include "ap_Win32App.h"
+./hello/main/win/Win32Main.cpp-22-
+./hello/main/win/Win32Main.cpp-23-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
+./hello/main/win/Win32Main.cpp-24-                    PSTR szCmdLine, int iCmdShow)
+./hello/main/win/Win32Main.cpp-25-{
+./hello/main/win/Win32Main.cpp:26:	// TODO abstract the naming of the app to somewhere else
+./hello/main/win/Win32Main.cpp-27-	
+./hello/main/win/Win32Main.cpp-28-	return AP_Win32App::WinMain("AbiHello Personal", hInstance, hPrevInstance, szCmdLine, iCmdShow);
+./hello/main/win/Win32Main.cpp-29-}
+./wp/ap/win/ap_Win32App.cpp-325-	// copy the given subset of the given document to the
+./wp/ap/win/ap_Win32App.cpp-326-	// system clipboard in a variety of formats.
+./wp/ap/win/ap_Win32App.cpp-327-	// MSFT requests that we post them in the order of
+./wp/ap/win/ap_Win32App.cpp-328-	// importance to us (most preserving to most lossy).
+./wp/ap/win/ap_Win32App.cpp-329-	//
+./wp/ap/win/ap_Win32App.cpp:330:	// TODO on NT, do we need to put unicode text on the clipboard ??
+./wp/ap/win/ap_Win32App.cpp:331:	// TODO do we need to put something in .ABW format on the clipboard ??
+./wp/ap/win/ap_Win32App.cpp-332-
+./wp/ap/win/ap_Win32App.cpp-333-	if (!m_pClipboard->openClipboard())			// try to lock the clipboard
+./wp/ap/win/ap_Win32App.cpp-334-		return;
+./wp/ap/win/ap_Win32App.cpp-335-	{
+./wp/ap/win/ap_Win32App.cpp-336-		m_pClipboard->clearClipboard();
+./wp/ap/win/ap_Win32App.cpp-415-
+./wp/ap/win/ap_Win32App.cpp-416-	if (!m_pClipboard->openClipboard())			// try to lock the clipboard
+./wp/ap/win/ap_Win32App.cpp-417-		return;
+./wp/ap/win/ap_Win32App.cpp-418-	
+./wp/ap/win/ap_Win32App.cpp-419-	{
+./wp/ap/win/ap_Win32App.cpp:420:		// TODO decide what the proper order is for these.
+./wp/ap/win/ap_Win32App.cpp:421:		// TODO decide if we need to support .ABW on the clipboard.
+./wp/ap/win/ap_Win32App.cpp-422-
+./wp/ap/win/ap_Win32App.cpp-423-		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_RTF, IE_Imp_RTF);
+./wp/ap/win/ap_Win32App.cpp-424-		TRY_TO_PASTE_IN_FORMAT(AP_CLIPBOARD_TEXTPLAIN_8BIT, IE_Imp_Text);
+./wp/ap/win/ap_Win32App.cpp-425-		
+./wp/ap/win/ap_Win32App.cpp:426:		// TODO figure out what to do with an image and other formats....
+./wp/ap/win/ap_Win32App.cpp:427:		UT_DEBUGMSG(("PasteFromClipboard: TODO support this format..."));
+./wp/ap/win/ap_Win32App.cpp-428-	}
+./wp/ap/win/ap_Win32App.cpp-429-
+./wp/ap/win/ap_Win32App.cpp-430-MyEnd:
+./wp/ap/win/ap_Win32App.cpp-431-	m_pClipboard->closeClipboard();				// release clipboard lock
+./wp/ap/win/ap_Win32App.cpp-432-	return;
+./wp/ap/win/ap_Win32App.cpp-435-UT_Bool AP_Win32App::canPasteFromClipboard(void)
+./wp/ap/win/ap_Win32App.cpp-436-{
+./wp/ap/win/ap_Win32App.cpp-437-	if (!m_pClipboard->openClipboard())
+./wp/ap/win/ap_Win32App.cpp-438-		return UT_FALSE;
+./wp/ap/win/ap_Win32App.cpp-439-
+./wp/ap/win/ap_Win32App.cpp:440:	// TODO decide if we need to support .ABW format on the clipboard.
+./wp/ap/win/ap_Win32App.cpp-441-	
+./wp/ap/win/ap_Win32App.cpp-442-	if (m_pClipboard->hasFormat(AP_CLIPBOARD_RTF))
+./wp/ap/win/ap_Win32App.cpp-443-		goto ReturnTrue;
+./wp/ap/win/ap_Win32App.cpp-444-	if (m_pClipboard->hasFormat(AP_CLIPBOARD_TEXTPLAIN_8BIT))
+./wp/ap/win/ap_Win32App.cpp-445-		goto ReturnTrue;
+./wp/ap/win/ap_Win32App.cpp-523-        
+./wp/ap/win/ap_Win32App.cpp-524-        // Draw the window
+./wp/ap/win/ap_Win32App.cpp-525-    case WM_PAINT:
+./wp/ap/win/ap_Win32App.cpp-526-        hdc = BeginPaint(hWnd, &ps);
+./wp/ap/win/ap_Win32App.cpp-527-		{
+./wp/ap/win/ap_Win32App.cpp:528:			// TODO: find XAP_App pointer for this
+./wp/ap/win/ap_Win32App.cpp-529-			GR_Graphics * pG = new GR_Win32Graphics(hdc, hwndSplash, 0);
+./wp/ap/win/ap_Win32App.cpp-530-			pG->drawImage(pSplash, 0, 0);
+./wp/ap/win/ap_Win32App.cpp-531-			DELETEP(pG);
+./wp/ap/win/ap_Win32App.cpp-532-		}
+./wp/ap/win/ap_Win32App.cpp-533-        EndPaint(hWnd, &ps);
+./wp/ap/win/ap_Win32App.cpp-597-				// it's OK that the filename also gets opened as a document
+./wp/ap/win/ap_Win32App.cpp-598-			}
+./wp/ap/win/ap_Win32App.cpp-599-#endif
+./wp/ap/win/ap_Win32App.cpp-600-		}
+./wp/ap/win/ap_Win32App.cpp-601-
+./wp/ap/win/ap_Win32App.cpp:602:		// TODO: platform-specific reasons to not show splash?
+./wp/ap/win/ap_Win32App.cpp:603:		// TODO: for example, if being launched via DDE or OLE??
+./wp/ap/win/ap_Win32App.cpp-604-	}
+./wp/ap/win/ap_Win32App.cpp-605-
+./wp/ap/win/ap_Win32App.cpp-606-	if (!bShowSplash)
+./wp/ap/win/ap_Win32App.cpp-607-		goto Done;
+./wp/ap/win/ap_Win32App.cpp-608-
+./wp/ap/win/ap_Win32App.cpp-658-		UT_ASSERT(hwndSplash);
+./wp/ap/win/ap_Win32App.cpp-659-    
+./wp/ap/win/ap_Win32App.cpp-660-		if (hwndSplash) 
+./wp/ap/win/ap_Win32App.cpp-661-		{
+./wp/ap/win/ap_Win32App.cpp-662-			// create image first
+./wp/ap/win/ap_Win32App.cpp:663:			// TODO: find XAP_App pointer for this
+./wp/ap/win/ap_Win32App.cpp-664-			GR_Graphics * pG = new GR_Win32Graphics(GetDC(hwndSplash), hwndSplash, 0);
+./wp/ap/win/ap_Win32App.cpp-665-			pSplash = pG->createNewImage("splash", pBB, iSplashWidth, iSplashHeight);
+./wp/ap/win/ap_Win32App.cpp-666-			DELETEP(pG);
+./wp/ap/win/ap_Win32App.cpp-667-
+./wp/ap/win/ap_Win32App.cpp-668-			// now bring the window up front & center
+./wp/ap/win/ap_Win32App.cpp-720-			"We hope this problem can be solved, until then you can use the program,\n"
+./wp/ap/win/ap_Win32App.cpp-721-			"but the toolbar will be missing.", NULL, MB_OK);
+./wp/ap/win/ap_Win32App.cpp-722-	}
+./wp/ap/win/ap_Win32App.cpp-723-
+./wp/ap/win/ap_Win32App.cpp-724-	// HACK: load least-common-denominator Rich Edit control
+./wp/ap/win/ap_Win32App.cpp:725:	// TODO: fix Spell dlg so we don't rely on this
+./wp/ap/win/ap_Win32App.cpp-726-	// ALT:  make it a Preview widget instead
+./wp/ap/win/ap_Win32App.cpp-727-
+./wp/ap/win/ap_Win32App.cpp-728-	HINSTANCE hinstRich = LoadLibrary("riched32.dll");
+./wp/ap/win/ap_Win32App.cpp-729-	if (!hinstRich)
+./wp/ap/win/ap_Win32App.cpp-730-		hinstRich = LoadLibrary("riched20.dll");
+./wp/ap/win/ap_Win32App.cpp-796-void AP_Win32App::ParseCommandLine(int iCmdShow)
+./wp/ap/win/ap_Win32App.cpp-797-{
+./wp/ap/win/ap_Win32App.cpp-798-	// parse the command line
+./wp/ap/win/ap_Win32App.cpp-799-	// <app> [-script <scriptname>]* [-dumpstrings] [-lib <AbiSuiteLibDirectory>] [<documentname>]*
+./wp/ap/win/ap_Win32App.cpp-800-	
+./wp/ap/win/ap_Win32App.cpp:801:	// TODO when we refactor the App classes, consider moving
+./wp/ap/win/ap_Win32App.cpp:802:	// TODO this to app-specific, cross-platform.
+./wp/ap/win/ap_Win32App.cpp-803-
+./wp/ap/win/ap_Win32App.cpp:804:	// TODO replace this with getopt or something similar.
+./wp/ap/win/ap_Win32App.cpp-805-	
+./wp/ap/win/ap_Win32App.cpp-806-	// Win32 does not put the program name in argv[0], so [0] is the first argument.
+./wp/ap/win/ap_Win32App.cpp-807-
+./wp/ap/win/ap_Win32App.cpp-808-	int nFirstArg = 0;
+./wp/ap/win/ap_Win32App.cpp-809-	int k;
+./wp/ap/win/ap_Win32App.cpp-857-				verbose = atoi (m_pArgs->m_argv[k]);
+./wp/ap/win/ap_Win32App.cpp-858-			}
+./wp/ap/win/ap_Win32App.cpp-859-			else
+./wp/ap/win/ap_Win32App.cpp-860-			{
+./wp/ap/win/ap_Win32App.cpp-861-				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
+./wp/ap/win/ap_Win32App.cpp:862:				// TODO don't know if it has a following argument or not -- assume not
+./wp/ap/win/ap_Win32App.cpp-863-			}
+./wp/ap/win/ap_Win32App.cpp-864-		}
+./wp/ap/win/ap_Win32App.cpp-865-		else
+./wp/ap/win/ap_Win32App.cpp-866-		{
+./wp/ap/win/ap_Win32App.cpp-867-			// [filename]
+./wp/ap/win/ap_Win32App.cpp-886-					ShowWindow(hwnd, iCmdShow);
+./wp/ap/win/ap_Win32App.cpp-887-					UpdateWindow(hwnd);
+./wp/ap/win/ap_Win32App.cpp-888-				}
+./wp/ap/win/ap_Win32App.cpp-889-				else
+./wp/ap/win/ap_Win32App.cpp-890-				{
+./wp/ap/win/ap_Win32App.cpp:891:					// TODO: warn user that we couldn't open that file
+./wp/ap/win/ap_Win32App.cpp-892-
+./wp/ap/win/ap_Win32App.cpp-893-#if 1
+./wp/ap/win/ap_Win32App.cpp:894:					// TODO we crash if we just delete this without putting something
+./wp/ap/win/ap_Win32App.cpp:895:					// TODO in it, so let's go ahead and open an untitled document
+./wp/ap/win/ap_Win32App.cpp:896:					// TODO for now.  this would cause us to get 2 untitled documents
+./wp/ap/win/ap_Win32App.cpp:897:					// TODO if the user gave us 2 bogus pathnames....
+./wp/ap/win/ap_Win32App.cpp-898-					kWindowsOpened++;
+./wp/ap/win/ap_Win32App.cpp-899-					pFirstWin32Frame->loadDocument(NULL, IEFT_Unknown);
+./wp/ap/win/ap_Win32App.cpp-900-					HWND hwnd = pFirstWin32Frame->getTopLevelWindow();
+./wp/ap/win/ap_Win32App.cpp-901-					ShowWindow(hwnd, iCmdShow);
+./wp/ap/win/ap_Win32App.cpp-902-					UpdateWindow(hwnd);
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-119-	for (int i = 0; i < NrElements(rgSpinIDs); ++i)
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-120-	{
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-121-		HWND hWndSpin = GetDlgItem(hWnd, rgSpinIDs[i]);
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-122-		if (hWndSpin)
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-123-		{
+./wp/ap/win/ap_Win32Dialog_Lists.cpp:124:			// TODO: Is this range reasonable?
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-125-			const WORD   nLower = 0;
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-126-			const WORD   nUpper = 100;
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-127-			const LPARAM range  = MAKELPARAM(nUpper, nLower);
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-128-			SendMessage(hWndSpin, UDM_SETRANGE, 0L, range);
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-129-		}
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-135-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-136-	m_newListType = m_iListType = NUMBERED_LIST;
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-137-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-138-	const XAP_StringSet* pSS = m_pApp->getStringSet();
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-139-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp:140:	UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-141-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-142-	// Set the locale specific strings
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-143-	struct control_id_string_id {
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-144-		UT_sint32		controlId;
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-145-		XAP_String_Id	stringId;
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-412-	_win32Dialog.enableControl(AP_RID_DIALOG_LIST_BTN_FONT, iType == 2);
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-413-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-414-	// Set the correct text for the "Customize" button.
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-415-	{
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-416-		const XAP_StringSet * pSS = m_pApp->getStringSet();
+./wp/ap/win/ap_Win32Dialog_Lists.cpp:417:		UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-418-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-419-		// TMN: I don't want to hard-code a size here. Besides, this function
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-420-		// should not be called frequently enough to be noticable
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-421-		// in a profiling session. If this allocation do show up as noticable,
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-422-		// something else is wrong.
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-525-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-526-void AP_Win32Dialog_Lists::_fillTypeList()
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-527-{
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-528-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-529-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp:530:	UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-531-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-532-	static const XAP_String_Id rgIDs[] =
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-533-	{
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-534-		AP_STRING_ID_DLG_Lists_Type_none,
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-535-		AP_STRING_ID_DLG_Lists_Type_bullet,
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-596-			nIDs = NrElements(rgNumberedIDs);
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-597-			break;
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-598-	}
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-599-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-600-	const XAP_StringSet * pSS = m_pApp->getStringSet();
+./wp/ap/win/ap_Win32Dialog_Lists.cpp:601:	UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-602-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-603-	for (size_t i = 0; i < nIDs; ++i)
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-604-	{
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-605-		_win32Dialog.addItemToCombo(idComboStyle, pSS->getValue(pIDs[i]));
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-606-	}
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-667-	{
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-668-		_win32Dialog.showControl(rgCustomIds[i], mode);
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-669-	}
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-670-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-671-#if 0
+./wp/ap/win/ap_Win32Dialog_Lists.cpp:672:	// TODO: Make the preview work as expected in this case
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-673-	if (!m_bisCustomized && !m_bDisplayCustomControls)
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-674-	{
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-675-		PopulateDialogData();
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-676-		_setData();
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-677-	}
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-750-	const control_id_string_id* rgMapping =
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-751-		m_isListAtPoint ? rgMappingActiveList : rgMappingNoList;
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-752-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-753-	const XAP_StringSet* pSS = m_pApp->getStringSet();
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-754-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp:755:	UT_ASSERT(pSS);	// TODO: Would an error handler be more appropriate here?
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-756-
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-757-	for (int i = 0; i < 2; ++i)
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-758-	{
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-759-		_win32Dialog.setControlText(rgMapping[i].controlId,
+./wp/ap/win/ap_Win32Dialog_Lists.cpp-760-									pSS->getValue(rgMapping[i].stringId));
+./wp/ap/win/ap_Win32Dialog_Options.cpp-130-	LPNMHDR pNmhdr = (LPNMHDR)lParam;
+./wp/ap/win/ap_Win32Dialog_Options.cpp-131-
+./wp/ap/win/ap_Win32Dialog_Options.cpp-132-	switch (pNmhdr->code)
+./wp/ap/win/ap_Win32Dialog_Options.cpp-133-	{
+./wp/ap/win/ap_Win32Dialog_Options.cpp-134-	case TCN_SELCHANGING:
+./wp/ap/win/ap_Win32Dialog_Options.cpp:135:		// TODO: consider validating data before leaving page
+./wp/ap/win/ap_Win32Dialog_Options.cpp-136-		break;
+./wp/ap/win/ap_Win32Dialog_Options.cpp-137-
+./wp/ap/win/ap_Win32Dialog_Options.cpp-138-	case TCN_SELCHANGE:
+./wp/ap/win/ap_Win32Dialog_Options.cpp-139-		{
+./wp/ap/win/ap_Win32Dialog_Options.cpp-140-			UT_uint32 iTo = TabCtrl_GetCurSel(pNmhdr->hwndFrom);  
+./wp/ap/win/ap_Win32Dialog_Options.cpp-353-			_DS(OPTIONS_BTN_CUSTOMDICT,				DLG_Options_Btn_CustomDict);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-354-			_DS(OPTIONS_LBL_IGNOREDWORD,			DLG_Options_Label_SpellIgnoredWord);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-355-			_DS(OPTIONS_BTN_IGNOREDRESET,			DLG_Options_Btn_IgnoreReset);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-356-			_DS(OPTIONS_BTN_IGNOREDEDIT,			DLG_Options_Btn_IgnoreEdit);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-357-
+./wp/ap/win/ap_Win32Dialog_Options.cpp:358:			// TODO need to populate values in the _COMBO_CUSTOMDICT
+./wp/ap/win/ap_Win32Dialog_Options.cpp-359-			HWND hwndDict = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT);
+./wp/ap/win/ap_Win32Dialog_Options.cpp:360:			SendMessage(hwndDict, CB_ADDSTRING, 0, (LPARAM)"custom.dic");	// TODO - get from prefs / var
+./wp/ap/win/ap_Win32Dialog_Options.cpp-361-			SendMessage(hwndDict, CB_SETCURSEL, (WPARAM) 0, 0);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-362-
+./wp/ap/win/ap_Win32Dialog_Options.cpp-363-			// set initial state
+./wp/ap/win/ap_Win32Dialog_Options.cpp-364-//			_CDB(OPTIONS_CHK_SpellCheckAsType,		id_CHECK_SPELL_CHECK_AS_TYPE);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-365-//			_CDB(OPTIONS_CHK_SpellHideErrors,		id_CHECK_SPELL_HIDE_ERRORS);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-375-		{
+./wp/ap/win/ap_Win32Dialog_Options.cpp-376-			// localize controls
+./wp/ap/win/ap_Win32Dialog_Options.cpp-377-			_DS(OPTIONS_CHK_PrefsAutoSave,			DLG_Options_Label_PrefsAutoSave);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-378-			_DS(OPTIONS_LBL_CURRENTSCHEME,			DLG_Options_Label_PrefsCurrentScheme);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-379-
+./wp/ap/win/ap_Win32Dialog_Options.cpp:380:			// TODO need to populate values in the _COMBO_CURRENTSCHEME
+./wp/ap/win/ap_Win32Dialog_Options.cpp-381-//			HWND hwndScheme = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-382-
+./wp/ap/win/ap_Win32Dialog_Options.cpp-383-//			_CDB(OPTIONS_CHK_PrefsAutoSave,			id_CHECK_PREFS_AUTO_SAVE);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-384-		}
+./wp/ap/win/ap_Win32Dialog_Options.cpp-385-		break;
+./wp/ap/win/ap_Win32Dialog_Options.cpp-399-			_DS(OPTIONS_CHK_ViewUnprintable,		DLG_Options_Label_ViewUnprintable);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-400-			_DS(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-401-			_DS(OPTIONS_LBL_SHOWHIDE,				DLG_Options_Label_ViewShowHide);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-402-			_DS(OPTIONS_LBL_VIEWFRAME,				DLG_Options_Label_ViewViewFrame);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-403-
+./wp/ap/win/ap_Win32Dialog_Options.cpp:404:			// TODO need to populate values in the _COMBO_UNITS
+./wp/ap/win/ap_Win32Dialog_Options.cpp-405-			HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-406-/*			_CASX(hwndAlign, DLG_Unit_inch);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-407-			_CASX(hwndAlign, DLG_Unit_cm);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-408-			_CASX(hwndAlign, DLG_Unit_points);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-409-			_CASX(hwndAlign, DLG_Unit_pico);
+./wp/ap/win/ap_Win32Dialog_Options.cpp-507-	HWND hWndCtrl = (HWND)lParam;
+./wp/ap/win/ap_Win32Dialog_Options.cpp-508-
+./wp/ap/win/ap_Win32Dialog_Options.cpp-509-	switch (wId)
+./wp/ap/win/ap_Win32Dialog_Options.cpp-510-	{
+./wp/ap/win/ap_Win32Dialog_Options.cpp-511-	case AP_RID_DIALOG_OPTIONS_BTN_SAVE:		// save current settings to disk
+./wp/ap/win/ap_Win32Dialog_Options.cpp:512:		UT_DEBUGMSG(("TODO OptionsBtnSave\n"));
+./wp/ap/win/ap_Win32Dialog_Options.cpp-513-		return 0;
+./wp/ap/win/ap_Win32Dialog_Options.cpp-514-
+./wp/ap/win/ap_Win32Dialog_Options.cpp-515-	case AP_RID_DIALOG_OPTIONS_BTN_DEFAULT:		// restore default (factory) settings
+./wp/ap/win/ap_Win32Dialog_Options.cpp-516-		UT_DEBUGMSG(("OptionsBtnDefault\n"));
+./wp/ap/win/ap_Win32Dialog_Options.cpp-517-		_event_SetDefaults();
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-142-
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-143-			switch (((LPNMHDR) lParam)->code) 
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-144-			{ 
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-145-			case TCN_SELCHANGING:
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-146-				{
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp:147:					// TODO: validate data before leaving page
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-148-				}
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-149-				break;
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-150-
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-151-			case TCN_SELCHANGE:             
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-152-				{             
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-272-										(DLGPROC)s_tabProc, (LPARAM)&tp); 
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-273-		UT_ASSERT((w && (w == m_hwndBreaks)));
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-274-	}
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-275-
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-276-	// HACK: make sure the first tab is visible
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp:277:	// TODO: trigger selchange logic instead
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-278-	ShowWindow(m_hwndSpacing, SW_SHOW);
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-279-
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-280-	// sync all controls once to get started
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-281-	// HACK: the first arg gets ignored
+./wp/ap/win/ap_Win32Dialog_Paragraph.cpp-282-	_syncControls(id_MENU_ALIGNMENT, UT_TRUE);
+./wp/ap/win/ap_Win32Frame.cpp-222-	//
+./wp/ap/win/ap_Win32Frame.cpp-223-	// Each Toolbar will also get a ViewListener so that
+./wp/ap/win/ap_Win32Frame.cpp-224-	// it can update toggle buttons, and other state-indicating
+./wp/ap/win/ap_Win32Frame.cpp-225-	// controls on it.
+./wp/ap/win/ap_Win32Frame.cpp-226-	//
+./wp/ap/win/ap_Win32Frame.cpp:227:	// TODO we ***really*** need to re-do the whole scrollbar thing.
+./wp/ap/win/ap_Win32Frame.cpp:228:	// TODO we have an addScrollListener() using an m_pScrollObj
+./wp/ap/win/ap_Win32Frame.cpp:229:	// TODO and a View-Listener, and a bunch of other widget stuff.
+./wp/ap/win/ap_Win32Frame.cpp:230:	// TODO and its very confusing.
+./wp/ap/win/ap_Win32Frame.cpp-231-	
+./wp/ap/win/ap_Win32Frame.cpp-232-	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+./wp/ap/win/ap_Win32Frame.cpp-233-	ENSUREP(pScrollObj);
+./wp/ap/win/ap_Win32Frame.cpp-234-	pViewListener = new ap_ViewListener(this);
+./wp/ap/win/ap_Win32Frame.cpp-235-	ENSUREP(pViewListener);
+./wp/ap/win/ap_Win32Frame.cpp-244-
+./wp/ap/win/ap_Win32Frame.cpp-245-	{
+./wp/ap/win/ap_Win32Frame.cpp-246-		const UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+./wp/ap/win/ap_Win32Frame.cpp-247-		for (UT_uint32 k = 0; k < nrToolbars; ++k)
+./wp/ap/win/ap_Win32Frame.cpp-248-		{
+./wp/ap/win/ap_Win32Frame.cpp:249:			// TODO Toolbars are a frame-level item, but a view-listener is
+./wp/ap/win/ap_Win32Frame.cpp:250:			// TODO a view-level item.  I've bound the toolbar-view-listeners
+./wp/ap/win/ap_Win32Frame.cpp:251:			// TODO to the current view within this frame and have code in the
+./wp/ap/win/ap_Win32Frame.cpp:252:			// TODO toolbar to allow the view-listener to be rebound to a different
+./wp/ap/win/ap_Win32Frame.cpp:253:			// TODO view.  in the future, when we have support for multiple views
+./wp/ap/win/ap_Win32Frame.cpp:254:			// TODO in the frame (think splitter windows), we will need to have
+./wp/ap/win/ap_Win32Frame.cpp:255:			// TODO a loop like this to help change the focus when the current
+./wp/ap/win/ap_Win32Frame.cpp:256:			// TODO view changes.
+./wp/ap/win/ap_Win32Frame.cpp-257-			
+./wp/ap/win/ap_Win32Frame.cpp-258-			EV_Win32Toolbar* pWin32Toolbar = (EV_Win32Toolbar *)m_vecToolbars.getNthItem(k);
+./wp/ap/win/ap_Win32Frame.cpp-259-			pWin32Toolbar->bindListenerToView(pView);
+./wp/ap/win/ap_Win32Frame.cpp-260-		}
+./wp/ap/win/ap_Win32Frame.cpp-261-	}
+./wp/ap/win/ap_Win32Frame.cpp-1105-{
+./wp/ap/win/ap_Win32Frame.cpp-1106-	// are we replacing another document?
+./wp/ap/win/ap_Win32Frame.cpp-1107-	if (m_pDoc)
+./wp/ap/win/ap_Win32Frame.cpp-1108-	{
+./wp/ap/win/ap_Win32Frame.cpp-1109-		// yep.  first make sure it's OK to discard it,
+./wp/ap/win/ap_Win32Frame.cpp:1110:		// TODO: query user if dirty...
+./wp/ap/win/ap_Win32Frame.cpp-1111-	}
+./wp/ap/win/ap_Win32Frame.cpp-1112-
+./wp/ap/win/ap_Win32Frame.cpp-1113-	// load a document into the current frame.
+./wp/ap/win/ap_Win32Frame.cpp-1114-	// if no filename, create a new document.
+./wp/ap/win/ap_Win32Frame.cpp-1115-
+./wp/ap/win/ap_Win32Prefs.cpp-141-	return buf;
+./wp/ap/win/ap_Win32Prefs.cpp-142-}
+./wp/ap/win/ap_Win32Prefs.cpp-143-
+./wp/ap/win/ap_Win32Prefs.cpp-144-void AP_Win32Prefs::overlayEnvironmentPrefs(void)
+./wp/ap/win/ap_Win32Prefs.cpp-145-{
+./wp/ap/win/ap_Win32Prefs.cpp:146:	// TODO steal the appropriate code from the unix version
+./wp/ap/win/ap_Win32Prefs.cpp:147:	// TODO after it is finished.
+./wp/ap/win/ap_Win32Prefs.cpp-148-}
+./wp/ap/win/ap_Win32Prefs.cpp-149-
+./wp/ap/win/ap_Win32Prefs.cpp-150-
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-40-													 XAP_Toolbar_Id id)
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-41-	: EV_Toolbar_Control(pToolbar/*,id*/)
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-42-{
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-43-	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_FONT);
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-44-
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp:45:	m_nPixels = 130;		// TODO: do a better calculation
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-46-	m_nLimit = LF_FACESIZE;
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-47-	m_bSort = UT_TRUE;
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-48-}
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-49-
+./wp/ap/win/ap_Win32Toolbar_FontCombo.cpp-50-AP_Win32Toolbar_FontCombo::~AP_Win32Toolbar_FontCombo(void)
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-36-													 XAP_Toolbar_Id id)
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-37-	: EV_Toolbar_Control(pToolbar/*,id*/)
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-38-{
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-39-	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_SIZE);
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-40-
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp:41:	m_nPixels = 40;		// TODO: do a better calculation
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-42-	m_nLimit = 4;
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-43-}
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-44-
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-45-AP_Win32Toolbar_SizeCombo::~AP_Win32Toolbar_SizeCombo(void)
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-46-{
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-70-	m_vecContents.addItem("28");
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-71-	m_vecContents.addItem("36");
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-72-	m_vecContents.addItem("48");
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-73-	m_vecContents.addItem("72");
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-74-
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp:75:	// TODO: may want to populate this based on current font instead?
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-76-	return UT_TRUE;
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-77-}
+./wp/ap/win/ap_Win32Toolbar_SizeCombo.cpp-78-
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-39-													 XAP_Toolbar_Id id)
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-40-	: EV_Toolbar_Control(pToolbar/*,id*/)
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-41-{
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-42-	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-43-
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp:44:	m_nPixels = 90;		// TODO: do a better calculation
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-45-	m_nLimit = 20;
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-46-	m_bSort = UT_TRUE;
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-47-}
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-48-
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-49-AP_Win32Toolbar_StyleCombo::~AP_Win32Toolbar_StyleCombo(void)
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-67-	m_vecContents.addItem("Heading 2");
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-68-	m_vecContents.addItem("Heading 3");
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-69-	m_vecContents.addItem("Plain Text");
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-70-	m_vecContents.addItem("Block Text");
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-71-#else
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp:72:	// TODO: need a view/doc pointer to get this right
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-73-	// ALSO: will need to repopulate as new styles added
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-74-	// HYP:  only call this method from shared code? 
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-75-	const char * szName;
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-76-	const PD_Style * pStyle;
+./wp/ap/win/ap_Win32Toolbar_StyleCombo.cpp-77-
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-36-													 XAP_Toolbar_Id id)
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-37-	: EV_Toolbar_Control(pToolbar/*,id*/)
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-38-{
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-39-	UT_ASSERT(id==AP_TOOLBAR_ID_ZOOM);
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-40-
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp:41:	m_nPixels = 60;		// TODO: do a better calculation
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-42-	m_nLimit = 6;
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-43-}
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-44-
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-45-AP_Win32Toolbar_ZoomCombo::~AP_Win32Toolbar_ZoomCombo(void)
+./wp/ap/win/ap_Win32Toolbar_ZoomCombo.cpp-46-{
+./ask/lib/win/ask_lib_Win32.c-537-		}
+./ask/lib/win/ask_lib_Win32.c-538-		return DefWindowProc(hwnd, msg, wParam, lParam);
+./ask/lib/win/ask_lib_Win32.c-539-	}
+./ask/lib/win/ask_lib_Win32.c-540-		
+./ask/lib/win/ask_lib_Win32.c-541-	case WM_CTLCOLOREDIT:
+./ask/lib/win/ask_lib_Win32.c:542:		// TODO why the heck doesn't this work?
+./ask/lib/win/ask_lib_Win32.c-543-		
+./ask/lib/win/ask_lib_Win32.c-544-		SetBkColor((HDC) wParam, RGB(255,255,255));
+./ask/lib/win/ask_lib_Win32.c-545-		
+./ask/lib/win/ask_lib_Win32.c-546-		return (LRESULT) GetStockObject(WHITE_BRUSH);
+./ask/lib/win/ask_lib_Win32.c-547-	
+./ask/lib/win/ask_lib_Win32.c-607-	
+./ask/lib/win/ask_lib_Win32.c-608-			if (iRes == GDI_ERROR)
+./ask/lib/win/ask_lib_Win32.c-609-			{
+./ask/lib/win/ask_lib_Win32.c-610-				DWORD err = GetLastError();
+./ask/lib/win/ask_lib_Win32.c-611-
+./ask/lib/win/ask_lib_Win32.c:612:				// TODO
+./ask/lib/win/ask_lib_Win32.c-613-			}
+./ask/lib/win/ask_lib_Win32.c-614-		}
+./ask/lib/win/ask_lib_Win32.c-615-
+./ask/lib/win/ask_lib_Win32.c-616-		EndPaint(hwnd, &ps);
+./ask/lib/win/ask_lib_Win32.c-617-		
+./ask/lib/win/ask_lib_Win32.c-667-	g_wndclassMain.lpszMenuName = NULL;
+./ask/lib/win/ask_lib_Win32.c-668-	g_wndclassMain.lpszClassName = "AbiSetup_MainWindow";
+./ask/lib/win/ask_lib_Win32.c-669-
+./ask/lib/win/ask_lib_Win32.c-670-	if (!RegisterClass(&g_wndclassMain))
+./ask/lib/win/ask_lib_Win32.c-671-	{
+./ask/lib/win/ask_lib_Win32.c:672:		// TODO fail
+./ask/lib/win/ask_lib_Win32.c-673-
+./ask/lib/win/ask_lib_Win32.c-674-		return -1;
+./ask/lib/win/ask_lib_Win32.c-675-	}
+./ask/lib/win/ask_lib_Win32.c-676-
+./ask/lib/win/ask_lib_Win32.c-677-	g_wndclassPane.style = CS_HREDRAW | CS_VREDRAW;
+./ask/lib/win/ask_lib_Win32.c-685-	g_wndclassPane.lpszMenuName = NULL;
+./ask/lib/win/ask_lib_Win32.c-686-	g_wndclassPane.lpszClassName = "AbiSetup_Pane";
+./ask/lib/win/ask_lib_Win32.c-687-
+./ask/lib/win/ask_lib_Win32.c-688-	if (!RegisterClass(&g_wndclassPane))
+./ask/lib/win/ask_lib_Win32.c-689-	{
+./ask/lib/win/ask_lib_Win32.c:690:		// TODO fail
+./ask/lib/win/ask_lib_Win32.c-691-
+./ask/lib/win/ask_lib_Win32.c-692-		return -1;
+./ask/lib/win/ask_lib_Win32.c-693-	}
+./ask/lib/win/ask_lib_Win32.c-694-
+./ask/lib/win/ask_lib_Win32.c-695-	g_wndclassGraphic.style = CS_HREDRAW | CS_VREDRAW;
+./ask/lib/win/ask_lib_Win32.c-703-	g_wndclassGraphic.lpszMenuName = NULL;
+./ask/lib/win/ask_lib_Win32.c-704-	g_wndclassGraphic.lpszClassName = "AbiSetup_Graphic";
+./ask/lib/win/ask_lib_Win32.c-705-
+./ask/lib/win/ask_lib_Win32.c-706-	if (!RegisterClass(&g_wndclassGraphic))
+./ask/lib/win/ask_lib_Win32.c-707-	{
+./ask/lib/win/ask_lib_Win32.c:708:		// TODO fail
+./ask/lib/win/ask_lib_Win32.c-709-
+./ask/lib/win/ask_lib_Win32.c-710-		return -1;
+./ask/lib/win/ask_lib_Win32.c-711-	}
+./ask/lib/win/ask_lib_Win32.c-712-
+./ask/lib/win/ask_lib_Win32.c-713-	lf.lfWidth = 0;
+./ask/lib/win/ask_lib_Win32.c-1047-										 g_hwndPane,
+./ask/lib/win/ask_lib_Win32.c-1048-										 (HMENU) 2002,
+./ask/lib/win/ask_lib_Win32.c-1049-										 g_hInstance,
+./ask/lib/win/ask_lib_Win32.c-1050-										 NULL);
+./ask/lib/win/ask_lib_Win32.c-1051-	hwndStatic_Dir = CreateWindow("STATIC",
+./ask/lib/win/ask_lib_Win32.c:1052:								  "TODO the dir",
+./ask/lib/win/ask_lib_Win32.c-1053-								  WS_CHILD | WS_VISIBLE | SS_LEFT,
+./ask/lib/win/ask_lib_Win32.c-1054-								  BUTTON_GAP + LABEL_WIDTH + BUTTON_GAP,
+./ask/lib/win/ask_lib_Win32.c-1055-								  iHeight - BUTTON_GAP/2 - BUTTON_HEIGHT - BUTTON_GAP/2 - BUTTON_HEIGHT,
+./ask/lib/win/ask_lib_Win32.c-1056-								  iWidth - (BUTTON_GAP + LABEL_WIDTH + BUTTON_GAP) - (BUTTON_WIDTH + 2*BUTTON_GAP),
+./ask/lib/win/ask_lib_Win32.c-1057-								  BUTTON_HEIGHT,
+./ask/lib/win/ask_lib_Win32.c-1058-								  g_hwndPane,
+./ask/lib/win/ask_lib_Win32.c-1059-								  (HMENU) 2003,
+./ask/lib/win/ask_lib_Win32.c-1060-								  g_hInstance,
+./ask/lib/win/ask_lib_Win32.c-1061-								  NULL);
+./ask/lib/win/ask_lib_Win32.c-1062-	hwndStatic_Space = CreateWindow("STATIC",
+./ask/lib/win/ask_lib_Win32.c:1063:									"TODO the space",
+./ask/lib/win/ask_lib_Win32.c-1064-									WS_CHILD | WS_VISIBLE | SS_LEFT,
+./ask/lib/win/ask_lib_Win32.c-1065-									BUTTON_GAP + LABEL_WIDTH + BUTTON_GAP,
+./ask/lib/win/ask_lib_Win32.c-1066-									iHeight - BUTTON_GAP/2 - BUTTON_HEIGHT,
+./ask/lib/win/ask_lib_Win32.c-1067-									iWidth - (BUTTON_GAP + LABEL_WIDTH + BUTTON_GAP) - (BUTTON_WIDTH + 2*BUTTON_GAP),
+./ask/lib/win/ask_lib_Win32.c-1068-									BUTTON_HEIGHT,
+./ask/lib/win/ask_lib_Win32.c-1297-
+./ask/lib/win/ask_lib_Win32.c-1298-	for (ndxSet=0; ndxSet<iNumSets && bCopyCancelled == 0; ndxSet++)
+./ask/lib/win/ask_lib_Win32.c-1299-	{
+./ask/lib/win/ask_lib_Win32.c-1300-		ASK_FileSet* pSet = ppSets[ndxSet];
+./ask/lib/win/ask_lib_Win32.c-1301-
+./ask/lib/win/ask_lib_Win32.c:1302:		// TODO specify directory for this set?
+./ask/lib/win/ask_lib_Win32.c-1303-		sprintf(buf, "Copying '%s'", pSet->pszName);
+./ask/lib/win/ask_lib_Win32.c-1304-		SetWindowText(hwndStatic_CurSet, buf);
+./ask/lib/win/ask_lib_Win32.c-1305-
+./ask/lib/win/ask_lib_Win32.c-1306-		ASK_fixSlashes(pSet->szInstallPath);
+./ask/lib/win/ask_lib_Win32.c-1307-		ASK_verifyDirExists(pSet->szInstallPath);
+./ask/lib/win/ask_lib_Win32_small.c-144-		if (err == ERROR_PATH_NOT_FOUND)
+./ask/lib/win/ask_lib_Win32_small.c-145-		{
+./ask/lib/win/ask_lib_Win32_small.c-146-			return 0;
+./ask/lib/win/ask_lib_Win32_small.c-147-		}
+./ask/lib/win/ask_lib_Win32_small.c-148-
+./ask/lib/win/ask_lib_Win32_small.c:149:		// TODO what to do here?
+./ask/lib/win/ask_lib_Win32_small.c-150-		return 0;
+./ask/lib/win/ask_lib_Win32_small.c-151-	}
+./ask/lib/win/ask_lib_Win32_small.c-152-
+./ask/lib/win/ask_lib_Win32_small.c-153-	return 1;
+./ask/lib/win/ask_lib_Win32_small.c-154-}
+./pkg/win/setup/setup.c-90-	if (!ASK_DoScreen_readyToCopy(g_iNumFileSets, g_aFileSets))
+./pkg/win/setup/setup.c-91-	{
+./pkg/win/setup/setup.c-92-		goto cancelled;
+./pkg/win/setup/setup.c-93-	}
+./pkg/win/setup/setup.c-94-
+./pkg/win/setup/setup.c:95:	// TODO note that we currently don't allow the user to select which file sets are optional
+./pkg/win/setup/setup.c-96-
+./pkg/win/setup/setup.c-97-	ASK_createRemoveFile("AbiWord");
+./pkg/win/setup/setup.c-98-	
+./pkg/win/setup/setup.c-99-	{
+./pkg/win/setup/setup.c-100-		int err = ASK_DoScreen_copy(g_iNumFileSets, g_aFileSets);
+./af/ev/win/ev_Win32Mouse.h-24-#define EV_WIN32MOUSE_H
+./af/ev/win/ev_Win32Mouse.h-25-
+./af/ev/win/ev_Win32Mouse.h-26-#include "ev_Mouse.h"
+./af/ev/win/ev_Win32Mouse.h-27-#include "ev_EditBits.h"
+./af/ev/win/ev_Win32Mouse.h-28-
+./af/ev/win/ev_Win32Mouse.h:29:// TODO EV_<platform>Mouse and EV_EditEventMapper are
+./af/ev/win/ev_Win32Mouse.h:30:// TODO unique for each document, although the EditBindings
+./af/ev/win/ev_Win32Mouse.h:31:// TODO may be global.  (ev_<platform>Mouse could be global
+./af/ev/win/ev_Win32Mouse.h:32:// TODO i suppose.)
+./af/ev/win/ev_Win32Mouse.h-33-
+./af/ev/win/ev_Win32Mouse.h-34-class AV_View;
+./af/ev/win/ev_Win32Mouse.h-35-
+./af/ev/win/ev_Win32Mouse.h-36-
+./af/ev/win/ev_Win32Mouse.h-37-class EV_Win32Mouse : public EV_Mouse
+./af/xap/win/xap_Win32Frame.h-89-	void						_createTopLevelWindow(void);
+./af/xap/win/xap_Win32Frame.h-90-	static LRESULT CALLBACK		_FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+./af/xap/win/xap_Win32Frame.h-91-
+./af/xap/win/xap_Win32Frame.h-92-  	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
+./af/xap/win/xap_Win32Frame.h-93-
+./af/xap/win/xap_Win32Frame.h:94:	// TODO see why ev_Win32Keyboard has lowercase prefix...
+./af/xap/win/xap_Win32Frame.h-95-	XAP_Win32App *				m_pWin32App;
+./af/xap/win/xap_Win32Frame.h-96-	EV_Win32MenuBar *			m_pWin32Menu;
+./af/xap/win/xap_Win32Frame.h-97-	EV_Win32MenuPopup *			m_pWin32Popup; /* only valid while a context popup is up */
+./af/xap/win/xap_Win32Frame.h-98-	UT_uint32					m_iBarHeight;
+./af/xap/win/xap_Win32Frame.h-99-	UT_uint32					m_iStatusBarHeight;

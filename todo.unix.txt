@@ -1,0 +1,1475 @@
+./af/ev/unix/ev_UnixKeyboard.cpp-41-
+./af/ev/unix/ev_UnixKeyboard.cpp-42-//////////////////////////////////////////////////////////////////
+./af/ev/unix/ev_UnixKeyboard.cpp-43-// This is used to remember the modifier mask (GDK_MODx_MASK) that
+./af/ev/unix/ev_UnixKeyboard.cpp-44-// is bound to the Alt keys.  We load this once per session.
+./af/ev/unix/ev_UnixKeyboard.cpp-45-//
+./af/ev/unix/ev_UnixKeyboard.cpp:46:// TODO Figure out if GTK/GDK can send us a MappingNotify event.
+./af/ev/unix/ev_UnixKeyboard.cpp:47:// TODO If so, recompute this value.
+./af/ev/unix/ev_UnixKeyboard.cpp-48-//
+./af/ev/unix/ev_UnixKeyboard.cpp-49-static GdkModifierType s_alt_mask = GDK_MODIFIER_MASK;	// bogus value
+./af/ev/unix/ev_UnixKeyboard.cpp-50-
+./af/ev/unix/ev_UnixKeyboard.cpp-51-GdkModifierType ev_UnixKeyboard::getAltModifierMask(void)
+./af/ev/unix/ev_UnixKeyboard.cpp-52-{
+./af/ev/unix/ev_UnixMenu.cpp-85-			return;
+./af/ev/unix/ev_UnixMenu.cpp-86-		}
+./af/ev/unix/ev_UnixMenu.cpp-87-
+./af/ev/unix/ev_UnixMenu.cpp-88-		const char * szMsg = pLabel->getMenuStatusMessage();
+./af/ev/unix/ev_UnixMenu.cpp-89-		if (!szMsg || !*szMsg)
+./af/ev/unix/ev_UnixMenu.cpp:90:			szMsg = "TODO This menu item doesn't have a StatusMessage defined.";
+./af/ev/unix/ev_UnixMenu.cpp-91-	
+./af/ev/unix/ev_UnixMenu.cpp-92-		pFrame->setStatusMessage(szMsg);
+./af/ev/unix/ev_UnixMenu.cpp-93-	};
+./af/ev/unix/ev_UnixMenu.cpp-94-	
+./af/ev/unix/ev_UnixMenu.cpp-95-	static void s_onMenuItemDeselect(GtkWidget * widget, gpointer data)
+./af/ev/unix/ev_UnixMenu.cpp-640-													   keyCode,
+./af/ev/unix/ev_UnixMenu.cpp-641-													   0,
+./af/ev/unix/ev_UnixMenu.cpp-642-													   GTK_ACCEL_LOCKED);
+./af/ev/unix/ev_UnixMenu.cpp-643-						}
+./af/ev/unix/ev_UnixMenu.cpp-644-
+./af/ev/unix/ev_UnixMenu.cpp:645:						// TODO: Should these happen for every widget, even if
+./af/ev/unix/ev_UnixMenu.cpp:646:						// TODO: we don't register an accelerator?
+./af/ev/unix/ev_UnixMenu.cpp-647-						gtk_accel_label_set_accel_widget(GTK_ACCEL_LABEL(label), w);
+./af/ev/unix/ev_UnixMenu.cpp-648-										 
+./af/ev/unix/ev_UnixMenu.cpp-649-					}
+./af/ev/unix/ev_UnixMenu.cpp-650-				}
+./af/ev/unix/ev_UnixMenu.cpp-651-
+./af/ev/unix/ev_UnixMouse.cpp-15- * along with this program; if not, write to the Free Software
+./af/ev/unix/ev_UnixMouse.cpp-16- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+./af/ev/unix/ev_UnixMouse.cpp-17- * 02111-1307, USA.
+./af/ev/unix/ev_UnixMouse.cpp-18- */
+./af/ev/unix/ev_UnixMouse.cpp-19-
+./af/ev/unix/ev_UnixMouse.cpp:20:// TODO see if we need to do the GTK absolute-to-relative coordinate
+./af/ev/unix/ev_UnixMouse.cpp:21:// TODO trick like we did in the top ruler.
+./af/ev/unix/ev_UnixMouse.cpp-22-
+./af/ev/unix/ev_UnixMouse.cpp-23-#include "ut_assert.h"
+./af/ev/unix/ev_UnixMouse.cpp-24-#include "ut_debugmsg.h"
+./af/ev/unix/ev_UnixMouse.cpp-25-#include "ut_types.h"
+./af/ev/unix/ev_UnixMouse.cpp-26-#include "ev_Mouse.h"
+./af/ev/unix/ev_UnixMouse.cpp-64-		emb = EV_EMB_BUTTON4;
+./af/ev/unix/ev_UnixMouse.cpp-65-	else if (e->state & GDK_BUTTON5_MASK)
+./af/ev/unix/ev_UnixMouse.cpp-66-		emb = EV_EMB_BUTTON5;
+./af/ev/unix/ev_UnixMouse.cpp-67-	else
+./af/ev/unix/ev_UnixMouse.cpp-68-	{
+./af/ev/unix/ev_UnixMouse.cpp:69:		// TODO decide something better to do here....
+./af/ev/unix/ev_UnixMouse.cpp-70-		UT_DEBUGMSG(("EV_UnixMouse::mouseUp: unknown button %d\n",e->button));
+./af/ev/unix/ev_UnixMouse.cpp-71-		return;
+./af/ev/unix/ev_UnixMouse.cpp-72-	}
+./af/ev/unix/ev_UnixMouse.cpp-73-
+./af/ev/unix/ev_UnixMouse.cpp:74:	// TODO confirm that we report release under the
+./af/ev/unix/ev_UnixMouse.cpp:75:	// TODO mouse button that we did the capture on.
+./af/ev/unix/ev_UnixMouse.cpp-76-
+./af/ev/unix/ev_UnixMouse.cpp-77-	mop = EV_EMO_RELEASE;
+./af/ev/unix/ev_UnixMouse.cpp-78-	if (m_clickState == EV_EMO_DOUBLECLICK)
+./af/ev/unix/ev_UnixMouse.cpp-79-		mop = EV_EMO_DOUBLERELEASE;
+./af/ev/unix/ev_UnixMouse.cpp-80-	m_clickState = 0;
+./af/ev/unix/ev_UnixMouse.cpp-92-	case EV_EEMR_INCOMPLETE:
+./af/ev/unix/ev_UnixMouse.cpp-93-		// I'm not sure this makes any sense, but we allow it.
+./af/ev/unix/ev_UnixMouse.cpp-94-		return;
+./af/ev/unix/ev_UnixMouse.cpp-95-	case EV_EEMR_BOGUS_START:
+./af/ev/unix/ev_UnixMouse.cpp-96-	case EV_EEMR_BOGUS_CONT:
+./af/ev/unix/ev_UnixMouse.cpp:97:		// TODO What to do ?? Should we beep at them or just be quiet ??
+./af/ev/unix/ev_UnixMouse.cpp-98-		return;
+./af/ev/unix/ev_UnixMouse.cpp-99-	default:
+./af/ev/unix/ev_UnixMouse.cpp-100-		UT_ASSERT(0);
+./af/ev/unix/ev_UnixMouse.cpp-101-		return;
+./af/ev/unix/ev_UnixMouse.cpp-102-	}
+./af/ev/unix/ev_UnixMouse.cpp-122-		emb = EV_EMB_BUTTON4;
+./af/ev/unix/ev_UnixMouse.cpp-123-	else if (e->button == 5)
+./af/ev/unix/ev_UnixMouse.cpp-124-		emb = EV_EMB_BUTTON5;
+./af/ev/unix/ev_UnixMouse.cpp-125-	else
+./af/ev/unix/ev_UnixMouse.cpp-126-	{
+./af/ev/unix/ev_UnixMouse.cpp:127:		// TODO decide something better to do here....
+./af/ev/unix/ev_UnixMouse.cpp-128-		UT_DEBUGMSG(("EV_UnixMouse::mouseClick: unknown button %d\n",e->button));
+./af/ev/unix/ev_UnixMouse.cpp-129-		return;
+./af/ev/unix/ev_UnixMouse.cpp-130-	}
+./af/ev/unix/ev_UnixMouse.cpp-131-	
+./af/ev/unix/ev_UnixMouse.cpp-132-	if (e->state & GDK_SHIFT_MASK)
+./af/ev/unix/ev_UnixMouse.cpp-140-		mop = EV_EMO_SINGLECLICK;
+./af/ev/unix/ev_UnixMouse.cpp-141-	else if (e->type == GDK_2BUTTON_PRESS)
+./af/ev/unix/ev_UnixMouse.cpp-142-		mop = EV_EMO_DOUBLECLICK;
+./af/ev/unix/ev_UnixMouse.cpp-143-	else
+./af/ev/unix/ev_UnixMouse.cpp-144-	{
+./af/ev/unix/ev_UnixMouse.cpp:145:		// TODO decide something better to do here....
+./af/ev/unix/ev_UnixMouse.cpp-146-		UT_DEBUGMSG(("EV_UnixMouse::mouseClick:: unknown type %d\n",e->type));
+./af/ev/unix/ev_UnixMouse.cpp-147-		return;
+./af/ev/unix/ev_UnixMouse.cpp-148-	}
+./af/ev/unix/ev_UnixMouse.cpp-149-
+./af/ev/unix/ev_UnixMouse.cpp-150-	emc = pView->getMouseContext((UT_sint32)e->x,(UT_sint32)e->y);
+./af/ev/unix/ev_UnixMouse.cpp-163-	case EV_EEMR_INCOMPLETE:
+./af/ev/unix/ev_UnixMouse.cpp-164-		// I'm not sure this makes any sense, but we allow it.
+./af/ev/unix/ev_UnixMouse.cpp-165-		return;
+./af/ev/unix/ev_UnixMouse.cpp-166-	case EV_EEMR_BOGUS_START:
+./af/ev/unix/ev_UnixMouse.cpp-167-	case EV_EEMR_BOGUS_CONT:
+./af/ev/unix/ev_UnixMouse.cpp:168:		// TODO What to do ?? Should we beep at them or just be quiet ??
+./af/ev/unix/ev_UnixMouse.cpp-169-		return;
+./af/ev/unix/ev_UnixMouse.cpp-170-	default:
+./af/ev/unix/ev_UnixMouse.cpp-171-		UT_ASSERT(0);
+./af/ev/unix/ev_UnixMouse.cpp-172-		return;
+./af/ev/unix/ev_UnixMouse.cpp-173-	}
+./af/ev/unix/ev_UnixMouse.cpp-196-	else if (e->state & GDK_BUTTON3_MASK)
+./af/ev/unix/ev_UnixMouse.cpp-197-		emb = EV_EMB_BUTTON3;
+./af/ev/unix/ev_UnixMouse.cpp-198-	else
+./af/ev/unix/ev_UnixMouse.cpp-199-		emb = EV_EMB_BUTTON0;
+./af/ev/unix/ev_UnixMouse.cpp-200-
+./af/ev/unix/ev_UnixMouse.cpp:201:	// TODO confirm that we report movements under the
+./af/ev/unix/ev_UnixMouse.cpp:202:	// TODO mouse button that we did the capture on.
+./af/ev/unix/ev_UnixMouse.cpp-203-
+./af/ev/unix/ev_UnixMouse.cpp-204-	if (m_clickState == 0)
+./af/ev/unix/ev_UnixMouse.cpp-205-	{
+./af/ev/unix/ev_UnixMouse.cpp-206-		mop = EV_EMO_DRAG;
+./af/ev/unix/ev_UnixMouse.cpp-207-		emc = pView->getMouseContext((UT_sint32)e->x,(UT_sint32)e->y);
+./af/ev/unix/ev_UnixMouse.cpp-233-	case EV_EEMR_INCOMPLETE:
+./af/ev/unix/ev_UnixMouse.cpp-234-		// I'm not sure this makes any sense, but we allow it.
+./af/ev/unix/ev_UnixMouse.cpp-235-		return;
+./af/ev/unix/ev_UnixMouse.cpp-236-	case EV_EEMR_BOGUS_START:
+./af/ev/unix/ev_UnixMouse.cpp-237-	case EV_EEMR_BOGUS_CONT:
+./af/ev/unix/ev_UnixMouse.cpp:238:		// TODO What to do ?? Should we beep at them or just be quiet ??
+./af/ev/unix/ev_UnixMouse.cpp-239-		return;
+./af/ev/unix/ev_UnixMouse.cpp-240-	default:
+./af/ev/unix/ev_UnixMouse.cpp-241-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+./af/ev/unix/ev_UnixMouse.cpp-242-		return;
+./af/ev/unix/ev_UnixMouse.cpp-243-	}
+./af/ev/unix/ev_UnixToolbar.cpp-68-
+./af/ev/unix/ev_UnixToolbar.cpp-69-		if (!wd->m_blockSignal)
+./af/ev/unix/ev_UnixToolbar.cpp-70-			wd->m_pUnixToolbar->toolbarEvent(wd, 0, 0);
+./af/ev/unix/ev_UnixToolbar.cpp-71-	};
+./af/ev/unix/ev_UnixToolbar.cpp-72-
+./af/ev/unix/ev_UnixToolbar.cpp:73:	// TODO: should this move out of wd?  It's convenient here; maybe I'll make
+./af/ev/unix/ev_UnixToolbar.cpp-74-	// a microclass for combo boxes.
+./af/ev/unix/ev_UnixToolbar.cpp-75-	static void s_combo_changed(GtkWidget * widget, gpointer user_data)
+./af/ev/unix/ev_UnixToolbar.cpp-76-	{
+./af/ev/unix/ev_UnixToolbar.cpp-77-		_wd * wd = (_wd *) user_data;
+./af/ev/unix/ev_UnixToolbar.cpp-78-		UT_ASSERT(wd);
+./af/ev/unix/ev_UnixToolbar.cpp-94-				}
+./af/ev/unix/ev_UnixToolbar.cpp-95-			}
+./af/ev/unix/ev_UnixToolbar.cpp-96-			else // widget has no ->parent, so use the buffer's results
+./af/ev/unix/ev_UnixToolbar.cpp-97-			{
+./af/ev/unix/ev_UnixToolbar.cpp-98-
+./af/ev/unix/ev_UnixToolbar.cpp:99:				// TODO : do a real conversion to UT_UCSChar or figure out the casting
+./af/ev/unix/ev_UnixToolbar.cpp-100-
+./af/ev/unix/ev_UnixToolbar.cpp-101-				// don't do changes for empty combo texts
+./af/ev/unix/ev_UnixToolbar.cpp-102-				if (UT_strcmp(wd->m_comboEntryBuffer, ""))
+./af/ev/unix/ev_UnixToolbar.cpp-103-				{
+./af/ev/unix/ev_UnixToolbar.cpp-104-					UT_UCSChar * text = (UT_UCSChar *) 
+./af/ev/unix/ev_UnixToolbar.cpp-429-				DELETEP(pControl);
+./af/ev/unix/ev_UnixToolbar.cpp-430-			}
+./af/ev/unix/ev_UnixToolbar.cpp-431-			break;
+./af/ev/unix/ev_UnixToolbar.cpp-432-					
+./af/ev/unix/ev_UnixToolbar.cpp-433-			case EV_TBIT_StaticLabel:
+./af/ev/unix/ev_UnixToolbar.cpp:434:				// TODO do these...
+./af/ev/unix/ev_UnixToolbar.cpp-435-				break;
+./af/ev/unix/ev_UnixToolbar.cpp-436-					
+./af/ev/unix/ev_UnixToolbar.cpp-437-			case EV_TBIT_Spacer:
+./af/ev/unix/ev_UnixToolbar.cpp-438-				break;
+./af/ev/unix/ev_UnixToolbar.cpp-439-					
+./af/gr/unix/gr_UnixGraphics.cpp-400-}
+./af/gr/unix/gr_UnixGraphics.cpp-401-
+./af/gr/unix/gr_UnixGraphics.cpp-402-void GR_UnixGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
+./af/gr/unix/gr_UnixGraphics.cpp-403-							   UT_sint32 x2, UT_sint32 y2)
+./af/gr/unix/gr_UnixGraphics.cpp-404-{
+./af/gr/unix/gr_UnixGraphics.cpp:405:	// TODO set the line width according to m_iLineWidth
+./af/gr/unix/gr_UnixGraphics.cpp-406-	gdk_draw_line(m_pWin, m_pGC, x1, y1, x2, y2);
+./af/gr/unix/gr_UnixGraphics.cpp-407-}
+./af/gr/unix/gr_UnixGraphics.cpp-408-
+./af/gr/unix/gr_UnixGraphics.cpp-409-void GR_UnixGraphics::setLineWidth(UT_sint32 iLineWidth)
+./af/gr/unix/gr_UnixGraphics.cpp-410-{
+./af/gr/unix/gr_UnixGraphics.cpp-819-
+./af/gr/unix/gr_UnixGraphics.cpp-820-	// Note: most of the unix font handling code is in abi/src/af/xap/unix
+./af/gr/unix/gr_UnixGraphics.cpp-821-	// Note: rather than in the graphics class.  i'm not sure this matters,
+./af/gr/unix/gr_UnixGraphics.cpp-822-	// Note: but it is just different....
+./af/gr/unix/gr_UnixGraphics.cpp-823-
+./af/gr/unix/gr_UnixGraphics.cpp:824:	// TODO add code to map the given font name into one of the
+./af/gr/unix/gr_UnixGraphics.cpp:825:	// TODO enums in GR_Font and set *pff and *pft.
+./af/gr/unix/gr_UnixGraphics.cpp-826-
+./af/gr/unix/gr_UnixGraphics.cpp-827-	*pff = FF_Unknown;
+./af/gr/unix/gr_UnixGraphics.cpp-828-	*pfp = FP_Unknown;
+./af/gr/unix/gr_UnixGraphics.cpp-829-	*pbTrueType = UT_TRUE;
+./af/gr/unix/gr_UnixGraphics.cpp-830-}
+./af/gr/unix/gr_UnixImage.cpp-139-	png_write_info(png_ptr, info_ptr);
+./af/gr/unix/gr_UnixImage.cpp-140-
+./af/gr/unix/gr_UnixImage.cpp-141-	UT_Byte * pBits = ((unsigned char*) m_image->data);
+./af/gr/unix/gr_UnixImage.cpp-142-	
+./af/gr/unix/gr_UnixImage.cpp-143-	UT_Byte* pData = (UT_Byte*) malloc(iWidth * iHeight * 3);
+./af/gr/unix/gr_UnixImage.cpp:144:	UT_ASSERT(pData); // TODO outofmem
+./af/gr/unix/gr_UnixImage.cpp-145-		
+./af/gr/unix/gr_UnixImage.cpp-146-	UT_uint32 	iRow;
+./af/gr/unix/gr_UnixImage.cpp-147-	UT_uint32 	iCol;
+./af/gr/unix/gr_UnixImage.cpp-148-	UT_Byte* 	pRow;
+./af/gr/unix/gr_UnixImage.cpp-149-	UT_uint32 	iBytesInRow;
+./af/gr/unix/gr_UnixImage.cpp-325-	     }
+./af/gr/unix/gr_UnixImage.cpp-326-	   
+./af/gr/unix/gr_UnixImage.cpp-327-	   // stretch the pixels from pOtherFM into pDisplayFM
+./af/gr/unix/gr_UnixImage.cpp-328-	   
+./af/gr/unix/gr_UnixImage.cpp-329-	   /*
+./af/gr/unix/gr_UnixImage.cpp:330:	    TODO this code came from imlib.  It's not exactly
+./af/gr/unix/gr_UnixImage.cpp-331-	    a match for our coding standards, so it needs a
+./af/gr/unix/gr_UnixImage.cpp-332-	    certain amount of cleanup.  However, it seems
+./af/gr/unix/gr_UnixImage.cpp-333-	    to be working nicely.
+./af/gr/unix/gr_UnixImage.cpp-334-	    */
+./af/gr/unix/gr_UnixImage.cpp-335-	   
+./af/gr/unix/gr_UnixImage.cpp-340-		
+./af/gr/unix/gr_UnixImage.cpp-341-		xarray = (int*) malloc(sizeof(int) * iDisplayWidth);
+./af/gr/unix/gr_UnixImage.cpp-342-		
+./af/gr/unix/gr_UnixImage.cpp-343-		if (!xarray)
+./af/gr/unix/gr_UnixImage.cpp-344-		  {
+./af/gr/unix/gr_UnixImage.cpp:345:		     // TODO outofmem
+./af/gr/unix/gr_UnixImage.cpp-346-		     return UT_FALSE;
+./af/gr/unix/gr_UnixImage.cpp-347-		  }
+./af/gr/unix/gr_UnixImage.cpp-348-		yarray = (unsigned char**) malloc(sizeof(unsigned char *) * iDisplayHeight);
+./af/gr/unix/gr_UnixImage.cpp-349-		
+./af/gr/unix/gr_UnixImage.cpp-350-		if (!yarray)
+./af/gr/unix/gr_UnixImage.cpp-351-		  {
+./af/gr/unix/gr_UnixImage.cpp:352:		     // TODO outofmem
+./af/gr/unix/gr_UnixImage.cpp-353-		     return UT_FALSE;
+./af/gr/unix/gr_UnixImage.cpp-354-		  }
+./af/gr/unix/gr_UnixImage.cpp-355-		
+./af/gr/unix/gr_UnixImage.cpp-356-		ptr22 = pOtherFM->data;
+./af/gr/unix/gr_UnixImage.cpp-357-		w3 = pOtherFM->width * 3;
+./af/util/unix/ut_dialogHelper.cpp-209-{
+./af/util/unix/ut_dialogHelper.cpp-210-	UT_ASSERT(e);
+./af/util/unix/ut_dialogHelper.cpp-211-
+./af/util/unix/ut_dialogHelper.cpp-212-	guint key = e->keyval;
+./af/util/unix/ut_dialogHelper.cpp-213-
+./af/util/unix/ut_dialogHelper.cpp:214:	// TODO this is hard coded, maybe fix it
+./af/util/unix/ut_dialogHelper.cpp-215-	if (key == 'k' ||
+./af/util/unix/ut_dialogHelper.cpp-216-		key == GDK_Escape)
+./af/util/unix/ut_dialogHelper.cpp-217-	{
+./af/util/unix/ut_dialogHelper.cpp-218-		gtk_main_quit();
+./af/util/unix/ut_dialogHelper.cpp-219-	}
+./af/xap/unix/xap_UnixApp.cpp-128-}
+./af/xap/unix/xap_UnixApp.cpp-129-
+./af/xap/unix/xap_UnixApp.cpp-130-void XAP_UnixApp::setGeometry(gint x, gint y, guint width, guint height,
+./af/xap/unix/xap_UnixApp.cpp-131-							  windowGeometryFlags flags)
+./af/xap/unix/xap_UnixApp.cpp-132-{
+./af/xap/unix/xap_UnixApp.cpp:133:	// TODO : do some range checking?
+./af/xap/unix/xap_UnixApp.cpp-134-	m_geometry.x = x;
+./af/xap/unix/xap_UnixApp.cpp-135-	m_geometry.y = y;
+./af/xap/unix/xap_UnixApp.cpp-136-	m_geometry.width = width;
+./af/xap/unix/xap_UnixApp.cpp-137-	m_geometry.height = height;
+./af/xap/unix/xap_UnixApp.cpp-138-	m_geometry.flags = flags;
+./af/xap/unix/xap_UnixApp.cpp-298-			p[len-1] = 0;
+./af/xap/unix/xap_UnixApp.cpp-299-		XAP_App::_setAbiSuiteLibDir(p);
+./af/xap/unix/xap_UnixApp.cpp-300-		return;
+./af/xap/unix/xap_UnixApp.cpp-301-	}
+./af/xap/unix/xap_UnixApp.cpp-302-
+./af/xap/unix/xap_UnixApp.cpp:303:	// TODO what to do ??  try the current directory...
+./af/xap/unix/xap_UnixApp.cpp-304-	
+./af/xap/unix/xap_UnixApp.cpp-305-	UT_DEBUGMSG(("ABISUITE_HOME not set and -lib not given.  Assuming current directory....\n"));
+./af/xap/unix/xap_UnixApp.cpp-306-
+./af/xap/unix/xap_UnixApp.cpp-307-	getcwd(buf,sizeof(buf));
+./af/xap/unix/xap_UnixApp.cpp-308-	int len = strlen(buf);
+./af/xap/unix/xap_UnixClipboard.cpp-322-	
+./af/xap/unix/xap_UnixClipboard.cpp-323-	if (bClipboard)
+./af/xap/unix/xap_UnixClipboard.cpp-324-	{
+./af/xap/unix/xap_UnixClipboard.cpp-325-		m_timeClipboard = m_pUnixApp->getTimeOfLastEvent();
+./af/xap/unix/xap_UnixClipboard.cpp-326-		_releaseOwnership(m_atomClipboard,m_timeClipboard);
+./af/xap/unix/xap_UnixClipboard.cpp:327:		// TODO decide if we need to call fakeClipboard -- the callback
+./af/xap/unix/xap_UnixClipboard.cpp:328:		// TODO should have taken care of this.
+./af/xap/unix/xap_UnixClipboard.cpp-329-		m_fakeClipboard.clearClipboard();
+./af/xap/unix/xap_UnixClipboard.cpp-330-	}
+./af/xap/unix/xap_UnixClipboard.cpp-331-	
+./af/xap/unix/xap_UnixClipboard.cpp-332-	if (bPrimary)
+./af/xap/unix/xap_UnixClipboard.cpp-333-	{
+./af/xap/unix/xap_UnixClipboard.cpp-424-
+./af/xap/unix/xap_UnixClipboard.cpp-425-	// ask XServer for all formats on this property; fill m_vecFormatsOnServer.
+./af/xap/unix/xap_UnixClipboard.cpp-426-
+./af/xap/unix/xap_UnixClipboard.cpp-427-	_getFormats(atom);
+./af/xap/unix/xap_UnixClipboard.cpp-428-#if 1
+./af/xap/unix/xap_UnixClipboard.cpp:429:	// TODO This is an experimental hack to try to get a "TEXT" from
+./af/xap/unix/xap_UnixClipboard.cpp:430:	// TODO the current owner of the clipboard -- if they refused to
+./af/xap/unix/xap_UnixClipboard.cpp:431:	// TODO respond (or returned a bogus reply) to the "TARGETS" request.
+./af/xap/unix/xap_UnixClipboard.cpp:432:	// TODO Remove this later.
+./af/xap/unix/xap_UnixClipboard.cpp-433-	if (m_vecFormatsOnServer.getItemCount() == 0)
+./af/xap/unix/xap_UnixClipboard.cpp-434-		m_vecFormatsOnServer.addItem((void*)gdk_atom_intern("TEXT",FALSE));
+./af/xap/unix/xap_UnixClipboard.cpp-435-#endif
+./af/xap/unix/xap_UnixClipboard.cpp-436-
+./af/xap/unix/xap_UnixClipboard.cpp-437-	// walk desired formats list and find first one that server also has.
+./af/xap/unix/xap_UnixClipboard.cpp-539-	if (_testOwnership(atom))
+./af/xap/unix/xap_UnixClipboard.cpp-540-	{
+./af/xap/unix/xap_UnixClipboard.cpp-541-		// the following call will send a message to the XServer.
+./af/xap/unix/xap_UnixClipboard.cpp-542-		// upon updating the property, the XServer will send us
+./af/xap/unix/xap_UnixClipboard.cpp-543-		// a selection_clear.  we spin here until it comes in.
+./af/xap/unix/xap_UnixClipboard.cpp:544:		// TODO investigate if this is necessary and/or if we
+./af/xap/unix/xap_UnixClipboard.cpp:545:		// TODO need a timeout on this loop.
+./af/xap/unix/xap_UnixClipboard.cpp-546-
+./af/xap/unix/xap_UnixClipboard.cpp-547-		m_waiting = UT_TRUE;
+./af/xap/unix/xap_UnixClipboard.cpp-548-		gtk_selection_owner_set(NULL,atom,timeOfRelease);
+./af/xap/unix/xap_UnixClipboard.cpp-549-		while (m_waiting)
+./af/xap/unix/xap_UnixClipboard.cpp-550-			gtk_main_iteration();
+./af/xap/unix/xap_UnixClipboard.cpp-648-	{
+./af/xap/unix/xap_UnixClipboard.cpp-649-		m_fakeClipboard.clearClipboard();
+./af/xap/unix/xap_UnixClipboard.cpp-650-		// assert that we are not the owner of the CLIPBOARD property.
+./af/xap/unix/xap_UnixClipboard.cpp-651-		UT_ASSERT( !_testOwnership(m_atomClipboard) );
+./af/xap/unix/xap_UnixClipboard.cpp-652-		m_bOwnClipboard = UT_FALSE;
+./af/xap/unix/xap_UnixClipboard.cpp:653:		// TODO consider clearing the highlighted selection on screen
+./af/xap/unix/xap_UnixClipboard.cpp-654-		return UT_TRUE;
+./af/xap/unix/xap_UnixClipboard.cpp-655-	}
+./af/xap/unix/xap_UnixClipboard.cpp-656-
+./af/xap/unix/xap_UnixClipboard.cpp-657-	if (event->selection == m_atomPrimary)
+./af/xap/unix/xap_UnixClipboard.cpp-658-	{
+./af/xap/unix/xap_UnixClipboard.cpp-768-   for (k = 0; k < kLimit; k++)
+./af/xap/unix/xap_UnixClipboard.cpp-769-     if (UT_stricmp(format,(const char *)m_vecFormat_AP_Name.getNthItem(k)) == 0)
+./af/xap/unix/xap_UnixClipboard.cpp-770-       return (GdkAtom)m_vecFormat_GdkAtom.getNthItem(k);
+./af/xap/unix/xap_UnixClipboard.cpp-771-
+./af/xap/unix/xap_UnixClipboard.cpp-772-   // no matches, so we'll create this new one for them...
+./af/xap/unix/xap_UnixClipboard.cpp:773:   // TODO this is probably unnecessary -- jeff
+./af/xap/unix/xap_UnixClipboard.cpp-774-
+./af/xap/unix/xap_UnixClipboard.cpp-775-   GdkAtom new_atom = gdk_atom_intern(format, FALSE);
+./af/xap/unix/xap_UnixClipboard.cpp-776-   m_vecFormat_AP_Name.addItem((void*)format);
+./af/xap/unix/xap_UnixClipboard.cpp-777-   m_vecFormat_GdkAtom.addItem((void*)new_atom);
+./af/xap/unix/xap_UnixClipboard.cpp-778-   return new_atom;
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-119-		{
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-120-			gtk_main();
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-121-			if (m_answer == a_CANCEL)			// The easy way out
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-122-				return UT_FALSE;
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-123-
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp:124:			// TODO  check for symlinks, because even symlinks to dirs won't
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp:125:			// TODO  show up with S_ISDIR().
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-126-
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp:127:			// TODO  check to make sure a file exists before we close off the
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp:128:			// TODO  loop
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-129-			
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-130-			// We can't just return, because we might have some dialog work to
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-131-			// do.  For example, the user might have typed in a directory, not
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-132-			// a file, so we have to catch it, change the dialog, and not return
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-133-			// any filename yet.
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-190-
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-191-			UT_sint32 nFileType = GPOINTER_TO_INT(gtk_object_get_user_data(
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-192-				GTK_OBJECT(activeItem)));
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-193-
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-194-			// set to first item, which should probably be auto detect
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp:195:			// TODO : "probably" isn't very good.
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-196-			UT_uint32 nIndex = 0;
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-197-			
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-198-			// the index in the types table will match the index in the suffix
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-199-			// table.  nFileType is the data we are searching for.
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-200-			for (UT_uint32 i = 0; m_nTypeList[i]; i++)
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-513-			
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-514-			// add menu to the option menu widget
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-515-			gtk_option_menu_set_menu(GTK_OPTION_MENU(filetypes_pulldown), menu);
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-516-
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-517-			// dialog; open dialog always does auto-detect
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp:518:			// TODO: should this also apply to the open dialog?
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-519-			if (m_id == XAP_DIALOG_ID_FILE_SAVEAS)
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-520-			  {
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-521-				gtk_menu_set_active(GTK_MENU(menu), activeItemIndex + 1);
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-522-				gtk_option_menu_set_history (GTK_OPTION_MENU(filetypes_pulldown), activeItemIndex + 1);
+./af/xap/unix/xap_UnixDlg_FileOpenSaveAs.cpp-523-			  }
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-232-
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-233-		// draw in 5 pixels or so from left edge
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-234-		dlg->m_gc->drawChars(unicodeString, 0, UT_UCS_strlen(unicodeString), 5, top);
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-235-		FREEP(unicodeString);
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-236-#if 0
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp:237:		// TODO:
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-238-		
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-239-		// we draw decorations after the text, even though the underline looks
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-240-		// kinda funny this way
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-241-		UT_sint32 iDrop = (dlg->m_gc->getFontDescent() / 3);
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-242-		dlg->m_gc->drawLine(5, top + iDrop + dlg->m_gc->getFontAscent(),
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-694-	text[0] = (gchar *) pSS->getValue(XAP_STRING_ID_DLG_UFS_StyleBoldItalic);  	gtk_clist_append(GTK_CLIST(m_styleList), text);	
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-695-	gtk_clist_thaw(GTK_CLIST(m_styleList));
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-696-
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-697-	gtk_clist_freeze(GTK_CLIST(m_sizeList));
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-698-	gtk_clist_clear(GTK_CLIST(m_sizeList));
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp:699:	// TODO perhaps populate the list based on the selected font/style?
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-700-	{
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-701-	    int sz = XAP_EncodingManager::fontsizes_list.size();
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-702-	    for(int i=0;i<sz;++i) {
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-703-		text[0]=(char*)XAP_EncodingManager::fontsizes_list.nth2(i);
+./af/xap/unix/xap_UnixDlg_FontChooser.cpp-704-		gtk_clist_append(GTK_CLIST(m_sizeList), text);
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-148-	UT_ASSERT(dlg);
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-149-	dlg->event_WindowDelete();
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-150-}
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-151-
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-152-#if 0
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp:153:// TODO: there must be a better way of doing this
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp:154:// TODO: it just seems so wasteful to have a callback
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp:155:// TODO: registered for every time the mouse moves over a widget
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-156-static void s_motion_event(GtkWidget * /* widget */,
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-157-			   GdkEventMotion *evt,
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-158-			   XAP_UnixDialog_Insert_Symbol *dlg)
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-159-{
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-160-        UT_DEBUGMSG(("DOM: motion event\n"));
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-490-
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-491-	// Now put the font combo box at the top of the dialog 
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-492-	gtk_box_pack_start(GTK_BOX(vhbox), m_fontcombo, TRUE, FALSE, 0);
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-493-
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-494-	// Now the Symbol Map. 
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp:495:	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-496-	m_SymbolMap = _previewNew (608, 147);
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-497-	gtk_object_set_data (GTK_OBJECT (m_windowMain), "SymbolMap", m_SymbolMap);
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-498-	gtk_box_pack_start(GTK_BOX(vboxInsertS), m_SymbolMap, FALSE, FALSE, 0);
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-499-	
+./af/xap/unix/xap_UnixDlg_Insert_Symbol.cpp-500-	// Now make a Hbox to hold  OK, Current Selection and Cancel
+./af/xap/unix/xap_UnixDlg_Print.cpp-505-		m_bDoPrintSelection = GTK_TOGGLE_BUTTON(buttonSelection)->active;
+./af/xap/unix/xap_UnixDlg_Print.cpp-506-		m_bDoPrintToFile	= GTK_TOGGLE_BUTTON(buttonFile)->active;
+./af/xap/unix/xap_UnixDlg_Print.cpp-507-		m_bCollate			= GTK_TOGGLE_BUTTON(buttonCollate)->active;
+./af/xap/unix/xap_UnixDlg_Print.cpp-508-		m_nCopies			= gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spinCopies));
+./af/xap/unix/xap_UnixDlg_Print.cpp-509-
+./af/xap/unix/xap_UnixDlg_Print.cpp:510:		// TODO check for valid entries
+./af/xap/unix/xap_UnixDlg_Print.cpp-511-
+./af/xap/unix/xap_UnixDlg_Print.cpp-512-		if (m_bDoPrintRange)
+./af/xap/unix/xap_UnixDlg_Print.cpp-513-		{
+./af/xap/unix/xap_UnixDlg_Print.cpp-514-			UT_uint32 first = atoi(gtk_entry_get_text(GTK_ENTRY(entryFrom)));
+./af/xap/unix/xap_UnixDlg_Print.cpp-515-			if (first < m_persistPrintDlg.nMinPage)
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-350-
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-351-	for (UT_uint32 i = 0; i < m_pApp->getFrameCount(); i++)
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-352-	{
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-353-		XAP_Frame * f = m_pApp->getFrame(i);
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-354-		UT_ASSERT(f);
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp:355:		const char * s = f->getTitle(128);	// TODO: chop this down more? 
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-356-		
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-357-		gint row = gtk_clist_append(GTK_CLIST(m_clistWindows), (gchar **) &s);
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-358-		gtk_clist_set_row_data(GTK_CLIST(m_clistWindows), row, GINT_TO_POINTER(i));
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-359-	} 
+./af/xap/unix/xap_UnixDlg_WindowMore.cpp-360-
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-241-}
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-242-
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-243-void XAP_UnixDialog_Zoom::event_RadioPageWidthClicked(void)
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-244-{
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-245-	_enablePercentSpin(UT_FALSE);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp:246:	// TODO : figure out the dimensions
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-247-}
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-248-
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-249-void XAP_UnixDialog_Zoom::event_RadioWholePageClicked(void)
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-250-{
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-251-	_enablePercentSpin(UT_FALSE);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp:252:	// TODO : figure out the dimensions
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-253-}
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-254-
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-255-void XAP_UnixDialog_Zoom::event_RadioPercentClicked(void)
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-256-{
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-257-	_enablePercentSpin(UT_TRUE);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-403-	FREEP(tmp);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-404-	gtk_object_set_data (GTK_OBJECT (windowZoom), "framePreview", framePreview);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-405-	gtk_widget_show (framePreview);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-406-	gtk_box_pack_start (GTK_BOX (hboxFrames), framePreview, TRUE, TRUE, 0);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-407-
+./af/xap/unix/xap_UnixDlg_Zoom.cpp:408:	// TODO: do something dynamically here?  How do we set this "sample" font?
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-409-	frameSampleText = gtk_frame_new ("10 pt Times New Roman");
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-410-	gtk_object_set_data (GTK_OBJECT (windowZoom), "frameSampleText", frameSampleText);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-411-	gtk_widget_show (frameSampleText);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-412-	gtk_container_add (GTK_CONTAINER (framePreview), frameSampleText);
+./af/xap/unix/xap_UnixDlg_Zoom.cpp-413-#if 0	
+./af/xap/unix/xap_UnixEncodingManager.cpp-196- * by stripping off different components of the value.
+./af/xap/unix/xap_UnixEncodingManager.cpp-197- *
+./af/xap/unix/xap_UnixEncodingManager.cpp-198- * For simplicity, we assume that the locale is in
+./af/xap/unix/xap_UnixEncodingManager.cpp-199- * X/Open format: language[_territory][.codeset][@modifier]
+./af/xap/unix/xap_UnixEncodingManager.cpp-200- *
+./af/xap/unix/xap_UnixEncodingManager.cpp:201: * TODO: Extend this to handle the CEN format (see the GNUlibc docs)
+./af/xap/unix/xap_UnixEncodingManager.cpp-202- *       as well. We could just copy the code from glibc wholesale
+./af/xap/unix/xap_UnixEncodingManager.cpp-203- *       but it is big, ugly, and complicated, so I'm reluctant
+./af/xap/unix/xap_UnixEncodingManager.cpp-204- *       to do so when this should handle 99% of the time...
+./af/xap/unix/xap_UnixEncodingManager.cpp-205- */
+./af/xap/unix/xap_UnixEncodingManager.cpp-206-static GList *
+./af/xap/unix/xap_UnixFont.cpp-759-	xxx_UT_DEBUGMSG(("PS font file:          %s %d\n", m_fontfile, this));
+./af/xap/unix/xap_UnixFont.cpp-760-	xxx_UT_DEBUGMSG(("PS font metrics file:  %s\n", m_metricfile));
+./af/xap/unix/xap_UnixFont.cpp-761-	xxx_UT_DEBUGMSG(("PS font encoding type: %s\n", m_metricsData->gfi->encodingScheme));
+./af/xap/unix/xap_UnixFont.cpp-762-	if (strcmp("FontSpecific", m_metricsData->gfi->encodingScheme) == 0)
+./af/xap/unix/xap_UnixFont.cpp-763-	{
+./af/xap/unix/xap_UnixFont.cpp:764:		// TODO: This is slightly a crock since we imagine the only font
+./af/xap/unix/xap_UnixFont.cpp:765:		// TODO: we'll see with FontSpecific encoding is the standard symbols
+./af/xap/unix/xap_UnixFont.cpp:766:		// TODO: font.  Sez who?  What we probably ought to do is dynamically
+./af/xap/unix/xap_UnixFont.cpp:767:		// TODO: allocate the encoding table for the font based on the
+./af/xap/unix/xap_UnixFont.cpp:768:		// TODO: FontSpecific encoding.  Or something.
+./af/xap/unix/xap_UnixFont.cpp-769-		the_enc = sym_enc;
+./af/xap/unix/xap_UnixFont.cpp-770-	}
+./af/xap/unix/xap_UnixFont.cpp-771-	m_uniWidths = (UT_uint16 *) malloc (sizeof (UT_uint16) * 256);
+./af/xap/unix/xap_UnixFont.cpp-772-	memset (m_uniWidths, 0, 256 * sizeof(UT_uint16)); // Clear array - i would hope that sizeof(UT_uint16) == 16
+./af/xap/unix/xap_UnixFont.cpp-773-	if (XAP_EncodingManager::instance->try_nativeToU(0xa1)==0xa1)
+./af/xap/unix/xap_UnixFont.cpp-788-				break;
+./af/xap/unix/xap_UnixFont.cpp-789-			}
+./af/xap/unix/xap_UnixFont.cpp-790-		}
+./af/xap/unix/xap_UnixFont.cpp-791-		if (unicode >= 0)
+./af/xap/unix/xap_UnixFont.cpp-792-		{
+./af/xap/unix/xap_UnixFont.cpp:793:			UT_ASSERT (unicode < 256); // TODO: support multibyte chars
+./af/xap/unix/xap_UnixFont.cpp-794-			m_uniWidths[unicode] = m_metricsData->cmi[i].wx;
+./af/xap/unix/xap_UnixFont.cpp-795-			++numfound;
+./af/xap/unix/xap_UnixFont.cpp-796-		}
+./af/xap/unix/xap_UnixFont.cpp-797-           }
+./af/xap/unix/xap_UnixFont.cpp-798-	   if (numfound < 127) 
+./af/xap/unix/xap_UnixFont.cpp-994-	// the layout engine, so use pixel sizes.  They're not really
+./af/xap/unix/xap_UnixFont.cpp-995-	// much more accurate this way, but they're more consistent
+./af/xap/unix/xap_UnixFont.cpp-996-	// with how the layout engine wants fonts.
+./af/xap/unix/xap_UnixFont.cpp-997-	myXLFD.setPixelSize(pixelsize);
+./af/xap/unix/xap_UnixFont.cpp-998-
+./af/xap/unix/xap_UnixFont.cpp:999:	// TODO  add any other special requests, like for a specific encoding
+./af/xap/unix/xap_UnixFont.cpp:1000:	// TODO  or registry, or resolution here
+./af/xap/unix/xap_UnixFont.cpp-1001-
+./af/xap/unix/xap_UnixFont.cpp-1002-	char * newxlfd = myXLFD.getXLFD();
+./af/xap/unix/xap_UnixFont.cpp-1003-	char* requested_lfd = newxlfd;
+./af/xap/unix/xap_UnixFont.cpp-1004-
+./af/xap/unix/xap_UnixFont.cpp-1005-	if(!is_CJK_font()) {
+./af/xap/unix/xap_UnixFontManager.cpp-32-#include "xap_UnixFontManager.h"
+./af/xap/unix/xap_UnixFontManager.cpp-33-#include "xap_UnixFontXLFD.h"
+./af/xap/unix/xap_UnixFontManager.cpp-34-#include "xap_EncodingManager.h"
+./af/xap/unix/xap_UnixFontManager.cpp-35-
+./af/xap/unix/xap_UnixFontManager.cpp-36-
+./af/xap/unix/xap_UnixFontManager.cpp:37:// TODO get this from some higher-level place
+./af/xap/unix/xap_UnixFontManager.cpp-38-#define FONTS_DIR_FILE	"/fonts.dir"
+./af/xap/unix/xap_UnixFontManager.cpp-39-
+./af/xap/unix/xap_UnixFontManager.cpp-40-XAP_UnixFontManager::XAP_UnixFontManager(void) : m_fontHash(256)
+./af/xap/unix/xap_UnixFontManager.cpp-41-{
+./af/xap/unix/xap_UnixFontManager.cpp-42-}
+./af/xap/unix/xap_UnixFontManager.cpp-159-	    }
+./af/xap/unix/xap_UnixFontManager.cpp-160-	}
+./af/xap/unix/xap_UnixFontManager.cpp-161-
+./af/xap/unix/xap_UnixFontManager.cpp-162-	if (totaldirs == 0)
+./af/xap/unix/xap_UnixFontManager.cpp-163-	{
+./af/xap/unix/xap_UnixFontManager.cpp:164:		// TODO this is not big enough for a really big list of fonts!
+./af/xap/unix/xap_UnixFontManager.cpp-165-		char message[10240];
+./af/xap/unix/xap_UnixFontManager.cpp-166-		g_snprintf(message, 10240, "AbiWord could not find any local font files in its font path.  Often this error is the\n"
+./af/xap/unix/xap_UnixFontManager.cpp-167-				   "result of invoking AbiWord directly instead of through its wrapper\n"
+./af/xap/unix/xap_UnixFontManager.cpp-168-				   "shell script.  The script sets the environment variable $ABISUITE_HOME which\n"
+./af/xap/unix/xap_UnixFontManager.cpp-169-				   "should point to the directory where AbiSuite components reside.\n"
+./af/xap/unix/xap_UnixFrame.cpp-389-	m_pUnixMenu = NULL;
+./af/xap/unix/xap_UnixFrame.cpp-390-	m_pUnixPopup = NULL;
+./af/xap/unix/xap_UnixFrame.cpp-391-	m_pView = NULL;
+./af/xap/unix/xap_UnixFrame.cpp-392-}
+./af/xap/unix/xap_UnixFrame.cpp-393-
+./af/xap/unix/xap_UnixFrame.cpp:394:// TODO when cloning a new frame from an existing one
+./af/xap/unix/xap_UnixFrame.cpp:395:// TODO should we also clone any frame-persistent
+./af/xap/unix/xap_UnixFrame.cpp:396:// TODO dialog data ??
+./af/xap/unix/xap_UnixFrame.cpp-397-
+./af/xap/unix/xap_UnixFrame.cpp-398-XAP_UnixFrame::XAP_UnixFrame(XAP_UnixFrame * f)
+./af/xap/unix/xap_UnixFrame.cpp-399-	: XAP_Frame(static_cast<XAP_Frame *>(f)),
+./af/xap/unix/xap_UnixFrame.cpp-400-	  m_dialogFactory(this, static_cast<XAP_App *>(f->m_pUnixApp))
+./af/xap/unix/xap_UnixFrame.cpp-401-{
+./af/xap/unix/xap_UnixFrame.cpp-540-	UT_ASSERT(m_pUnixMenu);
+./af/xap/unix/xap_UnixFrame.cpp-541-	bResult = m_pUnixMenu->synthesizeMenuBar();
+./af/xap/unix/xap_UnixFrame.cpp-542-	UT_ASSERT(bResult);
+./af/xap/unix/xap_UnixFrame.cpp-543-
+./af/xap/unix/xap_UnixFrame.cpp-544-	// create a toolbar instance for each toolbar listed in our base class.
+./af/xap/unix/xap_UnixFrame.cpp:545:	// TODO for some reason, the toolbar functions require the TLW to be
+./af/xap/unix/xap_UnixFrame.cpp:546:	// TODO realized (they reference m_wTopLevelWindow->window) before we call them.
+./af/xap/unix/xap_UnixFrame.cpp-547-
+./af/xap/unix/xap_UnixFrame.cpp-548-	gtk_widget_realize(m_wTopLevelWindow);
+./af/xap/unix/xap_UnixFrame.cpp-549-
+./af/xap/unix/xap_UnixFrame.cpp-550-
+./af/xap/unix/xap_UnixFrame.cpp-551-
+./af/xap/unix/xap_UnixPSGenerate.cpp-85-}
+./af/xap/unix/xap_UnixPSGenerate.cpp-86-
+./af/xap/unix/xap_UnixPSGenerate.cpp-87-void ps_Generate::abortFile(void)
+./af/xap/unix/xap_UnixPSGenerate.cpp-88-{
+./af/xap/unix/xap_UnixPSGenerate.cpp-89-	// abort the file.
+./af/xap/unix/xap_UnixPSGenerate.cpp:90:	// TODO close and delete or otherwise cleanup.
+./af/xap/unix/xap_UnixPSGenerate.cpp-91-
+./af/xap/unix/xap_UnixPSGenerate.cpp-92-	closeFile();
+./af/xap/unix/xap_UnixPSGenerate.cpp-93-}
+./af/xap/unix/xap_UnixPSGenerate.cpp-94-
+./af/xap/unix/xap_UnixPSGenerate.cpp-95-UT_Bool	ps_Generate::writeByte(UT_Byte byte)
+./af/xap/unix/xap_UnixPSGenerate.cpp-160-	for (int k=0; k<argc; k++)
+./af/xap/unix/xap_UnixPSGenerate.cpp-161-	{
+./af/xap/unix/xap_UnixPSGenerate.cpp-162-		bufLen = strlen(buf);
+./af/xap/unix/xap_UnixPSGenerate.cpp-163-		if (bufLen+strlen(argv[k]) < 256)
+./af/xap/unix/xap_UnixPSGenerate.cpp-164-		{
+./af/xap/unix/xap_UnixPSGenerate.cpp:165:			// TODO see if we need to PS-style esacpe the string before we add it.
+./af/xap/unix/xap_UnixPSGenerate.cpp-166-			sprintf(buf+bufLen," %s",argv[k]);
+./af/xap/unix/xap_UnixPSGenerate.cpp-167-		}
+./af/xap/unix/xap_UnixPSGenerate.cpp-168-		else
+./af/xap/unix/xap_UnixPSGenerate.cpp-169-		{
+./af/xap/unix/xap_UnixPSGenerate.cpp-170-			strcat(buf,"\n");
+./af/xap/unix/xap_UnixPSGenerate.cpp-198-	{
+./af/xap/unix/xap_UnixPSGenerate.cpp-199-		const char * psz = (const char *)pVec->getNthItem(k);
+./af/xap/unix/xap_UnixPSGenerate.cpp-200-		bufLen = strlen(buf);
+./af/xap/unix/xap_UnixPSGenerate.cpp-201-		if (bufLen+strlen(psz) < 256)
+./af/xap/unix/xap_UnixPSGenerate.cpp-202-		{
+./af/xap/unix/xap_UnixPSGenerate.cpp:203:			// TODO see if we need to PS-style esacpe the string before we add it.
+./af/xap/unix/xap_UnixPSGenerate.cpp-204-			sprintf(buf+bufLen," %s",psz);
+./af/xap/unix/xap_UnixPSGenerate.cpp-205-		}
+./af/xap/unix/xap_UnixPSGenerate.cpp-206-		else
+./af/xap/unix/xap_UnixPSGenerate.cpp-207-		{
+./af/xap/unix/xap_UnixPSGenerate.cpp-208-			strcat(buf,"\n");
+./af/xap/unix/xap_UnixPSGraphics.cpp-77-	m_currentColor.m_blu = 0;
+./af/xap/unix/xap_UnixPSGraphics.cpp-78-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-79-
+./af/xap/unix/xap_UnixPSGraphics.cpp-80-PS_Graphics::~PS_Graphics()
+./af/xap/unix/xap_UnixPSGraphics.cpp-81-{
+./af/xap/unix/xap_UnixPSGraphics.cpp:82:	// TODO free stuff
+./af/xap/unix/xap_UnixPSGraphics.cpp-83-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-84-
+./af/xap/unix/xap_UnixPSGraphics.cpp-85-UT_Bool PS_Graphics::queryProperties(GR_Graphics::Properties gp) const
+./af/xap/unix/xap_UnixPSGraphics.cpp-86-{
+./af/xap/unix/xap_UnixPSGraphics.cpp-87-	switch (gp)
+./af/xap/unix/xap_UnixPSGraphics.cpp-99-void PS_Graphics::setFont(GR_Font* pFont)
+./af/xap/unix/xap_UnixPSGraphics.cpp-100-{
+./af/xap/unix/xap_UnixPSGraphics.cpp-101-	UT_ASSERT(pFont);
+./af/xap/unix/xap_UnixPSGraphics.cpp-102-	PSFont * pNewFont = (static_cast<PSFont*> (pFont));
+./af/xap/unix/xap_UnixPSGraphics.cpp-103-
+./af/xap/unix/xap_UnixPSGraphics.cpp:104:	// TODO Not always what we want, i.e., start of a new page.
+./af/xap/unix/xap_UnixPSGraphics.cpp:105:	// TODO I added a call directly to _startPage to call _emit_SetFont();
+./af/xap/unix/xap_UnixPSGraphics.cpp:106:	// TODO I would rather do it all here.
+./af/xap/unix/xap_UnixPSGraphics.cpp-107-	if (pNewFont == m_pCurrentFont ) 
+./af/xap/unix/xap_UnixPSGraphics.cpp-108-		return;
+./af/xap/unix/xap_UnixPSGraphics.cpp-109-	
+./af/xap/unix/xap_UnixPSGraphics.cpp-110-	m_pCurrentFont = pNewFont;
+./af/xap/unix/xap_UnixPSGraphics.cpp-111-	if (m_ps)
+./af/xap/unix/xap_UnixPSGraphics.cpp-185-	const UT_uint16 * cwi = m_pCurrentFont->getUniWidths();
+./af/xap/unix/xap_UnixPSGraphics.cpp-186-
+./af/xap/unix/xap_UnixPSGraphics.cpp-187-	UT_uint32 iCharWidth = 0;
+./af/xap/unix/xap_UnixPSGraphics.cpp-188-	for (int k=0; k<num; k++)
+./af/xap/unix/xap_UnixPSGraphics.cpp-189-	{
+./af/xap/unix/xap_UnixPSGraphics.cpp:190:		//UT_ASSERT(p[k] < 256);			// TODO deal with Unicode
+./af/xap/unix/xap_UnixPSGraphics.cpp-191-		register int x;
+./af/xap/unix/xap_UnixPSGraphics.cpp-192-		UT_UCSChar currentChar;
+./af/xap/unix/xap_UnixPSGraphics.cpp-193-		currentChar = remapGlyph(p[k], UT_FALSE);
+./af/xap/unix/xap_UnixPSGraphics.cpp-194-		x = (currentChar < 256 ? _scale(cwi[currentChar]) : 0;
+./af/xap/unix/xap_UnixPSGraphics.cpp-195-		
+./af/xap/unix/xap_UnixPSGraphics.cpp-392-			*pD++ = 0;
+./af/xap/unix/xap_UnixPSGraphics.cpp-393-			m_ps->writeBytes(buf);
+./af/xap/unix/xap_UnixPSGraphics.cpp-394-			pD = buf;
+./af/xap/unix/xap_UnixPSGraphics.cpp-395-		}
+./af/xap/unix/xap_UnixPSGraphics.cpp-396-
+./af/xap/unix/xap_UnixPSGraphics.cpp:397:		// TODO deal with Unicode issues.
+./af/xap/unix/xap_UnixPSGraphics.cpp-398-		if (XAP_EncodingManager::instance->is_cjk_letter(*pS)) 
+./af/xap/unix/xap_UnixPSGraphics.cpp-399-		{		
+./af/xap/unix/xap_UnixPSGraphics.cpp-400-			pWctomb->wctomb_or_fallback(_bytes,_bytes_len,*pS);
+./af/xap/unix/xap_UnixPSGraphics.cpp-401-			if (pD+_bytes_len-buf > OUR_LINE_LIMIT)
+./af/xap/unix/xap_UnixPSGraphics.cpp-402-			{
+./af/xap/unix/xap_UnixPSGraphics.cpp-440-	m_ps->writeBytes(buf);
+./af/xap/unix/xap_UnixPSGraphics.cpp-441-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-442-
+./af/xap/unix/xap_UnixPSGraphics.cpp-443-void PS_Graphics::drawLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint32 y2)
+./af/xap/unix/xap_UnixPSGraphics.cpp-444-{
+./af/xap/unix/xap_UnixPSGraphics.cpp:445:	// TODO This is used for lines in the document, as well as underlines
+./af/xap/unix/xap_UnixPSGraphics.cpp:446:	// TODO and strikes.
+./af/xap/unix/xap_UnixPSGraphics.cpp-447-	m_bNeedStroked = UT_TRUE;
+./af/xap/unix/xap_UnixPSGraphics.cpp-448-
+./af/xap/unix/xap_UnixPSGraphics.cpp-449-	// emit a change in line width
+./af/xap/unix/xap_UnixPSGraphics.cpp-450-	_emit_SetLineWidth();
+./af/xap/unix/xap_UnixPSGraphics.cpp-451-	
+./af/xap/unix/xap_UnixPSGraphics.cpp-487-void PS_Graphics::setClipRect(const UT_Rect* /*pRect*/)
+./af/xap/unix/xap_UnixPSGraphics.cpp-488-{
+./af/xap/unix/xap_UnixPSGraphics.cpp-489-    // setClipRect is used for clipping images, even when printing to
+./af/xap/unix/xap_UnixPSGraphics.cpp-490-    // PostScript.  Just ignore these for now.
+./af/xap/unix/xap_UnixPSGraphics.cpp-491-
+./af/xap/unix/xap_UnixPSGraphics.cpp:492:    // TODO : Can PostScript clip regions?  Does it make sense for our images?
+./af/xap/unix/xap_UnixPSGraphics.cpp-493-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-494-
+./af/xap/unix/xap_UnixPSGraphics.cpp-495-void PS_Graphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
+./af/xap/unix/xap_UnixPSGraphics.cpp-496-							UT_sint32 /*width*/, UT_sint32 /*height*/)
+./af/xap/unix/xap_UnixPSGraphics.cpp-497-{
+./af/xap/unix/xap_UnixPSGraphics.cpp-575-	if (m_szTitle && *m_szTitle)
+./af/xap/unix/xap_UnixPSGraphics.cpp-576-		m_ps->formatComment("Title",&m_szTitle,1);
+./af/xap/unix/xap_UnixPSGraphics.cpp-577-
+./af/xap/unix/xap_UnixPSGraphics.cpp-578-	_emit_DocumentNeededResources();
+./af/xap/unix/xap_UnixPSGraphics.cpp-579-	
+./af/xap/unix/xap_UnixPSGraphics.cpp:580:	// TODO add other header-comments here
+./af/xap/unix/xap_UnixPSGraphics.cpp-581-	
+./af/xap/unix/xap_UnixPSGraphics.cpp-582-	m_ps->formatComment("EndComments");
+./af/xap/unix/xap_UnixPSGraphics.cpp-583-
+./af/xap/unix/xap_UnixPSGraphics.cpp-584-	///////////////////////////////////////////////////////////////////
+./af/xap/unix/xap_UnixPSGraphics.cpp-585-	// DSC3.0/Prolog/ProcedureDefinitions
+./af/xap/unix/xap_UnixPSGraphics.cpp-588-	m_ps->formatComment("BeginProlog");
+./af/xap/unix/xap_UnixPSGraphics.cpp-589-
+./af/xap/unix/xap_UnixPSGraphics.cpp-590-	_emit_PrologMacros();
+./af/xap/unix/xap_UnixPSGraphics.cpp-591-	_emit_FontMacros();
+./af/xap/unix/xap_UnixPSGraphics.cpp-592-	
+./af/xap/unix/xap_UnixPSGraphics.cpp:593:	// TODO add rest of prolog
+./af/xap/unix/xap_UnixPSGraphics.cpp-594-
+./af/xap/unix/xap_UnixPSGraphics.cpp-595-	m_ps->formatComment("EndProlog");
+./af/xap/unix/xap_UnixPSGraphics.cpp-596-
+./af/xap/unix/xap_UnixPSGraphics.cpp-597-	///////////////////////////////////////////////////////////////////
+./af/xap/unix/xap_UnixPSGraphics.cpp-598-	// DSC3.0/Script/DocumentSetup
+./af/xap/unix/xap_UnixPSGraphics.cpp-600-
+./af/xap/unix/xap_UnixPSGraphics.cpp-601-	m_ps->formatComment("BeginSetup");
+./af/xap/unix/xap_UnixPSGraphics.cpp-602-
+./af/xap/unix/xap_UnixPSGraphics.cpp-603-	_emit_IncludeResource();
+./af/xap/unix/xap_UnixPSGraphics.cpp-604-	
+./af/xap/unix/xap_UnixPSGraphics.cpp:605:	// TODO add other setup stuff
+./af/xap/unix/xap_UnixPSGraphics.cpp-606-
+./af/xap/unix/xap_UnixPSGraphics.cpp-607-	m_ps->formatComment("EndSetup");
+./af/xap/unix/xap_UnixPSGraphics.cpp-608-	return UT_TRUE;
+./af/xap/unix/xap_UnixPSGraphics.cpp-609-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-610-
+./af/xap/unix/xap_UnixPSGraphics.cpp-617-	g_snprintf(buf, sizeof(buf),"%d",pageNumber);
+./af/xap/unix/xap_UnixPSGraphics.cpp-618-
+./af/xap/unix/xap_UnixPSGraphics.cpp-619-	const char * argv[2] = { buf, buf };
+./af/xap/unix/xap_UnixPSGraphics.cpp-620-	m_ps->formatComment("Page",argv,2);
+./af/xap/unix/xap_UnixPSGraphics.cpp-621-
+./af/xap/unix/xap_UnixPSGraphics.cpp:622:	// TODO add other page-header comments here
+./af/xap/unix/xap_UnixPSGraphics.cpp-623-
+./af/xap/unix/xap_UnixPSGraphics.cpp-624-	m_ps->formatComment("BeginPageSetup");
+./af/xap/unix/xap_UnixPSGraphics.cpp-625-
+./af/xap/unix/xap_UnixPSGraphics.cpp-626-	g_snprintf(buf,sizeof (buf),"%d %d %d %s\n",iWidth,iHeight,PS_RESOLUTION,((bPortrait) ? "BPP" : "BPL"));
+./af/xap/unix/xap_UnixPSGraphics.cpp-627-	m_ps->writeBytes(buf);
+./af/xap/unix/xap_UnixPSGraphics.cpp-628-	
+./af/xap/unix/xap_UnixPSGraphics.cpp:629:	// TODO add page-setup stuff here
+./af/xap/unix/xap_UnixPSGraphics.cpp-630-
+./af/xap/unix/xap_UnixPSGraphics.cpp-631-	m_ps->formatComment("EndPageSetup");
+./af/xap/unix/xap_UnixPSGraphics.cpp-632-
+./af/xap/unix/xap_UnixPSGraphics.cpp-633-	// Note, the actual PS for the page will be sent by the
+./af/xap/unix/xap_UnixPSGraphics.cpp-634-	// individual drawing routings following the EndPageSetup.
+./af/xap/unix/xap_UnixPSGraphics.cpp-647-
+./af/xap/unix/xap_UnixPSGraphics.cpp-648-	if(m_bNeedStroked)
+./af/xap/unix/xap_UnixPSGraphics.cpp-649-		m_ps->writeBytes("stroke\n");
+./af/xap/unix/xap_UnixPSGraphics.cpp-650-	m_ps->writeBytes("EP\n");
+./af/xap/unix/xap_UnixPSGraphics.cpp-651-
+./af/xap/unix/xap_UnixPSGraphics.cpp:652:	// TODO add any page-trailer stuff here
+./af/xap/unix/xap_UnixPSGraphics.cpp:653:	// TODO (this inludes an atend's that we used in the page header)
+./af/xap/unix/xap_UnixPSGraphics.cpp-654-
+./af/xap/unix/xap_UnixPSGraphics.cpp-655-	// Note, either the next page or the document-trailer will follow this.
+./af/xap/unix/xap_UnixPSGraphics.cpp-656-	return UT_TRUE;
+./af/xap/unix/xap_UnixPSGraphics.cpp-657-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-658-
+./af/xap/unix/xap_UnixPSGraphics.cpp-660-{
+./af/xap/unix/xap_UnixPSGraphics.cpp-661-	// emit the document trailer
+./af/xap/unix/xap_UnixPSGraphics.cpp-662-
+./af/xap/unix/xap_UnixPSGraphics.cpp-663-	m_ps->formatComment("Trailer");
+./af/xap/unix/xap_UnixPSGraphics.cpp-664-	
+./af/xap/unix/xap_UnixPSGraphics.cpp:665:	// TODO add any trailer stuff here
+./af/xap/unix/xap_UnixPSGraphics.cpp:666:	// TODO (this includes an atend's that we used in the document header)
+./af/xap/unix/xap_UnixPSGraphics.cpp-667-
+./af/xap/unix/xap_UnixPSGraphics.cpp-668-	UT_Bool bStatus = m_ps->formatComment("EOF");
+./af/xap/unix/xap_UnixPSGraphics.cpp-669-
+./af/xap/unix/xap_UnixPSGraphics.cpp-670-	m_ps->closeFile();
+./af/xap/unix/xap_UnixPSGraphics.cpp-671-	delete m_ps;
+./af/xap/unix/xap_UnixPSGraphics.cpp-686-		PSFont * psf = (PSFont *)m_vecFontList.getNthItem(k);
+./af/xap/unix/xap_UnixPSGraphics.cpp-687-		if(!psf->getUnixFont()->is_CJK_font())
+./af/xap/unix/xap_UnixPSGraphics.cpp-688-		    vec.addItem(psf->getMetricsData()->gfi->fontName);
+./af/xap/unix/xap_UnixPSGraphics.cpp-689-	}
+./af/xap/unix/xap_UnixPSGraphics.cpp-690-
+./af/xap/unix/xap_UnixPSGraphics.cpp:691:	// TODO add any other resources here
+./af/xap/unix/xap_UnixPSGraphics.cpp-692-	
+./af/xap/unix/xap_UnixPSGraphics.cpp-693-	m_ps->formatComment("DocumentNeededResources",&vec);
+./af/xap/unix/xap_UnixPSGraphics.cpp-694-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-695-
+./af/xap/unix/xap_UnixPSGraphics.cpp-696-void PS_Graphics::_emit_IncludeResource(void)
+./af/xap/unix/xap_UnixPSGraphics.cpp-774-
+./af/xap/unix/xap_UnixPSGraphics.cpp-775-	}
+./af/xap/unix/xap_UnixPSGraphics.cpp-776-	for(int i=0;i<fontKeyCount;++i)
+./af/xap/unix/xap_UnixPSGraphics.cpp-777-	  free(fontKey[i]);
+./af/xap/unix/xap_UnixPSGraphics.cpp-778-	delete []fontKey;
+./af/xap/unix/xap_UnixPSGraphics.cpp:779:	// TODO add any other IncludeResource's here
+./af/xap/unix/xap_UnixPSGraphics.cpp-780-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-781-
+./af/xap/unix/xap_UnixPSGraphics.cpp-782-
+./af/xap/unix/xap_UnixPSGraphics.cpp-783-void PS_Graphics::_emit_PrologMacros(void)
+./af/xap/unix/xap_UnixPSGraphics.cpp-784-{
+./af/xap/unix/xap_UnixPSGraphics.cpp-1045-		  This is a pretty tight loop, for speed.  We're taking
+./af/xap/unix/xap_UnixPSGraphics.cpp-1046-		  each sample and averaging the R, G, and B values and
+./af/xap/unix/xap_UnixPSGraphics.cpp-1047-		  throwing that (in hex) to the output file.
+./af/xap/unix/xap_UnixPSGraphics.cpp-1048-		*/
+./af/xap/unix/xap_UnixPSGraphics.cpp-1049-
+./af/xap/unix/xap_UnixPSGraphics.cpp:1050:		// TODO : Balance these colors!  I don't like the output
+./af/xap/unix/xap_UnixPSGraphics.cpp:1051:		// TODO : I get from a simple average or adding the YIQ
+./af/xap/unix/xap_UnixPSGraphics.cpp:1052:		// TODO : weights.  Look at Netscape for something better.
+./af/xap/unix/xap_UnixPSGraphics.cpp-1053-		
+./af/xap/unix/xap_UnixPSGraphics.cpp-1054-#if 0
+./af/xap/unix/xap_UnixPSGraphics.cpp-1055-		// We can use the Y channel from the YIQ spec, which weights
+./af/xap/unix/xap_UnixPSGraphics.cpp-1056-		// the R, G, and B channels to be perceptually more balanced.
+./af/xap/unix/xap_UnixPSGraphics.cpp-1057-		g_snprintf((char *) hexbuf, sizeof(hexbuf), "%.2X", ( (UT_Byte) ( ( (float) (*cursor++) * (float) (0.299) +
+./af/xap/unix/xap_UnixPSGraphics.cpp-1080-	m_ps->writeBytes(buf);
+./af/xap/unix/xap_UnixPSGraphics.cpp-1081-	
+./af/xap/unix/xap_UnixPSGraphics.cpp-1082-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-1083-void PS_Graphics::drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+./af/xap/unix/xap_UnixPSGraphics.cpp-1084-{
+./af/xap/unix/xap_UnixPSGraphics.cpp:1085:	// TODO : Someone do dithering?  Until, we just call grayscale.
+./af/xap/unix/xap_UnixPSGraphics.cpp:1086:	// TODO : The alternative is to half each color (set a threshold at
+./af/xap/unix/xap_UnixPSGraphics.cpp:1087:	// TODO : 50% for each channel), but that would be really ugly.
+./af/xap/unix/xap_UnixPSGraphics.cpp-1088-	drawGrayImage(pImg, xDest, yDest);
+./af/xap/unix/xap_UnixPSGraphics.cpp-1089-}
+./af/xap/unix/xap_UnixPSGraphics.cpp-1090-
+./af/xap/unix/xap_UnixPSGraphics.cpp-1091-void PS_Graphics::setColorSpace(GR_Graphics::ColorSpace c)
+./af/xap/unix/xap_UnixPSGraphics.cpp-1092-{
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-26-{
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-27-}
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-28-
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-29-AP_UnixToolbar_Icons::~AP_UnixToolbar_Icons(void)
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-30-{
+./af/xap/unix/xap_UnixToolbar_Icons.cpp:31:	// TODO do we need to keep some kind of list
+./af/xap/unix/xap_UnixToolbar_Icons.cpp:32:	// TODO of the things we have created and
+./af/xap/unix/xap_UnixToolbar_Icons.cpp:33:	// TODO handed out, so that we can delete them ??
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-34-}
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-35-
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-36-UT_Bool AP_UnixToolbar_Icons::getPixmapForIcon(GdkWindow * window, GdkColor * background,
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-37-											   const char * szIconName, GtkWidget ** pwPixmap)
+./af/xap/unix/xap_UnixToolbar_Icons.cpp-38-{
+./hello/ap/unix/ap_UnixApp.cpp-103-	UT_ASSERT(m_pToolbarActionSet);
+./hello/ap/unix/ap_UnixApp.cpp-104-
+./hello/ap/unix/ap_UnixApp.cpp-105-	if (!XAP_UnixApp::initialize())
+./hello/ap/unix/ap_UnixApp.cpp-106-		return UT_FALSE;
+./hello/ap/unix/ap_UnixApp.cpp-107-
+./hello/ap/unix/ap_UnixApp.cpp:108:	// TODO  - load in strings
+./hello/ap/unix/ap_UnixApp.cpp-109-
+./hello/ap/unix/ap_UnixApp.cpp-110-	return UT_TRUE;
+./hello/ap/unix/ap_UnixApp.cpp-111-}
+./hello/ap/unix/ap_UnixApp.cpp-112-
+./hello/ap/unix/ap_UnixApp.cpp-113-XAP_Frame* AP_UnixApp::newFrame(void)
+./hello/ap/unix/ap_UnixApp.cpp-135-	return m_pStringSet;
+./hello/ap/unix/ap_UnixApp.cpp-136-}
+./hello/ap/unix/ap_UnixApp.cpp-137-	
+./hello/ap/unix/ap_UnixApp.cpp-138-int AP_UnixApp::main(const char* szAppName, int argc, char** argv)
+./hello/ap/unix/ap_UnixApp.cpp-139-{
+./hello/ap/unix/ap_UnixApp.cpp:140:	// TODO These printfs are not here permanently.  remove them later.
+./hello/ap/unix/ap_UnixApp.cpp-141-	
+./hello/ap/unix/ap_UnixApp.cpp-142-	printf("Build ID:\t%s\n", XAP_App::s_szBuild_ID);
+./hello/ap/unix/ap_UnixApp.cpp-143-	printf("Version:\t%s\n", XAP_App::s_szBuild_Version);
+./hello/ap/unix/ap_UnixApp.cpp-144-	printf("Build Options: \t%s\n", XAP_App::s_szBuild_Options);
+./hello/ap/unix/ap_UnixApp.cpp-145-	printf("Build Target: \t%s\n", XAP_App::s_szBuild_Target);
+./hello/main/unix/UnixMain.cpp-19-
+./hello/main/unix/UnixMain.cpp-20-#include "ap_UnixApp.h"
+./hello/main/unix/UnixMain.cpp-21-
+./hello/main/unix/UnixMain.cpp-22-int main(int argc, char ** argv)
+./hello/main/unix/UnixMain.cpp-23-{
+./hello/main/unix/UnixMain.cpp:24:	// TODO abstract the naming of the app to somewhere else
+./hello/main/unix/UnixMain.cpp-25-	
+./hello/main/unix/UnixMain.cpp-26-	return AP_UnixApp::main("AbiHello Personal", argc, argv);
+./hello/main/unix/UnixMain.cpp-27-}
+./wp/ap/unix/ap_UnixApp.cpp-379-	static const char * aszFormatsAccepted[] = { AP_CLIPBOARD_RTF,
+./wp/ap/unix/ap_UnixApp.cpp-380-												 AP_CLIPBOARD_STRING,
+./wp/ap/unix/ap_UnixApp.cpp-381-												 AP_CLIPBOARD_TEXTPLAIN_8BIT,
+./wp/ap/unix/ap_UnixApp.cpp-382-												 0 /* must be last */ };
+./wp/ap/unix/ap_UnixApp.cpp-383-
+./wp/ap/unix/ap_UnixApp.cpp:384:	// TODO currently i have this set so that a ^v or Menu[Edit/Paste] will
+./wp/ap/unix/ap_UnixApp.cpp:385:	// TODO use the CLIPBOARD property and a MiddleMouseClick will use the
+./wp/ap/unix/ap_UnixApp.cpp:386:	// TODO PRIMARY property -- this seems to be the "X11 way" (sigh).
+./wp/ap/unix/ap_UnixApp.cpp:387:	// TODO consider having a preferences switch to allow ^v and Menu[Edit/Paste]
+./wp/ap/unix/ap_UnixApp.cpp:388:	// TODO to use the most recent property... this might be a nice way of
+./wp/ap/unix/ap_UnixApp.cpp:389:	// TODO unifying things -- or it might not -- this is probably an area
+./wp/ap/unix/ap_UnixApp.cpp:390:	// TODO for investigation or some usability testing.
+./wp/ap/unix/ap_UnixApp.cpp-391-	
+./wp/ap/unix/ap_UnixApp.cpp-392-	XAP_UnixClipboard::T_AllowGet tFrom = ((bUseClipboard)
+./wp/ap/unix/ap_UnixApp.cpp-393-										   ? XAP_UnixClipboard::TAG_ClipboardOnly
+./wp/ap/unix/ap_UnixApp.cpp-394-										   : XAP_UnixClipboard::TAG_PrimaryOnly);
+./wp/ap/unix/ap_UnixApp.cpp-395-
+./wp/ap/unix/ap_UnixApp.cpp-432-	return;
+./wp/ap/unix/ap_UnixApp.cpp-433-}
+./wp/ap/unix/ap_UnixApp.cpp-434-
+./wp/ap/unix/ap_UnixApp.cpp-435-UT_Bool AP_UnixApp::canPasteFromClipboard(void)
+./wp/ap/unix/ap_UnixApp.cpp-436-{
+./wp/ap/unix/ap_UnixApp.cpp:437:	// TODO fix this...
+./wp/ap/unix/ap_UnixApp.cpp-438-	return UT_TRUE;
+./wp/ap/unix/ap_UnixApp.cpp-439-}
+./wp/ap/unix/ap_UnixApp.cpp-440-
+./wp/ap/unix/ap_UnixApp.cpp-441-/*****************************************************************/
+./wp/ap/unix/ap_UnixApp.cpp-442-/*****************************************************************/
+./wp/ap/unix/ap_UnixApp.cpp-577-		// selection in the given view.  this is intended for the
+./wp/ap/unix/ap_UnixApp.cpp-578-		// X11 middle mouse trick -- where we need to warp to a
+./wp/ap/unix/ap_UnixApp.cpp-579-		// new location and paste the current selection (not the
+./wp/ap/unix/ap_UnixApp.cpp-580-		// clipboard) and the act of warping clears the selection.
+./wp/ap/unix/ap_UnixApp.cpp-581-
+./wp/ap/unix/ap_UnixApp.cpp:582:		// TODO if we ever support multiple view types, we'll have to
+./wp/ap/unix/ap_UnixApp.cpp:583:		// TODO change this.
+./wp/ap/unix/ap_UnixApp.cpp-584-		FV_View * pFVView = static_cast<FV_View *>(pView);
+./wp/ap/unix/ap_UnixApp.cpp-585-		pFVView->getDocumentRangeOfCurrentSelection(&m_cacheDocumentRangeOfSelection);
+./wp/ap/unix/ap_UnixApp.cpp-586-
+./wp/ap/unix/ap_UnixApp.cpp-587-		m_cacheSelectionView = pView;
+./wp/ap/unix/ap_UnixApp.cpp-588-		UT_DEBUGMSG(("Clipboard::cacheCurrentSelection: [view %p][range %d %d]\n",
+./wp/ap/unix/ap_UnixApp.cpp-629-		dr = m_cacheDocumentRangeOfSelection;
+./wp/ap/unix/ap_UnixApp.cpp-630-		UT_DEBUGMSG(("Clipboard::getCurrentSelection: *using cached values* [range %d %d]\n",dr.m_pos1,dr.m_pos2));
+./wp/ap/unix/ap_UnixApp.cpp-631-	}
+./wp/ap/unix/ap_UnixApp.cpp-632-	else
+./wp/ap/unix/ap_UnixApp.cpp-633-	{
+./wp/ap/unix/ap_UnixApp.cpp:634:		// TODO if we ever support multiple view types, we'll have to
+./wp/ap/unix/ap_UnixApp.cpp:635:		// TODO change this.
+./wp/ap/unix/ap_UnixApp.cpp-636-		FV_View * pFVView = static_cast<FV_View *>(m_pViewSelection);
+./wp/ap/unix/ap_UnixApp.cpp-637-	
+./wp/ap/unix/ap_UnixApp.cpp-638-		pFVView->getDocumentRangeOfCurrentSelection(&dr);
+./wp/ap/unix/ap_UnixApp.cpp-639-		UT_DEBUGMSG(("Clipboard::getCurrentSelection: [view %p][range %d %d]\n",pFVView,dr.m_pos1,dr.m_pos2));
+./wp/ap/unix/ap_UnixApp.cpp-640-	}
+./wp/ap/unix/ap_UnixApp.cpp-666-			pExpText->copyToBuffer(&dr,&m_selectionByteBuf);
+./wp/ap/unix/ap_UnixApp.cpp-667-			DELETEP(pExpText);
+./wp/ap/unix/ap_UnixApp.cpp-668-			goto ReturnThisBuffer;
+./wp/ap/unix/ap_UnixApp.cpp-669-		}
+./wp/ap/unix/ap_UnixApp.cpp-670-
+./wp/ap/unix/ap_UnixApp.cpp:671:		// TODO add other formats as necessary
+./wp/ap/unix/ap_UnixApp.cpp-672-	}
+./wp/ap/unix/ap_UnixApp.cpp-673-
+./wp/ap/unix/ap_UnixApp.cpp-674-	UT_DEBUGMSG(("Clipboard::getCurrentSelection: cannot create anything in one of requested formats.\n"));
+./wp/ap/unix/ap_UnixApp.cpp-675-	return UT_FALSE;
+./wp/ap/unix/ap_UnixApp.cpp-676-
+./wp/ap/unix/ap_UnixApp.cpp-900-	sigaction(SIGSEGV, &sa, NULL);
+./wp/ap/unix/ap_UnixApp.cpp-901-	sigaction(SIGBUS, &sa, NULL);
+./wp/ap/unix/ap_UnixApp.cpp-902-	sigaction(SIGILL, &sa, NULL);
+./wp/ap/unix/ap_UnixApp.cpp-903-	sigaction(SIGQUIT, &sa, NULL);
+./wp/ap/unix/ap_UnixApp.cpp-904-	sigaction(SIGFPE, &sa, NULL);
+./wp/ap/unix/ap_UnixApp.cpp:905:	// TODO: handle SIGABRT
+./wp/ap/unix/ap_UnixApp.cpp-906-	
+./wp/ap/unix/ap_UnixApp.cpp-907-	if (bShowApp)
+./wp/ap/unix/ap_UnixApp.cpp-908-	{
+./wp/ap/unix/ap_UnixApp.cpp-909-		// if the initialize fails, we don't have icons, fonts, etc.
+./wp/ap/unix/ap_UnixApp.cpp-910-		if (!pMyUnixApp->initialize())
+./wp/ap/unix/ap_UnixApp.cpp-933-UT_Bool AP_UnixApp::parseCommandLine(void)
+./wp/ap/unix/ap_UnixApp.cpp-934-{
+./wp/ap/unix/ap_UnixApp.cpp-935-	// parse the command line
+./wp/ap/unix/ap_UnixApp.cpp-936-	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
+./wp/ap/unix/ap_UnixApp.cpp-937-        
+./wp/ap/unix/ap_UnixApp.cpp:938:	// TODO when we refactor the App classes, consider moving
+./wp/ap/unix/ap_UnixApp.cpp:939:	// TODO this to app-specific, cross-platform.
+./wp/ap/unix/ap_UnixApp.cpp-940-
+./wp/ap/unix/ap_UnixApp.cpp:941:	// TODO replace this with getopt or something similar.
+./wp/ap/unix/ap_UnixApp.cpp-942-        
+./wp/ap/unix/ap_UnixApp.cpp-943-	// Unix puts the program name in argv[0], so [1] is the first argument.
+./wp/ap/unix/ap_UnixApp.cpp-944-
+./wp/ap/unix/ap_UnixApp.cpp-945-	int nFirstArg = 1;
+./wp/ap/unix/ap_UnixApp.cpp-946-	int k;
+./wp/ap/unix/ap_UnixApp.cpp-984-				// [-geometry <X geometry string>]
+./wp/ap/unix/ap_UnixApp.cpp-985-
+./wp/ap/unix/ap_UnixApp.cpp-986-				// let us at the next argument
+./wp/ap/unix/ap_UnixApp.cpp-987-				k++;
+./wp/ap/unix/ap_UnixApp.cpp-988-				
+./wp/ap/unix/ap_UnixApp.cpp:989:				// TODO : does X have a dummy geometry value reserved for this?
+./wp/ap/unix/ap_UnixApp.cpp-990-				gint dummy = 1 << ((sizeof(gint) * 8) - 1);
+./wp/ap/unix/ap_UnixApp.cpp-991-				gint x = dummy;
+./wp/ap/unix/ap_UnixApp.cpp-992-				gint y = dummy;
+./wp/ap/unix/ap_UnixApp.cpp-993-				guint width = 0;
+./wp/ap/unix/ap_UnixApp.cpp-994-				guint height = 0;
+./wp/ap/unix/ap_UnixApp.cpp-1026-				verbose = atoi (m_pArgs->m_argv[k]);
+./wp/ap/unix/ap_UnixApp.cpp-1027-			}
+./wp/ap/unix/ap_UnixApp.cpp-1028-			else
+./wp/ap/unix/ap_UnixApp.cpp-1029-			{
+./wp/ap/unix/ap_UnixApp.cpp-1030-				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
+./wp/ap/unix/ap_UnixApp.cpp:1031:				// TODO don't know if it has a following argument or not -- assume not
+./wp/ap/unix/ap_UnixApp.cpp-1032-
+./wp/ap/unix/ap_UnixApp.cpp-1033-				_printUsage();
+./wp/ap/unix/ap_UnixApp.cpp-1034-				return UT_FALSE;
+./wp/ap/unix/ap_UnixApp.cpp-1035-			}
+./wp/ap/unix/ap_UnixApp.cpp-1036-		}
+./wp/ap/unix/ap_UnixApp.cpp-1053-				{
+./wp/ap/unix/ap_UnixApp.cpp-1054-					kWindowsOpened++;
+./wp/ap/unix/ap_UnixApp.cpp-1055-				}
+./wp/ap/unix/ap_UnixApp.cpp-1056-				else
+./wp/ap/unix/ap_UnixApp.cpp-1057-				{
+./wp/ap/unix/ap_UnixApp.cpp:1058:					// TODO: warn user that we couldn't open that file
+./wp/ap/unix/ap_UnixApp.cpp-1059-
+./wp/ap/unix/ap_UnixApp.cpp-1060-#if 1
+./wp/ap/unix/ap_UnixApp.cpp:1061:					// TODO we crash if we just delete this without putting something
+./wp/ap/unix/ap_UnixApp.cpp:1062:					// TODO in it, so let's go ahead and open an untitled document
+./wp/ap/unix/ap_UnixApp.cpp:1063:					// TODO for now.  this would cause us to get 2 untitled documents
+./wp/ap/unix/ap_UnixApp.cpp:1064:					// TODO if the user gave us 2 bogus pathnames....
+./wp/ap/unix/ap_UnixApp.cpp-1065-					kWindowsOpened++;
+./wp/ap/unix/ap_UnixApp.cpp-1066-					pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+./wp/ap/unix/ap_UnixApp.cpp-1067-
+./wp/ap/unix/ap_UnixApp.cpp-1068-					pFirstUnixFrame->raise();
+./wp/ap/unix/ap_UnixApp.cpp-1069-					
+./wp/ap/unix/ap_UnixClipboard.cpp-40-
+./wp/ap/unix/ap_UnixClipboard.cpp-41-   	AddFmt(AP_CLIPBOARD_RTF);
+./wp/ap/unix/ap_UnixClipboard.cpp-42-	AddFmt(AP_CLIPBOARD_TEXTPLAIN_8BIT);
+./wp/ap/unix/ap_UnixClipboard.cpp-43-	AddFmt(AP_CLIPBOARD_STRING);		// alias for TEXTPLAIN_8BIT
+./wp/ap/unix/ap_UnixClipboard.cpp-44-
+./wp/ap/unix/ap_UnixClipboard.cpp:45:	// TODO deal with multi-byte text (either unicode or utf8 or whatever)
+./wp/ap/unix/ap_UnixClipboard.cpp:46:	// TODO add something like the following.  you should be able to test
+./wp/ap/unix/ap_UnixClipboard.cpp:47:	// TODO against xemacs.
+./wp/ap/unix/ap_UnixClipboard.cpp:48:	// TODO
+./wp/ap/unix/ap_UnixClipboard.cpp:49:	// TODO AddFmt(AP_CLIPBOARD_COMPOUND_TEXT);
+./wp/ap/unix/ap_UnixClipboard.cpp-50-
+./wp/ap/unix/ap_UnixClipboard.cpp-51-#undef AddFmt
+./wp/ap/unix/ap_UnixClipboard.cpp-52-}
+./wp/ap/unix/ap_UnixDialog_Break.cpp-125-	gtk_widget_destroy(mainWindow);
+./wp/ap/unix/ap_UnixDialog_Break.cpp-126-}
+./wp/ap/unix/ap_UnixDialog_Break.cpp-127-
+./wp/ap/unix/ap_UnixDialog_Break.cpp-128-void AP_UnixDialog_Break::event_OK(void)
+./wp/ap/unix/ap_UnixDialog_Break.cpp-129-{
+./wp/ap/unix/ap_UnixDialog_Break.cpp:130:	// TODO save out state of radio items
+./wp/ap/unix/ap_UnixDialog_Break.cpp-131-	m_answer = AP_Dialog_Break::a_OK;
+./wp/ap/unix/ap_UnixDialog_Break.cpp-132-	gtk_main_quit();
+./wp/ap/unix/ap_UnixDialog_Break.cpp-133-}
+./wp/ap/unix/ap_UnixDialog_Break.cpp-134-
+./wp/ap/unix/ap_UnixDialog_Break.cpp-135-void AP_UnixDialog_Break::event_Cancel(void)
+./wp/ap/unix/ap_UnixDialog_Break.cpp-349-void AP_UnixDialog_Break::_storeWindowData(void)
+./wp/ap/unix/ap_UnixDialog_Break.cpp-350-{
+./wp/ap/unix/ap_UnixDialog_Break.cpp-351-	m_break = _getActiveRadioItem();
+./wp/ap/unix/ap_UnixDialog_Break.cpp-352-}
+./wp/ap/unix/ap_UnixDialog_Break.cpp-353-
+./wp/ap/unix/ap_UnixDialog_Break.cpp:354:// TODO if this function is useful elsewhere, move it to Unix dialog
+./wp/ap/unix/ap_UnixDialog_Break.cpp:355:// TODO helpers and standardize on a user-data tag for WIDGET_ID_TAG_KEY
+./wp/ap/unix/ap_UnixDialog_Break.cpp-356-GtkWidget * AP_UnixDialog_Break::_findRadioByID(AP_Dialog_Break::breakType b)
+./wp/ap/unix/ap_UnixDialog_Break.cpp-357-{
+./wp/ap/unix/ap_UnixDialog_Break.cpp-358-	UT_ASSERT(m_radioGroup);
+./wp/ap/unix/ap_UnixDialog_Break.cpp-359-	for (GSList * item = m_radioGroup ; item ; item = item->next)
+./wp/ap/unix/ap_UnixDialog_Break.cpp-360-	{
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-258-}
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-259-
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-260-
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-261-void AP_UnixDialog_Columns::event_OK(void)
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-262-{
+./wp/ap/unix/ap_UnixDialog_Columns.cpp:263:	// TODO save out state of radio items
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-264-	m_answer = AP_Dialog_Columns::a_OK;
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-265-	gtk_main_quit();
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-266-}
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-267-
+./wp/ap/unix/ap_UnixDialog_Columns.cpp-268-void AP_UnixDialog_Columns::event_Cancel(void)
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-194-	vbox = GTK_DIALOG (m_wMainWindow)->vbox;
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-195-	actionarea = GTK_DIALOG (m_wMainWindow)->action_area;
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-196-
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-197-	contents = _constructWindowContents ();
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-198-
+./wp/ap/unix/ap_UnixDialog_Goto.cpp:199:	// TODO: This call must be in _constructWindowContents
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-200-	gtk_window_add_accel_group (GTK_WINDOW (m_wMainWindow), m_accelGroup);
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-201-
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-202-	gtk_box_pack_start (GTK_BOX (vbox), contents, TRUE, TRUE, 0);
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-203-	
+./wp/ap/unix/ap_UnixDialog_Goto.cpp-204-	// Buttons
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-309-
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-310-		// add to list
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-311-	    list = g_list_append(list, (void *) listitem);
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-312-	}
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-313-
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp:314:	// TODO : Does the gtk_list free this list for me?  I think it does.
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-315-	
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-316-	// add GList items to list box
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-317-	gtk_list_append_items(GTK_LIST(m_listFormats), list);
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-318-
+./wp/ap/unix/ap_UnixDialog_Insert_DateTime.cpp-319-	// now select first item in box
+./wp/ap/unix/ap_UnixDialog_Options.cpp-375-	gtk_widget_show (listSpellDicts);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-376-	gtk_table_attach (GTK_TABLE (tableSpell), listSpellDicts, 1, 2, 7, 8,
+./wp/ap/unix/ap_UnixDialog_Options.cpp-377-	                  (GtkAttachOptions) (GTK_FILL),
+./wp/ap/unix/ap_UnixDialog_Options.cpp-378-	                  (GtkAttachOptions) (0), 0, 0);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-379-	listSpellDicts_menu = gtk_menu_new ();
+./wp/ap/unix/ap_UnixDialog_Options.cpp:380:	glade_menuitem = gtk_menu_item_new_with_label ("custom.dic");	// TODO - get from prefs / var
+./wp/ap/unix/ap_UnixDialog_Options.cpp-381-	gtk_widget_show (glade_menuitem);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-382-	gtk_menu_append (GTK_MENU (listSpellDicts_menu), glade_menuitem);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-383-	gtk_option_menu_set_menu (GTK_OPTION_MENU (listSpellDicts), listSpellDicts_menu);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-384-
+./wp/ap/unix/ap_UnixDialog_Options.cpp-385-	labelSpell = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Spelling));
+./wp/ap/unix/ap_UnixDialog_Options.cpp-642-	gtk_widget_show (listDefaultPageSize);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-643-	gtk_table_attach (GTK_TABLE (tableOther), listDefaultPageSize, 1, 2, 1, 2, (GtkAttachOptions) (0), (GtkAttachOptions) (0), 0, 0);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-644-	//gtk_table_attach (GTK_TABLE (tableOther), listDefaultPageSize, 1, 2, 1, 2, (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), (GtkAttachOptions) (0), 0, 0);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-645-
+./wp/ap/unix/ap_UnixDialog_Options.cpp-646-	listDefaultPageSize_menu = gtk_menu_new ();
+./wp/ap/unix/ap_UnixDialog_Options.cpp:647:// TODO: decide whether page sizes are universal or whether they require translating
+./wp/ap/unix/ap_UnixDialog_Options.cpp-648-	glade_menuitem = gtk_menu_item_new_with_label (_("A0"));
+./wp/ap/unix/ap_UnixDialog_Options.cpp-649- 	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_OPTION_PTR, (gpointer) listDefaultPageSize);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-650-	/**/ gtk_object_set_data(GTK_OBJECT(glade_menuitem), WIDGET_MENU_VALUE_TAG, (gpointer) fp_PageSize::A0);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-651-	CONNECT_MENU_ITEM_SIGNAL_ACTIVATE(glade_menuitem);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-652-	gtk_widget_show (glade_menuitem);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1338-	gpointer p = gtk_object_get_data( GTK_OBJECT(widget),
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1339-												WIDGET_MENU_VALUE_TAG);
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1340-
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1341-	gtk_object_set_data( GTK_OBJECT(option_menu), WIDGET_MENU_VALUE_TAG, p );
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1342-
+./wp/ap/unix/ap_UnixDialog_Options.cpp:1343:	//TODO: This code is now shared between RulerUnits and DefaultPaperSize
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1344-	//so anyone who wants to resurect this msg. needs to add a conditional
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1345-	//UT_DEBUGMSG(("s_menu_item_activate [%d %s]\n", p, UT_dimensionName( (UT_Dimension)((UT_uint32)p)) ) );
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1346-
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1347-	return TRUE;
+./wp/ap/unix/ap_UnixDialog_Options.cpp-1348-}
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-360-
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-361-GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-362-{
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-363-  const XAP_StringSet * pSS = m_pApp->getStringSet();
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-364-
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp:365:  // TODO: translate
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-366-  m_window = gtk_dialog_new ();
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-367-  gtk_window_set_title (GTK_WINDOW (m_window), pSS->getValue(AP_STRING_ID_DLG_PageNumbers_Title));
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-368-
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-369-  _constructWindowContents (GTK_DIALOG(m_window)->vbox);
+./wp/ap/unix/ap_UnixDialog_PageNumbers.cpp-370-
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-274-	gboolean state = gtk_toggle_button_get_active(
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-275-		GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(widget)));
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-276-
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-277-	tCheckState cs;
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-278-
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp:279:	// TODO : handle tri-state boxes !!!
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-280-	if (state == TRUE)
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-281-		cs = check_TRUE;
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-282-	else
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-283-		cs = check_FALSE;
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-284-	
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1267-	UT_ASSERT(m_listLineSpacing);
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1268-	gtk_option_menu_set_history(GTK_OPTION_MENU(m_listLineSpacing),
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1269-								(gint) _getMenuItemValue(id_MENU_SPECIAL_SPACING));
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1270-
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1271-	// set the check boxes
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp:1272:	// TODO : handle tri-state boxes !!!
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1273-
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1274-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonWidowOrphan)),
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1275-								 (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE));
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1276-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GTK_CHECK_BUTTON(m_checkbuttonKeepLines)),
+./wp/ap/unix/ap_UnixDialog_Paragraph.cpp-1277-								 (_getCheckItemValue(id_CHECK_KEEP_LINES) == check_TRUE));
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-512-	gtk_widget_grab_focus(m_entryFind);	
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-513-}
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-514-
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-515-void AP_UnixDialog_Replace::_storeWindowData(void)
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-516-{
+./wp/ap/unix/ap_UnixDialog_Replace.cpp:517:	// TODO: nothing?  The actual methods store
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-518-	// out last used data to the persist variables,
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-519-	// since we need to save state when things actually
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-520-	// happen (not when the dialog closes).
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-521-}
+./wp/ap/unix/ap_UnixDialog_Replace.cpp-522-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-16- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-17- * 02111-1307, USA.
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-18- */
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-19-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-20-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp:21:// TODO: still getting some artifacts when doing highligh/replacements
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-22-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-23-#include <stdlib.h>
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-24-#include <string.h>
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-25-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-26-#include "ut_string.h"
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-114-      _storeWindowData();
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-115-      
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-116-      gtk_widget_destroy(mainWindow);
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-117-   }
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-118-   
+./wp/ap/unix/ap_UnixDialog_Spell.cpp:119:   // TODO: all done message?
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-120-   UT_DEBUGMSG(("spelling check complete.\n"));
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-121-}
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-122-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-123-/**********************************************************/
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-124-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-414-   gchar * postword = (gchar*) _convertToMB(p);
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-415-   FREEP(p);
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-416-   gtk_text_insert(GTK_TEXT(m_textWord), NULL, NULL, NULL,
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-417-		   postword, strlen(postword));
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-418-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp:419:   // TODO: set scroll position so misspelled word is centered
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-420-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-421-   gtk_text_thaw( GTK_TEXT(m_textWord) );   
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-422-   gtk_clist_freeze( GTK_CLIST(m_clistSuggestions) );   
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-423-   gtk_clist_clear(GTK_CLIST(m_clistSuggestions));
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-424-   
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-454-   
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-455-}
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-456-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-457-void AP_UnixDialog_Spell::_populateWindowData(void)
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-458-{
+./wp/ap/unix/ap_UnixDialog_Spell.cpp:459:   // TODO: initialize list of user dictionaries
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-460-}
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-461-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-462-void AP_UnixDialog_Spell::_storeWindowData(void)
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-463-{
+./wp/ap/unix/ap_UnixDialog_Spell.cpp:464:   // TODO: anything to store?
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-465-}
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-466-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-467-/*************************************************************/
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-468-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-469-void AP_UnixDialog_Spell::event_Change()
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-582-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-583-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-584-// GTK+ uses multibyte strings for i18n
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-585-// these functions convert from wide (UCS) to MB and back
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-586-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp:587:// TODO: these are probably generally useful functions,
+./wp/ap/unix/ap_UnixDialog_Spell.cpp:588:// TODO: but I don't know about xp support for them.
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-589-
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-590-// make a multibyte encoded version of a string
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-591-char * AP_UnixDialog_Spell::_convertToMB(UT_UCSChar *wword)
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-592-{
+./wp/ap/unix/ap_UnixDialog_Spell.cpp-593-	char *word = (char *) malloc (UT_UCS_strlen(wword)*2);
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-837-}
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-838-
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-839-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-840-// Listbox stuff
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-841-
+./wp/ap/unix/ap_UnixDialog_Tab.cpp:842:// TODO - This should be moved to XAP code, but the methods in which GTK and
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-843-// windows handles selection/deselection differ so much, it's easier just to
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-844-// code up the hooks directly.
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-845-
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-846-/*static*/ void AP_UnixDialog_Tab::s_list_select(GtkWidget * widget, gpointer data )
+./wp/ap/unix/ap_UnixDialog_Tab.cpp-847-{
+./wp/ap/unix/ap_UnixFrame.cpp-133-	//
+./wp/ap/unix/ap_UnixFrame.cpp-134-	// Each Toolbar will also get a ViewListener so that
+./wp/ap/unix/ap_UnixFrame.cpp-135-	// it can update toggle buttons, and other state-indicating
+./wp/ap/unix/ap_UnixFrame.cpp-136-	// controls on it.
+./wp/ap/unix/ap_UnixFrame.cpp-137-	//
+./wp/ap/unix/ap_UnixFrame.cpp:138:	// TODO we ***really*** need to re-do the whole scrollbar thing.
+./wp/ap/unix/ap_UnixFrame.cpp:139:	// TODO we have an addScrollListener() using an m_pScrollObj
+./wp/ap/unix/ap_UnixFrame.cpp:140:	// TODO and a View-Listener, and a bunch of other widget stuff.
+./wp/ap/unix/ap_UnixFrame.cpp:141:	// TODO and its very confusing.
+./wp/ap/unix/ap_UnixFrame.cpp-142-	
+./wp/ap/unix/ap_UnixFrame.cpp-143-	pScrollObj = new AV_ScrollObj(this,_scrollFuncX,_scrollFuncY);
+./wp/ap/unix/ap_UnixFrame.cpp-144-	ENSUREP(pScrollObj);
+./wp/ap/unix/ap_UnixFrame.cpp-145-	pViewListener = new ap_UnixViewListener(this);
+./wp/ap/unix/ap_UnixFrame.cpp-146-	ENSUREP(pViewListener);
+./wp/ap/unix/ap_UnixFrame.cpp-155-		goto Cleanup;
+./wp/ap/unix/ap_UnixFrame.cpp-156-
+./wp/ap/unix/ap_UnixFrame.cpp-157-	nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+./wp/ap/unix/ap_UnixFrame.cpp-158-	for (UT_uint32 k=0; k < nrToolbars; k++)
+./wp/ap/unix/ap_UnixFrame.cpp-159-	{
+./wp/ap/unix/ap_UnixFrame.cpp:160:		// TODO Toolbars are a frame-level item, but a view-listener is
+./wp/ap/unix/ap_UnixFrame.cpp:161:		// TODO a view-level item.  I've bound the toolbar-view-listeners
+./wp/ap/unix/ap_UnixFrame.cpp:162:		// TODO to the current view within this frame and have code in the
+./wp/ap/unix/ap_UnixFrame.cpp:163:		// TODO toolbar to allow the view-listener to be rebound to a different
+./wp/ap/unix/ap_UnixFrame.cpp:164:		// TODO view.  in the future, when we have support for multiple views
+./wp/ap/unix/ap_UnixFrame.cpp:165:		// TODO in the frame (think splitter windows), we will need to have
+./wp/ap/unix/ap_UnixFrame.cpp:166:		// TODO a loop like this to help change the focus when the current
+./wp/ap/unix/ap_UnixFrame.cpp:167:		// TODO view changes.
+./wp/ap/unix/ap_UnixFrame.cpp-168-		
+./wp/ap/unix/ap_UnixFrame.cpp-169-		EV_UnixToolbar * pUnixToolbar = (EV_UnixToolbar *)m_vecToolbars.getNthItem(k);
+./wp/ap/unix/ap_UnixFrame.cpp-170-		pUnixToolbar->bindListenerToView(pView);
+./wp/ap/unix/ap_UnixFrame.cpp-171-	}
+./wp/ap/unix/ap_UnixFrame.cpp-172-
+./wp/ap/unix/ap_UnixFrame.cpp-229-#if 1
+./wp/ap/unix/ap_UnixFrame.cpp-230-	/*
+./wp/ap/unix/ap_UnixFrame.cpp-231-	  UPDATE:  this code is back, but I'm leaving these comments as
+./wp/ap/unix/ap_UnixFrame.cpp-232-	  an audit trail.  See bug 99.  This only happens when loading
+./wp/ap/unix/ap_UnixFrame.cpp-233-	  a document into an empty window -- the case where a frame gets
+./wp/ap/unix/ap_UnixFrame.cpp:234:	  reused.  TODO consider putting an expose into ap_EditMethods.cpp
+./wp/ap/unix/ap_UnixFrame.cpp-235-	  instead of a draw() here.
+./wp/ap/unix/ap_UnixFrame.cpp-236-	*/
+./wp/ap/unix/ap_UnixFrame.cpp-237-	
+./wp/ap/unix/ap_UnixFrame.cpp-238-	/*
+./wp/ap/unix/ap_UnixFrame.cpp-239-	  I've removed this once again.  (Eric)  I replaced it with a call
+./wp/ap/unix/ap_UnixFrame.cpp-328-
+./wp/ap/unix/ap_UnixFrame.cpp-329-
+./wp/ap/unix/ap_UnixFrame.cpp-330-AP_UnixFrame::AP_UnixFrame(XAP_UnixApp * app)
+./wp/ap/unix/ap_UnixFrame.cpp-331-	: XAP_UNIXBASEFRAME(app)
+./wp/ap/unix/ap_UnixFrame.cpp-332-{
+./wp/ap/unix/ap_UnixFrame.cpp:333:	// TODO
+./wp/ap/unix/ap_UnixFrame.cpp-334-	m_pData = NULL;
+./wp/ap/unix/ap_UnixFrame.cpp-335-}
+./wp/ap/unix/ap_UnixFrame.cpp-336-
+./wp/ap/unix/ap_UnixFrame.cpp-337-AP_UnixFrame::AP_UnixFrame(AP_UnixFrame * f)
+./wp/ap/unix/ap_UnixFrame.cpp-338-	: XAP_UNIXBASEFRAME(static_cast<XAP_UNIXBASEFRAME *>(f))
+./wp/ap/unix/ap_UnixFrame.cpp-339-{
+./wp/ap/unix/ap_UnixFrame.cpp:340:	// TODO
+./wp/ap/unix/ap_UnixFrame.cpp-341-	m_pData = NULL;
+./wp/ap/unix/ap_UnixFrame.cpp-342-}
+./wp/ap/unix/ap_UnixFrame.cpp-343-
+./wp/ap/unix/ap_UnixFrame.cpp-344-AP_UnixFrame::~AP_UnixFrame(void)
+./wp/ap/unix/ap_UnixFrame.cpp-345-{
+./wp/ap/unix/ap_UnixFrame.cpp-375-{
+./wp/ap/unix/ap_UnixFrame.cpp-376-	UT_Bool *bShowBar = static_cast<AP_FrameData*> (m_pData)->m_bShowBar;
+./wp/ap/unix/ap_UnixFrame.cpp-377-
+./wp/ap/unix/ap_UnixFrame.cpp-378-	for (UT_uint32 i = 0; i < m_vecToolbarLayoutNames.getItemCount(); i++)
+./wp/ap/unix/ap_UnixFrame.cpp-379-	{
+./wp/ap/unix/ap_UnixFrame.cpp:380:		// TODO: The two next lines are here to bind the EV_Toolbar to the
+./wp/ap/unix/ap_UnixFrame.cpp-381-		// AP_FrameData, but their correct place are next to the toolbar creation (JCA)
+./wp/ap/unix/ap_UnixFrame.cpp-382-		EV_UnixToolbar * pUnixToolbar = static_cast<EV_UnixToolbar *> (m_vecToolbars.getNthItem(i));
+./wp/ap/unix/ap_UnixFrame.cpp-383-		static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pUnixToolbar;
+./wp/ap/unix/ap_UnixFrame.cpp-384-		toggleBar(i, bShowBar[i]);
+./wp/ap/unix/ap_UnixFrame.cpp-385-	}
+./wp/ap/unix/ap_UnixFrame.cpp-417-{
+./wp/ap/unix/ap_UnixFrame.cpp-418-	// are we replacing another document?
+./wp/ap/unix/ap_UnixFrame.cpp-419-	if (m_pDoc)
+./wp/ap/unix/ap_UnixFrame.cpp-420-	{
+./wp/ap/unix/ap_UnixFrame.cpp-421-		// yep.  first make sure it's OK to discard it, 
+./wp/ap/unix/ap_UnixFrame.cpp:422:		// TODO: query user if dirty...
+./wp/ap/unix/ap_UnixFrame.cpp-423-	}
+./wp/ap/unix/ap_UnixFrame.cpp-424-
+./wp/ap/unix/ap_UnixFrame.cpp-425-	// load a document into the current frame.
+./wp/ap/unix/ap_UnixFrame.cpp-426-	// if no filename, create a new document.
+./wp/ap/unix/ap_UnixFrame.cpp-427-
+./wp/ap/unix/ap_UnixPrefs.cpp-66-
+./wp/ap/unix/ap_UnixPrefs.cpp-67-	if (!m_bUseEnvLocale)
+./wp/ap/unix/ap_UnixPrefs.cpp-68-		return;							// nothing to do...
+./wp/ap/unix/ap_UnixPrefs.cpp-69-
+./wp/ap/unix/ap_UnixPrefs.cpp-70-#if 1
+./wp/ap/unix/ap_UnixPrefs.cpp:71:	// TODO use various POSIX env variables
+./wp/ap/unix/ap_UnixPrefs.cpp:72:	// TODO (such as LANG and LC_*) to compute
+./wp/ap/unix/ap_UnixPrefs.cpp:73:	// TODO a name in our locale namespace
+./wp/ap/unix/ap_UnixPrefs.cpp:74:	// TODO (see .../src/wp/ap/xp/ap_*_Languages.h)
+./wp/ap/unix/ap_UnixPrefs.cpp-75-
+./wp/ap/unix/ap_UnixPrefs.cpp-76-        // make a copy of the current locale so we can set it back
+./wp/ap/unix/ap_UnixPrefs.cpp-77-	char *old_locale = UT_strdup(setlocale(LC_ALL, NULL));
+./wp/ap/unix/ap_UnixPrefs.cpp-78-
+./wp/ap/unix/ap_UnixPrefs.cpp-79-	// this will set our current locale information
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-48-													 XAP_Toolbar_Id id)
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-49-	: EV_Toolbar_Control(pToolbar/*,id*/)
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-50-{
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-51-	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_FONT);
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-52-
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp:53:	m_nPixels = 150;		// TODO: do a better calculation
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp:54:	m_nLimit = 32;			// TODO: honor this?  :)
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-55-}
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-56-
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-57-AP_UnixToolbar_FontCombo::~AP_UnixToolbar_FontCombo(void)
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-58-{
+./wp/ap/unix/ap_UnixToolbar_FontCombo.cpp-59-	// nothing to purge.  contents are static strings
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-35-AP_UnixToolbar_SizeCombo::AP_UnixToolbar_SizeCombo(EV_Toolbar * pToolbar,
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-36-													 XAP_Toolbar_Id id)
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-37-	: EV_Toolbar_Control(pToolbar/*,id*/)
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-38-{
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-39-	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_SIZE);
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp:40:	m_nPixels =60;		// TODO: do a better calculation
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-41-	m_nLimit = 10;    
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-42-}
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-43-
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-44-AP_UnixToolbar_SizeCombo::~AP_UnixToolbar_SizeCombo(void)
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-45-{
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-57-	    int sz = XAP_EncodingManager::fontsizes_list.size();
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-58-	    for(int i=0;i<sz;++i) {
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-59-		m_vecContents.addItem((void *) XAP_EncodingManager::fontsizes_list.nth2(i));
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-60-	    };
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-61-	}
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp:62:	// TODO: may want to populate this based on current font instead?
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-63-	return UT_TRUE;
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-64-}
+./wp/ap/unix/ap_UnixToolbar_SizeCombo.cpp-65-
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-36-													 XAP_Toolbar_Id id)
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-37-	: EV_Toolbar_Control(pToolbar/*,id*/)
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-38-{
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-39-	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-40-
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp:41:	m_nPixels = 65;		// TODO: do a better calculation
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-42-	m_nLimit = 20;
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-43-}
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-44-
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-45-AP_UnixToolbar_StyleCombo::~AP_UnixToolbar_StyleCombo(void)
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-46-{
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-63-	m_vecContents.addItem((void *) "Heading 2");
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-64-	m_vecContents.addItem((void *) "Heading 3");
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-65-	m_vecContents.addItem((void *) "Plain Text");
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-66-	m_vecContents.addItem((void *) "Block Text");
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-67-#else
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp:68:	// TODO: need a view/doc pointer to get this right
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-69-	// ALSO: will need to repopulate as new styles added
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-70-	// HYP:  only call this method from shared code? 
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-71-	const char * szName;
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-72-	const PD_Style * pStyle;
+./wp/ap/unix/ap_UnixToolbar_StyleCombo.cpp-73-
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-35-													 XAP_Toolbar_Id id)
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-36-	: EV_Toolbar_Control(pToolbar/*,id*/)
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-37-{
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-38-	UT_ASSERT(id==AP_TOOLBAR_ID_ZOOM);
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-39-
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp:40:	m_nPixels = 50;		// TODO: do a better calculation
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-41-	m_nLimit = 6;
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-42-}
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-43-
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-44-AP_UnixToolbar_ZoomCombo::~AP_UnixToolbar_ZoomCombo(void)
+./wp/ap/unix/ap_UnixToolbar_ZoomCombo.cpp-45-{
+./wp/ap/unix/ap_UnixTopRuler.cpp-35-/*****************************************************************/
+./wp/ap/unix/ap_UnixTopRuler.cpp-36-
+./wp/ap/unix/ap_UnixTopRuler.cpp-37-static void s_getWidgetRelativeMouseCoordinates(AP_UnixTopRuler * pUnixTopRuler,
+./wp/ap/unix/ap_UnixTopRuler.cpp-38-												gint * prx, gint * pry)
+./wp/ap/unix/ap_UnixTopRuler.cpp-39-{
+./wp/ap/unix/ap_UnixTopRuler.cpp:40:	// TODO there is what appears to be a bug in GTK where
+./wp/ap/unix/ap_UnixTopRuler.cpp:41:	// TODO mouse coordinates that we receive (motion and
+./wp/ap/unix/ap_UnixTopRuler.cpp:42:	// TODO release) when we have a grab are relative to
+./wp/ap/unix/ap_UnixTopRuler.cpp:43:	// TODO whatever window the mouse is over ***AND NOT***
+./wp/ap/unix/ap_UnixTopRuler.cpp:44:	// TODO relative to our window.  the following ***HACK***
+./wp/ap/unix/ap_UnixTopRuler.cpp:45:	// TODO is used to map the mouse coordinates relative to
+./wp/ap/unix/ap_UnixTopRuler.cpp:46:	// TODO our widget.
+./wp/ap/unix/ap_UnixTopRuler.cpp-47-
+./wp/ap/unix/ap_UnixTopRuler.cpp-48-	// root (absolute) coordinates
+./wp/ap/unix/ap_UnixTopRuler.cpp-49-	gint rx, ry;
+./wp/ap/unix/ap_UnixTopRuler.cpp-50-	GdkModifierType mask;
+./wp/ap/unix/ap_UnixTopRuler.cpp-51-	gdk_window_get_pointer((GdkWindow *) pUnixTopRuler->getRootWindow(), &rx, &ry, &mask);
+./wp/ap/unix/ap_UnixTopRuler.cpp-146-	gdk_window_get_position(m_wTopRuler->window, x, y);
+./wp/ap/unix/ap_UnixTopRuler.cpp-147-}
+./wp/ap/unix/ap_UnixTopRuler.cpp-148-
+./wp/ap/unix/ap_UnixTopRuler.cpp-149-GdkWindowPrivate * AP_UnixTopRuler::getRootWindow(void)
+./wp/ap/unix/ap_UnixTopRuler.cpp-150-{
+./wp/ap/unix/ap_UnixTopRuler.cpp:151:	// TODO move this function somewhere more logical, like
+./wp/ap/unix/ap_UnixTopRuler.cpp:152:	// TODO the XAP_Frame level, since that's where the
+./wp/ap/unix/ap_UnixTopRuler.cpp:153:	// TODO root window is common to all descendants.
+./wp/ap/unix/ap_UnixTopRuler.cpp-154-	if (m_rootWindow)
+./wp/ap/unix/ap_UnixTopRuler.cpp-155-		return m_rootWindow;
+./wp/ap/unix/ap_UnixTopRuler.cpp-156-
+./wp/ap/unix/ap_UnixTopRuler.cpp-157-	m_rootWindow  = ::getRootWindow(m_wTopRuler);
+./wp/ap/unix/ap_UnixTopRuler.cpp-158-	return m_rootWindow;
+./ask/lib/unix/ask_lib_Unix.c-90-int g_iWhichButton;
+./ask/lib/unix/ask_lib_Unix.c-91-int g_iWhichYesNoButton;
+./ask/lib/unix/ask_lib_Unix.c-92-
+./ask/lib/unix/ask_lib_Unix.c-93-void cb_button_browse_clicked(GtkWidget *widget, gpointer data)
+./ask/lib/unix/ask_lib_Unix.c-94-{
+./ask/lib/unix/ask_lib_Unix.c:95:	/* TODO */
+./ask/lib/unix/ask_lib_Unix.c-96-}
+./ask/lib/unix/ask_lib_Unix.c-97-
+./ask/lib/unix/ask_lib_Unix.c-98-void cb_button_cancel_clicked(GtkWidget *widget, gpointer data)
+./ask/lib/unix/ask_lib_Unix.c-99-{
+./ask/lib/unix/ask_lib_Unix.c-100-	if (ASK_YesNo("Cancel?", "Are you sure you want to cancel the installation?"))
+./ask/lib/unix/ask_lib_Unix.c-239-	
+./ask/lib/unix/ask_lib_Unix.c-240-	result = ASK_WaitForUserAction();
+./ask/lib/unix/ask_lib_Unix.c-241-
+./ask/lib/unix/ask_lib_Unix.c-242-	gtk_container_remove(GTK_CONTAINER(g_table), text);
+./ask/lib/unix/ask_lib_Unix.c-243-
+./ask/lib/unix/ask_lib_Unix.c:244:	/* TODO destroy */
+./ask/lib/unix/ask_lib_Unix.c-245-
+./ask/lib/unix/ask_lib_Unix.c-246-	return result;
+./ask/lib/unix/ask_lib_Unix.c-247-}
+./ask/lib/unix/ask_lib_Unix.c-248-
+./ask/lib/unix/ask_lib_Unix.c-249-int ASK_DoScreen_license(char* pszText)
+./ask/lib/unix/ask_lib_Unix.c-254-
+./ask/lib/unix/ask_lib_Unix.c-255-	gtk_table_resize(GTK_TABLE(g_table), 1, 2);
+./ask/lib/unix/ask_lib_Unix.c-256-
+./ask/lib/unix/ask_lib_Unix.c-257-	text = gtk_text_new(NULL, NULL);
+./ask/lib/unix/ask_lib_Unix.c-258-
+./ask/lib/unix/ask_lib_Unix.c:259:	/* TODO add a vertical scrollbar */
+./ask/lib/unix/ask_lib_Unix.c-260-	
+./ask/lib/unix/ask_lib_Unix.c-261-	gtk_text_insert (GTK_TEXT (text), NULL, &text->style->black, NULL,
+./ask/lib/unix/ask_lib_Unix.c-262-					 pszText, -1);
+./ask/lib/unix/ask_lib_Unix.c-263-	
+./ask/lib/unix/ask_lib_Unix.c-264-	gtk_table_attach (GTK_TABLE (g_table), text, 0, 1, 0, 1,
+./ask/lib/unix/ask_lib_Unix.c-273-	gtk_widget_show (label);
+./ask/lib/unix/ask_lib_Unix.c-274-
+./ask/lib/unix/ask_lib_Unix.c-275-	gtk_label_set_text(GTK_LABEL(g_label_next), "Yes");
+./ask/lib/unix/ask_lib_Unix.c-276-	gtk_label_set_text(GTK_LABEL(g_label_cancel), "No");
+./ask/lib/unix/ask_lib_Unix.c-277-	
+./ask/lib/unix/ask_lib_Unix.c:278:	/* TODO change the labels */
+./ask/lib/unix/ask_lib_Unix.c-279-	
+./ask/lib/unix/ask_lib_Unix.c-280-	result = ASK_WaitForUserAction();
+./ask/lib/unix/ask_lib_Unix.c-281-
+./ask/lib/unix/ask_lib_Unix.c-282-	gtk_label_set_text(GTK_LABEL(g_label_next), "Next");
+./ask/lib/unix/ask_lib_Unix.c-283-	gtk_label_set_text(GTK_LABEL(g_label_cancel), "Cancel");
+./ask/lib/unix/ask_lib_Unix.c-284-	
+./ask/lib/unix/ask_lib_Unix.c-285-	gtk_container_remove(GTK_CONTAINER(g_table), text);
+./ask/lib/unix/ask_lib_Unix.c-286-	gtk_container_remove(GTK_CONTAINER(g_table), label);
+./ask/lib/unix/ask_lib_Unix.c-287-
+./ask/lib/unix/ask_lib_Unix.c:288:	/* TODO destroy */
+./ask/lib/unix/ask_lib_Unix.c-289-
+./ask/lib/unix/ask_lib_Unix.c-290-	return result;
+./ask/lib/unix/ask_lib_Unix.c-291-}
+./ask/lib/unix/ask_lib_Unix.c-292-
+./ask/lib/unix/ask_lib_Unix.c-293-int ASK_DoScreen_choosedir(char* pszFileSetName, char* pszDefaultPath, char** ppszPath)
+./ask/lib/unix/ask_lib_Unix.c-364-	
+./ask/lib/unix/ask_lib_Unix.c-365-	gtk_container_remove(GTK_CONTAINER(g_table), label2);
+./ask/lib/unix/ask_lib_Unix.c-366-	gtk_container_remove(GTK_CONTAINER(g_table), label3);
+./ask/lib/unix/ask_lib_Unix.c-367-	gtk_container_remove(GTK_CONTAINER(g_table), label4);
+./ask/lib/unix/ask_lib_Unix.c-368-
+./ask/lib/unix/ask_lib_Unix.c:369:	/* TODO destroy everything */
+./ask/lib/unix/ask_lib_Unix.c-370-	
+./ask/lib/unix/ask_lib_Unix.c-371-	gtk_table_resize(GTK_TABLE(g_table), 1, 1);
+./ask/lib/unix/ask_lib_Unix.c-372-	
+./ask/lib/unix/ask_lib_Unix.c-373-	return result;
+./ask/lib/unix/ask_lib_Unix.c-374-}
+./ask/lib/unix/ask_lib_Unix.c-433-
+./ask/lib/unix/ask_lib_Unix.c-434-	gtk_container_remove(GTK_CONTAINER(g_table), label2);
+./ask/lib/unix/ask_lib_Unix.c-435-	gtk_container_remove(GTK_CONTAINER(g_table), label3);
+./ask/lib/unix/ask_lib_Unix.c-436-	gtk_container_remove(GTK_CONTAINER(g_table), label4);
+./ask/lib/unix/ask_lib_Unix.c-437-
+./ask/lib/unix/ask_lib_Unix.c:438:	/* TODO destroy these labels */
+./ask/lib/unix/ask_lib_Unix.c-439-	
+./ask/lib/unix/ask_lib_Unix.c-440-	gtk_table_resize(GTK_TABLE(g_table), 1, 1);
+./ask/lib/unix/ask_lib_Unix.c-441-	
+./ask/lib/unix/ask_lib_Unix.c-442-	return result;
+./ask/lib/unix/ask_lib_Unix.c-443-}
+./af/xap/unix/xap_UnixFontManager.h-19-
+./af/xap/unix/xap_UnixFontManager.h-20-#ifndef XAP_UNIXFONTMANAGER_H
+./af/xap/unix/xap_UnixFontManager.h-21-#define XAP_UNIXFONTMANAGER_H
+./af/xap/unix/xap_UnixFontManager.h-22-
+./af/xap/unix/xap_UnixFontManager.h-23-//////////////////////////////////////////////////////////////////
+./af/xap/unix/xap_UnixFontManager.h:24:// TODO rename this class with XAP_ prefix
+./af/xap/unix/xap_UnixFontManager.h-25-//////////////////////////////////////////////////////////////////
+./af/xap/unix/xap_UnixFontManager.h-26-
+./af/xap/unix/xap_UnixFontManager.h-27-#include <gtk/gtk.h>
+./af/xap/unix/xap_UnixFontManager.h-28-#include <gdk/gdk.h>
+./af/xap/unix/xap_UnixFontManager.h-29-#include <gdk/gdkx.h>
+./af/xap/unix/xap_UnixFrame.h-86-	virtual void				_createTopLevelWindow(void);
+./af/xap/unix/xap_UnixFrame.h-87-	virtual void				_setWindowIcon(void) = 0;
+./af/xap/unix/xap_UnixFrame.h-88-
+./af/xap/unix/xap_UnixFrame.h-89-	virtual EV_Toolbar *		_newToolbar(XAP_App *app, XAP_Frame *frame, const char *, const char *);
+./af/xap/unix/xap_UnixFrame.h-90-	
+./af/xap/unix/xap_UnixFrame.h:91:	// TODO see why ev_UnixKeyboard has lowercase prefix...
+./af/xap/unix/xap_UnixFrame.h-92-	XAP_UnixApp *				m_pUnixApp;
+./af/xap/unix/xap_UnixFrame.h-93-	EV_UnixMenuBar *			m_pUnixMenu;
+./af/xap/unix/xap_UnixFrame.h-94-	EV_UnixMenuPopup *			m_pUnixPopup; /* only valid while a context popup is up */
+./af/xap/unix/xap_UnixFrame.h-95-	
+./af/xap/unix/xap_UnixFrame.h-96-	GtkWidget *					m_wTopLevelWindow;
+./af/xap/unix/xap_UnixPSGraphics.h-36-/*****************************************************************/
+./af/xap/unix/xap_UnixPSGraphics.h-37-
+./af/xap/unix/xap_UnixPSGraphics.h-38-class PS_Graphics : public GR_Graphics
+./af/xap/unix/xap_UnixPSGraphics.h-39-{
+./af/xap/unix/xap_UnixPSGraphics.h-40-public:
+./af/xap/unix/xap_UnixPSGraphics.h:41:	/* TODO add other constructors to route to lp/lpr rather than a file */
+./af/xap/unix/xap_UnixPSGraphics.h-42-	PS_Graphics(const char * szFilename,
+./af/xap/unix/xap_UnixPSGraphics.h-43-				const char * szTitle,
+./af/xap/unix/xap_UnixPSGraphics.h-44-				const char * szSoftwareNameAndVersion,
+./af/xap/unix/xap_UnixPSGraphics.h-45-				XAP_UnixFontManager * fontManager,
+./af/xap/unix/xap_UnixPSGraphics.h-46-				UT_Bool		 bIsFile,
+./wp/ap/unix/ap_UnixDialog_Goto.h-50-	static void				s_prevClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
+./wp/ap/unix/ap_UnixDialog_Goto.h-51-	static void				s_closeClicked (GtkWidget * widget, AP_UnixDialog_Goto * me);
+./wp/ap/unix/ap_UnixDialog_Goto.h-52-      	static void				s_deleteClicked (GtkWidget * widget, gpointer /* data */ , AP_UnixDialog_Goto * me);
+./wp/ap/unix/ap_UnixDialog_Goto.h-53-
+./wp/ap/unix/ap_UnixDialog_Goto.h-54-	/* Widgets members.  Publics to make them accesible to the callbacks */
+./wp/ap/unix/ap_UnixDialog_Goto.h:55:	/* TODO: Convert them to private members, and add an inline accesor/mutator per member */
+./wp/ap/unix/ap_UnixDialog_Goto.h-56-	GtkWidget *				m_wMainWindow;
+./wp/ap/unix/ap_UnixDialog_Goto.h-57-	GtkWidget *				m_wEntry;
+./wp/ap/unix/ap_UnixDialog_Goto.h-58-	GtkWidget *				m_wPrev;
+./wp/ap/unix/ap_UnixDialog_Goto.h-59-	GtkWidget *				m_wNext;
+./wp/ap/unix/ap_UnixDialog_Goto.h-60-	GtkWidget *				m_wGoto;
