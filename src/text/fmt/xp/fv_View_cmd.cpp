@@ -3476,11 +3476,28 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 //
 		if(isInFrame(posCur) && !isInFrame(posCur+amt))
 		{
+		        fl_FrameLayout * pFL = getFrameLayout(posCur+amt);
+			if(pFL != NULL)
+			{
+			  //
+			  // Delete to edge of text box
+			  //
+			      PT_DocPosition posFrame = pFL->getPosition(true);
+			      amt = posFrame + pFL->getLength() - posCur;
+			}
 			return;
 		}
-		if(!isInFrame(posCur) && isInFrame(posCur+amt))
+		if(!isInFrame(posCur) && isInFrame(posCur+amt) && (amt > 1))
 		{
-			return;
+		        fl_FrameLayout * pFL = getFrameLayout(posCur+amt);
+			if(pFL != NULL)
+			{
+			  //
+			  // delete to start of text box
+			  //
+			      PT_DocPosition posFrame = pFL->getPosition(true);
+			      amt = posCur + amt + 1 - posFrame;
+			}
 		}
 //
 // isInFrame will return true if we're right at the frame strux or right

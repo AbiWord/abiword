@@ -94,7 +94,7 @@ public:
 	void                  _beginGlob();
 	void                  _endGlob();
 	UT_sint32             getGlobCount(void);
-
+        bool                  isImageWrapper(void) const;  	
 private:
 	FV_View *             m_pView;
 	FV_FrameEditMode      m_iFrameEditMode;

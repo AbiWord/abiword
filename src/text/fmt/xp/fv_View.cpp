@@ -841,6 +841,10 @@ void FV_View::deleteFrame(void)
 
 fl_FrameLayout * FV_View::getFrameLayout(void)
 {
+        if(m_FrameEdit.isActive())
+	{
+	       return m_FrameEdit.getFrameLayout();
+	}
 	return getFrameLayout(getPoint());
 }
 
@@ -1589,7 +1593,14 @@ void FV_View::focusChange(AV_Focus focus)
 	case AV_FOCUS_HERE:
 		if(getPoint() > 0 && isSelectionEmpty())
 		{
+		  if(m_FrameEdit.getFrameEditMode() != FV_FrameEdit_WAIT_FOR_FIRST_CLICK_INSERT)
+		  {
 			m_pG->getCaret()->enable();
+		  }
+		  else
+		  {
+		        break;
+		  }
 		}
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
@@ -2086,6 +2097,14 @@ bool FV_View::setTOCProps(PT_DocPosition pos, const char * szProps)
 
 bool FV_View::isSelectionEmpty(void) const
 {
+	if(m_FrameEdit.isActive() && m_FrameEdit.isImageWrapper() )
+	{
+	        return false;
+	}
+	if(m_FrameEdit.isActive() && (m_FrameEdit. getFrameEditMode() >= FV_FrameEdit_RESIZE_INSERT))
+	{
+	        return false;
+	}
 	if (!m_Selection.isSelected())
 	{
 		return true;
@@ -6844,7 +6863,7 @@ void FV_View::warpInsPtToXY(double xPos, double yPos, bool bClick = false)
 	if ((pos != getPoint()) && !bClick)
 		_clearIfAtFmtMark(getPoint());
 
-
+	m_FrameEdit.setMode(FV_FrameEdit_NOT_ACTIVE);
 	_setPoint(pos, bEOL);
 	_ensureInsertionPointOnScreen();
 	setCursorToContext();
@@ -10519,8 +10538,9 @@ bool FV_View::insertFootnote(bool bFootnote)
 	const XML_Char *cur_style;
 	getStyle(&cur_style);
 
-	m_pDoc->beginUserAtomicGlob();
+
 	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
 	if (!isSelectionEmpty())
 	{
 		_deleteSelection();

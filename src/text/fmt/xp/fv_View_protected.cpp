@@ -334,7 +334,11 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	{
 		iSelAnchor = 2;
 	}
-
+	if(m_FrameEdit.isActive())
+	{
+	        deleteFrame();
+		return;
+	}
 	UT_ASSERT(iPoint != iSelAnchor);
 
 	PT_DocPosition iLow = UT_MIN(iPoint,iSelAnchor);
@@ -426,7 +430,10 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 		fl_FrameLayout * pFL = getFrameLayout(iLow);
 		iHigh =pFL->getPosition(true) + pFL->getLength() -1;
 	}
-
+	if(m_pDoc->isFrameAtPos(iLow) && m_pDoc->isEndFrameAtPos(iHigh))
+	{
+	        iHigh++;
+	}
 	_resetSelection();
 
 	if(!bNoUpdate)
