@@ -69,9 +69,8 @@ AP_Win32Dialog_MergeCells::~AP_Win32Dialog_MergeCells(void)
 
 void AP_Win32Dialog_MergeCells::runModeless(XAP_Frame * pFrame)
 {
-	UT_return_if_fail (pFrame);	
-	
 	// raise the dialog
+	int iResult;
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 
 	LPCTSTR lpTemplate = NULL;
@@ -80,10 +79,25 @@ void AP_Win32Dialog_MergeCells::runModeless(XAP_Frame * pFrame)
 
 	lpTemplate = MAKEINTRESOURCE(AP_RID_DIALOG_MERGECELLS);
 
-	int result = DialogBoxParam(pWin32App->getInstance(),lpTemplate,
-						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
-						(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT_HARMLESS((result != -1));
+	HWND hResult = CreateDialogParam(pWin32App->getInstance(),lpTemplate,
+							static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
+							(DLGPROC)s_dlgProc,(LPARAM)this);
+	UT_ASSERT_HARMLESS((hResult != NULL));
+
+	m_hwndDlg = hResult;
+
+	// Save dialog the ID number and pointer to the widget
+	UT_sint32 sid =(UT_sint32)  getDialogId();
+	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
+
+	iResult = ShowWindow( m_hwndDlg, SW_SHOW );
+
+	iResult = BringWindowToTop( m_hwndDlg );
+
+	startUpdater();
+
+	UT_ASSERT_HARMLESS((iResult != 0));
+
 }
 
 BOOL CALLBACK AP_Win32Dialog_MergeCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
@@ -96,7 +110,7 @@ BOOL CALLBACK AP_Win32Dialog_MergeCells::s_dlgProc(HWND hWnd,UINT msg,WPARAM wPa
 		pThis = (AP_Win32Dialog_MergeCells *)lParam;
 		SWL(hWnd,lParam);
 		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
+
 	case WM_COMMAND:
 		pThis = GWL(hWnd);
 		return pThis->_onCommand(hWnd,wParam,lParam);
@@ -130,8 +144,8 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	m_hwndDlg = hWnd;	
-				
+	m_hwndDlg = hWnd;
+
 	// localise controls 		
 	_DS(TEXT_LEFT,		DLG_MergeCells_Left);		
 	_DS(TEXT_RIGHT,		DLG_MergeCells_Right);		
@@ -141,8 +155,9 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	_DSX(BTN_CANCEL,	DLG_Close);				
 				
 	// Localise caption
-	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_MergeCellsTitle));	
-	
+	ConstructWindowName();
+	SetWindowText(m_hwndDlg, m_WindowName);
+
 	// The four items are the same size
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_MERGECELLS_BMP_LEFT), &rect);			
 		
@@ -201,7 +216,15 @@ void AP_Win32Dialog_MergeCells::event_Close(void)
 
 void AP_Win32Dialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
 {
-	ConstructWindowName();
+	if((HWND)GetWindowLong(m_hwndDlg, GWL_HWNDPARENT) != static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
+	{
+		ConstructWindowName();
+		SetWindowText(m_hwndDlg, m_WindowName);
+
+		SetWindowLong(m_hwndDlg, GWL_HWNDPARENT, (long)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
+		SetWindowPos(m_hwndDlg, NULL, 0, 0, 0, 0,
+						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+	}
 	setAllSensitivities();
 }
 
@@ -243,7 +266,7 @@ BOOL AP_Win32Dialog_MergeCells::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPar
 		case AP_RID_DIALOG_MERGECELLS_BTN_CANCEL:						
 		case IDCANCEL:		// We want to close button work
 			m_answer = a_CANCEL; 						
-			EndDialog(hWnd,0);
+			destroy();
 			return 1;
 			
 		default:							// we did not handle this notification
@@ -257,13 +280,14 @@ BOOL AP_Win32Dialog_MergeCells::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPar
 void AP_Win32Dialog_MergeCells::destroy(void)
 {
 	finalize();
-	
+
+	int iResult = DestroyWindow( m_hwndDlg );
+	UT_ASSERT_HARMLESS((iResult != 0));
 }
 void AP_Win32Dialog_MergeCells::activate(void)
 {
-	
-        
-	ConstructWindowName();	
+	ConstructWindowName();
+	SetWindowText(m_hwndDlg, m_WindowName);
+
 	setAllSensitivities();
-	
 }

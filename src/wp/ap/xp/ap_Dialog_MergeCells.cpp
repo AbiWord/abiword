@@ -273,6 +273,7 @@ void AP_Dialog_MergeCells::onMerge(void)
 	_generateSrcDest();
 	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 	pView->cmdMergeCells(m_iCellSource, m_iCellDestination);
+	setAllSensitivities();
 }
 
 PT_DocPosition AP_Dialog_MergeCells::getCellSource(void)
