@@ -19,7 +19,7 @@
  */
 
 
-#include "gr_MacGraphics.h"
+#include "gr_MacQDGraphics.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
