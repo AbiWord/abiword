@@ -206,6 +206,7 @@ private:
 	UT_Vector				m_vSaveRect;
 	UT_Vector 				m_vSaveRectBuf;
 	HBRUSH					m_hClearBrush;
+	int						m_nLogPixelsY;
 };
 
 #endif /* GR_WIN32GRAPHICS_H */

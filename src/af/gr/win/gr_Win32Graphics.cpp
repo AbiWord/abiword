@@ -107,6 +107,8 @@ void GR_Win32Graphics::_constructorCommonCode(HDC hdc)
 	m_eLineStyle = LINE_SOLID;
 
 	setBrush((HBRUSH) GetStockObject(WHITE_BRUSH));	// Default brush
+
+	m_nLogPixelsY = GetDeviceCaps(m_hdc, LOGPIXELSY);
 }
 
 GR_Win32Graphics::GR_Win32Graphics(HDC hdc, HWND hwnd, XAP_App * app)
@@ -524,8 +526,8 @@ UT_uint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 }
 
 UT_uint32 GR_Win32Graphics::getDeviceResolution(void) const
-{
-	return GetDeviceCaps(m_hdc, LOGPIXELSY); // NOTE: assumes square pixels
+{	
+	return m_nLogPixelsY; // NOTE: assumes square pixels
 }
 
 void GR_Win32Graphics::setColor(const UT_RGBColor& clr)
