@@ -29,6 +29,7 @@ bool UT_UUID::s_bInitDone = false;
 
 /*!
     This constructor is used if the object is only used to generate new UUIDs
+    or if the uuid is to be set subsequently by setUUID()
 */
 UT_UUID::UT_UUID ()
 	:m_bIsValid(false)
@@ -54,6 +55,15 @@ UT_UUID::UT_UUID(const uuid_t &u)
 {
     _unpack(u, m_uuid);
 }
+
+/* copy constructor */
+UT_UUID::UT_UUID(const UT_UUID &u)
+{
+	m_uuid = u.m_uuid;
+	m_bIsValid = u.m_bIsValid;
+}
+
+
 
 /*!
     Converts string represenation of UUID to uuid_t
@@ -109,7 +119,7 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
 	// parse it
     uuid.time_low = strtoul(in, NULL, 16);
     uuid.time_mid = (UT_uint16)strtoul(in+9, NULL, 16);
-    uuid.time_hi_and_version = (UT_uint16)strtoul(in+14, NULL, 16);
+    uuid.time_high_and_version = (UT_uint16)strtoul(in+14, NULL, 16);
     uuid.clock_seq = (UT_uint16)strtoul(in+19, NULL, 16);
 
 	cp = in+24;
@@ -127,7 +137,7 @@ bool  UT_UUID::_parse(const char * in, struct uuid &uuid) const
 /*!
    pack UUID from the internal struct to uuid_t
 */
-void UT_UUID::_pack(const uuid &uu, uuid_t &u) const
+bool UT_UUID::_pack(const uuid &uu, uuid_t &u) const
 {
     UT_uint32   tmp;
     unsigned char   *out = &u[0];
@@ -146,7 +156,7 @@ void UT_UUID::_pack(const uuid &uu, uuid_t &u) const
     tmp >>= 8;
     out[4] = (unsigned char) tmp;
 
-    tmp = uu.time_hi_and_version;
+    tmp = uu.time_high_and_version;
     out[7] = (unsigned char) tmp;
     tmp >>= 8;
     out[6] = (unsigned char) tmp;
@@ -157,34 +167,40 @@ void UT_UUID::_pack(const uuid &uu, uuid_t &u) const
     out[8] = (unsigned char) tmp;
 
     memcpy(out+10, uu.node, 6);
+
+	return true;
 }
 
 /*!
     convert internal UUID struct to a string
 */
-void UT_UUID::_UUIDtoStr(const uuid &uu, UT_String & s) const
+bool UT_UUID::_UUIDtoStr(const uuid &uu, UT_String & s) const
 {
     UT_String_sprintf(s,"%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-        uu.time_low, uu.time_mid, uu.time_hi_and_version,
+        uu.time_low, uu.time_mid, uu.time_high_and_version,
         uu.clock_seq >> 8, uu.clock_seq & 0xFF,
         uu.node[0], uu.node[1], uu.node[2],
         uu.node[3], uu.node[4], uu.node[5]);
+
+	return true;
 }
 
 /*!
     convert uuid_t to a string
  */
-void UT_UUID::UUIDtoStr(const uuid_t &uu, UT_String & s) const
+bool UT_UUID::UUIDtoStr(const uuid_t &uu, UT_String & s) const
 {
     struct uuid uuid;
-    _unpack(uu, uuid);
-	_UUIDtoStr(uuid, s);
+    bool bRet = _unpack(uu, uuid);
+	bRet &= _UUIDtoStr(uuid, s);
+
+	return bRet;
 }
 
 /*!
     Unpack uuid_t into the internal uuid struct
 */
-void UT_UUID::_unpack(const uuid_t &in, uuid &uu) const
+bool UT_UUID::_unpack(const uuid_t &in, uuid &uu) const
 {
     const unsigned char  *ptr = &in[0];
     UT_uint32       tmp;
@@ -201,72 +217,148 @@ void UT_UUID::_unpack(const uuid_t &in, uuid &uu) const
     
     tmp = *ptr++;
     tmp = (tmp << 8) | *ptr++;
-    uu.time_hi_and_version = tmp;
+    uu.time_high_and_version = tmp;
 
     tmp = *ptr++;
     tmp = (tmp << 8) | *ptr++;
     uu.clock_seq = tmp;
 
     memcpy(uu.node, ptr, 6);
+
+	return true;
 }
 
 /*!
-    generate new UUID
+    Set internal UUID to the given value
 */
-void UT_UUID::makeUUID(UT_String & s) const
+bool UT_UUID::setUUID(const UT_String &s)
 {
-	struct uuid uuid;
-	_makeUUID(uuid);
-	_UUIDtoStr(uuid, s);
+	m_bIsValid = _parse(s.c_str(), m_uuid);
+	return m_bIsValid;
 }
 
-void UT_UUID::makeUUID(uuid_t & u) const
+bool UT_UUID::setUUID(const char *s)
+{
+	m_bIsValid = _parse(s, m_uuid);
+	return m_bIsValid;
+}
+
+bool UT_UUID::setUUID(const uuid_t &uu)
 {
 	struct uuid uuid;
-	_makeUUID(uuid);
-    _pack(uuid, u);
+    m_bIsValid = _unpack(uu, uuid);
+	return m_bIsValid;
 }
+
+/*!
+    generate new UUID and set the internal value to it
+*/
+bool UT_UUID::makeUUID()
+{
+	m_bIsValid = _makeUUID(m_uuid);
+	return m_bIsValid;
+}
+
+/*!
+    generate new UUID into provided string or uuid_t
+*/
+bool UT_UUID::makeUUID(UT_String & s) const
+{
+	struct uuid uuid;
+	bool bRet = _makeUUID(uuid);
+	bRet &= _UUIDtoStr(uuid, s);
+	return bRet;
+}
+
+bool UT_UUID::makeUUID(uuid_t & u) const
+{
+	struct uuid uuid;
+	bool bRet = _makeUUID(uuid);
+    bRet &= _pack(uuid, u);
+	return bRet;
+}
+
+/*!
+    retrive the time at which the UUID was created
+*/
+time_t UT_UUID::getTime() const
+{
+	UT_return_val_if_fail(m_bIsValid, 0xffffffff);
+	return _getTime(m_uuid);
+}
+
 
 time_t UT_UUID::getTime(const uuid_t & uu) const
 {
-	UT_return_val_if_fail(m_bIsValid, 0);
-	
-    struct uuid         uuid;
-    UT_uint32           high;
-    UT_uint64           clock_reg;
-	time_t tRet;
-	
+    struct uuid uuid;
+    bool bValid = _unpack(uu, uuid);
+	UT_return_val_if_fail(bValid, 0xffffffff);
 
-    _unpack(uu, uuid);
+	return _getTime(uuid);
+}
+
+time_t UT_UUID::_getTime(const struct uuid & uuid) const
+{
+	UT_uint32 iHigh;
+    UT_uint64 iClockReg;
+	time_t    tRet;
     
-    high = uuid.time_mid | ((uuid.time_hi_and_version & 0xFFF) << 16);
-    clock_reg = uuid.time_low | ((UT_uint64) high << 32);
+    iHigh = uuid.time_mid | ((uuid.time_high_and_version & 0xFFF) << 16);
+    iClockReg = uuid.time_low | ((UT_uint64) iHigh << 32);
 
-    clock_reg -= (((UT_uint64) 0x01B21DD2) << 32) + 0x13814000;
-    tRet = (time_t)(clock_reg / 10000000);
+    iClockReg -= (((UT_uint64) 0x01B21DD2) << 32) + 0x13814000;
+    tRet = (time_t)(iClockReg / 10000000);
 	
     return tRet;
 }
 
-UT_sint32 UT_UUID::getType(const uuid_t &uu) const
+/*!
+    get the type of the UUID
+*/
+UT_sint32 UT_UUID::getType() const
 {
 	UT_return_val_if_fail(m_bIsValid, -1);
 
-    struct uuid     uuid;
+	return _getType(m_uuid);
+}
 
-    _unpack(uu, uuid); 
-    return ((uuid.time_hi_and_version >> 12) & 0xF);
+UT_sint32 UT_UUID::getType(const uuid_t &uu) const
+{
+    struct uuid uuid;
+    bool bValid = _unpack(uu, uuid); 
+	UT_return_val_if_fail(bValid, -1);
+
+	return _getType(uuid);
+}
+
+UT_sint32 UT_UUID::_getType(const struct uuid &uuid) const
+{
+    return ((uuid.time_high_and_version >> 12) & 0xF);
+}
+
+/*!
+    get the variant of the UUID
+*/
+UT_UUIDVariant UT_UUID::getVariant() const
+{
+	UT_return_val_if_fail(m_bIsValid, UUID_VARIANT_ERROR);
+
+	return _getVariant(m_uuid);
 }
 
 UT_UUIDVariant UT_UUID::getVariant(const uuid_t &uu) const
 {
-	UT_return_val_if_fail(m_bIsValid, UUID_VARIANT_ERROR);
+    struct uuid uuid;
+	bool bValid = _unpack(uu, uuid);
+	UT_return_val_if_fail(bValid, UUID_VARIANT_ERROR);
 
-    struct uuid     uuid;
-    UT_sint32       var;
+	return _getVariant(uuid);
+}
 
-    _unpack(uu, uuid); 
-    var = uuid.clock_seq;
+UT_UUIDVariant UT_UUID::_getVariant(const struct uuid &uuid) const
+{
+	
+    UT_sint32 var = uuid.clock_seq;
 
     if ((var & 0x8000) == 0)
         return UUID_VARIANT_NCS;
@@ -280,34 +372,38 @@ UT_UUIDVariant UT_UUID::getVariant(const uuid_t &uu) const
 /*
  * Generate a series of random bytes. 
  */
-void UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes) const
+bool UT_UUID::_getRandomBytes(void *buf, UT_sint32 nbytes) const
 {
     UT_sint32 i;
     unsigned char *cp = (unsigned char *) buf;
 
     for (i = 0; i < nbytes; i++)
         *cp++ ^= (UT_rand() >> 7) & 0xFF;
-    return;
+	
+    return true;
 }
 
 
+/*!
+    get the three parts of the 60-bit time stamp
+*/
 /* Assume that the gettimeofday() has microsecond granularity */
 #define MAX_ADJUSTMENT 10
 
-UT_sint32 UT_UUID::_getClock(UT_uint32 &clock_high, UT_uint32 &clock_low, UT_uint16 &ret_clock_seq) const
+bool UT_UUID::_getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq) const
 {
-    static UT_sint32          adjustment = 0;
+    static UT_sint32          iAdjustment = 0;
     static struct timeval     last = {0, 0};
-    static UT_uint16          clock_seq;
+    static UT_uint16          iClockSeq;
     struct timeval            tv;
-    UT_uint64        clock_reg;
+    UT_uint64                 iClockReg;
     
 try_again:
     UT_gettimeofday(&tv);
     if ((last.tv_sec == 0) && (last.tv_usec == 0))
 	{
-        _getRandomBytes(&clock_seq, sizeof(clock_seq));
-        clock_seq &= 0x1FFF;
+        _getRandomBytes(&iClockSeq, sizeof(iClockSeq));
+        iClockSeq &= 0x1FFF;
         last = tv;
         last.tv_sec--;
     }
@@ -315,42 +411,44 @@ try_again:
 	if ((tv.tv_sec < last.tv_sec)
 		|| ((tv.tv_sec == last.tv_sec) && (tv.tv_usec < last.tv_usec)))
 	{
-        clock_seq = (clock_seq+1) & 0x1FFF;
-        adjustment = 0;
+        iClockSeq = (iClockSeq+1) & 0x1FFF;
+        iAdjustment = 0;
         last = tv;
     }
 	else if ((tv.tv_sec == last.tv_sec) && (tv.tv_usec == last.tv_usec))
 	{
-        if (adjustment >= MAX_ADJUSTMENT)
+        if (iAdjustment >= MAX_ADJUSTMENT)
             goto try_again;
-        adjustment++;
+        iAdjustment++;
     }
 	else
 	{
-        adjustment = 0;
+        iAdjustment = 0;
         last = tv;
     }
         
-    clock_reg = tv.tv_usec*10 + adjustment;
-    clock_reg += ((UT_uint64) tv.tv_sec)*10000000;
-    clock_reg += (((UT_uint64) 0x01B21DD2) << 32) + 0x13814000;
+    iClockReg = tv.tv_usec*10 + iAdjustment;
+    iClockReg += ((UT_uint64) tv.tv_sec)*10000000;
+    iClockReg += (((UT_uint64) 0x01B21DD2) << 32) + 0x13814000;
 
-    clock_high = (UT_uint32)(clock_reg >> 32);
-    clock_low = (UT_uint32)clock_reg;
-    ret_clock_seq = clock_seq;
-    return 0;
+    iHigh = (UT_uint32)(iClockReg >> 32);
+    iLow  = (UT_uint32)iClockReg;
+    iSeq  = iClockSeq;
+    return true;
 }
 
-void UT_UUID::_makeUUID(uuid &uu) const
+bool UT_UUID::_makeUUID(uuid &uu) const
 {
     static UT_sint32 has_init = 0;
     UT_uint32  clock_mid;
 
+	bool bRet = true;
+	
     if(!s_bInitDone)
 	{
         if(!UT_getEthernetAddress(s_node))
 		{
-            _getRandomBytes(s_node, 6);
+            bRet &= _getRandomBytes(s_node, 6);
             /*
              * Set multicast bit, to prevent conflicts
              * with IEEE 802 addresses obtained from
@@ -358,13 +456,152 @@ void UT_UUID::_makeUUID(uuid &uu) const
              */
             s_node[0] |= 0x80;
         }
-        s_bInitDone = true;
+        s_bInitDone = bRet;
     }
 	
-    _getClock(clock_mid, uu.time_low, uu.clock_seq);
+    bRet &= _getClock(clock_mid, uu.time_low, uu.clock_seq);
 	
     uu.clock_seq |= 0x8000;
     uu.time_mid = (UT_uint16) clock_mid;
-    uu.time_hi_and_version = (clock_mid >> 16) | 0x1000;
+    uu.time_high_and_version = (clock_mid >> 16) | 0x1000;
     memcpy(uu.node, s_node, 6);
+
+	return bRet;
 }
+
+bool UT_UUID::operator ==(const UT_UUID &u) const
+{
+	if(m_uuid.time_low != u.m_uuid.time_low)
+		return false;
+
+	if(m_uuid.time_mid != u.m_uuid.time_mid)
+		return false;
+	
+	if(m_uuid.time_high_and_version != u.m_uuid.time_high_and_version)
+		return false;
+
+	if(m_uuid.clock_seq != u.m_uuid.clock_seq)
+		return false;
+
+	if(memcmp(m_uuid.node, u.m_uuid.node, 6) != 0)
+		return false;
+
+	return true;
+}
+
+bool UT_UUID::operator !=(const UT_UUID &u) const
+{
+	if(m_uuid.time_low != u.m_uuid.time_low)
+		return true;
+
+	if(m_uuid.time_mid != u.m_uuid.time_mid)
+		return true;
+	
+	if(m_uuid.time_high_and_version != u.m_uuid.time_high_and_version)
+		return true;
+
+	if(m_uuid.clock_seq != u.m_uuid.clock_seq)
+		return true;
+
+	if(memcmp(m_uuid.node, u.m_uuid.node, 6) != 0)
+		return true;
+
+	return false;
+}
+
+bool UT_UUID::operator <(const UT_UUID &u) const
+{
+	if(m_uuid.time_low < u.m_uuid.time_low)
+		return true;
+
+	if(m_uuid.time_mid < u.m_uuid.time_mid)
+		return true;
+	
+	if(m_uuid.time_high_and_version < u.m_uuid.time_high_and_version)
+		return true;
+
+	if(m_uuid.clock_seq < u.m_uuid.clock_seq)
+		return true;
+
+	if(memcmp(m_uuid.node, u.m_uuid.node, 6) < 0)
+		return true;
+
+	return false;
+}
+
+bool UT_UUID::operator >(const UT_UUID &u) const
+{
+	if(m_uuid.time_low > u.m_uuid.time_low)
+		return true;
+
+	if(m_uuid.time_mid > u.m_uuid.time_mid)
+		return true;
+	
+	if(m_uuid.time_high_and_version > u.m_uuid.time_high_and_version)
+		return true;
+
+	if(m_uuid.clock_seq > u.m_uuid.clock_seq)
+		return true;
+
+	if(memcmp(m_uuid.node, u.m_uuid.node, 6) > 0)
+		return true;
+
+	return false;
+}
+
+bool UT_UUID::isYounger(const UT_UUID &u) const
+{
+	if((m_uuid.time_high_and_version & 0xFFF) > (u.m_uuid.time_high_and_version & 0xFFF))
+		return true;
+	else if((m_uuid.time_high_and_version & 0xFFF) < (u.m_uuid.time_high_and_version & 0xFFF))
+		return false;
+	
+	if(m_uuid.time_mid > u.m_uuid.time_mid)
+		return true;
+	else if(m_uuid.time_mid < u.m_uuid.time_mid)
+		return false;
+	   
+	if(m_uuid.time_low > u.m_uuid.time_low)
+		return true;
+	if(m_uuid.time_low < u.m_uuid.time_low)
+		return false;
+
+	return false;
+}
+
+bool UT_UUID::isOlder(const UT_UUID &u) const
+{
+	if((m_uuid.time_high_and_version & 0xFFF) < (u.m_uuid.time_high_and_version & 0xFFF))
+		return true;
+	else if((m_uuid.time_high_and_version & 0xFFF) > (u.m_uuid.time_high_and_version & 0xFFF))
+		return false;
+	
+	if(m_uuid.time_mid < u.m_uuid.time_mid)
+		return true;
+	else if(m_uuid.time_mid > u.m_uuid.time_mid)
+		return false;
+	   
+	if(m_uuid.time_low < u.m_uuid.time_low)
+		return true;
+	if(m_uuid.time_low > u.m_uuid.time_low)
+		return false;
+
+	return false;
+}
+
+bool UT_UUID::isOfSameAge(const UT_UUID &u) const
+{
+	if((m_uuid.time_high_and_version & 0xFFF) != (u.m_uuid.time_high_and_version & 0xFFF))
+		return false;
+	
+	if(m_uuid.time_mid != u.m_uuid.time_mid)
+		return false;
+	   
+	if(m_uuid.time_low != u.m_uuid.time_low)
+		return false;
+
+	return true;
+}
+
+
+

@@ -53,56 +53,115 @@ struct uuid
 {
     UT_uint32   time_low;
     UT_uint16   time_mid;
-    UT_uint16   time_hi_and_version;
+    UT_uint16   time_high_and_version;
     UT_uint16   clock_seq;
     UT_Byte     node[6];
 };
 
+// forward declaration
+class UT_UUIDGenerator;
+
+
+/*!
+    Class for generating and managing UUIDs
+*/
 class ABI_EXPORT UT_UUID
 {
-
- public:
-	/* various constructors */
-	UT_UUID();
-	UT_UUID(const UT_String &s);
-	UT_UUID(const char *);
-	UT_UUID(const uuid_t &s);
+  public:
+	/*
+	   all constructors are protected; instances of UT_UUID will be
+	   created through UT_UUIDGenerator declared below
+	*/
 	
+	/* virtual destructor*/
 	virtual ~UT_UUID (){};
 
-	void makeUUID(UT_String & s) const;
-	void makeUUID(uuid_t & u) const;
+	// these generate new UUIDs
+	bool            makeUUID();
+	bool            makeUUID(UT_String & s) const;
+	bool            makeUUID(uuid_t & u) const;
+
+	// these set m_uuid to given UUID
+	bool            setUUID(const UT_String &s);
+	bool            setUUID(const char *s);
+	bool            setUUID(const uuid_t &uu);
 	
+	// these retrieve various information from UUID
+	time_t          getTime() const;
 	time_t          getTime(const uuid_t & u) const;
+	
+	UT_sint32       getType() const;
 	UT_sint32       getType(const uuid_t &uu) const;
+
+	UT_UUIDVariant  getVariant() const;
 	UT_UUIDVariant  getVariant(const uuid_t &uu) const;
 
-	bool strToUUID(const char * in, uuid_t &u) const;
-	bool strToUUID(const UT_String &s, uuid_t &u) const;
+	/* convert strings into uuid_t and vice versa */
+	bool            strToUUID(const char * in, uuid_t &u) const;
+	bool            strToUUID(const UT_String &s, uuid_t &u) const;
+	bool            UUIDtoStr(const uuid_t &uu, UT_String & s) const;
 
-	void UUIDtoStr(const uuid_t &uu, UT_String & s) const;
-	
- protected:
-	void _pack(const uuid & unpacked, uuid_t &uuid) const;
-	void _unpack(const uuid_t &in, uuid &uu) const;
-	
-	void _makeUUID(uuid & u) const;
-	void _UUIDtoStr(const uuid &uu, UT_String & s) const;
+	// NB: these are spatial operators, not temporal ...
+	bool            operator ==(const UT_UUID &u) const;
+	bool            operator !=(const UT_UUID &u) const;
+	bool            operator < (const UT_UUID &u) const;
+	bool            operator > (const UT_UUID &u) const;
 
-	virtual void      _getRandomBytes(void *buf, int nbytes) const;
+	// temporal comparisons
+	bool            isOlder(const UT_UUID &u) const;
+	bool            isYounger(const UT_UUID &u) const;
+	bool            isOfSameAge(const UT_UUID &u) const;
 	
-	UT_sint32         _getClock(UT_uint32 &clock_high, UT_uint32 &clock_low,
-								UT_uint16 &ret_clock_seq) const;
-	
+   protected:
+	friend class UT_UUIDGenerator;
+	/* various protected constructors */
+	UT_UUID();
+	UT_UUID(const UT_String &s);
+	UT_UUID(const char *s);
+	UT_UUID(const uuid_t &u);
+	UT_UUID(const UT_UUID &u);
 
-	bool _parse(const char * in, struct uuid &u) const;
 	
-private:
+	// can be ovewritten when a better source of randomness than
+	// UT_rand() is available on given platform
+	virtual bool    _getRandomBytes(void *buf, int nbytes) const;
+	
+  private:
+	bool            _pack(const struct uuid & unpacked, uuid_t &uuid) const;
+	bool            _unpack(const uuid_t &in, struct uuid &uu) const;
+	bool            _parse(const char * in, struct uuid &u) const;
+	
+	bool            _makeUUID(struct uuid & u) const;
+	bool            _UUIDtoStr(const struct uuid &uu, UT_String & s) const;
 
+	time_t          _getTime(const struct uuid & uu) const;
+	UT_sint32       _getType(const struct uuid &uu) const;
+	UT_UUIDVariant  _getVariant(const struct uuid &uu) const;
+	
+	bool            _getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq) const;
+
+  private:	
 	uuid                 m_uuid;
 	bool                 m_bIsValid;
 	static bool          s_bInitDone;
 	static unsigned char s_node[6];
+};
+
+/*
+    We will create an instance of this (or derived) class in XAP_App()
+    and have XAP_App::getUUIDGenerator(). This will allow us to create
+    platform specific instances of UT_UUID from xp code
+*/
+class ABI_EXPORT UT_UUIDGenerator
+{
+  public:
+	UT_UUIDGenerator(){};
+	virtual ~UT_UUIDGenerator(){};
+
+	virtual UT_UUID * createUUID(){return new UT_UUID();}
+	virtual UT_UUID * createUUID(const UT_String &s){return new UT_UUID(s);}
+	virtual UT_UUID * createUUID(const char *s){return new UT_UUID(s);}
+	virtual UT_UUID * createUUID(const uuid_t &u){return new UT_UUID(u);}
 };
 
 #endif /* UT_UUID_H */
