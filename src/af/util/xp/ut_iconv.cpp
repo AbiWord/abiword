@@ -108,6 +108,9 @@ UT_iconv_t auto_iconv::getHandle ()
 // everything below this line is extern "C"
 //
 
+/*!
+ * \return the internal iconv UCS-2 charset name
+ */
 const char * ucs2Internal ()
 {
 #if defined(WIN32)
@@ -129,6 +132,9 @@ const char * ucs2Internal ()
 #endif
 }
 
+/*!
+ * \return the internal iconv UCS-2 charset name
+ */
 const char * ucs4Internal ()
 {
 #if defined(WIN32)
@@ -202,21 +208,21 @@ void UT_iconv_reset(UT_iconv_t cd)
 /*!
  * Borrowed from GLib 2.0 and (heavily) modified
  *
- * str - Pointer to the input string.
- * len - Length of the input string to convert.
- * from_codeset - The "codeset" of the string pointed to by 'str'.
- * to_codeset - The "codeset" we want for the output.
- * bytes_read - optional, supply NULL if you don't want this.
- * bytes_written - optional, supply NULL if you don't want this.
+ * \param str Pointer to the input string.
+ * \param len Length of the input string to convert.
+ * \param from_codeset The "codeset" of the string pointed to by 'str'.
+ * \param to_codeset The "codeset" we want for the output.
+ * \param bytes_read optional, supply NULL if you don't want this.
+ * \param bytes_written optional, supply NULL if you don't want this.
  *
- * Returns a freshly allocated output string, which is terminated by
+ * \return Returns a freshly allocated output string, which is terminated by
  * a zero byte. Note that if the output codeset's terminator is not
  * a zero byte (e.g., UCS-2, where it is two zero bytes), you can 
  * get correct termination by including the input string's terminator 
  * in the length passed as 'len'. E.g., if 'str' is null-terminated 
  * US-ASCII "foo", given 'len' as 4.
  *
- * TODO: Check for out-of-memory allocations etc.
+ * \todo Check for out-of-memory allocations etc.
  */
 char * UT_convert(const char*	str,
 		  UT_sint32	len,
