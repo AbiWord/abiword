@@ -80,7 +80,7 @@ WV_INCLUDES+=-I'$(top_srcdir)/../wv/glib-wv'
 
 ABI_CFLAGS=@WARNING_CFLAGS@ @DEBUG_CFLAGS@ @OPTIMIZE_CFLAGS@ \
 	@PROFILE_CFLAGS@ @XML_CFLAGS@ @SCRIPT_CFLAGS@ @BIDI_CFLAGS@ \
-	@PSICONV_CFLAGS@
+	@PSICONV_CFLAGS@ @WV_CFLAGS@
 
 CXXFLAGS=$(ABI_CFLAGS)
 CFLAGS=$(ABI_CFLAGS)
@@ -90,9 +90,8 @@ ABI_FE = Unix
 ABI_GNOME_PREFIX = Gnome
 
 # PSPELL_LIBS is empty if pspell is not enabled
-OTHER_LIBS=-lpng -lz @PSPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ @PSICONV_LIBS@
-
-PEER_LIBS=$(top_srcdir)/../wv/libwv.a
+OTHER_LIBS=-lpng -lz @PSPELL_LIBS@ @XML_LIBS@ @SCRIPT_LIBS@ \
+	@PSICONV_LIBS@ @WV_LIBS@
 
 ABI_LIBS=$(top_builddir)/src/wp/ap/libAp.a 
 ABI_LIBS+=$(top_builddir)/src/wp/impexp/xp/libImpexp.a

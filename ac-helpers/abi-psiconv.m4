@@ -40,10 +40,17 @@ fi
 # check for the header file
 
 if test "$abi_found_psiconv" = "yes"; then
-	AC_CHECK_HEADER(psiconv/generate.h, 
-	[abi_found_psiconv="yes"],
-	AC_MSG_ERROR([psiconv library found but header file missing]))
+	AC_CHECK_HEADER(psiconv.h, 
+	[abi_found_psiconvincs="yes"])
+	if "$abi_found_psiconvincs" = "yes"; then
+		PSICONV_CFLAGS=""
+	else 
+		AC_MSG_WARN([psiconv library found but header file missing])
+		abi_found_psiconv="no"
+		PSICONV_LIBS=""
+	fi
 fi
+
 
 # otherwise, use the sources given as an argument.  [ this means the
 # peer dir for abi ]

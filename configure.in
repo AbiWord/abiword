@@ -192,7 +192,9 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
 
-
+dnl Currently, we need all of the following, but in the future we
+dnl might not.  
+dnl
 dnl check for an xml parser
 
 ABI_NEED_XML_PARSER="yes"
@@ -203,6 +205,10 @@ dnl check for psiconv
 ABI_NEED_PSICONV="yes"
 ABI_PSICONV(${abs_srcdir}/../psiconv)
 
+dnl check for wv
+
+ABI_NEED_WV="yes"
+ABI_WV(${abs_srcdir}/../wv)
 
 dnl Checks for library functions.
 AC_FUNC_ALLOCA
