@@ -733,7 +733,11 @@ UINT XAP_Win32Dialog_FileOpenSaveAs::_previewPicture(HWND hDlg)
 	PAINTSTRUCT ps;
 	HDC hdc = BeginPaint(hThumbnail, &ps);
 	FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
-	GR_Win32Graphics* pGr = new GR_Win32Graphics(hdc,hThumbnail,XAP_App::getApp());
+
+	GR_Win32AllocInfo ai(hdc,hThumbnail,XAP_App::getApp());
+	GR_Win32Graphics *pGr = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+	UT_return_val_if_fail(pGr, false);
+	
 	pGr->drawImage(pImage,
 				   pGr->tlu((r.right	- scaled_width ) / 2),
 				   pGr->tlu((r.bottom - scaled_height) / 2));

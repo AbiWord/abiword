@@ -221,9 +221,9 @@ public:
 	GR_GraphicsFactory *       getGraphicsFactory() const {return m_pGraphicsFactory;}
 	void                       setDefaultGraphicsId(UT_uint32 i);
 	                           /* primary graphics allocator */
-	GR_Graphics *              newGraphics(GR_AllocInfo *param) const;
+	GR_Graphics *              newGraphics(GR_AllocInfo &ai) const;
 	                           /*secondary graphics allocator; use only in special cases */
-	GR_Graphics *              newGraphics(UT_uint32 iClassId, GR_AllocInfo *param) const;
+	GR_Graphics *              newGraphics(UT_uint32 iClassId, GR_AllocInfo &ai) const;
 	
 	virtual UT_sint32			setInputMode(const char * szName);
 	const char *				getInputMode() const;

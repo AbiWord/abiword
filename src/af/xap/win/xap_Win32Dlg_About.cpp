@@ -323,10 +323,17 @@ BOOL CALLBACK XAP_Win32Dialog_About::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,
 		r.right = pThis->m_pGrImageSidebar->getDisplayWidth();
 		FillRect(hdc, &r, GetSysColorBrush(COLOR_BTNFACE));
 
-		GR_Win32Graphics gr(hdc,hWnd,pThis->m_pFrame->getApp());
-		gr.drawImage(pThis->m_pGrImageSidebar,
-					 0,
-					 (r.bottom - pThis->m_pGrImageSidebar->getDisplayHeight())/2);
+
+		GR_Win32AllocInfo ai(hdc,hWnd,pThis->m_pFrame->getApp());
+		GR_Win32Graphics *pGR = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+		UT_return_val_if_fail(pGR, 0);
+		
+		pGR->drawImage(pThis->m_pGrImageSidebar,
+					   0,
+					   (r.bottom - pThis->m_pGrImageSidebar->getDisplayHeight())/2);
+
+		delete pGR;
+		
 		EndPaint(hWnd,&ps);
 		return 0;
 	}

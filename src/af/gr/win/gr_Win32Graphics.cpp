@@ -1824,21 +1824,21 @@ GR_Image * GR_Win32Graphics::genImageFromRectangle(const UT_Rect & r) {
 	}
 
 
-GR_Graphics * GR_Win32Graphics::graphicsAllocator(GR_AllocInfo* info)
+GR_Graphics * GR_Win32Graphics::graphicsAllocator(GR_AllocInfo &info)
 {
-	UT_return_val_if_fail(info && info->getType() == GRID_WIN32, NULL);
+	UT_return_val_if_fail(info.getType() == GRID_WIN32, NULL);
 	
-	GR_Win32AllocInfo *pAI = (GR_Win32AllocInfo*)info;
+	GR_Win32AllocInfo &AI = (GR_Win32AllocInfo&)info;
 
-	if(pAI->m_pDocInfo)
+	if(AI.m_pDocInfo)
 	{
 		// printer graphics required
-		return new GR_Win32Graphics(pAI->m_hdc, pAI->m_pDocInfo, pAI->m_pApp, pAI->m_hDevMode);
+		return new GR_Win32Graphics(AI.m_hdc, AI.m_pDocInfo, AI.m_pApp, AI.m_hDevMode);
 	}
 	else
 	{
 		// screen graphics required
-		return new GR_Win32Graphics(pAI->m_hdc, pAI->m_hwnd, pAI->m_pApp);
+		return new GR_Win32Graphics(AI.m_hdc, AI.m_hwnd, AI.m_pApp);
 	}
 }
 

@@ -42,8 +42,10 @@ XAP_UnixFontPreview::XAP_UnixFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_
 	gtk_window_move(GTK_WINDOW(m_pPreviewWindow), m_left, m_top);
 
 	XAP_App *pApp = m_pFrame->getApp();
-	m_gc = new GR_UnixGraphics(GTK_WIDGET(m_pDrawingArea)->window, static_cast<XAP_UnixApp*>(pApp)->getFontManager(), pApp);	
-	
+	//m_gc = new GR_UnixGraphics(GTK_WIDGET(m_pDrawingArea)->window, static_cast<XAP_UnixApp*>(pApp)->getFontManager(), pApp);	
+	GR_UnixAllocInfo ai(GTK_WIDGET(m_pDrawingArea)->window, static_cast<XAP_UnixApp*>(pApp)->getFontManager(), pApp);
+	m_gc = (GR_UnixGraphics*) XAP_App::getApp()->newGraphics(ai);
+
 	_createFontPreviewFromGC(m_gc, m_pPreviewWindow->allocation.width, m_pPreviewWindow->allocation.height);
 }
 

@@ -52,10 +52,20 @@ class QNXFont : public GR_Font {
 		FontID	*m_120ptFontID;
 };
 
+class GR_QNXAllocInfo : public GR_AllocInfo
+{
+  public:
+	GR_QNXAllocInfo() = 0;
+
+	virtual GR_GraphicsId getType() const {return GRID_QNX;}
+	virtual bool isPrinterGraphics() const = 0;
+};
+
 class GR_QNXGraphics : public GR_Graphics
 {
+	// all constructors are protected; instances must be created via
+	// GR_GraphicsFactory
  public:
-	GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App * app);
 	~GR_QNXGraphics();
 
 	static UT_uint32 s_getClassId() {return GRID_QNX;}
@@ -64,7 +74,7 @@ class GR_QNXGraphics : public GR_Graphics
 	virtual GR_Capability getCapability() {UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	
 	static const char *    graphicsDescriptor(void){return "QNX Default";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 	
 	virtual void		drawGlyph(UT_uint32 glyph_idx,UT_sint32 xoff,UT_sint32 yoff);
 	virtual void 		drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
@@ -144,7 +154,10 @@ class GR_QNXGraphics : public GR_Graphics
 	PgColor_t getCurrentPgColor() { return m_currentColor; };
 	QNXFont *getCurrentQNXFont() { return m_pFont; };
 	PhGC_t	*getCurrentGC() { return m_pGC; };
- protected:
+
+protected:
+	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
+	GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App * app);
 	virtual GR_Font* 	_findFont(const char* pszFontFamily, 
 								  const char* pszFontStyle, 
 								  const char* pszFontVariant, 

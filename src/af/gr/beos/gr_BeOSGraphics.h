@@ -40,10 +40,20 @@ private:
 	BFont	*m_pBFont;
 };
 
+class GR_BeOSAllocInfo : public GR_AllocInfo
+{
+  public:
+	GR_BeOSAllocInfo() = 0;
+
+	virtual GR_GraphicsId getType() const {return GRID_BEOS;}
+	virtual bool isPrinterGraphics() const = 0;
+};
+
 class GR_BeOSGraphics : public GR_Graphics
 {
+	// all constructors are protected; instances must be created via
+	// GR_GraphicsFactory
 public:
-	GR_BeOSGraphics(BView *front, XAP_App *app);
 	~GR_BeOSGraphics();
 
 	static UT_uint32 s_getClassId() {return GRID_BEOS;}
@@ -52,7 +62,7 @@ public:
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	
 	static const char *    graphicsDescriptor(void){return "BeOS Default";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 	
 	virtual void drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, int iCharOffset,
@@ -138,6 +148,9 @@ public:
     				{ return m_3dColors[c];};
  
 protected:
+	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
+	GR_BeOSGraphics(BView *front, XAP_App *app);
+	
 	BView					*m_pShadowView, *m_pFrontView;
 	BBitmap					*m_pShadowBitmap;
 	BMessage				*m_pPrintSettings;	

@@ -36,9 +36,9 @@
 
 class ABI_EXPORT GR_Win32USPGraphics : public GR_Win32Graphics
 {
+	// all constructors are protected; instances must be created via
+	// GR_GraphicsFactory
 public:
-	GR_Win32USPGraphics(HDC, HWND, XAP_App *);
-	GR_Win32USPGraphics(HDC, const DOCINFO *, XAP_App *, HGLOBAL hDevMode = NULL);
 	virtual ~GR_Win32USPGraphics();
 
 	static UT_uint32 s_getClassId() {return GRID_WIN32_UNISCRIBE;}
@@ -46,7 +46,7 @@ public:
 	
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_AND_PRINTER;}
 	static const char *    graphicsDescriptor(){return "Win32 Uniscribe";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*);
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	
 	///////////////////////////////////////////////////////////////////
@@ -64,7 +64,12 @@ public:
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void      justify(GR_RenderInfo & ri);
-
+	
+  protected:
+	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
+	GR_Win32USPGraphics(HDC, HWND, XAP_App *);
+	GR_Win32USPGraphics(HDC, const DOCINFO *, XAP_App *, HGLOBAL hDevMode = NULL);
+	
   private:
 	bool      _constructorCommonCode();
 	

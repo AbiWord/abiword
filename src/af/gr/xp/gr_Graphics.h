@@ -234,7 +234,7 @@ class GR_AllocInfo
 	virtual bool isPrinterGraphics()const {UT_ASSERT(UT_NOT_IMPLEMENTED); return false;}
 };
 
-typedef GR_Graphics * (*GR_Allocator)(GR_AllocInfo*);
+typedef GR_Graphics * (*GR_Allocator)(GR_AllocInfo&);
 typedef const char *  (*GR_Descriptor)(void);
 /*
    The purpose of GR_GraphicsFactory is to allow us to have parallel
@@ -258,7 +258,7 @@ class GR_GraphicsFactory
 	UT_uint32     registerPluginClass(GR_Allocator, GR_Descriptor);
 	
 	bool          unregisterClass(UT_uint32 iClassId);
-	GR_Graphics * newGraphics(UT_uint32 iClassId, GR_AllocInfo* param) const;
+	GR_Graphics * newGraphics(UT_uint32 iClassId, GR_AllocInfo &param) const;
 	const char *  getClassDescription(UT_uint32 iClassId) const;
 	
 	
@@ -296,7 +296,7 @@ class ABI_EXPORT GR_Graphics
 	// the following two static functions have to be implemented by all
 	// derrived classes and registered with GR_GraphicsFactory 
 	static const char *    graphicsDescriptor(void){UT_ASSERT(UT_NOT_IMPLEMENTED); return "???";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 #endif
 	
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;

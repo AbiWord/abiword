@@ -332,7 +332,10 @@ XAP_CocoaDialog_FileOpenSaveAs::previewPicture (void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// attach and clear the area immediately
-	GR_CocoaGraphics* pGr = new GR_CocoaGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
+	//GR_CocoaGraphics* pGr = new GR_CocoaGraphics(m_preview->window, unixapp->getFontManager(), m_pApp);
+	GR_CocoaAllocInfo ai(m_preview->window, unixapp->getFontManager(), m_pApp);
+	pGr = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+
 	pGr->clearArea(0, 0, m_preview->allocation.width, m_preview->allocation.height);
 
 	gchar * buf = gtk_file_selection_get_filename (m_FS);

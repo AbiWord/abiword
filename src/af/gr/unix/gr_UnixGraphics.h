@@ -41,12 +41,22 @@ UT_uint32 adobeToUnicode(UT_uint32 iAdobe);
 
 UT_uint32 adobeDingbatsToUnicode(UT_uint32 iAdobe);
 
+class GR_UnixAllocInfo : public GR_AllocInfo
+{
+  public:
+	GR_UnixAllocInfo() = 0;
+
+	virtual GR_GraphicsId getType() const {return GRID_UNIX;}
+	virtual bool isPrinterGraphics() const = 0;
+};
+
 class GR_UnixGraphics : public GR_Graphics
 {
 	friend class GR_UnixImage;
+
+	// all constructors are protected; instances must be created via
+	// GR_GraphicsFactory
  public:
- 	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
-	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
 	virtual ~GR_UnixGraphics();
 
 	static UT_uint32 s_getClassId() {return GRID_UNIX;}
@@ -54,7 +64,7 @@ class GR_UnixGraphics : public GR_Graphics
 	
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	static const char *    graphicsDescriptor(void){return "Unix Default";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 	
 	virtual void		setFont(GR_Font* pFont);
 	virtual void        clearFont(void) {m_pFont = NULL;} 
@@ -125,6 +135,9 @@ class GR_UnixGraphics : public GR_Graphics
 	virtual UT_uint32 	getDeviceResolution(void) const;
 
  protected:
+	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
+ 	GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
+	GR_UnixGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
 
 	virtual void _beginPaint ();
 	virtual void _endPaint ();

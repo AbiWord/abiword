@@ -124,6 +124,19 @@ XAP_Win32App::XAP_Win32App(HINSTANCE hInstance, XAP_Args * pArgs, const char * s
 										  GR_Win32USPGraphics::graphicsDescriptor,
 										  GRID_DEFAULT_PRINT);
 			UT_ASSERT( bSuccess );
+
+#else
+			bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
+										  GR_Win32Graphics::graphicsDescriptor,
+										  GRID_DEFAULT);
+
+			UT_ASSERT( bSuccess );
+
+			bSuccess = pGF->registerClass(GR_Win32Graphics::graphicsAllocator,
+										  GR_Win32Graphics::graphicsDescriptor,
+										  GRID_DEFAULT_PRINT);
+
+			UT_ASSERT( bSuccess );
 #endif
 			
 			// now free the library (GR_Win32USPGraphics will load it

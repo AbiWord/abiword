@@ -157,7 +157,10 @@ void XAP_CocoaDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new Cocoa GC
 	DELETEP (m_pGRGrid);
-	m_pGRGrid = new GR_CocoaGraphics([m_dlg grid], m_pApp);
+	//m_pGRGrid = new GR_CocoaGraphics([m_dlg grid], m_pApp);
+	GR_CocoaAllocInfo ai([m_dlg grid], m_pApp);
+	m_pGRGrid = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
+
 
 	// let the widget materialize
 	NSSize size = [[m_dlg grid] bounds].size;
@@ -167,7 +170,9 @@ void XAP_CocoaDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new Cocoa GC
 	DELETEP (m_pGRPreview);
-	m_pGRPreview = new GR_CocoaGraphics([m_dlg preview], m_pApp);
+	//m_pGRPreview = new GR_CocoaGraphics([m_dlg preview], m_pApp);
+	GR_CocoaAllocInfo ai([m_dlg preview], m_pApp);
+	m_pGRPreview = (GR_CocoaGraphics*)XAP_App::getApp()->newGraphics(ai);
 		
 	// let the widget materialize
 	size = [[m_dlg preview] bounds].size;

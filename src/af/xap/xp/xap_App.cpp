@@ -1049,11 +1049,11 @@ const char * XAP_App::getInputMode(void) const
     determines if screen or priter graphics is required and then
     allocates appropriate graphics respecting current setting.
 */
-GR_Graphics * XAP_App::newGraphics(GR_AllocInfo * param) const
+GR_Graphics * XAP_App::newGraphics(GR_AllocInfo &param) const
 {
-	UT_return_val_if_fail(m_pGraphicsFactory && param, NULL);
+	UT_return_val_if_fail(m_pGraphicsFactory, NULL);
 
-	if(param->isPrinterGraphics())
+	if(param.isPrinterGraphics())
 	{
 		return m_pGraphicsFactory->newGraphics(GRID_DEFAULT_PRINT, param);
 	}
@@ -1066,7 +1066,7 @@ GR_Graphics * XAP_App::newGraphics(GR_AllocInfo * param) const
 /*!
     Use only if you require specific graphics, otherwise use newGraphics(GR_AllocInfo*)
 */
-GR_Graphics * XAP_App::newGraphics(UT_uint32 iClassId, GR_AllocInfo * param) const
+GR_Graphics * XAP_App::newGraphics(UT_uint32 iClassId, GR_AllocInfo &param) const
 {
 	UT_return_val_if_fail(m_pGraphicsFactory, NULL);
 

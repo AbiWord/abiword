@@ -66,16 +66,6 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 	memset(&m_geometry, 0, sizeof(m_geometry));
 
-
-	/* We need to link UnixNull_Graphics because the AbiCommand
-	 * plugin uses it.
-	 */
-	if (abi_unixnullgraphics_instance)
-	  {
-	    delete abi_unixnullgraphics_instance;
-	    abi_unixnullgraphics_instance = new UnixNull_Graphics(0,0);
-	  }
-
 	// create an instance of UT_UUIDGenerator or appropriate derrived class
 	_setUUIDGenerator(new UT_UUIDGenerator());
 
@@ -116,6 +106,17 @@ XAP_UnixApp::XAP_UnixApp(XAP_Args * pArgs, const char * szAppName)
 
 		UT_ASSERT( bSuccess );
 	}
+
+	/* We need to link UnixNull_Graphics because the AbiCommand
+	 * plugin uses it.
+	 */
+	if (abi_unixnullgraphics_instance)
+	  {
+	    delete abi_unixnullgraphics_instance;
+	    //abi_unixnullgraphics_instance = new UnixNull_Graphics(0,0);
+		GR_UnixAllocInfo ai(0,0);
+		abi_unixnullgraphics_instance = (UnixNull_Graphics*) XAP_App::getApp()->newGraphics(GRID_UNIX_NULL, ai);
+	  }
 }
 
 XAP_UnixApp::~XAP_UnixApp()

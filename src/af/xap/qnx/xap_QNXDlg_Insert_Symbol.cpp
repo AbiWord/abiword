@@ -235,7 +235,9 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new QNX GC
 	DELETEP (m_qnxGraphics);
-	m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_SymbolMap, m_pApp);
+	//m_qnxGraphics = new GR_QNXGraphics(mainWindow, m_SymbolMap, m_pApp);
+	GR_QNXAllocInfo ai(mainWindow, m_SymbolMap, m_pApp);
+	m_qnxGraphics = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
 
 	// let the widget materialize TODO: get a real size!
 	UT_QNXGetWidgetArea(m_SymbolMap, NULL, NULL, &w, &h);
@@ -243,8 +245,10 @@ void XAP_QNXDialog_Insert_Symbol::runModeless(XAP_Frame * pFrame)
 
 	// make a new QNX GC
 	DELETEP (m_qnxarea);
-	m_qnxarea = new GR_QNXGraphics(mainWindow, m_areaCurrentSym, m_pApp);
-		
+	//m_qnxarea = new GR_QNXGraphics(mainWindow, m_areaCurrentSym, m_pApp);
+	GR_QNXAllocInfo ai(mainWindow, m_areaCurrentSym, m_pApp);
+	m_qnxarea = (GR_QNXGraphics*) XAP_App::getApp()->newGraphics(ai);
+
 	// let the widget materialize
 	UT_QNXGetWidgetArea(m_areaCurrentSym, NULL, NULL, &w, &h);
 	_createSymbolareaFromGC(m_qnxarea, (UT_uint32) w, (UT_uint32) h);

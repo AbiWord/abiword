@@ -1296,7 +1296,7 @@ bool GR_GraphicsFactory::unregisterClass(UT_uint32 iClassId)
    Creates an instance of the graphics class represented by iClassId,
    passing param to the class allocator.
 */
-GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo * param) const
+GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo &param) const
 {
 	UT_sint32 indx = m_vClassIds.findItem(iClassId);
 
@@ -1304,8 +1304,7 @@ GR_Graphics * GR_GraphicsFactory::newGraphics(UT_uint32 iClassId, GR_AllocInfo *
 		return NULL;
 				
 					
-	GR_Graphics * (*alloc)(void*)
-		= (GR_Graphics * (*)(void*))m_vAllocators.getNthItem(indx);
+	GR_Allocator alloc = (GR_Allocator)m_vAllocators.getNthItem(indx);
 				
 	if(!alloc)
 		return NULL;
@@ -1321,8 +1320,7 @@ const char *  GR_GraphicsFactory::getClassDescription(UT_uint32 iClassId) const
 		return NULL;
 				
 					
-	const char * (*descr)(void)
-		= (const char * (*)(void))m_vDescriptors.getNthItem(indx);
+	GR_Descriptor descr = (GR_Descriptor)m_vDescriptors.getNthItem(indx);
 				
 	if(!descr)
 		return NULL;

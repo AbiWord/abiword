@@ -34,9 +34,9 @@ class UT_ByteBuf;
 
 class ABI_EXPORT UnixNull_Graphics : public GR_Graphics
 {
+	// all constructors are protected; instances must be created via
+	// GR_GraphicsFactory
 public:
-	/* TODO add other constructors to route to lp/lpr rather than a file */
-	UnixNull_Graphics(XAP_UnixFontManager * fontManager,XAP_App *pApp);
 	virtual ~UnixNull_Graphics();
 
 	static UT_uint32 s_getClassId() {return GRID_UNIX_NULL;}
@@ -44,7 +44,7 @@ public:
 	
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	static const char *    graphicsDescriptor(void) { return "Unix Null Graphics";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 
 	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, 
@@ -114,6 +114,9 @@ public:
 	virtual void	  restoreRectangle(UT_uint32 iIndx) {}
 
 protected:
+	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
+	UnixNull_Graphics(XAP_UnixFontManager * fontManager,XAP_App *pApp);
+	
 	virtual GR_Font* _findFont(const char* pszFontFamily, 
 							   const char* pszFontStyle, 
 							   const char* pszFontVariant, 

@@ -195,7 +195,9 @@ bool XAP_Frame::initialize(const char * szKeyBindingsKey, const char * szKeyBind
 	// create a EventMapper state-machine to process our events
 	//////////////////////////////////////////////////////////////////
 
-#pragma warning remove me
+#define UT_WARNING "remove me at some point"
+#include "ut_warning.h"
+	
 #if 0 		// moved out to XAP_App
 	const char * szBindings = NULL;
 	EV_EditBindingMap * pBindingMap = NULL;

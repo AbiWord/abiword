@@ -561,18 +561,35 @@ void XAP_UnixDialog_Print::_getGraphics(void)
 		sprintf(bufSuggestedName,"%s.ps",m_szDocumentPathname);
 		if (!_getPrintToFilePathname(m_pFrame,bufSuggestedName))
 			goto Fail;
-
+#if 0
 		m_pPSGraphics = new PS_Graphics(m_szPrintToFilePathname, m_szDocumentTitle,
 										m_pFrame->getApp()->getApplicationName(),
 										fontmgr,
 										true, app);
+#endif
+		GR_UnixAllocInfo ai(m_szPrintToFilePathname, m_szDocumentTitle,
+							m_pFrame->getApp()->getApplicationName(),
+							fontmgr,
+							true, app);
+			
+		m_pPSGraphics = (PS_Graphics*) XAP_App::getApp()->newGraphics(ai);
+		
 	}
 	else
-	{		
+	{
+#if 0
 		m_pPSGraphics = new PS_Graphics(m_szPrintCommand, m_szDocumentTitle,
 										m_pFrame->getApp()->getApplicationName(),
 										fontmgr,
 										false, app);
+		
+#endif
+		GR_UnixAllocInfo ai(m_szPrintCommand, m_szDocumentTitle,
+							m_pFrame->getApp()->getApplicationName(),
+							fontmgr,
+							false, app);
+			
+		m_pPSGraphics = (PS_Graphics*) XAP_App::getApp()->newGraphics(ai);
 	}
 	FREEP(m_szPrintCommand);
 	UT_ASSERT(m_pPSGraphics);

@@ -32,10 +32,20 @@ class StNSViewLocker;
 
 @class XAP_CocoaNSView, XAP_CocoaNSScrollView;
 
+class GR_CocoaAllocInfo : public GR_AllocInfo
+{
+  public:
+	GR_CocoaAllocInfo() = 0;
+
+	virtual GR_GraphicsId getType() const {return GRID_COCOA;}
+	virtual bool isPrinterGraphics() const = 0;
+};
+
 class GR_CocoaGraphics : public GR_Graphics
 {
+	// all constructors are protected; instances must be created via
+	// GR_GraphicsFactory
  public:
-	GR_CocoaGraphics(NSView * view, /*XAP_CocoaFontManager * fontManager,*/ XAP_App *app);
 	~GR_CocoaGraphics();
 
 
@@ -45,7 +55,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	
 	static const char *    graphicsDescriptor(void){return "Cocoa Default";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 	
     // HACK: I need more speed
 	virtual void      drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) 
@@ -139,7 +149,10 @@ class GR_CocoaGraphics : public GR_Graphics
 	bool				isPrinting(void) const { return m_bIsPrinting; };
 	/* Cocoa Specific */
 	static	float		_getScreenResolution(void);
- protected:
+
+protected:
+	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
+	GR_CocoaGraphics(NSView * view, /*XAP_CocoaFontManager * fontManager,*/ XAP_App *app);
 	virtual GR_Font*	_findFont(const char* pszFontFamily, 
 								  const char* pszFontStyle, 
 								  const char* pszFontVariant, 

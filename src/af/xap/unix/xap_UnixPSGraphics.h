@@ -35,14 +35,9 @@ class XAP_UnixFontManager;
 
 class PS_Graphics : public GR_Graphics
 {
+	// all constructors are protected; instances must be created via
+	// GR_GraphicsFactory
 public:
-	/* TODO add other constructors to route to lp/lpr rather than a file */
-	PS_Graphics(const char * szFilename,
-				const char * szTitle,
-				const char * szSoftwareNameAndVersion,
-				XAP_UnixFontManager * fontManager,
-				bool		 bIsFile,
-				XAP_App *pApp);
 	virtual ~PS_Graphics();
 
 	static UT_uint32 s_getClassId() {return GRID_UNIX_PS;}
@@ -50,7 +45,7 @@ public:
 	
 	virtual GR_Capability getCapability() {return GRCAP_PRINTER_ONLY;}
 	static const char *    graphicsDescriptor(void) { return "Unix PostScript Graphics";}
-	static GR_Graphics *   graphicsAllocator(GR_AllocInfo*){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
+	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT(UT_NOT_IMPLEMENTED); return NULL;}
 
 	virtual void drawGlyph(UT_uint32 Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void drawChars(const UT_UCSChar* pChars, 
@@ -125,6 +120,15 @@ public:
 
 
 protected:
+	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
+	/* TODO add other constructors to route to lp/lpr rather than a file */
+	PS_Graphics(const char * szFilename,
+				const char * szTitle,
+				const char * szSoftwareNameAndVersion,
+				XAP_UnixFontManager * fontManager,
+				bool		 bIsFile,
+				XAP_App *pApp);
+	
 	virtual GR_Font* _findFont(const char* pszFontFamily, 
 							   const char* pszFontStyle, 
 							   const char* pszFontVariant, 

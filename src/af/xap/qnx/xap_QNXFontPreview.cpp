@@ -56,7 +56,9 @@ XAP_QNXFontPreview::XAP_QNXFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_ui
 	PtRealizeWidget(m_pPreviewWindow);
 
 	XAP_App *pApp = pQNXFrameImpl->getFrame()->getApp();
-	m_gc = new GR_QNXGraphics(m_pPreviewWindow,m_pDrawingArea, pApp);
+	//m_gc = new GR_QNXGraphics(m_pPreviewWindow,m_pDrawingArea, pApp);
+	GR_QNXAllocInfo ai(m_pPreviewWindow,m_pDrawingArea, pApp);
+	m_gc = (GR_QNXGraphics*) XAP_App::getApp()->neGraphics(ai);
 	
 	_createFontPreviewFromGC(m_gc, area.size.w,area.size.h);
 
