@@ -41,6 +41,8 @@ class GR_Graphics;
 class GR_Image;
 class UT_Timer;
 class UT_ByteBuf;
+class AP_LeftRulerInfo;
+
 
 typedef enum _FVDocPos
 {
@@ -105,6 +107,8 @@ public:
 	virtual void	cmdPaste(void);
 
 	virtual void	getTopRulerInfo(AP_TopRulerInfo * pInfo);
+	virtual void	getLeftRulerInfo(AP_LeftRulerInfo * pInfo);
+	
 	virtual EV_EditMouseContext getMouseContext(UT_sint32 xPos, UT_sint32 yPos);
 	virtual EV_EditMouseContext getInsertionPointContext(UT_sint32 * pxPos, UT_sint32 * pyPos);
 	

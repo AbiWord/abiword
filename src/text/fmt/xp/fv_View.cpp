@@ -47,6 +47,7 @@
 #include "xap_App.h"
 #include "xap_Clipboard.h"
 #include "ap_TopRuler.h"
+#include "ap_LeftRuler.h"
 
 // TODO why do we define these multiply, in different files? --EWS
 #define DELETEP(p)	do { if (p) delete p; } while (0)
@@ -4246,6 +4247,57 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 
 	return;
 }
+
+void FV_View::getLeftRulerInfo(AP_LeftRulerInfo * pInfo)
+{
+	memset(pInfo,0,sizeof(*pInfo));
+
+	if (1)								// TODO support tables
+	{
+		// we assume that we are in a column context (rather than a table)
+
+		pInfo->m_mode = AP_LeftRulerInfo::TRI_MODE_COLUMNS;
+
+		fl_BlockLayout * pBlock;
+		fp_Run * pRun;
+		UT_sint32 xCaret, yCaret;
+		UT_uint32 heightCaret;
+
+		_findPositionCoords(getPoint(), m_bPointEOL, xCaret, yCaret, heightCaret, &pBlock, &pRun);
+
+		fp_Container * pContainer = pRun->getLine()->getContainer();
+
+		pInfo->m_yPoint = yCaret - pContainer->getY();
+
+		fl_SectionLayout * pSection = pContainer->getSectionLayout();
+		if (pSection->getType() == FL_SECTION_DOC)
+		{
+			fp_Column* pColumn = (fp_Column*) pContainer;
+			fl_DocSectionLayout* pDSL = (fl_DocSectionLayout*) pSection;
+			fp_Page * pPage = pColumn->getPage();
+
+			UT_sint32 yoff = 0;
+			getPageYOffset(pPage, yoff);
+			pInfo->m_yPageStart = (UT_uint32)yoff;
+			pInfo->m_yPageSize = pPage->getHeight();
+
+			pInfo->m_yTopMargin = pDSL->getTopMargin();
+			pInfo->m_yBottomMargin = pDSL->getBottomMargin();
+		}
+		else
+		{
+			// TODO fill in the same info as above, with whatever is appropriate
+		}
+	}
+	else
+	{
+		// TODO support tables
+	}
+
+	return;
+}
+
+/*****************************************************************/
 
 UT_Bool FV_View::_insertPNGImage(UT_ByteBuf* pBB, const char* szName, UT_sint32 iImageWidth, UT_sint32 iImageHeight)
 {

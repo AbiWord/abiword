@@ -33,6 +33,25 @@ class AV_ScrollObj;
 class GR_Graphics;
 
 /*****************************************************************/
+/*****************************************************************/
+
+class AP_LeftRulerInfo
+{
+public:
+	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE } Mode;
+		
+	Mode					m_mode;
+
+	/* all values are in pixels */
+
+	UT_uint32				m_yPageStart;		/* absolute coord of start of page */
+	UT_uint32				m_yPageSize;		/* absolute page size for the current page */
+	UT_uint32				m_yPoint;			/* absolute coord of current insertion point */
+	UT_sint32				m_yTopMargin;		/* content start relative to top of page */
+	UT_sint32				m_yBottomMargin;	/* content end relative to top of page */
+};
+	
+/*****************************************************************/
 
 class AP_LeftRuler : public AV_Listener
 {
@@ -42,12 +61,12 @@ public:
 
 	virtual void		setView(AV_View * pView);
 	void				setView(AV_View* pView, UT_uint32 iZoom);
-	void				setOffsetPageViewTopMargin(UT_uint32 iPageViewLeftMargin);
 	void				setHeight(UT_uint32 iHeight);
 	UT_uint32			getHeight(void) const;
 	void				setWidth(UT_uint32 iWidth);
 	UT_uint32			getWidth(void) const;
 	void				draw(const UT_Rect * pClipRect);
+	void				draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi);
 	void				scrollRuler(UT_sint32 yoff, UT_sint32 ylimit);
 
 	/* used with AV_Listener */
@@ -63,13 +82,12 @@ protected:
 //									 UT_sint32 x, UT_sint32 h);
 	
 	XAP_Frame *			m_pFrame;
-	AV_View *			m_pView;
+	AV_View *			m_pView;		/* TODO make this a FV_View */
 	AV_ScrollObj *		m_pScrollObj;
 	GR_Graphics *		m_pG;
 	UT_Dimension		m_dim;
 	UT_uint32			m_iHeight;		/* size of window */
 	UT_uint32			m_iWidth;		/* size of window */
-	UT_uint32			m_iPageViewTopMargin;
 	UT_sint32			m_yScrollOffset;
 	UT_sint32			m_yScrollLimit;
 
@@ -87,6 +105,8 @@ protected:
 
 	UT_RGBColor			m_clrMarginArea;		/* used for flood fill of ruler area where margins are */
 	UT_RGBColor			m_clrDocumentArea;		/* used for flood fill of ruler where document is */
+
+	AP_LeftRulerInfo	m_lfi;					/* the values we last drew with */
 };
 
 #endif /* AP_LEFTRULER_H */

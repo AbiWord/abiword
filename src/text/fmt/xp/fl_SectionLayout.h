@@ -43,7 +43,7 @@ class fl_SectionLayout : public fl_Layout
 
 public:
 	fl_SectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, UT_uint32 iType);
-	~fl_SectionLayout();
+	virtual ~fl_SectionLayout();
 
 	inline UT_uint32	getType(void) const { return m_iType; }
 
@@ -94,7 +94,7 @@ class fl_DocSectionLayout : public fl_SectionLayout
 
 public:
 	fl_DocSectionLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap);
-	~fl_DocSectionLayout();
+	virtual ~fl_DocSectionLayout();
 
 	fl_DocSectionLayout* getNextDocSection(void) const;
 	fl_DocSectionLayout* getPrevDocSection(void) const;

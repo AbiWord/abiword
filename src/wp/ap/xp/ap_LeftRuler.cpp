@@ -32,6 +32,7 @@
 #include "xap_Frame.h"
 #include "ap_Ruler.h"
 #include "ap_Prefs.h"
+#include "fv_View.h"
 
 #define MyMax(a,b)		(((a)>(b)) ? (a) : (b))
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
@@ -46,7 +47,6 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 	m_pG = NULL;
 	m_iHeight = 0;
 	m_iWidth = 0;
-	m_iPageViewTopMargin = 0;
 	m_yScrollOffset = 0;
 	m_yScrollLimit = 0;
 	
@@ -76,6 +76,8 @@ AP_LeftRuler::AP_LeftRuler(XAP_Frame * pFrame)
 
 	UT_setColor(m_clrMarginArea, 127, 127, 127);
 	UT_setColor(m_clrDocumentArea, 255, 255, 255);
+
+	memset(&m_lfi,0,sizeof(m_lfi));
 }
 
 AP_LeftRuler::~AP_LeftRuler(void)
@@ -106,7 +108,6 @@ void AP_LeftRuler::setView(AV_View * pView)
 	}
 	
 	m_pView = pView;
-	setOffsetPageViewTopMargin(pView->getPageViewTopMargin());
 	
 	// create an AV_ScrollObj to receive send*ScrollEvents()
 	
@@ -124,16 +125,6 @@ void AP_LeftRuler::setView(AV_View * pView)
 	m_pView->addListener(static_cast<AV_Listener *>(this),&lidLeftRuler);
 
 	return;
-}
-
-void AP_LeftRuler::setOffsetPageViewTopMargin(UT_uint32 iPageViewTopMargin)
-{
-	// This gives us the amount of gray-space that the DocumentWindow
-	// draws to the above the paper in the "Page View".  We set the
-	// origin of our ruler at this offset.  For "Normal View" this
-	// should be zero.
-
-	m_iPageViewTopMargin = iPageViewTopMargin;
 }
 
 void AP_LeftRuler::setHeight(UT_uint32 iHeight)
@@ -161,12 +152,30 @@ UT_uint32 AP_LeftRuler::getWidth(void) const
 
 /*****************************************************************/
 
-UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask /* mask */)
+UT_Bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	// Handle AV_Listener events on the view.
 
 	UT_ASSERT(pView==m_pView);
 	//UT_DEBUGMSG(("AP_LeftRuler::notify [view %p][mask %p]\n",pView,mask));
+
+	// If the caret has moved to a different page or any of the properties
+	// on the page (such as the margins) have changed, we force a redraw.
+
+	if (mask & (AV_CHG_MOTION | AV_CHG_FMTSECTION))
+	{
+		AP_LeftRulerInfo lfi;
+		(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
+
+		if (   (lfi.m_yPageStart != m_lfi.m_yPageStart)
+			|| (lfi.m_yPageSize != m_lfi.m_yPageSize)
+			|| (lfi.m_yTopMargin != m_lfi.m_yTopMargin)
+			|| (lfi.m_yBottomMargin != m_lfi.m_yBottomMargin))
+		{
+			draw(NULL,lfi);
+		}
+	}
+	
 	return UT_TRUE;
 }
 
@@ -232,6 +241,14 @@ void AP_LeftRuler::scrollRuler(UT_sint32 yoff, UT_sint32 ylimit)
 
 void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 {
+	AP_LeftRulerInfo lfi;
+	(static_cast<FV_View *>(m_pView))->getLeftRulerInfo(&lfi);
+	
+	draw(pClipRect,lfi);
+}
+
+void AP_LeftRuler::draw(const UT_Rect * pClipRect, AP_LeftRulerInfo & lfi)
+{
 	if (!m_pG)
 		return;
 	
@@ -247,32 +264,24 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	UT_uint32 xLeft = s_iFixedWidth/4;
 	UT_uint32 xBar  = s_iFixedWidth/2;
 
-	// TODO get these from the document at the current cursor position.
-	
-	UT_uint32 pageHeight = m_pG->convertDimension("11.0in");
-	UT_uint32 docTopMarginHeight = m_pG->convertDimension("1.0in");
-	UT_uint32 docBottomMarginHeight = m_pG->convertDimension("1.0in");
-	UT_uint32 docWithinMarginHeight = pageHeight - docTopMarginHeight - docBottomMarginHeight;
+	UT_uint32 docWithinMarginHeight = lfi.m_yPageSize - lfi.m_yTopMargin - lfi.m_yBottomMargin;
 
-	// top edge of the paper depends upon the height of the
-	// gray-space we draw for PageView (when in PageView mode).
-
-	UT_sint32 yOrigin = (UT_sint32)m_iPageViewTopMargin;
+	UT_sint32 yOrigin = lfi.m_yPageStart;
 	UT_sint32 yScrolledOrigin = yOrigin - m_yScrollOffset;
 	UT_sint32 y,h;
 
-	if ((yScrolledOrigin + docTopMarginHeight) > 0)
+	if ((yScrolledOrigin + lfi.m_yTopMargin) > 0)
 	{
 		// top margin of paper is on-screen.  draw dark-gray bar.
 		// we need to clip it ourselves -- since the expose/paint
 		// clip rects don't know anything about this distinction.
 
 		y = yScrolledOrigin;
-		h = docTopMarginHeight - 1;
+		h = lfi.m_yTopMargin - 1;
 		m_pG->fillRect(m_clrMarginArea,xLeft,y,xBar,h);
 	}
 
-	yScrolledOrigin += docTopMarginHeight + 1;
+	yScrolledOrigin += lfi.m_yTopMargin + 1;
 	if ((yScrolledOrigin + docWithinMarginHeight) > 0)
 	{
 		// area within the page margins is on-screen.
@@ -284,14 +293,14 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	}
 
 	yScrolledOrigin += docWithinMarginHeight + 1;
-	if ((yScrolledOrigin + docBottomMarginHeight) > 0)
+	if ((yScrolledOrigin + lfi.m_yBottomMargin) > 0)
 	{
 		// bottom margin of paper is on-screen.
 		// draw another dark-gray bar, like we
 		// did at the top.
 
 		y = yScrolledOrigin;
-		h = docBottomMarginHeight - 1;
+		h = lfi.m_yBottomMargin - 1;
 		m_pG->fillRect(m_clrMarginArea,xLeft,y,xBar,h);
 	}
 
@@ -313,9 +322,9 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	}
 
 	// first draw the top margin
-	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < docTopMarginHeight); k++)
+	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < lfi.m_yTopMargin); k++)
 	{
-		y = yOrigin + docTopMarginHeight - k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
+		y = yOrigin + lfi.m_yTopMargin - k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
 		if (y >= 0)
 		{
 			if (k % tick.tickLabel)
@@ -348,9 +357,9 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	}
 	
 	// then draw everything below
-	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < (pageHeight - docTopMarginHeight)); k++)
+	for (k=1; (k*tick.tickUnit/tick.tickUnitScale < (lfi.m_yPageSize - lfi.m_yTopMargin)); k++)
 	{
-		y = yOrigin + docTopMarginHeight + k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
+		y = yOrigin + lfi.m_yTopMargin + k*tick.tickUnit/tick.tickUnitScale - m_yScrollOffset;
 		if (y >= 0)
 		{
 			if (k % tick.tickLabel)
@@ -384,5 +393,7 @@ void AP_LeftRuler::draw(const UT_Rect * pClipRect)
 	
 	if (pClipRect)
 		m_pG->setClipRect(NULL);
+
+	m_lfi = lfi;
 }
 
