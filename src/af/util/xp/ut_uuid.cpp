@@ -651,30 +651,98 @@ void UT_UUID::clear()
 	m_bIsValid = false;
 }
 
+/* Fowler/Noll/Vo hashing
+ * FNV is a public domain hashing algorithm; see
+ * 
+ *      http://www.isthe.com/chongo/tech/comp/fnv/index.html
+ *
+ * perform a 32 bit Fowler/Noll/Vo hash on a buffer
+ *
+ */
 UT_uint32 UT_UUID::hash32() const
 {
-	// based on UT_String
-	UT_uint32 h = 0;
-	char * p = (char*) & m_uuid;
-	
-	for (UT_uint32 i = 0; i < sizeof(m_uuid); ++i,++p)
+	static UT_uint32 hval = 0x811c9dc5;
+    unsigned char *bp = (unsigned char *)&m_uuid;
+
+
+	for(UT_uint32 i = 0; i < sizeof(m_uuid); ++i)
 	{
-		h = (h << 5) - h + *p;
-	}
-	
-	return h;
+		
+	/* multiply by the 32 bit FNV magic prime mod 2^32 */
+	hval *= 0x01000193;
+
+	/* xor the bottom with the current octet */
+	hval ^= (UT_uint32)*bp++;
+    }
+
+    /* return our new hash value */
+    return hval;
 }
 
+/*!
+ * perform a 64 bit Fowler/Noll/Vo hash
+ */
 UT_uint64 UT_UUID::hash64() const
 {
-	// based on UT_String
-	UT_uint64 h = 0;
-	char * p = (char*) & m_uuid;
-	
-	for (UT_uint32 i = 0; i < sizeof(m_uuid); ++i,++p)
+	static UT_uint64 hval = 0xcbf29ce484222325; // value FNV1_64_INIT;
+    unsigned char *bp = (unsigned char *) &m_uuid;
+
+    /*
+     * FNV-1 hash each octet of the buffer
+     */
+	for(UT_uint32 i = 0; i < sizeof(m_uuid); ++i)
 	{
-		h = (h << 5) - h + *p;
-	}
-	
-	return h;
+		/* multiply by the 64 bit FNV magic prime mod 2^64 */
+		hval *= 0x100000001b3;
+		/* xor the bottom with the current octet */
+		hval ^= (UT_uint64)*bp++;
+    }
+
+    /* return our new hash value */
+    return hval;
 }
+
+
+#ifdef DEBUG
+#include "ut_endian.h"
+UT_UUID::__test()
+{
+#if 0
+	// test hashes ...
+	UT_DEBUGMSG(("------------------- Testing 32-bit hash --------------------------------"));
+	UT_UUID u;
+	UT_uint64 h;
+#ifdef UT_BIG_ENDIAN
+	UT_uint32 * h1 = (UT_uint32*) &h;
+	UT_uint32 * h2 = (UT_uint32*)(((char*)&h) + 4);
+#else
+	UT_uint32 * h2 = (UT_uint32*) &h;
+	UT_uint32 * h1 = (UT_uint32*)(((char*)&h) + 4);
+#endif
+	UT_uint32 h32;
+	
+	UT_String s;
+
+	for(UT_uint32 i = 0; i < 10; i++)
+	{
+		u.makeUUID();
+		u.toString(s);
+		h32 = u.hash32();
+		h = u.hash64();
+
+		UT_DEBUGMSG(("uuid: %s, hash32: 0x%x, hash64: 0x%x%x\n",
+					 s.c_str(), h32, *h1, *h2));
+
+		// sleep 2 seconds
+		time_t t0 = time(NULL);
+		time_t t1;
+		
+		do{
+			t1 = time(NULL);
+		}while(t1 <= t0 + 1);	
+	}
+
+	UT_DEBUGMSG(("-------------------------------------------------\n"));
+#endif
+}
+#endif

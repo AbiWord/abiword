@@ -183,6 +183,10 @@ class ABI_EXPORT UT_UUID
 	
 	bool            _getClock(UT_uint32 &iHigh, UT_uint32 &iLow, UT_uint16 &iSeq);
 
+#ifdef DEBUG
+  public:
+	                __test();
+#endif
   private:	
 	uuid                   m_uuid;
 	bool                   m_bIsValid;
@@ -202,7 +206,14 @@ class ABI_EXPORT UT_UUID
 class ABI_EXPORT UT_UUIDGenerator
 {
   public:
-	UT_UUIDGenerator(){};
+	UT_UUIDGenerator()
+	{
+#ifdef DEBUG
+		UT_UUID u;
+		u.__test();
+#endif
+	};
+	
 	virtual ~UT_UUIDGenerator(){};
 
 	// because the default constructor creates NULL uuid, we also need
