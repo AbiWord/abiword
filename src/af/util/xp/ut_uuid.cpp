@@ -334,6 +334,18 @@ try_again:
     return true;
 }
 
+bool UT_UUID::resetTime()
+{
+    UT_uint32  clock_mid;
+    bool bRet = _getClock(clock_mid, m_uuid.time_low, m_uuid.clock_seq);
+	
+    m_uuid.clock_seq |= 0x8000;
+    m_uuid.time_mid = (UT_uint16) clock_mid;
+    m_uuid.time_high_and_version = (clock_mid >> 16) | 0x1000;
+
+	return bRet;
+}
+
 bool UT_UUID::_makeUUID(uuid &uu)
 {
     UT_uint32  clock_mid;

@@ -106,26 +106,61 @@ bool AD_Document::isPieceTableChanging(void)
         return m_bPieceTableChanging;
 }
 
-
+/*!
+    Creates a new UUID; this uuid has the 'MAC' portion set to the
+    same value as the main doc uuid -- this guarantees that all id's
+    generated this way will be document unique even though withou
+    using MAC in the uuid we cannot absolutely guarantee universal
+    uniqueness.
+*/
 UT_UUID * AD_Document::getNewUUID()const
 {
+	// when new uuid is requested, we will generate it reusing the MAC
+	// part of the doc uuid. This will ensure that all uuid's in the
+	// present document are unique even though we no longer use MAC
+	// addrress in them
 	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(), NULL);
+	UT_return_val_if_fail(m_pUUID, NULL);
+	UT_UUID * pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID(*m_pUUID);
 
-	UT_UUID * pUUID = XAP_App::getApp()->getUUIDGenerator()->createUUID();
-	UT_ASSERT( pUUID && pUUID->isValid());
+	UT_return_val_if_fail(pUUID, NULL);
+	pUUID->resetTime();
+	UT_ASSERT(pUUID->isValid());
 	return pUUID;
 }
 
+/*!
+    see notes on getNewUUID()
+*/
 UT_uint32 AD_Document::getNewUUID32() const
 {
+#if 0
 	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(),0);
 	return XAP_App::getApp()->getUUIDGenerator()->getNewUUID32();
+#else
+	UT_UUID *pUUID = getNewUUID();
+	UT_return_val_if_fail(pUUID, 0);
+	UT_uint32 iRet = pUUID->hash32();
+	delete pUUID;
+	return iRet;
+#endif
 }
 
+/*!
+    see notes on getNewUUID()
+*/
 UT_uint64 AD_Document::getNewUUID64() const
 {
+#if 0
 	UT_return_val_if_fail(XAP_App::getApp() && XAP_App::getApp()->getUUIDGenerator(),0);
 	return XAP_App::getApp()->getUUIDGenerator()->getNewUUID64();
+#else
+	UT_UUID *pUUID = getNewUUID();
+	UT_return_val_if_fail(pUUID, 0);
+	UT_uint32 iRet = pUUID->hash32();
+	delete pUUID;
+	return iRet;
+#endif
 }
 
 
@@ -1020,6 +1055,10 @@ bool AD_Document::showHistory(AV_View * pView)
 AD_VersionData::AD_VersionData(UT_uint32 v, time_t start, bool autorev)
 	:m_iId(v),m_pUUID(NULL),m_tStart(start),m_bAutoRevision(autorev)
 {
+	// we do not create uuid's based on the main doc uuid as
+	// AD_Document::getNewUUID() does; this is because we need to be
+	// able to distinguish between versions of documents created at
+	// different place at the same time.
 	UT_UUIDGenerator * pGen = XAP_App::getApp()->getUUIDGenerator();
 	UT_return_if_fail(pGen);
 	
@@ -1100,5 +1139,3 @@ bool AD_VersionData::newUID()
 
 	return m_pUUID->makeUUID();
 }
-
-

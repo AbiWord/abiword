@@ -119,6 +119,9 @@ class ABI_EXPORT UT_UUID
 	UT_sint32       getType() const;
 	UT_UUIDVariant  getVariant() const;
 
+	bool            resetTime(); // sets the time of UUID to now
+	
+
 	/* NB: these are operators over the UUID space, not temporal
 	   operators !!! */
 	bool            operator ==(const UT_UUID &u) const;
