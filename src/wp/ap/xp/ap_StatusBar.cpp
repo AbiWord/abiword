@@ -106,23 +106,23 @@ void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 
     if (mask & (AV_CHG_MOTION | AV_CHG_PAGECOUNT))
     {
-	UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar(); 
-	UT_uint32 newPageCount = pView->getLayout()->countPages();
+		UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar(); 
+		UT_uint32 newPageCount = pView->getLayout()->countPages();
 
-	if (newPageCount != m_nrPages || m_pageNr != currentPage)
-	{
-	    bNeedNewString = true;
-	    m_nrPages = newPageCount;
-	    m_pageNr = currentPage; 
-	}
+		if (newPageCount != m_nrPages || m_pageNr != currentPage)
+		{
+			bNeedNewString = true;
+			m_nrPages = newPageCount;
+			m_pageNr = currentPage; 
+		}
     }
 
     if (bNeedNewString)
     {
-	UT_UTF8String_sprintf(m_sBuf, m_szFormat, m_pageNr, m_nrPages);
-				
-	if (getListener())
-	    getListener()->notify();
+		UT_UTF8String_sprintf(m_sBuf, m_szFormat, m_pageNr, m_nrPages);
+		
+		if (getListener())
+			getListener()->notify();
 
     }
 }
@@ -435,9 +435,15 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
     // something with the window.
     if(getFrame()->getFrameMode() != XAP_NormalFrame)
     {
-	return true;
+		return true;
     }
-
+//
+// High order masks are uninteresting right now
+//
+	if( ((mask & 0x4FFF) == 0))
+	{
+		return true;
+	}
     setStatusMessage(static_cast<UT_UCSChar *>(NULL));
 	
     // Let each field on the status bar update itself accordingly.
