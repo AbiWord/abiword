@@ -67,7 +67,7 @@ UT_Bool pt_PieceTable::_insertSpan(pf_Frag * pf,
 		// prior to a paragraph should probably be interpreted as
 		// appending to the previous paragraph.
 
-		if (pf->getPrev()->getType == pf_Frag::PFT_Text)
+		if (pf->getPrev()->getType() == pf_Frag::PFT_Text)
 		{
 			pft = static_cast<pf_Frag_Text *>(pf->getPrev());
 			fragOffset = pft->getLength();
