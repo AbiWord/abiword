@@ -25,12 +25,12 @@
 #include "ut_vector.h"
 #include "ut_hash.h"
 #include "ut_xml.h"
-#include "xap_Dialog.h"
 
 #define NUM_MODELESSID 39
 
 class XAP_Args;
 class XAP_DialogFactory;
+class XAP_Dialog_Modeless;
 class XAP_Toolbar_ControlFactory;
 class XAP_Frame;
 class EV_EditMethodContainer;
@@ -68,7 +68,7 @@ public:
 	virtual ~XAP_App(void);
 
 	virtual UT_Bool					initialize(void);
-	virtual UT_Bool					rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf=(XAP_Frame*)NULL);
+	virtual UT_Bool					rememberFrame(XAP_Frame* pFrame, XAP_Frame* pCloneOf = 0);
 	virtual UT_Bool					forgetFrame(XAP_Frame * pFrame);
 	virtual UT_Bool					forgetClones(XAP_Frame * pFrame);
 	virtual UT_Bool					getClones(UT_Vector *pvClonesCopy, XAP_Frame * pFrame);
