@@ -3954,6 +3954,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
 			m_sdh = sdh;
 			_rtf_open_section(pcr->getIndexAP());
 			m_bInBlock = false;
+			m_bBlankLine = true;
 			return true;
 		}
 
