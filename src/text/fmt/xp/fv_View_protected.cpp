@@ -208,7 +208,7 @@ void FV_View::_clearSelection(void)
 	_drawBetweenPositions(iPos1, iPos2);
 //
 // fixme: This causes some flicker but it definitely removes all traces 
-// of selection dirt. If some can fix removing selection dirt properly this
+// of selection dirt. If someone can fix removing selection dirt properly this
 // call can be removed. MES 4/3/2003
 	updateScreen(false);
 }
@@ -2860,6 +2860,18 @@ void FV_View::_extSelToPos(PT_DocPosition iNewPoint)
 */
 void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 {
+	_drawOrClearBetweenPositions(iPos1, iPos2, false,false);
+}
+
+/*
+  This method simply iterates over every run between two doc positions
+  and draws or clears and redraws each one. We clear if bClear is true 
+  otherwise we just draw selected.
+ If bClear is true then the if bFullLineHeight is true the runs are 
+ cleared to their full height.
+*/
+bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, bool bClear, bool bFullLineHeight)
+{
 //
 // Handle little class for redrawing lines around cells
 //
@@ -2896,7 +2908,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 //
 	if(m_pParentData == NULL)
 	{
-		return;
+		return true;
 	}
 //	_fixInsertionPointCoords();
 	{
@@ -2931,7 +2943,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 		if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
 		{
 			UT_VECTOR_PURGEALL(CellLine *, vecTables);
-			return;
+			return true;
 		}
 		PT_DocPosition curpos = pBlock->getPosition() + pCurRun->getBlockOffset();
 		if (pCurRun == pRun2 || curpos >= posEnd)
@@ -3017,7 +3029,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 			if(pLine == NULL || (pLine->getContainer()->getPage()== NULL))
 			{
 				UT_VECTOR_PURGEALL(CellLine *, vecTables);
-				return;
+				return true;
 			}
 			pLine->getScreenOffsets(pCurRun, xoff, yoff);
 
@@ -3026,7 +3038,15 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 			da.pG = m_pG;
 			da.xoff = xoff;
 			da.yoff = yoff + pLine->getAscent();
-			pCurRun->draw(&da);
+			if(!bClear)
+			{
+				pCurRun->draw(&da);
+			}
+			else
+			{
+				pCurRun->clearScreen(bFullLineHeight);
+				pCurRun->draw(&da);
+			}
 		}
 
 		pCurRun = pCurRun->getNext();
@@ -3063,6 +3083,7 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 	}
 	UT_VECTOR_PURGEALL(CellLine *, vecTables);
 	xxx_UT_DEBUGMSG(("Finished Drawing lines in tables \n"));
+	return true;
 }
 
 /*
@@ -3071,12 +3092,13 @@ void FV_View::_drawBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2)
 */
 bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, bool bFullLineHeightRect)
 {
+	return _drawOrClearBetweenPositions(iPos1, iPos2, true,bFullLineHeightRect);
+#if 0
 	xxx_UT_DEBUGMSG(("FV_View::_clearBetweenPositions called\n"));
 	if (iPos1 >= iPos2)
 	{
 		return true;
 	}
-
 	fp_Run* pRun1;
 	fp_Run* pRun2;
 	UT_uint32 uheight;
@@ -3190,6 +3212,7 @@ bool FV_View::_clearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2,
 		}
 	}
 	return true;
+#endif
 }
 
 void FV_View::_findPositionCoords(PT_DocPosition pos,

@@ -1730,6 +1730,14 @@ FL_DocLayout::_backgroundCheck(UT_Worker * pWorker)
 		return;
 	}
 
+//
+// Don't redraw on selections.
+//
+//	if (!pDocLayout->m_pView->isSelectionEmpty())
+//	{
+//		return;
+//	}
+
 	// Don't spell check while printing!
 	if(pDocLayout->m_pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{
