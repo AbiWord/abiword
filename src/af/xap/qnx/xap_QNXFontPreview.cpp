@@ -48,12 +48,12 @@ XAP_QNXFontPreview::XAP_QNXFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_ui
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,Pt_FALSE,Ph_WM_FOCUS);
 	m_pPreviewWindow = PtCreateWidget(PtWindow,parentWindow,n,args);
-	PtRealizeWidget(m_pPreviewWindow);
 
 		n=0;
 	PtSetArg(&args[n++],Pt_ARG_DIM,&area.size,0);
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
 	m_pDrawingArea = PtCreateWidget(PtRaw,m_pPreviewWindow,n,args); 
+	PtRealizeWidget(m_pPreviewWindow);
 
 	XAP_App *pApp = pQNXFrameImpl->getFrame()->getApp();
 	m_gc = new GR_QNXGraphics(m_pPreviewWindow,m_pDrawingArea, pApp);
