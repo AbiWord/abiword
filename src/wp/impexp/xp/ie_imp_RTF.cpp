@@ -1581,6 +1581,8 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 //
 	if((m_TableControl.getNestDepth() > 1) && m_bCellBlank)
 	{
+			xxx_UT_DEBUGMSG(("Append block 6 \n"));
+
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	getDoc()->appendStrux(PTX_SectionTable,NULL);
@@ -1725,6 +1727,8 @@ void IE_Imp_RTF::HandleCell(void)
 	}
 	if(m_bCellBlank && (m_gbBlock.getLength() == 0))
 	{
+			xxx_UT_DEBUGMSG(("Append block 7 \n"));
+
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	else
@@ -2018,6 +2022,7 @@ void IE_Imp_RTF::HandleNote(void)
 		else
 			getDoc()->appendStrux(PTX_SectionEndnote,attribs);
 			
+		xxx_UT_DEBUGMSG(("Append block 8 \n"));
 		getDoc()->appendStrux(PTX_Block,NULL);
 	}
 	else
@@ -2392,12 +2397,16 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 	{
 		if(ok && m_bCellBlank && (getTable() != NULL))
 		{
+			xxx_UT_DEBUGMSG(("Append block 10 \n"));
+
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
 		}
 		else if( ok && m_bEndTableOpen)
 		{
+			xxx_UT_DEBUGMSG(("Append block 11 \n"));
+
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bEndTableOpen = false;
 		}
@@ -3044,6 +3053,8 @@ bool IE_Imp_RTF::InsertImage (const UT_ByteBuf * buf, const char * image_name,
 		UT_DEBUGMSG(("SEVIOR: Appending Object 2 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 		if(m_bCellBlank || m_bEndTableOpen)
 		{
+			xxx_UT_DEBUGMSG(("Append block 13 \n"));
+
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
@@ -3558,6 +3569,8 @@ bool IE_Imp_RTF::HandleField()
 		{
 			if(m_bCellBlank || m_bEndTableOpen)
 			{
+				xxx_UT_DEBUGMSG(("Append block 14 \n"));
+
 				getDoc()->appendStrux(PTX_Block,NULL);
 				m_bCellBlank = false;
 				m_bEndTableOpen = false;
@@ -3741,6 +3754,8 @@ XML_Char *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & buf, XML_Char *xmlField, 
 
 				if(m_bCellBlank || m_bEndTableOpen)
 				{
+					xxx_UT_DEBUGMSG(("Append block 15 \n"));
+
 					getDoc()->appendStrux(PTX_Block,NULL);
 					m_bCellBlank = false;
 					m_bEndTableOpen = false;
@@ -6692,6 +6707,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 	{
 		if(bAbiList || bWord97List )
 		{
+			xxx_UT_DEBUGMSG(("Append block 1 \n"));
 			bool bret = getDoc()->appendStrux(PTX_Block, attribs);
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
@@ -6713,7 +6729,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes()
 		}
 		else
 		{
-			xxx_UT_DEBUGMSG(("SEVIOR: Apply Para's append strux \n"));
+			UT_DEBUGMSG(("SEVIOR: Apply Para's append strux -2 \n"));
 			bool ok = getDoc()->appendStrux(PTX_Block, attribs);
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
@@ -7095,6 +7111,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 
 	if (!bUseInsertNotAppend()) // if we are reading a file or parsing a header and footer
 	{
+		UT_DEBUGMSG(("Appending Section strux now \n"));
 		return getDoc()->appendStrux(PTX_Section, propsArray);
 	}
 	else
@@ -9199,6 +9216,12 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 	if(m_bCellBlank || m_bEndTableOpen)
 	{
+		xxx_UT_DEBUGMSG(("Append block 3 \n"));
+		if (m_newSectionFlagged)
+		{
+			ApplySectionAttributes();
+			m_newSectionFlagged = false;
+		}
 		getDoc()->appendStrux(PTX_Block,NULL);
 		m_bCellBlank = false;
 		m_bEndTableOpen = false;
@@ -9295,6 +9318,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		getDoc()->appendStrux (PTX_SectionHdrFtr, propsArray);
 		propsArray[0] = NULL;
 		// actually it appears that we have to append a block for some cases.
+			xxx_UT_DEBUGMSG(("Append block 4 \n"));
 		getDoc()->appendStrux(PTX_Block, propsArray);
 
 		// tell that we are parsing headers and footers
@@ -9376,6 +9400,8 @@ bool IE_Imp_RTF::_appendField (const XML_Char *xmlField, const XML_Char ** pszAt
 		xxx_UT_DEBUGMSG(("SEVIOR: Appending Object m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 		if(m_bCellBlank || m_bEndTableOpen)
 		{
+			xxx_UT_DEBUGMSG(("Append block 5 \n"));
+
 			getDoc()->appendStrux(PTX_Block,NULL);
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;

@@ -72,7 +72,7 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 //
 	double curWidth = 0.0;
 	double curHeight = 0.0;
-	if(previewMode != PREVIEW_ADJUSTED_PAGE  || (pDoc != NULL))
+	if((previewMode != PREVIEW_ADJUSTED_PAGE)  && (pDoc != NULL))
 	{
 		curWidth = pDoc->m_docPageSize.Width(DIM_IN);
 		curHeight = pDoc->m_docPageSize.Height(DIM_IN);
@@ -118,8 +118,8 @@ AP_Preview_Abi::AP_Preview_Abi(GR_Graphics * gc, UT_uint32 iWidth,
 // In this case we set the page size to fit inside the gc window
 //
 	case PREVIEW_ADJUSTED_PAGE:
-		width = (double) iWidth/((double) gc->getResolution());
-		height = (double) iHeight/((double) gc->getResolution()) ;
+		width = (double) gc->tlu(iWidth)/((double) gc->getResolution());
+		height = (double) gc->tlu(iHeight)/((double) gc->getResolution()) ;
 		m_pDocument->m_docPageSize.Set(width,height,DIM_IN);
 		break;
 //

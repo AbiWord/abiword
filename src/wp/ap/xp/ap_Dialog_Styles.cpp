@@ -210,16 +210,16 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const XML_Char * pszProp,
 void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
 {
 	const XML_Char ** paraProps = NULL;
-	getView()->getBlockFormat(&paraProps,false);
+//	getView()->getBlockFormat(&paraProps,false);
 //
 // This line expands all styles
-//	getView()->getBlockFormat(&paraProps,true);
+	getView()->getBlockFormat(&paraProps,true);
 	const XML_Char ** charProps = NULL;
-	getView()->getCharFormat(&charProps,false);
+//	getView()->getCharFormat(&charProps,false);
 //
 // This line expans all styles..
 //
-//	getView()->getCharFormat(&charProps,true);
+	getView()->getCharFormat(&charProps,true);
 	UT_sint32 i =0;
 //
 // Loop over all properties and add them to our vector
@@ -275,6 +275,18 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 
 	const size_t nattribs = sizeof(attribs)/sizeof(attribs[0]);
 	UT_uint32 i;
+	UT_DEBUGMSG(("Looking at Style %s \n",szStyle));
+	UT_Vector vecAllProps;
+	vecAllProps.clear();
+	pStyle->getAllProperties(&vecAllProps,0);
+	for(i=0; i < vecAllProps.getItemCount(); i +=2)
+	{
+		const XML_Char * szName = static_cast<const XML_Char *>(vecAllProps.getNthItem(i));
+		const XML_Char * szValue = static_cast<const XML_Char *>(vecAllProps.getNthItem(i+1));
+		UT_DEBUGMSG(("Prop %d name %s val %s \n",i,szName,szValue));
+		addOrReplaceVecProp(szName, szValue);
+	}
+#if 0
 //
 // Loop through all Paragraph properties and add those with non-null values
 //
@@ -295,13 +307,28 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 		const XML_Char * szValue = NULL;
 		pStyle->getProperty(szName,szValue);
 		if(szValue)
+		{
+			UT_DEBUGMSG(("Adding char prop %s value %s \n",szName,szValue));
 			addOrReplaceVecProp(szName, szValue);
+		}
 	}
+#endif
 //
 // Loop through all the attributes and add those with non-null values
 //
 	if(bReplaceAttributes)
 	{
+		UT_Vector vecAllAtts;
+		vecAllAtts.clear();
+		pStyle->getAllAttributes(&vecAllProps,0);
+		for(i=0; i < vecAllAtts.getItemCount(); i +=2)
+		{
+			const XML_Char * szName = static_cast<const XML_Char  *>(vecAllAtts.getNthItem(i));
+			const XML_Char * szValue = static_cast<const XML_Char *>(vecAllAtts.getNthItem(i+1));
+			UT_DEBUGMSG(("Att %d name %s val %s \n",i,szName,szValue));
+			addOrReplaceVecAttribs(szName, szValue);
+		}
+#if 0
 		for(i = 0; i < nattribs; i++)
 		{
 			const XML_Char * szName = attribs[i];
@@ -310,6 +337,7 @@ void AP_Dialog_Styles::fillVecWithProps(const XML_Char * szStyle, bool bReplaceA
 			if(szValue)
 				addOrReplaceVecAttribs(szName, szValue);
 		}
+#endif
 	}
 }
 
@@ -1173,7 +1201,7 @@ void AP_Dialog_Styles::_createAbiPreviewFromGC(GR_Graphics * gc,
 	UT_ASSERT(gc);
 	if(m_pAbiPreview)
 		DELETEP(m_pAbiPreview);
-	m_pAbiPreview = new AP_Preview_Abi(gc,gc->tlu(width),gc->tlu(height),getFrame(),PREVIEW_ZOOMED);
+	m_pAbiPreview = new AP_Preview_Abi(gc,width,height,getFrame(),PREVIEW_ZOOMED);
 	UT_ASSERT(m_pAbiPreview);
 }
 
@@ -1332,7 +1360,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 // Update the description in the Modify Dialog.
 //
 	setModifyDescription (m_curStyleDesc.c_str());
-
+	UT_DEBUGMSG(("Style desc is %s \n",m_curStyleDesc.c_str()));
 	if( pStyle == NULL)
 	{
 		if(strlen(m_curStyleDesc.c_str()) == 0)
@@ -1516,7 +1544,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 //
 // Load up our properties vector
 //
-	fillVecWithProps(szStyle);
+	fillVecWithProps(szStyle,true);
 
 	// update the previews and the description label
 	if (getDoc()->getStyle (szStyle, &pStyle))
@@ -1532,15 +1560,17 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		for(i = 0; i < nParaFlds; i++)
 		{
 			const XML_Char * szName = paraFields[i];
-			const XML_Char * szValue = NULL;
-
-			if (!pStyle->getProperty(szName, szValue))
-				if (!pStyle->getAttribute(szName, szValue))
+			const XML_Char * szValue = getPropsVal(szName);
+			
+			if (szValue == NULL)
+			{
+				szValue = getAttsVal(szName);
+				if (szValue == NULL)
 				{
 					paraValues[i] = 0;
 					continue;
 				}
-
+			}
 			m_curStyleDesc += (const char *)szName;
 			m_curStyleDesc += ":";
 			m_curStyleDesc += (const char *)szValue;
@@ -1558,15 +1588,17 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 		for(i = 0; i < nCharFlds; i++)
 		{
 			const XML_Char * szName = charFields[i];
-			const XML_Char * szValue = NULL;
+			const XML_Char * szValue = getPropsVal(szName);
 
-			if (!pStyle->getProperty(szName, szValue))
-				if (!pStyle->getAttribute(szName, szValue))
+			if (szValue == NULL)
+			{
+				szValue = getAttsVal(szName);
+				if (szValue == NULL)
 				{
 					charValues[i] = 0;
 					continue;
 				}
-
+			}
 			m_curStyleDesc += (const char *)szName;
 			m_curStyleDesc += ":";
 			m_curStyleDesc += (const char *)szValue;

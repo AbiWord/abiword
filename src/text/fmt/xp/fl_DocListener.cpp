@@ -491,6 +491,11 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	}
 	case PTX_Block:
 	{
+		UT_DEBUGMSG(("SEVIOR: Doing populate block sdh %x \n",sdh));
+		if(m_pCurrentSL == NULL)
+		{
+			m_pDoc->miniDump(sdh,6);
+		}
 		UT_ASSERT(m_pCurrentSL);
 //
 // Look if we're inside a table. If so append this block to a cell.

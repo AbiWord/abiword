@@ -1173,6 +1173,10 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
  */
 bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const XML_Char ** attributes )
 {
+#if 0
+	pf_Frag_Strux * pfStrux = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
+	T_ASSERT(pfStrux->getStruxType() != PTX_Section);
+#endif
 	return m_pPieceTable->insertStruxNoUpdateBefore(sdh, pts, attributes );
 }
 
