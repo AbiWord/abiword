@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -28,13 +28,20 @@
 #include "pt_Types.h"
 
 /*
-	fp_TextRun represents a run of contiguous text sharing the same 
-	properties.  
+	fp_TextRun represents a run of contiguous text sharing the same
+	properties.
 */
 #ifdef BIDI_ENABLED
 #define MAX_SPAN_LEN 250   //initial size for m_pSpanBuff, realocated if needed
 #include "ut_timer.h"
+
+//this turns on work in progress that reduces the number of runs used by the bidi
+//build
+#ifdef DEBUG
+#define SMART_RUN_MERGING
 #endif
+
+#endif // BIDI_ENABLED
 
 class ABI_EXPORT fp_TextRun : public fp_Run
 {
@@ -44,14 +51,14 @@ public:
 
 	virtual void			lookupProperties(void);
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL);
-	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
+	virtual void			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& x2, UT_sint32& y2, UT_sint32& height, bool& bDirection);
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual bool			alwaysFits(void) const;
 	virtual bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, bool bForce=false);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const;
-	UT_uint32               countTrailingSpaces(void) const;
+	UT_uint32				countTrailingSpaces(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
 	
 	bool					split(UT_uint32 iSplitOffset);
@@ -59,7 +66,7 @@ public:
 	virtual bool			hasLayoutProperties(void) const;
 	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	virtual bool			recalcWidth(void);
-	virtual bool            canContainPoint(void) const;
+	virtual bool			canContainPoint(void) const;
 	bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
 
@@ -89,39 +96,39 @@ public:
 	bool					isFirstCharacter(UT_UCSChar Character) const;
 	bool					isLastCharacter(UT_UCSChar Character) const;
 	virtual bool			doesContainNonBlankData(void) const;
-	inline virtual bool	isSuperscript(void) const;
-	inline virtual bool	isSubscript(void) const;
+	inline virtual bool isSuperscript(void) const;
+	inline virtual bool isSubscript(void) const;
 	GR_Font*				getFont(void) const
 		{ return m_pScreenFont; }
-	UT_RGBColor				getFGColor(void) const
+	UT_RGBColor 			getFGColor(void) const
 		{ return m_colorFG; }
 
-	const XML_Char * 			getLanguage() const
+	const XML_Char *			getLanguage() const
 		{ return m_pLanguage; }
 
 #ifdef BIDI_ENABLED
-	UT_sint32               getStr(UT_UCSChar * str, UT_uint32 &iMax);
-	//bool                 setUnicodeDirection();
-    void					setDirection(FriBidiCharType dir);
-    static bool				getUseContextGlyphs(){return s_bUseContextGlyphs;};
-    // the usability of the following function is *very* limited, see the note in cpp file
-    void					setDirOverride(FriBidiCharType dir);
-    virtual FriBidiCharType	getDirection() const{return m_iDirOverride == FRIBIDI_TYPE_UNSET ? m_iDirection : m_iDirOverride;}
+	UT_sint32				getStr(UT_UCSChar * str, UT_uint32 &iMax);
+	//bool				   setUnicodeDirection();
+	void					setDirection(FriBidiCharType dir);
+	static bool 			getUseContextGlyphs(){return s_bUseContextGlyphs;};
+	// the usability of the following function is *very* limited, see the note in cpp file
+	void					setDirOverride(FriBidiCharType dir);
+	virtual FriBidiCharType getDirection() const{return m_iDirOverride == FRIBIDI_TYPE_UNSET ? m_iDirection : m_iDirOverride;}
 
 	/* needed for handling BiDi text, static because we need only one buffer
 	   for all the instances, public so that we could inicialised them in the cpp file outside of the
 	   constructor in order that the constructor can decide whether it is creating the first instance
 	   or not*/
-	UT_UCSChar * 		m_pSpanBuff;
-	UT_uint32		    m_iSpanBuffSize;
-	static UT_uint32    s_iClassInstanceCount;
-	FriBidiCharType		m_iDirOverride;
-	static bool			s_bUseContextGlyphs;
-	static bool			s_bSaveContextGlyphs;
+	UT_UCSChar *		m_pSpanBuff;
+	UT_uint32			m_iSpanBuffSize;
+	static UT_uint32	s_iClassInstanceCount;
+	FriBidiCharType 	m_iDirOverride;
+	static bool 		s_bUseContextGlyphs;
+	static bool 		s_bSaveContextGlyphs;
 	static UT_Timer *	s_pPrefsTimer;
-	static bool			s_bBidiOS;
+	static bool 		s_bBidiOS;
 private:
-	static void			_refreshPrefs(UT_Worker * pTimer);
+	static void 		_refreshPrefs(UT_Worker * pTimer);
 	void				_getContext(const UT_UCSChar *pSpan,
 									UT_uint32 lenSpan,
 									UT_uint32 len,
@@ -133,7 +140,7 @@ private:
 										 UT_uint32 offset,
 										 UT_UCSChar *prev,
 										 UT_UCSChar *next) const;
-	//fp_Run * 			_getOldNext()const{return m_pOldNext;};
+	//fp_Run *			_getOldNext()const{return m_pOldNext;};
 	void				_refreshDrawBuffer();
 #endif
 
@@ -145,13 +152,13 @@ public:
 protected:
 	void					_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths);
 	virtual void			_draw(dg_DrawArgs*);
-	virtual void       		_clearScreen(bool bFullLineHeightRect);
+	virtual void			_clearScreen(bool bFullLineHeightRect);
 
-    void                    _drawInvisibleSpaces(UT_sint32, UT_sint32);
-    void                    _drawInvisibles(UT_sint32, UT_sint32);
+	void					_drawInvisibleSpaces(UT_sint32, UT_sint32);
+	void					_drawInvisibles(UT_sint32, UT_sint32);
 	void					_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right);
 
-	void 					_getPartRect(UT_Rect* pRect,
+	void					_getPartRect(UT_Rect* pRect,
 										 UT_sint32 xoff,
 										 UT_sint32 yoff,
 										 UT_uint32 iStart,
@@ -181,7 +188,7 @@ protected:
 		TEXT_POSITION_SUPERSCRIPT,
 		TEXT_POSITION_SUBSCRIPT
 	};
-	UT_Byte				m_fPosition;
+	UT_Byte 			m_fPosition;
 	
 	/*
 	  This makes the assumption that all characters in a given run
@@ -193,7 +200,7 @@ protected:
 	*/
 	//GR_Font*				m_pFont;
 	//GR_Font*				m_pFontLayout;
-	UT_RGBColor				m_colorFG;
+	UT_RGBColor 			m_colorFG;
 	bool					m_bSquiggled;
 
 	enum

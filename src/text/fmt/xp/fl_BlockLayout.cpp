@@ -103,7 +103,7 @@ static const XML_Char * xml_Lists[] = { XML_NUMBERED_LIST,
 										XML_HAND_LIST,
 										XML_HEART_LIST };
 
-static const char     * fmt_Lists[] = { fmt_NUMBERED_LIST,
+static const char	  * fmt_Lists[] = { fmt_NUMBERED_LIST,
 										fmt_LOWERCASE_LIST,
 										fmt_UPPERCASE_LIST,
 										fmt_UPPERROMAN_LIST,
@@ -247,7 +247,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fb_LineBreaker* pBreaker,
 							   fl_BlockLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout,
-			       PT_AttrPropIndex indexAP)
+				   PT_AttrPropIndex indexAP)
 	: fl_Layout(PTX_Block, sdh)
 {
 	m_pAlignment = NULL;
@@ -553,18 +553,18 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 	const rgProps[] =
 	{
-		{ "margin-top",		&m_iTopMargin,		&m_iTopMarginLayoutUnits	},
+		{ "margin-top", 	&m_iTopMargin,		&m_iTopMarginLayoutUnits	},
 		{ "margin-bottom",	&m_iBottomMargin,	&m_iBottomMarginLayoutUnits },
-		{ "margin-left",	&m_iLeftMargin,		&m_iLeftMarginLayoutUnits	},
+		{ "margin-left",	&m_iLeftMargin, 	&m_iLeftMarginLayoutUnits	},
 		{ "margin-right",	&m_iRightMargin,	&m_iRightMarginLayoutUnits	},
-		{ "text-indent",	&m_iTextIndent,		&m_iTextIndentLayoutUnits	}
+		{ "text-indent",	&m_iTextIndent, 	&m_iTextIndentLayoutUnits	}
 	};
 	for (UT_uint32 iRg = 0; iRg < NrElements(rgProps); ++iRg)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
 		const PP_PropertyTypeSize * pProp = (const PP_PropertyTypeSize *)getPropertyType((XML_Char*)mai.szProp, Property_type_size);
 		*mai.pVar	= pG->convertDimension(pProp->getValue(), pProp->getDim());
-		*mai.pVarLU	= UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
+		*mai.pVarLU = UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 	}
 
 	{
@@ -580,7 +580,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		{
 			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_LEFT)
 			{
-			    DELETEP(m_pAlignment);
+				DELETEP(m_pAlignment);
 				m_pAlignment = new fb_Alignment_left;
 			}
 		}
@@ -588,7 +588,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		{
 			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_CENTER)
 			{
-			    DELETEP(m_pAlignment);
+				DELETEP(m_pAlignment);
 				m_pAlignment = new fb_Alignment_center;
 			}
 		}
@@ -596,7 +596,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		{
 			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_RIGHT)
 			{
-			    DELETEP(m_pAlignment);
+				DELETEP(m_pAlignment);
 				m_pAlignment = new fb_Alignment_right;
 			}
 		}
@@ -604,7 +604,7 @@ void fl_BlockLayout::_lookupProperties(void)
 		{
 			if(!m_pAlignment || m_pAlignment->getType() != FB_ALIGNMENT_JUSTIFY)
 			{
-			    DELETEP(m_pAlignment);
+				DELETEP(m_pAlignment);
 				m_pAlignment = new fb_Alignment_justify;
 			}
 		}
@@ -720,7 +720,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	{
 		// We have stopped or started a multi-level list
 		// this struxdochandle may already have been removed if there is another
-        // view on this document. So check first
+		// view on this document. So check first
 	
 		if(m_pAutoNum->isItem(getStruxDocHandle()))
 		{
@@ -826,12 +826,12 @@ fl_BlockLayout::~fl_BlockLayout()
 	purgeLayout();
 	UT_VECTOR_PURGEALL(fl_TabStop *, m_vecTabs);
 	DELETEP(m_pAlignment);
-	//  if (m_pAutoNum)
-//  	{
-//  		m_pAutoNum->removeItem(getStruxDocHandle());
-//  		if (m_pAutoNum->isEmpty())
-//  			DELETEP(m_pAutoNum);
-//  	}
+	//	if (m_pAutoNum)
+//		{
+//			m_pAutoNum->removeItem(getStruxDocHandle());
+//			if (m_pAutoNum->isEmpty())
+//				DELETEP(m_pAutoNum);
+//		}
 
 	UT_ASSERT(m_pLayout != NULL);
 	m_pLayout->notifyBlockIsBeingDeleted(this);
@@ -878,11 +878,11 @@ void fl_BlockLayout::clearScreen(GR_Graphics* /* pG */)
 	{
 		UT_ASSERT(!pLine->isEmpty());
 //		fp_Run * pRun = pLine->getFirstRun();
-//  	while(pRun)
-//  		{
-//  			pRun->clearScreen();
-//  			pRun = pRun->getNext();
-//  		}
+//		while(pRun)
+//			{
+//				pRun->clearScreen();
+//				pRun = pRun->getNext();
+//			}
 		pLine->clearScreen();
 		pLine = pLine->getNext();
 	}
@@ -1014,24 +1014,24 @@ void fl_BlockLayout::collapse(void)
 void fl_BlockLayout::purgeLayout(void)
 {
 	fp_Line* pLine = m_pFirstLine;
-	//         if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
-//  	{
-//  	  // Sevior.
-//  	  // TODO. Investigate whether this causes a memory leak.
-//            // This delete appears to clash with the line delete from the shadows
-//            // Apparently the fact that both the first page shadow and this overall
-//  	  // hdrftrSection are attached to the same container causes conflicts.
-//  	  // Maybe we should implement a virtual header/footer container for the
-//  	  // overall hdrftrSectionLayout. Anyway right now doing this prsvents
-//  	  // a crash on closing windows.
-//  	  //
-//  	        while (m_pFirstRun)
-//  	        {
-//  		       fp_Run* pNext = m_pFirstRun->getNext();
-//  		       delete m_pFirstRun;
-//  		       m_pFirstRun = pNext;
-//  		}
-//  		return;
+	//		   if(getSectionLayout() && (getSectionLayout()->getType()== FL_SECTION_HDRFTR))
+//		{
+//		  // Sevior.
+//		  // TODO. Investigate whether this causes a memory leak.
+//			  // This delete appears to clash with the line delete from the shadows
+//			  // Apparently the fact that both the first page shadow and this overall
+//		  // hdrftrSection are attached to the same container causes conflicts.
+//		  // Maybe we should implement a virtual header/footer container for the
+//		  // overall hdrftrSectionLayout. Anyway right now doing this prsvents
+//		  // a crash on closing windows.
+//		  //
+//				while (m_pFirstRun)
+//				{
+//				   fp_Run* pNext = m_pFirstRun->getNext();
+//				   delete m_pFirstRun;
+//				   m_pFirstRun = pNext;
+//			}
+//			return;
 //	}
 	while (pLine)
 	{
@@ -1098,7 +1098,7 @@ void fl_BlockLayout::_removeAllEmptyLines(void)
   the block from their lines (and delete them from the display).
 
   \note The Run list may be inconsistent when this function is
-        called, so no assertion.
+		called, so no assertion.
   */
 bool fl_BlockLayout::_truncateLayout(fp_Run* pTruncRun)
 {
@@ -1177,7 +1177,7 @@ void fl_BlockLayout::_stuffAllRunsOnALine(void)
 /*!
   Add end-of-paragraph Run to block
 
-  This function adds the EOP Run to the block.  The presence of the
+  This function adds the EOP Run to the block.	The presence of the
   EOP is an invariant (except for when merging / splitting blocks) and
   ensures that the cursor can always be placed on the last line of a
   block.  If there are multiple lines, the first N-1 lines will have a
@@ -1232,7 +1232,7 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
   function.
 
   \note It should <b>only</b> be called by functions that do really
-        low-level handling of blocks and only on newly created blocks.
+		low-level handling of blocks and only on newly created blocks.
 */
 void
 fl_BlockLayout::_purgeEndOfParagraphRun(void)
@@ -1292,7 +1292,7 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	pLine->setNext(pNewLine);
 	// Update LastLine if necessary
 	if (m_pLastLine == pLine)
-	    m_pLastLine = pNewLine;
+		m_pLastLine = pNewLine;
 	// Set the block
 	pNewLine->setBlock(this);
 	// Add the line to the container
@@ -1500,7 +1500,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 				// Previous block exists but doesn't have a last line.
 				// This is a BUG. Try a work around for now. TODO Fix this elsewhere
 				UT_DEBUGMSG(("BUG!!! Previous block exists with no last line. This should not happen \n"));
-				//  m_pPrev->format();
+				//	m_pPrev->format();
 			}
 		}
 		if (m_pPrev && m_pPrev->getLastLine())
@@ -1532,7 +1532,7 @@ fp_Line* fl_BlockLayout::getNewLine(void)
 	return pLine;
 }
 
-const char*	fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandStyles) const
+const char* fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -1551,7 +1551,7 @@ const char*	fl_BlockLayout::getProperty(const XML_Char * pszName, bool bExpandSt
 	return PP_evalProperty(pszName,pSpanAP,pBlockAP,pSectionAP,m_pDoc,bExpandStyles);
 }
 
-const PP_PropertyType *	fl_BlockLayout::getPropertyType(const XML_Char * pszName, tProperty_type Type, bool bExpandStyles) const
+const PP_PropertyType * fl_BlockLayout::getPropertyType(const XML_Char * pszName, tProperty_type Type, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -1565,7 +1565,7 @@ const PP_PropertyType *	fl_BlockLayout::getPropertyType(const XML_Char * pszName
 /*!
  Get block's position in document
  \param bActualBlockPos When true return block's position. When false
-                        return position of first run in block
+						return position of first run in block
  \return Position of block (or first run in block)
  \fixme Split in two functions if called most often with FALSE
 */
@@ -1614,7 +1614,7 @@ bool	fl_BlockLayout::getBlockBuf(UT_GrowBuf * pgb) const
   \retval height Height of carret
   \retval bDirection Editing direction (true = LTR, false = RTL)
   \return The Run containing (or next to) the carret, or NULL if the block
-          has no formatting information.
+		  has no formatting information.
   \fixme bDirection should be an enum type
 */
 fp_Run*
@@ -1679,10 +1679,10 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	fp_Run* pPrevRun = pRun->getPrev();
 	
 	if (pPrevRun &&
-	    pPrevRun->getBlockOffset() + pPrevRun->getLength() > iRelOffset)
+		pPrevRun->getBlockOffset() + pPrevRun->getLength() > iRelOffset)
 	{
-	    pRun = pPrevRun;
-	    bCoordOfPrevRun = false;
+		pRun = pPrevRun;
+		bCoordOfPrevRun = false;
 	}
 	
 	// Since the requested offset may be a page break (or similar
@@ -1712,10 +1712,10 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// (This check is rather non-intuitive - step through the code
 	// for the different permutations to see why it's correct).
 	if (bEOL && pRun->getBlockOffset() < iRelOffset &&
-	    pRun->getBlockOffset() + pRun->getLength() >= iRelOffset)
+		pRun->getBlockOffset() + pRun->getLength() >= iRelOffset)
 	{
-	    bCoordOfPrevRun = false;
-	    bUseFirstExit = true;
+		bCoordOfPrevRun = false;
+		bUseFirstExit = true;
 	}
 
 	// If not bEOL, we're done: either we have actually found the
@@ -1726,8 +1726,8 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	// exit point, we should be OK performance wise).
 	if (bUseFirstExit || !bEOL)
 	{
-	    if (bCoordOfPrevRun && pRun->letPointPass())
-	    {
+		if (bCoordOfPrevRun && pRun->letPointPass())
+		{
 			// This looks a little weird. What it does is first try to
 			// go one Run back only, if allowed.  If that fails, use
 			// the original Run.
@@ -1772,7 +1772,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 			{
 				height = 0;
 			}
-	    }
+		}
 		else
 		{
 			if(getFirstRun()->getLine())
@@ -1783,9 +1783,9 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 			{
 				height = 0;
 			}
-	    }
+		}
 
-	    return pRun;
+		return pRun;
 	}
 
 	// Runs with layout information (page/column break) are not
@@ -1811,7 +1811,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 		{
 			height = 0;
 		}
-	    return pRun;
+		return pRun;
 	}
 
 	// Now search for the Run at the end of the line.  For a
@@ -1832,7 +1832,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 	//
 	while (pPrevRun && !pPrevRun->canContainPoint())
 	{
-	    pPrevRun = pPrevRun->getPrev();
+		pPrevRun = pPrevRun->getPrev();
 	}
 
 	// If we went past the head of the list, it means that the
@@ -1847,7 +1847,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 		{
 			height = 0;
 		}
-	    return pRun;
+		return pRun;
 	}
 
 
@@ -1863,7 +1863,7 @@ fl_BlockLayout::findPointCoords(PT_DocPosition iPos,
 		{
 			height = 0;
 		}
-	    return pRun;
+		return pRun;
 	}
 
 	// Only case left is that of a soft-broken line.
@@ -2019,7 +2019,7 @@ fl_PartOfBlock::doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const
 	end1 = m_iOffset + m_iLength;
 
 	start2 = iOffset;
-	end2 =   iOffset + iLength;
+	end2 =	 iOffset + iLength;
 
 	if (end1 == start2)
 	{
@@ -2050,7 +2050,7 @@ fl_PartOfBlock::doesTouch(UT_sint32 iOffset, UT_sint32 iLength) const
  Recalculate boundries for pending word
  \param iOffset Offset of change
  \param chg Size of change, negative is removal, zero is for
-            recalculating the pending word.
+			recalculating the pending word.
 
  On entry, the block is already changed and any pending word is junk.
  On exit, there's either a single unchecked pending word, or nothing.
@@ -2092,7 +2092,7 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg)
 	while ((iFirst + iLen < iBlockSize))
 	{
 		UT_UCSChar followChar;
-		followChar = ((iFirst + iLen + 1) < iBlockSize)  ?  pBlockText[iFirst + iLen + 1]  : UCS_UNKPUNK;
+		followChar = ((iFirst + iLen + 1) < iBlockSize)  ?	pBlockText[iFirst + iLen + 1]  : UCS_UNKPUNK;
 		if (UT_isWordDelimiter(pBlockText[iFirst + iLen], followChar)) break;
 		iLen++;
 	}
@@ -2264,7 +2264,7 @@ fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 				UT_UCSChar currentChar, followChar;
 				currentChar = pBlockText[wordBeginning + wordLength];
 				followChar = ((wordBeginning + wordLength + 1) < eor)  ?
-					pBlockText[wordBeginning + wordLength + 1]  :  UCS_UNKPUNK;
+					pBlockText[wordBeginning + wordLength + 1]	:  UCS_UNKPUNK;
 				if (UT_isWordDelimiter(currentChar, followChar)) break;
 				wordLength++;
 			}
@@ -2363,10 +2363,10 @@ fl_BlockLayout::_doCheckWord(fl_PartOfBlock* pPOB,
 		{
 			UT_UCSChar currentChar;
 			currentChar = pWord[i];
-		    
+			
 			// Remove UCS_ABI_OBJECT from the word
 			if (currentChar == UCS_ABI_OBJECT) continue;
-		    
+			
 			// Convert smart quote apostrophe to ASCII single quote to
 			// be compatible with ispell
 			if (currentChar == UCS_RQUOTE) currentChar = '\'';
@@ -2468,7 +2468,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	{
 		UT_DEBUGMSG(("In fl_BlockLayout::doclistener_populateSpan  no LastLine \n"));
 		UT_DEBUGMSG(("getPrev = %d this = %d \n",getPrev(),this));
-		//	        UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		//			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
 	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
@@ -2479,7 +2479,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	  handled specially.  Normal characters get grouped into
 	  runs as usual.
 	*/
-	UT_uint32 	iNormalBase = 0;
+	UT_uint32	iNormalBase = 0;
 	bool		bNormal = false;
 	UT_uint32 i;
 	for (i=0; i<len; i++)
@@ -2495,7 +2495,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 		case UCS_BOOKMARKSTART:
 		case UCS_BOOKMARKEND:
 		case UCS_TAB:	// tab
-#ifdef BIDI_ENABLED		
+#ifdef BIDI_ENABLED 	
 		case UCS_LRO:	// explicit direction overrides
 		case UCS_RLO:
 		case UCS_PDF:
@@ -2541,7 +2541,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 				_doInsertTabRun(i + blockOffset);
 				break;
 
-#ifdef BIDI_ENABLED		
+#ifdef BIDI_ENABLED 	
 			case UCS_LRO:
 				m_iDirOverride = FRIBIDI_TYPE_LTR;
 				break;
@@ -2586,23 +2586,23 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	FV_View* pView = m_pLayout->getView();
 	if(pView)
 		pView->eraseInsertionPoint();
-		
+
 #ifdef BIDI_ENABLED
 	xxx_UT_DEBUGMSG(("_doInsertTextSpan: offset %d, len %d\n", blockOffset, len));
 	PT_BlockOffset curOffset = blockOffset;
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan = 0;
-	
+
 	while(len > curOffset - blockOffset)
 	{
 		FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET;
 		getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
-	
+
 		iType = fribidi_get_type((FriBidiChar)pSpan[0]);
-	
+
 		UT_uint32 trueLen = UT_MIN(lenSpan,len);
 		UT_uint32 i = 1;
-		
+
 		for(i = 1; i < trueLen; i++)
 		{
 			iPrevType = iType;
@@ -2610,7 +2610,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 			if(iType != iPrevType)
 				break;
 		}
-	    xxx_UT_DEBUGMSG(("_doInsertTextSpan: text run: offset %d, len %d\n", curOffset, i));
+		xxx_UT_DEBUGMSG(("_doInsertTextSpan: text run: offset %d, len %d\n", curOffset, i));
 		fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), curOffset, i);
 		UT_ASSERT(pNewRun);
 		pNewRun->setDirOverride(m_iDirOverride);
@@ -2625,7 +2625,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 	
 #else
 	fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), blockOffset, len);
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	UT_ASSERT(pNewRun); // TODO check for outofmem
 	if (_doInsertRun(pNewRun))
 	{
 #if 0
@@ -2635,9 +2635,9 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		  half-not.  The newly inserted portion is clearly dirty.
 		  It has not even been drawn on screen yet.  The previously
 		  existent portion is not dirty.  If we want to do this
-		  merge, then we have two choices.  First, we could
+		  merge, then we have two choices.	First, we could
 		  erase the old portion, merge, and consider the result
-		  to be dirty.  OR, we could draw the new portion on
+		  to be dirty.	OR, we could draw the new portion on
 		  screen, merge, and consider the result to be NOT
 		  dirty.  The first approach causes flicker.  The second
 		  approach won't work now since we don't know the
@@ -2660,7 +2660,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 #endif
 
 #ifdef BIDI_ENABLED
-		//###TF pNewRun->setDirection(FRIBIDI_TYPE_UNSET);      //#TF need the the previous run to be set before we can do this
+		//###TF pNewRun->setDirection(FRIBIDI_TYPE_UNSET);		//#TF need the the previous run to be set before we can do this
 #endif
 
 		return true;
@@ -2676,11 +2676,11 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_ForcedLineBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
 	if (bResult)
-	    _breakLineAfterRun(pNewRun);
+		_breakLineAfterRun(pNewRun);
 
 	return bResult;
 }
@@ -2704,9 +2704,9 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 	}
 	
 	UT_ASSERT(pRun && pRun->getType() == FPRUN_BOOKMARK);
-    if(!pRun || pRun->getType() != FPRUN_BOOKMARK)
-    	return false;
-    	
+	if(!pRun || pRun->getType() != FPRUN_BOOKMARK)
+		return false;
+		
 	pB1 = static_cast<fp_BookmarkRun *>(pRun);
 
 	// Remove Run from line
@@ -2746,12 +2746,12 @@ bool	fl_BlockLayout::_deleteBookmarkRun(PT_BlockOffset blockOffset)
 
 bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 {
-	fp_Run * pNewRun =  new fp_BookmarkRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	fp_Run * pNewRun =	new fp_BookmarkRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	UT_ASSERT(pNewRun);
 	bool bResult = _doInsertRun(pNewRun);
 	if (bResult)
 	{
-	    _breakLineAfterRun(pNewRun);
+		_breakLineAfterRun(pNewRun);
 	}
 
 	return bResult;
@@ -2787,7 +2787,7 @@ bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 			}
 		}
 		
-	    _breakLineAfterRun(pNewRun);
+		_breakLineAfterRun(pNewRun);
 	}
 
 	return bResult;
@@ -2798,11 +2798,11 @@ bool	fl_BlockLayout::_doInsertHyperlinkRun(PT_BlockOffset blockOffset)
 bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_FieldStartRun(this, m_pLayout->getGraphics(), blockOffset, 1);
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
 	if (bResult)
-	    _breakLineAfterRun(pNewRun);
+		_breakLineAfterRun(pNewRun);
 
 	return bResult;
 }
@@ -2810,11 +2810,11 @@ bool	fl_BlockLayout::_doInsertFieldStartRun(PT_BlockOffset blockOffset)
 bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_FieldEndRun(this, m_pLayout->getGraphics(), blockOffset, 1);
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
 	if (bResult)
-	    _breakLineAfterRun(pNewRun);
+		_breakLineAfterRun(pNewRun);
 
 	return bResult;
 }
@@ -2822,7 +2822,7 @@ bool	fl_BlockLayout::_doInsertFieldEndRun(PT_BlockOffset blockOffset)
 bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_ForcedPageBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	UT_ASSERT(pNewRun); // TODO check for outofmem
 	if(getPrev()!= NULL && getPrev()->getLastLine()==NULL)
 	{
 		UT_DEBUGMSG(("In fl_BlockLayout::_doInsertForcedPageBreakRun  no LastLine \n"));
@@ -2832,7 +2832,7 @@ bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 
 	bool bResult = _doInsertRun(pNewRun);
 	if (bResult)
-	    _breakLineAfterRun(pNewRun);
+		_breakLineAfterRun(pNewRun);
 
 	return bResult;
 }
@@ -2840,11 +2840,11 @@ bool	fl_BlockLayout::_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset)
 bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_ForcedColumnBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	bool bResult = _doInsertRun(pNewRun);
 	if (bResult)
-	    _breakLineAfterRun(pNewRun);
+		_breakLineAfterRun(pNewRun);
 
 	return bResult;
 }
@@ -2852,7 +2852,7 @@ bool	fl_BlockLayout::_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset)
 bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_TabRun(this, m_pLayout->getGraphics(), blockOffset, 1);
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
 }
@@ -2862,7 +2862,7 @@ bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* p
 	GR_Image* pImage = pFG->generateImage(m_pLayout->getGraphics());
 
 	fp_ImageRun* pNewRun = new fp_ImageRun(this, m_pLayout->getGraphics(), blockOffset, 1, pImage);
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	UT_ASSERT(pNewRun); // TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
 }
@@ -2922,99 +2922,99 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	}
 	else if(UT_strcmp(pszType, "date_mmddyy") == 0)
 	{
-	    pNewRun = new fp_FieldMMDDYYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldMMDDYYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_ddmmyy") == 0)
 	{
-	    pNewRun = new fp_FieldDDMMYYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDDMMYYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_mdy") == 0)
 	{
-	    pNewRun = new fp_FieldMonthDayYearRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldMonthDayYearRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_mthdy") == 0)
 	{
-	    pNewRun = new fp_FieldMthDayYearRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldMthDayYearRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_dfl") == 0)
 	{
-	    pNewRun = new fp_FieldDefaultDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDefaultDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_ntdfl") == 0)
 	{
-	    pNewRun = new fp_FieldDefaultDateNoTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDefaultDateNoTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_wkday") == 0)
 	{
-	    pNewRun = new fp_FieldWkdayRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldWkdayRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "date_doy") == 0)
 	{
-	    pNewRun = new fp_FieldDOYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldDOYRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time_miltime") == 0)
 	{
-	    pNewRun = new fp_FieldMilTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldMilTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time_ampm") == 0)
 	{
-	    pNewRun = new fp_FieldAMPMRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldAMPMRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time_zone") == 0)
 	{
-	    pNewRun = new fp_FieldTimeZoneRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldTimeZoneRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "time_epoch") == 0)
 	{
-	    pNewRun = new fp_FieldTimeEpochRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldTimeEpochRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "word_count") == 0)
 	{
-	    pNewRun = new fp_FieldWordCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldWordCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "char_count") == 0)
 	{
-	    pNewRun = new fp_FieldCharCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldCharCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "line_count") == 0)
 	{
-	    pNewRun = new fp_FieldLineCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldLineCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "para_count") == 0)
 	{
-	    pNewRun = new fp_FieldParaCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldParaCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "nbsp_count") == 0)
 	{
-	    pNewRun = new fp_FieldNonBlankCharCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldNonBlankCharCountRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "file_name") == 0)
 	{
-	    pNewRun = new fp_FieldFileNameRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldFileNameRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "app_ver") == 0)
 	{
-	    pNewRun = new fp_FieldBuildVersionRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildVersionRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "app_id") == 0)
 	{
-	    pNewRun = new fp_FieldBuildIdRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildIdRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	}
 	else if(UT_strcmp(pszType, "app_options") == 0)
 	  {
-	    pNewRun = new fp_FieldBuildOptionsRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildOptionsRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "app_target") == 0)
 	  {
-	    pNewRun = new fp_FieldBuildTargetRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildTargetRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "app_compiledate") == 0)
 	  {
-	    pNewRun = new fp_FieldBuildCompileDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildCompileDateRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	  }
 	else if(UT_strcmp(pszType, "app_compiletime") == 0)
 	  {
-	    pNewRun = new fp_FieldBuildCompileTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+		pNewRun = new fp_FieldBuildCompileTimeRun(this, m_pLayout->getGraphics(), blockOffset, 1);
 	  }
 	else
 	{
@@ -3026,7 +3026,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 		//		return _doInsertRun(pNewRun);
 	}
 
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
+	UT_ASSERT(pNewRun); // TODO check for outofmem
 	
 	pNewRun->lookupProperties();
 	pNewRun->calculateValue();
@@ -3038,7 +3038,7 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 
 FV_View * fl_BlockLayout::getView( void)
 {
-	return  m_pLayout->getView();
+	return	m_pLayout->getView();
 }
 
 bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
@@ -3057,18 +3057,18 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	if (pNewRun->getType() == FPRUN_TEXT)
 	{
 		fp_TextRun* pNewTextRun = (fp_TextRun*) pNewRun;
-		
+
 		pNewTextRun->fetchCharWidths(&m_gbCharWidths);
 		pNewTextRun->recalcWidth();
 	}
-	
+
 	bool bInserted = false;
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
 	{
 		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
 		UT_uint32 iRunLength = pRun->getLength();
-		
+
 		if ( (iRunBlockOffset + iRunLength) <= blockOffset )
 		{
 			// nothing to do.  the insert occurred AFTER this run
@@ -3076,7 +3076,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		else if (iRunBlockOffset > blockOffset)
 		{
 			UT_ASSERT(bInserted);
-			
+
 			// the insert is occuring BEFORE this run, so we just move the run offset
 			pRun->setBlockOffset(iRunBlockOffset + len);
 		}
@@ -3085,7 +3085,7 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			UT_ASSERT(!bInserted);
 
 			bInserted = true;
-			
+
 			// the insert is right before this run.
 			pRun->setBlockOffset(iRunBlockOffset + len);
 
@@ -3117,10 +3117,10 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			UT_ASSERT(pTextRun->getNext()->getType() == FPRUN_TEXT);
 
 // sterwill -- is the call to getNext() needed?  pOtherHalfOfSplitRun
-//             is not used.
-			
+//			   is not used.
+
 //			fp_TextRun* pOtherHalfOfSplitRun = (fp_TextRun*) pTextRun->getNext();
-			
+
 //			pTextRun->recalcWidth();
 
 			bInserted = true;
@@ -3173,8 +3173,130 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 		}
 	}
 
+#ifdef BIDI_ENABLED
+#ifdef SMART_RUN_MERGING
+	/*
+	  if we inserted a text run, we need to separate any characters in the adjucent runs
+	  that are of weak direction
+	*/
+
+	if(pNewRun->getType() == FPRUN_TEXT)
+	{
+		FriBidiCharType iPrevType, iType = FRIBIDI_TYPE_UNSET, iDirection;
+		iDirection = pNewRun->getDirection();
+
+		fp_TextRun *pNext = NULL, *pPrev = NULL;
+		PT_BlockOffset curOffset;
+		const UT_UCSChar* pSpan;
+		UT_uint32 lenSpan = 0;
+
+		if(  pNewRun->getPrev()
+		  && pNewRun->getPrev()->getType() == FPRUN_TEXT
+		  && pNewRun->getPrev()->getVisDirection() != iDirection)
+		{
+			pPrev = static_cast<fp_TextRun*>(pNewRun->getPrev());
+			curOffset = pPrev->getBlockOffset() + pPrev->getLength() - 1;
+		}
+
+		while(pPrev)
+		{
+			getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+			iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
+
+			while(curOffset > pPrev->getBlockOffset() && !FRIBIDI_IS_STRONG(iType))
+			{
+				curOffset--;
+				getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+				iType = fribidi_get_type((FriBidiChar)pSpan[0]);
+				if(iType != iPrevType)
+				{
+					pPrev->split(curOffset+1);
+					//now we want to reset the direction of the second half
+					pPrev->getNext()->setDirection(iPrevType);
+					iPrevType = iType;
+					// we do not want to break here, since pPrev still points to the
+					// left part, so we can carry on leftwards
+				}
+			}
+
+			if(FRIBIDI_IS_STRONG(iPrevType))
+				break;
+
+			// if we got this far, the whole previous run is weak, so we want to
+			// reset its direction and proceed with the run before it
+			pPrev->setDirection(iPrevType);
+
+			if(pPrev->getPrev() && pPrev->getPrev()->getType() == FPRUN_TEXT)
+			{
+				pPrev = static_cast<fp_TextRun*>(pPrev->getPrev());
+				curOffset = pPrev->getBlockOffset() + pPrev->getLength() - 1;
+			}
+			else
+				break;
+
+		}
+
+		// now do the same thing with the following run
+		if(  pNewRun->getNext()
+		  && pNewRun->getNext()->getType() == FPRUN_TEXT
+		  && pNewRun->getNext()->getVisDirection() != iDirection)
+		{
+			pNext = static_cast<fp_TextRun*>(pNewRun->getNext());
+			curOffset = pNext->getBlockOffset();
+		}
+
+		iType = FRIBIDI_TYPE_UNSET;
+		while(pNext)
+		{
+			getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+			iPrevType = fribidi_get_type((FriBidiChar)pSpan[0]);
+			bool bDirSet = false;
+			while(curOffset < pNext->getBlockOffset() + pNext->getLength() - 1 && !FRIBIDI_IS_STRONG(iType))
+			{
+				curOffset++;
+				getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+				iType = fribidi_get_type((FriBidiChar)pSpan[0]);
+				if(iType != iPrevType)
+				{
+					pNext->split(curOffset);
+					pNext->setDirection(iPrevType);
+					pNext->getNext()->setDirection(iType);
+					bDirSet = true;
+					iPrevType = iType; // not needed
+
+					// since pNext points now to the left half, the right-ward processing
+					// cannot continue, but insteds we need to proceed with the new run
+					// on the right
+					break;
+				}
+			}
+
+			if(FRIBIDI_IS_STRONG(iPrevType))
+				break;
+
+			// if we got this far, the whole next run is weak, so we want to
+			// reset its direction, unless we split it, in which case it has already
+			// been set
+			// then proceed with the run after it
+			if(!bDirSet)
+				pNext->setDirection(iPrevType);
+
+
+			if(pNext->getNext() && pNext->getNext()->getType() == FPRUN_TEXT)
+			{
+				pNext = static_cast<fp_TextRun*>(pNext->getNext());
+				curOffset = pNext->getBlockOffset();
+			}
+			else
+				break;
+
+		}
+
+	}
+#endif
+#endif
 	_assertRunListIntegrity();
-	
+
 	return true;
 }
 
@@ -3198,7 +3320,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 	  handled specially.  Normal characters get grouped into
 	  runs as usual.
 	*/
-	UT_uint32 	iNormalBase = 0;
+	UT_uint32	iNormalBase = 0;
 	bool	bNormal = false;
 	UT_uint32 i;
 	UT_uint32 _sqlist[100], *sqlist = _sqlist;
@@ -3220,7 +3342,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 		case UCS_BOOKMARKSTART:
 		case UCS_BOOKMARKEND:
 		case UCS_TAB:	// tab
-#ifdef BIDI_ENABLED		
+#ifdef BIDI_ENABLED 	
 		case UCS_LRO:	// explicit direction overrides
 		case UCS_RLO:
 		case UCS_PDF:
@@ -3266,7 +3388,7 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 				_doInsertTabRun(i + blockOffset);
 				break;
 
-#ifdef BIDI_ENABLED		
+#ifdef BIDI_ENABLED 	
 			case UCS_LRO:
 				m_iDirOverride = FRIBIDI_TYPE_LTR;
 				break;
@@ -3414,7 +3536,7 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 	{
 		UT_uint32 iRunBlockOffset = pRun->getBlockOffset();
 		UT_uint32 iRunLength = pRun->getLength();
-		fp_Run* pNextRun = pRun->getNext();	// remember where we're going, since this run may get axed
+		fp_Run* pNextRun = pRun->getNext(); // remember where we're going, since this run may get axed
 		
 		if ( (iRunBlockOffset + iRunLength) <= blockOffset )
 		{
@@ -3434,7 +3556,7 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 				{
 					// the deleted section is entirely within this run
 					pRun->setLength(iRunLength - len);
-					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
+					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
 					m_bFixCharWidths = true;
 				}
 				else
@@ -3443,7 +3565,7 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					UT_ASSERT(iDeleted > 0);
 
 					pRun->setLength(iRunLength - iDeleted);
-					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
+					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
 					m_bFixCharWidths = true;
 				}
 			}
@@ -3455,7 +3577,7 @@ bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 					UT_ASSERT(iDeleted > 0);
 					pRun->setBlockOffset(iRunBlockOffset - (len - iDeleted));
 					pRun->setLength(iRunLength - iDeleted);
-					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT));	// only textual runs could have a partial deletion
+					UT_ASSERT((pRun->getLength() == 0) || (pRun->getType() == FPRUN_TEXT)); // only textual runs could have a partial deletion
 					m_bFixCharWidths = true;
 				}
 				else
@@ -3519,7 +3641,7 @@ bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs)
 	FV_View* pView = m_pLayout->getView();
 	if (pView && (pView->isActive() || pView->isPreview()))
 	{
- 		pView->_resetSelection();
+		pView->_resetSelection();
 		pView->_setPoint(pcrs->getPosition());
 	}
 	else if(pView && pView->getPoint() > pcrs->getPosition())
@@ -3670,7 +3792,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// so the call might try to clear empty lines. jskov 2001.04.23
 
 	// Sevior put this back 2001.6.3. I don't understand why there was ever any
-    // question about it's neccessity.
+	// question about it's neccessity.
 
 	clearScreen(m_pLayout->getGraphics());
 
@@ -3681,7 +3803,7 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 	// the document) this will be empty - but the EOP Run needs to be
 	// deleted.
 
-	fl_BlockLayout*	pPrevBL = m_pPrev;
+	fl_BlockLayout* pPrevBL = m_pPrev;
 	if (pPrevBL)
 	{
 		// Find the EOP Run.
@@ -3917,7 +4039,7 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 																		  PL_ListenerId lid,
 																		  PL_StruxFmtHandle sfhNew))
 {
-	//  Exchange handles with the piece table
+	//	Exchange handles with the piece table
 	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)this;
 	pfnBindHandles(sdh,lid,sfhNew);
 
@@ -3951,7 +4073,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 
 	fl_SectionLayout* pSL = m_pSectionLayout;
 	UT_ASSERT(pSL);
-	fl_BlockLayout*	pNewBL = pSL->insertBlock(sdh, this, pcrx->getIndexAP());
+	fl_BlockLayout* pNewBL = pSL->insertBlock(sdh, this, pcrx->getIndexAP());
 	if(isHdrFtr())
 		pNewBL->setHdrFtr();
 	if (!pNewBL)
@@ -4061,7 +4183,7 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 	}
 	// else the old value of pLastRun is what we want.
 
-	// pFirstNewRun can be NULL at this point.  It means that the
+	// pFirstNewRun can be NULL at this point.	It means that the
 	// entire set of runs in this block must remain with this block --
 	// and the newly created block will be empty.
 	//
@@ -4157,7 +4279,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	// Everything from this point forward (to the next section) needs
 	// to be re-parented to this new section.  We also need to verify
 	// that this insertion point is at the end of the block (and that
-	// another block follows).  This is because a section cannot
+	// another block follows).	This is because a section cannot
 	// contain content.
 
 	UT_ASSERT(pcrx);
@@ -4177,8 +4299,8 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 //
 	m_pDoc->getBounds(true,pos1);
 	fl_DocSectionLayout* pDSL = NULL;
-    if(m_pSectionLayout->getType() == FL_SECTION_DOC)
-		pDSL =  (fl_DocSectionLayout *) m_pSectionLayout;
+	if(m_pSectionLayout->getType() == FL_SECTION_DOC)
+		pDSL =	(fl_DocSectionLayout *) m_pSectionLayout;
 		//UT_ASSERT(m_pSectionLayout->getType() == FL_SECTION_DOC);
 	xxx_UT_DEBUGMSG(("SectionLayout for block is %x block is %x \n",m_pSectionLayout,this));
 	fl_SectionLayout* pSL = NULL;
@@ -4412,7 +4534,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 	if (m_pSquiggles->findRange(runBlockOffset, runBlockEnd, iFirst, iLast))
 	{
 		UT_sint32 iStart, iEnd;
-		fl_PartOfBlock*	pPOB;
+		fl_PartOfBlock* pPOB;
 		UT_sint32 i = iFirst;
 
 		// The first POB may only be partially within the region. Clip
@@ -4421,7 +4543,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 		if (!pPOB->getIsIgnored())
 		{
 			iStart = pPOB->getOffset();
-			iEnd =  iStart + pPOB->getLength();
+			iEnd =	iStart + pPOB->getLength();
 			if (iStart < runBlockOffset) iStart = runBlockOffset;
 
 			// Only draw if there's more than one POB. If there's only
@@ -4439,7 +4561,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 			if (pPOB->getIsIgnored()) continue;
 
 			iStart = pPOB->getOffset();
-			iEnd =  iStart + pPOB->getLength();
+			iEnd =	iStart + pPOB->getLength();
 			pTextRun->drawSquiggle(iStart, iEnd - iStart);
 		}
 		// The last POB may only be partially within the region. Clip
@@ -4451,7 +4573,7 @@ fl_BlockLayout::findSquigglesForRun(fp_Run* pRun)
 			// one.
 			if (iFirst != iLast)
 				iStart = pPOB->getOffset();
-			iEnd =  pPOB->getOffset() + pPOB->getLength();
+			iEnd =	pPOB->getOffset() + pPOB->getLength();
 			if (iEnd > runBlockEnd) iEnd = runBlockEnd;
 			pTextRun->drawSquiggle(iStart, iEnd - iStart);
 		}
@@ -4711,20 +4833,20 @@ bool fl_BlockLayout::recalculateFields(bool bLayoutDependentOnly)
 
 	bool bResult = false;
 	fp_Run* pRun = m_pFirstRun;
- 	while (pRun)
+	while (pRun)
 	{
 		if (pRun->getType() == FPRUN_FIELD)
 		{
 			fp_FieldRun* pFieldRun = static_cast<fp_FieldRun*>(pRun);
-            if(!bLayoutDependentOnly || pFieldRun->isLayoutDependent())
-            {
+			if(!bLayoutDependentOnly || pFieldRun->isLayoutDependent())
+			{
 				const bool bSizeChanged = pFieldRun->calculateValue();
 				bResult = bResult || bSizeChanged;
 			}
 		}
-		//       		else if(pRun->isField() == true)
+		//				else if(pRun->isField() == true)
 		//	{
-		//       bResult = pRun->getField()->update();
+		//		 bResult = pRun->getField()->update();
 		//}
 		pRun = pRun->getNext();
 	}
@@ -5000,7 +5122,7 @@ bool	fl_BlockLayout::findPrevTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 
 {
 	UT_ASSERT(iStartX >= 0);
 	UT_DEBUGMSG(("fl_BlockLayout::findPrevTabStopInLayoutUnits\n"
-				 "       iStartX %d, iMaxX %d\n", iStartX, iMaxX));
+				 "		 iStartX %d, iMaxX %d\n", iStartX, iMaxX));
 				
 	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
 	UT_uint32 i;
@@ -5103,9 +5225,9 @@ void fl_BlockLayout::setPrev(fl_BlockLayout* pBL)
 
 void fl_BlockLayout::setSectionLayout(fl_SectionLayout* pSectionLayout)
 {
-	//  If we are setting the new section layout, this block
-	//  shouldn't already have a section.  If we are clearing
-	//  it, then it should already have a section.
+	//	If we are setting the new section layout, this block
+	//	shouldn't already have a section.  If we are clearing
+	//	it, then it should already have a section.
 	if (pSectionLayout == NULL)
 	{
 		UT_ASSERT(m_pSectionLayout != NULL);
@@ -5342,7 +5464,7 @@ List_Type fl_BlockLayout::getListTypeFromStyle( const XML_Char* style)
 }
 
 
-char *  fl_BlockLayout::getFormatFromListType( List_Type iListType)
+char *	fl_BlockLayout::getFormatFromListType( List_Type iListType)
 {
 	UT_uint32 nlisttype = (UT_uint32) iListType;
 	char * format = NULL;
@@ -5465,10 +5587,10 @@ void fl_BlockLayout::remItemFromList(void)
 		if (currLevel == 0)
 		{
 #ifndef __MRC__
-			const XML_Char * attribs[] = { 	"listid", lid,
+			const XML_Char * attribs[] = {	"listid", lid,
 										"level", buf, NULL, NULL };
 #else
-			const XML_Char * attribs[] = { 	"listid", NULL,
+			const XML_Char * attribs[] = {	"listid", NULL,
 											"level", NULL, NULL, NULL };
 			attribs [1] = lid;
 			attribs [3] = buf;
@@ -5479,10 +5601,10 @@ void fl_BlockLayout::remItemFromList(void)
 		else
 		{
 #ifndef __MRC__
-			const XML_Char * attribs[] = { 	"listid", lid,
+			const XML_Char * attribs[] = {	"listid", lid,
 											"level", buf,NULL,NULL };
 #else
-			const XML_Char * attribs[] = { 	"listid", NULL,
+			const XML_Char * attribs[] = {	"listid", NULL,
 											"level", NULL, NULL, NULL };
 			attribs [1] = lid;
 			attribs [3] = buf;
@@ -5506,7 +5628,7 @@ void fl_BlockLayout::remItemFromList(void)
  * Start a list with the paragraph definition container in the style defined by "style"
 \params const XML_CHar * style the name of the paragraph style for this block.
 */
-void    fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSDH)
+void	fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle prevSDH)
 {
 	//
 	// Starts a new list at the current block with list style style all other
@@ -5596,7 +5718,7 @@ void    fl_BlockLayout::StartList( const XML_Char * style, PL_StruxDocHandle pre
 	StartList( lType, startv,szDelim, szDec, szFont, fAlign, fIndent, currID,level);
 }
 
-void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
+void	fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 {
 	//
 	// This function fills the vector va with list attributes
@@ -5620,7 +5742,7 @@ void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 	}
 	if(buf != NULL)
 	{
-		va->addItem( (void *) "level");	va->addItem( (void *) buf);
+		va->addItem( (void *) "level"); va->addItem( (void *) buf);
 		count++;
 	}
 	if(style != NULL)
@@ -5635,7 +5757,7 @@ void    fl_BlockLayout::getListAttributesVector( UT_Vector * va)
 }
 
 
-void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
+void	fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 {
 	//
 	// This function fills the vector vp with list properties. All vector
@@ -5690,7 +5812,7 @@ void    fl_BlockLayout::getListPropertyVector( UT_Vector * vp)
 }
 
 
-void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID, UT_uint32 curlevel )
+void	fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Char * lDelim, const XML_Char * lDecimal, const XML_Char * fFont, float Align, float indent, UT_uint32 iParentID, UT_uint32 curlevel )
 {
 	//
 	// Starts a new list at the current block with all the options
@@ -5733,22 +5855,22 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	sprintf(buf, "%i", curlevel);
 	sprintf(pszStart,"%i",start);
 
-	UT_XML_strncpy(	pszAlign,
+	UT_XML_strncpy( pszAlign,
 					sizeof(pszAlign),
 					UT_convertInchesToDimensionString(DIM_IN, Align, 0));
 
-	UT_XML_strncpy(	pszIndent,
+	UT_XML_strncpy( pszIndent,
 					sizeof(pszIndent),
 					UT_convertInchesToDimensionString(DIM_IN, indent, 0));
 	
-	va.addItem( (void *) "listid");			va.addItem( (void *) lid);
+	va.addItem( (void *) "listid"); 		va.addItem( (void *) lid);
 	va.addItem( (void *) "parentid");		va.addItem( (void *) pid);
 	va.addItem( (void *) "level");			va.addItem( (void *) buf);
 	vp.addItem( (void *) "start-value");	vp.addItem( (void *) pszStart);
 	vp.addItem( (void *) "margin-left");	vp.addItem( (void *) pszAlign);
 	vp.addItem( (void *) "text-indent");	vp.addItem( (void *) pszIndent);
-	vp.addItem( (void *) "field-font");     vp.addItem( (void *) fFont);
-	vp.addItem( (void *) "list-style");	    vp.addItem( (void *) style);
+	vp.addItem( (void *) "field-font"); 	vp.addItem( (void *) fFont);
+	vp.addItem( (void *) "list-style"); 	vp.addItem( (void *) style);
 	xxx_UT_DEBUGMSG(("SEVIOR: Starting List with font %s \n",fFont));
 
 
@@ -5791,7 +5913,7 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 }
 
 
-void    fl_BlockLayout::StopListInBlock(void)
+void	fl_BlockLayout::StopListInBlock(void)
 {
 	//
 	// Stops the list in the current block
@@ -5876,7 +5998,7 @@ void    fl_BlockLayout::StopListInBlock(void)
 				pStyle->getProperty((const XML_Char *)"text-indent", szIndent);
 				fAlign = (float)UT_convertToInches(szAlign);
 				fAlign *= level;
-				UT_XML_strncpy(	align,
+				UT_XML_strncpy( align,
 								sizeof(align),
 								UT_convertInchesToDimensionString(DIM_IN, fAlign, 0));
 				sprintf(indent, "%s", szIndent);
@@ -5885,10 +6007,10 @@ void    fl_BlockLayout::StopListInBlock(void)
 			{
 				fAlign =  (float)LIST_DEFAULT_INDENT * level;
 				fIndent = (float)-LIST_DEFAULT_INDENT_LABEL;
-				UT_XML_strncpy(	align,
+				UT_XML_strncpy( align,
 								sizeof(align),
 								UT_convertInchesToDimensionString(DIM_IN, fAlign, 0));
-				UT_XML_strncpy(	indent,
+				UT_XML_strncpy( indent,
 								sizeof(indent),
 								UT_convertInchesToDimensionString(DIM_IN, fIndent, 0));
 			}
@@ -5911,7 +6033,7 @@ void    fl_BlockLayout::StopListInBlock(void)
 		if (pPrev)
 		{
 			szAlign = pPrev->getProperty("margin-left", true);
-			szIndent =  pPrev->getProperty("text-indent", true);
+			szIndent =	pPrev->getProperty("text-indent", true);
 		}
 		else if (pNext)
 		{
@@ -5994,7 +6116,7 @@ void    fl_BlockLayout::StopListInBlock(void)
 	}
 	else
 	{
-		const XML_Char * attribs[] = { 	"listid", NULL,"level",NULL, NULL,NULL };
+		const XML_Char * attribs[] = {	"listid", NULL,"level",NULL, NULL,NULL };
 		attribs [1] = lid;
 		attribs [3] = pszlevel;
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
@@ -6027,7 +6149,7 @@ fl_BlockLayout * fl_BlockLayout::getPreviousList(UT_uint32 id)
 	//
 	// Find the most recent list item that matches the id given
 	//
-  	UT_ASSERT(m_pAutoNum);
+	UT_ASSERT(m_pAutoNum);
 	fl_BlockLayout * pPrev = getPrev();
 	bool bmatchid =  false;
 	fl_AutoNum * pAutoNum = NULL;
@@ -6077,7 +6199,7 @@ fl_BlockLayout * fl_BlockLayout::getNextList(UT_uint32 id)
 	// Find the next list  item that matches the id given
 	//
 	fl_BlockLayout * pNext = getNext();
-	bool bmatchLevel =  false;
+	bool bmatchLevel =	false;
 	if( pNext != NULL && pNext->isListItem())
 	{
 		bmatchLevel = (bool) (id == pNext->getAutoNum()->getID());
@@ -6195,7 +6317,7 @@ void  fl_BlockLayout::prependList( fl_BlockLayout * nextList)
 		props[i] = (XML_Char *) vp.getNthItem(i);
 	}
 	props[i] = (XML_Char *) NULL;
-	m_bStartList =  false;
+	m_bStartList =	false;
 	m_bStopList = false; 
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
@@ -6240,7 +6362,7 @@ void  fl_BlockLayout::resumeList( fl_BlockLayout * prevList)
 		props[i] = (XML_Char *) vp.getNthItem(i);
 	}
 	props[i] = (XML_Char *) NULL;
-	m_bStartList =  false;
+	m_bStartList =	false;
 	m_bStopList = false; 
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
@@ -6379,12 +6501,12 @@ void fl_BlockLayout::_createListLabel(void)
 	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,(const char **)tagatt);
 #endif
 
-	const XML_Char*	attributes[] = {
+	const XML_Char* attributes[] = {
 		"type","list_label",
 		NULL, NULL
 	};
 	bool bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, NULL);
-	// 	pView->_generalUpdate();
+	//	pView->_generalUpdate();
 	if(m_pDoc->isDoingPaste() == false)
 	{
 		UT_UCSChar c = UCS_TAB;
@@ -6422,7 +6544,7 @@ void fl_BlockLayout::_deleteListLabel(void)
 	PD_Document * pDoc = m_pLayout->getDocument();
 	UT_uint32 posBlock = getPosition();
 	// Find List Label
-    fp_Run * pRun = getFirstRun();
+	fp_Run * pRun = getFirstRun();
 	bool bStop = false;
 	m_bListLabelCreated = false;
 	//
