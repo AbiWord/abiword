@@ -51,7 +51,7 @@ tgz_dirs=	bin AbiSuite
 tgz:	tgz_fonts tgz_dynamic_nofonts tgz_dynamic_fonts tgz_static_nofonts tgz_static_fonts
 
 tgz_dynamic_nofonts:
-	@echo Building .tar.gz package [dynamic,nofonts] ...
+	@echo "* Building .tar.gz package [dynamic,nofonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS),$(VERIFY_DIRECTORY))
 	(cp ../common/unix/install.sh $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS))
@@ -62,11 +62,11 @@ tgz_dynamic_nofonts:
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); strip AbiSuite/bin/*_d;)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS)/AbiSuite; tar cf ../data.tar .)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_NOFONTS); rm -rf AbiSuite)
-	(cd $(DIST); tar cf - $(PKGBASENAME_DYNAMIC_NOFONTS) | gzip - -9 - > $(PKGBASENAME_DYNAMIC_NOFONTS).tar.gz)
+	(cd $(DIST); tar cf - $(PKGBASENAME_DYNAMIC_NOFONTS) | gzip - - > $(PKGBASENAME_DYNAMIC_NOFONTS).tar.gz)
 	(cd $(DIST); rm -rf $(PKGBASENAME_DYNAMIC_NOFONTS))
 
 tgz_dynamic_fonts:
-	@echo Building .tar.gz package [dynamic,fonts] ...
+	@echo "* Building .tar.gz package [dynamic,fonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_DYNAMIC_FONTS),$(VERIFY_DIRECTORY))
 	(cp ../common/unix/install.sh $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS))
@@ -76,11 +76,11 @@ tgz_dynamic_fonts:
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); strip AbiSuite/bin/*_d;)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS)/AbiSuite; tar cf ../data.tar .)
 	(cd $(DIST)/$(PKGBASENAME_DYNAMIC_FONTS); rm -rf AbiSuite)
-	(cd $(DIST); tar cf - $(PKGBASENAME_DYNAMIC_FONTS) | gzip - -9 - > $(PKGBASENAME_DYNAMIC_FONTS).tar.gz)
+	(cd $(DIST); tar cf - $(PKGBASENAME_DYNAMIC_FONTS) | gzip - - > $(PKGBASENAME_DYNAMIC_FONTS).tar.gz)
 	(cd $(DIST); rm -rf $(PKGBASENAME_DYNAMIC_FONTS))
 
 tgz_static_nofonts:
-	@echo Building .tar.gz package [static,nofonts] ...
+	@echo "* Building .tar.gz package [static,nofonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_STATIC_NOFONTS),$(VERIFY_DIRECTORY))
 	(cp ../common/unix/install.sh $(DIST)/$(PKGBASENAME_STATIC_NOFONTS))
@@ -91,11 +91,11 @@ tgz_static_nofonts:
 	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); strip AbiSuite/bin/*_s;)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS)/AbiSuite; tar cf ../data.tar .)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_NOFONTS); rm -rf AbiSuite)
-	(cd $(DIST); tar cf - $(PKGBASENAME_STATIC_NOFONTS) | gzip - -9 - > $(PKGBASENAME_STATIC_NOFONTS).tar.gz)
+	(cd $(DIST); tar cf - $(PKGBASENAME_STATIC_NOFONTS) | gzip - - > $(PKGBASENAME_STATIC_NOFONTS).tar.gz)
 	(cd $(DIST); rm -rf $(PKGBASENAME_STATIC_NOFONTS))
 
 tgz_static_fonts:
-	@echo Building .tar.gz package [static,fonts] ...
+	@echo "* Building .tar.gz package [static,fonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(PKGBASENAME_STATIC_FONTS),$(VERIFY_DIRECTORY))
 	(cp ../common/unix/install.sh $(DIST)/$(PKGBASENAME_STATIC_FONTS))
@@ -105,5 +105,5 @@ tgz_static_fonts:
 	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); strip AbiSuite/bin/*_s;)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS)/AbiSuite; tar cf ../data.tar .)
 	(cd $(DIST)/$(PKGBASENAME_STATIC_FONTS); rm -rf AbiSuite)
-	(cd $(DIST); tar cf - $(PKGBASENAME_STATIC_FONTS) | gzip - -9 - > $(PKGBASENAME_STATIC_FONTS).tar.gz)
+	(cd $(DIST); tar cf - $(PKGBASENAME_STATIC_FONTS) | gzip - - > $(PKGBASENAME_STATIC_FONTS).tar.gz)
 	(cd $(DIST); rm -rf $(PKGBASENAME_STATIC_FONTS))

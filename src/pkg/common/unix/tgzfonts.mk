@@ -44,9 +44,9 @@ font_files = 	README \
 		fonts
 
 tgz_fonts:
-	@echo Building Unix fonts package [.tar.gz format] ...
+	@echo "* Building .tar.gz package [fonts] ..."
 	@$(subst xxxx,$(DIST),$(VERIFY_DIRECTORY))
 	@$(subst xxxx,$(DIST)/$(ABI_FONTS_PKGBASENAME),$(VERIFY_DIRECTORY))
 	(cd $(OUTDIR)/AbiSuite/fonts; tar cf - $(font_files))| (cd $(DIST)/$(ABI_FONTS_PKGBASENAME); tar xf -)
-	(cd $(DIST); tar cf - $(ABI_FONTS_PKGBASENAME) | gzip - -9 - > $(ABI_FONTS_PKGBASENAME).tar.gz)
+	(cd $(DIST); tar cf - $(ABI_FONTS_PKGBASENAME) | gzip - - > $(ABI_FONTS_PKGBASENAME).tar.gz)
 	(cd $(DIST); rm -rf $(ABI_FONTS_PKGBASENAME))

@@ -77,9 +77,14 @@ PORT_FLAGS		+=
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
-DL_LIBS			= 
 
-# Compiler option to link statically (to avoid run-time linkage)
+# Which links can this platform create.  Define one or
+# both of these options.
+UNIX_CAN_BUILD_DYNAMIC=1
+UNIX_CAN_BUILD_STATIC=1
+
+# Compiler options for static and dynamic linkage
+DL_LIBS			= 
 STATIC_FLAGS		= -static
 
 ABI_NATIVE	= unix

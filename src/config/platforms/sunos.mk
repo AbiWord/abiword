@@ -80,11 +80,14 @@ PORT_FLAGS		+=
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 
-# Does Solaris 7 NEED -ldl?  It seems to...
-DL_LIBS			= dl
+# Which links can this platform create.  Define one or
+# both of these options.
+UNIX_CAN_BUILD_DYNAMIC=1
+#UNIX_CAN_BUILD_STATIC=1
 
-# Compiler option to link statically (to avoid run-time linkage)
-STATIC_FLAGS		= -static
+# Compiler options for static and dynamic linkage
+DL_LIBS			= dl
+STATIC_FLAGS		=
 
 ABI_NATIVE	= unix
 ABI_FE		= Unix

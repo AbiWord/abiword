@@ -95,7 +95,13 @@ ifeq ($(OS_RELEASE_MAJOR), 2)
 	DL_LIBS = dl
 endif
 
-# Compiler option to link statically (to avoid run-time linkage)
+# Which links can this platform create.  Define one or
+# both of these options.
+UNIX_CAN_BUILD_DYNAMIC=1
+UNIX_CAN_BUILD_STATIC=1
+
+# Compiler options for static and dynamic linkage
+# ld is handled above
 STATIC_FLAGS		= -static
 
 ABI_NATIVE	= unix

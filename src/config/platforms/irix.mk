@@ -112,9 +112,15 @@ endif
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
-DL_LIBS			= dl
 
-# Compiler option to link statically (to avoid run-time linkage)
+# Which links can this platform create.  Define one or
+# both of these options. (what can IRIX do?  someone
+# with an SGI set the right one and mail a patch)
+UNIX_CAN_BUILD_DYNAMIC=1
+UNIX_CAN_BUILD_STATIC=1
+
+# Compiler options for static and dynamic linkage
+DL_LIBS			= dl
 STATIC_FLAGS		= -static
 
 ABI_NATIVE	= unix

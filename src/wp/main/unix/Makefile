@@ -58,13 +58,23 @@ STATIC_LDFLAGS =	$(STATIC_FLAGS)
 # we override the $(PROGRAM) rule.
 
 $(PROGRAM): $(OBJS) $(EXTRA_LIBDEP)
+ifdef UNIX_CAN_BUILD_DYNAMIC
 	@$(MAKE_OBJDIR)
 	@echo Linking dynamic $(PROGRAM)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(DYNAMIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+else
+	@echo "Not linking dynamic $(PROGRAM)"
+	@echo "    UNIX_CAN_BUILD_DYNAMIC not defined for this platform."
+endif
 
 $(PROGRAM_S): $(OBJS) $(EXTRA_LIBDEP)
+ifdef UNIX_CAN_BUILD_STATIC
 	@$(MAKE_OBJDIR)
 	@echo Linking static $(PROGRAM_S)
 	@$(CCC) -o $@ $(CFLAGS) $(OBJS) $(STATIC_LDFLAGS) -L/usr/local/lib $(LDFLAGS) $(EXTRA_LIBS) $(XLDFLAGS)
+else
+	@echo "Not linking static $(PROGRAM)"
+	@echo "    UNIX_CAN_BUILD_STATIC not defined for this platform."
+endif
 
 build:: $(TARGETS)
