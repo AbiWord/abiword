@@ -139,7 +139,6 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_ToggleCase.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Tab.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_Dialog_InsertBookmark.$(OBJ_SUFFIX)\
-		$(OBJDIR)/ap_Dialog_MetaData.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_InsertHyperlink.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)		\
@@ -188,6 +187,8 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Frame.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_splash.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_wp_sidebar.$(OBJ_SUFFIX)
+
+#		$(OBJDIR)/ap_Dialog_MetaData.$(OBJ_SUFFIX)	\
 
 ifeq ($(ABI_OPT_CURLHASH),1)
 OBJS +=		$(OBJDIR)/ap_HashDownloader.$(OBJ_SUFFIX)
