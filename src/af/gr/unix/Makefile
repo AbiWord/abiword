@@ -22,14 +22,16 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=		gr_UnixGraphics.h
+EXPORT_HEADERS=		gr_UnixGraphics.h	\
+			gr_UnixImage.h
 
 HEADERS=		$(EXPORT_HEADERS)
 
 RELEASE_HEADERS=	$(EXPORT_HEADERS)
 RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
 
-CPPSRCS=		gr_UnixGraphics.cpp
+CPPSRCS=		gr_UnixGraphics.cpp	\
+			gr_UnixImage.cpp
 
 INCLUDES=		-I/usr/X11R6/include
 

@@ -1,4 +1,4 @@
-/* AbiSource Application Framework
+/* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
@@ -17,36 +17,26 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_WIN32CLIPBOARD_H
-#define XAP_WIN32CLIPBOARD_H
+#ifndef GR_WIN32IMAGE_H
+#define GR_WIN32IMAGE_H
 
-#include "ut_types.h"
+#include <windows.h>
 
-#include "xap_Clipboard.h"
+#include "gr_Image.h"
 
-class AP_Win32Clipboard : public AP_Clipboard
+class GR_Win32Image : public GR_Image
 {
 public:
-	AP_Win32Clipboard();
-	
-	virtual UT_Bool		open(void);
-	virtual UT_Bool		close(void);
-	virtual UT_Bool		addData(char* format, void* pData, UT_sint32 iNumBytes);
-	virtual UT_sint32	getDataLen(char* format);
-	virtual UT_Bool		getData(char* format, void* pData);
-	virtual UT_Bool		hasFormat(char* format);
-	virtual UT_sint32	countFormats(void);
-	virtual char*		getNthFormat(UT_sint32 n);
-	virtual UT_Bool		clear(void);
+	GR_Win32Image(BITMAPINFO* pDIB);
+	~GR_Win32Image();
 
-	virtual GR_Image*	getImage(void);
-	virtual UT_Bool		addImage(GR_Image*);
+	virtual UT_sint32	getWidth(void) const;
+	virtual UT_sint32	getHeight(void) const;
 	
+	inline BITMAPINFO*	getDIB(void) const { return m_pDIB; }
+
 protected:
-	UT_uint32			_convertFormatString(char* format);
-	
-	UT_uint32			m_cfRTF;
+    BITMAPINFO*		m_pDIB;
 };
 
-#endif /* XAP_WIN32CLIPBOARD_H */
-
+#endif /* GR_WIN32IMAGE_H */

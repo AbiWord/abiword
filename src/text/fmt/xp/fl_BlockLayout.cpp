@@ -40,6 +40,8 @@
 #include "px_ChangeRecord_Strux.h"
 #include "px_ChangeRecord_StruxChange.h"
 #include "fv_View.h"
+#include "xap_App.h"
+#include "xap_Clipboard.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -1382,6 +1384,14 @@ UT_Bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pc
 	return UT_TRUE;
 }
 
+UT_Bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
+{
+	fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), blockOffset, len);
+	UT_ASSERT(pNewRun);	// TODO check for outofmem
+
+	return _doInsertRun(pNewRun);
+}
+
 UT_Bool	fl_BlockLayout::_doInsertForcedLineBreakRun(PT_BlockOffset blockOffset)
 {
 	fp_Run* pNewRun = new fp_ForcedLineBreakRun(this, m_pLayout->getGraphics(), blockOffset, 1);
@@ -1416,7 +1426,24 @@ UT_Bool	fl_BlockLayout::_doInsertTabRun(PT_BlockOffset blockOffset)
 
 UT_Bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro)
 {
-	fp_ImageRun* pNewRun = new fp_ImageRun(this, m_pLayout->getGraphics(), blockOffset, 1);
+	GR_Image* pImage = NULL;
+
+	/*
+	  TODO this is a hack.  Images now work by just pulling one off
+	  the clipbard.
+	*/
+	AP_Clipboard* pClip = AP_App::getClipboard();
+	if (pClip->open())
+	{
+		if (pClip->hasFormat(AP_CLIPBOARD_IMAGE))
+		{
+			pImage = pClip->getImage();
+		}
+		
+		pClip->close();
+	}
+	
+	fp_ImageRun* pNewRun = new fp_ImageRun(this, m_pLayout->getGraphics(), blockOffset, 1, pImage);
 	UT_ASSERT(pNewRun);	// TODO check for outofmem
 
 	return _doInsertRun(pNewRun);
@@ -1438,6 +1465,8 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 #ifndef NDEBUG	
 	_assertRunListIntegrity();
 #endif
+	
+	m_gbCharWidths.ins(blockOffset, len);
 	
 	if (m_pFirstRun && !(m_pFirstRun->getNext()) && (m_pFirstRun->getLength() == 0))
 	{
@@ -1545,7 +1574,6 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 
 		UT_ASSERT(offset==blockOffset);
 
-		m_gbCharWidths.ins(offset, len);
 		pNewRun->calcWidths(&m_gbCharWidths);
 			
 		if (pLastRun)
@@ -1571,14 +1599,6 @@ UT_Bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 	return UT_TRUE;
 }
 
-UT_Bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
-{
-	fp_TextRun* pNewRun = new fp_TextRun(this, m_pLayout->getGraphics(), blockOffset, len);
-	UT_ASSERT(pNewRun);	// TODO check for outofmem
-
-	return _doInsertRun(pNewRun);
-}
-
 UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 {
 	UT_ASSERT(pcrs->getType()==PX_ChangeRecord::PXT_InsertSpan);
@@ -1592,7 +1612,7 @@ UT_Bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs
 	PT_BufIndex bi = pcrs->getBufIndex();
 	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
 
-	m_gbCharWidths.ins(blockOffset, len);
+//	m_gbCharWidths.ins(blockOffset, len);
 
 	AV_ChangeMask mask = AV_CHG_TYPING | AV_CHG_FMTCHAR;
 	
@@ -1751,6 +1771,8 @@ UT_Bool fl_BlockLayout::_delete(PT_BlockOffset blockOffset, UT_uint32 len)
 	_assertRunListIntegrity();
 #endif
 	
+	m_gbCharWidths.del(blockOffset, len);
+
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
 	{
@@ -1856,8 +1878,6 @@ UT_Bool fl_BlockLayout::doclistener_deleteSpan(const PX_ChangeRecord_Span * pcrs
 	PT_BlockOffset blockOffset = (pcrs->getPosition() - getPosition());
 	UT_uint32 len = pcrs->getLength();
 	UT_ASSERT(len>0);
-
-	m_gbCharWidths.del(blockOffset, len);
 
 	_delete(blockOffset, len);
 	

@@ -71,6 +71,8 @@ UT_Bool		AP_FakeClipboard::close(void)
 
 UT_Bool		AP_FakeClipboard::addData(char* format, void* pData, UT_sint32 iNumBytes)
 {
+	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
+	
 	_ClipboardItem* pItem = new _ClipboardItem(format, pData, iNumBytes);
 
 	UT_sint32 err = m_vecData.addItem(pItem);
@@ -116,6 +118,8 @@ UT_Bool		AP_FakeClipboard::hasFormat(char* format)
 
 UT_sint32	AP_FakeClipboard::getDataLen(char* format)
 {
+	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
+
 	_ClipboardItem* pItem = _findFormatItem(format);
 	if (!pItem)
 	{
@@ -127,6 +131,8 @@ UT_sint32	AP_FakeClipboard::getDataLen(char* format)
 
 UT_Bool		AP_FakeClipboard::getData(char* format, void* pData)
 {
+	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
+
 	_ClipboardItem* pItem = _findFormatItem(format);
 	if (!pItem)
 	{
@@ -166,3 +172,18 @@ UT_Bool		AP_FakeClipboard::clear(void)
 	
 	return UT_TRUE;
 }
+
+GR_Image*	AP_FakeClipboard::getImage(void)
+{
+	UT_ASSERT(UT_TODO);
+
+	return NULL;
+}
+
+UT_Bool		AP_FakeClipboard::addImage(GR_Image*)
+{
+	UT_ASSERT(UT_TODO);
+
+	return UT_FALSE;
+}
+

@@ -21,8 +21,6 @@
 
 GR_Image::GR_Image()
 {
-	m_iWidth = 0;
-	m_iHeight = 0;
 }
 
 GR_Image::~GR_Image()

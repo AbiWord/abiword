@@ -1139,24 +1139,82 @@ void fp_ForcedLineBreakRun::_draw(dg_DrawArgs* pDA)
 	UT_ASSERT(pDA->pG == m_pG);
 }
 
-fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
+fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_IMAGE)
 {
+#if 0	// put this back later
+	UT_ASSERT(pImage);
+#endif
+	
+	m_pImage = pImage;
+	
 	if (bLookupProperties)
 	{
 		lookupProperties();
 	}
 
-	/*
-	  TODO get rid of this hack and make images draw for real.
-	*/
-	m_iWidth = m_pG->convertDimension("0.5in");
-	m_iHeight = m_pG->convertDimension("0.5in");
 	m_iAscent = m_iHeight;
 	m_iDescent = 0;
 }
 
 void fp_ImageRun::lookupProperties(void)
 {
+	const PP_AttrProp * pSpanAP = NULL;
+	const PP_AttrProp * pBlockAP = NULL;
+	const PP_AttrProp * pSectionAP = NULL; // TODO do we care about section-level inheritance?
+	
+	m_pBL->getSpanAttrProp(m_iOffsetFirst+fl_BLOCK_STRUX_OFFSET,&pSpanAP);
+
+	const XML_Char *pszWidth = PP_evalProperty("width",pSpanAP,pBlockAP,pSectionAP);
+	const XML_Char *pszHeight = PP_evalProperty("height",pSpanAP,pBlockAP,pSectionAP);
+
+	UT_sint32 iWidth = 0;
+	UT_sint32 iHeight = 0;
+	if (pszWidth && pszHeight)
+	{
+		iWidth = atoi(pszWidth);
+		iHeight = atoi(pszHeight);
+	}
+
+	if ((iWidth == 0) || (iHeight == 0))
+	{
+		UT_sint32 iImageWidth;
+		UT_sint32 iImageHeight;
+		
+		if (m_pImage)
+		{
+			iImageWidth = m_pImage->getWidth();
+			iImageHeight = m_pImage->getHeight();
+		}
+		else
+		{
+			iImageWidth = m_pG->convertDimension("1in");
+			iImageHeight = m_pG->convertDimension("1in");
+		}
+		
+		if (m_pG->queryProperties(GR_Graphics::DGP_SCREEN))
+		{
+			m_iWidth = iImageWidth;
+			m_iHeight = iImageHeight;
+		}
+		else
+		{
+			double fScale = m_pG->getResolution() / 72.0;
+			
+			m_iWidth = (UT_sint32) (iImageWidth * fScale);
+			m_iHeight = (UT_sint32) (iImageHeight * fScale);
+		}
+	}
+	else
+	{
+		m_iWidth = iWidth;
+		m_iHeight = iHeight;
+	}
+
+	UT_ASSERT(m_iWidth > 0);
+	UT_ASSERT(m_iHeight > 0);
+
+	m_iAscent = m_iHeight;
+	m_iDescent = 0;
 }
 
 UT_Bool fp_ImageRun::canBreakAfter(void) const
@@ -1232,12 +1290,18 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(pDA->pG == m_pG);
 
-	UT_RGBColor clr(50, 50, 220);
 	UT_sint32 xoff = 0, yoff = 0;
-	
 	m_pLine->getScreenOffsets(this, xoff, yoff);
-	
-	m_pG->fillRect(clr, xoff, yoff, m_iWidth, m_iHeight);
+
+	if (m_pImage)
+	{
+		m_pG->drawImage(m_pImage, xoff, yoff, m_iWidth, m_iHeight);
+	}
+	else
+	{
+		UT_RGBColor clr(0, 0, 255);
+		m_pG->fillRect(clr, xoff, yoff, m_iWidth, m_iHeight);
+	}
 }
 
 fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD)

@@ -42,6 +42,9 @@ public:
 	virtual UT_sint32	countFormats(void);
 	virtual char*		getNthFormat(UT_sint32 n);
 	virtual UT_Bool		clear(void);
+
+	virtual GR_Image*	getImage(void);
+	virtual UT_Bool		addImage(GR_Image*);
 	
 protected:
 	_ClipboardItem*		_findFormatItem(char*);

@@ -21,6 +21,7 @@
 #include <windows.h>
 
 #include "gr_Win32Graphics.h"
+#include "gr_Win32Image.h"
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -507,6 +508,35 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 
 void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest, UT_sint32 iDestWidth, UT_sint32 iDestHeight)
 {
-	UT_ASSERT(UT_TODO);
+	UT_ASSERT(pImg);
+	
+	GR_Win32Image* pWin32Img = static_cast<GR_Win32Image*>(pImg);
+
+	BITMAPINFO* pDIB = pWin32Img->getDIB();
+
+	UT_uint32 iSizeOfColorData = pDIB->bmiHeader.biClrUsed * sizeof(RGBQUAD);
+	UT_Byte* pBits = ((unsigned char*) pDIB) + pDIB->bmiHeader.biSize + iSizeOfColorData;
+	
+	int iRes = StretchDIBits(m_hdc,
+							 xDest,
+							 yDest,
+							 iDestWidth,
+							 iDestHeight,
+							 0,
+							 0,
+							 pWin32Img->getWidth(),
+							 pWin32Img->getHeight(),
+							 pBits,
+							 pDIB,
+							 DIB_RGB_COLORS,
+							 SRCCOPY
+							 );
+	
+	if (iRes == GDI_ERROR)
+	{
+		DWORD err = GetLastError();
+
+		UT_DEBUGMSG(("StretchDIBits failed with err %d\n", err));
+	}
 }
 

@@ -28,6 +28,8 @@
 
 #include "ut_types.h"
 
+class GR_Image;
+
 class AP_Clipboard
 {
 public:
@@ -42,6 +44,9 @@ public:
 	virtual UT_Bool		hasFormat(char* format) = 0;
 	virtual char*		getNthFormat(UT_sint32 n) = 0;
 	virtual UT_Bool		clear(void) = 0;
+
+	virtual GR_Image*	getImage(void) = 0;
+	virtual UT_Bool		addImage(GR_Image*) = 0;
 
 protected:
 	UT_Bool	m_bOpen;

@@ -17,21 +17,26 @@
  * 02111-1307, USA.
  */
 
-#ifndef GR_IMAGE_H
-#define GR_IMAGE_H
+#include "gr_Win32Image.h"
 
-#include "ut_types.h"
-
-class GR_Image
+GR_Win32Image::GR_Win32Image(BITMAPINFO* pDIB)
 {
-public:
-	GR_Image();
-	virtual ~GR_Image();
+	m_pDIB = pDIB;
+}
+
+GR_Win32Image::~GR_Win32Image()
+{
+	delete m_pDIB;
+}
+
+UT_sint32	GR_Win32Image::getWidth(void) const
+{
+	return m_pDIB->bmiHeader.biWidth;
+}
+
+UT_sint32	GR_Win32Image::getHeight(void) const
+{
+	return m_pDIB->bmiHeader.biHeight;
+}
+
 	
-	virtual UT_sint32	getWidth(void) const = 0;
-	virtual UT_sint32	getHeight(void) const = 0;
-
-protected:
-};
-
-#endif /* GR_IMAGE */

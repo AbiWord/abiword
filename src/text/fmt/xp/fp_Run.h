@@ -31,6 +31,7 @@ class fl_BlockLayout;
 class fp_Line;
 class GR_Graphics;
 class GR_Font;
+class GR_Image;
 class PD_Document;
 struct dg_DrawArgs;
 
@@ -261,7 +262,7 @@ protected:
 class fp_ImageRun : public fp_Run
 {
  public:
-	fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, UT_Bool bLookupProperties=UT_TRUE);
+	fp_ImageRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen, GR_Image* pImage, UT_Bool bLookupProperties=UT_TRUE);
 
 	virtual void			lookupProperties(void);
 	virtual int				split(fp_RunSplitInfo&);
@@ -276,6 +277,8 @@ class fp_ImageRun : public fp_Run
 protected:
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(void);
+
+	GR_Image*				m_pImage;
 };
 
 #define FPFIELD_MAX_LENGTH	63
@@ -310,5 +313,4 @@ protected:
 };
 
 #endif /* RUN_H */
-
 

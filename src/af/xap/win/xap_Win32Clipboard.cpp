@@ -25,6 +25,9 @@
 
 #include "xap_Win32Clipboard.h"
 
+#include "gr_Image.h"
+#include "gr_Win32Image.h"
+
 AP_Win32Clipboard::AP_Win32Clipboard() : AP_Clipboard()
 {
 	m_cfRTF = RegisterClipboardFormat(CF_RTF);
@@ -81,6 +84,8 @@ UT_uint32	AP_Win32Clipboard::_convertFormatString(char* format)
 
 UT_Bool		AP_Win32Clipboard::addData(char* format, void* pData, UT_sint32 iNumBytes)
 {
+	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
+	
 	// TODO do we need to verify that we own the clipboard?
 	
 	UINT iFormat = _convertFormatString(format);
@@ -91,21 +96,11 @@ UT_Bool		AP_Win32Clipboard::addData(char* format, void* pData, UT_sint32 iNumByt
 	
 	HANDLE hData = NULL;
 
-	if (iFormat == CF_DIB)
-	{
-		/*
-		  TODO munge the image data format given to use
-		  into a DIB
-		*/
-	}
-	else
-	{
-		hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, iNumBytes);
-		// TODO handle outofmem
-		void* p = GlobalLock(hData);
-		memcpy(p, pData, iNumBytes);
-		GlobalUnlock(hData);
-	}
+	hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, iNumBytes);
+	// TODO handle outofmem
+	void* p = GlobalLock(hData);
+	memcpy(p, pData, iNumBytes);
+	GlobalUnlock(hData);
 
 	if (SetClipboardData(iFormat, hData))
 	{
@@ -138,6 +133,8 @@ UT_Bool		AP_Win32Clipboard::hasFormat(char* format)
 
 UT_sint32	AP_Win32Clipboard::getDataLen(char* format)
 {
+	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
+	
 	UINT iFormat = _convertFormatString(format);
 	if (iFormat == 0)
 	{
@@ -147,22 +144,7 @@ UT_sint32	AP_Win32Clipboard::getDataLen(char* format)
 	HANDLE hData = GetClipboardData(iFormat);
 	if (hData)
 	{
-		if (iFormat == CF_DIB)
-		{
-			/*
-			  TODO convert the given image from DIB
-			  to our common image format, and return
-			  the size of that.
-			*/
-
-			UT_ASSERT(UT_TODO);
-			
-			return -1;
-		}
-		else
-		{
-			return GlobalSize(hData);
-		}
+		return GlobalSize(hData);
 	}
 	else
 	{
@@ -172,6 +154,8 @@ UT_sint32	AP_Win32Clipboard::getDataLen(char* format)
 
 UT_Bool		AP_Win32Clipboard::getData(char* format, void* pData)
 {
+	UT_ASSERT(!(0 == UT_stricmp(format, AP_CLIPBOARD_IMAGE)));
+	
 	UINT iFormat = _convertFormatString(format);
 	if (iFormat == 0)
 	{
@@ -181,29 +165,15 @@ UT_Bool		AP_Win32Clipboard::getData(char* format, void* pData)
 	HANDLE hData = GetClipboardData(iFormat);
 	if (hData)
 	{
-		if (iFormat == CF_DIB)
-		{
-			/*
-			  TODO convert the DIB to our common
-			  image format and return that.
-			*/
-
-			UT_ASSERT(UT_TODO);
-			
-			return UT_FALSE;
-		}
-		else
-		{
-			// TODO error check the following stuff
+		// TODO error check the following stuff
 		
-			UT_uint32 iLen = GlobalSize(hData);
-			void* p = GlobalLock(hData);
+		UT_uint32 iLen = GlobalSize(hData);
+		void* p = GlobalLock(hData);
 
-			memcpy(pData, p, iLen);
-			GlobalUnlock(hData);
+		memcpy(pData, p, iLen);
+		GlobalUnlock(hData);
 
-			return UT_TRUE;
-		}
+		return UT_TRUE;
 	}
 	else
 	{
@@ -261,4 +231,36 @@ UT_Bool		AP_Win32Clipboard::clear(void)
 	return EmptyClipboard();
 }
 
+GR_Image*	AP_Win32Clipboard::getImage(void)
+{
+	HANDLE hData = GetClipboardData(CF_DIB);
+	if (hData)
+	{
+		// TODO error check the following stuff
+		
+		UT_uint32 iLen = GlobalSize(hData);
+		void* p = GlobalLock(hData);
+
+		BITMAPINFO* pDIB;
+		pDIB = (BITMAPINFO*) new unsigned char[iLen];
+		UT_ASSERT(pDIB); // TODO outofmem
+		
+		memcpy(pDIB, p, iLen);
+		
+		GlobalUnlock(hData);
+
+		return new GR_Win32Image(pDIB);
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+UT_Bool		AP_Win32Clipboard::addImage(GR_Image*)
+{
+	UT_ASSERT(UT_TODO);
+
+	return UT_FALSE;
+}
 

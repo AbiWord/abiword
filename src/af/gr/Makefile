@@ -32,7 +32,8 @@ TARGETS=		$(LIBRARY)
 # note: and add a line to the intall section which copies it to
 # note: the $(DIST)/bin directory on Windows.
 
-PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/gr_$(ABI_FE)Graphics.$(OBJ_SUFFIX)
+PLATFORM_OBJS=	$(ABI_NATIVE)/$(OBJDIR)/gr_$(ABI_FE)Graphics.$(OBJ_SUFFIX)	\
+		$(ABI_NATIVE)/$(OBJDIR)/gr_$(ABI_FE)Image.$(OBJ_SUFFIX)
 
 OBJS=		$(PLATFORM_OBJS)					\
 		xp/$(OBJDIR)/gr_DrawArgs.$(OBJ_SUFFIX)			\
