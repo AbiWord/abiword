@@ -38,9 +38,8 @@ public:
 	typedef enum { PORTRAIT, LANDSCAPE } Orientation;
 
 	// declare JavaBean-like accessors for our properties
-	// TMN: I'm not sure about the virtuality of these accessors/mutators
-#define SET_GATHER(a, u)  virtual inline u get##a(void) const {return m_##a;} \
-			  virtual inline void set##a(u p##a) {m_##a = p##a;}
+#define SET_GATHER(a, u)  inline u get##a(void) const {return m_##a;} \
+			  inline void set##a(u p##a) {m_##a = p##a;}
 	SET_GATHER(PageSize,		fp_PageSize);
 	SET_GATHER(PageUnits,		fp_PageSize::Unit);
 	SET_GATHER(PageOrientation,	Orientation);

@@ -41,7 +41,7 @@ public:
 	virtual void event_PageUnitsChanged ();
 	virtual void event_MarginUnitsChanged ();
 
-protected:
+ protected:
 	// construction functions
 	virtual GtkWidget * _constructWindow (void);
 	virtual void        _constructWindowContents (GtkWidget *container);
@@ -52,10 +52,11 @@ protected:
 	GtkWidget * m_buttonOK;
 	GtkWidget * m_buttonCancel;
 
+ private:
 	// pointers to widgets that we may need to query
 	GtkWidget * m_optionPageSize;
-	GtkWidget * m_spinPageWidth;
-	GtkWidget * m_spinPageHeight;
+	GtkWidget * m_entryPageWidth;
+	GtkWidget * m_entryPageHeight;
 	GtkWidget * m_optionPageUnits;
 	GtkWidget * m_radioPagePortrait;
 	GtkWidget * m_radioPageLandscape;

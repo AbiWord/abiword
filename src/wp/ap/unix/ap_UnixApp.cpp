@@ -72,6 +72,12 @@
 #include "fv_View.h"
 #include "fp_Run.h"
 
+#ifdef GTK_WIN_POS_CENTER_ALWAYS
+#define WIN_POS GTK_WIN_POS_CENTER_ALWAYS
+#else
+#define WIN_POS GTK_WIN_POS_CENTER
+#endif
+
 /*****************************************************************/
 
 AP_UnixApp::AP_UnixApp(XAP_Args * pArgs, const char * szAppName)
@@ -801,7 +807,7 @@ GR_Image * AP_UnixApp::_showSplash(UT_uint32 delay)
 		gtk_widget_show(da);
 
 		// now bring the window up front & center
-		gtk_window_set_position(GTK_WINDOW(wSplash), GTK_WIN_POS_CENTER_ALWAYS);
+		gtk_window_set_position(GTK_WINDOW(wSplash), WIN_POS);
 
 		// create the window so we can attach a GC to it
 		gtk_widget_show(wSplash);
