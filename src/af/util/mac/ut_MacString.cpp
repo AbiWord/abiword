@@ -46,3 +46,14 @@ char * UT_catPathname(const char * szPath, const char * szFile)
 	return szPathname;
 }
 
+/*
+    Convert a C string to a Pascal Str255 with String conversion
+    
+    TODO: move it away of CoreFoundation to something compatible outside of Carbon
+*/
+void UT_C2PStrWithConversion (const char *inStr, StringPtr outStr, CFStringBuiltInEncodings inCharset, 
+                              CFStringBuiltInEncodings outCharset)
+{
+        CFStringRef  myCFStr = CFStringCreateWithCString (NULL, inStr, inCharset);
+        UT_ASSERT (CFStringGetPascalString (myCFStr, outStr, sizeof (Str255), outCharset));
+}

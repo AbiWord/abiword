@@ -29,6 +29,10 @@
 
 /* Mac headers */
 #include <MacTypes.h>
+#include <CFString.h>
+
+void UT_C2PStrWithConversion (const char *inStr, StringPtr outStr, CFStringBuiltInEncodings inCharset, 
+                              CFStringBuiltInEncodings outCharset);
 
 inline void C2PStr (Str255 pString, const char * str)
 {
