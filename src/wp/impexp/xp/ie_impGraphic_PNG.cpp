@@ -42,7 +42,7 @@ bool IE_ImpGraphicPNG_Sniffer::getDlgLabels(const char ** pszDesc,
 {
 	*pszDesc = "Portable Network Graphics (.png)";
 	*pszSuffixList = "*.png";
-	*ft = IEGFT_PNG;
+	*ft = getType ();
 	return true;
 }
 

@@ -50,7 +50,7 @@ bool IE_ImpGraphicBMP_Sniffer::getDlgLabels(const char ** pszDesc,
 {
 	*pszDesc = "Windows Bitmap (.bmp)";
 	*pszSuffixList = "*.bmp";
-	*ft = IEGFT_BMP;
+	*ft = getType ();
 	return true;
 }
 

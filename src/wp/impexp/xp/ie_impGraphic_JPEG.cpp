@@ -73,7 +73,7 @@ bool IE_ImpGraphicJPEG_Sniffer::getDlgLabels(const char ** pszDesc,
     // TODO add a more complete list of suffixes
 	*pszDesc = "JPEG Image (.jpg, .jpeg)";
 	*pszSuffixList = "*.jpg; *.jpeg";
-	*ft = IEGFT_JPEG;
+	*ft = getType ();
 	return true;
 }
 

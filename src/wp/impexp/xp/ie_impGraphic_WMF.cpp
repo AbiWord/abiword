@@ -71,7 +71,7 @@ bool IE_ImpGraphicWMF_Sniffer::getDlgLabels(const char ** pszDesc,
 {
 	*pszDesc = "Windows Metafile (.wmf)";
 	*pszSuffixList = "*.wmf";
-	*ft = IEGFT_WMF;
+	*ft = getType ();
 	return true;
 }
 

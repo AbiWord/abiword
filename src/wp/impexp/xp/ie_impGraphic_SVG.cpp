@@ -39,7 +39,7 @@ bool IE_ImpGraphicSVG_Sniffer::getDlgLabels(const char ** pszDesc,
 {
 	*pszDesc = "Scalable Vector Graphics (.svg)";
 	*pszSuffixList = "*.svg";
-	*ft = IEGFT_SVG;
+	*ft = getType ();
 	return true;
 }
 
