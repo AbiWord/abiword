@@ -53,6 +53,9 @@ public:
 	UT_Bool					appendFmt(const XML_Char ** attributes);
 	UT_Bool					appendFmt(const UT_Vector * pVecAttributes);
 	UT_Bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
+
+	UT_Bool					addListener(PL_Listener * pListener,
+										PL_LIstenerId listenerId);
 	
 	// TODO add stuff for objects like in-line images.
 

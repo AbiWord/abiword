@@ -19,14 +19,12 @@ UT_Bool pp_TableAttrProp::createAP(pt_AttrPropIndex * pIndex)
 	PP_AttrProp * pNew = new PP_AttrProp();
 	if (!pNew)
 		return UT_FALSE;
-	if (m_vecTable.addItem(pNew) != 0)
+	if (m_vecTable.addItem(pNew,pIndex) != 0)
 	{
 		delete pNew;
 		return UT_FALSE;
 	}
 
-	if (pIndex)
-		*pIndex = m_vecTable.getItemCount()-1;
 	return UT_TRUE;
 }
 

@@ -25,13 +25,16 @@ public:
 	virtual ~pf_Frag_Strux();
 
 	PTStruxType				getStruxType(void) const;
-
+	PL_StruxFmtHandle		getFmtHandle(PL_ListenerId lid) const;
+	UT_Bool					setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh);
+	
 	virtual void			dump(FILE * fp) const = 0;
 	
 protected:
 	PTStruxType				m_struxType;
 	UT_uint32				m_vsIndex;	/* which VS[] we are in */
 	pt_AttrPropIndex		m_indexAP;	/* index in VS[].m_tableAttrProp to our A/P */
+	UT_Vector				m_vecFmtHandle;
 };
 
 #endif /* PF_FRAG_STRUX_H */

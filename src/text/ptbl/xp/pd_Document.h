@@ -9,6 +9,7 @@
 #include "ut_vector.h"
 #include "xmlparse.h"
 class pt_PieceTable;
+class PL_Listener;
 
 typedef UT_uint32 PT_DocPosition;		/* absolute document position */
 typedef enum _PTStruxType { PTX_Section, PTX_ColumnSet, PTX_Column, PTX_Block } PTStruxType;
@@ -57,12 +58,16 @@ public:
 	UT_Bool					appendFmt(const UT_Vector * pVecAttributes);
 	UT_Bool					appendSpan(UT_UCSChar * p, UT_uint32 length);
 
+	UT_Bool					addListener(PL_Listener * pListener, PL_ListenerId * pListenerId);
+	UT_Bool					removeListener(PL_ListenerId listenerId);
+	
 	void					dump(FILE * fp) const;
 	
 protected:
 	const char *			m_szFilename;
 	UT_Bool					m_bDirty;
 	pt_PieceTable *			m_pPieceTable;
+	UT_Vector				m_vecListeners;
 };
 
 

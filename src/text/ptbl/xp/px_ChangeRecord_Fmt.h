@@ -24,7 +24,7 @@ public:
 	
 protected:
 	PT_DocPosition			m_position2;	/* absolute document position of end of the change */
-	pt_AttrPropIndex		m_index;		/* index in VS[].m_tableAttrProp to our A/P */
+	pt_AttrPropIndex		m_indexAP;		/* index in VS[].m_tableAttrProp to our A/P */
 };
 
 #endif /* PX_CHANGERECORD_FMT_H */

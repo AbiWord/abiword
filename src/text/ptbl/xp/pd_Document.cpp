@@ -9,6 +9,7 @@
 #include "ut_assert.h"
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
+#include "pl_Listener.h"
 #include "ie_imp.h"
 
 PD_Document::PD_Document()
@@ -24,6 +25,8 @@ PD_Document::~PD_Document()
 		free((void *)m_szFilename);
 	if (m_pPieceTable)
 		delete m_pPieceTable;
+	// we do not purge the contents of m_vecListeners
+	// since these are now owned by us.
 }
 
 UT_Bool PD_Document::readFromFile(const char * szFilename)
@@ -180,4 +183,42 @@ UT_Bool PD_Document::appendSpan(UT_UCSChar * pbuf, UT_uint32 length)
 	// can only be used while loading the document
 
 	return m_pPieceTable->appendSpan(pbuf,length);
+}
+
+UT_Bool PD_Document::addListener(PL_Listener * pListener,
+								 PL_ListenerId * pListenerId)
+{
+	UT_uint32 kLimit = m_vecListeners.getItemCount();
+	UT_uint32 k;
+
+	// see if we can recycle a cell in the vector.
+	
+	for (k=0; k<kLimit; k++)
+		if (m_vecListeners.getNthItem(k) == 0)
+		{
+			m_vecListeners.setNthItem(k,pListener,NULL);
+			goto ClaimThisK;
+		}
+
+	// otherwise, extend the vector for it.
+	
+	if (m_vecListeners.addItem(pListener,&k) != 0)
+		return UT_FALSE;				// could not add item to vector
+
+  ClaimThisK:
+
+	// propagate the listener to the PieceTable and
+	// let it do its thing.
+
+	m_pPieceTable->addListener(pListener,k);
+
+	// give our vector index back to the caller as a "Listener Id".
+	
+	*pListenerId = k;
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::removeListener(PL_ListenerId listenerId)
+{
+	return m_vecListeners.setNthItem(listenerId,NULL,NULL);
 }
