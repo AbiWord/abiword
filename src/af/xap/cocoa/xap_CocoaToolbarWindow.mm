@@ -1,5 +1,5 @@
 /* AbiSource Program Utilities
- * Copyright (C) 2002-2003 Hubert Figuiere
+ * Copyright (C) 2002-2004 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -197,19 +197,13 @@ static XAP_CocoaToolbarWindow_Controller * pSharedToolbar = nil;
 	UT_DEBUGMSG(("received hideToolbarNotification:\n"));
 	if (m_current != [notif object]) {
 		NSLog(@"attempt to hide toolbar for a different frame.");
+		return;
 	}
 	[self removeAllToolbars];
 	m_current = nil;
 	[[self window] orderOut:self];
 }
 
-
-#if 0
-- (NSView *)getTopView
-{
-	return [[self window] contentView];
-}
-#endif
 
 @end
 
