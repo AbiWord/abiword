@@ -24,15 +24,17 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
+## TODO -- shouldn't need all of these
 EXPORT_HEADERS=		dg_LayoutView.h	\
+			fp_Column.h		\
+			fl_SectionLayout.h	\
+			fl_DocLayout.h		
 
 HEADERS=		$(EXPORT_HEADERS)	\
 			fb_LineBreaker.h	\
 			fl_BlockLayout.h	\
 			fl_DocLayout.h		\
-			fl_SectionLayout.h	\
 			fp_BlockSlice.h		\
-			fp_Column.h		\
 			fp_Line.h		\
 			fp_Page.h		\
 			fp_Run.h		\
@@ -53,7 +55,7 @@ CPPSRCS=		dg_LayoutView.cpp		\
 			fp_Run.cpp			\
 			fp_SectionSlice.cpp
 
-INCLUDES=		-I$(DIST)/include -I.
+INCLUDES=		-I$(DIST)/include -I. -DUT_DEBUG -DFMTLIB
 
 LIBRARY_NAME=		AbiFmt
 LIBRARY_VERSION=	$(ABI_VERSION)

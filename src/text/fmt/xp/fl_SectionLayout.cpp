@@ -124,6 +124,7 @@ FP_Column* FL_SectionLayout::getNewColumn()
 	UT_ASSERT(pCM);
 
 	UT_uint32 kCMI=0;
+#define MARKER 1
 #if MARKER
 	UT_sint32 xoff, yoff;
 	FP_Column* pCol;
@@ -230,7 +231,7 @@ UT_Bool FL_SectionLayout::reformat()
 					 && !(pMarker->getType() & DG_MT_END))
 			{
 #if MARKER
-				FL_BlockLayout*	pBL = pMarker->getBlock();
+				FL_BlockLayout*	pBL = (FL_BlockLayout*) pMarker->getBlock();
 
 				if (pBL->needsReformat())
 				{
@@ -286,7 +287,7 @@ void FL_SectionLayout::_purgeLayout()
 					 && !(pMarker->getType() & DG_MT_END))
 			{
 #if MARKER
-				FL_BlockLayout*	pBL = pMarker->getBlock();
+				FL_BlockLayout*	pBL = (FL_BlockLayout*) pMarker->getBlock();
 
 				delete pBL;
 #endif 

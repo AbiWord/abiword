@@ -373,8 +373,9 @@ FL_BlockLayout* DG_LayoutView::_findBlockWithBufferPosition(UT_uint32 pos)
 
 	if (pBlockMarker)
 	{
+#define MARKER 1
 #if MARKER
-		return pBlockMarker->getBlock();
+		return (FL_BlockLayout*) pBlockMarker->getBlock();
 #endif
 	}
 	else

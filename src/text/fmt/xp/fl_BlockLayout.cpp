@@ -61,8 +61,9 @@ FL_BlockLayout::FL_BlockLayout(DG_DocMarker* pBlockMarker,
 	m_iCharWidthSpace = 0;
 	m_bNeedsReformat = UT_FALSE;
 
+#define MARKER 1
 #if MARKER
-	m_pBlockMarker->setBlock(this);
+	m_pBlockMarker->setBlock((DG_BlockLayout*) this);
 #endif
 	
 	m_pLayout = m_pSectionLayout->getLayout();
