@@ -305,22 +305,28 @@ double UT_convertToInches(const char* s)
 	if(*p)
 	  {
 	    UT_Dimension dim = UT_determineDimension(p, (UT_Dimension)-1);
-
-	    switch(dim)
-	      {
-	      case DIM_IN: result = f;        break;
-	      case DIM_PI: result = f / 6;    break;
-	      case DIM_PT: result = f / 72;   break;
-	      case DIM_CM: result = f / 2.54; break;
-	      case DIM_MM: result = f / 25.4; break;
-	      default:
-		UT_DEBUGMSG(("Unknown dimension type: %s", p));
-		UT_ASSERT(0);
-		result = f;
-	      }
+	    result = UT_convertDimToInches (f, dim);
 	  }
 
 	return result;
+}
+
+double UT_convertDimToInches (double f, UT_Dimension dim)
+{
+  double result = 0.0;
+  switch(dim)
+    {
+    case DIM_IN: result = f;        break;
+    case DIM_PI: result = f / 6;    break;
+    case DIM_PT: result = f / 72;   break;
+    case DIM_CM: result = f / 2.54; break;
+    case DIM_MM: result = f / 25.4; break;
+    default:
+      UT_DEBUGMSG(("Unknown dimension type: %d", dim));
+      UT_ASSERT(0);
+      result = f;
+    }
+  return result;
 }
 
 double UT_convertToPoints(const char* s)
