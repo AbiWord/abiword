@@ -766,10 +766,6 @@ void FV_View::moveInsPtTo(FV_DocPos dp)
 		_eraseInsertionPoint();
 	
 	PT_DocPosition iPos = _getDocPos(dp);
-
-	if (iPos != getPoint())
-		notifyListeners(AV_CHG_FMTCHAR); // ensure that toolbar doesn't get stale...
-
 	_setPoint(iPos, (dp == FV_DOCPOS_EOL));
 
 	if (!_ensureThatInsertionPointIsOnScreen())
