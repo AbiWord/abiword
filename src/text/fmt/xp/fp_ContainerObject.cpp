@@ -871,6 +871,11 @@ void fg_FillType::Fill(GR_Graphics * pG, UT_sint32 & srcX, UT_sint32 & srcY, UT_
 			 dest.top = y;
 			 dest.width = width;
 			 dest.height = height;
+//
+// Overwrite With white first for alpha blended images
+//
+			 UT_RGBColor white(255,255,255);
+			 painter.fillRect(white,dest);
 			 if(m_pDocImage == NULL)
 			 {
 				 painter.fillRect(m_pImage,src,dest);

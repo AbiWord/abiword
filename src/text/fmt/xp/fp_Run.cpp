@@ -136,7 +136,10 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_iTmpX(0),
 	m_iTmpY(0),
 	m_iTmpWidth(0),
-	m_pTmpLine(NULL)
+	m_pTmpLine(NULL),
+	m_bDrawSelection(false),
+	m_iSelLow(0),
+	m_iSelHigh(0)
 {
 	xxx_UT_DEBUGMSG(("fp_Run %x created!!! \n",this));
 	pBL->setPrevListLabel(false);
@@ -220,6 +223,45 @@ bool fp_Run::isInSelectedTOC(void)
 }
 
 /*!
+ * The following are methods to avoid flickering while changing a selection.
+ * The idea is to generate a cliprect around just the selected text.
+ */
+
+/*!
+ * Set the selection draw mode.
+ */
+void fp_Run::setSelectionMode(PT_DocPosition posLow, PT_DocPosition posHigh)
+{
+	m_bDrawSelection = true;
+	m_iSelLow = posLow;
+	m_iSelHigh = posHigh;
+}
+
+/*!
+ * Clear the selection mode
+ */
+void fp_Run::clearSelectionMode(void)
+{
+	m_bDrawSelection = false;
+	m_iSelLow = 0;
+	m_iSelHigh = 0;
+}
+
+bool fp_Run::isSelectionDraw(void) const
+{
+	return m_bDrawSelection;
+}
+
+PT_DocPosition fp_Run::posSelLow(void) const
+{
+	return m_iSelLow;
+}
+
+PT_DocPosition fp_Run::posSelHigh(void) const
+{
+	return m_iSelHigh;
+}
+/*!
  * This method looks at the values of TmpX and TmpWidth and compares them
  * to the new ones. If they're different we do a clearscreen on them.
  */
@@ -260,7 +302,7 @@ bool fp_Run::clearIfNeeded(void)
 void fp_Run::Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y, UT_sint32 width,
 				  UT_sint32 height)
 {
-	xxx_UT_DEBUGMSG(("-------------------Fill called!!!!----\n"));
+	xxx_UT_DEBUGMSG(("-------------------Fill called!!!!---- x %d width %d \n",x,width));
 	if((width < 1) || (height < 1))
 	{
 		return;
@@ -752,6 +794,7 @@ bool fp_Run::isFirstVisRunOnLine(void) const
 
 void fp_Run::markAsDirty(void)
 {
+	xxx_UT_DEBUGMSG(("Run %x marked dirty \n"));
 	m_bDirty = true;
 }
 
@@ -872,14 +915,41 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 		// nothing to clear if this run is not currently on a line
 		return;
 	}
-	xxx_UT_DEBUGMSG(("SEVIOR: Doing clear screen in run %x \n",this));
+	xxx_UT_DEBUGMSG(("SEVIOR: Doing Run_ClearScreen in run %x \n",this));
 	if(getLine()->getContainer() != NULL)
 	{
 		if(getLine()->getContainer()->getPage() != 0)
 		{
-
+			UT_Rect clip(0,0,0,0);
+			if(isSelectionDraw())
+			{
+				if(getType() == FPRUN_TEXT)
+				{
+					UT_sint32 xoff,yoff;
+					getLine()->getScreenOffsets(this, xoff, yoff);
+					UT_sint32 xLeft = xoff;
+					UT_sint32 x1,y1,x2,y2,height;
+					bool bDir;
+					if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
+					{
+						findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
+						xLeft = x1;
+					}
+					UT_sint32 xRight = xLeft + getWidth();
+					if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
+					{
+						findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
+						xRight = x1;
+					}
+					clip.set(xLeft,yoff,xRight-xLeft,getLine()->getHeight());
+					getGraphics()->setClipRect(&clip);
+				}
+			}
 			_clearScreen(bFullLineHeightRect);
-
+			if(isSelectionDraw())
+			{
+				getGraphics()->setClipRect(NULL);
+			}
 			// make sure we only get erased once
 			_setDirty(true);
 			m_bIsCleared = true;
@@ -997,7 +1067,34 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		m_pG = pG;
 	}
 	pG->setColor(getFGColor());
+	UT_Rect clip(0,0,0,0);
+	if(isSelectionDraw())
+	{
+		if((getType() == FPRUN_TEXT) && getLine())
+		{
+			UT_sint32 xLeft = pDA->xoff;
+			UT_sint32 x1,y1,x2,y2,height;
+			bool bDir;
+			if(posSelLow() > getBlock()->getPosition(true) + getBlockOffset())
+			{
+				findPointCoords(posSelLow() - getBlock()->getPosition(true), x1,y1,x2,y2,height,bDir);
+				xLeft = x1;
+			}
+			UT_sint32 xRight = xLeft + getWidth();
+			if(posSelHigh() < getBlock()->getPosition(true) + getBlockOffset() + getLength())
+			{
+				findPointCoords(posSelHigh() - getBlock()->getPosition(true) +1, x1,y1,x2,y2,height,bDir);
+				xRight = x1;
+			}
+			clip.set(xLeft,pDA->yoff-getLine()->getAscent(),xRight-xLeft,getLine()->getHeight());
+			pDA->pG->setClipRect(&clip);
+		}
+	}
 	_draw(pDA);
+	if(isSelectionDraw())
+	{
+		pDA->pG->setClipRect(NULL);
+	}
 	FV_View* pView = _getView();
 	UT_return_if_fail(pView);
 	bool bShowRevs = pView->isShowRevisions();
@@ -1065,6 +1162,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 		painter.drawLine(pDA->xoff, pDA->yoff, pDA->xoff + m_iWidth, pDA->yoff);
 
 	}
+	m_bIsCleared = false;
 	_setDirty(false);
 	if(pG->queryProperties(GR_Graphics::DGP_PAPER))
 	{

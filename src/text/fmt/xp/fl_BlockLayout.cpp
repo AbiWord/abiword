@@ -2702,7 +2702,7 @@ void fl_BlockLayout::format()
 		fp_Line* pLine = static_cast<fp_Line *>(getFirstContainer());
 		while(pLine && 	bJustifyStuff)
 		{
-		    pLine->resetJustification(!bJustifyStuff); // temporary reset
+			pLine->resetJustification(!bJustifyStuff); // temporary reset
 			pLine = static_cast<fp_Line *>(pLine->getNext());
 		}
 
@@ -2768,6 +2768,7 @@ void fl_BlockLayout::format()
 		if(	bJustifyStuff)
 		{
 			pLastLine->resetJustification(bJustifyStuff); // permanent reset
+			pLastLine->layout();
 		}
 	}
 	fp_Run * pRun = m_pFirstRun;

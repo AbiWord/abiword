@@ -3444,12 +3444,16 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 			da.yoff = yoff + pLine->getAscent();
 			if(!bClear)
 			{
+				pCurRun->setSelectionMode(iPos1-4,iPos2+4);
 				pCurRun->draw(&da);
+				pCurRun->clearSelectionMode();
 			}
 			else
 			{
+				pCurRun->setSelectionMode(iPos1-4,iPos2+4);
 				pCurRun->Run_ClearScreen(bFullLineHeight);
 				pCurRun->draw(&da);
+				pCurRun->clearSelectionMode();
 			}
 			fp_Page * pPage = pLine->getPage();
 			if((pPage != NULL) && (vecPages.findItem(pPage) <0))

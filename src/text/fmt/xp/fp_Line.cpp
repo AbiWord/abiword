@@ -1083,7 +1083,10 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 
 			if(pRun->isDirty())
 			{
-				runIndex++;
+				if(runIndex < count-1)
+				{
+					runIndex++;
+				}
 			}
 			else
 			{
@@ -1136,9 +1139,11 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		}
 
 		// now mark the last pPrev run as dirty, so we do not have to do
-		// that later ...
+		// that lateer
+
 		if(pPrev)
 			pPrev->markAsDirty();
+ 
 		
 		leftClear = pRun->getDescent();
 		if(j>0 && pPrev != NULL && pPrev->getType() == FPRUN_TEXT)

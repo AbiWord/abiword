@@ -461,6 +461,10 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 //
 // low and high are on different rows. First get top, left
 //
+// Fix me! Instead of redrawing over this, do a fillrect(image,src,dest)
+// three times.
+// Then left and right are inverted.
+//
 		UT_sint32 xx,yy;
 		fp_Run * pRun = pLineLow->getFirstRun();
 		pLineLow->getScreenOffsets(pRun,xx,yy);

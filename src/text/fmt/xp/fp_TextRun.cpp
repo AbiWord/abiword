@@ -1334,94 +1334,98 @@ void fp_TextRun::_clearScreen(bool /* bFullLineHeightRect */)
 {
 //	UT_ASSERT(!isDirty());
 	UT_ASSERT(getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN));
+	UT_sint32 iExtra = 0;
 	if(!getLine()->isEmpty() && getLine()->getLastVisRun() == this)   //#TF must be last visual run
 	{
 		// Last run on the line so clear to end.
-
-		getLine()->clearScreenFromRunToEnd(this);
-	}
-	else
-	{
-		getGraphics()->setFont(_getFont());
-		/*
-		  TODO this should not be hard-coded.  We need to figure out
-		  what the appropriate background color for this run is, and
-		  use that.  Note that it could vary on a run-by-run basis,
-		  since document facilities allow the background color to be
-		  changed, for things such as table cells.
-		*/
-		// we need to use here page color, not highlight color, otherwise
-		// we endup with higlighted margin
-		//UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
-		UT_RGBColor clrNormalBackground(_getColorPG());
-		if (getField())
+		if(isSelectionDraw())
 		{
-		  clrNormalBackground -= _getView()->getColorFieldOffset();
-		}
-		getGraphics()->setColor(clrNormalBackground);
-
-		UT_sint32 xoff = 0, yoff = 0;
-		getLine()->getScreenOffsets(this, xoff, yoff);
-		
-		//
-		// Handle case where character extend behind the left side
-		// like italic Times New Roman f
-		//
-		fp_Line * thisLine = getLine();
-		fp_Run * pPrev = getPrevRun();
-		fp_Run * pNext = getNextRun();
-		UT_sint32 leftClear = getAscent()/2;
-		UT_sint32 rightClear = getAscent()/2;
-		UT_sint32 iCumWidth = leftClear;
-
-		if(thisLine != NULL)
-		{
-			// TODO -- this needs to be done in vis. space !!!
-			
-			while(pPrev != NULL && pPrev->getLine() == thisLine &&
-				   (pPrev->getLength() == 0 || iCumWidth > 0))
+			UT_Rect * pRect = const_cast<UT_Rect *>(getGraphics()->getClipRect());
+			if(pRect)
 			{
-				iCumWidth -= pPrev->getWidth();
+				pRect->width += getGraphics()->tlu(5); // uwog will hate me..
+				iExtra += getGraphics()->tlu(5); // But I just want it to work
+			}
+		}
+		else
+		{
+			getLine()->clearScreenFromRunToEnd(this);
+			xxx_UT_DEBUGMSG(("TextRun Clear Screen line is %x \n",getLine()));
+			getLine()->setNeedsRedraw();
+			return;
+		}
+	}
+
+	getGraphics()->setFont(_getFont());
+	/*
+	  TODO this should not be hard-coded.  We need to figure out
+	  what the appropriate background color for this run is, and
+	  use that.  Note that it could vary on a run-by-run basis,
+	  since document facilities allow the background color to be
+	  changed, for things such as table cells.
+	*/
+	// we need to use here page color, not highlight color, otherwise
+	// we endup with higlighted margin
+	//UT_RGBColor clrNormalBackground(m_colorHL.m_red, m_colorHL.m_grn, m_colorHL.m_blu);
+	UT_RGBColor clrNormalBackground(_getColorPG());
+	if (getField())
+	{
+		clrNormalBackground -= _getView()->getColorFieldOffset();
+	}
+	getGraphics()->setColor(clrNormalBackground);
+	
+	UT_sint32 xoff = 0, yoff = 0;
+	getLine()->getScreenOffsets(this, xoff, yoff);
+	
+	//
+	// Handle case where character extend behind the left side
+	// like italic Times New Roman f
+	//
+	fp_Line * thisLine = getLine();
+	fp_Run * pPrev = getPrevRun();
+	fp_Run * pNext = getNextRun();
+	UT_sint32 leftClear = getAscent()/2;
+	if(isSelectionDraw())
+	{
+		leftClear = 0;
+	}
+	UT_sint32 rightClear = getAscent()/2 + iExtra;
+	if(!isSelectionDraw() && iExtra== 0)
+	{
+		rightClear = 0;
+	}
+	UT_sint32 iCumWidth = leftClear;
+	if(thisLine != NULL)
+	{
+		// TODO -- this needs to be done in vis. space !!!
+		while(pPrev != NULL && pPrev->getLine() == thisLine &&
+			  (pPrev->getLength() == 0 || iCumWidth > 0))
+		{
+			iCumWidth -= pPrev->getWidth();
+			if(!isSelectionDraw())
+			{
 				pPrev->markAsDirty();
-				pPrev = pPrev->getPrevRun();
 			}
-
-#if 0
-			// This defeats the purpose of this code; what is required
-			// is to test whether there is a chance of this run
-			// overextending and this is not easy to do because even
-			// non-italic fonts might do that. Tomas, Nov 28, 2003
-			if (pPrev != NULL && pPrev->getLine() == thisLine &&
-					(   pPrev->getType() == FPRUN_TEXT
-					 || pPrev->getType() == FPRUN_FIELD
-					 || pPrev->getType() == FPRUN_IMAGE))
-			{
- 				leftClear = 0;
-			}
-#endif
-
-			iCumWidth = rightClear;
-			while(pNext != NULL && pNext->getLine() == thisLine &&
-				   (pNext->getLength() == 0 || iCumWidth > 0))
-			{
-				iCumWidth -= pNext->getWidth();
-				pNext->markAsDirty();
-				pNext = pNext->getNextRun();
-			}
+			pPrev = pPrev->getPrevRun();
 		}
-		Fill(getGraphics(),xoff - leftClear, yoff, getWidth() + leftClear + rightClear,
-			 getLine()->getHeight());
-		xxx_UT_DEBUGMSG(("leftClear = %d width = %d xoff %d height %d \n",
-						 leftClear,getWidth(),xoff,getLine()->getHeight()));
 		
+		iCumWidth = rightClear;
+		while(pNext != NULL && pNext->getLine() == thisLine &&
+			  (pNext->getLength() == 0 || iCumWidth > 0))
+		{
+			iCumWidth -= pNext->getWidth();
+			if(!isSelectionDraw())
+			{
+				pNext->markAsDirty();
+			}
+			pNext = pNext->getNextRun();
+		}
 	}
-	if(getLine())
-	{
-
-		xxx_UT_DEBUGMSG(("TextRun Clear Screen line is %x \n",getLine()));
-		getLine()->setNeedsRedraw();
-	}
-
+	Fill(getGraphics(),xoff - leftClear, yoff, getWidth() + leftClear + rightClear,
+		 getLine()->getHeight());
+	xxx_UT_DEBUGMSG(("leftClear = %d width = %d xoff %d height %d \n",
+					 leftClear,getWidth(),xoff,getLine()->getHeight()));
+	
 
 }
 
@@ -1443,20 +1447,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 // and we have full justification we abort, reformat the paragraph and redraw.
 //
 	/*bool bRefresh =*/ _refreshDrawBuffer();
-#if 0
-	// this is extremely expensive; all we need to do is to restore
-	// the justification info in _refereshDrawBuffer();
-	if(bRefresh && getBlock()->getAlignment()->getType() == FB_ALIGNMENT_JUSTIFY)
-	{
-		UT_DEBUGMSG(("_refreshDrawBuffer called on Justified run - reformat and abort \n"));
-		getBlock()->setNeedsReformat(0);
-		getBlock()->setNeedsRedraw();
-		getBlock()->markAllRunsDirty();
-		getLine()->setNeedsRedraw();
-		markAsDirty();
-		return;
-	}
-#endif
 	
 	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n",
 					 this, m_iVisDirection, _getDirection()));
@@ -1771,7 +1761,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	{
 		iX += getWidth();
 	}
-
+	UT_ASSERT(iSegmentCount > 0);
 	for(UT_uint32 iSegment = 0; iSegment < iSegmentCount; iSegment++)
 	{
 		if(bSegmentSelected[iSegment])
@@ -1794,16 +1784,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		m_pRenderInfo->m_iLength = iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment];
 		m_pRenderInfo->m_xoff = iX;
 		m_pRenderInfo->m_yoff = yTopOfRun;
-		
+		xxx_UT_DEBUGMSG(("_drawText segment %d off %d length %d width %d \n",iSegment,iMyOffset,m_pRenderInfo->m_iLength ,iSegmentWidth[iSegment]));
 		painter.renderChars(*m_pRenderInfo);
 		
-#if 0
-		painter.drawChars(s_pCharBuff,
-						  iMyOffset,
-						  iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment],
-						  iX,
-						  yTopOfRun,pRI->m_pAdvances + iMyOffset);
-#endif
 		if(iVisDir == UT_BIDI_LTR)
 			iX += iSegmentWidth[iSegment];
 	}

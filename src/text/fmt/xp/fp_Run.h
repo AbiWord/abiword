@@ -323,7 +323,13 @@ public:
 	// bookmarks, and hidden hidden text, to ensure that these are not deleted behind
 	// the users backs.
 	bool        deleteFollowingIfAtInsPoint() const;
-	
+
+	// Methods for selection drawing
+	void                 setSelectionMode(PT_DocPosition posLow, PT_DocPosition posHigh);
+    void                 clearSelectionMode(void);
+	bool                 isSelectionDraw(void) const;
+	PT_DocPosition       posSelLow(void) const;
+    PT_DocPosition       posSelHigh(void) const;
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
@@ -464,6 +470,11 @@ private:
 	UT_sint32               m_iTmpY;
 	UT_sint32               m_iTmpWidth;
 	fp_Line *               m_pTmpLine;
+
+	// Variables for selection drawing
+    bool                    m_bDrawSelection;
+    PT_DocPosition          m_iSelLow;
+    PT_DocPosition          m_iSelHigh;
 };
 
 class ABI_EXPORT fp_TabRun : public fp_Run
