@@ -9,18 +9,37 @@
 <!-- ==============================================================  -->
 
 <!-- British (and Irish) English Localisation provided by Alan Horkan <Alan.Horkan@maths.tcd.ie> -->
-<!-- en-GB is mostly the same as en-US, and en-IE does not conflict with en-GB to the best of my knowledge  -->  
+<!-- en-GB is mostly the same as en-US, and en-IE does not conflict with en-GB to the best of my knowledge  --> 
+<!-- Updated by David Chart <linux@dchart.demon.co.uk> --> 
 
 <AbiStrings app="AbiWord" ver="1.0" language="en-GB">
 
 <Strings	class="XAP"
+DLG_Options_Label_CheckWhiteForTransparent="Allow screen colours other than white"
+DLG_UFS_BGColorTab="Highlight Colour"
 DLG_UFS_ColorTab="   Colour   "
 DLG_UP_Grayscale="Greyscale"
 DLG_UP_Color="Colour"
 />
 
 <Strings	class="AP"
+AUTOTEXT_SALUTATION_1="Dear Mum and Dad,"
+AUTOTEXT_CLOSING_10="Yours faithfully,"
+AUTOTEXT_CLOSING_11="Yours sincerely,"
+AUTOTEXT_CLOSING_12="Yours truly,"
+AUTOTEXT_CLOSING_6="Respectfully,"
+AUTOTEXT_CLOSING_7="Take care,"
+AUTOTEXT_CLOSING_8="Thank you,"
+AUTOTEXT_CLOSING-0="Thanks,"
+AUTOTEXT_MAIL_1="RECORDED DELIVERY"
 MSG_IE_BogusDocument="File %s is an invalid document"
+DLG_Background_Title="Change Background Colour"
+DLG_Background_TitleFore="Change Text Colour"
+DLG_Background_TitleHighlight="Change Highlight Colour"
+DLG_Background_ClearClr="Clear Background Colour"
+DLG_Background_ClearHighlight="Clear Highlight Colour"
+DLG_Options_Label_ChooseForTransparent="Choose Screen Colour"
+DLG_Options_Label_ColorChooserLabel="Choose Screen Colour for AbiWord"
 DLG_Para_AlignCentered="Centred"
 DLG_Para_PreviewSampleFallback="This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialogue."
 DLG_Tab_Radio_Center="Centre"
