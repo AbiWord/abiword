@@ -50,6 +50,7 @@
 
 class XAP_Frame;
 class AD_Document;
+class XAP_StringSet;
 
 const UT_uint32 iResultCount = 4;
 

@@ -308,6 +308,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	for(i=0; i< static_cast<UT_sint32>(pVecBlocks->getItemCount()); i++)
 	{
 		pPrevBL = static_cast<fl_BlockLayout *>(pVecBlocks->getNthItem(i));
+		UT_DEBUGMSG(("Looking at Block %x pos %d \n",pPrevBL,pPrevBL->getPosition()));
 		if(pPrevBL->getPosition() > posNew)
 		{
 			bFound = true;
@@ -319,6 +320,7 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	for(i=0; i< static_cast<UT_sint32>(m_vecAllBlocks.getItemCount()); i++)
 	{
 		pPrevBL = static_cast<fl_BlockLayout *>(m_vecAllBlocks.getNthItem(i));
+		UT_DEBUGMSG(("Looking at Block %x pos %d \n",pPrevBL,pPrevBL->getPosition()));
 		if(pPrevBL->getPosition() > posNew)
 		{
 			bFound = true;
@@ -340,6 +342,15 @@ void fl_TOCLayout::_addBlockInVec(fl_BlockLayout * pBlock, UT_Vector * pVecBlock
 	}
 	iAllBlocks = i;
 	PD_Style * pStyle = NULL;
+	if(pPrevBL)
+	{
+		UT_DEBUGMSG(("My block at pos %d Inserted after Block at pos %d \n",posNew,pPrevBL->getPosition()));
+	}
+	else
+	{
+		UT_DEBUGMSG(("New block at pos append to end \n",posNew));
+
+	}
 	m_pDoc->getStyle(sStyle.utf8_str(),&pStyle);
 	fl_TOCListener * pListen = new fl_TOCListener(this,pPrevBL,pStyle);
 	PT_DocPosition posStart,posEnd;

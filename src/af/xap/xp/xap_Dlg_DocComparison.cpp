@@ -21,6 +21,9 @@
 
 #include "xap_Dlg_DocComparison.h"
 #include "xad_Document.h"
+#include "xap_App.h"
+#include "xap_Strings.h"
+
 #include <locale.h>
 
 XAP_Dialog_DocComparison::XAP_Dialog_DocComparison(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id):
