@@ -99,6 +99,7 @@ void UT_XML_BufReader::closeFile ()
 }
 
 UT_XML::UT_XML () :
+  m_is_chardata(true),
   m_chardata_buffer(0),
   m_chardata_length(0),
   m_chardata_max(0),
@@ -109,6 +110,7 @@ UT_XML::UT_XML () :
   m_xml_type(0),
   m_bStopped(false),
   m_pListener(0),
+  m_pExpertListener(0),
   m_pReader(0)
 {
   // 
@@ -155,7 +157,15 @@ void UT_XML::flush_all ()
 {
   if (m_chardata_length)
     {
-      if (m_pListener) m_pListener->charData (m_chardata_buffer, m_chardata_length);
+      if (m_pListener && m_is_chardata)
+		  m_pListener->charData (m_chardata_buffer, m_chardata_length);
+      if (m_pExpertListener)
+		  {
+			  if (m_is_chardata)
+				  m_pExpertListener->CharData (m_chardata_buffer, m_chardata_length);
+			  else
+				  m_pExpertListener->Default (m_chardata_buffer, m_chardata_length);
+		  }
       m_chardata_length = 0;
     }
 }
@@ -180,8 +190,11 @@ void UT_XML::startElement (const char * name, const char ** atts)
       return;
     }
 
-  UT_ASSERT (m_pListener);
-  m_pListener->startElement (name, atts);
+  UT_ASSERT (m_pListener || m_pExpertListener);
+  if (m_pListener)
+	  m_pListener->startElement (name, atts);
+  if (m_pExpertListener)
+	  m_pExpertListener->StartElement (name, atts);
 }
 
 /* Declared in ut_xml.h as: void UT_XML::endElement (const XML_Char * name);
@@ -198,8 +211,11 @@ void UT_XML::endElement (const char * name)
 	if (*(name + m_nslength) == ':') name += m_nslength + 1;
       }
 
-  UT_ASSERT (m_pListener);
-  m_pListener->endElement (name);
+  UT_ASSERT (m_pListener || m_pExpertListener);
+  if (m_pListener)
+	  m_pListener->endElement (name);
+  if (m_pExpertListener)
+	  m_pExpertListener->EndElement (name);
 }
 
 /* Declared in ut_xml.h as: void UT_XML::charData (const XML_Char * buffer, int length);
@@ -207,6 +223,64 @@ void UT_XML::endElement (const char * name)
 void UT_XML::charData (const char * buffer, int length)
 {
   if (m_bStopped) return;
+
+  if (m_chardata_length && !m_is_chardata) flush_all ();
+
+  m_is_chardata = true;
+
+  if (!grow (m_chardata_buffer, m_chardata_length, m_chardata_max, length))
+    {
+      m_bStopped = true;
+      return;
+    }
+  memcpy (m_chardata_buffer + m_chardata_length, buffer, length);
+  m_chardata_length += length;
+  m_chardata_buffer[m_chardata_length] = 0;
+}
+
+void UT_XML::processingInstruction (const char * target, const char * data)
+{
+  if (m_bStopped) return;
+  if (m_pExpertListener)
+	{
+	  if (m_chardata_length) flush_all ();
+	  m_pExpertListener->ProcessingInstruction (target, data);
+	}
+}
+
+void UT_XML::comment (const char * data)
+{
+  if (m_bStopped) return;
+  if (m_pExpertListener)
+	{
+	  if (m_chardata_length) flush_all ();
+	  m_pExpertListener->Comment (data);
+	}
+}
+
+void UT_XML::cdataSection (bool start)
+{
+  if (m_bStopped) return;
+  if (m_pExpertListener)
+	{
+	  if (m_chardata_length) flush_all ();
+	  if (start)
+		m_pExpertListener->StartCdataSection ();
+	  else
+		m_pExpertListener->EndCdataSection ();
+	}
+}
+
+/* Declared in ut_xml.h as: void UT_XML::defaultData (const XML_Char * buffer, int length);
+ */
+void UT_XML::defaultData (const char * buffer, int length)
+{
+  if (m_bStopped) return;
+  if (m_pExpertListener == 0) return;
+
+  if (m_chardata_length && m_is_chardata) flush_all ();
+
+  m_is_chardata = false;
 
   if (!grow (m_chardata_buffer, m_chardata_length, m_chardata_max, length))
     {
@@ -263,10 +337,10 @@ bool UT_XML::sniff (const char * buffer, UT_uint32 length, const char * xml_type
 
 UT_Error UT_XML::parse (const UT_ByteBuf * pBB)
 {
-  UT_ASSERT (m_pListener);
+  UT_ASSERT (m_pListener || m_pExpertListener);
   UT_ASSERT (pBB);
 
-  if ((pBB == 0) || (m_pListener == 0)) return UT_ERROR;
+  if ((pBB == 0) || ((m_pListener == 0) && (m_pExpertListener == 0))) return UT_ERROR;
   if (!reset_all ()) return UT_OUTOFMEM;
 
   const char * buffer = reinterpret_cast<const char *>(pBB->getPointer (0));

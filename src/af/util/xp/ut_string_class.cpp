@@ -663,7 +663,7 @@ UT_uint32 hashcode(const UT_String& string)
 
 static const char * s_UTF8_GenericBaseID = "UT_UTF8String";
 
-const char * UT_UTF8String::GenericBaseID ()
+const char * UT_UTF8String::GenericBaseID () const
 {
 	return s_UTF8_GenericBaseID;
 }

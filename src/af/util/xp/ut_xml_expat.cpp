@@ -40,7 +40,7 @@ extern "C" {
 
 static void _startElement (void * userData, const XML_Char * name, const XML_Char ** atts)
 {
-  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
 
   /* libxml2 can supply atts == 0, which is a little at variance to what is expected...
    */
@@ -53,14 +53,44 @@ static void _startElement (void * userData, const XML_Char * name, const XML_Cha
 
 static void _endElement (void * userData, const XML_Char * name)
 {
-  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
   pXML->endElement (static_cast<const char *>(name));
 }
 
 static void _charData (void * userData, const XML_Char * buffer, int length)
 {
-  UT_XML * pXML = static_cast<UT_XML *>(userData);
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
   pXML->charData (static_cast<const char *>(buffer), length);
+}
+
+static void _processingInstruction (void * userData, const XML_Char * target, const XML_Char * data)
+{
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
+  pXML->processingInstruction (static_cast<const char *>(target), static_cast<const char *>(data));
+}
+
+static void _comment (void * userData, const XML_Char * data)
+{
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
+  pXML->comment (static_cast<const char *>(data));
+}
+
+static void _startCdataSection (void * userData)
+{
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
+  pXML->cdataSection (true);
+}
+
+static void _endCdataSection (void * userData)
+{
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
+  pXML->cdataSection (false);
+}
+
+static void _default (void * userData, const XML_Char * buffer, int length)
+{
+  UT_XML * pXML = reinterpret_cast<UT_XML *>(userData);
+  pXML->defaultData (static_cast<const char *>(buffer), length);
 }
 
 #ifdef __MRC__
@@ -104,6 +134,10 @@ UT_Error UT_XML::parse (const char * szFilename)
 
   XML_SetElementHandler (parser, _startElement, _endElement);
   XML_SetCharacterDataHandler (parser, _charData);
+  XML_SetProcessingInstructionHandler (parser, _processingInstruction);
+  XML_SetCommentHandler (parser, _comment);
+  XML_SetCdataSectionHandler (parser, _startCdataSection, _endCdataSection);
+  XML_SetDefaultHandler (parser, _default);
 
   XML_SetUserData (parser, static_cast<void *>(this));
 
@@ -132,7 +166,7 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 {
   if (!m_bSniffing)
     {
-      UT_ASSERT (m_pListener);
+      UT_ASSERT (m_pListener || m_pExpertListener);
       if (m_pListener == 0) return UT_ERROR;
     }
   UT_ASSERT (buffer);
@@ -153,6 +187,10 @@ UT_Error UT_XML::parse (const char * buffer, UT_uint32 length)
 
   XML_SetElementHandler (parser, _startElement, _endElement);
   XML_SetCharacterDataHandler (parser, _charData);
+  XML_SetProcessingInstructionHandler (parser, _processingInstruction);
+  XML_SetCommentHandler (parser, _comment);
+  XML_SetCdataSectionHandler (parser, _startCdataSection, _endCdataSection);
+  XML_SetDefaultHandler (parser, _default);
 
   XML_SetUserData (parser, static_cast<void *>(this));
 

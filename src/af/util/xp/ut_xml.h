@@ -48,6 +48,8 @@ class ABI_EXPORT UT_XML
   void setNameSpace (const char * xml_namespace);
 
  private:
+  bool m_is_chardata; // as opposed to SAX "default" data
+
   char * m_chardata_buffer;
 
   UT_uint32 m_chardata_length;
@@ -107,6 +109,33 @@ class ABI_EXPORT UT_XML
   Listener * m_pListener;
 
  public:
+
+  /* EXPERIMENTAL - Use With Caution!
+   */
+  class ABI_EXPORT ExpertListener
+    {
+    public:
+      virtual ~ExpertListener () {}
+
+      virtual void StartElement (const XML_Char * name, const XML_Char ** atts) = 0;
+      virtual void EndElement (const XML_Char * name) = 0;
+      virtual void CharData (const XML_Char * buffer, int length) = 0;
+      virtual void ProcessingInstruction (const XML_Char * target, const XML_Char * data) = 0;
+      virtual void Comment (const XML_Char * data) = 0;
+      virtual void StartCdataSection () = 0;
+      virtual void EndCdataSection () = 0;
+      virtual void Default (const XML_Char * buffer, int length) = 0;
+
+    protected:
+      ExpertListener () {}
+    };
+
+  void setExpertListener (ExpertListener * pExpertListener) { m_pExpertListener = pExpertListener; }
+
+ protected:
+  ExpertListener * m_pExpertListener;
+
+ public:
   class ABI_EXPORT Reader
     {
     public:
@@ -146,6 +175,10 @@ class ABI_EXPORT UT_XML
   void startElement (const XML_Char * name, const XML_Char ** atts);
   void endElement (const XML_Char * name);
   void charData (const XML_Char * buffer, int length);
+  void processingInstruction (const XML_Char * target, const XML_Char * data);
+  void comment (const XML_Char * data);
+  void cdataSection (bool start);
+  void defaultData (const XML_Char * buffer, int length);
 };
 
 class DefaultReader : public UT_XML::Reader

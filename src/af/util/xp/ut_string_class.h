@@ -48,7 +48,7 @@ class UT_UCS4String;
 class ABI_EXPORT UT_GenericBase
 {
 public:
-	virtual const char *	GenericBaseID () = 0;
+	virtual const char *	GenericBaseID () const = 0;
 
 	virtual ~UT_GenericBase () { }
 };
@@ -165,7 +165,7 @@ ABI_EXPORT void UT_String_setProperty(UT_String & sPropertyString, const UT_Stri
 class ABI_EXPORT UT_UTF8String : public UT_GenericBase
 {
 public:
-	virtual const char *	GenericBaseID ();
+	virtual const char *	GenericBaseID () const;
 
 	UT_UTF8String ();
 	UT_UTF8String (const char * sz);
