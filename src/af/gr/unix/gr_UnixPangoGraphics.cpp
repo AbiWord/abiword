@@ -31,9 +31,10 @@
 #include <pango/pango-item.h>
 #include <pango/pangoxft.h>
 
-UT_uint32 GR_UnixPangoGraphics::s_iInstanceCount = 0;
-UT_VersionInfo GR_UnixPangoGraphics::s_Version;
-int GR_UnixPangoGraphics::s_iMaxScript = 0;
+
+UT_uint32                GR_UnixPangoGraphics::s_iInstanceCount = 0;
+UT_VersionInfo           GR_UnixPangoGraphics::s_Version;
+int                      GR_UnixPangoGraphics::s_iMaxScript = 0;
 
 
 class GR_UnixPangoItem: public GR_Item
@@ -92,11 +93,18 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 		m_pGlyphs(NULL),
 		m_pJustify(NULL)
 	{
+		++s_iInstanceCount;
 	};
 	
 	virtual ~GR_UnixPangoRenderInfo()
 	{
 		delete [] m_pJustify;
+
+		s_iInstanceCount--;
+		if(!s_iInstanceCount)
+		{
+			delete [] s_pLogAttr;  s_pLogAttr  = NULL;
+		}
 	};
 
 	virtual GRRI_Type getType() const {return GRRI_UNIX_PANGO;}
@@ -105,14 +113,59 @@ class GR_UnixPangoRenderInfo : public GR_RenderInfo
 	virtual bool      cut(UT_uint32 offset, UT_uint32 iLen, bool bReverse = false);
 	virtual bool      isJustified() const;
 
-  public:
+	bool getUTF8Text();
+	
+	inline bool       allocStaticBuffers(UT_uint32 iSize)
+	    {
+			if(s_pLogAttr) { delete [] s_pLogAttr; s_pLogAttr = NULL; }
+			s_pLogAttr  = new PangoLogAttr[iSize]; // log attr. correspont to characters, not glyphs, but since there are
+												   // always at least as many glyphs, this is OK
+			UT_return_val_if_fail(s_pLogAttr, false);
+
+			s_iStaticSize = iSize;
+			
+			s_pOwnerUTF8 = NULL;
+			
+			return true;
+	    }
 
 	PangoGlyphString* m_pGlyphs;
 	int *             m_pJustify;
 
-	
+	static UT_UTF8String sUTF8;
+	static GR_UnixPangoRenderInfo * s_pOwnerUTF8;
+	static PangoLogAttr * s_pLogAttr;
+	static UT_uint32  s_iInstanceCount;
+	static UT_uint32  s_iStaticSize;  // size of the static buffers
 };
 
+
+GR_UnixPangoRenderInfo * GR_UnixPangoRenderInfo::s_pOwnerUTF8 = NULL;
+UT_UTF8String            GR_UnixPangoRenderInfo::sUTF8;
+PangoLogAttr *           GR_UnixPangoRenderInfo::s_pLogAttr = NULL;
+UT_uint32                GR_UnixPangoRenderInfo::s_iInstanceCount = 0;
+UT_uint32                GR_UnixPangoRenderInfo::s_iStaticSize = 0;
+
+
+bool GR_UnixPangoRenderInfo::getUTF8Text()
+{
+	if(s_pOwnerUTF8 == this)
+		return true;
+	
+	UT_return_val_if_fail( m_pText, false );
+
+	UT_TextIterator & text = *m_pText;
+	sUTF8.clear();
+	
+	for(; text.getStatus() == UTIter_OK; ++text)
+	{
+		sUTF8 += text.getChar();
+	}
+
+	s_pOwnerUTF8 = this;
+
+	return true;
+}
 
 GR_UnixPangoGraphics::GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
 	:GR_UnixGraphics(win, fontManager, app), m_pFontMap(NULL),m_pContext(NULL), m_pFont(NULL)
@@ -374,9 +427,69 @@ void GR_UnixPangoGraphics::appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_Grow
 	UT_return_if_fail( UT_NOT_IMPLEMENTED );
 }
 
-bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext)
+/*!
+    returns true on success
+ */
+bool GR_UnixPangoGraphics::_scriptBreak(GR_UnixPangoRenderInfo &ri)
 {
-	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, true );
+	UT_return_val_if_fail(ri.m_pText && ri.m_pGlyphs && ri.m_pItem, false);
+
+	GR_UnixPangoItem * pItem = (GR_UnixPangoItem*)ri.m_pItem;
+
+	// fill the static buffer with UTF8 text
+	UT_return_val_if_fail(ri.getUTF8Text(), false);
+
+	UT_return_val_if_fail(ri.allocStaticBuffers(ri.m_pGlyphs->num_glyphs), false);
+		
+	pango_break(ri.sUTF8.utf8_str(), ri.sUTF8.byteLength(),&(pItem->m_pi->analysis), ri.s_pLogAttr, ri.m_pGlyphs->num_glyphs);
+
+	return true;
+}
+
+bool GR_UnixPangoGraphics::canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter)
+{
+	UT_return_val_if_fail(ri.getType() == GRRI_UNIX_PANGO && ri.m_iOffset < ri.m_iLength, false);
+	GR_UnixPangoRenderInfo & RI = (GR_UnixPangoRenderInfo &)ri;
+	iNext = -1;
+
+	if(!_scriptBreak(RI))
+		return false;
+
+	if(ri.m_iLength > (UT_sint32)RI.s_iStaticSize)
+	{
+		UT_return_val_if_fail( RI.allocStaticBuffers(ri.m_iLength),false );
+	}
+	
+	UT_uint32 iDelta  = 0;
+	if(bAfter)
+	{
+		// the caller wants to know if break can occur on the (logically) right edge of the given
+		// character
+		if(ri.m_iOffset + 1 == ri.m_iLength)
+		{
+			// we are quering the last char of a run, for which we do not have the info
+			// we will return false, which should force the next run to be examined ...
+			return false;
+		}
+
+		// we will examine the next character, since USP tells us about breaking on the left edge
+		iDelta = 1;
+	}
+
+	if(RI.s_pLogAttr[ri.m_iOffset + iDelta].is_char_break)
+		return true;
+
+	// find the next break
+	for(UT_sint32 i = ri.m_iOffset + iDelta + 1; i < RI.m_iLength; ++i)
+	{
+		if(RI.s_pLogAttr[i].is_char_break)
+		{
+			iNext = i - iDelta;
+			break;
+		}
+	}
+	
+	return false;
 }
 
 

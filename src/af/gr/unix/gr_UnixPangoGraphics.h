@@ -36,6 +36,7 @@
 /************************************************************************/
 /************************************************************************/
 
+class GR_UnixPangoRenderInfo;
 class GR_UnixPangoGraphics;
 
 class ABI_EXPORT GR_UnixPangoFont : public GR_Font
@@ -96,7 +97,7 @@ public:
 	virtual void renderChars(GR_RenderInfo & ri);
 	virtual void measureRenderedCharWidths(GR_RenderInfo & ri);
 	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const;
-	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext);
+	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter);
 
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
@@ -136,6 +137,8 @@ public:
 	GR_UnixPangoGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app);
 	GR_UnixPangoGraphics(GdkPixmap * win, XAP_UnixFontManager * fontManager, XAP_App *app, bool bUsePixmap);
 
+	inline bool _scriptBreak(GR_UnixPangoRenderInfo &ri);
+	
   private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
