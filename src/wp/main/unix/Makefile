@@ -71,6 +71,9 @@ build:: $(TARGETS)
 	@echo Exporting $(TARGETS) from `pwd`
 	@$(subst xxxx,$(BINDIR),$(VERIFY_DIRECTORY))
 	@$(ABICOPY) $(TARGETS) $(BINDIR)
+	@$(subst xxxx,$(DISTDIR),$(VERIFY_DIRECTORY))
+	@$(ABICOPY) $(TARGETS) $(DISTDIR)
 
-
+# the last two lines are a hack to put something into the DIST tree until
+# we decide what we want the layout to be.
 
