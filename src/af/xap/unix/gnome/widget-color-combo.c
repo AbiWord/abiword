@@ -168,7 +168,7 @@ color_table_setup (ColorCombo *cc,
 						  color_group));
 
 	{
-		GtkWidget *picker = color_palette_get_color_picker (cc->palette);
+		GtkWidget *picker = color_palette_get_color_button (cc->palette);
 		g_signal_connect (picker, "clicked",
 				  G_CALLBACK (cb_cust_color_clicked), cc);
 	}

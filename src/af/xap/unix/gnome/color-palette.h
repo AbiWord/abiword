@@ -30,11 +30,7 @@
 #ifndef GNUMERIC_COLOR_PALETTE_H
 #define GNUMERIC_COLOR_PALETTE_H
 
-/* for GnomeColorPicker */
-#undef GNOME_DISABLE_DEPRECATED
-
 #include <gtk/gtk.h>
-#include <libgnomeui/gnome-color-picker.h>
 #include "color-group.h"
 
 G_BEGIN_DECLS
@@ -42,9 +38,9 @@ G_BEGIN_DECLS
 typedef struct _ColorNamePair ColorNamePair;
 
 typedef struct _ColorPalette {
-	GtkVBox          vbox;
-	GtkTooltips      *tool_tip;
-	GnomeColorPicker *picker;
+	GtkVBox 		vbox;
+	GtkTooltips	   *tool_tip;
+	GtkColorButton *button;
 	/*
 	 * Array of colors
 	 */
@@ -101,7 +97,7 @@ void		 color_palette_set_group (ColorPalette *P,
 void             color_palette_set_current_color (ColorPalette *P, GdkColor *color);
 void             color_palette_set_color_to_default (ColorPalette *P);
 GdkColor        *color_palette_get_current_color (ColorPalette *P, gboolean *is_default);
-GtkWidget       *color_palette_get_color_picker  (ColorPalette *P);
+GtkWidget       *color_palette_get_color_button  (ColorPalette *P);
 
 G_END_DECLS
 
