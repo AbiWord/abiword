@@ -686,7 +686,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				if ((keyCode != GDK_VoidSymbol))
 				{
 					gtk_widget_add_accelerator(w,
-											   "activate-item",
+											   "activate",
 											   GTK_MENU(wParent)->accel_group,
 											   keyCode,
 											   (GdkModifierType)0,
@@ -734,6 +734,10 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 				
 				// since we are starting a new sub menu, create a shell for new items
 				GtkWidget * wsub = gtk_menu_new();
+
+				GtkWidget * tearoff = gtk_tearoff_menu_item_new () ;
+				gtk_widget_show ( tearoff ) ;
+				gtk_container_add ( GTK_CONTAINER (wsub), tearoff ) ;
 
 				// Here's the tricky part:
 				// If the underlined character conflicts with ANY accelerator
@@ -806,7 +810,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 						if (wParent == wMenuRoot)
 						{
 							gtk_widget_add_accelerator(w,
-													   "activate_item",
+													   "activate",
 													   m_accelGroup,
 													   keyCode,
 													   GDK_MOD1_MASK,
@@ -816,7 +820,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot)
 						{
 							// just bind to be triggered by parent
 							gtk_widget_add_accelerator(w,
-													   "activate_item",
+													   "activate",
 													   GTK_MENU(wParent)->accel_group,
 													   keyCode,
 													   (GdkModifierType)0,
@@ -1094,7 +1098,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 #if ABI_GTK_DEPRECATED
 				// unbind all accelerators
 				gtk_widget_remove_accelerators(item,
-											   "activate_item",
+											   "activate",
 											   FALSE);
 #endif
 				// wipe it out
@@ -1140,7 +1144,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 #ifdef ABI_GTK_DEPRECATED
 					// unbind all accelerators
 					gtk_widget_remove_accelerators(item,
-												   "activate_item",
+												   "activate",
 												   FALSE);
 #endif
 						
@@ -1172,7 +1176,7 @@ bool EV_UnixMenu::_refreshMenu(AV_View * pView, GtkWidget * wMenuRoot)
 				if ((keyCode != GDK_VoidSymbol))// && parent_accel_group)
 				{
 					gtk_widget_add_accelerator(item,
-											   "activate_item",
+											   "activate",
 											   GTK_MENU(item->parent)->accel_group,
 											   keyCode,
 											   (GdkModifierType)0,
