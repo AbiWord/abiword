@@ -230,7 +230,8 @@ cd ../abi
 
 # Creates GNOME menu entries
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/pixmaps
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_prefix}/share/pixmaps/abiword_48.png
+#%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_prefix}/share/pixmaps/abiword_48.png
+%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/icons/abiword_48.png $RPM_BUILD_ROOT/%{_datadir}/pixmaps/abiword_48.png
 %__mkdir_p $RPM_BUILD_ROOT/%{_prefix}/share/applications/
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abi/abiword.desktop $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
 %__perl -p -i -e "s|Exec=abiword|Exec=abiword-2.2|" $RPM_BUILD_ROOT/%{_datadir}/applications/abiword.desktop
@@ -239,7 +240,7 @@ cd ../abi
 %__mkdir_p $RPM_BUILD_ROOT/%{_libdir}/bonobo/servers
 
 # Fix for wrong file rights on fonts,icons,clipart
-%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/pixmaps/*
+%__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/pixmaps/*
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/clipart/*
 %__chmod 644 $RPM_BUILD_ROOT/%{_datadir}/%{AbiSuite}/templates/*
 
