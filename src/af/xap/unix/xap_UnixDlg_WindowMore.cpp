@@ -21,6 +21,10 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
+// This header defines some functions for Unix dialogs,
+// like centering them, measuring them, etc.
+#include "ut_dialogHelper.h"
+
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
@@ -33,6 +37,7 @@
 #define DELETEP(p)	do { if (p) delete p; } while (0)
 
 /*****************************************************************/
+
 AP_Dialog * XAP_UnixDialog_WindowMore::static_constructor(AP_DialogFactory * pFactory,
 													   AP_Dialog_Id id)
 {
@@ -50,119 +55,304 @@ XAP_UnixDialog_WindowMore::~XAP_UnixDialog_WindowMore(void)
 {
 }
 
+/*****************************************************************/
+
+// These are all static callbacks, bound to GTK or GDK events.
+
+static void s_ok_clicked(GtkWidget * widget,
+						 XAP_UnixDialog_WindowMore * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_OK();
+}
+
+static void s_cancel_clicked(GtkWidget * widget,
+							 XAP_UnixDialog_WindowMore * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_Cancel();
+}
+
+static void s_clist_event(GtkWidget * widget,
+						  GdkEventButton * event,
+						  XAP_UnixDialog_WindowMore * dlg)
+{
+	UT_ASSERT(widget && event && dlg);
+
+	// Only respond to double clicks
+	if (event->type == GDK_2BUTTON_PRESS)
+	{
+		dlg->event_DoubleClick();
+	}
+}
+
+static void s_delete_clicked(GtkWidget * widget,
+							 gpointer data,
+							 XAP_UnixDialog_WindowMore * dlg)
+{
+	UT_ASSERT(widget && dlg);
+
+	dlg->event_WindowDelete();
+}
+
+/*****************************************************************/
+
 void XAP_UnixDialog_WindowMore::runModal(XAP_Frame * pFrame)
 {
 	// NOTE: this work could be done in XP code
 	m_pApp = pFrame->getApp();
 	UT_ASSERT(m_pApp);
+
+	// Initialize member so we know where we are now
 	m_ndxSelFrame = m_pApp->findFrame(pFrame);
 	UT_ASSERT(m_ndxSelFrame >= 0);
 
-	// raise the dialog
-#if 0
-	XAP_UnixApp * pUnixApp = static_cast<XAP_UnixApp *>(m_pApp);
-	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	// Build the window's widgets and arrange them
+	GtkWidget * mainWindow = _constructWindow();
+	UT_ASSERT(mainWindow);
 
-	LPCTSTR lpTemplate = NULL;
-
-	UT_ASSERT(m_id == XAP_DIALOG_ID_WINDOWMORE);
-
-	lpTemplate = MAKEINTRESOURCE(XAP_RID_DIALOG_WINDOWMORE);
-
-	int result = DialogBoxParam(pUnixApp->getInstance(),lpTemplate,
-								pUnixFrame->getTopLevelWindow(),
-								(DLGPROC)s_dlgProc,(LPARAM)this);
-	UT_ASSERT((result != -1));
-#endif 
-}
-
-#if 0
-BOOL CALLBACK XAP_UnixDialog_WindowMore::s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
-{
-	// This is a static function.
-
-	XAP_UnixDialog_WindowMore * pThis;
+	// Populate the window's data items
+	_populateWindow();
 	
-	switch (msg)
+	// To center the dialog, we need the frame of its parent.
+	XAP_UnixFrame * pUnixFrame = static_cast<XAP_UnixFrame *>(pFrame);
+	UT_ASSERT(pUnixFrame);
+	
+	// Get the GtkWindow of the parent frame
+	GtkWidget * parentWindow = pUnixFrame->getTopLevelWindow();
+	UT_ASSERT(parentWindow);
+	
+	// Center our new dialog in its parent and make it a transient
+	// so it won't get lost underneath
+    centerDialog(parentWindow, mainWindow);
+	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+
+	// Show the top level dialog,
+	gtk_widget_show(mainWindow);
+
+	// Make it modal, and stick it up top
+	gtk_grab_add(mainWindow);
+
+	// Run into the GTK event loop for this window.
+	gtk_main();
+
+	gtk_widget_destroy(mainWindow);
+}
+
+void XAP_UnixDialog_WindowMore::event_OK(void)
+{
+	// Query the list for its selection.
+	gint row = _GetFromList();
+
+	if (row >= 0)
+		m_ndxSelFrame = (UT_uint32) row;
+	
+	m_answer = XAP_Dialog_WindowMore::a_OK;
+	gtk_main_quit();
+}
+
+void XAP_UnixDialog_WindowMore::event_Cancel(void)
+{
+	m_answer = XAP_Dialog_WindowMore::a_CANCEL;
+	gtk_main_quit();
+}
+
+void XAP_UnixDialog_WindowMore::event_DoubleClick(void)
+{
+	// Query the list for its selection.	
+	gint row = _GetFromList();
+
+	// If it found something, return with it
+	if (row >= 0)
 	{
-	case WM_INITDIALOG:
-		pThis = (XAP_UnixDialog_WindowMore *)lParam;
-		SetWindowLong(hWnd,DWL_USER,lParam);
-		return pThis->_onInitDialog(hWnd,wParam,lParam);
-		
-	case WM_COMMAND:
-		pThis = (XAP_UnixDialog_WindowMore *)GetWindowLong(hWnd,DWL_USER);
-		return pThis->_onCommand(hWnd,wParam,lParam);
-		
-	default:
-		return 0;
+		m_ndxSelFrame = (UT_uint32) row;
+		event_OK();
 	}
 }
 
-BOOL XAP_UnixDialog_WindowMore::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+void XAP_UnixDialog_WindowMore::event_WindowDelete(void)
 {
-	{
-		HWND hwndList = GetDlgItem(hWnd, XAP_RID_DIALOG_WINDOWMORE_LIST);  
-
-		// load each frame name into the list
-		for (UT_uint32 i=0; i<m_pApp->getFrameCount(); i++)
-		{
-			XAP_Frame * f = m_pApp->getFrame(i);
-			UT_ASSERT(f);
-			const char * s = f->getTitle(128);	// TODO: chop this down more? 
-
-            SendMessage(hwndList, LB_ADDSTRING, 0, (LPARAM) s); 
-            SendMessage(hwndList, LB_SETITEMDATA, i, (LPARAM) i);  
-        } 
-
-		// select the one we're in
-		SendMessage(hwndList, LB_SETCURSEL, (WPARAM) m_ndxSelFrame, 0);
-	}		
-
-	return 1;							// 1 == we did not call SetFocus()
+	m_answer = XAP_Dialog_WindowMore::a_CANCEL;	
+	gtk_main_quit();
 }
 
-BOOL XAP_UnixDialog_WindowMore::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+/*****************************************************************/
+
+gint XAP_UnixDialog_WindowMore::_GetFromList(void)
 {
-	WORD wNotifyCode = HIWORD(wParam);
-	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
-	int nItem;
+	// Grab the selected index and store it in the member data
+	GList * selectedRow = GTK_CLIST(m_clistWindows)->selection;
 
-	switch (wId)
+	if (selectedRow)
 	{
-	case XAP_RID_DIALOG_WINDOWMORE_LIST:
-		switch (HIWORD(wParam))
+		gint rowNumber = GPOINTER_TO_INT(selectedRow->data);
+		if (rowNumber >= 0)
 		{
-			case LBN_SELCHANGE:
-				// NOTE: we could get away with only grabbing this in IDOK case
-				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
-				m_ndxSelFrame = SendMessage(hWndCtrl, LB_GETITEMDATA, nItem, 0);
-				return 1;
-
-			case LBN_DBLCLK:
-				nItem = SendMessage(hWndCtrl, LB_GETCURSEL, 0, 0);
-				m_ndxSelFrame = SendMessage(hWndCtrl, LB_GETITEMDATA, nItem, 0);
-				EndDialog(hWnd,0);
-				return 1;
-
-			default:
-				return 0;
+			// Store the value
+			return rowNumber;
 		}
-		break;
-
-	case IDCANCEL:						// also XAP_RID_DIALOG_WINDOWMORE_BTN_CANCEL
-		m_answer = a_CANCEL;
-		// fall through
-
-	case IDOK:							// also XAP_RID_DIALOG_WINDOWMORE_BTN_OK
-		EndDialog(hWnd,0);
-		return 1;
-
-	default:							// we did not handle this notification
-		UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
-		return 0;						// return zero to let windows take care of it.
+		else
+		{
+			// We have a selection but no rows in it...
+			// funny.
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return -1;
+		}
 	}
+
+	// No selected rows
+	return -1;
 }
 
-#endif
+GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
+{
+	// This is the top level GTK widget, the window.
+	// It's created with a "dialog" style.
+	GtkWidget *windowMain;
+
+	// This is the top level organization widget, which packs
+	// things vertically
+	GtkWidget *vboxMain;
+
+	// The top item in the vbox is a simple label
+	GtkWidget *labelActivate;
+
+	// The second item in the vbox is our list of windows
+	GtkWidget *clistWindows;
+	
+	// The third (and bottom) item in the vbox is a horizontal
+	// button box, which holds our two action buttons.
+	GtkWidget *buttonboxAction;
+
+	// These are the buttons.
+	GtkWidget *buttonOK;
+	GtkWidget *buttonCancel;
+
+	// Create the new top level window.
+	windowMain = gtk_window_new (GTK_WINDOW_DIALOG);
+	gtk_object_set_data (GTK_OBJECT (windowMain), "windowMain", windowMain);
+	gtk_window_set_title (GTK_WINDOW (windowMain), "More windows");
+	// This policy allows the window to let the window manager shrink and grow it.
+	gtk_window_set_policy (GTK_WINDOW (windowMain), TRUE, TRUE, FALSE);
+
+	vboxMain = gtk_vbox_new (FALSE, 0);
+	gtk_object_set_data (GTK_OBJECT (windowMain), "vboxMain", vboxMain);
+	gtk_widget_show (vboxMain);
+	gtk_container_add (GTK_CONTAINER (windowMain), vboxMain);
+
+	labelActivate = gtk_label_new ("Activate");
+	gtk_object_set_data (GTK_OBJECT (windowMain), "labelActivate", labelActivate);
+	gtk_widget_show (labelActivate);
+	gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
+	gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);
+	gtk_misc_set_alignment (GTK_MISC (labelActivate), 0, 0);
+	gtk_misc_set_padding (GTK_MISC (labelActivate), 10, 5);
+
+	clistWindows = gtk_clist_new (1);
+	gtk_object_set_data (GTK_OBJECT (windowMain), "clistWindows", clistWindows);
+	gtk_widget_show (clistWindows);
+	gtk_box_pack_start (GTK_BOX (vboxMain), clistWindows, TRUE, TRUE, 0);
+	gtk_widget_set_usize (clistWindows, 350, 210);
+	gtk_container_border_width (GTK_CONTAINER (clistWindows), 10);
+	gtk_clist_set_column_width (GTK_CLIST (clistWindows), 0, 80);
+	gtk_clist_column_titles_hide (GTK_CLIST (clistWindows));
+
+	buttonboxAction = gtk_hbutton_box_new ();
+	gtk_object_set_data (GTK_OBJECT (windowMain), "buttonboxAction", buttonboxAction);
+	gtk_widget_show (buttonboxAction);
+	gtk_box_pack_start (GTK_BOX (vboxMain), buttonboxAction, FALSE, TRUE, 0);
+	gtk_container_border_width (GTK_CONTAINER (buttonboxAction), 11);
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (buttonboxAction), GTK_BUTTONBOX_END);
+	gtk_button_box_set_spacing (GTK_BUTTON_BOX (buttonboxAction), 10);
+	gtk_button_box_set_child_size (GTK_BUTTON_BOX (buttonboxAction), 81, 27);
+	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (buttonboxAction), 0, 0);
+
+	buttonOK = gtk_button_new_with_label ("OK");
+	gtk_object_set_data (GTK_OBJECT (windowMain), "buttonOK", buttonOK);
+	gtk_widget_show (buttonOK);
+	gtk_container_add (GTK_CONTAINER (buttonboxAction), buttonOK);
+
+	buttonCancel = gtk_button_new_with_label ("Cancel");
+	gtk_object_set_data (GTK_OBJECT (windowMain), "buttonCancel", buttonCancel);
+	gtk_widget_show (buttonCancel);
+	gtk_container_add (GTK_CONTAINER (buttonboxAction), buttonCancel);
+
+	/*
+	  After we construct our widgets, we attach callbacks to static
+	  callback functions so we can respond to their events.  In this
+	  dialog, we will want to respond to both buttons (OK and Cancel),
+	  double-clicks on the clist, which will be treated like a
+	  click on the OK button.
+	*/
+
+	/*
+	  For a callback data item, the way we have the events routed,
+	  we pass a pointer to this instance of the class dialog, so that
+	  the static callbacks (which have no access to instance data)
+	  can just offload the real work through a select few public
+	  class methods.
+	*/
+	
+	gtk_signal_connect(GTK_OBJECT(buttonOK),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_ok_clicked),
+					   (gpointer) this);
+	
+	gtk_signal_connect(GTK_OBJECT(buttonCancel),
+					   "clicked",
+					   GTK_SIGNAL_FUNC(s_cancel_clicked),
+					   (gpointer) this);
+
+	gtk_signal_connect(GTK_OBJECT(clistWindows),
+					   "button_press_event",
+					   GTK_SIGNAL_FUNC(s_clist_event),
+					   (gpointer) this);
+
+	// Since each modal dialog is raised through gtk_main(),
+	// we need to bind a callback to the top level window's
+	// "delete" event to make sure we actually exit
+	// with gtk_main_quit(), for the case that the user used
+	// a window manager to close us.
+
+	gtk_signal_connect_after(GTK_OBJECT(windowMain),
+							 "delete_event",
+							 GTK_SIGNAL_FUNC(s_delete_clicked),
+							 (gpointer) this);
+
+	gtk_signal_connect_after(GTK_OBJECT(windowMain),
+							 "destroy",
+							 NULL,
+							 NULL);
+
+	// Update member variables with the important widgets that
+	// might need to be queried or altered later.
+
+	m_windowMain = windowMain;
+	m_clistWindows = clistWindows;
+	m_buttonOK = buttonOK;
+	m_buttonCancel = buttonCancel;
+
+	return windowMain;
+}
+
+void XAP_UnixDialog_WindowMore::_populateWindow(void)
+{
+	// We just do one thing here, which is fill the list with
+	// all the windows.
+
+	for (UT_uint32 i = 0; i < m_pApp->getFrameCount(); i++)
+	{
+		XAP_Frame * f = m_pApp->getFrame(i);
+		UT_ASSERT(f);
+		const char * s = f->getTitle(128);	// TODO: chop this down more? 
+		
+		gint row = gtk_clist_append(GTK_CLIST(m_clistWindows), (gchar **) &s);
+		gtk_clist_set_row_data(GTK_CLIST(m_clistWindows), row, GINT_TO_POINTER(i));
+	} 
+
+	// Select the one we're in
+	gtk_clist_select_row(GTK_CLIST(m_clistWindows), m_ndxSelFrame, 0);
+}
+

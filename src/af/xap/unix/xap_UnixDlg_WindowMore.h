@@ -34,8 +34,25 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
+
+	// callbacks can fire these events
+
+	virtual void			event_OK(void);
+	virtual void			event_Cancel(void);
+	virtual void			event_DoubleClick(void);
+	virtual void			event_WindowDelete(void);
 	
 protected:
+
+	gint 		_GetFromList(void);
+	GtkWidget * _constructWindow(void);
+	void		_populateWindow(void);
+	
+	GtkWidget * m_windowMain;
+	GtkWidget * m_clistWindows;
+	GtkWidget * m_buttonOK;
+	GtkWidget * m_buttonCancel;
+	
 };
 
 #endif /* XAP_UNIXDIALOG_WINDOWMORE_H */
