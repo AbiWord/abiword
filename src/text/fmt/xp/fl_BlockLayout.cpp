@@ -65,6 +65,11 @@
 
 #include "xap_EncodingManager.h"
 
+#if 1
+// todo: work around to remove the INPUTWORDLEN restriction for pspell
+#include "ispell.h"
+#endif
+
 //////////////////////////////////////////////////////////////////////
 // Two Useful List arrays
 /////////////////////////////////////////////////////////////////////
@@ -2251,12 +2256,12 @@ bool fl_BlockLayout::_checkMultiWord(const UT_UCSChar* pBlockText,
 				(!bAllUpperCase || !m_pLayout->getSpellCheckCaps()) &&		
 				(!UT_UCS_isdigit(pBlockText[wordBeginning])) &&			// still ignore first char==num words
 				(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
-				(wordLength < 100))
+				(wordLength < INPUTWORDLEN))
 			{
 				PD_Document * pDoc = m_pLayout->getDocument();
 				XAP_App * pApp = XAP_App::getApp();
 
-				UT_UCSChar theWord[101];
+				UT_UCSChar theWord[INPUTWORDLEN + 1];
 
 				UT_uint32 newLength = wordLength;
 				for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
@@ -2351,12 +2356,12 @@ bool fl_BlockLayout::checkWord(fl_PartOfBlock* pPOB)
 		(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		
 		(!UT_UCS_isdigit(pBlockText[wordBeginning])) &&			// still ignore first char==num words
 		(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
-		(wordLength < 100))
+		(wordLength < INPUTWORDLEN))
 	{
 		PD_Document * pDoc = m_pLayout->getDocument();
 		XAP_App * pApp = XAP_App::getApp();
 
-		UT_UCSChar theWord[101];
+		UT_UCSChar theWord[INPUTWORDLEN + 1];
 		UT_uint32 newLength = wordLength;
 		for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
 		  {
@@ -4702,7 +4707,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 
 		wordLength = pPOB->iLength;
 
-		UT_UCSChar theWord[101];
+		UT_UCSChar theWord[INPUTWORDLEN + 1];
 		UT_uint32 newLength = wordLength;
 		for (UT_uint32 ldex=0; ldex<wordLength; ++ldex)
 		  {
@@ -4725,7 +4730,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 			(!m_pLayout->getSpellCheckCaps() || !bAllUpperCase) &&		
 			(!UT_UCS_isdigit(theWord[0])) &&			// still ignore first char==num words
 			(!bHasNumeric || !m_pLayout->getSpellCheckNumbers()) &&		// can these two lines be simplified?
-			(newLength < 100) &&
+			(newLength < INPUTWORDLEN) &&
 
 			(!SpellCheckNWord16(theWord, newLength)) &&
 			(!pApp->isWordInDict(theWord, newLength)))

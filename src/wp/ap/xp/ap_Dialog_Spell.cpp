@@ -39,6 +39,11 @@
 
 #include "xap_EncodingManager.h"
 
+#if 1
+// todo: remove this requirement on INPUTWORDLEN for pspell builds
+#include "ispell.h"
+#endif
+
 AP_Dialog_Spell::AP_Dialog_Spell(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
   : XAP_Dialog_NonPersistent(pDlgFactory,id)
 {
@@ -227,7 +232,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		XAP_EncodingManager::instance->noncjk_letters(pBlockText+m_iWordOffset, m_iWordLength) && 
 		(!checkCaps || !bAllUpperCase) &&             // TODO: iff relevant Option is set
 		(!UT_UCS_isdigit(pBlockText[m_iWordOffset]) &&
-		 (m_iWordLength < 100))) {
+		 (m_iWordLength < INPUTWORDLEN))) {
 	    
 	       // try testing our current change all lists
 		  if (!inChangeAll()) {
@@ -235,7 +240,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 		     // try ignore all list and user dictionaries here, too
 		     XAP_App * pApp = m_pFrame->getApp();
 
-			 UT_UCSChar theWord[101];
+			 UT_UCSChar theWord[INPUTWORDLEN + 1];
 			 //UT_DEBUGMSG(("char: %s", pBlockText[m_iWordOffset]));
 			 // convert smart quote apostrophe to ASCII single quote to be compatible with ispell
 			 for (int ldex=0; ldex<m_iWordLength; ++ldex)
