@@ -90,6 +90,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 	fl_ContainerLayout* pFirstLayout = NULL;
 	fp_Container* pOuterContainer = NULL;
 	fp_Column* pCurColumn = NULL;
+	fp_Column* pPrevColumn = NULL;
 	xxx_UT_DEBUGMSG(("Doing ColumnBreak for section %x at page %x \n",pSL,m_pStartPage));
 //	UT_ASSERT(pSL->needsSectionBreak());
 	pSL->setNeedsSectionBreak(false,m_pStartPage);
@@ -128,9 +129,23 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			pFirstLayout = static_cast<fl_ContainerLayout *>(pOuterContainer->getSectionLayout());
 		}
 	}
-
+	fp_Page * pPrevPage = pCurColumn->getPage();
 	while (pCurColumn)
 	{
+		if(pCurColumn->getPage() != pPrevPage)
+		{
+			if(pPrevPage)
+			{
+//
+// check and update wrapped text around positioned objects
+//
+				fp_Container * pNextContainer = pPrevPage->updatePageForWrapping(pCurColumn);
+				if(pNextContainer != NULL)
+				{
+					pOuterContainer = pNextContainer;
+				}
+			}
+		}
 		fp_Container* pFirstContainerToKeep = pOuterContainer;
 		xxx_UT_DEBUGMSG(("SEVIOR: first to keep 1 %x \n",pFirstContainerToKeep));
 		fp_Container* pLastContainerToKeep = NULL;
@@ -229,6 +244,14 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				pCurContainer->getContainerType() == FP_CONTAINER_LINE)
 			{
 				fp_Line* pCurLine = static_cast<fp_Line *>(pCurContainer);
+				if(pCurLine->isSameYAsPrevious())
+				{
+//
+// No vertical changes to skip this
+//
+					pCurContainer = _getNext(pCurContainer);
+					continue;
+				}
 				// Excellent.  If we have a footnote, we can start deducting
 				// from the working height if the footnote container is not on
 				// this page.
@@ -813,6 +836,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					pOuterContainer = _getNext(pCon);
 				}
 //				pCurColumn->validate();
+				pPrevColumn = pCurColumn;
 				pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
 					// This is only relevant for the initial column. All
 					// other columns should flush their entire content.
@@ -851,6 +875,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				bTOCTest = true;
 			}
 //			pCurColumn->validate();
+			pPrevColumn = pCurColumn;
 			pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
 			if(pCurColumn == NULL && (bTableTest || bTOCTest) && pOuterContainer != NULL)
 			{
@@ -888,9 +913,22 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 				pCurColumn =  static_cast<fp_Column *>(pSL->getNewContainer(pCon));
 			}
 		}
+//
+// check for wrapped objects on last page
+//
 		if(pCurColumn == NULL)
 		{
 			UT_ASSERT(pOuterContainer == NULL);
+			fp_Page * pPage = pPrevColumn->getPage();
+			fp_Container * pNextContainer = pPage->updatePageForWrapping(pCurColumn);
+			if(pNextContainer == NULL)
+			{
+				pCurColumn = NULL;
+			}
+			else
+			{
+				pOuterContainer = pNextContainer;
+			}
 		}
 //
 // Loop back for next pCurContainer. Finish if pCurColumn == NULL.

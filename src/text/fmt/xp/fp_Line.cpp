@@ -85,7 +85,9 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	m_iRunsRTLcount(0),
 	m_iRunsLTRcount(0),
 	m_bIsCleared(true),
-	m_bContainsFootnoteRef(false)
+	m_bContainsFootnoteRef(false),
+	m_bIsWrapped(false),
+	m_bIsSameYAsPrevious(false)
 {
 	if(!s_iClassInstanceCounter)
 	{
@@ -215,6 +217,50 @@ bool fp_Line::containsOffset(PT_DocPosition blockOffset)
 		return false;
 	}
 	return true;
+}
+
+/*!
+ * Return two rectangles that represent the space left to the left and right
+ * right of the line where a wrapped object might be.
+ */
+void fp_Line::genOverlapRects(UT_Rect & recLeft,UT_Rect & recRight)
+{
+	UT_Rect * pRec = getScreenRect();
+	recLeft.top = pRec->top;
+	recRight.top = pRec->top;
+	recLeft.height = pRec->height;
+	recRight.height = pRec->height;
+	if(!isWrapped())
+	{
+		delete pRec;
+		recLeft.width = 0;
+		recRight.width = 0;
+		return;
+	}
+	UT_sint32 iLeftX = m_pBlock->getLeftMargin();
+	UT_sint32 iMaxWidth = getContainer()->getWidth();
+	UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();
+	if (isFirstLineInBlock())
+	{
+		if(iBlockDir == UT_BIDI_LTR)
+			iLeftX += m_pBlock->getTextIndent();
+	}
+	UT_sint32 xoff = 0;
+	UT_sint32 yoff = 0;
+	fp_Run * pRun = getFirstRun();
+	if(pRun)
+	{
+		getScreenOffsets(pRun,xoff,yoff);
+	}
+	iLeftX += xoff;
+	recLeft.left = iLeftX;
+	recLeft.width = pRec->left - iLeftX;
+	recRight.left = pRec->left + pRec->width;
+
+	iMaxWidth -= m_pBlock->getRightMargin();
+	iMaxWidth += xoff;
+	recRight.width = iMaxWidth - recRight.left;
+	delete pRec;
 }
 
 /*!
@@ -494,7 +540,6 @@ void fp_Line::remove(void)
 	// called from this function so we will cache them
 	fp_ContainerObject * pPrev = getPrev();
 	fp_ContainerObject * pNext = getNext();
-	
 	if (pNext)
 	{
 		pNext->setPrev(pPrev);
@@ -506,6 +551,7 @@ void fp_Line::remove(void)
 	}
 	if(getContainer())
 	{
+		xxx_UT_DEBUGMSG(("Removing line %x from container \n",this));
 		static_cast<fp_VerticalContainer *>(getContainer())->removeContainer(this);
 	}
 }
@@ -842,6 +888,10 @@ fp_Run * fp_Line::getRunFromIndex(UT_uint32 runIndex)
 
 void fp_Line::clearScreen(void)
 {
+	if(getBlock() == NULL)
+	{
+		return;
+	}
 	if(getBlock()->isHdrFtr() || isScreenCleared())
 	{
 		return;
@@ -2540,6 +2590,10 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 
 void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 {
+	if(m_pBlock == NULL)
+	{
+		return;
+	}
 	UT_sint32 iX = m_pBlock->getLeftMargin();
 	UT_sint32 iMaxWidth = getContainer()->getWidth();
 

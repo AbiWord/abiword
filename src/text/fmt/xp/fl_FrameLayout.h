@@ -32,16 +32,19 @@
 
 enum FL_FrameFormatMode
 {
-	FL_FRAME_POSITIONED_TO_BLOCK_ABOVE_TEXT,
-	FL_FRAME_POSITIONED_TO_BLOCK_BELOW_TEXT,
-	FL_FRAME_POSITIONED_TO_COLUMN_ABOVE_TEXT,
-	FL_FRAME_POSITIONED_TO_COLUMN_BELOW_TEXT,
-	FL_FRAME_POSITIONED_TO_PAGE_ABOVE_TEXT,
-	FL_FRAME_POSITIONED_TO_PAGE_BELOW_TEXT,
-	FL_FRAME_POSITIONED_INLINE,
-	FL_FRAME_TEXT_WRAPPED_TO_RIGHT,
-	FL_FRAME_TEXT_WRAPPED_TO_LEFT,
-	FL_FRAME_CENTERED_IN_TEXT
+	FL_FRAME_POSITIONED_TO_BLOCK,
+	FL_FRAME_POSITIONED_TO_COLUMN,
+	FL_FRAME_POSITIONED_TO_PAGE,
+	FL_FRAME_POSITIONED_INLINE
+};
+
+enum FL_FrameWrapMode
+{
+	FL_FRAME_ABOVE_TEXT,
+	FL_FRAME_BELOW_TEXT,
+	FL_FRAME_WRAPPED_TO_RIGHT,
+	FL_FRAME_WRAPPED_TO_LEFT,
+	FL_FRAME_WRAPPED_BOTH_SIDES
 };
 
 enum FL_FrameType
@@ -96,10 +99,13 @@ public:
 	PT_DocPosition           getDocPosition(void);
 	UT_uint32                getLength(void);
 	void                     setContainerProperties(void);
+	UT_sint32                getBoundingSpace(void) const;
 	FL_FrameType             getFrameType(void) const 
 		{return m_iFrameType;}
 	FL_FrameFormatMode       getFramePositionTo(void) const
 		{ return m_iFramePositionTo;}
+	FL_FrameWrapMode         getFrameWrapMode(void) const
+		{ return m_iFrameWrapMode;}
 	UT_sint32                getFrameWidth(void) const
 		{ return m_iWidth;}
 	UT_sint32                getFrameHeight(void) const
@@ -150,6 +156,9 @@ private:
 
 	UT_sint32               m_iXColumn;
 	UT_sint32               m_iYColumn;
+
+	UT_sint32               m_iBoundingSpace;
+    FL_FrameWrapMode        m_iFrameWrapMode;
 };
 
 #endif /* FRAMELAYOUT_H */

@@ -1054,6 +1054,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 		const XML_Char *pszFrameType = NULL;
 		const XML_Char *pszPositionTo = NULL;
+		const XML_Char *pszWrapMode=NULL;
 		const XML_Char *pszXpad = NULL;
 		const XML_Char *pszYpad = NULL;
 
@@ -1088,6 +1089,20 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		else
 		{
 			sVal = pszPositionTo;
+		}
+		UT_String_setProperty(sFrameProps,sProp,sVal);		
+
+
+// wrap-mode
+
+		sProp = "wrap-mode";
+		if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
+		{
+			sVal = "above-text";
+		}
+		else
+		{
+			sVal = pszWrapMode;
 		}
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 

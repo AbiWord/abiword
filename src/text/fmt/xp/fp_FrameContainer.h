@@ -84,6 +84,10 @@ public:
 	void setTopStyle    (const PP_PropertyMap::Line & style) { m_lineTop    = style; }
 	void                setOverWrote(void)
 		{m_bOverWrote = true;}
+	void                setWrapping(bool bWrapping)
+		{m_bIsWrapped = bWrapping;}
+	bool                isWrappingSet(void) const
+		{ return m_bIsWrapped;}
 private:
 	void                   _drawLine (const PP_PropertyMap::Line & style,
 									  UT_sint32 left, UT_sint32 top, 
@@ -103,7 +107,8 @@ private:
 	PP_PropertyMap::Line   m_lineLeft;
 	PP_PropertyMap::Line   m_lineRight;
 	PP_PropertyMap::Line   m_lineTop;
-    bool      m_bOverWrote;
+    bool                   m_bOverWrote;
+    bool                   m_bIsWrapped;
 };
 
 

@@ -27,6 +27,7 @@
 class fl_BlockLayout;
 class fp_Line;
 class fp_Run;
+class fp_Page;
 struct fp_RunSplitInfo;
 
 /*
@@ -38,10 +39,10 @@ class ABI_EXPORT fb_LineBreaker
 public:
 	fb_LineBreaker();
 	virtual ~fb_LineBreaker(void);
-	UT_sint32	breakParagraph(fl_BlockLayout*, fp_Line * pLineToStartAt);
+	UT_sint32	breakParagraph(fl_BlockLayout*, fp_Line * pLineToStartAt, fp_Page * pPage);
 
 protected:
-	void		_breakTheLineAtLastRunToKeep(fp_Line *pLine, fl_BlockLayout *pBlock);
+	void		_breakTheLineAtLastRunToKeep(fp_Line *pLine, fl_BlockLayout *pBlock,fp_Page * pPage);
 	UT_sint32	_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_Run **pOffendingRun);
 	bool		_splitAtOrBeforeThisRun(fp_Run *pCurrentRun, UT_sint32 iTrailSpace);
 	bool		_splitAtNextNonBlank(fp_Run *pCurrentRun);
