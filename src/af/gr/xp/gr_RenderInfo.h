@@ -104,7 +104,11 @@ class GR_XPItem : public GR_Item
 class GR_Itemization
 {
   public:
-	GR_Itemization(){};
+	GR_Itemization()
+		:m_iEmbedingLevel(0),
+	     m_iDirOverride(0)
+	{};
+	
 	virtual ~GR_Itemization() {clear();}
 
 	UT_uint32     getItemCount() const {return m_vOffsets.getItemCount();}
@@ -127,10 +131,19 @@ class GR_Itemization
 	         { m_vOffsets.insertItemAt(offset, indx); m_vItems.insertItemAt(item,indx);}
 	
 	void clear();
+
+	void      setEmbedingLevel(UT_uint32 l) {m_iEmbedingLevel = l;}
+	UT_uint32 getEmbedingLevel() const {return m_iEmbedingLevel;}
+
+	void            setDirOverride(FriBidiCharType o) {m_iDirOverride = o;}
+	FriBidiCharType getDirOverride() const {return m_iDirOverride;}
 	
   private:
 	UT_NumberVector m_vOffsets;
 	UT_Vector       m_vItems;
+
+	UT_uint32       m_iEmbedingLevel;
+	FriBidiCharType m_iDirOverride;   
 };
 
 /*

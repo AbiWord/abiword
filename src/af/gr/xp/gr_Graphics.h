@@ -580,7 +580,13 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void justify(GR_RenderInfo & ri);
-
+	
+    virtual UT_uint32 mapXYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y, bool &bBOL, bool &bEOL) const;
+    virtual void      findPointCoords(const GR_RenderInfo & ri,
+									  UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
+									  UT_sint32& x2, UT_sint32& y2,
+									  UT_sint32& height, bool& bDirection) const;
+	
 	// should be overriden by any classes implemented as plugins
 	// NB: you must not use s_Version to store the version of derrived
 	// classes, but have your own static variable for the derrived

@@ -3529,6 +3529,8 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 						  blockOffset + fl_BLOCK_STRUX_OFFSET,
 						  blockOffset + fl_BLOCK_STRUX_OFFSET + len - 1);
 	GR_Itemization I;
+	I.setDirOverride(m_iDirOverride);
+	I.setEmbedingLevel(m_iDomDirection);
 	
 	m_pLayout->getGraphics()->itemize(text, I);
 

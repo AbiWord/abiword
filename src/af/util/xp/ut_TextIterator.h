@@ -128,9 +128,10 @@ class ABI_EXPORT UT_TextIterator
 	virtual void setPosition(UT_uint32 pos) = 0;
 
 	///////////////////////////////////////////////////////////////////
-	// set upper bounds
+	// set and retrieve upper bounds
 	//
-	virtual void setUpperLimit(UT_uint32 maxpos) = 0;
+	virtual void      setUpperLimit(UT_uint32 maxpos) = 0;
+	virtual UT_uint32 getUpperLimit() const = 0;
 	
 	///////////////////////////////////////////////////////////////////
 	// returns the current state of the iterator (see definition of

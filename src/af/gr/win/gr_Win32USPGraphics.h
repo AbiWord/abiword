@@ -23,6 +23,7 @@
 #include "ut_types.h"
 #include "gr_Win32Graphics.h"
 #include "gr_RenderInfo.h"
+#include "gr_Win32Uniscribe.h"
 
 // we do not want this to be a plugin for now
 #define GR_WIN32USP_BUILTIN
@@ -78,6 +79,10 @@ public:
 	static HINSTANCE s_hUniscribe;
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
+
+  protected:
+	// these are the Uniscribe functions we load from the DLL
+	static tScriptItemize ScriptItemize;
 };
 
 class GR_USPRenderInfo : public GR_RenderInfo

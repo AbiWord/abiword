@@ -19,6 +19,7 @@
 
 #include <exception>
 #include <stdexcept>
+#include <fribidi.h>
 #include "gr_Win32USPGraphics.h"
 #include "ut_debugmsg.h"
 
@@ -27,11 +28,14 @@ HINSTANCE GR_Win32USPGraphics::s_hUniscribe = NULL;
 UT_uint32 GR_Win32USPGraphics::s_iInstanceCount = 0;
 UT_VersionInfo GR_Win32USPGraphics::s_Version;
 
+tScriptItemize GR_Win32USPGraphics::ScriptItemize = NULL;
+
 enum usp_error
 {
 	uspe_unknown  = 0x00000000,
 	uspe_loadfail = 0x00000001,
-	uspe_nohinst  = 0x00000002
+	uspe_nohinst  = 0x00000002,
+	uspe_nofunct  = 0x00000003
 };
 
 
@@ -44,6 +48,22 @@ class usp_exception
 	~usp_exception(){};
 	
 	usp_error error;
+};
+
+class GR_Win32USPItem: public GR_Item
+{
+	friend class GR_Win32USPGraphics;
+	
+  public:
+	virtual ~GR_Win32USPItem(){};
+	virtual GR_ScriptType getType() {return (GR_ScriptType) m_si.a.eScript;}
+	virtual GR_Item * makeCopy() {return new GR_Win32USPItem(m_si);} // make a copy of this item
+	
+
+  protected:
+	GR_Win32USPItem(SCRIPT_ITEM si):m_si(si){};
+
+	SCRIPT_ITEM m_si;
 };
 
 
@@ -113,7 +133,7 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 						UT_uint32 iV3 = (pFix->dwFileVersionLS & 0xffff0000) >> 16;
 						UT_uint32 iV4 = pFix->dwFileVersionLS & 0x0000ffff;
 							
-						UT_DEBUGMSG(("GR_Win32USPGraphics: Uniscribe version %d.%d.%d.%d",
+						UT_DEBUGMSG(("GR_Win32USPGraphics: Uniscribe version %d.%d.%d.%d\n",
 									 iV1, iV2, iV3, iV4));
 					}
 				}
@@ -121,7 +141,16 @@ bool GR_Win32USPGraphics::_constructorCommonCode()
 			}
 		}
 #endif
-		
+
+		// now we load the functions we need
+		ScriptItemize = (tScriptItemize)GetProcAddress(s_hUniscribe, "ScriptItemize");
+		if(!ScriptItemize)
+		{
+			usp_exception e(uspe_nofunct);
+			throw(e);
+			return false;
+		}
+
 	}
 	else // we are not the first instance, USP should be loaded
 	{
@@ -192,6 +221,86 @@ GR_Graphics *   GR_Win32USPGraphics::graphicsAllocator(GR_AllocInfo& info)
 bool GR_Win32USPGraphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 {
 	UT_return_val_if_fail( UT_NOT_IMPLEMENTED, false );
+
+	static WCHAR wcInChars[100];
+	static SCRIPT_ITEM Items[20];
+
+	WCHAR *pInChars = &wcInChars[0];
+	SCRIPT_ITEM * pItems = &Items[0];
+	bool bDeleteChars = false;
+	bool bDeleteItems = false;
+
+	UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
+	UT_uint32 iPosStart = text.getPosition();
+	UT_uint32 iPosEnd   = text.getUpperLimit();
+	UT_return_val_if_fail(iPosEnd < 0xffffffff && iPosEnd >= iPosStart, false);
+
+	UT_uint32 iLen = iPosEnd - iPosStart + 1; // including iPosEnd
+
+	if(iLen > 100)
+	{
+		UT_DEBUGMSG(("GR_Win32USPGraphics::itemize: text buffer too small (iLen %d)\n", iLen));
+		pInChars = new WCHAR[iLen];
+		UT_return_val_if_fail(pInChars,false);
+		bDeleteChars = true;
+	}
+
+	int iItemCount;
+	//SCRIPT_CONTROL sc;
+	SCRIPT_STATE   ss;
+	ss.uBidiLevel = I.getEmbedingLevel();
+	ss.fOverrideDirection = I.getDirOverride() == FRIBIDI_TYPE_UNSET ? 0 : 1;
+	ss.fInhibitSymSwap = 0;
+	ss.fCharShape = 1;
+	ss.fDigitSubstitute = 1;
+	ss.fInhibitLigate = 0;
+	ss.fDisplayZWG = 0; // this needs to be set from prefs (show para)
+	ss.fArabicNumContext = 0;
+	ss.fGcpClusters = 0;
+	ss.fReserved = 0;
+	ss.fEngineReserved = 0;
+		
+	HRESULT hRes = ScriptItemize(pInChars, iLen, 20, /*sc*/NULL, &ss, pItems, &iItemCount);
+	if(hRes)
+	{
+		UT_return_val_if_fail(hRes == E_OUTOFMEMORY, false);
+		UT_uint32 iItemBuffSize = 20;
+		UT_DEBUGMSG(("GR_Win32USPGraphics::itemize: item buffer too small (len %d)\n", iItemBuffSize));
+		
+		do
+		{
+			iItemBuffSize *= 2;
+			
+			if(bDeleteItems)
+				delete [] pItems;
+			
+			pItems = new SCRIPT_ITEM[iItemBuffSize];
+			UT_return_val_if_fail(pItems, false);
+			bDeleteItems = true;
+
+			hRes = ScriptItemize(pInChars, iLen, iItemBuffSize, /*sc*/NULL, &ss, pItems, &iItemCount);
+			
+		}while(hRes == E_OUTOFMEMORY);
+
+		UT_return_val_if_fail(hRes == 0, false);
+	}
+	
+	// now we process the ouptut
+	for(UT_uint32 i = 0; i < iItemCount; ++i)
+	{
+		GR_Win32USPItem * pI = new GR_Win32USPItem(pItems[i]);
+		UT_return_val_if_fail(pI, false);
+
+		I.addItem(pItems[i].iCharPos, pI);
+	}
+
+	if(bDeleteItems)
+		delete [] pItems;
+
+	if(bDeleteChars)
+		delete [] pInChars;
+	
+	return true;
 }
 
 bool GR_Win32USPGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)

@@ -1171,6 +1171,27 @@ void GR_Graphics::justify(GR_RenderInfo & ri)
 	}
 }
 
+UT_uint32 GR_Graphics::mapXYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y, bool &bBOL, bool &bEOL) const
+{
+	UT_return_val_if_fail(ri.getType() == GRRI_XP && ri.m_pWidths, 0);
+	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
+
+	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,0 );
+	return 0;
+}
+
+void GR_Graphics::findPointCoords(const GR_RenderInfo & ri,
+								  UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
+								  UT_sint32& x2, UT_sint32& y2,
+								  UT_sint32& height, bool& bDirection) const
+{
+	UT_return_if_fail(ri.getType() == GRRI_XP && ri.m_pWidths);
+	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
+	
+	UT_return_if_fail(UT_NOT_IMPLEMENTED);
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  IMPLEMNATION OF GR_GraphicsFactory
