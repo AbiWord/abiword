@@ -51,7 +51,7 @@ ifeq ($(ABI_FE),Win32)
 	@if [ -d $(ABI_ROOT)/../abiword-docs ]; then				\
 		echo "Found abiword-docs in peer directory - building help files"; \
 		cd $(ABI_ROOT)/../abiword-docs; \
-		ABI_DOC_PROG=AbiWord-2.0 make-html.sh \
+		ABI_DOC_PROG=$(BINDIR)/AbiWord.exe make-html.sh \
 		cp -r $(ABI_ROOT)/../abiword-docs/help/* $(CANON_AppDir)/help; \
 	else \
 		echo "No abiword-docs directory - skipping help files"; \
