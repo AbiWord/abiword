@@ -172,7 +172,7 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   
-  labelActivate = gtk_label_new (abiLocaleToUTF8(pSS->getValue(XAP_STRING_ID_DLG_UENC_EncLabel)).c_str());
+  labelActivate = gtk_label_new (pSS->getValue(XAP_STRING_ID_DLG_UENC_EncLabel));
   gtk_widget_show (labelActivate);
   gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
   gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);

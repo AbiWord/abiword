@@ -719,11 +719,8 @@ GtkWidget * abiDialogNew(gboolean resizable, const char * title, ...)
     UT_String_vprintf (titleStr, title, args);
     va_end (args);
 
-	// locale->utf8 title
-	UT_String utf8 ( abiLocaleToUTF8 ( titleStr ) ) ;
-	
     // create the title
-    gtk_window_set_title ( GTK_WINDOW(dlg), utf8.c_str() ) ;
+    gtk_window_set_title ( GTK_WINDOW(dlg), titleStr.c_str() ) ;
   }
 
   return dlg ;
@@ -756,9 +753,7 @@ GtkWidget* abiAddButton(GtkDialog * me, const gchar * btn_id,
 
 	// todo: possibly make me locale sensitive->utf8
 
-	UT_String utf8 ( abiLocaleToUTF8 ( btn_id ) ) ;
-	
-	GtkWidget * wid = gtk_dialog_add_button(me, utf8.c_str(), response_id);
+	GtkWidget * wid = gtk_dialog_add_button(me, btn_id, response_id);
 	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
 
 	return wid ;
@@ -783,7 +778,7 @@ UT_String abiLocaleToUTF8(const UT_String & inStr)
 	gsize bytes_read = 0, bytes_written = 0 ;
 
 	gchar * utf8 = g_locale_to_utf8 ( inStr.c_str(), -1,
-									  &bytes_read, &bytes_written, &err ) ;
+					  &bytes_read, &bytes_written, &err ) ;
 
 	// blissfully ignore errors
 	
@@ -862,10 +857,10 @@ GtkWidget *createDrawingArea ()
 void messageBoxOK(const char * message)
 {
 	GtkWidget * msg = gtk_message_dialog_new ( NULL,
-											   GTK_DIALOG_MODAL,
-											   GTK_MESSAGE_INFO,
-											   GTK_BUTTONS_OK,
-											   message ) ;
+						   GTK_DIALOG_MODAL,
+						   GTK_MESSAGE_INFO,
+						   GTK_BUTTONS_OK,
+						   message ) ;
 
 	gtk_window_set_title(GTK_WINDOW(msg), "AbiWord");
 	gtk_widget_show ( msg ) ;

@@ -509,9 +509,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// NOTE: let GTK take care of the localization of the actual
 	// NOTE: buttons and labels on the FileSelection dialog.
 	
-	GtkFileSelection *pFS = GTK_FILE_SELECTION(
-											   gtk_file_selection_new(
-																	  abiLocaleToUTF8(szTitle).c_str()));
+	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle));
 	m_FS = pFS;
 
 	abiSetupModalDialog(GTK_DIALOG(pFS), pFrame, this, GTK_RESPONSE_CANCEL);
