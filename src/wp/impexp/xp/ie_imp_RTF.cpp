@@ -2808,7 +2808,7 @@ bool IE_Imp_RTF::HandleHyperlink()
 bool IE_Imp_RTF::HandleHeaderFooter(RTFHdrFtr::HdrFtrType hftype, UT_uint32 & headerID)
 {
 	RTFHdrFtr * header;
-
+	UT_DEBUGMSG(("SEVIOR: Doing handle header/footer \n"));
 	header = new RTFHdrFtr ();
 	header->m_type = hftype;
 	UT_uint32 id = 0;
@@ -3496,7 +3496,8 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 			
 			// Ignore all other \* tags
 			// TODO different destination (all unhandled at the moment, so enter skip mode)
-			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
+			//m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip; was this
+			SkipCurrentGroup();
 			return true;
 		}
 		break;
