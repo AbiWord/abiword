@@ -473,7 +473,7 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 	if (pBufUCS && *pBufUCS)
 	{
 		UT_UCS4_strncpy(m_bufUCS, pBufUCS, AP_MAX_MESSAGE_FIELD);
-		m_bufUCS[AP_MAX_MESSAGE_FIELD];
+		m_bufUCS[AP_MAX_MESSAGE_FIELD] = 0;
 	}
 	
  	ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
