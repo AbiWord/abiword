@@ -1576,7 +1576,7 @@ UT_String XAP_UnixFrameImpl::_localizeHelpUrl (bool bLocal, const char * pathBef
 {
 #ifdef HAVE_GNOME
 	UT_String path (pathAfter);
-	path += ".xml";
+	path += ".html";
 	return path;
 #else
 	return XAP_FrameImpl::_localizeHelpUrl (bLocal, pathBefore, pathAfter);
