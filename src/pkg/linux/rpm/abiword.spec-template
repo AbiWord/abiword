@@ -258,7 +258,6 @@ cd ../abi
 %{_bindir}/*
 %{_datadir}/%{AbiSuite}/AbiWord/scripts/*
 %defattr(644,root,root,755)
-%{_datadir}/%{AbiSuite}/AbiWord.exe.MANIFEST
 %{_datadir}/%{AbiSuite}/abi-nautilus-view-file.xml
 #%{_datadir}/%{AbiSuite}/COPYING
 %{_datadir}/%{AbiSuite}/README
