@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2002-11-20 17:19-0500\n"
-"PO-Revision-Date: 2002-11-29 22:06--800\n"
+"PO-Revision-Date: 2003-01-05 17:22--800\n"
 "Last-Translator: Besnik Bleta <besnikbleta@hotmail.com>\n"
 "Language-Team: Shqip <Shqip@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -33,7 +33,7 @@ msgstr " - Rezervuar. \n"
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h.h:11
 msgid " Auto Update"
-msgstr "Vetëfreskim"
+msgstr "Vetëpërditësim"
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:13
@@ -273,7 +273,7 @@ msgstr "&Fshij"
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:97
 msgid "&Delete hyperlink"
-msgstr "&Fshij tejlidhjen"
+msgstr "&Fshij tejlidhsen"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h.h:99
@@ -398,7 +398,7 @@ msgstr "&Tekst i padukshëm"
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:147
 msgid "&Hyperlink"
-msgstr "&Tejlidhje"
+msgstr "&Tejlidhse"
 
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h.h:149
@@ -1066,7 +1066,7 @@ msgstr "&Vetëkontrollo drejtshkrimin e dokumentit"
 #. DLG_Styles_ModifyAutomatic
 #: po/tmp/ap_String_Id.h.h:411
 msgid "Automatically update"
-msgstr "Vetëfreskohu"
+msgstr "Vetëpërditësohu"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h.h:413
@@ -1626,7 +1626,7 @@ msgstr "Krijo një dokument të ri"
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h.h:629
 msgid "Create new document from a Template"
-msgstr "Krijo një dokument sipas një modeli"
+msgstr "Krijo dokument të ri  sipas një modeli"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h.h:631
@@ -1843,7 +1843,7 @@ msgstr "Fshij Shtyllë"
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:715
 msgid "Delete hyperlink"
-msgstr "Fshij tejlidhje"
+msgstr "Fshij tejlidhsen"
 
 #. TOOLBAR_LABEL_DELETE_ROW
 #: po/tmp/ap_String_Id.h.h:717
@@ -2336,7 +2336,7 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Kryefaqe dhe Fundfaqe mund të krijohen dhe ndryshohen vetëm në Print View Mode. \n"
+"Kryefaqe dhe Fundfaqe mund të krijohen dhe ndryshohen vetëm brenda Mënyrës Shfaq Shtypjen. \n"
 " Për tu futur atje, zgjidhni Shfaq pastaj Skemë Shtypjeje prej Menu. \n"
 " Doni të futeni atje tani?"
 
@@ -2527,7 +2527,7 @@ msgstr "Fut Shtylla Para"
 #. TOOLBAR_LABEL_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:979
 msgid "Insert Hyperlink"
-msgstr "Fut Tejlidhje"
+msgstr "Fut Tejlidhse"
 
 #. TOOLBAR_LABEL_IMG
 #: po/tmp/ap_String_Id.h.h:981
@@ -2567,12 +2567,12 @@ msgstr "Fut një zonë llogaritjeje"
 #. TOOLBAR_TOOLTIP_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:995
 msgid "Insert a hyperlink into the document"
-msgstr "Fut një tejlidhje në dokument"
+msgstr "Fut një tejlidhse në dokument"
 
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
 #: po/tmp/ap_String_Id.h.h:997
 msgid "Insert a new table into your document"
-msgstr "Krijoni një tabelë në dokumentin tuaj"
+msgstr "Krijoni një tabelë të renë dokumentin tuaj"
 
 #. MENU_STATUSLINE_INSERT_BREAK
 #: po/tmp/ap_String_Id.h.h:999
@@ -2592,7 +2592,7 @@ msgstr "Fut një simbol ose një tjetër karakter special"
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h.h:1005
 msgid "Insert an automatically-updated page number"
-msgstr "Fut një numër faqeje që ndryshohet vetiu"
+msgstr "Fut një numër faqeje që përditësohet vetiu"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h.h:1007
@@ -2622,7 +2622,7 @@ msgstr "Fut vizatim"
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1017
 msgid "Insert hyperlink"
-msgstr "Fut tejlidhje"
+msgstr "Fut tejlidhse"
 
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h.h:1019
@@ -3755,7 +3755,7 @@ msgstr "Kërko për ndihmë rreth..."
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h.h:1461
 msgid "Seconds between updates"
-msgstr "Sekonda ndërmjet rifreskimesh"
+msgstr "Sekonda ndërmjet përditësimesh"
 
 #. FIELD_DateTime_Epoch
 #: po/tmp/ap_String_Id.h.h:1463
@@ -4311,7 +4311,7 @@ msgstr "Kontrolli drejtshkrimor i përmbushur."
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h.h:1681
 msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
-msgstr "Teksti tek i cili doni të bashkangjisni tejlidhjen duhet të jetë brenda një paragrafi"
+msgstr "Teksti tek i cili doni të bashkangjisni tejlidhsen duhet të jetë brenda një paragrafi"
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h.h:1683
@@ -4321,12 +4321,12 @@ msgstr "Dita"
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h.h:1685
 msgid "This change will only take effect when you restart AbiWord or create a new document."
-msgstr "Ky ndryshim do ketë efekt pasi të rinisni AbiWord-in ose të krijoni një dokument tëri"
+msgstr "Ky ndryshim do ketë efekt pasi të rinisni AbiWord-in ose të krijoni një dokument të ri"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h.h:1687
 msgid "This paragraph represents words as they might appear in your document.  To see text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
-msgstr "Ky paragraf tregon si do të dukeshin fjalët në dokumentin tuaj. Që të parashihnitekst nga dokumenti juaj, vendosni kursorin në një paragraf me tekstdhe hapni këtë dialog."
+msgstr "Ky paragraf tregon si do të dukeshin fjalët në dokumentin tuaj. Që të parashihni tekst nga dokumenti juaj, vendosni kursorin në një paragraf me tekst dhe hapni këtë dialog."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h.h:1689
@@ -4506,7 +4506,7 @@ msgstr "Shfaq"
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h.h:1755
 msgid "View the document in full screen mode"
-msgstr "Shih dokumentin në tërë ekranin"
+msgstr "Shfaq dokumentin në tërë ekranin"
 
 #. DLG_Options_Label_ViewTooltips
 #: po/tmp/ap_String_Id.h.h:1757
@@ -4516,7 +4516,7 @@ msgstr "Shfaq spiegime për butonin përkatës"
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h.h:1759
 msgid "View..."
-msgstr "Shih..."
+msgstr "Shfaq..."
 
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h.h:1761
@@ -4578,7 +4578,7 @@ msgstr "Keni ndryshuar kahun"
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h.h:1783
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Duhet të zgjidhni një pjesë nga dokumenti para se të fusni një tejlidhje."
+msgstr "Duhet të zgjidhni një pjesë nga dokumenti para se të fusni një tejlidhse."
 
 #. AUTOTEXT_CLOSING_12
 #: po/tmp/ap_String_Id.h.h:1785
@@ -4834,7 +4834,7 @@ msgstr "Armene, ARMSCII-8"
 #. LANG_AS_IN
 #: po/tmp/xap_String_Id.h.h:69
 msgid "Assamese"
-msgstr ""
+msgstr "Asameze"
 
 #. DLG_PLUGIN_MANAGER_AUTHOR
 #: po/tmp/xap_String_Id.h.h:71
@@ -5257,7 +5257,7 @@ msgstr "Frënge (Zvicër)"
 #. LANG_FY_NL
 #: po/tmp/xap_String_Id.h.h:255
 msgid "Frisian"
-msgstr ""
+msgstr "Frisiane"
 
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h.h:257
@@ -5834,7 +5834,7 @@ msgstr "Pa ngjyrë theksimi"
 #. DLG_Options_Label_UnixFontWarning
 #: po/tmp/xap_String_Id.h.h:507
 msgid "Show font warning at start up"
-msgstr "Trego sinjalizimin rreth gërmave në hyrje"
+msgstr "Trego sinjalizimin rreth gërmave në nisje"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h.h:509
@@ -6056,7 +6056,7 @@ msgstr "Pa titull%d"
 #. DLG_Update
 #: po/tmp/xap_String_Id.h.h:609
 msgid "Update"
-msgstr "Rifresko"
+msgstr "Përditëso"
 
 #. LANG_VI_VN
 #: po/tmp/xap_String_Id.h.h:617
