@@ -450,3 +450,598 @@ void ie_Table::setCellRowCol(UT_sint32 row, UT_sint32 col)
 		pPT->setCellApi(api);
 	}
 }
+
+/*---------------------------------------------------------------------------------------------*/
+
+/*!
+ * These classes aid the import of table information. They we designed to import RTF but they might
+ * useful for other classes too.
+ */
+ie_imp_cell::ie_imp_cell(ie_imp_table * pImpTable, PD_Document * pDoc, 
+						 ie_imp_cell * pLeftImpCell, UT_sint32 iRow):
+	m_pDoc(pDoc),
+	m_iCellX(-1),
+	m_iLeft(-1),
+	m_iRight(-1),
+	m_iTop(-1),
+	m_iBot(-1),
+	m_cellSDH(NULL),
+	m_pImpTable(pImpTable),
+	m_pCellLeft(pLeftImpCell),
+	m_iRow(iRow),
+	m_bMergeAbove(false),
+	m_bMergeRight(false),
+	m_bFirstVertical(false)
+{
+	m_sCellProps.clear();
+}
+
+
+ie_imp_cell::~ie_imp_cell(void)
+{
+}
+
+/*!
+ * Set the cellX value for the cell. rtf uses this to distinguish between cells. All the cells with the
+ * same cellx have in the same column.
+ * The value of cellX is the right most-edge of the cell including 0.5 of the spacing to the next cell 
+ * in uints of twips.
+ */
+void ie_imp_cell::setCellX(UT_sint32 cellx)
+{
+	m_iCellX = cellx;
+}
+
+/*!
+ * Get the cellX value for the cell.
+ */
+UT_sint32 ie_imp_cell::getCellX(void)
+{
+	return m_iCellX;
+}
+
+/*!
+ * set a pointer to the cell immedidately left of this one.
+ */
+void ie_imp_cell::setCellLeft(ie_imp_cell * pImpCell)
+{
+	m_pCellLeft = pImpCell;
+}
+
+/*!
+ * set Left attach for this this cell..
+ */
+void ie_imp_cell::setLeft(UT_sint32 iLeft)
+{
+	m_iLeft = iLeft;
+	UT_String spLeft("left-attach");
+	UT_String svLeft;
+	UT_String_sprintf(svLeft,"%d",iLeft);
+	setProp(&spLeft,&svLeft);
+}
+
+/*!
+ * Get the left attach for the cell
+ */
+UT_sint32 ie_imp_cell::getLeft(void)
+{
+	return m_iLeft;
+}
+
+/*!
+ * set Right attach for this this cell..
+ */
+void ie_imp_cell::setRight(UT_sint32 iRight)
+{
+	m_iRight = iRight;
+	UT_String spRight("right-attach");
+	UT_String svRight;
+	UT_String_sprintf(svRight,"%d",iRight);
+	setProp(&spRight,&svRight);
+}
+
+/*!
+ * Get the right attach for the cell
+ */
+UT_sint32 ie_imp_cell::getRight(void)
+{
+	return m_iRight;
+}
+
+/*!
+ * set top attach for this this cell..
+ */
+void ie_imp_cell::setTop(UT_sint32 iTop)
+{
+	m_iTop = iTop;
+	UT_String spTop("top-attach");
+	UT_String svTop;
+	UT_String_sprintf(svTop,"%d",iTop);
+	setProp(&spTop,&svTop);
+}
+
+/*!
+ * Get the top attach for the cell
+ */
+UT_sint32 ie_imp_cell::getTop(void)
+{
+	return m_iTop;
+}
+
+/*!
+ * set bottom attach for this this cell..
+ */
+void ie_imp_cell::setBot(UT_sint32 iBot)
+{
+	m_iBot = iBot;
+	UT_String spBot("bot-attach");
+	UT_String svBot;
+	UT_String_sprintf(svBot,"%d",iBot);
+	setProp(&spBot,&svBot);
+}
+
+/*!
+ * Get the bottom attach for the cell
+ */
+UT_sint32 ie_imp_cell::getBot(void)
+{
+	return m_iBot;
+}
+
+/*!
+ * Get the cell SDH for this cell.
+ */
+PL_StruxDocHandle ie_imp_cell::getCellSDH(void)
+{
+	return m_cellSDH;
+}
+
+/*!
+ * Set Cell SDH 
+ */
+void ie_imp_cell::setCellSDH(PL_StruxDocHandle cellSDH)
+{
+	m_cellSDH = cellSDH;
+}
+
+/*!
+ * Write all the properties of this cell to the piecetable without throwing a changerecord
+ */
+void ie_imp_cell::writeCellPropsInDoc(void)
+{
+	UT_return_if_fail(m_cellSDH);
+	m_pDoc->changeStruxAttsNoUpdate(m_cellSDH,"props",m_sCellProps.c_str());
+}
+
+/*!
+ * Return a pointer to the import cell class above this one.
+ */
+ie_imp_cell * ie_imp_cell::getCellAbove(void)
+{
+	return NULL;
+}
+
+/*!
+ * Return a pointer to the import cell class below this one.
+ */
+ie_imp_cell * ie_imp_cell::getCellBelow(void)
+{
+	return NULL;
+}
+
+/*!
+ * Return a pointer to the import cell class right of this one.
+ */
+ie_imp_cell * ie_imp_cell::getCellRight(void)
+{
+	return NULL;
+}
+
+/*!
+ * Return a pointer to the import cell class left of this one.
+ */
+ie_imp_cell * ie_imp_cell::getCellLeft(void)
+{
+	return m_pCellLeft;
+}
+
+/*!
+ * set a property of this cell.
+ */
+void ie_imp_cell::setProp(UT_String * psProp, UT_String * psVal)
+{
+	UT_String_setProperty(m_sCellProps, psProp, psVal);
+}
+
+/*!
+ * Return the value of a property of this cell. This should be deleted when you've finished with it.
+ */
+UT_String * ie_imp_cell::getPropVal(UT_String * psProp)
+{
+	return UT_String_getPropVal(m_sCellProps, psProp);
+}
+
+/*!
+ * Class for handling import of tables. Built for RTF but might be useful elsewhere.
+ */
+ie_imp_table::ie_imp_table(PD_Document * pDoc):
+	m_pDoc(pDoc),
+	m_tableSDH(NULL),
+	m_pCurImpCell(NULL),
+	m_iRowCounter(0),
+	m_bAutoFit(true),
+	m_bNewRow(true)
+{
+	m_sTableProps.clear();
+	m_vecCells.clear();
+	m_vecCellX.clear();
+}
+
+ie_imp_table::~ie_imp_table(void)
+{
+	UT_VECTOR_PURGEALL(ie_imp_cell *,m_vecCells);
+}
+
+/*!
+ * Open a new cell.
+ */
+void ie_imp_table::OpenCell(void)
+{
+	ie_imp_cell * pNewCell = new ie_imp_cell(this, m_pDoc,m_pCurImpCell,m_iRowCounter);
+	m_pCurImpCell = pNewCell;
+	m_vecCells.addItem((void *) pNewCell);
+	m_bNewRow = false;
+}
+
+/*!
+ * Start a new row.
+ */
+void ie_imp_table::NewRow(void)
+{
+	m_pCurImpCell = NULL;
+	m_iRowCounter++;
+	m_bNewRow = true;
+}
+
+/*!
+ * Set the current cell to that at row row and at position col past the first cell on
+ * this row.
+ */
+void ie_imp_table::setCellRowNthCell(UT_sint32 row, UT_sint32 col)
+{
+	UT_sint32 i =0;
+	ie_imp_cell * pCell = NULL;
+	UT_sint32 ColCount = 0;
+	for(i=0; i < (UT_sint32) m_vecCells.getItemCount(); i++)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		if(pCell->getRow() == row)
+		{
+			if(col == ColCount)
+			{
+				break;
+			}
+			ColCount++;
+		}
+	}
+	if(i == (UT_sint32) m_vecCells.getItemCount())
+	{
+		m_pCurImpCell = NULL;
+	}
+	else
+	{
+		m_pCurImpCell = pCell;
+	}
+}
+
+/*!
+ * Set this cell to have the cellx value given.
+ */
+void ie_imp_table::setCellX(UT_sint32 cellx)
+{
+	UT_return_if_fail(m_pCurImpCell);
+	m_pCurImpCell->setCellX(cellx);
+}
+
+/*!
+ * Return this tables SDH
+ */
+PL_StruxDocHandle ie_imp_table::getTableSDH(void)
+{
+	return m_tableSDH;
+}
+
+/*!
+ * Set the SDH for this table
+ */
+void ie_imp_table::setTableSDH(PL_StruxDocHandle sdh)
+{
+	m_tableSDH = sdh;
+}
+
+/*!
+ * Write out all the properties in the properties string to the tableSDH
+ */
+void ie_imp_table::writeTablePropsInDoc(void)
+{
+	UT_return_if_fail(m_tableSDH);
+	if(!m_bAutoFit)
+	{
+	}
+	m_pDoc->changeStruxAttsNoUpdate(m_tableSDH,"props",m_sTableProps.c_str());
+}
+
+/*!
+ * Write out all the properties in all the cells to the PieceTable
+ */
+void ie_imp_table::writeAllCellPropsInDoc(void)
+{
+	UT_sint32 i =0;
+	ie_imp_cell * pCell = NULL;
+	for(i=0; i< (UT_sint32) m_vecCells.getItemCount();i++)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		if(!pCell->isMergedAbove() && !pCell->isMergedRight())
+		{
+			pCell->writeCellPropsInDoc();
+		}
+	}
+}
+
+/*!
+ * Set a property in the table properties string.
+ */
+void ie_imp_table::setProp(UT_String * psProp, UT_String * psVal)
+{
+	UT_String_setProperty(m_sTableProps, psProp, psVal);
+}
+
+/*!
+ * Return the value of a property of this table. 
+ * This should be deleted when you've finished with it.
+ */
+UT_String * ie_imp_table::getPropVal(UT_String * psProp)
+{
+	return UT_String_getPropVal(m_sTableProps, psProp);
+}
+
+/*!
+ * Set a property in the current cell properties string.
+ */
+void ie_imp_table::setCellProp(UT_String * psProp, UT_String * psVal)
+{
+	UT_return_if_fail(m_pCurImpCell);
+	m_pCurImpCell->setProp(psProp, psVal);
+}
+
+/*!
+ * Return the value of a property of the current cell. 
+ * This should be deleted when you've finished with it.
+ */
+UT_String * ie_imp_table::getCellPropVal(UT_String * psProp)
+{
+	UT_return_val_if_fail(m_pCurImpCell,NULL);
+	return m_pCurImpCell->getPropVal(psProp);
+}
+
+/*!
+ * Return a pointer to the current cell
+ */
+ie_imp_cell * ie_imp_table::getCurCell(void)
+{
+	return m_pCurImpCell;
+}
+
+/*!
+ * set the current cell to the nth (iCell) location on the current row.
+ */
+void ie_imp_table::setNthCellOnThisRow(UT_sint32 iCell)
+{
+	setCellRowNthCell(m_iRowCounter, iCell);
+}
+
+/*!
+ * This static function is used to compare CellX's for the qsort method of UT_Vector
+\param vX1 pointer to a CellX value.
+\param vX2 pointer to a second CellX value
+*/
+static UT_sint32 compareCellX(const void * vX1, const void * vX2)
+{
+	UT_sint32 x1 = *((UT_sint32 *) vX1);
+	UT_sint32 x2 = *((UT_sint32 *) vX2);
+	return x1 - x2;
+}
+
+
+/*!
+ * Build a vector of all the cellx's and sort them
+ */
+void ie_imp_table::_buildCellXVector(void)
+{
+	m_vecCellX.clear();
+	UT_sint32 i =0;
+	ie_imp_cell * pCell = NULL;
+	for(i=0; i< (UT_sint32) m_vecCells.getItemCount(); i++)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		UT_sint32 cellx = pCell->getCellX();
+		if(m_vecCellX.findItem((void *) cellx) < 0)
+		{
+			m_vecCellX.addItem((void *) cellx);
+		}
+	}
+	m_vecCellX.qsort(compareCellX);
+}
+
+/*!
+ * Returns column number of the cell.
+ */
+UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
+{
+	UT_sint32 cellx = pImpCell->getCellX();
+	UT_sint32 col = m_vecCellX.findItem((void *) cellx);
+	return col;
+}
+
+ie_imp_cell *  ie_imp_table::getCellAtRowColX(UT_sint32 iRow,UT_sint32 cellX)
+{
+	UT_sint32 i = 0;
+	ie_imp_cell * pCell = NULL;
+	bool bfound = false;
+	for(i=0; i< (UT_sint32) m_vecCells.getItemCount(); i++)
+	{
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		UT_sint32 icellx = pCell->getCellX();
+		if(icellx == cellX && (pCell->getRow() == iRow))
+		{
+			break;
+			bfound = true;
+		}
+	}
+	if(bfound)
+	{
+		return pCell;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+/*!
+ * This method bulds the table structure as required by abiword. ie It sets all the
+ * left-attach, right-attach etc.
+ */
+void ie_imp_table::buildTableStructure(void)
+{
+//
+// Start by building a vector of cellX's
+//
+	_buildCellXVector();
+//
+// Now construct the table structure.
+//
+	UT_sint32 i = 0;
+	ie_imp_cell * pCell = NULL;
+	UT_sint32 cellx = 0;
+	UT_sint32 curRow = 0;
+	UT_sint32 iLeft =0;
+	UT_sint32 iRight=0;
+	UT_sint32 iTop=0;
+	UT_sint32 iBot=0;
+
+	for(i=0; i< (UT_sint32) m_vecCells.getItemCount(); i++)
+	{
+		bool bSkipThis = false;
+		pCell = (ie_imp_cell *) m_vecCells.getNthItem(i);
+		cellx = pCell->getCellX();
+		if(i==0 || (pCell->getRow() > curRow))
+		{
+			curRow = pCell->getRow();
+			iLeft =0;
+			if(pCell->isMergedAbove())
+			{
+//
+// This cell is verticall merged. Advance the left pointer to the position after this cell.
+//
+				iLeft = getColNumber(pCell);
+				bSkipThis = true;
+			}
+		}
+		iRight = getColNumber(pCell);
+		iTop = curRow;
+		if(pCell->isFirstVerticalMerged())
+		{
+			//
+			// The cells below this are vertically merged with this. go hunting for the last one.
+			//
+			UT_sint32 newRow = curRow+1;
+			ie_imp_cell * pNewCell = getCellAtRowColX(newRow,pCell->getCellX());
+			while(pNewCell && pNewCell->isMergedAbove())
+			{
+				newRow++;
+				pNewCell = getCellAtRowColX(newRow,pCell->getCellX());
+			}
+			iBot = newRow;
+		}
+		else
+		{
+			iBot = iTop + 1;
+		}
+		//	
+		// OK got what we need, set the left,right,top,bot attach's for the cell
+		//
+		if(!bSkipThis)
+		{
+			pCell->setLeft(iLeft);
+			pCell->setRight(iRight);
+			pCell->setTop(iTop);
+			pCell->setBot(iBot);
+		}
+//
+// Advance left attach to the right most cell.
+//
+		iLeft = iRight;
+	}
+}
+
+/*!
+ * Class to hold a stack of tables for nested tables.
+ */
+ie_imp_table_control::ie_imp_table_control(PD_Document * pDoc):
+	m_pDoc(pDoc)
+{
+	m_sLastTable.push(NULL);
+}
+
+
+ie_imp_table_control::~ie_imp_table_control(void)
+{
+	while(m_sLastTable.getDepth() > 1)
+	{
+		ie_imp_table * pT = NULL;
+		m_sLastTable.pop((void **)&pT);
+		delete pT;
+	}
+}
+
+UT_sint32 ie_imp_table_control::getNestDepth(void)
+{
+	return m_sLastTable.getDepth() -1;
+}
+
+void ie_imp_table_control::OpenTable(void)
+{
+	ie_imp_table * pT = new ie_imp_table(m_pDoc);
+	m_sLastTable.push((void *) pT);
+}
+
+
+void ie_imp_table_control::OpenCell(void)
+{
+	ie_imp_table * pT = NULL;
+	m_sLastTable.viewTop((void **) &pT);
+	pT->OpenCell();
+}
+
+void ie_imp_table_control::CloseTable(void)
+{
+	ie_imp_table * pT = NULL;
+	m_sLastTable.pop((void **) &pT);
+	pT->buildTableStructure();
+	pT->writeTablePropsInDoc();
+	pT->writeAllCellPropsInDoc();
+	delete pT;
+}
+
+
+void ie_imp_table_control::CloseCell(void)
+{
+}
+
+ie_imp_table *  ie_imp_table_control::getTable(void)
+{
+	ie_imp_table * pT = NULL;
+	m_sLastTable.viewTop((void **) &pT);
+	return pT;
+}

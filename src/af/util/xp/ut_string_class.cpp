@@ -376,6 +376,149 @@ UT_String UT_String_vprintf(const UT_String & inFormat, va_list args1)
   return UT_String_vprintf( outStr, inFormat, args1 );
 }
 
+/*!
+ * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
+ * Return the value of the property sProp or NULL if it is not present.
+ * This UT_String * should be deleted by the calling programming after it is finished with it.
+ */
+UT_String * UT_String_getPropVal(UT_String & sPropertyString, UT_String * sProp)
+{
+	UT_String sWork = *sProp;
+	UT_String * sVal = NULL;
+	sWork += ":";
+	char * szWork = const_cast<char *>(sWork.c_str());
+	char * szProps = const_cast<char *>(sPropertyString.c_str());
+	char * szLoc = strstr(szProps,szWork);
+	if(szLoc == NULL)
+	{
+		return NULL;
+	}
+//
+// Look if this is the last property in the string.
+//
+	char * szDelim = strchr(szLoc,':');
+	if(szDelim == NULL)
+	{
+//
+// Remove trailing spaces
+//
+		UT_sint32 iSLen = strlen(szProps);
+		while(iSLen > 0 && szLoc[iSLen-1] == ' ')
+		{
+			iSLen--;
+		}
+//
+// Calculate the location of the substring
+//
+		UT_sint32 offset = (UT_sint32) ((size_t) szLoc - (size_t)szProps);
+		offset += strlen(szWork);
+		sVal = new UT_String(sPropertyString.substr(offset,(iSLen - offset)));
+		return sVal;
+	}
+	else
+	{
+		szDelim = strchr(szLoc,';');
+		if(szDelim == NULL)
+		{
+//
+// bad property string
+//
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return NULL;
+		}
+		szDelim--;
+//
+// Remove trailing spaces.
+//
+		while(*szDelim == ' ')
+		{
+			szDelim--;
+		}
+//
+// Calculate the location of the substring
+//
+		UT_sint32 offset = (UT_sint32) ((size_t) szLoc - (size_t)szProps);
+		offset += strlen(szWork);
+		UT_sint32 iLen = (UT_sint32) ((size_t) szDelim - (size_t) szProps); 
+		sVal = new UT_String(sPropertyString.substr(offset,(iLen - offset)));
+		return sVal;
+	}
+	return sVal;
+}
+
+/*!
+ * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
+ * Add the property sProp with value sVal to the string of properties. If the property is already present, replace the 
+ * old value with the new value.
+ */
+void UT_String_setProperty(UT_String & sPropertyString, UT_String * sProp, UT_String * sVal)
+{
+//
+// Remove the old value if it exists and tack the new property on the end.
+//
+	UT_String_removeProperty(sPropertyString, sProp);
+	sPropertyString += "; ";
+	sPropertyString += *sProp;
+	sPropertyString += ":";
+	sPropertyString += *sVal;
+}
+
+/*!
+ * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
+ * Remove the property sProp and it's value from the string of properties. 
+ */
+void UT_String_removeProperty(UT_String & sPropertyString, UT_String * sProp)
+{
+	UT_String sWork = *sProp;
+	UT_String * sVal = NULL;
+	sWork += ":";
+	char * szWork = const_cast<char *>(sWork.c_str());
+	char * szProps = const_cast<char *>(sPropertyString.c_str());
+	char * szLoc = strstr(szProps,szWork);
+	if(szLoc == NULL)
+	{
+//
+// Not here, do nothing
+		return ;
+	}
+//
+// Found it, Get left part.
+//
+	UT_sint32 locLeft = (UT_sint32) ((size_t) szLoc - (size_t) szProps);
+	UT_String sLeft = sPropertyString.substr(0,locLeft);
+	locLeft = (UT_sint32) sLeft.size();
+//
+// Remove trailing ';' and ' '
+//
+	while(locLeft >= 0 && (sLeft[locLeft] == ';' || sLeft[locLeft] == ' '))
+	{
+		locLeft--;
+	}
+	UT_String sNew(sLeft.substr(0,locLeft+1));
+//
+// Look for ";" to get right part
+//
+	char * szDelim = strchr(szLoc,';');
+	if(szDelim == NULL)
+	{
+//
+// No properties after this, just assign and return
+//
+		sPropertyString = sNew;
+	}
+	else
+	{
+//
+// Just slice off the properties and tack them onot the pre-existing sNew
+//
+		UT_sint32 offset = (UT_sint32) ((size_t) szDelim - (size_t) szProps);
+		UT_sint32 iLen = sPropertyString.size() - offset;
+		sNew += " ;";
+		sNew += sPropertyString.substr(offset,iLen);
+		sPropertyString = sNew;
+	}
+}
+
 //////////////////////////////////////////////////////////////////
 // Helpers
 

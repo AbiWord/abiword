@@ -6832,7 +6832,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		if(!getDoc()->verifySectionID(hdrftrID.c_str()))
 		{
 			PL_StruxDocHandle sdh = getDoc()->getLastSectionSDH();
-			getDoc()->changeSectionAttsNoUpdate(sdh,szType,hdrftrID.c_str());
+			getDoc()->changeStruxAttsNoUpdate(sdh,szType,hdrftrID.c_str());
 		}
 		getDoc()->appendStrux (PTX_SectionHdrFtr, propsArray);
 		propsArray[0] = NULL;

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2002 Martin Sevior
+ *                    <msevior@physics.unimelb.edu.au>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,6 +29,7 @@ class PD_Document;
 class UT_Stack;
 class PX_ChangeRecord_Object;
 class PP_AttrProp;
+class ie_imp_table;
 
 
 class ABI_EXPORT ie_PartTable
@@ -92,6 +94,114 @@ class ABI_EXPORT ie_Table
 	PD_Document *     m_pDoc;
 	UT_Stack          m_sLastTable;
 };			
+
+
+class ABI_EXPORT ie_imp_cell
+{
+ public:
+	ie_imp_cell(ie_imp_table * pImpTable, PD_Document * pDoc, 
+				ie_imp_cell * pImpCell, UT_sint32 iRow);
+	virtual          ~ie_imp_cell(void);
+	void             setCellX(UT_sint32 cellx);
+	UT_sint32        getCellX(void);
+	void             setCellLeft(ie_imp_cell * pImpCell);
+	void             setLeft(UT_sint32 iLeft);
+	UT_sint32        getLeft(void);
+	void             setRight(UT_sint32 iRight);
+	UT_sint32        getRight(void);
+	void             setTop(UT_sint32 iTop);
+	UT_sint32        getTop(void);
+	void             setBot(UT_sint32 iBot);
+	UT_sint32        getBot(void);
+	PL_StruxDocHandle getCellSDH(void);
+	void             setCellSDH(PL_StruxDocHandle cellSDH);
+	void             writeCellPropsInDoc(void);
+	ie_imp_cell *    getCellAbove(void);
+	ie_imp_cell *    getCellBelow(void);
+	ie_imp_cell *    getCellLeft(void);
+	ie_imp_cell *    getCellRight(void);
+	void             setProp(UT_String * psProp, UT_String * psVal);
+	UT_String *      getPropVal(UT_String * psProp);
+	UT_sint32        getRow(void) { return m_iRow;}
+	void             setMergeAbove(bool bAbove) { m_bMergeAbove = bAbove;}
+	void             setMergeRight(bool bRight) {m_bMergeRight = bRight;}
+	void             setFirstVerticalMerge( bool bVert) {m_bFirstVertical = bVert;}
+	bool             isMergedAbove(void) const {return m_bMergeAbove;}
+	bool             isMergedRight(void) const {return m_bMergeRight;}
+	bool             isFirstVerticalMerged(void) const {return m_bFirstVertical;}
+ 
+ private:
+	PD_Document *         m_pDoc;
+	UT_sint32             m_iCellX;
+	UT_sint32             m_iLeft;
+	UT_sint32             m_iRight;
+	UT_sint32             m_iTop;
+	UT_sint32             m_iBot;
+	PL_StruxDocHandle     m_cellSDH;
+	ie_imp_table   *      m_pImpTable;
+    ie_imp_cell *         m_pCellLeft;
+	UT_sint32             m_iRow;
+	bool                  m_bMergeAbove;
+	bool                  m_bMergeRight;
+	bool                  m_bFirstVertical;
+	UT_String             m_sCellProps;
+};			
+
+
+class ABI_EXPORT ie_imp_table
+{
+ public:
+	ie_imp_table(PD_Document * pDoc);
+	virtual ~ie_imp_table(void);
+	void                OpenCell(void);
+	void                NewRow(void);
+	void                setCellRowNthCell(UT_sint32 row, UT_sint32 col);
+	void                setCellX(UT_sint32 cellx);
+	PL_StruxDocHandle   getTableSDH(void);
+	void                setTableSDH(PL_StruxDocHandle cellSDH);
+	void                writeTablePropsInDoc(void);
+	void                writeAllCellPropsInDoc(void);
+	void                setProp(UT_String * psProp, UT_String * psVal);
+	UT_String *         getPropVal(UT_String * psProp);
+	UT_String *         getCellPropVal(UT_String * psProp);
+	void                setCellProp(UT_String * psProp, UT_String * psVal);
+	ie_imp_cell *       getCurCell(void);
+	void                setNthCellOnThisRow(UT_sint32 iCell);
+	void                buildTableStructure(void);
+	void                setAutoFit(bool bVal) {m_bAutoFit = bVal;}
+	bool                isNewRow(void) { return m_bNewRow;}
+	UT_sint32           getColNumber(ie_imp_cell * pImpCell);
+	ie_imp_cell *       getCellAtRowColX(UT_sint32 newRow,UT_sint32 cellX);
+ private:
+	void                _buildCellXVector(void);
+	PD_Document *       m_pDoc;
+	PL_StruxDocHandle   m_tableSDH;
+	ie_imp_cell *       m_pCurImpCell;
+	UT_sint32           m_iRowCounter;
+	UT_String           m_sTableProps;
+	bool                m_bAutoFit;
+	bool                m_bNewRow;
+	UT_Vector           m_vecCells;
+	UT_Vector           m_vecCellX;
+};			
+
+class ABI_EXPORT ie_imp_table_control
+{
+public:
+	ie_imp_table_control(PD_Document * pDoc);
+	virtual ~ie_imp_table_control(void);
+	UT_sint32           getNestDepth(void);
+	void                OpenTable(void);
+	void                OpenCell(void);
+	void                CloseTable(void);
+	void                CloseCell(void);
+	ie_imp_table *      getTable(void);
+private:
+	UT_Stack            m_sLastTable;
+	PD_Document *       m_pDoc;
+};
+
+
 
 #endif /* IE_TABLE */
 

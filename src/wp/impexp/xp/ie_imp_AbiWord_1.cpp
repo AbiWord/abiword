@@ -301,7 +301,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 			if(pszType)
 			{
 				PL_StruxDocHandle sdh = getDoc()->getLastSectionSDH();
-				getDoc()->changeSectionAttsNoUpdate(sdh,pszType,pszId);
+				getDoc()->changeStruxAttsNoUpdate(sdh,pszType,pszId);
 				m_parseState = _PS_Sec;
 				m_bWroteSection = true;
 				X_CheckError(getDoc()->appendStrux(PTX_Section,atts));

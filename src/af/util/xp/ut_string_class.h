@@ -118,6 +118,16 @@ ABI_EXPORT UT_String UT_String_vprintf(const UT_String & inFormat, va_list args1
 
 /***************************************************************************/
 
+/***************************************************************************/
+/*!
+ * Some functions to add/subtract and extract UT_String properties from a UT_String of properties.
+ */
+
+ABI_EXPORT UT_String * UT_String_getPropVal(UT_String & sPropertyString, UT_String * sProp);
+ABI_EXPORT void UT_String_setProperty(UT_String & sPropertyString, UT_String * sProp, UT_String * sVal);
+ABI_EXPORT void UT_String_removeProperty(UT_String & sPropertyString, UT_String * sProp);
+
+
 //!
 //	UT_UCS2String, a simple wrapper for zero terminated 'UCS2' strings.
 //

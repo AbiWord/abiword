@@ -285,7 +285,8 @@ public:
 											const XML_Char * pszHdrFtrID);
 	bool                    verifySectionID(const XML_Char * pszId);
 	PL_StruxDocHandle       getLastSectionSDH(void);
-	bool                    changeSectionAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue);
+	bool                    changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue);
+
 	PT_AttrPropIndex       getAPIFromSDH(PL_StruxDocHandle sdh);
     bool                    getAttributeFromSDH(PL_StruxDocHandle sdh, const char * szAttribute, const char ** pszValue);
     bool                    getPropertyFromSDH(PL_StruxDocHandle sdh, const char * szProperty, const char ** pszValue);
