@@ -76,15 +76,11 @@ typedef		UT_sint32			UT_ErrorCode;
 #endif /* _MSC_VER && _DEBUG && _CRTDBG_MAP_ALLOC */
 
 
-/*
-	Unicode character constants.
-	TODO: 	The code really isn't ready to handle the double-byte 
-		representations.  For right now, we just map these symbols
-		to single-byte character representations.  Someone should 
-		try and fix this if possible. (See bug 512) 
-		
+/* Unicode character constants.  Try to use these rather than
+** decimal or hex constants throughout the code.  See also bug
+** 512.
 */
-#if 0
+
 #define UCS_TAB				((UT_UCSChar)0x0009)
 #define UCS_LF				((UT_UCSChar)0x000a)
 #define UCS_VTAB			((UT_UCSChar)0x000b)
@@ -93,35 +89,28 @@ typedef		UT_sint32			UT_ErrorCode;
 #define UCS_SPACE			((UT_UCSChar)0x0020)
 #define UCS_NBSP			((UT_UCSChar)0x00a0)
 
-#define UCS_EN_SPACE			((UT_UCSChar)0x2002)
-#define UCS_EM_SPACE			((UT_UCSChar)0x2003)
+#if 1 /* try to use the unicode values for special chars */
+#define UCS_EN_SPACE		((UT_UCSChar)0x2002)
+#define UCS_EM_SPACE		((UT_UCSChar)0x2003)
 #define UCS_EN_DASH			((UT_UCSChar)0x2013)
 #define UCS_EM_DASH			((UT_UCSChar)0x2014)
 #define UCS_BULLET			((UT_UCSChar)0x2022)
 #define UCS_LQUOTE			((UT_UCSChar)0x2018)
 #define UCS_RQUOTE			((UT_UCSChar)0x2019)
-#define UCS_LDBLQUOTE			((UT_UCSChar)0x201c)
-#define UCS_RDBLQUOTE			((UT_UCSChar)0x201d)
+#define UCS_LDBLQUOTE		((UT_UCSChar)0x201c)
+#define UCS_RDBLQUOTE		((UT_UCSChar)0x201d)
 
-#else
+#else /* see bug 512 */
 
-#define UCS_TAB                         ((UT_UCSChar)0x0009)
-#define UCS_LF                          ((UT_UCSChar)0x000a)
-#define UCS_VTAB                        ((UT_UCSChar)0x000b)
-#define UCS_FF                          ((UT_UCSChar)0x000c)
-#define UCS_CR                          ((UT_UCSChar)0x000d)
-#define UCS_SPACE                       ((UT_UCSChar)0x0020)
-#define UCS_NBSP                        ((UT_UCSChar)0x00a0)
-
-#define UCS_EN_SPACE                    ((UT_UCSChar)0x0020)
-#define UCS_EM_SPACE                    ((UT_UCSChar)0x0020)
-#define UCS_EN_DASH                     ((UT_UCSChar)0x002d)
-#define UCS_EM_DASH                     ((UT_UCSChar)0x002d)
-#define UCS_BULLET                      ((UT_UCSChar)0x0095)
-#define UCS_LQUOTE                      ((UT_UCSChar)0x0027)
-#define UCS_RQUOTE                      ((UT_UCSChar)0x0027)
-#define UCS_LDBLQUOTE                   ((UT_UCSChar)0x0022)
-#define UCS_RDBLQUOTE                   ((UT_UCSChar)0x0022)
+#define UCS_EN_SPACE		((UT_UCSChar)0x0020)
+#define UCS_EM_SPACE		((UT_UCSChar)0x0020)
+#define UCS_EN_DASH			((UT_UCSChar)0x002d)
+#define UCS_EM_DASH			((UT_UCSChar)0x002d)
+#define UCS_BULLET			((UT_UCSChar)0x0095)
+#define UCS_LQUOTE			((UT_UCSChar)0x0027)
+#define UCS_RQUOTE			((UT_UCSChar)0x0027)
+#define UCS_LDBLQUOTE		((UT_UCSChar)0x0022)
+#define UCS_RDBLQUOTE		((UT_UCSChar)0x0022)
 
 #endif
 
