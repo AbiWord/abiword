@@ -1832,7 +1832,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 
 			if (wv0x01(&blip, fil, picf.lcb - picf.cbHeader))
 			  {
-                       this->_handleImage(&blip, picf.mx * picf.dxaGoal / 1000, picf.my * picf.dyaGoal / 1000);
+                       this->_handleImage(&blip, picf.mx * picf.dxaGoal / 1000, picf.my * picf.dyaGoal / 1000, picf.dyaCropTop, picf.dyaCropBottom, picf.dxaCropLeft, picf.dxaCropRight);
 			  }
 			else
 			  {
@@ -1882,7 +1882,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 //
 					UT_DEBUGMSG(("!!!!Found a blip in a fspa!!!!!!!!!! \n"));
 					this->_handleImage(&blip, fspa->xaRight-fspa->xaLeft,
-									   fspa->yaBottom-fspa->yaTop);
+									   fspa->yaBottom-fspa->yaTop,0,0,0,0);
 				}
 				bool isTextBox = false;
 				UT_uint32 textOff = 0;
@@ -3965,7 +3965,7 @@ static MSWord_ImageType s_determineImageType ( Blip * b )
 	}
 }
 
-UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
+UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long cropt, long cropb, long cropl, long cropr)
 {
 	const char * mimetype = UT_strdup ("image/png");
 	IE_ImpGraphic * importer	= 0;
@@ -4074,9 +4074,13 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height)
 
   {
 	  UT_LocaleTransactor(LC_NUMERIC, "C");
-	  UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
+	  UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
 						static_cast<double>(width) / static_cast<double>(1440),
-						static_cast<double>(height) / static_cast<double>(1440));
+			    static_cast<double>(height) / static_cast<double>(1440),
+			    static_cast<double>(cropt) / static_cast<double>(1440),
+			    static_cast<double>(cropb) / static_cast<double>(1440),
+			    static_cast<double>(cropl) / static_cast<double>(1440),
+						static_cast<double>(cropr) / static_cast<double>(1440));
   }
 
   UT_String_sprintf(propsName, "%d", getDoc()->getUID(UT_UniqueId::Image));
