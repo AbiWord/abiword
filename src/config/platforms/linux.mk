@@ -81,7 +81,7 @@ ABI_OPTIONS	+= Profile:On
 endif
 
 ifeq ($(ABI_OPT_OPTIMIZE),1)
-OPTIMIZER	+= -O3 -fomit-frame-pointer
+OPTIMIZER	+= -O3
 OBJ_DIR_SFX	:= $(OBJ_DIR_SFX)OPT_
 ABI_OPTIONS	+= Optimize:On
 ABI_OPT_DEBUG	= 0
@@ -223,7 +223,7 @@ ABI_FE		= Unix
 ## This is relative to $(ABI_ROOT)/src/pkg
 
 ABIPKGDIR	= linux
-PSICONV_PLATFORM_DEFS= CFLAGS='-O3 -fomit-frame-pointer'
+PSICONV_PLATFORM_DEFS= CFLAGS='-O3'
 
 # End of linux defs
 
