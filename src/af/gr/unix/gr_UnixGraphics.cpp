@@ -785,32 +785,16 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	}
 	else
 	{
+		UT_uint32 uChar;
 		XftCharSpec aCharSpec[256];
 		XftCharSpec* pCharSpec = aCharSpec;
+		UT_sint32 currentYoff = tdu(yoff);
 
 		if (iLength > 256)
 			pCharSpec = new XftCharSpec[iLength];
 
-		// let's carry through the pCharSpec calculation in layout units
-		pCharSpec[0].ucs4 = static_cast<FT_UInt>(pChars[iCharOffset]);
-		UT_uint32 uChar = static_cast<UT_uint32>(pCharSpec[0].ucs4);
-		pCharSpec[0].x = tdu(xoff);
-		pCharSpec[0].y = tdu(yoff);
 		UT_uint32 xPos = xoff;
-
-		if(m_bIsSymbol && uChar < 255 && uChar >=32)
-		{
-			uChar = static_cast<UT_uint32>(pChars[iCharOffset]);
-			pCharSpec[0].ucs4 = static_cast<FT_UInt>(adobeToUnicode(uChar));
-			xxx_UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[0].ucs4));
-		}
-		if(m_bIsDingbat && uChar < 255 && uChar >=32)
-		{
-			uChar = static_cast<UT_uint32>(pChars[iCharOffset]);
-			pCharSpec[0].ucs4 = static_cast<FT_UInt>(adobeDingbatsToUnicode(uChar));
-			UT_DEBUGMSG(("DrawGlyph 2 remapped %d to %d \n",uChar,pCharSpec[0].ucs4));
-		}
-		for (int i = 1; i < iLength; ++i)
+		for (int i = 0; i < iLength; ++i)
 		{
 			uChar = static_cast<UT_uint32>(pChars[i + iCharOffset]);
 			if(m_bIsSymbol && uChar < 255 && uChar >=32)
@@ -832,9 +816,11 @@ void GR_UnixGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 			// it turns out that we don't fit in a short.
 			// or we can keep it in an int array, then transfer to shorts.
 			// that's probably better.
-			xPos += pCharWidths[i-1];
 			pCharSpec[i].x = tdu(xPos);
-			pCharSpec[i].y = tdu(yoff);
+			pCharSpec[i].y = currentYoff;
+			if (i < iLength - 1) {
+				xPos += pCharWidths[i];
+			}
 		}
 		
 		XftDrawCharSpec (m_pXftDraw, &m_XftColor, m_pXftFontD, pCharSpec, iLength);
