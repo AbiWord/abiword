@@ -39,6 +39,28 @@ class PD_Document;
 class pt_PieceTable;
 class pf_Frag;
 
+/////////////////////////////////////////////////////////////
+//
+// The following enum defines possible iterator states:
+//
+//     OK: need I say more?
+//     
+//     OutOfBounds: last positioning operation took the iterator
+//                  out of bounds; this error state is recoverable
+//                  by using the indexing operator [], but the use
+//                  of relative increment operators (++, --, +=, -=)
+//                  in this state will lead to undefined results.
+//
+//     Error: any other error; this state is irrecoverable
+//                  
+//
+enum UTIterStatus
+{
+	UTIter_OK,
+	UTIter_OutOfBounds,
+	UTIter_Error
+};
+
 
 class ABI_EXPORT UT_TextIterator
 {
@@ -46,7 +68,9 @@ class ABI_EXPORT UT_TextIterator
 
 	/////////////////////////////////////////
 	// data accessor
-	virtual UT_UCS4Char getChar() const = 0; 
+	virtual UT_UCS4Char getChar() = 0;
+
+	virtual UTIterStatus getStatus() const = 0;
 
 	//////////////////////////////////////////
 	// increment operators -- we intentionally

@@ -42,7 +42,7 @@
     \param dpos - document position we want to start from
 */
 PD_DocIterator::PD_DocIterator(PD_Document &doc, PT_DocPosition dpos)
-	: m_pt(*doc.getPieceTable()), m_pos(dpos), m_frag(NULL)
+	: m_pt(*doc.getPieceTable()), m_pos(dpos), m_frag(NULL), m_status(UTIter_OK)
 {
 	// find the frag at requested postion
 	_findFrag();
@@ -66,6 +66,7 @@ bool PD_DocIterator::_findFrag()
 		if(m_frag->getPos() <= m_pos && m_frag->getPos() + m_frag->getLength() > m_pos)
 		{
 			// we have the correct fragment already
+			m_status = UTIter_OK;
 			return true;
 		}
 
@@ -79,19 +80,14 @@ bool PD_DocIterator::_findFrag()
 				if(m_frag->getPos() <= m_pos && m_frag->getPos() + m_frag->getLength() > m_pos)
 				{
 					// we have the correct fragment
+					m_status = UTIter_OK;
 					return true;
 				}
 
 				m_frag = m_frag->getNext();
 			}
 
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-			// set the pos to end of doc
-			m_frag = m_pt.getFragments().getLast();
-			UT_return_val_if_fail(m_frag, false);
-			
-			m_pos = m_frag->getPos() + m_frag->getLength() - 1;
+			m_status = UTIter_OutOfBounds;
 			
 			return false;
 		}
@@ -106,17 +102,14 @@ bool PD_DocIterator::_findFrag()
 				if(m_frag->getPos() <= m_pos && m_frag->getPos() + m_frag->getLength() > m_pos)
 				{
 					// we have the correct fragment
+					m_status = UTIter_OK;
 					return true;
 				}
 
 				m_frag = m_frag->getPrev();
 			}
 
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-
-			// set the pos to start of doc
-			m_frag = m_pt.getFragments().getFirst();
-			m_pos = 0;
+			m_status = UTIter_OutOfBounds;
 			
 			return false;
 		}
@@ -134,24 +127,23 @@ bool PD_DocIterator::_findFrag()
 		if(m_frag->getPos() <= m_pos && m_frag->getPos() + m_frag->getLength() > m_pos)
 		{
 			// we have the correct fragment
+			m_status = UTIter_OK;
 			return true;
 		}
-
-		// set the current pos to the end of doc
-		m_pos = m_frag->getPos() + m_frag->getLength() - 1;
 	}
 	
 	// this happens, for instance, when we try to move past end of doc
 	// (this can happen legitimately for example in the last increment
 	// of a for loop)
+	m_status = UTIter_OutOfBounds;
 	return false;
 }
 
 /*! get character at the curent position
  */
-UT_UCS4Char PD_DocIterator::getChar() const
+UT_UCS4Char PD_DocIterator::getChar()
 {
-	UT_return_val_if_fail(m_frag, UT_IT_ERROR);
+	UT_return_val_if_fail(m_frag && m_status == UTIter_OK, UT_IT_ERROR);
 
 	if(m_frag->getType() == pf_Frag::PFT_Text)
 	{
@@ -159,8 +151,20 @@ UT_UCS4Char PD_DocIterator::getChar() const
 
 		const UT_UCS4Char * p = m_pt.getPointer(pft->getBufIndex());
 
-		UT_return_val_if_fail(p, UT_IT_ERROR);
-		UT_return_val_if_fail(m_pos - pft->getPos() < pft->getLength(), UT_IT_ERROR);
+		if(!p)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_status = UTIter_Error;
+			return UT_IT_ERROR;
+		}
+		
+		if(!(m_pos - pft->getPos() < pft->getLength()))
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_status = UTIter_Error;
+			return UT_IT_ERROR;
+		}
+		
 		return p[m_pos - pft->getPos()];
 	}
 
@@ -172,40 +176,67 @@ UT_UCS4Char PD_DocIterator::getChar() const
  */
 UT_TextIterator & PD_DocIterator::operator ++ ()
 {
-	m_pos++;
-	_findFrag();
-
+	if(m_status == UTIter_OK)
+	{
+		m_pos++;
+		_findFrag();
+	}
+	
 	return *this;
 }
 
 	
 UT_TextIterator & PD_DocIterator::operator -- ()
 {
-	if(m_pos > 0)
+	if(m_status == UTIter_OK)
 	{
-		m_pos--;
-		_findFrag();
+		if(m_pos > 0)
+		{
+			m_pos--;
+			_findFrag();
+		}
+		else
+		{
+			m_status = UTIter_OutOfBounds;
+		}
 	}
-
+	
 	return *this;
 }
 	
 UT_TextIterator & PD_DocIterator::operator +=  (UT_sint32 i)
 {
-	m_pos += i;
-	_findFrag();
-
+	if(m_status == UTIter_OK)
+	{
+		if(i >= -(UT_sint32)m_pos)
+		{
+			m_pos += i;
+			_findFrag();
+		}
+		else
+		{
+			m_status = UTIter_OutOfBounds;
+		}
+	}
+	
 	return *this;
 }
 	
 UT_TextIterator & PD_DocIterator::operator -=  (UT_sint32 i)
 {
-	if((UT_sint32)m_pos >= i)
+	if(m_status == UTIter_OK)
 	{
-		m_pos -= i;
-		_findFrag();
+		if((UT_sint32)m_pos >= i)
+		{
+			m_pos -= i;
+			_findFrag();
+		}
+		else
+		{
+			m_status = UTIter_OutOfBounds;
+		}
 	}
-
+	
 	return *this;
 }
 
@@ -232,7 +263,9 @@ UT_UCS4Char PD_DocIterator::operator [](UT_uint32 dpos)
     \param offset - offset relative to strux we want to start from
 */
 PD_StruxIterator::PD_StruxIterator(PD_Document &doc, PL_StruxDocHandle sdh, UT_uint32 offset)
-	: m_pt(*doc.getPieceTable()), m_offset(offset), m_sdh(sdh), m_frag_offset(0), m_frag(NULL)
+	: m_pt(*doc.getPieceTable()), m_offset(offset), m_sdh(sdh),
+	  m_frag_offset(0), m_frag(NULL),
+	  m_status(UTIter_OK)
 {
 	UT_return_if_fail(m_sdh);
 	m_frag = static_cast<const pf_Frag *>(m_sdh);
@@ -248,6 +281,7 @@ bool PD_StruxIterator::_findFrag()
 	{
 		if(m_frag_offset <= m_offset && m_frag_offset + m_frag->getLength() > m_offset)
 		{
+			m_status = UTIter_OK;
 			return true;
 		}
 
@@ -267,15 +301,16 @@ bool PD_StruxIterator::_findFrag()
 	// this happens, for instance, when we try to move past end of doc
 	// (this can happen legitimately for example in the last increment
 	// of a for loop)
+	m_status = UTIter_OutOfBounds;
 	return false;
 }
 
 
 /*! get character at the curent position
  */
-UT_UCS4Char PD_StruxIterator::getChar() const
+UT_UCS4Char PD_StruxIterator::getChar()
 {
-	UT_return_val_if_fail(m_frag, UT_IT_ERROR);
+	UT_return_val_if_fail(m_frag && m_status == UTIter_OK, UT_IT_ERROR);
 
 	if(m_frag->getType() == pf_Frag::PFT_Text)
 	{
@@ -283,8 +318,20 @@ UT_UCS4Char PD_StruxIterator::getChar() const
 
 		const UT_UCS4Char * p = m_pt.getPointer(pft->getBufIndex());
 
-		UT_return_val_if_fail(p, UT_IT_ERROR);
-		UT_return_val_if_fail(m_offset - m_frag_offset < pft->getLength(), UT_IT_ERROR);
+		if(!p)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_status = UTIter_Error;
+			return UT_IT_ERROR;
+		}
+		
+		if(!(m_offset - m_frag_offset < pft->getLength()))
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_status = UTIter_Error;
+			return UT_IT_ERROR;
+		}
+
 		return p[m_offset - m_frag_offset];
 	}
 
@@ -296,50 +343,66 @@ UT_UCS4Char PD_StruxIterator::getChar() const
  */
 UT_TextIterator & PD_StruxIterator::operator ++ ()
 {
-	m_offset++;
-	_findFrag();
-
+	if(m_status == UTIter_OK)
+	{
+		m_offset++;
+		_findFrag();
+	}
+	
 	return *this;
 }
 
 UT_TextIterator & PD_StruxIterator::operator -- ()
 {
-	if(m_offset > 0)
+	if(m_status == UTIter_OK)
 	{
-		m_offset--;
-		_findFrag();
+		if(m_offset > 0)
+		{
+			m_offset--;
+			_findFrag();
+		}
+		else
+		{
+			m_status = UTIter_OutOfBounds;
+		}
 	}
-
+	
 	return *this;
 }
 	
 UT_TextIterator & PD_StruxIterator::operator +=  (UT_sint32 i)
 {
-	if(i >= -(UT_sint32)m_offset)
+	if(m_status == UTIter_OK)
 	{
-		m_offset += i;
-	}
-	else
-	{
-		m_offset = 0;
+		if(i >= -(UT_sint32)m_offset)
+		{
+			m_offset += i;
+			_findFrag();
+		}
+		else
+		{
+			m_status = UTIter_OutOfBounds;
+		}
 	}
 	
-	_findFrag();
 	return *this;
 }
 	
 UT_TextIterator & PD_StruxIterator::operator -=  (UT_sint32 i)
 {
-	if((UT_sint32)m_offset >= i)
+	if(m_status == UTIter_OK)
 	{
-		m_offset -= i;
+		if((UT_sint32)m_offset >= i)
+		{
+			m_offset -= i;
+			_findFrag();
+		}
+		else
+		{
+			m_status = UTIter_OutOfBounds;
+		}
 	}
-	else
-	{
-		m_offset = 0;
-	}
-
-	_findFrag();
+	
 	return *this;
 }
 

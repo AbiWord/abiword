@@ -54,7 +54,8 @@ class ABI_EXPORT PD_DocIterator : UT_TextIterator
   public:
 	PD_DocIterator(PD_Document & doc, PT_DocPosition dpos = 0);
 
-	virtual UT_UCS4Char getChar() const; // return character at present position
+	virtual UT_UCS4Char  getChar(); // return character at present position
+	virtual UTIterStatus getStatus() const {return m_status;}
 
 	virtual UT_TextIterator & operator ++ ();
 	virtual UT_TextIterator & operator -- ();
@@ -71,6 +72,7 @@ class ABI_EXPORT PD_DocIterator : UT_TextIterator
 	
 	const pf_Frag * m_frag;
 
+	UTIterStatus    m_status;
 };
 
 /******************************************************************
@@ -87,7 +89,8 @@ class ABI_EXPORT PD_StruxIterator : UT_TextIterator
   public:
 	PD_StruxIterator(PD_Document & doc, PL_StruxDocHandle sdh, UT_uint32 offset = 0);
 
-	virtual UT_UCS4Char getChar() const; // return character at present position
+	virtual UT_UCS4Char getChar(); // return character at present position
+	virtual UTIterStatus getStatus() const {return m_status;}
 
 	virtual UT_TextIterator & operator ++ ();
 	virtual UT_TextIterator & operator -- ();
@@ -106,6 +109,7 @@ class ABI_EXPORT PD_StruxIterator : UT_TextIterator
 	
 	const pf_Frag * m_frag;
 
+	UTIterStatus    m_status;
 };
 
 #endif //PD_ITERATOR_H
