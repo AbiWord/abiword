@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <photon/Pf.h>
+#include <photon/PhRender.h>
 
 #include "xap_QNXApp.h"
 #include "gr_QNXGraphics.h"
@@ -42,14 +43,6 @@
 */
 #define DRAW_START DrawSetup();
 #define DRAW_END   DrawTeardown();
-
-/* Global font cache */
-struct _fcache {
-	struct _fcache *next;
-	struct _fcache *prev;
-	char 		   name[36];
-} *g_pFCache = NULL;
-
 
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -136,6 +129,8 @@ GR_QNXGraphics::GR_QNXGraphics(PtWidget_t * win, PtWidget_t * draw, XAP_App *app
 	m_iLineWidth = 1;
 	m_currentColor = Pg_BLACK;
 	m_pPrintContext = NULL;
+	m_pImg=NULL;
+	m_saveRect=NULL;
 	m_iAscentCache = m_iDescentCache = -1;
 
 	m_cs = GR_Graphics::GR_COLORSPACE_COLOR;
@@ -345,54 +340,13 @@ void GR_QNXGraphics::drawGlyph(UT_uint32 Char,UT_sint32 xoff,UT_sint32 yoff)
 void GR_QNXGraphics::setFont(GR_Font * pFont)
 {
 	QNXFont *qnxFont = (QNXFont *)pFont;
-//	const char *backupfont = { "helv10" };
-//	const char *font;
 
-if(pFont->getAllocNumber() != m_iFontAllocNo)
-{
-	m_pFont = qnxFont;
-	m_iFontAllocNo= pFont->getAllocNumber();
-	m_iAscentCache = m_iDescentCache = -1;
-}
-/*	if (!qnxFont || !(font = qnxFont->getFont())) {
-		UT_DEBUGMSG(("No font found, using helv10 as default"));
-		UT_ASSERT(0);
-		font = backupfont;
-	}*/
-
-/*	if (m_pFont && strcmp(m_pFont->getFont(), font) == 0) {
-		return;
-	} else if (m_pFont) {
-		delete(m_pFont);
-	}*/
-
-//	m_pFont = new QNXFont(font);
-
-	/* At the same time, load the font metrics into
-       a local cache to speed up access as we use them! */
-/*	struct _fcache *tmp;
-	for (tmp = g_pFCache; tmp; tmp = tmp->next) {
-		if (strcmp(tmp->name, font) == 0) {
-			break;
-		}
+	if(pFont->getAllocNumber() != m_iFontAllocNo)
+	{
+		m_pFont = qnxFont;
+		m_iFontAllocNo= pFont->getAllocNumber();
+		m_iAscentCache = m_iDescentCache = -1;
 	}
-	if (tmp == NULL &&
-		(tmp = (struct _fcache *)malloc(sizeof(*tmp))) != NULL) {
-		strcpy(tmp->name, font);
-		tmp->next = g_pFCache;
-		tmp->prev = NULL;
-		g_pFCache = tmp;
-
-//		PfLoadMetrics(font);
-	} else if (tmp && tmp->prev) {
-		if ((tmp->prev->next = tmp->next)) {
-			tmp->next->prev = tmp->prev;
-		}
-		if ((tmp->next = g_pFCache)) {
-			g_pFCache->prev = tmp;
-		}
-		tmp->prev = NULL;
-	}*/
 }
 
 UT_uint32 GR_QNXGraphics::getFontAscent()
@@ -1079,21 +1033,49 @@ bool GR_QNXGraphics::endPrint(void) {
 	return true;
 }
 
-bool GR_QNXGraphics::_setTransform(const GR_Transform &tr)
+bool	GR_QNXGraphics::_setTransform(const GR_Transform & tr)
 {
-//Hmm?
-
-return true;
+UT_DEBUGMSG(("_setTransform: Unimplemented!"));
+UT_ASSERT(0);
+return false;
 }
 
 void GR_QNXGraphics::saveRectangle(UT_Rect &r)
 {
+PhRect_t rect;
+short int x,y;
 
+if(m_pImg)
+{
+PgShmemDestroy(m_pImg);
+m_pImg=NULL;
+}
+DELETEP(m_saveRect);
+
+PtGetAbsPosition(m_pDraw,&x,&y);
+rect.ul.x=x + r.left;
+rect.ul.y=y + r.top;
+rect.lr.x= rect.ul.x + r.width;
+rect.lr.y= rect.ul.y + r.height;
+m_pImg =PgReadScreen(&rect,NULL);
+
+m_saveRect = new UT_Rect(r);
+return;
 }
 
 void GR_QNXGraphics::restoreRectangle()
 {
+UT_ASSERT(m_saveRect && m_pImg);
+PhPoint_t pos;
 
+DRAW_START
 
+pos.x=m_saveRect->left;
+pos.y=m_saveRect->top;
+
+PgDrawPhImage(&pos,m_pImg,0);
+
+DRAW_END
+return;
 }
 
