@@ -29,16 +29,19 @@ Stephen Hack <shack@uiuc.edu>                   options dialog
 Martin Willemoes Hansen <mwh@stampede.org>
 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>	m68k Endian patch
 Ming-I Hsieh <mihs@wm28.csie.ncu.edu.tw>        FreeBSD
-Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog
+Richard Jefts <babs@cs.jhu.edu>                 layout navigation, font dialog, .zabw impexp
+Cuenca Abela Joaquin <cuenca@ie2.u-psud.fr>	GNOME front end
 Luke Jordan <ljordan@mweb.co.za>                subscript, superscript
 Matt Kimball <robozapp@xmission.com>            layout fixes
 Larry Kollar <kollar@stc.net>                   MkLinux
 Tuomas Kuosmanen <tigert@gimp.org>              artist
 James Lefavour <James@albany.net>               Win98/VC6
 Jerry LeVan <levan@eagle.eku.edu>               LinuxPPC
+Brian Marick <marick@rstcorp.com>		
 Lalo Martins <lalo@webcom.com>
 Caolan McNamara <Caolan.McNamara@ul.ie>         Word import
 Bruce Pearson <BruceP@wn.com.au>                full justification
+Duncan Rose <d.rose@salford.ac.uk>
 Pierre Sarrazin <ps@cam.org>            
 Dan Schreiber <dan@abisource.com>
 <kstailey@kstailey.tzo.com>                     OpenBSD
