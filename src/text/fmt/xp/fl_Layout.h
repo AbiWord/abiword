@@ -40,7 +40,7 @@ class fl_Layout
 {
 public:
 	fl_Layout(PTStruxType type, PL_StruxDocHandle sdh);
-	~fl_Layout();
+	virtual ~fl_Layout();
 
 	PTStruxType			getType(void) const;
 	PT_AttrPropIndex 	getAttrPropIndex(void) const;
