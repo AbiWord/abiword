@@ -111,7 +111,9 @@ private:
 	void _generateNoLigatureTable();
 	void _generateNoLigature2Table();
 	void _generateNoShapingTable();
-
+	void _fixHebrewLigatures(bool bShape);
+	void _fixHebrewLetters(bool bShape);
+	
 	UT_UCS4Char _remapGlyph(UT_UCS4Char g) const;
 
 	static bool 		    s_bInit;

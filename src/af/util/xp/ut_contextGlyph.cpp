@@ -87,9 +87,9 @@ static LigatureData s_ligature[] =
 	{0x05D0, 0x05B7, 0xFB2E, 0xFB2E, 0xFB2E, 0},
 	{0x05D0, 0x05B8, 0xFB2F, 0xFB2F, 0xFB2F, 0},
 	{0x05D0, 0x05BC, 0xFB30, 0xFB30, 0xFB30, 0},
-	{0x05D0, 0x05DC, 0xFB4F, 0xFB4F, 0xFB4F, 0},
+//	{0x05D0, 0x05DC, 0xFB4F, 0xFB4F, 0xFB4F, 0}, // alef-lamed
 	{0x05D1, 0x05BC, 0xFB31, 0xFB31, 0xFB31, 0},
-	{0x05D1, 0x05BF, 0xFB4D, 0xFB4D, 0xFB4D, 0},
+	{0x05D1, 0x05BF, 0xFB4C, 0xFB4C, 0xFB4C, 0},
 	{0x05D2, 0x05BC, 0xFB32, 0xFB32, 0xFB32, 0},
 	{0x05D3, 0x05BC, 0xFB33, 0xFB33, 0xFB33, 0},
 	{0x05D4, 0x05BC, 0xFB34, 0xFB34, 0xFB34, 0},
@@ -99,17 +99,17 @@ static LigatureData s_ligature[] =
 	{0x05D8, 0x05BC, 0xFB38, 0xFB38, 0xFB38, 0},
 	{0x05D9, 0x05B4, 0xFB1D, 0xFB1D, 0xFB1D, 0},
 	{0x05D9, 0x05BC, 0xFB39, 0xFB39, 0xFB39, 0},
-	{0x05DA, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0},
-	{0x05DB, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0},
-	{0x05DB, 0x05BF, 0xFB4E, 0xFB4E, 0xFB4E, 0},
+	{0x05DA, 0x05BC, 0xFB3A, 0xFB3A, 0xFB3A, 0},
+	{0x05DB, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3B, 0},
+	{0x05DB, 0x05BF, 0xFB4D, 0xFB4D, 0xFB4D, 0},
 	{0x05DC, 0x05BC, 0xFB3C, 0xFB3C, 0xFB3C, 0},
-	{0x05DE, 0x05BC, 0xFB3E, 0xFB3E, 1, 1},
-	{0x05E0, 0x05BC, 0xFB40, 0xFB40, 1, 1},
+	{0x05DE, 0x05BC, 0xFB3E, 0xFB3E, 0xFB3E, 0},
+	{0x05E0, 0x05BC, 0xFB40, 0xFB40, 0xFB40, 0},
 	{0x05E1, 0x05BC, 0xFB41, 0xFB41, 0xFB41, 0},
-	{0x05E3, 0x05BC, 0xFB44, 0xFB44, 0xFB43, 0},
-	{0x05E4, 0x05BC, 0xFB44, 0xFB44, 0xFB43, 0},
-	{0x05E4, 0x05BF, 0xFB4F, 0xFB4F, 0xFB4F, 0},
-	{0x05E6, 0x05BC, 0xFB46, 0xFB46, 1, 1},
+	{0x05E3, 0x05BC, 0xFB43, 0xFB43, 0xFB43, 0},
+	{0x05E4, 0x05BC, 0xFB44, 0xFB44, 0xFB44, 0},
+	{0x05E4, 0x05BF, 0xFB4E, 0xFB4E, 0xFB4E, 0},
+	{0x05E6, 0x05BC, 0xFB46, 0xFB46, 0xFB46, 0},
 	{0x05E7, 0x05BC, 0xFB47, 0xFB47, 0xFB47, 0},
 	{0x05E8, 0x05BC, 0xFB48, 0xFB48, 0xFB48, 0},
 	{0x05E9, 0x05BC, 0xFB49, 0xFB49, 0xFB49, 0},
@@ -318,6 +318,18 @@ static LigatureData s_ligature[] =
 	{0xFB49, 0x05C2, 0xFB2D, 0xFB2D, 0xFB2D, 0xFB2D},
 
 };
+
+static LigatureData s_hebrewShapingLigature[] =
+{
+	{0x05DA, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0xFB3A},
+	{0x05DB, 0x05BC, 0xFB3B, 0xFB3B, 0xFB3A, 0xFB3A},
+	{0x05DE, 0x05BC, 0xFB3E, 0xFB3E, 1, 1},
+	{0x05E0, 0x05BC, 0xFB40, 0xFB40, 1, 1},
+	{0x05E3, 0x05BC, 0xFB44, 0xFB44, 0xFB43, 0xFB43},
+	{0x05E4, 0x05BC, 0xFB44, 0xFB44, 0xFB43, 0xFB43},
+	{0x05E6, 0x05BC, 0xFB46, 0xFB46, 1, 1}
+};
+
 
 // This table contains reverse ligature data for identifying the first
 // part of a ligature from the second part; it is generated
@@ -988,18 +1000,14 @@ UT_contextGlyph::UT_contextGlyph()
 	if(!s_bInit)
 	{
 		bool bHebrewContextGlyphs = false;
-		XAP_App::getApp()->getPrefsValueBool(static_cast<XML_Char*>(XAP_PREF_KEY_UseHebrewContextGlyphs),
+		XAP_App::getApp()->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_UseHebrewContextGlyphs,
 											 &bHebrewContextGlyphs);
 
-		// if the user does not want to use glyphshaping for the final
-		// forms of Hebrew characters, we will shift the data in our
-		// glyph tables
-		if(!bHebrewContextGlyphs)
-		{
-			s_iGlyphTableSize -= (HEBREW_END - HEBREW_START + 1) * sizeof(LetterData);
-			memmove(&s_table[HEBREW_START], &s_table[HEBREW_END + 1],s_iGlyphTableSize - HEBREW_START);
-		}
-
+		// fix the letter and ligature data depending on whether the user wants
+		// shaping for Hebrew
+		_fixHebrewLetters(bHebrewContextGlyphs);
+		_fixHebrewLigatures(bHebrewContextGlyphs);
+		
 		// now copy the data from the ligature table into the reversed
 		// ligature table and sort it
 		memcpy(s_lig_rev,s_ligature, sizeof(s_ligature));
@@ -1151,6 +1159,67 @@ UT_UCS4Char UT_contextGlyph::getSmartQuote(UT_UCS4Char c,
 	return c;
 }
 
+void UT_contextGlyph::_fixHebrewLetters(bool bShape)
+{
+	// this function can only be called when the singleton is being
+	// initialised and only once ...
+	static bool bCalled = false;
+	UT_return_if_fail(!s_bInit && !bCalled);
+
+	if(!bShape)
+	{
+		s_iGlyphTableSize -= (HEBREW_END - HEBREW_START + 1) * sizeof(LetterData);
+
+		// this works because the the segement we are
+		// cutting out is longer than a chunk that memmove
+		// might be moving in a single go
+		memmove(&s_table[HEBREW_START], &s_table[HEBREW_END + 1],
+				s_iGlyphTableSize - HEBREW_START);
+	}
+
+	bCalled  = true;
+}
+
+
+/*!
+    find and modify the handful of ligature entries that need to be
+	modified if hebrew shaping is on
+*/
+void UT_contextGlyph::_fixHebrewLigatures(bool bShape)
+{
+	// this function should only be called when the singleton is being
+	// initialised
+	UT_return_if_fail(!s_bInit);
+	
+	if(bShape)
+	{
+		LigatureSequence Lig;
+		LigatureData * pLig = NULL;
+		
+		for(UT_uint32 i = 0; i < NrElements(s_hebrewShapingLigature); i++)
+		{
+			Lig.code = s_hebrewShapingLigature[i].code_low;
+			Lig.next = s_hebrewShapingLigature[i].code_high;
+		
+			pLig = static_cast<LigatureData*>(bsearch(static_cast<void*>(&Lig),
+													  static_cast<void*>(s_ligature),
+													  NrElements(s_ligature),
+													  sizeof(LigatureData),
+													  s_comp_lig));
+
+			if(!pLig)
+			{
+				UT_ASSERT(UT_NOT_REACHED);
+				continue;
+			}
+
+			pLig->initial = s_hebrewShapingLigature[i].initial;
+			pLig->medial  = s_hebrewShapingLigature[i].medial;
+			pLig->final   = s_hebrewShapingLigature[i].final;
+			pLig->alone   = s_hebrewShapingLigature[i].alone;
+		}
+	}
+}
 
 
 // This function evaluates the context of a glyph deciding what form
