@@ -975,3 +975,14 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RevisionPresentContext)
 
     return EV_MIS_ZERO;
 }
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_InTable)
+{
+	ABIWORD_VIEW;
+	UT_ASSERT(pView);
+
+	if(pView->isInTable())
+		return EV_MIS_ZERO;
+
+    return EV_MIS_Gray;
+}

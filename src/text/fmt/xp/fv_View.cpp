@@ -1281,7 +1281,7 @@ void FV_View::insertSectionBreak(BreakSectionType type)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	// Signal PieceTable Changes have Started
+	// Signal PieceTable Changes have ended
 	m_pDoc->notifyPieceTableChangeEnd();
 	m_iPieceTableState = 0;
 }
@@ -7570,4 +7570,34 @@ void FV_View::toggleMarkRevisions()
 bool FV_View::isMarkRevisions()
 {
 	return m_pDoc->isMarkRevisions();
+}
+
+/* Table related functions */
+bool FV_View::isInTable()
+{
+	PT_DocPosition pos;
+
+	if (isSelectionEmpty())
+	{
+		pos = _getDocPos(FV_DOCPOS_BOW, false);
+	}
+	else
+	{
+		pos = (m_iInsPoint < m_iSelectionAnchor ? m_iInsPoint : m_iSelectionAnchor);
+	}
+	
+	UT_sint32 xPoint, yPoint, xPoint2, yPoint2, iPointHeight;
+	bool bDirection;
+
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	fp_Run * pRun;
+	
+	pRun = pBL->findPointCoords(pos, false, xPoint,
+							    yPoint, xPoint2, yPoint2,
+							    iPointHeight, bDirection);
+	
+	fp_Line * pLine = pRun->getLine();
+	fp_Container * pCon = pLine->getContainer();
+	
+	return pCon->getContainerType() == FP_CONTAINER_CELL;
 }

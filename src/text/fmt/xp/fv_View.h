@@ -446,7 +446,9 @@ public:
 	void                cmdSetRevisionLevel(UT_uint32 i){m_iViewRevision = i;}
 	UT_uint32           getRevisionLevel()const{return m_iViewRevision;}
 
-
+	/* Table related functions */
+	bool				isInTable();
+	
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
