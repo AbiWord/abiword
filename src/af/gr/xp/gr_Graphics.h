@@ -211,7 +211,6 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_uint32 getFontHeight(GR_Font *)  PURE_VIRTUAL_IF_NOT_PANGO;
 
 #ifndef WITH_PANGO
-	UT_UCSChar        remapGlyph(const UT_UCSChar actual, bool noMatterWhat);
 	UT_uint32         getMaxCharacterWidth(const UT_UCSChar*s, UT_uint32 Length);
 #else
 	UT_sint32         getApproxCharWidth();
@@ -484,19 +483,10 @@ class ABI_EXPORT GR_Graphics
 	XAP_App	*	      m_pApp;
 	UT_uint32	      m_iZoomPercentage;
 	UT_uint32         m_iFontAllocNo;
-#ifndef WITH_PANGO
-	static bool       m_bRemapGlyphsMasterSwitch;
-	static bool       m_bRemapGlyphsNoMatterWhat;
-	static UT_UCSChar m_ucRemapGlyphsDefault;
-	static UT_UCSChar* m_pRemapGlyphsTableSrc;
-	static UT_UCSChar* m_pRemapGlyphsTableDst;
-	static UT_uint32  m_iRemapGlyphsTableLen;
-#endif
 
 	static XAP_PrefsScheme *m_pPrefsScheme;
 	static UT_uint32 m_uTick;
 
-	static UT_uint32 m_instanceCount;
 	const UT_Rect *  m_pRect;
  private:
 	GR_Caret *		 m_pCaret;
@@ -516,6 +506,7 @@ class ABI_EXPORT GR_Graphics
 
 	static PangoContext *   s_pPangoContext;
 	static XAP_PangoFontManager * s_pPangoFontManager;
+	static UT_uint32 m_instanceCount;
 #endif
 	GR_Transform     m_Transform;
 };

@@ -280,7 +280,7 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
 
-	UT_UCSChar currentChar = remapGlyph(Char, false);
+	UT_UCSChar currentChar = Char;
 	//TODO this is a temporary hack -- need a way to handle true 32-bit chars
 	UT_UCS2Char aChar = (UT_UCS2Char) currentChar;
 
@@ -472,7 +472,7 @@ UT_uint16*	GR_Win32Graphics::_remapGlyphs(const UT_UCSChar* pChars, int iCharOff
 	int i, j;
 	for (i = 0, j = 0; i < iLength; ++i, ++j)
 	{
-		m_remapBuffer[j] = (UT_UCS2Char)remapGlyph(pChars[iCharOffset + i], false);
+		m_remapBuffer[j] = (UT_UCS2Char)pChars[iCharOffset + i];
 		
 		if(m_remapBuffer[j] == 0x200B || m_remapBuffer[j] == 0xFEFF ||
 		   m_remapBuffer[j] == UCS_LIGATURE_PLACEHOLDER)

@@ -208,7 +208,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
     buffer[0] = '\0';
     char* builder=buffer;
 	for (i=0; i<iLength; ++i) {
-		char* utf8buf = UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], false));
+		char* utf8buf = UT_encodeUTF8char(pChars[i+iCharOffset]);
 		int len = utf8_char_len(*utf8buf);
 		memcpy(builder, utf8buf, len);
 		builder+=len; 						
@@ -250,8 +250,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 	viewFont.GetEscapements(buffer,iLength,&tempdelta,escapementArray);
 
 
-	// TODO: need remapGlyph() before the following function call?
-	m_pShadowView->DrawString(UT_encodeUTF8char(remapGlyph(pChars[0+iCharOffset], false)),
+	m_pShadowView->DrawString(UT_encodeUTF8char(pChars[0+iCharOffset]),
 							  BPoint(xoff,yoff+offset));
 								  
 	for (i=1; i<iLength; i++)
@@ -262,7 +261,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		 */
 		widthAbiWants=(unsigned short int)(escapementArray[i-1].x*fontsize);
 		xoff+=widthAbiWants;
-		m_pShadowView->DrawString(UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], false)),
+		m_pShadowView->DrawString(UT_encodeUTF8char(pChars[i+iCharOffset]),
 								  BPoint(xoff,yoff+offset));
 	}
 

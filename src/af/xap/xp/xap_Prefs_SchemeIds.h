@@ -44,24 +44,12 @@
 #define XAP_PREF_KEY_ToolbarAppearance		"ToolbarAppearance"
 #define XAP_PREF_DEFAULT_ToolbarAppearance	"icon"						/* {icon,text,both} */
 
-#define XAP_PREF_KEY_RemapGlyphsMasterSwitch			"RemapGlyphsMasterSwitch"
- /* completely ignore glyph remapping if false */
-#define XAP_PREF_DEFAULT_RemapGlyphsMasterSwitch		"1"
-
-#define XAP_PREF_KEY_RemapGlyphsNoMatterWhat			"RemapGlyphsNoMatterWhat"
- /* if true, do remap even if originals aren't zero-width */
-#define XAP_PREF_DEFAULT_RemapGlyphsNoMatterWhat	"0"
-
 #define XAP_PREF_KEY_RemapGlyphsDefault 			"RemapGlyphsDefault"
  /* default replacement glyph for originals not mentioned in the table */
 #define XAP_PREF_DEFAULT_RemapGlyphsDefault 		"&#x00B0;"
 /* degree symbol */
 
-#define XAP_PREF_KEY_RemapGlyphsTable				"RemapGlyphsTable"
-/* pairwise table of originals and replacements, arbitrarily many pairs */
-#	define XAP_PREF_DEFAULT_RemapGlyphsTable			"&#x2018;`&#x2019;'&#x201c;&quot;&#x201d;&quot;"
 /* smart quotes */
-
 #define XAP_PREF_KEY_SmartQuotesEnable				"SmartQuotesEnable"
 /* substitute curly smart quotes on the fly */
 #define XAP_PREF_DEFAULT_SmartQuotesEnable			"0"
@@ -168,10 +156,7 @@
 #ifdef dcl
 
 dcl(ToolbarAppearance)
-dcl(RemapGlyphsMasterSwitch)
-dcl(RemapGlyphsNoMatterWhat)
 dcl(RemapGlyphsDefault)
-dcl(RemapGlyphsTable)
 dcl(SmartQuotesEnable)
 dcl(UseSuffix)
 dcl(SaveContextGlyphs)

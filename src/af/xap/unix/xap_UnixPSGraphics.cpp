@@ -364,7 +364,7 @@ void PS_Graphics::_drawCharsUTF8(const UT_UCSChar* pChars, UT_uint32 iCharOffset
 			pD = buf;
 		}
 
-		currentChar = remapGlyph(*pS, false);
+		currentChar = *pS;
 		if (!((currentChar >= 'a' && currentChar <= 'z') || (currentChar >= 'A' && currentChar <= 'Z') ||
 			  currentChar == ' '))
 		{
