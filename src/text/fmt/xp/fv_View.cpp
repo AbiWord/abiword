@@ -2002,13 +2002,11 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 			const PP_AttrProp *pAttrProp;
 			const fl_BlockLayout * pBL = getCurrentBlock();
 			PP_AttrProp * pMyAP = NULL;
+			const XML_Char rev_s[] = "revision";
 
 			// not entirely sure whether we can get away witht he
 			// const_cast here, we might have to make a copy ... #TF
 			pBL->getSpanAttrProp(getPoint() - pBL->getPosition(false),false,&pAttrProp);
-
-			if(pAttrProp)
-				pMyAP = new PP_AttrProp;
 
 			if(isMarkRevisions())
 			{
@@ -2016,9 +2014,11 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 				const XML_Char * pRevision;
 				//XML_Char pTestRevision[] = "2{font-family:Arial},!3{font-family:Courier},-4";
 
+				pMyAP = new PP_AttrProp;
+
 				if(pAttrProp)
 				{
-					pAttrProp->getAttribute("revision", pRevision);
+					pAttrProp->getAttribute(rev_s, pRevision);
 					*pMyAP = *pAttrProp;
 				}
 				else
@@ -2029,14 +2029,18 @@ bool FV_View::cmdCharInsert(UT_UCSChar * text, UT_uint32 count, bool bForce)
 				PP_RevisionAttr Revisions(pRevision);
 				Revisions.addRevision(m_pDoc->getRevisionId(), PP_REVISION_ADDITION, NULL, NULL);
 
-				pMyAP->setAttribute("revision", Revisions.getXMLstring());
+				pMyAP->setAttribute(rev_s, Revisions.getXMLstring());
 			}
 			else
 			{
 				if(pAttrProp)
 				{
-					*pMyAP = *pAttrProp;
-					pMyAP->setAttribute("revision", "");
+					const XML_Char * pAttr[3];
+					pAttr[0] = rev_s;
+					pAttr[1] = 0;
+					pAttr[2] = 0;
+
+					pMyAP = pAttrProp->cloneWithElimination(NULL, pAttr);
 				}
 
 			}
