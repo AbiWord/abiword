@@ -120,7 +120,8 @@ ISpellChecker::ISpellChecker()
 	m_askfilename(NULL),
 	m_Trynum(0),
 	m_translate_in(UT_ICONV_INVALID),
-	m_translate_out(UT_ICONV_INVALID)
+	m_translate_out(UT_ICONV_INVALID),
+	m_initialized(false)
 {
 	memset(m_sflagindex,0,sizeof(m_sflagindex));
 	memset(m_pflagindex,0,sizeof(m_pflagindex));
@@ -149,15 +150,8 @@ ISpellChecker::~ISpellChecker()
 		m_mapping.clear ();
 	}
 
-	// lcleanup(); // replaced this with functions for Win32 brokeness
-	clearindex (m_pflagindex);
-	clearindex (m_sflagindex);
-
-	FREEP(m_hashtbl);
-	FREEP(m_hashstrings);
-	FREEP(m_sflaglist);
-	FREEP(m_chartypes);
-
+	if (m_initialized)
+		lcleanup(); // only cleanup our mess if we were successfully initialized
 
 	if (UT_iconv_isValid (m_translate_in ))
 		UT_iconv_close(m_translate_in);
@@ -487,7 +481,7 @@ ISpellChecker::_requestDictionary(const char *szLang)
 	}
 
 	m_bSuccessfulInit = true;
-
+	
 	if (prefstringchar < 0)
 		m_defdupchar = 0;
 	else
@@ -495,4 +489,3 @@ ISpellChecker::_requestDictionary(const char *szLang)
 
 	return true;
 }
-
