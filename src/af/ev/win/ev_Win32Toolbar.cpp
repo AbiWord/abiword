@@ -889,8 +889,20 @@ UT_Bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 		szToolTip = pLabel->getStatusMsg();
 	}
 
-	// here 'tis
-	strncpy(lpttt->lpszText, szToolTip, 80);
+	if (!szToolTip || !*szToolTip)
+	{
+		szToolTip = pLabel->getToolbarLabel();
+	}
+
+	if (szToolTip && *szToolTip)
+	{
+		// here 'tis
+		strncpy(lpttt->lpszText, szToolTip, 80);
+	}
+	else
+	{
+		lpttt->lpszText[0] = '\0';
+	}
 
 	return UT_TRUE;
 }
