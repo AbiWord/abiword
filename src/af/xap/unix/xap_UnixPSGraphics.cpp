@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <locale.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"
@@ -392,8 +393,10 @@ void PS_Graphics::invertRect(const UT_Rect* /*pRect*/)
 
 void PS_Graphics::setClipRect(const UT_Rect* /*pRect*/)
 {
-	// setClipRect is only used for handling screen exposes, which do not happen on paper.
-	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+    // setClipRect is used for clipping images, even when printing to
+    // PostScript.  Just ignore these for now.
+
+    // TODO : Can PostScript clip regions?  Does it make sense for our images?
 }
 
 void PS_Graphics::clearArea(UT_sint32 /*x*/, UT_sint32 /*y*/,
@@ -735,21 +738,22 @@ void PS_Graphics::_emit_SetColor(void)
 	char buf[128];
 	// used for any averaging
 	unsigned char newclr;
+
+	setlocale(LC_NUMERIC,"C");
 	switch(m_cs)
 	{
 	case GR_Graphics::GR_COLORSPACE_COLOR:
-		sprintf(buf,"0.%.0f 0.%.0f 0.%.0f setrgbcolor\n",					// Write the radix character as hard wired periods in PS files, LC_NUMERIC can make sprintf choose non period values for it.
-				((float) m_currentColor.m_red / (float) 255.0)*100000000.0,
-				((float) m_currentColor.m_grn / (float) 255.0)*100000000.0,
-				((float) m_currentColor.m_blu / (float) 255.0)*100000000.0);
+        sprintf(buf, "%.8f %.8f %.8f setrgbcolor\n",
+                ((float) m_currentColor.m_red / (float) 255.0),
+                ((float) m_currentColor.m_grn / (float) 255.0),
+                ((float) m_currentColor.m_blu / (float) 255.0));
 		break;
 	case GR_Graphics::GR_COLORSPACE_GRAYSCALE:
 		newclr = (unsigned char) (( (float) m_currentColor.m_red +
 									(float) m_currentColor.m_grn +
 									(float) m_currentColor.m_blu ) /
 								  (float) 3.0);
-		sprintf(buf,"0.%.0f setgray\n",								// Write the radix character as hard wired periods in PS files, LC_NUMERIC can make sprintf choose non period values for it.
-				(float) newclr / (float) 255.0) * 10000000.0;
+		sprintf(buf,"%.8f setgray\n", (float) newclr / (float) 255.0);
 		break;
 	case GR_Graphics::GR_COLORSPACE_BW:
 		// Black & White is a special case of the Gray color space where
@@ -759,6 +763,7 @@ void PS_Graphics::_emit_SetColor(void)
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
+	setlocale(LC_NUMERIC,""); // restore original locale
 	
 	m_ps->writeBytes(buf);
 }
