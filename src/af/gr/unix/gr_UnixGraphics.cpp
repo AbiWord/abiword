@@ -81,9 +81,13 @@ GR_UnixGraphics::GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontMana
 
 	gdk_gc_set_function(m_pXORGC, GDK_XOR);
 
-	GdkColor clrWhite;
+ 	GdkColor clrWhite;
 	gdk_color_white(m_pColormap, &clrWhite);
 	gdk_gc_set_foreground(m_pXORGC, &clrWhite);
+
+ 	GdkColor clrBlack;
+	gdk_color_black(m_pColormap, &clrBlack);
+	gdk_gc_set_foreground(m_pGC, &clrBlack);
 
 	// I only want to set CAP_NOT_LAST, but the call takes all
 	// arguments (and doesn't have a default value).  Set the
