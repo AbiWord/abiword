@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<abiword version="unnumbered">
+<abiword version="unnumbered" fileformat="1.0">
 <!-- =====================================================================  -->
 <!-- This file is an AbiWord document.                                      -->
 <!-- AbiWord is a free, Open Source word processor.                         -->
@@ -9,17 +9,18 @@
 
 <!--         Build_ID          = (none) -->
 <!--         Build_Version     = unnumbered -->
-<!--         Build_Options     = LicensedTrademarks:Off Debug:On -->
-<!--         Build_Target      = /work/abi/src/../src/WIN32_4.0_i386_DBG/obj -->
-<!--         Build_CompileTime = 23:59:41 -->
-<!--         Build_CompileDate = Feb 17 2000 -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On BiDi:Off Bonobo:Off DirectPrint:On Gnome:On LibXML:Off Pspell:On Scripting:Off -->
+<!--         Build_Target      = /home/dom/abiword/abi/src/../src/Linux_2.2.14-5.0_i386_GNOME/obj -->
+<!--         Build_CompileTime = 17:09:03 -->
+<!--         Build_CompileDate = Jun 21 2001 -->
 
+<pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="inch" page-scale="1.000000"/>
 <section>
-<p style="Plain Text">$Id$</p>
+<p style="Plain Text"><c props="lang:en-US"></c>$Id$</p>
 <p style="Plain Text">[Last updated at Build 0.5.5]</p>
 <p style="Plain Text"></p>
 <p style="Plain Text"></p>
-<p style="Normal" props="text-align:center"><c props="font-size:24pt; font-weight:bold">AbiWord Localization</c></p>
+<p style="Normal" props="text-align:center"><c props="font-weight:bold; font-size:24pt">AbiWord Localization</c></p>
 <p props="text-align:center">Version 1.0</p>
 <p props="text-align:center">Copyright (C) 1999 AbiSource, Inc., All Rights Reserved.</p>
 <p></p>
@@ -71,9 +72,29 @@
 <p></p>
 <p>As of 0.5.5, there are a few problems with this:</p>
 <p></p>
-<p>[1]  Sometimes, expat (the XML parser that we use) doesn't like some high-byte Latin-1 characters.  I've had it choke on <c props="font-family:Courier New; font-size:12pt; font-weight:bold">&#xe4;</c> in one place in the file but not in another.  I'm still looking into this.  If this causes you problems, you can substitute an XML numeric entity for the character (<c props="font-family:Courier New; font-size:12pt; font-weight:bold">&amp;#xE4;</c> for example).</p>
+<p>[1]  Sometimes, expat (the XML parser that we use) doesn't like some high-byte Latin-1 characters.  I've had it choke on <c props="font-weight:bold; font-family:Courier New; font-size:12pt">ä</c> in one place in the file but not in another.  I'm still looking into this.  If this causes you problems, you can substitute an XML numeric entity for the character (<c props="font-weight:bold; font-family:Courier New; font-size:12pt">&amp;#xE4;</c> for example).</p>
 <p></p>
-<p>[2]  We currently following Win32 convention of using <c props="font-family:Courier New; font-size:12pt; font-weight:bold">&amp;</c> in a string to indicate the letter that should be underlined in a dialog. (The Win32 version passes it straight through and the Unix/GTK version either strips it our or translates it into the necessary widget calls to get it to work.)  You may use this at your discretion, but you'll need to see the resulting dialog to check for duplicates and make the letter placement make sense in your language.  Also, the ampersand character is a reserved character in XML, so you'll need to escape it using <c props="font-family:Courier New; font-size:12pt; font-weight:bold">&amp;amp;</c> -- I'm currently looking for an alternative way of dealing with this....</p>
+<p>[2]  We currently following Win32 convention of using <c props="font-weight:bold; font-family:Courier New; font-size:12pt">&amp;</c> in a string to indicate the letter that should be underlined in a dialog. (The Win32 version passes it straight through and the Unix/GTK version either strips it our or translates it into the necessary widget calls to get it to work.)  You may use this at your discretion, but you'll need to see the resulting dialog to check for duplicates and make the letter placement make sense in your language.  Also, the ampersand character is a reserved character in XML, so you'll need to escape it using <c props="font-weight:bold; font-family:Courier New; font-size:12pt">&amp;amp;</c> -- I'm currently looking for an alternative way of dealing with this....</p>
+<p></p>
+<p><c props="font-weight:bold">3.4 system.profile files</c></p>
+<p><c props="font-weight:normal"></c></p>
+<p><c props="font-weight:normal">These files are located in the abi/user/wp directory and set the default settings for your particular locale. These files’ names take the form ‘system.profile-xx-YY’ where </c><c props="font-weight:bold">xx-YY</c><c props="font-weight:normal"> is your locale.</c></p>
+<p><c props="font-weight:normal"></c></p>
+<p><c props="font-weight:normal">The contents of these files are simple and straightforward. Your best bet is to copy an existing file over to your locale and edit it. </c></p>
+<p><c props="font-weight:normal"></c></p>
+<p><c props="font-weight:normal">Common variables found:</c></p>
+<p><c props="font-weight:normal"></c></p>
+<p><c props="font-weight:normal">[1] DocumentLocale: your xx-YY from above. This is used to set the default language of the document being edited</c></p>
+<p><c props="font-weight:normal">[2] RulerUnits: inch, cm, mm</c></p>
+<p><c props="font-weight:normal">[3] DefaultPageSize: Letter, A4, B3, etc...</c></p>
+<p></p>
+<p><c props="font-weight:bold">3.5 Add a new entry for your language/locale in the language dialog</c></p>
+<p><c></c></p>
+<p>In src/af/util/xp/ut_Language you’ll see a list of locale/language mappings. This is used to mark words as being in a particular language and is used by the spell-checker and could be used in a thesaurus, etc...</p>
+<p><c></c></p>
+<p><c props="font-weight:bold">3.6 Add a new entry for your language in the spell-checking code</c></p>
+<p></p>
+<p>You’ll want to add a locale/hashfile mapping for ispell dictionaries in src/other/spell/xp/ispell_checker.cpp - it’s 1 line of code</p>
 <p></p>
 <p><c props="font-weight:bold">4.  Testing Your Translation</c></p>
 <p></p>
@@ -81,7 +102,7 @@
 <p></p>
 <p>[1] look at your preferences file:</p>
 <p props="margin-left:1.2cm">on Unix this is <c props="font-family:Courier New">~/.AbiSuite/AbiWord.Profile</c></p>
-<p props="margin-left:1.2cm; text-indent:0.0cm">on Win32 this is varies considerably between Windows versions and how the system was installed, so check the debug output for the message "Constructed preference file name ...".</p>
+<p props="text-indent:0.0cm; margin-left:1.2cm">on Win32 this is varies considerably between Windows versions and how the system was installed, so check the debug output for the message "Constructed preference file name ...".</p>
 <p></p>
 <p>[2] change both occurrences of <c props="font-family:Courier New; font-weight:bold">_builtin_</c> to <c props="font-family:Courier New; font-weight:bold">custom</c>.</p>
 <p></p>

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<abiword version="unnumbered">
+<?xml version="1.0"?>
+<abiword version="unnumbered" fileformat="1.0">
 <!-- =====================================================================  -->
 <!-- This file is an AbiWord document.                                      -->
 <!-- AbiWord is a free, Open Source word processor.                         -->
@@ -9,30 +9,31 @@
 
 <!--         Build_ID          = (none) -->
 <!--         Build_Version     = unnumbered -->
-<!--         Build_Options     = LicensedTrademarks:Off Debug:On Gnome:Off Gnome-XML:Off -->
-<!--         Build_Target      = /home/sam/abi/abi/src/Linux_2.4.0-test5_i386_DBG/obj -->
-<!--         Build_CompileTime = 12:44:54 -->
-<!--         Build_CompileDate = Nov 11 2000 -->
+<!--         Build_Options     = LicensedTrademarks:Off Debug:On BiDi:Off Bonobo:Off DirectPrint:On Gnome:On LibXML:Off Pspell:On Scripting:Off -->
+<!--         Build_Target      = /home/dom/abiword/abi/src/../src/Linux_2.2.14-5.0_i386_GNOME/obj -->
+<!--         Build_CompileTime = 17:09:03 -->
+<!--         Build_CompileDate = Jun 21 2001 -->
 
-<section column_gap="0.25in" num_columns="1">
-<p props="line-height:1.0; margin-top:0pt">$Id$</p>
+<pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="inch" page-scale="1.000000"/>
+<section num_columns="1" column_gap="0.25in">
+<p props="line-height:1.0; margin-top:0pt"><c props="lang:en-US"></c>$Id$</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center">AbiSource Programmer Guidelines</p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center"></p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center">Copyright (C) 1999 AbiSource, Inc. All Rights Reserved.</p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center"></p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center">Eric W. Sink, eric@abisource.com</p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center">AbiSource, Inc.</p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center"></p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center">$Date$</p>
-<p props="line-height:1.0; margin-top:0pt; text-align:center"></p>
+<p props="text-align:center; margin-top:0pt; line-height:1.0">AbiSource Programmer Guidelines</p>
+<p props="text-align:center; margin-top:0pt; line-height:1.0"></p>
+<p props="text-align:center; margin-top:0pt; line-height:1.0">Copyright (C) 1999 AbiSource, Inc. All Rights Reserved.</p>
+<p props="text-align:center; margin-top:0pt; line-height:1.0"></p>
+<p props="text-align:center; margin-top:0pt; line-height:1.0">Eric W. Sink, eric@abisource.com</p>
+<p props="text-align:center; margin-top:0pt; line-height:1.0">AbiSource, Inc.</p>
+<p props="text-align:center; margin-top:0pt; line-height:1.0"></p>
+<p props="text-align:center; margin-top:0pt; line-height:1.0">$Date$</p>
+<p props="text-align:center; margin-top:0pt; line-height:1.0"></p>
 <p props="line-height:1.0; margin-top:0pt">1.  Generally, we use Hungarian notation and mixed-case names for variables.  Prefix integer variables with an i and pointer variables with a p.  For example, iNumColumns.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">2.  Class member variables should be prefixed with m_.  For example, m_pBlockLayout.  Static member variables should be prefixed with s_.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">3.  We use C++, but we use it carefully.  We generally follow the C++ Portability Guide document at www.mozilla.org.  Don't use templates, exceptions, RTTI, or namespaces.  Avoid multiple inheritance.  The C++ filename suffix is .cpp. </p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">4.  C is allowed, but if you're writing new code, we'd prefer that you change the suffix to .cpp and compile it as C++.  :-)  The type checking is stronger that way.  If you do use C, do not use C++ style comments (// this is a comment).  In C++ code, prefer C++ style comments where appropriate.  </p>
+<p props="line-height:1.0; margin-top:0pt">4.  C is allowed (but strongly discouraged), but if you're writing new code, we'd prefer that you change the suffix to .cpp and compile it as C++.  :-)  The type checking is stronger that way.  If you do use C, do not use C++ style comments (// this is a comment).  In C++ code, prefer C++ style comments where appropriate.  </p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">5.  We care about compiler warnings.  Turn on the highest warning level of your compiler which is reasonable and fix everything it complains about.  Our goal is to have a warning-free build.  In practice, we usually come very close to that goal.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
@@ -40,7 +41,7 @@
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">7.  Cross-platform (XP) code is very important to us.  Remember that XP code must compile on a wide variety of platforms.  Don't put platform-specific stuff in XP files.  Don't put platform #ifdefs in XP files.  Don't put any code which could be XP in a platform-specific file.  At the time of this writing, AbiWord is approximately 90% XP code, based on line count.  We'd like to keep it that way.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
-<p props="line-height:1.0; margin-top:0pt">8.  Use  the portability types in abi/src/util.  For example, don't use unsigned long, use UT_uint32 instead.  If there is no possibility of overflow on <c props="font-weight:bold">any</c><c props="font-weight:normal"> supported platform</c>, int can be used as loop index.  There's also UT_Bool, with its attendant UT_TRUE and UT_FALSE.</p>
+<p props="line-height:1.0; margin-top:0pt">8.  Use  the portability types in abi/src/util.  For example, don't use unsigned long, use UT_uint32 instead.  If there is no possibility of overflow on <c props="font-weight:bold">any</c><c props="font-weight:normal"> supported platform</c>, int can be used as loop index.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">9.  Keep an eye on Bugzilla.  We believe in the "fix bugs as you go" approach.  Don't let the bug count ever get too high.  When you fix a bug, update Bugzilla to reflect the change in state.</p>
 <p props="line-height:1.0; margin-top:0pt"></p>
@@ -81,5 +82,34 @@
 <p props="line-height:1.0; margin-top:0pt"></p>
 <p props="line-height:1.0; margin-top:0pt">This is part of the more general principle of using only ANSI standard C++, and only those parts of it that are portable.  </p>
 <p props="line-height:1.0; margin-top:0pt"></p>
+<p props="line-height:1.0; margin-top:0pt">19. On a subsequent note, don’t do multiple declarations of loop variables inside the loop in XP code because the win32 compiler (CL) is stupid and non-conformant:</p>
+<p props="line-height:1.0; margin-top:0pt"><c></c></p>
+<p props="line-height:1.0; margin-top:0pt">for (UT_uint32 i = 0; i &lt; 10; i++)</p>
+<p props="line-height:1.0; margin-top:0pt">{</p>
+<p props="line-height:1.0; margin-top:0pt">// do something 1</p>
+<p props="line-height:1.0; margin-top:0pt">}</p>
+<p props="line-height:1.0; margin-top:0pt"><c></c></p>
+<p props="line-height:1.0; margin-top:0pt">for (UT_uint32 i = 0; i &lt; 100; i++)</p>
+<p props="line-height:1.0; margin-top:0pt">{</p>
+<p props="line-height:1.0; margin-top:0pt">// do something loop #2<br/>}</p>
+<p props="line-height:1.0; margin-top:0pt"><c></c></p>
+<p props="line-height:1.0; margin-top:0pt">20. Use of protected member variables is strongly discouraged. Please use private member variables, using properly-scoped getter/setter methods to access and set their values.</p>
+<p props="line-height:1.0; margin-top:0pt"><c></c></p>
+<p props="line-height:1.0; margin-top:0pt">21. Use constructor initializers. <c props="font-weight:bold">Do</c><c props="font-weight:normal"> do this:</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal"></c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal">Foo::Foo (int a, int b)</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal">	: m_a(a), m_b(b)</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal">{<br/>}</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal"></c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:bold">Do not</c><c props="font-weight:normal"> do this:</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal"></c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal">Foo:Foo (int a, int b)</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal">{</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal">	m_a = a;</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal">	m_b = b;<br/>}</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal"></c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal">22. static_cast&lt;&gt; and const_cast&lt;&gt; are your friends. Avoid dynamic_cast&lt;&gt; at all costs.</c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal"></c></p>
+<p props="line-height:1.0; margin-top:0pt"><c props="font-weight:normal">23. Don’t use templates in your code. We have lots of utility classes in src/af/util/xp which are meant to supplant the STL. These classes themselves </c><c props="font-weight:bold">may conditionally</c><c props="font-weight:normal"> use the STL as their backend.</c></p>
 </section>
 </abiword>
