@@ -5,6 +5,40 @@
 ;               [add your name here]
 ;Version        see AbiSource CVS
 
+; Define this for the older (non 'Modern') user interface, English only
+!define CLASSIC_UI
+
+; Define this to not include the optional downloadable components (dictionaries, crtlib, ...)
+!define NODOWNLOADS
+
+; To include the C Runtime Library for the compiler used
+; Define either the URL for downloadable one or LOCAL to include within setup (include final slash)
+; then define the actual crt library filename (both file and (URL or LOCAL) must be defined)
+; 1a) the base URL where the crt library can be downloaded from
+;!define OPT_CRTL_URL "http://abiword.pchasm.org/microsoft/"
+; 1b) alternately where the file may be found on the local filesystem for inclusion
+;!define OPT_CRTL_LOCAL "\Program Files\Microsoft Visual Studio\REDIST\"
+; 2) the actual filename of the crt library
+;!define OPT_CRTL_FILENAME "msvcrt.dll"  ; MSVC 5 and 6 (not for Windows Me, NT 2000, or newer)
+;!define OPT_CRTL_FILENAME "msvcr70.dll"  ; MSVC 7
+
+; Define this to include the dictionaries in the installer
+; if NODOWNLOADS is defined then the files must be locally available
+;!define OPT_DICTIONARIES
+
+; NOT YET AVAILABLE
+; Define this to include the standard set of plugins
+; if NODOWNLOADS is defined then the files must be locally available
+;!define OPT_PLUGINS
+
+; If you have upx available in your PATH, enable this for a smaller setup file
+;!define HAVE_UPX
+
+; Specify this one only if you are the TradeMark holder!!!
+;!define TRADEMARKED_BUILD
+
+
+
 ;Declarations
 !define PRODUCT "AbiWord"
 !ifndef VERSION_MAJOR
@@ -25,11 +59,14 @@
 !define MAINPROGRAM "Abiword\bin\Abiword.exe"
 
 
-; Define this to not include the optional downloadable components (dictionaries, crtlib, ...)
-;!define NODOWNLOADS
-
-; Define this for the older (non 'Modern') user interface, English only
-!define CLASSIC_UI
+; Some checks of user defines
+!ifdef NODOWNLOADS & OPT_CRTL_URL
+!warning "OPT_CRTL_URL and NODOWNLOADS both defined, ignoring OPT_CRTL_URL"
+!undef OPT_CRTL_URL
+!endif
+!ifdef OPT_CRTL_URL & OPT_CRTL_LOCAL
+!error "OPT_CRTL_URL and OPT_CRTL_LOCAL cannot both be defined"
+!endif
 
 
 ; Do a Cyclic Redundancy Check to make sure the installer 
@@ -45,7 +82,7 @@ PluginDir .
 
 ; compresses the header
 !ifdef HAVE_UPX
-!packhdr tmp.dat "upx -9 tmp.dat"
+!packhdr tmp.dat "upx --best tmp.dat"
 !endif
 
 ; Specify the icons to use
@@ -92,13 +129,17 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   !define MUI_FINISHPAGE
     !define MUI_FINISHPAGE_RUN "$INSTDIR\${MAINPROGRAM}"
     !define MUI_FINISHPAGE_RUN_PARAMETERS  $\"$INSTDIR\readme.txt$\"
-    ; !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt" ; doesn't work for me, oh well
+    ;!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\readme.txt"
     !define MUI_FINISHPAGE_NOAUTOCLOSE
 
   !define MUI_ABORTWARNING
 
   !define MUI_UNINSTALLER
     !define MUI_UNCONFIRMPAGE
+
+  ; allow insertion of our custom pages
+  !define MUI_CUSTOMPAGECOMMANDS
+
 
   ; Languages
   ; some are presently commented out as they lack some translations (hence fail to build)
@@ -142,7 +183,26 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
   !insertmacro MUI_SYSTEM 
 
-!else
+  ; Reserve Files to possibly aid in starting faster
+  !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+  !insertmacro MUI_RESERVEFILE_SPECIALINI
+  !insertmacro MUI_RESERVEFILE_SPECIALBITMAP
+
+; reserve room at start of compressed archive for plugins (not already reserved by Modern UI)
+!define RESERVE_PLUGINS
+!ifdef RESERVE_PLUGINS
+  ; ReserveFile [/nonfatal] [/r] file [file...]
+  ReserveFile "${NSISDIR}\Plugins\LangDLL.dll"
+  !ifndef NODOWNLOADS
+    ReserveFile "${NSISDIR}\Plugins\NSISdl.dll"
+  !endif
+  !ifdef OPT_DICTIONARIES
+    ReserveFile "${NSISDIR}\Plugins\untgz.dll"
+  !endif
+!endif ; RESERVE_PLUGINS
+
+
+!else ; CLASSIC_UI
 
   ; The name of the installer
   Name "${PRODUCT} ${VERSION}"
@@ -151,12 +211,6 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   ; no WindowsXP manifest stuff
   XPStyle off
   
-  ;Page declaration [optional, just specifies default behavior]
-  Page license
-  Page components
-  Page directory
-  Page instfiles
-
   ; The text to prompt the user to enter a directory
   DirText "Choose a directory to install in to:"
 
@@ -167,7 +221,7 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
   ; set the checkmark bitmaps to use
   CheckBitmap ${MUI_CHECKBITMAP}
 
-  ; The text to prompt the user to enter a directory
+  ; The text to prompt the user to select options for installation
   ComponentText "This will install Abiword on your computer. Select which optional components you want installed."
 
   ; License Information
@@ -176,149 +230,238 @@ InstallDirRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR} "Install_D
 
 !endif
 
+
+; Language Strings
+; descriptions for Sections and SubSections
+
+; English
+; Section titles, what user sees to select components for installation
+LangString TITLE_ssection_core                 ${LANG_English} "Primary components"
+LangString TITLE_section_abi                   ${LANG_English} "Abiword.exe (required)"
+Langstring TITLE_section_shellupdate           ${LANG_English} "Update Registry Settings"
+LangString TITLE_ssection_shortcuts            ${LANG_English} "Shortcuts"
+LangString TITLE_ssection_shortcuts_cu         ${LANG_English} "Shortcuts (Current User)"
+LangString TITLE_section_sm_shortcuts_cu       ${LANG_English} "Start Menu Shortcuts (Current User)"
+LangString TITLE_section_desktop_shortcuts_cu  ${LANG_English} "Desktop Shortcut (Current User)"
+LangString TITLE_ssection_shortcuts_au         ${LANG_English} "Shortcuts (All Users)"
+LangString TITLE_section_sm_shortcuts_au       ${LANG_English} "Start Menu Shortcuts (All Users)"
+LangString TITLE_section_desktop_shortcuts_au  ${LANG_English} "Desktop Shortcut (All Users)"
+LangString TITLE_ssection_gen_file_assoc       ${LANG_English} "General file associations"
+LangString TITLE_section_fa_doc                ${LANG_English} "Associate .doc with AbiWord"
+LangString TITLE_section_fa_rtf                ${LANG_English} "Associate .rtf with AbiWord"
+LangString TITLE_ssection_helper_files         ${LANG_English} "Helper files"
+LangString TITLE_section_help                  ${LANG_English} "Help Files"
+LangString TITLE_section_templates             ${LANG_English} "Templates"
+;LangString TITLE_section_samples               ${LANG_English} "Samples"
+LangString TITLE_section_clipart               ${LANG_English} "Clipart"
+!ifdef OPT_CRTL_LOCAL
+LangString TITLE_section_crtlib_local          ${LANG_English} "CRTlib ${OPT_CRTL_FILENAME}"
+!endif
+!ifdef OPT_CRTL_URL
+LangString TITLE_section_crtlib_dl             ${LANG_English} "Download CRTlib ${OPT_CRTL_FILENAME}"
+!endif
+LangString TITLE_ssection_dictionary           ${LANG_English} "Dictionaries"
+LangString TITLE_section_dictinary_def_English ${LANG_English} "en-US  US English (default)"
+!ifdef OPT_DICTIONARIES
+LangString TITLE_ssection_dl_opt_dict          ${LANG_English} "Download optional dictionaries"
+!endif
+!ifdef OPT_PLUGINS
+LangString TITLE_ssection_plugins              ${LANG_English} "Plugins"
+!endif
+
+; Section descriptions displayed to user when mouse hovers over a section
+LangString DESC_ssection_core            ${LANG_English} "Primary (core) set of components for AbiWord to run well."
+LangString DESC_section_abi              ${LANG_English} "Required.  Installs the actual AbiWord.exe program."
+Langstring DESC_section_shellupdate      ${LANG_English} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
+LangString DESC_ssection_shortcuts       ${LANG_English} "Installs shortcuts in various places to allow starting AbiWord through additional locations."
+LangString DESC_ssection_shortcuts_cu    ${LANG_English} "Installs shortcuts for the currently logged on user."
+LangString DESC_ssection_shortcuts_au    ${LANG_English} "Installs shortcuts for all users (or current user on systems without multiple users)."
+LangString DESC_ssection_gen_file_assoc  ${LANG_English} "Associates various documents with AbiWord, so AbiWord will be used to open them."
+LangString DESC_section_fa_doc           ${LANG_English} "Specifies that AbiWord should be used to open Microsoft Word (R) native format documents."
+LangString DESC_section_fa_rtf           ${LANG_English} "Specifies that AbiWord should be used to open Rich Text Files, a 'standard' format for WordProcessors."
+LangString DESC_ssection_helper_files    ${LANG_English} "Installs various optional files to aid in using AbiWord."
+LangString DESC_section_help             ${LANG_English} "Installs the help documents, no help is available if this is omitted."
+LangString DESC_section_templates        ${LANG_English} "Installs templates that can be used to aid in creation of new documents with predefined formatting."
+;LangString DESC_section_samples          ${LANG_English} "Samples have been removed."
+LangString DESC_section_clipart          ${LANG_English} "Installs pictures (clipart) that can be inserted into documents."
+!ifdef OPT_CRTL_URL | OPT_CRTL_LOCAL
+LangString DESC_section_crtlib           ${LANG_English} "Installs the C Runtime Library used by AbiWord, useful if your system lacks this already."
+!endif
+LangString DESC_ssection_dictionary      ${LANG_English} "Installs dictionaries for various languages that are used to spell check your document."
+!ifdef OPT_DICTIONARIES
+!endif
+!ifdef OPT_PLUGINS
+LangString DESC_ssection_plugins         ${LANG_English} "Installs various optional plugins."
+!endif
+
+; Error messages and other text displayed in Detail Window or in MessageBoxes
+
+; in the main section
+LangString PROMPT_OVERWRITE ${LANG_English} "Overwrite Existing ${PRODUCT}?"
+LangString MSG_ABORT        ${LANG_English} "Quitting the install process"
+
+; sections involving additional downloads
+!ifndef NODOWNLOADS
+
+; C Runtime Library
+!ifdef OPT_CRTL_URL
+; CRTLError downloading
+LangString PROMPT_CRTL_DL_FAILED   ${LANG_English} "Failed to download requested c runtime library (DLL): ${OPT_CRTL_URL}${OPT_CRTL_FILENAME}"
+!endif ; OPT_CRTL_URL
+
+; for dictionary stuff
+!ifdef OPT_DICTIONARIES
+; Custom Download page
+LangString DLMIRROR_IO_WINDOWTITLE       ${LANG_English} ": Base URL"
+LangString TEXT_IO_TITLE                 ${LANG_English} "Optional Downloadable Components Base URL"
+LangString TEXT_IO_SUBTITLE              ${LANG_English} "Dictionaries"
+LangString MSG_SELECT_DL_MIRROR          ${LANG_English} "Select download mirror..."
+LangString MSG_ERROR_SELECTING_DL_MIRROR ${LANG_English} "Error obtaining user choice, using default site!"
+!endif ; OPT_DICTIONARIES
+
+!endif ; NODOWNLOADS
+
+; Start menu & desktop
+LangString SM_PRODUCT_GROUP        ${LANG_English} "${PRODUCT} Word Processor"
+LangString SHORTCUT_NAME           ${LANG_English} "${PRODUCT} v${VERSION_MAJOR}"
+LangString SHORTCUT_NAME_UNINSTALL ${LANG_English} "Uninstall ${PRODUCT} v${VERSION_MAJOR}"
+; repeate these so we can use them in the uninstaller
+LangString un.SM_PRODUCT_GROUP     ${LANG_English} "${PRODUCT} Word Processor"
+LangString un.SHORTCUT_NAME        ${LANG_English} "${PRODUCT} v${VERSION_MAJOR}"
+
+; Uninstall Strings
+LangString un.UNINSTALL_WARNING ${LANG_English} "This will delete $INSTDIR and all subdirectories and files?"
+
+
+; French ${LANG_French}
+
+; German ${LANG_German}
+
+; Spanish ${LANG_Spanish}
+
+; SimpChinese ${LANG_SimpChinese}
+
+; TradChinese ${LANG_TradChinese}
+
+; Japanese ${LANG_Japanese}
+
+; Italian ${LANG_Italian}
+
+; Dutch ${LANG_Dutch}
+
+; Polish ${LANG_Polish}
+
+; Greek ${LANG_Greek}
+
+; Russian ${LANG_Russian}
+
+; PortugueseBR ${LANG_PortugueseBR}
+
+; Ukrainian ${LANG_Ukrainian}
+
+; Czech ${LANG_Czech}
+
+; Bulgarian ${LANG_Bulgarian}
+
+; End Language descriptions
+
+
 ; Install types 
 InstType "Typical (default)"              ;Section 1
 InstType "Full (with File Associations)"  ;Section 2
 InstType "Minimal"                        ;Section 3
 ; any other combination is "Custom"
 
+!ifndef CLASSIC_UI
+; Page order
+  !insertmacro MUI_PAGECOMMAND_WELCOME
+  !insertmacro MUI_PAGECOMMAND_LICENSE
+  !insertmacro MUI_PAGECOMMAND_COMPONENTS
+  !insertmacro MUI_PAGECOMMAND_DIRECTORY
+  !ifndef NODOWNLOADS
+    !ifdef OPT_DICTIONARIES
+      Page custom getDLMirror "$(DLMIRROR_IO_WINDOWTITLE)" ; Custom page to get DL mirror
+    !endif
+  !endif
+  !insertmacro MUI_PAGECOMMAND_INSTFILES
+  !insertmacro MUI_PAGECOMMAND_FINISH
+!else ; CLASSIC_UI
+  ;Page declaration [optional, just specifies default behavior]
+  Page license
+  Page components
+  Page directory
+  !ifndef NODOWNLOADS
+    !ifdef OPT_DICTIONARIES
+      Page custom getDLMirror "$(DLMIRROR_IO_WINDOWTITLE)" ; Custom page to get DL mirror
+    !endif
+  !endif
+  Page instfiles
+!endif
 
-; Language Strings
-; descriptions for Sections and SubSections
 
-; English
-LangString DESC_section_abi           ${LANG_English} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_English} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_English} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_English} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_English} "Installs shortcuts for all users (or current user on systems without multiple users)."
 
-; French
-LangString DESC_section_abi           ${LANG_French} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_French} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_French} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_French} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_French} "Installs shortcuts for all users (or current user on systems without multiple users)."
+; Associate file extension and content type with an application entry
+!macro CreateFileAssociation extension appType contentType
+	WriteRegStr HKCR "${extension}" "" "${appType}"
+	WriteRegStr HKCR "${extension}" "Content Type" "${contentType}"
+!macroend
 
-; German
-LangString DESC_section_abi           ${LANG_German} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_German} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_German} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_German} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_German} "Installs shortcuts for all users (or current user on systems without multiple users)."
+; Create a language localized Start Menu group
+!macro lngCreateSMGroup group
+	push $0
+	StrCpy $0 "${group}"
+	CreateDirectory "$SMPROGRAMS\$0"
+	pop $0
+!macroend
 
-; Spanish
-LangString DESC_section_abi           ${LANG_Spanish} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_Spanish} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_Spanish} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_Spanish} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_Spanish} "Installs shortcuts for all users (or current user on systems without multiple users)."
+; Create a language localized Start Menu ShortCut
+; we split the link.lnk up so we can use localized components without confusing NSIS
+!macro lngCreateShortCut basedir group linkname target.file parameters icon.file icon_index_number
+	push $0
+	push $1
+	push $2
+	StrCpy $0 "${basedir}"
+	StrCpy $0 "$0\"
+	; if group is empty skip past it
+	StrCpy $1 "${group}"
+	StrLen $2 "$1"
+	IntCmp $2 0 +3
+	StrCpy $0 "$0$1"
+	StrCpy $0 "$0\"
+	;skipGroup:
+	StrCpy $1 ${linkname}
+	StrCpy $0 "$0$1"
+	StrCpy $0 "$0.lnk"
+	CreateShortCut $0 "${target.file}" "${parameters}" "${icon.file}" ${icon_index_number}
+	pop $2
+	pop $1
+	pop $0
+!macroend
 
-; SimpChinese
-LangString DESC_section_abi           ${LANG_SimpChinese} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_SimpChinese} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_SimpChinese} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_SimpChinese} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_SimpChinese} "Installs shortcuts for all users (or current user on systems without multiple users)."
 
-; TradChinese
-LangString DESC_section_abi           ${LANG_TradChinese} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_TradChinese} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_TradChinese} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_TradChinese} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_TradChinese} "Installs shortcuts for all users (or current user on systems without multiple users)."
+; *********************************************************************
 
-; Japanese
-LangString DESC_section_abi           ${LANG_Japanese} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_Japanese} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_Japanese} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_Japanese} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_Japanese} "Installs shortcuts for all users (or current user on systems without multiple users)."
 
-; Italian
-LangString DESC_section_abi           ${LANG_Italian} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_Italian} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_Italian} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_Italian} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_Italian} "Installs shortcuts for all users (or current user on systems without multiple users)."
-
-; Dutch
-LangString DESC_section_abi           ${LANG_Dutch} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_Dutch} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_Dutch} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_Dutch} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_Dutch} "Installs shortcuts for all users (or current user on systems without multiple users)."
-
-; Polish
-;LangString DESC_section_abi           ${LANG_Polish} "Required.  Installs the actual AbiWord.exe program."
-;Langstring DESC_section_shellupdate   ${LANG_Polish} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-;LangString DESC_ssection_shortcuts    ${LANG_Polish} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-;LangString DESC_ssection_shortcuts_cu ${LANG_Polish} "Installs shortcuts for the currently logged on user."
-;LangString DESC_ssection_shortcuts_au ${LANG_Polish} "Installs shortcuts for all users (or current user on systems without multiple users)."
-
-; Greek
-LangString DESC_section_abi           ${LANG_Greek} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_Greek} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_Greek} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_Greek} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_Greek} "Installs shortcuts for all users (or current user on systems without multiple users)."
-
-; Russian
-LangString DESC_section_abi           ${LANG_Russian} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_Russian} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_Russian} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_Russian} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_Russian} "Installs shortcuts for all users (or current user on systems without multiple users)."
-
-; PortugueseBR
-;LangString DESC_section_abi           ${LANG_PortugueseBR} "Required.  Installs the actual AbiWord.exe program."
-;Langstring DESC_section_shellupdate   ${LANG_PortugueseBR} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-;LangString DESC_ssection_shortcuts    ${LANG_PortugueseBR} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-;LangString DESC_ssection_shortcuts_cu ${LANG_PortugueseBR} "Installs shortcuts for the currently logged on user."
-;LangString DESC_ssection_shortcuts_au ${LANG_PortugueseBR} "Installs shortcuts for all users (or current user on systems without multiple users)."
-
-; Ukrainian
-LangString DESC_section_abi           ${LANG_Ukrainian} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_Ukrainian} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_Ukrainian} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_Ukrainian} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_Ukrainian} "Installs shortcuts for all users (or current user on systems without multiple users)."
-
-; Czech
-LangString DESC_section_abi           ${LANG_Czech} "Required.  Installs the actual AbiWord.exe program."
-Langstring DESC_section_shellupdate   ${LANG_Czech} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-LangString DESC_ssection_shortcuts    ${LANG_Czech} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-LangString DESC_ssection_shortcuts_cu ${LANG_Czech} "Installs shortcuts for the currently logged on user."
-LangString DESC_ssection_shortcuts_au ${LANG_Czech} "Installs shortcuts for all users (or current user on systems without multiple users)."
-
-; Bulgarian
-;LangString DESC_section_abi           ${LANG_Bulgarian} "Required.  Installs the actual AbiWord.exe program."
-;Langstring DESC_section_shellupdate   ${LANG_Bulgarian} "Adds entries to the Windows registry to allow the shell (Explorer) to handle supported file formats."
-;LangString DESC_ssection_shortcuts    ${LANG_Bulgarian} "Installs shortcuts in various places to allow staring AbiWord through additional locations."
-;LangString DESC_ssection_shortcuts_cu ${LANG_Bulgarian} "Installs shortcuts for the currently logged on user."
-;LangString DESC_ssection_shortcuts_au ${LANG_Bulgarian} "Installs shortcuts for all users (or current user on systems without multiple users)."
-
-; End Language descriptions
-
+SubSection /e "$(TITLE_ssection_core)" ssection_core
 
 ; The stuff that must be installed
-Section "Abiword.exe (required)" section_abi
+Section "$(TITLE_section_abi)" section_abi
 	SectionIn 1 2 3 RO	; included in Typical, Full, Minimal, Required
 	;;
 	; Testing clause to Overwrite Existing Version - if exists
 	IfFileExists "$INSTDIR\${MAINPROGRAM}" 0 DoInstall
 	
-	MessageBox MB_YESNO "Overwrite Existing ${PRODUCT}?" IDYES DoInstall
+	MessageBox MB_YESNO "$(PROMPT_OVERWRITE)" IDYES DoInstall
 	
-	Abort "Quitting the install process"
+	Abort "$(MSG_ABORT)"
 
 	DoInstall:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; Set output path to the installation directory.
-	SetOutPath $INSTDIR\AbiWord\bin
+	SetOutPath $INSTDIR\${PRODUCT}\bin
 	File "AbiWord.exe"
 
-	SetOutPath $INSTDIR\AbiWord
+	SetOutPath $INSTDIR\${PRODUCT}
 	File "..\AbiSuite\AbiWord\system.*"
 	File /r "..\AbiSuite\AbiWord\strings"
 
@@ -358,7 +501,7 @@ Section "Abiword.exe (required)" section_abi
 SectionEnd
 
 ; OPTIONAL Registry Settings
-Section "Update Registry Settings" section_shellupdate
+Section "$(TITLE_section_shellupdate)" section_shellupdate
 	SectionIn 1 2 3
 	; Write the AbiSuite.AbiWord Keys
 	WriteRegStr HKCR "${APPSET}.${PRODUCT}" "" "${PRODUCT} Document"
@@ -370,56 +513,59 @@ Section "Update Registry Settings" section_shellupdate
 ;	WriteRegStr HKCR "${APPSET}.${PRODUCT}\shell\open\ddeexec\topic" "" "System"
 
 	; Write File Associations
-	WriteRegStr HKCR ".abw" "" "${APPSET}.${PRODUCT}"
-	WriteRegStr HKCR ".abw" "Content Type" "application/abiword"
-	WriteRegStr HKCR ".awt" "" "${APPSET}.${PRODUCT}"
-	WriteRegStr HKCR ".awt" "Content Type" "application/abiword-template"
-	WriteRegStr HKCR ".zabw" "" "${APPSET}.${PRODUCT}"
-	WriteRegStr HKCR ".zabw" "Content Type" "application/abiword-compressed"
+	!insertmacro CreateFileAssociation ".abw"  "${APPSET}.${PRODUCT}" "application/abiword"
+	!insertmacro CreateFileAssociation ".awt"  "${APPSET}.${PRODUCT}" "application/abiword-template"
+	!insertmacro CreateFileAssociation ".zabw" "${APPSET}.${PRODUCT}" "application/abiword-compressed"
 
 SectionEnd
 
-SubSection /e "Shortcuts" ssection_shortcuts
+SubSectionEnd ; core
 
-SubSection /e "Shortcuts (Current User)" ssection_shortcuts_cu
+
+; *********************************************************************
+
+
+SubSection /e "$(TITLE_ssection_shortcuts)" ssection_shortcuts
+
+SubSection /e "$(TITLE_ssection_shortcuts_cu)" ssection_shortcuts_cu
 
 ; OPTIONAL Start Menu Shortcut for the current user profile
-Section "Start Menu Shortcuts (Current User)"
+Section "$(TITLE_section_sm_shortcuts_cu)" section_sm_shortcuts_cu
 	SectionIn 1 2 3
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
-	CreateDirectory "$SMPROGRAMS\${PRODUCT} v${VERSION_MAJOR}"
-	CreateShortCut "$SMPROGRAMS\${PRODUCT} v${VERSION_MAJOR}\Uninstall ${PRODUCT}.lnk" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
-	CreateShortCut "$SMPROGRAMS\${PRODUCT} v${VERSION_MAJOR}\${PRODUCT}.lnk" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	!insertmacro lngCreateSMGroup  "$(SM_PRODUCT_GROUP)"
+	!insertmacro lngCreateShortCut "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	!insertmacro lngCreateShortCut "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 SectionEnd
 
 ; OPTIONAL Desktop Shortcut for the current user profile
-Section "Desktop Shortcut (Current User)"
+Section "$(TITLE_section_desktop_shortcuts_cu)" section_desktop_shortcuts_cu
 	SectionIn 1 2 3
 	SetShellVarContext current  	; This is probably overkill, but playing it safe
-	CreateShortCut "$DESKTOP\${PRODUCT}.lnk" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	!insertmacro lngCreateShortCut "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
 SectionEnd
 
 
 SubSectionEnd ; Shortcuts (Current User)
-SubSection /e "Shortcuts (All Users)" ssection_shortcuts_au
+SubSection /e "$(TITLE_ssection_shortcuts_au)" ssection_shortcuts_au
 
 
 ; OPTIONAL Start Menu Shortcut for the special All User profile (not used in win9x) 
-Section "Start Menu Shortcuts (All Users)"
+Section "$(TITLE_section_sm_shortcuts_au)" section_sm_shortcuts_au
 	SectionIn 2		; off by default, included in 2 Full Install
 	SetShellVarContext all  	; set to all, reset at end of section
-	CreateDirectory "$SMPROGRAMS\${PRODUCT} v${VERSION_MAJOR}"
-	CreateShortCut "$SMPROGRAMS\${PRODUCT} v${VERSION_MAJOR}\Uninstall ${PRODUCT}.lnk" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
-	CreateShortCut "$SMPROGRAMS\${PRODUCT} v${VERSION_MAJOR}\${PRODUCT}.lnk" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	!insertmacro lngCreateSMGroup  "$(SM_PRODUCT_GROUP)"
+	!insertmacro lngCreateShortCut "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	!insertmacro lngCreateShortCut "$SMPROGRAMS" "$(SM_PRODUCT_GROUP)" "$(SHORTCUT_NAME_UNINSTALL)" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" "" "$INSTDIR\Uninstall${PRODUCT}${VERSION_MAJOR}.exe" 0
 	SetShellVarContext current  	; This is pro'ly overkill
 SectionEnd
 
 
 ; OPTIONAL Desktop Shortcut for All Users
-Section "Desktop Shortcut (All Users)"
+Section "$(TITLE_section_desktop_shortcuts_au)" section_desktop_shortcuts_au
 	SectionIn 2	; not in default, included in 2 Full Install
 	SetShellVarContext all  	;  All users 
-	CreateShortCut "$DESKTOP\${PRODUCT}.lnk" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
+	!insertmacro lngCreateShortCut "$DESKTOP" "" "$(SHORTCUT_NAME)" "$INSTDIR\${MAINPROGRAM}" "" "$INSTDIR\${MAINPROGRAM}" 0
 	SetShellVarContext current  	; reset to current user
 SectionEnd
 
@@ -428,108 +574,256 @@ SubSectionEnd ; Shortcuts (All Users)"
 SubSectionEnd ; Shortcuts
 
 
-;SectionDivider " general file associations "
-SubSection /e "General file associations"
+; *********************************************************************
 
+
+SubSection /e "$(TITLE_ssection_gen_file_assoc)" ssection_gen_file_assoc
 
 ; OPTIONAL 
-Section "Associate .doc with AbiWord"
+Section "$(TITLE_section_fa_doc)" section_fa_doc
 	SectionIn 2
-	; Write File Associations
-	WriteRegStr HKCR ".doc" "" "AbiSuite.AbiWord"
-	WriteRegStr HKCR ".doc" "Content Type" "application/abiword"
+	!insertmacro CreateFileAssociation ".doc"  "${APPSET}.${PRODUCT}" "application/abiword"
 SectionEnd
 
 ; OPTIONAL 
-Section "Associate .rtf with AbiWord"
+Section "$(TITLE_section_fa_rtf)" section_fa_rtf
 	SectionIn 2
-	; Write File Associations
-	WriteRegStr HKCR ".rtf" "" "AbiSuite.AbiWord"
-	WriteRegStr HKCR ".rtf" "Content Type" "application/abiword"
+	!insertmacro CreateFileAssociation ".rtf"  "${APPSET}.${PRODUCT}" "application/abiword"
 SectionEnd
 
 SubSectionEnd ; general file associations
 
-;SectionDivider " helper files "
-SubSection /e "Helper files"
+
+; *********************************************************************
+
+
+SubSection /e "$(TITLE_ssection_helper_files)" ssection_helper_files
 
 ; MORE OPTIONS
 ; language packs, clipart, help docs, templates etc.   
-;Section "Help Files"
-;SectionEnd
 
 ; OPTIONAL Installation of Help Files
-Section "Help Files"
+Section "$(TITLE_section_help)" section_help
 	SectionIn 1 2
 	SetOutPath $INSTDIR\AbiWord
 	file /r "..\abisuite\abiword\help"
 SectionEnd
 
 ; OPTIONAL Installation of Templates
-Section "Templates"
+Section "$(TITLE_section_templates)" section_templates
 	SectionIn 1 2
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\templates"
 SectionEnd
 
 ; OPTIONAL Installation of Samples - REMOVED
-;Section "Samples"
+;Section "$(TITLE_section_samples)" section_samples
 ;	SectionIn 1 2
 ;	SetOutPath $INSTDIR\AbiWord
 ;	File /r "..\AbiSuite\AbiWord\sample"
 ;SectionEnd
 
 ; OPTIONAL Installation of Clipart
-Section "Clipart"
+Section "$(TITLE_section_clipart)" section_clipart
 	SectionIn 1 2
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\clipart"
 SectionEnd
+
+
+!ifdef OPT_CRTL_LOCAL
+; OPTIONAL Installation of c runtime library dll
+Section "$(TITLE_section_crtlib_local)" section_crtlib_local
+	SectionIn 2	; select if full installation choosen
+	SetOutPath $INSTDIR\${PRODUCT}\bin
+	File "${OPT_CRTL_LOCAL}${OPT_CRTL_FILENAME}"
+SectionEnd
+!endif ; OPT_CRTL_LOCAL
 
 ; we only enable this option if a url to connect to was
 ; specified during installation building; this should
 ; only be enabled for release builds if your server (where
 ; the url points) can handle the load and you need
 ; a crtlib other than msvcrt.dll (or to support Win95)
-!ifndef NODOWNLOADS
-!ifdef CRTL_URL
+!ifdef OPT_CRTL_URL
 ; OPTIONAL Installation of c runtime library dll
-Section "Download CRTlib ${CRTL_FILENAME}"
+Section "$(TITLE_section_crtlib_dl)" section_crtlib_dl
 	SectionIn 2	; select if full installation choosen
-	NSISdl::download "${CRTL_URL}${CRTL_FILENAME}" "$INSTDIR\AbiWord\bin\${CRTL_FILENAME}"
+	NSISdl::download "${OPT_CRTL_URL}${OPT_CRTL_FILENAME}" "$INSTDIR\${PRODUCT}\bin\${OPT_CRTL_FILENAME}"
 	StrCmp $0 "success" Finish
 		; Couldn't download the file
-		DetailPrint "Could not download requested c runtime library (DLL): ${CRTL_URL}${CRTL_FILENAME}"
-		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${CRTL_URL}${CRTL_FILENAME}"
+		DetailPrint "$(PROMPT_CRTL_DL_FAILED)"
+		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "$(PROMPT_CRTL_DL_FAILED)"
 	Finish:
 SectionEnd
-!endif
-!endif
+!endif ; OPT_CRTL_URL
 
-SubSection /e "Dictionaries"
+
+SubSection /e "$(TITLE_ssection_dictionary)" ssection_dictionary
 
 ; OPTIONAL Installation of Default Dictionary
-Section "en-US  US English (default)"
+Section "$(TITLE_section_dictinary_def_English)" section_dictinary_def_English
 	SectionIn 1 2
 	SetOutPath $INSTDIR
 	File /r "..\AbiSuite\dictionary"
 SectionEnd
 
-!ifndef NODOWNLOADS
-; NOTE: these just reference files for download then installs them
-SubSection /e "Download optional dictionaries"
 
-;TODO make a string and figure out how to let user pick another
-!ifndef DICTIONARY_BASE
-!define DICTIONARY_BASE "http://dl.sourceforge.net/abiword"
+!ifdef OPT_DICTIONARIES
+
+!ifndef NODOWNLOADS
+; NOTE: these just reference files for download, once download installs(extracts) them
+
+; WARNING: ${ssection_dl_opt_dict}+1 is assumed to be 1st section of downloadable dictionaries
+SubSection /e "$(TITLE_ssection_dl_opt_dict)" ssection_dl_opt_dict
+
+; we attempt to let user pick, but this is our fallback/default entry
+!ifndef DICTIONARY_BASE_DEFAULT
+!define DICTIONARY_BASE_DEFAULT "http://dl.sourceforge.net/abiword"
 !endif
+
+; this is the count of dictionaries available for download [count of sections defined]
+!define DICTIONARY_COUNT 27	; used to query sections & set description text
+
+; determine if section selected by user
+!define SF_SELECTED   1
+
+; RESULT should be one of the R set $R0-$R9
+!macro isDLDictSelected RESULT
+  ; we !!!assume!!! that section# of 1st dictionary section is # of dictionary subsection + 1
+  push $0	; the 1st section
+  push $1	; the last section
+
+  StrCpy ${RESULT} 0
+  StrCpy $0 ${ssection_dl_opt_dict}
+  IntOp $0 $0 + 1                   ; order here
+  IntOp $1 $0 + ${DICTIONARY_COUNT} ; matters  $1 = ${ssection_dl_opt_dict} + 1 + ${DICTIONARY_COUNT}
+  ; $0=section of 1st downloadable dictionary
+  loop_start:
+    ; check if flag set
+    SectionGetFlags $0 ${RESULT}
+    IntOp ${RESULT} ${RESULT} & ${SF_SELECTED}
+    IntCmp ${RESULT} ${SF_SELECTED} loop_end 0 0
+    ; loop through sections
+    IntOp $0 $0 + 1  
+    IntCmpU $0 $1 loop_end
+  Goto loop_start 
+  loop_end:
+
+  pop $1
+  pop $0
+!macroend
+
+; creates an .ini file for use by custom download InstallOption dialog
+; $R0 is set to temp file used
+; $R1 is default/fallback entry
+; $R2 is URL list except for default entry
+Function createDLIni
+  ; create .ini file used for custom dialog
+  GetTempFileName $R0
+
+  ; write out our fields  
+  WriteINIStr $R0 "Settings" NumFields "2"
+  WriteINIStr $R0 "Settings" CancelEnabled "1"
+  WriteINIStr $R0 "Settings" CancelShow "1"
+  WriteINIStr $R0 "Settings" BackEnabled "0"
+
+  WriteINIStr $R0 "Field 1" Type "Label"
+  WriteINIStr $R0 "Field 1" Text "$(MSG_SELECT_DL_MIRROR)"
+  WriteINIStr $R0 "Field 1" Left   "0"
+  WriteINIStr $R0 "Field 1" Right  "-1"
+  WriteINIStr $R0 "Field 1" Top    "15"
+  WriteINIStr $R0 "Field 1" Bottom "35"
+
+  WriteINIStr $R0 "Field 2" Type "combobox"
+  WriteINIStr $R0 "Field 2" Text "sel"
+  WriteINIStr $R0 "Field 2" Left   "0"
+  WriteINIStr $R0 "Field 2" Right  "-1"
+  WriteINIStr $R0 "Field 2" Top    "39"
+  WriteINIStr $R0 "Field 2" Bottom "-1"
+  WriteINIStr $R0 "Field 2" minLen "8"
+  WriteINIStr $R0 "Field 2" listItems "$R1|$R2"
+  WriteINIStr $R0 "Field 2" state "$R1"
+FunctionEnd
+
+; determines where to download from
+; $R9 is set to base URL
+Function getDLMirror
+  ; save callees registers
+  Push $R0
+  Push $R1
+  Push $R2
+
+  !insertmacro isDLDictSelected $R0
+  IntCmp $R0 0 noUpDate 0 0
+
+!ifndef CLASSIC_UI
+  !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
+!else
+  ;Set text on the white rectangle
+  Push $R0
+
+    GetDlgItem $R0 $HWNDPARENT 1037
+    SendMessage $R0 ${WM_SETTEXT} 0 "STR:$(TEXT_IO_TITLE)"
+    GetDlgItem $R0 $HWNDPARENT 1038
+    SendMessage $R0 ${WM_SETTEXT} 0 "STR:$(TEXT_IO_SUBTITLE)"
+
+  Pop $R0
+!endif
+
+
+  ; "Selecting download mirror ..."
+  ; use install options to allow custom entry or select from list
+
+  ; create the inifile used to specify our custom dialog
+  StrCpy $R1 "${DICTIONARY_BASE_DEFAULT}"
+  StrCpy $R2 "http://unc.dl.sourceforge.net/abiword|http://telia.dl.sourceforge.net/abiword|http://umn.dl.sourceforge.net/abiword|http://twtelecom.dl.sourceforge.net/abiword|http://easynews.dl.sourceforge.net/abiword|http://belnet.dl.sourceforge.net/abiword|http://cesnet.dl.sourceforge.net/abiword|http://switch.dl.sourceforge.net/abiword"
+  Call createDLIni ; sets $R0 to inifilename
+
+  ; create the dialog and wait for user's response
+!ifndef CLASSIC_UI
+  ; for now manually call, as the macro doesn't work as expected
+  ;  !insertmacro MUI_INSTALLOPTIONS_DISPLAY "$R0"
+  InstallOptions::dialog $R0
+!else
+  InstallOptions::dialog $R0
+!endif
+
+  ; pop return status and use default value on anything other than success
+  ; else read back user's choice
+  Pop $R9
+  StrCmp $R9 "success" 0 useDefaultURL
+    ReadINIStr $R9 $R0 "Field 2" State ; $R9 = URL field's state
+    Goto Next1
+  useDefaultURL:
+    DetailPrint "$(MSG_ERROR_SELECTING_DL_MIRROR)"
+    StrCpy $R9 "${DICTIONARY_BASE_DEFAULT}"
+  Next1:
+
+  ; remove .ini file
+  Delete $R0
+
+  ; $R9 is the base URL chosen
+
+  noUpDate:
+
+  ; restore calless registers
+  Pop $R2
+  Pop $R1
+  Pop $R0
+FunctionEnd
+
+!endif  ; NODOWNLOADS
 
 ; $R3 is set to the filename used
 Function getDictionary
+      !define DICTIONARY_BASE $R9
+
 	!define DICT_LANG $R0
 	!define DICT_LOCALE $R1
 	!define DICT_ARCH $R2
 
+!ifndef NODOWNLOADS
 	; set filename, handle files without locale portion (represented by Xx)
 	StrCmp ${DICT_LOCALE} "Xx" noLocale 0
 		StrCpy $R3 "abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
@@ -537,9 +831,15 @@ Function getDictionary
 	noLocale:
 		StrCpy $R3 "abispell-${DICT_LANG}.${DICT_ARCH}.tar.gz"
 	Skip1:
+!else ; for files included in setup we just leave the -Xx tacked on
+		StrCpy $R3 "abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
+!endif
 	!define DICT_FILENAME $R3
 
-	; Quietly download the file
+
+!ifndef NODOWNLOADS
+	; download the file
+	DetailPrint "NSISdl::download '${DICTIONARY_BASE}/${DICT_FILENAME}' '$TEMP\${DICT_FILENAME}'"
 	NSISdl::download "${DICTIONARY_BASE}/${DICT_FILENAME}" "$TEMP\${DICT_FILENAME}"
 	StrCmp $0 "success" doDictInst
 		; Couldn't download the file
@@ -547,11 +847,16 @@ Function getDictionary
 		DetailPrint "  ${DICTIONARY_BASE}/${DICT_FILENAME}"
 		MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "Failed to download ${DICTIONARY_BASE}/${DICT_FILENAME}"
 	Goto Finish
+!endif
 
 	doDictInst:
 		; Unzip dictionary into dictionary subdirecotry
-		untgz::extract "-j" "$TEMP\${DICT_FILENAME}" "-d" "$INSTDIR\dictionary"
+		untgz::extract "-j" "-d" "$INSTDIR\dictionary" "$TEMP\${DICT_FILENAME}"
+		StrCmp $0 "success" doCleanup
+			DetailPrint "  Failed to extract ${DICT_FILENAME}"
+			MessageBox MB_OK|MB_ICONEXCLAMATION|MB_DEFBUTTON1 "  Failed to extract ${DICT_FILENAME}"
 		
+		doCleanup:
 		; Delete temporary files
 		Delete "$TEMP\${DICT_FILENAME}"
 
@@ -561,10 +866,19 @@ Function getDictionary
 		!undef DICT_ARCH
 FunctionEnd
 
+; used to define a section containing an optional dictionary for downloading & installation
 !macro SectionDict DICT_NAME DICT_LANG DICT_LOCALE DICT_ARCH DICT_SIZE
-Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}'
-;	SectionIn 2	; Full only
+Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}' section_dl_opt_dict_${DICT_LANG}_${DICT_LOCALE}
+!ifdef NODOWNLOADS
+	SectionIn 2	; Full only
+	SetOutPath $TEMP
+	File "abispell-${DICT_LANG}-${DICT_LOCALE}.${DICT_ARCH}.tar.gz"
+!else
 	AddSize ${DICT_SIZE}
+!endif
+
+	DetailPrint "Installing dictionary for: '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}'"
+
 	StrCpy $R0 ${DICT_LANG}
 	StrCpy $R1 ${DICT_LOCALE}
 	StrCpy $R2 ${DICT_ARCH}
@@ -572,8 +886,10 @@ Section '${DICT_LANG}-${DICT_LOCALE}  ${DICT_NAME}'
 SectionEnd
 !macroend
 
+
 ; These are listed alphabetically based on English LANG-LOCALE
 ; NOTE: if the dictinaries are updated so to should these sizes (KB)
+; Be sure to update DICTIONARY_COUNT above (so description & selection query work correctly)
 !insertmacro SectionDict "Catalan"      "ca" "ES" "i386"  4324
 !insertmacro SectionDict "Czech"        "cs" "DZ" "i386"  2558
 !insertmacro SectionDict "Danish"       "da" "DK" "i386"  1580
@@ -602,12 +918,20 @@ SectionEnd
 !insertmacro SectionDict "Svenska"      "sv" "SE" "i386"   753  ;Swedish
 !insertmacro SectionDict "Ukrainian"    "uk" "UA" "i386"  3490
 
-SubSectionEnd ; Optional downloads
-!endif  ; NODOWNLOADS
+
+!ifndef NODOWNLOADS
+SubSectionEnd ; DL Optional downloads
+!endif
+
+!endif ; OPT_DICTIONARIES
+
 
 SubSectionEnd ; Dictionaries
 
 SubSectionEnd ; helper files
+
+
+; *********************************************************************
 
 
 !ifndef CLASSIC_UI
@@ -641,7 +965,7 @@ Function .onInit
   ; Pass count of pushed items, if value exceeds items pushed then dialog not shown
   Push 13F ;16F ;16 = number of languages, F = change font
 
-  LangDLL::LangDialog "Installer Language" "Please select a language."
+  LangDLL::LangDialog "Installation Language" "Please select a language."
 
   Pop $LANGUAGE
   StrCmp $LANGUAGE "cancel" 0 +2
@@ -659,8 +983,62 @@ FunctionEnd
 		!insertmacro MUI_DESCRIPTION_TEXT ${section_shellupdate} $(DESC_section_shellupdate)
 		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_shortcuts} $(DESC_ssection_shortcuts)
 		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_sm_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_desktop_shortcuts_cu} $(DESC_ssection_shortcuts_cu)
 		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_shortcuts_au} $(DESC_ssection_shortcuts_au)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_sm_shortcuts_au} $(DESC_ssection_shortcuts_au)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_desktop_shortcuts_au} $(DESC_ssection_shortcuts_au)
+
+		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_core} $(DESC_ssection_core)
+		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_gen_file_assoc} $(DESC_ssection_gen_file_assoc)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_fa_doc} $(DESC_section_fa_doc)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_fa_rtf} $(DESC_section_fa_rtf)
+		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_helper_files} $(DESC_ssection_helper_files)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_help} $(DESC_section_help)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_templates} $(DESC_section_templates)
+;		!insertmacro MUI_DESCRIPTION_TEXT ${section_samples} $(DESC_section_samples)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_clipart} $(DESC_section_clipart)
+
+!ifdef OPT_CRTL_LOCAL
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_crtlib_local} $(DESC_section_crtlib)
+!endif
+
+!ifndef NODOWNLOADS
+!ifdef OPT_CRTL_URL
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_crtlib_dl} $(DESC_section_crtlib)
+!endif
+
+		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_dictionary} $(DESC_ssection_dictionary)
+		!insertmacro MUI_DESCRIPTION_TEXT ${section_dictinary_def_English} $(DESC_ssection_dictionary)
+!ifdef OPT_DICTIONARIES
+		!insertmacro MUI_DESCRIPTION_TEXT ${ssection_dl_opt_dict} $(DESC_ssection_dictionary)
+!endif ; OPT_DICTIONARIES
+!endif ; NODOWNLOADS
+
+!ifdef OPT_DICTIONARIES
+		; we !!!assume!!! that section# of 1st dictionary section is # of dictionary subsection + 1
+		push $R1	; the 1st section
+		push $R2	; the last section
+		StrCpy $R1 ${ssection_dl_opt_dict}
+		IntOp $R1 $R1 + 1                   ; order here
+		IntOp $R2 $R1 + ${DICTIONARY_COUNT}	; matters  $R2 = ${ssection_dl_opt_dict} + 1 + ${DICTIONARY_COUNT}
+		; $R1=section of 1st downloadable dictionary
+		loop_start:  
+			!insertmacro MUI_DESCRIPTION_TEXT $R1 $(DESC_ssection_dictionary)
+			IntOp $R1 $R1 + 1  
+			IntCmpU $R1 $R2 loop_end
+		Goto loop_start 
+		loop_end:
+		pop $R2
+		pop $R1
+!endif
+
+
 	!insertmacro MUI_FUNCTIONS_DESCRIPTION_END
+
+!ifndef NODOWNLOADS
+!endif
+
 !endif
 
 
@@ -669,10 +1047,23 @@ FunctionEnd
 	UninstallText "This will uninstall ${PRODUCT} v${VERSION_MAJOR}. Hit next to continue."
 !endif
 
+
+; check if a file extension is associated with us and if so delete it
+!macro un.RemoveFileAssociation extension appType
+	push $0
+	ReadRegStr $0 HKCR "${extension}" "(Default)"
+	StrCmp $0 "${appType}" 0 Skip_Del_File_Assoc.${extension}
+		; actually remove file assoications
+		DeleteRegKey HKCR "${extension}"
+	Skip_Del_File_Assoc.${extension}:
+	pop $0
+!macroend
+
+
 ; special uninstall section.
 Section "Uninstall"
 
-	MessageBox MB_OKCANCEL "This will delete $INSTDIR and all subdirectories and files?" IDOK DoUnInstall
+	MessageBox MB_OKCANCEL $(UNINSTALL_WARNING) IDOK DoUnInstall
 	
 	Abort "Quitting the uninstall process"
 
@@ -682,29 +1073,25 @@ Section "Uninstall"
 	DeleteRegKey HKLM SOFTWARE\${APPSET}\${PRODUCT}\v${VERSION_MAJOR}
 
 	; remove file assoications
-	DeleteRegKey HKCR "${APPSET}.${PRODUCT}"
-	DeleteRegKey HKCR ".abw"
-	DeleteRegKey HKCR ".awt"
-	DeleteRegKey HKCR ".zabw"
+	; our native ones
+	!insertMacro un.RemoveFileAssociation ".abw"  "${APPSET}.${PRODUCT}"
+	!insertMacro un.RemoveFileAssociation ".awt"  "${APPSET}.${PRODUCT}"
+	!insertMacro un.RemoveFileAssociation ".zabw" "${APPSET}.${PRODUCT}"
+	; other common ones
+	!insertMacro un.RemoveFileAssociation ".doc"  "${APPSET}.${PRODUCT}"
+	!insertMacro un.RemoveFileAssociation ".rtf"  "${APPSET}.${PRODUCT}"
 
-	ReadRegStr $0 HKCR ".doc" "(Default)"
-	StrCmp $0 "${APPSET}.${PRODUCT}" Del_Word_Assoc Skip_Del_Word
-	Del_Word_Assoc:
-	DeleteRegKey HKCR ".doc"
-	Skip_Del_Word:
-	
-	ReadRegStr $0 HKCR ".rtf" "(Default)"
-	StrCmp $0 "${APPSET}.${PRODUCT}" Del_RTF_Assoc Skip_Del_RTF
-	Del_RTF_Assoc:
-	DeleteRegKey HKCR ".rtf"
-	Skip_Del_RTF:
-	
+	; actual apptype entry
+	DeleteRegKey HKCR "${APPSET}.${PRODUCT}"
+
 	; remove start menu shortcuts.
-	;Delete "$SMPROGRAMS\${PRODUCT} v${VERSION_MAJOR}\*.*"
-	RMDir /r "$SMPROGRAMS\${PRODUCT} v${VERSION_MAJOR}"
+	;Delete "$SMPROGRAMS\${SM_PRODUCT_GROUP}\*.*"
+	StrCpy $0 "$(SM_PRODUCT_GROUP)"
+	RMDir /r "$SMPROGRAMS\$0"
 
 	; remove desktop shortcut.
-	Delete "$DESKTOP\${PRODUCT}.lnk"
+	StrCpy $0 "$(SHORTCUT_NAME)"
+	Delete "$DESKTOP\$0.lnk"
 
 	; remove directories used (and any files in them)
 	RMDir /r "$INSTDIR"
