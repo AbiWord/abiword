@@ -95,6 +95,7 @@ class XAP_UnixFont
 	GdkFont *				getGdkFont(UT_uint32 pixelsize);
 
 	GdkFont *				getMatchGdkFont(UT_uint32 size);
+	XAP_UnixFont *          getMatchUnixFont(void);
 
 	bool					is_TTF_font() const {return (m_fontType == FONT_TYPE_TTF);}
 	bool					is_PS_font()  const {return ((m_fontType == FONT_TYPE_PFA) || (m_fontType == FONT_TYPE_PFB));}
@@ -199,6 +200,7 @@ class XAP_UnixFontHandle : public GR_Font
 	inline GdkFont      *getMatchGdkFont()	{ return m_font? m_font->getMatchGdkFont(m_size): NULL; }
 	
 	void explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one);	
+	void explodeUnixFonts(XAP_UnixFont**  pSingleByte, XAP_UnixFont ** pMultiByte);	
 };
 
 #endif /* XAP_UNIXFONT_H */

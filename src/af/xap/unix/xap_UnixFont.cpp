@@ -101,6 +101,42 @@ UT_uint32 XAP_UnixFontHandle::getSize(void)
 }
 
 
+void XAP_UnixFontHandle::explodeUnixFonts(XAP_UnixFont ** pSingleByte, XAP_UnixFont ** pMultiByte)
+{
+	if(m_font==NULL)
+	{
+		*pSingleByte = NULL;
+		*pMultiByte = NULL;
+		return;
+	}
+
+	if(m_font->is_CJK_font())
+	{
+		*pMultiByte = m_font;
+		*pSingleByte = m_font->getMatchUnixFont();
+	}
+	else
+	{
+		*pSingleByte = m_font;
+		*pMultiByte = m_font->getMatchUnixFont();
+	}		
+}
+
+void XAP_UnixFontHandle::explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one)
+{
+	if(m_font->is_CJK_font())
+	  {
+		non_cjk_one=getMatchGdkFont();
+		cjk_one=getGdkFont();
+	  }
+	else
+	  {
+		non_cjk_one=getGdkFont();
+		cjk_one=getMatchGdkFont();
+	  }
+}
+
+
 /*******************************************************************/		
 
 XAP_UnixFont::XAP_UnixFont(void)
@@ -130,8 +166,11 @@ XAP_UnixFont::XAP_UnixFont(void)
 XAP_UnixFont::XAP_UnixFont(XAP_UnixFont & copy)
 {
 	//UT_DEBUGMSG(("XAP_UnixFont:: copy constructor\n"));
+
 	m_is_cjk=copy.m_is_cjk;
-	m_cjk_font_metric =copy.m_cjk_font_metric;
+	m_cjk_font_metric.ascent =copy.m_cjk_font_metric.ascent;
+	m_cjk_font_metric.descent =copy.m_cjk_font_metric.descent;
+	m_cjk_font_metric.width =copy.m_cjk_font_metric.width;
 	
 	m_name = NULL;
 	m_style = STYLE_LAST;
@@ -171,7 +210,7 @@ XAP_UnixFont::~XAP_UnixFont(void)
 	FREEP(m_fontKey);
 
 	//	UT_VECTOR_PURGEALL(allocFont *, m_allocFonts);
-	for(UT_sint32 i =0; i < m_allocFonts.getItemCount(); i++)
+	for(UT_uint32 i =0; i < m_allocFonts.getItemCount(); i++)
 	{
 		allocFont * p = (allocFont *) m_allocFonts.getNthItem(i);
 		gdk_font_unref(p->gdkFont);
@@ -309,7 +348,7 @@ const char * XAP_UnixFont::getXLFD(void)
 
 UT_uint16 XAP_UnixFont::getCharWidth(UT_UCSChar c)
 {
-	if(!m_uniWidths || m_metricsData)
+	if(!m_uniWidths || !m_metricsData)
 		getMetricsData();
 
 	uniWidth * w = (uniWidth *) bsearch(&c, m_uniWidths, m_metricsData->numOfChars, sizeof(uniWidth), s_compareUniWidthsChar);
@@ -1077,16 +1116,44 @@ GdkFont * XAP_UnixFont::getMatchGdkFont(UT_uint32 size)
   return pMatchUnixFont ? pMatchUnixFont->getGdkFont(size) : getGdkFont(size);
 }
 
-void XAP_UnixFontHandle::explodeGdkFonts(GdkFont* & non_cjk_one,GdkFont*& cjk_one)
+
+XAP_UnixFont * XAP_UnixFont::getMatchUnixFont(void)
 {
-	if(m_font->is_CJK_font())
-	  {
-		non_cjk_one=getMatchGdkFont();
-		cjk_one=getGdkFont();
-	  }
-	else
-	  {
-		non_cjk_one=getGdkFont();
-		cjk_one=getMatchGdkFont();
-	  }
-};
+  if (!XAP_EncodingManager::get_instance()->cjk_locale())
+      return this;
+  int s;
+  switch(m_style)
+  {
+      case XAP_UnixFont::STYLE_NORMAL:
+		  s=0;
+		  break;
+      case XAP_UnixFont::STYLE_BOLD:
+		  s=1;
+		  break;
+	  case XAP_UnixFont::STYLE_ITALIC:
+		  s=2;
+		  break;
+	  case XAP_UnixFont::STYLE_BOLD_ITALIC:
+		  s=3;
+		  break;
+	  default:
+		  s=0;
+  }
+  XAP_UnixFont *pMatchUnixFont= NULL;
+  if(is_CJK_font())
+  {
+	  pMatchUnixFont = s_defaultNonCJKFont[s];
+  }
+  else
+  {
+	  pMatchUnixFont = s_defaultCJKFont[s];
+  }
+  if(pMatchUnixFont != NULL)
+  {
+	  return pMatchUnixFont;
+  }
+  else
+  {
+	  return this;
+  }
+}

@@ -56,6 +56,11 @@ static bool isFontUnicode(GdkFont *font)
 #include "xap_EncodingManager.h"
 #include "ut_OverstrikingChars.h"
 
+//
+// Below this size we use GDK fonts. Above it we use metric info.
+//
+#define MAX_ABI_GDK_FONT_SIZE 200
+
 XAP_UnixFontHandle *	GR_UnixGraphics::s_pFontGUI = NULL;
 UT_uint32 				GR_UnixGraphics::s_iInstanceCount = 0;
 
@@ -301,7 +306,13 @@ void GR_UnixGraphics::setFont(GR_Font * pFont)
 #endif
 
 	m_pFont = pUFont;
-	m_pFont->explodeGdkFonts(m_pSingleByteFont,m_pMultiByteFont);
+//
+// Only use gdk fonts for Low resolution
+//
+	if(pUFont->getSize()< MAX_ABI_GDK_FONT_SIZE)
+	{
+		m_pFont->explodeGdkFonts(m_pSingleByteFont,m_pMultiByteFont);
+	}
 }
 
 UT_uint32 GR_UnixGraphics::getFontHeight(GR_Font * fnt)
@@ -331,38 +342,70 @@ UT_uint32 GR_UnixGraphics::measureUnRemappedChar(const UT_UCSChar c)
 
 	GdkFont * font;
 	UT_UCSChar Wide_char = c;
-		
-	if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
+//
+// Use GDK at Low resolutions, Metrics at high resolution. This saves tons
+// of memory on the X server and speeds up things enormously.
+//	
+	if(m_pFont->getSize() <  MAX_ABI_GDK_FONT_SIZE)
 	{
-		font = m_pSingleByteFont;
-		
-		if(isFontUnicode(font))
+		if(XAP_EncodingManager::get_instance()->isUnicodeLocale())
 		{
-			//this is a unicode font
-			LE2BE16(&c,&Wide_char)
-			return gdk_text_width(font, (gchar*) &Wide_char, 2);
+			font = m_pSingleByteFont;
+		
+			if(isFontUnicode(font))
+			{
+				//this is a unicode font
+				LE2BE16(&c,&Wide_char)
+					return gdk_text_width(font, (gchar*) &Wide_char, 2);
+			}
+			else
+			{
+				//this is not a unicode font
+				if(c > 0xff) //a non unicode font contains only 256 chars
+					return 0;
+				else
+				{
+					gchar gc = (gchar) c;
+					return gdk_text_width(font, (gchar*)&gc, 1);
+				}		
+			}
 		}
 		else
 		{
-			//this is not a unicode font
-			if(c > 0xff) //a non unicode font contains only 256 chars
+			WCTOMB_DECLS;
+			CONVERT_TO_MBS(Wide_char);
+			if (fallback_used)
 				return 0;
-			else
-			{
-				gchar gc = (gchar) c;
-				return gdk_text_width(font, (gchar*)&gc, 1);
-			}		
+			font = XAP_EncodingManager::get_instance()->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
+
+			return gdk_text_width(font, text, text_length);
 		}
 	}
+//
+// Use Metric info. From PS Graphics.
+//
 	else
 	{
-		WCTOMB_DECLS;
-		CONVERT_TO_MBS(Wide_char);
-		if (fallback_used)
-			return 0;
-		font = XAP_EncodingManager::get_instance()->is_cjk_letter(Wide_char) ? m_pMultiByteFont : m_pSingleByteFont;
-
-		return gdk_text_width(font, text, text_length);
+		double dsize = (double) m_pFont->getSize();
+	    XAP_UnixFont *pEnglishFont;
+		XAP_UnixFont *pChineseFont;
+	    m_pFont->explodeUnixFonts(&pEnglishFont,&pChineseFont);
+//
+// The metrics are in 1/1000th's of an inch, we need to convert these to
+// pixels.  Try this....
+//	
+		double fFactor; 
+		fFactor = (double) 1.0/1000.0;
+		if (XAP_EncodingManager::get_instance()->is_cjk_letter(c))
+		{
+			return (UT_uint32) ( fFactor * dsize * (double) pChineseFont->get_CJK_Width());
+		}
+		else
+		{	
+			UT_uint32 width;
+			width = (UT_uint32) (fFactor * dsize * (double) pEnglishFont->getCharWidth(c));
+			return width;
+		}
 	}
 
 }
@@ -545,10 +588,31 @@ UT_uint32 GR_UnixGraphics::getFontAscent(GR_Font * fnt)
 	UT_ASSERT(m_pGC);
 
 	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
-	
-	GdkFont* pFont = hndl->getGdkFont();
-	GdkFont* pMatchFont=hndl->getMatchGdkFont();
-	return MAX(pFont->ascent, pMatchFont->ascent);
+//
+// Use GDK at low resolution.
+//
+	if(hndl->getSize() < MAX_ABI_GDK_FONT_SIZE)
+	{
+		GdkFont* pFont = hndl->getGdkFont();
+		GdkFont* pMatchFont=hndl->getMatchGdkFont();
+		return MAX(pFont->ascent, pMatchFont->ascent);
+	}
+//
+// Use metrics info at higher resolution.
+//
+	else
+	{
+		XAP_UnixFont * pSingleByte = NULL;
+		XAP_UnixFont * pMultiByte = NULL;
+		hndl->explodeUnixFonts(&pSingleByte,&pMultiByte);
+		GlobalFontInfo * gfsi = pSingleByte->getMetricsData()->gfi;
+		UT_ASSERT(gfsi);
+		UT_uint32 ascsingle = (UT_uint32) ( (double) gfsi->fontBBox.ury * (double) hndl->getSize() /1000.);
+		GlobalFontInfo * gfmi = pMultiByte->getMetricsData()->gfi;
+		UT_ASSERT(gfmi);
+		UT_uint32 ascmulti = (UT_uint32) ( (double) gfmi->fontBBox.ury * (double) hndl->getSize() /1000.);
+		return MAX(ascsingle,ascmulti);
+	}
 }
 
 UT_uint32 GR_UnixGraphics::getFontAscent()
@@ -562,10 +626,31 @@ UT_uint32 GR_UnixGraphics::getFontDescent(GR_Font * fnt)
 	UT_ASSERT(m_pGC);
 
 	XAP_UnixFontHandle * hndl = static_cast<XAP_UnixFontHandle *>(fnt);
-
-	GdkFont* pFont = hndl->getGdkFont();
-	GdkFont* pMatchFont=hndl->getMatchGdkFont();
-	return MAX(pFont->descent, pMatchFont->descent);
+//
+// Use GDK at low resolution.
+//
+	if(hndl->getSize() <  MAX_ABI_GDK_FONT_SIZE )
+	{
+		GdkFont* pFont = hndl->getGdkFont();
+		GdkFont* pMatchFont=hndl->getMatchGdkFont();
+		return MAX(pFont->descent, pMatchFont->descent);
+	}
+//
+// Use metrics info at higher resolution.
+//
+	else
+	{
+		XAP_UnixFont * pSingleByte = NULL;
+		XAP_UnixFont * pMultiByte = NULL;
+		hndl->explodeUnixFonts(&pSingleByte,&pMultiByte);
+		GlobalFontInfo * gfsi = pSingleByte->getMetricsData()->gfi;
+		UT_ASSERT(gfsi);
+		UT_uint32 dsingle = (UT_uint32) ( -(double) gfsi->fontBBox.lly * (double) hndl->getSize() /1000.);
+		GlobalFontInfo * gfmi = pMultiByte->getMetricsData()->gfi;
+		UT_ASSERT(gfmi);
+		UT_uint32 dmulti = (UT_uint32) ( -(double) gfmi->fontBBox.lly * (double) hndl->getSize() /1000.);
+		return MAX(dsingle,dmulti);
+	}
 }
 
 UT_uint32 GR_UnixGraphics::getFontDescent()
