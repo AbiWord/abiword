@@ -60,26 +60,32 @@ void XAP_QNXDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	// we get all our strings from the application string set
 	const XAP_StringSet * pSS = pFrame->getApp()->getStringSet();
 
+	XAP_QNXFrame * frame = static_cast<XAP_QNXFrame *>(pFrame);
+	UT_ASSERT(frame);
+	PtWidget_t * parent = frame->getTopLevelWindow();
+	UT_ASSERT(parent);
+
+
 	str1 = str2 = str3 = NULL;
 	def_button = 1;
 	switch (m_buttons)
 	{
 	case b_OC: // OK && Cancel
-str2 = pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str();
+		str2 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str());
 		if (m_defaultAnswer == a_CANCEL) {
 			def_button = 2;
 		}
 
 	case b_O: // OK
-str1 = pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str();
+str1 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_OK).c_str());
 		break;
 
 	case b_YNC: // Yes && No && Cancel
-str3 = pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str();
+str3 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel).c_str());
 
 	case b_YN: // Yes && No
-str1 = pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_Yes).c_str();
-str2 = pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_No).c_str();
+str1 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_Yes).c_str());
+str2 = strdup(pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_No).c_str());
 		if (m_defaultAnswer == a_NO) {
 			def_button = 2;
 		}
@@ -92,11 +98,7 @@ str2 = pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_No).c_str();
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 
-	// get top level window and it's GtkWidget *
-	XAP_QNXFrame * frame = static_cast<XAP_QNXFrame *>(pFrame);
-	UT_ASSERT(frame);
-	PtWidget_t * parent = frame->getTopLevelWindow();
-	UT_ASSERT(parent);
+
 
 	ret = PtAskQuestion(parent,
 						szCaption,
@@ -146,5 +148,9 @@ str2 = pSS->getValueUTF8(XAP_STRING_ID_DLG_QNXMB_No).c_str();
 	default:
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
+
+FREEP(str1);
+FREEP(str2);
+FREEP(str3);
 }
 
