@@ -38,7 +38,7 @@ const char* UT_basename(const char* path)
 	while(len > 0 && path[len-1] != '/')
 		str = &path[--len];
 
-	return str;
+	return str;_S_IFREG
 }
 
 /*!
@@ -57,3 +57,16 @@ bool UT_directoryExists(const char* dir)
     
     return false;
 }
+
+bool UT_isRegularFile(const char* filename)
+{
+    struct stat buf;
+    
+    if (lstat(dir, &buf) != -1)
+    {
+	return buf.st_mode & S_IFREG;
+    }
+    
+    return false;
+}
+

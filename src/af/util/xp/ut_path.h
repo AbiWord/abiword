@@ -10,7 +10,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ * bool UT_isRegularFile(const char* filename);
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
@@ -19,9 +19,11 @@
  
 #ifndef UT_PATH_H
 #define UT_PATH_H
-
+bool UT_isRegularFile(const char* filename);
 const char* UT_basename(const char* path);
 
 bool UT_directoryExists(const char* dir);
+
+bool UT_isRegularFile(const char* filename);
 
 #endif /* UT_PATH_H */

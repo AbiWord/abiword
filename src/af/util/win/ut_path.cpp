@@ -46,7 +46,19 @@ bool UT_directoryExists(const char* dir)
 
 	if( _stat( dir , &buf ) != -1 ) 
 	{
-		return ( buf.st_mode & _S_IFDIR );
+		return ( buf.st_mode & _S_IFDIR ) != 0;
 	}
 	return false;
 }
+
+bool UT_isRegularFile(const char* filename)
+{
+	struct _stat buf;
+
+	if( _stat( filename , &buf ) != -1 ) 
+	{
+		return ( buf.st_mode & _S_IFREG ) != 0;
+	}
+	return false;
+}
+
