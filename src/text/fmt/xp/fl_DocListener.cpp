@@ -574,8 +574,31 @@ UT_Bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 								// link them together
 								if (pLastRun)
 								{
+									// skip over any zero-length runs
+									pRun = pBL->m_pFirstRun;
+
+									while (pRun && pRun->m_iLen == 0)
+									{
+										fp_Run * pNuke = pRun;
+
+										pRun = pNuke->getNext();
+
+										// detach from their line
+										fp_Line* pLine = pNuke->getLine();
+										UT_ASSERT(pLine);
+										
+										pLine->removeRun(pNuke);
+										
+										delete pNuke;
+									}
+
+									pBL->m_pFirstRun = pRun;
+
+									// then link what's left
 									pLastRun->setNext(pBL->m_pFirstRun);
-									pBL->m_pFirstRun->setPrev(pLastRun);
+
+									if (pBL->m_pFirstRun)
+										pBL->m_pFirstRun->setPrev(pLastRun);
 								}
 								else
 								{

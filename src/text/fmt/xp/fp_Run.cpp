@@ -225,6 +225,10 @@ UT_Bool fp_Run::canBreakAfter() const
 			}
 		}
 	}
+	else if (!m_pNext)
+	{
+		return UT_TRUE;
+	}
 
 	if (m_pNext)
 	{
@@ -239,14 +243,24 @@ UT_Bool fp_Run::canBreakBefore() const
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
 
-	if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
+	if (m_iLen > 0)
 	{
-		UT_ASSERT(lenSpan>0);
-
-		if (pSpan[0] == 32)
+		if (m_pBL->getSpanPtr(m_iOffsetFirst, &pSpan, &lenSpan))
 		{
-			return UT_TRUE;
+			UT_ASSERT(lenSpan>0);
+
+			if (pSpan[0] == 32)
+			{
+				return UT_TRUE;
+			}
 		}
+	}
+	else
+	{
+		if (m_pNext)
+			return m_pNext->canBreakBefore();
+		else
+			return UT_TRUE;
 	}
 
 	return UT_FALSE;

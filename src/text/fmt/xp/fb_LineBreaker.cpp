@@ -606,7 +606,7 @@ int fb_SimpleLineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 		}
 
 		UT_ASSERT(pLine->getHeight() > 0);
-		UT_ASSERT(pLine->getWidth() > 0);
+		UT_ASSERT((pLine->getWidth() > 0) || (iCurLineWidth==0));
 
 		// The line is done.  Let's see if the size is going to be okay.
 		if (pLine->getHeight() > iGuessLineHeight)
