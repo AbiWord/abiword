@@ -42,12 +42,21 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
 	XAP_Dialog_Insert_Symbol(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~XAP_Dialog_Insert_Symbol(void);
 
+	//------------------------------------------------------------
+	// All these are needed for a modeless dialog
+
 	virtual void     useStart(void);
 	virtual void     useEnd(void);
 	virtual void	 runModal(XAP_Frame * pFrame) = 0;
 	virtual void	 runModeless(XAP_Frame * pFrame) = 0;
         virtual void     destroy(void)=0;
         virtual void     activate(void)=0;
+	void		 setActiveFrame(XAP_Frame *pFrame);
+	// Only Windows needs this
+	virtual void		notifyActiveFrame(XAP_Frame *pFrame) = 0;
+
+	//--------------------------------------------------------------
+
 	// read these back
 	UT_UCSChar	     getInsertedSymbol(void);
 	char *     getInsertedFont(void);
@@ -57,9 +66,6 @@ class XAP_Dialog_Insert_Symbol : public XAP_Dialog_Modeless
 	{
 		m_pListener = p_listener_in;
 	}
-	void				setActiveFrame(XAP_Frame *pFrame);
-	
-	virtual void		notifyActiveFrame(XAP_Frame *pFrame) = 0;
 
  protected:
 	// handle the XP-job of drawing our symbols.

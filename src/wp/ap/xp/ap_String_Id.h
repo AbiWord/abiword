@@ -88,6 +88,8 @@ dcl(DLG_WordCount_Characters_No,	"Characters (no spaces)")
 dcl(DLG_WordCount_Characters_Sp,	"Characters (with spaces)")
 dcl(DLG_WordCount_Paragraphs,		"Paragraphs")
 dcl(DLG_WordCount_Lines,			"Lines")
+dcl(DLG_WordCount_Update_Rate,          "Seconds between updates")
+dcl(DLG_WordCount_Auto_Update,          " Auto Update")
 	
 /* Spell dialog */
 dcl(DLG_Spell_SpellTitle,		"Spelling")
@@ -204,3 +206,9 @@ dcl(DLG_DateTime_AvailableFormats,		"&Available formats:")
 dcl(DLG_Field_FieldTitle,				"Field")
 dcl(DLG_Field_Types,					"&Types:")
 dcl(DLG_Field_Fields,					"&Fields:")
+
+
+
+
+
+

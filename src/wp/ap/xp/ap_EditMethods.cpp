@@ -4209,14 +4209,17 @@ static UT_Bool s_doWordCountDlg(FV_View * pView)
 		= (AP_Dialog_WordCount *)(pDialogFactory->requestDialog(AP_DIALOG_ID_WORDCOUNT));
 	UT_ASSERT(pDialog);
 
-	pDialog->setCount(pView->countWords());
-
-	pDialog->runModal(pFrame);
-	
+        if(pDialog->isRunning())
+	{
+	  //        	pDialog->setCount(pView->countWords());
+		pDialog->activate();
+	}
+        else
+	{
+        	pDialog->setCount(pView->countWords());
+	        pDialog->runModeless(pFrame);
+	}
 	UT_Bool bOK = UT_TRUE;
-
-	pDialogFactory->releaseDialog(pDialog);
-
 	return bOK;
 }
 

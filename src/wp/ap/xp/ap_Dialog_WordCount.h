@@ -29,20 +29,35 @@
 
 class XAP_Frame;
 
-class AP_Dialog_WordCount : public XAP_Dialog_NonPersistent
+class AP_Dialog_WordCount : public XAP_Dialog_Modeless
 {
 public:
 	AP_Dialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Dialog_WordCount(void);
 
-	virtual void					runModal(XAP_Frame * pFrame) = 0;
+
+	//------------------------------------------------------------
+	// All these are needed for a modeless dialog
+
+	virtual void     useStart(void);
+	virtual void     useEnd(void);
+	virtual void	 runModal(XAP_Frame * pFrame) = 0;
+	virtual void	 runModeless(XAP_Frame * pFrame) = 0;
+        virtual void     destroy(void)=0;
+        virtual void     activate(void)=0;
+	void		 setActiveFrame(XAP_Frame *pFrame);
+	// Only Windows needs this
+	virtual void	 notifyActiveFrame(XAP_Frame *pFrame) = 0;
+
+	//--------------------------------------------------------------
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
 
 	AP_Dialog_WordCount::tAnswer		getAnswer(void) const;
 	FV_DocCount                             getCount(void) const;
 	void                                    setCount(FV_DocCount);
-	
+	void                                    setCountFromActiveFrame(void);
+
 protected:
 	
 	AP_Dialog_WordCount::tAnswer		m_answer;

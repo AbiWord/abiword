@@ -21,6 +21,7 @@
 #define AP_UNIXDIALOG_WORDCOUNT_H
 
 #include "ap_Dialog_WordCount.h"
+#include "ut_timer.h"
 
 class XAP_UnixFrame;
 
@@ -33,12 +34,23 @@ public:
 	virtual ~AP_UnixDialog_WordCount(void);
 
 	virtual void			runModal(XAP_Frame * pFrame);
+	virtual void			runModeless(XAP_Frame * pFrame);
+        virtual void     destroy(void);
+        virtual void     activate(void);
+	// Only Windows needs this
+	virtual void	 notifyActiveFrame(XAP_Frame *pFrame);
+	virtual void	 notifyCloseFrame(XAP_Frame *pFrame){};
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-
+        static void      autoupdateWC(UT_Timer * pTimer);
+	virtual void     set_sensitivity(void);
+	virtual void     setUpdateCounter(void);
 	// callbacks can fire these events
 
 	virtual void			event_OK(void);
+	virtual void			event_Update(void);
+	virtual void			event_Checkbox(void);
+	virtual void			event_Spin(void);
 	virtual void			event_WindowDelete(void);
 
 protected:
@@ -47,13 +59,42 @@ protected:
 	virtual GtkWidget * _constructWindow(void);
 	void		        _populateWindowData(void);
 	virtual GtkWidget * _constructWindowContents(void);
+        void _updateWindowData(void);       
 
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wContent;
 	GtkWidget * m_buttonOK;
-	
+	GtkWidget * m_buttonUpdate;
+	GtkWidget * m_pTableframe;
+        UT_Timer * m_pAutoUpdateWC;
+        GtkWidget * m_pAutospin;
+        GtkWidget * m_pAutocheck;
+        GtkWidget * m_pAutospinlabel;
+	GtkAdjustment * m_Spinrange;
+        UT_Bool m_bAutoWC;
+        guint m_Update_rate;
 
+	// Labels for the Word Count data
+	GtkWidget * m_labelWCount;
+	GtkWidget * m_labelPCount;
+	GtkWidget * m_labelCCount;
+	GtkWidget * m_labelCNCount;
+	GtkWidget * m_labelLCount;	
+	GtkWidget * m_labelPgCount;	
+
+        // Handshake variables
+
+        UT_Bool m_bDestroy_says_stopupdating;
+        UT_Bool m_bAutoUpdate_happening_now;
 };
 
 #endif /* AP_UNIXDIALOG_WORDCOUNT_H */
+
+
+
+
+
+
+
+

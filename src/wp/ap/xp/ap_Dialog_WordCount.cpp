@@ -31,13 +31,21 @@
 #include "ap_Dialog_WordCount.h"
 
 AP_Dialog_WordCount::AP_Dialog_WordCount(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id)
+	: XAP_Dialog_Modeless(pDlgFactory,id)
 {
 	m_answer = a_OK;
 	memset(&m_count,0,sizeof(m_count));
 }
 
 AP_Dialog_WordCount::~AP_Dialog_WordCount(void)
+{
+}
+
+void AP_Dialog_WordCount::useStart( void)
+{
+}
+
+void AP_Dialog_WordCount::useEnd( void)
 {
 }
 
@@ -56,5 +64,15 @@ void AP_Dialog_WordCount::setCount(FV_DocCount nCount)
 	m_count = nCount;
 }
 
+void AP_Dialog_WordCount::setCountFromActiveFrame(void)
+{
+        FV_View * pview = (FV_View *) getActiveFrame()->getCurrentView();
+        setCount(pview->countWords());
+}
+
+void AP_Dialog_WordCount::setActiveFrame(XAP_Frame *pFrame)
+{
+	notifyActiveFrame(pFrame);
+}
 
 

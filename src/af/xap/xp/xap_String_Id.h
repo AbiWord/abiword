@@ -32,7 +32,7 @@ dcl(DLG_OK,						"OK")
 dcl(DLG_Cancel,					"Cancel")
 dcl(DLG_Close,					"Close")
 dcl(DLG_Insert,					"&Insert")
-
+dcl(DLG_Update,                                 "Update")
 /* Units */
 dcl(DLG_Unit_inch,				"inch")
 dcl(DLG_Unit_cm,				"cm")
@@ -115,4 +115,5 @@ dcl(DLG_UP_Grayscale,					"Grayscale")
 dcl(DLG_UP_Color,						"Color")
      /* Insert Symbol dialog */
 dcl(DLG_Insert_SymbolTitle,                        "Insert Symbol")
+
 
