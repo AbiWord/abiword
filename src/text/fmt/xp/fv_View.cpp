@@ -4840,12 +4840,12 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 }
 
 
-void FV_View::getPageScreenOffsets(fp_Page* pThePage, UT_sint32& xoff,
+void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
 								   UT_sint32& yoff)
 {
 	UT_uint32 y = getPageViewTopMargin();
 
-	fp_Page* pPage = m_pLayout->getFirstPage();
+	const fp_Page* pPage = m_pLayout->getFirstPage();
 	while (pPage)
 	{
 		if (pPage == pThePage)
@@ -7612,15 +7612,17 @@ bool FV_View::insertEndnote()
 		_setPoint(dp+1,false);
 	}
 
-	// add endnote anchor
+	// add endnote anchor, inside endnote section
 	//get ready to apply Endnote Reference style
-	EanchStart = getPoint();
+	EanchStart = getPoint()-1;
 
 	// if the block after which were inserted was not the last block
 	// we have to adjust the postion, because we are now siting at the
 	// start of the next block instead of our own
 	UT_DEBUGMSG(("fv_View::insertEndnote: EanchStart %d\n",EanchStart));
 
+	_clearSelection();
+	_setPoint(EanchStart);
 	if (cmdInsertField("endnote_anchor", attrs)==false)
 		return false;
 	EanchEnd = getPoint();
@@ -7650,9 +7652,13 @@ bool FV_View::insertEndnote()
 
 	pBL = _findBlockAtPosition(EanchStart);
 	UT_ASSERT(pBL != 0);
-	bWidthChange = pBL->getFirstRun()->getNext()->recalcWidth();
-	xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstRun()->getNext()->getType(),bWidthChange));
-	if(bWidthChange) pBL->setNeedsReformat();
+
+	if (pBL->getFirstRun()->getNext())
+	{
+		bWidthChange = pBL->getFirstRun()->getNext()->recalcWidth();
+		xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pBL->getFirstRun()->getNext()->getType(),bWidthChange));
+		if(bWidthChange) pBL->setNeedsReformat();
+	}
 
 	m_pDoc->endUserAtomicGlob();
 	_generalUpdate();
@@ -7706,6 +7712,7 @@ bool FV_View::insertEndnoteSection(const XML_Char * enpid)
  	setPoint(pointBreak+1);
 	UT_DEBUGMSG(("plam: about to insert end footnote\n"));
   	e |= m_pDoc->insertStrux(getPoint(),PTX_EndFootnote,block_attrs,NULL);
+	UT_DEBUGMSG(("plam: inserted everything\n"));
 
 	// Now create the endnotes section
 	// If there is a list item here remove it!

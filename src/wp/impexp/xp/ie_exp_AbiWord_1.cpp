@@ -816,6 +816,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeField();
             _closeHyperlink();
 			_closeBlock();
+			m_pie->write("</foot>");
 			return true;
 		}
 	case PTX_EndMarginnote:

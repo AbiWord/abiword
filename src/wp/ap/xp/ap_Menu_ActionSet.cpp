@@ -148,7 +148,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_INSERT_FIELD,		0,1,0,	"insField",			NULL,					NULL);
 	_s(AP_MENU_ID_INSERT_FILE, 0,1,0, "insFile", NULL, NULL);
 	_s(AP_MENU_ID_INSERT_SYMBOL,	0,1,0,	"insSymbol",		NULL,					NULL);
-	_s(AP_MENU_ID_INSERT_ENDNOTE,	0,0,0,	"insEndnote",		ap_GetState_AlwaysDisabled,					NULL);
+	_s(AP_MENU_ID_INSERT_ENDNOTE,	0,0,0,	"insEndnote",		NULL,					NULL);
 #ifdef HAVE_GNOME
 	_s(AP_MENU_ID_INSERT_PICTURE,   1,0,0,  NULL, NULL, NULL);
 #else

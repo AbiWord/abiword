@@ -50,7 +50,7 @@
 #define X_TestParseState(ps)	((m_parseState==(ps)))
 
 #define X_VerifyParseState(ps)	do {  if (!(X_TestParseState(ps)))			\
-									  {  m_error = UT_IE_BOGUSDOCUMENT;	\
+									  {  m_error = UT_IE_BOGUSDOCUMENT;	UT_ASSERT(0); \
 										 return; } } while (0)
 
 #define X_CheckDocument(b)		do {  if (!(b))								\
@@ -342,6 +342,14 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		    return;
 		}
 	}
+	case TT_FOOTNOTE:
+	{
+		// better be contained inside a section
+		X_VerifyParseState(_PS_Sec);
+		m_bWroteSection = true;
+		X_CheckError(getDoc()->appendStrux(PTX_SectionFootnote,atts));
+		return;
+	}
 	case TT_BLOCK:
 	{
 		X_VerifyParseState(_PS_Sec);
@@ -351,7 +359,6 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 		m_iInlineStart = getOperationCount();
 		return;
 	}
-
 	case TT_INLINE:
 		// ignored for fields
 		if (m_parseState == _PS_Field) return;
@@ -612,6 +619,11 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_SECTION:
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Doc;
+		return;
+
+	case TT_FOOTNOTE:
+		X_VerifyParseState(_PS_Sec);
+		X_CheckError(getDoc()->appendStrux(PTX_EndFootnote,NULL));
 		return;
 
 	case TT_TABLE:

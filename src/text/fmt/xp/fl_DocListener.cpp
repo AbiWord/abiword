@@ -336,7 +336,20 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	break;
 
 	case PTX_SectionFootnote:
-		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionFootnote'"));
+	{
+		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionFootnote'\n"));
+		// This isn't probably quite right.
+// 		fl_FootnoteLayout* pSL = new fl_FootnoteLayout(m_pCurrentSL->getDocLayout(), sdh, pcr->getIndexAP(), 
+// 													   m_pCurrentSL);
+
+ 		fl_ContainerLayout* pSL = m_pCurrentSL->insert(sdh, NULL, pcr->getIndexAP(), FL_CONTAINER_FOOTNOTE);
+		*psfh = (PL_StruxFmtHandle)pSL;
+		m_pCurrentSL = (fl_SectionLayout*)pSL;
+		break;
+	}
+
+	case PTX_EndFootnote:
+		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'EndFootnote'\n"));
 		break;
 
 	case PTX_SectionHdrFtr:

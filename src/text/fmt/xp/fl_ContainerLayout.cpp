@@ -296,7 +296,10 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 			pPrev->_insertIntoList(pL);
 		break;
 	case FL_CONTAINER_FOOTNOTE:
-		pL = (fl_ContainerLayout *) new fl_FootnoteLayout(getDocLayout(), sdh, indexAP, this);
+		UT_ASSERT(myContainingLayout()->getContainerType()==FL_CONTAINER_DOCSECTION);
+		pL = (fl_ContainerLayout *) new fl_FootnoteLayout(getDocLayout(), 
+					  static_cast<fl_DocSectionLayout*>(myContainingLayout()), 
+					  sdh, indexAP, this);
 		if (pPrev)
 			pPrev->_insertIntoList(pL);
 		break;

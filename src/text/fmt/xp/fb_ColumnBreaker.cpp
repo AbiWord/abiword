@@ -27,6 +27,7 @@
 #include "fp_Column.h"
 #include "ut_assert.h"
 #include "fl_ContainerLayout.h"
+#include "fl_FootnoteLayout.h"
 #include "fp_Page.h"
 
 fb_ColumnBreaker::fb_ColumnBreaker() :
@@ -132,7 +133,32 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 
 				// Ok.  Now, deduct the proper amount from iMaxColHeight.
 				// We need to get the footnote section.
-				// what's the proper place to do that?
+
+				// I guess that what we have to do is to get the
+				// parent BlockLayout of pCurLine (pFirstLayout, I hope), and traverse its
+				// getNext() to get, hopefully, a FootnoteLayout.  Then
+				// we get its height.
+
+				UT_ASSERT(pFirstLayout->getNext() && 
+						  pFirstLayout->getNext()->getType() == PTX_SectionFootnote);
+
+				// we might have a number of footnote layouts, if we have a number of
+				// footnotes in this paragraph.
+				fl_FootnoteLayout * pFootL = static_cast<fl_FootnoteLayout *>(pFirstLayout->getNext());
+
+				// we want the height of the contained block, eh.
+				fl_BlockLayout * pBL = static_cast<fl_BlockLayout *> (pFootL->getFirstLayout());
+
+				// now, check out its height and add that to stuff.
+				fp_ContainerObject * pFC = pBL->getFirstContainer();
+				int iFootnoteHeight = 0;
+				while (pFC)
+				{
+					iFootnoteHeight += pFC->getHeightInLayoutUnits();
+					pFC = pFC->getNext();
+				}
+// 				UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
+				iWorkingColHeight += iFootnoteHeight;
 			}
 		}
 
@@ -486,6 +512,7 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 		{
 			if (pCurContainer->getContainer() != pCurColumn)
 			{
+				UT_ASSERT(pCurContainer->getContainer());
 				static_cast<fp_VerticalContainer *>(pCurContainer->getContainer())->removeContainer(pCurContainer);
 				pCurColumn->addContainer(pCurContainer);
 			}

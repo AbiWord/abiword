@@ -33,6 +33,7 @@
 #include "gr_Graphics.h"
 #include "gr_DrawArgs.h"
 #include "fv_View.h"
+#include "fp_FootnoteContainer.h"
 #include "fp_TableContainer.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -240,7 +241,7 @@ UT_sint32 fp_Page::getBottom(void) const
 	return getHeight() - iBottomMargin;
 }
 
-void fp_Page::getScreenOffsets(fp_Container* pContainer, UT_sint32& xoff, UT_sint32& yoff)
+void fp_Page::getScreenOffsets(fp_Container* pContainer, UT_sint32& xoff, UT_sint32& yoff) const
 {
 	if(!m_pView)
 	{
@@ -272,7 +273,7 @@ void fp_Page::setPrev(fp_Page* p)
 	m_pPrev = p;
 }
 
-FL_DocLayout* fp_Page::getDocLayout()
+FL_DocLayout* fp_Page::getDocLayout() const
 {
 	return m_pLayout;
 }
@@ -326,8 +327,6 @@ void fp_Page::_drawCropMarks(dg_DrawArgs* pDA)
 
 void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 {
-	// draw each column on the page
-	int count = m_vecColumnLeaders.getItemCount();
 //
 // Fill the Page with the page color
 //
@@ -357,33 +356,35 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 
     _drawCropMarks(pDA);
 
+	// draw each column on the page
+	int count = m_vecColumnLeaders.getItemCount();
 	for (int i=0; i<count; i++)
 	{
 		fp_Column* pCol = (fp_Column*) m_vecColumnLeaders.getNthItem(i);
-
-		fp_Column* pTmpCol = pCol;
-		while (pTmpCol)
+		while (pCol)
 		{
 			dg_DrawArgs da = *pDA;
-			da.xoff += pTmpCol->getX();
-			da.yoff += pTmpCol->getY();
-			pTmpCol->draw(&da);
+			da.xoff += pCol->getX();
+			da.yoff += pCol->getY();
+			pCol->draw(&da);
 
-			fp_Column *pNextCol = pTmpCol->getFollower();
+			fp_Column *pNextCol = pCol->getFollower();
 
-			if(pNextCol && pTmpCol->getDocSectionLayout()->getColumnLineBetween())
+			if(pNextCol && pCol->getDocSectionLayout()->getColumnLineBetween())
 			{
 				// draw line between columns if required.
 
-				UT_sint32 x = pDA->xoff + (pTmpCol->getX() + pTmpCol->getWidth() + pNextCol->getX()) / 2;
-				UT_sint32 y = pDA->yoff + pTmpCol->getY();
+				UT_sint32 x = pDA->xoff + (pCol->getX() + pCol->getWidth() + pNextCol->getX()) / 2;
+				UT_sint32 y = pDA->yoff + pCol->getY();
 				pDA->pG->setColor(m_pView->getColorColumnLine());
-				pDA->pG->drawLine(x, y, x, y + pTmpCol->getHeight());
+				pDA->pG->drawLine(x, y, x, y + pCol->getHeight());
 			}
 
-			pTmpCol = pNextCol;
+			pCol = pNextCol;
 		}
 	}
+
+	// draw the page's headers and footers
     if(m_pView->getViewMode() == VIEW_PRINT)
 	{
 		if (m_pHeader)
@@ -402,6 +403,18 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool bAlwaysUseWhiteBackground)
 			m_pFooter->draw(&da);
 		}
 	}
+
+	// draw footnotes
+	count = m_vecFootnotes.getItemCount();
+	for (int i=0; i<count; i++)
+	{
+		fp_FootnoteContainer* pFC = (fp_FootnoteContainer*) m_vecFootnotes.getNthItem(i);
+		dg_DrawArgs da = *pDA;
+		da.xoff += pFC->getX();
+		da.yoff += pFC->getY();
+		pFC->draw(&da);
+	}
+
 	m_bNeedsRedraw = false;
 }
 
@@ -426,8 +439,8 @@ fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
  */
 bool fp_Page::breakPage(void)
 {
-	UT_sint32 count = countColumnLeaders();
-	if (count <= 0)
+	UT_uint32 count = countColumnLeaders();
+	if (count == 0)
 	{
 		return true;
 	}
@@ -447,7 +460,7 @@ bool fp_Page::breakPage(void)
 	UT_sint32 availHeight = getHeight() - iBottomMargin;
 #endif
 
-	UT_sint32 i;
+	UT_uint32 i;
 	for (i=0; i<count; i++)
 	{
 		fp_Column* pLeader = getNthColumnLeader(i);
@@ -684,11 +697,16 @@ fp_Column * fp_Page::getPrevColOnPages(fp_Column * pCol, fp_Page * pPage)
 
 void fp_Page::_reformat(void)
 {
-	int count = countColumnLeaders();
-	if (count <= 0)
-	{
+	// this is naive, because columns can cause the footnotes
+	// to change pages.  But it'll do for now.
+	_reformatColumns(); _reformatFootnotes();
+}
+
+void fp_Page::_reformatColumns(void)
+{
+	UT_uint32 count = countColumnLeaders();
+	if (count == 0)
 		return;
-	}
 
 	fp_Column* pFirstColumnLeader = getNthColumnLeader(0);
 	fp_Column * pLastCol = NULL;
@@ -711,13 +729,25 @@ void fp_Page::_reformat(void)
 	UT_sint32 iYLayoutUnits = iTopMarginLayoutUnits;
 #endif
 
-	int i;
-	for (i=0; i<count; i++)
+	// we need the height of the footnotes on this page, to deduct.
+	UT_uint32 iFootnoteHeight = 0;
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	UT_uint32 iFootnoteHeightLayoutUnits = 0;
+#endif
+	for (UT_uint32 i = 0; i < countFootnoteContainers(); i++)
+	{
+		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		iFootnoteHeightLayoutUnits += getNthFootnoteContainer(i)->getHeightInLayoutUnits();
+#endif
+	}
+
+	for (UT_uint32 i = 0; i < count; i++)
 	{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		if (iYLayoutUnits >= (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 #else
-		if (iY >= (getHeight() - iBottomMargin))
+		if (iY >= (getHeight() - iBottomMargin - iFootnoteHeight))
 #endif
 		{
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
@@ -833,30 +863,11 @@ void fp_Page::_reformat(void)
 				return;
 			}
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
-			UT_sint32 iYLayoutNext = 0;
-			if(pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)
-			{
-				fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pFirstNextContainer);
-				iYLayoutNext = pTC->getHeightInLayoutUnits();
-			}
-			else
-			{
-				iYLayoutNext = pFirstNextContainer->getHeightInLayoutUnits();
-			}
+			UT_sint32 iYLayoutNext = pFirstNextContainer->getHeightInLayoutUnits();
 			if( (iYLayoutUnits + 3*iYLayoutNext) < (getHeightInLayoutUnits() - iBottomMarginLayoutUnits))
 #else
-			UT_sint32 iYNext = 0;
-			bool bIsTable = false;
-			if(pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE)
-			{
-				fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pFirstNextContainer);
-				iYNext = pTC->getHeight();
-				bIsTable = true;
-			}
-			else
-			{
-				iYNext = pFirstNextContainer->getHeight();
-			}
+			UT_sint32 iYNext = pFirstNextContainer->getHeight();
+			bool bIsTable = (pFirstNextContainer->getContainerType() == FP_CONTAINER_TABLE);
 			if( !bIsTable && (iY + 3*iYNext) < (getHeight() - iBottomMargin))
 #endif
 			{
@@ -869,6 +880,47 @@ void fp_Page::_reformat(void)
 		}
 	}
 	return;
+}
+
+void fp_Page::_reformatFootnotes(void)
+{
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	UT_uint32 pageHeightLayoutUnits = getAvailableHeightInLayoutUnits();
+	UT_uint32 iFootnoteHeightLayoutUnits = 0;
+#else
+	UT_uint32 pageHeight = getAvailableHeight();
+	UT_uint32 iFootnoteHeight = 0;
+#endif
+	for (UT_uint32 i = 0; i < countFootnoteContainers(); i++)
+	{
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		iFootnoteHeightLayoutUnits += getNthFootnoteContainer(i)->getHeightInLayoutUnits();
+#else
+		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
+#endif
+	}
+
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+	pageHeightLayoutUnits -= iFootnoteHeightLayoutUnits;
+	UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeightLayoutUnits, iFootnoteHeightLayoutUnits));
+#else
+	pageHeight -= iFootnoteHeight;
+	UT_DEBUGMSG(("got page height %d, footnote height %d\n", pageHeight, iFootnoteHeight));
+#endif
+	for (UT_uint32 i = 0; i < countFootnoteContainers(); i++)
+	{
+		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
+		fl_DocSectionLayout* pSL = (getNthColumnLeader(0)->getDocSectionLayout());
+
+		pFC->setX(pSL->getLeftMargin());
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+		pFC->setYInLayoutUnits(pageHeightLayoutUnits);
+		pageHeightLayoutUnits += getNthFootnoteContainer(i)->getHeightInLayoutUnits();
+#else
+		pFC->setY(pageHeight);
+		pageHeight += getNthFootnoteContainer(i)->getHeight();
+#endif
+	}
 }
 
 /*!
@@ -936,7 +988,7 @@ void fp_Page::removeColumnLeader(fp_Column* pLeader)
 		pDSLNew->addOwnedPage(this);
 		m_pOwner = pDSLNew;
 	}
-	_reformat();
+	_reformatColumns();
 }
 
 /*!
@@ -1211,7 +1263,7 @@ void fp_Page::removeHdrFtr(HdrFtrType hfType)
 	}
 }
 
-fp_ShadowContainer* fp_Page::getHdrFtrP(HdrFtrType hfType)
+fp_ShadowContainer* fp_Page::getHdrFtrP(HdrFtrType hfType) const
 {
 	if(hfType < FL_HDRFTR_FOOTER)
 	{
@@ -1321,3 +1373,40 @@ fp_ShadowContainer* fp_Page::getHdrFtrContainer(fl_HdrFtrSectionLayout* pHFSL)
 			return buildHdrFtrContainer(pHFSL, FL_HDRFTR_FOOTER);
 	}
 }
+
+UT_uint32 fp_Page::countFootnoteContainers(void) const
+{
+	return m_vecFootnotes.getItemCount();
+}
+
+fp_FootnoteContainer* fp_Page::getNthFootnoteContainer(UT_sint32 n) const 
+{
+// 	if (m_pFootnoteContainer)
+// 		return m_pFootnoteContainer;
+// 	return buildFootnoteContainer(pFL);
+	return (fp_FootnoteContainer*)m_vecFootnotes.getNthItem(n);
+} 
+
+bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC, 
+											fp_FootnoteContainer * pAfter)
+{
+	if (pAfter)
+	{
+		UT_sint32 ndx = m_vecFootnotes.findItem(pAfter);
+		UT_ASSERT(ndx >= 0);
+		m_vecFootnotes.insertItemAt(pFC, ndx+1);
+	}
+	else
+	{
+		m_vecFootnotes.insertItemAt(pFC, 0);
+	}
+
+	_reformat();
+
+	return true;
+}
+
+void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)
+{
+}
+

@@ -277,23 +277,10 @@ protected:
 	UT_RGBColor				_getColorPG(void) const { return m_pColorPG; }
 	UT_RGBColor				_getColorFG(void) const { return m_pColorFG; }
 	UT_RGBColor				_getColorHL(void) const { return m_pColorHL; }
-	bool					_setColorFG(UT_RGBColor c)
-								{
-									UT_RGBColor o = c;
-									m_pColorFG = c;
-									return o != c;
-								}
-	bool					_setColorHL(UT_RGBColor c)
-								{
-									UT_RGBColor o = c;
-									m_pColorHL = c;
-									return o != c;
-								}
-
-	bool                    _setColorHL(const char *pszColor)
-	                            {
-		                            return m_pColorHL.setColor(pszColor);
-								}
+	void					_setColorFG(UT_RGBColor c) { m_pColorFG = c; }
+	void					_setColorHL(UT_RGBColor c) { m_pColorHL = c; }
+	void                    _setColorHL(const char *pszColor)
+		{ m_pColorHL.setColor(pszColor); }
 	
 	void					_setLine(fp_Line* pLine) { m_pLine = pLine; }
 	void					_setHeight(UT_sint32 iHeight)
@@ -826,6 +813,42 @@ private:
 		TEXT_POSITION_SUBSCRIPT
 	};
 	UT_Byte					m_fPosition;
+};
+
+class ABI_EXPORT fp_FieldEndnoteRefRun : public fp_FieldRun
+{
+public:
+
+	fp_FieldEndnoteRefRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldEndnoteRefRun(){}
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
+#if 0
+	UT_uint32				getPID() const {return m_iPID;}
+private:
+	UT_uint32 m_iPID;
+#endif
+};
+
+class ABI_EXPORT fp_FieldEndnoteAnchorRun : public fp_FieldRun
+{
+public:
+
+	fp_FieldEndnoteAnchorRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldEndnoteAnchorRun() {}
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+	virtual UT_uint32		needsFrequentUpdates(){return FIELD_UPDATE_ENDNOTE;};
+#if 0
+	UT_uint32				getPID() const {return m_iPID;}
+private:
+	UT_uint32 m_iPID;
+#endif
 };
 
 class ABI_EXPORT fp_FieldFootnoteRefRun : public fp_FieldRun

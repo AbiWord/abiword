@@ -2086,12 +2086,11 @@ private:
 
 
 fl_HdrFtrSectionLayout::fl_HdrFtrSectionLayout(HdrFtrType iHFType, FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_HDRFTR,FL_CONTAINER_HDRFTR,PTX_SectionHdrFtr,pDocSL)
+	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_HDRFTR,FL_CONTAINER_HDRFTR,PTX_SectionHdrFtr,pDocSL),
+	  m_pDocSL(pDocSL),
+	  m_iHFType(iHFType),
+	  m_pHdrFtrContainer(NULL)
 {
-	m_pDocSL = pDocSL;
-	m_iHFType = iHFType;
-	m_iType = FL_SECTION_HDRFTR;
-	m_pHdrFtrContainer = NULL;
 	fl_Layout::setType(PTX_SectionHdrFtr); // Set the type of this strux
 	UT_DEBUGMSG(("SEVIOR: Creating HFType =%d \n",m_iHFType));
 //
@@ -3658,7 +3657,6 @@ bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
 
-	FV_View* pView = m_pHFSL->getDocLayout()->getView();
 	switch (pcrx->getStruxType())
 	{
 	case PTX_Section:

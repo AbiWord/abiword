@@ -2003,7 +2003,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	if(bDrawBckg)
 	{
-		getGR()->fillRect( clrNormalBackground,
+		getGR()->fillRect(clrNormalBackground,
 					pDA->xoff,
 					yTopOfSel + getAscent() - getLine()->getAscent(),
 					getWidth(),

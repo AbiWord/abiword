@@ -784,15 +784,19 @@ fl_BlockLayout::~fl_BlockLayout()
 fl_DocSectionLayout * fl_BlockLayout::getDocSectionLayout(void) const
 {
 	fl_DocSectionLayout * pDSL = NULL;
-	if(getSectionLayout()->getType() == FL_SECTION_DOC ||
-	   getSectionLayout()->getType() == FL_SECTION_FOOTNOTE)
+	if(getSectionLayout()->getType() == FL_SECTION_DOC)
 	{
 		pDSL = static_cast<fl_DocSectionLayout *>( m_pSectionLayout);
 		return pDSL;
 	}
-	else if(getSectionLayout()->getType() == FL_SECTION_HDRFTR)
+	else if	(getSectionLayout()->getType() == FL_SECTION_FOOTNOTE)
 	{
-		pDSL = static_cast<fl_HdrFtrSectionLayout *>( getSectionLayout())->getDocSectionLayout();
+		pDSL = static_cast<fl_FootnoteLayout *>(getSectionLayout())->getDocSectionLayout();
+		return pDSL;
+	}
+	else if (getSectionLayout()->getType() == FL_SECTION_HDRFTR)
+	{
+		pDSL = static_cast<fl_HdrFtrSectionLayout *>(getSectionLayout())->getDocSectionLayout();
 		return pDSL;
 	}
 	else if (getSectionLayout()->getType() == FL_SECTION_SHADOW)

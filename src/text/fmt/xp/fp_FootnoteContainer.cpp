@@ -86,7 +86,6 @@ void fp_FootnoteContainer::setContainer(fp_Container * pContainer)
 		clearScreen();
 	}
 	fp_Container::setContainer(pContainer);
-	UT_ASSERT(pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE);
 }
 
 /*!
@@ -103,7 +102,7 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
 		ytop = pClipRect->top;
         ybot += ytop + 1;
-		UT_DEBUGMSG(("Footnote: clip top %d clip bot %d \n",ytop,ybot));
+		xxx_UT_DEBUGMSG(("Footnote: clip top %d clip bot %d \n",ytop,ybot));
 	}
 	else
 	{
@@ -111,6 +110,31 @@ void fp_FootnoteContainer::draw(dg_DrawArgs* pDA)
 		ybot = imax;
 	}
 	xxx_UT_DEBUGMSG(("Footnote: Drawing unbroken footnote %x x %d, y %d width %d height %d \n",this,getX(),getY(),getWidth(),getHeight()));
+
+//
+// Only draw the lines in the clipping region.
+//
+	dg_DrawArgs da = *pDA;
+
+	UT_uint32 count = countCons();
+	for (UT_uint32 i = 0; i<count; i++)
+	{
+		fp_ContainerObject* pContainer = (fp_ContainerObject*) getNthCon(i);
+		UT_sint32 ydiff = 0;
+		da.xoff = pDA->xoff + pContainer->getX();
+		da.yoff = pDA->yoff + pContainer->getY();
+		ydiff = da.yoff + pContainer->getHeight();
+		UT_sint32 sumHeight = pContainer->getHeight() + (ybot-ytop);
+		UT_sint32 totDiff = 0;
+		if(da.yoff < ytop)
+			totDiff = ybot - da.yoff;
+		else
+			totDiff = ydiff - ytop;
+
+		if ((totDiff < sumHeight) || (pClipRect == NULL))
+			pContainer->draw(&da);
+	}
+    _drawBoundaries(pDA);
 }
 
 fp_Container * fp_FootnoteContainer::getNextContainerInSection() const

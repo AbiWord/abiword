@@ -997,6 +997,11 @@ void fp_Column::layout(void)
 	for (UT_uint32 i=0; i < iCountContainers ; i++)
 	{
 		pContainer = (fp_Container*) getNthCon(i);
+
+		// ignore footnotes
+		if (pContainer->getContainerType() == FP_CONTAINER_FOOTNOTE)
+			continue;
+		
 		xxx_UT_DEBUGMSG(("Column Layout: Container %d Container %x Type %d \n",i,pContainer,pContainer->getContainerType()));
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 		iY = (int)(ScaleLayoutUnitsToScreen * iYLayoutUnits + 0.5);

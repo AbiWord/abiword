@@ -54,12 +54,14 @@
 #include "ut_assert.h"
 #include "ut_units.h"
 
-fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
-	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_FOOTNOTE,FL_CONTAINER_FOOTNOTE,PTX_SectionFootnote,pMyContainerLayout),
+fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
+ 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_FOOTNOTE,FL_CONTAINER_FOOTNOTE,PTX_SectionFootnote,pMyContainerLayout),
+	  m_pDocSL(pDocSL),
 	  m_bNeedsFormat(true),
 	  m_bNeedsRebuild(false)
 {
 	_createFootnoteContainer();
+	_insertFootnoteContainer(getFirstContainer());
 }
 
 fl_FootnoteLayout::~fl_FootnoteLayout()
@@ -169,17 +171,48 @@ fl_SectionLayout * fl_FootnoteLayout::getSectionLayout(void) const
   Create a new Footnote container.
   \params If pPrevFootnote is non-null place the new cell after this in the linked
           list, otherwise just append it to the end.
-  \return The newly created Cell container
+  \return The newly created Footnote container
 */
 fp_Container* fl_FootnoteLayout::getNewContainer(fp_Container *)
 {
-//
-// One cell container per cell layout
-//
 	UT_ASSERT(getPrev() == NULL);
 	UT_ASSERT((getFirstContainer() == NULL) && (getLastContainer()==NULL));
+	UT_DEBUGMSG(("PLAM: creating new footnote container\n"));
 	_createFootnoteContainer();
+	_insertFootnoteContainer(getFirstContainer());
 	return (fp_Container *) getLastContainer();
+}
+
+void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
+{
+	UT_DEBUGMSG(("inserting footnote container into parent container\n"));
+	fl_ContainerLayout * pUPCL = myContainingLayout();
+	fl_ContainerLayout * pPrevL = (fl_ContainerLayout *) getPrev();
+	fp_Container * pPrevCon = NULL;
+	fp_Container * pUpCon = NULL;
+	fp_Page * pPage = NULL;
+
+	// get the owning container
+	if(pPrevL != NULL)
+	{
+		pPrevCon = pPrevL->getLastContainer();
+		pUpCon = pPrevCon->getContainer();
+	}
+	else
+	{
+		pUpCon = pUPCL->getLastContainer();
+	}
+
+	pPage = pUpCon->getPage();
+	pNewFC->setContainer(pUpCon);
+
+	// need to put onto page as well, in the appropriate place.
+	UT_ASSERT(pPage);
+	if (pPage->countFootnoteContainers() == 0)
+		pPage->insertFootnoteContainer((fp_FootnoteContainer*)pNewFC, NULL);
+	else
+		pPage->insertFootnoteContainer((fp_FootnoteContainer*)pNewFC,
+									   pPage->getNthFootnoteContainer(pPage->countFootnoteContainers()-1));
 }
 
 

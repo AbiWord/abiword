@@ -222,7 +222,7 @@ public:
 
 	// TODO some of these functions should move into protected
 
-	void	getPageScreenOffsets(fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
+	void	getPageScreenOffsets(const fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
 	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff)const;
 	virtual UT_sint32 getPageViewLeftMargin(void) const;
 	virtual UT_sint32 getPageViewTopMargin(void) const;

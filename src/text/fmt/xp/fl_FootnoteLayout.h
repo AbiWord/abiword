@@ -43,7 +43,7 @@ class ABI_EXPORT fl_FootnoteLayout : public fl_SectionLayout
 	friend class fp_FootnoteContainer;
 
 public:
-	fl_FootnoteLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
+	fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout * pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_FootnoteLayout();
 
 	virtual bool 	doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
@@ -64,14 +64,17 @@ public:
 	bool                     recalculateFields(UT_uint32 iUpdateCount);
 	virtual void		     redrawUpdate(void);
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL);
+	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
 
 protected:
 	virtual void		     _lookupProperties(void);
 	virtual void             _purgeLayout(void);
 private:
 	void                     _createFootnoteContainer(void);
+	void                     _insertFootnoteContainer(fp_Container * pNewFC);
 	void                     _localCollapse();
 
+	fl_DocSectionLayout*	 m_pDocSL;
 	bool                   m_bNeedsFormat;
 	bool                   m_bNeedsRebuild;
 };

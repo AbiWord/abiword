@@ -69,15 +69,14 @@ public:
 	void				setPrev(fp_Page*);
 	void                markAllDirty(void) {m_bNeedsRedraw = true;}
 	UT_sint32			getColumnGap(void) const;
-	FL_DocLayout*		getDocLayout();
+	FL_DocLayout*		getDocLayout() const;
 	void				setView(FV_View*);
 
 	inline fl_DocSectionLayout* getOwningSection(void) const { return m_pOwner; }
 
 	PT_DocPosition		getFirstLastPos(bool bFirst) const;
 	void				mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool bUseHdrFtr = false, fl_HdrFtrShadow ** pShadow = NULL);
-	void				getOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
-	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff);
+	void				getScreenOffsets(fp_Container*, UT_sint32& xoff, UT_sint32& yoff) const;
 
 	void				draw(dg_DrawArgs*, bool bAlaysUseWhiteBackground=false);
 	bool				needsRedraw(void) const;
@@ -88,6 +87,8 @@ public:
     UT_sint32           getFilledHeight(fp_Container * prevContainer) const;
 	UT_sint32           getAvailableHeight(void) const;
 #endif
+
+	// Leader (e.g. column) functions.
 	void 				columnHeightChanged(fp_Column* pLeader);
 	bool                breakPage(void);
 	UT_uint32 			countColumnLeaders(void) const;
@@ -98,13 +99,17 @@ public:
 
 	// Header/Footer functions.
 	void                removeHdrFtr(HdrFtrType hfType);
-	fp_ShadowContainer* getHdrFtrP(HdrFtrType hfType);
+	fp_ShadowContainer* getHdrFtrP(HdrFtrType hfType) const;
 	fp_ShadowContainer*	getHdrFtrContainer(fl_HdrFtrSectionLayout*);
 	fp_ShadowContainer*	buildHdrFtrContainer(fl_HdrFtrSectionLayout*, 
 											 HdrFtrType hfType);
-	// Footnote functions.
-	fp_FootnoteContainer* getFootnoteContainer(fl_FootnoteLayout * pFL); 
 
+	// Footnote functions.
+	UT_uint32			countFootnoteContainers(void) const;
+	fp_FootnoteContainer* getNthFootnoteContainer(UT_sint32 n) const; 
+	bool				insertFootnoteContainer(fp_FootnoteContainer * pFC, 
+												fp_FootnoteContainer * pAfter);
+	void				removeFootnoteContainer(fp_FootnoteContainer * pFC);
 
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
@@ -113,6 +118,8 @@ public:
 protected:
     void                _drawCropMarks(dg_DrawArgs*);
 	void				_reformat(void);
+	void				_reformatColumns(void);
+	void				_reformatFootnotes(void);
 
 private:
 	// don't allow copying
@@ -136,7 +143,7 @@ private:
 	fp_ShadowContainer* m_pFooter;
 	fp_ShadowContainer* m_pHeader;
 
-	fp_FootnoteContainer * m_pFootnoteContainer;
+	UT_Vector			m_vecFootnotes;
 };
 
 #endif /* PAGE_H */

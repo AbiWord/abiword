@@ -45,6 +45,7 @@
 #include "ut_growbuf.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
+#include "fl_FootnoteLayout.h"
 
 #include "ap_Prefs.h"
 #include "xap_Frame.h"
@@ -372,7 +373,7 @@ bool fp_Run::updateHighlightColor(void)
 				// if it is, then use the cell backgound color
 				if(pCon->getContainerType() == FP_CONTAINER_CELL && (((fp_CellContainer *) pCon)->getBgStyle() != FS_OFF))
 				{
-					m_pColorHL = ((fp_CellContainer *) pCon)->getBgColor();
+					_setColorHL(((fp_CellContainer *) pCon)->getBgColor());
 					return m_pColorHL != oldColor;
 				}
 				pPage = pCon->getPage();
@@ -381,7 +382,7 @@ bool fp_Run::updateHighlightColor(void)
 		if (pPage != NULL)
 		{
 			if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
-				m_pColorHL = *pPage->getOwningSection()->getPaperColor();
+				_setColorHL(*pPage->getOwningSection()->getPaperColor());
 			else
 			{
 				UT_setColor (m_pColorHL, 255, 255, 255);
@@ -394,7 +395,7 @@ bool fp_Run::updateHighlightColor(void)
 			return m_pColorHL != oldColor;
 		}
 		else
-			m_pColorHL = *getBlock()->getDocSectionLayout()->getPaperColor();
+			_setColorHL(*getBlock()->getDocSectionLayout()->getPaperColor());
 
 		return m_pColorHL != oldColor;
 	}
@@ -1296,7 +1297,8 @@ void fp_TabRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	UT_RGBColor clrFG;
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, getBlock()->getDocument(), true), clrFG);
-	bChanged |= _setColorFG(clrFG);
+	bChanged |= (clrFG != _getColorFG());
+	_setColorFG(clrFG);
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();
@@ -2900,8 +2902,6 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 				&& (iSel2 > iRunBase)
 				)
 			{
-				UT_RGBColor c = pView->getColorImageResize();
-				
 				UT_uint32 top = yoff;
 				UT_uint32 left = xoff;
 				UT_uint32 right = xoff + getWidth() - 1;
@@ -4077,33 +4077,23 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 
 	UT_ASSERT(bRes);
 
-	// What we want to do now is to search in the containing
-	// sectionLayout's EndnoteSection for all of the endnotes which
-	// are numbered before us.  This assumes, of course, that we want
-	// numeric endnotes.  I'm not sure how to do otherwise at the
-	// moment.  Probably a paragraph property or something.  or maybe
-	// we put it directly on the endnote anchor. -PL
-
-	// Clearly this should be cached or something, later.  It's updated
-	// far, far too often.
-
-	fl_DocSectionLayout * pEndSL = getBlock()->
-		getDocSectionLayout()->getEndnote();
+	// now we need to find the block's footnote section.
+	fl_FootnoteLayout * pFootL = static_cast<fl_FootnoteLayout *>(getBlock()->getNext());
 
 	// Hmm, this is kind of messy; we can be called before
 	// the endnote section has been added.
-	if (pEndSL == NULL)
+	if (pFootL == NULL)
 	{
 		UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 		UT_UCS4_strcpy_char(sz_ucs_FieldValue, "?");
 		return _setValue(sz_ucs_FieldValue);
 	}
-	UT_ASSERT(pEndSL->getType() == FL_SECTION_ENDNOTE);
+	UT_ASSERT(pFootL->getType() == FL_SECTION_FOOTNOTE);
 
 	// Now, count out how many paragraphs have special endnote-id tags
 	// until we reach the desired paragraph.  (para == block)
 
-	fl_BlockLayout * pBL = (fl_BlockLayout *) pEndSL->getFirstLayout();
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pFootL->getFirstLayout();
 	int endnoteNo = countEndnotesBefore(pBL, endid);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
@@ -4131,7 +4121,7 @@ fp_FieldFootnoteAnchorRun::fp_FieldFootnoteAnchorRun(fl_BlockLayout* pBL, GR_Gra
 #endif
 }
 
-// Appears in the EndnoteSection, one per endnote.
+// Appears in the FootnoteContainer, one per footnote.
 bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 {
 	const PP_AttrProp * pp = getAP();
@@ -4140,15 +4130,40 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 
 	UT_ASSERT(bRes);
 
-	// What we want to do now is to search in the containing
-	// sectionLayout's EndnoteSection for all of the endnotes which
-	// are numbered before us.  This assumes, of course, that we want
-	// numeric endnotes.  I'm not sure how to do otherwise at the
-	// moment.  Probably a paragraph property or something.  or maybe
-	// we put it directly on the endnote anchor. -PL
+	fl_SectionLayout * pFootSL = getBlock()->getSectionLayout();
+	//UT_ASSERT((pFootSL->getType() == FL_SECTION_ENDNOTE));
 
-	// Clearly this should be cached or something, later.  It's updated
-	// far, far too often.
+	// this can happen when we delete last endnote
+	if(pFootSL->getType() != FL_SECTION_FOOTNOTE)
+		return false;
+	// Now, count out how many paragraphs have special endnote-id tags
+	// until we reach the desired paragraph.  (para == block)
+
+	// should this actually be refactored?
+
+	fl_BlockLayout * pBL = (fl_BlockLayout *) pFootSL->getFirstLayout();
+	int endnoteNo = countEndnotesBefore(pBL, endid);
+
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	UT_String szFieldValue;
+
+	szFieldValue = UT_String_sprintf ("[%d] ", endnoteNo);
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+// Appears in the EndnoteSection, one per endnote.
+bool fp_FieldEndnoteAnchorRun::calculateValue(void)
+{
+	const PP_AttrProp * pp = getAP();
+	const XML_Char * endid;
+	bool bRes = pp->getAttribute("endnote-id", endid);
+
+	UT_ASSERT(bRes);
 
 	fl_DocSectionLayout * pEndSL = getBlock()->
 		getDocSectionLayout();
