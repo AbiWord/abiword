@@ -30,7 +30,7 @@
 
 #include "gr_Graphics.h"
 #include "ev_EditBits.h"
-
+#include "pt_Types.h"
 #include "xap_Strings.h"
 
 class XAP_App;
@@ -41,6 +41,7 @@ class AV_ScrollObj;
 class GR_Graphics;
 class ap_RulerTicks;
 class fp_CellContainer;
+
 /*****************************************************************/
 
 
@@ -124,7 +125,7 @@ public:
 	void                mousePress(EV_EditModifierState ems, EV_EditMouseButton emb, UT_uint32 x, UT_uint32 y);
 
 	void                mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb, UT_sint32 x, UT_sint32 y);
-
+	UT_sint32           setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed, UT_sint32 y);
 	/* used with AV_Listener */
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
     virtual  AV_ListenerType getType(void) { return AV_LISTENER_LEFTRULER;}

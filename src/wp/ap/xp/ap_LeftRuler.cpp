@@ -437,6 +437,65 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton emb
 	return;
 }
 
+
+
+/*****************************************************************/
+
+
+UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed, UT_sint32 y)
+{
+	_UUL(y);
+	m_bValidMouseClick = false;
+	m_draggingWhat = DW_NOTHING;
+	m_bEventIgnored = false;
+	FV_View * pView = (static_cast<FV_View *>(m_pView));
+	iFixed = s_iFixedWidth;
+	if(m_pView == NULL)
+	{
+		return 0;
+	}
+	if(m_pView->getPoint() == 0)
+	{
+		return 0;
+	}
+	pView->getLeftRulerInfo(pos,&m_infoCache);
+	draw(NULL, &m_infoCache);
+
+	iFixed = (UT_sint32)UT_MAX(m_iWidth,s_iFixedWidth);
+
+	if(pView->getViewMode() != VIEW_PRINT)
+	{
+		iFixed = s_iFixedWidth;
+	}
+
+	UT_DEBUGMSG(("setTableLineDrag:LeftRuler y = %d \n",y));
+
+	if (m_infoCache.m_mode ==  AP_LeftRulerInfo::TRI_MODE_TABLE)
+	{
+		UT_sint32 i = 0;
+		bool bFound = false;
+		for(i=0; (i<= m_infoCache.m_iNumRows) && !bFound; i++)
+		{
+			UT_Rect rCell;
+			_getCellMarkerRects(&m_infoCache, i,rCell);
+			if(rCell.containsPoint(iFixed/2,y))
+			{
+				m_bValidMouseClick = true;
+				m_draggingWhat = DW_CELLMARK;
+				m_bBeforeFirstMotion = true;
+				m_draggingCell = i;
+				m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+				m_draggingCenter = rCell.top +2;
+
+				return (UT_sint32)(m_iWidth/2);
+			}
+		}
+	}
+	return 0;
+}
+
+
+
 /*****************************************************************/
 
 void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
@@ -457,6 +516,19 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 
 	_UUL(x);
 	_UUL(y);
+
+	// if they drag vertically off the ruler, we ignore the whole thing.
+
+	if ((x < 0) || (x > (UT_sint32)m_iWidth))
+	{
+		if(!m_bEventIgnored)
+		{
+			_ignoreEvent(false);
+			m_bEventIgnored = true;
+		}
+		m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
+		return;
+	}
 	
 	if (!m_bValidMouseClick)
 	{
@@ -500,19 +572,6 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 
 //  	UT_DEBUGMSG(("mouseMotion: [ems 0x%08lx][x %ld][y %ld]\n",ems,x,y));
 	ap_RulerTicks tick(m_pG,m_dim);
-
-	// if they drag vertically off the ruler, we ignore the whole thing.
-
-	if ((x < 0) || (x > (UT_sint32)m_iWidth))
-	{
-		if(!m_bEventIgnored)
-		{
-			_ignoreEvent(false);
-			m_bEventIgnored = true;
-		}
-		m_pG->setCursor( GR_Graphics::GR_CURSOR_DEFAULT);
-		return;
-	}
 
 	// lots of stuff omitted here; we should see about including it.
 	// it has to do with autoscroll.
@@ -627,9 +686,42 @@ void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 
 		return;
 	case DW_CELLMARK:
 		{
+
+			UT_sint32 oldDragCenter = m_draggingCenter;
+			
+			UT_sint32 yAbsTop = m_infoCache.m_yPageStart - m_yScrollOffset;
+
+			m_draggingCenter = tick.snapPixelToGrid(y);
+
+		// bounds checking for end-of-page
+
+			if (m_draggingCenter < yAbsTop)
+				m_draggingCenter = yAbsTop;
+
+			if (m_draggingCenter > (UT_sint32)(yAbsTop + m_infoCache.m_yPageSize))
+				m_draggingCenter = yAbsTop + m_infoCache.m_yPageSize;
 			_xorGuide();
 			m_pG->setCursor(GR_Graphics::GR_CURSOR_GRAB);
 			m_bBeforeFirstMotion = false;
+			UT_uint32 xLeft = s_iFixedHeight / 4;
+			UT_Rect rCell;
+			rCell.set(xLeft, m_draggingCenter-2, xLeft * 2, _UL(4));
+
+			UT_Rect clip;
+			if( m_draggingCenter > oldDragCenter)
+			{
+				clip.set(xLeft, oldDragCenter-4,s_iFixedHeight,m_draggingCenter - oldDragCenter +s_iFixedHeight );
+			}
+			else
+			{
+				clip.set(xLeft, m_draggingCenter-4,s_iFixedHeight, oldDragCenter - m_draggingCenter+ s_iFixedHeight);
+			}
+			draw(&clip);
+//
+// FIXME need to clear the old cell mark
+//
+			_drawCellMark(&rCell,true);
+
 			return;
 		}
 	default:
@@ -970,6 +1062,10 @@ void AP_LeftRuler::_drawCellProperties(AP_LeftRulerInfo * pInfo)
 	UT_Rect rCell;
 	for(i=0;i <= nrows; i++)
 	{
+		if(m_bValidMouseClick && (m_draggingWhat == DW_CELLMARK) && (i == m_draggingCell ))
+		{
+			continue;
+		}
 		_getCellMarkerRects(pInfo,i,rCell);
 		if(rCell.height > 0)
 		{
@@ -1054,7 +1150,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 
 	UT_Rect r;
 	UT_Rect * pClipRect = NULL;
-	
+ 
 	if (pCR)
 	{
 		r.left   = _UL(pCR->left);
@@ -1067,6 +1163,7 @@ void AP_LeftRuler::draw(const UT_Rect * pCR, AP_LeftRulerInfo * lfi)
 	}
 	else
 	{
+		m_pG->setClipRect(NULL);
 		//UT_DEBUGMSG(("LeftRuler:: draw [no clip]\n"));
 	}
 	

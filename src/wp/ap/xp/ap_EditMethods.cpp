@@ -10598,7 +10598,9 @@ Defun(endResizeImage)
 	return true;
 }
 static UT_sint32 sTopRulerHeight =0;
+static UT_sint32 sLeftRulerPos =0;
 static UT_sint32 siFixed =0;
+
 Defun(beginVDrag)
 {
 	CHECK_FRAME;
@@ -10620,7 +10622,19 @@ Defun(beginVDrag)
 Defun(beginHDrag)
 {
 	CHECK_FRAME;
-	//ABIWORD_VIEW;
+	ABIWORD_VIEW;
+	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
+	if(!pLeftRuler)
+	{
+		return true;
+	}
+	pView->setDragTableLine(true);
+	UT_sint32 x = pCallData->m_xPos;
+	UT_sint32 y = pCallData->m_yPos;
+	PT_DocPosition pos = pView->getDocPositionFromXY(x, y);
+	sLeftRulerPos = pLeftRuler->setTableLineDrag(pos,siFixed,y);
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+
 	return true;
 }
 
@@ -10660,7 +10674,16 @@ Defun(dragVline)
 Defun(dragHline)
 {
 	CHECK_FRAME;
-	//ABIWORD_VIEW;
+	ABIWORD_VIEW;
+	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
+	if(!pLeftRuler)
+	{
+		return true;
+	}
+	UT_sint32 y = pCallData->m_yPos;
+	pView->getGraphics()->setCursor(GR_Graphics::GR_CURSOR_GRAB);
+	EV_EditModifierState ems = 0; 
+	pLeftRuler->mouseMotion(ems, sLeftRulerPos,y);
 	return true;
 }
 
@@ -10685,7 +10708,18 @@ Defun(endDragVline)
 Defun(endDragHline)
 {
 	CHECK_FRAME;
-	//ABIWORD_VIEW;
+	ABIWORD_VIEW;
+	AP_LeftRuler * pLeftRuler = pView->getLeftRuler();
+	if(!pLeftRuler)
+	{
+		return true;
+	}
+	UT_sint32 y = pCallData->m_yPos;
+	EV_EditModifierState ems = 0; 
+	EV_EditMouseButton emb = EV_EMB_BUTTON1;
+	pLeftRuler->mouseRelease(ems,emb,sLeftRulerPos,y);
+	pView->setDragTableLine(false);
+	pView->setCursorToContext();
 	return true;
 }
 
