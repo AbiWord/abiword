@@ -42,6 +42,7 @@ public:
 
 	virtual void 		show();
 	virtual void 		hide();
+	virtual int	 		getHeight();
 
 protected:
 	PtWidget_t *		m_wStatusBar;

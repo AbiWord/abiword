@@ -73,8 +73,8 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _TR_STRETCH_, _TR_STRETCH_); 
 	PtSetArg(&args[n++], Pt_ARG_BORDER_WIDTH, 2, 2); 
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
-	PtWidget_t *cont = PtCreateWidget(PtGroup, m_rootWindow, n, args);
-	PtAddCallback(cont, Pt_CB_RESIZE, &(_fe::resize), this);
+	m_wTopRulerGroup = PtCreateWidget(PtGroup, m_rootWindow, n, args);
+	PtAddCallback(m_wTopRulerGroup, Pt_CB_RESIZE, &(_fe::resize), this);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_DIM, &area.size, 0); 
@@ -82,17 +82,13 @@ PtWidget_t * AP_QNXTopRuler::createWidget(void)
 	PtSetArg(&args[n++], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1);
 	PtSetArg(&args[n++], Pt_ARG_USER_DATA, &data, sizeof(this)); 
     PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
-	m_wTopRuler = PtCreateWidget(PtRaw, cont, n, args);
+	m_wTopRuler = PtCreateWidget(PtRaw, m_wTopRulerGroup, n, args);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_PTR_MOTION_BUTTON /* Ph_EV_PTR_MOTION */, 
 								  _fe::motion_notify_event, this);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_PRESS, _fe::button_press_event, this);
 	PtAddEventHandler(m_wTopRuler, Ph_EV_BUT_RELEASE, _fe::button_release_event, this);
 
-/*
-	gtk_signal_connect(GTK_OBJECT(m_wTopRuler), "configure_event",
-					   GTK_SIGNAL_FUNC(_fe::configure_event), NULL);
-*/
-	return m_wTopRuler;
+	return m_wTopRulerGroup;
 }
 
 void AP_QNXTopRuler::setView(AV_View * pView)

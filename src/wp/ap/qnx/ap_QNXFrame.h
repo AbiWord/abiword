@@ -67,6 +67,7 @@ protected:
 	UT_Error					_replaceDocument(AD_Document * pDoc);
     virtual void                _showOrHideToolbars();
     virtual void                _showOrHideStatusbar();
+	virtual void 				_reflowLayout(int loweradj, int upperadj);
 	
 
 	PtWidget_t *			m_dArea;
@@ -77,6 +78,8 @@ protected:
 
 	PtWidget_t *			m_topRuler;
 	PtWidget_t *			m_leftRuler;
+
+	PtWidget_t *			m_statusBar;
 };
 
 #endif /* AP_QNXFRAME_H */

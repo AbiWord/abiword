@@ -50,6 +50,7 @@ public:
 			
 protected:
 	PtWidget_t *	m_wTopRuler;
+	PtWidget_t *	m_wTopRulerGroup;
 	PtWidget_t *	m_rootWindow;
 
 	class _fe

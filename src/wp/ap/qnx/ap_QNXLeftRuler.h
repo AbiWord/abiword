@@ -45,6 +45,7 @@ public:
 	
 protected:
 	PtWidget_t *		m_wLeftRuler;
+	PtWidget_t *		m_wLeftRulerGroup;
 
 protected:
 	class _fe

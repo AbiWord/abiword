@@ -45,44 +45,44 @@ AP_QNXLeftRuler::~AP_QNXLeftRuler(void)
 
 PtWidget_t * AP_QNXLeftRuler::createWidget(void)
 {
-      PtArg_t args[10];
-      PhArea_t area;
-      void    *data = this;
-      int n = 0;
-      UT_ASSERT(!m_pG && !m_wLeftRuler);
+	PtArg_t args[10];
+	PhArea_t area;
+	void    *data = this;
+	int n = 0;
+	UT_ASSERT(!m_pG && !m_wLeftRuler);
 
-      XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)m_pFrame;
-	  UT_ASSERT(m_pFrame);
+	XAP_QNXFrame *pQNXFrame = (XAP_QNXFrame *)m_pFrame;
+	UT_ASSERT(m_pFrame);
 
-      area.pos.x = 0;
-      area.pos.y = pQNXFrame->m_AvailableArea.pos.y;
-      area.size.w = s_iFixedWidth;
-      area.size.h = pQNXFrame->m_AvailableArea.size.h;
-      pQNXFrame->m_AvailableArea.pos.x += area.size.w + 3;
-      pQNXFrame->m_AvailableArea.size.w -= area.size.w + 3;
-      PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
-	  UT_DEBUGMSG(("LR: Offset %d,%d Size %d/%d ",
+	area.pos.x = 0;
+	area.pos.y = pQNXFrame->m_AvailableArea.pos.y;
+	area.size.w = s_iFixedWidth;
+	area.size.h = pQNXFrame->m_AvailableArea.size.h;
+	pQNXFrame->m_AvailableArea.pos.x += area.size.w + 3;
+	pQNXFrame->m_AvailableArea.size.w -= area.size.w + 3;
+	PtSetArg(&args[n], Pt_ARG_AREA, &area, 0); n++;
+	UT_DEBUGMSG(("LR: Offset %d,%d Size %d/%d ",
                 area.pos.x, area.pos.y, area.size.w, area.size.h));
-      PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
+	PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
 #define _LR_ANCHOR_     (Pt_LEFT_ANCHORED_LEFT | Pt_RIGHT_ANCHORED_LEFT | \
                          Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
-      PtSetArg(&args[n], Pt_ARG_ANCHOR_FLAGS, _LR_ANCHOR_, _LR_ANCHOR_); n++;
+	PtSetArg(&args[n], Pt_ARG_ANCHOR_FLAGS, _LR_ANCHOR_, _LR_ANCHOR_); n++;
 #define _LR_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
-        PtSetArg(&args[n], Pt_ARG_GROUP_FLAGS, _LR_STRETCH_, _LR_STRETCH_); n++;
-      PtSetArg(&args[n], Pt_ARG_BORDER_WIDTH, 2, 0); n++;
-      PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); n++;
-      PtWidget_t *cont = PtCreateWidget(PtGroup, pQNXFrame->getTopLevelWindow(), n, args);
-	  PtAddCallback(cont, Pt_CB_RESIZE, &(_fe::resize), this);
+	PtSetArg(&args[n], Pt_ARG_GROUP_FLAGS, _LR_STRETCH_, _LR_STRETCH_); n++;
+	PtSetArg(&args[n], Pt_ARG_BORDER_WIDTH, 2, 0); n++;
+	PtSetArg(&args[n], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED); n++;
+	m_wLeftRulerGroup = PtCreateWidget(PtGroup, pQNXFrame->getTopLevelWindow(), n, args);
+	PtAddCallback(m_wLeftRulerGroup, Pt_CB_RESIZE, &(_fe::resize), this);
 
-      n = 0;
-      PtSetArg(&args[n], Pt_ARG_DIM, &area.size, 0); n++;
-      PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
-      PtSetArg(&args[n], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); n++;
-      PtSetArg(&args[n], Pt_ARG_USER_DATA, &data, sizeof(this)); n++;
-      PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
-      m_wLeftRuler = PtCreateWidget(PtRaw, cont, n, args);
+	n = 0;
+	PtSetArg(&args[n], Pt_ARG_DIM, &area.size, 0); n++;
+	PtSetArg(&args[n], Pt_ARG_FILL_COLOR, Pg_TRANSPARENT, 0); n++;
+	PtSetArg(&args[n], Pt_ARG_RAW_DRAW_F, &(_fe::expose), 1); n++;
+	PtSetArg(&args[n], Pt_ARG_USER_DATA, &data, sizeof(this)); n++;
+	PtSetArg(&args[n], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); n++;
+	m_wLeftRuler = PtCreateWidget(PtRaw, m_wLeftRulerGroup, n, args);
 
-	return m_wLeftRuler;
+	return m_wLeftRulerGroup;
 }
 
 void AP_QNXLeftRuler::setView(AV_View * pView)

@@ -76,7 +76,6 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
 
 	UT_ASSERT(!m_pG && !m_wStatusBar);
 
-	m_wStatusBar = NULL;
 
 	/* Create a group and then attach it to the bottom */
 	UT_QNXGetWidgetArea(frame->getTopLevelWindow(), NULL, NULL, &area.size.w, &area.size.h);
@@ -106,7 +105,7 @@ PtWidget_t * AP_QNXStatusBar::createWidget(void)
 
 
 	UT_ASSERT(m_wStatusBar);
-	return m_wStatusBar;
+	return m_wStatusBarGroup;
 }
 
 void AP_QNXStatusBar::show(void) {
@@ -116,7 +115,16 @@ void AP_QNXStatusBar::show(void) {
 
 void AP_QNXStatusBar::hide(void) {
     UT_ASSERT(m_wStatusBarGroup);
+	//When we hide before we actually do a relize on a window, things get messed up
+	PtSetResource(m_wStatusBarGroup, Pt_ARG_FLAGS, Pt_DELAY_REALIZE, Pt_DELAY_REALIZE);
     PtUnrealizeWidget(m_wStatusBarGroup);
+}
+
+int AP_QNXStatusBar::getHeight(void) {
+	unsigned short *height;
+    UT_ASSERT(m_wStatusBarGroup);
+	PtGetResource(m_wStatusBarGroup, Pt_ARG_HEIGHT, &height, 0);
+	return *height;
 }
 
 

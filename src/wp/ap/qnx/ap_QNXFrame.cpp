@@ -254,7 +254,10 @@ UT_Error AP_QNXFrame::_showDocument(UT_uint32 iZoom)
 	*/
 	((AP_FrameData*)m_pData)->m_pTopRuler->draw(NULL);
 	((AP_FrameData*)m_pData)->m_pLeftRuler->draw(NULL);
-	((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+
+	if(PtWidgetIsRealized(m_statusBar) != 0) {
+		((AP_FrameData*)m_pData)->m_pStatusBar->draw();
+	}
 
 	return UT_OK;
 
@@ -423,7 +426,10 @@ void AP_QNXFrame::_showOrHideToolbars(void)
         // AP_FrameData, but their correct place are next to the toolbar creation (JCA)
         EV_QNXToolbar * pQNXToolbar = static_cast<EV_QNXToolbar *> (m_vecToolbars.getNthItem(i));
         static_cast<AP_FrameData*> (m_pData)->m_pToolbar[i] = pQNXToolbar;
-        toggleBar(i, bShowBar[i]);
+		//It is enabled by default .. only toggle it off
+		if(!bShowBar[i]) {
+	        toggleBar(i, bShowBar[i]);
+		}
     }
 }
 
@@ -431,7 +437,10 @@ void AP_QNXFrame::_showOrHideToolbars(void)
 void AP_QNXFrame::_showOrHideStatusbar(void)
 {
     bool bShowStatusBar = static_cast<AP_FrameData*> (m_pData)->m_bShowStatusBar;
-    //  toggleStatusBar(bShowStatusBar);
+	//It is enabled by default .. only toggle it off
+	if(!bShowStatusBar) {
+    	toggleStatusBar(bShowStatusBar);
+	} 
 }
 
 /*****************************************************************/
@@ -751,14 +760,17 @@ PtWidget_t * AP_QNXFrame::_createStatusBarWindow(void)
 
 	((AP_FrameData *)m_pData)->m_pStatusBar = pQNXStatusBar;
 	
-	PtWidget_t * w = pQNXStatusBar->createWidget();
+	//This should probably be held in XP land
+	m_statusBar = pQNXStatusBar->createWidget();
 
-	return w;
+	return m_statusBar;
 }
 
 void AP_QNXFrame::setStatusMessage(const char * szMsg)
 {
-	((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+	if(PtWidgetIsRealized(m_statusBar) != 0) {
+		((AP_FrameData *)m_pData)->m_pStatusBar->setStatusMessage(szMsg);
+	}
 }
 
 void AP_QNXFrame::_setWindowIcon(void)
@@ -775,8 +787,14 @@ UT_Error AP_QNXFrame::_replaceDocument(AD_Document * pDoc)
 }
 
 void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
+	int		before, after;
+	unsigned short *height;
+
     AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
     UT_ASSERT(pFrameData);
+
+	PtGetResource(getTBGroupWidget(), Pt_ARG_WIDTH, &height, 0);
+	before = *height;
 
     if (bBarOn) {
         pFrameData->m_pToolbar[iBarNb]->show();
@@ -784,6 +802,13 @@ void AP_QNXFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn) {
     else {
         pFrameData->m_pToolbar[iBarNb]->hide();
     }
+
+	PtExtentWidgetFamily(getTBGroupWidget());
+	PtGetResource(getTBGroupWidget(), Pt_ARG_WIDTH, &height, 0);
+	after = *height;
+
+	printf("Before %d After %d \n", before, after);
+	_reflowLayout(0, before - after);
 }
 
 void AP_QNXFrame::toggleTopRuler(bool bRulerOn)
@@ -831,7 +856,7 @@ void AP_QNXFrame::toggleTopRuler(bool bRulerOn)
 
 	((AP_FrameData*)m_pData)->m_pTopRuler = pQNXTopRuler;
 #else
-	UT_DEBUGMSG(("TODO: Toggle Left Ruler "));
+	UT_DEBUGMSG(("TODO: Toggle Right Ruler "));
 #endif
 }
 
@@ -884,15 +909,20 @@ void AP_QNXFrame::toggleRuler(bool bRulerOn)
 
 
 void AP_QNXFrame::toggleStatusBar(bool bStatusBarOn) {
+	int height;
     AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
     UT_ASSERT(pFrameData);
 
+	height = pFrameData->m_pStatusBar->getHeight();
     if (bStatusBarOn) {
+		_reflowLayout(-height, 0);
         pFrameData->m_pStatusBar->show();
     }
     else {
         pFrameData->m_pStatusBar->hide();
+		_reflowLayout(height, 0);
     }
+
 }
 
 void AP_QNXFrame::setDocumentFocus() {
@@ -900,13 +930,44 @@ void AP_QNXFrame::setDocumentFocus() {
 }
 
 /*** THIS CODE WILL GO AWAY WITH AN INTELLIGENT LAYOUT THINGY ***/
-#if 0
-void AP_QNXFrame::reflowLayout() {
-	PtWidget_t *toolbar;
-	PtWidget_t *statusbar;
+void AP_QNXFrame::_reflowLayout(int loweradj, int upperadj) {
+	PhArea_t 	newarea, *oldarea;
 	
 	/* The document area is comprised of 
 	*/	
+	printf("Adjusting by %d %d \n", loweradj, upperadj);
+	/*
+     loweradj < 0 means we are enabling and > 0 means disabling
+	*/
+	if(loweradj != 0) { 	
+		PtGetResource(m_hScroll, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.y += loweradj;
+		PtSetResource(m_hScroll, Pt_ARG_AREA, &newarea, 0);
 
+		PtGetResource(m_vScroll, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.size.h += loweradj;
+		PtSetResource(m_vScroll, Pt_ARG_AREA, &newarea, 0);
+
+		PtGetResource(m_leftRuler, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.size.h += loweradj;
+		PtSetResource(m_leftRuler, Pt_ARG_AREA, &newarea, 0);
+
+		PtGetResource(m_dAreaGroup, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.size.h += loweradj;
+		PtSetResource(m_dAreaGroup, Pt_ARG_AREA, &newarea, 0);
+	} 
+
+	/*
+	 upperadj < 0 means we are enabling an > 0 means disabling
+	*/
+	if(upperadj != 0) {
+		PtGetResource(m_vScroll, Pt_ARG_AREA, &oldarea, 0);
+		newarea = *oldarea;
+		newarea.pos.y -= loweradj;
+		PtSetResource(m_vScroll, Pt_ARG_AREA, &newarea, 0);
+	}
 }
-#endif
