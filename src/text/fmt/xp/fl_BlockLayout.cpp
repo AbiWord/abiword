@@ -1762,20 +1762,51 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 		if (getPrev() && getPrev()->getLastContainer())
 		{
 			pPrevLine = (fp_Line *) getPrev()->getLastContainer();
-			pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
+			if(pPrevLine->getContainerType() != FP_CONTAINER_FOOTNOTE)
+			{
+				pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
+				UT_ASSERT(pContainer);
+			}
+			else
+			{
+				fp_Container * ppPrev = (fp_Container *) pPrevLine;
+				while(ppPrev && ppPrev->getContainerType() == FP_CONTAINER_FOOTNOTE)
+				{
+					ppPrev = ppPrev->getPrev();
+				}
+				if(ppPrev)
+				{
+					pPrevLine = (fp_Line *) ppPrev;
+					pContainer = (fp_VerticalContainer *) pPrevLine->getContainer();
+				}
+				else
+				{
+					pPrevLine = NULL;
+					pContainer = NULL;
+				}
+			}
 		}
 		else if (getNext() && getNext()->getFirstContainer())
 		{
 			pContainer = (fp_VerticalContainer *) getNext()->getFirstContainer()->getContainer();
+			UT_ASSERT(pContainer);
 		}
 		else if (m_pSectionLayout->getFirstContainer())
 		{
 			// TODO assert something here about what's in that container
 			pContainer = (fp_VerticalContainer *) m_pSectionLayout->getFirstContainer();
+			UT_ASSERT(pContainer);
 		}
 		else
 		{
 			pContainer = (fp_VerticalContainer *) m_pSectionLayout->getNewContainer();
+			UT_ASSERT(pContainer);
+			UT_ASSERT(pContainer->getWidth() >0);
+		}
+		if(pContainer == NULL)
+		{
+			pContainer = (fp_VerticalContainer *) m_pSectionLayout->getNewContainer();
+			UT_ASSERT(pContainer);
 			UT_ASSERT(pContainer->getWidth() >0);
 		}
 
@@ -2716,7 +2747,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 		//			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 	const UT_UCSChar* pChars = m_pDoc->getPointer(bi);
-
+	xxx_UT_DEBUGMSG(("fl_BlockLayout:: populateSpan BlockOffset %d NO chars %d \n",blockOffset,len));
 	/*
 	  walk through the characters provided and find any
 	  control characters.  Then, each control character gets
@@ -2728,6 +2759,7 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 	UT_uint32 i;
 	for (i=0; i<len; i++)
 	{
+		xxx_UT_DEBUGMSG(("fl_BlockLayout: char %d %c \n",i,(char) pChars[i]));
 		switch (pChars[i])
 		{
 			// see similar control characters in fl_DocLayout.cpp
@@ -2825,17 +2857,18 @@ bool fl_BlockLayout::doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs,
 
 bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len)
 {
-	xxx_UT_DEBUGMSG(("_doInsertTextSpan: offset %d, len %d\n", blockOffset, len));
+	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d\n", blockOffset, len));
 	PT_BlockOffset curOffset = blockOffset;
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan = 0;
 
 	while(len > curOffset - blockOffset)
 	{
-		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: iWhileCount %d\n", ++iWhileCount));
+		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: len %d curOffset %d blobkOffset %d \n",len,curOffset,blockOffset));
 		
 		FriBidiCharType iPrevType, iNextType, iLastStrongType = FRIBIDI_TYPE_UNSET, iType;
 		getSpanPtr((UT_uint32) curOffset, &pSpan, &lenSpan);
+		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d \n",lenSpan));
 		UT_ASSERT(pSpan);
 		if(!pSpan)
 			return false;
@@ -3454,12 +3487,23 @@ bool	fl_BlockLayout::_doInsertRun(fp_Run* pNewRun)
 			offset += pRun->getLength();
 			pRun = pRun->getNext();
 		}
-
+#if 0
+//
+// Blocks that contain footnotes will fail here. Remove this code.
+//
 		UT_ASSERT(offset==blockOffset);
-
+#endif
 		if (pLastRun)
 		{
-			pLastRun->insertIntoRunListAfterThis(*pNewRun);
+			if((pNewRun->getType() !=FPRUN_ENDOFPARAGRAPH) && (pLastRun->getType()== FPRUN_ENDOFPARAGRAPH))
+			{
+				pLastRun->insertIntoRunListBeforeThis(*pNewRun);
+				pLastRun->setBlockOffset(pNewRun->getBlockOffset()+pNewRun->getLength());
+			}
+			else
+			{
+				pLastRun->insertIntoRunListAfterThis(*pNewRun);
+			}
 		}
 		else
 		{
@@ -3700,9 +3744,18 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void)
 
 		// Verify that if there is no next Run, this Run is the EOP Run.
 		// Or we're in the middle of loading a document.
+//
+// FIXME; Take this code out when things work.
+//
+		if(pRun->getNext() || (FPRUN_ENDOFPARAGRAPH == pRun->getType()) )
+		{
+		}
+		else
+		{
+			m_pLayout->getDocument()->miniDump(getStruxDocHandle(),8);
+		}
 		UT_ASSERT( pRun->getNext()
 				   || (FPRUN_ENDOFPARAGRAPH == pRun->getType()) );
-
 		pRun = pRun->getNext();
 	}
 }
@@ -4107,12 +4160,15 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			{
 				m_pFirstRun->setPrev(pLastRun);
 			}
+			offset = pLastRun->getBlockOffset();
+			offset += pLastRun->getLength();
 		}
 		else
 		{
 			pPrevBL->m_pFirstRun = m_pFirstRun;
+			offset = pPrevBL->getPosition();
 		}
-
+		UT_DEBUGMSG(("deleteStrux: offset = %d \n",offset));
 		// Merge charwidths
 		UT_uint32 lenNew = m_gbCharWidths.getLength();
 

@@ -63,6 +63,7 @@ fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout*
 {
 	_createFootnoteContainer();
 	_insertFootnoteContainer(getFirstContainer());
+	UT_ASSERT(myContainingLayout());
 }
 
 fl_FootnoteLayout::~fl_FootnoteLayout()
@@ -198,6 +199,10 @@ void fl_FootnoteLayout::_insertFootnoteContainer(fp_Container * pNewFC)
 		if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
 			pPrevCon = (fp_Container *) static_cast<fl_BlockLayout *>(pPrevL)->findLineWithFootnotePID(getFootnotePID());
+		}
+		if(pPrevCon == NULL)
+		{
+			pPrevCon = pPrevL->getLastContainer();
 		}
 		pUpCon = pPrevCon->getContainer();
 	}

@@ -105,13 +105,7 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 	// find the previous strux (either a paragraph or something else).
 
 	pf_Frag_Strux * pfsPrev = NULL;
-	pf_Frag * pf = pfs->getPrev();
-	while (pf && !pfsPrev)
-	{
-		if (pf->getType() == pf_Frag::PFT_Strux)
-			pfsPrev = static_cast<pf_Frag_Strux *> (pf);
-		pf = pf->getPrev();
-	}
+	_getStruxFromPositionSkip(pfs->getPos(),&pfsPrev);
 	UT_ASSERT(pfsPrev);			// we have a block that's not in a section ??
 	//
 	// Code to prevent a crash. But this should not happen and if it does not everything will

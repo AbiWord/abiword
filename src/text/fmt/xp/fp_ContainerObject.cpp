@@ -172,7 +172,7 @@ bool fp_Container::getPageRelativeOffsets(UT_Rect &r) const
 	else
 	{
 		fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) pColumnC;
-		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pFC;
+		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pFC->getSectionLayout();
 		pDSL = (fl_DocSectionLayout *) pFL->myContainingLayout();
 	}
 	UT_return_val_if_fail(pDSL,false);

@@ -344,10 +344,12 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	}
 	case TT_FOOTNOTE:
 	{
-		// better be contained inside a section
-		X_VerifyParseState(_PS_Sec);
+		// Footnotes are contained inside a Block
+		X_VerifyParseState(_PS_Block);
+		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
 		X_CheckError(getDoc()->appendStrux(PTX_SectionFootnote,atts));
+		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
 		return;
 	}
 	case TT_BLOCK:
@@ -624,6 +626,8 @@ void IE_Imp_AbiWord_1::endElement(const XML_Char *name)
 	case TT_FOOTNOTE:
 		X_VerifyParseState(_PS_Sec);
 		X_CheckError(getDoc()->appendStrux(PTX_EndFootnote,NULL));
+		xxx_UT_DEBUGMSG(("FInished Append End footnote strux \n"));
+		m_parseState = _PS_Block;
 		return;
 
 	case TT_TABLE:

@@ -3273,7 +3273,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	UT_uint32 uheight;
 	m_bPointEOL = false;
 	bool bOldFootnote = isInFootnote();
-	UT_DEBUGMSG(("_charMotion: Old Position is %d \n",posOld));
+	xxx_UT_DEBUGMSG(("_charMotion: Old Position is %d \n",posOld));
 	/*
 	  we don't really care about the coords.  We're calling these
 	  to get the Run pointer
@@ -3419,7 +3419,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 	}
 //
 // OK sweep through footnote sections without stopping
-	UT_DEBUGMSG(("Point is %d inFootnote %d bOldFootnote %d \n",m_iInsPoint,isInFootnote(),bOldFootnote));
+	xxx_UT_DEBUGMSG(("Point is %d inFootnote %d bOldFootnote %d \n",m_iInsPoint,isInFootnote(),bOldFootnote));
 	if(bForward)
 	{
 		if(!bOldFootnote && isInFootnote())
@@ -3506,7 +3506,7 @@ bool FV_View::_charMotion(bool bForward,UT_uint32 countChars)
 		_clearIfAtFmtMark(posOld);
 		notifyListeners(AV_CHG_MOTION);
 	}
-	UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
+	xxx_UT_DEBUGMSG(("SEVIOR: Point = %d \n",getPoint()));
 	_fixInsertionPointCoords();
 	return bRes;
 }

@@ -286,6 +286,7 @@ bool pt_PieceTable::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, boo
 	return false;
 }
 
+
 bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 								  const UT_UCSChar ** ppSpan, UT_uint32 * pLength) const
 {
@@ -299,17 +300,27 @@ bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 	UT_ASSERT(pf->getType() == pf_Frag::PFT_Strux);
 	pf_Frag_Strux * pfsBlock = static_cast<pf_Frag_Strux *> (pf);
 	UT_ASSERT(pfsBlock->getStruxType() == PTX_Block);
-
+	xxx_UT_DEBUGMSG(("getSpanPtr: Requested offset %d \n",offset));
+	
 	UT_uint32 cumOffset = pf->getLength();
 	for (pf_Frag * pfTemp=pfsBlock->getNext(); (pfTemp); pfTemp=pfTemp->getNext())
 	{
+		xxx_UT_DEBUGMSG(("getSpanPtr: offset %d cumOffset %d \n",offset,cumOffset));
 		if (offset == cumOffset)
 		{
 			if (pfTemp->getType() == pf_Frag::PFT_FmtMark)
 				continue;
-
+			if(isFootnote(pfTemp) || isEndFootnote(pfTemp))
+			{
+				cumOffset += pfTemp->getLength();
+				continue;
+			}
 			if (pfTemp->getType() != pf_Frag::PFT_Text)
+			{
+				xxx_UT_DEBUGMSG(("getSpanPtr: Error 1 offset %d cumOffset %d \n",offset,cumOffset));
+//				UT_ASSERT(0);
 				return false;
+			}
 
 			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 			*ppSpan = getPointer(pfText->getBufIndex());
@@ -318,9 +329,16 @@ bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 		}
 		if (offset < cumOffset+pfTemp->getLength())
 		{
+			if(isFootnote(pfTemp) || isEndFootnote(pfTemp))
+			{
+				cumOffset += pfTemp->getLength();
+				continue;
+			}
 			if (pfTemp->getType() != pf_Frag::PFT_Text)
+			{
+				xxx_UT_DEBUGMSG(("getSpanPtr: Error 2 offset %d cumOffset %d \n",offset,cumOffset));
 				return false;
-
+			}
 			pf_Frag_Text * pfText = static_cast<pf_Frag_Text *> (pfTemp);
 			const UT_UCSChar * p = getPointer(pfText->getBufIndex());
 			UT_uint32 delta = offset - cumOffset;
@@ -331,8 +349,10 @@ bool pt_PieceTable::getSpanPtr(PL_StruxDocHandle sdh, UT_uint32 offset,
 
 		cumOffset += pfTemp->getLength();
 	}
+	xxx_UT_DEBUGMSG(("getSpanPtr: Error 3 offset %d cumOffset %d \n",offset,cumOffset));
 	return false;
 }
+
 
 PD_Document * pt_PieceTable::getDocument(void)
 {
@@ -793,16 +813,18 @@ bool pt_PieceTable::_getStruxFromPositionSkip(PT_DocPosition docPos,
 		}
 		xxx_UT_DEBUGMSG(("countEndNotes 1 %d \n",countEndFootnotes));
 	}
-	while(pfFirst && pfFirst->getPrev() && pfFirst->getType() !=pf_Frag::PFT_Strux || (countEndFootnotes > 0))
+	while(pfFirst && pfFirst->getPrev() && pfFirst->getType() !=pf_Frag::PFT_Strux || (countEndFootnotes > 0) || isFootnote(pfFirst) || isEndFootnote(pfFirst))
 	{
 		pfFirst = pfFirst->getPrev();
 		if(isFootnote(pfFirst))
 		{
 			countEndFootnotes--;
+			pfFirst = pfFirst->getPrev();
 		}
 		else if(isEndFootnote(pfFirst))
 		{
 			countEndFootnotes++;
+			pfFirst = pfFirst->getPrev();
 		}
 		xxx_UT_DEBUGMSG(("countEndNotes 2 %d \n",countEndFootnotes));
 	}
@@ -819,6 +841,7 @@ bool pt_PieceTable::_getStruxOfTypeFromPosition(PT_DocPosition dpos,
 	// return the strux fragment of the given type containing
 	// the given absolute document position.
 	UT_ASSERT(ppfs);
+	xxx_UT_DEBUGMSG(("_getStruxOfTypeFromPosition: looking for type %d \n",pts));
 	*ppfs = NULL;
 
 	pf_Frag_Strux * pfs = NULL;

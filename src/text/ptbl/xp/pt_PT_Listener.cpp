@@ -72,14 +72,34 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 			{
 				pf_Frag_Text * pft = static_cast<pf_Frag_Text *> (pf);
 				PX_ChangeRecord * pcr = NULL;
-				bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset);
-				UT_ASSERT(bStatus1);
+				bool bStatus1 = false;
+				bool bAddOffset = true;
+				if(sfh != NULL)
+				{
+					bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset);
+					UT_ASSERT(bStatus1);
+				}
+				else
+				{
+					PT_DocPosition pos = pf->getPos();
+					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
+					PL_StruxDocHandle sdh = NULL;
+					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
+					pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+					blockOffset = pos - pfs->getPos() -1;
+					bStatus1 = pft->createSpecialChangeRecord(&pcr,pos,blockOffset);
+					UT_ASSERT(bStatus1);
+					bAddOffset = false;
+				}
 				bool bStatus2 = pListener->populate(sfh,pcr);
 				if (pcr)
 					delete pcr;
 				if (!bStatus2)
 					return false;
-				blockOffset += pf->getLength();
+				if(bAddOffset)
+				{
+					blockOffset += pf->getLength();
+				}
 			}
 			break;
 			
@@ -102,6 +122,10 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				if (!bStatus2)
 					return false;
 				blockOffset = 0;
+				if(isEndFootnote(pfs))
+				{
+					sfh = NULL;
+				}
 			}
 			break;
 

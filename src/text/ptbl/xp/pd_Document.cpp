@@ -1182,6 +1182,18 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		}
 		pfs = (pf_Frag_Strux *) pf;
 	}
+	if(pfs == NULL)
+	{
+		pf =  m_pPieceTable->getFragments().getFirst();
+		while(pf && pf->getType() != pf->getType() != pf_Frag::PFT_Strux)
+		{
+			pf = pf->getNext();
+		}
+		if(pf)
+		{
+			pfs = (pf_Frag_Strux *) pfs;
+		}
+	}
 	for(i=0; pfs && (i< 2*nstruxes); i++)
 	{
 		pf = (pf_Frag *) pfs;

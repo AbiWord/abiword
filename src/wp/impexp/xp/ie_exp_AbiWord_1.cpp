@@ -770,7 +770,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
 			_closeSpan();
             _closeField();
             _closeHyperlink();
-			_closeBlock();
+			m_bInBlock = false;
 			_openTag("foot","",true,pcr->getIndexAP());
 			return true;
 		}
@@ -817,6 +817,7 @@ bool s_AbiWord_1_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
             _closeHyperlink();
 			_closeBlock();
 			m_pie->write("</foot>");
+			m_bInBlock = true;
 			return true;
 		}
 	case PTX_EndMarginnote:

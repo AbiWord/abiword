@@ -94,7 +94,7 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 							  const PX_ChangeRecord * pcr)
 {
 	UT_ASSERT(m_pLayout);
-	xxx_UT_DEBUGMSG(("fl_DocListener::populate type %d \n",pcr->getType()));
+	UT_DEBUGMSG(("fl_DocListener::populate type %d \n",pcr->getType()));
 
 	bool bResult = false;
 
@@ -271,7 +271,7 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				//
 				// Format Previous section is it exists to get page mapping sane.
 				//
-				xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate DocSection in DocListener \n"));
+				UT_DEBUGMSG(("SEVIOR: Doing Populate DocSection in DocListener \n"));
 				fl_DocSectionLayout * pPDSL = m_pLayout->getLastSection();
 				if(pPDSL != NULL)
 				{
@@ -338,20 +338,27 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 	case PTX_SectionFootnote:
 	{
 		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionFootnote'\n"));
-		// This isn't probably quite right.
-// 		fl_FootnoteLayout* pSL = new fl_FootnoteLayout(m_pCurrentSL->getDocLayout(), sdh, pcr->getIndexAP(), 
-// 													   m_pCurrentSL);
-
- 		fl_ContainerLayout* pSL = m_pCurrentSL->insert(sdh, NULL, pcr->getIndexAP(), FL_CONTAINER_FOOTNOTE);
+		UT_ASSERT(m_pCurrentSL);
+	    fl_SectionLayout * pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_FOOTNOTE);
 		*psfh = (PL_StruxFmtHandle)pSL;
 		m_pCurrentSL = (fl_SectionLayout*)pSL;
 		break;
 	}
 
 	case PTX_EndFootnote:
+	{
 		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'EndFootnote'\n"));
+//
+// CurrentSL is a Footnote. Return this and set the m_pCurrentSL to it's 
+// container
+//
+		fl_ContainerLayout * pCL = m_pCurrentSL;
+		UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE);
+		*psfh = (PL_StruxFmtHandle) pCL;
+		m_pCurrentSL = (fl_SectionLayout *) m_pCurrentSL->myContainingLayout();
+		UT_ASSERT(m_pCurrentSL);
 		break;
-
+	}
 	case PTX_SectionHdrFtr:
 		// This path is taken on a change of page type. Eg A4 => letter.
 	{
