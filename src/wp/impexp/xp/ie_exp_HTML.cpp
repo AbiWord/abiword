@@ -326,8 +326,10 @@ private:
 	void	_handleHyperlink (PT_AttrPropIndex api);
 	void	_handleBookmark (PT_AttrPropIndex api);
 
-	void    _handleMetaTag (const char * key, const char * value);
+#ifdef HTML_META_SUPPORTED
+	void    _handleMetaTag (const char * key, UT_UTF8String & value);
 	void    _handleMeta ();
+#endif
 
 	PD_Document *		m_pDocument;
 	IE_Exp_HTML *		m_pie;
@@ -840,16 +842,24 @@ void s_HTML_Listener::_outputBegin (PT_AttrPropIndex api)
 	m_utf8_1 = "title";
 	tagOpen (TT_TITLE, m_utf8_1);
 
-	UT_String titleProp;
-	if ( m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp) && titleProp.size () )
-		textUntrusted(titleProp.c_str());
+#ifdef HTML_META_SUPPORTED
+	UT_UTF8String titleProp;
+
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, titleProp) && titleProp.size ())
+		textTrusted (titleProp.escapeXML ());
 	else
 		textUntrusted (m_pie->getFileName ());
+#else
+	textUntrusted (m_pie->getFileName ());
+#endif
+
 	tagClose (TT_TITLE, m_utf8_1);
 
+#ifdef HTML_META_SUPPORTED
 	/* write out our metadata properties
 	 */
 	_handleMeta ();
+#endif
 
 	if (!m_bIsAbiWebDoc) // belongs to a different option... [TODO]
 		{
@@ -2899,34 +2909,34 @@ void s_HTML_Listener::_handleBookmark (PT_AttrPropIndex api)
 		}
 }
 
-void s_HTML_Listener::_handleMetaTag(const char * key, const char * value)
-{
-	UT_String content;
+#ifdef HTML_META_SUPPORTED
 
-	if (m_bIs4)
-		content = UT_String_sprintf("<meta name=\"%s\" content=\"%s\" >\r\n", key, value);
-	else
-		content = UT_String_sprintf("<meta name=\"%s\" content=\"%s\" />\r\n", key, value);
-	
-	textTrusted (content.c_str());
+void s_HTML_Listener::_handleMetaTag (const char * key, UT_UTF8String & value)
+{
+	m_utf8_1  = "meta name=\"";
+	m_utf8_1 += key;
+	m_utf8_1 += "\" content=\"";
+	m_utf8_1 += value.escapeXML ();
+	m_utf8_1 += "\"";
+
+	tagOpenClose (m_utf8_1, m_bIs4);
 }
 
 void s_HTML_Listener::_handleMeta ()
 {
-	// export metadata - first map some data to common HTML Meta props
-	UT_String metaProp ;
+	UT_UTF8String metaProp;
 	
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, metaProp) && metaProp.size () )
-	    _handleMetaTag ("Title", metaProp.c_str());
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE,    metaProp) && metaProp.size ())
+	    _handleMetaTag ("Title",    metaProp);
 
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, metaProp) && metaProp.size () )
-		_handleMetaTag ("Author", metaProp.c_str());
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR,  metaProp) && metaProp.size ())
+		_handleMetaTag ("Author",   metaProp);
 	
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size () )
-	    _handleMetaTag("Keywords", metaProp.c_str());
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size ())
+	    _handleMetaTag ("Keywords", metaProp);
 	
-	if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT, metaProp) && metaProp.size () )
-		_handleMetaTag("Subject", metaProp.c_str());
+	if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT,  metaProp) && metaProp.size ())
+		_handleMetaTag ("Subject",  metaProp);
 
 #if 0
 	// now generically dump all of our data to meta stuff
@@ -2945,6 +2955,8 @@ void s_HTML_Listener::_handleMeta ()
 #endif
 
 }
+
+#endif /* HTML_META_SUPPORTED */
 
 bool s_HTML_Listener::populate (PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * pcr)
 {

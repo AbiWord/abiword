@@ -1093,8 +1093,8 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 
   // set all of the important meta-data props
 
-  m_pDocument->setMetaDataProp ( PD_META_KEY_GENERATOR, "AbiWord" ) ;
-  m_pDocument->setMetaDataProp ( PD_META_KEY_FORMAT, "application/x-abiword" ) ;
+  m_pDocument->setMetaDataProp ( PD_META_KEY_GENERATOR, UT_UTF8String("AbiWord") ) ;
+  m_pDocument->setMetaDataProp ( PD_META_KEY_FORMAT,    UT_UTF8String(IE_MIME_AbiWord) ) ;
 
   // get the saved time, remove trailing newline
   time_t now = time ( NULL ) ;

@@ -965,6 +965,14 @@ void UT_UTF8String::appendUCS2 (const UT_UCS2Char * sz, size_t n /* 0 = null-ter
 	pimpl->appendUCS2 (sz, n);
 }
 
+/* escapes '<', '>' & '&' in the current string
+ */
+const UT_UTF8String & UT_UTF8String::escapeXML ()
+{
+	pimpl->escapeXML ();
+	return *this;
+}
+
 UT_UCS2String UT_UTF8String::ucs2_str ()
 {
 	UT_UCS2String ucs2string;

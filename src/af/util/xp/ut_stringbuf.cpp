@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 // UT_Stringbuf.cpp
 
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
@@ -797,6 +799,55 @@ void UT_UTF8Stringbuf::appendUCS4 (const UT_UCS4Char * sz, size_t n /* == 0 => n
 	*m_pEnd = 0;
 }
 
+/* escapes '<', '>' & '&' in the current string
+ */
+void UT_UTF8Stringbuf::escapeXML ()
+{
+	size_t incr = 0;
+
+	char * ptr = m_psz;
+	while (ptr < m_pEnd)
+		{
+			if ((*ptr == '<') || (*ptr == '>')) incr += 3;
+			else if (*ptr == '&') incr += 4;
+			ptr++;
+		}
+	bool bInsert = grow (incr);
+
+	ptr = m_psz;
+	while (ptr < m_pEnd)
+		{
+			if (*ptr == '<')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "lt;", 3);
+						}
+					else *ptr++ = '?';
+				}
+			else if (*ptr == '>')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "gt;", 3);
+						}
+					else *ptr++ = '?';
+				}
+			else if (*ptr == '&')
+				{
+					if (bInsert)
+						{
+							*ptr++ = '&';
+							insert (ptr, "amp;", 4);
+						}
+					else *ptr++ = '?';
+				}
+			else ptr++;
+		}
+}
+
 void UT_UTF8Stringbuf::clear ()
 {
 	if (m_psz) free (m_psz);
@@ -804,6 +855,30 @@ void UT_UTF8Stringbuf::clear ()
 	m_pEnd = 0;
 	m_strlen = 0;
 	m_buflen = 0;
+}
+
+void UT_UTF8Stringbuf::insert (char *& ptr, const char * str, size_t utf8length)
+{
+	if ( str == 0) return;
+	if (*str == 0) return;
+
+	if ((ptr < m_psz) || (ptr > m_pEnd)) return;
+
+	char * orig_buf = m_psz;
+	char * orig_ptr = ptr;
+
+	size_t length = (size_t) strlen (str);
+
+	if (!grow (length)) return;
+
+	ptr = m_psz + (orig_ptr - orig_buf);
+
+	memmove (ptr + length, ptr, (m_pEnd - ptr) + 1);
+	memcpy (ptr, str, length);
+
+	ptr += length;
+	m_pEnd += length;
+	m_strlen += utf8length;
 }
 
 bool UT_UTF8Stringbuf::grow (size_t length)

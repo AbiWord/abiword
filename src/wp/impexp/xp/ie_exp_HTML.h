@@ -45,6 +45,10 @@
  */
 #define HTML_TABLES_SUPPORTED
 
+/* Define if meta information is supported
+ */
+#define HTML_META_SUPPORTED
+
 /* TODO: Rather than having separate sniffers to differentiate
  *       the exporter's behaviour, should have a dialog box
  *       with options.

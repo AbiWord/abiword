@@ -111,7 +111,7 @@ PD_Document::~PD_Document()
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
 	UT_VECTOR_PURGEALL(PD_Revision*, m_vRevisions);
 	// remove the meta data
-	UT_HASH_PURGEDATA(UT_String*, &m_metaDataMap, delete) ;
+	UT_HASH_PURGEDATA(UT_UTF8String*, &m_metaDataMap, delete) ;
 	UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
 	// we do not purge the contents of m_vecListeners
@@ -199,29 +199,41 @@ bool PD_Document::addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint3
 void PD_Document::setMetaDataProp ( const UT_String & key,
 				    const UT_String & value )
 {
-  UT_String * ptrvalue = new UT_String ( value ) ;
-  m_metaDataMap.set ( key, ptrvalue ) ;
+  UT_UTF8String * ptrvalue = new UT_UTF8String(value.c_str());
+  m_metaDataMap.set (key, ptrvalue);
+}
+
+void PD_Document::setMetaDataProp ( const UT_String & key,
+				    const UT_UTF8String & value )
+{
+  UT_UTF8String * ptrvalue = new UT_UTF8String(value);
+  m_metaDataMap.set (key, ptrvalue);
 }
 
 bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp ) const
 {
-  bool found = false ;
+  UT_UTF8String value;
+  bool found = getMetaDataProp (key, value);
+  outProp = value.utf8_str ();
+  return found;
+}
+
+bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const
+{
+  bool found = false;
   outProp = "";
 
-  const UT_String * val = NULL ;
+  const UT_UTF8String * val = (UT_UTF8String *) m_metaDataMap.pick (key);
+  found = (val != NULL);
 
-  val = (UT_String *) m_metaDataMap.pick ( key ) ;
-  found = ( val != NULL ) ;
+  if (val && val->size ()) outProp = *val;
 
-  if ( val && val->size() )
-    outProp = *val ;
-
-  return found ;
+  return found;
 }
 
 UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
 {
-  const UT_UTF8String * val = (UT_UTF8String *) m_metaDataMap.pick ( key ) ;
+  const UT_UTF8String * val = (UT_UTF8String *) m_mailMergeMap.pick ( key ) ;
   if (val)
     return *val;
   return "";
@@ -229,7 +241,7 @@ UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
 
 bool PD_Document::mailMergeFieldExists(const UT_String & key) const
 {
-    void * val = (void *) m_metaDataMap.pick ( key ) ;
+    void * val = (void *) m_mailMergeMap.pick ( key ) ;
     return (val != NULL);
 }
 
@@ -237,7 +249,7 @@ void PD_Document::setMailMergeField(const UT_String & key,
 				    const UT_UTF8String & value)
 {
   UT_UTF8String * ptrvalue = new UT_UTF8String ( value ) ;
-  m_metaDataMap.set ( key, ptrvalue ) ;
+  m_mailMergeMap.set ( key, ptrvalue ) ;
 }
 
 //////////////////////////////////////////////////////////////////
