@@ -18,14 +18,17 @@
  */
 
 #include <gtk/gtk.h>
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_dialogHelper.h"
+
 #include "xap_Frame.h"
 #include "xap_UnixFrame.h"
-#include "ap_UnixTopRuler.h"
+
 #include "gr_UnixGraphics.h"
+#include "ap_UnixTopRuler.h"
 
 #define DELETEP(p)		do { if (p) delete p; p = NULL; } while (0)
 #define REPLACEP(p,q)	do { if (p) delete p; p = q; } while (0)
@@ -68,6 +71,26 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	m_rootWindow = NULL;
 	m_wTopRuler = NULL;
 	m_pG = NULL;
+
+	// Initialize ruler colors to match the style of the GTK Window
+	// representing pFrame
+	GtkStyle * style = gtk_widget_get_default_style();
+	UT_ASSERT(style);
+
+	/*
+	GdkColor fg[5];
+	GdkColor bg[5];
+	GdkColor light[5];
+	GdkColor dark[5];
+	GdkColor mid[5];
+	GdkColor text[5];
+	GdkColor base[5];
+	*/
+	
+	UT_setColor(m_clrBackground, style->bg[GTK_STATE_NORMAL].red, style->bg[GTK_STATE_NORMAL].green, style->bg[GTK_STATE_NORMAL].blue);
+
+	UT_setColor(m_clrMarginArea, 200, 0, 0);
+	UT_setColor(m_clrDocumentArea, 0, 200, 0);
 }
 
 AP_UnixTopRuler::~AP_UnixTopRuler(void)

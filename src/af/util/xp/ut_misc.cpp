@@ -137,6 +137,13 @@ UT_RGBColor::UT_RGBColor(unsigned char red, unsigned char grn, unsigned char blu
 	m_blu = blu;
 }
 
+void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b)
+{
+	col.m_red = r;
+	col.m_grn = g;
+	col.m_blu = b;
+}
+
 void UT_parseColor(const char *p, UT_RGBColor& c)
 {
 	if (strlen(p) == 6)

@@ -124,8 +124,6 @@ public:
 	
 protected:
 	void	_draw(const UT_Rect * pClipRect, AP_TopRulerInfo * pUseInfo);
-	void 	_draw3DFrame(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
-						 UT_sint32 x, UT_sint32 w);
 	void	_drawBar(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo,
 					 UT_RGBColor &clr, UT_sint32 x, UT_sint32 w);
 	void	_drawTickMark(const UT_Rect * pClipRect,
@@ -228,6 +226,19 @@ protected:
 	
 	/* static const*/ UT_uint32	s_iFixedHeight /* =32 */;	/* size we draw stuff w/o regard to window size */
 	/* static const*/ UT_uint32	s_iFixedWidth  /* =32 */;	/* minimum width of non-scrolling area on left */
+
+	// a collection of standard colors for drawing
+
+	UT_RGBColor			m_clrWhite;				/* constant used for highlights */
+	UT_RGBColor			m_clrBlack;				/* constant used for ticks/text, shadows */
+	UT_RGBColor			m_clrDarkGray;			/* constant used for default tab stops, shadows */
+	UT_RGBColor			m_clrLiteGray;
+	
+	UT_RGBColor			m_clrBackground;		/* used for background flood fill */
+
+	UT_RGBColor			m_clrMarginArea;		/* used for flood fill of ruler area where margins are */
+	UT_RGBColor			m_clrDocumentArea;		/* used for flood fill of ruler where document is */
+	
 };
 
 #endif /* AP_TOPRULER_H */

@@ -40,6 +40,7 @@ public:
 	unsigned char m_blu;
 };
 
+void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned char b);
 void UT_parseColor(const char*, UT_RGBColor&);
 
 // ----------------------------------------------------------------
