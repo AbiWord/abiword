@@ -14,7 +14,7 @@
 <AbiStrings app="AbiWord Personal" ver="1.0" language="no-NYN">
 
 <Strings	class="XAP"
-UntitledDocument="Untitledfoo%d"
+UntitledDocument="Untitled%d"
 DLG_OK="OK"
 DLG_Cancel="Cancel"
 DLG_Close="Close"
