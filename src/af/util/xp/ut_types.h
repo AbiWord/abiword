@@ -174,10 +174,14 @@ typedef	UT_sint32		UT_Error;
 
 #define E2B(err)		((err) == UT_OK)
 
-
 /* UGLY UGLY Iconv hack for operating systems with strange declartions
    for iconv.  Why, oh why can't they all be the same? <sob> I will
-   suffer in the afterlife for this - sam - dec 2000 */
+   suffer in the afterlife for this - sam - dec 2000 
+
+   Update - the folks repsonsible for the Single Unix Specification
+   are responsible for this.  They will suffer even more in the
+   afterlife than I will. - sam - mar 2001
+*/
 
 #if defined (WIN32) || defined(__QNXNTO__) ||  \
 (defined (__MACH__) && defined (__APPLE__)) || \
