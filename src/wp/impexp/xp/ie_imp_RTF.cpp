@@ -758,6 +758,12 @@ UT_Bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, UT_Boo
 			m_currentRTFState.m_paraProps.m_indentLeft = param;
 		}
 		break;
+	case 'o': 
+	        if (strcmp((char*)pKeyword,"ol") == 0)
+	        {
+		         return HandleOverline(fParam ? param : 1);
+		}
+		break;
 	case 'p':
 		if (strcmp((char*)pKeyword, "par") == 0)
 		{
