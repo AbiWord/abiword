@@ -1354,31 +1354,3 @@ void PS_Graphics::_drawFT2Bitmap(UT_sint32 x, UT_sint32 y, FT_Bitmap * pBitmap) 
 
 /***************************************************************************/
 /***************************************************************************/
-
-PS_GraphicsFactory::PS_GraphicsFactory(const UT_String & command)
-	: GR_GraphicsFactory(), m_command(command), m_mergeCount(0)
-{
-}
-
-PS_GraphicsFactory::~PS_GraphicsFactory()
-{
-}
-
-GR_Graphics* PS_GraphicsFactory::getGraphics()
-{
-	/* todo: keep a running count for print to file */
-	UT_String command;
-	if (m_command[0] == '|')
-		command = m_command;
-	else
-		command = UT_String_sprintf ("%s-%d", m_command.c_str(), m_mergeCount);
-	m_mergeCount++;
-
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp*>(XAP_App::getApp());
-	return new PS_Graphics ((command[0] == '|' ? command.c_str()+1 : command.c_str()), command.c_str(), 
-							pApp->getApplicationName(), pApp->getFontManager(),
-							(command[0] != '|'), pApp);
-}
-
-/***************************************************************************/
-/***************************************************************************/

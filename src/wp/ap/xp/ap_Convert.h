@@ -26,7 +26,7 @@
 
 //////////////////////////////////////////////////////////////////
 
-class GR_GraphicsFactory;
+class GR_Graphics;
 
 class ABI_EXPORT AP_Convert
 {
@@ -47,7 +47,7 @@ class ABI_EXPORT AP_Convert
 	void setVerbose(int level);
 	void setMergeSource (const char * source);
 
-	void print(const char * file, GR_GraphicsFactory & pFactory);
+	void print(const char * file, GR_Graphics * pGraphics);
 
 	void setImpProps (const char * props) {
 		m_impProps = props;
