@@ -1512,8 +1512,8 @@ bool XAP_UnixFrameImpl::_close()
 bool XAP_UnixFrameImpl::_raise()
 {
 	UT_ASSERT(m_wTopLevelWindow);
-	gdk_window_raise(m_wTopLevelWindow->window);
-	gtk_widget_grab_focus (m_wTopLevelWindow);
+
+	gtk_window_present(GTK_WINDOW (m_wTopLevelWindow));
 
 	return true;
 }
