@@ -756,8 +756,9 @@ bool GR_Graphics::itemize(UT_TextIterator & text, GR_Itemization & I)
 		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
 
 		iType = UT_bidiGetCharType(c);
-#if 1
-		// this brach of code breaks at all direction bounaries
+#if 0
+		// this branch of code breaks at all direction bounaries
+		// it is disabled because doing that causes bug 8099
 		iCurOffset = iLastOffset = text.getPosition();
 		++text;
 		

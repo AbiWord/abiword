@@ -914,11 +914,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		|| (pNext->_getColorHL() != _getColorHL())
 		|| (pNext->_getColorHL().isTransparent() != _getColorHL().isTransparent())
 		|| (pNext->m_fPosition != m_fPosition)
-#if 0
 		|| (pNext->getVisDirection() != getVisDirection())
-#else
-		|| (pNext->getDirection() != getDirection())
-#endif
 		// we also want to test the override, because we do not want runs that have the same
 		// visual direction but different override merged
 		|| (pNext->m_iDirOverride != m_iDirOverride)
@@ -948,18 +944,10 @@ bool fp_TextRun::canMergeWithNext(void)
 		return false;
 	}
 	
-#if 0
 //
 // Don't coalese past word boundaries
 // This improves lots of flicker issues
 //
-	// I see; actually we went into lot (and I mean _lot_) of trouble to coalesce pass
-	// direction boundary changes (and that includes spaces) in order to reduce the number
-	// of text runs in the document. Clearly, this is not desirable, so I have made the
-	// necessary changes to the code above (test for direction rather than visual
-	// direction) and disabled the code in breakMeAtDirectionBoundaries() and
-	// breakNeigboursAtDirectionBoundaries(). This achieves the same as this code this but
-	// in much more efficient way.
 	PD_StruxIterator text(getBlock()->getStruxDocHandle(),
 						  getBlockOffset() + fl_BLOCK_STRUX_OFFSET);
 	text.setPosition(getLength()-1);
@@ -967,8 +955,8 @@ bool fp_TextRun::canMergeWithNext(void)
 	{
 		return false;
 	}
-#endif
-    return true;
+
+	return true;
 }
 
 void fp_TextRun::mergeWithNext(void)
@@ -2657,8 +2645,6 @@ void fp_TextRun::setDirOverride(UT_BidiCharType dir)
 */
 void fp_TextRun::breakNeighborsAtDirBoundaries()
 {
-#if 0
-	// we no longer coalsce across dir boundaries, so this is not needed
 #ifndef NO_BIDI_SUPPORT
 	UT_BidiCharType iPrevType, iType = UT_BIDI_UNSET;
 	UT_BidiCharType iDirection = getDirection();
@@ -2794,13 +2780,10 @@ void fp_TextRun::breakNeighborsAtDirBoundaries()
 
 	}
 #endif
-#endif
 }
 
 void fp_TextRun::breakMeAtDirBoundaries(UT_BidiCharType iNewOverride)
 {
-#if 0
-	// we no longer coalesce past dir boundaries, so this is not needed
 #ifndef NO_BIDI_SUPPORT
 	// we cannot use the draw buffer here because in case of ligatures it might
 	// contain characters of misleading directional properties
@@ -2859,7 +2842,6 @@ void fp_TextRun::breakMeAtDirBoundaries(UT_BidiCharType iNewOverride)
 		pRun = static_cast<fp_TextRun*>(pRun->getNextRun());
 		iPrevType = iType;
 	}
-#endif
 #endif
 }
 
