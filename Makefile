@@ -71,7 +71,8 @@ canonical:
 ## Target to make binary distribution files
 ## This creates $(DIST)/<platform_specific_installation_packages>
 
-distribution: compile canonical
+#compile canonical
+distribution: 
 	$(MAKE) ABI_ROOT=$(ABI_ROOT) prefix=$(prefix) -C src distribution
 
 ##################################################################
