@@ -458,12 +458,12 @@ void s_LaTeX_Listener::_convertColor(UT_String& szDest, const char* pszColor)
 		strncpy (colors[i],&pszColor[2*i],2);
 		colors[i][2]=0;
 	}
-	setlocale (LC_NUMERIC, "C");
+	char * old_locale = setlocale (LC_NUMERIC, "C");
 	UT_String_sprintf (szDest, "%.3f,%.3f,%.3f",
 			   strtol (&colors[0][0],NULL,16)/255.,
 			   strtol (&colors[1][0],NULL,16)/255.,
 			   strtol (&colors[2][0],NULL,16)/255.);
-	setlocale (LC_NUMERIC, "");
+	setlocale (LC_NUMERIC, old_locale);
 }
 
 void s_LaTeX_Listener::_convertFontSize(UT_String& szDest, const char* pszFontSize)

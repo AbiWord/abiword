@@ -1675,7 +1675,7 @@ UT_Error IE_Imp_WordPerfect::_appendSection()
    propsArray[0] = "props";
    propsArray[2] = NULL ;
 
-   setlocale(LC_NUMERIC, "C");
+   char * old_locale = setlocale(LC_NUMERIC, "C");
 	
    if (m_bLeftMarginSet)
    {
@@ -1703,7 +1703,7 @@ UT_Error IE_Imp_WordPerfect::_appendSection()
       myProps += UT_String_sprintf("columns:%d", m_numberOfColumns);
    }
   
-   setlocale(LC_NUMERIC, NULL);
+   setlocale(LC_NUMERIC, old_locale);
    propsArray[1] = (XML_Char*)myProps.c_str() ;
 
    if (myProps.size() == 0)
