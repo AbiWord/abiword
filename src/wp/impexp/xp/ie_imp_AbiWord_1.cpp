@@ -479,7 +479,7 @@ void IE_Imp_AbiWord_1::startElement(const XML_Char *name, const XML_Char **atts)
 	case TT_META:
 		X_VerifyParseState(_PS_MetaData);
 		m_parseState = _PS_Meta;
-		m_currentMetaDataName = _getXMLPropValue("name", atts);
+		m_currentMetaDataName = _getXMLPropValue("key", atts);
 		return;
 
 	case TT_OTHER:

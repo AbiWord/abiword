@@ -893,11 +893,14 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
       if ( val )
 	{
 	  UT_String *stringval = (UT_String* ) val;
-	  m_pie->write( "<m key=\"" ) ;
-	  _outputXMLChar ( cursor.key().c_str(), cursor.key().size() ) ;
-	  m_pie->write ( "\">" ) ;
-	  _outputXMLChar ( stringval->c_str(), stringval->size() ) ;
-	  m_pie->write ( "</m>\n" ) ;
+	  if( stringval->size () > 0 )
+	    {
+	      m_pie->write( "<m key=\"" ) ;
+	      _outputXMLChar ( cursor.key().c_str(), cursor.key().size() ) ;
+	      m_pie->write ( "\">" ) ;
+	      _outputXMLChar ( stringval->c_str(), stringval->size() ) ;
+	      m_pie->write ( "</m>\n" ) ;
+	    }
 	}
     }
 

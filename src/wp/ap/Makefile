@@ -46,6 +46,7 @@ PLATFORM_OBJS=	$(OBJDIR)/ap_$(ABI_FE)App.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_Tab.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_InsertBookmark.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Dialog_InsertHyperlink.$(OBJ_SUFFIX)	\
+		$(OBJDIR)/ap_$(ABI_FE)Dialog_MetaData.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_$(ABI_FE)Frame.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)LeftRuler.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_$(ABI_FE)Prefs.$(OBJ_SUFFIX)		\
@@ -136,7 +137,8 @@ OBJS=		$(PLATFORM_OBJS)				\
 		$(OBJDIR)/ap_Dialog_HdrFtr.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_ToggleCase.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_Tab.$(OBJ_SUFFIX)		\
-		$(OBJDIR)/ap_Dialog_InsertBookmark.$(OBJ_SUFFIX)		\
+		$(OBJDIR)/ap_Dialog_InsertBookmark.$(OBJ_SUFFIX)\
+		$(OBJDIR)/ap_Dialog_MetaData.$(OBJ_SUFFIX)	\
 		$(OBJDIR)/ap_Dialog_InsertHyperlink.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_EditMethods.$(OBJ_SUFFIX)		\
 		$(OBJDIR)/ap_FrameData.$(OBJ_SUFFIX)		\

@@ -75,6 +75,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_SAVEIMAGE,		0,1,0,	"fileSaveImage",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_IMPORT, 0,1,0, "fileImport", NULL, NULL);
 	_s(AP_MENU_ID_FILE_EXPORT, 0,1,0, "fileExport", NULL, NULL);
+	_s(AP_MENU_ID_FILE_PROPERTIES, 0,1,0, "dlgMetaData", NULL, NULL);
 	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,	"closeWindow",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,	"pageSetup",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PRINT,		0,1,0,	"print",			NULL,					NULL);

@@ -131,11 +131,13 @@ bool PD_Document::getMetaDataProp ( const UT_String & key, UT_String & outProp )
   bool found = false ;
   outProp = "" ;
 
-  const void * val = NULL ;
-  found = m_metaDataMap.contains ( key, val ) ;
+  const UT_String * val = NULL ;
 
-  if ( val )
-    outProp= ( const char * ) val;
+  val = (UT_String *) m_metaDataMap.pick ( key ) ;
+  found = ( val != NULL ) ;
+
+  if ( val && val->size() )
+    outProp = *val ;
 
   return found ;
 }

@@ -128,7 +128,7 @@ enum
 // searchable, indexable keywords
 #define PD_META_KEY_KEYWORDS          "abiword.keywords"
 
-// the time this document was created
+// the time this document was created. Same as dc.date
 #define PD_META_KEY_DATE_CREATED      "abiword.date_created"
 
 // the last time this document was saved

@@ -73,6 +73,7 @@
 #include "ap_Dialog_HdrFtr.h"
 #include "ap_Dialog_InsertBookmark.h"
 #include "ap_Dialog_InsertHyperlink.h"
+#include "ap_Dialog_MetaData.h"
 
 #include "xap_App.h"
 #include "xap_DialogFactory.h"
@@ -330,6 +331,7 @@ public:
 	static EV_EditMethod_Fn dlgSpellPrefs;
 	static EV_EditMethod_Fn dlgWordCount;
 	static EV_EditMethod_Fn dlgOptions;
+  static EV_EditMethod_Fn dlgMetaData;
 
 	static EV_EditMethod_Fn dlgFont;
 	static EV_EditMethod_Fn dlgParagraph;
@@ -631,6 +633,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgFont),				0,		""),
 	EV_EditMethod(NF(dlgHdrFtr),			0,		""),
 	EV_EditMethod(NF(dlgLanguage),			0,		""),
+	EV_EditMethod(NF(dlgMetaData), 0, ""),
 	EV_EditMethod(NF(dlgMoreWindows),		0,		""),
 	EV_EditMethod(NF(dlgOptions),			0,			""),
 	EV_EditMethod(NF(dlgParagraph), 		0,		""),
@@ -2529,6 +2532,93 @@ Defun1(dlgAbout)
 	s_doAboutDlg(pFrame, XAP_DIALOG_ID_ABOUT);
 
 	return true;
+}
+
+Defun(dlgMetaData)
+{
+  CHECK_FRAME;
+
+  FV_View * pView = static_cast<FV_View *>(pAV_View);
+
+  XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
+  UT_ASSERT(pFrame);
+  
+  XAP_App * pApp = pFrame->getApp();
+  UT_ASSERT(pApp);
+  
+  pFrame->raise();
+  
+  XAP_DialogFactory * pDialogFactory
+    = (XAP_DialogFactory *)(pFrame->getDialogFactory());
+  
+  AP_Dialog_MetaData * pDialog
+    = (AP_Dialog_MetaData *)(pDialogFactory->requestDialog(AP_DIALOG_ID_METADATA));
+  UT_ASSERT(pDialog);
+  if (!pDialog)
+    return false;
+
+  // get the properties
+   
+  PD_Document * pDocument = pView->getDocument();
+
+  UT_String prop ( "" ) ;
+
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_TITLE, prop ) )
+    pDialog->setTitle ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_SUBJECT, prop ) )
+    pDialog->setSubject ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_CREATOR, prop ) )
+    pDialog->setAuthor ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_PUBLISHER, prop ) )
+    pDialog->setPublisher ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_CONTRIBUTOR, prop ) )
+    pDialog->setCoAuthor ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_TYPE, prop ) )
+    pDialog->setCategory ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_KEYWORDS, prop ) )
+    pDialog->setKeywords ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_LANGUAGE, prop ) )
+    pDialog->setLanguages ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_SOURCE, prop ) )
+    pDialog->setSource ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_RELATION, prop ) )
+    pDialog->setRelation ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_COVERAGE, prop ) )
+    pDialog->setCoverage ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_RIGHTS, prop ) )
+    pDialog->setRights ( prop ) ;
+  if ( pDocument->getMetaDataProp ( PD_META_KEY_DESCRIPTION, prop ) )
+    pDialog->setDescription ( prop ) ;
+
+  // run the dialog
+
+  pDialog->runModal(pFrame);
+  bool bOK = (pDialog->getAnswer() == AP_Dialog_MetaData::a_OK);
+
+  if (bOK)
+    {
+      // reset the props
+      pDocument->setMetaDataProp ( PD_META_KEY_TITLE, pDialog->getTitle() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_SUBJECT, pDialog->getSubject() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_CREATOR, pDialog->getAuthor() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_PUBLISHER, pDialog->getPublisher() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_CONTRIBUTOR, pDialog->getCoAuthor() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_TYPE, pDialog->getCategory() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_KEYWORDS, pDialog->getKeywords() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_LANGUAGE, pDialog->getLanguages() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_SOURCE, pDialog->getSource() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_RELATION, pDialog->getRelation() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_COVERAGE, pDialog->getCoverage() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_RIGHTS, pDialog->getRights() ) ;
+      pDocument->setMetaDataProp ( PD_META_KEY_DESCRIPTION, pDialog->getDescription() ) ;
+
+      // TODO: set the document as dirty when something changed
+    }
+  
+  // release the dialog
+
+  pDialogFactory->releaseDialog(pDialog);
+  return true ;
 }
 
 Defun(fileNew)
