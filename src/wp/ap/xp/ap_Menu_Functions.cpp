@@ -1363,29 +1363,29 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_Zoom)
 	switch(id)
 	{
 	case AP_MENU_ID_VIEW_ZOOM_200:
-		if (pFrame->getZoomPercentage() == 200)
+		if (pFrame->getZoomPercentage() == 200 && (pFrame->getZoomType() == XAP_Frame::z_PERCENT || pFrame->getZoomType() == XAP_Frame::z_200))
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_100:
-		if (pFrame->getZoomPercentage() == 100)
+		if (pFrame->getZoomPercentage() == 100 && (pFrame->getZoomType() == XAP_Frame::z_PERCENT || pFrame->getZoomType() == XAP_Frame::z_100))
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_75:
-		if (pFrame->getZoomPercentage() == 75)
+		if (pFrame->getZoomPercentage() == 75 && (pFrame->getZoomType() == XAP_Frame::z_PERCENT || pFrame->getZoomType() == XAP_Frame::z_75))
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_50:
-		if (pFrame->getZoomPercentage() == 50)
+		if (pFrame->getZoomPercentage() == 50 && pFrame->getZoomType() == XAP_Frame::z_PERCENT)
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_WHOLE:
 		xxx_UT_DEBUGMSG(("Whole: %d %d\n", pFrame->getZoomPercentage(), pView->calculateZoomPercentForWholePage()));
-		if (pFrame->getZoomPercentage() == pView->calculateZoomPercentForWholePage())
+		if (pFrame->getZoomType() == XAP_Frame::z_WHOLEPAGE)
 			s = EV_MIS_Toggled;
 		break;
 	case AP_MENU_ID_VIEW_ZOOM_WIDTH:
 		xxx_UT_DEBUGMSG(("Width: %d %d\n", pFrame->getZoomPercentage(), pView->calculateZoomPercentForPageWidth()));
-		if (pFrame->getZoomPercentage() == pView->calculateZoomPercentForPageWidth())
+		if (pFrame->getZoomType() == XAP_Frame::z_PAGEWIDTH)
 			s = EV_MIS_Toggled;
 		break;
 	default:
