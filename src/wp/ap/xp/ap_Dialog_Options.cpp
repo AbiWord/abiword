@@ -114,6 +114,7 @@ void AP_Dialog_Options::_storeWindowData(void)
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_StatusBarVisible, _gatherViewShowStatusBar() );
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_ParaVisible, _gatherViewUnprintable() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AllowCustomToolbars, _gatherAllowCustomToolbars() );
+	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_AutoLoadPlugins, _gatherAutoLoadPlugins() );
 #ifdef BIDI_ENABLED
 	Save_Pref_Bool( pPrefsScheme, AP_PREF_KEY_DefaultDirectionRtl, _gatherOtherDirectionRtl() );
 	Save_Pref_Bool( pPrefsScheme, XAP_PREF_KEY_UseContextGlyphs, _gatherOtherUseContextGlyphs() );
@@ -308,6 +309,9 @@ void AP_Dialog_Options::_populateWindowData(void)
 
 	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AllowCustomToolbars,&b))
 		_setAllowCustomToolbars(b);
+
+	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_AutoLoadPlugins,&b))
+		_setAutoLoadPlugins(b);
 
 #if 1
 	// TODO: JOAQUIN FIX THIS

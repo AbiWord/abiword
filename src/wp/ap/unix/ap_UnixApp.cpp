@@ -280,9 +280,12 @@ bool AP_UnixApp::initialize(void)
 		szMenuLabelSetName = AP_PREF_DEFAULT_MenuLabelSet ;
 
 	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
-
-    loadAllPlugins();
-
+	bool bLoadPlugins = true;
+	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
+	if(bLoadPlugins || !bFound)
+	{
+		loadAllPlugins();
+	}
     //////////////////////////////////////////////////////////////////
 
 #ifdef ABI_OPT_PERL
@@ -601,32 +604,34 @@ void AP_UnixApp::loadAllPlugins ()
   pluginList[1] = pluginDir;
 
   for(int i = 0; i < 2; i++)
-    {
+  {
       pluginDir = pluginList[i];
 
       UT_DEBUGMSG(("DOM: leading plugins from %s\n", pluginDir.c_str()));
       
       n = scandir(pluginDir.c_str(), &namelist, so_only, alphasort);
       if (n < 0)
-	{
-	  UT_DEBUGMSG(("DOM: no plugins found\n"));
-	}
-      else {
-	while(n--) {
-	  UT_String plugin (pluginDir + namelist[n]->d_name);
-	  if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
-	    {
-	      UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));
-	    }
-	  else
-	    {
-	      UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", namelist[n]->d_name));
-	    }
-	  free(namelist[n]);
-	}
-	free(namelist);
+	  {
+		  UT_DEBUGMSG(("DOM: no plugins found\n"));
+	  }
+      else 
+	  {
+		  while(n--) 
+		  {
+			  UT_String plugin (pluginDir + namelist[n]->d_name);
+			  if (XAP_ModuleManager::instance().loadModule (plugin.c_str()))
+			  {
+				  UT_DEBUGMSG(("DOM: loaded plugin: %s\n", namelist[n]->d_name));
+			  }
+			  else
+			  {
+				  UT_DEBUGMSG(("DOM: didn't load plugin: %s\n", namelist[n]->d_name));
+			  }
+			  free(namelist[n]);
+		  }
+		  free(namelist);
       }
-    }
+  }
 }
 
 /*****************************************************************/

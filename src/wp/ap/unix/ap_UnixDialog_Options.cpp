@@ -391,6 +391,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	GtkWidget *checkWhiteForTransparent;
 	GtkWidget *pushChooseColorForTransparent;
 	GtkWidget *checkAllowCustomToolbars;
+	GtkWidget *checkAutoLoadPlugins;
 	GtkWidget *label3;
 	GtkWidget *vbox36;
 	GtkWidget *frame40;
@@ -961,6 +962,13 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	fontPath = gtk_check_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Options_Label_ModifyUnixFontPath));
 	gtk_widget_show (fontPath);
 	gtk_box_pack_start (GTK_BOX (vbox29), fontPath, FALSE, FALSE, 0);
+
+//
+// Auto Load Plugins.
+//
+	checkAutoLoadPlugins = gtk_check_button_new_with_label (pSS->getValue(AP_STRING_ID_DLG_Options_Label_CheckAutoLoadPlugins));
+	gtk_widget_show (checkAutoLoadPlugins);
+	gtk_box_pack_start (GTK_BOX (vbox29), checkAutoLoadPlugins, TRUE, TRUE, 0);
 	
 	label10 = gtk_label_new (pSS->getValue(AP_STRING_ID_DLG_Options_TabLabel_Preferences));
 	gtk_widget_show (label10);
@@ -996,6 +1004,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	m_pushbuttonNewTransparentColor = pushChooseColorForTransparent;
 
 	m_checkbuttonAllowCustomToolbars      = checkAllowCustomToolbars;
+	m_checkbuttonAutoLoadPlugins      = checkAutoLoadPlugins;
 
 	m_checkbuttonSmartQuotesEnable	        = enable_sq;
 	m_listDefaultPageSize			= page_size;
@@ -1284,6 +1293,9 @@ GtkWidget *AP_UnixDialog_Options::_lookupWidget ( tControl id )
 	case id_CHECK_ALLOW_CUSTOM_TOOLBARS:
 		return m_checkbuttonAllowCustomToolbars;
 
+	case id_CHECK_AUTO_LOAD_PLUGINS:
+		return m_checkbuttonAutoLoadPlugins;
+
 	case id_CHECK_COLOR_FOR_TRANSPARENT_IS_WHITE:
 		return  m_checkbuttonTransparentIsWhite;
 
@@ -1516,6 +1528,7 @@ DEFINE_GET_SET_BOOL	(ViewAll);
 DEFINE_GET_SET_BOOL	(ViewHiddenText);
 DEFINE_GET_SET_BOOL	(ViewUnprintable);
 DEFINE_GET_SET_BOOL (AllowCustomToolbars);
+DEFINE_GET_SET_BOOL (AutoLoadPlugins);
 
 #undef DEFINE_GET_SET_BOOL
 

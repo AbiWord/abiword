@@ -297,6 +297,8 @@ dcl(DLG_Options_Label_PrefsCurrentScheme,	"&Current Preferences Scheme")
 
 dcl(DLG_Options_Label_ShowSplash, "Show the AbiWord splash screen on application startup")
 
+dcl(DLG_Options_Label_CheckAutoLoadPlugins, "Automatically load all plugins found")
+
 dcl(DLG_Options_Label_ViewShowHide,		"Show...")
 dcl(DLG_Options_Label_ViewRuler,		"&Ruler")
 dcl(DLG_Options_Label_ViewUnits,		"&Units:")

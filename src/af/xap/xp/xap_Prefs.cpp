@@ -34,6 +34,12 @@ struct xmlToIdMapping {
 	int m_type;
 };
 
+static  UT_sint32 compareStrings(const void * ppS1, const void * ppS2)
+{
+	const char ** sz1 = (const char **) (ppS1);
+	const char ** sz2 = (const char **) (ppS2);
+	return UT_stricmp(*sz1, *sz2);
+}
 
 enum
 {
@@ -179,20 +185,27 @@ bool XAP_PrefsScheme::getNthValue(UT_uint32 k, const XML_Char ** pszKey, const X
 {
 	if (k >= (UT_uint32)m_hash.size())
 		return false;
-
-	UT_StringPtrMap::UT_Cursor c (&m_hash);
-	const void * v = NULL;
-	UT_uint32 i;
-
-	for ( i = 0, v = c.first(); 
-	      c.is_valid() && i < k; v = c.next(), i++ )
+//
+// Output prefs in alphabetic Order.
+//
+	UT_Vector vecKeys;
+	UT_Vector * vecD = m_hash.keys();
+	UT_uint32 i=0;
+	vecKeys.clear();
+	for(i=0; i< vecD->getItemCount(); i++)
 	{
-	  // noop
+		vecKeys.addItem((void *) static_cast<UT_String *>(vecD->getNthItem(i))->c_str());
 	}
-	if(c.is_valid())
+	vecKeys.qsort(compareStrings);
+	delete vecD;
+	const char * szKey = NULL;
+	const char * szValue = NULL;
+	szKey = (const XML_Char *) vecKeys.getNthItem(k);
+	szValue = (const XML_Char *)  m_hash.pick(szKey);
+	if(szValue && *szValue)
 	{
-		*pszKey = (const XML_Char *)c.key().c_str();
-		*pszValue = (const XML_Char *)v;
+		*pszKey = szKey;
+		*pszValue = szValue;
 		return true;
 	}
 	else
@@ -1049,7 +1062,8 @@ bool XAP_Prefs::savePrefsFile(void)
 			const XML_Char * szKey;
 			const XML_Char * szValue;
 			UT_uint32 j;
-			for (j=0; (p->getNthValue(j,&szKey,&szValue)); j++)
+
+			for (j=0;(p->getNthValue(j, &szKey, &szValue)) ; j++)
 			{
 				bool need_print;
 				need_print = false;

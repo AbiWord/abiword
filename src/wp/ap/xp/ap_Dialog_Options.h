@@ -80,6 +80,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 				   id_SHOWSPLASH,
 				   id_UNIXFONTWARNING,
                    id_CHECK_ALLOW_CUSTOM_TOOLBARS,
+                   id_CHECK_AUTO_LOAD_PLUGINS,
 				   id_last } tControl;
 
 	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
@@ -134,6 +135,7 @@ class AP_Dialog_Options : public XAP_Dialog_NonPersistent
 	SET_GATHER			(ViewHiddenText,	bool);
 	SET_GATHER			(ViewUnprintable,	bool);
     SET_GATHER          (AllowCustomToolbars, bool);
+    SET_GATHER          (AutoLoadPlugins, bool);
 
 #ifdef BIDI_ENABLED
 	SET_GATHER			(OtherDirectionRtl, bool);
