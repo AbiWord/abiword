@@ -2972,7 +2972,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		for(i = 1; i < trueLen; i++)
 		{
 			iPrevType = iType;
-			if(!FRIBIDI_IS_NEUTRAL(iType))
+			if(FRIBIDI_IS_STRONG(iType))
 				iLastStrongType = iType;
 			
 			iType = fribidi_get_type((FriBidiChar)pSpan[i]);
@@ -2989,7 +2989,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: weak->weak\n"));
 					bIgnore = true;
 				}
-				else if(!FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
+				else if(FRIBIDI_IS_STRONG(iPrevType) && FRIBIDI_IS_NEUTRAL(iType))
 				{
 					// we can ignore a neutral character following a
 					// strong one if it is followed by a strong
@@ -3005,13 +3005,13 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 							break;
 						}
 
-						if(!FRIBIDI_IS_NEUTRAL(iNextType))
+						if(FRIBIDI_IS_STRONG(iNextType))
 							break;
 					}
 					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->weak\n"));
 					
 				}
-				else if(FRIBIDI_IS_NEUTRAL(iPrevType) && !FRIBIDI_IS_NEUTRAL(iType))
+				else if(FRIBIDI_IS_NEUTRAL(iPrevType) && FRIBIDI_IS_STRONG(iType))
 				{
 					// a neutral character followed by a strong one -- we
 					// can ignore it, if the neutral character was
