@@ -1514,9 +1514,13 @@ bool PD_Document::canDo(bool bUndo) const
 
 bool PD_Document::undoCmd(UT_uint32 repeatCount)
 {
-	while (repeatCount--)
+	while (repeatCount > 0)
+	{
+		UT_uint32 inCount = undoCount(true);
 		if (!m_pPieceTable->undoCmd())
 			return false;
+		repeatCount -= inCount - undoCount(true);
+	}
 	return true;
 }
 

@@ -473,7 +473,7 @@ bool pt_PieceTable::undoCmd(void)
 			break;
 
 	} while (m_history.getUndo(&pcr));
-        m_pDocument->updateFields();
+	m_pDocument->updateFields();
 	return true;
 }
 
