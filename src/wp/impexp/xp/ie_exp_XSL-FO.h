@@ -50,7 +50,7 @@ public:
 	virtual ~IE_Exp_XSL_FO();
 	
 protected:
-	virtual UT_Error	_writeDocument(void);
+	virtual UT_Error	_writeDocument();
 	
  private:
 	s_XSL_FO_Listener *	m_pListener;

@@ -19,6 +19,7 @@
 
 #include <locale.h>
 
+#include "ut_string_class.h"
 #include "ut_string.h"
 #include "ut_types.h"
 #include "ut_bytebuf.h"
@@ -441,6 +442,22 @@ docUnitToString(fp_PageSize::Unit docUnit)
 	}
 }
 
+static UT_String
+purgeSpaces(const char* st)
+{
+	UT_String retval;
+
+	while (*st != '\0')
+	{
+		if (*st != ' ')
+			retval += *st++;
+		else
+			++st;
+	}
+
+	return retval;
+}
+
 void s_XSL_FO_Listener::_handlePageSize(PT_AttrPropIndex api)
 {
   //
@@ -619,7 +636,7 @@ void s_XSL_FO_Listener::_openBlock(PT_AttrPropIndex api)
 		{
 			USED();
 			m_pie->write("font-size=\"");
-			m_pie->write((const char *)szValue);
+			m_pie->write(purgeSpaces((const char *) szValue).c_str());
 			m_pie->write("\"");
 		}		
 
@@ -756,7 +773,11 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		if (pAP->getProperty("bgcolor", szValue))
 		{
 			USED();
-			m_pie->write("background-color=\"#");
+			m_pie->write("background-color=\"");
+
+			if (*szValue >= '0' && *szValue <= '9')
+				m_pie->write("#");
+
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
 		}
@@ -764,7 +785,11 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		if (pAP->getProperty("color", szValue))
 		{
 			USED();
-			m_pie->write("color=\"#");
+			m_pie->write("color=\"");
+
+			if (*szValue >= '0' && *szValue <= '9')
+				m_pie->write("#");
+
 			m_pie->write((const char *)szValue);
 			m_pie->write("\"");
 		}
@@ -781,7 +806,7 @@ void s_XSL_FO_Listener::_openSpan(PT_AttrPropIndex api)
 		{
 			USED();
 			m_pie->write("font-size=\"");
-			m_pie->write((const char *)szValue);
+			m_pie->write(purgeSpaces((const char *)szValue).c_str());
 			m_pie->write("\"");
 		}		
 

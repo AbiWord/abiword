@@ -1486,7 +1486,7 @@ inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 	// first the char preceding this part of the run, which is simple
 	// NB. cannot call getSpanPtr with negative offset, or we will get
 	// into the undo buffer
-	const UT_UCSChar * pPrev, * pNext;
+	const UT_UCSChar * pPrev = 0, * pNext = 0;
 	UT_uint32 lenPrev, lenAfter;
 	
 	if(m_iOffsetFirst > 1)
