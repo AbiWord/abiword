@@ -355,6 +355,6 @@ void AP_UnixDialog_Columns::_storeWindowData(void)
 //	m_break = _getActiveRadioItem();
 }
 
-void AP_UnixDialog_Columns::enableLineBetweenControl(UT_Bool bState = UT_TRUE)
+void AP_UnixDialog_Columns::enableLineBetweenControl(UT_Bool bState)
 {
 }
