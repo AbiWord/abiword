@@ -50,6 +50,9 @@ static char Rcs_Id[] =
 
 /*
  * $Log$
+ * Revision 1.4  2002/03/06 08:27:16  fjfranklin
+ * o Only activate compound handling when the hash file says so (Per Larsson)
+ *
  * Revision 1.3  2001/05/14 09:52:50  hub
  * Removed newMain.c from GNUmakefile.am
  *
@@ -177,8 +180,9 @@ static void	save_root_cap P ((FIRST_ARG(istate) ichar_t * word, ichar_t * patter
 extern void upcase P ((ichar_t * string));
 extern void lowcase P ((ichar_t * string));
 extern ichar_t * strtosichar P ((char * in, int canonical));
-*/
+
 int compoundflag = COMPOUND_CONTROLLED;
+*/
 
 static int posscmp (FIRST_ARG(istate) char *a, char *b)
 #if 0
@@ -270,7 +274,8 @@ void makepossibilities (FIRST_ARG(istate) ichar_t *word)
     if (DEREF(istate, pcount) < MAXPOSSIBLE)
 	wrongletter (DEREF_FIRST_ARG(istate) word);		/* substitution */
 
-    if ((compoundflag != COMPOUND_ANYTIME)  &&  DEREF(istate, pcount) < MAXPOSSIBLE)
+    if ((DEREF(istate, hashheader.compoundflag) != COMPOUND_ANYTIME)  &&
+      DEREF(istate,pcount) < MAXPOSSIBLE)
 	missingspace (DEREF_FIRST_ARG(istate) word);	/* two words */
 
     }
@@ -497,7 +502,7 @@ int compoundgood (FIRST_ARG(istate) ichar_t *word, int pfxopts)
     /*
     ** If compoundflag is COMPOUND_NEVER, compound words are never ok.
     */
-    if (compoundflag == COMPOUND_NEVER)
+    if (DEREF(istate, hashheader.compoundflag) == COMPOUND_NEVER)
 	return 0;
     /*
     ** Test for a possible compound word (for languages like German that
