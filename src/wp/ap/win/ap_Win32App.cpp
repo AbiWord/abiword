@@ -58,6 +58,7 @@
 #include "ap_EditMethods.h"
 
 #include "fp_Run.h"
+#include "ut_Win32OS.h"
 
 #include "ie_exp.h"
 #include "ie_exp_AbiWord_1.h"
@@ -435,7 +436,8 @@ void AP_Win32App::copyToClipboard(PD_DocumentRange * pDocRange)
 
 		// put raw text on the clipboard
 
-		if (XAP_EncodingManager::get_instance()->isUnicodeLocale())
+		// TODO Should use a finer-grain technique than IsWinNT() since Win98 supports unicode clipboard.
+		if (UT_IsWinNT())
 		{
 			// put raw unicode text on the clipboard
 			// TODO On NT we should always put unicode text on the clipboard regardless of locale.

@@ -21,6 +21,7 @@
 #ifndef UT_Win32OS_H
 #define UT_Win32OS_H
 
+#include <windows.h>
 #include "ut_types.h"
 
 bool UT_IsWinNT(void);

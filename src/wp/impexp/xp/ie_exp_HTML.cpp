@@ -1242,6 +1242,7 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 
+#if 0
 	if (!XAP_EncodingManager::get_instance()->cjk_locale())
 	{
 	    m_pie->write("<?xml version=\"1.0\" encoding=\"");
@@ -1252,6 +1253,10 @@ void s_HTML_Listener::_outputBegin(PT_AttrPropIndex api)
 	{
 	    m_pie->write("<?xml version=\"1.0\"?>\n");
 	};
+#else
+	// we always encode as UTF-8
+	m_pie->write("?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+#endif
 	m_pie->write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml/DTD/xhtml1-strict.dtd\">\n");
 
 	m_pie->write("<!-- ================================================================================  -->\n");
