@@ -387,6 +387,64 @@ static int x_hexDigit(char c)
 	return 0;
 }
 
+static int parseColorToNextDelim ( const char * p, UT_uint32 & index )
+{
+  char buffer[7] = "" ;
+  index = 0 ;
+
+  while (isdigit(*p))
+    {
+      buffer[index++] = *p++;
+    }
+  buffer[index] = 0;
+  return atoi(buffer);
+}
+
+static void UT_parseCMYKColor(const char *p, UT_RGBColor& c, UT_uint32 len)
+{
+  // yes, i know that CMYK->RGB is lossy... DAL
+  // WARNING: !!!!UNTESTED!!!!
+
+  UT_DEBUGMSG(("DOM: parsing CMYK value!!\n"));
+
+  int cyanVal    = 0;
+  int magentaVal = 0;
+  int yellowVal  = 0;
+  int kVal       = 0;
+
+  p += 5; // advance past "CMYK("
+
+  UT_uint32 index = 0;
+
+  cyanVal = parseColorToNextDelim ( p, index ) ;
+  p+=(index+1); index = 0;
+
+  magentaVal = parseColorToNextDelim ( p, index ) ;
+  p+=(index+1); index = 0;
+
+  yellowVal = parseColorToNextDelim ( p, index ) ;
+  p+=(index+1); index = 0;
+
+  kVal = parseColorToNextDelim ( p, index ) ;
+
+  int  cPlusK = cyanVal + kVal;
+  int  mPlusK  = magentaVal + kVal;
+  int  yPlusK = yellowVal + kVal;
+  
+  if (cPlusK < 255)
+    c.m_red = 255 - cPlusK;
+  
+  if (mPlusK < 255)
+    c.m_grn = 255 - mPlusK;
+  
+  if (yPlusK < 255)
+    c.m_blu = 255 - yPlusK;
+
+  UT_DEBUGMSG(("DOM: CMYK (%d %d %d %d) -> RGB (%d %d %d)!!\n",
+	       cyanVal, magentaVal, yellowVal, kVal,
+	       c.m_red, c.m_grn, c.m_blu));
+}
+
 UT_RGBColor::UT_RGBColor()
 {
 	m_red = 0;
@@ -411,6 +469,13 @@ void UT_setColor(UT_RGBColor & col, unsigned char r, unsigned char g, unsigned c
 void UT_parseColor(const char *p, UT_RGBColor& c)
 {
         UT_uint32 len = strlen (p);
+
+	if ( len > 7 && strncmp ( p, "cmyk(", 5 ) == 0 )
+	  {
+	    // CMYK color. parse that out
+	    UT_parseCMYKColor ( p, c, len ) ;
+	    return;
+	  }
 
 	char returned_color[7] = "";
 
