@@ -72,6 +72,7 @@ public:
 
 	static const char * m_impProps;
 	static const char * m_expProps;
+	static const char * m_sUserProfile;
 
 private:
 	bool          m_bShowSplash;

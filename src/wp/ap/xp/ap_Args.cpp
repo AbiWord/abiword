@@ -60,6 +60,8 @@ const char * AP_Args::m_sMerge = NULL;
 const char * AP_Args::m_impProps=NULL;
 const char * AP_Args::m_expProps=NULL;
 
+const char * AP_Args::m_sUserProfile = NULL;
+
 AP_Args::AP_Args(XAP_Args * pArgs, const char * szAppName, AP_App * pApp)
 	: XArgs (pArgs), poptcon(NULL), m_bShowSplash(true), m_pApp(pApp)
 {
@@ -208,5 +210,6 @@ const struct poptOption AP_Args::const_opts[] =
 	 // GNOME build kills everything after "version"
 	 {"version", '\0', POPT_ARG_NONE, &m_iVersion, 0, "Print AbiWord version", NULL},
  	 {"help", '?', POPT_ARG_NONE, &m_iHelp, 0, "Display help", NULL},
+	 {"userprofile", 'u', POPT_ARG_STRING, &m_sUserProfile,0,"Use specified user profile.",NULL},
 	 {NULL, '\0', 0, NULL, 0, NULL, NULL} /* end the list */
 	};
