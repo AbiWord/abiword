@@ -6993,7 +6993,7 @@ UT_return_val_if_fail(pDialog, false);
 		{
 			bSubScript = (strstr(h, "subscript") != NULL);
 		}
-		pDialog->setSuperScript(bSubScript);
+		pDialog->setSubScript(bSubScript);
 
 		FREEP(props_in);
 	}
