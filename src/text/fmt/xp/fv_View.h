@@ -128,9 +128,11 @@ public:
 // ----------------------
 
 	// find and replace 
-	void 			findReset(void);
+	void 			findReset();
 	UT_Bool			findSetExtents(PT_DocPosition start, PT_DocPosition end);
+	UT_Bool 		findSetNextString(UT_UCSChar * string);
 	UT_Bool 		findNext(const UT_UCSChar * string, UT_Bool bSelect = UT_TRUE, UT_Bool * bWrapped = NULL);
+	UT_Bool			findNextAuto(void);
 	UT_Bool			findReplace(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped = NULL);
 	UT_Bool			findReplaceAll(const UT_UCSChar * find, const UT_UCSChar * replace, UT_Bool * bWrapped = NULL);	
 		
@@ -227,6 +229,8 @@ protected:
 	fl_BlockLayout * 	_findGetCurrentBlock(void);
 	fl_BlockLayout * 	_findGetNextBlock(UT_Bool * wrapped);
 
+	UT_UCSChar * 		_m_findNextString;
+	
 	// search routines (these return values will fall short of an
 	// extremely large document - fix them)
 	UT_sint32 			_findBlockSearchDumb(const UT_UCSChar * haystack, const UT_UCSChar * needle);

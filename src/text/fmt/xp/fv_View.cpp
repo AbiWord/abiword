@@ -98,6 +98,8 @@ FV_View::FV_View(void* pParentData, FL_DocLayout* pLayout)
 	_resetSelection();
 	_fixInsertionPointCoords();
 
+	_m_findNextString = NULL;
+
 	findReset();
 }
 
@@ -105,6 +107,8 @@ FV_View::~FV_View()
 {
 	DELETEP(m_pAutoScrollTimer);
 
+	FREEP(_m_findNextString);
+	
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
 }
@@ -1665,7 +1669,7 @@ void FV_View::endDrag(UT_sint32 xPos, UT_sint32 yPos)
 
 // ---------------- start find and replace ---------------
 
-void FV_View::findReset(void)
+void FV_View::findReset()
 {
 	UT_Bool bRes;
 	
@@ -1677,7 +1681,6 @@ void FV_View::findReset(void)
 	bRes = m_pDoc->getBounds(UT_TRUE, m_iFindPosEnd);
 	UT_ASSERT(bRes);
 
-	// set cursor to start
 	m_iFindCur = m_iFindPosStart;
 
 	m_bDoneFind = UT_FALSE;
@@ -1710,6 +1713,15 @@ UT_Bool FV_View::findSetExtents(PT_DocPosition start, PT_DocPosition end)
 	}
 	else
 		return UT_FALSE;
+}
+
+UT_Bool FV_View::findSetNextString(UT_UCSChar * string)
+{
+	UT_ASSERT(string);
+
+	FREEP(_m_findNextString);
+
+	return UT_UCS_cloneString(&_m_findNextString, string);
 }
 
 /*
@@ -1833,8 +1845,9 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 
 				if (!block)
 				{
-					UT_DEBUGMSG(("The Find mechanism lost a block in its DocLayout.  This means something "
-								 "really weird happened."));
+					UT_DEBUGMSG(("The Find mechanism lost a block in its DocLayout.  This means something\n"
+								 "really weird happened.  Perhaps the document offsets and cursors were\n"
+								 "set outside the real extents of the document.\n"));
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 				}
 
@@ -1854,6 +1867,37 @@ UT_Bool FV_View::findNext(const UT_UCSChar * string, UT_Bool bSelect, UT_Bool * 
 		// they were never written
 	}
 
+	return UT_FALSE;
+}
+
+/*
+  Call this function with no arguments to work off the view's
+  find string member.  If the find string is empty or null,
+  this function returns UT_FALSE, else it does the find and
+  returns UT_TRUE.
+*/
+
+UT_Bool FV_View::findNextAuto(void)
+{
+	if (_m_findNextString && *_m_findNextString)
+	{
+		// must resize doc positions so we're within bounds
+		// for the whole find
+		findReset();
+		
+		m_iFindCur = m_iInsPoint;
+		
+		// we start the find at n characters into the current block
+		fl_BlockLayout * block = _findGetCurrentBlock();
+		UT_ASSERT(block);
+
+		// start the find at the beginning of the current block
+		m_iFindCur = block->getPosition(UT_FALSE);
+		// casting here loses high end data
+		m_iFindBufferOffset = ((long) m_iInsPoint - (long) block->getPosition(UT_FALSE));
+		
+		return findNext(_m_findNextString, UT_TRUE, NULL);
+	}
 	return UT_FALSE;
 }
 

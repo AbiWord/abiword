@@ -201,6 +201,9 @@ UT_Bool AP_Dialog_Replace::findNext()
 	m_didSomething = UT_TRUE;
 
 	UT_Bool bWrapped = UT_FALSE;
+
+	// update the view's automatic "find next" string
+	m_pView->findSetNextString(m_findString);
 	
 	// call view to do the work
 	UT_Bool result = m_pView->findNext(m_findString, UT_TRUE, &bWrapped);
