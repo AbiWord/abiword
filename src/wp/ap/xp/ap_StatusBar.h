@@ -39,6 +39,17 @@ class GR_Graphics;
 /*****************************************************************/
 /*****************************************************************/
 
+#define PROGRESS_CMD_MASK 0x3		/* 0,1,2,3 Operational values */
+enum _progress_flags {
+	PROGRESS_RESERVED1 	= 0x0,	
+	PROGRESS_START  	= 0x1,		/* Start using the progress bar */
+	PROGRESS_STOP	 	= 0x2,		/* Stop using the progress bar */	
+	PROGRESS_RESERVED2	= 0x3,
+    PROGRESS_SHOW_MSG	= 0x4,		/* Allow message to be displayed */
+	PROGRESS_SHOW_RAW	= 0x8,		/* Allow raw value to be displayed */
+	PROGRESS_SHOW_PERCENT = 0x10,	/* Allow calculation of percent value */
+};
+
 class AP_StatusBar : public AV_Listener
 {
 public:
@@ -53,9 +64,12 @@ public:
 	UT_uint32			getHeight(void) const;
 	void				setWidth(UT_uint32 iWidth);
 	void				setHeight(UT_uint32 iHeight);
-	void				setStatusMessage(UT_UCSChar * pbufUCS);
-	void				setStatusMessage(const char * pbuf);
+	void				setStatusMessage(UT_UCSChar * pbufUCS, int redraw = UT_TRUE);
+	void				setStatusMessage(const char * pbuf, int redraw = UT_TRUE);
 	const UT_UCSChar *	getStatusMessage(void) const;
+
+	void				setStatusProgressType(int start, int end, int flags);
+	void 				setStatusProgressValue(int value);
 	
 	/* used with AV_Listener */
 	virtual UT_Bool		notify(AV_View * pView, const AV_ChangeMask mask);

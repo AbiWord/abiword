@@ -32,6 +32,8 @@
 #include "fl_DocLayout.h"
 #include "fv_View.h"
 
+#include "ut_timer.h"
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
@@ -227,11 +229,23 @@ public:
 	virtual UT_uint32	getDesiredWidth(void);
 	virtual void		draw(void);
 	virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
+
+	void				setStatusProgressType(int start, int end, int flags);
+	void 				setStatusProgressValue(int value);
+
+	UT_sint32			m_ProgressStart;
+	UT_sint32			m_ProgressEnd;
+	UT_sint32			m_ProgressValue;
+	UT_sint32			m_ProgressStartPoint;
+	UT_uint32			m_ProgressFlags;
+	UT_Timer			*m_ProgressTimer;
+
 };
 
 ap_sb_Field_StatusMessage::ap_sb_Field_StatusMessage(AP_StatusBar * pSB)
 	: ap_sb_Field(pSB)
 {
+	m_ProgressStartPoint = 0;
 }
 
 ap_sb_Field_StatusMessage::~ap_sb_Field_StatusMessage(void)
@@ -245,7 +259,95 @@ UT_uint32 ap_sb_Field_StatusMessage::getDesiredWidth(void)
 
 void ap_sb_Field_StatusMessage::draw(void)
 {
-	_draw3D();
+	int centertext = 0;
+
+	if ((m_ProgressFlags & PROGRESS_CMD_MASK) == PROGRESS_START) {
+		GR_Graphics * pG = m_pSB->getGraphics();
+		UT_RGBColor clr(255,255,0);			//Yellow
+		UT_RGBColor anticlr(120,120,120);	//Dark grey
+		UT_Rect newrect;
+		UT_Rect greyrect;
+
+		pG->setClipRect(&m_rect3d);
+		
+		//If we are doing a continuous update ...
+		if (m_ProgressStart == m_ProgressEnd) {
+
+			newrect.top = m_rect3d.top + m_rect3d.height - m_ProgressStartPoint; 
+			newrect.left = m_rect3d.left; 
+			newrect.height = m_rect3d.height;
+			newrect.width = 1;
+
+			m_ProgressStartPoint--;
+			if (m_ProgressStartPoint < 0) {
+				m_ProgressStartPoint = (2 * m_rect3d.height) -1;
+			}
+
+			while (newrect.left < m_rect3d.width) { 
+				
+				pG->fillRect(clr, newrect);
+
+				greyrect = newrect;
+				greyrect.top += (newrect.top < m_rect3d.top) ? greyrect.height : (-1 * greyrect.height);
+				pG->fillRect(anticlr, greyrect);
+
+				newrect.left++;
+				newrect.top--;
+				if (newrect.top < m_rect3d.top - m_rect3d.height) {
+					newrect.top = m_rect3d.top + m_rect3d.height;
+				}
+			}
+				
+		}
+		//We are doing a percentage update ...
+		else {
+			char buffer[AP_MAX_MESSAGE_FIELD];
+
+			buffer[0] = '\0';
+			newrect = 
+			greyrect = m_rect3d;
+
+			//TODO: Get rid of the double here ...
+			double percent = (double)m_ProgressValue / (double)(m_ProgressEnd - m_ProgressStart); 
+			newrect.width = (UT_sint32)((double)newrect.width * percent); 
+
+			greyrect.left += newrect.width;
+			greyrect.width -= newrect.width;
+
+			pG->fillRect(clr, newrect);
+			pG->fillRect(anticlr, greyrect);
+
+			/* If we were asked to, we would need to print the percent value */
+			switch (m_ProgressFlags & (PROGRESS_SHOW_RAW | PROGRESS_SHOW_PERCENT)) {
+				case PROGRESS_SHOW_RAW:
+					sprintf(buffer, "%d", m_ProgressValue); 
+					break;
+				case PROGRESS_SHOW_PERCENT:
+					sprintf(buffer, "%.1f%%", 100 * percent); 
+					break;
+				case (PROGRESS_SHOW_RAW | PROGRESS_SHOW_PERCENT):
+					sprintf(buffer, "%d (%.1f%%)", m_ProgressValue, 100 * percent); 
+					break;
+				case 0:
+				default:
+					break;
+			}
+
+			if (buffer[0]) {
+				m_pSB->setStatusMessage((const char *)buffer, UT_FALSE);
+				centertext = 1;
+			}
+		}
+		
+		pG->setClipRect(NULL);
+
+		if (!(m_ProgressFlags & (PROGRESS_SHOW_MSG | PROGRESS_SHOW_RAW | PROGRESS_SHOW_PERCENT))) {
+			return;
+		}
+	}
+	else {
+		_draw3D();
+	}
 
 	const UT_UCSChar * szMsg = m_pSB->getStatusMessage();
 	UT_uint32 len = UT_UCS_strlen(szMsg);
@@ -254,9 +356,14 @@ void ap_sb_Field_StatusMessage::draw(void)
 	{
 		GR_Graphics * pG = m_pSB->getGraphics();
 		UT_uint32 iFontHeight = pG->getFontHeight();
+		UT_uint32 iStringWidth = pG->measureString(szMsg, 0, len, NULL);
 
 		UT_uint32 x = m_rect3d.left + 3;
 		UT_uint32 y = m_rect3d.top + (m_rect3d.height-iFontHeight)/2;
+
+		if (centertext) {
+			x = m_rect3d.left + ((m_rect3d.width - iStringWidth) / 2);
+		}
 
 		pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	
@@ -269,6 +376,53 @@ void ap_sb_Field_StatusMessage::draw(void)
 void ap_sb_Field_StatusMessage::notify(AV_View * /*pView*/, const AV_ChangeMask /*mask*/)
 {
 	return;
+}
+
+static void updateProgress(UT_Timer * pTimer)
+{
+    UT_ASSERT(pTimer);
+
+    ap_sb_Field_StatusMessage *pfsm;
+    pfsm = (ap_sb_Field_StatusMessage *)pTimer->getInstanceData();
+	UT_ASSERT(pfsm);
+
+	pfsm->draw();
+}
+
+/*
+ This will set up the status message with a status/percentage updater.
+ Flags are 0 for now.
+ If start == end then the progress bar is a continuous update.
+ If start != end then the progress bar will indicate an amount
+	between start-end
+
+ FLAGS: 0 
+ TODO: Allow status message to xor on top,
+       or update the message with the value (as a percent or
+       raw via the setProgressType. Start/Stop the progress bar.
+*/ 
+void ap_sb_Field_StatusMessage::setStatusProgressType(int start, int end, int flags) {
+	m_ProgressStart = 
+	m_ProgressValue = start;
+	m_ProgressEnd = end;
+	m_ProgressFlags = flags;
+	m_ProgressStartPoint = 0;
+
+	if (m_ProgressTimer) {
+		delete m_ProgressTimer;
+		m_ProgressTimer = NULL;
+	}
+
+	if (m_ProgressStart == m_ProgressEnd &&
+       (m_ProgressFlags & PROGRESS_CMD_MASK) == PROGRESS_START) {  
+		m_ProgressTimer = UT_Timer::static_constructor(updateProgress, this);
+		m_ProgressTimer->stop();
+		m_ProgressTimer->set(50);	//Milliseconds
+	}
+}
+
+void ap_sb_Field_StatusMessage::setStatusProgressValue(int value) {
+	m_ProgressValue = value;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -604,7 +758,7 @@ void AP_StatusBar::_draw(void)
 	}
 }
 
-void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS)
+void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int redraw)
 {
 	memset(m_bufUCS,0,sizeof(m_bufUCS));
 
@@ -615,10 +769,12 @@ void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS)
 	}
 	
 	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
-	pf->draw();
+	if (redraw == UT_TRUE) {
+		pf->draw();
+	}
 }
 
-void AP_StatusBar::setStatusMessage(const char * pBuf)
+void AP_StatusBar::setStatusMessage(const char * pBuf, int redraw)
 {
 	UT_uint32 len = ((pBuf && *pBuf) ? strlen(pBuf) : 0);
 	UT_ASSERT(len < AP_MAX_MESSAGE_FIELD);
@@ -630,11 +786,26 @@ void AP_StatusBar::setStatusMessage(const char * pBuf)
 	else
 		memset(bufUCS,0,sizeof(bufUCS));
 
-	setStatusMessage(bufUCS);
+	setStatusMessage(bufUCS, redraw);
 }
 
 const UT_UCSChar * AP_StatusBar::getStatusMessage(void) const
 {
 	return m_bufUCS;
 }
+
+void AP_StatusBar::setStatusProgressType(int start, int end, int flags) {
+	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
+
+	pf->setStatusProgressType(start, end, flags);
+	pf->draw();
+}
+
+void AP_StatusBar::setStatusProgressValue(int value) {
+	ap_sb_Field_StatusMessage * pf = (ap_sb_Field_StatusMessage *)m_pStatusMessageField;
+
+	pf->setStatusProgressValue(value);
+	pf->draw();
+}
+
 
