@@ -871,7 +871,7 @@ void XAP_UnixFrameImpl::createTopLevelWindow(void)
 void XAP_UnixFrameImpl::_createIMContext(GdkWindow *w)
 {
 	m_imContext = gtk_im_multicontext_new();
-	gtk_im_context_set_use_preedit (m_imContext, TRUE);
+	gtk_im_context_set_use_preedit (m_imContext, FALSE); // show alternate preedit stuff in a separate window or somesuch
 	gtk_im_context_set_client_window(m_imContext, w);
 	g_signal_connect(G_OBJECT(m_imContext), "commit", 
 					 G_CALLBACK(_imCommit_cb), this);
