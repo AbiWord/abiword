@@ -860,6 +860,10 @@ fp_Container* fl_ContainerLayout::getLastContainer() const
 
 void fl_ContainerLayout::setFirstContainer(fp_Container * pCon)
 {
+	if(pCon && getContainerType() == FL_CONTAINER_BLOCK)
+	{
+		UT_ASSERT(pCon->getContainerType() == FP_CONTAINER_LINE);
+	}
 	xxx_UT_DEBUGMSG(("Set FirstContainer of %x to %x \n",this,pCon));
 	m_pFirstContainer = pCon;
 }

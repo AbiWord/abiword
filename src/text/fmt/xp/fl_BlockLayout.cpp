@@ -1553,6 +1553,12 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine)
 	pLine->remove();
 
 	delete pLine;
+#if DEBUG
+	if(getFirstContainer())
+	{
+		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
+	}
+#endif
 }
 
 void fl_BlockLayout::_purgeLine(fp_Line* pLine)
@@ -1570,6 +1576,12 @@ void fl_BlockLayout::_purgeLine(fp_Line* pLine)
 	pLine->remove();
 
 	delete pLine;
+#if DEBUG
+	if(getFirstContainer())
+	{
+		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
+	}
+#endif
 }
 
 
@@ -1847,7 +1859,12 @@ fl_BlockLayout::_breakLineAfterRun(fp_Run* pRun)
 	// Update the layout information in the lines.
 	pLine->layout();
 	pNewLine->layout();
-
+#if DEBUG
+	if(getFirstContainer())
+	{
+		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
+	}
+#endif
 	_assertRunListIntegrity();
 }
 
@@ -2352,6 +2369,8 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 			setLastContainer(pLine);
 			if(bFirst)
 			{
+				pLine->setPrev(NULL);
+				UT_ASSERT(pLine->getNext() == NULL);
 				setFirstContainer(pLine);
 			}
 		}
@@ -2385,6 +2404,12 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 		fp_Line* pLastLine = static_cast<fp_Line *>(getLastContainer());
 		pLastLine->resetJustification(true); // permanent reset
 	}
+#if DEBUG
+	if(getFirstContainer())
+	{
+		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
+	}
+#endif
 	return;
 }
 
@@ -2531,6 +2556,12 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 			}
 			xxx_UT_DEBUGMSG(("-1- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 			pLine->setHeight(iHeight);
+#if DEBUG
+			if(getFirstContainer())
+			{
+				UT_ASSERT(getFirstContainer()->getPrev() == NULL);
+			}
+#endif
 			return pLine;
 		}
 	}
@@ -2654,6 +2685,12 @@ fp_Line *  fl_BlockLayout::getNextWrappedLine(UT_sint32 iX,
 	}
 	xxx_UT_DEBUGMSG(("-3- New line %x has X %d Max width %d wrapped %d sameY %d \n",pLine,pLine->getX(),pLine->getMaxWidth(),pLine->isWrapped(),pLine->isSameYAsPrevious()));
 	pLine->setHeight(iHeight);
+#if DEBUG
+	if(getFirstContainer())
+	{
+		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
+	}
+#endif
 	return pLine;
 }
 
@@ -3175,6 +3212,12 @@ fp_Container* fl_BlockLayout::getNewContainer(fp_Container * /* pCon*/)
 		}
 	}
 	UT_ASSERT(pLine->getContainer());
+#if DEBUG
+	if(getFirstContainer())
+	{
+		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
+	}
+#endif
 	return static_cast<fp_Container *>(pLine);
 }
 
@@ -7068,7 +7111,12 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	}
 
 	_assertRunListIntegrity();
-
+#if DEBUG
+	if(getFirstContainer())
+	{
+		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
+	}
+#endif
 	return true;
 }
 
