@@ -33,7 +33,7 @@ class PD_Style
 {
 public:
 	PD_Style(pt_PieceTable * pPT, PT_AttrPropIndex indexAP);
-	~PD_Style();
+	virtual ~PD_Style();
 
 	inline PT_AttrPropIndex		getIndexAP(void) const	{ return m_indexAP; };
 	UT_Bool						setIndexAP(PT_AttrPropIndex indexAP);
@@ -57,7 +57,7 @@ class PD_BuiltinStyle : public PD_Style
 {
 public:
 	PD_BuiltinStyle(pt_PieceTable * pPT, PT_AttrPropIndex indexAP);
-	~PD_BuiltinStyle();
+	virtual ~PD_BuiltinStyle();
 
 	virtual UT_Bool			isUserDefined(void) const { return (m_indexAP == m_indexAPOrig); };
 
