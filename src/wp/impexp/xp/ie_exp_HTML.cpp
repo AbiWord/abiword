@@ -1411,7 +1411,14 @@ void s_HTML_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 			break;
 
 		case UCS_FF:					// page break, convert to line break
-			sBuf += "<br />";
+			if (!m_bIs4)
+			{
+				sBuf += "<br />";
+			}
+			else
+			{
+				sBuf += "<br>";
+			}
 			pData++;
 			break;
 		
