@@ -321,10 +321,10 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	yoff = _tduY(yoff);
 
 #if 0 // this bypassesthe font handling mechanism
-	HFONT hFont = GR_Win32Font::Acq::getDisplayFont(*m_pFont, this);
+	HFONT hFont = m_pFont->getDisplayFont(this);
 	SelectObject(m_hdc, hFont);
 #else
-	GR_Win32Font::Acq::selectFontIntoDC(*m_pFont, this, m_hdc);
+	m_pFont->selectFontIntoDC(this, m_hdc);
 #endif
 	
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
@@ -422,7 +422,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	
 	// iLength can be modified by _remapGlyphs
 	int iLength = iLengthOrig;
-	HFONT hFont = GR_Win32Font::Acq::getDisplayFont(*m_pFont, this);
+	HFONT hFont = m_pFont->getDisplayFont(this);
 	SelectObject(m_hdc, hFont);
 	SetTextAlign(m_hdc, TA_LEFT | TA_TOP);
 	SetBkMode(m_hdc, TRANSPARENT);		// TODO: remember and reset?
@@ -582,7 +582,7 @@ void GR_Win32Graphics::setFont(GR_Font* pFont)
 	{
 		m_pFont = pWin32Font;
 		m_iFontAllocNo = pFont->getAllocNumber();
-		GR_Win32Font::Acq::selectFontIntoDC(*m_pFont, this, m_hdc);
+		m_pFont->selectFontIntoDC(this, m_hdc);
 	}
 }
 
@@ -598,7 +598,7 @@ UT_uint32 GR_Win32Graphics::getFontHeight(GR_Font * fnt)
 UT_uint32 GR_Win32Graphics::getFontHeight()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((GR_Win32Font::Acq::getFontHeight(*m_pFont)) * getResolution() / getDeviceResolution());
+	return (UT_uint32)((m_pFont->getHeight()) * getResolution() / getDeviceResolution());
 }
 
 UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
@@ -613,7 +613,7 @@ UT_uint32 GR_Win32Graphics::getFontAscent(GR_Font* fnt)
 UT_uint32 GR_Win32Graphics::getFontAscent()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((GR_Win32Font::Acq::getAscent(*m_pFont)) * getResolution() / getDeviceResolution());
+	return (UT_uint32)((m_pFont->getAscent()) * getResolution() / getDeviceResolution());
 }
 
 UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
@@ -628,7 +628,7 @@ UT_uint32 GR_Win32Graphics::getFontDescent(GR_Font* fnt)
 UT_uint32 GR_Win32Graphics::getFontDescent()
 {
 	UT_return_val_if_fail( m_pFont, 0 );
-	return (UT_uint32)((GR_Win32Font::Acq::getDescent(*m_pFont)) * getResolution() / getDeviceResolution());
+	return (UT_uint32)((m_pFont->getDescent()) * getResolution() / getDeviceResolution());
 }
 
 void GR_Win32Graphics::getCoverage(UT_NumberVector& coverage)
@@ -647,7 +647,7 @@ UT_sint32 GR_Win32Graphics::measureUnRemappedChar(const UT_UCSChar c)
 	#endif
 
 	UT_ASSERT(m_pFont);
-	UT_sint32 iWidth = GR_Win32Font::Acq::measureUnRemappedChar(*m_pFont, c);
+	UT_sint32 iWidth = m_pFont->measureUnRemappedChar(c);
 
 	if (iWidth==GR_CW_UNKNOWN || iWidth==GR_CW_ABSENT)
 		return iWidth;
@@ -1547,17 +1547,17 @@ void GR_Win32Font::fetchFont(UT_uint32 pixelsize) const
 	insertFontInCache(pixelsize, pFont);
 }
 
-HFONT GR_Win32Font::Acq::getDisplayFont(GR_Win32Font& font, GR_Graphics * pG)
+HFONT GR_Win32Font::getDisplayFont(GR_Graphics * pG)
 {
-	UT_uint32 zoom = font.m_bGUIFont ? 100 : pG->getZoomPercentage();
-	UT_uint32 pixels = font.m_bGUIFont ? font.m_iHeight : font.m_iHeight*zoom/100;
+	UT_uint32 zoom = m_bGUIFont ? 100 : pG->getZoomPercentage();
+	UT_uint32 pixels = m_bGUIFont ? m_iHeight : m_iHeight*zoom/100;
 		
-	HFONT pFont = font.getFontFromCache(pixels, false, zoom);
+	HFONT pFont = getFontFromCache(pixels, false, zoom);
 	if (pFont)
 		return pFont;
 
-	font.fetchFont(pixels);
-	return font.getFontFromCache(pixels, false, zoom);
+	fetchFont(pixels);
+	return getFontFromCache(pixels, false, zoom);
 }
 
 void GR_Win32Font::setupFontInfo()
@@ -1578,29 +1578,29 @@ void GR_Win32Font::setupFontInfo()
 	m_defaultCharWidth = getCharWidthFromCache(d);
 }
 
-UT_sint32 GR_Win32Font::Acq::measureUnRemappedChar(GR_Win32Font& font, UT_UCSChar c)
+UT_sint32 GR_Win32Font::measureUnRemappedChar(UT_UCSChar c)
 {
 #ifndef ABI_GRAPHICS_PLUGIN_NO_WIDTHS
 	// first of all, handle 0-width spaces ...
 	if(c == 0xFEFF || c == 0x200b || c == UCS_LIGATURE_PLACEHOLDER)
 		return 0;
 
-	UT_sint32 iWidth = font.getCharWidthFromCache(c);
+	UT_sint32 iWidth = getCharWidthFromCache(c);
 	return iWidth;
 #else
 	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,0);
 #endif
 }
 
-void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, HDC hdc)
+void GR_Win32Font::selectFontIntoDC(GR_Graphics * pGr, HDC hdc)
 {
-	HFONT hFont = getDisplayFont(font, pGr);
+	HFONT hFont = getDisplayFont(pGr);
 	HGDIOBJ hRet = SelectObject(hdc, hFont);
 
 	// hate having to do the cast, here
 	UT_ASSERT_HARMLESS( hRet != (void*)GDI_ERROR);
 	
-	if (hdc != font.m_oldHDC)
+	if (hdc != m_oldHDC)
 	{
 		// invalidate cached info when we change hdc's.
 		// this is probably unnecessary except when
@@ -1609,8 +1609,8 @@ void GR_Win32Font::Acq::selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, 
 		// TODO to not invalidate if old and new are
 		// TODO both on screen.
 
-		font._clearAnyCachedInfo();
-		font.m_oldHDC = hdc;
+		_clearAnyCachedInfo();
+		m_oldHDC = hdc;
 	}
 }
 

@@ -520,14 +520,16 @@ void GR_Win32USPGraphics::_setupFontOnDC(GR_Win32USPFont *pFont)
 {
 	UT_return_if_fail( pFont );
 
+	HFONT hFont = pFont->getDisplayFont(this);
+	
 	if(pFont->getAllocNumber() != m_iDCFontAllocNo ||
-	   (HFONT) GetCurrentObject(m_hdc, OBJ_FONT) != pFont->getFontHandle())
+	   (HFONT) GetCurrentObject(m_hdc, OBJ_FONT) != hFont)
 	{
-		if(NULL == SelectObject(m_hdc, pFont->getFontHandle()))
+		if(NULL == SelectObject(m_hdc, hFont))
 		{
 			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			LOGFONT lf;
-			if(GetObject(m_pFont->getFontHandle(), sizeof(LOGFONT), &lf))
+			if(GetObject(hFont, sizeof(LOGFONT), &lf))
 			{
 				// this assumes that the lfFaceName is a char string; it could be wchar in
 				// fact but it seems to work elsewhere in the win32 graphics class

@@ -39,34 +39,31 @@ public:
 	static GR_Win32Font * newFont(LOGFONT & lf);
 	virtual ~GR_Win32Font();
 
-	// make GR_Win32Graphics an "aquaintance" of GR_Win32Font
-	class Acq
-	{
-		friend class GR_Win32Graphics;
-		friend class GR_Win32Font;
-	private:
+	UT_uint32	getAscent()  const { return m_tm.tmAscent; }
+	UT_uint32	getDescent() const { return m_tm.tmDescent; }
+	UT_uint32	getHeight()  const { return m_tm.tmHeight; }
 
-		static inline HFONT		getDisplayFont(GR_Win32Font& font, GR_Graphics * pGr);
+	HFONT       getDisplayFont(GR_Graphics * pGr);
 
-		static UT_sint32	measureUnRemappedChar(	GR_Win32Font& font,
-													UT_UCSChar c);
-		static UT_uint32	getAscent(const GR_Win32Font& font)
-			{ return font.m_tm.tmAscent; }
-		static UT_uint32	getDescent(const GR_Win32Font& font)
-			{ return font.m_tm.tmDescent; }
-		static UT_uint32	getFontHeight(const GR_Win32Font& font)
-			{ return font.m_tm.tmHeight; }
-
-		static void	 selectFontIntoDC(GR_Win32Font& font, GR_Graphics * pGr, HDC hdc);
-	};
-	friend class Acq;
-	
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const;
+	UT_sint32	measureUnRemappedChar(UT_UCSChar c);
 	virtual GR_CharWidths* newFontWidths(void) const;
-	void markGUIFont() {m_bGUIFont = true;}
+	
+	void        selectFontIntoDC(GR_Graphics * pGr, HDC hdc);
+	
+	void        markGUIFont() {m_bGUIFont = true;}
+	bool        isFontGUI() const {return m_bGUIFont;}
 
-	HDC   getFontHDC() const {return m_oldHDC;}
-	HFONT getFontHandle() const {return m_layoutFont;}
+	HDC         getFontHDC() const {return m_oldHDC;}
+
+	
+	// NB: the font handle is one which was associated with this font when it was
+	// origianlly created; however, it is not necessarily one that is to be used for
+	// drawing as that has to reflect zoom factor and has to be obtained using
+	// GR_Win32Font::Acq::getDisplayFont()
+	// (The handle returned by getFontHandle() can be used for things that are not
+	// affected by zoom, such as retrieving face names, etc.)
+	HFONT       getFontHandle() const {return m_layoutFont;}
 	
 protected:
 	// all construction has to be done via the graphics class
@@ -85,6 +82,10 @@ protected:
 	// it is prinicipally intened to be used when we share fonts between screen and
 	// printer 
 	virtual void _clearAnyCachedInfo() {};
+	HFONT        getFontFromCache(UT_uint32 pixelsize, bool bIsLayout,
+								  UT_uint32 zoomPercentage) const;
+
+	void         fetchFont(UT_uint32 pixelsize) const;
    	
 private:
 
@@ -94,9 +95,7 @@ private:
 		HFONT			    hFont;
 	};
 
-	HFONT				    getFontFromCache(UT_uint32 pixelsize, bool bIsLayout, UT_uint32 zoomPercentage) const;
 	void					insertFontInCache(UT_uint32 pixelsize, HFONT pFont) const;
-	void					fetchFont(UT_uint32 pixelsize) const;
 
 	void					setupFontInfo();
 
