@@ -128,12 +128,21 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 	if (m_answer == a_OK)
 	{
-		if (   (!lf.lfFaceName && m_pFontFamily)
-			|| (lf.lfFaceName && !m_pFontFamily)
-			|| (UT_stricmp(lf.lfFaceName,m_pFontFamily) != 0))
+		if(m_pFontFamily)
 		{
-			m_bChangedFontFamily = UT_TRUE;
-			setFontFamily(lf.lfFaceName);
+			if((UT_stricmp(lf.lfFaceName,m_pFontFamily) != 0))
+			{
+				m_bChangedFontFamily = UT_TRUE;
+				setFontFamily(lf.lfFaceName);
+			}
+		}
+		else
+		{
+			if(lf.lfFaceName[0])
+			{
+				m_bChangedFontFamily = UT_TRUE;
+				setFontFamily(lf.lfFaceName);
+			}
 		}
 
 		UT_Bool bIsSizeValid = ((cf.Flags & CF_NOSIZESEL) == 0);
