@@ -69,7 +69,7 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	: EV_Keyboard(pEEM),
 	  m_hKeyboardLayout(0),
-	  m_iconv((UT_iconv_t)-1),
+	  m_iconv(UT_ICONV_INVALID),
 	  m_bIsUnicodeInput(false)
 {
 	HINSTANCE hInstUser;
@@ -85,7 +85,7 @@ ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 
 ev_Win32Keyboard::~ev_Win32Keyboard()
 {
-	if( m_iconv != (UT_iconv_t)-1 )
+	if( m_iconv != UT_ICONV_INVALID )
 		UT_iconv_close( m_iconv );
 }
 
@@ -93,10 +93,10 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 {
 	char  szCodePage[16];
 
-	if( m_iconv != (UT_iconv_t)-1 )
+	if( m_iconv != UT_ICONV_INVALID )
 	{
 		UT_iconv_close( m_iconv );
-		m_iconv = (UT_iconv_t)-1;
+		m_iconv = UT_ICONV_INVALID;
 	}
 	if( hKeyboardLayout != 0 )
 	{
@@ -195,7 +195,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 
 	UT_UCSChar charData[2];
 	size_t ret;
-	if( m_iconv != (UT_iconv_t)-1 )
+	if( m_iconv != UT_ICONV_INVALID )
 	{
 		// convert to 8bit string and null terminate
 		size_t len_in, len_out;

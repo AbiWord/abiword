@@ -120,8 +120,8 @@ ISpellChecker::ISpellChecker()
 	m_infile(NULL),
 	m_outfile(NULL),
 	m_askfilename(NULL),
-	m_translate_in((UT_iconv_t)-1),
-	m_translate_out((UT_iconv_t)-1),
+	m_translate_in(UT_ICONV_INVALID),
+	m_translate_out(UT_ICONV_INVALID),
 	m_Trynum(0)
 
 {
@@ -154,10 +154,10 @@ ISpellChecker::~ISpellChecker()
   
   if(UT_iconv_isValid (m_translate_in ))
     UT_iconv_close(m_translate_in);
-  m_translate_in = (UT_iconv_t)-1;
+  m_translate_in = UT_ICONV_INVALID;
   if(UT_iconv_isValid(m_translate_out))
     UT_iconv_close(m_translate_out);
-  m_translate_out = (UT_iconv_t)-1;
+  m_translate_out = UT_ICONV_INVALID;
 }
 
 SpellChecker::SpellCheckResult
