@@ -131,11 +131,6 @@ private:
 									UT_uint32 offset,
 									UT_UCSChar * prev,
 									UT_UCSChar * next) const;
-	UT_UCSChar			_getContextGlyph(const UT_UCSChar * pSpan,
-										 UT_uint32 len,
-										 UT_uint32 offset,
-										 UT_UCSChar *prev,
-										 UT_UCSChar *next) const;
 #ifndef WITH_PANGO
 	void				_refreshDrawBuffer();
 #endif
@@ -167,12 +162,6 @@ protected:
 										 UT_uint32 iLen,
 										 const UT_GrowBuf * pgbCharWidths);
 
-	void					_drawPart(UT_sint32 xoff,
-									  UT_sint32 yoff,
-									  UT_uint32 iStart,
-									  UT_uint32 iLen,
-									  const UT_GrowBuf * pgbCharWidths);
-
 	void					_drawLastChar(UT_sint32 xoff,
 										  UT_sint32 yoff,
 										  const UT_GrowBuf * pgbCharWidths,
@@ -198,6 +187,16 @@ protected:
 #endif
 	UT_sint32              _getSpaceWidthBeforeJustification();
 	void                   _setSpaceWidthBeforeJustification(UT_sint32 iWidth);
+
+private:
+	inline void            _stripLigaturePlaceHolders(UT_UCS4Char * pChars,
+													  UT_sint32 * pWidths,
+													  UT_uint32 &iLen,
+													  UT_uint32 * pOffsets,
+													  UT_uint32 iOffsetsCount);
+
+	inline void            _calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw);
+	inline bool            _checkAndFixStaticBuffers(UT_uint32 iLen);
 
 private:
 	enum
@@ -227,6 +226,8 @@ private:
 	// these can be static as for now we do not want to chache anything
 	static UT_sint32 *      s_pCharAdvance;
 	static UT_uint32        s_iCharAdvanceSize;
+	static UT_UCS4Char *    s_pCharBuff;
+	static UT_sint32 *      s_pWidthBuff;
 };
 
 #endif /* FP_TEXTRUN_H */

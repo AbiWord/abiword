@@ -53,6 +53,8 @@
 //we cache pref value UseContextGlyphs; the following defines how often
 //to refresh the cache (in miliseconds)
 #define PREFS_REFRESH_MSCS 2000
+#define TEXTRUN_STATIC_BUFFER_SIZE 256
+
 //inicialise the static members of the class
 bool fp_TextRun::s_bUseContextGlyphs = true;
 bool fp_TextRun::s_bSaveContextGlyphs = false;
@@ -60,6 +62,8 @@ bool fp_TextRun::s_bBidiOS = false;
 UT_Timer * fp_TextRun::s_pPrefsTimer = 0;
 UT_uint32  fp_TextRun::s_iClassInstanceCount = 0;
 UT_sint32 * fp_TextRun::s_pCharAdvance = NULL;
+UT_UCS4Char * fp_TextRun::s_pCharBuff = NULL;
+UT_sint32 * fp_TextRun::s_pWidthBuff = NULL;
 UT_uint32  fp_TextRun::s_iCharAdvanceSize = 0;
 
 
@@ -114,6 +118,18 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	{
 		s_bBidiOS = (XAP_App::getApp()->theOSHasBidiSupport() == XAP_App::BIDI_SUPPORT_FULL);
 		UT_DEBUGMSG(("fp_TextRun size is %d\n",sizeof(fp_TextRun) ));
+
+		// set the static buffers to some reasonable value
+		s_pCharAdvance = new UT_sint32 [TEXTRUN_STATIC_BUFFER_SIZE];
+		UT_return_if_fail(s_pCharAdvance);
+
+		s_pCharBuff = new UT_UCS4Char [TEXTRUN_STATIC_BUFFER_SIZE];
+		UT_return_if_fail(s_pCharBuff);
+		
+		s_pWidthBuff = new UT_sint32 [TEXTRUN_STATIC_BUFFER_SIZE];
+		UT_return_if_fail(s_pWidthBuff);
+		
+		s_iCharAdvanceSize = TEXTRUN_STATIC_BUFFER_SIZE;
 	}
 
 	s_iClassInstanceCount++;
@@ -125,8 +141,9 @@ fp_TextRun::~fp_TextRun()
 	if(!s_iClassInstanceCount)
 	{
 		DELETEP(s_pPrefsTimer);
-		delete [] s_pCharAdvance;
-		s_pCharAdvance = NULL;
+		delete [] s_pCharAdvance; s_pCharAdvance = NULL;
+		delete [] s_pCharBuff;    s_pCharBuff = NULL;
+		delete [] s_pWidthBuff;   s_pWidthBuff = NULL;
 		s_iCharAdvanceSize = 0;
 	}
 
@@ -1259,10 +1276,23 @@ bool fp_TextRun::recalcWidth(void)
 
 			if(s_bUseContextGlyphs)
 			{
-				getGR()->measureString(m_pSpanBuff + j, 0, 1, static_cast<UT_GrowBufElement*>(pCharWidths) + k);
+				if(k > 0 && *(m_pSpanBuff + j) == UCS_LIGATURE_PLACEHOLDER)
+				{
+					pCharWidths[k]   = pCharWidths[k - 1]/2;
+					UT_uint32 mod    = pCharWidths[k-1]%2;
+					pCharWidths[k-1] = pCharWidths[k] + mod;
+				}
+				else
+				{
+					
+					getGR()->measureString(m_pSpanBuff + j, 0, 1,
+										   static_cast<UT_GrowBufElement*>(pCharWidths) + k);
+
+					UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
+					_setWidth(getWidth() + iCW);
+				}
+				
 			}
-			UT_uint32 iCW = pCharWidths[k] > 0 ? pCharWidths[k] : 0;
-			_setWidth(getWidth() + iCW);
 		}
 #endif // #ifndef WITH_PANGO
 
@@ -1378,7 +1408,9 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	*/
 
 	_refreshDrawBuffer();
-	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n", this, m_iVisDirection, _getDirection()));
+	xxx_UT_DEBUGMSG(("fp_TextRun::_draw (0x%x): m_iVisDirection %d, _getDirection() %d\n",
+					 this, m_iVisDirection, _getDirection()));
+	
 	UT_sint32 yTopOfRun = pDA->yoff - getAscent() - getGR()->tlu(1); // Hack to remove
 	UT_sint32 yTopOfSel = yTopOfRun + getGR()->tlu(1); // final character dirt
 
@@ -1402,160 +1434,26 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 
 	////////////////////////////////////////////////////////////////////
 	//
-	// This section deals with calculating character advances so that
-	// overstriking characters get handled correctly
+	// Here we handle run background ..
+	// 
 	//
+	//	the old way of doing things was very inefficient; for each chunk of this
+	//	run that had a different background we first drew the background rectangle,
+	//	then drew the text over it, and then moved onto the next chunk. This is very
+	//	involved since to draw the text in pieces we have to calculate the screen
+	//	offset of each chunk using character widths.
+	//	
+	// 	This is is what we will do instead:
+	// 	(1) draw the background using the background colour for the whole run in
+	// 		a single go
+	// 	(2) draw any selection background where needed over the basic background
+	// 	(3) draw the whole text in a single go over the composite background
 
-	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
-	UT_sint32 * pCWThis = pgbCharWidths->getPointer(getBlockOffset());
-	if(pCWThis == NULL)
-	{
-		return;
-	}
-
-	// The following code calculates the advances for individual
-	// characters that are to be fed to gr_Graphics::drawChars()
-	// Note, that character advances are not necessarily identical to
-	// character widths; in the case of combining characters the
-	// required advance depends on the width of the base character and
-	// the properties of the combining character, and it can be both
-	// positive and negative.
-	//
-	// At the moment, we calculate the advances here puting them into
-	// a static array. Should this prove to be too much of a
-	// performance bottleneck, we could cache this in a member array,
-	// and refresh it inside refreshDrawBuffer()
-
-	UT_uint32 iLen = getLength();
-	if(iLen > s_iCharAdvanceSize)
-	{
-		delete [] s_pCharAdvance;
-		s_pCharAdvance = new UT_sint32 [iLen];
-		UT_return_if_fail(s_pCharAdvance);
-		s_iCharAdvanceSize = iLen;
-	}
-
-	UT_sint32 xoff_draw = pDA->xoff;
-
-	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL )
-	{
-		for(UT_uint32 n = 0; n < iLen - 1; n++)
-		{
-			if(pCWThis[iLen - n - 1] < 0 || pCWThis[iLen - n - 1] >= GR_OC_LEFT_FLUSHED)
-			{
-				UT_sint32 iCumAdvance = 0;
-
-				UT_sint32 m = iLen - n - 2;
-				while(m >= 0 && pCWThis[m] < 0)
-					m--;
-
-				if(m < 0)
-				{
-					// problem: this run does not contain the
-					// character over which we are meant to be
-					// overimposing our overstriking chars
-					// we will have to set the offsets to 0
-					for(UT_uint32 k = n; k < iLen - 1; k++)
-						s_pCharAdvance[k] = 0;
-
-					n = iLen - 1;
-				}
-				else
-				{
-					UT_uint32 k;
-					for(k = n; k < iLen - m -1; k++)
-					{
-						UT_sint32 iAdv;
-						if(pCWThis[iLen - k - 1] >= GR_OC_LEFT_FLUSHED)
-						{
-							UT_sint32 iThisWidth = pCWThis[iLen - k - 1] & GR_OC_MAX_WIDTH;
-							iAdv = pCWThis[m] - iThisWidth - iCumAdvance;
-						}
-						else
-						{
-							// centered character
-							iAdv = (pCWThis[m] + pCWThis[iLen - k - 1])/2 - iCumAdvance;
-						}
-
-						if(k == 0)
-						{
-							// k == 0, this is the leftmost character,
-							// so we have no advance to set, but we
-							// can adjust the starting point of the drawing
-							xoff_draw += iAdv;
-						}
-						else if(k == n)
-						{
-							// this is a special case; we have already
-							// calculated the advance in previous
-							// round of the main loop, and this is
-							// only adjustment
-							s_pCharAdvance[k-1] += iAdv;
-						}
-						else
-							s_pCharAdvance[k-1] = iAdv;
-
-						iCumAdvance += iAdv;
-					}
-
-					s_pCharAdvance[k-1] = -iCumAdvance;
-					s_pCharAdvance[k]   = pCWThis[m];
-					n = k; // should be k+1, but there will be n++ in
-					       // the for loop
-				}
-
-			}
-			else
-			{
-				s_pCharAdvance[n] = pCWThis[iLen - n - 1];
-			}
-		}
-	}
-	else
-	{
-		for(UT_uint32 n = 0; n < iLen - 1; n++)
-		{
-			if(pCWThis[n+1] < 0 || pCWThis[n+1] >= GR_OC_LEFT_FLUSHED)
-			{
-				// remember the width of the non-zero character
-				UT_sint32 iWidth = pCWThis[n];
-				UT_sint32 iCumAdvance = 0;
-
-				// find the next non-zerow char
-				UT_uint32 m  = n + 1;
-				while(m < iLen && pCWThis[m] < 0)
-				{
-					// plus because pCharWidths[m] < 0
-					// -1 because it is between m-1 and m
-					UT_sint32 iAdv;
-					if(pCWThis[m] >= GR_OC_LEFT_FLUSHED)
-					{
-						UT_sint32 iThisWidth = pCWThis[m] & GR_OC_MAX_WIDTH;
-						iThisWidth -= iWidth;
-
-						iAdv = -(iThisWidth - iCumAdvance);
-					}
-					else
-					{
-						//centered character
-						iAdv = iWidth - (iWidth + pCWThis[m])/2 + iCumAdvance;
-					}
-
-					s_pCharAdvance[m-1] = iAdv;
-					iCumAdvance += iAdv;
-					m++;
-				}
-
-				n = m-1; // this is the last 0-width char
-				s_pCharAdvance[n] = iWidth - iCumAdvance;
-			}
-			else
-				s_pCharAdvance[n] = pCWThis[n];
-		}
-
-	}
-
-	UT_uint32 iBase = getBlock()->getPosition();
+	// draw the background for the whole run, but only in sreen context or if
+	// it is not white
+	// static const UT_RGBColor clrWhite(255,255,255); // FIXME: should not be hardwired?!
+	bool bDrawBckg = (getGR()->queryProperties(GR_Graphics::DGP_SCREEN)
+			  /* || clrNormalBackground != clrWhite */);
 
 	UT_RGBColor clrPageBackground(_getColorPG());
 	UT_RGBColor clrNormalBackground(_getColorHL());
@@ -1567,26 +1465,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		clrNormalBackground -= color_offset;
 		clrSelBackground -= color_offset;
 	}
-
-	/*
-		the old way of doing things was very inefficient; for each chunk of this
-		run that had a different background we first drew the background rectangle,
-		then drew the text over it, and then moved onto the next chunk. This is very
-		involved since to draw the text in pieces we have to calculate the screen
-		offset of each chunk using character widths.
-
-		This is is what we will do instead:
-		(1) draw the background using the background colour for the whole run in
-			a single go
-		(2) draw any selection background where needed over the basic background
-		(3) draw the whole text in a single go over the composite background
-	*/
-
-	// draw the background for the whole run, but only in sreen context or if
-	// it is not white
-	// static const UT_RGBColor clrWhite(255,255,255); // FIXME: should not be hardwired?!
-	bool bDrawBckg = (getGR()->queryProperties(GR_Graphics::DGP_SCREEN)
-			  /* || clrNormalBackground != clrWhite */);
 
 	if(bDrawBckg)
 	{
@@ -1604,6 +1482,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 						getLine()->getHeight());
 	}
 
+	// calculate selection rectangles ...
+	UT_uint32 iBase = getBlock()->getPosition();
 	UT_uint32 iRunBase = iBase + getBlockOffset();
 
 	FV_View* pView = getBlock()->getDocLayout()->getView();
@@ -1630,6 +1510,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	bSegmentSelected[0] = false;
 	iSegmentWidth[0] = getWidth();
 
+	const UT_GrowBuf * pgbCharWidths = getBlock()->getCharWidths()->getCharWidths();
 
 	if (/* pView->getFocus()!=AV_FOCUS_NONE && */ iSel1 != iSel2)
 	{
@@ -1699,6 +1580,33 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		}
 	}
 
+	////////////////////////////////////////////////////////////////////
+	//
+	// This section deals with calculating character advances so that
+	// overstriking characters get handled correctly
+	//
+
+	UT_sint32 * pCWThis = pgbCharWidths->getPointer(getBlockOffset());
+
+	if(pCWThis == NULL)
+	{
+		return;
+	}
+
+	// before processing character advances, we need to strip any
+	// ligature placeholders; the ligature-placeholder stripping affects
+	// the length of the string we pass to the graphis class -- we
+	// cannot just use getLength()
+	UT_uint32 iLen = getLength();
+	UT_return_if_fail(_checkAndFixStaticBuffers(iLen));
+
+	// strip placeholders and adjust segment offsets accordingly
+	_stripLigaturePlaceHolders(m_pSpanBuff, pCWThis, iLen, &iSegmentOffset[0], iSegmentCount);
+
+	// now we can calculate the character advances
+	UT_sint32 xoff_draw = pDA->xoff;
+	_calculateCharAdvances(iLen, xoff_draw);
+	
 	/*
 		if the text on either side of this run is in italics, there is a good
 		chance that the background covered some of the text; to fix this we
@@ -1709,14 +1617,6 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 		over a piece of text results in the text being erased; apart from
 		the sreen, a Windows printer can behave like this).
 	*/
-
-	// first of all remember the current colour (this is necessary
-	// because hyperlink and revision colors are set from the base
-	// class and we must respect them
-#if 0
-	UT_RGBColor curColor;
-	getGR()->getColor(curColor);
-#endif
 
 	if(bDrawBckg && getGR()->queryProperties(GR_Graphics::DGP_OPAQUEOVERLAY))
 	{
@@ -1789,13 +1689,13 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 			getGR()->setColor(getFGColor());
 
 		UT_uint32 iMyOffset = iVisDir == FRIBIDI_TYPE_RTL ?
-			getLength()-iSegmentOffset[iSegment+1]  :
+			iLen-iSegmentOffset[iSegment+1]  :
 			iSegmentOffset[iSegment];
 
 		if(iVisDir == FRIBIDI_TYPE_RTL)
 			iX -= iSegmentWidth[iSegment];
 
-		getGR()->drawChars(m_pSpanBuff,
+		getGR()->drawChars(s_pCharBuff,
 						   iMyOffset,
 						   iSegmentOffset[iSegment+1]-iSegmentOffset[iSegment],
 						   iX,
@@ -1822,7 +1722,7 @@ void fp_TextRun::_fillRect(UT_RGBColor& clr,
 						   UT_sint32 yoff,
 						   UT_uint32 iPos1,
 						   UT_uint32 iLen,
-						   const UT_GrowBuf* pgbCharWidths,
+						   const UT_GrowBuf * pgbCharWidths,
 						   UT_Rect &r)
 {
 	/*
@@ -1865,12 +1765,10 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 		return;
 	}
 
-	//Should this be an error condition? I treat it as a zero length run, but other might not
-	const UT_GrowBufElement * pCharWidths = pgbCharWidths->getPointer(0);
-
 	pRect->left = 0;//#TF need 0 because of BiDi, need to calculate the width of the non-selected
 			//section first rather than the abs pos of the left corner
 
+	UT_GrowBufElement * pCharWidths = pgbCharWidths->getPointer(0);
 	UT_ASSERT(pCharWidths);
 	if (!pCharWidths) {
 		UT_DEBUGMSG(("TODO: Investigate why pCharWidths is NULL?"));
@@ -1902,41 +1800,6 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	if(getVisDirection() == FRIBIDI_TYPE_RTL) pRect->left = xoff + getWidth() - pRect->left - pRect->width;
 }
 
-inline UT_UCSChar fp_TextRun::_getContextGlyph(const UT_UCSChar * pSpan,
-										UT_uint32 len,
-										UT_uint32 offset,
-										UT_UCSChar *prev,
-										UT_UCSChar *after) const
-{
-	UT_sint32 iStop2 = static_cast<UT_sint32>(CONTEXT_BUFF_SIZE) < static_cast<UT_sint32>(len - 1) ? CONTEXT_BUFF_SIZE : len - 1;
-	UT_contextGlyph cg;
-	UT_UCSChar next[CONTEXT_BUFF_SIZE + 1];
-
-	xxx_UT_DEBUGMSG(("fp_TextRun::_getContextGlyph: len %d, offset %d\n",
-					len,offset));
-
-
-	// now for each character in this fragment we create
-	// an array of the chars that follow it, get the char
-	// that precedes it and then translate it using our
-	// UT_contextGlyph class, and we are done
-	UT_sint32 i;
-	for(i=0; i < iStop2; i++)
-		next[i] = pSpan[i+offset+1];
-	for(UT_sint32 j = 0; after[j]!=0 && static_cast<UT_uint32>(i) < CONTEXT_BUFF_SIZE; i++,j++)
-		next[i] = after[j];
-	next[i] = 0;
-
-	switch(offset)
-	{
-		case 0: break;
-		case 1: prev[1] = prev[0]; prev[0] = pSpan[0];
-				break;
-		default: prev[1] = pSpan[offset-2]; prev[0] = pSpan[offset-1];
-	}
-
-	return cg.getGlyph(&pSpan[offset],&prev[0],&next[0], m_pLanguage);
-}
 
 inline void fp_TextRun::_getContext(const UT_UCSChar *pSpan,
 									UT_uint32 lenSpan,
@@ -2268,75 +2131,6 @@ void fp_TextRun::_drawFirstChar(UT_sint32 xoff, UT_sint32 yoff, bool bSelection)
 		getGR()->drawChars(m_pSpanBuff, iPos, 1, xoff, yoff);
 	}
 }
-
-void fp_TextRun::_drawPart(UT_sint32 xoff,
-						   UT_sint32 yoff,
-						   UT_uint32 iStart,
-						   UT_uint32 iLen,
-						   const UT_GrowBuf * pgbCharWidths)
-{
-	/*
-	  Upon entry to this function, yoff is the TOP of the run,
-	  NOT the baseline.
-	*/
-
-	// don't even try to draw a zero-length run
-	if (getLength() == 0)
-	{
-		return;
-	}
-
-	UT_ASSERT(iStart >= getBlockOffset());
-	UT_ASSERT(iStart + iLen <= getBlockOffset() + getLength());
-
-	UT_uint32 iLeftWidth = 0;
-	const UT_GrowBufElement * pCharWidths = pgbCharWidths->getPointer(0);
-	UT_ASSERT(pCharWidths);
-	if (!pCharWidths) {
-		UT_DEBUGMSG(("TODO: Investigate why pCharWidths is NULL?"));
-		return;
-	}
-
-
-	UT_uint32 i;
-	for (i=getBlockOffset(); i<iStart; i++)
-	{
-		iLeftWidth += pCharWidths[i]; //NB! in rtl text this is visually right width
-	}
-
-	// in the bidi build we keep a cache of the visual span of this run
-	// this speeds things up
-	// (the cache is refreshed by _refreshDrawBuff, it is the responsibility
-	// of caller of _drawPart to ensure that the chache is uptodate)
-	FriBidiCharType iVisDirection = getVisDirection();
-	bool bReverse = (!s_bBidiOS && iVisDirection == FRIBIDI_TYPE_RTL)
-		  || (s_bBidiOS && m_iDirOverride == FRIBIDI_TYPE_LTR && _getDirection() == FRIBIDI_TYPE_RTL);
-	if(iVisDirection == FRIBIDI_TYPE_RTL) //rtl: determine the width of the text we are to print
-	{
-		for (; i < iLen + iStart; i++)
-		{
-			iLeftWidth += pCharWidths[i];
-		}
-	}
-
-	if(bReverse)
-		// since the draw buffer is reversed, we need to calculate the position
-		// of the last character in this fragement in it, for that is where we
-		// start drawing from
-		getGR()->drawChars(m_pSpanBuff + (getLength() + getBlockOffset() - iStart) - iLen, 0, iLen, xoff + getWidth() - iLeftWidth, yoff);
-
-		// if the buffer is not reversed because this is simple LTR run, then
-		// iLeftWidth is precisely that
-	else if(iVisDirection == FRIBIDI_TYPE_LTR)
-		getGR()->drawChars(m_pSpanBuff + iStart - getBlockOffset(), 0, iLen, xoff + iLeftWidth, yoff);
-	else
-
-
-		// if the buffer is not reversed because the OS will reverse it, then we
-		// draw from it as if it was LTR buffer, but iLeftWidth is right width
-		getGR()->drawChars(m_pSpanBuff + iStart - getBlockOffset(), 0, iLen, xoff + getWidth() - iLeftWidth, yoff);
-}
-
 
 void fp_TextRun::_drawInvisibleSpaces(UT_sint32 xoff, UT_sint32 yoff)
 {
@@ -3261,3 +3055,229 @@ void fp_TextRun::_setSpaceWidthBeforeJustification(UT_sint32 iWidth)
 	UT_ASSERT(m_bIsJustified);
 	m_iSpaceWidthBeforeJustification = iWidth;
 }
+
+void fp_TextRun::_stripLigaturePlaceHolders(UT_UCS4Char * pChars,
+											UT_sint32 * pWidths,
+											UT_uint32 &iLen,
+											UT_uint32 * pOffset,
+											UT_uint32 iOffsetCount)
+{
+	UT_return_if_fail(iLen <= s_iCharAdvanceSize && pOffset);
+
+	UT_sint32 len = (UT_sint32) iLen;
+	bool bReverse = false;
+	
+	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL)
+	{
+		memset(s_pWidthBuff, 0, sizeof(UT_sint32)*s_iCharAdvanceSize);
+		bReverse = true;
+	}
+	
+	for(UT_sint32 i = 0, j = 0; i < len; i++, j++)
+	{
+		UT_sint32 m = bReverse ? len - i - 1 : i;
+		
+		if(pChars[i] != UCS_LIGATURE_PLACEHOLDER)
+		{
+			s_pCharBuff[j] = pChars[i];
+
+			if(bReverse)
+				s_pWidthBuff[j] += pWidths[m];
+			else
+				s_pWidthBuff[j] = pWidths[m];
+
+		}
+		else
+		{
+			if(bReverse)
+			{
+				// the first part of the ligature will come at the j
+				// index, we want to include the half width of the
+				// second character
+				s_pWidthBuff[j] = pWidths[m];
+			}
+			
+			j--;
+			iLen--;
+			
+			if(j >= 0 && !bReverse)
+			{
+				s_pWidthBuff[j] += pWidths[m];
+			}
+
+			// adjust any offsets passed to us
+			// NB: there is always one more offset than iOffsetCount
+			for(UT_sint32 k = 0; k <= (UT_sint32)iOffsetCount; k++)
+			{
+				if(!pOffset[k] || (UT_sint32)pOffset[k] <= j)
+					continue;
+
+				pOffset[k]--;
+			}
+		}
+	}
+}
+
+
+void fp_TextRun::_calculateCharAdvances(UT_uint32 iLen, UT_sint32 & xoff_draw)
+{
+	// The following code calculates the advances for individual
+	// characters that are to be fed to gr_Graphics::drawChars()
+	// Note, that character advances are not necessarily identical to
+	// character widths; in the case of combining characters the
+	// required advance depends on the width of the base character and
+	// the properties of the combining character, and it can be both
+	// positive and negative.
+	//
+	// At the moment, we calculate the advances here puting them into
+	// a static array. Should this prove to be too much of a
+	// performance bottleneck, we could cache this in a member array,
+	// and refresh it inside refreshDrawBuffer()
+
+	UT_return_if_fail(iLen <= s_iCharAdvanceSize);
+
+	if(!s_bBidiOS && getVisDirection()== FRIBIDI_TYPE_RTL )
+	{
+		// we expect the width array to be the result of processing by
+		// _stripLigaturePlaceHolders(), which is in the same order as
+		// the string to which it relates
+		
+		for(UT_uint32 n = 0; n < iLen - 1; n++)
+		{
+			if(s_pWidthBuff[n] < 0 || s_pWidthBuff[n] >= GR_OC_LEFT_FLUSHED)
+			{
+				UT_sint32 iCumAdvance = 0;
+
+				UT_uint32 m = n+1;
+				while(m < (UT_sint32)iLen && s_pWidthBuff[m] < 0)
+					m++;
+
+				if(m >= iLen)
+				{
+					// problem: this run does not contain the
+					// character over which we are meant to be
+					// overimposing our overstriking chars
+					// we will have to set the offsets to 0
+					for(UT_uint32 k = n; k < iLen - 1; k++)
+						s_pCharAdvance[k] = 0;
+
+					n = iLen - 1;
+				}
+				else
+				{
+					UT_uint32 k;
+					for(k = n; k < m; k++)
+					{
+						UT_sint32 iAdv;
+						if(s_pWidthBuff[k] >= GR_OC_LEFT_FLUSHED)
+						{
+							UT_sint32 iThisWidth = s_pWidthBuff[k] & GR_OC_MAX_WIDTH;
+							iAdv = s_pWidthBuff[m] - iThisWidth - iCumAdvance;
+						}
+						else
+						{
+							// centered character
+							iAdv = (s_pWidthBuff[m] + s_pWidthBuff[k])/2 - iCumAdvance;
+						}
+
+						if(k == 0)
+						{
+							// k == 0, this is the leftmost character,
+							// so we have no advance to set, but we
+							// can adjust the starting point of the drawing
+							xoff_draw += iAdv;
+						}
+						else if(k == n)
+						{
+							// this is a special case; we have already
+							// calculated the advance in previous
+							// round of the main loop, and this is
+							// only adjustment
+							s_pCharAdvance[k-1] += iAdv;
+						}
+						else
+							s_pCharAdvance[k-1] = iAdv;
+
+						iCumAdvance += iAdv;
+					}
+
+					s_pCharAdvance[k-1] = -iCumAdvance;
+					s_pCharAdvance[k]   = s_pWidthBuff[m];
+					n = k; // should be k+1, but there will be n++ in
+					       // the for loop
+				}
+
+			}
+			else
+			{
+				s_pCharAdvance[n] = s_pWidthBuff[n];
+			}
+		}
+	}
+	else
+	{
+		for(UT_uint32 n = 0; n < iLen - 1; n++)
+		{
+			if(s_pWidthBuff[n+1] < 0 || s_pWidthBuff[n+1] >= GR_OC_LEFT_FLUSHED)
+			{
+				// remember the width of the non-zero character
+				UT_sint32 iWidth = s_pWidthBuff[n];
+				UT_sint32 iCumAdvance = 0;
+
+				// find the next non-zerow char
+				UT_uint32 m  = n + 1;
+				while(m < iLen && s_pWidthBuff[m] < 0)
+				{
+					// plus because pCharWidths[m] < 0
+					// -1 because it is between m-1 and m
+					UT_sint32 iAdv;
+					if(s_pWidthBuff[m] >= GR_OC_LEFT_FLUSHED)
+					{
+						UT_sint32 iThisWidth = s_pWidthBuff[m] & GR_OC_MAX_WIDTH;
+						iThisWidth -= iWidth;
+
+						iAdv = -(iThisWidth - iCumAdvance);
+					}
+					else
+					{
+						//centered character
+						iAdv = iWidth - (iWidth + s_pWidthBuff[m])/2 + iCumAdvance;
+					}
+
+					s_pCharAdvance[m-1] = iAdv;
+					iCumAdvance += iAdv;
+					m++;
+				}
+
+				n = m-1; // this is the last 0-width char
+				s_pCharAdvance[n] = iWidth - iCumAdvance;
+			}
+			else
+				s_pCharAdvance[n] = s_pWidthBuff[n];
+		}
+
+	}
+}
+
+bool fp_TextRun::_checkAndFixStaticBuffers(UT_uint32 iLen)
+{
+	if(iLen > s_iCharAdvanceSize)
+	{
+		delete [] s_pCharAdvance;
+		s_pCharAdvance = new UT_sint32 [iLen];
+		UT_return_val_if_fail(s_pCharAdvance, false);
+
+		delete [] s_pCharBuff;
+		s_pCharBuff = new UT_UCS4Char [iLen];
+		UT_return_val_if_fail(s_pCharBuff, false);
+		
+		delete [] s_pWidthBuff;
+		s_pWidthBuff = new UT_sint32 [iLen];
+		UT_return_val_if_fail(s_pWidthBuff,false);
+		
+		s_iCharAdvanceSize = iLen;
+	}
+
+	return true;
+}
+
