@@ -250,9 +250,10 @@ UT_Bool AP_DiskStringSet::setValue(XAP_String_Id id, const XML_Char * szString)
 		  It's harmless to do so.
 		 */
 		{
+			int k;
 			int kLimit=gb.getLength();
 			UT_uint16 * p=gb.getPointer(0);
-			for (int k=0; k<kLimit; k++)
+			for (k=0; k<kLimit; k++)
 			{
 				szDup[k] = (unsigned char)p[k];
 			}
