@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2000-11-20 23:50+0100\n"
+"POT-Creation-Date: 2001-02-04 14:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,8 +23,14 @@ msgstr ""
 msgid " Auto Update"
 msgstr "Actualização Automática"
 
-#. MSG_DlgNotImp
+#. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h.h:9
+#, c-format
+msgid "% of normal size"
+msgstr "% do tamanha normal"
+
+#. MSG_DlgNotImp
+#: po/tmp/ap_String_Id.h.h:11
 #, c-format
 msgid ""
 "%s not implemented yet.\n"
@@ -47,339 +53,401 @@ msgstr ""
 " Caso contrário, por favor seja paciente."
 
 #. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h.h:11
+#: po/tmp/ap_String_Id.h.h:13
 msgid "&1 None"
 msgstr "&1 Nenhum"
 
 #. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h.h:13
+#: po/tmp/ap_String_Id.h.h:15
 msgid "&2 .........."
 msgstr "&2 .........."
 
 #. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h.h:15
+#: po/tmp/ap_String_Id.h.h:17
 msgid "&3\t----------"
 msgstr "&3 ----------"
 
 #. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h.h:17
+#: po/tmp/ap_String_Id.h.h:19
 msgid "&4 __________"
 msgstr "&4 __________"
 
 #. DLG_Spell_AddToDict
-#: po/tmp/ap_String_Id.h.h:19
+#: po/tmp/ap_String_Id.h.h:21
 msgid "&Add"
 msgstr "Adicionar ao dicionário"
 
+#. DLG_PageSetup_Adjust
+#: po/tmp/ap_String_Id.h.h:23
+msgid "&Adjust to:"
+msgstr "&Ajustar a:"
+
 #. DLG_Options_Label_ViewAll
-#: po/tmp/ap_String_Id.h.h:21
+#: po/tmp/ap_String_Id.h.h:25
 msgid "&All"
 msgstr "&Tudo"
 
 #. DLG_Para_LabelAt
-#: po/tmp/ap_String_Id.h.h:23
+#: po/tmp/ap_String_Id.h.h:27
 msgid "&At:"
 msgstr "&À:"
 
 #. DLG_Options_Label_PrefsAutoSave
-#: po/tmp/ap_String_Id.h.h:25
+#: po/tmp/ap_String_Id.h.h:29
 msgid "&Automatically save this Scheme"
 msgstr "Gravar &automaticamente as preferências"
 
 #. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h.h:27
+#: po/tmp/ap_String_Id.h.h:31
 msgid "&Available formats:"
 msgstr "&Formatos disponíveis:"
 
 #. DLG_Para_LabelBefore
-#: po/tmp/ap_String_Id.h.h:29
+#: po/tmp/ap_String_Id.h.h:33
 msgid "&Before:"
 msgstr "&Antes:"
 
+#. DLG_PageSetup_Bottom
+#: po/tmp/ap_String_Id.h.h:35
+msgid "&Bottom:"
+msgstr "&Base"
+
 #. DLG_Spell_Change
-#: po/tmp/ap_String_Id.h.h:31
+#: po/tmp/ap_String_Id.h.h:37
 msgid "&Change"
 msgstr "Mudar"
 
 #. DLG_Break_ColumnBreak
-#: po/tmp/ap_String_Id.h.h:33
+#: po/tmp/ap_String_Id.h.h:39
 msgid "&Column break"
 msgstr "... &Coluna"
 
 #. DLG_Options_Btn_CustomDict
-#: po/tmp/ap_String_Id.h.h:35
+#: po/tmp/ap_String_Id.h.h:41
 msgid "&Dictionary..."
 msgstr "&Dicionário pessoal..."
 
 #. DLG_Para_PushNoHyphenate
-#: po/tmp/ap_String_Id.h.h:37
+#: po/tmp/ap_String_Id.h.h:43
 msgid "&Don't hyphenate"
 msgstr "&Não hifenizar"
 
 #. DLG_Options_Btn_IgnoreEdit
-#: po/tmp/ap_String_Id.h.h:39
+#: po/tmp/ap_String_Id.h.h:45
 msgid "&Edit"
 msgstr "&Modificar"
 
 #. DLG_Break_EvenPage
-#: po/tmp/ap_String_Id.h.h:41
+#: po/tmp/ap_String_Id.h.h:47
 msgid "&Even page"
 msgstr "Página pa&r"
 
 #. DLG_Options_Label_ViewExtraTB
-#: po/tmp/ap_String_Id.h.h:43
+#: po/tmp/ap_String_Id.h.h:49
 msgid "&Extra Toolbar"
 msgstr "Toolbar &Extra"
 
 #. DLG_Field_Fields
-#: po/tmp/ap_String_Id.h.h:45
+#: po/tmp/ap_String_Id.h.h:51
 msgid "&Fields:"
 msgstr "&Campos..."
 
 #. DLG_FR_FindNextButton
-#: po/tmp/ap_String_Id.h.h:47
+#: po/tmp/ap_String_Id.h.h:53
 msgid "&Find Next"
 msgstr "&Procurar o seguinte"
 
+#. DLG_PageSetup_Footer
+#: po/tmp/ap_String_Id.h.h:55
+#, fuzzy
+msgid "&Footer:"
+msgstr "Tipo de letra:"
+
 #. DLG_Options_Label_ViewFormatTB
-#: po/tmp/ap_String_Id.h.h:49
+#: po/tmp/ap_String_Id.h.h:57
 msgid "&Format Toolbar"
 msgstr "Ver barra de &formatação"
 
+#. DLG_PageSetup_Header
+#: po/tmp/ap_String_Id.h.h:59
+#, fuzzy
+msgid "&Header:"
+msgstr "Primeira"
+
+#. DLG_PageSetup_Height
+#: po/tmp/ap_String_Id.h.h:61
+#, fuzzy
+msgid "&Height:"
+msgstr "Altura:"
+
 #. DLG_Options_Label_ViewHiddenText
-#: po/tmp/ap_String_Id.h.h:51
+#: po/tmp/ap_String_Id.h.h:63
 msgid "&Hidden Text"
 msgstr "Texto &escondido"
 
 #. DLG_Spell_Ignore
-#: po/tmp/ap_String_Id.h.h:53
+#: po/tmp/ap_String_Id.h.h:65
 msgid "&Ignore"
 msgstr "Ignora"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
-#: po/tmp/ap_String_Id.h.h:55
+#: po/tmp/ap_String_Id.h.h:67
 msgid "&Indents and Spacing"
 msgstr "&Identação e Espaçamento"
 
 #. DLG_Para_PushKeepLinesTogether
-#: po/tmp/ap_String_Id.h.h:57
+#: po/tmp/ap_String_Id.h.h:69
 msgid "&Keep lines together"
 msgstr "&Manter linhas juntas"
 
-#. DLG_Para_LabelLeft
-#: po/tmp/ap_String_Id.h.h:59
+#. DLG_PageSetup_Landscape
+#: po/tmp/ap_String_Id.h.h:71
+msgid "&Landscape"
+msgstr "&Horizontal"
+
+#. DLG_PageSetup_Left
+#: po/tmp/ap_String_Id.h.h:73
 msgid "&Left:"
 msgstr "&Esquerda:"
 
+#. DLG_PageSetup_Margin
+#: po/tmp/ap_String_Id.h.h:75
+msgid "&Margin"
+msgstr "&Margem"
+
 #. DLG_FR_MatchCase
-#: po/tmp/ap_String_Id.h.h:61
+#: po/tmp/ap_String_Id.h.h:77
 msgid "&Match case"
 msgstr "&Diferenciar maiúsculas/minúsculas"
 
 #. DLG_Break_NextPage
-#: po/tmp/ap_String_Id.h.h:63
+#: po/tmp/ap_String_Id.h.h:79
 msgid "&Next page"
 msgstr "Página &seguinte"
 
 #. DLG_Goto_Label_Number
-#: po/tmp/ap_String_Id.h.h:65
+#: po/tmp/ap_String_Id.h.h:81
 msgid "&Number:"
 msgstr "Número:"
 
 #. DLG_Break_OddPage
-#: po/tmp/ap_String_Id.h.h:67
+#: po/tmp/ap_String_Id.h.h:83
 msgid "&Odd page"
 msgstr "Página &ímpar"
 
 #. DLG_Break_PageBreak
-#: po/tmp/ap_String_Id.h.h:69
+#: po/tmp/ap_String_Id.h.h:85
 msgid "&Page break"
 msgstr "... &Página"
 
+#. DLG_PageSetup_Portrait
+#: po/tmp/ap_String_Id.h.h:87
+msgid "&Portrait"
+msgstr "&Vertical"
+
 #. DLG_FR_ReplaceButton
-#: po/tmp/ap_String_Id.h.h:71
+#: po/tmp/ap_String_Id.h.h:89
 msgid "&Replace"
 msgstr "S&ubstituir"
 
 #. DLG_Options_Btn_IgnoreReset
-#: po/tmp/ap_String_Id.h.h:73
+#: po/tmp/ap_String_Id.h.h:91
 msgid "&Reset"
 msgstr "&Cancelar"
 
-#. DLG_Para_LabelRight
-#: po/tmp/ap_String_Id.h.h:75
+#. DLG_PageSetup_Right
+#: po/tmp/ap_String_Id.h.h:93
 msgid "&Right:"
 msgstr "&Direita:"
 
 #. DLG_Options_Label_ViewRuler
-#: po/tmp/ap_String_Id.h.h:77
+#: po/tmp/ap_String_Id.h.h:95
 msgid "&Ruler"
 msgstr "&Régua"
 
 #. DLG_Para_LabelSpecial
-#: po/tmp/ap_String_Id.h.h:79
+#: po/tmp/ap_String_Id.h.h:97
 msgid "&Special:"
 msgstr "&Especial:"
 
 #. DLG_Options_Label_ViewStandardTB
-#: po/tmp/ap_String_Id.h.h:81
+#: po/tmp/ap_String_Id.h.h:99
 msgid "&Standard Toolbar"
 msgstr "Toolbar &Standard"
 
 #. DLG_Para_PushSuppressLineNumbers
-#: po/tmp/ap_String_Id.h.h:83
+#: po/tmp/ap_String_Id.h.h:101
 msgid "&Suppress line numbers"
 msgstr "&Esconder numeração de linhas"
 
 #. DLG_Para_ButtonTabs
-#: po/tmp/ap_String_Id.h.h:85
+#: po/tmp/ap_String_Id.h.h:103
 msgid "&Tabs..."
 msgstr "&Tabulação"
 
+#. DLG_PageSetup_Top
+#: po/tmp/ap_String_Id.h.h:105
+#, fuzzy
+msgid "&Top:"
+msgstr "&Tipo..."
+
 #. DLG_Field_Types
-#: po/tmp/ap_String_Id.h.h:87
+#: po/tmp/ap_String_Id.h.h:107
 msgid "&Types:"
 msgstr "&Tipo..."
 
+#. DLG_PageSetup_Units
+#: po/tmp/ap_String_Id.h.h:109
+#, fuzzy
+msgid "&Units:"
+msgstr "&Unidades de medida:"
+
 #. DLG_Para_PushWidowOrphanControl
-#: po/tmp/ap_String_Id.h.h:89
+#: po/tmp/ap_String_Id.h.h:111
 msgid "&Widow/Orphan control"
 msgstr "&Controlo Janela/Orfã"
 
+#. DLG_PageSetup_Width
+#: po/tmp/ap_String_Id.h.h:113
+#, fuzzy
+msgid "&Width:"
+msgstr "Comprimento"
+
 #. DLG_Options_Label_ViewUnits
-#: po/tmp/ap_String_Id.h.h:91
+#: po/tmp/ap_String_Id.h.h:115
 msgid "&units:"
 msgstr "&Unidades de medida:"
 
 #. DLG_Spell_NoSuggestions
-#: po/tmp/ap_String_Id.h.h:93
+#: po/tmp/ap_String_Id.h.h:117
 msgid "(no spelling suggestions)"
 msgstr "Nenhuma sugestão"
 
 #. DLG_Para_SpecialNone
-#: po/tmp/ap_String_Id.h.h:95
+#: po/tmp/ap_String_Id.h.h:119
 msgid "(none)"
 msgstr "(nenhum)"
 
 #. DLG_Para_SpacingHalf
-#: po/tmp/ap_String_Id.h.h:97
+#: po/tmp/ap_String_Id.h.h:121
 msgid "1.5 lines"
 msgstr "1,5 linha"
 
 #. DLG_Goto_Btn_Prev
-#: po/tmp/ap_String_Id.h.h:99
+#: po/tmp/ap_String_Id.h.h:123
 msgid "<< Prev"
 msgstr "Página Anterior"
 
 #. DLG_Options_Label_SpellSuggest
-#: po/tmp/ap_String_Id.h.h:101
+#: po/tmp/ap_String_Id.h.h:125
 msgid "A&lways suggest corrections"
 msgstr "&Sugerir sempre uma alternativa"
 
 #. DLG_Para_LabelAfter
-#: po/tmp/ap_String_Id.h.h:103
+#: po/tmp/ap_String_Id.h.h:127
 msgid "Aft&er:"
 msgstr "&Depois:"
 
 #. DLG_Para_LabelAlignment
-#: po/tmp/ap_String_Id.h.h:105
+#: po/tmp/ap_String_Id.h.h:129
 msgid "Ali&gnment:"
 msgstr "&Alinhamento:"
 
-#. DLG_Tab_Label_Alignment
-#: po/tmp/ap_String_Id.h.h:107
+#. DLG_PageNumbers_Alignment
+#: po/tmp/ap_String_Id.h.h:131
 msgid "Alignment"
 msgstr "Alinhamento"
 
 #. DLG_Options_Btn_Apply
-#: po/tmp/ap_String_Id.h.h:109 po/tmp/xap_String_Id.h.h:35
+#: po/tmp/ap_String_Id.h.h:133 po/tmp/xap_String_Id.h.h:35
 msgid "Apply"
 msgstr "Aplicar"
 
 #. DLG_Lists_Apply_Current
-#: po/tmp/ap_String_Id.h.h:111
+#: po/tmp/ap_String_Id.h.h:135
 msgid "Apply to Current List"
 msgstr "Aplicar à lista actual"
 
 #. DLG_Para_SpacingAtLeast
-#: po/tmp/ap_String_Id.h.h:113
+#: po/tmp/ap_String_Id.h.h:137
 msgid "At least"
 msgstr "Pelo menos"
 
 #. DLG_Para_LabelBy
-#: po/tmp/ap_String_Id.h.h:115
+#: po/tmp/ap_String_Id.h.h:139
 msgid "B&y:"
 msgstr "&À:"
 
 #. DLG_Tab_Radio_Bar
-#: po/tmp/ap_String_Id.h.h:117
+#: po/tmp/ap_String_Id.h.h:141
 msgid "Bar"
 msgstr "Barra"
 
 #. DLG_Lists_Box_List
-#: po/tmp/ap_String_Id.h.h:119
+#: po/tmp/ap_String_Id.h.h:143
 msgid "Box List"
 msgstr "Lista com Caixas"
 
 #. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h.h:121
+#: po/tmp/ap_String_Id.h.h:145
 msgid "Break"
 msgstr "Quebra"
 
 #. DLG_Lists_Type_bullet
-#: po/tmp/ap_String_Id.h.h:123
+#: po/tmp/ap_String_Id.h.h:147
 msgid "Bullet"
 msgstr "Pontuada"
 
 #. DLG_Lists_Bullet_List
-#: po/tmp/ap_String_Id.h.h:125
+#: po/tmp/ap_String_Id.h.h:149
 msgid "Bullet List"
 msgstr "Lista de pontos"
 
-#. DLG_Tab_Radio_Center
-#: po/tmp/ap_String_Id.h.h:127
+#. DLG_PageNumbers_Center
+#: po/tmp/ap_String_Id.h.h:151
 msgid "Center"
 msgstr "Centrado"
 
 #. DLG_Para_AlignCentered
-#: po/tmp/ap_String_Id.h.h:129
+#: po/tmp/ap_String_Id.h.h:153
 msgid "Centered"
 msgstr "ao Centro"
 
 #. DLG_Spell_ChangeTo
-#: po/tmp/ap_String_Id.h.h:131
+#: po/tmp/ap_String_Id.h.h:155
 msgid "Change &to:"
 msgstr "Mudar para:"
 
 #. DLG_Spell_ChangeAll
-#: po/tmp/ap_String_Id.h.h:133
+#: po/tmp/ap_String_Id.h.h:157
 msgid "Change A&ll"
 msgstr "Mudar todas"
 
 #. DLG_Lists_Cur_Change_Start
-#: po/tmp/ap_String_Id.h.h:135
+#: po/tmp/ap_String_Id.h.h:159
 msgid ""
 "Change Current \n"
 "List"
 msgstr "Mudar lista actual"
 
 #. DLG_WordCount_Characters_No
-#: po/tmp/ap_String_Id.h.h:137
+#: po/tmp/ap_String_Id.h.h:161
 msgid "Characters (no spaces)"
 msgstr "Caracteres (sem contar espaços)"
 
 #. DLG_WordCount_Characters_Sp
-#: po/tmp/ap_String_Id.h.h:139
+#: po/tmp/ap_String_Id.h.h:163
 msgid "Characters (with spaces)"
 msgstr "Caracteres (contando espaços)"
 
 #. DLG_Options_Label_SpellCheckAsType
-#: po/tmp/ap_String_Id.h.h:141
+#: po/tmp/ap_String_Id.h.h:165
 msgid "Check s&pelling as you type"
 msgstr "Verificar ortografia enquanto escreve"
 
 #. DLG_Goto_Label_Help
-#: po/tmp/ap_String_Id.h.h:143
+#: po/tmp/ap_String_Id.h.h:167
+#, fuzzy
 msgid "Choose your target in the left side.\n"
 msgstr ""
 "Escolha o tipo de pesquisa na esquerda. Para usar o botão &quot;Ir "
@@ -389,569 +457,621 @@ msgstr ""
 "posição actual."
 
 #. DLG_Tab_Button_Clear
-#: po/tmp/ap_String_Id.h.h:145
+#: po/tmp/ap_String_Id.h.h:169
 msgid "Clear"
 msgstr "Limpar"
 
 #. DLG_Tab_Button_ClearAll
-#: po/tmp/ap_String_Id.h.h:147
+#: po/tmp/ap_String_Id.h.h:171
 msgid "Clear &All"
 msgstr "Limpar &Tudo"
 
 #. MSG_QueryExit
-#: po/tmp/ap_String_Id.h.h:149
+#: po/tmp/ap_String_Id.h.h:173
 msgid "Close all windows and exit?"
 msgstr "Fechar todas as janelas e sair?"
 
 #. ColumnGapStatus
-#: po/tmp/ap_String_Id.h.h:151
+#: po/tmp/ap_String_Id.h.h:175
 #, c-format
 msgid "Column Gap [%s]"
 msgstr "Espaçamento de Coluna [%s]"
 
 #. DLG_Column_ColumnTitle
-#: po/tmp/ap_String_Id.h.h:153
+#: po/tmp/ap_String_Id.h.h:177
 msgid "Columns"
 msgstr "Colunas"
 
 #. DLG_Break_Continuous
-#: po/tmp/ap_String_Id.h.h:155
+#: po/tmp/ap_String_Id.h.h:179
 msgid "Con&tinuous"
 msgstr "Con&tínuo"
 
 #. MSG_IE_CouldNotOpen
-#: po/tmp/ap_String_Id.h.h:157
+#: po/tmp/ap_String_Id.h.h:181
 #, c-format
 msgid "Could not open file %s for writing"
 msgstr "Não foi possível abrir %s para escrita"
 
 #. MSG_IE_CouldNotWrite
-#: po/tmp/ap_String_Id.h.h:159
+#: po/tmp/ap_String_Id.h.h:183
 #, c-format
 msgid "Could not write to file %s"
 msgstr "Não foi possível escrever o ficheiro %s"
 
 #. MSG_SaveFailed
-#: po/tmp/ap_String_Id.h.h:161
+#: po/tmp/ap_String_Id.h.h:185
 #, c-format
 msgid "Could not write to the file %s."
 msgstr "Impossível escrever no ficheiro %s."
 
 #. DLG_Lists_Current_Font
-#: po/tmp/ap_String_Id.h.h:163
+#: po/tmp/ap_String_Id.h.h:187
 msgid "Current Font"
 msgstr "Tipo de letra"
 
 #. DLG_Lists_Current_List_Label
-#: po/tmp/ap_String_Id.h.h:165
+#: po/tmp/ap_String_Id.h.h:189
 msgid "Current List Label"
 msgstr "Etiqueta actual"
 
 #. DLG_Lists_Current_List_Type
-#: po/tmp/ap_String_Id.h.h:167
+#: po/tmp/ap_String_Id.h.h:191
 msgid "Current List Type"
 msgstr "Tipo actual da lista"
 
 #. DLG_Options_Label_PrefsCurrentScheme
-#: po/tmp/ap_String_Id.h.h:169
+#: po/tmp/ap_String_Id.h.h:193
 msgid "Current Preferences Scheme"
 msgstr "Esquema de preferências actual"
 
 #. FIELD_Datetime_CurrentTime
-#: po/tmp/ap_String_Id.h.h:171
+#: po/tmp/ap_String_Id.h.h:195
 msgid "Current time"
 msgstr "Hora actual"
 
 #. DLG_Options_Label_ViewCursorBlink
-#: po/tmp/ap_String_Id.h.h:173
+#: po/tmp/ap_String_Id.h.h:197
 msgid "Cursor &blink"
 msgstr "&Piscar cursor"
 
 #. DLG_Options_Label_SpellCustomDict
-#: po/tmp/ap_String_Id.h.h:175
+#: po/tmp/ap_String_Id.h.h:199
 msgid "Custom Dictionary:"
 msgstr "Dicionário pessoal:"
 
 #. DLG_Lists_Customize
-#: po/tmp/ap_String_Id.h.h:177
-msgid "Customize"
+#: po/tmp/ap_String_Id.h.h:201
+#, fuzzy
+msgid "Customized List"
 msgstr "Configurar"
 
 #. DLG_Lists_Dashed_List
-#: po/tmp/ap_String_Id.h.h:179
+#: po/tmp/ap_String_Id.h.h:203
 msgid "Dashed List"
 msgstr "Lista com Traços"
 
 #. FIELD_Type_Datetime
-#: po/tmp/ap_String_Id.h.h:181
+#: po/tmp/ap_String_Id.h.h:205
 msgid "Date and Time"
 msgstr "Data e Hora"
 
 #. DLG_Options_Btn_Default
-#: po/tmp/ap_String_Id.h.h:183
+#: po/tmp/ap_String_Id.h.h:207
 msgid "De&faults"
 msgstr "&Original"
 
 #. DLG_Tab_Radio_Decimal
-#: po/tmp/ap_String_Id.h.h:185
+#: po/tmp/ap_String_Id.h.h:209
 msgid "Decimal"
 msgstr "Decimal"
 
+#. DLG_Options_Label_DefaultPageSize
+#: po/tmp/ap_String_Id.h.h:211
+#, fuzzy
+msgid "Default page size"
+msgstr "Fim de tab original"
+
 #. DLG_Tab_Label_DefaultTS
-#: po/tmp/ap_String_Id.h.h:187
+#: po/tmp/ap_String_Id.h.h:213
 msgid "Default tab stops:"
 msgstr "Fim de tab original"
 
 #. DLG_Lists_Diamond_List
-#: po/tmp/ap_String_Id.h.h:189
+#: po/tmp/ap_String_Id.h.h:215
 msgid "Diamond List"
 msgstr "Lista com Diamantes"
 
 #. DLG_Options_Prompt_IgnoreResetAll
-#: po/tmp/ap_String_Id.h.h:191
+#: po/tmp/ap_String_Id.h.h:217
 msgid "Do you want to reset ignored words in all the documents?"
 msgstr "Deseja cancelar a lista de palavras ignoradas em todos os documentos?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
-#: po/tmp/ap_String_Id.h.h:193
+#: po/tmp/ap_String_Id.h.h:219
 msgid "Do you want to reset ignored words in the current document?"
 msgstr "Deseja cancelar a lista de palavras ignoradas neste documento?"
 
 #. DLG_Para_SpacingDouble
-#: po/tmp/ap_String_Id.h.h:195
+#: po/tmp/ap_String_Id.h.h:221
 msgid "Double"
 msgstr "Dupla"
 
 #. MSG_ImportError
-#: po/tmp/ap_String_Id.h.h:197
+#: po/tmp/ap_String_Id.h.h:223
 #, c-format
 msgid "Error importing file %s."
 msgstr "Erro de importação do ficheiro %s."
 
 #. MSG_SaveFailedExport
-#: po/tmp/ap_String_Id.h.h:199
+#: po/tmp/ap_String_Id.h.h:225
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
 msgstr "Impossível escrever no ficheiro %s."
 
 #. MSG_SaveFailedName
-#: po/tmp/ap_String_Id.h.h:201
+#: po/tmp/ap_String_Id.h.h:227
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Impossível escrever no ficheiro %s."
 
 #. DLG_Para_SpacingExactly
-#: po/tmp/ap_String_Id.h.h:203
+#: po/tmp/ap_String_Id.h.h:229
 msgid "Exactly"
 msgstr "Exactamente"
 
 #. DLG_FR_FindLabel
-#: po/tmp/ap_String_Id.h.h:205
+#: po/tmp/ap_String_Id.h.h:231
 msgid "Fi&nd what:"
 msgstr "P&rocurar..."
 
 #. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h.h:207
+#: po/tmp/ap_String_Id.h.h:233
 msgid "Field"
 msgstr "Campo"
 
 #. MSG_IE_BogusDocument
-#: po/tmp/ap_String_Id.h.h:209
+#: po/tmp/ap_String_Id.h.h:235
 #, c-format
 msgid "File %s is a bogus document"
 msgstr "%s é um ficheiro danificado"
 
 #. MSG_IE_UnsupportedType
-#: po/tmp/ap_String_Id.h.h:211
+#: po/tmp/ap_String_Id.h.h:237
 #, c-format
 msgid "File %s is not of a currently supported file type"
 msgstr "O ficheiro %s é de um tipo ainda não suportado"
 
 #. MSG_IE_FakeType
-#: po/tmp/ap_String_Id.h.h:213
+#: po/tmp/ap_String_Id.h.h:239
 #, c-format
 msgid "File %s is not of the type it claims to be"
 msgstr "%s não é do formato que alega ser"
 
 #. MSG_IE_UnknownType
-#: po/tmp/ap_String_Id.h.h:215
+#: po/tmp/ap_String_Id.h.h:241
 #, c-format
 msgid "File %s is of unknown type"
 msgstr "%s é de um formato desconhecido"
 
 #. MSG_IE_FileNotFound
-#: po/tmp/ap_String_Id.h.h:217
+#: po/tmp/ap_String_Id.h.h:243
 #, c-format
 msgid "File %s not found"
 msgstr "Ficheiro %s não encontrado"
 
 #. DLG_FR_FindTitle
-#: po/tmp/ap_String_Id.h.h:219
+#: po/tmp/ap_String_Id.h.h:245
 msgid "Find"
 msgstr "Procurar"
 
 #. FirstLineIndentStatus
-#: po/tmp/ap_String_Id.h.h:221
+#: po/tmp/ap_String_Id.h.h:247
 #, c-format
 msgid "First Line Indent [%s]"
 msgstr "Identação da Primeira Linha [%s]"
 
 #. DLG_Para_SpecialFirstLine
-#: po/tmp/ap_String_Id.h.h:223
+#: po/tmp/ap_String_Id.h.h:249
 msgid "First line"
 msgstr "1ª linha"
 
 #. DLG_Lists_Font
-#: po/tmp/ap_String_Id.h.h:225 po/tmp/xap_String_Id.h.h:65
+#: po/tmp/ap_String_Id.h.h:251 po/tmp/xap_String_Id.h.h:65
 msgid "Font:"
 msgstr "Tipo de letra:"
 
+#. DLG_PageNumbers_Footer
+#: po/tmp/ap_String_Id.h.h:253
+#, fuzzy
+msgid "Footer"
+msgstr "Tipos"
+
 #. DLG_Lists_Format
-#: po/tmp/ap_String_Id.h.h:227
+#: po/tmp/ap_String_Id.h.h:255
 msgid "Format:"
 msgstr "Formato:"
 
 #. DLG_Goto_Btn_Goto
-#: po/tmp/ap_String_Id.h.h:229
+#: po/tmp/ap_String_Id.h.h:257
 msgid "Go To"
 msgstr "Ir para"
 
 #. DLG_Goto_Label_What
-#: po/tmp/ap_String_Id.h.h:231
+#: po/tmp/ap_String_Id.h.h:259
 msgid "Go To &What:"
 msgstr "Ir para a..."
 
 #. DLG_Goto_Title
-#: po/tmp/ap_String_Id.h.h:233
+#: po/tmp/ap_String_Id.h.h:261
 msgid "Go to..."
 msgstr "Ir para..."
 
 #. DLG_Lists_Hand_List
-#: po/tmp/ap_String_Id.h.h:235
+#: po/tmp/ap_String_Id.h.h:263
 msgid "Hand List"
 msgstr "Lista com Mãos"
 
 #. DLG_Para_SpecialHanging
-#: po/tmp/ap_String_Id.h.h:237
+#: po/tmp/ap_String_Id.h.h:265
 msgid "Hanging"
 msgstr "Pendurado"
 
+#. DLG_PageNumbers_Header
+#: po/tmp/ap_String_Id.h.h:267
+#, fuzzy
+msgid "Header"
+msgstr "Primeira"
+
 #. DLG_Lists_Heart_List
-#: po/tmp/ap_String_Id.h.h:239
+#: po/tmp/ap_String_Id.h.h:269
 msgid "Heart List"
 msgstr "Lista com Corações"
 
 #. DLG_Options_Label_SpellHideErrors
-#: po/tmp/ap_String_Id.h.h:241
+#: po/tmp/ap_String_Id.h.h:271
 msgid "Hide &spelling errors in the document"
 msgstr "&Esconder erros ortográficos no documento"
 
 #. DLG_Spell_IgnoreAll
-#: po/tmp/ap_String_Id.h.h:243
+#: po/tmp/ap_String_Id.h.h:273
 msgid "I&gnore All"
 msgstr "Ignora todas"
 
 #. InsertModeFieldINS
-#: po/tmp/ap_String_Id.h.h:245
+#: po/tmp/ap_String_Id.h.h:275
 msgid "INS"
 msgstr "INS"
 
 #. DLG_Options_Label_SpellInternet
-#: po/tmp/ap_String_Id.h.h:247
+#: po/tmp/ap_String_Id.h.h:277
 msgid "Ignore Internet and &file addresses"
 msgstr "Ignorar endereços da &Internet e nomes de ficheiros"
 
 #. DLG_Options_Label_SpellUppercase
-#: po/tmp/ap_String_Id.h.h:249
+#: po/tmp/ap_String_Id.h.h:279
 msgid "Ignore words in &UPPERCASE"
 msgstr "Ignorar &MAIÚSCULAS"
 
 #. DLG_Options_Label_SpellNumbers
-#: po/tmp/ap_String_Id.h.h:251
+#: po/tmp/ap_String_Id.h.h:281
 msgid "Ignore words with num&bers"
 msgstr "Ignorar palavras com n&úmeros"
 
 #. DLG_Options_Label_SpellIgnoredWord
-#: po/tmp/ap_String_Id.h.h:253
+#: po/tmp/ap_String_Id.h.h:283
 msgid "Ignored words:"
 msgstr "Palavras ignoradas:"
 
 #. DLG_Lists_Implies_List
-#: po/tmp/ap_String_Id.h.h:255
+#: po/tmp/ap_String_Id.h.h:285
 msgid "Implies List"
 msgstr "Lista de Implicações"
 
 #. DLG_Para_LabelIndentation
-#: po/tmp/ap_String_Id.h.h:257
+#: po/tmp/ap_String_Id.h.h:287
 msgid "Indentation"
 msgstr "Identação"
 
 #. DLG_Break_Insert
-#: po/tmp/ap_String_Id.h.h:259 po/tmp/xap_String_Id.h.h:73
+#: po/tmp/ap_String_Id.h.h:289 po/tmp/xap_String_Id.h.h:73
 msgid "Insert"
 msgstr "Inserir quebra de..."
 
 #. DLG_Options_Label_ViewUnprintable
-#: po/tmp/ap_String_Id.h.h:261
+#: po/tmp/ap_String_Id.h.h:291
 msgid "Invisible &Layout Marks"
 msgstr "&Caracteres não imprimíveis"
 
 #. DLG_Para_AlignJustified
-#: po/tmp/ap_String_Id.h.h:263
+#: po/tmp/ap_String_Id.h.h:293
 msgid "Justified"
 msgstr "Justificado"
 
 #. DLG_Para_PushKeepWithNext
-#: po/tmp/ap_String_Id.h.h:265
+#: po/tmp/ap_String_Id.h.h:295
 msgid "Keep with ne&xt"
 msgstr "Manter com o &seguinte"
 
 #. FIELD_PieceTable_Test
-#: po/tmp/ap_String_Id.h.h:267
+#: po/tmp/ap_String_Id.h.h:297
 msgid "Kevins Test"
 msgstr ""
 
 #. DLG_Lists_Indent
-#: po/tmp/ap_String_Id.h.h:269
+#: po/tmp/ap_String_Id.h.h:299
 msgid "Label Align:"
 msgstr "Alinhamento da identação"
 
 #. DLG_Tab_Label_Leader
-#: po/tmp/ap_String_Id.h.h:271
+#: po/tmp/ap_String_Id.h.h:301
 msgid "Leader"
 msgstr "Primeira"
 
-#. DLG_Tab_Radio_Left
-#: po/tmp/ap_String_Id.h.h:273
+#. DLG_PageNumbers_Left
+#: po/tmp/ap_String_Id.h.h:303
 msgid "Left"
 msgstr "à Esquerda"
 
 #. LeftIndentStatus
-#: po/tmp/ap_String_Id.h.h:275
+#: po/tmp/ap_String_Id.h.h:305
 #, c-format
 msgid "Left Indent [%s]"
 msgstr "Identação à Esquerda [%s]"
 
 #. LeftIndentTextIndentStatus
-#: po/tmp/ap_String_Id.h.h:277
+#: po/tmp/ap_String_Id.h.h:307
 #, c-format
 msgid "Left Indent [%s] First Line Indent [%s]"
 msgstr "Identação à Esquerda [%s] Primeira Linha [%s]"
 
 #. LeftMarginStatus
-#: po/tmp/ap_String_Id.h.h:279
+#: po/tmp/ap_String_Id.h.h:309
 #, c-format
 msgid "Left Margin [%s]"
 msgstr "Margem Esquerda [%s]"
 
 #. DLG_Lists_Level
-#: po/tmp/ap_String_Id.h.h:281
+#: po/tmp/ap_String_Id.h.h:311
 msgid "Level Delimiter:"
 msgstr "Nível"
 
 #. DLG_Para_LabelLineSpacing
-#: po/tmp/ap_String_Id.h.h:283
+#: po/tmp/ap_String_Id.h.h:313
 msgid "Li&ne spacing:"
 msgstr "&Altura da linha:"
 
 #. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h.h:285
+#: po/tmp/ap_String_Id.h.h:315
 msgid "Line"
 msgstr "Linha"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
-#: po/tmp/ap_String_Id.h.h:287
+#: po/tmp/ap_String_Id.h.h:317
 msgid "Line and &Page Breaks"
 msgstr "&Quebras de Linha e Página"
 
 #. DLG_Column_Line_Between
-#: po/tmp/ap_String_Id.h.h:289
+#: po/tmp/ap_String_Id.h.h:319
 msgid "Line between"
 msgstr "Linha intermédia"
 
 #. DLG_WordCount_Lines
-#: po/tmp/ap_String_Id.h.h:291
+#: po/tmp/ap_String_Id.h.h:321
 msgid "Lines"
 msgstr "Linhas"
 
 #. FIELD_Numbers_ListLabel
-#: po/tmp/ap_String_Id.h.h:293
+#: po/tmp/ap_String_Id.h.h:323
 msgid "List Label"
 msgstr "Etiqueta da lista"
 
 #. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h.h:295
+#: po/tmp/ap_String_Id.h.h:325
 msgid "Lists for "
 msgstr "Listas para"
 
 #. DLG_Lists_Lower_Case_List
-#: po/tmp/ap_String_Id.h.h:297
+#: po/tmp/ap_String_Id.h.h:327
 msgid "Lower Case List"
 msgstr "Lista com minúsculas"
 
 #. DLG_Lists_Lower_Roman_List
-#: po/tmp/ap_String_Id.h.h:299
+#: po/tmp/ap_String_Id.h.h:329
 msgid "Lower Roman List"
 msgstr "Lista românica com minúsculas"
 
 #. FIELD_PieceTable_MartinTest
-#: po/tmp/ap_String_Id.h.h:301
+#: po/tmp/ap_String_Id.h.h:331
 msgid "Martins Test"
 msgstr ""
 
 #. DLG_Para_SpacingMultiple
-#: po/tmp/ap_String_Id.h.h:303
+#: po/tmp/ap_String_Id.h.h:333
 msgid "Multiple"
 msgstr "Multiplo"
 
 #. DLG_Lists_New_List_Label
-#: po/tmp/ap_String_Id.h.h:305
+#: po/tmp/ap_String_Id.h.h:335
 msgid "New List Label"
 msgstr "Nova etiqueta"
 
 #. DLG_Lists_New_List_Type
-#: po/tmp/ap_String_Id.h.h:307
+#: po/tmp/ap_String_Id.h.h:337
 msgid ""
 "New List \n"
 "Type"
 msgstr "Novo tipo de lista"
 
 #. DLG_Lists_Starting_Value
-#: po/tmp/ap_String_Id.h.h:309
+#: po/tmp/ap_String_Id.h.h:339
 msgid ""
 "New Starting \n"
 "Value"
 msgstr "Valor inicial"
 
 #. DLG_Goto_Btn_Next
-#: po/tmp/ap_String_Id.h.h:311
+#: po/tmp/ap_String_Id.h.h:341
 msgid "Next >>"
 msgstr "Página Seguinte"
 
 #. DLG_Lists_Type_none
-#: po/tmp/ap_String_Id.h.h:313
+#: po/tmp/ap_String_Id.h.h:343
 msgid "None"
 msgstr "Nada"
 
 #. DLG_Spell_UnknownWord
-#: po/tmp/ap_String_Id.h.h:315
+#: po/tmp/ap_String_Id.h.h:345
 msgid "Not in dictionary&:"
 msgstr "Palavra desconhecida:"
 
 #. DLG_Column_Number
-#: po/tmp/ap_String_Id.h.h:317
+#: po/tmp/ap_String_Id.h.h:347
 msgid "Number of columns"
 msgstr "Número de colunas"
 
 #. FIELD_Numbers_PagesCount
-#: po/tmp/ap_String_Id.h.h:319
+#: po/tmp/ap_String_Id.h.h:349
 msgid "Number of pages"
 msgstr "Número de páginas"
 
 #. DLG_Lists_Type_numbered
-#: po/tmp/ap_String_Id.h.h:321
+#: po/tmp/ap_String_Id.h.h:351
 msgid "Numbered"
 msgstr "Numerada"
 
 #. DLG_Lists_Numbered_List
-#: po/tmp/ap_String_Id.h.h:323
+#: po/tmp/ap_String_Id.h.h:353
 msgid "Numbered List"
 msgstr "Lista numerada"
 
 #. FIELD_Type_Numbers
-#: po/tmp/ap_String_Id.h.h:325
+#: po/tmp/ap_String_Id.h.h:355
 msgid "Numbers"
 msgstr "Números"
 
 #. InsertModeFieldOVR
-#: po/tmp/ap_String_Id.h.h:327
+#: po/tmp/ap_String_Id.h.h:357
 msgid "OVR"
 msgstr "SUBS"
 
 #. DLG_Column_One
-#: po/tmp/ap_String_Id.h.h:329
+#: po/tmp/ap_String_Id.h.h:359
 msgid "One"
 msgstr "Uma"
 
+#. DLG_PageSetup_Orient
+#: po/tmp/ap_String_Id.h.h:361
+#, fuzzy
+msgid "Orentation..."
+msgstr "Identação"
+
 #. DLG_Options_TabLabel_Other
-#: po/tmp/ap_String_Id.h.h:331
+#: po/tmp/ap_String_Id.h.h:363
 msgid "Other"
 msgstr "Outros"
 
 #. MSG_IE_NoMemory
-#: po/tmp/ap_String_Id.h.h:333
+#: po/tmp/ap_String_Id.h.h:365
 #, c-format
 msgid "Out of memory attempting to open %s"
 msgstr "Não há memória suficiente para abrir %s"
 
-#. DLG_Goto_Target_Page
-#: po/tmp/ap_String_Id.h.h:335 po/tmp/xap_String_Id.h.h:95
+#. DLG_PageSetup_Page
+#: po/tmp/ap_String_Id.h.h:367 po/tmp/xap_String_Id.h.h:95
 msgid "Page"
 msgstr "Página"
 
 #. DLG_Para_PushPageBreakBefore
-#: po/tmp/ap_String_Id.h.h:337
+#: po/tmp/ap_String_Id.h.h:369
 msgid "Page &break before"
 msgstr "&Quebrar pagina antes de"
 
+#. DLG_PageNumbers_Title
+#: po/tmp/ap_String_Id.h.h:371
+#, fuzzy
+msgid "Page Numbers"
+msgstr "Número da página"
+
+#. DLG_PageSetup_Title
+#: po/tmp/ap_String_Id.h.h:373
+msgid "Page Setup"
+msgstr "Definição de Página"
+
 #. FIELD_Numbers_PageNumber
-#: po/tmp/ap_String_Id.h.h:339
+#: po/tmp/ap_String_Id.h.h:375
 msgid "Page number"
 msgstr "Número da página"
 
 #. PageInfoField
-#: po/tmp/ap_String_Id.h.h:341
+#: po/tmp/ap_String_Id.h.h:377
 #, c-format
 msgid "Page: %d/%d"
 msgstr "Página: %d/%d"
 
 #. DLG_WordCount_Pages
-#: po/tmp/ap_String_Id.h.h:343
+#: po/tmp/ap_String_Id.h.h:379
 msgid "Pages"
 msgstr "Páginas"
 
 #. DLG_Para_LabelPagination
-#: po/tmp/ap_String_Id.h.h:345
+#: po/tmp/ap_String_Id.h.h:381
 msgid "Pagination"
 msgstr "Paginação"
 
+#. DLG_PageSetup_Paper_Size
+#: po/tmp/ap_String_Id.h.h:383
+msgid "Paper Si&ze:"
+msgstr "&Tamanho:"
+
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h.h:385
+msgid "Paper..."
+msgstr "Papel..."
+
 #. DLG_Para_ParaTitle
-#: po/tmp/ap_String_Id.h.h:347
+#: po/tmp/ap_String_Id.h.h:387
 msgid "Paragraph"
 msgstr "Parágrafo"
 
 #. DLG_WordCount_Paragraphs
-#: po/tmp/ap_String_Id.h.h:349
+#: po/tmp/ap_String_Id.h.h:389
 msgid "Paragraphs"
 msgstr "Parágrafos"
 
 #. DLG_Goto_Target_Picture
-#: po/tmp/ap_String_Id.h.h:351
+#: po/tmp/ap_String_Id.h.h:391
 msgid "Picture"
 msgstr "Figura"
 
 #. FIELD_Type_PieceTable
-#: po/tmp/ap_String_Id.h.h:353
+#: po/tmp/ap_String_Id.h.h:393
 msgid "Piece Table"
 msgstr ""
 
+#. DLG_PageNumbers_Position
+#: po/tmp/ap_String_Id.h.h:395
+#, fuzzy
+msgid "Position"
+msgstr "Paginação"
+
 #. DLG_Options_TabLabel_Preferences
-#: po/tmp/ap_String_Id.h.h:355
+#: po/tmp/ap_String_Id.h.h:397
 msgid "Preference Schemes"
 msgstr "Preferências"
 
 #. DLG_Options_OptionsTitle
-#: po/tmp/ap_String_Id.h.h:357
+#: po/tmp/ap_String_Id.h.h:399
 msgid "Preferences"
 msgstr "Opções"
 
-#. DLG_Lists_Preview
-#: po/tmp/ap_String_Id.h.h:359 po/tmp/xap_String_Id.h.h:99
+#. DLG_PageNumbers_Preview
+#: po/tmp/ap_String_Id.h.h:401 po/tmp/xap_String_Id.h.h:99
 msgid "Preview"
 msgstr "Exemplo"
 
 #. DLG_Para_PreviewPrevParagraph
-#: po/tmp/ap_String_Id.h.h:361
+#: po/tmp/ap_String_Id.h.h:403
 msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
@@ -960,182 +1080,187 @@ msgstr ""
 "Parágrafo Anterior Parágrafo Anterior Parágrafo Anterior "
 
 #. DLG_FR_ReplaceWithLabel
-#: po/tmp/ap_String_Id.h.h:363
+#: po/tmp/ap_String_Id.h.h:405
 msgid "Re&place with:"
 msgstr "...e sub&stituir por..."
 
 #. DLG_FR_ReplaceTitle
-#: po/tmp/ap_String_Id.h.h:365
+#: po/tmp/ap_String_Id.h.h:407
 msgid "Replace"
 msgstr "Substituir"
 
 #. DLG_FR_ReplaceAllButton
-#: po/tmp/ap_String_Id.h.h:367
+#: po/tmp/ap_String_Id.h.h:409
 msgid "Replace &All"
 msgstr "Substituir t&udo"
 
 #. DLG_Lists_Resume
-#: po/tmp/ap_String_Id.h.h:369
+#: po/tmp/ap_String_Id.h.h:411
 msgid "Resume Previous List"
 msgstr "Continuar a lista anterior"
 
 #. MSG_RevertBuffer
-#: po/tmp/ap_String_Id.h.h:371
+#: po/tmp/ap_String_Id.h.h:413
 #, c-format
 msgid "Revert to saved copy of %s?"
 msgstr "Reabrir '%s' como estava da ultima vez que foi gravado?"
 
-#. DLG_Tab_Radio_Right
-#: po/tmp/ap_String_Id.h.h:373
+#. DLG_PageNumbers_Right
+#: po/tmp/ap_String_Id.h.h:415
 msgid "Right"
 msgstr "à Direita"
 
 #. RightIndentStatus
-#: po/tmp/ap_String_Id.h.h:375
+#: po/tmp/ap_String_Id.h.h:417
 #, c-format
 msgid "Right Indent [%s]"
 msgstr "Identação à Direita [%s]"
 
 #. RightMarginStatus
-#: po/tmp/ap_String_Id.h.h:377
+#: po/tmp/ap_String_Id.h.h:419
 #, c-format
 msgid "Right Margin [%s]"
 msgstr "Margem Direita [%s]"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h.h:379
+#: po/tmp/ap_String_Id.h.h:421
 msgid "Sa&ve"
 msgstr "&Gravar"
 
 #. MSG_ConfirmSave
-#: po/tmp/ap_String_Id.h.h:381
+#: po/tmp/ap_String_Id.h.h:423
 #, c-format
 msgid "Save changes to %s?"
 msgstr "Gravar alterações em %s?"
 
+#. DLG_PageSetup_Scale
+#: po/tmp/ap_String_Id.h.h:425
+msgid "Scale..."
+msgstr "Escala..."
+
 #. DLG_WordCount_Update_Rate
-#: po/tmp/ap_String_Id.h.h:383
+#: po/tmp/ap_String_Id.h.h:427
 msgid "Seconds between updates"
 msgstr "Período da actualização"
 
 #. DLG_Break_SectionBreaks
-#: po/tmp/ap_String_Id.h.h:385
+#: po/tmp/ap_String_Id.h.h:429
 msgid "Section breaks"
 msgstr "... Quebra de Secção para..."
 
 #. DLG_Tab_Button_Set
-#: po/tmp/ap_String_Id.h.h:387
+#: po/tmp/ap_String_Id.h.h:431
 msgid "Set"
 msgstr "Definir"
 
 #. DLG_Options_Label_ViewShowHide
-#: po/tmp/ap_String_Id.h.h:389
+#: po/tmp/ap_String_Id.h.h:433
 msgid "Show/Hide..."
 msgstr "Mostra/Esconde..."
 
 #. DLG_Para_SpacingSingle
-#: po/tmp/ap_String_Id.h.h:391
+#: po/tmp/ap_String_Id.h.h:435
 msgid "Single"
 msgstr "Simples"
 
 #. DLG_Para_LabelSpacing
-#: po/tmp/ap_String_Id.h.h:393
+#: po/tmp/ap_String_Id.h.h:437
 msgid "Spacing"
 msgstr "Espaçamento"
 
 #. DLG_Options_TabLabel_Spelling
-#: po/tmp/ap_String_Id.h.h:395
+#: po/tmp/ap_String_Id.h.h:439
 msgid "Spelling"
 msgstr "Correcção ortográfica"
 
 #. DLG_Lists_Square_List
-#: po/tmp/ap_String_Id.h.h:397
+#: po/tmp/ap_String_Id.h.h:441
 msgid "Square List"
 msgstr "Lista com Quadrados"
 
 #. DLG_Lists_Star_List
-#: po/tmp/ap_String_Id.h.h:399
+#: po/tmp/ap_String_Id.h.h:443
 msgid "Star List"
 msgstr "Lista com Estrelas"
 
 #. DLG_Lists_Start
-#: po/tmp/ap_String_Id.h.h:401
+#: po/tmp/ap_String_Id.h.h:445
 msgid "Start At:"
 msgstr "Começar em:"
 
 #. DLG_Lists_Start_New
-#: po/tmp/ap_String_Id.h.h:403
+#: po/tmp/ap_String_Id.h.h:447
 msgid "Start New List"
 msgstr "Começar nova lista"
 
 #. DLG_Lists_Start_Sub
-#: po/tmp/ap_String_Id.h.h:405
+#: po/tmp/ap_String_Id.h.h:449
 msgid "Start Sublist"
 msgstr "Começar sublista"
 
 #. DLG_WordCount_Statistics
-#: po/tmp/ap_String_Id.h.h:407
+#: po/tmp/ap_String_Id.h.h:451
 msgid "Statistics:"
 msgstr "Estatísticas"
 
 #. DLG_Options_Label_ViewStatusBar
-#: po/tmp/ap_String_Id.h.h:409
+#: po/tmp/ap_String_Id.h.h:453
 msgid "Status bar"
 msgstr "Ver barra de estado"
 
 #. DLG_Lists_Stop_Current_List
-#: po/tmp/ap_String_Id.h.h:411
+#: po/tmp/ap_String_Id.h.h:455
 msgid "Stop Current List"
 msgstr "Terminar lista"
 
 #. DLG_Lists_Style
-#: po/tmp/ap_String_Id.h.h:413 po/tmp/xap_String_Id.h.h:129
+#: po/tmp/ap_String_Id.h.h:457 po/tmp/xap_String_Id.h.h:129
 msgid "Style:"
 msgstr "Estilo:"
 
 #. DLG_Spell_Suggestions
-#: po/tmp/ap_String_Id.h.h:415
+#: po/tmp/ap_String_Id.h.h:459
 msgid "Sugg&estions:"
 msgstr "Sugestões:"
 
 #. DLG_Options_Label_SpellMainOnly
-#: po/tmp/ap_String_Id.h.h:417
+#: po/tmp/ap_String_Id.h.h:461
 msgid "Suggest from &main dictionary only"
 msgstr "Sugerir do &dicionário principal apenas"
 
 #. TabStopStatus
-#: po/tmp/ap_String_Id.h.h:419
+#: po/tmp/ap_String_Id.h.h:463
 #, c-format
 msgid "Tab Stop [%s]"
 msgstr "Fim de Tabulação [%s]"
 
 #. DLG_Tab_Label_TabPosition
-#: po/tmp/ap_String_Id.h.h:421
+#: po/tmp/ap_String_Id.h.h:465
 msgid "Tab stop position:"
 msgstr "Fim da tabulação"
 
 #. DLG_Tab_Label_TabToClear
-#: po/tmp/ap_String_Id.h.h:423
+#: po/tmp/ap_String_Id.h.h:467
 msgid "Tab stops to be cleared:"
 msgstr "Tabulações a eliminar"
 
 #. DLG_Tab_TabTitle
-#: po/tmp/ap_String_Id.h.h:425
+#: po/tmp/ap_String_Id.h.h:469
 msgid "Tabs"
 msgstr "Tabulação"
 
 #. DLG_Lists_Align
-#: po/tmp/ap_String_Id.h.h:427
+#: po/tmp/ap_String_Id.h.h:471
 msgid "Text Align:"
 msgstr "Alinhamento da lista"
 
 #. MSG_SpellDone
-#: po/tmp/ap_String_Id.h.h:429
+#: po/tmp/ap_String_Id.h.h:473
 msgid "The spelling check is complete."
 msgstr "Correcção ortográfica terminada."
 
 #. DLG_Para_PreviewSampleFallback
-#: po/tmp/ap_String_Id.h.h:431
+#: po/tmp/ap_String_Id.h.h:475
 msgid ""
 "This paragraph represents words as they might appear in your document.  "
 msgstr ""
@@ -1144,62 +1269,62 @@ msgstr ""
 "este diálogo."
 
 #. DLG_Column_Three
-#: po/tmp/ap_String_Id.h.h:433
+#: po/tmp/ap_String_Id.h.h:477
 msgid "Three"
 msgstr "Três"
 
 #. DLG_Lists_Tick_List
-#: po/tmp/ap_String_Id.h.h:435
+#: po/tmp/ap_String_Id.h.h:479
 msgid "Tick List"
 msgstr "Lista de Verificações"
 
 #. DLG_Lists_Triangle_List
-#: po/tmp/ap_String_Id.h.h:437
+#: po/tmp/ap_String_Id.h.h:481
 msgid "Triangle List"
 msgstr "Listas com Triângulos"
 
 #. DLG_Column_Two
-#: po/tmp/ap_String_Id.h.h:439
+#: po/tmp/ap_String_Id.h.h:483
 msgid "Two"
 msgstr "Duas"
 
 #. DLG_Lists_Type
-#: po/tmp/ap_String_Id.h.h:441
+#: po/tmp/ap_String_Id.h.h:485
 msgid "Type:"
 msgstr "Tipo"
 
 #. DLG_Lists_Upper_Case_List
-#: po/tmp/ap_String_Id.h.h:443
+#: po/tmp/ap_String_Id.h.h:487
 msgid "Upper Case List"
 msgstr "Lista com maiúsculas"
 
 #. DLG_Lists_Upper_Roman_List
-#: po/tmp/ap_String_Id.h.h:445
+#: po/tmp/ap_String_Id.h.h:489
 msgid "Upper Roman List"
 msgstr "Lista românica com maiúsculas"
 
 #. DLG_Options_TabLabel_View
-#: po/tmp/ap_String_Id.h.h:447
+#: po/tmp/ap_String_Id.h.h:491
 msgid "View"
 msgstr "Ver"
 
 #. DLG_Options_Label_ViewViewFrame
-#: po/tmp/ap_String_Id.h.h:449
+#: po/tmp/ap_String_Id.h.h:493
 msgid "View..."
 msgstr "Mostra..."
 
 #. DLG_WordCount_WordCountTitle
-#: po/tmp/ap_String_Id.h.h:451
+#: po/tmp/ap_String_Id.h.h:495
 msgid "Word Count"
 msgstr "Contagem de Palavras"
 
 #. DLG_WordCount_Words
-#: po/tmp/ap_String_Id.h.h:453
+#: po/tmp/ap_String_Id.h.h:497
 msgid "Words"
 msgstr "Palavras"
 
 #. MSG_SaveFailedWrite
-#: po/tmp/ap_String_Id.h.h:455
+#: po/tmp/ap_String_Id.h.h:499
 #, c-format
 msgid "Writing error when attempting to save %s"
 msgstr "Impossível escrever no ficheiro %s."
@@ -1564,13 +1689,18 @@ msgstr "centímetros"
 msgid "inch"
 msgstr "polegadas"
 
-#. DLG_Unit_pico
+#. DLG_Unit_mm
 #: po/tmp/xap_String_Id.h.h:159
+msgid "mm"
+msgstr "mm"
+
+#. DLG_Unit_pico
+#: po/tmp/xap_String_Id.h.h:161
 msgid "pico"
 msgstr "picos"
 
 #. DLG_Unit_points
-#: po/tmp/xap_String_Id.h.h:161
+#: po/tmp/xap_String_Id.h.h:163
 msgid "points"
 msgstr "pontos"
 
