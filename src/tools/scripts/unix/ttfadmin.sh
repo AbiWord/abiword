@@ -5,7 +5,7 @@ then
 	echo ""
 	echo "This script generates support files required by AbiWord"
 	echo "for each TrueType font in the given directory."
-	echo "NB: this script must be located in the same directory as
+	echo "NB: this script must be located in the same directory as"
 	echo "the programs ttf2uafm and ttf2t42."
 	echo ""
 	echo "Usage: ttfadmin.sh directory"
