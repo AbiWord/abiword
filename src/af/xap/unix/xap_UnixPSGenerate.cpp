@@ -19,6 +19,7 @@
 
 #include <string.h>
 #include <signal.h>
+#include <stdio.h>
 
 #include "ut_assert.h"
 #include "xap_UnixPSGenerate.h"
