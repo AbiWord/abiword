@@ -34,12 +34,12 @@ UT_BEGIN_EXTERN_C
 
 ///////////////////////////////////////////////////////////////////////////////
 // UTFXX->UTF8 character conversion
-int ABI_EXPORT unichar_to_utf8 (int c, unsigned char *outbuf);
+ABI_EXPORT int  unichar_to_utf8 (int c, unsigned char *outbuf);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Replacements for common non-ANSI functions
 
-char * ABI_EXPORT UT_strdup(const char * szSource); 
+ABI_EXPORT char *  UT_strdup(const char * szSource); 
 
 // Below are case-insensitive strcmp-like functions prototypes.  The functions
 // lexographically compare strings, returning <0, 0, >0 as strcmp(...) does.
@@ -49,63 +49,63 @@ char * ABI_EXPORT UT_strdup(const char * szSource);
 // This functionality is comparable with the 'standard' GNU strcasecmp(...)
 // and the Microsoft stricmp functions.
 ABI_EXPORT UT_sint32 UT_stricmp(const char *s1, const char *s2);
-UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen);
+ABI_EXPORT UT_sint32 UT_strnicmp(const char *s1, const char *s2, int ilen);
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool ABI_EXPORT UT_cloneString(char *& rszDest, const char * szSource);
-bool ABI_EXPORT UT_replaceString(char *& rszDest, const char * szSource);
+ABI_EXPORT bool  UT_cloneString(char *& rszDest, const char * szSource);
+ABI_EXPORT bool  UT_replaceString(char *& rszDest, const char * szSource);
 
-UT_uint32 ABI_EXPORT UT_XML_strlen(const XML_Char * sz);
-bool ABI_EXPORT UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
-bool ABI_EXPORT UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource);
-bool ABI_EXPORT UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource);
-UT_sint32 ABI_EXPORT UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
-UT_sint32 ABI_EXPORT UT_XML_strnicmp(const XML_Char * sz1, const XML_Char * sz2, const UT_uint32 n);
-UT_sint32 ABI_EXPORT UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2);
-UT_uint32 ABI_EXPORT UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szSource);
+ABI_EXPORT UT_uint32  UT_XML_strlen(const XML_Char * sz);
+ABI_EXPORT bool  UT_XML_cloneString(XML_Char *& rszDest, const XML_Char * szSource);
+ABI_EXPORT bool  UT_XML_cloneList(XML_Char **& rszDest, const XML_Char ** szSource);
+ABI_EXPORT bool  UT_XML_replaceList(XML_Char **& rszDest, const XML_Char ** szSource);
+ABI_EXPORT UT_sint32  UT_XML_stricmp(const XML_Char * sz1, const XML_Char * sz2);
+ABI_EXPORT UT_sint32  UT_XML_strnicmp(const XML_Char * sz1, const XML_Char * sz2, const UT_uint32 n);
+ABI_EXPORT UT_sint32  UT_XML_strcmp(const XML_Char * sz1, const XML_Char * sz2);
+ABI_EXPORT UT_uint32  UT_XML_strncpy(XML_Char * szDest, UT_uint32 nLen, const XML_Char * szSource);
 
 // this function allocates (and returns a pointer to) new memory for the new string
-bool ABI_EXPORT UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource);
+ABI_EXPORT bool  UT_XML_cloneNoAmpersands(XML_Char *& rszDest, const XML_Char * szSource);
 // This function uses a static buffer to do the translation
-XML_Char * ABI_EXPORT UT_XML_transNoAmpersands(const XML_Char * szSource);
+ABI_EXPORT XML_Char *  UT_XML_transNoAmpersands(const XML_Char * szSource);
 
-UT_uint32 ABI_EXPORT UT_pointerArrayLength(void ** array);
+ABI_EXPORT UT_uint32  UT_pointerArrayLength(void ** array);
 
 // the naming convention has deviated from the above.  it's kind
 // of a mutant libc/C++ naming convention.
-UT_sint32 		ABI_EXPORT UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right);
-UT_UCSChar * 	ABI_EXPORT UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
-UT_UCSChar * 	ABI_EXPORT UT_UCS_stristr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
-UT_uint32 		ABI_EXPORT UT_UCS_strlen(const UT_UCSChar * string);
-UT_UCSChar * 	ABI_EXPORT UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src);
-UT_UCSChar * 	ABI_EXPORT UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src);
-char *			ABI_EXPORT UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src);
-bool			ABI_EXPORT UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src);
-bool			ABI_EXPORT UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src);
+ABI_EXPORT UT_sint32 		 UT_UCS_strcmp(const UT_UCSChar* left, const UT_UCSChar* right);
+ABI_EXPORT UT_UCSChar * 	 UT_UCS_strstr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
+ABI_EXPORT UT_UCSChar * 	 UT_UCS_stristr(const UT_UCSChar * phaystack, const UT_UCSChar * pneedle);
+ABI_EXPORT UT_uint32 		 UT_UCS_strlen(const UT_UCSChar * string);
+ABI_EXPORT UT_UCSChar * 	 UT_UCS_strcpy(UT_UCSChar * dest, const UT_UCSChar * src);
+ABI_EXPORT UT_UCSChar * 	 UT_UCS_strcpy_char(UT_UCSChar * dest, const char * src);
+ABI_EXPORT char *			 UT_UCS_strcpy_to_char(char * dest, const UT_UCSChar * src);
+ABI_EXPORT bool			 UT_UCS_cloneString(UT_UCSChar ** dest, const UT_UCSChar * src);
+ABI_EXPORT bool			 UT_UCS_cloneString_char(UT_UCSChar ** dest, const char * src);
 
 #ifdef BIDI_ENABLED
-UT_UCSChar *    ABI_EXPORT UT_UCS_strncpy(UT_UCSChar * dest, const UT_UCSChar * src, UT_uint32 n);
-UT_UCSChar *    ABI_EXPORT UT_UCS_strnrev(UT_UCSChar * dest, UT_uint32 n);
+ABI_EXPORT UT_UCSChar *     UT_UCS_strncpy(UT_UCSChar * dest, const UT_UCSChar * src, UT_uint32 n);
+ABI_EXPORT UT_UCSChar *     UT_UCS_strnrev(UT_UCSChar * dest, UT_uint32 n);
 #endif
 
-UT_UCSChar		ABI_EXPORT UT_UCS_tolower(UT_UCSChar c);
-UT_UCSChar              ABI_EXPORT UT_UCS_toupper(UT_UCSChar c);
+ABI_EXPORT UT_UCSChar		 UT_UCS_tolower(UT_UCSChar c);
+ABI_EXPORT UT_UCSChar               UT_UCS_toupper(UT_UCSChar c);
 
-char * ABI_EXPORT UT_upperString(char * string);
-char * ABI_EXPORT UT_lowerString(char * string);
+ABI_EXPORT char *  UT_upperString(char * string);
+ABI_EXPORT char *  UT_lowerString(char * string);
 
-char * ABI_EXPORT UT_catPathname(const char * szPath, const char * szFile);
-char * ABI_EXPORT UT_tmpnam(char *);
-void   ABI_EXPORT UT_unlink(const char *);
+ABI_EXPORT char *  UT_catPathname(const char * szPath, const char * szFile);
+ABI_EXPORT char *  UT_tmpnam(char *);
+ABI_EXPORT void    UT_unlink(const char *);
 
-UT_UCSChar ABI_EXPORT UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
-void ABI_EXPORT UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
-XML_Char * ABI_EXPORT UT_encodeUTF8char(UT_UCSChar cIn);
-XML_Char * ABI_EXPORT UT_decodeXMLstring(XML_Char *pcIn);
+ABI_EXPORT UT_UCSChar  UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
+void  UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);
+ABI_EXPORT XML_Char *  UT_encodeUTF8char(UT_UCSChar cIn);
+ABI_EXPORT XML_Char *  UT_decodeXMLstring(XML_Char *pcIn);
 
-bool ABI_EXPORT UT_isSmartQuotableCharacter(UT_UCSChar c);
-bool ABI_EXPORT UT_isSmartQuotedCharacter(UT_UCSChar c);
+ABI_EXPORT bool  UT_isSmartQuotableCharacter(UT_UCSChar c);
+ABI_EXPORT bool  UT_isSmartQuotedCharacter(UT_UCSChar c);
 
 #define UT_UCS_isdigit(x)	(((x) >= '0') && ((x) <= '9'))  // TODO: make UNICODE-wise
 #if 0
@@ -114,9 +114,9 @@ bool ABI_EXPORT UT_isSmartQuotedCharacter(UT_UCSChar c);
 #define UT_UCS_isalpha(x)	(UT_UCS_isupper(x) || UT_UCS_islower(x))		// HACK: not UNICODE-safe
 #else
 	/*these are unicode-safe*/
-bool ABI_EXPORT UT_UCS_isupper(UT_UCSChar c);
-bool ABI_EXPORT UT_UCS_islower(UT_UCSChar c);
-bool ABI_EXPORT UT_UCS_isalpha(UT_UCSChar c);
+ABI_EXPORT bool  UT_UCS_isupper(UT_UCSChar c);
+ABI_EXPORT bool  UT_UCS_islower(UT_UCSChar c);
+ABI_EXPORT bool  UT_UCS_isalpha(UT_UCSChar c);
 #endif
 #define UT_UCS_isalnum(x)	(UT_UCS_isalpha(x) || UT_UCS_isdigit(x))		// HACK: not UNICODE-safe
 #define UT_UCS_isspace(x)   (((x)==' '||((x)=='\r')||((x)=='\n')||((x)=='\t')||((x)=='\f')))  // HACK: not UNICODE safe
@@ -129,12 +129,13 @@ bool ABI_EXPORT UT_UCS_isalpha(UT_UCSChar c);
 #define N_(String) (String)
 
 #endif /* WIN32 */
-UT_END_EXTERN_C
 
 /*
  this one prints floating point value but using dot as fractional serparator
  independent of the current locale's settings.
 */
-const char* ABI_EXPORT std_size_string(float f);
+ABI_EXPORT const char*  std_size_string(float f);
+
+UT_END_EXTERN_C
 
 #endif /* UT_STRING_H */
