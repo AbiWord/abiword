@@ -216,6 +216,28 @@ dcl(DLG_Options_Label_ViewUnprintable,	"Invisible &Layout Marks")
 dcl(DLG_Options_Prompt_IgnoreResetCurrent,	"Do you want to reset ignored words in the current document?" )
 dcl(DLG_Options_Prompt_IgnoreResetAll,		"Do you want to reset ignored words in all the documents?" )
 
+dcl(DLG_Tab_TabTitle,					"Tabs")
+dcl(DLG_Tab_Label_TabPosition,			"Tab stop position:")
+dcl(DLG_Tab_Label_TabToClear,			"Tab stops to be cleared:")
+dcl(DLG_Tab_Label_DefaultTS,			"Default tab stops:")
+
+dcl(DLG_Tab_Label_Alignment,			"Alignment")
+dcl(DLG_Tab_Radio_Left,					"Left")
+dcl(DLG_Tab_Radio_Center,				"Center")
+dcl(DLG_Tab_Radio_Right,				"Right")
+dcl(DLG_Tab_Radio_Decimal,				"Decimal")
+dcl(DLG_Tab_Radio_Bar,					"Bar")
+
+dcl(DLG_Tab_Label_Leader,				"Leader")
+dcl(DLG_Tab_Radio_None,					"&1 None")
+dcl(DLG_Tab_Radio_Dot,					"&2 ..........")
+dcl(DLG_Tab_Radio_Dash,					"&3	----------")
+dcl(DLG_Tab_Radio_Underline,			"&4 __________")
+
+dcl(DLG_Tab_Button_Set,					"Set")
+dcl(DLG_Tab_Button_Clear,				"Clear")
+dcl(DLG_Tab_Button_ClearAll,			"Clear &All")
+
 dcl(DLG_DateTime_DateTimeTitle,			"Date and Time")
 dcl(DLG_DateTime_AvailableFormats,		"&Available formats:")
 

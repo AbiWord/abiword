@@ -566,9 +566,10 @@ void fp_Line::layout(void)
 		if (pRun->getType() == FPRUN_TAB)
 		{
 			UT_sint32 iPos;
-			unsigned char iTabType;
+			eTabType	iTabType;
+			eTabLeader	iTabLeader;
 
-			UT_Bool bRes = findNextTabStop(iX - iStartX, iPos, iTabType);
+			UT_Bool bRes = findNextTabStop(iX - iStartX, iPos, iTabType, iTabLeader);
 			UT_ASSERT(bRes);
 
 			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
@@ -815,12 +816,13 @@ UT_Bool fp_Line::recalculateFields(void)
 	return bResult;
 }
 
-UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType)
+UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType & iType, eTabLeader & iLeader )
 {
-	UT_sint32		iTabStopPosition = 0;
-	unsigned char	iTabStopType;
+	UT_sint32	iTabStopPosition = 0;
+	eTabType	iTabStopType = FL_TAB_NONE;
+	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	UT_Bool bRes = m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType);
+	UT_Bool bRes = m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getX();
@@ -829,6 +831,7 @@ UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsign
 	{
 		iPosition = iTabStopPosition;
 		iType = iTabStopType;
+		iLeader = iTabStopLeader;
 
 		return UT_TRUE;
 	}
@@ -838,12 +841,15 @@ UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsign
 	}
 }
 
-UT_Bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType)
+UT_Bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, eTabType& iType, eTabLeader& iLeader )
 {
-	UT_sint32		iTabStopPosition = 0;
-	unsigned char	iTabStopType;
+	UT_sint32	iTabStopPosition = 0;
+	eTabType	iTabStopType = FL_TAB_NONE;
+	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	UT_Bool bRes = m_pBlock->findNextTabStopInLayoutUnits(iStartX + getXInLayoutUnits(), getXInLayoutUnits() + getMaxWidthInLayoutUnits(), iTabStopPosition, iTabStopType);
+	UT_Bool bRes = m_pBlock->findNextTabStopInLayoutUnits( iStartX + getXInLayoutUnits(), 
+														   getXInLayoutUnits() + getMaxWidthInLayoutUnits(), 
+														   iTabStopPosition, iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getXInLayoutUnits();
@@ -852,6 +858,7 @@ UT_Bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPos
 	{
 		iPosition = iTabStopPosition;
 		iType = iTabStopType;
+		iLeader = iTabStopLeader;
 
 		return UT_TRUE;
 	}
@@ -961,7 +968,6 @@ UT_Bool fp_Line::containsForcedPageBreak(void) const
 			return UT_TRUE;
 		}
 	}
-
 	return UT_FALSE;
 }
 
@@ -996,12 +1002,15 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 		
 		if (pRun->getType() == FPRUN_TAB)
 		{
-			UT_sint32 iPos;
-			unsigned char iTabType;
+			UT_sint32	iPos;
+			eTabType	iTabType;
+			eTabLeader	iTabLeader;
 
-			UT_Bool bRes = findNextTabStop(iX, iPos, iTabType);
+			UT_Bool bRes = findNextTabStop(iX, iPos, iTabType, iTabLeader);
 			UT_ASSERT(bRes);
 			UT_ASSERT(iTabType == FL_TAB_LEFT);
+
+			// TODO -- support all the tabs  shack@uiuc.edu
 
 			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
 			pTabRun->setWidth(iPos - iX);
@@ -1035,9 +1044,10 @@ UT_sint32 fp_Line::calculateWidthOfLineInLayoutUnits(void)
 		if (pRun->getType() == FPRUN_TAB)
 		{
 			UT_sint32 iPos;
-			unsigned char iTabType;
+			eTabType iTabType;
+			eTabLeader iTabLeader;
 
-			UT_Bool bRes = findNextTabStopInLayoutUnits(iX, iPos, iTabType);
+			UT_Bool bRes = findNextTabStopInLayoutUnits(iX, iPos, iTabType, iTabLeader);
 			UT_ASSERT(bRes);
 			UT_ASSERT(iTabType == FL_TAB_LEFT);
 

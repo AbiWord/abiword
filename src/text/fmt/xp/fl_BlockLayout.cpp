@@ -148,7 +148,8 @@ fl_TabStop::fl_TabStop()
 {
 	iPosition = 0;
 	iPositionLayoutUnits = 0;
-	iType = 0;
+	iType = FL_TAB_NONE;
+	iLeader = FL_LEADER_NONE;
 }
 
 static int compare_tabs(const void* p1, const void* p2)
@@ -284,8 +285,9 @@ void fl_BlockLayout::_lookupProperties(void)
 	const char* pszTabStops = getProperty((XML_Char*)"tabstops");
 	if (pszTabStops && pszTabStops[0])
 	{
-		unsigned char iType = 0;
-		UT_sint32 iPosition = 0;
+		eTabType	iType = FL_TAB_NONE;
+		eTabLeader	iLeader = FL_LEADER_NONE;
+		UT_sint32	iPosition = 0;
 		
 		const char* pStart = pszTabStops;
 		while (*pStart)
@@ -328,8 +330,13 @@ void fl_BlockLayout::_lookupProperties(void)
 				case 'L':	// fall through
 				default:
 					iType = FL_TAB_LEFT;
+					UT_DEBUGMSG(("tabstop: unknown tab stop type [%c]\n", p1[1]));
 					break;
 				}
+
+				// tab leaders
+				if ( p1 +2 != pEnd && p1[2] >= '0' && p1[2] <= (((UT_sint32)__FL_LEADER_MAX)+'0') )
+					iLeader = (eTabLeader)(p1[2]-'0');
 			}
 
 			char pszPosition[32];
@@ -353,6 +360,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			pTabStop->iPosition = iPosition;
 			pTabStop->iPositionLayoutUnits = UT_convertToLayoutUnits(pszPosition);
 			pTabStop->iType = iType;
+			pTabStop->iLeader = iLeader;
 			pTabStop->iOffset = pStart - pszTabStops;
 
 			m_vecTabs.addItem(pTabStop);
@@ -3669,12 +3677,16 @@ UT_Bool fl_BlockLayout::recalculateFields(void)
 	return bResult;
 }
 
-UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType)
+UT_Bool	fl_BlockLayout::findNextTabStop( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, 
+										 eTabType & iType, eTabLeader &iLeader )
 {
 	UT_ASSERT(iStartX >= 0);
 
 	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
 	UT_uint32 i;
+
+	iLeader = FL_LEADER_NONE;
+	
 	for (i=0; i<iCountTabs; i++)
 	{
 		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
@@ -3739,12 +3751,16 @@ UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_s
 
 }
 
-UT_Bool	fl_BlockLayout::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType)
+UT_Bool	fl_BlockLayout::findNextTabStopInLayoutUnits( UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, 
+													  eTabType& iType, eTabLeader &iLeader)
 {
 	UT_ASSERT(iStartX >= 0);
 
 	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
 	UT_uint32 i;
+
+	UT_UNUSED(iLeader); // TODO FIXME
+	
 	for (i=0; i<iCountTabs; i++)
 	{
 		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
@@ -3808,7 +3824,8 @@ UT_Bool	fl_BlockLayout::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint3
 
 }
 
-UT_Bool fl_BlockLayout::s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset)
+UT_Bool fl_BlockLayout::s_EnumTabStops( void * myThis, UT_uint32 k, UT_sint32 & iPosition, 
+										eTabType & iType, eTabLeader &iLeader, UT_uint32 & iOffset )
 {
 	// a static function
 
@@ -3822,6 +3839,7 @@ UT_Bool fl_BlockLayout::s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & i
 
 	iPosition = pTab->iPosition;
 	iType = pTab->iType;
+	iLeader = pTab->iLeader;
 	iOffset = pTab->iOffset;
 	return UT_TRUE;
 }
@@ -4020,9 +4038,6 @@ UT_Bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkC
 
 void fl_BlockLayout::recheckIgnoredWords()
 {
-	fp_Run	   *pRun = m_pFirstRun;
-	UT_ASSERT(pRun);
-
 	fl_PartOfBlock*	pPOB;
 
 	// for scanning a word	
@@ -4124,6 +4139,7 @@ void fl_BlockLayout::recheckIgnoredWords()
 
 XML_Char* fl_BlockLayout::getListStyleString( List_Type iListType)
 {
+
         XML_Char* style;
 
 	// These strings match piece table styles and should not be 

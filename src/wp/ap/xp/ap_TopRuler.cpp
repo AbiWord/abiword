@@ -35,16 +35,6 @@
 #include "ap_StatusBar.h"
 #include "ap_Strings.h"
 
-// HACK: private copy of constants from fl_BlockLayout.h
-// TODO: find a better way of passing iType for tabs?
-// NOTE: this ordering is convenient for cycling m_iDefaultTabType 
-
-#define FL_TAB_LEFT				1
-#define FL_TAB_CENTER			2
-#define FL_TAB_RIGHT			3
-#define FL_TAB_DECIMAL			4
-#define FL_TAB_BAR				5
-
 #define	tr_TABINDEX_NEW			-1
 #define	tr_TABINDEX_NONE		-2
 
@@ -592,12 +582,13 @@ void AP_TopRuler::_getTabToggleRect(UT_Rect * prToggle)
 void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 										UT_sint32 k,
 										UT_sint32 * pTab,
-										unsigned char & iType)
+										eTabType & iType)
 {
 	UT_sint32 xAbsLeft = _getFirstPixelInColumn(pInfo,pInfo->m_iCurrentColumn);
 
 	UT_sint32 iPosition;
 	UT_uint32 iOffset;
+	eTabLeader iLeader;
 
 	if (k == tr_TABINDEX_NEW)
 	{
@@ -611,7 +602,7 @@ void AP_TopRuler::_getTabStopXAnchor(AP_TopRulerInfo * pInfo,
 		UT_ASSERT(k<pInfo->m_iTabStops);
 
 		UT_Bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
-												k, iPosition, iType, iOffset);
+												k, iPosition, iType, iLeader, iOffset );
 		UT_ASSERT(bRes);
 	}
 
@@ -641,7 +632,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 {
 	UT_sint32 anchor;
 	UT_Rect rect;
-	unsigned char iType;
+	eTabType iType;
 
 	if (m_draggingWhat == DW_TABSTOP)
 	{
@@ -711,7 +702,7 @@ void AP_TopRuler::_drawTabProperties(const UT_Rect * pClipRect,
 }
 
 UT_sint32 AP_TopRuler::_findTabStop(AP_TopRulerInfo * pInfo, 
-									UT_uint32 x, UT_uint32 y, unsigned char & iType)
+									UT_uint32 x, UT_uint32 y, eTabType & iType)
 {
 	// hit-test all the existing tabs
 	// return the index of the one found
@@ -749,10 +740,11 @@ const char * AP_TopRuler::_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k
 
 	UT_sint32 iPosition;
 	UT_uint32 iOffset;
-	unsigned char iType;
+	eTabType	iType;
+	eTabLeader  iLeader;
 
 	UT_Bool bRes = pInfo->m_pfnEnumTabStops(pInfo->m_pVoidEnumTabStopsData, 
-											k, iPosition, iType, iOffset);
+											k, iPosition, iType, iLeader, iOffset );
 	UT_ASSERT(bRes);
 
 	const char* pStart = &pInfo->m_pszTabStops[iOffset];
@@ -1092,6 +1084,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 			case FL_TAB_CENTER:		m_iDefaultTabType = FL_TAB_RIGHT;	break;
 			case FL_TAB_RIGHT:		m_iDefaultTabType = FL_TAB_DECIMAL;	break;
 			case FL_TAB_DECIMAL:	m_iDefaultTabType = FL_TAB_LEFT;	break;
+			default:	UT_DEBUGMSG(("Should not happen, tab type %d\n", m_iDefaultTabType));
 		}
 		_drawTabToggle(NULL, UT_TRUE);
 		return;
@@ -1099,7 +1092,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */, EV_EditMouseButton 
 
 	// next hit-test against the tabs
 
-	unsigned char iType;
+ 	eTabType iType;
 	UT_sint32 iTab = _findTabStop(&m_infoCache, x, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType);
 	if (iTab >= 0)
 	{
@@ -1415,7 +1408,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState /* ems */, EV_EditMouseButto
 
 	case DW_TABSTOP:
 		{
-			unsigned char iType;
+       			eTabType iType;
+
 			UT_sint32 iTab = _findTabStop(&m_infoCache, xgrid+xAbsLeft, s_iFixedHeight/2 + s_iFixedHeight/4 - 3, iType);
 			
 			UT_DEBUGMSG (("iTab: %i, m_draggingTab: %i\n", iTab, m_draggingTab));
@@ -2261,7 +2255,7 @@ void AP_TopRuler::_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase)
 	}
 }
 
-void AP_TopRuler::_drawTabStop(UT_Rect & rect, unsigned char iType, UT_Bool bFilled)
+void AP_TopRuler::_drawTabStop(UT_Rect & rect, eTabType iType, UT_Bool bFilled)
 {
 	GR_Graphics::GR_Color3D clr3d;
 	if (bFilled)

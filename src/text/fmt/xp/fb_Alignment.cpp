@@ -30,7 +30,7 @@
 // Alignment left
 /////////////////////////////////////////////////////////////
 
-void fb_Alignment_left::initialize(fp_Line *pLine)
+void fb_Alignment_left::initialize(fp_Line * /*pLine*/ )
 {
 }
 

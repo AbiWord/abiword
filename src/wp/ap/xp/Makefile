@@ -36,6 +36,7 @@ CPPSRCS=	ap_Convert.cpp			\
 		ap_Dialog_Replace.cpp		\
 		ap_Dialog_Spell.cpp		\
 		ap_Dialog_Columns.cpp		\
+		ap_Dialog_Tab.cpp		\
 		ap_EditMethods.cpp		\
 		ap_FrameData.cpp		\
 		ap_LeftRuler.cpp		\

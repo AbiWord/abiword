@@ -30,6 +30,7 @@
 #include "ap_Ruler.h"
 #include "ev_EditBits.h"
 #include "gr_Graphics.h"
+#include "fl_BlockLayout.h"
 #include "xap_Strings.h"
 
 class XAP_App;
@@ -61,7 +62,9 @@ public:
 
 	// tab stop information
 
-	UT_Bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset);
+	UT_Bool					(*m_pfnEnumTabStops)(void * pData, UT_uint32 k, 
+								UT_sint32 & iPosition, eTabType & iType, eTabLeader & iLeader, 
+								UT_uint32 & iOffset );
 	void *					m_pVoidEnumTabStopsData;
 	UT_sint32				m_iTabStops;
 	UT_sint32				m_iDefaultTabInterval;
@@ -156,13 +159,13 @@ protected:
 	void	_getTabToggleRect(UT_Rect * prToggle);
 	void	_drawTabToggle(const UT_Rect * pClipRect, UT_Bool bErase);
 
-	void	_getTabStopXAnchor(AP_TopRulerInfo * pInfo, UT_sint32 k, UT_sint32 * pTab, unsigned char & iType);
+	void	_getTabStopXAnchor(AP_TopRulerInfo * pInfo, UT_sint32 k, UT_sint32 * pTab, eTabType & iType);
 	void	_getTabStopRect(AP_TopRulerInfo * pInfo, UT_sint32 anchor, UT_Rect * pRect);
 	void	_drawTabProperties(const UT_Rect * pClipRect,
 								   AP_TopRulerInfo * pInfo,
 								   UT_Bool bDrawAll = UT_TRUE);
 
-	UT_sint32		_findTabStop(AP_TopRulerInfo * pInfo, UT_uint32 x, UT_uint32 y, unsigned char & iType);
+	UT_sint32		_findTabStop(AP_TopRulerInfo * pInfo, UT_uint32 x, UT_uint32 y, eTabType & iType);
 	const char *	_getTabStopString(AP_TopRulerInfo * pInfo, UT_sint32 k);
 	void			_getTabZoneRect(AP_TopRulerInfo * pInfo, UT_Rect &rZone);
 	void			_setTabStops(ap_RulerTicks tick, UT_sint32 iTab, UT_Bool bDelete);
@@ -187,7 +190,7 @@ protected:
 	void		_drawLeftIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawRightIndentMarker(UT_Rect & r, UT_Bool bFilled);
 	void		_drawFirstLineIndentMarker(UT_Rect & r, UT_Bool bFilled);
-	void		_drawTabStop(UT_Rect & r, unsigned char iType, UT_Bool bFilled);
+	void		_drawTabStop(UT_Rect & r, eTabType iType, UT_Bool bFilled);
 	void		_drawColumnGapMarker(UT_Rect & r);
 	UT_Bool		_isInBottomBoxOfLeftIndent(UT_uint32 y);
 	void		_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
@@ -236,11 +239,11 @@ protected:
 	UT_sint32			m_dragging2Center; /* center of drag-along */
 	UT_Rect				m_dragging2Rect; /* rect of drag-along */
 	UT_sint32			m_draggingTab;	/* index of tab being dragged */
-	unsigned char		m_draggingTabType;
+	eTabType			m_draggingTabType;
 	UT_sint32			m_dragStart;
 	UT_Bool				m_bBeforeFirstMotion;
 
-	unsigned char		m_iDefaultTabType;
+	eTabType			m_iDefaultTabType;
 
 	UT_Bool				m_bGuide;	/* UT_TRUE ==> guide line XORed onscreen */
 	UT_sint32			m_xGuide;	/* valid iff m_bGuide */

@@ -19,6 +19,7 @@
 
 #include "ut_types.h"
 #include "ut_string.h"
+#include "ut_units.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
@@ -27,6 +28,7 @@
 #include "ut_dialogHelper.h"
 
 #include "gr_UnixGraphics.h"
+#include "fl_BlockLayout.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -58,8 +60,8 @@ AP_UnixDialog_Tab::AP_UnixDialog_Tab(XAP_DialogFactory * pDlgFactory,
                                                  XAP_Dialog_Id id)
     : AP_Dialog_Tab(pDlgFactory,id)
 {
-	m_current_alignment = align_LEFT;
-	m_current_leader	= leader_NONE;
+	m_current_alignment = FL_TAB_LEFT;
+	m_current_leader	= FL_LEADER_NONE;
 	m_bInSetCall		= UT_FALSE;
 
 }
@@ -165,30 +167,73 @@ void AP_UnixDialog_Tab::event_WindowDelete(void)
                 GTK_SIGNAL_FUNC(s_menu_item_activate),		\
                 (gpointer) this);							\
         } while (0)
-GtkWidget* AP_UnixDialog_Tab::_constructWindow ()
+GtkWidget* AP_UnixDialog_Tab::_constructWindow (void )
 {
-    //////////////////////////////////////////////////////////////////////
-	// BEGIN: glade stuff (interface.c)
-
-	// for the internationalization	
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	//checkbuttonSpellHideErrors = gtk_check_button_new_with_label
-	//	(pSS->getValue( AP_STRING_ID_DLG_Tab_Label_SpellHideErrors ));
+	GtkWidget *windowTabs;
 
-    //////////////////////////////////////////////////////////////////////
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	windowTabs = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	//windowTabs = gtk_window_new (GTK_WINDOW_DIALOG);
+	gtk_object_set_data (GTK_OBJECT (windowTabs), "windowTabs", windowTabs);
+	gtk_window_set_title (GTK_WINDOW (windowTabs), pSS->getValue( AP_STRING_ID_DLG_Tab_TabTitle));
+
+	_constructWindowContents(windowTabs);
+	return windowTabs;
+}
+
+void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
+{
+	GtkWidget *buttonOK;
+	GtkWidget *buttonCancel;
+	GtkWidget *buttonApply;
+
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+
+	//
+	// Gnome buttons
+	//
+	
+	buttonApply = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Options_Btn_Apply));
+	gtk_widget_ref (buttonApply);
+	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "buttonApply", buttonApply,
+							(GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonApply);
+	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonApply);
+	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
+
+	buttonOK = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_OK));
+	gtk_widget_ref (buttonOK);
+	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "buttonOK", buttonOK,
+							  (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonOK);
+	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonOK);
+	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
+
+	buttonCancel = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_Cancel));
+	gtk_widget_ref (buttonCancel);
+	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "buttonCancel", buttonCancel,
+							  (GtkDestroyNotify) gtk_widget_unref);
+	gtk_widget_show (buttonCancel);
+	gtk_container_add (GTK_CONTAINER (m_GnomeButtons), buttonCancel);
+	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
+	m_buttonApply = buttonApply;
+	m_buttonOK = buttonOK;
+	m_buttonCancel = buttonCancel;
+}
+
+void    AP_UnixDialog_Tab::_constructWindowContents( GtkWidget * windowTabs )
+{
+   //////////////////////////////////////////////////////////////////////
 	// BEGIN: glade stuff
 
-	GtkWidget *windowTabs;
 	GtkWidget *table13;
 	GtkWidget *hbuttonbox4;
 	GtkWidget *buttonSet;
 	GtkWidget *buttonClear;
 	GtkWidget *buttonClearAll;
 	GtkWidget *hbuttonbox3;
-	GtkWidget *buttonOK;
-	GtkWidget *buttonCancel;
-	GtkWidget *buttonApply;
 	GtkWidget *hseparator5;
 	GtkWidget *hbox10;
 	GtkWidget *label8;
@@ -226,11 +271,8 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow ()
 	GtkAccelGroup *accel_group;
 
 	accel_group = gtk_accel_group_new ();
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	windowTabs = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_object_set_data (GTK_OBJECT (windowTabs), "windowTabs", windowTabs);
-	//	(pSS->getValue( AP_STRING_ID_DLG_Tab_Label_SpellHideErrors ));
-	gtk_window_set_title (GTK_WINDOW (windowTabs), pSS->getValue( AP_STRING_ID_DLG_Tab_TabTitle));
 
 	table13 = gtk_table_new (5, 1, FALSE);
 	gtk_widget_ref (table13);
@@ -276,9 +318,10 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow ()
 	GTK_WIDGET_SET_FLAGS (buttonClearAll, GTK_CAN_DEFAULT);
 
 	hbuttonbox3 = gtk_hbutton_box_new ();
+	m_GnomeButtons = hbuttonbox3;
 	gtk_widget_ref (hbuttonbox3);
 	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "hbuttonbox3", hbuttonbox3,
-							  (GtkDestroyNotify) gtk_widget_unref);
+				  (GtkDestroyNotify) gtk_widget_unref);
 	gtk_widget_show (hbuttonbox3);
 	gtk_table_attach (GTK_TABLE (table13), hbuttonbox3, 0, 1, 4, 5,
 					  (GtkAttachOptions) (GTK_FILL),
@@ -287,29 +330,10 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow ()
 	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox3), 5);
 	gtk_button_box_set_child_ipadding (GTK_BUTTON_BOX (hbuttonbox3), 0, 0);
 
-	buttonApply = gtk_button_new_with_label (pSS->getValue( AP_STRING_ID_DLG_Options_Btn_Apply));
-	gtk_widget_ref (buttonApply);
-	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "buttonApply", buttonApply,
-							(GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonApply);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox3), buttonApply);
-	GTK_WIDGET_SET_FLAGS (buttonApply, GTK_CAN_DEFAULT);
-
-	buttonOK = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_OK));
-	gtk_widget_ref (buttonOK);
-	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "buttonOK", buttonOK,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonOK);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox3), buttonOK);
-	GTK_WIDGET_SET_FLAGS (buttonOK, GTK_CAN_DEFAULT);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue( XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_ref (buttonCancel);
-	gtk_object_set_data_full (GTK_OBJECT (windowTabs), "buttonCancel", buttonCancel,
-							  (GtkDestroyNotify) gtk_widget_unref);
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox3), buttonCancel);
-	GTK_WIDGET_SET_FLAGS (buttonCancel, GTK_CAN_DEFAULT);
+	//
+	// Construct the buttons to be gnomified
+	//
+	_constructGnomeButtons( windowTabs);
 
 	hseparator5 = gtk_hseparator_new ();
 	gtk_widget_ref (hseparator5);
@@ -586,6 +610,7 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow ()
 
 	gtk_window_add_accel_group (GTK_WINDOW (windowTabs), accel_group);
 
+
     //////////////////////////////////////////////////////////////////////
 	// END: glade stuff
 
@@ -603,17 +628,17 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow ()
 
     //////////////////////////////////////////////////////////////////////
     // the control buttons
-    gtk_signal_connect(GTK_OBJECT(buttonOK),
+    gtk_signal_connect(GTK_OBJECT(m_buttonOK),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_ok_clicked),
                        (gpointer) this);
     
-    gtk_signal_connect(GTK_OBJECT(buttonCancel),
+    gtk_signal_connect(GTK_OBJECT(m_buttonCancel),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_cancel_clicked),
                        (gpointer) this);
 
-    gtk_signal_connect(GTK_OBJECT(buttonApply),
+    gtk_signal_connect(GTK_OBJECT(m_buttonApply),
                        "clicked",
                        GTK_SIGNAL_FUNC(s_apply_clicked),
                        (gpointer) this);
@@ -660,9 +685,9 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow ()
 	m_Widgets.setNthItem( id_BUTTON_CLEAR,			buttonClear,				NULL);
 	m_Widgets.setNthItem( id_BUTTON_CLEAR_ALL,		buttonClearAll,				NULL);
 
-	m_Widgets.setNthItem( id_BUTTON_OK,				buttonOK,					NULL);
-	m_Widgets.setNthItem( id_BUTTON_CANCEL,			buttonCancel,				NULL);
-	m_Widgets.setNthItem( id_BUTTON_APPLY,			buttonApply,				NULL);
+	m_Widgets.setNthItem( id_BUTTON_OK,			m_buttonOK,					NULL);
+	m_Widgets.setNthItem( id_BUTTON_CANCEL,			m_buttonCancel,				NULL);
+	m_Widgets.setNthItem( id_BUTTON_APPLY,			m_buttonApply,				NULL);
 
 
 	// some lists of signals to set
@@ -707,8 +732,6 @@ GtkWidget* AP_UnixDialog_Tab::_constructWindow ()
 
 		gtk_object_set_data( GTK_OBJECT(w), "tControl", (gpointer) i );
 	}
-
-    return windowTabs;
 }
 
 GtkWidget *AP_UnixDialog_Tab::_lookupWidget ( tControl id )
@@ -794,10 +817,10 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	UT_ASSERT(dlg); 
 	UT_ASSERT(widget && GTK_IS_LIST_ITEM(widget));
 
-	tTabInfo *pTabInfo = (tTabInfo *) gtk_object_get_user_data(GTK_OBJECT(widget));
+	fl_TabStop *pTabInfo = (fl_TabStop *) gtk_object_get_user_data(GTK_OBJECT(widget));
 	UT_ASSERT(pTabInfo);
 	
-	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_list_select [%s]\n", pTabInfo->pszTab ));
+	//UT_DEBUGMSG(("AP_UnixDialog_Tab::s_list_select [%s]\n", pTabInfo->pszTab ));
 	
 	// get the -1, 0.. (n-1) index
 	dlg->m_iGtkListIndex = gtk_list_child_position(GTK_LIST(dlg->_lookupWidget(id_LIST_TAB)), widget);
@@ -834,7 +857,7 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 
-	dlg->m_current_alignment = (tAlignment)((UT_uint32)gtk_object_get_user_data(GTK_OBJECT(widget)));
+	dlg->m_current_alignment = (eTabType)((UT_uint32)gtk_object_get_user_data(GTK_OBJECT(widget)));
 
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_alignment_change [%c]\n", AlignmentToChar(dlg->m_current_alignment)));
 	dlg->_event_somethingChanged();
@@ -849,7 +872,7 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 	if ( dlg->m_bInSetCall || gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(widget)) == FALSE ) 
 		return;
 	
-	dlg->m_current_leader = (tLeader)((UT_uint32)gtk_object_get_user_data(GTK_OBJECT(widget)));
+	dlg->m_current_leader = (eTabLeader)((UT_uint32)gtk_object_get_user_data(GTK_OBJECT(widget)));
 	
 	UT_DEBUGMSG(("AP_UnixDialog_Tab::s_leader_change\n"));
 	dlg->_event_somethingChanged();
@@ -868,7 +891,7 @@ void AP_UnixDialog_Tab::_controlEnable( tControl id, UT_Bool value )
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-AP_UnixDialog_Tab::tAlignment AP_UnixDialog_Tab::_gatherAlignment()
+eTabType AP_UnixDialog_Tab::_gatherAlignment()
 {
 	// for ( UT_uint32 i = (UT_uint32)id_ALIGN_LEFT; 
 	// 	  i <= (UT_uint32)id_ALIGN_BAR;
@@ -877,7 +900,7 @@ AP_UnixDialog_Tab::tAlignment AP_UnixDialog_Tab::_gatherAlignment()
 	return m_current_alignment;
 }
 
-void AP_UnixDialog_Tab::_setAlignment( AP_UnixDialog_Tab::tAlignment a )
+void AP_UnixDialog_Tab::_setAlignment( eTabType a )
 {
 	// NOTE - tControl id_ALIGN_LEFT .. id_ALIGN_BAR must be in the same order
 	// as the tAlignment enums.
@@ -898,12 +921,12 @@ void AP_UnixDialog_Tab::_setAlignment( AP_UnixDialog_Tab::tAlignment a )
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-AP_UnixDialog_Tab::tLeader AP_UnixDialog_Tab::_gatherLeader()
+eTabLeader AP_UnixDialog_Tab::_gatherLeader()
 {
-	return leader_NONE;
+	return FL_LEADER_NONE;
 }
 
-void AP_UnixDialog_Tab::_setLeader( AP_UnixDialog_Tab::tLeader a )
+void AP_UnixDialog_Tab::_setLeader( eTabLeader a )
 {
 	// NOTE - tControl id_LEADER_NONE .. id_ALIGN_BAR must be in the same order
 	// as the tAlignment enums.
@@ -945,17 +968,21 @@ void AP_UnixDialog_Tab::_setTabList( const UT_Vector &v )
 	GList *gList = NULL;
 	GtkList *wList = GTK_LIST(_lookupWidget( id_LIST_TAB ));
 	UT_uint32 i;
-	tTabInfo *pTabInfo;
+	fl_TabStop *pTabInfo;
 
 	// clear all the items from the list
 	gtk_list_clear_items( wList, 0, -1 );
 
 	for ( i = 0; i < v.getItemCount(); i++ )
 	{
-		pTabInfo = (tTabInfo *)v.getNthItem(i);
+		pTabInfo = (fl_TabStop *)v.getNthItem(i);
 
 		// this will do for the time being, but if we want 
-		GtkWidget *li = gtk_list_item_new_with_label( pTabInfo->pszTab );
+		//GtkWidget *li = gtk_list_item_new_with_label( pTabInfo->pszTab );
+		UT_DEBUGMSG(("%s:%d need to fix\n", __FILE__,__LINE__));
+
+		GtkWidget *li = gtk_list_item_new_with_label( 
+							UT_convertToDimensionlessString( pTabInfo->iPositionLayoutUnits,  pTabInfo->iPosition ));
 		gtk_object_set_user_data( GTK_OBJECT(li), (gpointer) pTabInfo );
 
 		// we want to DO stuff

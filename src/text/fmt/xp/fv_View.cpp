@@ -1313,7 +1313,6 @@ void FV_View::insertParagraphBreak(void)
 	// otherwise blank.
 	//
 	fl_BlockLayout * pBlock = getCurrentBlock();
-	fl_BlockLayout * pPrevListBlock;
 	if(isCurrentListBlockEmpty() == UT_TRUE)
 	{
 	         pBlock->StopList();
@@ -5282,12 +5281,18 @@ void FV_View::cmdUndo(UT_uint32 count)
 	else
 		_eraseInsertionPoint();
 
+	// Signal Spell checks are unsafe 
+        m_bdontSpellCheckRightNow = UT_TRUE;
+
 	m_pDoc->undoCmd(count);
 
 	_generalUpdate();
 	
 	notifyListeners(AV_CHG_DIRTY);
-	
+
+	// Signal Spell checks are safe again
+        m_bdontSpellCheckRightNow = UT_FALSE;
+
 	if (isSelectionEmpty())
 	{
 		if (!_ensureThatInsertionPointIsOnScreen())
@@ -5305,9 +5310,15 @@ void FV_View::cmdRedo(UT_uint32 count)
 	else
 		_eraseInsertionPoint();
 
+	// Signal Spell checks are unsafe 
+        m_bdontSpellCheckRightNow = UT_TRUE;
+
 	m_pDoc->redoCmd(count);
 
 	_generalUpdate();
+
+	// Signal Spell checks are safe again
+        m_bdontSpellCheckRightNow = UT_FALSE;
 	
 	if (isSelectionEmpty())
 	{

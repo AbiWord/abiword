@@ -139,21 +139,22 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					  if it's a left tab, then add its width to the m_iWorkingLineWidth
 					*/
 
-					UT_sint32 iPos;
-					unsigned char iType;
+					UT_sint32	iPos;
+					eTabType	iType;
+					eTabLeader	iLeader;
 
 					// Subtract the width already added then work out new
 					// tab position.
 					
 					m_iWorkingLineWidth -= pCurrentRun->getWidthInLayoutUnits();
 
-					UT_Bool bRes = pLine->findNextTabStopInLayoutUnits(m_iWorkingLineWidth, iPos, iType);
+					UT_Bool bRes = pLine->findNextTabStop(m_iWorkingLineWidth, iPos, iType, iLeader);
 					if (bRes)
 					{
-
-						UT_DEBUGMSG(("%s(%d) tab run: type=%d height=%d width=%d offset=%d length=%d\n",
+						UT_DEBUGMSG(("%s:%d tab run: p=%p type=%d leader=%d height=%d width=%d offset=%d length=%d\n",
 								 __FILE__, __LINE__,
-								iType,
+								(int)iType,
+								(int)iLeader,
 								pCurrentRun->getHeight(),
 								pCurrentRun->getWidth(),
 								pCurrentRun->getBlockOffset(),

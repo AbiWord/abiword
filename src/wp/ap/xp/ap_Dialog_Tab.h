@@ -24,6 +24,7 @@
 #include "xap_Dialog.h"
 #include "xav_View.h"
 #include "ut_units.h"
+#include "fl_BlockLayout.h"
 
 class XAP_Frame;
 
@@ -43,8 +44,10 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	typedef enum { id_EDIT_TAB = 0, id_LIST_TAB,
 				   id_SPIN_DEFAULT_TAB_STOP, 
 
+				   // should be in same order as eTabType (fl_BlockLayout.h)
 				   id_ALIGN_LEFT, id_ALIGN_CENTER, id_ALIGN_RIGHT, id_ALIGN_DECIMAL, id_ALIGN_BAR, 
 
+				   // should be in same order as eTabLeader (fl_BlockLayout.h)
 				   id_LEADER_NONE, id_LEADER_DOT, id_LEADER_DASH, id_LEADER_UNDERLINE,
 
 				   id_BUTTON_SET, id_BUTTON_CLEAR, id_BUTTON_CLEAR_ALL,
@@ -52,22 +55,13 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 			
 				   id_last } tControl;
 
-	typedef enum { align_LEFT = 0, align_CENTER, align_RIGHT, 
-				   align_DECIMAL, align_BAR } tAlignment;
-
-	typedef enum { leader_NONE = 0, leader_DOT, leader_DASH, 
-				   leader_UNDERLINE } tLeader;
-
 	AP_Dialog_Tab::tAnswer	getAnswer(void) const;
-
-	
-	static unsigned char AlignmentToChar( tAlignment );
-	static tAlignment    CharToAlignment( unsigned char );
-	
 
 	// clear the tab list
 	void clearList();
 
+	static unsigned char AlignmentToChar( eTabType a );
+	static eTabType		 CharToAlignment( unsigned char ch );
 
  protected:
 
@@ -85,15 +79,14 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	void _storeWindowData(void);	
 
 	// grab tab from the current text/align/leader controls
-	void buildTab( char *buffer, int bufferlen );
+	void buildTab( char *buffer, UT_uint32 bufferlen );
 
 	// the actual access functions
 #define SET_GATHER(a,u) virtual u _gather##a(void) = 0; \
 					 	virtual void    _set##a( u ) = 0
-	SET_GATHER			(Alignment,			tAlignment);
-	SET_GATHER			(Leader,			tLeader);
-	SET_GATHER			(DefaultTabStop,	UT_sint32);
-
+	SET_GATHER			(Alignment,			eTabType);
+	SET_GATHER			(Leader,			eTabLeader);
+	SET_GATHER			(DefaultTabStop,	UT_sint32);	// at this point, in current default units
 
 	// to populate the whole list
 	SET_GATHER			(TabList,			const UT_Vector &);
@@ -114,21 +107,14 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	tAnswer				m_answer;
 	XAP_Frame *			m_pFrame;
 
-	typedef struct {
-		char		  * pszTab;
-		UT_sint32		iPosition;
-		unsigned char	iType;
-		XML_Char		iLeader;
-		UT_uint32		iOffset;
-	} tTabInfo;
+	const char *			m_pszTabStops;	// from rulerInfo
+	UT_Vector m_tabInfo;		// list of fl_TabStop *
 
-	UT_Vector m_tabInfo;		// list of tTabInfo *
-
-	tTabInfo *m_CurrentTab;		// the tab item selected
+	fl_TabStop *m_CurrentTab;		// the tab item selected
 
 	// AP level handlers
 	void _event_TabChange(void);		// when the edit box changes
-	void _event_TabSelected( tTabInfo *tabSelect);	// when a list item is selected
+	void _event_TabSelected( fl_TabStop *tabSelect);	// when a list item is selected
 
 	void _event_Set(void);				// buttons
 	void _event_Clear(void);

@@ -62,6 +62,28 @@ class PX_ChangeRecord_StruxChange;
 class fl_PartOfBlock;
 class fl_AutoNum;
 
+// Tab types and leaders
+typedef enum {
+	FL_TAB_NONE = 0,
+	FL_TAB_LEFT,
+	FL_TAB_CENTER,
+	FL_TAB_RIGHT,
+	FL_TAB_DECIMAL,
+	FL_TAB_BAR,
+	__FL_TAB_MAX
+} eTabType;
+
+typedef enum {
+	FL_LEADER_NONE = 0,
+	FL_LEADER_DOT,
+	FL_LEADER_HYPHEN,
+	FL_LEADER_UNDERLINE,
+	FL_LEADER_THICKLINE,
+	FL_LEADER_EQUALSIGN,
+	__FL_LEADER_MAX
+} eTabLeader;
+
+
 class fl_CharWidths
 {
 	public:
@@ -239,8 +261,14 @@ public:
 
 	void checkSpelling(void);
 	void debugFlashing(void);
-	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
-	UT_Bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
+ 	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, 
+				UT_sint32& iPosition, eTabType& iType, 
+				eTabLeader &iLeader );
+ 	UT_Bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX,
+					     UT_sint32& iPosition, 
+					     eTabType& iType, 
+					     eTabLeader &iLeader);
+
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
 	inline UT_sint32 getTabsCount(void) const { return (UT_sint32) m_vecTabs.getItemCount(); }
 
@@ -292,7 +320,8 @@ public:
 	fl_PartOfBlock*			getSquiggle(UT_uint32 iOffset) const;
 	void					recheckIgnoredWords();
 
-	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, unsigned char & iType, UT_uint32 & iOffset);
+	static UT_Bool			s_EnumTabStops(void * myThis, UT_uint32 k, UT_sint32 & iPosition, 
+										   eTabType & iType, eTabLeader &iLeader, UT_uint32 & iOffset );
 	
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons |= reason;}
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uBackgroundCheckReasons &= ~reason;}
@@ -442,21 +471,14 @@ public:
 protected:
 };
 
-// TODO make a typedef to type type rather than just using 'unsigned char'
-
-#define FL_TAB_LEFT				1
-#define FL_TAB_CENTER			2
-#define FL_TAB_RIGHT			3
-#define FL_TAB_DECIMAL			4
-#define FL_TAB_BAR				5
-
 struct fl_TabStop
 {
 	fl_TabStop();
 	
 	UT_sint32		iPosition;
 	UT_sint32		iPositionLayoutUnits;
-	unsigned char	iType;
+	eTabType		iType;
+	eTabLeader		iLeader;
 	UT_uint32		iOffset;
 };
 

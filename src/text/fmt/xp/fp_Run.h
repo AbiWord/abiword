@@ -160,7 +160,7 @@ public:
 	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE) = 0;
 	virtual UT_sint32		findTrailingSpaceDistance(void) const { return 0; }	
 	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const { return 0; }	
-	virtual UT_Bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& si) { return UT_FALSE; }
+	virtual UT_Bool			findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return UT_FALSE; }
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, UT_Bool& bBOL, UT_Bool& bEOL) = 0;
 	virtual void 			findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, UT_sint32& height) = 0;
 	virtual void			lookupProperties(void) = 0;

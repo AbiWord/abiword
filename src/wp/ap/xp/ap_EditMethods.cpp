@@ -51,6 +51,7 @@
 #include "ap_Dialog_Lists.h"
 #include "ap_Dialog_Options.h"
 #include "ap_Dialog_Spell.h"
+#include "ap_Dialog_Tab.h"
 #include "ap_Dialog_Insert_DateTime.h"
 #include "ap_Dialog_Field.h"
 #include "ap_Dialog_WordCount.h"
@@ -866,11 +867,11 @@ static UT_Bool s_AskRevertFile(XAP_Frame * pFrame)
 static UT_Bool s_AskCloseAllAndExit(XAP_Frame * pFrame)
 {
 	// return UT_TRUE if we should quit.
-
 	return (pFrame->showMessageBox(AP_STRING_ID_MSG_QueryExit,
 										XAP_Dialog_MessageBox::b_YN,
 										XAP_Dialog_MessageBox::a_NO)
 						== XAP_Dialog_MessageBox::a_YES);
+
 }
 
 static XAP_Dialog_MessageBox::tAnswer s_AskSaveFile(XAP_Frame * pFrame)
@@ -3041,14 +3042,22 @@ static UT_Bool s_doGotoDlg(FV_View * pView, XAP_Dialog_Id id)
 		= (AP_Dialog_Goto *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-        if(pDialog->isRunning() == UT_TRUE)
+	pDialog->runModeless(pFrame);
+	
+	UT_Bool bOK = UT_TRUE;
+
+	// get result?
+	
+	pDialogFactory->releaseDialog(pDialog);
+
+	if(pDialog->isRunning() == UT_TRUE)
 	{
-	        pDialog->activate();
-        }
+		pDialog->activate();
+	}
 	else
-        {
-	        pDialog->setView(pView);
-	        pDialog->runModeless(pFrame);
+	{
+		pDialog->setView(pView);
+		pDialog->runModeless(pFrame);
 	}
 	return UT_TRUE;
 }
@@ -3433,6 +3442,52 @@ static UT_Bool s_doOptionsDlg(FV_View * pView)
 	pDialogFactory->releaseDialog(pDialog);
 
 	return UT_TRUE;	
+}
+
+static UT_Bool s_doTabDlg(FV_View * pView)
+{
+
+#ifndef NDEBUG
+
+	XAP_Frame * pFrame = (XAP_Frame *) pView->getParentData();
+	UT_ASSERT(pFrame);
+
+	pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+		= (XAP_DialogFactory *)(pFrame->getDialogFactory());
+
+	AP_Dialog_Tab * pDialog
+		= (AP_Dialog_Tab *)(pDialogFactory->requestDialog(AP_DIALOG_ID_TAB));
+	UT_ASSERT(pDialog);
+
+	// run the dialog
+	pDialog->runModal(pFrame);
+
+	// get the dialog answer
+	AP_Dialog_Tab::tAnswer answer = pDialog->getAnswer();
+
+	switch (answer)
+	{
+	case AP_Dialog_Tab::a_OK:
+		
+		break;
+		
+	case AP_Dialog_Tab::a_CANCEL:
+		// do nothing
+		break;
+	default:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+			
+	pDialogFactory->releaseDialog(pDialog);
+	return UT_TRUE;	
+#else
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
+	s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
+	return UT_TRUE;
+
+#endif
 }
 
 /*****************************************************************/
@@ -4358,11 +4413,9 @@ Defun1(dlgStyle)
 
 Defun1(dlgTabs)
 {
-	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
-	UT_ASSERT(pFrame);
-
-	s_TellNotImplemented(pFrame, "Tabs dialog", __LINE__);
-	return UT_TRUE;
+ 	ABIWORD_VIEW;
+ 	
+ 	return s_doTabDlg(pView);
 }
 
 Defun0(noop)

@@ -47,7 +47,7 @@ AP_Dialog_Tab::AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 
 AP_Dialog_Tab::~AP_Dialog_Tab(void)
 {
-	UT_VECTOR_PURGEALL(tTabInfo *, m_tabInfo);
+	UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
 }
 
 AP_Dialog_Tab::tAnswer AP_Dialog_Tab::getAnswer(void) const
@@ -74,51 +74,49 @@ void AP_Dialog_Tab::_populateWindowData(void)
 				rulerInfo.m_iDefaultTabInterval, 
 				rulerInfo.m_pszTabStops 
 				));
-	
+
+	// save the tab string location
+	m_pszTabStops = rulerInfo.m_pszTabStops;
+
 	int iTab;
-	tTabInfo		*pTabInfo;
+	fl_TabStop		*pTabInfo;
 	for ( iTab = 0; iTab < rulerInfo.m_iTabStops; iTab++ )
 	{
 	
 		// create new tab info
-		pTabInfo = new tTabInfo();
+		pTabInfo = new fl_TabStop();
 		UT_ASSERT(pTabInfo);
 
-#if 0
-		// get tab information	
-		(*rulerInfo.m_pfnEnumTabStops)(
-						rulerInfo.m_pVoidEnumTabStopsData,	// void* pData
-						iTab,								// UT_uint32 k
-						pTabInfo->iPosition,				// UT_sint32& iPosition
-						pTabInfo->iType,					// unsigned char& iType
-						pTabInfo->iOffset,					// UT_uint32& iOffset
-						pTabInfo->iLeader );
-#else
-// TMN: Pathched to get it to compile. Either 'iLeader' has been added here,
-// and the corresponding header has not been updated, or the the header
-// have dropped this last parameter. Let's hope it's the last assumption.
-		(*rulerInfo.m_pfnEnumTabStops)(
-						rulerInfo.m_pVoidEnumTabStopsData,
-						iTab,
-						pTabInfo->iPosition,
-						pTabInfo->iType,
-						pTabInfo->iOffset);
-#endif
+
+		(*rulerInfo.m_pfnEnumTabStops)( rulerInfo.m_pVoidEnumTabStopsData,
+						iTab, pTabInfo->iPosition, pTabInfo->iType, pTabInfo->iLeader, 
+						pTabInfo->iOffset );
+
+		// if we're NOT the last tab
+		//if ( iTab + 1 != rulerInfo.mTabStops )
+		//{
+//
+//		}
+		//	else
+		//{
+//
+		//	}
+
 
 		// parse string stuff out
-		int i = 0;
-		while ( rulerInfo.m_pszTabStops[pTabInfo->iOffset + i] &&  
-		        rulerInfo.m_pszTabStops[pTabInfo->iOffset + i] != '/' &&	// remove /...
-		        rulerInfo.m_pszTabStops[pTabInfo->iOffset + i] != ',' ) 
-			i++;
+		//int i = 0;
+		//while ( rulerInfo.m_pszTabStops[pTabInfo->iOffset + i] &&  
+		//        rulerInfo.m_pszTabStops[pTabInfo->iOffset + i] != '/' &&	// remove /...
+		//        rulerInfo.m_pszTabStops[pTabInfo->iOffset + i] != ',' ) 
+		//	i++;
 
 		// allocate a copy of the buffer (NOTE - we don't use all the space)
-		pTabInfo->pszTab = new char[i+1];	
-		memcpy( pTabInfo->pszTab, &rulerInfo.m_pszTabStops[pTabInfo->iOffset], i );
-		pTabInfo->pszTab[i] = '\0';
+		//pTabInfo->pszTab = new char[i+1];	
+		//memcpy( pTabInfo->pszTab, &rulerInfo.m_pszTabStops[pTabInfo->iOffset], i );
+		//pTabInfo->pszTab[i] = '\0';
 
 		// debug msgs
-		UT_DEBUGMSG(("position=%d str=%s\n", pTabInfo->iPosition, pTabInfo->pszTab ));
+		//UT_DEBUGMSG(("position=%d str=%s\n", pTabInfo->iPosition, pTabInfo->pszTab ));
 		m_tabInfo.addItem(pTabInfo);
 	}
 	
@@ -175,7 +173,7 @@ void AP_Dialog_Tab::_event_TabChange(void)
 	UT_DEBUGMSG(("AP_Dialog_Tab::_event_TabChange\n"));
 }
 
-void AP_Dialog_Tab::_event_TabSelected( tTabInfo *pTabInfo )
+void AP_Dialog_Tab::_event_TabSelected( fl_TabStop *pTabInfo )
 {
 	UT_DEBUGMSG(("AP_Dialog_Tab::_event_TabSelected\n"));
 
@@ -186,10 +184,12 @@ void AP_Dialog_Tab::_event_TabSelected( tTabInfo *pTabInfo )
 	// common set of constants.  ap_TopRuler.cpp defines all the constants
 	// again.  Here, since enum is rel 0, i'm subtracting one and doing an
 	// ugly type cast
-	_setAlignment( (tAlignment)(pTabInfo->iType - 1) );
+	_setAlignment( pTabInfo->iType );
 
 	// set the edit box's text
-	_setTabEdit( pTabInfo->pszTab );
+	//_setTabEdit( pTabInfo->pszTab );
+	
+	UT_DEBUGMSG(("%s:%d need to setTabEdit\n",__FILE__,__LINE__));
 
 	// something changed...
 	_event_somethingChanged();
@@ -210,29 +210,29 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 	UT_DEBUGMSG(("AP_Dialog_Tab::_event_ClearAll\n"));
 }
 
-/*static*/ unsigned char AP_Dialog_Tab::AlignmentToChar( AP_Dialog_Tab::tAlignment a )
+/*static*/ unsigned char AP_Dialog_Tab::AlignmentToChar( eTabType a )
 {
 	char ch;
 
 	switch ( a )
 	{
-	case AP_Dialog_Tab::align_LEFT:
+	case FL_TAB_LEFT:
 		ch = 'L';
 		break;
 
-	case AP_Dialog_Tab::align_RIGHT:
+	case FL_TAB_RIGHT:
 		ch = 'R';
 		break;
 
-	case AP_Dialog_Tab::align_CENTER:
+	case FL_TAB_CENTER:
 		ch = 'C';
 		break;
 
-	case AP_Dialog_Tab::align_DECIMAL:
+	case FL_TAB_DECIMAL:
 		ch = 'D';
 		break;
 
-	case AP_Dialog_Tab::align_BAR:
+	case FL_TAB_BAR:
 		// fall through
 
 	default:
@@ -244,35 +244,34 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 	return ch;
 }
 
-/*static*/ AP_Dialog_Tab::tAlignment AP_Dialog_Tab::CharToAlignment( unsigned char ch )
+/*static*/ eTabType AP_Dialog_Tab::CharToAlignment( unsigned char ch )
 {
-	tAlignment a;
+	eTabType a;
 	switch ( ch )
 	{
 	case 'L':
-		a = align_LEFT;
+		a = FL_TAB_LEFT;
 		break;
 
 	case 'R':
-		a = align_RIGHT;
+		a = FL_TAB_RIGHT;
 		break;
 
 	case 'C':
-		a = align_CENTER;
+		a = FL_TAB_CENTER;
 		break;
 
 	case 'D':
-		a = align_DECIMAL;
+		a = FL_TAB_DECIMAL;
 		break;
 
 	case 'B':					// not implemented, fall though
-		// a = align_BAR;
-		// break;
+		//a = FL_TAB_BAR;
+		//break;
 
 	default:
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
-		a = align_LEFT;
-
+		a = FL_TAB_LEFT;
 	}
 	return a;
 }
@@ -281,11 +280,11 @@ void AP_Dialog_Tab::clearList()
 {
 	_clearList();
 
-	UT_VECTOR_PURGEALL(tTabInfo *, m_tabInfo);
+	UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
 }
 
 
-void AP_Dialog_Tab::buildTab( char *buffer, int bufflen )
+void AP_Dialog_Tab::buildTab( char *buffer, UT_uint32 /*bufflen*/ )
 {
 	// TODO - use snprintf
 	sprintf( buffer, "%s/%c", _gatherTabEdit(), AlignmentToChar(_gatherAlignment()));
@@ -306,9 +305,10 @@ void AP_Dialog_Tab::_event_somethingChanged()
 
 	for ( UT_uint32 i = 0; i < m_tabInfo.getItemCount(); i++ )
 	{
-		tTabInfo *pTabInfo = (tTabInfo *)m_tabInfo.getNthItem(i);
+		fl_TabStop *pTabInfo = (fl_TabStop *)m_tabInfo.getNthItem(i);
 		UT_ASSERT(pTabInfo);
 
+#if 0
 		// if we have a tab at that unit
 		if ( !strcmp(buffer, pTabInfo->pszTab) )
 		{
@@ -320,6 +320,7 @@ void AP_Dialog_Tab::_event_somethingChanged()
 				bEnableSet = UT_FALSE;
 
 		}
+#endif
 	}
 
 	_controlEnable( id_BUTTON_SET, bEnableSet );

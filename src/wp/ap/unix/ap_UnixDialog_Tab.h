@@ -44,8 +44,8 @@ public:
 	// we implement these so the XP dialog can set/grab our data
 #define SET_GATHER(a,t) virtual t _gather##a(void);  \
  					    virtual void    _set##a( t )
-	SET_GATHER			(Alignment,			tAlignment);
-	SET_GATHER			(Leader,			tLeader);
+	SET_GATHER			(Alignment,			eTabType);
+	SET_GATHER			(Leader,			eTabLeader);
 	SET_GATHER			(DefaultTabStop,	UT_sint32);
 
 
@@ -68,6 +68,8 @@ public:
 	
 	// private construction functions
 	GtkWidget * _constructWindow(void);
+	void _constructWindowContents(GtkWidget * windowTabs);
+	void _constructGnomeButtons(GtkWidget * windowTabs);
 
 	// pointers to widgets we need to query/set
 	// there are a ton of them in this dialog
@@ -76,8 +78,13 @@ public:
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// unix specific
-	tAlignment m_current_alignment;
-	tLeader    m_current_leader;
+	eTabType	m_current_alignment;
+	eTabLeader	m_current_leader;
+	GtkWidget * m_GnomeButtons;
+	GtkWidget * m_buttonOK;
+	GtkWidget * m_buttonApply;
+	GtkWidget * m_buttonCancel;
+
 	UT_Bool	   m_bInSetCall;		// a flag set to tell the change routines to ignore this message
 	UT_sint32  m_iGtkListIndex;		// the -1, 0.. (N-1) index for the N tabs
 
@@ -108,3 +115,4 @@ protected:
 };
 
 #endif /* AP_UNIXDIALOG_TAB_H */
+
