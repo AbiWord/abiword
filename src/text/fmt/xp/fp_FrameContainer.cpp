@@ -299,6 +299,16 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	{
 		return;
 	}
+	if(getView())
+	{
+		if(getView()->getFrameEdit()->getFrameEditMode() == FV_FrameEdit_DRAG_EXISTING)
+		{
+			if((getView()->getFrameEdit()->getFrameContainer() == this))
+			{
+				return;
+			}
+		}
+	}
 //
 // Only draw the lines in the clipping region.
 //

@@ -80,7 +80,6 @@ public:
 	void setLeftStyle   (const PP_PropertyMap::Line & style) { m_lineLeft   = style; }
 	void setRightStyle  (const PP_PropertyMap::Line & style) { m_lineRight  = style; }
 	void setTopStyle    (const PP_PropertyMap::Line & style) { m_lineTop    = style; }
-
 private:
 	void                   _drawLine (const PP_PropertyMap::Line & style,
 									  UT_sint32 left, UT_sint32 top, 

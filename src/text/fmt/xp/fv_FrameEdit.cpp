@@ -42,13 +42,15 @@ FV_FrameEdit::FV_FrameEdit (FV_View * pView)
 	  m_iInitialDragX(0),
 	  m_iInitialDragY(0),
 	  m_bFirstDragDone(false),
-	  m_bInitialClick(false)
+	  m_bInitialClick(false),
+	  m_pFrameImage(NULL)
 {
 	UT_ASSERT (pView);
 }
 
 FV_FrameEdit::~FV_FrameEdit()
 {
+	DELETEP(m_pFrameImage);
 }
 
 bool FV_FrameEdit::isActive(void) const
@@ -77,6 +79,7 @@ void FV_FrameEdit::setMode(FV_FrameEditMode iEditMode)
 	{
 		m_pFrameLayout = NULL;
 		m_pFrameContainer = NULL;
+		DELETEP(m_pFrameImage);
 		m_recCurFrame.width = 0;
 		m_recCurFrame.height = 0;
 	    m_iDraggingWhat = FV_FrameEdit_DragNothing;
@@ -654,6 +657,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 			drawFrame(false);
 			m_pFrameLayout = NULL;
 			m_pFrameContainer = NULL;
+			DELETEP(m_pFrameImage);
 			m_pView->setCursorToContext();
 		}
 		else
@@ -967,6 +971,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 //
 // Finish up by putting the editmode back to existing selected.
 //	
+		DELETEP(m_pFrameImage);
 		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
 		m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
 		drawFrame(true);
@@ -1029,6 +1034,7 @@ void FV_FrameEdit::deleteFrame(void)
 
 	m_pFrameLayout = NULL;
 	m_pFrameContainer = NULL;
+	DELETEP(m_pFrameImage);
 	m_recCurFrame.width = 0;
 	m_recCurFrame.height = 0;
 	m_iDraggingWhat = FV_FrameEdit_DragNothing;
@@ -1061,10 +1067,21 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 	m_pView->getPageScreenOffsets(pPage,xPage,yPage);
 	da.xoff = xPage + m_pFrameContainer->getX();
 	da.yoff = yPage + m_pFrameContainer->getY();
-	m_pFrameContainer->clearScreen();
-	m_pFrameContainer->draw(&da);
-	if(bWithHandles)
+	if((m_pFrameImage == NULL) || (m_iDraggingWhat != FV_FrameEdit_DragWholeFrame) )
 	{
-		m_pFrameContainer->drawHandles(&da);
+		m_pFrameContainer->clearScreen();
+		m_pFrameContainer->draw(&da);
+		if(bWithHandles)
+		{
+			m_pFrameContainer->drawHandles(&da);
+		}
+		if(m_iDraggingWhat == FV_FrameEdit_DragWholeFrame)
+		{
+			m_pFrameImage = getGraphics()->genImageFromRectangle(m_recCurFrame);
+		}
+	}
+	else
+	{
+		getGraphics()->drawImage(m_pFrameImage,m_recCurFrame.left,m_recCurFrame.top);
 	}
 }

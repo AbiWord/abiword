@@ -52,6 +52,7 @@ class FL_DocLayout;
 class PD_Document;
 class GR_Graphics;
 class FV_View;
+class GR_Image;
 
 class ABI_EXPORT FV_FrameEdit
 {
@@ -85,6 +86,7 @@ public:
 										  PT_DocPosition & posAtXY);
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}
+	fp_FrameContainer *   getFrameContainer(void) { m_pFrameContainer;}
 private:
 	FV_View *             m_pView;
 	FV_FrameEditMode      m_iFrameEditMode;
@@ -98,6 +100,7 @@ private:
 	UT_sint32             m_iInitialDragY;
 	bool                  m_bFirstDragDone;
 	bool                  m_bInitialClick;
+	GR_Image *            m_pFrameImage;
 };
 
 #endif /* FV_FRAME_EDIT_H */
