@@ -49,14 +49,14 @@
 /*****************************************************************/
 
 XAP_Dialog * AP_Win32Dialog_Options::static_constructor(XAP_DialogFactory * pFactory,
-                                                         XAP_Dialog_Id id)
+                                                        XAP_Dialog_Id id)
 {
     AP_Win32Dialog_Options * p = new AP_Win32Dialog_Options(pFactory,id);
     return p;
 }
 
 AP_Win32Dialog_Options::AP_Win32Dialog_Options(XAP_DialogFactory * pDlgFactory,
-                                                 XAP_Dialog_Id id)
+                                               XAP_Dialog_Id id)
     : AP_Dialog_Options(pDlgFactory,id)
 {
 }
@@ -70,6 +70,9 @@ AP_Win32Dialog_Options::~AP_Win32Dialog_Options(void)
 
 void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 {
+	// save for use with event
+	m_pFrame = pFrame;
+
 	// raise the dialog
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 	XAP_Win32Frame * pWin32Frame = static_cast<XAP_Win32Frame *>(pFrame);
@@ -132,8 +135,8 @@ BOOL AP_Win32Dialog_Options::_onNotify(HWND hWnd, LPARAM lParam)
 		// TODO: consider validating data before leaving page
 		break;
 
-	case TCN_SELCHANGE:             
-		{             
+	case TCN_SELCHANGE:
+		{
 			UT_uint32 iTo = TabCtrl_GetCurSel(pNmhdr->hwndFrom);  
 			for (UT_uint32 k=0; k<m_vecSubDlgHWnd.getItemCount(); k++)
 				ShowWindow((HWND)m_vecSubDlgHWnd.getNthItem(k), ((k==iTo) ? SW_SHOW : SW_HIDE));
@@ -188,12 +191,25 @@ BOOL CALLBACK AP_Win32Dialog_Options::s_tabProc(HWND hWnd,UINT msg,WPARAM wParam
 	}
 }
 
+struct {
+	UT_Dimension  dim;
+	int 		  id;
+} s_aAlignUnit[] = 
+{
+	{ DIM_IN, XAP_STRING_ID_DLG_Unit_inch },
+	{ DIM_CM, XAP_STRING_ID_DLG_Unit_cm },
+	{ DIM_PT, XAP_STRING_ID_DLG_Unit_points },
+	{ DIM_PI, XAP_STRING_ID_DLG_Unit_pico },
+};
+#define SIZE_aAlignUnit  (sizeof(s_aAlignUnit)/sizeof(s_aAlignUnit[0]))
+
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
 #define _DS(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	SetDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 #define _GV(s)		(pSS->getValue(AP_STRING_ID_##s))
+#define _GVX(s)		(pSS->getValue(XAP_STRING_ID_##s))
 
 // the order of the tabs
 
@@ -254,7 +270,7 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 		tp.which = AP_RID_DIALOG_OPT_SPL;
 		pTemplate = UT_LockDlgRes(hinst, MAKEINTRESOURCE(tp.which));
 		w = CreateDialogIndirectParam(hinst, pTemplate, m_hwndTab, 
-										(DLGPROC)s_tabProc, (LPARAM)&tp); 
+										(DLGPROC)s_tabProc, (LPARAM)&tp);
 		UT_ASSERT((w
 				   && (m_vecSubDlgHWnd.getItemCount()>0)
 				   && (w == m_vecSubDlgHWnd.getLastItem())));
@@ -289,6 +305,7 @@ BOOL AP_Win32Dialog_Options::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 //////////////////////////////////////////////////////////////////
 
 #define _CAS(w,s)	SendMessage(w, CB_ADDSTRING, 0, (LPARAM) _GV(s))
+#define _CASX(w,s)	SendMessage(w, CB_ADDSTRING, 0, (LPARAM) _GVX(s))
 #define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))
 
 BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -326,6 +343,9 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 			_DS(OPTIONS_BTN_IGNOREDEDIT,			DLG_Options_Btn_IgnoreEdit);
 
 			// TODO need to populate values in the _COMBO_CUSTOMDICT
+			HWND hwndDict = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT);
+			SendMessage(hwndDict, CB_ADDSTRING, 0, (LPARAM)"custom.dic");	// TODO - get from prefs / var
+			SendMessage(hwndDict, CB_SETCURSEL, (WPARAM) 0, 0);
 
 			// set initial state
 //			_CDB(OPTIONS_CHK_SpellCheckAsType,		id_CHECK_SPELL_CHECK_AS_TYPE);
@@ -340,18 +360,47 @@ BOOL AP_Win32Dialog_Options::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	case AP_RID_DIALOG_OPT_PREF:
 		{
-//			_CDB(OPTIONS_CHK_PrefsAutoSave,		id_CHECK_PREFS_AUTO_SAVE);
-//			_CDB(OPTIONS_CHK_ViewShowRuler,		id_CHECK_VIEW_SHOW_RULER);
-//			_CDB(OPTIONS_CHK_ViewCursorBlink,	id_CHECK_VIEW_SHOW_TOOLBARS);
-//			_CDB(OPTIONS_CHK_ViewShowToolbars,	id_CHECK_VIEW_SHOW_TOOLBARS);
-//			_CDB(OPTIONS_CHK_ViewAll,				id_CHECK_VIEW_ALL);
-//			_CDB(OPTIONS_CHK_ViewHiddenText,		id_CHECK_VIEW_HIDDEN_TEXT);
-//			_CDB(OPTIONS_CHK_ViewUnprintable,		id_CHECK_VIEW_UNPRINTABLE);
+			// localize controls
+			_DS(OPTIONS_CHK_PrefsAutoSave,			DLG_Options_Label_PrefsAutoSave);
+			_DS(OPTIONS_LBL_CURRENTSCHEME,			DLG_Options_Label_PrefsCurrentScheme);
+
+			// TODO need to populate values in the _COMBO_CURRENTSCHEME
+//			HWND hwndScheme = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME);
+
+//			_CDB(OPTIONS_CHK_PrefsAutoSave,			id_CHECK_PREFS_AUTO_SAVE);
 		}
 		break;
 
 	case AP_RID_DIALOG_OPT_VIEW:
 		{
+			// localize controls
+			_DS(OPTIONS_CHK_ViewShowRuler,			DLG_Options_Label_ViewRuler);
+			_DS(OPTIONS_CHK_ViewCursorBlink,		DLG_Options_Label_ViewCursorBlink);
+			_DS(OPTIONS_CHK_ViewShowToolbars,		DLG_Options_Label_ViewToolbars);
+			_DS(OPTIONS_CHK_ViewAll,				DLG_Options_Label_ViewAll);
+			_DS(OPTIONS_CHK_ViewHiddenText,			DLG_Options_Label_ViewHiddenText);
+			_DS(OPTIONS_CHK_ViewUnprintable,		DLG_Options_Label_ViewUnprintable);
+			_DS(OPTIONS_LBL_UNITS,					DLG_Options_Label_ViewUnits);
+			_DS(OPTIONS_LBL_SHOWHIDE,				DLG_Options_Label_ViewShowHide);
+			_DS(OPTIONS_LBL_VIEWFRAME,				DLG_Options_Label_ViewViewFrame);
+
+			// TODO need to populate values in the _COMBO_UNITS
+			HWND hwndAlign = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
+/*			_CASX(hwndAlign, DLG_Unit_inch);
+			_CASX(hwndAlign, DLG_Unit_cm);
+			_CASX(hwndAlign, DLG_Unit_points);
+			_CASX(hwndAlign, DLG_Unit_pico);
+*/
+			for( int n1 = 0; n1 < SIZE_aAlignUnit; n1++ ) 
+				SendMessage(hwndAlign, CB_ADDSTRING, 0, (LPARAM)pSS->getValue(s_aAlignUnit[n1].id));
+			SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM) 0, 0);
+
+//			_CDB(OPTIONS_CHK_ViewShowRuler,			id_CHECK_VIEW_SHOW_RULER);
+//			_CDB(OPTIONS_CHK_ViewCursorBlink,		id_CHECK_VIEW_CURSOR_BLINK);
+//			_CDB(OPTIONS_CHK_ViewShowToolbars,		id_CHECK_VIEW_SHOW_TOOLBARS);
+//			_CDB(OPTIONS_CHK_ViewAll,				id_CHECK_VIEW_ALL);
+//			_CDB(OPTIONS_CHK_ViewHiddenText,		id_CHECK_VIEW_HIDDEN_TEXT);
+//			_CDB(OPTIONS_CHK_ViewUnprintable,		id_CHECK_VIEW_UNPRINTABLE);
 		}
 		break;
 	
@@ -384,6 +433,9 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellNumbers:		_enableDisableLogic(id_CHECK_SPELL_NUMBERS);		return 0;
 	case AP_RID_DIALOG_OPTIONS_CHK_SpellInternet:		_enableDisableLogic(id_CHECK_SPELL_INTERNET);		return 0;
 
+	case AP_RID_DIALOG_OPTIONS_COMBO_CUSTOMDICT:
+		return 0;
+
 	case AP_RID_DIALOG_OPTIONS_BTN_CUSTOMDICT:
 		UT_DEBUGMSG(("WM_Command for BtnCustomDict\n"));
 		return 0;
@@ -396,7 +448,22 @@ BOOL AP_Win32Dialog_Options::_onCommandTab(HWND hWnd, WPARAM wParam, LPARAM lPar
 	case AP_RID_DIALOG_OPTIONS_BTN_IGNOREDEDIT:
 		UT_DEBUGMSG(("WM_Command for BtnIgnoreEdit\n"));
 		return 0;
-		
+
+	case AP_RID_DIALOG_OPTIONS_CHK_PrefsAutoSave:		_enableDisableLogic(id_CHECK_PREFS_AUTO_SAVE);		return 0;
+
+	case AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME:
+		return 0;
+
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowRuler:		_enableDisableLogic(id_CHECK_VIEW_SHOW_RULER);		return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewCursorBlink:		_enableDisableLogic(id_CHECK_VIEW_CURSOR_BLINK);	return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewShowToolbars:	_enableDisableLogic(id_CHECK_VIEW_SHOW_TOOLBARS);	return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewAll:				_enableDisableLogic(id_CHECK_VIEW_ALL);				return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewHiddenText:		_enableDisableLogic(id_CHECK_VIEW_HIDDEN_TEXT);		return 0;
+	case AP_RID_DIALOG_OPTIONS_CHK_ViewUnprintable:		_enableDisableLogic(id_CHECK_VIEW_UNPRINTABLE);		return 0;
+
+	case AP_RID_DIALOG_OPTIONS_COMBO_UNITS:
+		return 0;
+
 	default:
 		UT_DEBUGMSG(("WM_Command for id %ld for sub-dialog\n",wId));
 		return 0;
@@ -545,18 +612,32 @@ DEFINE_GET_SET_BOOL(VIEW_INDEX,ViewUnprintable);
 
 UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void) 
 {
+	HWND hwndAlign = GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
+	int nSel = SendMessage(hwndAlign, CB_GETCURSEL, 0, 0);
+
+	if( nSel != CB_ERR )
+		return s_aAlignUnit[nSel].dim;
 	return DIM_IN;
 }
 
-void    AP_Win32Dialog_Options::_setViewRulerUnits(UT_Dimension dim) 
+void  AP_Win32Dialog_Options::_setViewRulerUnits(UT_Dimension dim) 
 {
+	int n1;
+	for( n1 = 0; n1 < SIZE_aAlignUnit; n1++ ) 
+		if( s_aAlignUnit[n1].dim == dim )
+			break;
+	if( n1 == SIZE_aAlignUnit )
+		n1 = 0;
+
+	HWND hwndAlign = GetDlgItem((HWND)m_vecSubDlgHWnd.getNthItem(VIEW_INDEX), AP_RID_DIALOG_OPTIONS_COMBO_UNITS);
+	SendMessage(hwndAlign, CB_SETCURSEL, (WPARAM)n1, 0);
 }
 
 int AP_Win32Dialog_Options::_gatherNotebookPageNum(void) 
-{				
+{
 	return 0;
-}			
+}
 
 void    AP_Win32Dialog_Options::_setNotebookPageNum(int pn) 
-{	
+{
 }

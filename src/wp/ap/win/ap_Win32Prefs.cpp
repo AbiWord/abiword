@@ -77,15 +77,17 @@ UT_Bool AP_Win32Prefs::loadBuiltinPrefs(void)
 	{
 		char  szTmp[64];
 
-		szLocaleInfo[0] = tolower( szLocaleInfo[0] );
-		szLocaleInfo[1] = tolower( szLocaleInfo[1] );
-		szLocaleInfo[2] = '-';
-
 		if( !strcmp( szLocaleInfo, "Non" ) ) // Special case: Nynorsk in Norway
-			strcpy( &szLocaleInfo[3], "NYNORSK" );
+        {
+			strcpy( szLocaleInfo, "no-NYNORSK" );
+        }
 		else if( GetLocaleInfo( LOCALE_USER_DEFAULT, LOCALE_SABBREVCTRYNAME, szTmp, sizeof( szTmp ) / sizeof( szTmp[0] ) ) )
 		{
 			char *psz;
+
+		    szLocaleInfo[0] = tolower( szLocaleInfo[0] );
+		    szLocaleInfo[1] = tolower( szLocaleInfo[1] );
+    		szLocaleInfo[2] = '-';
 
 			for( psz = s_ISO3166_2_and_3; *psz != '\0'; psz += 5 )
 				if( !strncmp( &psz[2], szTmp, 3 ) )
@@ -95,7 +97,11 @@ UT_Bool AP_Win32Prefs::loadBuiltinPrefs(void)
 			szLocaleInfo[5] = '\0';
 		}
 		else
-			szLocaleInfo[3] = '\0';
+        {
+		    szLocaleInfo[0] = tolower( szLocaleInfo[0] );
+		    szLocaleInfo[1] = tolower( szLocaleInfo[1] );
+			szLocaleInfo[2] = '\0';
+        }
 
 		UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n", szLocaleInfo));
 

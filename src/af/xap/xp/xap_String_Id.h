@@ -32,6 +32,12 @@ dcl(DLG_OK,					"OK")
 dcl(DLG_Cancel,				"Cancel")
 dcl(DLG_Close,				"Close")
 
+/* Units */
+dcl(DLG_Unit_inch,				"inch")
+dcl(DLG_Unit_cm,				"cm")
+dcl(DLG_Unit_points,			"points")
+dcl(DLG_Unit_pico,				"pico")
+
 /* Message box */
 /* These are tagged "UnixMB" because the underscores precede accelerator
    characters.  It should be an ampersand on Windows, but Windows doesn't
