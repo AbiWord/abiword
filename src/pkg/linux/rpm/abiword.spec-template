@@ -446,15 +446,6 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 # Copies all clipart
 %__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
 
-# Copies american dictionaries
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/clipart/*.png $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/clipart/
-%__mkdir_p $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary
-%ifarch %ix86
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/dictionary/LittleEndian32.american.hash $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/american.hash
-%else
-%__cp $RPM_BUILD_DIR/%{name}-%{version}/abidistfiles/dictionary/BigEndian32.american.hash $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/dictionary/american.hash
-%endif
-
 # Fix for wrong file rights on fonts,icons,clipart
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/fonts/*
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/icons/*
@@ -474,7 +465,7 @@ cp $RPM_BUILD_DIR/%{name}-%{version}/abi/src/pkg/linux/rpm/data/abiword.desktop 
 %{ABIPREFIX}/AbiSuite/AbiWord/strings
 %{ABIPREFIX}/AbiSuite/AbiWord/system.profile-*
 %{ABIPREFIX}/AbiSuite/bin
-%{ABIPREFIX}/AbiSuite/dictionary/*american*.hash
+%attr(644,root,root) %{ABIPREFIX}/AbiSuite/dictionary/*american*.hash*
 %{ABIPREFIX}/AbiSuite/icons
 %{ABIPREFIX}/AbiSuite/templates
 %attr(644,root,root) %{prefix}/share/pixmaps/abiword_48.png
