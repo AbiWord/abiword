@@ -312,7 +312,7 @@ void AP_UnixFrame::setStatusMessage(const char * szMsg)
 
 void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 {
-	AP_FrameData *pFrameData = static_cast<const AP_FrameData *>(getFrameData());
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(getFrameData());
 	UT_ASSERT(pFrameData);
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 		
@@ -367,7 +367,7 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 
 void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 {
-	AP_FrameData *pFrameData = static_cast<const AP_FrameData *>(getFrameData());
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *>(getFrameData());
 	UT_ASSERT(pFrameData);
 	AP_UnixFrameImpl * pFrameImpl = static_cast<AP_UnixFrameImpl *>(getFrameImpl());
 

@@ -399,17 +399,17 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	gtk_clist_set_column_title (GTK_CLIST (toolbar_clist), 1,
 				    pSS->getValueUTF8(AP_STRING_ID_DLG_Options_Label_Toolbars).c_str());
 
-	gchar *data[2];
+	const gchar *data[2];
 	data[1] = 0;
 
 	data[0] = static_cast<const gchar *>(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewStandardTB));
-	gtk_clist_append (GTK_CLIST(toolbar_clist), data);
+	gtk_clist_append (GTK_CLIST(toolbar_clist), const_cast<gchar **>(data));
 
 	data[0] = static_cast<const gchar *>(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewFormatTB));
-	gtk_clist_append (GTK_CLIST(toolbar_clist), data);
+	gtk_clist_append (GTK_CLIST(toolbar_clist), const_cast<gchar **>(data));
 
 	data[0] = static_cast<const gchar *>(pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB));
-	gtk_clist_append (GTK_CLIST(toolbar_clist), data);
+	gtk_clist_append (GTK_CLIST(toolbar_clist), const_cast<gchar **>(data));
 
 	gtk_clist_thaw (GTK_CLIST (toolbar_clist));
 
@@ -732,7 +732,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindowContents (GtkWidget * vbox)
 	for (int i = static_cast<int>(fp_PageSize::_first_predefined_pagesize_);
 		 i < static_cast<int>(fp_PageSize::_last_predefined_pagesize_dont_use_); i++)
 	{
-	  popdown_items = g_list_append (popdown_items, reinterpret_cast<const void*>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i)) );
+	  popdown_items = g_list_append (popdown_items, const_cast<void *>(reinterpret_cast<const void*>(fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i))) );
 	}
 	gtk_combo_set_popdown_strings (GTK_COMBO (page_size), popdown_items);
 

@@ -63,7 +63,7 @@ XAP_Dictionary::~XAP_Dictionary()
 
   	//UT_HASH_PURGEDATA(UT_UCSChar *, (&m_hashWords), free);
 	UT_StringPtrMap::UT_Cursor _hc1(&m_hashWords);
-	for ( UT_UCSChar * _hval1 = static_cast<const UT_UCSChar *>(_hc1.first()); _hc1.is_valid(); _hval1 = static_cast<const UT_UCSChar *>(_hc1.next()) )
+	for (UT_UCSChar * _hval1 = const_cast<UT_UCSChar *>(reinterpret_cast<const UT_UCSChar *>(_hc1.first())); _hc1.is_valid(); _hval1 = const_cast<UT_UCSChar *>(reinterpret_cast<const UT_UCSChar *>(_hc1.next())) )
 	{ 
 		if (_hval1)
 			free (_hval1);

@@ -156,7 +156,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(XML_Char*),my_cmp);
 
   for (int i = 0; i < static_cast<int>(getExistingBookmarksCount()); i++)
-  	  gtk_clist_append (GTK_CLIST (m_clist), static_cast<const gchar**>(&m_pBookmarks[i]));
+  	  gtk_clist_append (GTK_CLIST (m_clist), const_cast<gchar **>(reinterpret_cast<const gchar **>(&m_pBookmarks[i])));
 
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
 

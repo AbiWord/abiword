@@ -914,7 +914,7 @@ GList *  AP_UnixDialog_Lists::_getGlistFonts (void)
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		XAP_UnixFont * pFont = static_cast<XAP_UnixFont *>(list->getNthItem(i));
-		const gchar * lgn  = reinterpret_cast<gchar *>(pFont->getName());
+		const gchar * lgn  = reinterpret_cast<const gchar *>(pFont->getName());
 		if((strstr(currentfont,lgn)==NULL) || (strlen(currentfont)!=strlen(lgn)) )
 		{
 			strncpy(currentfont, lgn, 50);

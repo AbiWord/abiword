@@ -576,11 +576,9 @@ GtkWidget* AP_UnixDialog_Styles::_constructWindowContents(
 	// TODO: translate me
 	GList * styleTypes = NULL;
 
-	styleTypes = g_list_append (styleTypes, 
-								reinterpret_cast<gpointer>(pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_InUse)));
-	styleTypes = g_list_append (styleTypes,
-								reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_All)));
-	styleTypes = g_list_append (styleTypes, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_UserDefined)));
+	styleTypes = g_list_append (styleTypes, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_InUse))));
+	styleTypes = g_list_append (styleTypes, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_All))));
+	styleTypes = g_list_append (styleTypes, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue (AP_STRING_ID_DLG_Styles_LBL_UserDefined))));
 
 	gtk_combo_set_popdown_strings (GTK_COMBO(comboList), styleTypes);
 	gtk_combo_set_value_in_list (GTK_COMBO(comboList), static_cast<int>(m_whichType), false);
@@ -734,7 +732,7 @@ void AP_UnixDialog_Styles::_populateCList(void) const
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()))
 		{
-			gtk_clist_append (GTK_CLIST(m_wclistStyles), reinterpret_cast<gchar **>(&data[0]));
+			gtk_clist_append (GTK_CLIST(m_wclistStyles), const_cast<gchar **>(reinterpret_cast<const gchar **>(&data[0])));
 		}
 	}
 
@@ -1506,16 +1504,16 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(pFollowedByStyle && pcStyle == pFollowedByStyle)
 			szFollowedBy = name;
 		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
-			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, reinterpret_cast<gpointer>(name));
+			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, const_cast<void *>(reinterpret_cast<const void *>(name)));
 		else if(szCurrentStyle == NULL)
-			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, reinterpret_cast<gpointer>(name));
+			m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, const_cast<void *>(reinterpret_cast<const void *>(name)));
 
-		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, reinterpret_cast<gpointer>(name));
+		m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, const_cast<void *>(reinterpret_cast<const void *>(name)));
 	}
-	m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent)));
-	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone)));
-	m_gStyleType = g_list_append(m_gStyleType, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) ));
-	m_gStyleType = g_list_append(m_gStyleType, reinterpret_cast<gpointer>(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)));
+	m_gfollowedByStyles = g_list_append (m_gfollowedByStyles, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent))));
+	m_gbasedOnStyles = g_list_append (m_gbasedOnStyles, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone))));
+	m_gStyleType = g_list_append(m_gStyleType, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph))));
+	m_gStyleType = g_list_append(m_gStyleType, const_cast<void *>(reinterpret_cast<const void *>(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter))));
  
 //
 // Set the popdown list

@@ -53,7 +53,7 @@ void AP_UnixFrameImpl::_bindToolbars(AV_View * pView)
 		// TODO in the frame (think splitter windows), we will need to have
 		// TODO a loop like this to help change the focus when the current
 		// TODO view changes.		
-		EV_UnixToolbar * pUnixToolbar = const_cast<const EV_UnixToolbar *>(reinterpret_cast<EV_UnixToolbar *>(m_vecToolbars.getNthItem(k)));
+		EV_UnixToolbar * pUnixToolbar = reinterpret_cast<EV_UnixToolbar *>(m_vecToolbars.getNthItem(k));
 		pUnixToolbar->bindListenerToView(pView);
 	}	
 }
@@ -155,14 +155,14 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	static_cast<AP_FrameData*>(pFrame->getFrameData())->m_pLeftRuler = pUnixLeftRuler;
 
 	// set up for scroll bars.
-	m_pHadj = reinterpret_cast<const GtkAdjustment*>(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
+	m_pHadj = reinterpret_cast<GtkAdjustment *>(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
 	gtk_object_set_user_data(GTK_OBJECT(m_pHadj), this);
 	m_hScroll = gtk_hscrollbar_new(m_pHadj);
 	gtk_object_set_user_data(GTK_OBJECT(m_hScroll), this);
 
 	g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::hScrollChanged), NULL);
 
-	m_pVadj = reinterpret_cast<const GtkAdjustment*>(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
+	m_pVadj = reinterpret_cast<GtkAdjustment *>(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0));
 	gtk_object_set_user_data(GTK_OBJECT(m_pVadj), this);
 	m_vScroll = gtk_vscrollbar_new(m_pVadj);
 	gtk_object_set_user_data(GTK_OBJECT(m_vScroll), this);
