@@ -1971,11 +1971,6 @@ msgstr "Výchozí datum (bez èasu)"
 msgid "Default date representation"
 msgstr "Výchozí datum pro zobrazení"
 
-#. DLG_Options_Label_DefLangForDocs
-#: po/tmp/ap_String_Id.h.h:859
-msgid "Default language for documents"
-msgstr "Výchozí jazyk pro dokumenty"
-
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:861
 msgid "Default page size"

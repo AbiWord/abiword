@@ -615,7 +615,6 @@ DLG_Options_Label_CheckWhiteForTransparent="Andere Bildschirmfarbe als weiß zul
 DLG_Options_Label_ChooseForTransparent="Bildschirmfarbe wählen"
 DLG_Options_Label_ColorChooserLabel="Bildschirmfarbe für Abiword wählen"
 DLG_Options_Label_CustomDict="custom.dic"
-DLG_Options_Label_DefLangForDocs="Vorgabesprache für Dokumente"
 DLG_Options_Label_DefaultPageSize="Voreingestellte Seitengröße"
 DLG_Options_Label_DirectionRtl="Voreingestellte Textrichtung von rechts nach links"
 DLG_Options_Label_General="Allgemein"

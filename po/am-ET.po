@@ -1744,11 +1744,6 @@ msgstr "የነበረው ቀን (ያለ ሰዓት)"
 msgid "Default date representation"
 msgstr "የነበረው የቀን አቀራረብ"
 
-#. DLG_Options_Label_DefLangForDocs
-#: po/tmp/ap_String_Id.h.h:677
-msgid "Default language for documents"
-msgstr "ለሰነሶቹ የነበረው ቋንቋ"
-
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:679
 msgid "Default page size"

@@ -2020,11 +2020,6 @@ msgstr "‫געװײנטלעכע־דאַטע (אָן צײַט)"
 msgid "Default date representation"
 msgstr "געװײנטלעכע דאַטע רעפּרעזענטאַציע"
 
-#. DLG_Options_Label_DefLangForDocs
-#: po/tmp/ap_String_Id.h.h:857
-msgid "Default language for documents"
-msgstr "געװײנטלעכע דאָקומענט שפּראַך"
-
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:859
 msgid "Default page size"

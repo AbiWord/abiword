@@ -616,7 +616,6 @@ DLG_Options_Label_CheckWhiteForTransparent="Schermkleuren anders dan wit toestaa
 DLG_Options_Label_ChooseForTransparent="Schermkleur kiezen"
 DLG_Options_Label_ColorChooserLabel="Schermkleur kiezen voor AbiWord"
 DLG_Options_Label_CustomDict="custom.dic"
-DLG_Options_Label_DefLangForDocs="Maak een nieuw document"
 DLG_Options_Label_DefaultPageSize="Standaard pagina grootte"
 DLG_Options_Label_DirectionRtl="Standaard rechts-naar-links richting van tekst instellen"
 DLG_Options_Label_General="Algemeen"

@@ -1967,11 +1967,6 @@ msgstr "Data e parazgjedhur (pa kohën)"
 msgid "Default date representation"
 msgstr "Paraqitja e parazgjedhur për datën"
 
-#. DLG_Options_Label_DefLangForDocs
-#: po/tmp/ap_String_Id.h.h:859
-msgid "Default language for documents"
-msgstr "Gjuha e parazgjedhur për dokumentet"
-
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:861
 msgid "Default page size"

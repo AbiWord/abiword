@@ -260,42 +260,38 @@ BEGIN
 
 END
 
-// The sub-dialog for the PREFERENCES tab of the Language dialog
+// The sub-dialog for the LANGUAGE tab of the Language dialog
 AP_RID_DIALOG_OPT_LANGUAGE DIALOG DISCARDABLE  0, 0, 295, 135
 STYLE WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
-	GROUPBOX        "Language settings", 	AP_RID_DIALOG_OPTIONS_LANGSETTINGS,0,2,290,67
-    LTEXT           "Default language for documents", AP_RID_DIALOG_OPTIONS_TEXT_DOCLANG, 5,16,120,8
-    
-    COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_DOCLANG,130,14,113,70,CBS_DROPDOWNLIST | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
+	GROUPBOX        "Language settings", 	AP_RID_DIALOG_OPTIONS_LANGSETTINGS,0,2,290,47
                     
-	LTEXT           "User Interface Language",AP_RID_DIALOG_OPTIONS_TEXT_UILANG, 5,36,106,8
+	LTEXT           "User Interface Language",AP_RID_DIALOG_OPTIONS_TEXT_UILANG, 5,16,106,8
 	
-	COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG, 130,32,113,70,CBS_DROPDOWNLIST | CBS_SORT | 
+	COMBOBOX        AP_RID_DIALOG_OPTIONS_COMBO_UILANG, 130,12,113,70,CBS_DROPDOWNLIST | CBS_SORT | 
 		            WS_VSCROLL | WS_TABSTOP	
 
 	CONTROL 		"Change language when changing keyboard", AP_RID_DIALOG_OPTIONS_CHK_LanguageWithKeyboard ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,56, 280, 8
+					5,36, 280, 8
 	GROUPBOX		"Bi-Directional Options...", AP_RID_DIALOG_OPTIONS_FRM_BidiOptions,
-					2, 77, 290, 57
+					2, 57, 290, 57
 	CONTROL 		"Default to right-to-left direction of text:", AP_RID_DIALOG_OPTIONS_CHK_OtherDirectionRtl ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,87, 140, 10
+					5,67, 140, 10
 	CONTROL 		"Select correct shapes of glyphs from context:", AP_RID_DIALOG_OPTIONS_CHK_OtherUseContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,98, 140, 10
+					5,78, 140, 10
 	CONTROL 		"Use glyph shaping for Hebrew:", AP_RID_DIALOG_OPTIONS_CHK_OtherHebrewContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,109, 140, 10
+					5,89, 140, 10
 	CONTROL 		"Save visual glyphs", AP_RID_DIALOG_OPTIONS_CHK_OtherSaveContextGlyphs ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					5,120, 140, 10
+					5,100, 140, 10
 	CONTROL 		"Auto-insert direction marker", AP_RID_DIALOG_OPTIONS_CHK_DirMarkerAfterClosingParenthesis ,
 					"Button", BS_AUTOCHECKBOX | WS_TABSTOP,
-					150,87, 135, 10
+					150,67, 135, 10
 END
 
 #endif /* RC_INVOKED */

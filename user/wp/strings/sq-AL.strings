@@ -607,7 +607,6 @@ DLG_Options_Label_CheckWhiteForTransparent="Lejo për ekranin ngjyra të tjera veç
 DLG_Options_Label_ChooseForTransparent="Zgjidh Ngjyrën e Ekranit"
 DLG_Options_Label_ColorChooserLabel="Zgjidh ngjyrën e ekranit për AbiWord-in"
 DLG_Options_Label_CustomDict="vetiak.dic"
-DLG_Options_Label_DefLangForDocs="Gjuha e parazgjedhur për dokumentet"
 DLG_Options_Label_DefaultPageSize="Madhësia e parazgjedhur për faqen"
 DLG_Options_Label_DirectionRtl="Shkrim nga e djathta në të majtë (parazgjedhje)"
 DLG_Options_Label_HebrewContextGlyphs="Përdor forma shkronjash për Hibru"

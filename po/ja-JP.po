@@ -1964,11 +1964,6 @@ msgstr "デフォルトの日付表現(時間除く)"
 msgid "Default date representation"
 msgstr "デフォルトの日付表現"
 
-#. DLG_Options_Label_DefLangForDocs
-#: po/tmp/ap_String_Id.h.h:857
-msgid "Default language for documents"
-msgstr "文書のデフォルト言語"
-
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:859
 msgid "Default page size"

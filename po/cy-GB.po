@@ -1948,11 +1948,6 @@ msgstr "Dyddiad rhagosodedig (heb amser)"
 msgid "Default date representation"
 msgstr "Cynrychioliad dyddiad rhagosodedig"
 
-#. DLG_Options_Label_DefLangForDocs
-#: po/tmp/ap_String_Id.h.h:853
-msgid "Default language for documents"
-msgstr "Iaith rhagosodedig dogfennau"
-
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:855
 msgid "Default page size"

@@ -342,7 +342,6 @@ DLG_Options_Label_CheckWhiteForTransparent="Permitir cores da xanela diferentes 
 DLG_Options_Label_ChooseForTransparent="Escoller cor da xanela"
 DLG_Options_Label_ColorChooserLabel="Escoller cor da xanela do AbiWord"
 DLG_Options_Label_CustomDict="custom.dic"
-DLG_Options_Label_DefLangForDocs="Língua padrón dos documentos"
 DLG_Options_Label_DefaultPageSize="Tamaño padrón da páxina"
 DLG_Options_Label_DirectionRtl="Orientación do texto padrón: direita-&gt;esquerda"
 DLG_Options_Label_General="Xeral"

@@ -545,7 +545,6 @@ DLG_Options_Label_CheckWhiteForTransparent="Permettre les couleurs autres que bl
 DLG_Options_Label_ChooseForTransparent="Choisir la couleur d'écran"
 DLG_Options_Label_ColorChooserLabel="Choisir la couleur d'écran pour AbiWord"
 DLG_Options_Label_CustomDict="seltehi.dic"
-DLG_Options_Label_DefLangForDocs="bangu pe lo datnyvei secau lonu cuxna"
 DLG_Options_Label_DefaultPageSize="Taille de la page par défaut :"
 DLG_Options_Label_DirectionRtl="Direction du texte de droite à gauche par défaut"
 DLG_Options_Label_HebrewContextGlyphs=""

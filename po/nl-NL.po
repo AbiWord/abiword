@@ -2030,12 +2030,6 @@ msgstr "Standaard datum (zonder tijd)"
 msgid "Default date representation"
 msgstr "Standaard datum weergave"
 
-#. DLG_Options_Label_DefLangForDocs
-#: po/tmp/ap_String_Id.h.h:857
-#, fuzzy
-msgid "Default language for documents"
-msgstr "Maak een nieuw document"
-
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:859
 msgid "Default page size"

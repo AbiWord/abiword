@@ -629,7 +629,6 @@ DLG_Options_Label_ViewViewFrame="Poka¿..."
 DLG_Options_Label_Visible="Widoczne"
 DLG_Options_Label_WithExtension="z rozszerzeniem:"
 
-DLG_Options_Label_DefLangForDocs="Domy¶lny jêzyk dokumentów"
 DLG_Options_Label_LangSettings="Ustawienia jêzyka"
 DLG_Options_Label_Language="Jêzyk"
 DLG_Options_Label_UILang="Jêzyk interfejsu u¿ytkownika"

@@ -862,7 +862,6 @@ void AP_Win32Dialog_Options_Lang::_onInitDialog()
 	_DSX2(OPTIONS_CHK_LanguageWithKeyboard,		DLG_Options_Label_LangWithKeyboard);
 	_DSX2(OPTIONS_CHK_DirMarkerAfterClosingParenthesis,	DLG_Options_Label_DirMarkerAfterClosingParenthesis);
 
-	_DS2(OPTIONS_TEXT_DOCLANG, 					DLG_Options_Label_DefLangForDocs);
 	_DS2(OPTIONS_TEXT_UILANG,				 	DLG_Options_Label_UILang);
 	_DS2(OPTIONS_LANGSETTINGS, 					DLG_Options_Label_LangSettings);
 				

@@ -446,7 +446,6 @@ TOOLBAR_TOOLTIP_MERGEABOVE="Slå saman med cella over"
 TOOLBAR_TOOLTIP_MERGEBELOW="Slå saman med cella under"
 
 
-DLG_Options_Label_DefLangForDocs="Stan&amp;dardspråk for nye dokument"
 DLG_Options_Label_LangSettings="S&amp;pråkinnstillingar"
 DLG_Options_Label_Language="Språk"
 DLG_Options_Label_UILang="Språ&amp;k for brukargrensesnitt"

@@ -315,7 +315,6 @@ dcl(DLG_Options_Label_UseContextGlyphs, "Determine glyph shapes from context")
 dcl(DLG_Options_Label_SaveContextGlyphs, "Save visual glyph shapes")
 dcl(DLG_Options_Label_HebrewContextGlyphs, "Use glyph shaping for Hebrew")
 
-dcl(DLG_Options_Label_DefLangForDocs, 			"Default language for documents")
 dcl(DLG_Options_Label_UILang, 					"User Interface Language")
 dcl(DLG_Options_Label_LangSettings, 			"Language settings")
 

@@ -1796,11 +1796,6 @@ msgstr "La date du jour (sans l'heure)"
 msgid "Default date representation"
 msgstr "La date du jour courant"
 
-#. DLG_Options_Label_DefLangForDocs
-#: po/tmp/ap_String_Id.h.h:693
-msgid "Default language for documents"
-msgstr "bangu pe lo datnyvei secau lonu cuxna"
-
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:695
 msgid "Default page size"

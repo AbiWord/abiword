@@ -1992,11 +1992,6 @@ msgstr "Voreingestelltes Datum (ohne Uhrzeit)"
 msgid "Default date representation"
 msgstr "Voreingestellter Datumsausdruck"
 
-#. DLG_Options_Label_DefLangForDocs
-#: po/tmp/ap_String_Id.h.h:857
-msgid "Default language for documents"
-msgstr "Vorgabesprache für Dokumente"
-
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h.h:859
 msgid "Default page size"
