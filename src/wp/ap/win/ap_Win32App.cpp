@@ -465,7 +465,7 @@ static GR_Image * _showSplash(HINSTANCE hInstance, XAP_Args * pArgs, const char 
 
 		// create a centered window the size of our bitmap
 		hwndSplash = CreateWindow(s_SplashWndClassName, 
-								  NULL, WS_POPUP /* | WS_BORDER */,
+								  NULL, WS_POPUP | WS_BORDER,
 								  (rect.right  / 2) - (iSplashWidth  / 2),
 								  (rect.bottom / 2) - (iSplashHeight / 2),
 								  iSplashWidth,
