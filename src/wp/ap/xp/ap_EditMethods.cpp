@@ -7186,8 +7186,16 @@ Defun1(dlgSpellPrefs)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-
-  return s_doOptionsDlg(pView, 1); // spelling tab
+	
+#ifndef WIN32
+    return s_doOptionsDlg(pView, 1); // spelling tab
+#else
+    // spelling tab in Windows in the tab num 2
+    // becuase 1, is language selection. We should use
+    // an enumerator instead of fixed values. Jordi,
+	return s_doOptionsDlg(pView, 2);
+									
+#endif
 }
 
 /*****************************************************************/

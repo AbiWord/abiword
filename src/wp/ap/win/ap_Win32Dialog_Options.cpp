@@ -94,7 +94,7 @@ void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 	m_pFrame = pFrame;
 	UT_ASSERT(pFrame);	
 	
-	/* Create the property sheet and associate its pages*/	
+	/* Create the property sheet and associate its pages*/		
 	m_toolbars.setContainer(this);	
 	m_toolbars.createPage(pWin32App, AP_RID_DIALOG_OPT_TOOLBARS, AP_STRING_ID_DLG_Options_Label_Toolbars);	
 	sheet.addPage(&m_toolbars);		
@@ -591,14 +591,13 @@ int AP_Win32Dialog_Options_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lP
 int CALLBACK AP_Win32Dialog_Options_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam)
 {	
 	if (uMsg==PSCB_INITIALIZED)
-	{		
-		// Force the creation of all pages
+	{	
+		/* Force the creation of all pages*/
 		PropSheet_SetCurSel(hwnd, 0,0);
 		PropSheet_SetCurSel(hwnd, 0,1);
 		PropSheet_SetCurSel(hwnd, 0,2);
 		PropSheet_SetCurSel(hwnd, 0,3);
-		PropSheet_SetCurSel(hwnd, 0,4);	
-		PropSheet_SetCurSel(hwnd, 0,0);	
+		PropSheet_SetCurSel(hwnd, 0,4);					
 	}			
 	return 	0;
 }
@@ -619,6 +618,10 @@ void AP_Win32Dialog_Options_Sheet::_onInitDialog(HWND hwnd)
 	SetWindowText(GetDlgItem(hwnd, ID_APPLY_NOW), pSS->getValue(AP_STRING_ID_DLG_Options_Btn_Default));
 	SetWindowText(GetDlgItem(hwnd, IDOK), pSS->getValue(XAP_STRING_ID_DLG_OK));
 	SetWindowText(GetDlgItem(hwnd, IDCANCEL), pSS->getValue(XAP_STRING_ID_DLG_Cancel));	
+
+	AP_Win32Dialog_Options*	 pParent=  (AP_Win32Dialog_Options*)getParent();		
+	int nDefPage = pParent->getInitialPageNum();		
+	PropSheet_SetCurSel(hwnd, 0, nDefPage);	
 	
 }
 
@@ -1101,6 +1104,9 @@ void AP_Win32Dialog_Options_Pref::_onInitDialog()
 	// TODO need to populate values in the _COMBO_CURRENTSCHEME
 	//			HWND hwndScheme = GetDlgItem(hWnd, AP_RID_DIALOG_OPTIONS_COMBO_CURRENTSCHEME);
 	//			_CDB(OPTIONS_CHK_PrefsAutoSave, 		id_CHECK_PREFS_AUTO_SAVE);
+
+	
+
 
 }
 
