@@ -137,6 +137,7 @@ void fp_PageSize::Set(Predefined preDef, Unit u)
 void fp_PageSize::Set(double w, double h, Unit u)
 {
 	int i;
+	double converted_w, converted_h;
 
 	UT_ASSERT(u >= 0 && u < _last_predefined_unit_dont_use_);
 
@@ -144,16 +145,31 @@ void fp_PageSize::Set(double w, double h, Unit u)
 
 	for (i = 0; i < (int)_last_predefined_pagesize_dont_use_; i++)
 	{
-	    if ((pagesizes [i].w == w) && 
-			(pagesizes [i].h == h) && 
-			(pagesizes [i].u == u))
+		if (pagesizes[i].u != u )  // Convert to local defined units and round off
+		{
+			converted_w = w * ScaleFactors[u]/ScaleFactors[pagesizes[i].u];
+			int w_int = (int) (converted_w*10.0);
+			if ( converted_w*10 - w_int >= 0.5 ) w_int++;
+			converted_w = (double) w_int/10.0;
+			converted_h = h * ScaleFactors[u]/ScaleFactors[pagesizes[i].u];
+			int h_int = (int) (converted_h*10.0);
+			if ( converted_h*10 - h_int >= 0.5 ) h_int++;
+			converted_h = (double) h_int/10.0;			
+		}
+		else
+		{
+			converted_w = w;
+			converted_h = h;
+		}
+
+	    if ((pagesizes [i].w == converted_w) && 
+			(pagesizes [i].h == converted_h))
 		{
 			Set(static_cast<Predefined>(i), u);
 			break;
 		}
-		if ((pagesizes [i].h == w) &&
-			(pagesizes [i].w == h) &&
-			(pagesizes [i].u == u))
+		if ((pagesizes [i].h == converted_w) &&
+			(pagesizes [i].w == converted_h))
 		{
 			Set(static_cast<Predefined>(i), u);
 			m_bisPortrait = false;
