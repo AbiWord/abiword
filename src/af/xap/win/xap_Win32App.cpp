@@ -28,7 +28,6 @@
 #include "xap_Win32Toolbar_Icons.h"
 #include "xap_Win32_TB_CFactory.h"
 #include "xap_Win32Slurp.h"
-#include "xap_Win32Module.h"
 
 #ifdef _MSC_VER
 #pragma warning(disable:4355)	// 'this' used in base member initializer list
@@ -329,7 +328,3 @@ void XAP_Win32App::enableAllTopLevelWindows(bool b)
 	}
 }
 
-XAP_Module* XAP_Win32App::createModule()
-{
-	return new XAP_Win32Module;
-}

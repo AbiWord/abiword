@@ -23,6 +23,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_types.h"
 #include "ev_BeOSToolbar.h"
 #include "xap_Types.h"
 #include "xap_BeOSApp.h"
@@ -45,10 +46,12 @@ EV_BeOSToolbar::EV_BeOSToolbar(XAP_BeOSApp * pBeOSApp,
 			   const char * szToolbarLabelSetName)
 	: EV_Toolbar(pBeOSApp->getEditMethodContainer(),
 				 szToolbarLayoutName,
-				 szToolbarLabelSetName) {
-	m_pBeOSApp = pBeOSApp;
-	m_pBeOSFrame = pBeOSFrame;
-	m_pViewListener = NULL;
+				 szToolbarLabelSetName),
+	m_pBeOSApp(pBeOSApp),
+	m_pBeOSFrame(pBeOSFrame),
+	m_pViewListener(NULL),
+	m_bHidden(false)
+{
 }
 
 EV_BeOSToolbar::~EV_BeOSToolbar(void) {
@@ -62,12 +65,15 @@ bool EV_BeOSToolbar::synthesize(void) {
 
 	if (!m_pBeOSFrame) 
 		return false;
+	
 	pBWin = (be_Window *)m_pBeOSFrame->getTopLevelWindow();
 	UT_ASSERT(pBWin);
 	
 	BRect r = pBWin->m_winRectAvailable;
-	r.bottom = r.top + ITEM_HEIGHT + 2*ITEM_SEPERATE;
+	r.bottom = r.top + ITEM_HEIGHT + 2*ITEM_SEPERATE + 1;
+	
 	pBWin->m_winRectAvailable.top = r.bottom + 1;
+	
 	ToolbarView *tb = new ToolbarView(this, r, "Toolbar", 
 		 			  B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP, 
 		 			  B_WILL_DRAW | B_FRAME_EVENTS); 
@@ -118,7 +124,7 @@ bool EV_BeOSToolbar::synthesize(void) {
 				
 			switch (pAction->getItemType()) {
 			case EV_TBIT_ColorFore:
-			case EV_TBIT_ColorBack:
+			case EV_TBIT_ColorBack: {
 				UT_DEBUGMSG(("TODO: Hey BeOS needs some tender love and care and a colour selector! \n"));
 				UT_ASSERT(UT_NOT_IMPLEMENTED);
 				UT_ASSERT(UT_stricmp(pLabel->getIconName(),"NoIcon")!=0);
@@ -226,6 +232,7 @@ bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 	int oldstate, perform_update = 0;
 	
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
+	
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++) {
 		EV_Toolbar_LayoutItem * pLayoutItem = m_pToolbarLayout->getLayoutItem(k);
 		UT_ASSERT(pLayoutItem);
@@ -235,9 +242,9 @@ bool EV_BeOSToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask) {
 		UT_ASSERT(pAction);
 
 		AV_ChangeMask maskOfInterest = pAction->getChangeMaskOfInterest();
-		//If this item doesn't care about
-		if ((maskOfInterest & mask) == 0) 
-			continue;										// changes of this type, skip it...
+		
+		if ((maskOfInterest & mask) == 0)   //If this item doesn't care about
+			continue;						// changes of this type, skip it...
 
 		switch (pLayoutItem->getToolbarLayoutFlags()) {
 		case EV_TLF_Normal: {
@@ -416,54 +423,23 @@ void EV_BeOSToolbar::_releaseListener(void) {
 	m_pViewListener = NULL;
 }
 
-
-
-/*********************************************************/
-#pragma mark -- Be Class
-class TBMouseFilter: public BMessageFilter {
-	public:
-		TBMouseFilter(ToolbarView * pToolbarView);
-		filter_result Filter(BMessage *message, BHandler **target);
-	private:
-		ToolbarView 	*m_pTBView;
-};
-		
-TBMouseFilter::TBMouseFilter(ToolbarView *pToolbarView)
-          : BMessageFilter(B_PROGRAMMED_DELIVERY, B_LOCAL_SOURCE) {
-	m_pTBView = pToolbarView;
-}					   
-
-filter_result TBMouseFilter::Filter(BMessage *message, BHandler **target) 
-{ 
-	BRect r;
-	BPoint pt;
- 	int i;
- 		
-	switch(message->what) 
+void EV_BeOSToolbar::show() {
+	UT_DEBUGMSG(("EV_BeOSToolbar::show()\n"));
+	if(m_bHidden)
 	{
-		case B_MOUSE_UP: 
-		{		
-			message->FindPoint("where", &pt);
-			for (i=0; i< m_pTBView->item_count; i++) {
-				r = m_pTBView->items[i].rect;
-				if (m_pTBView->items[i].state & ENABLED_MASK &&
-				    r.Contains(pt) && m_pTBView->items[i].bitmap != NULL) 
-				{
-					//We have a hit on an item ...
-					int id = m_pTBView->items[i].id;
-			 		m_pTBView->m_pBeOSToolbar->toolbarEvent(id, NULL, 0);		
-					break;
-				}
-			}
-			break;
-		}
-	
-	default:
-		return(B_DISPATCH_MESSAGE);
+		m_pTBView->Show();
+		m_bHidden=false;
 	}
-	return(B_SKIP_MESSAGE);			
 }
 
+void EV_BeOSToolbar::hide() {
+	UT_DEBUGMSG(("EV_BeOSToolbar::show()\n"));
+	if(!m_bHidden)
+	{
+		m_pTBView->Hide();
+		m_bHidden=true;
+	}
+}
 
 ToolbarView::ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name, 
 			 uint32 resizeMask, uint32 flags) 
@@ -482,8 +458,6 @@ ToolbarView::ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name,
 	SetViewColor(216, 216, 216);
 	m_fOldWidth=frame.Width()+1;
 	m_fOldHeight=frame.Height()+1;
-	TBMouseFilter *filter = new TBMouseFilter(this);
-	AddFilter(filter);
 	
 	m_bDisplayTooltip = false;
 	fToolTip = new TToolTip();
@@ -492,8 +466,6 @@ ToolbarView::ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name,
 
 ToolbarView::~ToolbarView() 
 {
-	; //Do nothing ...
-
 	for(int i = 0; i < item_count; i ++)
 	{
 		if(items[i].popupString)
@@ -519,9 +491,7 @@ bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, XAP_Toolbar_Id
 		return(false);
 		
 	if (downbitmap == NULL) {
-		items[item_count].popupString = (char *)malloc(strlen(popupString) + 1);
-		strcpy(items[item_count].popupString , popupString);// strdup(popupString);
-		items[item_count].popupString[strlen(popupString)] = '\0';
+		items[item_count].popupString = strdup(popupString);
 		
 		items[item_count].type = BITMAP_BUTTON;
 		items[item_count].id = id;
@@ -529,6 +499,7 @@ bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, XAP_Toolbar_Id
 		items[item_count].rect.top = ITEM_SEPERATE; 
 		items[item_count].rect.bottom = ITEM_SEPERATE + ITEM_HEIGHT;
 		items[item_count].rect.left = ITEM_SEPERATE;
+		
 		if (item_count != 0)
 			items[item_count].rect.left +=  items[item_count-1].rect.right;
 		items[item_count].rect.right = ITEM_WIDTH +
@@ -540,6 +511,9 @@ bool ToolbarView::AddItem(BBitmap *upbitmap, BBitmap *downbitmap, XAP_Toolbar_Id
 	}
 	return(true);
 }
+
+
+
 bool ToolbarView::AddItem(BPopUpMenu *popupmenu, int iWidth, XAP_Toolbar_Id id) {
 	if (item_count >= ITEM_MAX -1)
 		return(false);
@@ -547,32 +521,28 @@ bool ToolbarView::AddItem(BPopUpMenu *popupmenu, int iWidth, XAP_Toolbar_Id id) 
 	items[item_count].popupString = NULL;
 	items[item_count].type = DROP_DOWN;
 	items[item_count].id = id;
-	items[item_count].rect.top = ITEM_SEPERATE; 
+	items[item_count].rect.top = ITEM_SEPERATE - 1; 
 	items[item_count].rect.left = ITEM_SEPERATE;
+	
 	if (item_count != 0) {
 		items[item_count].rect.left +=  items[item_count-1].rect.right;
 	}
+	
 	items[item_count].rect.right = iWidth +
 								   items[item_count].rect.left; 
-	items[item_count].rect.bottom = ITEM_SEPERATE + ITEM_HEIGHT;
-	//printf("DROPDOWN RECT: "); items[item_count].rect.PrintToStream();
+	items[item_count].rect.bottom = ITEM_SEPERATE + ITEM_HEIGHT - 1;
 
 	items[item_count].menu = new BMenuField(items[item_count].rect, 
-										   "DropDownBox", 
 										   "", 
-									   		popupmenu, 
+										   "", 
+									   		popupmenu,
+									   		true,
 									   		B_FOLLOW_LEFT | B_FOLLOW_TOP, 
 									   		B_WILL_DRAW); 
 
 	items[item_count].menu->SetDivider(0); 
 	AddChild(items[item_count].menu);
 	
-	/*
-	if (items[item_count].menu->SetTargetForItems(this) != B_OK)
-		printf("CAN'T SET TARGET FOR ITEMS \n");
-	*/
-	
-	//items[item_count].menu->SetDivider(0);
 	item_count++;	
 	return(true);
 }
@@ -628,38 +598,54 @@ void ToolbarView::MessageReceived(BMessage *msg) {
 void ToolbarView::Draw(BRect clip) {
 	BRect 	r;
 	int 	i;
-//	BPicture *mypict;
-//	BeginPicture(new BPicture);
+	
 	Window()->DisableUpdates();
+	drawing_mode oldmode = DrawingMode();
+	Window()->Lock();
+	SetDrawingMode(B_OP_ALPHA);
+	Window()->Unlock();
 	for (i=0; i<item_count; i++) {
 		r = items[i].rect;
 		if (items[i].bitmap && r.Intersects(clip)) {
-//			UT_DEBUGMSG(("Clip intersection on i:%d\n",i));
-//			UT_DEBUGMSG(("Item rect left=%f top=%f right=%f bottom=%f\n",r.left,r.top,r.right,r.bottom));
 			Window()->Lock();
-			//Draw the bitmap of the icon
-			DrawBitmapAsync(items[i].bitmap, BPoint(r.left, r.top));
-			//DrawBitmap(items[i].bitmap, BPoint(r.left, r.top));
+				
+			// We're dawing with alpha, so we need to overdraw the old bitmap
+			// with the toolbar's colour, or they 'ovelay' each other.
+			SetHighColor(216,216,216);
+			FillRect(r);
 			
-			//Disabled icons should be greyed out ...
-			if (!(items[i].state & ENABLED_MASK)) {
-//				drawing_mode oldmode = DrawingMode();
-//				SetDrawingMode(B_OP_SUBTRACT);
-///				SetHighColor(80, 80, 80);
-//				FillRect(r);
-//				SetDrawingMode(oldmode);
-			}
-
-			//Pressed icons should look like they are pressed (ie down)
-			else if (items[i].state & PRESSED_MASK) {
-				//Toggle buttons which are down
-				HighLightItem(i, 2);
-			}			
-
-			//We just draw normal icons when activated
-			else {
+			if ((items[i].state & ENABLED_MASK)) {
 				DrawBitmapAsync(items[i].bitmap, BPoint(r.left, r.top));
+			} else {
+				// Disabled icons should be greyed out.
+				// We build a heavily alpha blended grey version of the icon.
+				BBitmap greyedBitmap(items[i].bitmap->Bounds(), B_RGBA32);
+				rgb_color *bitsFrom = static_cast<rgb_color *>(items[i].bitmap->Bits());
+				rgb_color *bitsTo = static_cast<rgb_color *>(greyedBitmap.Bits());
+				
+				int pixels = items[i].bitmap->BitsLength()/4;
+				int count;
+				for(count=0; count<pixels; count++)
+				{
+					unsigned char shade = (bitsFrom[count].red/3) +
+										  (bitsFrom[count].green/3) +
+										  (bitsFrom[count].blue/3); 
+					bitsTo[count].red = shade;
+					bitsTo[count].green = shade;
+					bitsTo[count].blue = shade;
+					bitsTo[count].alpha = bitsFrom[count].alpha/4;
+				}
+				
+				// We can't use DrawBitmapAsync, bacause the greyed bitmap is deallocated before it's
+				// drawn.  We should really store they greyed versions somewhere permanent.
+				DrawBitmap(&greyedBitmap, BPoint(r.left, r.top));
 			}
+
+			// Pressed icons should look like they are pressed (ie down)
+			if (items[i].state & PRESSED_MASK) {
+				HighLightItem(i, 2);
+			}
+			
 			Window()->Unlock();
 		}
 		else if (items[i].type == SEPERATOR) {
@@ -667,53 +653,53 @@ void ToolbarView::Draw(BRect clip) {
 		}
 	}
 	
-	//Draw a nice border around the toolbar
+	// Draw a nice BeOSey border around the toolbar.
 	Window()->Lock();
 	r = Bounds();
-	SetHighColor(152,152,152);		//Dark grey
-	StrokeRect(r);
-	rgb_color colortouse;
-	rgb_color dark={192,192,192};
-	rgb_color light={240,240,240};
-	//SetHighColor(192,192,192);		//Light Dark grey
-	colortouse=dark;
+	
+	rgb_color dark={154,154,154};
+	rgb_color light_dark={186,186,186};
+	rgb_color light={241,241,241};
+
+	SetDrawingMode(B_OP_COPY);
+
 	BeginLineArray(4);
-	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.right-1, r.bottom-1),colortouse);
-	AddLine(BPoint(r.right-1, r.top+1), BPoint(r.right-1, r.bottom-1),colortouse);
-	colortouse=light;
-	//SetHighColor(240,240,240);		//Almost white
-	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.left+1, r.top+1),colortouse);
-	AddLine(BPoint(r.left+1, r.top+1), BPoint(r.right-1, r.top+1),colortouse);
-//	if ((mypict = EndPicture())) {
-//		DrawPicture(mypict, BPoint(0,0));
-//		Sync();
-//		delete mypict;
-//	}
+	AddLine(BPoint(r.left, r.top), BPoint(r.right, r.top), light);
+	AddLine(BPoint(r.left, r.top), BPoint(r.left, r.bottom), light);
+	AddLine(BPoint(r.left, r.bottom-1), BPoint(r.right, r.bottom-1), light_dark);
+	AddLine(BPoint(r.left, r.bottom), BPoint(r.right, r.bottom), dark);
+	
 	EndLineArray();
-Window()->EnableUpdates();
-Sync();
-Window()->Unlock();
+	
+	SetDrawingMode(oldmode);
+	
+	Window()->EnableUpdates();
+	Sync();
+	Window()->Unlock();
 }
 
 void ToolbarView::HighLightItem(int index, int state) {
 	BRect r = items[index].rect;
 	rgb_color colortouse;
-	rgb_color dark = { 150, 150, 150, 255 };	//was 192
-	rgb_color light = { 240, 240, 240, 255 };	//was 240
-	Window()->Lock();	
+	rgb_color dark = { 154, 154, 154, 255 };
+	rgb_color light = { 241, 241, 241, 255 };
+	rgb_color back = { 216, 216, 216, 255 };
+	Window()->Lock();
+	if (state == 0) 
+		colortouse=back;
 	if (state == 1)				//UP look
-		colortouse=dark;		//Light Dark grey
-	else if (state == 2)			//DOWN look
-		colortouse=light;		//Almost white
+		colortouse=dark;
+	else if (state == 2)		//DOWN look
+		colortouse=light;
 	BeginLineArray(8);
 	AddLine(BPoint(r.left, r.bottom), BPoint(r.right, r.bottom),colortouse);
 	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.right-1, r.bottom-1),colortouse);
 	AddLine(BPoint(r.right, r.top), BPoint(r.right, r.bottom),colortouse);
 	AddLine(BPoint(r.right-1, r.top+1), BPoint(r.right-1, r.bottom-1),colortouse);
 	if (state == 1)
-		colortouse=light;		//Almost white
+		colortouse=light;
 	else if (state == 2)
-		colortouse=dark;		//Light Dark grey
+		colortouse=dark;
 	AddLine(BPoint(r.left, r.bottom), BPoint(r.left, r.top),colortouse);
 	AddLine(BPoint(r.left+1, r.bottom-1), BPoint(r.left+1, r.top+1),colortouse);
 	AddLine(BPoint(r.left, r.top), BPoint(r.right, r.top),colortouse);
@@ -725,87 +711,150 @@ void ToolbarView::HighLightItem(int index, int state) {
 
 void ToolbarView::FrameResized(float width, float height) {
 	BRect r;
-	/*if (width+1 > m_fOldWidth)
+	if ((width + 1) > m_fOldWidth)
 	{
-	*/	r.left=m_fOldWidth-5;
+		r.left=m_fOldWidth;
 		r.right=width;
 		r.top=Bounds().top;
 		r.bottom=Bounds().bottom;
-//		UT_DEBUGMSG(("Actually invalidating toolbar\n"));
 		Invalidate(r);
-	/*}*/
+	}
 	m_fOldWidth=width+1;
 }
 									
 void ToolbarView::MouseMoved(BPoint where, uint32 code,	const BMessage *msg) 
 {
-#if 0 // Old code.
 	int i;
 
-	return;
-	
-	for (i=0; i<item_count; i++) {
+	for (i=0; i<item_count; ++i)
+	{
 		if (items[i].type == BITMAP_BUTTON &&
-		    items[i].rect.Contains(where) && (items[i].state & ENABLED_MASK)) {
-			if (i != last_highlight) {
-				HighLightItem(i, 0);
-				if (last_highlight >= 0)
-					HighLightItem(last_highlight, 1);
+		    items[i].rect.Contains(where) &&
+		    (items[i].state & ENABLED_MASK))
+		{
+			if(last_highlight == i)
+				break;
+				
+			if(mouseDownItemNo == i)
+			{
+				HighLightItem(i, 2);
+			}
+			else
+			{
+				HighLightItem(i, 1);
+			}
+			if (last_highlight >= 0)
+			{
+				if (items[last_highlight].state & PRESSED_MASK)
+				{
+					HighLightItem(last_highlight, 2);
+				}
+				else
+				{	
+					HighLightItem(last_highlight, 0);
+				}
 			}
 			last_highlight = i;
-			return;
+			break;
 		}
 	}
-	if (last_highlight >= 0)
-		HighLightItem(last_highlight, 1);
-#else // New code -- Added by cjp - 11/17/00
-
-			int i = 0;
-			BRect r;
-						
-			for (i=0; i< item_count; i++) 
+	
+	if (i >= item_count)
+	{
+		if (last_highlight >= 0)
+		{
+			if (items[last_highlight].state & PRESSED_MASK)
 			{
-				r = items[i].rect;
-				if (r.Contains(where)) 
-				{
-					break;
-				}
+				HighLightItem(last_highlight, 2);
 			}
-			
-			if(i >= item_count)
-				return;
+			else
+			{
+				HighLightItem(last_highlight, 0);
+			}
+			last_highlight=-1;
+		}
+		return;
+	}
+
+	BRect r(items[i].rect);
 				
-			// if mouse has moved into our view, our window is active and it previously
-			// wasn't in, send a message to start the ToolTip
-			if (items[i].popupString && (items[i].rect.Contains(where)) && (Window()->IsActive())) 
-			{
-				if (!m_bDisplayTooltip) 
-				{
-					BMessage	msg(eToolTipStart);
-		
-					msg.AddPoint("start", ConvertToScreen(where));
-					msg.AddRect("bounds", ConvertToScreen(items[i].rect));
-					msg.AddString("string", items[i].popupString);
-					MessageReceived(&msg);
+	// if mouse has moved into our view, our window is active and it previously
+	// wasn't in, send a message to start the ToolTip
+	if (items[i].popupString && (items[i].rect.Contains(where)) && (Window()->IsActive())) 
+	{
+		if (!m_bDisplayTooltip) 
+		{
+			BMessage	msg(eToolTipStart);
 
-					m_bDisplayTooltip = true;
-					lastToolTipIndex = i;
-				}
-				else if(lastToolTipIndex != -1 && i != lastToolTipIndex)
-				{
-					BMessage msg(eToolTipStop);
-					MessageReceived(&msg);
-					m_bDisplayTooltip = false;
-					lastToolTipIndex = -1;
-				}
-			}
-			// otherwise stop the message
-			else if (m_bDisplayTooltip) {
-				BMessage msg(eToolTipStop);
-				MessageReceived(&msg);
-				m_bDisplayTooltip = false;
-				lastToolTipIndex = -1;
-			}
-#endif
+			msg.AddPoint("start", ConvertToScreen(where));
+			msg.AddRect("bounds", ConvertToScreen(items[i].rect));
+			msg.AddString("string", items[i].popupString);
+			MessageReceived(&msg);
+
+			m_bDisplayTooltip = true;
+			lastToolTipIndex = i;
+		}
+		else if(lastToolTipIndex != -1 && i != lastToolTipIndex)
+		{
+			BMessage msg(eToolTipStop);
+			MessageReceived(&msg);
+			m_bDisplayTooltip = false;
+			lastToolTipIndex = -1;
+		}
+	}
+	// otherwise stop the message
+	else if (m_bDisplayTooltip)
+	{
+		BMessage msg(eToolTipStop);
+		MessageReceived(&msg);
+		m_bDisplayTooltip = false;
+		lastToolTipIndex = -1;
+	}
 }
 
+void ToolbarView::MouseDown(BPoint where)
+{
+	int i;
+	for (i=0; i<item_count; ++i)
+	{
+		if (items[i].type == BITMAP_BUTTON &&
+		    items[i].rect.Contains(where) &&
+		    (items[i].state & ENABLED_MASK))
+		{
+			HighLightItem(i, 2);
+			last_highlight = i;
+			mouseDownItemNo = i;
+		}
+	}
+}
+
+void ToolbarView::MouseUp(BPoint where)
+{
+	int i;
+	for (i=0; i<item_count; ++i)
+	{
+		if (items[i].type == BITMAP_BUTTON &&
+		    items[i].rect.Contains(where) &&
+		    (items[i].state & ENABLED_MASK))
+		{
+			if(i == mouseDownItemNo)
+			{
+				if (items[i].state & PRESSED_MASK)
+				{
+					HighLightItem(i, 2);
+				}
+				else	
+				{
+					HighLightItem(i, 0);
+				}
+				m_pBeOSToolbar->toolbarEvent(items[i].id, NULL, 0);
+				last_highlight = i;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	mouseDownItemNo=-1;
+}

@@ -134,6 +134,8 @@ OBJS=		$(PLATFORM_OBJS)						\
 		$(OBJDIR)/xap_ViewListener.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xav_View.$(OBJ_SUFFIX)				\
 		$(OBJDIR)/xap_EncodingManager.$(OBJ_SUFFIX)			\
+		$(OBJDIR)/xap_Module.$(OBJ_SUFFIX)				\
+		$(OBJDIR)/xap_ModuleManager.$(OBJ_SUFFIX)			\
 		$(OBJDIR)/xap_Dlg_Language.$(OBJ_SUFFIX)
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

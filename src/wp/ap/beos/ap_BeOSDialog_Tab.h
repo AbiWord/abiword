@@ -54,6 +54,9 @@ protected:
 	void                            _setTabEdit( const char *pszStr );
 	
 	class TabWindow* newwin;
+	
+private:
+	eTabLeader m_current_leader;
 };
 
 #endif /* AP_BEOSDIALOG_TAB_H */

@@ -29,7 +29,6 @@ XAP_BeOSModule::XAP_BeOSModule () : m_module (-1), m_szname (NULL)
 XAP_BeOSModule::~XAP_BeOSModule (void)
 {
 	FREEP(m_szname);
-	unload ();
 }
 
 bool XAP_BeOSModule::unload (void)

@@ -30,14 +30,18 @@
 
 class XAP_Win32Module : public XAP_Module
 {
-public:
+
+	friend class XAP_ModuleManager;
+
+protected:
 
 	XAP_Win32Module();
 	virtual ~XAP_Win32Module();
 
-private:
 	virtual bool load(const char* name);
 	virtual bool unload();
+
+public:
 	virtual bool resolveSymbol(const char* symbol_name, void** symbol);
 	virtual bool getModuleName(char** dest) const;
 	virtual bool getErrorMsg(char** dest) const;

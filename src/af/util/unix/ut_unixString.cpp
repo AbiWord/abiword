@@ -24,6 +24,7 @@
 #include <ctype.h>
 
 #include <glib.h>
+#include <unistd.h>
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -46,8 +47,29 @@ char * UT_catPathname(const char * szPath, const char * szFile)
 	return szPathname;
 }
 
+void UT_unlink (const char * base)
+{
+	unlink (base);
+}
+
 char * UT_tmpnam(char * base)
 {
-  return tmpnam(base);
+#if 1
+	char * name = g_strdup_printf ("/tmp/XXXXXX");
+
+	int fd = mkstemp (name);
+
+	if (fd != -1)
+	{
+		close (fd);
+		strncpy (base, name, strlen (name));
+		g_free (name);
+		return name;
+	}
+
+	return base;
+#else
+	return tmpnam(base);
+#endif
 }
 

@@ -29,13 +29,18 @@
 
 class XAP_MacModule : public XAP_Module 
 {
-public:
+
+	friend class XAP_ModuleManager;
+
+protected:
 
    XAP_MacModule () ;
    virtual ~XAP_MacModule (void);
 
    virtual bool   load (const char * name);
    virtual bool   unload (void);
+
+public:
    virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
    virtual bool   getModuleName (char ** dest) const;
    virtual bool   getErrorMsg (char ** dest) const;

@@ -98,6 +98,7 @@ char * UT_lowerString(char * string);
 
 char * UT_catPathname(const char * szPath, const char * szFile);
 char * UT_tmpnam(char *);
+void   UT_unlink(const char *);
 
 UT_UCSChar UT_decodeUTF8char(const XML_Char * p, UT_uint32 len);
 void UT_decodeUTF8string(const XML_Char * p, UT_uint32 len, UT_GrowBuf * pResult);

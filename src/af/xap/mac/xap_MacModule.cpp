@@ -36,8 +36,6 @@ XAP_MacModule::~XAP_MacModule (void)
 {
   if(m_szname)
     free (m_szname);
-
-  unload ();
 }
 
 bool XAP_MacModule::getModuleName (char ** dest) const

@@ -467,7 +467,7 @@ abi_widget_invoke (AbiWidget * w, const char * mthdName,
 
 	// get a handle to the actual EditMethod
 	method = container->findEditMethodByName (mthdName);
-	g_return_val_if_fail (container != 0, FALSE);
+	g_return_val_if_fail (method != 0, FALSE);
 
 	// get a pointer to the method's C/C++ function
 	function = method->getFn();

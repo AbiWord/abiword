@@ -1,6 +1,7 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
- * 
+ * Copyright (C) 2001 AbiSource, Inc.
+ * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com> 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,33 +18,35 @@
  * 02111-1307, USA.
  */
 
-#ifndef XAP_QNXMODULE_H
-#define XAP_QNXMODULE_H
+#ifndef XAP_MODULE_MANAGER_H
+#define XAP_MODULE_MANAGER_H
 
-#include "xap_Module.h"
+// Singleton class that will load/unload modules for us
 
-class XAP_QNXModule : public XAP_Module 
+#include "ut_vector.h"
+
+class XAP_Module;
+
+class XAP_ModuleManager
 {
+private:
 
-	friend class XAP_ModuleManager;
-
-protected:
-
-   XAP_QNXModule () ;
-   virtual ~XAP_QNXModule (void);
-
-   virtual bool   load (const char * name);
-   virtual bool   unload (void);
+	XAP_ModuleManager ();
+	~XAP_ModuleManager ();
 
 public:
 
-   virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
-   virtual bool   getModuleName (char ** dest) const;
-   virtual bool   getErrorMsg (char ** dest) const;
+	static XAP_ModuleManager & instance ();
 
- private:
-	void * m_module;
-	char * m_szname;
+	XAP_Module * loadModule (const char * szFilename);
+	bool         unloadModule (XAP_Module * module);
+
+	const UT_Vector *  enumModules () const;
+
+private:
+
+	UT_Vector m_modules;
+
 };
 
-#endif /* XAP_QNXMODULE_H */
+#endif /* XAP_MODULE_MANAGER_H */

@@ -26,7 +26,6 @@
 #include "xap_App.h"
 #include "xap_BeOSDialogFactory.h"
 #include "xap_BeOSToolbar_ControlFactory.h"
-#include "xap_BeOSModule.h"
 
 class XAP_Args;
 class AP_BeOSToolbar_Icons;
@@ -56,7 +55,6 @@ public:
 	XAP_BeOSApp(XAP_Args * pArgs, const char * szAppName);
 	virtual ~XAP_BeOSApp(void);
 
-	virtual inline XAP_Module * createModule (void) {return new XAP_BeOSModule();}
 	virtual bool					initialize(void);
 	//For handling the double click messages, containing new file info
 	virtual XAP_Frame * 				newFrame(const char *path) = 0;

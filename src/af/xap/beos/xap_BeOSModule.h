@@ -26,16 +26,20 @@
 class XAP_BeOSModule : public XAP_Module 
 {
 
+	friend class XAP_ModuleManager;
+
+protected:
+	
+	XAP_BeOSModule () ;
+	virtual ~XAP_BeOSModule (void);
+	
+	virtual bool   load (const char * name);
+	virtual bool   unload (void);
+
 public:
-
-   XAP_BeOSModule () ;
-   virtual ~XAP_BeOSModule (void);
-
-   virtual bool   load (const char * name);
-   virtual bool   unload (void);
-   virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
-   virtual bool   getModuleName (char ** dest) const;
-   virtual bool   getErrorMsg (char ** dest) const;
+	virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
+	virtual bool   getModuleName (char ** dest) const;
+	virtual bool   getErrorMsg (char ** dest) const;
 
  private:
 	char * m_szname;

@@ -56,6 +56,12 @@ replay a previously recorded BPicture.
 					}
 #endif
 
+inline uint32 
+utf8_char_len(uchar byte) 
+{ 
+  return (((0xE5000000 >> ((byte >> 3) & 0x1E)) & 3) + 1); 
+}
+
 GR_BeOSGraphics::GR_BeOSGraphics(BView *docview, XAP_App * app) {
 	m_pApp = app;
 	m_pShadowView = NULL;
@@ -187,12 +193,14 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 {
 	int i;
 	char buffer[2*(iLength+1)];
-
-	DPRINTF(printf("GR: Draw Chars\n"));
 	
     buffer[0] = '\0';
+    char* builder=buffer;
 	for (i=0; i<iLength; ++i) {
-		strcat(buffer, UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], false)));						
+		char* utf8buf = UT_encodeUTF8char(remapGlyph(pChars[i+iCharOffset], false));
+		int len = utf8_char_len(*utf8buf);
+		memcpy(builder, utf8buf, len);
+		builder+=len; 						
 	}
 	
 	if (!m_pShadowView->Window()->Lock()) {
@@ -201,7 +209,7 @@ void GR_BeOSGraphics::drawChars(const UT_UCSChar* pChars, int iCharOffset,
 		return;
 	}
 	
-	// If we use B_OP_OVER, out text will anti-alias correctly against
+	// If we use B_OP_OVER, our text will anti-alias correctly against
 	// e.g. the ruler and the status bar.
     drawing_mode oldMode = m_pShadowView->DrawingMode();
     m_pShadowView->SetDrawingMode(B_OP_OVER);
@@ -390,7 +398,7 @@ void GR_BeOSGraphics::setFont(GR_Font* pFont)
 	if (m_pBeOSFont)
 		m_pShadowView->SetFont(m_pBeOSFont->get_font());
 	else
-		printf("HEY! NO FONT INFORMATION AVAILABLE!\n");
+		UT_DEBUGMSG(("HEY! NO FONT INFORMATION AVAILABLE!\n"));
 
 	m_pShadowView->Window()->Unlock();
 	}
@@ -438,6 +446,37 @@ UT_uint32 GR_BeOSGraphics::getFontDescent()
 	return((UT_uint32)(fh.descent + 0.5));
 }
 
+
+UT_uint32 GR_BeOSGraphics::getFontAscent(GR_Font *font)
+{
+	font_height fh;
+	BeOSFont* bFont = static_cast<BeOSFont *>(font);
+
+	bFont->get_font()->GetHeight(&fh);
+	
+	return((UT_uint32)(fh.ascent + 0.5));
+}
+
+UT_uint32 GR_BeOSGraphics::getFontDescent(GR_Font *font)
+{
+	font_height fh;
+	BeOSFont* bFont = static_cast<BeOSFont *>(font);
+
+	bFont->get_font()->GetHeight(&fh);
+	
+	return((UT_uint32)(fh.descent + 0.5));
+}
+
+UT_uint32 GR_BeOSGraphics::getFontHeight(GR_Font *font)
+{
+	font_height fh;
+	BeOSFont* bFont = static_cast<BeOSFont *>(font);
+
+	bFont->get_font()->GetHeight(&fh);
+	
+	return((UT_uint32)(fh.ascent + fh.descent + fh.leading + 0.5));
+}
+
 UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 {
 	//We need to convert the string from UCS2 to UTF8 before
@@ -455,9 +494,6 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	tempdelta.space=0.0;
 	tempdelta.nonspace=0.0;
 	float fontsize=0.0f;
-	
-//	m_pShadowView->GetFont(&viewFont);
-//	viewFont.SetSpacing(B_BITMAP_SPACING); // moved inside of lock call..
 
 	if (m_pShadowView->Window()->Lock()) {
 		
@@ -478,67 +514,6 @@ UT_uint32 GR_BeOSGraphics::measureUnRemappedChar(const UT_UCSChar c)
 	return 1.0f; // Shouldn't happen.
 }
 
-#if 0
-UT_uint32 GR_BeOSGraphics::measureString(const UT_UCSChar* s, int iOffset,
-									  int num,  unsigned short* pWidths)
-{
-	DPRINTF(printf("GR: Measure String\n"));
-	UT_uint32	size, i;	
-	char 		*buffer;
-
-	//We need to convert the string from UCS2 to UTF8 before
-	//we use the BeOS string operations on it.
-	buffer = new char[2*(num+1)];
-	if (!buffer) {
-		return(0);
-	}
-
-	//Set the character, then set the length of the character
-	size=0;
-	memset(buffer, 0, 2*(num+1));
-
-	BFont viewFont;
-	BPoint *escapementArray=new BPoint[num];
-
-	m_pShadowView->GetFont(&viewFont);
-	viewFont.SetSpacing(B_BITMAP_SPACING);
-	if (m_pShadowView->Window()->Lock()) {
-		m_pShadowView->SetFont(&viewFont);
-		m_pShadowView->Window()->Unlock();
-	}
-
-	for (i=0; i<num; i++) {
-		char * utf8char;
-		UT_UCSChar *currentChar;
-		currentChar = s[i+Offset];
-		// TODO: next line might be performance hit
-		currentChar = remapGlyph(currentChar, false);
-		utf8char =  UT_encodeUTF8char(currentChar);
-		strcat(buffer, utf8char);						
-	}
-
-	escapement_delta tempdelta;
-	tempdelta.space=0.0;
-	tempdelta.nonspace=0.0;
-	//Hope this works on UTF8 characters buffers
-	viewFont.GetEscapements(buffer,num,&tempdelta,escapementArray);
-	float fontsize=viewFont.Size();
-
-	for (i=0; i<num; i++)
-	{
-		pWidths[i]=(short unsigned int) ceil(escapementArray[i].x*fontsize) ;
-/*
-		printf("Escapement for %d is %d (%f)\n",i,
-			(short unsigned int) ceil(escapementArray[i].x*fontsize),
-			ceil(escapementArray[i].x*fontsize));
-*/
-		size+= ceil(escapementArray[i].x *fontsize);
-	}
-
-	delete [] buffer;
-	return(size);
-}
-#endif
 UT_uint32 GR_BeOSGraphics::_getResolution() const
 {
 	return 72;
@@ -573,13 +548,11 @@ void GR_BeOSGraphics::setLineWidth(UT_sint32 iLineWidth)
 {
 	DPRINTF(printf("GR: Set Line Width %d \n", iLineWidth));
 	
-	//m_iLineWidth = iLineWidth;
 	if(m_pShadowView->Window()->Lock())
 	{
 		m_pShadowView->SetPenSize(iLineWidth);
 		m_pShadowView->Window()->Unlock();
 	}
-	//UPDATE_VIEW
 }
 
 /*Poly line is only used during drawing squiggles*/

@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (C) 1998-2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -112,7 +112,8 @@ static TokenTable s_Tokens[] =
 	{"PAGE",      F_PAGE},
 	{"NUMCHARS",  F_NUMCHARS},
 	{"NUMWORDS",  F_NUMWORDS},
-	
+
+	// these below aren't handled, but they're known about
 	{"HYPERLINK", F_HYPERLINK},
 	{"PAGEREF",   F_PAGEREF},
 	{"EMBED",     F_EMBED},

@@ -93,10 +93,10 @@ bool UT_Xpm2Bitmap(const char ** pIconData,
 		// store the actual color value in the 
 		// rgb quad array with our color index.
 		if (UT_stricmp(bufColorValue,"None")==0) {
-			pRGB[k].red = 219; 
-			pRGB[k].green = 222;
-			pRGB[k].blue = 219;
-			pRGB[k].alpha = 255;//{255,255,255,255};//B_TRANSPARENT_32_BIT;
+			pRGB[k].red = 255; 
+			pRGB[k].green = 0;
+			pRGB[k].blue = 0;
+			pRGB[k].alpha = 0;
 		}
 		else
 		{

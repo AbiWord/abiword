@@ -124,7 +124,7 @@ EV_BeOSMenu::EV_BeOSMenu(XAP_BeOSApp * pBeOSApp,
 			 const char * szMenuLabelSetName)
 	: EV_Menu(pBeOSApp->getEditMethodContainer(),szMenuLayoutName,szMenuLabelSetName)
 {
-	UT_DEBUGMSG(("EV:Menu: Name: %s SetName %s \n", 
+	xxx_UT_DEBUGMSG(("EV:Menu: Name: %s SetName %s \n", 
 				szMenuLayoutName, szMenuLabelSetName));
 	m_pBeOSApp = pBeOSApp;
 	m_pBeOSFrame = pBeOSFrame;
@@ -293,7 +293,7 @@ bool EV_BeOSMenu::synthesizeMenuBar()
 
 	//Create the top level menubar
 	BRect all = pBWin->m_winRectAvailable;
-	all.bottom = all.top + 18;
+	all.bottom = all.top + 19;
 	pBWin->m_winRectAvailable.top = all.bottom + 1;
 	pMenuBar = new BMenuBar(all, "Menubar");
 	UT_ASSERT(pMenuBar);
@@ -454,7 +454,7 @@ bool EV_BeOSMenu::synthesize()
 				}
 			}
 
-			UT_DEBUGMSG(("NORM MENU: L:[%s] MN:[%s] \n", 
+			xxx_UT_DEBUGMSG(("NORM MENU: L:[%s] MN:[%s] \n", 
 				(szLabelName) ? szLabelName : "NULL", 
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
 			if (szLabelName && *szLabelName) {
@@ -510,7 +510,7 @@ bool EV_BeOSMenu::synthesize()
                         szLabelName = data[0];
 
                         szMnemonicName = data[1];           
-			UT_DEBUGMSG(("START SUB MENU: L:[%s] MN:[%s] \n", 
+			xxx_UT_DEBUGMSG(("START SUB MENU: L:[%s] MN:[%s] \n", 
 				(szLabelName) ? szLabelName : "NULL", 
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
 
@@ -572,10 +572,10 @@ bool EV_BeOSMenu::synthesize()
 		}
 
 		case EV_MLF_BeginPopupMenu:
-			UT_DEBUGMSG(("MENU: Begin popup menu \n"));
+			xxx_UT_DEBUGMSG(("MENU: Begin popup menu \n"));
                         break;
                 case EV_MLF_EndPopupMenu:
-			UT_DEBUGMSG(("MENU: End popup menu \n"));
+			xxx_UT_DEBUGMSG(("MENU: End popup menu \n"));
                         break;
 
 		default:
@@ -748,7 +748,7 @@ bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 				}
 			}
 
-			UT_DEBUGMSG(("NORM MENU: L:[%s] MN:[%s] \n", 
+			xxx_UT_DEBUGMSG(("NORM MENU: L:[%s] MN:[%s] \n", 
 				(szLabelName) ? szLabelName : "NULL", 
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
 			if (szLabelName && *szLabelName) {
@@ -792,7 +792,7 @@ bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
                         szLabelName = data[0];
 
                         szMnemonicName = data[1];           
-			UT_DEBUGMSG(("START SUB MENU: L:[%s] MN:[%s] \n", 
+			xxx_UT_DEBUGMSG(("START SUB MENU: L:[%s] MN:[%s] \n", 
 				(szLabelName) ? szLabelName : "NULL", 
 				(szMnemonicName) ? szMnemonicName : "NULL")); 
 
@@ -857,10 +857,10 @@ bool EV_BeOSMenuPopup::synthesizeMenuPopup(XAP_BeOSFrame * pFrame)
 		}
 
 		case EV_MLF_BeginPopupMenu:
-			UT_DEBUGMSG(("MENU: Begin popup menu \n"));
+			xxx_UT_DEBUGMSG(("MENU: Begin popup menu \n"));
                         break;
                 case EV_MLF_EndPopupMenu:
-			UT_DEBUGMSG(("MENU: End popup menu \n"));
+			xxx_UT_DEBUGMSG(("MENU: End popup menu \n"));
                         break;
 
 		default:

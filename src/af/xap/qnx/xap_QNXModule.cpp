@@ -29,7 +29,6 @@ XAP_QNXModule::XAP_QNXModule () : m_module (NULL), m_szname (NULL)
 XAP_QNXModule::~XAP_QNXModule (void)
 {
 	FREEP(m_szname);
-	unload ();
 }
 
 bool XAP_QNXModule::load (const char * file_name)

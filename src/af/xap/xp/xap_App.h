@@ -44,7 +44,6 @@ class XAP_Dictionary;
 class PD_DocumentRange;
 class AV_View;
 class XAP_EncodingManager;
-class XAP_Module;
 class UT_String;
 
 /*****************************************************************
@@ -142,8 +141,6 @@ public:
 														UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 	virtual void 							parseAndSetGeometry(const char *string);
 
-
-	virtual XAP_Module * 					createModule() = 0;
 
 #ifdef ABI_OPT_JS
 	// HACK: I don't think that perlEvalFile belongs to App

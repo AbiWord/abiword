@@ -41,7 +41,6 @@ public:
 	XAP_Win32ModuleImpl() : m_hMod(0), m_pszErr(0), m_pszModuleName(0) { }
 	~XAP_Win32ModuleImpl()
 	{
-		unload();
 	}
 
 	bool load(const char* name)

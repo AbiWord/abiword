@@ -161,6 +161,11 @@ UT_Error AP_BeOSFrame::_showDocument(UT_uint32 iZoom)
 		
 		EV_BeOSToolbar * pBeOSToolbar = (EV_BeOSToolbar *)m_vecToolbars.getNthItem(k);
 		pBeOSToolbar->bindListenerToView(pView);
+		
+		// We need to put the pointers to our toolbars into the frame data,
+		// for use by the show/hide mechanism.
+		UT_DEBUGMSG(("Inseting Toolbar %d into array\n", k));
+		static_cast<AP_FrameData *>(m_pData)->m_pToolbar[k] = pBeOSToolbar;
 	}
 
 	/****************************************************************
@@ -382,6 +387,18 @@ bool AP_BeOSFrame::initialize()
 	ev_BeOSMouse * pBeOSMouse = static_cast<ev_BeOSMouse *>(m_pMouse);
 	pBeOSMouse->synthesize(m_pBeOSApp, this);
 
+	UT_uint32 nrToolbars = m_vecToolbarLayoutNames.getItemCount();
+	for (UT_uint32 k=0; k < nrToolbars; k++)
+	{			
+		// Set the initial hidden poperty to match what the FrameDate holds.
+		EV_BeOSToolbar * pBeOSToolbar = (EV_BeOSToolbar *)m_vecToolbars.getNthItem(k);
+		UT_ASSERT(pBeOSToolbar);
+		if(!(static_cast<AP_FrameData*> (m_pData)->m_bShowBar[k])) {
+			UT_DEBUGMSG(("Hiding toolbar %d", k));
+			pBeOSToolbar->hide();
+		}	
+	}
+
 	//Actually show the window to the world
 	m_pBeWin->Show();
  	//getTopLevelWindow()->Show();
@@ -436,6 +453,43 @@ UT_Error AP_BeOSFrame::_loadDocument(const char * szFilename, IEFileType ieft)
 	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
 	UNREFP(pNewDoc);
 	return err;
+
+ReplaceDocument:
+	getApp()->forgetClones(this);
+
+	// NOTE: prior document is discarded in _showDocument()
+	m_pDoc = pNewDoc;
+	return UT_OK;
+}
+
+UT_Error AP_BeOSFrame::importDocument(const char * szFilename, int ieft, bool markClean) {
+	// are we replacing another document?
+	if (m_pDoc)
+	{
+		// yep.  first make sure it's OK to discard it, 
+		// TODO: query user if dirty...
+	}
+
+	// load a document into the current frame.
+	// if no filename, create a new document.
+
+	AD_Document * pNewDoc = new PD_Document(getApp());
+	UT_ASSERT(pNewDoc);
+	
+	if (!szFilename || !*szFilename)
+	{
+		pNewDoc->newDocument();
+		m_iUntitled = _getNextUntitledNumber();
+		goto ReplaceDocument;
+	}
+	UT_Error errorCode;
+	errorCode = pNewDoc->importFile(szFilename, ieft, markClean);
+	if (!errorCode)
+		goto ReplaceDocument;
+
+	UT_DEBUGMSG(("ap_Frame: could not open the file [%s]\n",szFilename));
+	UNREFP(pNewDoc);
+	return errorCode;
 
 ReplaceDocument:
 	getApp()->forgetClones(this);
@@ -662,6 +716,24 @@ UT_Error AP_BeOSFrame::_replaceDocument(AD_Document * pDoc)
 	m_pDoc = REFP(pDoc);
 
 	return _showDocument();
+}
+
+void AP_BeOSFrame::toggleBar(UT_uint32 iBarNb, bool bBarOn)
+{
+	UT_DEBUGMSG(("AP_BeOSFrame::toggleBar %d\n", bBarOn));
+
+	AP_FrameData *pFrameData = static_cast<AP_FrameData *> (getFrameData());
+	UT_ASSERT(pFrameData);
+	UT_ASSERT(pFrameData->m_pToolbar);
+	
+	EV_Toolbar *pToolbar = pFrameData->m_pToolbar[iBarNb];
+	
+	UT_ASSERT(pToolbar);
+
+	if (bBarOn)
+		pToolbar->show();
+	else	// turning toolbar off
+		pToolbar->hide();
 }
 
 void AP_BeOSFrame::toggleRuler(bool bRulerOn)

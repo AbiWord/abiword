@@ -138,7 +138,7 @@ void SpellWin::_suggestChange()
 	
 	m_DlgSpell->m_iSelectedRow = suggestList->CurrentSelection();
 	
-	if (!m_DlgSpell->m_Suggestions.count) 
+	if (!m_DlgSpell->m_Suggestions->size()) 
 	{
 		// no change to suggest, ignore it
 		if (m_DlgSpell->m_iSelectedRow != -1)
@@ -162,7 +162,7 @@ void SpellWin::_change(void)
 
 	if (m_DlgSpell->m_iSelectedRow != -1)
 	{
-		replace = m_DlgSpell->m_Suggestions.word[m_DlgSpell->m_iSelectedRow];
+		replace = static_cast<UT_UCSChar *>(m_DlgSpell->m_Suggestions->getNthItem(m_DlgSpell->m_iSelectedRow));
 		m_DlgSpell->changeWordWith(replace);
 	}
 	else
@@ -219,7 +219,7 @@ void SpellWin::_changeAll(void)
 	
 	if (m_DlgSpell->m_iSelectedRow != -1)
 	{
-		replace = (UT_UCSChar*) m_DlgSpell->m_Suggestions.word[m_DlgSpell->m_iSelectedRow];
+		replace = (UT_UCSChar*) m_DlgSpell->m_Suggestions->getNthItem(m_DlgSpell->m_iSelectedRow);
 		m_DlgSpell->addChangeAll(replace);
 		m_DlgSpell->changeWordWith(replace);
 	}
@@ -311,7 +311,7 @@ void SpellWin::_showMisspelledWord(void)
 	sentenceView->MakeEditable(false);
 
 	// insert suggestions
-	if (!m_DlgSpell->m_Suggestions.count) 
+	if (!m_DlgSpell->m_Suggestions->size()) 
 	{
 		const XAP_StringSet * pSS = m_DlgSpell->m_pApp->getStringSet();
 		BStringItem* emptyItem = new BStringItem(pSS->getValue(AP_STRING_ID_DLG_Spell_NoSuggestions));
@@ -321,9 +321,9 @@ void SpellWin::_showMisspelledWord(void)
 	} 
 	else 
 	{
-		for (int i = 0; i < m_DlgSpell->m_Suggestions.count; i++)
+		for (int i = 0; i < m_DlgSpell->m_Suggestions->size(); i++)
 		{
-			p = (UT_UCSChar *) m_DlgSpell->m_Suggestions.word[i];
+			p = (UT_UCSChar *) m_DlgSpell->m_Suggestions->getNthItem(i);
 			len = UT_UCS_strlen(p);
 			if (len)
 			{

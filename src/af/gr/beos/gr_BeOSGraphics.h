@@ -30,6 +30,7 @@ class BeOSFont : public GR_Font {
 public:
 	BeOSFont(BFont *aFont) 	{ m_pBFont = aFont; };
 	BFont *get_font(void) 	{ return(m_pBFont); };
+	
 private:
 	BFont	*m_pBFont;
 };
@@ -44,7 +45,7 @@ public:
 						   int iLength, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void setFont(GR_Font* pFont);
 
-	virtual UT_uint32 getFontHeight();
+
 	//virtual UT_uint32 measureString(const UT_UCSChar*s, int iOffset, int num, unsigned short* pWidths);
 	virtual UT_uint32 measureUnRemappedChar(const UT_UCSChar c);
 	virtual UT_uint32 _getResolution(void) const;
@@ -58,6 +59,11 @@ public:
 							  const char* pszFontStretch, const char* pszFontSize);
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
+	virtual UT_uint32 getFontHeight();
+	virtual UT_uint32 getFontAscent(GR_Font *);
+	virtual UT_uint32 getFontDescent(GR_Font *);
+	virtual UT_uint32 getFontHeight(GR_Font *);
+	
 	
 	virtual void drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints);

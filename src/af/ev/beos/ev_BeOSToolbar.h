@@ -57,37 +57,48 @@ typedef struct {
 #define ITEM_WIDTH 		23
 #define ITEM_HEIGHT		23
 #define ITEM_SEPERATE	5
-#define ITEM_MAX 		20
+#define ITEM_MAX 		50
 
 class EV_BeOSToolbar;
 
 class ToolbarView: public BView {
-	public:
-		ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name, 
-					 uint32 resizeMask, uint32 flags);
-		~ToolbarView();
-				
-		bool AddSeperator();
-		bool AddItem(BBitmap *onbitmap, BBitmap *offbitmap, XAP_Toolbar_Id id , const char* popupString);
-		bool AddItem(BPopUpMenu * menu, int width, XAP_Toolbar_Id id);
-		
-		virtual void Draw(BRect clip);
-		virtual void FrameResized(float width, float height);
-		virtual void MessageReceived(BMessage *msg);
-		virtual	void MouseMoved(BPoint where, uint32 code, const BMessage *msg);
-		tb_item_t *  FindItemByID(XAP_Toolbar_Id id);
-				
-		void 		HighLightItem(int index, int up);
+public:
+	ToolbarView(EV_BeOSToolbar *tb, BRect frame, const char *name, 
+				 uint32 resizeMask, uint32 flags);
+	~ToolbarView();
+			
+	bool AddSeperator();
+	bool AddItem(BBitmap *onbitmap, BBitmap *offbitmap, XAP_Toolbar_Id id , const char* popupString);
+	bool AddItem(BPopUpMenu * menu, int width, XAP_Toolbar_Id id);
+	
+	virtual void Draw(BRect clip);
+	virtual void FrameResized(float width, float height);
+	virtual void MessageReceived(BMessage *msg);
+	
+	virtual	void MouseMoved(BPoint where, uint32 code, const BMessage *msg);
+	virtual void MouseDown(BPoint point);
+	virtual void MouseUp(BPoint point);
+	
+	tb_item_t *  FindItemByID(XAP_Toolbar_Id id);
+			
+	void 		HighLightItem(int index, int up);
 
-		int				item_count, last_highlight;
-		tb_item_t		items[ITEM_MAX];
-		EV_BeOSToolbar	*m_pBeOSToolbar;
-		float		m_fOldWidth;
-		float		m_fOldHeight;
+	int				item_count, last_highlight;
+	
+	// TODO: Change this to a UT_Vector.
+	tb_item_t		items[ITEM_MAX];
+	
+	EV_BeOSToolbar	*m_pBeOSToolbar;
+	float		m_fOldWidth;
+	float		m_fOldHeight;
 		
-		bool m_bDisplayTooltip;
-		class 	TToolTip *fToolTip;
-		long lastToolTipIndex;
+	bool m_bDisplayTooltip;
+	class 	TToolTip *fToolTip;
+	long lastToolTipIndex;
+
+private:
+	int mouseDownItemNo;
+	bool mouseDown;
 };
 
 
@@ -113,15 +124,21 @@ public:
 			 UT_UCSChar * pData,
 			 UT_uint32 dataLength);
 
+	// These are protected on the other platfoms, but not in the base class.
+	// I can't really work out why.  I'll leave them public for the moment.
+	virtual void					show();
+	virtual void					hide();
+
 protected:
 	void 	_releaseListener(void);
-
 
 	XAP_BeOSApp *					m_pBeOSApp;
 	XAP_BeOSFrame *					m_pBeOSFrame;
 	EV_BeOSToolbar_ViewListener *	m_pViewListener;
 	AP_BeOSToolbar_Icons *			m_pBeOSToolbarIcons;
 	ToolbarView						*m_pTBView;
+private:
+	bool							m_bHidden;	
 };
 
 #endif /* EV_BEOSTOOLBAR_H */

@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2001 AbiSource, Inc.
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,23 +24,31 @@
 #include <glib.h>
 #include <gmodule.h>
 
+// The Unix/GLib impl. of XAP_Module interface
+
 class XAP_UnixModule : public XAP_Module 
 {
+	friend class XAP_ModuleManager;
+
+protected:
+	
+	XAP_UnixModule () ;
+	virtual ~XAP_UnixModule (void);
+	
+	virtual bool   load (const char * name);
+	virtual bool   unload (void);
+	
 public:
+	
+	virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
+	virtual bool   getModuleName (char ** dest) const;
+	virtual bool   getErrorMsg (char ** dest) const;
+	
+private:
 
-   XAP_UnixModule () ;
-   virtual ~XAP_UnixModule (void);
-
-   virtual bool   load (const char * name);
-   virtual bool   unload (void);
-   virtual bool   resolveSymbol (const char * symbol_name, void ** symbol);
-   virtual bool   getModuleName (char ** dest) const;
-   virtual bool   getErrorMsg (char ** dest) const;
-
- private:
-   bool m_bLoaded;
-   char * m_szname;
-   GModule * m_module;
+	bool m_bLoaded;
+	char * m_szname;
+	GModule * m_module;
 };
 
 #endif /* XAP_UNIXMODULE_H */

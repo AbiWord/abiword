@@ -64,8 +64,6 @@ public:
 	
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile) = 0;
 
-	virtual XAP_Module*						createModule();
-
 	void									enableAllTopLevelWindows(bool);
 
 protected:
