@@ -171,7 +171,7 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 			}
 			else
 			{			  
-				static UT_UCS4_mbtowc m ("UTF-8");
+				static UT_UCS4_mbtowc m;
 				ucs=new UT_UCSChar[mLength];
 				for(int i=0;i<mLength;++i)
 			  	{
