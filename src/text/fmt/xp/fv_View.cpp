@@ -7608,9 +7608,9 @@ bool FV_View::insertFootnote()
 {
 	fl_DocSectionLayout * pDSL = getCurrentPage()->getOwningSection();
 
-	// can only insert Footnote into an FL_SECTION_DOC
-	if (_findBlockAtPosition(getPoint())->getSectionLayout()
-		      ->getType() != FL_SECTION_DOC)
+	// can only insert Footnote into an FL_SECTION_DOC or a Table
+	fl_SectionLayout * pSL =  _findBlockAtPosition(getPoint())->getSectionLayout();
+	if ( (pSL->getContainerType() != FL_CONTAINER_DOCSECTION) && (pSL->getContainerType() != FL_CONTAINER_CELL) )
 		return false;
 
 	// add field for footnote reference

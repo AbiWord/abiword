@@ -162,7 +162,45 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 			UT_sint32 iContainerHeight = 0;
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
 			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
-				iContainerHeight = static_cast<fp_TableContainer *>(pCurContainer)->getHeightInLayoutUnits();
+			{
+				fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCurContainer);
+				iContainerHeight = pTab->getHeightInLayoutUnits();
+				bool bDoFootnoteDeduction = false;
+				if(!pTab->isThisBroken() && pTab->getFirstBrokenTable())
+				{
+					pTab = pTab->getFirstBrokenTable();
+					bDoFootnoteDeduction = true;
+				}
+//
+// only do the footnote height deduction if the table has been broken.
+//
+				if(pTab->containsFootnoteReference() &&	bDoFootnoteDeduction )
+				{
+					// Ok.  Now, deduct the proper amount from iMaxColHeight.
+
+					// OK get a vector of the footnote containers in this line.
+					UT_Vector vecFootnotes;
+					pTab->getFootnoteContainers(&vecFootnotes);
+					fp_Page *pCurPage = pCurColumn->getPage();
+					// Now loop through all these and add them to the height.
+					UT_sint32 i =0;
+					for(i=0; i< (UT_sint32) vecFootnotes.getItemCount();i++)
+					{
+						fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) vecFootnotes.getNthItem(i);
+						if(pFC->getPage() == NULL || pFC->getPage() != pCurPage)
+						{
+#if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+							iFootnoteHeight += pFC->getHeightInLayoutUnits();
+#else
+							iFootnoteHeight += pFC->getHeight();
+#endif
+						}				
+					}	
+					UT_DEBUGMSG(("got Table footnote section height %d\n", iFootnoteHeight));
+					iWorkingColHeight += iFootnoteHeight;
+
+				}
+			}
 			else
 				iContainerHeight = pCurContainer->getHeightInLayoutUnits();
 
@@ -536,7 +574,48 @@ UT_sint32 fb_ColumnBreaker::breakSection(fl_DocSectionLayout * pSL)
 					}
 				}
 			}
-
+			if(pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer * pCurTable = (fp_TableContainer *) pCurContainer;
+				if(!pCurTable->isThisBroken() && pCurTable->getFirstBrokenTable())
+				{
+					pCurTable = pCurTable->getFirstBrokenTable();
+				}
+				if(pCurTable->isThisBroken())
+				{
+					UT_DEBUGMSG(("About to call containerFootnoteReferenced \n"));
+					if(pCurTable->containsFootnoteReference())
+					{
+						// OK get a vector of the footnote containers in this line.
+						UT_Vector vecFootnotes;
+						pCurTable->getFootnoteContainers(&vecFootnotes);
+						
+					// Now loop through all these and check they're on this
+					// page. If not add them.
+						fp_Page * pCurPage = pCurColumn->getPage();
+						UT_ASSERT(pCurPage);
+						UT_sint32 i =0;
+						for(i=0; i< (UT_sint32) vecFootnotes.getItemCount();i++)
+						{
+							fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) vecFootnotes.getNthItem(i);
+							fp_Page * myPage = pFC->getPage();
+							xxx_UT_DEBUGMSG(("Footnote %x is on Page %x \n",pFC,myPage));
+							if(myPage != pCurPage)
+							{
+								if(myPage == NULL)
+								{
+									pCurPage->insertFootnoteContainer(pFC);
+								}
+								else
+								{
+									myPage->removeFootnoteContainer(pFC);
+									pCurPage->insertFootnoteContainer(pFC);
+								}
+							}
+						}
+					}
+				}
+			}
 //
 // Code to fix order in the column
 //

@@ -375,7 +375,10 @@ bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) pCL;
 		pFL->setFootnoteEndIn();
 		fl_BlockLayout * pBL = (fl_BlockLayout *) pFL->getFirstLayout();
-		pBL->updateEnclosingBlockIfNeeded();
+		if(pBL)
+		{
+			pBL->updateEnclosingBlockIfNeeded();
+		}
 		UT_ASSERT(m_pCurrentSL);
 		break;
 	}

@@ -59,6 +59,8 @@
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "fl_FootnoteLayout.h"
+#include "fp_FootnoteContainer.h"
 
 #define SCALE_TO_SCREEN ((double)(getGraphics()->getResolution()) / UT_LAYOUT_UNITS)
 
@@ -734,6 +736,79 @@ fp_TableContainer * fp_CellContainer::getTopmostTable() const
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
+/*!
+ * Return true if the cell contains footnote references
+ */
+bool fp_CellContainer::containsFootnoteReference(void)
+{
+	fp_Container * pCon = getFirstContainer();
+	bool bFound = false;
+	while(pCon && !bFound)
+	{
+		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		{
+			fp_Line * pLine = (fp_Line *) pCon;
+			if(pLine->containsFootnoteReference())
+			{
+				bFound = true;
+			}
+		}
+		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_TableContainer *pTab = (fp_TableContainer *) pCon;
+			if(pTab->containsFootnoteReference())
+			{
+				bFound = true;
+			}
+		}
+		pCon = (fp_Container *) pCon->getNext();
+	}
+	return bFound;
+}
+
+/*!
+ * This method returns a vector of all the footnote layouts in this cell
+ */
+bool fp_CellContainer::getFootnoteContainers(UT_Vector * pVecFoots)
+{
+	fp_Container * pCon = getFirstContainer();
+	bool bFound = false;
+	while(pCon)
+	{
+		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		{
+			fp_Line * pLine = (fp_Line *) pCon;
+			if(pLine->containsFootnoteReference())
+			{
+				bFound = true;
+				UT_Vector vecFC;
+				pLine->getFootnoteContainers(&vecFC);
+				UT_uint32 i =0;
+				for(i=0; i< vecFC.getItemCount();i++)
+				{
+					pVecFoots->addItem(vecFC.getNthItem(i));
+				}
+			}
+		}
+		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_TableContainer *pTab = (fp_TableContainer *) pCon;
+			if(pTab->containsFootnoteReference())
+			{
+				bFound = true;
+				UT_Vector vecFC;
+				pTab->getFootnoteContainers(&vecFC);
+				UT_uint32 i =0;
+				for(i=0; i< vecFC.getItemCount();i++)
+				{
+					pVecFoots->addItem(vecFC.getNthItem(i));
+				}
+			}
+		}
+ 		pCon = (fp_Container *) pCon->getNext();
+	}
+	return bFound;
+}
 
 /*!
  * Return the x coordinate offset of this cell. 
@@ -1012,11 +1087,30 @@ UT_sint32 fp_CellContainer::wantVBreakAt(UT_sint32 vpos)
 	UT_sint32 i =0;
 	UT_sint32 iYBreak = vpos;
 	fp_Container * pCon;
+	fp_Line * pLine = NULL;
 	for(i=0; i< count; i++)
 	{
 		pCon = (fp_Container *) getNthCon(i);
 		UT_sint32 iY = pCon->getY() + getY();
-		if(iY <= vpos && iY + pCon->getHeight() > vpos)
+		UT_sint32 conHeight = pCon->getHeight();
+		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		{
+			pLine = (fp_Line *) pCon;
+			if(pLine->containsFootnoteReference())
+			{
+				UT_Vector vecFC;
+				if(pLine->getFootnoteContainers(&vecFC))
+				{
+					UT_uint32 k  = 0;
+					for(k=0; k < vecFC.getItemCount(); k++)
+					{
+						fp_FootnoteContainer * pFC = (fp_FootnoteContainer *) vecFC.getNthItem(k);
+						conHeight += pFC->getHeight();
+					}
+				}
+			}
+		}
+		if(iY <= vpos && iY + conHeight > vpos)
 		{
 			//
 			// Container overlaps break point. Find break point in the 
@@ -2583,6 +2677,160 @@ UT_sint32 fp_TableContainer::getHeight(void)
 	UT_sint32 iMyHeight = getYBottom() - getYBreak();
 	return iMyHeight;
 }
+/*!
+ * Return true if the table contains footnote references
+ */
+bool fp_TableContainer::containsFootnoteReference(void)
+{
+	fp_Container * pCon = getFirstContainer();
+	bool bFound = false;
+	while(pCon && !bFound)
+	{
+		if(pCon->getContainerType() == FP_CONTAINER_CELL)
+		{
+			fp_CellContainer * pCell = (fp_CellContainer *) pCon;
+			if(pCell->containsFootnoteReference())
+			{
+				if(isThisBroken())
+				{
+//
+// If broken check to see if the container containing the footnote reference
+// is on screen.
+//
+					fp_Container * pCellCon = pCell->getFirstContainer();
+					while(pCellCon && !bFound)
+					{
+						if(isInBrokenTable(pCell,pCellCon))
+						{
+							if(pCellCon->getContainerType() == FP_CONTAINER_LINE)
+							{
+								fp_Line * pLine = (fp_Line *) pCellCon;
+								if(pLine->containsFootnoteReference())
+								{
+									bFound = true;
+								}
+							}
+							else if(pCellCon->getContainerType() == FP_CONTAINER_TABLE)
+							{
+								fp_TableContainer *pTab = (fp_TableContainer *) pCellCon;
+								if(pTab->containsFootnoteReference())
+								{
+									bFound = true;
+								}
+							}
+						}
+						pCellCon = (fp_Container *) pCellCon->getNext();
+ 					}
+  				}
+				else
+				{
+					bFound = true;
+				}
+			}
+		}
+		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_TableContainer *pTab = (fp_TableContainer *) pCon;
+			bFound = pTab->containsFootnoteReference();
+		}
+		pCon = (fp_Container *) pCon->getNext();
+	}
+	return bFound;
+}
+
+/*!
+ * This method returns a vector of call the footnote layouts in this table
+ */
+bool fp_TableContainer::getFootnoteContainers(UT_Vector * pVecFoots)
+{
+	fp_Container * pCon = getFirstContainer();
+	bool bFound = false;
+	while(pCon)
+	{
+		if(pCon->getContainerType() == FP_CONTAINER_CELL)
+		{
+			fp_CellContainer * pCell = (fp_CellContainer *) pCon;
+			if(pCell->containsFootnoteReference())
+			{
+				if(isThisBroken())
+				{
+//
+// If broken check to see if the container containing the footnote reference
+// is on screen.
+//
+					fp_Container * pCellCon = pCell->getFirstContainer();
+					while(pCellCon)
+					{
+						if(isInBrokenTable(pCell,pCellCon))
+						{
+							if(pCellCon->getContainerType() == FP_CONTAINER_LINE)
+							{
+								fp_Line * pLine = (fp_Line *) pCellCon;
+								if(pLine->containsFootnoteReference())
+								{
+									bFound = true;
+									UT_Vector vecFC;
+									pLine->getFootnoteContainers(&vecFC);
+									UT_uint32 i =0;
+									for(i=0; i< vecFC.getItemCount();i++)
+									{
+										pVecFoots->addItem(vecFC.getNthItem(i));
+									}
+								}
+							}
+							else if(pCellCon->getContainerType() == FP_CONTAINER_TABLE)
+							{
+								fp_TableContainer *pTab = (fp_TableContainer *) pCellCon;
+								if(pTab->containsFootnoteReference())
+								{
+									bFound = true;
+									UT_Vector vecFC;
+									pTab->getFootnoteContainers(&vecFC);
+									UT_uint32 i =0;
+									for(i=0; i< vecFC.getItemCount();i++)
+									{
+										pVecFoots->addItem(vecFC.getNthItem(i));
+									}
+								}
+							}
+						}
+						pCellCon = (fp_Container *) pCellCon->getNext();
+ 					}
+  				}
+				else
+				{
+					UT_Vector vecFC;
+					pCell->getFootnoteContainers(&vecFC);
+					UT_uint32 i =0;
+					for(i=0; i< vecFC.getItemCount();i++)
+					{
+						pVecFoots->addItem(vecFC.getNthItem(i));
+					}
+					bFound = true;
+				}
+			}
+		}
+		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			fp_TableContainer *pTab = (fp_TableContainer *) pCon;
+			bFound = pTab->containsFootnoteReference();
+			if(bFound)
+			{
+				UT_Vector vecFC;
+				pTab->getFootnoteContainers(&vecFC);
+				UT_uint32 i =0;
+				for(i=0; i< vecFC.getItemCount();i++)
+				{
+					pVecFoots->addItem(vecFC.getNthItem(i));
+				}
+			}
+		}
+		pCon = (fp_Container *) pCon->getNext();
+	}
+	return bFound;
+
+}
+
 /*!
  * Return true if the supplied Cell and it's container are within this
  * broken container.

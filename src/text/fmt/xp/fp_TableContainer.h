@@ -126,6 +126,8 @@ public:
 	UT_sint32           getCellY(fp_Line * pLine) const;
 	UT_sint32           getSpannedHeight(void);
 	void                setLineMarkers(void);
+	bool                containsFootnoteReference(void);
+	bool                getFootnoteContainers(UT_Vector * pvecFoots);
     UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
     UT_sint32           getRightAttach(void) const
@@ -383,6 +385,8 @@ public:
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	void                drawLines();
+	bool                containsFootnoteReference(void);
+	bool                getFootnoteContainers(UT_Vector * pvecFoots);
     virtual void        clearScreen(void);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
@@ -427,6 +431,7 @@ public:
 	void                setYBottom(UT_sint32 iBotContainer);
 	bool                isInBrokenTable(fp_CellContainer * pCell, 
 										fp_Container * pCon);
+
 //
 // This is the smallest Y value of the Table allowed in this 
 // broken Table.

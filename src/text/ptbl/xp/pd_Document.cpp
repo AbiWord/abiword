@@ -3348,7 +3348,7 @@ bool PD_Document::setAttrProp(const XML_Char ** ppAttr)
 	}
 
 	bool bRet = VARSET.storeAP(ppAttr, &m_indexAP);
-	UT_DEBUGMSG(( "pd_Document::setAttrProp: document %x storeAP res %d indexAP %d %s \n", this,bRet,m_indexAP));
+	UT_DEBUGMSG(( "pd_Document::setAttrProp: document %x storeAP res %d indexAP %d  \n", this,bRet,m_indexAP));
 
 	if(!bRet)
 		return false;

@@ -4238,7 +4238,7 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 						{
 							return HandleBookmark (RBT_END);
 						}
-#if 0
+#if 1
 //
 // Fixme I need to be able to handle footnotes inside tables in RTF
 //

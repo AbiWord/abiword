@@ -2163,6 +2163,7 @@ void fp_Line::layout(void)
 					 "		 run type %d\n",
 					iX, iXLayoutUnits, ii, iCountRuns, pRun->getType()));
 #if !defined(WITH_PANGO) && defined(USE_LAYOUT_UNITS)
+
 		_calculateWidthOfRun(iX,
 							 iXLayoutUnits,
 							 pRun,
