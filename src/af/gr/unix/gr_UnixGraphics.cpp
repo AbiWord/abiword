@@ -19,6 +19,11 @@
  * 02111-1307, USA.
  */
 
+#undef GDK_DISABLE_DEPRECATED
+#undef GDK_PIXBUF_DISABLE_DEPRECATED
+#undef GTK_DISABLE_DEPRECATED
+#warning POKEY FIX ME I AM DEPRECATED!
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -28,6 +33,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFontManager.h"
 #include "xap_UnixFont.h"
+
 #include "gr_UnixGraphics.h"
 #include "gr_UnixImage.h"
 #include "ut_sleep.h"
