@@ -823,7 +823,7 @@ void fp_Line::clearScreen(void)
 	{
 		return;
 	}
-	xxx_UT_DEBUGMSG(("fp_Line: Doing clearscreen %x \n",this));
+	xxx_UT_DEBUGMSG(("fp_Line: Doing regular full clearscreen %x \n",this));
 	UT_sint32 count = m_vecRuns.getItemCount();
 	if(getPage() && !getPage()->isOnScreen())
 	{
@@ -913,6 +913,7 @@ void fp_Line::clearScreen(void)
 void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 {
 	// need to get _visually_ first run on screen
+	xxx_UT_DEBUGMSG((" _doClearScreenFromRunIndex %d this %x \n",runIndex,this));
 	fp_Run* pRun = static_cast<fp_Run*>(m_vecRuns.getNthItem(_getRunLogIndx(0)));
 	UT_sint32 count = m_vecRuns.getItemCount();
 
@@ -972,6 +973,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 	
 
 	// if we have a valid index to clear from, let's do it ...
+
 	if(static_cast<UT_sint32>(runIndex) < count)
 	{
 		UT_sint32 xoff, yoff;
@@ -1056,11 +1058,13 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 				leftClear = pRun->getAscent()/2;
 		if(getPage() == NULL)
 		{
+			xxx_UT_DEBUGMSG(("pl_Line _doClear no Page \n"));
 			return;
 		}
 //		UT_ASSERT((m_iClearToPos + leftClear - (xoff-xoffLine)) <= getPage()->getWidth());
 		xxx_UT_DEBUGMSG(("Clear from runindex to end height %d \n",getHeight()));
-
+		xxx_UT_DEBUGMSG(("Width of clear %d \n",m_iClearToPos + leftClear - xoff));
+		xxx_UT_DEBUGMSG((" m_iClearToPos %d leftClear %d xoff %d xoffline %d \n",m_iClearToPos,leftClear,xoff,xoffLine));
 		// now we do the clearing
 		if(iDomDirection == FRIBIDI_TYPE_LTR)
 		{
@@ -1068,8 +1072,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 			// to the end of the line
 			pRun->Fill(getGraphics(), xoff - leftClear,
 					   yoff,
-					   m_iClearToPos + leftClear
-					   - (xoff - xoffLine),
+					   m_iClearToPos + leftClear - xoff,
 					   getHeight());
 		}
 		else
@@ -1137,6 +1140,8 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 	}
 	else
 	{
+		xxx_UT_DEBUGMSG(("Invalid run index %d count %d \n",runIndex,count));
+		clearScreen();
 		// no valid indext to clear from ...
 		getBlock()->setNeedsRedraw();
 		setNeedsRedraw();
@@ -1149,7 +1154,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 */
 void fp_Line::clearScreenFromRunToEnd(fp_Run * ppRun)
 {
-	xxx_UT_DEBUGMSG(("Clear 1 from run %x to end \n",ppRun));
+	xxx_UT_DEBUGMSG(("Clear 1 from run %x to end of line %x \n",ppRun,this));
 	if(getBlock()->isHdrFtr())
 	{
 		return;

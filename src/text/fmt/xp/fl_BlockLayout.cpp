@@ -4490,11 +4490,11 @@ bool fl_BlockLayout::doclistener_insertSpan(const PX_ChangeRecord_Span * pcrs)
 
 	if (bNormal && (iNormalBase < i))
 	{
-		xxx_UT_DEBUGMSG(("insertSpan: BlockOffset %d iNormalBase %d i %d \n",blockOffset,iNormalBase,i));
+		UT_DEBUGMSG(("insertSpan: BlockOffset %d iNormalBase %d i %d \n",blockOffset,iNormalBase,i));
 		_doInsertTextSpan(blockOffset + iNormalBase, i - iNormalBase);
 	}
 
-	setNeedsReformat(iNormalBase);
+	setNeedsReformat(blockOffset);
 	updateEnclosingBlockIfNeeded();
 
 	m_pSquiggles->textInserted(blockOffset, len);
