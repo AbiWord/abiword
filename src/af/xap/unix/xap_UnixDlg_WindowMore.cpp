@@ -33,10 +33,6 @@
 #include "xap_Dlg_WindowMore.h"
 #include "xap_UnixDlg_WindowMore.h"
 
-#ifdef HAVE_GNOME
-#include <gnome.h>
-#endif
-
 /*****************************************************************/
 
 XAP_Dialog * XAP_UnixDialog_WindowMore::static_constructor(XAP_DialogFactory * pFactory,

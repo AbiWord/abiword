@@ -23,7 +23,7 @@ SUBDIRS = xp @PLATFORM@
 noinst_LIBRARIES= libEv.a
 
 if WITH_GNOME
-objects = $(ABI_GNOME_OBJECTS)
+objects = $(ABI_OBJECTS) #$(ABI_GNOME_OBJECTS)
 else
 objects = $(ABI_OBJECTS)
 endif

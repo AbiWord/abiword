@@ -35,7 +35,7 @@
 #include "ie_exp.h"
 #include "xap_UnixDialogHelper.h"
 
-#ifdef HAVE_GNOME
+#if 0//def HAVE_GNOME
 #include "ap_UnixGnomeApp.h"
 #else
 #include "ap_UnixApp.h"
@@ -1459,7 +1459,7 @@ abi_widget_map_to_screen(AbiWidget * abi)
 
 		if ( !pApp )
 		  {
-#ifdef HAVE_GNOME
+#if 0//def HAVE_GNOME
 		    pApp = new AP_UnixGnomeApp (pArgs, "AbiWidget");
 #else
 		    pApp = new AP_UnixApp (pArgs, "AbiWidget");

@@ -82,7 +82,7 @@
 #	include "ap_UnixDialog_Download_File.h"
 #endif
 
-#ifdef HAVE_GNOME
+#if 0//def HAVE_GNOME
 #	include "xap_UnixGnomeDlg_About.h"
 #   include "xap_UnixGnomeDlg_ClipArt.h"
 #	include "xap_UnixGnomeDlg_FontChooser.h"
@@ -129,7 +129,7 @@
 
 #else
 
-#   ifdef HAVE_GNOME
+#if 0 //def HAVE_GNOME
     DeclareDialog(XAP_DIALOG_ID_MESSAGE_BOX,	XAP_UnixGnomeDialog_MessageBox)
 	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_UnixDialog_FileOpenSaveAs)
 	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_UnixDialog_FileOpenSaveAs)

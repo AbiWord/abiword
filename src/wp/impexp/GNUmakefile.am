@@ -22,11 +22,7 @@ SUBDIRS= xp @PLATFORM@
 
 noinst_LIBRARIES= libImpExp.a
 
-if WITH_GNOME
-objects = $(ABI_GNOME_OBJECTS)
-else
 objects = $(ABI_OBJECTS)
-endif
 
 libImpExp_a_SOURCES = 
 

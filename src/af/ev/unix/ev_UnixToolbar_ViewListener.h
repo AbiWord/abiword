@@ -31,7 +31,7 @@ class EV_UnixToolbar_ViewListener : public AV_Listener
 public:
 	EV_UnixToolbar_ViewListener(EV_UnixToolbar * pUnixToolbar,
 								AV_View * pView);
-	~EV_UnixToolbar_ViewListener(void);
+	virtual ~EV_UnixToolbar_ViewListener(void);
 	
 	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask);
     virtual AV_ListenerType getType(void) { return AV_LISTENER_TOOLBAR;}

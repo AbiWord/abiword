@@ -38,9 +38,9 @@
 #include "xap_UnixDialogHelper.h"
 #include "xap_Dialog.h"
 
-#ifdef HAVE_GNOME
+#if 0//def HAVE_GNOME
 #include <gnome.h>
-#include <libgnomeui/gnome-window-icon.h>
+#include <gnome-window-icon.h>
 #endif
 
 /*****************************************************************/
@@ -579,14 +579,13 @@ void centerDialog(GtkWidget * parent, GtkWidget * child)
 	gtk_window_set_transient_for(GTK_WINDOW(child),
 				     GTK_WINDOW(parent));
 
-#ifdef HAVE_GNOME
+#if 0//def HAVE_GNOME
 	gnome_window_icon_set_from_default (GTK_WINDOW(child));
 #else
 	GdkPixbuf * icon = gtk_window_get_icon(GTK_WINDOW(parent));	
 	if ( NULL != icon )
 	{
 		gtk_window_set_icon(GTK_WINDOW(child), icon);
-		UT_DEBUGMSG(("DOM: got&set icon: %p\n", icon));
 	}
 #endif
 }

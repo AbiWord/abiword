@@ -43,7 +43,7 @@ class XAP_Frame;
 #elif defined(XP_TARGET_COCOA)
 #include "xap_CocoaApp.h"
 #define XAP_App_BaseClass XAP_CocoaApp
-#elif defined(HAVE_GNOME)
+#elif 0//defined(HAVE_GNOME)
 #include "xap_UnixGnomeApp.h"
 #define XAP_App_BaseClass XAP_UnixGnomeApp
 #else

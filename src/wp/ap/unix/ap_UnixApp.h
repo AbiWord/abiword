@@ -34,7 +34,7 @@
 #include "ap_UnixClipboard.h"
 #include "pt_Types.h"
 
-#ifdef HAVE_GNOME
+#if 0//def HAVE_GNOME
 #include "xap_UnixGnomeApp.h"
 #define XAP_UNIXBASEAPP XAP_UnixGnomeApp
 #else

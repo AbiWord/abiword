@@ -22,7 +22,7 @@
 
 #include "ev_UnixMenu.h"
 
-#ifdef HAVE_GNOME
+#if 0 //def HAVE_GNOME
 #include "gnome/ev_UnixGnomeMenu.h"
 #define EV_UNIXBASEMENU EV_UnixGnomeMenu
 #else

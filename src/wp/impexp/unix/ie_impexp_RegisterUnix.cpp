@@ -18,15 +18,9 @@
  * 02111-1307, USA.
  */
 
-
-
 #include "ie_imp.h"
 #include "ie_exp.h"
 #include "ie_impexp_Register.h"
-
-#if defined(HAVE_GNOME)
-	void IE_ImpExp_RegisterGnome (void);
-#endif
 
 /*!
   Register all GNOME Importer and Exporter
@@ -34,8 +28,5 @@
  */
 void IE_ImpExp_RegisterPlatform ()
 {
-#if defined(HAVE_GNOME)
-	IE_ImpExp_RegisterGnome ();
-#endif
 }
     

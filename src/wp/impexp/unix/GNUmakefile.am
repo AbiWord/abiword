@@ -18,10 +18,6 @@
 
 include $(top_srcdir)/includes.mk
 
-if WITH_GNOME
-SUBDIRS = gnome
-endif
-
 INCLUDES= $(PSICONV_INCLUDES) $(WP_INCLUDES) \
 	$(TEXT_INCLUDES) $(AF_INCLUDES)  $(ICONV_INCLUDES) \
 	$(LIBPNG_INCLUDES) $(OTHER_INCLUDES)  \

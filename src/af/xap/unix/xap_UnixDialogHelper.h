@@ -62,11 +62,6 @@ gint searchCList(GtkCList * clist, char * compareText);
 //		checkbutton/button.  It will also set the accel-groups 
 void createLabelAccelerators( GtkWidget * widget );
 
-#ifdef HAVE_GNOME
-#include <libgnomeui-2.0/gnome.h>
-void setDefaultButton (GnomeDialog * dlg, int which);
-#endif
-
 GtkStyle * get_ensured_style (GtkWidget * w);
 
 // creates a GtkDrawingArea, and pushes/pops correct visual and colormap
