@@ -57,6 +57,8 @@ AP_CocoaDialog_WordCount::~AP_CocoaDialog_WordCount(void)
 	// 
 }
 
+
+
 /*****************************************************************/
 
 void  AP_CocoaDialog_WordCount::activate(void)
@@ -73,6 +75,7 @@ void AP_CocoaDialog_WordCount::runModeless(XAP_Frame * pFrame)
 	[m_dlg setXAPOwner:this];
 
 	NSWindow * window = [m_dlg window];
+	localizeDialog();
 
 	/* Save dialog the ID number and pointer to the widget
 	 */
@@ -112,7 +115,7 @@ void AP_CocoaDialog_WordCount::event_Update(void)
 {
 	setCountFromActiveFrame();
 
-	_updateWindowData();
+	updateDialogData();
 }
 
 void AP_CocoaDialog_WordCount::event_CloseWindow(void)
@@ -144,15 +147,6 @@ void AP_CocoaDialog_WordCount::destroy(void)
 	m_dlg = nil;
 }
 
-void AP_CocoaDialog_WordCount::_updateWindowData(void)
-{
-	[m_dlg setCounts:&m_count];
-}
-
-void AP_CocoaDialog_WordCount::_populateWindowData(void)
-{
-	// 
-}
 
 @implementation AP_CocoaDialog_WordCountController
 
@@ -177,17 +171,6 @@ void AP_CocoaDialog_WordCount::_populateWindowData(void)
 
 - (void)windowDidLoad
 {
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-
-	LocalizeControl([self window],     pSS, AP_STRING_ID_DLG_WordCount_WordCountTitle);
-
-	LocalizeControl(_wordCount,        pSS, AP_STRING_ID_DLG_WordCount_Words);
-	LocalizeControl(_paraLabel,        pSS, AP_STRING_ID_DLG_WordCount_Paragraphs);
-	LocalizeControl(_charSpaceLabel,   pSS, AP_STRING_ID_DLG_WordCount_Characters_Sp);
-	LocalizeControl(_charNoSpaceLabel, pSS, AP_STRING_ID_DLG_WordCount_Characters_No);
-	LocalizeControl(_linesLabel,       pSS, AP_STRING_ID_DLG_WordCount_Lines);
-	LocalizeControl(_pageLabel,        pSS, AP_STRING_ID_DLG_WordCount_Pages);
-
 	NSPanel * panel = (NSPanel *) [self window];
 
 	[panel setBecomesKeyOnlyIfNeeded:YES];
@@ -198,14 +181,69 @@ void AP_CocoaDialog_WordCount::_populateWindowData(void)
 	_xap->event_CloseWindow();
 }
 
-- (void)setCounts:(FV_DocCount *)count
+
+- (XAP_CocoaWidget*)getWidget(int wid)
 {
-	[_wordCount        setIntValue:count->word ];
-	[_paraCount        setIntValue:count->para ];
-	[_charSpaceCount   setIntValue:count->ch_sp];
-	[_charNoSpaceCount setIntValue:count->ch_no];
-	[_linesCount       setIntValue:count->line ];
-	[_pageCount        setIntValue:count->page ];
+	switch(wid) {
+	case AP_Dialog_WordCount::DIALOG_WID:
+		return new XAP_CocoaWidget([self window]);
+		break;
+	case AP_Dialog_WordCount::CLOSE_BTN_WID:
+		return new XAP_CocoaWidget(NULL);
+		break;
+	case AP_Dialog_WordCount::TITLE_LBL_WID:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		return NULL;
+		break;
+	case AP_Dialog_WordCount::PAGES_LBL_WID:
+		return new XAP_CocoaWidget(_pageLabel);
+		break;
+	case AP_Dialog_WordCount::PAGES_VAL_WID:
+		return new XAP_CocoaWidget(_pageCount);
+		break;
+	case AP_Dialog_WordCount::LINES_LBL_WID:
+		return new XAP_CocoaWidget(_linesLabel);
+		break;
+	case AP_Dialog_WordCount::LINES_VAL_WID:
+		return new XAP_CocoaWidget(_linesCount);
+		break;
+	case AP_Dialog_WordCount::CHARNSP_LBL_WID:
+		return new XAP_CocoaWidget(_charNoSpaceLabel);
+		break;
+	case AP_Dialog_WordCount::CHARNSP_VAL_WID:
+		return new XAP_CocoaWidget(_charNoSpaceCount);
+		break;
+	case AP_Dialog_WordCount::CHARSP_LBL_WID:
+		return new XAP_CocoaWidget(_charSpaceLabel);
+		break;
+	case AP_Dialog_WordCount::CHARSP_VAL_WID:
+		return new XAP_CocoaWidget(_charSpaceCount);
+		break;
+	case AP_Dialog_WordCount::PARA_LBL_WID:
+		return new XAP_CocoaWidget(_paraLabel);
+		break;
+	case AP_Dialog_WordCount::PARA_VAL_WID:
+		return new XAP_CocoaWidget(_paraCount);
+		break;
+	case AP_Dialog_WordCount::WORDS_LBL_WID:
+		return new XAP_CocoaWidget(_wordLabel);
+		break;
+	case AP_Dialog_WordCount::WORDS_VAL_WID:
+		return new XAP_CocoaWidget(_wordCount);
+		break;
+	case AP_Dialog_WordCount::WORDSNF_LBL_WID:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		return NULL;
+		break;
+	case AP_Dialog_WordCount::WORDSNF_VAL_WID:
+		UT_ASSERT(UT_NOT_IMPLEMENTED);
+		return NULL;
+		break;		
+	default:
+		UT_ASSERT(UT_NOT_REACHED);
+	}
+	return NULL;
 }
+
 
 @end

@@ -421,6 +421,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/af/xap/cocoa/GNUmakefile
  src/af/xap/qnx/GNUmakefile
  src/af/xap/unix/GNUmakefile
+ src/af/xap/unix/t/GNUmakefile
  src/af/xap/unix/gnome/GNUmakefile
  src/other/GNUmakefile
  src/other/spell/GNUmakefile
@@ -460,6 +461,7 @@ AC_CONFIG_FILES([GNUmakefile
  src/wp/main/unix/GNUmakefile
  src/wp/test/GNUmakefile
  src/wp/test/xp/GNUmakefile
+ src/wp/test/unix/GNUmakefile
  src/tools/GNUmakefile
  src/tools/cdump/GNUmakefile
  src/tools/cdump/xp/GNUmakefile

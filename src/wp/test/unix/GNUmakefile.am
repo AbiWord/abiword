@@ -1,6 +1,5 @@
 ## AbiSource Applications
-## Copyright (C) 2001 Sam Tobin-Hochstadt
-## Copyright (C) 2005 Hubert Figuiere
+## Copyright (C) 2004 Hubert Figuiere <hfiguiere@teaser.fr>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -17,23 +16,21 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
 ## 02111-1307, USA.
 
+
 include $(top_srcdir)/includes.mk
 
-SUBDIRS = xp @PLATFORM@
+TESTS = AbiWord-test
 
-noinst_LIBRARIES= libXap.a
-check_LIBRARIES = libTestXap.a 
+check_PROGRAMS = AbiWord-test
 
-if WITH_GNOME
-objects = $(ABI_OBJECTS) $(ABI_GNOME_OBJECTS)
-else
-objects = $(ABI_OBJECTS)
-endif
+INCLUDES = \
+	$(AF_INCLUDES) $(WP_INCLUDES) $(OTHER_INCLUDES) $(TEXT_INCLUDES)
 
-libXap_a_SOURCES = 
+REPEAT_LIBS = $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS) $(ABI_LIBS)
 
-libXap_a_LIBADD = $(objects) 
+AbiWord_test_LDFLAGS = -Wl,-whole-archive $(ABI_TEST_LIBS) -Wl,-no-whole-archive
 
-libTestXap_a_SOURCES =
+AbiWord_test_LDADD =  $(ABI_TEST_LIBS) $(REPEAT_LIBS) $(PLATFORM_LIBS) $(OTHER_LIBS)
 
-libTestXap_a_LIBADD = @PLATFORM@/t/*.o
+AbiWord_test_SOURCES = test_main.cpp 
+

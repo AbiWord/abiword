@@ -1,5 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,12 +28,14 @@
 #include "xap_DialogFactory.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
+#include "xap_Widget.h"
 
 /*****************************************************************/
 
 XAP_Dialog::XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id,
 		       const char * helpUrl )
-  : m_pApp ( NULL ), m_pDlgFactory ( pDlgFactory ), m_id ( id ), m_helpUrl(NULL)
+  : m_pApp ( NULL ), m_pDlgFactory ( pDlgFactory ), m_id ( id ), 
+	m_helpUrl(NULL)
 {
   m_pApp = pDlgFactory->getApp();
 
@@ -45,6 +48,30 @@ XAP_Dialog::XAP_Dialog(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id,
 XAP_Dialog::~XAP_Dialog(void)
 {
 	delete m_helpUrl;
+}
+
+
+int XAP_Dialog::getWidgetValueInt(xap_widget_id wid)
+{
+	XAP_Widget *w =	getWidget(wid);
+	int retval = w->getValueInt();
+	delete w;
+	return retval;
+}
+
+
+void XAP_Dialog::setWidgetValueInt(xap_widget_id wid, int value)
+{
+	XAP_Widget *w = getWidget(wid);
+	w->setValueInt(value);
+	delete w;
+}
+
+void XAP_Dialog::setWidgetLabel(xap_widget_id wid, const UT_UTF8String &val)
+{
+	XAP_Widget *w = getWidget(wid);
+	w->setLabel(val);
+	delete w;
 }
 
 /*****************************************************************/

@@ -29,6 +29,7 @@
 #include "ap_Dialog_WordCount.h"
 #include "ut_timer.h"
 
+class XAP_CocoaWidget;
 class AP_CocoaDialog_WordCount;
 
 @interface AP_CocoaDialog_WordCountController : NSWindowController <XAP_CocoaDialogProtocol>
@@ -47,7 +48,7 @@ class AP_CocoaDialog_WordCount;
     IBOutlet NSTextField *_wordLabel;
 	AP_CocoaDialog_WordCount*	_xap;
 }
-- (void)setCounts:(FV_DocCount*)count;
+- (XAP_CocoaWidget*)getWidget(int wid);
 @end
 
 /*****************************************************************/
@@ -69,11 +70,13 @@ public:
 
 	virtual void			event_Update(void);
 	void 					event_CloseWindow(void);
+protected:
+	virtual XAP_Widget *getWidget(xap_widget_id wid)
+	{
+		return [m_dlg getWidget:(int)wid];
+	}
 
 private:
-	void				_populateWindowData(void);
-	void 				_updateWindowData(void);       
-
 	UT_Timer * m_pAutoUpdateWC;
 
 	// Handshake variables

@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
+ * Copyright (C) 2005 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,12 +47,13 @@ public:
 	void			event_WindowDelete(void);
 
 protected:
+	virtual XAP_Widget *getWidget(xap_widget_id wid);
+	virtual void constructDialog(void);
 
 	static void s_response(GtkWidget * wid, gint id, AP_UnixDialog_WordCount * me ) ;
 
 	// private construction functions
-	GtkWidget * _constructWindow(void);
-	void 				_updateWindowData(void);
+//	GtkWidget * _constructWindow(void);
 
 	static void                     autoupdateWC(UT_Worker * pTimer);
 
@@ -66,6 +68,13 @@ protected:
 	GtkWidget * m_labelCNCount;
 	GtkWidget * m_labelLCount;	
 	GtkWidget * m_labelPgCount;	
+	GtkWidget * m_labelLabelWCount;
+	GtkWidget * m_labelWNFCount;
+	GtkWidget * m_labelLabelPCount;
+	GtkWidget * m_labelLabelCCount;
+	GtkWidget * m_labelLabelCNCount;
+	GtkWidget * m_labelLabelLCount;	
+	GtkWidget * m_labelLabelPgCount;	
 	GtkWidget * m_labelTitle;
 
 	UT_Timer * m_pAutoUpdateWC;

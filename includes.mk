@@ -1,6 +1,6 @@
 ## AbiSource Applications
 ## Copyright (C) 2001 Sam Tobin-Hochstadt
-## Copyright (C) 2001 Hubert Figuiere <hfiguiere@teaser.fr>
+## Copyright (C) 2001, 2005 Hubert Figuiere <hfiguiere@teaser.fr>
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License
@@ -138,6 +138,7 @@ endif
 ABI_TEST_LIBS=$(top_builddir)/src/af/util/libTestUtil.a
 ABI_TEST_LIBS+=$(top_builddir)/src/text/ptbl/xp/t/libTestPtbl.a
 ABI_TEST_LIBS+=$(top_builddir)/src/af/tf/libTF.a
+ABI_TEST_LIBS+=$(top_builddir)/src/af/xap/libTestXap.a
 
 # we don't assume that WITH_GNOME => unix, on the off chance that
 # someday it won't

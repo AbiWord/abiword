@@ -44,8 +44,34 @@ public:
         void                                    ConstructWindowName(void);
 
         void                                    setActiveFrame(XAP_Frame *pFrame);
+	// must be public for Cocoa, because I can't make an Obj-C class
+	// be friend of a C++ class. Not a big deal.
+	enum {
+		DIALOG_WID,
+		CLOSE_BTN_WID,
+		TITLE_LBL_WID,
+		PAGES_LBL_WID,
+		PAGES_VAL_WID,
+		LINES_LBL_WID,
+		LINES_VAL_WID,
+		CHARSP_LBL_WID,
+		CHARSP_VAL_WID,
+		CHARNSP_LBL_WID,
+		CHARNSP_VAL_WID,
+		PARA_LBL_WID,
+		PARA_VAL_WID,
+		WORDS_LBL_WID,
+		WORDS_VAL_WID,
+		WORDSNF_LBL_WID,
+		WORDSNF_VAL_WID
+	};
+
 
 protected:
+
+	virtual void localizeDialog(void);
+	virtual void updateDialogData(void);
+
 	AP_Dialog_WordCount::tAnswer		m_answer;
 	FV_DocCount							m_count;
 	char m_WindowName[100];
