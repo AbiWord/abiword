@@ -1005,6 +1005,11 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 				iNextCtrHeight = 12*14; //average height!
 			}
 			bool bForce = (pageHeight + 2*iNextCtrHeight) >= pTmpPage->getAvailableHeight();
+//
+// Note that the HdrFtr Shadows are created BEFORE the columns are placed
+// on the page.
+//
+
 			if (m_bForceNewPage || bForce)
 			{
 				if (pTmpPage->getNext())
@@ -2952,8 +2957,9 @@ fl_ContainerLayout* fl_HdrFtrSectionLayout::findMatchingContainer(fl_ContainerLa
 		}
 		else if(bInTable && (ppBL->getNext() == NULL))
 		{
-			if(ppBL->getContainerType() == FL_CONTAINER_CELL)
+			if(ppBL->myContainingLayout()->getNext() == NULL)
 			{
+				ppBL = ppBL->myContainingLayout();
 				ppBL = ppBL->myContainingLayout()->getNext();
 				bInTable = false;
 			}
@@ -3368,14 +3374,20 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_deleteStrux(fl_ContainerLayout* pBL,
 		// Find matching block in this shadow.
 
 		pShadowBL = pPair->getShadow()->findMatchingContainer(pBL);
-		bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteStrux(pcrx)
-			&& bResult;
+		if(pShadowBL)
+		{
+			bResult = static_cast<fl_BlockLayout *>(pShadowBL)->doclistener_deleteStrux(pcrx)
+				&& bResult;
+		}
 	}
 	// Update the overall block too.
 
 	m_pDoc->allowChangeInsPoint();
 	pBL = findMatchingContainer(pBL);
-   	bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteStrux(pcrx) && bResult;
+	if(pBL)
+	{
+		bResult = static_cast<fl_BlockLayout *>(pBL)->doclistener_deleteStrux(pcrx) && bResult;
+	}
 	return bResult;
 }
 
@@ -3920,8 +3932,9 @@ fl_ContainerLayout* fl_HdrFtrShadow::findMatchingContainer(fl_ContainerLayout* p
 		}
 		else if(bInTable && (ppBL->getNext() == NULL))
 		{
-			if(ppBL->getContainerType() == FL_CONTAINER_CELL)
+			if(ppBL->myContainingLayout()->getNext() == NULL)
 			{
+				ppBL = ppBL->myContainingLayout();
 				ppBL = ppBL->myContainingLayout()->getNext();
 				bInTable = false;
 			}
@@ -3934,6 +3947,10 @@ fl_ContainerLayout* fl_HdrFtrShadow::findMatchingContainer(fl_ContainerLayout* p
 		{
 			ppBL = ppBL->getNext();
 		}
+	}
+	if(ppBL == NULL)
+	{
+		m_pDoc->miniDump(pBL->getStruxDocHandle(),6);
 	}
 	UT_ASSERT(ppBL);
 	xxx_UT_DEBUGMSG(("Search for block in shadow %x \n",this));

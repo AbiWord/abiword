@@ -1812,10 +1812,6 @@ void fp_ShadowContainer::draw(dg_DrawArgs* pDA)
 //
 // Clip to keep inside header/footer container
 //
-		if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
-		{
-			UT_DEBUGMSG(("Tbale in shadow draw \n"));
-		}
 		if(iY > getMaxHeight())
 			break;
 		pContainer->draw(&da);

@@ -214,9 +214,9 @@ fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon)
 }
 
 /*!
- * This Method returns the column that embeds the container given.
+ * This Method returns the column or shadow that embeds the container given.
  */
-fp_Column * fp_CellContainer::getColumn(fp_Container * pCon)
+fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * pCon)
 {
 	fp_TableContainer * pBroke = getBrokenTable(pCon);
 	if(pBroke == NULL)
@@ -245,6 +245,10 @@ fp_Column * fp_CellContainer::getColumn(fp_Container * pCon)
 			if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
 			{
 				pCol = static_cast<fp_Column *>(pCon);
+			}
+			else if(pCon->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
+			{
+				return static_cast<fp_VerticalContainer *>(pCon);
 			}
 			else
 			{
@@ -296,7 +300,7 @@ fp_Column * fp_CellContainer::getColumn(fp_Container * pCon)
     {
 		xxx_UT_DEBUGMSG(("getColumn in table got column %x \n",pCol));
 	}
-	return pCol;
+	return static_cast<fp_VerticalContainer *>(pCol);
 }
 
 bool fp_CellContainer::containsNestedTables(void)
@@ -3926,8 +3930,7 @@ fp_Page * fp_TableContainer::getPage(void)
 		// associated with this broken table.
 		//
 		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getContainer());
-		pCol = pCell->getColumn(this);
-		return pCol->getPage();
+		return pCell->getColumn(this)->getPage();
 	}
 	return fp_Container::getPage();
 }

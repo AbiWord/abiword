@@ -348,6 +348,10 @@ void fl_TableLayout::format(void)
 		getNewContainer(NULL);
 		bRebuild = true;
 	}
+	else if( getFirstContainer()->countCons() == 0)
+	{
+		bRebuild = true;
+	}
 	if(isDirty())
 	{
 		UT_DEBUGMSG(("TableLayout Mark All runs dirty \n"));

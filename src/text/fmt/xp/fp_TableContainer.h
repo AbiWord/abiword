@@ -119,7 +119,7 @@ public:
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
 	fp_TableContainer * getBrokenTable(fp_Container * pCon);
-	fp_Column *         getColumn(fp_Container *pCon);
+	fp_VerticalContainer * getColumn(fp_Container *pCon);
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
