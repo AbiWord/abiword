@@ -1424,6 +1424,7 @@ void FV_View::insertParagraphBreak(void)
 	// But first check to see if we're in a list and the current block is
 	// otherwise blank.
 	//
+	m_pDoc->disableListUpdates();
 	fl_BlockLayout * pBlock = getCurrentBlock();
 	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
 	if(isCurrentListBlockEmpty() == UT_TRUE)
@@ -1443,10 +1444,10 @@ void FV_View::insertParagraphBreak(void)
 	}
 
 	m_pDoc->insertStrux(getPoint(), PTX_Block);
-	_generalUpdate();
-	sdh = getCurrentBlock()->getStruxDocHandle();
-	getCurrentBlock()->format();
-	m_pDoc->listUpdate(sdh);
+//	_generalUpdate();
+//	sdh = getCurrentBlock()->getStruxDocHandle();
+//	getCurrentBlock()->format();
+//	m_pDoc->listUpdate(sdh);
 	if(bBefore == UT_TRUE)
 	{
 	          fl_BlockLayout * pPrev = getCurrentBlock()->getPrev();
@@ -1456,7 +1457,11 @@ void FV_View::insertParagraphBreak(void)
 	}
 	m_pDoc->endUserAtomicGlob();
 
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
 	_generalUpdate();
+
 	if (!_ensureThatInsertionPointIsOnScreen())
 	{
 		_fixInsertionPointCoords();
@@ -2547,7 +2552,10 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
         const XML_Char * properties[] = { (XML_Char*)"font-family", NULL, 0};
 	const XML_Char ** props_in = NULL;
 	const XML_Char * currentfont;
-  
+	UT_Bool bisList = UT_FALSE;
+ 	fl_BlockLayout * curBlock = NULL;
+ 	fl_BlockLayout * nBlock = NULL;
+ 
 	if (!isSelectionEmpty())
 	{
 	        m_pDoc->disableListUpdates();
@@ -2574,16 +2582,23 @@ void FV_View::cmdCharDelete(UT_Bool bForward, UT_uint32 count)
 		{
 		      if(isTabListBehindPoint() == UT_TRUE)
 		      {
-			     fl_BlockLayout * curBlock = _findBlockAtPosition(getPoint()); 
-			     fl_BlockLayout * nBlock = _findBlockAtPosition(getPoint()-2);
+			     curBlock = _findBlockAtPosition(getPoint()); 
+			     nBlock = _findBlockAtPosition(getPoint()-2);
 			     if(nBlock == curBlock)
-			       count = 2; //sevior was 2
+			     {
+			               count = 2;
+				       bisList = UT_TRUE;
+			     }       
 		      }
 		}
 	        if((bForward == UT_TRUE) && (count == 1))
 		{
 		      if(isTabListAheadPoint() == UT_TRUE)
+		      {
 			     count = 2;
+			     bisList = UT_TRUE;
+		      }       
+
 		}
 	  /*
 	    Code to deal with font boundary problem. 
@@ -2637,12 +2652,18 @@ deleted.
 
 		if (amt > 0)
 		{
-		  //  m_pDoc->disableListUpdates();
+		        m_pDoc->disableListUpdates();
 
 	      		m_pDoc->deleteSpan(posCur, posCur+amt);
-			// restore updates and clean up dirty lists
-			//	m_pDoc->enableListUpdates();
-			//m_pDoc->updateDirtyLists();
+ 			nBlock = _findBlockAtPosition(getPoint());
+ 			if(nBlock->getAutoNum() != NULL && nBlock->isListLabelInBlock() == UT_FALSE)
+ 			{
+ 			        nBlock->remItemFromList();
+ 			}
+ 			
+                         // restore updates and clean up dirty lists
+ 			m_pDoc->enableListUpdates();
+  			m_pDoc->updateDirtyLists();
 
 			if(fontFlag)
 			  {
@@ -5512,12 +5533,11 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	else
 	{
 		m_iInsPoint -= countChars;
-		if (m_iInsPoint < posBOD)
-		{
-			m_iInsPoint = posBOD;
-		}
+//		if (m_iInsPoint < posBOD)
+//		{
+//			m_iInsPoint = posBOD;
+//		}
 		_findPositionCoords(m_iInsPoint, UT_FALSE, x, y, uheight, &pBlock, &pRun);
-		//		while(pRun != NULL && (pRun->isField() == UT_TRUE || pRun->getType() == FPRUN_FIELD) && m_iInsPoint > posBOD)
 		while(pRun != NULL && pRun->isField() == UT_TRUE && m_iInsPoint > posBOD)
 		{
 			m_iInsPoint--;

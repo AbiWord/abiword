@@ -53,7 +53,6 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	m_iStartValue(start),
 	m_iAsciiOffset(0),
 	m_bUpdatingItems(UT_FALSE),
-	m_bUpdate(UT_TRUE),
 	m_bDirty(UT_FALSE),
 	m_ioffset(0),
 	m_bWordMultiStyle(UT_TRUE),
@@ -86,7 +85,6 @@ fl_AutoNum::fl_AutoNum(	UT_uint32 id,
 	m_iStartValue(start),
 	m_iAsciiOffset(0),
 	m_bUpdatingItems(UT_FALSE),
-	m_bUpdate(UT_TRUE),
 	m_bDirty(UT_FALSE),
 	m_ioffset(0),
 	m_bWordMultiStyle(UT_TRUE),
@@ -504,6 +502,7 @@ List_Type fl_AutoNum::getType(void)
 void fl_AutoNum::setStartValue(UT_uint32 start)
 {
 	m_iStartValue = start;
+        m_bDirty = UT_TRUE;
 	_updateItems(0,NULL);
 }
 
@@ -517,12 +516,6 @@ UT_uint32 fl_AutoNum::getStartValue32(void)
 {
 	return m_iStartValue;
 }
-
-void fl_AutoNum::setUpdatePolicy( UT_Bool bUpdate)
-{
-        m_bUpdate = bUpdate;
-}
-
 
 void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLast, UT_uint32 depth)
 {
@@ -538,6 +531,7 @@ void fl_AutoNum::insertFirstItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pLas
 
 	if (m_pParent)
 	{
+	  UT_DEBUGMSG(("SEVIOR: setting parent item \n"));
 		m_pParentItem = pLast;
 		m_bDirty = UT_TRUE;
 	}
@@ -567,7 +561,7 @@ void fl_AutoNum::insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pPrev)
 	m_bDirty = UT_TRUE;
 	ndx = m_pItems.findItem((void *) pPrev) + 1;
 	m_pItems.insertItemAt((void *) pItem, ndx);
-	if(m_bUpdate == UT_FALSE)
+	if(m_pDoc->areListUpdatesAllowed() == UT_FALSE)
 	       return;
 
 	// scan through all the lists and update parent pointers
@@ -604,7 +598,7 @@ void fl_AutoNum::prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pNext)
 	        pPrev = m_pItems.getNthItem(ndx-1);
 	}
 	m_pItems.insertItemAt((void *) pItem, ndx);
-	if(m_bUpdate == UT_FALSE)
+	if(m_pDoc->areListUpdatesAllowed() == UT_FALSE)
 	        return;
 	if(pPrev != NULL)
 	{
@@ -674,7 +668,7 @@ void fl_AutoNum::removeItem(PL_StruxDocHandle pItem)
 				pAuto->m_bDirty = UT_TRUE;
 				pAuto->setParentItem(getParentItem());
 			}
-			if(m_bUpdate)
+			if(m_pDoc->areListUpdatesAllowed() == UT_TRUE)
 			        pAuto->_updateItems(0,NULL);
 		}
 	}
@@ -718,7 +712,7 @@ fl_AutoNum * fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh)
 {
 	UT_sint32 i;
 	fl_AutoNum * pAuto;
-	if(m_bUpdate == UT_FALSE)
+	if(m_pDoc->areListUpdatesAllowed() == UT_FALSE)
 	{
 	        if(isItem(sdh) == UT_FALSE)
 	        {
@@ -835,7 +829,7 @@ void fl_AutoNum::_updateItems(UT_uint32 start, PL_StruxDocHandle notMe)
 {
   //	UT_DEBUGMSG(("Entering _updateItems\n"));
 	UT_sint32 j;
-	if(m_bUpdate == UT_TRUE)
+	if(m_pDoc->areListUpdatesAllowed() == UT_TRUE)
 	{
 		UT_sint32 numlists = m_pDoc->getListsCount();
 		m_bUpdatingItems = UT_TRUE;

@@ -59,7 +59,7 @@ struct _dataItemPair
 //////////////////////////////////////////////////////////////////
 
 PD_Document::PD_Document()
-	: AD_Document(), m_hashDataItems(11)
+  : AD_Document(), m_hashDataItems(11)
 {
 	m_pPieceTable = NULL;
 
@@ -67,6 +67,7 @@ PD_Document::PD_Document()
 	// but now we just depend on save() never being called without
 	// a previous saveAs() (which specifies a type)
 	m_lastSavedAsType = IEFT_AbiWord_1;
+	m_ballowListUpdates = UT_FALSE;
 }
 
 PD_Document::~PD_Document()
@@ -1124,31 +1125,21 @@ UT_Bool PD_Document::appendList(const XML_Char ** attributes)
 	return UT_TRUE;
 }
 
+UT_Bool PD_Document::areListUpdatesAllowed(void)
+{
+        return m_ballowListUpdates;
+}
+ 
 void PD_Document::disableListUpdates(void)
 {
-	UT_uint32 iNumLists = m_vecLists.getItemCount();
-	UT_uint32 i;
-	fl_AutoNum * pAutoNum;
-	for(i=0; i< iNumLists; i++)
-	{
-		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
-		pAutoNum->setUpdatePolicy(UT_FALSE);
-	}
+        m_ballowListUpdates = UT_FALSE;
 }
-
-
+   
 void PD_Document::enableListUpdates(void)
 {
-	UT_uint32 iNumLists = m_vecLists.getItemCount();
-	UT_uint32 i;
-	fl_AutoNum * pAutoNum;
-	for(i=0; i< iNumLists; i++)
-	{
-		pAutoNum = (fl_AutoNum *) m_vecLists.getNthItem(i);
-		pAutoNum->setUpdatePolicy(UT_TRUE);
-	}
+        m_ballowListUpdates = UT_TRUE;
 }
-
+  
 void PD_Document::updateDirtyLists(void)
 {
 	UT_uint32 iNumLists = m_vecLists.getItemCount();

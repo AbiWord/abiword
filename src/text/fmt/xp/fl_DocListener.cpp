@@ -80,7 +80,7 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pL);
 			if(pBL->getPrev()!= NULL && pBL->getPrev()->getLastLine()==NULL)
 			{
-			        UT_DEBUGMSG(("In DocListner no LastLine Fixing this now \n"));
+			        UT_DEBUGMSG(("In DocListner no LastLine in Previous Block Fixing this now \n"));
 			        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
 				pBL->getPrev()->format();
 				
@@ -92,7 +92,7 @@ UT_Bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 			bResult = pBLSL->bl_doclistener_populateSpan(pBL, pcrs, blockOffset, len);
 			if(pBL->getLastLine()==NULL)
 			{
-			        UT_DEBUGMSG(("In  DocListner no LastLine fixing this now \n"));
+			        UT_DEBUGMSG(("In  DocListner no LastLine in this block fixing this now \n"));
 				UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
 				pBL->format();
 				//UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -265,6 +265,14 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 			m_pLayout->queueBlockForBackgroundCheck(reason, pBL,UT_TRUE);
 		}
 		*psfh = (PL_StruxFmtHandle)pBL;
+       		if(pBL->getLastLine()==NULL)
+		{
+			        UT_DEBUGMSG(("In DocListner no LastLine in block append. Fixing this now \n"));
+			        UT_DEBUGMSG(("getPrev = %d this = %d \n",pBL->getPrev(),pBL));
+				pBL->format();
+				
+		}
+
 	}
 	break;
 			

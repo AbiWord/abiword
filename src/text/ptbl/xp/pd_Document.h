@@ -196,6 +196,8 @@ public:
 	void            disableListUpdates(void);
 	void            enableListUpdates(void);
 	void            updateDirtyLists(void);
+	UT_Bool         areListUpdatesAllowed(void);
+ 
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 #endif
@@ -205,7 +207,7 @@ protected:
 
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
-
+	UT_Bool                                 m_ballowListUpdates;
 	pt_PieceTable *			        m_pPieceTable;
 	UT_Vector				m_vecListeners;
 	UT_Vector				m_vecLists;

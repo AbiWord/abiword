@@ -3720,10 +3720,10 @@ UT_Bool fl_BlockLayout::doclistener_deleteObject(const PX_ChangeRecord_Object * 
 		if(m_pAutoNum)
 		{
 		       m_pAutoNum->markAsDirty();
-		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE && m_pAutoNum->canListUpdate()==UT_TRUE)
-		       {
-			     remItemFromList();
-		       }
+//  		       if(m_pAutoNum->doesItemHaveLabel(this)==UT_FALSE && m_pDoc->areListUpdatesAllowed() == UT_TRUE)
+//  		       {
+//  			     remItemFromList();
+//  		       }
 		}
 		break;
 	}		
@@ -4609,15 +4609,33 @@ void    fl_BlockLayout::StartList( List_Type lType, UT_uint32 start,const XML_Ch
 	XML_Char lid[15], pszAlign[20], pszIndent[20],buf[20],pid[20],pszStart[20];
 	XML_Char * style = getListStyleString(lType);
 	UT_Bool bRet;
-	UT_uint32 id;
+	UT_uint32 id=0;
 	UT_Vector vp,va;
 
 	fl_AutoNum * pAutoNum;
-
+	const PP_AttrProp * pBlockAP = NULL;
+	const XML_Char * szLid=NULL;
+	getAttrProp(&pBlockAP);
+	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
+		szLid = NULL;
+	if (szLid)
+		id = atoi(szLid);
+	else 
+		id = 0;
+	
 	FV_View* pView = m_pLayout->getView();
 	UT_ASSERT(pView);
 	pView->_eraseInsertionPoint();
 
+	pAutoNum = m_pDoc->getListByID(id);
+	if(pAutoNum != NULL)
+	{
+ 	        UT_DEBUGMSG(("SEVIOR: Trying to start an existing list \n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		m_pAutoNum = pAutoNum;
+		m_bListItem = UT_TRUE;
+		listUpdate();
+	}
 	id = rand();
 	sprintf(lid, "%i", id);
 

@@ -36,7 +36,7 @@
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "ap_Preview_Paragraph.h"
-
+#include "xad_Document.h"
 
 AP_Dialog_Lists::AP_Dialog_Lists(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 :	XAP_Dialog_Modeless(pDlgFactory, id),
@@ -98,7 +98,11 @@ AP_Dialog_Lists::~AP_Dialog_Lists(void)
 	}
 	// What do we do about the fakeAutoNum in the Document pDoc?
 	// Maybe we need another constrcutor
+
 	DELETEP(m_pFakeAuto);
+	
+	// I want to delete this but C++ won't let me. Any Ideas? Sevior
+	//DELETEP(m_pFakeDoc);
 }
 
 AP_Dialog_Lists::tAnswer AP_Dialog_Lists::getAnswer(void) const
@@ -455,9 +459,8 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
        // Now generate the AutoNum
        //
        DELETEP(m_pFakeAuto);
-       //PD_Document * pDoc = getBlock()->getDocument();
-       m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, m_pszDelim, m_pszDecimal, (PD_Document *) NULL);
-       m_pFakeAuto->setUpdatePolicy( UT_FALSE);
+       m_pFakeDoc = new PD_Document();
+       m_pFakeAuto = new fl_AutoNum(m_iID, 0, m_newListType, m_newStartValue, m_pszDelim, m_pszDecimal, (PD_Document *) m_pFakeDoc);
        m_pFakeAuto->insertFirstItem(m_pFakeSdh[0], NULL,1);
        m_pFakeLayout[0]->setAutoNum(m_pFakeAuto);
        for(i=1; i<4; i++)

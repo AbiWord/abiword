@@ -91,7 +91,6 @@ public:
 	const UT_Bool				isEmpty(void);
 	PL_StruxDocHandle			getFirstItem(void);
 	UT_Bool						isLastOnLevel(PL_StruxDocHandle pItem);
-	UT_Bool						canListUpdate(void) {return m_bUpdate;}
 
 	fl_AutoNum *				getParent(void) { return m_pParent; }
 	fl_AutoNum *				getActiveParent(void) ;
@@ -100,7 +99,6 @@ public:
 	void						markAsDirty(void);
 	void						findAndSetParentItem(void);
 	void						setParent(fl_AutoNum *);
-	void						setUpdatePolicy(UT_Bool bUpdate);
 	void						setAsciiOffset(UT_uint32 new_asciioffset);
 
 	void						update(UT_uint32 start);
@@ -132,7 +130,6 @@ protected:
 	UT_uint32					m_iStartValue;
 	UT_uint16					m_iAsciiOffset;
 	UT_Bool						m_bUpdatingItems;
-	UT_Bool						m_bUpdate;
 	UT_Bool						m_bDirty;
 	UT_sint32					m_ioffset;
 	XML_Char					m_pszDecimal[80];
