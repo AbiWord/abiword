@@ -48,6 +48,8 @@ public:
 
 	
 	AP_UnixFont(void);
+	AP_UnixFont(AP_UnixFont & copy);
+	
 	~AP_UnixFont(void);
 
 	UT_Bool 				openFileAs(const char * fontfile,

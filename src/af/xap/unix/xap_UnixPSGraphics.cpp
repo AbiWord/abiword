@@ -214,15 +214,20 @@ DG_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	// Request the appropriate AP_UnixFont::, and bury it in an
 	// instance of a UnixFont:: with the correct size.
 	AP_UnixFont * unixfont = m_fm->getFont(pszFontFamily, s);
-	if (!unixfont)
+	AP_UnixFont * item = NULL;
+	if (unixfont)
+	{
+		// make a copy
+		item = new AP_UnixFont(*unixfont);
+	}
+	else
 	{
 		// Oops!  We don't have that font here.  substitute something
 		// we know we have (get smarter about this later)
-		unixfont = m_fm->getFont("Times New Roman", s);
-		UT_ASSERT(unixfont);
+		item = new AP_UnixFont(*m_fm->getFont("Times New Roman", s));
 	}
 	
-	PSFont * pFont = new PSFont(unixfont, convertDimension(pszFontSize));
+	PSFont * pFont = new PSFont(item, convertDimension(pszFontSize));
 	UT_ASSERT(pFont);
 
 	// Here we do something different from gr_UnixGraphics::setFont().
@@ -233,10 +238,14 @@ DG_Font* PS_Graphics::findFont(const char* pszFontFamily,
 	{
 		PSFont * psf = (PSFont *) m_vecFontList.getNthItem(k);
 		UT_ASSERT(psf);
-		if (psf->getUnixFont() == pFont->getUnixFont())
+		// is this good enough for a match?
+		if (psf->getUnixFont() == pFont->getUnixFont() &&
+			psf->getSize() == pFont->getSize())
 		{
-			delete pFont;
-			return psf;
+			// don't return the one in the vector, even though
+			// it matches, but return the copy, since they're
+			// disposable outside our realm.
+			return pFont;
 		}
 	}
 

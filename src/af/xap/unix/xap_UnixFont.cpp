@@ -37,7 +37,7 @@
 AP_UnixFont::AP_UnixFont(void)
 {
 	m_name = NULL;
-	m_style = AP_UnixFont::STYLE_LAST;
+	m_style = STYLE_LAST;
 	m_xlfd = NULL;
 	
 	m_fontfile = NULL;
@@ -48,6 +48,27 @@ AP_UnixFont::AP_UnixFont(void)
 	m_PFAFile = NULL;
 	
 	m_fontKey = NULL;
+}
+
+AP_UnixFont::AP_UnixFont(AP_UnixFont & copy)
+{
+	m_name = NULL;
+	m_style = STYLE_LAST;
+	m_xlfd = NULL;
+
+	m_fontfile = NULL;
+	m_metricfile = NULL;
+	
+	m_metricsData = NULL;
+
+	m_PFAFile = NULL;
+
+	m_fontKey = NULL;
+
+	openFileAs(copy.getFontfile(),
+			   copy.getMetricfile(),
+			   copy.getXLFD(),
+			   copy.getStyle());
 }
 
 AP_UnixFont::~AP_UnixFont(void)

@@ -39,12 +39,19 @@
 
 /*****************************************************************/
 
-UnixFont::UnixFont(AP_UnixFont * pFont, UT_uint16 size)
+UnixFont::UnixFont(AP_UnixFont * pFont, UT_uint32 size)
 {
 	UT_ASSERT(pFont);
   
 	m_hFont = pFont;
 	m_pointSize = size;
+}
+
+UnixFont::~UnixFont(void)
+{
+	;
+	// don't remove where our font points, since it's
+	// owned by the font manager (we don't keep our own copy)
 }
 
 AP_UnixFont * UnixFont::getUnixFont(void)
@@ -321,16 +328,20 @@ DG_Font* UNIXGraphics::findFont(const char* pszFontFamily,
 	// Request the appropriate AP_UnixFont::, and bury it in an
 	// instance of a UnixFont:: with the correct size.
 	AP_UnixFont * unixfont = m_pFontManager->getFont(pszFontFamily, s);
-	if (!unixfont)
+	AP_UnixFont * item = NULL;
+	if (unixfont)
+	{
+		// make a copy
+		item = new AP_UnixFont(*unixfont);
+	}
+	else
 	{
 		// Oops!  We don't have that font here.  substitute something
 		// we know we have (get smarter about this later)
-		unixfont = m_pFontManager->getFont("Times New Roman", s);
-		UT_ASSERT(unixfont);
+		item = new AP_UnixFont(*m_pFontManager->getFont("Times New Roman", s));
 	}
 	
-	UnixFont * pFont = new UnixFont(unixfont,
-									(UT_uint16) convertDimension(pszFontSize));
+	UnixFont * pFont = new UnixFont(item, convertDimension(pszFontSize));
 
 	UT_ASSERT(pFont);
 

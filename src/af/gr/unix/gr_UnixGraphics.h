@@ -37,8 +37,9 @@
 class UnixFont : public DG_Font
 {
 public:
-  UnixFont(AP_UnixFont * hFont, UT_uint16 size);
-
+  UnixFont(AP_UnixFont * hFont, UT_uint32 size);
+  ~UnixFont(void);
+  
   // this shouldn't need to be called to draw things,
   // since it has no idea of "size"; it's just
   // a face that the UnixFontManager:: can verify
@@ -50,7 +51,7 @@ public:
 
 protected:
   AP_UnixFont * 		m_hFont;
-  UT_uint16				m_pointSize;
+  UT_uint32				m_pointSize;
 };
 
 class UNIXGraphics : public DG_Graphics
