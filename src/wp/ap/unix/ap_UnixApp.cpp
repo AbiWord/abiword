@@ -323,7 +323,7 @@ static gint s_drawingarea_expose(GtkWidget * /* widget */,
 
 // szFile is optional; a NULL pointer will use the default splash screen.
 // The delay is how long the splash should stay on screen in milliseconds.
-static GR_Image * _showSplash(const char * szFile, UT_uint32 delay)
+static GR_Image * _showSplash(UT_uint32 delay)
 {
 	wSplash = NULL;
 	pSplashImage = NULL;
@@ -331,8 +331,7 @@ static GR_Image * _showSplash(const char * szFile, UT_uint32 delay)
 	UT_ByteBuf* pBB = NULL;
 
 	// use a default if they haven't specified anything
-	if (szFile == NULL)
-		szFile = "splash.png";
+	const char * szFile = "splash.png";
 
 	// store value for use by the expose event, which attaches the timer
 	splashTimeoutValue = delay;
@@ -397,34 +396,6 @@ static GR_Image * _showSplash(const char * szFile, UT_uint32 delay)
 	return pSplashImage;
 }
 
-// TODO : MOVE THIS TO XP CODE!  This is a cut & paste job since each
-// TODO : platform _can_ have different options, and we didn't sort
-// TODO : out how to honor them correclty yet.  There is a copy of
-// TODO : this function in other platforms.
-
-void AP_UnixApp::_printUsage(void)
-{
-	// TODO : automatically generate the output from the options struct
-	// for getopt ?
-	
-	// just print to stdout, not stderr
-	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
-
-#ifdef DEBUG
-	printf("  -d,         --dumpstrings    dump strings strings to file\n");
-#endif
-	printf("  -g geom,    --geometry=geom  set initial frame geometry\n");
-	printf("  -h,         --help           view this help summary\n");
-	printf("  -l dir,     --lib=dir        use dir for application components\n");
-	printf("  -n,         --nosplash       do not show splash screen\n");
-	printf("  -s file,    --script=file    execute file as script\n");
-#ifdef DEBUG	
-	printf("  -S file,    --splash=file    use file for splash screen\n");
-#endif
-
-	printf("\n");
-}
-
 /*****************************************************************/
 
 int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
@@ -442,6 +413,25 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 
 	XAP_Args Args = XAP_Args(argc,argv);
 
+	// Do a quick and dirty find for "-nosplash"
+	UT_Bool bShowSplash = UT_TRUE;
+	for (int k = 1; k < Args.m_argc; k++)
+		if (*Args.m_argv[k] == '-')
+			if (UT_stricmp(Args.m_argv[k],"-nosplash") == 0)
+			{
+				bShowSplash = UT_FALSE;
+				break;
+			}
+
+	// HACK : these calls to gtk reside properly in XAP_UnixApp::initialize(),
+	// HACK : but need to be here to throw the splash screen as
+	// HACK : soon as possible.
+	gtk_set_locale();
+	gtk_init(&Args.m_argc,&Args.m_argv);
+	
+	if (bShowSplash)
+		_showSplash(2000);
+			
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(&Args, szAppName);
 
 	// if the initialize fails, we don't have icons, fonts, etc.
@@ -467,208 +457,153 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 	return 0;
 }
 
-// TODO : move these out somewhere XP
-struct option longopts[] =
-{
-	// TODO : maybe use constants for the final entry for each
-	// TODO : for better matching below.
-	
-#ifdef DEBUG
-    {"dumpstrings", no_argument, 		NULL, 'd'},
-#endif
-    {"geometry",    required_argument, 	NULL, 'g'},
-    {"help",        no_argument, 		NULL, 'h'},		
-    {"lib",         required_argument, 	NULL, 'l'},
-	{"nosplash",	no_argument, 		NULL, 'n'},
-	{"script",      required_argument, 	NULL, 's'},
-#ifdef DEBUG
-	{"splash",		required_argument, 	NULL, 'S'},
-#endif
-    {0,             0, 					NULL,  0 }
-};
-
-// What a great way to construct a string...
-
-// TODO : move these out somewhere XP
-
-char shortopts[] =
-#ifdef DEBUG
-    "d"
-#endif
-    "h"
-    "g:"
-    "l:"
-    "n"
-    "s:"
-#ifdef DEBUG
-    "S:"
-#endif
-    ;
-
 UT_Bool AP_UnixApp::parseCommandLine(void)
 {
 	// parse the command line
-	// <app> [--script <scriptname>]* [--dumpstrings]
-	//       [--lib <AbiSuiteLibDirectory>] [<documentname>]*
+	// <app> [-script <scriptname>]* [-dumpstrings] [<documentname>]*
         
 	// TODO when we refactor the App classes, consider moving
 	// TODO this to app-specific, cross-platform.
 
+	// TODO replace this with getopt or something similar.
+        
+	// Unix puts the program name in argv[0], so [1] is the first argument.
+
+	int nFirstArg = 1;
 	int k;
 	int kWindowsOpened = 0;
-
-	// these options get turned on/off or set during the options parsing,
-	// but are read below when deciding what to act on.
-	UT_Bool bShowSplash = UT_TRUE;
-	const char * szSplashFile = NULL;
-
-	// use getopt_long as suggested and contributed by Ming-I Hsieh
-	// <mihs@wm28.csie.ncu.edu.tw>
-	while ((k = getopt_long(m_pArgs->m_argc, m_pArgs->m_argv,
-							shortopts, longopts, NULL)) != EOF)
+        
+	for (k=nFirstArg; (k<m_pArgs->m_argc); k++)
 	{
-		switch (k)
+		if (*m_pArgs->m_argv[k] == '-')
 		{
-		case 'd':
-		{
+			if (UT_stricmp(m_pArgs->m_argv[k],"-script") == 0)
+			{
+				// [-script scriptname]
+				k++;
+			}
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-lib") == 0)
+			{
+				// [-lib <AbiSuiteLibDirectory>]
+				// we've already processed this when we initialized the App class
+				k++;
+			}
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-dumpstrings") == 0)
+			{
+				// [-dumpstrings]
 #ifdef DEBUG
-			// dump strings out to file; only honored in debug
-			AP_BuiltinStringSet * pBuiltinStringSet =
-				new AP_BuiltinStringSet(this, AP_PREF_DEFAULT_StringSet);
-			pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
-			delete pBuiltinStringSet;
-#endif			
-			break;
-		}
-		case 'g':
-		{
-			// store the user's requested geometry at the app level for frames
-			// to request, if they want it.
-			UT_ASSERT(optarg);
-
-			gint dummy = 1 << ((sizeof(gint) * 8) - 1);
-			gint x = dummy;
-			gint y = dummy;
-			guint width = 0;
-			guint height = 0;
-			
-			XParseGeometry(optarg, &x, &y, &width, &height);
-
-			// use both by default
-			XAP_UnixApp::windowGeometryFlags f = (XAP_UnixApp::windowGeometryFlags)
-				(XAP_UnixApp::GEOMETRY_FLAG_SIZE
-				 | XAP_UnixApp::GEOMETRY_FLAG_POS);
-
-			// if pos (x and y) weren't provided just use size
-			if (x == dummy || y == dummy)
-				f = XAP_UnixApp::GEOMETRY_FLAG_SIZE;
-
-			// if size (width and height) weren't provided just use pos
-			if (width == 0 || height == 0)
-				f = XAP_UnixApp::GEOMETRY_FLAG_POS;
-			
-			// set the xap-level geometry for future frame use
-			setGeometry(x, y, width, height, f);
-			break;
-		}
-		case 'h':
-		{
-			_printUsage();
-			return UT_FALSE;
-		}
-		case 'l':
-		{
-			// [--lib <AbiSuiteLibDirectory>]
-			// we've already processed this when we initialized
-			// the App class
-			break;
-		}
-		case 'n':
-		{
-			// user doesn't want a splash screen
-			bShowSplash = UT_FALSE;
-			break;
-		}
-		case 's':
-		{
-#ifdef DEBUG
-			// execute a script
-			UT_DEBUGMSG(("Scripting is not yet implemented.\n"));
+				// dump the string table in english as a template for translators.
+				// see abi/docs/AbiSource_Localization.abw for details.
+				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+				pBuiltinStringSet->dumpBuiltinSet("EnUS.strings");
+				delete pBuiltinStringSet;
 #endif
-			break;
-		}
-		case 'S':
-		{
-#ifdef DEBUG
-			// user wants a custom splash screen, but only honored in
-			// debug
-			szSplashFile = optarg;
-#endif
-		    break;
-		}
-		default:
-			// if we got this, they passed an argument we can't decipher
-			_printUsage();
-			return UT_FALSE;
-		}
-	}
+			}
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-nosplash") == 0)
+			{
+				// we've alrady processed this before we initialized the App class
+			}
+			else if (UT_stricmp(m_pArgs->m_argv[k],"-geometry") == 0)
+			{
+				// [-geometry <X geometry string>]
 
-	// act on some options we've parsed
-	if (bShowSplash)
-		_showSplash(szSplashFile, 2000);
+				// let us at the next argument
+				k++;
+				
+				// TODO : does X have a dummy geometry value reserved for this?
+				gint dummy = 1 << ((sizeof(gint) * 8) - 1);
+				gint x = dummy;
+				gint y = dummy;
+				guint width = 0;
+				guint height = 0;
+			
+				XParseGeometry(m_pArgs->m_argv[k], &x, &y, &width, &height);
 
-	// this pointer is around to be used to fork off new windows as needed
-	AP_UnixFrame * pFirstUnixFrame = NULL;
+				// use both by default
+				XAP_UnixApp::windowGeometryFlags f = (XAP_UnixApp::windowGeometryFlags)
+					(XAP_UnixApp::GEOMETRY_FLAG_SIZE
+					 | XAP_UnixApp::GEOMETRY_FLAG_POS);
 
-	// use any outstanding command line args as documents
-	while (optind < m_pArgs->m_argc)
-	{
-		if (pFirstUnixFrame == NULL)
-		{
-			pFirstUnixFrame = new AP_UnixFrame(this);
-			pFirstUnixFrame->initialize();
-			kWindowsOpened++;
-		}
-		if (pFirstUnixFrame->loadDocument(m_pArgs->m_argv[optind],
-										  IEFT_Unknown))
-		{
-			pFirstUnixFrame = NULL;
+				// if pos (x and y) weren't provided just use size
+				if (x == dummy || y == dummy)
+					f = XAP_UnixApp::GEOMETRY_FLAG_SIZE;
+
+				// if size (width and height) weren't provided just use pos
+				if (width == 0 || height == 0)
+					f = XAP_UnixApp::GEOMETRY_FLAG_POS;
+			
+				// set the xap-level geometry for future frame use
+				setGeometry(x, y, width, height, f);
+			}
+			else
+			{
+				UT_DEBUGMSG(("Unknown command line option [%s]\n",m_pArgs->m_argv[k]));
+				// TODO don't know if it has a following argument or not -- assume not
+
+				_printUsage();
+				return UT_FALSE;
+			}
 		}
 		else
 		{
-			char message[2048];
-			g_snprintf(message, 2048,
-					   "Cannot open file %s.", m_pArgs->m_argv[optind]);
-			messageBoxOK(message);
+			// [filename]
+                        
+			AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
+			pFirstUnixFrame->initialize();
+			if (pFirstUnixFrame->loadDocument(m_pArgs->m_argv[k], IEFT_Unknown))
+			{
+				kWindowsOpened++;
+			}
+			else
+			{
+				// TODO: warn user that we couldn't open that file
 
-			// remove the stale frame
-
-			// NOTE : Must have app forget frame manually.  Is this a bad
-			// NOTE : design decision on the part of the frame?  The
-			// NOTE : frame is reponsible for making the app remember it
-			// NOTE : in its constructor, shouldn't it have the app
-			// NOTE : forget it in its destructor?
-
-			forgetFrame(pFirstUnixFrame);
-
-			pFirstUnixFrame->close();
-			DELETEP(pFirstUnixFrame);
-
-			// decrement the number of windows opened
-			kWindowsOpened--;
-			
+#if 1
+				// TODO we crash if we just delete this without putting something
+				// TODO in it, so let's go ahead and open an untitled document
+				// TODO for now.  this would cause us to get 2 untitled documents
+				// TODO if the user gave us 2 bogus pathnames....
+				kWindowsOpened++;
+				pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
+#else
+				delete pFirstUnixFrame;
+#endif
+			}
 		}
-		optind++;
 	}
 
 	if (kWindowsOpened == 0)
 	{
 		// no documents specified or were able to be opened, open an untitled one
 
-		pFirstUnixFrame = new AP_UnixFrame(this);
+		AP_UnixFrame * pFirstUnixFrame = new AP_UnixFrame(this);
 		pFirstUnixFrame->initialize();
 		pFirstUnixFrame->loadDocument(NULL, IEFT_Unknown);
 	}
 
 	return UT_TRUE;
 }
+
+// TODO : MOVE THIS TO XP CODE!  This is a cut & paste job since each
+// TODO : platform _can_ have different options, and we didn't sort
+// TODO : out how to honor them correclty yet.  There is a copy of
+// TODO : this function in other platforms.
+
+void AP_UnixApp::_printUsage(void)
+{
+	// just print to stdout, not stderr
+	printf("\nUsage: %s [option]... [file]...\n\n", m_pArgs->m_argv[0]);
+
+#ifdef DEBUG
+	printf("  -dumpstrings      dump strings strings to file\n");
+#endif
+	printf("  -geometry geom    set initial frame geometry\n");
+	printf("  -lib dir          use dir for application components\n");
+	printf("  -nosplash         do not show splash screen\n");
+#ifdef ABI_OPT_JS
+	printf("  -script file      execute file as script\n");
+#endif
+
+	printf("\n");
+}
+
