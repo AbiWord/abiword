@@ -396,7 +396,8 @@ bool EV_QNXToolbar::synthesize(void)
 				n = 0;
 				PtSetArg(&args[n++], Pt_ARG_WIDTH, iWidth, 0); 
 				PtSetArg(&args[n++], Pt_ARG_VISIBLE_COUNT, 6, 0); 
-				PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
+//This shouldn't be done for ListBoxes as it will prevent the user from scrolling using the arrow keys.
+//				PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS); 
 				PtSetArg(&args[n++], Pt_ARG_LIST_FLAGS, 
 						/*Pt_LIST_NON_SELECT |*/ 0, 
 						/*Pt_LIST_NON_SELECT |*/ Pt_LIST_SCROLLBAR_GETS_FOCUS);

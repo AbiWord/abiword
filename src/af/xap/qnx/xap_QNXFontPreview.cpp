@@ -42,6 +42,7 @@ XAP_QNXFontPreview::XAP_QNXFontPreview(XAP_Frame * pFrame, UT_sint32 left, UT_ui
 	PtSetArg(&args[n++],Pt_ARG_WINDOW_RENDER_FLAGS,Pt_FALSE,Pt_TRUE);	
 	PtSetArg(&args[n++],Pt_ARG_AREA,&area,0);
 	PtSetArg(&args[n++],Pt_ARG_FLAGS,Pt_FALSE,Pt_GETS_FOCUS);
+	PtSetArg(&args[n++],Pt_ARG_WINDOW_MANAGED_FLAGS,Pt_FALSE,Ph_WM_FOCUS);
 	m_pPreviewWindow = PtCreateWidget(PtWindow,m_pQNXFrame->getTopLevelWindow(),n,args);
 	PtRealizeWidget(m_pPreviewWindow);
 
