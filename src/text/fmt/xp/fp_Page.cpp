@@ -261,8 +261,8 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 								{
 									bLoop = true;
 									vecCollapse.addItem(pBL);
-									pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
 								}
+								pBL = static_cast<fl_BlockLayout *>(pBL->getNext());
 							}
 							else
 							{
