@@ -32,6 +32,7 @@
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 #include "xap_Prefs.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "ap_Dialog_Id.h"
 #include "ap_Prefs_SchemeIds.h"
@@ -654,9 +655,8 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	// insert translation code here.
 	
 	//set Tab label
-	[[m_tab tabViewItemAtIndex:0] 
-	     setLabel:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Toolbars)]];
-	[m_tlbTlbBox setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Toolbars)]];
+	LocalizeControl([m_tab tabViewItemAtIndex:0], pSS, AP_STRING_ID_DLG_Options_Label_Toolbars);
+	LocalizeControl(m_tlbTlbBox, pSS, AP_STRING_ID_DLG_Options_Label_Toolbars);
 	// add the items
 	
 	m_tlbTlbListDataSource = [[XAP_StringListDataSource alloc] init];
@@ -665,14 +665,14 @@ void AP_CocoaDialog_Options::_storeWindowData(void)
 	[m_tlbTlbListDataSource addString:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewExtraTB)]];
 	[m_tlbTlbList setDataSource:m_tlbTlbListDataSource];	// setDataSource DO NOT retain the data source
 	
-	[m_tlbVisibleBox setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Visible)]];
-	[[m_tlbShowHideGroup cellAtRow:0 column:0] setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Show)]];
-	[[m_tlbShowHideGroup cellAtRow:1 column:0] setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Hide)]];
-	[m_tlbBtnStylBox setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Look)]];
-	[[m_tlbBtnStylGroup cellAtRow:0 column:0] setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Icons)]];
-	[[m_tlbBtnStylGroup cellAtRow:1 column:0] setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Text)]];
-	[[m_tlbBtnStylGroup cellAtRow:2 column:0] setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_Both)]];
-	[m_tlbViewTooltipBtn setTitle:[NSString stringWithUTF8String:pSS->getValue(AP_STRING_ID_DLG_Options_Label_ViewTooltips)]];	
+	LocalizeControl(m_tlbVisibleBox, pSS, AP_STRING_ID_DLG_Options_Label_Visible);
+	LocalizeControl([m_tlbShowHideGroup cellAtRow:0 column:0], pSS, AP_STRING_ID_DLG_Options_Label_Show);
+	LocalizeControl([m_tlbShowHideGroup cellAtRow:1 column:0], pSS, AP_STRING_ID_DLG_Options_Label_Hide);
+	LocalizeControl(m_tlbBtnStylBox, pSS, AP_STRING_ID_DLG_Options_Label_Look);
+	LocalizeControl([m_tlbBtnStylGroup cellAtRow:0 column:0], pSS, AP_STRING_ID_DLG_Options_Label_Icons);
+	LocalizeControl([m_tlbBtnStylGroup cellAtRow:1 column:0], pSS, AP_STRING_ID_DLG_Options_Label_Text);
+	LocalizeControl([m_tlbBtnStylGroup cellAtRow:2 column:0], pSS, AP_STRING_ID_DLG_Options_Label_Both);
+	LocalizeControl(m_tlbViewTooltipBtn, pSS, AP_STRING_ID_DLG_Options_Label_ViewTooltips);
 }
 
 - (void)setXAPOwner:(AP_CocoaDialog_Options *)owner

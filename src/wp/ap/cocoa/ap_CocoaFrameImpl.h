@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,13 +20,13 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "xap_CocoaFrame.h"
 #import "xap_CocoaFrameImpl.h"
 
 
 class AP_CocooApp;
-class XAP_CocoaFrame;
 
-@class XAP_CocoaNSView;
+@class XAP_CocoaNSView, XAP_NSScroller;
 
 @interface AP_DocViewDelegate : NSObject <XAP_MouseEventDelegate>
 {
@@ -43,6 +43,7 @@ class XAP_CocoaFrame;
 - (IBAction)rulerClick:(id)sender;
 - (XAP_CocoaNSView *)getVRuler;
 - (XAP_CocoaNSView *)getHRuler;
+- (IBAction)scrollAction:(id)sender;
 @end
 
 /*****************************************************************/
@@ -54,10 +55,28 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 
 	virtual NSString *			_getNibName (); /* must be public to be called from Obj-C */
 
-	NSScroller*					getHScrollbar()
-									{ return m_hScrollbar; };
-	NSScroller*					getVScrollbar()
-									{ return m_vScrollbar; };									
+//	XAP_NSScroller*					getHScrollbar()
+//									{ return m_hScrollbar; };
+//	XAP_NSScroller*					getVScrollbar()
+//									{ return m_vScrollbar; };									
+	UT_sint32 _getHScrollValue()	{ return m_HCurrentScroll; };
+	UT_sint32 _getHScrollMin()	{ return m_HMinScroll; };
+	UT_sint32 _getHScrollMax()	{ return m_HMaxScroll; };
+	UT_sint32 _getHVisible()	{ return m_HVisible; };
+	void _setHScrollValue(UT_sint32);
+	void _setHScrollMin(UT_sint32);
+	void _setHScrollMax(UT_sint32);
+	void _setHVisible(UT_sint32);
+	UT_sint32 _getVScrollValue()	{ return m_VCurrentScroll; };
+	UT_sint32 _getVScrollMin()	{ return m_VMinScroll; };
+	UT_sint32 _getVScrollMax()	{ return m_VMaxScroll; };
+	UT_sint32 _getVVisible()	{ return m_VVisible; };
+	void _setVScrollValue(UT_sint32);
+	void _setVScrollMin(UT_sint32);
+	void _setVScrollMax(UT_sint32);
+	void _setVVisible(UT_sint32);
+	void _scrollAction(id sender);
+	
  protected:
 	void _showOrHideStatusbar(void);
 
@@ -76,8 +95,20 @@ class AP_CocoaFrameImpl : public XAP_CocoaFrameImpl
 
 	void giveFocus();
 private:
-	NSScroller *				m_hScrollbar;
-	NSScroller *				m_vScrollbar;
+	XAP_NSScroller *				m_hScrollbar;
+	XAP_NSScroller *				m_vScrollbar;
 	XAP_CocoaNSView *			m_docAreaGRView;
 	static bool					_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
+private:
+	UT_sint32					m_HMinScroll;
+	UT_sint32					m_HMaxScroll;
+	UT_sint32					m_HCurrentScroll;
+	UT_sint32					m_HVisible;
+	UT_sint32					m_VMinScroll;
+	UT_sint32					m_VMaxScroll;
+	UT_sint32					m_VCurrentScroll;
+	UT_sint32					m_VVisible;
+	/* called when updating */
+	void _setHScrollbarValues();
+	void _setVScrollbarValues();
 };

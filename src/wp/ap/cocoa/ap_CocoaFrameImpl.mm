@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,15 +36,152 @@
 #import "ap_CocoaLeftRuler.h"
 #import "ap_CocoaStatusBar.h"
 
+/*!
+	custom wrapper for NSScrollers.
+ */
+@interface XAP_NSScroller : NSScroller
+{
+}
+-(id)initWithFrame:(NSRect)frame andController:(AP_CocoaFrameController*)controller vertical:(BOOL)vertical;
+
+@end
+
 /*****************************************************************/
 AP_CocoaFrameImpl::AP_CocoaFrameImpl(AP_CocoaFrame *pCocoaFrame, XAP_CocoaApp *pCocoaApp)
-	: XAP_CocoaFrameImpl (pCocoaFrame, pCocoaApp)
+	: XAP_CocoaFrameImpl (pCocoaFrame, pCocoaApp),
+		m_hScrollbar(nil),
+		m_vScrollbar(nil),
+		m_docAreaGRView(nil),
+		m_HMinScroll(0),
+		m_HMaxScroll(0),
+		m_HCurrentScroll(0),
+		m_VMinScroll(0),
+		m_VMaxScroll(0),
+		m_VCurrentScroll(0)
 {
-	m_hScrollbar = NULL;
-	m_vScrollbar = NULL;
-	m_docAreaGRView = NULL;
 }
 
+void AP_CocoaFrameImpl::_setHScrollValue(UT_sint32 value)
+{
+	if (m_HCurrentScroll != value) {
+		m_HCurrentScroll = value;
+		_setHScrollbarValues();
+	}
+}
+
+void AP_CocoaFrameImpl::_setHScrollMin(UT_sint32 value)
+{
+	if (m_HMinScroll != value) {
+		m_HMinScroll = value;
+		_setHScrollbarValues();
+	}
+}
+
+void AP_CocoaFrameImpl::_setHScrollMax(UT_sint32 value)
+{
+	if (m_HMaxScroll != value) {
+		m_HMaxScroll = value;
+		_setHScrollbarValues();
+	}
+}
+
+void AP_CocoaFrameImpl::_setHVisible(UT_sint32 value)
+{
+	if (m_HVisible != value) {
+		m_HVisible = value;
+		_setHScrollbarValues();
+	}
+}
+
+void AP_CocoaFrameImpl::_setVScrollValue(UT_sint32 value)
+{
+	if (m_VCurrentScroll != value) {
+		m_VCurrentScroll = value;
+		_setVScrollbarValues();
+	}
+}
+
+void AP_CocoaFrameImpl::_setVScrollMin(UT_sint32 value)
+{
+	if (m_VMinScroll != value) {
+		m_VMinScroll = value;
+		_setVScrollbarValues();
+	}
+}
+
+void AP_CocoaFrameImpl::_setVScrollMax(UT_sint32 value)
+{
+	if (m_VMaxScroll != value) {
+		m_VMaxScroll = value;
+		_setVScrollbarValues();
+	}
+}
+
+void AP_CocoaFrameImpl::_setVVisible(UT_sint32 value)
+{
+	if (m_VVisible != value) {
+		m_VVisible = value;
+		_setVScrollbarValues();
+	}
+}
+
+void AP_CocoaFrameImpl::_setHScrollbarValues()
+{
+	float value, knob;
+	value = (m_HCurrentScroll / (m_HMaxScroll - m_HVisible));
+	if (m_HMaxScroll == 0) {
+		knob = 1.0;
+	}
+	else {
+		knob = (m_HVisible / m_HMaxScroll);
+	}
+	UT_DEBUGMSG(("_setHScrollbarValues(), max = %d, current = %d, visible = %d\n", m_HMaxScroll, m_HCurrentScroll, m_HVisible));
+	UT_DEBUGMSG(("_setHScrollbarValues(), value = %f, knob = %f\n", value, knob));
+	if (knob >= 1.0) {
+		[m_hScrollbar setEnabled:NO];
+	}
+	else {
+		[m_hScrollbar setEnabled:YES];
+		[m_hScrollbar setFloatValue:value knobProportion:knob];
+	}
+}
+
+
+void AP_CocoaFrameImpl::_setVScrollbarValues()
+{
+	float value, knob;
+	value = (m_VCurrentScroll / (m_VMaxScroll - m_VVisible));
+	if (m_VMaxScroll == 0) {
+		knob = 1.0;
+	}
+	else {
+		knob = (m_VVisible / m_VMaxScroll);
+	}
+	UT_DEBUGMSG(("_setVScrollbarValues(), max = %d, current = %d, visible = %d\n", m_VMaxScroll, m_VCurrentScroll, m_VVisible));
+	UT_DEBUGMSG(("_setVScrollbarValues(), value = %f, knob = %f\n", value, knob));
+	if (knob >= 1.0) {
+		[m_hScrollbar setEnabled:NO];
+	}
+	else {
+		[m_hScrollbar setEnabled:YES];
+		[m_vScrollbar setFloatValue:value knobProportion:knob];
+	}
+}
+
+
+void AP_CocoaFrameImpl::_scrollAction(id sender)
+{
+	float newValue = [sender floatValue];
+	AV_View * pView = getFrame()->getCurrentView();
+	if (sender == m_vScrollbar) {
+		m_VCurrentScroll = lrintf(newValue * (m_VMaxScroll - m_VVisible));
+		pView->sendVerticalScrollEvent(m_VCurrentScroll);
+	}
+	else {
+		m_HCurrentScroll = lrintf(newValue * (m_HMaxScroll - m_HVisible));
+		pView->sendHorizontalScrollEvent(m_HCurrentScroll);	
+	}
+}
 
 void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 {
@@ -65,7 +202,7 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 		m_vScrollbar = NULL;
 		m_docAreaGRView = NULL;
 	}
-		NSRect frame = [docArea bounds];
+	NSRect frame = [docArea bounds];
 	NSRect controlFrame;
 	
 	/* vertical scrollbar */
@@ -73,9 +210,10 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	controlFrame.size.width = [NSScroller scrollerWidth];
 	controlFrame.size.height = frame.size.height - controlFrame.origin.y;
 	controlFrame.origin.x = frame.size.width - controlFrame.size.width;
-	m_vScrollbar = [[NSScroller alloc] initWithFrame:controlFrame];
+	m_vScrollbar = [[XAP_NSScroller alloc] initWithFrame:controlFrame andController:_getController()
+						vertical:YES];
 	[docArea addSubview:m_vScrollbar];
-	[m_vScrollbar setAutoresizingMask:(NSViewMinXMargin |  NSViewHeightSizable)];
+	[m_vScrollbar setEnabled:YES];
 	[m_vScrollbar release];
 	
 	/* horizontal scrollbar */
@@ -83,9 +221,10 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 	controlFrame.origin.y = 0;
 	controlFrame.size.height = [NSScroller scrollerWidth];
 	controlFrame.size.width = frame.size.width - controlFrame.size.height;
-	m_hScrollbar = [[NSScroller alloc] initWithFrame:controlFrame];
+	m_hScrollbar = [[XAP_NSScroller alloc] initWithFrame:controlFrame andController:_getController()
+						vertical:NO];
 	[docArea addSubview:m_hScrollbar];
-	[m_hScrollbar setAutoresizingMask:(NSViewMaxYMargin |  NSViewWidthSizable)];
+	[m_hScrollbar setEnabled:YES];
 	[m_hScrollbar release];
 
 	/* doc view */
@@ -281,6 +420,7 @@ void AP_CocoaFrameImpl::giveFocus()
 
 - (IBAction)rulerClick:(id)sender
 {
+	UT_DEBUGMSG(("ruler action"));
 }
 
 - (XAP_CocoaNSView *)getVRuler
@@ -293,6 +433,33 @@ void AP_CocoaFrameImpl::giveFocus()
 	return hRuler;
 }
 
+- (IBAction)scrollAction:(id)sender
+{
+	static_cast<AP_CocoaFrameImpl*>(m_frame)->_scrollAction(sender);
+}
+
+@end
+
+
+@implementation XAP_NSScroller
+
+-(id)initWithFrame:(NSRect)frame andController:(AP_CocoaFrameController*)controller vertical:(BOOL)vertical
+{
+	self = [super initWithFrame:frame];
+	UT_DEBUGMSG (("x = %f, y = %f, w = %f, h = %f\n", frame.origin.x, frame.origin.y,
+			frame.size.width, frame.size.height));
+	if (vertical) {
+		UT_DEBUGMSG(("Is vertical\n"));
+		[self setAutoresizingMask:(NSViewMinXMargin |  NSViewHeightSizable)];
+	}
+	else {
+		UT_DEBUGMSG(("Is horizontal\n"));
+		[self setAutoresizingMask:(NSViewMaxYMargin |  NSViewWidthSizable)];
+	}
+	[self setTarget:controller];
+	[self setAction:@selector(scrollAction:)];
+	return self;
+}
 
 @end
 

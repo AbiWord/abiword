@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,10 +28,8 @@
 #include "xap_CocoaFrame.h"
 #include "ev_CocoaToolbar.h"
 #include "xav_View.h"
-#include "xad_Document.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
-#include "pd_Document.h"
 #include "gr_CocoaGraphics.h"
 #include "xap_Scrollbar_ViewListener.h"
 #include "ap_CocoaFrame.h"
@@ -40,12 +38,6 @@
 #include "ap_CocoaLeftRuler.h"
 #include "ap_CocoaStatusBar.h"
 #include "ap_CocoaViewListener.h"
-#if 1
-#include "ev_CocoaMenuBar.h"
-#include "ev_Menu_Layouts.h"
-#include "ev_Menu_Labels.h"
-#include "ev_Menu_Actions.h"
-#endif
 
 #import "ap_CocoaFrameImpl.h"
 
@@ -76,71 +68,73 @@ UT_uint32 AP_CocoaFrame::getZoomPercentage(void)
 
 void AP_CocoaFrame::setXScrollRange(void)
 {
-	int width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
-	NSRect rect = [static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->m_docAreaGRView frame];
-	float windowWidth = rect.size.width;
+	GR_Graphics*	pGr = ((AP_FrameData*)m_pData)->m_pG;
+	AP_CocoaFrameImpl* pFrameImpl = static_cast<AP_CocoaFrameImpl *>(getFrameImpl());
+	UT_sint32 width = ((AP_FrameData*)m_pData)->m_pDocLayout->getWidth();
+	NSRect rect = [pFrameImpl->m_docAreaGRView frame];
+	UT_sint32 visibleWidth = pGr->tlu(lrintf(rect.size.width));
+	pFrameImpl->_setHVisible(visibleWidth);
+	UT_DEBUGMSG(("visibleWidth: %d, doc width:%d\n", visibleWidth, width));
+	if (m_pView == NULL) {
+		UT_DEBUGMSG(("m_pView is NULL\n"));
+	}
 
-	float newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
-	float newmax = width - windowWidth; /* upper - page_size */
+	UT_sint32 newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
+	UT_sint32 newmax = width - visibleWidth; /* upper - page_size */
 	if (newmax <= 0)
-		newvalue = 0;
+		newmax = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
-	
-//	[m_hScrollbar setHorizontalPageScroll:windowWidth];
-//	[m_hScrollbar setHorizontalLineScroll:20.0f];
-	
+	UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
+	pFrameImpl->_setHScrollMax(newmax);
+	pFrameImpl->_setHScrollValue(newvalue);
+
+	m_pView->sendHorizontalScrollEvent(newvalue, newmax);
 #if 0
-	bool bDifferentPosition = (newvalue != (int)m_pHadj->value);
-	bool bDifferentLimits = ((width-windowWidth) != (int)(m_pHadj->upper-m_pHadj->page_size));
-	
-	m_pHadj->value = newvalue;
-	m_pHadj->lower = 0.0;
-	m_pHadj->upper = (gfloat) width;
-	m_pHadj->step_increment = 20.0;
-	m_pHadj->page_increment = (gfloat) windowWidth;
-	m_pHadj->page_size = (gfloat) windowWidth;
-#endif
-//	UT_ASSERT (UT_TODO);
-//	[scroller drawIfNeeded];
-#if 0
-	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendHorizontalScrollEvent(newvalue, (int)(m_pHadj->upper-m_pHadj->page_size));
+	NSScroller* scroller = pFrameImpl->getHScrollbar();
+	float value = newvalue/newmax;
+	bool bDifferentPosition = (value != [scroller floatValue]);
+	if (m_pView && (bDifferentPosition || bDifferentLimits)) {
+		UT_DEBUGMSG(("Set X scroll to %f (%d/%d)\n", value, newvalue, newmax));
+		[scroller setFloatValue:value knobProportion:(visibleWidth/m_HMaxScroll)];
+		m_pView->sendHorizontalScrollEvent((int)newvalue, m_HMaxScroll);
+	}
 #endif
 }
 
 void AP_CocoaFrame::setYScrollRange(void)
 {
-	int height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
-	NSRect rect = [static_cast<AP_CocoaFrameImpl *>(getFrameImpl())->m_docAreaGRView frame];
-	float windowHeight = rect.size.width;
+	GR_Graphics*	pGr = ((AP_FrameData*)m_pData)->m_pG;
+	AP_CocoaFrameImpl * pFrameImpl = static_cast<AP_CocoaFrameImpl *>(getFrameImpl());
+	UT_sint32 height = ((AP_FrameData*)m_pData)->m_pDocLayout->getHeight();
+	NSRect rect = [pFrameImpl->m_docAreaGRView frame];
+	UT_sint32 visibleHeight = pGr->tlu(lrintf(rect.size.height));
+	pFrameImpl->_setVVisible(visibleHeight);
+	UT_DEBUGMSG(("visibleHeight: %d, doc height:%d\n", visibleHeight, height));
+	if (m_pView == NULL) {
+		UT_DEBUGMSG(("m_pView is NULL\n"));
+	}
 
-	float newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
-	float newmax = height - windowHeight;	/* upper - page_size */
+	UT_sint32 newvalue = ((m_pView) ? m_pView->getYScrollOffset() : 0);
+	UT_sint32 newmax = height - visibleHeight;	/* upper - page_size */
 	if (newmax <= 0)
-		newvalue = 0;
+		newmax = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
+	UT_DEBUGMSG (("newmax = %d, newvalue = %d\n", newmax, newvalue));
+	pFrameImpl->_setVScrollMax(newmax);
+	pFrameImpl->_setVScrollValue(newvalue);
 
-//	[m_vScrollbar setVerticalPageScroll:windowHeight];
-//	[m_vScrollbar setVerticalLineScroll:20.0f];
-
+	// TODO optimize
+	m_pView->sendVerticalScrollEvent(newvalue, newmax);
 #if 0
-	bool bDifferentPosition = (newvalue != (int)m_pVadj->value);
-	bool bDifferentLimits ((height-windowHeight) != (int)(m_pVadj->upper-m_pVadj->page_size));
-	
-	m_pVadj->value = newvalue;
-	m_pVadj->lower = 0.0;
-	m_pVadj->upper = (gfloat) height;
-	m_pVadj->step_increment = 20.0;
-	m_pVadj->page_increment = (gfloat) windowHeight;
-	m_pVadj->page_size = (gfloat) windowHeight;
-#endif
-//	UT_ASSERT (UT_TODO);
-//	[scroller drawIfNeeded];
-#if 0
-	if (m_pView && (bDifferentPosition || bDifferentLimits))
-		m_pView->sendVerticalScrollEvent(newvalue, (int)(m_pVadj->upper-m_pVadj->page_size));
+	NSScroller* scroller = pFrameImpl->getVScrollbar();
+	float value = newvalue/newmax;
+	bool bDifferentPosition = (value != [scroller floatValue]);
+	if (m_pView && (bDifferentPosition || bDifferentLimits)) {
+		UT_DEBUGMSG(("Set Y scroll to %f (%d/%d)\n", value, newvalue, newmax));
+		[scroller setFloatValue:value knobProportion:(windowHeight/m_VMaxScroll)];
+	}
 #endif
 }
 
@@ -218,24 +212,22 @@ Cleanup:
 void AP_CocoaFrame::_scrollFuncY(void * pData, UT_sint32 yoff, UT_sint32 /*yrange*/)
 {
 	// this is a static callback function and doesn't have a 'this' pointer.
-	
 	AP_CocoaFrame * pCocoaFrame = static_cast<AP_CocoaFrame *>(pData);
+	AP_CocoaFrameImpl* pFrameImpl = static_cast<AP_CocoaFrameImpl*>(pCocoaFrame->getFrameImpl());
 	AV_View * pView = pCocoaFrame->getCurrentView();
+//	UT_sint32 value = pFrameImpl->_getVScrollValue();
 	
-	// we've been notified (via sendVerticalScrollEvent()) of a scroll (probably
-	// a keyboard motion).  push the new values into the scrollbar widgets
-	// (with clamping).  then cause the view to scroll.
-	
-	float yoffNew = (float)yoff;
-	float yoffMax = 0;
-//TODO	float yoffMax = pCocoaFrame->m_pVadj->upper - pCocoaFrame->m_pVadj->page_size;
-	if (yoffMax <= 0)
-		yoffNew = 0;
-	else if (yoffNew > yoffMax)
-		yoffNew = yoffMax;
-//TODO	gtk_adjustment_set_value(GTK_ADJUSTMENT(pCocoaFrame->m_pVadj),yoffNew);
-	
-	pView->setYScrollOffset((UT_sint32)yoffNew);
+	if (pFrameImpl->_getVScrollMin() > yoff) {
+		yoff = pFrameImpl->_getVScrollMin();
+	}
+	if (pFrameImpl->_getVScrollMax() < yoff) {
+		yoff = pFrameImpl->_getVScrollMax();
+	}
+	pFrameImpl->_setVScrollValue(yoff);
+//	value = yoff / (pCocoaFrame->_getVScrollMax() - pCocoaFrame->_getVScrollMin());
+//	[scroller setFloatValue:value];
+
+	pView->setYScrollOffset(pView->getGraphics()->tlu(yoff));
 }
 
 void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange*/)
@@ -243,21 +235,21 @@ void AP_CocoaFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrang
 	// this is a static callback function and doesn't have a 'this' pointer.
 	
 	AP_CocoaFrame * pCocoaFrame = static_cast<AP_CocoaFrame *>(pData);
+	AP_CocoaFrameImpl* pFrameImpl = static_cast<AP_CocoaFrameImpl*>(pCocoaFrame->getFrameImpl());
 	AV_View * pView = pCocoaFrame->getCurrentView();
+//	UT_sint32 value = pFrameImpl->_getHScrollValue();
 	
-	// we've been notified (via sendScrollEvent()) of a scroll (probably
-	// a keyboard motion).  push the new values into the scrollbar widgets
-	// (with clamping).  then cause the view to scroll.
+	if (pFrameImpl->_getHScrollMin() > xoff) {
+		xoff = pFrameImpl->_getHScrollMin();
+	}
+	if (pFrameImpl->_getHScrollMax() < xoff) {
+		xoff = pFrameImpl->_getHScrollMax();
+	}
+	pFrameImpl->_setHScrollValue(xoff);
+//	value = xoff / (pCocoaFrame->m_HMaxScroll - pCocoaFrame->m_HMinScroll);
+//	[scroller setFloatValue:value];
 
-	float xoffNew = (float)xoff;
-	float xoffMax = 0;
-//TODO	float xoffMax = pCocoaFrame->m_pHadj->upper - pCocoaFrame->m_pHadj->page_size;
-	if (xoffMax <= 0)
-		xoffNew = 0;
-	else if (xoffNew > xoffMax)
-		xoffNew = xoffMax;
-//TODO	gtk_adjustment_set_value(GTK_ADJUSTMENT(pCocoaFrame->m_pHadj),xoffNew);
-	pView->setXScrollOffset((UT_sint32)xoffNew);
+	pView->setXScrollOffset(pView->getGraphics()->tlu(xoff));
 }
 
 
@@ -495,10 +487,7 @@ bool AP_CocoaFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 void AP_CocoaFrame::_setViewFocus(AV_View *pView)
 {
 	AP_CocoaFrameImpl * pFrameImpl = static_cast<AP_CocoaFrameImpl *>(getFrameImpl());
-#warning not implemented
-//	bool bFocus=GPOINTER_TO_INT(g_object_get_data(G_OBJECT(pFrameImpl->getTopLevelWindow()),
-//						 "toplevelWindowFocus"));
-//	pView->setFocus(bFocus && (gtk_grab_get_current()==NULL || gtk_grab_get_current()==pFrameImpl->getTopLevelWindow()) ? AV_FOCUS_HERE : !bFocus && gtk_grab_get_current()!=NULL && isTransientWindow(GTK_WINDOW(gtk_grab_get_current()),GTK_WINDOW(pFrameImpl->getTopLevelWindow())) ?  AV_FOCUS_NEARBY : AV_FOCUS_NONE);
+	pFrameImpl->giveFocus();
 }
 
 void AP_CocoaFrame::_bindToolbars(AV_View *pView)

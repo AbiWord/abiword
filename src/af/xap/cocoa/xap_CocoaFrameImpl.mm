@@ -46,255 +46,6 @@
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
-#if 0
-/****************************************************************/
-void XAP_CocoaFrameImpl::_fe::realize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
-{
-  GdkICAttr *ic_attr=(GdkICAttr *)g_object_get_data(G_OBJECT(widget), "ic_attr");
-  GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
-  if (gdk_im_ready () && (ic_attr = gdk_ic_attr_new ()) != NULL)
-    {
-      gint width, height;
-      int mask;
-	  GdkColormap *colormap;
-      GdkICAttr *attr = ic_attr;
-      int attrmask = GDK_IC_ALL_REQ;
-      GdkIMStyle style;
-
-      int supported_style =(GdkIMStyle)(GDK_IM_PREEDIT_NONE |
-				   GDK_IM_PREEDIT_NOTHING |
-			           GDK_IM_PREEDIT_POSITION |
-			           GDK_IM_STATUS_NONE |
-				   GDK_IM_STATUS_NOTHING);
-
-      if (widget->style && widget->style->font->type != GDK_FONT_FONTSET)
-		supported_style &= ~GDK_IM_PREEDIT_POSITION;
-
-      attr->style = style = gdk_im_decide_style ((GdkIMStyle)supported_style);
-      attr->client_window = widget->window;
-
-      if ((colormap = gtk_widget_get_colormap (widget)) !=
-		  gtk_widget_get_default_colormap ())
-		{
-		  attrmask |= GDK_IC_PREEDIT_COLORMAP;
-		  attr->preedit_colormap = colormap;
-		}
-      attrmask |= GDK_IC_PREEDIT_FOREGROUND;
-      attrmask |= GDK_IC_PREEDIT_BACKGROUND;
-      attr->preedit_foreground = widget->style->fg[GTK_STATE_NORMAL];
-      attr->preedit_background = widget->style->base[GTK_STATE_NORMAL];
-
-      switch (style & GDK_IM_PREEDIT_MASK)
-		{
-		case GDK_IM_PREEDIT_POSITION:
-		  if (widget->style && widget->style->font->type != GDK_FONT_FONTSET)
-			{
-			  g_warning ("over-the-spot style requires fontset");
-			  break;
-			}
-
-		  gdk_window_get_size (widget->window, &width, &height);
-		  
-		  attrmask |= GDK_IC_PREEDIT_POSITION_REQ;
-		  attr->spot_location.x = 0;
-		  attr->spot_location.y = height;
-		  attr->preedit_area.x = 0;
-		  attr->preedit_area.y = 0;
-		  attr->preedit_area.width = width;
-		  attr->preedit_area.height = height;
-		  attr->preedit_fontset = widget->style->font;
-		  
-		  break;
-		}
-      ic = gdk_ic_new (attr, (GdkICAttributesType)attrmask);
-	  
-      if (ic == NULL)
-		g_warning ("Can't create input context.");
-      else
-		{
-		  mask = gdk_window_get_events (widget->window);
-		  mask |= (GdkEventMask)gdk_ic_get_events (ic);
-		  gdk_window_set_events (widget->window,(GdkEventMask) mask);
-
-		  if (GTK_WIDGET_HAS_FOCUS(widget))
-			gdk_im_begin (ic, widget->window);
-		}
-	}
-  g_object_set_data(G_OBJECT(widget), "ic_attr", ic_attr);
-  g_object_set_data(G_OBJECT(widget), "ic", ic);
-}
-
-void XAP_CocoaFrameImpl::_fe::unrealize(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
-{
-  GdkICAttr *ic_attr=(GdkICAttr *)g_object_get_data(G_OBJECT(widget), "ic_attr");
-  GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
-  if (ic)
-    {
-      gdk_ic_destroy (ic);
-      ic = (GdkIC *)NULL;
-    }
-  if (ic_attr)
-    {
-      gdk_ic_attr_destroy (ic_attr);
-      ic_attr = (GdkICAttr *)NULL;
-    }
-  g_object_set_data(G_OBJECT(widget), "ic_attr", ic_attr);
-  g_object_set_data(G_OBJECT(widget), "ic", ic);
-}
-
-void XAP_CocoaFrameImpl::_fe::sizeAllocate(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
-{
-  GdkICAttr *ic_attr=(GdkICAttr *)g_object_get_data(G_OBJECT(widget), "ic_attr");
-  GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
-  if (ic &&
-	  (gdk_ic_get_style (ic) & GDK_IM_PREEDIT_POSITION))
-	{
-	  gint width, height;
-
-	  gdk_window_get_size (widget->window, &width, &height);
-	  ic_attr->preedit_area.width = width;
-	  ic_attr->preedit_area.height = height;
-	  gdk_ic_set_attr (ic, ic_attr,
-	      		   GDK_IC_PREEDIT_AREA);
-	}
-}
-
-gint XAP_CocoaFrameImpl::_fe::focusIn(GtkWidget * widget, GdkEvent * /*e*/,gpointer /*data*/)
-{
-  GdkIC * ic=(GdkIC *)g_object_get_data(G_OBJECT(widget), "ic");
-  if (ic)
-    gdk_im_begin (ic, widget->window);
-  return FALSE;
-}
-
-gint XAP_CocoaFrameImpl::_fe::focusOut(GtkWidget * /* w*/, GdkEvent * /*e*/,gpointer /*data*/)
-{
-  gdk_im_end ();
-  return FALSE;
-}
-gboolean XAP_CocoaFrameImpl::_fe::focus_in_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
-{
-	XAP_CocoaFrame * pFrame = (XAP_CocoaFrame *) g_object_get_user_data(G_OBJECT(w));
-	UT_ASSERT(pFrame);
-	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
-						GINT_TO_POINTER(TRUE));
-	if (pFrame->getCurrentView())
-		pFrame->getCurrentView()->focusChange(gtk_grab_get_current() == NULL || gtk_grab_get_current() == w ? AV_FOCUS_HERE : AV_FOCUS_NEARBY);
-	return FALSE;
-}
-
-gboolean XAP_CocoaFrameImpl::_fe::focus_out_event(GtkWidget *w,GdkEvent */*event*/,gpointer /*user_data*/)
-{
-	XAP_CocoaFrame * pFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	UT_ASSERT(pFrame);
-	g_object_set_data(G_OBJECT(w), "toplevelWindowFocus",
-						GINT_TO_POINTER(FALSE));
-	if (pFrame->getCurrentView())
-		pFrame->getCurrentView()->focusChange(AV_FOCUS_NONE);
-	return FALSE;
-}
-
-gint XAP_CocoaFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * e)
-{
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	pCocoaFrame->setTimeOfLastEvent(e->time);
-	AV_View * pView = pCocoaFrame->getCurrentView();
-	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *>(pCocoaFrame->getMouse());
-
-	//UT_DEBUGMSG(("Grabbing mouse.\n"));
-	gtk_grab_add(w);
-	
-	if (pView)
-		pCocoaMouse->mouseClick(pView,e);
-	return 1;
-}
-
-gint XAP_CocoaFrameImpl::_fe::button_release_event(GtkWidget * w, GdkEventButton * e)
-{
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	pCocoaFrame->setTimeOfLastEvent(e->time);
-	AV_View * pView = pCocoaFrame->getCurrentView();
-
-	EV_CocoaMouse * pCocoaMouse = static_cast<EV_CocoaMouse *>(pCocoaFrame->getMouse());
-
-	//UT_DEBUGMSG(("Ungrabbing mouse.\n"));
-	gtk_grab_remove(w);
-	
-	if (pView)
-		pCocoaMouse->mouseUp(pView,e);
-	
-	return 1;
-}
-	
-gint XAP_CocoaFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
-{
-	// This is basically a resize event.
-		
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	AV_View * pView = pCocoaFrame->getCurrentView();
-
-	if (pView)
-		pView->setWindowSize(e->width, e->height);
-
-	// Dynamic Zoom Implimentation
-   pCocoaFrame->updateZoom();
-
-	return 1;
-}
-
-	
-gint XAP_CocoaFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
-{
-	UT_Rect rClip;
-	rClip.left = pExposeEvent->area.x;
-	rClip.top = pExposeEvent->area.y;
-	rClip.width = pExposeEvent->area.width;
-	rClip.height = pExposeEvent->area.height;
-	xxx_UT_DEBUGMSG(("gtk in Frame expose:  left=%d, top=%d, width=%d, height=%d\n", rClip.left, rClip.top, rClip.width, rClip.height));
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	FV_View * pView = (FV_View *) pCocoaFrame->getCurrentView();
-	if(pView)
-	{
-		GR_Graphics * pG = pView->getGraphics();
-		pG->doRepaint(&rClip);
-	}
-	return 0;
-}
-
-void XAP_CocoaFrameImpl::_fe::vScrollChanged(GtkAdjustment * w, gpointer /*data*/)
-{
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	AV_View * pView = pCocoaFrame->getCurrentView();
-	
-	//UT_DEBUGMSG(("gtk vScroll: value %ld\n",(UT_sint32)w->value));
-	
-	if (pView)
-		pView->sendVerticalScrollEvent((UT_sint32) w->value);
-}
-	
-void XAP_CocoaFrameImpl::_fe::hScrollChanged(GtkAdjustment * w, gpointer /*data*/)
-{
-	XAP_CocoaFrame * pCocoaFrame = (XAP_CocoaFrame *)g_object_get_user_data(G_OBJECT(w));
-	AV_View * pView = pCocoaFrame->getCurrentView();
-	
-	if (pView)
-		pView->sendHorizontalScrollEvent((UT_sint32) w->value);
-}
-	
-void XAP_CocoaFrameImpl::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
-{
-	// I think this is right:
-	// 	We shouldn't have to call gtk_main_quit() here because
-	//  this signal catcher is only inserted before the GTK
-	//  default handler (which will continue to destroy the window
-	//  if we don't return TRUE).
-	//
-	//  This function should be for things to happen immediately
-	//  before a frame gets hosed once and for all.
-	
-	//gtk_main_quit ();
-}
-#endif
 
 /*!
  * Background abi repaint function.
@@ -490,7 +241,7 @@ void XAP_CocoaFrameImpl::_createTopLevelWindow(void)
 
 	NSWindow * theWindow = [m_frameController window];
 	UT_ASSERT (theWindow);
-	[theWindow setTitle:[NSString stringWithCString:m_pCocoaApp->getApplicationTitleForTitleBar()]];
+	[theWindow setTitle:[NSString stringWithUTF8String:m_pCocoaApp->getApplicationTitleForTitleBar()]];
 //	NSView * docArea = [m_frameController getMainView];
 /*  	[scroller setHasHorizontalScroller:YES];
   	[scroller setHasVerticalScroller:YES];*/
@@ -666,7 +417,7 @@ bool XAP_CocoaFrameImpl::_show()
 
 bool XAP_CocoaFrameImpl::_openURL(const char * szURL)
 {  
-	NSURL *URL = [[NSURL alloc] initWithString:[NSString stringWithCString:szURL]];		
+	NSURL *URL = [[NSURL alloc] initWithString:[NSString stringWithUTF8String:szURL]];		
 	
 	NSWorkspace * space = [NSWorkspace sharedWorkspace];
 	[space openURL:URL];
@@ -712,7 +463,7 @@ bool XAP_CocoaFrameImpl::_updateTitle()
 	/* TODO discard this sprintf and you NSString features instead */
 	NSWindow * theWindow = [m_frameController window];
 	UT_ASSERT (theWindow);
-	NSString * str = [NSString stringWithCString:szTitle];
+	NSString * str = [NSString stringWithUTF8String:szTitle];
 	[theWindow setTitleWithRepresentedFilename:str];
 
 	return true;

@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2002 Hubert Figuiere
+ * Copyright (C) 2001-2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,11 +22,12 @@
 #define AP_COCOAFRAME_H
 
 #import <Cocoa/Cocoa.h>
-#import "gr_CocoaGraphics.h"
-#import "xap_CocoaFrame.h"
 
+class XAP_CocoaApp;
+class XAP_Frame;
 class AP_CocoaFrame;
 class FL_DocLayout;
+class GR_Graphics;
 
 #include "ap_Frame.h"
 #include "ie_types.h"
@@ -76,16 +77,10 @@ protected:
 
 	virtual UT_sint32			_getDocumentAreaWidth();
 	virtual UT_sint32			_getDocumentAreaHeight();
-
-#if 0	
-	GtkAdjustment *				m_pVadj;
-	GtkAdjustment *				m_pHadj;
-	GtkWidget *					m_table;
-	GtkWidget *					m_innertable;
-	GtkWidget *					m_topRuler;
-	GtkWidget *					m_leftRuler;
-	GtkWidget *					m_wSunkenBox;
-#endif
+	void 						_getHScrollValues (UT_sint32 &min, UT_sint32 &max, UT_sint32 &current);
+	void 						_getVScrollValues (UT_sint32 &min, UT_sint32 &max, UT_sint32 &current);
+	void 						_setHScrollValues (UT_sint32 min, UT_sint32 max, UT_sint32 current);
+	void 						_setVScrollValues (UT_sint32 min, UT_sint32 max, UT_sint32 current);
 };
 
 #endif /* AP_COCOAFRAME_H */
