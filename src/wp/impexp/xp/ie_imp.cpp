@@ -104,13 +104,17 @@ bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const XML_Char ** attributes)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendStruxFmt(pfs, attributes);
-	else {
+	else 
+	{
 		bool bRes;
 
-		if (true /*!pfs*/) {
+		if (pfs == NULL) 
+		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			bRes = false;
-		} else {
+		} 
+		else 
+		{
 			bRes = m_pDocument->changeStruxFmt(PTC_AddFmt,
 											   m_dpos, m_dpos,
 											   attributes, NULL,
