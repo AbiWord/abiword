@@ -49,7 +49,7 @@ UT_Bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 	UT_ASSERT(ppcr);
 	
 	PX_ChangeRecord_Strux * pcr
-		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,UT_FALSE,UT_FALSE,
+		= new PX_ChangeRecord_Strux(PX_ChangeRecord::PXT_InsertStrux,0,
 									0, /* doc position is undefined for strux */
 									UT_TRUE, /* bleftside is undefined for strux */
 									m_indexAP,m_struxType);

@@ -314,4 +314,30 @@ UT_Bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
 	return m_pPieceTable->getStruxFromPosition(listenerId,docPos,psfh);
 }
 
+void PD_Document::beginUserAtomicGlob(void)
+{
+	m_pPieceTable->beginUserAtomicGlob();
+}
+
+void PD_Document::endUserAtomicGlob(void)
+{
+	m_pPieceTable->endUserAtomicGlob();
+}
+
+UT_Bool PD_Document::undoCmd(UT_uint32 repeatCount)
+{
+	while (repeatCount--)
+		if (!m_pPieceTable->undoCmd())
+			return UT_FALSE;
+	return UT_TRUE;
+}
+
+UT_Bool PD_Document::redoCmd(UT_uint32 repeatCount)
+{
+	while (repeatCount--)
+		if (!m_pPieceTable->redoCmd())
+			return UT_FALSE;
+	return UT_TRUE;
+}
+
 

@@ -24,30 +24,39 @@
 class PX_ChangeRecord
 {
 public:
-	typedef enum _PXType { PXT_InsertSpan=0, 	PXT_DeleteSpan=1,
+	typedef enum _PXFlags { PXF_Null=				0x00,
+							PXF_MultiStepStart=		0x01, /* display-atomic */
+							PXF_MultiStepEnd=		0x02,
+							PXF_UserAtomicStart=	0x04, /* user-level-atomic */
+							PXF_UserAtomicEnd=		0x08 } PXFlags;
+	
+	typedef enum _PXType { PXT_UserAtomicGlobMarker=-1,
+						   PXT_InsertSpan=0, 	PXT_DeleteSpan=1,
 						   PXT_InsertFmt=2,		PXT_DeleteFmt=3,
 						   PXT_InsertStrux=4,	PXT_DeleteStrux=5,
 						   PXT_InsertObject=6,	PXT_DeleteObject=7 } PXType;
 
 	PX_ChangeRecord(PXType type,
-					UT_Bool bMultiStepStart,
-					UT_Bool bMultiStepEnd,
+					UT_Byte atomic,		/* see PXFlags */
 					PT_DocPosition position,
 					UT_Bool bLeftSide,
 					PT_AttrPropIndex indexAP);
 	virtual ~PX_ChangeRecord();
 
 	PXType					getType(void) const;
+	UT_Byte					getFlags(void) const;
 	PT_DocPosition			getPosition(void) const;
 	PT_AttrPropIndex		getIndexAP(void) const;
 
+	virtual PX_ChangeRecord * reverse(void) const;
+	UT_Byte					getRevFlags(void) const;
+	PXType					getRevType(void) const;
+	
 	virtual void			dump(void) const;
 	
 protected:
 	PXType					m_type;
-
-	UT_Bool					m_bMultiStepStart;
-	UT_Bool					m_bMultiStepEnd;
+	UT_Byte					m_atomic;			/* see PXFlags above */
 	PT_DocPosition			m_position;			/* absolute document position of the change */
 	UT_Bool					m_bLeftSide;
 	PT_AttrPropIndex		m_indexAP;

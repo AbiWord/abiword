@@ -25,6 +25,11 @@ public:
 
 	void					setPieceTableState(PTState pts);
 
+	void					beginUserAtomicGlob(void);
+	void					endUserAtomicGlob(void);
+	UT_Bool					undoCmd(void);
+	UT_Bool					redoCmd(void);
+
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   UT_Bool bLeftSide,
 									   UT_UCSChar * p,
@@ -94,6 +99,8 @@ protected:
 	UT_Bool					_deleteSpan(pf_Frag_Text * pft, UT_uint32 fragOffset,
 										PT_BufIndex bi, UT_uint32 length);
 	void					_deleteTextFrag(pf_Frag_Text * pft);
+	UT_Bool					_getStruxFromPosition(PT_DocPosition docPos,
+												  pf_Frag_Strux ** ppfs) const;
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

@@ -29,6 +29,11 @@ public:
 	UT_Bool					isDirty(void) const;
 	void					setClean(void);
 
+	void					beginUserAtomicGlob(void);
+	void					endUserAtomicGlob(void);
+	UT_Bool					undoCmd(UT_uint32 repeatCount);
+	UT_Bool					redoCmd(UT_uint32 repeatCount);
+	
 	UT_Bool					insertSpan(PT_DocPosition dpos,
 									   UT_Bool bLeftSide,
 									   UT_UCSChar * p,

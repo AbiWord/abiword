@@ -41,10 +41,13 @@ public:
 	UT_Bool					getRedo(PX_ChangeRecord ** ppcr) const;
 	UT_Bool					didUndo(void);
 	UT_Bool					didRedo(void);
+
+	void					enableHistory(UT_Bool bOn);
 	
 protected:
 	UT_Vector				m_vecChangeRecords;
 	UT_uint32				m_undoPosition;
+	UT_Bool					m_historyOn;
 };
 
 #endif /* PX_CHANGEHISTORY_H */

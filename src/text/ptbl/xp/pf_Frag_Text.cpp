@@ -42,7 +42,7 @@ UT_Bool pf_Frag_Text::createSpecialChangeRecord(PX_ChangeRecord ** ppcr) const
 	PT_DocPosition docPos = m_pPieceTable->getFragPosition(this);
 	PX_ChangeRecord * pcr
 		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
-								   UT_FALSE,UT_FALSE,docPos,
+								   0,docPos,
 								   UT_TRUE, /* assume left side */
 								   m_indexAP,m_bufIndex,m_length);
 	if (!pcr)

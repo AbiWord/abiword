@@ -1612,3 +1612,14 @@ UT_Bool FV_View::_charMotion(UT_Bool bForward,UT_uint32 countChars)
 	return UT_TRUE;
 }
 // -------------------------------------------------------------------------
+
+void FV_View::cmdUndo(UT_uint32 count)
+{
+	m_pDoc->undoCmd(count);
+}
+
+void FV_View::cmdRedo(UT_uint32 count)
+{
+	m_pDoc->redoCmd(count);
+}
+

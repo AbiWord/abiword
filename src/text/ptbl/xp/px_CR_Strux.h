@@ -23,14 +23,15 @@ class PX_ChangeRecord_Strux : public PX_ChangeRecord
 {
 public:
 	PX_ChangeRecord_Strux(PXType type,
-						  UT_Bool bMultiStepStart,
-						  UT_Bool bMultiStepEnd,
+						  UT_Byte atomic,
 						  PT_DocPosition position,
 						  UT_Bool bLeftSide,
 						  PT_AttrPropIndex indexAP,
 						  PTStruxType struxType);
 	~PX_ChangeRecord_Strux();
 
+	virtual PX_ChangeRecord * reverse(void) const;
+	
 	PTStruxType				getStruxType(void) const;
 
 protected:

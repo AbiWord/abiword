@@ -192,7 +192,7 @@ UT_Bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	// anyone listening.
 	
 	PX_ChangeRecord_Span * pcr
-		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,UT_FALSE,UT_FALSE,
+		= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,0,
 								   dpos,bLeftSide,pft->getIndexAP(),bi,length);
 	UT_ASSERT(pcr);
 	m_history.addChangeRecord(pcr);
@@ -320,13 +320,13 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 	// a simple delete.  otherwise, we need to set up a multi-step
 	// delete.
 
-	UT_Bool bMultiStepStart = UT_FALSE;
-	UT_Bool bMultiStepEnd = UT_FALSE;
+	PX_ChangeRecord::PXFlags fMultiStepStart = PX_ChangeRecord::PXF_Null;
+	PX_ChangeRecord::PXFlags fMultiStepEnd = PX_ChangeRecord::PXF_Null;
 	UT_Bool bInMultiStep = UT_FALSE;
 
 	if (f.x_fragOffset+length > f.x_pft->getLength())
 	{
-		bMultiStepStart = UT_TRUE;
+		fMultiStepStart = PX_ChangeRecord::PXF_MultiStepStart;
 		bInMultiStep = UT_TRUE;
 	}
 
@@ -346,7 +346,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 		{
 			lengthThisStep = length;
 			if (bInMultiStep)
-				bMultiStepEnd = UT_TRUE;
+				fMultiStepEnd = PX_ChangeRecord::PXF_MultiStepEnd;
 		}
 		
 		// create a change record for this change and put it in the history.
@@ -354,11 +354,12 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 		// we need are blown away during the delete.  we then notify all
 		// listeners of the change.
 		
-		PX_ChangeRecord_Span * pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
-															  bMultiStepStart,bMultiStepEnd,
-															  dpos,UT_FALSE,
-															  f.x_pft->getIndexAP(),
-															  f.x_bi,lengthThisStep);
+		PX_ChangeRecord_Span * pcr
+			= new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_DeleteSpan,
+									   fMultiStepStart | fMultiStepEnd,
+									   dpos,UT_FALSE,
+									   f.x_pft->getIndexAP(),
+									   f.x_bi,lengthThisStep);
 		UT_ASSERT(pcr);
 		m_history.addChangeRecord(pcr);
 		_deleteSpan(f.x_pft,f.x_fragOffset,f.x_bi,lengthThisStep);
@@ -371,7 +372,7 @@ UT_Bool pt_PieceTable::deleteSpan(PT_DocPosition dpos,
 		length -= lengthThisStep;
 		if (length)
 		{
-			bMultiStepStart = UT_FALSE;
+			fMultiStepStart = PX_ChangeRecord::PXF_Null;
 
 			// since _deleteSpan(), can delete f.x_pft, messes with the
 			// fragment list, and does some aggressive coalescing of
@@ -749,6 +750,20 @@ UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 {
 	// return the SFH of the last strux immediately prior to
 	// the given absolute document position.
+
+	pf_Frag_Strux * pfs = NULL;
+	if (!_getStruxFromPosition(docPos,&pfs))
+		return UT_FALSE;
+	
+	*psfh = pfs->getFmtHandle(listenerId);
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
+											 pf_Frag_Strux ** ppfs) const
+{
+	// return the strux fragment immediately prior (containing)
+	// the given absolute document position.
 	
 	PT_DocPosition sum = 0;
 	pf_Frag * pfLastStrux = NULL;
@@ -776,7 +791,7 @@ UT_Bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
  FoundIt:
 
 	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pfLastStrux);
-	*psfh = pfs->getFmtHandle(listenerId);
+	*ppfs = pfs;
 	return UT_TRUE;
 }
 
@@ -843,6 +858,102 @@ UT_Bool pt_PieceTable::getTextFragFromPosition(PT_DocPosition docPos,
 	
 	UT_ASSERT(0);
 	return UT_FALSE;
+}
+
+void pt_PieceTable::beginUserAtomicGlob(void)
+{
+	// a 'user-atomic-glob' is a change record marker used to indicate
+	// the start of a set of edits which the user will probably consider
+	// an atomic operation.  we leave it upto the view/layout/formatter
+	// to decide what that is.  this is used to glob events for the
+	// purposes of UNDO/REDO -- this might be word globbing of a contiguous
+	// sequence of keystokes or bracket a global search/replace.
+	//
+	// we do not notify the listeners.
+	
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_UserAtomicGlobMarker,
+												PX_ChangeRecord::PXF_UserAtomicStart,
+												0,0,0);
+	UT_ASSERT(pcr);
+	m_history.addChangeRecord(pcr);
+}
+
+void pt_PieceTable::endUserAtomicGlob(void)
+{
+	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_UserAtomicGlobMarker,
+												PX_ChangeRecord::PXF_UserAtomicEnd,
+												0,0,0);
+	UT_ASSERT(pcr);
+	m_history.addChangeRecord(pcr);
+}
+
+UT_Bool pt_PieceTable::undoCmd(void)
+{
+	// do a user-atomic undo.
+	// return false if we can't.
+	
+	PX_ChangeRecord * pcr;
+	if (!m_history.getUndo(&pcr))
+		return UT_FALSE;
+	UT_ASSERT(pcr);
+
+	// the flags on the first undo record tells us whether it is
+	// a simple change, a multi-step change (display atomic) or
+	// a user-atomic (via globbing).
+	// for a simple change, we just do it and return.
+	// for a multi-step or user-atomic we loop until we do the
+	// corresponding other end.
+	
+	UT_Byte flagsFirst = pcr->getFlags();
+	while (m_history.getUndo(&pcr))
+	{
+		PX_ChangeRecord * pcrRev = pcr->reverse();
+		UT_ASSERT(pcrRev);
+		UT_Byte flagsRev = pcrRev->getFlags();
+//TODO update fragments
+		pf_Frag_Strux * pfs = NULL;
+		UT_Bool bResult = _getStruxFromPosition(pcrRev->getPosition(),&pfs);
+		m_pDocument->notifyListeners(pfs,pcrRev);
+		delete pcrRev;
+		m_history.didUndo();
+		if (flagsRev == flagsFirst)		// stop when we have a matching end
+			break;
+	}
+
+	return UT_TRUE;
+}
+
+UT_Bool pt_PieceTable::redoCmd(void)
+{
+	// do a user-atomic redo.
+	// return false if we can't.
+	
+	PX_ChangeRecord * pcr;
+	if (!m_history.getRedo(&pcr))
+		return UT_FALSE;
+	UT_ASSERT(pcr);
+
+	// the flags on the first redo record tells us whether it is
+	// a simple change, a multi-step change (display atomic) or
+	// a user-atomic (via globbing).
+	// for a simple change, we just do it and return.
+	// for a multi-step or user-atomic we loop until we do the
+	// corresponding other end.
+	
+	UT_Byte flagsFirst = pcr->getFlags();
+	while (m_history.getRedo(&pcr))
+	{
+		UT_Byte flagsRev = pcr->getRevFlags();
+//TODO update fragments
+		pf_Frag_Strux * pfs = NULL;
+		UT_Bool bResult = _getStruxFromPosition(pcr->getPosition(),&pfs);
+		m_pDocument->notifyListeners(pfs,pcr);
+		m_history.didRedo();
+		if (flagsRev == flagsFirst)		// stop when we have a matching end
+			break;
+	}
+
+	return UT_TRUE;
 }
 
 void pt_PieceTable::dump(FILE * fp) const

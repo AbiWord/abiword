@@ -27,14 +27,15 @@ class PX_ChangeRecord_Span : public PX_ChangeRecord
 {
 public:
 	PX_ChangeRecord_Span(PXType type,
-						 UT_Bool bMultiStepStart,
-						 UT_Bool bMultiStepEnd,
+						 UT_Byte atomic,
 						 PT_DocPosition position,
 						 UT_Bool bLeftSide,
 						 PT_AttrPropIndex indexAP,
 						 PT_BufIndex bufIndex,
 						 UT_uint32 length);
 	~PX_ChangeRecord_Span();
+
+	virtual PX_ChangeRecord * reverse(void) const;
 
 	UT_uint32				getLength(void) const;
 	

@@ -92,6 +92,9 @@ public:
 	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos);
 	void			extSelNextPrevLine(UT_Bool bNext);
 
+	void			cmdUndo(UT_uint32 count);
+	void			cmdRedo(UT_uint32 count);
+	
 	void			Test_Dump(void);	/* TODO remove this */
 // ----------------------
 	
