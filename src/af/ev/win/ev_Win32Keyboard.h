@@ -25,6 +25,7 @@
 
 #include "ev_Keyboard.h"
 #include "ev_EditBits.h"
+#include "iconv.h"
 
 class AV_View;
 
@@ -32,6 +33,7 @@ class ev_Win32Keyboard : public EV_Keyboard
 {
 public:
 	ev_Win32Keyboard(EV_EditEventMapper * pEEM);
+	~ev_Win32Keyboard();
 	void remapKeyboard(HKL hKeyboardLayout);
 
 	UT_Bool onKeyDown(AV_View * pView,
@@ -45,6 +47,8 @@ protected:
 	void				_emitChar(AV_View * pView,
 								  HWND hWnd, UINT iMsg, WPARAM nVirtKey, LPARAM keyData,
 								  BYTE b, EV_EditModifierState ems);
+	HKL					m_hKeyboardLayout;
+	iconv_t				m_iconv; /* Selected translation to Unicode */
 };
 
 #endif /* EV_WIN32KEYBOARD_H */

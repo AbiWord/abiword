@@ -31,7 +31,6 @@
 #include "ev_EditMethod.h"
 #include "ev_EditBinding.h"
 #include "ev_EditEventMapper.h"
-#include "iconv.h"
 
 #ifdef UT_DEBUG
 #define MSG(keydata,args)	do { if ( ! (keyData & 0x40000000)) UT_DEBUGMSG args ; } while (0)
@@ -159,11 +158,6 @@
 // Note: instances of this class, but then so is the physical
 // Note: keyboard.
 
-static UT_Bool s_bMapped = UT_FALSE;
-static HKL s_hKeyboardLayout = 0;
-static iconv_t s_iconv= (iconv_t)-1; /* Selected translation to Unicode */
-// the s_iconv will leek since there is no way to tell when a iconv_close is to be done
-
 static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 
 /*****************************************************************/
@@ -172,29 +166,35 @@ static EV_EditBits s_mapVirtualKeyCodeToNVK(WPARAM nVirtKey);
 ev_Win32Keyboard::ev_Win32Keyboard(EV_EditEventMapper * pEEM)
 	: EV_Keyboard(pEEM)
 {
-	if (!s_bMapped)
-		remapKeyboard(GetKeyboardLayout(0));
-	s_bMapped = UT_TRUE;
+	m_hKeyboardLayout = 0;
+	m_iconv = (iconv_t)-1;
+	remapKeyboard(GetKeyboardLayout(0));
+}
+
+ev_Win32Keyboard::~ev_Win32Keyboard()
+{
+	if( m_iconv != (iconv_t)-1 )
+		iconv_close( m_iconv );
 }
 
 void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 {
 	char  szCodePage[10];
 
-	if( s_iconv != (iconv_t)-1 )
+	if( m_iconv != (iconv_t)-1 )
 	{
-		iconv_close( s_iconv );
-		s_iconv = (iconv_t)-1;
+		iconv_close( m_iconv );
+		m_iconv = (iconv_t)-1;
 	}
 	if( hKeyboardLayout != 0 )
 	{
 		strcpy( szCodePage, "CP" );
 		if( GetLocaleInfo( LOWORD( hKeyboardLayout ), LOCALE_IDEFAULTANSICODEPAGE, &szCodePage[2], sizeof( szCodePage ) / sizeof( szCodePage[0] ) - 2 ) )
 		{
-			s_iconv = iconv_open( "UCS-2-INTERNAL", szCodePage );
+			m_iconv = iconv_open( "UCS-2-INTERNAL", szCodePage );
 		}
 
-    	s_hKeyboardLayout = hKeyboardLayout;
+		m_hKeyboardLayout = hKeyboardLayout;
 	}
 }
 
@@ -376,7 +376,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 
 	unsigned int scancode = (keyData & 0x00ff0000)>>16;
 	GetKeyboardState(keyState);
-	count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,s_hKeyboardLayout);
+	count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,m_hKeyboardLayout);
 
 	if (count == -1)
 	{
@@ -405,7 +405,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		keyState[VK_RCONTROL] &= ~0x80;
 		keyState[VK_RMENU] &= ~0x80;
 
-		count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,s_hKeyboardLayout);
+		count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,m_hKeyboardLayout);
 
 		if (count == 1)
 		{
@@ -477,7 +477,7 @@ UT_Bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 		keyState[VK_RCONTROL] &= ~0x80;
 		keyState[VK_RMENU] &= ~0x80;
 		
-		count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,s_hKeyboardLayout);
+		count = ToAsciiEx(nVirtKey,scancode,keyState,(WORD *)buffer,0,m_hKeyboardLayout);
 
 		if (count == 1)
 		{
@@ -511,7 +511,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 	//			 (ems&EV_EMS_ALT)?"alt":""));
 
 	UT_uint16 charData;
-	if( s_iconv != (iconv_t)-1 )
+	if( m_iconv != (iconv_t)-1 )
 	{
 		// convert to 8bit string and null terminate
 		size_t len_in, len_out;
@@ -520,7 +520,7 @@ void ev_Win32Keyboard::_emitChar(AV_View * pView,
 
 		len_in = 1;
 		len_out = 2;
-		iconv( s_iconv, &In, &len_in, &Out, &len_out );
+		iconv( m_iconv, &In, &len_in, &Out, &len_out );
 	}
 	else
 		charData = b;
