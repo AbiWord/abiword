@@ -21,6 +21,7 @@
 
 #include "ut_assert.h"
 #include "ut_png.h"
+#include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "fl_Layout.h"
 #include "px_CR_Object.h"
@@ -178,7 +179,7 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, double fDPI,
 	/*
 	  Create the data item
 	*/
-	char * mimetype = strdup("image/png");
+	char * mimetype = UT_strdup("image/png");
    	pDoc->createDataItem(szName, UT_FALSE, m_pbbPNG, mimetype, NULL);
 
 	/*
