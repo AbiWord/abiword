@@ -394,7 +394,7 @@ void Text_Listener::_genBOM(void)
 void Text_Listener::_genLineBreak(void)
 {
 	char *pMB = static_cast<char *>(m_mbLineBreak);
-	UT_UCSChar *pWC = 0;
+	const UT_UCSChar *pWC = 0;
 	int mbLen = 0;
 
 	// TODO Old Mac should use "\r".  Mac OSX should Use U+2028 or U+2029.
