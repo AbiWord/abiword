@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2003 Hubert Figuiere
@@ -18,21 +20,22 @@
  * 02111-1307, USA.
  */
 
-#import <Cocoa/Cocoa.h>
-
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#import "ev_CocoaMouse.h"
-#include "xap_Frame.h"
-#include "xap_CocoaFrame.h"
-#import "ap_FrameData.h"
-#include "ap_CocoaFrame.h"
 
 #include "gr_CocoaGraphics.h"
-#include "ap_CocoaTopRuler.h"
+#include "gr_Painter.h"
 
-#import "ap_CocoaFrameImpl.h"
+#include "ev_CocoaMouse.h"
+
+#include "xap_Frame.h"
+#include "xap_CocoaFrame.h"
+
+#include "ap_CocoaFrame.h"
+#include "ap_CocoaFrameImpl.h"
+#include "ap_CocoaTopRuler.h"
+#include "ap_FrameData.h"
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)
 
@@ -114,6 +117,273 @@ NSWindow * AP_CocoaTopRuler::getRootWindow(void)
 	return m_rootWindow;
 }
 
+void AP_CocoaTopRuler::_drawMarginProperties(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr)
+{
+	if (!m_pG)
+		return;
+
+	UT_Rect rLeft;
+	UT_Rect rRight;
+
+	_getMarginMarkerRects(pInfo, rLeft, rRight);
+
+	GR_Painter painter(m_pG);
+
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
+
+	NSPoint control[4];
+
+	control[0].x = static_cast<float>(0);
+	control[0].y = static_cast<float>(0);
+	control[1].x = static_cast<float>(0);
+	control[1].y = static_cast<float>(6);
+	control[2].x = static_cast<float>(6);
+	control[2].y = static_cast<float>(6);
+	control[3].x = static_cast<float>(6);
+	control[3].y = static_cast<float>(0);
+
+	NSColor * lineColor = [NSColor knobColor];
+	NSColor * fillColor = pG->HBlue();
+
+	UT_sint32 l = rLeft.left;
+	UT_sint32 t = rLeft.top;
+
+	pG->rawPolyAtOffset(control, 4, l, t, fillColor, true);
+	pG->rawPolyAtOffset(control, 4, l, t, lineColor, false);
+
+	l = rRight.left;
+	t = rRight.top;
+
+	pG->rawPolyAtOffset(control, 4, l, t, fillColor, true);
+	pG->rawPolyAtOffset(control, 4, l, t, lineColor, false);
+}
+
+void AP_CocoaTopRuler::_drawLeftIndentMarker(UT_Rect & rect, bool bFilled)
+{
+	if (!m_pG)
+		return;
+
+	UT_sint32 l = rect.left;
+	UT_sint32 t = rect.top;
+
+	fl_BlockLayout * pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	
+	bool bRTL = pBlock ? (pBlock->getDominantDirection() == UT_BIDI_RTL) : false;
+
+	GR_Painter painter(m_pG);
+
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
+
+	NSPoint control[5];
+
+	control[0].x = static_cast<float>(10);
+	control[0].y = static_cast<float>( 8);
+	control[1].x = static_cast<float>(10);
+	control[1].y = static_cast<float>( 5);
+	control[2].x = static_cast<float>( 5);
+	control[2].y = static_cast<float>( 0);
+	control[3].x = static_cast<float>( 0);
+	control[3].y = static_cast<float>( 5);
+	control[4].x = static_cast<float>( 0);
+	control[4].y = static_cast<float>( 8);
+
+	NSColor * lineColor = [NSColor knobColor];
+
+	NSColor * fillColor = 0;
+
+	if (bFilled)
+		fillColor = pG->HBlue();
+	else
+		fillColor = [NSColor whiteColor];
+
+	pG->rawPolyAtOffset(control, 5, l, t, fillColor, true);
+	pG->rawPolyAtOffset(control, 5, l, t, lineColor, false);
+
+	if (!bRTL)
+	{
+		control[0].x = static_cast<float>(10);
+		control[0].y = static_cast<float>( 9);
+		control[1].x = static_cast<float>( 0);
+		control[1].y = static_cast<float>( 9);
+		control[2].x = static_cast<float>( 0);
+		control[2].y = static_cast<float>(14);
+		control[3].x = static_cast<float>(10);
+		control[3].y = static_cast<float>(14);
+
+		pG->rawPolyAtOffset(control, 4, l, t, fillColor, true);
+		pG->rawPolyAtOffset(control, 4, l, t, lineColor, false);
+	}
+}
+
+void AP_CocoaTopRuler::_drawRightIndentMarker(UT_Rect & rect, bool bFilled)
+{
+	if (!m_pG)
+		return;
+
+	UT_sint32 l = rect.left;
+	UT_sint32 t = rect.top;
+
+	fl_BlockLayout * pBlock = (static_cast<FV_View *>(m_pView))->getCurrentBlock();
+	
+	bool bRTL = pBlock ? (pBlock->getDominantDirection() == UT_BIDI_RTL) : false;
+
+	GR_Painter painter(m_pG);
+
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
+
+	NSPoint control[5];
+
+	control[0].x = static_cast<float>(10);
+	control[0].y = static_cast<float>( 8);
+	control[1].x = static_cast<float>(10);
+	control[1].y = static_cast<float>( 5);
+	control[2].x = static_cast<float>( 5);
+	control[2].y = static_cast<float>( 0);
+	control[3].x = static_cast<float>( 0);
+	control[3].y = static_cast<float>( 5);
+	control[4].x = static_cast<float>( 0);
+	control[4].y = static_cast<float>( 8);
+
+	NSColor * lineColor = [NSColor knobColor];
+
+	NSColor * fillColor = 0;
+
+	if (bFilled)
+		fillColor = pG->HBlue();
+	else
+		fillColor = [NSColor whiteColor];
+
+	pG->rawPolyAtOffset(control, 5, l, t, fillColor, true);
+	pG->rawPolyAtOffset(control, 5, l, t, lineColor, false);
+
+	if (bRTL)
+	{
+		control[0].x = static_cast<float>(10);
+		control[0].y = static_cast<float>( 9);
+		control[1].x = static_cast<float>( 0);
+		control[1].y = static_cast<float>( 9);
+		control[2].x = static_cast<float>( 0);
+		control[2].y = static_cast<float>(14);
+		control[3].x = static_cast<float>(10);
+		control[3].y = static_cast<float>(14);
+
+		pG->rawPolyAtOffset(control, 4, l, t, fillColor, true);
+		pG->rawPolyAtOffset(control, 4, l, t, lineColor, false);
+	}
+}
+
+void AP_CocoaTopRuler::_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled)
+{
+	if (!m_pG)
+		return;
+
+	UT_sint32 l = rect.left;
+	UT_sint32 t = rect.top;
+
+	GR_Painter painter(m_pG);
+
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
+
+	NSPoint control[5];
+
+	control[0].x = static_cast<float>( 0);
+	control[0].y = static_cast<float>( 0);
+	control[1].x = static_cast<float>( 0);
+	control[1].y = static_cast<float>( 3);
+	control[2].x = static_cast<float>( 5);
+	control[2].y = static_cast<float>( 8);
+	control[3].x = static_cast<float>(10);
+	control[3].y = static_cast<float>( 3);
+	control[4].x = static_cast<float>(10);
+	control[4].y = static_cast<float>( 0);
+
+	NSColor * lineColor = [NSColor knobColor];
+
+	NSColor * fillColor = 0;
+
+	if (bFilled)
+		fillColor = pG->HBlue();
+	else
+		fillColor = [NSColor whiteColor];
+
+	pG->rawPolyAtOffset(control, 5, l, t, fillColor, true);
+	pG->rawPolyAtOffset(control, 5, l, t, lineColor, false);
+}
+
+void AP_CocoaTopRuler::_drawColumnGapMarker(UT_Rect & rect)
+{
+	if (!m_pG)
+		return;
+
+	UT_sint32 l = rect.left;
+	UT_sint32 t = rect.top;
+
+	UT_sint32 w = m_pG->tdu(rect.width);
+
+	GR_Painter painter(m_pG);
+
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
+
+	NSPoint control[6];
+
+	control[0].x = static_cast<float>(w - 1);
+	control[0].y = static_cast<float>(    0);
+	control[1].x = static_cast<float>(    1);
+	control[1].y = static_cast<float>(    0);
+	control[2].x = static_cast<float>(    1);
+	control[2].y = static_cast<float>(    6);
+	control[3].x = static_cast<float>(    4);
+	control[3].y = static_cast<float>(    3);
+	control[4].x = static_cast<float>(w - 4);
+	control[4].y = static_cast<float>(    3);
+	control[5].x = static_cast<float>(w - 1);
+	control[5].y = static_cast<float>(    6);
+
+	NSColor * lineColor = [NSColor knobColor];
+	NSColor * fillColor = pG->HBlue();
+
+	pG->rawPolyAtOffset(control, 6, l, t, fillColor, true);
+	pG->rawPolyAtOffset(control, 6, l, t, lineColor, false);
+}
+
+void AP_CocoaTopRuler::_drawCellMark(UT_Rect * prDrag, bool bUp)
+{
+	if (!m_pG || !prDrag)
+		return;
+
+	UT_sint32 l = prDrag->left;
+	UT_sint32 t = prDrag->top;
+
+	UT_sint32 w = m_pG->tdu(prDrag->width);
+	UT_sint32 h = m_pG->tdu(prDrag->height);
+
+	GR_Painter painter(m_pG);
+
+	GR_CocoaGraphics * pG = static_cast<GR_CocoaGraphics *>(m_pG);
+
+	NSPoint control[4];
+
+	control[0].x = static_cast<float>(    1);
+	control[0].y = static_cast<float>(    1);
+	control[1].x = static_cast<float>(    1);
+	control[1].y = static_cast<float>(h - 1);
+	control[2].x = static_cast<float>(w - 1);
+	control[2].y = static_cast<float>(h - 1);
+	control[3].x = static_cast<float>(w - 1);
+	control[3].y = static_cast<float>(    1);
+
+	NSColor * lineColor = [NSColor knobColor];
+
+	NSColor * fillColor = 0;
+
+	if (bUp)
+		fillColor = pG->HGrey();
+	else
+		fillColor = [NSColor whiteColor];
+
+	pG->rawPolyAtOffset(control, 4, l, t, fillColor, true);
+	pG->rawPolyAtOffset(control, 4, l, t, lineColor, false);
+}
 
 bool AP_CocoaTopRuler::_graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param)
 {

@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2002 Hubert Figuiere
@@ -50,6 +52,14 @@ public:
 	XAP_CocoaNSView * 		getWidget(void) { return m_wTopRuler; };
 	NSWindow * 	getRootWindow(void);
 	
+protected:
+	virtual void	_drawMarginProperties(const UT_Rect * pClipRect, AP_TopRulerInfo * pInfo, GR_Graphics::GR_Color3D clr);
+	virtual void	_drawLeftIndentMarker(UT_Rect & r, bool bFilled);
+	virtual void	_drawRightIndentMarker(UT_Rect & r, bool bFilled);
+	virtual void	_drawFirstLineIndentMarker(UT_Rect & rect, bool bFilled);
+	virtual void	_drawColumnGapMarker(UT_Rect & rect);
+	virtual void	_drawCellMark(UT_Rect * prDrag, bool bUp);
+
 private:
 	static bool _graphicsUpdateCB(NSRect * aRect, GR_CocoaGraphics *pG, void* param);
 

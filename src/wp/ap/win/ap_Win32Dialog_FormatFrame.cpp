@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2002-3 Jordi Mas i Hernàndez <jmas@softcatala.org>
+ * Copyright (C) 2002-4 Jordi Mas i Hernàndez <jmas@softcatala.org>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,10 +17,7 @@
  * 02111-1307, USA.
  */
  
- //
- // TODO: Still work to do. Implementation not finished
- //
-
+ 
 #include <stdlib.h>
 
 #include "ut_string.h"
@@ -39,9 +36,15 @@
 #include "xap_Win32Toolbar_Icons.h"
 
 
-
 #define GWL(hwnd)		(AP_Win32Dialog_FormatFrame*)GetWindowLong((hwnd), DWL_USER)
 #define SWL(hwnd, d)	(AP_Win32Dialog_FormatFrame*)SetWindowLong((hwnd), DWL_USER,(LONG)(d))
+
+
+const char * sThickness[FORMAT_FRAME_NUMTHICKNESS] = {"0.25pt","0.5pt",
+													   "0.75pt","1.0pt",
+													   "1.5pt","2.25pt","3pt",
+													   "4.5pt","6.0pt"};
+	
 
 XAP_Dialog * AP_Win32Dialog_FormatFrame::static_constructor(XAP_DialogFactory * pFactory,
 													       XAP_Dialog_Id id)
@@ -59,7 +62,10 @@ AP_Win32Dialog_FormatFrame::AP_Win32Dialog_FormatFrame(XAP_DialogFactory * pDlgF
 	m_hBitmapLeft(NULL),
 	m_pPreviewWidget(NULL)
 {
-		
+	UT_sint32 i = 0;
+	for(i=0; i < FORMAT_FRAME_NUMTHICKNESS ;i++)
+		m_dThickness[i] = UT_convertToInches(sThickness[i]);
+	
 	 
 }   
     
@@ -149,8 +155,8 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	HDC hdc;
 	int x, y;	
 	UT_uint32 w,h;
-	RECT rect;
-	int nItem;
+	UT_sint32 i = 0;
+	RECT rect;	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
@@ -164,13 +170,23 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	/* Localise controls*/
 	_DSX(FORMATFRAME_BTN_CANCEL,		DLG_Close);
 	_DSX(FORMATFRAME_BTN_APPLY,			DLG_Apply);
-	/*_DS(FORMATFRAME_TEXT_BACKGROUND,	DLG_FormatFrame_Color);
+	_DS(FORMATFRAME_TEXT_BACKGROUND,	DLG_FormatFrame_Color);
 	_DS(FORMATFRAME_TEXT_PREVIEW,		DLG_FormatFrame_Preview);
 	_DS(FORMATFRAME_TEXT_BORDERS,		DLG_FormatFrame_Border_Color);
 	_DS(FORMATFRAME_TEXT_BORDER, 		DLG_FormatFrame_Color);
 	_DS(FORMATFRAME_TEXT_BACKGROUNDS, 	DLG_FormatFrame_Background);
-	_DS(FORMATFRAME_TEXT_APPLYTO,	 	DLG_FormatFrame_Apply_To);*/
-	
+	_DS(FORMATFRAME_TEXT_TEXTWRAPS,		DLG_FormatFrame_TextWrapping);
+	_DS(FORMATFRAME_CHK_TEXTWRAP,		DLG_FormatFrame_SetTextWrapping);
+	_DS(FORMATFRAME_TEXT_POSTEXTPOS,	DLG_FormatFrame_PositionTo);
+	_DS(FORMATFRAME_RADIO_PARA,		 	DLG_FormatFrame_SetToParagraph);
+	_DS(FORMATFRAME_RADIO_COLUMN,		DLG_FormatFrame_SetToColumn);
+	_DS(FORMATFRAME_RADIO_PAGE,			DLG_FormatFrame_SetToPage);
+	_DS(FORMATFRAME_BUTTON_SELIMAGE,	DLG_FormatFrame_SelectImage);
+	_DS(FORMATFRAME_BUTTON_NOIMAGE,		DLG_FormatFrame_NoImageBackground);
+	_DS(FORMATFRAME_TEXT_THICKNESS,		DLG_FormatTable_Thickness);
+	_DS(FORMATFRAME_TEXT_IMGBACK,		DLG_FormatFrame_SetImageBackground);
+
+
 	SetWindowText(hWnd, pSS->getValue(AP_STRING_ID_DLG_FormatFrameTitle));	
 	
 	
@@ -188,8 +204,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	m_pPreviewWidget->getGraphics()->init3dColors();
 	m_pPreviewWidget->getWindowSize(&w,&h);
 	_createPreviewFromGC(m_pPreviewWidget->getGraphics(), w, h);	
-	m_pPreviewWidget->setPreview(m_pFormatFramePreview); 
-	
+	m_pPreviewWidget->setPreview(m_pFormatFramePreview); 	
 								
 	startUpdater();
 	setAllSensitivities();
@@ -201,26 +216,14 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping() ? BST_CHECKED: BST_UNCHECKED);
 
-	// This might should just be removed but whatever.
-#if 0	
-	/* Combo Values for Applyto*/
-	HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_APPLYTO);
+	/* Combo Values for Thickness */
+	HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS);
+	
+	for(i=0; i < FORMAT_FRAME_NUMTHICKNESS ;i++)
+		SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) sThickness[i]);
 
-	/*
-	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatFrame_Apply_To_Selection));    			
-	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_SELECTION);
+	SendMessage(hCombo, CB_SETCURSEL, 0, 0);
 
-	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatFrame_Apply_To_Row));    			
-	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_ROW);
-
-	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatFrame_Apply_To_Column));    			
-	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_COLUMN);
-
-	nItem = SendMessage(hCombo, CB_ADDSTRING, 0, (WPARAM) pSS->getValue(AP_STRING_ID_DLG_FormatFrame_Apply_To_Table));    			
-	SendMessage(hCombo, CB_SETITEMDATA, nItem, FORMAT_TABLE_TABLE);*/
-			
-	SendMessage(hCombo, CB_SETCURSEL, 0, 0);    			
-#endif
 	XAP_Win32DialogHelper::s_centerDialog(hWnd);			
 	return 1; 
 }
@@ -325,41 +328,60 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 		}			
 
 		case AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP:
-{
-                        bool bChecked;
+		{
+			bool bChecked;
 			bChecked = (bool)(IsDlgButtonChecked(m_hwndDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP)==BST_CHECKED);
 
 			setWrapping(bChecked);
 
 			// Not necessary now, but we may some day show
 			// text wrapping in the preview.
-                        event_previewExposed();
-                        return 1;
-}
+			event_previewExposed();
+			return 1;
+		}
 
 			
 		case AP_RID_DIALOG_FORMATFRAME_BTN_CANCEL:			
 			m_answer = AP_Dialog_FormatFrame::a_CLOSE;
 			destroy();
+			event_Close();
 			EndDialog(hWnd,0);
 			return 1;
 
-		case AP_RID_DIALOG_FORMATFRAME_BTN_APPLY:
+		case AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS:
 		{
-// see above regarding why this is commented.
-#if 0
-			int nSelected, nData = FORMAT_TABLE_SELECTION;
-			HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_APPLYTO);
-			nSelected = SendMessage(hCombo, CB_GETCURSEL, 0, 0);					
-#endif
+			if (wNotifyCode == CBN_SELCHANGE)                       
+			{
+				int nSelected;
+				HWND hCombo = GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS);
+				nSelected = SendMessage(hCombo, CB_GETCURSEL, 0, 0);				
 
-//			if (nSelected!=CB_ERR)			
-//				nData  = SendMessage(hCombo, CB_GETITEMDATA, nSelected, 0);
+				if (nSelected != CB_ERR)
+				{
+					char szThickness[1024];
+					UT_UTF8String sThickness;
 
-			m_answer = AP_Dialog_FormatFrame::a_OK;
-			applyChanges();			
+					SendMessage(hCombo, CB_GETLBTEXT, nSelected, (LPARAM)szThickness);
+					sThickness = szThickness;
+					setBorderThickness(sThickness);
+				}
+			}
+			return 1;
 		}
-			return 1;			
+
+		case AP_RID_DIALOG_FORMATFRAME_BUTTON_SELIMAGE:
+				askForGraphicPathName();
+				return 1;
+
+		case AP_RID_DIALOG_FORMATFRAME_BUTTON_NOIMAGE:
+				clearImage();
+				return 1;
+
+		case AP_RID_DIALOG_FORMATFRAME_BTN_APPLY:
+				applyChanges();
+				return 1;
+
+		
 			
 		default:							// we did not handle this notification 
 			UT_DEBUGMSG(("WM_Command for id %ld\n",wId));
@@ -424,3 +446,4 @@ void AP_Win32Dialog_FormatFrame::event_Close(void)
 	m_answer = AP_Dialog_FormatFrame::a_CLOSE;
 	destroy();
 }
+

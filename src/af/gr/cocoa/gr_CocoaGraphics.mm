@@ -127,6 +127,14 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_cacheArray (10),
 	m_cacheRectArray (10),
 	m_currentColor (nil),
+	m_imageBlue16x15 (nil),
+	m_imageBlue11x16 (nil),
+	m_imageGrey16x15 (nil),
+	m_imageGrey11x16 (nil),
+	m_colorBlue16x15 (nil),
+	m_colorBlue11x16 (nil),
+	m_colorGrey16x15 (nil),
+	m_colorGrey11x16 (nil),
 	m_pFont (NULL),
 	m_fontForGraphics (nil),
 	m_pFontGUI(NULL),
@@ -142,6 +150,20 @@ GR_CocoaGraphics::GR_CocoaGraphics(NSView * win, XAP_App * app)
 	m_fontMetricsLayoutManager(nil),
 	m_fontMetricsTextContainer(nil)
 {
+	NSBundle * bundle = [NSBundle mainBundle];
+	m_imageBlue16x15 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Blue16x15" ofType:@"png"]];
+	m_imageBlue11x16 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Blue11x16" ofType:@"png"]];
+	m_imageGrey16x15 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Grey16x15" ofType:@"png"]];
+	m_imageGrey11x16 = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"Grey11x16" ofType:@"png"]];
+	m_colorBlue16x15 = [NSColor colorWithPatternImage:m_imageBlue16x15];
+	m_colorBlue11x16 = [NSColor colorWithPatternImage:m_imageBlue11x16];
+	m_colorGrey16x15 = [NSColor colorWithPatternImage:m_imageGrey16x15];
+	m_colorGrey11x16 = [NSColor colorWithPatternImage:m_imageGrey11x16];
+	[m_colorBlue16x15 retain];
+	[m_colorBlue11x16 retain];
+	[m_colorGrey16x15 retain];
+	[m_colorGrey11x16 retain];
+
 	m_pApp = app;
 	UT_ASSERT (m_pWin);
 	m_fontProps = [[NSMutableDictionary alloc] init];
@@ -187,6 +209,15 @@ GR_CocoaGraphics::~GR_CocoaGraphics()
 	[m_fontProps release];
 	[m_fontForGraphics release];
 	[m_currentColor release];
+
+	[m_imageBlue16x15 release];
+	[m_imageBlue11x16 release];
+	[m_imageGrey16x15 release];
+	[m_imageGrey11x16 release];
+	[m_colorBlue16x15 release];
+	[m_colorBlue11x16 release];
+	[m_colorGrey16x15 release];
+	[m_colorGrey11x16 release];
 
 	s_iInstanceCount--;
 	for (int i = 0; i < COUNT_3D_COLORS; i++) {
@@ -692,6 +723,30 @@ UT_uint32 GR_CocoaGraphics::getFontDescent()
 	return static_cast<UT_uint32>(lrint(ftluD(m_pFont->getDescent())));
 }
 
+void GR_CocoaGraphics::rawPolyAtOffset(NSPoint * point, int npoint, UT_sint32 offset_x, UT_sint32 offset_y, NSColor * color, bool bFill)
+{
+	UT_ASSERT(point && (npoint > 2) && color);
+	if (!(point && (npoint > 2) && color))
+		return;
+
+	LOCK_CONTEXT__;
+
+	[color set];
+
+	::CGContextBeginPath(m_CGContext);
+	::CGContextMoveToPoint(m_CGContext, TDUX(offset_x) + point[0].x, _tduY(offset_y) + point[0].y);
+
+	for (int i = 1; i < npoint; i++)
+		::CGContextAddLineToPoint(m_CGContext, TDUX(offset_x) + point[i].x, _tduY(offset_y) + point[i].y);
+
+	::CGContextClosePath(m_CGContext);
+
+	if (bFill)
+		::CGContextFillPath(m_CGContext);
+	else
+		::CGContextStrokePath(m_CGContext);
+}
+
 void GR_CocoaGraphics::drawLine(UT_sint32 x1, UT_sint32 y1,
 							   UT_sint32 x2, UT_sint32 y2)
 {
@@ -1166,9 +1221,10 @@ void GR_CocoaGraphics::init3dColors()
 {
 	m_3dColors[CLR3D_Foreground] = [[NSColor blackColor] copy];
 	m_3dColors[CLR3D_Background] = [[NSColor controlColor] copy];
-	m_3dColors[CLR3D_BevelUp] = [[NSColor whiteColor] copy];
-	m_3dColors[CLR3D_BevelDown] = [[NSColor darkGrayColor] copy];
-	m_3dColors[CLR3D_Highlight] = [[NSColor controlHighlightColor] copy];
+	m_3dColors[CLR3D_BevelUp]    = [[NSColor whiteColor] copy];
+	m_3dColors[CLR3D_BevelDown]  =  [NSColor colorWithCalibratedWhite:0.0f alpha:0.25]; // [[NSColor darkGrayColor] copy];
+   [m_3dColors[CLR3D_BevelDown] retain];
+	m_3dColors[CLR3D_Highlight]  = [[NSColor whiteColor] copy]; // [[NSColor controlHighlightColor] copy];
 }
 
 void GR_CocoaGraphics::polygon(UT_RGBColor& clr,UT_Point *pts,UT_uint32 nPoints)

@@ -423,7 +423,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	collapse();
 //	UT_ASSERT(pcrx->getStruxType()== PTX_SectionFrame);
 //
-	UT_DEBUGMSG(("Unlinking frame Layout %x \n",this));
+
 	fl_ContainerLayout * pPrev = getPrev();
 	fl_ContainerLayout * pNext = getNext();
 
@@ -457,36 +457,7 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 		return false;
 	}
 	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
-	UT_sint32 i = 0;
-	bool bFound = false;
-	for(i=0; i<pBL->getNumFrames() && !bFound;i++)
-	{
-	  fl_FrameLayout * pF = pBL->getNthFrameLayout(i);
-	  if(pF == this)
-	  {
-	    bFound = true;
-	  }
-	}
-	if(bFound)
-	{
-	  pBL->removeFrame(this);
-	}
-	else
-	{
-	  UT_DEBUGMSG(("Whoops! not Frame found. Try ahead \n"));
-	  pCL = this;
-	  while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
-	  {
-	    pCL = pCL->getNext();
-	  }
-	  if(pCL == NULL)
-	  {
-	    UT_DEBUGMSG(("No BlockLayout before this frame! \n"));
-	    return false;
-	  }
-	  pBL = static_cast<fl_BlockLayout *>(pCL);
-	  pBL->removeFrame(this);
-	}
+	pBL->removeFrame(this);
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
 	return true;

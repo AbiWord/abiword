@@ -78,6 +78,11 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void		setColor(const UT_RGBColor& clr);
 	virtual void		getColor(UT_RGBColor& clr);
 
+	NSColor *		HBlue() const { return m_colorBlue16x15; }
+	NSColor *		VBlue() const { return m_colorBlue11x16; }
+	NSColor *		HGrey() const { return m_colorGrey16x15; }
+	NSColor *		VGrey() const { return m_colorGrey11x16; }
+
 	virtual GR_Font*	getGUIFont();
 
 	virtual UT_uint32	getFontAscent();
@@ -85,6 +90,7 @@ class GR_CocoaGraphics : public GR_Graphics
 	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		setLineWidth(UT_sint32);
 	virtual void		polyLine(UT_Point * pts, UT_uint32 nPoints);
+	void			rawPolyAtOffset(NSPoint * point, int npoint, UT_sint32 offset_x, UT_sint32 offset_y, NSColor * color, bool bFill);
 	void			fillNSRect (NSRect & aRect, NSColor * color);
 	virtual void		fillRect(const UT_RGBColor& c,
 								 UT_sint32 x, UT_sint32 y,
@@ -190,6 +196,15 @@ private:
 	UT_GenericVector<id>		m_cacheArray;
 	UT_GenericVector<NSRect*>	m_cacheRectArray;
 	NSColor *					m_currentColor;
+
+	NSImage *					m_imageBlue16x15;
+	NSImage *					m_imageBlue11x16;
+	NSImage *					m_imageGrey16x15;
+	NSImage *					m_imageGrey11x16;
+	NSColor *					m_colorBlue16x15;
+	NSColor *					m_colorBlue11x16;
+	NSColor *					m_colorGrey16x15;
+	NSColor *					m_colorGrey11x16;
 
 	// our currently requested font by handle
 	XAP_CocoaFont *	m_pFont;

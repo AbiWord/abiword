@@ -640,11 +640,6 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	m_iInitialOffX = 0;
 	m_iInitialOffY = 0;
 	PT_DocPosition oldPoint = m_pView->getPoint();
-	if(oldPoint < 2)
-	{
-	  oldPoint = 2;
-	}
-	bool bInFrame = m_pView->isInFrame(oldPoint);
 	bool bPasteTableCol = (m_pView->getPrevSelectionMode() == FV_SelectionMode_TableColumn);
 	if(!bPasteTableCol)
 	{
@@ -660,26 +655,13 @@ void FV_VisualDragText::mouseRelease(UT_sint32 x, UT_sint32 y)
 	{
 		m_pView->getDocument()->endUserAtomicGlob(); // End the big undo block
 	}
-	if(m_pView->getDocument()->isEndFootnoteAtPos(newPoint))
+	if(!bPasteTableCol)
 	{
-	        newPoint++;
+	        m_pView->cmdSelect(oldPoint,newPoint);
 	}
-	bool bFinalFrame = m_pView->isInFrame(newPoint) && !m_pView->getDocument()->isFrameAtPos(newPoint);
-	bool bDoSelect = true;
-	if(bInFrame && !bFinalFrame)
+	else
 	{
-	     bDoSelect = false;
-	}
-	if(bDoSelect)
-	{
-	      if(!bPasteTableCol)
-	      {
-	            m_pView->cmdSelect(oldPoint,newPoint);
-	      }
-	      else
-	      {
-		    m_pView->cmdSelectColumn(newPoint);
-	      }
+		m_pView->cmdSelectColumn(newPoint);
 	}
 	m_bTextCut = false;
 }

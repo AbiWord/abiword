@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiSource Application Framework
  * Copyright (C) 2003 Hubert Figuiere
  * 
@@ -22,14 +24,19 @@
  
 #include "ut_assert.h"
 #include "ut_debugmsg.h" 
+
 #include "ev_CocoaKeyboard.h"
 #include "ev_EditMethod.h"
 #include "ev_NamedVirtualKey.h"
+
+#include "xap_CocoaTextView.h"
+#include "xap_CocoaToolPalette.h"
 #include "xap_Frame.h"
 #include "xav_View.h"
 
-#import "xap_CocoaTextView.h"
-#import "xap_CocoaToolPalette.h"
+#include "fv_View.h"
+
+#include "pd_Document.h"
 
 @implementation XAP_CocoaTextView
 
@@ -363,12 +370,41 @@ UT_DEBUGMSG(("selectedRange=(location=%u,length=%u)\n",m_selectedRange.location,
 
 	m_selectedRange = selRange;
 	m_hasMarkedText = (selRange.length != 0 ? YES : NO);
+
 	UT_DEBUGMSG(("Hub TODO: handle -[XAP_CocoaTextView setMarkedText:selectedRange:]\n"));
-UT_DEBUGMSG(("range=(location=%u,length=%u) [aString length]=%u\n",selRange.location,selRange.length,[aString length]));
+	UT_DEBUGMSG(("range=(location=%u,length=%u) [aString length]=%u\n",selRange.location,selRange.length,[aString length]));
 	/*
 		Steal code from the selection handling code in XP land. We have the AV_View
 		so everything is here.
 	 */
+
+	if (FV_View * pView = static_cast<FV_View *>(m_pFrame->getCurrentView())) {
+		NSString * str = 0;
+
+		if ([aString isKindOfClass:[NSString class]]) {
+			str = (NSString *) aString;
+		}
+		else if ([aString isKindOfClass:[NSAttributedString class]]) {
+			NSAttributedString * attr_str = (NSAttributedString *) aString;
+			str = [attr_str string];
+		}
+		if (str) {
+			if ([str length]) {
+				UT_UCS4String ucs4([str UTF8String], [str length]);
+
+				PT_DocPosition oldPos = pView->getPoint();
+
+				if (!pView->isSelectionEmpty())
+					oldPos = pView->getSelectionAnchor();
+
+				ev_CocoaKeyboard * pCocoaKeyboard = static_cast<ev_CocoaKeyboard *>(m_pFrame->getKeyboard());
+				pCocoaKeyboard->insertTextEvent(pView, str);
+
+			//	pView->cmdCharInsert(ucs4.ucs4_str(), ucs4.length());
+				pView->cmdSelect(oldPos, pView->getPoint());
+			}
+		}
+	}
 }
 
 - (void)unmarkText
@@ -381,6 +417,5 @@ UT_DEBUGMSG(("range=(location=%u,length=%u) [aString length]=%u\n",selRange.loca
 {
 	return [NSArray array];
 }
-
 
 @end

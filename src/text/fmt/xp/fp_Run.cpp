@@ -1212,7 +1212,7 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 	UT_return_if_fail(pView);
 	bool bShowRevs = pView->isShowRevisions();
 
-	double i2Du = pDA->pG->tlu(2);
+	UT_uint32 i2Du = pDA->pG->tlu(2);
 	
 	if(m_pRevisions && bShowRevs)
 	{
@@ -1236,17 +1236,16 @@ void fp_Run::draw(dg_DrawArgs* pDA)
 					UT_uint32 iWidth = getDrawingWidth();
 					
 					if(r_type == PP_REVISION_ADDITION || r_type == PP_REVISION_ADDITION_AND_FMT)
-						{
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du, iWidth, getGraphics()->tlu(1));
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du + getGraphics()->tlu(2),
-											 iWidth, getGraphics()->tlu(1));
-							
-						}
+					{
+						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(1));
+						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + getGraphics()->tlu(2),
+										 iWidth, getGraphics()->tlu(1));	
+					}
 					else if(r_type == PP_REVISION_FMT_CHANGE)
-						{
-							// draw a thick line underneath
-							painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff + i2Du, iWidth, getGraphics()->tlu(2));
-						}
+					{
+						// draw a thick line underneath
+						painter.fillRect(s_fgColor,pDA->xoff, pDA->yoff, iWidth, getGraphics()->tlu(2));
+					}
 					else
 					{
 						// draw a strike-through line						

@@ -194,8 +194,8 @@ pf_Frag * pt_PieceTable::_findLastStruxOfType(pf_Frag * pfStart, PTStruxType pst
 			
 			}
 		}
-		
-		pf = pf->getPrev();
+		if(pf)
+			pf = pf->getPrev();
 	}
 
 	return pf;

@@ -89,7 +89,6 @@ public:
 										  fl_BlockLayout ** pCloseBL);
 	fl_FrameLayout *      getFrameLayout(void)
 		{ return m_pFrameLayout;}
-	void                  setPointInside(void);
 	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}
 	static void 		  _autoScroll(UT_Worker * pTimer);
 	void                  _beginGlob();

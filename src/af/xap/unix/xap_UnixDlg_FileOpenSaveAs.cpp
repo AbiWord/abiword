@@ -96,9 +96,13 @@ static void s_dialog_response(GtkWidget * /* widget */,
 {
 	switch (answer)
 	{
-		case XAP_Dialog_FileOpenSaveAs::a_CANCEL:
-		case XAP_Dialog_FileOpenSaveAs::a_OK:
-			*ptr = static_cast<XAP_Dialog_FileOpenSaveAs::tAnswer> (answer);
+		case GTK_RESPONSE_CANCEL:
+		case GTK_RESPONSE_ACCEPT:
+
+			if (answer == GTK_RESPONSE_CANCEL)
+				*ptr = XAP_Dialog_FileOpenSaveAs::a_CANCEL;
+			else
+				*ptr = XAP_Dialog_FileOpenSaveAs::a_OK;
 			gtk_main_quit();
 			break;
 		default:
@@ -161,7 +165,7 @@ fsel_key_event (GtkWidget *widget, GdkEventKey *event, XAP_Dialog_FileOpenSaveAs
 
 static void s_file_activated(GtkWidget * w, XAP_Dialog_FileOpenSaveAs::tAnswer * answer)
 {
-	s_dialog_response(w, XAP_Dialog_FileOpenSaveAs::a_OK, answer);
+	s_dialog_response(w, GTK_RESPONSE_ACCEPT, answer);
 }
 
 static void file_selection_changed  (GtkTreeSelection  *selection,
@@ -643,12 +647,12 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_FC = GTK_FILE_CHOOSER( gtk_file_chooser_dialog_new (szTitle.utf8_str(),
 									GTK_WINDOW(parent),
 									(m_id == XAP_DIALOG_ID_FILE_OPEN || m_id == XAP_DIALOG_ID_INSERT_PICTURE || m_id == XAP_DIALOG_ID_FILE_EXPORT || m_id == XAP_DIALOG_ID_INSERT_FILE ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
-									GTK_STOCK_CANCEL, XAP_Dialog_FileOpenSaveAs::a_CANCEL,
-									GTK_STOCK_OK, XAP_Dialog_FileOpenSaveAs::a_OK,
+									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+									GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
 									NULL)
 							);
 
-	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_CANCEL);
+	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_ACCEPT);
 #else	
 	GtkFileSelection *pFS = GTK_FILE_SELECTION(gtk_file_selection_new(szTitle.utf8_str()));
 	m_FS = pFS;

@@ -423,7 +423,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate)
 	if(!isInFrame(iLow) && isInFrame(iHigh))
 	{
 		fl_FrameLayout * pFL = getFrameLayout(iHigh);
-		iHigh =pFL->getPosition(true);
+		iHigh =pFL->getPosition(true)-1;
 	}
 	if(isInFrame(iLow) && !isInFrame(iHigh))
 	{
@@ -2935,7 +2935,7 @@ bool FV_View::_insertField(const char* szName,
 
 
 	fd_Field * pField = NULL;
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	if (!isSelectionEmpty())
 	{
 		m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
@@ -2945,10 +2945,6 @@ bool FV_View::_insertField(const char* szName,
 			pField->update();
 		}
 		m_pDoc->endUserAtomicGlob();
-	}
-	else if(m_FrameEdit.isActive())
-	{
-	       m_FrameEdit.setPointInside();
 	}
 	else
 	{
@@ -2980,14 +2976,10 @@ FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool
 
 		PP_AttrProp AttrProp_Before;
 
-		if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+		if (!isSelectionEmpty())
 		{
 			_deleteSelection(&AttrProp_Before, bNoUpdate);
 		}
-		else if(m_FrameEdit.isActive())
-		  {
-		    m_FrameEdit.setPointInside();
-		  }
 
 		// If we have a string with length, do an insert, else let it
 		// hang from the delete above
@@ -3056,13 +3048,9 @@ FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool bNoUpd
 
 		PP_AttrProp AttrProp_Before;
 
-		if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+		if (!isSelectionEmpty())
 		{
 			_deleteSelection(&AttrProp_Before, bNoUpdate);
-		}
-		else if(m_FrameEdit.isActive())
-		{
-		  m_FrameEdit.setPointInside();
 		}
 
 		// If we have a string with length, do an insert, else let it
@@ -4817,12 +4805,8 @@ void FV_View::_doPaste(bool bUseClipboard, bool bHonorFormatting)
 {
 	// internal portion of paste operation.
 
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	if (!isSelectionEmpty())
 		_deleteSelection();
-	else if(m_FrameEdit.isActive())
-	{
-	       m_FrameEdit.setPointInside();
-	}
 
 	_clearIfAtFmtMark(getPoint());
 	PD_DocumentRange dr(m_pDoc,getPoint(),getPoint());
@@ -5480,11 +5464,10 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
-	bool doInsert = true;
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	if (!isSelectionEmpty())
 	{
 		m_pDoc->beginUserAtomicGlob();
 		PP_AttrProp AttrProp_Before;
@@ -5506,10 +5489,6 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	}
 	else
 	{
-	        if(m_FrameEdit.isActive())
-		{
-		       m_FrameEdit.setPointInside();
-		}
 		bool bOK = true;
 		if(!isPointLegal() && bOK)
 		{
@@ -5544,6 +5523,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 			m_pDoc->beginUserAtomicGlob();
 			cmdCharDelete(true,count);
 		}
+		bool doInsert = true;
 		if(text[0] == UCS_TAB && count == 1)
 		{
 			//
@@ -5585,7 +5565,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 			}
 		}
 		
-		if (doInsert)
+		if (doInsert == true)
 		{
 			if(pLR)
 			{
@@ -5631,10 +5611,7 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	_setPoint(getPoint());
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
-	if(!doInsert)
-	{
-	  notifyListeners(AV_CHG_ALL);
-	}
+
 	return bResult;
 }
 

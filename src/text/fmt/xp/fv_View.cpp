@@ -934,10 +934,6 @@ bool FV_View::isInFrame(PT_DocPosition pos)
 	{
 		return true;
 	}
-	if(m_pDoc->isFrameAtPos(pos-1) && !m_pDoc->isEndFrameAtPos(pos))
-	{
-		return true;
-	}
 	fl_BlockLayout* pBlock = _findBlockAtPosition(pos);
 
 	if(pBlock)
@@ -2167,23 +2163,7 @@ void FV_View::moveInsPtTo(FV_DocPos dp, bool bClearSelection)
 
 
 	PT_DocPosition iPos = _getDocPos(dp);
-	if((dp == FV_DOCPOS_EOD) && m_pDoc->isHdrFtrAtPos(iPos) &&
-	   m_pDoc->isEndFrameAtPos(iPos-1))
-	{
-	     iPos--;
-	     while(!isPointLegal(iPos))
-	     {    
-	          iPos--;
-	     }
-	}
-	else if((dp == FV_DOCPOS_EOD) && m_pDoc->isEndFrameAtPos(iPos))
-	{
-	     iPos--;
-	     while(!isPointLegal(iPos))
-	     {    
-	          iPos--;
-	     }
-	}
+
 	if (iPos != getPoint())
 	{
 		bool bPointIsValid = (getPoint() >= _getDocPos(FV_DOCPOS_BOD));
@@ -2361,7 +2341,6 @@ bool FV_View::isCurrentListBlockEmpty(void)
 	//
 	fp_Run * pRun = pBlock->getFirstRun();
 	UT_uint32 ifield =0;
-	UT_uint32 iTab = 0;
 	while((bEmpty == true) && (pRun != NULL))
 	{
 		FP_RUN_TYPE runtype = static_cast<FP_RUN_TYPE>(pRun->getType());
@@ -2374,15 +2353,6 @@ bool FV_View::isCurrentListBlockEmpty(void)
 			{
 				ifield++;
 				if(ifield > 1)
-				{
-					bEmpty = false;
-					break;
-				}
-			}
-			else if(runtype == FPRUN_TAB)
-			{
-				iTab++;
-				if(iTab > 1)
 				{
 					bEmpty = false;
 					break;
@@ -2828,15 +2798,11 @@ void FV_View::insertParagraphBreak(void)
 	//
 	_saveAndNotifyPieceTableChange();
 
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	if (!isSelectionEmpty())
 	{
 		bDidGlob = true;
 		//	m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
-	}
-	else if(m_FrameEdit.isActive())
-	{
-	       m_FrameEdit.setPointInside();
 	}
 
 	// insert a new paragraph with the same attributes/properties
@@ -6811,14 +6777,10 @@ void FV_View::insertSymbol(UT_UCSChar c, XML_Char * symfont)
 	// if so delete it then get the current font
 	m_pDoc->beginUserAtomicGlob();
 
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
 		_generalUpdate();
-	}
-	else if(m_FrameEdit.isActive())
-	{
-	       m_FrameEdit.setPointInside();
 	}
 	// We have to determine the current font so we can put it back after
 	// Inserting the Symbol
@@ -10592,10 +10554,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	{
 		return false;
 	}
-	if(m_FrameEdit.isActive())
-	{
-	        return false;
-	}
+
 //
 // Do this first
 //
@@ -10641,13 +10600,9 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
-	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
+	if (!isSelectionEmpty())
 	{
 		_deleteSelection();
-	}
-	else if(m_FrameEdit.isActive())
-	{
-	       m_FrameEdit.setPointInside();
 	}
 	bool bCreatedFootnoteSL = false;
 

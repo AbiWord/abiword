@@ -1,3 +1,5 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2004 Hubert Figuière
@@ -174,17 +176,19 @@ private:
 	UT_sint32           _snapPixelToGrid(UT_sint32 xDist, ap_RulerTicks & tick);
 	double              _scalePixelDistanceToUnits(UT_sint32 yDist, ap_RulerTicks & tick);
 	void                _ignoreEvent(bool bDone);
-
+protected:
 	void                _getMarginMarkerRects(AP_LeftRulerInfo * pInfo, UT_Rect &rTop, UT_Rect &rBottom);
-	void		        _drawMarginProperties(const UT_Rect * pClipRect,
+
+	virtual void		_drawMarginProperties(const UT_Rect * pClipRect,
 											  AP_LeftRulerInfo * pInfo, 
 											  GR_Graphics::GR_Color3D clr);
-
+private:
 
 	void                _getCellMarkerRects(AP_LeftRulerInfo * pInfo, UT_sint32 iCell, UT_Rect &rCell, fp_TableContainer * pBroke=NULL);
 	void		        _drawCellProperties( AP_LeftRulerInfo * pInfo);
-	void                _drawCellMark(UT_Rect *prDrag, bool bUp);
-
+protected:
+	virtual void		_drawCellMark(UT_Rect *prDrag, bool bUp);
+private:
 	void                _xorGuide(bool bClear=false);
 	void				_displayStatusMessage(XAP_String_Id messageID, const ap_RulerTicks &tick, double dValue);
 

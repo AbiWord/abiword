@@ -132,6 +132,13 @@ XAP_CocoaAppController* XAP_AppController_Instance = nil;
 
 			[[NSFileManager defaultManager] changeCurrentDirectoryPath:desktop];
 		}
+	if (NSMenu * menu = [NSApp windowsMenu])
+		if (NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:@"Panels" action:nil keyEquivalent:@""])
+			{
+				[menu addItem:item];
+				[item setSubmenu:m_PanelMenu];
+				[item release];
+			}
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification

@@ -70,18 +70,6 @@ FV_FrameEdit::~FV_FrameEdit()
 	}
 }
 
-void FV_FrameEdit::setPointInside(void)
-{
-  fl_FrameLayout * pFL = getFrameLayout();
-  if(pFL == NULL)
-  {
-    return;
-  }
-  PT_DocPosition pos = pFL->getPosition(true) + pFL->getLength()-1;
-  setMode(FV_FrameEdit_NOT_ACTIVE);
-  m_pView->_setPoint(pos);
-}
-
 bool FV_FrameEdit::isActive(void) const
 {
 	return (FV_FrameEdit_NOT_ACTIVE != m_iFrameEditMode);
@@ -1034,17 +1022,6 @@ bool FV_FrameEdit::getFrameStrings(double x, double y,
 		if((pBL == NULL) || (pRun == NULL))
 		{
 			return false;
-		}
-		fl_BlockLayout * pPrevBL = pBL;
-		while(pBL && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_ENDNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FOOTNOTE) || (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_TOC)|| (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_FRAME) )
-		{
-		  UT_DEBUGMSG(("Skipping Block %x \n",pBL));
-		     pPrevBL = pBL;
-		     pBL = pBL->getPrevBlockInDocument();
-		}
-		if(pBL == NULL)
-		{
-		     pBL = pPrevBL;
 		}
 		pLine = pRun->getLine();
 		if(pLine == NULL)

@@ -112,6 +112,8 @@ private:
 - (id)init;
 - (void)dealloc;
 - (void)windowDidLoad;
+- (void)toggleVisibility:(id)sender;
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
 - (void)setPreviewString:(NSString *)previewString;
 @end
 
@@ -187,6 +189,9 @@ private:
 - (void)windowDidLoad;
 - (void)close;
 - (void)windowWillClose;
+
+- (void)toggleVisibility:(id)sender;
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem;
 
 + (void)setPreviewText:(id)previewText;
 - (void)setPreviewString:(NSString *)previewString;

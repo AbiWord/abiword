@@ -719,6 +719,34 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	[panel setBecomesKeyOnlyIfNeeded:YES];
 
 	[oPreview setStringValue:@"Preview"];
+
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
+	if (NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:@"Preview Panel" action:@selector(toggleVisibility:) keyEquivalent:@"I"])
+		{
+			[item setTarget:self];
+			[pController appendPanelItem:item];
+			[item release];
+		}
+}
+
+- (void)toggleVisibility:(id)sender
+{
+	NSPanel * panel = (NSPanel *) [self window];
+
+	if ([panel isVisible])
+		[panel orderOut:self];
+	else
+		[panel orderFront:self];
+}
+
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+{
+	NSPanel * panel = (NSPanel *) [self window];
+
+	[menuItem setState:([panel isVisible] ? NSOnState : NSOffState)];
+
+	return YES;
 }
 
 - (void)setPreviewString:(NSString *)previewString
@@ -890,6 +918,9 @@ static XAP_CocoaToolPalette * s_instance = 0;
 - (void)windowDidLoad
 {
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -windowDidLoad\n"));
+
+	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+
 	if (m_PaletteView)
 		{
 			// TODO: localise palette titles based on toolbar names
@@ -947,6 +978,13 @@ static XAP_CocoaToolPalette * s_instance = 0;
 			[oPanel setDelegate:self];
 
 			[self setWindow:oPanel];
+
+			if (NSMenuItem * item = [[NSMenuItem alloc] initWithTitle:@"Tool Palette" action:@selector(toggleVisibility:) keyEquivalent:@"T"])
+				{
+					[item setTarget:self];
+					[pController appendPanelItem:item];
+					[item release];
+				}
 		}
 
 #define defn(T,X,Y)			m_ToolChest[ToolID_##T].button = T; \
@@ -1007,9 +1045,7 @@ static XAP_CocoaToolPalette * s_instance = 0;
 			[oProperties setDelegate:m_Properties_DataSource];
 		}
 
-	[[oPreviewPanel window] orderOut:self];
-
-	XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+	[oPreviewPanel windowDidLoad];
 
 	[self setCurrentView:[pController currentView] inFrame:[pController currentFrame]];
 	[self sync];
@@ -1025,6 +1061,21 @@ static XAP_CocoaToolPalette * s_instance = 0;
 - (void)windowWillClose
 {
 	UT_DEBUGMSG(("XAP_CocoaToolPalette -windowWillClose\n"));
+}
+
+- (void)toggleVisibility:(id)sender
+{
+	if ([oPanel isVisible])
+		[oPanel orderOut:self];
+	else
+		[oPanel orderFront:self];
+}
+
+- (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
+{
+	[menuItem setState:([oPanel isVisible] ? NSOnState : NSOffState)];
+
+	return YES;
 }
 
 + (void)setPreviewText:(id)previewText
