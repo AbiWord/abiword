@@ -487,12 +487,14 @@ void UT_String_addPropertyString(UT_String & sPropertyString, const UT_String & 
 	UT_sint32 iBase  =0;
 	UT_String sProp;
 	UT_String sVal;
+	UT_String sSubStr;
 	const char * szWork = NULL;
 	const char * szLoc = NULL;
 	while(iBase < iSize)
 	{
 		bool bBreakAtEnd = false;
-		szWork = sNewProp.substr(iBase, iSize-iBase).c_str();
+		sSubStr = sNewProp.substr(iBase, iSize-iBase);
+		szWork = sSubStr.c_str();
 		szLoc = strstr(szWork,":");
 		if(szLoc)
 		{
@@ -503,7 +505,8 @@ void UT_String_addPropertyString(UT_String & sPropertyString, const UT_String & 
 			break;
 		}
 		iBase += szLoc-szWork+1;
-		szWork = sNewProp.substr(iBase, iSize-iBase).c_str();
+		sSubStr = sNewProp.substr(iBase, iSize-iBase);
+		szWork = sSubStr.c_str();
 		szLoc = strstr(szWork,";");
 		if(szLoc)
 		{
