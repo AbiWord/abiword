@@ -34,16 +34,15 @@ public:
 	virtual void			runModal(AP_Frame * pFrame);
 
 	static AP_Dialog *		static_constructor(AP_DialogFactory *, AP_Dialog_Id id);
-
-	// yank these
-	/* 
-   	GtkWidget				*findEntry;
-	GtkWidget 				*matchCaseCheck;
-    GtkWidget 				*replaceEntry;
-	*/
-
+	static BOOL CALLBACK	s_dlgProc(HWND,UINT,WPARAM,LPARAM);
+	
 protected:
-
+	void					_initButtons(HWND hWnd);
+	BOOL					_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+	BOOL					_onBtn_FindNext(HWND hWnd);
+	BOOL					_onBtn_Replace(HWND hWnd);
+	BOOL					_onBtn_ReplaceAll(HWND hWnd);
 };
 
 #endif /* AP_WIN32DIALOG_REPLACE_H */

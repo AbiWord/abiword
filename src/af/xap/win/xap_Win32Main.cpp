@@ -43,12 +43,12 @@
 
 /*****************************************************************/
 
-int AP_Win32App::WinMain (const char * szAppName, HINSTANCE hInstance, 
-					HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
+int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
+						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
 	// this is a static function and doesn't have a 'this' pointer.
-	HWND        hwnd ;
-	MSG         msg ;
+	HWND hwnd;
+	MSG msg;
 
 	// TODO the following two variables are a temporary hack.
 	// TODO we need to convert szCmdLine into argc/argv format.
@@ -122,18 +122,18 @@ int AP_Win32App::WinMain (const char * szAppName, HINSTANCE hInstance,
 	}
 	
 
-	ShowWindow (hwnd, iCmdShow) ;
-	UpdateWindow (hwnd) ;
+	ShowWindow(hwnd, iCmdShow);
+	UpdateWindow(hwnd);
 
 	// turn over control to windows
 
-	while (GetMessage (&msg, NULL, 0, 0))
+	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		// Note: we do not call TranslateMessage() because
 		// Note: the keybinding mechanism is responsible
 		// Note: for deciding if/when to do this.
 
-		DispatchMessage (&msg) ;
+		DispatchMessage(&msg);
 	}
 
 	// destroy the App.  It should take care of deleting all frames.
@@ -142,6 +142,6 @@ int AP_Win32App::WinMain (const char * szAppName, HINSTANCE hInstance,
 
 	SET_CRT_DEBUG_FIELD( _CRTDBG_LEAK_CHECK_DF );
 
-	return msg.wParam ;
+	return msg.wParam;
 }
 

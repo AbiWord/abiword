@@ -71,6 +71,9 @@ public:
 	// These are the persistent dialog data items,
 	// which are carefully read and set by useStart()
 	// and useEnd(), and not by the accessors.
+	// TODO add 'persist' to variable names to help us
+	// TODO identify them as such.  remove the leading
+	// TODO '_'.
 	UT_UCSChar *			_m_findString; 
 	UT_UCSChar *			_m_replaceString;
 	UT_Bool					_m_matchCase;

@@ -22,14 +22,8 @@ ABI_DEPTH = ../../..
 
 include $(ABI_DEPTH)/config/abi_defs.mk
 
-EXPORT_HEADERS=
-HEADERS=		$(EXPORT_HEADERS)
-
-
-RELEASE_HEADERS=	$(EXPORT_HEADERS)
-RELEASE_HEADERS_DEST=	$(RELEASE_INCLUDE_DIR)
-
 CPPSRCS=		Win32Main.cpp
+RCSRCS=			Win32Main.rc
 
 PROGRAM=		AbiWord.exe
 
@@ -55,7 +49,6 @@ include $(ABI_DEPTH)/config/abi_rules.mk
 
 THE_LIBS=		$(DIST)/lib/*
 
-## override $(PROGRAM) target in rules
 
 $(PROGRAM): $(OBJS) $(THE_LIBS)
 	@$(MAKE_OBJDIR)

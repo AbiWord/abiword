@@ -107,6 +107,7 @@ protected:
 	JSInterpOptions 				m_JSOptions;
 #endif /* ABI_OPT_JS */
 
+	// TODO give this a s_ prefix like all other static variables
 	static AP_Clipboard*			_pClipboard;
 };
 

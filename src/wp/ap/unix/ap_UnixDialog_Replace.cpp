@@ -83,6 +83,7 @@ static void FindCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialog)
 	repDialog->setReplaceString(replaceString);
 	
 	repDialog->findNext();
+	// TODO do you need to delete findString, replaceString, findEntryText,replaceEntryText ??
 }
 
 
@@ -110,6 +111,7 @@ static void ReplaceCallback(GtkWidget * widget, AP_UnixDialog_Replace * repDialo
 	repDialog->setReplaceString(replaceString);
 	
 	repDialog->findReplace();
+	// TODO do you need to delete findString, replaceString, findEntryText,replaceEntryText ??
 	
 }
 
@@ -195,6 +197,8 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	// this dialog is persistent, so we set our text to what
 	// it was last time
 	{
+		// TODO do you need a +1 on the new char[...]
+
 		UT_UCSChar * bufferUnicode = getFindString();
 		char * bufferNormal = new char [UT_UCS_strlen(bufferUnicode)];
 		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
@@ -238,6 +242,8 @@ void AP_UnixDialog_Replace::runModal(AP_Frame * pFrame)
 	replaceEntry = gtk_entry_new_with_max_length(50);
 	
 	{
+		// TODO do you need a +1 on the new char[...]
+
 		UT_UCSChar * bufferUnicode = getReplaceString();
 		char * bufferNormal = new char [UT_UCS_strlen(bufferUnicode)];
 		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);

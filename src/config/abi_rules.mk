@@ -71,9 +71,18 @@ OBJS		= $(addprefix $(OBJDIR)/,$(CSRCS:.c=.$(OBJ_SUFFIX)))		\
 		  $(addprefix $(OBJDIR)/,$(ASFILES:.s=.$(OBJ_SUFFIX)))
 endif
 
+#
+# Win32 resource file
+#
+
 ifeq ($(OS_NAME), WIN32)
-OBJS += $(RES)
+RCOBJS=$(RCSRCS:.rc=.res)
+OBJS+=$(RCOBJS)
 endif
+
+#
+# Trash which can be deleted
+#
 
 ALL_TRASH		= $(TARGETS) $(OBJS) $(OBJDIR) LOGS TAGS $(GARBAGE) \
 			  $(NOSUCHFILE) \
@@ -140,10 +149,10 @@ else
 endif
 
 ifeq ($(OS_NAME), WIN32)
-$(RES): $(RESNAME)
+$(RCOBJS): $(RCSRCS)
 	@$(MAKE_OBJDIR)
-	@$(RC) -Fo$(RES) $(RESNAME)
-	@echo $(RES) finished
+	@$(RC) -Fo$(RCOBJS) $(ABI_INCS) $(RCSRCS)
+	@echo $(RCOBJS) finished
 endif
 
 $(OBJDIR)/%.$(OBJ_SUFFIX): %.cpp

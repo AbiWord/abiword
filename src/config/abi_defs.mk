@@ -74,7 +74,8 @@ ABI_XAP_INCS=	/config					\
 ABI_CALC_INCS=	/calc/engine/xp				\
 		/calc/gui/$(ABI_NATIVE)
 
-ABI_WP_INCS=	/wp/fmt/xp				\
+ABI_WP_INCS=	/wp/ap/xp	/wp/ap/$(ABI_NATIVE)	\
+		/wp/fmt/xp				\
 		/wp/gr/xp	/wp/gr/$(ABI_NATIVE)	\
 		/wp/impexp/xp				\
 		/wp/ptbl/xp

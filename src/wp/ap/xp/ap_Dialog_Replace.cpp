@@ -182,7 +182,7 @@ UT_Bool AP_Dialog_Replace::findNext()
 	UT_ASSERT(m_pView);
 
 	UT_ASSERT(m_findString);
-	UT_ASSERT(m_replaceString);
+	//UT_ASSERT(m_replaceString);
 	
 	// so we save our attributes to persistent storage
 	m_didSomething = UT_TRUE;

@@ -60,8 +60,6 @@ protected:
 	HINSTANCE					m_hInstance;
 	AP_Win32DialogFactory			m_dialogFactory;
 	AP_Win32Toolbar_ControlFactory	m_controlFactory;
-
-	/* TODO put anything we need here. */
 };
 
 #endif /* AP_WIN32APP_H */
