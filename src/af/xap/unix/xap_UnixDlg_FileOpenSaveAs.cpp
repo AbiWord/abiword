@@ -256,6 +256,11 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 
 			UT_DEBUGMSG(("UseSuffix: %d\n", wantSuffix));
 
+			// do not want suffix for directory names
+			err = stat(szDialogFilename, &buf);
+			if (S_ISDIR(buf.st_mode))
+				wantSuffix = false;
+
 			// if the file doesn't have a suffix already, and the file type
 			// is normal (special types are negative, like auto detect),
 			// and the user wants extensions, slap a suffix on it.   
