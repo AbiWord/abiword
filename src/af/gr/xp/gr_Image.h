@@ -35,13 +35,22 @@ public:
 	virtual UT_sint32	getDisplayWidth(void) const = 0;
 	virtual UT_sint32	getDisplayHeight(void) const = 0;
 
+
 	virtual UT_Bool		convertToPNG(UT_ByteBuf** ppBB) const = 0;
 	virtual UT_Bool		convertFromPNG(const UT_ByteBuf* pBB, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight) = 0;
 
 	void				getName(char* szName) const;
+
+	void				setLayoutSize(UT_sint32 iLayoutWidth, UT_sint32 iLayoutHeight);
+	UT_sint32			getLayoutWidth(void) const { return m_iLayoutWidth;}
+	UT_sint32			getLayoutHeight(void) const	{ return m_iLayoutHeight;}
+								
+		
 	
 protected:
 	char				m_szName[GR_IMAGE_MAX_NAME_LEN+1];
+	UT_sint32			m_iLayoutWidth;
+	UT_sint32			m_iLayoutHeight;
 };
 
 class GR_StretchableImage : public GR_Image

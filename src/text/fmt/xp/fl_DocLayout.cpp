@@ -180,7 +180,8 @@ UT_sint32 FL_DocLayout::getWidth()
 
 GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 								const PP_AttrProp * pBlockAP,
-								const PP_AttrProp * pSectionAP)
+								const PP_AttrProp * pSectionAP,
+								UT_sint32 iUseLayoutResolution)
 {
 	GR_Font* pFont;
 
@@ -203,7 +204,7 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?) 
 	char key[500];
-	sprintf(key,"%s;%s;%s;%s;%s;%s",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+	sprintf(key,"%s;%s;%s;%s;%s;%s,%i",pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize, iUseLayoutResolution);
 	
 	UT_HashEntry* pEntry = m_hashFontCache.findEntry(key);
 	if (!pEntry)
@@ -211,7 +212,12 @@ GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 		// TODO -- note that we currently assume font-family to be a single name,
 		// TODO -- not a list.  This is broken.
 
+		if(iUseLayoutResolution)
+			{
+			m_pG->setLayoutResolutionMode(UT_TRUE);
+			}
 		pFont = m_pG->findFont(pszFamily, pszStyle, pszVariant, pszWeight, pszStretch, pszSize);
+		m_pG->setLayoutResolutionMode(UT_FALSE);
 		UT_ASSERT(pFont);
 
 		// add it to the cache

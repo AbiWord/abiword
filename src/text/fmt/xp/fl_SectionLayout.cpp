@@ -716,10 +716,12 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	if (pszColumnGap && pszColumnGap[0])
 	{
 		m_iColumnGap = m_pLayout->getGraphics()->convertDimension(pszColumnGap);
+		m_iColumnGapLayoutUnits = UT_convertToLayoutUnits(pszColumnGap);
 	}
 	else
 	{
 		m_iColumnGap = m_pLayout->getGraphics()->convertDimension("0.25in");
+		m_iColumnGapLayoutUnits = UT_convertToLayoutUnits("0.25in");
 	}
 
 	const char* pszSpaceAfter = NULL;
@@ -727,10 +729,12 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	if (pszSpaceAfter && pszSpaceAfter[0])
 	{
 		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension(pszSpaceAfter);
+		m_iSpaceAfterLayoutUnits = UT_convertToLayoutUnits(pszSpaceAfter);
 	}
 	else
 	{
 		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension("0in");
+		m_iSpaceAfterLayoutUnits = UT_convertToLayoutUnits("0in");
 	}
 
 	const char* pszLeftMargin = NULL;
@@ -756,16 +760,24 @@ void fl_DocSectionLayout::_lookupProperties(void)
 		)
 	{
 		m_iLeftMargin = m_pLayout->getGraphics()->convertDimension(pszLeftMargin);
+		m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(pszLeftMargin);
 		m_iTopMargin = m_pLayout->getGraphics()->convertDimension(pszTopMargin);
+		m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(pszTopMargin);
 		m_iRightMargin = m_pLayout->getGraphics()->convertDimension(pszRightMargin);
+		m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(pszRightMargin);
 		m_iBottomMargin = m_pLayout->getGraphics()->convertDimension(pszBottomMargin);
+		m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(pszBottomMargin);
 	}
 	else
 	{
 		m_iLeftMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iLeftMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
 		m_iTopMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iTopMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
 		m_iRightMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iRightMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
 		m_iBottomMargin = UT_docUnitsFromPaperUnits(m_pLayout->getGraphics(), 100);
+		m_iBottomMarginLayoutUnits = UT_layoutUnitsFromPaperUnits(100);
 	}
 	
 	m_bForceNewPage = UT_FALSE;
@@ -854,6 +866,11 @@ UT_uint32 fl_DocSectionLayout::getNumColumns(void) const
 UT_uint32 fl_DocSectionLayout::getColumnGap(void) const
 {
 	return m_iColumnGap;
+}
+
+UT_uint32 fl_DocSectionLayout::getColumnGapInLayoutUnits(void) const
+{
+	return m_iColumnGapLayoutUnits;
 }
 
 fl_DocSectionLayout* fl_DocSectionLayout::getNextDocSection(void) const
@@ -1005,14 +1022,14 @@ UT_sint32 fl_DocSectionLayout::breakSection(void)
 		fp_Line* pLastLineToKeep = NULL;
 		fp_Line* pOffendingLine = NULL;
 		
-		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeight();
+		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeightInLayoutUnits();
 		UT_sint32 iWorkingColHeight = 0;
 
 		fp_Line* pCurLine = pFirstLineToKeep;
 		while (pCurLine)
 		{
-			UT_sint32 iLineHeight = pCurLine->getHeight();
-			UT_sint32 iLineMarginAfter = pCurLine->getMarginAfter();
+			UT_sint32 iLineHeight = pCurLine->getHeightInLayoutUnits();
+			UT_sint32 iLineMarginAfter = pCurLine->getMarginAfterInLayoutUnits();
 			UT_sint32 iTotalLineSpace = iLineHeight + iLineMarginAfter;
 
 			if ((iWorkingColHeight + iTotalLineSpace) > iMaxColHeight)

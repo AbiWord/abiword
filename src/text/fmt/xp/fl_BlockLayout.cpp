@@ -69,7 +69,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 							   fl_BlockLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout,
 							   PT_AttrPropIndex indexAP)
-	: fl_Layout(PTX_Block, sdh), m_gbCharWidths(256)
+	: fl_Layout(PTX_Block, sdh)
 {
 	m_pAlignment = NULL;
 
@@ -112,6 +112,7 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 fl_TabStop::fl_TabStop()
 {
 	iPosition = 0;
+	iPositionLayoutUnits = 0;
 	iType = 0;
 }
 
@@ -195,10 +196,15 @@ void fl_BlockLayout::_lookupProperties(void)
 	GR_Graphics* pG = m_pLayout->getGraphics();
 	
 	m_iTopMargin = pG->convertDimension(getProperty("margin-top"));
+	m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(getProperty("margin-top"));
 	m_iBottomMargin = pG->convertDimension(getProperty("margin-bottom"));
+	m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(getProperty("margin-bottom"));
 	m_iLeftMargin = pG->convertDimension(getProperty("margin-left"));
+	m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(getProperty("margin-left"));
 	m_iRightMargin = pG->convertDimension(getProperty("margin-right"));
+	m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(getProperty("margin-right"));
 	m_iTextIndent = pG->convertDimension(getProperty("text-indent"));
+	m_iTextIndentLayoutUnits = UT_convertToLayoutUnits(getProperty("text-indent"));
 
 	{
 		const char* pszAlign = getProperty("text-align");
@@ -315,6 +321,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			
 			fl_TabStop* pTabStop = new fl_TabStop();
 			pTabStop->iPosition = iPosition;
+			pTabStop->iPositionLayoutUnits = UT_convertToLayoutUnits(pszPosition);
 			pTabStop->iType = iType;
 			pTabStop->iOffset = pStart - pszTabStops;
 
@@ -344,6 +351,8 @@ void fl_BlockLayout::_lookupProperties(void)
 #endif
 	
 	m_iDefaultTabInterval = pG->convertDimension(getProperty("default-tab-interval"));
+	m_iDefaultTabIntervalLayoutUnits = UT_convertToLayoutUnits(getProperty("default-tab-interval"));
+
 
 	const char * pszSpacing = getProperty("line-height");
 
@@ -369,16 +378,18 @@ void fl_BlockLayout::_lookupProperties(void)
 			pTmp[posPlus] = 0;
 
 			m_dLineSpacing = pG->convertDimension(pTmp);
+			m_dLineSpacingLayoutUnits = UT_convertToLayoutUnits(pTmp);
 		}
 		else if(UT_hasDimensionComponent(pszSpacing))
 		{
 			m_eSpacingPolicy = spacing_EXACT;
 			m_dLineSpacing = pG->convertDimension(pszSpacing);
+			m_dLineSpacingLayoutUnits = UT_convertToLayoutUnits(pszSpacing);
 		}
 		else
 		{
 			m_eSpacingPolicy = spacing_MULTIPLE;
-			m_dLineSpacing = UT_convertDimensionless(pszSpacing);
+			m_dLineSpacing = m_dLineSpacingLayoutUnits = UT_convertDimensionless(pszSpacing);
 		}
 	}
 }
@@ -819,14 +830,15 @@ UT_uint32 fl_BlockLayout::getPosition(UT_Bool bActualBlockPos) const
 	return pos;
 }
 
-UT_GrowBuf * fl_BlockLayout::getCharWidths(void)
+fl_CharWidths * fl_BlockLayout::getCharWidths(void)
 {
 	return &m_gbCharWidths;
 }
 
-void fl_BlockLayout::getLineSpacing(double& dSpacing, eSpacingPolicy& eSpacing) const
+void fl_BlockLayout::getLineSpacing(double& dSpacing, double &dSpacingLayout, eSpacingPolicy& eSpacing) const
 {
 	dSpacing = m_dLineSpacing;
+	dSpacingLayout = m_dLineSpacingLayoutUnits;
 	eSpacing = m_eSpacingPolicy;
 }
 
@@ -2439,7 +2451,7 @@ UT_Bool fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pc
 		// merge charwidths
 		UT_uint32 lenNew = m_gbCharWidths.getLength();
 
-		pPrevBL->m_gbCharWidths.ins(offset, m_gbCharWidths.getPointer(0), lenNew);
+		pPrevBL->m_gbCharWidths.ins(offset, m_gbCharWidths, 0, lenNew);
 
 		fp_Line* pLastLine = pPrevBL->getLastLine();
 		
@@ -2697,7 +2709,7 @@ UT_Bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pc
 		// NOTE: we do the length check on the outside for speed
 		// TODO [1] can we move info from the current to the new
 		// TODO CharWidths to keep from having to compute it in [2].
-		pNewBL->m_gbCharWidths.ins(0, m_gbCharWidths.getPointer(blockOffset), lenNew);
+		pNewBL->m_gbCharWidths.ins(0, m_gbCharWidths, blockOffset, lenNew);
 		m_gbCharWidths.truncate(blockOffset);
 	}
 
@@ -3101,6 +3113,58 @@ UT_Bool	fl_BlockLayout::findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_s
 		}
 
 		iPos += m_iDefaultTabInterval;
+	}
+
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+
+	return UT_FALSE;
+}
+
+UT_Bool	fl_BlockLayout::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType)
+{
+	UT_uint32 iCountTabs = m_vecTabs.getItemCount();
+	UT_uint32 i;
+	for (i=0; i<iCountTabs; i++)
+	{
+		fl_TabStop* pTab = (fl_TabStop*) m_vecTabs.getNthItem(i);
+
+		if (pTab->iPositionLayoutUnits > iMaxX)
+		{
+			break;
+		}
+		
+		if (pTab->iPositionLayoutUnits > iStartX)
+		{
+			iPosition = pTab->iPositionLayoutUnits;
+			iType = pTab->iType;
+
+			return UT_TRUE;
+		}
+	}
+	
+	// now, handle the default tabs
+
+	UT_sint32 iMin = m_iLeftMarginLayoutUnits;
+
+	if (iMin > iStartX)
+	{
+		iPosition = iMin;
+		iType = FL_TAB_LEFT;
+		return UT_TRUE;
+	}
+	
+	UT_ASSERT(m_iDefaultTabIntervalLayoutUnits > 0);
+	UT_sint32 iPos = 0;
+	for (;;)
+	{
+		if (iPos > iStartX)
+		{
+			iPosition = iPos;
+			iType = FL_TAB_LEFT;
+			return UT_TRUE;
+		}
+
+		iPos += m_iDefaultTabIntervalLayoutUnits;
 	}
 
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

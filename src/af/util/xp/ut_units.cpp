@@ -261,6 +261,11 @@ double UT_convertToPoints(const char* s)
 	return result;
 }
 
+UT_sint32 UT_convertToLayoutUnits(const char* s)
+{
+	return (UT_sint32)(UT_convertToInches(s) * UT_LAYOUT_UNITS);
+}
+
 double UT_convertDimensionless(const char * sz)
 {
 	// convert given string into a number -- without using any dimension
@@ -347,6 +352,14 @@ UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits)
 	UT_ASSERT(pG);
 
 	return (pG->getResolution() * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
+}
+
+UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits)
+{
+	// convert number in paper units (see above) into
+	// "layout" units.
+
+	return (UT_LAYOUT_UNITS * iPaperUnits / UT_PAPER_UNITS_PER_INCH);
 }
 
 const char * UT_formatDimensionedValue(double value,

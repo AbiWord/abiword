@@ -28,16 +28,20 @@ class GR_Graphics;
 UT_BEGIN_EXTERN_C
 
 #define UT_PAPER_UNITS_PER_INCH				100
+#define UT_LAYOUT_UNITS						1440
+
 
 typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_PI, DIM_PT, DIM_none } UT_Dimension;
 
 double UT_convertToInches(const char* s);
 double UT_convertToPoints(const char* s);
+UT_sint32 UT_convertToLayoutUnits(const char* s);
 double UT_convertDimensionless(const char * sz);
 double UT_convertInchesToDimension(double inches, UT_Dimension dim);
 
 UT_sint32 UT_paperUnits(const char * sz);
 UT_sint32 UT_docUnitsFromPaperUnits(GR_Graphics * pG, UT_sint32 iPaperUnits);
+UT_sint32 UT_layoutUnitsFromPaperUnits(UT_sint32 iPaperUnits);
 
 UT_Dimension UT_determineDimension(const char * sz, UT_Dimension fallback = DIM_IN);
 const char * UT_dimensionName(UT_Dimension dim);

@@ -89,9 +89,16 @@ public:
 	UT_sint32		getHeight();
 	UT_sint32       getWidth();
 
+	enum
+	{
+		FIND_FONT_AT_SCREEN_RESOLUTION,
+		FIND_FONT_AT_LAYOUT_RESOLUTION,
+	};
 	GR_Font*		findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
-							 const PP_AttrProp * pSectionAP);
+							 const PP_AttrProp * pSectionAP,
+							 UT_sint32 iUseLayoutResolution
+							);
 	
 	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner);
 	fp_Page*	getFirstPage();

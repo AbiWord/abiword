@@ -48,18 +48,23 @@ public:
 	
 	void				setPage(fp_Page*);
 	void				setWidth(UT_sint32);
+	void				setWidthInLayoutUnits(UT_sint32);
 	void				setMaxHeight(UT_sint32);
+	void				setMaxHeightInLayoutUnits(UT_sint32);
 	void				setHeight(UT_sint32);
 	void				setX(UT_sint32);
 	void				setY(UT_sint32);
 	
 	inline				UT_sint32			getMaxHeight(void) const 		{ return m_iMaxHeight; }
+	inline				UT_sint32			getMaxHeightInLayoutUnits(void) const 	{ return m_iMaxHeightLayoutUnits; }
 	inline				UT_sint32			getWidth(void) const 			{ return m_iWidth; }
+	inline				UT_sint32			getWidthInLayoutUnits(void) const 	{ UT_ASSERT(m_iWidthLayoutUnits); return m_iWidthLayoutUnits; }
 	inline				UT_sint32			getX(void) const 				{ return m_iX; }
 	inline				UT_sint32			getY(void) const				{ return m_iY; }
 	inline				fp_Page*			getPage(void) const				{ return m_pPage; }
 	inline				fl_SectionLayout*	getSectionLayout(void) const	{ return m_pSectionLayout; }
 	inline				UT_sint32			getHeight(void) const			{ return m_iHeight; }
+	inline				UT_sint32			getHeightInLayoutUnits(void) const	{ return m_iHeightLayoutUnits; }
 
 	fp_Line*			getFirstLine(void) const;
 	fp_Line*			getLastLine(void) const;
@@ -86,8 +91,11 @@ protected:
 	fp_Page*				m_pPage;
 
 	UT_sint32 				m_iWidth;
+	UT_sint32 				m_iWidthLayoutUnits;
 	UT_sint32 				m_iHeight;
+	UT_sint32 				m_iHeightLayoutUnits;
 	UT_sint32				m_iMaxHeight;
+	UT_sint32				m_iMaxHeightLayoutUnits;
 
 	UT_sint32				m_iX;
 	UT_sint32				m_iY;
@@ -134,7 +142,10 @@ protected:
 class fp_HdrFtrContainer : public fp_Container
 {
 public:
-	fp_HdrFtrContainer(UT_sint32 iX, UT_sint32 iY, UT_sint32 iWidth, UT_sint32 iHeight, fl_SectionLayout* pSL);
+	fp_HdrFtrContainer(UT_sint32 iX, UT_sint32 iY, 
+							UT_sint32 iWidth, UT_sint32 iHeight,
+							UT_sint32 iWidthLayout, UT_sint32 iHeightLayout, 
+							fl_SectionLayout* pSL);
 	~fp_HdrFtrContainer();
 
 	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const;

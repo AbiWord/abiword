@@ -60,12 +60,20 @@ void fp_FmtMarkRun::lookupProperties(void)
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
 	m_pG->setFont(pFont);
 	m_iAscent = m_pG->getFontAscent();	
 	m_iDescent = m_pG->getFontDescent();
 	m_iHeight = m_pG->getFontHeight();
+
+	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
+
+	m_pG->setFont(pFont);
+	m_iAscentLayoutUnits = m_pG->getFontAscent();	
+	m_iDescentLayoutUnits = m_pG->getFontDescent();
+	m_iHeightLayoutUnits = m_pG->getFontHeight();
+
 }
 
 UT_Bool fp_FmtMarkRun::canBreakAfter(void) const
@@ -78,7 +86,7 @@ UT_Bool fp_FmtMarkRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
-UT_Bool	fp_FmtMarkRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+UT_Bool	fp_FmtMarkRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }

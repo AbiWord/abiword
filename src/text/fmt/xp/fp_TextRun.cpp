@@ -47,6 +47,7 @@ fp_TextRun::fp_TextRun(fl_BlockLayout* pBL,
 	: fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_TEXT)
 {
 	m_pFont = NULL;
+	m_pFontLayout = NULL;
 	m_fDecorations = 0;
 	m_iLineWidth = 0;
 	m_bSquiggled = UT_FALSE;
@@ -75,7 +76,8 @@ void fp_TextRun::lookupProperties(void)
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
+	m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
 
 	PD_Document * pDoc = m_pBL->getDocument();
 
@@ -130,6 +132,14 @@ void fp_TextRun::lookupProperties(void)
 	m_iAscent = m_pG->getFontAscent();	
 	m_iDescent = m_pG->getFontDescent();
 	m_iHeight = m_pG->getFontHeight();
+
+	m_pG->setFont(m_pFontLayout);
+	m_iAscentLayoutUnits = m_pG->getFontAscent();	
+	UT_ASSERT(m_iAscentLayoutUnits);
+	m_iDescentLayoutUnits = m_pG->getFontDescent();
+	m_iHeightLayoutUnits = m_pG->getFontHeight();
+
+	m_pG->setFont(m_pFont);
 }
 
 UT_Bool fp_TextRun::canBreakAfter(void) const
@@ -245,13 +255,13 @@ UT_Bool fp_TextRun::alwaysFits(void) const
 	return UT_TRUE;
 }
 
-UT_Bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
+UT_Bool	fp_TextRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce)
 {
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iLeftWidth = 0;
-	UT_sint32 iRightWidth = m_iWidth;
+	UT_sint32 iRightWidth = m_iWidthLayoutUnits;
 
 	si.iOffset = -1;
 
@@ -311,7 +321,7 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSpli
 
 	if (
 		(si.iOffset == -1)
-		|| (si.iLeftWidth == m_iWidth)
+		|| (si.iLeftWidth == m_iWidthLayoutUnits)
 		)
 	{
 		// there were no split points which fit.
@@ -319,7 +329,7 @@ UT_Bool	fp_TextRun::findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSpli
 	}
 
 	UT_ASSERT(si.iLeftWidth <= iMaxLeftWidth);
-	UT_ASSERT(si.iLeftWidth < m_iWidth);
+	UT_ASSERT(si.iLeftWidth < m_iWidthLayoutUnits);
 
 	return UT_TRUE;
 }
@@ -340,7 +350,7 @@ void fp_TextRun::mapXYToPosition(UT_sint32 x, UT_sint32 /*y*/, PT_DocPosition& p
 		return;
 	}
 
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	// catch the case of a click directly on the left half of the first character in the run
@@ -384,7 +394,7 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	UT_ASSERT(m_pLine);
 	
 	m_pLine->getOffsets(this, xoff, yoff);
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
 	const UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_uint32 offset = UT_MIN(iOffset, m_iOffsetFirst + m_iLen);
@@ -431,6 +441,7 @@ UT_Bool fp_TextRun::canMergeWithNext(void)
 		(pNext->m_iOffsetFirst != (m_iOffsetFirst + m_iLen))
 		|| (pNext->m_fDecorations != m_fDecorations)
 		|| (pNext->m_pFont != m_pFont)
+		|| (pNext->m_pFontLayout != m_pFontLayout)
 		|| (m_iHeight != pNext->m_iHeight)
 		|| (m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 		|| (pNext->m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
@@ -452,6 +463,7 @@ void fp_TextRun::mergeWithNext(void)
 
 	UT_ASSERT(pNext->m_iOffsetFirst == (m_iOffsetFirst + m_iLen));
 	UT_ASSERT(pNext->m_pFont == m_pFont);	// is this legal?
+	UT_ASSERT(pNext->m_pFontLayout == m_pFontLayout);	// is this legal?
 	UT_ASSERT(pNext->m_fDecorations == m_fDecorations);
 	UT_ASSERT(m_iAscent == pNext->m_iAscent);
 	UT_ASSERT(m_iDescent == pNext->m_iDescent);
@@ -461,6 +473,7 @@ void fp_TextRun::mergeWithNext(void)
 
 
 	m_iWidth += pNext->m_iWidth;
+	m_iWidthLayoutUnits += pNext->m_iWidthLayoutUnits;
 	m_iLen += pNext->m_iLen;
 	m_bDirty = m_bDirty || pNext->m_bDirty;
 	m_pNext = pNext->getNext();
@@ -482,12 +495,17 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	fp_TextRun* pNew = new fp_TextRun(m_pBL, m_pG, iSplitOffset, m_iLen - (iSplitOffset - m_iOffsetFirst), UT_FALSE);
 	UT_ASSERT(pNew);
 	pNew->m_pFont = this->m_pFont;
+	pNew->m_pFontLayout = this->m_pFontLayout;
 	pNew->m_fDecorations = this->m_fDecorations;
 	pNew->m_colorFG = this->m_colorFG;
 
 	pNew->m_iAscent = this->m_iAscent;
 	pNew->m_iDescent = this->m_iDescent;
 	pNew->m_iHeight = this->m_iHeight;
+	pNew->m_iAscentLayoutUnits = this->m_iAscentLayoutUnits;
+	UT_ASSERT(pNew->m_iAscentLayoutUnits);
+	pNew->m_iDescentLayoutUnits = this->m_iDescentLayoutUnits;
+	pNew->m_iHeightLayoutUnits = this->m_iHeightLayoutUnits;
 	pNew->m_iLineWidth = this->m_iLineWidth;
 	pNew->m_bDirty = this->m_bDirty;
 //	pNew->m_iSpaceWidthBeforeJustification = this->m_iSpaceWidthBeforeJustification;
@@ -505,22 +523,19 @@ UT_Bool fp_TextRun::split(UT_uint32 iSplitOffset)
 	m_pLine->insertRunAfter(pNew, this);
 
 	m_iWidth = simpleRecalcWidth();
+	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
 	pNew->m_iX = m_iX + m_iWidth;
 	pNew->m_iY = m_iY;
 	pNew->m_iWidth = pNew->simpleRecalcWidth();
+	pNew->m_iWidthLayoutUnits = pNew->simpleRecalcWidth(Width_type_layout_units);
 	
 	return UT_TRUE;
 }
 
-void fp_TextRun::fetchCharWidths(UT_GrowBuf * pgbCharWidths)
+void fp_TextRun::_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths)
 {
-	if (m_iLen == 0)
-	{
-		return;
-	}
-
-	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 	UT_ASSERT(pCharWidths);
+	UT_ASSERT(pFont);
 
 	const UT_UCSChar* pSpan;
 	UT_uint32 lenSpan;
@@ -533,7 +548,7 @@ void fp_TextRun::fetchCharWidths(UT_GrowBuf * pgbCharWidths)
 		bContinue = m_pBL->getSpanPtr(offset, &pSpan, &lenSpan);
 		UT_ASSERT(lenSpan>0);
 
-		m_pG->setFont(m_pFont);
+		m_pG->setFont(pFont);
 
 		if (len <= lenSpan)
 		{
@@ -550,10 +565,42 @@ void fp_TextRun::fetchCharWidths(UT_GrowBuf * pgbCharWidths)
 		}
 	}
 }
-
-UT_sint32 fp_TextRun::simpleRecalcWidth(void) const
+void fp_TextRun::fetchCharWidths(fl_CharWidths * pgbCharWidths)
 {
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	if (m_iLen == 0)
+	{
+		return;
+	}
+
+	UT_uint16* pCharWidths = pgbCharWidths->getCharWidths()->getPointer(0);
+	_fetchCharWidths(m_pFont, pCharWidths);
+
+	pCharWidths = pgbCharWidths->getCharWidthsLayoutUnits()->getPointer(0);
+	_fetchCharWidths(m_pFontLayout, pCharWidths);
+
+	m_pG->setFont(m_pFont);
+
+}
+
+UT_sint32 fp_TextRun::simpleRecalcWidth(UT_sint32 iWidthType) const
+{
+	UT_GrowBuf * pgbCharWidths;
+	switch(iWidthType)
+	{
+		case Width_type_display:
+			pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+			break;
+
+		case Width_type_layout_units:
+			pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
+			break;
+
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			return 0;
+			break;
+	}
+
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 	
 	UT_sint32 iWidth = 0;
@@ -603,7 +650,7 @@ UT_sint32 fp_TextRun::simpleRecalcWidth(void) const
 
 UT_Bool fp_TextRun::recalcWidth(void)
 {
-	UT_sint32 iWidth = simpleRecalcWidth();
+	UT_sint32 iWidth = simpleRecalcWidth(Width_type_display);
 	
 	if (iWidth == m_iWidth)
 	{
@@ -616,6 +663,7 @@ UT_Bool fp_TextRun::recalcWidth(void)
 	}
 	
 	m_iWidth = iWidth;
+	m_iWidthLayoutUnits = simpleRecalcWidth(Width_type_layout_units);
 
 	return UT_TRUE;
 }
@@ -663,7 +711,7 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 	} 
 	
 	UT_ASSERT(pDA->pG == m_pG);
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
 	UT_uint32 iBase = m_pBL->getPosition();
 
 	m_pG->setFont(m_pFont);
@@ -965,7 +1013,7 @@ void fp_TextRun::drawSquiggle(UT_uint32 iOffset, UT_uint32 iLen)
 	m_pLine->getScreenOffsets(this, xoff, yoff);
 
 	UT_Rect r;
-	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();  
+	const UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();  
 	_getPartRect( &r, xoff, yoff, iOffset, iLen, pgbCharWidths);
 
 	_drawSquiggle(r.top + iAscent + iGap, r.left, r.left + r.width); 
@@ -1086,7 +1134,36 @@ UT_Bool fp_TextRun::isSubscript(void) const
 
 UT_sint32 fp_TextRun::findTrailingSpaceDistance(void) const
 {
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
+	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
+
+	UT_sint32 iTrailingDistance = 0;
+
+	if(m_iLen > 0)
+	{
+		UT_UCSChar c;
+
+		UT_sint32 i;
+		for (i = m_iLen - 1; i >= 0; i--)
+		{
+			if(getCharacter(i, c) && (UCS_SPACE == c))
+			{
+				iTrailingDistance += pCharWidths[i + m_iOffsetFirst];
+			}
+			else
+			{
+				break;
+			}
+		}
+
+	}
+
+	return iTrailingDistance;
+}
+
+UT_sint32 fp_TextRun::findTrailingSpaceDistanceInLayoutUnits(void) const
+{
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidthsLayoutUnits();
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_sint32 iTrailingDistance = 0;
@@ -1117,7 +1194,7 @@ void fp_TextRun::resetJustification()
 {
 	if(m_iSpaceWidthBeforeJustification != JUSTIFICATION_NOT_USED)
 	{
-		UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+		UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
 		UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 		UT_sint32 i = findCharacter(0, UCS_SPACE);
@@ -1142,7 +1219,7 @@ void fp_TextRun::resetJustification()
 
 void fp_TextRun::distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun)
 {
-	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths();
+	UT_GrowBuf * pgbCharWidths = m_pBL->getCharWidths()->getCharWidths();
 	UT_uint16* pCharWidths = pgbCharWidths->getPointer(0);
 
 	UT_ASSERT(iSpacesInRun);

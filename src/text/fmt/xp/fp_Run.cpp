@@ -65,7 +65,9 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	
 	m_bDirty = UT_TRUE;		// a run which has just been created is not onscreen, therefore it is dirty
 	m_iWidth = 0;
+	m_iWidthLayoutUnits = 0;
 	m_iHeight = 0;
+	m_iHeightLayoutUnits = 0;
 	m_iX = 0;
 	m_iY = 0;
 	m_pNext = NULL;
@@ -73,6 +75,8 @@ fp_Run::fp_Run(fl_BlockLayout* pBL,
 	m_pLine = NULL;
 	m_iAscent = 0;
 	m_iDescent = 0;
+	m_iAscentLayoutUnits = 0;
+	m_iDescentLayoutUnits = 0;
 }
 
 fp_Run::~fp_Run()
@@ -247,7 +251,7 @@ UT_uint32 fp_Run::containsOffset(UT_uint32 iOffset)
 	}
 }
 
-void fp_Run::fetchCharWidths(UT_GrowBuf * /* pgbCharWidths */)
+void fp_Run::fetchCharWidths(fl_CharWidths * /* pgbCharWidths */)
 {
 	// do nothing.  subclasses may override this.
 }
@@ -286,12 +290,19 @@ void fp_TabRun::lookupProperties(void)
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP);
+	GR_Font* pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION);
 
 	m_pG->setFont(pFont);
 	m_iAscent = m_pG->getFontAscent();	
 	m_iDescent = m_pG->getFontDescent();
 	m_iHeight = m_pG->getFontHeight();
+
+	pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION);
+
+	m_pG->setFont(pFont);
+	m_iAscentLayoutUnits = m_pG->getFontAscent();	
+	m_iDescentLayoutUnits = m_pG->getFontDescent();
+	m_iHeightLayoutUnits = m_pG->getFontHeight();
 }
 
 UT_Bool fp_TabRun::canBreakAfter(void) const
@@ -304,7 +315,7 @@ UT_Bool fp_TabRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-UT_Bool	fp_TabRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+UT_Bool	fp_TabRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }
@@ -428,7 +439,7 @@ UT_Bool fp_ForcedLineBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-UT_Bool	fp_ForcedLineBreakRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+UT_Bool	fp_ForcedLineBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
@@ -499,6 +510,8 @@ void fp_ImageRun::lookupProperties(void)
 	{
 		m_iWidth = m_pImage->getDisplayWidth();
 		m_iHeight = m_pImage->getDisplayHeight();
+		m_iWidthLayoutUnits = m_pImage->getLayoutWidth();
+		m_iHeightLayoutUnits = m_pImage->getLayoutHeight();
 	}
 	else
 	{
@@ -506,6 +519,8 @@ void fp_ImageRun::lookupProperties(void)
 			
 		m_iWidth = m_pG->convertDimension("0.5in");
 		m_iHeight = m_pG->convertDimension("0.5in");
+		m_iWidthLayoutUnits = UT_convertToLayoutUnits("0.5in");
+		m_iHeightLayoutUnits = UT_convertToLayoutUnits("0.5in");
 	}
 		
 	UT_ASSERT(m_iWidth > 0);
@@ -513,6 +528,8 @@ void fp_ImageRun::lookupProperties(void)
 
 	m_iAscent = m_iHeight;
 	m_iDescent = 0;
+	m_iAscentLayoutUnits = m_iHeightLayoutUnits;
+	m_iDescentLayoutUnits = 0;
 }
 
 UT_Bool fp_ImageRun::canBreakAfter(void) const
@@ -525,7 +542,7 @@ UT_Bool fp_ImageRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
-UT_Bool	fp_ImageRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+UT_Bool	fp_ImageRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }
@@ -650,6 +667,7 @@ void fp_ImageRun::_draw(dg_DrawArgs* pDA)
 fp_FieldRun::fp_FieldRun(fl_BlockLayout* pBL, GR_Graphics* pG, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_Run(pBL, pG, iOffsetFirst, iLen, FPRUN_FIELD)
 {
 	m_pFont = NULL;
+	m_pFontLayout = NULL;
 
 	m_sFieldValue[0] = 0;
 	
@@ -752,6 +770,10 @@ UT_Bool fp_FieldRun::calculateValue(void)
 			{
 				clearScreen();
 				m_iWidth = iNewWidth;
+
+				m_pG->setFont(m_pFontLayout);
+				m_iWidthLayoutUnits = m_pG->measureString(m_sFieldValue, 0, UT_UCS_strlen(m_sFieldValue), aCharWidths);
+
 				return UT_TRUE;
 			}
 
@@ -773,7 +795,8 @@ void fp_FieldRun::lookupProperties(void)
 
 	// look for fonts in this DocLayout's font cache
 	FL_DocLayout * pLayout = m_pBL->getDocLayout();
-	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP),
+	m_pFont = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_SCREEN_RESOLUTION),
+	m_pFontLayout = pLayout->findFont(pSpanAP,pBlockAP,pSectionAP, FL_DocLayout::FIND_FONT_AT_LAYOUT_RESOLUTION),
 
 	UT_parseColor(PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP, m_pBL->getDocument(), UT_TRUE), m_colorFG);
 
@@ -781,6 +804,13 @@ void fp_FieldRun::lookupProperties(void)
 	m_iAscent = m_pG->getFontAscent();	
 	m_iDescent = m_pG->getFontDescent();
 	m_iHeight = m_pG->getFontHeight();
+
+	m_pG->setFont(m_pFontLayout);
+	m_iAscentLayoutUnits = m_pG->getFontAscent();	
+	m_iDescentLayoutUnits = m_pG->getFontDescent();
+	m_iHeightLayoutUnits = m_pG->getFontHeight();
+
+	m_pG->setFont(m_pFont);
 
 	const XML_Char* pszType = NULL;
 	pSpanAP->getAttribute("type", pszType);
@@ -814,7 +844,7 @@ UT_Bool fp_FieldRun::canBreakBefore(void) const
 	return UT_TRUE;
 }
 
-UT_Bool	fp_FieldRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+UT_Bool	fp_FieldRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }
@@ -939,7 +969,7 @@ UT_Bool fp_ForcedColumnBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-UT_Bool	fp_ForcedColumnBreakRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+UT_Bool	fp_ForcedColumnBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	
@@ -1010,7 +1040,7 @@ UT_Bool fp_ForcedPageBreakRun::canBreakBefore(void) const
 	return UT_FALSE;
 }
 
-UT_Bool	fp_ForcedPageBreakRun::findMaxLeftFitSplitPoint(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
+UT_Bool	fp_ForcedPageBreakRun::findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 /* iMaxLeftWidth */, fp_RunSplitInfo& /* si */, UT_Bool /* bForce */)
 {
 	return UT_FALSE;
 }

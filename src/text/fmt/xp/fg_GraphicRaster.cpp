@@ -116,10 +116,14 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
+	UT_sint32 iLayoutWidth = 0;
+	UT_sint32 iLayoutHeight = 0;
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
 		iDisplayWidth = pG->convertDimension(pszWidth);
 		iDisplayHeight = pG->convertDimension(pszHeight);
+		iLayoutWidth = UT_convertToLayoutUnits(pszWidth);
+		iLayoutHeight = UT_convertToLayoutUnits(pszHeight);
 	}
 	else
 	{
@@ -141,13 +145,22 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 			
 			iDisplayWidth = (UT_sint32) (iImageWidth * fScale);
 			iDisplayHeight = (UT_sint32) (iImageHeight * fScale);
+
+			fScale = 1440.0 / 72.0;
+			iLayoutWidth = (UT_sint32) (iImageWidth * fScale);
+			iLayoutHeight = (UT_sint32) (iImageHeight * fScale);
+
 		}
 	}
 
 	UT_ASSERT(iDisplayWidth > 0);
 	UT_ASSERT(iDisplayHeight > 0);
 
-	return pG->createNewImage(m_pszDataID, m_pbbPNG, iDisplayWidth, iDisplayHeight);
+	GR_Image *pImage = pG->createNewImage(m_pszDataID, m_pbbPNG, iDisplayWidth, iDisplayHeight);
+
+	pImage->setLayoutSize(iLayoutWidth, iLayoutHeight);
+
+	return pImage;
 }
 
 //

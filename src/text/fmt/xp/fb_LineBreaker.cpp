@@ -55,7 +55,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 			m_pFirstRunToKeep = pLine->getFirstRun();
 			m_pLastRunToKeep = NULL;
 			
-			m_iMaxLineWidth = pLine->getMaxWidth();
+			m_iMaxLineWidth = pLine->getMaxWidthInLayoutUnits();
 			m_iWorkingLineWidth = 0;
 			
 //			UT_Bool bFoundBreakAfter = UT_FALSE;
@@ -111,7 +111,7 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 				if(!pCurrentRun)
 					break;
 
-				m_iWorkingLineWidth += pCurrentRun->getWidth();
+				m_iWorkingLineWidth += pCurrentRun->getWidthInLayoutUnits();
 			
 				unsigned char iCurRunType = pCurrentRun->getType();
 
@@ -145,9 +145,9 @@ UT_sint32 fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					// Subtract the width already added then work out new
 					// tab position.
 					
-					m_iWorkingLineWidth -= pCurrentRun->getWidth();
+					m_iWorkingLineWidth -= pCurrentRun->getWidthInLayoutUnits();
 
-					UT_Bool bRes = pLine->findNextTabStop(m_iWorkingLineWidth, iPos, iType);
+					UT_Bool bRes = pLine->findNextTabStopInLayoutUnits(m_iWorkingLineWidth, iPos, iType);
 					if (bRes)
 					{
 
@@ -353,11 +353,11 @@ UT_sint32 fb_LineBreaker::_moveBackToFirstNonBlankData(fp_Run *pCurrentRun, fp_R
 	{
 		if(!pCurrentRun->doesContainNonBlankData())
 		{
-			iTrailingBlank += pCurrentRun->getWidth();
+			iTrailingBlank += pCurrentRun->getWidthInLayoutUnits();
 		}
 		else
 		{
-			iTrailingBlank += pCurrentRun->findTrailingSpaceDistance();
+			iTrailingBlank += pCurrentRun->findTrailingSpaceDistanceInLayoutUnits();
 			break;
 		}
 		
@@ -381,8 +381,8 @@ UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 
 	// Set m_iWorkingLineWidth to length including this run.
 
-	m_iWorkingLineWidth += pCurrentRun->findTrailingSpaceDistance();
-	m_iWorkingLineWidth -= pCurrentRun->getWidth();
+	m_iWorkingLineWidth += pCurrentRun->findTrailingSpaceDistanceInLayoutUnits();
+	m_iWorkingLineWidth -= pCurrentRun->getWidthInLayoutUnits();
 
 
 	fp_Run *pOffendingRun = pCurrentRun;
@@ -391,7 +391,7 @@ UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 
 	UT_Bool bFoundBreakAfter = UT_FALSE;
 
-	UT_Bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);
+	UT_Bool bFoundSplit = pOffendingRun->findMaxLeftFitSplitPointInLayoutUnits(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo);
 	if (bFoundSplit)
 	{
 		UT_ASSERT(pOffendingRun->getType() == FPRUN_TEXT);
@@ -434,7 +434,7 @@ UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 				  see if we can split this run to get
 				  something which will fit.
 				*/
-				bFoundSplit = pRunLookingBackwards->findMaxLeftFitSplitPoint(pRunLookingBackwards->getWidth(), splitInfo);
+				bFoundSplit = pRunLookingBackwards->findMaxLeftFitSplitPointInLayoutUnits(pRunLookingBackwards->getWidthInLayoutUnits(), splitInfo);
 
 				if (bFoundSplit)
 				{
@@ -458,7 +458,7 @@ UT_Bool fb_LineBreaker::_splitAtOrBeforeThisRun(fp_Run *pCurrentRun)
 		  to force a split of the Offending Run.
 		*/
 
-		bFoundSplit = pOffendingRun->findMaxLeftFitSplitPoint(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo, UT_TRUE);
+		bFoundSplit = pOffendingRun->findMaxLeftFitSplitPointInLayoutUnits(m_iMaxLineWidth - m_iWorkingLineWidth, splitInfo, UT_TRUE);
 		if (bFoundSplit)
 		{
 			UT_ASSERT(pOffendingRun->getType() == FPRUN_TEXT);
@@ -538,7 +538,7 @@ void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo
 //							pRunToSplit->recalcWidth();
 //							pOtherHalfOfSplitRun->recalcWidth();
 	
-	UT_ASSERT((UT_sint32)pRunToSplit->getWidth() == splitInfo.iLeftWidth);
+	UT_ASSERT((UT_sint32)pRunToSplit->getWidthInLayoutUnits() == splitInfo.iLeftWidth);
 
 	UT_ASSERT(pOtherHalfOfSplitRun);
 	UT_ASSERT(pOtherHalfOfSplitRun->getLine() == pRunToSplit->getLine());

@@ -48,6 +48,7 @@ class fp_Page
 	~fp_Page();
 
 	UT_sint32		getWidth(void) const;
+	UT_sint32		getWidthInLayoutUnits(void) const;
 	UT_sint32		getHeight(void) const;
 	UT_sint32		getBottom(void) const;
 	fp_Page*		getNext(void) const;
@@ -90,7 +91,9 @@ protected:
 	fp_Page*			m_pPrev;
 
 	UT_sint32			m_iWidth;
+	UT_sint32			m_iWidthLayoutUnits;
 	UT_sint32			m_iHeight;
+	UT_sint32			m_iHeightLayoutUnits;
 
 	UT_Bool				m_bNeedsRedraw;
 

@@ -39,6 +39,12 @@ void GR_Image::getName(char* p) const
 	strcpy(p, m_szName);
 }
 
+void GR_Image::setLayoutSize(UT_sint32 iLayoutWidth, UT_sint32 iLayoutHeight)
+{
+	m_iLayoutWidth = iLayoutWidth;
+	m_iLayoutHeight = iLayoutHeight;
+}
+
 GR_StretchableImage::GR_StretchableImage()
 {
 	m_iDisplayWidth = 0;

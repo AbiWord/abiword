@@ -38,6 +38,7 @@ GR_Font::~GR_Font()
 GR_Graphics::GR_Graphics()
 {
 	m_iZoomPercentage = 100;
+	m_bLayoutResolutionModeEnabled = UT_FALSE;
 }
 
 GR_Graphics::~GR_Graphics()
@@ -65,7 +66,15 @@ UT_uint32 GR_Graphics::getResolution(void) const
 UT_sint32 GR_Graphics::convertDimension(const char * s) const
 {
 	double dInches = UT_convertToInches(s);
-	double dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
+	double dResolution;
+	if(m_bLayoutResolutionModeEnabled)
+		{
+		dResolution = UT_LAYOUT_UNITS;
+		}
+	else
+		{
+		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
+		}
 
 	return (UT_sint32) (dInches * dResolution);
 }
@@ -74,7 +83,16 @@ const char * GR_Graphics::invertDimension(UT_Dimension dim, double dValue) const
 {
 	// return pointer to static buffer -- use it quickly.
 	
-	double dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
+	double dResolution;
+	if(m_bLayoutResolutionModeEnabled)
+		{
+		dResolution = UT_LAYOUT_UNITS;
+		}
+	else
+		{
+		dResolution = getResolution();		// NOTE: assumes square pixels/dpi/etc.
+		}
+
 	double dInches = dValue / dResolution;
 
 	return UT_convertToDimensionString( dim,

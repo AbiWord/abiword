@@ -154,10 +154,14 @@ GR_Font* GR_Win32Graphics::findFont(const char* pszFontFamily,
 		strcpy(lf.lfFaceName, pszFontFamily);
 	}
 
+	lf.lfOutPrecision = OUT_TT_ONLY_PRECIS;		// Choose only True Type fonts.
+	lf.lfQuality = PROOF_QUALITY;
+
 	HFONT hFont = CreateFontIndirect(&lf);
 	UT_ASSERT(hFont);
 	if (!hFont)
 		return 0;
+
 	return new GR_Win32Font(hFont);
 }
 

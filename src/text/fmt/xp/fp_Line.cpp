@@ -38,6 +38,7 @@ fp_Line::fp_Line()
 	m_iAscent = 0;
 	m_iDescent = 0;
 	m_iMaxWidth = 0;
+	m_iMaxWidthLayoutUnits = 0;
 	m_iWidth = 0;
 	m_iHeight = 0;
 	m_iX = 0;
@@ -53,6 +54,11 @@ fp_Line::~fp_Line()
 void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 {
 	m_iMaxWidth = iMaxWidth;
+}
+
+void fp_Line::setMaxWidthInLayoutUnits(UT_sint32 iMaxWidth)
+{
+	m_iMaxWidthLayoutUnits = iMaxWidth;
 }
 
 void fp_Line::setContainer(fp_Container* pContainer)
@@ -283,25 +289,37 @@ void fp_Line::recalcHeight()
 
 	UT_sint32 iMaxAscent = 0;
 	UT_sint32 iMaxDescent = 0;
+	UT_sint32 iMaxAscentLayoutUnits = 0;
+	UT_sint32 iMaxDescentLayoutUnits = 0;
 
 	for (i=0; i<count; i++)
 	{
 		UT_sint32 iAscent;
 		UT_sint32 iDescent;
+		UT_sint32 iAscentLayoutUnits;
+		UT_sint32 iDescentLayoutUnits;
 
 		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
 
 		iAscent = pRun->getAscent();
 		iDescent = pRun->getDescent();
+		iAscentLayoutUnits = pRun->getAscentInLayoutUnits();
+		UT_ASSERT(!iAscent || iAscentLayoutUnits);
+		iDescentLayoutUnits = pRun->getDescentInLayoutUnits();
+	
 	
 		if (pRun->isSuperscript() || pRun->isSubscript())
 		{
 			iAscent += iAscent * 1/2;
 			iDescent += iDescent;
+			iAscentLayoutUnits += iAscentLayoutUnits * 1/2;
+			iDescentLayoutUnits += iDescentLayoutUnits;
 		}
 
 		iMaxAscent = UT_MAX(iMaxAscent, iAscent);
 		iMaxDescent = UT_MAX(iMaxDescent, iDescent);
+		iMaxAscentLayoutUnits = UT_MAX(iMaxAscentLayoutUnits, iAscentLayoutUnits);
+		iMaxDescentLayoutUnits = UT_MAX(iMaxDescentLayoutUnits, iDescentLayoutUnits);
 	}
 
     UT_sint32 iOldHeight = m_iHeight;
@@ -309,22 +327,35 @@ void fp_Line::recalcHeight()
 	UT_sint32 iOldDescent = m_iDescent;
 	
 	UT_sint32 iNewHeight = iMaxAscent + iMaxDescent;
+	UT_sint32 iNewHeightLayoutUnits = iMaxAscentLayoutUnits + iMaxDescentLayoutUnits;
 	UT_sint32 iNewAscent = iMaxAscent;
 	UT_sint32 iNewDescent = iMaxDescent;
 
 	{
 		// adjust line height to include leading
-		double dLineSpace;
+		double dLineSpace, dLineSpaceLayout;
 		fl_BlockLayout::eSpacingPolicy eSpacing;
-		m_pBlock->getLineSpacing(dLineSpace, eSpacing);
+		m_pBlock->getLineSpacing(dLineSpace, dLineSpaceLayout, eSpacing);
 
 		if (eSpacing == fl_BlockLayout::spacing_EXACT)
+			{
 			iNewHeight = (UT_sint32) dLineSpace;
+			
+			iNewHeightLayoutUnits = (UT_sint32) dLineSpaceLayout;
+
+			}
 		else if (eSpacing == fl_BlockLayout::spacing_ATLEAST)
+			{
 			iNewHeight = UT_MAX(iNewHeight, (UT_sint32) dLineSpace);
+
+			iNewHeightLayoutUnits = UT_MAX(iNewHeightLayoutUnits, (UT_sint32) dLineSpaceLayout);
+			}
 		else
+			{
 			// multiple
 			iNewHeight = (UT_sint32) (iNewHeight * dLineSpace);
+			iNewHeightLayoutUnits = (UT_sint32) (iNewHeightLayoutUnits * dLineSpaceLayout);
+			}
 	}
 
 	if (
@@ -336,6 +367,8 @@ void fp_Line::recalcHeight()
 		clearScreen();
 
 		m_iHeight = iNewHeight;
+		m_iHeightLayoutUnits = iNewHeightLayoutUnits;
+		UT_ASSERT(m_iHeightLayoutUnits);
 		m_iAscent = iNewAscent;
 		m_iDescent = iNewDescent;
 	}
@@ -559,6 +592,11 @@ void fp_Line::setX(UT_sint32 iX)
 	m_iX = iX;
 }
 
+void fp_Line::setXInLayoutUnits(UT_sint32 iX)
+{
+	m_iXLayoutUnits = iX;
+}
+
 void fp_Line::setY(UT_sint32 iY)
 {
 	if (m_iY == iY)
@@ -569,6 +607,11 @@ void fp_Line::setY(UT_sint32 iY)
 	clearScreen();
 	
 	m_iY = iY;
+}
+
+void fp_Line::setYInLayoutUnits(UT_sint32 iY)
+{
+	m_iYLayoutUnits = iY;
 }
 
 UT_sint32 fp_Line::getMarginBefore(void) const
@@ -602,6 +645,26 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 		UT_sint32 iBottomMargin = getBlock()->getBottomMargin();
 		
 		UT_sint32 iNextTopMargin = pNextLine->getBlock()->getTopMargin();
+		
+		UT_sint32 iMargin = UT_MAX(iBottomMargin, iNextTopMargin);
+
+		return iMargin;
+	}
+
+	return 0;
+}
+
+UT_sint32 fp_Line::getMarginAfterInLayoutUnits(void) const
+{
+	if (isLastLineInBlock() && getBlock()->getNext())
+	{
+		fp_Line* pNextLine = getBlock()->getNext()->getFirstLine();
+		UT_ASSERT(pNextLine);
+		UT_ASSERT(pNextLine->isFirstLineInBlock());
+					
+		UT_sint32 iBottomMargin = getBlock()->getBottomMarginInLayoutUnits();
+		
+		UT_sint32 iNextTopMargin = pNextLine->getBlock()->getTopMarginInLayoutUnits();
 		
 		UT_sint32 iMargin = UT_MAX(iBottomMargin, iNextTopMargin);
 
@@ -655,6 +718,29 @@ UT_Bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, unsign
 	}
 }
 
+UT_Bool	fp_Line::findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32& iPosition, unsigned char& iType)
+{
+	UT_sint32		iTabStopPosition = 0;
+	unsigned char	iTabStopType;
+
+	UT_Bool bRes = m_pBlock->findNextTabStopInLayoutUnits(iStartX + getXInLayoutUnits(), getXInLayoutUnits() + getMaxWidthInLayoutUnits(), iTabStopPosition, iTabStopType);
+	UT_ASSERT(bRes);
+
+	iTabStopPosition -= getXInLayoutUnits();
+
+	if (iTabStopPosition < m_iMaxWidthLayoutUnits)
+	{
+		iPosition = iTabStopPosition;
+		iType = iTabStopType;
+
+		return UT_TRUE;
+	}
+	else
+	{
+		return UT_FALSE;
+	}
+}
+
 void fp_Line::recalcMaxWidth()
 {
 	UT_sint32 iX = m_pBlock->getLeftMargin();
@@ -675,6 +761,28 @@ void fp_Line::recalcMaxWidth()
 	}
 	
 	setMaxWidth(iMaxWidth);
+
+	// Do same calculation but in layout units.
+
+	iX = m_pBlock->getLeftMarginInLayoutUnits();
+
+	if (isFirstLineInBlock())
+	{
+		iX += m_pBlock->getTextIndentInLayoutUnits();
+	}
+
+	setXInLayoutUnits(iX);
+
+	iMaxWidth = m_pContainer->getWidthInLayoutUnits();
+	iMaxWidth -= m_pBlock->getRightMarginInLayoutUnits();
+	iMaxWidth -= m_pBlock->getLeftMarginInLayoutUnits();
+	if (isFirstLineInBlock())
+	{
+		iMaxWidth -= m_pBlock->getTextIndentInLayoutUnits();
+	}
+	
+	setMaxWidthInLayoutUnits(iMaxWidth);
+
 }
 
 fp_Line*	fp_Line::getNextLineInSection(void) const
@@ -807,6 +915,59 @@ UT_sint32 fp_Line::calculateWidthOfLine(void)
 	return iX;
 }
 
+UT_sint32 fp_Line::calculateWidthOfLineInLayoutUnits(void)
+{
+	UT_uint32 iCountRuns = m_vecRuns.getItemCount();
+	UT_sint32 iX = 0;
+	UT_uint32 i;
+
+	// first calc the width of the line
+	for (i=0; i<iCountRuns; i++)
+	{
+		fp_Run* pRun = (fp_Run*) m_vecRuns.getNthItem(i);
+		
+		if (pRun->getType() == FPRUN_TAB)
+		{
+			UT_sint32 iPos;
+			unsigned char iTabType;
+
+			UT_Bool bRes = findNextTabStopInLayoutUnits(iX, iPos, iTabType);
+			UT_ASSERT(bRes);
+			UT_ASSERT(iTabType == FL_TAB_LEFT);
+
+			fp_TabRun* pTabRun = static_cast<fp_TabRun*>(pRun);
+			pTabRun->setWidth(iPos - iX);
+			
+			iX = iPos;
+		}
+		else if (pRun->getType() == FPRUN_TEXT)
+		{
+			//fp_TextRun* pTextRun = static_cast<fp_TextRun*>(pRun);
+
+			if(i == 0)
+			{
+				iX += pRun->getWidthInLayoutUnits();
+			}
+			else if(i == iCountRuns - 1)
+			{
+				iX += pRun->getWidthInLayoutUnits();
+			}
+			else
+			{
+				iX += pRun->getWidthInLayoutUnits();
+			}
+		}
+		else
+		{
+			iX += pRun->getWidthInLayoutUnits();
+		}
+	}
+
+	m_iWidthLayoutUnits = iX;
+
+	return iX;
+}
+
 UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 {
 	// need to move back until we find the first non blank character and
@@ -825,6 +986,38 @@ UT_sint32 fp_Line::calculateWidthOfTrailingSpaces(void)
 		else
 		{
 			iTrailingBlank += pCurrentRun->findTrailingSpaceDistance();
+			break;
+		}
+		
+		if(pCurrentRun == getFirstRun())
+			break;
+
+		pCurrentRun = pCurrentRun->getPrev();
+	}
+	while(pCurrentRun);
+
+
+	return iTrailingBlank;
+}
+
+UT_sint32 fp_Line::calculateWidthOfTrailingSpacesInLayoutUnits(void)
+{
+	// need to move back until we find the first non blank character and
+	// return the distance back to this character.
+
+	UT_sint32 iTrailingBlank = 0;
+
+	fp_Run *pCurrentRun = getLastRun();
+
+	do
+	{
+		if(!pCurrentRun->doesContainNonBlankData())
+		{
+			iTrailingBlank += pCurrentRun->getWidthInLayoutUnits();
+		}
+		else
+		{
+			iTrailingBlank += pCurrentRun->findTrailingSpaceDistanceInLayoutUnits();
 			break;
 		}
 		

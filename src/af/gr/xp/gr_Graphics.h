@@ -156,6 +156,7 @@ public:
 	void setZoomPercentage(UT_uint32 iZoom);
 	UT_uint32 getZoomPercentage(void) const;
 	UT_uint32 getResolution(void) const;
+	void setLayoutResolutionMode(UT_Bool bEnable) {m_bLayoutResolutionModeEnabled = bEnable;}
 
 	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
 				   CLR3D_Background=1,				/* color of face/background on a 3d object */
@@ -173,6 +174,7 @@ protected:
 	virtual UT_uint32 _getResolution(void) const = 0;
 	
 	UT_uint32	m_iZoomPercentage;
+	UT_Bool		m_bLayoutResolutionModeEnabled;
 	
 };
 

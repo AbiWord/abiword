@@ -48,7 +48,9 @@ fp_Page::fp_Page(FL_DocLayout* pLayout, FV_View* pView,
 	UT_ASSERT(pG);
 
 	m_iWidth = UT_docUnitsFromPaperUnits(pG,iWidth);
+	m_iWidthLayoutUnits = UT_layoutUnitsFromPaperUnits(iWidth);
 	m_iHeight = UT_docUnitsFromPaperUnits(pG,iHeight);
+	m_iHeightLayoutUnits = UT_layoutUnitsFromPaperUnits(iHeight);
 
 	m_pNext = NULL;
 	m_pPrev = NULL;
@@ -81,6 +83,11 @@ UT_Bool fp_Page::isEmpty(void) const
 UT_sint32 fp_Page::getWidth(void) const
 {
 	return m_iWidth;
+}
+
+UT_sint32 fp_Page::getWidthInLayoutUnits(void) const
+{
+	return m_iWidthLayoutUnits;
 }
 
 UT_sint32 fp_Page::getHeight(void) const
@@ -218,13 +225,19 @@ void fp_Page::_reformat(void)
 	UT_sint32 iRightMargin = pFirstSectionLayout->getRightMargin();
 	UT_sint32 iTopMargin = pFirstSectionLayout->getTopMargin();
 	UT_sint32 iBottomMargin = pFirstSectionLayout->getBottomMargin();
+
+	UT_sint32 iLeftMarginLayoutUnits = pFirstSectionLayout->getLeftMarginInLayoutUnits();
+	UT_sint32 iRightMarginLayoutUnits = pFirstSectionLayout->getRightMarginInLayoutUnits();
+	UT_sint32 iTopMarginLayoutUnits = pFirstSectionLayout->getTopMarginInLayoutUnits();
+	UT_sint32 iBottomMarginLayoutUnits = pFirstSectionLayout->getBottomMarginInLayoutUnits();
 	
 	UT_sint32 iY = iTopMargin;
+	UT_sint32 iYLayoutUnits = iTopMarginLayoutUnits;
 	
 	int i;
 	for (i=0; i<count; i++)
 	{
-		if (iY >= (m_iHeight - iBottomMargin))
+		if (iYLayoutUnits >= (m_iHeightLayoutUnits - iBottomMarginLayoutUnits))
 		{
 			break;
 		}
@@ -233,30 +246,39 @@ void fp_Page::_reformat(void)
 		fl_DocSectionLayout* pSL = (pLeader->getDocSectionLayout());
 		UT_uint32 iNumColumns = pSL->getNumColumns();
 		UT_uint32 iColumnGap = pSL->getColumnGap();
+		UT_uint32 iColumnGapLayoutUnits = pSL->getColumnGapInLayoutUnits();
 
 		UT_uint32 iSpace = m_iWidth - iLeftMargin - iRightMargin;
+		UT_uint32 iSpaceLayoutUnits = m_iWidthLayoutUnits - iLeftMarginLayoutUnits - iRightMarginLayoutUnits;
 		UT_uint32 iColWidth = (iSpace - ((iNumColumns - 1) * iColumnGap)) / iNumColumns;
+		UT_uint32 iColWidthLayoutUnits = (iSpaceLayoutUnits - ((iNumColumns - 1) * iColumnGapLayoutUnits)) / iNumColumns;
 		
 		UT_sint32 iX = iLeftMargin;
 		
 		fp_Column* pTmpCol = pLeader;
 		UT_sint32 iMostHeight = 0;
+		UT_sint32 iMostHeightLayoutUnits = 0;
 		while (pTmpCol)
 		{
 			pTmpCol->setX(iX);
 			pTmpCol->setY(iY);
 			pTmpCol->setMaxHeight(m_iHeight - iBottomMargin - iY);
+			pTmpCol->setMaxHeightInLayoutUnits(m_iHeightLayoutUnits - iBottomMarginLayoutUnits - iYLayoutUnits);
 			pTmpCol->setWidth(iColWidth);
+			pTmpCol->setWidthInLayoutUnits(iColWidthLayoutUnits);
 			iX += (iColWidth + iColumnGap);
 
 			iMostHeight = UT_MAX(iMostHeight, pTmpCol->getHeight());
+			iMostHeightLayoutUnits = UT_MAX(iMostHeightLayoutUnits, pTmpCol->getHeightInLayoutUnits());
 
 			pTmpCol = pTmpCol->getFollower();
 		}
 
 		iY += iMostHeight;
+		iYLayoutUnits += iMostHeightLayoutUnits;
 
 		iY += pLeader->getDocSectionLayout()->getSpaceAfter();
+		iYLayoutUnits += pLeader->getDocSectionLayout()->getSpaceAfterInLayoutUnits();
 	}
 
 	while (i < count)
@@ -409,6 +431,8 @@ fp_HdrFtrContainer* fp_Page::getHeaderContainer(fl_HdrFtrSectionLayout* pHFSL)
 									   0,
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
 									   m_pOwner->getTopMargin(),
+									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
+									   m_pOwner->getTopMarginInLayoutUnits(),
 									   pHFSL);
 	// TODO outofmem
 
@@ -429,6 +453,8 @@ fp_HdrFtrContainer* fp_Page::getFooterContainer(fl_HdrFtrSectionLayout* pHFSL)
 									   getHeight() - m_pOwner->getBottomMargin(),
 									   getWidth() - (m_pOwner->getLeftMargin() + m_pOwner->getRightMargin()),
 									   m_pOwner->getBottomMargin(),
+									   getWidthInLayoutUnits() - (m_pOwner->getLeftMarginInLayoutUnits() + m_pOwner->getRightMarginInLayoutUnits()),
+									   m_pOwner->getBottomMarginInLayoutUnits(),
 									   pHFSL);
 	// TODO outofmem
 

@@ -56,6 +56,60 @@ class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class fl_PartOfBlock;
 
+class fl_CharWidths
+{
+	public:
+		fl_CharWidths()	: m_gbCharWidths(256), m_gbCharWidthsLayoutUnits(256)
+			{
+			}
+
+	private:
+
+		UT_GrowBuf m_gbCharWidths;
+		UT_GrowBuf m_gbCharWidthsLayoutUnits;
+
+	public:
+
+		UT_Bool ins(UT_uint32 position, UT_uint32 length)
+			{
+			m_gbCharWidths.ins(position, length);
+			return m_gbCharWidthsLayoutUnits.ins(position, length);
+			}
+
+		UT_Bool del(UT_uint32 position, UT_uint32 amount)
+			{
+			m_gbCharWidths.del(position, amount);
+			return m_gbCharWidthsLayoutUnits.del(position, amount);
+			}
+		UT_uint32 getLength(void) const
+			{
+			UT_ASSERT(m_gbCharWidths.getLength() == m_gbCharWidthsLayoutUnits.getLength());
+			return m_gbCharWidths.getLength();
+			}
+		UT_Bool ins(UT_uint32 position, const fl_CharWidths &Other, UT_uint32 offset, UT_uint32 length)
+			{
+			m_gbCharWidths.ins(position, Other.m_gbCharWidths.getPointer(offset), length);
+			return m_gbCharWidthsLayoutUnits.ins(position, Other.m_gbCharWidthsLayoutUnits.getPointer(offset), length);
+			}
+		void truncate(UT_uint32 position)
+			{
+			m_gbCharWidths.truncate(position);
+			m_gbCharWidthsLayoutUnits.truncate(position);
+			}
+
+		UT_GrowBuf *getCharWidths()
+			{
+			return &m_gbCharWidths;
+			}
+		UT_GrowBuf *getCharWidthsLayoutUnits()
+			{
+			return &m_gbCharWidthsLayoutUnits;
+			}
+
+
+};
+
+
 /*
 	Blocks are stored in a linked list which contains all of the blocks in
 	the normal flow, in order.
@@ -108,7 +162,7 @@ public:
 	void findSquigglesForRun(fp_Run* pRun);
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
-	UT_GrowBuf * getCharWidths(void);
+	fl_CharWidths * getCharWidths(void);
 
 	PT_DocPosition getPosition(UT_Bool bActualBlockPos=UT_FALSE) const;
 	fp_Run* findPointCoords(PT_DocPosition position, UT_Bool bEOL, UT_sint32& x, UT_sint32& y, UT_sint32& height);
@@ -121,17 +175,22 @@ public:
 	void clearScreen(GR_Graphics*);
 
 	inline UT_sint32	getTextIndent(void) const { return m_iTextIndent; }
+	inline UT_sint32	getTextIndentInLayoutUnits(void) const { return m_iTextIndentLayoutUnits; }
 	inline UT_sint32	getLeftMargin(void) const { return m_iLeftMargin; }
+	inline UT_sint32	getLeftMarginInLayoutUnits(void) const { return m_iLeftMarginLayoutUnits; }
 	inline UT_sint32	getRightMargin(void) const { return m_iRightMargin; }
+	inline UT_sint32	getRightMarginInLayoutUnits(void) const { return m_iRightMarginLayoutUnits; }
 	inline UT_sint32	getTopMargin(void) const { return m_iTopMargin; }
+	inline UT_sint32	getTopMarginInLayoutUnits(void) const { return m_iTopMarginLayoutUnits; }
 	inline UT_sint32	getBottomMargin(void) const { return m_iBottomMargin; }
+	inline UT_sint32	getBottomMarginInLayoutUnits(void) const { return m_iBottomMarginLayoutUnits; }
 	inline fb_Alignment *		getAlignment(void) const { return m_pAlignment; }
 	inline FL_DocLayout* 		getDocLayout(void) const { return m_pLayout; }
 	inline fl_SectionLayout* 	getSectionLayout(void) { return m_pSectionLayout; }
 
 	void setSectionLayout(fl_SectionLayout* pSectionLayout);
 
-	void getLineSpacing(double& dSpacing, eSpacingPolicy& eSpacing) const;
+	void getLineSpacing(double& dSpacing, double &dSpacingLayout, eSpacingPolicy& eSpacing) const;
 						
 	inline UT_uint32 getProp_Orphans(void) const { return m_iOrphansProperty; }
 	inline UT_uint32 getProp_Widows(void) const { return m_iWidowsProperty; }
@@ -143,6 +202,7 @@ public:
 
 	void checkSpelling(void);
 	UT_Bool	findNextTabStop(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
+	UT_Bool	findNextTabStopInLayoutUnits(UT_sint32 iStartX, UT_sint32 iMaxX, UT_sint32& iPosition, unsigned char& iType);
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
 	inline UT_sint32 getTabsCount(void) const { return (UT_sint32) m_vecTabs.getItemCount(); }
 
@@ -249,7 +309,7 @@ protected:
 	UT_Bool					m_bNeedsReformat;
 	UT_Bool					m_bFixCharWidths;
 	
-	UT_GrowBuf				m_gbCharWidths;
+	fl_CharWidths			m_gbCharWidths;
 
 	FL_DocLayout*	       	m_pLayout;
 	fb_LineBreaker*			m_pBreaker;
@@ -265,17 +325,24 @@ protected:
 
 	UT_Vector				m_vecTabs;
 	UT_sint32				m_iDefaultTabInterval;
+	UT_sint32				m_iDefaultTabIntervalLayoutUnits;
 
 	// read-only caches of the underlying properties
 	UT_uint32				m_iOrphansProperty;
 	UT_uint32				m_iWidowsProperty;
 	UT_sint32				m_iTopMargin;
+	UT_sint32				m_iTopMarginLayoutUnits;
 	UT_sint32				m_iBottomMargin;
+	UT_sint32				m_iBottomMarginLayoutUnits;
 	UT_sint32				m_iLeftMargin;
+	UT_sint32				m_iLeftMarginLayoutUnits;
 	UT_sint32				m_iRightMargin;
+	UT_sint32				m_iRightMarginLayoutUnits;
 	UT_sint32				m_iTextIndent;
+	UT_sint32				m_iTextIndentLayoutUnits;
 	fb_Alignment *			m_pAlignment;
 	double					m_dLineSpacing;
+	double					m_dLineSpacingLayoutUnits;
 	//UT_Bool					m_bExactSpacing;
 	eSpacingPolicy			m_eSpacingPolicy;
 	UT_Bool					m_bKeepTogether;
@@ -319,6 +386,7 @@ struct fl_TabStop
 	fl_TabStop();
 	
 	UT_sint32		iPosition;
+	UT_sint32		iPositionLayoutUnits;
 	unsigned char	iType;
 	UT_uint32		iOffset;
 };

@@ -43,6 +43,7 @@ fp_Container::fp_Container(UT_uint32 iType, fl_SectionLayout* pSectionLayout)
 	m_pG = m_pSectionLayout->getDocLayout()->getGraphics();
 
 	m_iWidth = 0;
+	m_iWidthLayoutUnits = 0;
 	m_iHeight = 0;
 
 	m_pPage = NULL;
@@ -78,6 +79,12 @@ void fp_Container::setWidth(UT_sint32 iWidth)
 //	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
 
+void fp_Container::setWidthInLayoutUnits(UT_sint32 iWidth)
+{
+	m_iWidthLayoutUnits = iWidth;
+
+}
+
 void fp_Container::setHeight(UT_sint32 iHeight)
 {
 	if (iHeight == m_iHeight)
@@ -101,6 +108,18 @@ void fp_Container::setMaxHeight(UT_sint32 iMaxHeight)
 	}
 	
 	m_iMaxHeight = iMaxHeight;
+}
+
+void fp_Container::setMaxHeightInLayoutUnits(UT_sint32 iMaxHeight)
+{
+	UT_ASSERT(iMaxHeight > 0);
+
+	if (iMaxHeight == m_iMaxHeightLayoutUnits)
+	{
+		return;
+	}
+	
+	m_iMaxHeightLayoutUnits = iMaxHeight;
 }
 
 void fp_Container::getOffsets(fp_Line* pLine, UT_sint32& xoff, UT_sint32& yoff)
@@ -433,6 +452,7 @@ void fp_Column::setPrev(fp_Column*p)
 void fp_Column::layout(void)
 {
 	UT_sint32 iY = 0;
+	UT_sint32 iYLayoutUnits = 0;
 
 	UT_uint32 iCountLines = m_vecLines.getItemCount();
 	for (UT_uint32 i=0; i < iCountLines; i++)
@@ -440,13 +460,18 @@ void fp_Column::layout(void)
 		fp_Line* pLine = (fp_Line*) m_vecLines.getNthItem(i);
 		
 		UT_sint32 iLineHeight = pLine->getHeight();
+		UT_sint32 iLineHeightLayoutUnits = pLine->getHeightInLayoutUnits();
 //		UT_sint32 iLineMarginBefore = (i != 0) ? pLine->getMarginBefore() : 0;
 		UT_sint32 iLineMarginAfter = pLine->getMarginAfter();
+		UT_sint32 iLineMarginAfterLayoutUnits = pLine->getMarginAfterInLayoutUnits();
 
 //		iY += iLineMarginBefore;
 		pLine->setY(iY);
+		pLine->setYInLayoutUnits(iYLayoutUnits);
 		iY += iLineHeight;
 		iY += iLineMarginAfter;
+		iYLayoutUnits += iLineHeightLayoutUnits;
+		iYLayoutUnits += iLineMarginAfterLayoutUnits;
 	}
 
 	UT_sint32 iNewHeight = iY;
@@ -456,6 +481,7 @@ void fp_Column::layout(void)
 	}
 
 	m_iHeight = iY;
+	m_iHeightLayoutUnits = iYLayoutUnits;
 	
 	m_pPage->columnHeightChanged(this);
 }
@@ -506,12 +532,16 @@ fp_HdrFtrContainer::fp_HdrFtrContainer(UT_sint32 iX,
 									   UT_sint32 iY,
 									   UT_sint32 iWidth,
 									   UT_sint32 iHeight,
+									   UT_sint32 iWidthLayout,
+									   UT_sint32 iHeightLayout,
 									   fl_SectionLayout* pSectionLayout) : fp_Container(FP_CONTAINER_HDRFTR, pSectionLayout)
 {
 	m_iX = iX;
 	m_iY = iY;
 	m_iWidth = iWidth;
 	m_iHeight = iHeight;
+	m_iWidthLayoutUnits = iWidthLayout;
+	m_iHeightLayoutUnits = iHeightLayout;
 }
 
 fp_HdrFtrContainer::~fp_HdrFtrContainer()

@@ -45,19 +45,25 @@ class fp_TextRun : public fp_Run
 	virtual UT_Bool			canBreakAfter(void) const;
 	virtual UT_Bool			canBreakBefore(void) const;
 	virtual UT_Bool			alwaysFits(void) const;
-	virtual UT_Bool			findMaxLeftFitSplitPoint(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
+	virtual UT_Bool			findMaxLeftFitSplitPointInLayoutUnits(UT_sint32 iMaxLeftWidth, fp_RunSplitInfo& si, UT_Bool bForce=UT_FALSE);
 	virtual UT_sint32		findTrailingSpaceDistance(void) const;
+	virtual UT_sint32		findTrailingSpaceDistanceInLayoutUnits(void) const;
 	void					drawSquiggle(UT_uint32, UT_uint32);
 	
 	UT_Bool					split(UT_uint32 iSplitOffset);
 
-	virtual void			fetchCharWidths(UT_GrowBuf * pgbCharWidths);
+	virtual void			fetchCharWidths(fl_CharWidths * pgbCharWidths);
 	virtual UT_Bool			recalcWidth(void);
 
 	UT_Bool					canMergeWithNext(void);
 	void					mergeWithNext(void);
 
-	UT_sint32				simpleRecalcWidth(void) const;
+	enum
+	{
+		Width_type_display,
+		Width_type_layout_units,
+	};
+	UT_sint32				simpleRecalcWidth(UT_sint32 iWidthType = Width_type_display) const;
 
 	void					resetJustification();
 	void					distributeJustificationAmongstSpaces(UT_sint32 iAmount, UT_uint32 iSpacesInRun);
@@ -77,6 +83,7 @@ class fp_TextRun : public fp_Run
 #endif	
 	
 protected:
+	void					_fetchCharWidths(GR_Font* pFont, UT_uint16* pCharWidths);
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void       		_clearScreen(UT_Bool bFullLineHeightRect);
 	
@@ -128,6 +135,7 @@ protected:
 	  TODO fix this issue
 	*/
 	GR_Font*				m_pFont;
+	GR_Font*				m_pFontLayout;
 	UT_RGBColor				m_colorFG;
 	UT_Bool					m_bSquiggled;
 
