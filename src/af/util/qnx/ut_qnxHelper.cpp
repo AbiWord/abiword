@@ -166,4 +166,42 @@ void connectFocusModeless(PtWidget_t *widget, XAP_App * pApp)
 	PtAddCallback(widget, Pt_CB_DESTROYED, focus_out_event_Modeless, pApp);
 }
 
+int pretty_group(PtWidget_t *w, const char *title) {
+	int n, width;
+	PtArg_t args[10];
+
+	n = 0;
+
+	if (title && *title) {
+		PhRect_t rect;
+		const char *font = NULL;
+		char *defaultfont = { "helv10" };
+
+		PtGetResource(w, Pt_ARG_TITLE_FONT, &font, 0);
+		if (!font) {
+			font = defaultfont;	
+		}
+
+		PfExtentText(&rect, NULL, font, title, 0);
+		//printf("Setting width to %d \n", rect.lr.x - rect.ul.x + 10);
+		//PtSetArg(&args[n++], Pt_ARG_WIDTH, rect.lr.x - rect.ul.x + 10, 0);
+
+		PtSetArg(&args[n++], Pt_ARG_TITLE, title, 0);
+		PtSetArg(&args[n++], Pt_ARG_CONTAINER_FLAGS, 
+			Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA, 
+			Pt_SHOW_TITLE | Pt_ETCH_TITLE_AREA);
+	}
+#define OUTLINE_GROUP (Pt_TOP_OUTLINE | Pt_TOP_BEVEL | \
+					   Pt_BOTTOM_OUTLINE | Pt_BOTTOM_BEVEL | \
+					   Pt_LEFT_OUTLINE | Pt_LEFT_BEVEL | \
+					   Pt_RIGHT_OUTLINE | Pt_RIGHT_BEVEL)
+	PtSetArg(&args[n++], Pt_ARG_BASIC_FLAGS, OUTLINE_GROUP, OUTLINE_GROUP);
+	PtSetArg(&args[n++], Pt_ARG_BEVEL_WIDTH, 1, 0);
+	PtSetArg(&args[n++], Pt_ARG_FLAGS, Pt_HIGHLIGHTED, Pt_HIGHLIGHTED);
+
+	PtSetResources(w, n, args);
+
+	return 0;
+}
+
 

@@ -66,4 +66,9 @@ int  UT_QNXComboGetPos(PtWidget_t *widget);
 void connectFocusModeless(PtWidget_t *widget, XAP_App * pApp);
 void connectFocus(PtWidget_t *widget, XAP_Frame *frame);
 
+/*
+ Make groups look pretty
+*/
+int pretty_group(PtWidget_t *w, const char *title);
+
 #endif /* UT_QNXHELPER_H */

@@ -354,33 +354,43 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	windowZoom = PtCreateWidget(PtWindow, NULL, n, args);
 	PtAddCallback(windowZoom, Pt_CB_WINDOW_CLOSING, s_delete_clicked, this);
 
-	n = 0;
 #define MARGIN_SIZE 10 
-	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, Pt_GROUP_HORIZONTAL); 
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, 0); 
 	PtSetArg(&args[n++], Pt_ARG_MARGIN_HEIGHT, MARGIN_SIZE, 0); 
 	PtSetArg(&args[n++], Pt_ARG_MARGIN_WIDTH, MARGIN_SIZE, 0); 
+	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, MARGIN_SIZE, 0); 
+	PtWidget_t *mainvgroup = PtCreateWidget(PtGroup, windowZoom, n, args);
+
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, Pt_GROUP_HORIZONTAL); 
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_X, MARGIN_SIZE, 0); 
-	hboxFrames = PtCreateWidget(PtGroup, windowZoom, n, args);
+	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, Pt_GROUP_EQUAL_SIZE_VERTICAL, Pt_GROUP_EQUAL_SIZE_VERTICAL);
+	hboxFrames = PtCreateWidget(PtGroup, mainvgroup, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL); 
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, 
 				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL, 
 				Pt_GROUP_EXCLUSIVE | Pt_GROUP_EQUAL_SIZE_HORIZONTAL);
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Zoom To", 0); 
 	vboxZoomTo = PtCreateWidget(PtGroup, hboxFrames, n, args);
+	pretty_group(vboxZoomTo, pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_VERTICAL, Pt_GROUP_VERTICAL); 
-	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "Preview", 0); 
 	PtSetArg(&args[n++], Pt_ARG_GROUP_SPACING_Y, 10, 0); 
 	vboxZoomPreview = PtCreateWidget(PtGroup, hboxFrames, n, args);
+	pretty_group(vboxZoomPreview, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame));
 
+#if 0
 	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_RadioFrameCaption));
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtCreateWidget(PtLabel, vboxZoomTo, n, args);
 	FREEP(unixstr);
+#endif
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_FLAGS, 0, Pt_GETS_FOCUS);
@@ -444,12 +454,15 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	PtAddCallback(spinbuttonPercent, Pt_CB_NUMERIC_CHANGED, s_spin_Percent_changed, this);
 	PtAddCallback(spinbuttonPercent, Pt_CB_ACTIVATE, s_spin_Percent_changed, this);
 
+#if 0
 	n = 0;
 	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(XAP_STRING_ID_DLG_Zoom_PreviewFrame));
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, unixstr, 0);
 	PtCreateWidget(PtLabel, vboxZoomPreview, n, args);
 	FREEP(unixstr);
+#endif
 
+	//This should be set by some string ...
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_TEXT_STRING, "10 pt Times New Roman", 0);
 	frameSampleText = PtCreateWidget(PtLabel, vboxZoomPreview, n, args);
@@ -457,12 +470,14 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, 150, 0);
 	PtSetArg(&args[n++], Pt_ARG_HEIGHT, 150, 0);
+/*
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, Pt_GROUP_HORIZONTAL); 
 #define _VS_ANCHOR_ (Pt_LEFT_ANCHORED_RIGHT | Pt_RIGHT_ANCHORED_RIGHT | \
 		     Pt_TOP_ANCHORED_TOP | Pt_BOTTOM_ANCHORED_BOTTOM)
 	PtSetArg(&args[n++], Pt_ARG_ANCHOR_FLAGS, _VS_ANCHOR_, _VS_ANCHOR_); 
 #define _VS_STRETCH_ (Pt_GROUP_STRETCH_HORIZONTAL | Pt_GROUP_STRETCH_VERTICAL)
 	PtSetArg(&args[n++], Pt_ARG_GROUP_FLAGS, _VS_STRETCH_, _VS_STRETCH_); 
+*/
 	PtWidget_t *rawgroup = PtCreateWidget(PtGroup, vboxZoomPreview, n, args);
 
 	n = 0;
@@ -475,7 +490,11 @@ PtWidget_t * XAP_QNXDialog_Zoom::_constructWindow(void)
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_GROUP_ORIENTATION, Pt_GROUP_HORIZONTAL, Pt_GROUP_HORIZONTAL); 
-	PtWidget_t *vboxButtons = PtCreateWidget(PtGroup, vboxZoomPreview, n, args);
+	PtWidget_t *vboxButtons = PtCreateWidget(PtGroup, mainvgroup, n, args);
+
+	n = 0;
+	PtSetArg(&args[n++], Pt_ARG_WIDTH, 1.5 * ABI_DEFAULT_BUTTON_WIDTH, 0);
+	PtCreateWidget(PtLabel, vboxButtons, n, args);
 
 	n = 0;
 	PtSetArg(&args[n++], Pt_ARG_WIDTH, ABI_DEFAULT_BUTTON_WIDTH, 0);
