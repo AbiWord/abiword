@@ -47,7 +47,9 @@ static struct _impGraphic s_impGraphicTable[] =
 {
 	DeclareImporter(IE_ImpGraphic_PNG),
 	DeclareImporter(IE_ImpGraphic_BMP),
+#ifdef DEBUG
 	DeclareImporter(IE_ImpGraphic_SVG),
+#endif
 };
 
 /*****************************************************************/
