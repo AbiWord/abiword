@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (C) 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,9 +28,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 
-// This header defines some functions for Cocoa dialogs,
-// like centering them, measuring them, etc.
-#include "xap_CocoaDialogHelper.h"
+#include "xap_CocoaDialog_Utilities.h"
 
 #include "xap_App.h"
 #include "xap_CocoaApp.h"
@@ -42,108 +41,44 @@
 
 /*****************************************************************/
 
-#define	WIDGET_ID_TAG_KEY "id"
-
-/*****************************************************************/
-
 XAP_Dialog * AP_CocoaDialog_Replace::static_constructor(XAP_DialogFactory * pFactory,
-													   XAP_Dialog_Id id)
+													   XAP_Dialog_Id dlgid)
 {
-	UT_DEBUGMSG(("AP_CocoaDialog_Replace::static_constructor(...) I've been called\n"));
+	xxx_UT_DEBUGMSG(("AP_CocoaDialog_Replace::static_constructor(...) I've been called\n"));
 
-	AP_CocoaDialog_Replace * p = new AP_CocoaDialog_Replace(pFactory,id);
+	AP_CocoaDialog_Replace * p = new AP_CocoaDialog_Replace(pFactory,dlgid);
 	return p;
 }
 
 AP_CocoaDialog_Replace::AP_CocoaDialog_Replace(XAP_DialogFactory * pDlgFactory,
-											   XAP_Dialog_Id id)
-	: AP_Dialog_Replace(pDlgFactory,id)
+											   XAP_Dialog_Id dlgid)
+	: AP_Dialog_Replace(pDlgFactory,dlgid),
+	m_dlg(nil)
 {
-	m_windowMain = NULL;
-
-	m_entryFind = NULL;
-	m_entryReplace = NULL;
-	m_checkbuttonMatchCase = NULL;
-
-	m_buttonFindNext = NULL;
-	m_buttonReplace = NULL;
-	m_buttonReplaceAll = NULL;
-
-	m_buttonCancel = NULL;
 }
 
 AP_CocoaDialog_Replace::~AP_CocoaDialog_Replace(void)
 {
-}
-
-/*****************************************************************/
-
-static void s_delete_clicked(GtkWidget * /* widget */,
-							 gpointer /* data */,
-							 AP_CocoaDialog_Replace * dlg)
-{
-	UT_ASSERT(dlg);
-	dlg->event_WindowDelete();
-}
-
-static void s_find_clicked(GtkWidget * widget, AP_CocoaDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Find();
-}
-
-static void s_replace_clicked(GtkWidget * widget, AP_CocoaDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Replace();
-}
-
-static void s_replace_all_clicked(GtkWidget * widget, AP_CocoaDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_ReplaceAll();
-}
-
-static void s_cancel_clicked(GtkWidget * widget, AP_CocoaDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Cancel();
-}
-
-static void s_match_case_toggled(GtkWidget * widget, AP_CocoaDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_MatchCaseToggled();
-}
-
-static void s_find_entry_activate(GtkWidget * widget, AP_CocoaDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Find();
-}
-
-static void s_replace_entry_activate(GtkWidget * widget, AP_CocoaDialog_Replace * dlg)
-{
-	UT_ASSERT(widget && dlg);
-	dlg->event_Replace();
+	if (m_dlg) {
+		[m_dlg release];
+	}
 }
 
 /*****************************************************************/
 
 void AP_CocoaDialog_Replace::activate(void)
 {
-        UT_ASSERT(m_windowMain);
 	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
-        gdk_window_raise(m_windowMain->window);
+	NSWindow* window = [m_dlg window];
+	[window setTitle:[NSString stringWithUTF8String:m_WindowName]];
+	[window orderFront:m_dlg];
 }
 
 
 void AP_CocoaDialog_Replace::notifyActiveFrame(XAP_Frame *pFrame)
 {
-        UT_ASSERT(m_windowMain);
 	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (m_windowMain), m_WindowName);
+	[[m_dlg window] setTitle:[NSString stringWithUTF8String:m_WindowName]];
 }
 
 void AP_CocoaDialog_Replace::runModeless(XAP_Frame * pFrame)
@@ -151,21 +86,18 @@ void AP_CocoaDialog_Replace::runModeless(XAP_Frame * pFrame)
 	// get the Dialog Id number
 	UT_sint32 sid =(UT_sint32)  getDialogId();
 
-	// Build the window's widgets and arrange them
-	GtkWidget * mainWindow = _constructWindow();
-	UT_ASSERT(mainWindow);
+	m_dlg = [[AP_CocoaDialog_ReplaceController alloc] initFromNib];
+	[m_dlg setXAPOwner:this];
 
 	// Save dialog the ID number and pointer to the Dialog
 	m_pApp->rememberModelessId( sid,  (XAP_Dialog_Modeless *) m_pDialog);
 
-	// This magic command displays the frame where strings will be found
-	connectFocusModeless(GTK_WIDGET(mainWindow),m_pApp);
+	NSWindow* window = [m_dlg window];
 
 	// Populate the window's data items
 	_populateWindowData();
 	
-	// Show the top level dialog,
-	gtk_widget_show(mainWindow);
+	[window orderFront:m_dlg];
 
 	// this dialog needs this
 	setView(static_cast<FV_View *> (getActiveFrame()->getCurrentView()));
@@ -173,71 +105,72 @@ void AP_CocoaDialog_Replace::runModeless(XAP_Frame * pFrame)
 
 void AP_CocoaDialog_Replace::event_Find(void)
 {
-	char * findEntryText;
-
-	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
+	NSString* findWhat;
 	
-	UT_UCSChar * findString;
-
-	UT_UCS_cloneString_char(&findString, findEntryText);
+	findWhat = [m_dlg findWhat];
 	
-	setFindString(findString);
+	setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
 	
-	findNext();
-
-	FREEP(findString);
+	if (!getReverseFind())	{
+		findNext();
+	}
+	else {
+		findPrev();
+	}
 }
+
 		
 void AP_CocoaDialog_Replace::event_Replace(void)
 {
-	char * findEntryText;
-	char * replaceEntryText;
-
-	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
-	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryReplace));
+	NSString* findWhat;
+	NSString* replaceWith;
 	
-	UT_UCSChar * findString;
-	UT_UCSChar * replaceString;
-
-	UT_UCS_cloneString_char(&findString, findEntryText);
-	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
+	findWhat = [m_dlg findWhat];
+	replaceWith = [m_dlg replaceWith];
 	
-	setFindString(findString);
-	setReplaceString(replaceString);
+	setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
+	setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
 	
-	findReplace();
-
-	FREEP(findString);
-	FREEP(replaceString);
+	if(!getReverseFind()) {	
+		findReplace();
+	}
+	else {
+		findReplaceReverse();
+	}
 }
 
 void AP_CocoaDialog_Replace::event_ReplaceAll(void)
 {
-	char * findEntryText;
-	char * replaceEntryText;
+	NSString* findWhat;
+	NSString* replaceWith;
+	
+	findWhat = [m_dlg findWhat];
+	replaceWith = [m_dlg replaceWith];
 
-	findEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryFind));
-	replaceEntryText = (char *) gtk_entry_get_text(GTK_ENTRY(m_entryReplace));
-	
-	UT_UCSChar * findString;
-	UT_UCSChar * replaceString;
+	setFindString(UT_UCS4String([findWhat UTF8String]).ucs4_str());
+	setReplaceString(UT_UCS4String([replaceWith UTF8String]).ucs4_str());
 
-	UT_UCS_cloneString_char(&findString, findEntryText);
-	UT_UCS_cloneString_char(&replaceString, replaceEntryText);
-	
-	setFindString(findString);
-	setReplaceString(replaceString);
-	
 	findReplaceAll();
-
-	FREEP(findString);
-	FREEP(replaceString);
 }
+
 
 void AP_CocoaDialog_Replace::event_MatchCaseToggled(void)
 {
-	setMatchCase(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_checkbuttonMatchCase)));
+	setMatchCase([m_dlg matchCase]);
 }
+
+
+void AP_CocoaDialog_Replace::event_WholeWordToggled(void)
+{
+	setMatchCase([m_dlg wholeWord]);
+}
+
+
+void AP_CocoaDialog_Replace::event_ReverseFindToggled(void)
+{
+	setReverseFind([m_dlg findReverse]);
+}
+
 
 void AP_CocoaDialog_Replace::event_Cancel(void)
 {
@@ -245,266 +178,225 @@ void AP_CocoaDialog_Replace::event_Cancel(void)
 	destroy();
 }
 
+
+void AP_CocoaDialog_Replace::event_CloseWindow(void)
+{
+	m_answer = AP_Dialog_Replace::a_CANCEL;
+}
+
+
 void AP_CocoaDialog_Replace::destroy(void)
 {
 	_storeWindowData();
-        modeless_cleanup();
-	if(m_windowMain && GTK_IS_WIDGET(m_windowMain))
-	  gtk_widget_destroy(m_windowMain);
-        m_windowMain = NULL;
+	modeless_cleanup();
+	[m_dlg close];
+	[m_dlg release];
+	m_dlg = nil;
 }
 
-void AP_CocoaDialog_Replace::event_WindowDelete(void)
-{
-	m_answer = AP_Dialog_Replace::a_CANCEL;	
-	destroy();
-}
 
 /*****************************************************************/
-
-GtkWidget * AP_CocoaDialog_Replace::_constructWindow(void)
-{
-	GtkWidget *windowReplace;
-	GtkWidget *vboxReplace;
-	GtkWidget *tableReplace;
-	GtkWidget *entryFind;
-	GtkWidget *entryReplace = 0;
-	GtkWidget *checkbuttonMatchCase;
-	GtkWidget *labelFind;
-	GtkWidget *labelReplace;
-	GtkWidget *separator;
-	GtkWidget *hbuttonbox1;
-	GtkWidget *buttonFindNext;
-	GtkWidget *buttonReplace = 0;
-	GtkWidget *buttonReplaceAll = 0;
-	GtkWidget *buttonCancel;
-
-
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	XML_Char * unixstr = NULL;	// used for conversions
-
-
-	windowReplace = gtk_window_new(GTK_WINDOW_DIALOG);
-
-	ConstructWindowName();
-	gtk_window_set_title (GTK_WINDOW (windowReplace),  m_WindowName);
-	gtk_window_set_default_size(GTK_WINDOW (windowReplace), 400, 100);
-
-
-	// top level vbox
-	vboxReplace = gtk_vbox_new (FALSE, 12);
-	gtk_widget_show (vboxReplace);
-	gtk_container_add (GTK_CONTAINER (windowReplace), vboxReplace);
-	gtk_container_set_border_width (GTK_CONTAINER (vboxReplace), 10);
-
-	// table up top
-	tableReplace = gtk_table_new (3, 2, FALSE);
-	gtk_widget_show (tableReplace);
-	gtk_box_pack_start (GTK_BOX (vboxReplace), tableReplace, FALSE, TRUE, 0);
-
-	// find label is always here
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindLabel));
-	labelFind = gtk_label_new (unixstr);
-	FREEP(unixstr);
-	gtk_widget_show (labelFind);
-	gtk_table_attach (GTK_TABLE (tableReplace), labelFind, 0, 1, 0, 1,
-			  GtkAttachOptions(GTK_FILL),
-			  GtkAttachOptions(0), 5, 0);
-	gtk_misc_set_alignment (GTK_MISC (labelFind), 0, 0.5);
-
-	// find entry is always here
-	entryFind = gtk_entry_new ();
-	gtk_widget_show (entryFind);
-	gtk_table_attach (GTK_TABLE (tableReplace), entryFind, 1, 2, 0, 1,
-			  GtkAttachOptions(GTK_EXPAND | GTK_FILL),
-			  GtkAttachOptions(GTK_EXPAND | GTK_FILL), 0, 0);
-
-	// match case is always here
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_MatchCase));	
-	checkbuttonMatchCase = gtk_check_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_show (checkbuttonMatchCase);
-	gtk_table_attach (GTK_TABLE (tableReplace), checkbuttonMatchCase, 1, 2, 1, 2,
-			  GtkAttachOptions(GTK_FILL),
-			  GtkAttachOptions(0), 0, 0);
-
-	// the replace label and field are only visible if we're a "replace" dialog
-	if (m_id == AP_DIALOG_ID_REPLACE)
-	{	
-		// create replace label
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceWithLabel));	
-		labelReplace = gtk_label_new (unixstr);
-		FREEP(unixstr);
-		gtk_widget_show (labelReplace);
-		gtk_table_attach (GTK_TABLE (tableReplace), labelReplace, 0, 1, 2, 3,
-				  GtkAttachOptions(0), GtkAttachOptions(0), 5, 0);
-		gtk_misc_set_alignment (GTK_MISC (labelReplace), 0, 0.5);
-
-		// create replace entry
-		entryReplace = gtk_entry_new ();
-		gtk_widget_show (entryReplace);
-		gtk_table_attach (GTK_TABLE (tableReplace), entryReplace, 1, 2, 2, 3,
-				  GtkAttachOptions(GTK_EXPAND | GTK_FILL),
-				  GtkAttachOptions(GTK_EXPAND | GTK_FILL), 0, 0);
-
-	}
-	
-	// Horizontal separator above button box
-	separator = GTK_WIDGET (gtk_hseparator_new());
-	gtk_box_pack_start (GTK_BOX (vboxReplace), separator, FALSE, FALSE, 0);
-	gtk_widget_show (separator);
-
-	// button box at the bottom
-	hbuttonbox1 = gtk_hbutton_box_new ();
-	gtk_widget_show (hbuttonbox1);
-	gtk_box_pack_start (GTK_BOX (vboxReplace), hbuttonbox1, FALSE, FALSE, 0);
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (hbuttonbox1), GTK_BUTTONBOX_END);
-	gtk_button_box_set_spacing (GTK_BUTTON_BOX (hbuttonbox1), 10);
-	gtk_button_box_set_child_size (GTK_BUTTON_BOX (hbuttonbox1), 85, 24);
-
-	if (m_id == AP_DIALOG_ID_REPLACE)
-	{
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceButton));	
-		buttonReplace = gtk_button_new_with_label (unixstr);
-		FREEP(unixstr);
-		gtk_widget_show (buttonReplace);
-		gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonReplace);
-
-		UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceAllButton));	
-		buttonReplaceAll = gtk_button_new_with_label (unixstr);
-		FREEP(unixstr);
-		gtk_widget_show (buttonReplaceAll);
-		gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonReplaceAll);
-	}
-
-	UT_XML_cloneNoAmpersands(unixstr, pSS->getValue(AP_STRING_ID_DLG_FR_FindNextButton));	
-	buttonFindNext = gtk_button_new_with_label (unixstr);
-	FREEP(unixstr);
-	gtk_widget_show (buttonFindNext);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonFindNext);
-
-	buttonCancel = gtk_button_new_with_label (pSS->getValue(XAP_STRING_ID_DLG_Cancel));
-	gtk_widget_show (buttonCancel);
-	gtk_container_add (GTK_CONTAINER (hbuttonbox1), buttonCancel);
-
-	// attach generic signals
-	g_signal_connect(G_OBJECT(checkbuttonMatchCase),
-					   "toggled",
-					   G_CALLBACK(s_match_case_toggled),
-					   this);
-
-	// If the user hits "enter" in the entry field, we launch a find
-	g_signal_connect(G_OBJECT(entryFind),
-					   "activate",
-					   G_CALLBACK(s_find_entry_activate),
-					   this);
-
-	// Buttons
-	g_signal_connect(G_OBJECT(buttonFindNext),
-					   "clicked",
-					   G_CALLBACK(s_find_clicked),
-					   this);
-	
-	g_signal_connect(G_OBJECT(buttonCancel),
-					   "clicked",
-					   G_CALLBACK(s_cancel_clicked),
-					   this);
-
-	// Window events
-	g_signal_connect(G_OBJECT(windowReplace),
-			   "delete_event",
-			   G_CALLBACK(s_delete_clicked),
-			   (gpointer) this);
-
-	g_signal_connect_after(G_OBJECT(windowReplace),
-							 "destroy",
-							 NULL,
-							 NULL);
-
-	// signals only useful in "replace mode"
-	if (m_id == AP_DIALOG_ID_REPLACE)
-	{
-		// If the user hits "enter" in the entry field, we launch a replace
-		g_signal_connect(G_OBJECT(entryReplace),
-						   "activate",
-						   G_CALLBACK(s_replace_entry_activate),
-						   this);
-
-		// Buttons
-		g_signal_connect(G_OBJECT(buttonReplace),
-						   "clicked",
-						   G_CALLBACK(s_replace_clicked),
-						   this);
-
-		g_signal_connect(G_OBJECT(buttonReplaceAll),
-						   "clicked",
-						   G_CALLBACK(s_replace_all_clicked),
-						   this);
-	}
-
-	// save pointers to members
-	m_windowMain = windowReplace;
-
-	m_entryFind = entryFind;
-	m_entryReplace = entryReplace;
-	m_checkbuttonMatchCase = checkbuttonMatchCase;
-
-	m_buttonFindNext = buttonFindNext;
-	m_buttonReplace = buttonReplace;
-	m_buttonReplaceAll = buttonReplaceAll;
-	m_buttonCancel = buttonCancel;
-
-	m_buttonCancel = buttonCancel;
-
-	
-	return windowReplace;
-}
-
 void AP_CocoaDialog_Replace::_populateWindowData(void)
 {
-	UT_ASSERT(m_entryFind && m_checkbuttonMatchCase);
-
 	// last used find string
 	{
-		UT_UCSChar * bufferUnicode = getFindString();
-		char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+		UT_UCS4Char * bufferUnicode = getFindString();
+		char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
+		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
-		gtk_entry_set_text(GTK_ENTRY(m_entryFind), bufferNormal);
-		gtk_entry_select_region(GTK_ENTRY(m_entryFind), 0, -1);
-
+		[m_dlg setFindWhat:[NSString stringWithUTF8String:bufferNormal]];
+		// select teh whole buffer
 		FREEP(bufferNormal);
 	}
 	
 	
 	// last used replace string
 	if (m_id == AP_DIALOG_ID_REPLACE)
-	{
-		UT_ASSERT(m_entryReplace);
-		
-		UT_UCSChar * bufferUnicode = getReplaceString();
-		char * bufferNormal = (char *) UT_calloc(UT_UCS_strlen(bufferUnicode) + 1, sizeof(char));
-		UT_UCS_strcpy_to_char(bufferNormal, bufferUnicode);
+	{		
+		UT_UCS4Char * bufferUnicode = getReplaceString();
+		char * bufferNormal = (char *) UT_calloc(UT_UCS4_strlen(bufferUnicode) + 1, sizeof(char));
+		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
 		FREEP(bufferUnicode);
 		
-		gtk_entry_set_text(GTK_ENTRY(m_entryReplace), bufferNormal);
+		[m_dlg setReplaceWith:[NSString stringWithUTF8String:bufferNormal]];
 
 		FREEP(bufferNormal);
 	}
 
 	// match case button
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkbuttonMatchCase), getMatchCase());
+	[m_dlg setMatchCase:getMatchCase()];
+	[m_dlg setWholeWord:getWholeWord()];
+	[m_dlg setFindReverse:getReverseFind()];
 
-	// Find entry should have focus, for immediate typing
-	gtk_widget_grab_focus(m_entryFind);	
+	// give focus to find what
 }
 
-void AP_CocoaDialog_Replace::_storeWindowData(void)
+
+void AP_CocoaDialog_Replace::_updateLists()
 {
-	// TODO: nothing?  The actual methods store
-	// out last used data to the persist variables,
-	// since we need to save state when things actually
-	// happen (not when the dialog closes).
+	[m_dlg updateFindWhat:&m_findList];
+	[m_dlg updateReplaceWith:&m_replaceList];
 }
+
+
+
+@implementation AP_CocoaDialog_ReplaceController
+
+- (id)initFromNib
+{
+	self = [super initWithWindowNibName:@"ap_CocoaDialog_Replace"];
+	return self;
+}
+
+-(void)discardXAP
+{
+	_xap = NULL;
+}
+
+-(void)dealloc
+{
+	[super dealloc];
+}
+
+- (void)setXAPOwner:(XAP_Dialog *)owner
+{
+	_xap = dynamic_cast<AP_CocoaDialog_Replace*>(owner);
+}
+
+-(void)windowDidLoad
+{
+	if (_xap) {
+		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+		
+		_xap->ConstructWindowName();
+		[[self window] setTitle:[NSString stringWithUTF8String:_xap->getWindowName()]];
+		LocalizeControl(_whatLabel, pSS, AP_STRING_ID_DLG_FR_FindLabel);
+		LocalizeControl(_matchCaseBtn, pSS, AP_STRING_ID_DLG_FR_MatchCase);
+		LocalizeControl(_wholeWordBtn, pSS, AP_STRING_ID_DLG_FR_WholeWord);
+		LocalizeControl(_replaceLabel, pSS, AP_STRING_ID_DLG_FR_ReplaceWithLabel);
+		LocalizeControl(_findAndReplaceBtn, pSS, AP_STRING_ID_DLG_FR_ReplaceButton);
+		LocalizeControl(_replaceAll, pSS, AP_STRING_ID_DLG_FR_ReplaceAllButton);
+		LocalizeControl(_findBtn, pSS, AP_STRING_ID_DLG_FR_FindNextButton);
+		LocalizeControl(_findReverseBtn, pSS, AP_STRING_ID_DLG_FR_ReverseFind);
+	}
+}
+	
+- (void)windowWillClose:(NSNotification *)aNotification
+{
+	_xap->event_CloseWindow();
+}
+
+
+- (IBAction)findAction:(id)sender
+{
+	_xap->event_Find();
+}
+
+- (IBAction)findAndReplaceAction:(id)sender
+{
+	_xap->event_Replace();
+}
+
+- (IBAction)matchCaseAction:(id)sender
+{
+	_xap->event_MatchCaseToggled();
+}
+
+- (IBAction)wholeWordAction:(id)sender
+{
+	_xap->event_WholeWordToggled();
+}
+
+- (IBAction)findReverseAction:(id)sender
+{
+	_xap->event_ReverseFindToggled();
+}
+
+- (IBAction)replaceAllAction:(id)sender
+{
+	_xap->event_ReplaceAll();
+}
+
+- (NSString*)findWhat
+{
+	return [_whatCombo stringValue];
+}
+
+
+- (void)setFindWhat:(NSString*)str
+{
+	[_whatCombo setStringValue:str];
+}
+
+
+- (NSString*)replaceWith
+{
+	return [_replaceCombo stringValue];
+}
+
+
+- (void)setReplaceWith:(NSString*)str
+{
+	[_replaceCombo setStringValue:str];
+}
+
+
+- (bool)matchCase
+{
+	return ([_matchCaseBtn state] != NSOffState);
+}
+
+- (void)setMatchCase:(bool)val
+{
+	[_matchCaseBtn setState:(val?NSOnState:NSOffState)];
+}
+
+- (bool)wholeWord
+{
+	return ([_wholeWordBtn state] != NSOffState);
+}
+
+
+- (void)setWholeWord:(bool)val
+{
+	[_wholeWordBtn setState:(val?NSOnState:NSOffState)];
+}
+
+
+- (bool)findReverse
+{
+	return ([_findReverseBtn state] != NSOffState);
+}
+
+
+- (void)setFindReverse:(bool)val
+{
+	[_findReverseBtn setState:(val?NSOnState:NSOffState)];
+}
+
+
+- (void)updateFindWhat:(UT_Vector*)list
+{
+	[self _updateCombo:_whatCombo withList:list];
+}
+
+
+- (void)updateReplaceWith:(UT_Vector*)list
+{
+	[self _updateCombo:_replaceCombo withList:list];
+}
+
+- (void)_updateCombo:(NSComboBox*)combo withList:(UT_Vector*)list
+{
+	UT_uint32 vecSize, i;
+	[combo removeAllItems];
+	
+	vecSize = list->getItemCount();
+	for(i = 0; i < vecSize; i++) {
+		[combo addItemWithObjectValue:[NSString stringWithUTF8String:(const char*)(*list)[i]]];
+	}
+}
+
+@end
 

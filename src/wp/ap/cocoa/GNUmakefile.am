@@ -31,15 +31,17 @@ libWpAp_cocoa_a_SOURCES=\
 	ap_CocoaClipboard.mm	\
 	ap_CocoaDialogFactory.mm	\
 	ap_CocoaDialog_Break.mm	\
+	ap_CocoaDialog_Columns.mm	\
 	ap_CocoaDialog_FormatFootnotes.mm	\
 	ap_CocoaDialog_Insert_DateTime.mm	\
 	ap_CocoaDialog_Lists.mm	\
 	ap_CocoaDialog_MetaData.mm	\
 	ap_CocoaDialog_New.mm	\
 	ap_CocoaDialog_Options.mm	\
-	ap_CocoaDialog_Stylist.mm	\
+	ap_CocoaDialog_Styles.mm	\
 	ap_CocoaDialog_Paragraph.mm	\
 	ap_CocoaDialog_PageSetup.mm	\
+	ap_CocoaDialog_Replace.mm	\
 	ap_CocoaDialog_Tab.mm	\
 	ap_CocoaDialog_ToggleCase.mm	\
 	ap_CocoaDialog_WordCount.mm	\
@@ -63,6 +65,7 @@ libWpAp_cocoa_a_SOURCES=\
 
 EXTRA_DIST = \
 	ap_CocoaDialog_Break.nib \
+	ap_CocoaDialog_Columns.nib \
 	ap_CocoaDialog_FormatFootnotes.nib \
 	ap_CocoaDialog_Lists.nib \
 	ap_CocoaDialog_MetaData.nib \
@@ -70,6 +73,8 @@ EXTRA_DIST = \
 	ap_CocoaDialog_Options.nib \
 	ap_CocoaDialog_PageSetup.nib \
 	ap_CocoaDialog_Paragraph.nib \
+	ap_CocoaDialog_Replace.nib \
+	ap_CocoaDialog_Styles.nib \
 	ap_CocoaDialog_Tab.nib \
 	ap_CocoaDialog_ToggleCase.nib \
 	ap_CocoaDialog_WordCount.nib \

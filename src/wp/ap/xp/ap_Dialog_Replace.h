@@ -46,6 +46,7 @@ public:
 
 	typedef enum { a_VOID, a_FIND_NEXT, a_REPLACE, a_REPLACE_ALL, a_CANCEL }	tAnswer;
         void                                       ConstructWindowName(void);
+	char *		getWindowName(void) { return m_WindowName; };
 
     AP_Dialog_Replace::tAnswer	getAnswer(void) const;
 

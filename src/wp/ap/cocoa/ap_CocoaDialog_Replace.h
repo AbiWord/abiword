@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001, 2003 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,13 +24,15 @@
 #include "ap_Dialog_Replace.h"
 
 class XAP_CocoaFrame;
+@class AP_CocoaDialog_ReplaceController;
+@protocol XAP_CocoaDialogProtocol;
 
 /*****************************************************************/
 
 class AP_CocoaDialog_Replace: public AP_Dialog_Replace
 {
 public:
-	AP_CocoaDialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
+	AP_CocoaDialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id dlgid);
 	virtual ~AP_CocoaDialog_Replace(void);
 
 
@@ -41,37 +43,64 @@ public:
 	virtual void			destroy(void);
 	virtual void			activate(void);
 
-	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
+	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id dlgid);
 
 	// callbacks can fire these events
-	virtual void			event_Find(void);
-	virtual void			event_Replace(void);
-	virtual void			event_ReplaceAll(void);
-	virtual void			event_MatchCaseToggled(void);	
-	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
+	void					event_Find(void);
+	void					event_Replace(void);
+	void					event_ReplaceAll(void);
+	void					event_MatchCaseToggled(void);	
+	void					event_WholeWordToggled(void);	
+	void					event_ReverseFindToggled(void);	
+	void					event_Cancel(void);
+	void					event_CloseWindow(void);
 
-protected:
-#if 0
-	// private construction functions
-	virtual GtkWidget * _constructWindow(void);
+private:
+	void			_updateLists();
+	void 		_storeWindowData(void) {};
 	void		_populateWindowData(void);
-	void 		_storeWindowData(void);
-
-	// pointers to widgets we need to query/set
-	GtkWidget * m_windowMain;
-
-	GtkWidget * m_entryFind;
-	GtkWidget * m_entryReplace;
-	GtkWidget * m_checkbuttonMatchCase;
-
-	GtkWidget * m_buttonFindNext;
-	GtkWidget * m_buttonReplace;
-	GtkWidget * m_buttonReplaceAll;
-
-	GtkWidget * m_buttonCancel;
-#endif
+	AP_CocoaDialog_ReplaceController* m_dlg;
 };
+
+
+@interface AP_CocoaDialog_ReplaceController : NSWindowController <XAP_CocoaDialogProtocol>
+{
+    IBOutlet NSButton *_findAndReplaceBtn;
+    IBOutlet NSButton *_findBtn;
+	IBOutlet NSButton *_findReverseBtn;
+    IBOutlet NSButton *_matchCaseBtn;
+    IBOutlet NSButton *_replaceAll;
+    IBOutlet NSComboBox *_replaceCombo;
+    IBOutlet NSTextField *_replaceLabel;
+    IBOutlet NSComboBox *_whatCombo;
+    IBOutlet NSTextField *_whatLabel;
+    IBOutlet NSButton *_wholeWordBtn;
+	AP_CocoaDialog_Replace*	_xap;
+}
+- (IBAction)findAction:(id)sender;
+- (IBAction)findAndReplaceAction:(id)sender;
+- (IBAction)findReverseAction:(id)sender;
+- (IBAction)matchCaseAction:(id)sender;
+- (IBAction)wholeWordAction:(id)sender;
+- (IBAction)replaceAllAction:(id)sender;
+
+
+- (NSString*)findWhat;
+- (void)setFindWhat:(NSString*)str;
+- (NSString*)replaceWith;
+- (void)setReplaceWith:(NSString*)str;
+- (bool)matchCase;
+- (void)setMatchCase:(bool)val;
+- (bool)wholeWord;
+- (void)setWholeWord:(bool)val;
+- (bool)findReverse;
+- (void)setFindReverse:(bool)val;
+
+- (void)updateFindWhat:(UT_Vector*)list;
+- (void)updateReplaceWith:(UT_Vector*)list;
+- (void)_updateCombo:(NSComboBox*)combo withList:(UT_Vector*)list;
+@end
+
 
 #endif /* AP_COCOADIALOG_REPLACE_H */
 
