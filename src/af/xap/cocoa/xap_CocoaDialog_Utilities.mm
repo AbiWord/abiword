@@ -24,6 +24,16 @@
 
 #include "xap_CocoaDialog_Utilities.h"
 
+/*!
+	Localize a control with a string from a string set
+	
+	\param control the control AppKit object
+	\param pSS the string set
+	\param stringID the string ID from the string set
+	\note if the control object you pass is of an unknown type, the function will
+	NSLog something on the console. Feel free to update the function if you want to
+	handle that kind of object.
+ */
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId)
 {
 	char buf [1024];
@@ -51,6 +61,13 @@ void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id strin
 	[str release];
 }
 
+/*!
+	Fetch a string from the string set and return a NSString
+	
+	\param pSS the string set
+	\param stringId the string id
+	\return a NSString
+ */
 NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId)
 {
 	char buf [1024];
@@ -58,6 +75,13 @@ NSString* LocalizedString (const XAP_StringSet * pSS, XAP_String_Id stringId)
 	return [NSString stringWithUTF8String:buf];
 }
 
+/*!
+	Append a menu item to the popup button
+	
+	\param menu the popup button
+	\param pSS the string set
+	\param stringId the string id
+ */
 void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XAP_String_Id stringId, int tag)
 {
 	NSString* str = LocalizedString(pSS, stringId);
@@ -67,7 +91,7 @@ void AppendLocalizedMenuItem (NSPopUpButton* menu, const XAP_StringSet * pSS, XA
 	[item release];
 }
 
-/*
+/*!
 	Strip the '&' from the label
 	
 	\param buf the result buffer
