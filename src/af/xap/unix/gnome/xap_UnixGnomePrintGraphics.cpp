@@ -260,9 +260,8 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 			UT_UTF8String utf8 (uChars + iCharOffset, iLength);
 			gnome_print_moveto (m_gpc, tdu (xoff), yoff);
 			gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
-			return;
 			delete [] uChars;
-
+			return;
 		}
 		else
 		{
@@ -292,7 +291,7 @@ void XAP_UnixGnomePrintGraphics::drawChars(const UT_UCSChar* pChars,
 		//
 		advance += pCharWidths [i];
 
-		if (UT_UCS4_isspace (ch)) { // not sure if this needs to be a UCS4 space test or just an ASCII space test...
+		if (UT_UCS4_isspace (ch)) {
 			if (!last_was_space && !utf8.empty()) { // draw non-space chars at every flush
 				gnome_print_moveto (m_gpc, tdu (xoff + prevAdvance), yoff);
 				gnome_print_show_sized (m_gpc, reinterpret_cast<const guchar *>(utf8.utf8_str()), utf8.byteLength());
