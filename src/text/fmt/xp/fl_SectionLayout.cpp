@@ -821,21 +821,37 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 void fl_DocSectionLayout::format(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	FV_View * pView = m_pLayout->getView();
+	UT_return_if_fail(pView);
+
+	bool bShowHidden = pView->getShowPara();
+	FPVisibility eHidden;
+	bool bHidden;
+
 	while (pBL)
 	{
-		pBL->format();
-		UT_sint32 count = 0;
-		while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
+		eHidden  = pBL->isHidden();
+		bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		              || eHidden == FP_HIDDEN_REVISION
+		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+		if(!bHidden)
 		{
-			UT_DEBUGMSG(("Error formatting a block try again \n"));
-			count = count + 1;
 			pBL->format();
-			if(count > 3)
+			UT_sint32 count = 0;
+			while(pBL->getLastContainer() == NULL || pBL->getFirstContainer()==NULL)
 			{
-				UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
-				break;
+				UT_DEBUGMSG(("Error formatting a block try again \n"));
+				count = count + 1;
+				pBL->format();
+				if(count > 3)
+				{
+					UT_DEBUGMSG(("Give up trying to format. Hope for the best :-( \n"));
+					break;
+				}
 			}
 		}
+
 		pBL = pBL->getNext();
 	}
 
@@ -888,16 +904,32 @@ void fl_DocSectionLayout::markAllRunsDirty(void)
 void fl_DocSectionLayout::updateLayout(void)
 {
 	fl_ContainerLayout*	pBL = getFirstLayout();
+	FV_View * pView = m_pLayout->getView();
+	UT_return_if_fail(pView);
+
+	bool bShowHidden = pView->getShowPara();
+	FPVisibility eHidden;
+	bool bHidden;
+
 	while (pBL)
 	{
-		if (pBL->getContainerType()== FL_CONTAINER_BLOCK && pBL->needsReformat())
+		eHidden  = pBL->isHidden();
+		bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		              || eHidden == FP_HIDDEN_REVISION
+		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+
+		if(!bHidden)
 		{
-			pBL->format();
+			if (pBL->getContainerType()== FL_CONTAINER_BLOCK && pBL->needsReformat())
+			{
+				pBL->format();
+			}
+			else
+			{
+				pBL->updateLayout();
+			}
 		}
-		else
-		{
-			pBL->updateLayout();
-		}
+
 		pBL = pBL->getNext();
 	}
 
@@ -1627,13 +1659,13 @@ bool fl_DocSectionLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * 
 // OK set the links and move all blocks in this section into the previous section.
 // I know that getFirstLayout isn't set for Endnotes.  Maybe this should be
 // fixed. -PL
-// 
+//
 	if (pcrx->getStruxType() != PTX_SectionEndnote)
 	{
 		fl_ContainerLayout * pBCur = getFirstLayout();
 		fl_ContainerLayout * pBPrev = pPrevSL->getLastLayout();
 		UT_ASSERT(pBCur && pBPrev);
-		
+
 		pBCur->setPrev(pBPrev);
 		pBPrev->setNext(pBCur);
 		while(pBCur != NULL)
@@ -1928,11 +1960,11 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidLayou
 		pCurColumn = (fp_Column*) getFirstContainer();
 	}
 //
-// This branch is from _reformat in fp_Page. A column that used to 
+// This branch is from _reformat in fp_Page. A column that used to
 // exist has been bumped off
-// the page by an expanding column. We need to layout from the last 
+// the page by an expanding column. We need to layout from the last
 // valid block onwards. If
-// start the beginning we get stuck in an infinite loop. The last 
+// start the beginning we get stuck in an infinite loop. The last
 // valid block, is the last block
 // that has all it's lines correctly laid out on a page.
 //
@@ -2026,9 +2058,9 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidLayou
 				bDoTableBreak = false;
 
 				/*
-				  We have found the offending container (the first one 
+				  We have found the offending container (the first one
 				  which won't fit in the
-				  column) and we now need to decide whether we can break 
+				  column) and we now need to decide whether we can break
 				  the column just before it.  */
 //
 // Now we check to see if the offending container is a table and if it
@@ -2075,7 +2107,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidLayou
 //
 // We bump the broken table after this one and trust the adjustTablesize
 // method to set things right.
-// 
+//
 							if(pTab->getNext())
 							{
 								pOffendingContainer = (fp_Container *) pTab->getNextContainerInSection();
@@ -2086,7 +2118,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidLayou
 							else
 							{
 								bDoTableBreak = true;
-							}								
+							}
 						}
 #endif
 						bDoTableBreak = true;
@@ -2094,7 +2126,7 @@ UT_sint32 fl_DocSectionLayout::breakSection(fl_ContainerLayout * pLastValidLayou
 //
 // If we don't break the table, the heights of the broken table's
 // will be adjusted at the setY() in the layout stage.
-//						
+//
 					fp_TableContainer * pBroke = NULL;
 					UT_sint32 iAvail = iMaxColHeight - iWorkingColHeight - iContainerMarginAfter;
 					double scale = ((double) pTab->getGraphics()->getResolution())/UT_LAYOUT_UNITS;

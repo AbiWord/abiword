@@ -1164,7 +1164,18 @@ fl_BlockLayout::_insertEndOfParagraphRun(void)
 
 	pFirst->addRun(m_pFirstRun);
 
-	pFirst->layout();
+	// only do the line layout if this block is not hidden ...
+	FV_View * pView = getView();
+	UT_return_if_fail(pView);
+
+	bool bShowHidden = pView->getShowPara();
+	FPVisibility eHidden;
+	eHidden  = isHidden();
+	bool bHidden = ((eHidden == FP_HIDDEN_TEXT && !bShowHidden)
+		              || eHidden == FP_HIDDEN_REVISION
+		              || eHidden == FP_HIDDEN_REVISION_AND_TEXT);
+	if(!bHidden)
+		pFirst->layout();
 
 	// Run list should be valid now.
 	_assertRunListIntegrity();
@@ -4360,7 +4371,7 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
 	while (pBL)
 	{
 		fl_BlockLayout* pNext = (fl_BlockLayout *) pBL->getNext();
-			
+
 		pBL->collapse();
 		if(pBL->isHdrFtr())
 		{
@@ -4463,14 +4474,14 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord
 	m_pDoc->getBounds(true,pos1);
 
 	fl_SectionLayout* pSL = NULL;
-	
+
 	pSL = (fl_SectionLayout *) static_cast<fl_ContainerLayout *>(getSectionLayout())->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE);
-	
+
 		// Must call the bind function to complete the exchange of handles
 		// with the document (piece table) *** before *** anything tries
 		// to call down into the document (like all of the view
 		// listeners).
-		
+
 	PL_StruxFmtHandle sfhNew = (PL_StruxFmtHandle)pSL;
 	pfnBindHandles(sdh,lid,sfhNew);
 
