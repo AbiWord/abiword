@@ -57,29 +57,30 @@ public:
 	AV_View * 					getView(void);
 	FV_View * 					getFvView(void);
 	
-	bool						setFindString(const UT_UCSChar * string);
+	void						setFindString(const UT_UCSChar * string);
 	UT_UCSChar *				getFindString(void);
 
-	bool						setReplaceString(const UT_UCSChar * string);
+	void						setReplaceString(const UT_UCSChar * string);
 	UT_UCSChar * 				getReplaceString(void);
 
-	bool						setMatchCase(bool match);
+	void						setMatchCase(bool match);
 	bool						getMatchCase(void);
+
+	void						setReverseFind( bool newValue);
+	bool						getReverseFind(void);
+
+	void						setWholeWord( bool newValue);
+	bool						getWholeWord(void);
 
 	// Action functions... set data using the accessors
 	// above and call one of these.
 	bool						findNext(void);
+	bool						findPrev(void);
+	bool						findReplaceReverse(void);
 	bool						findReplace(void);
 	bool 						findReplaceAll(void);
 	
  protected:
-
-	// These are the persistent dialog data items,
-	// which are carefully read and set by useStart()
-	// and useEnd(), and not by the accessors.
-	UT_UCSChar *				persist_findString; 
-	UT_UCSChar *				persist_replaceString;
-	bool						persist_matchCase;
 
 	// These are the "current use" dialog data items,
 	// which are liberally read and set by the
@@ -89,13 +90,6 @@ public:
 	FV_View * 					m_pView;
 	UT_UCSChar *				m_findString; 
 	UT_UCSChar *				m_replaceString;
-	bool						m_matchCase;
-
-	// These are also "current use" dialog data item,
-	// but they're not user-settable; they are set
-	// on conditions that action functions or other
-	// non-accessor methods are invoked.
-	bool						m_didSomething;
 
 	// Message boxes for events during search
 	XAP_Frame *					m_pFrame;

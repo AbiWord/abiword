@@ -1322,6 +1322,114 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 	return pBL;
 }
 
+fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos)
+{
+	fl_BlockLayout* pBL = NULL;
+	PL_StruxFmtHandle sfh = 0;
+
+	PT_DocPosition posBOD;
+	bool bRes;
+
+	bRes = m_pDoc->getBounds(false, posBOD);
+	UT_ASSERT(bRes);
+	if(m_pDoc->isEndFootnoteAtPos(pos))
+	{
+		xxx_UT_DEBUGMSG(("End footnote found at %d \n",pos));
+		pos--;
+	}
+	if(m_pDoc->isFootnoteAtPos(pos))
+	{
+		xxx_UT_DEBUGMSG(("Start footnote found at %d \n",pos));
+		pos+=2;
+	}
+	bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
+	// If block wasn't found at position, try finding it to the right,
+	// limited only by the EOD.
+	while(!bRes && (pos > posBOD))
+	{
+		pos--;
+		bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
+	}
+
+	if (bRes)
+	{
+		fl_Layout * pL = (fl_Layout *)sfh;
+		if(!pL)
+			return NULL;
+
+		switch (pL->getType())
+		{
+		case PTX_Block:
+			pBL = static_cast<fl_BlockLayout *>(pL);
+			break;
+
+		case PTX_Section:
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			// We asked for a block, and we got a section.  Bad
+			return NULL;
+		}
+	}
+	else
+	{
+		UT_ASSERT(0);
+		return NULL;
+	}
+
+	if(pBL->getSectionLayout()->getType() == FL_SECTION_HDRFTR)
+	{
+		fl_HdrFtrShadow * pShadow = NULL;
+		FV_View * pView = getView();
+		if(pView && pView->isHdrFtrEdit())
+		{
+			pShadow = pView->getEditShadow();
+//
+// We might actually be in the other HdrFtr is the point got here from an undo!
+// Check for this.
+//
+			if(!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos))
+			{
+				fl_HdrFtrSectionLayout * pHF = (fl_HdrFtrSectionLayout *) pBL->getSectionLayout();
+				if(pHF->isPointInHere(pos))
+				{
+					pShadow = pHF->getFirstShadow();
+					pView->clearHdrFtrEdit();
+					pView->setHdrFtrEdit(pShadow);
+					pBL = (fl_BlockLayout *) pShadow->findBlockAtPosition(pos);
+					return pBL;
+				}
+				// Ok, we're really confused now, point is nowhere to be found.
+				// It might be OK if pos-1 is in here, though...
+				if (!pShadow->getHdrFtrSectionLayout()->isPointInHere(pos-1))
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				}
+			}
+
+		}
+		else
+		{
+			pShadow = ((fl_HdrFtrSectionLayout *) pBL->getSectionLayout())->getFirstShadow();
+		}
+		fl_BlockLayout * ppBL = NULL;
+		if(pShadow != NULL)
+			ppBL = (fl_BlockLayout *) pShadow->findMatchingContainer(pBL);
+		else
+		{
+			if(!isLayoutFilling())
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
+		}
+		
+		if(ppBL) {
+			pBL = ppBL;
+			}
+	}
+	UT_ASSERT(pBL);
+	return pBL;
+}
+
 void FL_DocLayout::deleteEmptyColumnsAndPages(void)
 {
 	fl_DocSectionLayout* pSL = m_pFirstSection;

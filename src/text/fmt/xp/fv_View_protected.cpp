@@ -31,7 +31,7 @@
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
-
+#include "ut_types.h"
 #include "xav_View.h"
 #include "fv_View.h"
 #include "fl_DocLayout.h"
@@ -2013,16 +2013,16 @@ fp_Page* FV_View::_getPageForXY(UT_sint32 xPos, UT_sint32 yPos, UT_sint32& xClic
  \param bMatchCase True to match case, false to ignore case
 */
 UT_uint32*
-FV_View::_computeFindPrefix(const UT_UCSChar* pFind, bool bMatchCase)
+FV_View::_computeFindPrefix(const UT_UCSChar* pFind)
 {
 	UT_uint32 m = UT_UCS4_strlen(pFind);
 	UT_uint32 k = 0, q = 1;
-	UT_uint32 *pPrefix = static_cast<UT_uint32*>(UT_calloc(m, sizeof(UT_uint32)));
+	UT_uint32 *pPrefix = (UT_uint32*) UT_calloc(m, sizeof(UT_uint32));
 	UT_ASSERT(pPrefix);
 
 	pPrefix[0] = 0; // Must be this regardless of the string
 
-	if (bMatchCase)
+	if (m_bMatchCase)
 	{
 		for (q = 1; q < m; q++)
 		{
@@ -2061,32 +2061,32 @@ FV_View::_computeFindPrefix(const UT_UCSChar* pFind, bool bMatchCase)
 		function - it is presently done lot's of places in the code.
 */
 bool
-FV_View::_findNext(const UT_UCSChar* pFind, UT_uint32* pPrefix,
-				   bool bMatchCase, bool& bDoneEntireDocument)
+FV_View::_findNext(UT_uint32* pPrefix,
+				   bool& bDoneEntireDocument)
 {
-	UT_ASSERT(pFind);
+	UT_ASSERT(m_sFind);
 
 	fl_BlockLayout* block = _findGetCurrentBlock();
 	PT_DocPosition offset = _findGetCurrentOffset();
 	UT_UCSChar* buffer = NULL;
-	UT_uint32 m = UT_UCS4_strlen(pFind);
+	UT_uint32 m = UT_UCS4_strlen(m_sFind);
 
 	// Clone the search string, converting it to lowercase is search
 	// should ignore case.
-	UT_UCSChar* pFindStr = static_cast<UT_UCSChar*>(UT_calloc(m, sizeof(UT_UCSChar)));
+	UT_UCSChar* pFindStr = (UT_UCSChar*) UT_calloc(m, sizeof(UT_UCSChar));
 	UT_ASSERT(pFindStr);
 	if (!pFindStr)
 		return false;
 	UT_uint32 j;
-	if (bMatchCase)
+	if (m_bMatchCase)
 	{
 		for (j = 0; j < m; j++)
-			pFindStr[j] = pFind[j];
+			pFindStr[j] = m_sFind[j];
 	}
 	else
 	{
 		for (j = 0; j < m; j++)
-			pFindStr[j] = UT_UCS4_tolower(pFind[j]);
+			pFindStr[j] = UT_UCS4_tolower(m_sFind[j]);
 	}
 
 	// Now we use the prefix function (stored as an array) to search
@@ -2096,7 +2096,7 @@ FV_View::_findNext(const UT_UCSChar* pFind, UT_uint32* pPrefix,
 		UT_sint32 foundAt = -1;
 		UT_uint32 i = 0, t = 0;
 
-		if (bMatchCase)
+		if (m_bMatchCase)
 		{
 			UT_UCSChar currentChar;
 
@@ -2113,8 +2113,21 @@ FV_View::_findNext(const UT_UCSChar* pFind, UT_uint32* pPrefix,
 				i++;
 				if (t == m)
 				{
-					foundAt = i - m;
-					break;
+					if (m_bWholeWord) 
+					{
+						bool start = UT_isWordDelimiter(buffer[i-m-1], UCS_UNKPUNK, UCS_UNKPUNK);
+						bool end = UT_isWordDelimiter(buffer[i], UCS_UNKPUNK, UCS_UNKPUNK);
+						if (start && end) 
+						{
+        					foundAt = i - m;
+					        break;
+		              	}
+			        }
+					else 
+					{
+						foundAt = i - m;
+						break;
+					}
 				}
 			}
 		}
@@ -2132,13 +2145,27 @@ FV_View::_findNext(const UT_UCSChar* pFind, UT_uint32* pPrefix,
 
 				while (t > 0 && pFindStr[t] != currentChar)
 					t = pPrefix[t-1];
+
 				if (pFindStr[t] == currentChar)
 					t++;
 				i++;
 				if (t == m)
 				{
-					foundAt = i - m;
-					break;
+					if (m_bWholeWord)
+					{
+						bool start = UT_isWordDelimiter(buffer[i-m-1], UCS_UNKPUNK, UCS_UNKPUNK);
+						bool end = UT_isWordDelimiter(buffer[i], UCS_UNKPUNK, UCS_UNKPUNK);
+						if (start && end)
+						{
+							foundAt = i - m;
+							break;
+						}
+					}
+					else
+					{
+						foundAt = i - m;
+						break;
+					}
 				}
 			}
 		}
@@ -2176,7 +2203,165 @@ FV_View::_findNext(const UT_UCSChar* pFind, UT_uint32* pPrefix,
 	return false;
 }
 
+bool
+FV_View::_findPrev(UT_uint32* pPrefix,
+				   bool& bDoneEntireDocument)
+{
+	UT_ASSERT(m_sFind);
 
+	fl_BlockLayout* block = _findGetCurrentBlock();
+	PT_DocPosition offset = _findGetCurrentOffset();
+	UT_UCSChar* buffer = NULL;
+	UT_uint32 m = UT_UCS4_strlen(m_sFind);
+
+	// Clone the search string, converting it to lowercase is search
+	// should ignore case.
+	UT_UCSChar* pFindStr = (UT_UCSChar*) UT_calloc(m, sizeof(UT_UCSChar));
+	UT_ASSERT(pFindStr);
+	if (!pFindStr)
+		return false;
+	UT_uint32 j;
+	if (m_bMatchCase)
+	{
+		for (j = 0; j < m; j++)
+			pFindStr[j] = m_sFind[j];
+	}
+	else
+	{
+		for (j = 0; j < m; j++)
+			pFindStr[j] = UT_UCS4_tolower(m_sFind[j]);
+	}
+
+	// Now we use the prefix function (stored as an array) to search
+	// through the document text.
+	while ((buffer = _findGetPrevBlockBuffer(&block, &offset)))
+	{
+		UT_sint32 foundAt = -1;
+		UT_uint32 i = UT_MIN(offset, UT_UCS4_strlen(buffer));
+		if (i > m) 
+		{
+			i-=m;
+		}
+		else 
+		{
+			if (i==0)
+				i = UT_UCS4_strlen(buffer);
+			else
+				i=0;
+		}
+			
+		UT_uint32 t = 0;
+			
+		if (m_bMatchCase)
+		{
+			UT_UCSChar currentChar;
+
+			while ((i > 0 ))
+			{
+				t = 0;
+				currentChar = buffer[i];
+				if (currentChar == UCS_RQUOTE) currentChar = '\'';
+				while ((m_sFind[t] == currentChar)&& ( t < m+1)) {
+					t++;
+					currentChar = buffer[i + t];
+					if (currentChar == UCS_RQUOTE) currentChar = '\'';
+					}	
+					
+				if (t == m) {
+					if (m_bWholeWord)
+					{
+						bool start = UT_isWordDelimiter(buffer[i-1], UCS_UNKPUNK, UCS_UNKPUNK);
+						bool end = UT_isWordDelimiter(buffer[i+m], UCS_UNKPUNK, UCS_UNKPUNK);
+						if (start && end)
+						{
+							foundAt = i;
+							break;
+						}
+					}
+					else
+					{
+						foundAt = i;
+						break;
+					}
+				}
+			
+				i--;
+			}
+		}
+		else
+		{
+			UT_UCSChar currentChar;
+
+			while ((i >0 ))
+			{
+				t = 0;
+				currentChar = buffer[i];
+				if (currentChar == UCS_RQUOTE) currentChar = '\'';
+				currentChar = UT_UCS4_tolower(currentChar);
+				while ((m_sFind[t] == currentChar) && ( t <= m)) {
+					t++;
+					currentChar = buffer[i + t];
+					if (currentChar == UCS_RQUOTE) currentChar = '\'';
+					currentChar = UT_UCS4_tolower(currentChar);
+					}	
+				if (t == m) 
+				{
+					if (m_bWholeWord)
+					{
+						bool start = UT_isWordDelimiter(buffer[i-1], UCS_UNKPUNK, UCS_UNKPUNK);
+						bool end = UT_isWordDelimiter(buffer[i+m], UCS_UNKPUNK, UCS_UNKPUNK);
+						if (start && end)
+						{
+							foundAt = i;
+							break;
+						}
+					}
+					else
+					{
+						foundAt = i;
+						break;
+					}
+				}
+				i--;
+			}
+		}
+
+
+		// Select region of matching string if found
+		if (foundAt > 0)
+		{
+
+			UT_DEBUGMSG(("Found pos: %d", (block)->getPosition(false)+ foundAt));
+			UT_DEBUGMSG((" - len: %d\n", m));
+			
+			_setPoint(block->getPosition(false) + foundAt + m);
+			_setSelectionAnchor();
+			_charMotion(false, m);
+
+			m_doneFind = true;
+
+			FREEP(pFindStr);
+			FREEP(buffer);
+			return true;
+		}
+
+		// Didn't find anything, so set the offset to the start of the
+		// current area (0)
+		offset = 0;
+
+		// Must clean up buffer returned for search
+		FREEP(buffer);
+	}
+
+	bDoneEntireDocument = true;
+
+	// Reset wrap for next time
+	m_wrappedEnd = false;
+
+	FREEP(pFindStr);
+
+	return false;
+}
 PT_DocPosition
 FV_View::_BlockOffsetToPos(fl_BlockLayout * block, PT_DocPosition offset)
 {
@@ -2292,25 +2477,120 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 	return bufferSegment;
 }
 
-/*!
- Find and replace text unit
- \param pFind String to find
- \param pReplace String to replace it with
- \param pPrefix Search prefix function
- \param bMatchCase True to match case, false to ignore case
- \result bDoneEntireDocument True if entire document searched,
-		 false otherwise
- \return True if string was replaced, false otherwise
-
- This function will replace an existing selection with pReplace. It
- will then do a search for pFind.
-*/
-bool
-FV_View::_findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
-					  UT_uint32* pPrefix, bool bMatchCase,
-					  bool& bDoneEntireDocument)
+UT_UCSChar*
+FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
+								 PT_DocPosition* pOffset)
 {
-	UT_ASSERT(pFind && pReplace);
+	UT_ASSERT(m_pLayout);
+
+	UT_ASSERT(pBlock);
+	UT_ASSERT(*pBlock);
+
+	UT_ASSERT(pOffset);
+
+	fl_BlockLayout* newBlock = NULL;
+	PT_DocPosition newOffset = 0;
+	
+	UT_uint32 blockStart = 0;
+	UT_uint32 bufferLength = 0;
+
+	UT_GrowBuf pBuffer;
+
+	// Check early for completion, from where we left off last, and
+	// bail if we are now at or past the start position
+	if (m_wrappedEnd
+		&& _BlockOffsetToPos(*pBlock, *pOffset) <= m_startPosition)
+	{
+		// We're done
+		return NULL;
+	}
+
+	if (!(*pBlock)->getBlockBuf(&pBuffer))
+	{
+		UT_DEBUGMSG(("Block %p has no associated buffer.\n", *pBlock));
+		UT_ASSERT(0);
+	}
+
+	// Have we already searched all the text in this buffer?
+	if (_BlockOffsetToPos(*pBlock, *pOffset) <= (*pBlock)->getPosition(false))
+	{
+		// Then return a fresh new block's buffer
+		newBlock = (*pBlock)->getPrevBlockInDocument();
+
+		// Are we at the end of the document?
+		if (!newBlock)
+		{
+			// Then wrap (fetch the first block in the doc)
+			PT_DocPosition endOfDoc;
+			getEditableBounds(true, endOfDoc);
+
+			newBlock = m_pLayout->findBlockAtPositionReverse(endOfDoc);
+
+			m_wrappedEnd = true;
+
+			UT_ASSERT(newBlock);
+		}
+
+		// Re-assign the buffer contents for our new block
+		pBuffer.truncate(0);
+		// The offset starts at end of block
+		newOffset = pBuffer.getLength();
+		blockStart = 0;
+		if (!newBlock->getBlockBuf(&pBuffer))
+		{
+			UT_DEBUGMSG(("Block %p (a ->prev block) has no buffer.\n",
+						 newBlock));
+			UT_ASSERT(0);
+		}
+
+		// Good to go with a full buffer for our new block
+	}
+	else
+	{
+		// We have some left to go in this buffer.	Buffer is still
+		// valid, just copy pointers
+		newBlock = *pBlock;
+		newOffset = *pOffset;
+		blockStart = 0;
+	}
+
+	// Are we going to run into the start position in this buffer?	If
+	// so, we need to size our length accordingly
+	if (m_wrappedEnd && (newBlock->getPosition(false) <= m_startPosition))
+	{
+		blockStart = m_startPosition - (newBlock->getPosition(true));
+		bufferLength = pBuffer.getLength() - blockStart;
+	}
+	else
+	{
+		bufferLength = pBuffer.getLength() - blockStart;
+	}
+
+	// clone a buffer (this could get really slow on large buffers!)
+	UT_UCSChar* bufferSegment = NULL;
+
+	// remember, the caller gets to free this memory
+	bufferSegment = (UT_UCSChar*)UT_calloc(bufferLength + 1, sizeof(UT_UCSChar));
+	UT_ASSERT(bufferSegment);
+
+	memmove(bufferSegment, pBuffer.getPointer(blockStart),
+			(bufferLength) * sizeof(UT_UCSChar));
+
+	// before we bail, hold up our block stuff for next round
+	*pBlock = newBlock;
+	*pOffset = newOffset;
+	
+	UT_DEBUGMSG(("Block pos: %d", (newBlock)->getPosition(false)));
+	UT_DEBUGMSG((" - len: %d\n", pBuffer.getLength()));
+	
+
+	return bufferSegment;
+}
+
+bool
+FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument)
+{
+	UT_ASSERT(m_sFind && m_sReplace);
 
 	bool bRes = false;
 
@@ -2331,9 +2611,80 @@ FV_View::_findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
 
 		// If we have a string with length, do an insert, else let it
 		// hang from the delete above
-		if (*pReplace)
-			bRes = m_pDoc->insertSpan(getPoint(), pReplace,
-									  UT_UCS4_strlen(pReplace),
+		if (*m_sReplace)
+		{
+			bRes = m_pDoc->insertSpan(getPoint(), m_sReplace,
+									  UT_UCS4_strlen(m_sReplace),
+									  &AttrProp_Before);
+			
+			setPoint( getPoint() - UT_UCS4_strlen(m_sReplace)) ;
+		}
+		// Do not increase the insertion point index, since the insert
+		// span will leave us at the correct place.
+
+		_generalUpdate();
+
+
+		// If we've wrapped around once, and we're doing work before
+		// we've hit the point at which we started, then we adjust the
+		// start position so that we stop at the right spot.
+		if (m_wrappedEnd && !bDoneEntireDocument)
+		{
+			m_startPosition += (long) UT_UCS4_strlen(m_sReplace);
+			m_startPosition -= (long) UT_UCS4_strlen(m_sFind);
+		}
+
+		UT_ASSERT(m_startPosition >= 2);
+	}
+
+	m_pDoc->endUserAtomicGlob();
+	_restorePieceTableState();
+
+	// Find next occurrence in document
+	_findPrev(pPrefix, bDoneEntireDocument);
+	return bRes;
+}
+
+/*!
+ Find and replace text unit
+ \param pFind String to find
+ \param pReplace String to replace it with
+ \param pPrefix Search prefix function
+ \param bMatchCase True to match case, false to ignore case
+ \result bDoneEntireDocument True if entire document searched,
+		 false otherwise
+ \return True if string was replaced, false otherwise
+
+ This function will replace an existing selection with pReplace. It
+ will then do a search for pFind.
+*/
+bool
+FV_View::_findReplace(UT_uint32* pPrefix, bool& bDoneEntireDocument)
+{
+	UT_ASSERT(m_sFind && m_sReplace);
+
+	bool bRes = false;
+
+	_saveAndNotifyPieceTableChange();
+	m_pDoc->beginUserAtomicGlob();
+
+	// Replace selection if it's due to a find operation
+	if (m_doneFind && !isSelectionEmpty())
+	{
+		bRes = true;
+
+		PP_AttrProp AttrProp_Before;
+
+		if (!isSelectionEmpty())
+		{
+			_deleteSelection(&AttrProp_Before);
+		}
+
+		// If we have a string with length, do an insert, else let it
+		// hang from the delete above
+		if (*m_sReplace)
+			bRes = m_pDoc->insertSpan(getPoint(), m_sReplace,
+									  UT_UCS4_strlen(m_sReplace),
 									  &AttrProp_Before);
 
 		// Do not increase the insertion point index, since the insert
@@ -2346,8 +2697,8 @@ FV_View::_findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
 		// start position so that we stop at the right spot.
 		if (m_wrappedEnd && !bDoneEntireDocument)
 		{
-			m_startPosition += static_cast<long>(UT_UCS4_strlen(pReplace));
-			m_startPosition -= static_cast<long>(UT_UCS4_strlen(pFind));
+			m_startPosition += (long) UT_UCS4_strlen(m_sReplace);
+			m_startPosition -= (long) UT_UCS4_strlen(m_sFind);
 		}
 
 		UT_ASSERT(m_startPosition >= 2);
@@ -2357,7 +2708,7 @@ FV_View::_findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
 	_restorePieceTableState();
 
 	// Find next occurrence in document
-	_findNext(pFind, pPrefix, bMatchCase, bDoneEntireDocument);
+	_findNext(pPrefix, bDoneEntireDocument);
 	return bRes;
 }
 

@@ -159,8 +159,11 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_pEditShadow(NULL),
 		m_iSavedPosition(0),
 		m_bNeedSavedPosition(false),
-		_m_matchCase(false),
-		_m_findNextString(0),
+		m_bMatchCase(false),
+		m_bReverseFind(false),
+		m_bWholeWord(false),
+		m_sFind(0),
+		m_sReplace(0),
 		m_bShowPara(false),
 		m_viewMode(VIEW_PRINT),
 		m_previewMode(PREVIEW_NONE),
@@ -422,7 +425,8 @@ FV_View::~FV_View()
 		DELETEP(m_caretListener);
 	}
 
-	FREEP(_m_findNextString);
+	FREEP(m_sFind);
+	FREEP(m_sReplace);
 
 	FREEP(m_chg.propsChar);
 	FREEP(m_chg.propsBlock);
@@ -1279,6 +1283,10 @@ PT_DocPosition FV_View::saveSelectedImage (const char * toFile)
 
   return dPos ;
 }
+
+PT_DocPosition FV_View::mapDocPos( FV_DocPos dp ) {
+	return ( _getDocPos( dp ));
+	}
 
 PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
 {
@@ -4710,16 +4718,28 @@ book_mark_not_found:
  \return True if string was found, false otherwise
 */
 bool
-FV_View::findNext(const UT_UCSChar* pFind, bool bMatchCase,
-				  bool& bDoneEntireDocument)
+FV_View::findNext(const UT_UCSChar* pFind, bool& bDoneEntireDocument)
+
 {
+	findSetFindString(pFind);
+	return findNext(bDoneEntireDocument);
+}
+
+bool
+FV_View::findNext(bool& bDoneEntireDocument)
+{
+	if ((m_startPosition >=0) && (m_startPosition <2)) {
+		m_startPosition = 2;
+		setPoint(m_startPosition);
+		}
+
 	if (!isSelectionEmpty())
 	{
 		_clearSelection();
 	}
 
-	UT_uint32* pPrefix = _computeFindPrefix(pFind, bMatchCase);
-	bool bRes = _findNext(pFind, pPrefix, bMatchCase, bDoneEntireDocument);
+	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
+	bool bRes = _findNext(pPrefix, bDoneEntireDocument);
 	FREEP(pPrefix);
 
 	if (isSelectionEmpty())
@@ -4738,6 +4758,39 @@ FV_View::findNext(const UT_UCSChar* pFind, bool bMatchCase,
 }
 
 
+bool
+FV_View::findPrev(const UT_UCSChar* pFind, bool& bDoneEntireDocument)
+{
+	findSetFindString(pFind);
+	return findPrev(bDoneEntireDocument);
+}
+
+bool
+FV_View::findPrev(bool& bDoneEntireDocument)
+{
+	if (!isSelectionEmpty())
+	{
+		_clearSelection();
+	}
+
+	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
+	bool bRes = _findPrev(pPrefix, bDoneEntireDocument);
+	FREEP(pPrefix);
+
+	if (isSelectionEmpty())
+	{
+		_updateInsertionPoint();
+	}
+	else
+	{
+		_ensureInsertionPointOnScreen();
+		_drawSelection();
+	}
+
+	notifyListeners(AV_CHG_MOTION);
+	return bRes;
+}
+
 /*!
  Find operation reset
 
@@ -4753,24 +4806,91 @@ FV_View::findSetStartAtInsPoint(void)
 }
 
 
-/*!
- Set find-next string
- \param pFind String to find
- \param bMatchCase True to match case, false to ignore case
- \return True if there was enough memory to clone the string
- This function is used for non-dialog search operations.
-*/
-bool
-FV_View::findSetNextString(UT_UCSChar* pFind, bool bMatchCase)
+
+void
+FV_View::findSetFindString(const UT_UCSChar* pFind)
 {
-	UT_ASSERT(pFind);
+	FREEP(m_sFind);
+	UT_UCS4_cloneString(&m_sFind, pFind);
+}
 
-	// update case matching
-	_m_matchCase = bMatchCase;
+UT_UCSChar * 
+FV_View::findGetFindString(void)
+{
+	UT_UCSChar * string = NULL;
+	if (m_sFind)
+	{
+		if (UT_UCS4_cloneString(&string, m_sFind))
+			return string;
+	}
+	else
+	{
+		if (UT_UCS4_cloneString_char(&string, ""))
+			return string;
+	}
 
-	// update string
-	FREEP(_m_findNextString);
-	return UT_UCS4_cloneString(&_m_findNextString, pFind);
+	return NULL;
+}
+
+void
+FV_View::findSetReplaceString(const UT_UCSChar* pReplace)
+{
+	FREEP(m_sReplace);
+	UT_UCS4_cloneString(&m_sReplace, pReplace);
+}
+
+UT_UCSChar * 
+FV_View::findGetReplaceString(void)
+{
+	UT_UCSChar * string = NULL;
+	if (m_sReplace)
+	{
+		if (UT_UCS4_cloneString(&string, m_sReplace))
+			return string;
+	}
+	else
+	{
+		if (UT_UCS4_cloneString_char(&string, ""))
+			return string;
+	}
+
+	return NULL;
+}
+
+void
+FV_View::findSetReverseFind	(bool newValue)
+{
+	m_bReverseFind = newValue;
+}
+
+bool
+FV_View::findGetReverseFind	()
+{
+	return m_bReverseFind;
+}
+
+void
+FV_View::findSetMatchCase(bool newValue)
+{
+	m_bMatchCase = newValue;
+}
+
+bool
+FV_View::findGetMatchCase()
+{
+	return m_bMatchCase;
+}
+
+void
+FV_View::findSetWholeWord(bool newValue)
+{
+	m_bWholeWord = newValue;
+}
+
+bool
+FV_View::findGetWholeWord()
+{
+	return m_bWholeWord;
 }
 
 /*!
@@ -4783,10 +4903,18 @@ FV_View::findAgain(void)
 {
 	bool bRes = false;
 
-	if (_m_findNextString && *_m_findNextString)
+	if (m_sFind && *m_sFind)
 	{
 		bool bTmp;
-		bRes = findNext(_m_findNextString, _m_matchCase, bTmp);
+		if (m_bReverseFind)
+		{
+			bRes = findPrev(bTmp);
+		}
+		else
+		{
+			bRes = findNext(bTmp);
+		}
+			
 		if (bRes)
 		{
 			_drawSelection();
@@ -4796,6 +4924,29 @@ FV_View::findAgain(void)
 	return bRes;
 }
 
+bool
+FV_View::findReplaceReverse(bool& bDoneEntireDocument)
+{
+	UT_ASSERT(m_sFind && m_sReplace);
+
+	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
+	bool bRes = _findReplaceReverse(pPrefix, bDoneEntireDocument);
+	FREEP(pPrefix);
+
+	updateScreen();
+
+	if (isSelectionEmpty())
+	{
+		_updateInsertionPoint();
+	}
+	else
+	{
+		_ensureInsertionPointOnScreen();
+		_drawSelection();
+	}
+
+	return bRes;
+}
 
 /*!
  Find and replace string
@@ -4807,14 +4958,12 @@ FV_View::findAgain(void)
  \return True if string was replaced, false otherwise
 */
 bool
-FV_View::findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
-					 bool bMatchCase, bool& bDoneEntireDocument)
+FV_View::findReplace(bool& bDoneEntireDocument)
 {
-	UT_ASSERT(pFind && pReplace);
+	UT_ASSERT(m_sFind && m_sReplace);
 
-	UT_uint32* pPrefix = _computeFindPrefix(pFind, bMatchCase);
-	bool bRes = _findReplace(pFind, pReplace, pPrefix,
-							 bMatchCase, bDoneEntireDocument);
+	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
+	bool bRes = _findReplace(pPrefix, bDoneEntireDocument);
 	FREEP(pPrefix);
 
 	updateScreen();
@@ -4840,25 +4989,29 @@ FV_View::findReplace(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
  \return Number of replacements made
 */
 UT_uint32
-FV_View::findReplaceAll(const UT_UCSChar* pFind, const UT_UCSChar* pReplace,
-						bool bMatchCase)
+FV_View::findReplaceAll()
 {
 	UT_uint32 iReplaced = 0;
 	m_pDoc->beginUserAtomicGlob();
 
+	if ((m_startPosition >=0) && (m_startPosition <2))
+	{
+		m_startPosition = 2;
+	}
+
 	bool bDoneEntireDocument = false;
 
 	// Compute search prefix
-	UT_uint32* pPrefix = _computeFindPrefix(pFind, bMatchCase);
+	UT_uint32* pPrefix = _computeFindPrefix(m_sFind);
 
 	// Prime with the first match - _findReplace is really
 	// replace-then-find.
-	_findNext(pFind, pPrefix, bMatchCase, bDoneEntireDocument);
+	_findNext(pPrefix, bDoneEntireDocument);
 
 	// Keep replacing until the end of the buffer is hit
 	while (!bDoneEntireDocument)
 	{
-		_findReplace(pFind, pReplace, pPrefix, bMatchCase,bDoneEntireDocument);
+		_findReplace(pPrefix, bDoneEntireDocument);
 		iReplaced++;
 	}
 

@@ -226,7 +226,7 @@ public:
 	virtual bool		isSelectionEmpty(void) const;
 	virtual void		cmdUnselectSelection(void);
 	void				getDocumentRangeOfCurrentSelection(PD_DocumentRange * pdr);
-
+	PT_DocPosition		mapDocPos( FV_DocPos dp );
 	PT_DocPosition saveSelectedImage (const char * toFile );
 	PT_DocPosition saveSelectedImage (const UT_ByteBuf ** outByteBuf);
 
@@ -401,33 +401,47 @@ public:
 
 	// find and replace
 
-	bool			findSetNextString(UT_UCSChar* string, bool bMatchCase);
+	void			findSetFindString	(const UT_UCSChar* string);
+	void			findSetReplaceString(const UT_UCSChar* string);
+	void			findSetReverseFind	(bool newValue);
+	void			findSetMatchCase	(bool newValue);
+	void			findSetWholeWord	(bool newValue);
+	UT_UCSChar *	findGetFindString   (void);
+	UT_UCSChar *	findGetReplaceString(void);
+	bool			findGetReverseFind	();
+	bool			findGetMatchCase	();
+	bool			findGetWholeWord	();
+
 	bool			findAgain(void);
 
 	void			findSetStartAtInsPoint(void);
 
-	bool			findNext(const UT_UCSChar* pFind, bool bMatchCase,
+	bool			findNext(bool& bDoneEntireDocument);
+	bool			findNext(const UT_UCSChar* pFind, bool& bDoneEntireDocument);
+	
+	UT_uint32*		_computeFindPrefix(const UT_UCSChar* pFind);
+
+	bool			_findNext(UT_uint32* pPrefix,
 							 bool& bDoneEntireDocument);
-	UT_uint32*		_computeFindPrefix(const UT_UCSChar* pFind,
-									   bool bMatchCase);
-	bool			_findNext(const UT_UCSChar* pFind,
-							  UT_uint32* pPrefix,
-							  bool bMatchCase,
+
+	bool			findPrev(bool& bDoneEntireDocument);
+	bool			findPrev(const UT_UCSChar* pFind, bool& bDoneEntireDocument);
+
+	bool			_findPrev(UT_uint32* pPrefix,
 							  bool& bDoneEntireDocument);
 
-	bool			_findReplace(const UT_UCSChar* pFind,
-								 const UT_UCSChar* pReplace,
-								 UT_uint32* pPrefix,
-								 bool bMatchCase,
+	bool			findReplaceReverse(bool& bDoneEntireDocument);
+
+	bool			_findReplaceReverse(UT_uint32* pPrefix,
 								 bool& bDoneEntireDocument);
-	bool			findReplace(const UT_UCSChar* pFind,
-								const UT_UCSChar* pReplace,
-								bool bMatchCase,
+
+	bool			_findReplace(UT_uint32* pPrefix,
 								bool& bDoneEntireDocument);
 
-	UT_uint32		findReplaceAll(const UT_UCSChar* pFind,
-								   const UT_UCSChar* pReplace,
-								   bool bMatchCase);
+
+	bool			findReplace(bool& bDoneEntireDocument);
+
+	UT_uint32		findReplaceAll();
 
 // ----------------------
 
@@ -707,9 +721,13 @@ private:
 	fl_BlockLayout *	_findGetCurrentBlock(void);
 	PT_DocPosition		_findGetCurrentOffset(void);
 	UT_UCSChar *		_findGetNextBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
+	UT_UCSChar *		_findGetPrevBlockBuffer(fl_BlockLayout ** block, PT_DocPosition *offset);
 
-	bool				_m_matchCase;
-	UT_UCSChar *		_m_findNextString;
+	bool				m_bReverseFind;
+	bool				m_bWholeWord;
+	bool				m_bMatchCase;
+	UT_UCSChar *		m_sFind;
+	UT_UCSChar *		m_sReplace;
 
 	UT_sint32			_findBlockSearchRegexp(const UT_UCSChar * haystack, const UT_UCSChar * needle);
 

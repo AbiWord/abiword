@@ -71,6 +71,7 @@ Andrew Dunbar <hippietrail@yahoo.com>			UTF-8 text recognition,
 							encoding stuff
 Ryan Dooley <ryan@coe.missouri.edu> 			started IRIX port
 Paul Egli <pegli@sourcegear.com>
+Dennis Elbers <deje_auto@hotmail.com>			Win32 Find/Replace dialog additions
 Uri Elias <elias@techunix.technion.ac.il>		testing of bidi
 Mike Fabian  <mfabian@suse.de>				XIM fix for Gnome.
 Danny Faught <faught@rstcorp.com>

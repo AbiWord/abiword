@@ -49,9 +49,6 @@ AP_Win32Dialog_Replace::AP_Win32Dialog_Replace(XAP_DialogFactory * pDlgFactory,
 											   XAP_Dialog_Id id)
 	: AP_Dialog_Replace(pDlgFactory,id)
 {
-	m_findString = NULL;
-	m_replaceString = NULL;
-	m_matchCase = true;
 	m_hWnd = 0;
 }
 
@@ -74,6 +71,34 @@ void AP_Win32Dialog_Replace::activate(void)
 	iResult = BringWindowToTop( m_hWnd );
 	
 	UT_ASSERT((iResult != 0));
+	
+	{
+	UT_UCSChar * bufferUnicode = getFindString();
+	UT_uint32 lenUnicode = UT_UCS4_strlen(bufferUnicode);
+	if (lenUnicode)
+	{
+		char * bufferNormal = new char [lenUnicode + 1];
+		UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
+		SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND,bufferNormal);
+		DELETEP(bufferNormal);
+	}
+	FREEP(bufferUnicode);
+	}
+	
+	if (m_id == AP_DIALOG_ID_REPLACE)
+	{
+	
+		UT_UCSChar * bufferUnicode = getReplaceString();
+		UT_uint32 lenUnicode = UT_UCS4_strlen(bufferUnicode);
+		if (lenUnicode)
+		{
+			char * bufferNormal = new char [lenUnicode + 1];
+			UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
+			SetDlgItemText(m_hWnd,AP_RID_DIALOG_REPLACE_EDIT_REPLACE,bufferNormal);
+			DELETEP(bufferNormal);
+		}
+		FREEP(bufferUnicode);
+	}
 }
 
 
@@ -191,12 +216,23 @@ void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 	BOOL bEnableFind = (lenFind > 0);
 	EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_FINDNEXT),bEnableFind);
 
+
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
+	
 		BOOL bEnableReplace = bEnableFind;
 		EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACE),bEnableReplace);
 		EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_REPLACEALL),bEnableReplace);
 	}
+
+	CheckDlgButton(hWnd,AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE,
+				   ((getMatchCase()) ? BST_CHECKED : BST_UNCHECKED));
+
+	CheckDlgButton(hWnd,AP_RID_DIALOG_REPLACE_CHECK_WHOLEWORD,
+				   ((getWholeWord()) ? BST_CHECKED : BST_UNCHECKED));
+
+	CheckDlgButton(hWnd,AP_RID_DIALOG_REPLACE_CHECK_REVERSEFIND,
+				   ((getReverseFind()) ? BST_CHECKED : BST_UNCHECKED));
 
 	return;
 }
@@ -220,40 +256,15 @@ BOOL AP_Win32Dialog_Replace::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 
 	_DSX(REPLACE_BTN_CLOSE, 		DLG_Cancel);
 
-	{
-		UT_UCSChar * bufferUnicode = getFindString();
-		UT_uint32 lenUnicode = UT_UCS4_strlen(bufferUnicode);
-		if (lenUnicode)
-		{
-			char * bufferNormal = new char [lenUnicode + 1];
-			UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
-			SetDlgItemText(hWnd,AP_RID_DIALOG_REPLACE_EDIT_FIND,bufferNormal);
-			DELETEP(bufferNormal);
-		}
-		FREEP(bufferUnicode);
-	}
 
 	if (m_id == AP_DIALOG_ID_REPLACE)
 	{
-		UT_UCSChar * bufferUnicode = getReplaceString();
-		UT_uint32 lenUnicode = UT_UCS4_strlen(bufferUnicode);
-		if (lenUnicode)
-		{
-			char * bufferNormal = new char [lenUnicode + 1];
-			UT_UCS4_strcpy_to_char(bufferNormal, bufferUnicode);
-			SetDlgItemText(hWnd,AP_RID_DIALOG_REPLACE_EDIT_REPLACE,bufferNormal);
-			DELETEP(bufferNormal);
-		}
-		FREEP(bufferUnicode);
 
 		// localize replace-specific controls
 		_DS(REPLACE_BTN_REPLACE,	DLG_FR_ReplaceButton);
 		_DS(REPLACE_BTN_REPLACEALL, DLG_FR_ReplaceAllButton);
 		_DS(REPLACE_TEXT_REPLACE,	DLG_FR_ReplaceWithLabel);
 	}
-
-	CheckDlgButton(hWnd,AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE,
-				   ((getMatchCase()) ? BST_CHECKED : BST_UNCHECKED));
 
 	_initButtons(hWnd);
 
@@ -287,6 +298,38 @@ BOOL AP_Win32Dialog_Replace::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		setMatchCase((IsDlgButtonChecked(hWnd,AP_RID_DIALOG_REPLACE_CHECK_MATCHCASE)==BST_CHECKED));
 		return 1;
 
+	case AP_RID_DIALOG_REPLACE_CHECK_WHOLEWORD:
+		setWholeWord((IsDlgButtonChecked(hWnd,AP_RID_DIALOG_REPLACE_CHECK_WHOLEWORD)==BST_CHECKED));
+		return 1;
+
+	case AP_RID_DIALOG_REPLACE_CHECK_REVERSEFIND:
+		{
+		bool currentVal = (IsDlgButtonChecked(hWnd,AP_RID_DIALOG_REPLACE_CHECK_REVERSEFIND)==BST_CHECKED);
+		setReverseFind(currentVal);
+		
+		if (!m_pView->isSelectionEmpty()) 
+		{
+		// if there's a selection, clear it
+			if (m_pView->getSelectionText() != NULL) 
+			{
+				PT_DocPosition pt = m_pView->getSelectionAnchor();
+				PT_DocPosition ln = UT_UCS4_strlen (m_pView->getSelectionText());
+				if (currentVal)
+				{
+					m_pView->moveInsPtTo(pt);
+				}
+				else
+				{
+					m_pView->moveInsPtTo(pt+ln);
+				}
+				m_pView->cmdUnselectSelection();
+			}
+		}
+
+		m_pView->findSetStartAtInsPoint();
+
+		return 1;	
+		}
 	case AP_RID_DIALOG_REPLACE_BTN_FINDNEXT:
 		return _onBtn_FindNext(hWnd);
 		
@@ -328,7 +371,12 @@ BOOL AP_Win32Dialog_Replace::_onBtn_FindNext(HWND hWnd)
 		goto FreeMemory;
 
 	setFindString(pUCSFind);
-	findNext();
+	if (!getReverseFind()) {
+    	findNext();
+		}
+	else {
+		findPrev();
+		}
 
 FreeMemory:
 	DELETEP(pBufFromDialogFind);
@@ -378,7 +426,12 @@ BOOL AP_Win32Dialog_Replace::_onBtn_Replace(HWND hWnd)
 
 	setFindString(pUCSFind);
 	setReplaceString(pUCSReplace);
-	findReplace();
+	if (!getReverseFind()) {
+    	findReplace();
+		}
+	else {
+		findReplaceReverse();
+		}
 
 FreeMemory:
 	DELETEP(pBufFromDialogFind);

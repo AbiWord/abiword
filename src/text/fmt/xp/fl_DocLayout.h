@@ -133,6 +133,7 @@ public:
 	void        setLayoutIsFilling(bool bisFill) { m_bisLayoutFilling = bisFill;}
 	bool        isLayoutFilling(void) const { return m_bisLayoutFilling;}
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos) const;
+    fl_BlockLayout*	findBlockAtPositionReverse(PT_DocPosition pos);
 	void		deletePage(fp_Page* pPage, bool bDontNotify);
 
 	void		formatAll();
