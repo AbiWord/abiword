@@ -40,7 +40,7 @@ fi
 # check for the header file
 
 if test "$abi_found_psiconv" = "yes"; then
-	AC_CHECK_HEADER(psiconv.h, 
+	AC_CHECK_HEADER(psiconv/data.h, 
 	[abi_found_psiconvincs="yes"])
 	if test "$abi_found_psiconvincs" = "yes"; then
 		PSICONV_CFLAGS=""
@@ -57,7 +57,7 @@ fi
 # peer dir for abi ]
 
 if test "$abi_found_psiconv" = "no"; then
-    if test "x$1" != "x" -a -a "$1"; then
+    if test "x$1" != "x" -a "$1"; then
 	PSICONV_LIBS="$1/psiconv/.libs/libpsiconv.a"
 	PSICONV_CFLAGS="-I$1/"
 	AC_MSG_RESULT(using supplied psiconv library)	
