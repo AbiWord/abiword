@@ -933,7 +933,7 @@ print_document (GnomePrintContext         *ctx,
   // actually print
   s_actuallyPrint ( pDoc, pGraphics,
 		    pPrintView, "bonobo_printed_document",
-		    1, false,
+		    1, false, false,
 		    width, height,
 		    1, iPagesToPrint ) ;
   
