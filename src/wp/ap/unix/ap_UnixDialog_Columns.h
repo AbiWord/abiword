@@ -154,9 +154,14 @@ public:
 	void                            event_previewExposed(void);
 	virtual void			event_OK(void);
 	virtual void			event_Cancel(void);
-	virtual void			event_WindowDelete(void);
 
 protected:
+
+	typedef enum
+		{
+			BUTTON_OK,
+			BUTTON_CANCEL
+		} ResponseId ;
 
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
@@ -170,8 +175,6 @@ protected:
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 
-	GtkWidget * m_wbuttonOk;
-	GtkWidget * m_wbuttonCancel;
 	GtkWidget * m_wlineBetween;
 	GtkWidget * m_wtoggleOne;
 	GtkWidget * m_wtoggleTwo;
