@@ -30,6 +30,7 @@
 
 pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
 {
+	m_pts = PTS_Loading;
 	m_pDocument = pDocument;
 
 	setPieceTableState(PTS_Loading);
