@@ -1,6 +1,6 @@
 #ifndef TTF_PROTO_H
 #define TTF_PROTO_H
-
+#include "types.h"
 /* function prototypes */
 
 #include <sys/types.h>

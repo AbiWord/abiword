@@ -2,6 +2,7 @@
 #ifndef TTF_TYPES_H
 #define TTF_TYPES_H
 
+#include <sys/types.h>
 typedef unsigned char	TTF_BYTE;
 typedef signed char		TTF_CHAR;
 typedef unsigned short	TTF_USHORT;
