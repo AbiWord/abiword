@@ -76,6 +76,8 @@ void AP_Frame::quickZoom(UT_uint32 iZoom)
 // Redraw the entire screen
 //
 		pView->updateScreen(false);
+		pView->setPoint(pView->getPoint()); // place the cursor correctly
+		                                    // on the screen.
 		if(pTop && !pTop->isHidden())
 		{
 			pTop->draw(NULL);
