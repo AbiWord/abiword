@@ -489,7 +489,7 @@ void AP_UnixApp::setSelectionStatus(AV_View * pView)
 		// asserted one.  we force clear the old one to enforce the X11
 		// style.
 
-		m_pViewSelection->cmdUnselectSelection();
+		((FV_View *)m_pViewSelection)->cmdUnselectSelection();
 	}
 
 	// now fill in all of our variables for this window
