@@ -274,6 +274,13 @@ endif
 ifeq ($(OS_NAME), procnto)
 include $(ABI_ROOT)/src/config/platforms/nto.mk
 endif
+ifeq ($(OS_NAME), QNX)
+ifeq (,$(suffix $(OS_RELEASE))) 
+# QNX 4 not supported
+else
+include $(ABI_ROOT)/src/config/platforms/nto.mk
+endif
+endif
 
 # TODO: how do we differentiate between old SunOS and new Solaris
 ifeq ($(OS_NAME), SunOS)
