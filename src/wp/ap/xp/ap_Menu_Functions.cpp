@@ -522,7 +522,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_View)
 	switch(id)
 	{
 	case AP_MENU_ID_VIEW_RULER:
-		UT_DEBUGMSG(("ap_GetState_View - AP_MENU_ID_VIEW_RULER %d", pFrameData->m_bShowRuler ));
+		UT_DEBUGMSG(("ap_GetState_View - AP_MENU_ID_VIEW_RULER %d\n", pFrameData->m_bShowRuler ));
 
 		if ( pFrameData->m_bShowRuler ) 
 			s = EV_MIS_Toggled;

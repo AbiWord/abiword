@@ -437,7 +437,7 @@ void FL_DocLayout::_toggleAutoSpell(UT_Bool bSpell)
 {
 	m_bAutoSpellCheck = bSpell;
 
-	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)", bSpell ? "UT_TRUE" : "UT_FALSE" ));
+	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSpell (%s)\n", bSpell ? "UT_TRUE" : "UT_FALSE" ));
 
 	if (bSpell)
 	{

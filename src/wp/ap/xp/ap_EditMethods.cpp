@@ -3706,7 +3706,7 @@ Defun1(viewRuler)
 	// toggle the ruler bit
 	pFrameData->m_bShowRuler = ! pFrameData->m_bShowRuler;
 
-	UT_DEBUGMSG(("viewRuler: showruler=%d", pFrameData->m_bShowRuler ));
+	UT_DEBUGMSG(("viewRuler: showruler=%d\n", pFrameData->m_bShowRuler ));
 
 	pFrame->toggleRuler( pFrameData->m_bShowRuler );
 

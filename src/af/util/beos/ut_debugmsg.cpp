@@ -33,5 +33,5 @@ void _UT_OutputMessage(char *s, ...)
 
 	vsprintf(sBuf, s, marker);
 
-	fprintf(stderr,"DEBUG: %s\n",sBuf);
+	fprintf(stderr,"DEBUG: %s",sBuf);
 }
