@@ -40,6 +40,7 @@ clean:: $(REQUIRECLEAN)
 	rm -rf $(OBJDIR)
 
 realclean:: $(REQUIREREALCLEAN)
+	rm -rf *OBJ
 
 ##################################################################
 ## Build system library files (strings, dictionaries, example
