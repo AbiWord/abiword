@@ -237,7 +237,7 @@ cd ../abi
 %__chmod 644 $RPM_BUILD_ROOT%{ABIPREFIX}/AbiSuite/templates/*
 
 %clean
-##%__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
+%__rm -rf $RPM_BUILD_ROOT $RPM_BUILD_DIR/file.list.%{name}
 
 %files
 %defattr(644,root,root,755)
