@@ -40,7 +40,7 @@ ABI_APPLIBS=		$(LoadOrder) $(LoadOrder) $(LoadOrder)
 ABI_APPLIBDEP=		$(LoadOrder)
 
 # libdl flags go into the process later
-ABI_LIBS=		png z stdc++ 
+ABI_LIBS=		png z
 
 # include both dynamic and static binaries
 TARGETS=		$(PROGRAM) $(PROGRAM_S)

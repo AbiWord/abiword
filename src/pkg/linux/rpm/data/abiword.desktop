@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=AbiWord Personal
+Name[da]=AbiWord Personal
+Comment=AbiWord Personal Wordprocessor
+Comment[da]=AbiWord Personal tekstbehandlingsprogram
+Exec=abiword
+Icon=abiword_48.png
+Terminal=0
+Type=Application
