@@ -78,6 +78,8 @@ static const GtkTargetEntry drag_types[] =
 		{"text/richtext", 0, TARGET_URI_LIST},
 		{"text/rtf", 0, TARGET_URI_LIST},
 		{"application/msword", 0, TARGET_URI_LIST},
+		{"application/vnd.ms-word", 0, TARGET_URI_LIST},
+		{"application/vnd.sun.xml.writer", 0, TARGET_URI_LIST},
 		{"application/x-applix-word", 0, TARGET_URI_LIST},
 		{"application/x-palm-database", 0, TARGET_URI_LIST},
 		{"application/vnd.palm", 0, TARGET_URI_LIST},
