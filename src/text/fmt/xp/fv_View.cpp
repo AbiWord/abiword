@@ -10196,6 +10196,7 @@ bool FV_View::isInTable( PT_DocPosition pos)
 		return true;
 	}
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	UT_ASSERT(pBL->getContainerType() == FL_CONTAINER_BLOCK);
 	xxx_UT_DEBUGMSG((" Got Bokc at pos %d looking at pos %d \n",pBL->getPosition(true),pos));
 	if(!pBL)
 	{
@@ -10208,7 +10209,8 @@ bool FV_View::isInTable( PT_DocPosition pos)
 		xxx_UT_DEBUGMSG(("Not in table \n"));
 		return false;
 	}
-	xxx_UT_DEBUGMSG(("Containing Layout is %s \n",pCL->getContainerString()));
+	UT_ASSERT(pCL->getContainerType() != FL_CONTAINER_TABLE);
+	UT_DEBUGMSG(("Containing Layout is %s  pos %d \n",pCL->getContainerString(),pos));
 	if(pCL->getContainerType() == FL_CONTAINER_CELL)
 	{
 		xxx_UT_DEBUGMSG(("Inside Table cell pos %d this pos %d \n",pCL->getPosition(),pos));
@@ -10224,7 +10226,11 @@ bool FV_View::isInTable( PT_DocPosition pos)
 	if(pCL->getContainerType() == FL_CONTAINER_TABLE)
 	{
 		PT_DocPosition posTable = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
-		if(posTable <= pos)
+		if(posTable <= pos) // TODO CHECK THIS very carefully!!
+		{
+			return false;
+		}
+		else
 		{
 			xxx_UT_DEBUGMSG(("IS intable is true \n"));
 			return true;

@@ -175,7 +175,15 @@ void AP_Dialog_MergeCells::setAllSensitivities(void)
 
 	fp_Container * pCon = pLine->getContainer();
 	UT_return_if_fail(pCon);
-
+	if(pCon->getContainerType() != FP_CONTAINER_CELL)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		setSensitivity(radio_above,false);
+		setSensitivity(radio_below,false);
+		setSensitivity(radio_left,false);
+		setSensitivity(radio_right,false);
+		return;
+	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCon->getContainer());
 	UT_return_if_fail(pTab);
 	UT_return_if_fail(pTab->getContainerType() == FP_CONTAINER_TABLE);

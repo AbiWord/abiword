@@ -1427,6 +1427,10 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BreakOK)
 	{
 		return EV_MIS_Gray;
 	}
+	else if(pView->isHdrFtrEdit())
+	{
+		return EV_MIS_Gray;
+	}
 	else
 	{
 		return EV_MIS_ZERO;

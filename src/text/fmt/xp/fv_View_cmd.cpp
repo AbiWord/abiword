@@ -3534,6 +3534,12 @@ void FV_View::cmdUndo(UT_uint32 count)
 // Do a complete update coz who knows what happened in the undo!
 //
 	notifyListeners(AV_CHG_ALL);
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true, posEnd);
+	while(!isPointLegal() && (getPoint() < posEnd))
+	{
+		_charMotion(true,1);
+	}
 	setCursorToContext();
 
 
@@ -3583,6 +3589,12 @@ void FV_View::cmdRedo(UT_uint32 count)
 // Do a complete update coz who knows what happened in the undo!
 //
 	notifyListeners(AV_CHG_ALL);
+	PT_DocPosition posEnd = 0;
+	getEditableBounds(true, posEnd);
+	while(!isPointLegal() && (getPoint() < posEnd))
+	{
+		_charMotion(true,1);
+	}
 	setCursorToContext();
 
 	_updateInsertionPoint();
