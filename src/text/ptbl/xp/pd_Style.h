@@ -51,6 +51,7 @@ public:
 	void					used(UT_sint32 count);
 	bool					isUsed(void) const;
 	bool					isCharStyle(void) const;
+	bool					isList(void);
 	
 	bool					addProperty(const XML_Char * szName, const XML_Char * szValue);
 	bool					addProperties(const XML_Char ** pProperties);
@@ -78,6 +79,9 @@ protected:
 	// lazily-bound attribute caches to speed lookups
 	PD_Style *				m_pBasedOn;
 	PD_Style *				m_pFollowedBy;
+
+private:
+	UT_sint32				m_iIsList;
 };
 
 

@@ -245,7 +245,7 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 		}
 		
 
-		PP_AttrProp * pNew1;
+		PP_AttrProp * pNew1 = NULL;
 
         if(bFound && szStyle && UT_strcmp(szStyle, "None"))
         {
@@ -253,6 +253,60 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			PD_Style * pStyle = NULL;
 			pDoc->getStyle(szStyle,&pStyle);
 			UT_ASSERT(pStyle);
+			
+			// first of all deal with list-attributes if the new style is not
+			// a list style and the old style is a list style
+			if(pStyle->isList())
+			{
+				UT_DEBUGMSG(("old style is a list style\n"));
+				// OK, old style is a list, is the new style?
+				// (the following function cares not whether we are dealing
+				//  with attributes or properties)
+				const XML_Char * pNewStyle = UT_getAttribute("list-style", properties);
+				
+				// we do not care about the value, just about whether it is there
+				if(!pNewStyle)
+				{
+					UT_DEBUGMSG(("new style is not a list style\n"));
+					
+					const XML_Char * pListAttrs[8];
+					pListAttrs[0] = "listid";
+					pListAttrs[1] = NULL;
+					pListAttrs[2] = "parentid";
+					pListAttrs[3] = NULL;
+					pListAttrs[4] = "level";
+					pListAttrs[5] = NULL;
+					pListAttrs[6] = NULL;
+					pListAttrs[7] = NULL;
+
+					// we also need to explicitely clear the list formating
+					// properties, since their values are not necessarily part
+					// of the style definition, so that cloneWithEliminationIfEqual
+					// which we call later will not get rid off them
+					const XML_Char * pListProps[18];
+					pListProps[0] =  "start-value";
+					pListProps[1] =  NULL;
+					pListProps[2] =  "list-style";
+					pListProps[3] =  NULL;
+					pListProps[4] =  "margin-left";
+					pListProps[5] =  NULL;
+					pListProps[6] =  "text-indent";
+					pListProps[7] =  NULL;
+					pListProps[8] =  "field-color";
+					pListProps[9] =  NULL;
+					pListProps[10]=  "list-delim";
+					pListProps[11] =  NULL;
+					pListProps[12]=  "field-font";
+					pListProps[13] =  NULL;
+					pListProps[14]=  "list-decimal";
+					pListProps[15] =  NULL;
+					pListProps[16] =  NULL;
+					pListProps[17] =  NULL;
+					
+					pNew1 = papOld->cloneWithElimination((const XML_Char **)&pListAttrs, (const XML_Char **)&pListProps);
+				}
+			}
+			
 			UT_Vector vProps, vAttribs;
 		
 			pStyle->getAllProperties(&vProps,0);
@@ -282,7 +336,16 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 			}
 			sAttribs[i] = NULL;
 		
-			PP_AttrProp * pNew0 = papOld->cloneWithEliminationIfEqual(sAttribs,sProps);
+			PP_AttrProp * pNew0;
+			
+			if(pNew1)
+			{
+				pNew0 = pNew1->cloneWithEliminationIfEqual(sAttribs,sProps);
+				delete pNew1;
+			}
+			else
+			 	pNew0 = papOld->cloneWithEliminationIfEqual(sAttribs,sProps);
+			 	
 			delete [] sProps;
 			delete [] sAttribs;
 			
