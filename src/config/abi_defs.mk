@@ -326,8 +326,8 @@ endif
 ## We should change this when get non-gtk versions on unix....
 
 ifeq ($(ABI_NATIVE),unix)
-CFLAGS 		+=	`gtk-config --cflags`
-EXTRA_LIBS	+=	`gtk-config --libs`
+CFLAGS 		+=	`$(GTK_CONFIG) --cflags`
+EXTRA_LIBS	+=	`$(GTK_CONFIG) --libs`
 endif
 
 ##################################################################

@@ -114,6 +114,7 @@ PLATFORM_FLAGS		+= $(M68K_ARCH_FLAGS)
 OS_ENDIAN		= BigEndian32
 endif
 
+GTK_CONFIG		= gtk-config
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
