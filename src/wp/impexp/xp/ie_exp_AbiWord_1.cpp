@@ -196,19 +196,19 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			// TODO in it and escaping it or using single-quotes.
 			
 			m_pie->write(" ");
-			m_pie->write(szName);
+			m_pie->write((char*)szName);
 			m_pie->write("=\"");
-			m_pie->write(szValue);
+			m_pie->write((char*)szValue);
 			m_pie->write("\"");
 		}
 		if (pAP->getNthProperty(0,szName,szValue))
 		{
 			m_pie->write(" ");
-			m_pie->write(PT_PROPS_ATTRIBUTE_NAME);
+			m_pie->write((char*)PT_PROPS_ATTRIBUTE_NAME);
 			m_pie->write("=\"");
-			m_pie->write(szName);
+			m_pie->write((char*)szName);
 			m_pie->write(":");
-			m_pie->write(szValue);
+			m_pie->write((char*)szValue);
 			UT_uint32 j = 1;
 			while (pAP->getNthProperty(j++,szName,szValue))
 			{
@@ -218,9 +218,9 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 				if (*szValue)
 				{
 					m_pie->write("; ");
-					m_pie->write(szName);
+					m_pie->write((char*)szName);
 					m_pie->write(":");
-					m_pie->write(szValue);
+					m_pie->write((char*)szValue);
 				}
 			}
 			m_pie->write("\"");

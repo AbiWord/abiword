@@ -147,7 +147,7 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute("type", pszSectionType);
+			pAP->getAttribute((XML_Char*)"type", pszSectionType);
 			if (
 				!pszSectionType
 				|| (0 == UT_stricmp(pszSectionType, "doc"))
@@ -172,9 +172,9 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				if (0 == UT_stricmp(pszSectionType, "header"))
 				{
 					const XML_Char* pszID = NULL;
-					pAP->getAttribute("id", pszID);
+					pAP->getAttribute((XML_Char*)"id", pszID);
 
-					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr(pszID);
+					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
 			
 					// append a HdrFtrSectionLayout to this DocLayout
@@ -194,9 +194,9 @@ UT_Bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
 				else if (0 == UT_stricmp(pszSectionType, "footer"))
 				{
 					const XML_Char* pszID = NULL;
-					pAP->getAttribute("id", pszID);
+					pAP->getAttribute((XML_Char*)"id", pszID);
 
-					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr(pszID);
+					fl_DocSectionLayout* pDocSL = m_pLayout->findSectionForHdrFtr((char*)pszID);
 					UT_ASSERT(pDocSL);
 			
 					// append a HdrFtrSectionLayout to this DocLayout

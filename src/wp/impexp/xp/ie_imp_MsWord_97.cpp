@@ -884,7 +884,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage(Blip * b, long width, long height)
    }
 
    X_ReturnNoMemIfError(m_pDocument->appendObject(PTO_Image, propsArray));
-   X_CheckError0(m_pDocument->createDataItem(propsName, UT_FALSE,
+   X_CheckError0(m_pDocument->createDataItem((char*)propsName, UT_FALSE,
 					     pBBPNG, (void*)mimetype, NULL));
 
    DELETEP(buf);

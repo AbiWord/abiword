@@ -22,6 +22,11 @@
 #ifndef UT_TYPES_H
 #define UT_TYPES_H
 
+#include <stdlib.h>
+#ifdef HAVE_GNOME
+#include <glib.h>
+#endif
+
 #ifdef NULL
 #undef NULL
 #endif
@@ -33,6 +38,11 @@
 #else
 #define UT_BEGIN_EXTERN_C
 #define UT_END_EXTERN_C
+#endif
+
+#ifdef HAVE_GNOME_XML2
+#include <libxml/tree.h>
+#define XML_Char xmlChar
 #endif
 
 typedef		unsigned char		UT_Byte;

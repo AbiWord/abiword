@@ -24,7 +24,11 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_hash.h"
+#ifdef HAVE_GNOME_XML2
+#include <libxml/parser.h>
+#else
 #include "xmlparse.h"
+#endif
 #include "xap_Dialog.h"
 
 #define NUM_MODELESSID 39

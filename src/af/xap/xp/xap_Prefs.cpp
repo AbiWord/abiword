@@ -60,18 +60,18 @@ UT_Bool XAP_PrefsScheme::setSchemeName(const XML_Char * szNewSchemeName)
 UT_Bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szValue)
 {
 	++m_uTick;
-	UT_HashEntry * pEntry = m_hash.findEntry(szKey);
+	UT_HashEntry * pEntry = m_hash.findEntry((char*)szKey);
 	if (pEntry)
 	{
 		if (UT_stricmp(szValue,pEntry->pszRight) == 0)
 			return UT_TRUE;				// equal values, no changes required
 		
-		m_hash.setEntry(pEntry, szValue, NULL); // update with new value
+		m_hash.setEntry(pEntry, (char*)szValue, NULL); // update with new value
 	}
 	else
 	{
 		// otherwise, need to add a new entry
-		m_hash.addEntry(szKey,szValue,NULL);
+		m_hash.addEntry((char*)szKey,(char*)szValue,NULL);
 	}
 
 	m_pPrefs->_markPrefChange( szKey );
@@ -81,12 +81,12 @@ UT_Bool XAP_PrefsScheme::setValue(const XML_Char * szKey, const XML_Char * szVal
 
 UT_Bool XAP_PrefsScheme::setValueBool(const XML_Char * szKey, UT_Bool bValue)
 {
-	return setValue(szKey, ((bValue) ? "1" : "0"));
+	return setValue(szKey, (XML_Char*) ((bValue) ? "1" : "0"));
 }
 
 UT_Bool XAP_PrefsScheme::getValue(const XML_Char * szKey, const XML_Char ** pszValue) const
 {
-	UT_HashEntry * pEntry = m_hash.findEntry(szKey);
+	UT_HashEntry * pEntry = m_hash.findEntry((char*)szKey);
 	if (!pEntry)
 		return UT_FALSE;
 
@@ -430,6 +430,7 @@ UT_Bool XAP_Prefs::getPrefsValueBool(const XML_Char * szKey, UT_Bool * pbValue) 
 ******************************************************************
 *****************************************************************/
 
+#ifndef HAVE_GNOME_XML2
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
@@ -453,6 +454,7 @@ static void startElement_SystemDefaultFile(void *userData, const XML_Char *name,
 	XAP_Prefs * pPrefs = (XAP_Prefs *)userData;
 	pPrefs->_startElement_SystemDefaultFile(name,atts);
 }
+#endif /* HAVE_GNOME_XML2 */
 
 /*****************************************************************/
 
@@ -667,12 +669,15 @@ void XAP_Prefs::_charData(const XML_Char * /* s */, int /* len */)
 
 /*****************************************************************/
 
+
 UT_Bool XAP_Prefs::loadPrefsFile(void)
 {
+#ifndef HAVE_GNOME_XML2 
+	XML_Parser parser = NULL;
+#endif
 	UT_Bool bResult = UT_FALSE;			// assume failure
 	const char * szFilename;
 	FILE * fp = NULL;
-	XML_Parser parser = NULL;
 	int done = 0;
 	char buf[4096];
 
@@ -688,7 +693,25 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 		UT_DEBUGMSG(("could not get pathname for preferences file.\n"));
 		goto Cleanup;
 	}
-
+#ifdef HAVE_GNOME_XML2
+	else
+	{
+	  xmlDocPtr dok = xmlParseFile(szFilename);
+	  if (dok == NULL)
+	    {
+	      UT_DEBUGMSG(("Could not open and parse file %s\n",
+			   szFilename));
+	    }
+	  else
+	    {
+	      xmlNodePtr node = xmlDocGetRootElement(dok);
+	      _scannode(dok,node,0,UT_FALSE);
+	      xmlFreeDoc(dok);
+	      bResult = UT_TRUE;
+	    }
+	}
+ Cleanup:
+#else
 	fp = fopen(szFilename, "r");
 	if (!fp)
 	{
@@ -755,13 +778,13 @@ UT_Bool XAP_Prefs::loadPrefsFile(void)
 	}
 
 	bResult = UT_TRUE;
-
 Cleanup:
 	FREEP(m_parserState.m_szSelectedSchemeName);
 	if (parser)
 		XML_ParserFree(parser);
 	if (fp)
 		fclose(fp);
+#endif /* HAVE_GNOME_XML2 */
 	return bResult;
 }
 
@@ -1025,13 +1048,26 @@ UT_Bool XAP_Prefs::loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsP
 	UT_ASSERT(szSystemDefaultPrefsPathname && *szSystemDefaultPrefsPathname);
 	
 	UT_Bool bResult = UT_FALSE;			// assume failure
+	m_parserState.m_parserStatus = UT_TRUE;
+#ifdef HAVE_GNOME_XML2
+	xmlDocPtr dok = xmlParseFile(szSystemDefaultPrefsPathname);
+	if (dok == NULL)
+	  {
+	    UT_DEBUGMSG(("Could not open and parse file %s\n",
+			 szSystemDefaultPrefsPathname));
+	  }
+	else
+	  {
+	    xmlNodePtr node = xmlDocGetRootElement(dok);
+	    _scannode(dok,node,0,UT_TRUE);
+	    xmlFreeDoc(dok);
+	    bResult = UT_TRUE;
+	  }
+#else
 	FILE * fp = NULL;
-	XML_Parser parser = NULL;
 	int done = 0;
 	char buf[4096];
-
-	m_parserState.m_parserStatus = UT_TRUE;
-
+	XML_Parser parser = NULL;
 	fp = fopen(szSystemDefaultPrefsPathname, "r");
 	if (!fp)
 	{
@@ -1079,6 +1115,7 @@ Cleanup:
 		XML_ParserFree(parser);
 	if (fp)
 		fclose(fp);
+#endif
 	return bResult;
 }
 
@@ -1121,18 +1158,18 @@ void XAP_Prefs::_markPrefChange( const XML_Char *szKey )
 {
 	if ( m_bInChangeBlock )
 	{
-		UT_HashEntry *uth_e = m_ahashChanges.findEntry( szKey );
+		UT_HashEntry *uth_e = m_ahashChanges.findEntry((char*) szKey );
 		if ( uth_e ) 
 			m_ahashChanges.setEntry( uth_e, (char *)NULL, (void *)1 );	
 		else
-			m_ahashChanges.addEntry( szKey, (char *)NULL, (void *)1 );	
+			m_ahashChanges.addEntry((char*) szKey, (char *)NULL, (void *)1 );	
 
 		// notify later
 	}
 	else
 	{
 		UT_AlphaHashTable	changes(3);
-		changes.addEntry( szKey, (char *)NULL, (void *)1 );	
+		changes.addEntry((char*) szKey, (char *)NULL, (void *)1 );	
 
 		_sendPrefsSignal( (UT_AlphaHashTable *)&changes );
 	}
@@ -1165,3 +1202,35 @@ void XAP_Prefs::_sendPrefsSignal( UT_AlphaHashTable *hash  )
 		(p->m_pFunc)(m_pApp, this, hash, p->m_pData);
 	}
 }
+
+#ifdef HAVE_GNOME_XML2
+void XAP_Prefs::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c, gboolean sys)
+{
+  while (cur != NULL)
+    {
+      if (strcmp("text", (char*) cur->name) == 0)
+	{
+	  xmlChar* s = cur->content; // xmlNodeListGetString(dok, cur, 1);
+	  _charData(s, strlen((char*) s));
+	}
+      else
+	{
+	  xmlChar *prop = NULL;
+	  const xmlChar* props[3] = { NULL, NULL, NULL };
+	  if (cur->properties)
+	    {
+	      props[0] = cur->properties->name;
+	      props[1] = cur->properties->children->content;
+	    }
+	  if (sys) _startElement_SystemDefaultFile(cur->name, props);
+	  else     _startElement(cur->name, props);
+	  if (prop) g_free(prop);
+	}
+      _scannode(dok, cur->children, c + 1, sys);
+      if (strcmp("text", (char*) cur->name) != 0)
+	_endElement(cur->name);
+      cur = cur->next;
+    }
+}
+#endif /* HAVE_GNOME_XML2 */
+

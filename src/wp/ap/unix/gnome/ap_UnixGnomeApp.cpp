@@ -233,7 +233,7 @@ UT_Bool AP_UnixGnomeApp::parseCommandLine(void)
 	{
 		// dump the string table in english as a template for translators.
 		// see abi/docs/AbiSource_Localization.abw for details.
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
 		pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
 		delete pBuiltinStringSet;
 	}

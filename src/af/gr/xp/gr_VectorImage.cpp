@@ -91,6 +91,7 @@ GR_VectorImage::~GR_VectorImage()
 {
 }
 
+#ifndef HAVE_GNOME
 static void startElement(void *userData, const XML_Char* name, const XML_Char** atts)
 {
    GR_VectorImage * reader = (GR_VectorImage*)userData;
@@ -108,6 +109,7 @@ static void charData(void *userData, const XML_Char* text, int len)
    GR_VectorImage * reader = (GR_VectorImage*)userData;
    reader->_charData(text, len);
 }
+#endif /* HAVE_GNOME */
 
 void GR_VectorImage::setDisplaySize(UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
@@ -159,6 +161,7 @@ UT_Bool GR_VectorImage::render(GR_Graphics* pGR, UT_sint32 xDest, UT_sint32 yDes
    return UT_TRUE;
 }
 
+#ifndef HAVE_GNOME
 void GR_VectorImage::_startElement(const XML_Char * name, const XML_Char ** atts)
 {
 }
@@ -170,3 +173,5 @@ void GR_VectorImage::_endElement(const XML_Char * name)
 void GR_VectorImage::_charData(const XML_Char * text, int len)
 {
 }
+#endif /* HAVE_GNOME */
+

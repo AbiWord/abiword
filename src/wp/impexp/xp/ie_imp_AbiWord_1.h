@@ -22,7 +22,11 @@
 #define IE_IMP_ABIWORD_1_H
 
 #include <stdio.h>
+#ifdef HAVE_GNOME_XML2
+#include <libxml/parser.h>
+#else
 #include "xmlparse.h"
+#endif
 #include "ut_vector.h"
 #include "ut_stack.h"
 #include "ie_imp.h"
@@ -43,7 +47,9 @@ public:
 
     // the following are public only so that the
     // XML parser callback routines can access them.
-	
+#ifdef HAVE_GNOME_XML2
+    void _scannode(xmlDocPtr dok, xmlNodePtr cur, int c);
+#endif	
     void				_startElement(const XML_Char *name, const XML_Char **atts);
     void				_endElement(const XML_Char *name);
     void				_charData(const XML_Char*, int);

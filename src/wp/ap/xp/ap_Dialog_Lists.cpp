@@ -115,7 +115,7 @@ void  AP_Dialog_Lists::Apply(void)
 	      style = getListStyleString();
 	      getView()->changeListStyle(getAutoNum(),style);
        	      getAutoNum()->setStartValue(m_curStartValue);
-	      getAutoNum()->setFormat(m_newListType);
+	      getAutoNum()->setFormat((XML_Char*)m_newListType);
        	      getAutoNum()->update(0);
 	      getBlock()->listUpdate();
 	      return;
@@ -134,18 +134,18 @@ void  AP_Dialog_Lists::Apply(void)
 	      case 0:  // Numbered List
 	      
 		       getAutoNum()->setStartValue(m_newStartValue);
-     		       getAutoNum()->setFormat(m_newListType);
+     		       getAutoNum()->setFormat((XML_Char*)m_newListType);
 		       break;
 	      case 1:  // Lowe Case List
 		       getAutoNum()->setStartValue(m_newStartValue); 
-     		       getAutoNum()->setFormat(m_newListType);
+     		       getAutoNum()->setFormat((XML_Char*)m_newListType);
 		       break;
 	      case 2:  // Upper Case List
 		       getAutoNum()->setStartValue(m_newStartValue); 
-     		       getAutoNum()->setFormat(m_newListType);
+     		       getAutoNum()->setFormat((XML_Char*)m_newListType);
 		       break;
 	      case 3:  // Bulleted List
-		       getAutoNum()->setFormat(m_newListType);
+		       getAutoNum()->setFormat((XML_Char*)m_newListType);
 		       break;
 	      default:
 		       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -209,7 +209,7 @@ void AP_Dialog_Lists::ConstructWindowName(void)
 	XML_Char * tmp = NULL;
         UT_uint32 title_width = 33;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_Lists_Title));
-        BuildWindowName((char *) m_WindowName,tmp,title_width);
+        BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
         FREEP(tmp);
 
 }

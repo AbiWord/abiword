@@ -95,7 +95,7 @@ PD_Style * PD_Style::getBasedOn(void)
 
 	if (getAttribute(PT_BASEDON_ATTRIBUTE_NAME, szStyle))
 		if (szStyle && szStyle[0])
-			m_pPT->getStyle(szStyle, &m_pBasedOn);
+			m_pPT->getStyle((char*)szStyle, &m_pBasedOn);
 
 	// NOTE: we silently fail if style is referenced, but not defined
 
@@ -111,7 +111,7 @@ PD_Style * PD_Style::getFollowedBy(void)
 
 	if (getAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, szStyle))
 		if (szStyle && szStyle[0])
-			m_pPT->getStyle(szStyle, &m_pFollowedBy);
+			m_pPT->getStyle((char*)szStyle, &m_pFollowedBy);
 
 	// NOTE: we silently fail if style is referenced, but not defined
 

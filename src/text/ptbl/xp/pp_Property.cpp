@@ -24,7 +24,11 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
+#ifdef HAVE_GNOME_XML2
+#include <libxml/parser.h>
+#else
 #include "xmlparse.h"
+#endif
 #include "pp_Property.h"
 #include "pp_AttrProp.h"
 #include "pd_Document.h"
@@ -131,7 +135,7 @@ static PD_Style * _getStyle(const PP_AttrProp * pAttrProp, PD_Document * pDoc)
 	{
 		UT_ASSERT(szValue && szValue[0]);
 		if (pDoc)
-			pDoc->getStyle(szValue, &pStyle);
+			pDoc->getStyle((char*)szValue, &pStyle);
 
 		// NOTE: we silently fail if style is referenced, but not defined
 	}

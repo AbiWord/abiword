@@ -82,13 +82,13 @@ fl_SectionLayout::~fl_SectionLayout()
 	}
 }
 
-const char*	fl_SectionLayout::getAttribute(const XML_Char * pszName) const
+const char*	fl_SectionLayout::getAttribute(const char * pszName) const
 {
 	const PP_AttrProp * pAP = NULL;
 	getAttrProp(&pAP);
 	
 	const XML_Char* pszAtt = NULL;
-	pAP->getAttribute(pszName, pszAtt);
+	pAP->getAttribute((XML_Char*)pszName, pszAtt);
 
 	return pszAtt;
 }
@@ -734,7 +734,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	*/
 	
 	const char* pszNumColumns = NULL;
-	pSectionAP->getProperty("columns", (const XML_Char *&)pszNumColumns);
+	pSectionAP->getProperty((XML_Char*)"columns", (const XML_Char *&)pszNumColumns);
 	if (pszNumColumns && pszNumColumns[0])
 	{
 		m_iNumColumns = atoi(pszNumColumns);
@@ -745,7 +745,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	}
 
 	const char* pszColumnGap = NULL;
-	pSectionAP->getProperty("column-gap", (const XML_Char *&)pszColumnGap);
+	pSectionAP->getProperty((XML_Char*)"column-gap", (const XML_Char *&)pszColumnGap);
 	if (pszColumnGap && pszColumnGap[0])
 	{
 		m_iColumnGap = m_pLayout->getGraphics()->convertDimension(pszColumnGap);
@@ -758,7 +758,7 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	}
 
 	const char* pszSpaceAfter = NULL;
-	pSectionAP->getProperty("section-space-after", (const XML_Char *&)pszSpaceAfter);
+	pSectionAP->getProperty((XML_Char*)"section-space-after", (const XML_Char *&)pszSpaceAfter);
 	if (pszSpaceAfter && pszSpaceAfter[0])
 	{
 		m_iSpaceAfter = m_pLayout->getGraphics()->convertDimension(pszSpaceAfter);
@@ -774,15 +774,15 @@ void fl_DocSectionLayout::_lookupProperties(void)
 	const char* pszTopMargin = NULL;
 	const char* pszRightMargin = NULL;
 	const char* pszBottomMargin = NULL;
-	pSectionAP->getProperty("page-margin-left", (const XML_Char *&)pszLeftMargin);
-	pSectionAP->getProperty("page-margin-top", (const XML_Char *&)pszTopMargin);
-	pSectionAP->getProperty("page-margin-right", (const XML_Char *&)pszRightMargin);
-	pSectionAP->getProperty("page-margin-bottom", (const XML_Char *&)pszBottomMargin);
+	pSectionAP->getProperty((XML_Char*)"page-margin-left", (const XML_Char *&)pszLeftMargin);
+	pSectionAP->getProperty((XML_Char*)"page-margin-top", (const XML_Char *&)pszTopMargin);
+	pSectionAP->getProperty((XML_Char*)"page-margin-right", (const XML_Char *&)pszRightMargin);
+	pSectionAP->getProperty((XML_Char*)"page-margin-bottom", (const XML_Char *&)pszBottomMargin);
 
 
 	const XML_Char * szRulerUnits;
 	UT_Dimension dim;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+	if (XAP_App::getApp()->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		dim = UT_determineDimension(szRulerUnits);
 	else
 		dim = DIM_IN;
@@ -1953,7 +1953,7 @@ UT_Bool fl_ShadowListener::populateStrux(PL_StruxDocHandle sdh,
 		if (m_pDoc->getAttrProp(indexAP, &pAP) && pAP)
 		{
 			const XML_Char* pszSectionType = NULL;
-			pAP->getAttribute("type", pszSectionType);
+			pAP->getAttribute((XML_Char*)"type", pszSectionType);
 			if (
 				!pszSectionType
 				|| (0 == UT_stricmp(pszSectionType, "doc"))

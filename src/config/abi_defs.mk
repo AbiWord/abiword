@@ -28,7 +28,7 @@
 #### NOTE: the Makefiles use 'ifdef' rather than 'ifeq' so setting
 #### NOTE: this to **any** value will enable it.
 ####
-#### ABI_OPT_DEBUG=1
+ABI_OPT_DEBUG=1
 ####
 
 #### To get a GNOME build:  add the following line back to the
@@ -43,6 +43,23 @@
 #### NOTE: this to **any** value will enable it.
 ####
 #### ABI_OPT_GNOME=1
+####
+
+#### To build with libxml2 (aka gnome-xml version 2)
+#### as opposed to expat as XML parser 
+#### add the following line back to the
+#### Makefile, add the variable to the make command line, or set
+#### this variable as an environment variable.  A full recompile
+#### must be done when switching the value of this variable.
+####
+#### NOTE: the Makefiles use 'ifdef' rather than 'ifeq' so setting
+#### NOTE: this to **any** value will enable it.
+####
+#### NOTE: this is still experimental and require version 2.x of 
+#### NOTE: libxml (aka gnome-xml). Get the latest version from
+#### NOTE: http://xmlsoft.org/
+####
+#### ABI_OPT_GNOME_XML2=1
 ####
 
 #### To get a cygwin/gcc/gtk (as opposed to a native win32) build: add
@@ -199,8 +216,12 @@ endif
 
 ABI_OTH_INCS=	/other/spell
 
+ifdef ABI_OPT_GNOME_XML2
+ABI_PEER_INCS=
+else
 ABI_PEER_INCS=	/../../expat/xmlparse	\
 		/../../expat/xmltok
+endif
 
 ABI_ALL_INCS=	$(ABI_XAP_INCS) $(ABI_PEER_INCS) $(ABI_AP_INCS) $(ABI_OTH_INCS) $(ABI_TM_INCS)
 ifeq ($(OS_NAME), WIN32)
@@ -412,8 +433,8 @@ endif
 
 ifeq ($(ABI_NATIVE),unix)
 ifdef ABI_OPT_GNOME
-GNOME_CFLAGS	:=	$(shell $(GNOME_CONFIG) --cflags gnomeui)
-GNOME_LIBS	:=	$(shell $(GNOME_CONFIG) --libs gnomeui)
+GNOME_CFLAGS	:= $(shell $(GNOME_CONFIG) --cflags gnomeui)
+GNOME_LIBS	:= $(shell $(GNOME_CONFIG) --libs gnomeui)
 CFLAGS 		+=	$(GNOME_CFLAGS) -DHAVE_GNOME
 EXTRA_LIBS	+=	$(GNOME_LIBS)
 ABI_GNOME_DIR		= gnome
@@ -425,6 +446,15 @@ GTK_LIBS	:=	$(shell $(GTK_CONFIG) --libs)
 CFLAGS 		+=	$(GTK_CFLAGS)
 EXTRA_LIBS	+=	$(GTK_LIBS)
 ABI_OPTIONS+=Gnome:Off
+endif
+ifdef ABI_OPT_GNOME_XML2
+XML_CFLAGS	= $(shell $(LIBXML_CONFIG) --cflags)
+XML_LIBS	= $(shell $(LIBXML_CONFIG) --libs)
+CFLAGS 		+=	$(XML_CFLAGS) -DHAVE_GNOME_XML2
+EXTRA_LIBS	+=	$(XML_LIBS)
+ABI_OPTIONS+=Gnome-XML:On
+else
+ABI_OPTIONS+=Gnome-XML:Off
 endif
 endif
 

@@ -245,9 +245,9 @@ void s_RTF_ListenerGetProps::_compute_span_properties(const PP_AttrProp * pSpanA
 	// see if we have a previously unused color reference.
 	
 	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	UT_sint32 ndxColor = m_pie->_findColor(szColor);
+	UT_sint32 ndxColor = m_pie->_findColor((char*)szColor);
 	if (ndxColor == -1)
-		m_pie->_addColor(szColor);
+		m_pie->_addColor((char*)szColor);
 
 	// convert our font properties into an item for the rtf font table.
 	// in this pass thru the document we are just collecting all the

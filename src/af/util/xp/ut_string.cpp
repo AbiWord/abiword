@@ -21,6 +21,9 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#ifdef HAVE_GNOME_XML2
+#include <glib.h>
+#endif
 
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -783,6 +786,7 @@ XML_Char* UT_encodeUTF8char(UT_UCSChar cIn)
 }
 #endif // --jeff
 
+#ifndef HAVE_GNOME_XML2
 static void endElement(void *userData, const XML_Char *name)
 {
 }
@@ -793,6 +797,7 @@ static void startElement(void *userData, const XML_Char *name, const XML_Char **
 	//What do we do with this, is this cast safe!?
 	*pout = (XML_Char *)atts[1];
 }
+#endif /* HAVE_GNOME_XML2 */
 
 XML_Char *UT_decodeXMLstring(XML_Char *in)
 {
@@ -801,9 +806,28 @@ XML_Char *UT_decodeXMLstring(XML_Char *in)
 	// is just used during init to chomp the preference default value
 	// strings, so the amount of work done probably doesn't matter too
 	// much.
+	XML_Char *out = 0;
+#ifdef HAVE_GNOME_XML2
+	static xmlDocPtr dok;
+	//UT_DEBUGMSG(("BLAH in:%s\n",in));
+	char* in2 = 
+	  g_strdup_printf("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n"
+			  "<fake blah=\"%s\"/>\n",in);
+	dok = xmlParseDoc(in2);
+	if (dok == NULL)
+	  UT_DEBUGMSG(("XML parsing error\n"));
+	else
+	  {
+	    xmlNodePtr node = xmlDocGetRootElement(dok);
+	    out = UT_strdup(node->properties->children->content);
+	    //UT_DEBUGMSG(("BLAH out:%s\n",out));
+	  }
+	g_free(in2);
+	xmlFreeDoc(dok);
+	return out;
+#else
 	const char s1[] = "<fake blah=\"";
 	const char s2[] = "\"/>";
-	XML_Char *out = 0;
 	XML_Parser parser = 0;
 	parser = XML_ParserCreate(0);
 	XML_SetUserData(parser, &out);
@@ -812,11 +836,12 @@ XML_Char *UT_decodeXMLstring(XML_Char *in)
 	||  !XML_Parse(parser, in, strlen(in), 0)
 	||  !XML_Parse(parser, s2, sizeof(s2)-1, 0))
 	{
-		UT_DEBUGMSG(("XML parsing error %s; %s:%d\n", XML_ErrorString(XML_GetErrorCode(parser)), __FILE__, __LINE__));
+		UT_DEBUGMSG(("XML parsing error %s; %s:%d\n",
+			     XML_ErrorString(XML_GetErrorCode(parser)),
+			     __FILE__, __LINE__));
 	}
-	// TODO: who owns the storage for this?
-	out = UT_strdup(out);
 	if (parser) XML_ParserFree(parser);
-	return out;
-	
+	// TODO: who owns the storage for this?
+	return UT_strdup(out);
+#endif
 }

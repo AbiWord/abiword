@@ -78,6 +78,12 @@
 #	include <assert.h>
 #	define UT_ASSERT assert
 
+#elif defined(HAVE_GNOME)
+#ifdef NDEBUG
+#define UT_ASSERT assert
+#else
+#define UT_ASSERT g_assert
+#endif
 #else
 
 	// A Unix variant.

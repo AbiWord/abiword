@@ -21,6 +21,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef HAVE_GNOME_XML2
+#include <glib.h>
+#endif
+
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -36,6 +40,7 @@
 ******************************************************************
 *****************************************************************/
 
+#ifndef HAVE_GNOME_XML2
 static void startElement(void *userData, const XML_Char *name, const XML_Char **atts)
 {
 	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
@@ -53,6 +58,7 @@ static void charData(void* userData, const XML_Char *s, int len)
 	IE_Imp_AbiWord_1* pDocReader = (IE_Imp_AbiWord_1*) userData;
 	pDocReader->_charData(s, len);
 }
+#endif /* HAVE_GNOME_XML2 */
 
 /*****************************************************************/
 /*****************************************************************/
@@ -77,6 +83,22 @@ void IE_Imp_AbiWord_1::_closeFile(void)
 
 UT_Error IE_Imp_AbiWord_1::importFile(const char * szFilename)
 {
+#ifdef HAVE_GNOME_XML2
+	xmlDocPtr dok = xmlParseFile(szFilename);
+	if (dok == NULL)
+	  {
+	    UT_DEBUGMSG(("Could not open and parse file %s\n",
+			 szFilename));
+	    m_error = UT_IE_FILENOTFOUND;
+	  }
+	else
+	  {
+	    xmlNodePtr node = xmlDocGetRootElement(dok);
+	    _scannode(dok,node,0);
+	    xmlFreeDoc(dok);
+	    m_error = UT_OK;
+	  }
+#else
 	XML_Parser parser = NULL;
 	int done = 0;
 	char buf[4096];
@@ -129,6 +151,7 @@ Cleanup:
 	if (parser)
 		XML_ParserFree(parser);
 	_closeFile();
+#endif /* HAVE_GNOME_XML2 */
 	return m_error;
 }
 
@@ -524,7 +547,7 @@ void IE_Imp_AbiWord_1::_endElement(const XML_Char *name)
 		while (trim >= 0 && MyIsWhite(buffer[trim])) trim--;
 		m_currentDataItem.truncate(trim+1);
 #undef MyIsWhite
- 		X_CheckError(m_pDocument->createDataItem(m_currentDataItemName,m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
+ 		X_CheckError(m_pDocument->createDataItem((char*)m_currentDataItemName,m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
 		FREEP(m_currentDataItemName);
 		// the data item will free the token we passed (mime-type)
 		m_currentDataItemMimeType = NULL;
@@ -782,3 +805,33 @@ void IE_Imp_AbiWord_1::pasteFromBuffer(PD_DocumentRange * pDocRange,
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
+
+#ifdef HAVE_GNOME_XML2
+void IE_Imp_AbiWord_1::_scannode(xmlDocPtr dok, xmlNodePtr cur, int c)
+{
+  while (cur != NULL)
+    {
+      if (strcmp("text", (char*) cur->name) == 0)
+	{
+	  xmlChar* s = cur->content; // xmlNodeListGetString(dok, cur, 1);
+	  _charData(s, strlen((char*) s));
+	}
+      else
+	{
+	  xmlChar *prop = NULL;
+	  const xmlChar* props[3] = { NULL, NULL, NULL };
+	  if (cur->properties)
+	    {
+	      props[0] = cur->properties->name;
+	      props[1] = cur->properties->children->content;
+	    }
+	  _startElement(cur->name, props);
+	  if (prop) g_free(prop);
+	}
+      _scannode(dok, cur->children, c + 1);
+      if (strcmp("text", (char*) cur->name) != 0)
+	_endElement(cur->name);
+      cur = cur->next;
+    }
+}
+#endif /* HAVE_GNOME_XML2 */

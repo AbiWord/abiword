@@ -604,7 +604,7 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 	m_pG = NULL;
 
 	const XML_Char * szRulerUnits;
-	if (pFrame->getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+	if (pFrame->getApp()->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
 		m_dim = DIM_IN;

@@ -1012,7 +1012,7 @@ void fp_FieldRun::lookupProperties(void)
 	} 
 	else m_fPosition = TEXT_POSITION_NORMAL;
 
-	pSpanAP->getAttribute("type", pszType);
+	pSpanAP->getAttribute((XML_Char*)"type", pszType);
 	UT_ASSERT(pszType);
 
 	int i;

@@ -155,11 +155,14 @@ UT_Bool AP_UnixApp::initialize(void)
 	
 	{
 		const char * szISpellDirectory = NULL;
-		getPrefsValueDirectory(UT_FALSE,AP_PREF_KEY_SpellDirectory,&szISpellDirectory);
+		getPrefsValueDirectory(UT_FALSE,
+				       (const XML_Char*)AP_PREF_KEY_SpellDirectory,
+				       (const XML_Char**)&szISpellDirectory);
 		UT_ASSERT((szISpellDirectory) && (*szISpellDirectory));
 
 		const char * szSpellCheckWordList = NULL;
-		getPrefsValue(AP_PREF_KEY_SpellCheckWordList,&szSpellCheckWordList);
+		getPrefsValue((XML_Char*)AP_PREF_KEY_SpellCheckWordList,
+			      (const XML_Char**)&szSpellCheckWordList);
 		UT_ASSERT((szSpellCheckWordList) && (*szSpellCheckWordList));
 		
 		char * szPathname = (char *)calloc(sizeof(char),strlen(szISpellDirectory)+strlen(szSpellCheckWordList)+2);
@@ -185,7 +188,7 @@ UT_Bool AP_UnixApp::initialize(void)
 		// assume we will be using the builtin set (either as the main
 		// set or as the fallback set).
 		
-		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
 		UT_ASSERT(pBuiltinStringSet);
 		m_pStringSet = pBuiltinStringSet;
 
@@ -194,12 +197,15 @@ UT_Bool AP_UnixApp::initialize(void)
 		const char * szDirectory = NULL;
 		const char * szStringSet = NULL;
 
-		if (   (getPrefsValue(AP_PREF_KEY_StringSet,&szStringSet))
+		if (   (getPrefsValue((const XML_Char*)AP_PREF_KEY_StringSet,
+				      (const XML_Char**)&szStringSet))
 			&& (szStringSet)
 			&& (*szStringSet)
 			&& (UT_stricmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
 		{
-			getPrefsValueDirectory(UT_TRUE,AP_PREF_KEY_StringSetDirectory,&szDirectory);
+			getPrefsValueDirectory(UT_TRUE,
+					       (const XML_Char*)AP_PREF_KEY_StringSetDirectory,
+					       (const XML_Char**)&szDirectory);
 			UT_ASSERT((szDirectory) && (*szDirectory));
 
 			char * szPathname = (char *)calloc(sizeof(char),strlen(szDirectory)+strlen(szStringSet)+100);
@@ -936,7 +942,7 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 #ifdef DEBUG
 				// dump the string table in english as a template for translators.
 				// see abi/docs/AbiSource_Localization.abw for details.
-				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,AP_PREF_DEFAULT_StringSet);
+				AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this,(XML_Char*)AP_PREF_DEFAULT_StringSet);
 				pBuiltinStringSet->dumpBuiltinSet("en-US.strings");
 				delete pBuiltinStringSet;
 #endif
@@ -1045,39 +1051,39 @@ UT_Bool AP_UnixApp::parseCommandLine(void)
 					switch (error)
 					{
 					case -301:
-						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_FileNotFound),m_pArgs->m_argv[k]);
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FileNotFound),m_pArgs->m_argv[k]);
 						break;
 						
 					case -302:
-						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_NoMemory),m_pArgs->m_argv[k]);
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_NoMemory),m_pArgs->m_argv[k]);
 						break;
 						
 					case -303:
-						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnknownType),m_pArgs->m_argv[k]);
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnknownType),m_pArgs->m_argv[k]);
 						break;
 						
 					case -304:
-						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_BogusDocument),m_pArgs->m_argv[k]);
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_BogusDocument),m_pArgs->m_argv[k]);
 						break;
 						
 					case -305:
-						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotOpen),m_pArgs->m_argv[k]);
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotOpen),m_pArgs->m_argv[k]);
 						break;
 							
 					case -306:
-						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),m_pArgs->m_argv[k]);
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_CouldNotWrite),m_pArgs->m_argv[k]);
 						break;
 						
 					case -307:
-						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),m_pArgs->m_argv[k]);
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_FakeType),m_pArgs->m_argv[k]);
 						break;
 						
 					case -311:
-						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_IE_UnsupportedType),m_pArgs->m_argv[k]);
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_IE_UnsupportedType),m_pArgs->m_argv[k]);
 						break;
 						
 					default:
-						pDialog->setMessage(pSS->getValue(AP_STRING_ID_MSG_ImportError),m_pArgs->m_argv[k]);
+						pDialog->setMessage((char*)pSS->getValue(AP_STRING_ID_MSG_ImportError),m_pArgs->m_argv[k]);
 					}
 					pDialog->setButtons(XAP_Dialog_MessageBox::b_O);
 					pDialog->setDefaultAnswer(XAP_Dialog_MessageBox::a_OK);

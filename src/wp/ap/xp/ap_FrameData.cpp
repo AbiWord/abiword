@@ -48,25 +48,25 @@ AP_FrameData::AP_FrameData(XAP_App * pApp)
 	{
 		UT_Bool b;
 
-		if (pApp->getPrefsValueBool( AP_PREF_KEY_InsertMode, &b))
+		if (pApp->getPrefsValueBool((XML_Char*) AP_PREF_KEY_InsertMode, &b))
 			m_bInsertMode = b;
 
-		if (pApp->getPrefsValueBool( AP_PREF_KEY_RulerVisible, &b))
+		if (pApp->getPrefsValueBool((XML_Char*) AP_PREF_KEY_RulerVisible, &b))
 			m_bShowRuler = b;
 
-		if (pApp->getPrefsValueBool( AP_PREF_KEY_StandardBarVisible, &b))
+		if (pApp->getPrefsValueBool((XML_Char*) AP_PREF_KEY_StandardBarVisible, &b))
 			m_bShowBar[0] = b;
 
-		if (pApp->getPrefsValueBool( AP_PREF_KEY_FormatBarVisible, &b))
+		if (pApp->getPrefsValueBool((XML_Char*) AP_PREF_KEY_FormatBarVisible, &b))
 			m_bShowBar[1] = b;
 
-		if (pApp->getPrefsValueBool( AP_PREF_KEY_ExtraBarVisible, &b))
+		if (pApp->getPrefsValueBool((XML_Char*) AP_PREF_KEY_ExtraBarVisible, &b))
 			m_bShowBar[2] = b;
 
-		if (pApp->getPrefsValueBool( AP_PREF_KEY_StatusBarVisible, &b))
+		if (pApp->getPrefsValueBool((XML_Char*) AP_PREF_KEY_StatusBarVisible, &b))
 			m_bShowStatusBar = b;
 
-		if (pApp->getPrefsValueBool( AP_PREF_KEY_ParaVisible, &b))
+		if (pApp->getPrefsValueBool((XML_Char*) AP_PREF_KEY_ParaVisible, &b))
 			m_bShowPara = b;
 	}
 }

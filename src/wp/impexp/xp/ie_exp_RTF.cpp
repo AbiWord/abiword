@@ -513,7 +513,7 @@ void IE_Exp_RTF::_rtf_compute_font_properties(const _rtf_font_info * pfi,
 	GR_Font::FontPitchEnum fp;
 	UT_Bool tt;
 	
-	GR_Font::s_getGenericFontProperties(szFontFamily, &ff, &fp, &tt);
+	GR_Font::s_getGenericFontProperties((char*)szFontFamily, &ff, &fp, &tt);
 
 	// TODO there is a general confusion in this program between fontname and fontfamily.
 	// TODO one is "Courier New" and the other is "Modern".  it seems that we interchange

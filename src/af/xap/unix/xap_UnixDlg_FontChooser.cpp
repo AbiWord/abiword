@@ -844,7 +844,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			UT_ASSERT(text && text[0]);
 			if (!m_pFontFamily || UT_stricmp(m_pFontFamily, text[0]))
 			{
-				setFontFamily(text[0]);
+				setFontFamily((XML_Char*)text[0]);
 				m_bChangedFontFamily = UT_TRUE;
 			}
 		}
@@ -862,12 +862,12 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			{
 				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
 				{
-					setFontStyle("normal");
+					setFontStyle((XML_Char*)"normal");
 					m_bChangedFontStyle = UT_TRUE;
 				}
 				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
 				{
-					setFontWeight("normal");
+					setFontWeight((XML_Char*)"normal");
 					m_bChangedFontWeight = UT_TRUE;
 				}
 			}
@@ -875,12 +875,12 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			{
 				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "normal"))
 				{
-					setFontStyle("normal");
+					setFontStyle((XML_Char*)"normal");
 					m_bChangedFontStyle = UT_TRUE;
 				}
 				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
 				{
-					setFontWeight("bold");
+					setFontWeight((XML_Char*)"bold");
 					m_bChangedFontWeight = UT_TRUE;
 				}
 			}
@@ -888,12 +888,12 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			{
 				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
 				{
-					setFontStyle("italic");
+					setFontStyle((XML_Char*)"italic");
 					m_bChangedFontStyle = UT_TRUE;
 				}
 				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "normal"))
 				{
-					setFontWeight("normal");
+					setFontWeight((XML_Char*)"normal");
 					m_bChangedFontWeight = UT_TRUE;
 				}
 			}
@@ -901,12 +901,12 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 			{
 				if (!m_pFontStyle || UT_stricmp(m_pFontStyle, "italic"))
 				{
-					setFontStyle("italic");
+					setFontStyle((XML_Char*)"italic");
 					m_bChangedFontStyle = UT_TRUE;
 				}
 				if (!m_pFontWeight || UT_stricmp(m_pFontWeight, "bold"))
 				{
-					setFontWeight("bold");
+					setFontWeight((XML_Char*)"bold");
 					m_bChangedFontWeight = UT_TRUE;
 				}
 			}
@@ -927,7 +927,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 
 			if (!m_pFontSize || UT_stricmp(m_pFontSize, sizeString))
 			{
-				setFontSize(sizeString);
+				setFontSize((XML_Char*)sizeString);
 				m_bChangedFontSize = UT_TRUE;
 			}
 		}
@@ -947,7 +947,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		
 			if (!m_pColor || UT_stricmp(m_pColor, buf_color))
 			{
-				setColor(buf_color);
+				setColor((XML_Char*)buf_color);
 				m_bChangedColor = UT_TRUE;
 			}
 		}

@@ -40,7 +40,11 @@
 #include "xap_UnixToolbar_Icons.h"
 #include "ev_UnixToolbar_ViewListener.h"
 #include "xav_View.h"
+#ifdef HAVE_GNOME_XML2
+#include <libxml/parser.h>
+#else
 #include "xmlparse.h"
+#endif
 #include "xap_Prefs.h"
 #include "ev_UnixGnomeToolbar.h"
 
@@ -422,7 +426,7 @@ GtkWidget *EV_UnixGnomeToolbar::_makeToolbar(void)
 	if (firstTime)
 	{
 		firstTime = UT_FALSE;
-		m_pUnixApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance, &szValue);
+		m_pUnixApp->getPrefsValue((XML_Char*)XAP_PREF_KEY_ToolbarAppearance, &szValue);
 		UT_ASSERT((szValue) && (*szValue));
 		
 		if (UT_XML_stricmp(szValue,"icon") == 0)

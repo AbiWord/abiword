@@ -154,7 +154,7 @@ void  AP_Dialog_Replace::ConstructWindowName(void)
                 UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FR_ReplaceTitle));	
                 title_width = 60;
 	}
-        BuildWindowName((char *) m_WindowName,tmp,title_width);
+        BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
         FREEP(tmp);
 }
 

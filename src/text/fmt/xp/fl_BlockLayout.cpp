@@ -156,7 +156,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 
 	{
-		const char* pszOrphans = getProperty("orphans");
+		const char* pszOrphans = getProperty((XML_Char*)"orphans");
 		if (pszOrphans && pszOrphans[0])
 		{
 			m_iOrphansProperty = atoi(pszOrphans);
@@ -166,7 +166,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			m_iOrphansProperty = 1;
 		}
 		
-		const char* pszWidows = getProperty("widows");
+		const char* pszWidows = getProperty((XML_Char*)"widows");
 		if (pszWidows && pszWidows[0])
 		{
 			m_iWidowsProperty = atoi(pszWidows);
@@ -187,7 +187,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	}
 
 	{
-		const char* pszKeepTogether = getProperty("keep-together");
+		const char* pszKeepTogether = getProperty((XML_Char*)"keep-together");
 		if (pszKeepTogether
 			&& (0 == UT_stricmp("yes", pszKeepTogether))
 			)
@@ -195,7 +195,7 @@ void fl_BlockLayout::_lookupProperties(void)
 			m_bKeepTogether = UT_TRUE;
 		}
 	
-		const char* pszKeepWithNext = getProperty("keep-with-next");
+		const char* pszKeepWithNext = getProperty((XML_Char*)"keep-with-next");
 		if (pszKeepWithNext
 			&& (0 == UT_stricmp("yes", pszKeepWithNext))
 			)
@@ -206,19 +206,19 @@ void fl_BlockLayout::_lookupProperties(void)
 	
 	GR_Graphics* pG = m_pLayout->getGraphics();
 
-	m_iTopMargin = pG->convertDimension(getProperty("margin-top"));
-	m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(getProperty("margin-top"));
-	m_iBottomMargin = pG->convertDimension(getProperty("margin-bottom"));
-	m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(getProperty("margin-bottom"));
-	m_iLeftMargin = pG->convertDimension(getProperty("margin-left"));
-	m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(getProperty("margin-left"));
-	m_iRightMargin = pG->convertDimension(getProperty("margin-right"));
-	m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(getProperty("margin-right"));
-	m_iTextIndent = pG->convertDimension(getProperty("text-indent"));
-	m_iTextIndentLayoutUnits = UT_convertToLayoutUnits(getProperty("text-indent"));
+	m_iTopMargin = pG->convertDimension(getProperty((XML_Char*)"margin-top"));
+	m_iTopMarginLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"margin-top"));
+	m_iBottomMargin = pG->convertDimension(getProperty((XML_Char*)"margin-bottom"));
+	m_iBottomMarginLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"margin-bottom"));
+	m_iLeftMargin = pG->convertDimension(getProperty((XML_Char*)"margin-left"));
+	m_iLeftMarginLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"margin-left"));
+	m_iRightMargin = pG->convertDimension(getProperty((XML_Char*)"margin-right"));
+	m_iRightMarginLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"margin-right"));
+	m_iTextIndent = pG->convertDimension(getProperty((XML_Char*)"text-indent"));
+	m_iTextIndentLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"text-indent"));
 
 	{
-		const char* pszAlign = getProperty("text-align");
+		const char* pszAlign = getProperty((XML_Char*)"text-align");
 
 		DELETEP(m_pAlignment);
 
@@ -257,7 +257,7 @@ void fl_BlockLayout::_lookupProperties(void)
 	m_vecTabs.clear();
 
 	// parse any new tabstops
-	const char* pszTabStops = getProperty("tabstops");
+	const char* pszTabStops = getProperty((XML_Char*)"tabstops");
 	if (pszTabStops && pszTabStops[0])
 	{
 		unsigned char iType = 0;
@@ -350,17 +350,17 @@ void fl_BlockLayout::_lookupProperties(void)
 
 #if 0
 	UT_DEBUGMSG(("XXXX: [default-tab-interval:%s][yields %d][resolution %d][zoom %d]\n",
-				 getProperty("default-tab-interval"),
-				 pG->convertDimension(getProperty("default-tab-interval")),
+				 getProperty((XML_Char*)"default-tab-interval"),
+				 pG->convertDimension(getProperty((XML_Char*)"default-tab-interval")),
 				 pG->getResolution(),
 				 pG->getZoomPercentage()));
 #endif
 	
-	m_iDefaultTabInterval = pG->convertDimension(getProperty("default-tab-interval"));
-	m_iDefaultTabIntervalLayoutUnits = UT_convertToLayoutUnits(getProperty("default-tab-interval"));
+	m_iDefaultTabInterval = pG->convertDimension(getProperty((XML_Char*)"default-tab-interval"));
+	m_iDefaultTabIntervalLayoutUnits = UT_convertToLayoutUnits(getProperty((XML_Char*)"default-tab-interval"));
 
 
-	const char * pszSpacing = getProperty("line-height");
+	const char * pszSpacing = getProperty((XML_Char*)"line-height");
 
 	// NOTE : Parsing spacing strings:
 	// NOTE : - if spacing string ends with "+", it's marked as an "At Least" measurement
@@ -4006,8 +4006,8 @@ void fl_BlockLayout::recheckIgnoredWords()
 
 void fl_BlockLayout::_startList(UT_uint32 id)
 {
-	const XML_Char * format = getProperty("format",UT_TRUE);
-	UT_uint32 start = atoi(getProperty("start-value",UT_TRUE));
+	const XML_Char * format = getProperty((XML_Char*)"format",UT_TRUE);
+	UT_uint32 start = atoi(getProperty((XML_Char*)"start-value",UT_TRUE));
 	m_pAutoNum = new fl_AutoNum(id, start, format, this,  m_pAutoNum);
 	m_bListItem = UT_TRUE;
 	m_bStartList = UT_TRUE;
@@ -4071,7 +4071,7 @@ void fl_BlockLayout::remItemFromList(void)
 		sprintf(buf, "%i", currLevel);
 		if (currLevel == 0)
 		{
-		       pView->setStyle("Normal");
+		       pView->setStyle((XML_Char*)"Normal");
 		       id = 0;
 		}
 		else

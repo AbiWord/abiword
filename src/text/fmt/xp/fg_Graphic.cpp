@@ -38,12 +38,12 @@ FG_Graphic* FG_Graphic::createFromChangeRecord(const fl_Layout* pFL,
    if (bFoundSpanAP && pSpanAP)
    {
       const XML_Char *pszDataID;
-      UT_Bool bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
+      UT_Bool bFoundDataID = pSpanAP->getAttribute((XML_Char*)"dataid", pszDataID);
       
       if (bFoundDataID && pszDataID)
       {
 	   char * pszMimeType = NULL;
-	   bFoundDataID = pFL->getDocument()->getDataItemDataByName(pszDataID, NULL, (void**)&pszMimeType, NULL);
+	   bFoundDataID = pFL->getDocument()->getDataItemDataByName((char*)pszDataID, NULL, (void**)&pszMimeType, NULL);
 	   
 	   // figure out what type to create
 	   

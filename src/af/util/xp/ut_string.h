@@ -21,8 +21,15 @@
 #ifndef UT_STRING_H
 #define UT_STRING_H
 
-#include "ut_types.h"
+#ifdef HAVE_GNOME_XML2
+#include <libxml/parser.h>
+#else
 #include "xmlparse.h"
+#endif
+
+#include "ut_types.h"
+
+
 class UT_GrowBuf;
 
 UT_BEGIN_EXTERN_C

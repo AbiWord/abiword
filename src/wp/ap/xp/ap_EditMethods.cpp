@@ -1581,7 +1581,7 @@ UT_Bool _helpLocalizeAndOpenURL(AV_View* pAV_View, UT_Bool bLocal, const char* p
 	const char * abiSuiteLibDir = pApp->getAbiSuiteLibDir();
 	const XML_Char * abiSuiteLocString = NULL;
 	char * helpURL = (char *)malloc(512);
-	pPrefs->getPrefsValue(AP_PREF_KEY_StringSet, &abiSuiteLocString);
+	pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_StringSet, &abiSuiteLocString);
 	if (bLocal)
 	{
 		UT_ASSERT(strlen(abiSuiteLibDir) + strlen(pathBeforeLang) + strlen(abiSuiteLocString) + strlen(pathAfterLang) < 509);
@@ -3766,7 +3766,7 @@ class FV_View_Insert_symbol_listener : public XAP_Insert_symbol_listener
 		{
 			UT_ASSERT(p_view != NULL);
 
-			p_view->insertSymbol(Char, p_font_name);
+			p_view->insertSymbol(Char, (XML_Char*)p_font_name);
 
 			return UT_TRUE;
 		}
@@ -3865,7 +3865,7 @@ Defun1(viewStd)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(AP_PREF_KEY_StandardBarVisible, pFrameData->m_bShowBar[0]); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_StandardBarVisible, pFrameData->m_bShowBar[0]); 
 
 	return UT_TRUE;
 }
@@ -3892,7 +3892,7 @@ Defun1(viewFormat)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(AP_PREF_KEY_FormatBarVisible, pFrameData->m_bShowBar[1]); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_FormatBarVisible, pFrameData->m_bShowBar[1]); 
 
 	return UT_TRUE;
 }
@@ -3919,7 +3919,7 @@ Defun1(viewExtra)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[2]); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible, pFrameData->m_bShowBar[2]); 
 
 	return UT_TRUE;
 }
@@ -3946,7 +3946,7 @@ Defun1(viewStatus)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(AP_PREF_KEY_StatusBarVisible, pFrameData->m_bShowStatusBar);
+	pScheme->setValueBool((XML_Char*) AP_PREF_KEY_StatusBarVisible, pFrameData->m_bShowStatusBar);
 	return UT_TRUE;
 }
 
@@ -3973,7 +3973,7 @@ Defun1(viewRuler)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_RulerVisible, pFrameData->m_bShowRuler); 
 #endif
 
 	return UT_TRUE;
@@ -4349,7 +4349,7 @@ Defun1(doBullets)
 	else
 	{
 	        pBlock->listUpdate();
-		pView->cmdStartList("Bullet List");
+		pView->cmdStartList((XML_Char*)"Bullet List");
 	}
 	return UT_TRUE;
 #else
@@ -4378,7 +4378,7 @@ Defun1(doNumbers)
 	else
 	{
 	        pBlock->listUpdate();
-		pView->cmdStartList("Numbered List");
+		pView->cmdStartList((XML_Char*)"Numbered List");
 	}
 	return UT_TRUE;
 #else
@@ -4547,7 +4547,7 @@ Defun1(cycleInputMode)
 
 	// this edit method may get ignored entirely
 	UT_Bool b;
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_KeyBindingsCycle, &b) && !b)
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_KeyBindingsCycle, &b) && !b)
 		return UT_FALSE;
 
 	const char * szCurrentInputMode = pFrame->getInputMode();
@@ -4563,7 +4563,8 @@ Defun1(cycleInputMode)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValue(AP_PREF_KEY_KeyBindings, szNextInputMode); 
+	pScheme->setValue((XML_Char*)AP_PREF_KEY_KeyBindings,
+			  (XML_Char*)szNextInputMode); 
 #endif
 
 	return bResult;
@@ -4580,7 +4581,7 @@ Defun1(toggleInsertMode)
 
 	// this edit method may get ignored entirely
 	UT_Bool b;
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_InsertModeToggle, &b) && !b)
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_InsertModeToggle, &b) && !b)
 		return UT_FALSE;
 
 	// toggle the insert mode
@@ -4597,7 +4598,7 @@ Defun1(toggleInsertMode)
 	XAP_PrefsScheme * pScheme = pPrefs->getCurrentScheme(UT_TRUE);
 	UT_ASSERT(pScheme);
 
-	pScheme->setValueBool(AP_PREF_KEY_InsertMode, pFrameData->m_bInsertMode); 
+	pScheme->setValueBool((XML_Char*)AP_PREF_KEY_InsertMode, pFrameData->m_bInsertMode); 
 #endif
 
 	return UT_TRUE;

@@ -82,7 +82,7 @@ void s_RTF_ListenerWriteDoc::_openSpan(PT_AttrPropIndex apiSpan)
 	m_pDocument->getAttrProp(apiSpan,&pSpanAP);
 
 	const XML_Char * szColor = PP_evalProperty("color",pSpanAP,pBlockAP,pSectionAP,m_pDocument,UT_TRUE);
-	UT_sint32 ndxColor = m_pie->_findColor(szColor);
+	UT_sint32 ndxColor = m_pie->_findColor((char*)szColor);
 	UT_ASSERT(ndxColor != -1);
 	if (ndxColor != 0)
 		m_pie->_rtf_keyword("cf",ndxColor);
@@ -404,7 +404,7 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	const XML_Char * szDefaultTabs = PP_evalProperty("default-tab-interval",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,UT_TRUE);
-	m_pie->_rtf_keyword_ifnotdefault_twips("deftab",szDefaultTabs,720);
+	m_pie->_rtf_keyword_ifnotdefault_twips("deftab",(char*)szDefaultTabs,720);
 
 	// <docfmt> -- document views and zoom level
 	
@@ -415,26 +415,26 @@ void s_RTF_ListenerWriteDoc::_rtf_docfmt(void)
 	// <docfmt> -- page information
 
 	const XML_Char * szPaperWidth = "8.5in"; // TODO look this up in the document
-	m_pie->_rtf_keyword_ifnotdefault_twips("paperw",szPaperWidth,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("paperw",(char*)szPaperWidth,0);
 	const XML_Char * szPaperHeight = "11in"; // TODO look this up in the document
-	m_pie->_rtf_keyword_ifnotdefault_twips("paperh",szPaperHeight,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("paperh",(char*)szPaperHeight,0);
 	
 	const XML_Char * szLeftMargin = PP_evalProperty("page-margin-left",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,UT_TRUE);
-	m_pie->_rtf_keyword_ifnotdefault_twips("margl",szLeftMargin,1800);
+	m_pie->_rtf_keyword_ifnotdefault_twips("margl",(char*)szLeftMargin,1800);
 	const XML_Char * szRightMargin = PP_evalProperty("page-margin-right",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,UT_TRUE);
-	m_pie->_rtf_keyword_ifnotdefault_twips("margr",szRightMargin,1800);
+	m_pie->_rtf_keyword_ifnotdefault_twips("margr",(char*)szRightMargin,1800);
 	const XML_Char * szTopMargin = PP_evalProperty("page-margin-top",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,UT_TRUE);
-	m_pie->_rtf_keyword_ifnotdefault_twips("margt",szTopMargin,1440);
+	m_pie->_rtf_keyword_ifnotdefault_twips("margt",(char*)szTopMargin,1440);
 	const XML_Char * szBottomMargin = PP_evalProperty("page-margin-Bottom",
 													 pSpanAP,pBlockAP,pSectionAP,
 													 m_pDocument,UT_TRUE);
-	m_pie->_rtf_keyword_ifnotdefault_twips("margb",szBottomMargin,1440);
+	m_pie->_rtf_keyword_ifnotdefault_twips("margb",(char*)szBottomMargin,1440);
 	m_pie->_rtf_keyword("widowctl");	// enable widow and orphan control
 	
 	// TODO <docfmt> -- linked styles
@@ -477,8 +477,8 @@ void s_RTF_ListenerWriteDoc::_rtf_open_section(PT_AttrPropIndex api)
 
 	m_pie->_rtf_keyword("sectd");								// restore all defaults for this section
 	m_pie->_rtf_keyword("sbknone");								// no page break implied
-	m_pie->_rtf_keyword_ifnotdefault("cols",szColumns,1);
-	m_pie->_rtf_keyword_ifnotdefault_twips("colsx",szColumnGap,720);
+	m_pie->_rtf_keyword_ifnotdefault("cols",(char*)szColumns,1);
+	m_pie->_rtf_keyword_ifnotdefault_twips("colsx",(char*)szColumnGap,720);
 
 }
 
@@ -551,11 +551,11 @@ void s_RTF_ListenerWriteDoc::_rtf_open_block(PT_AttrPropIndex api)
 	else if (UT_stricmp(szTextAlign,"justify")==0)
 		m_pie->_rtf_keyword("qj");
 
-	m_pie->_rtf_keyword_ifnotdefault_twips("fi",szFirstLineIndent,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("li",szLeftIndent,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("ri",szRightIndent,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("sb",szTopMargin,0);
-	m_pie->_rtf_keyword_ifnotdefault_twips("sa",szBottomMargin,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("fi",(char*)szFirstLineIndent,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("li",(char*)szLeftIndent,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("ri",(char*)szRightIndent,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("sb",(char*)szTopMargin,0);
+	m_pie->_rtf_keyword_ifnotdefault_twips("sa",(char*)szBottomMargin,0);
 
 	if (strcmp(szLineHeight,"1.0") != 0)
 	{
@@ -669,7 +669,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	// fetch the "name" of the image and use it to fetch the actual image data.
 	
 	const XML_Char * szDataID = NULL;
-	UT_Bool bFoundDataID = pImageAP->getAttribute("dataid",szDataID);
+	UT_Bool bFoundDataID = pImageAP->getAttribute((XML_Char*)"dataid",szDataID);
 	if (!bFoundDataID)
 	{
 		UT_DEBUGMSG(("RTF_Export: cannot get dataid for image\n"));
@@ -678,7 +678,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	const UT_ByteBuf * pbb = NULL;
 	void * pToken = NULL;
 	void * pHandle = NULL;
-	UT_Bool bFoundDataItem = m_pDocument->getDataItemDataByName(szDataID,&pbb,&pToken,&pHandle);
+	UT_Bool bFoundDataItem = m_pDocument->getDataItemDataByName((char*)szDataID,&pbb,&pToken,&pHandle);
 	if (!bFoundDataItem)
 	{
 		UT_DEBUGMSG(("RTF_Export: cannot get dataitem for image\n"));
@@ -690,8 +690,8 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 	
 	const XML_Char * szWidthProp = NULL;
 	const XML_Char * szHeightProp = NULL;
-	UT_Bool bFoundWidthProperty = pImageAP->getProperty("width",szWidthProp);
-	UT_Bool bFoundHeightProperty = pImageAP->getProperty("height",szHeightProp);
+	UT_Bool bFoundWidthProperty = pImageAP->getProperty((XML_Char*)"width",szWidthProp);
+	UT_Bool bFoundHeightProperty = pImageAP->getProperty((XML_Char*)"height",szHeightProp);
 
 	// get the width/height of the image from the image itself.
 
@@ -729,9 +729,9 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			m_pie->_rtf_keyword("picw",iImageWidth);
 			m_pie->_rtf_keyword("pich",iImageHeight);
 			if (bFoundWidthProperty)
-				m_pie->_rtf_keyword_ifnotdefault_twips("picwgoal",szWidthProp,0);
+				m_pie->_rtf_keyword_ifnotdefault_twips("picwgoal",(char*)szWidthProp,0);
 			if (bFoundHeightProperty)
-				m_pie->_rtf_keyword_ifnotdefault_twips("pichgoal",szHeightProp,0);
+				m_pie->_rtf_keyword_ifnotdefault_twips("pichgoal",(char*)szHeightProp,0);
 			// we use the default values for picscale[xy]==100, piccrop[tblr]==0
 			
 			// TODO deal with <metafileinfo>

@@ -321,7 +321,6 @@ protected:
 #define FPFIELD_TIME		1
 #define FPFIELD_PAGE_NUMBER	2
 #define FPFIELD_PAGE_COUNT	3
-<<<<<<< fp_Run.h
 #define FPFIELD_LIST_LABEL	4
 =======
 */

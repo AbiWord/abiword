@@ -24,7 +24,12 @@
 #include "ut_types.h"
 #include "ut_alphahash.h"
 #include "ut_vector.h"
+#ifdef HAVE_GNOME_XML2
+#include <libxml/parser.h>
+#else
 #include "xmlparse.h"
+#endif
+
 
 // PP_AttrProp captures the complete set of XML and CSS
 // Attributes/Properties for a piece of the document.

@@ -254,7 +254,7 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
 	what_lb = gtk_label_new ("");
-	tmp = s_convert (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_What));
+	tmp = s_convert((char*)pSS->getValue(AP_STRING_ID_DLG_Goto_Label_What));
 	what_lb_key = gtk_label_parse_uline (GTK_LABEL (what_lb), tmp);
 	g_free (tmp);
 	gtk_box_pack_start (GTK_BOX (vbox), what_lb, FALSE, FALSE, 0);
@@ -273,7 +273,7 @@ GtkWidget *AP_UnixDialog_Goto::_constructWindowContents (void)
 	gtk_box_pack_start (GTK_BOX (hbox), vbox2, TRUE, TRUE, 0);
 
 	number_lb = gtk_label_new ("");
-	tmp = s_convert (pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Number));
+	tmp = s_convert ((char*)pSS->getValue (AP_STRING_ID_DLG_Goto_Label_Number));
 	number_lb_key = gtk_label_parse_uline (GTK_LABEL (number_lb), tmp);
 	g_free (tmp);
 	gtk_box_pack_start (GTK_BOX (vbox2), number_lb, FALSE, FALSE, 0);

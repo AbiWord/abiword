@@ -61,7 +61,7 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory * pDlgFactory, XAP_Di
 	// determine unit system to use in this dialog
 	const XML_Char * szRulerUnits;
 	UT_ASSERT(m_pApp);
-	if (m_pApp->getPrefs()->getPrefsValue(AP_PREF_KEY_RulerUnits, &szRulerUnits))
+	if (m_pApp->getPrefs()->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits, &szRulerUnits))
 		m_dim = UT_determineDimension(szRulerUnits);
 	else
 		m_dim = DIM_IN;
@@ -196,7 +196,7 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ATLEAST, op_INIT);
 
 					// need to strip off that plus
-					int posPlus = pPlusFound - sz;
+					int posPlus = pPlusFound - (char*) sz;
 					UT_ASSERT(posPlus>=0);
 					UT_ASSERT(posPlus<100);
 
@@ -204,7 +204,7 @@ UT_Bool AP_Dialog_Paragraph::setDialogData(const XML_Char ** pProps)
 					strcpy(pTmp, sz);
 					pTmp[posPlus] = 0;
 
-					_setSpinItemValue(id_SPIN_SPECIAL_SPACING, pTmp, op_INIT);
+					_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)pTmp, op_INIT);
 				}
 				else
 				{
@@ -985,28 +985,28 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, UT_Bool bAll /* = UT_F
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
 		{
 		case spacing_SINGLE:
-			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "1.0", op_SYNC);
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"1.0", op_SYNC);
 			break;
 
 		case spacing_ONEANDHALF:
-			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "1.5", op_SYNC);
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"1.5", op_SYNC);
 			break;
 
 		case spacing_DOUBLE:
-			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "2.0", op_SYNC);
+			_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"2.0", op_SYNC);
 			break;
 
 		case spacing_ATLEAST:
 		case spacing_EXACTLY:
 			// only change to default if not dimensioned
 			if (dimOld == DIM_none)
-				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "12pt", op_SYNC);
+				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"12pt", op_SYNC);
 			break;
 
 		case spacing_MULTIPLE:
 			// only change to default if dimensioned
 			if (dimOld != DIM_none)
-				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, "1.0", op_SYNC);
+				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (XML_Char*)"1.0", op_SYNC);
 			break;
 
 		default:

@@ -28,7 +28,11 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ut_growbuf.h"
+#ifdef HAVE_GNOME_XML2
+#include <libxml/parser.h>
+#else
 #include "xmlparse.h"
+#endif
 #include "pt_Types.h"
 #include "fl_Layout.h"
 #include "fl_DocLayout.h"		// FIXME: this is needed for the friend'ed function

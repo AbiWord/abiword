@@ -135,7 +135,7 @@ void XAP_Dialog_Insert_Symbol::_onInsertButton()
 
 	XML_Char * symfont = (XML_Char *) getInsertedFont();
 
-	m_pListener->insertSymbol(c, symfont);
+	m_pListener->insertSymbol(c, (char*)symfont);
 }
 
 void XAP_Dialog_Insert_Symbol::setActiveFrame(XAP_Frame *pFrame)
@@ -155,7 +155,7 @@ void  XAP_Dialog_Insert_Symbol::ConstructWindowName()
 	XML_Char * tmp = NULL;
 
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(XAP_STRING_ID_DLG_Insert_SymbolTitle));
-        BuildWindowName((char *) m_WindowName,tmp,80);
+        BuildWindowName((char *) m_WindowName,(char*)tmp,80);
         FREEP(tmp);
 }
 

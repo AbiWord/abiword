@@ -152,7 +152,8 @@ void AP_Dialog_Options::_storeWindowData(void)
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// save ruler units value
-	pPrefsScheme->setValue( AP_PREF_KEY_RulerUnits, UT_dimensionName( _gatherViewRulerUnits()) );
+	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_RulerUnits,
+			       (XML_Char*)UT_dimensionName( _gatherViewRulerUnits()) );
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 	// allow XAP_Prefs to notify all the listeners of changes
@@ -161,7 +162,8 @@ void AP_Dialog_Options::_storeWindowData(void)
 	// TODO: change to snprintf
 	XML_Char szBuffer[40];
 	sprintf( szBuffer, "%i", _gatherNotebookPageNum() );
-	pPrefsScheme->setValue( AP_PREF_KEY_OptionsTabNumber, szBuffer );
+	pPrefsScheme->setValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,
+			       (XML_Char*)szBuffer );
 
 	// allow the prefListeners to receive their calls
 	pPrefs->endBlockChange();
@@ -195,49 +197,50 @@ void AP_Dialog_Options::_populateWindowData(void)
 	UT_ASSERT( pPrefs );
 
 	// ------------ Spell
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_AutoSpellCheck,&b))
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_AutoSpellCheck,&b))
 		_setSpellCheckAsType (b);
 
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckCaps,&b))
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellCheckCaps,&b))
 		_setSpellUppercase (b);
 
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckNumbers,&b))
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellCheckNumbers,&b))
 		_setSpellNumbers (b);
 
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_SpellCheckInternet,&b))
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_SpellCheckInternet,&b))
 		_setSpellInternet (b);
 	
 	// ------------ Smart Quotes
-	if (pPrefs->getPrefsValueBool(XAP_PREF_KEY_SmartQuotesEnable,&b))
+	if (pPrefs->getPrefsValueBool((XML_Char*)XAP_PREF_KEY_SmartQuotesEnable,&b))
 		_setSmartQuotesEnable (b);
 
 	// ------------ Prefs	
 	_setPrefsAutoSave( pPrefs->getAutoSavePrefs() );
 
 	// ------------ View
-	if (pPrefs->getPrefsValue(AP_PREF_KEY_RulerUnits,&pszBuffer))
+	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_RulerUnits,&pszBuffer))
 		_setViewRulerUnits (UT_determineDimension(pszBuffer));
 
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_RulerVisible,&b))
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_RulerVisible,&b))
 		_setViewShowRuler (b);
 
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_StandardBarVisible,&b))
+
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_StandardBarVisible,&b))
 		_setViewShowStandardBar (b);
 
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_FormatBarVisible,&b))
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_FormatBarVisible,&b))
 		_setViewShowFormatBar (b);
 
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_ExtraBarVisible,&b))
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ExtraBarVisible,&b))
 		_setViewShowExtraBar (b);
 
-    if (pPrefs->getPrefsValueBool(AP_PREF_KEY_ParaVisible,&b))
+    if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_ParaVisible,&b))
         _setViewUnprintable (b);
 
-	if (pPrefs->getPrefsValueBool(AP_PREF_KEY_CursorBlink,&b))
+	if (pPrefs->getPrefsValueBool((XML_Char*)AP_PREF_KEY_CursorBlink,&b))
 		_setViewCursorBlink (b);
 
 	// ------------ the page tab number 
-	if (pPrefs->getPrefsValue(AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
+	if (pPrefs->getPrefsValue((XML_Char*)AP_PREF_KEY_OptionsTabNumber,&pszBuffer))
 		_setNotebookPageNum (atoi(pszBuffer));
 
 
@@ -309,7 +312,7 @@ void AP_Dialog_Options::_event_SetDefaults(void)
 
 	currentPage = _gatherNotebookPageNum();
 
-	pPrefs->setCurrentScheme("_builtin_");		
+	pPrefs->setCurrentScheme((XML_Char*)"_builtin_");		
 	
 	_populateWindowData();
 

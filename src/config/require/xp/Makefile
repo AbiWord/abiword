@@ -22,7 +22,11 @@ ABI_ROOT:=$(shell pwd)/../../../..
 
 include $(ABI_ROOT)/src/config/abi_defs.mk
 
+ifdef ABI_OPT_GNOME_XML2
+REQUIRE=
+else
 REQUIRE=	_EXPAT_ 
+endif
 TARGET=		build
 
 include $(ABI_ROOT)/src/config/abi_rules.mk

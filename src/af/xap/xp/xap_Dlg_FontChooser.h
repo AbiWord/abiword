@@ -21,7 +21,11 @@
 #define XAP_DIALOG_FONTCHOOSER_H
 
 #include "ut_types.h"
+#ifdef HAVE_GNOME_XML2
+#include <libxml/parser.h>
+#else
 #include "xmlparse.h"
+#endif
 #include "xap_Dialog.h"
 class GR_Graphics;
 

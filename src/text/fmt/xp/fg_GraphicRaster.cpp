@@ -48,10 +48,10 @@ FG_Graphic* FG_GraphicRaster::createFromChangeRecord(const fl_Layout* pFL,
 												&pFG->m_pSpanAP);
 	if (bFoundSpanAP && pFG->m_pSpanAP)
 	{
-		UT_Bool bFoundDataID = pFG->m_pSpanAP->getAttribute("dataid", pFG->m_pszDataID);
+		UT_Bool bFoundDataID = pFG->m_pSpanAP->getAttribute((XML_Char*)"dataid", pFG->m_pszDataID);
 		if (bFoundDataID && pFG->m_pszDataID)
 		{
-			bFoundDataItem = pDoc->getDataItemDataByName(pFG->m_pszDataID, (const UT_ByteBuf **)&pFG->m_pbbPNG, NULL, NULL);
+			bFoundDataItem = pDoc->getDataItemDataByName((char*)pFG->m_pszDataID, (const UT_ByteBuf **)&pFG->m_pbbPNG, NULL, NULL);
 		}
 	}
 
@@ -112,8 +112,8 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 
 	const XML_Char *pszWidth;
 	const XML_Char *pszHeight;
-	UT_Bool bFoundWidthProperty = m_pSpanAP->getProperty("width", pszWidth);
-	UT_Bool bFoundHeightProperty = m_pSpanAP->getProperty("height", pszHeight);
+	UT_Bool bFoundWidthProperty = m_pSpanAP->getProperty((XML_Char*)"width", pszWidth);
+	UT_Bool bFoundHeightProperty = m_pSpanAP->getProperty((XML_Char*)"height", pszHeight);
 
 	UT_sint32 iDisplayWidth = 0;
 	UT_sint32 iDisplayHeight = 0;
@@ -121,8 +121,8 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 	UT_sint32 iLayoutHeight = 0;
 	if (bFoundWidthProperty && bFoundHeightProperty && pszWidth && pszHeight && pszWidth[0] && pszHeight[0])
 	{
-		iDisplayWidth = pG->convertDimension(pszWidth);
-		iDisplayHeight = pG->convertDimension(pszHeight);
+		iDisplayWidth = pG->convertDimension((char*)pszWidth);
+		iDisplayHeight = pG->convertDimension((char*)pszHeight);
 		iLayoutWidth = UT_convertToLayoutUnits(pszWidth);
 		iLayoutHeight = UT_convertToLayoutUnits(pszHeight);
 	}
@@ -157,7 +157,7 @@ GR_Image* FG_GraphicRaster::generateImage(GR_Graphics* pG)
 	UT_ASSERT(iDisplayWidth > 0);
 	UT_ASSERT(iDisplayHeight > 0);
 
-   	GR_Image *pImage = pG->createNewImage(m_pszDataID, m_pbbPNG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
+   	GR_Image *pImage = pG->createNewImage((char*)m_pszDataID, m_pbbPNG, iDisplayWidth, iDisplayHeight, GR_Image::GRT_Raster);
 
 	pImage->setLayoutSize(iLayoutWidth, iLayoutHeight);
 

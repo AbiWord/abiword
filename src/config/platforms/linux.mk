@@ -72,6 +72,19 @@ ifdef ABI_OPT_DEBUG
 OPTIMIZER	= -g -Wall -ansi -pedantic
 DEFINES		= -DDEBUG -UNDEBUG
 OBJ_DIR_SFX	= DBG
+ifdef ABI_OPT_GNOME
+ifdef ABI_OPT_GNOME_XML2
+OBJ_DIR_SFX	= GNOME_XML
+else
+OBJ_DIR_SFX	= GNOME
+endif
+else
+ifdef ABI_OPT_GNOME_XML2
+OBJ_DIR_SFX	= GTK_XML
+else
+OBJ_DIR_SFX	= GTK
+endif
+endif
 else 
 OPTIMIZER	= -O2 -Wall -ansi -pedantic
 DEFINES		=
@@ -131,6 +144,7 @@ endif
 GLIB_CONFIG		= glib-config
 GTK_CONFIG		= gtk-config
 GNOME_CONFIG    	= gnome-config
+LIBXML_CONFIG		= xml-config
 
 # Shared library flags
 MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
@@ -138,7 +152,7 @@ MKSHLIB			= $(LD) $(DSO_LDOPTS) -soname $(@:$(OBJDIR)/%.so=%.so)
 # Which links can this platform create.  Define one or
 # both of these options.
 UNIX_CAN_BUILD_DYNAMIC=1
-UNIX_CAN_BUILD_STATIC=1
+UNIX_CAN_BUILD_STATIC=0
 
 # Compiler options for static and dynamic linkage
 DL_LIBS			= dl
@@ -152,7 +166,7 @@ ABI_FE		= Unix
 ## Set ABI_OPT_GNOME to 1 (when invoking 'make') or set as
 ## an environment variable.
 ##
-## ABI_OPT_GNOME=1
+##ABI_OPT_GNOME=1
 
 ##################################################################
 ## ABIPKGDIR defines the directory containing the Makefile to use to

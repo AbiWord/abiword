@@ -27,7 +27,11 @@
 #include "ut_alphahash.h"
 #include "ut_string.h"
 #include "ut_vector.h"
+#ifdef HAVE_GNOME_XML2
+#include <libxml/parser.h>
+#else
 #include "xmlparse.h"
+#endif
 #include "pt_Types.h"
 #include "pp_AttrProp.h"
 
@@ -151,7 +155,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 			while (isspace(*q))
 				q++;
 
-			setProperty(p, q);
+			setProperty((const XML_Char*)p, (const XML_Char*)q);
 		}
 
 		free(pOrig);
@@ -180,7 +184,7 @@ UT_Bool	PP_AttrProp::setAttribute(const XML_Char * szName, const XML_Char * szVa
 
 		UT_lowerString(copy);
 			
-		UT_Bool bRet = (m_pAttributes->addEntry(copy, szValue, NULL) == 0);
+		UT_Bool bRet = (m_pAttributes->addEntry(copy, (char*)szValue, NULL) == 0);
 
 		FREEP(copy);
 
@@ -200,11 +204,11 @@ UT_Bool	PP_AttrProp::setProperty(const XML_Char * szName, const XML_Char * szVal
 		}
 	}
 
-	UT_HashEntry* pEntry = m_pProperties->findEntry(szName);
+	UT_HashEntry* pEntry = m_pProperties->findEntry((char*)szName);
 	if (pEntry)
-		return (m_pProperties->setEntry(pEntry, szValue, NULL) == 0);
+		return (m_pProperties->setEntry(pEntry, (char*)szValue, NULL) == 0);
 	else
-		return (m_pProperties->addEntry(szName, szValue, NULL) == 0);
+		return (m_pProperties->addEntry((char*)szName, (char*)szValue, NULL) == 0);
 }
 
 UT_Bool	PP_AttrProp::getNthAttribute(int ndx, const XML_Char *& szName, const XML_Char *& szValue) const
@@ -240,7 +244,7 @@ UT_Bool PP_AttrProp::getProperty(const XML_Char * szName, const XML_Char *& szVa
 	if (!m_pProperties)
 		return UT_FALSE;
 	
-	UT_HashEntry* pEntry = m_pProperties->findEntry(szName);
+	UT_HashEntry* pEntry = m_pProperties->findEntry((char*)szName);
 	if (!pEntry)
 		return UT_FALSE;
 
@@ -254,7 +258,7 @@ UT_Bool PP_AttrProp::getAttribute(const XML_Char * szName, const XML_Char *& szV
 	if (!m_pAttributes)
 		return UT_FALSE;
 	
-	UT_HashEntry* pEntry = m_pAttributes->findEntry(szName);
+	UT_HashEntry* pEntry = m_pAttributes->findEntry((char*)szName);
 	if (!pEntry)
 		return UT_FALSE;
 
