@@ -144,14 +144,14 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 
 	UT_uint32 k, kLast;
 	for (k=0; k<m_countStatic; k++)
-		if (UT_stricmp(szName,m_arrayStaticEditMethods[k].getName()) == 0)
+		if (UT_strcmp(szName,m_arrayStaticEditMethods[k].getName()) == 0)
 			return &m_arrayStaticEditMethods[k];
 	
 	kLast = m_vecDynamicEditMethods.getItemCount();
 	for (k=0; k<kLast; k++)
 	{
 		EV_EditMethod * pem = (EV_EditMethod *)m_vecDynamicEditMethods.getNthItem(k);
-		if (UT_stricmp(szName,pem->getName()) == 0)
+		if (UT_strcmp(szName,pem->getName()) == 0)
 			return pem;
 	}
 

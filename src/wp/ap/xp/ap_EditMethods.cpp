@@ -3540,10 +3540,17 @@ Defun1(cycleInputMode)
 	return bResult;
 }
 
-Defun0(viCmd_A)
+//////////////////////////////////////////////////////////////////
+// The following commands are suggested for the various VI keybindings.
+// It may be possible to use our exisiting methods for them, but I
+// didn't know all of the little (subtle) side-effects that make VI
+// special.
+//////////////////////////////////////////////////////////////////
+
+Defun(viCmd_A)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return UT_FALSE;
+	// insert after the end of the current line
+	return ( EX(warpInsPtEOL) && EX(setInputVI) );
 }
 Defun0(viCmd_I)
 {
@@ -3560,11 +3567,13 @@ Defun0(viCmd_O)
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 	return UT_FALSE;
 }
-Defun0(viCmd_a)
+
+Defun(viCmd_a)
 {
-	UT_ASSERT(UT_NOT_IMPLEMENTED);
-	return UT_FALSE;
+	// insert after the current position
+	return ( EX(warpInsPtRight) && EX(setInputVI) );
 }
+
 Defun0(viCmd_o)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);

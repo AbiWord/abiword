@@ -299,7 +299,6 @@ static struct ap_bs_Char s_CharTable[] =
 	{0x3e, /* >      */ { "",					"",					"warpInsPtEOD",	""					}},
 	{0x3f, /* ?      */ { "find",				"",					"",				""					}},
 	{0x40, /* @      */ { "",					"",					"",				""					}},
-	//Start adding text at the begining of the line
 	{0x41, /* A      */ { "viCmd_A",			"",					"",				""					}},
 	{0x42, /* B      */ { "",					"",					"",				""					}},
 	{0x43, /* C      */ { "",					"",					"",				""					}},
