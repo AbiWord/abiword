@@ -1911,8 +1911,8 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					}
 					UT_DEBUGMSG((" clienttextbox %x clientdata %x \n",answer->clienttextbox,answer->clientdata));
 				}
-//				if(isTextBox)
-//				{
+				if(isTextBox)
+				{
 //				if(answer != NULL)
 //				{
 					UT_DEBUGMSG(("Found a Text box! text offset is.. %d \n",textOff));
@@ -1985,7 +1985,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					m_vecTextboxPos.addItem(pPos);
 					wvReleaseEscher (&item);
 					return true;
-//				}
+				}
 				wvReleaseEscher (&item);
 			}
 			else
