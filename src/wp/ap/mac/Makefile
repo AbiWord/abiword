@@ -46,7 +46,6 @@ CPPSRCS=		ap_$(ABI_FE)App.cpp			\
 			ap_$(ABI_FE)_TB_CFactory.cpp	\
 			ap_$(ABI_FE)Tlbr_FontCombo.cpp	\
 			ap_$(ABI_FE)Tlbr_SizeCombo.cpp	\
-			ap_$(ABI_FE)Tlbr_ControlFactory.cpp	\
 			ap_$(ABI_FE)Toolbar_StyleCombo.cpp	\
 			ap_$(ABI_FE)Toolbar_ZoomCombo.cpp	\
 			ap_$(ABI_FE)TopRuler.cpp		\
