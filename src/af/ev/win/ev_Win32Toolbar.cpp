@@ -343,7 +343,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
 				ExtTextOut(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, sz, lstrlen(sz), 0);
 				
 				/*Font example after the name*/
-				const char* szSample="AbCEfGiHj";
+				const char* szSample="AbCdEfGhIj";
 				GetTextExtentPoint32(dis->hDC, sz, lstrlen(sz), &size);
 				SelectObject (dis->hDC, hFont);
 				ExtTextOut(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, lstrlen(szSample), 0);					
