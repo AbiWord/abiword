@@ -174,7 +174,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock)
 					bool bRes = pLine->findNextTabStopInLayoutUnits(m_iWorkingLineWidth, iPos, iType, iLeader);
 					if (bRes)
 					{
-						UT_DEBUGMSG(("%s:%d tab run: type=%d leader=%d height=%d width=%d offset=%d length=%d",
+						xxx_UT_DEBUGMSG(("%s:%d tab run: type=%d leader=%d height=%d width=%d offset=%d length=%d",
 									 __FILE__, __LINE__,
 									 (int)iType,
 									 (int)iLeader,
