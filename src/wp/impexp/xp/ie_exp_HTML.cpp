@@ -609,15 +609,18 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 			(pAP->getProperty("color", szValue))
 		    || (pAP->getProperty("font-size", szValue))
 		    || (pAP->getProperty("font-family", szValue))
+			|| (pAP->getProperty("bgcolor", szValue))
 			)
 		{
 			const XML_Char* pszColor = NULL;
+			const XML_Char* pszBgColor = NULL;
 			const XML_Char* pszFontSize = NULL;
 			const XML_Char* pszFontFamily = NULL;
 
 			pAP->getProperty("color", pszColor);
-		    pAP->getProperty("font-size", pszFontSize);
-		    pAP->getProperty("font-family", pszFontFamily);
+			pAP->getProperty("font-size", pszFontSize);
+			pAP->getProperty("font-family", pszFontFamily);
+			pAP->getProperty("bgcolor", pszBgColor);
 
 			if (pszColor)
 			{
@@ -679,6 +682,27 @@ void s_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 				    }
 
 			}
+			
+			if (pszBgColor)
+			  {
+			  if (!span)
+				    {
+					m_pie->write("<span style=\"background: #");	
+					char szColor[16];
+					_convertColor(szColor,(char*)pszBgColor);
+					m_pie->write(szColor);
+					m_pie->write(";");
+					span = true;
+				    }
+				  else 
+				    {
+					m_pie->write("; color: #");	
+					char szColor[16];
+					_convertColor(szColor,(char*)pszBgColor);
+					m_pie->write(szColor);
+					m_pie->write(";");
+				    }
+			  }
 
 		}
 		
