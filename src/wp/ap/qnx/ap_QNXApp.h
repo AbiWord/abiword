@@ -65,7 +65,7 @@ public:
 
 	virtual	void					catchSignals(int sig_num);
 
-	static int main (const char * szAppName, int argc, char ** argv);
+	static int main (const char * szAppName, int argc,const char ** argv);
 
 protected:
 	//AP_QNXPrefs *			m_prefs;

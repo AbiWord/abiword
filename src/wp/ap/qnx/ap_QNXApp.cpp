@@ -763,7 +763,7 @@ static GR_Image * _showSplash(PtWidget_t *spwin, UT_uint32 delay)
 AP_QNXApp * gQNXApp = NULL; 
 PtWidget_t	*gTimerWidget = NULL;
 
-int AP_QNXApp::main(const char * szAppName, int argc, char ** argv)
+int AP_QNXApp::main(const char * szAppName, int argc, const char ** argv)
 {
 	// This is a static function.
 		   
@@ -932,7 +932,7 @@ bool AP_QNXApp::parseCommandLine(void)
 			else if (UT_stricmp (m_pArgs->m_argv[k],"-to") == 0)
 			{
 				k++;
-				to = m_pArgs->m_argv[k];
+				to = (char*) m_pArgs->m_argv[k];
 			}
 			else if (UT_stricmp (m_pArgs->m_argv[k], "-show") == 0)
 			{
