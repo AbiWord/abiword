@@ -1,1 +1,5 @@
 GNUmakefile.in
+GNUmakefile.in
+.deps
+GNUmakefile
+cdump
