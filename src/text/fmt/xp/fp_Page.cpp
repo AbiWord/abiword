@@ -1490,15 +1490,44 @@ UT_sint32 fp_Page::findFootnoteContainer(fp_FootnoteContainer * pFC)
 
 fp_FootnoteContainer* fp_Page::getNthFootnoteContainer(UT_sint32 n) const 
 {
-// 	if (m_pFootnoteContainer)
-// 		return m_pFootnoteContainer;
-// 	return buildFootnoteContainer(pFL);
 	return (fp_FootnoteContainer*)m_vecFootnotes.getNthItem(n);
 } 
 
 bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC, 
 											fp_FootnoteContainer * pAfter)
 {
+	UT_uint32 i =0;
+	UT_uint32 loc =0;
+	UT_sint32 fVal = pFC->getValue();
+	fp_FootnoteContainer * pFTemp = NULL;
+	for(i=0; i< m_vecFootnotes.getItemCount();i++)
+	{
+		pFTemp = (fp_FootnoteContainer *) m_vecFootnotes.getNthItem(i);
+		if(fVal < pFTemp->getValue())
+		{
+			loc = i;
+			break;
+		}
+	}
+	if(pFTemp == NULL)
+	{
+		m_vecFootnotes.addItem((void *) pFC);
+	}
+	else if( i>= m_vecFootnotes.getItemCount())
+	{
+		m_vecFootnotes.addItem((void *) pFC);
+	}
+	else
+	{
+		m_vecFootnotes.insertItemAt(pFC, loc);
+	}
+	if(pFC)
+	{
+		pFC->setPage(this);
+	}
+	_reformat();
+	return true;
+#if 0
 	if (pAfter)
 	{
 		UT_sint32 ndx = m_vecFootnotes.findItem(pAfter);
@@ -1513,9 +1542,9 @@ bool fp_Page::insertFootnoteContainer(fp_FootnoteContainer * pFC,
 	{
 		pFC->setPage(this);
 	}
-	_reformat();
 
 	return true;
+#endif
 }
 
 void fp_Page::removeFootnoteContainer(fp_FootnoteContainer * pFC)

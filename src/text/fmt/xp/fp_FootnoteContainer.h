@@ -43,7 +43,7 @@ class ABI_EXPORT fp_FootnoteContainer : public fp_VerticalContainer
 public:
 	fp_FootnoteContainer(fl_SectionLayout* pSectionLayout);
 	virtual ~fp_FootnoteContainer();
-
+	UT_sint32           getValue(void);
 	void				layout(void);
 	virtual void		clearScreen(void);
 	virtual void		draw(dg_DrawArgs*);

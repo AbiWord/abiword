@@ -27,6 +27,7 @@
 #include "fp_Page.h"
 #include "fp_Line.h"
 #include "fv_View.h"
+#include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
 #include "ut_vector.h"
@@ -67,6 +68,16 @@ void fp_FootnoteContainer::setPage(fp_Page * pPage)
 		m_pPage->removeFootnoteContainer(this);
 	}
 	m_pPage = pPage;
+}
+
+/*! 
+ * This method returns the value of the footnote reference (or anchor)
+ */
+UT_sint32 fp_FootnoteContainer::getValue(void)
+{
+	fl_FootnoteLayout * pFL = (fl_FootnoteLayout *) getSectionLayout();
+	FL_DocLayout * pDL = pFL->getDocLayout();
+	return pDL->getFootnoteVal(pFL->getFootnotePID());
 }
 
 void fp_FootnoteContainer::clearScreen(void)

@@ -62,10 +62,10 @@ fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout*
 	  m_iFootnotePID(0),
 	  m_bHasEndFootnote(false)
 {
+	m_pLayout->addFootnote(this);
 	_createFootnoteContainer();
 	_insertFootnoteContainer(getFirstContainer());
 	UT_ASSERT(myContainingLayout());
-	m_pLayout->addFootnote(this);
 }
 
 fl_FootnoteLayout::~fl_FootnoteLayout()
