@@ -82,6 +82,8 @@
 #   include "ap_UnixDialog_FormatTOC.h"
 #   include "ap_UnixDialog_MailMerge.h"
 #   include "ap_UnixDialog_Latex.h"
+#   include "xap_UnixDlg_Print.h"
+#   include "xap_UnixDlg_PrintPreview.h"
 #if 0
 #	include "ap_UnixDialog_Download_File.h"
 #endif
@@ -92,8 +94,6 @@
 #else
 #   include "xap_UnixDlg_ClipArt.h"
 #	include "xap_UnixDlg_About.h"
-#	include "xap_UnixDlg_Print.h"
-#   include "xap_UnixDlg_PrintPreview.h"
 #endif
 
 #else
