@@ -85,13 +85,24 @@ EXTRA_LIBS=	$(addprefix $(DIST)/lib/lib,$(addsuffix $(ABI_VERSION)_s.lib,$(ABI_A
 
 WXINCLUDE=	-D__WXMSW__ -D__WIN95__ -I/AbiSource/wxwin/include
 else
+ifeq ($(BUILDWXWIN),YES)
 EXTRA_LIBS=	-L$(DIST)/lib 							\
 		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
 		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
 		$(addprefix -l,$(ABI_LIBS))	\
 		-L/usr/src/wxGTK/lib/Linux -lwx_gtk \
 		`gtk-config --libs`
+
 WXINCLUDE=	-D__WXGTK__ -I/usr/src/wxGTK/include
+else
+EXTRA_LIBS=	-L$(DIST)/lib 							\
+		$(addprefix -l,$(addsuffix $(ABI_VERSION),$(ABI_APPLIBS)))	\
+		$(addprefix -l,$(addsuffix $(MOD_VERSION),$(ABI_OTHLIBS)))	\
+		$(addprefix -l,$(ABI_LIBS))	\
+		`gtk-config --libs`
+
+WXINCLUDE=	-D__WXGTK__ -I/usr/src/wxGTK/include
+endif
 endif
 
 ##################################################################
