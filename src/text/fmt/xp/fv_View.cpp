@@ -504,7 +504,7 @@ void FV_View::toggleCase (ToggleCase c)
 
 			xxx_UT_DEBUGMSG(("fv_View::toggleCase: iLenToCopy %d, low %d\n", iLenToCopy, low));
 				
-			if(!pRun || pRun->getType() == FPRUN_ENDOFPARAGRAPH)
+			if(!pRun || pRun->getType() == FPRUN_ENDOFPARAGRAPH || iLenToCopy == 0)
 				break;
 									
 			if(iLenToCopy > iTempLen)
