@@ -177,7 +177,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	
 	// localize the strings in our dialog, and set some userdata for some widgets
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPosition"), pSS, AP_STRING_ID_DLG_PageNumbers_Position);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbPosition"), pSS, AP_STRING_ID_DLG_PageNumbers_Position_No_Colon);
 	
 	GtkWidget * radioHeader = glade_xml_get_widget(xml, "rbHeader");
 	localizeButton(radioHeader, pSS, AP_STRING_ID_DLG_PageNumbers_Header);
@@ -187,7 +187,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	localizeButton(glade_xml_get_widget(xml, "rbFooter"), pSS, AP_STRING_ID_DLG_PageNumbers_Footer);	
 	gtk_object_set_user_data(GTK_OBJECT(radioFooter), GINT_TO_POINTER(AP_Dialog_PageNumbers::id_FTR));	
 
-	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAlignment"), pSS, AP_STRING_ID_DLG_PageNumbers_Alignment);
+	localizeLabelMarkup(glade_xml_get_widget(xml, "lbAlignment"), pSS, AP_STRING_ID_DLG_PageNumbers_Alignment_No_Colon);
 	
 	GtkWidget * radioLeft =	glade_xml_get_widget(xml, "rbLeft");
 	localizeButton(radioLeft, pSS, AP_STRING_ID_DLG_PageNumbers_Left);	

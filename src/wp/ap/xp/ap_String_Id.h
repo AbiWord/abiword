@@ -555,7 +555,9 @@ dcl(DLG_PageNumbers_Header, 		 "Header")
 dcl(DLG_PageNumbers_Footer, 		 "Footer")
 dcl(DLG_PageNumbers_Preview,		 "Preview")
 dcl(DLG_PageNumbers_Alignment,		 "Alignment:")
+dcl(DLG_PageNumbers_Alignment_No_Colon,	 "Alignment")
 dcl(DLG_PageNumbers_Position,		 "Position:")
+dcl(DLG_PageNumbers_Position_No_Colon,	 "Position")
 
 	 /* page setup dialog */
 dcl(DLG_PageSetup_Title,  "Page Setup")
