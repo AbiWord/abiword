@@ -4255,17 +4255,18 @@ bool IE_Imp_RTF::TranslateKeyword(unsigned char* pKeyword, long param, bool fPar
 //
 // Look to see if m_bNestTableProps is true for nested tables.
 //
-// changed the 1 to 0, because get getNestDepth() returns 0 for
-// unnested table -- see ie_Table.cpp (Tomas, May 8, 2003)			
+// To all RTF hackers, getting these 0's and 1's is extremely important.
+// Don't change them unless you can verify that a huge range of RTF docs with
+// tables (nested and unnested) get imported corectly. Martin 10/5/2003
 			else if((m_TableControl.getNestDepth() > 0) && !m_bNestTableProps)
 			{
-				while(m_TableControl.getNestDepth() > 0)
+				while(m_TableControl.getNestDepth() > 1)
 				{
 					UT_DEBUGMSG(("SEVIOR:Close Table trowd2 \n"));
 					CloseTable();
 					m_bCellBlank = true;
 				}
-				m_currentRTFState.m_paraProps.m_tableLevel = 0;
+				m_currentRTFState.m_paraProps.m_tableLevel = 1; 
 			}
 //
 // If a trowd appears without  a preceding \cell we close the previous table
