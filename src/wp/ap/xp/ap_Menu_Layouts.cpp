@@ -375,7 +375,7 @@ EV_Menu_LabelSet *  XAP_Menu_Factory::CreateMenuLabelSet(const char * szLanguage
 		#undef menuitem
 	}
 
-	return m_pLabelSet;
+	return new EV_Menu_LabelSet(m_pLabelSet);
 }
 
 UT_uint32 XAP_Menu_Factory::GetMenuLabelSetLanguageCount(void)
