@@ -159,8 +159,8 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 
 	UT_ASSERT (m_sniffer);
 
-	mi->name    = "WordPerfect 6/7/8 (tm) Importer";
-	mi->desc    = "WordPerfect 6/7/8 (tm) Documents";
+	mi->name    = "WordPerfect 6/7/8/9 (tm) Importer";
+	mi->desc    = "WordPerfect 6/7/8/9 (tm) Documents";
 	mi->version = ABI_VERSION_STRING;
 	mi->author  = "Abi the Ant";
 	mi->usage   = "No Usage";
@@ -220,8 +220,8 @@ UT_Confidence_t IE_Imp_WordPerfect_Sniffer::recognizeContents (const char * szBu
 	     int majorVersion = (int) *(szBuf + WP_HEADER_MAJOR_VERSION_OFFSET);
 	     int minorVersion = (int) *(szBuf + WP_HEADER_MINOR_VERSION_OFFSET);
 	     UT_DEBUGMSG(("product type: %i, file type: %i, major version: %i, minor version: %i\n", productType, fileType, majorVersion, minorVersion ));
-	     // we only want to try parsing wordperfect 6/7/8 documents for now
-	     if ((majorVersion != WP_WORDPERFECT678_EXPECTED_MAJOR_VERSION) || (fileType != WP_WORDPERFECT_DOCUMENT_FILE_TYPE))
+	     // we only want to try parsing wordperfect 6/7/8/9 documents for now
+	     if ((majorVersion != WP_WORDPERFECT6789_EXPECTED_MAJOR_VERSION) || (fileType != WP_WORDPERFECT_DOCUMENT_FILE_TYPE))
 	       return UT_CONFIDENCE_POOR;
 	     
 	     return UT_CONFIDENCE_PERFECT;
@@ -253,7 +253,7 @@ bool	IE_Imp_WordPerfect_Sniffer::getDlgLabels (const char ** pszDesc,
 												const char ** pszSuffixList,
 												IEFileType * ft)
 {
-	*pszDesc = "WordPerfect 6/7/8 (.wpd)";
+	*pszDesc = "WordPerfect 6/7/8/9 (.wpd)";
 	*pszSuffixList = "*.wpd";
 	*ft = getFileType();
 	return true;
@@ -267,10 +267,12 @@ bool	IE_Imp_WordPerfect_Sniffer::getDlgLabels (const char ** pszDesc,
 #define DOC_PROPBUFFER_SIZE 1024
 
 IE_Imp_WordPerfect::IE_Imp_WordPerfect(PD_Document * pDocument)
-  : IE_Imp (pDocument), m_bInSection(false)
+  : IE_Imp (pDocument)
 {
    m_undoOn = false;
-   m_bParagraphChanged = true;
+   m_bParagraphChanged = false;
+   m_bParagraphExists = false;
+   m_bInSection = false;
 
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_EOL, &IE_Imp_WordPerfect::_insertSpace));
    m_wordPerfectDispatchBytes.addItem(new WordPerfectByteTag(WP_TOP_SOFT_SPACE, &IE_Imp_WordPerfect::_insertSpace));
@@ -718,7 +720,6 @@ UT_Error IE_Imp_WordPerfect::_handleEndOfLineGroup()
 	   case 28: // deletable hard EOP
 	     { 
 	       X_CheckWordPerfectError(_flushText());
-	       _appendCurrentParagraphProperties();
 	       UT_UCSChar ucs = UCS_FF;
 	       X_CheckDocumentError(getDoc()->appendSpan(&ucs,1));
 	     }
@@ -750,7 +751,7 @@ UT_Error IE_Imp_WordPerfect::_handlePageGroup()
 }
 
 // handles a column group
-// (TODO: partially implemented, only basic column import is done, see bug 2756, 1270 and bug 515)
+// (TODO: partially implemented
 UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
 {
    UT_DEBUGMSG(("WordPerfect: Handling a column group\n"));
@@ -775,26 +776,19 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
                   break;
           case 2: // TODO: Define Text Columns, Partially implemented
                   unsigned char colType;
-                  unsigned char rowSpacing[5]; // a WPSP type var., which seems to be 5 bytes, but I don't what it is.
+                  unsigned char rowSpacing[4]; // a WP SPacing type variable, which is 4 bytes
+                  unsigned char unknown; 
                   unsigned char numCols;
           
                   X_CheckFileReadElementError(fread(&colType, sizeof(unsigned char), 1, m_importFile));
-                  
-                  // WTF doesn't this line work? 5 bytes isn't asked too much, isn't it?
-                  // X_CheckFileReadElementError(fread(&rowSpacing[0], sizeof(unsigned char), 5, m_importFile));
-                  
-                  // instead, read 5 charachters 1 by 1
-                  X_CheckFileReadElementError(fread(&rowSpacing[0], sizeof(unsigned char), 1, m_importFile));
-                  X_CheckFileReadElementError(fread(&rowSpacing[1], sizeof(unsigned char), 1, m_importFile));
-                  X_CheckFileReadElementError(fread(&rowSpacing[2], sizeof(unsigned char), 1, m_importFile));
-                  X_CheckFileReadElementError(fread(&rowSpacing[3], sizeof(unsigned char), 1, m_importFile));
-                  X_CheckFileReadElementError(fread(&rowSpacing[4], sizeof(unsigned char), 1, m_importFile));
-                  
+                  if (fread(&rowSpacing[0], sizeof(unsigned char), 4, m_importFile) != 4*sizeof(unsigned char))
+                     return UT_IE_IMPORTERROR;
+                  // I don't have a clue what this lonely byte does...
+                  X_CheckFileReadElementError(fread(&unknown, sizeof(unsigned char), 1, m_importFile));
                   X_CheckFileReadElementError(fread(&numCols, sizeof(unsigned char), 1, m_importFile));
           
                   UT_DEBUGMSG(("WordPerfect: Column type: %d\n", colType & 0x03));
-                  UT_DEBUGMSG(("WordPerfect: # columns: %d\n", numCols));
-                  
+                                    
                   // number of columns = {0,1} means columns off
                   if ((numCols==0) || (numCols==1))
                   {
@@ -823,7 +817,16 @@ UT_Error IE_Imp_WordPerfect::_handleColumnGroup()
                                    propsArray[0] = "props";
                                    propsArray[1] = propBuffer.c_str();
                                    propsArray[2] = NULL;
-                                   X_CheckWordPerfectError(_flushText());
+                                   
+                                   // this is a realy obscure statement, which has to be cleaned up sometime
+                                   if (
+                                         ((!m_bParagraphExists) && (m_textBuf.getLength() > 0)) ||
+                                         (m_bParagraphExists && m_bParagraphChanged) || 
+                                         (m_textBuf.getLength() > 0)
+                                      )
+                                   {
+                                      X_CheckWordPerfectError(_flushText());
+                                   }
                                    X_CheckDocumentError(_appendSection(propsArray));
                                    // set m_bParagraphChanged to true so the paragraph properties will 
                                    // unconditionally be added in this new section
@@ -864,13 +867,15 @@ UT_Error IE_Imp_WordPerfect::_handleParagraphGroup()
    // dispatch to subgroup to handle the rest of the relevant properties within the
    // group (and thus, read more of the file-- so we keep this even if undo is 'on')
    switch (subGroup)
-     {
+   {
       case WP_PARAGRAPH_GROUP_JUSTIFICATION:
-	X_CheckWordPerfectError(_handleParagraphGroupJustification());
-	break;
-     }
-   m_bParagraphChanged = true;
-	 
+      {   
+         X_CheckWordPerfectError(_handleParagraphGroupJustification());
+         m_bParagraphChanged = true;
+	      break;
+      }   
+   }
+     
    X_CheckWordPerfectError(_skipGroup(startPosition, size));
    
    return UT_OK;
@@ -1458,9 +1463,9 @@ UT_Error IE_Imp_WordPerfect::_flushText()
 {
    UT_DEBUGMSG(("WordPerfect: Flushing Text\n"));
    	
-   // append the current paragraph properties if they are changed; m_bParagraphChanged is initialized with true, so the first time
-   // we will have a structure to insert into
-   if(m_bParagraphChanged)
+   // append the current paragraph properties, but only when the paragraph properties 
+   // have changed or there is no paragraph at all
+   if(m_bParagraphChanged || (!m_bParagraphExists))
      {	
 	_appendCurrentParagraphProperties();
      }
@@ -1562,6 +1567,8 @@ UT_Error IE_Imp_WordPerfect::_appendCurrentParagraphProperties()
    propsArray[1] = propBuffer.c_str();
    propsArray[2] = NULL;
    m_bParagraphChanged = false;
+   // _never_ set m_bParagraphExists to false again!
+   m_bParagraphExists = true;
    
    if ( !m_bInSection )
      {

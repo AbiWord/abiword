@@ -34,7 +34,7 @@
 
 // The importer/reader for WordPerfect 6 documents.
 
-#define WP_WORDPERFECT678_EXPECTED_MAJOR_VERSION 2
+#define WP_WORDPERFECT6789_EXPECTED_MAJOR_VERSION 2
 #define WP_WORDPERFECT_DOCUMENT_FILE_TYPE 10
 #define WP_FONT_TABLE_SIZE_GUESS 10
 
@@ -279,6 +279,7 @@ public:
    UT_uint16 m_indexPointer;
    bool m_undoOn;
    bool m_bParagraphChanged;
+   bool m_bParagraphExists;
    bool m_bInSection;
    UT_Mbtowc m_Mbtowc;
    UT_GrowBuf m_textBuf;
