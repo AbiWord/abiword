@@ -105,12 +105,6 @@ public:
 	FriBidiCharType 	m_iDirOverride;
 	static bool 		s_bBidiOS;
 private:
-	void				_getContext(const UT_UCSChar *pSpan,
-									UT_uint32 lenSpan,
-									UT_uint32 len,
-									UT_uint32 offset,
-									UT_UCSChar * prev,
-									UT_UCSChar * next) const;
 	void				_refreshDrawBuffer();
 
 private:
@@ -126,7 +120,6 @@ public:
 #endif
 
 protected:
-	// void					_fetchCharWidths(GR_Font* pFont, UT_GrowBufElement* pCharWidths);
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect = true);
 

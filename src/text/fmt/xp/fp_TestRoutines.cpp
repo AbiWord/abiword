@@ -33,6 +33,8 @@
 #include "fp_Page.h"
 #include "fp_Column.h"
 
+#include "pd_Iterator.h"
+
 /*!
   Dump fp_Column information
   \param fp File where the dump should be written to
@@ -122,24 +124,17 @@ void fp_TextRun::__dump(FILE * fp) const
 	fprintf(fp,"         [");
 	if (getLength() != 0)
 	{
-		const UT_UCSChar* pSpan = NULL;
-		UT_uint32 lenSpan = 0;
-
 		UT_uint32 koff=getBlockOffset();
 		UT_uint32 klen=getLength();
-		
-		while (getBlock()->getSpanPtr(koff, &pSpan, &lenSpan) && (klen > 0))
-		{
-			UT_uint32 kdraw = UT_MIN(klen,lenSpan);
-			for (UT_uint32 k=0; k<kdraw; k++)
-			{
-				// a cheap unicode to ascii hack...
-				unsigned char c = static_cast<unsigned char>(pSpan[k] & 0x00ff);
-				fprintf(fp,"%c",c);
-			}
 
-			klen -= kdraw;
-			koff += lenSpan;
+		PD_StruxIterator text(getBlock()->getStruxDocHandle(),
+							  koff + fl_BLOCK_STRUX_OFFSET);
+
+		for(UT_uint32 k = 0; k < klen; k++)
+		{
+			unsigned char c = static_cast<unsigned char>(text[k+fl_BLOCK_STRUX_OFFSET] & 0x00ff);
+			UT_return_if_fail(text.getStatus() == UTIter_OK);
+			fprintf(fp,"%c",c);
 		}
 	}
 	fprintf(fp,"]\n");

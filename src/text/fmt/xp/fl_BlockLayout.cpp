@@ -60,6 +60,7 @@
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
 #include "px_CR_StruxChange.h"
+#include "pd_Iterator.h"
 #include "fv_View.h"
 #include "xap_App.h"
 #include "xap_Clipboard.h"
@@ -3310,32 +3311,20 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 {
 	xxx_UT_DEBUGMSG(("_doInsertTextSpan: Initial offset %d, len %d\n", blockOffset, len));
 	PT_BlockOffset curOffset = blockOffset;
-	const UT_UCSChar* pSpan;
-	UT_uint32 lenSpan = 0;
+	PD_StruxIterator text(getStruxDocHandle(), curOffset + fl_BLOCK_STRUX_OFFSET);
 
 	while(len > curOffset - blockOffset)
 	{
 		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: len %d curOffset %d blobkOffset %d \n",len,curOffset,blockOffset));
 		
 		FriBidiCharType iPrevType, iNextType, iLastStrongType = FRIBIDI_TYPE_UNSET, iType;
-		getSpanPtr(static_cast<UT_uint32>(curOffset), &pSpan, &lenSpan);
-		UT_ASSERT(pSpan);
-		if(!pSpan)
-			return false;
+		
+		UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET];
+		UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
+		
+		iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 
-		iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[0]));
-
-		UT_uint32 trueLen = UT_MIN(lenSpan,len - (curOffset - blockOffset));
 		UT_uint32 i = 1;
-#if 0
-		UT_String sTmp;
-		UT_uint32 j =0;
-		for(j=0;j<trueLen;j++)
-		{
-			sTmp += pSpan[j];
-		}
-		xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan lenSpan %d truelen %d text |%s| \n",lenSpan,trueLen,sTmp.c_str()));
-#endif
 
 		//We need to do some bidi processing on the span; basically we
 		//have to break the text into chunks that each will go into a
@@ -3347,13 +3336,16 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 		//allocating and deleting the runs when loading a
 		//document. The following code tries to catch out the obvious
 		//cases when the span can remain intact. Tomas, Jan 28, 2003
-		for(i = 1; i < trueLen; i++)
+		for(i = 1; i < len; i++)
 		{
 			iPrevType = iType;
 			if(FRIBIDI_IS_STRONG(iType))
 				iLastStrongType = iType;
 			
-			iType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[i]));
+			c = text[curOffset + fl_BLOCK_STRUX_OFFSET + i];
+			UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
+			
+			iType = fribidi_get_type(static_cast<FriBidiChar>(c));
 			if(iType != iPrevType)
 			{
 				// potential direction boundary see if we can ignore
@@ -3372,7 +3364,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 					// two neutral characters in a row will have the same
 					// direction
 					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: ntrl->ntrl (c=0x%04x)\n",
-								 pSpan[i]));
+								 c));
 					bIgnore = true;
 				}
 				else
@@ -3383,12 +3375,15 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 					// strong one if it is followed by a strong
 					// character of identical type to the previous one
 					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: strong->ntrl (c=0x%04x)\n",
-								 pSpan[i]));
+								 c));
 					
 					// take a peek at what follows
-					for(UT_uint32 j = i+1; j < trueLen; j++)
+					for(UT_uint32 j = i+1; j < len; j++)
 					{
-						iNextType = fribidi_get_type(static_cast<FriBidiChar>(pSpan[j]));
+						UT_UCS4Char c = text[curOffset + fl_BLOCK_STRUX_OFFSET + j];
+						UT_return_val_if_fail(text.getStatus() == UTIter_OK, false);
+						
+						iNextType = fribidi_get_type(static_cast<FriBidiChar>(c));
 						xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: iNextType 0x%04x\n",
 									      iNextType));
 						if(iNextType == iPrevType)
@@ -3415,7 +3410,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 						bIgnore = true;
 					}
 					xxx_UT_DEBUGMSG(("fl_BlockLayout::_doInsertTextSpan: ntrl->strong (c=0x%04x)\n",
-								 pSpan[i]));
+								 c));
 					
 				}
 				else
@@ -3429,7 +3424,7 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 					break;
 			}
 			
-		}
+		}// for
 		xxx_UT_DEBUGMSG(("_dopopulateTextSpan: text run: offset %d, len %d\n", curOffset, i));
 		fp_TextRun* pNewRun = new fp_TextRun(this, curOffset, i);
 		UT_ASSERT(pNewRun);
