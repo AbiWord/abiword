@@ -20,7 +20,7 @@
 #include <gnome.h>
 #include "ut_assert.h"
 #include "ut_vector.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "xap_UnixDlg_MessageBox.h"
 #include "xap_UnixGnomeDlg_MessageBox.h"
 #include "xap_UnixApp.h"

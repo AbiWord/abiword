@@ -22,7 +22,7 @@
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"
 #include "ap_Strings.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 
 #include "ap_UnixDialog_PageSetup.h"
 

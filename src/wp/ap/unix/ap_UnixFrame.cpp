@@ -44,7 +44,7 @@
 #include "xap_UnixFontManager.h"
 #include "ap_UnixStatusBar.h"
 #include "ap_UnixViewListener.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #if 1
 #include "ev_UnixMenuBar.h"
 #include "ev_Menu_Layouts.h"

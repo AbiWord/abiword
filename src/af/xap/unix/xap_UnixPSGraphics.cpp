@@ -27,7 +27,7 @@
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "ut_wctomb.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "ut_endian.h"
 
 #include "xap_UnixPSGenerate.h"

@@ -29,5 +29,4 @@ libUtil_unix_a_SOURCES=\
 	ut_unixString.cpp	\
 	ut_unixTimer.cpp	\
 	ut_unixIdle.cpp		\
-	ut_dialogHelper.cpp	\
 	ut_path.cpp

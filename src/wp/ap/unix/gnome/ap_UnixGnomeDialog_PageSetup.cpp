@@ -21,7 +21,7 @@
 #include "ap_UnixGnomeDialog_PageSetup.h"
 #include "ap_Strings.h"
 #include "ut_debugmsg.h"
-#include "ut_dialogHelper.cpp"
+#include "xap_UnixDialogHelper.cpp"
 
 static void
 cb_close (GtkWidget * w, AP_UnixGnomeDialog_PageSetup * dlg)

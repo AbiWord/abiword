@@ -25,7 +25,7 @@
 #include "xap_UnixFrame.h"
 #include "ap_UnixLeftRuler.h"
 #include "gr_UnixGraphics.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "ut_sleep.h"
 
 #define ENSUREP(p)		do { UT_ASSERT(p); if (!p) goto Cleanup; } while (0)

@@ -21,7 +21,7 @@
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixGnomeDlg_About.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "xap_UnixFrame.h"
 #include "xap_App.h"
 #include "ut_string_class.h"

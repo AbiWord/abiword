@@ -28,7 +28,7 @@
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "xap_UnixFont.h"
 #include "xap_UnixFontXLFD.h"
 #include "xap_EncodingManager.h"

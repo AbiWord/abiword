@@ -51,7 +51,7 @@ static bool isFontUnicode(GdkFont *font)
 #include "ut_assert.h"
 #include "ut_misc.h"
 #include "ut_string.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "ut_wctomb.h"
 #include "xap_EncodingManager.h"
 #include "ut_OverstrikingChars.h"

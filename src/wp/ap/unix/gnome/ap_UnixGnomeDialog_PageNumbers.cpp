@@ -21,7 +21,7 @@
 #include "ap_UnixGnomeDialog_PageNumbers.h"
 #include "ap_Strings.h"
 #include "ut_debugmsg.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 
 AP_UnixGnomeDialog_PageNumbers::AP_UnixGnomeDialog_PageNumbers(XAP_DialogFactory * pDlgFactory, 
 			       XAP_Dialog_Id id) :

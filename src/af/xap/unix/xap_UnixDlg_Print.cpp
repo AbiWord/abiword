@@ -23,7 +23,7 @@
 #include "ut_debugmsg.h"
 #include "ut_string.h"
 #include "ut_assert.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "xap_Dialog_Id.h"
 #include "xap_UnixDlg_Print.h"
 #include "xap_UnixDlg_MessageBox.h"

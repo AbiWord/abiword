@@ -30,6 +30,7 @@ noinst_LIBRARIES = libXap_unix.a
 libXap_unix_a_SOURCES=\
 	xap_UnixApp.cpp				\
 	xap_UnixClipboard.cpp			\
+	xap_UnixDialogHelper.cpp		\
 	xap_UnixDlg_About.cpp			\
 	xap_UnixDlg_Image.cpp			\
 	xap_UnixDlg_ClipArt.cpp			\

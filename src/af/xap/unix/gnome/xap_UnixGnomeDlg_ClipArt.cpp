@@ -20,7 +20,7 @@
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
 #include "xap_UnixGnomeDlg_ClipArt.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "xap_UnixFrame.h"
 #include "xap_App.h"
 

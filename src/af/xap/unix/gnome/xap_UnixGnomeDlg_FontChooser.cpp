@@ -27,7 +27,7 @@
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "ut_units.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "xap_UnixGnomeDlg_FontChooser.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"

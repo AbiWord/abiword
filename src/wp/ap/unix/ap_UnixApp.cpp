@@ -58,7 +58,7 @@
 #include "gr_Image.h"
 #include "ut_bytebuf.h"
 #include "ut_png.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "ut_debugmsg.h"
 
 #include "fv_View.h"

@@ -21,7 +21,7 @@
 #include "xap_Dialog_Id.h"
 #include "xap_Strings.h"
 #include "xap_UnixGnomeDlg_PluginManager.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 
 XAP_Dialog * XAP_UnixGnomeDialog_PluginManager::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)

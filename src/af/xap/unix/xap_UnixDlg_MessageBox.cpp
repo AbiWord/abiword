@@ -22,7 +22,7 @@
 #include <glib.h>
 #include "ut_assert.h"
 #include "ut_vector.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "xap_UnixDlg_MessageBox.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrame.h"

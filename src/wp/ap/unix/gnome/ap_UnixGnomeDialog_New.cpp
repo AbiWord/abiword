@@ -25,7 +25,7 @@
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 
 #include "gr_UnixGraphics.h"
 #include "fl_BlockLayout.h"
@@ -42,7 +42,7 @@
 #include "ap_UnixGnomeDialog_New.h"
 
 #include <gnome.h>
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 
 XAP_Dialog * AP_UnixGnomeDialog_New::static_constructor(XAP_DialogFactory * pFactory,
 														XAP_Dialog_Id id)

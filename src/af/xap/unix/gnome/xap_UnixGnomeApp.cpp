@@ -25,7 +25,7 @@
 #include <unistd.h>
 
 #include "ut_debugmsg.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 #include "ut_string.h"
 
 #include "xap_Args.h"

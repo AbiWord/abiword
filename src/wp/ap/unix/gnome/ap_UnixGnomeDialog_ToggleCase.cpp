@@ -26,7 +26,7 @@
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -35,7 +35,7 @@
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
 #include "ap_UnixGnomeDialog_ToggleCase.h"
-#include "ut_dialogHelper.h"
+#include "xap_UnixDialogHelper.h"
 
 /*****************************************************************/
 
