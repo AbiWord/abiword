@@ -44,7 +44,7 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	virtual void	runModal(XAP_Frame * pFrame) = 0;
 
 	// answer from dialog
-	typedef enum { a_OK, a_CANCEL, a_APPLY } tAnswer;
+	typedef enum { a_OK, a_CANCEL } tAnswer;
 
 	// control ids
 	typedef enum { id_EDIT_TAB = 0, id_LIST_TAB,
@@ -57,7 +57,7 @@ class AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 				   id_LEADER_NONE, id_LEADER_DOT, id_LEADER_DASH, id_LEADER_UNDERLINE,
 
 				   id_BUTTON_SET, id_BUTTON_CLEAR, id_BUTTON_CLEAR_ALL,
-				   id_BUTTON_OK, id_BUTTON_CANCEL, id_BUTTON_APPLY,
+				   id_BUTTON_OK, id_BUTTON_CANCEL, 
 			
 				   id_last } tControl;
 

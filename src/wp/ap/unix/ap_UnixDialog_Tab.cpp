@@ -144,7 +144,6 @@ void    AP_UnixDialog_Tab::_constructGnomeButtons( GtkWidget * windowTabs)
 {
 	GtkWidget *buttonOK;
 	GtkWidget *buttonCancel;
-	GtkWidget *buttonApply;
 	GtkWidget *hseparator5;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
