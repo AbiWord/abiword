@@ -1603,7 +1603,12 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 			if(iPageCount > 1)
 			{
 				UT_String msg (pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc));
+				UT_sint32 iFilled = pLayout->getPercentFilled();
+				UT_String sFilled;
+				UT_String_sprintf(sFilled," %d",iFilled);
+				msg += sFilled;
 				pFrame->setStatusMessage ( static_cast<const XML_Char *>(msg.c_str()) );
+				
 			}
 			else
 			{
