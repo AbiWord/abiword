@@ -1,5 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2002 AbiSource, Inc.
+ * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -179,18 +180,42 @@ int UT_UCS4_mbtowc::mbtowc (UT_UCS4Char & wc, char mb)
 
   const char * inptr = m_buf;
 
-  UT_UCS4Char ucs4;
+  // need eight bytes in order for the hack below to work (see below)
+  UT_UCS4Char ucs4[2];
   char * outptr = reinterpret_cast<char *>(&ucs4);
 
   size_t inlen = m_bufLen;
-  size_t outlen = sizeof (UT_UCS4Char);
+  size_t outlen = sizeof (ucs4[0]);
 
   const UT_iconv_t cd = m_converter->cd ();
 
   size_t len = UT_iconv (const_cast<UT_iconv_t>(cd), &inptr, &inlen, &outptr, &outlen);
+
+  // This is a nasty hack I would prefer not to have to do
+  // here. Sometimes iconv does not write the translated value out,
+  // and it sits somewhere internatlly until the next call; on the
+  // next call it issues the previous character and the new one sits
+  // somewhere in. I discovered this in the rtf importer when trying
+  // to hanlde cp1255, and it is caused by the fact that some
+  // combinations of characters in 1255 can translate into a
+  // precombined Unicode glyph, and iconv is waiting for the next
+  // character. I flush it out by feeding it a NULL character.
+  // (The output buffer in that case needs to be 8 bytes, so that the
+  // iconv can output both the cached charcter and the NULL, otherwise
+  // it will complain.)
+  // Tomas, May 2, 2003
+  if(len == 0 && outlen == sizeof(ucs4[0]))
+  {
+	  char c = 0;
+	  inptr = &c;
+	  inlen = 1;
+	  outlen = sizeof (ucs4);
+	  len = UT_iconv (const_cast<UT_iconv_t>(cd), &inptr, &inlen, &outptr, &outlen);
+  }
+  
   if (len != (size_t)-1)
     {
-      wc = ucs4;
+      wc = ucs4[0];
       m_bufLen = 0;
       return 1;
     }
