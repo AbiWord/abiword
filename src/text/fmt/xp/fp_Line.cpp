@@ -17,6 +17,9 @@
  * 02111-1307, USA.
  */
 
+#include <stdlib.h>
+#include "ut_types.h"	// for FREEP
+
 #include "fl_DocLayout.h"
 #include "fl_BlockLayout.h"
 #include "fb_Alignment.h"
@@ -26,7 +29,6 @@
 #include "fp_TextRun.h"
 #include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
-#include <stdlib.h> /*Fixes the undeclared free() problem*/
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
