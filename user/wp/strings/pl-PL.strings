@@ -9,7 +9,7 @@
 
 <!-- First Polish translations provided by Sercxemulo <explo@poczta.wp.pl> and        -->
 <!-- (0.9.6+) by Piotr Banski <bansp@bigfoot.com>. Since February 2002 (0.99.2+)      --> 
-<!-- maintained by Andrzej Pruszynski <abi@rth.coi.waw.pl>. Last update: 02-Aug-2003  -->
+<!-- maintained by Andrzej Pruszynski <abi@rth.coi.waw.pl>. Last update: 24-Aug-2003  -->
 
 <AbiStrings app="AbiWord" ver="1.0" language="pl-PL">
 
@@ -95,6 +95,7 @@ DLG_NoSaveFile_DirNotExist="Podany katalog nie istnieje."
 DLG_NoSaveFile_DirNotWriteable="Katalog %s jest zabezpieczony przed zapisem."
 DLG_OK="OK"
 
+DLG_Options_Label_CheckEnableSmoothScrolling="W³±cz p³ynne przewijanie"
 DLG_Options_Label_DirMarkerAfterClosingParenthesis="Autowstawianie znaczników kierunku"
 DLG_Options_Label_InvalidRangeForAutoSave="Czêstotliwo¶æ automatycznego zapisu musi byæ liczb± z przedzia³u od 1 do 120."
 DLG_Options_Label_LangWithKeyboard="Zmieñ jêzyk przy zmianie klawiatury"
@@ -354,6 +355,7 @@ MSG_BuildingDoc="Konstruowanie dokumentu..."
 MSG_ImportingDoc="Importowanie dokumentu..."
 MSG_NoBreakInsideTable="Nie mo¿na wstawiaæ znaków podzia³u wewn±trz tabeli."
 
+PRINT_CANNOTSTARTPRINTJOB="Nie mo¿na uruchomiæ procesu druku."
 SPELL_CANTLOAD_DICT="Nie znaleziono s³ownika dla jêzyka %s."
 SPELL_CANTLOAD_DLL="AbiWord nie znalaz³ pliku *.dll s³ownika dla jêzyka %s.\nPobierz z witryny http://aspell.net/win32/ i zainstaluj."
 
