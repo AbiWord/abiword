@@ -38,10 +38,10 @@
 
 // all of these are measured in pixels
 
-#define DEFAULT_TOP_MARGIN 5
+#define DEFAULT_TOP_MARGIN _UL(5)
 
-#define DEFAULT_LEFT_STOP 20
-#define DEFAULT_RIGHT_STOP 20
+#define DEFAULT_LEFT_STOP _UL(20)
+#define DEFAULT_RIGHT_STOP _UL(20)
 
 #define DEFAULT_BEFORE_SPACING 0
 #define DEFAULT_AFTER_SPACING 0
@@ -165,7 +165,7 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 
 	if(pageLeftMargin)
 	{
-		m_leftStop = SCALE_TO_PIXELS(pageLeftMargin);
+		m_leftStop = _UL(SCALE_TO_PIXELS(pageLeftMargin));
 	}
 	else
 	{
@@ -175,14 +175,14 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 	// left margins are in or out from the default stop
 	if (leftIndent)
 	{
-		m_leftStop += SCALE_TO_PIXELS(leftIndent);
+		m_leftStop += _UL(SCALE_TO_PIXELS(leftIndent));
 		// NOTE : if we recomputed the leftIndent, we have to recompute
 		// NOTE : the firstLineLeftStop below
 	}
 
 	if(pageRightMargin)
 	{
-		m_rightStop = SCALE_TO_PIXELS(pageRightMargin);
+		m_rightStop = _UL(SCALE_TO_PIXELS(pageRightMargin));
 	}
 	else
 	{
@@ -191,10 +191,12 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 
 	// right margins are in or out from the default stop
 	if (rightIndent)
-		m_rightStop += SCALE_TO_PIXELS(rightIndent);
+		m_rightStop += _UL(SCALE_TO_PIXELS(rightIndent));
 
 	STORE_CONVERTED(m_beforeSpacing, beforeSpacing);
 	STORE_CONVERTED(m_afterSpacing, afterSpacing);
+	_UUL(m_beforeSpacing);
+	_UUL(m_afterSpacing);
 
 	m_indent = indent;
 	switch (m_indent)
@@ -202,10 +204,10 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 		// the signage for these two is handled in the conversion through
 		// UT_convertToInches()
 	case AP_Dialog_Paragraph::indent_FIRSTLINE:
-		m_firstLineLeftStop = m_leftStop + SCALE_TO_PIXELS(firstLineIndent);
+		m_firstLineLeftStop = m_leftStop + _UL(SCALE_TO_PIXELS(firstLineIndent));
 		break;
 	case AP_Dialog_Paragraph::indent_HANGING:
-		m_firstLineLeftStop = m_leftStop - SCALE_TO_PIXELS(firstLineIndent);
+		m_firstLineLeftStop = m_leftStop - _UL(SCALE_TO_PIXELS(firstLineIndent));
 		break;
 	case AP_Dialog_Paragraph::indent_NONE:
 		m_firstLineLeftStop = m_leftStop;
@@ -235,15 +237,15 @@ void AP_Preview_Paragraph_Block::setFormat(const XML_Char * pageLeftMargin,
 
 			// we measure from top to top here, and use a minimum of the current
 			// line height
-			if (SCALE_TO_PIXELS(lineSpacing) > m_fontHeight)
-				m_lineSpacing = SCALE_TO_PIXELS(lineSpacing) - m_fontHeight;
+			if (_UL(SCALE_TO_PIXELS(lineSpacing)) > m_fontHeight)
+				m_lineSpacing = _UL(SCALE_TO_PIXELS(lineSpacing)) - m_fontHeight;
 			else
 				m_lineSpacing = 0;
 			break;
 		case AP_Dialog_Paragraph::spacing_EXACTLY:
 			// for exact, we always give them exactly what they asked for,
 			// overlapping and all
-			m_lineSpacing = SCALE_TO_PIXELS(lineSpacing);
+			m_lineSpacing = _UL(SCALE_TO_PIXELS(lineSpacing));
 			break;
 		case AP_Dialog_Paragraph::spacing_MULTIPLE:
 			m_lineSpacing = (UT_uint32) ((double) m_fontHeight
@@ -564,17 +566,17 @@ bool AP_Preview_Paragraph::_loadDrawFont(void)
 void AP_Preview_Paragraph::_drawPageBackground(void)
 {
 	// clear area
-	m_gc->fillRect(*m_clrWhite, 0, 0, getWindowWidth(), getWindowHeight());
+	m_gc->fillRect(*m_clrWhite, 0, 0, _UL(getWindowWidth()), _UL(getWindowHeight()));
 }
 
 void AP_Preview_Paragraph::_drawPageBorder(void)
 {
 	// draw a black one pixel border
 	m_gc->setColor(*m_clrBlack);
-	m_gc->drawLine(0, 0, getWindowWidth(), 0);
-	m_gc->drawLine(getWindowWidth() - 1, 0, getWindowWidth() - 1, getWindowHeight());
-	m_gc->drawLine(getWindowWidth() - 1, getWindowHeight() - 1, 0, getWindowHeight() - 1);
-	m_gc->drawLine(0, getWindowHeight() - 1, 0, 0);
+	m_gc->drawLine(0, 0, _UL(getWindowWidth()), 0);
+	m_gc->drawLine(_UL(getWindowWidth()) - _UL(1), 0, _UL(getWindowWidth()) - _UL(1), _UL(getWindowHeight()));
+	m_gc->drawLine(_UL(getWindowWidth()) - _UL(1), _UL(getWindowHeight()) - _UL(1), 0, _UL(getWindowHeight()) - _UL(1));
+	m_gc->drawLine(0, _UL(getWindowHeight()) - _UL(1), 0, 0);
 }
 
 
@@ -672,7 +674,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 	UT_ASSERT(words && widths);
 
 	// width of space character in pixels
-	UT_sint32 spaceCharWidth = 3;
+	UT_sint32 spaceCharWidth = _UL(3);
 
 	UT_uint32 i = 0;
 	UT_uint32 totalWords = words->getItemCount();
@@ -681,7 +683,7 @@ UT_uint32 AP_Preview_Paragraph::_appendLine(UT_Vector * words,
 
 	// max length of first line is the diff between the (special)
 	// left stop and the (normal) right stop
-	UT_sint32 maxPixelsForThisLine = getWindowWidth() - left - right;
+	UT_sint32 maxPixelsForThisLine = _UL(getWindowWidth()) - left - right;
 
 	// negative or zero makes no sense; bail in that case (callers can deal)
 	if (maxPixelsForThisLine <= 0)
