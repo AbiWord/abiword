@@ -26,6 +26,7 @@
 #include "ut_vector.h"
 
 class UT_Timer;
+class GR_Graphics;
 
 typedef void (*UT_TimerCallback)(UT_Timer* pTimer);
 
@@ -59,7 +60,7 @@ public:
 		*platform* code, so that it can instantiate the appropriate 
 		platform-specific subclass.
 	*/
-	static UT_Timer* static_constructor(UT_TimerCallback pCallback, void* pData);
+	static UT_Timer* static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG=0);
 	
 protected:
 	UT_Timer();		// should only be called from static_constructor()

@@ -84,6 +84,8 @@ public:
 							  UT_Bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
 	virtual UT_Bool endPrint(void);
 
+	virtual HWND getHwnd(void) const;
+
 protected:
 	UT_RGBColor			m_clr;
 	HDC					m_hdc;

@@ -22,6 +22,7 @@
 #include "ut_types.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
+#include "ut_Win32Timer.h"
 #include "xap_ViewListener.h"
 #include "ap_FrameData.h"
 #include "xap_Win32Frame.h"
@@ -786,6 +787,16 @@ LRESULT CALLBACK AP_Win32Frame::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARAM wP
 		return 0;
 	}
 
+	case WM_TIMER:
+	{
+		// Timers are handled differently on Win95 and WinNT.
+		TIMERPROC * pfn = (TIMERPROC *)lParam;
+		UT_Win32Timer * pTimer = (UT_Win32Timer *)wParam;
+		UT_ASSERT( (void *)(pfn) == (void *)(Global_Win32TimerProc) );
+		Global_Win32TimerProc(hwnd,WM_TIMER, pTimer->getIdentifier(),NULL);
+		return 0;
+	}
+	
 	case WM_DESTROY:
 		return 0;
 	} /* switch (iMsg) */

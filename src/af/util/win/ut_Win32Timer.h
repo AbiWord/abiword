@@ -27,7 +27,7 @@
 class UT_Win32Timer : public UT_Timer
 {
 public:
-	UT_Win32Timer(UT_TimerCallback pCallback, void* pData);
+	UT_Win32Timer(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG);
 	~UT_Win32Timer();
 
 	virtual UT_sint32 set(UT_uint32 iMilliseconds);
@@ -37,7 +37,13 @@ public:
 protected:
 	UT_sint32 m_iMilliseconds;
 	UT_Bool m_bStarted;
+	HWND m_hWnd;
 };
+
+VOID CALLBACK Global_Win32TimerProc(HWND hwnd, 
+									UINT uMsg, 
+									UINT idEvent, 
+									DWORD dwTime);
 
 #endif /* UT_WIN32TIMER_H */
 

@@ -591,3 +591,7 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	}
 }
 
+HWND GR_Win32Graphics::getHwnd(void) const
+{
+	return m_hwnd;
+}

@@ -423,7 +423,7 @@ void FL_DocLayout::queueBlockForSpell(fl_BlockLayout *pBlock, UT_Bool bHead)
 
 	if (!m_pSpellCheckTimer)
 	{
-		m_pSpellCheckTimer = UT_Timer::static_constructor(_spellCheck, this);
+		m_pSpellCheckTimer = UT_Timer::static_constructor(_spellCheck, this, m_pG);
 		if (m_pSpellCheckTimer)
 			m_pSpellCheckTimer->set(SPELL_CHECK_MSECS);
 	}

@@ -22,32 +22,37 @@
 
 #include "ut_Win32Timer.h"
 #include "ut_assert.h"
+#include "gr_Win32Graphics.h"
 
 /*****************************************************************/
 	
-UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData)
+UT_Timer* UT_Timer::static_constructor(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG)
 {
 	UT_ASSERT(pCallback);
-	UT_Win32Timer * p = new UT_Win32Timer(pCallback,pData);
+	UT_Win32Timer * p = new UT_Win32Timer(pCallback,pData,pG);
 
 	return p;
 }
 
-UT_Win32Timer::UT_Win32Timer(UT_TimerCallback pCallback, void* pData)
+UT_Win32Timer::UT_Win32Timer(UT_TimerCallback pCallback, void* pData, GR_Graphics * pG)
 {
 	setCallback(pCallback);
 	setInstanceData(pData);
 	m_bStarted = UT_FALSE;
 	m_iMilliseconds = 0;
+
+	GR_Win32Graphics * pWinG = static_cast<GR_Win32Graphics *>(pG);
+	
+	m_hWnd = ((pWinG) ? pWinG->getHwnd() : 0);
 }
 
 
 /*****************************************************************/
 
-VOID CALLBACK _Win32TimerProc(HWND hwnd, 
-						UINT uMsg, 
-						UINT idEvent, 
-						DWORD dwTime)
+VOID CALLBACK Global_Win32TimerProc(HWND hwnd, 
+									UINT uMsg, 
+									UINT idEvent, 
+									DWORD dwTime)
 {
 	UT_Timer* pMyTimer = UT_Timer::findTimer(idEvent);
 	UT_ASSERT(pMyTimer);
@@ -63,8 +68,12 @@ UT_Win32Timer::~UT_Win32Timer()
 UT_sint32 UT_Win32Timer::set(UT_uint32 iMilliseconds)
 {
 	// set the freq and start firing events.
+
+	// NOTE: Win95 does not support TimerProc.  WinNT does support TimerProc.
+	// NOTE: I'm going to pass enough information so that we should be able
+	// NOTE: to get back to our timer callback regardless of the OS.
 	
-	UINT idTimer = SetTimer(NULL, 0, iMilliseconds, (TIMERPROC) _Win32TimerProc);
+	UINT idTimer = SetTimer(m_hWnd, (UINT)this, iMilliseconds, (TIMERPROC) Global_Win32TimerProc);
 	if (idTimer == 0)
 		return -1;
 	
@@ -84,7 +93,7 @@ void UT_Win32Timer::stop(void)
 	if (idTimer == 0)
 		return;
 	
-	KillTimer(NULL, idTimer);
+	KillTimer(m_hWnd, idTimer);
 	m_bStarted = UT_FALSE;
 }
 
