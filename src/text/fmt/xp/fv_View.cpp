@@ -5462,12 +5462,12 @@ void FV_View::getTopRulerInfo(AP_TopRulerInfo * pInfo)
 		// fill in the details
 	}
 
-	static char buf[20];
+	static UT_String buf;
 	char * old_locale = setlocale(LC_NUMERIC,"C");
-	snprintf(buf, sizeof(buf), "%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
+	buf = UT_String_sprintf ("%.4fin", m_pDoc->m_docPageSize.Width(DIM_IN));
 	setlocale(LC_NUMERIC,old_locale); // restore original locale
 
-	pInfo->m_xPaperSize = m_pG->convertDimension(buf);
+	pInfo->m_xPaperSize = m_pG->convertDimension(buf.c_str());
 	pInfo->m_xPageViewMargin = getPageViewLeftMargin();
 
 	pInfo->m_pfnEnumTabStops = fl_BlockLayout::s_EnumTabStops;

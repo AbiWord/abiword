@@ -17,7 +17,6 @@
  * 02111-1307, USA.
  */
 
-#include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ut_string.h"
@@ -38,15 +37,15 @@
 
 
 XAP_Dialog * AP_CocoaDialog_Download_File::static_constructor(XAP_DialogFactory * pFactory,
-													 XAP_Dialog_Id id)
+													 XAP_Dialog_Id theId)
 {
-	AP_CocoaDialog_Download_File * p = new AP_CocoaDialog_Download_File(pFactory,id);
+	AP_CocoaDialog_Download_File * p = new AP_CocoaDialog_Download_File(pFactory,theId);
 	return (XAP_Dialog*)p;
 }
 
 AP_CocoaDialog_Download_File::AP_CocoaDialog_Download_File(XAP_DialogFactory * pDlgFactory,
-											 XAP_Dialog_Id id)
-	: AP_Dialog_Download_File(pDlgFactory,id)
+											 XAP_Dialog_Id theId)
+	: AP_Dialog_Download_File(pDlgFactory,theId)
 {
 }
 

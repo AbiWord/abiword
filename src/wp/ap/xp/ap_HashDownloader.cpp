@@ -40,6 +40,7 @@
 #include "ap_Dialog_Download_File.h"
 
 #include "ut_string.h"
+#include "ut_string_class.h"
 #include "ut_path.h"
 #include "ut_decompress.h"
 
@@ -104,7 +105,7 @@ AP_HashDownloader::getDefaultAbiSpellListURL(void)
 UT_sint32
 AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endianess, UT_uint32 forceDownload)
 {
-	char szURL[256], szFName[128], *szPath;
+	char *szPath;
 	UT_sint32 ret, i;
 	FILE *fp;
 	gzFile gzfp;
@@ -113,10 +114,11 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 #ifdef CURLHASH_NO_CACHING_OF_LIST
 	forceDownload = 1;
 #endif
+        UT_String szURL, szFName;
 
-	snprintf(szFName, sizeof(szFName), getAbiSpellListName(), endianess);
-	snprintf(szURL, sizeof(szURL), getDefaultAbiSpellListURL(), szFName);
-	szPath = UT_catPathname(XAP_App::getApp()->getUserPrivateDirectory(), szFName);
+	szFName = UT_String_sprintf (getAbiSpellListName(), endianess);
+	szURL = UT_String_sprintf (getDefaultAbiSpellListURL(), szFName.c_str());
+	szPath = UT_catPathname(XAP_App::getApp()->getUserPrivateDirectory(), szFName.c_str());
 	UT_ASSERT((szPath) && (*szPath));
 
 #ifdef CURLHASH_NEVER_UPDATE_LIST
@@ -174,9 +176,9 @@ AP_HashDownloader::downloadDictionaryList(XAP_Frame *pFrame, const char *endiane
 	initData();
 	xmlParser.setListener(this);
 	if ((ret = xmlParser.parse(fileData.data, fileData.s)) || xmlParseOk == -1) {
-		char errMsg[1024];
-		snprintf(errMsg, sizeof(errMsg), "Error while parsing abispell dictionary-list (ret=%d - xmlParseOk=%d)\n", ret, xmlParseOk);
-		showErrorMsg(pFrame, errMsg);
+		UT_String errMsg;
+		errMsg = UT_String_sprintf ("Error while parsing abispell dictionary-list (ret=%d - xmlParseOk=%d)\n", ret, xmlParseOk);
+		showErrorMsg(pFrame, errMsg.c_str());
 		return(-1);
 	}
 

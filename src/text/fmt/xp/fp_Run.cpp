@@ -4063,12 +4063,12 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 
-	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	UT_String szFieldValue;
 
 	// How do we superscript the endnote?
-	snprintf(szFieldValue, FPFIELD_MAX_LENGTH, "[%d]", endnoteNo);
+	szFieldValue = UT_String_sprintf ("[%d]", endnoteNo);
 
-	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
 
 	return _setValue(sz_ucs_FieldValue);
 }
@@ -4122,11 +4122,11 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
 
-	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+	UT_String szFieldValue;
 
-	snprintf(szFieldValue, FPFIELD_MAX_LENGTH, "[%d] ", endnoteNo);
+	szFieldValue = UT_String_sprintf ("[%d] ", endnoteNo);
 
-	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue.c_str());
 
 	return _setValue(sz_ucs_FieldValue);
 }
