@@ -952,6 +952,28 @@ void fl_TableLayout::_purgeLayout(void)
 }
 
 //------------------------------------------------------------------
+///
+/// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
+///
+static struct xmlToIdMapping s_FillStyleTokens[] =
+{
+	{	"fill",			FS_FILL			},
+	{	"off",			FS_OFF			}
+};
+#define s_FillStyleTokenTableSize	((sizeof(s_FillStyleTokens)/sizeof(s_FillStyleTokens[0])))
+
+///
+/// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
+///
+static struct xmlToIdMapping s_LineStyleTokens[] =
+{
+	{	"dotted",			LS_DOTTED		},
+	{	"double-dash",		LS_DOUBLE_DASH	},
+	{	"normal",			LS_NORMAL		},
+	{	"off",				LS_OFF			},
+	{	"on-off-dash",		LS_ON_OFF_DASH	}
+};
+#define s_LineStyleTokenTableSize	((sizeof(s_LineStyleTokens)/sizeof(s_LineStyleTokens[0])))
 
 fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_CELL,FL_CONTAINER_CELL,PTX_SectionCell,pMyContainerLayout),

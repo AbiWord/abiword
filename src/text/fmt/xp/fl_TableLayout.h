@@ -334,28 +334,5 @@ struct xmlToIdMapping {
 #define LS_DOUBLE_DASH	3	// doube-dash
 #define LS_DOTTED		4	// dotted
 
-///
-/// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
-///
-static struct xmlToIdMapping s_FillStyleTokens[] =
-{
-	{	"fill",			FS_FILL			},
-	{	"off",			FS_OFF			}
-};
-#define s_FillStyleTokenTableSize	((sizeof(s_FillStyleTokens)/sizeof(s_FillStyleTokens[0])))
-
-///
-/// NOTE TO ALL HACKERS!! This must be in alphabetical order on Pain of Death
-///
-static struct xmlToIdMapping s_LineStyleTokens[] =
-{
-	{	"dotted",			LS_DOTTED		},
-	{	"double-dash",		LS_DOUBLE_DASH	},
-	{	"normal",			LS_NORMAL		},
-	{	"off",				LS_OFF			},
-	{	"on-off-dash",		LS_ON_OFF_DASH	}
-};
-#define s_LineStyleTokenTableSize	((sizeof(s_LineStyleTokens)/sizeof(s_LineStyleTokens[0])))
-
 #endif /* TABLELAYOUT_H */
 
