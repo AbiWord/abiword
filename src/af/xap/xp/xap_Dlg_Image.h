@@ -41,7 +41,7 @@ public:
 
 	double getWidth () const { return m_width; }
 	double getHeight () const { return m_height; }
-	bool getPerserveAspect() const { return m_bAspect; }
+	bool getPreserveAspect() const { return m_bAspect; }
 
 	// needed to set the initial width & height
 	void setWidth (double w) { setWidth(w,false); }

@@ -90,7 +90,7 @@ BOOL XAP_Win32Dialog_Image::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	// Initialize controls
 	_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_HEIGHT, getHeightString() );
 	_win32Dialog.setControlText( XAP_RID_DIALOG_IMAGE_EBX_WIDTH, getWidthString() );
-	_win32Dialog.checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPerserveAspect() );
+	_win32Dialog.checkButton( XAP_RID_DIALOG_IMAGE_CHK_ASPECT, getPreserveAspect() );
 
 	return TRUE;
 }
