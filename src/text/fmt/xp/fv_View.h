@@ -445,7 +445,7 @@ public:
 	void				setPoint(PT_DocPosition pt);
 
 // -----------------------
-
+	void                killBlink(void);
 	void				setShowPara(bool);
 	inline bool 	getShowPara(void) const { return m_bShowPara; };
 

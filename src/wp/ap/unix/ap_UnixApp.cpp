@@ -117,6 +117,9 @@
 #include <gnome.h>
 #include <libbonoboui.h>
 #include <libgnomevfs/gnome-vfs.h>
+#include <bonobo/bonobo-macros.h>
+#include <bonobo/bonobo-object.h>
+
 #include "xap_UnixGnomePrintGraphics.h"
 #include "ap_EditMethods.h"
 
@@ -1787,6 +1790,9 @@ load_document_from_stream (BonoboPersistStream *ps,
 	Bonobo_Stream_iobuf *buffer;
 	CORBA_long len_read;
 	FILE * tmpfile;
+#ifdef LOGFILE
+	fprintf(logfile,"Load file from stream \n");
+#endif
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ABI_WIDGET (data));
@@ -1800,6 +1806,9 @@ load_document_from_stream (BonoboPersistStream *ps,
 	UT_tmpnam(szTempfile);
 	
 	tmpfile = fopen(szTempfile, "wb");
+#ifdef LOGFILE
+	fprintf(logfile,"Create Temp filename %s \n",tmpfile);
+#endif
 	
 	do 
 	{
@@ -1826,8 +1835,10 @@ load_document_from_stream (BonoboPersistStream *ps,
 	// Load the file.
 	//
 	//
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget::unlink_after_load",static_cast<gboolean>(TRUE),NULL);
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",static_cast<gchar *>(szTempfile),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget--unlink-after-load",static_cast<gboolean>(TRUE),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget--load-file",static_cast<gchar *>(szTempfile),NULL);
+
+
 	return;
 
  exit_clean:
@@ -1957,7 +1968,7 @@ load_document_from_file(BonoboPersistFile *pf, const CORBA_char *filename,
 	//
 	// Load the file.
 	//
-	g_object_set(G_OBJECT(abiwidget),"AbiWidget::load_file",reinterpret_cast<const gchar *>(filename),NULL);
+	g_object_set(G_OBJECT(abiwidget),"AbiWidget--load-file",reinterpret_cast<const gchar *>(filename),NULL);
 	return 0;
 }
 
@@ -2206,11 +2217,16 @@ AbiControl_add_interfaces (AbiWidget *abiwidget,
 	return to_aggregate;
 }
 
+
 static BonoboControl * AbiWidget_control_new (AbiWidget * abi)
 {
   // create a BonoboControl from a widget
   BonoboControl * control = bonobo_control_new (GTK_WIDGET(abi));
-
+#if 0
+  AbiWidgetClass * abi_klazz = ABI_WIDGET_CLASS (G_OBJECT_GET_CLASS(G_OBJECT(abi)));
+  BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_klazz;
+  GObjectClass *gobject_class = G_OBJECT_CLASS(abi_klazz);
+#endif
   AbiControl_add_interfaces (ABI_WIDGET(abi),
 							 BONOBO_OBJECT(control));
   return control;
@@ -2247,7 +2263,8 @@ bonobo_AbiWidget_factory  (BonoboGenericFactory *factory,
 static int mainBonobo(int argc, const char ** argv)
 {
 	BONOBO_FACTORY_INIT ("abiword-component", "0.1", &argc, const_cast<char **>(argv));
-
+	XAP_App * pApp = XAP_App::getApp();
+	pApp->setBonoboRunning();
 	return bonobo_generic_factory_main ("OAFIID:GNOME_AbiWord_ControlFactory",
 										bonobo_AbiWidget_factory, NULL);
 }

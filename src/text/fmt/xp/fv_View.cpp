@@ -915,6 +915,11 @@ void FV_View::setPaperColor(const XML_Char* clr)
 	_draw(0, 0, getWindowWidth(), getWindowHeight(), false, false);
 }
 
+void FV_View::killBlink(void)
+{
+	m_pG->getCaret()->setBlink(false);
+}
+
 void FV_View::focusChange(AV_Focus focus)
 {
 	m_focus=focus;

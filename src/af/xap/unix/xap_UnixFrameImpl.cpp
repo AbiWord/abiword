@@ -710,7 +710,10 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 	XAP_Frame* pFrame = pUnixFrameImpl->getFrame();
 	XAP_App * pApp = pFrame->getApp();
 	UT_ASSERT(pApp);
-
+	if(pApp->isBonoboRunning())
+	{
+		return FALSE;
+	}
 	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
 

@@ -24,6 +24,9 @@
 #include "gr_Caret.h"
 #include "gr_Graphics.h"
 #include "ut_assert.h"
+#include "xap_App.h"
+#include "xap_Frame.h"
+#include "xav_View.h"
 
 static const UT_uint32 CURSOR_BLINK_TIME = 600; /* milliseconds */
 static const UT_uint32 CURSOR_DELAY_TIME = 10;
@@ -194,7 +197,22 @@ void GR_Caret::_blink(bool bExplicit)
 {
 	if (m_bRecursiveDraw || !m_bPositionSet)
 		return;
-
+	XAP_App * pApp = XAP_App::getApp();
+	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
+	if(pFrame == NULL)
+	{
+		return;
+	}
+	AV_View * pView = pFrame->getCurrentView();
+	if(pView == NULL)
+	{
+		return;
+	}
+	if(pView->isLayoutFilling())
+	{
+		return;
+	}
+		
 	// After any autoblink, we want there to be BLINK_TIME 
 	// until next autoblink.
 	if (!bExplicit)

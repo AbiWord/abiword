@@ -36,10 +36,22 @@
 #include "xap_UnixDialogHelper.h"
 #include <glib-object.h>
 #include "ap_UnixApp.h"
+#include "ut_sleep.h"
+#include "fv_View.h"
+#include "fl_DocLayout.h"
 
 //#define LOGFILE
 #ifdef LOGFILE
 static FILE * logfile;
+#endif
+
+
+#ifdef HAVE_GNOME
+#include <gnome.h>
+#include <libbonoboui.h>
+#include <libgnomevfs/gnome-vfs.h>
+#include <bonobo/bonobo-macros.h>
+#include <bonobo/bonobo-object.h>
 #endif
 
 /**************************************************************************/
@@ -82,6 +94,7 @@ struct _AbiPrivData {
 	bool                 m_bPendingFile;
 	bool                 m_bMappedEventProcessed;
     bool                 m_bUnlinkFileAfterLoad;
+	gint                 m_iNumFileLoads;
 };
 
 /**************************************************************************/
@@ -192,6 +205,10 @@ enum {
 static GtkBinClass * parent_class = 0;
 
 static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p);
+
+//static void s_abi_widget_destroy(GObject * w, gpointer abi);
+
+//static void s_abi_widget_delete(GObject * w, gpointer abi);
 
 /**************************************************************************/
 /**************************************************************************/
@@ -366,17 +383,23 @@ abi_widget_load_file(AbiWidget * abi, const char * pszFile)
 	  abi->priv->m_bPendingFile = true;
 	  return false;
 	}
+	if(abi->priv->m_iNumFileLoads > 0)
+	{
+		return false;
+	}
 	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
 	if(pFrame == NULL)
 		return false;
 
 	bool res= ( UT_OK == pFrame->loadDocument(abi->priv->m_szFilename,IEFT_Unknown ,true));
+	abi->priv->m_bPendingFile = false;
+	abi->priv->m_iNumFileLoads += 1;
 	if(abi->priv->m_bUnlinkFileAfterLoad)
 	{
 	  unlink(pszFile);
 	  abi->priv->m_bUnlinkFileAfterLoad = false;
 	}
-	return res;
+	return FALSE;
 }
 
 static gint s_abi_widget_load_file(gpointer p)
@@ -401,7 +424,10 @@ static void s_abi_widget_map_cb(GObject * w,  GdkEvent *event,gpointer p)
   if(!abi->priv->m_bMappedEventProcessed)
   {
 	  abi->priv->m_bMappedEventProcessed = true;
-	  s_abi_widget_load_file((gpointer) abi);
+//
+// Can't load until this event has finished propagating
+//
+	  g_idle_add(static_cast<GSourceFunc>(s_abi_widget_load_file),static_cast<gpointer>(abi));
   }
 }
 
@@ -459,7 +485,6 @@ static void abi_widget_set_prop (GObject  *object,
 
 #ifdef LOGFILE
 	fprintf(logfile,"setArg %d\n",arg_id);
-	fclose(logfile);
 	fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
 #endif
 
@@ -1103,11 +1128,61 @@ abi_widget_realize (GtkWidget * widget)
 	gtk_style_set_background (widget->style, widget->window, GTK_STATE_NORMAL);
 
 	//
-	// connect a signal handler to load files after abiword is mapped
+	// connect a signal handler to load files after abiword is in a stable
+	// state.
 	//
 	g_signal_connect_after(G_OBJECT(widget),"map_event", 
 			       G_CALLBACK (s_abi_widget_map_cb),
 			       (gpointer) abi);
+	//
+	// connect a signal handler to the destroy signal of the window
+	//
+// 	g_signal_connect(G_OBJECT(widget),"delete_event", 
+// 			       G_CALLBACK (s_abi_widget_delete),
+// 			       (gpointer) abi);
+// 	g_signal_connect(G_OBJECT(widget),"destroy", 
+// 			       G_CALLBACK (s_abi_widget_delete),
+// 			       (gpointer) abi);
+}
+
+
+static void
+abi_widget_finalize(GObject *object)
+{
+	AbiWidget * abi;
+	
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_ABI_WIDGET(object));
+
+	// here we free any self-created data
+	abi = ABI_WIDGET(object);
+
+	// order of deletion is important here
+
+	if(abi->priv->m_pApp)
+	{
+		if(abi->priv->m_pFrame)
+		{
+			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
+			delete abi->priv->m_pFrame;
+		}
+		if(!abi->priv->externalApp)
+		{
+			abi->priv->m_pApp->shutdown();
+			delete abi->priv->m_pApp;
+		}
+		abi->priv->m_pApp = NULL;
+	}
+	g_free (abi->priv->m_szFilename);
+
+	g_free (abi->priv);
+
+#ifdef LOGFILE
+	fprintf(logfile,"abiwidget finalized\n");
+	fclose(logfile);
+#endif
+	// chain up
+	BONOBO_CALL_PARENT (G_OBJECT_CLASS, finalize, (object));
 }
 
 static void
@@ -1135,6 +1210,7 @@ abi_widget_destroy (GtkObject *object)
 			abi->priv->m_pApp->shutdown();
 			delete abi->priv->m_pApp;
 		}
+		abi->priv->m_pApp = NULL;
 	}
 	g_free (abi->priv->m_szFilename);
 
@@ -1144,15 +1220,63 @@ abi_widget_destroy (GtkObject *object)
 	fprintf(logfile,"abiwidget destroyed\n");
 	fclose(logfile);
 #endif
-
-	// chain up
 	if (GTK_OBJECT_CLASS (parent_class)->destroy)
 		GTK_OBJECT_CLASS (parent_class)->destroy (object);
+}
+
+
+static void
+abi_widget_bonobo_destroy (BonoboObject *object)
+{
+	AbiWidget * abi;
+	while(1)
+	{
+		UT_usleep(10000);
+	}
+	
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_ABI_WIDGET(object));
+
+	// here we free any self-created data
+	abi = ABI_WIDGET(object);
+
+	// order of deletion is important here
+
+	if(abi->priv->m_pApp)
+	{
+		if(abi->priv->m_pFrame)
+		{
+			abi->priv->m_pApp->forgetFrame(abi->priv->m_pFrame);
+			delete abi->priv->m_pFrame;
+		}
+		if(!abi->priv->externalApp)
+		{
+			abi->priv->m_pApp->shutdown();
+			delete abi->priv->m_pApp;
+		}
+		abi->priv->m_pApp = NULL;
+	}
+	g_free (abi->priv->m_szFilename);
+
+	g_free (abi->priv);
+
+#ifdef LOGFILE
+	fprintf(logfile,"abiwidget destroyed in bonobo_destroy \n");
+	fclose(logfile);
+#endif
+	// chain up
+	BONOBO_CALL_PARENT (BONOBO_OBJECT_CLASS, destroy, BONOBO_OBJECT(object));
 }
 
 static void
 abi_widget_class_init (AbiWidgetClass *abi_class)
 {
+
+#ifdef LOGFILE
+	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
+	fprintf(logfile,"Abi_widget class init \n");
+#endif
+
 	GtkObjectClass * object_class;
 	GtkWidgetClass * widget_class;
 	GtkContainerClass *container_class;
@@ -1165,7 +1289,14 @@ abi_widget_class_init (AbiWidgetClass *abi_class)
 	GObjectClass *gobject_class = G_OBJECT_CLASS(abi_class);
 
 	// we need our own special destroy function
-	object_class->destroy  = abi_widget_destroy;
+	XAP_App * pApp = XAP_App::getApp();
+	if(pApp->isBonoboRunning())
+	{
+		BonoboObjectClass *bonobo_object_class = (BonoboObjectClass *)abi_class;
+		bonobo_object_class->destroy = abi_widget_bonobo_destroy;
+		gobject_class->finalize = abi_widget_finalize;
+	}
+
 
 	// set our parent class
 	parent_class = (GtkBinClass *)
@@ -1959,6 +2090,7 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	priv->m_bPendingFile = false;
 	priv->m_bMappedEventProcessed = false;
 	priv->m_bUnlinkFileAfterLoad = false;
+	priv->m_iNumFileLoads = 0;
 	if(pApp == NULL)
 	{
 		priv->m_pApp = NULL;
@@ -1968,6 +2100,25 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	{
 		priv->m_pApp = pApp;
 		priv->externalApp = true;
+		UT_sint32 count = pApp->getFrameCount();
+		UT_sint32 i =0;
+		for(i=0; i<count; i++)
+		{
+			XAP_Frame * pFrame = pApp->getFrame(i);
+			if(pFrame)
+			{
+				FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
+				if(pView)
+				{
+					pView->killBlink();
+					FL_DocLayout * pLayout = pView->getLayout();
+					if(pLayout)
+					{
+						pLayout->dequeueAll();
+					}
+				}
+			}
+		}
 	}
 	// this is all that we can do here, because we can't draw until we're
 	// realized and have a GdkWindow pointer
@@ -1978,10 +2129,7 @@ abi_widget_construct (AbiWidget * abi, const char * file, AP_UnixApp * pApp)
 	abi->priv = priv;
 
 #ifdef LOGFILE
-	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
 	fprintf(logfile,"AbiWidget Constructed \n");
-	fclose(logfile);
-	logfile = fopen("/home/msevior/test-abicontrol/abiLogFile","a+");
 #endif
 }
 
@@ -1996,6 +2144,10 @@ abi_widget_map_to_screen(AbiWidget * abi)
   GtkWidget * widget = GTK_WIDGET(abi);
 
   // now we can set up Abi inside of this GdkWindow
+
+#ifdef LOGFILE
+	fprintf(logfile,"AbiWidget map_to_screen done \n");
+#endif
 
 	XAP_Args *pArgs = 0;
 	abi->priv->m_bMappedToScreen = true;
@@ -2012,12 +2164,10 @@ abi_widget_map_to_screen(AbiWidget * abi)
 		    pApp = new AP_UnixApp (pArgs, "AbiWidget");
 
 		UT_ASSERT(pApp);
-		pApp->setBonoboRunning();
 		pApp->initialize(true);
 		abi->priv->m_pApp     = pApp;
 	}
 
-	// there is no AP_UnixGnomeFrame
 	AP_UnixFrame * pFrame  = new AP_UnixFrame(abi->priv->m_pApp);
 
 	UT_ASSERT(pFrame);

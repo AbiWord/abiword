@@ -1811,6 +1811,25 @@ FL_DocLayout::queueBlockForBackgroundCheck(UT_uint32 iReason,
 	}
 }
 
+void FL_DocLayout::dequeueAll(void)
+{
+	UT_sint32 i =0;
+	for(i= m_vecUncheckedBlocks.getItemCount()-1; i>= 0; i--)
+	{
+		m_vecUncheckedBlocks.deleteNthItem(i);	
+	}
+	m_bStopSpellChecking = true;
+	if(m_pBackgroundCheckTimer)
+	{
+		m_pBackgroundCheckTimer->stop();
+		// Wait for checking to complete before returning.
+		while(m_bImSpellCheckingNow == true)
+		{
+			// TODO shouldn't we have a little sleep here?
+		}
+	}
+}
+
 /*!
  Remove block from background checking queue
  \param pBlock Block to remove

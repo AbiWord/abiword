@@ -492,17 +492,27 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	bool holdsSelection = false, hadView = true;
 	PD_DocumentRange range;
 	PT_DocPosition inspt = 0;
+	FV_View * pOldView = NULL;
+	FL_DocLayout * pOldDocLayout  = NULL;
 	if (m_pView && !m_pView->isSelectionEmpty ()) {
 		holdsSelection = true;
 		static_cast<FV_View*>(m_pView)->getDocumentRangeOfCurrentSelection (&range);
 	} else if (m_pView)
+	{
 		inspt = static_cast<FV_View*>(m_pView)->getInsPoint ();
+		pOldView = static_cast<FV_View *>(m_pView);
+		pOldView->killBlink();
+	}
 	else
 		hadView = false;
 
 	// switch to new view, cleaning up previous settings
 	if (static_cast<AP_FrameData*>(m_pData)->m_pDocLayout)
+	{
 		pOldDoc = (static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getDocument());
+		pOldDocLayout = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout;
+		pOldDocLayout->dequeueAll();
+	}
 
 	REPLACEP(static_cast<AP_FrameData*>(m_pData)->m_pG, pG);
 	REPLACEP(static_cast<AP_FrameData*>(m_pData)->m_pDocLayout, pDocLayout);

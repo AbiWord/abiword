@@ -69,7 +69,8 @@ XAP_App::XAP_App(XAP_Args * pArgs, const char * szAppName)
 	  m_pToolbarFactory(NULL),
 	  m_pHashDownloader(NULL),
 	  m_bAllowCustomizing(true),
-	  m_bDebugBool(false)
+	  m_bDebugBool(false),
+	  m_bBonoboRunning(false)
 {
 	UT_ASSERT(szAppName && *szAppName);
 	m_pApp = this;

@@ -239,6 +239,22 @@ gint AP_UnixTopRuler::_fe::motion_notify_event(GtkWidget* w, GdkEventMotion* e)
 	// a static function
 	AP_UnixTopRuler * pUnixTopRuler = static_cast<AP_UnixTopRuler *>(gtk_object_get_user_data(GTK_OBJECT(w)));
 
+	XAP_App * pApp = XAP_App::getApp();
+	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
+	if(pFrame == NULL)
+	{
+		return 1;
+	}
+	AV_View * pView = pFrame->getCurrentView();
+	if(pView == NULL)
+	{
+		return 1;
+	}
+	if(pView->getPoint() == 0)
+	{
+		return 1;
+	}
+
 	EV_EditModifierState ems;
 	
 	ems = 0;

@@ -181,6 +181,8 @@ public:
     void                                    setToolbarsCustomizable(bool b);
     
 	XAP_HashDownloader *			getHashDownloader(void) const { return m_pHashDownloader; };
+	void                            setBonoboRunning(void) {m_bBonoboRunning = true;}
+	bool                            isBonoboRunning(void) const { return m_bBonoboRunning;}
 
 protected:
 	void									_setAbiSuiteLibDir(const char * sz);
@@ -212,6 +214,7 @@ protected:
 	static XAP_App *						m_pApp;
 	bool                                    m_bAllowCustomizing;
 	bool                                    m_bDebugBool;
+	bool                                    m_bBonoboRunning;
 private:
 	XAP_App(const XAP_App&);				// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);	
