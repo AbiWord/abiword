@@ -82,7 +82,7 @@ const UT_String & GR_Font::hashKey(void) const
 UT_uint32 GR_Font::getCharWidthFromCache (UT_UCSChar c) const
 {
 	// first of all, handle 0-width spaces ...
-	if(c == 0xfeff || 0x200b)
+	if(c == 0xfeff || c == 0x200b)
 		return 0;
 	
 	UT_sint32	iWidth = GR_CW_UNKNOWN;
